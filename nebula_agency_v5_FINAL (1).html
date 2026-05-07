@@ -46,11 +46,11 @@ img{display:block;max-width:100%;height:auto;}
 
 /* ============ TYPOGRAPHIE ============ */
 h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-0.02em;line-height:1.15;color:var(--text);}
-.h-display{font-size:clamp(2rem,5vw,4rem);font-weight:700;letter-spacing:-0.03em;word-break:keep-all;overflow-wrap:break-word;hyphens:none;max-width:100%;}
-.h-section{font-size:clamp(1.9rem,4vw,2.7rem);font-weight:700;letter-spacing:-0.025em;}
+.h-display{font-size:clamp(2.8rem,7.5vw,7.5rem);font-weight:700;letter-spacing:-0.04em;line-height:1.0;word-break:keep-all;overflow-wrap:break-word;hyphens:none;max-width:100%;}
+.h-section{font-size:clamp(1.9rem,4vw,3.2rem);font-weight:700;letter-spacing:-0.03em;line-height:1.1;}
 .h-card{font-size:1.18rem;font-weight:600;letter-spacing:-0.01em;}
-.grad{background:linear-gradient(135deg,var(--blue2) 0%,var(--violet2) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
-.grad-3{background:linear-gradient(135deg,var(--blue2) 0%,var(--violet2) 50%,var(--cyan) 100%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:gradFlow 8s linear infinite;}
+.grad{color:var(--cyan);}
+.grad-3{color:var(--cyan);position:relative;}.grad-3::after{content:'';position:absolute;left:0;right:0;bottom:-0.06em;height:0.06em;background:var(--cyan);border-radius:99px;opacity:0.5;}
 @keyframes gradFlow{0%{background-position:0% center;}100%{background-position:200% center;}}
 
 /* ============ NAV ============ */
@@ -118,7 +118,7 @@ section{position:relative;z-index:2;padding:110px 24px;max-width:100vw;overflow:
 }
 /* Animation typewriter pour la sub */
 .hero-sub{position:relative;}
-.hero-sub-shimmer{display:inline-block;background:linear-gradient(90deg,var(--text2) 0%,var(--text) 50%,var(--text2) 100%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmerText 4s linear infinite;}
+.hero-sub-shimmer{display:inline;color:var(--text);font-weight:700;border-bottom:1px solid rgba(255,255,255,0.25);padding-bottom:1px;}
 @keyframes shimmerText{from{background-position:0% center;}to{background-position:-200% center;}}
 
 .hero-sub{color:var(--text2);font-size:1.1rem;line-height:1.75;max-width:560px;margin-bottom:36px;}
@@ -133,8 +133,8 @@ section{position:relative;z-index:2;padding:110px 24px;max-width:100vw;overflow:
 .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--bord2);}
 .btn-ghost:hover{border-color:var(--blue);background:rgba(79,111,255,.06);transform:translateY(-2px);}
 
-.hero-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding-top:32px;border-top:1px solid var(--border);}
-.metric-num{font-family:'Space Grotesk',sans-serif;font-size:1.85rem;font-weight:700;letter-spacing:-0.02em;background:linear-gradient(135deg,var(--blue2),var(--violet2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1;}
+.hero-proof{display:flex;align-items:center;gap:16px;margin-top:32px;padding-top:24px;border-top:1px solid var(--border);}
+.metric-num{font-family:'Space Grotesk',sans-serif;font-size:1.85rem;font-weight:700;letter-spacing:-0.02em;color:var(--text);line-height:1;}
 .metric-label{font-size:.78rem;color:var(--text3);margin-top:6px;}
 
 /* HERO LOGO */
@@ -161,7 +161,35 @@ section{position:relative;z-index:2;padding:110px 24px;max-width:100vw;overflow:
 
 /* ============ SERVICES ============ */
 .services-head{margin-bottom:56px;}
-.services-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:22px;}
+.svc-list{display:flex;flex-direction:column;border-top:1px solid var(--border);}
+.svc-row{display:grid;grid-template-columns:80px 1fr auto;gap:32px;align-items:start;padding:36px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:all .4s var(--ease-out-expo);position:relative;text-decoration:none;color:inherit;}
+.svc-row::before{content:'';position:absolute;left:0;right:0;bottom:-1px;height:1px;background:linear-gradient(90deg,var(--blue),var(--violet));transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease-out-expo);}
+.svc-row:hover::before{transform:scaleX(1);}
+.svc-row:hover .svc-num-big{color:var(--text);transform:translateX(4px);}
+.svc-row:hover .svc-row-arrow{transform:translateX(8px);color:var(--cyan);}
+.svc-row.featured-row{background:rgba(79,111,255,.03);padding:36px 24px;margin:0 -24px;}
+.svc-num-big{font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:500;color:var(--text3);letter-spacing:0.12em;padding-top:4px;transition:color .3s,transform .3s var(--ease-out-expo);}
+.svc-row-body{}
+.svc-row-head{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap;}
+.svc-row-name{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:600;letter-spacing:-0.015em;color:var(--text);}
+.svc-row-badge{padding:3px 10px;border-radius:100px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;flex-shrink:0;}
+.svc-row-badge.pop{background:rgba(147,51,234,.15);border:1px solid rgba(147,51,234,.4);color:var(--violet2);}
+.svc-row-badge.fast{background:rgba(6,182,212,.12);border:1px solid rgba(6,182,212,.35);color:var(--cyan);}
+.svc-row-badge.eco{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:#4ade80;}
+.svc-row-desc{color:var(--text2);font-size:.92rem;line-height:1.7;max-width:600px;}
+.svc-row-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;}
+.svc-row-pill{padding:4px 11px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:100px;font-size:.78rem;color:var(--text3);}
+.svc-row-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:120px;}
+.svc-row-price{font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;color:var(--text);letter-spacing:-0.02em;text-align:right;}
+.svc-row-price-unit{font-size:.72rem;color:var(--text3);font-weight:400;}
+.svc-row-roi{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--green);letter-spacing:.05em;text-align:right;line-height:1.5;}
+.svc-row-arrow{font-size:1.1rem;color:var(--text3);transition:transform .4s var(--ease-out-expo),color .3s;margin-top:4px;}
+@media(max-width:700px){
+  .svc-row{grid-template-columns:50px 1fr;gap:16px;padding:24px 0;}
+  .svc-row-right{display:none;}
+  .svc-row.featured-row{margin:0 -12px;padding:24px 12px;}
+  .svc-row-name{font-size:1.05rem;}
+}
 .svc{padding:30px;background:var(--card);border:1px solid var(--border);border-radius:16px;position:relative;overflow:hidden;transition:transform .35s cubic-bezier(.4,0,.2,1),background .35s ease,border-color .35s ease;}
 .svc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--violet));opacity:0;transition:opacity .3s;}
 .svc::after{content:'';position:absolute;top:0;right:0;width:150px;height:150px;background:radial-gradient(circle,rgba(79,111,255,.15) 0%,transparent 70%);opacity:0;transform:translate(40%,-40%);transition:opacity .5s;pointer-events:none;}
@@ -187,7 +215,7 @@ section{position:relative;z-index:2;padding:110px 24px;max-width:100vw;overflow:
 .svc-feats li::before{content:'';width:14px;height:14px;background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%237a8eff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>') center/contain no-repeat;flex-shrink:0;margin-top:3px;}
 .svc-foot{padding-top:18px;border-top:1px solid var(--border);display:flex;align-items:baseline;justify-content:space-between;gap:6px;}
 .svc-price-block{display:flex;align-items:baseline;gap:6px;}
-.svc-price{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;background:linear-gradient(135deg,var(--blue2),var(--violet2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.svc-price{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;color:var(--text);}
 .svc-price-unit{font-size:.78rem;color:var(--text3);font-weight:500;}
 .svc-cta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--blue2);letter-spacing:0.1em;text-transform:uppercase;display:inline-flex;align-items:center;gap:5px;text-decoration:none;transition:gap .3s;}
 .svc-cta:hover{gap:8px;}
@@ -212,7 +240,7 @@ section{position:relative;z-index:2;padding:110px 24px;max-width:100vw;overflow:
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .stat-box{padding:24px 18px;background:rgba(79,111,255,.04);border:1px solid rgba(79,111,255,.1);border-radius:12px;text-align:center;transition:all .3s;}
 .stat-box:hover{background:rgba(79,111,255,.1);border-color:rgba(79,111,255,.3);transform:translateY(-2px);}
-.stat-big{font-family:'Space Grotesk',sans-serif;font-size:2.1rem;font-weight:700;background:linear-gradient(135deg,var(--blue2),var(--violet2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1;letter-spacing:-0.02em;}
+.stat-big{font-family:'Space Grotesk',sans-serif;font-size:2.1rem;font-weight:700;color:var(--text);line-height:1;letter-spacing:-0.02em;}
 .stat-desc{font-size:.74rem;color:var(--text3);margin-top:8px;letter-spacing:0.04em;}
 
 /* ============ PORTFOLIO ============ */
@@ -330,13 +358,11 @@ section{position:relative;z-index:2;padding:110px 24px;max-width:100vw;overflow:
   .hero{padding:96px 18px 50px;min-height:auto;}
   .hero-grid{gap:28px;}
   .hero-visual{max-width:280px;}
-  .h-display{font-size:clamp(1.85rem,8.5vw,2.6rem);}
+  .h-display{font-size:clamp(2.4rem,9vw,3.2rem);line-height:1.0;letter-spacing:-0.04em;}
   .h-section{font-size:clamp(1.6rem,5.5vw,2rem);}
   .hero-sub{font-size:.98rem;line-height:1.65;}
-  .hero-metrics{grid-template-columns:repeat(3,1fr);gap:10px;padding-top:24px;}
-  .metric-num{font-size:1.3rem;}
-  .metric-label{font-size:.66rem;}
-  .services-grid{grid-template-columns:1fr;max-width:440px;margin-left:auto;margin-right:auto;}
+  .hero-metrics{display:none;}
+  .services-grid{grid-template-columns:1fr;}
   .stats-panel{position:static;}
   .form{padding:22px;}
   .hero-cta-row{gap:10px;}
@@ -347,7 +373,7 @@ section{position:relative;z-index:2;padding:110px 24px;max-width:100vw;overflow:
 @media(max-width:420px){
   section{padding:60px 16px;}
   .hero{padding:90px 16px 40px;}
-  .h-display{font-size:1.85rem;line-height:1.1;}
+  .h-display{font-size:clamp(2rem,8vw,2.8rem);line-height:1.0;letter-spacing:-0.04em;}
   .h-section{font-size:1.5rem;}
   .hero-sub{font-size:.95rem;}
   .hero-cta-row{flex-direction:column;align-items:stretch;}
@@ -428,7 +454,7 @@ body:has(a:hover) .cursor-ring{width:48px;height:48px;border-color:rgba(147,51,2
 .port-results-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px;}
 .port-result-item{text-align:center;padding:20px;background:rgba(79,111,255,.04);border:1px solid rgba(79,111,255,.1);border-radius:12px;transition:all .3s;}
 .port-result-item:hover{background:rgba(79,111,255,.1);border-color:rgba(79,111,255,.3);transform:translateY(-3px);}
-.port-result-num{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:700;background:linear-gradient(135deg,var(--blue2),var(--violet2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1;}
+.port-result-num{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:700;color:var(--text);line-height:1;}
 .port-result-label{font-size:.74rem;color:var(--text3);margin-top:6px;letter-spacing:.04em;}
 .wa-counter-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;background:rgba(37,211,102,.08);border:1px solid rgba(37,211,102,.3);border-radius:100px;margin-top:12px;font-size:.82rem;color:#4ade80;}
 .wa-counter-badge::before{content:'';width:7px;height:7px;border-radius:50%;background:#25d366;box-shadow:0 0 10px #25d366;animation:badgePulse 1.5s infinite;}
@@ -764,8 +790,7 @@ body.fast-scroll .hero-visual,body.fast-scroll .port-card,body.fast-scroll .svc{
         </a>
         <a href="#services" class="btn btn-ghost">Voir les tarifs</a>
       </div>
-      <div class="hero-metrics rv rv-d4">
-        <div><div class="metric-num">48h</div><div class="metric-label">Délai express</div></div>
+      </div>
         <div><div class="metric-num">90+</div><div class="metric-label">Boutons WhatsApp</div></div>
         <div><div class="metric-num">100%</div><div class="metric-label">Satisfaction client</div></div>
       </div>
@@ -876,94 +901,98 @@ body.fast-scroll .hero-visual,body.fast-scroll .port-card,body.fast-scroll .svc{
       <h2 class="h-section">Des solutions <span class="grad">simples & efficaces</span></h2>
       <p class="section-lead">Pas besoin de tout comprendre à la technique. <strong>Choisissez le service qui correspond à votre besoin</strong>, on s'occupe de tout — du design jusqu'à la mise en ligne. Vos clients pourront vous trouver, voir vos produits et commander en un clic.</p>
     </div>
-    <div class="services-grid">
+        <div class="svc-list">
 
-      <!-- 1. VITRINE COMPLÈTE -->
-      <div class="svc svc-popular tilt-card rv-scale rv-d1"><div class="tilt-shine"></div>
-        <div class="svc-head">
-          <div class="svc-icon svc-ic-violet-pop">🚀</div>
-          <span class="svc-badge-pop">⭐ POPULAIRE</span>
+      <!-- 01 — VITRINE COMPLÈTE ★ POPULAIRE -->
+      <div class="svc-row featured-row rv" onclick="setTier('Vitrine + Catalogue + QR Code — 35 550 F');document.getElementById('order').scrollIntoView({behavior:'smooth'})">
+        <div class="svc-num-big">01</div>
+        <div class="svc-row-body">
+          <div class="svc-row-head">
+            <span class="svc-row-name">Vitrine + Catalogue + QR Code</span>
+            <span class="svc-row-badge pop">★ POPULAIRE</span>
+            <span class="svc-row-badge fast">48h chrono</span>
+          </div>
+          <p class="svc-row-desc">La <strong>solution tout-en-un</strong> : vitrine digitale responsive, catalogue interactif de vos produits, boutons WhatsApp pré-remplis et QR code imprimable. Tout ce qu'il faut pour exister en ligne dès demain.</p>
+          <div class="svc-row-pills">
+            <span class="svc-row-pill">Design sur-mesure</span>
+            <span class="svc-row-pill">Mobile-first</span>
+            <span class="svc-row-pill">WhatsApp intégré</span>
+            <span class="svc-row-pill">QR code A4</span>
+            <span class="svc-row-pill">Hébergement inclus</span>
+          </div>
         </div>
-        <h3 class="h-card">Vitrine + Catalogue + QR Code</h3>
-        <p class="svc-desc">La <strong>solution tout-en-un</strong> pour démarrer en force. Une vitrine digitale professionnelle + votre catalogue produits/services + un QR code à imprimer. Tout ce qu'il faut pour exister en ligne.</p>
-        <ul class="svc-feats">
-          <li>Vitrine digitale responsive personnalisée</li>
-          <li>Catalogue complet de vos produits/services</li>
-          <li>Boutons WhatsApp pré-remplis pour commander</li>
-          <li>QR code imprimable pour vitrine/cartes</li>
-          <li>Optimisation mobile native</li>
-        </ul>
-        <div class="roi-badge">
-          💡 <span><strong>50 550 F = 1 seul client suffit</strong> pour rentabiliser votre vitrine</span>
-        </div>
-        <div class="delivery-timer">
-          <span class="delivery-timer-dot"></span>
-          Livré en 48h ⚡
-        </div>
-        <div class="svc-foot" style="margin-top:14px;">
-          <div class="svc-price-block"><span class="svc-price">35 550</span><span class="svc-price-unit">FCFA</span></div>
-          <a href="#order" class="svc-cta" onclick="setTier('Vitrine + Catalogue + QR Code — 35 550 F')">Choisir →</a>
+        <div class="svc-row-right">
+          <div class="svc-row-price">35 550<br><span class="svc-row-price-unit">FCFA</span></div>
+          <div class="svc-row-roi">1 client = rentabilisé</div>
+          <div class="svc-row-arrow">→</div>
         </div>
       </div>
 
-      <!-- 2. CATALOGUE + QR -->
-      <div class="svc tilt-card rv-scale rv-d2"><div class="tilt-shine"></div>
-        <div class="svc-head"><div class="svc-icon svc-ic-blue">📱</div><span class="svc-pill svc-pill-eco">💰 Économique</span></div>
-        <h3 class="h-card">Catalogue Digital + QR Code</h3>
-        <p class="svc-desc">Idéal si vous avez déjà une présence en ligne. <strong>Un catalogue interactif</strong> que vos clients consultent depuis WhatsApp ou un QR code dans votre boutique. Mises à jour faciles.</p>
-        <ul class="svc-feats">
-          <li>Catalogue digital interactif</li>
-          <li>Photos haute qualité de vos produits</li>
-          <li>Prix et descriptions structurés</li>
-          <li>QR code à imprimer/partager</li>
-          <li>Boutons WhatsApp intégrés</li>
-          <li>Hébergement en ligne inclus</li>
-        </ul>
-        <div class="delivery-timer">
-          <span class="delivery-timer-dot"></span>
-          Livré en 48h ⚡
+      <!-- 02 — CATALOGUE + QR -->
+      <div class="svc-row rv rv-d1" onclick="setTier('Catalogue Digital + QR Code — 30 000 F');document.getElementById('order').scrollIntoView({behavior:'smooth'})">
+        <div class="svc-num-big">02</div>
+        <div class="svc-row-body">
+          <div class="svc-row-head">
+            <span class="svc-row-name">Catalogue Digital + QR Code</span>
+            <span class="svc-row-badge eco">Économique</span>
+          </div>
+          <p class="svc-row-desc">Un catalogue interactif que vos clients consultent via WhatsApp ou un QR code affiché dans votre boutique. Photos, prix, descriptions — mises à jour faciles, résultats immédiats.</p>
+          <div class="svc-row-pills">
+            <span class="svc-row-pill">Catalogue interactif</span>
+            <span class="svc-row-pill">Photos HD</span>
+            <span class="svc-row-pill">QR code print</span>
+            <span class="svc-row-pill">Hébergement inclus</span>
+          </div>
         </div>
-        <div class="svc-foot" style="margin-top:14px;">
-          <div class="svc-price-block"><span class="svc-price">30 000</span><span class="svc-price-unit">FCFA</span></div>
-          <a href="#order" class="svc-cta" onclick="setTier('Catalogue Digital + QR Code — 30 000 F')">Choisir →</a>
-        </div>
-      </div>
-
-      <!-- 3. GOOGLE MAPS -->
-      <div class="svc tilt-card rv-scale rv-d3"><div class="tilt-shine"></div>
-        <div class="svc-head"><div class="svc-icon svc-ic-cyan">📍</div><span class="svc-pill svc-pill-fast">⚡ Rapide</span></div>
-        <h3 class="h-card">Création Fiche Google Maps</h3>
-        <p class="svc-desc">Soyez <strong>visible quand vos clients cherchent sur Google</strong>. Nous créons et optimisons votre fiche Google Business pour apparaître sur Maps avec photos, horaires, contact direct.</p>
-        <ul class="svc-feats">
-          <li>Création complète de votre fiche Google</li>
-          <li>Optimisation SEO local</li>
-          <li>Intégration de photos professionnelles</li>
-          <li>Configuration horaires & coordonnées</li>
-          <li>Catégorisation optimale</li>
-          <li>Conseils pour récolter des avis</li>
-        </ul>
-        <div class="svc-foot">
-          <div class="svc-price-block"><span class="svc-price">15 550</span><span class="svc-price-unit">FCFA</span></div>
-          <a href="#order" class="svc-cta" onclick="setTier('Création Fiche Google Maps — 15 550 F')">Choisir →</a>
+        <div class="svc-row-right">
+          <div class="svc-row-price">30 000<br><span class="svc-row-price-unit">FCFA</span></div>
+          <div class="svc-row-roi">Livré en 48h</div>
+          <div class="svc-row-arrow">→</div>
         </div>
       </div>
 
-      <!-- 4. QR REVIEW -->
-      <div class="svc tilt-card rv-scale rv-d4"><div class="tilt-shine"></div>
-        <div class="svc-head"><div class="svc-icon svc-ic-pink">⭐</div></div>
-        <h3 class="h-card">Création Code QR Review</h3>
-        <p class="svc-desc">Boostez votre <strong>réputation en ligne</strong>. Un QR code qui amène directement vos clients satisfaits sur la page d'avis Google. Plus d'avis = plus de confiance = plus de ventes.</p>
-        <ul class="svc-feats">
-          <li>QR code personnalisé à votre marque</li>
-          <li>Lien direct vers vos avis Google</li>
-          <li>Carte/sticker imprimable au format A6</li>
-          <li>Conseils placement & utilisation</li>
-          <li>Augmente votre note moyenne</li>
-          <li>Améliore votre référencement</li>
-        </ul>
-        <div class="svc-foot">
-          <div class="svc-price-block"><span class="svc-price">20 550</span><span class="svc-price-unit">FCFA</span></div>
-          <a href="#order" class="svc-cta" onclick="setTier('Création Code QR Review — 20 550 F')">Choisir →</a>
+      <!-- 03 — GOOGLE MAPS -->
+      <div class="svc-row rv rv-d2" onclick="setTier('Création Fiche Google Maps — 15 550 F');document.getElementById('order').scrollIntoView({behavior:'smooth'})">
+        <div class="svc-num-big">03</div>
+        <div class="svc-row-body">
+          <div class="svc-row-head">
+            <span class="svc-row-name">Fiche Google Maps Optimisée</span>
+            <span class="svc-row-badge fast">⚡ Rapide</span>
+          </div>
+          <p class="svc-row-desc">Apparaissez quand vos clients cherchent sur Google. Fiche Business créée et optimisée avec photos, horaires, SEO local — pour que votre commerce soit trouvé en premier.</p>
+          <div class="svc-row-pills">
+            <span class="svc-row-pill">Fiche Google Business</span>
+            <span class="svc-row-pill">SEO local</span>
+            <span class="svc-row-pill">Photos pro</span>
+            <span class="svc-row-pill">Avis optimisés</span>
+          </div>
+        </div>
+        <div class="svc-row-right">
+          <div class="svc-row-price">15 550<br><span class="svc-row-price-unit">FCFA</span></div>
+          <div class="svc-row-roi">Visible en 24h</div>
+          <div class="svc-row-arrow">→</div>
+        </div>
+      </div>
+
+      <!-- 04 — QR REVIEW -->
+      <div class="svc-row rv rv-d3" onclick="setTier('Création Code QR Review — 20 550 F');document.getElementById('order').scrollIntoView({behavior:'smooth'})">
+        <div class="svc-num-big">04</div>
+        <div class="svc-row-body">
+          <div class="svc-row-head">
+            <span class="svc-row-name">QR Code Avis Clients</span>
+          </div>
+          <p class="svc-row-desc">Un QR code qui amène vos clients satisfaits directement sur vos avis Google. Plus d'avis = meilleure note = plus de confiance = plus de ventes. Simple et puissant.</p>
+          <div class="svc-row-pills">
+            <span class="svc-row-pill">QR code sur-mesure</span>
+            <span class="svc-row-pill">Sticker A6 imprimable</span>
+            <span class="svc-row-pill">Lien avis Google</span>
+            <span class="svc-row-pill">Réputation boostée</span>
+          </div>
+        </div>
+        <div class="svc-row-right">
+          <div class="svc-row-price">20 550<br><span class="svc-row-price-unit">FCFA</span></div>
+          <div class="svc-row-roi">+40% d'avis moy.</div>
+          <div class="svc-row-arrow">→</div>
         </div>
       </div>
 
@@ -1869,6 +1898,228 @@ document.addEventListener('keydown',e=>{
       setTimeout(()=>p.remove(),1300);
     }
   }
+})();
+
+/* ════════════════════════════════════════════════════════════
+   ░░░  CORRECTIONS $100K — LERP SCROLL + MULTI-STEP FORM
+   ════════════════════════════════════════════════════════════ */
+
+/* ===== LENIS-STYLE LERP SMOOTH SCROLL ===== */
+(function(){
+  if(window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  if(/Mobi|Android/i.test(navigator.userAgent))return; // native on mobile
+
+  let current=0,target=0,ease=0.082,rafId=0,ticking=false;
+  const html=document.documentElement;
+  const body=document.body;
+
+  // Measure scroll height
+  function setHeight(){
+    body.style.position='fixed';
+    body.style.top='0';
+    body.style.left='0';
+    body.style.width='100%';
+    html.style.height=body.scrollHeight+'px';
+  }
+
+  function lerp(a,b,t){return a+(b-a)*t;}
+
+  let isReady=false;
+  // Only activate after loader hides (1.5s)
+  setTimeout(()=>{
+    setHeight();
+    window.addEventListener('resize',setHeight);
+    isReady=true;
+    target=current=window.scrollY||0;
+    tick();
+  },1600);
+
+  window.addEventListener('scroll',()=>{
+    if(!isReady)return;
+    target=window.scrollY;
+    if(!ticking){ticking=true;requestAnimationFrame(tick);}
+  },{passive:true});
+
+  function tick(){
+    ticking=false;
+    if(!isReady)return;
+    const delta=target-current;
+    if(Math.abs(delta)<0.08){current=target;body.style.transform='translateY(0)';return;}
+    current=lerp(current,target,ease);
+    body.style.transform=`translateY(${-(current-target)}px)`;
+    // Update scroll progress bar based on visual position
+    const max=html.scrollHeight-window.innerHeight;
+    const bar=document.getElementById('scrollProgress');
+    if(bar)bar.style.width=(max>0?(target/max*100):0)+'%';
+    requestAnimationFrame(tick);
+    ticking=true;
+  }
+})();
+
+/* ===== MULTI-STEP FORM ===== */
+(function(){
+  const form=document.querySelector('.form');
+  if(!form)return;
+
+  // Inject step indicator at top of form
+  const indicator=document.createElement('div');
+  indicator.className='mf-steps';
+  indicator.innerHTML=`
+    <div class="mf-step active" data-step="1">
+      <span class="mf-step-num">1</span>
+      <span class="mf-step-label">Vous</span>
+    </div>
+    <div class="mf-step-line"></div>
+    <div class="mf-step" data-step="2">
+      <span class="mf-step-num">2</span>
+      <span class="mf-step-label">Votre projet</span>
+    </div>
+    <div class="mf-step-line"></div>
+    <div class="mf-step" data-step="3">
+      <span class="mf-step-num">3</span>
+      <span class="mf-step-label">Options</span>
+    </div>`;
+  form.prepend(indicator);
+
+  // Inject CSS
+  const style=document.createElement('style');
+  style.textContent=`
+    .mf-steps{display:flex;align-items:center;gap:0;margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid var(--border);}
+    .mf-step{display:flex;flex-direction:column;align-items:center;gap:6px;flex:0 0 auto;}
+    .mf-step-num{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--text3);transition:all .4s var(--ease-out-expo);}
+    .mf-step.active .mf-step-num{border-color:var(--blue);background:var(--blue);color:white;box-shadow:0 0 16px rgba(79,111,255,.4);}
+    .mf-step.done .mf-step-num{border-color:var(--green);background:rgba(74,222,128,.1);color:var(--green);content:'✓';}
+    .mf-step-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);transition:color .3s;}
+    .mf-step.active .mf-step-label{color:var(--blue2);}
+    .mf-step-line{flex:1;height:1px;background:var(--border);margin:0 8px;position:relative;overflow:hidden;}
+    .mf-step-line::after{content:'';position:absolute;top:0;left:0;height:100%;background:linear-gradient(90deg,var(--blue),var(--violet));width:0%;transition:width .6s var(--ease-out-expo);}
+    .mf-step-line.done::after{width:100%;}
+
+    .mf-section{transition:opacity .4s var(--ease-out-expo),transform .4s var(--ease-out-expo),max-height .5s var(--ease-out-expo);}
+    .mf-section.hidden{opacity:0;transform:translateX(20px);max-height:0;overflow:hidden;pointer-events:none;margin:0;padding:0;}
+    .mf-section.exiting{opacity:0;transform:translateX(-20px);}
+
+    .mf-nav{display:flex;gap:12px;margin-top:16px;}
+    .mf-btn-back{padding:12px 20px;background:transparent;border:1px solid var(--bord2);color:var(--text2);border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;cursor:pointer;transition:all .25s;flex:0 0 auto;}
+    .mf-btn-back:hover{border-color:var(--blue);color:var(--blue2);}
+    .mf-btn-next{flex:1;padding:14px;background:linear-gradient(135deg,var(--blue),var(--violet));color:white;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;}
+    .mf-btn-next:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(79,111,255,.4);}
+  `;
+  document.head.appendChild(style);
+
+  // Get form sections via existing .form-sec labels
+  const secs=form.querySelectorAll('.form-sec');
+  const fields=form.querySelectorAll('.fg,.fg-row,.checks');
+  const submitBtn=form.querySelector('.btn-submit');
+
+  // Group elements into 3 steps based on their order
+  // Step 1: nom, tel, marque, secteur, ville
+  // Step 2: niveau, couleurs, logo, delai, desc
+  // Step 3: checkboxes + submit
+  // We'll wrap them in mf-section divs
+  const allItems=[...form.children].filter(c=>!c.classList.contains('mf-steps'));
+  // Categorize:
+  let step1=[],step2=[],step3=[];
+  let phase=1;
+  allItems.forEach(el=>{
+    if(el.classList.contains('form-sec')){
+      const t=el.textContent.trim().toLowerCase();
+      if(t.includes('projet')||t.includes('service'))phase=2;
+      if(t.includes('option')||t.includes('livraison'))phase=3;
+    }
+    if(el.classList.contains('btn-submit'))phase=3;
+    if(phase===1)step1.push(el);
+    else if(phase===2)step2.push(el);
+    else step3.push(el);
+  });
+
+  function wrapStep(items,n){
+    const div=document.createElement('div');
+    div.className=`mf-section mf-s${n}`;
+    if(n!==1)div.classList.add('hidden');
+    items.forEach(i=>div.appendChild(i));
+    return div;
+  }
+
+  const w1=wrapStep(step1,1);
+  const w2=wrapStep(step2,2);
+  const w3=wrapStep(step3,3);
+
+  // Add nav buttons
+  function addNav(wrap,stepNum){
+    const nav=document.createElement('div');
+    nav.className='mf-nav';
+    if(stepNum>1){
+      const back=document.createElement('button');
+      back.type='button';back.className='mf-btn-back';back.textContent='← Retour';
+      back.onclick=()=>goTo(stepNum-1);
+      nav.appendChild(back);
+    }
+    if(stepNum<3){
+      const next=document.createElement('button');
+      next.type='button';next.className='mf-btn-next';
+      next.innerHTML='Continuer <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+      next.onclick=()=>goTo(stepNum+1);
+      nav.appendChild(next);
+    }
+    wrap.appendChild(nav);
+  }
+
+  addNav(w1,1);addNav(w2,2);addNav(w3,3);
+  form.appendChild(w1);form.appendChild(w2);form.appendChild(w3);
+
+  let cur=1;
+  function goTo(n){
+    const steps=indicator.querySelectorAll('.mf-step');
+    const lines=indicator.querySelectorAll('.mf-step-line');
+    [w1,w2,w3].forEach((w,i)=>{
+      if(i+1===n){w.classList.remove('hidden','exiting');}
+      else if(i+1<n){w.classList.add('exiting');setTimeout(()=>{w.classList.add('hidden');w.classList.remove('exiting');},400);}
+      else{w.classList.add('hidden');w.classList.remove('exiting');}
+      steps[i].classList.toggle('active',i+1===n);
+      steps[i].classList.toggle('done',i+1<n);
+    });
+    lines.forEach((l,i)=>l.classList.toggle('done',i+1<n));
+    cur=n;
+    // Scroll form into view
+    setTimeout(()=>form.scrollIntoView({behavior:'smooth',block:'start'}),100);
+  }
+})();
+
+/* ===== HERO PROOF BAR (replace removed metrics) ===== */
+(function(){
+  // Add a proof bar if hero-proof element exists
+  const hero=document.querySelector('.hero-grid > div:first-child');
+  if(!hero)return;
+  // Only add if hero-proof doesn't already exist
+  if(hero.querySelector('.hero-proof'))return;
+  const proof=document.createElement('div');
+  proof.className='hero-proof rv rv-d4';
+  proof.innerHTML=`
+    <div class="hero-proof-avatars">
+      <span style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#ff6b9d,#c4648a);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:white;border:2px solid var(--bg);margin-left:-8px;flex-shrink:0;">M</span>
+      <span style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4f6fff,#06b6d4);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:white;border:2px solid var(--bg);margin-left:-8px;flex-shrink:0;">K</span>
+      <span style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#ec4899);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:white;border:2px solid var(--bg);margin-left:-8px;flex-shrink:0;">A</span>
+    </div>
+    <div class="hero-proof-text">
+      <strong>+47 entrepreneurs</strong> ont lancé leur vitrine avec NEBULA<br>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.05em;">COTONOU · PORTO-NOVO · BOHICON · PARAKOU</span>
+    </div>`;
+  proof.style.cssText='display:flex;align-items:center;gap:14px;margin-top:32px;padding-top:28px;border-top:1px solid var(--border);';
+  proof.querySelector('.hero-proof-avatars').style.cssText='display:flex;flex-direction:row-reverse;margin-left:8px;';
+  hero.appendChild(proof);
+})();
+
+/* ===== SERVICE ROW STAGGER (enhanced reveal timing) ===== */
+(function(){
+  const rows=document.querySelectorAll('.svc-row');
+  rows.forEach((row,i)=>{
+    row.style.transitionDelay=`${i*60}ms`;
+  });
+  const rObs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');});
+  },{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+  rows.forEach(r=>rObs.observe(r));
 })();
 </script>
 </body>
