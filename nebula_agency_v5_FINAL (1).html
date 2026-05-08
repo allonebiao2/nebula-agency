@@ -1019,7 +1019,7 @@ body.fast-scroll .hero-visual,body.fast-scroll .port-card,body.fast-scroll .svc{
         </div>
         <div class="why-item rv-left rv-d3">
           <div class="why-num">03</div>
-          <div><h3>🤖 Technologies de pointe</h3><p>Nous utilisons les dernières IA et outils d'automatisation (Groq, n8n, Supabase) pour vous offrir ce qui se fait de mieux, sans que vous ayez à comprendre comment ça marche.</p></div>
+          <div><h3>⚙️ Technologies de pointe</h3><p>Nous utilisons les meilleurs outils du marché et des process éprouvés pour vous offrir ce qui se fait de mieux, sans que vous ayez à comprendre comment ça marche.</p></div>
         </div>
         <div class="why-item rv-left rv-d4">
           <div class="why-num">04</div>
@@ -1067,8 +1067,8 @@ body.fast-scroll .hero-visual,body.fast-scroll .port-card,body.fast-scroll .svc{
         <div class="testi-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
         <p class="testi-text">«&nbsp;Je n'y croyais pas trop au départ. Mais le site est magnifique, très professionnel. Mes clients de Lagos me disent qu'ils ont l'impression d'acheter en boutique&nbsp;!&nbsp;»</p>
         <div class="testi-author">
-          <div class="testi-avatar av-cyan">LP</div>
-          <div><div class="testi-name">Laetitia Padonou</div><div class="testi-role">Créatrice, Little Sun Pearls · Cotonou</div></div>
+          <div class="testi-avatar av-cyan">A</div>
+          <div><div class="testi-name">Ariane</div><div class="testi-role">Créatrice, Little Sun Pearls · Cotonou</div></div>
         </div>
       </div>
       <div class="testi rv-scale rv-d3">
@@ -1083,10 +1083,10 @@ body.fast-scroll .hero-visual,body.fast-scroll .port-card,body.fast-scroll .svc{
 
     <div style="display:flex;justify-content:center;margin-top:48px;" class="rv">
       <div class="ai-badge">
-        <div class="ai-badge-icon">🤖</div>
+        <div class="ai-badge-icon">⚡</div>
         <div class="ai-badge-text">
-          <strong>Certifié IA — Technologie de pointe</strong>
-          Powered by Groq · n8n · Supabase · Claude AI
+          <strong>Excellence technique — Sites livrés en 48h</strong>
+          Cotonou · Porto-Novo · Abomey-Calavi · Parakou
         </div>
       </div>
     </div>
@@ -1334,7 +1334,7 @@ body.fast-scroll .hero-visual,body.fast-scroll .port-card,body.fast-scroll .svc{
     </div>
   </div>
   <div style="max-width:1280px;margin:0 auto;padding:16px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
-    <div class="footer-made">Fait avec ⚡ et IA à Cotonou, Bénin 🇧🇯</div>
+    <div class="footer-made">Conçu avec passion à Cotonou, Bénin 🇧🇯</div>
     <div class="footer-live-stat" id="footerLiveStat">🚀 <span id="sitesLances">2</span> sites lancés cette semaine</div>
   </div>
   <div class="footer-copy">© 2025 NEBULA AGENCY · COTONOU · BÉNIN · VOTRE PRÉSENCE DIGITALE LIVRÉE EN 48H</div>
@@ -1904,56 +1904,36 @@ document.addEventListener('keydown',e=>{
    ░░░  CORRECTIONS $100K — LERP SCROLL + MULTI-STEP FORM
    ════════════════════════════════════════════════════════════ */
 
-/* ===== LENIS-STYLE LERP SMOOTH SCROLL ===== */
+/* ===== FLUID SMOOTH SCROLL — wheel-event LERP without breaking fixed layout ===== */
 (function(){
   if(window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
   if(/Mobi|Android/i.test(navigator.userAgent))return; // native on mobile
-
-  let current=0,target=0,ease=0.082,rafId=0,ticking=false;
-  const html=document.documentElement;
-  const body=document.body;
-
-  // Measure scroll height
-  function setHeight(){
-    body.style.position='fixed';
-    body.style.top='0';
-    body.style.left='0';
-    body.style.width='100%';
-    html.style.height=body.scrollHeight+'px';
-  }
-
+  // Soft wheel deceleration: intercept wheel and animate scrollTop with rAF
+  let target=window.scrollY,current=window.scrollY,running=false;
+  const ease=0.14;
   function lerp(a,b,t){return a+(b-a)*t;}
-
-  let isReady=false;
-  // Only activate after loader hides (1.5s)
-  setTimeout(()=>{
-    setHeight();
-    window.addEventListener('resize',setHeight);
-    isReady=true;
-    target=current=window.scrollY||0;
-    tick();
-  },1600);
-
-  window.addEventListener('scroll',()=>{
-    if(!isReady)return;
-    target=window.scrollY;
-    if(!ticking){ticking=true;requestAnimationFrame(tick);}
-  },{passive:true});
-
   function tick(){
-    ticking=false;
-    if(!isReady)return;
-    const delta=target-current;
-    if(Math.abs(delta)<0.08){current=target;body.style.transform='translateY(0)';return;}
+    const d=target-current;
+    if(Math.abs(d)<0.5){current=target;running=false;window.scrollTo(0,Math.round(current));return;}
     current=lerp(current,target,ease);
-    body.style.transform=`translateY(${-(current-target)}px)`;
-    // Update scroll progress bar based on visual position
-    const max=html.scrollHeight-window.innerHeight;
-    const bar=document.getElementById('scrollProgress');
-    if(bar)bar.style.width=(max>0?(target/max*100):0)+'%';
+    window.scrollTo(0,Math.round(current));
     requestAnimationFrame(tick);
-    ticking=true;
   }
+  window.addEventListener('wheel',e=>{
+    // Allow normal scroll if modifier or horizontal
+    if(e.ctrlKey||e.shiftKey||Math.abs(e.deltaX)>Math.abs(e.deltaY))return;
+    e.preventDefault();
+    target=Math.max(0,Math.min(document.documentElement.scrollHeight-window.innerHeight,target+e.deltaY*0.85));
+    if(!running){running=true;current=window.scrollY;requestAnimationFrame(tick);}
+  },{passive:false});
+  // Reset target on programmatic scroll (anchor click, etc.)
+  let resetTimer=0;
+  window.addEventListener('scroll',()=>{
+    if(running)return;
+    target=current=window.scrollY;
+    clearTimeout(resetTimer);
+    resetTimer=setTimeout(()=>{target=current=window.scrollY;},80);
+  },{passive:true});
 })();
 
 /* ===== MULTI-STEP FORM ===== */
