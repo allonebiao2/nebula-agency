@@ -1,0 +1,11 @@
+# Obsidian — état local de l'interface, à ne pas versionner
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Editor
+.vscode/
+*.swp
