@@ -24,6 +24,13 @@
 - Chaque client a son dossier dans /clients/
 - Assets organisés en images/ videos/ docs/
 
+## Journal automatique
+À chaque fin de session Claude Code :
+1. Créer ou mettre à jour _memoire/journal/[date]-journal.md
+2. Lister toutes les modifications faites
+3. Lister les fichiers touchés
+4. Commit automatiquement ce journal
+
 ## Éléments d'une vitrine NEBULA
 ### Sections standard
 - Hero (titre + accroche + CTA WhatsApp)
