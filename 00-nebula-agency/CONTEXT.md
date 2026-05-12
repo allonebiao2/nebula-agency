@@ -20,6 +20,26 @@ Esthétique premium accessible — pas de templates génériques.
 
 ### Historique des versions
 
+#### v7.2 — 2026-05-12 (polish pro + audio + mobile)
+- **Audio jazz d'ambiance** : bouton flottant bas-droit, démarre au premier clic/scroll/touch, fade in/out, persistance localStorage. Fichier attendu : `audio/jazz-loop.mp3` (royalty-free, à déposer)
+- **Film grain overlay** : texture SVG turbulence fixed, mix-blend-mode overlay, opacity .05 (.04 sur mobile)
+- **Liquid glass inner borders** : `inset 0 1px 0 rgba(255,255,255,0.04)` sur nav/cards/btns pour effet de réfraction
+- **Phone mockup décoratif** : 3 SVG mockups inline dans la section Avatar IA (animation hue-rotate)
+- **Mobile pro polish** :
+  - `font-size:16px` sur les inputs (élimine le zoom iOS)
+  - Tap targets nav-links et CTA passés à 36-44px min
+  - Padding ajusté < 420px
+- **Audio README** dans `00-nebula-agency/audio/` avec sources royalty-free recommandées
+
+#### v7.1 — 2026-05-12 (boost animations + déplacement)
+- Reading progress bar (top, dégradé bleu/violet/cyan)
+- Tilt 3D au hover sur cards (svc, port-card, why-item, ct) — desktop only
+- Gradient border conique animé au hover des services
+- Magnetic CTA sur btn-primary, btn-submit, nav-cta — desktop only
+- Stagger reveal étendu (rv-d5 à rv-d8)
+- Icônes bouncy avec spring easing `cubic-bezier(0.34,1.56,0.64,1)`
+- Fichier déplacé de la racine vers `00-nebula-agency/`
+
 #### v7 — 2026-05-12
 - **Prix Service 01** : 35 550 → 50 550 FCFA (card + onclick + option du select)
 - **Nouvelle section Forfaits Avatar IA** entre Services et Pourquoi NEBULA

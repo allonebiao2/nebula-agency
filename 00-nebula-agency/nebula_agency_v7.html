@@ -75,6 +75,55 @@ img{display:block;max-width:100%;height:auto;}
 .ct:hover .ct-icon{transform:scale(1.18) rotate(8deg);}
 .why-num{transition:transform .55s cubic-bezier(0.34,1.56,0.64,1),box-shadow .3s ease;}
 
+/* ============ FILM GRAIN OVERLAY ============ */
+.grain{position:fixed;inset:0;pointer-events:none;z-index:199;opacity:.05;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:240px 240px;will-change:auto;}
+@media(prefers-reduced-motion:reduce){.grain{opacity:.03;}}
+
+/* ============ LIQUID GLASS INNER BORDERS ============ */
+.nav{box-shadow:inset 0 1px 0 rgba(255,255,255,0.04),inset 0 -1px 0 rgba(255,255,255,0.02);}
+.svc,.port-card,.ct,.stat-box{box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);}
+.svc:hover,.port-card:hover,.ct:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,0.08),0 30px 60px -20px rgba(0,0,0,0.35);}
+.btn-primary,.btn-submit{box-shadow:inset 0 1px 0 rgba(255,255,255,0.18),0 4px 20px rgba(79,111,255,.3);}
+.btn-primary:hover,.btn-submit:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,0.22),0 8px 24px rgba(79,111,255,.4),0 16px 40px rgba(147,51,234,.25);}
+
+/* ============ AUDIO TOGGLE BUTTON ============ */
+.audio-toggle{position:fixed;bottom:18px;right:18px;width:44px;height:44px;border-radius:50%;background:rgba(14,18,35,0.72);backdrop-filter:blur(14px) saturate(150%);-webkit-backdrop-filter:blur(14px) saturate(150%);border:1px solid rgba(255,255,255,0.08);box-shadow:inset 0 1px 0 rgba(255,255,255,0.06),0 8px 24px rgba(0,0,0,0.35);color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:201;transition:transform .35s var(--ease-out-expo),color .25s ease,box-shadow .25s ease,border-color .25s ease;will-change:transform;}
+.audio-toggle:hover{color:var(--blue2);border-color:rgba(122,142,255,0.4);transform:translateY(-2px) scale(1.05);box-shadow:inset 0 1px 0 rgba(255,255,255,0.12),0 12px 32px rgba(79,111,255,0.25);}
+.audio-toggle:active{transform:translateY(-1px) scale(0.98);}
+.audio-toggle svg{width:18px;height:18px;}
+.audio-toggle .icon-muted{display:block;}
+.audio-toggle .icon-playing{display:none;}
+.audio-toggle.is-playing .icon-muted{display:none;}
+.audio-toggle.is-playing .icon-playing{display:block;color:var(--blue2);}
+.audio-toggle.is-playing{border-color:rgba(122,142,255,0.35);}
+.audio-toggle.is-playing::after{content:'';position:absolute;inset:-2px;border-radius:50%;border:1px solid rgba(122,142,255,0.4);animation:audioPulse 2.4s ease-in-out infinite;pointer-events:none;}
+@keyframes audioPulse{0%,100%{transform:scale(1);opacity:.5;}50%{transform:scale(1.12);opacity:0;}}
+
+/* ============ PHONE MOCKUP DECORATION (Avatar IA section) ============ */
+.section-mockup{display:inline-flex;align-items:center;gap:14px;margin-top:18px;}
+.phone-mockup{width:46px;height:78px;border-radius:9px;background:linear-gradient(165deg,#1a1f3a,#0a0d1a);border:1px solid rgba(122,142,255,0.3);position:relative;flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,0.08),0 8px 24px rgba(0,0,0,0.35);overflow:hidden;}
+.phone-mockup::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:14px;height:3px;background:#000;border-radius:0 0 3px 3px;}
+.phone-mockup::after{content:'';position:absolute;inset:6px 4px 4px;border-radius:5px;background:linear-gradient(180deg,rgba(79,111,255,0.18),rgba(147,51,234,0.18) 50%,rgba(6,182,212,0.12));animation:phoneScreen 4s ease-in-out infinite;}
+@keyframes phoneScreen{0%,100%{filter:hue-rotate(0deg);}50%{filter:hue-rotate(25deg);}}
+.section-mockup-label{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text3);}
+
+/* ============ MOBILE PRO POLISH ============ */
+@media(max-width:768px){
+  .fg input,.fg select,.fg textarea{font-size:16px;padding:13px 14px;}
+  .nav-links a{min-height:36px;display:flex;align-items:center;}
+  .nav-cta{min-height:36px;}
+  .btn{min-height:44px;}
+  .svc-cta{min-height:32px;padding:6px 0;display:inline-flex;align-items:center;}
+  .audio-toggle{width:42px;height:42px;bottom:14px;right:14px;}
+  .grain{opacity:.04;}
+}
+@media(max-width:420px){
+  section{padding:56px 18px;}
+  .form{padding:18px;}
+  .svc{padding:22px;}
+  .h-card{font-size:1.05rem;}
+}
+
 /* ============ BACKGROUND FX ============ */
 .bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(79,111,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(79,111,255,0.04) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse at 50% 30%,black 0%,transparent 80%);-webkit-mask-image:radial-gradient(ellipse at 50% 30%,black 0%,transparent 80%);animation:gridShift 30s linear infinite;}
 @keyframes gridShift{0%{background-position:0 0;}100%{background-position:80px 80px;}}
@@ -410,6 +459,7 @@ section{position:relative;z-index:2;padding:110px 24px;max-width:100vw;overflow:
 </head>
 <body>
 
+<div class="grain" aria-hidden="true"></div>
 <div class="bg-grid"></div>
 <div class="bg-orb orb-1"></div>
 <div class="bg-orb orb-2"></div>
@@ -566,6 +616,12 @@ section{position:relative;z-index:2;padding:110px 24px;max-width:100vw;overflow:
       <div class="section-eyebrow">Forfaits Avatar IA</div>
       <h2 class="h-section">Votre avatar parle <span class="grad">à votre place</span></h2>
       <p class="section-lead">Un avatar IA à votre image qui crée du contenu vidéo pour <strong>TikTok, WhatsApp, Instagram et Facebook</strong>. Vous économisez du temps, vous gardez votre visage.</p>
+      <div class="section-mockup" aria-hidden="true">
+        <div class="phone-mockup"></div>
+        <div class="phone-mockup" style="transform:rotate(-6deg) translateY(2px);width:42px;height:72px;"></div>
+        <div class="phone-mockup" style="transform:rotate(6deg) translateY(-2px);width:42px;height:72px;"></div>
+        <span class="section-mockup-label">Format vertical · prêt à poster</span>
+      </div>
     </div>
     <div class="services-grid avatar-grid">
 
@@ -963,6 +1019,78 @@ document.querySelectorAll('.metric-num,.stat-big').forEach(el=>counterObs.observ
   });
 })();
 
+// ===== AMBIENT JAZZ =====
+(function(){
+  const audio=document.getElementById('nebula-jazz');
+  const btn=document.getElementById('audioToggle');
+  if(!audio||!btn)return;
+  const STORAGE_KEY='nebula_audio_state';
+  const TARGET_VOL=0.22;
+  const FADE_MS=900;
+  let started=false;
+  let userMuted=localStorage.getItem(STORAGE_KEY)==='muted';
+
+  function fadeTo(targetVol,dur){
+    const startVol=audio.volume;
+    const t0=performance.now();
+    function step(t){
+      const p=Math.min((t-t0)/dur,1);
+      const eased=1-Math.pow(1-p,3);
+      audio.volume=startVol+(targetVol-startVol)*eased;
+      if(p<1)requestAnimationFrame(step);
+      else if(targetVol===0)audio.pause();
+    }
+    requestAnimationFrame(step);
+  }
+
+  function play(){
+    audio.volume=0;
+    const p=audio.play();
+    if(p&&p.catch){
+      p.then(()=>{
+        btn.classList.add('is-playing');
+        fadeTo(TARGET_VOL,FADE_MS);
+      }).catch(()=>{
+        // autoplay refusé : on attend une vraie action utilisateur
+      });
+    }
+  }
+
+  function stop(){
+    fadeTo(0,FADE_MS/1.5);
+    btn.classList.remove('is-playing');
+  }
+
+  function tryStart(){
+    if(started||userMuted)return;
+    started=true;
+    play();
+  }
+
+  ['click','touchstart','scroll','keydown'].forEach(ev=>{
+    window.addEventListener(ev,tryStart,{once:true,passive:true});
+  });
+
+  btn.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    if(audio.paused||audio.volume<0.01){
+      userMuted=false;
+      localStorage.setItem(STORAGE_KEY,'playing');
+      started=true;
+      play();
+    }else{
+      userMuted=true;
+      localStorage.setItem(STORAGE_KEY,'muted');
+      stop();
+    }
+  });
+
+  // Si l'utilisateur avait coupé : on garde le bouton visible sans démarrer
+  if(userMuted){
+    btn.classList.remove('is-playing');
+  }
+})();
+
 // ===== FORM SUBMIT =====
 function soumettreCommande(){const get=id=>document.getElementById(id).value.trim();
 const nom=get('f_nom'),tel=get('f_tel'),marque=get('f_marque'),secteur=get('f_secteur'),ville=get('f_ville'),niveau=get('f_niveau'),couleurs=get('f_couleurs'),desc=get('f_desc'),logo=get('f_logo'),delai=get('f_delai');
@@ -977,5 +1105,12 @@ if(document.getElementById('fc_avis').checked)f.push('Section avis');
 const msg=['🚀 *NOUVELLE COMMANDE — NEBULA AGENCY*','═══════════════════════════════','','👤 *CONTACT*','• Nom : '+nom,'• WhatsApp : '+tel,'• Marque : '+marque,'• Secteur : '+secteur,'• Ville : '+ville,'','🎯 *PROJET*','• Service : '+niveau,'• Couleurs : '+(couleurs||'À définir ensemble'),'• Logo : '+logo,'• Délai : '+delai,'','✅ *OPTIONS SUPPLÉMENTAIRES*',f.length?f.map(x=>'• '+x).join('\n'):'• Aucune option supplémentaire','','📝 *DESCRIPTION*',desc,'','═══════════════════════════════','📩 Envoyé via nebula-agency.online'].join('\n');
 window.open('https://wa.me/22996740732?text='+encodeURIComponent(msg),'_blank');}
 </script>
+
+<audio id="nebula-jazz" src="audio/jazz-loop.mp3" loop preload="none"></audio>
+<button class="audio-toggle" id="audioToggle" aria-label="Lecture de la musique d'ambiance" type="button">
+  <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+  <svg class="icon-playing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+</button>
+
 </body>
 </html>
