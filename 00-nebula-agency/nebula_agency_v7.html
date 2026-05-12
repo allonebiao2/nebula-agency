@@ -48,6 +48,33 @@ img{display:block;max-width:100%;height:auto;}
 /* ============ ANIMATION FILL-MODE ============ */
 .bg-grid,.orb-1,.orb-2,.orb-3,.hero-logo-img,.hero-halo-1,.hero-halo-2,.hero-badge-dot::after,.stats-head-dot::after{animation-fill-mode:both;}
 
+/* ============ READING PROGRESS BAR ============ */
+.read-progress{position:fixed;top:0;left:0;height:2px;width:0;background:linear-gradient(90deg,var(--blue),var(--violet),var(--cyan));z-index:200;pointer-events:none;box-shadow:0 0 12px rgba(79,111,255,.6),0 0 24px rgba(147,51,234,.3);transition:width .08s linear;}
+
+/* ============ TILT 3D ============ */
+@media(min-width:769px){
+  .tilt-target{transition:transform .5s var(--ease-out-expo),box-shadow .4s ease;transform-style:preserve-3d;will-change:transform;}
+  .tilt-target.tilting{transition:transform .08s linear,box-shadow .4s ease;}
+}
+
+/* ============ MAGNETIC CTA ============ */
+@media(min-width:769px){
+  .magnetic{transition:transform .35s var(--ease-out-expo);will-change:transform;}
+  .magnetic.pulling{transition:transform .12s linear;}
+}
+
+/* ============ ANIMATED GRADIENT BORDER ON SERVICE CARDS (declared later to win cascade) ============ */
+@property --svc-angle{syntax:'<angle>';initial-value:0deg;inherits:false;}
+@keyframes rotateSvcAngle{to{--svc-angle:360deg;}}
+
+/* ============ EXTENDED STAGGER REVEAL ============ */
+.rv-d5{transition-delay:.40s;}.rv-d6{transition-delay:.48s;}.rv-d7{transition-delay:.56s;}.rv-d8{transition-delay:.64s;}
+
+/* ============ BOUNCY ICONS ON HOVER ============ */
+.ct-icon{transition:transform .55s cubic-bezier(0.34,1.56,0.64,1);}
+.ct:hover .ct-icon{transform:scale(1.18) rotate(8deg);}
+.why-num{transition:transform .55s cubic-bezier(0.34,1.56,0.64,1),box-shadow .3s ease;}
+
 /* ============ BACKGROUND FX ============ */
 .bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(79,111,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(79,111,255,0.04) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse at 50% 30%,black 0%,transparent 80%);-webkit-mask-image:radial-gradient(ellipse at 50% 30%,black 0%,transparent 80%);animation:gridShift 30s linear infinite;}
 @keyframes gridShift{0%{background-position:0 0;}100%{background-position:80px 80px;}}
@@ -187,14 +214,14 @@ section{position:relative;z-index:2;padding:110px 24px;max-width:100vw;overflow:
 @media(max-width:768px){.avatar-grid{grid-template-columns:1fr;max-width:440px;margin-left:auto;margin-right:auto;}}
 .svc{padding:30px;background:var(--card);border:1px solid var(--border);border-radius:16px;position:relative;overflow:hidden;transition:transform .35s var(--ease-out-expo),background .35s ease,border-color .35s ease;}
 .svc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--violet));opacity:0;transition:opacity .3s;}
-.svc::after{content:'';position:absolute;top:0;right:0;width:150px;height:150px;background:radial-gradient(circle,rgba(79,111,255,.15) 0%,transparent 70%);opacity:0;transform:translate(40%,-40%);transition:opacity .5s;pointer-events:none;}
+.svc::after{content:'';position:absolute;inset:0;border-radius:16px;padding:1.5px;background:conic-gradient(from var(--svc-angle),transparent 0%,var(--blue) 20%,var(--violet) 50%,var(--cyan) 80%,transparent 100%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .4s ease;pointer-events:none;}
 .svc:hover{border-color:var(--bord2);transform:translate3d(0,-6px,0);background:var(--card2);}
 .svc:hover::before{opacity:1;}
-.svc:hover::after{opacity:1;}
+.svc:hover::after{opacity:1;animation:rotateSvcAngle 4s linear infinite;}
 
 .svc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px;}
-.svc-icon{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;transition:transform .4s ease;}
-.svc:hover .svc-icon{transform:scale(1.1) rotate(-5deg);}
+.svc-icon{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;transition:transform .55s cubic-bezier(0.34,1.56,0.64,1);}
+.svc:hover .svc-icon{transform:scale(1.18) rotate(360deg);}
 .svc-ic-blue{background:rgba(79,111,255,.15);border:1px solid rgba(79,111,255,.3);}
 .svc-ic-violet{background:rgba(147,51,234,.15);border:1px solid rgba(147,51,234,.3);}
 .svc-ic-cyan{background:rgba(6,182,212,.15);border:1px solid rgba(6,182,212,.3);}
@@ -871,6 +898,70 @@ const counterObs=new IntersectionObserver(es=>{
   });
 },{threshold:0.5});
 document.querySelectorAll('.metric-num,.stat-big').forEach(el=>counterObs.observe(el));
+
+// ===== READING PROGRESS BAR =====
+(function(){
+  const bar=document.createElement('div');
+  bar.className='read-progress';
+  document.body.appendChild(bar);
+  let ticking=false;
+  function update(){
+    const h=document.documentElement;
+    const scrolled=h.scrollTop||document.body.scrollTop;
+    const max=(h.scrollHeight-h.clientHeight)||1;
+    bar.style.width=Math.min((scrolled/max)*100,100)+'%';
+    ticking=false;
+  }
+  window.addEventListener('scroll',()=>{
+    if(!ticking){requestAnimationFrame(update);ticking=true;}
+  },{passive:true});
+  update();
+})();
+
+// ===== TILT 3D (desktop only) =====
+(function(){
+  if(!window.matchMedia('(min-width:769px)').matches)return;
+  if(window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const targets=document.querySelectorAll('.svc,.port-card,.why-item,.ct');
+  targets.forEach(card=>{
+    card.classList.add('tilt-target');
+    let rect=null;
+    card.addEventListener('mouseenter',()=>{rect=card.getBoundingClientRect();card.classList.add('tilting');});
+    card.addEventListener('mousemove',e=>{
+      if(!rect)rect=card.getBoundingClientRect();
+      const x=(e.clientX-rect.left)/rect.width-0.5;
+      const y=(e.clientY-rect.top)/rect.height-0.5;
+      const ry=x*7,rx=-y*7;
+      card.style.transform=`perspective(900px) rotateY(${ry}deg) rotateX(${rx}deg) translate3d(0,-6px,0)`;
+    });
+    card.addEventListener('mouseleave',()=>{
+      card.classList.remove('tilting');
+      card.style.transform='';
+      rect=null;
+    });
+  });
+})();
+
+// ===== MAGNETIC CTAs (desktop only) =====
+(function(){
+  if(!window.matchMedia('(min-width:769px)').matches)return;
+  if(window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const btns=document.querySelectorAll('.btn-primary,.btn-submit,.nav-cta');
+  btns.forEach(btn=>{
+    btn.classList.add('magnetic');
+    btn.addEventListener('mousemove',e=>{
+      const rect=btn.getBoundingClientRect();
+      const x=e.clientX-(rect.left+rect.width/2);
+      const y=e.clientY-(rect.top+rect.height/2);
+      btn.classList.add('pulling');
+      btn.style.transform=`translate3d(${x*0.25}px,${y*0.4}px,0)`;
+    });
+    btn.addEventListener('mouseleave',()=>{
+      btn.classList.remove('pulling');
+      btn.style.transform='';
+    });
+  });
+})();
 
 // ===== FORM SUBMIT =====
 function soumettreCommande(){const get=id=>document.getElementById(id).value.trim();
