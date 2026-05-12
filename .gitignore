@@ -9,3 +9,8 @@ Thumbs.db
 # Editor
 .vscode/
 *.swp
+
+# Claude Code — config locale machine, skills installés
+.claude/
+.agents/
+skills-lock.json
