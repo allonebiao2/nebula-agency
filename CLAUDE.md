@@ -23,6 +23,18 @@
 - Jamais pusher sans validation de Mongazi
 - Chaque client a son dossier dans /clients/
 - Assets organisés en images/ videos/ docs/
+- Clés API et secrets : uniquement dans `.env` local, jamais commités
+- Clé secrète FedaPay (`sk_live_*`) : JAMAIS dans le HTML ni côté client
+
+## FedaPay — Paiement Mobile Money
+- Provider de paiement pour les vitrines clients (Mobile Money, cartes)
+- Clés API stockées dans `.env` local (voir `.env.example` pour la structure)
+  - `FEDAPAY_PUBLIC_KEY` (pk_live_*) : utilisable côté client / HTML
+  - `FEDAPAY_SECRET_KEY` (sk_live_*) : uniquement côté serveur (n8n, backend)
+- Intégration dans vitrines : utiliser UNIQUEMENT la clé publique
+- Sous-comptes clients : créer via "+ Ajouter un compte" dans le dashboard FedaPay
+- Notifications paiement : WhatsApp + MyFeda (app) + Email natif FedaPay
+- Voir `_memoire/stack.md` pour la doc complète du stack technique
 
 ## Journal automatique
 À chaque fin de session Claude Code :

@@ -14,3 +14,9 @@ Thumbs.db
 .claude/
 .agents/
 skills-lock.json
+
+# Secrets — clés API, jamais sur GitHub
+.env
+.env.local
+*.key
+secrets/
