@@ -5,6 +5,33 @@
 
 ---
 
+## v0.2 — 2026-05-14 — Intégration FedaPay + pricing récurrent
+
+**État**
+- FedaPay adopté comme provider de paiement standard (Mobile Money + cartes)
+- Sécurité secrets : `.env` ignoré par git, `.env.example` commité comme template
+- Vitrine `nebula_agency_v8.html` refondue avec arguments Mobile Money + badge sur les cards
+- Nouveau pricing : Vitrine 70k setup + 10k/mois · Catalogue 50k setup + 10k/mois
+- Workflow versioning : un seul fichier vitrine actif à la fois (v7 supprimé)
+
+**Différenciation NEBULA**
+- Vitrines qui **encaissent**, pas juste qui montrent (Mobile Money intégré)
+- Abonnement mensuel = modifications illimitées 24h/24 (argument anti-friction)
+- 5 arguments vente : paiement direct, 24h/24, zéro app, WhatsApp auto, livraison 48h
+
+**Outils**
+- FedaPay (paiement) + MyFeda (app mobile)
+- `.env` local + `.env.example` commité
+- KARABA = nouvelle direction marketing NEBULA Agency (bio TikTok refondue)
+
+**À faire ensuite**
+- Attendre validation compte FedaPay (resoumission avec adresse + description corrigées)
+- Intégrer FedaPay Inline JS dans v8 dès validation
+- Google Docs template pour catalogue de la nouvelle cliente
+- Migrer les vitrines clients existantes vers le nouveau modèle d'abonnement
+
+---
+
 ## v0.1 — 2026-05-11 — Mise en place de la mémoire
 
 **État**

@@ -31,6 +31,18 @@
 - Git local pour chaque modification
 - Diff montré à Mongazi avant chaque commit
 - Push GitHub `allonebiao2` uniquement après validation
+- **Un seul fichier versionné actif à la fois** (depuis 2026-05-14)
+  - À chaque mise à jour d'un `nebula_agency_vX.html` (ou autre fichier versionné), supprimer l'ancien via `git rm` avant de créer le nouveau
+  - L'historique git garde la trace des versions précédentes — pas besoin d'accumuler les fichiers
+  - Voir `_memoire/decisions.md` (2026-05-14) pour le détail
+
+### Paiement intégré dans les vitrines (depuis 2026-05-14)
+- **FedaPay** comme provider standard (Mobile Money Moov, MTN, Wave + cartes)
+- Clés API stockées **uniquement dans `.env` local** (jamais commitées)
+- Clé publique `pk_live_*` : côté client (HTML/JS de la vitrine)
+- Clé secrète `sk_live_*` : côté serveur uniquement (n8n, webhooks)
+- Sous-comptes clients via "+ Ajouter un compte" dans le dashboard FedaPay
+- Notifications paiement triple : WhatsApp (bouton confirmation) + MyFeda (app) + Email natif
 
 ---
 
