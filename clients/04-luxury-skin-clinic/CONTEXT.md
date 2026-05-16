@@ -13,7 +13,7 @@
 
 Projet multi-marques composé de **4 pages HTML distinctes** :
 
-1. **hub.html** — page d'accueil centrale
+1. **index.html** — page d'accueil centrale (hub)
    - 3 cards flottantes vers chaque marque
    - Liens Instagram et TikTok
    - Particules dorées + musique spa douce
@@ -79,7 +79,7 @@ Projet multi-marques composé de **4 pages HTML distinctes** :
 - [x] Structure dossiers créée
 - [ ] Assets collectés
 - [x] Maquette / direction artistique (framework v1)
-- [x] HTML/CSS — hub.html (framework, contenu démo)
+- [x] HTML/CSS — index.html / hub (framework, contenu démo)
 - [x] HTML/CSS — ina-luxury.html (framework, contenu démo)
 - [x] HTML/CSS — luxury-skin-clinic.html (framework, contenu démo)
 - [x] HTML/CSS — cozy.html (framework, contenu démo)
@@ -106,14 +106,14 @@ Projet multi-marques composé de **4 pages HTML distinctes** :
 
 - Logos réels des 3 marques (actuellement monogrammes dorés)
 - Photos produits/soins en base64 (actuellement placeholders dégradés élégants)
-- Liens Instagram et TikTok réels dans hub.html (actuellement `#`)
+- Liens Instagram et TikTok réels dans index.html (actuellement `#`)
 - VIDEO_ID de la vraie vidéo de présentation dans luxury-skin-clinic.html
 - Textes, prix et listes produits validés par Gloria
 - Photos avant/après réelles dans la galerie
 
 ## Liens
 
-- Pages : `hub.html`, `ina-luxury.html`, `luxury-skin-clinic.html`, `cozy.html` (à créer)
+- Pages : `index.html` (hub), `ina-luxury.html`, `luxury-skin-clinic.html`, `cozy.html`
 - Assets : `assets/`
 - Infos client détaillées : `assets/docs/gloria-infos.md`
 - URL en ligne : —
