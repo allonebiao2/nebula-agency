@@ -72,6 +72,7 @@
 | 01 | Jocelyne | Grain d'Esthétique - beauté | Livré | - |
 | 02 | Cédène | Little Sun Pearls - bijoux | En attente photos | - |
 | 03 | Abakar | WECS - montage vidéo | En cours | - |
+| 04 | Gloria | Luxury Skin Clinic - cosmétique (hub 4 pages) | Structure créée | 0167975626 |
 
 ## Mémoire générale
 - Voir _memoire/cerveau.md pour contexte complet
