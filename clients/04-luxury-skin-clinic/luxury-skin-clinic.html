@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0c0b09">
+<title>LUXURY SKIN CLINIC — Soins & Prestations | Cotonou</title>
+<meta name="description" content="LUXURY SKIN CLINIC — Institut de beauté à Cotonou. Soins du visage, du corps et rituels signature. Réservation sur WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --noir:#0c0b09;--noir-2:#16140f;--noir-3:#221f17;
+  --creme:#faf6ec;--creme-2:#efe6d2;
+  --or:#c9a24b;--or-clair:#ecd9a4;--or-vif:#e3c074;--or-sombre:#8f6f30;
+  --texte:#f3eede;--texte-doux:#aaa291;
+  --gold-grad:linear-gradient(135deg,#ecd9a4 0%,#c9a24b 48%,#8f6f30 100%);
+  --ease:cubic-bezier(.22,1,.36,1);--ease-soft:cubic-bezier(.4,0,.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--noir);color:var(--texte);font-family:'Jost',system-ui,sans-serif;
+  font-weight:300;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100svh;}
+@media(hover:hover) and (pointer:fine){body{cursor:none;}}
+h1,h2,h3,h4{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;}
+a,button{color:inherit;text-decoration:none;font-family:inherit;}
+button{background:none;border:none;cursor:pointer;}
+::selection{background:rgba(201,162,75,.3);color:var(--creme);}
+
+.marble{position:fixed;inset:0;z-index:0;background:
+  radial-gradient(ellipse 80% 60% at 20% 12%,rgba(35,31,23,.9),transparent 70%),
+  radial-gradient(ellipse 70% 70% at 88% 88%,rgba(34,30,22,.85),transparent 65%),var(--noir);}
+.marble::before{content:'';position:absolute;inset:-20%;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='700' height='700'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='0.009 0.013' numOctaves='5' seed='12'/><feColorMatrix values='0 0 0 0 0.79  0 0 0 0 0.64  0 0 0 0 0.30  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23m)'/></svg>");
+  opacity:.08;mix-blend-mode:screen;animation:marbleDrift 70s ease-in-out infinite alternate;}
+@keyframes marbleDrift{0%{transform:scale(1.05);}100%{transform:scale(1.16) translate(2%,-2%);}}
+#particles{position:fixed;inset:0;z-index:1;pointer-events:none;}
+
+.cursor-dot,.cursor-ring{position:fixed;top:0;left:0;z-index:9999;pointer-events:none;
+  border-radius:50%;mix-blend-mode:screen;will-change:transform;}
+.cursor-dot{width:7px;height:7px;background:var(--or-clair);box-shadow:0 0 12px 3px rgba(236,217,164,.8);
+  transform:translate(-50%,-50%);}
+.cursor-ring{width:38px;height:38px;border:1px solid rgba(201,162,75,.55);
+  transform:translate(-50%,-50%);transition:width .3s var(--ease),height .3s var(--ease),border-color .3s;}
+.cursor-ring.hot{width:62px;height:62px;border-color:rgba(236,217,164,.9);}
+@media(hover:none),(pointer:coarse){.cursor-dot,.cursor-ring{display:none;}}
+
+#curtain{position:fixed;inset:0;z-index:900;pointer-events:none;display:flex;}
+#curtain .panel{flex:1;background:linear-gradient(180deg,#16140f,#0c0b09);
+  transition:transform 1.05s var(--ease);}
+#curtain .panel.l{transform-origin:left;}
+#curtain .panel.r{transform-origin:right;}
+#curtain.open .panel{transform:scaleX(0);}
+
+header{position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);
+  background:linear-gradient(180deg,rgba(12,11,9,.92),rgba(12,11,9,.7));
+  border-bottom:1px solid rgba(201,162,75,.16);}
+.head-in{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:15px 30px;max-width:1280px;margin:0 auto;}
+.back-hub{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--texte-doux);transition:color .35s,gap .35s var(--ease);}
+.back-hub:hover{color:var(--or-clair);gap:13px;}
+.back-hub svg{width:17px;height:9px;stroke:currentColor;fill:none;stroke-width:1.6;}
+.brand-id{text-align:center;line-height:1;}
+.brand-id .nm{font-family:'Cormorant Garamond',serif;font-size:1.32rem;font-weight:600;letter-spacing:.1em;
+  background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.brand-id .tg{font-size:8px;letter-spacing:.32em;text-transform:uppercase;color:var(--texte-doux);margin-top:3px;}
+.wa-top{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:30px;
+  border:1px solid rgba(201,162,75,.4);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--or-clair);transition:all .35s var(--ease);white-space:nowrap;}
+.wa-top:hover{background:rgba(201,162,75,.12);border-color:var(--or-vif);transform:translateY(-2px);}
+.wa-top svg{width:15px;height:15px;fill:currentColor;}
+
+.wrap{position:relative;z-index:5;max-width:1200px;margin:0 auto;padding:0 30px;}
+section{padding:80px 0;}
+.sec-head{text-align:center;margin-bottom:46px;}
+.sec-head .eyebrow{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--or);
+  margin-bottom:13px;display:inline-flex;align-items:center;gap:11px;}
+.sec-head .eyebrow::before,.sec-head .eyebrow::after{content:'';width:30px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--or));}
+.sec-head .eyebrow::after{background:linear-gradient(90deg,var(--or),transparent);}
+.sec-head h2{font-size:clamp(2rem,4.6vw,3.2rem);font-weight:500;color:var(--creme);line-height:1.14;}
+.sec-head p{font-size:.92rem;color:var(--texte-doux);margin-top:14px;line-height:1.75;
+  max-width:560px;margin-left:auto;margin-right:auto;}
+
+/* HERO */
+.hero{min-height:88svh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:120px 30px 80px;position:relative;z-index:5;}
+.hero-crest{width:64px;height:64px;border-radius:50%;border:1px solid rgba(201,162,75,.45);
+  display:flex;align-items:center;justify-content:center;margin-bottom:26px;
+  font-family:'Cormorant Garamond',serif;font-size:23px;font-weight:600;
+  background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform .9s var(--ease);}
+.reveal.in{opacity:1;transform:none;}
+.hero h1{font-size:clamp(2.5rem,7vw,5rem);font-weight:500;color:var(--creme);line-height:1.08;
+  letter-spacing:.01em;}
+.hero h1 em{font-style:italic;background:var(--gold-grad);-webkit-background-clip:text;
+  background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-sub{font-size:1rem;color:var(--texte-doux);margin-top:22px;line-height:1.8;max-width:520px;}
+.hero-cta{margin-top:34px;display:flex;gap:14px;flex-wrap:wrap;justify-content:center;}
+.btn-gold{display:inline-flex;align-items:center;gap:9px;padding:15px 32px;border-radius:32px;
+  background:var(--gold-grad);color:var(--noir);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;font-weight:500;transition:transform .35s var(--ease),box-shadow .35s;}
+.btn-gold:hover{transform:translateY(-3px);box-shadow:0 16px 36px -12px rgba(201,162,75,.6);}
+.btn-gold svg{width:16px;height:16px;fill:currentColor;}
+.btn-ghost{display:inline-flex;align-items:center;gap:9px;padding:15px 30px;border-radius:32px;
+  border:1px solid rgba(201,162,75,.4);color:var(--or-clair);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;transition:all .35s var(--ease);}
+.btn-ghost:hover{background:rgba(201,162,75,.1);border-color:var(--or-vif);transform:translateY(-3px);}
+.hero-stats{margin-top:54px;display:flex;gap:36px;flex-wrap:wrap;justify-content:center;}
+.hstat{text-align:center;}
+.hstat .n{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:600;
+  background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.hstat .l{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--texte-doux);margin-top:3px;}
+
+/* NAV TABS */
+.tabs{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-bottom:18px;}
+.tab{padding:11px 22px;border-radius:30px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  border:1px solid rgba(201,162,75,.26);color:var(--texte-doux);transition:all .32s var(--ease);}
+.tab:hover{color:var(--or-clair);border-color:var(--or);}
+.tab.active{background:var(--gold-grad);color:var(--noir);font-weight:500;border-color:transparent;}
+.concern-line{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:36px;}
+.cfilter{padding:7px 15px;border-radius:24px;font-size:10px;letter-spacing:.05em;
+  border:1px solid rgba(201,162,75,.2);color:var(--texte-doux);transition:all .3s var(--ease);
+  display:inline-flex;align-items:center;gap:6px;}
+.cfilter::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--or);opacity:.5;}
+.cfilter:hover{color:var(--creme);border-color:var(--or);}
+.cfilter.active{background:rgba(201,162,75,.16);color:var(--or-clair);border-color:var(--or-vif);}
+.cfilter.active::before{opacity:1;box-shadow:0 0 8px var(--or-vif);}
+
+/* SERVICES GRID */
+.svc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:22px;}
+.svc{position:relative;border-radius:17px;overflow:hidden;display:flex;flex-direction:column;
+  background:linear-gradient(165deg,rgba(34,31,23,.82),rgba(12,11,9,.94));
+  border:1px solid rgba(201,162,75,.17);
+  transition:transform .5s var(--ease),box-shadow .5s var(--ease),border-color .4s;}
+.svc.anim{opacity:0;transform:translateY(24px);}
+.svc.anim.in{opacity:1;transform:none;transition:opacity .55s var(--ease),transform .55s var(--ease);}
+.svc:hover{transform:translateY(-9px);border-color:rgba(236,217,164,.45);
+  box-shadow:0 32px 60px -28px rgba(0,0,0,.85),0 0 38px -16px rgba(201,162,75,.4);}
+.svc-visual{position:relative;height:158px;overflow:hidden;}
+.svc-visual .vbg{position:absolute;inset:0;}
+.svc-visual .vmono{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;font-size:64px;color:rgba(250,246,236,.26);
+  transition:transform .6s var(--ease);}
+.svc:hover .vmono{transform:scale(1.13);}
+.svc-visual .shine{position:absolute;inset:0;background:linear-gradient(125deg,transparent 40%,
+  rgba(255,255,255,.12) 50%,transparent 60%);transform:translateX(-100%);transition:transform .8s var(--ease);}
+.svc:hover .shine{transform:translateX(100%);}
+.tag-sig{position:absolute;top:11px;right:11px;padding:5px 11px;border-radius:18px;font-size:8px;
+  letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:var(--noir);
+  background:var(--gold-grad);box-shadow:0 4px 14px rgba(201,162,75,.5);}
+.svc-dur{position:absolute;bottom:11px;left:13px;font-size:9.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--or-clair);background:rgba(12,11,9,.7);padding:5px 10px;
+  border-radius:16px;border:1px solid rgba(201,162,75,.25);}
+.svc-body{padding:20px 20px 22px;flex:1;display:flex;flex-direction:column;}
+.svc-type{font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--or);margin-bottom:7px;}
+.svc-body h3{font-size:1.36rem;color:var(--creme);font-weight:600;line-height:1.2;}
+.svc-body p{font-size:.81rem;color:var(--texte-doux);line-height:1.68;margin-top:8px;flex:1;}
+.svc-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;
+  padding-top:15px;border-top:1px solid rgba(201,162,75,.13);}
+.svc-price{font-family:'Cormorant Garamond',serif;font-size:1.42rem;font-weight:600;
+  background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.svc-price small{font-size:.6rem;letter-spacing:.08em;-webkit-text-fill-color:var(--texte-doux);
+  font-family:'Jost',sans-serif;}
+.svc-wa{display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:24px;
+  font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--noir);
+  background:var(--gold-grad);transition:transform .3s var(--ease),box-shadow .3s;}
+.svc-wa:hover{transform:translateY(-2px);box-shadow:0 10px 22px -8px rgba(201,162,75,.7);}
+.svc-wa svg{width:13px;height:13px;fill:currentColor;}
+
+/* GALERIE AVANT/APRÈS */
+.ba-bg{background:linear-gradient(180deg,rgba(22,20,15,.5),transparent);}
+.ba-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:22px;}
+.ba{border-radius:16px;overflow:hidden;border:1px solid rgba(201,162,75,.18);
+  background:rgba(12,11,9,.6);}
+.ba-slider{position:relative;aspect-ratio:4/3;overflow:hidden;cursor:ew-resize;user-select:none;
+  touch-action:none;}
+.ba-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+.ba-after{z-index:1;}
+.ba-before{z-index:2;clip-path:inset(0 50% 0 0);}
+.ba-tag{position:absolute;top:11px;font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;
+  padding:5px 11px;border-radius:14px;background:rgba(12,11,9,.78);border:1px solid rgba(201,162,75,.3);
+  color:var(--or-clair);z-index:4;}
+.ba-tag.bf{left:11px;}.ba-tag.af{right:11px;}
+.ba-mono{font-family:'Cormorant Garamond',serif;font-size:54px;}
+.ba-handle{position:absolute;top:0;bottom:0;width:2px;background:var(--gold-grad);z-index:3;
+  left:50%;transform:translateX(-50%);}
+.ba-handle::after{content:'';position:absolute;top:50%;left:50%;width:38px;height:38px;
+  transform:translate(-50%,-50%);border-radius:50%;background:rgba(12,11,9,.85);
+  border:1px solid var(--or-vif);box-shadow:0 0 18px rgba(201,162,75,.5);}
+.ba-handle::before{content:'‹ ›';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  color:var(--or-clair);font-size:14px;z-index:1;letter-spacing:1px;}
+.ba-cap{padding:15px 18px;}
+.ba-cap h4{font-size:1.16rem;color:var(--creme);font-weight:600;}
+.ba-cap p{font-size:.76rem;color:var(--texte-doux);margin-top:4px;}
+
+/* VIDÉO */
+.video-frame{position:relative;max-width:880px;margin:0 auto;border-radius:20px;overflow:hidden;
+  border:1px solid rgba(201,162,75,.26);aspect-ratio:16/9;
+  box-shadow:0 40px 80px -30px rgba(0,0,0,.9);}
+.video-poster{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:20px;cursor:pointer;
+  background:radial-gradient(ellipse at 50% 40%,rgba(34,28,20,.7),rgba(12,11,9,.95));}
+.video-poster::before{content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='v'><feTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='4' seed='5'/><feColorMatrix values='0 0 0 0 0.82  0 0 0 0 0.67  0 0 0 0 0.33  0 0 0 0.5 0'/></filter><rect width='100%' height='100%' filter='url(%23v)'/></svg>");
+  opacity:.1;mix-blend-mode:screen;}
+.play-btn{width:84px;height:84px;border-radius:50%;background:var(--gold-grad);
+  display:flex;align-items:center;justify-content:center;position:relative;
+  transition:transform .4s var(--ease);}
+.video-poster:hover .play-btn{transform:scale(1.1);}
+.play-btn::after{content:'';position:absolute;inset:-12px;border-radius:50%;
+  border:1px solid rgba(201,162,75,.5);animation:playRipple 2.4s ease-out infinite;}
+@keyframes playRipple{0%{opacity:.7;transform:scale(1);}100%{opacity:0;transform:scale(1.5);}}
+.play-btn svg{width:30px;height:30px;fill:var(--noir);margin-left:5px;}
+.video-poster .vt{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--or-clair);
+  position:relative;}
+.video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+
+/* AVIS */
+.rev-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px;}
+.rev{border-radius:16px;padding:28px 26px;border:1px solid rgba(201,162,75,.17);
+  background:linear-gradient(165deg,rgba(34,31,23,.7),rgba(12,11,9,.9));
+  transition:transform .5s var(--ease),border-color .4s;}
+.rev:hover{transform:translateY(-6px);border-color:rgba(236,217,164,.4);}
+.rev-stars{display:flex;gap:3px;margin-bottom:13px;}
+.rev-stars svg{width:15px;height:15px;fill:var(--or-vif);}
+.rev-quote{position:relative;}
+.rev-quote::before{content:'\\201C';position:absolute;top:-26px;left:-6px;
+  font-family:'Cormorant Garamond',serif;font-size:60px;color:rgba(201,162,75,.22);}
+.rev p{font-size:.88rem;color:var(--texte);line-height:1.78;font-style:italic;}
+.rev-who{display:flex;align-items:center;gap:12px;margin-top:18px;padding-top:16px;
+  border-top:1px solid rgba(201,162,75,.12);}
+.rev-av{width:42px;height:42px;border-radius:50%;flex-shrink:0;
+  background:radial-gradient(circle at 38% 32%,rgba(201,162,75,.4),rgba(12,11,9,.6));
+  border:1px solid rgba(201,162,75,.4);display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--or-clair);}
+.rev-who .nm{font-size:.92rem;color:var(--creme);}
+.rev-who .ro{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--texte-doux);margin-top:2px;}
+
+/* CTA FINAL */
+.final{text-align:center;padding:90px 30px;position:relative;z-index:5;}
+.final-card{max-width:680px;margin:0 auto;border-radius:22px;padding:54px 40px;
+  border:1px solid rgba(201,162,75,.3);
+  background:linear-gradient(160deg,rgba(34,31,23,.8),rgba(12,11,9,.92));position:relative;overflow:hidden;}
+.final-card::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(201,162,75,.18),transparent 70%);}
+.final-card>*{position:relative;}
+.final-card h2{font-size:clamp(1.9rem,4vw,2.8rem);color:var(--creme);font-weight:500;line-height:1.16;}
+.final-card h2 em{font-style:italic;background:var(--gold-grad);-webkit-background-clip:text;
+  background-clip:text;-webkit-text-fill-color:transparent;}
+.final-card p{font-size:.92rem;color:var(--texte-doux);margin:14px 0 26px;line-height:1.75;}
+
+footer{position:relative;z-index:5;border-top:1px solid rgba(201,162,75,.14);
+  padding:34px 30px;text-align:center;}
+.foot-meta{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--texte-doux);}
+.foot-sig{margin-top:8px;font-size:9.5px;letter-spacing:.14em;color:rgba(170,162,145,.45);}
+
+@media(max-width:560px){
+  .head-in,.wrap{padding-left:18px;padding-right:18px;}
+  .brand-id .nm{font-size:1.05rem;}.wa-top span{display:none;}.wa-top{padding:9px;}
+  section{padding:58px 0;}.hero{padding-top:100px;}
+  .hero-stats{gap:24px;}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition-duration:.15s!important;}
+  .marble::before{animation:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="marble"></div>
+<canvas id="particles"></canvas>
+<div class="cursor-dot" id="cDot"></div>
+<div class="cursor-ring" id="cRing"></div>
+<div id="curtain"><div class="panel l"></div><div class="panel r"></div></div>
+
+<header>
+  <div class="head-in">
+    <a class="back-hub" href="hub.html"><svg viewBox="0 0 24 12"><path d="M23 6H2M7 1 2 6l5 5"/></svg> Accueil</a>
+    <div class="brand-id"><div class="nm">LUXURY SKIN CLINIC</div><div class="tg">Soins & Prestations</div></div>
+    <a class="wa-top" id="waTop" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5zM6.7 19.6l.4.2a9.5 9.5 0 0 0 4.9 1.3 9.5 9.5 0 1 0-8-4.4l.2.4-1 3.4 3.5-.9zM17.5 13.9c-.1-.2-.5-.3-1-.6s-1.4-.7-1.6-.8-.4-.1-.5.1l-.8 1c-.2.2-.3.2-.5.1a7.7 7.7 0 0 1-2.3-1.4 8.5 8.5 0 0 1-1.6-2c-.1-.3 0-.4.1-.5l.4-.5.3-.4a.4.4 0 0 0 0-.5l-.9-2c-.2-.5-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4 5.3 5.3 0 0 0 3.2.8 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3z"/></svg>
+      <span>Réserver</span>
+    </a>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-crest reveal">L</div>
+  <h1 class="reveal">L'institut où la peau<br><em>retrouve sa lumière</em></h1>
+  <p class="hero-sub reveal">Soins du visage, soins du corps et rituels signature.
+    Une parenthèse d'exception au cœur de Cotonou.</p>
+  <div class="hero-cta reveal">
+    <a class="btn-gold" id="heroWa" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5zM6.7 19.6l.4.2a9.5 9.5 0 0 0 4.9 1.3 9.5 9.5 0 1 0-8-4.4l.2.4-1 3.4 3.5-.9zM17.5 13.9c-.1-.2-.5-.3-1-.6s-1.4-.7-1.6-.8-.4-.1-.5.1l-.8 1c-.2.2-.3.2-.5.1a7.7 7.7 0 0 1-2.3-1.4 8.5 8.5 0 0 1-1.6-2c-.1-.3 0-.4.1-.5l.4-.5.3-.4a.4.4 0 0 0 0-.5l-.9-2c-.2-.5-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4 5.3 5.3 0 0 0 3.2.8 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3z"/></svg>
+      Réserver un soin
+    </a>
+    <a class="btn-ghost" href="#prestations">Voir les prestations</a>
+  </div>
+  <div class="hero-stats reveal">
+    <div class="hstat"><div class="n">15+</div><div class="l">Soins signature</div></div>
+    <div class="hstat"><div class="n">100%</div><div class="l">Sur-mesure</div></div>
+    <div class="hstat"><div class="n">Cotonou</div><div class="l">Notre institut</div></div>
+  </div>
+</div>
+
+<section id="prestations">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Nos prestations</div>
+      <h2>Des soins pensés pour vous</h2>
+      <p>Sélectionnez un univers et affinez selon votre préoccupation. Chaque soin est réalisé
+        par nos expertes, avec des protocoles d'exception.</p>
+    </div>
+    <div class="tabs" id="tabs"></div>
+    <div class="concern-line" id="concernLine"></div>
+    <div class="svc-grid" id="svcGrid"></div>
+  </div>
+</section>
+
+<section class="ba-bg">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Résultats</div>
+      <h2>Avant · Après</h2>
+      <p>Glissez le curseur pour découvrir la transformation. Des résultats visibles,
+        soin après soin.</p>
+    </div>
+    <div class="ba-grid" id="baGrid"></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Visite guidée</div>
+      <h2>Découvrez l'institut</h2>
+      <p>Quelques instants pour ressentir l'atmosphère de Luxury Skin Clinic.</p>
+    </div>
+    <div class="video-frame reveal" id="videoFrame">
+      <div class="video-poster" id="videoPoster">
+        <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        <div class="vt">Lire la présentation</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ba-bg">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Témoignages</div>
+      <h2>Elles nous ont fait confiance</h2>
+    </div>
+    <div class="rev-grid" id="revGrid"></div>
+  </div>
+</section>
+
+<div class="final">
+  <div class="final-card reveal">
+    <h2>Offrez à votre peau<br><em>un moment d'exception</em></h2>
+    <p>Réservez votre soin en quelques secondes sur WhatsApp. Notre équipe vous conseille
+      et confirme votre rendez-vous.</p>
+    <a class="btn-gold" id="finalWa" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5zM6.7 19.6l.4.2a9.5 9.5 0 0 0 4.9 1.3 9.5 9.5 0 1 0-8-4.4l.2.4-1 3.4 3.5-.9zM17.5 13.9c-.1-.2-.5-.3-1-.6s-1.4-.7-1.6-.8-.4-.1-.5.1l-.8 1c-.2.2-.3.2-.5.1a7.7 7.7 0 0 1-2.3-1.4 8.5 8.5 0 0 1-1.6-2c-.1-.3 0-.4.1-.5l.4-.5.3-.4a.4.4 0 0 0 0-.5l-.9-2c-.2-.5-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4 5.3 5.3 0 0 0 3.2.8 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3z"/></svg>
+      Réserver maintenant
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="foot-meta">Luxury Skin Clinic · Cotonou · Bénin</div>
+  <div class="foot-sig">Vitrine signée NEBULA Agency</div>
+</footer>
+
+<script>
+'use strict';
+const WA='2290167975626';
+const reduceMotion=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
+/* ⚠️ Remplacer VIDEO_ID par l'identifiant de la vraie vidéo de présentation */
+const VIDEO_ID='ScMzIvxBSi4';
+
+function waLink(m){return `https://wa.me/${WA}?text=${encodeURIComponent(m)}`;}
+
+/* ===== CURSEUR ===== */
+(function(){
+  if(!fine)return;const dot=cDot,ring=cRing;
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;
+    dot.style.transform=`translate(${mx}px,${my}px) translate(-50%,-50%)`;});
+  (function loop(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;
+    ring.style.transform=`translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+    requestAnimationFrame(loop);})();
+  addEventListener('mouseover',e=>{
+    ring.classList.toggle('hot',!!e.target.closest('a,button,.svc,.rev,.tab,.cfilter'));});
+})();
+
+/* ===== PARTICULES ===== */
+(function(){
+  const cv=particles,ctx=cv.getContext('2d');let w,h,ps=[];
+  function size(){w=cv.width=innerWidth;h=cv.height=innerHeight;}
+  size();addEventListener('resize',size);
+  const N=reduceMotion?0:(innerWidth<760?16:34);
+  function mk(r){return{x:Math.random()*w,y:r?Math.random()*h:-10,rr:Math.random()*1.7+.5,
+    sp:Math.random()*.4+.15,dr:(Math.random()-.5)*.3,a:Math.random()*.5+.2,
+    tw:Math.random()*6.28,ts:Math.random()*.03+.01};}
+  for(let i=0;i<N;i++)ps.push(mk(1));
+  function draw(){ctx.clearRect(0,0,w,h);
+    for(const p of ps){p.y+=p.sp;p.x+=p.dr;p.tw+=p.ts;
+      if(p.y>h+10)Object.assign(p,mk(0));
+      const fl=p.a*(.6+.4*Math.sin(p.tw));
+      const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.rr*3.4);
+      g.addColorStop(0,`rgba(236,217,164,${fl})`);g.addColorStop(1,'rgba(236,217,164,0)');
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y,p.rr*3.4,0,6.283);ctx.fill();}
+    requestAnimationFrame(draw);}
+  if(N>0)draw();
+})();
+
+/* ===== RIDEAU ===== */
+addEventListener('load',()=>{requestAnimationFrame(()=>curtain.classList.add('open'));
+  setTimeout(()=>curtain.remove(),1300);});
+
+/* ===== LIENS WHATSAPP GLOBAUX ===== */
+waTop.href=heroWa.href=finalWa.href=
+  waLink("Bonjour LUXURY SKIN CLINIC, je souhaite réserver un soin en institut.");
+
+/* ===== DONNÉES ===== */
+const TYPES=[
+  {key:'all',label:'Tous les soins'},
+  {key:'visage',label:'Soins du visage'},
+  {key:'corps',label:'Soins du corps'},
+  {key:'rituel',label:'Rituels signature'},
+];
+const CONCERNS={
+  eclat:'Éclat & teint',taches:'Taches',acne:'Acné & pores',
+  age:'Anti-âge & fermeté',hydratation:'Hydratation',detente:'Détente & bien-être',
+};
+const TINTS={
+  visage:'linear-gradient(155deg,#2a2018,#3a2a22 55%,#1a1410)',
+  corps:'linear-gradient(155deg,#2a2218,#3a3020 55%,#1a160e)',
+  rituel:'linear-gradient(155deg,#241c12,#3a2c1a 55%,#15100a)',
+};
+const SERVICES=[
+  {t:'visage',n:'Soin Hydra-Éclat',p:15000,dur:'60 min',c:['eclat','hydratation'],
+   d:"Nettoyage, exfoliation douce et masque hydratant pour un teint frais et lumineux."},
+  {t:'visage',n:'Nettoyage de Peau Profond',p:12000,dur:'50 min',c:['acne'],
+   d:"Extraction des impuretés et purification des pores pour une peau nette."},
+  {t:'visage',n:'Peeling Dépigmentant',p:25000,dur:'45 min',c:['taches','eclat'],
+   d:"Protocole professionnel ciblant les taches et l'irrégularité du teint."},
+  {t:'visage',n:'Microneedling Régénérant',p:35000,dur:'75 min',c:['age','taches'],
+   d:"Stimule le collagène pour lisser, raffermir et atténuer les marques."},
+  {t:'visage',n:'Soin Acné Purifiant',p:18000,dur:'60 min',c:['acne'],
+   d:"Soin assainissant qui apaise les imperfections et régule le sébum."},
+  {t:'visage',n:'Massage Visage Kobido',p:20000,dur:'55 min',c:['age','eclat'],
+   d:"Massage liftant japonais qui redessine et illumine les traits."},
+  {t:'visage',n:'Luminothérapie LED',p:15000,dur:'40 min',c:['acne','eclat'],
+   d:"La lumière au service de la peau : éclat, apaisement et régénération."},
+  {t:'corps',n:'Massage Relaxant Spa',p:18000,dur:'60 min',c:['detente'],
+   d:"Un massage enveloppant pour relâcher les tensions et apaiser l'esprit."},
+  {t:'corps',n:'Gommage Corps Royal',p:14000,dur:'45 min',c:['eclat'],
+   d:"Exfoliation sensorielle qui révèle une peau douce, satinée et lumineuse."},
+  {t:'corps',n:'Enveloppement Détox',p:22000,dur:'70 min',c:['detente','eclat'],
+   d:"Un cocon de soin qui purifie, draine et sublime la peau du corps."},
+  {t:'corps',n:'Drainage Lymphatique',p:25000,dur:'60 min',c:['detente','age'],
+   d:"Massage drainant qui allège les jambes et affine la silhouette."},
+  {t:'rituel',n:'Rituel Visage Or 24 Carats',p:50000,dur:'90 min',c:['age','eclat'],sig:1,
+   d:"Notre rituel signature : feuilles d'or, massage liftant et masque précieux."},
+  {t:'rituel',n:'Rituel Évasion Corps & Esprit',p:45000,dur:'120 min',c:['detente'],sig:1,
+   d:"Gommage, massage et soin visage : une parenthèse de pure détente."},
+  {t:'rituel',n:'Rituel Mariée Éclat Absolu',p:60000,dur:'150 min',c:['eclat','age'],sig:1,
+   d:"Le protocole complet pour rayonner le jour J, de la tête aux pieds."},
+];
+const BEFORE_AFTER=[
+  {n:'Protocole Anti-Taches',d:'Après 6 séances de peeling dépigmentant'},
+  {n:'Soin Anti-Acné',d:'Après 8 semaines de soins purifiants'},
+  {n:'Rituel Anti-Âge Or',d:'Effet liftant visible après 4 séances'},
+  {n:'Éclat & Hydratation',d:'Teint unifié après un soin Hydra-Éclat'},
+];
+const REVIEWS=[
+  {n:'Sandrine A.',r:'Cliente fidèle',
+   q:"Un institut à la hauteur du nom. Ma peau n'a jamais été aussi belle, l'accueil est exceptionnel."},
+  {n:'Murielle K.',r:'Soin du visage',
+   q:"Le rituel Or 24 carats est une expérience inoubliable. Je ressors transformée à chaque fois."},
+  {n:'Florence D.',r:'Protocole anti-taches',
+   q:"Mes taches se sont vraiment estompées. Des conseils précieux et un suivi sérieux."},
+  {n:'Inès T.',r:'Rituel mariée',
+   q:"J'ai rayonné le jour de mon mariage. Merci pour ce professionnalisme et cette douceur."},
+];
+
+let curType='all',curConcern=null;
+
+/* ===== TABS + FILTRES ===== */
+function buildTabs(){
+  tabs.innerHTML='';
+  TYPES.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='tab'+(t.key===curType?' active':'');
+    b.textContent=t.label;
+    b.addEventListener('click',()=>{curType=t.key;curConcern=null;refresh();});
+    tabs.appendChild(b);
+  });
+}
+function buildConcerns(){
+  const pool=SERVICES.filter(s=>curType==='all'||s.t===curType);
+  const keys=[...new Set(pool.flatMap(s=>s.c))];
+  concernLine.innerHTML='';
+  keys.forEach(k=>{
+    const b=document.createElement('button');
+    b.className='cfilter'+(k===curConcern?' active':'');
+    b.textContent=CONCERNS[k];
+    b.addEventListener('click',()=>{curConcern=(curConcern===k?null:k);refresh();});
+    concernLine.appendChild(b);
+  });
+}
+function refresh(){
+  buildTabs();buildConcerns();renderServices();
+}
+function renderServices(){
+  let list=SERVICES.filter(s=>curType==='all'||s.t===curType);
+  if(curConcern)list=list.filter(s=>s.c.includes(curConcern));
+  svcGrid.innerHTML='';
+  if(!list.length){
+    svcGrid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--texte-doux)">
+      <h3 style="font-size:1.5rem;color:var(--creme);font-style:italic">Aucun soin pour ce filtre</h3></div>`;
+    return;
+  }
+  const typeLabel={visage:'Soin du visage',corps:'Soin du corps',rituel:'Rituel signature'};
+  list.forEach((s,i)=>{
+    const el=document.createElement('article');el.className='svc anim';
+    el.innerHTML=`
+      <div class="svc-visual">
+        <div class="vbg" style="background:${TINTS[s.t]}"></div>
+        <div class="vmono">${s.n[0]}</div>
+        <div class="shine"></div>
+        ${s.sig?'<span class="tag-sig">Signature</span>':''}
+        <span class="svc-dur">${s.dur}</span>
+      </div>
+      <div class="svc-body">
+        <div class="svc-type">${typeLabel[s.t]}</div>
+        <h3>${s.n}</h3>
+        <p>${s.d}</p>
+        <div class="svc-foot">
+          <div class="svc-price">${s.p.toLocaleString('fr-FR')} <small>FCFA</small></div>
+          <a class="svc-wa" href="${waLink(`Bonjour LUXURY SKIN CLINIC, je souhaite réserver : ${s.n} (${s.dur} — ${s.p.toLocaleString('fr-FR')} FCFA).`)}" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5zM6.7 19.6l.4.2a9.5 9.5 0 0 0 4.9 1.3 9.5 9.5 0 1 0-8-4.4l.2.4-1 3.4 3.5-.9zM17.5 13.9c-.1-.2-.5-.3-1-.6s-1.4-.7-1.6-.8-.4-.1-.5.1l-.8 1c-.2.2-.3.2-.5.1a7.7 7.7 0 0 1-2.3-1.4 8.5 8.5 0 0 1-1.6-2c-.1-.3 0-.4.1-.5l.4-.5.3-.4a.4.4 0 0 0 0-.5l-.9-2c-.2-.5-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4 5.3 5.3 0 0 0 3.2.8 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3z"/></svg>
+            Réserver
+          </a>
+        </div>
+      </div>`;
+    svcGrid.appendChild(el);
+  });
+  requestAnimationFrame(()=>{
+    svcGrid.querySelectorAll('.svc.anim').forEach((c,i)=>
+      setTimeout(()=>c.classList.add('in'),reduceMotion?0:i*55));
+  });
+}
+
+/* ===== GALERIE AVANT/APRÈS ===== */
+function buildBA(){
+  baGrid.innerHTML='';
+  BEFORE_AFTER.forEach(item=>{
+    const el=document.createElement('div');el.className='ba';
+    el.innerHTML=`
+      <div class="ba-slider">
+        <div class="ba-layer ba-after" style="background:linear-gradient(160deg,#3a2e1e,#5a4426 60%,#2a2014)">
+          <span class="ba-mono" style="color:rgba(236,217,164,.5)">${item.n[0]}</span>
+        </div>
+        <div class="ba-layer ba-before" style="background:linear-gradient(160deg,#1c1a15,#272219 60%,#141109)">
+          <span class="ba-mono" style="color:rgba(170,162,145,.3)">${item.n[0]}</span>
+        </div>
+        <span class="ba-tag bf">Avant</span>
+        <span class="ba-tag af">Après</span>
+        <div class="ba-handle"></div>
+      </div>
+      <div class="ba-cap"><h4>${item.n}</h4><p>${item.d}</p></div>`;
+    baGrid.appendChild(el);
+    initSlider(el.querySelector('.ba-slider'));
+  });
+}
+function initSlider(slider){
+  const before=slider.querySelector('.ba-before'),handle=slider.querySelector('.ba-handle');
+  let dragging=false;
+  function set(x){
+    const r=slider.getBoundingClientRect();
+    let pct=((x-r.left)/r.width)*100;pct=Math.max(2,Math.min(98,pct));
+    before.style.clipPath=`inset(0 ${100-pct}% 0 0)`;
+    handle.style.left=pct+'%';
+  }
+  function down(e){dragging=true;set((e.touches?e.touches[0]:e).clientX);}
+  function move(e){if(dragging)set((e.touches?e.touches[0]:e).clientX);}
+  function up(){dragging=false;}
+  slider.addEventListener('mousedown',down);slider.addEventListener('touchstart',down,{passive:true});
+  addEventListener('mousemove',move);addEventListener('touchmove',move,{passive:true});
+  addEventListener('mouseup',up);addEventListener('touchend',up);
+  slider.addEventListener('mousemove',e=>{if(!dragging&&fine)set(e.clientX);});
+}
+
+/* ===== AVIS ===== */
+function buildReviews(){
+  const star='<svg viewBox="0 0 24 24"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1z"/></svg>';
+  revGrid.innerHTML='';
+  REVIEWS.forEach(r=>{
+    const el=document.createElement('div');el.className='rev';
+    el.innerHTML=`
+      <div class="rev-stars">${star.repeat(5)}</div>
+      <div class="rev-quote"><p>${r.q}</p></div>
+      <div class="rev-who">
+        <div class="rev-av">${r.n[0]}</div>
+        <div><div class="nm">${r.n}</div><div class="ro">${r.r}</div></div>
+      </div>`;
+    revGrid.appendChild(el);
+  });
+}
+
+/* ===== VIDÉO ===== */
+videoPoster.addEventListener('click',()=>{
+  const ifr=document.createElement('iframe');
+  ifr.src=`https://www.youtube-nocookie.com/embed/${VIDEO_ID}?autoplay=1&rel=0`;
+  ifr.allow='autoplay; encrypted-media; picture-in-picture';
+  ifr.allowFullscreen=true;
+  videoFrame.innerHTML='';videoFrame.appendChild(ifr);
+});
+
+/* ===== REVEAL AU SCROLL ===== */
+(function(){
+  const io=new IntersectionObserver(es=>{
+    es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+  },{threshold:.14});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+})();
+
+/* ===== INIT ===== */
+refresh();buildBA();buildReviews();
+</script>
+</body>
+</html>

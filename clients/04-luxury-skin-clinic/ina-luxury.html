@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0c0b09">
+<title>INA LUXURY — Cosmétiques & Capillaires | Luxury Skin Clinic</title>
+<meta name="description" content="INA LUXURY — Collection de soins visage, corps et capillaires. Sérums, crèmes, gommages et rituels premium à Cotonou.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --noir:#0c0b09;--noir-2:#16140f;--noir-3:#221f17;
+  --creme:#faf6ec;--creme-2:#efe6d2;
+  --or:#c9a24b;--or-clair:#ecd9a4;--or-vif:#e3c074;--or-sombre:#8f6f30;
+  --texte:#f3eede;--texte-doux:#aaa291;
+  --gold-grad:linear-gradient(135deg,#ecd9a4 0%,#c9a24b 48%,#8f6f30 100%);
+  --ease:cubic-bezier(.22,1,.36,1);--ease-soft:cubic-bezier(.4,0,.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--noir);color:var(--texte);font-family:'Jost',system-ui,sans-serif;
+  font-weight:300;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100svh;}
+@media(hover:hover) and (pointer:fine){body{cursor:none;}}
+h1,h2,h3,h4{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;}
+a,button{color:inherit;text-decoration:none;font-family:inherit;}
+button{background:none;border:none;cursor:pointer;}
+::selection{background:rgba(201,162,75,.3);color:var(--creme);}
+img{max-width:100%;display:block;}
+
+.marble{position:fixed;inset:0;z-index:0;background:
+  radial-gradient(ellipse 80% 60% at 20% 12%,rgba(35,31,23,.9),transparent 70%),
+  radial-gradient(ellipse 70% 70% at 88% 88%,rgba(34,30,22,.85),transparent 65%),var(--noir);}
+.marble::before{content:'';position:absolute;inset:-20%;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='700' height='700'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='0.009 0.013' numOctaves='5' seed='12'/><feColorMatrix values='0 0 0 0 0.79  0 0 0 0 0.64  0 0 0 0 0.30  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23m)'/></svg>");
+  opacity:.08;mix-blend-mode:screen;animation:marbleDrift 70s ease-in-out infinite alternate;}
+@keyframes marbleDrift{0%{transform:scale(1.05);}100%{transform:scale(1.16) translate(2%,-2%);}}
+#particles{position:fixed;inset:0;z-index:1;pointer-events:none;}
+
+.cursor-dot,.cursor-ring{position:fixed;top:0;left:0;z-index:9999;pointer-events:none;
+  border-radius:50%;mix-blend-mode:screen;will-change:transform;}
+.cursor-dot{width:7px;height:7px;background:var(--or-clair);box-shadow:0 0 12px 3px rgba(236,217,164,.8);
+  transform:translate(-50%,-50%);}
+.cursor-ring{width:38px;height:38px;border:1px solid rgba(201,162,75,.55);
+  transform:translate(-50%,-50%);transition:width .3s var(--ease),height .3s var(--ease),border-color .3s;}
+.cursor-ring.hot{width:62px;height:62px;border-color:rgba(236,217,164,.9);}
+@media(hover:none),(pointer:coarse){.cursor-dot,.cursor-ring{display:none;}}
+
+#curtain{position:fixed;inset:0;z-index:900;pointer-events:none;display:flex;}
+#curtain .panel{flex:1;background:linear-gradient(180deg,#16140f,#0c0b09);transform-origin:top;
+  transition:transform 1.05s var(--ease);}
+#curtain .panel.l{transform-origin:left;}
+#curtain .panel.r{transform-origin:right;}
+#curtain.open .panel{transform:scaleX(0);}
+
+/* ===== HEADER ===== */
+.wrap{position:relative;z-index:5;max-width:1280px;margin:0 auto;padding:0 26px;}
+header{position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);
+  background:linear-gradient(180deg,rgba(12,11,9,.92),rgba(12,11,9,.7));
+  border-bottom:1px solid rgba(201,162,75,.16);}
+.head-in{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:15px 26px;max-width:1280px;margin:0 auto;}
+.back-hub{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--texte-doux);transition:color .35s,gap .35s var(--ease);}
+.back-hub:hover{color:var(--or-clair);gap:13px;}
+.back-hub svg{width:17px;height:9px;stroke:currentColor;fill:none;stroke-width:1.6;}
+.brand-id{text-align:center;line-height:1;}
+.brand-id .nm{font-family:'Cormorant Garamond',serif;font-size:1.32rem;font-weight:600;letter-spacing:.14em;
+  background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.brand-id .tg{font-size:8px;letter-spacing:.32em;text-transform:uppercase;color:var(--texte-doux);
+  margin-top:3px;}
+.wa-top{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:30px;
+  border:1px solid rgba(201,162,75,.4);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--or-clair);transition:all .35s var(--ease);white-space:nowrap;}
+.wa-top:hover{background:rgba(201,162,75,.12);border-color:var(--or-vif);transform:translateY(-2px);}
+.wa-top svg{width:15px;height:15px;fill:currentColor;}
+
+/* ===== SUB-HEADER : BREADCRUMB + RETOUR ===== */
+.subnav{position:sticky;top:62px;z-index:90;backdrop-filter:blur(12px);
+  background:rgba(12,11,9,.82);border-bottom:1px solid rgba(201,162,75,.1);}
+.subnav-in{display:flex;align-items:center;gap:14px;padding:11px 26px;max-width:1280px;margin:0 auto;
+  flex-wrap:wrap;}
+.btn-back{display:inline-flex;align-items:center;gap:7px;font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--texte-doux);padding:7px 13px;border-radius:24px;
+  border:1px solid rgba(201,162,75,.22);transition:all .3s var(--ease);}
+.btn-back:hover{color:var(--or-clair);border-color:var(--or);transform:translateX(-2px);}
+.btn-back svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8;}
+.btn-back[disabled]{opacity:.32;pointer-events:none;}
+.crumb{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:11.5px;letter-spacing:.06em;}
+.crumb a,.crumb span{color:var(--texte-doux);transition:color .3s;}
+.crumb a{cursor:pointer;}
+.crumb a:hover{color:var(--or-clair);}
+.crumb .sep{color:rgba(201,162,75,.4);font-size:9px;}
+.crumb .cur{color:var(--or-clair);}
+.menu-toggle{margin-left:auto;display:none;align-items:center;gap:8px;font-size:10.5px;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--or-clair);padding:7px 14px;
+  border-radius:24px;border:1px solid rgba(201,162,75,.3);}
+.menu-toggle svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.7;}
+
+/* ===== LAYOUT ===== */
+.layout{display:grid;grid-template-columns:248px 1fr;gap:34px;padding:34px 26px 90px;
+  max-width:1280px;margin:0 auto;position:relative;z-index:5;}
+
+/* ===== ACCORDÉON MENU ===== */
+.menu{align-self:start;position:sticky;top:128px;
+  background:linear-gradient(165deg,rgba(34,31,23,.7),rgba(12,11,9,.85));
+  border:1px solid rgba(201,162,75,.18);border-radius:16px;padding:10px;}
+.menu-head{font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--or);
+  padding:11px 13px 13px;border-bottom:1px solid rgba(201,162,75,.12);margin-bottom:6px;}
+.acc-fam{border-radius:10px;overflow:hidden;}
+.acc-fam-btn{width:100%;display:flex;align-items:center;justify-content:space-between;
+  padding:12px 13px;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--texte);transition:background .3s,color .3s;}
+.acc-fam-btn:hover{background:rgba(201,162,75,.08);color:var(--or-clair);}
+.acc-fam-btn.active{color:var(--or-clair);}
+.acc-fam-btn .chev{width:13px;height:13px;stroke:var(--or);fill:none;stroke-width:2;
+  transition:transform .4s var(--ease);}
+.acc-fam.open .acc-fam-btn .chev{transform:rotate(180deg);}
+.acc-fam.open .acc-fam-btn{background:rgba(201,162,75,.06);}
+.acc-sub{max-height:0;overflow:hidden;transition:max-height .45s var(--ease);}
+.acc-fam.open .acc-sub{max-height:520px;}
+.acc-sub-btn{width:100%;text-align:left;padding:9px 13px 9px 26px;font-size:11.5px;
+  color:var(--texte-doux);transition:color .25s,padding .25s;position:relative;}
+.acc-sub-btn::before{content:'';position:absolute;left:14px;top:50%;width:4px;height:1px;
+  background:var(--or);opacity:0;transition:opacity .25s,width .25s;}
+.acc-sub-btn:hover{color:var(--or-clair);padding-left:30px;}
+.acc-sub-btn.active{color:var(--or-clair);}
+.acc-sub-btn.active::before,.acc-sub-btn:hover::before{opacity:1;width:8px;}
+.menu-reset{width:100%;margin-top:8px;padding:11px;font-size:10px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--texte-doux);border-top:1px solid rgba(201,162,75,.1);
+  transition:color .3s;}
+.menu-reset:hover{color:var(--or-clair);}
+
+/* ===== MAIN ===== */
+.main-head{margin-bottom:22px;}
+.main-head .eyebrow{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--or);
+  margin-bottom:9px;}
+.main-head h1{font-size:clamp(1.9rem,4.4vw,3rem);font-weight:500;color:var(--creme);line-height:1.12;}
+.main-head .lead{font-size:.9rem;color:var(--texte-doux);margin-top:10px;line-height:1.7;max-width:560px;}
+
+/* familles en grandes cards (état initial) */
+.fam-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:8px;}
+.fam-card{position:relative;border-radius:16px;overflow:hidden;padding:32px 26px;min-height:200px;
+  display:flex;flex-direction:column;justify-content:flex-end;gap:5px;
+  border:1px solid rgba(201,162,75,.2);transition:transform .5s var(--ease),border-color .4s;}
+.fam-card:hover{transform:translateY(-8px);border-color:rgba(236,217,164,.5);}
+.fam-card .fc-bg{position:absolute;inset:0;z-index:-1;opacity:.9;}
+.fam-card .fc-k{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--or-clair);}
+.fam-card h3{font-size:1.7rem;color:var(--creme);font-weight:600;}
+.fam-card p{font-size:.8rem;color:var(--texte-doux);line-height:1.6;}
+.fam-card .fc-go{margin-top:10px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--or-clair);display:inline-flex;align-items:center;gap:7px;transition:gap .35s var(--ease);}
+.fam-card:hover .fc-go{gap:12px;}
+.fam-card .fc-go svg{width:16px;height:8px;stroke:currentColor;fill:none;stroke-width:1.6;}
+
+/* ===== SOUS-CATÉGORIES (pills) ===== */
+.subcat-row{display:flex;gap:9px;flex-wrap:wrap;margin:18px 0 4px;}
+.subcat-pill{padding:8px 16px;border-radius:26px;font-size:11px;letter-spacing:.06em;
+  border:1px solid rgba(201,162,75,.24);color:var(--texte-doux);
+  transition:all .32s var(--ease);}
+.subcat-pill:hover{color:var(--or-clair);border-color:var(--or);}
+.subcat-pill.active{background:var(--gold-grad);color:var(--noir);font-weight:500;
+  border-color:transparent;}
+
+/* ===== CHIPS PRÉOCCUPATION ===== */
+.concern-block{margin:22px 0 6px;}
+.concern-lbl{font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--or);
+  margin-bottom:11px;display:flex;align-items:center;gap:9px;}
+.concern-lbl::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(201,162,75,.3),transparent);}
+.chips{display:flex;gap:8px;flex-wrap:wrap;}
+.chip{padding:7px 14px;border-radius:24px;font-size:10.5px;letter-spacing:.04em;
+  border:1px solid rgba(201,162,75,.22);color:var(--texte-doux);
+  transition:all .3s var(--ease);display:inline-flex;align-items:center;gap:6px;}
+.chip::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--or);opacity:.5;
+  transition:opacity .3s,box-shadow .3s;}
+.chip:hover{color:var(--creme);border-color:var(--or);transform:translateY(-2px);}
+.chip.active{background:rgba(201,162,75,.16);color:var(--or-clair);border-color:var(--or-vif);}
+.chip.active::before{opacity:1;box-shadow:0 0 8px var(--or-vif);}
+
+/* ===== PANNEAU CONSEILS ===== */
+.advice{margin:20px 0 4px;border-radius:16px;overflow:hidden;
+  border:1px solid rgba(201,162,75,.26);
+  background:linear-gradient(150deg,rgba(34,31,23,.85),rgba(12,11,9,.9));
+  max-height:0;opacity:0;transition:max-height .5s var(--ease),opacity .4s,margin .4s;}
+.advice.show{max-height:600px;opacity:1;margin:20px 0 8px;}
+.advice-in{padding:24px 26px;}
+.advice-top{display:flex;align-items:center;gap:11px;margin-bottom:12px;}
+.advice-ic{width:38px;height:38px;border-radius:50%;flex-shrink:0;
+  background:radial-gradient(circle at 38% 32%,rgba(201,162,75,.4),rgba(12,11,9,.5));
+  border:1px solid rgba(201,162,75,.45);display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--or-clair);}
+.advice-top h4{font-size:1.32rem;color:var(--creme);font-weight:600;}
+.advice-intro{font-size:.87rem;color:var(--texte-doux);line-height:1.78;margin-bottom:14px;}
+.advice-tips{display:grid;gap:9px;}
+.advice-tip{display:flex;gap:10px;font-size:.82rem;color:var(--texte);line-height:1.6;}
+.advice-tip svg{width:15px;height:15px;flex-shrink:0;margin-top:3px;stroke:var(--or-vif);
+  fill:none;stroke-width:2;}
+
+/* ===== GRILLE PRODUITS ===== */
+.grid-meta{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  margin:24px 0 16px;flex-wrap:wrap;}
+.grid-meta .count{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--texte-doux);}
+.grid-meta .count b{color:var(--or-clair);font-weight:500;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:20px;}
+.card{position:relative;border-radius:15px;overflow:hidden;
+  background:linear-gradient(168deg,rgba(34,31,23,.8),rgba(12,11,9,.92));
+  border:1px solid rgba(201,162,75,.16);
+  transition:transform .12s var(--ease-soft),box-shadow .4s var(--ease),border-color .4s;
+  transform-style:preserve-3d;will-change:transform;}
+.card:hover{box-shadow:0 28px 56px -26px rgba(0,0,0,.85),0 0 34px -14px rgba(201,162,75,.4);
+  border-color:rgba(236,217,164,.45);}
+.card-anim{opacity:0;transform:translateY(22px);}
+.card-anim.in{opacity:1;transform:none;transition:opacity .5s var(--ease),transform .5s var(--ease);}
+.card-photo{position:relative;aspect-ratio:1/1;overflow:hidden;transform:translateZ(28px);}
+.card-photo .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+.card-photo .ph-mono{font-family:'Cormorant Garamond',serif;font-size:62px;font-weight:500;
+  color:rgba(250,246,236,.32);transition:transform .6s var(--ease);}
+.card:hover .ph-mono{transform:scale(1.12);}
+.card-photo .shine{position:absolute;inset:0;background:linear-gradient(125deg,transparent 38%,
+  rgba(255,255,255,.13) 48%,transparent 58%);transform:translateX(-100%);transition:transform .8s var(--ease);}
+.card:hover .shine{transform:translateX(100%);}
+.badge-best{position:absolute;top:11px;left:11px;display:inline-flex;align-items:center;gap:5px;
+  padding:5px 11px;border-radius:20px;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;
+  font-weight:500;color:var(--noir);background:var(--gold-grad);
+  box-shadow:0 4px 14px rgba(201,162,75,.5);}
+.badge-best::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--noir);
+  animation:bestPulse 1.8s ease-in-out infinite;}
+@keyframes bestPulse{0%,100%{transform:scale(1);opacity:.85;}50%{transform:scale(1.45);opacity:.35;}}
+.card-body{padding:16px 16px 18px;transform:translateZ(40px);}
+.card-cat{font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--or);margin-bottom:6px;}
+.card h3{font-size:1.16rem;color:var(--creme);font-weight:600;line-height:1.22;}
+.card-desc{font-size:.76rem;color:var(--texte-doux);line-height:1.62;margin-top:6px;min-height:3.1em;}
+.card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:13px;
+  padding-top:13px;border-top:1px solid rgba(201,162,75,.13);}
+.card-price{font-family:'Cormorant Garamond',serif;font-size:1.32rem;font-weight:600;
+  background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.card-price small{font-size:.62rem;letter-spacing:.08em;-webkit-text-fill-color:var(--texte-doux);
+  font-family:'Jost',sans-serif;}
+.card-wa{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:22px;
+  font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--or-clair);
+  border:1px solid rgba(201,162,75,.35);transition:all .3s var(--ease);}
+.card-wa:hover{background:rgba(201,162,75,.14);border-color:var(--or-vif);}
+.card-wa svg{width:13px;height:13px;fill:currentColor;}
+
+.empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--texte-doux);}
+.empty h3{font-size:1.5rem;color:var(--creme);margin-bottom:8px;font-style:italic;}
+
+/* ===== FOOTER ===== */
+footer{position:relative;z-index:5;border-top:1px solid rgba(201,162,75,.14);
+  padding:34px 26px;text-align:center;}
+.foot-wa{display:inline-flex;align-items:center;gap:9px;padding:14px 30px;border-radius:32px;
+  background:var(--gold-grad);color:var(--noir);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;font-weight:500;transition:transform .35s var(--ease),box-shadow .35s;}
+.foot-wa:hover{transform:translateY(-3px);box-shadow:0 16px 34px -12px rgba(201,162,75,.6);}
+.foot-wa svg{width:17px;height:17px;fill:currentColor;}
+.foot-meta{margin-top:18px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--texte-doux);}
+.foot-sig{margin-top:8px;font-size:9.5px;letter-spacing:.14em;color:rgba(170,162,145,.45);}
+
+#scrim{position:fixed;inset:0;z-index:95;background:rgba(8,7,5,.7);backdrop-filter:blur(3px);
+  opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s;}
+#scrim.show{opacity:1;visibility:visible;}
+
+@media(max-width:880px){
+  .layout{grid-template-columns:1fr;gap:0;padding-top:20px;}
+  .menu{position:fixed;top:0;left:0;bottom:0;width:282px;max-width:84vw;z-index:96;border-radius:0;
+    transform:translateX(-105%);transition:transform .42s var(--ease);overflow-y:auto;
+    border-right:1px solid rgba(201,162,75,.2);}
+  .menu.open{transform:none;}
+  .menu-toggle{display:inline-flex;}
+  .subnav{top:60px;}
+}
+@media(max-width:560px){
+  .head-in{padding:12px 16px;}.wrap,.layout,.subnav-in,.head-in{padding-left:16px;padding-right:16px;}
+  .brand-id .nm{font-size:1.1rem;}.wa-top span{display:none;}.wa-top{padding:9px;}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:13px;}
+  .card-body{padding:13px 12px 15px;}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition-duration:.15s!important;}
+  .marble::before{animation:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="marble"></div>
+<canvas id="particles"></canvas>
+<div class="cursor-dot" id="cDot"></div>
+<div class="cursor-ring" id="cRing"></div>
+<div id="curtain"><div class="panel l"></div><div class="panel r"></div></div>
+<div id="scrim"></div>
+
+<header>
+  <div class="head-in">
+    <a class="back-hub" href="hub.html"><svg viewBox="0 0 24 12"><path d="M23 6H2M7 1 2 6l5 5"/></svg> Accueil</a>
+    <div class="brand-id"><div class="nm">INA LUXURY</div><div class="tg">Cosmétiques & Capillaires</div></div>
+    <a class="wa-top" id="waTop" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5zM6.7 19.6l.4.2a9.5 9.5 0 0 0 4.9 1.3 9.5 9.5 0 1 0-8-4.4l.2.4-1 3.4 3.5-.9zM17.5 13.9c-.1-.2-.5-.3-1-.6s-1.4-.7-1.6-.8-.4-.1-.5.1l-.8 1c-.2.2-.3.2-.5.1a7.7 7.7 0 0 1-2.3-1.4 8.5 8.5 0 0 1-1.6-2c-.1-.3 0-.4.1-.5l.4-.5a1.8 1.8 0 0 0 .3-.4.4.4 0 0 0 0-.5l-.9-2c-.2-.5-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4 5.3 5.3 0 0 0 3.2.8 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3z"/></svg>
+      <span>Commander</span>
+    </a>
+  </div>
+</header>
+
+<div class="subnav">
+  <div class="subnav-in">
+    <button class="btn-back" id="btnBack" disabled>
+      <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg> Retour
+    </button>
+    <nav class="crumb" id="crumb" aria-label="Fil d'Ariane"></nav>
+    <button class="menu-toggle" id="menuToggle">
+      <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg> Catalogue
+    </button>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="menu" id="menu" aria-label="Menu du catalogue">
+    <div class="menu-head">Explorer le catalogue</div>
+    <div id="accordion"></div>
+    <button class="menu-reset" id="menuReset">↺ Tout afficher</button>
+  </aside>
+
+  <main>
+    <div class="main-head" id="mainHead"></div>
+    <div id="subcatRow"></div>
+    <div class="concern-block" id="concernBlock" hidden>
+      <div class="concern-lbl">Filtrer par préoccupation</div>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="advice" id="advice"><div class="advice-in" id="adviceIn"></div></div>
+    <div id="famCardsWrap"></div>
+    <div class="grid-meta" id="gridMeta" hidden><div class="count" id="count"></div></div>
+    <div class="grid" id="grid"></div>
+  </main>
+</div>
+
+<footer>
+  <a class="foot-wa" id="waFoot" href="#" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5zM6.7 19.6l.4.2a9.5 9.5 0 0 0 4.9 1.3 9.5 9.5 0 1 0-8-4.4l.2.4-1 3.4 3.5-.9zM17.5 13.9c-.1-.2-.5-.3-1-.6s-1.4-.7-1.6-.8-.4-.1-.5.1l-.8 1c-.2.2-.3.2-.5.1a7.7 7.7 0 0 1-2.3-1.4 8.5 8.5 0 0 1-1.6-2c-.1-.3 0-.4.1-.5l.4-.5a1.8 1.8 0 0 0 .3-.4.4.4 0 0 0 0-.5l-.9-2c-.2-.5-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4 5.3 5.3 0 0 0 3.2.8 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3z"/></svg>
+    Conseil personnalisé sur WhatsApp
+  </a>
+  <div class="foot-meta">INA LUXURY · Cotonou · Bénin</div>
+  <div class="foot-sig">Vitrine signée NEBULA Agency</div>
+</footer>
+
+<script>
+'use strict';
+const WA='2290167975626';
+const reduceMotion=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
+
+/* ===== DONNÉES ===== */
+const FAMILIES=[
+  {key:'visage',label:'Visage',desc:'Démaquillants, sérums, crèmes et rituels pour le visage.',
+   tint:'linear-gradient(155deg,#2a2018,#3a2a22 55%,#1a1410)'},
+  {key:'corps',label:'Corps',desc:'Gommages, laits et huiles pour une peau sublime.',
+   tint:'linear-gradient(155deg,#2a2218,#3a3020 55%,#1a160e)'},
+  {key:'capillaires',label:'Capillaires',desc:'Shampoings et soins pour des cheveux éclatants.',
+   tint:'linear-gradient(155deg,#241e16,#332a1e 55%,#15110c)'},
+];
+const SUBCATS={
+  visage:[
+    {key:'demaquillant',label:'Démaquillant'},{key:'gel-lavant',label:'Gel lavant'},
+    {key:'serum',label:'Sérum'},{key:'creme',label:'Crème'},
+    {key:'pack',label:'Pack visage'},{key:'routine',label:'Routines complètes'},
+  ],
+  corps:[
+    {key:'gommage',label:'Gommage'},{key:'lait',label:'Lait corps'},
+    {key:'beurre',label:'Beurre corporel'},{key:'huile',label:'Huile'},
+  ],
+  capillaires:[
+    {key:'shampoing',label:'Shampoing'},{key:'apres-shampoing',label:'Après-shampoing'},
+  ],
+};
+const CONCERNS={
+  taches:{label:'Taches & hyperpigmentation',
+    intro:"Les taches apparaissent souvent après le soleil, l'acné ou les variations hormonales. La régularité et la protection sont vos meilleures alliées.",
+    tips:["Appliquez vos actifs éclaircissants le soir, sur peau propre.",
+      "Une protection solaire le jour est indispensable pour ne pas annuler les résultats.",
+      "Comptez 4 à 8 semaines de régularité avant de juger l'efficacité."]},
+  acne:{label:'Acné & imperfections',
+    intro:"Les imperfections traduisent un excès de sébum et des pores obstrués. L'objectif : purifier sans agresser ni dessécher la peau.",
+    tips:["Nettoyez matin et soir avec un gel doux, sans frotter.",
+      "Évitez de toucher ou percer les boutons pour limiter les marques.",
+      "Hydratez toujours : une peau asséchée produit encore plus de sébum."]},
+  hydratation:{label:'Déshydratation',
+    intro:"Une peau déshydratée tiraille et marque davantage. Elle a besoin d'eau ET de lipides pour retrouver son confort.",
+    tips:["Superposez un sérum à l'acide hyaluronique puis une crème riche.",
+      "Buvez suffisamment et limitez l'eau trop chaude au nettoyage.",
+      "Un soin de nuit nourrissant aide la peau à se régénérer."]},
+  age:{label:'Anti-âge & fermeté',
+    intro:"Avec le temps, la peau perd en collagène et en rebond. On stimule, on nourrit et on protège pour préserver sa fermeté.",
+    tips:["Privilégiez des actifs ciblés : collagène, peptides, vitamine C.",
+      "Massez vos soins pour activer la microcirculation.",
+      "La constance prime : un rituel suivi vaut mieux qu'un produit miracle."]},
+  eclat:{label:'Éclat & teint terne',
+    intro:"Un teint terne résulte souvent d'un manque d'exfoliation et de lumière. On réveille la peau en douceur.",
+    tips:["Exfoliez une à deux fois par semaine pour relancer l'éclat.",
+      "La vitamine C le matin illumine et unifie le teint.",
+      "Un sommeil suffisant se lit immédiatement sur la peau."]},
+  sensible:{label:'Sensibilité & rougeurs',
+    intro:"Une peau réactive a une barrière fragilisée. On apaise et on renforce avec des formules minimalistes.",
+    tips:["Choisissez des soins sans parfum ni alcool agressif.",
+      "Introduisez un nouveau produit à la fois pour identifier les réactions.",
+      "Évitez les gommages mécaniques trop abrasifs."]},
+  secheresse:{label:'Cheveux secs & ternes',
+    intro:"Des cheveux secs manquent de lipides et de protection. On nourrit en profondeur et on referme les écailles.",
+    tips:["Faites un masque nourrissant une fois par semaine.",
+      "Rincez à l'eau tiède plutôt que chaude pour préserver la fibre.",
+      "Espacez les shampoings et privilégiez des formules sans sulfates agressifs."]},
+  pousse:{label:'Pousse & croissance',
+    intro:"La croissance dépend d'un cuir chevelu sain et stimulé. On nourrit la racine et on respecte la fibre.",
+    tips:["Massez le cuir chevelu pour activer la microcirculation.",
+      "Le ricin et la menthe sont reconnus pour soutenir la pousse.",
+      "Évitez les coiffures trop serrées qui fragilisent la racine."]},
+};
+const PRODUCTS=[
+  // VISAGE
+  {f:'visage',s:'demaquillant',n:'Eau Micellaire Pétales de Rose',p:4500,c:['eclat','sensible'],
+   d:"Démaquille et apaise en un geste, sans rinçage, pour une peau fraîche."},
+  {f:'visage',s:'demaquillant',n:'Huile Démaquillante Précieuse',p:6000,c:['hydratation','sensible'],best:1,
+   d:"Dissout maquillage et impuretés tout en nourrissant la peau."},
+  {f:'visage',s:'gel-lavant',n:'Gel Purifiant Fleur de Coton',p:5000,c:['acne','eclat'],
+   d:"Nettoie en douceur, purifie les pores et matifie le teint."},
+  {f:'visage',s:'gel-lavant',n:'Mousse Nettoyante Éclat Doré',p:5500,c:['eclat','taches'],
+   d:"Une mousse aérienne qui ravive la luminosité dès le nettoyage."},
+  {f:'visage',s:'serum',n:'Sérum Anti-Taches Vitamine C',p:12000,c:['taches','eclat'],best:1,
+   d:"Concentré illuminateur qui atténue visiblement les taches brunes."},
+  {f:'visage',s:'serum',n:'Sérum Repulpant Acide Hyaluronique',p:13500,c:['hydratation','age'],
+   d:"Repulpe et lisse en saturant la peau d'hydratation."},
+  {f:'visage',s:'serum',n:'Sérum Niacinamide Pores Nets',p:11000,c:['acne','eclat'],
+   d:"Resserre les pores et régule l'excès de sébum."},
+  {f:'visage',s:'serum',n:'Sérum Lift Collagène Or',p:16000,c:['age'],best:1,
+   d:"Soin signature qui raffermit et redessine l'ovale du visage."},
+  {f:'visage',s:'creme',n:'Crème Jour Hydra-Lumière',p:9500,c:['hydratation','eclat'],
+   d:"Hydratation longue durée et fini lumineux pour la journée."},
+  {f:'visage',s:'creme',n:'Crème Nuit Régénérante',p:11500,c:['age','hydratation'],
+   d:"Régénère la peau pendant le sommeil pour un réveil reposé."},
+  {f:'visage',s:'creme',n:'Crème Anti-Taches Intense',p:13000,c:['taches'],
+   d:"Cible les taches installées et unifie le teint nuit après nuit."},
+  {f:'visage',s:'creme',n:'Crème Apaisante Peaux Sensibles',p:9000,c:['sensible','hydratation'],
+   d:"Calme les rougeurs et renforce la barrière cutanée."},
+  {f:'visage',s:'pack',n:'Coffret Éclat Suprême',p:38000,c:['eclat','taches'],best:1,
+   d:"Le trio nettoyage, sérum et crème pour un teint sublimé."},
+  {f:'visage',s:'pack',n:'Coffret Hydratation Intense',p:32000,c:['hydratation'],
+   d:"Un duo sérum et crème pour une peau repulpée et confortable."},
+  {f:'visage',s:'routine',n:'Routine Anti-Taches 4 Étapes',p:45000,c:['taches','eclat'],best:1,
+   d:"Le protocole complet pour estomper les taches en profondeur."},
+  {f:'visage',s:'routine',n:'Routine Anti-Âge Signature',p:58000,c:['age'],
+   d:"Cinq soins d'exception pour une peau visiblement plus ferme."},
+  {f:'visage',s:'routine',n:'Routine Peau Nette Anti-Acné',p:39000,c:['acne','eclat'],
+   d:"Un parcours purifiant pour retrouver une peau nette et lisse."},
+  // CORPS
+  {f:'corps',s:'gommage',n:'Gommage Sucre & Miel Doré',p:6500,c:['eclat'],
+   d:"Exfolie en douceur et laisse la peau satinée et parfumée."},
+  {f:'corps',s:'gommage',n:'Gommage Café Tonifiant',p:6000,c:['eclat'],
+   d:"Lisse le grain de peau et stimule la microcirculation."},
+  {f:'corps',s:'lait',n:'Lait Corps Satin Précieux',p:7000,c:['hydratation'],
+   d:"Une texture fondante qui hydrate sans effet collant."},
+  {f:'corps',s:'lait',n:'Lait Éclaircissant Uniformisant',p:9500,c:['taches','eclat'],best:1,
+   d:"Unifie le teint du corps et illumine jour après jour."},
+  {f:'corps',s:'beurre',n:'Beurre Karité Or Nourrissant',p:8000,c:['hydratation','sensible'],
+   d:"Beurre intense pour les peaux très sèches et inconfortables."},
+  {f:'corps',s:'huile',n:'Huile Sèche Lumière Dorée',p:9000,c:['hydratation','eclat'],best:1,
+   d:"Nourrit et nimbe la peau d'un voile lumineux non gras."},
+  {f:'corps',s:'huile',n:'Huile Raffermissante Corps',p:10500,c:['age'],
+   d:"Tonifie et raffermit les zones relâchées du corps."},
+  // CAPILLAIRES
+  {f:'capillaires',s:'shampoing',n:'Shampoing Nutrition Karité',p:6500,c:['secheresse'],
+   d:"Lave en douceur et nourrit les cheveux secs et ternes."},
+  {f:'capillaires',s:'shampoing',n:'Shampoing Croissance Ricin & Menthe',p:7500,c:['pousse','secheresse'],best:1,
+   d:"Stimule le cuir chevelu et soutient la pousse des cheveux."},
+  {f:'capillaires',s:'apres-shampoing',n:'Après-Shampoing Soie & Brillance',p:7000,c:['secheresse'],
+   d:"Démêle, gaine la fibre et révèle une brillance miroir."},
+  {f:'capillaires',s:'apres-shampoing',n:'Masque Capillaire Réparateur Intense',p:9500,c:['secheresse','pousse'],best:1,
+   d:"Répare les longueurs abîmées et fortifie la fibre en profondeur."},
+];
+
+/* ===== ÉTAT ===== */
+const state={family:null,subcat:null,concern:null};
+
+/* ===== CURSEUR ===== */
+(function(){
+  if(!fine)return;
+  const dot=cDot,ring=cRing;let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;
+    dot.style.transform=`translate(${mx}px,${my}px) translate(-50%,-50%)`;});
+  (function loop(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;
+    ring.style.transform=`translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+    requestAnimationFrame(loop);})();
+  addEventListener('mouseover',e=>{
+    if(e.target.closest('a,button,.card,.fam-card,.chip,.subcat-pill'))ring.classList.add('hot');
+    else ring.classList.remove('hot');
+  });
+})();
+
+/* ===== PARTICULES ===== */
+(function(){
+  const cv=particles,ctx=cv.getContext('2d');let w,h,ps=[];
+  function size(){w=cv.width=innerWidth;h=cv.height=innerHeight;}
+  size();addEventListener('resize',size);
+  const N=reduceMotion?0:(innerWidth<760?18:38);
+  function mk(r){return{x:Math.random()*w,y:r?Math.random()*h:-10,rr:Math.random()*1.7+.5,
+    sp:Math.random()*.42+.16,dr:(Math.random()-.5)*.3,a:Math.random()*.5+.2,
+    tw:Math.random()*6.28,ts:Math.random()*.03+.01};}
+  for(let i=0;i<N;i++)ps.push(mk(1));
+  function draw(){ctx.clearRect(0,0,w,h);
+    for(const p of ps){p.y+=p.sp;p.x+=p.dr;p.tw+=p.ts;
+      if(p.y>h+10)Object.assign(p,mk(0));
+      const fl=p.a*(.6+.4*Math.sin(p.tw));
+      const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.rr*3.4);
+      g.addColorStop(0,`rgba(236,217,164,${fl})`);g.addColorStop(1,'rgba(236,217,164,0)');
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y,p.rr*3.4,0,6.283);ctx.fill();}
+    requestAnimationFrame(draw);}
+  if(N>0)draw();
+})();
+
+/* ===== RIDEAU OUVERTURE ===== */
+addEventListener('load',()=>{requestAnimationFrame(()=>curtain.classList.add('open'));
+  setTimeout(()=>curtain.remove(),1300);});
+
+/* ===== WHATSAPP HELPERS ===== */
+function waLink(msg){return `https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;}
+waTop.href=waLink("Bonjour INA LUXURY, j'aimerais passer commande.");
+waFoot.href=waLink("Bonjour INA LUXURY, j'aimerais un conseil personnalisé pour ma routine de soins.");
+
+/* ===== ACCORDÉON ===== */
+function buildAccordion(){
+  accordion.innerHTML='';
+  FAMILIES.forEach(fam=>{
+    const wrap=document.createElement('div');wrap.className='acc-fam';wrap.dataset.fam=fam.key;
+    wrap.innerHTML=`<button class="acc-fam-btn"><span>${fam.label}</span>
+      <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="acc-sub"></div>`;
+    const sub=wrap.querySelector('.acc-sub');
+    SUBCATS[fam.key].forEach(sc=>{
+      const b=document.createElement('button');b.className='acc-sub-btn';b.textContent=sc.label;
+      b.dataset.fam=fam.key;b.dataset.sub=sc.key;
+      b.addEventListener('click',()=>{select(fam.key,sc.key,null);closeMenu();});
+      sub.appendChild(b);
+    });
+    wrap.querySelector('.acc-fam-btn').addEventListener('click',()=>{
+      const wasOpen=wrap.classList.contains('open');
+      document.querySelectorAll('.acc-fam').forEach(x=>x.classList.remove('open'));
+      if(!wasOpen)wrap.classList.add('open');
+      select(fam.key,null,null);
+    });
+    accordion.appendChild(wrap);
+  });
+}
+function syncAccordion(){
+  document.querySelectorAll('.acc-fam').forEach(w=>{
+    const on=w.dataset.fam===state.family;
+    w.classList.toggle('open',on);
+    w.querySelector('.acc-fam-btn').classList.toggle('active',on);
+  });
+  document.querySelectorAll('.acc-sub-btn').forEach(b=>{
+    b.classList.toggle('active',b.dataset.fam===state.family&&b.dataset.sub===state.subcat);
+  });
+}
+
+/* ===== SÉLECTION / NAVIGATION ===== */
+function select(family,subcat,concern){
+  state.family=family;state.subcat=subcat;state.concern=concern;
+  render();
+}
+function goBack(){
+  if(state.concern!==null)state.concern=null;
+  else if(state.subcat!==null)state.subcat=null;
+  else if(state.family!==null)state.family=null;
+  render();
+}
+btnBack.addEventListener('click',goBack);
+menuReset.addEventListener('click',()=>{select(null,null,null);closeMenu();});
+
+/* ===== RENDU ===== */
+function render(){
+  syncAccordion();
+  renderCrumb();
+  renderHead();
+  renderSubcats();
+  renderConcerns();
+  renderAdvice();
+  renderGrid();
+  btnBack.disabled=(state.family===null);
+  window.scrollTo({top:0,behavior:reduceMotion?'auto':'smooth'});
+}
+
+function renderCrumb(){
+  const parts=[`<a data-nav="root">Catalogue</a>`];
+  if(state.family){
+    const f=FAMILIES.find(x=>x.key===state.family);
+    parts.push(`<span class="sep">/</span>`);
+    if(state.subcat||state.concern)parts.push(`<a data-nav="fam">${f.label}</a>`);
+    else parts.push(`<span class="cur">${f.label}</span>`);
+  }
+  if(state.subcat){
+    const sc=SUBCATS[state.family].find(x=>x.key===state.subcat);
+    parts.push(`<span class="sep">/</span>`);
+    if(state.concern)parts.push(`<a data-nav="sub">${sc.label}</a>`);
+    else parts.push(`<span class="cur">${sc.label}</span>`);
+  }
+  if(state.concern){
+    parts.push(`<span class="sep">/</span><span class="cur">${CONCERNS[state.concern].label}</span>`);
+  }
+  crumb.innerHTML=parts.join('');
+  crumb.querySelectorAll('[data-nav]').forEach(a=>{
+    a.addEventListener('click',()=>{
+      const n=a.dataset.nav;
+      if(n==='root')select(null,null,null);
+      else if(n==='fam')select(state.family,null,null);
+      else if(n==='sub')select(state.family,state.subcat,null);
+    });
+  });
+}
+
+function renderHead(){
+  if(!state.family){
+    mainHead.innerHTML=`<div class="eyebrow">La Collection</div>
+      <h1>L'art du soin, sublimé</h1>
+      <p class="lead">Explorez nos trois univers de beauté. Chaque formule est pensée pour révéler
+      le meilleur de votre peau et de vos cheveux.</p>`;
+  }else{
+    const f=FAMILIES.find(x=>x.key===state.family);
+    let title=f.label,eyebrow='Univers';
+    if(state.subcat){const sc=SUBCATS[state.family].find(x=>x.key===state.subcat);
+      title=sc.label;eyebrow=f.label;}
+    mainHead.innerHTML=`<div class="eyebrow">${eyebrow}</div><h1>${title}</h1>`;
+  }
+}
+
+function renderSubcats(){
+  if(!state.family){subcatRow.innerHTML='';return;}
+  const row=document.createElement('div');row.className='subcat-row';
+  SUBCATS[state.family].forEach(sc=>{
+    const b=document.createElement('button');
+    b.className='subcat-pill'+(sc.key===state.subcat?' active':'');
+    b.textContent=sc.label;
+    b.addEventListener('click',()=>{
+      select(state.family,sc.key===state.subcat?null:sc.key,null);
+    });
+    row.appendChild(b);
+  });
+  subcatRow.innerHTML='';subcatRow.appendChild(row);
+}
+
+function poolBeforeConcern(){
+  return PRODUCTS.filter(p=>
+    (!state.family||p.f===state.family)&&(!state.subcat||p.s===state.subcat));
+}
+function renderConcerns(){
+  if(!state.family){concernBlock.hidden=true;return;}
+  const pool=poolBeforeConcern();
+  const keys=[...new Set(pool.flatMap(p=>p.c))];
+  if(!keys.length){concernBlock.hidden=true;return;}
+  concernBlock.hidden=false;
+  chips.innerHTML='';
+  keys.forEach(k=>{
+    const b=document.createElement('button');
+    b.className='chip'+(k===state.concern?' active':'');
+    b.textContent=CONCERNS[k].label;
+    b.addEventListener('click',()=>{
+      select(state.family,state.subcat,k===state.concern?null:k);
+    });
+    chips.appendChild(b);
+  });
+}
+
+function renderAdvice(){
+  if(!state.concern){advice.classList.remove('show');return;}
+  const c=CONCERNS[state.concern];
+  adviceIn.innerHTML=`
+    <div class="advice-top">
+      <div class="advice-ic">✦</div>
+      <h4>${c.label}</h4>
+    </div>
+    <p class="advice-intro">${c.intro}</p>
+    <div class="advice-tips">
+      ${c.tips.map(t=>`<div class="advice-tip">
+        <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>${t}</span></div>`).join('')}
+    </div>`;
+  advice.classList.add('show');
+}
+
+function renderFamCards(){
+  const wrap=document.createElement('div');wrap.className='fam-cards';
+  FAMILIES.forEach(f=>{
+    const cnt=PRODUCTS.filter(p=>p.f===f.key).length;
+    const card=document.createElement('article');card.className='fam-card';
+    card.innerHTML=`<div class="fc-bg" style="background:${f.tint}"></div>
+      <div class="fc-k">${cnt} produits</div>
+      <h3>${f.label}</h3><p>${f.desc}</p>
+      <span class="fc-go">Découvrir
+        <svg viewBox="0 0 24 12"><path d="M1 6h21M17 1l5 5-5 5"/></svg></span>`;
+    card.addEventListener('click',()=>select(f.key,null,null));
+    wrap.appendChild(card);
+  });
+  famCardsWrap.innerHTML='';famCardsWrap.appendChild(wrap);
+}
+
+function renderGrid(){
+  if(!state.family){
+    renderFamCards();
+    gridMeta.hidden=true;grid.innerHTML='';
+    return;
+  }
+  famCardsWrap.innerHTML='';
+  let list=poolBeforeConcern();
+  if(state.concern)list=list.filter(p=>p.c.includes(state.concern));
+  gridMeta.hidden=false;
+  count.innerHTML=`<b>${list.length}</b> produit${list.length>1?'s':''}`;
+  grid.innerHTML='';
+  if(!list.length){
+    grid.innerHTML=`<div class="empty"><h3>Aucun produit pour cette sélection</h3>
+      <p>Essayez une autre préoccupation ou réinitialisez les filtres.</p></div>`;
+    return;
+  }
+  list.forEach((p,i)=>grid.appendChild(productCard(p,i)));
+  requestAnimationFrame(()=>{
+    grid.querySelectorAll('.card-anim').forEach((c,i)=>{
+      setTimeout(()=>c.classList.add('in'),reduceMotion?0:i*55);
+    });
+  });
+}
+
+function productCard(p,i){
+  const fam=FAMILIES.find(x=>x.key===p.f);
+  const sc=SUBCATS[p.f].find(x=>x.key===p.s);
+  const el=document.createElement('article');
+  el.className='card card-anim';
+  el.innerHTML=`
+    <div class="card-photo">
+      <div class="ph" style="background:${fam.tint}">
+        <span class="ph-mono">${p.n[0]}</span>
+      </div>
+      <div class="shine"></div>
+      ${p.best?`<span class="badge-best">Bestseller</span>`:''}
+    </div>
+    <div class="card-body">
+      <div class="card-cat">${fam.label} · ${sc.label}</div>
+      <h3>${p.n}</h3>
+      <p class="card-desc">${p.d}</p>
+      <div class="card-foot">
+        <div class="card-price">${p.p.toLocaleString('fr-FR')} <small>FCFA</small></div>
+        <a class="card-wa" href="${waLink(`Bonjour INA LUXURY, je suis intéressée par : ${p.n} (${p.p.toLocaleString('fr-FR')} FCFA).`)}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5zM6.7 19.6l.4.2a9.5 9.5 0 0 0 4.9 1.3 9.5 9.5 0 1 0-8-4.4l.2.4-1 3.4 3.5-.9zM17.5 13.9c-.1-.2-.5-.3-1-.6s-1.4-.7-1.6-.8-.4-.1-.5.1l-.8 1c-.2.2-.3.2-.5.1a7.7 7.7 0 0 1-2.3-1.4 8.5 8.5 0 0 1-1.6-2c-.1-.3 0-.4.1-.5l.4-.5.3-.4a.4.4 0 0 0 0-.5l-.9-2c-.2-.5-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4 5.3 5.3 0 0 0 3.2.8 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3z"/></svg>
+          Commander
+        </a>
+      </div>
+    </div>`;
+  if(fine)attachTilt(el);
+  return el;
+}
+
+/* ===== TILT 3D ===== */
+function attachTilt(card){
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const px=(e.clientX-r.left)/r.width-.5,py=(e.clientY-r.top)/r.height-.5;
+    card.style.transform=`perspective(820px) rotateX(${-py*7}deg) rotateY(${px*9}deg) translateY(-6px)`;
+  });
+  card.addEventListener('mouseleave',()=>{card.style.transform='';});
+}
+
+/* ===== MENU MOBILE ===== */
+function closeMenu(){menu.classList.remove('open');scrim.classList.remove('show');}
+menuToggle.addEventListener('click',()=>{
+  menu.classList.toggle('open');scrim.classList.toggle('show');
+});
+scrim.addEventListener('click',closeMenu);
+
+/* ===== INIT ===== */
+buildAccordion();
+render();
+</script>
+</body>
+</html>

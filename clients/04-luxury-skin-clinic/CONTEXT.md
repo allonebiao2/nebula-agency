@@ -76,15 +76,15 @@ Projet multi-marques composé de **4 pages HTML distinctes** :
 
 - [x] Brief reçu
 - [ ] Brief validé
-- [ ] Structure dossiers créée ✅
+- [x] Structure dossiers créée
 - [ ] Assets collectés
-- [ ] Maquette / direction artistique
-- [ ] HTML/CSS — hub.html
-- [ ] HTML/CSS — ina-luxury.html
-- [ ] HTML/CSS — luxury-skin-clinic.html
-- [ ] HTML/CSS — cozy.html
-- [ ] Contenu intégré
-- [ ] Responsive testé
+- [x] Maquette / direction artistique (framework v1)
+- [x] HTML/CSS — hub.html (framework, contenu démo)
+- [x] HTML/CSS — ina-luxury.html (framework, contenu démo)
+- [x] HTML/CSS — luxury-skin-clinic.html (framework, contenu démo)
+- [x] HTML/CSS — cozy.html (framework, contenu démo)
+- [ ] Contenu réel intégré (textes + photos base64 de la cliente)
+- [ ] Responsive testé sur appareils réels
 - [ ] Livré
 
 ## Décisions importantes
@@ -92,6 +92,24 @@ Projet multi-marques composé de **4 pages HTML distinctes** :
 > Documenter au fur et à mesure les choix structurants.
 
 - 2026-05-16 — Projet structuré en 4 pages HTML distinctes (hub + 3 marques).
+- 2026-05-16 — Framework v1 construit avec contenu de démonstration premium
+  (noms de produits/soins plausibles, prix indicatifs). À remplacer par le contenu réel.
+- 2026-05-16 — Direction artistique : marbre noir animé, particules dorées, curseur doré,
+  typographie Cormorant Garamond (titres) + Jost (corps).
+- 2026-05-16 — Polices chargées via Google Fonts (seule ressource externe). Peut être
+  inlinée plus tard si besoin d'une autonomie totale.
+- 2026-05-16 — Sons générés par Web Audio API (son cristal + ambiance spa), zéro fichier externe.
+- 2026-05-16 — Vidéo de présentation : embed YouTube (VIDEO_ID à remplacer dans
+  luxury-skin-clinic.html).
+
+## À remplacer avant livraison
+
+- Logos réels des 3 marques (actuellement monogrammes dorés)
+- Photos produits/soins en base64 (actuellement placeholders dégradés élégants)
+- Liens Instagram et TikTok réels dans hub.html (actuellement `#`)
+- VIDEO_ID de la vraie vidéo de présentation dans luxury-skin-clinic.html
+- Textes, prix et listes produits validés par Gloria
+- Photos avant/après réelles dans la galerie
 
 ## Liens
 
