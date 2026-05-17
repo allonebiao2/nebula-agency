@@ -115,19 +115,15 @@ section{padding:80px 0;}
 .hstat .l{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--texte-doux);margin-top:3px;}
 
 /* NAV TABS */
-.tabs{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-bottom:18px;}
+.tabs{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-bottom:40px;}
 .tab{padding:11px 22px;border-radius:30px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
   border:1px solid rgba(201,162,75,.26);color:var(--texte-doux);transition:all .32s var(--ease);}
-.tab:hover{color:var(--or-clair);border-color:var(--or);}
+.tab:hover{color:var(--or-clair);border-color:var(--or-vif);transform:translateY(-2px);}
 .tab.active{background:var(--gold-grad);color:var(--noir);font-weight:500;border-color:transparent;}
-.concern-line{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:36px;}
-.cfilter{padding:7px 15px;border-radius:24px;font-size:10px;letter-spacing:.05em;
-  border:1px solid rgba(201,162,75,.2);color:var(--texte-doux);transition:all .3s var(--ease);
-  display:inline-flex;align-items:center;gap:6px;}
-.cfilter::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--or);opacity:.5;}
-.cfilter:hover{color:var(--creme);border-color:var(--or);}
-.cfilter.active{background:rgba(201,162,75,.16);color:var(--or-clair);border-color:var(--or-vif);}
-.cfilter.active::before{opacity:1;box-shadow:0 0 8px var(--or-vif);}
+.svc{scroll-margin-top:98px;}
+.svc.flash{animation:svcFlash 1.5s var(--ease);}
+@keyframes svcFlash{0%,100%{box-shadow:0 0 0 0 rgba(201,162,75,0);}
+  30%{box-shadow:0 0 0 2px var(--or-vif),0 32px 60px -28px rgba(0,0,0,.85),0 0 46px -8px rgba(201,162,75,.6);}}
 
 /* SERVICES GRID */
 .svc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:22px;}
@@ -291,7 +287,7 @@ footer{position:relative;z-index:5;border-top:1px solid rgba(201,162,75,.14);
 <div class="hero">
   <div class="hero-crest reveal">L</div>
   <h1 class="reveal">L'institut où la peau<br><em>retrouve sa lumière</em></h1>
-  <p class="hero-sub reveal">Soins du visage, soins du corps et rituels signature.
+  <p class="hero-sub reveal">Soin Oxygène, Glass Skin, peelings, massages et rituels VIP.
     Une parenthèse d'exception au cœur de Cotonou.</p>
   <div class="hero-cta reveal">
     <a class="btn-gold" id="heroWa" href="#" target="_blank" rel="noopener">
@@ -301,7 +297,7 @@ footer{position:relative;z-index:5;border-top:1px solid rgba(201,162,75,.14);
     <a class="btn-ghost" href="#prestations">Voir les prestations</a>
   </div>
   <div class="hero-stats reveal">
-    <div class="hstat"><div class="n">15+</div><div class="l">Soins signature</div></div>
+    <div class="hstat"><div class="n">6</div><div class="l">Prestations d'exception</div></div>
     <div class="hstat"><div class="n">100%</div><div class="l">Sur-mesure</div></div>
     <div class="hstat"><div class="n">Cotonou</div><div class="l">Notre institut</div></div>
   </div>
@@ -312,11 +308,10 @@ footer{position:relative;z-index:5;border-top:1px solid rgba(201,162,75,.14);
     <div class="sec-head reveal">
       <div class="eyebrow">Nos prestations</div>
       <h2>Des soins pensés pour vous</h2>
-      <p>Sélectionnez un univers et affinez selon votre préoccupation. Chaque soin est réalisé
-        par nos expertes, avec des protocoles d'exception.</p>
+      <p>Découvrez nos six prestations signature. Cliquez sur une prestation pour la rejoindre.
+        Chaque soin est réalisé par nos expertes, avec des protocoles d'exception.</p>
     </div>
     <div class="tabs" id="tabs"></div>
-    <div class="concern-line" id="concernLine"></div>
     <div class="svc-grid" id="svcGrid"></div>
   </div>
 </section>
@@ -396,7 +391,7 @@ function waLink(m){return `https://wa.me/${WA}?text=${encodeURIComponent(m)}`;}
     ring.style.transform=`translate(${rx}px,${ry}px) translate(-50%,-50%)`;
     requestAnimationFrame(loop);})();
   addEventListener('mouseover',e=>{
-    ring.classList.toggle('hot',!!e.target.closest('a,button,.svc,.rev,.tab,.cfilter'));});
+    ring.classList.toggle('hot',!!e.target.closest('a,button,.svc,.rev,.tab'));});
 })();
 
 /* ===== PARTICULES ===== */
@@ -429,118 +424,74 @@ waTop.href=heroWa.href=finalWa.href=
   waLink("Bonjour LUXURY SKIN CLINIC, je souhaite réserver un soin en institut.");
 
 /* ===== DONNÉES ===== */
-const TYPES=[
-  {key:'all',label:'Tous les soins'},
-  {key:'visage',label:'Soins du visage'},
-  {key:'corps',label:'Soins du corps'},
-  {key:'rituel',label:'Rituels signature'},
-];
-const CONCERNS={
-  eclat:'Éclat & teint',taches:'Taches',acne:'Acné & pores',
-  age:'Anti-âge & fermeté',hydratation:'Hydratation',detente:'Détente & bien-être',
-};
-const TINTS={
-  visage:'linear-gradient(155deg,#2a2018,#3a2a22 55%,#1a1410)',
-  corps:'linear-gradient(155deg,#2a2218,#3a3020 55%,#1a160e)',
-  rituel:'linear-gradient(155deg,#241c12,#3a2c1a 55%,#15100a)',
-};
-const SERVICES=[
-  {t:'visage',n:'Soin Hydra-Éclat',p:15000,dur:'60 min',c:['eclat','hydratation'],
-   d:"Nettoyage, exfoliation douce et masque hydratant pour un teint frais et lumineux."},
-  {t:'visage',n:'Nettoyage de Peau Profond',p:12000,dur:'50 min',c:['acne'],
-   d:"Extraction des impuretés et purification des pores pour une peau nette."},
-  {t:'visage',n:'Peeling Dépigmentant',p:25000,dur:'45 min',c:['taches','eclat'],
-   d:"Protocole professionnel ciblant les taches et l'irrégularité du teint."},
-  {t:'visage',n:'Microneedling Régénérant',p:35000,dur:'75 min',c:['age','taches'],
-   d:"Stimule le collagène pour lisser, raffermir et atténuer les marques."},
-  {t:'visage',n:'Soin Acné Purifiant',p:18000,dur:'60 min',c:['acne'],
-   d:"Soin assainissant qui apaise les imperfections et régule le sébum."},
-  {t:'visage',n:'Massage Visage Kobido',p:20000,dur:'55 min',c:['age','eclat'],
-   d:"Massage liftant japonais qui redessine et illumine les traits."},
-  {t:'visage',n:'Luminothérapie LED',p:15000,dur:'40 min',c:['acne','eclat'],
-   d:"La lumière au service de la peau : éclat, apaisement et régénération."},
-  {t:'corps',n:'Massage Relaxant Spa',p:18000,dur:'60 min',c:['detente'],
-   d:"Un massage enveloppant pour relâcher les tensions et apaiser l'esprit."},
-  {t:'corps',n:'Gommage Corps Royal',p:14000,dur:'45 min',c:['eclat'],
-   d:"Exfoliation sensorielle qui révèle une peau douce, satinée et lumineuse."},
-  {t:'corps',n:'Enveloppement Détox',p:22000,dur:'70 min',c:['detente','eclat'],
-   d:"Un cocon de soin qui purifie, draine et sublime la peau du corps."},
-  {t:'corps',n:'Drainage Lymphatique',p:25000,dur:'60 min',c:['detente','age'],
-   d:"Massage drainant qui allège les jambes et affine la silhouette."},
-  {t:'rituel',n:'Rituel Visage Or 24 Carats',p:50000,dur:'90 min',c:['age','eclat'],sig:1,
-   d:"Notre rituel signature : feuilles d'or, massage liftant et masque précieux."},
-  {t:'rituel',n:'Rituel Évasion Corps & Esprit',p:45000,dur:'120 min',c:['detente'],sig:1,
-   d:"Gommage, massage et soin visage : une parenthèse de pure détente."},
-  {t:'rituel',n:'Rituel Mariée Éclat Absolu',p:60000,dur:'150 min',c:['eclat','age'],sig:1,
-   d:"Le protocole complet pour rayonner le jour J, de la tête aux pieds."},
+const PRESTATIONS=[
+  {key:'soin-oxygene',n:'Soin Oxygène',p:18000,dur:'60 min',
+   d:"Un soin oxygénant qui décongestionne, illumine et redonne de la vitalité à la peau fatiguée.",
+   tint:'linear-gradient(155deg,#23241c,#34362a 55%,#15140e)'},
+  {key:'soin-glass-skin',n:'Soin Glass Skin',p:25000,dur:'75 min',
+   d:"Le rituel inspiré de la K-beauty pour une peau lisse, repulpée et lumineuse comme du verre.",
+   tint:'linear-gradient(155deg,#2a2018,#3a2a22 55%,#1a1410)'},
+  {key:'peelings',n:'Peelings',p:22000,dur:'45 min',
+   d:"Peeling professionnel qui affine le grain de peau, unifie le teint et ravive l'éclat.",
+   tint:'linear-gradient(155deg,#2a2218,#3a3020 55%,#1a160e)'},
+  {key:'massage-luxury',n:'Massage Luxury',p:20000,dur:'60 min',
+   d:"Un massage signature enveloppant qui relâche les tensions du corps et apaise l'esprit.",
+   tint:'linear-gradient(155deg,#241c12,#3a2c1a 55%,#15100a)'},
+  {key:'gommage-luxury',n:'Gommage Luxury',p:15000,dur:'50 min',
+   d:"Exfoliation sensorielle qui révèle une peau douce, satinée et délicatement parfumée.",
+   tint:'linear-gradient(155deg,#26201a,#382e24 55%,#16120d)'},
+  {key:'soin-complet-vip',n:'Soin Complet VIP',p:60000,dur:'150 min',sig:1,
+   d:"L'expérience absolue : visage, corps et rituels d'exception réunis en une parenthèse unique.",
+   tint:'linear-gradient(155deg,#2a2012,#42321a 55%,#17110a)'},
 ];
 const BEFORE_AFTER=[
-  {n:'Protocole Anti-Taches',d:'Après 6 séances de peeling dépigmentant'},
-  {n:'Soin Anti-Acné',d:'Après 8 semaines de soins purifiants'},
-  {n:'Rituel Anti-Âge Or',d:'Effet liftant visible après 4 séances'},
-  {n:'Éclat & Hydratation',d:'Teint unifié après un soin Hydra-Éclat'},
+  {n:'Éclat Oxygène',d:'Teint ravivé après un Soin Oxygène'},
+  {n:'Effet Glass Skin',d:'Peau lissée et repulpée après le Soin Glass Skin'},
+  {n:'Peelings',d:'Teint unifié après une cure de peelings'},
+  {n:'Soin Complet VIP',d:'Résultat global après un Soin Complet VIP'},
 ];
 const REVIEWS=[
   {n:'Sandrine A.',r:'Cliente fidèle',
    q:"Un institut à la hauteur du nom. Ma peau n'a jamais été aussi belle, l'accueil est exceptionnel."},
-  {n:'Murielle K.',r:'Soin du visage',
-   q:"Le rituel Or 24 carats est une expérience inoubliable. Je ressors transformée à chaque fois."},
-  {n:'Florence D.',r:'Protocole anti-taches',
+  {n:'Murielle K.',r:'Soin Glass Skin',
+   q:"Le Soin Glass Skin est une expérience inoubliable. Je ressors transformée à chaque fois."},
+  {n:'Florence D.',r:'Peelings',
    q:"Mes taches se sont vraiment estompées. Des conseils précieux et un suivi sérieux."},
-  {n:'Inès T.',r:'Rituel mariée',
+  {n:'Inès T.',r:'Soin Complet VIP',
    q:"J'ai rayonné le jour de mon mariage. Merci pour ce professionnalisme et cette douceur."},
 ];
 
-let curType='all',curConcern=null;
-
-/* ===== TABS + FILTRES ===== */
-function buildTabs(){
+/* ===== NAVIGATION DES 6 PRESTATIONS ===== */
+function buildNav(){
   tabs.innerHTML='';
-  TYPES.forEach(t=>{
+  PRESTATIONS.forEach(s=>{
     const b=document.createElement('button');
-    b.className='tab'+(t.key===curType?' active':'');
-    b.textContent=t.label;
-    b.addEventListener('click',()=>{curType=t.key;curConcern=null;refresh();});
+    b.className='tab';
+    b.textContent=s.n;
+    b.addEventListener('click',()=>{
+      const card=document.getElementById('presta-'+s.key);
+      if(!card)return;
+      card.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'});
+      card.classList.remove('flash');void card.offsetWidth;card.classList.add('flash');
+    });
     tabs.appendChild(b);
   });
 }
-function buildConcerns(){
-  const pool=SERVICES.filter(s=>curType==='all'||s.t===curType);
-  const keys=[...new Set(pool.flatMap(s=>s.c))];
-  concernLine.innerHTML='';
-  keys.forEach(k=>{
-    const b=document.createElement('button');
-    b.className='cfilter'+(k===curConcern?' active':'');
-    b.textContent=CONCERNS[k];
-    b.addEventListener('click',()=>{curConcern=(curConcern===k?null:k);refresh();});
-    concernLine.appendChild(b);
-  });
-}
-function refresh(){
-  buildTabs();buildConcerns();renderServices();
-}
 function renderServices(){
-  let list=SERVICES.filter(s=>curType==='all'||s.t===curType);
-  if(curConcern)list=list.filter(s=>s.c.includes(curConcern));
   svcGrid.innerHTML='';
-  if(!list.length){
-    svcGrid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--texte-doux)">
-      <h3 style="font-size:1.5rem;color:var(--creme);font-style:italic">Aucun soin pour ce filtre</h3></div>`;
-    return;
-  }
-  const typeLabel={visage:'Soin du visage',corps:'Soin du corps',rituel:'Rituel signature'};
-  list.forEach((s,i)=>{
+  PRESTATIONS.forEach((s,i)=>{
     const el=document.createElement('article');el.className='svc anim';
+    el.id='presta-'+s.key;
     el.innerHTML=`
       <div class="svc-visual">
-        <div class="vbg" style="background:${TINTS[s.t]}"></div>
+        <div class="vbg" style="background:${s.tint}"></div>
         <div class="vmono">${s.n[0]}</div>
         <div class="shine"></div>
         ${s.sig?'<span class="tag-sig">Signature</span>':''}
         <span class="svc-dur">${s.dur}</span>
       </div>
       <div class="svc-body">
-        <div class="svc-type">${typeLabel[s.t]}</div>
+        <div class="svc-type">${s.sig?'Prestation signature':'Prestation institut'}</div>
         <h3>${s.n}</h3>
         <p>${s.d}</p>
         <div class="svc-foot">
@@ -634,7 +585,7 @@ videoPoster.addEventListener('click',()=>{
 })();
 
 /* ===== INIT ===== */
-refresh();buildBA();buildReviews();
+buildNav();renderServices();buildBA();buildReviews();
 </script>
 </body>
 </html>

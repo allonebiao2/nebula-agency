@@ -34,6 +34,42 @@ Projet multi-marques composé de **4 pages HTML distinctes** :
    - Catalogue produits COZY
    - Navigation par catégorie
 
+## Architecture confirmée par la cliente (2026-05-17)
+
+Architecture EXACTE des 3 marques, validée par Gloria. Elle pilote la navigation
+de chaque page et l'arborescence `assets/images/`.
+
+### MARQUE 1 — INA LUXURY (`ina-luxury.html`)
+Produits cosmétiques et capillaires. Menu accordéon à 3 niveaux :
+Catégorie → Sous-catégorie → filtres par préoccupation.
+
+- **Visage** : Démaquillants · Gel nettoyants · Sérums · Crèmes · Masque
+- **Corps** : Beauty bar · Crème corps · Gommage · Huile corps
+- **Capillaires** : Shampoing · Après-shampoing · Sérum · Huile · Masque
+
+### MARQUE 2 — LUXURY SKIN CLINIC (`luxury-skin-clinic.html`)
+Soins et prestations en institut. Navigation = liste des 6 prestations
+(barre de pastilles qui défile vers chaque prestation).
+
+- Soin Oxygène · Soin Glass Skin · Peelings · Massage Luxury ·
+  Gommage Luxury · Soin Complet VIP
+
+### MARQUE 3 — COZY (`cozy.html`)
+Hygiène intime et bien-être. Navigation = 3 catégories produits.
+
+- Gel nettoyant intime · Huile intime · Crème parfumée
+
+### Arborescence `assets/images/`
+```
+logo/  ·  galerie/  ·  hub/
+ina-luxury/visage/{demaquillants,gel-nettoyants,serums,cremes,masque}
+ina-luxury/corps/{beauty-bar,creme-corps,gommage,huile-corps}
+ina-luxury/capillaires/{shampoing,apres-shampoing,serum,huile,masque}
+luxury-skin-clinic/{soin-oxygene,soin-glass-skin,peelings,
+                    massage-luxury,gommage-luxury,soin-complet-vip}
+cozy/{gel-nettoyant-intime,huile-intime,creme-parfumee}
+```
+
 ## Ton et univers
 
 - **Style visuel** : luxe, élégance, premium, raffiné
@@ -83,6 +119,7 @@ Projet multi-marques composé de **4 pages HTML distinctes** :
 - [x] HTML/CSS — ina-luxury.html (framework, contenu démo)
 - [x] HTML/CSS — luxury-skin-clinic.html (framework, contenu démo)
 - [x] HTML/CSS — cozy.html (framework, contenu démo)
+- [x] Architecture confirmée des 3 marques intégrée (navigation + dossiers)
 - [ ] Contenu réel intégré (textes + photos base64 de la cliente)
 - [ ] Responsive testé sur appareils réels
 - [ ] Livré
@@ -101,6 +138,13 @@ Projet multi-marques composé de **4 pages HTML distinctes** :
 - 2026-05-16 — Sons générés par Web Audio API (son cristal + ambiance spa), zéro fichier externe.
 - 2026-05-16 — Vidéo de présentation : embed YouTube (VIDEO_ID à remplacer dans
   luxury-skin-clinic.html).
+- 2026-05-17 — Architecture EXACTE des 3 marques confirmée par Gloria et intégrée :
+  navigation des 3 pages + arborescence `assets/images/` alignées (voir section
+  « Architecture confirmée »).
+- 2026-05-17 — INA LUXURY : carte produit enrichie activée (sélecteur de formats +
+  accordéons Description / Actifs / Résultats / Ingrédients) pour les Beauty bars.
+- 2026-05-17 — LUXURY SKIN CLINIC et COZY : filtres secondaires (préoccupation /
+  besoin) retirés — navigation simplifiée aux prestations / catégories confirmées.
 
 ## À remplacer avant livraison
 

@@ -388,25 +388,31 @@ const fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
 const FAMILIES=[
   {key:'visage',label:'Visage',desc:'Démaquillants, sérums, crèmes et rituels pour le visage.',
    tint:'linear-gradient(155deg,#2a2018,#3a2a22 55%,#1a1410)'},
-  {key:'corps',label:'Corps',desc:'Gommages, laits et huiles pour une peau sublime.',
+  {key:'corps',label:'Corps',desc:'Beauty bars, crèmes, gommages et huiles pour une peau sublime.',
    tint:'linear-gradient(155deg,#2a2218,#3a3020 55%,#1a160e)'},
   {key:'capillaires',label:'Capillaires',desc:'Shampoings et soins pour des cheveux éclatants.',
    tint:'linear-gradient(155deg,#241e16,#332a1e 55%,#15110c)'},
 ];
 const SUBCATS={
   visage:[
-    {key:'demaquillant',label:'Démaquillant'},{key:'gel-lavant',label:'Gel lavant'},
-    {key:'nettoyant',label:'Nettoyants visage'},
-    {key:'serum',label:'Sérum'},{key:'creme',label:'Crème'},
-    {key:'pack',label:'Pack visage'},{key:'routine',label:'Routines complètes'},
+    {key:'demaquillants',label:'Démaquillants'},
+    {key:'gel-nettoyants',label:'Gel nettoyants'},
+    {key:'serums',label:'Sérums'},
+    {key:'cremes',label:'Crèmes'},
+    {key:'masque',label:'Masque'},
   ],
   corps:[
-    {key:'savon-corps',label:'Savon corps'},
-    {key:'gommage',label:'Gommage'},{key:'lait',label:'Lait corps'},
-    {key:'beurre',label:'Beurre corporel'},{key:'huile',label:'Huile'},
+    {key:'beauty-bar',label:'Beauty bar'},
+    {key:'creme-corps',label:'Crème corps'},
+    {key:'gommage',label:'Gommage'},
+    {key:'huile-corps',label:'Huile corps'},
   ],
   capillaires:[
-    {key:'shampoing',label:'Shampoing'},{key:'apres-shampoing',label:'Après-shampoing'},
+    {key:'shampoing',label:'Shampoing'},
+    {key:'apres-shampoing',label:'Après-shampoing'},
+    {key:'serum',label:'Sérum'},
+    {key:'huile',label:'Huile'},
+    {key:'masque',label:'Masque'},
   ],
 };
 const CONCERNS={
@@ -452,72 +458,37 @@ const CONCERNS={
       "Évitez les coiffures trop serrées qui fragilisent la racine."]},
 };
 const PRODUCTS=[
-  // VISAGE
-  {f:'visage',s:'demaquillant',n:'Eau Micellaire Pétales de Rose',p:4500,c:['eclat','sensible'],
+  // ===== VISAGE =====
+  {f:'visage',s:'demaquillants',n:'Eau Micellaire Pétales de Rose',p:4500,c:['eclat','sensible'],
    d:"Démaquille et apaise en un geste, sans rinçage, pour une peau fraîche."},
-  {f:'visage',s:'demaquillant',n:'Huile Démaquillante Précieuse',p:6000,c:['hydratation','sensible'],best:1,
+  {f:'visage',s:'demaquillants',n:'Huile Démaquillante Précieuse',p:6000,c:['hydratation','sensible'],best:1,
    d:"Dissout maquillage et impuretés tout en nourrissant la peau."},
-  {f:'visage',s:'gel-lavant',n:'Gel Purifiant Fleur de Coton',p:5000,c:['acne','eclat'],
+  {f:'visage',s:'gel-nettoyants',n:'Gel Purifiant Fleur de Coton',p:5000,c:['acne','eclat'],
    d:"Nettoie en douceur, purifie les pores et matifie le teint."},
-  {f:'visage',s:'gel-lavant',n:'Mousse Nettoyante Éclat Doré',p:5500,c:['eclat','taches'],
+  {f:'visage',s:'gel-nettoyants',n:'Mousse Nettoyante Éclat Doré',p:5500,c:['eclat','taches'],
    d:"Une mousse aérienne qui ravive la luminosité dès le nettoyage."},
-  {f:'visage',s:'serum',n:'Sérum Anti-Taches Vitamine C',p:12000,c:['taches','eclat'],best:1,
+  {f:'visage',s:'serums',n:'Sérum Anti-Taches Vitamine C',p:12000,c:['taches','eclat'],best:1,
    d:"Concentré illuminateur qui atténue visiblement les taches brunes."},
-  {f:'visage',s:'serum',n:'Sérum Repulpant Acide Hyaluronique',p:13500,c:['hydratation','age'],
+  {f:'visage',s:'serums',n:'Sérum Repulpant Acide Hyaluronique',p:13500,c:['hydratation','age'],
    d:"Repulpe et lisse en saturant la peau d'hydratation."},
-  {f:'visage',s:'serum',n:'Sérum Niacinamide Pores Nets',p:11000,c:['acne','eclat'],
+  {f:'visage',s:'serums',n:'Sérum Niacinamide Pores Nets',p:11000,c:['acne','eclat'],
    d:"Resserre les pores et régule l'excès de sébum."},
-  {f:'visage',s:'serum',n:'Sérum Lift Collagène Or',p:16000,c:['age'],best:1,
+  {f:'visage',s:'serums',n:'Sérum Lift Collagène Or',p:16000,c:['age'],best:1,
    d:"Soin signature qui raffermit et redessine l'ovale du visage."},
-  {f:'visage',s:'creme',n:'Crème Jour Hydra-Lumière',p:9500,c:['hydratation','eclat'],
+  {f:'visage',s:'cremes',n:'Crème Jour Hydra-Lumière',p:9500,c:['hydratation','eclat'],
    d:"Hydratation longue durée et fini lumineux pour la journée."},
-  {f:'visage',s:'creme',n:'Crème Nuit Régénérante',p:11500,c:['age','hydratation'],
+  {f:'visage',s:'cremes',n:'Crème Nuit Régénérante',p:11500,c:['age','hydratation'],
    d:"Régénère la peau pendant le sommeil pour un réveil reposé."},
-  {f:'visage',s:'creme',n:'Crème Anti-Taches Intense',p:13000,c:['taches'],
+  {f:'visage',s:'cremes',n:'Crème Anti-Taches Intense',p:13000,c:['taches'],
    d:"Cible les taches installées et unifie le teint nuit après nuit."},
-  {f:'visage',s:'creme',n:'Crème Apaisante Peaux Sensibles',p:9000,c:['sensible','hydratation'],
+  {f:'visage',s:'cremes',n:'Crème Apaisante Peaux Sensibles',p:9000,c:['sensible','hydratation'],
    d:"Calme les rougeurs et renforce la barrière cutanée."},
-  {f:'visage',s:'pack',n:'Coffret Éclat Suprême',p:38000,c:['eclat','taches'],best:1,
-   d:"Le trio nettoyage, sérum et crème pour un teint sublimé."},
-  {f:'visage',s:'pack',n:'Coffret Hydratation Intense',p:32000,c:['hydratation'],
-   d:"Un duo sérum et crème pour une peau repulpée et confortable."},
-  {f:'visage',s:'routine',n:'Routine Anti-Taches 4 Étapes',p:45000,c:['taches','eclat'],best:1,
-   d:"Le protocole complet pour estomper les taches en profondeur."},
-  {f:'visage',s:'routine',n:'Routine Anti-Âge Signature',p:58000,c:['age'],
-   d:"Cinq soins d'exception pour une peau visiblement plus ferme."},
-  {f:'visage',s:'routine',n:'Routine Peau Nette Anti-Acné',p:39000,c:['acne','eclat'],
-   d:"Un parcours purifiant pour retrouver une peau nette et lisse."},
-  {f:'visage',s:'nettoyant',n:'Busserole Beauty Bar',c:['taches','eclat'],
-   d:"Un savon soin illuminateur conçu pour les peaux ternes, irrégulières ou sujettes aux taches pigmentaires. Nettoie tout en révélant progressivement un teint plus uniforme et frais.",
-   formats:[{label:'250g',p:8000}],
-   detail:"Sa base lavante douce produit une mousse agréable qui laisse la peau propre sans film lourd.",
-   actives:[
-     "L'association busserole et réglisse améliore l'apparence des taches et ravive l'éclat.",
-     "L'aloe vera apporte confort et apaisement.",
-     "Le Caprylic/Capric Triglyceride maintient une peau douce et souple."],
-   results:[
-     "Nettoie sans agresser",
-     "Aide à uniformiser le teint",
-     "Apporte éclat et douceur",
-     "Sensation de peau fraîche et confortable",
-     "Convient à un usage quotidien"],
-   ingredients:"Glycerin, Aqua, Sodium Stearate, Sorbitol, Sodium Laurate, Propylene Glycol, Glycyrrhiza Glabra Root Extract, Arctostaphylos Uva-Ursi Leaf Extract, Aloe Barbadensis Leaf Juice, Caprylic/Capric Triglyceride, Sodium Chloride, Stearic Acid, Lauric Acid, Tetrasodium EDTA, Etidronic Acid."},
-  // CORPS
-  {f:'corps',s:'gommage',n:'Gommage Sucre & Miel Doré',p:6500,c:['eclat'],
-   d:"Exfolie en douceur et laisse la peau satinée et parfumée."},
-  {f:'corps',s:'gommage',n:'Gommage Café Tonifiant',p:6000,c:['eclat'],
-   d:"Lisse le grain de peau et stimule la microcirculation."},
-  {f:'corps',s:'lait',n:'Lait Corps Satin Précieux',p:7000,c:['hydratation'],
-   d:"Une texture fondante qui hydrate sans effet collant."},
-  {f:'corps',s:'lait',n:'Lait Éclaircissant Uniformisant',p:9500,c:['taches','eclat'],best:1,
-   d:"Unifie le teint du corps et illumine jour après jour."},
-  {f:'corps',s:'beurre',n:'Beurre Karité Or Nourrissant',p:8000,c:['hydratation','sensible'],
-   d:"Beurre intense pour les peaux très sèches et inconfortables."},
-  {f:'corps',s:'huile',n:'Huile Sèche Lumière Dorée',p:9000,c:['hydratation','eclat'],best:1,
-   d:"Nourrit et nimbe la peau d'un voile lumineux non gras."},
-  {f:'corps',s:'huile',n:'Huile Raffermissante Corps',p:10500,c:['age'],
-   d:"Tonifie et raffermit les zones relâchées du corps."},
-  {f:'corps',s:'savon-corps',n:'Kojic Beauty Bar',c:['taches','eclat'],best:1,
+  {f:'visage',s:'masque',n:'Masque Détox Argile Dorée',p:7000,c:['acne','eclat'],
+   d:"Désincruste les pores et matifie pour un teint net et lumineux."},
+  {f:'visage',s:'masque',n:'Masque Hydratant Velours',p:7500,c:['hydratation','sensible'],best:1,
+   d:"Un cocon d'hydratation qui repulpe et apaise la peau en quelques minutes."},
+  // ===== CORPS =====
+  {f:'corps',s:'beauty-bar',n:'Kojic Beauty Bar',c:['taches','eclat'],best:1,
    d:"Un savon soin hautement concentré pensé pour les peaux qui veulent retrouver de l'éclat, réduire l'apparence des taches et uniformiser le teint tout en douceur.",
    formats:[{label:'150g',p:5500},{label:'300g',p:10000}],
    detail:"Le Kojic Beauty Bar associe la douceur d'une base lavante douce à un complexe d'actifs éclaircissants et apaisants soigneusement dosés. Il nettoie la peau efficacement sans la décaper, tout en laissant une sensation de confort.",
@@ -533,14 +504,47 @@ const PRODUCTS=[
      "Nettoyage efficace mais non agressif",
      "Confort immédiat après usage"],
    ingredients:"Glycerin, Aqua, Sodium Stearate, Sorbitol, Sodium Laurate, Propylene Glycol, Goat Milk Powder, Kojic Dipalmitate, Caprylic/Capric Triglyceride, Carica Papaya Fruit Extract, Panthenol, Glycyrrhiza Glabra Root Extract, Sodium Chloride, Stearic Acid, Lauric Acid, Titanium Dioxide, Tetrasodium EDTA, Etidronic Acid."},
-  // CAPILLAIRES
+  {f:'corps',s:'beauty-bar',n:'Busserole Beauty Bar',c:['taches','eclat'],
+   d:"Un savon soin illuminateur conçu pour les peaux ternes, irrégulières ou sujettes aux taches pigmentaires. Nettoie tout en révélant progressivement un teint plus uniforme et frais.",
+   formats:[{label:'250g',p:8000}],
+   detail:"Sa base lavante douce produit une mousse agréable qui laisse la peau propre sans film lourd.",
+   actives:[
+     "L'association busserole et réglisse améliore l'apparence des taches et ravive l'éclat.",
+     "L'aloe vera apporte confort et apaisement.",
+     "Le Caprylic/Capric Triglyceride maintient une peau douce et souple."],
+   results:[
+     "Nettoie sans agresser",
+     "Aide à uniformiser le teint",
+     "Apporte éclat et douceur",
+     "Sensation de peau fraîche et confortable",
+     "Convient à un usage quotidien"],
+   ingredients:"Glycerin, Aqua, Sodium Stearate, Sorbitol, Sodium Laurate, Propylene Glycol, Glycyrrhiza Glabra Root Extract, Arctostaphylos Uva-Ursi Leaf Extract, Aloe Barbadensis Leaf Juice, Caprylic/Capric Triglyceride, Sodium Chloride, Stearic Acid, Lauric Acid, Tetrasodium EDTA, Etidronic Acid."},
+  {f:'corps',s:'creme-corps',n:'Lait Corps Satin Précieux',p:7000,c:['hydratation'],
+   d:"Une texture fondante qui hydrate sans effet collant."},
+  {f:'corps',s:'creme-corps',n:'Lait Éclaircissant Uniformisant',p:9500,c:['taches','eclat'],best:1,
+   d:"Unifie le teint du corps et illumine jour après jour."},
+  {f:'corps',s:'creme-corps',n:'Beurre Karité Or Nourrissant',p:8000,c:['hydratation','sensible'],
+   d:"Beurre intense pour les peaux très sèches et inconfortables."},
+  {f:'corps',s:'gommage',n:'Gommage Sucre & Miel Doré',p:6500,c:['eclat'],
+   d:"Exfolie en douceur et laisse la peau satinée et parfumée."},
+  {f:'corps',s:'gommage',n:'Gommage Café Tonifiant',p:6000,c:['eclat'],
+   d:"Lisse le grain de peau et stimule la microcirculation."},
+  {f:'corps',s:'huile-corps',n:'Huile Sèche Lumière Dorée',p:9000,c:['hydratation','eclat'],best:1,
+   d:"Nourrit et nimbe la peau d'un voile lumineux non gras."},
+  {f:'corps',s:'huile-corps',n:'Huile Raffermissante Corps',p:10500,c:['age'],
+   d:"Tonifie et raffermit les zones relâchées du corps."},
+  // ===== CAPILLAIRES =====
   {f:'capillaires',s:'shampoing',n:'Shampoing Nutrition Karité',p:6500,c:['secheresse'],
    d:"Lave en douceur et nourrit les cheveux secs et ternes."},
   {f:'capillaires',s:'shampoing',n:'Shampoing Croissance Ricin & Menthe',p:7500,c:['pousse','secheresse'],best:1,
    d:"Stimule le cuir chevelu et soutient la pousse des cheveux."},
   {f:'capillaires',s:'apres-shampoing',n:'Après-Shampoing Soie & Brillance',p:7000,c:['secheresse'],
    d:"Démêle, gaine la fibre et révèle une brillance miroir."},
-  {f:'capillaires',s:'apres-shampoing',n:'Masque Capillaire Réparateur Intense',p:9500,c:['secheresse','pousse'],best:1,
+  {f:'capillaires',s:'serum',n:'Sérum Capillaire Pousse Active',p:8500,c:['pousse'],
+   d:"Concentré fortifiant qui stimule la racine et densifie la chevelure."},
+  {f:'capillaires',s:'huile',n:'Huile Capillaire Nutrition Ricin',p:7000,c:['secheresse','pousse'],
+   d:"Nourrit les longueurs, gaine la fibre et soutient la pousse."},
+  {f:'capillaires',s:'masque',n:'Masque Capillaire Réparateur Intense',p:9500,c:['secheresse','pousse'],best:1,
    d:"Répare les longueurs abîmées et fortifie la fibre en profondeur."},
 ];
 
@@ -791,11 +795,39 @@ function renderGrid(){
   });
 }
 
+const WA_SVG='<svg viewBox="0 0 24 24"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5zM6.7 19.6l.4.2a9.5 9.5 0 0 0 4.9 1.3 9.5 9.5 0 1 0-8-4.4l.2.4-1 3.4 3.5-.9zM17.5 13.9c-.1-.2-.5-.3-1-.6s-1.4-.7-1.6-.8-.4-.1-.5.1l-.8 1c-.2.2-.3.2-.5.1a7.7 7.7 0 0 1-2.3-1.4 8.5 8.5 0 0 1-1.6-2c-.1-.3 0-.4.1-.5l.4-.5.3-.4a.4.4 0 0 0 0-.5l-.9-2c-.2-.5-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4 5.3 5.3 0 0 0 3.2.8 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3z"/></svg>';
+
 function productCard(p,i){
   const fam=FAMILIES.find(x=>x.key===p.f);
   const sc=SUBCATS[p.f].find(x=>x.key===p.s);
+  const hasFmt=Array.isArray(p.formats)&&p.formats.length>0;
+  const multiFmt=hasFmt&&p.formats.length>1;
+  const basePrice=hasFmt?p.formats[0].p:p.p;
+  const baseFmt=hasFmt?p.formats[0].label:'';
   const el=document.createElement('article');
   el.className='card card-anim';
+
+  const fmtHtml=multiFmt
+    ?`<div class="card-formats">${p.formats.map((f,j)=>
+       `<button class="fmt-pill${j===0?' active':''}" data-i="${j}">${f.label}</button>`).join('')}</div>`
+    :'';
+
+  const accs=[];
+  if(p.detail)accs.push(['Description',`<p class="acc-p">${p.detail}</p>`]);
+  if(p.actives&&p.actives.length)accs.push(['Actifs clés',
+    `<div class="acc-sub-h">Ce qu'il apporte</div><div class="acc-list">${
+     p.actives.map(a=>`<div class="acc-li">${a}</div>`).join('')}</div>`]);
+  if(p.results&&p.results.length)accs.push(['Résultats',
+    `<div class="acc-list">${p.results.map(r=>
+     `<div class="res-li"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>${r}</span></div>`).join('')}</div>`]);
+  if(p.ingredients)accs.push(['Ingrédients',`<p class="ingr-text">${p.ingredients}</p>`]);
+  const accHtml=accs.length
+    ?`<div class="card-acc">${accs.map(([t,inner])=>
+       `<button class="acc-btn"><span>${t}</span>
+          <svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+        <div class="acc-panel"><div class="acc-inner">${inner}</div></div>`).join('')}</div>`
+    :'';
+
   el.innerHTML=`
     <div class="card-photo">
       <div class="ph" style="background:${fam.tint}">
@@ -808,14 +840,44 @@ function productCard(p,i){
       <div class="card-cat">${fam.label} · ${sc.label}</div>
       <h3>${p.n}</h3>
       <p class="card-desc">${p.d}</p>
-      <div class="card-foot">
-        <div class="card-price">${p.p.toLocaleString('fr-FR')} <small>FCFA</small></div>
-        <a class="card-wa" href="${waLink(`Bonjour INA LUXURY, je suis intéressée par : ${p.n} (${p.p.toLocaleString('fr-FR')} FCFA).`)}" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5zM6.7 19.6l.4.2a9.5 9.5 0 0 0 4.9 1.3 9.5 9.5 0 1 0-8-4.4l.2.4-1 3.4 3.5-.9zM17.5 13.9c-.1-.2-.5-.3-1-.6s-1.4-.7-1.6-.8-.4-.1-.5.1l-.8 1c-.2.2-.3.2-.5.1a7.7 7.7 0 0 1-2.3-1.4 8.5 8.5 0 0 1-1.6-2c-.1-.3 0-.4.1-.5l.4-.5.3-.4a.4.4 0 0 0 0-.5l-.9-2c-.2-.5-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4 5.3 5.3 0 0 0 3.2.8 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3z"/></svg>
-          Commander
-        </a>
+      ${fmtHtml}
+      ${accHtml}
+      <div class="card-bottom">
+        <div class="card-foot">
+          <div class="card-price"><span class="cp-amt">${basePrice.toLocaleString('fr-FR')}</span>
+            <small>FCFA${multiFmt?` · <span class="cp-fmt">${baseFmt}</span>`:''}</small></div>
+          <a class="card-wa" target="_blank" rel="noopener">${WA_SVG} Commander</a>
+        </div>
       </div>
     </div>`;
+
+  const amtEl=el.querySelector('.cp-amt'),fmtEl=el.querySelector('.cp-fmt'),
+        waBtn=el.querySelector('.card-wa');
+  function setWa(price,label){
+    waBtn.href=waLink(`Bonjour INA LUXURY, je suis intéressée par : ${p.n}${label?' — '+label:''} (${price.toLocaleString('fr-FR')} FCFA).`);
+  }
+  setWa(basePrice,baseFmt);
+
+  if(multiFmt){
+    el.querySelectorAll('.fmt-pill').forEach(pill=>{
+      pill.addEventListener('click',()=>{
+        el.querySelectorAll('.fmt-pill').forEach(x=>x.classList.remove('active'));
+        pill.classList.add('active');
+        const f=p.formats[+pill.dataset.i];
+        amtEl.textContent=f.p.toLocaleString('fr-FR');
+        if(fmtEl)fmtEl.textContent=f.label;
+        setWa(f.p,f.label);
+      });
+    });
+  }
+  el.querySelectorAll('.acc-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const panel=btn.nextElementSibling;
+      const open=btn.classList.toggle('open');
+      panel.style.maxHeight=open?panel.scrollHeight+'px':'0';
+    });
+  });
+
   if(fine)attachTilt(el);
   return el;
 }

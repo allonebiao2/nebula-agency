@@ -114,27 +114,7 @@ header{position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);
   border:1px solid rgba(201,162,75,.26);color:var(--texte-doux);transition:all .32s var(--ease);}
 .cat-tab:hover{color:var(--or-clair);border-color:var(--or);}
 .cat-tab.active{background:var(--gold-grad);color:var(--noir);font-weight:500;border-color:transparent;}
-.need-line{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:14px;}
-.need{padding:7px 15px;border-radius:24px;font-size:10px;letter-spacing:.04em;
-  border:1px solid rgba(201,162,75,.2);color:var(--texte-doux);transition:all .3s var(--ease);
-  display:inline-flex;align-items:center;gap:6px;}
-.need::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--or);opacity:.5;}
-.need:hover{color:var(--creme);border-color:var(--or);}
-.need.active{background:rgba(201,162,75,.16);color:var(--or-clair);border-color:var(--or-vif);}
-.need.active::before{opacity:1;box-shadow:0 0 8px var(--or-vif);}
-
-.advice{max-width:680px;margin:8px auto 0;border-radius:15px;overflow:hidden;
-  border:1px solid rgba(201,162,75,.24);
-  background:linear-gradient(150deg,rgba(34,31,23,.82),rgba(12,11,9,.9));
-  max-height:0;opacity:0;transition:max-height .5s var(--ease),opacity .4s,margin .4s;}
-.advice.show{max-height:300px;opacity:1;margin:18px auto 0;}
-.advice-in{padding:20px 24px;display:flex;gap:13px;align-items:flex-start;}
-.advice-ic{width:34px;height:34px;border-radius:50%;flex-shrink:0;
-  background:radial-gradient(circle at 38% 32%,rgba(201,162,75,.4),rgba(12,11,9,.5));
-  border:1px solid rgba(201,162,75,.45);display:flex;align-items:center;justify-content:center;
-  color:var(--or-clair);}
-.advice-in h4{font-size:1.16rem;color:var(--creme);font-weight:600;margin-bottom:5px;}
-.advice-in p{font-size:.82rem;color:var(--texte-doux);line-height:1.72;}
+.cat-tabs{margin-bottom:30px;}
 
 .grid-meta{text-align:center;margin:24px 0 18px;font-size:11px;letter-spacing:.18em;
   text-transform:uppercase;color:var(--texte-doux);}
@@ -257,8 +237,6 @@ footer{position:relative;z-index:5;border-top:1px solid rgba(201,162,75,.14);
 <div class="catalog">
   <div class="wrap">
     <div class="cat-tabs" id="catTabs"></div>
-    <div class="need-line" id="needLine"></div>
-    <div class="advice" id="advice"><div class="advice-in" id="adviceIn"></div></div>
     <div class="grid-meta" id="gridMeta"></div>
     <div class="grid" id="grid"></div>
   </div>
@@ -298,7 +276,7 @@ function waLink(m){return `https://wa.me/${WA}?text=${encodeURIComponent(m)}`;}
     ring.style.transform=`translate(${rx}px,${ry}px) translate(-50%,-50%)`;
     requestAnimationFrame(loop);})();
   addEventListener('mouseover',e=>{
-    ring.classList.toggle('hot',!!e.target.closest('a,button,.card,.cat-tab,.need'));});
+    ring.classList.toggle('hot',!!e.target.closest('a,button,.card,.cat-tab'));});
 })();
 
 /* ===== PARTICULES ===== */
@@ -331,47 +309,26 @@ waTop.href=finalWa.href=waLink("Bonjour COZY, j'aimerais un conseil sur vos prod
 /* ===== DONNÉES ===== */
 const CATS=[
   {key:'all',label:'Tout COZY'},
-  {key:'intime',label:'Hygiène intime'},
-  {key:'sensible',label:'Soins zones sensibles'},
-  {key:'fraicheur',label:'Fraîcheur quotidienne'},
-  {key:'corps',label:'Soins du corps doux'},
+  {key:'gel-nettoyant-intime',label:'Gel nettoyant intime'},
+  {key:'huile-intime',label:'Huile intime'},
+  {key:'creme-parfumee',label:'Crème parfumée'},
 ];
-const NEEDS={
-  fraicheur:{label:'Fraîcheur',
-    txt:"Pour une sensation de fraîcheur durable, privilégiez des formules légères et un usage quotidien doux, sans surcharger la zone."},
-  apaisant:{label:'Apaisant & confort',
-    txt:"En cas d'inconfort ou de sensibilité, choisissez des soins apaisants au pH respecté et évitez les produits parfumés agressifs."},
-  eclat:{label:'Éclat & uniformité',
-    txt:"Pour unifier les zones sensibles, appliquez vos soins éclaircissants avec régularité, sur une peau propre et sèche."},
-  hydratation:{label:'Hydratation',
-    txt:"Une zone bien hydratée est plus confortable et résistante. Optez pour des textures douces, sans alcool desséchant."},
-  douceur:{label:'Extra-douceur',
-    txt:"Les peaux délicates apprécient les formules minimalistes : peu d'ingrédients, beaucoup de douceur."},
-};
 const PRODUCTS=[
-  {cat:'intime',n:'Gel Intime Apaisant pH Neutre',p:4000,need:['apaisant','douceur'],best:1,
+  {cat:'gel-nettoyant-intime',n:'Gel Nettoyant Intime Doux pH Neutre',p:4000,best:1,
    d:"Nettoie en douceur et préserve l'équilibre naturel de la flore intime."},
-  {cat:'intime',n:'Mousse Lavante Intime Délicate',p:4500,need:['douceur','fraicheur'],
+  {cat:'gel-nettoyant-intime',n:'Mousse Nettoyante Intime Délicate',p:4500,
    d:"Une mousse aérienne très douce pour une toilette quotidienne tout en délicatesse."},
-  {cat:'intime',n:'Lingettes Intimes Fraîcheur',p:3000,need:['fraicheur'],
-   d:"La fraîcheur nomade, idéale en déplacement, douce et respectueuse."},
-  {cat:'sensible',n:'Sérum Éclaircissant Zones Intimes',p:8500,need:['eclat'],best:1,
-   d:"Aide à unifier le teint des zones sensibles, en douceur et progressivement."},
-  {cat:'sensible',n:'Crème Apaisante Zones Sensibles',p:6000,need:['apaisant','douceur'],
-   d:"Calme les sensations d'inconfort et apporte un confort immédiat."},
-  {cat:'sensible',n:'Huile Intime Hydratante',p:7000,need:['hydratation','apaisant'],
-   d:"Nourrit et préserve la souplesse des zones délicates."},
-  {cat:'fraicheur',n:'Brume Intime Parfumée',p:5000,need:['fraicheur'],
-   d:"Un voile subtilement parfumé pour une fraîcheur délicate tout au long de la journée."},
-  {cat:'fraicheur',n:'Déodorant Intime Naturel',p:4500,need:['fraicheur','douceur'],
-   d:"Une protection douce d'origine naturelle, respectueuse des zones sensibles."},
-  {cat:'corps',n:'Gel Lavant Corps Très Doux',p:4000,need:['douceur'],
-   d:"Un gel lavant ultra-doux pour le corps, adapté aux peaux réactives."},
-  {cat:'corps',n:'Lait Corps Peaux Sensibles',p:5500,need:['hydratation','apaisant'],best:1,
-   d:"Hydrate et apaise les peaux sensibles avec une texture fondante."},
+  {cat:'huile-intime',n:'Huile Intime Hydratante',p:7000,best:1,
+   d:"Nourrit et préserve la souplesse et le confort des zones délicates."},
+  {cat:'huile-intime',n:'Huile Intime Apaisante',p:7500,
+   d:"Calme les sensations d'inconfort et apporte une douceur immédiate."},
+  {cat:'creme-parfumee',n:'Crème Parfumée Délicate',p:5000,best:1,
+   d:"Un voile crémeux subtilement parfumé pour une peau douce et délicatement fraîche."},
+  {cat:'creme-parfumee',n:'Crème Parfumée Hydratante',p:5500,
+   d:"Hydrate et parfume délicatement la peau pour un confort tout au long de la journée."},
 ];
 
-let curCat='all',curNeed=null;
+let curCat='all';
 
 /* ===== RENDU ===== */
 function buildTabs(){
@@ -380,60 +337,34 @@ function buildTabs(){
     const b=document.createElement('button');
     b.className='cat-tab'+(c.key===curCat?' active':'');
     b.textContent=c.label;
-    b.addEventListener('click',()=>{curCat=c.key;curNeed=null;render();});
+    b.addEventListener('click',()=>{curCat=c.key;render();});
     catTabs.appendChild(b);
-  });
-}
-function buildNeeds(){
-  const pool=PRODUCTS.filter(p=>curCat==='all'||p.cat===curCat);
-  const keys=[...new Set(pool.flatMap(p=>p.need))];
-  needLine.innerHTML='';
-  keys.forEach(k=>{
-    const b=document.createElement('button');
-    b.className='need'+(k===curNeed?' active':'');
-    b.textContent=NEEDS[k].label;
-    b.addEventListener('click',()=>{curNeed=(curNeed===k?null:k);render();});
-    needLine.appendChild(b);
   });
 }
 function renderCrumb(){
   const parts=[`<a data-nav="root">Catalogue</a>`];
   if(curCat!=='all'){
     const c=CATS.find(x=>x.key===curCat);
-    parts.push(`<span class="sep">/</span>`);
-    parts.push(curNeed?`<a data-nav="cat">${c.label}</a>`:`<span class="cur">${c.label}</span>`);
-  }
-  if(curNeed){
-    parts.push(`<span class="sep">/</span><span class="cur">${NEEDS[curNeed].label}</span>`);
+    parts.push(`<span class="sep">/</span><span class="cur">${c.label}</span>`);
   }
   crumb.innerHTML=parts.join('');
   crumb.querySelectorAll('[data-nav]').forEach(a=>{
     a.addEventListener('click',()=>{
-      if(a.dataset.nav==='root'){curCat='all';curNeed=null;}
-      else if(a.dataset.nav==='cat'){curNeed=null;}
-      render();
+      if(a.dataset.nav==='root'){curCat='all';render();}
     });
   });
 }
-function renderAdvice(){
-  if(!curNeed){advice.classList.remove('show');return;}
-  const n=NEEDS[curNeed];
-  adviceIn.innerHTML=`<div class="advice-ic">✦</div>
-    <div><h4>${n.label}</h4><p>${n.txt}</p></div>`;
-  advice.classList.add('show');
-}
 function render(){
-  buildTabs();buildNeeds();renderCrumb();renderAdvice();
+  buildTabs();renderCrumb();
   btnBack.disabled=(curCat==='all');
-  let list=PRODUCTS.filter(p=>curCat==='all'||p.cat===curCat);
-  if(curNeed)list=list.filter(p=>p.need.includes(curNeed));
+  const list=PRODUCTS.filter(p=>curCat==='all'||p.cat===curCat);
   gridMeta.innerHTML=`<b>${list.length}</b> produit${list.length>1?'s':''}`;
   grid.innerHTML='';
   if(!list.length){
-    grid.innerHTML=`<div class="empty"><h3>Aucun produit pour ce filtre</h3></div>`;return;
+    grid.innerHTML=`<div class="empty"><h3>Aucun produit dans cette catégorie</h3></div>`;return;
   }
-  const catLabel={intime:'Hygiène intime',sensible:'Zones sensibles',
-    fraicheur:'Fraîcheur',corps:'Soin du corps'};
+  const catLabel={'gel-nettoyant-intime':'Gel nettoyant intime',
+    'huile-intime':'Huile intime','creme-parfumee':'Crème parfumée'};
   list.forEach(p=>{
     const el=document.createElement('article');el.className='card anim';
     el.innerHTML=`
@@ -473,7 +404,7 @@ function attachTilt(card){
   card.addEventListener('mouseleave',()=>{card.style.transform='';});
 }
 btnBack.addEventListener('click',()=>{
-  if(curNeed)curNeed=null;else if(curCat!=='all')curCat='all';
+  if(curCat!=='all')curCat='all';
   render();
 });
 
