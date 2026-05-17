@@ -204,6 +204,7 @@ header{position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);
 .grid-meta .count b{color:var(--or-clair);font-weight:500;}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:20px;}
 .card{position:relative;border-radius:15px;overflow:hidden;
+  display:flex;flex-direction:column;
   background:linear-gradient(168deg,rgba(34,31,23,.8),rgba(12,11,9,.92));
   border:1px solid rgba(201,162,75,.16);
   transition:transform .12s var(--ease-soft),box-shadow .4s var(--ease),border-color .4s;
@@ -212,7 +213,7 @@ header{position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);
   border-color:rgba(236,217,164,.45);}
 .card-anim{opacity:0;transform:translateY(22px);}
 .card-anim.in{opacity:1;transform:none;transition:opacity .5s var(--ease),transform .5s var(--ease);}
-.card-photo{position:relative;aspect-ratio:1/1;overflow:hidden;transform:translateZ(28px);}
+.card-photo{position:relative;aspect-ratio:1/1;overflow:hidden;transform:translateZ(28px);flex-shrink:0;}
 .card-photo .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
 .card-photo .ph-mono{font-family:'Cormorant Garamond',serif;font-size:62px;font-weight:500;
   color:rgba(250,246,236,.32);transition:transform .6s var(--ease);}
@@ -227,11 +228,12 @@ header{position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);
 .badge-best::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--noir);
   animation:bestPulse 1.8s ease-in-out infinite;}
 @keyframes bestPulse{0%,100%{transform:scale(1);opacity:.85;}50%{transform:scale(1.45);opacity:.35;}}
-.card-body{padding:16px 16px 18px;transform:translateZ(40px);}
+.card-body{padding:16px 16px 18px;transform:translateZ(40px);flex:1;display:flex;flex-direction:column;}
 .card-cat{font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--or);margin-bottom:6px;}
 .card h3{font-size:1.16rem;color:var(--creme);font-weight:600;line-height:1.22;}
 .card-desc{font-size:.76rem;color:var(--texte-doux);line-height:1.62;margin-top:6px;min-height:3.1em;}
-.card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:13px;
+.card-bottom{margin-top:auto;}
+.card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;
   padding-top:13px;border-top:1px solid rgba(201,162,75,.13);}
 .card-price{font-family:'Cormorant Garamond',serif;font-size:1.32rem;font-weight:600;
   background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
@@ -242,6 +244,38 @@ header{position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);
   border:1px solid rgba(201,162,75,.35);transition:all .3s var(--ease);}
 .card-wa:hover{background:rgba(201,162,75,.14);border-color:var(--or-vif);}
 .card-wa svg{width:13px;height:13px;fill:currentColor;}
+
+/* sélecteur de formats */
+.card-formats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.fmt-pill{padding:5px 12px;border-radius:18px;font-size:9.5px;letter-spacing:.04em;
+  border:1px solid rgba(201,162,75,.3);color:var(--texte-doux);
+  transition:background .28s var(--ease),color .28s,border-color .28s;}
+.fmt-pill:hover{color:var(--or-clair);border-color:var(--or);}
+.fmt-pill.active{background:var(--gold-grad);color:var(--noir);font-weight:500;border-color:transparent;}
+.cp-fmt{font-size:.62rem;letter-spacing:.06em;-webkit-text-fill-color:var(--texte-doux);
+  font-family:'Jost',sans-serif;}
+/* accordéons produit */
+.card-acc{margin-top:12px;border-top:1px solid rgba(201,162,75,.13);}
+.acc-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:11px 0 9px;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--or-clair);transition:color .25s;}
+.acc-btn:hover{color:var(--creme);}
+.acc-btn .ic{width:13px;height:13px;stroke:var(--or);fill:none;stroke-width:2.4;
+  stroke-linecap:round;transition:transform .35s var(--ease);flex-shrink:0;}
+.acc-btn.open .ic{transform:rotate(45deg);}
+.acc-panel{max-height:0;overflow:hidden;transition:max-height .42s var(--ease);}
+.acc-inner{padding:2px 0 13px;}
+.acc-p{font-size:.77rem;color:var(--texte-doux);line-height:1.72;}
+.acc-sub-h{font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--or);
+  margin:14px 0 8px;}
+.acc-list{display:flex;flex-direction:column;gap:7px;}
+.acc-li{display:flex;gap:9px;font-size:.76rem;color:var(--texte);line-height:1.58;}
+.acc-li::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;
+  background:var(--gold-grad);box-shadow:0 0 6px rgba(201,162,75,.55);}
+.res-li{display:flex;gap:9px;font-size:.76rem;color:var(--texte);line-height:1.58;}
+.res-li svg{width:13px;height:13px;flex-shrink:0;margin-top:3px;stroke:var(--or-vif);
+  fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;}
+.ingr-text{font-size:.71rem;color:var(--texte-doux);line-height:1.78;letter-spacing:.01em;}
 
 .empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--texte-doux);}
 .empty h3{font-size:1.5rem;color:var(--creme);margin-bottom:8px;font-style:italic;}
@@ -362,10 +396,12 @@ const FAMILIES=[
 const SUBCATS={
   visage:[
     {key:'demaquillant',label:'Démaquillant'},{key:'gel-lavant',label:'Gel lavant'},
+    {key:'nettoyant',label:'Nettoyants visage'},
     {key:'serum',label:'Sérum'},{key:'creme',label:'Crème'},
     {key:'pack',label:'Pack visage'},{key:'routine',label:'Routines complètes'},
   ],
   corps:[
+    {key:'savon-corps',label:'Savon corps'},
     {key:'gommage',label:'Gommage'},{key:'lait',label:'Lait corps'},
     {key:'beurre',label:'Beurre corporel'},{key:'huile',label:'Huile'},
   ],
@@ -451,6 +487,21 @@ const PRODUCTS=[
    d:"Cinq soins d'exception pour une peau visiblement plus ferme."},
   {f:'visage',s:'routine',n:'Routine Peau Nette Anti-Acné',p:39000,c:['acne','eclat'],
    d:"Un parcours purifiant pour retrouver une peau nette et lisse."},
+  {f:'visage',s:'nettoyant',n:'Busserole Beauty Bar',c:['taches','eclat'],
+   d:"Un savon soin illuminateur conçu pour les peaux ternes, irrégulières ou sujettes aux taches pigmentaires. Nettoie tout en révélant progressivement un teint plus uniforme et frais.",
+   formats:[{label:'250g',p:8000}],
+   detail:"Sa base lavante douce produit une mousse agréable qui laisse la peau propre sans film lourd.",
+   actives:[
+     "L'association busserole et réglisse améliore l'apparence des taches et ravive l'éclat.",
+     "L'aloe vera apporte confort et apaisement.",
+     "Le Caprylic/Capric Triglyceride maintient une peau douce et souple."],
+   results:[
+     "Nettoie sans agresser",
+     "Aide à uniformiser le teint",
+     "Apporte éclat et douceur",
+     "Sensation de peau fraîche et confortable",
+     "Convient à un usage quotidien"],
+   ingredients:"Glycerin, Aqua, Sodium Stearate, Sorbitol, Sodium Laurate, Propylene Glycol, Glycyrrhiza Glabra Root Extract, Arctostaphylos Uva-Ursi Leaf Extract, Aloe Barbadensis Leaf Juice, Caprylic/Capric Triglyceride, Sodium Chloride, Stearic Acid, Lauric Acid, Tetrasodium EDTA, Etidronic Acid."},
   // CORPS
   {f:'corps',s:'gommage',n:'Gommage Sucre & Miel Doré',p:6500,c:['eclat'],
    d:"Exfolie en douceur et laisse la peau satinée et parfumée."},
@@ -466,6 +517,22 @@ const PRODUCTS=[
    d:"Nourrit et nimbe la peau d'un voile lumineux non gras."},
   {f:'corps',s:'huile',n:'Huile Raffermissante Corps',p:10500,c:['age'],
    d:"Tonifie et raffermit les zones relâchées du corps."},
+  {f:'corps',s:'savon-corps',n:'Kojic Beauty Bar',c:['taches','eclat'],best:1,
+   d:"Un savon soin hautement concentré pensé pour les peaux qui veulent retrouver de l'éclat, réduire l'apparence des taches et uniformiser le teint tout en douceur.",
+   formats:[{label:'150g',p:5500},{label:'300g',p:10000}],
+   detail:"Le Kojic Beauty Bar associe la douceur d'une base lavante douce à un complexe d'actifs éclaircissants et apaisants soigneusement dosés. Il nettoie la peau efficacement sans la décaper, tout en laissant une sensation de confort.",
+   actives:[
+     "Le Kojic aide à réduire visiblement les taches pigmentaires et raviver l'éclat du teint.",
+     "L'extrait de papaye apporte une exfoliation enzymatique douce.",
+     "La réglisse unifie le teint et calme les irrégularités.",
+     "Le panthénol renforce le confort cutané."],
+   results:[
+     "Teint plus lumineux et uniforme",
+     "Taches progressivement atténuées",
+     "Peau plus lisse et douce",
+     "Nettoyage efficace mais non agressif",
+     "Confort immédiat après usage"],
+   ingredients:"Glycerin, Aqua, Sodium Stearate, Sorbitol, Sodium Laurate, Propylene Glycol, Goat Milk Powder, Kojic Dipalmitate, Caprylic/Capric Triglyceride, Carica Papaya Fruit Extract, Panthenol, Glycyrrhiza Glabra Root Extract, Sodium Chloride, Stearic Acid, Lauric Acid, Titanium Dioxide, Tetrasodium EDTA, Etidronic Acid."},
   // CAPILLAIRES
   {f:'capillaires',s:'shampoing',n:'Shampoing Nutrition Karité',p:6500,c:['secheresse'],
    d:"Lave en douceur et nourrit les cheveux secs et ternes."},
