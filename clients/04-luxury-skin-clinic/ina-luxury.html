@@ -913,6 +913,20 @@ function renderGrid(){
       setTimeout(()=>c.classList.add('in'),reduceMotion?0:Math.min(i,16)*40));
   });
 }
+/* surligne les actifs clés dans une liste INCI */
+const INCI_KEYS=['Niacinamide','Retinol','Tretinoin','Benzoyl Peroxide','Azelaic Acid',
+  'Salicylic Acid','Mandelic Acid','Lactic Acid','Glycolic Acid','Gluconolactone',
+  'Alpha-Arbutin','Tranexamic Acid','Sodium Hyaluronate','Hydrolyzed Hyaluronic Acid',
+  'Squalane','Ceramide NP','Panthenol','Allantoin','Centella Asiatica Extract',
+  'Aloe Barbadensis Leaf Juice','Camellia Sinensis Leaf Extract','Glycyrrhiza Glabra Root Extract',
+  'Resveratrol','Tocopherol','Bisabolol','Cysteamine Hydrochloride','Zinc PCA','Zinc Oxide',
+  'Sodium Ascorbyl Phosphate','Calamine','Sulfur','Melaleuca Alternifolia Leaf Oil',
+  'Avena Sativa','Urea','Clindamycin','Methylsulfonylmethane'];
+function hiInci(s){
+  let out=s;
+  INCI_KEYS.forEach(k=>{out=out.split(k).join('<b class="inci-key">'+k+'</b>');});
+  return out;
+}
 function productCard(p,i){
   const fam=FAMILIES.find(x=>x.key===p.f);
   const sc=SUBCATS[p.f].find(x=>x.key===p.s);
@@ -925,14 +939,23 @@ function productCard(p,i){
   if(p.stock===0)stock='<span class="stock-flag out">Rupture</span>';
   else if(typeof p.stock==='number'&&p.stock<5)stock=`<span class="stock-flag low">Plus que ${p.stock}</span>`;
   const concerns=p.c.map(k=>`<button class="cc-badge" data-c="${k}">${CONCERNS[k]}</button>`).join('');
-  // détails
-  let det='';
-  if(p.plus)det+=`<div class="det-h">En savoir plus</div><p class="det-p">${p.plus}</p>`;
-  if(p.results)det+=`<div class="det-h">Résultats</div><div class="det-list">${
+  // résultats clés visibles sur la carte (3 max)
+  let visRes=[];
+  if(p.results)visRes=p.results.slice(0,3);
+  else if(p.steps)visRes=p.steps.slice(0,3).map(s=>s.d);
+  const resHtml=visRes.length?`<div class="card-results">${
+    visRes.map(r=>`<div class="res"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>${r}</span></div>`).join('')}</div>`:'';
+  // accordéon 1 — En savoir plus
+  let more='';
+  if(p.plus)more+=`<div class="det-h">Actifs clés</div><p class="det-p">${p.plus}</p>`;
+  if(p.results)more+=`<div class="det-h">Tous les résultats</div><div class="det-list">${
     p.results.map(r=>`<div class="det-li"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>${r}</span></div>`).join('')}</div>`;
-  if(p.steps)det+=`<div class="det-h">Résultats par étapes</div>${
+  if(p.steps)more+=`<div class="det-h">Résultats par étapes</div>${
     p.steps.map(s=>`<div class="det-step"><b>${s.t} —</b><span>${s.d}</span></div>`).join('')}`;
-  if(p.inci)det+=`<div class="det-h">Composition (INCI)</div><p class="det-inci">${p.inci}</p>`;
+  if(p.warn)more+=`<div class="det-h">Précautions</div><p class="det-p">${p.warn}</p>`;
+  // accordéon 2 — Ingrédients
+  const ingr=p.inci?`<div class="det-h">Composition complète (INCI)</div><p class="det-inci">${hiInci(p.inci)}</p>
+    <p class="det-p" style="margin-top:8px;font-size:.72rem;opacity:.7;">Les actifs clés sont surlignés en or.</p>`:'';
   const priceHtml=p.todo
     ?`<div class="card-price ask">Prix à définir</div>`
     :(p.p==null)
@@ -956,9 +979,12 @@ function productCard(p,i){
       ${p.size?`<div class="card-size">${p.size}</div>`:''}
       <p class="card-desc">${p.d}</p>
       <div class="card-concerns">${concerns}</div>
+      ${resHtml}
       ${p.warn?`<div class="card-warn"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span>${p.warn}</span></div>`:''}
-      ${det?`<button class="detail-toggle"><span>En savoir plus</span><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
-        <div class="detail-panel"><div class="detail-inner">${det}</div></div>`:''}
+      ${more?`<button class="detail-toggle"><span>En savoir plus</span><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="detail-panel"><div class="detail-inner">${more}</div></div>`:''}
+      ${ingr?`<button class="detail-toggle"><span>Ingrédients</span><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="detail-panel"><div class="detail-inner">${ingr}</div></div>`:''}
       <div class="card-bottom">
         <div class="card-foot">${priceHtml}${actionHtml}</div>
       </div>
@@ -966,15 +992,15 @@ function productCard(p,i){
   el.querySelectorAll('.cc-badge').forEach(b=>{
     b.addEventListener('click',()=>select(p.f,p.s,b.dataset.c));
   });
-  const tog=el.querySelector('.detail-toggle');
-  if(tog){
+  el.querySelectorAll('.detail-toggle').forEach(tog=>{
+    const baseLabel=tog.querySelector('span').textContent;
     tog.addEventListener('click',()=>{
       const panel=tog.nextElementSibling;
       const open=tog.classList.toggle('open');
       panel.style.maxHeight=open?panel.scrollHeight+'px':'0';
-      tog.querySelector('span').textContent=open?'Réduire':'En savoir plus';
+      tog.querySelector('span').textContent=open?'Réduire':baseLabel;
     });
-  }
+  });
   const addBtn=el.querySelector('[data-add]');
   if(addBtn)addBtn.addEventListener('click',()=>addToCart(p));
   return el;
@@ -1075,6 +1101,15 @@ render();
 #audio-btn,#audio-hint{display:none!important;}
 body{padding-bottom:84px;}
 .wg-txt{white-space:pre-line;}
+.card-results{display:flex;flex-direction:column;gap:6px;margin-top:11px;
+  padding-top:11px;border-top:1px solid rgba(201,168,76,.16);}
+.card-results .res{display:flex;align-items:flex-start;gap:8px;font-size:.79rem;
+  line-height:1.45;color:#c9bfa6;}
+.card-results .res svg{width:14px;height:14px;flex-shrink:0;margin-top:1px;
+  stroke:#d8c074;fill:none;stroke-width:2.6;}
+.card-results .res b{color:#ead9a6;font-weight:600;}
+.detail-toggle+.detail-toggle,.detail-panel+.detail-toggle{margin-top:8px;}
+.inci-key{color:#e3cd86;font-weight:600;}
 .lc-social{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);
   display:flex;gap:13px;z-index:500;}
 .lc-social a{position:relative;width:46px;height:46px;border-radius:50%;

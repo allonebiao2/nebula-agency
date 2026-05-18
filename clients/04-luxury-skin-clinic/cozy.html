@@ -556,12 +556,22 @@ function render(){
       setTimeout(()=>c.classList.add('in'),reduceMotion?0:i*60));
   });
 }
+/* surligne les actifs clés dans une liste INCI */
+const INCI_KEYS=['Phenylethyl Resorcinol','Kigelia Africana Extract','Trigonella Foenum-Graecum Extract',
+  'Serenoa Serrulata Extract','Butyrospermum Parkii Butter','Prunus Amygdalus Dulcis Oil',
+  'Ceramide NP','Panthenol','Allantoin','Niacinamide','Squalane','Urea','Arginine',
+  'Aloe Barbadensis Leaf Juice','Helianthus Annuus Seed Oil','Tocopherol'];
+function hiInci(s){
+  let out=s;
+  INCI_KEYS.forEach(k=>{out=out.split(k).join('<b class="inci-key">'+k+'</b>');});
+  return out;
+}
 function card(p){
   const el=document.createElement('article');el.className='card anim';
   const concerns=(p.c||[]).map(x=>`<span class="cc-badge">${x}</span>`).join('');
-  let det='';
-  if(p.plus)det+=`<div class="det-h">Actifs clés</div><p class="det-p">${p.plus}</p>`;
-  if(p.inci)det+=`<div class="det-h">Composition (INCI)</div><p class="det-inci">${p.inci}</p>`;
+  let more='';
+  if(p.plus)more+=`<div class="det-h">Actifs clés</div><p class="det-p">${p.plus}</p>`;
+  const ingr=p.inci?`<div class="det-h">Composition complète (INCI)</div><p class="det-inci">${hiInci(p.inci)}</p>`:'';
   el.innerHTML=`
     <div class="card-photo">
       ${IMG[p.n]
@@ -579,8 +589,10 @@ function card(p){
       <p class="card-desc">${p.d}</p>
       ${concerns?`<div class="card-concerns">${concerns}</div>`:''}
       ${p.important?`<div class="card-warn"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span><b>Important</b>${p.important}</span></div>`:''}
-      ${det?`<button class="detail-toggle"><span>En savoir plus</span><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
-        <div class="detail-panel"><div class="detail-inner">${det}</div></div>`:''}
+      ${more?`<button class="detail-toggle"><span>En savoir plus</span><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="detail-panel"><div class="detail-inner">${more}</div></div>`:''}
+      ${ingr?`<button class="detail-toggle"><span>Ingrédients</span><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="detail-panel"><div class="detail-inner">${ingr}</div></div>`:''}
       <div class="card-bottom">
         <div class="card-foot">
           ${p.todo
@@ -592,13 +604,16 @@ function card(p){
         </div>
       </div>
     </div>`;
-  const tog=el.querySelector('.detail-toggle');
-  if(tog)tog.addEventListener('click',()=>{
-    const panel=tog.nextElementSibling;const open=tog.classList.toggle('open');
-    panel.style.maxHeight=open?panel.scrollHeight+'px':'0';
-    tog.querySelector('span').textContent=open?'Réduire':'En savoir plus';
+  el.querySelectorAll('.detail-toggle').forEach(tog=>{
+    const baseLabel=tog.querySelector('span').textContent;
+    tog.addEventListener('click',()=>{
+      const panel=tog.nextElementSibling;const open=tog.classList.toggle('open');
+      panel.style.maxHeight=open?panel.scrollHeight+'px':'0';
+      tog.querySelector('span').textContent=open?'Réduire':baseLabel;
+    });
   });
-  el.querySelector('[data-add]').addEventListener('click',()=>addToCart(p));
+  const ab=el.querySelector('[data-add]');
+  if(ab)ab.addEventListener('click',()=>addToCart(p));
   return el;
 }
 
@@ -683,6 +698,8 @@ render();
 #audio-btn,#audio-hint{display:none!important;}
 body{padding-bottom:84px;}
 .wg-txt{white-space:pre-line;}
+.detail-toggle+.detail-toggle,.detail-panel+.detail-toggle{margin-top:8px;}
+.inci-key{color:#c98aa0;font-weight:600;}
 .lc-social{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);
   display:flex;gap:13px;z-index:500;}
 .lc-social a{position:relative;width:46px;height:46px;border-radius:50%;
