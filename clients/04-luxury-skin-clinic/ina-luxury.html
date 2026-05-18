@@ -510,7 +510,7 @@ const FAMILIES=[
    tint:'linear-gradient(155deg,#2a2018,#3a2a22 55%,#1a1410)'},
   {key:'corps',label:'Corps',desc:'Beauty bars, crèmes, gommages et huiles pour le corps.',
    tint:'linear-gradient(155deg,#2a2218,#3a3020 55%,#1a160e)'},
-  {key:'capillaires',label:'Capillaires',desc:'Shampoings, sérums, huiles et masques cheveux.',
+  {key:'capillaires',label:'Capillaires',desc:'Shampoings, après-shampoings, masques, sérums, huiles et beurres cheveux.',
    tint:'linear-gradient(155deg,#241e16,#332a1e 55%,#15110c)'},
   {key:'enfant',label:'Enfant (0-16 ans)',desc:'Soins doux et haute tolérance pour la peau des enfants.',
    tint:'linear-gradient(155deg,#241f1a,#34302a 55%,#16120e)'},
@@ -531,9 +531,9 @@ const SUBCATS={
   capillaires:[
     {key:'shampoing',label:'Shampoing'},
     {key:'apres-shampoing',label:'Après-shampoing'},
-    {key:'serum',label:'Sérum'},
-    {key:'huile',label:'Huile'},
     {key:'masque',label:'Masque'},
+    {key:'serum',label:'Sérum'},
+    {key:'huile-beurre',label:'Huile / Beurre'},
   ],
   enfant:[
     {key:'gel-lavant',label:'Gel Lavant'},
@@ -731,7 +731,9 @@ const state={family:null,subcat:null,concern:null};
     else{caret.style.display='none';
       setTimeout(()=>gate.classList.add('gone'),reduceMotion?300:1400);}
   }
+  gate.addEventListener('click',()=>{caret.style.display='none';gate.classList.add('gone');});
   addEventListener('load',()=>setTimeout(type,reduceMotion?100:520));
+  if(document.readyState==='complete')setTimeout(type,reduceMotion?100:520);
 })();
 
 /* ===== HELPERS WHATSAPP ===== */
@@ -821,8 +823,8 @@ function renderHead(){
   if(!state.family){
     mainHead.innerHTML=`<div class="eyebrow">La Collection</div>
       <h1>L'art du soin, sublimé</h1>
-      <p class="lead">Explorez nos quatre univers de beauté. Chaque formule est pensée pour révéler
-      le meilleur de votre peau, de vos cheveux et du bien-être des plus jeunes.</p>`;
+      <p class="lead">Toute la collection est présentée ci-dessous. Affinez par catégorie
+      dans le menu, ou par préoccupation, pour trouver le soin fait pour vous.</p>`;
   }else{
     const f=FAMILIES.find(x=>x.key===state.family);
     let title=f.label,eyebrow='Univers';
@@ -874,12 +876,10 @@ function renderFamCards(){
   famCardsWrap.innerHTML='';famCardsWrap.appendChild(wrap);
 }
 function renderGrid(){
-  if(!state.family){
-    renderFamCards();gridMeta.hidden=true;grid.innerHTML='';return;
-  }
-  famCardsWrap.innerHTML='';
   let list=poolBeforeConcern();
   if(state.concern)list=list.filter(p=>p.c.includes(state.concern));
+  if(!state.family)renderFamCards();
+  else famCardsWrap.innerHTML='';
   gridMeta.hidden=false;
   count.innerHTML=`<b>${list.length}</b> produit${list.length>1?'s':''}`;
   grid.innerHTML='';
@@ -891,7 +891,7 @@ function renderGrid(){
   list.forEach((p,i)=>grid.appendChild(productCard(p,i)));
   requestAnimationFrame(()=>{
     grid.querySelectorAll('.card-anim').forEach((c,i)=>
-      setTimeout(()=>c.classList.add('in'),reduceMotion?0:i*55));
+      setTimeout(()=>c.classList.add('in'),reduceMotion?0:Math.min(i,16)*40));
   });
 }
 function productCard(p,i){

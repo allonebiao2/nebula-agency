@@ -29,7 +29,7 @@
 Catégorie → Sous-catégorie → Préoccupation → Produits. Panier multi-produits.
 - **Visage** : Gel Nettoyants · Sérums · Crèmes · Masques
 - **Corps** : Beauty Bar · Crème corps · Gommage · Huile corps
-- **Capillaires** : Shampoing · Après-shampoing · Sérum · Huile · Masque
+- **Capillaires** : Shampoing · Après-shampoing · Masque · Sérum · Huile / Beurre
 - **Enfant (0-16 ans)** : Gel Lavant · Crème Hydratante · Crème Apaisante · Crème Lavante
 - **24 produits réels** intégrés (fiches complètes : desc, actifs, résultats, INCI, avertissements).
 - Sous-catégories sans produit (Corps : Beauty Bar/Crème corps/Huile corps ;
@@ -108,6 +108,8 @@ Panier multi-produits. Avertissement spécifique sur la Maca Cream (résultats p
   externe, contraire à la règle « zéro CDN »).
 - 2026-05-18 — Contenus non fournis (« le document ») rédigés en versions pro par défaut,
   marqués « à valider ».
+- 2026-05-18 — Capillaires : sous-catégories fixées à 5 (Shampoing · Après-shampoing ·
+  Masque · Sérum · Huile / Beurre). Dossier assets `huile` renommé `huile-beurre`.
 
 ## Liens
 
