@@ -1,163 +1,116 @@
-# CONTEXT — LUXURY SKIN CLINIC (Ahouangnimon Gloria)
+# CONTEXT — LUXURY CLUB 229 (Ahouangnimon Gloria)
+
+> Dossier client : `clients/04-luxury-skin-clinic/`
+> Nom officiel du projet : **LUXURY CLUB 229** (anciennement « Luxury Skin Clinic »,
+> qui est désormais le nom de l'une des 3 marques).
 
 ## Identité
 
-- **Nom du client** : Ahouangnimon Gloria
-- **Marque principale** : LUXURY SKIN CLINIC
-- **Secteur** : Cosmétique, soins de la peau, institut de beauté
+- **Nom du projet** : LUXURY CLUB 229
+- **Cliente** : Ahouangnimon Gloria
+- **Secteur** : clinique esthétique de luxe, cosmétiques, bien-être
 - **Ville** : Cotonou, Bénin
-- **WhatsApp** : 0167975626 ⚠️ INTOUCHABLE
-- **Cible** : Clientèle beauté & bien-être premium en Afrique de l'Ouest
+- **WhatsApp** : +229 0167975626 ⚠️ INTOUCHABLE (`2290167975626`)
+- **Spécialiste institut** : Mme Sabrina, esthéticienne diplômée
+- **Palette** : Blanc nacré · Or `#C9A84C` · Noir profond `#0a0a0a`
 
-## Brief
+## Structure du projet — hub + 3 marques
 
-Projet multi-marques composé de **4 pages HTML distinctes** :
+| Fichier | Rôle | Design |
+|---|---|---|
+| `index.html` | Hub LUXURY CLUB 229 | Noir & or, luxe |
+| `ina-luxury.html` | Catalogue cosmétiques & capillaires | Noir & or |
+| `luxury-skin-clinic.html` | Soins & prestations en institut | Blanc clinique + or + menthe |
+| `cozy.html` | Hygiène intime & bien-être | Rose poudré + or + blanc |
 
-1. **index.html** — page d'accueil centrale (hub)
-   - 3 cards flottantes vers chaque marque
-   - Liens Instagram et TikTok
-   - Particules dorées + musique spa douce
-   - Son cristal + zoom cinématique au clic
+## Architecture des 3 marques (brief v2 — 2026-05-18)
 
-2. **ina-luxury.html** — catalogue produits cosmétiques et capillaires
-   - Navigation : Visage / Corps / Capillaires
-   - Sous-catégories par type de soin
-   - Filtres par préoccupation cliquables
-   - Fil d'Ariane retour niveau par niveau
-
-3. **luxury-skin-clinic.html** — soins et prestations de l'institut
-   - Navigation par type de soin
-   - Filtres par préoccupation
-   - Galerie photos + vidéo de présentation
-
-4. **cozy.html** — hygiène intime et autres produits COZY
-   - Catalogue produits COZY
-   - Navigation par catégorie
-
-## Architecture confirmée par la cliente (2026-05-17)
-
-Architecture EXACTE des 3 marques, validée par Gloria. Elle pilote la navigation
-de chaque page et l'arborescence `assets/images/`.
-
-### MARQUE 1 — INA LUXURY (`ina-luxury.html`)
-Produits cosmétiques et capillaires. Menu accordéon à 3 niveaux :
-Catégorie → Sous-catégorie → filtres par préoccupation.
-
-- **Visage** : Démaquillants · Gel nettoyants · Sérums · Crèmes · Masque
-- **Corps** : Beauty bar · Crème corps · Gommage · Huile corps
+### INA Luxury — catalogue, navigation 4 niveaux
+Catégorie → Sous-catégorie → Préoccupation → Produits. Panier multi-produits.
+- **Visage** : Gel Nettoyants · Sérums · Crèmes · Masques
+- **Corps** : Beauty Bar · Crème corps · Gommage · Huile corps
 - **Capillaires** : Shampoing · Après-shampoing · Sérum · Huile · Masque
+- **Enfant (0-16 ans)** : Gel Lavant · Crème Hydratante · Crème Apaisante · Crème Lavante
+- **24 produits réels** intégrés (fiches complètes : desc, actifs, résultats, INCI, avertissements).
+- Sous-catégories sans produit (Corps : Beauty Bar/Crème corps/Huile corps ;
+  toute la catégorie Capillaires) → état « Bientôt disponible ».
 
-### MARQUE 2 — LUXURY SKIN CLINIC (`luxury-skin-clinic.html`)
-Soins et prestations en institut. Navigation = liste des 6 prestations
-(barre de pastilles qui défile vers chaque prestation).
+### Luxury Skin Clinic — 11 soins & prestations
+Design clinique distinct. Soins groupés Visage / Corps / Capillaires / Soin complet.
+- Consultation Peau gratuite + Suivi · Soin Oxygène · Soin Glass Skin · Luxury Peel ·
+  Gommage Luxury · Luxury Massage · Diagnostic Capillaire · Hair Spa ·
+  Soin Activateur de Pousse · Soin Complet VIP.
+- Règlement clinique obligatoire (modal « J'AI COMPRIS ✓ ») avant toute réservation.
+- Alerte RDV 24h sur chaque soin · acompte 5 000 F · badges « Réalisé par Mme Sabrina ».
+- 2 questionnaires intégrés (Consultation Peau, Diagnostic Capillaire) → envoi WhatsApp.
 
-- Soin Oxygène · Soin Glass Skin · Peelings · Massage Luxury ·
-  Gommage Luxury · Soin Complet VIP
+### Cozy — 6 produits
+Design rose poudré sensuel. Filtres par catégorie (Intime / Corps / Bien-être).
+Panier multi-produits. Avertissement spécifique sur la Maca Cream (résultats progressifs).
 
-### MARQUE 3 — COZY (`cozy.html`)
-Hygiène intime et bien-être. Navigation = 3 catégories produits.
+## Fonctionnalités transverses
 
-- Gel nettoyant intime · Huile intime · Crème parfumée
+- **Panier multi-produits** sur INA Luxury et Cozy (persistant via localStorage,
+  total auto, commande groupée WhatsApp).
+- **Préoccupations** affichées en badges sur chaque carte (cliquables pour filtrer sur INA Luxury).
+- **Guidance** : encarts « consultation gratuite », « contacter Mme Sabrina », badges Bestseller.
+- **Gestion de stock** : code prêt (badges « Plus que X » / « Rupture ») — tout en stock pour l'instant.
+- **Audio** : ambiance douce générée via Web Audio API (règle NEBULA zéro CDN externe).
+- Écran d'accueil animé par marque (texte d'accueil typé) · curseur personnalisé · hub :
+  3 cards sur la même ligne en mobile, son cristal + zoom à l'entrée.
 
-### Arborescence `assets/images/`
-```
-logo/  ·  galerie/  ·  hub/
-ina-luxury/visage/{demaquillants,gel-nettoyants,serums,cremes,masque}
-ina-luxury/corps/{beauty-bar,creme-corps,gommage,huile-corps}
-ina-luxury/capillaires/{shampoing,apres-shampoing,serum,huile,masque}
-luxury-skin-clinic/{soin-oxygene,soin-glass-skin,peelings,
-                    massage-luxury,gommage-luxury,soin-complet-vip}
-cozy/{gel-nettoyant-intime,huile-intime,creme-parfumee}
-```
+## Détail des contenus
 
-## Ton et univers
-
-- **Style visuel** : luxe, élégance, premium, raffiné
-- **Palette** : Blanc • Or • Noir
-- **Typographie** : à définir (esprit haute couture / institut de beauté premium)
-
-## Expérience utilisateur attendue
-
-- Son cristal au touché de chaque carte
-- Zoom cinématique à l'entrée dans chaque marque
-- Cards marques flottantes avec lévitation douce
-- Curseur personnalisé doré
-- Particules dorées qui tombent en fond
-- Phrase d'accueil qui s'écrit lettre par lettre
-- Musique spa douce (bouton mute visible)
-- Fil d'Ariane cliquable à chaque niveau
-- Bouton retour sans ressortir entièrement
-- Vidéo de présentation dans la galerie (clic pour lire)
-- Badge Bestseller animé sur les produits phares
-
-## Contenu fourni
-
-- [ ] Textes (descriptions produits, soins, prestations)
-- [ ] Photos / visuels produits (à encoder en base64)
-- [ ] Logos des 3 marques (INA LUXURY, LUXURY SKIN CLINIC, COZY)
-- [ ] Vidéo de présentation
-- [ ] Coordonnées / horaires / réseaux (Instagram, TikTok)
+- Liste complète produits / soins / prix : voir `assets/docs/gloria-infos.md`.
+- Données sources : tableaux `PRODUCTS` / `SERVICES` dans chaque fichier HTML.
 
 ## Contraintes
 
-- **Deadline** : à définir
-- **Budget** : 100 000 FCFA setup + 10 000 FCFA/mois
-  (hébergement + sécurité + modifications illimitées 24h/24)
-- **Hébergement** : Netlify
-- **Technique** : HTML pur, CSS inline, zéro framework
-- **Images** : toujours en base64, jamais de CDN externe
-- WhatsApp de Gloria (`0167975626`) : **ne jamais modifier sans confirmation**
+- **Budget** : 100 000 FCFA setup + 10 000 FCFA/mois.
+- **Hébergement** : Netlify (`index.html` = page d'accueil).
+- **Technique** : HTML pur, CSS inline, JS vanilla, zéro framework, zéro CDN externe.
+- **Images** : base64 — actuellement placeholders dégradés élégants.
+- WhatsApp de Gloria : ne jamais modifier sans confirmation.
 
 ## État d'avancement
 
-- [x] Brief reçu
-- [ ] Brief validé
-- [x] Structure dossiers créée
-- [ ] Assets collectés
-- [x] Maquette / direction artistique (framework v1)
-- [x] HTML/CSS — index.html / hub (framework, contenu démo)
-- [x] HTML/CSS — ina-luxury.html (framework, contenu démo)
-- [x] HTML/CSS — luxury-skin-clinic.html (framework, contenu démo)
-- [x] HTML/CSS — cozy.html (framework, contenu démo)
-- [x] Architecture confirmée des 3 marques intégrée (navigation + dossiers)
-- [ ] Contenu réel intégré (textes + photos base64 de la cliente)
+- [x] Brief v2 reçu et intégré
+- [x] index.html — hub Luxury Club 229
+- [x] ina-luxury.html — 24 produits, nav 4 niveaux, panier
+- [x] luxury-skin-clinic.html — 11 soins, design clinique, règlement, formulaires
+- [x] cozy.html — 6 produits, design rose, panier
+- [ ] Logos réels des marques
+- [ ] Photos produits en base64 (placeholders pour l'instant)
+- [ ] Liens Instagram / TikTok réels
+- [ ] Validation des 4 contenus rédigés par défaut (voir ci-dessous)
 - [ ] Responsive testé sur appareils réels
 - [ ] Livré
 
+## À valider / remplacer avant livraison
+
+- **Contenus rédigés par défaut** (le brief renvoyait à « le document » non fourni) :
+  règlement clinique, questionnaire Consultation Peau, questionnaire Diagnostic
+  Capillaire, 8 étapes du Soin Glass Skin. → à valider avec Gloria.
+- Prix manquant : « Rose Hydra Crème » affichée « Prix sur demande ».
+- Logos, photos réelles, réseaux sociaux.
+
 ## Décisions importantes
 
-> Documenter au fur et à mesure les choix structurants.
-
-- 2026-05-16 — Projet structuré en 4 pages HTML distinctes (hub + 3 marques).
-- 2026-05-16 — Framework v1 construit avec contenu de démonstration premium
-  (noms de produits/soins plausibles, prix indicatifs). À remplacer par le contenu réel.
-- 2026-05-16 — Direction artistique : marbre noir animé, particules dorées, curseur doré,
-  typographie Cormorant Garamond (titres) + Jost (corps).
-- 2026-05-16 — Polices chargées via Google Fonts (seule ressource externe). Peut être
-  inlinée plus tard si besoin d'une autonomie totale.
-- 2026-05-16 — Sons générés par Web Audio API (son cristal + ambiance spa), zéro fichier externe.
-- 2026-05-16 — Vidéo de présentation : embed YouTube (VIDEO_ID à remplacer dans
-  luxury-skin-clinic.html).
-- 2026-05-17 — Architecture EXACTE des 3 marques confirmée par Gloria et intégrée :
-  navigation des 3 pages + arborescence `assets/images/` alignées (voir section
-  « Architecture confirmée »).
-- 2026-05-17 — INA LUXURY : carte produit enrichie activée (sélecteur de formats +
-  accordéons Description / Actifs / Résultats / Ingrédients) pour les Beauty bars.
-- 2026-05-17 — LUXURY SKIN CLINIC et COZY : filtres secondaires (préoccupation /
-  besoin) retirés — navigation simplifiée aux prestations / catégories confirmées.
-
-## À remplacer avant livraison
-
-- Logos réels des 3 marques (actuellement monogrammes dorés)
-- Photos produits/soins en base64 (actuellement placeholders dégradés élégants)
-- Liens Instagram et TikTok réels dans index.html (actuellement `#`)
-- VIDEO_ID de la vraie vidéo de présentation dans luxury-skin-clinic.html
-- Textes, prix et listes produits validés par Gloria
-- Photos avant/après réelles dans la galerie
+- 2026-05-16 — Projet structuré en hub + 3 marques (4 pages HTML).
+- 2026-05-17 — Architecture des sous-catégories des 3 marques confirmée et intégrée.
+- 2026-05-18 — Brief v2 : projet renommé **LUXURY CLUB 229** ; « Luxury Skin Clinic »
+  devient le nom de la marque institut.
+- 2026-05-18 — INA Luxury passe à 4 catégories (ajout Enfant 0-16 ans) et 24 produits réels.
+- 2026-05-18 — Ajout d'un système de panier multi-produits (INA Luxury + Cozy).
+- 2026-05-18 — Luxury Skin Clinic : design clinique distinct (blanc dominant), règlement
+  obligatoire avant réservation, questionnaires intégrés.
+- 2026-05-18 — Musique : ambiance Web Audio API retenue (le jazz nécessiterait un MP3
+  externe, contraire à la règle « zéro CDN »).
+- 2026-05-18 — Contenus non fournis (« le document ») rédigés en versions pro par défaut,
+  marqués « à valider ».
 
 ## Liens
 
-- Pages : `index.html` (hub), `ina-luxury.html`, `luxury-skin-clinic.html`, `cozy.html`
-- Assets : `assets/`
-- Infos client détaillées : `assets/docs/gloria-infos.md`
+- Pages : `index.html`, `ina-luxury.html`, `luxury-skin-clinic.html`, `cozy.html`
+- Assets : `assets/` · Infos client : `assets/docs/gloria-infos.md`
 - URL en ligne : —
