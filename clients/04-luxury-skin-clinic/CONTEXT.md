@@ -105,7 +105,15 @@ Photos produits réelles intégrées en base64 (8/8).
   - INA Luxury — Corps : Huile à la Rose · Visage : Crème au Lait de Chèvre
   - Cozy : Baume Pailleté (Nuit Scintillante) · Le Boost Fermeté
 - Image `CONSULTATION PEAU` classée dans `assets/images/clinic/` — non intégrée :
-  les fiches soin de la clinique n'ont pas d'emplacement photo (décision design à prendre).
+  les fiches soin de la clinique ont désormais une bannière visuelle SVG (voir ci-dessous),
+  mais pas d'emplacement photo réelle. Décision à prendre si on veut y mettre des photos.
+
+## Visuels des soins (Luxury Skin Clinic)
+
+Chaque fiche soin a une bannière illustrée : 4 visuels line-art dorés générés en SVG
+(Visage · Corps · Capillaires · Soin complet/VIP), inline dans `luxury-skin-clinic.html`.
+100 % libre de droit, zéro CDN, zéro fichier externe. Modifiables directement dans le
+code (objet `SVC_ART`). Voie B (vraies photos via `_inbox/`) reste possible plus tard.
 
 ## Décisions importantes
 

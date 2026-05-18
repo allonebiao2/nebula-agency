@@ -832,6 +832,14 @@ const ICONS={
   grid:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',
   star:'<path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1z"/>'
 };
+/* illustrations line-art dorées par catégorie de soin — générées en SVG,
+   100% libre de droit, zéro CDN, zéro fichier externe */
+const SVC_ART={
+visage:'<svg viewBox="0 0 208 100" fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="1.6"><path d="M104 26c19 0 30 14 30 31 0 16-13 27-30 27S74 73 74 57c0-17 11-31 30-31z" opacity=".55"/><path d="M104 15v-7M128 22l5-5M80 22l-5-5M140 45h7M61 45h-7" opacity=".7"/><path d="M104 47c6 7 10 12 10 18a10 10 0 0 1-20 0c0-6 4-11 10-18z" fill="#c9a84c" fill-opacity=".14"/></g><path d="M152 62l2.2 6 6 2.2-6 2.2-2.2 6-2.2-6-6-2.2 6-2.2z" stroke-width="1.2" fill="#c9a84c" fill-opacity=".45"/><path d="M58 70l1.6 4.4 4.4 1.6-4.4 1.6-1.6 4.4-1.6-4.4-4.4-1.6 4.4-1.6z" stroke-width="1.1" fill="#c9a84c" fill-opacity=".35"/></svg>',
+corps:'<svg viewBox="0 0 208 100" fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="1.5" opacity=".62"><path d="M36 38c26-14 52-14 68 0 16 14 42 14 68 0"/><path d="M36 52c26-14 52-14 68 0 16 14 42 14 68 0"/><path d="M36 66c26-14 52-14 68 0 16 14 42 14 68 0"/></g><path d="M104 86V52M104 70c-10-2-17-10-18-22 12 1 19 9 18 22zM104 70c10-2 17-10 18-22-12 1-19 9-18 22z" stroke-width="1.5" fill="#c9a84c" fill-opacity=".1"/><path d="M104 30l2 5.6 5.6 2-5.6 2-2 5.6-2-5.6-5.6-2 5.6-2z" stroke-width="1.2" fill="#c9a84c" fill-opacity=".45"/></svg>',
+capillaires:'<svg viewBox="0 0 208 100" fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="1.6" opacity=".72"><path d="M80 20c-11 16-11 31 0 46s10 21 3 28"/><path d="M94 17c-13 18-13 35 0 53s11 19 5 24"/><path d="M108 16c-13 19-13 38 0 57"/><path d="M122 17c13 18 13 35 0 53s-11 19-5 24"/><path d="M136 20c11 16 11 31 0 46s-10 21-3 28"/></g><path d="M108 88c1-10 7-17 16-19-1 11-7 17-16 19zM108 88c-1-10-7-17-16-19 1 11 7 17 16 19z" stroke-width="1.4" fill="#c9a84c" fill-opacity=".12"/></svg>',
+complet:'<svg viewBox="0 0 208 100" fill="none" stroke="#c9a84c" stroke-linecap="round" stroke-linejoin="round"><g stroke-width="1.7"><path d="M68 66h72l6-32-23 17-19-27-19 27-23-17z" fill="#c9a84c" fill-opacity=".1"/><path d="M68 72h72"/></g><g stroke-width="1.3"><circle cx="104" cy="22" r="3.4" fill="#c9a84c" fill-opacity=".4"/><circle cx="79" cy="49" r="2.8" fill="#c9a84c" fill-opacity=".4"/><circle cx="129" cy="49" r="2.8" fill="#c9a84c" fill-opacity=".4"/><path d="M156 28l2 5.6 5.6 2-5.6 2-2 5.6-2-5.6-5.6-2 5.6-2z" fill="#c9a84c" fill-opacity=".45"/><path d="M52 34l1.6 4.4 4.4 1.6-4.4 1.6-1.6 4.4-1.6-4.4-4.4-1.6 4.4-1.6z" fill="#c9a84c" fill-opacity=".35"/></g></svg>'
+};
 function svcCard(s,idx){
   const el=document.createElement('article');el.className='svc anim';
   const tier=s.tier?`<span class="svc-tier ${s.tierCls}">${s.tier}</span>`:'';
@@ -859,6 +867,7 @@ function svcCard(s,idx){
   else if(s.kind==='form-hair')btn=`<button class="svc-book ghost" data-form="hair"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Remplir le diagnostic</button>`;
   else btn=`<button class="svc-book" data-book="${idx}"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M8 2v4M16 2v4M3 9h18M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/></svg> Réserver ce soin</button>`;
   el.innerHTML=`
+    <div class="svc-visual">${SVC_ART[s.g]||''}</div>
     <div class="svc-top">${tier}
       <div class="svc-cat">${GROUPS.find(g=>g.key===s.g).label}</div>
       <h3>${s.n}</h3>${price}
@@ -1066,16 +1075,24 @@ body{padding-bottom:84px;}
 .lc-ripple{position:fixed;border-radius:50%;pointer-events:none;z-index:9999;
   transform:translate(-50%,-50%);
   background:radial-gradient(circle,rgba(201,168,76,.42),rgba(201,168,76,0) 70%);}
-.svc-card{transition:transform .55s cubic-bezier(.22,1,.36,1),box-shadow .55s;}
-.svc-card:hover{transform:translateY(-7px);
-  box-shadow:0 22px 46px -16px rgba(20,45,45,.26),0 0 0 1px rgba(201,168,76,.4);}
+.svc{transition:transform .55s cubic-bezier(.22,1,.36,1),box-shadow .55s,border-color .55s;}
+.svc:hover{box-shadow:0 22px 46px -16px rgba(20,45,45,.26),0 0 0 1px rgba(201,168,76,.4);}
 .svc-book{transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s;}
 .svc-book:hover{transform:translateY(-2px) scale(1.015);}
 .svc-rdv svg{animation:rdvPulse 2.4s ease-in-out infinite;}
 @keyframes rdvPulse{0%,100%{opacity:.45;}50%{opacity:1;}}
 .svc-by svg{animation:rdvPulse 3s ease-in-out infinite;}
-@media(prefers-reduced-motion:reduce){.svc-card:hover,.svc-book:hover{transform:none;}
-  .svc-rdv svg,.svc-by svg{animation:none;}}
+/* visuel illustré par catégorie de soin */
+.svc-visual{position:relative;height:124px;display:flex;align-items:center;
+  justify-content:center;overflow:hidden;border-bottom:1px solid var(--ligne);
+  background:linear-gradient(150deg,#fbf8f0,#f2efe5 55%,#ecf3ef);}
+.svc-visual::after{content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 72% 22%,rgba(201,168,76,.12),transparent 62%);}
+.svc-visual svg{position:relative;width:208px;height:100px;
+  transition:transform .6s cubic-bezier(.22,1,.36,1);}
+.svc:hover .svc-visual svg{transform:scale(1.045);}
+@media(prefers-reduced-motion:reduce){.svc-book:hover{transform:none;}
+  .svc-rdv svg,.svc-by svg{animation:none;}.svc:hover .svc-visual svg{transform:none;}}
 @media(prefers-reduced-motion:reduce){.lc-social a{animation:none;}.lc-eq i{animation:none!important;}}
 </style>
 <div class="lc-social" aria-label="Réseaux sociaux">
@@ -1198,7 +1215,7 @@ window.LCAudio={play:play,musicStart:musicStart,musicStop:musicStop,
 var lastHover=0;
 document.addEventListener('pointerover',function(e){
   if(!e.target.closest)return;
-  if(!e.target.closest('.card,.fam-card,.brand,.svc-card'))return;
+  if(!e.target.closest('.card,.fam-card,.brand,.svc'))return;
   var n=performance.now();if(n-lastHover<130)return;lastHover=n;
   play('hover');
 });
@@ -1218,7 +1235,7 @@ document.addEventListener('click',function(e){
 /* effet ripple doré au clic + rebond du compteur panier */
 document.addEventListener('click',function(e){
   if(!e.target.closest)return;
-  if(e.target.closest('.card,.fam-card,.brand,.svc-card')){
+  if(e.target.closest('.card,.fam-card,.brand,.svc')){
     var rp=document.createElement('span');rp.className='lc-ripple';
     rp.style.left=e.clientX+'px';rp.style.top=e.clientY+'px';
     document.body.appendChild(rp);
