@@ -1,6 +1,7 @@
 # Obsidian — état local de l'interface, à ne pas versionner
 .obsidian/workspace.json
 .obsidian/workspace-mobile.json
+.obsidian/graph.json
 
 # OS
 Thumbs.db
