@@ -36,9 +36,34 @@ Vague 1 traitée ici = les 3 priorités concrètes (audio, réseaux, textes).
 ## 3. Fichiers touchés
 `index.html`, `ina-luxury.html`, `cozy.html`, `luxury-skin-clinic.html`.
 
-## 4. Reste à faire (vague 2)
-- Correction 4 — descriptions produits enrichies + 2 accordéons (En savoir plus / Ingrédients)
-- Correction 5 — panneau catalogue latéral complet (architecture 3 marques)
-- Correction 6 — animations maximales (hover 3D, ripple, fly-to-cart, etc.)
-- Correction 7 — Luxury Skin Clinic style clinique renforcé
-- Correction 8 — audit mobile (3 cards hub, tap 44px, swipe)
+## 4. Vague 2 — faite
+
+### Correction 4 — Fiches produits enrichies
+- Résultats clés visibles sur la carte (3 max).
+- Deux accordéons distincts : « En savoir plus » et « Ingrédients ».
+- Actifs clés surlignés en or dans la liste INCI.
+- Bug corrigé : carte Cozy « todo » sans `data-add` (crash évité).
+
+### Correction 5 — Panneau catalogue 3 marques
+- Accordéon catalogue d'INA Luxury enrichi : compteurs de produits par
+  catégorie/sous-catégorie + sections « Luxury Skin Clinic » et « Cozy »
+  (liens sortants accordéon vers les autres pages).
+
+### Correction 6 — Animations
+- Hover cartes : élévation + ombre + liseré or/rose, zoom image.
+- Effet ripple doré au clic sur les cartes (toutes les pages).
+- Rebond du compteur panier à chaque ajout.
+- Pulse vert continu sur les CTA WhatsApp.
+
+### Correction 7 — Luxury Skin Clinic
+- Design clinique déjà conforme (blanc + or, badge Sabrina, protocoles, RDV).
+- Polish : pulse « timer » sur l'alerte RDV 24h, hover sur les boutons.
+
+### Correction 8 — Mobile
+- 3 cards hub sur même ligne : déjà OK (`flex-wrap:nowrap`).
+- Réseaux/mute : 44px (zone tap conforme).
+- Swipe vers la gauche pour fermer le catalogue ajouté.
+
+## 5. Méthode
+Travail en vagues testées (syntaxe JS validée à chaque étape). Audio testable :
+le son se débloque au 1er clic, la musique démarre, le bouton mute (bas droite) la coupe.

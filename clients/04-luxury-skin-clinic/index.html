@@ -577,6 +577,9 @@ body{padding-bottom:84px;}
   .lc-social a,.lc-mute{width:44px;height:44px;}
   .lc-mute{right:13px;bottom:13px;}
 }
+.lc-ripple{position:fixed;border-radius:50%;pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(circle,rgba(216,192,116,.5),rgba(216,192,116,0) 70%);}
 @media(prefers-reduced-motion:reduce){.lc-social a{animation:none;}.lc-eq i{animation:none!important;}}
 </style>
 <div class="lc-social" aria-label="Réseaux sociaux">
@@ -715,6 +718,22 @@ document.addEventListener('click',function(e){
   if(t.closest('#menuToggle,#cartBtn'))return play('menuOpen');
   if(t.closest('#cartClose,#menuReset,.cart-close,.modal-close'))return play('menuClose');
   if(t.closest('a,button'))return play('tap');
+});
+/* effet ripple doré au clic + rebond du compteur panier */
+document.addEventListener('click',function(e){
+  if(!e.target.closest)return;
+  if(e.target.closest('.card,.fam-card,.brand,.svc-card')){
+    var rp=document.createElement('span');rp.className='lc-ripple';
+    rp.style.left=e.clientX+'px';rp.style.top=e.clientY+'px';
+    document.body.appendChild(rp);
+    rp.animate([{width:'0px',height:'0px',opacity:.5},
+      {width:'300px',height:'300px',opacity:0}],
+      {duration:600,easing:'cubic-bezier(.22,1,.36,1)'}).onfinish=function(){rp.remove();};
+  }
+  if(e.target.closest('[data-add]')){
+    var cc=document.getElementById('cartCount');
+    if(cc){cc.classList.remove('bump');void cc.offsetWidth;cc.classList.add('bump');}
+  }
 });
 /* bouton mute + démarrage de la musique au 1er clic */
 var mute=document.getElementById('lcMute');

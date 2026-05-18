@@ -440,7 +440,7 @@ footer{position:relative;z-index:5;border-top:1px solid rgba(201,168,76,.14);
 
 <div class="layout">
   <aside class="menu" id="menu" aria-label="Menu du catalogue">
-    <div class="menu-head">Explorer le catalogue</div>
+    <div class="menu-head">Catalogue Luxury Club 229</div>
     <div id="accordion"></div>
     <button class="menu-reset" id="menuReset">↺ Tout afficher</button>
   </aside>
@@ -759,16 +759,38 @@ const state={family:null,subcat:null,concern:null};
 document.getElementById('helpWa').href=waLink("Bonjour Mme Sabrina, j'aimerais un conseil personnalisé pour mes soins INA Luxury.");
 
 /* ===== ACCORDÉON MENU ===== */
+/* architecture des 2 autres marques (liens sortants) */
+const CROSS_BRANDS=[
+  {label:'LUXURY SKIN CLINIC',href:'luxury-skin-clinic.html#soins',groups:[
+    {label:'Soins Visage',items:['Consultation Peau (gratuite)','Consultation — Suivi','Soin Oxygène','Soin Glass Skin','Luxury Peel']},
+    {label:'Soins Corps',items:['Gommage Luxury','Luxury Massage']},
+    {label:'Soins Capillaires',items:['Diagnostic Capillaire','Le Hair Spa','Activateur de Pousse']},
+    {label:'VIP',items:['Le Soin Complet VIP']},
+  ]},
+  {label:'COZY',href:'cozy.html',groups:[
+    {label:'Hygiène intime',items:['Gel Nettoyant Intime','Huile Intime']},
+    {label:'Soin du corps',items:['Crème Corps Night Kiss','Huile Éclat Suprême','Baume Pailleté']},
+    {label:'Bien-être',items:['Maca Cream','Crème Mains','Le Boost Fermeté']},
+  ]},
+];
+function subCount(f,s){return PRODUCTS.filter(p=>p.f===f&&p.s===s).length;}
 function buildAccordion(){
   accordion.innerHTML='';
+  /* ----- INA LUXURY : navigation dans la page ----- */
+  const inaHead=document.createElement('div');
+  inaHead.className='acc-brand-head on';inaHead.innerHTML='✦ INA LUXURY';
+  accordion.appendChild(inaHead);
   FAMILIES.forEach(fam=>{
     const wrap=document.createElement('div');wrap.className='acc-fam';wrap.dataset.fam=fam.key;
+    const total=PRODUCTS.filter(p=>p.f===fam.key).length;
     wrap.innerHTML=`<button class="acc-fam-btn"><span>${fam.label}</span>
+      <span class="acc-k">${total}</span>
       <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
       <div class="acc-sub"></div>`;
     const sub=wrap.querySelector('.acc-sub');
     SUBCATS[fam.key].forEach(sc=>{
-      const b=document.createElement('button');b.className='acc-sub-btn';b.textContent=sc.label;
+      const b=document.createElement('button');b.className='acc-sub-btn';
+      b.innerHTML=`<span>${sc.label}</span><span class="acc-k">${subCount(fam.key,sc.key)}</span>`;
       b.dataset.fam=fam.key;b.dataset.sub=sc.key;
       b.addEventListener('click',()=>{select(fam.key,sc.key,null);closeMenu();});
       sub.appendChild(b);
@@ -781,9 +803,31 @@ function buildAccordion(){
     });
     accordion.appendChild(wrap);
   });
+  /* ----- LUXURY SKIN CLINIC + COZY : liens sortants ----- */
+  CROSS_BRANDS.forEach(brand=>{
+    const head=document.createElement('div');
+    head.className='acc-brand-head';head.innerHTML='✦ '+brand.label;
+    accordion.appendChild(head);
+    brand.groups.forEach(g=>{
+      const wrap=document.createElement('div');wrap.className='acc-fam acc-fam-link';
+      wrap.innerHTML=`<button class="acc-fam-btn"><span>${g.label}</span>
+        <span class="acc-k">${g.items.length}</span>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="acc-sub"></div>`;
+      const sub=wrap.querySelector('.acc-sub');
+      g.items.forEach(it=>{
+        const a=document.createElement('a');a.className='acc-sub-btn acc-link';
+        a.href=brand.href;
+        a.innerHTML=`<span>${it}</span><svg class="acc-ext" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg>`;
+        sub.appendChild(a);
+      });
+      wrap.querySelector('.acc-fam-btn').addEventListener('click',()=>wrap.classList.toggle('open'));
+      accordion.appendChild(wrap);
+    });
+  });
 }
 function syncAccordion(){
-  document.querySelectorAll('.acc-fam').forEach(w=>{
+  document.querySelectorAll('.acc-fam[data-fam]').forEach(w=>{
     const on=w.dataset.fam===state.family;
     w.classList.toggle('open',on);
     w.querySelector('.acc-fam-btn').classList.toggle('active',on);
@@ -1110,6 +1154,22 @@ body{padding-bottom:84px;}
 .card-results .res b{color:#ead9a6;font-weight:600;}
 .detail-toggle+.detail-toggle,.detail-panel+.detail-toggle{margin-top:8px;}
 .inci-key{color:#e3cd86;font-weight:600;}
+.acc-brand-head{font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:#d8c074;font-weight:600;padding:15px 6px 8px;margin-top:8px;
+  border-top:1px solid rgba(201,168,76,.18);}
+.acc-brand-head:first-child{border-top:0;margin-top:0;padding-top:2px;}
+.acc-brand-head.on{color:#ead9a6;}
+.acc-k{margin-left:auto;font-size:10px;line-height:1;color:#cdbe93;
+  background:rgba(201,168,76,.13);border:1px solid rgba(201,168,76,.26);
+  border-radius:20px;padding:3px 8px;flex-shrink:0;}
+.acc-fam-btn{gap:7px;}
+.acc-fam-btn .acc-k{margin-right:5px;}
+.acc-sub-btn{display:flex!important;align-items:center;gap:8px;}
+.acc-sub-btn>span:first-child{flex:1;text-align:left;}
+.acc-link{text-decoration:none;}
+.acc-ext{width:12px;height:12px;stroke:#9c8f70;fill:none;stroke-width:2;
+  margin-left:auto;flex-shrink:0;transition:stroke .25s;}
+.acc-link:hover .acc-ext{stroke:#e3cd86;}
 .lc-social{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);
   display:flex;gap:13px;z-index:500;}
 .lc-social a{position:relative;width:46px;height:46px;border-radius:50%;
@@ -1159,6 +1219,21 @@ body{padding-bottom:84px;}
   .lc-social a,.lc-mute{width:44px;height:44px;}
   .lc-mute{right:13px;bottom:13px;}
 }
+.lc-ripple{position:fixed;border-radius:50%;pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(circle,rgba(216,192,116,.5),rgba(216,192,116,0) 70%);}
+.cart-count.bump{animation:cartBump .55s cubic-bezier(.22,1,.36,1);}
+@keyframes cartBump{0%{transform:scale(1);}35%{transform:scale(1.55);}100%{transform:scale(1);}}
+.card{transition:transform .5s cubic-bezier(.22,1,.36,1),box-shadow .5s!important;}
+.card:hover{transform:translateY(-9px) scale(1.012);
+  box-shadow:0 24px 52px -14px rgba(0,0,0,.66),0 0 0 1px rgba(201,168,76,.55);}
+.fam-card{transition:transform .5s cubic-bezier(.22,1,.36,1),box-shadow .5s;}
+.fam-card:hover{transform:translateY(-7px);}
+.btn-add.wa,.cart-wa{animation:waPulse 2.3s ease-in-out infinite;}
+@keyframes waPulse{0%,100%{box-shadow:0 0 0 0 rgba(37,211,102,0);}
+  50%{box-shadow:0 0 0 5px rgba(37,211,102,.18);}}
+@media(prefers-reduced-motion:reduce){.card:hover,.fam-card:hover{transform:none;}
+  .btn-add.wa,.cart-wa,.cart-count.bump{animation:none;}}
 @media(prefers-reduced-motion:reduce){.lc-social a{animation:none;}.lc-eq i{animation:none!important;}}
 </style>
 <div class="lc-social" aria-label="Réseaux sociaux">
@@ -1298,6 +1373,36 @@ document.addEventListener('click',function(e){
   if(t.closest('#cartClose,#menuReset,.cart-close,.modal-close'))return play('menuClose');
   if(t.closest('a,button'))return play('tap');
 });
+/* effet ripple doré au clic + rebond du compteur panier */
+document.addEventListener('click',function(e){
+  if(!e.target.closest)return;
+  if(e.target.closest('.card,.fam-card,.brand,.svc-card')){
+    var rp=document.createElement('span');rp.className='lc-ripple';
+    rp.style.left=e.clientX+'px';rp.style.top=e.clientY+'px';
+    document.body.appendChild(rp);
+    rp.animate([{width:'0px',height:'0px',opacity:.5},
+      {width:'300px',height:'300px',opacity:0}],
+      {duration:600,easing:'cubic-bezier(.22,1,.36,1)'}).onfinish=function(){rp.remove();};
+  }
+  if(e.target.closest('[data-add]')){
+    var cc=document.getElementById('cartCount');
+    if(cc){cc.classList.remove('bump');void cc.offsetWidth;cc.classList.add('bump');}
+  }
+});
+/* swipe vers la gauche pour fermer le catalogue (mobile) */
+(function(){
+  var menu=document.getElementById('menu');if(!menu)return;
+  var x0=null;
+  menu.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;},{passive:true});
+  menu.addEventListener('touchmove',function(e){
+    if(x0===null)return;
+    if(x0-e.touches[0].clientX>60){
+      if(typeof closeMenu==='function')closeMenu();
+      x0=null;
+    }
+  },{passive:true});
+  menu.addEventListener('touchend',function(){x0=null;},{passive:true});
+})();
 /* bouton mute + démarrage de la musique au 1er clic */
 var mute=document.getElementById('lcMute');
 if(mute){

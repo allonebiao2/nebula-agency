@@ -1063,6 +1063,19 @@ body{padding-bottom:84px;}
   .lc-social a,.lc-mute{width:44px;height:44px;}
   .lc-mute{right:13px;bottom:13px;}
 }
+.lc-ripple{position:fixed;border-radius:50%;pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(circle,rgba(201,168,76,.42),rgba(201,168,76,0) 70%);}
+.svc-card{transition:transform .55s cubic-bezier(.22,1,.36,1),box-shadow .55s;}
+.svc-card:hover{transform:translateY(-7px);
+  box-shadow:0 22px 46px -16px rgba(20,45,45,.26),0 0 0 1px rgba(201,168,76,.4);}
+.svc-book{transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s;}
+.svc-book:hover{transform:translateY(-2px) scale(1.015);}
+.svc-rdv svg{animation:rdvPulse 2.4s ease-in-out infinite;}
+@keyframes rdvPulse{0%,100%{opacity:.45;}50%{opacity:1;}}
+.svc-by svg{animation:rdvPulse 3s ease-in-out infinite;}
+@media(prefers-reduced-motion:reduce){.svc-card:hover,.svc-book:hover{transform:none;}
+  .svc-rdv svg,.svc-by svg{animation:none;}}
 @media(prefers-reduced-motion:reduce){.lc-social a{animation:none;}.lc-eq i{animation:none!important;}}
 </style>
 <div class="lc-social" aria-label="Réseaux sociaux">
@@ -1201,6 +1214,22 @@ document.addEventListener('click',function(e){
   if(t.closest('#menuToggle,#cartBtn'))return play('menuOpen');
   if(t.closest('#cartClose,#menuReset,.cart-close,.modal-close'))return play('menuClose');
   if(t.closest('a,button'))return play('tap');
+});
+/* effet ripple doré au clic + rebond du compteur panier */
+document.addEventListener('click',function(e){
+  if(!e.target.closest)return;
+  if(e.target.closest('.card,.fam-card,.brand,.svc-card')){
+    var rp=document.createElement('span');rp.className='lc-ripple';
+    rp.style.left=e.clientX+'px';rp.style.top=e.clientY+'px';
+    document.body.appendChild(rp);
+    rp.animate([{width:'0px',height:'0px',opacity:.5},
+      {width:'300px',height:'300px',opacity:0}],
+      {duration:600,easing:'cubic-bezier(.22,1,.36,1)'}).onfinish=function(){rp.remove();};
+  }
+  if(e.target.closest('[data-add]')){
+    var cc=document.getElementById('cartCount');
+    if(cc){cc.classList.remove('bump');void cc.offsetWidth;cc.classList.add('bump');}
+  }
 });
 /* bouton mute + démarrage de la musique au 1er clic */
 var mute=document.getElementById('lcMute');
