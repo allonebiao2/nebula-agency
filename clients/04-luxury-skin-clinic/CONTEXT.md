@@ -136,6 +136,31 @@ Photos produits réelles intégrées en base64 (8/8).
   avec compteurs ; animations (hover 3D, ripple doré, rebond panier, pulse WhatsApp) ;
   polish clinique ; audit mobile (swipe catalogue). v3 complète sur les 4 pages.
 
+## Paiement en ligne — FedaPay (en préparation)
+
+Objectif : permettre le paiement direct (Mobile Money / carte) sur les vitrines,
+en complément de la commande WhatsApp.
+
+- **Statut** : en attente de la vérification du compte FedaPay de Mongazi.
+- **Architecture retenue** (conforme `CLAUDE.md`) :
+  vitrine → webhook n8n (envoi du panier + montant) → n8n crée la transaction
+  FedaPay avec la clé secrète `sk_live_*` (serveur uniquement) → renvoie l'URL de
+  paiement FedaPay → la vitrine redirige le client vers la page sécurisée FedaPay.
+- La clé secrète ne touche jamais le HTML ; pas de SDK CDN dans la vitrine.
+- **À faire dès la vérification du compte** :
+  1. Créer un sous-compte FedaPay pour Gloria (dashboard FedaPay).
+  2. Construire le workflow n8n (création transaction → retour URL → webhook
+     de confirmation de paiement → notification WhatsApp).
+  3. Ajouter le bouton « Payer en ligne » dans le panier d'INA Luxury & Cozy
+     (à côté de « Commander sur WhatsApp »).
+  4. Tester un paiement réel de bout en bout avant mise en ligne.
+
+## Évolutions demandées (à planifier)
+
+- **Audit friction complet** (demandé le 2026-05-18, à faire plus tard) :
+  tunnel panier → WhatsApp + 2 questionnaires clinique + modal règlement
+  obligatoire avant réservation.
+
 ## Liens
 
 - Pages : `index.html`, `ina-luxury.html`, `luxury-skin-clinic.html`, `cozy.html`

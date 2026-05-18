@@ -104,4 +104,24 @@
 
 ---
 
+## 2026-05-18 — Intégration FedaPay sur les vitrines : via n8n, pas de SDK client
+
+- **Contexte** : ajouter le paiement direct (Mobile Money / carte) sur les vitrines
+  clients, en complément de la commande WhatsApp. Compte FedaPay en cours de
+  vérification.
+- **Décision** : la vitrine n'intègre **aucun SDK FedaPay ni script CDN**. Flux :
+  vitrine → webhook n8n → n8n crée la transaction FedaPay avec `sk_live_*`
+  (serveur) → renvoie l'URL de paiement → la vitrine redirige vers la page
+  sécurisée FedaPay.
+- **Raison** : la clé secrète `sk_live_*` ne doit jamais être côté client
+  (règle `CLAUDE.md`) ; éviter une dépendance CDN ; n8n est déjà le backend NEBULA.
+- **Alternatives écartées** : `checkout.js` de FedaPay (charge un script CDN +
+  expose la logique côté client) ; liens de paiement statiques (montant du panier
+  dynamique, incompatible).
+- **Conséquences** : intégration réelle bloquée jusqu'à la vérification du compte
+  (sous-compte client + workflow n8n + test d'un paiement réel). Préparation
+  documentée dans `clients/04-luxury-skin-clinic/CONTEXT.md`.
+
+---
+
 <!-- Ajouter les nouvelles décisions au-dessus -->
