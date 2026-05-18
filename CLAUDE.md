@@ -85,6 +85,19 @@
 - Quand on change de méthode de travail : mettre à jour _memoire/evolution/methodes.md
 - Cette mémoire sert à la fois dans GitHub ET Obsidian
 
+## RÈGLE AUTOMATIQUE — MÉMOIRE ET DISPATCH
+Après CHAQUE modification importante ou grande avancée :
+1. Créer ou mettre à jour le fichier `_memoire/conversations/[date]-[sujet].md`
+2. Dispatcher les infos aux bons fichiers :
+   - Nouveau produit → CONTEXT.md du client concerné
+   - Nouvelle technique → _memoire/apprentissages/
+   - Décision prise → _memoire/decisions.md
+   - Modification vitrine → CONTEXT.md du client
+3. Demander à Mongazi : « Voulez-vous que je sauvegarde cette avancée en mémoire ? »
+4. Attendre la confirmation puis commit + push
+
+Ne jamais terminer une session importante sans proposer la sauvegarde mémoire.
+
 ## Commandes rapides
 - "nouveau client [nom]" → créer dossier + CONTEXT.md
 - "checklist [client]" → vérifier avant livraison
