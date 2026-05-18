@@ -59,4 +59,49 @@
 
 ---
 
+## 2026-05-18 — Numéro WhatsApp : format Bénin 10 chiffres conservé
+
+- **Contexte** : un brief demandait de passer le numéro à `wa.me/22967975626`.
+- **Décision** : conserver `2290167975626` (229 + 01 67 97 56 26) sur toutes les pages.
+- **Raison** : `22967975626` est l'ancien format béninois à 8 chiffres, abandonné
+  depuis le passage du Bénin à la numérotation 10 chiffres (préfixe `01`) en 2023 ;
+  il risque de ne plus router vers WhatsApp. Confirmé avec Mongazi.
+- **Alternatives écartées** : appliquer le numéro du brief tel quel (risque de casser
+  tout le tunnel de contact client).
+- **Conséquences** : règle « lien WhatsApp = confirmation obligatoire » respectée ;
+  toujours vérifier le format 10 chiffres pour les futurs clients.
+
+---
+
+## 2026-05-18 — Architecture audio des vitrines (Web Audio API + délégation)
+
+- **Contexte** : l'ancien audio par page ne fonctionnait pas de façon fiable.
+- **Décision** : module unifié `LCAudio` (Web Audio API pure, zéro fichier externe) :
+  sons générés par oscillateurs, musique d'ambiance jazz générative, déblocage de
+  l'`AudioContext` au 1er geste utilisateur, câblage des effets par **délégation
+  d'événements** sur `document`.
+- **Raison** : zéro CDN (règle NEBULA), un seul bloc réutilisable sur les 4 pages,
+  la délégation évite de modifier chaque écouteur existant.
+- **Alternatives écartées** : MP3 base64 (lourd), librairie audio externe (CDN interdit),
+  brancher l'audio écouteur par écouteur (fragile, verbeux).
+- **Conséquences** : pour ajouter un son, étendre l'objet `SFX` ; l'ancien bouton
+  audio est masqué en CSS (code inerte conservé pour robustesse).
+
+---
+
+## 2026-05-18 — Catalogue 3 marques : enrichir le menu existant
+
+- **Contexte** : un brief demandait un panneau catalogue latéral montrant
+  l'architecture des 3 marques sur `ina-luxury.html`.
+- **Décision** : enrichir le menu accordéon **déjà en place** (compteurs de produits +
+  sections Luxury Skin Clinic et Cozy en liens sortants) plutôt que créer un 2ᵉ
+  panneau slide-over indépendant.
+- **Raison** : éviter un refactor risqué du layout ; le menu existant remplit déjà
+  le rôle ; pas de redondance avec le bouton « Catalogue » existant.
+- **Alternatives écartées** : panneau slide-over séparé (refactor du layout `.layout`).
+- **Conséquences** : navigation INA Luxury dans la page, marques Clinic/Cozy en liens
+  vers leurs pages.
+
+---
+
 <!-- Ajouter les nouvelles décisions au-dessus -->
