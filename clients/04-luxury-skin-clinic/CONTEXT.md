@@ -127,6 +127,11 @@ Photos produits réelles intégrées en base64 (8/8).
   intégrés en base64 (compressées ~640px, JPEG/PNG optimisés), 1 image classée.
   INA Luxury passe à 33 produits, Cozy à 8. Logo INA Luxury fait en CSS (texte noir
   sur blanc, serif espacé) ; logos Cozy / Clinic / Hub en images base64.
+- 2026-05-18 — v3 vague 1 : module audio unifié `LCAudio` (Web Audio API, effets +
+  musique jazz douce, déblocage au 1er clic) sur les 4 pages ; barre réseaux sociaux
+  fixe (WhatsApp/Instagram/TikTok) ; textes d'accueil courts (36 ms/lettre).
+  WhatsApp `2290167975626` conservé. Vague 2 à venir : descriptions enrichies,
+  panneau catalogue latéral, animations, style clinique, audit mobile.
 
 ## Liens
 
