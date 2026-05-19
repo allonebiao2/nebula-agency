@@ -703,12 +703,12 @@ const PRODUCTS=[
    d:"Nettoyant crème doux à l'Aloe vera et beurre de karité. Haute tolérance — bébés et enfants.",
    inci:"Aqua, Aloe Barbadensis Leaf Juice, Cocamidopropyl Betaine, Sodium Cocoyl Isethionate, Glycerin, Emulsifying Wax, Butyrospermum Parkii Butter, Cetyl Alcohol, Xanthan Gum, Disodium EDTA, Phenoxyethanol, Ethylhexylglycerin, Parfum."},
   // ===== CAPILLAIRES (nouveaux — fiches à compléter) =====
-  {f:'capillaires',s:'shampoing',n:'Shampoing Sensicare',p:null,todo:1,isnew:1,c:['a-completer'],d:"Description à venir."},
-  {f:'capillaires',s:'apres-shampoing',n:'Après-Shampoing Sensicare',p:null,todo:1,isnew:1,c:['a-completer'],d:"Description à venir."},
-  {f:'capillaires',s:'masque',n:'Masque Fortifiant K10',p:null,todo:1,isnew:1,c:['a-completer'],d:"Description à venir."},
-  {f:'capillaires',s:'serum',n:'Sérum Anagen',p:null,todo:1,isnew:1,c:['a-completer'],d:"Description à venir."},
-  {f:'capillaires',s:'serum',n:'Sérum Hydratant',p:null,todo:1,isnew:1,c:['a-completer'],d:"Description à venir."},
-  {f:'capillaires',s:'huile-beurre',n:'Huile Soin 2-en-1',p:null,todo:1,isnew:1,c:['a-completer'],d:"Description à venir."},
+  {f:'capillaires',s:'shampoing',n:'Shampoing Sensicare',p:8000,stock:0,isnew:1,c:['a-completer'],d:"Description à venir."},
+  {f:'capillaires',s:'apres-shampoing',n:'Après-Shampoing Sensicare',p:8000,stock:0,isnew:1,c:['a-completer'],d:"Description à venir."},
+  {f:'capillaires',s:'masque',n:'Masque Fortifiant K10',p:10000,stock:0,isnew:1,c:['a-completer'],d:"Description à venir."},
+  {f:'capillaires',s:'serum',n:'Sérum Anagen',p:20000,stock:0,isnew:1,c:['a-completer'],d:"Description à venir."},
+  {f:'capillaires',s:'serum',n:'Sérum Hydratant',p:8000,stock:0,isnew:1,c:['a-completer'],d:"Description à venir."},
+  {f:'capillaires',s:'huile-beurre',n:'Huile Soin 2-en-1',p:9000,stock:0,isnew:1,c:['a-completer'],d:"Description à venir."},
   // ===== CORPS (nouveaux — fiches à compléter) =====
   {f:'corps',s:'beauty-bar',n:'Kojic Beauty Bar',p:null,todo:1,isnew:1,c:['a-completer'],d:"Description à venir."},
   {f:'corps',s:'beauty-bar',n:'Milk Beauty Bar',p:null,todo:1,isnew:1,c:['a-completer'],d:"Description à venir."},
@@ -1002,7 +1002,7 @@ function productCard(p,i){
   if(p.isnew)flags.push('<span class="flag new">Nouveau</span>');
   if(p.reco)flags.push('<span class="flag reco">Recommandé</span>');
   let stock='';
-  if(p.stock===0)stock='<span class="stock-flag out">Rupture</span>';
+  if(p.stock===0)stock='<span class="stock-flag out">Rupture de stock</span>';
   else if(typeof p.stock==='number'&&p.stock<5)stock=`<span class="stock-flag low">Plus que ${p.stock}</span>`;
   const _cc=p.c||[];
   const _ccCap=_cc.length>3?2:_cc.length;
@@ -1030,7 +1030,9 @@ function productCard(p,i){
     :(p.p==null)
     ?`<div class="card-price ask">Prix sur demande</div>`
     :`<div class="card-price">${fmt(p.p)} <small>FCFA</small></div>`;
-  const actionHtml=(p.p==null)
+  const actionHtml=(p.stock===0)
+    ?`<a class="btn-add wa" href="${waLink(`Bonjour, je souhaite être averti(e) du retour en stock de ${p.n}.`)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg> M'avertir du retour</a>`
+    :(p.p==null)
     ?`<a class="btn-add wa" href="${waLink(`Bonjour, je souhaite connaître le prix du produit : ${p.n}.`)}" target="_blank" rel="noopener">Demander le prix</a>`
     :`<button class="btn-add" data-add="${p.n}"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Panier</button>`;
   el.innerHTML=`

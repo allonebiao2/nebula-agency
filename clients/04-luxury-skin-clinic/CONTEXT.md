@@ -161,6 +161,12 @@ code (objet `SVC_ART`). Voie B (vraies photos via `_inbox/`) reste possible plus
   badges + « +X autres » cliquable. Qualité images : hints CSS ajoutés — les
   originaux ayant été compressés le 18/05 (640px), la résolution native n'est pas
   récupérable sans re-fourniture des photos dans `_inbox/`.
+- 2026-05-19 — Capillaires : prix fixés (Shampoing · Après-Shampoing · Sérum
+  Hydratant = 8 000 F · Masque K10 = 10 000 F · Sérum Anagen = 20 000 F · Huile
+  Soin 2-en-1 = 9 000 F). Les 6 produits capillaires sont en **rupture de stock**
+  (badge rouge « Rupture de stock », bouton « M'avertir du retour » via WhatsApp).
+  Hub : ancienne barre réseaux statique supprimée, seule la barre animée
+  `lc-social` est conservée.
 
 ## Paiement en ligne — FedaPay (en préparation)
 
