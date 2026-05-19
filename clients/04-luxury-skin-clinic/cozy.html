@@ -984,5 +984,104 @@ if(mute){
 }
 })();
 </script>
+<!-- ============ NEBULA — CATALOGUE GLOBAL ============ -->
+<style id="lc-cat-css">
+.lc-cat-btn{position:fixed;left:16px;bottom:16px;z-index:600;display:flex;align-items:center;
+  gap:8px;padding:11px 16px;border-radius:30px;cursor:pointer;
+  font-family:'Cormorant Garamond',serif;font-size:.94rem;letter-spacing:.05em;
+  background:rgba(13,11,8,.9);border:1px solid rgba(201,168,76,.55);color:#ead9a6;
+  -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
+  transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s,color .35s,border-color .35s;}
+.lc-cat-btn:hover{transform:translateY(-3px);color:#fff;border-color:#e3cd86;
+  box-shadow:0 12px 26px rgba(201,168,76,.4);}
+.lc-cat-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;}
+.lc-cat-scrim{position:fixed;inset:0;z-index:690;background:rgba(6,6,6,.74);
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+  opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s;}
+.lc-cat-scrim.open{opacity:1;visibility:visible;}
+.lc-cat-panel{position:fixed;top:0;left:0;bottom:0;width:322px;max-width:88vw;z-index:700;
+  background:linear-gradient(168deg,#1c1812,#0b0a08);border-right:1px solid rgba(201,168,76,.3);
+  box-shadow:10px 0 50px rgba(0,0,0,.7);
+  transform:translateX(-105%);transition:transform .42s cubic-bezier(.22,1,.36,1);
+  overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 0 34px;}
+.lc-cat-panel.open{transform:none;}
+.lc-cat-panel::-webkit-scrollbar{width:5px;}
+.lc-cat-panel::-webkit-scrollbar-thumb{background:rgba(201,168,76,.32);border-radius:3px;}
+.lc-cat-top{display:flex;align-items:center;justify-content:space-between;padding:0 18px 14px;
+  border-bottom:1px solid rgba(201,168,76,.16);margin-bottom:6px;}
+.lc-cat-top h3{font-family:'Cormorant Garamond',serif;font-size:1.16rem;color:#ead9a6;font-weight:600;}
+.lc-cat-close{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;border:1px solid rgba(201,168,76,.3);color:#ead9a6;cursor:pointer;flex-shrink:0;}
+.lc-cat-close svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;}
+.lc-cat-brand{display:flex;align-items:center;justify-content:space-between;
+  margin:15px 12px 3px;padding:10px 13px;border-radius:9px;text-decoration:none;
+  font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;
+  color:#e3cd86;background:rgba(201,168,76,.09);transition:background .25s;}
+.lc-cat-brand:hover{background:rgba(201,168,76,.17);}
+.lc-cat-brand svg{width:16px;height:9px;stroke:currentColor;fill:none;stroke-width:1.8;flex-shrink:0;}
+.lc-cat-cat{padding:10px 22px 3px;font-size:13px;letter-spacing:.03em;
+  color:#d8c8a4;font-family:'Cormorant Garamond',serif;font-weight:600;}
+.lc-cat-sub{display:block;padding:5px 22px 5px 38px;font-size:11.5px;color:#9c937e;
+  text-decoration:none;position:relative;transition:color .2s,padding .2s;}
+.lc-cat-sub::before{content:'·';position:absolute;left:27px;color:#c9a84c;}
+.lc-cat-sub:hover{color:#ead9a6;padding-left:43px;}
+@media(prefers-reduced-motion:reduce){.lc-cat-panel,.lc-cat-btn{transition:none;}}
+@media(max-width:600px){.lc-cat-btn{font-size:.86rem;padding:10px 14px;}}
+</style>
+<button class="lc-cat-btn" id="lcCatBtn" aria-label="Ouvrir le catalogue">
+  <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg> Catalogue
+</button>
+<div class="lc-cat-scrim" id="lcCatScrim"></div>
+<aside class="lc-cat-panel" id="lcCatPanel" aria-label="Catalogue Luxury Club 229">
+  <div class="lc-cat-top">
+    <h3>Catalogue Luxury Club 229</h3>
+    <button class="lc-cat-close" id="lcCatClose" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div id="lcCatBody"></div>
+</aside>
+<script>
+(function(){
+'use strict';
+var ARCH=[
+  {b:'INA LUXURY',href:'ina-luxury.html',cats:[
+    {n:'Visage',subs:['Gel Nettoyants','Sérums','Crèmes','Masques']},
+    {n:'Corps',subs:['Beauty Bar','Crème corps','Gommage','Huile corps']},
+    {n:'Capillaires',subs:['Shampoing','Après-shampoing','Masque','Sérum','Huile / Beurre']},
+    {n:'Enfant (0-16 ans)',subs:['Gel Lavant','Crème Hydratante','Crème Apaisante','Crème Lavante']}
+  ]},
+  {b:'Luxury Skin Clinic',href:'luxury-skin-clinic.html#soins',cats:[
+    {n:'Soins du visage',subs:['Consultation Peau','Consultation — Suivi','Soin Oxygène','Soin Glass Skin','Luxury Peel']},
+    {n:'Soins du corps',subs:['Gommage Luxury','Luxury Massage']},
+    {n:'Soins capillaires',subs:['Diagnostic Capillaire','Le Hair Spa','Activateur de Pousse']},
+    {n:'Expérience VIP',subs:['Le Soin Complet VIP']}
+  ]},
+  {b:'Cozy',href:'cozy.html',cats:[
+    {n:'Hygiène intime',subs:['Gel Nettoyant Intime','Huile Intime']},
+    {n:'Soin du corps',subs:['Crème Corps Night Kiss','Huile Éclat Suprême','Baume Pailleté']},
+    {n:'Bien-être',subs:['Maca Cream','Crème Mains','Le Boost Fermeté']}
+  ]}
+];
+var body=document.getElementById('lcCatBody');
+if(!body)return;
+var AR='<svg viewBox="0 0 24 12"><path d="M1 6h21M17 1l5 5-5 5"/></svg>';
+body.innerHTML=ARCH.map(function(br){
+  var cats=br.cats.map(function(c){
+    return '<div class="lc-cat-cat">'+c.n+'</div>'+
+      c.subs.map(function(s){return '<a class="lc-cat-sub" href="'+br.href+'">'+s+'</a>';}).join('');
+  }).join('');
+  return '<a class="lc-cat-brand" href="'+br.href+'">✦ '+br.b+AR+'</a>'+cats;
+}).join('');
+var panel=document.getElementById('lcCatPanel'),scrim=document.getElementById('lcCatScrim'),
+    btn=document.getElementById('lcCatBtn'),closeb=document.getElementById('lcCatClose');
+function openCat(){panel.classList.add('open');scrim.classList.add('open');
+  if(window.LCAudio)LCAudio.play('menuOpen');}
+function shutCat(){panel.classList.remove('open');scrim.classList.remove('open');
+  if(window.LCAudio)LCAudio.play('menuClose');}
+btn.addEventListener('click',openCat);
+closeb.addEventListener('click',shutCat);
+scrim.addEventListener('click',shutCat);
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&panel.classList.contains('open'))shutCat();});
+})();
+</script>
 </body>
 </html>
