@@ -167,6 +167,11 @@ code (objet `SVC_ART`). Voie B (vraies photos via `_inbox/`) reste possible plus
   (badge rouge « Rupture de stock », bouton « M'avertir du retour » via WhatsApp).
   Hub : ancienne barre réseaux statique supprimée, seule la barre animée
   `lc-social` est conservée.
+- 2026-05-19 — Audit conversion : panier enrichi (vignette photo, boutons
+  quantité tactiles, « Vider le panier », zone de livraison dans le message
+  WhatsApp) ; questionnaires clinique refondus en parcours **multi-étapes**
+  (barre de progression, validation inline, sauvegarde `localStorage`). La
+  réduction du nombre de questions reste une décision de contenu pour Gloria.
 
 ## Paiement en ligne — FedaPay (en préparation)
 

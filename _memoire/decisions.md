@@ -145,4 +145,24 @@
 
 ---
 
+## 2026-05-19 — Audit conversion : panier + questionnaires multi-étapes
+
+- **Contexte** : le site n'a pas d'inscription ; audit des vrais parcours de
+  conversion (panier→WhatsApp, questionnaires clinique, modal règlement).
+- **Décisions** :
+  - Panier : vignette photo produit, boutons quantité agrandis (tactile mobile),
+    bouton « Vider le panier », ligne zone de livraison dans le message WhatsApp.
+  - Questionnaires clinique : refonte en **multi-étapes** (1 section/écran,
+    barre de progression, Précédent/Suivant), validation **inline**, radios
+    requis vérifiés, sauvegarde des réponses en `localStorage`.
+  - Règlement clinique : déjà affiché 1×/session — inchangé.
+- **Raison** : un questionnaire de 25 champs en une seule page provoque l'abandon ;
+  le multi-étapes réduit la friction sans rien supprimer.
+- **Alternatives écartées** : supprimer des questions (décision de contenu qui
+  revient à Gloria, pas un choix technique).
+- **Conséquences** : la réduction du nombre de questions reste à valider avec
+  Gloria si elle souhaite un questionnaire plus court.
+
+---
+
 <!-- Ajouter les nouvelles décisions au-dessus -->
