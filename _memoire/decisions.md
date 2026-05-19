@@ -124,4 +124,25 @@
 
 ---
 
+## 2026-05-19 — Corrections critiques v3 (logo, audio mobile, stock, réseaux)
+
+- **Contexte** : série de corrections critiques sur Luxury Club 229 (logo de
+  chargement, audio mobile bloqué, doublons réseaux, stock capillaires).
+- **Décisions** :
+  - Splash screen sur les 4 pages : logo Luxury Group + bouton « Entrer dans
+    l'univers » qui débloque l'audio (geste explicite obligatoire sur mobile),
+    flag `sessionStorage`. Le splash ne se ferme plus automatiquement.
+  - Emblèmes du hub (I/L/C) → texte stylisé CSS par marque (les dossiers
+    `assets/images/logo/<marque>/` sont vides).
+  - Capillaires : prix fixés, 6 produits mis en rupture de stock (badge rouge +
+    bouton « M'avertir du retour » WhatsApp).
+  - Une seule barre réseaux : la barre animée `lc-social` ; l'ancienne barre
+    statique du hub est supprimée.
+- **Raison** : sur mobile l'audio exige un geste utilisateur explicite ; éviter
+  les doublons d'UI ; refléter l'état réel du stock.
+- **Conséquences** : audio à tester sur un vrai téléphone. Qualité des images
+  produits non récupérable (originaux compressés le 18/05) sans re-fourniture.
+
+---
+
 <!-- Ajouter les nouvelles décisions au-dessus -->
