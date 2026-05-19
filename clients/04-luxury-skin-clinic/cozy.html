@@ -234,10 +234,16 @@ main{position:relative;z-index:5;}
 .ci-info .ci-u{font-size:.68rem;color:var(--gris);margin-top:2px;}
 .ci-ctrl{display:flex;align-items:center;gap:9px;margin-top:8px;}
 .qty{display:flex;align-items:center;gap:9px;border:1px solid var(--ligne);border-radius:20px;padding:3px;}
-.qty button{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  color:var(--rose-fonce);font-size:14px;transition:background .25s;}
+.qty button{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  color:var(--rose-fonce);font-size:16px;transition:background .25s;}
 .qty button:hover{background:var(--rose-pale);}
-.qty span{min-width:18px;text-align:center;font-size:.8rem;color:var(--encre);}
+.qty span{min-width:20px;text-align:center;font-size:.85rem;color:var(--encre);}
+.ci-img{width:52px;height:52px;border-radius:11px;flex-shrink:0;object-fit:cover;}
+.cart-clear{display:block;margin:12px auto 0;font-size:.7rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--gris);text-decoration:underline;
+  text-underline-offset:3px;cursor:pointer;transition:color .25s;}
+.cart-clear:hover{color:var(--rose-fonce);}
+@media(max-width:600px){.qty button{width:38px;height:38px;}.qty span{min-width:24px;}}
 .ci-rm{font-size:.66rem;letter-spacing:.05em;text-transform:uppercase;color:var(--gris);transition:color .25s;}
 .ci-rm:hover{color:var(--warn);}
 .ci-line{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--rose-fonce);
@@ -390,6 +396,7 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
       Commander sur WhatsApp
     </button>
     <div class="cart-note">Votre commande sera confirmée par notre équipe sur WhatsApp.</div>
+    <button class="cart-clear" id="cartClear" type="button">Vider le panier</button>
   </div>
 </aside>
 
@@ -691,7 +698,7 @@ function syncCart(){
   }else{
     cartItems.innerHTML=cart.map(it=>`
       <div class="ci">
-        <div class="ci-mono">${it.n[0]}</div>
+        ${IMG[it.n]?`<img class="ci-img" src="${IMG[it.n]}" alt="${it.n}">`:`<div class="ci-mono">${it.n[0]}</div>`}
         <div class="ci-info">
           <h4>${it.n}</h4>
           <div class="ci-u">${it.size?it.size+' · ':''}${fmt(it.p)} FCFA</div>
@@ -718,11 +725,13 @@ function closeCart(){cartDrawer.classList.remove('open');scrim.classList.remove(
 cartBtn.addEventListener('click',openCart);
 cartClose.addEventListener('click',closeCart);
 scrim.addEventListener('click',closeCart);
+function clearCart(){cart=[];saveCart();syncCart();}
+cartClear.addEventListener('click',clearCart);
 cartWa.addEventListener('click',()=>{
   if(!cart.length)return;
   let msg="Bonjour Cozy, je souhaite commander :\n";
   cart.forEach(it=>{msg+=`- ${it.n}${it.size?' ('+it.size+')':''} x${it.qty} = ${fmt(it.qty*it.p)} FCFA\n`;});
-  msg+=`TOTAL : ${fmt(cartTotalVal())} FCFA\nMerci de confirmer ma commande.`;
+  msg+=`TOTAL : ${fmt(cartTotalVal())} FCFA\n\nMa zone de livraison : \nMerci de confirmer ma commande.`;
   window.open(waLink(msg),'_blank');
 });
 

@@ -352,10 +352,16 @@ header{position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);
 .ci-info .ci-u{font-size:.68rem;color:var(--texte-doux);margin-top:2px;}
 .ci-ctrl{display:flex;align-items:center;gap:9px;margin-top:8px;}
 .qty{display:flex;align-items:center;gap:9px;border:1px solid rgba(201,168,76,.26);border-radius:20px;padding:3px;}
-.qty button{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  color:var(--or-clair);font-size:14px;transition:background .25s;}
+.qty button{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  color:var(--or-clair);font-size:16px;transition:background .25s;}
 .qty button:hover{background:rgba(201,168,76,.16);}
-.qty span{min-width:18px;text-align:center;font-size:.8rem;color:var(--creme);}
+.qty span{min-width:20px;text-align:center;font-size:.85rem;color:var(--creme);}
+.ci-img{width:52px;height:52px;border-radius:10px;flex-shrink:0;object-fit:cover;}
+.cart-clear{display:block;margin:12px auto 0;font-size:.7rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--texte-doux);text-decoration:underline;
+  text-underline-offset:3px;cursor:pointer;transition:color .25s;}
+.cart-clear:hover{color:#d9776b;}
+@media(max-width:600px){.qty button{width:38px;height:38px;}.qty span{min-width:24px;}}
 .ci-rm{font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--texte-doux);
   transition:color .25s;}
 .ci-rm:hover{color:#d9776b;}
@@ -510,6 +516,7 @@ footer{position:relative;z-index:5;border-top:1px solid rgba(201,168,76,.14);
       Commander sur WhatsApp
     </button>
     <div class="cart-note">Votre commande sera confirmée par notre équipe sur WhatsApp.</div>
+    <button class="cart-clear" id="cartClear" type="button">Vider le panier</button>
   </div>
 </aside>
 
@@ -1132,7 +1139,7 @@ function syncCart(){
   }else{
     cartItems.innerHTML=cart.map(it=>`
       <div class="ci">
-        <div class="ci-mono">${it.n[0]}</div>
+        ${IMG[it.n]?`<img class="ci-img" src="${IMG[it.n]}" alt="${it.n}">`:`<div class="ci-mono">${it.n[0]}</div>`}
         <div class="ci-info">
           <h4>${it.n}</h4>
           <div class="ci-u">${it.size?it.size+' · ':''}${fmt(it.p)} FCFA</div>
@@ -1158,11 +1165,13 @@ function openCart(){cartDrawer.classList.add('open');showScrim();}
 function closeCart(){cartDrawer.classList.remove('open');hideScrim();}
 cartBtn.addEventListener('click',openCart);
 cartClose.addEventListener('click',closeCart);
+function clearCart(){cart=[];saveCart();syncCart();}
+cartClear.addEventListener('click',clearCart);
 cartWa.addEventListener('click',()=>{
   if(!cart.length)return;
   let msg="Bonjour INA Luxury, je souhaite commander :\n";
   cart.forEach(it=>{msg+=`- ${it.n}${it.size?' ('+it.size+')':''} x${it.qty} = ${fmt(it.qty*it.p)} FCFA\n`;});
-  msg+=`TOTAL : ${fmt(cartTotalVal())} FCFA\nMerci de confirmer ma commande.`;
+  msg+=`TOTAL : ${fmt(cartTotalVal())} FCFA\n\nMa zone de livraison : \nMerci de confirmer ma commande.`;
   window.open(waLink(msg),'_blank');
 });
 
