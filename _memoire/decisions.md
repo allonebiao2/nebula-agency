@@ -185,4 +185,19 @@
 
 ---
 
+## 2026-05-19 — Catalogue global omniprésent
+
+- **Contexte** : le catalogue n'existait que sur `ina-luxury` ; besoin d'y accéder
+  depuis n'importe quelle page.
+- **Décision** : composant « Catalogue global » autonome (bouton fixe bas-gauche
+  + panneau coulissant + scrim) montrant l'architecture des 3 marques, injecté
+  sur `index`, `cozy` et `luxury-skin-clinic`. `ina-luxury` garde son panneau
+  latéral intégré (filtrage en direct) — pas de double catalogue.
+- **Raison** : navigation cohérente et omniprésente sans casser la fonctionnalité
+  de filtrage propre à `ina-luxury`.
+- **Conséquences** : les éléments du panneau global sont des liens vers les pages
+  marques (pas de filtrage en direct hors `ina-luxury`).
+
+---
+
 <!-- Ajouter les nouvelles décisions au-dessus -->
