@@ -31,12 +31,12 @@ Catégorie → Sous-catégorie → Préoccupation → Produits. Panier multi-pro
 - **Corps** : Beauty Bar · Crème corps · Gommage · Huile corps
 - **Capillaires** : Shampoing · Après-shampoing · Masque · Sérum · Huile / Beurre
 - **Enfant (0-16 ans)** : Gel Lavant · Crème Hydratante · Crème Apaisante · Crème Lavante
-- **33 produits** : 24 fiches complètes (desc, actifs, résultats, INCI, avertissements)
-  + 9 nouveaux produits (7 Capillaires, 1 Huile corps, 1 Crème visage) en fiches
-  à compléter (prix « à définir », description « à venir », badge « À compléter »).
-- **Photos produits réelles** intégrées en base64 (33/33).
-- Sous-catégories encore sans produit : Corps (Beauty Bar, Crème corps) →
-  état « Bientôt disponible ».
+- **35 produits** : 24 fiches complètes (desc, actifs, résultats, INCI, avertissements)
+  + 11 nouveaux produits en fiches à compléter (prix « à définir », description
+  « à venir », badge « À compléter »).
+- **Corps** entièrement peuplé : Beauty Bar 3 · Crème corps 2 · Gommage 1 · Huile corps 1.
+- **Photos produits réelles** en base64 : 33 produits illustrés ; 2 Beauty Bars
+  (Kojic, Milk) en attente de photo (placeholder dégradé en attendant).
 
 ### Luxury Skin Clinic — 11 soins & prestations
 Design clinique distinct. Soins groupés Visage / Corps / Capillaires / Soin complet.
@@ -81,14 +81,15 @@ Photos produits réelles intégrées en base64 (8/8).
 
 - [x] Brief v2 reçu et intégré
 - [x] index.html — hub Luxury Club 229
-- [x] ina-luxury.html — 24 produits, nav 4 niveaux, panier
+- [x] ina-luxury.html — 35 produits, nav 4 niveaux, panier
 - [x] luxury-skin-clinic.html — 11 soins, design clinique, règlement, formulaires
 - [x] cozy.html — 8 produits, design rose, panier
 - [x] Logos intégrés : INA Luxury (logo CSS), Cozy, Luxury Skin Clinic, Luxury Club 229 (hub)
 - [x] Photos produits réelles en base64 (INA Luxury 33/33 · Cozy 8/8)
 - [ ] Liens Instagram / TikTok réels
 - [ ] Validation des 4 contenus rédigés par défaut (voir ci-dessous)
-- [ ] Compléter les 11 fiches « nouveaux produits » (prix, description, INCI)
+- [ ] Compléter les 13 fiches « nouveaux produits » (prix, description, INCI)
+- [ ] Photos des 2 Beauty Bars (Kojic, Milk)
 - [ ] Responsive testé sur appareils réels
 - [ ] Livré
 
@@ -97,13 +98,14 @@ Photos produits réelles intégrées en base64 (8/8).
 - **Contenus rédigés par défaut** (le brief renvoyait à « le document » non fourni) :
   règlement clinique, questionnaire Consultation Peau, questionnaire Diagnostic
   Capillaire, 8 étapes du Soin Glass Skin. → à valider avec Gloria.
-- Prix manquant : « Rose Hydra Crème » affichée « Prix sur demande ».
 - Réseaux sociaux (Instagram / TikTok).
-- **11 nouveaux produits à compléter** (image OK, prix/desc « à définir ») :
+- **13 nouveaux produits à compléter** (prix/desc « à définir ») :
   - INA Luxury — Capillaires : Shampoing Sensicare · Après-Shampoing Sensicare ·
-    Masque Fortifiant K10 · Sérum Anagen · Sérum Hydratant · Beurre Clarté · Huile Soin 2-en-1
-  - INA Luxury — Corps : Huile à la Rose · Visage : Crème au Lait de Chèvre
+    Masque Fortifiant K10 · Sérum Anagen · Sérum Hydratant · Huile Soin 2-en-1
+  - INA Luxury — Corps : Kojic Beauty Bar\* · Milk Beauty Bar\* · Crème au Lait de
+    Chèvre · Beurre Clarté · Huile à la Rose
   - Cozy : Baume Pailleté (Nuit Scintillante) · Le Boost Fermeté
+  - \* = sans photo (placeholder en attendant).
 - Image `CONSULTATION PEAU` classée dans `assets/images/clinic/` — non intégrée :
   les fiches soin de la clinique ont désormais une bannière visuelle SVG (voir ci-dessous),
   mais pas d'emplacement photo réelle. Décision à prendre si on veut y mettre des photos.
@@ -143,6 +145,13 @@ code (objet `SVC_ART`). Voie B (vraies photos via `_inbox/`) reste possible plus
   En savoir plus / Ingrédients, actifs INCI surlignés) ; panneau catalogue 3 marques
   avec compteurs ; animations (hover 3D, ripple doré, rebond panier, pulse WhatsApp) ;
   polish clinique ; audit mobile (swipe catalogue). v3 complète sur les 4 pages.
+- 2026-05-19 — Correction d'architecture par Gloria : Busserole Beauty Bar déplacée
+  de Visage/Nettoyants vers Corps/Beauty Bar ; ajout de Kojic Beauty Bar et Milk
+  Beauty Bar (Corps/Beauty Bar) ; Crème au Lait de Chèvre et Beurre Clarté déplacées
+  vers Corps/Crème corps ; Huile à la Rose confirmée en Corps/Huile corps. INA Luxury
+  passe à 35 produits, toutes les sous-catégories Corps sont peuplées. Prix de
+  « Rose Hydra Crème » fixé à 7 000 FCFA. Cozy : Huile Éclat Suprême déjà en Corps
+  (pas de rayon « huile » distinct dans Cozy) — inchangé.
 
 ## Paiement en ligne — FedaPay (en préparation)
 
