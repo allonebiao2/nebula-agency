@@ -165,4 +165,24 @@
 
 ---
 
+## 2026-05-19 — Navigation automatique + logos + fix empilement catalogue
+
+- **Contexte** : navigation jugée trop lente (bouton « Entrer » obligatoire,
+  texte d'accueil lent) ; logos à intégrer ; panneau catalogue invisible sur mobile.
+- **Décisions** :
+  - Suppression du bouton « Entrer dans l'univers » : l'entrée dans chaque
+    compartiment est **automatique** à la fin du texte d'accueil (un clic le saute).
+    Le son se débloque désormais au premier tap réel sur la page.
+  - Nouveau logo Luxury Club 229 (« LC » or sur noir, contient déjà le nom)
+    affiché en plein sur l'accueil et les welcome-gates ; logos Cozy et Clinique
+    dans les emblèmes du hub ; INA Luxury reste en logo CSS (aucune image fournie).
+  - Particules en `z-index:-1` et `.layout` sans `z-index` : corrige le bug où le
+    panneau catalogue (menu `position:fixed`) restait sous le scrim sur mobile.
+- **Raison** : un client part si l'entrée prend trop de temps ; un panneau
+  catalogue invisible sur mobile = fonctionnalité cassée.
+- **Conséquences** : l'audio mobile démarre à la 1ʳᵉ interaction réelle (plus
+  d'écran dédié au déblocage du son) — compromis vitesse assumé.
+
+---
+
 <!-- Ajouter les nouvelles décisions au-dessus -->
