@@ -719,6 +719,7 @@ function syncCart(){
   }
   cartTotal.textContent=fmt(cartTotalVal())+' FCFA';
   cartWa.toggleAttribute('disabled',cart.length===0);
+  cartClear.style.display=cart.length?'':'none';
 }
 function openCart(){cartDrawer.classList.add('open');scrim.classList.add('show');}
 function closeCart(){cartDrawer.classList.remove('open');scrim.classList.remove('show');}
