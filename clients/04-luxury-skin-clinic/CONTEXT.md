@@ -152,6 +152,15 @@ code (objet `SVC_ART`). Voie B (vraies photos via `_inbox/`) reste possible plus
   passe à 35 produits, toutes les sous-catégories Corps sont peuplées. Prix de
   « Rose Hydra Crème » fixé à 7 000 FCFA. Cozy : Huile Éclat Suprême déjà en Corps
   (pas de rayon « huile » distinct dans Cozy) — inchangé.
+- 2026-05-19 — Corrections critiques : splash screen sur les 4 pages (logo Luxury
+  Group + bouton « Entrer dans l'univers » → déblocage audio mobile garanti par un
+  geste explicite, flag `sessionStorage`) ; emblèmes du hub en texte stylisé CSS
+  (les dossiers `assets/images/logo/<marque>/` sont vides) ; volume musique plus
+  présent sur mobile que desktop ; accordéons « En savoir plus » garantis sans
+  clipping (max-height:none une fois ouverts) ; préoccupations plafonnées à 2-3
+  badges + « +X autres » cliquable. Qualité images : hints CSS ajoutés — les
+  originaux ayant été compressés le 18/05 (640px), la résolution native n'est pas
+  récupérable sans re-fourniture des photos dans `_inbox/`.
 
 ## Paiement en ligne — FedaPay (en préparation)
 
