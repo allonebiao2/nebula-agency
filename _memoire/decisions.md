@@ -332,4 +332,40 @@
 
 ---
 
+## 2026-05-20 — INA Luxury : détourage fonds blancs (produits sur fond noir luxe)
+
+- **Contexte** : Gloria voulait que les produits INA Luxury fondent dans le
+  fond noir doré de la marque. Or 33 des 34 images base64 étaient en JPEG
+  avec fond blanc → impossible à effacer en CSS seul (aucun `mix-blend-mode`
+  ne supprime un fond blanc d'un JPEG sur un fond noir).
+- **Décision** : détourage automatique des fonds blancs via script Python
+  Pillow (`_detoure.py` — script transient, supprimé après exécution).
+  Pour chaque image : flood-fill depuis les 4 coins avec seuil de tolérance
+  pour ne supprimer QUE le fond connecté (pas les zones blanches internes
+  au produit). Léger feathering Gaussien (0.6px) pour adoucir les bords.
+  Conversion JPEG → PNG avec alpha transparent. 31 images traitées, 3 skip
+  (déjà sans fond blanc, conservées telles quelles).
+- **Raison** : seul moyen propre d'avoir des produits réellement détourés
+  sur fond noir. Les alternatives CSS (mix-blend-mode multiply/screen/lighten
+  + fond noir) sont toutes mathématiquement inadaptées à ce cas. Demander
+  à Gloria de re-fournir des PNG transparents = friction inutile alors
+  qu'on a déjà ses images de bonne qualité.
+- **Alternatives écartées** :
+  - `mix-blend-mode: multiply` sur fond noir → tout devient noir (le multiply
+    avec 0 = 0)
+  - `mix-blend-mode: screen` ou `lighten` → le blanc reste blanc, n'efface
+    rien (visible sur fond noir)
+  - Demander à Gloria des PNG transparents → friction supplémentaire
+- **Conséquences** :
+  - Poids du fichier ina-luxury.html passe de ~3 Mo à ~9 Mo (PNG transparent
+    > JPEG compressé).
+  - CSS `.card-photo` : background gradient radial noir profond + pseudo
+    `::after` vignette + filter `drop-shadow` noir + halo or léger.
+  - Si chargement mobile devient trop lent, re-optimiser via pngquant
+    (palette 256 couleurs) ou re-réduire les dimensions de 900 px à 700 px.
+  - Pour les futurs ajouts d'images : refournir détourées en PNG si possible,
+    sinon relancer le script de détourage automatique.
+
+---
+
 <!-- Ajouter les nouvelles décisions au-dessus -->
