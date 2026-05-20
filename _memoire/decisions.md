@@ -200,4 +200,30 @@
 
 ---
 
+## 2026-05-20 — Enrichissement contenu fiches : champ `det` unifié
+
+- **Contexte** : les fiches produits / services affichaient une description
+  courte (`d`) et un INCI brut, sans hiérarchie ni progression dans le contenu
+  de l'accordéon. Le client (Gloria) a fourni un dossier complet de descriptions
+  longues structurées pour les 30+ produits et 11 services.
+- **Décision** : ajouter un champ optionnel `det` (string HTML) à chaque
+  produit / service. Quand `det` est présent, le rendu de l'accordéon
+  « En savoir plus » l'utilise prioritairement ; sinon fallback sur l'ancienne
+  construction (`plus + use + warn` pour `ina-luxury`, `plus` pour `cozy`).
+  Pour le clinic, le `det` est injecté en tête du contenu de l'accordéon
+  « Le protocole en détail », avant le protocole structuré et le post-soin.
+- **Raison** : un champ optionnel n'impose pas d'enrichir toutes les fiches en
+  une seule passe (idéal pour livrer par vagues), garde les fiches non
+  enrichies fonctionnelles, et concentre la richesse éditoriale au même
+  endroit que les actifs déjà existants. Classes CSS partagées (`det-h`,
+  `det-p`, `det-ul`, `det-phase`, `det-warn`) → cohérence visuelle.
+- **Alternatives écartées** : remplacer entièrement le champ `d` par un objet
+  riche (casserait les cartes et la liste catalogue) ; créer un fichier
+  externe par fiche (incompatible avec la règle « tout en HTML pur sans CDN »).
+- **Conséquences** : 43 fiches enrichies sur 54 (24/35 INA Luxury, 8/8 Cozy,
+  11/11 Clinic). Les 11 fiches restantes (Beauty Bars sans photo et capillaires
+  en rupture) gardent l'ancien rendu jusqu'au retour du stock / des photos.
+
+---
+
 <!-- Ajouter les nouvelles décisions au-dessus -->
