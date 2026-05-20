@@ -226,4 +226,80 @@
 
 ---
 
+## 2026-05-20 — Cozy : refonte catégories Hygiène intime / SELFCARE / Raffermissants
+
+- **Contexte** : architecture Cozy initiale (Hygiène intime, Soin du corps,
+  Bien-être) jugée peu lisible par Gloria. Mauvaise classification du Gel
+  Nettoyant Intime mélangé à l'Huile Intime (qui est en fait un produit SELFCARE
+  sensoriel, pas un produit d'hygiène).
+- **Décision** :
+  - `intime` (Hygiène intime) : 1 seul produit — Gel Nettoyant Intime.
+  - `selfcare` (SELFCARE) : 4 produits — Huile Intime, Crème Corps Parfumée,
+    Crème Mains, Baume Pailleté.
+  - `raffermissant` (Produits raffermissants) : 2 produits — Maca Cream,
+    Le Boost Fermeté.
+  - Synchronisé dans les ARCH catalogue des 4 pages (cozy, ina-luxury,
+    luxury-skin-clinic, index).
+- **Raison** : « Hygiène intime » au sens strict = soin lavant intime. Les autres
+  produits sont du soin-plaisir (selfcare). La fermeté mérite sa propre catégorie
+  parce que c'est l'argument commercial premium de Cozy.
+- **Conséquences** : Huile Éclat Suprême, initialement classée Cozy, transférée
+  à INA Luxury Corps/Huile (elle n'appartenait pas à la gamme Cozy).
+
+---
+
+## 2026-05-20 — INA Luxury Enfant : fusion Crème Hydratante + Crème Apaisante
+
+- **Contexte** : sous-catégories enfant initialement séparées en
+  « Crème Hydratante » et « Crème Apaisante ». Or Crème Douceur d'Aloe ET
+  Crème Dermo-Apaisante sont chacune **à la fois** hydratantes et apaisantes —
+  la distinction n'apporte rien à l'utilisateur.
+- **Décision** : fusionner en une seule sous-catégorie `creme` (label « Crème »).
+  Les 2 produits s'affichent ensemble dans cette catégorie unique.
+- **Raison** : un menu plus court (3 sous-catégories au lieu de 4) est plus
+  lisible. La granularité fine est de toute façon expliquée dans la description
+  de chaque produit.
+- **Conséquences** : ARCH catalogue synchronisé dans les 4 pages + docs
+  internes (`CONTEXT.md`, `gloria-infos.md`).
+
+---
+
+## 2026-05-20 — Services Clinic : champ `by` pour surcharger le praticien
+
+- **Contexte** : tous les soins Luxury Skin Clinic affichaient « Réalisé par
+  Mme Sabrina — Diplômée » en bas de carte. Le Luxury Massage n'est pas réalisé
+  par Mme Sabrina mais par l'esthéticienne.
+- **Décision** : ajouter un champ optionnel `by` sur les services. Le rendu
+  utilise `s.by` s'il existe, sinon fallback sur « Mme Sabrina — Diplômée ».
+- **Raison** : pattern propre et extensible (massothérapeute, coiffeur, etc.)
+  sans casser les 10 soins par défaut.
+- **Conséquences** : Luxury Massage seul soin avec override pour l'instant
+  (`by:"l'esthéticienne"`). Réutilisable pour futurs soins.
+
+---
+
+## 2026-05-20 — Audio mobile : démarrage au 1er geste (et pas au 1er click)
+
+- **Contexte** : sur mobile, la musique d'ambiance ne démarrait qu'au premier
+  `click`. Un utilisateur qui scrollait ou tappait sans relâcher n'entendait
+  jamais rien. Plainte directe de Mongazi : « On n'étend absolument rien sur
+  la version mobile ».
+- **Décision** : refonte du hook de déblocage `_kick()` qui écoute désormais
+  `touchstart`, `touchend`, `pointerdown`, `click`, `keydown`, `scroll`. Au
+  premier événement quel qu'il soit, il fait ensure + resume + musicStart +
+  marque le bouton mute en playing. Volumes mobile augmentés
+  (master 0.9 → 1.0, musique 0.16 → 0.24, ramp 4 s → 2.2 s).
+- **Raison** : iOS Safari bloque l'autoplay sans interaction utilisateur,
+  c'est une règle système non contournable. La meilleure réponse possible est
+  donc de **rendre le déblocage le plus sensible possible** au moindre geste,
+  pas d'essayer de le bypasser.
+- **Alternatives écartées** : bouton « Activer le son » dédié au splash
+  (lent, friction supplémentaire, déjà supprimé en session précédente) ;
+  Howler/Tone.js (interdit par règle NEBULA « pas de CDN »).
+- **Conséquences** : appliqué aux 4 pages. Test mobile recommandé sur un
+  vrai téléphone pour vérifier que le mode silencieux iOS n'empêche pas
+  Web Audio (rien à faire côté code dans ce cas).
+
+---
+
 <!-- Ajouter les nouvelles décisions au-dessus -->
