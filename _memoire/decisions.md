@@ -302,4 +302,34 @@
 
 ---
 
+## 2026-05-20 — Cosmétique : descriptions EXACTES + photos uniformes
+
+- **Contexte** : Gloria a indiqué (via Mongazi) qu'en cosmétique, la précision
+  des termes est critique pour la conformité réglementaire et la promesse au
+  client. Les descriptions doivent être **exactement** celles qu'elle a fournies,
+  pas reformulées. En parallèle, certaines photos étaient rognées par
+  `object-fit:cover` — il fallait que **tout** le produit soit visible.
+- **Décision** :
+  - **Descriptions** : conserver le texte source mot pour mot, avec les listes
+    à puces préservées (jamais convertir une liste à puces en phrase
+    combinée pour les produits cosmétiques). Sections dans l'ordre exact du
+    brief : Description produit → Résultats attendus → Caractéristiques produit
+    → Conseils d'utilisation → Actifs clés.
+  - **Photos** : `object-fit:contain` + `padding:8px` + fond dégradé thématique
+    sur `.card-photo` (noir/anthracite pour ina-luxury, rose pâle pour cozy).
+    `aspect-ratio:4/3` conservé pour garder la même hauteur partout. Grille
+    et disposition générale strictement inchangées.
+- **Raison** : la cosmétique a un vocabulaire réglementé (« aide à »,
+  « visiblement », pas de promesses thérapeutiques). Reformuler =
+  risque de mal traduire. Photos rognées = client ne voit pas le packaging
+  complet, frein à l'achat.
+- **Alternatives écartées** : laisser cover et redimensionner les sources
+  (lourd et non scalable) ; convertir tous les sources en format 4:3 normalisé
+  (perte de qualité, impossible sans accès aux originaux non compressés).
+- **Conséquences** : les 36 fiches enrichies pré-restauration (vagues 1-9)
+  ont du texte reformulé. Si Gloria veut la même fidélité absolue dessus,
+  elle doit re-poster les textes source un par un.
+
+---
+
 <!-- Ajouter les nouvelles décisions au-dessus -->
