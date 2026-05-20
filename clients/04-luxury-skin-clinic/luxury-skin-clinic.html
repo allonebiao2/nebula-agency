@@ -209,6 +209,14 @@ section{padding:58px 0;}
 .proto-li{display:flex;gap:8px;font-size:.76rem;color:var(--encre-2);line-height:1.5;margin-bottom:6px;}
 .proto-li svg{width:12px;height:12px;flex-shrink:0;margin-top:3px;stroke:var(--menthe);fill:none;stroke-width:2.6;}
 .proto-p{font-size:.76rem;color:var(--encre-2);line-height:1.7;}
+.det-h{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--menthe);font-weight:600;margin:12px 0 6px;}
+.det-h:first-child{margin-top:0;}
+.det-p{font-size:.76rem;color:var(--encre-2);line-height:1.7;margin:0 0 6px;}
+.det-ul{font-size:.76rem;color:var(--encre-2);line-height:1.65;padding-left:18px;margin:0 0 6px;}
+.det-ul li{margin:2px 0;}
+.det-phase{font-size:.76rem;color:var(--encre-2);line-height:1.65;margin:4px 0;}
+.det-phase b{color:var(--or-fonce);}
+.det-warn{font-size:.74rem;color:#8a3a3a;background:rgba(180,80,80,.06);border-left:2px solid #b04545;padding:8px 10px;border-radius:6px;margin:8px 0 4px;line-height:1.55;}
 
 .svc-warn{display:flex;gap:8px;margin-top:12px;padding:10px 12px;border-radius:9px;
   background:var(--warn-bg);border:1px solid #f0d4c4;font-size:.72rem;color:var(--warn);line-height:1.55;}
@@ -711,13 +719,12 @@ const SERVICES=[
    d:"Le point de départ de tout protocole. Un questionnaire complet, analysé par Mme Sabrina, pour comprendre votre peau avant toute recommandation.",
    c:['eclat'],
    meta:[['Diagnostic','grid']],
-   protocol:{type:'list',h:'Ce qui est inclus',items:[
-     "Questionnaire peau complet et confidentiel","Analyse personnalisée par une professionnelle diplômée",
-     "Recommandation de soins et de produits adaptée","Photos à transmettre sur WhatsApp après l'envoi"]}},
+   det:`<div class="det-h">En savoir plus</div><p class="det-p">La Consultation Peau gratuite est l'étape fondamentale du parcours Luxury Skin Clinic. Avant toute recommandation de soin ou de produit, Mme Sabrina prend le temps de comprendre votre peau dans sa globalité : type, sensibilité, historique, mode de vie, objectifs. Cette première lecture rigoureuse évite les protocoles inadaptés et garantit que chaque soin ou produit recommandé est réellement utile pour vous.</p><div class="det-h">Ce que vous obtenez</div><ul class="det-ul"><li>Un questionnaire confidentiel structuré et complet</li><li>Une analyse personnalisée par une professionnelle diplômée</li><li>Une recommandation de soins et de produits ciblée et réaliste</li><li>Un échange direct sur WhatsApp avec photos de votre peau</li></ul><div class="det-h">Comment ça se passe</div><p class="det-p">Remplissez le questionnaire en ligne en prenant le temps de répondre précisément. Transmettez ensuite vos photos sur WhatsApp pour compléter l'analyse. Mme Sabrina vous répond personnellement avec une recommandation adaptée.</p>`},
   {g:'visage',n:'Consultation Peau — Suivi',tier:'Premium',tierCls:'',p:20000,kind:'book',
    d:"Un accompagnement approfondi sur 4 à 6 mois : diagnostic complet, programme personnalisé et suivi mensuel.",
    c:['eclat','taches','imperfections'],
    meta:[['Suivi 4-6 mois','clock'],['Check-up mensuel','grid']],
+   det:`<div class="det-h">En savoir plus</div><p class="det-p">Pour les peaux qui demandent un véritable accompagnement dans le temps. Sur 4 à 6 mois, Mme Sabrina suit l'évolution de votre peau, ajuste votre routine à chaque étape et adapte les soins en fonction de vos progrès et de votre rythme de vie. C'est la formule idéale lorsqu'on a déjà essayé plusieurs produits sans résultats durables ou lorsqu'on souhaite traiter en profondeur une problématique (taches, acné, relâchement, manque d'éclat).</p><div class="det-h">Résultats attendus</div><p class="det-phase"><b>1er mois</b> — diagnostic, mise en place de la routine, début du rééquilibrage.</p><p class="det-phase"><b>2 à 3 mois</b> — premières améliorations visibles, ajustements selon réactions.</p><p class="det-phase"><b>4 à 6 mois</b> — transformation visible et durable, peau stabilisée.</p><div class="det-h">Ce qui est inclus</div><ul class="det-ul"><li>Diagnostic complet de votre peau</li><li>Programme de soins entièrement personnalisé</li><li>Check-up mensuel avec ajustements précis</li><li>Dossier de suivi exclusif et confidentiel</li><li>Disponibilité WhatsApp directe avec Mme Sabrina</li></ul>`,
    protocol:{type:'list',h:'Votre suivi inclut',items:[
      "Diagnostic complet de votre peau","Programme de soins entièrement personnalisé",
      "Check-up mensuel avec ajustements","Dossier de suivi exclusif et confidentiel"]}},
@@ -725,6 +732,7 @@ const SERVICES=[
    d:"Un soin purifiant en profondeur qui désincruste, oxygène et rééquilibre les peaux à imperfections.",
    c:['imperfections','pores','grasses','terne'],
    meta:[['Environ 1h','clock'],['1 fois / mois','repeat']],
+   det:`<div class="det-h">En savoir plus</div><p class="det-p">Soin signature dédié aux peaux à imperfections, brillances ou pores dilatés. En une heure, votre peau est nettoyée en profondeur, désincrustée manuellement et oxygénée. Le protocole agit en cascade : préparation, exfoliation, ouverture des pores, extraction maîtrisée, masque purifiant et finition technologique. Une véritable remise à zéro cutanée qui révèle une peau nette, équilibrée et éclatante.</p><div class="det-h">Résultats attendus</div><p class="det-phase"><b>Dès la sortie de soin</b> — peau visiblement nette, pores désincrustés, teint plus frais et lumineux.</p><p class="det-phase"><b>Après 2 à 3 séances</b> — réduction visible des imperfections, peau plus stable, brillances diminuées.</p><p class="det-phase"><b>Après 4 à 6 séances mensuelles</b> — grain de peau affiné durablement, peau équilibrée, imperfections nettement réduites.</p><div class="det-h">Caractéristiques</div><ul class="det-ul"><li>Durée : environ 1 heure</li><li>Fréquence : 1 fois par mois</li><li>Convient aux peaux grasses, mixtes et à imperfections</li></ul>`,
    protocol:{type:'steps',h:'Le protocole',items:[
      ['Démaquillage','Nettoyage doux et préparation de la peau.'],
      ['Exfoliation','Élimination des cellules mortes pour lisser le grain.'],
@@ -738,6 +746,7 @@ const SERVICES=[
    c:['terne','texture','age','eclat'],
    warn:"Contre-indications : peau très irritée ou acné inflammatoire active.",
    meta:[['Environ 1h15','clock'],['Soin signature','star']],
+   det:`<div class="det-h">En savoir plus</div><p class="det-p">Soin signature de Luxury Skin Clinic, le Glass Skin est inspiré des protocoles asiatiques de référence visant l'effet « peau de verre » : lisse, uniforme, repulpée et profondément lumineuse. En 1h15, votre peau traverse 8 étapes successives qui agissent à la fois sur le grain, l'hydratation, l'éclat et la luminosité globale. C'est le soin qu'on choisit pour transformer durablement la qualité de la peau, pas seulement pour un coup d'éclat ponctuel.</p><div class="det-h">Résultats attendus</div><p class="det-phase"><b>Dès la sortie de soin</b> — peau lumineuse, lisse au toucher, hydratée en profondeur, teint immédiatement « réveillé ».</p><p class="det-phase"><b>Entre J+3 et J+7</b> — une légère purge peut apparaître, c'est normal et fait partie du processus de renouvellement.</p><p class="det-phase"><b>Après 3 à 4 séances mensuelles</b> — peau visiblement plus uniforme, grain affiné, luminosité durable, qualité globale de la peau transformée.</p><div class="det-h">Caractéristiques</div><ul class="det-ul"><li>Soin signature de la clinique</li><li>Protocole 8 étapes</li><li>Durée : environ 1h15</li><li>Inclut LED, masques avancés et sérums repulpants</li></ul><div class="det-h">Conseils post-soin</div><p class="det-p">Routine stricte pendant 3 jours après le soin : pas de gommage, pas d'actifs agressifs, protection solaire impérative en journée.</p><p class="det-warn">⚠️ Contre-indications : peau très irritée ou acné inflammatoire active. Une consultation préalable est recommandée.</p>`,
    protocol:{type:'steps',h:'Le protocole (8 étapes)',note:'Protocole détaillé rédigé par défaut — à valider avec la clinique.',items:[
      ['Double démaquillage','Nettoyage huileux puis aqueux pour une peau parfaitement propre.'],
      ['Exfoliation enzymatique','Affine le grain sans agresser.'],
@@ -753,6 +762,7 @@ const SERVICES=[
    c:['taches','acne','irregulier','age'],
    warn:"Jamais en premier soin. Une préparation de la peau est indispensable.",
    meta:[['1 fois / 6 mois max','repeat'],['Sur protocole','grid']],
+   det:`<div class="det-h">En savoir plus</div><p class="det-p">Le Luxury Peel est l'intervention la plus puissante du protocole visage. Il agit en profondeur sur les taches, les cicatrices d'acné, les irrégularités marquées du teint et les signes installés du temps. C'est un acte technique exigeant : il n'est jamais proposé en premier soin et nécessite une préparation intensive de la peau pour garantir des résultats sûrs, contrôlés et spectaculaires. C'est un investissement, pas une routine, choisi pour transformer durablement la qualité de la peau.</p><div class="det-h">Résultats attendus</div><p class="det-phase"><b>1 à 2 semaines après le peel</b> — phase de desquamation contrôlée, peau qui se renouvelle en profondeur.</p><p class="det-phase"><b>4 à 6 semaines</b> — peau visiblement plus uniforme, taches atténuées, grain affiné, éclat renforcé.</p><p class="det-phase"><b>2 à 3 mois</b> — résultats complets, qualité globale de la peau transformée durablement.</p><div class="det-h">Prérequis obligatoires</div><ul class="det-ul"><li>Minimum 3 séances de Soin Oxygène (peaux acné / pores)</li><li>OU 3 mois de Soin Glass Skin (taches / éclat)</li><li>Préparation intensive de la peau 2 semaines avant</li><li>Kit pré-peeling et kit post-peeling disponibles</li></ul><div class="det-h">Caractéristiques</div><ul class="det-ul"><li>Fréquence : 1 fois tous les 6 mois maximum</li><li>Acte technique réalisé sur protocole</li><li>Suivi post-peel obligatoire</li></ul><p class="det-warn">⚠️ Jamais en premier soin. Une consultation préalable et une préparation intensive sont indispensables. Protection solaire stricte obligatoire pendant toute la phase post-peel.</p>`,
    protocol:{type:'list',h:'Prérequis obligatoires',items:[
      "Minimum 3 séances de Soin Oxygène (peaux acné / pores)","OU 3 mois de Soin Glass Skin (taches / éclat)",
      "Préparation intensive de la peau 2 semaines avant","Kit pré-peeling et kit post-peeling disponibles"]}},
@@ -760,6 +770,7 @@ const SERVICES=[
    d:"Une exfoliation hybride qui révèle une peau du corps lisse, unifiée et lumineuse.",
    c:['irregulier','peau-seche','eclat'],
    meta:[['1 fois / 2 mois','repeat']],
+   det:`<div class="det-h">En savoir plus</div><p class="det-p">Le Gommage Luxury combine exfoliation chimique douce (AHA, BHA, Acide azélaïque) et exfoliation mécanique ultra-fine pour révéler une peau du corps profondément lisse, uniforme et lumineuse. Les agents clarifiants (Arbutine, Acide kojique, Réglisse) atténuent les taches et les zones pigmentées (hyperpigmentation post-épilation, frottements, cicatrices d'acné corporelle). Le protocole se termine par un modelage nourrissant qui restaure le confort cutané et sublime le rendu final.</p><div class="det-h">Résultats attendus</div><p class="det-phase"><b>Dès la sortie de soin</b> — peau du corps incroyablement douce, lumineuse et uniforme.</p><p class="det-phase"><b>Après 2 à 3 séances espacées de 2 mois</b> — taches atténuées, peau plus claire et plus homogène.</p><p class="det-phase"><b>Au long terme</b> — qualité globale de la peau du corps visiblement transformée.</p><div class="det-h">Caractéristiques</div><ul class="det-ul"><li>Exfoliation hybride : chimique + mécanique</li><li>Action clarifiante et unifiante</li><li>Modelage final nourrissant</li><li>Fréquence : 1 fois tous les 2 mois</li></ul>`,
    protocol:{type:'mix',h:'Une exfoliation hybride',blocks:[
      {t:'p',v:"Exfoliation chimique (AHA / BHA / Azélaïque), agents clarifiants (Arbutine / Kojique / Réglisse) et exfoliation mécanique ultra douce aux cristaux surfins."},
      {t:'steps',v:[['Application','Pose du soin exfoliant sur le corps.'],['Pose','Temps d\'action maîtrisé.'],
@@ -769,12 +780,14 @@ const SERVICES=[
    d:"Un massage complet et enveloppant pour relâcher les tensions et apaiser le corps et l'esprit.",
    c:['detente','bienetre'],
    meta:[['1 heure','clock'],['À volonté','repeat']],
+   det:`<div class="det-h">En savoir plus</div><p class="det-p">Une heure suspendue, conçue pour relâcher les tensions accumulées et reconnecter le corps et l'esprit. Le Luxury Massage couvre l'ensemble du corps de la tête aux pieds, avec une attention particulière aux zones où le stress se loge (nuque, épaules, dos, lombaires). C'est un soin de qualité spa, pensé comme un véritable moment d'apaisement profond.</p><div class="det-h">Résultats attendus</div><p class="det-phase"><b>Pendant le soin</b> — relâchement musculaire progressif, ralentissement du rythme, état de détente profonde.</p><p class="det-phase"><b>Après la séance</b> — corps allégé, esprit apaisé, qualité de sommeil souvent améliorée la nuit suivante.</p><p class="det-phase"><b>En séances régulières</b> — diminution durable du stress, tensions musculaires mieux gérées au quotidien.</p><div class="det-h">Zones travaillées</div><ul class="det-ul"><li>Cuir chevelu</li><li>Nuque et épaules</li><li>Dos et lombaires</li><li>Bras et mains</li><li>Jambes et pieds</li></ul><div class="det-h">Caractéristiques</div><ul class="det-ul"><li>Durée : 1 heure</li><li>Fréquence : à volonté, selon le besoin</li><li>Soin de bien-être pur, sans visée médicale</li></ul>`,
    protocol:{type:'list',h:'Zones travaillées',items:[
      "Cuir chevelu","Nuque","Dos","Bras","Jambes","Pieds"]}},
   {g:'capillaires',n:'Diagnostic Capillaire',tier:'',tierCls:'',p:5000,kind:'form-hair',
    d:"Le Perfect Hair Program commence ici : un questionnaire complet pour analyser votre cheveu et votre cuir chevelu.",
    c:['chute','pousse','cuir-sensible'],
    meta:[['Diagnostic','grid']],
+   det:`<div class="det-h">En savoir plus</div><p class="det-p">Le Diagnostic Capillaire est l'étape d'entrée du Perfect Hair Program. Avant de proposer un protocole capillaire (chute, pousse, casse, sécheresse, cuir chevelu sensible), Mme Sabrina analyse votre cheveu et votre cuir chevelu : nature, état, antécédents, habitudes de coiffage, traitements chimiques, mode de vie. Cette étape conditionne la pertinence de tous les soins capillaires qui suivront.</p><div class="det-h">Ce qui est inclus</div><ul class="det-ul"><li>Questionnaire capillaire complet et confidentiel</li><li>Analyse du cuir chevelu et de la fibre capillaire</li><li>Recommandation d'un protocole personnalisé</li><li>Photos à transmettre sur WhatsApp après l'envoi</li></ul><div class="det-h">Comment ça se passe</div><p class="det-p">Remplissez le questionnaire en ligne. Envoyez ensuite vos photos cuir chevelu et cheveux sur WhatsApp pour compléter l'analyse. Vous recevez en retour une recommandation de protocole et le programme de soins adapté.</p>`,
    protocol:{type:'list',h:'Ce qui est inclus',items:[
      "Questionnaire capillaire complet","Analyse du cuir chevelu et de la fibre",
      "Recommandation de protocole personnalisé","Photos à transmettre sur WhatsApp après l'envoi"]}},
@@ -782,6 +795,7 @@ const SERVICES=[
    d:"Une technique japonaise alliant eau, massage et soins pour un cuir chevelu sain et apaisé.",
    c:['cuir-sensible','secs','bienetre'],
    meta:[['1 fois / mois','repeat']],
+   det:`<div class="det-h">En savoir plus</div><p class="det-p">Le Hair Spa s'inspire directement des rituels capillaires japonais. Il associe un soin par l'eau, un massage du cuir chevelu et l'application de soins ciblés pour rééquilibrer le cuir chevelu et nourrir la fibre. Idéal en cas de cuir chevelu sensible, sec, irrité ou tout simplement fatigué par les coiffages successifs. C'est aussi un moment de détente profonde.</p><div class="det-h">Résultats attendus</div><p class="det-phase"><b>Dès la sortie de soin</b> — cuir chevelu apaisé, sensation de légèreté, cheveux doux et brillants.</p><p class="det-phase"><b>Après 2 à 3 séances mensuelles</b> — cuir chevelu rééquilibré, démangeaisons et inconforts réduits.</p><p class="det-phase"><b>En entretien régulier</b> — qualité globale du cuir chevelu nettement améliorée, terrain favorable à la pousse.</p><div class="det-h">Le rituel</div><ul class="det-ul"><li>Technique japonaise : eau, massage et soins</li><li>Analyse du cuir chevelu incluse</li><li>Détente profonde et cuir chevelu rééquilibré</li></ul><div class="det-h">Caractéristiques</div><ul class="det-ul"><li>Fréquence : 1 fois par mois</li><li>Bienfait double : cuir chevelu et bien-être</li></ul>`,
    protocol:{type:'list',h:'Le rituel',items:[
      "Technique japonaise : eau, massage et soins","Analyse du cuir chevelu incluse",
      "Détente profonde et cuir chevelu rééquilibré"]}},
@@ -789,6 +803,7 @@ const SERVICES=[
    d:"Une microstimulation capillaire avancée associée à un sérum premium pour densifier la chevelure.",
    c:['chute','pousse','abimes'],
    meta:[['1 séance / mois','repeat'],['Cure 6 mois min.','clock']],
+   det:`<div class="det-h">En savoir plus</div><p class="det-p">Le Soin Activateur de Pousse cible spécifiquement les problématiques de chute, de pousse lente, de cheveux fins ou clairsemés. La microstimulation capillaire avancée réactive la circulation au niveau du bulbe pileux et favorise l'absorption d'un sérum premium concentré en actifs densifiants. C'est une démarche structurée, qui s'inscrit dans la durée (cure de 6 mois minimum) pour produire des résultats sérieux et visibles.</p><div class="det-h">Résultats attendus</div><p class="det-phase"><b>1er à 2e mois</b> — cuir chevelu mieux irrigué, sensation de chevelure plus tonique.</p><p class="det-phase"><b>3e à 4e mois</b> — apparition de nouveaux cheveux dans les zones traitées, densification visible.</p><p class="det-phase"><b>6e mois</b> — densité globale visiblement améliorée, cheveux plus forts, chevelure plus fournie.</p><div class="det-h">Le protocole</div><ul class="det-ul"><li>Microstimulation capillaire avancée</li><li>Application d'un sérum activateur premium</li><li>Conseils routine maison entre les séances</li></ul><div class="det-h">Caractéristiques</div><ul class="det-ul"><li>Fréquence : 1 séance par mois</li><li>Cure recommandée : 6 mois minimum</li><li>Convient aux problématiques chute, pousse, densité</li></ul>`,
    protocol:{type:'list',h:'Le protocole',items:[
      "Microstimulation capillaire avancée","Application d'un sérum activateur premium",
      "Cure recommandée : 1 séance par mois, 6 mois minimum"]}},
@@ -796,6 +811,7 @@ const SERVICES=[
    d:"L'expérience absolue : visage, corps, capillaires et bien-être réunis dans un espace VIP entièrement privatisé.",
    c:['bienetre','eclat','detente'],
    meta:[['4 à 5 heures','clock'],['Espace privatisé','star']],
+   det:`<div class="det-h">En savoir plus</div><p class="det-p">Le Soin Complet VIP est l'expérience phare de Luxury Skin Clinic. Pendant 4 à 5 heures, l'ensemble de l'espace est privatisé rien que pour vous. Vous enchaînez les protocoles visage, corps, capillaires et bien-être dans un cadre exclusif, avec une personne entièrement dédiée à votre service du début à la fin. Vin à volonté, repas servi sur place, atmosphère intime et raffinée. C'est le soin choisi pour célébrer un événement, s'offrir un cadeau exceptionnel ou simplement vivre une journée entière hors du temps.</p><div class="det-h">Résultats attendus</div><p class="det-phase"><b>Pendant l'expérience</b> — détente absolue, lâcher-prise complet, sensation de luxe enveloppant.</p><p class="det-phase"><b>À la sortie</b> — peau visiblement transformée, cheveux sublimés, corps détendu, esprit apaisé.</p><p class="det-phase"><b>Les jours suivants</b> — sentiment durable de bien-être, éclat de la peau et des cheveux qui se prolonge.</p><div class="det-h">Tout est inclus</div><ul class="det-ul"><li>Soin du visage complet</li><li>Gommage du corps</li><li>Massage complet</li><li>Soins capillaires</li><li>Vin à volonté et repas servi sur place</li><li>Une personne entièrement dédiée à votre service</li><li>Espace VIP privatisé exclusif</li></ul><div class="det-h">Caractéristiques</div><ul class="det-ul"><li>Durée : 4 à 5 heures</li><li>Réservation impérative et exclusive</li><li>Idéal pour anniversaire, célébration, cadeau d'exception</li></ul>`,
    protocol:{type:'list',h:'Tout est inclus',items:[
      "Soin du visage complet","Gommage du corps","Massage complet","Soins capillaires",
      "Vin à volonté et repas","Une personne entièrement dédiée à votre service",
@@ -897,6 +913,7 @@ function svcCard(s,idx){
   const meta=(s.meta||[]).map(m=>`<span><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">${ICONS[m[1]]}</svg>${m[0]}</span>`).join('');
   // protocole
   let proto='';
+  if(s.det)proto+=s.det;
   const pr=s.protocol;
   if(pr){
     proto+=`<div class="proto-h">${pr.h}</div>`;
