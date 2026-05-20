@@ -847,10 +847,11 @@ body{padding-bottom:84px;}
 var AC=window.AudioContext||window.webkitAudioContext;
 if(!AC)return;
 var ctx,master,musicGain,lp,musicOn=false,musicTimer;
+var IS_MOBILE=matchMedia('(max-width:760px)').matches;
 function ensure(){
   if(ctx)return;
   ctx=new AC();
-  master=ctx.createGain();master.gain.value=.9;master.connect(ctx.destination);
+  master=ctx.createGain();master.gain.value=IS_MOBILE?1.0:.9;master.connect(ctx.destination);
   musicGain=ctx.createGain();musicGain.gain.value=0;
   lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=950;
   musicGain.connect(lp);lp.connect(master);
@@ -927,7 +928,7 @@ function musicStart(){
   if(musicOn)return;musicOn=true;
   musicGain.gain.cancelScheduledValues(ctx.currentTime);
   musicGain.gain.setValueAtTime(Math.max(musicGain.gain.value,.0001),ctx.currentTime);
-  musicGain.gain.linearRampToValueAtTime(matchMedia('(max-width:760px)').matches?.16:.10,ctx.currentTime+4);
+  musicGain.gain.linearRampToValueAtTime(IS_MOBILE?.24:.10,ctx.currentTime+2.2);
   mLoop();
 }
 function musicStop(){
@@ -936,10 +937,19 @@ function musicStop(){
 }
 window.LCAudio={play:play,musicStart:musicStart,musicStop:musicStop,
   ensure:ensure,resume:resume,isMusicOn:function(){return musicOn;}};
-/* déblocage de l'audio au premier geste utilisateur */
-['click','touchstart','keydown'].forEach(function(ev){
-  document.addEventListener(ev,function u(){ensure();resume();
-    document.removeEventListener(ev,u);},{passive:true});
+/* déblocage + démarrage musique au tout premier geste (n'importe lequel) */
+function _kick(){
+  ensure();resume();
+  if(!musicOn)musicStart();
+  var m=document.getElementById('lcMute');if(m)m.classList.add('playing');
+}
+['touchstart','touchend','pointerdown','click','keydown','scroll'].forEach(function(ev){
+  document.addEventListener(ev,function u(){
+    _kick();
+    ['touchstart','touchend','pointerdown','click','keydown','scroll'].forEach(function(e2){
+      document.removeEventListener(e2,u);
+    });
+  },{passive:true,once:true});
 });
 /* câblage automatique des effets (délégation d'événements) */
 var lastHover=0;
@@ -978,15 +988,12 @@ document.addEventListener('click',function(e){
     if(cc){cc.classList.remove('bump');void cc.offsetWidth;cc.classList.add('bump');}
   }
 });
-/* bouton mute + démarrage de la musique au 1er clic */
+/* bouton mute — toggle uniquement (démarrage déjà géré par _kick au 1er geste) */
 var mute=document.getElementById('lcMute');
 if(mute){
-  document.addEventListener('click',function s(){
-    if(!musicOn){musicStart();mute.classList.add('playing');}
-    document.removeEventListener('click',s);
-  });
   mute.addEventListener('click',function(e){
     e.stopPropagation();
+    ensure();resume();
     if(musicOn){musicStop();mute.classList.remove('playing');}
     else{musicStart();mute.classList.add('playing');}
   });
