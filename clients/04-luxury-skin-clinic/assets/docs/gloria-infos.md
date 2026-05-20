@@ -29,7 +29,7 @@ Panier multi-produits. **24 produits** intégrés (voir liste ci-dessous).
 - **Visage** : Gel Nettoyants · Sérums · Crèmes · Masques
 - **Corps** : Beauty Bar · Crème corps · Gommage · Huile corps
 - **Capillaires** : Shampoing · Après-shampoing · Sérum · Huile · Masque
-- **Enfant (0-16 ans)** : Gel Lavant · Crème Hydratante · Crème Apaisante · Crème Lavante
+- **Enfant (0-16 ans)** : Gel Lavant · Crème · Crème Lavante
 
 ### Luxury Skin Clinic — `luxury-skin-clinic.html` (institut)
 Design clinique distinct (blanc dominant + or + vert menthe). 11 soins/prestations.
@@ -86,8 +86,8 @@ Design rose poudré + or + blanc. 6 produits. Panier multi-produits.
 | Produit | Prix | Format | Sous-catégorie |
 |---|---|---|---|
 | Gel Lavant Aloe | 6 800 F | 250ml | Gel Lavant |
-| Crème Douceur d'Aloe | 6 800 F | 250ml | Crème Hydratante |
-| Crème Dermo-Apaisante Enfants | 13 000 F | 250ml | Crème Apaisante |
+| Crème Douceur d'Aloe | 6 800 F | 250ml | Crème |
+| Crème Dermo-Apaisante Enfants | 13 000 F | 250ml | Crème |
 | Crème Lavante Dermatologique Enfants | 8 000 F | — | Crème Lavante |
 
 > ⚠️ = produit portant un avertissement d'usage (intégré dans la fiche produit).

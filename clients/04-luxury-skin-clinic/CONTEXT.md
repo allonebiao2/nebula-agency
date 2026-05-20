@@ -30,7 +30,7 @@ Catégorie → Sous-catégorie → Préoccupation → Produits. Panier multi-pro
 - **Visage** : Gel Nettoyants · Sérums · Crèmes · Masques
 - **Corps** : Beauty Bar · Crème corps · Gommage · Huile corps
 - **Capillaires** : Shampoing · Après-shampoing · Masque · Sérum · Huile / Beurre
-- **Enfant (0-16 ans)** : Gel Lavant · Crème Hydratante · Crème Apaisante · Crème Lavante
+- **Enfant (0-16 ans)** : Gel Lavant · Crème · Crème Lavante
 - **35 produits** : 24 fiches complètes (desc, actifs, résultats, INCI, avertissements)
   + 11 nouveaux produits en fiches à compléter (prix « à définir », description
   « à venir », badge « À compléter »).
