@@ -776,7 +776,7 @@ const SERVICES=[
      {t:'steps',v:[['Application','Pose du soin exfoliant sur le corps.'],['Pose','Temps d\'action maîtrisé.'],
        ['Rinçage','Élimination en douceur.'],['Finition','Soin nourrissant et apaisant.'],
        ['Modelage','Modelage final pour une peau sublimée.']]}]}},
-  {g:'corps',n:'Luxury Massage',tier:'',tierCls:'',p:30000,kind:'book',
+  {g:'corps',n:'Luxury Massage',tier:'',tierCls:'',p:30000,kind:'book',by:"l'esthéticienne",
    d:"Un massage complet et enveloppant pour relâcher les tensions et apaiser le corps et l'esprit.",
    c:['detente','bienetre'],
    meta:[['1 heure','clock'],['À volonté','repeat']],
@@ -946,7 +946,7 @@ function svcCard(s,idx){
         <div class="svc-acc-panel"><div class="svc-acc-inner">${proto}</div></div></div>`:''}
       ${warn}${rdv}
       <div class="svc-foot">
-        <div class="svc-by"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Réalisé par Mme Sabrina — Diplômée</div>
+        <div class="svc-by"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Réalisé par ${s.by||'Mme Sabrina — Diplômée'}</div>
         ${btn}
       </div>
     </div>`;
