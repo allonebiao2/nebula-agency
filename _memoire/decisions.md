@@ -368,4 +368,32 @@
 
 ---
 
+## 2026-05-21 — Restauration massive des textes EXACTS (briefs Gloria)
+
+- **Contexte** : Gloria, exigeante sur la précision réglementaire du vocabulaire
+  cosmétique, a re-posté en clair les briefs sources de quasiment toutes les
+  fiches. Les versions paraphrasées des vagues 1-9 ne lui convenaient pas.
+- **Décision** : restaurer **mot pour mot** le texte source dans le champ `det`
+  de chaque fiche, en respectant strictement :
+  - les sections dans l'ordre exact du brief (Description → Résultats par
+    phases → Caractéristiques → Conseils → Avertissements / Actifs clés) ;
+  - les listes à puces telles quelles (jamais converties en phrases) ;
+  - les emojis de titres de section du brief (✨ 💎 🌿 🧖🏽‍♀️ 📅 🧴 🌫️…) ;
+  - les listes ordonnées `<ol class="det-ul">` pour les étapes numérotées
+    (protocoles de soin, questionnaires).
+- **Raison** : en cosmétique, la formulation est réglementée (« aide à »,
+  « contribue à », « visiblement » — jamais de promesse thérapeutique).
+  Reparaphraser = risque de mal traduire une allégation. Le texte de Gloria
+  fait foi.
+- **Conséquences** :
+  - 50/54 fiches en texte EXACT (INA Luxury 32/36, Cozy 7/7, Clinic 11/11).
+  - Règlement intérieur clinique étendu de 6 à 7 sections (modal `reglScrim`).
+  - Restent 4 fiches sans brief : Crème Lait de Chèvre + 6 capillaires en
+    rupture (à restaurer dès réception des briefs).
+  - **Process pour la suite** : toute nouvelle fiche ou correction de fiche
+    cosmétique doit partir du texte source fourni par Gloria, jamais d'une
+    reformulation. Voir [[feedback_contenu-manquant]].
+
+---
+
 <!-- Ajouter les nouvelles décisions au-dessus -->
