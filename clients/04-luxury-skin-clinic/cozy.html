@@ -193,7 +193,7 @@ main{position:relative;z-index:5;}
 .det-warn{font-size:.72rem;color:#8a3a3a;background:rgba(180,80,80,.06);border-left:2px solid #b04545;padding:8px 10px;border-radius:6px;margin:8px 0 4px;line-height:1.55;}
 .det-inci{font-size:.66rem;color:var(--gris);line-height:1.7;}
 .card-bottom{margin-top:auto;padding-top:13px;}
-.card-foot{display:flex;align-items:center;justify-content:space-between;gap:9px;
+.card-foot{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;
   border-top:1px solid var(--ligne);padding-top:13px;}
 .card-price{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600;color:var(--rose-fonce);}
 .card-price small{font-size:.56rem;letter-spacing:.06em;color:var(--gris);font-family:'Jost',sans-serif;}
@@ -202,6 +202,25 @@ main{position:relative;z-index:5;}
   color:#fff;background:var(--rose-grad);transition:transform .3s var(--ease),box-shadow .3s;}
 .btn-add:hover{transform:translateY(-2px);box-shadow:0 10px 22px -8px rgba(189,125,142,.6);}
 .btn-add svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.4;}
+
+/* selecteur de quantite sur fiche produit */
+.add-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end;}
+.qty-card{display:inline-flex;align-items:center;gap:2px;border:1px solid var(--rose);
+  border-radius:20px;padding:2px;background:#fff;}
+.qty-card button{width:26px;height:26px;border:0;border-radius:50%;background:transparent;
+  color:var(--rose-fonce);cursor:pointer;font-size:14px;line-height:1;font-weight:600;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .2s,color .2s,transform .15s;}
+.qty-card button:hover{background:var(--rose-pale);}
+.qty-card button:active{transform:scale(.92);}
+.qty-card button:disabled{opacity:.35;cursor:not-allowed;}
+.qty-card .q-val{min-width:20px;text-align:center;font-size:.82rem;color:var(--encre);
+  font-weight:500;font-family:'Jost',sans-serif;}
+@media(max-width:600px){
+  .qty-card button{width:32px;height:32px;}
+  .qty-card .q-val{min-width:22px;font-size:.85rem;}
+  .add-actions{justify-content:space-between;width:100%;}
+}
 
 /* guidance */
 .help-strip{margin-top:34px;display:flex;align-items:center;justify-content:center;gap:14px;
@@ -642,7 +661,7 @@ function card(p){
             :`<div class="card-price">${fmt(p.p)} <small>FCFA</small></div>`}
           ${p.todo
             ?`<a class="btn-add" href="${waLink(`Bonjour Cozy, je souhaite des infos sur le produit : ${p.n}.`)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> WhatsApp</a>`
-            :`<button class="btn-add" data-add="${p.n}"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Panier</button>`}
+            :`<div class="add-actions"><div class="qty-card"><button type="button" class="q-dec" aria-label="Diminuer la quantité">−</button><span class="q-val">1</span><button type="button" class="q-inc" aria-label="Augmenter la quantité">+</button></div><button class="btn-add" data-add="${p.n}"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Panier</button></div>`}
         </div>
       </div>
     </div>`;
@@ -664,8 +683,22 @@ function card(p){
       tog.querySelector('span').textContent=open?'Réduire':baseLabel;
     });
   });
+  // selecteur de quantite inline sur la carte (Mod 5)
+  const qVal=el.querySelector('.q-val');
+  const qDec=el.querySelector('.q-dec');
+  const qInc=el.querySelector('.q-inc');
+  function setQ(n){const v=Math.max(1,Math.min(20,n|0));qVal.textContent=v;if(qDec)qDec.disabled=(v<=1);}
+  if(qVal){
+    setQ(1);
+    qDec.addEventListener('click',()=>setQ(parseInt(qVal.textContent,10)-1));
+    qInc.addEventListener('click',()=>setQ(parseInt(qVal.textContent,10)+1));
+  }
   const ab=el.querySelector('[data-add]');
-  if(ab)ab.addEventListener('click',()=>addToCart(p));
+  if(ab)ab.addEventListener('click',()=>{
+    const qty=qVal?parseInt(qVal.textContent,10):1;
+    addToCart(p,qty);
+    if(qVal)setQ(1);
+  });
   const _moreBtn=el.querySelector('.cc-more');
   if(_moreBtn)_moreBtn.addEventListener('click',()=>{
     el.querySelectorAll('.cc-extra').forEach(x=>x.classList.remove('cc-hide'));
@@ -681,11 +714,13 @@ try{cart=JSON.parse(localStorage.getItem(CART_KEY))||[];}catch(e){cart=[];}
 function saveCart(){try{localStorage.setItem(CART_KEY,JSON.stringify(cart));}catch(e){}}
 function cartQty(){return cart.reduce((s,it)=>s+it.qty,0);}
 function cartTotalVal(){return cart.reduce((s,it)=>s+it.qty*it.p,0);}
-function addToCart(p){
+function addToCart(p,qty){
+  const q=Math.max(1,Math.min(20,(qty|0)||1));
   const ex=cart.find(it=>it.n===p.n);
-  if(ex)ex.qty++;
-  else cart.push({n:p.n,p:p.p,size:p.size||'',qty:1});
-  saveCart();syncCart();toast(`${p.n} ajouté au panier`);
+  if(ex)ex.qty+=q;
+  else cart.push({n:p.n,p:p.p,size:p.size||'',qty:q});
+  saveCart();syncCart();
+  toast(`${p.n}${q>1?' ×'+q:''} ajouté au panier`);
 }
 function changeQty(name,d){
   const it=cart.find(x=>x.n===name);if(!it)return;
@@ -735,9 +770,31 @@ function clearCart(){cart=[];saveCart();syncCart();}
 cartClear.addEventListener('click',clearCart);
 cartWa.addEventListener('click',()=>{
   if(!cart.length)return;
-  let msg="Bonjour Cozy, je souhaite commander :\n";
-  cart.forEach(it=>{msg+=`- ${it.n}${it.size?' ('+it.size+')':''} x${it.qty} = ${fmt(it.qty*it.p)} FCFA\n`;});
-  msg+=`TOTAL : ${fmt(cartTotalVal())} FCFA\n\nMa zone de livraison : \nMerci de confirmer ma commande.`;
+  const items=cart.reduce((s,it)=>s+it.qty,0);
+  const lines=cart.map((it,i)=>
+    `${i+1}.  *${it.n}*${it.size?'\n     Format : '+it.size:''}\n     Quantité : ${it.qty}  ·  Prix unitaire : ${fmt(it.p)} F\n     Sous-total : *${fmt(it.qty*it.p)} FCFA*`
+  ).join('\n\n');
+  const msg=`🌸  *Bonjour Cozy*  🌸
+
+Je souhaite passer la commande suivante depuis votre boutique en ligne :
+
+━━━━━━━━━━━━━━━━━━━━
+🛍️  *MA SÉLECTION* — ${items} article${items>1?'s':''}
+━━━━━━━━━━━━━━━━━━━━
+
+${lines}
+
+━━━━━━━━━━━━━━━━━━━━
+💖  *TOTAL  :  ${fmt(cartTotalVal())} FCFA*
+━━━━━━━━━━━━━━━━━━━━
+
+📍  Zone de livraison :
+👤  Nom & prénom :
+📞  Numéro de contact :
+
+Merci de me confirmer la disponibilité et les modalités de livraison. ✨
+
+À très vite, 💕`;
   window.open(waLink(msg),'_blank');
 });
 

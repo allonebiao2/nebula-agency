@@ -345,7 +345,7 @@ header{position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);
 .det-inci{font-size:.66rem;color:var(--texte-doux);line-height:1.7;letter-spacing:.01em;}
 
 .card-bottom{margin-top:auto;padding-top:14px;}
-.card-foot{display:flex;align-items:center;justify-content:space-between;gap:9px;
+.card-foot{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;
   border-top:1px solid rgba(201,168,76,.13);padding-top:13px;}
 .card-price{font-family:'Cormorant Garamond',serif;font-size:1.36rem;font-weight:600;
   background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
@@ -359,6 +359,25 @@ header{position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);
 .btn-add svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.4;}
 .btn-add.wa{background:none;border:1px solid rgba(201,168,76,.4);color:var(--or-clair);}
 .btn-add.wa:hover{background:rgba(201,168,76,.12);}
+
+/* selecteur de quantite sur fiche produit */
+.add-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end;}
+.qty-card{display:inline-flex;align-items:center;gap:2px;border:1px solid rgba(201,168,76,.32);
+  border-radius:20px;padding:2px;background:rgba(10,10,10,.4);}
+.qty-card button{width:26px;height:26px;border:0;border-radius:50%;background:transparent;
+  color:var(--or-clair);cursor:pointer;font-size:14px;line-height:1;font-weight:500;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .2s,color .2s,transform .15s;}
+.qty-card button:hover{background:rgba(201,168,76,.18);color:var(--creme);}
+.qty-card button:active{transform:scale(.92);}
+.qty-card button:disabled{opacity:.3;cursor:not-allowed;}
+.qty-card .q-val{min-width:20px;text-align:center;font-size:.82rem;color:var(--creme);
+  font-weight:500;font-family:'Jost',sans-serif;}
+@media(max-width:600px){
+  .qty-card button{width:32px;height:32px;}
+  .qty-card .q-val{min-width:22px;font-size:.85rem;}
+  .add-actions{justify-content:space-between;width:100%;}
+}
 
 .empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--texte-doux);}
 .empty h3{font-size:1.5rem;color:var(--creme);margin-bottom:8px;font-style:italic;}
@@ -1286,7 +1305,7 @@ function productCard(p,i){
     ?`<a class="btn-add wa" href="${waLink(`Bonjour, je souhaite être averti(e) du retour en stock de ${p.n}.`)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg> M'avertir du retour</a>`
     :(p.p==null)
     ?`<a class="btn-add wa" href="${waLink(`Bonjour, je souhaite connaître le prix du produit : ${p.n}.`)}" target="_blank" rel="noopener">Demander le prix</a>`
-    :`<button class="btn-add" data-add="${p.n}"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Panier</button>`;
+    :`<div class="add-actions"><div class="qty-card"><button type="button" class="q-dec" aria-label="Diminuer la quantité">−</button><span class="q-val">1</span><button type="button" class="q-inc" aria-label="Augmenter la quantité">+</button></div><button class="btn-add" data-add="${p.n}"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Panier</button></div>`;
   el.innerHTML=`
     <div class="card-photo">
       ${IMG[p.n]
@@ -1337,8 +1356,22 @@ function productCard(p,i){
       tog.querySelector('span').textContent=open?'Réduire':baseLabel;
     });
   });
+  // selecteur de quantite inline sur la carte (Mod 5 : choix qty avant ajout)
+  const qVal=el.querySelector('.q-val');
+  const qDec=el.querySelector('.q-dec');
+  const qInc=el.querySelector('.q-inc');
+  function setQ(n){const v=Math.max(1,Math.min(20,n|0));qVal.textContent=v;if(qDec)qDec.disabled=(v<=1);}
+  if(qVal){
+    setQ(1);
+    qDec.addEventListener('click',()=>setQ(parseInt(qVal.textContent,10)-1));
+    qInc.addEventListener('click',()=>setQ(parseInt(qVal.textContent,10)+1));
+  }
   const addBtn=el.querySelector('[data-add]');
-  if(addBtn)addBtn.addEventListener('click',()=>addToCart(p));
+  if(addBtn)addBtn.addEventListener('click',()=>{
+    const qty=qVal?parseInt(qVal.textContent,10):1;
+    addToCart(p,qty);
+    if(qVal)setQ(1); // reset apres ajout
+  });
   return el;
 }
 
@@ -1359,11 +1392,13 @@ try{cart=JSON.parse(localStorage.getItem(CART_KEY))||[];}catch(e){cart=[];}
 function saveCart(){try{localStorage.setItem(CART_KEY,JSON.stringify(cart));}catch(e){}}
 function cartQty(){return cart.reduce((s,it)=>s+it.qty,0);}
 function cartTotalVal(){return cart.reduce((s,it)=>s+it.qty*it.p,0);}
-function addToCart(p){
+function addToCart(p,qty){
+  const q=Math.max(1,Math.min(20,(qty|0)||1));
   const ex=cart.find(it=>it.n===p.n);
-  if(ex)ex.qty++;
-  else cart.push({n:p.n,p:p.p,size:p.size||'',qty:1});
-  saveCart();syncCart();toast(`${p.n} ajouté au panier`);
+  if(ex)ex.qty+=q;
+  else cart.push({n:p.n,p:p.p,size:p.size||'',qty:q});
+  saveCart();syncCart();
+  toast(`${p.n}${q>1?' ×'+q:''} ajouté au panier`);
 }
 function changeQty(name,delta){
   const it=cart.find(x=>x.n===name);if(!it)return;
@@ -1414,9 +1449,31 @@ function clearCart(){cart=[];saveCart();syncCart();}
 cartClear.addEventListener('click',clearCart);
 cartWa.addEventListener('click',()=>{
   if(!cart.length)return;
-  let msg="Bonjour INA Luxury, je souhaite commander :\n";
-  cart.forEach(it=>{msg+=`- ${it.n}${it.size?' ('+it.size+')':''} x${it.qty} = ${fmt(it.qty*it.p)} FCFA\n`;});
-  msg+=`TOTAL : ${fmt(cartTotalVal())} FCFA\n\nMa zone de livraison : \nMerci de confirmer ma commande.`;
+  const items=cart.reduce((s,it)=>s+it.qty,0);
+  const lines=cart.map((it,i)=>
+    `${i+1}.  *${it.n}*${it.size?'\n     Format : '+it.size:''}\n     Quantité : ${it.qty}  ·  Prix unitaire : ${fmt(it.p)} F\n     Sous-total : *${fmt(it.qty*it.p)} FCFA*`
+  ).join('\n\n');
+  const msg=`🌸  *Bonjour INA Luxury*  🌸
+
+Je souhaite passer la commande suivante depuis votre boutique en ligne :
+
+━━━━━━━━━━━━━━━━━━━━
+🛍️  *MA COMMANDE* — ${items} article${items>1?'s':''}
+━━━━━━━━━━━━━━━━━━━━
+
+${lines}
+
+━━━━━━━━━━━━━━━━━━━━
+💰  *TOTAL  :  ${fmt(cartTotalVal())} FCFA*
+━━━━━━━━━━━━━━━━━━━━
+
+📍  Zone de livraison :
+👤  Nom & prénom :
+📞  Numéro de contact :
+
+Merci de me confirmer la disponibilité, le délai et les modalités de livraison. ✨
+
+À très vite, 🤍`;
   window.open(waLink(msg),'_blank');
 });
 
