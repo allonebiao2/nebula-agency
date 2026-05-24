@@ -756,16 +756,32 @@ body{padding-bottom:84px;}
 var AC=window.AudioContext||window.webkitAudioContext;
 if(!AC)return;
 var ctx,master,musicGain,lp,musicOn=false,musicTimer;
-var IS_MOBILE=matchMedia('(max-width:760px)').matches;
+/* Mobile detection : viewport OU pointer:coarse (tablette/phone) */
+var IS_MOBILE=matchMedia('(max-width:760px)').matches||matchMedia('(pointer:coarse)').matches;
 function ensure(){
   if(ctx)return;
-  ctx=new AC();
-  master=ctx.createGain();master.gain.value=IS_MOBILE?1.0:.9;master.connect(ctx.destination);
+  try{ctx=new AC();}catch(e){return;}
+  /* DynamicsCompressor pour eviter le clipping quand on boost le gain mobile */
+  var comp=ctx.createDynamicsCompressor();
+  comp.threshold.value=-10;comp.knee.value=4;comp.ratio.value=8;
+  comp.attack.value=.005;comp.release.value=.12;
+  comp.connect(ctx.destination);
+  master=ctx.createGain();
+  master.gain.value=IS_MOBILE?1.45:.9;
+  master.connect(comp);
   musicGain=ctx.createGain();musicGain.gain.value=0;
   lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=950;
   musicGain.connect(lp);lp.connect(master);
+  /* iOS unlock : silent buffer joue 1 sample pendant le 1er geste */
+  try{var b=ctx.createBuffer(1,1,22050),s=ctx.createBufferSource();
+    s.buffer=b;s.connect(ctx.destination);s.start(0);}catch(e){}
 }
-function resume(){if(ctx&&ctx.state==='suspended')ctx.resume();}
+function resume(){
+  if(!ctx)return;
+  if(ctx.state==='suspended'){
+    try{var p=ctx.resume();if(p&&p.catch)p.catch(function(){});}catch(e){}
+  }
+}
 function tone(freq,dur,type,vol,dest){
   ensure();resume();
   var t=ctx.currentTime,o=ctx.createOscillator(),g=ctx.createGain();
