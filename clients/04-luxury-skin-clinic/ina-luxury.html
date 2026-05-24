@@ -1040,7 +1040,13 @@ const state={family:null,subcat:null,routine:null};
 })();
 
 /* ===== HELPERS WHATSAPP ===== */
-document.getElementById('helpWa').href=waLink(`🌸 *Bonjour Luxury Club 229* ✨\n\n${BRAND_LINE}\n\nJ'aimerais un conseil personnalisé pour mes soins INA Luxury. 🤍\n\nPouvez-vous me proposer une routine adaptée à ma peau ?\n\nMerci 🙏\n\nRéf : ${genRef()}  ·  ${nowFr()}`);
+(function(){
+  const a=document.getElementById('helpWa');
+  a.href=waLink(`🌸 *Bonjour Luxury Club 229* ✨\n\n${BRAND_LINE}\n\nJ'aimerais un conseil personnalisé pour mes soins INA Luxury. 🤍\n\nPouvez-vous me proposer une routine adaptée à ma peau ?\n\nMerci 🙏\n\nRéf : ${genRef()}  ·  ${nowFr()}`);
+  a.setAttribute('data-lc-confirm','1');
+  a.setAttribute('data-lc-recap','💆 <b>Conseil personnalisé</b><small>Routine sur-mesure avec Mme Sabrina</small>');
+  a.setAttribute('data-lc-q','Envoyer votre demande de conseil ?');
+})();
 
 /* ===== ACCORDÉON MENU ===== */
 /* architecture des 2 autres marques (liens sortants) */
@@ -1355,10 +1361,12 @@ function productCard(p,i){
   const _e=emoOf(p);
   const _waStock=`🌸 *Bonjour Luxury Club 229* ✨\n\n${BRAND_LINE}\n\nJe souhaite être averti(e) du retour en stock de :\n${_e} *${p.n}*${p.size?' — '+p.size:''}\n\nMerci de me prévenir dès sa disponibilité 🙏\n\nRéf : ${genRef()}  ·  ${nowFr()}`;
   const _waPrice=`🌸 *Bonjour Luxury Club 229* ✨\n\n${BRAND_LINE}\n\nJe souhaite connaître le prix et les modalités de commande pour :\n${_e} *${p.n}*${p.size?' — '+p.size:''}\n\nMerci 🙏\n\nRéf : ${genRef()}  ·  ${nowFr()}`;
+  const _recapStock=`${_e} <b>${p.n}</b>${p.size?'<small>'+p.size+'</small>':''}<small>Vous serez averti(e) dès le retour en stock</small>`;
+  const _recapPrice=`${_e} <b>${p.n}</b>${p.size?'<small>'+p.size+'</small>':''}<small>Demande de prix et disponibilité</small>`;
   const actionHtml=(p.stock===0)
-    ?`<a class="btn-add wa" href="${waLink(_waStock)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg> M'avertir du retour</a>`
+    ?`<a class="btn-add wa" href="${waLink(_waStock)}" target="_blank" rel="noopener" data-lc-confirm data-lc-recap="${_recapStock.replace(/"/g,'&quot;')}" data-lc-q="Envoyer votre demande d'alerte retour en stock ?"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg> M'avertir du retour</a>`
     :(p.p==null)
-    ?`<a class="btn-add wa" href="${waLink(_waPrice)}" target="_blank" rel="noopener">Demander le prix</a>`
+    ?`<a class="btn-add wa" href="${waLink(_waPrice)}" target="_blank" rel="noopener" data-lc-confirm data-lc-recap="${_recapPrice.replace(/"/g,'&quot;')}" data-lc-q="Envoyer votre demande de prix ?">Demander le prix</a>`
     :`<div class="add-actions"><div class="qty-card"><button type="button" class="q-dec" aria-label="Diminuer la quantité">−</button><span class="q-val">1</span><button type="button" class="q-inc" aria-label="Augmenter la quantité">+</button></div><button class="btn-add" data-add="${p.n}"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Panier</button></div>`;
   el.innerHTML=`
     <div class="card-photo">
@@ -1544,7 +1552,18 @@ ${recvLine}
 Merci de me confirmer la disponibilité et le délai 🙏
 
 Réf : ${genRef()}  ·  ${nowFr()}`;
-  window.open(waLink(msg),'_blank');
+  // Récap HTML pour le modal de confirmation
+  const recapHtml=cart.map(it=>{
+    const e=emoForName(it.n);
+    return `<div class="lc-recap-line"><div class="nm">${e} <b>${it.n}</b>${it.size?'<small>'+it.size+'</small>':''}<small>Quantité : ${it.qty}  ·  ${fmt(it.p)} F l'unité</small></div><div class="ln">${fmt(it.qty*it.p)} F</div></div>`;
+  }).join('')+`<div class="lc-recap-total"><span>TOTAL</span><span>${fmt(cartTotalVal())} FCFA</span></div>`;
+  const recvHtml=(recv==='livraison')
+    ?`<div class="lc-recap-line" style="border-top:1px solid rgba(201,168,76,.22);margin-top:8px;padding-top:12px;"><div class="nm">📍 Livraison à domicile<small>${city||'Ville à préciser sur WhatsApp'}</small></div></div>`
+    :`<div class="lc-recap-line" style="border-top:1px solid rgba(201,168,76,.22);margin-top:8px;padding-top:12px;"><div class="nm">📍 Retrait sur place</div></div>`;
+  window.lcConfirmOrder({
+    recap:recapHtml+recvHtml,
+    onConfirm:()=>window.open(waLink(msg),'_blank'),
+  });
 });
 
 /* ===== TOAST ===== */
@@ -1663,6 +1682,112 @@ body{padding-bottom:84px;}
 @media(prefers-reduced-motion:reduce){.card:hover,.fam-card:hover{transform:none;}
   .btn-add.wa,.cart-wa,.cart-count.bump{animation:none;}}
 @media(prefers-reduced-motion:reduce){.lc-social a{animation:none;}.lc-eq i{animation:none!important;}}
+
+/* ============ FLOW CONFIRMATION 3 ÉTAPES ============ */
+.lc-modal{position:fixed;inset:0;z-index:5000;display:none;
+  align-items:center;justify-content:center;padding:24px;}
+.lc-modal.on{display:flex;}
+.lc-modal::before{content:'';position:absolute;inset:0;
+  background:rgba(0,0,0,.76);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  opacity:0;transition:opacity .4s ease;}
+.lc-modal.on::before{opacity:1;}
+.lc-confirm-card{position:relative;z-index:1;max-width:540px;width:100%;
+  max-height:88vh;overflow-y:auto;
+  background:linear-gradient(170deg,#faf6ec,#f4eede 60%,#ead9b5);
+  border:1px solid #c9a84c;border-radius:18px;padding:32px 28px 26px;
+  box-shadow:0 40px 80px -20px rgba(0,0,0,.6),
+    0 0 0 1px rgba(201,168,76,.18) inset,0 0 100px -30px rgba(201,168,76,.5);
+  transform:translateY(20px) scale(.95);opacity:0;
+  transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .4s ease;}
+.lc-modal.on .lc-confirm-card{transform:translateY(0) scale(1);opacity:1;}
+.lc-confirm-x{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;border:0;
+  background:rgba(10,10,10,.06);cursor:pointer;transition:all .25s;}
+.lc-confirm-x:hover{background:rgba(10,10,10,.16);transform:rotate(90deg);}
+.lc-confirm-x svg{width:14px;height:14px;stroke:#0a0a0a;fill:none;stroke-width:2.2;stroke-linecap:round;}
+.lc-confirm-logo{text-align:center;margin-bottom:18px;}
+.lc-confirm-logo h1{font-family:'Cormorant Garamond',serif;font-size:1.15rem;
+  font-weight:600;letter-spacing:.34em;text-indent:.34em;
+  background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;}
+.lc-confirm-logo .sep{display:block;width:60px;height:1px;
+  background:linear-gradient(90deg,transparent,#c9a84c,transparent);margin:10px auto 0;}
+.lc-confirm-title{font-family:'Cormorant Garamond',serif;font-size:1.9rem;
+  text-align:center;color:#0a0a0a;font-weight:500;margin-bottom:18px;letter-spacing:.02em;}
+.lc-recap{background:rgba(10,10,10,.04);border:1px solid rgba(201,168,76,.28);
+  border-radius:12px;padding:14px 16px;margin-bottom:18px;}
+.lc-recap-line{display:flex;justify-content:space-between;align-items:flex-start;
+  gap:12px;padding:10px 0;border-bottom:1px dashed rgba(201,168,76,.22);
+  font-size:.86rem;color:#1f1e1a;line-height:1.5;}
+.lc-recap-line:last-of-type{border-bottom:0;}
+.lc-recap-line .nm{flex:1;}
+.lc-recap-line .nm b{font-weight:600;color:#0a0a0a;}
+.lc-recap-line .nm small{display:block;color:#6e6855;font-size:.74rem;margin-top:2px;}
+.lc-recap-line .ln{font-family:'Jost',sans-serif;font-weight:500;color:#0a0a0a;white-space:nowrap;}
+.lc-recap-total{display:flex;justify-content:space-between;align-items:baseline;
+  margin-top:10px;padding-top:12px;border-top:2px solid #c9a84c;
+  font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:600;color:#0a0a0a;}
+.lc-recap-total span:last-child{background:var(--gold-grad);-webkit-background-clip:text;
+  background-clip:text;-webkit-text-fill-color:transparent;}
+.lc-confirm-q{text-align:center;font-size:.92rem;color:#1f1e1a;margin-bottom:20px;line-height:1.6;}
+.lc-confirm-btns{display:flex;flex-direction:column;gap:10px;}
+.lc-btn{padding:14px 22px;border-radius:30px;font-family:'Jost',sans-serif;
+  font-size:.84rem;letter-spacing:.06em;cursor:pointer;border:0;
+  transition:all .35s cubic-bezier(.22,1,.36,1);width:100%;}
+.lc-btn.primary{color:#0a0a0a;background:var(--gold-grad);
+  font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  box-shadow:0 10px 24px -8px rgba(201,168,76,.55);}
+.lc-btn.primary:hover{transform:translateY(-2px);
+  box-shadow:0 18px 34px -10px rgba(201,168,76,.75);}
+.lc-btn.ghost{color:#0a0a0a;background:transparent;border:1px solid rgba(201,168,76,.45);}
+.lc-btn.ghost:hover{background:rgba(201,168,76,.1);}
+
+/* ====== Thanks modal ====== */
+.lc-thanks-modal{position:fixed;inset:0;z-index:5100;display:none;
+  align-items:center;justify-content:center;padding:24px;background:#050402;}
+.lc-thanks-modal.on{display:flex;}
+.lc-thanks-bg{position:absolute;inset:0;background:
+  radial-gradient(ellipse 70% 50% at 50% 50%,rgba(33,29,22,.6),transparent),
+  radial-gradient(ellipse 80% 60% at 30% 0%,rgba(201,168,76,.22),transparent 60%),#050402;}
+.lc-thanks-particles{position:absolute;inset:0;pointer-events:none;width:100%;height:100%;}
+.lc-thanks-inner{position:relative;z-index:2;max-width:600px;width:100%;text-align:center;
+  color:var(--creme);opacity:0;transform:translateY(20px);
+  transition:opacity 1s ease,transform 1s cubic-bezier(.22,1,.36,1);}
+.lc-thanks-modal.on .lc-thanks-inner{opacity:1;transform:translateY(0);}
+.lc-thanks-logo{font-family:'Cormorant Garamond',serif;font-size:1.9rem;
+  letter-spacing:.36em;text-indent:.36em;font-weight:500;
+  background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;margin-bottom:8px;
+  opacity:0;animation:lcThanksFade 1.4s ease .3s forwards;}
+@keyframes lcThanksFade{to{opacity:1;}}
+.lc-thanks-flourish{display:block;width:140px;height:1px;
+  background:linear-gradient(90deg,transparent,#c9a84c,transparent);
+  margin:14px auto 26px;transform:scaleX(0);transform-origin:center;
+  animation:lcFlourish 1s cubic-bezier(.22,1,.36,1) 1.1s forwards;}
+@keyframes lcFlourish{to{transform:scaleX(1);}}
+.lc-thanks-text{font-family:'Cormorant Garamond',serif;font-size:1.35rem;
+  line-height:1.75;color:var(--creme);font-weight:400;white-space:pre-line;min-height:8em;
+  padding:0 12px;}
+.lc-thanks-text .lc-caret{display:inline-block;width:2px;height:1em;background:var(--or-vif);
+  vertical-align:-.18em;animation:lcCaret .9s steps(1) infinite;margin-left:2px;}
+@keyframes lcCaret{0%,49%{opacity:1;}50%,100%{opacity:0;}}
+.lc-thanks-actions{margin-top:30px;display:flex;flex-direction:column;gap:18px;align-items:center;
+  opacity:0;animation:lcThanksFade .8s ease 2.4s forwards;}
+.lc-thanks-actions .lc-btn{max-width:280px;}
+.lc-thanks-social{font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--texte-doux);text-align:center;margin-top:6px;}
+.lc-thanks-social-row{display:flex;gap:14px;justify-content:center;margin-top:12px;}
+.lc-thanks-social-row a{width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;border:1px solid rgba(201,168,76,.4);
+  color:var(--or-clair);transition:all .3s;}
+.lc-thanks-social-row a:hover{background:rgba(201,168,76,.16);border-color:#c9a84c;transform:translateY(-3px);}
+.lc-thanks-social-row a svg{width:18px;height:18px;fill:currentColor;}
+@media(max-width:560px){
+  .lc-confirm-card{padding:26px 18px 22px;}
+  .lc-confirm-title{font-size:1.55rem;}
+  .lc-thanks-logo{font-size:1.4rem;letter-spacing:.28em;text-indent:.28em;}
+  .lc-thanks-text{font-size:1.05rem;line-height:1.7;}
+}
 </style>
 <div class="lc-social" aria-label="Réseaux sociaux">
   <a class="wa" href="https://wa.me/2290167975626" target="_blank" rel="noopener" data-net="WhatsApp" aria-label="Contacter sur WhatsApp">
@@ -1851,6 +1976,205 @@ if(mute){
     else{musicStart();mute.classList.add('playing');}
   });
 }
+})();
+</script>
+
+<!-- ============ FLOW CONFIRMATION 3 ÉTAPES ============ -->
+<div class="lc-modal" id="lcConfirmModal" role="dialog" aria-modal="true" aria-labelledby="lcConfirmTitle" aria-hidden="true">
+  <article class="lc-confirm-card">
+    <button class="lc-confirm-x" type="button" aria-label="Fermer" data-lc-close>
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="lc-confirm-logo">
+      <h1>LUXURY CLUB 229</h1>
+      <span class="sep"></span>
+    </div>
+    <h2 class="lc-confirm-title" id="lcConfirmTitle">Votre sélection ✨</h2>
+    <div class="lc-recap" id="lcConfirmRecap"></div>
+    <p class="lc-confirm-q" id="lcConfirmQ">Est-ce bien tout ce que vous souhaitez commander ?</p>
+    <div class="lc-confirm-btns">
+      <button type="button" class="lc-btn primary" id="lcConfirmOk">Confirmer et commander →</button>
+      <button type="button" class="lc-btn ghost" data-lc-close id="lcConfirmCancel">Ajouter d'autres produits</button>
+    </div>
+  </article>
+</div>
+
+<div class="lc-thanks-modal" id="lcThanksModal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="lc-thanks-bg"></div>
+  <canvas class="lc-thanks-particles" id="lcThanksParticles"></canvas>
+  <div class="lc-thanks-inner">
+    <div class="lc-thanks-logo">LUXURY CLUB 229</div>
+    <span class="lc-thanks-flourish"></span>
+    <div class="lc-thanks-text" id="lcThanksText"></div>
+    <div class="lc-thanks-actions">
+      <button type="button" class="lc-btn primary" id="lcThanksClose">Retour à la boutique</button>
+      <div>
+        <div class="lc-thanks-social">Suivez-nous pour ne rien manquer</div>
+        <div class="lc-thanks-social-row">
+          <a href="https://wa.me/2290167975626" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5zM6.7 19.6l.4.2a9.5 9.5 0 0 0 4.9 1.3 9.5 9.5 0 1 0-8-4.4l.2.4-1 3.4 3.5-.9zM17.5 13.9c-.1-.2-.5-.3-1-.6s-1.4-.7-1.6-.8-.4-.1-.5.1l-.8 1c-.2.2-.3.2-.5.1a7.7 7.7 0 0 1-2.3-1.4 8.5 8.5 0 0 1-1.6-2c-.1-.3 0-.4.1-.5l.4-.5.3-.4a.4.4 0 0 0 0-.5l-.9-2c-.2-.5-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4 5.3 5.3 0 0 0 3.2.8 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3z"/></svg>
+          </a>
+          <a href="https://www.instagram.com/inaluxury" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.25.07 1.62.07 4.78s0 3.53-.07 4.78c-.05 1.17-.25 1.8-.41 2.23a3.7 3.7 0 0 1-.9 1.38c-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.25.06-1.62.07-4.78.07s-3.53 0-4.78-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9c-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23C2.2 15.55 2.2 15.18 2.2 12s0-3.53.07-4.78c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41 1.25-.06 1.62-.07 4.78-.07Zm0 2.16c-3.1 0-3.45 0-4.66.07-1.05.05-1.62.24-2 .4-.5.18-.86.42-1.24.8-.38.38-.62.74-.8 1.24-.16.38-.35.95-.4 2-.07 1.2-.07 1.56-.07 4.66s0 3.46.07 4.66c.05 1.05.24 1.62.4 2 .18.5.42.86.8 1.24.38.38.74.62 1.24.8.38.16.95.35 2 .4 1.2.07 1.56.07 4.66.07s3.46 0 4.66-.07c1.05-.05 1.62-.24 2-.4.5-.18.86-.42 1.24-.8.38-.38.62-.74.8-1.24.16-.38.35-.95.4-2 .07-1.2.07-1.56.07-4.66s0-3.46-.07-4.66c-.05-1.05-.24-1.62-.4-2-.18-.5-.42-.86-.8-1.24-.38-.38-.74-.62-1.24-.8-.38-.16-.95-.35-2-.4-1.2-.07-1.56-.07-4.66-.07Zm0 3.7a3.94 3.94 0 1 1 0 7.88 3.94 3.94 0 0 1 0-7.88Zm0 6.5a2.56 2.56 0 1 0 0-5.12 2.56 2.56 0 0 0 0 5.12Zm5.02-6.65a.92.92 0 1 1-1.84 0 .92.92 0 0 1 1.84 0Z"/></svg>
+          </a>
+          <a href="https://www.tiktok.com/@inaluxury" target="_blank" rel="noopener" aria-label="TikTok">
+            <svg viewBox="0 0 24 24"><path d="M19.6 6.8a5.65 5.65 0 0 1-3.4-1.2 5.7 5.7 0 0 1-1.85-3H11.2v10.34a2.4 2.4 0 1 1-2.4-2.4c.26 0 .52.04.77.12V7.6a5.7 5.7 0 0 0-.77-.05 5.7 5.7 0 1 0 5.7 5.7V7.92a8.13 8.13 0 0 0 5.1 1.78V6.8Z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== FLOW DE CONFIRMATION 3 ÉTAPES ===== */
+(function(){
+  const LC_THANKS=`Merci pour votre confiance ✨\n\nVotre demande a bien été transmise à notre équipe Luxury Club 229.\n\nNous vous reviendrons dans les plus brefs délais — au maximum sous 24 heures.\n\nPrenez soin de vous. 🌿`;
+  const confirmModal=document.getElementById('lcConfirmModal'),
+        confirmRecap=document.getElementById('lcConfirmRecap'),
+        confirmOk=document.getElementById('lcConfirmOk'),
+        confirmCancel=document.getElementById('lcConfirmCancel'),
+        confirmQ=document.getElementById('lcConfirmQ'),
+        thanksModal=document.getElementById('lcThanksModal'),
+        thanksText=document.getElementById('lcThanksText'),
+        thanksClose=document.getElementById('lcThanksClose');
+  const reduceMo=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  let onConfirm=null,lastFocus=null,particlesRaf=null,typeTimer=null;
+
+  function openConfirm(opts){
+    lastFocus=document.activeElement;
+    confirmRecap.innerHTML=opts.recap||'';
+    confirmQ.textContent=opts.q||'Est-ce bien tout ce que vous souhaitez commander ?';
+    confirmOk.innerHTML=opts.confirmLabel||'Confirmer et commander →';
+    confirmCancel.textContent=opts.cancelLabel||"Ajouter d'autres produits";
+    onConfirm=opts.onConfirm||null;
+    confirmModal.classList.add('on');
+    confirmModal.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+    setTimeout(()=>confirmOk.focus(),200);
+  }
+  function closeConfirm(){
+    confirmModal.classList.remove('on');
+    confirmModal.setAttribute('aria-hidden','true');
+    if(!thanksModal.classList.contains('on'))document.body.style.overflow='';
+    onConfirm=null;
+    if(lastFocus&&lastFocus.focus)setTimeout(()=>lastFocus.focus(),50);
+  }
+  confirmModal.addEventListener('click',e=>{
+    if(e.target===confirmModal||e.target.closest('[data-lc-close]'))closeConfirm();
+  });
+  confirmOk.addEventListener('click',()=>{
+    const fn=onConfirm;
+    closeConfirm();
+    playChime();
+    showThanks();
+    if(fn)setTimeout(fn,50); // léger délai pour laisser l'animation thanks démarrer
+  });
+
+  function playChime(){
+    try{
+      if(!window.LCAudio||!window.LCAudio.ctx)return;
+      const ctx=window.LCAudio.ctx;
+      const notes=[523.25,659.25,783.99]; // C5 E5 G5 - accord doré ascendant
+      notes.forEach((freq,i)=>{
+        const t=ctx.currentTime+i*0.13;
+        const o=ctx.createOscillator(),g=ctx.createGain();
+        o.type='sine';o.frequency.value=freq;
+        g.gain.setValueAtTime(0,t);
+        g.gain.linearRampToValueAtTime(0.13,t+0.04);
+        g.gain.exponentialRampToValueAtTime(0.0001,t+0.7);
+        o.connect(g);g.connect(ctx.destination);
+        o.start(t);o.stop(t+0.8);
+      });
+    }catch(e){}
+  }
+
+  function showThanks(){
+    thanksModal.classList.add('on');
+    thanksModal.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+    thanksText.innerHTML='';
+    let i=0;
+    const txt=LC_THANKS;
+    function step(){
+      if(i<=txt.length){
+        thanksText.innerHTML=txt.slice(0,i).replace(/\n/g,'<br>')+'<span class="lc-caret"></span>';
+        i++;
+        typeTimer=setTimeout(step,reduceMo?0:26);
+      }else{
+        thanksText.innerHTML=txt.replace(/\n/g,'<br>');
+      }
+    }
+    setTimeout(step,reduceMo?0:700); // après fade-in logo
+    startParticles();
+    // reprend musique douce si dispo
+    setTimeout(()=>{try{if(window.LCAudio&&window.LCAudio.musicStart)window.LCAudio.musicStart();}catch(e){}},400);
+  }
+  function closeThanks(){
+    thanksModal.classList.remove('on');
+    thanksModal.setAttribute('aria-hidden','true');
+    document.body.style.overflow='';
+    if(typeTimer)clearTimeout(typeTimer);
+    stopParticles();
+  }
+  thanksClose.addEventListener('click',closeThanks);
+
+  function startParticles(){
+    const cv=document.getElementById('lcThanksParticles');
+    if(!cv)return;
+    const ctx=cv.getContext('2d');
+    function size(){cv.width=innerWidth;cv.height=innerHeight;}
+    size();addEventListener('resize',size);
+    const N=reduceMo?0:Math.min(60,Math.floor(innerWidth/18));
+    const ps=[];
+    for(let i=0;i<N;i++){
+      ps.push({x:Math.random()*cv.width,y:Math.random()*cv.height,
+        r:Math.random()*1.8+0.6,sp:Math.random()*0.42+0.14,
+        dr:(Math.random()-0.5)*0.28,a:Math.random()*0.55+0.22,
+        tw:Math.random()*6.28,ts:Math.random()*0.03+0.012});
+    }
+    function draw(){
+      ctx.clearRect(0,0,cv.width,cv.height);
+      for(const p of ps){
+        p.y+=p.sp;p.x+=p.dr;p.tw+=p.ts;
+        if(p.y>cv.height+10){p.y=-10;p.x=Math.random()*cv.width;}
+        const fl=p.a*(0.6+0.4*Math.sin(p.tw));
+        const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*3.4);
+        g.addColorStop(0,`rgba(236,217,164,${fl})`);
+        g.addColorStop(1,'rgba(236,217,164,0)');
+        ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y,p.r*3.4,0,6.283);ctx.fill();
+      }
+      particlesRaf=requestAnimationFrame(draw);
+    }
+    if(N>0)draw();
+  }
+  function stopParticles(){if(particlesRaf){cancelAnimationFrame(particlesRaf);particlesRaf=null;}}
+
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Escape')return;
+    if(thanksModal.classList.contains('on'))closeThanks();
+    else if(confirmModal.classList.contains('on'))closeConfirm();
+  });
+
+  // API publique
+  window.lcConfirmOrder=openConfirm;
+  window.lcShowThanks=showThanks;
+
+  /* Intercepteur global pour liens wa.me marqués data-lc-confirm */
+  document.addEventListener('click',e=>{
+    const a=e.target.closest('a[href*="wa.me"][data-lc-confirm]');
+    if(!a)return;
+    e.preventDefault();
+    const url=a.href;
+    const recapHtml=`<div class="lc-recap-line"><div class="nm">${a.dataset.lcRecap||'Demande WhatsApp'}</div></div>`;
+    openConfirm({
+      recap:recapHtml,
+      q:a.dataset.lcQ||'Confirmer l\'envoi de votre demande ?',
+      confirmLabel:'Envoyer sur WhatsApp →',
+      cancelLabel:'Annuler',
+      onConfirm:()=>window.open(url,'_blank'),
+    });
+  });
 })();
 </script>
 </body>
