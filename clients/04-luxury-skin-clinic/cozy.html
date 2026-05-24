@@ -275,6 +275,26 @@ main{position:relative;z-index:5;}
 .ci-line{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--rose-fonce);
   margin-left:auto;white-space:nowrap;}
 .cart-foot{padding:18px 22px 22px;border-top:1px solid var(--ligne);}
+.cart-recv{margin-bottom:16px;padding-bottom:14px;border-bottom:1px dashed var(--rose);}
+.cart-recv-lbl{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--rose-fonce);margin-bottom:9px;}
+.cart-recv-opts{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px;}
+.cart-recv-opts .recv-opt{flex:1 1 140px;cursor:pointer;}
+.cart-recv-opts .recv-opt input{position:absolute;opacity:0;pointer-events:none;}
+.cart-recv-opts .recv-pill{display:flex;align-items:center;gap:7px;justify-content:center;padding:9px 11px;
+  border-radius:24px;border:1px solid var(--rose);background:#fff;
+  font-size:11px;letter-spacing:.04em;color:var(--encre-2);
+  transition:all .25s var(--ease);text-align:center;}
+.cart-recv-opts .recv-ico{font-size:14px;}
+.cart-recv-opts .recv-opt:hover .recv-pill{border-color:var(--rose-fonce);color:var(--rose-fonce);}
+.cart-recv-opts input:checked + .recv-pill{background:var(--rose-pale);
+  border-color:var(--rose-fonce);color:var(--rose-fonce);font-weight:500;}
+.cart-city{display:block;width:100%;padding:10px 13px;border-radius:10px;
+  border:1px solid var(--rose);background:#fff;
+  color:var(--encre);font-family:'Jost',sans-serif;font-size:.85rem;
+  transition:border-color .25s;}
+.cart-city:focus{outline:none;border-color:var(--rose-fonce);}
+.cart-city::placeholder{color:var(--gris);opacity:.8;}
+.cart-city[hidden]{display:none;}
 .cart-total{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;}
 .cart-total span{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gris);}
 .cart-total b{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:600;color:var(--rose-fonce);}
@@ -415,6 +435,14 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
   </div>
   <div class="cart-items" id="cartItems"></div>
   <div class="cart-foot">
+    <div class="cart-recv">
+      <div class="cart-recv-lbl">Mode de réception</div>
+      <div class="cart-recv-opts">
+        <label class="recv-opt"><input type="radio" name="recv" value="livraison" checked><span class="recv-pill"><span class="recv-ico">🛵</span>Livraison à domicile</span></label>
+        <label class="recv-opt"><input type="radio" name="recv" value="retrait"><span class="recv-pill"><span class="recv-ico">📍</span>Retrait sur place</span></label>
+      </div>
+      <input type="text" id="cartCity" class="cart-city" placeholder="Ville / quartier (livraison)" autocomplete="address-level2">
+    </div>
     <div class="cart-total"><span>Total</span><b id="cartTotal">0 FCFA</b></div>
     <button class="cart-wa" id="cartWa">
       <svg viewBox="0 0 24 24"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5zM6.7 19.6l.4.2a9.5 9.5 0 0 0 4.9 1.3 9.5 9.5 0 1 0-8-4.4l.2.4-1 3.4 3.5-.9zM17.5 13.9c-.1-.2-.5-.3-1-.6s-1.4-.7-1.6-.8-.4-.1-.5.1l-.8 1c-.2.2-.3.2-.5.1a7.7 7.7 0 0 1-2.3-1.4 8.5 8.5 0 0 1-1.6-2c-.1-.3 0-.4.1-.5l.4-.5.3-.4a.4.4 0 0 0 0-.5l-.9-2c-.2-.5-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4 5.3 5.3 0 0 0 3.2.8 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3z"/></svg>
@@ -430,9 +458,27 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
 <script>
 'use strict';
 const WA='2290167975626';
+const BRAND_LINE='━ Boutique Cozy ━';
 const reduceMotion=matchMedia('(prefers-reduced-motion:reduce)').matches;
 const fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
 function waLink(m){return `https://wa.me/${WA}?text=${encodeURIComponent(m)}`;}
+function genRef(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<4;i++)s+=c[Math.floor(Math.random()*c.length)];return 'LC229-'+s;}
+function nowFr(){const d=new Date();const pad=n=>String(n).padStart(2,'0');return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}h${pad(d.getMinutes())}`;}
+/* Emoji selon la catégorie Cozy (cat) ou nom du produit pour précision */
+const EMO_BY_CAT={'intime':'🌷','selfcare':'🌸','raffermissant':'💗'};
+function emoOf(p){
+  if(!p)return '🧴';
+  // Match plus précis par nom de produit si possible
+  const n=(p.n||'').toLowerCase();
+  if(n.includes('booster')||n.includes('fermeté'))return '🥛';
+  if(n.includes('pailleté')||n.includes('paillete'))return '✨';
+  if(n.includes('huile'))return '✨';
+  if(n.includes('crème mains')||n.includes('creme mains'))return '🤲';
+  if(n.includes('gel nettoyant'))return '🫧';
+  if(n.includes('maca'))return '💗';
+  return EMO_BY_CAT[p.cat]||'🌸';
+}
+function emoForName(name){const p=PRODUCTS.find(x=>x.n===name);return emoOf(p);}
 function fmt(n){return n.toLocaleString('fr-FR');}
 
 /* ===== DONNÉES ===== */
@@ -586,8 +632,8 @@ const Ambiance=(function(){
 })();
 
 /* ===== HELPERS WA ===== */
-document.getElementById('helpWa').href=waLink("Bonjour Cozy, j'aimerais un conseil sur vos produits.");
-document.getElementById('finalWa').href=waLink("Bonjour Cozy, j'aimerais échanger sur vos soins intimes et bien-être.");
+document.getElementById('helpWa').href=waLink(`🌸 *Bonjour Luxury Club 229* ✨\n\n${BRAND_LINE}\n\nJ'aimerais un conseil sur les produits Cozy 💕\n\nPouvez-vous me guider dans ma sélection ?\n\nMerci 🙏\n\nRéf : ${genRef()}  ·  ${nowFr()}`);
+document.getElementById('finalWa').href=waLink(`🌸 *Bonjour Luxury Club 229* ✨\n\n${BRAND_LINE}\n\nJ'aimerais échanger sur vos soins intimes et bien-être Cozy 🌷\n\nMerci 🙏\n\nRéf : ${genRef()}  ·  ${nowFr()}`);
 
 /* ===== FILTRES ===== */
 function buildFilters(){
@@ -659,9 +705,9 @@ function card(p){
           ${p.todo
             ?`<div class="card-price">Prix à définir</div>`
             :`<div class="card-price">${fmt(p.p)} <small>FCFA</small></div>`}
-          ${p.todo
-            ?`<a class="btn-add" href="${waLink(`Bonjour Cozy, je souhaite des infos sur le produit : ${p.n}.`)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> WhatsApp</a>`
-            :`<div class="add-actions"><div class="qty-card"><button type="button" class="q-dec" aria-label="Diminuer la quantité">−</button><span class="q-val">1</span><button type="button" class="q-inc" aria-label="Augmenter la quantité">+</button></div><button class="btn-add" data-add="${p.n}"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Panier</button></div>`}
+          ${(()=>{const _e=emoOf(p);const _todoMsg=`🌸 *Bonjour Luxury Club 229* ✨\n\n${BRAND_LINE}\n\nJe souhaite des informations sur :\n${_e} *${p.n}*${p.size?' — '+p.size:''}\n\nMerci 🙏\n\nRéf : ${genRef()}  ·  ${nowFr()}`;return p.todo
+            ?`<a class="btn-add" href="${waLink(_todoMsg)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> WhatsApp</a>`
+            :`<div class="add-actions"><div class="qty-card"><button type="button" class="q-dec" aria-label="Diminuer la quantité">−</button><span class="q-val">1</span><button type="button" class="q-inc" aria-label="Augmenter la quantité">+</button></div><button class="btn-add" data-add="${p.n}"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Panier</button></div>`})()}
         </div>
       </div>
     </div>`;
@@ -768,33 +814,47 @@ cartClose.addEventListener('click',closeCart);
 scrim.addEventListener('click',closeCart);
 function clearCart(){cart=[];saveCart();syncCart();}
 cartClear.addEventListener('click',clearCart);
+/* Setup sélecteur mode de réception */
+const cartCityInput=document.getElementById('cartCity');
+function getRecv(){
+  const r=document.querySelector('input[name="recv"]:checked');
+  return r?r.value:'livraison';
+}
+document.querySelectorAll('input[name="recv"]').forEach(r=>{
+  r.addEventListener('change',()=>{cartCityInput.hidden=(getRecv()!=='livraison');});
+});
+
 cartWa.addEventListener('click',()=>{
   if(!cart.length)return;
-  const items=cart.reduce((s,it)=>s+it.qty,0);
-  const lines=cart.map((it,i)=>
-    `${i+1}.  *${it.n}*${it.size?'\n     Format : '+it.size:''}\n     Quantité : ${it.qty}  ·  Prix unitaire : ${fmt(it.p)} F\n     Sous-total : *${fmt(it.qty*it.p)} FCFA*`
-  ).join('\n\n');
-  const msg=`🌸  *Bonjour Cozy*  🌸
+  const lines=cart.map(it=>{
+    const e=emoForName(it.n);
+    return `${e} *${it.n}*${it.size?' — '+it.size:''}\n   Qté : ${it.qty}  |  ${fmt(it.qty*it.p)} FCFA`;
+  }).join('\n\n');
+  const recv=getRecv();
+  const city=cartCityInput.value.trim();
+  const recvLine=(recv==='livraison')
+    ?`📍 Mode de réception : Livraison\n🏡 Ville / quartier : ${city||'à préciser'}`
+    :`📍 Mode de réception : Retrait sur place`;
+  const msg=`🌸 *Bonjour Luxury Club 229* ✨
 
-Je souhaite passer la commande suivante depuis votre boutique en ligne :
+${BRAND_LINE}
 
-━━━━━━━━━━━━━━━━━━━━
-🛍️  *MA SÉLECTION* — ${items} article${items>1?'s':''}
-━━━━━━━━━━━━━━━━━━━━
+Ma commande :
 
 ${lines}
 
 ━━━━━━━━━━━━━━━━━━━━
-💖  *TOTAL  :  ${fmt(cartTotalVal())} FCFA*
+💖 *TOTAL : ${fmt(cartTotalVal())} FCFA*
 ━━━━━━━━━━━━━━━━━━━━
 
-📍  Zone de livraison :
-👤  Nom & prénom :
-📞  Numéro de contact :
+${recvLine}
 
-Merci de me confirmer la disponibilité et les modalités de livraison. ✨
+👤 Nom & prénom :
+📞 Numéro de contact :
 
-À très vite, 💕`;
+Merci de me confirmer la disponibilité et le délai 🙏
+
+Réf : ${genRef()}  ·  ${nowFr()}`;
   window.open(waLink(msg),'_blank');
 });
 

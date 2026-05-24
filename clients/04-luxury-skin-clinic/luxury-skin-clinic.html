@@ -644,10 +644,22 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
 <script>
 'use strict';
 const WA='2290167975626';
+const BRAND_LINE='━ Soins Luxury Skin Clinic ━';
 const reduceMotion=matchMedia('(prefers-reduced-motion:reduce)').matches;
 const fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
 function waLink(m){return `https://wa.me/${WA}?text=${encodeURIComponent(m)}`;}
 function fmt(n){return n.toLocaleString('fr-FR');}
+function genRef(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<4;i++)s+=c[Math.floor(Math.random()*c.length)];return 'LC229-'+s;}
+function nowFr(){const d=new Date();const pad=n=>String(n).padStart(2,'0');return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}h${pad(d.getMinutes())}`;}
+/* Emoji intelligent par soin (g = groupe : visage / corps / capillaires / complet) */
+const EMO_BY_GROUP={'visage':'💆‍♀️','corps':'🌸','capillaires':'💇‍♀️','complet':'👑'};
+function emoOfSvc(s){
+  if(!s)return '✨';
+  if((s.tier||'').toLowerCase().includes('vip'))return '👑';
+  if(s.kind==='form-skin')return '🩺';
+  if(s.kind==='pay-wa-hair')return '🩺';
+  return EMO_BY_GROUP[s.g]||'✨';
+}
 
 /* ===== CURSEUR ===== */
 (function(){
@@ -1057,16 +1069,38 @@ function payViaWa(formKind,svcIdx){
   const s=SERVICES[svcIdx];if(!s)return;
   let msg;
   if(formKind==='hair'){
-    msg="Bonjour Luxury Skin Clinic 🌸,"
-      +`\n\nJe souhaite démarrer mon *${s.n}* (Perfect Hair Program™ — ${fmt(s.p)} FCFA).`
-      +"\n\nMerci de me transmettre :"
-      +"\n• le lien ou les instructions de paiement (Mobile Money / autre) ;"
-      +"\n• le questionnaire diagnostic capillaire complet à remplir ;"
-      +"\n• la liste des photos à joindre (face, profils, arrière, racines, longueurs, zones problématiques)."
-      +"\n\nMes principales préoccupations capillaires (au choix) : chute · casse · pellicules · sécheresse · manque de pousse · irritations du cuir chevelu."
-      +"\n\nMerci, j'attends votre retour pour commencer. 🤍";
+    msg=`🌸 *Bonjour Luxury Club 229* ✨
+
+${BRAND_LINE}
+
+Je souhaite démarrer mon *${s.n}* 🩺
+   Programme : Perfect Hair Program™
+   Tarif : ${fmt(s.p)} FCFA
+
+Merci de me transmettre :
+• le lien ou les instructions de paiement (Mobile Money / autre)
+• le questionnaire diagnostic capillaire complet
+• la liste des photos à joindre (face, profils, arrière, racines, longueurs, zones problématiques)
+
+Mes principales préoccupations capillaires (au choix) :
+chute · casse · pellicules · sécheresse · manque de pousse · irritations du cuir chevelu
+
+Merci, j'attends votre retour pour commencer 🙏
+
+Réf : ${genRef()}  ·  ${nowFr()}`;
   }else{
-    msg=`Bonjour Luxury Skin Clinic, je souhaite démarrer ${s.n} (${fmt(s.p)} FCFA). Merci de m'indiquer la suite (paiement + questionnaire).`;
+    const e=emoOfSvc(s);
+    msg=`🌸 *Bonjour Luxury Club 229* ✨
+
+${BRAND_LINE}
+
+Je souhaite démarrer :
+${e} *${s.n}*
+   Tarif : ${fmt(s.p)} FCFA
+
+Merci de m'indiquer la suite (paiement + questionnaire) 🙏
+
+Réf : ${genRef()}  ·  ${nowFr()}`;
   }
   window.open(waLink(msg),'_blank');
 }
@@ -1084,10 +1118,45 @@ reglConfirm.addEventListener('click',()=>{
 function doBooking(){
   if(!pendingBook)return;
   const s=pendingBook;
-  const msg=`Bonjour Luxury Skin Clinic, je souhaite réserver le soin : ${s.n}`
-    +(s.p>0?` (${fmt(s.p)} FCFA).`:`.`)
-    +`\nJ'ai lu et accepté le règlement de la clinique.`
-    +`\nMerci de me proposer un créneau (24h minimum à l'avance).`;
+  const isVip=(s.tier||'').toUpperCase().includes('VIP');
+  const e=emoOfSvc(s);
+  const tarifLine=(s.p>0)?`   Tarif : ${fmt(s.p)} FCFA`:`   Tarif : sur devis`;
+  // Durée pour le VIP (extraite de meta si dispo)
+  let durationLine='';
+  if(isVip){
+    const dur=(s.meta||[]).find(m=>(m[1]||'')==='clock');
+    durationLine=dur?`\n   Durée : ${dur[0]}`:'\n   Durée : 4 à 5 heures';
+  }
+  const msg=isVip
+    ?`🌸 *Bonjour Luxury Club 229* ✨
+
+${BRAND_LINE}
+
+Je souhaite réserver le *SOIN COMPLET VIP* ⭐
+${tarifLine}${durationLine}
+
+📅 Date souhaitée : à définir ensemble
+⏰ Rappel : RDV 24h minimum à l'avance
+✅ J'ai lu et accepté le règlement de la clinique.
+
+Merci de me contacter pour organiser cette expérience exclusive 🙏
+
+Réf : ${genRef()}  ·  ${nowFr()}`
+    :`🌸 *Bonjour Luxury Club 229* ✨
+
+${BRAND_LINE}
+
+Je souhaite réserver :
+${e} *${s.n}*
+${tarifLine}
+
+📅 Date souhaitée : à définir ensemble
+⏰ Rappel : RDV 24h minimum à l'avance
+✅ J'ai lu et accepté le règlement de la clinique.
+
+Merci de me contacter pour confirmer mon créneau 🙏
+
+Réf : ${genRef()}  ·  ${nowFr()}`;
   window.open(waLink(msg),'_blank');
   pendingBook=null;
   openModal('confirmScrim');
@@ -1210,14 +1279,30 @@ theForm.addEventListener('submit',e=>{
     else if(inp.type==='radio'){if(inp.checked)answers[key]=inp.value;}
     else if(inp.value.trim())answers[key]=inp.value.trim();
   });
-  let msg=currentForm.waPrefix+'\n';
+  const isSkin=(currentForm===SKIN_FORM);
+  const headTitle=isSkin?'la *Consultation Peau GRATUITE* 🩺':'mon *Diagnostic Capillaire* 🩺';
+  let body='';
   currentForm.sections.forEach(sec=>{
+    let secLines='';
     sec.fields.forEach(f=>{
       const v=answers[f.n];
-      if(v!==undefined&&v!=='')msg+=`\n• ${f.n} : ${Array.isArray(v)?v.join(', '):v}`;
+      if(v!==undefined&&v!=='')secLines+=`\n• ${f.n} : ${Array.isArray(v)?v.join(', '):v}`;
     });
+    if(secLines)body+=`\n\n*${sec.h}*${secLines}`;
   });
-  msg+='\n\nJe joins mes photos dans cette conversation.';
+  const msg=`🌸 *Bonjour Luxury Club 229* ✨
+
+${BRAND_LINE}
+
+Je souhaite bénéficier de ${headTitle}
+
+J'ai rempli le questionnaire en ligne, voici mes réponses :${body}
+
+Je joins mes photos dans cette conversation 📸
+
+Merci de me contacter pour la suite 🙏
+
+Réf : ${genRef()}  ·  ${nowFr()}`;
   try{localStorage.removeItem(formKey());}catch(e){}
   window.open(waLink(msg),'_blank');
   closeModal('formScrim');

@@ -438,6 +438,26 @@ header{position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);
 .ci-line{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--or-clair);
   margin-left:auto;white-space:nowrap;}
 .cart-foot{padding:18px 22px 22px;border-top:1px solid rgba(201,168,76,.16);}
+.cart-recv{margin-bottom:16px;padding-bottom:14px;border-bottom:1px dashed rgba(201,168,76,.18);}
+.cart-recv-lbl{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--or);margin-bottom:9px;}
+.cart-recv-opts{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px;}
+.cart-recv-opts .recv-opt{flex:1 1 140px;cursor:pointer;}
+.cart-recv-opts .recv-opt input{position:absolute;opacity:0;pointer-events:none;}
+.cart-recv-opts .recv-pill{display:flex;align-items:center;gap:7px;justify-content:center;padding:9px 11px;
+  border-radius:24px;border:1px solid rgba(201,168,76,.25);background:rgba(10,10,10,.35);
+  font-size:11px;letter-spacing:.04em;color:var(--texte-doux);
+  transition:all .25s var(--ease);text-align:center;}
+.cart-recv-opts .recv-ico{font-size:14px;}
+.cart-recv-opts .recv-opt:hover .recv-pill{border-color:var(--or);color:var(--creme);}
+.cart-recv-opts input:checked + .recv-pill{background:rgba(201,168,76,.16);
+  border-color:var(--or-vif);color:var(--or-clair);box-shadow:0 0 0 1px rgba(236,217,164,.35) inset;}
+.cart-city{display:block;width:100%;padding:10px 13px;border-radius:10px;
+  border:1px solid rgba(201,168,76,.22);background:rgba(10,10,10,.4);
+  color:var(--creme);font-family:'Jost',sans-serif;font-size:.85rem;
+  transition:border-color .25s,background .25s;}
+.cart-city:focus{outline:none;border-color:var(--or);background:rgba(10,10,10,.6);}
+.cart-city::placeholder{color:var(--texte-doux);opacity:.7;}
+.cart-city[hidden]{display:none;}
 .cart-total{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;}
 .cart-total span{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--texte-doux);}
 .cart-total b{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:600;
@@ -584,6 +604,14 @@ footer{position:relative;z-index:5;border-top:1px solid rgba(201,168,76,.14);
   </div>
   <div class="cart-items" id="cartItems"></div>
   <div class="cart-foot">
+    <div class="cart-recv">
+      <div class="cart-recv-lbl">Mode de réception</div>
+      <div class="cart-recv-opts">
+        <label class="recv-opt"><input type="radio" name="recv" value="livraison" checked><span class="recv-pill"><span class="recv-ico">🛵</span>Livraison à domicile</span></label>
+        <label class="recv-opt"><input type="radio" name="recv" value="retrait"><span class="recv-pill"><span class="recv-ico">📍</span>Retrait sur place</span></label>
+      </div>
+      <input type="text" id="cartCity" class="cart-city" placeholder="Ville / quartier (livraison)" autocomplete="address-level2">
+    </div>
     <div class="cart-total"><span>Total</span><b id="cartTotal">0 FCFA</b></div>
     <button class="cart-wa" id="cartWa">
       <svg viewBox="0 0 24 24"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5zM6.7 19.6l.4.2a9.5 9.5 0 0 0 4.9 1.3 9.5 9.5 0 1 0-8-4.4l.2.4-1 3.4 3.5-.9zM17.5 13.9c-.1-.2-.5-.3-1-.6s-1.4-.7-1.6-.8-.4-.1-.5.1l-.8 1c-.2.2-.3.2-.5.1a7.7 7.7 0 0 1-2.3-1.4 8.5 8.5 0 0 1-1.6-2c-.1-.3 0-.4.1-.5l.4-.5.3-.4a.4.4 0 0 0 0-.5l-.9-2c-.2-.5-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4 5.3 5.3 0 0 0 3.2.8 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3z"/></svg>
@@ -599,10 +627,33 @@ footer{position:relative;z-index:5;border-top:1px solid rgba(201,168,76,.14);
 <script>
 'use strict';
 const WA='2290167975626';
+const BRAND_LINE='━ Boutique INA Luxury ━';
 const reduceMotion=matchMedia('(prefers-reduced-motion:reduce)').matches;
 const fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
 function waLink(msg){return `https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;}
 function fmt(n){return n.toLocaleString('fr-FR');}
+/* Référence courte de commande pour tracabilité (ex: LC229-A3F2) */
+function genRef(){
+  const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';
+  for(let i=0;i<4;i++)s+=c[Math.floor(Math.random()*c.length)];
+  return 'LC229-'+s;
+}
+/* Date courte formatée fr (24/05/2026 14h32) */
+function nowFr(){
+  const d=new Date();const pad=n=>String(n).padStart(2,'0');
+  return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}h${pad(d.getMinutes())}`;
+}
+/* Emoji intelligent selon la sous-catégorie produit */
+const EMO_BY_SUB={
+  'gel-nettoyants':'🫧','serums':'💧','cremes':'🌸','masques':'🌿',
+  'beauty-bar':'🧼','creme-corps':'🌙','gommage':'🍯','huile-corps':'✨',
+  'shampoing':'💇‍♀️','apres-shampoing':'💇‍♀️','masque':'🌿','serum':'💧','huile-beurre':'✨',
+  'gel-lavant':'🧒','creme':'🧒','creme-lavante':'🧒',
+};
+function emoOf(prod){return EMO_BY_SUB[prod&&prod.s]||'🧴';}
+function emoForName(name){
+  const p=PRODUCTS.find(x=>x.n===name);return emoOf(p);
+}
 
 /* ===== DONNÉES ===== */
 const FAMILIES=[
@@ -989,7 +1040,7 @@ const state={family:null,subcat:null,routine:null};
 })();
 
 /* ===== HELPERS WHATSAPP ===== */
-document.getElementById('helpWa').href=waLink("Bonjour Mme Sabrina, j'aimerais un conseil personnalisé pour mes soins INA Luxury.");
+document.getElementById('helpWa').href=waLink(`🌸 *Bonjour Luxury Club 229* ✨\n\n${BRAND_LINE}\n\nJ'aimerais un conseil personnalisé pour mes soins INA Luxury. 🤍\n\nPouvez-vous me proposer une routine adaptée à ma peau ?\n\nMerci 🙏\n\nRéf : ${genRef()}  ·  ${nowFr()}`);
 
 /* ===== ACCORDÉON MENU ===== */
 /* architecture des 2 autres marques (liens sortants) */
@@ -1301,10 +1352,13 @@ function productCard(p,i){
     :(p.p==null)
     ?`<div class="card-price ask">Prix sur demande</div>`
     :`<div class="card-price">${fmt(p.p)} <small>FCFA</small></div>`;
+  const _e=emoOf(p);
+  const _waStock=`🌸 *Bonjour Luxury Club 229* ✨\n\n${BRAND_LINE}\n\nJe souhaite être averti(e) du retour en stock de :\n${_e} *${p.n}*${p.size?' — '+p.size:''}\n\nMerci de me prévenir dès sa disponibilité 🙏\n\nRéf : ${genRef()}  ·  ${nowFr()}`;
+  const _waPrice=`🌸 *Bonjour Luxury Club 229* ✨\n\n${BRAND_LINE}\n\nJe souhaite connaître le prix et les modalités de commande pour :\n${_e} *${p.n}*${p.size?' — '+p.size:''}\n\nMerci 🙏\n\nRéf : ${genRef()}  ·  ${nowFr()}`;
   const actionHtml=(p.stock===0)
-    ?`<a class="btn-add wa" href="${waLink(`Bonjour, je souhaite être averti(e) du retour en stock de ${p.n}.`)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg> M'avertir du retour</a>`
+    ?`<a class="btn-add wa" href="${waLink(_waStock)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg> M'avertir du retour</a>`
     :(p.p==null)
-    ?`<a class="btn-add wa" href="${waLink(`Bonjour, je souhaite connaître le prix du produit : ${p.n}.`)}" target="_blank" rel="noopener">Demander le prix</a>`
+    ?`<a class="btn-add wa" href="${waLink(_waPrice)}" target="_blank" rel="noopener">Demander le prix</a>`
     :`<div class="add-actions"><div class="qty-card"><button type="button" class="q-dec" aria-label="Diminuer la quantité">−</button><span class="q-val">1</span><button type="button" class="q-inc" aria-label="Augmenter la quantité">+</button></div><button class="btn-add" data-add="${p.n}"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Panier</button></div>`;
   el.innerHTML=`
     <div class="card-photo">
@@ -1447,33 +1501,49 @@ cartBtn.addEventListener('click',openCart);
 cartClose.addEventListener('click',closeCart);
 function clearCart(){cart=[];saveCart();syncCart();}
 cartClear.addEventListener('click',clearCart);
+/* Setup sélecteur mode de réception */
+const cartCityInput=document.getElementById('cartCity');
+function getRecv(){
+  const r=document.querySelector('input[name="recv"]:checked');
+  return r?r.value:'livraison';
+}
+document.querySelectorAll('input[name="recv"]').forEach(r=>{
+  r.addEventListener('change',()=>{
+    cartCityInput.hidden=(getRecv()!=='livraison');
+  });
+});
+
 cartWa.addEventListener('click',()=>{
   if(!cart.length)return;
-  const items=cart.reduce((s,it)=>s+it.qty,0);
-  const lines=cart.map((it,i)=>
-    `${i+1}.  *${it.n}*${it.size?'\n     Format : '+it.size:''}\n     Quantité : ${it.qty}  ·  Prix unitaire : ${fmt(it.p)} F\n     Sous-total : *${fmt(it.qty*it.p)} FCFA*`
-  ).join('\n\n');
-  const msg=`🌸  *Bonjour INA Luxury*  🌸
+  const lines=cart.map(it=>{
+    const e=emoForName(it.n);
+    return `${e} *${it.n}*${it.size?' — '+it.size:''}\n   Qté : ${it.qty}  |  ${fmt(it.qty*it.p)} FCFA`;
+  }).join('\n\n');
+  const recv=getRecv();
+  const city=cartCityInput.value.trim();
+  const recvLine=(recv==='livraison')
+    ?`📍 Mode de réception : Livraison\n🏡 Ville / quartier : ${city||'à préciser'}`
+    :`📍 Mode de réception : Retrait sur place`;
+  const msg=`🌸 *Bonjour Luxury Club 229* ✨
 
-Je souhaite passer la commande suivante depuis votre boutique en ligne :
+${BRAND_LINE}
 
-━━━━━━━━━━━━━━━━━━━━
-🛍️  *MA COMMANDE* — ${items} article${items>1?'s':''}
-━━━━━━━━━━━━━━━━━━━━
+Ma commande :
 
 ${lines}
 
 ━━━━━━━━━━━━━━━━━━━━
-💰  *TOTAL  :  ${fmt(cartTotalVal())} FCFA*
+💰 *TOTAL : ${fmt(cartTotalVal())} FCFA*
 ━━━━━━━━━━━━━━━━━━━━
 
-📍  Zone de livraison :
-👤  Nom & prénom :
-📞  Numéro de contact :
+${recvLine}
 
-Merci de me confirmer la disponibilité, le délai et les modalités de livraison. ✨
+👤 Nom & prénom :
+📞 Numéro de contact :
 
-À très vite, 🤍`;
+Merci de me confirmer la disponibilité et le délai 🙏
+
+Réf : ${genRef()}  ·  ${nowFr()}`;
   window.open(waLink(msg),'_blank');
 });
 
