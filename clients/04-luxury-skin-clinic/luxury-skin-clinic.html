@@ -341,22 +341,7 @@ section{padding:58px 0;}
 .form-next:hover,.form-prev:hover{filter:brightness(.94);}
 .form-nav .form-submit{margin:0;flex:1;width:auto;}
 
-/* confirmation */
-.confirm-ic{width:62px;height:62px;border-radius:50%;background:var(--menthe-clair);
-  border:1px solid #cfe2da;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
-.confirm-ic svg{width:28px;height:28px;stroke:var(--menthe);fill:none;stroke-width:2.6;}
-.confirm h3{text-align:center;font-size:1.6rem;}
-.confirm-msg{margin-top:16px;background:var(--blanc-2);border-radius:11px;padding:18px 20px;}
-.confirm-msg .cm-h{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--or-fonce);
-  font-weight:600;margin-bottom:10px;}
-.confirm-msg ul{display:flex;flex-direction:column;gap:8px;}
-.confirm-msg li{display:flex;gap:9px;font-size:.8rem;color:var(--encre-2);line-height:1.5;}
-.confirm-msg li svg{width:13px;height:13px;flex-shrink:0;margin-top:3px;stroke:var(--menthe);fill:none;stroke-width:2.6;}
-.confirm-out{text-align:center;font-size:.84rem;color:var(--encre);margin-top:16px;font-style:italic;}
-.confirm-btn{margin-top:18px;width:100%;padding:13px;border-radius:9px;background:var(--encre);
-  color:var(--blanc);font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;
-  transition:background .3s;}
-.confirm-btn:hover{background:var(--menthe);}
+/* (CSS confirmation legacy supprime — remplace par lc-confirm-* / lc-thanks-* en bas de page) */
 
 /* audio */
 #audio-btn{position:fixed;right:20px;bottom:20px;z-index:120;width:50px;height:50px;border-radius:50%;
@@ -620,26 +605,7 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
   </div>
 </div>
 
-<!-- MODAL CONFIRMATION -->
-<div class="modal-scrim" id="confirmScrim">
-  <div class="modal" role="dialog" aria-modal="true" aria-label="Confirmation">
-    <div class="modal-body confirm">
-      <div class="confirm-ic"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>
-      <h3>Votre demande a bien été envoyée !</h3>
-      <div class="confirm-msg">
-        <div class="cm-h">Rappel important</div>
-        <ul>
-          <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>Les rendez-vous se confirment sous 24h maximum</span></li>
-          <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>Aucun rendez-vous le jour même</span></li>
-          <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>Acompte de 5 000 FCFA requis pour validation</span></li>
-          <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>Tolérance retard : 5 minutes maximum</span></li>
-        </ul>
-      </div>
-      <p class="confirm-out">Notre équipe vous contactera très prochainement. ✨</p>
-      <button class="confirm-btn" data-close="confirmScrim">Fermer</button>
-    </div>
-  </div>
-</div>
+<!-- (Ancienne MODAL CONFIRMATION supprimee — remplacee par lc-thanks-modal en bas de page) -->
 
 <script>
 'use strict';
