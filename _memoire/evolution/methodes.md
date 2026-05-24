@@ -16,8 +16,14 @@
 1. Copier `_templates/CONTEXT-template.md` dans le dossier client
 2. Collecter les assets dans `assets/images/`, `assets/videos/`, `assets/docs/`
 3. Encoder les images en **base64** (jamais de lien externe)
+   - **Photos produits** : normaliser sur canvas blanc 600×800 (3:4) JPEG q78
+     pour une grille visuellement cohérente — voir `lecons.md` 2026-05-24.
+   - Pas de détourage automatique : les fonds blancs studio sont un atout.
 4. Construire `vitrine.html` : HTML pur + CSS inline + JS vanilla si nécessaire
-5. Tester sur mobile réel (réseau 4G africain)
+5. Tester sur mobile réel **iPhone ET Android** (pas seulement émulation desktop) :
+   - Audio (musique + SFX) — voir `lecons.md` 2026-05-25
+   - Touch targets ≥ 44px
+   - Performance sur réseau 4G africain
 6. Dérouler `_templates/checklist-livraison.md`
 7. Envoyer preview au client (URL Netlify staging ou capture)
 8. **Aucun push sans validation explicite de Mongazi**

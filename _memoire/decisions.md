@@ -396,4 +396,24 @@
 
 ---
 
+## 2026-05-25 — Audio mobile : silent buffer unlock + compresseur + gain boosté
+
+- **Contexte** : Gloria signale que la musique et les bruitages ne fonctionnent pas / ne s'entendent pas sur mobile (iOS Safari + Android). La logique `ctx.resume()` au premier geste suffisait sur desktop mais pas sur iOS où l'AudioContext reste en `suspended`.
+- **Décision** : Patch en 4 points sur LCAudio (les 4 pages Luxury Club 229) :
+  1. **Silent buffer unlock** : jouer un buffer audio d'1 sample silencieux pendant `ensure()` — pattern canonique recommandé par Apple pour débloquer iOS Safari.
+  2. **DynamicsCompressor** entre master et destination (`threshold=-10`, `ratio=8`) pour gérer le clipping quand on boost le gain.
+  3. **Master gain mobile** : `1.0` → `1.45` (+45 %). Le compresseur absorbe les pics.
+  4. **Détection mobile élargie** : `matchMedia('(max-width:760px)')` ∨ `matchMedia('(pointer:coarse)')` pour couvrir tablettes + phones en paysage.
+- **Raison** : Les 3 changements sont nécessaires conjointement. Le silent buffer débloque iOS sans demander de permission. Le compresseur permet de monter le gain sans saturation. La détection élargie évite de rater des cas mobile en landscape.
+- **Alternatives écartées** :
+  - HTMLAudioElement + MediaStream pour bypasser le mode silencieux iOS → demanderait la permission Microphone, hors scope pour une vitrine commerciale.
+  - Howler.js → externe au repo, viole la règle « zéro CDN » de NEBULA.
+  - User-agent sniffing → fragile et déprécié.
+- **Conséquences** :
+  - Audio fonctionnel sur Chrome Android, Safari iOS (hors mode silencieux), Firefox mobile.
+  - Limitation iOS mode silencieux documentée dans `apprentissages/techniques-html.md` — à mentionner aux clientes pour les tests.
+  - Pattern réutilisable pour les futurs projets NEBULA → archivé comme technique standard.
+
+---
+
 <!-- Ajouter les nouvelles décisions au-dessus -->

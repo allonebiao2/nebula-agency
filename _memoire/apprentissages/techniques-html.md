@@ -94,6 +94,76 @@ function tone(freq,dur,type,vol){
 
 ---
 
+## Audio mobile — fixes spécifiques iOS & Android (2026-05-25)
+
+**Problème** : sur mobile, la musique et les bruitages ne fonctionnent pas
+ou ne s'entendent pas. Symptômes : son muet sur iOS Safari, son trop faible
+sur Android.
+
+**Causes & solutions**
+
+### 1. iOS Safari : silent buffer unlock (canonique Apple)
+L'AudioContext reste en `suspended` sur iOS même après le geste. La résolution
+asynchrone de `ctx.resume()` fait que les premiers oscillateurs sont muets.
+Le pattern Apple : jouer un buffer audio d'1 sample silencieux **pendant** le
+geste pour forcer le déblocage.
+
+```js
+try{
+  var b=ctx.createBuffer(1,1,22050),s=ctx.createBufferSource();
+  s.buffer=b;s.connect(ctx.destination);s.start(0);
+}catch(e){}
+```
+
+### 2. Master gain boosté + DynamicsCompressor pour éviter le clipping
+Les haut-parleurs mobile sont plus faibles que ceux d'un laptop. Monter le
+gain master à 1.45 sur mobile (vs .9 desktop). Ajouter un compresseur entre
+master et destination pour empêcher la saturation.
+
+```js
+var comp=ctx.createDynamicsCompressor();
+comp.threshold.value=-10;comp.knee.value=4;comp.ratio.value=8;
+comp.attack.value=.005;comp.release.value=.12;
+comp.connect(ctx.destination);
+master=ctx.createGain();
+master.gain.value=IS_MOBILE?1.45:.9;
+master.connect(comp);
+```
+
+### 3. Détection mobile élargie
+`matchMedia('(max-width:760px)')` rate les tablettes et phones en paysage.
+Combiner avec `(pointer:coarse)` pour couvrir tout le tactile :
+
+```js
+var IS_MOBILE=matchMedia('(max-width:760px)').matches
+           ||matchMedia('(pointer:coarse)').matches;
+```
+
+### 4. Resume Promise géré
+`ctx.resume()` retourne une Promise (iOS). L'ignorer = warnings console + erreurs
+silencieuses. Catch-er sans bloquer :
+
+```js
+function resume(){
+  if(!ctx)return;
+  if(ctx.state==='suspended'){
+    try{var p=ctx.resume();if(p&&p.catch)p.catch(function(){});}catch(e){}
+  }
+}
+```
+
+### Limitation matérielle iOS — non résoluble
+Quand l'iPhone est en **mode silencieux** (interrupteur côté), Web Audio
+reste muet quelle que soit la config. Workaround possible via `<audio>` +
+MediaStream mais demande la permission Microphone → hors scope pour une
+vitrine commerciale. Mentionner à la cliente que le test doit se faire avec
+le téléphone NON silencieux.
+
+**Notes** : volume effectif des SFX sur mobile après patch (master 1.45) :
+tap .12 · hover .14 · whatsapp .29 · addCart .32 · brandClick .43 · musique .35.
+
+---
+
 ## Dispatch d'images en base64 via script Python
 
 **Problème** : intégrer beaucoup d'images dans des vitrines 100 % inline sans CDN.
