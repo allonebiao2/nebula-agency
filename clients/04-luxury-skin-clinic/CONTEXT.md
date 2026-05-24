@@ -18,25 +18,30 @@
 
 | Fichier | Rôle | Design |
 |---|---|---|
-| `index.html` | Hub LUXURY CLUB 229 | Noir & or, luxe |
+| `index.html` | Hub LUXURY CLUB 229 (+ bouton flottant **Biographie Mme Sabrina** → modal) | Noir & or, luxe |
 | `ina-luxury.html` | Catalogue cosmétiques & capillaires | Noir & or |
 | `luxury-skin-clinic.html` | Soins & prestations en institut | Blanc clinique + or + menthe |
 | `cozy.html` | Hygiène intime & bien-être | Rose poudré + or + blanc |
 
 ## Architecture des 3 marques (brief v2 — 2026-05-18)
 
-### INA Luxury — catalogue, navigation 4 niveaux
-Catégorie → Sous-catégorie → Préoccupation → Produits. Panier multi-produits.
+### INA Luxury — catalogue, navigation + routines préétablies
+Catégorie → Sous-catégorie → Produits, **OU** Catégorie → Routine préétablie (clés en main).
+Panier multi-produits. Le filtre par préoccupation a été remplacé par **4 routines Visage**
+(Hydra · Acné · Éclat/Pigmentation · Boosters) et **2 routines Corps** (Luxury · Skin),
+toutes structurées en tiers **Luxury (médicale) en haut + Skin (semi-médicale) en dessous**.
 - **Visage** : Gel Nettoyants · Sérums · Crèmes · Masques
 - **Corps** : Beauty Bar · Crème corps · Gommage · Huile corps
 - **Capillaires** : Shampoing · Après-shampoing · Masque · Sérum · Huile / Beurre
 - **Enfant (0-16 ans)** : Gel Lavant · Crème · Crème Lavante
-- **35 produits** : 24 fiches complètes (desc, actifs, résultats, INCI, avertissements)
-  + 11 nouveaux produits en fiches à compléter (prix « à définir », description
-  « à venir », badge « À compléter »).
-- **Corps** entièrement peuplé : Beauty Bar 3 · Crème corps 2 · Gommage 1 · Huile corps 1.
-- **Photos produits réelles** en base64 : 33 produits illustrés ; 2 Beauty Bars
-  (Kojic, Milk) en attente de photo (placeholder dégradé en attendant).
+- **38 produits** : 28 fiches complètes (desc, actifs, résultats, INCI, avertissements)
+  + 10 nouveaux produits en fiches à compléter (prix « à définir » ou description
+  « à venir »).
+- **Corps** entièrement peuplé : Beauty Bar 3 · Crème corps 2 · Gommage 1 · Huile corps 2.
+- **Photos produits réelles** en base64 : 34 produits illustrés (Huile Éclat Suprême
+  ré-ajoutée le 2026-05-24) ; 2 Beauty Bars (Kojic, Milk) sans photo encore (placeholder
+  dégradé en attendant). Toutes les images normalisées en **600×800 (3:4), fond blanc,
+  JPEG q78** — même canvas, produits centrés, échelle visuelle homogène dans la grille.
 
 ### Luxury Skin Clinic — 11 soins & prestations
 Design clinique distinct. Soins groupés Visage / Corps / Capillaires / Soin complet.
@@ -45,13 +50,20 @@ Design clinique distinct. Soins groupés Visage / Corps / Capillaires / Soin com
   Soin Activateur de Pousse · Soin Complet VIP.
 - Règlement clinique obligatoire (modal « J'AI COMPRIS ✓ ») avant toute réservation.
 - Alerte RDV 24h sur chaque soin · acompte 5 000 F · badges « Réalisé par Mme Sabrina ».
-- 2 questionnaires intégrés (Consultation Peau, Diagnostic Capillaire) → envoi WhatsApp.
+- 1 questionnaire intégré (Consultation Peau gratuite) → envoi WhatsApp.
+- **Diagnostic Capillaire** (5 000 F, payant) : description brève + bouton
+  « Remplir le formulaire » → redirection WhatsApp avec message adapté
+  (paiement-via-WhatsApp tant que FedaPay n'est pas branché). Le questionnaire
+  capillaire complet (`HAIR_FORM`) reste dans le code, réactivable dès l'intégration
+  paiement.
 
-### Cozy — 8 produits
+### Cozy — 7 produits
 Design rose poudré sensuel. Filtres par catégorie (Intime / Corps / Bien-être).
 Panier multi-produits. Avertissement spécifique sur la Maca Cream (résultats progressifs).
-6 produits complets + 2 nouveaux (Baume Pailleté, Le Boost Fermeté) en fiches à compléter.
-Photos produits réelles intégrées en base64 (8/8).
+7 produits complets — dont **Le Boost Fermeté** (Booster Drink Sublimes, 15 000 F / 150g)
+et **Baume Pailleté Nuit Scintillante** (9 000 F), tous deux validés le 2026-05-24.
+Photos produits réelles intégrées en base64 (7/7), normalisées au même canvas que
+INA Luxury (**600×800, 3:4, fond blanc, JPEG q78**).
 
 ## Fonctionnalités transverses
 
@@ -88,7 +100,9 @@ Photos produits réelles intégrées en base64 (8/8).
 - [x] Photos produits réelles en base64 (INA Luxury 33/33 · Cozy 8/8)
 - [ ] Liens Instagram / TikTok réels
 - [ ] Validation des 4 contenus rédigés par défaut (voir ci-dessous)
-- [ ] Compléter les 13 fiches « nouveaux produits » (prix, description, INCI)
+- [ ] Compléter les 10 fiches « nouveaux produits » restantes (prix, description, INCI) —
+  inclut les 3 produits cités dans les briefs routines (Crème Pré-Nettoyante,
+  Rose Solution Micellaire, Concentré Fruité)
 - [ ] Photos des 2 Beauty Bars (Kojic, Milk)
 - [ ] Responsive testé sur appareils réels
 - [ ] Livré
@@ -172,6 +186,18 @@ code (objet `SVC_ART`). Voie B (vraies photos via `_inbox/`) reste possible plus
   WhatsApp) ; questionnaires clinique refondus en parcours **multi-étapes**
   (barre de progression, validation inline, sauvegarde `localStorage`). La
   réduction du nombre de questions reste une décision de contenu pour Gloria.
+- 2026-05-24 — Brief Gloria : remplacement du **filtre par préoccupation** par
+  **« Routine préétablie »** sur INA Luxury. 4 routines Visage (Hydra · Acné ·
+  Éclat/Pigmentation · Boosters) et 2 routines Corps (Luxury · Skin). Chaque
+  routine est structurée en tiers : Luxury (gamme médicale) en haut, Skin
+  (gamme semi-médicale, plus abordable) en dessous. La routine Éclat/Pigmentation
+  est exceptionnellement à 3 tiers (Luxury Pigment + Luxury Éclat + Skin).
+  Les Boosters ne sont pas tier-divisés : un seul bloc (nettoyants & masques)
+  destiné aux clients ayant suivi une routine de base ~3 mois. Les badges de
+  préoccupations restent affichés sur les fiches produit (informationnels) mais
+  ne déclenchent plus de filtrage. Ajout de 2 nouveaux produits placeholder cités
+  dans le brief : **Crème Pré-Nettoyante** (Visage/Crèmes, Luxury) et
+  **Rose Solution Micellaire** (Visage/Gel Nettoyants, Skin) — fiches « à compléter ».
 
 ## Paiement en ligne — FedaPay (en préparation)
 
