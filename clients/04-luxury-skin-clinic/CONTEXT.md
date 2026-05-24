@@ -34,9 +34,10 @@ toutes structurées en tiers **Luxury (médicale) en haut + Skin (semi-médicale
 - **Corps** : Beauty Bar · Crème corps · Gommage · Huile corps
 - **Capillaires** : Shampoing · Après-shampoing · Masque · Sérum · Huile / Beurre
 - **Enfant (0-16 ans)** : Gel Lavant · Crème · Crème Lavante
-- **38 produits** : 28 fiches complètes (desc, actifs, résultats, INCI, avertissements)
+- **39 produits** : 29 fiches complètes (desc, actifs, résultats, INCI, avertissements)
   + 10 nouveaux produits en fiches à compléter (prix « à définir » ou description
-  « à venir »).
+  « à venir »). Inclut **INA Luxury Body Butter Baiser Nocturne** (7 000 F / 100ml)
+  migré depuis Cozy le 2026-05-24 (l'étiquette officielle est INA LUXURY BODY BUTTER).
 - **Corps** entièrement peuplé : Beauty Bar 3 · Crème corps 2 · Gommage 1 · Huile corps 2.
 - **Photos produits réelles** en base64 : 34 produits illustrés (Huile Éclat Suprême
   ré-ajoutée le 2026-05-24) ; 2 Beauty Bars (Kojic, Milk) sans photo encore (placeholder
@@ -57,12 +58,14 @@ Design clinique distinct. Soins groupés Visage / Corps / Capillaires / Soin com
   capillaire complet (`HAIR_FORM`) reste dans le code, réactivable dès l'intégration
   paiement.
 
-### Cozy — 7 produits
+### Cozy — 6 produits
 Design rose poudré sensuel. Filtres par catégorie (Intime / Corps / Bien-être).
 Panier multi-produits. Avertissement spécifique sur la Maca Cream (résultats progressifs).
-7 produits complets — dont **Le Boost Fermeté** (Booster Drink Sublimes, 15 000 F / 150g)
+6 produits complets — dont **Le Boost Fermeté** (Booster Drink Sublimes, 15 000 F / 150g)
 et **Baume Pailleté Nuit Scintillante** (9 000 F), tous deux validés le 2026-05-24.
-Photos produits réelles intégrées en base64 (7/7), normalisées au même canvas que
+La **Crème Corps Parfumée Night Kiss** a été migrée vers INA Luxury (rebrand officiel
+« INA LUXURY BODY BUTTER baiser nocturne »).
+Photos produits réelles intégrées en base64 (6/6), normalisées au même canvas que
 INA Luxury (**600×800, 3:4, fond blanc, JPEG q78**).
 
 ## Fonctionnalités transverses
