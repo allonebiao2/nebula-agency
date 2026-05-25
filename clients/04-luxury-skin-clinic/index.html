@@ -33,6 +33,13 @@ body{
 h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;letter-spacing:.01em;}
 a{color:inherit;text-decoration:none;}
 ::selection{background:rgba(201,168,76,.3);color:var(--creme);}
+/* Accessibilite clavier : focus invisible souris, doré visible au clavier */
+:focus{outline:none;}
+:focus-visible{outline:2px solid var(--or-vif);outline-offset:3px;border-radius:4px;}
+a:focus-visible,button:focus-visible,[role="link"]:focus-visible,[role="button"]:focus-visible,
+input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-visible{
+  outline:2px solid var(--or-vif);outline-offset:3px;
+  box-shadow:0 0 0 4px rgba(227,192,116,.18);}
 
 /* ===== FOND MARBRE ===== */
 .marble{position:fixed;inset:0;z-index:0;overflow:hidden;background:

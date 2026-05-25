@@ -31,6 +31,13 @@ a,button{color:inherit;text-decoration:none;font-family:inherit;}
 button{background:none;border:none;cursor:pointer;}
 ::selection{background:rgba(217,154,169,.3);}
 img{max-width:100%;display:block;}
+/* Accessibilite clavier : focus invisible souris, rose poudré visible au clavier */
+:focus{outline:none;}
+:focus-visible{outline:2px solid var(--rose-fonce);outline-offset:3px;border-radius:4px;}
+a:focus-visible,button:focus-visible,[role="button"]:focus-visible,input:focus-visible,
+textarea:focus-visible,select:focus-visible,summary:focus-visible{
+  outline:2px solid var(--rose-fonce);outline-offset:3px;
+  box-shadow:0 0 0 4px rgba(189,125,142,.22);}
 
 .bg{position:fixed;inset:0;z-index:0;background:
   radial-gradient(ellipse 75% 55% at 82% 0%,var(--rose-pale),transparent 62%),
