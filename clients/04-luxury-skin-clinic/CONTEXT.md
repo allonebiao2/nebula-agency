@@ -87,9 +87,12 @@ INA Luxury (**600×800, 3:4, fond blanc, JPEG q78**).
 ## Contraintes
 
 - **Budget** : 100 000 FCFA setup + 10 000 FCFA/mois.
-- **Hébergement** : Netlify (`index.html` = page d'accueil).
+- **Hébergement** : Netlify (`index.html` = page d'accueil) — `https://luxuryskinclinic.netlify.app/`.
 - **Technique** : HTML pur, CSS inline, JS vanilla, zéro framework, zéro CDN externe.
-- **Images** : base64 — actuellement placeholders dégradés élégants.
+- **Images** : fichiers JPG/PNG externes dans `assets/images/` (lazy-loadés
+  sur les templates produits) — **plus de base64 dans les pages** depuis le
+  2026-05-25 (gain cumulé −78 % de poids HTML). Les chemins restent 100 %
+  relatifs/Netlify, conformes à la règle « zéro CDN externe ».
 - WhatsApp de Gloria : ne jamais modifier sans confirmation.
 
 ## État d'avancement
@@ -100,7 +103,16 @@ INA Luxury (**600×800, 3:4, fond blanc, JPEG q78**).
 - [x] luxury-skin-clinic.html — 11 soins, design clinique, règlement, formulaires
 - [x] cozy.html — 8 produits, design rose, panier
 - [x] Logos intégrés : INA Luxury (logo CSS), Cozy, Luxury Skin Clinic, Luxury Club 229 (hub)
-- [x] Photos produits réelles en base64 (INA Luxury 33/33 · Cozy 8/8)
+- [x] Photos produits réelles en `assets/images/` (INA Luxury 35/35 · Cozy 6/6),
+  lazy-loadées
+- [x] Audit complet vitrine + correctifs UX (validation ville livraison,
+  null-checks, confirm vider panier, méta sociales complètes) — 2026-05-25
+- [x] Métadonnées sociales (og:title/description/image/url + twitter:card +
+  canonical) sur les 4 pages — 2026-05-25
+- [x] 4 images Open Graph générées (1200×630, charte respectée, < 50 KB
+  chacune) dans `assets/images/og-*.jpg` — 2026-05-25
+- [x] Allègement HTML (extraction base64 → fichiers + lazy loading) :
+  2547 KB → 548 KB cumulé sur les 4 pages (−78 %) — 2026-05-25
 - [ ] Liens Instagram / TikTok réels
 - [ ] Validation des 4 contenus rédigés par défaut (voir ci-dessous)
 - [ ] Compléter les 10 fiches « nouveaux produits » restantes (prix, description, INCI) —
@@ -201,6 +213,31 @@ code (objet `SVC_ART`). Voie B (vraies photos via `_inbox/`) reste possible plus
   ne déclenchent plus de filtrage. Ajout de 2 nouveaux produits placeholder cités
   dans le brief : **Crème Pré-Nettoyante** (Visage/Crèmes, Luxury) et
   **Rose Solution Micellaire** (Visage/Gel Nettoyants, Skin) — fiches « à compléter ».
+- 2026-05-25 — **Audit complet + correctifs + allègement** (5 sessions, 7 commits).
+  Domaine Netlify confirmé : `luxuryskinclinic.netlify.app`.
+  - **4 bugs UX/conversion corrigés** : validation ville si livraison
+    (cozy + ina-luxury), null-checks sur `#helpWa`/`#finalWa`, confirmation
+    avant « Vider le panier », méta sociales URL-free.
+  - **Métadonnées sociales complètes** sur les 4 pages : og:title /
+    description / type / site_name / locale / url / image / image:width /
+    image:height / image:alt + twitter:card / title / description / image +
+    `<link rel=canonical>`. Permet aperçu visuel des liens partagés sur
+    WhatsApp/Facebook/Instagram.
+  - **4 images OG générées** via pipeline HTML → PNG (Edge headless) → JPG
+    qualité 88 (System.Drawing PowerShell). Toutes < 50 KB, charte respectée
+    pixel-perfect (Cormorant Garamond + or dégradé / rose poudré selon page).
+    Sources HTML versionnées dans `assets/og-source/` pour régénération future.
+  - **Allègement HTML** (extraction base64 → fichiers + `loading="lazy"`) :
+    stratégie hash-first (SHA-256 binaire) puis slug-first puis extract.
+    Total : 2547 KB → 548 KB sur les 4 pages (−78 %), chargement 3G estimé
+    27 s → 6 s. Aucune perte de qualité (les disk JPGs en `assets/images/`
+    étaient déjà les versions canoniques, on les utilise enfin).
+  - **Cleanup** : `huile-eclat-supreme.jpg` déplacé de `cozy/corps/` vers
+    `ina-luxury/corps/huile-corps/` (cross-référence à l'origine d'une
+    migration produit). Body Butter Baiser Nocturne extrait du base64 vers
+    `ina-luxury/corps/creme-corps/body-butter-baiser-nocturne.jpg`.
+  - **Scripts versionnés** dans `/scripts/` (og-audit, og-allegement,
+    og-smoke) — réutilisables pour les vitrines des autres clients.
 
 ## Paiement en ligne — FedaPay (en préparation)
 
@@ -223,12 +260,29 @@ en complément de la commande WhatsApp.
 
 ## Évolutions demandées (à planifier)
 
-- **Audit friction complet** (demandé le 2026-05-18, à faire plus tard) :
-  tunnel panier → WhatsApp + 2 questionnaires clinique + modal règlement
-  obligatoire avant réservation.
+- **Audit friction complet** (demandé le 2026-05-18, partiellement traité
+  le 2026-05-25) : tunnel panier → WhatsApp validé et fluidifié, modal
+  règlement obligatoire en place. Les 2 questionnaires clinique restent
+  à auditer en profondeur (refonte multi-étapes déjà faite le 2026-05-19).
+- Tester en prod sur mobile réel après le redeploy Netlify
+  (https://luxuryskinclinic.netlify.app/).
+- Valider les aperçus de partage social via
+  https://developers.facebook.com/tools/debug/ (Scrape Again obligatoire).
 
 ## Liens
 
 - Pages : `index.html`, `ina-luxury.html`, `luxury-skin-clinic.html`, `cozy.html`
 - Assets : `assets/` · Infos client : `assets/docs/gloria-infos.md`
-- URL en ligne : —
+- **URL en ligne** : https://luxuryskinclinic.netlify.app/
+
+## Performance (mesurée 2026-05-25)
+
+| Page | Poids HTML | Chargement 3G estimé |
+|---|---|---|
+| index.html | 57 KB | < 1 s |
+| luxury-skin-clinic.html | 152 KB | ~2 s |
+| cozy.html | 108 KB | ~1 s |
+| ina-luxury.html | 230 KB | ~2 s |
+
+Images en lazy-loading : l'utilisateur ne télécharge que ce qu'il voit. Le
+cache HTTP Netlify rend les re-visites quasi-instantanées.

@@ -216,10 +216,147 @@ JSON parseable, 0 produit sans image, 0 image orpheline. Supprimer le script apr
 
 ---
 
+## Allègement d'une vitrine HTML lourde — extraire base64 → fichiers + lazy
+
+**Problème** : Une vitrine NEBULA accumule des images base64 inline et finit
+par peser 1+ MB. Sur 3G/4G en Afrique de l'Ouest, ça donne 10-15 s de chargement
+et un bounce rate énorme. Mais on ne veut pas casser la règle "100% autonome"
+(pas de Google Drive / CDN externe).
+
+**Solution** : Extraire les base64 vers `assets/images/...` (chemins relatifs,
+servis par Netlify donc 100% autonomes) + `loading="lazy"` sur les `<img>`
+en grille. Stratégie de mapping **hash-first** pour ne jamais re-encoder :
+
+1. **HASH match** (SHA-256 binaire) : si le base64 == un fichier disque
+   existant → on lie. Bit-pour-bit identique, **zéro perte qualité**.
+2. **SLUG match** : pour les objets JS `IMG{"Nom Produit": "data:..."}`,
+   matcher le slug du nom avec un nom de fichier disque.
+3. **EXTRACT** : si rien ne matche, écrire `assets/images/extracted/<slug>.<ext>`
+   en décodant le base64 (zéro re-encodage = qualité identique au base64).
+
+**Scripts versionnés dans `/scripts/`** (réutilisables sur tout client) :
+- `og-audit.js <page.html>` : inventaire base64 (nombre, poids, mapping potentiel)
+- `og-allegement.js <page.html>` : applique la transformation (backup .bak auto)
+- `og-smoke.js <page.html>` : vérifie syntaxe JS + existence fichiers + 0 base64 restant
+
+**Pattern de remplacement IMG{}**
+```js
+// AVANT
+const IMG={
+  "Sérum Anagen":"data:image/jpeg;base64,/9j/4AAQ...(40 KB de texte b64)..."
+};
+// APRES
+const IMG={
+  "Sérum Anagen":"assets/images/ina-luxury/capillaires/serum/serum-anagen.jpg"
+};
+```
+
+**Pattern lazy sur template JS**
+```js
+// AVANT
+return `<img src="${IMG[p.n]}" alt="${p.n}">`;
+// APRES
+return `<img loading="lazy" src="${IMG[p.n]}" alt="${p.n}">`;
+```
+
+**Résultat mesuré** (hub Luxury Club 229, 4 pages) :
+- index.html : 508 KB → 57 KB (-89%)
+- luxury-skin-clinic.html : 405 KB → 152 KB (-62%)
+- cozy.html : 432 KB → 108 KB (-75%)
+- ina-luxury.html : 1200 KB → 230 KB (-81%)
+- **Total : 2547 KB → 548 KB (-78%)**, chargement 3G : 27 s → 6 s
+
+**Pièges**
+- Les `<img class="wg-logo">` (logos hero) : **NE PAS** ajouter `loading="lazy"`,
+  ils sont above-the-fold. Le script ne lazifie que les templates JS `${IMG[...]}`.
+- Si le base64 est dédupliqué (même logo répété 2× dans la page), le script
+  utilise une `Map seenB64` pour ne le hasher qu'une fois.
+- Le fallback EXTRACT crée `assets/images/extracted/` — penser à déplacer les
+  fichiers vers le bon dossier sémantique par la suite (`corps/`, `visage/`...).
+
+---
+
+## Images Open Graph générées sans API (HTML → PNG via Edge headless)
+
+**Problème** : Les liens partagés sur WhatsApp/Facebook/Instagram nécessitent
+`<meta property="og:image">` avec une URL absolue d'image 1200×630. Sans API
+payante (Midjourney/Ideogram), comment générer des OG brand-cohérentes ?
+
+**Solution** : HTML + CSS local → PNG via Edge headless → JPG optimisé.
+Brand-perfect, gratuit, reproductible, < 50 KB par image.
+
+**Pipeline**
+1. Créer un fichier HTML par OG (1200×630), charte exacte du client, polices
+   Google Fonts, gradients dorés CSS.
+2. Lancer Edge headless :
+   ```powershell
+   & "msedge.exe" --headless --disable-gpu --hide-scrollbars `
+     --window-size=1200,630 --screenshot="og-luxury.png" `
+     "file:///C:/path/to/og-luxury.html"
+   ```
+3. Convertir PNG → JPG qualité 88 avec `System.Drawing.Bitmap` (PowerShell natif Windows) :
+   ```powershell
+   Add-Type -AssemblyName System.Drawing
+   $jpegEncoder = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() `
+     | ? { $_.MimeType -eq 'image/jpeg' }
+   $encParams = New-Object System.Drawing.Imaging.EncoderParameters(1)
+   $encParams.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter(
+     [System.Drawing.Imaging.Encoder]::Quality, [long]88)
+   $img = [System.Drawing.Image]::FromFile('og-luxury.png')
+   $bmp = New-Object System.Drawing.Bitmap $img.Width, $img.Height, `
+     ([System.Drawing.Imaging.PixelFormat]::Format24bppRgb)
+   $g = [System.Drawing.Graphics]::FromImage($bmp)
+   $g.Clear([System.Drawing.Color]::White)
+   $g.DrawImage($img, 0, 0)
+   $bmp.Save('og-luxury.jpg', $jpegEncoder, $encParams)
+   ```
+4. Garder les HTML sources dans `assets/og-source/` (versionnés Git) pour
+   pouvoir régénérer plus tard si on change un slogan/couleur.
+
+**Meta tags HTML à ajouter sur la page**
+```html
+<meta property="og:image" content="https://domaine.netlify.app/assets/images/og-page.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Titre descriptif">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://domaine.netlify.app/assets/images/og-page.jpg">
+```
+
+**Test de validation après deploy** : https://developers.facebook.com/tools/debug/
+→ coller l'URL, cliquer "Scrape Again" (Facebook cache agressif).
+
+**Résultat** (Luxury Club 229) : 4 OG images générées, 35-46 KB chacune,
+charte respectée (Cormorant Garamond, gradients dorés, cadre coins).
+
+---
+
+## Audit complet d'une vitrine en fin de session — checklist
+
+**Quand** : avant livraison client OU si la vitrine est en prod depuis > 1 mois.
+
+**Catégories à vérifier**
+1. **Liens WhatsApp** : format `wa.me/<numero>?text=...`, encodage URI, numéro correct
+2. **JS** : null-checks sur `getElementById`, try/catch autour de localStorage/AudioContext
+3. **Cart WhatsApp** (si présent) : validation ville si livraison, confirmation avant "Vider le panier"
+4. **Meta sociales** : `og:image`, `og:url`, `canonical`, `twitter:card`
+5. **Poids HTML** : si > 300 KB, candidat à l'allègement base64 → fichiers
+6. **Lazy loading** sur les images en grille / panier
+7. **Audio mobile** : silent buffer iOS + compresseur + master gain 1.8 (voir
+   feedback_audio-mobile)
+8. **Focus visible** au clavier (`:focus-visible` global)
+
+**Bonnes pratiques découvertes**
+- Toujours **vérifier les trouvailles d'un agent Explore manuellement** —
+  taux de faux positifs ~50 % sur l'audit Luxury Club 229.
+- Pour tout fix > 3 fichiers : faire un script Node générique dans `/scripts/`
+  plutôt que des sed-replace manuels.
+- Backup auto `.bak` avant toute transformation script-driven.
+
+---
+
 ## Autres techniques à documenter
 
 - Variables CSS pour palette client
 - Carousel sans librairie (CSS scroll-snap)
-- Lazy-load des images base64 lourdes (technique alternative)
-- Open Graph pour partage WhatsApp
-- Optimisation Lighthouse mobile sur vitrine 100% inline
+- Skeleton screens pendant le lazy-load
