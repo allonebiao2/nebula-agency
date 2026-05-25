@@ -162,6 +162,42 @@ le téléphone NON silencieux.
 **Notes** : volume effectif des SFX sur mobile après patch (master 1.45) :
 tap .12 · hover .14 · whatsapp .29 · addCart .32 · brandClick .43 · musique .35.
 
+### Update v2 (2026-05-25 PM) — itération après retour cliente
+La v1 ci-dessus ne suffisait pas dans la vraie vie. 4 fixes additionnels :
+
+1. **Low-pass adapté mobile** : `lp.frequency.value = IS_MOBILE ? 2800 : 950`
+   — les haut-parleurs téléphone sont tinny, couper à 950 Hz rend la musique
+   inaudible (le contenu reste dans les basses que le HP ne reproduit pas).
+   Sur mobile, lever la coupure à 2800 Hz garde la couleur jazz mais laisse
+   passer la clarté.
+
+2. **Compresseur en mode limiter, pas crusher** :
+   `threshold:-4, ratio:3, knee:6` (au lieu de `-10, 8, 4`). Le réglage v1
+   écrasait justement les pics qu'on cherchait à booster. Nouveau : laisse
+   passer les volumes naturels, attrape seulement les crêtes.
+
+3. **iOS unlock avec oscillateur silencieux** en plus du silent buffer :
+   ```js
+   var uo=ctx.createOscillator(),ug=ctx.createGain();
+   ug.gain.value=0;uo.connect(ug);ug.connect(ctx.destination);
+   uo.start(0);uo.stop(ctx.currentTime+.002);
+   ```
+   Certaines versions iOS Safari ont besoin d'un vrai oscillateur joué (même à
+   gain 0) pour débloquer totalement la chaîne audio.
+
+4. **Chime immédiat au clic « Entrer »** : appel `LCAudio.play('chordOk')`
+   AVANT `musicStart()` dans la fonction `enter()` du welcome-gate. L'utilisateur
+   entend un accord doré dès le geste — confirme immédiatement que l'audio
+   fonctionne (sinon il attend 1 s avant le premier accord de musique et
+   pense que c'est cassé).
+
+5. **Music gain target ↑** : `IS_MOBILE ? .38 : .12` (vs `.24 : .10` v1) sur
+   ramp de 1 s (au lieu de 2.2 s). Le master 1.8 + LP 2800 Hz + ramp rapide
+   donnent une musique audible quasi immédiate sur mobile.
+
+**Leçon** : tester sur vrai mobile AVANT la livraison cliente, pas après.
+Voir [[lecons.md#2026-05-25]].
+
 ---
 
 ## Dispatch d'images en base64 via script Python

@@ -579,7 +579,12 @@ let curCat='all';
   function enter(){
     if(entered)return;entered=true;
     try{sessionStorage.setItem('lcAudioOn','1');}catch(e){}
-    if(window.LCAudio){LCAudio.ensure();LCAudio.resume();LCAudio.musicStart();}
+    if(window.LCAudio){
+      LCAudio.ensure();LCAudio.resume();
+      /* Chime immediat pour confirmer que l'audio fonctionne */
+      LCAudio.play('chordOk');
+      LCAudio.musicStart();
+    }
     const m=document.getElementById('lcMute');if(m)m.classList.add('playing');
     gate.classList.add('gone');
   }
@@ -994,20 +999,31 @@ var IS_MOBILE=matchMedia('(max-width:760px)').matches||matchMedia('(pointer:coar
 function ensure(){
   if(ctx)return;
   try{ctx=new AC();}catch(e){return;}
-  /* DynamicsCompressor pour eviter le clipping quand on boost le gain mobile */
+  /* Limiter doux (pas crusher) - laisse passer les volumes naturels, attrape juste les peaks */
   var comp=ctx.createDynamicsCompressor();
-  comp.threshold.value=-10;comp.knee.value=4;comp.ratio.value=8;
-  comp.attack.value=.005;comp.release.value=.12;
+  comp.threshold.value=-4;comp.knee.value=6;comp.ratio.value=3;
+  comp.attack.value=.003;comp.release.value=.15;
   comp.connect(ctx.destination);
   master=ctx.createGain();
-  master.gain.value=IS_MOBILE?1.45:.9;
+  /* Master boost mobile (haut-parleurs telephone faibles) - le limiter absorbe les pics */
+  master.gain.value=IS_MOBILE?1.8:1.0;
   master.connect(comp);
   musicGain=ctx.createGain();musicGain.gain.value=0;
-  lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=950;
+  /* Low-pass adapte : mobile a haut-parleurs tinny -> couper moins haut sinon inaudible */
+  lp=ctx.createBiquadFilter();lp.type='lowpass';
+  lp.frequency.value=IS_MOBILE?2800:950;
   musicGain.connect(lp);lp.connect(master);
-  /* iOS unlock : silent buffer joue 1 sample pendant le 1er geste */
-  try{var b=ctx.createBuffer(1,1,22050),s=ctx.createBufferSource();
-    s.buffer=b;s.connect(ctx.destination);s.start(0);}catch(e){}
+  /* iOS unlock robuste : silent buffer + oscillateur silencieux 1ms */
+  try{
+    var b=ctx.createBuffer(1,1,22050),s=ctx.createBufferSource();
+    s.buffer=b;s.connect(ctx.destination);s.start(0);
+    /* Certaines versions iOS Safari ont besoin d'un vrai oscillateur joue */
+    var uo=ctx.createOscillator(),ug=ctx.createGain();
+    ug.gain.value=0;uo.connect(ug);ug.connect(ctx.destination);
+    uo.start(0);uo.stop(ctx.currentTime+.002);
+  }catch(e){}
+  /* Tentative de resume immediate (au cas ou) */
+  try{if(ctx.state==='suspended'){var pr=ctx.resume();if(pr&&pr.catch)pr.catch(function(){});}}catch(e){}
 }
 function resume(){
   if(!ctx)return;
@@ -1086,7 +1102,7 @@ function musicStart(){
   if(musicOn)return;musicOn=true;
   musicGain.gain.cancelScheduledValues(ctx.currentTime);
   musicGain.gain.setValueAtTime(Math.max(musicGain.gain.value,.0001),ctx.currentTime);
-  musicGain.gain.linearRampToValueAtTime(IS_MOBILE?.24:.10,ctx.currentTime+2.2);
+  musicGain.gain.linearRampToValueAtTime(IS_MOBILE?.38:.12,ctx.currentTime+1.0);
   mLoop();
 }
 function musicStop(){
