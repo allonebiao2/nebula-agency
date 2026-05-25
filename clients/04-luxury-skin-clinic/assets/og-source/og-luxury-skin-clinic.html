@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:1200px;height:630px;overflow:hidden;}
+body{
+  background:
+    radial-gradient(ellipse at 75% 80%, rgba(201,168,76,.08) 0%, transparent 55%),
+    linear-gradient(180deg,#fbfaf7 0%, #f3f1e9 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;color:#1f1e1a;position:relative;
+}
+.frame{
+  position:absolute;inset:38px;border:1px solid rgba(201,168,76,.32);
+}
+.frame::before,.frame::after{
+  content:'';position:absolute;width:80px;height:80px;
+  border:2px solid #c9a84c;
+}
+.frame::before{top:-1px;left:-1px;border-right:none;border-bottom:none;}
+.frame::after{bottom:-1px;right:-1px;border-left:none;border-top:none;}
+.bg-mint{
+  position:absolute;width:380px;height:380px;border-radius:50%;
+  background:radial-gradient(circle, rgba(170,205,190,.22) 0%, transparent 70%);
+  top:-90px;left:-90px;filter:blur(40px);
+}
+.inner{text-align:center;z-index:2;padding:0 100px;}
+.eyebrow{
+  font-family:'Jost',sans-serif;font-weight:400;
+  font-size:16px;letter-spacing:.55em;text-transform:uppercase;
+  color:#c9a84c;margin-bottom:30px;
+}
+.eyebrow::before,.eyebrow::after{
+  content:'';display:inline-block;vertical-align:middle;
+  width:46px;height:1px;background:#c9a84c;margin:0 22px;
+}
+.brand{
+  font-family:'Cormorant Garamond',serif;font-weight:500;
+  font-size:96px;line-height:1;letter-spacing:.03em;
+  color:#1f1e1a;margin-bottom:22px;
+}
+.brand .accent{
+  font-style:italic;font-weight:400;
+  background:linear-gradient(135deg,#ecd9a4 0%,#c9a84c 48%,#8f6f30 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.divider{
+  width:140px;height:1px;background:#c9a84c;
+  margin:0 auto 26px;position:relative;
+}
+.divider::before{
+  content:'';position:absolute;left:50%;top:-3px;width:7px;height:7px;
+  background:#c9a84c;transform:translateX(-50%) rotate(45deg);
+}
+.tagline{
+  font-family:'Cormorant Garamond',serif;font-weight:400;font-style:italic;
+  font-size:30px;color:#4a4842;letter-spacing:.02em;
+  margin-bottom:34px;
+}
+.foot{
+  font-family:'Jost',sans-serif;font-weight:300;
+  font-size:13px;letter-spacing:.4em;text-transform:uppercase;
+  color:#8d8a80;
+}
+</style>
+</head>
+<body>
+<div class="frame"></div>
+<div class="bg-mint"></div>
+<div class="inner">
+  <div class="eyebrow">Clinique Esthétique</div>
+  <div class="brand">LUXURY <span class="accent">Skin</span> CLINIC</div>
+  <div class="divider"></div>
+  <div class="tagline">Soins esthétiques par Mme Sabrina</div>
+  <div class="foot">Cotonou · Sur rendez-vous</div>
+</div>
+</body>
+</html>

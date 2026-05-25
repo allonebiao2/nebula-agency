@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:1200px;height:630px;overflow:hidden;}
+body{
+  background:radial-gradient(ellipse at 50% 40%, #1a160e 0%, #0a0a0a 70%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;color:#faf6ec;position:relative;
+}
+.frame{
+  position:absolute;inset:38px;border:1px solid rgba(201,168,76,.32);
+}
+.frame::before,.frame::after{
+  content:'';position:absolute;width:80px;height:80px;
+  border:2px solid #c9a84c;
+}
+.frame::before{top:-1px;left:-1px;border-right:none;border-bottom:none;}
+.frame::after{bottom:-1px;right:-1px;border-left:none;border-top:none;}
+.inner{text-align:center;z-index:2;padding:0 100px;}
+.eyebrow{
+  font-family:'Jost',sans-serif;font-weight:400;
+  font-size:16px;letter-spacing:.55em;text-transform:uppercase;
+  color:#c9a84c;margin-bottom:34px;
+}
+.eyebrow::before,.eyebrow::after{
+  content:'';display:inline-block;vertical-align:middle;
+  width:46px;height:1px;background:#c9a84c;margin:0 22px;
+}
+.brand{
+  font-family:'Cormorant Garamond',serif;font-weight:500;
+  font-size:88px;line-height:1.05;letter-spacing:.04em;
+  background:linear-gradient(135deg,#ecd9a4 0%,#c9a84c 48%,#8f6f30 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  margin-bottom:26px;white-space:nowrap;
+}
+.brand .accent{font-style:italic;font-weight:400;}
+.divider{
+  width:140px;height:1px;background:#c9a84c;
+  margin:0 auto 26px;position:relative;
+}
+.divider::before{
+  content:'';position:absolute;left:50%;top:-3px;width:7px;height:7px;
+  background:#c9a84c;transform:translateX(-50%) rotate(45deg);
+}
+.tagline{
+  font-family:'Cormorant Garamond',serif;font-weight:400;font-style:italic;
+  font-size:34px;color:#ecd9a4;letter-spacing:.02em;
+  margin-bottom:38px;
+}
+.foot{
+  font-family:'Jost',sans-serif;font-weight:300;
+  font-size:14px;letter-spacing:.4em;text-transform:uppercase;
+  color:#aaa291;
+}
+</style>
+</head>
+<body>
+<div class="frame"></div>
+<div class="inner">
+  <div class="eyebrow">Esthétique de Luxe</div>
+  <div class="brand">LUXURY <span class="accent">Club</span> 229</div>
+  <div class="divider"></div>
+  <div class="tagline">Votre espace beauté &amp; bien-être</div>
+  <div class="foot">Cotonou · Bénin</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:1200px;height:630px;overflow:hidden;}
+body{
+  background:
+    radial-gradient(ellipse at 30% 30%, rgba(231,188,199,.45) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 75%, rgba(217,154,169,.30) 0%, transparent 55%),
+    linear-gradient(135deg,#fdf6f3 0%,#f6e3e6 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;color:#5a3140;position:relative;
+}
+.frame{
+  position:absolute;inset:38px;border:1px solid rgba(201,168,76,.4);
+}
+.frame::before,.frame::after{
+  content:'';position:absolute;width:80px;height:80px;
+  border:2px solid #c9a84c;
+}
+.frame::before{top:-1px;left:-1px;border-right:none;border-bottom:none;}
+.frame::after{bottom:-1px;right:-1px;border-left:none;border-top:none;}
+.inner{text-align:center;z-index:2;padding:0 100px;}
+.eyebrow{
+  font-family:'Jost',sans-serif;font-weight:400;
+  font-size:16px;letter-spacing:.55em;text-transform:uppercase;
+  color:#bd7d8e;margin-bottom:32px;
+}
+.eyebrow::before,.eyebrow::after{
+  content:'';display:inline-block;vertical-align:middle;
+  width:46px;height:1px;background:#bd7d8e;margin:0 22px;
+}
+.brand{
+  font-family:'Cormorant Garamond',serif;font-weight:500;font-style:italic;
+  font-size:148px;line-height:1;letter-spacing:.02em;
+  color:#bd7d8e;margin-bottom:24px;
+}
+.divider{
+  width:140px;height:1px;background:#c9a84c;
+  margin:0 auto 26px;position:relative;
+}
+.divider::before{
+  content:'';position:absolute;left:50%;top:-3px;width:7px;height:7px;
+  background:#c9a84c;transform:translateX(-50%) rotate(45deg);
+}
+.tagline{
+  font-family:'Cormorant Garamond',serif;font-weight:400;
+  font-size:34px;color:#5a3140;letter-spacing:.02em;
+  margin-bottom:36px;
+}
+.foot{
+  font-family:'Jost',sans-serif;font-weight:300;
+  font-size:14px;letter-spacing:.4em;text-transform:uppercase;
+  color:#a37989;
+}
+.brand-suffix{
+  font-family:'Jost',sans-serif;font-weight:400;font-style:normal;
+  font-size:18px;letter-spacing:.45em;text-transform:uppercase;
+  color:#bd7d8e;display:block;margin-top:4px;
+}
+</style>
+</head>
+<body>
+<div class="frame"></div>
+<div class="inner">
+  <div class="eyebrow">Bien-être Féminin</div>
+  <div class="brand">Cozy<span class="brand-suffix">by Luxury Club 229</span></div>
+  <div class="divider"></div>
+  <div class="tagline">Hygiène intime &amp; bien-être</div>
+  <div class="foot">Soins · Douceur · Confort</div>
+</div>
+</body>
+</html>
