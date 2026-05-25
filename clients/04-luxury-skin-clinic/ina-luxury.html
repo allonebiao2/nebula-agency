@@ -6,6 +6,15 @@
 <meta name="theme-color" content="#0a0a0a">
 <title>INA Luxury — Cosmétiques & Capillaires | Luxury Club 229</title>
 <meta name="description" content="INA Luxury — Soins visage, corps, capillaires et enfant. Sérums, crèmes, nettoyants et masques formulés avec précision.">
+<meta property="og:title" content="INA Luxury — Cosmétiques & Capillaires">
+<meta property="og:description" content="Soins visage, corps, capillaires et enfant. Sérums, crèmes, nettoyants et masques formulés avec précision.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="LUXURY CLUB 229">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="INA Luxury — Cosmétiques & Capillaires">
+<meta name="twitter:description" content="Soins visage, corps, capillaires formulés avec précision.">
+<!-- TODO meta sociales : ajouter og:url, og:image et <link rel=canonical> une fois le domaine Netlify connu -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
@@ -1054,6 +1063,7 @@ const state={family:null,subcat:null,routine:null};
 /* ===== HELPERS WHATSAPP ===== */
 (function(){
   const a=document.getElementById('helpWa');
+  if(!a)return;
   a.href=waLink(`🌸 *Bonjour Luxury Club 229* ✨\n\n${BRAND_LINE}\n\nJ'aimerais un conseil personnalisé pour mes soins INA Luxury. 🤍\n\nPouvez-vous me proposer une routine adaptée à ma peau ?\n\nMerci 🙏\n\nRéf : ${genRef()}  ·  ${nowFr()}`);
   a.setAttribute('data-lc-confirm','1');
   a.setAttribute('data-lc-recap','💆 <b>Conseil personnalisé</b><small>Routine sur-mesure avec Mme Sabrina</small>');
@@ -1520,7 +1530,10 @@ function closeCart(){cartDrawer.classList.remove('open');hideScrim();}
 cartBtn.addEventListener('click',openCart);
 cartClose.addEventListener('click',closeCart);
 function clearCart(){cart=[];saveCart();syncCart();}
-cartClear.addEventListener('click',clearCart);
+cartClear.addEventListener('click',()=>{
+  if(!cart.length)return;
+  if(confirm('Vider entièrement votre panier ?\n\nCette action est définitive.')){clearCart();toast('Panier vidé');}
+});
 /* Setup sélecteur mode de réception */
 const cartCityInput=document.getElementById('cartCity');
 function getRecv(){
@@ -1541,8 +1554,13 @@ cartWa.addEventListener('click',()=>{
   }).join('\n\n');
   const recv=getRecv();
   const city=cartCityInput.value.trim();
+  if(recv==='livraison' && !city){
+    toast('Indiquez votre ville ou quartier pour la livraison');
+    cartCityInput.focus();
+    return;
+  }
   const recvLine=(recv==='livraison')
-    ?`📍 Mode de réception : Livraison\n🏡 Ville / quartier : ${city||'à préciser'}`
+    ?`📍 Mode de réception : Livraison\n🏡 Ville / quartier : ${city}`
     :`📍 Mode de réception : Retrait sur place`;
   const msg=`🌸 *Bonjour Luxury Club 229* ✨
 
