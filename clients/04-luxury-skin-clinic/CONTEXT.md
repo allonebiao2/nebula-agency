@@ -273,6 +273,22 @@ code (objet `SVC_ART`). Voie B (vraies photos via `_inbox/`) reste possible plus
   - **Instagram unifié** : 7 occurrences (4 barres flottantes + 3 modales
     de remerciement) basculées de `@inaluxury` vers le compte cross-marque
     `@luxuryclub229`. Aria-labels mis à jour. TikTok inchangé.
+- 2026-05-26 (4e vague) — **Pédagogie commande & instructions photos**.
+  - **Consultation Peau gratuite** : ajout d'une ligne pédagogique dans le
+    récap de confirmation du questionnaire. Pour le formulaire Peau :
+    « 📸 Photos requises — Veuillez joindre des photos nettes des différentes
+    faces de votre visage **après avoir envoyé votre questionnaire**, pour
+    une meilleure analyse de Mme Sabrina. » (variante hair pour le Diagnostic
+    Capillaire conservée plus courte). `luxury-skin-clinic.html` ligne ~1322.
+  - **Commande produits — bloc « Personnalisation de votre routine »** :
+    après clic sur « Commander sur WhatsApp » dans le panier Cozy ou INA Luxury,
+    le modal de confirmation affiche désormais un encart pédagogique (texte
+    fourni par Gloria) + checkbox **« J'ai lu et compris, je valide ma
+    commande »**. Le bouton « Valider ma commande → » est désactivé tant que
+    la case n'est pas cochée. Pattern réutilisable via le nouveau paramètre
+    `opts.acknowledge={text}` sur `lcConfirmOrder` — autres flux WhatsApp
+    (Demande de prix, Alerte stock) restent inchangés. Charte : rose poudré
+    pour Cozy, doré-cream pour INA Luxury.
 - 2026-05-26 (3e vague) — **Simplifications Gloria** :
   - **Routine Savons supprimée** d'INA Luxury Corps : Gloria ne veut que 2 packs
     (Body Pack Luxury + Body Pack Skin). L'entrée `key:'savons'` retirée de

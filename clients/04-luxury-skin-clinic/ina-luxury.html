@@ -1707,8 +1707,12 @@ Réf : ${genRef()}  ·  ${nowFr()}`;
   const infosRecap=`<div class="lc-recap-line" style="border-top:1px solid rgba(201,168,76,.22);margin-top:8px;padding-top:12px;"><div class="nm">👤 ${prenom} ${nom}<small>📞 ${wa}${waAlt?' · '+waAlt:''}</small></div></div>`;
   const recvHtml=`<div class="lc-recap-line"><div class="nm">📦 Livraison à domicile<small>${cartCityInput.value.trim()} · ${custQuartier.value.trim()}</small><small>🧭 ${custReperes.value.trim()}</small><small>⏰ ${custCreneau.value}</small></div></div>`;
   const noteRecap=note?`<div class="lc-recap-line"><div class="nm">💬 Note<small>${note.replace(/</g,'&lt;')}</small></div></div>`:'';
+  const ackHtml=`<p>Merci d'avoir passé votre commande auprès de nous.</p><p>Dès réception de votre colis, veuillez contacter Madame Sabrina afin de recevoir votre routine personnalisée. Cette étape est essentielle pour garantir de meilleurs résultats, car chaque routine est adaptée aux besoins spécifiques et au type de peau de chaque client(e).</p><p>Une bonne personnalisation permet un accompagnement plus précis, plus efficace et des résultats optimisés.</p>`;
   window.lcConfirmOrder({
     recap:recapHtml+infosRecap+recvHtml+noteRecap,
+    acknowledge:{text:ackHtml},
+    q:'Cochez la case ci-dessus puis validez pour envoyer votre commande sur WhatsApp.',
+    confirmLabel:'Valider ma commande →',
     onConfirm:()=>window.open(waLink(msg),'_blank'),
   });
 });
@@ -1877,6 +1881,21 @@ body{padding-bottom:84px;}
 .lc-recap-total span:last-child{background:var(--gold-grad);-webkit-background-clip:text;
   background-clip:text;-webkit-text-fill-color:transparent;}
 .lc-confirm-q{text-align:center;font-size:.92rem;color:#1f1e1a;margin-bottom:20px;line-height:1.6;}
+.lc-ack{margin:6px 0 16px;padding:18px 19px;border-radius:14px;
+  background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.38);text-align:left;}
+.lc-ack-tag{font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;
+  color:#8a6f23;margin-bottom:11px;font-weight:600;}
+.lc-ack-text{font-family:'Cormorant Garamond',serif;font-size:1.02rem;line-height:1.65;
+  color:#1f1e1a;margin-bottom:14px;}
+.lc-ack-text p{margin:0 0 9px;}
+.lc-ack-text p:last-child{margin-bottom:0;}
+.lc-ack-check{display:flex;align-items:flex-start;gap:10px;cursor:pointer;
+  font-size:.86rem;color:#1f1e1a;user-select:none;
+  padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.65);
+  border:1px solid transparent;transition:background .25s,border-color .25s;}
+.lc-ack-check:hover{background:#fff;border-color:rgba(201,168,76,.55);}
+.lc-ack-check input{margin:2px 0 0;width:17px;height:17px;cursor:pointer;
+  accent-color:#a98835;flex-shrink:0;}
 .lc-confirm-btns{display:flex;flex-direction:column;gap:10px;}
 .lc-btn{padding:14px 22px;border-radius:30px;font-family:'Jost',sans-serif;
   font-size:.84rem;letter-spacing:.06em;cursor:pointer;border:0;
@@ -1886,6 +1905,8 @@ body{padding-bottom:84px;}
   box-shadow:0 10px 24px -8px rgba(201,168,76,.55);}
 .lc-btn.primary:hover{transform:translateY(-2px);
   box-shadow:0 18px 34px -10px rgba(201,168,76,.75);}
+.lc-btn.primary:disabled{opacity:.42;cursor:not-allowed;transform:none;box-shadow:none;}
+.lc-btn.primary:disabled:hover{transform:none;box-shadow:none;}
 .lc-btn.ghost{color:#0a0a0a;background:transparent;border:1px solid rgba(201,168,76,.45);}
 .lc-btn.ghost:hover{background:rgba(201,168,76,.1);}
 
@@ -2165,6 +2186,14 @@ if(mute){
     </div>
     <h2 class="lc-confirm-title" id="lcConfirmTitle">Votre sélection ✨</h2>
     <div class="lc-recap" id="lcConfirmRecap"></div>
+    <div class="lc-ack" id="lcConfirmAck" hidden>
+      <div class="lc-ack-tag">📦 Personnalisation de votre routine</div>
+      <div class="lc-ack-text" id="lcConfirmAckText"></div>
+      <label class="lc-ack-check">
+        <input type="checkbox" id="lcConfirmAckCheck">
+        <span>J'ai lu et compris, je valide ma commande</span>
+      </label>
+    </div>
     <p class="lc-confirm-q" id="lcConfirmQ">Est-ce bien tout ce que vous souhaitez commander ?</p>
     <div class="lc-confirm-btns">
       <button type="button" class="lc-btn primary" id="lcConfirmOk">Confirmer et commander →</button>
@@ -2209,11 +2238,17 @@ if(mute){
         confirmOk=document.getElementById('lcConfirmOk'),
         confirmCancel=document.getElementById('lcConfirmCancel'),
         confirmQ=document.getElementById('lcConfirmQ'),
+        ackBlock=document.getElementById('lcConfirmAck'),
+        ackText=document.getElementById('lcConfirmAckText'),
+        ackCheck=document.getElementById('lcConfirmAckCheck'),
         thanksModal=document.getElementById('lcThanksModal'),
         thanksText=document.getElementById('lcThanksText'),
         thanksClose=document.getElementById('lcThanksClose');
   const reduceMo=matchMedia('(prefers-reduced-motion:reduce)').matches;
   let onConfirm=null,lastFocus=null,particlesRaf=null,typeTimer=null;
+  ackCheck.addEventListener('change',()=>{
+    if(!ackBlock.hidden)confirmOk.disabled=!ackCheck.checked;
+  });
 
   function openConfirm(opts){
     lastFocus=document.activeElement;
@@ -2222,10 +2257,20 @@ if(mute){
     confirmOk.innerHTML=opts.confirmLabel||'Confirmer et commander →';
     confirmCancel.textContent=opts.cancelLabel||"Ajouter d'autres produits";
     onConfirm=opts.onConfirm||null;
+    if(opts.acknowledge){
+      ackText.innerHTML=opts.acknowledge.text||'';
+      ackBlock.hidden=false;
+      ackCheck.checked=false;
+      confirmOk.disabled=true;
+    }else{
+      ackBlock.hidden=true;
+      ackCheck.checked=false;
+      confirmOk.disabled=false;
+    }
     confirmModal.classList.add('on');
     confirmModal.setAttribute('aria-hidden','false');
     document.body.style.overflow='hidden';
-    setTimeout(()=>confirmOk.focus(),200);
+    setTimeout(()=>opts.acknowledge?ackCheck.focus():confirmOk.focus(),200);
   }
   function closeConfirm(){
     confirmModal.classList.remove('on');

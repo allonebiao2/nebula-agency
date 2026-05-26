@@ -1319,7 +1319,10 @@ Merci de me contacter pour la suite 🙏
 Réf : ${genRef()}  ·  ${nowFr()}`;
   const formTitle=isSkin?'Consultation Peau — GRATUITE':'Diagnostic Capillaire';
   const formIcon=isSkin?'🩺':'🩺';
-  const recapHtml=`<div class="lc-recap-line"><div class="nm">${formIcon} <b>${formTitle}</b><small>Questionnaire complet · ${currentForm.sections.length} sections renseignées</small><small>Vos photos seront jointes sur WhatsApp</small></div></div>`;
+  const photoNote=isSkin
+    ?`<div class="lc-recap-line" style="border-top:1px solid rgba(201,168,76,.22);margin-top:8px;padding-top:12px;"><div class="nm">📸 Photos requises<small>Veuillez joindre des photos nettes des différentes faces de votre visage <b>après avoir envoyé votre questionnaire</b>, pour une meilleure analyse de Mme Sabrina.</small></div></div>`
+    :`<div class="lc-recap-line" style="border-top:1px solid rgba(201,168,76,.22);margin-top:8px;padding-top:12px;"><div class="nm">📸 Photos requises<small>À transmettre sur WhatsApp après l'envoi du questionnaire pour le diagnostic.</small></div></div>`;
+  const recapHtml=`<div class="lc-recap-line"><div class="nm">${formIcon} <b>${formTitle}</b><small>Questionnaire complet · ${currentForm.sections.length} sections renseignées</small></div></div>${photoNote}`;
   closeModal('formScrim');
   window.lcConfirmOrder({
     title:'Votre questionnaire ✨',
