@@ -1576,10 +1576,12 @@ function productCard(p,i){
   const _waPrice=`🌸 *Bonjour Luxury Club 229* ✨\n\n${BRAND_LINE}\n\nJe souhaite connaître le prix et les modalités de commande pour :\n${_e} *${p.n}*${p.size?' — '+p.size:''}\n\nMerci 🙏\n\nRéf : ${genRef()}  ·  ${nowFr()}`;
   const _recapStock=`${_e} <b>${p.n}</b>${p.size?'<small>'+p.size+'</small>':''}<small>Vous serez averti(e) dès le retour en stock</small>`;
   const _recapPrice=`${_e} <b>${p.n}</b>${p.size?'<small>'+p.size+'</small>':''}<small>Demande de prix et disponibilité</small>`;
+  const _ackStock=`<p>Vous demandez à être prévenu(e) quand <b>${p.n}</b> sera de nouveau disponible.</p><p>Mme Sabrina ou son équipe vous écrira sur WhatsApp dès que le produit sera en stock. <b>Aucune commande n'est passée à ce stade</b> — vous restez libre d'acheter ou non.</p><p>Pour annuler l'alerte, il suffit de nous le signaler par message.</p>`;
+  const _ackPrice=`<p>Vous demandez le prix et les modalités pour <b>${p.n}</b>${p.size?' ('+p.size+')':''}.</p><p>Mme Sabrina vous confirmera le tarif sur WhatsApp. Le prix est <b>fixé par la maison</b> et tient compte de la formulation, du conditionnement et de la disponibilité de la matière première.</p><p>Aucune commande n'est validée à ce stade — vous restez libre d'acheter ou non après réception du prix.</p>`;
   const actionHtml=(p.stock===0)
-    ?`<a class="btn-add wa" href="${waLink(_waStock)}" target="_blank" rel="noopener" data-lc-confirm data-lc-recap="${_recapStock.replace(/"/g,'&quot;')}" data-lc-q="Envoyer votre demande d'alerte retour en stock ?"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg> M'avertir du retour</a>`
+    ?`<a class="btn-add wa" href="${waLink(_waStock)}" target="_blank" rel="noopener" data-lc-confirm data-lc-recap="${_recapStock.replace(/"/g,'&quot;')}" data-lc-ack="${_ackStock.replace(/"/g,'&quot;')}" data-lc-q="Envoyer votre demande d'alerte retour en stock ?"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg> M'avertir du retour</a>`
     :(p.p==null)
-    ?`<a class="btn-add wa" href="${waLink(_waPrice)}" target="_blank" rel="noopener" data-lc-confirm data-lc-recap="${_recapPrice.replace(/"/g,'&quot;')}" data-lc-q="Envoyer votre demande de prix ?">Demander le prix</a>`
+    ?`<a class="btn-add wa" href="${waLink(_waPrice)}" target="_blank" rel="noopener" data-lc-confirm data-lc-recap="${_recapPrice.replace(/"/g,'&quot;')}" data-lc-ack="${_ackPrice.replace(/"/g,'&quot;')}" data-lc-q="Envoyer votre demande de prix ?">Demander le prix</a>`
     :`<div class="add-actions"><div class="qty-card"><button type="button" class="q-dec" aria-label="Diminuer la quantité">−</button><span class="q-val">1</span><button type="button" class="q-inc" aria-label="Augmenter la quantité">+</button></div><button class="btn-add" data-add="${p.n}"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Panier</button></div>`;
   el.innerHTML=`
     <div class="card-photo">
@@ -2514,16 +2516,20 @@ if(mute){
   window.lcConfirmOrder=openConfirm;
   window.lcShowThanks=showThanks;
 
-  /* Intercepteur global pour liens wa.me marqués data-lc-confirm */
+  /* Intercepteur global pour liens wa.me marqués data-lc-confirm
+     Si l'attribut data-lc-ack est présent, un bloc d'acceptation s'affiche
+     avec la checkbox "J'ai lu et compris" obligatoire avant validation. */
   document.addEventListener('click',e=>{
     const a=e.target.closest('a[href*="wa.me"][data-lc-confirm]');
     if(!a)return;
     e.preventDefault();
     const url=a.href;
     const recapHtml=`<div class="lc-recap-line"><div class="nm">${a.dataset.lcRecap||'Demande WhatsApp'}</div></div>`;
+    const ackText=a.dataset.lcAck;
     openConfirm({
       recap:recapHtml,
-      q:a.dataset.lcQ||'Confirmer l\'envoi de votre demande ?',
+      acknowledge:ackText?{text:ackText}:null,
+      q:a.dataset.lcQ||(ackText?'Cochez la case ci-dessus pour continuer.':'Confirmer l\'envoi de votre demande ?'),
       confirmLabel:'Envoyer sur WhatsApp →',
       cancelLabel:'Annuler',
       onConfirm:()=>window.open(url,'_blank'),

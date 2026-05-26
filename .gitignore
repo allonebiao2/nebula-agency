@@ -21,3 +21,6 @@ skills-lock.json
 .env.local
 *.key
 secrets/
+
+# Captures d'écran locales — ne pas versionner
+_tmp_screenshots/

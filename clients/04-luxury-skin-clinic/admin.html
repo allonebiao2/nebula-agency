@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Tableau de bord — Luxury Club 229</title>
+<meta name="description" content="Tableau de bord interne — Luxury Club 229 · Mme Sabrina">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --noir:#0a0a0a; --noir-2:#141210; --noir-3:#211d16;
+  --creme:#faf6ec; --nacre:#f4eede;
+  --or:#c9a84c; --or-fonce:#a8862f; --or-clair:#e6d3a0;
+  --texte:#e7decb; --texte-doux:#a99a7c;
+  --ligne:rgba(201,168,76,.22);
+  --vert:#7fb59a; --rose:#bd7d8e;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--noir);color:var(--texte);font-family:'Jost',system-ui,sans-serif;
+  font-weight:300;line-height:1.55;min-height:100vh;
+  background-image:
+    radial-gradient(ellipse 50% 40% at 0% 0%,rgba(201,168,76,.08),transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 100%,rgba(231,188,199,.06),transparent 60%);}
+h1,h2,h3,h4{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;color:var(--creme);}
+a{color:var(--or-clair);text-decoration:none;}
+a:hover{color:var(--or);}
+ul{list-style:none;}
+
+/* ===== HEADER ===== */
+.admin-head{position:sticky;top:0;z-index:50;background:rgba(10,10,10,.92);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--ligne);
+  padding:14px 26px;display:flex;align-items:center;justify-content:space-between;gap:14px;}
+.admin-head-l{display:flex;align-items:center;gap:14px;}
+.admin-head-l-mark{font-family:'Cormorant Garamond',serif;font-size:1.25rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--or-clair);}
+.admin-head-l-tag{font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--texte-doux);}
+.admin-head-r{display:flex;gap:10px;flex-wrap:wrap;}
+.admin-link{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;
+  border-radius:8px;background:rgba(201,168,76,.12);border:1px solid var(--ligne);
+  font-size:.78rem;letter-spacing:.04em;color:var(--creme);transition:all .25s ease;}
+.admin-link:hover{background:rgba(201,168,76,.25);border-color:var(--or);color:var(--creme);}
+.admin-link svg{width:14px;height:14px;}
+
+/* ===== LAYOUT ===== */
+.admin-main{max-width:1180px;margin:0 auto;padding:36px 26px 80px;
+  display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.admin-card{background:linear-gradient(160deg,rgba(33,29,22,.65),rgba(20,18,16,.85));
+  border:1px solid var(--ligne);border-radius:16px;padding:22px 24px;
+  transition:border-color .3s ease;}
+.admin-card:hover{border-color:rgba(201,168,76,.45);}
+.admin-card-wide{grid-column:1/-1;}
+
+.card-h{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.card-h-ico{width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  border-radius:8px;background:linear-gradient(135deg,rgba(201,168,76,.25),rgba(201,168,76,.05));
+  border:1px solid var(--ligne);flex-shrink:0;}
+.card-h-ico svg{width:18px;height:18px;stroke:var(--or-clair);fill:none;stroke-width:1.7;}
+.card-h-titles{flex:1;}
+.card-h-eyebrow{font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--or);
+  display:block;}
+.card-h-title{font-size:1.2rem;font-weight:500;line-height:1.2;color:var(--creme);}
+
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-size:.86rem;align-items:baseline;}
+.kv dt{color:var(--texte-doux);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;}
+.kv dd{color:var(--creme);font-weight:500;}
+.kv dd b{color:var(--or-clair);font-weight:600;}
+.kv-tel{font-family:'Cormorant Garamond',serif;font-size:1.1rem;letter-spacing:.06em;}
+
+.list-tight{display:flex;flex-direction:column;gap:7px;font-size:.86rem;}
+.list-tight li{padding-left:18px;position:relative;line-height:1.5;}
+.list-tight li::before{content:'';position:absolute;left:5px;top:.55em;width:5px;height:5px;
+  background:var(--or);border-radius:50%;}
+.list-tight li b{color:var(--or-clair);}
+
+.steps{display:flex;flex-direction:column;gap:12px;}
+.step{display:grid;grid-template-columns:30px 1fr;gap:14px;align-items:start;}
+.step-num{width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+  border-radius:50%;background:linear-gradient(135deg,#e6d3a0,#c9a84c 70%,#a8862f);
+  color:#0a0a0a;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1rem;}
+.step-body{font-size:.86rem;line-height:1.55;}
+.step-body b{color:var(--or-clair);}
+
+.schedule{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.sched-day{background:rgba(201,168,76,.08);border:1px solid var(--ligne);border-radius:12px;padding:14px;}
+.sched-day-head{font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--or-clair);
+  letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.sched-day-cnt{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--texte-doux);
+  background:rgba(201,168,76,.15);padding:3px 9px;border-radius:10px;}
+.sched-slots{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.sched-slot{padding:7px 10px;border-radius:7px;background:rgba(10,10,10,.4);
+  border:1px solid var(--ligne);font-size:.82rem;color:var(--creme);text-align:center;}
+
+.soin-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:14px;
+  padding:9px 0;border-bottom:1px solid var(--ligne);font-size:.86rem;}
+.soin-row:last-child{border-bottom:none;}
+.soin-row-l b{color:var(--creme);}
+.soin-row-l small{display:block;color:var(--texte-doux);font-size:.7rem;letter-spacing:.06em;
+  text-transform:uppercase;margin-top:2px;}
+.soin-row-p{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--or-clair);
+  white-space:nowrap;}
+
+.soin-group{margin-bottom:18px;}
+.soin-group-h{font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--or);
+  margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--ligne);}
+
+.cta-box{padding:14px 18px;background:linear-gradient(135deg,rgba(127,181,154,.12),rgba(127,181,154,.04));
+  border:1px solid rgba(127,181,154,.3);border-radius:11px;font-size:.84rem;line-height:1.55;
+  margin-top:14px;}
+.cta-box b{color:var(--vert);}
+
+.warning-box{padding:14px 18px;background:linear-gradient(135deg,rgba(231,188,199,.14),rgba(231,188,199,.05));
+  border:1px solid rgba(231,188,199,.35);border-radius:11px;font-size:.84rem;line-height:1.55;
+  margin-top:14px;}
+.warning-box b{color:var(--rose);}
+
+@media(max-width:780px){
+  .admin-main{grid-template-columns:1fr;padding:24px 18px 60px;}
+  .schedule{grid-template-columns:1fr;}
+  .admin-head{padding:12px 18px;}
+  .admin-head-l-tag{display:none;}
+}
+
+@media print{
+  body{background:#fff;color:#000;}
+  .admin-head{display:none;}
+  .admin-card{break-inside:avoid;border:1px solid #ccc;background:#fff;}
+  .admin-card h1,h2,h3,h4,.card-h-title{color:#000;}
+  .kv dd,.list-tight li,.soin-row-l b,.step-body{color:#000;}
+  .card-h-eyebrow,.card-h-ico svg{color:#a8862f;}
+  .admin-link{display:none;}
+}
+</style>
+</head>
+<body>
+
+<header class="admin-head">
+  <div class="admin-head-l">
+    <span class="admin-head-l-mark">Tableau de bord</span>
+    <span class="admin-head-l-tag">Luxury Club 229 · Mme Sabrina</span>
+  </div>
+  <nav class="admin-head-r">
+    <a class="admin-link" href="index.html">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.7"><path d="M3 12l9-9 9 9M5 10v10h4v-6h6v6h4V10"/></svg>
+      Hub public
+    </a>
+    <a class="admin-link" href="luxury-skin-clinic.html#rdv-booking">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.7"><path d="M3 9h18M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2V3M3 19a2 2 0 0 0 2 2zm0 0V7a2 2 0 0 1 2-2h2V3m4 0v4"/></svg>
+      Page RDV
+    </a>
+    <a class="admin-link" href="javascript:window.print()">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.7"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>
+      Imprimer
+    </a>
+  </nav>
+</header>
+
+<main class="admin-main">
+
+  <!-- CONTACTS & PAIEMENT -->
+  <div class="admin-card">
+    <div class="card-h">
+      <div class="card-h-ico">
+        <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-13.5 7.79L3 21l1.21-4.5A9 9 0 1 1 21 12z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="card-h-titles">
+        <span class="card-h-eyebrow">Contacts</span>
+        <h2 class="card-h-title">Numéros & paiement</h2>
+      </div>
+    </div>
+    <dl class="kv">
+      <dt>WhatsApp clinique</dt><dd><span class="kv-tel">+229 01 67 97 56 26</span></dd>
+      <dt>Mobile Money acompte</dt><dd><span class="kv-tel">01 67 97 56 26</span></dd>
+      <dt>Montant acompte</dt><dd><b>5 100 FCFA</b> (fixe, tous soins)</dd>
+      <dt>Ville</dt><dd>Cotonou · Bénin</dd>
+    </dl>
+    <div class="cta-box">
+      <b>💡 Important —</b> L'acompte est la <b>seule</b> garantie de validation du RDV.
+      Tant que la capture n'est pas reçue, le créneau reste ouvert aux autres clientes.
+    </div>
+  </div>
+
+  <!-- PLANNING STANDARD -->
+  <div class="admin-card">
+    <div class="card-h">
+      <div class="card-h-ico">
+        <svg viewBox="0 0 24 24"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="card-h-titles">
+        <span class="card-h-eyebrow">Planning hebdomadaire</span>
+        <h2 class="card-h-title">Jours & créneaux</h2>
+      </div>
+    </div>
+    <div class="schedule">
+      <div class="sched-day">
+        <div class="sched-day-head">Mercredi <span class="sched-day-cnt">4 slots</span></div>
+        <div class="sched-slots">
+          <div class="sched-slot">9h</div>
+          <div class="sched-slot">11h</div>
+          <div class="sched-slot">14h</div>
+          <div class="sched-slot">16h</div>
+        </div>
+      </div>
+      <div class="sched-day">
+        <div class="sched-day-head">Samedi <span class="sched-day-cnt">4 slots</span></div>
+        <div class="sched-slots">
+          <div class="sched-slot">9h</div>
+          <div class="sched-slot">11h</div>
+          <div class="sched-slot">14h</div>
+          <div class="sched-slot">16h</div>
+        </div>
+      </div>
+    </div>
+    <ul class="list-tight" style="margin-top:14px;">
+      <li><b>8 RDV maximum par semaine</b> (4 par jour × 2 jours)</li>
+      <li>Tous les autres jours : <b>fermé</b></li>
+      <li>Aucun RDV le jour même — réservation 24h à l'avance minimum</li>
+    </ul>
+  </div>
+
+  <!-- PROCÉDURE DE RÉSERVATION -->
+  <div class="admin-card admin-card-wide">
+    <div class="card-h">
+      <div class="card-h-ico">
+        <svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="card-h-titles">
+        <span class="card-h-eyebrow">Pour Gloria / l'assistante</span>
+        <h2 class="card-h-title">Procédure de réservation</h2>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">La cliente envoie sa demande via le formulaire du site (page RDV).
+          Le message arrive sur le <b>WhatsApp clinique</b> avec : nom, jour souhaité, créneau, soin (optionnel).</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">Vérifier le planning de Mme Sabrina pour ce jour-là.<br>
+          <b>Si le créneau est libre :</b> répondre « Votre créneau est disponible. Envoyez l'acompte
+          de 5 100 F au 01 67 97 56 26 et joignez la capture du paiement pour valider. »<br>
+          <b>Si le créneau est pris :</b> proposer 1 ou 2 alternatives sur les jours mer/sam suivants.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">Réception de la <b>capture du paiement</b> (5 100 F Mobile Money).
+          Vérifier le montant + le numéro destinataire.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">Confirmer définitivement : « Votre rendez-vous est confirmé pour
+          [jour] à [heure]. Nous vous attendons. Merci ✨ »<br>
+          Noter le RDV dans l'agenda papier ou Google Calendar.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">La veille : envoyer un message de rappel à la cliente avec l'heure
+          du RDV et l'adresse de la clinique.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TARIFS RAPIDES -->
+  <div class="admin-card admin-card-wide">
+    <div class="card-h">
+      <div class="card-h-ico">
+        <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="card-h-titles">
+        <span class="card-h-eyebrow">Référence rapide</span>
+        <h2 class="card-h-title">Tarifs des soins</h2>
+      </div>
+    </div>
+
+    <div class="soin-group">
+      <div class="soin-group-h">💆‍♀️ Visage</div>
+      <div class="soin-row"><div class="soin-row-l"><b>Consultation Peau</b><small>Gratuite</small></div><div class="soin-row-p">0 F</div></div>
+      <div class="soin-row"><div class="soin-row-l"><b>Consultation Peau — Suivi</b><small>Premium</small></div><div class="soin-row-p">20 000 F</div></div>
+      <div class="soin-row"><div class="soin-row-l"><b>Soin Visage Oxygène</b></div><div class="soin-row-p">30 000 F</div></div>
+      <div class="soin-row"><div class="soin-row-l"><b>Soin Visage Glass Skin</b><small>Signature</small></div><div class="soin-row-p">45 000 F</div></div>
+      <div class="soin-row"><div class="soin-row-l"><b>Luxury Peel</b><small>Avancé</small></div><div class="soin-row-p">120 000 F</div></div>
+    </div>
+
+    <div class="soin-group">
+      <div class="soin-group-h">🌸 Corps</div>
+      <div class="soin-row"><div class="soin-row-l"><b>Gommage Luxury</b></div><div class="soin-row-p">45 000 F</div></div>
+      <div class="soin-row"><div class="soin-row-l"><b>Luxury Massage</b></div><div class="soin-row-p">30 000 F</div></div>
+    </div>
+
+    <div class="soin-group">
+      <div class="soin-group-h">💇‍♀️ Capillaires</div>
+      <div class="soin-row"><div class="soin-row-l"><b>Diagnostic Capillaire</b></div><div class="soin-row-p">5 000 F</div></div>
+      <div class="soin-row"><div class="soin-row-l"><b>Le Hair Spa</b></div><div class="soin-row-p">15 000 F</div></div>
+    </div>
+
+    <div class="cta-box">
+      <b>📋 Pour la liste complète et à jour</b> avec descriptions, durées, contre-indications :
+      consulter <a href="luxury-skin-clinic.html#soins">la page publique des soins</a>.
+    </div>
+  </div>
+
+  <!-- RÈGLEMENT (résumé) -->
+  <div class="admin-card admin-card-wide">
+    <div class="card-h">
+      <div class="card-h-ico">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="card-h-titles">
+        <span class="card-h-eyebrow">À rappeler aux clientes</span>
+        <h2 class="card-h-title">Règlement clinique — résumé</h2>
+      </div>
+    </div>
+    <ul class="list-tight">
+      <li><b>Ponctualité :</b> tolérance maximum 5 min. Au-delà → RDV automatiquement annulé et acompte perdu.</li>
+      <li><b>Annulation :</b> 24h à l'avance minimum, sinon perte de l'acompte.</li>
+      <li><b>Accompagnateur :</b> 1 seul autorisé, attend à l'accueil.</li>
+      <li><b>Climatisation :</b> cabines climatisées, accueil non climatisé (prévenir l'accompagnateur).</li>
+      <li><b>Cabine :</b> à l'arrivée, présenter à l'accueil le soin réservé.</li>
+    </ul>
+    <div class="warning-box">
+      <b>⚠️ Cas particuliers à signaler à Mme Sabrina :</b> grossesse, traitement médical en cours,
+      allergie connue, peau sensible, soin esthétique récent (botox, fillers, peeling). Toujours
+      avant le RDV, jamais le jour J.
+    </div>
+  </div>
+
+  <!-- LIENS RAPIDES -->
+  <div class="admin-card admin-card-wide">
+    <div class="card-h">
+      <div class="card-h-ico">
+        <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5L21 10a5 5 0 0 0-7-7l-2 2M14 11a5 5 0 0 0-7.5-.5L3 14a5 5 0 0 0 7 7l2-2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="card-h-titles">
+        <span class="card-h-eyebrow">Liens utiles</span>
+        <h2 class="card-h-title">Accès rapides</h2>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;">
+      <a class="admin-link" href="index.html" style="justify-content:center;padding:14px;">
+        🏛️ Hub Luxury Club 229
+      </a>
+      <a class="admin-link" href="luxury-skin-clinic.html" style="justify-content:center;padding:14px;">
+        💆‍♀️ Luxury Skin Clinic
+      </a>
+      <a class="admin-link" href="luxury-skin-clinic.html#rdv-booking" style="justify-content:center;padding:14px;">
+        📅 Formulaire RDV
+      </a>
+      <a class="admin-link" href="ina-luxury.html" style="justify-content:center;padding:14px;">
+        ✨ INA Luxury (cosmétiques)
+      </a>
+      <a class="admin-link" href="cozy.html" style="justify-content:center;padding:14px;">
+        🌸 Cozy (intime)
+      </a>
+      <a class="admin-link" href="index.html#temoignages" style="justify-content:center;padding:14px;">
+        💛 Galerie témoignages
+      </a>
+      <a class="admin-link" href="https://wa.me/2290167975626" target="_blank" rel="noopener" style="justify-content:center;padding:14px;">
+        💬 Ouvrir WhatsApp Business
+      </a>
+    </div>
+  </div>
+
+  <!-- LIMITES & PORTÉE -->
+  <div class="admin-card admin-card-wide">
+    <div class="card-h">
+      <div class="card-h-ico">
+        <svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.29 3.86l-8.18 14.18a2 2 0 0 0 1.71 3h16.36a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="card-h-titles">
+        <span class="card-h-eyebrow">À savoir</span>
+        <h2 class="card-h-title">Ce que ce tableau de bord PEUT et NE PEUT PAS faire</h2>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div>
+        <div style="font-family:'Cormorant Garamond',serif;color:var(--vert);font-size:1.05rem;margin-bottom:10px;">✅ Ce qui marche</div>
+        <ul class="list-tight">
+          <li>Référence rapide tarifs + horaires</li>
+          <li>Procédure de réservation pas à pas</li>
+          <li>Liens directs vers toutes les vitrines</li>
+          <li>Imprimable (bouton en haut à droite)</li>
+          <li>Toujours à jour (sources : pages publiques)</li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-family:'Cormorant Garamond',serif;color:var(--rose);font-size:1.05rem;margin-bottom:10px;">⚠️ Limites</div>
+        <ul class="list-tight">
+          <li>Pas de liste des RDV en temps réel (Gloria gère via WhatsApp + agenda)</li>
+          <li>Pas d'accès aux messages WhatsApp depuis le site (limitation technique WhatsApp)</li>
+          <li>Pas de modération avis en 1 clic (Sabrina copie-colle dans le code)</li>
+          <li>Page publique mais non listée — ne PAS partager l'URL aux clientes</li>
+        </ul>
+      </div>
+    </div>
+    <div class="cta-box" style="margin-top:18px;">
+      <b>💡 Évolution possible —</b> Pour avoir un vrai dashboard temps réel (liste des RDV reçus,
+      bouton confirmer/annuler, statistiques), il faudrait connecter le site à un backend (Supabase
+      gratuit). On en reparle quand vous serez prêts.
+    </div>
+  </div>
+
+</main>
+
+<footer style="text-align:center;padding:20px;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--texte-doux);border-top:1px solid var(--ligne);margin-top:30px;">
+  Tableau de bord interne · Luxury Club 229 · NEBULA Agency
+</footer>
+
+</body>
+</html>

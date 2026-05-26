@@ -166,6 +166,113 @@ main{position:relative;z-index:5;}
 .rdv-banner-in svg{width:24px;height:24px;stroke:var(--menthe);fill:none;stroke-width:1.8;flex-shrink:0;}
 .rdv-banner-in p{font-size:.86rem;color:var(--encre-2);line-height:1.6;}
 .rdv-banner-in b{color:var(--encre);font-weight:600;}
+.rdv-banner-cta{display:inline-block;margin-left:8px;color:var(--or-fonce);font-weight:600;
+  border-bottom:1px solid currentColor;padding-bottom:1px;white-space:nowrap;}
+.rdv-banner-cta:hover{color:var(--or);}
+
+/* ===== SECTION RÉSERVATION RDV ===== */
+#rdv-booking{padding:32px 0 64px;}
+.rdv-box{max-width:980px;margin:0 auto;padding:34px 32px 30px;border-radius:22px;
+  background:linear-gradient(165deg,#ffffff 0%,#f9f4ee 60%,#f3ebde 100%);
+  border:1px solid var(--ligne);box-shadow:0 30px 60px -30px rgba(60,42,48,.18);}
+.rdv-head{text-align:center;margin-bottom:24px;}
+.rdv-eyebrow{font-size:9.5px;letter-spacing:.32em;text-transform:uppercase;color:var(--or-fonce);}
+.rdv-title{font-size:clamp(1.5rem,3.4vw,2.1rem);line-height:1.18;color:var(--encre);margin-top:6px;}
+.rdv-flourish{display:flex;justify-content:center;margin:12px 0 10px;}
+.rdv-flourish span{display:block;width:60px;height:1px;background:var(--or);position:relative;}
+.rdv-flourish span::before,.rdv-flourish span::after{content:'';position:absolute;top:50%;width:5px;height:5px;
+  background:var(--or);border-radius:50%;transform:translateY(-50%);}
+.rdv-flourish span::before{left:-12px;}
+.rdv-flourish span::after{right:-12px;}
+.rdv-intro{font-size:.92rem;color:var(--encre-2);line-height:1.6;max-width:580px;margin:0 auto;}
+
+.rdv-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:24px 0;}
+.rdv-pane{background:rgba(255,255,255,.7);border:1px solid var(--ligne);border-radius:14px;padding:18px;}
+.rdv-label{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--encre);
+  margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.rdv-days{display:flex;flex-wrap:wrap;gap:8px;}
+.rdv-day{flex:1 1 calc(50% - 4px);min-width:120px;padding:10px 12px;border-radius:10px;
+  background:#fff;border:1px solid var(--ligne);color:var(--encre);font-size:.85rem;line-height:1.25;
+  cursor:pointer;transition:all .25s ease;text-align:left;font-family:inherit;}
+.rdv-day:hover:not(.disabled){border-color:var(--or);background:#fff8eb;transform:translateY(-2px);}
+.rdv-day.active{background:linear-gradient(135deg,#e6d3a0,#c9a84c 70%,#a8862f);color:#fff;border-color:var(--or-fonce);
+  box-shadow:0 10px 22px -8px rgba(201,168,76,.55);}
+.rdv-day.active .rdv-day-weekday{color:rgba(255,255,255,.85);}
+.rdv-day.disabled{opacity:.4;cursor:not-allowed;background:#f5f0e8;}
+.rdv-day-weekday{display:block;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gris);}
+.rdv-day-date{display:block;font-weight:600;margin-top:2px;}
+.rdv-days-help,.rdv-slots-help{font-size:.74rem;color:var(--gris);margin-top:10px;font-style:italic;}
+
+.rdv-slots{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.rdv-slot{padding:14px 8px;border-radius:10px;background:#fff;border:1px solid var(--ligne);
+  color:var(--encre);font-size:1rem;font-family:'Cormorant Garamond',serif;font-weight:600;
+  cursor:pointer;transition:all .25s ease;display:flex;align-items:center;justify-content:center;gap:5px;}
+.rdv-slot:hover{border-color:var(--or);background:#fff8eb;transform:translateY(-2px);}
+.rdv-slot.active{background:linear-gradient(135deg,#e6d3a0,#c9a84c 70%,#a8862f);color:#fff;border-color:var(--or-fonce);
+  box-shadow:0 10px 22px -8px rgba(201,168,76,.55);}
+.rdv-slot-label{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;
+  font-family:'Jost',sans-serif;font-weight:400;color:inherit;opacity:.7;}
+
+.rdv-form{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:24px;}
+.rdv-field{display:flex;flex-direction:column;gap:6px;}
+.rdv-field-wide{grid-column:1/-1;}
+.rdv-flabel{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--encre-2);font-weight:500;}
+.rdv-field input{padding:11px 13px;border-radius:9px;border:1px solid var(--ligne);background:#fff;
+  font-family:inherit;font-size:.95rem;color:var(--encre);transition:border-color .25s,box-shadow .25s;}
+.rdv-field input:focus{outline:none;border-color:var(--or);box-shadow:0 0 0 3px rgba(201,168,76,.18);}
+.rdv-field.error input{border-color:var(--warn);background:var(--warn-bg);}
+
+.rdv-acompte{grid-column:1/-1;padding:18px 20px;border-radius:14px;
+  background:linear-gradient(135deg,rgba(231,188,199,.18),rgba(230,211,160,.22));
+  border:1px solid rgba(201,168,76,.35);margin-top:6px;}
+.rdv-acompte-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.rdv-acompte-head svg{width:22px;height:22px;color:var(--or-fonce);flex-shrink:0;}
+.rdv-acompte-head b{font-family:'Cormorant Garamond',serif;font-size:1.02rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--encre);}
+.rdv-acompte-steps{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:7px;}
+.rdv-acompte-steps li{font-size:.88rem;color:var(--encre);line-height:1.55;padding-left:0;}
+.rdv-acompte-steps li b:first-child{color:var(--or-fonce);margin-right:6px;}
+.rdv-acompte-note{font-size:.78rem;color:var(--warn);margin-top:10px;line-height:1.5;}
+
+.rdv-ack{grid-column:1/-1;padding:18px 20px;border-radius:14px;
+  background:linear-gradient(135deg,rgba(255,255,255,.5),rgba(245,236,222,.4));
+  border:1px solid var(--ligne);margin-top:6px;}
+.rdv-ack-tag{font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;color:var(--or-fonce);
+  margin-bottom:11px;font-weight:600;}
+.rdv-ack-list{list-style:none;padding:0;margin:0 0 14px;display:flex;flex-direction:column;gap:7px;}
+.rdv-ack-list li{font-size:.83rem;color:var(--encre);line-height:1.55;padding-left:14px;position:relative;}
+.rdv-ack-list li::before{content:'';position:absolute;left:0;top:.6em;width:5px;height:5px;
+  background:var(--or);border-radius:50%;}
+.rdv-ack-list li b{color:var(--encre);font-weight:600;}
+.rdv-ack-check{display:flex;align-items:flex-start;gap:11px;padding:13px 14px;border-radius:10px;
+  background:#fff;border:1.5px solid var(--ligne);cursor:pointer;
+  transition:border-color .25s,background .25s,box-shadow .25s;}
+.rdv-ack-check:hover{border-color:var(--or);background:#fffdf5;}
+.rdv-ack-check input{margin:2px 0 0;width:18px;height:18px;cursor:pointer;flex-shrink:0;accent-color:var(--or-fonce);}
+.rdv-ack-check input:checked+span{color:var(--encre);}
+.rdv-ack-check input:checked{}
+.rdv-ack-check:has(input:checked){border-color:var(--or-fonce);background:#fffaee;
+  box-shadow:0 0 0 3px rgba(201,168,76,.12);}
+.rdv-ack-check span{font-size:.85rem;line-height:1.55;color:var(--encre-2);}
+
+.rdv-submit{grid-column:1/-1;display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:15px 24px;border-radius:12px;
+  background:linear-gradient(135deg,#e6d3a0,#c9a84c 55%,#a8862f);
+  color:#0a0a0a;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.04rem;
+  letter-spacing:.05em;border:1px solid rgba(255,255,255,.3);
+  box-shadow:0 16px 32px -10px rgba(201,168,76,.55);cursor:pointer;
+  transition:transform .35s var(--ease),box-shadow .35s,opacity .25s;}
+.rdv-submit svg{width:22px;height:22px;}
+.rdv-submit:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 22px 40px -10px rgba(201,168,76,.7);}
+.rdv-submit:disabled{opacity:.5;cursor:not-allowed;}
+.rdv-validation{grid-column:1/-1;font-size:.78rem;color:var(--encre-2);text-align:center;
+  line-height:1.55;margin-top:4px;font-style:italic;}
+
+@media(max-width:720px){
+  .rdv-box{padding:24px 18px;}
+  .rdv-grid{grid-template-columns:1fr;}
+  .rdv-form{grid-template-columns:1fr;}
+}
 
 /* ===== SECTIONS ===== */
 section{padding:58px 0;}
@@ -464,7 +571,8 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
       <svg viewBox="0 0 24 24"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
       <p><b>Règle de rendez-vous —</b> Mme Sabrina reçoit actuellement
         <b>le mercredi et le samedi</b>. Les rendez-vous se prennent <b>24h minimum à l'avance</b>,
-        aucun rendez-vous le jour même. Un acompte de 5 000 FCFA valide votre réservation.</p>
+        aucun rendez-vous le jour même. Un acompte de 5 100 FCFA valide votre réservation.
+        <a href="#rdv-booking" class="rdv-banner-cta">Réserver maintenant →</a></p>
     </div>
   </div>
 
@@ -497,6 +605,95 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
             Remplir le questionnaire
           </button>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION RÉSERVATION RDV — Mer / Sam, 4 créneaux/jour
+       Pour activer la persistance cross-visiteurs (slots pris invisibles) :
+       voir docs/SUPABASE-AVIS.md (étendu : table clinic_bookings).
+       ========================================================================= -->
+  <section id="rdv-booking">
+    <div class="wrap">
+      <div class="rdv-box reveal">
+        <header class="rdv-head">
+          <div class="rdv-eyebrow">Prendre rendez-vous</div>
+          <h2 class="rdv-title">Réservez votre soin avec Mme Sabrina</h2>
+          <div class="rdv-flourish"><span></span></div>
+          <p class="rdv-intro">Choisissez votre jour, votre créneau, puis envoyez votre demande.
+            Mme Sabrina vous confirmera la disponibilité ou vous proposera une alternative.</p>
+        </header>
+
+        <div class="rdv-grid">
+          <div class="rdv-pane">
+            <div class="rdv-label">1. Choisissez un jour</div>
+            <div class="rdv-days" id="rdvDays" role="radiogroup" aria-label="Sélectionnez un jour de rendez-vous"></div>
+            <div class="rdv-days-help">Jours disponibles : <b>mercredi</b> et <b>samedi</b> uniquement.</div>
+          </div>
+
+          <div class="rdv-pane">
+            <div class="rdv-label">2. Choisissez un créneau</div>
+            <div class="rdv-slots" id="rdvSlots" role="radiogroup" aria-label="Sélectionnez un créneau horaire"></div>
+            <div class="rdv-slots-help" id="rdvSlotsHelp">Sélectionnez d'abord un jour ci-dessus.</div>
+          </div>
+        </div>
+
+        <form class="rdv-form" id="rdvForm" novalidate>
+          <!-- Honeypot anti-bot -->
+          <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+            <label>Ne pas remplir<input type="text" name="hp_rdv" tabindex="-1" autocomplete="off"></label>
+          </div>
+
+          <div class="rdv-field">
+            <label class="rdv-flabel" for="rdvFirst">Prénom *</label>
+            <input type="text" id="rdvFirst" required maxlength="40" placeholder="Marie" autocomplete="given-name">
+          </div>
+          <div class="rdv-field">
+            <label class="rdv-flabel" for="rdvLast">Nom *</label>
+            <input type="text" id="rdvLast" required maxlength="40" placeholder="K." autocomplete="family-name">
+          </div>
+          <div class="rdv-field rdv-field-wide">
+            <label class="rdv-flabel" for="rdvSoin">Soin souhaité (facultatif)</label>
+            <input type="text" id="rdvSoin" maxlength="80" placeholder="ex : Hydrafacial, Peeling Glow, Soin Acné…">
+          </div>
+
+          <div class="rdv-acompte">
+            <div class="rdv-acompte-head">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18M3 12h18M3 17h12" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <b>RÉSERVATION LUXURY SKIN CLINIC</b>
+            </div>
+            <ol class="rdv-acompte-steps">
+              <li><b>1.</b> Envoyer un acompte de <b>5 100 FCFA</b> au <b>01 67 97 56 26</b> (Mobile Money)</li>
+              <li><b>2.</b> Envoyer une <b>capture du paiement</b> via WhatsApp en répondant à notre message</li>
+            </ol>
+            <p class="rdv-acompte-note">⚠️ Le rendez-vous n'est <b>confirmé</b> qu'après réception de la preuve de paiement.
+              Sans capture, la place reste ouverte aux autres clientes.</p>
+          </div>
+
+          <div class="rdv-ack" id="rdvAck">
+            <div class="rdv-ack-tag">📋 Règlement de la clinique</div>
+            <ul class="rdv-ack-list">
+              <li><b>Ponctualité —</b> Tolérance maximum 5 minutes. Au-delà, le rendez-vous est automatiquement annulé et l'acompte perdu.</li>
+              <li><b>Annulation —</b> Toute annulation doit être signalée au moins <b>24h à l'avance</b>. Annulation tardive = perte de l'acompte.</li>
+              <li><b>Accompagnateur —</b> 1 seul autorisé, doit patienter à l'accueil.</li>
+              <li><b>Acompte —</b> 5 100 FCFA non remboursable, valide votre créneau.</li>
+              <li><b>Confirmation —</b> Mme Sabrina valide votre RDV uniquement après réception de la capture du paiement.</li>
+            </ul>
+            <label class="rdv-ack-check">
+              <input type="checkbox" id="rdvAckCheck">
+              <span>J'ai lu et j'accepte le règlement de la clinique. Je m'engage à respecter mon créneau et à envoyer la preuve de paiement pour valider mon rendez-vous.</span>
+            </label>
+          </div>
+
+          <button class="rdv-submit" type="submit" id="rdvSubmit" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5z" stroke="currentColor" fill="none" stroke-width="1.7" stroke-linejoin="round"/></svg>
+            Réserver le rendez-vous avec Madame
+          </button>
+
+          <p class="rdv-validation">Mme Sabrina confirmera si l'heure choisie est <b>réellement disponible</b>
+            ou vous proposera une <b>alternative</b> si besoin.</p>
+        </form>
       </div>
     </div>
   </section>
@@ -541,7 +738,7 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
           <b>📅 Réservation & paiement</b>
           <p>• Mme Sabrina reçoit actuellement <b>le mercredi et le samedi</b> uniquement.<br>
           • Toute prestation nécessite une réservation obligatoire à l'avance.<br>
-          • Un acompte de 5 000 FCFA est requis pour valider votre rendez-vous.<br>
+          • Un acompte de 5 100 FCFA est requis pour valider votre rendez-vous.<br>
           • Le paiement de l'acompte se fait directement via notre site internet (website).<br>
           ⚠️ Sans validation de paiement, le rendez-vous n'est pas confirmé.</p></div></div>
         <div class="regl-item"><div class="regl-num">2</div><div>
@@ -1336,6 +1533,213 @@ Réf : ${genRef()}  ·  ${nowFr()}`;
   });
 });
 document.getElementById('openSkinForm').addEventListener('click',()=>openForm('skin'));
+
+/* =========================================================================
+   RÉSERVATION RDV — Calendrier mer/sam + 4 créneaux + soumission WhatsApp
+   ========================================================================= */
+(function(){
+'use strict';
+const WEEKS_AHEAD=8;
+const WEEKDAY_LABELS=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+const MONTH_LABELS=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+const ALLOWED_WEEKDAYS=[3,6]; // 3 = mercredi, 6 = samedi
+const SLOTS=[
+  {value:'09:00',label:'9h',period:'matin'},
+  {value:'11:00',label:'11h',period:'matin'},
+  {value:'14:00',label:'14h',period:'après-midi'},
+  {value:'16:00',label:'16h',period:'après-midi'},
+];
+const ACOMPTE_FCFA=5100;
+const RDV_THROTTLE_MS=10*60*1000;
+
+const state={day:null,slot:null};
+
+function $(id){return document.getElementById(id);}
+
+function buildDays(){
+  const wrap=$('rdvDays');
+  if(!wrap)return;
+  const today=new Date();today.setHours(0,0,0,0);
+  const minDate=new Date(today.getTime()+24*60*60*1000); // au moins 24h à l'avance
+  const horizon=new Date(today.getTime()+WEEKS_AHEAD*7*24*60*60*1000);
+  const days=[];
+  for(let d=new Date(today);d<=horizon;d=new Date(d.getTime()+24*60*60*1000)){
+    if(ALLOWED_WEEKDAYS.includes(d.getDay())&&d>=minDate){
+      days.push(new Date(d));
+    }
+  }
+  wrap.innerHTML=days.map(d=>{
+    const iso=d.toISOString().slice(0,10);
+    return `<button type="button" class="rdv-day" data-day="${iso}" role="radio" aria-checked="false">
+      <span class="rdv-day-weekday">${WEEKDAY_LABELS[d.getDay()]}</span>
+      <span class="rdv-day-date">${d.getDate()} ${MONTH_LABELS[d.getMonth()]}</span>
+    </button>`;
+  }).join('');
+  wrap.querySelectorAll('.rdv-day').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      if(btn.classList.contains('disabled'))return;
+      state.day=btn.dataset.day;
+      state.slot=null;
+      wrap.querySelectorAll('.rdv-day').forEach(b=>{
+        const on=b===btn;
+        b.classList.toggle('active',on);
+        b.setAttribute('aria-checked',on?'true':'false');
+      });
+      renderSlots();
+    });
+  });
+}
+
+function renderSlots(){
+  const wrap=$('rdvSlots');
+  const help=$('rdvSlotsHelp');
+  if(!wrap)return;
+  if(!state.day){
+    wrap.innerHTML='';
+    help.textContent="Sélectionnez d'abord un jour ci-dessus.";
+    return;
+  }
+  wrap.innerHTML=SLOTS.map(s=>{
+    return `<button type="button" class="rdv-slot" data-slot="${s.value}"
+      role="radio" aria-checked="false" aria-label="${s.label} ${s.period}">
+      <span>${s.label}</span><span class="rdv-slot-label">${s.period}</span>
+    </button>`;
+  }).join('');
+  help.textContent='Cliquez sur le créneau souhaité.';
+  wrap.querySelectorAll('.rdv-slot').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      state.slot=btn.dataset.slot;
+      wrap.querySelectorAll('.rdv-slot').forEach(b=>{
+        const on=b===btn;
+        b.classList.toggle('active',on);
+        b.setAttribute('aria-checked',on?'true':'false');
+      });
+    });
+  });
+}
+
+function fmtFrenchDate(iso){
+  const d=new Date(iso+'T00:00:00');
+  return WEEKDAY_LABELS[d.getDay()].toLowerCase()+' '+d.getDate()+' '+MONTH_LABELS[d.getMonth()]+' '+d.getFullYear();
+}
+
+function bindSubmit(){
+  const form=$('rdvForm');
+  if(!form)return;
+  // Activer/désactiver le bouton selon la case "J'ai lu et j'accepte"
+  const ack=$('rdvAckCheck'), submit=$('rdvSubmit');
+  if(ack&&submit){
+    const sync=()=>{submit.disabled=!ack.checked;};
+    ack.addEventListener('change',sync);
+    sync();
+  }
+  form.addEventListener('submit',e=>{
+    e.preventDefault();
+    // Honeypot
+    const hp=form.querySelector('input[name="hp_rdv"]');
+    if(hp&&hp.value)return;
+
+    // Vérif règlement accepté (double sécurité côté JS)
+    if(ack&&!ack.checked){
+      $('rdvAck').scrollIntoView({behavior:'smooth',block:'center'});
+      ack.focus();
+      return;
+    }
+
+    const first=$('rdvFirst').value.trim();
+    const last=$('rdvLast').value.trim();
+    const soin=$('rdvSoin').value.trim();
+
+    let ok=true;
+    function flag(el,bad){el.closest('.rdv-field').classList.toggle('error',bad);if(bad)ok=false;}
+    flag($('rdvFirst'),first.length<2);
+    flag($('rdvLast'),last.length<1);
+
+    if(!state.day){
+      $('rdvDays').scrollIntoView({behavior:'smooth',block:'center'});
+      ok=false;
+    }
+    if(!state.slot){
+      $('rdvSlots').scrollIntoView({behavior:'smooth',block:'center'});
+      ok=false;
+    }
+    if(!ok)return;
+
+    // Throttle anti-spam : 10 min entre 2 soumissions
+    try{
+      const last=parseInt(localStorage.getItem('lc-rdv-last')||'0',10);
+      if(last&&Date.now()-last<RDV_THROTTLE_MS){
+        const mins=Math.ceil((RDV_THROTTLE_MS-(Date.now()-last))/60000);
+        alert('Vous venez de soumettre une réservation. Veuillez patienter '+mins+' min avant la suivante.');
+        return;
+      }
+    }catch(_){}
+
+    const ref=genRef();
+    const slotLabel=(SLOTS.find(s=>s.value===state.slot)||{}).label||state.slot;
+    const dateLabel=fmtFrenchDate(state.day);
+
+    const msg=
+`📅 *RÉSERVATION LUXURY SKIN CLINIC*
+
+${BRAND_LINE}
+
+👤 *Cliente :* ${first} ${last}
+🗓️ *Jour souhaité :* ${dateLabel}
+⏰ *Créneau :* ${slotLabel}
+${soin?'💆‍♀️ *Soin souhaité :* '+soin+'\n':''}
+━━━━━━━━━━━━━━━━━━━
+
+💳 *VALIDATION DE LA RÉSERVATION*
+
+1️⃣ Envoyer un acompte de *${ACOMPTE_FCFA.toLocaleString('fr-FR')} FCFA* au *01 67 97 56 26*
+2️⃣ Envoyer une *capture du paiement* en réponse à ce message
+
+⚠️ Sans capture, le rendez-vous n'est pas confirmé.
+
+━━━━━━━━━━━━━━━━━━━
+Réf : ${ref}  ·  ${nowFr()}
+Mme Sabrina confirmera la disponibilité ou proposera une alternative.`;
+
+    try{localStorage.setItem('lc-rdv-last',String(Date.now()));}catch(_){}
+    window.open(waLink(msg),'_blank','noopener');
+
+    // Toast de confirmation
+    const toast=document.createElement('div');
+    toast.className='rdv-toast';
+    toast.style.cssText='position:fixed;bottom:100px;left:50%;transform:translateX(-50%);'+
+      'background:linear-gradient(135deg,#e6d3a0,#c9a84c 70%,#a8862f);color:#0a0a0a;'+
+      'padding:14px 20px;border-radius:30px;font-family:Cormorant Garamond,serif;font-weight:600;'+
+      'box-shadow:0 20px 40px -10px rgba(0,0,0,.35);z-index:9999;font-size:.95rem;'+
+      'max-width:90vw;text-align:center;line-height:1.45;';
+    toast.innerHTML='✨ Votre demande est ouverte dans WhatsApp.<br>Envoyez-la pour finaliser, puis joignez la capture du paiement.';
+    document.body.appendChild(toast);
+    setTimeout(()=>{toast.style.transition='opacity .5s';toast.style.opacity='0';
+      setTimeout(()=>toast.remove(),500);},5200);
+
+    // Reset
+    form.reset();state.day=null;state.slot=null;
+    document.querySelectorAll('.rdv-day,.rdv-slot').forEach(b=>{
+      b.classList.remove('active');b.setAttribute('aria-checked','false');
+    });
+    if(ack){ack.checked=false;submit.disabled=true;}
+    renderSlots();
+  });
+  // Reset error au changement
+  form.querySelectorAll('input').forEach(i=>{
+    i.addEventListener('input',()=>i.closest('.rdv-field')?.classList.remove('error'));
+  });
+}
+
+function init(){
+  if(!$('rdvDays'))return;
+  buildDays();
+  renderSlots();
+  bindSubmit();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
+else init();
+})();
 </script>
 <!-- ============ NEBULA v3 — RÉSEAUX SOCIAUX + AUDIO ============ -->
 <style id="lc-v3-css">

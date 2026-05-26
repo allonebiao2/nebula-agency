@@ -262,6 +262,43 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-vi
   transition:opacity .6s,transform .6s;}
 #audio-hint.gone{opacity:0;transform:translateX(10px);pointer-events:none;}
 
+/* ===== FAB AVIS — bouton flottant vers les avis clients =====
+   Placé en haut à droite : zone libre, toujours visible pendant le scroll,
+   ne chevauche aucun autre élément (catalogue en bas-gauche, social en bas-centre,
+   audio masqué, logo centré au top). */
+.fab-avis{position:fixed;top:calc(16px + env(safe-area-inset-top,0px));right:20px;
+  z-index:700;display:inline-flex;align-items:center;
+  gap:10px;padding:11px 17px 11px 13px;border-radius:30px;
+  background:linear-gradient(135deg,#e6d3a0,#c9a84c 55%,#a8862f);
+  color:#0a0a0a;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:.9rem;
+  letter-spacing:.04em;text-decoration:none;
+  border:1px solid rgba(255,255,255,.3);box-shadow:0 12px 28px -8px rgba(201,168,76,.65),
+    0 0 0 1px rgba(201,168,76,.25) inset;
+  transition:transform .4s var(--ease),box-shadow .4s,padding .4s;
+  opacity:0;transform:translateY(-15px);
+  animation:fabFadeIn .8s 1.6s var(--ease) both;}
+.fab-avis svg{width:20px;height:20px;flex-shrink:0;}
+.fab-avis:hover{transform:translateY(2px) scale(1.04);
+  box-shadow:0 18px 36px -8px rgba(201,168,76,.8),0 0 0 1px rgba(201,168,76,.35) inset;}
+.fab-avis:focus-visible{outline:2px solid var(--creme);outline-offset:3px;}
+/* Halo pulsant pour attirer l'œil */
+.fab-avis::before{content:'';position:absolute;inset:-4px;border-radius:34px;
+  border:1.5px solid rgba(230,211,160,.65);opacity:0;animation:fabPulse 2.8s ease-out 2s infinite;
+  pointer-events:none;}
+@keyframes fabFadeIn{from{opacity:0;transform:translateY(-15px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fabPulse{0%{opacity:.7;transform:scale(1);}70%{opacity:0;transform:scale(1.2);}100%{opacity:0;}}
+@media(prefers-reduced-motion:reduce){.fab-avis::before{animation:none;}}
+@media(max-width:540px){
+  .fab-avis{padding:9px 14px 9px 11px;font-size:.78rem;gap:7px;right:12px;top:calc(12px + env(safe-area-inset-top,0px));}
+  .fab-avis svg{width:17px;height:17px;}
+}
+@media(max-width:380px){
+  .fab-avis-label{display:none;}
+  .fab-avis{padding:10px;border-radius:50%;}
+}
+/* Bouton se masque quand la section avis est déjà visible (animation vers le haut) */
+.fab-avis.hidden{opacity:0;pointer-events:none;transform:translateY(-20px) scale(.85);}
+
 /* ===== RESPONSIVE — 3 CARDS SUR LA MÊME LIGNE ===== */
 @media(max-width:768px){
   .hub{padding:30px 12px 22px;}
@@ -382,6 +419,52 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-vi
     </div>
   </section>
 
+  <!-- ============ TÉMOIGNAGES PHOTOS — galerie manuelle curée par Sabrina ============ -->
+  <section class="hub-testi" id="temoignages" aria-label="Témoignages clients en photos">
+    <header class="testi-head">
+      <div class="testi-eyebrow">Résultats vérifiés</div>
+      <h2 class="testi-title">Témoignages clients</h2>
+      <div class="testi-flourish"><span></span></div>
+      <p class="testi-intro">Photos de résultats, captures de discussions, retours visuels —
+        partagés par nos clientes avec leur accord. Cliquez sur une image pour l'agrandir.</p>
+    </header>
+
+    <div class="testi-filters" id="testiFilters" role="tablist" aria-label="Filtrer les témoignages">
+      <button class="testi-chip active" type="button" data-testi-filter="all" role="tab" aria-selected="true">Tous</button>
+      <button class="testi-chip" type="button" data-testi-filter="avant-apres" role="tab" aria-selected="false">Avant / Après</button>
+      <button class="testi-chip" type="button" data-testi-filter="photo" role="tab" aria-selected="false">Photos résultat</button>
+      <button class="testi-chip" type="button" data-testi-filter="capture" role="tab" aria-selected="false">Captures de discussion</button>
+    </div>
+
+    <div class="testi-grid" id="testiGrid"></div>
+
+    <div class="testi-cta">
+      <p><b>Vous aussi, partagez votre témoignage</b> — envoyez votre photo, capture WhatsApp
+        ou témoignage écrit à Mme Sabrina. Avec votre accord, il pourra rejoindre cette galerie.</p>
+      <a class="testi-wa-btn" href="https://wa.me/2290167975626?text=Bonjour%20Mme%20Sabrina%2C%20je%20souhaite%20partager%20un%20t%C3%A9moignage%20pour%20Luxury%20Club%20229%20%E2%9C%A8" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5z" stroke="currentColor" fill="none" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        Envoyer mon témoignage
+      </a>
+    </div>
+  </section>
+
+  <!-- Lightbox pour agrandir une photo de témoignage -->
+  <div class="testi-lightbox" id="testiLightbox" aria-hidden="true" role="dialog" aria-label="Visualisation agrandie">
+    <button class="testi-lb-close" type="button" aria-label="Fermer">
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <button class="testi-lb-nav testi-lb-prev" type="button" aria-label="Témoignage précédent">
+      <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="testi-lb-nav testi-lb-next" type="button" aria-label="Témoignage suivant">
+      <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <figure class="testi-lb-fig">
+      <img id="testiLbImg" alt="">
+      <figcaption id="testiLbCap"></figcaption>
+    </figure>
+  </div>
+
   <section class="hub-reviews" id="avis" aria-label="Avis clients">
     <header class="rev-head">
       <div class="rev-eyebrow">Votre voix compte</div>
@@ -408,10 +491,16 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-vi
     <div class="rev-form-wrap">
       <h3 class="rev-form-title">Laisser un avis</h3>
       <form class="rev-form" id="revForm" novalidate>
+        <!-- Honeypot anti-bot : champ caché, doit rester vide -->
+        <div class="rev-hp" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+          <label for="hp_website">Ne pas remplir</label>
+          <input type="text" id="hp_website" name="hp_website" tabindex="-1" autocomplete="off">
+        </div>
+
         <div class="rev-field" data-field="name">
           <label class="rev-label" for="revName">Votre nom et prénom *</label>
-          <input type="text" id="revName" name="name" required maxlength="60" placeholder="Marie K." autocomplete="name">
-          <span class="rev-error">Merci d'indiquer votre nom.</span>
+          <input type="text" id="revName" name="name" required minlength="2" maxlength="60" placeholder="Marie K." autocomplete="name">
+          <span class="rev-error">Merci d'indiquer votre nom (2 caractères min).</span>
         </div>
 
         <div class="rev-field" data-field="target">
@@ -439,9 +528,9 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-vi
 
         <div class="rev-field" data-field="text">
           <label class="rev-label" for="revText">Votre avis *</label>
-          <textarea id="revText" name="text" required maxlength="600" rows="4" placeholder="Partagez votre expérience, vos résultats, vos remarques constructives…"></textarea>
+          <textarea id="revText" name="text" required minlength="20" maxlength="600" rows="4" placeholder="Partagez votre expérience, vos résultats, vos remarques constructives… (20 caractères minimum)"></textarea>
           <span class="rev-counter"><span id="revCharCount">0</span>/600</span>
-          <span class="rev-error">Merci de rédiger un commentaire.</span>
+          <span class="rev-error">Merci de rédiger un commentaire de 20 caractères minimum.</span>
         </div>
 
         <p class="rev-transparency"><b>✨ Transparence.</b> Votre avis est transmis à Mme Sabrina via WhatsApp pour publication. Nous publions tous les retours authentiques — positifs comme constructifs. Aucun avis n'est filtré pour donner une fausse image.</p>
@@ -461,6 +550,15 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-vi
   <span class="audio-waves"></span>
   <svg id="audioIcon" viewBox="0 0 24 24"><path d="M4 9v6h4l5 5V4L8 9H4z"/><path id="muteX" d="M16 9l5 6M21 9l-5 6"/></svg>
 </button>
+
+<!-- Bouton flottant : redirige vers la section avis clients -->
+<a href="#avis" id="fabAvis" class="fab-avis" aria-label="Laisser un avis ou lire les avis clients">
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path d="M21 12a9 9 0 0 1-13.5 7.79L3 21l1.21-4.5A9 9 0 1 1 21 12z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+  <span class="fab-avis-label">Avis clients</span>
+</a>
 
 <script>
 'use strict';
@@ -617,7 +715,7 @@ const Audio=(function(){
     });
     setTimeout(()=>foot.classList.add('show'),reduceMotion?0:300);
     /* Bio + sections du bas révélées au scroll (IntersectionObserver) */
-    revealOnScroll(['#bio','#avis']);
+    revealOnScroll(['#bio','#temoignages','#avis']);
   }
   function revealOnScroll(selectors){
     const els=selectors.flatMap(s=>Array.from(document.querySelectorAll(s)));
@@ -760,6 +858,93 @@ body{padding-bottom:84px;}
   .bio-name{font-size:1.7rem;}
   .bio-body p{font-size:.9rem;line-height:1.72;text-align:left;}
   .bio-flourish{margin:12px 0 20px;}
+}
+
+/* ===== TÉMOIGNAGES PHOTOS — galerie manuelle ===== */
+.hub-testi{width:100%;max-width:1080px;margin:40px auto 28px;padding:0 6px;
+  opacity:0;transform:translateY(20px);
+  transition:opacity .9s var(--ease),transform .9s var(--ease);}
+.hub-testi.show{opacity:1;transform:none;}
+.testi-head{text-align:center;margin-bottom:24px;}
+.testi-eyebrow{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--or);margin-bottom:8px;}
+.testi-title{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(1.8rem,4.2vw,2.4rem);
+  color:var(--creme);letter-spacing:.01em;line-height:1.18;}
+.testi-flourish{display:flex;justify-content:center;margin:14px 0 10px;}
+.testi-flourish span{display:block;width:80px;height:1px;background:var(--or);position:relative;}
+.testi-flourish span::before,.testi-flourish span::after{content:'';position:absolute;top:50%;
+  width:6px;height:6px;background:var(--or);border-radius:50%;transform:translateY(-50%);}
+.testi-flourish span::before{left:-14px;}
+.testi-flourish span::after{right:-14px;}
+.testi-intro{font-size:.9rem;color:var(--texte-doux);line-height:1.55;max-width:600px;margin:0 auto;}
+
+.testi-filters{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:18px 0 22px;}
+.testi-chip{padding:7px 16px;border-radius:24px;background:rgba(33,29,22,.45);
+  border:1px solid rgba(201,168,76,.3);color:var(--creme);font-size:.78rem;letter-spacing:.04em;
+  cursor:pointer;transition:all .3s var(--ease);font-family:inherit;}
+.testi-chip:hover{border-color:var(--or);background:rgba(201,168,76,.15);}
+.testi-chip.active{background:linear-gradient(135deg,#e6d3a0,#c9a84c 70%,#a8862f);color:#0a0a0a;
+  border-color:var(--or-fonce);box-shadow:0 8px 18px -6px rgba(201,168,76,.55);}
+
+.testi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;
+  margin-bottom:28px;}
+.testi-card{position:relative;border-radius:14px;overflow:hidden;cursor:zoom-in;
+  background:rgba(33,29,22,.5);border:1px solid rgba(201,168,76,.18);
+  aspect-ratio:3/4;transition:transform .35s var(--ease),box-shadow .35s,border-color .35s;}
+.testi-card:hover{transform:translateY(-4px) scale(1.02);border-color:rgba(201,168,76,.5);
+  box-shadow:0 24px 50px -18px rgba(201,168,76,.4);}
+.testi-card img{width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform .5s var(--ease);}
+.testi-card:hover img{transform:scale(1.05);}
+.testi-card-meta{position:absolute;left:0;right:0;bottom:0;padding:10px 12px;
+  background:linear-gradient(to top,rgba(0,0,0,.85),transparent);
+  color:var(--creme);font-size:.74rem;line-height:1.35;}
+.testi-card-badge{display:inline-block;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;
+  padding:3px 8px;border-radius:10px;background:rgba(201,168,76,.85);color:#0a0a0a;
+  font-weight:600;margin-bottom:5px;}
+.testi-card-cap{font-family:'Cormorant Garamond',serif;font-size:.85rem;color:#fff;
+  line-height:1.35;text-shadow:0 1px 3px rgba(0,0,0,.6);}
+
+.testi-empty{grid-column:1/-1;padding:30px 18px;text-align:center;color:var(--texte-doux);
+  font-style:italic;font-size:.9rem;border-radius:12px;background:rgba(33,29,22,.4);
+  border:1px dashed rgba(201,168,76,.3);}
+
+.testi-cta{max-width:580px;margin:0 auto;text-align:center;padding:20px 20px 8px;
+  border-top:1px solid rgba(201,168,76,.18);}
+.testi-cta p{font-size:.86rem;color:var(--texte-doux);line-height:1.55;margin-bottom:14px;}
+.testi-cta p b{color:var(--creme);font-weight:500;}
+.testi-wa-btn{display:inline-flex;align-items:center;gap:8px;
+  padding:11px 22px;border-radius:30px;
+  background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;
+  font-size:.86rem;font-weight:500;letter-spacing:.02em;
+  box-shadow:0 12px 26px -8px rgba(37,211,102,.55);
+  transition:transform .3s var(--ease),box-shadow .3s;}
+.testi-wa-btn svg{width:18px;height:18px;}
+.testi-wa-btn:hover{transform:translateY(-2px);box-shadow:0 18px 32px -8px rgba(37,211,102,.7);}
+
+/* ===== LIGHTBOX TÉMOIGNAGES ===== */
+.testi-lightbox{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.92);
+  display:none;align-items:center;justify-content:center;padding:40px 20px;
+  opacity:0;transition:opacity .3s ease;}
+.testi-lightbox.open{display:flex;opacity:1;}
+.testi-lb-close,.testi-lb-nav{position:absolute;background:rgba(201,168,76,.15);
+  border:1px solid rgba(201,168,76,.4);color:var(--or-clair);
+  border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .3s var(--ease);z-index:2;}
+.testi-lb-close{top:18px;right:18px;}
+.testi-lb-prev{top:50%;left:18px;transform:translateY(-50%);}
+.testi-lb-next{top:50%;right:18px;transform:translateY(-50%);}
+.testi-lb-close:hover,.testi-lb-nav:hover{background:rgba(201,168,76,.35);transform:scale(1.08);}
+.testi-lb-nav:hover{transform:translateY(-50%) scale(1.08);}
+.testi-lb-close svg,.testi-lb-nav svg{width:22px;height:22px;}
+.testi-lb-fig{max-width:min(900px,90vw);max-height:88vh;margin:0;display:flex;flex-direction:column;
+  align-items:center;gap:14px;}
+.testi-lb-fig img{max-width:100%;max-height:78vh;border-radius:8px;
+  box-shadow:0 30px 70px -20px rgba(0,0,0,.6);}
+.testi-lb-fig figcaption{font-family:'Cormorant Garamond',serif;color:var(--creme);
+  text-align:center;font-size:1rem;line-height:1.45;max-width:600px;}
+@media(max-width:540px){
+  .testi-lb-nav{width:40px;height:40px;}
+  .testi-lb-close{width:40px;height:40px;top:12px;right:12px;}
 }
 
 /* ===== AVIS CLIENTS — section interactive ===== */
@@ -1205,18 +1390,24 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&panel.class
 /* ============================================================
    AVIS PUBLIES
    ------------------------------------------------------------
-   Modere par Mme Sabrina. Pour ajouter un avis approuve :
-   pousser un nouvel objet en tete de tableau (le plus recent en premier).
+   Modéré par Mme Sabrina. Pour ajouter un avis approuvé :
+   pousser un nouvel objet en tête de tableau (le plus récent en premier).
    Format : {name, date:"AAAA-MM", category, targetLabel, rating, text}
    category : "ina" | "clinic" | "cozy" | "autre"
+   ------------------------------------------------------------
+   Anti-spam intégré : honeypot + throttle 10 min + filtre mots
+   interdits + longueurs min/max.
    ============================================================ */
 var REVIEWS=[
-  /* Exemples a remplacer par les vrais avis de Gloria. Tonalite variee pour
-     que les visiteurs voient des retours honnetes (pas uniquement 5 etoiles). */
+  /* Exemples à remplacer par les vrais avis. Tonalité variée pour
+     que les visiteurs voient des retours honnêtes (pas uniquement 5 étoiles). */
 ];
 
 var WHATSAPP_NUM='2290167975626';
 var PAGE_SIZE=6;
+var THROTTLE_MS=10*60*1000; // 10 minutes entre 2 soumissions du même navigateur
+var MIN_TEXT=20, MAX_TEXT=600, MIN_NAME=2, MAX_NAME=60;
+var BAD_WORDS=['merde','con ','connard','salope','pute','enculé','enculer','nique','niqu','batard','bâtard','fdp','pd ','tg ','tdc','tâpé','pédé'];
 var state={filter:'all',shown:PAGE_SIZE,rating:0};
 
 function $(id){return document.getElementById(id);}
@@ -1358,11 +1549,61 @@ function showToast(msg){
   },4200);
 }
 
-/* ----- Soumission via WhatsApp ----- */
+/* ----- Filtre mots interdits (filet basique, complète la modération Sabrina) ----- */
+function containsBadWord(txt){
+  var low=' '+txt.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')+' ';
+  for(var i=0;i<BAD_WORDS.length;i++){
+    if(low.indexOf(' '+BAD_WORDS[i].replace(/[̀-ͯ]/g,''))!==-1)return true;
+  }
+  return false;
+}
+
+/* ----- Throttle : 1 avis par 10 min par navigateur ----- */
+function throttleRemainingMs(){
+  try{
+    var last=parseInt(localStorage.getItem('lc-avis-last')||'0',10);
+    if(!last)return 0;
+    var rem=THROTTLE_MS-(Date.now()-last);
+    return rem>0?rem:0;
+  }catch(e){return 0;}
+}
+function markSubmitted(){
+  try{localStorage.setItem('lc-avis-last',String(Date.now()));}catch(e){}
+}
+
+/* ----- Soumission via WhatsApp (Mme Sabrina modère puis publie) ----- */
+function submitViaWhatsApp(payload){
+  var catLabels={
+    ina:'Un produit INA Luxury',
+    clinic:'Une prestation Skin Clinic',
+    cozy:'Un produit Cozy',
+    autre:"Accueil / Service / Autre"
+  };
+  var targetTxt=catLabels[payload.target]||payload.target;
+  if(payload.detail)targetTxt+=' — '+payload.detail;
+  var stars='★'.repeat(payload.rating)+'☆'.repeat(5-payload.rating);
+  var msg='🌟 NOUVEL AVIS — Luxury Club 229\n\n'+
+    'De : '+payload.name+'\n'+
+    'Cible : '+targetTxt+'\n'+
+    'Note : '+stars+' ('+payload.rating+'/5)\n\n'+
+    'Commentaire :\n'+payload.text+'\n\n'+
+    '— Envoyé depuis luxuryskinclinic.netlify.app';
+  var url='https://wa.me/'+WHATSAPP_NUM+'?text='+encodeURIComponent(msg);
+  if(window.LCAudio)LCAudio.play('whatsapp');
+  window.open(url,'_blank','noopener');
+  showToast('Merci ! Votre avis a été préparé dans WhatsApp. Envoyez-le pour finaliser.');
+}
+
+/* ----- Soumission du formulaire ----- */
 function bindSubmit(){
   var form=$('revForm');if(!form)return;
   form.addEventListener('submit',function(e){
     e.preventDefault();
+
+    // Honeypot — si rempli, ignorer silencieusement (probable bot)
+    var hp=form.querySelector('input[name="hp_website"]');
+    if(hp&&hp.value){return;}
+
     var name=$('revName').value.trim();
     var target=$('revTarget').value;
     var detail=$('revDetail').value.trim();
@@ -1374,10 +1615,10 @@ function bindSubmit(){
       if(el)el.classList.toggle('error',bad);
       if(bad)ok=false;
     }
-    flag('name',!name);
+    flag('name',!name||name.length<MIN_NAME||name.length>MAX_NAME);
     flag('target',!target);
     flag('rating',!rating);
-    flag('text',text.length<5);
+    flag('text',text.length<MIN_TEXT||text.length>MAX_TEXT);
     if(!ok){
       var firstErr=form.querySelector('.rev-field.error');
       if(firstErr){firstErr.scrollIntoView({behavior:'smooth',block:'center'});
@@ -1385,25 +1626,24 @@ function bindSubmit(){
         if(inp)setTimeout(function(){inp.focus();},400);}
       return;
     }
-    var catLabels={
-      ina:'Un produit INA Luxury',
-      clinic:'Une prestation Skin Clinic',
-      cozy:'Un produit Cozy',
-      autre:"Accueil / Service / Autre"
-    };
-    var targetTxt=catLabels[target]||target;
-    if(detail)targetTxt+=' — '+detail;
-    var stars='★'.repeat(rating)+'☆'.repeat(5-rating);
-    var msg='🌟 NOUVEL AVIS — Luxury Club 229\n\n'+
-      'De : '+name+'\n'+
-      'Cible : '+targetTxt+'\n'+
-      'Note : '+stars+' ('+rating+'/5)\n\n'+
-      'Commentaire :\n'+text+'\n\n'+
-      '— Envoyé depuis luxuryskinclinic.netlify.app';
-    var url='https://wa.me/'+WHATSAPP_NUM+'?text='+encodeURIComponent(msg);
-    if(window.LCAudio)LCAudio.play('whatsapp');
-    window.open(url,'_blank','noopener');
-    showToast('Merci ! Votre avis a été préparé dans WhatsApp. Envoyez-le pour finaliser.');
+
+    if(containsBadWord(text)||containsBadWord(name)){
+      showToast('Votre message contient des termes inappropriés. Merci de reformuler.');
+      return;
+    }
+
+    var rem=throttleRemainingMs();
+    if(rem>0){
+      var mins=Math.ceil(rem/60000);
+      showToast('Vous venez déjà de soumettre un avis. Réessayez dans '+mins+' min.');
+      return;
+    }
+
+    var payload={name:name,target:target,detail:detail,rating:rating,text:text};
+
+    submitViaWhatsApp(payload);
+    markSubmitted();
+
     form.reset();state.rating=0;
     document.querySelectorAll('#revStarsInput .rev-star-btn').forEach(function(b){
       b.classList.remove('active');b.setAttribute('aria-checked','false');
@@ -1419,15 +1659,179 @@ function bindSubmit(){
   });
 }
 
+/* ----- Bouton flottant : masquer définitivement dès que la section avis
+        devient visible. Une fois que la cliente a découvert la section,
+        le FAB n'a plus besoin de réapparaître pour le reste de la session. ----- */
+function bindFab(){
+  var fab=document.getElementById('fabAvis');
+  var sec=document.getElementById('avis');
+  if(!fab||!sec||!('IntersectionObserver' in window))return;
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        fab.classList.add('hidden');
+        io.unobserve(en.target); // Une fois masqué, on ne ré-observe plus
+      }
+    });
+  },{threshold:0.18});
+  io.observe(sec);
+}
+
 /* ----- Init ----- */
 function init(){
   buildStarsInput();
   bindFilters();
   bindCounter();
   bindSubmit();
+  bindFab();
   renderList();
 }
 if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}
+else init();
+
+})();
+</script>
+
+<!-- ============ TÉMOIGNAGES PHOTOS — galerie + lightbox ============ -->
+<script>
+(function(){
+'use strict';
+
+/* ============================================================
+   TÉMOIGNAGES CLIENTS — galerie manuelle curée par Sabrina
+   ------------------------------------------------------------
+   Pour ajouter un nouveau témoignage : pousser un objet en tête du tableau.
+   - src     : chemin de l'image dans assets/images/temoignages/
+   - type    : 'photo' | 'capture' | 'avant-apres'
+   - caption : légende affichée sous la photo (optionnelle)
+   - date    : 'AAAA-MM' (optionnel, sert au tri)
+   Voir assets/images/temoignages/README.md pour la procédure complète.
+   ============================================================ */
+var TESTIMONIALS=[
+  /* Exemple à dupliquer quand Mme Sabrina aura validé les premières photos :
+  {
+    src:'assets/images/temoignages/exemple.jpg',
+    type:'avant-apres',
+    caption:'Marie K. — Résultat après 6 séances',
+    date:'2026-04'
+  },
+  */
+];
+
+var TYPE_LABELS={
+  'photo':'Photo résultat',
+  'capture':'Capture discussion',
+  'avant-apres':'Avant / Après'
+};
+
+var testiState={filter:'all',current:0,visible:[]};
+
+function $(id){return document.getElementById(id);}
+function escapeHTML(s){return String(s||'').replace(/[&<>"']/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
+function filteredTesti(){
+  if(testiState.filter==='all')return TESTIMONIALS;
+  return TESTIMONIALS.filter(function(t){return t.type===testiState.filter;});
+}
+
+function renderTesti(){
+  var grid=$('testiGrid');
+  if(!grid)return;
+  var list=filteredTesti();
+  testiState.visible=list;
+  if(!list.length){
+    grid.innerHTML='<div class="testi-empty">Les premières photos de témoignages seront publiées très prochainement.<br>'+
+      'Envoyez les vôtres à Mme Sabrina via WhatsApp pour les ajouter à cette galerie.</div>';
+    return;
+  }
+  grid.innerHTML=list.map(function(t,i){
+    var badge=TYPE_LABELS[t.type]||'Témoignage';
+    var caption=t.caption?'<div class="testi-card-cap">'+escapeHTML(t.caption)+'</div>':'';
+    return '<button type="button" class="testi-card" data-idx="'+i+'" aria-label="Voir le témoignage : '+escapeHTML(t.caption||badge)+'">'+
+      '<img src="'+escapeHTML(t.src)+'" alt="'+escapeHTML(t.caption||badge)+'" loading="lazy">'+
+      '<div class="testi-card-meta">'+
+        '<span class="testi-card-badge">'+escapeHTML(badge)+'</span>'+
+        caption+
+      '</div>'+
+    '</button>';
+  }).join('');
+  grid.querySelectorAll('.testi-card').forEach(function(card){
+    card.addEventListener('click',function(){openLightbox(parseInt(card.dataset.idx,10));});
+  });
+}
+
+function bindTestiFilters(){
+  document.querySelectorAll('[data-testi-filter]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var f=btn.getAttribute('data-testi-filter');
+      if(f===testiState.filter)return;
+      testiState.filter=f;
+      document.querySelectorAll('[data-testi-filter]').forEach(function(b){
+        var on=b===btn;
+        b.classList.toggle('active',on);
+        b.setAttribute('aria-selected',on?'true':'false');
+      });
+      renderTesti();
+      if(window.LCAudio)LCAudio.play('filter');
+    });
+  });
+}
+
+/* ===== Lightbox ===== */
+function openLightbox(idx){
+  testiState.current=idx;
+  var lb=$('testiLightbox');
+  showLightboxImage();
+  lb.classList.add('open');
+  lb.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+}
+function closeLightbox(){
+  var lb=$('testiLightbox');
+  lb.classList.remove('open');
+  lb.setAttribute('aria-hidden','true');
+  document.body.style.overflow='';
+}
+function showLightboxImage(){
+  var list=testiState.visible;
+  if(!list.length)return;
+  var t=list[testiState.current];
+  $('testiLbImg').src=t.src;
+  $('testiLbImg').alt=t.caption||'';
+  var cap=$('testiLbCap');
+  var badge=TYPE_LABELS[t.type]||'';
+  cap.innerHTML=(badge?'<small style="display:block;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:#c9a84c;margin-bottom:6px;">'+escapeHTML(badge)+'</small>':'')+
+    escapeHTML(t.caption||'');
+}
+function navLightbox(dir){
+  var list=testiState.visible;
+  if(!list.length)return;
+  testiState.current=(testiState.current+dir+list.length)%list.length;
+  showLightboxImage();
+}
+function bindLightbox(){
+  var lb=$('testiLightbox');
+  if(!lb)return;
+  lb.querySelector('.testi-lb-close').addEventListener('click',closeLightbox);
+  lb.querySelector('.testi-lb-prev').addEventListener('click',function(){navLightbox(-1);});
+  lb.querySelector('.testi-lb-next').addEventListener('click',function(){navLightbox(1);});
+  lb.addEventListener('click',function(e){if(e.target===lb)closeLightbox();});
+  document.addEventListener('keydown',function(e){
+    if(!lb.classList.contains('open'))return;
+    if(e.key==='Escape')closeLightbox();
+    else if(e.key==='ArrowLeft')navLightbox(-1);
+    else if(e.key==='ArrowRight')navLightbox(1);
+  });
+}
+
+function init(){
+  if(!$('testiGrid'))return;
+  bindTestiFilters();
+  bindLightbox();
+  renderTesti();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
 else init();
 
 })();
