@@ -461,19 +461,7 @@ header{position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);
 .ci-line{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--or-clair);
   margin-left:auto;white-space:nowrap;}
 .cart-foot{padding:18px 22px 22px;border-top:1px solid rgba(201,168,76,.16);}
-.cart-recv{margin-bottom:16px;padding-bottom:14px;border-bottom:1px dashed rgba(201,168,76,.18);}
 .cart-recv-lbl{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--or);margin-bottom:9px;}
-.cart-recv-opts{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px;}
-.cart-recv-opts .recv-opt{flex:1 1 140px;cursor:pointer;}
-.cart-recv-opts .recv-opt input{position:absolute;opacity:0;pointer-events:none;}
-.cart-recv-opts .recv-pill{display:flex;align-items:center;gap:7px;justify-content:center;padding:9px 11px;
-  border-radius:24px;border:1px solid rgba(201,168,76,.25);background:rgba(10,10,10,.35);
-  font-size:11px;letter-spacing:.04em;color:var(--texte-doux);
-  transition:all .25s var(--ease);text-align:center;}
-.cart-recv-opts .recv-ico{font-size:14px;}
-.cart-recv-opts .recv-opt:hover .recv-pill{border-color:var(--or);color:var(--creme);}
-.cart-recv-opts input:checked + .recv-pill{background:rgba(201,168,76,.16);
-  border-color:var(--or-vif);color:var(--or-clair);box-shadow:0 0 0 1px rgba(236,217,164,.35) inset;}
 .cart-city{display:block;width:100%;padding:10px 13px;border-radius:10px;
   border:1px solid rgba(201,168,76,.22);background:rgba(10,10,10,.4);
   color:var(--creme);font-family:'Jost',sans-serif;font-size:.85rem;
@@ -628,7 +616,6 @@ footer{position:relative;z-index:5;border-top:1px solid rgba(201,168,76,.14);
 
 <footer>
   <div class="foot-meta">INA Luxury · Luxury Club 229 · Cotonou · Bénin</div>
-  <div class="foot-sig">Vitrine signée NEBULA Agency</div>
 </footer>
 
 <!-- PANIER -->
@@ -640,13 +627,6 @@ footer{position:relative;z-index:5;border-top:1px solid rgba(201,168,76,.14);
   </div>
   <div class="cart-items" id="cartItems"></div>
   <div class="cart-foot">
-    <div class="cart-recv">
-      <div class="cart-recv-lbl">Mode de réception</div>
-      <div class="cart-recv-opts">
-        <label class="recv-opt"><input type="radio" name="recv" value="livraison" checked><span class="recv-pill"><span class="recv-ico">🛵</span>Livraison à domicile</span></label>
-        <label class="recv-opt"><input type="radio" name="recv" value="retrait"><span class="recv-pill"><span class="recv-ico">📍</span>Retrait sur place</span></label>
-      </div>
-    </div>
     <div class="cart-customer">
       <div class="cart-recv-lbl">Vos coordonnées</div>
       <div class="cart-grid-2">
@@ -1067,11 +1047,6 @@ const ROUTINES={
        {kind:'skin',label:'Body Pack Skin',sub:'Gamme semi-médicale',
         items:['Crème au Lait de Chèvre','Huile à la Rose','Bonbon Scrub']},
      ]},
-    {key:'savons',label:'Savons',desc:"Sélection de savons soin pour le corps — nettoient en douceur et subliment la peau au quotidien.",
-     tiers:[
-       {kind:'luxury',label:'Savons soin',sub:'Beauty Bars',
-        items:['Kojic Beauty Bar','Busserole Beauty Bar','Milk Beauty Bar']},
-     ]},
   ],
 };
 function routinesFor(fam){return ROUTINES[fam]||[];}
@@ -1315,7 +1290,7 @@ function renderRoutines(){
   if(!state.family||!list.length||state.routine){routineBlock.hidden=true;return;}
   routineBlock.hidden=false;
   const intro=state.family==='corps'
-    ?'Trois packs corps : <b>Body Pack Luxury</b> (gamme médicale), <b>Body Pack Skin</b> (gamme semi-médicale) et <b>Savons</b> (Beauty Bars). La différence Luxury / Skin se situe au niveau de la concentration des actifs.'
+    ?'Deux packs corps disponibles : <b>Body Pack Luxury</b> (gamme médicale) et <b>Body Pack Skin</b> (gamme semi-médicale). La différence se situe au niveau de la concentration des actifs. Choisissez selon vos besoins et votre budget.'
     :'Deux gammes disponibles : <b>Luxury</b> (gamme médicale) et <b>Skin</b> (gamme semi-médicale). La différence se situe au niveau de la concentration des actifs. Choisissez selon vos besoins et votre budget.';
   routineIntro.innerHTML=intro;
   routineChips.innerHTML='';
@@ -1618,7 +1593,6 @@ cartClear.addEventListener('click',()=>{
 });
 /* Setup sélecteur mode de réception */
 const cartCityInput=document.getElementById('cartCity');
-const cartDelivBox=document.getElementById('cartDelivBox');
 const custPrenom=document.getElementById('custPrenom');
 const custNom=document.getElementById('custNom');
 const custWa=document.getElementById('custWa');
@@ -1627,15 +1601,6 @@ const custQuartier=document.getElementById('custQuartier');
 const custReperes=document.getElementById('custReperes');
 const custCreneau=document.getElementById('custCreneau');
 const custNote=document.getElementById('custNote');
-function getRecv(){
-  const r=document.querySelector('input[name="recv"]:checked');
-  return r?r.value:'livraison';
-}
-function syncDelivVisibility(){cartDelivBox.hidden=(getRecv()!=='livraison');}
-document.querySelectorAll('input[name="recv"]').forEach(r=>{
-  r.addEventListener('change',syncDelivVisibility);
-});
-syncDelivVisibility();
 
 /* Auto-remplissage depuis localStorage (cliente récurrente) */
 const CUST_KEY='lc_customer_v1';
@@ -1684,14 +1649,11 @@ cartWa.addEventListener('click',()=>{
   if(!requireField(custPrenom,'Prénom'))return;
   if(!requireField(custNom,'Nom'))return;
   if(!requireField(custWa,'Numéro WhatsApp'))return;
-  const recv=getRecv();
-  /* Validation conditionnelle livraison */
-  if(recv==='livraison'){
-    if(!requireField(cartCityInput,'Ville'))return;
-    if(!requireField(custQuartier,'Quartier précis'))return;
-    if(!requireField(custReperes,'Repères'))return;
-    if(!requireField(custCreneau,'Créneau de livraison'))return;
-  }
+  /* Livraison : champs obligatoires */
+  if(!requireField(cartCityInput,'Ville'))return;
+  if(!requireField(custQuartier,'Quartier précis'))return;
+  if(!requireField(custReperes,'Repères'))return;
+  if(!requireField(custCreneau,'Créneau de livraison'))return;
   /* Sauvegarde des coordonnées (avant ouverture WhatsApp) */
   saveCustomer();
 
@@ -1710,13 +1672,11 @@ cartWa.addEventListener('click',()=>{
 ${prenom} ${nom}
 📞 WhatsApp : ${wa}${waAlt?'\n📱 Tél. alternatif : '+waAlt:''}`;
 
-  const recvBloc=(recv==='livraison')
-    ?`📦 *RÉCEPTION* : Livraison à domicile
+  const recvBloc=`📦 *RÉCEPTION* : Livraison à domicile
 🏙️ Ville : ${cartCityInput.value.trim()}
 🏘️ Quartier : ${custQuartier.value.trim()}
 🧭 Repères : ${custReperes.value.trim()}
-⏰ Créneau : ${custCreneau.value}`
-    :`📦 *RÉCEPTION* : Retrait sur place`;
+⏰ Créneau : ${custCreneau.value}`;
 
   const noteBloc=note?`\n💬 *NOTE*\n${note}\n`:'';
 
@@ -1745,9 +1705,7 @@ Réf : ${genRef()}  ·  ${nowFr()}`;
     return `<div class="lc-recap-line"><div class="nm">${e} <b>${it.n}</b>${it.size?'<small>'+it.size+'</small>':''}<small>Quantité : ${it.qty}  ·  ${fmt(it.p)} F l'unité</small></div><div class="ln">${fmt(it.qty*it.p)} F</div></div>`;
   }).join('')+`<div class="lc-recap-total"><span>TOTAL</span><span>${fmt(cartTotalVal())} FCFA</span></div>`;
   const infosRecap=`<div class="lc-recap-line" style="border-top:1px solid rgba(201,168,76,.22);margin-top:8px;padding-top:12px;"><div class="nm">👤 ${prenom} ${nom}<small>📞 ${wa}${waAlt?' · '+waAlt:''}</small></div></div>`;
-  const recvHtml=(recv==='livraison')
-    ?`<div class="lc-recap-line"><div class="nm">📦 Livraison à domicile<small>${cartCityInput.value.trim()} · ${custQuartier.value.trim()}</small><small>🧭 ${custReperes.value.trim()}</small><small>⏰ ${custCreneau.value}</small></div></div>`
-    :`<div class="lc-recap-line"><div class="nm">📦 Retrait sur place</div></div>`;
+  const recvHtml=`<div class="lc-recap-line"><div class="nm">📦 Livraison à domicile<small>${cartCityInput.value.trim()} · ${custQuartier.value.trim()}</small><small>🧭 ${custReperes.value.trim()}</small><small>⏰ ${custCreneau.value}</small></div></div>`;
   const noteRecap=note?`<div class="lc-recap-line"><div class="nm">💬 Note<small>${note.replace(/</g,'&lt;')}</small></div></div>`:'';
   window.lcConfirmOrder({
     recap:recapHtml+infosRecap+recvHtml+noteRecap,

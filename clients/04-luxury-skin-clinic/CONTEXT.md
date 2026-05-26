@@ -273,6 +273,24 @@ code (objet `SVC_ART`). Voie B (vraies photos via `_inbox/`) reste possible plus
   - **Instagram unifié** : 7 occurrences (4 barres flottantes + 3 modales
     de remerciement) basculées de `@inaluxury` vers le compte cross-marque
     `@luxuryclub229`. Aria-labels mis à jour. TikTok inchangé.
+- 2026-05-26 (3e vague) — **Simplifications Gloria** :
+  - **Routine Savons supprimée** d'INA Luxury Corps : Gloria ne veut que 2 packs
+    (Body Pack Luxury + Body Pack Skin). L'entrée `key:'savons'` retirée de
+    `ROUTINES.corps`. Les 3 Beauty Bars (Kojic, Busserole, Milk) restent
+    accessibles via Corps → Beauty Bar (catalogue normal). Intro routine corps
+    reformulée : « Trois packs corps … » → « Deux packs corps disponibles … ».
+  - **Option « Retrait sur place » supprimée** du panier (Cozy + INA Luxury) :
+    seule la livraison est désormais proposée. Suppression du bloc HTML
+    « Mode de réception », du helper JS `getRecv()`, du listener `syncDelivVisibility`,
+    et des branches conditionnelles `(recv==='livraison')?...:...` dans les
+    messages WhatsApp et le récap modal. Le bloc adresse de livraison est
+    désormais toujours affiché et tous ses champs sont obligatoires. CSS orphan
+    `.cart-recv*` et `.recv-pill*` également nettoyés (charte conservée pour
+    `.cart-recv-lbl` qui reste utilisé par les autres labels du panier).
+  - **Signature « Vitrine signée NEBULA Agency » retirée** des 4 pieds de page
+    (Gloria : « pas trop professionnel »). Le `<div class="foot-sig">` supprimé
+    sur `index.html`, `cozy.html`, `ina-luxury.html` et `luxury-skin-clinic.html`.
+    Le `foot-meta` (Marque · Cotonou · Bénin) est conservé.
 - 2026-05-26 (suite) — **Réorganisation catalogue corps + Concentré Fruité complété**.
   - **Body Butter Baiser Nocturne ré-intégré dans Cozy** : décision inverse du
     2026-05-24 (Gloria : « le produit appartient à Cozy, pas à INA Luxury »).

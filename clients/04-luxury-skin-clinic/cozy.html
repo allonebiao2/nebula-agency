@@ -299,19 +299,7 @@ main{position:relative;z-index:5;}
 .ci-line{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--rose-fonce);
   margin-left:auto;white-space:nowrap;}
 .cart-foot{padding:18px 22px 22px;border-top:1px solid var(--ligne);}
-.cart-recv{margin-bottom:16px;padding-bottom:14px;border-bottom:1px dashed var(--rose);}
 .cart-recv-lbl{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--rose-fonce);margin-bottom:9px;}
-.cart-recv-opts{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px;}
-.cart-recv-opts .recv-opt{flex:1 1 140px;cursor:pointer;}
-.cart-recv-opts .recv-opt input{position:absolute;opacity:0;pointer-events:none;}
-.cart-recv-opts .recv-pill{display:flex;align-items:center;gap:7px;justify-content:center;padding:9px 11px;
-  border-radius:24px;border:1px solid var(--rose);background:#fff;
-  font-size:11px;letter-spacing:.04em;color:var(--encre-2);
-  transition:all .25s var(--ease);text-align:center;}
-.cart-recv-opts .recv-ico{font-size:14px;}
-.cart-recv-opts .recv-opt:hover .recv-pill{border-color:var(--rose-fonce);color:var(--rose-fonce);}
-.cart-recv-opts input:checked + .recv-pill{background:var(--rose-pale);
-  border-color:var(--rose-fonce);color:var(--rose-fonce);font-weight:500;}
 .cart-city{display:block;width:100%;padding:10px 13px;border-radius:10px;
   border:1px solid var(--rose);background:#fff;
   color:var(--encre);font-family:'Jost',sans-serif;font-size:.85rem;
@@ -455,7 +443,6 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
 
 <footer>
   <div class="foot-meta">Cozy · Luxury Club 229 · Cotonou · Bénin</div>
-  <div class="foot-sig">Vitrine signée NEBULA Agency</div>
 </footer>
 
 <button id="audio-btn" aria-label="Activer ou couper l'ambiance">
@@ -471,13 +458,6 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
   </div>
   <div class="cart-items" id="cartItems"></div>
   <div class="cart-foot">
-    <div class="cart-recv">
-      <div class="cart-recv-lbl">Mode de réception</div>
-      <div class="cart-recv-opts">
-        <label class="recv-opt"><input type="radio" name="recv" value="livraison" checked><span class="recv-pill"><span class="recv-ico">🛵</span>Livraison à domicile</span></label>
-        <label class="recv-opt"><input type="radio" name="recv" value="retrait"><span class="recv-pill"><span class="recv-ico">📍</span>Retrait sur place</span></label>
-      </div>
-    </div>
     <div class="cart-customer">
       <div class="cart-recv-lbl">Vos coordonnées</div>
       <div class="cart-grid-2">
@@ -904,7 +884,6 @@ cartClear.addEventListener('click',()=>{
 });
 /* Setup sélecteur mode de réception */
 const cartCityInput=document.getElementById('cartCity');
-const cartDelivBox=document.getElementById('cartDelivBox');
 const custPrenom=document.getElementById('custPrenom');
 const custNom=document.getElementById('custNom');
 const custWa=document.getElementById('custWa');
@@ -913,15 +892,6 @@ const custQuartier=document.getElementById('custQuartier');
 const custReperes=document.getElementById('custReperes');
 const custCreneau=document.getElementById('custCreneau');
 const custNote=document.getElementById('custNote');
-function getRecv(){
-  const r=document.querySelector('input[name="recv"]:checked');
-  return r?r.value:'livraison';
-}
-function syncDelivVisibility(){cartDelivBox.hidden=(getRecv()!=='livraison');}
-document.querySelectorAll('input[name="recv"]').forEach(r=>{
-  r.addEventListener('change',syncDelivVisibility);
-});
-syncDelivVisibility();
 
 /* Auto-remplissage depuis localStorage (cliente récurrente) */
 const CUST_KEY='lc_customer_v1';
@@ -970,14 +940,11 @@ cartWa.addEventListener('click',()=>{
   if(!requireField(custPrenom,'Prénom'))return;
   if(!requireField(custNom,'Nom'))return;
   if(!requireField(custWa,'Numéro WhatsApp'))return;
-  const recv=getRecv();
-  /* Validation conditionnelle livraison */
-  if(recv==='livraison'){
-    if(!requireField(cartCityInput,'Ville'))return;
-    if(!requireField(custQuartier,'Quartier précis'))return;
-    if(!requireField(custReperes,'Repères'))return;
-    if(!requireField(custCreneau,'Créneau de livraison'))return;
-  }
+  /* Livraison : champs obligatoires */
+  if(!requireField(cartCityInput,'Ville'))return;
+  if(!requireField(custQuartier,'Quartier précis'))return;
+  if(!requireField(custReperes,'Repères'))return;
+  if(!requireField(custCreneau,'Créneau de livraison'))return;
   /* Sauvegarde des coordonnées (avant ouverture WhatsApp) */
   saveCustomer();
 
@@ -996,13 +963,11 @@ cartWa.addEventListener('click',()=>{
 ${prenom} ${nom}
 📞 WhatsApp : ${wa}${waAlt?'\n📱 Tél. alternatif : '+waAlt:''}`;
 
-  const recvBloc=(recv==='livraison')
-    ?`📦 *RÉCEPTION* : Livraison à domicile
+  const recvBloc=`📦 *RÉCEPTION* : Livraison à domicile
 🏙️ Ville : ${cartCityInput.value.trim()}
 🏘️ Quartier : ${custQuartier.value.trim()}
 🧭 Repères : ${custReperes.value.trim()}
-⏰ Créneau : ${custCreneau.value}`
-    :`📦 *RÉCEPTION* : Retrait sur place`;
+⏰ Créneau : ${custCreneau.value}`;
 
   const noteBloc=note?`\n💬 *NOTE*\n${note}\n`:'';
 
@@ -1031,9 +996,7 @@ Réf : ${genRef()}  ·  ${nowFr()}`;
     return `<div class="lc-recap-line"><div class="nm">${e} <b>${it.n}</b>${it.size?'<small>'+it.size+'</small>':''}<small>Quantité : ${it.qty}  ·  ${fmt(it.p)} F l'unité</small></div><div class="ln">${fmt(it.qty*it.p)} F</div></div>`;
   }).join('')+`<div class="lc-recap-total"><span>TOTAL</span><span>${fmt(cartTotalVal())} FCFA</span></div>`;
   const infosRecap=`<div class="lc-recap-line" style="border-top:1px solid var(--rose);margin-top:8px;padding-top:12px;"><div class="nm">👤 ${prenom} ${nom}<small>📞 ${wa}${waAlt?' · '+waAlt:''}</small></div></div>`;
-  const recvHtml=(recv==='livraison')
-    ?`<div class="lc-recap-line"><div class="nm">📦 Livraison à domicile<small>${cartCityInput.value.trim()} · ${custQuartier.value.trim()}</small><small>🧭 ${custReperes.value.trim()}</small><small>⏰ ${custCreneau.value}</small></div></div>`
-    :`<div class="lc-recap-line"><div class="nm">📦 Retrait sur place</div></div>`;
+  const recvHtml=`<div class="lc-recap-line"><div class="nm">📦 Livraison à domicile<small>${cartCityInput.value.trim()} · ${custQuartier.value.trim()}</small><small>🧭 ${custReperes.value.trim()}</small><small>⏰ ${custCreneau.value}</small></div></div>`;
   const noteRecap=note?`<div class="lc-recap-line"><div class="nm">💬 Note<small>${note.replace(/</g,'&lt;')}</small></div></div>`:'';
   window.lcConfirmOrder({
     recap:recapHtml+infosRecap+recvHtml+noteRecap,
