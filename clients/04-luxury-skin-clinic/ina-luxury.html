@@ -536,6 +536,28 @@ footer{position:relative;z-index:5;border-top:1px solid rgba(201,168,76,.14);
   *{animation-duration:.01ms!important;transition-duration:.15s!important;}
   .marble::before{animation:none;}
 }
+/* ===== AVIS PRODUITS — widget sous chaque carte ===== */
+.card-reviews{display:flex;align-items:center;gap:10px;margin:8px 0 10px;
+  padding:7px 0;border-top:1px dashed rgba(201,168,76,.14);
+  border-bottom:1px dashed rgba(201,168,76,.14);flex-wrap:wrap;}
+.rev-mini-display{display:flex;align-items:center;gap:6px;font-size:.82rem;}
+.rev-mini-stars{display:inline-flex;font-size:13px;line-height:1;letter-spacing:0;}
+.rev-mini-stars .rev-mini-s{color:rgba(201,168,76,.3);}
+.rev-mini-stars .rev-mini-s.on{color:var(--or);text-shadow:0 0 4px rgba(201,168,76,.4);}
+.rev-mini-num{font-weight:500;color:var(--or-clair);font-size:.83rem;}
+.rev-mini-cnt{color:var(--texte-doux);font-size:.74rem;letter-spacing:.04em;}
+.rev-mini-empty{font-size:.76rem;color:var(--texte-doux);font-style:italic;letter-spacing:.02em;}
+.rev-mini{margin-left:auto;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--or-clair);text-decoration:none;padding:5px 11px;border-radius:18px;
+  border:1px solid rgba(201,168,76,.34);background:rgba(20,18,15,.6);
+  transition:all .25s ease;display:inline-flex;align-items:center;gap:5px;
+  white-space:nowrap;font-weight:400;}
+.rev-mini:hover{border-color:var(--or);background:rgba(201,168,76,.16);color:var(--creme);}
+.rev-mini-star{width:11px;height:11px;fill:currentColor;flex-shrink:0;}
+@media(max-width:480px){
+  .rev-mini{font-size:.7rem;padding:4px 9px;letter-spacing:.06em;}
+  .card-reviews{gap:7px;}
+}
 </style>
 </head>
 <body>
@@ -785,6 +807,23 @@ const IMG={
   "Concentré Fruité":"assets/images/ina-luxury/corps/gommage/concentre-fruite.jpg",
   "Kojic Beauty Bar":"assets/images/ina-luxury/corps/beauty-bar/kojic-beauty-bar.png",
   "Milk Beauty Bar":"assets/images/ina-luxury/corps/beauty-bar/milk-beauty-bar.jpg"
+};
+/* ============================================================
+   AVIS PRODUITS — modérés par Mme Sabrina
+   ------------------------------------------------------------
+   Mapping nom-de-produit → liste d'avis approuvés.
+   Format avis : {n:"Prénom N.", d:"AAAA-MM", r:1..5, t:"texte..."}
+   Pour ajouter un avis : pousser un objet dans le tableau du produit.
+   Si un produit n'a pas encore d'avis, la carte affiche
+   « Soyez la première personne à donner un avis ».
+   ============================================================ */
+const REVIEWS_INA={
+  /* Exemple (commenté) :
+  "Beurre Clarté":[
+    {n:"Aïssé M.", d:"2026-04", r:5, t:"Texture délicieuse, ma peau est plus lumineuse après 3 semaines."},
+    {n:"Lucie T.",  d:"2026-03", r:4, t:"Belle hydratation, parfum un peu sucré pour moi."}
+  ],
+  */
 };
 const PRODUCTS=[
   // ===== VISAGE — GEL NETTOYANTS =====
@@ -1402,6 +1441,36 @@ function hiInci(s){
   INCI_KEYS.forEach(k=>{out=out.split(k).join('<b class="inci-key">'+k+'</b>');});
   return out;
 }
+/* ----- Widget avis sous chaque carte produit ----- */
+function avisLinkIna(p){
+  const msg='🌟 NOUVEL AVIS — Luxury Club 229\n\n'+
+    'De : (votre nom et prénom)\n'+
+    'Cible : Un produit INA Luxury — '+p.n+(p.size?' ('+p.size+')':'')+'\n'+
+    'Note : (★/5)\n\n'+
+    'Commentaire :\n(partagez votre vrai ressenti — positif ou constructif)\n\n'+
+    '— Envoyé depuis luxuryskinclinic.netlify.app';
+  return 'https://wa.me/2290167975626?text='+encodeURIComponent(msg);
+}
+function revWidgetIna(p){
+  const link=avisLinkIna(p);
+  const list=(typeof REVIEWS_INA!=='undefined'&&REVIEWS_INA[p.n])||[];
+  const linkHtml='<a class="rev-mini" href="'+link+'" target="_blank" rel="noopener" aria-label="Donner un avis sur '+p.n+'">'+
+    '<svg class="rev-mini-star" viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.9L12 17.8 5.8 21l1.2-6.9-5-4.9 6.9-1z"/></svg>'+
+    'Donner un avis</a>';
+  if(!list.length){
+    return '<span class="rev-mini-empty">Soyez la 1ʳᵉ personne à donner un avis</span>'+linkHtml;
+  }
+  const sum=list.reduce((a,r)=>a+r.r,0);
+  const avg=sum/list.length;
+  const rounded=Math.round(avg);
+  let stars='';
+  for(let i=1;i<=5;i++)stars+='<span class="rev-mini-s'+(i<=rounded?' on':'')+'">★</span>';
+  return '<div class="rev-mini-display" aria-label="Note moyenne '+avg.toFixed(1)+' sur 5, '+list.length+' avis">'+
+    '<span class="rev-mini-stars">'+stars+'</span>'+
+    '<span class="rev-mini-num">'+avg.toFixed(1).replace('.0','')+'</span>'+
+    '<span class="rev-mini-cnt">('+list.length+' avis)</span>'+
+    '</div>'+linkHtml;
+}
 function productCard(p,i){
   const fam=FAMILIES.find(x=>x.key===p.f);
   const sc=SUBCATS[p.f].find(x=>x.key===p.s);
@@ -1466,6 +1535,7 @@ function productCard(p,i){
       <h3>${p.n}</h3>
       ${p.size?`<div class="card-size">${p.size}</div>`:''}
       <p class="card-desc">${p.d}</p>
+      <div class="card-reviews">${revWidgetIna(p)}</div>
       <div class="card-concerns">${concerns}</div>
       ${resHtml}
       ${p.warn?`<div class="card-warn"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span>${p.warn}</span></div>`:''}
