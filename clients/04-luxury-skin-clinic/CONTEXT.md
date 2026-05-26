@@ -347,6 +347,31 @@ en complément de la commande WhatsApp.
      (à côté de « Commander sur WhatsApp »).
   4. Tester un paiement réel de bout en bout avant mise en ligne.
 
+## Système d'avis clients (2026-05-26)
+
+Mise en place demandée par Gloria pour favoriser l'interaction et la
+crédibilité. Architecture sans backend, modération via WhatsApp.
+
+- **Hub `index.html`** : page scrollable. Top fold = logo + 3 univers,
+  scroll → bio (sortie du modal, désormais en section visible) → section
+  Avis clients en bas.
+- **Section avis** : titre « Cliquez ici pour laisser vos avis », filtres
+  par catégorie (Tous / INA / Skin Clinic / Cozy), liste des témoignages
+  avec moyenne + nombre, formulaire complet (nom, catégorie, précision,
+  étoiles cliquables, texte 600 caractères).
+- **Soumission** : ouvre WhatsApp avec message pré-rempli vers
+  `+229 01 67 97 56 26`. Gloria valide puis ajoute l'avis approuvé au
+  tableau `REVIEWS` de `index.html` (format documenté en commentaire).
+- **Étoiles produits** : sous chaque carte de `ina-luxury.html`, widget
+  mini (moyenne + count si données, sinon « Soyez la 1ʳᵉ ») + bouton
+  WhatsApp pré-rempli avec le nom du produit. Tableau `REVIEWS_INA`
+  mapping produit→avis.
+- **Transparence affichée** : « Nous publions tous les retours
+  authentiques — positifs comme constructifs. Aucun avis n'est filtré
+  pour donner une fausse image. »
+- **À demander à Gloria** : 3-4 avis authentiques d'amorçage, validation
+  du wording de transparence.
+
 ## Évolutions demandées (à planifier)
 
 - **Audit friction complet** (demandé le 2026-05-18, partiellement traité

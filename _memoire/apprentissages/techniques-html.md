@@ -355,6 +355,95 @@ charte respectée (Cormorant Garamond, gradients dorés, cadre coins).
 
 ---
 
+## Avis clients sans backend — modération via WhatsApp
+
+**Problème** : Le client veut un système d'avis interactif (étoiles +
+commentaires) sur sa vitrine HTML statique, avec modération pour rester
+authentique. Pas de Supabase, pas de n8n, pas de Cloud à provisionner.
+
+**Solution** : Le formulaire d'avis n'écrit nulle part — il génère un
+message WhatsApp pré-rempli (`wa.me/<num>?text=...`). Le propriétaire
+reçoit, valide, puis ajoute manuellement l'avis approuvé à un tableau JS
+commenté dans le HTML.
+
+```html
+<form id="revForm">
+  <input id="revName" required>
+  <select id="revTarget" required>...</select>
+  <div id="revStarsInput" role="radiogroup"></div>
+  <textarea id="revText" required maxlength="600"></textarea>
+  <button type="submit">Envoyer via WhatsApp</button>
+</form>
+
+<script>
+const REVIEWS = [
+  // Format : {name, date:"AAAA-MM", category, targetLabel, rating, text}
+  // Le proprietaire pousse les avis approuves ici, en tete de tableau.
+];
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const msg = `NOUVEL AVIS\n\nDe : ${name}\nNote : ${'★'.repeat(rating)}\n\n${text}`;
+  window.open(`https://wa.me/2290167975626?text=${encodeURIComponent(msg)}`, '_blank');
+});
+</script>
+```
+
+**Notes** :
+- WhatsApp respecte les `\n` natifs dans `text=` et formate `*gras*`.
+- Validation côté client uniquement (champs requis, longueur min).
+- Toast post-envoi pour confirmer (l'app WhatsApp s'ouvre dans un onglet
+  séparé, le visiteur n'a pas de retour sinon).
+- Pour afficher les avis approuvés : `REVIEWS.filter(...).map(...)`,
+  filtres par catégorie, pagination "Voir plus".
+- **Trade-off** : la mise à jour est manuelle (HTML/JS edit + commit).
+  Acceptable jusqu'à ~30 avis/mois.
+
+**Quand l'utiliser** : vitrines artisanales, contrôle total de la
+modération, zéro budget infra, propriétaire qui utilise déjà WhatsApp
+au quotidien (cas Gloria — Luxury Club 229, 2026-05-26).
+
+---
+
+## IntersectionObserver pour reveal au scroll
+
+**Problème** : Faire apparaître élégamment une section quand elle entre
+dans le viewport, sans librairie d'animation.
+
+**Solution** :
+```js
+function revealOnScroll(selectors){
+  const els = selectors.flatMap(s => [...document.querySelectorAll(s)]);
+  if (!('IntersectionObserver' in window)) {
+    els.forEach(el => el.classList.add('show'));
+    return;
+  }
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('show'); io.unobserve(e.target); }
+    });
+  }, { rootMargin:'0px 0px -10% 0px', threshold:.05 });
+  els.forEach(el => io.observe(el));
+}
+revealOnScroll(['#bio', '#avis']);
+```
+
+CSS :
+```css
+.section{opacity:0;transform:translateY(20px);
+  transition:opacity .9s ease,transform .9s ease;}
+.section.show{opacity:1;transform:none;}
+```
+
+**Notes** :
+- `rootMargin: '0px 0px -10% 0px'` retarde le trigger jusqu'à ce que
+  la section soit franchement visible (pas dès qu'elle effleure le bas).
+- `io.unobserve(e.target)` après reveal : on n'observe plus l'élément
+  une fois affiché (perf).
+- Fallback `classList.add('show')` immédiat sur IE/anciens browsers.
+
+---
+
 ## Autres techniques à documenter
 
 - Variables CSS pour palette client
