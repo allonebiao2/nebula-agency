@@ -125,8 +125,10 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-vi
 #curtain.closing .panel::after{opacity:1;}
 
 /* ===== HUB ===== */
-.hub{position:relative;z-index:5;min-height:100svh;display:flex;flex-direction:column;
+.hub{position:relative;z-index:5;display:flex;flex-direction:column;
   align-items:center;padding:40px 22px 28px;}
+.hub-top{display:flex;flex-direction:column;align-items:center;width:100%;
+  min-height:calc(100svh - 80px);}
 
 /* logo placeholder */
 .hub-logo{display:flex;flex-direction:column;align-items:center;gap:11px;
@@ -314,6 +316,8 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-vi
 <!-- HUB -->
 <main class="hub" id="hub">
 
+  <div class="hub-top">
+
   <div class="hub-logo">
     <img class="hub-logo-img" src="assets/images/logos/logo-luxury-club-229.png" alt="Luxury Club 229">
     <div class="logo-word">LUXURY <b>CLUB</b> 229</div>
@@ -323,11 +327,6 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-vi
   <div class="hub-welcome" id="welcome" aria-live="polite"></div>
 
   <div class="hub-invite" id="invite">Sélectionnez votre univers</div>
-
-  <button class="bio-fab" id="bioFab" type="button" aria-haspopup="dialog" aria-controls="bioModal">
-    <span class="bio-fab-icon" aria-hidden="true">✦</span>
-    <span class="bio-fab-txt">Biographie · Mme Sabrina</span>
-  </button>
 
   <section class="brands" id="brands" aria-label="Nos univers">
 
@@ -366,57 +365,27 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-vi
 
   </section>
 
+  </div><!-- /.hub-top -->
+
+  <section class="hub-bio" id="bio" aria-label="Biographie de Mme Sabrina">
+    <div class="hub-bio-inner">
+      <div class="bio-eyebrow">Cosmétologue · Spécialiste soins visage médicaux</div>
+      <h2 class="bio-name" id="bioTitle">Madame A. Sabrina</h2>
+      <div class="bio-flourish"><span></span></div>
+      <div class="bio-body">
+        <p>Madame A. Sabrina est une cosmétologue passionnée et experte, évoluant dans l'univers de la beauté et des soins depuis <b>2018</b>. Diplômée en sciences de la cosmétologie ainsi qu'en sciences de la cosmétique corporelle et capillaire, elle a construit son expertise autour de l'innovation, de l'excellence et de la maîtrise avancée des soins cutanés.</p>
+        <p>Au fil des années, elle a enrichi son savoir-faire à travers <b>plus de 20 certificats de perfectionnement</b> dans ses différents domaines d'activité, affirmant ainsi son engagement constant pour l'excellence professionnelle. Spécialisée également en <b>soins du visage médicaux avancés</b>, elle allie connaissances scientifiques, techniques modernes et approche personnalisée afin d'offrir des résultats visibles et durables.</p>
+        <p>Sa vision a toujours été claire : offrir au Bénin une marque de cosmétique <b>luxueuse, innovante et performante</b>, formulée avec des actifs intelligents et de dernière génération, tout en intégrant des techniques de soins à la pointe pour le traitement des différents problèmes cutanés.</p>
+        <p>À travers son univers, <b>Madame Ahouangnimon Sabrina</b> invite chaque personne à découvrir une expérience unique où luxe, expertise, passion et amour du soin se rencontrent harmonieusement. Un espace pensé pour sublimer chaque peau avec élégance, efficacité et raffinement.</p>
+      </div>
+      <div class="bio-sign">— LUXURY CLUB 229</div>
+    </div>
+  </section>
+
   <footer class="hub-foot" id="hubFoot">
     <div class="foot-loc">Cotonou · Bénin · +229 01 67 97 56 26</div>
   </footer>
 </main>
-
-<div class="bio-modal" id="bioModal" role="dialog" aria-modal="true" aria-labelledby="bioTitle" hidden>
-  <div class="bio-scrim" data-bio-close="1"></div>
-  <article class="bio-card">
-    <button class="bio-close" type="button" aria-label="Fermer" data-bio-close="1">
-      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
-    <div class="bio-eyebrow">Cosmétologue · Spécialiste soins visage médicaux</div>
-    <h2 class="bio-name" id="bioTitle">Madame A. Sabrina</h2>
-    <div class="bio-flourish"><span></span></div>
-    <div class="bio-body">
-      <p>Madame A. Sabrina est une cosmétologue passionnée et experte, évoluant dans l'univers de la beauté et des soins depuis <b>2018</b>. Diplômée en sciences de la cosmétologie ainsi qu'en sciences de la cosmétique corporelle et capillaire, elle a construit son expertise autour de l'innovation, de l'excellence et de la maîtrise avancée des soins cutanés.</p>
-      <p>Au fil des années, elle a enrichi son savoir-faire à travers <b>plus de 20 certificats de perfectionnement</b> dans ses différents domaines d'activité, affirmant ainsi son engagement constant pour l'excellence professionnelle. Spécialisée également en <b>soins du visage médicaux avancés</b>, elle allie connaissances scientifiques, techniques modernes et approche personnalisée afin d'offrir des résultats visibles et durables.</p>
-      <p>Sa vision a toujours été claire : offrir au Bénin une marque de cosmétique <b>luxueuse, innovante et performante</b>, formulée avec des actifs intelligents et de dernière génération, tout en intégrant des techniques de soins à la pointe pour le traitement des différents problèmes cutanés.</p>
-      <p>À travers son univers, <b>Madame Ahouangnimon Sabrina</b> invite chaque personne à découvrir une expérience unique où luxe, expertise, passion et amour du soin se rencontrent harmonieusement. Un espace pensé pour sublimer chaque peau avec élégance, efficacité et raffinement.</p>
-    </div>
-    <div class="bio-sign">— LUXURY CLUB 229</div>
-  </article>
-</div>
-<script>
-(function(){
-  const fab=document.getElementById('bioFab'),modal=document.getElementById('bioModal');
-  if(!fab||!modal)return;
-  let lastFocus=null;
-  function open(){
-    lastFocus=document.activeElement;
-    modal.hidden=false;
-    requestAnimationFrame(()=>modal.classList.add('open'));
-    document.body.style.overflow='hidden';
-    setTimeout(()=>{const closeBtn=modal.querySelector('.bio-close');if(closeBtn)closeBtn.focus();},120);
-  }
-  function close(){
-    modal.classList.remove('open');
-    setTimeout(()=>{
-      modal.hidden=true;document.body.style.overflow='';
-      if(lastFocus&&lastFocus.focus)lastFocus.focus();
-    },340);
-  }
-  fab.addEventListener('click',open);
-  modal.addEventListener('click',e=>{
-    if(e.target.closest('[data-bio-close]'))close();
-  });
-  document.addEventListener('keydown',e=>{
-    if(e.key==='Escape'&&!modal.hidden)close();
-  });
-})();
-</script>
 
 <div id="audio-hint">Activer l'ambiance sonore</div>
 <button id="audio-btn" aria-label="Activer ou couper la musique">
@@ -574,12 +543,20 @@ const Audio=(function(){
   }
   function finish(){
     invite.classList.add('show');
-    const bioFab=document.getElementById('bioFab');
-    if(bioFab)setTimeout(()=>bioFab.classList.add('show'),reduceMotion?0:200);
     document.querySelectorAll('.brand').forEach((b,i)=>{
       setTimeout(()=>{b.style.opacity='1';},reduceMotion?0:i*90);
     });
     setTimeout(()=>foot.classList.add('show'),reduceMotion?0:300);
+    /* Bio + sections du bas révélées au scroll (IntersectionObserver) */
+    revealOnScroll(['#bio']);
+  }
+  function revealOnScroll(selectors){
+    const els=selectors.flatMap(s=>Array.from(document.querySelectorAll(s)));
+    if(!('IntersectionObserver' in window)){els.forEach(el=>el.classList.add('show'));return;}
+    const io=new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');io.unobserve(e.target);}});
+    },{rootMargin:'0px 0px -10% 0px',threshold:.05});
+    els.forEach(el=>io.observe(el));
   }
   function enterSite(){
     if(loader.classList.contains('gone'))return;
@@ -678,77 +655,39 @@ body{padding-bottom:84px;}
   background:radial-gradient(circle,rgba(216,192,116,.5),rgba(216,192,116,0) 70%);}
 @media(prefers-reduced-motion:reduce){.lc-social a{animation:none;}.lc-eq i{animation:none!important;}}
 
-/* ===== BIOGRAPHIE — bouton flottant + modal ===== */
-.bio-fab{margin:6px auto 0;display:inline-flex;align-items:center;gap:10px;
-  padding:11px 22px 11px 20px;border-radius:34px;border:0;cursor:pointer;
-  font-family:'Cormorant Garamond',serif;font-size:14.5px;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--noir);font-weight:500;
-  background:var(--gold-grad);
-  box-shadow:0 14px 36px -16px rgba(201,168,76,.6),0 0 0 1px rgba(201,168,76,.4),
-    0 0 30px -10px rgba(236,217,164,.35);
-  opacity:0;transform:translateY(8px);
-  transition:opacity .8s var(--ease),transform .55s var(--ease),
-    box-shadow .35s,filter .35s;
-  position:relative;}
-.bio-fab.show{opacity:1;transform:translateY(0);animation:bioFloat 4.8s ease-in-out 1.2s infinite;}
-.bio-fab .bio-fab-icon{font-size:1.05rem;line-height:1;color:var(--noir);}
-.bio-fab .bio-fab-txt{font-weight:500;}
-.bio-fab:hover{transform:translateY(-4px) scale(1.03);
-  box-shadow:0 22px 46px -16px rgba(236,217,164,.75),0 0 0 1px rgba(236,217,164,.65),
-    0 0 50px -8px rgba(236,217,164,.55);filter:brightness(1.06);}
-.bio-fab:active{transform:translateY(-1px) scale(1);}
-@keyframes bioFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
-@media(prefers-reduced-motion:reduce){.bio-fab.show{animation:none;}}
-@media(max-width:560px){
-  .bio-fab{padding:10px 18px;font-size:12.5px;letter-spacing:.1em;}
-}
-
-.bio-modal{position:fixed;inset:0;z-index:1500;display:flex;align-items:center;justify-content:center;
-  padding:22px;opacity:0;transition:opacity .35s var(--ease);}
-.bio-modal[hidden]{display:none;}
-.bio-modal.open{opacity:1;}
-.bio-scrim{position:absolute;inset:0;background:rgba(0,0,0,.74);
-  -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);cursor:pointer;}
-.bio-card{position:relative;max-width:640px;width:100%;max-height:88vh;overflow-y:auto;
+/* ===== BIOGRAPHIE — section visible sous les univers ===== */
+.hub-bio{width:100%;max-width:760px;margin:64px auto 40px;
+  padding:42px 38px 34px;border-radius:18px;
   background:linear-gradient(168deg,#1a1612 0%,#0a0908 100%);
-  border:1px solid rgba(201,168,76,.32);border-radius:18px;
-  padding:42px 38px 34px;
-  box-shadow:0 40px 80px -20px rgba(0,0,0,.85),
-    0 0 0 1px rgba(201,168,76,.1) inset,
-    0 0 100px -30px rgba(201,168,76,.4);
-  transform:translateY(20px) scale(.97);
-  transition:transform .5s var(--ease);}
-.bio-modal.open .bio-card{transform:translateY(0) scale(1);}
-.bio-card::before{content:'';position:absolute;inset:0;border-radius:18px;pointer-events:none;
-  background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(236,217,164,.13),transparent 60%);}
-.bio-close{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;color:var(--or-clair);
-  border:1px solid rgba(201,168,76,.28);background:rgba(10,10,10,.6);cursor:pointer;
-  transition:all .3s var(--ease);z-index:2;}
-.bio-close:hover{color:var(--creme);border-color:var(--or);background:rgba(201,168,76,.16);
-  transform:rotate(90deg);}
-.bio-close svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;
-  stroke-linecap:round;}
+  border:1px solid rgba(201,168,76,.32);
+  box-shadow:0 40px 80px -20px rgba(0,0,0,.6),
+    0 0 0 1px rgba(201,168,76,.08) inset,
+    0 0 100px -40px rgba(201,168,76,.32);
+  position:relative;overflow:hidden;
+  opacity:0;transform:translateY(20px);
+  transition:opacity .9s var(--ease),transform .9s var(--ease);}
+.hub-bio.show{opacity:1;transform:none;}
+.hub-bio::before{content:'';position:absolute;inset:0;border-radius:18px;pointer-events:none;
+  background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(236,217,164,.11),transparent 60%);}
+.hub-bio-inner{position:relative;z-index:1;}
 .bio-eyebrow{font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--or);
-  text-align:center;position:relative;z-index:1;}
+  text-align:center;}
 .bio-name{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:2.2rem;
-  color:var(--creme);text-align:center;margin-top:6px;letter-spacing:.02em;
-  position:relative;z-index:1;}
-.bio-flourish{display:flex;justify-content:center;margin:16px 0 24px;position:relative;z-index:1;}
+  color:var(--creme);text-align:center;margin-top:6px;letter-spacing:.02em;}
+.bio-flourish{display:flex;justify-content:center;margin:16px 0 24px;}
 .bio-flourish span{position:relative;width:90px;height:1px;
   background:linear-gradient(90deg,transparent,var(--or),transparent);}
 .bio-flourish span::after{content:'✦';position:absolute;left:50%;top:-10px;
   transform:translateX(-50%);font-size:13px;color:var(--or);
   text-shadow:0 0 8px rgba(201,168,76,.5);}
-.bio-body{position:relative;z-index:1;}
 .bio-body p{font-size:.97rem;line-height:1.78;color:var(--texte);
   margin-bottom:15px;text-align:justify;hyphens:auto;}
 .bio-body p:last-child{margin-bottom:0;}
 .bio-body b{color:var(--or-clair);font-weight:500;}
 .bio-sign{margin-top:24px;font-family:'Cormorant Garamond',serif;font-style:italic;
-  font-size:.95rem;color:var(--or);text-align:center;letter-spacing:.05em;position:relative;z-index:1;}
+  font-size:.95rem;color:var(--or);text-align:center;letter-spacing:.05em;}
 @media(max-width:560px){
-  .bio-card{padding:34px 22px 28px;border-radius:16px;}
+  .hub-bio{padding:34px 22px 28px;border-radius:16px;margin:48px auto 32px;}
   .bio-name{font-size:1.7rem;}
   .bio-body p{font-size:.9rem;line-height:1.72;text-align:left;}
   .bio-flourish{margin:12px 0 20px;}
