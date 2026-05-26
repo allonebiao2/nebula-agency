@@ -61,10 +61,12 @@ Design clinique distinct. Soins groupés Visage / Corps / Capillaires / Soin com
 ### Cozy — 6 produits
 Design rose poudré sensuel. Filtres par catégorie (Intime / Corps / Bien-être).
 Panier multi-produits. Avertissement spécifique sur la Maca Cream (résultats progressifs).
-6 produits complets — dont **Le Boost Fermeté** (Booster Drink Sublimes, 15 000 F / 150g)
-et **Baume Pailleté Nuit Scintillante** (9 000 F), tous deux validés le 2026-05-24.
-La **Crème Corps Parfumée Night Kiss** a été migrée vers INA Luxury (rebrand officiel
-« INA LUXURY BODY BUTTER baiser nocturne »).
+7 produits complets — dont **Le Boost Fermeté** (Booster Drink Sublimes, 15 000 F / 150g),
+**Baume Pailleté Nuit Scintillante** (9 000 F), tous deux validés le 2026-05-24, et
+**Body Butter Baiser Nocturne** (7 000 F / 100ml) — initialement migré vers INA Luxury
+le 2026-05-24, **ré-intégré dans Cozy le 2026-05-26** sur décision Gloria (le produit
+appartient à la marque Cozy, l'étiquette « INA LUXURY BODY BUTTER » sur le pot est un
+ancien packaging).
 Photos produits réelles intégrées en base64 (6/6), normalisées au même canvas que
 INA Luxury (**600×800, 3:4, fond blanc, JPEG q78**).
 
@@ -129,15 +131,13 @@ INA Luxury (**600×800, 3:4, fond blanc, JPEG q78**).
   règlement clinique, questionnaire Consultation Peau, questionnaire Diagnostic
   Capillaire, 8 étapes du Soin Glass Skin. → à valider avec Gloria.
 - Réseaux sociaux (Instagram / TikTok).
-- **14 nouveaux produits à compléter** (prix/desc « à définir ») :
-  - INA Luxury — Visage : Rose Purifiant Sérum (ajout 2026-05-26, gamme Skin —
-    routine Acné)
-  - INA Luxury — Capillaires : Shampoing Sensicare · Après-Shampoing Sensicare ·
-    Masque Fortifiant K10 · Sérum Anagen · Sérum Hydratant · Huile Soin 2-en-1
-  - INA Luxury — Corps : Kojic Beauty Bar\* · Milk Beauty Bar\* · Crème au Lait de
-    Chèvre · Beurre Clarté · Huile à la Rose
-  - Cozy : Baume Pailleté (Nuit Scintillante) · Le Boost Fermeté
-  - \* = sans photo (placeholder en attendant).
+- **Nouveaux produits à compléter** (prix/desc « à définir ») — Rose Purifiant Sérum
+  (visage/sérums, gamme Skin, ajout 2026-05-26) · Crème Pré-Nettoyante (visage/crèmes,
+  Luxury) · Rose Solution Micellaire (visage/gel-nettoyants, Skin) · les 6 produits
+  capillaires INA Luxury en rupture · Kojic & Milk Beauty Bars (corps, sans photo).
+- ✅ **Concentré Fruité** complété le 2026-05-26 : 15 000 F · 100 ml · catégorie
+  corrigée `huile-corps` → `gommage` · description complète Acide Lactique 5% +
+  Willow Bark · photo intégrée (`assets/images/ina-luxury/corps/gommage/concentre-fruite.jpg`).
 - Image `CONSULTATION PEAU` classée dans `assets/images/clinic/` — non intégrée :
   les fiches soin de la clinique ont désormais une bannière visuelle SVG (voir ci-dessous),
   mais pas d'emplacement photo réelle. Décision à prendre si on veut y mettre des photos.
@@ -273,6 +273,26 @@ code (objet `SVC_ART`). Voie B (vraies photos via `_inbox/`) reste possible plus
   - **Instagram unifié** : 7 occurrences (4 barres flottantes + 3 modales
     de remerciement) basculées de `@inaluxury` vers le compte cross-marque
     `@luxuryclub229`. Aria-labels mis à jour. TikTok inchangé.
+- 2026-05-26 (suite) — **Réorganisation catalogue corps + Concentré Fruité complété**.
+  - **Body Butter Baiser Nocturne ré-intégré dans Cozy** : décision inverse du
+    2026-05-24 (Gloria : « le produit appartient à Cozy, pas à INA Luxury »).
+    Retiré de `ina-luxury.html` (PRODUCTS + IMG map). Ajouté dans `cozy.html`
+    (`cat:'selfcare'`, 7 000 F / 100ml, fiche complète conservée). Image déplacée
+    `ina-luxury/corps/creme-corps/body-butter-baiser-nocturne.jpg` →
+    `cozy/corps/body-butter-baiser-nocturne.jpg`. Ancienne image obsolète
+    `cozy/corps/creme-corps-parfumee.jpg` supprimée. Cohérence : hub `index.html`
+    et clinique `luxury-skin-clinic.html` mis à jour
+    (« Crème Corps Night Kiss » → « Body Butter Baiser Nocturne » dans le panneau
+    Cozy SELFCARE).
+  - **Concentré Fruité enrichi et reclassé** : sous-catégorie corrigée
+    `huile-corps` → `gommage` (placement réel selon Gloria). Fiche complète
+    fournie par Gloria : 15 000 F / 100 ml, description Acide Lactique 5% +
+    Willow Bark Extract, résultats par phase (2-4 sem · 6-8 sem · 2-3 mois),
+    conseils d'utilisation 1×/semaine, INCI complète. Photo PNG depuis
+    `_inbox/` traitée via `scripts/og-defringe.ps1` → 600×800 JPEG q78
+    (17 KB) dans `assets/images/ina-luxury/corps/gommage/`. PNG source
+    archivé dans `_inbox/_processed/`. Le produit reste dans la routine
+    Body Pack Luxury (`items:['Beurre Clarté','Huile Éclat Suprême','Concentré Fruité']`).
 
 ## Paiement en ligne — FedaPay (en préparation)
 
