@@ -608,7 +608,7 @@ footer{position:relative;z-index:5;border-top:1px solid rgba(201,168,76,.14);
     <div id="subcatRow"></div>
     <div class="routine-block" id="routineBlock" hidden>
       <div class="routine-lbl">Routine préétablie</div>
-      <div class="routine-intro" id="routineIntro">Choisissez une routine clé en main. <b>Luxury</b> (gamme médicale) en premier, <b>Skin</b> (semi-médicale, plus abordable) en dessous.</div>
+      <div class="routine-intro" id="routineIntro">Deux gammes disponibles : <b>Luxury</b> (gamme médicale) et <b>Skin</b> (gamme semi-médicale). La différence se situe au niveau de la concentration des actifs. Choisissez selon vos besoins et votre budget.</div>
       <div class="routine-chips" id="routineChips"></div>
     </div>
     <div id="famCardsWrap"></div>
@@ -864,6 +864,10 @@ const PRODUCTS=[
    d:"Sérum correcteur anti-imperfections, anti-marques & éclat.",
    det:`<div class="det-h">Description</div><p class="det-p"><b>Sérum correcteur anti-imperfections, anti-marques & éclat</b></p><p class="det-p">Le Serum Azelaic est un soin concentré conçu pour les peaux sujettes aux imperfections, aux taches post-acné et au teint irrégulier. Sa formule multi-actions aide à améliorer visiblement l'apparence de la peau tout en maintenant son confort et son hydratation.</p><p class="det-p">Au cœur de la formule, l'acide azélaïque aide à réduire l'apparence des imperfections, des rougeurs et des irrégularités pigmentaires tout en favorisant un teint plus uniforme.<br>La niacinamide et le zinc PCA contribuent à équilibrer l'excès de sébum et à améliorer l'apparence des pores et des brillances.<br>L'alpha-arbutine et l'extrait de réglisse aident à atténuer progressivement les taches et marques post-imperfections.<br>Le N-Acetyl Glucosamine complète l'action éclaircissante et améliore visiblement la texture de la peau.</p><p class="det-p"><b>Pour préserver le confort cutané, la formule contient également :</b></p><ul class="det-ul"><li>du panthénol</li><li>de l'allantoïne</li><li>du Sodium PCA</li><li>de la glycérine</li></ul><p class="det-p">Ces actifs hydratants et apaisants aident à limiter les sensations d'inconfort et de sécheresse souvent associées aux soins correcteurs intensifs.</p><div class="det-h">Résultats attendus ✨</div><p class="det-phase"><b>Après 2 à 4 semaines</b></p><ul class="det-ul"><li>Peau plus équilibrée</li><li>Réduction progressive des brillances</li><li>Apparence des imperfections améliorée</li></ul><p class="det-phase"><b>Après 1 à 2 mois</b></p><ul class="det-ul"><li>Taches et marques post-acné visiblement atténuées</li><li>Teint plus uniforme et lumineux</li><li>Texture de peau plus régulière</li></ul><p class="det-phase"><b>Après 2 à 3 mois d'utilisation régulière</b></p><ul class="det-ul"><li>Peau visiblement plus nette et plus saine</li><li>Réduction des imperfections récurrentes</li><li>Éclat global amélioré</li></ul><p class="det-p" style="font-style:italic;opacity:.75">(Les résultats peuvent varier selon le type de peau, la profondeur des marques et la régularité d'utilisation.)</p><div class="det-h">Caractéristiques du produit 💛</div><ul class="det-ul"><li>Sérum multi-actions anti-imperfections</li><li>Contient acide azélaïque</li><li>Aide à uniformiser le teint</li><li>Cible les taches et marques post-acné</li><li>Hydrate et apaise la peau</li><li>Texture légère et rapidement absorbée</li><li>Convient aux peaux mixtes, grasses et sujettes aux imperfections</li></ul><div class="det-h">Conseils d'utilisation 🫧</div><p class="det-p">Appliquer quelques gouttes sur peau propre et sèche, de préférence le soir.</p><p class="det-p"><b>Commencer par :</b></p><ul class="det-ul"><li>2 à 3 applications par semaine</li><li>puis augmenter progressivement selon la tolérance de la peau</li></ul><p class="det-p">Appliquer ensuite une crème hydratante.</p><p class="det-p">Le matin, utiliser une protection solaire quotidienne.</p><p class="det-warn">⚠️ Éviter l'association le même soir avec des exfoliants puissants si la peau est sensible.<br>⚠️ Éviter le contour des yeux et les zones irritées.</p>`,
    inci:"Aqua (Water), Azelaic Acid, Glycerin, Propylene Glycol, Niacinamide, Dimethyl Isosorbide, Alpha-Arbutin, N-Acetyl Glucosamine, Glycyrrhiza Glabra (Licorice) Root Extract, Panthenol, Sodium PCA, Zinc PCA, Allantoin, Xanthan Gum, Disodium EDTA, Parfum (Fragrance), Diazolidinyl Urea, Iodopropynyl Butylcarbamate."},
+  {f:'visage',s:'serums',n:'Rose Purifiant Sérum',p:null,todo:1,isnew:1,
+   c:['acne','grasses'],
+   d:"Sérum purifiant anti-imperfections — gamme Skin (semi-médicale).",
+   det:`<div class="det-h">Description provisoire</div><p class="det-p">Sérum purifiant de la gamme SKIN (semi-médicale), conçu pour aider à réduire les imperfections, équilibrer la peau et favoriser un teint plus net au quotidien. Texture légère, application matin et/ou soir.</p><div class="det-h">Conseils d'utilisation</div><p class="det-p">Appliquer quelques gouttes sur peau propre et sèche, avant la Crème Acné Control. Toujours utiliser une protection solaire le matin.</p><p class="det-p" style="font-style:italic;opacity:.75">📝 Descriptif provisoire — à valider avec Gloria avant publication officielle. Prix, taille et photo à définir.</p>`},
   // ===== VISAGE — CRÈMES =====
   {f:'visage',s:'cremes',n:'Crème Pré-Nettoyante',p:null,todo:1,isnew:1,
    c:['secheresse','sensibles','nettoyage-doux'],
@@ -1030,15 +1034,15 @@ const ROUTINES={
      tiers:[
        {kind:'luxury',label:'Luxury',sub:'Gamme médicale',
         items:['Nettoyant Ice','Sérum Ice','Crème Ice','Crème Pré-Nettoyante']},
-       {kind:'skin',label:'Skin',sub:'Gamme semi-médicale · plus abordable',
+       {kind:'skin',label:'Skin',sub:'Gamme semi-médicale',
         items:['Rose Solution Micellaire','Gel Lavant Skin','Rose Hydra Serum','Rose Hydra Crème']},
      ]},
     {key:'acne',label:'Acné',desc:"Imperfections et peaux à problèmes — purifie, apaise et matifie.",
      tiers:[
        {kind:'luxury',label:'Luxury',sub:'Gamme médicale',
         items:['Glass Skin Crème','Glass Skin Boost Crème']},
-       {kind:'skin',label:'Skin',sub:'Gamme semi-médicale · plus abordable',
-        items:['Serum Azelaic','Reti Rose Crème']},
+       {kind:'skin',label:'Skin',sub:'Gamme semi-médicale',
+        items:['Rose Purifiant Sérum','Acné Control Crème']},
      ]},
     {key:'eclat',label:'Éclat / Pigmentation',desc:"Taches, teint terne, irrégularités — pour un teint unifié et lumineux.",
      tiers:[
@@ -1046,7 +1050,7 @@ const ROUTINES={
         items:['Glass Skin Crème','Glass Skin Boost Crème']},
        {kind:'luxury',label:'Luxury — Éclat',sub:'Gamme médicale',
         items:['Sérum Glass Skin','Glass Skin Boost Crème']},
-       {kind:'skin',label:'Skin',sub:'Gamme semi-médicale · plus abordable',
+       {kind:'skin',label:'Skin',sub:'Gamme semi-médicale',
         items:['Serum Azelaic','Reti Rose Crème']},
      ]},
     {key:'booster',label:'Boosters',desc:"Pour les clients ayant utilisé les routines de base ~3 mois et qui veulent intensifier leurs résultats.",
@@ -1061,9 +1065,9 @@ const ROUTINES={
        {kind:'luxury',label:'Body Pack Luxury',sub:'Gamme médicale',
         items:['Beurre Clarté','Huile Éclat Suprême','Concentré Fruité']},
      ]},
-    {key:'body-skin',label:'Body Pack Skin',desc:"Pack corps quotidien — doux, efficace, plus abordable.",
+    {key:'body-skin',label:'Body Pack Skin',desc:"Pack corps quotidien — gamme semi-médicale, doux et efficace.",
      tiers:[
-       {kind:'skin',label:'Body Pack Skin',sub:'Gamme semi-médicale · plus abordable',
+       {kind:'skin',label:'Body Pack Skin',sub:'Gamme semi-médicale',
         items:['Crème au Lait de Chèvre','Huile à la Rose','Bonbon Scrub']},
      ]},
     {key:'savons',label:'Savons',desc:"Sélection de savons soin pour le corps — nettoient en douceur et subliment la peau au quotidien.",
@@ -1314,8 +1318,8 @@ function renderRoutines(){
   if(!state.family||!list.length||state.routine){routineBlock.hidden=true;return;}
   routineBlock.hidden=false;
   const intro=state.family==='corps'
-    ?'Trois packs corps clés en main : <b>Body Pack Luxury</b> (gamme médicale), <b>Body Pack Skin</b> (semi-médicale, plus abordable) et <b>Savons</b> (Beauty Bars soin).'
-    :'Choisissez une routine clé en main. <b>Luxury</b> (gamme médicale) en premier, <b>Skin</b> (semi-médicale, plus abordable) en dessous.';
+    ?'Trois packs corps : <b>Body Pack Luxury</b> (gamme médicale), <b>Body Pack Skin</b> (gamme semi-médicale) et <b>Savons</b> (Beauty Bars). La différence Luxury / Skin se situe au niveau de la concentration des actifs.'
+    :'Deux gammes disponibles : <b>Luxury</b> (gamme médicale) et <b>Skin</b> (gamme semi-médicale). La différence se situe au niveau de la concentration des actifs. Choisissez selon vos besoins et votre budget.';
   routineIntro.innerHTML=intro;
   routineChips.innerHTML='';
   list.forEach(r=>{
@@ -1981,7 +1985,7 @@ body{padding-bottom:84px;}
   <a class="wa" href="https://wa.me/2290167975626" target="_blank" rel="noopener" data-net="WhatsApp" aria-label="Contacter sur WhatsApp">
     <svg viewBox="0 0 24 24"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5zM6.7 19.6l.4.2a9.5 9.5 0 0 0 4.9 1.3 9.5 9.5 0 1 0-8-4.4l.2.4-1 3.4 3.5-.9zM17.5 13.9c-.1-.2-.5-.3-1-.6s-1.4-.7-1.6-.8-.4-.1-.5.1l-.8 1c-.2.2-.3.2-.5.1a7.7 7.7 0 0 1-2.3-1.4 8.5 8.5 0 0 1-1.6-2c-.1-.3 0-.4.1-.5l.4-.5.3-.4a.4.4 0 0 0 0-.5l-.9-2c-.2-.5-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4 5.3 5.3 0 0 0 3.2.8 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3z"/></svg>
   </a>
-  <a class="ig" href="https://www.instagram.com/inaluxury?igsh=MzFjcjcyaDhuMGxy&amp;utm_source=qr" target="_blank" rel="noopener" data-net="Instagram" aria-label="Instagram INA Luxury">
+  <a class="ig" href="https://www.instagram.com/luxuryclub229?igsh=N2RzdzBxZzFnYXN3&amp;utm_source=qr" target="_blank" rel="noopener" data-net="Instagram" aria-label="Instagram Luxury Club 229">
     <svg viewBox="0 0 24 24" fill-rule="evenodd"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.4a4.6 4.6 0 1 1 0 9.2 4.6 4.6 0 0 1 0-9.2zm0 2a2.6 2.6 0 1 0 0 5.2 2.6 2.6 0 0 0 0-5.2zm4.9-3.1a1.15 1.15 0 1 1 0 2.3 1.15 1.15 0 0 1 0-2.3z"/></svg>
   </a>
   <a class="tt" href="https://www.tiktok.com/@inaluxury?_r=1&amp;_t=ZS-96Sy5pGjxRc" target="_blank" rel="noopener" data-net="TikTok" aria-label="TikTok INA Luxury">
@@ -2229,7 +2233,7 @@ if(mute){
           <a href="https://wa.me/2290167975626" target="_blank" rel="noopener" aria-label="WhatsApp">
             <svg viewBox="0 0 24 24"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5zM6.7 19.6l.4.2a9.5 9.5 0 0 0 4.9 1.3 9.5 9.5 0 1 0-8-4.4l.2.4-1 3.4 3.5-.9zM17.5 13.9c-.1-.2-.5-.3-1-.6s-1.4-.7-1.6-.8-.4-.1-.5.1l-.8 1c-.2.2-.3.2-.5.1a7.7 7.7 0 0 1-2.3-1.4 8.5 8.5 0 0 1-1.6-2c-.1-.3 0-.4.1-.5l.4-.5.3-.4a.4.4 0 0 0 0-.5l-.9-2c-.2-.5-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4 5.3 5.3 0 0 0 3.2.8 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3z"/></svg>
           </a>
-          <a href="https://www.instagram.com/inaluxury" target="_blank" rel="noopener" aria-label="Instagram">
+          <a href="https://www.instagram.com/luxuryclub229?igsh=N2RzdzBxZzFnYXN3&amp;utm_source=qr" target="_blank" rel="noopener" aria-label="Instagram">
             <svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.25.07 1.62.07 4.78s0 3.53-.07 4.78c-.05 1.17-.25 1.8-.41 2.23a3.7 3.7 0 0 1-.9 1.38c-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.25.06-1.62.07-4.78.07s-3.53 0-4.78-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9c-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23C2.2 15.55 2.2 15.18 2.2 12s0-3.53.07-4.78c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41 1.25-.06 1.62-.07 4.78-.07Zm0 2.16c-3.1 0-3.45 0-4.66.07-1.05.05-1.62.24-2 .4-.5.18-.86.42-1.24.8-.38.38-.62.74-.8 1.24-.16.38-.35.95-.4 2-.07 1.2-.07 1.56-.07 4.66s0 3.46.07 4.66c.05 1.05.24 1.62.4 2 .18.5.42.86.8 1.24.38.38.74.62 1.24.8.38.16.95.35 2 .4 1.2.07 1.56.07 4.66.07s3.46 0 4.66-.07c1.05-.05 1.62-.24 2-.4.5-.18.86-.42 1.24-.8.38-.38.62-.74.8-1.24.16-.38.35-.95.4-2 .07-1.2.07-1.56.07-4.66s0-3.46-.07-4.66c-.05-1.05-.24-1.62-.4-2-.18-.5-.42-.86-.8-1.24-.38-.38-.74-.62-1.24-.8-.38-.16-.95-.35-2-.4-1.2-.07-1.56-.07-4.66-.07Zm0 3.7a3.94 3.94 0 1 1 0 7.88 3.94 3.94 0 0 1 0-7.88Zm0 6.5a2.56 2.56 0 1 0 0-5.12 2.56 2.56 0 0 0 0 5.12Zm5.02-6.65a.92.92 0 1 1-1.84 0 .92.92 0 0 1 1.84 0Z"/></svg>
           </a>
           <a href="https://www.tiktok.com/@inaluxury" target="_blank" rel="noopener" aria-label="TikTok">

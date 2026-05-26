@@ -113,7 +113,8 @@ INA Luxury (**600×800, 3:4, fond blanc, JPEG q78**).
   chacune) dans `assets/images/og-*.jpg` — 2026-05-25
 - [x] Allègement HTML (extraction base64 → fichiers + lazy loading) :
   2547 KB → 548 KB cumulé sur les 4 pages (−78 %) — 2026-05-25
-- [ ] Liens Instagram / TikTok réels
+- [x] Lien Instagram réel intégré sur les 4 pages (`@luxuryclub229`, cross-marque)
+- [ ] Lien TikTok réel à confirmer (actuellement `@inaluxury`)
 - [ ] Validation des 4 contenus rédigés par défaut (voir ci-dessous)
 - [ ] Compléter les 10 fiches « nouveaux produits » restantes (prix, description, INCI) —
   inclut les 3 produits cités dans les briefs routines (Crème Pré-Nettoyante,
@@ -128,7 +129,9 @@ INA Luxury (**600×800, 3:4, fond blanc, JPEG q78**).
   règlement clinique, questionnaire Consultation Peau, questionnaire Diagnostic
   Capillaire, 8 étapes du Soin Glass Skin. → à valider avec Gloria.
 - Réseaux sociaux (Instagram / TikTok).
-- **13 nouveaux produits à compléter** (prix/desc « à définir ») :
+- **14 nouveaux produits à compléter** (prix/desc « à définir ») :
+  - INA Luxury — Visage : Rose Purifiant Sérum (ajout 2026-05-26, gamme Skin —
+    routine Acné)
   - INA Luxury — Capillaires : Shampoing Sensicare · Après-Shampoing Sensicare ·
     Masque Fortifiant K10 · Sérum Anagen · Sérum Hydratant · Huile Soin 2-en-1
   - INA Luxury — Corps : Kojic Beauty Bar\* · Milk Beauty Bar\* · Crème au Lait de
@@ -238,6 +241,38 @@ code (objet `SVC_ART`). Voie B (vraies photos via `_inbox/`) reste possible plus
     `ina-luxury/corps/creme-corps/body-butter-baiser-nocturne.jpg`.
   - **Scripts versionnés** dans `/scripts/` (og-audit, og-allegement,
     og-smoke) — réutilisables pour les vitrines des autres clients.
+- 2026-05-26 — **4 ajustements demandés par Gloria** sur la vitrine.
+  - **Disponibilité Mme Sabrina** restreinte à mercredi/samedi « pour le
+    moment » : bandeau RDV haut de page, ligne RDV sous chaque fiche soin
+    (9 soins), point 1 du règlement clinique, et messages WhatsApp
+    (VIP + standard) adaptés. Récap modal aussi (« Mercredi ou samedi — à
+    confirmer avec la clinique »). 5 occurrences groupées, prêtes à élargir
+    le jour où Sabrina aura plus de jours dispos.
+  - **Confirmation de réservation enrichie** : après validation d'une
+    *prestation*, le modal de remerciement affiche une carte adresse luxe
+    doré (Akpakpa Suru Lere — Von en face poissonnerie Saint-Paul, 2ᵉ rue
+    à droite, 1ʳᵉ maison à étage carrelée marron, 1ᵉʳ étage porte à gauche)
+    avec 2 CTA dorés : `tel:+22967975626` (Appeler · 67 97 56 26) et
+    Google Maps (recherche « Luxury Skin Clinic Cotonou »). Affichage
+    conditionnel via `opts.thanks={text,address}` sur `lcConfirmOrder` —
+    pas affichée pour les questionnaires diagnostic (à distance).
+    Constantes centralisées : `LC_BOOK_THANKS` (texte typewriter) + bloc
+    HTML statique de la carte (1 endroit à éditer).
+  - **INA Luxury — Routines simplifiées** (Gloria : « le français là est
+    déjà compliqué pour eux ») : intro raccourcie selon ses mots exacts —
+    « Deux gammes disponibles : Luxury (gamme médicale) et Skin (gamme
+    semi-médicale). La différence se situe au niveau de la concentration
+    des actifs. Choisissez selon vos besoins et votre budget. ».
+    Sous-titres des tiers Skin allégés (« plus abordable » retiré, 4 occ.).
+    Adapté pour Visage et Corps.
+  - **Correction Routine Acné — tier Skin** : remplacement de Serum Azelaic
+    + Reti Rose Crème par **Rose Purifiant Sérum + Acné Control Crème**
+    (correction d'erreur Gloria). Rose Purifiant Sérum ajouté comme nouveau
+    produit Visage/Sérums marqué `todo:1, isnew:1` — prix, taille, photo,
+    description complète à valider (placeholder pro fourni en attendant).
+  - **Instagram unifié** : 7 occurrences (4 barres flottantes + 3 modales
+    de remerciement) basculées de `@inaluxury` vers le compte cross-marque
+    `@luxuryclub229`. Aria-labels mis à jour. TikTok inchangé.
 
 ## Paiement en ligne — FedaPay (en préparation)
 

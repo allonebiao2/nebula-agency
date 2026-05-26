@@ -462,8 +462,9 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
   <div class="rdv-banner reveal">
     <div class="rdv-banner-in">
       <svg viewBox="0 0 24 24"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
-      <p><b>Règle de rendez-vous —</b> Les rendez-vous se prennent <b>24h minimum à l'avance</b>.
-        Aucun rendez-vous le jour même. Un acompte de 5 000 FCFA valide votre réservation.</p>
+      <p><b>Règle de rendez-vous —</b> Mme Sabrina reçoit actuellement
+        <b>le mercredi et le samedi</b>. Les rendez-vous se prennent <b>24h minimum à l'avance</b>,
+        aucun rendez-vous le jour même. Un acompte de 5 000 FCFA valide votre réservation.</p>
     </div>
   </div>
 
@@ -539,7 +540,8 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
       <div class="regl-list">
         <div class="regl-item"><div class="regl-num">1</div><div>
           <b>📅 Réservation & paiement</b>
-          <p>• Toute prestation nécessite une réservation obligatoire à l'avance.<br>
+          <p>• Mme Sabrina reçoit actuellement <b>le mercredi et le samedi</b> uniquement.<br>
+          • Toute prestation nécessite une réservation obligatoire à l'avance.<br>
           • Un acompte de 5 000 FCFA est requis pour valider votre rendez-vous.<br>
           • Le paiement de l'acompte se fait directement via notre site internet (website).<br>
           ⚠️ Sans validation de paiement, le rendez-vous n'est pas confirmé.</p></div></div>
@@ -633,6 +635,7 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
 'use strict';
 const WA='2290167975626';
 const BRAND_LINE='━ Soins Luxury Skin Clinic ━';
+const LC_BOOK_THANKS=`Merci pour votre réservation ✨\n\nVotre demande a bien été transmise à Mme Sabrina. Elle vous recontacte sous 24h pour confirmer votre créneau.\n\nNous vous attendons à la clinique 🌿`;
 const reduceMotion=matchMedia('(prefers-reduced-motion:reduce)').matches;
 const fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
 function waLink(m){return `https://wa.me/${WA}?text=${encodeURIComponent(m)}`;}
@@ -965,7 +968,7 @@ function svcCard(s,idx){
   }
   if(s.post)proto+=`<div class="proto-h">Après le soin</div><p class="proto-p">${s.post}</p>`;
   const rdv=(s.kind==='book')?`<div class="svc-rdv"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
-    <span>Les rendez-vous se font 24h minimum à l'avance. Aucun rendez-vous le même jour.</span></div>`:'';
+    <span>Mme Sabrina reçoit le mercredi et le samedi. Rendez-vous 24h minimum à l'avance.</span></div>`:'';
   const warn=s.warn?`<div class="svc-warn"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span>${s.warn}</span></div>`:'';
   let btn;
   if(s.kind==='form-skin')btn=`<button class="svc-book ghost" data-form="skin"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Remplir le questionnaire</button>`;
@@ -1135,7 +1138,7 @@ ${BRAND_LINE}
 Je souhaite réserver le *SOIN COMPLET VIP* ⭐
 ${tarifLine}${durationLine}
 
-📅 Date souhaitée : à définir ensemble
+📅 Jour souhaité : mercredi ou samedi (à confirmer ensemble)
 ⏰ Rappel : RDV 24h minimum à l'avance
 ✅ J'ai lu et accepté le règlement de la clinique.
 
@@ -1150,7 +1153,7 @@ Je souhaite réserver :
 ${e} *${s.n}*
 ${tarifLine}
 
-📅 Date souhaitée : à définir ensemble
+📅 Jour souhaité : mercredi ou samedi (à confirmer ensemble)
 ⏰ Rappel : RDV 24h minimum à l'avance
 ✅ J'ai lu et accepté le règlement de la clinique.
 
@@ -1159,13 +1162,14 @@ Merci de me contacter pour confirmer mon créneau 🙏
 Réf : ${genRef()}  ·  ${nowFr()}`;
   const tarifTxt=(s.p>0)?fmt(s.p)+' FCFA':'Sur devis';
   const recapHtml=isVip
-    ?`<div class="lc-recap-line"><div class="nm">👑 <b>SOIN COMPLET VIP ⭐</b><small>Durée : 4 à 5 heures · Espace privatisé</small><small>Date à définir avec la clinique</small></div><div class="ln">${tarifTxt}</div></div>`
-    :`<div class="lc-recap-line"><div class="nm">${e} <b>${s.n}</b>${s.tier?'<small>'+s.tier+'</small>':''}<small>Date à définir avec la clinique</small></div><div class="ln">${tarifTxt}</div></div>`;
+    ?`<div class="lc-recap-line"><div class="nm">👑 <b>SOIN COMPLET VIP ⭐</b><small>Durée : 4 à 5 heures · Espace privatisé</small><small>Mercredi ou samedi — à confirmer avec la clinique</small></div><div class="ln">${tarifTxt}</div></div>`
+    :`<div class="lc-recap-line"><div class="nm">${e} <b>${s.n}</b>${s.tier?'<small>'+s.tier+'</small>':''}<small>Mercredi ou samedi — à confirmer avec la clinique</small></div><div class="ln">${tarifTxt}</div></div>`;
   window.lcConfirmOrder({
     title:'Votre réservation ✨',
     recap:recapHtml,
     q:'Confirmez-vous l\'envoi de votre demande de réservation ?',
     confirmLabel:'Confirmer la réservation →',
+    thanks:{text:LC_BOOK_THANKS,address:true},
     onConfirm:()=>{
       window.open(waLink(msg),'_blank');
       pendingBook=null;
@@ -1412,7 +1416,7 @@ body{padding-bottom:84px;}
   <a class="wa" href="https://wa.me/2290167975626" target="_blank" rel="noopener" data-net="WhatsApp" aria-label="Contacter sur WhatsApp">
     <svg viewBox="0 0 24 24"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5zM6.7 19.6l.4.2a9.5 9.5 0 0 0 4.9 1.3 9.5 9.5 0 1 0-8-4.4l.2.4-1 3.4 3.5-.9zM17.5 13.9c-.1-.2-.5-.3-1-.6s-1.4-.7-1.6-.8-.4-.1-.5.1l-.8 1c-.2.2-.3.2-.5.1a7.7 7.7 0 0 1-2.3-1.4 8.5 8.5 0 0 1-1.6-2c-.1-.3 0-.4.1-.5l.4-.5.3-.4a.4.4 0 0 0 0-.5l-.9-2c-.2-.5-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4 5.3 5.3 0 0 0 3.2.8 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3z"/></svg>
   </a>
-  <a class="ig" href="https://www.instagram.com/inaluxury?igsh=MzFjcjcyaDhuMGxy&amp;utm_source=qr" target="_blank" rel="noopener" data-net="Instagram" aria-label="Instagram INA Luxury">
+  <a class="ig" href="https://www.instagram.com/luxuryclub229?igsh=N2RzdzBxZzFnYXN3&amp;utm_source=qr" target="_blank" rel="noopener" data-net="Instagram" aria-label="Instagram Luxury Club 229">
     <svg viewBox="0 0 24 24" fill-rule="evenodd"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.4a4.6 4.6 0 1 1 0 9.2 4.6 4.6 0 0 1 0-9.2zm0 2a2.6 2.6 0 1 0 0 5.2 2.6 2.6 0 0 0 0-5.2zm4.9-3.1a1.15 1.15 0 1 1 0 2.3 1.15 1.15 0 0 1 0-2.3z"/></svg>
   </a>
   <a class="tt" href="https://www.tiktok.com/@inaluxury?_r=1&amp;_t=ZS-96Sy5pGjxRc" target="_blank" rel="noopener" data-net="TikTok" aria-label="TikTok INA Luxury">
@@ -1785,6 +1789,33 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&panel.class
 .lc-thanks-text .lc-caret{display:inline-block;width:2px;height:1em;background:#e3c074;
   vertical-align:-.18em;animation:lcCaret .9s steps(1) infinite;margin-left:2px;}
 @keyframes lcCaret{0%,49%{opacity:1;}50%,100%{opacity:0;}}
+.lc-thanks-address{margin-top:26px;background:rgba(13,11,8,.55);
+  border:1px solid rgba(201,168,76,.32);border-radius:14px;padding:20px 22px;text-align:left;
+  opacity:0;transform:translateY(14px);
+  transition:opacity .7s ease,transform .7s ease;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);}
+.lc-thanks-address.on{opacity:1;transform:translateY(0);}
+.lc-thanks-addr-tag{font-size:.62rem;letter-spacing:.32em;text-transform:uppercase;
+  color:#e3c074;margin-bottom:10px;font-weight:600;}
+.lc-thanks-addr-body{font-family:'Cormorant Garamond',serif;font-size:1.08rem;line-height:1.65;
+  color:#faf6ec;}
+.lc-thanks-addr-body sup{font-size:.62em;vertical-align:super;}
+.lc-thanks-addr-body b{color:#e3c074;font-weight:600;}
+.lc-thanks-addr-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+.lc-thanks-addr-btn{flex:1 1 auto;min-width:160px;display:inline-flex;align-items:center;
+  justify-content:center;gap:9px;padding:11px 16px;border-radius:10px;
+  background:linear-gradient(180deg,#c9a84c,#a98835);color:#1a1407;text-decoration:none;
+  font-size:.76rem;font-weight:600;letter-spacing:.05em;
+  transition:transform .25s ease,box-shadow .25s ease;
+  box-shadow:0 4px 14px rgba(201,168,76,.18);}
+.lc-thanks-addr-btn:hover{transform:translateY(-2px);
+  box-shadow:0 10px 24px rgba(201,168,76,.36);}
+.lc-thanks-addr-btn svg{width:16px;height:16px;flex-shrink:0;}
+@media(max-width:560px){
+  .lc-thanks-address{padding:16px 18px;margin-top:20px;}
+  .lc-thanks-addr-body{font-size:1rem;}
+  .lc-thanks-addr-btn{font-size:.7rem;padding:10px 14px;min-width:140px;}
+}
 .lc-thanks-actions{margin-top:30px;display:flex;flex-direction:column;gap:18px;align-items:center;
   opacity:0;animation:lcThanksFade .8s ease 2.4s forwards;}
 .lc-thanks-actions .lc-btn{max-width:280px;}
@@ -1825,13 +1856,31 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&panel.class
     <div class="lc-thanks-logo">LUXURY CLUB 229</div>
     <span class="lc-thanks-flourish"></span>
     <div class="lc-thanks-text" id="lcThanksText"></div>
+    <div class="lc-thanks-address" id="lcThanksAddress" hidden>
+      <div class="lc-thanks-addr-tag">📍 Notre adresse</div>
+      <div class="lc-thanks-addr-body">
+        Akpakpa Suru Lere — Von en face de la poissonnerie Saint-Paul.<br>
+        2<sup>e</sup> rue à droite, 1<sup>re</sup> maison à étage carrelée marron à votre droite.<br>
+        Nous sommes au <b>1<sup>er</sup> étage, porte à gauche</b>.
+      </div>
+      <div class="lc-thanks-addr-actions">
+        <a class="lc-thanks-addr-btn" href="tel:+22967975626">
+          <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span>Appeler · 67 97 56 26</span>
+        </a>
+        <a class="lc-thanks-addr-btn" href="https://www.google.com/maps/search/?api=1&amp;query=Luxury+Skin+Clinic+Cotonou" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>Ouvrir Google Maps</span>
+        </a>
+      </div>
+    </div>
     <div class="lc-thanks-actions">
       <button type="button" class="lc-btn primary" id="lcThanksClose">Retour à la clinique</button>
       <div>
         <div class="lc-thanks-social">Suivez-nous pour ne rien manquer</div>
         <div class="lc-thanks-social-row">
           <a href="https://wa.me/2290167975626" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24"><path d="M.5 23.5l1.6-6A11.4 11.4 0 1 1 12 23.4a11.3 11.3 0 0 1-5.5-1.4l-6 1.5zM6.7 19.6l.4.2a9.5 9.5 0 0 0 4.9 1.3 9.5 9.5 0 1 0-8-4.4l.2.4-1 3.4 3.5-.9z"/></svg></a>
-          <a href="https://www.instagram.com/inaluxury" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.25.07 1.62.07 4.78s0 3.53-.07 4.78c-.05 1.17-.25 1.8-.41 2.23a3.7 3.7 0 0 1-.9 1.38c-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.25.06-1.62.07-4.78.07s-3.53 0-4.78-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9c-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23C2.2 15.55 2.2 15.18 2.2 12s0-3.53.07-4.78c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41 1.25-.06 1.62-.07 4.78-.07Zm0 5.86a3.94 3.94 0 1 0 0 7.88 3.94 3.94 0 0 0 0-7.88Zm0 6.5a2.56 2.56 0 1 1 0-5.12 2.56 2.56 0 0 1 0 5.12Zm5.02-6.65a.92.92 0 1 0-1.84 0 .92.92 0 0 0 1.84 0Z"/></svg></a>
+          <a href="https://www.instagram.com/luxuryclub229?igsh=N2RzdzBxZzFnYXN3&amp;utm_source=qr" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.25.07 1.62.07 4.78s0 3.53-.07 4.78c-.05 1.17-.25 1.8-.41 2.23a3.7 3.7 0 0 1-.9 1.38c-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.25.06-1.62.07-4.78.07s-3.53 0-4.78-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9c-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23C2.2 15.55 2.2 15.18 2.2 12s0-3.53.07-4.78c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41 1.25-.06 1.62-.07 4.78-.07Zm0 5.86a3.94 3.94 0 1 0 0 7.88 3.94 3.94 0 0 0 0-7.88Zm0 6.5a2.56 2.56 0 1 1 0-5.12 2.56 2.56 0 0 1 0 5.12Zm5.02-6.65a.92.92 0 1 0-1.84 0 .92.92 0 0 0 1.84 0Z"/></svg></a>
           <a href="https://www.tiktok.com/@inaluxury" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24"><path d="M19.6 6.8a5.65 5.65 0 0 1-3.4-1.2 5.7 5.7 0 0 1-1.85-3H11.2v10.34a2.4 2.4 0 1 1-2.4-2.4c.26 0 .52.04.77.12V7.6a5.7 5.7 0 0 0-.77-.05 5.7 5.7 0 1 0 5.7 5.7V7.92a8.13 8.13 0 0 0 5.1 1.78V6.8Z"/></svg></a>
         </div>
       </div>
@@ -1850,9 +1899,10 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&panel.class
         confirmTitle=document.getElementById('lcConfirmTitle'),
         thanksModal=document.getElementById('lcThanksModal'),
         thanksText=document.getElementById('lcThanksText'),
+        thanksAddress=document.getElementById('lcThanksAddress'),
         thanksClose=document.getElementById('lcThanksClose');
   const reduceMo=matchMedia('(prefers-reduced-motion:reduce)').matches;
-  let onConfirm=null,lastFocus=null,particlesRaf=null,typeTimer=null;
+  let onConfirm=null,lastFocus=null,particlesRaf=null,typeTimer=null,pendingThanks=null;
   function openConfirm(opts){
     lastFocus=document.activeElement;
     confirmRecap.innerHTML=opts.recap||'';
@@ -1861,6 +1911,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&panel.class
     confirmOk.innerHTML=opts.confirmLabel||'Confirmer et envoyer →';
     confirmCancel.textContent=opts.cancelLabel||'Annuler';
     onConfirm=opts.onConfirm||null;
+    pendingThanks=opts.thanks||null;
     confirmModal.classList.add('on');confirmModal.setAttribute('aria-hidden','false');
     document.body.style.overflow='hidden';
     setTimeout(()=>confirmOk.focus(),200);
@@ -1875,7 +1926,8 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&panel.class
     if(e.target===confirmModal||e.target.closest('[data-lc-close]'))closeConfirm();
   });
   confirmOk.addEventListener('click',()=>{
-    const fn=onConfirm;closeConfirm();playChime();showThanks();
+    const fn=onConfirm,thanksOpts=pendingThanks;
+    closeConfirm();playChime();showThanks(thanksOpts);
     if(fn)setTimeout(fn,50);
   });
   function playChime(){
@@ -1894,15 +1946,23 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&panel.class
       });
     }catch(e){}
   }
-  function showThanks(){
+  function showThanks(opts){
+    opts=opts||{};
+    const txt=opts.text||LC_THANKS;
+    const showAddr=!!opts.address;
+    thanksAddress.hidden=!showAddr;
+    thanksAddress.classList.remove('on');
     thanksModal.classList.add('on');thanksModal.setAttribute('aria-hidden','false');
     document.body.style.overflow='hidden';
-    thanksText.innerHTML='';let i=0;const txt=LC_THANKS;
+    thanksText.innerHTML='';let i=0;
     function step(){
       if(i<=txt.length){
         thanksText.innerHTML=txt.slice(0,i).replace(/\n/g,'<br>')+'<span class="lc-caret"></span>';
         i++;typeTimer=setTimeout(step,reduceMo?0:26);
-      }else thanksText.innerHTML=txt.replace(/\n/g,'<br>');
+      }else{
+        thanksText.innerHTML=txt.replace(/\n/g,'<br>');
+        if(showAddr)setTimeout(()=>thanksAddress.classList.add('on'),reduceMo?0:200);
+      }
     }
     setTimeout(step,reduceMo?0:700);
     startParticles();
@@ -1912,6 +1972,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&panel.class
     thanksModal.classList.remove('on');thanksModal.setAttribute('aria-hidden','true');
     document.body.style.overflow='';
     if(typeTimer)clearTimeout(typeTimer);
+    thanksAddress.classList.remove('on');
     stopParticles();
   }
   thanksClose.addEventListener('click',closeThanks);
