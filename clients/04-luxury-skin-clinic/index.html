@@ -382,6 +382,75 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-vi
     </div>
   </section>
 
+  <section class="hub-reviews" id="avis" aria-label="Avis clients">
+    <header class="rev-head">
+      <div class="rev-eyebrow">Votre voix compte</div>
+      <h2 class="rev-title">Cliquez ici pour laisser vos avis</h2>
+      <div class="rev-flourish"><span></span></div>
+      <p class="rev-intro">Nous valorisons l'<b>authenticité</b>. Partagez votre vrai ressenti — qu'il soit enthousiaste, mitigé ou critique. Chaque retour nous aide à grandir et à mieux vous servir.</p>
+    </header>
+
+    <div class="rev-summary" id="revSummary">
+      <div class="rev-avg"><span id="revAvg">—</span><span class="rev-avg-stars" id="revAvgStars"></span></div>
+      <div class="rev-count"><span id="revCount">0</span> avis publié(s)</div>
+    </div>
+
+    <div class="rev-filters" id="revFilters" role="tablist" aria-label="Filtrer les avis">
+      <button class="rev-chip active" type="button" data-rev-filter="all" role="tab" aria-selected="true">Tous</button>
+      <button class="rev-chip" type="button" data-rev-filter="ina" role="tab" aria-selected="false">Produits INA</button>
+      <button class="rev-chip" type="button" data-rev-filter="clinic" role="tab" aria-selected="false">Soins Skin Clinic</button>
+      <button class="rev-chip" type="button" data-rev-filter="cozy" role="tab" aria-selected="false">Produits Cozy</button>
+    </div>
+
+    <div class="rev-list" id="revList" aria-live="polite"></div>
+    <button class="rev-more" type="button" id="revMore" hidden>Voir plus d'avis</button>
+
+    <div class="rev-form-wrap">
+      <h3 class="rev-form-title">Laisser un avis</h3>
+      <form class="rev-form" id="revForm" novalidate>
+        <div class="rev-field" data-field="name">
+          <label class="rev-label" for="revName">Votre nom et prénom *</label>
+          <input type="text" id="revName" name="name" required maxlength="60" placeholder="Marie K." autocomplete="name">
+          <span class="rev-error">Merci d'indiquer votre nom.</span>
+        </div>
+
+        <div class="rev-field" data-field="target">
+          <label class="rev-label" for="revTarget">Que souhaitez-vous noter ? *</label>
+          <select id="revTarget" name="target" required>
+            <option value="">— Choisir —</option>
+            <option value="ina">Un produit INA Luxury</option>
+            <option value="clinic">Une prestation Skin Clinic</option>
+            <option value="cozy">Un produit Cozy</option>
+            <option value="autre">L'accueil, le service, autre</option>
+          </select>
+          <span class="rev-error">Merci de choisir une catégorie.</span>
+        </div>
+
+        <div class="rev-field" data-field="detail">
+          <label class="rev-label" for="revDetail">Précisez (optionnel)</label>
+          <input type="text" id="revDetail" name="detail" maxlength="80" placeholder="Nom du produit, du soin reçu…">
+        </div>
+
+        <div class="rev-field" data-field="rating">
+          <span class="rev-label">Votre note *</span>
+          <div class="rev-stars-input" id="revStarsInput" role="radiogroup" aria-label="Note sur 5 étoiles" aria-required="true"></div>
+          <span class="rev-error">Merci d'attribuer une note.</span>
+        </div>
+
+        <div class="rev-field" data-field="text">
+          <label class="rev-label" for="revText">Votre avis *</label>
+          <textarea id="revText" name="text" required maxlength="600" rows="4" placeholder="Partagez votre expérience, vos résultats, vos remarques constructives…"></textarea>
+          <span class="rev-counter"><span id="revCharCount">0</span>/600</span>
+          <span class="rev-error">Merci de rédiger un commentaire.</span>
+        </div>
+
+        <p class="rev-transparency"><b>✨ Transparence.</b> Votre avis est transmis à Mme Sabrina via WhatsApp pour publication. Nous publions tous les retours authentiques — positifs comme constructifs. Aucun avis n'est filtré pour donner une fausse image.</p>
+
+        <button class="rev-submit" type="submit" id="revSubmit">Envoyer mon avis via WhatsApp</button>
+      </form>
+    </div>
+  </section>
+
   <footer class="hub-foot" id="hubFoot">
     <div class="foot-loc">Cotonou · Bénin · +229 01 67 97 56 26</div>
   </footer>
@@ -548,7 +617,7 @@ const Audio=(function(){
     });
     setTimeout(()=>foot.classList.add('show'),reduceMotion?0:300);
     /* Bio + sections du bas révélées au scroll (IntersectionObserver) */
-    revealOnScroll(['#bio']);
+    revealOnScroll(['#bio','#avis']);
   }
   function revealOnScroll(selectors){
     const els=selectors.flatMap(s=>Array.from(document.querySelectorAll(s)));
@@ -691,6 +760,139 @@ body{padding-bottom:84px;}
   .bio-name{font-size:1.7rem;}
   .bio-body p{font-size:.9rem;line-height:1.72;text-align:left;}
   .bio-flourish{margin:12px 0 20px;}
+}
+
+/* ===== AVIS CLIENTS — section interactive ===== */
+.hub-reviews{width:100%;max-width:880px;margin:24px auto 40px;padding:0 6px;
+  opacity:0;transform:translateY(20px);
+  transition:opacity .9s var(--ease),transform .9s var(--ease);}
+.hub-reviews.show{opacity:1;transform:none;}
+.rev-head{text-align:center;margin-bottom:30px;}
+.rev-eyebrow{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--or);margin-bottom:8px;}
+.rev-title{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(1.8rem,4.2vw,2.4rem);
+  color:var(--creme);letter-spacing:.01em;line-height:1.18;}
+.rev-flourish{display:flex;justify-content:center;margin:14px 0 18px;}
+.rev-flourish span{position:relative;width:90px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--or),transparent);}
+.rev-flourish span::after{content:'✦';position:absolute;left:50%;top:-10px;
+  transform:translateX(-50%);font-size:13px;color:var(--or);
+  text-shadow:0 0 8px rgba(201,168,76,.5);}
+.rev-intro{font-size:.95rem;line-height:1.72;color:var(--texte-doux);max-width:600px;margin:0 auto;}
+.rev-intro b{color:var(--or-clair);font-weight:500;}
+/* Synthese moyenne */
+.rev-summary{display:flex;flex-direction:column;align-items:center;gap:6px;
+  margin:24px auto 18px;padding:18px 24px;
+  background:rgba(20,18,15,.55);border:1px solid rgba(201,168,76,.22);border-radius:14px;
+  max-width:360px;}
+.rev-avg{display:flex;align-items:baseline;gap:12px;}
+.rev-avg #revAvg{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:500;
+  color:var(--creme);}
+.rev-avg-stars{display:inline-flex;gap:2px;font-size:18px;color:var(--or);letter-spacing:.05em;}
+.rev-count{font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--texte-doux);}
+/* Filtres */
+.rev-filters{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:18px 0 22px;}
+.rev-chip{padding:7px 14px;border-radius:30px;cursor:pointer;
+  font-family:'Jost',sans-serif;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;
+  background:rgba(20,18,15,.7);border:1px solid rgba(201,168,76,.28);color:var(--texte-doux);
+  transition:all .3s var(--ease);}
+.rev-chip:hover{border-color:rgba(201,168,76,.55);color:var(--or-clair);}
+.rev-chip.active{background:rgba(201,168,76,.18);border-color:var(--or);color:var(--or-clair);}
+/* Liste avis */
+.rev-list{display:grid;gap:14px;margin-bottom:14px;}
+.rev-card{padding:18px 20px;border-radius:13px;
+  background:linear-gradient(168deg,rgba(28,24,18,.85),rgba(13,11,8,.92));
+  border:1px solid rgba(201,168,76,.18);
+  transition:border-color .35s var(--ease),transform .35s var(--ease);}
+.rev-card:hover{border-color:rgba(201,168,76,.38);transform:translateY(-2px);}
+.rev-card-head{display:flex;justify-content:space-between;align-items:flex-start;
+  gap:10px;margin-bottom:6px;flex-wrap:wrap;}
+.rev-card-author{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:1.05rem;
+  color:var(--creme);letter-spacing:.01em;}
+.rev-card-meta{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.rev-stars-display{display:inline-flex;gap:1.5px;font-size:14px;letter-spacing:0;}
+.rev-stars-display .rev-star{color:rgba(201,168,76,.28);}
+.rev-stars-display .rev-star.on{color:var(--or);text-shadow:0 0 5px rgba(201,168,76,.45);}
+.rev-card-date{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--texte-doux);}
+.rev-card-target{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--or-clair);opacity:.86;margin-bottom:8px;}
+.rev-card-text{font-size:.93rem;line-height:1.7;color:var(--texte);}
+.rev-empty{padding:30px 20px;text-align:center;color:var(--texte-doux);font-style:italic;
+  border:1px dashed rgba(201,168,76,.22);border-radius:13px;background:rgba(20,18,15,.4);}
+.rev-more{display:block;margin:6px auto 28px;padding:10px 22px;border-radius:30px;cursor:pointer;
+  background:transparent;border:1px solid rgba(201,168,76,.38);color:var(--or-clair);
+  font-family:'Jost',sans-serif;font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;
+  transition:all .3s var(--ease);}
+.rev-more:hover{border-color:var(--or);background:rgba(201,168,76,.12);color:var(--creme);}
+.rev-more[hidden]{display:none;}
+/* Formulaire */
+.rev-form-wrap{margin-top:30px;padding:30px 28px;border-radius:16px;
+  background:linear-gradient(168deg,#1a1612,#0b0a08);
+  border:1px solid rgba(201,168,76,.28);
+  box-shadow:0 30px 60px -22px rgba(0,0,0,.55),0 0 80px -30px rgba(201,168,76,.22);}
+.rev-form-title{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:1.4rem;
+  color:var(--creme);text-align:center;margin-bottom:18px;}
+.rev-form{display:flex;flex-direction:column;gap:14px;}
+.rev-field{display:flex;flex-direction:column;gap:6px;position:relative;}
+.rev-label{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--or-clair);}
+.rev-form input[type="text"],.rev-form select,.rev-form textarea{
+  width:100%;padding:11px 14px;border-radius:10px;
+  background:rgba(10,9,7,.7);border:1px solid rgba(201,168,76,.22);color:var(--texte);
+  font-family:'Jost',sans-serif;font-size:.95rem;font-weight:300;
+  transition:border-color .25s,background .25s;}
+.rev-form input[type="text"]:focus,.rev-form select:focus,.rev-form textarea:focus{
+  outline:none;border-color:var(--or);background:rgba(20,17,12,.85);
+  box-shadow:0 0 0 3px rgba(201,168,76,.12);}
+.rev-form textarea{resize:vertical;min-height:96px;line-height:1.6;}
+.rev-form select{appearance:none;-webkit-appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%23c9a84c' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M1 1l5 5 5-5'/></svg>");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;}
+.rev-form option{background:#0b0a08;color:var(--texte);}
+.rev-counter{position:absolute;right:8px;bottom:8px;font-size:10.5px;
+  letter-spacing:.06em;color:var(--texte-doux);pointer-events:none;}
+/* Étoiles input cliquables */
+.rev-stars-input{display:inline-flex;gap:4px;padding:4px 0;}
+.rev-stars-input .rev-star-btn{background:transparent;border:0;padding:4px;cursor:pointer;
+  font-size:28px;line-height:1;color:rgba(201,168,76,.32);
+  transition:color .2s,transform .2s;}
+.rev-stars-input .rev-star-btn:hover,.rev-stars-input .rev-star-btn.hover{
+  color:var(--or-vif);transform:scale(1.1);}
+.rev-stars-input .rev-star-btn.active{color:var(--or);text-shadow:0 0 8px rgba(201,168,76,.5);}
+.rev-stars-input[aria-invalid="true"] .rev-star-btn{color:rgba(231,124,124,.4);}
+/* Erreurs */
+.rev-form .rev-field.error input,.rev-form .rev-field.error select,
+.rev-form .rev-field.error textarea{border-color:rgba(231,124,124,.6);}
+.rev-error{font-size:11.5px;color:#e88;margin-top:2px;display:none;}
+.rev-field.error .rev-error{display:block;}
+.rev-transparency{font-size:11.5px;line-height:1.6;color:var(--texte-doux);
+  padding:11px 14px;border-radius:10px;background:rgba(201,168,76,.07);
+  border:1px solid rgba(201,168,76,.18);margin-top:4px;}
+.rev-transparency b{color:var(--or-clair);font-weight:500;}
+.rev-submit{margin-top:6px;padding:14px 26px;border-radius:32px;border:0;cursor:pointer;
+  font-family:'Cormorant Garamond',serif;font-size:1rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--noir);font-weight:500;background:var(--gold-grad);
+  box-shadow:0 14px 30px -14px rgba(201,168,76,.5),0 0 0 1px rgba(201,168,76,.4);
+  transition:transform .3s,box-shadow .3s,filter .3s;}
+.rev-submit:hover{transform:translateY(-2px) scale(1.02);
+  box-shadow:0 20px 42px -14px rgba(236,217,164,.7),0 0 0 1px rgba(236,217,164,.6);filter:brightness(1.06);}
+.rev-submit:active{transform:translateY(0) scale(1);}
+.rev-submit:disabled{opacity:.55;cursor:not-allowed;transform:none!important;filter:none;}
+/* Toast confirmation */
+.rev-toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);
+  z-index:1400;padding:14px 22px;border-radius:14px;
+  background:linear-gradient(160deg,#1a1612,#0b0a08);
+  border:1px solid var(--or);color:var(--creme);
+  box-shadow:0 20px 50px -18px rgba(0,0,0,.7),0 0 0 1px rgba(236,217,164,.2);
+  font-size:.93rem;letter-spacing:.02em;text-align:center;max-width:90vw;
+  opacity:0;pointer-events:none;
+  transition:opacity .4s var(--ease),transform .4s var(--ease);}
+.rev-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(max-width:600px){
+  .rev-form-wrap{padding:24px 18px;border-radius:14px;}
+  .rev-title{font-size:1.55rem;}
+  .rev-stars-input .rev-star-btn{font-size:32px;padding:6px 4px;}
+  .rev-summary{padding:14px 18px;}
+  .rev-avg #revAvg{font-size:2rem;}
+  .rev-chip{font-size:10.5px;padding:6px 11px;letter-spacing:.08em;}
 }
 </style>
 <div class="lc-social" aria-label="Réseaux sociaux">
@@ -992,6 +1194,242 @@ btn.addEventListener('click',openCat);
 closeb.addEventListener('click',shutCat);
 scrim.addEventListener('click',shutCat);
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&panel.classList.contains('open'))shutCat();});
+})();
+</script>
+
+<!-- ============ NEBULA — AVIS CLIENTS (rendu + soumission WhatsApp) ============ -->
+<script>
+(function(){
+'use strict';
+
+/* ============================================================
+   AVIS PUBLIES
+   ------------------------------------------------------------
+   Modere par Mme Sabrina. Pour ajouter un avis approuve :
+   pousser un nouvel objet en tete de tableau (le plus recent en premier).
+   Format : {name, date:"AAAA-MM", category, targetLabel, rating, text}
+   category : "ina" | "clinic" | "cozy" | "autre"
+   ============================================================ */
+var REVIEWS=[
+  /* Exemples a remplacer par les vrais avis de Gloria. Tonalite variee pour
+     que les visiteurs voient des retours honnetes (pas uniquement 5 etoiles). */
+];
+
+var WHATSAPP_NUM='2290167975626';
+var PAGE_SIZE=6;
+var state={filter:'all',shown:PAGE_SIZE,rating:0};
+
+function $(id){return document.getElementById(id);}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
+/* ----- Etoiles affichage ----- */
+function starsHTML(n){
+  var h='<span class="rev-stars-display" aria-label="Note '+n+' sur 5">';
+  for(var i=1;i<=5;i++){h+='<span class="rev-star'+(i<=n?' on':'')+'" aria-hidden="true">★</span>';}
+  return h+'</span>';
+}
+
+/* ----- Synthese ----- */
+function refreshSummary(){
+  var avgEl=$('revAvg'),starsEl=$('revAvgStars'),countEl=$('revCount');
+  if(!avgEl)return;
+  var list=filtered();
+  if(!list.length){avgEl.textContent='—';starsEl.innerHTML='';countEl.textContent='0';return;}
+  var sum=list.reduce(function(a,r){return a+r.rating;},0);
+  var avg=sum/list.length;
+  avgEl.textContent=avg.toFixed(1).replace('.0','');
+  starsEl.innerHTML=starsHTML(Math.round(avg));
+  countEl.textContent=list.length;
+}
+
+function filtered(){
+  if(state.filter==='all')return REVIEWS;
+  return REVIEWS.filter(function(r){return r.category===state.filter;});
+}
+
+function frDate(yyyymm){
+  if(!yyyymm)return '';
+  var m=yyyymm.split('-');if(m.length<2)return yyyymm;
+  var mois=['Janv.','Fev.','Mars','Avr.','Mai','Juin','Juil.','Aout','Sept.','Oct.','Nov.','Dec.'];
+  var idx=Math.max(0,Math.min(11,parseInt(m[1],10)-1));
+  return mois[idx]+' '+m[0];
+}
+
+/* ----- Render liste ----- */
+function renderList(){
+  var list=$('revList'),more=$('revMore');
+  if(!list)return;
+  var data=filtered();
+  if(!data.length){
+    list.innerHTML='<div class="rev-empty">Soyez la première personne à partager votre expérience.<br>Les avis publiés apparaîtront ici.</div>';
+    if(more)more.hidden=true;
+    refreshSummary();return;
+  }
+  var visible=data.slice(0,state.shown);
+  list.innerHTML=visible.map(function(r){
+    var target=r.targetLabel?'<div class="rev-card-target">'+escapeHTML(r.targetLabel)+'</div>':'';
+    return '<article class="rev-card">'+
+      '<header class="rev-card-head">'+
+        '<div class="rev-card-author">'+escapeHTML(r.name)+'</div>'+
+        '<div class="rev-card-meta">'+starsHTML(r.rating)+
+          '<span class="rev-card-date">'+escapeHTML(frDate(r.date))+'</span></div>'+
+      '</header>'+
+      target+
+      '<p class="rev-card-text">'+escapeHTML(r.text).replace(/\n/g,'<br>')+'</p>'+
+    '</article>';
+  }).join('');
+  if(more)more.hidden=data.length<=state.shown;
+  refreshSummary();
+}
+
+/* ----- Filtres ----- */
+function bindFilters(){
+  document.querySelectorAll('[data-rev-filter]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var f=btn.getAttribute('data-rev-filter');
+      if(f===state.filter)return;
+      state.filter=f;state.shown=PAGE_SIZE;
+      document.querySelectorAll('[data-rev-filter]').forEach(function(b){
+        var on=b===btn;
+        b.classList.toggle('active',on);
+        b.setAttribute('aria-selected',on?'true':'false');
+      });
+      renderList();
+      if(window.LCAudio)LCAudio.play('filter');
+    });
+  });
+  var more=$('revMore');
+  if(more)more.addEventListener('click',function(){
+    state.shown+=PAGE_SIZE;renderList();
+  });
+}
+
+/* ----- Etoiles cliquables (input) ----- */
+function buildStarsInput(){
+  var wrap=$('revStarsInput');if(!wrap)return;
+  var html='';
+  for(var i=1;i<=5;i++){
+    html+='<button type="button" class="rev-star-btn" data-val="'+i+'" '+
+      'role="radio" aria-checked="false" aria-label="'+i+' étoile'+(i>1?'s':'')+'">★</button>';
+  }
+  wrap.innerHTML=html;
+  var btns=wrap.querySelectorAll('.rev-star-btn');
+  btns.forEach(function(b){
+    b.addEventListener('click',function(){
+      state.rating=parseInt(b.getAttribute('data-val'),10);
+      btns.forEach(function(x){
+        var v=parseInt(x.getAttribute('data-val'),10);
+        var on=v<=state.rating;
+        x.classList.toggle('active',on);
+        x.setAttribute('aria-checked',on?'true':'false');
+      });
+      wrap.parentElement.classList.remove('error');
+      if(window.LCAudio)LCAudio.play('tap');
+    });
+    b.addEventListener('mouseenter',function(){
+      var v=parseInt(b.getAttribute('data-val'),10);
+      btns.forEach(function(x){
+        var vx=parseInt(x.getAttribute('data-val'),10);
+        x.classList.toggle('hover',vx<=v);
+      });
+    });
+    b.addEventListener('mouseleave',function(){
+      btns.forEach(function(x){x.classList.remove('hover');});
+    });
+  });
+}
+
+/* ----- Compteur de caracteres ----- */
+function bindCounter(){
+  var ta=$('revText'),c=$('revCharCount');if(!ta||!c)return;
+  ta.addEventListener('input',function(){c.textContent=ta.value.length;});
+}
+
+/* ----- Toast ----- */
+function showToast(msg){
+  var t=document.createElement('div');
+  t.className='rev-toast';t.textContent=msg;
+  document.body.appendChild(t);
+  requestAnimationFrame(function(){t.classList.add('show');});
+  setTimeout(function(){
+    t.classList.remove('show');
+    setTimeout(function(){t.remove();},500);
+  },4200);
+}
+
+/* ----- Soumission via WhatsApp ----- */
+function bindSubmit(){
+  var form=$('revForm');if(!form)return;
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    var name=$('revName').value.trim();
+    var target=$('revTarget').value;
+    var detail=$('revDetail').value.trim();
+    var rating=state.rating;
+    var text=$('revText').value.trim();
+    var ok=true;
+    function flag(field,bad){
+      var el=form.querySelector('[data-field="'+field+'"]');
+      if(el)el.classList.toggle('error',bad);
+      if(bad)ok=false;
+    }
+    flag('name',!name);
+    flag('target',!target);
+    flag('rating',!rating);
+    flag('text',text.length<5);
+    if(!ok){
+      var firstErr=form.querySelector('.rev-field.error');
+      if(firstErr){firstErr.scrollIntoView({behavior:'smooth',block:'center'});
+        var inp=firstErr.querySelector('input,select,textarea,.rev-star-btn');
+        if(inp)setTimeout(function(){inp.focus();},400);}
+      return;
+    }
+    var catLabels={
+      ina:'Un produit INA Luxury',
+      clinic:'Une prestation Skin Clinic',
+      cozy:'Un produit Cozy',
+      autre:"Accueil / Service / Autre"
+    };
+    var targetTxt=catLabels[target]||target;
+    if(detail)targetTxt+=' — '+detail;
+    var stars='★'.repeat(rating)+'☆'.repeat(5-rating);
+    var msg='🌟 NOUVEL AVIS — Luxury Club 229\n\n'+
+      'De : '+name+'\n'+
+      'Cible : '+targetTxt+'\n'+
+      'Note : '+stars+' ('+rating+'/5)\n\n'+
+      'Commentaire :\n'+text+'\n\n'+
+      '— Envoyé depuis luxuryskinclinic.netlify.app';
+    var url='https://wa.me/'+WHATSAPP_NUM+'?text='+encodeURIComponent(msg);
+    if(window.LCAudio)LCAudio.play('whatsapp');
+    window.open(url,'_blank','noopener');
+    showToast('Merci ! Votre avis a été préparé dans WhatsApp. Envoyez-le pour finaliser.');
+    form.reset();state.rating=0;
+    document.querySelectorAll('#revStarsInput .rev-star-btn').forEach(function(b){
+      b.classList.remove('active');b.setAttribute('aria-checked','false');
+    });
+    $('revCharCount').textContent='0';
+  });
+  /* Reset error au changement */
+  ['revName','revTarget','revText'].forEach(function(id){
+    var el=$(id);if(!el)return;
+    var field=el.closest('.rev-field');
+    el.addEventListener('input',function(){field.classList.remove('error');});
+    el.addEventListener('change',function(){field.classList.remove('error');});
+  });
+}
+
+/* ----- Init ----- */
+function init(){
+  buildStarsInput();
+  bindFilters();
+  bindCounter();
+  bindSubmit();
+  renderList();
+}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}
+else init();
+
 })();
 </script>
 </body>
