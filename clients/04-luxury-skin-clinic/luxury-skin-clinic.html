@@ -459,6 +459,7 @@ section{padding:58px 0;}
 .form-progress{height:5px;border-radius:4px;background:var(--ligne);overflow:hidden;margin-bottom:8px;}
 .form-progress-bar{height:100%;width:0;background:var(--menthe);transition:width .4s cubic-bezier(.22,1,.36,1);}
 .form-step-lbl{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--or-fonce);margin-bottom:16px;}
+.fld-hint{font-size:.72rem;color:var(--encre);font-weight:700;margin:-2px 0 7px;letter-spacing:.01em;}
 .fld-err{font-size:.7rem;color:var(--warn);margin-top:5px;}
 .fld-bad input,.fld-bad textarea{border-color:var(--warn)!important;}
 .fld-bad .opt-row{outline:1px solid var(--warn);outline-offset:4px;border-radius:8px;}
@@ -1080,8 +1081,8 @@ const SKIN_FORM={
       {t:'textarea',n:'Si oui, lesquels et quand ?'},
       {t:'radio',n:'Traitement dermatologique en cours',o:['Oui','Non']}]},
     {h:'Routine actuelle',fields:[
-      {t:'textarea',n:'Produits utilisés le matin'},
-      {t:'textarea',n:'Produits utilisés le soir'}]},
+      {t:'textarea',n:'Produits utilisés le matin',hint:'(mettre le nom exact du produit et la marque)'},
+      {t:'textarea',n:'Produits utilisés le soir',hint:'(mettre le nom exact du produit et la marque)'}]},
     {h:'Réactions aux actifs',fields:[
       {t:'check',n:'Actifs déjà utilisés',o:['Rétinol','Vitamine C','Acides (AHA/BHA)','Niacinamide','Peroxyde de benzoyle','Aucun']},
       {t:'text',n:'Un actif a-t-il provoqué une réaction ?'}]},
@@ -1091,7 +1092,15 @@ const SKIN_FORM={
     {h:'Mode de vie',fields:[
       {t:'radio',n:'Exposition au soleil',o:['Faible','Modérée','Importante']},
       {t:'radio',n:'Niveau de stress',o:['Faible','Modéré','Élevé']},
-      {t:'radio',n:'Hydratation quotidienne (eau)',o:['Moins d\'1L','1 à 2L','Plus de 2L']}]},
+      {t:'radio',n:'Hydratation quotidienne (eau)',o:['Moins d\'1L','1 à 2L','Plus de 2L']},
+      {t:'text',n:'Poids (kg)'},
+      {t:'check',n:'Consommez-vous régulièrement ces aliments ?',o:['Produits laitiers','Œufs','Pâtisseries','Fast food','Soja (bouillie ou fromage)','Whey protéine','Alcool','Aliments / boissons sucrés','Noix (arachide, amande, cajou, autres)']},
+      {t:'radio',n:'Dégradation de votre peau après consommation d\'un aliment ?',o:['Oui','Non']},
+      {t:'text',n:'Si oui, lequel ?'},
+      {t:'radio',n:'Diabète (vous ou un membre de votre famille) ?',o:['Oui','Non','Je ne sais pas']},
+      {t:'radio',n:'SOPK (Syndrome des Ovaires Polykystiques) ?',o:['Oui','Non','Je ne sais pas']},
+      {t:'radio',n:'Acné menstruel ?',o:['Oui','Non']},
+      {t:'radio',n:'Cou, aisselles ou visage plus foncés que le reste du corps ?',o:['Oui','Non']}]},
     {h:'Objectifs',fields:[
       {t:'textarea',n:'Qu\'attendez-vous de nos soins ?',req:1}]},
   ]
@@ -1407,7 +1416,8 @@ function renderField(f,id){
   else if(f.t==='textarea')ctrl=`<textarea data-fld="${f.n}"${f.req?' data-req="1"':''}></textarea>`;
   else if(f.t==='radio')ctrl=`<div class="opt-row">${f.o.map(o=>`<label class="opt"><input type="radio" name="r_${id}" value="${o}" data-fld="${f.n}"><span>${o}</span></label>`).join('')}</div>`;
   else if(f.t==='check')ctrl=`<div class="opt-row">${f.o.map(o=>`<label class="opt"><input type="checkbox" value="${o}" data-fld="${f.n}"><span>${o}</span></label>`).join('')}</div>`;
-  return `<div class="fld"><label>${f.n}${req}</label>${ctrl}</div>`;
+  const hint=f.hint?`<div class="fld-hint">${f.hint}</div>`:'';
+  return `<div class="fld"><label>${f.n}${req}</label>${hint}${ctrl}</div>`;
 }
 function openForm(kind){
   currentForm=(kind==='hair')?HAIR_FORM:SKIN_FORM;

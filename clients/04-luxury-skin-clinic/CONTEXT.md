@@ -328,6 +328,24 @@ code (objet `SVC_ART`). Voie B (vraies photos via `_inbox/`) reste possible plus
     archivé dans `_inbox/_processed/`. Le produit reste dans la routine
     Body Pack Luxury (`items:['Beurre Clarté','Huile Éclat Suprême','Concentré Fruité']`).
 
+- 2026-05-27 — **Consultation Peau gratuite enrichie** (demande Gloria).
+  - **Routine actuelle** : sous chaque textarea (matin + soir), ajout d'un
+    hint en gras *(mettre le nom exact du produit et la marque)* — point
+    crucial pour l'analyse de Mme Sabrina.
+  - **Mode de vie** : 8 nouvelles questions ajoutées après les 3 existantes
+    (exposition soleil / stress / hydratation) — Poids (kg) · cases à cocher
+    aliments à risque (produits laitiers, œufs, pâtisseries, fast food, soja,
+    whey protéine, alcool, sucré, noix) · dégradation peau après un aliment
+    (Oui/Non + précision) · diabète personnel/familial · SOPK · acné menstruel
+    · cou/aisselles/visage plus foncés que le corps.
+  - **Système `hint` ajouté à `renderField`** : nouvelle propriété optionnelle
+    sur les champs de formulaire, affichée en gras `.fld-hint` sous le label.
+    Réutilisable pour tous les champs où une consigne doit ressortir
+    visuellement sans polluer le label ni le payload WhatsApp.
+  - Les nouvelles réponses remontent automatiquement dans le message
+    WhatsApp envoyé à Mme Sabrina (la boucle d'envoi parcourt déjà toutes
+    les `sections.fields`).
+
 ## Paiement en ligne — FedaPay (en préparation)
 
 Objectif : permettre le paiement direct (Mobile Money / carte) sur les vitrines,
