@@ -101,7 +101,7 @@ INA Luxury (**600×800, 3:4, fond blanc, JPEG q78**).
 
 - [x] Brief v2 reçu et intégré
 - [x] index.html — hub Luxury Club 229
-- [x] ina-luxury.html — 35 produits, nav 4 niveaux, panier
+- [x] ina-luxury.html — 37 produits, nav 4 niveaux, panier (incl. Savon Noir Papaya & Clarté Black Soap, 2026-05-27)
 - [x] luxury-skin-clinic.html — 11 soins, design clinique, règlement, formulaires
 - [x] cozy.html — 8 produits, design rose, panier
 - [x] Logos intégrés : INA Luxury (logo CSS), Cozy, Luxury Skin Clinic, Luxury Club 229 (hub)
@@ -328,6 +328,19 @@ code (objet `SVC_ART`). Voie B (vraies photos via `_inbox/`) reste possible plus
     archivé dans `_inbox/_processed/`. Le produit reste dans la routine
     Body Pack Luxury (`items:['Beurre Clarté','Huile Éclat Suprême','Concentré Fruité']`).
 
+- 2026-05-27 — **INA Luxury : nouvelle sous-catégorie Corps / Savon Noir + 2 produits**.
+  - `SUBCATS.corps` étendu : 5e entrée `{key:'savon-noir',label:'Savon Noir'}`
+    après Huile corps. Emoji 🖤 ajouté à `EMO_BY_SUB`.
+  - Description famille Corps mise à jour : ajout de « savons noirs ».
+  - **Savon Noir Papaya** (17 500 F / 500g) — savon noir africain en pâte
+    enrichi en papaye + réglisse, fiche complète (résultats 4 paliers,
+    INCI, conseils, lecture experte).
+  - **Clarté Black Soap** (15 000 F / 300g) — gel douche illuminateur
+    inspiré du savon noir, panthénol + avoine + réglisse, fiche complète.
+  - Images traitées via `og-defringe.ps1` (600×800 JPEG q78) dans
+    `assets/images/ina-luxury/corps/savon-noir/`. Sources PNG/JPG archivées
+    dans `_inbox/_processed/`. INA Luxury passe à **37 produits**.
+  - Hub `index.html` : sous-cat « Savon Noir » ajoutée au panneau INA Corps.
 - 2026-05-27 — **Consultation Peau gratuite enrichie** (demande Gloria).
   - **Routine actuelle** : sous chaque textarea (matin + soir), ajout d'un
     hint en gras *(mettre le nom exact du produit et la marque)* — point
