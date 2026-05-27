@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Carnet professionnel — INA Luxury Skin Clinic</title>
+<meta name="description" content="Outil interne — Carnet de consultation et suivi cutané · Mme Sabrina">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --noir:#0a0a0a; --noir-2:#141210; --noir-3:#211d16;
+  --creme:#faf6ec; --nacre:#f4eede;
+  --or:#c9a84c; --or-fonce:#a8862f; --or-clair:#e6d3a0;
+  --texte:#e7decb; --texte-doux:#a99a7c;
+  --ligne:rgba(201,168,76,.22);
+  --vert:#7fb59a; --rose:#bd7d8e; --rouge:#d97a7a;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--noir);color:var(--texte);font-family:'Jost',system-ui,sans-serif;
+  font-weight:300;line-height:1.55;min-height:100vh;
+  background-image:
+    radial-gradient(ellipse 50% 40% at 0% 0%,rgba(201,168,76,.08),transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 100%,rgba(231,188,199,.06),transparent 60%);}
+h1,h2,h3,h4{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;color:var(--creme);}
+a{color:var(--or-clair);text-decoration:none;}
+a:hover{color:var(--or);}
+
+/* HEADER */
+.head{position:sticky;top:0;z-index:50;background:rgba(10,10,10,.92);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--ligne);
+  padding:14px 26px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+.head-l{display:flex;align-items:baseline;gap:14px;}
+.head-mark{font-family:'Cormorant Garamond',serif;font-size:1.3rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--or-clair);}
+.head-tag{font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--texte-doux);}
+.head-r{display:flex;gap:10px;flex-wrap:wrap;}
+.head-link{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:9px;
+  background:rgba(201,168,76,.12);border:1px solid var(--ligne);
+  font-size:.78rem;letter-spacing:.04em;color:var(--creme);transition:all .25s ease;cursor:pointer;
+  font-family:'Jost',sans-serif;}
+.head-link:hover{background:rgba(201,168,76,.25);border-color:var(--or);color:var(--creme);}
+.head-link svg{width:14px;height:14px;}
+.head-link.primary{background:linear-gradient(135deg,#e6d3a0,#c9a84c 70%,#a8862f);color:#0a0a0a;
+  font-weight:600;border-color:rgba(255,255,255,.25);}
+.head-link.primary:hover{transform:translateY(-1px);box-shadow:0 8px 16px -4px rgba(201,168,76,.5);}
+
+/* LAYOUT */
+.main{max-width:920px;margin:0 auto;padding:36px 26px 80px;}
+.intro{text-align:center;margin-bottom:32px;}
+.intro-eyebrow{font-size:9.5px;letter-spacing:.32em;text-transform:uppercase;color:var(--or);margin-bottom:8px;}
+.intro h1{font-size:2.4rem;letter-spacing:.04em;margin-bottom:10px;}
+.intro p{font-size:.92rem;color:var(--texte-doux);max-width:580px;margin:0 auto;line-height:1.65;}
+
+/* SECTIONS */
+.sec{background:linear-gradient(160deg,rgba(33,29,22,.65),rgba(20,18,16,.85));
+  border:1px solid var(--ligne);border-radius:16px;padding:24px 26px;margin-bottom:18px;
+  transition:border-color .3s ease;}
+.sec:hover{border-color:rgba(201,168,76,.35);}
+.sec-h{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:14px;
+  border-bottom:1px solid var(--ligne);}
+.sec-n{width:34px;height:34px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  border-radius:50%;background:linear-gradient(135deg,#e6d3a0,#c9a84c 70%,#a8862f);
+  color:#0a0a0a;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:.95rem;}
+.sec-h h2{font-size:1.22rem;letter-spacing:.04em;font-weight:500;flex:1;line-height:1.25;}
+.sec-h-tag{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--or);
+  padding:4px 10px;background:rgba(201,168,76,.12);border:1px solid var(--ligne);border-radius:10px;
+  white-space:nowrap;}
+
+/* FIELDS */
+.fld{margin-bottom:16px;}
+.fld:last-child{margin-bottom:0;}
+.fld>label{display:block;font-size:.84rem;color:var(--creme);margin-bottom:8px;font-weight:400;
+  line-height:1.45;}
+.fld>label small{display:block;color:var(--texte-doux);font-size:.74rem;margin-top:2px;}
+.fld input[type=text],.fld input[type=tel],.fld input[type=email],.fld input[type=date],
+.fld textarea{
+  width:100%;padding:10px 13px;border-radius:8px;background:rgba(10,10,10,.5);
+  border:1px solid var(--ligne);color:var(--creme);font-family:'Jost',sans-serif;font-size:.88rem;
+  transition:all .2s ease;}
+.fld input:focus,.fld textarea:focus{outline:none;border-color:var(--or);
+  box-shadow:0 0 0 3px rgba(201,168,76,.18);background:rgba(10,10,10,.7);}
+.fld textarea{min-height:74px;resize:vertical;line-height:1.5;}
+
+/* GRID */
+.fgrid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.fgrid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+@media(max-width:680px){.fgrid-2,.fgrid-3{grid-template-columns:1fr;}}
+
+/* CHECKBOX / RADIO */
+.opt-row{display:flex;flex-wrap:wrap;gap:8px;}
+.opt{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:9px;
+  background:rgba(10,10,10,.45);border:1px solid var(--ligne);cursor:pointer;
+  font-size:.82rem;color:var(--texte);transition:all .2s ease;user-select:none;line-height:1.35;}
+.opt:hover{border-color:rgba(201,168,76,.5);background:rgba(201,168,76,.06);color:var(--creme);}
+.opt input{appearance:none;width:14px;height:14px;border:1.5px solid var(--or);
+  border-radius:3px;background:transparent;cursor:pointer;flex-shrink:0;position:relative;}
+.opt input[type=radio]{border-radius:50%;}
+.opt input:checked{background:var(--or);}
+.opt input:checked::after{content:'';position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;font-size:10px;color:#0a0a0a;line-height:1;}
+.opt input[type=checkbox]:checked::after{content:'✓';font-weight:700;}
+.opt input[type=radio]:checked::after{content:'';width:6px;height:6px;background:#0a0a0a;
+  border-radius:50%;margin:auto;top:50%;left:50%;transform:translate(-50%,-50%);position:absolute;}
+.opt.sel{background:rgba(201,168,76,.18);border-color:var(--or);color:var(--creme);}
+
+/* SUB-HEADING inside section */
+.sec-sub{font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--or);
+  margin:18px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--ligne);}
+.sec-sub:first-child{margin-top:0;}
+
+/* SUIVI CARDS */
+.suivi-card{background:rgba(10,10,10,.35);border:1px solid var(--ligne);border-radius:12px;
+  padding:18px 20px;margin-bottom:14px;}
+.suivi-card-h{font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--or-clair);
+  letter-spacing:.06em;margin-bottom:14px;}
+
+/* PHOTO LIST */
+.photo-list{background:rgba(201,168,76,.06);border:1px dashed rgba(201,168,76,.35);
+  border-radius:10px;padding:14px 18px;}
+.photo-list ul{list-style:none;display:flex;flex-direction:column;gap:6px;font-size:.84rem;
+  color:var(--texte);}
+.photo-list ul li::before{content:'📸 ';margin-right:6px;}
+
+/* FOOTER ACTIONS */
+.actions{position:sticky;bottom:0;z-index:40;background:linear-gradient(180deg,
+  rgba(10,10,10,0),rgba(10,10,10,.85) 30%,rgba(10,10,10,.95));
+  padding:20px 26px 24px;margin:30px -26px -80px;
+  display:flex;justify-content:center;gap:12px;flex-wrap:wrap;
+  border-top:1px solid var(--ligne);backdrop-filter:blur(12px);}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:11px;
+  font-family:'Jost',sans-serif;font-size:.86rem;letter-spacing:.04em;font-weight:500;
+  border:1px solid var(--ligne);cursor:pointer;transition:all .25s ease;
+  background:rgba(10,10,10,.6);color:var(--creme);}
+.btn:hover{border-color:var(--or);background:rgba(201,168,76,.12);}
+.btn svg{width:16px;height:16px;}
+.btn.primary{background:linear-gradient(135deg,#e6d3a0,#c9a84c 70%,#a8862f);color:#0a0a0a;
+  font-weight:600;border-color:rgba(255,255,255,.25);box-shadow:0 6px 18px -6px rgba(201,168,76,.5);}
+.btn.primary:hover{transform:translateY(-1px);box-shadow:0 10px 24px -6px rgba(201,168,76,.7);
+  background:linear-gradient(135deg,#f0dfac,#d2b25a 70%,#b69334);}
+.btn.danger{color:var(--rose);}
+.btn.danger:hover{border-color:var(--rose);background:rgba(189,125,142,.08);}
+
+/* TOAST */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);opacity:0;
+  background:rgba(20,18,16,.95);color:var(--creme);padding:14px 22px;border-radius:11px;
+  border:1px solid var(--or);font-size:.86rem;z-index:200;
+  transition:all .35s var(--ease);pointer-events:none;backdrop-filter:blur(12px);
+  box-shadow:0 12px 30px rgba(0,0,0,.5);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.err{border-color:var(--rouge);}
+
+/* LOADING */
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid transparent;
+  border-top-color:currentColor;border-right-color:currentColor;border-radius:50%;
+  animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:780px){
+  .main{padding:24px 16px 60px;}
+  .sec{padding:18px 18px;}
+  .sec-h h2{font-size:1.05rem;}
+  .head{padding:12px 16px;}
+  .head-tag{display:none;}
+  .intro h1{font-size:1.7rem;}
+  .actions{margin:30px -16px -60px;padding:16px;}
+  .btn{padding:11px 16px;font-size:.8rem;}
+}
+
+/* ===== PDF STAGE (rendu hors écran pour la capture) ===== */
+.pdf-stage{position:fixed;top:0;left:-9999px;width:794px;background:#fff;color:#1a1612;
+  font-family:'Jost',sans-serif;font-size:11.5px;line-height:1.5;padding:48px 56px;}
+.pdf-stage *{box-sizing:border-box;}
+.pdf-cover{text-align:center;padding:18px 0 30px;border-bottom:2px solid #c9a84c;margin-bottom:28px;}
+.pdf-cover-eyebrow{font-size:9px;letter-spacing:.32em;text-transform:uppercase;color:#a8862f;
+  margin-bottom:8px;}
+.pdf-cover h1{font-family:'Cormorant Garamond',serif;font-size:26px;color:#1a1612;letter-spacing:.06em;
+  margin-bottom:6px;font-weight:600;}
+.pdf-cover-sub{font-family:'Cormorant Garamond',serif;font-size:14px;color:#a8862f;font-style:italic;
+  letter-spacing:.04em;margin-bottom:14px;}
+.pdf-cover-meta{display:flex;justify-content:center;gap:22px;font-size:10.5px;color:#5a4f3e;
+  flex-wrap:wrap;margin-top:14px;}
+.pdf-cover-meta span b{color:#1a1612;font-weight:600;}
+.pdf-sec{margin-bottom:18px;break-inside:avoid;page-break-inside:avoid;}
+.pdf-sec-h{display:flex;align-items:baseline;gap:10px;padding:7px 12px;background:#f7f0e0;
+  border-left:3px solid #c9a84c;border-radius:0 6px 6px 0;margin-bottom:10px;}
+.pdf-sec-n{font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700;color:#a8862f;}
+.pdf-sec-t{font-family:'Cormorant Garamond',serif;font-size:13.5px;font-weight:600;color:#1a1612;
+  letter-spacing:.04em;}
+.pdf-row{display:grid;grid-template-columns:140px 1fr;gap:14px;margin-bottom:6px;font-size:11px;
+  padding:3px 0;}
+.pdf-row dt{font-weight:600;color:#5a4f3e;font-size:10px;letter-spacing:.04em;
+  text-transform:uppercase;}
+.pdf-row dd{color:#1a1612;}
+.pdf-row dd b{color:#a8862f;}
+.pdf-checks{margin-top:4px;}
+.pdf-check-li{display:inline-block;padding:3px 10px;margin:3px 4px 0 0;background:#fbf7eb;
+  border:1px solid #e6d3a0;border-radius:6px;font-size:10.5px;color:#1a1612;}
+.pdf-sub{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:#a8862f;
+  margin:10px 0 5px;font-weight:600;}
+.pdf-empty{color:#9c8c6f;font-style:italic;font-size:10px;}
+.pdf-note{padding:10px 14px;background:#fbf7eb;border:1px solid #e6d3a0;border-radius:6px;
+  font-size:10.5px;line-height:1.55;color:#1a1612;margin-top:6px;}
+.pdf-foot{margin-top:30px;padding-top:14px;border-top:1px solid #c9a84c;text-align:center;
+  font-size:9.5px;color:#5a4f3e;letter-spacing:.06em;}
+.pdf-foot b{color:#a8862f;}
+
+</style>
+</head>
+<body>
+
+<header class="head">
+  <div class="head-l">
+    <span class="head-mark">Carnet professionnel</span>
+    <span class="head-tag">INA Luxury Skin Clinic · Mme Sabrina</span>
+  </div>
+  <nav class="head-r">
+    <a class="head-link" href="admin.html">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.7"><path d="M15 18l-6-6 6-6"/></svg>
+      Tableau de bord
+    </a>
+    <button class="head-link" id="btnReset" type="button">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.7"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+      Nouvelle fiche
+    </button>
+    <button class="head-link primary" id="btnPdf" type="button">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Télécharger PDF
+    </button>
+  </nav>
+</header>
+
+<main class="main">
+
+  <div class="intro">
+    <div class="intro-eyebrow">Carnet de soins & suivi cutané</div>
+    <h1>Diagnostic avancé visage & corps</h1>
+    <p>Outil professionnel pour réaliser une analyse approfondie de la peau, proposer une routine personnalisée et assurer un suivi précis. Remplissez les champs durant la consultation puis générez le PDF à envoyer à la cliente.</p>
+  </div>
+
+  <form id="carnet" autocomplete="off">
+    <div id="sectionsRoot"></div>
+
+    <div class="actions">
+      <button class="btn danger" id="btnReset2" type="button">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        Réinitialiser
+      </button>
+      <button class="btn primary" id="btnPdf2" type="button">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Télécharger le PDF
+      </button>
+    </div>
+  </form>
+</main>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- PDF stage (off-screen, prêt pour html2canvas) -->
+<div class="pdf-stage" id="pdfStage" aria-hidden="true"></div>
+
+<!-- jsPDF + html2canvas (CDN) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+'use strict';
+
+/* ===================================================================
+   SCHÉMA DU CARNET — 21 sections
+   ===================================================================
+   Types de champs :
+   - text       → input texte court
+   - tel        → input tel
+   - email      → input email
+   - date       → input date
+   - long       → input texte sur toute la largeur
+   - textarea   → zone multi-lignes
+   - radio      → un seul choix parmi options
+   - check      → plusieurs choix parmi options
+   - sub        → sous-titre (rendu visuellement, pas un champ)
+   - grid       → groupe de champs sur 2 colonnes
+   =================================================================== */
+const SECTIONS=[
+  {n:1,h:'Informations personnelles',tag:'Identité',fields:[
+    {grid:[
+      {t:'text',n:'Nom & prénom',req:1},
+      {t:'text',n:'Âge'},
+      {t:'radio',n:'Sexe',o:['Femme','Homme']},
+      {t:'text',n:'Profession'},
+      {t:'tel',n:'Téléphone / WhatsApp',req:1},
+      {t:'email',n:'Email'},
+      {t:'text',n:'Ville / Pays'},
+      {t:'date',n:'Date de la consultation'},
+    ]},
+    {t:'text',n:'Esthéticienne / Skin therapist',default:'Mme Sabrina'},
+  ]},
+  {n:2,h:'Motif de consultation',tag:'Préoccupations',fields:[
+    {t:'check',n:'Quelle est votre principale préoccupation ?',o:[
+      'Acné','Taches pigmentaires','Hyperpigmentation post-acné','Mélasma',
+      'Déshydratation','Peau sensible','Rougeurs','Eczéma','Psoriasis',
+      'Barrière cutanée abîmée','Excès de sébum','Pores dilatés','Texture irrégulière',
+      'Rides / ridules','Teint terne','Vergetures','Cicatrices','Kératose pilaire',
+      'Poils incarnés','Irritations corporelles','Transpiration / odeurs corporelles']},
+    {t:'text',n:'Autre préoccupation'},
+    {t:'radio',n:'Depuis combien de temps ?',o:['Quelques semaines','Quelques mois','Plusieurs années']},
+  ]},
+  {n:3,h:'Type de peau',tag:'Classification',fields:[
+    {t:'radio',n:'Votre peau est principalement',o:[
+      'Sèche (tiraillements, manque de confort, desquamation)',
+      'Grasse (brillance rapide, pores visibles, excès de sébum)',
+      'Mixte (zone T grasse, joues normales ou sèches)',
+      'Normale (équilibrée, sans inconfort majeur)',
+      'Sensible (réagit aux produits, rougeurs fréquentes)']},
+  ]},
+  {n:4,h:'État actuel de la peau',tag:'Observations',fields:[
+    {sub:'Hydratation & confort'},
+    {t:'check',n:'',o:['Tiraillements','Déshydratation (teint terne, ridules de déshydratation, inconfort)',
+      'Desquamation (petites peaux visibles)','Sensation de brûlure']},
+    {sub:'Sébum & imperfections'},
+    {t:'check',n:'',o:['Excès de sébum','Brillance excessive','Pores dilatés','Points noirs',
+      'Microkystes','Boutons inflammatoires (rouges douloureux)',
+      'Acné hormonale (menton / mâchoire)','Acné sévère (nombreuses lésions inflammatoires)']},
+    {sub:'Sensibilité & inflammation'},
+    {t:'check',n:'',o:['Rougeurs','Irritations','Démangeaisons',
+      'Réactions fréquentes aux produits','Barrière cutanée fragilisée']},
+    {sub:'Pigmentation & teint'},
+    {t:'check',n:'',o:['Taches brunes','Hyperpigmentation post-inflammatoire',
+      'Mélasma (taches diffuses souvent hormonales)','Teint terne','Teint irrégulier']},
+    {sub:'Texture & vieillissement'},
+    {t:'check',n:'',o:['Texture irrégulière','Cicatrices d\'acné','Relâchement cutané',
+      'Ridules','Rides installées']},
+  ]},
+  {n:5,h:'Couleur & phototype de peau',tag:'Phototype',fields:[
+    {t:'radio',n:'Couleur de peau',o:['Très claire','Claire','Mate','Foncée','Très foncée']},
+    {t:'radio',n:'Réaction au soleil',o:['Brûle facilement','Bronze légèrement','Bronze facilement','Pigmente facilement']},
+  ]},
+  {n:6,h:'Zones concernées',tag:'Localisation',fields:[
+    {t:'check',n:'Zones du corps concernées',o:[
+      'Front','Joues','Menton','Nez','Mâchoire','Cou','Dos','Poitrine',
+      'Aisselles','Maillot','Bras','Jambes','Fesses','Corps entier']},
+  ]},
+  {n:7,h:'Historique cutané',tag:'Antécédents',fields:[
+    {t:'check',n:'Avez-vous déjà eu',o:[
+      'Acné sévère','Allergies cutanées','Eczéma','Psoriasis','Dermatite','Rosacée',
+      'Infection cutanée','Cicatrices chéloïdes (épaisses qui gonflent)',
+      'Réaction à un produit cosmétique','Aucune pathologie connue']},
+  ]},
+  {n:8,h:'Produits actuels',tag:'Routine en cours',fields:[
+    {t:'long',n:'Nettoyant'},
+    {t:'long',n:'Sérum'},
+    {t:'long',n:'Crème hydratante'},
+    {t:'long',n:'Crème traitante'},
+    {t:'long',n:'SPF / protection solaire'},
+    {t:'long',n:'Exfoliants / acides'},
+    {t:'long',n:'Huiles'},
+    {t:'long',n:'Produits éclaircissants'},
+  ]},
+  {n:9,h:'Actifs déjà utilisés',tag:'Réactions',fields:[
+    {t:'check',n:'Avez-vous déjà utilisé',o:[
+      'Acide salicylique','Acide glycolique','Acide lactique','Niacinamide',
+      'Rétinol','Trétinoïne','Hydroquinone','Acide azélaïque','Vitamine C',
+      'Peroxyde de benzoyle','Corticoïdes','Kojic acid']},
+    {t:'textarea',n:'Réactions observées'},
+  ]},
+  {n:10,h:'Routine actuelle',tag:'Habitudes',fields:[
+    {t:'textarea',n:'Matin'},
+    {t:'textarea',n:'Soir'},
+    {t:'text',n:'Fréquence d\'exfoliation'},
+    {t:'radio',n:'Utilisez-vous une protection solaire quotidiennement ?',o:['Oui','Non']},
+  ]},
+  {n:11,h:'Mode de vie',tag:'Hygiène de vie',fields:[
+    {t:'radio',n:'Buvez-vous suffisamment d\'eau ?',o:['Oui','Non']},
+    {t:'radio',n:'Votre alimentation est',o:['Équilibrée','Moyenne','Déséquilibrée']},
+    {t:'check',n:'Consommez-vous fréquemment',o:['Produits laitiers','Sucre','Fast-food','Alcool']},
+    {t:'radio',n:'Niveau de stress',o:['Faible','Moyen','Élevé']},
+    {t:'radio',n:'Qualité du sommeil',o:['Bonne','Moyenne','Mauvaise']},
+  ]},
+  {n:12,h:'Santé & hormones',tag:'Médical',fields:[
+    {t:'check',n:'Avez-vous',o:['SOPK','Troubles hormonaux','Grossesse récente',
+      'Post-partum','Thyroïde','Diabète','Anémie','Maladie auto-immune']},
+    {t:'radio',n:'Prenez-vous actuellement des médicaments ?',o:['Oui','Non']},
+    {t:'textarea',n:'Si oui, lesquels ?'},
+  ]},
+  {n:13,h:'Sensibilités & allergies',tag:'Allergènes',fields:[
+    {t:'check',n:'Êtes-vous allergique à',o:['Parfum','Huiles essentielles','Nickel',
+      'Conservateurs','Acides','Aucun connu']},
+  ]},
+  {n:14,h:'Habitudes pouvant impacter la peau',tag:'Comportements',fields:[
+    {t:'check',n:'Habitudes à surveiller',o:[
+      'Toucher fréquent du visage','Percer les boutons','Dormir maquillé(e)',
+      'Exposition solaire excessive','Peu de nettoyage des pinceaux','Frottements fréquents',
+      'Rasage fréquent','Gommages agressifs']},
+  ]},
+  {n:15,h:'Objectifs de la cliente',tag:'Attentes',fields:[
+    {t:'textarea',n:'Quels résultats souhaitez-vous obtenir ?'},
+    {t:'text',n:'En combien de temps ?'},
+    {t:'radio',n:'Êtes-vous prêt(e) à suivre une routine régulière ?',o:['Oui','Non']},
+  ]},
+  {n:16,h:'Photos à fournir',tag:'Documentation',photoList:[
+    'Photo face',
+    'Profil droit',
+    'Profil gauche',
+    'Zones concernées',
+    'Photos sans filtre ni maquillage'
+  ]},
+  {n:17,h:'Analyse professionnelle',tag:'Partie clinique',fields:[
+    {t:'long',n:'Type de peau (analyse)'},
+    {t:'long',n:'État de peau (analyse)'},
+    {t:'radio',n:'Niveau de sensibilité',o:['Faible','Moyen','Élevé']},
+    {t:'radio',n:'Niveau d\'hydratation',o:['Bon','Moyen','Faible']},
+    {t:'radio',n:'Niveau d\'inflammation',o:['Faible','Moyen','Élevé']},
+    {t:'textarea',n:'Diagnostic esthétique'},
+    {t:'radio',n:'Barrière cutanée',o:['Saine','Fragilisée','Endommagée']},
+  ]},
+  {n:18,h:'Routine recommandée',tag:'Prescription',fields:[
+    {sub:'Matin'},
+    {t:'long',n:'Nettoyant matin'},
+    {t:'long',n:'Sérum matin'},
+    {t:'long',n:'Hydratant matin'},
+    {t:'long',n:'Protection solaire'},
+    {sub:'Soir'},
+    {t:'long',n:'Nettoyant soir'},
+    {t:'long',n:'Traitement soir'},
+    {t:'long',n:'Hydratant soir'},
+  ]},
+  {n:19,h:'Soins cabine recommandés',tag:'Protocole clinique',fields:[
+    {t:'check',n:'Soins recommandés',o:[
+      'Hydrafacial','Microneedling','Peeling superficiel','Peeling anti-acné',
+      'Peeling anti-taches','LED thérapie','Extraction des comédons',
+      'Soin hydratant intense','Soin réparateur barrière cutanée']},
+    {t:'text',n:'Fréquence'},
+  ]},
+  {n:20,h:'Suivi professionnel',tag:'Évolutions',fields:[
+    {suivi:1},{suivi:2},{suivi:3},
+  ]},
+  {n:21,h:'Notes professionnelles',tag:'Observations libres',fields:[
+    {t:'textarea',n:'Notes libres de l\'esthéticienne'},
+  ]},
+];
+
+const $=id=>document.getElementById(id);
+const root=$('sectionsRoot');
+
+/* ===== RENDU DU FORMULAIRE ===== */
+function renderField(f,si,fi){
+  if(f.sub){
+    return `<div class="sec-sub">${f.sub}</div>`;
+  }
+  if(f.grid){
+    return `<div class="fgrid-2">${f.grid.map((g,gi)=>renderField(g,si,fi+'_'+gi)).join('')}</div>`;
+  }
+  if(f.suivi){
+    return `<div class="suivi-card">
+      <div class="suivi-card-h">Consultation ${f.suivi}</div>
+      <div class="fld"><label>Date</label><input type="date" data-fld="Suivi ${f.suivi} — Date"></div>
+      <div class="fld"><label>Évolution</label><textarea data-fld="Suivi ${f.suivi} — Évolution"></textarea></div>
+      <div class="fld"><label>Tolérance produits</label><textarea data-fld="Suivi ${f.suivi} — Tolérance produits"></textarea></div>
+      <div class="fld"><label>Nouveaux symptômes</label><textarea data-fld="Suivi ${f.suivi} — Nouveaux symptômes"></textarea></div>
+      <div class="fld"><label>Ajustements</label><textarea data-fld="Suivi ${f.suivi} — Ajustements"></textarea></div>
+    </div>`;
+  }
+  const id='f_'+si+'_'+fi;
+  const labelTxt=f.n?`<label>${f.n}${f.req?' <span style="color:var(--rose)">*</span>':''}</label>`:'';
+  if(f.t==='text'||f.t==='tel'||f.t==='email'||f.t==='date'||f.t==='long'){
+    const it=(f.t==='long')?'text':f.t;
+    const dv=f.default?` value="${f.default}"`:'';
+    return `<div class="fld">${labelTxt}<input type="${it}" id="${id}" data-fld="${f.n}"${dv}></div>`;
+  }
+  if(f.t==='textarea'){
+    return `<div class="fld">${labelTxt}<textarea id="${id}" data-fld="${f.n}"></textarea></div>`;
+  }
+  if(f.t==='radio'){
+    return `<div class="fld">${labelTxt}<div class="opt-row" data-grp="${id}">${f.o.map((o,oi)=>
+      `<label class="opt"><input type="radio" name="${id}" value="${o.replace(/"/g,'&quot;')}" data-fld="${f.n}"><span>${o}</span></label>`
+    ).join('')}</div></div>`;
+  }
+  if(f.t==='check'){
+    return `<div class="fld">${labelTxt}<div class="opt-row">${f.o.map(o=>
+      `<label class="opt"><input type="checkbox" value="${o.replace(/"/g,'&quot;')}" data-fld="${f.n||'_check_'+si}"><span>${o}</span></label>`
+    ).join('')}</div></div>`;
+  }
+  return '';
+}
+
+function renderSection(sec,si){
+  if(sec.photoList){
+    return `<section class="sec">
+      <div class="sec-h"><div class="sec-n">${sec.n}</div><h2>${sec.h}</h2>
+        <span class="sec-h-tag">${sec.tag||''}</span></div>
+      <div class="photo-list">
+        <p style="margin-bottom:10px;font-size:.84rem;color:var(--texte-doux)">À demander à la cliente sur WhatsApp :</p>
+        <ul>${sec.photoList.map(p=>`<li>${p}</li>`).join('')}</ul>
+      </div>
+    </section>`;
+  }
+  const body=sec.fields.map((f,fi)=>renderField(f,si,fi)).join('');
+  return `<section class="sec">
+    <div class="sec-h"><div class="sec-n">${sec.n}</div><h2>${sec.h}</h2>
+      ${sec.tag?`<span class="sec-h-tag">${sec.tag}</span>`:''}</div>
+    ${body}
+  </section>`;
+}
+
+root.innerHTML=SECTIONS.map(renderSection).join('');
+
+/* ===== INTERACTIONS OPT (radio/check) ===== */
+root.addEventListener('click',e=>{
+  const lbl=e.target.closest('.opt');
+  if(!lbl)return;
+  const inp=lbl.querySelector('input');
+  if(inp.type==='radio'){
+    lbl.closest('.opt-row').querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));
+    lbl.classList.add('sel');
+  }else{
+    requestAnimationFrame(()=>lbl.classList.toggle('sel',inp.checked));
+  }
+});
+
+/* ===== TOAST ===== */
+const toast=$('toast');
+let toastT=null;
+function showToast(msg,err){
+  toast.textContent=msg;
+  toast.classList.toggle('err',!!err);
+  toast.classList.add('show');
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>toast.classList.remove('show'),2800);
+}
+
+/* ===== RÉCUPÉRATION DES DONNÉES ===== */
+function collect(){
+  const ans={};
+  root.querySelectorAll('input,textarea').forEach(inp=>{
+    const k=inp.dataset.fld;if(!k)return;
+    const v=inp.value;
+    if(inp.type==='checkbox'){
+      if(inp.checked){ans[k]=ans[k]||[];ans[k].push(inp.value);}
+    }else if(inp.type==='radio'){
+      if(inp.checked)ans[k]=inp.value;
+    }else if(v&&v.trim()){
+      ans[k]=v.trim();
+    }
+  });
+  return ans;
+}
+
+/* ===== CONSTRUCTION DU PDF STAGE ===== */
+const pdfStage=$('pdfStage');
+
+function fmtDate(iso){
+  if(!iso)return '';
+  const d=new Date(iso);if(isNaN(d))return iso;
+  return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+}
+function nowFr(){
+  return new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+}
+function esc(s){return String(s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+
+function buildPdfStage(ans){
+  const nom=ans['Nom & prénom']||'Cliente';
+  const dateConsult=fmtDate(ans['Date de la consultation'])||nowFr();
+  const therapist=ans['Esthéticienne / Skin therapist']||'Mme Sabrina';
+
+  let html=`<div class="pdf-cover">
+    <div class="pdf-cover-eyebrow">Carnet professionnel · soins & suivi cutané</div>
+    <h1>INA Luxury Skin Clinic</h1>
+    <div class="pdf-cover-sub">Diagnostic avancé visage & corps</div>
+    <div class="pdf-cover-meta">
+      <span><b>Cliente :</b> ${esc(nom)}</span>
+      <span><b>Date :</b> ${esc(dateConsult)}</span>
+      <span><b>Par :</b> ${esc(therapist)}</span>
+    </div>
+  </div>`;
+
+  SECTIONS.forEach(sec=>{
+    if(sec.photoList){
+      html+=`<div class="pdf-sec">
+        <div class="pdf-sec-h"><span class="pdf-sec-n">${sec.n}.</span>
+          <span class="pdf-sec-t">${sec.h}</span></div>
+        <div style="font-size:10.5px;color:#5a4f3e;margin-bottom:6px">Photos à demander à la cliente :</div>
+        <div class="pdf-checks">${sec.photoList.map(p=>`<span class="pdf-check-li">📸 ${esc(p)}</span>`).join('')}</div>
+      </div>`;
+      return;
+    }
+    let secBody='';
+    sec.fields.forEach(f=>{
+      if(f.sub){secBody+=`<div class="pdf-sub">${esc(f.sub)}</div>`;return;}
+      if(f.grid){
+        f.grid.forEach(g=>secBody+=renderPdfField(g,ans));
+        return;
+      }
+      if(f.suivi){
+        const k=`Suivi ${f.suivi}`;
+        const date=fmtDate(ans[k+' — Date']);
+        const evo=ans[k+' — Évolution'];
+        const tol=ans[k+' — Tolérance produits'];
+        const sym=ans[k+' — Nouveaux symptômes'];
+        const adj=ans[k+' — Ajustements'];
+        if(!date&&!evo&&!tol&&!sym&&!adj){
+          secBody+=`<div class="pdf-sub">Consultation ${f.suivi}</div><div class="pdf-empty">— Non renseignée —</div>`;
+          return;
+        }
+        secBody+=`<div class="pdf-sub">Consultation ${f.suivi}</div>`;
+        if(date)secBody+=`<dl class="pdf-row"><dt>Date</dt><dd>${esc(date)}</dd></dl>`;
+        if(evo)secBody+=`<dl class="pdf-row"><dt>Évolution</dt><dd>${esc(evo)}</dd></dl>`;
+        if(tol)secBody+=`<dl class="pdf-row"><dt>Tolérance produits</dt><dd>${esc(tol)}</dd></dl>`;
+        if(sym)secBody+=`<dl class="pdf-row"><dt>Nouveaux symptômes</dt><dd>${esc(sym)}</dd></dl>`;
+        if(adj)secBody+=`<dl class="pdf-row"><dt>Ajustements</dt><dd>${esc(adj)}</dd></dl>`;
+        return;
+      }
+      secBody+=renderPdfField(f,ans);
+    });
+    if(!secBody.trim())secBody='<div class="pdf-empty">— Aucune information renseignée —</div>';
+    html+=`<div class="pdf-sec">
+      <div class="pdf-sec-h"><span class="pdf-sec-n">${sec.n}.</span>
+        <span class="pdf-sec-t">${esc(sec.h)}</span></div>
+      ${secBody}
+    </div>`;
+  });
+
+  html+=`<div class="pdf-foot">
+    INA Luxury Skin Clinic · <b>Mme Sabrina</b> · Cotonou, Bénin<br>
+    WhatsApp : +229 01 67 97 56 26 · Document généré le ${nowFr()}
+  </div>`;
+
+  pdfStage.innerHTML=html;
+}
+
+function renderPdfField(f,ans){
+  if(!f.n)return '';
+  const v=ans[f.n];
+  if(v===undefined||v===null||v===''||(Array.isArray(v)&&v.length===0)){
+    // Pour les champs cliniques importants on affiche "—"
+    return '';
+  }
+  if(Array.isArray(v)){
+    return `<div style="margin-bottom:8px">
+      <div style="font-size:10px;font-weight:600;color:#5a4f3e;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px">${esc(f.n)||''}</div>
+      <div class="pdf-checks">${v.map(x=>`<span class="pdf-check-li">${esc(x)}</span>`).join('')}</div>
+    </div>`;
+  }
+  // pour les textareas, on rend en bloc
+  if(f.t==='textarea'){
+    return `<div style="margin-bottom:8px">
+      <div style="font-size:10px;font-weight:600;color:#5a4f3e;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px">${esc(f.n)}</div>
+      <div class="pdf-note">${esc(v).replace(/\n/g,'<br>')}</div>
+    </div>`;
+  }
+  return `<dl class="pdf-row"><dt>${esc(f.n)}</dt><dd>${esc(v)}</dd></dl>`;
+}
+
+/* ===== GÉNÉRATION PDF ===== */
+async function generatePdf(){
+  const ans=collect();
+  if(!ans['Nom & prénom']){
+    showToast('Veuillez renseigner le nom de la cliente avant de générer le PDF.',1);
+    document.querySelector('input[data-fld="Nom & prénom"]').focus();
+    return;
+  }
+
+  const btn=$('btnPdf'),btn2=$('btnPdf2');
+  const origHtml=btn.innerHTML,origHtml2=btn2.innerHTML;
+  btn.innerHTML='<span class="spinner"></span> Génération...';
+  btn2.innerHTML='<span class="spinner"></span> Génération...';
+  btn.disabled=true;btn2.disabled=true;
+
+  try{
+    buildPdfStage(ans);
+    // Petit délai pour que le DOM se peigne
+    await new Promise(r=>setTimeout(r,50));
+
+    const stage=pdfStage;
+    const canvas=await html2canvas(stage,{
+      scale:2,
+      backgroundColor:'#ffffff',
+      logging:false,
+      useCORS:true,
+      windowWidth:stage.scrollWidth,
+      windowHeight:stage.scrollHeight,
+    });
+
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF('p','mm','a4');
+    const pdfW=210,pdfH=297;
+    const imgW=pdfW;
+    const imgH=(canvas.height*imgW)/canvas.width;
+
+    let heightLeft=imgH;
+    let position=0;
+    const imgData=canvas.toDataURL('image/jpeg',0.94);
+
+    pdf.addImage(imgData,'JPEG',0,position,imgW,imgH);
+    heightLeft-=pdfH;
+    while(heightLeft>0){
+      position=heightLeft-imgH;
+      pdf.addPage();
+      pdf.addImage(imgData,'JPEG',0,position,imgW,imgH);
+      heightLeft-=pdfH;
+    }
+
+    const nom=(ans['Nom & prénom']||'cliente').replace(/[^a-zA-Z0-9-_ ]/g,'').trim().replace(/\s+/g,'_');
+    const dateIso=(ans['Date de la consultation']||new Date().toISOString().slice(0,10));
+    const filename=`Carnet_${nom}_${dateIso}.pdf`;
+    pdf.save(filename);
+
+    showToast('PDF généré ✨ — partagez-le sur WhatsApp');
+  }catch(err){
+    console.error(err);
+    showToast('Erreur lors de la génération du PDF',1);
+  }finally{
+    btn.innerHTML=origHtml;btn2.innerHTML=origHtml2;
+    btn.disabled=false;btn2.disabled=false;
+    // Vider le stage pour éviter qu'il pèse en mémoire
+    pdfStage.innerHTML='';
+  }
+}
+
+$('btnPdf').addEventListener('click',generatePdf);
+$('btnPdf2').addEventListener('click',generatePdf);
+
+/* ===== RÉINITIALISER ===== */
+function resetForm(){
+  if(!confirm('Démarrer une nouvelle fiche ? Toutes les données saisies seront effacées.'))return;
+  root.querySelectorAll('input,textarea').forEach(inp=>{
+    if(inp.type==='checkbox'||inp.type==='radio')inp.checked=false;
+    else if(!inp.value||inp.dataset.fld!=='Esthéticienne / Skin therapist')inp.value='';
+  });
+  root.querySelectorAll('.opt.sel').forEach(o=>o.classList.remove('sel'));
+  // Remettre la valeur par défaut de l'esthéticienne
+  const t=document.querySelector('input[data-fld="Esthéticienne / Skin therapist"]');
+  if(t)t.value='Mme Sabrina';
+  // Remettre la date du jour si vide
+  const d=document.querySelector('input[data-fld="Date de la consultation"]');
+  if(d&&!d.value)d.value=new Date().toISOString().slice(0,10);
+  window.scrollTo({top:0,behavior:'smooth'});
+  showToast('Fiche réinitialisée');
+}
+$('btnReset').addEventListener('click',resetForm);
+$('btnReset2').addEventListener('click',resetForm);
+
+/* ===== INIT : date du jour pré-remplie ===== */
+(function init(){
+  const d=document.querySelector('input[data-fld="Date de la consultation"]');
+  if(d&&!d.value)d.value=new Date().toISOString().slice(0,10);
+})();
+</script>
+</body>
+</html>
