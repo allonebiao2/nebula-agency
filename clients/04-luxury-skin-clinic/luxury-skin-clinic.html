@@ -826,6 +826,52 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
   </div>
 </div>
 
+<!-- MODAL CONDITIONS DIAGNOSTIC CAPILLAIRE -->
+<div class="modal-scrim" id="hairTermsScrim">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Conditions du diagnostic capillaire">
+    <div class="modal-head">
+      <div><div class="mh-tag">À lire avant l'envoi</div><h3>Conditions du diagnostic</h3></div>
+      <button class="modal-close" data-close="hairTermsScrim" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p class="regl-intro">🌿 <b>Merci d'avoir rempli votre questionnaire capillaire.</b><br>
+        Pour permettre à Mme Sabrina d'analyser vos cheveux et de préparer vos recommandations personnalisées,
+        merci de lire attentivement les conditions ci-dessous.</p>
+      <div class="regl-list">
+        <div class="regl-item"><div class="regl-num">1</div><div>
+          <b>💳 Paiement du diagnostic</b>
+          <p>• Le diagnostic capillaire personnalisé est facturé <b>5 000 FCFA</b>.<br>
+          • Paiement à effectuer au <b>01 67 97 56 26</b> (Mobile Money), comme pour tous nos services.<br>
+          • Une fois le paiement effectué, envoyez la <b>capture du paiement</b> sur WhatsApp en réponse à notre message.</p></div></div>
+        <div class="regl-item"><div class="regl-num">2</div><div>
+          <b>⏰ Délai de réception des résultats</b>
+          <p>• Après réception de votre capture de paiement, vos résultats sont préparés sous <b>24 à 72 heures</b>.<br>
+          • Vous recevrez : votre <b>diagnostic complet</b> + les <b>recommandations personnalisées</b> (routine, soins, produits adaptés).</p></div></div>
+        <div class="regl-item"><div class="regl-num">3</div><div>
+          <b>📸 Photos à transmettre</b>
+          <p>Pour un diagnostic précis, joignez sur WhatsApp :<br>
+          • photo du cuir chevelu · photo des longueurs · photo de face<br>
+          • photo des zones concernées · photo récente sans filtre</p></div></div>
+        <div class="regl-item"><div class="regl-num">4</div><div>
+          <b>🔒 Confidentialité</b>
+          <p>Toutes vos informations restent strictement confidentielles et ne sont utilisées que pour préparer
+          votre diagnostic et vos recommandations personnalisées.</p></div></div>
+      </div>
+      <p class="regl-intro" style="margin-top:14px;padding:12px 14px;border-radius:12px;background:rgba(201,168,76,.10);border:1px solid rgba(201,168,76,.32);font-size:.86rem">
+        ⚠️ <b>NB : Le paiement de 5 000 FCFA est OBLIGATOIRE pour recevoir vos résultats.</b><br>
+        Sans capture de paiement, aucun diagnostic ne pourra être transmis.
+      </p>
+      <label class="regl-check">
+        <input type="checkbox" id="hairTermsCheck">
+        <span>J'ai lu et j'accepte les conditions. Je m'engage à effectuer le paiement de <b>5 000 FCFA</b> au <b>01 67 97 56 26</b> et à envoyer la capture sur WhatsApp pour recevoir mes résultats sous 24 à 72h.</span>
+      </label>
+      <button class="regl-confirm" id="hairTermsConfirm" data-lc="ok" disabled>
+        <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> J'ai lu, j'accepte — Envoyer
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- (Ancienne MODAL CONFIRMATION supprimee — remplacee par lc-thanks-modal en bas de page) -->
 
 <script>
@@ -1023,14 +1069,14 @@ const SERVICES=[
    det:`<div class="det-h">🌿 Une expérience à vivre au moins une fois dans sa vie</div><p class="det-p">Le Massage Luxury Skin Technique est bien plus qu'un massage : c'est une expérience immersive de relaxation profonde, pensée pour relâcher les tensions du corps et apaiser l'esprit.</p><p class="det-p">Grâce à une combinaison de plusieurs techniques de massage professionnelles, ce rituel agit sur l'ensemble du corps pour détendre intensément les muscles, apaiser les nerfs et rétablir une sensation globale de bien-être.</p><div class="det-h">🧖🏽‍♀️ Une prise en charge complète du corps</div><p class="det-p">Ce massage est conçu pour ne laisser aucune zone de côté.</p><p class="det-p"><b>Chaque partie du corps est travaillée avec précision :</b></p><ul class="det-ul"><li>cuir chevelu et crâne</li><li>nuque et cou</li><li>dos complet</li><li>bras et mains</li><li>cuisses et jambes</li><li>pieds et plantes des pieds</li></ul><p class="det-p">👉 Aucune zone n'est oubliée, aucune tension n'est ignorée.</p><div class="det-h">💆🏽‍♀️ Une technique professionnelle & maîtrisée</div><p class="det-p">Le massage est réalisé par une esthéticienne formée aux techniques de relaxation et de bien-être.</p><p class="det-p">Il combine plusieurs approches afin d'obtenir un résultat profond et harmonieux :</p><ul class="det-ul"><li>détente musculaire</li><li>relâchement des tensions nerveuses</li><li>amélioration de la circulation du bien-être corporel</li><li>apaisement global du corps et de l'esprit</li></ul><div class="det-h">🌫️ Ambiance & durée</div><p class="det-p">Le soin se déroule dans une ambiance :</p><ul class="det-ul"><li>douce</li><li>calme</li><li>chaleureuse</li><li>relaxante</li></ul><p class="det-p">La durée du massage est de 1 heure complète, entièrement dédiée à votre détente.</p><div class="det-h">💎 Résultats attendus</div><p class="det-phase"><b>Dès la fin du soin :</b></p><ul class="det-ul"><li>sensation de légèreté du corps</li><li>relâchement des tensions</li><li>apaisement profond</li><li>esprit plus calme et détendu</li></ul><div class="det-h">📅 Fréquence recommandée</div><p class="det-p">Le Massage Luxury Skin Technique peut être réalisé :</p><p class="det-p">👉 à volonté, selon vos besoins et votre envie de détente.<br>Il suffit simplement de prendre rendez-vous.</p><div class="det-h">🌿 L'esprit du soin</div><p class="det-p">Ce massage est une parenthèse hors du temps, une reconnexion totale au corps et au bien-être.<br>Il invite à relâcher, respirer et se recentrer dans une expérience de détente complète et luxueuse.</p>`,
    protocol:{type:'list',h:'Zones travaillées',items:[
      "Cuir chevelu","Nuque","Dos","Bras","Jambes","Pieds"]}},
-  {g:'capillaires',n:'Diagnostic Capillaire',tier:'',tierCls:'',p:5000,kind:'pay-wa-hair',
+  {g:'capillaires',n:'Diagnostic Capillaire',tier:'',tierCls:'',p:5000,kind:'form-hair',
    d:"Perfect Hair Program™ — Diagnostic personnalisé pour comprendre vos cheveux et votre cuir chevelu.",
    c:['chute','pousse','cuir-sensible'],
    meta:[['Diagnostic','grid']],
-   det:`<div class="det-h">Pourquoi cette consultation ?</div><p class="det-p">La consultation capillaire est une étape essentielle pour comprendre les besoins réels de vos cheveux et de votre cuir chevelu. ✨</p><p class="det-p">Elle permet d'identifier les causes des problèmes capillaires <b>(chute, casse, pellicules, sécheresse, manque de pousse, irritation…)</b> afin de proposer une routine et des soins adaptés à votre situation.</p><p class="det-p">Chaque cheveu est différent : un diagnostic personnalisé permet d'éviter les mauvais produits, de mieux cibler les besoins du cuir chevelu et d'obtenir des résultats plus efficaces et durables. 🤍</p><div class="det-h">Comment ça se passe</div><p class="det-p">Service à <b>5 000 FCFA</b>. Vous serez accompagnée personnellement par Mme Sabrina sur WhatsApp pour le règlement, le questionnaire diagnostic et la transmission de vos photos. Une routine sur-mesure vous sera ensuite proposée.</p>`,
+   det:`<div class="det-h">Pourquoi cette consultation ?</div><p class="det-p">La consultation capillaire est une étape essentielle pour comprendre les besoins réels de vos cheveux et de votre cuir chevelu. ✨</p><p class="det-p">Elle permet d'identifier les causes des problèmes capillaires <b>(chute, casse, pellicules, sécheresse, manque de pousse, irritation…)</b> afin de proposer une routine et des soins adaptés à votre situation.</p><p class="det-p">Chaque cheveu est différent : un diagnostic personnalisé permet d'éviter les mauvais produits, de mieux cibler les besoins du cuir chevelu et d'obtenir des résultats plus efficaces et durables. 🤍</p><div class="det-h">Comment ça se passe</div><p class="det-p">1. Vous remplissez le questionnaire capillaire complet.<br>2. Vous lisez et acceptez les conditions de diagnostic.<br>3. Vous effectuez le paiement obligatoire de <b>5 000 FCFA</b> au <b>01 67 97 56 26</b> (Mobile Money) et envoyez la capture sur WhatsApp.<br>4. Vous recevez vos résultats et recommandations sous <b>24 à 72h</b>.</p>`,
    protocol:{type:'list',h:'Ce qui est inclus',items:[
-     "Questionnaire capillaire complet","Analyse du cuir chevelu et de la fibre",
-     "Recommandation de protocole personnalisé","Photos à transmettre sur WhatsApp après l'envoi"]}},
+     "Questionnaire capillaire complet (12 sections)","Analyse du cuir chevelu et de la fibre",
+     "Recommandation de routine et de protocole personnalisé","Résultats sous 24 à 72h après réception de votre paiement"]}},
   {g:'capillaires',n:'Le Hair Spa',tier:'',tierCls:'',p:15000,kind:'book',
    d:"Rituel capillaire & détente profonde — Soin du cuir chevelu • Relaxation intense • Expertise capillaire.",
    c:['cuir-sensible','secs','bienetre'],
@@ -1106,31 +1152,90 @@ const SKIN_FORM={
   ]
 };
 const HAIR_FORM={
-  title:'Diagnostic Capillaire',tag:'Perfect Hair Program',
-  intro:"Ce questionnaire ouvre votre Perfect Hair Program. Il nous aide à comprendre votre cheveu et votre cuir chevelu.",
+  title:'Questionnaire Capillaire',tag:'Diagnostic personnalisé',
+  intro:"Diagnostic cheveux & cuir chevelu — INA Luxury Hair Clinic. Répondez avec précision afin que Mme Sabrina puisse créer une routine totalement personnalisée à votre cuir chevelu, vos cheveux, vos habitudes et vos objectifs.",
   waPrefix:"Bonjour Luxury Skin Clinic, voici mon questionnaire de Diagnostic Capillaire :",
   sections:[
-    {h:'Informations',fields:[
-      {t:'text',n:'Nom complet',req:1},{t:'text',n:'Âge'},
-      {t:'tel',n:'Téléphone / WhatsApp',req:1}]},
-    {h:'Type & nature des cheveux',fields:[
-      {t:'radio',n:'Nature des cheveux',o:['Lisses','Ondulés','Bouclés','Crépus']},
-      {t:'radio',n:'Épaisseur',o:['Fins','Moyens','Épais']},
-      {t:'radio',n:'Cheveux naturels ou traités',o:['Naturels','Colorés','Défrisés','Autre traitement']}]},
+    {h:'Informations personnelles',fields:[
+      {t:'text',n:'Nom & prénom',req:1},
+      {t:'text',n:'Âge'},
+      {t:'radio',n:'Sexe',o:['Femme','Homme']},
+      {t:'text',n:'Profession'},
+      {t:'tel',n:'Numéro WhatsApp',req:1},
+      {t:'text',n:'Email'},
+      {t:'text',n:'Ville / Pays'}]},
+    {h:'Objectifs capillaires',fields:[
+      {t:'check',n:'Vos principaux objectifs',o:[
+        'Accélérer la pousse','Réduire la chute des cheveux',
+        'Traiter l\'alopécie (zones clairsemées ou perte de densité)',
+        'Traiter les pellicules','Soulager les démangeaisons',
+        'Traiter le psoriasis du cuir chevelu (plaques, squames, irritations)',
+        'Réduire la casse','Hydrater les cheveux','Fortifier les cheveux',
+        'Retrouver de la densité','Réparer les cheveux abîmés','Définir les boucles',
+        'Entretenir les locks','Réduire les irritations du cuir chevelu']},
+      {t:'text',n:'Autre objectif'},
+      {t:'radio',n:'Depuis combien de temps avez-vous ce problème ?',o:['Quelques semaines','Quelques mois','Plus d\'un an','Plusieurs années']}]},
+    {h:'Type de cheveux',fields:[
+      {t:'check',n:'Texture capillaire',o:['Crépus','Bouclés','Frisés','Défrisés','Locksés','Naturels','Colorés','Décolorés']},
+      {t:'radio',n:'Épaisseur de cheveux',o:['Fins (légers et fragiles)','Moyens','Épais (volumineux et résistants)']},
+      {t:'radio',n:'Densité capillaire',o:['Faible (cuir chevelu visible facilement)','Moyenne','Forte (chevelure très dense)']},
+      {t:'radio',n:'Vos cheveux sont-ils ?',o:['Très secs (rêches, ternes, difficiles à coiffer)','Secs','Normaux','Gras (regraissent rapidement)']},
+      {t:'check',n:'Vos pointes sont-elles ?',o:['Saines','Sèches','Fourchues (ouvertes ou fendillées)','Cassantes (se cassent facilement)']}]},
     {h:'État du cuir chevelu',fields:[
-      {t:'radio',n:'Type de cuir chevelu',o:['Sec','Normal','Gras','Sensible / irrité']},
-      {t:'check',n:'Sensations ressenties',o:['Démangeaisons','Pellicules','Tiraillements','Excès de sébum','Aucune']}]},
-    {h:'Problématiques capillaires',fields:[
-      {t:'check',n:'Vos préoccupations',o:['Chute des cheveux','Cheveux secs','Cheveux abîmés','Pousse lente','Manque de volume','Pointes fourchues']},
+      {t:'check',n:'Votre cuir chevelu est',o:['Sec (tiraillements, petites peaux, inconfort)','Gras (racines huileuses)','Sensible (réagit aux produits ou coiffures)','Irrité (rougeurs, picotements)','Normal']},
+      {t:'check',n:'Ressentez-vous',o:['Démangeaisons','Douleurs (sensibilité au toucher)','Sensation de brûlure','Rougeurs','Pellicules sèches (blanches, qui tombent)','Pellicules grasses (jaunes ou collantes)','Plaques (zones épaisses ou squameuses)','Croûtes (accumulations épaisses)','Odeurs inhabituelles']},
+      {t:'check',n:'Déjà diagnostiqué(e) avec',o:['Psoriasis (plaques épaisses, squames blanches/argentées)','Dermatite séborrhéique','Alopécie androgénétique (perte progressive héréditaire)','Alopécie de traction (coiffures serrées)','Pelade (zones rondes sans cheveux)','Eczéma','Aucune pathologie connue']},
+      {t:'text',n:'Autre pathologie'},
       {t:'textarea',n:'Depuis combien de temps ?'}]},
-    {h:'Routine actuelle',fields:[
-      {t:'radio',n:'Fréquence de lavage',o:['Tous les jours','2-3 fois / semaine','1 fois / semaine','Moins souvent']},
-      {t:'textarea',n:'Produits actuellement utilisés'}]},
-    {h:'Habitudes & coiffage',fields:[
-      {t:'check',n:'Habitudes de coiffage',o:['Tresses / tissages','Chaleur (fer, séchoir)','Coiffures serrées','Aucune particulière']},
-      {t:'radio',n:'Traitement chimique récent',o:['Oui','Non']}]},
-    {h:'Objectifs',fields:[
-      {t:'textarea',n:'Quel résultat souhaitez-vous obtenir ?',req:1}]},
+    {h:'Chute & alopécie',fields:[
+      {t:'radio',n:'Constatez-vous une chute excessive ?',o:['Oui','Non']},
+      {t:'check',n:'La chute est située',o:['Diffuse (sur toute la tête)','Frontale (ligne frontale qui recule)','Tempes','Vertex (sommet du crâne)','Bords clairsemés','Zones localisées']},
+      {t:'textarea',n:'Depuis quand ?'},
+      {t:'check',n:'Avez-vous remarqué',o:['Amincissement des cheveux','Trous / zones dégarnies','Cassure importante','Régression de la ligne frontale']},
+      {t:'radio',n:'Antécédents familiaux d\'alopécie ?',o:['Oui','Non']}]},
+    {h:'Habitudes capillaires',fields:[
+      {t:'radio',n:'Fréquence de lavage',o:['1 fois / semaine','2 fois / semaine','Toutes les 2 semaines','Rarement']},
+      {t:'text',n:'Shampoing utilisé'},
+      {t:'text',n:'Après-shampoing utilisé'},
+      {t:'text',n:'Huiles utilisées'},
+      {t:'text',n:'Masques utilisés'},
+      {t:'text',n:'Leave-in utilisé'},
+      {t:'check',n:'Utilisez-vous fréquemment',o:['Gel coiffant','Lace glue / colle','Cire','Mousse coiffante','Huiles lourdes']},
+      {t:'check',n:'Portez-vous souvent',o:['Perruques','Tissages','Braids','Vanilles','Chignons serrés','Locks']},
+      {t:'radio',n:'Fréquence d\'utilisation de la chaleur',o:['Jamais','Occasionnellement','Régulièrement']},
+      {t:'check',n:'Outils chauffants utilisés',o:['Fer à lisser','Sèche-cheveux','Casque chauffant']}]},
+    {h:'Antécédents chimiques',fields:[
+      {t:'check',n:'Avez-vous déjà utilisé',o:['Défrisage','Coloration','Décoloration','Botox capillaire','Lissage brésilien','Autre traitement chimique']},
+      {t:'text',n:'Date du dernier traitement chimique'},
+      {t:'radio',n:'Réaction allergique à un produit capillaire ?',o:['Oui','Non']},
+      {t:'text',n:'Si oui, lequel ?'}]},
+    {h:'Mode de vie & santé',fields:[
+      {t:'radio',n:'Buvez-vous suffisamment d\'eau ?',o:['Oui','Non']},
+      {t:'radio',n:'Votre alimentation est',o:['Équilibrée','Moyenne','Déséquilibrée']},
+      {t:'radio',n:'Êtes-vous souvent stressé(e) ?',o:['Oui','Non']},
+      {t:'radio',n:'Dormez-vous suffisamment ?',o:['Oui','Non']},
+      {t:'radio',n:'Prenez-vous des compléments alimentaires ?',o:['Oui','Non']},
+      {t:'text',n:'Si oui, lesquels ?'}]},
+    {h:'Santé générale',fields:[
+      {t:'check',n:'Avez-vous',o:['Problèmes hormonaux','SOPK (Syndrome des Ovaires Polykystiques)','Anémie (fatigue, carence en fer)','Troubles thyroïdiens','Carences','Maladie auto-immune','Post-partum récent','Aucun problème connu']},
+      {t:'radio',n:'Traitement médical en cours ?',o:['Oui','Non']},
+      {t:'text',n:'Si oui, lequel ?'},
+      {t:'radio',n:'Êtes-vous enceinte ou allaitante ?',o:['Oui','Non']}]},
+    {h:'Micro-needling capillaire',fields:[
+      {t:'radio',n:'Avez-vous déjà effectué du micro-needling capillaire ?',o:['Oui','Non']},
+      {t:'check',n:'Avez-vous',o:['Cuir chevelu sensible','Plaies ouvertes','Infection active','Psoriasis sévère actif','Antécédents de chéloïdes (cicatrices épaisses)','Aucun de ces éléments']},
+      {t:'radio',n:'Êtes-vous prêt(e) à suivre plusieurs séances pour optimiser les résultats ?',o:['Oui','Non']}]},
+    {h:'Objectifs & engagement',fields:[
+      {t:'textarea',n:'Quels résultats souhaitez-vous obtenir ?',req:1},
+      {t:'text',n:'En combien de temps espérez-vous voir des résultats ?'},
+      {t:'radio',n:'Êtes-vous prêt(e) à suivre une routine régulière ?',o:['Oui','Non']}]},
+    {h:'Photos à fournir',fields:[
+      {t:'check',n:'Je m\'engage à envoyer sur WhatsApp',o:[
+        'Une photo du cuir chevelu',
+        'Une photo des longueurs',
+        'Une photo de face',
+        'Une photo des zones concernées',
+        'Une photo récente sans filtre']}]},
   ]
 };
 
@@ -1501,7 +1606,8 @@ theForm.addEventListener('submit',e=>{
     else if(inp.value.trim())answers[key]=inp.value.trim();
   });
   const isSkin=(currentForm===SKIN_FORM);
-  const headTitle=isSkin?'la *Consultation Peau GRATUITE* 🩺':'mon *Diagnostic Capillaire* 🩺';
+  const isHair=(currentForm===HAIR_FORM);
+  const headTitle=isSkin?'la *Consultation Peau GRATUITE* 🩺':'mon *Diagnostic Capillaire personnalisé* 🩺';
   let body='';
   currentForm.sections.forEach(sec=>{
     let secLines='';
@@ -1511,26 +1617,61 @@ theForm.addEventListener('submit',e=>{
     });
     if(secLines)body+=`\n\n*${sec.h}*${secLines}`;
   });
-  const msg=`🌸 *Bonjour Luxury Club 229* ✨
+  const hairFooter=isHair
+    ?`
+
+━━━━━━━━━━━━━━━━━━━
+💳 *Paiement obligatoire : 5 000 FCFA*
+   Numéro : *01 67 97 56 26* (Mobile Money)
+📸 J'envoie ma capture de paiement dans cette conversation, ainsi que mes photos (cuir chevelu, longueurs, face, zones concernées, photo récente sans filtre).
+⏰ Je comprends que mes résultats + recommandations me seront transmis sous *24 à 72h* après réception de mon paiement.
+✅ J'ai lu et accepté les conditions du diagnostic.
+━━━━━━━━━━━━━━━━━━━`
+    :`
+
+Je joins mes photos dans cette conversation 📸`;
+  const msg=`🌸 *Bonjour Luxury Skin Clinic* ✨
 
 ${BRAND_LINE}
 
 Je souhaite bénéficier de ${headTitle}
 
-J'ai rempli le questionnaire en ligne, voici mes réponses :${body}
-
-Je joins mes photos dans cette conversation 📸
+J'ai rempli le questionnaire en ligne, voici mes réponses :${body}${hairFooter}
 
 Merci de me contacter pour la suite 🙏
 
 Réf : ${genRef()}  ·  ${nowFr()}`;
-  const formTitle=isSkin?'Consultation Peau — GRATUITE':'Diagnostic Capillaire';
-  const formIcon=isSkin?'🩺':'🩺';
+  const formTitle=isSkin?'Consultation Peau — GRATUITE':'Diagnostic Capillaire — 5 000 FCFA';
+  const formIcon='🩺';
   const photoNote=isSkin
     ?`<div class="lc-recap-line" style="border-top:1px solid rgba(201,168,76,.22);margin-top:8px;padding-top:12px;"><div class="nm">📸 Photos requises<small>Veuillez joindre des photos nettes des différentes faces de votre visage <b>après avoir envoyé votre questionnaire</b>, pour une meilleure analyse de Mme Sabrina.</small></div></div>`
-    :`<div class="lc-recap-line" style="border-top:1px solid rgba(201,168,76,.22);margin-top:8px;padding-top:12px;"><div class="nm">📸 Photos requises<small>À transmettre sur WhatsApp après l'envoi du questionnaire pour le diagnostic.</small></div></div>`;
+    :`<div class="lc-recap-line" style="border-top:1px solid rgba(201,168,76,.22);margin-top:8px;padding-top:12px;"><div class="nm">💳 Paiement requis<small><b>5 000 FCFA</b> au <b>01 67 97 56 26</b> (Mobile Money). Envoyez la capture de paiement + photos sur WhatsApp. Résultats sous <b>24 à 72h</b>.</small></div></div>`;
   const recapHtml=`<div class="lc-recap-line"><div class="nm">${formIcon} <b>${formTitle}</b><small>Questionnaire complet · ${currentForm.sections.length} sections renseignées</small></div></div>${photoNote}`;
   closeModal('formScrim');
+  // Pour le diagnostic capillaire payant → passer par le modal "Conditions" avant l'envoi WhatsApp
+  if(isHair){
+    const hairCheck=document.getElementById('hairTermsCheck');
+    const hairConfirmBtn=document.getElementById('hairTermsConfirm');
+    hairCheck.checked=false;
+    hairConfirmBtn.setAttribute('disabled','');
+    openModal('hairTermsScrim');
+    const onConfirm=()=>{
+      hairConfirmBtn.removeEventListener('click',onConfirm);
+      closeModal('hairTermsScrim');
+      window.lcConfirmOrder({
+        title:'Votre diagnostic capillaire ✨',
+        recap:recapHtml,
+        q:'Envoyer votre questionnaire à Mme Sabrina ?',
+        confirmLabel:'Envoyer mon questionnaire →',
+        onConfirm:()=>{
+          try{localStorage.removeItem(formKey());}catch(e){}
+          window.open(waLink(msg),'_blank');
+        },
+      });
+    };
+    hairConfirmBtn.addEventListener('click',onConfirm);
+    return;
+  }
   window.lcConfirmOrder({
     title:'Votre questionnaire ✨',
     recap:recapHtml,
@@ -1542,6 +1683,12 @@ Réf : ${genRef()}  ·  ${nowFr()}`;
     },
   });
 });
+// Activation du bouton "J'ai lu, j'accepte" en fonction de la case
+(function(){
+  const c=document.getElementById('hairTermsCheck'),b=document.getElementById('hairTermsConfirm');
+  if(!c||!b)return;
+  c.addEventListener('change',()=>b.toggleAttribute('disabled',!c.checked));
+})();
 document.getElementById('openSkinForm').addEventListener('click',()=>openForm('skin'));
 
 /* =========================================================================
