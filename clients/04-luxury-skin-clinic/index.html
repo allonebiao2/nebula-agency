@@ -725,6 +725,21 @@ const Audio=(function(){
     },{rootMargin:'0px 0px -10% 0px',threshold:.05});
     els.forEach(el=>io.observe(el));
   }
+  // Detecte si l'URL pointe directement vers une section (lien envoye par Sabrina,
+  // ex: ?#avis ou #temoignages). Dans ce cas on saute l'animation d'accueil
+  // et on scroll immediatement vers la section ciblee.
+  const DIRECT_HASHES=['#avis','#temoignages'];
+  const directTarget=DIRECT_HASHES.includes(location.hash)?location.hash:null;
+  function jumpToTarget(){
+    if(!directTarget)return;
+    const el=document.querySelector(directTarget);
+    if(!el)return;
+    // Reveler la section + ses voisines immediatement (pas d'attente du scroll)
+    document.querySelectorAll('#bio,#temoignages,#avis').forEach(s=>s.classList.add('show'));
+    setTimeout(()=>{
+      el.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'});
+    },reduceMotion?0:200);
+  }
   function enterSite(){
     if(loader.classList.contains('gone'))return;
     try{sessionStorage.setItem('lcAudioOn','1');}catch(e){}
@@ -732,11 +747,22 @@ const Audio=(function(){
     if(window.LCAudio){LCAudio.ensure();LCAudio.resume();LCAudio.play('chordOk');LCAudio.musicStart();}
     loader.classList.add('gone');
     hub.classList.add('ready');
-    setTimeout(()=>typePara(0),reduceMotion?0:240);
+    if(directTarget){
+      // Mode direct : afficher immediatement les sections sans animation typing
+      invite.classList.add('show');
+      document.querySelectorAll('.brand').forEach(b=>{b.style.opacity='1';});
+      foot.classList.add('show');
+      revealOnScroll(['#bio','#temoignages','#avis']);
+      jumpToTarget();
+    }else{
+      setTimeout(()=>typePara(0),reduceMotion?0:240);
+    }
   }
   loader.addEventListener('click',enterSite);
-  addEventListener('load',()=>setTimeout(enterSite,reduceMotion?150:850));
-  if(document.readyState==='complete')setTimeout(enterSite,reduceMotion?150:850);
+  // Si on arrive avec un hash direct, on accelere le loader (200ms au lieu de 850)
+  const loaderDelay=directTarget?(reduceMotion?0:200):(reduceMotion?150:850);
+  addEventListener('load',()=>setTimeout(enterSite,loaderDelay));
+  if(document.readyState==='complete')setTimeout(enterSite,loaderDelay);
 })();
 
 /* ===== ENTRÉE MARQUE : SON CRISTAL + ZOOM + RIDEAU ===== */
