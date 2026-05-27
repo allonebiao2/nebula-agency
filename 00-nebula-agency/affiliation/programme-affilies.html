@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Programme Partenaires Affiliés — NEBULA Agency</title>
+<meta name="description" content="Kit complet du partenaire affilié NEBULA Agency — vision, services, tarifs, scripts de vente, objections.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --noir:#0a0a0a; --noir-2:#141210; --noir-3:#211d16;
+  --creme:#faf6ec; --nacre:#f4eede;
+  --or:#c9a84c; --or-fonce:#a8862f; --or-clair:#e6d3a0;
+  --texte:#e7decb; --texte-doux:#a99a7c;
+  --ligne:rgba(201,168,76,.22);
+  --vert:#7fb59a; --rose:#bd7d8e; --rouge:#d97a7a;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;font-size:18px;}
+body{background:var(--noir);color:var(--texte);font-family:'Jost',system-ui,sans-serif;
+  font-weight:300;line-height:1.7;min-height:100vh;font-size:1.05rem;
+  background-image:
+    radial-gradient(ellipse 50% 40% at 0% 0%,rgba(201,168,76,.08),transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 100%,rgba(231,188,199,.06),transparent 60%);}
+h1,h2,h3,h4{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;color:var(--creme);}
+a{color:var(--or-clair);text-decoration:none;}
+a:hover{color:var(--or);}
+ul,ol{list-style:none;}
+
+/* HEADER */
+.head{position:sticky;top:0;z-index:50;background:rgba(10,10,10,.92);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--ligne);
+  padding:14px 26px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+.head-l{display:flex;align-items:baseline;gap:14px;}
+.head-mark{font-family:'Cormorant Garamond',serif;font-size:1.3rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--or-clair);}
+.head-tag{font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--texte-doux);}
+.head-r{display:flex;gap:10px;flex-wrap:wrap;}
+.head-link{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:9px;
+  background:rgba(201,168,76,.12);border:1px solid var(--ligne);
+  font-size:.78rem;letter-spacing:.04em;color:var(--creme);transition:all .25s ease;cursor:pointer;
+  font-family:'Jost',sans-serif;}
+.head-link:hover{background:rgba(201,168,76,.25);border-color:var(--or);color:var(--creme);}
+.head-link svg{width:14px;height:14px;}
+.head-link.primary{background:linear-gradient(135deg,#e6d3a0,#c9a84c 70%,#a8862f);color:#0a0a0a;
+  font-weight:600;border-color:rgba(255,255,255,.25);}
+.head-link.primary:hover{transform:translateY(-1px);box-shadow:0 8px 16px -4px rgba(201,168,76,.5);}
+
+/* LAYOUT — étroit & vertical pour rendu portrait */
+.main{max-width:720px;margin:0 auto;padding:0 26px 80px;}
+
+/* SECTIONS — chacune = 1 page PDF */
+.sec{padding:70px 0 50px;border-bottom:1px solid var(--ligne);position:relative;page-break-after:always;break-after:page;}
+.sec:last-child{border-bottom:none;}
+.sec-num{position:absolute;top:60px;right:0;font-family:'Cormorant Garamond',serif;
+  font-size:6rem;color:rgba(201,168,76,.08);font-weight:700;line-height:1;letter-spacing:.04em;}
+.sec-eyebrow{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--or);
+  margin-bottom:12px;font-weight:500;}
+.sec-h{font-size:2.6rem;letter-spacing:.04em;line-height:1.2;margin-bottom:18px;font-weight:500;
+  position:relative;z-index:1;}
+.sec-h::after{content:'';display:block;width:70px;height:2px;background:linear-gradient(90deg,var(--or),transparent);
+  margin-top:18px;}
+.sec-intro{font-size:1.1rem;color:var(--texte-doux);margin-bottom:36px;line-height:1.75;max-width:680px;}
+
+p{margin-bottom:16px;font-size:1.05rem;line-height:1.75;}
+strong,b{color:var(--creme);font-weight:500;}
+em,i{color:var(--or-clair);}
+
+/* COVER PAGE */
+.cover{min-height:90vh;display:flex;flex-direction:column;justify-content:center;text-align:center;
+  padding:80px 0 60px;page-break-after:always;}
+.cover-eyebrow{font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--or);
+  margin-bottom:24px;font-weight:500;}
+.cover h1{font-size:4rem;letter-spacing:.06em;line-height:1;margin-bottom:14px;
+  background:linear-gradient(135deg,#faf6ec 0%,#e6d3a0 50%,#c9a84c 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;}
+.cover-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.4rem;
+  color:var(--or-clair);margin-bottom:38px;letter-spacing:.04em;}
+.cover-line{width:140px;height:1px;background:linear-gradient(90deg,transparent,var(--or),transparent);
+  margin:0 auto 38px;}
+.cover-mark{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--creme);
+  letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px;}
+.cover-mark span{color:var(--or);}
+.cover-tagline{font-size:.86rem;color:var(--texte-doux);letter-spacing:.14em;text-transform:uppercase;
+  margin-bottom:60px;}
+.cover-meta{display:flex;justify-content:center;gap:30px;font-size:.78rem;color:var(--texte-doux);
+  letter-spacing:.1em;text-transform:uppercase;flex-wrap:wrap;}
+.cover-meta span b{color:var(--or-clair);}
+@media(max-width:680px){
+  .cover h1{font-size:2.4rem;}
+  .cover-sub{font-size:1.05rem;}
+  .cover-meta{flex-direction:column;gap:8px;}
+}
+
+/* CARDS */
+.card{background:linear-gradient(160deg,rgba(33,29,22,.65),rgba(20,18,16,.85));
+  border:1px solid var(--ligne);border-radius:14px;padding:24px 28px;margin-bottom:16px;
+  transition:border-color .3s ease;}
+.card:hover{border-color:rgba(201,168,76,.35);}
+.card h3{font-size:1.45rem;letter-spacing:.04em;margin-bottom:12px;color:var(--creme);line-height:1.3;}
+.card .card-eyebrow{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--or);
+  margin-bottom:8px;font-weight:500;}
+.card p{font-size:1.02rem;color:var(--texte);margin-bottom:10px;line-height:1.7;}
+.card p:last-child{margin-bottom:0;}
+
+/* TWO COLUMN — passe en une seule colonne pour rendu vertical PDF */
+.cols-2{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:20px;}
+.cols-3{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:20px;}
+
+/* PRICE BOX */
+.price{background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(168,134,47,.05));
+  border:1.5px solid rgba(201,168,76,.45);border-radius:14px;padding:30px 28px;margin-bottom:18px;
+  position:relative;}
+.price-eyebrow{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--or);
+  margin-bottom:10px;font-weight:600;}
+.price-name{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--creme);
+  margin-bottom:8px;font-weight:600;letter-spacing:.04em;}
+.price-tag{font-family:'Cormorant Garamond',serif;font-size:3.2rem;color:var(--or-clair);
+  font-weight:700;line-height:1.1;margin-bottom:6px;}
+.price-tag small{font-size:.45em;color:var(--texte-doux);font-weight:500;}
+.price-commission{padding:14px 18px;background:rgba(127,181,154,.1);border:1px solid rgba(127,181,154,.3);
+  border-radius:10px;color:var(--vert);font-size:1rem;margin-top:18px;font-weight:500;line-height:1.6;}
+.price-commission b{color:var(--vert);font-weight:600;}
+.price-features{list-style:none;margin-top:18px;}
+.price-features li{padding:8px 0 8px 30px;font-size:1rem;color:var(--texte);position:relative;line-height:1.55;}
+.price-features li::before{content:'✓';position:absolute;left:4px;color:var(--or);font-weight:700;font-size:1.15rem;}
+
+/* PROCESS STEPS */
+.steps{display:flex;flex-direction:column;gap:18px;}
+.step{display:grid;grid-template-columns:50px 1fr;gap:20px;align-items:start;}
+.step-num{width:50px;height:50px;display:flex;align-items:center;justify-content:center;
+  border-radius:50%;background:linear-gradient(135deg,#e6d3a0,#c9a84c 70%,#a8862f);
+  color:#0a0a0a;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.3rem;flex-shrink:0;}
+.step-body h4{font-family:'Cormorant Garamond',serif;font-size:1.35rem;color:var(--creme);margin-bottom:6px;
+  letter-spacing:.04em;line-height:1.3;}
+.step-body p{font-size:1.02rem;color:var(--texte);margin-bottom:8px;line-height:1.7;}
+.step-body small{display:block;font-size:.9rem;color:var(--texte-doux);font-style:italic;margin-top:6px;line-height:1.5;}
+
+/* SPEECHES */
+.speech{margin-bottom:30px;}
+.speech-head{display:flex;align-items:baseline;gap:12px;margin-bottom:12px;flex-wrap:wrap;}
+.speech-tag{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--or);
+  background:rgba(201,168,76,.12);padding:5px 12px;border-radius:6px;border:1px solid var(--ligne);}
+.speech-title{font-family:'Cormorant Garamond',serif;font-size:1.35rem;color:var(--creme);
+  letter-spacing:.04em;font-weight:500;line-height:1.3;}
+.speech-body{background:rgba(10,10,10,.4);border-left:3px solid var(--or);
+  padding:20px 24px;border-radius:0 10px 10px 0;font-size:1.02rem;line-height:1.75;
+  color:var(--texte);white-space:pre-wrap;font-family:'Jost',sans-serif;}
+.speech-body b{color:var(--or-clair);font-weight:500;}
+
+/* OBJECTIONS */
+.obj{margin-bottom:22px;background:rgba(10,10,10,.35);border:1px solid var(--ligne);
+  border-radius:11px;overflow:hidden;}
+.obj-q{padding:18px 22px;background:rgba(189,125,142,.06);border-bottom:1px solid var(--ligne);
+  font-family:'Cormorant Garamond',serif;font-size:1.25rem;color:var(--rose);letter-spacing:.04em;
+  font-style:italic;line-height:1.4;}
+.obj-q::before{content:'❝ ';color:rgba(189,125,142,.5);}
+.obj-q::after{content:' ❞';color:rgba(189,125,142,.5);}
+.obj-a{padding:18px 22px;font-size:1.02rem;color:var(--texte);line-height:1.75;}
+.obj-a b{color:var(--vert);}
+
+/* CHECKLIST */
+.checklist{list-style:none;}
+.checklist li{padding:14px 0 14px 38px;border-bottom:1px solid var(--ligne);position:relative;
+  font-size:1.02rem;color:var(--texte);line-height:1.7;}
+.checklist li:last-child{border-bottom:none;}
+.checklist li::before{content:'';position:absolute;left:6px;top:18px;width:20px;height:20px;
+  border:1.5px solid var(--or);border-radius:4px;}
+.checklist li b{color:var(--creme);}
+
+/* TABLES */
+.tbl{width:100%;border-collapse:collapse;margin-bottom:18px;}
+.tbl th{background:rgba(201,168,76,.12);padding:14px 16px;text-align:left;
+  font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--or-clair);font-size:1rem;
+  letter-spacing:.06em;border-bottom:1.5px solid var(--or);}
+.tbl td{padding:14px 16px;font-size:1rem;color:var(--texte);border-bottom:1px solid var(--ligne);line-height:1.5;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:nth-child(even) td{background:rgba(201,168,76,.04);}
+.tbl .r{text-align:right;color:var(--or-clair);font-weight:600;}
+
+/* QUOTE / CALLOUT */
+.callout{padding:22px 26px;background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(168,134,47,.04));
+  border-left:3px solid var(--or);border-radius:0 11px 11px 0;margin:18px 0;font-style:italic;
+  color:var(--creme);font-size:1.1rem;line-height:1.75;}
+.callout b{color:var(--or-clair);font-style:normal;font-weight:500;}
+
+.warn{padding:20px 24px;background:rgba(217,122,122,.08);border:1px solid rgba(217,122,122,.32);
+  border-radius:11px;color:var(--texte);font-size:1rem;line-height:1.7;margin:18px 0;}
+.warn b{color:var(--rouge);}
+
+/* FOOTER ACTIONS */
+.actions{position:sticky;bottom:0;z-index:40;background:linear-gradient(180deg,
+  rgba(10,10,10,0),rgba(10,10,10,.85) 30%,rgba(10,10,10,.95));
+  padding:20px 26px 24px;margin:30px -26px -80px;
+  display:flex;justify-content:center;gap:12px;flex-wrap:wrap;
+  border-top:1px solid var(--ligne);backdrop-filter:blur(12px);}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:11px;
+  font-family:'Jost',sans-serif;font-size:.86rem;letter-spacing:.04em;font-weight:500;
+  border:1px solid var(--ligne);cursor:pointer;transition:all .25s ease;
+  background:rgba(10,10,10,.6);color:var(--creme);text-decoration:none;}
+.btn:hover{border-color:var(--or);background:rgba(201,168,76,.12);}
+.btn svg{width:16px;height:16px;}
+.btn.primary{background:linear-gradient(135deg,#e6d3a0,#c9a84c 70%,#a8862f);color:#0a0a0a;
+  font-weight:600;border-color:rgba(255,255,255,.25);box-shadow:0 6px 18px -6px rgba(201,168,76,.5);}
+.btn.primary:hover{transform:translateY(-1px);box-shadow:0 10px 24px -6px rgba(201,168,76,.7);
+  background:linear-gradient(135deg,#f0dfac,#d2b25a 70%,#b69334);}
+
+/* TOAST */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);opacity:0;
+  background:rgba(20,18,16,.95);color:var(--creme);padding:14px 22px;border-radius:11px;
+  border:1px solid var(--or);font-size:.86rem;z-index:200;
+  transition:all .35s var(--ease);pointer-events:none;backdrop-filter:blur(12px);
+  box-shadow:0 12px 30px rgba(0,0,0,.5);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid transparent;
+  border-top-color:currentColor;border-right-color:currentColor;border-radius:50%;
+  animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:780px){
+  html{font-size:17px;}
+  .main{padding:0 18px 60px;}
+  .sec{padding:50px 0 40px;}
+  .sec-num{font-size:4rem;}
+  .sec-h{font-size:1.9rem;}
+  .price-tag{font-size:2.5rem;}
+  .head{padding:12px 16px;}
+  .head-tag{display:none;}
+  .actions{margin:30px -18px -60px;padding:16px;}
+  .btn{padding:11px 16px;font-size:.85rem;}
+}
+
+/* PRINT — pour Save as PDF natif */
+@media print{
+  body{background:#fff;color:#1a1612;}
+  .head, .actions, .toast{display:none !important;}
+  .main{max-width:none;padding:0;}
+  .sec{page-break-after:always;border-bottom:none;padding:24px 0;}
+  .sec-num{color:rgba(201,168,76,.2);}
+  h1,h2,h3,h4{color:#1a1612;}
+  .card{background:#fbf7eb;border-color:#e6d3a0;}
+  .speech-body{background:#fbf7eb;color:#1a1612;}
+  .obj-q{background:#fbf7eb;color:#a8862f;}
+  .price{background:#fbf7eb;}
+  .price-tag{color:#a8862f;}
+  .tbl th{background:#fbf7eb;color:#a8862f;}
+}
+
+/* PDF STAGE pour génération jsPDF */
+.pdf-stage{position:fixed;top:0;left:-9999px;width:794px;background:#0a0a0a;color:#e7decb;
+  font-family:'Jost',sans-serif;padding:0;}
+
+</style>
+</head>
+<body>
+
+<header class="head">
+  <div class="head-l">
+    <span class="head-mark">Partenaires affiliés</span>
+    <span class="head-tag">NEBULA Agency · Confidentiel</span>
+  </div>
+  <nav class="head-r">
+    <button class="head-link" onclick="window.print()">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.7"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>
+      Imprimer / Sauver PDF
+    </button>
+    <button class="head-link primary" id="btnPdf" type="button">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Télécharger PDF
+    </button>
+  </nav>
+</header>
+
+<main class="main">
+
+  <!-- ===== COVER ===== -->
+  <section class="cover">
+    <div class="cover-eyebrow">Programme partenaires affiliés · Édition 2026</div>
+    <h1>VENDEZ LE LUXE<br>NUMÉRIQUE</h1>
+    <div class="cover-sub">Devenez ambassadeur NEBULA Agency<br>et transformez chaque vente en revenu durable</div>
+    <div class="cover-line"></div>
+    <div class="cover-mark">NEBULA <span>•</span> AGENCY</div>
+    <div class="cover-tagline">Cotonou · Bénin · Afrique de l'Ouest</div>
+    <div class="cover-meta">
+      <span><b>Édition</b> Mai 2026</span>
+      <span><b>Document</b> Confidentiel</span>
+      <span><b>Fondateur</b> Mongazi</span>
+    </div>
+  </section>
+
+  <!-- ===== 1. LE MOT DU FONDATEUR ===== -->
+  <section class="sec">
+    <div class="sec-num">01</div>
+    <div class="sec-eyebrow">Le mot du fondateur</div>
+    <h2 class="sec-h">Pourquoi je vous ouvre les portes de NEBULA</h2>
+    <div class="sec-intro">
+      <p>L'Afrique francophone vit une révolution silencieuse. Des marques de qualité naissent chaque semaine — instituts de beauté, marques cosmétiques, créatrices, restaurants — mais 9 sur 10 n'ont aucune présence digitale digne de leur produit. Une simple page Instagram, un WhatsApp Business mal exploité, et c'est tout.</p>
+      <p>NEBULA Agency est née de ce constat : <b>la qualité africaine mérite un écrin digital à sa hauteur.</b> Nous concevons des vitrines premium, sur-mesure, qui transforment une marque en référence locale.</p>
+      <p>Aujourd'hui, je cherche des partenaires aiguisés — des personnes qui sentent les opportunités, qui savent parler aux entrepreneurs, et qui veulent construire un revenu récurrent en vendant un produit dont elles peuvent être fières.</p>
+    </div>
+    <div class="callout">
+      Si vous lisez ce document, c'est que je vous fais confiance pour porter haut le nom NEBULA. Chaque vitrine que vous vendez, c'est une marque africaine qui s'élève. Et c'est aussi <b>un revenu direct sur votre compte sous 7 jours.</b>
+      <br><br>— <b>Mongazi</b>, fondateur de NEBULA Agency
+    </div>
+  </section>
+
+  <!-- ===== 2. LA VISION ===== -->
+  <section class="sec">
+    <div class="sec-num">02</div>
+    <div class="sec-eyebrow">Notre vision</div>
+    <h2 class="sec-h">Le digital africain, version luxe accessible</h2>
+    <div class="sec-intro">
+      Nous croyons que chaque marque africaine ambitieuse devrait avoir une vitrine digitale qui rivalise avec ce qu'on voit à Paris, à Milan, à Dubai — sans avoir à payer le prix de Paris.
+    </div>
+    <div class="cols-3">
+      <div class="card">
+        <div class="card-eyebrow">Le problème</div>
+        <h3>9 marques sur 10 invisibles</h3>
+        <p>Beaucoup de marques africaines vendent uniquement via Instagram et WhatsApp. Pas de site, pas de vitrine pro, pas de crédibilité aux yeux d'un client haut de gamme.</p>
+      </div>
+      <div class="card">
+        <div class="card-eyebrow">Notre conviction</div>
+        <h3>La qualité doit se voir</h3>
+        <p>Quand une cliente arrive sur une vitrine NEBULA, elle ressent immédiatement le sérieux, le luxe, le professionnalisme. Le panier moyen monte. La confiance s'installe.</p>
+      </div>
+      <div class="card">
+        <div class="card-eyebrow">Notre obsession</div>
+        <h3>Conversion, pas vitrine</h3>
+        <p>On ne fait pas de "joli site". On construit des machines à convertir : tout converge vers WhatsApp, le rendez-vous, l'achat. Chaque pixel sert un objectif business.</p>
+      </div>
+    </div>
+    <div class="callout">
+      <b>Notre standard :</b> chaque vitrine NEBULA pourrait être celle d'une marque de Paris. Mais elle parle français d'Afrique, vit sur WhatsApp, encaisse en Mobile Money, et coûte 50 fois moins cher qu'une agence européenne.
+    </div>
+  </section>
+
+  <!-- ===== 3. QUI SOMMES-NOUS ===== -->
+  <section class="sec">
+    <div class="sec-num">03</div>
+    <div class="sec-eyebrow">Qui sommes-nous</div>
+    <h2 class="sec-h">Une agence, trois marques, une mission</h2>
+    <div class="sec-intro">
+      NEBULA Agency est dirigée par Mongazi depuis Cotonou. Nous couvrons toute l'Afrique francophone — Bénin, Côte d'Ivoire, Sénégal, Togo, Burkina, Mali, Cameroun.
+    </div>
+    <div class="cols-2">
+      <div class="card">
+        <div class="card-eyebrow">NEBULA Agency</div>
+        <h3>Vitrines digitales & automatisation IA</h3>
+        <p>Cœur de métier : sites premium pour marques exigeantes. Vitrines, catalogues, outils internes, automatisations WhatsApp + IA.</p>
+      </div>
+      <div class="card">
+        <div class="card-eyebrow">AXIO IA</div>
+        <h3>Éducation à l'intelligence artificielle</h3>
+        <p>Formation des entrepreneurs et professionnels africains à utiliser l'IA dans leur business. Marque sœur de NEBULA.</p>
+      </div>
+      <div class="card">
+        <div class="card-eyebrow">KARABA Finance</div>
+        <h3>Solutions financières digitales</h3>
+        <p>Plateformes Mobile Money, automatisation paiements, suivi de trésorerie. Pour PME et entrepreneurs.</p>
+      </div>
+      <div class="card">
+        <div class="card-eyebrow">Notre stack</div>
+        <h3>Technique simple, résultat luxe</h3>
+        <p>HTML pur, images optimisées, WhatsApp-first, hébergement Netlify, automatisation n8n + Claude IA. Pas de cuisine compliquée : ça marche, c'est rapide, c'est beau.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 4. NOS RÉALISATIONS ===== -->
+  <section class="sec">
+    <div class="sec-num">04</div>
+    <div class="sec-eyebrow">Nos références</div>
+    <h2 class="sec-h">Des clientes qui parlent pour nous</h2>
+    <div class="sec-intro">
+      Quand un prospect doute, montrez-lui une vraie réalisation NEBULA. Voici les vitrines que vous pouvez partager fièrement en exemple.
+    </div>
+    <div class="card">
+      <div class="card-eyebrow">Étude de cas n°1 — Référence absolue</div>
+      <h3>Luxury Skin Clinic — Cotonou</h3>
+      <p><b>Lien :</b> luxuryskinclinic.netlify.app</p>
+      <p>Hub digital complet pour une clinique esthétique haut de gamme. Inclut : page de la clinique, boutique cosmétiques INA Luxury, soins intimes Cozy, formulaire de réservation RDV avec calendrier mer/sam, témoignages, consultation peau gratuite, diagnostic capillaire payant, carnet professionnel de consultation, facturation interne.</p>
+      <p><b>Résultat :</b> la clinique a complètement digitalisé son flux client — réservation, diagnostic, facturation, suivi — sans avoir à embaucher d'assistante supplémentaire.</p>
+    </div>
+    <div class="card">
+      <div class="card-eyebrow">Étude de cas n°2</div>
+      <h3>Grain d'Esthétique — Cotonou</h3>
+      <p>Vitrine premium pour salon de beauté. Photos professionnelles, galerie services, témoignages, contact WhatsApp direct. <b>Résultat :</b> demandes de RDV multipliées par 3 dans les 30 premiers jours.</p>
+    </div>
+    <div class="callout">
+      <b>Astuce vente :</b> envoyez TOUJOURS le lien luxuryskinclinic.netlify.app à un prospect avant le premier rendez-vous. Quand il voit le niveau de finition, le doute disparaît.
+    </div>
+  </section>
+
+  <!-- ===== 5. CE QUE VOUS VENDEZ ===== -->
+  <section class="sec">
+    <div class="sec-num">05</div>
+    <div class="sec-eyebrow">Notre offre</div>
+    <h2 class="sec-h">Deux produits, deux gammes, zéro confusion</h2>
+    <div class="sec-intro">
+      Pour rester clair et closer vite, NEBULA propose deux offres principales. Pas de menu à 50 lignes : deux produits, deux prix, deux durées.
+    </div>
+
+    <div class="price">
+      <div class="price-eyebrow">Offre 1 · La plus vendue</div>
+      <div class="price-name">VITRINE PREMIUM</div>
+      <div class="price-tag">100 000 <small>FCFA</small></div>
+      <p style="color:var(--texte-doux);font-size:.86rem;margin-top:6px">Négociable jusqu'à 75 000 F selon complexité</p>
+      <ul class="price-features">
+        <li>Site web single-page haut de gamme</li>
+        <li>Design luxe sur-mesure (palette client)</li>
+        <li>5 à 7 sections : Hero · Services · Galerie · Témoignages · Contact</li>
+        <li>Optimisé mobile + desktop</li>
+        <li>Boutons WhatsApp et Mobile Money intégrés</li>
+        <li>Hébergement Netlify offert 1 an</li>
+        <li>Délai de livraison : 5 à 7 jours</li>
+      </ul>
+      <div class="price-commission">
+        💰 <b>Votre commission : 30 000 FCFA</b> par vente (22 500 F si négo max à 75 000 F)
+      </div>
+    </div>
+
+    <div class="price">
+      <div class="price-eyebrow">Offre 2 · Pour grandes marques</div>
+      <div class="price-name">CATALOGUE COMPLET</div>
+      <div class="price-tag">40 000 <small>FCFA</small></div>
+      <p style="color:var(--texte-doux);font-size:.86rem;margin-top:6px">Prix ferme — ne pas négocier</p>
+      <ul class="price-features">
+        <li>Hub multi-pages (3 à 5 sous-marques ou catégories)</li>
+        <li>Catalogue produits avec panier + commande WhatsApp</li>
+        <li>Espace admin interne pour le client (gestion stock, prix, photos)</li>
+        <li>Formulaire de réservation RDV avec calendrier</li>
+        <li>Carnet client / facturation PDF intégrés (si pertinent)</li>
+        <li>Réécriture complète des contenus (français pro)</li>
+        <li>Hébergement Netlify offert 1 an + maintenance 3 mois</li>
+        <li>Délai de livraison : 14 à 21 jours</li>
+      </ul>
+      <div class="price-commission">
+        💰 <b>Votre commission : 12 000 FCFA</b> par vente (prix ferme)
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 6. TARIFS & COMMISSIONS ===== -->
+  <section class="sec">
+    <div class="sec-num">06</div>
+    <div class="sec-eyebrow">Tarifs & rémunération</div>
+    <h2 class="sec-h">Combien vous gagnez sur chaque vente</h2>
+    <div class="sec-intro">
+      Transparence totale. Voici exactement ce que vous touchez selon le produit vendu et le prix final négocié avec le client.
+    </div>
+
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>Produit</th>
+          <th>Prix client</th>
+          <th class="r">Votre commission (30 %)</th>
+          <th class="r">Part NEBULA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><b>Vitrine</b> — prix normal</td><td>100 000 F</td><td class="r">30 000 F</td><td class="r">70 000 F</td></tr>
+        <tr><td><b>Vitrine</b> — légère négo</td><td>90 000 F</td><td class="r">27 000 F</td><td class="r">63 000 F</td></tr>
+        <tr><td><b>Vitrine</b> — négo moyenne</td><td>85 000 F</td><td class="r">25 500 F</td><td class="r">59 500 F</td></tr>
+        <tr><td><b>Vitrine</b> — négo max</td><td>75 000 F (plancher)</td><td class="r">22 500 F</td><td class="r">52 500 F</td></tr>
+        <tr><td><b>Catalogue complet</b></td><td>40 000 F (ferme)</td><td class="r">12 000 F</td><td class="r">28 000 F</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin-top:24px;margin-bottom:10px;font-size:1.15rem">📋 Règles de négociation</h3>
+    <ul class="checklist">
+      <li><b>Vitrine :</b> vous pouvez négocier librement entre 75 000 F et 100 000 F selon la complexité demandée par le client.</li>
+      <li><b>En dessous de 75 000 F :</b> obligation de valider avec Mongazi avant d'accepter (cas exceptionnels).</li>
+      <li><b>Catalogue :</b> prix ferme à 40 000 F. Pas de négo (sauf cas validé Mongazi).</li>
+      <li><b>Plus de complexité demandée ?</b> le prix peut MONTER au-dessus de 100 000 F (votre commission monte aussi). Toujours valider avec Mongazi.</li>
+    </ul>
+
+    <h3 style="margin-top:24px;margin-bottom:10px;font-size:1.15rem">💳 Flux de paiement</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Le client paie directement Mongazi</h4>
+          <p>Mobile Money au <b>01 67 97 56 26</b> (ou autre canal validé). Vous ne touchez pas l'argent du client.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>NEBULA produit le site</h4>
+          <p>Mongazi confirme le paiement reçu et démarre la production. Vous êtes tenu·e informé·e à chaque étape.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Votre commission tombe sous 7 jours</h4>
+          <p>Mobile Money sur le numéro que vous nous avez communiqué. Reçu de paiement WhatsApp pour traçabilité.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 7. ICP — POUR QUI VENDRE ===== -->
+  <section class="sec">
+    <div class="sec-num">07</div>
+    <div class="sec-eyebrow">Votre cible</div>
+    <h2 class="sec-h">À qui vendre une vitrine NEBULA</h2>
+    <div class="sec-intro">
+      Ne perdez pas votre temps. Concentrez-vous sur les profils qui ferment vite et payent comptant. Voici la cible idéale.
+    </div>
+
+    <h3 style="margin-bottom:10px">🎯 Profils idéaux (où concentrer votre énergie)</h3>
+    <div class="cols-2">
+      <div class="card">
+        <div class="card-eyebrow">Beauté & wellness</div>
+        <h3>Instituts, salons, cliniques esthétiques</h3>
+        <p>Esthéticiennes, coiffeuses haut de gamme, instituts spa, cliniques de soins. Marché énorme, panier moyen élevé, prestations récurrentes.</p>
+      </div>
+      <div class="card">
+        <div class="card-eyebrow">Cosmétiques</div>
+        <h3>Marques de cosmétiques & soins</h3>
+        <p>Créatrices de produits (savons, crèmes, huiles, parfums). Souvent visibles sur Instagram mais pas de vitrine sérieuse pour vendre.</p>
+      </div>
+      <div class="card">
+        <div class="card-eyebrow">Mode & bijoux</div>
+        <h3>Boutiques mode, bijouterie, accessoires</h3>
+        <p>Marques de vêtements, sacs, bijoux haut de gamme. Le visuel pro est essentiel pour ce secteur.</p>
+      </div>
+      <div class="card">
+        <div class="card-eyebrow">Premium services</div>
+        <h3>Restaurants, hôtels, coachs</h3>
+        <p>Établissements qui veulent paraître à la hauteur de leur prix. Coachs business, formateurs, créatrices de contenu.</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:24px;margin-bottom:10px">📡 Signaux d'achat à repérer</h3>
+    <ul class="checklist">
+      <li><b>Instagram actif (1k+ abonnés)</b> mais "lien dans bio" = page Linktree gratuite ou rien du tout</li>
+      <li><b>WhatsApp Business utilisé</b> mais photos de catalogue dans le statut, pas de vitrine pro</li>
+      <li><b>Marque récente mais bien positionnée</b> qui veut "passer un cap" professionnel</li>
+      <li><b>Concurrent direct a déjà un beau site</b> — le prospect ressent la pression de rattraper</li>
+      <li><b>Le client mentionne</b> qu'il "veut être pris au sérieux" ou qu'il "perd des clients qui le trouvent pas"</li>
+    </ul>
+
+    <h3 style="margin-top:24px;margin-bottom:10px">🚫 Profils à éviter (perte de temps)</h3>
+    <ul class="checklist">
+      <li>Marques qui marchandent dès la première seconde sur tout</li>
+      <li>Personnes qui n'ont pas encore vraiment lancé leur activité</li>
+      <li>Demandes "j'ai juste besoin d'une page Facebook" — pas notre cible</li>
+      <li>Profils qui veulent "voir le travail avant de payer" sans acompte</li>
+    </ul>
+  </section>
+
+  <!-- ===== 8. LE PROCESSUS COMMERCIAL ===== -->
+  <section class="sec">
+    <div class="sec-num">08</div>
+    <div class="sec-eyebrow">Votre playbook</div>
+    <h2 class="sec-h">Le processus en 6 étapes</h2>
+    <div class="sec-intro">
+      Voici la séquence éprouvée pour transformer un prospect en client payant. Suivez-la dans l'ordre, ne sautez pas d'étape.
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Identifier</h4>
+          <p>Repérer 5 à 10 cibles par jour sur Instagram (recherche par hashtags #cotonou #cosmétiques #institutbeauté), TikTok, marchés physiques, recommandations clients.</p>
+          <small>Objectif : 50 prospects qualifiés en réserve à tout moment.</small>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Approcher</h4>
+          <p>Premier contact en DM Instagram OU WhatsApp. <b>Jamais cold call</b>. Toujours personnalisé : citer le nom de la marque, un détail spécifique.</p>
+          <small>Voir Section 09 pour les scripts d'approche prêts à copier.</small>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Qualifier</h4>
+          <p>Poser 3 questions clés : <em>« Quel est votre principal canal de vente aujourd'hui ? »</em> · <em>« Combien de clients par mois grâce à votre Instagram ? »</em> · <em>« Que pensez-vous de votre présence en ligne aujourd'hui ? »</em></p>
+          <small>Vous écoutez. Vous ne vendez pas encore.</small>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Présenter</h4>
+          <p>Envoyer le lien <b>luxuryskinclinic.netlify.app</b> en disant : <em>« Voici un exemple de ce qu'on fait. Imaginez la même chose, à votre image. »</em> Laisser le client visiter 2-3 minutes.</p>
+          <small>La démo vend mieux que les mots.</small>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>Closer</h4>
+          <p>Présenter l'offre VITRINE 100 000 F (ou CATALOGUE 40 000 F selon le profil). Préciser le délai 5-7 jours et le paiement Mobile Money. Si négo : descendre progressivement, jamais directement à 75k.</p>
+          <small>« Démarrer la commande aujourd'hui pour livraison vendredi prochain ? »</small>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <h4>Transmettre à Mongazi</h4>
+          <p>Une fois le client OK, envoyer un message WhatsApp à Mongazi avec : nom client, contact, prix négocié, type de projet, brief en 3 lignes. Mongazi prend le relais pour le paiement et la production.</p>
+          <small>Votre commission est verrouillée dès cette étape.</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 9. SPEECHES & SCRIPTS ===== -->
+  <section class="sec">
+    <div class="sec-num">09</div>
+    <div class="sec-eyebrow">Vos armes de vente</div>
+    <h2 class="sec-h">Scripts prêts à l'emploi</h2>
+    <div class="sec-intro">
+      Ces messages sont testés. Copiez-les, adaptez le prénom et le nom de la marque, envoyez. Le ton est chaleureux, professionnel, jamais agressif.
+    </div>
+
+    <div class="speech">
+      <div class="speech-head">
+        <span class="speech-tag">Approche 1</span>
+        <span class="speech-title">DM Instagram à froid (vu Instagram puis approche)</span>
+      </div>
+      <div class="speech-body">Bonjour [Prénom] 🌸
+
+Je suis tombé·e sur le compte de <b>[Nom de la marque]</b> et franchement, ce que vous proposez est magnifique — j'ai particulièrement aimé [détail spécifique : la collection X, votre dernier post, le logo, la photo de Y].
+
+Je travaille avec NEBULA Agency, on conçoit des vitrines digitales sur-mesure pour les marques comme la vôtre, qui méritent d'être prises au sérieux en ligne.
+
+Un exemple de ce qu'on fait : <b>https://luxuryskinclinic.netlify.app</b>
+
+Est-ce que vous auriez 5 minutes cette semaine pour qu'on en discute ? Aucune pression, je veux juste voir si ça peut vous intéresser ✨</div>
+    </div>
+
+    <div class="speech">
+      <div class="speech-head">
+        <span class="speech-tag">Approche 2</span>
+        <span class="speech-title">WhatsApp à froid (numéro trouvé sur Instagram ou recommandation)</span>
+      </div>
+      <div class="speech-body">Bonjour [Prénom],
+
+[Votre nom] de NEBULA Agency à l'appareil 🌿
+
+J'ai vu votre marque <b>[Nom]</b> en ligne et je trouve que vous avez vraiment quelque chose de fort à proposer. Le seul truc qui manque pour vous démarquer encore plus : une vraie vitrine digitale qui montre votre niveau.
+
+On crée des sites premium sur-mesure pour des marques comme la vôtre. Voici un exemple récent : <b>https://luxuryskinclinic.netlify.app</b>
+
+Si ça vous parle, je peux vous présenter ce qu'on pourrait faire pour [Nom de la marque] — sans engagement, juste pour voir si c'est intéressant pour vous 🙏</div>
+    </div>
+
+    <div class="speech">
+      <div class="speech-head">
+        <span class="speech-tag">Approche 3</span>
+        <span class="speech-title">Recommandation par un client commun</span>
+      </div>
+      <div class="speech-body">Bonjour [Prénom] ✨
+
+[Nom du contact commun] m'a parlé de vous en bien et m'a dit que votre marque <b>[Nom]</b> mérite une vitrine digitale à la hauteur.
+
+Je travaille avec NEBULA Agency, on a notamment réalisé <b>https://luxuryskinclinic.netlify.app</b> pour une clinique esthétique à Cotonou.
+
+Quand est-ce qu'on peut se parler 5 minutes ? Je vous présente ce qu'on peut faire pour vous 🌸</div>
+    </div>
+
+    <div class="speech">
+      <div class="speech-head">
+        <span class="speech-tag">Pitch</span>
+        <span class="speech-title">Le pitch en 60 secondes (au téléphone ou face à face)</span>
+      </div>
+      <div class="speech-body">« [Prénom], aujourd'hui votre marque est belle sur Instagram, mais quand une cliente exigeante veut en savoir plus, elle tombe sur quoi ? Un lien Linktree, un WhatsApp, et c'est tout.
+
+Le problème, c'est que vos meilleurs clients potentiels — ceux qui ont le budget — sont les plus exigeants. Sans vitrine pro, vous les perdez avant même qu'ils vous contactent.
+
+Chez NEBULA, on conçoit des vitrines digitales premium, livrées en 5 à 7 jours, pour <b>100 000 FCFA</b>. Tout est inclus : design sur-mesure, hébergement 1 an, optimisation mobile, boutons WhatsApp directs.
+
+Concrètement, en une semaine, vous passez d'invisible à incontournable. Et le ROI se voit dès le premier mois. »</div>
+    </div>
+
+    <div class="speech">
+      <div class="speech-head">
+        <span class="speech-tag">Pitch long</span>
+        <span class="speech-title">Le pitch en 3 minutes (avec démo)</span>
+      </div>
+      <div class="speech-body">« Avant de vous parler de ce qu'on fait, prenez 30 secondes pour visiter ce lien : <b>luxuryskinclinic.netlify.app</b>
+
+[Attendre que la personne regarde]
+
+Voilà, ça c'est ce qu'on a fait pour Luxury Skin Clinic à Cotonou. Aujourd'hui leur agenda est plein, les RDV se prennent directement en ligne avec acompte Mobile Money, et leur réputation a explosé.
+
+Pour <b>[Nom de la marque]</b>, on ferait quelque chose dans le même esprit mais à votre image — couleurs, photos, ton. Vous décidez de tout, on exécute.
+
+Le tarif : <b>100 000 FCFA</b>. C'est tout. Pas de mensualité, pas de surprise. Hébergement compris pour 1 an, boutons WhatsApp et Mobile Money intégrés, optimisé pour mobile.
+
+Livraison : <b>5 à 7 jours</b>. Acompte de 50% au démarrage, 50% à la livraison.
+
+Si vous êtes intéressée, on peut démarrer aujourd'hui. Vous m'envoyez vos photos et infos, je transmets à Mongazi, et vendredi prochain votre vitrine est en ligne. »</div>
+    </div>
+  </section>
+
+  <!-- ===== 10. OBJECTIONS ===== -->
+  <section class="sec">
+    <div class="sec-num">10</div>
+    <div class="sec-eyebrow">Maîtriser les objections</div>
+    <h2 class="sec-h">Les 8 objections que vous entendrez</h2>
+    <div class="sec-intro">
+      Préparez vos réponses. 80% des objections tournent autour de ces 8 phrases. Mémorisez les réponses, adaptez-les avec votre style.
+    </div>
+
+    <div class="obj">
+      <div class="obj-q">C'est trop cher</div>
+      <div class="obj-a">« Je comprends. Mais comparez : une agence à Paris vous facturerait 1 500 000 F minimum pour le même résultat. Une vitrine NEBULA, c'est <b>100 000 F</b> — soit le prix de 2 ou 3 produits que vous vendez. Et c'est un investissement qui rapporte pendant des années, pas une dépense. »</div>
+    </div>
+
+    <div class="obj">
+      <div class="obj-q">J'ai déjà Instagram, ça suffit</div>
+      <div class="obj-a">« Instagram c'est parfait pour exister, mais quand une cliente exigeante veut sérieusement acheter, elle veut un site. Sans ça, vous perdez les clients qui ont le plus gros budget — ceux qui font la différence. <b>Instagram amène le trafic, la vitrine convertit.</b> Les deux marchent ensemble. »</div>
+    </div>
+
+    <div class="obj">
+      <div class="obj-q">Mon cousin peut me faire un site gratuit</div>
+      <div class="obj-a">« Il peut, oui. Mais regardez cet exemple [montrer luxuryskinclinic.netlify.app]. La différence entre un site amateur et une vitrine pro, c'est la différence entre une boutique de rue et une boutique de luxe. <b>Vos clients la verront immédiatement.</b> Et un cousin ne sera pas là dans 6 mois pour les mises à jour. »</div>
+    </div>
+
+    <div class="obj">
+      <div class="obj-q">Je n'ai pas le temps de m'en occuper</div>
+      <div class="obj-a">« C'est justement notre métier. Vous n'avez qu'à nous envoyer : votre logo, 5 à 10 photos de vos produits/services, votre numéro WhatsApp, et un brief en 5 lignes. <b>On fait tout le reste.</b> Sous 7 jours, votre vitrine est en ligne. Vous ne touchez à rien. »</div>
+    </div>
+
+    <div class="obj">
+      <div class="obj-q">Je veux d'abord voir un exemple personnalisé pour moi</div>
+      <div class="obj-a">« Je comprends votre prudence. Mais réfléchissez : si on faisait un exemple personnalisé gratuit pour chaque prospect, on n'aurait jamais le temps de livrer nos clients existants. <b>Notre garantie : nos références.</b> Visitez luxuryskinclinic.netlify.app — si on a fait ça pour eux, on le fait pour vous, au même niveau. »</div>
+    </div>
+
+    <div class="obj">
+      <div class="obj-q">Et si je ne suis pas satisfaite ?</div>
+      <div class="obj-a">« On travaille avec vous tout au long du projet. Vous validez chaque étape : le design, les textes, les couleurs. <b>Aucune livraison sans votre accord.</b> Et les ajustements sont inclus pendant la production. Vous êtes la patronne du projet. »</div>
+    </div>
+
+    <div class="obj">
+      <div class="obj-q">Je vais réfléchir</div>
+      <div class="obj-a">« Bien sûr, prenez le temps. Juste une question : qu'est-ce qui vous fait hésiter, concrètement ? Le prix ? Le timing ? Le contenu ? <b>Si c'est juste le timing, on peut planifier pour le mois prochain.</b> Si c'est le prix, on peut adapter le périmètre. Dites-moi ce qui vous bloque, on trouve une solution. »</div>
+    </div>
+
+    <div class="obj">
+      <div class="obj-q">Pourquoi je vous fais confiance ?</div>
+      <div class="obj-a">« Légitime. Trois preuves : <b>(1)</b> nos références — visitez luxuryskinclinic.netlify.app et imaginez votre marque traitée pareil. <b>(2)</b> Le paiement se fait en 2 fois (acompte au démarrage + solde à la livraison), donc vous ne payez le solde qu'une fois satisfaite. <b>(3)</b> NEBULA Agency est basée à Cotonou, dirigée par Mongazi — vous pouvez nous joindre directement à tout moment. »</div>
+    </div>
+  </section>
+
+  <!-- ===== 11. CHECKLIST PARTENAIRE ===== -->
+  <section class="sec">
+    <div class="sec-num">11</div>
+    <div class="sec-eyebrow">Votre routine gagnante</div>
+    <h2 class="sec-h">La discipline du partenaire qui réussit</h2>
+    <div class="sec-intro">
+      Les meilleurs vendeurs ne sont pas les plus doués — ce sont les plus réguliers. Voici la routine quotidienne et hebdomadaire à tenir.
+    </div>
+
+    <h3 style="margin-bottom:10px">☀️ Chaque jour (30 minutes)</h3>
+    <ul class="checklist">
+      <li>Identifier <b>5 nouvelles cibles</b> sur Instagram / TikTok / recommandations</li>
+      <li>Envoyer <b>3 messages d'approche</b> personnalisés (DM ou WhatsApp)</li>
+      <li>Relancer <b>2 à 3 prospects</b> en attente de réponse depuis plus de 48h</li>
+      <li>Mettre à jour votre suivi (Notion, tableur, ou simple liste WhatsApp)</li>
+    </ul>
+
+    <h3 style="margin-top:24px;margin-bottom:10px">📅 Chaque semaine</h3>
+    <ul class="checklist">
+      <li>Faire le point avec Mongazi : leads transmis, projets en cours, commissions à toucher</li>
+      <li>Identifier 1 secteur d'activité à explorer en profondeur (ex : esthéticiennes, restaurants…)</li>
+      <li>Demander à 2 clients satisfaits une recommandation vers leur entourage</li>
+      <li>Améliorer 1 script ou 1 réponse à objection selon ce qui marche / ne marche pas</li>
+    </ul>
+
+    <h3 style="margin-top:24px;margin-bottom:10px">📊 Objectifs minimum</h3>
+    <div class="cols-3">
+      <div class="card">
+        <div class="card-eyebrow">Semaine</div>
+        <h3>1 vente</h3>
+        <p>1 vitrine vendue = <b>30 000 F</b> de commission minimum.</p>
+      </div>
+      <div class="card">
+        <div class="card-eyebrow">Mois</div>
+        <h3>4-6 ventes</h3>
+        <p>Cible réaliste pour un partenaire actif : <b>120 000 à 180 000 F/mois</b>.</p>
+      </div>
+      <div class="card">
+        <div class="card-eyebrow">Trimestre</div>
+        <h3>1 catalogue</h3>
+        <p>Décrocher 1 catalogue par trimestre = bonus de <b>12 000 F</b> ponctuel.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <b>La vérité :</b> les partenaires qui réussissent ne sont pas plus intelligents. Ils ont juste arrêté de sauter une journée. <b>3 messages par jour, 5 jours sur 7, pendant 30 jours = 60 prospects.</b> Avec un taux de conversion de 5%, ça fait 3 ventes/mois minimum.
+    </div>
+  </section>
+
+  <!-- ===== 12. VOS OUTILS ===== -->
+  <section class="sec">
+    <div class="sec-num">12</div>
+    <div class="sec-eyebrow">Votre boîte à outils</div>
+    <h2 class="sec-h">Tout ce dont vous avez besoin, au même endroit</h2>
+    <div class="sec-intro">
+      Voici les liens et numéros à utiliser au quotidien. Mettez cette section en favori sur votre téléphone.
+    </div>
+
+    <h3 style="margin-bottom:10px">🔗 Liens de démonstration à partager aux prospects</h3>
+    <div class="card">
+      <div class="card-eyebrow">Référence principale</div>
+      <h3>Luxury Skin Clinic</h3>
+      <p><b>https://luxuryskinclinic.netlify.app</b></p>
+      <p>Hub complet : clinique + boutique cosmétiques + soins intimes + admin. Le plus impressionnant à montrer.</p>
+    </div>
+    <div class="card">
+      <div class="card-eyebrow">Vitrine simple</div>
+      <h3>Grain d'Esthétique</h3>
+      <p><i>Lien à demander à Mongazi</i></p>
+      <p>Pour montrer une vitrine plus accessible, plus proche du tarif de base 100 000 F.</p>
+    </div>
+
+    <h3 style="margin-top:24px;margin-bottom:10px">📱 Contacts NEBULA</h3>
+    <table class="tbl">
+      <thead>
+        <tr><th>Quoi</th><th>Comment</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><b>Mongazi (fondateur)</b></td><td>WhatsApp Business · à demander dans votre kit personnel</td></tr>
+        <tr><td>Soumettre un lead</td><td>Message WhatsApp direct à Mongazi avec format ci-dessous</td></tr>
+        <tr><td>Questions urgentes</td><td>WhatsApp Mongazi (réponse sous 24h)</td></tr>
+        <tr><td>Versement commission</td><td>Mobile Money sur votre numéro déclaré · sous 7 jours</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin-top:24px;margin-bottom:10px">📋 Format de soumission d'un lead</h3>
+    <div class="speech-body" style="margin-top:10px">🌸 <b>Nouveau lead — [Votre nom]</b>
+
+<b>Client :</b> [Nom de la marque + prénom contact]
+<b>Téléphone / WhatsApp :</b> [Numéro avec indicatif pays]
+<b>Secteur :</b> [Beauté / Mode / Restaurant / Autre]
+<b>Type de projet :</b> Vitrine 100 000 F (ou négocié à X) · OU Catalogue 40 000 F
+<b>Brief en 3 lignes :</b>
+[Phrase 1 : que vend le client]
+[Phrase 2 : à qui]
+[Phrase 3 : ce qu'il attend du site]
+
+<b>Statut :</b> client OK pour démarrer · attend confirmation paiement de Mongazi</div>
+  </section>
+
+  <!-- ===== 13. ENGAGEMENT ===== -->
+  <section class="sec">
+    <div class="sec-num">13</div>
+    <div class="sec-eyebrow">Vos engagements</div>
+    <h2 class="sec-h">Les 7 règles d'or du partenaire NEBULA</h2>
+    <div class="sec-intro">
+      Pour que la collaboration dure, voici les 7 règles non négociables. Les enfreindre = fin du partenariat.
+    </div>
+
+    <ul class="checklist">
+      <li><b>1. Représenter NEBULA avec respect.</b> Tout message, toute promesse engage l'image de la marque. Soyez professionnel·le toujours.</li>
+      <li><b>2. Ne jamais encaisser l'argent du client à votre nom.</b> Le client paie TOUJOURS directement Mongazi. Aucune exception.</li>
+      <li><b>3. Ne pas négocier en dessous du plancher</b> (75 000 F vitrine, 40 000 F catalogue) sans validation préalable de Mongazi.</li>
+      <li><b>4. Transmettre les leads dans les 24h.</b> Si vous attendez 3 jours, le client perd l'élan et la vente se perd.</li>
+      <li><b>5. Ne pas faire de fausses promesses</b> (délais, fonctionnalités, prix). Si vous doutez, demandez à Mongazi avant de vous engager.</li>
+      <li><b>6. Confidentialité totale.</b> Ce document, les tarifs, les noms clients : strictement confidentiels. Ne pas partager.</li>
+      <li><b>7. Persévérance.</b> 80% des ventes se font après 5 à 7 contacts. Ne lâchez pas après le 1er « non ».</li>
+    </ul>
+
+    <div class="warn">
+      <b>⚠️ Important :</b> tout partenaire qui contourne ces règles (encaissement direct, fausses promesses, partage de docs confidentiels) sera immédiatement retiré du programme — sans commission sur les ventes en cours.
+    </div>
+  </section>
+
+  <!-- ===== 14. FERMETURE ===== -->
+  <section class="sec">
+    <div class="sec-num">14</div>
+    <div class="sec-eyebrow">Et maintenant</div>
+    <h2 class="sec-h">Lancez-vous cette semaine</h2>
+    <div class="sec-intro">
+      Vous avez tout entre les mains. La vision, les produits, les tarifs, les scripts, les objections. La seule chose qui manque maintenant : votre premier message à votre premier prospect.
+    </div>
+
+    <div class="callout">
+      <b>Le défi premier mois :</b> 30 prospects contactés, 5 rendez-vous décrochés, 2 ventes closées. C'est <b>60 000 F minimum</b> de commission. Réalisable par n'importe quel partenaire sérieux. Beaucoup feront plus.
+    </div>
+
+    <h3 style="margin-top:24px;margin-bottom:10px">✨ Votre première semaine</h3>
+    <ul class="checklist">
+      <li><b>Jour 1 :</b> relire ce document en entier. Surligner les 3 sections les plus utiles pour vous.</li>
+      <li><b>Jour 2 :</b> identifier 10 prospects qualifiés sur Instagram / WhatsApp. Construire une liste.</li>
+      <li><b>Jour 3-4 :</b> envoyer 6 messages d'approche (Script 1 ou 2). Personnaliser chaque message.</li>
+      <li><b>Jour 5 :</b> relancer les prospects qui n'ont pas répondu. Démarrer les premières conversations sérieuses.</li>
+      <li><b>Jour 6-7 :</b> closer la première vente. Transmettre le lead à Mongazi. Votre commission tombe sous 7 jours.</li>
+    </ul>
+
+    <div class="callout" style="margin-top:24px">
+      Bienvenue dans NEBULA Agency.<br><br>
+      <b>Vendons ensemble le futur digital de l'Afrique.</b><br><br>
+      — Mongazi
+    </div>
+
+    <div style="text-align:center;margin-top:50px;padding-top:30px;border-top:1px solid var(--ligne)">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;letter-spacing:.16em;color:var(--or-clair);margin-bottom:6px">NEBULA · AGENCY</div>
+      <div style="font-size:.78rem;color:var(--texte-doux);letter-spacing:.18em;text-transform:uppercase">Cotonou · Bénin · Afrique de l'Ouest</div>
+      <div style="font-size:.74rem;color:var(--texte-doux);margin-top:10px">Document confidentiel · Programme Partenaires Affiliés · Édition 2026</div>
+    </div>
+  </section>
+
+  <div class="actions">
+    <button class="btn" onclick="window.print()">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>
+      Imprimer / Sauver PDF
+    </button>
+    <button class="btn primary" id="btnPdf2" type="button">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Télécharger PDF
+    </button>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const toast=$('toast');
+let toastT=null;
+function showToast(msg){
+  toast.textContent=msg;
+  toast.classList.add('show');
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>toast.classList.remove('show'),3200);
+}
+
+async function generatePdf(){
+  const btn=$('btnPdf'),btn2=$('btnPdf2');
+  const orig=btn.innerHTML,orig2=btn2.innerHTML;
+  btn.innerHTML='<span class="spinner"></span> Génération...';
+  btn2.innerHTML='<span class="spinner"></span> Génération...';
+  btn.disabled=true;btn2.disabled=true;
+
+  try{
+    // Cibler les sections (cover + chaque .sec)
+    const sections=[document.querySelector('.cover'), ...document.querySelectorAll('.sec')];
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF('p','mm','a4');
+    const pdfW=210,pdfH=297;
+
+    for(let i=0;i<sections.length;i++){
+      const sec=sections[i];
+      const canvas=await html2canvas(sec,{
+        scale:1.5,
+        backgroundColor:'#0a0a0a',
+        logging:false,
+        useCORS:true,
+      });
+      const imgW=pdfW;
+      const imgH=(canvas.height*imgW)/canvas.width;
+      const imgData=canvas.toDataURL('image/jpeg',0.88);
+
+      if(i>0)pdf.addPage();
+
+      // Si la section tient sur une page
+      if(imgH<=pdfH){
+        pdf.addImage(imgData,'JPEG',0,0,imgW,imgH);
+      }else{
+        // Pagination interne si trop long
+        let heightLeft=imgH,position=0;
+        pdf.addImage(imgData,'JPEG',0,position,imgW,imgH);
+        heightLeft-=pdfH;
+        while(heightLeft>0){
+          position=heightLeft-imgH;
+          pdf.addPage();
+          pdf.addImage(imgData,'JPEG',0,position,imgW,imgH);
+          heightLeft-=pdfH;
+        }
+      }
+    }
+
+    pdf.save('NEBULA_Programme_Partenaires_Affilies.pdf');
+    showToast('PDF téléchargé ✨ — partagez-le à vos partenaires');
+  }catch(err){
+    console.error(err);
+    showToast('Erreur lors de la génération. Essayez Imprimer / Sauver PDF.');
+  }finally{
+    btn.innerHTML=orig;btn2.innerHTML=orig2;
+    btn.disabled=false;btn2.disabled=false;
+  }
+}
+$('btnPdf').addEventListener('click',generatePdf);
+$('btnPdf2').addEventListener('click',generatePdf);
+</script>
+</body>
+</html>

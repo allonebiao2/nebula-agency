@@ -1615,7 +1615,7 @@ function productCard(p,i){
   const _ackPrice=`<p>Vous demandez le prix et les modalités pour <b>${p.n}</b>${_curSize?' ('+_curSize+')':''}.</p><p>Mme Sabrina vous confirmera le tarif sur WhatsApp. Le prix est <b>fixé par la maison</b> et tient compte de la formulation, du conditionnement et de la disponibilité de la matière première.</p><p>Aucune commande n'est validée à ce stade — vous restez libre d'acheter ou non après réception du prix.</p>`;
   const actionHtml=(p.stock===0)
     ?`<a class="btn-add wa" href="${waLink(_waStock)}" target="_blank" rel="noopener" data-lc-confirm data-lc-recap="${_recapStock.replace(/"/g,'&quot;')}" data-lc-ack="${_ackStock.replace(/"/g,'&quot;')}" data-lc-q="Envoyer votre demande d'alerte retour en stock ?"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg> M'avertir du retour</a>`
-    :(p.p==null)
+    :(_curPrice==null)
     ?`<a class="btn-add wa" href="${waLink(_waPrice)}" target="_blank" rel="noopener" data-lc-confirm data-lc-recap="${_recapPrice.replace(/"/g,'&quot;')}" data-lc-ack="${_ackPrice.replace(/"/g,'&quot;')}" data-lc-q="Envoyer votre demande de prix ?">Demander le prix</a>`
     :`<div class="add-actions"><div class="qty-card"><button type="button" class="q-dec" aria-label="Diminuer la quantité">−</button><span class="q-val">1</span><button type="button" class="q-inc" aria-label="Augmenter la quantité">+</button></div><button class="btn-add" data-add="${p.n}"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Panier</button></div>`;
   el.innerHTML=`
