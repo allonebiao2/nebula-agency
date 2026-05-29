@@ -1,0 +1,29 @@
+# Cerveau IA
+anthropic>=0.40.0
+
+# Base de données
+supabase>=2.9.0
+
+# Sourcing
+googlemaps>=4.10.0
+httpx>=0.27.0
+beautifulsoup4>=4.12.0
+lxml>=5.0.0
+
+# Email (Vague 3)
+resend>=2.5.0
+
+# Alertes (Vague 5)
+python-telegram-bot>=21.6
+
+# Webhook receiver (Vague 4)
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+
+# Config + utilitaires
+python-dotenv>=1.0.1
+pydantic>=2.9.0
+pydantic-settings>=2.6.0
+typer>=0.13.0
+rich>=13.9.0
+tenacity>=9.0.0
