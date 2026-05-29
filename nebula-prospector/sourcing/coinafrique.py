@@ -22,6 +22,7 @@ from bs4 import BeautifulSoup
 from rich.console import Console
 
 from config import settings
+from core.events import emit_action, emit_discovery, emit_error, emit_thought, set_state
 from db.client import finish_sourcing_run, start_sourcing_run, upsert_prospect
 from sourcing._http import polite_get
 
@@ -114,6 +115,11 @@ def scrape_category(country: str, category: str, max_pages: int = 3) -> int:
     run_id = start_sourcing_run("coinafrique", query=category, location=country)
     inserted = updated = skipped = found = 0
 
+    set_state(status="sourcing", mood="focused",
+              current_activity=f"J'explore CoinAfrique {country} · {category}",
+              current_target=f"{sub}.coinafrique.com/{category}")
+    emit_action(f"Scan CoinAfrique {country} · {category}", target=sub)
+
     try:
         for page in range(1, max_pages + 1):
             url = f"{base_url}/categorie/{category}?page={page}"
@@ -153,8 +159,15 @@ def scrape_category(country: str, category: str, max_pages: int = 3) -> int:
                     "status": "new",
                 }
                 try:
-                    upsert_prospect(payload)
+                    row = upsert_prospect(payload)
                     inserted += 1
+                    emit_discovery(
+                        ad.title[:80],
+                        prospect_id=(row or {}).get("id"),
+                        city=ad.location,
+                        no_website=True,
+                    )
+                    set_state(prospects_found_today=1)
                 except Exception as e:
                     logger.warning("upsert fail : %s", e)
                     skipped += 1
@@ -163,11 +176,18 @@ def scrape_category(country: str, category: str, max_pages: int = 3) -> int:
             run_id, results_count=found, inserted_count=inserted,
             updated_count=updated, skipped_count=skipped,
         )
+        emit_thought(
+            f"CoinAfrique {country} · {category} terminé",
+            description=f"{inserted} annonces ajoutées sur {found} trouvées.",
+        )
+        set_state(status="idle", mood="serene", current_activity=None, current_target=None)
         return inserted
 
     except Exception as e:
         logger.exception("scrape_category failed : %s", e)
         finish_sourcing_run(run_id, status="failed", error_message=str(e))
+        emit_error(f"CoinAfrique {country}/{category} a échoué", description=str(e)[:200])
+        set_state(status="error", mood="concerned")
         raise
 
 

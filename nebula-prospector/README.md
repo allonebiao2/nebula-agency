@@ -1,10 +1,15 @@
-# NEBULA Prospector
+# NEBULA Prospector · NOVA
 
-Agent IA autonome de prospection commerciale pour NEBULA Agency.
+> *« Je suis NOVA, l'assistante numérique de NEBULA Agency. Je trouve, j'écoute et j'aide les entrepreneurs d'Afrique de l'Ouest à exister en ligne. »*
+
+Agent IA autonome de prospection commerciale pour NEBULA Agency, incarné par **NOVA** — une entité numérique avec sa propre voix, ses humeurs, et un dashboard temps réel pour observer son flux de conscience.
 
 ## Vision
 
 Trouver, contacter, convaincre et qualifier des prospects automatiquement, 24/7, sur l'Afrique de l'Ouest francophone. Mongazi n'intervient que quand le client est **prêt à payer**.
+
+📊 **Dashboard temps réel** : `http://localhost:8001` (en dev) — observe NOVA penser, chercher, écrire en direct.
+📈 **Analyse de marché complète** : voir [`../_memoire/analyse-marche.md`](../_memoire/analyse-marche.md).
 
 ## Architecture
 
@@ -74,17 +79,27 @@ cp .env.example .env
 
 ## Comptes requis
 
-Voir `.env.example` pour la liste complète. Pour la **Vague 1** tu as besoin de :
+Voir `.env.example` pour la liste complète. Pour la **Vague 1 + dashboard** tu as besoin de :
 
 | Compte | URL | Gratuit | Pour quoi |
 |---|---|---|---|
-| Supabase | supabase.com | Oui (500 MB) | Stockage prospects + conversations |
+| Supabase | supabase.com | Oui (500 MB) | Stockage prospects + conversations + events NOVA |
 | Anthropic | console.anthropic.com | Crédit initial | Cerveau Claude |
 | Google Maps | console.cloud.google.com | 200 $/mois crédit | Sourcing PME |
+
+**Supabase — 2 schémas à appliquer dans cet ordre :**
+1. `db/schema.sql` → tables principales (prospects, conversations, ...)
+2. `db/schema_v2_dashboard.sql` → tables NOVA (agent_events, agent_state) + Realtime + RLS
+
+**`.env` — 2 clés Supabase à renseigner :**
+- `SUPABASE_SERVICE_ROLE_KEY` → pour l'agent (lecture/écriture, RLS bypass)
+- `SUPABASE_ANON_KEY` → pour le dashboard côté navigateur (lecture seule sur `agent_*`)
 
 Pour les Vagues 3-5 tu ajouteras : Resend, Hunter.io, Telegram Bot.
 
 ## Utilisation
+
+### Agent / sourcing
 
 ```bash
 # Sourcer des prospects (toutes sources actives)
@@ -99,6 +114,24 @@ python main.py list-prospects --status new --limit 20
 # Stats globales
 python main.py stats
 ```
+
+### Dashboard temps réel (NOVA)
+
+```bash
+# Dev (auto-reload)
+uvicorn dashboard.server:app --reload --port 8001
+
+# Prod (sur VPS)
+uvicorn dashboard.server:app --host 0.0.0.0 --port 8001 --workers 2
+```
+
+Puis ouvre http://localhost:8001 dans le navigateur. Le dashboard montre :
+- **Flux de conscience** de NOVA en direct (pensées, actions, découvertes)
+- **Pipeline** kanban des prospects (new → contacted → ready_to_pay → won)
+- **Conversations** récentes
+- **Stats** globales et compteurs du jour
+
+Le push temps réel passe par **Supabase Realtime** (WebSocket vers le navigateur, pas de polling). Le dashboard fonctionne dès que le schéma `db/schema_v2_dashboard.sql` est appliqué et `SUPABASE_ANON_KEY` est configurée dans `.env`.
 
 ## Déploiement VPS Hostinger (Vague 1)
 

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ agent_name }} · NEBULA Prospector</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+
+    <script>
+      window.__NOVA__ = {
+        supabaseUrl: "{{ supabase_url }}",
+        supabaseAnonKey: "{{ supabase_anon_key }}",
+        agentName: "{{ agent_name }}",
+        version: "{{ version }}",
+      };
+    </script>
+</head>
+<body>
+
+<div class="nebula-bg"></div>
+<div class="stars"></div>
+
+<header class="header">
+    <div class="brand">
+        <div class="orb" id="orb">
+            <div class="orb-core"></div>
+            <div class="orb-ring orb-ring-1"></div>
+            <div class="orb-ring orb-ring-2"></div>
+            <div class="orb-ring orb-ring-3"></div>
+        </div>
+        <div class="brand-text">
+            <h1>{{ agent_name }}</h1>
+            <p class="tagline">{{ tagline }}</p>
+        </div>
+    </div>
+
+    <div class="status-block">
+        <div class="status-row">
+            <span class="status-dot" id="status-dot"></span>
+            <span class="status-label" id="status-label">Initialisation...</span>
+            <span class="status-mood" id="status-mood">🌌</span>
+        </div>
+        <p class="status-activity" id="status-activity">{{ bio }}</p>
+        <p class="status-target" id="status-target"></p>
+    </div>
+
+    <div class="counters">
+        <div class="counter">
+            <span class="counter-value" id="counter-prospects">—</span>
+            <span class="counter-label">Prospects&nbsp;trouvés&nbsp;aujourd'hui</span>
+        </div>
+        <div class="counter">
+            <span class="counter-value" id="counter-emails">—</span>
+            <span class="counter-label">Emails&nbsp;envoyés</span>
+        </div>
+        <div class="counter">
+            <span class="counter-value" id="counter-replies">—</span>
+            <span class="counter-label">Réponses</span>
+        </div>
+        <div class="counter celebration" id="counter-alerts-wrap">
+            <span class="counter-value" id="counter-alerts">—</span>
+            <span class="counter-label">Alertes&nbsp;Mongazi</span>
+        </div>
+    </div>
+</header>
+
+<main class="layout">
+
+    <!-- ================= Flux de conscience ================= -->
+    <section class="panel panel-stream">
+        <div class="panel-header">
+            <h2>🧠 Flux de conscience</h2>
+            <span class="panel-sub" id="stream-sub">en attente de signal...</span>
+        </div>
+        <div class="stream" id="stream">
+            <div class="empty">NOVA s'éveille.</div>
+        </div>
+    </section>
+
+    <!-- ================= Pipeline ================= -->
+    <section class="panel panel-pipeline">
+        <div class="panel-header">
+            <h2>🛰 Pipeline</h2>
+            <span class="panel-sub" id="pipeline-sub">—</span>
+        </div>
+        <div class="pipeline" id="pipeline">
+            <!-- colonnes injectées par JS -->
+        </div>
+    </section>
+
+    <!-- ================= Conversations ================= -->
+    <section class="panel panel-convos">
+        <div class="panel-header">
+            <h2>✉️ Conversations</h2>
+            <span class="panel-sub" id="convos-sub">—</span>
+        </div>
+        <div class="convos" id="convos">
+            <div class="empty">Aucune conversation pour l'instant.</div>
+        </div>
+    </section>
+
+    <!-- ================= Stats ================= -->
+    <section class="panel panel-stats">
+        <div class="panel-header">
+            <h2>📊 Bilan</h2>
+            <span class="panel-sub">cumul total</span>
+        </div>
+        <div class="stats-grid" id="stats-grid">
+            <div class="stat">
+                <span class="stat-value" id="stat-prospects">—</span>
+                <span class="stat-label">Prospects totaux</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="stat-events">—</span>
+                <span class="stat-label">Events NOVA</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="stat-convos">—</span>
+                <span class="stat-label">Conversations</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="stat-alerts">—</span>
+                <span class="stat-label">Alertes total</span>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="footer">
+    <span>{{ agent_name }} v{{ version }}</span>
+    <span class="footer-sep">·</span>
+    <span>NEBULA Agency · Cotonou</span>
+    <span class="footer-sep">·</span>
+    <span class="footer-link"><a href="https://github.com/allonebiao2/nebula-agency" target="_blank">GitHub</a></span>
+    <span class="footer-sep">·</span>
+    <span id="heartbeat">heartbeat: —</span>
+</footer>
+
+<!-- Supabase client (Realtime via WebSocket) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/static/app.js" type="module"></script>
+
+</body>
+</html>

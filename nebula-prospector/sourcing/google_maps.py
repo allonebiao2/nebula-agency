@@ -22,6 +22,13 @@ from rich.table import Table
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from config import settings
+from core.events import (
+    emit_action,
+    emit_discovery,
+    emit_error,
+    emit_thought,
+    set_state,
+)
 from db.client import (
     finish_sourcing_run,
     get_prospect_by_external,
@@ -158,6 +165,11 @@ def search_businesses(
     run_id = start_sourcing_run("google_maps", query=full_query, location=city)
     console.print(f"[cyan]🔍 Google Maps · {full_query}[/cyan]")
 
+    set_state(status="sourcing", mood="focused",
+              current_activity=f"Je scanne {city} via Google Maps...",
+              current_target=full_query)
+    emit_action(f"Recherche : {full_query}", target=city)
+
     try:
         results: list[dict[str, Any]] = []
         response = _text_search(gmaps, full_query, language="fr", region=country.lower() if country else None)
@@ -194,7 +206,7 @@ def search_businesses(
             payload = _build_prospect_payload(raw, details, city=city, country=country)
 
             try:
-                upsert_prospect(payload)
+                row = upsert_prospect(payload)
                 if existing:
                     stats.updated += 1
                 else:
@@ -204,6 +216,14 @@ def search_businesses(
                         f"[dim]({payload.get('sector_normalized') or 'unknown'} · "
                         f"site={'oui' if payload.get('has_website') else 'NON'})[/dim]"
                     )
+                    emit_discovery(
+                        payload["name"],
+                        prospect_id=(row or {}).get("id"),
+                        city=city,
+                        sector=payload.get("sector_normalized"),
+                        no_website=not payload.get("has_website"),
+                    )
+                    set_state(prospects_found_today=1, bump_heartbeat=True)
             except Exception as e:
                 logger.exception("upsert failed pour %s : %s", payload.get("name"), e)
                 stats.skipped += 1
@@ -216,9 +236,21 @@ def search_businesses(
             skipped_count=stats.skipped,
         )
 
+        emit_thought(
+            f"Scan terminé : {full_query}",
+            description=(f"{stats.inserted} nouveaux prospects, "
+                         f"{stats.updated} mis à jour, "
+                         f"sur {stats.found} résultats."),
+        )
+        set_state(status="idle", mood="serene",
+                  current_activity=None, current_target=None)
+
     except Exception as e:
         logger.exception("sourcing failed : %s", e)
         finish_sourcing_run(run_id, status="failed", error_message=str(e))
+        emit_error(f"Sourcing échoué : {full_query}", description=str(e)[:200])
+        set_state(status="error", mood="concerned",
+                  current_activity=f"Erreur sur {full_query}")
         raise
 
     return stats

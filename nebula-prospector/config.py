@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     # --- Vague 1 ---
     supabase_url: str = ""
     supabase_service_role_key: str = ""
+    supabase_anon_key: str = ""           # exposée au navigateur (dashboard)
     anthropic_api_key: str = ""
     google_maps_api_key: str = ""
 
