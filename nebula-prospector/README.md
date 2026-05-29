@@ -133,38 +133,20 @@ Puis ouvre http://localhost:8001 dans le navigateur. Le dashboard montre :
 
 Le push temps réel passe par **Supabase Realtime** (WebSocket vers le navigateur, pas de polling). Le dashboard fonctionne dès que le schéma `db/schema_v2_dashboard.sql` est appliqué et `SUPABASE_ANON_KEY` est configurée dans `.env`.
 
-## Déploiement VPS Hostinger (Vague 1)
+## Déploiement Railway
 
-Une fois la Vague 1 testée en local et fonctionnelle :
+Voir le guide complet pas à pas : **[`DEPLOY-RAILWAY.md`](DEPLOY-RAILWAY.md)**
 
-```bash
-# 1. SSH sur le VPS
-ssh root@72.61.103.56
+Résumé :
+1. Crée le compte Railway, connecte-le au repo GitHub `allonebiao2/nebula-agency`
+2. Configure **Root Directory = `nebula-prospector`** dans le service
+3. Colle les variables d'environnement (Supabase, Anthropic, Google Maps)
+4. Génère un domaine public → c'est ton dashboard NOVA accessible 24/7
+5. Crée un second service "cron" pour le sourcing quotidien (`python main.py sourcing` à 3h UTC)
 
-# 2. Cloner le repo + installer
-cd /opt
-git clone https://github.com/allonebiao2/nebula-agency.git
-cd nebula-agency/nebula-prospector
-python3.11 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+Coût estimé : **~ 4 $/mois**, couvert par le crédit gratuit Railway (5 $/mois).
 
-# 3. Configurer .env (copier .env.example et remplir)
-cp .env.example .env
-nano .env
-
-# 4. Tester
-python main.py healthcheck
-python main.py sourcing --country BJ --google-only
-
-# 5. Installer le cron (sourcing quotidien 03h UTC)
-crontab -e
-# Ajouter :
-# 0 3 * * * cd /opt/nebula-agency/nebula-prospector && /opt/nebula-agency/nebula-prospector/.venv/bin/python main.py sourcing >> /var/log/nebula-prospector.log 2>&1
-```
-
-À partir de la **Vague 4**, on installera FastAPI comme service systemd
-pour exposer le webhook de réception emails (Resend).
+Files de config Railway déjà présents dans le repo : `Procfile`, `railway.json`, `nixpacks.toml`, `.python-version`.
 
 ## Règles d'or
 
