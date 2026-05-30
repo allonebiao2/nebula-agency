@@ -82,6 +82,19 @@ def _run_daily_pipeline():
             pass
 
 
+def _run_morning_briefing():
+    """Job 7h UTC (= 8h Cotonou) : envoie le rapport matinal sur Telegram."""
+    import logging
+    log = logging.getLogger("nova.scheduler")
+    log.info("[scheduler] morning briefing")
+    try:
+        from alerts.morning_briefing import send_morning_briefing
+        ok = send_morning_briefing()
+        log.info(f"[scheduler] morning briefing {'OK' if ok else 'FAILED'}")
+    except Exception as e:
+        log.exception(f"[scheduler] morning briefing erreur : {e}")
+
+
 @app.on_event("startup")
 async def _start_scheduler():
     global _scheduler
@@ -99,10 +112,20 @@ async def _start_scheduler():
             replace_existing=True,
             misfire_grace_time=3600,
         )
+        _scheduler.add_job(
+            _run_morning_briefing,
+            "cron",
+            hour=7,  # 7h UTC = 8h Cotonou (UTC+1)
+            minute=0,
+            id="morning_briefing",
+            replace_existing=True,
+            misfire_grace_time=1800,
+        )
         _scheduler.start()
         import logging
         logging.getLogger("nova.scheduler").info(
-            "[scheduler] APScheduler démarré (sourcing à 3h UTC = 4h Cotonou)"
+            "[scheduler] APScheduler démarré : "
+            "sourcing 3h UTC (4h Cotonou) + briefing 7h UTC (8h Cotonou)"
         )
     except Exception as e:
         import logging
@@ -116,6 +139,43 @@ async def _stop_scheduler():
     global _scheduler
     if _scheduler:
         _scheduler.shutdown(wait=False)
+
+
+# ---------------------------------------------------------------------------
+# Endpoints admin (déclenchent les jobs à la demande, protégés par token)
+# ---------------------------------------------------------------------------
+
+def _check_admin_token(request: Request) -> bool:
+    import os
+    expected = os.environ.get("ADMIN_TOKEN", "")
+    if not expected:
+        return False  # pas de token configuré = endpoints désactivés
+    provided = request.headers.get("X-Admin-Token") or request.query_params.get("token", "")
+    return provided == expected
+
+
+@app.post("/api/admin/run/morning-briefing")
+async def admin_run_morning_briefing(request: Request):
+    """Force l'envoi du briefing matinal sur Telegram."""
+    if not _check_admin_token(request):
+        return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
+    try:
+        from alerts.morning_briefing import send_morning_briefing
+        ok = send_morning_briefing()
+        return {"ok": ok}
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.post("/api/admin/run/sourcing")
+async def admin_run_sourcing(request: Request):
+    """Force un cycle sourcing + enrichissement complet (peut prendre 5-10 min)."""
+    if not _check_admin_token(request):
+        return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
+    import threading
+    # Lance en thread pour ne pas bloquer la requête HTTP
+    threading.Thread(target=_run_daily_pipeline, daemon=True).start()
+    return {"ok": True, "message": "Pipeline lancé en arrière-plan"}
 
 
 # ---------------------------------------------------------------------------

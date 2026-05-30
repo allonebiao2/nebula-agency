@@ -293,6 +293,23 @@ def enrich_cmd(
 
 
 # ---------------------------------------------------------------------------
+# Rapports
+# ---------------------------------------------------------------------------
+
+@app.command("briefing")
+def briefing_cmd() -> None:
+    """Envoie le rapport matinal Telegram immédiatement (pour test)."""
+    from alerts.morning_briefing import send_morning_briefing
+    logging.basicConfig(level=settings.log_level)
+    console.print("[cyan]Envoi du briefing matinal sur Telegram...[/cyan]")
+    ok = send_morning_briefing()
+    if ok:
+        console.print("[bold green]✓ Briefing envoyé.[/bold green]")
+    else:
+        console.print("[bold red]✗ Échec de l'envoi.[/bold red]")
+
+
+# ---------------------------------------------------------------------------
 # Lecture
 # ---------------------------------------------------------------------------
 
