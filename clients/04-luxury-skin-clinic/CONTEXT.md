@@ -403,6 +403,47 @@ crédibilité. Architecture sans backend, modération via WhatsApp.
 - **À demander à Gloria** : 3-4 avis authentiques d'amorçage, validation
   du wording de transparence.
 
+## Recherche cross-marque (2026-05-30)
+
+Demande Gloria : pouvoir rechercher produits & soins **depuis chacun
+des 3 compartiments**, et voir les résultats des 3 marques.
+
+- **Catalogue partagé** : `assets/js/global-catalog.js` (nouveau fichier).
+  Au chargement de chaque page, fetch les 2 autres pages HTML et parse
+  leurs `PRODUCTS` / `SERVICES` via `new Function`. Normalisation en
+  format unifié `{brand,name,price,sub,tags,desc,url}`. **Zéro
+  duplication de données** — la vérité reste dans chaque source.
+- **Barre sticky** sur les 3 pages, chartée selon la palette :
+  INA Luxury (or sur noir), Cozy (rose poudré), Skin Clinic (blanc +
+  menthe). Placeholder « Rechercher un produit/soin (toutes marques) ».
+- **Résultats groupés par marque** avec badge couleur + comptage par
+  groupe. Tri : marque locale d'abord, puis les 2 autres.
+- **Navigation cross-marque** : cliquer un résultat d'une autre marque
+  → redirige vers `cible.html?q=<terme>` qui pré-remplit la barre à
+  l'arrivée (transparent). Cliquer un résultat de la même marque →
+  reset query + scroll vers la catégorie du produit.
+- **Diacritiques insensible** : `norm()` retire les accents avant match.
+  Recherche AND multi-mots sur `name + sub + desc + tags`.
+- Indicateur « (chargement Cozy & Clinic…) » pendant le fetch initial.
+
+## Modal « Faire ma consultation » sur INA Luxury (2026-05-30)
+
+Demande Gloria : remplacer le bouton unique « Faire ma consultation
+gratuite » par « Faire ma consultation » qui propose **les 3
+consultations existantes** (pas de 4e à ajouter) :
+
+1. **Consultation Peau** — Gratuite (questionnaire WhatsApp,
+   `luxury-skin-clinic.html#consultation`)
+2. **Consultation Peau — Suivi** — Premium 20 000 F (RDV institut,
+   `luxury-skin-clinic.html#soins`)
+3. **Diagnostic Capillaire** — 5 000 F (questionnaire WhatsApp,
+   `luxury-skin-clinic.html#soins`)
+
+Modal flottant centré (`#consultModal`), 3 cartes verticales avec icône
++ nom + tag tier + description courte. Échap / clic en dehors / bouton ✕
+ferment. Position : bouton `#consultBtn` dans l'encart `.guide` en haut
+de la zone catalogue INA Luxury.
+
 ## Évolutions demandées (à planifier)
 
 - **Audit friction complet** (demandé le 2026-05-18, partiellement traité

@@ -11,14 +11,45 @@
 Vitrines élégantes, modernes, rapides à livrer.
 Esthétique premium accessible — pas de templates génériques.
 
+## Grille tarifaire actuelle (2026-05-30)
+
+| Service | Setup | Mensuel |
+|---|---|---|
+| Vitrine Digitale + QR Code | **150 000 FCFA** | 15 000 F/mois *si modification demandée dans le mois* |
+| Catalogue Digital + QR Code | **50 000 FCFA** | 15 000 F/mois *si modification demandée dans le mois* |
+| Création Fiche Google Maps | **20 000 FCFA** | — |
+| Création QR Code Google Review | **30 000 FCFA** | — |
+| Forfait Avatar IA ESSENTIEL | — | 30 000 F/mois (3 vidéos) |
+| Forfait Avatar IA PRO | — | 100 000 F/mois (10 vidéos + scripts + publication + rapport) |
+
+**Délai affiché** : **5 à 7 jours** partout (hero, métriques, why, étapes, CTAs).
+Ancien « 48h / 48-72h » remplacé le 2026-05-30.
+
+**Frais mensuel** : ne s'applique QUE si le client demande au moins une
+modification dans le mois — pas de récurrence automatique.
+
 ## État
 
-- **Version actuelle** : v7
-- **Fichier** : `nebula_agency_v7.html`
+- **Version actuelle** : v8
+- **Fichier** : `nebula_agency_v8.html`
 - **Statut** : Livrée
 - **Source** : copiée depuis `nebula_agency_v5_FINAL (1).html`
 
 ### Historique des versions
+
+#### v8 — 2026-05-30 (grille tarifaire + délai + portfolio INA)
+- **Vitrine Digitale** : 70 000 → **150 000 FCFA** setup
+- **Mensuel** : 10 000 → **15 000 FCFA/mois**, applicable uniquement
+  si le client demande au moins une modification dans le mois
+  (formulé clairement dans la note bleue sous les features)
+- **Fiche Google Maps** : 15 550 → **20 000 FCFA**
+- **QR Code Review** renommé **QR Code Google Review**, 20 550 → **30 000 FCFA**
+- **Délai** : « 48h / 48 à 72h » → **« 5 à 7 jours »** partout
+  (hero h1, métriques, stat-box, why-item, étape 3, CTAs, meta tags)
+- **Stat « Vitrines déployées »** : 2 → **3**
+- **Portfolio** : ajout d'une 3e carte **INA Luxury** pointant vers
+  `https://luxuryskinclinic.netlify.app/ina-luxury.html` avec mock
+  visuel dédié `.mock-ina` (palette or/noir, dégradé gold)
 
 #### v7.2 — 2026-05-12 (polish pro + audio + mobile)
 - **Audio jazz d'ambiance** : bouton flottant bas-droit, démarre au premier clic/scroll/touch, fade in/out, persistance localStorage. Fichier attendu : `audio/jazz-loop.mp3` (royalty-free, à déposer)
