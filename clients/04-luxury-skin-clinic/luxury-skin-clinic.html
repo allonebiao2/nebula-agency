@@ -286,6 +286,75 @@ section{padding:58px 0;}
 
 /* ===== CARTE SOIN ===== */
 .svc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:22px;}
+
+/* SEARCH BAR — recherche cross-marque */
+.search-bar{position:sticky;top:0;z-index:30;padding:14px 0 12px;margin:0 -2px 18px;
+  background:linear-gradient(180deg,rgba(251,250,247,.96) 65%,rgba(251,250,247,.5));
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+.search-bar-inner{position:relative;display:flex;align-items:center;
+  border:1px solid var(--ligne);border-radius:30px;
+  background:#fff;padding:0 10px 0 14px;
+  transition:border-color .25s var(--ease),box-shadow .25s var(--ease);
+  box-shadow:0 2px 12px rgba(31,30,26,.04);}
+.search-bar-inner:focus-within{border-color:var(--menthe);
+  box-shadow:0 0 0 4px rgba(127,174,157,.18);}
+.search-bar-ic{width:16px;height:16px;color:var(--menthe);flex-shrink:0;}
+.search-bar input{flex:1;background:none;border:0;outline:none;
+  color:var(--encre);font:300 13px/1 'Jost',system-ui,sans-serif;
+  letter-spacing:.02em;padding:13px 10px;min-width:0;}
+.search-bar input::placeholder{color:var(--gris);font-weight:300;}
+.search-bar input::-webkit-search-cancel-button{display:none;}
+.search-bar-clear{display:none;width:26px;height:26px;border-radius:50%;
+  background:var(--menthe-clair);color:var(--menthe);
+  align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;
+  transition:background .2s,transform .2s;border:0;padding:0;}
+.search-bar-clear svg{width:11px;height:11px;}
+.search-bar-clear:hover{background:#cfe5dc;transform:scale(1.08);}
+.search-bar-clear.show{display:inline-flex;}
+.search-results-wrap{display:none;margin-bottom:30px;}
+.search-results-wrap.show{display:block;}
+.search-meta{text-align:center;margin:0 0 18px;font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--gris);}
+.search-meta b{color:var(--menthe);font-weight:600;}
+.search-empty{padding:38px 18px;text-align:center;color:var(--encre-2);
+  border:1px dashed var(--ligne);border-radius:14px;background:#fff;}
+.search-empty h3{font-family:'Cormorant Garamond',serif;color:var(--menthe);
+  font-size:1.3rem;margin-bottom:8px;font-weight:500;}
+.search-empty b{color:var(--encre);}
+.search-group{margin:18px 0 4px;padding:8px 0 6px;border-top:1px solid var(--ligne);}
+.search-group:first-of-type{border-top:0;margin-top:0;}
+.search-group-h{display:flex;align-items:center;gap:10px;margin-bottom:12px;
+  font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gris);}
+.search-group-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.search-group-h b{color:var(--encre);font-weight:600;letter-spacing:.14em;}
+.search-group-h .ct{color:var(--menthe);margin-left:auto;font-weight:600;}
+.search-result{display:flex;align-items:flex-start;gap:14px;
+  padding:12px 14px;border-radius:12px;text-decoration:none;color:inherit;
+  border:1px solid var(--ligne);background:#fff;
+  transition:all .22s var(--ease);margin-bottom:8px;}
+.search-result:hover{border-color:var(--menthe);background:var(--menthe-clair);
+  transform:translateY(-1px);box-shadow:0 6px 18px rgba(127,174,157,.18);}
+.search-result-badge{flex-shrink:0;padding:4px 9px;border-radius:8px;
+  font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;
+  align-self:flex-start;margin-top:2px;}
+.search-result-badge.b-ina{background:linear-gradient(135deg,#e6d3a0,#c9a84c 55%,#a8862f);color:#1a1410;}
+.search-result-badge.b-cozy{background:linear-gradient(135deg,#f0cdd4,#d99aa9 60%,#bd7d8e);color:#fff;}
+.search-result-badge.b-clinic{background:linear-gradient(135deg,#cfe6dd,#7fb6a4 60%,#4e8472);color:#0c2a22;}
+.search-result-body{flex:1;min-width:0;}
+.search-result-row{display:flex;align-items:baseline;gap:10px;margin-bottom:3px;flex-wrap:wrap;}
+.search-result-name{font-family:'Cormorant Garamond',serif;font-size:1.05rem;
+  color:var(--encre);font-weight:500;}
+.search-result-price{font-size:.8rem;color:var(--menthe);font-weight:600;white-space:nowrap;}
+.search-result-price.free{color:#5a8c5d;}
+.search-result-price.tba{color:var(--gris);font-style:italic;font-weight:400;}
+.search-result-desc{font-size:.72rem;color:var(--encre-2);line-height:1.5;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.search-result-go{color:var(--menthe);font-size:18px;flex-shrink:0;align-self:center;
+  transition:transform .22s var(--ease);}
+.search-result:hover .search-result-go{transform:translateX(4px);}
+.search-loading{font-size:.72rem;color:var(--gris);text-align:center;
+  padding:14px 8px;font-style:italic;letter-spacing:.04em;}
+.search-loading::before{content:'⋯ ';color:var(--menthe);}
 .svc{background:#fff;border:1px solid var(--ligne);border-radius:15px;overflow:hidden;
   display:flex;flex-direction:column;
   transition:transform .45s var(--ease),box-shadow .45s var(--ease),border-color .35s;}
@@ -579,6 +648,19 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
 
   <section id="soins">
     <div class="wrap">
+      <div class="search-bar">
+        <div class="search-bar-inner">
+          <svg class="search-bar-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="searchInput" type="search" placeholder="Rechercher un soin ou un produit (toutes marques)…" autocomplete="off" aria-label="Rechercher">
+          <button class="search-bar-clear" id="searchClear" type="button" aria-label="Effacer la recherche">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="search-results-wrap" id="searchResultsWrap">
+        <div class="search-meta" id="searchMeta"></div>
+        <div id="searchResults"></div>
+      </div>
       <div id="svcSections"></div>
     </div>
   </section>
@@ -874,6 +956,7 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
 
 <!-- (Ancienne MODAL CONFIRMATION supprimee — remplacee par lc-thanks-modal en bas de page) -->
 
+<script src="assets/js/global-catalog.js"></script>
 <script>
 'use strict';
 const WA='2290167975626';
@@ -1690,6 +1773,122 @@ Réf : ${genRef()}  ·  ${nowFr()}`;
   c.addEventListener('change',()=>b.toggleAttribute('disabled',!c.checked));
 })();
 document.getElementById('openSkinForm').addEventListener('click',()=>openForm('skin'));
+
+/* =========================================================================
+   RECHERCHE CROSS-MARQUE — INA + Cozy + Skin Clinic
+   ========================================================================= */
+(function(){
+if(window.LC&&LC.initGlobalCatalog)LC.initGlobalCatalog({localBrand:'clinic',localItems:SERVICES});
+let curQuery='';
+const inp=document.getElementById('searchInput');
+const clr=document.getElementById('searchClear');
+const wrap=document.getElementById('searchResultsWrap');
+const metaEl=document.getElementById('searchMeta');
+const resultsEl=document.getElementById('searchResults');
+const sections=document.getElementById('svcSections');
+if(!inp||!clr||!wrap||!sections)return;
+function norm(s){return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
+function syncClear(){clr.classList.toggle('show',!!curQuery);}
+function render(){
+  if(!curQuery){
+    wrap.classList.remove('show');
+    sections.style.display='';
+    return;
+  }
+  sections.style.display='none';
+  wrap.classList.add('show');
+  const cat=(window.LC&&LC.globalCatalog)?LC.globalCatalog:(window.LC&&LC.localCatalog?LC.localCatalog:[]);
+  const loading=!(window.LC&&LC.globalCatalog);
+  const results=cat.filter(it=>LC.matches(it,curQuery));
+  const ORDER={clinic:0,ina:1,cozy:2};
+  results.sort((a,b)=>{
+    const da=ORDER[a.brand]-ORDER[b.brand];
+    if(da)return da;
+    return a.name.localeCompare(b.name,'fr');
+  });
+  metaEl.innerHTML=`<b>${results.length}</b> résultat${results.length>1?'s':''} pour « ${curQuery} »`+
+    (loading?' <span style="opacity:.6;font-style:italic">(chargement INA &amp; Cozy…)</span>':'');
+  resultsEl.innerHTML='';
+  if(!results.length){
+    resultsEl.innerHTML=`<div class="search-empty"><h3>Aucun résultat</h3>
+      <p>Aucun soin ni produit trouvé pour <b>« ${curQuery} »</b>. Essayez un autre mot ou contactez Mme Sabrina.</p></div>`;
+    return;
+  }
+  const groups={};
+  results.forEach(it=>{(groups[it.brand]=groups[it.brand]||[]).push(it);});
+  const container=document.createElement('div');
+  ['clinic','ina','cozy'].forEach(b=>{
+    if(!groups[b])return;
+    const meta=LC.BRAND_META[b];
+    const grp=document.createElement('div');grp.className='search-group';
+    grp.innerHTML=`<div class="search-group-h">
+      <span class="search-group-dot" style="background:${meta.color}"></span>
+      <b>${meta.label}</b> · ${meta.kind}${groups[b].length>1?'s':''}
+      <span class="ct">${groups[b].length}</span>
+    </div>`;
+    groups[b].forEach(it=>grp.appendChild(resultCard(it,b==='clinic')));
+    container.appendChild(grp);
+  });
+  if(loading){
+    const l=document.createElement('div');l.className='search-loading';
+    l.textContent='Chargement des catalogues INA Luxury et Cozy…';
+    container.appendChild(l);
+  }
+  resultsEl.appendChild(container);
+}
+function resultCard(item,isLocal){
+  const meta=LC.BRAND_META[item.brand];
+  const a=document.createElement('a');
+  a.className='search-result';
+  if(isLocal){
+    a.href='#soins';
+    a.addEventListener('click',e=>{
+      e.preventDefault();
+      inp.value='';curQuery='';syncClear();render();
+      // scroll vers la section soins
+      const sec=document.getElementById('soins');
+      if(sec)sec.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+  }else{
+    a.href=meta.url+'?q='+encodeURIComponent(item.name);
+  }
+  let priceHtml='';
+  if(item.isFree)priceHtml=`<span class="search-result-price free">Gratuit</span>`;
+  else if(item.price==null)priceHtml=`<span class="search-result-price tba">à venir</span>`;
+  else priceHtml=`<span class="search-result-price">${item.price.toLocaleString('fr-FR')} FCFA</span>`;
+  a.innerHTML=`<span class="search-result-badge b-${item.brand}">${meta.short}</span>
+    <div class="search-result-body">
+      <div class="search-result-row">
+        <span class="search-result-name">${item.name}</span>
+        ${priceHtml}
+      </div>
+      <div class="search-result-desc">${item.desc||''}</div>
+    </div>
+    <span class="search-result-go">→</span>`;
+  return a;
+}
+let t=null;
+inp.addEventListener('input',()=>{
+  const v=norm(inp.value).trim();
+  if(v===curQuery)return;
+  curQuery=v;syncClear();
+  clearTimeout(t);t=setTimeout(render,90);
+});
+clr.addEventListener('click',()=>{
+  inp.value='';curQuery='';syncClear();inp.focus();render();
+});
+inp.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&curQuery){inp.value='';curQuery='';syncClear();render();}
+});
+try{
+  const params=new URLSearchParams(location.search);
+  const q=params.get('q');
+  if(q){inp.value=q;curQuery=norm(q).trim();syncClear();render();}
+}catch(e){}
+if(window.LC&&LC.globalCatalogPromise){
+  LC.globalCatalogPromise.then(()=>{ if(curQuery)render(); });
+}
+})();
 
 /* =========================================================================
    RÉSERVATION RDV — Calendrier mer/sam + 4 créneaux + soumission WhatsApp

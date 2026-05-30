@@ -217,6 +217,120 @@ header{position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);
 .fam-card:hover .fc-go{gap:12px;}
 .fam-card .fc-go svg{width:15px;height:8px;stroke:currentColor;fill:none;stroke-width:1.6;}
 
+/* modal choix consultation */
+.consult-modal{position:fixed;inset:0;z-index:300;display:none;
+  align-items:flex-start;justify-content:center;padding:48px 16px 16px;
+  background:rgba(6,6,6,.78);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  overflow-y:auto;}
+.consult-modal.show{display:flex;animation:cmFadeIn .25s var(--ease);}
+@keyframes cmFadeIn{from{opacity:0;}to{opacity:1;}}
+.consult-card{position:relative;width:100%;max-width:540px;
+  background:linear-gradient(165deg,#1a1714 0%,#0f0d0a 100%);
+  border:1px solid rgba(201,168,76,.32);border-radius:18px;
+  padding:32px 24px 26px;box-shadow:0 20px 60px rgba(0,0,0,.55);}
+.consult-card-x{position:absolute;top:12px;right:12px;width:34px;height:34px;
+  border:0;border-radius:50%;background:rgba(201,168,76,.14);color:var(--or-clair);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .2s,transform .2s;}
+.consult-card-x svg{width:14px;height:14px;}
+.consult-card-x:hover{background:rgba(201,168,76,.3);transform:rotate(90deg);}
+.consult-eyebrow{font-size:9.5px;letter-spacing:.32em;text-transform:uppercase;
+  color:var(--or);text-align:center;margin-bottom:8px;}
+.consult-title{font-family:'Cormorant Garamond',serif;font-weight:500;
+  font-size:1.7rem;color:var(--creme);text-align:center;margin-bottom:6px;}
+.consult-sub{font-size:.78rem;color:var(--texte-doux);text-align:center;
+  margin-bottom:22px;line-height:1.5;max-width:420px;margin-left:auto;margin-right:auto;}
+.consult-list{display:flex;flex-direction:column;gap:12px;}
+.consult-opt{display:flex;align-items:flex-start;gap:14px;
+  padding:16px 16px;border-radius:13px;text-align:left;
+  border:1px solid rgba(201,168,76,.18);background:rgba(20,18,16,.55);
+  cursor:pointer;transition:all .25s var(--ease);text-decoration:none;color:inherit;
+  width:100%;font-family:inherit;}
+.consult-opt:hover{border-color:var(--or);background:rgba(30,26,18,.7);
+  transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,168,76,.15);}
+.consult-opt-ic{width:38px;height:38px;border-radius:50%;background:var(--gold-grad);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-size:18px;color:var(--noir);}
+.consult-opt-body{flex:1;min-width:0;}
+.consult-opt-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
+.consult-opt-name{font-family:'Cormorant Garamond',serif;font-size:1.05rem;
+  color:var(--creme);font-weight:500;}
+.consult-opt-tag{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  padding:3px 8px;border-radius:10px;font-weight:600;}
+.consult-opt-tag.free{background:rgba(134,192,138,.18);color:#9fd3a2;
+  border:1px solid rgba(134,192,138,.4);}
+.consult-opt-tag.paid{background:var(--gold-grad);color:var(--noir);}
+.consult-opt-desc{font-size:.74rem;color:var(--texte-doux);line-height:1.5;}
+.consult-opt-go{color:var(--or);font-size:18px;flex-shrink:0;align-self:center;
+  transition:transform .25s var(--ease);}
+.consult-opt:hover .consult-opt-go{transform:translateX(4px);}
+
+/* search bar produits */
+.search-bar{position:sticky;top:0;z-index:30;padding:14px 0 12px;margin:0 -2px 4px;
+  background:linear-gradient(180deg,rgba(10,10,10,.94) 65%,rgba(10,10,10,.4));
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+.search-bar-inner{position:relative;display:flex;align-items:center;
+  border:1px solid rgba(201,168,76,.32);border-radius:30px;
+  background:rgba(20,18,16,.78);padding:0 10px 0 14px;
+  transition:border-color .25s var(--ease),box-shadow .25s var(--ease);}
+.search-bar-inner:focus-within{border-color:var(--or-vif);
+  box-shadow:0 0 0 4px rgba(227,192,116,.16);}
+.search-bar-ic{width:16px;height:16px;color:var(--or);flex-shrink:0;}
+.search-bar input{flex:1;background:none;border:0;outline:none;
+  color:var(--creme);font:300 13px/1 'Jost',system-ui,sans-serif;
+  letter-spacing:.02em;padding:13px 10px;min-width:0;}
+.search-bar input::placeholder{color:var(--texte-doux);font-weight:300;}
+.search-bar input::-webkit-search-cancel-button{display:none;}
+.search-bar-clear{display:none;width:26px;height:26px;border-radius:50%;
+  background:rgba(201,168,76,.16);color:var(--or-clair);
+  align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;
+  transition:background .2s,transform .2s;border:0;padding:0;}
+.search-bar-clear svg{width:11px;height:11px;}
+.search-bar-clear:hover{background:rgba(201,168,76,.3);transform:scale(1.08);}
+.search-bar-clear.show{display:inline-flex;}
+.search-empty{padding:38px 18px;text-align:center;color:var(--texte-doux);
+  border:1px dashed rgba(201,168,76,.22);border-radius:14px;
+  background:rgba(20,18,16,.4);}
+.search-empty h3{font-family:'Cormorant Garamond',serif;color:var(--or-clair);
+  font-size:1.3rem;margin-bottom:8px;font-weight:500;}
+.search-empty b{color:var(--creme);}
+/* résultats cross-marque */
+.search-group{margin:18px 0 4px;padding:8px 0 6px;
+  border-top:1px solid rgba(201,168,76,.18);}
+.search-group:first-of-type{border-top:0;margin-top:0;}
+.search-group-h{display:flex;align-items:center;gap:10px;margin-bottom:12px;
+  font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--texte-doux);}
+.search-group-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.search-group-h b{color:var(--creme);font-weight:600;letter-spacing:.14em;}
+.search-group-h .ct{color:var(--or);margin-left:auto;font-weight:600;}
+.search-result{display:flex;align-items:flex-start;gap:14px;
+  padding:12px 14px;border-radius:12px;text-decoration:none;color:inherit;
+  border:1px solid rgba(201,168,76,.15);background:rgba(20,18,16,.55);
+  transition:all .22s var(--ease);margin-bottom:8px;}
+.search-result:hover{border-color:var(--or);background:rgba(30,26,18,.7);
+  transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.3);}
+.search-result-badge{flex-shrink:0;padding:4px 9px;border-radius:8px;
+  font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;
+  align-self:flex-start;margin-top:2px;}
+.search-result-badge.b-ina{background:var(--gold-grad);color:var(--noir);}
+.search-result-badge.b-cozy{background:linear-gradient(135deg,#f3c8d2,#d99aa9 60%,#b87987);color:#3a1a26;}
+.search-result-badge.b-clinic{background:linear-gradient(135deg,#cfe6dd,#7fb6a4 60%,#4e8472);color:#0c2a22;}
+.search-result-body{flex:1;min-width:0;}
+.search-result-row{display:flex;align-items:baseline;gap:10px;margin-bottom:3px;flex-wrap:wrap;}
+.search-result-name{font-family:'Cormorant Garamond',serif;font-size:1.05rem;
+  color:var(--creme);font-weight:500;}
+.search-result-price{font-size:.8rem;color:var(--or-clair);font-weight:600;white-space:nowrap;}
+.search-result-price.free{color:#9fd3a2;}
+.search-result-price.tba{color:var(--texte-doux);font-style:italic;font-weight:400;}
+.search-result-desc{font-size:.72rem;color:var(--texte-doux);line-height:1.5;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.search-result-go{color:var(--or);font-size:18px;flex-shrink:0;align-self:center;
+  transition:transform .22s var(--ease);}
+.search-result:hover .search-result-go{transform:translateX(4px);}
+.search-loading{font-size:.72rem;color:var(--texte-doux);text-align:center;
+  padding:14px 8px;font-style:italic;letter-spacing:.04em;}
+.search-loading::before{content:'⋯ ';color:var(--or);}
+
 /* sous-cat pills */
 .subcat-row{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 4px;}
 .subcat-pill{padding:8px 16px;border-radius:26px;font-size:11px;letter-spacing:.05em;
@@ -622,7 +736,17 @@ footer{position:relative;z-index:5;border-top:1px solid rgba(201,168,76,.14);
         <b>Vous ne savez pas quel produit choisir ?</b>
         <p>Mme Sabrina, esthéticienne diplômée, analyse votre peau et vous oriente — gratuitement.</p>
       </div>
-      <a class="guide-cta" href="luxury-skin-clinic.html#consultation">Faire ma consultation gratuite</a>
+      <button class="guide-cta" type="button" id="consultBtn">Faire ma consultation</button>
+    </div>
+
+    <div class="search-bar">
+      <div class="search-bar-inner">
+        <svg class="search-bar-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="searchInput" type="search" placeholder="Rechercher un produit (nom, ingrédient, besoin…)" autocomplete="off" aria-label="Rechercher un produit">
+        <button class="search-bar-clear" id="searchClear" type="button" aria-label="Effacer la recherche">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
     </div>
 
     <div class="main-head" id="mainHead"></div>
@@ -698,6 +822,7 @@ footer{position:relative;z-index:5;border-top:1px solid rgba(201,168,76,.14);
 
 <div id="toast"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span id="toastTxt">Ajouté au panier</span></div>
 
+<script src="assets/js/global-catalog.js"></script>
 <script>
 'use strict';
 const WA='2290167975626';
@@ -1131,6 +1256,9 @@ const PRODUCTS=[
    inci:"Composé du Lactic Lip Scrub, du Baume Douceur et du Lip Jelly. Voir les fiches individuelles pour le détail des INCI."},
 ];
 
+/* ===== CATALOGUE GLOBAL (recherche cross-marque) ===== */
+if(window.LC&&LC.initGlobalCatalog)LC.initGlobalCatalog({localBrand:'ina',localItems:PRODUCTS});
+
 /* ===== ÉTAT ===== */
 /* ===== ROUTINES PRÉÉTABLIES =====
    Remplace l'ancien filtre par préoccupation. Hiérarchie : Luxury (médicale) en haut, Skin (semi-médicale) en bas.
@@ -1183,7 +1311,7 @@ function routinesFor(fam){return ROUTINES[fam]||[];}
 function getRoutine(fam,key){return routinesFor(fam).find(r=>r.key===key)||null;}
 function productByName(n){return PRODUCTS.find(p=>p.n===n)||null;}
 
-const state={family:null,subcat:null,routine:null};
+const state={family:null,subcat:null,routine:null,query:''};
 
 /* ===== CURSEUR ===== */
 (function(){
@@ -1340,13 +1468,60 @@ function syncAccordion(){
 function select(family,subcat,routine){
   // changement de famille => on quitte la routine
   if(family!==state.family)routine=null;
-  state.family=family;state.subcat=subcat;state.routine=routine;render();
+  state.family=family;state.subcat=subcat;state.routine=routine;
+  // cliquer sur une catégorie efface la recherche en cours
+  if(state.query){state.query='';const si=document.getElementById('searchInput');if(si)si.value='';syncSearchClearBtn();}
+  render();
 }
 function goBack(){
+  if(state.query){state.query='';const si=document.getElementById('searchInput');if(si)si.value='';syncSearchClearBtn();render();return;}
   if(state.routine!==null)state.routine=null;
   else if(state.subcat!==null)state.subcat=null;
   else if(state.family!==null)state.family=null;
   render();
+}
+/* ===== RECHERCHE PRODUITS (cross-marque) ===== */
+function normalizeSearch(s){
+  return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+}
+function syncSearchClearBtn(){
+  const btn=document.getElementById('searchClear');
+  if(!btn)return;
+  btn.classList.toggle('show',!!state.query);
+}
+function setupSearchBar(){
+  const inp=document.getElementById('searchInput');
+  const clr=document.getElementById('searchClear');
+  if(!inp||!clr)return;
+  let t=null;
+  inp.addEventListener('input',()=>{
+    const v=normalizeSearch(inp.value).trim();
+    if(v===state.query)return;
+    state.query=v;
+    syncSearchClearBtn();
+    clearTimeout(t);t=setTimeout(render,90);
+  });
+  clr.addEventListener('click',()=>{
+    inp.value='';state.query='';syncSearchClearBtn();inp.focus();render();
+  });
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='Escape'&&state.query){inp.value='';state.query='';syncSearchClearBtn();render();}
+  });
+  // pré-remplissage via ?q=
+  try{
+    const params=new URLSearchParams(location.search);
+    const q=params.get('q');
+    if(q){
+      inp.value=q;
+      state.query=normalizeSearch(q).trim();
+      syncSearchClearBtn();
+    }
+  }catch(e){}
+}
+setupSearchBar();
+// re-render quand le catalogue cross-marque arrive
+if(window.LC&&LC.globalCatalogPromise){
+  LC.globalCatalogPromise.then(()=>{ if(state.query)render(); });
 }
 btnBack.addEventListener('click',goBack);
 menuReset.addEventListener('click',()=>{select(null,null,null);closeMenu();});
@@ -1355,11 +1530,20 @@ menuReset.addEventListener('click',()=>{select(null,null,null);closeMenu();});
 function render(){
   syncAccordion();renderCrumb();renderHead();renderSubcats();
   renderRoutines();renderGrid();
-  btnBack.disabled=(state.family===null);
-  window.scrollTo({top:0,behavior:reduceMotion?'auto':'smooth'});
+  btnBack.disabled=(state.family===null&&!state.query);
+  // pas de scroll-top si on est juste en train de taper
+  if(!state.query)window.scrollTo({top:0,behavior:reduceMotion?'auto':'smooth'});
 }
 function renderCrumb(){
   const parts=[`<a data-nav="root">Catalogue</a>`];
+  if(state.query){
+    parts.push(`<span class="sep">/</span><span class="cur">Recherche : « ${state.query} »</span>`);
+    crumb.innerHTML=parts.join('');
+    crumb.querySelectorAll('[data-nav]').forEach(a=>{
+      a.addEventListener('click',()=>{select(null,null,null);});
+    });
+    return;
+  }
   if(state.family){
     const f=FAMILIES.find(x=>x.key===state.family);
     parts.push(`<span class="sep">/</span>`);
@@ -1385,6 +1569,10 @@ function renderCrumb(){
   });
 }
 function renderHead(){
+  if(state.query){
+    mainHead.innerHTML=`<div class="eyebrow">Recherche</div><h1>Résultats</h1>`;
+    return;
+  }
   if(!state.family){
     mainHead.innerHTML=`<div class="eyebrow">La Collection</div>
       <h1>L'art du soin, sublimé</h1>
@@ -1402,8 +1590,8 @@ function renderHead(){
   }
 }
 function renderSubcats(){
-  // masqué quand une routine est active (la routine traverse les sous-catégories)
-  if(!state.family||state.routine){subcatRow.innerHTML='';return;}
+  // masqué quand une routine est active (la routine traverse les sous-catégories) ou en mode recherche
+  if(state.query||!state.family||state.routine){subcatRow.innerHTML='';return;}
   const row=document.createElement('div');row.className='subcat-row';
   SUBCATS[state.family].forEach(sc=>{
     const b=document.createElement('button');
@@ -1415,9 +1603,9 @@ function renderSubcats(){
   subcatRow.innerHTML='';subcatRow.appendChild(row);
 }
 function renderRoutines(){
-  // sélecteur de routines — visible uniquement sur Visage et Corps, masqué quand une routine est ouverte
+  // sélecteur de routines — visible uniquement sur Visage et Corps, masqué quand une routine est ouverte ou en mode recherche
   const list=state.family?routinesFor(state.family):[];
-  if(!state.family||!list.length||state.routine){routineBlock.hidden=true;return;}
+  if(state.query||!state.family||!list.length||state.routine){routineBlock.hidden=true;return;}
   routineBlock.hidden=false;
   const intro=state.family==='corps'
     ?'Deux packs corps disponibles : <b>Body Pack Luxury</b> (gamme médicale) et <b>Body Pack Skin</b> (gamme semi-médicale). La différence se situe au niveau de la concentration des actifs. Choisissez selon vos besoins et votre budget.'
@@ -1448,6 +1636,13 @@ function renderFamCards(){
   famCardsWrap.innerHTML='';famCardsWrap.appendChild(wrap);
 }
 function renderGrid(){
+  // mode recherche : recherche cross-marque (INA + Cozy + Skin Clinic)
+  if(state.query){
+    routineView.hidden=true;routineView.innerHTML='';
+    famCardsWrap.innerHTML='';
+    renderGlobalSearch();
+    return;
+  }
   // routine active : affiche la vue routine (tiers Luxury > Skin) et masque la grille classique
   if(state.routine){
     if(!state.family)renderFamCards();
@@ -1473,6 +1668,83 @@ function renderGrid(){
     grid.querySelectorAll('.card-anim').forEach((c,i)=>
       setTimeout(()=>c.classList.add('in'),reduceMotion?0:Math.min(i,16)*40));
   });
+}
+function renderGlobalSearch(){
+  const q=state.query;
+  // catalogue global si chargé, sinon local INA en attendant
+  const cat=(window.LC&&LC.globalCatalog)?LC.globalCatalog:(window.LC&&LC.localCatalog?LC.localCatalog:[]);
+  const loading=!(window.LC&&LC.globalCatalog);
+  const results=cat.filter(it=>LC.matches(it,q));
+  // tri : marque locale d'abord, puis Cozy, puis Clinic
+  const ORDER={ina:0,cozy:1,clinic:2};
+  results.sort((a,b)=>{
+    const da=ORDER[a.brand]-ORDER[b.brand];
+    if(da)return da;
+    return a.name.localeCompare(b.name,'fr');
+  });
+  gridMeta.hidden=false;
+  count.innerHTML=`<b>${results.length}</b> résultat${results.length>1?'s':''} pour « ${q} »`+
+    (loading?' <span style="opacity:.6;font-style:italic">(chargement Cozy &amp; Clinic…)</span>':'');
+  grid.innerHTML='';
+  if(!results.length){
+    grid.innerHTML=`<div class="search-empty"><h3>Aucun produit trouvé</h3>
+      <p>Aucun résultat pour <b>« ${q} »</b>. Essayez un autre mot ou contactez Mme Sabrina.</p></div>`;
+    return;
+  }
+  // groupement par marque
+  const groups={};
+  results.forEach(it=>{(groups[it.brand]=groups[it.brand]||[]).push(it);});
+  const wrap=document.createElement('div');
+  ['ina','cozy','clinic'].forEach(b=>{
+    if(!groups[b])return;
+    const meta=LC.BRAND_META[b];
+    const grp=document.createElement('div');grp.className='search-group';
+    grp.innerHTML=`<div class="search-group-h">
+      <span class="search-group-dot" style="background:${meta.color}"></span>
+      <b>${meta.label}</b> · ${meta.kind}${groups[b].length>1?'s':''}
+      <span class="ct">${groups[b].length}</span>
+    </div>`;
+    groups[b].forEach(it=>grp.appendChild(searchResultCard(it,b===state.localBrand||b==='ina')));
+    wrap.appendChild(grp);
+  });
+  if(loading){
+    const l=document.createElement('div');l.className='search-loading';
+    l.textContent='Chargement des catalogues Cozy et Skin Clinic…';
+    wrap.appendChild(l);
+  }
+  grid.appendChild(wrap);
+}
+function searchResultCard(item,isLocal){
+  const meta=LC.BRAND_META[item.brand];
+  const a=document.createElement('a');
+  a.className='search-result';
+  // local INA : on garde sur la page (clic = pré-remplir n'a pas de sens, on redirige vers le produit en vrai mais simple = juste reset query et garder le user là)
+  if(isLocal){
+    a.href='#';
+    a.addEventListener('click',e=>{
+      e.preventDefault();
+      // efface la recherche pour montrer le produit dans la grille normale
+      const inp=document.getElementById('searchInput');if(inp)inp.value='';
+      state.query='';state.family=item.raw.f||null;state.subcat=item.raw.s||null;
+      syncSearchClearBtn();render();
+    });
+  }else{
+    a.href=meta.url+'?q='+encodeURIComponent(item.name);
+  }
+  let priceHtml='';
+  if(item.isFree)priceHtml=`<span class="search-result-price free">Gratuit</span>`;
+  else if(item.price==null)priceHtml=`<span class="search-result-price tba">à venir</span>`;
+  else priceHtml=`<span class="search-result-price">${item.price.toLocaleString('fr-FR')} FCFA</span>`;
+  a.innerHTML=`<span class="search-result-badge b-${item.brand}">${meta.short}</span>
+    <div class="search-result-body">
+      <div class="search-result-row">
+        <span class="search-result-name">${item.name}</span>
+        ${priceHtml}
+      </div>
+      <div class="search-result-desc">${item.desc||''}</div>
+    </div>
+    <span class="search-result-go">→</span>`;
+  return a;
 }
 function renderRoutineView(){
   const r=getRoutine(state.family,state.routine);
@@ -2597,6 +2869,77 @@ if(mute){
       onConfirm:()=>window.open(url,'_blank'),
     });
   });
+})();
+</script>
+
+<!-- ============ MODAL CHOIX CONSULTATION ============ -->
+<div class="consult-modal" id="consultModal" role="dialog" aria-modal="true" aria-labelledby="consultTitle" aria-hidden="true">
+  <article class="consult-card">
+    <button class="consult-card-x" type="button" aria-label="Fermer" id="consultClose">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="consult-eyebrow">Consultation</div>
+    <h2 class="consult-title" id="consultTitle">Choisissez votre consultation</h2>
+    <p class="consult-sub">Mme Sabrina, esthéticienne diplômée, vous accompagne selon votre besoin. Sélectionnez la formule qui vous correspond.</p>
+    <div class="consult-list">
+      <a class="consult-opt" href="luxury-skin-clinic.html#consultation">
+        <span class="consult-opt-ic">✦</span>
+        <div class="consult-opt-body">
+          <div class="consult-opt-row">
+            <span class="consult-opt-name">Consultation Peau</span>
+            <span class="consult-opt-tag free">Gratuite</span>
+          </div>
+          <div class="consult-opt-desc">Questionnaire offert pour analyser votre peau et recevoir une routine sur mesure de Mme Sabrina.</div>
+        </div>
+        <span class="consult-opt-go">→</span>
+      </a>
+      <a class="consult-opt" href="luxury-skin-clinic.html#soins">
+        <span class="consult-opt-ic">★</span>
+        <div class="consult-opt-body">
+          <div class="consult-opt-row">
+            <span class="consult-opt-name">Consultation Peau — Suivi</span>
+            <span class="consult-opt-tag paid">Premium · 20 000 F</span>
+          </div>
+          <div class="consult-opt-desc">Suivi personnalisé en institut avec Mme Sabrina pour ajuster votre routine et accompagner votre transformation.</div>
+        </div>
+        <span class="consult-opt-go">→</span>
+      </a>
+      <a class="consult-opt" href="luxury-skin-clinic.html#soins">
+        <span class="consult-opt-ic">❀</span>
+        <div class="consult-opt-body">
+          <div class="consult-opt-row">
+            <span class="consult-opt-name">Diagnostic Capillaire</span>
+            <span class="consult-opt-tag paid">5 000 F</span>
+          </div>
+          <div class="consult-opt-desc">Questionnaire approfondi pour analyser votre cuir chevelu et identifier la routine capillaire idéale.</div>
+        </div>
+        <span class="consult-opt-go">→</span>
+      </a>
+    </div>
+  </article>
+</div>
+<script>
+(function(){
+  const btn=document.getElementById('consultBtn');
+  const modal=document.getElementById('consultModal');
+  const closeBtn=document.getElementById('consultClose');
+  if(!btn||!modal)return;
+  let lastFocus=null;
+  function open(){
+    lastFocus=document.activeElement;
+    modal.classList.add('show');modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+    requestAnimationFrame(()=>closeBtn.focus());
+  }
+  function close(){
+    modal.classList.remove('show');modal.setAttribute('aria-hidden','true');
+    document.body.style.overflow='';
+    if(lastFocus&&lastFocus.focus)lastFocus.focus();
+  }
+  btn.addEventListener('click',open);
+  closeBtn.addEventListener('click',close);
+  modal.addEventListener('click',e=>{if(e.target===modal)close();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('show'))close();});
 })();
 </script>
 </body>

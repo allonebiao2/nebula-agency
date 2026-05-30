@@ -138,6 +138,70 @@ main{position:relative;z-index:5;}
   border-radius:24px;background:var(--rose-pale);}
 .hero-note svg{width:14px;height:14px;fill:var(--rose-vif);}
 
+/* SEARCH BAR — recherche cross-marque */
+.search-bar{position:sticky;top:0;z-index:30;padding:14px 0 12px;margin:0 -2px 4px;
+  background:linear-gradient(180deg,rgba(253,246,243,.96) 65%,rgba(253,246,243,.5));
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+.search-bar-inner{position:relative;display:flex;align-items:center;
+  border:1px solid var(--rose);border-radius:30px;
+  background:#fff;padding:0 10px 0 14px;
+  transition:border-color .25s var(--ease),box-shadow .25s var(--ease);}
+.search-bar-inner:focus-within{border-color:var(--rose-fonce);
+  box-shadow:0 0 0 4px rgba(189,125,142,.18);}
+.search-bar-ic{width:16px;height:16px;color:var(--rose-fonce);flex-shrink:0;}
+.search-bar input{flex:1;background:none;border:0;outline:none;
+  color:var(--encre);font:300 13px/1 'Jost',system-ui,sans-serif;
+  letter-spacing:.02em;padding:13px 10px;min-width:0;}
+.search-bar input::placeholder{color:var(--gris);font-weight:300;}
+.search-bar input::-webkit-search-cancel-button{display:none;}
+.search-bar-clear{display:none;width:26px;height:26px;border-radius:50%;
+  background:var(--rose-pale);color:var(--rose-fonce);
+  align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;
+  transition:background .2s,transform .2s;border:0;padding:0;}
+.search-bar-clear svg{width:11px;height:11px;}
+.search-bar-clear:hover{background:var(--rose);transform:scale(1.08);}
+.search-bar-clear.show{display:inline-flex;}
+.search-empty{padding:38px 18px;text-align:center;color:var(--encre-2);
+  border:1px dashed var(--rose);border-radius:14px;background:#fff;}
+.search-empty h3{font-family:'Cormorant Garamond',serif;color:var(--rose-fonce);
+  font-size:1.3rem;margin-bottom:8px;font-weight:500;}
+.search-empty b{color:var(--encre);}
+/* résultats cross-marque */
+.search-group{margin:18px 0 4px;padding:8px 0 6px;border-top:1px solid var(--ligne);}
+.search-group:first-of-type{border-top:0;margin-top:0;}
+.search-group-h{display:flex;align-items:center;gap:10px;margin-bottom:12px;
+  font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gris);}
+.search-group-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.search-group-h b{color:var(--encre);font-weight:600;letter-spacing:.14em;}
+.search-group-h .ct{color:var(--rose-fonce);margin-left:auto;font-weight:600;}
+.search-result{display:flex;align-items:flex-start;gap:14px;
+  padding:12px 14px;border-radius:12px;text-decoration:none;color:inherit;
+  border:1px solid var(--ligne);background:#fff;
+  transition:all .22s var(--ease);margin-bottom:8px;}
+.search-result:hover{border-color:var(--rose-fonce);background:var(--rose-pale);
+  transform:translateY(-1px);box-shadow:0 6px 18px rgba(189,125,142,.15);}
+.search-result-badge{flex-shrink:0;padding:4px 9px;border-radius:8px;
+  font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;
+  align-self:flex-start;margin-top:2px;}
+.search-result-badge.b-ina{background:var(--gold-grad);color:#1a1410;}
+.search-result-badge.b-cozy{background:var(--rose-grad);color:#fff;}
+.search-result-badge.b-clinic{background:linear-gradient(135deg,#cfe6dd,#7fb6a4 60%,#4e8472);color:#0c2a22;}
+.search-result-body{flex:1;min-width:0;}
+.search-result-row{display:flex;align-items:baseline;gap:10px;margin-bottom:3px;flex-wrap:wrap;}
+.search-result-name{font-family:'Cormorant Garamond',serif;font-size:1.05rem;
+  color:var(--encre);font-weight:500;}
+.search-result-price{font-size:.8rem;color:var(--rose-fonce);font-weight:600;white-space:nowrap;}
+.search-result-price.free{color:#5a8c5d;}
+.search-result-price.tba{color:var(--gris);font-style:italic;font-weight:400;}
+.search-result-desc{font-size:.72rem;color:var(--encre-2);line-height:1.5;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.search-result-go{color:var(--rose-fonce);font-size:18px;flex-shrink:0;align-self:center;
+  transition:transform .22s var(--ease);}
+.search-result:hover .search-result-go{transform:translateX(4px);}
+.search-loading{font-size:.72rem;color:var(--gris);text-align:center;
+  padding:14px 8px;font-style:italic;letter-spacing:.04em;}
+.search-loading::before{content:'⋯ ';color:var(--rose-fonce);}
+
 /* FILTRES */
 .filters{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;padding:8px 26px 6px;}
 .fpill{padding:10px 20px;border-radius:30px;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;
@@ -412,10 +476,18 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
     </span></div>
   </div>
 
-  <div class="filters" id="filters"></div>
-
   <div class="catalog">
     <div class="wrap">
+      <div class="search-bar">
+        <div class="search-bar-inner">
+          <svg class="search-bar-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="searchInput" type="search" placeholder="Rechercher un produit ou un soin (toutes marques)…" autocomplete="off" aria-label="Rechercher">
+          <button class="search-bar-clear" id="searchClear" type="button" aria-label="Effacer la recherche">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="filters" id="filters"></div>
       <div class="grid-meta" id="gridMeta"></div>
       <div class="grid" id="grid"></div>
 
@@ -496,6 +568,7 @@ footer{position:relative;z-index:5;border-top:1px solid var(--ligne);padding:30p
 
 <div id="toast"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span id="toastTxt">Ajouté au panier</span></div>
 
+<script src="assets/js/global-catalog.js"></script>
 <script>
 'use strict';
 const WA='2290167975626';
@@ -575,6 +648,9 @@ const PRODUCTS=[
    det:`<div class="det-h">🌸 Description</div><p class="det-p">Le <b>Booster Drink Sublimes</b> est une poudre beauté formulée pour accompagner votre routine raffermissante du buste et des courbes.</p><p class="det-p">Conçu comme le complément idéal de la <b>Crème Courbes Sublimes</b>, ce rituel beauté associe soin externe et routine quotidienne afin d'aider à améliorer l'apparence de la fermeté et la qualité visuelle de la peau.</p><p class="det-p">Sa formule à base de collagène s'intègre facilement dans votre quotidien grâce à une texture en poudre simple à diluer dans de l'eau, du lait ou votre boisson préférée.</p><div class="det-h">💎 Pourquoi l'associer à la crème ?</div><p class="det-p">Il a été pensé pour compléter la routine corporelle en accompagnant les soins appliqués sur la peau.</p><p class="det-p">L'association <b>routine topique + routine beauté quotidienne</b> permet d'obtenir une prise en charge plus complète du confort et de l'apparence de la peau.</p><p class="det-p">👉 Pour des résultats optimaux, il est recommandé de l'utiliser en combinaison avec la <b>Crème Courbes Sublimes</b>.</p><div class="det-h">✨ Ce que le rituel apporte</div><ul class="det-ul"><li>Contribue à une routine beauté ciblée</li><li>Aide à soutenir l'apparence de la fermeté de la peau</li><li>Accompagne les soins raffermissants appliqués localement</li><li>S'intègre facilement dans une routine quotidienne bien-être</li></ul><div class="det-h">🌿 Texture & utilisation</div><p class="det-p"><b>Chaque pot contient 15 prises individuelles.</b> Une dose correspond à <b>10 g de poudre par jour</b>.</p><p class="det-p">À mélanger dans :</p><ul class="det-ul"><li>de l'eau</li><li>du lait</li><li>un smoothie</li><li>ou votre jus préféré</li></ul><div class="det-h">📅 Résultats attendus</div><p class="det-phase"><b>Après quelques semaines</b> — meilleure sensation de confort et de souplesse de la peau, routine beauté plus complète.</p><p class="det-phase"><b>Après 2 à 3 mois d'utilisation régulière avec la crème</b> — amélioration progressive de l'apparence globale de la peau, peau visiblement plus souple et plus harmonieuse.</p><p class="det-p" style="font-style:italic;opacity:.75">👉 Les résultats dépendent de la régularité d'utilisation, de l'hygiène de vie et de la routine globale.</p><div class="det-h">🧴 Conseils d'utilisation</div><p class="det-p"><b>Prendre 1 dose de 10 g par jour.</b> Diluer dans la boisson de votre choix puis consommer immédiatement.</p><p class="det-p">Pour de meilleurs résultats :</p><ul class="det-ul"><li>utiliser quotidiennement</li><li>associer à la Crème Courbes Sublimes</li><li>maintenir une routine régulière sur plusieurs semaines</li></ul><p class="det-warn"><b>⚠️ Attention — soins raffermissants</b><br>Les soins raffermissants (crèmes et boisson beauté) agissent progressivement et demandent de la régularité pour obtenir de beaux résultats.<br><br><b>Ce ne sont pas des produits à effet immédiat.</b><br>Pour observer une amélioration visible de l'apparence du buste ou des courbes, il est important de les utiliser correctement, quotidiennement et de façon constante pendant environ <b>3 à 6 mois</b>.<br><br>Après les résultats obtenus, il est possible de réduire progressivement la fréquence d'utilisation afin d'aider à maintenir les effets.<br><br>💡 Ces soins <b>ne remplacent pas une chirurgie esthétique</b> et ne donnent pas des résultats comparables à une intervention médicale. Ils ont plutôt pour objectif :<br>• d'améliorer l'apparence générale des courbes ;<br>• d'apporter plus de confort et de souplesse ;<br>• et de sublimer naturellement les courbes féminines avec une utilisation régulière.<br><br>✨ La patience, la régularité et une bonne routine restent les clés des meilleurs résultats.</p><div class="det-h">🧪 Ingrédients (INCI)</div><p class="det-p">Hydrolyzed Marine Collagen.</p><div class="det-h">🌸 L'esprit du rituel</div><p class="det-p">Accompagne les femmes qui souhaitent intégrer un rituel beauté quotidien alliant soin du corps, féminité et régularité, dans une approche douce et sensorielle du self-care.</p>`},
 ];
 let curCat='all';
+let curQuery='';
+/* catalogue global cross-marque */
+if(window.LC&&LC.initGlobalCatalog)LC.initGlobalCatalog({localBrand:'cozy',localItems:PRODUCTS});
 
 /* ===== CURSEUR ===== */
 (function(){
@@ -712,17 +788,130 @@ function buildFilters(){
   });
 }
 
+/* ===== RECHERCHE CROSS-MARQUE ===== */
+function normalizeSearch(s){return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
+function syncSearchClearBtn(){
+  const btn=document.getElementById('searchClear');
+  if(btn)btn.classList.toggle('show',!!curQuery);
+}
+function setupSearchBar(){
+  const inp=document.getElementById('searchInput');
+  const clr=document.getElementById('searchClear');
+  if(!inp||!clr)return;
+  let t=null;
+  inp.addEventListener('input',()=>{
+    const v=normalizeSearch(inp.value).trim();
+    if(v===curQuery)return;
+    curQuery=v;syncSearchClearBtn();
+    clearTimeout(t);t=setTimeout(render,90);
+  });
+  clr.addEventListener('click',()=>{
+    inp.value='';curQuery='';syncSearchClearBtn();inp.focus();render();
+  });
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='Escape'&&curQuery){inp.value='';curQuery='';syncSearchClearBtn();render();}
+  });
+  try{
+    const params=new URLSearchParams(location.search);
+    const q=params.get('q');
+    if(q){inp.value=q;curQuery=normalizeSearch(q).trim();syncSearchClearBtn();}
+  }catch(e){}
+}
+
 /* ===== RENDU ===== */
 function render(){
+  const filtersDiv=document.getElementById('filters');
+  const gridMeta=document.getElementById('gridMeta');
+  const grid=document.getElementById('grid');
+  if(curQuery){
+    filtersDiv.innerHTML='';
+    renderGlobalSearch(gridMeta,grid);
+    return;
+  }
   buildFilters();
   const list=PRODUCTS.filter(p=>curCat==='all'||p.cat===curCat);
-  document.getElementById('gridMeta').innerHTML=`<b>${list.length}</b> produit${list.length>1?'s':''}`;
-  const grid=document.getElementById('grid');grid.innerHTML='';
+  gridMeta.innerHTML=`<b>${list.length}</b> produit${list.length>1?'s':''}`;
+  grid.innerHTML='';
   list.forEach(p=>grid.appendChild(card(p)));
   requestAnimationFrame(()=>{
     grid.querySelectorAll('.card.anim').forEach((c,i)=>
       setTimeout(()=>c.classList.add('in'),reduceMotion?0:i*60));
   });
+}
+function renderGlobalSearch(metaEl,gridEl){
+  const q=curQuery;
+  const cat=(window.LC&&LC.globalCatalog)?LC.globalCatalog:(window.LC&&LC.localCatalog?LC.localCatalog:[]);
+  const loading=!(window.LC&&LC.globalCatalog);
+  const results=cat.filter(it=>LC.matches(it,q));
+  const ORDER={cozy:0,ina:1,clinic:2};
+  results.sort((a,b)=>{
+    const da=ORDER[a.brand]-ORDER[b.brand];
+    if(da)return da;
+    return a.name.localeCompare(b.name,'fr');
+  });
+  metaEl.innerHTML=`<b>${results.length}</b> résultat${results.length>1?'s':''} pour « ${q} »`+
+    (loading?' <span style="opacity:.6;font-style:italic">(chargement INA &amp; Clinic…)</span>':'');
+  gridEl.innerHTML='';
+  if(!results.length){
+    gridEl.innerHTML=`<div class="search-empty"><h3>Aucun produit trouvé</h3>
+      <p>Aucun résultat pour <b>« ${q} »</b>. Essayez un autre mot ou contactez Luxury Club 229.</p></div>`;
+    return;
+  }
+  const groups={};
+  results.forEach(it=>{(groups[it.brand]=groups[it.brand]||[]).push(it);});
+  const wrap=document.createElement('div');
+  ['cozy','ina','clinic'].forEach(b=>{
+    if(!groups[b])return;
+    const meta=LC.BRAND_META[b];
+    const grp=document.createElement('div');grp.className='search-group';
+    grp.innerHTML=`<div class="search-group-h">
+      <span class="search-group-dot" style="background:${meta.color}"></span>
+      <b>${meta.label}</b> · ${meta.kind}${groups[b].length>1?'s':''}
+      <span class="ct">${groups[b].length}</span>
+    </div>`;
+    groups[b].forEach(it=>grp.appendChild(searchResultCard(it,b==='cozy')));
+    wrap.appendChild(grp);
+  });
+  if(loading){
+    const l=document.createElement('div');l.className='search-loading';
+    l.textContent='Chargement des catalogues INA Luxury et Skin Clinic…';
+    wrap.appendChild(l);
+  }
+  gridEl.appendChild(wrap);
+}
+function searchResultCard(item,isLocal){
+  const meta=LC.BRAND_META[item.brand];
+  const a=document.createElement('a');
+  a.className='search-result';
+  if(isLocal){
+    a.href='#';
+    a.addEventListener('click',e=>{
+      e.preventDefault();
+      const inp=document.getElementById('searchInput');if(inp)inp.value='';
+      curQuery='';curCat=item.raw.cat||'all';
+      syncSearchClearBtn();render();
+    });
+  }else{
+    a.href=meta.url+'?q='+encodeURIComponent(item.name);
+  }
+  let priceHtml='';
+  if(item.isFree)priceHtml=`<span class="search-result-price free">Gratuit</span>`;
+  else if(item.price==null)priceHtml=`<span class="search-result-price tba">à venir</span>`;
+  else priceHtml=`<span class="search-result-price">${item.price.toLocaleString('fr-FR')} FCFA</span>`;
+  a.innerHTML=`<span class="search-result-badge b-${item.brand}">${meta.short}</span>
+    <div class="search-result-body">
+      <div class="search-result-row">
+        <span class="search-result-name">${item.name}</span>
+        ${priceHtml}
+      </div>
+      <div class="search-result-desc">${item.desc||''}</div>
+    </div>
+    <span class="search-result-go">→</span>`;
+  return a;
+}
+setupSearchBar();
+if(window.LC&&LC.globalCatalogPromise){
+  LC.globalCatalogPromise.then(()=>{ if(curQuery)render(); });
 }
 /* surligne les actifs clés dans une liste INCI */
 const INCI_KEYS=['Phenylethyl Resorcinol','Kigelia Africana Extract','Trigonella Foenum-Graecum Extract',
