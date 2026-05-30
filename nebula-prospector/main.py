@@ -57,7 +57,10 @@ def healthcheck() -> None:
     if settings.google_maps_api_key:
         table.add_row("Google Maps key", "[green]OK[/green]", f"...{settings.google_maps_api_key[-6:]}")
     else:
-        table.add_row("Google Maps key", "[red]VIDE[/red]", "Requis vague 1 (sourcing)")
+        table.add_row("Google Maps key", "[dim]vide[/dim]", "Optionnel — OSM utilisé à la place (gratuit)")
+
+    # OpenStreetMap (toujours dispo)
+    table.add_row("OpenStreetMap", "[green]OK[/green]", "Gratuit, aucune clé requise")
 
     # Vagues suivantes
     for label, key in [
@@ -82,36 +85,56 @@ def healthcheck() -> None:
 @app.command()
 def sourcing(
     country: str | None = typer.Option(None, "--country", "-C", help="Code pays (ex: BJ). Sinon tous."),
+    osm_only: bool = typer.Option(False, "--osm-only", help="OSM uniquement (gratuit)"),
     google_only: bool = typer.Option(False, "--google-only"),
     jiji_only: bool = typer.Option(False, "--jiji-only"),
     coinafrique_only: bool = typer.Option(False, "--coinafrique-only"),
 ) -> None:
-    """Lance toutes les sources actives (Google Maps + Jiji + CoinAfrique)."""
+    """Lance toutes les sources actives (OpenStreetMap + Google Maps si clé + Jiji + CoinAfrique).
+
+    Si GOOGLE_MAPS_API_KEY est vide → Google Maps est skip automatiquement.
+    OSM est gratuit et ne demande aucune clé.
+    """
     logging.basicConfig(level=settings.log_level)
 
     countries = [country.upper()] if country else settings.target_countries_list
-    run_google = not (jiji_only or coinafrique_only)
-    run_jiji = not (google_only or coinafrique_only)
-    run_coin = not (google_only or jiji_only)
+    only_flags = [osm_only, google_only, jiji_only, coinafrique_only]
+    any_only = any(only_flags)
 
-    # --- Google Maps ---
+    run_osm = osm_only or not any_only
+    run_google = (google_only or not any_only) and bool(settings.google_maps_api_key)
+    run_jiji = jiji_only or not any_only
+    run_coin = coinafrique_only or not any_only
+
+    cities_to_use = settings.target_cities_list
+    if country:
+        from sourcing.openstreetmap import CITY_TO_COUNTRY as OSM_CITY
+        cities_to_use = [c for c in cities_to_use
+                         if OSM_CITY.get(c.lower()) == country.upper()]
+
+    # --- OpenStreetMap (gratuit, prioritaire) ---
+    if run_osm:
+        from sourcing.openstreetmap import search_city_all as osm_search_all
+        for city in cities_to_use:
+            try:
+                osm_search_all(city)
+            except Exception as e:
+                console.print(f"[red]✗ OSM {city} : {e}[/red]")
+
+    # --- Google Maps (skip si pas de clé) ---
     if run_google:
         from sourcing.google_maps import search_businesses
         google_queries = [
             "salon de beauté", "institut de beauté", "boutique mode",
             "restaurant", "boutique bijoux", "photographe mariage",
         ]
-        # On boucle sur villes × requêtes (limité aux villes du pays si filtré)
-        cities_to_use = settings.target_cities_list
-        if country:
-            from sourcing.google_maps import CITY_TO_COUNTRY
-            cities_to_use = [c for c in cities_to_use
-                             if CITY_TO_COUNTRY.get(c.lower()) == country.upper()]
         for city, query in product(cities_to_use, google_queries):
             try:
                 search_businesses(query, city, max_results=20)
             except Exception as e:
                 console.print(f"[red]✗ Google Maps {city}/{query} : {e}[/red]")
+    elif google_only:
+        console.print("[yellow]⚠ GOOGLE_MAPS_API_KEY vide, Google Maps skip.[/yellow]")
 
     # --- Jiji ---
     if run_jiji:

@@ -107,11 +107,13 @@ KEYS = [
     },
     {
         "name": "GOOGLE_MAPS_API_KEY",
-        "label": "Clé Google Maps Platform",
-        "example": "AIzaSy...",
+        "label": "Clé Google Maps Platform [OPTIONNEL — laisse vide si tu ne veux pas, on utilisera OpenStreetMap (gratuit)]",
+        "example": "AIzaSy... ou vide pour skip",
         "url": "https://console.cloud.google.com/google/maps-apis/credentials",
-        "help": ("Active d'abord Places API (New) + Geocoding API dans la Library, "
-                 "puis Credentials → Create Credentials → API key"),
+        "help": ("OPTIONNEL : si tu n'as pas pu obtenir la clé Google (erreur OR_BACR2_44 "
+                 "ou pas de carte bancaire), laisse simplement vide et appuie ENTRÉE. "
+                 "OpenStreetMap fera le sourcing à la place (100 % gratuit, illimité)."),
+        "optional": True,
     },
 ]
 
@@ -214,19 +216,25 @@ def configure_keys() -> bool:
     info(f"{len(missing)} clé(s) à configurer.\n")
 
     for i, k in enumerate(missing, 1):
-        print(f"\n  {C.BOLD}--- Clé {i}/{len(missing)} : {k['name']} ---{C.R}")
+        is_optional = k.get("optional", False)
+        flag = f" {C.YELLOW}[OPTIONNEL]{C.R}" if is_optional else ""
+        print(f"\n  {C.BOLD}--- Clé {i}/{len(missing)} : {k['name']}{flag} ---{C.R}")
         print(f"  {k['label']}")
         print(f"  {C.DIM}Exemple : {k['example']}{C.R}")
         print(f"  {C.CYAN}{k['help']}{C.R}")
-        print(f"  J'ouvre la page dans ton navigateur...")
-        try:
-            webbrowser.open(k["url"])
-        except Exception:
-            print(f"  Ouvre manuellement : {k['url']}")
-        time.sleep(0.5)
-        val = ask(f"Colle ici la valeur de {k['name']}")
+        if not is_optional:
+            print(f"  J'ouvre la page dans ton navigateur...")
+            try:
+                webbrowser.open(k["url"])
+            except Exception:
+                print(f"  Ouvre manuellement : {k['url']}")
+            time.sleep(0.5)
+        val = ask(f"Colle ici la valeur de {k['name']} (ou ENTRÉE pour skip)")
         if not val:
-            warn(f"Clé {k['name']} laissée vide → tu ne pourras pas l'utiliser")
+            if is_optional:
+                info(f"Clé {k['name']} skippée (OK, alternative gratuite utilisée).")
+            else:
+                warn(f"Clé {k['name']} laissée vide → tu ne pourras pas l'utiliser")
         env[k["name"]] = val
 
     save_env(env)
@@ -328,10 +336,12 @@ def offer_actions() -> None:
 
 
 def run_sourcing_test() -> None:
-    print(f"\n  {C.CYAN}🔍 Sourcing test : salons de beauté à Cotonou (max 5){C.R}\n")
+    # On utilise OpenStreetMap (toujours dispo, gratuit). Si Google Maps key
+    # présente, le test Google se fera plus tard via main.py sourcing.
+    print(f"\n  {C.CYAN}🔍 Sourcing test : beauté à Cotonou via OpenStreetMap{C.R}\n")
     subprocess.run(
-        [sys.executable, "-m", "sourcing.google_maps",
-         "search", "--query", "salon de beauté", "--city", "Cotonou", "--max", "5"],
+        [sys.executable, "-m", "sourcing.openstreetmap",
+         "search", "--city", "Cotonou", "--category", "beauty"],
         cwd=str(ROOT),
     )
 
