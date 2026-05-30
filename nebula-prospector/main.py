@@ -82,19 +82,15 @@ def healthcheck() -> None:
 # Sourcing
 # ---------------------------------------------------------------------------
 
-@app.command()
-def sourcing(
-    country: str | None = typer.Option(None, "--country", "-C", help="Code pays (ex: BJ). Sinon tous."),
-    osm_only: bool = typer.Option(False, "--osm-only", help="OSM uniquement (gratuit)"),
-    google_only: bool = typer.Option(False, "--google-only"),
-    jiji_only: bool = typer.Option(False, "--jiji-only"),
-    coinafrique_only: bool = typer.Option(False, "--coinafrique-only"),
+def run_sourcing_pipeline(
+    country: str | None = None,
+    *,
+    osm_only: bool = False,
+    google_only: bool = False,
+    jiji_only: bool = False,
+    coinafrique_only: bool = False,
 ) -> None:
-    """Lance toutes les sources actives (OpenStreetMap + Google Maps si clé + Jiji + CoinAfrique).
-
-    Si GOOGLE_MAPS_API_KEY est vide → Google Maps est skip automatiquement.
-    OSM est gratuit et ne demande aucune clé.
-    """
+    """Helper réutilisable (CLI + scheduler) qui lance les sources actives."""
     logging.basicConfig(level=settings.log_level)
 
     countries = [country.upper()] if country else settings.target_countries_list
@@ -156,6 +152,24 @@ def sourcing(
 
     console.print("\n[bold green]✓ Sourcing terminé.[/bold green]")
     stats()
+
+
+@app.command("sourcing")
+def sourcing_cmd(
+    country: str | None = typer.Option(None, "--country", "-C", help="Code pays (ex: BJ). Sinon tous."),
+    osm_only: bool = typer.Option(False, "--osm-only", help="OSM uniquement (gratuit)"),
+    google_only: bool = typer.Option(False, "--google-only"),
+    jiji_only: bool = typer.Option(False, "--jiji-only"),
+    coinafrique_only: bool = typer.Option(False, "--coinafrique-only"),
+) -> None:
+    """Lance toutes les sources actives (OpenStreetMap + Google Maps si clé + Jiji + CoinAfrique)."""
+    run_sourcing_pipeline(
+        country=country,
+        osm_only=osm_only,
+        google_only=google_only,
+        jiji_only=jiji_only,
+        coinafrique_only=coinafrique_only,
+    )
 
 
 # ---------------------------------------------------------------------------

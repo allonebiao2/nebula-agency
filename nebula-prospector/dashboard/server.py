@@ -35,6 +35,68 @@ app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="stat
 
 
 # ---------------------------------------------------------------------------
+# Scheduler (cron sourcing quotidien)
+# ---------------------------------------------------------------------------
+# En production, NOVA lance le sourcing automatiquement à 3h UTC chaque jour.
+# En dev, le scheduler ne se lance pas pour éviter les sourcings indésirables.
+
+_scheduler = None
+
+def _run_daily_sourcing():
+    """Job appelé par le scheduler chaque jour à 3h UTC."""
+    import logging
+    log = logging.getLogger("nova.scheduler")
+    log.info("[scheduler] début du sourcing quotidien")
+    try:
+        from main import run_sourcing_pipeline
+        run_sourcing_pipeline()
+        log.info("[scheduler] sourcing quotidien terminé OK")
+    except Exception as e:
+        log.exception(f"[scheduler] sourcing quotidien échoué : {e}")
+        try:
+            from alerts.telegram_bot import notify_error
+            notify_error(f"Sourcing quotidien échoué : {e}")
+        except Exception:
+            pass
+
+
+@app.on_event("startup")
+async def _start_scheduler():
+    global _scheduler
+    if settings.env != "production":
+        return
+    try:
+        from apscheduler.schedulers.background import BackgroundScheduler
+        _scheduler = BackgroundScheduler(timezone="UTC")
+        _scheduler.add_job(
+            _run_daily_sourcing,
+            "cron",
+            hour=3,
+            minute=0,
+            id="daily_sourcing",
+            replace_existing=True,
+            misfire_grace_time=3600,
+        )
+        _scheduler.start()
+        import logging
+        logging.getLogger("nova.scheduler").info(
+            "[scheduler] APScheduler démarré (sourcing à 3h UTC = 4h Cotonou)"
+        )
+    except Exception as e:
+        import logging
+        logging.getLogger("nova.scheduler").exception(
+            f"[scheduler] échec démarrage : {e}"
+        )
+
+
+@app.on_event("shutdown")
+async def _stop_scheduler():
+    global _scheduler
+    if _scheduler:
+        _scheduler.shutdown(wait=False)
+
+
+# ---------------------------------------------------------------------------
 # Page
 # ---------------------------------------------------------------------------
 
