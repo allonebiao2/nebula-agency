@@ -42,20 +42,41 @@ app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="stat
 
 _scheduler = None
 
-def _run_daily_sourcing():
-    """Job appelé par le scheduler chaque jour à 3h UTC."""
+def _run_daily_pipeline():
+    """Job quotidien : sourcing OSM → enrichissement (emails + scoring Claude)."""
     import logging
     log = logging.getLogger("nova.scheduler")
-    log.info("[scheduler] début du sourcing quotidien")
+
+    # 1. Sourcing
+    log.info("[scheduler] daily — début sourcing")
     try:
         from main import run_sourcing_pipeline
         run_sourcing_pipeline()
-        log.info("[scheduler] sourcing quotidien terminé OK")
+        log.info("[scheduler] daily — sourcing OK")
     except Exception as e:
-        log.exception(f"[scheduler] sourcing quotidien échoué : {e}")
+        log.exception(f"[scheduler] sourcing échoué : {e}")
         try:
             from alerts.telegram_bot import notify_error
             notify_error(f"Sourcing quotidien échoué : {e}")
+        except Exception:
+            pass
+        return  # pas la peine d'enrichir si le sourcing a planté
+
+    # 2. Enrichissement (limité à 25/jour pour ne pas brûler de tokens Claude)
+    log.info("[scheduler] daily — début enrichissement")
+    try:
+        from main import run_enrichment_pipeline
+        stats = run_enrichment_pipeline(limit=25, only_with_website=True)
+        log.info(
+            f"[scheduler] daily — enrichissement OK : "
+            f"{stats['processed']} traités, {stats['with_email']} emails, "
+            f"{stats['scored']} scorés"
+        )
+    except Exception as e:
+        log.exception(f"[scheduler] enrichissement échoué : {e}")
+        try:
+            from alerts.telegram_bot import notify_error
+            notify_error(f"Enrichissement quotidien échoué : {e}")
         except Exception:
             pass
 
@@ -69,11 +90,11 @@ async def _start_scheduler():
         from apscheduler.schedulers.background import BackgroundScheduler
         _scheduler = BackgroundScheduler(timezone="UTC")
         _scheduler.add_job(
-            _run_daily_sourcing,
+            _run_daily_pipeline,
             "cron",
             hour=3,
             minute=0,
-            id="daily_sourcing",
+            id="daily_pipeline",
             replace_existing=True,
             misfire_grace_time=3600,
         )

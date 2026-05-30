@@ -173,6 +173,97 @@ def sourcing_cmd(
 
 
 # ---------------------------------------------------------------------------
+# Enrichissement (Vague 2)
+# ---------------------------------------------------------------------------
+
+def run_enrichment_pipeline(
+    limit: int = 25,
+    only_with_website: bool = True,
+) -> dict[str, int]:
+    """Enrichit les prospects status='new' : scrape emails + scoring Claude.
+
+    Retourne un dict de stats `{processed, with_email, scored}`.
+    """
+    from db.client import get_db
+    from enrichment.website_scraper import scrape_emails_from_site, get_site_summary
+    from enrichment.scoring import score_prospect
+
+    db = get_db()
+    q = db.table("prospects").select("*").eq("status", "new").limit(limit)
+    if only_with_website:
+        q = q.eq("has_website", True)
+    prospects = q.execute().data or []
+
+    stats_out = {"processed": 0, "with_email": 0, "scored": 0}
+    if not prospects:
+        return stats_out
+
+    for p in prospects:
+        update: dict = {}
+
+        # 1. Scraper emails si manquant
+        if not p.get("email") and p.get("website"):
+            try:
+                emails = scrape_emails_from_site(p["website"])
+                if emails:
+                    update["email"] = emails[0]
+                    stats_out["with_email"] += 1
+            except Exception as e:
+                logging.warning(f"scrape failed for {p.get('name')}: {e}")
+
+        # 2. Résumé site + scoring Claude
+        site_content = ""
+        if p.get("website"):
+            try:
+                site_content = get_site_summary(p["website"])
+            except Exception as e:
+                logging.warning(f"summary failed for {p.get('name')}: {e}")
+
+        result = score_prospect({**p, **update}, site_content)
+        if result["score"] > 0:
+            stats_out["scored"] += 1
+            update["score"] = result["score"]
+            update["status"] = "enriched"
+            update["status_reason"] = result["reason"][:500]
+        else:
+            update["status_reason"] = (result["reason"] or "scoring failed")[:500]
+
+        try:
+            db.table("prospects").update(update).eq("id", p["id"]).execute()
+            stats_out["processed"] += 1
+        except Exception as e:
+            logging.exception(f"DB update failed for {p.get('name')}: {e}")
+
+        # Event dashboard (best-effort)
+        try:
+            from core.events import emit_thought
+            emit_thought(
+                f"Enrichi : {p['name']} → score {result['score']}/10",
+                description=result.get("reason"),
+            )
+        except Exception:
+            pass
+
+    return stats_out
+
+
+@app.command("enrich")
+def enrich_cmd(
+    limit: int = typer.Option(25, "--limit", "-l", help="Nombre max de prospects à enrichir"),
+    only_with_website: bool = typer.Option(True, "--with-website/--all",
+                                            help="Ne traite que les prospects ayant un website"),
+) -> None:
+    """Enrichit les prospects (scrape emails + scoring Claude)."""
+    logging.basicConfig(level=settings.log_level)
+    console.print(f"[cyan]Enrichissement (max {limit} prospects)...[/cyan]")
+    s = run_enrichment_pipeline(limit=limit, only_with_website=only_with_website)
+    console.print(
+        f"\n[bold green]✓ Enrichissement terminé[/bold green] — "
+        f"traités: {s['processed']} · emails trouvés: {s['with_email']} · scorés: {s['scored']}"
+    )
+
+
+# ---------------------------------------------------------------------------
 # Lecture
 # ---------------------------------------------------------------------------
 
