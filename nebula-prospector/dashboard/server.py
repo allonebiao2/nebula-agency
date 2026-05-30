@@ -81,6 +81,23 @@ def _run_daily_pipeline():
         except Exception:
             pass
 
+    # 3. Outreach (envoi cold emails aux HOT non encore contactés, max 15/jour)
+    log.info("[scheduler] daily — début outreach")
+    try:
+        from messaging.outreach import run_outreach
+        out = run_outreach()
+        log.info(
+            f"[scheduler] daily — outreach OK : envoyés={out['sent']} "
+            f"skipped={out['skipped']} erreurs={out['errors']} (quota={out['quota']})"
+        )
+    except Exception as e:
+        log.exception(f"[scheduler] outreach échoué : {e}")
+        try:
+            from alerts.telegram_bot import notify_error
+            notify_error(f"Outreach quotidien échoué : {e}")
+        except Exception:
+            pass
+
 
 def _run_morning_briefing():
     """Job 7h UTC (= 8h Cotonou) : envoie le rapport matinal sur Telegram."""
@@ -169,13 +186,42 @@ async def admin_run_morning_briefing(request: Request):
 
 @app.post("/api/admin/run/sourcing")
 async def admin_run_sourcing(request: Request):
-    """Force un cycle sourcing + enrichissement complet (peut prendre 5-10 min)."""
+    """Force un cycle sourcing + enrichissement + outreach (peut prendre 5-10 min)."""
     if not _check_admin_token(request):
         return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
     import threading
-    # Lance en thread pour ne pas bloquer la requête HTTP
     threading.Thread(target=_run_daily_pipeline, daemon=True).start()
     return {"ok": True, "message": "Pipeline lancé en arrière-plan"}
+
+
+@app.post("/api/admin/run/outreach")
+async def admin_run_outreach(request: Request):
+    """Force un cycle d'outreach (cold emails) — utile pour tester."""
+    if not _check_admin_token(request):
+        return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
+    try:
+        from messaging.outreach import run_outreach
+        body = await request.json() if request.headers.get("content-type", "").startswith("application/json") else {}
+        max_send = body.get("max_send") if isinstance(body, dict) else None
+        stats = run_outreach(max_send=max_send)
+        return {"ok": True, "stats": stats}
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.post("/api/admin/run/enrich")
+async def admin_run_enrich(request: Request):
+    """Force un cycle d'enrichissement seul (sans sourcing)."""
+    if not _check_admin_token(request):
+        return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
+    try:
+        from main import run_enrichment_pipeline
+        body = await request.json() if request.headers.get("content-type", "").startswith("application/json") else {}
+        limit = body.get("limit", 25) if isinstance(body, dict) else 25
+        stats = run_enrichment_pipeline(limit=limit, only_with_website=True)
+        return {"ok": True, "stats": stats}
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
 
 
 # ---------------------------------------------------------------------------

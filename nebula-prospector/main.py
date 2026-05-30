@@ -296,6 +296,65 @@ def enrich_cmd(
 # Rapports
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# Outreach (Vague 3)
+# ---------------------------------------------------------------------------
+
+@app.command("preview")
+def preview_cmd(
+    prospect_id: str = typer.Argument(..., help="UUID du prospect"),
+    service: str | None = typer.Option(None, "--service", "-s",
+                                        help="Forcer un service (vitrine/catalogue/qr_menu/fiche_maps/qr_review/auto_whatsapp)"),
+) -> None:
+    """Génère et affiche un cold email pour un prospect (sans envoi)."""
+    from db.client import get_db
+    from messaging.templates import generate_cold_email
+    from enrichment.website_scraper import get_site_summary
+
+    p = get_db().table("prospects").select("*").eq("id", prospect_id).limit(1).execute().data
+    if not p:
+        console.print(f"[red]Prospect {prospect_id} introuvable.[/red]")
+        raise typer.Exit(1)
+    p = p[0]
+
+    site_content = get_site_summary(p.get("website") or "") if p.get("website") else ""
+    result = generate_cold_email(p, site_content, service=service)
+
+    if result.get("error"):
+        console.print(f"[red]Erreur : {result['error']}[/red]")
+        raise typer.Exit(1)
+
+    console.print(f"\n[bold cyan]═══ Cold email pour {p.get('name')} ═══[/bold cyan]")
+    console.print(f"[dim]→ Service pitché : {result.get('service')}[/dim]")
+    console.print(f"[dim]→ Personnalisation : {result.get('personalization_notes')}[/dim]\n")
+    console.print(f"[bold]Objet :[/bold] {result['subject']}\n")
+    console.print(f"[bold]Corps :[/bold]\n{result['body']}\n")
+
+
+@app.command("outreach")
+def outreach_cmd(
+    max_send: int = typer.Option(15, "--max", "-m", help="Nombre max d'envois (quota journalier ignoré si défini)"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Génère sans envoyer"),
+) -> None:
+    """Lance un cycle d'outreach : prospects HOT → email perso → envoi Resend."""
+    from messaging.outreach import run_outreach
+    logging.basicConfig(level=settings.log_level)
+
+    if dry_run:
+        console.print("[yellow]Mode dry-run non implémenté pour outreach (utilise 'preview' à la place)[/yellow]")
+        raise typer.Exit(0)
+
+    console.print(f"[cyan]Cycle outreach (max {max_send} envois)...[/cyan]")
+    s = run_outreach(max_send=max_send)
+    console.print(
+        f"\n[bold green]✓ Outreach terminé[/bold green]\n"
+        f"  envoyés : [bold]{s['sent']}[/bold]\n"
+        f"  skipped : {s['skipped']}\n"
+        f"  erreurs : {s['errors']}\n"
+        f"  quota   : {s['quota']}"
+    )
+
+
 @app.command("briefing")
 def briefing_cmd() -> None:
     """Envoie le rapport matinal Telegram immédiatement (pour test)."""
