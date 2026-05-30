@@ -194,7 +194,10 @@ def run_enrichment_pipeline(
         q = q.eq("has_website", True)
     prospects = q.execute().data or []
 
-    stats_out = {"processed": 0, "with_email": 0, "scored": 0}
+    stats_out = {
+        "processed": 0, "with_email": 0, "scored": 0,
+        "hot": 0, "warm": 0, "cold": 0, "rejected": 0,
+    }
     if not prospects:
         return stats_out
 
@@ -220,13 +223,16 @@ def run_enrichment_pipeline(
                 logging.warning(f"summary failed for {p.get('name')}: {e}")
 
         result = score_prospect({**p, **update}, site_content)
+        update["score"] = result["score"]
+        update["tier"] = result["tier"]
+        update["recommended_service"] = result.get("recommended_service")
+        update["score_breakdown"] = result.get("breakdown") or None
+        update["status_reason"] = (result.get("reason") or "")[:500]
+        update["status"] = "enriched" if result["score"] > 0 else "rejected"
+
         if result["score"] > 0:
             stats_out["scored"] += 1
-            update["score"] = result["score"]
-            update["status"] = "enriched"
-            update["status_reason"] = result["reason"][:500]
-        else:
-            update["status_reason"] = (result["reason"] or "scoring failed")[:500]
+        stats_out[result["tier"]] = stats_out.get(result["tier"], 0) + 1
 
         try:
             db.table("prospects").update(update).eq("id", p["id"]).execute()
@@ -234,13 +240,30 @@ def run_enrichment_pipeline(
         except Exception as e:
             logging.exception(f"DB update failed for {p.get('name')}: {e}")
 
-        # Event dashboard (best-effort)
+        # Event dashboard + alerte Telegram si HOT
         try:
             from core.events import emit_thought
             emit_thought(
-                f"Enrichi : {p['name']} → score {result['score']}/10",
+                f"Enrichi : {p['name']} → {result['tier'].upper()} ({result['score']}/10)",
                 description=result.get("reason"),
             )
+            if result["tier"] == "hot":
+                try:
+                    from alerts.telegram_bot import notify_hot_lead
+                    svc = result.get("recommended_service") or "—"
+                    snippet = (
+                        f"Score {result['score']}/10 · {p.get('sector') or '?'} · "
+                        f"{p.get('city') or '?'}, {p.get('country') or '?'}\n"
+                        f"💡 Service à pitcher : <b>{svc}</b>\n"
+                        f"📝 {result.get('reason') or ''}"
+                    )
+                    notify_hot_lead(
+                        p.get("name") or "?",
+                        prospect_id=p.get("id"),
+                        snippet=snippet,
+                    )
+                except Exception as te:
+                    logging.warning(f"hot_lead alert failed: {te}")
         except Exception:
             pass
 
@@ -258,8 +281,14 @@ def enrich_cmd(
     console.print(f"[cyan]Enrichissement (max {limit} prospects)...[/cyan]")
     s = run_enrichment_pipeline(limit=limit, only_with_website=only_with_website)
     console.print(
-        f"\n[bold green]✓ Enrichissement terminé[/bold green] — "
-        f"traités: {s['processed']} · emails trouvés: {s['with_email']} · scorés: {s['scored']}"
+        f"\n[bold green]✓ Enrichissement terminé[/bold green]\n"
+        f"  traités  : {s['processed']}\n"
+        f"  emails   : {s['with_email']}\n"
+        f"  scorés   : {s['scored']}\n"
+        f"  🔥 hot   : [bold red]{s.get('hot', 0)}[/bold red]\n"
+        f"  ☕ warm  : [yellow]{s.get('warm', 0)}[/yellow]\n"
+        f"  🧊 cold  : [blue]{s.get('cold', 0)}[/blue]\n"
+        f"  ❌ rejetés: {s.get('rejected', 0)}"
     )
 
 

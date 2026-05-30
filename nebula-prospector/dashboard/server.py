@@ -69,8 +69,9 @@ def _run_daily_pipeline():
         stats = run_enrichment_pipeline(limit=25, only_with_website=True)
         log.info(
             f"[scheduler] daily — enrichissement OK : "
-            f"{stats['processed']} traités, {stats['with_email']} emails, "
-            f"{stats['scored']} scorés"
+            f"{stats['processed']} traités · {stats['with_email']} emails · "
+            f"hot={stats.get('hot',0)} warm={stats.get('warm',0)} "
+            f"cold={stats.get('cold',0)} rejected={stats.get('rejected',0)}"
         )
     except Exception as e:
         log.exception(f"[scheduler] enrichissement échoué : {e}")

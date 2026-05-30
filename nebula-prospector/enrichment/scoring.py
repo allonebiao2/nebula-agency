@@ -1,4 +1,28 @@
-"""Scoring Claude — qualifie le fit prospect / NEBULA Agency."""
+"""Scoring Claude — qualifie le fit prospect / NEBULA Agency.
+
+Barème explicite (10 points max) :
++3  besoin explicite détecté (recherche site, vente en ligne, visibilité)
++2  business actif (posts récents, site basique, signes de vie commerciale)
++2  secteur prioritaire NEBULA (beauté, mode, restauration, photo, artisanat, jeune marque)
++2  contact direct disponible (email, téléphone, ou réseau social actif)
++1  localisation Afrique de l'Ouest francophone (BJ, TG, CI, SN, BF)
+-2  déjà un site web professionnel et complet
+-3  concurrent (agence digitale, webdesign, marketing) ou grand groupe
+
+Segmentation :
+hot       (8-10) → contact prioritaire dans la journée
+warm      (5-7)  → contact dans la semaine
+cold      (1-4)  → liste d'attente / pas encore mûr
+rejected  (0)    → pas pertinent (concurrent, grand groupe, hors cible)
+
+Service NEBULA recommandé (en fonction du profil) :
+- vitrine        : pas de site, business prêt à vendre en ligne
+- catalogue      : vend des produits, beaucoup de SKUs
+- qr_menu        : restaurant, bar, salon
+- fiche_maps     : commerce physique sans présence Google
+- qr_review      : business établi avec besoin de réputation
+- auto_whatsapp  : volume de demandes WA important
+"""
 from __future__ import annotations
 
 import json
@@ -11,40 +35,76 @@ from config import settings
 
 log = logging.getLogger(__name__)
 
-SCORING_PROMPT = """Tu es NOVA, l'agent commercial autonome de NEBULA Agency, basée à Cotonou (Bénin).
+VALID_SERVICES = {
+    "vitrine", "catalogue", "qr_menu", "fiche_maps",
+    "qr_review", "auto_whatsapp",
+}
+VALID_TIERS = {"hot", "warm", "cold", "rejected"}
 
-NEBULA Agency crée des **vitrines digitales premium** pour entrepreneurs d'Afrique de l'Ouest francophone (Bénin, Togo, Côte d'Ivoire, Sénégal, Burkina Faso). Offre :
-- Vitrine + QR code + WhatsApp + paiement Mobile Money — 150 000 FCFA setup
-- Catalogue digital — 50 000 FCFA setup
-- Fiche Google Maps — 20 000 FCFA
-- QR Code Google Review — 30 000 FCFA
-- Délai livraison : 5 à 7 jours
+SCORING_PROMPT = """Tu es NOVA, agent commercial autonome de NEBULA Agency (Cotonou, Bénin).
 
-**Cible idéale** : artisans, instituts de beauté, salons, boutiques, restaurants, photographes, jeunes marques, créateurs locaux qui n'ont PAS encore de présence web pro (ou en ont une vraiment basique).
+**Catalogue NEBULA** :
+- `vitrine` — Vitrine digitale + QR + Mobile Money — 150 000 FCFA setup (idéal : pas de site, business prêt à vendre)
+- `catalogue` — Catalogue digital + QR — 50 000 FCFA setup (idéal : beaucoup de produits à exposer)
+- `qr_menu` — QR Code menu — sur devis (idéal : restaurants, bars, salons)
+- `fiche_maps` — Fiche Google Maps — 20 000 FCFA (idéal : commerce physique sans présence Google)
+- `qr_review` — QR Code Google Review — 30 000 FCFA (idéal : business établi qui veut plus d'avis)
+- `auto_whatsapp` — Automatisation WhatsApp — sur devis (idéal : business avec gros volume de demandes WA)
 
-**Pas la cible** : grandes entreprises déjà très digitalisées, multinationales, banques, services publics.
+**Cible géographique** : Bénin, Togo, Côte d'Ivoire, Sénégal, Burkina Faso.
 
-Voici un prospect potentiel :
-- **Nom** : {name}
-- **Secteur** : {sector}
-- **Ville** : {city}, {country}
-- **Site web actuel** : {website}
-- **Email trouvé** : {email}
-- **Réseaux sociaux** : {socials}
+**Cible idéale** : artisans, instituts beauté, salons, boutiques, restaurants, photographes, jeunes marques, créateurs locaux sans présence web pro.
 
-Voici un extrait du contenu de leur site web (homepage) :
+**À éviter** : grandes entreprises digitalisées, multinationales, banques, services publics, autres agences digitales (concurrents).
+
 ---
+
+**Prospect à évaluer** :
+- Nom : {name}
+- Secteur : {sector}
+- Localisation : {city}, {country}
+- Site web : {website}
+- Email : {email}
+- Réseaux : {socials}
+
+**Contenu du site (extrait)** :
 {site_content}
+
 ---
 
-Donne un **score de 1 à 10** sur le fit avec NEBULA Agency :
-- **10** = prospect parfait (entrepreneur local sans web pro, secteur cible exact)
-- **7-9** = très bon fit (à contacter en priorité)
-- **4-6** = fit moyen (peut-être déjà bien équipé, ou trop gros, ou secteur tangent)
-- **1-3** = pas pertinent (grande entreprise, secteur incompatible, pas en Afrique de l'Ouest)
+**Barème (max 10)** :
+- +3 si besoin explicite détecté (texte parle de site, vente en ligne, visibilité)
+- +2 si business actif (signes de vie commerciale, nouveautés)
+- +2 si secteur prioritaire NEBULA (beauté/mode/resto/photo/artisanat/jeune marque)
+- +2 si contact direct disponible (email OU réseaux actifs)
+- +1 si localisation Afrique de l'Ouest francophone
+- -2 si déjà un site web pro et complet
+- -3 si concurrent (agence/webdesign/marketing) ou grand groupe → score = 0 et tier = `rejected`
 
-**Réponds en JSON STRICT uniquement** (pas de markdown, pas de texte avant/après) :
-{{"score": <entier 1-10>, "reason": "<une phrase courte expliquant la note>"}}"""
+**Tier** :
+- 8-10 → `hot` (à contacter en priorité)
+- 5-7 → `warm` (à contacter cette semaine)
+- 1-4 → `cold` (pas mûr, plus tard)
+- 0   → `rejected` (concurrent, pas la cible)
+
+**Service à pitcher** : choisis UN service dans la liste ci-dessus, celui qui correspond le mieux au prospect. Si rien ne convient → `null`.
+
+**Réponds en JSON STRICT** (pas de markdown, pas de texte avant/après) :
+{{
+  "score": <entier 0-10>,
+  "tier": "hot" | "warm" | "cold" | "rejected",
+  "recommended_service": "vitrine" | "catalogue" | "qr_menu" | "fiche_maps" | "qr_review" | "auto_whatsapp" | null,
+  "breakdown": {{
+    "needs_signal": <-3..3>,
+    "active_business": <0..2>,
+    "priority_sector": <0..2>,
+    "direct_contact": <0..2>,
+    "location": <0..1>,
+    "has_pro_site": <-2..0>,
+    "is_competitor": <-3..0>
+  }},
+  "reason": "<une phrase courte expliquant le score et le service recommandé>"
+}}"""
 
 
 def _build_socials_line(prospect: dict[str, Any]) -> str:
@@ -70,14 +130,44 @@ def _strip_code_fence(text: str) -> str:
     return t.strip()
 
 
+def _coerce_tier(score: int, raw_tier: Any) -> str:
+    """Vérifie/déduit le tier à partir du score si besoin."""
+    if isinstance(raw_tier, str) and raw_tier in VALID_TIERS:
+        return raw_tier
+    if score == 0:
+        return "rejected"
+    if score >= 8:
+        return "hot"
+    if score >= 5:
+        return "warm"
+    return "cold"
+
+
+def _coerce_service(raw: Any) -> str | None:
+    if isinstance(raw, str) and raw in VALID_SERVICES:
+        return raw
+    return None
+
+
 def score_prospect(prospect: dict[str, Any], site_content: str = "") -> dict[str, Any]:
     """Demande à Claude de scorer le fit NEBULA.
 
-    Retourne `{"score": int 0-10, "reason": str}`.
-    Score 0 = erreur (pas un vrai score, signal d'échec).
+    Retourne un dict :
+        {
+            "score": int 0-10,
+            "tier": "hot" | "warm" | "cold" | "rejected",
+            "recommended_service": str | None,
+            "breakdown": dict,
+            "reason": str,
+            "error": str | None  # présent uniquement si parsing failed
+        }
     """
     if not settings.anthropic_api_key:
-        return {"score": 0, "reason": "ANTHROPIC_API_KEY manquante"}
+        return {
+            "score": 0, "tier": "rejected",
+            "recommended_service": None, "breakdown": {},
+            "reason": "ANTHROPIC_API_KEY manquante", "error": "config",
+        }
 
     client = Anthropic(api_key=settings.anthropic_api_key)
     prompt = SCORING_PROMPT.format(
@@ -94,21 +184,37 @@ def score_prospect(prospect: dict[str, Any], site_content: str = "") -> dict[str
     try:
         resp = client.messages.create(
             model=settings.claude_model_fast,
-            max_tokens=250,
+            max_tokens=500,
             messages=[{"role": "user", "content": prompt}],
         )
         raw_text = resp.content[0].text if resp.content else ""
     except Exception as e:
         log.exception(f"Claude scoring API failed: {e}")
-        return {"score": 0, "reason": f"Claude API error: {e}"}
+        return {
+            "score": 0, "tier": "rejected",
+            "recommended_service": None, "breakdown": {},
+            "reason": f"Claude API error: {e}", "error": "api",
+        }
 
     cleaned = _strip_code_fence(raw_text)
     try:
         data = json.loads(cleaned)
         score = int(data.get("score", 0))
-        reason = (data.get("reason") or "").strip()
-        score = max(1, min(10, score)) if score > 0 else 0
-        return {"score": score, "reason": reason or "(pas de raison fournie)"}
+        score = max(0, min(10, score))
+        tier = _coerce_tier(score, data.get("tier"))
+        return {
+            "score": score,
+            "tier": tier,
+            "recommended_service": _coerce_service(data.get("recommended_service")),
+            "breakdown": data.get("breakdown") or {},
+            "reason": (data.get("reason") or "").strip() or "(pas de raison fournie)",
+            "error": None,
+        }
     except Exception as e:
         log.warning(f"Claude scoring JSON parse failed: {cleaned[:200]!r}")
-        return {"score": 0, "reason": f"parse error ({e}): {cleaned[:120]}"}
+        return {
+            "score": 0, "tier": "rejected",
+            "recommended_service": None, "breakdown": {},
+            "reason": f"parse error: {cleaned[:120]}",
+            "error": f"parse: {e}",
+        }
