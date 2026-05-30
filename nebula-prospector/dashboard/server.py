@@ -40,16 +40,19 @@ app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="stat
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "agent_name": persona.NAME,
-        "tagline": persona.TAGLINE,
-        "bio": persona.SHORT_BIO,
-        "version": persona.VERSION,
-        "supabase_url": settings.supabase_url,
-        "supabase_anon_key": settings.supabase_anon_key,
-        "moods": persona.MOODS,
-    })
+    # Starlette >= 0.28 requiert (request, name, context) au lieu de (name, context)
+    return templates.TemplateResponse(
+        request,
+        "index.html",
+        {
+            "agent_name": persona.NAME,
+            "tagline": persona.TAGLINE,
+            "bio": persona.SHORT_BIO,
+            "version": persona.VERSION,
+            "supabase_url": settings.supabase_url,
+            "supabase_anon_key": settings.supabase_anon_key,
+        },
+    )
 
 
 # ---------------------------------------------------------------------------
