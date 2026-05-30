@@ -68,22 +68,29 @@ async def state():
     return JSONResponse(row or {})
 
 
+def _safe_count(table_name: str) -> int:
+    """Count exact d'une table, retourne 0 si table absente ou erreur."""
+    try:
+        r = get_db().table(table_name).select("*", count="exact", head=True).execute()
+        return r.count or 0
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning("count %s failed: %s", table_name, e)
+        return 0
+
+
 @app.get("/api/stats")
 async def stats():
-    counts = count_prospects_by_status()
-    db = get_db()
-    total_events = (db.table("agent_events").select("id", count="exact")
-                    .limit(1).execute().count or 0)
-    total_alerts = (db.table("alerts").select("id", count="exact")
-                    .limit(1).execute().count or 0)
-    total_convos = (db.table("conversations").select("id", count="exact")
-                    .limit(1).execute().count or 0)
+    try:
+        counts = count_prospects_by_status()
+    except Exception:
+        counts = {}
     return JSONResponse({
         "pipeline": counts,
         "totals": {
-            "events": total_events,
-            "alerts": total_alerts,
-            "conversations": total_convos,
+            "events": _safe_count("agent_events"),
+            "alerts": _safe_count("alerts"),
+            "conversations": _safe_count("conversations"),
             "prospects": sum(counts.values()),
         },
     })
