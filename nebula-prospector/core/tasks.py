@@ -260,7 +260,8 @@ def _h_enrichment(payload: dict[str, Any]) -> dict[str, Any]:
 def _h_outreach(payload: dict[str, Any]) -> dict[str, Any]:
     from messaging.outreach import run_outreach
     max_send = payload.get("max_send")
-    return run_outreach(max_send=max_send)
+    tiers = payload.get("tiers")  # ex: ["hot","warm","cold"], default None = [hot, warm]
+    return run_outreach(max_send=max_send, tiers=tiers)
 
 
 @register_handler("document.create")

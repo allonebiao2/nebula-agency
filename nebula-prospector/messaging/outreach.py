@@ -74,13 +74,17 @@ def _mark_contacted(prospect_id: str) -> None:
     }).eq("id", prospect_id).execute()
 
 
-def _select_hot_prospects(limit: int) -> list[dict[str, Any]]:
-    """Sélectionne les prospects à contacter aujourd'hui : tier=hot, status=enriched, email présent."""
+def _select_prospects_for_outreach(limit: int, tiers: list[str] | None = None) -> list[dict[str, Any]]:
+    """Sélectionne les prospects à contacter : tier dans (hot, warm par défaut), status=enriched,
+    email présent. Tri par score décroissant.
+    """
+    if tiers is None:
+        tiers = ["hot", "warm"]
     db = get_db()
     r = (
         db.table("prospects")
         .select("*")
-        .eq("tier", "hot")
+        .in_("tier", tiers)
         .eq("status", "enriched")
         .not_.is_("email", "null")
         .order("score", desc=True)
@@ -90,19 +94,23 @@ def _select_hot_prospects(limit: int) -> list[dict[str, Any]]:
     return r.data or []
 
 
-def run_outreach(max_send: int | None = None) -> dict[str, int]:
+def run_outreach(max_send: int | None = None, tiers: list[str] | None = None) -> dict[str, int]:
     """Lance un cycle d'outreach. Retourne stats.
 
-    `max_send` = override le quota (sinon = remaining_quota_today()).
+    Args:
+        max_send: override le quota (sinon = remaining_quota_today())
+        tiers: liste de tiers ciblés (default ['hot', 'warm']). Permet de cibler
+               aussi les cold si on veut. Trié par score décroissant donc les
+               meilleurs warm passent avant des cold moyens.
     """
     quota = max_send if max_send is not None else remaining_quota_today()
     if quota <= 0:
         log.info("outreach: quota journalier épuisé")
         return {"sent": 0, "skipped": 0, "errors": 0, "quota": 0}
 
-    candidates = _select_hot_prospects(quota)
+    candidates = _select_prospects_for_outreach(quota, tiers=tiers)
     if not candidates:
-        log.info("outreach: aucun prospect hot prêt")
+        log.info(f"outreach: aucun prospect prêt (tiers={tiers or ['hot','warm']})")
         return {"sent": 0, "skipped": 0, "errors": 0, "quota": quota}
 
     sent = 0
