@@ -511,6 +511,23 @@ async def admin_run_weekly_learning(request: Request):
         return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
 
 
+@app.post("/api/admin/test-email")
+async def admin_test_email(request: Request):
+    """Envoie un email de test via le backend configuré (resend ou gmail_smtp)."""
+    if not _check_admin_token(request):
+        return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
+    try:
+        from messaging.resend_client import send_email
+        body = await request.json() if request.headers.get("content-type", "").startswith("application/json") else {}
+        to = body.get("to") or "allonebiao2@gmail.com"
+        subject = body.get("subject") or "Test NOVA"
+        body_text = body.get("body") or "Test email envoyé par NOVA."
+        result = send_email(to=to, subject=subject, body_text=body_text)
+        return {"ok": True, "result": result}
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)[:300]}, status_code=500)
+
+
 @app.post("/api/admin/run/imap-poll")
 async def admin_run_imap_poll(request: Request):
     """Force un poll IMAP immédiat — utile pour tester sans attendre 5 min."""
