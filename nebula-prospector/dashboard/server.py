@@ -112,6 +112,19 @@ def _run_morning_briefing():
         log.exception(f"[scheduler] morning briefing erreur : {e}")
 
 
+def _drain_task_queue():
+    """Worker loop : consomme la queue tasks (CEO ↔ Workers)."""
+    import logging
+    log = logging.getLogger("nova.scheduler")
+    try:
+        from core.tasks import drain_queue
+        stats = drain_queue(max_tasks=10)  # max 10 tâches par tick (toutes les 10 min)
+        if stats["processed"] > 0:
+            log.info(f"[scheduler] tasks drained : {stats}")
+    except Exception as e:
+        log.exception(f"[scheduler] task drain erreur : {e}")
+
+
 @app.on_event("startup")
 async def _start_scheduler():
     global _scheduler
@@ -138,11 +151,20 @@ async def _start_scheduler():
             replace_existing=True,
             misfire_grace_time=1800,
         )
+        _scheduler.add_job(
+            _drain_task_queue,
+            "interval",
+            minutes=10,
+            id="task_queue_drain",
+            replace_existing=True,
+            max_instances=1,
+            coalesce=True,
+        )
         _scheduler.start()
         import logging
         logging.getLogger("nova.scheduler").info(
-            "[scheduler] APScheduler démarré : "
-            "sourcing 3h UTC (4h Cotonou) + briefing 7h UTC (8h Cotonou)"
+            "[scheduler] APScheduler démarré : sourcing 3h UTC + briefing 7h UTC + "
+            "task queue drain toutes les 10 min"
         )
     except Exception as e:
         import logging
@@ -222,6 +244,130 @@ async def admin_run_enrich(request: Request):
         return {"ok": True, "stats": stats}
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+# ---------------------------------------------------------------------------
+# NOVA v2 brain layer — Mission, Documents, Tasks
+# ---------------------------------------------------------------------------
+
+@app.get("/api/admin/mission")
+async def admin_get_mission(request: Request):
+    if not _check_admin_token(request):
+        return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
+    from core.mission import get_active_mission_full, get_mission_history
+    return {"ok": True, "active": get_active_mission_full(), "history": get_mission_history(10)}
+
+
+@app.post("/api/admin/mission")
+async def admin_update_mission(request: Request):
+    if not _check_admin_token(request):
+        return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
+    try:
+        from core.mission import update_mission
+        body = await request.json()
+        record = update_mission(
+            new_content=body["content"],
+            reason=body.get("reason", "via admin endpoint"),
+            edited_by=body.get("edited_by", "mongazi"),
+        )
+        return {"ok": True, "mission": record}
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=400)
+
+
+@app.get("/api/admin/documents")
+async def admin_list_documents(request: Request):
+    if not _check_admin_token(request):
+        return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
+    from core.documents import list_documents
+    return {"ok": True, "documents": list_documents(100)}
+
+
+@app.get("/api/admin/documents/{key}")
+async def admin_read_document(key: str, request: Request):
+    if not _check_admin_token(request):
+        return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
+    from core.documents import read_document
+    doc = read_document(key)
+    if not doc:
+        return JSONResponse({"ok": False, "error": "not found"}, status_code=404)
+    return {"ok": True, "document": doc}
+
+
+@app.post("/api/admin/documents")
+async def admin_create_document(request: Request):
+    if not _check_admin_token(request):
+        return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
+    try:
+        from core.documents import create_document
+        body = await request.json()
+        doc = create_document(
+            key=body["key"],
+            title=body.get("title", body["key"]),
+            content=body["content"],
+            tags=body.get("tags", []),
+            created_by=body.get("created_by", "mongazi"),
+            upsert=bool(body.get("upsert", False)),
+        )
+        return {"ok": True, "document": doc}
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=400)
+
+
+@app.get("/api/admin/tasks")
+async def admin_list_tasks(request: Request):
+    if not _check_admin_token(request):
+        return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
+    from core.tasks import list_tasks, list_handlers
+    status = request.query_params.get("status")
+    type_ = request.query_params.get("type")
+    return {
+        "ok": True,
+        "handlers": list_handlers(),
+        "tasks": list_tasks(status=status, type_=type_, limit=100),
+    }
+
+
+@app.post("/api/admin/tasks")
+async def admin_create_task(request: Request):
+    if not _check_admin_token(request):
+        return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
+    try:
+        from core.tasks import create_task
+        body = await request.json()
+        t = create_task(
+            task_type=body["type"],
+            payload=body.get("payload", {}),
+            priority=int(body.get("priority", 5)),
+            reason=body.get("reason"),
+            created_by=body.get("created_by", "mongazi"),
+        )
+        return {"ok": True, "task": t}
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=400)
+
+
+@app.post("/api/admin/tasks/drain")
+async def admin_drain_tasks(request: Request):
+    if not _check_admin_token(request):
+        return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
+    try:
+        from core.tasks import drain_queue
+        body = await request.json() if request.headers.get("content-type", "").startswith("application/json") else {}
+        max_tasks = body.get("max_tasks", 20) if isinstance(body, dict) else 20
+        stats = drain_queue(max_tasks=max_tasks)
+        return {"ok": True, "stats": stats}
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.get("/api/admin/tool-stats")
+async def admin_tool_stats(request: Request):
+    if not _check_admin_token(request):
+        return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
+    from core.tool_calls import get_tool_stats
+    hours = int(request.query_params.get("hours", "24"))
+    return {"ok": True, "window_hours": hours, "stats": get_tool_stats(window_hours=hours)}
 
 
 # ---------------------------------------------------------------------------

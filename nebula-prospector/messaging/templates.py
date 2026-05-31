@@ -18,6 +18,7 @@ from typing import Any
 from anthropic import Anthropic
 
 from config import settings
+from core.tool_calls import tool_call
 
 log = logging.getLogger(__name__)
 
@@ -132,6 +133,7 @@ def _build_socials_line(prospect: dict[str, Any]) -> str:
     return " · ".join(parts) if parts else "(aucun)"
 
 
+@tool_call("claude.email", per_hour=30, per_day=200, raise_on_limit=False)
 def generate_cold_email(
     prospect: dict[str, Any],
     site_content: str = "",

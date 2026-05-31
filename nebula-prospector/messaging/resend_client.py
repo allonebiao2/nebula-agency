@@ -7,6 +7,7 @@ from typing import Any
 import resend
 
 from config import settings
+from core.tool_calls import tool_call, RateLimited
 
 log = logging.getLogger(__name__)
 
@@ -32,6 +33,7 @@ def _default_from() -> str:
     return f"{name} <{addr}>"
 
 
+@tool_call("resend.send", per_hour=20, per_day=100, raise_on_limit=False)
 def send_email(
     to: str,
     subject: str,

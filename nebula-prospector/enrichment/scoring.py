@@ -32,6 +32,7 @@ from typing import Any
 from anthropic import Anthropic
 
 from config import settings
+from core.tool_calls import tool_call
 
 log = logging.getLogger(__name__)
 
@@ -149,6 +150,7 @@ def _coerce_service(raw: Any) -> str | None:
     return None
 
 
+@tool_call("claude.score", per_hour=120, per_day=1000, raise_on_limit=False)
 def score_prospect(prospect: dict[str, Any], site_content: str = "") -> dict[str, Any]:
     """Demande à Claude de scorer le fit NEBULA.
 
