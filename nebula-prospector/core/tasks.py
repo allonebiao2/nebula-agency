@@ -252,7 +252,8 @@ def _h_sourcing(payload: dict[str, Any]) -> dict[str, Any]:
 def _h_enrichment(payload: dict[str, Any]) -> dict[str, Any]:
     from main import run_enrichment_pipeline
     limit = int(payload.get("limit") or 25)
-    return run_enrichment_pipeline(limit=limit, only_with_website=True)
+    only_with_website = bool(payload.get("only_with_website", True))
+    return run_enrichment_pipeline(limit=limit, only_with_website=only_with_website)
 
 
 @register_handler("outreach.run")

@@ -233,18 +233,38 @@ async def admin_run_outreach(request: Request):
 
 @app.post("/api/admin/run/enrich")
 async def admin_run_enrich(request: Request):
-    """Force un cycle d'enrichissement seul (sans sourcing)."""
+    """Force un cycle d'enrichissement (en arrière-plan pour éviter timeout HTTP)."""
     if not _check_admin_token(request):
         return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
     try:
-        from main import run_enrichment_pipeline
         body = await request.json() if request.headers.get("content-type", "").startswith("application/json") else {}
         if not isinstance(body, dict):
             body = {}
         limit = int(body.get("limit", 25))
         only_with_website = bool(body.get("only_with_website", True))
-        stats = run_enrichment_pipeline(limit=limit, only_with_website=only_with_website)
-        return {"ok": True, "stats": stats}
+        background = bool(body.get("background", True))  # default async pour éviter timeout
+
+        if not background:
+            from main import run_enrichment_pipeline
+            stats = run_enrichment_pipeline(limit=limit, only_with_website=only_with_website)
+            return {"ok": True, "stats": stats}
+
+        # Mode background : lance en thread, retour immédiat
+        import threading
+        def _run():
+            try:
+                from main import run_enrichment_pipeline
+                import logging
+                log = logging.getLogger("nova.admin")
+                log.info(f"[admin] enrich bg start (limit={limit}, only_with_website={only_with_website})")
+                s = run_enrichment_pipeline(limit=limit, only_with_website=only_with_website)
+                log.info(f"[admin] enrich bg done : {s}")
+            except Exception as e:
+                import logging
+                logging.getLogger("nova.admin").exception(f"[admin] enrich bg failed: {e}")
+
+        threading.Thread(target=_run, daemon=True).start()
+        return {"ok": True, "message": f"Enrichissement lancé en background (limit={limit})"}
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
 
