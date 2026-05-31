@@ -32,6 +32,10 @@ const els = {
     sConvos: $("stat-convos"),
     sAlerts: $("stat-alerts"),
     heartbeat: $("heartbeat"),
+    console: $("console"),
+    consoleSub: $("console-sub"),
+    tasks: $("tasks"),
+    tasksSub: $("tasks-sub"),
 };
 
 /* ---- Utilities ---- */
@@ -210,21 +214,100 @@ function renderStats(d) {
     els.sAlerts.textContent    = d.totals?.alerts ?? "—";
 }
 
+/* ---- CONSOLE (Tool Calls en direct) ---- */
+function fmtTime(iso) {
+    if (!iso) return "—";
+    const d = new Date(iso);
+    return d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+}
+
+function toolCallEl(tc) {
+    const div = document.createElement("div");
+    div.className = `tool-call status-${tc.status || 'ok'}`;
+    const duration = tc.duration_ms ? `${tc.duration_ms}ms` : "";
+    div.innerHTML = `
+        <div class="tool-call-time">${escapeHtml(fmtTime(tc.created_at))}</div>
+        <div class="tool-call-body">
+            <div class="tool-call-name">${escapeHtml(tc.tool_name)}</div>
+            ${tc.input_summary ? `<div class="tool-call-input">→ ${escapeHtml(tc.input_summary)}</div>` : ""}
+            ${tc.output_summary ? `<div class="tool-call-output">← ${escapeHtml(tc.output_summary)}</div>` : ""}
+        </div>
+        <div class="tool-call-duration">${duration}</div>
+    `;
+    return div;
+}
+
+function renderToolCalls(list) {
+    if (!list || list.length === 0) {
+        els.console.innerHTML = `<div class="empty">NOVA n'a pas encore utilisé d'outil.</div>`;
+        els.consoleSub.textContent = "0 appel";
+        return;
+    }
+    els.console.innerHTML = "";
+    list.forEach(tc => els.console.appendChild(toolCallEl(tc)));
+    els.consoleSub.textContent = `${list.length} derniers appels`;
+}
+
+function prependToolCall(tc) {
+    const empty = els.console.querySelector(".empty");
+    if (empty) empty.remove();
+    els.console.prepend(toolCallEl(tc));
+    // Cap à 50 entries
+    while (els.console.children.length > 50) {
+        els.console.removeChild(els.console.lastChild);
+    }
+}
+
+/* ---- TASKS QUEUE ---- */
+function taskCardEl(t) {
+    const div = document.createElement("div");
+    div.className = `task-card status-${t.status}`;
+    const time = t.finished_at ? `Fini : ${fmtTime(t.finished_at)}` :
+                 t.started_at  ? `Démarré : ${fmtTime(t.started_at)}` :
+                 `Créé : ${fmtTime(t.created_at)}`;
+    div.innerHTML = `
+        <div class="task-row">
+            <span class="task-type">${escapeHtml(t.type)}</span>
+            <span class="task-status">${escapeHtml(t.status)}</span>
+        </div>
+        ${t.reason ? `<div class="task-reason">${escapeHtml(t.reason)}</div>` : ""}
+        <div class="task-time">${escapeHtml(time)}${t.attempts > 1 ? ` · tentative ${t.attempts}/${t.max_attempts}` : ""}</div>
+    `;
+    return div;
+}
+
+function renderTasks(list) {
+    if (!list || list.length === 0) {
+        els.tasks.innerHTML = `<div class="empty">Aucune tâche en queue.</div>`;
+        els.tasksSub.textContent = "0";
+        return;
+    }
+    els.tasks.innerHTML = "";
+    list.forEach(t => els.tasks.appendChild(taskCardEl(t)));
+    const running = list.filter(t => t.status === "running").length;
+    const pending = list.filter(t => t.status === "pending").length;
+    els.tasksSub.textContent = `${pending} pending · ${running} running`;
+}
+
 /* ---- Bootstrap ---- */
 async function loadAll() {
     try {
-        const [stateR, eventsR, pipelineR, convosR, statsR] = await Promise.all([
+        const [stateR, eventsR, pipelineR, convosR, statsR, toolsR, tasksR] = await Promise.all([
             fetch("/api/state").then(r => r.json()),
             fetch("/api/recent-events?limit=80").then(r => r.json()),
             fetch("/api/pipeline").then(r => r.json()),
             fetch("/api/recent-conversations?limit=10").then(r => r.json()),
             fetch("/api/stats").then(r => r.json()),
+            fetch("/api/recent-tool-calls?limit=30").then(r => r.json()).catch(() => []),
+            fetch("/api/recent-tasks?limit=15").then(r => r.json()).catch(() => []),
         ]);
         renderState(stateR);
         renderEvents(eventsR);
         renderPipeline(pipelineR);
         renderConversations(convosR);
         renderStats(statsR);
+        renderToolCalls(toolsR);
+        renderTasks(tasksR);
     } catch (e) {
         console.error("loadAll failed:", e);
     }
@@ -237,7 +320,6 @@ function subscribe() {
             { event: "INSERT", schema: "public", table: "agent_events" },
             (payload) => {
                 prependEvent(payload.new);
-                // celebration → re-fetch stats
                 if (payload.new.severity === "celebration") loadAll();
             })
         .subscribe();
@@ -246,6 +328,18 @@ function subscribe() {
         .on("postgres_changes",
             { event: "*", schema: "public", table: "agent_state" },
             (payload) => renderState(payload.new))
+        .subscribe();
+
+    supa.channel("nova-tools")
+        .on("postgres_changes",
+            { event: "INSERT", schema: "public", table: "tool_calls" },
+            (payload) => prependToolCall(payload.new))
+        .subscribe();
+
+    supa.channel("nova-tasks")
+        .on("postgres_changes",
+            { event: "*", schema: "public", table: "tasks" },
+            () => fetch("/api/recent-tasks?limit=15").then(r => r.json()).then(renderTasks).catch(() => {}))
         .subscribe();
 }
 

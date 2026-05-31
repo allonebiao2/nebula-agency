@@ -600,6 +600,25 @@ async def recent_conversations(limit: int = 20):
     return JSONResponse(rows)
 
 
+@app.get("/api/recent-tool-calls")
+async def recent_tool_calls(limit: int = 30):
+    """Derniers appels de tools NOVA (claude.score, query_supabase, resend.send, etc.)."""
+    db = get_db()
+    rows = (db.table("tool_calls").select("*")
+            .order("created_at", desc=True).limit(min(limit, 200)).execute().data) or []
+    return JSONResponse(rows)
+
+
+@app.get("/api/recent-tasks")
+async def recent_tasks(limit: int = 20):
+    """Dernières tâches de la queue (pending / running / done / failed)."""
+    db = get_db()
+    rows = (db.table("tasks").select(
+        "id,type,status,priority,reason,attempts,max_attempts,created_at,started_at,finished_at"
+    ).order("created_at", desc=True).limit(min(limit, 100)).execute().data) or []
+    return JSONResponse(rows)
+
+
 @app.get("/api/persona")
 async def persona_info():
     return JSONResponse({

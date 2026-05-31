@@ -269,10 +269,11 @@ html, body {
 .layout {
     display: grid;
     grid-template-columns: 1.3fr 1.6fr 1fr;
-    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) auto;
     grid-template-areas:
         "stream pipeline convos"
-        "stream pipeline stats";
+        "console tasks stats"
+        "console tasks stats";
     gap: 18px;
     padding: 18px 40px 80px;
     min-height: calc(100vh - 200px);
@@ -282,6 +283,8 @@ html, body {
 .panel-pipeline  { grid-area: pipeline; }
 .panel-convos    { grid-area: convos; }
 .panel-stats     { grid-area: stats; }
+.panel-console   { grid-area: console; }
+.panel-tasks     { grid-area: tasks; }
 
 .panel {
     background: var(--bg-panel);
@@ -603,6 +606,140 @@ html, body {
 ::-webkit-scrollbar-thumb:hover { background: rgba(124,58,237,0.5); }
 
 /* =========================================================================
+   CONSOLE — tools NOVA en direct
+   ========================================================================= */
+.console {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 14px;
+    max-height: 60vh;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 11.5px;
+}
+
+.tool-call {
+    display: flex;
+    gap: 10px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    border-radius: 8px;
+    border-left: 3px solid var(--c-violet);
+    background: rgba(10, 8, 25, 0.5);
+    animation: tool-call-in 0.4s var(--ease-soft);
+}
+@keyframes tool-call-in {
+    from { opacity: 0; transform: translateX(-8px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+.tool-call.status-ok           { border-left-color: var(--c-green); }
+.tool-call.status-failed       { border-left-color: var(--c-red); background: rgba(40,10,10,0.4); }
+.tool-call.status-rate_limited { border-left-color: var(--c-gold); }
+
+.tool-call-time {
+    color: var(--text-dim);
+    font-size: 10px;
+    flex-shrink: 0;
+    min-width: 50px;
+}
+.tool-call-body { flex: 1; min-width: 0; }
+.tool-call-name {
+    color: var(--c-cyan-soft);
+    font-weight: 600;
+}
+.tool-call-input {
+    color: var(--text-muted);
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.tool-call-output {
+    color: var(--text);
+    margin-top: 2px;
+    font-style: italic;
+    opacity: 0.8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.tool-call-duration {
+    color: var(--c-violet-soft);
+    font-size: 10px;
+    flex-shrink: 0;
+}
+
+/* =========================================================================
+   TASKS QUEUE
+   ========================================================================= */
+.tasks {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 14px;
+    max-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.task-card {
+    padding: 10px 12px;
+    background: rgba(10, 8, 25, 0.55);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--c-violet);
+    border-radius: var(--r-sm);
+    animation: tool-call-in 0.35s var(--ease-soft);
+}
+.task-card.status-pending   { border-left-color: var(--c-gold); }
+.task-card.status-running   { border-left-color: var(--c-cyan); background: rgba(6,40,55,0.4); }
+.task-card.status-done      { border-left-color: var(--c-green); opacity: 0.65; }
+.task-card.status-failed    { border-left-color: var(--c-red); }
+.task-card.status-cancelled { border-left-color: var(--text-dim); opacity: 0.5; }
+
+.task-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+.task-type {
+    color: var(--text-strong);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+}
+.task-status {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-weight: 700;
+}
+.task-card.status-pending   .task-status { background: var(--c-gold); color: var(--bg-deep); }
+.task-card.status-running   .task-status { background: var(--c-cyan); color: var(--bg-deep); }
+.task-card.status-done      .task-status { background: var(--c-green); color: var(--bg-deep); }
+.task-card.status-failed    .task-status { background: var(--c-red); color: white; }
+.task-card.status-cancelled .task-status { background: var(--text-dim); color: white; }
+
+.task-reason {
+    margin-top: 4px;
+    color: var(--text-muted);
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.task-time {
+    color: var(--text-dim);
+    font-size: 10px;
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* =========================================================================
    Responsive
    ========================================================================= */
 @media (max-width: 1200px) {
@@ -610,6 +747,7 @@ html, body {
         grid-template-columns: 1fr 1fr;
         grid-template-areas:
             "stream pipeline"
+            "console tasks"
             "convos stats";
     }
     .header { grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -618,6 +756,9 @@ html, body {
 
 /* --- Tablette / mobile paysage --- */
 @media (max-width: 768px) {
+    .layout {
+        grid-template-areas: "stream" "pipeline" "console" "tasks" "convos" "stats";
+    }
     .header {
         grid-template-columns: 1fr;
         padding: 18px 16px;
