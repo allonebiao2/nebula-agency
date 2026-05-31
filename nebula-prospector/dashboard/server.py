@@ -371,6 +371,55 @@ async def admin_tool_stats(request: Request):
 
 
 # ---------------------------------------------------------------------------
+# Chat Telegram bidirectionnel
+# ---------------------------------------------------------------------------
+
+@app.post("/api/telegram/webhook")
+async def telegram_webhook(request: Request):
+    """Reçoit les messages Telegram entrants. Sécurisé via X-Telegram-Bot-Api-Secret-Token."""
+    import os
+    expected_secret = os.environ.get("TELEGRAM_WEBHOOK_SECRET", "")
+    provided = request.headers.get("X-Telegram-Bot-Api-Secret-Token", "")
+    if expected_secret and provided != expected_secret:
+        return JSONResponse({"ok": False, "error": "invalid secret"}, status_code=403)
+
+    try:
+        update = await request.json()
+        from alerts.telegram_chat import handle_incoming_message
+        result = handle_incoming_message(update)
+        return {"ok": True, **result}
+    except Exception as e:
+        import logging
+        logging.getLogger("nova.telegram").exception(f"webhook error: {e}")
+        # Toujours retourner 200 à Telegram pour éviter retries indéfinis
+        return {"ok": False, "error": str(e)[:200]}
+
+
+@app.post("/api/admin/telegram/setup-webhook")
+async def admin_setup_webhook(request: Request):
+    """Configure le webhook Telegram pour pointer vers notre endpoint."""
+    if not _check_admin_token(request):
+        return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
+    import os
+    from alerts.telegram_chat import setup_webhook
+    public_url = "https://nebula-agency-production.up.railway.app/api/telegram/webhook"
+    secret = os.environ.get("TELEGRAM_WEBHOOK_SECRET", "")
+    if not secret:
+        return JSONResponse({"ok": False, "error": "TELEGRAM_WEBHOOK_SECRET env var missing"}, status_code=500)
+    result = setup_webhook(public_url, secret_token=secret)
+    return {"ok": result.get("ok", False), "telegram_response": result}
+
+
+@app.get("/api/admin/telegram/webhook-info")
+async def admin_webhook_info(request: Request):
+    """Vérifie l'état actuel du webhook Telegram."""
+    if not _check_admin_token(request):
+        return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
+    from alerts.telegram_chat import get_webhook_info
+    return get_webhook_info()
+
+
+# ---------------------------------------------------------------------------
 # Page
 # ---------------------------------------------------------------------------
 
