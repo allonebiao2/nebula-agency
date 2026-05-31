@@ -239,8 +239,11 @@ async def admin_run_enrich(request: Request):
     try:
         from main import run_enrichment_pipeline
         body = await request.json() if request.headers.get("content-type", "").startswith("application/json") else {}
-        limit = body.get("limit", 25) if isinstance(body, dict) else 25
-        stats = run_enrichment_pipeline(limit=limit, only_with_website=True)
+        if not isinstance(body, dict):
+            body = {}
+        limit = int(body.get("limit", 25))
+        only_with_website = bool(body.get("only_with_website", True))
+        stats = run_enrichment_pipeline(limit=limit, only_with_website=only_with_website)
         return {"ok": True, "stats": stats}
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
