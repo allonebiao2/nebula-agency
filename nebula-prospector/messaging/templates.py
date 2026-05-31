@@ -26,16 +26,16 @@ log = logging.getLogger(__name__)
 # Pitch NEBULA selon le service recommandé
 SERVICE_PITCH = {
     "vitrine": {
-        "name": "vitrine digitale + QR code + paiement Mobile Money",
+        "name": "vitrine digitale professionnelle + QR Code + commandes WhatsApp",
         "price": "150 000 FCFA",
         "delay": "5 à 7 jours",
-        "proof": "On a livré ça à Grain d'Esthétique (Cotonou) — leur institut reçoit maintenant des réservations 24h/24.",
+        "proof": "On a livré ça à Grain d'Esthétique (Cotonou) — leur institut reçoit maintenant des réservations 24h/24 via WhatsApp.",
     },
     "catalogue": {
-        "name": "catalogue digital interactif + QR code",
+        "name": "catalogue digital interactif + QR Code + commandes WhatsApp",
         "price": "50 000 FCFA",
         "delay": "5 à 7 jours",
-        "proof": "INA Luxury (Cotonou) gère ses 37 produits via notre catalogue — chaque client commande directement sur WhatsApp.",
+        "proof": "INA Luxury (Cotonou) gère ses 37 produits via notre catalogue — chaque client commande en 1 clic sur WhatsApp.",
     },
     "qr_menu": {
         "name": "QR Code menu digital",
