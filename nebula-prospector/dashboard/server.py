@@ -138,6 +138,19 @@ def _poll_inbox_imap():
         log.exception(f"[scheduler] inbox poll erreur : {e}")
 
 
+def _run_weekly_learning():
+    """Job dimanche 22h UTC : NOVA s'auto-améliore en réfléchissant à sa semaine."""
+    import logging
+    log = logging.getLogger("nova.scheduler")
+    log.info("[scheduler] weekly learning start")
+    try:
+        from learning.weekly_learner import run_weekly_learning
+        result = run_weekly_learning()
+        log.info(f"[scheduler] weekly learning done: applied={result.get('applied')}")
+    except Exception as e:
+        log.exception(f"[scheduler] weekly learning erreur : {e}")
+
+
 @app.on_event("startup")
 async def _start_scheduler():
     global _scheduler
@@ -181,6 +194,16 @@ async def _start_scheduler():
             replace_existing=True,
             max_instances=1,
             coalesce=True,
+        )
+        _scheduler.add_job(
+            _run_weekly_learning,
+            "cron",
+            day_of_week="sun",
+            hour=22,  # 22h UTC = 23h Cotonou dimanche soir
+            minute=0,
+            id="weekly_learning",
+            replace_existing=True,
+            misfire_grace_time=3600,
         )
         _scheduler.start()
         import logging
@@ -467,6 +490,26 @@ async def admin_webhook_info(request: Request):
 # ---------------------------------------------------------------------------
 # V4 — Inbox IMAP (lecture réponses prospects)
 # ---------------------------------------------------------------------------
+
+@app.post("/api/admin/run/weekly-learning")
+async def admin_run_weekly_learning(request: Request):
+    """Force le cycle d'apprentissage hebdo immédiat (sans attendre dimanche)."""
+    if not _check_admin_token(request):
+        return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
+    try:
+        import threading
+        def _run():
+            try:
+                from learning.weekly_learner import run_weekly_learning
+                run_weekly_learning()
+            except Exception as e:
+                import logging
+                logging.getLogger("nova.admin").exception(f"weekly_learning failed: {e}")
+        threading.Thread(target=_run, daemon=True).start()
+        return {"ok": True, "message": "Cycle apprentissage hebdo lancé en background (~30-60s)"}
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
 
 @app.post("/api/admin/run/imap-poll")
 async def admin_run_imap_poll(request: Request):

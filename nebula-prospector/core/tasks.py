@@ -299,6 +299,13 @@ def _h_mission_update(payload: dict[str, Any]) -> dict[str, Any]:
     )
 
 
+@register_handler("learning.weekly")
+def _h_weekly_learning(payload: dict[str, Any]) -> dict[str, Any]:
+    """Lance le cycle d'auto-amélioration hebdo (NOVA réfléchit + apprend)."""
+    from learning.weekly_learner import run_weekly_learning
+    return run_weekly_learning()
+
+
 @register_handler("maintenance.archive_cold")
 def _h_archive_cold(payload: dict[str, Any]) -> dict[str, Any]:
     """Archive les prospects cold non touchés depuis N jours."""
