@@ -306,6 +306,87 @@ def _h_weekly_learning(payload: dict[str, Any]) -> dict[str, Any]:
     return run_weekly_learning()
 
 
+@register_handler("drafts.generate")
+def _h_generate_drafts(payload: dict[str, Any]) -> dict[str, Any]:
+    """Génère N cold emails persos pour des prospects et les envoie sur Telegram pour copier-coller manuel."""
+    from db.client import get_db
+    from messaging.templates import generate_cold_email
+    from enrichment.website_scraper import get_site_summary
+    from alerts.telegram_bot import send_message, _esc
+
+    tier = payload.get("tier", "warm")
+    limit = min(int(payload.get("limit", 5)), 15)
+    db = get_db()
+
+    prospects = (
+        db.table("prospects")
+        .select("id, name, email, sector, city, country, website, recommended_service, score, tier, status_reason, facebook_url, instagram_url")
+        .eq("tier", tier)
+        .eq("status", "enriched")
+        .not_.is_("email", "null")
+        .order("score", desc=True)
+        .limit(limit)
+        .execute()
+        .data or []
+    )
+
+    if not prospects:
+        send_message(f"❌ Aucun prospect <code>{_esc(tier)}</code> avec email à drafter.", silent=True)
+        return {"ok": False, "count": 0, "reason": f"no {tier} prospects"}
+
+    send_message(
+        f"📝 <b>Drafts en cours…</b>\nGénération de {len(prospects)} emails {_esc(tier)} via Claude. "
+        f"Tu vas recevoir un message par prospect. <i>Copie/colle dans Gmail.</i>",
+        silent=True,
+    )
+
+    generated = 0
+    for p in prospects:
+        try:
+            site_content = ""
+            if p.get("website"):
+                try:
+                    site_content = get_site_summary(p["website"])
+                except Exception:
+                    pass
+            draft = generate_cold_email(p, site_content)
+            if draft.get("error"):
+                send_message(
+                    f"⚠️ Échec draft pour <b>{_esc(p.get('name', '?'))}</b> : {_esc(draft['error'])}",
+                    silent=True,
+                )
+                continue
+
+            text = (
+                f"━━━━━━━━━━━━━━━━━━━\n"
+                f"📧 <b>À :</b> <code>{_esc(p.get('email', '?'))}</code>\n"
+                f"👤 <b>{_esc(p.get('name', '?'))}</b> · {_esc(p.get('city', '?'))} · {_esc(p.get('sector', '?'))}\n"
+                f"🎯 Service pitché : <code>{_esc(draft.get('service', '—'))}</code>\n"
+                f"━━━━━━━━━━━━━━━━━━━\n"
+                f"<b>OBJET :</b> {_esc(draft['subject'])}\n\n"
+                f"<b>CORPS :</b>\n{_esc(draft['body'])}\n"
+                f"━━━━━━━━━━━━━━━━━━━\n"
+                f"<i>📝 {_esc(draft.get('personalization_notes', ''))}</i>"
+            )
+            # Telegram limite à 4096 chars, on split si besoin
+            for chunk in [text[i:i+3800] for i in range(0, len(text), 3800)]:
+                send_message(chunk, silent=True)
+            generated += 1
+        except Exception as e:
+            send_message(
+                f"⚠️ Erreur pour <b>{_esc(p.get('name', '?'))}</b> : {_esc(str(e)[:200])}",
+                silent=True,
+            )
+
+    send_message(
+        f"✅ <b>{generated}/{len(prospects)} drafts envoyés.</b>\n"
+        f"Copie-colle dans Gmail et envoie depuis {_esc('allonebiao2@gmail.com')}.\n"
+        f"<i>Les conversations entrantes seront détectées dès que l'IMAP fonctionnera.</i>"
+    )
+
+    return {"ok": True, "count": generated, "tier": tier}
+
+
 @register_handler("maintenance.archive_cold")
 def _h_archive_cold(payload: dict[str, Any]) -> dict[str, Any]:
     """Archive les prospects cold non touchés depuis N jours."""
