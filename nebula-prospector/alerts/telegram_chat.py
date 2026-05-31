@@ -108,23 +108,11 @@ def _gather_context() -> str:
     except Exception as e:
         log.debug(f"top hot fetch failed: {e}")
 
-    # Tools disponibles (actions que NOVA peut proposer d'exécuter)
+    # Date / heure courante pour situer NOVA dans le temps
     parts.append(
-        "## ACTIONS DISPONIBLES (émettre via bloc <actions>JSON array</actions>)\n\n"
-        "### Apprendre / mémoire\n"
-        '- {"action":"learn_skill","key":"slug-court","title":"Titre du skill","content":"Instructions détaillées que tu suivras à partir de maintenant…"}\n'
-        '  → utilise quand Mongazi te dit "apprends à faire X", "à partir de maintenant tu…", "rappelle-toi que…"\n'
-        '- {"action":"create_document","key":"slug","title":"...","content":"...","tags":["..."]}\n'
-        '- {"action":"update_document","key":"existing-slug","content":"...","tags":[...]}\n'
-        '- {"action":"update_mission","content":"Nouvelle mission complète...","reason":"..."}\n\n'
-        "### Lecture (lire la BDD avant d'agir)\n"
-        '- {"action":"list_top_prospects","tier":"hot","limit":5} — renvoie les N premiers prospects d\'un tier\n'
-        '- {"action":"read_prospect","prospect_id":"uuid"} — fiche complète d\'un prospect\n\n'
-        "### Actions productives\n"
-        '- {"action":"create_task","type":"sourcing.run","payload":{}} — cycle sourcing+enrich+outreach\n'
-        '- {"action":"create_task","type":"enrichment.run","payload":{"limit":25}}\n'
-        '- {"action":"create_task","type":"outreach.run","payload":{"max_send":15}}\n\n'
-        "Règles : ne propose une action QUE si Mongazi le demande explicitement ou si c'est utile. Tu peux émettre 1 à 3 actions par message.\n"
+        f"## CONTEXTE TEMPOREL\n"
+        f"- Maintenant (UTC) : {now.strftime('%Y-%m-%d %H:%M')}\n"
+        f"- À Cotonou (UTC+1) : {(now + timedelta(hours=1)).strftime('%Y-%m-%d %H:%M')}\n"
     )
     return "\n".join(parts)
 
@@ -137,58 +125,127 @@ Tu parles à Mongazi (ton propriétaire et fondateur de NEBULA) sur Telegram. Tu
 
 1. **Tu apprends** : Mongazi peut t'enseigner des skills via la conversation. Quand il dit "apprends à faire X" / "à partir de maintenant tu…" / "rappelle-toi que…" → émets l'action `learn_skill`. Le skill sera dans ta mémoire long terme et tu l'appliqueras pour toujours.
 
-2. **Tu agis** : tu peux émettre des actions JSON dans `<actions>[...]</actions>` que le serveur exécute. Voir la liste plus bas dans le contexte.
+2. **Tu agis avec 11 tools** (function calling Anthropic) :
+   - **Lecture** : `query_supabase` (SQL SELECT libre), `list_top_prospects`, `read_prospect`, `search_documents`, `fetch_url`
+   - **Mémoire** : `learn_skill`, `create_document`, `update_mission`
+   - **Action** : `create_task`, `notify_mongazi`, `generate_email_preview`
 
-3. **Tu lis avant d'agir** : si Mongazi te pose une question sur des prospects/données précis, utilise `list_top_prospects` ou `read_prospect` AVANT de répondre, pour avoir les vraies infos. Pas d'invention.
+3. **Tu lis AVANT de répondre** : si Mongazi te pose une question chiffrée, utilise `query_supabase` ou les tools de lecture pour avoir la vérité. **Jamais d'invention.**
 
-4. **Tu connais tes skills appris** : ils sont dans le contexte sous "TES SKILLS APPRIS". Tu DOIS les appliquer.
+4. **Tu connais tes skills appris** : ils sont injectés dans le contexte. Tu DOIS les appliquer.
 
 ## Règles strictes
 
-- Réponses concises (max 8 phrases sauf si question complexe)
+- Réponses concises en français (max 8 phrases sauf question complexe)
 - 1 émoji max par message
-- Si tu ne sais pas, dis-le — pas d'invention
+- Si tu ne sais pas, dis-le — utilise tes outils, sinon admets l'inconnu
 - Si Mongazi te demande si tu es humaine, réponds honnêtement (tu es un agent IA)
-- Pour les actions destructives (envoyer 100 emails, supprimer des données…) demande confirmation
-- Format actions : tag exact `<actions>` ... `</actions>`, contenu = JSON array valide
-- Tu peux émettre 1 à 3 actions par message
+- Actions destructives ou coûteuses (envoyer 50+ emails, supprimer en masse) → demande confirmation explicite
+- **Légalité** (cf NEBULA) : pas de scraping LinkedIn/Meta/TikTok, pas de spam, RGPD respecté, pas d'usurpation d'identité humaine
+- Tu peux enchaîner plusieurs tools dans la même conversation (multi-turn) pour bosser proprement
 
-## Exemple de bonne réponse
+## Workflow typique
 
-User : "Apprends à toujours saluer les Béninois en disant 'Akwaba'"
-Toi :
-"D'accord, je m'en souviendrai 👍
+1. Mongazi demande quelque chose
+2. Tu appelles tes tools pour CHERCHER les vraies infos / EXÉCUTER
+3. Tu réponds avec les résultats concrets + ton analyse
+4. Si utile, tu enregistres un skill / document pour t'en souvenir
 
-<actions>
-[{"action":"learn_skill","key":"greeting-benin","title":"Salutation béninoise","content":"Quand je rédige un email à un prospect au Bénin, je commence toujours par 'Akwaba' au lieu de 'Bonjour'."}]
-</actions>"
+## Exemples
+
+Mongazi : "Combien de prospects HOT au Sénégal ?"
+→ Tu appelles `query_supabase(sql="SELECT COUNT(*) FROM prospects WHERE tier='hot' AND country='SN'")`
+→ Tu réponds avec le vrai chiffre + une proposition de suite.
+
+Mongazi : "Apprends à toujours saluer les Béninois par 'Akwaba'"
+→ Tu appelles `learn_skill(key="greeting-benin", title="Salutation béninoise", content="Dans les emails au Bénin, commencer par 'Akwaba' au lieu de 'Bonjour'.")`
+→ Tu confirmes brièvement.
 """
 
 
 @tool_call("claude.chat", per_hour=60, per_day=500, raise_on_limit=False)
-def _ask_claude(message: str, context: str) -> str:
-    """Appelle Claude Opus 4.7 (modèle deep) pour le chat conversationnel."""
+def _ask_claude_with_tools(message: str, context: str, max_turns: int = 6) -> tuple[str, list[dict]]:
+    """Multi-turn function calling : Claude peut appeler les tools nova_tools.
+
+    Retourne (réponse_finale_texte, liste_actions_executées).
+    """
     if not settings.anthropic_api_key:
-        return "⚠️ Je ne peux pas répondre, ANTHROPIC_API_KEY non configurée."
+        return ("⚠️ Je ne peux pas répondre, ANTHROPIC_API_KEY non configurée.", [])
+
+    from alerts.nova_tools import TOOLS_SCHEMA, execute_tool
 
     client = Anthropic(api_key=settings.anthropic_api_key)
-    user_content = f"{context}\n---\n\nMongazi : {message}"
-
-    # Chat utilise le modèle DEEP (Opus 4.7) pour qualité maximale.
-    # Fallback sur le modèle fast si deep n'est pas configuré.
     model = settings.claude_model_deep or settings.claude_model_fast
+    messages: list[dict[str, Any]] = [
+        {"role": "user", "content": f"{context}\n---\n\nMongazi : {message}"}
+    ]
+    actions_log: list[dict] = []
 
-    try:
-        resp = client.messages.create(
-            model=model,
-            max_tokens=1500,
-            system=SYSTEM_PROMPT_CHAT,
-            messages=[{"role": "user", "content": user_content}],
-        )
-        return resp.content[0].text if resp.content else ""
-    except Exception as e:
-        log.exception(f"Claude chat failed: {e}")
-        return f"⚠️ Erreur Claude : {str(e)[:200]}"
+    for turn in range(max_turns):
+        try:
+            resp = client.messages.create(
+                model=model,
+                max_tokens=2000,
+                system=SYSTEM_PROMPT_CHAT,
+                tools=TOOLS_SCHEMA,
+                messages=messages,
+            )
+        except Exception as e:
+            log.exception(f"Claude API failed (turn {turn}): {e}")
+            return (f"⚠️ Erreur Claude : {str(e)[:200]}", actions_log)
+
+        # Récupère le texte ET les tool_use blocks de la réponse
+        text_parts: list[str] = []
+        tool_uses: list[dict] = []
+        for block in resp.content or []:
+            if getattr(block, "type", "") == "text":
+                text_parts.append(getattr(block, "text", ""))
+            elif getattr(block, "type", "") == "tool_use":
+                tool_uses.append({
+                    "id": block.id,
+                    "name": block.name,
+                    "input": block.input,
+                })
+
+        # Pas de tool call → réponse finale
+        if not tool_uses:
+            return ("\n".join(t for t in text_parts if t).strip(), actions_log)
+
+        # On a des tool calls — on les exécute et on continue la boucle
+        # 1) Ajouter le message assistant avec ses content blocks (text + tool_use)
+        assistant_content = []
+        for block in resp.content or []:
+            if getattr(block, "type", "") == "text":
+                assistant_content.append({"type": "text", "text": block.text})
+            elif getattr(block, "type", "") == "tool_use":
+                assistant_content.append({
+                    "type": "tool_use",
+                    "id": block.id,
+                    "name": block.name,
+                    "input": block.input,
+                })
+        messages.append({"role": "assistant", "content": assistant_content})
+
+        # 2) Exécuter chaque tool et préparer les tool_results
+        tool_results: list[dict] = []
+        for tu in tool_uses:
+            result = execute_tool(tu["name"], tu["input"] or {})
+            actions_log.append({
+                "tool": tu["name"],
+                "input": tu["input"],
+                "result_summary": str(result)[:200],
+            })
+            tool_results.append({
+                "type": "tool_result",
+                "tool_use_id": tu["id"],
+                "content": json.dumps(result, default=str, ensure_ascii=False)[:5000],
+            })
+
+        # 3) Ajouter le message user avec les tool_results
+        messages.append({"role": "user", "content": tool_results})
+
+    # Fin de la boucle sans réponse finale → on renvoie ce qu'on a
+    return ("(NOVA a utilisé trop d'outils, réponse incomplète)", actions_log)
 
 
 # ---------------------------------------------------------------------------
@@ -381,28 +438,21 @@ def handle_incoming_message(update: dict[str, Any]) -> dict[str, Any]:
         )
         return {"handled": True, "reason": "help"}
 
-    # Indique qu'on a vu le message (typing indicator serait mieux mais c'est plus simple)
     log.info(f"Chat from Mongazi: {text[:120]}")
 
     # 1. Construire le contexte
     context = _gather_context()
 
-    # 2. Demander à Claude
-    raw_reply = _ask_claude(text, context) or "⚠️ Pas de réponse."
+    # 2. Demander à Claude avec function calling multi-turn
+    reply_text, actions_log = _ask_claude_with_tools(text, context)
 
-    # 3. Extraire les éventuelles actions
-    reply_text, actions = _extract_actions(raw_reply)
-
-    # 4. Envoyer la réponse principale
+    # 3. Envoyer la réponse principale
     if reply_text.strip():
         send_message(_format_for_telegram(reply_text))
+    else:
+        send_message("✅ J'ai utilisé mes outils sur ta demande. Pose-moi une question pour la suite.")
 
-    # 5. Exécuter les actions (max 3 par message pour éviter les abus)
-    for action in actions[:3]:
-        confirmation = _execute_action(action)
-        send_message(confirmation, silent=True)
-
-    return {"handled": True, "reason": "replied", "actions_count": len(actions)}
+    return {"handled": True, "reason": "replied", "tools_used": len(actions_log)}
 
 
 def _format_for_telegram(text: str) -> str:
