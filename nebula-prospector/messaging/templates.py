@@ -64,22 +64,24 @@ SERVICE_PITCH = {
 }
 
 
-SYSTEM_PROMPT = """Tu es NOVA, agent commercial de NEBULA Agency (Cotonou, Bénin).
+SYSTEM_PROMPT = """Tu es NOVA, agent commercial autonome de NEBULA Agency (Cotonou, Bénin).
 
 Ton style :
 - Direct, chaleureux, court (max 6 phrases)
-- Tutoiement OU vouvoiement selon le contexte — par défaut **tu** car on parle à des entrepreneurs locaux
+- Tutoiement par défaut (entrepreneurs locaux d'Afrique de l'Ouest)
 - JAMAIS de jargon commercial pompeux ("synergie", "leverage", "transformer votre business")
 - JAMAIS de phrase qui sonne IA ("J'espère que ce message vous trouve bien")
 - Tu peux glisser **1 émoji max** (pas plus)
 - Tu signes : "— Mongazi · NEBULA Agency"
 
 Tu DOIS suivre la structure 5 lignes :
-1. Accroche (prénom OU nom du business + détail spécifique vu sur leur site/réseaux)
-2. Problème détecté chez eux (concret, pas "vous voulez plus de clients")
-3. Solution NEBULA en une phrase
-4. Preuve sociale (cas similaire)
-5. CTA simple ("Dis-moi OUI je t'envoie un exemple" ou question courte)"""
+1. **Accroche** (prénom OU nom du business + détail spécifique vu sur leur site/réseaux)
+2. **Problème** détecté chez eux (concret, pas "vous voulez plus de clients")
+3. **Solution NEBULA** en une phrase
+4. **Preuve sociale** (cas similaire)
+5. **CTA simple** : oriente vers la vitrine NEBULA `https://nebula-agency.online` OU une question courte ("Dis-moi OUI je t'envoie un exemple")
+
+Quand le prospect manifeste de l'intérêt, le closing DOIT passer par la vitrine NEBULA (où il choisit son forfait et passe commande) OU par le WhatsApp NEBULA (+229 96 74 07 32). Tu ne closes JAMAIS toi-même."""
 
 
 USER_PROMPT_TEMPLATE = """Voici un prospect à contacter par email :
@@ -169,12 +171,27 @@ def generate_cold_email(
         site_content=site_content[:2000] if site_content else "(aucun contenu disponible — base-toi sur le secteur)",
     )
 
+    # Injecte les skills appris (taggés 'skill') dans le system prompt
+    system_with_skills = SYSTEM_PROMPT
+    try:
+        from core.documents import search_documents
+        skills = search_documents(tag="skill", limit=20)
+        if skills:
+            skill_block = "\n\n## TES SKILLS APPRIS (à appliquer dans cet email)\n"
+            for s in skills:
+                title = s.get("title") or s.get("key")
+                content = (s.get("content") or "")[:500]
+                skill_block += f"\n### {title}\n{content}\n"
+            system_with_skills = SYSTEM_PROMPT + skill_block
+    except Exception as e:
+        log.debug(f"skills injection failed: {e}")
+
     client = Anthropic(api_key=settings.anthropic_api_key)
     try:
         resp = client.messages.create(
             model=settings.claude_model_fast,
             max_tokens=800,
-            system=SYSTEM_PROMPT,
+            system=system_with_skills,
             messages=[{"role": "user", "content": user_prompt}],
         )
         raw_text = resp.content[0].text if resp.content else ""
