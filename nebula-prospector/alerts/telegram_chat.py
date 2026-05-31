@@ -48,6 +48,21 @@ def _gather_context() -> str:
     except Exception as e:
         log.debug(f"mission fetch failed: {e}")
 
+    # Skills appris (documents tagués 'skill')
+    try:
+        from core.documents import search_documents
+        skills = search_documents(tag="skill", limit=30)
+        if skills:
+            lines = []
+            for s in skills:
+                title = s.get("title") or s.get("key")
+                # Contenu tronqué pour le contexte (sinon trop long)
+                content = (s.get("content") or "")[:400]
+                lines.append(f"### {title}\n{content}")
+            parts.append("## TES SKILLS APPRIS\n" + "\n\n".join(lines) + "\n")
+    except Exception as e:
+        log.debug(f"skills fetch failed: {e}")
+
     # Stats globales
     try:
         total = db.table("prospects").select("id", count="exact", head=True).execute().count or 0
@@ -95,53 +110,78 @@ def _gather_context() -> str:
 
     # Tools disponibles (actions que NOVA peut proposer d'exécuter)
     parts.append(
-        "## ACTIONS DISPONIBLES (à émettre via bloc <actions>)\n"
-        '- {"action":"create_task","type":"sourcing.run","payload":{},"reason":"..."} — lance un cycle sourcing+enrich+outreach\n'
-        '- {"action":"create_task","type":"enrichment.run","payload":{"limit":25}} — enrichit N prospects\n'
-        '- {"action":"create_task","type":"outreach.run","payload":{"max_send":15}} — envoie N cold emails\n'
-        '- {"action":"create_task","type":"document.create","payload":{"key":"...","title":"...","content":"...","tags":[]}}\n'
-        '- {"action":"update_mission","content":"Nouvelle mission complète...","reason":"..."} — modifie ta mission\n'
-        "\n"
-        "Ne propose une action QUE si Mongazi le demande explicitement ou si c'est évident.\n"
-        "Sinon réponds simplement en français.\n"
+        "## ACTIONS DISPONIBLES (émettre via bloc <actions>JSON array</actions>)\n\n"
+        "### Apprendre / mémoire\n"
+        '- {"action":"learn_skill","key":"slug-court","title":"Titre du skill","content":"Instructions détaillées que tu suivras à partir de maintenant…"}\n'
+        '  → utilise quand Mongazi te dit "apprends à faire X", "à partir de maintenant tu…", "rappelle-toi que…"\n'
+        '- {"action":"create_document","key":"slug","title":"...","content":"...","tags":["..."]}\n'
+        '- {"action":"update_document","key":"existing-slug","content":"...","tags":[...]}\n'
+        '- {"action":"update_mission","content":"Nouvelle mission complète...","reason":"..."}\n\n'
+        "### Lecture (lire la BDD avant d'agir)\n"
+        '- {"action":"list_top_prospects","tier":"hot","limit":5} — renvoie les N premiers prospects d\'un tier\n'
+        '- {"action":"read_prospect","prospect_id":"uuid"} — fiche complète d\'un prospect\n\n'
+        "### Actions productives\n"
+        '- {"action":"create_task","type":"sourcing.run","payload":{}} — cycle sourcing+enrich+outreach\n'
+        '- {"action":"create_task","type":"enrichment.run","payload":{"limit":25}}\n'
+        '- {"action":"create_task","type":"outreach.run","payload":{"max_send":15}}\n\n'
+        "Règles : ne propose une action QUE si Mongazi le demande explicitement ou si c'est utile. Tu peux émettre 1 à 3 actions par message.\n"
     )
     return "\n".join(parts)
 
 
-SYSTEM_PROMPT_CHAT = """Tu es NOVA, l'agent commercial autonome de NEBULA Agency.
+SYSTEM_PROMPT_CHAT = """Tu es NOVA — Network Observation & Value Agent — l'agent IA autonome de NEBULA Agency (Cotonou, Bénin). Tu es aussi capable et aussi intelligente que Claude Opus, et tu as accès à un système d'outils pour AGIR (pas juste répondre).
 
-Mongazi (ton propriétaire et fondateur de NEBULA) te parle directement sur Telegram. Tu lui réponds en français, de manière concise, chaleureuse mais professionnelle.
+Tu parles à Mongazi (ton propriétaire et fondateur de NEBULA) sur Telegram. Tu réponds en français, de manière concise et professionnelle mais chaleureuse — comme un partenaire de travail compétent, pas un assistant servile.
 
-Règles :
-- Tu réponds en français, max 8 phrases
-- Tu peux glisser 1 émoji max
-- Tu connais ton état actuel (mission, stats, prospects HOT) — utilise-le
-- Tu peux PROPOSER une action via un bloc <actions>...</actions> en JSON
-  Le serveur l'exécutera et confirmera à Mongazi
-- Si Mongazi te demande quelque chose que tu ne peux pas faire, dis-le honnêtement
-- Si Mongazi te demande "es-tu un humain ?" → réponds que tu es un agent IA
-- Tu peux dire "je ne sais pas" — c'est mieux que d'inventer
-- Format des actions :
-  <actions>
-  [{"action":"create_task","type":"outreach.run","payload":{"max_send":5},"reason":"Mongazi demande un cycle court de 5 envois"}]
-  </actions>
-  (entoure du tag, JSON valide, array d'actions)
+## Ce qui te rend différente
+
+1. **Tu apprends** : Mongazi peut t'enseigner des skills via la conversation. Quand il dit "apprends à faire X" / "à partir de maintenant tu…" / "rappelle-toi que…" → émets l'action `learn_skill`. Le skill sera dans ta mémoire long terme et tu l'appliqueras pour toujours.
+
+2. **Tu agis** : tu peux émettre des actions JSON dans `<actions>[...]</actions>` que le serveur exécute. Voir la liste plus bas dans le contexte.
+
+3. **Tu lis avant d'agir** : si Mongazi te pose une question sur des prospects/données précis, utilise `list_top_prospects` ou `read_prospect` AVANT de répondre, pour avoir les vraies infos. Pas d'invention.
+
+4. **Tu connais tes skills appris** : ils sont dans le contexte sous "TES SKILLS APPRIS". Tu DOIS les appliquer.
+
+## Règles strictes
+
+- Réponses concises (max 8 phrases sauf si question complexe)
+- 1 émoji max par message
+- Si tu ne sais pas, dis-le — pas d'invention
+- Si Mongazi te demande si tu es humaine, réponds honnêtement (tu es un agent IA)
+- Pour les actions destructives (envoyer 100 emails, supprimer des données…) demande confirmation
+- Format actions : tag exact `<actions>` ... `</actions>`, contenu = JSON array valide
+- Tu peux émettre 1 à 3 actions par message
+
+## Exemple de bonne réponse
+
+User : "Apprends à toujours saluer les Béninois en disant 'Akwaba'"
+Toi :
+"D'accord, je m'en souviendrai 👍
+
+<actions>
+[{"action":"learn_skill","key":"greeting-benin","title":"Salutation béninoise","content":"Quand je rédige un email à un prospect au Bénin, je commence toujours par 'Akwaba' au lieu de 'Bonjour'."}]
+</actions>"
 """
 
 
 @tool_call("claude.chat", per_hour=60, per_day=500, raise_on_limit=False)
 def _ask_claude(message: str, context: str) -> str:
-    """Appelle Claude avec le contexte + question de Mongazi."""
+    """Appelle Claude Opus 4.7 (modèle deep) pour le chat conversationnel."""
     if not settings.anthropic_api_key:
         return "⚠️ Je ne peux pas répondre, ANTHROPIC_API_KEY non configurée."
 
     client = Anthropic(api_key=settings.anthropic_api_key)
     user_content = f"{context}\n---\n\nMongazi : {message}"
 
+    # Chat utilise le modèle DEEP (Opus 4.7) pour qualité maximale.
+    # Fallback sur le modèle fast si deep n'est pas configuré.
+    model = settings.claude_model_deep or settings.claude_model_fast
+
     try:
         resp = client.messages.create(
-            model=settings.claude_model_fast,
-            max_tokens=1000,
+            model=model,
+            max_tokens=1500,
             system=SYSTEM_PROMPT_CHAT,
             messages=[{"role": "user", "content": user_content}],
         )
@@ -185,6 +225,102 @@ def _execute_action(action: dict[str, Any]) -> str:
     """Exécute une action proposée par Claude. Retourne un message de confirmation/erreur."""
     kind = action.get("action")
     try:
+        # === APPRENTISSAGE / MÉMOIRE ===
+        if kind == "learn_skill":
+            from core.documents import create_document
+            key = action["key"]
+            if not key.startswith("skill-"):
+                key = f"skill-{key}"
+            tags = list(set((action.get("tags") or []) + ["skill"]))
+            create_document(
+                key=key,
+                title=action.get("title", action["key"]),
+                content=action["content"],
+                tags=tags,
+                created_by="nova-learned-from-mongazi",
+                upsert=True,
+            )
+            return f"🧠 Nouveau skill mémorisé : <b>{_esc(action.get('title') or key)}</b>"
+
+        if kind == "create_document":
+            from core.documents import create_document
+            doc = create_document(
+                key=action["key"],
+                title=action.get("title", action["key"]),
+                content=action["content"],
+                tags=action.get("tags", []),
+                upsert=bool(action.get("upsert", True)),
+            )
+            return f"📝 Document <b>{_esc(doc.get('title','?'))}</b> sauvegardé"
+
+        if kind == "update_document":
+            from core.documents import update_document
+            updated = update_document(
+                key=action["key"],
+                content=action.get("content"),
+                title=action.get("title"),
+                tags=action.get("tags"),
+            )
+            if updated:
+                return f"📝 Document <code>{_esc(action['key'])}</code> mis à jour"
+            return f"⚠️ Document <code>{_esc(action['key'])}</code> introuvable"
+
+        if kind == "update_mission":
+            from core.mission import update_mission
+            update_mission(
+                new_content=action["content"],
+                reason=action.get("reason", "via chat Telegram"),
+                edited_by="mongazi",
+            )
+            return "🎯 Mission mise à jour. Nouvelle version active."
+
+        # === LECTURE (renvoie les données à l'utilisateur) ===
+        if kind == "list_top_prospects":
+            db = get_db()
+            tier = action.get("tier", "hot")
+            limit = min(int(action.get("limit", 5)), 20)
+            r = (
+                db.table("prospects")
+                .select("id, name, sector, city, country, score, recommended_service, email, website, status_reason")
+                .eq("tier", tier)
+                .order("score", desc=True)
+                .order("updated_at", desc=True)
+                .limit(limit)
+                .execute()
+            )
+            rows = r.data or []
+            if not rows:
+                return f"🔍 Aucun prospect <b>{_esc(tier)}</b> en BDD"
+            lines = [f"<b>Top {len(rows)} prospects {_esc(tier)} :</b>"]
+            for i, p in enumerate(rows, 1):
+                svc = p.get("recommended_service") or "—"
+                lines.append(
+                    f"{i}. <b>{_esc(p.get('name','?'))}</b> · "
+                    f"{_esc(p.get('sector','?'))} · {_esc(p.get('city','?'))}\n"
+                    f"   Score {p.get('score',0)}/10 · à pitcher: <code>{_esc(svc)}</code>\n"
+                    f"   <code>{_esc(p.get('id','')[:8])}</code>"
+                )
+            return "\n\n".join(lines)
+
+        if kind == "read_prospect":
+            db = get_db()
+            pid = action["prospect_id"]
+            r = db.table("prospects").select("*").eq("id", pid).limit(1).execute()
+            p = (r.data or [None])[0]
+            if not p:
+                return f"⚠️ Prospect <code>{_esc(pid[:8])}</code> introuvable"
+            return (
+                f"<b>{_esc(p.get('name','?'))}</b>\n"
+                f"{_esc(p.get('sector','?'))} · {_esc(p.get('city','?'))}, {_esc(p.get('country','?'))}\n"
+                f"Tier: <b>{_esc(p.get('tier','—'))}</b> · Score: <b>{p.get('score',0)}/10</b>\n"
+                f"Service: <code>{_esc(p.get('recommended_service','—'))}</code>\n"
+                f"Email: {_esc(p.get('email') or '(à trouver)')}\n"
+                f"Site: {_esc(p.get('website') or '—')}\n"
+                f"Status: {_esc(p.get('status','—'))}\n\n"
+                f"💡 {_esc((p.get('status_reason') or '')[:300])}"
+            )
+
+        # === ACTIONS PRODUCTIVES (tasks queue) ===
         if kind == "create_task":
             from core.tasks import create_task
             t = create_task(
@@ -195,15 +331,6 @@ def _execute_action(action: dict[str, Any]) -> str:
                 created_by="mongazi-via-chat",
             )
             return f"✅ Tâche <code>{_esc(action['type'])}</code> créée (id: <code>{t.get('id','?')[:8]}</code>)"
-
-        if kind == "update_mission":
-            from core.mission import update_mission
-            update_mission(
-                new_content=action["content"],
-                reason=action.get("reason", "via chat Telegram"),
-                edited_by="mongazi",
-            )
-            return "✅ Mission mise à jour. Nouvelle version active."
 
         return f"⚠️ Action inconnue : <code>{_esc(str(kind))}</code>"
 
