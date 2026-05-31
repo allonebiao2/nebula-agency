@@ -125,6 +125,19 @@ def _drain_task_queue():
         log.exception(f"[scheduler] task drain erreur : {e}")
 
 
+def _poll_inbox_imap():
+    """Job IMAP : récupère les nouvelles réponses prospects et les classifie."""
+    import logging
+    log = logging.getLogger("nova.scheduler")
+    try:
+        from inbox.imap_poller import poll_inbox
+        stats = poll_inbox(max_messages=30)
+        if stats.get("fetched", 0) > 0 or stats.get("error"):
+            log.info(f"[scheduler] inbox poll : {stats}")
+    except Exception as e:
+        log.exception(f"[scheduler] inbox poll erreur : {e}")
+
+
 @app.on_event("startup")
 async def _start_scheduler():
     global _scheduler
@@ -160,11 +173,20 @@ async def _start_scheduler():
             max_instances=1,
             coalesce=True,
         )
+        _scheduler.add_job(
+            _poll_inbox_imap,
+            "interval",
+            minutes=5,
+            id="inbox_imap_poll",
+            replace_existing=True,
+            max_instances=1,
+            coalesce=True,
+        )
         _scheduler.start()
         import logging
         logging.getLogger("nova.scheduler").info(
             "[scheduler] APScheduler démarré : sourcing 3h UTC + briefing 7h UTC + "
-            "task queue drain toutes les 10 min"
+            "task queue 10min + IMAP poll 5min"
         )
     except Exception as e:
         import logging
@@ -440,6 +462,50 @@ async def admin_webhook_info(request: Request):
         return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
     from alerts.telegram_chat import get_webhook_info
     return get_webhook_info()
+
+
+# ---------------------------------------------------------------------------
+# V4 — Inbox IMAP (lecture réponses prospects)
+# ---------------------------------------------------------------------------
+
+@app.post("/api/admin/run/imap-poll")
+async def admin_run_imap_poll(request: Request):
+    """Force un poll IMAP immédiat — utile pour tester sans attendre 5 min."""
+    if not _check_admin_token(request):
+        return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
+    try:
+        from inbox.imap_poller import poll_inbox
+        body = await request.json() if request.headers.get("content-type", "").startswith("application/json") else {}
+        max_msg = int(body.get("max_messages", 30)) if isinstance(body, dict) else 30
+        stats = poll_inbox(max_messages=max_msg)
+        return {"ok": True, "stats": stats}
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+# ---------------------------------------------------------------------------
+# Resend — vérification domaine
+# ---------------------------------------------------------------------------
+
+@app.post("/api/admin/resend/verify-domain")
+async def admin_resend_verify_domain(request: Request):
+    """Demande à Resend de vérifier les DNS records du domaine. Utile après ajout des records."""
+    if not _check_admin_token(request):
+        return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
+    try:
+        import os
+        api_key = os.environ.get("RESEND_API_KEY", "")
+        if not api_key:
+            return JSONResponse({"ok": False, "error": "RESEND_API_KEY missing"}, status_code=500)
+        import httpx
+        r = httpx.get(
+            "https://api.resend.com/domains",
+            headers={"Authorization": f"Bearer {api_key}"},
+            timeout=10.0,
+        )
+        return {"ok": True, "status": r.status_code, "data": r.json()}
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
 
 
 # ---------------------------------------------------------------------------
