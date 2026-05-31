@@ -42,7 +42,17 @@ def send_email(
     reply_to: str | None = None,
     body_html: str | None = None,
 ) -> dict[str, Any]:
-    """Envoie un email via Resend. Retourne {"ok": bool, "id": str | None, "error": str | None}."""
+    """Envoie un email — Resend par défaut, fallback Gmail SMTP si EMAIL_BACKEND=gmail_smtp.
+
+    Retourne {"ok": bool, "id": str | None, "error": str | None}.
+    """
+    import os
+    backend = os.environ.get("EMAIL_BACKEND", "resend").lower()
+    if backend == "gmail_smtp":
+        from messaging.gmail_smtp_client import send_email_gmail
+        return send_email_gmail(to, subject, body_text,
+                                reply_to=reply_to, body_html=body_html)
+
     if not _ensure_configured():
         return {"ok": False, "id": None, "error": "RESEND_API_KEY missing"}
 
