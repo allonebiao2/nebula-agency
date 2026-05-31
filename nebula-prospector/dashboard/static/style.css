@@ -616,9 +616,100 @@ html, body {
     .counters { grid-column: 1 / -1; }
 }
 
+/* --- Tablette / mobile paysage --- */
 @media (max-width: 768px) {
-    .header { grid-template-columns: 1fr; padding: 20px; }
-    .layout { grid-template-columns: 1fr; grid-template-areas: "stream" "pipeline" "convos" "stats"; padding: 12px; }
-    .brand-text h1 { font-size: 28px; }
-    .counters { grid-template-columns: repeat(2, 1fr); }
+    .header {
+        grid-template-columns: 1fr;
+        padding: 18px 16px;
+        gap: 18px;
+    }
+    .brand { gap: 16px; }
+    .orb { width: 64px; height: 64px; }
+    .orb-core { inset: 18px; }
+    .brand-text h1 { font-size: 26px; letter-spacing: 2px; }
+    .brand-text .tagline { font-size: 12px; }
+
+    .status-block {
+        border-left: 0;
+        padding-left: 0;
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+    }
+    .status-activity { font-size: 14px; }
+
+    .counters {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    .counter { padding: 10px 8px; }
+    .counter-value { font-size: 22px; }
+    .counter-label { font-size: 9px; letter-spacing: 0.5px; line-height: 1.3; }
+
+    .layout {
+        grid-template-columns: 1fr;
+        grid-template-areas: "stream" "pipeline" "convos" "stats";
+        padding: 12px 12px 80px;
+        gap: 12px;
+        min-height: auto;
+    }
+    .panel-header { padding: 14px 16px; }
+    .panel-header h2 { font-size: 15px; }
+    .panel-sub { font-size: 11px; }
+
+    .pipeline { max-height: 55vh; padding: 10px; }
+    .kanban-col { flex: 0 0 180px; }
+
+    .stream, .convos, .stats-grid { padding: 12px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stat-value { font-size: 24px; }
+
+    .footer {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px;
+        padding: 14px 12px;
+        font-size: 11px;
+        text-align: center;
+    }
+    .footer-sep { display: none; }
+
+    /* scrollbars discrètes en mobile */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+}
+
+/* --- Mobile portrait --- */
+@media (max-width: 480px) {
+    .header { padding: 14px 12px; gap: 14px; }
+    .brand { gap: 12px; }
+    .orb { width: 52px; height: 52px; }
+    .orb-core { inset: 14px; }
+    .brand-text h1 { font-size: 22px; letter-spacing: 1px; }
+    .brand-text .tagline { font-size: 11px; }
+
+    .status-block { padding-top: 12px; }
+    .status-row { gap: 8px; flex-wrap: wrap; }
+    .status-label { font-size: 11px; letter-spacing: 1px; }
+    .status-activity { font-size: 13px; }
+    .status-target { font-size: 11px; word-break: break-word; }
+
+    .counters { gap: 8px; }
+    .counter { padding: 9px 6px; }
+    .counter-value { font-size: 19px; }
+    .counter-label { font-size: 8.5px; }
+
+    .layout { padding: 10px 10px 70px; gap: 10px; }
+    .panel-header { padding: 12px 14px; }
+    .panel-header h2 { font-size: 14px; }
+    .pipeline { padding: 8px; gap: 8px; }
+    .kanban-col { flex: 0 0 160px; padding: 8px; }
+    .kanban-col-title { font-size: 10px; }
+    .stat-value { font-size: 21px; }
+    .stat-label { font-size: 9px; }
+}
+
+/* --- Très petits écrans (galaxy fold, vieux iPhone) --- */
+@media (max-width: 360px) {
+    .brand-text h1 { font-size: 19px; letter-spacing: 0.5px; }
+    .counters { grid-template-columns: 1fr 1fr; }
+    .counter-value { font-size: 17px; }
 }
