@@ -163,9 +163,64 @@ Mongazi : "Apprends à toujours saluer les Béninois par 'Akwaba'"
 """
 
 
+def _load_chat_history(chat_id: str, limit: int = 20) -> list[dict[str, Any]]:
+    """Charge les N derniers messages user/assistant pour reconstruire le contexte conversationnel."""
+    try:
+        db = get_db()
+        rows = (
+            db.table("chat_history")
+            .select("role, content, tool_use")
+            .eq("chat_id", chat_id)
+            .in_("role", ["user", "assistant"])
+            .order("created_at", desc=True)
+            .limit(limit)
+            .execute()
+            .data or []
+        )
+        # Inverse pour avoir ordre chronologique
+        rows.reverse()
+        messages = []
+        for r in rows:
+            if r["role"] == "assistant" and r.get("tool_use"):
+                # Skip les messages assistant qui n'ont que des tool_use (déjà répondus)
+                continue
+            if r.get("content"):
+                messages.append({"role": r["role"], "content": r["content"]})
+        return messages
+    except Exception as e:
+        log.warning(f"chat history load failed: {e}")
+        return []
+
+
+def _save_chat_message(chat_id: str, role: str, content: str | None,
+                        tool_use: dict | None = None,
+                        thinking_summary: str | None = None,
+                        tokens_in: int | None = None,
+                        tokens_out: int | None = None,
+                        model: str | None = None) -> None:
+    """Persiste un message du chat pour la mémoire long terme."""
+    try:
+        get_db().table("chat_history").insert({
+            "chat_id": chat_id,
+            "role": role,
+            "content": content,
+            "tool_use": tool_use,
+            "thinking_summary": (thinking_summary or "")[:2000] if thinking_summary else None,
+            "tokens_in": tokens_in,
+            "tokens_out": tokens_out,
+            "model": model,
+        }).execute()
+    except Exception as e:
+        log.warning(f"chat save failed: {e}")
+
+
 @tool_call("claude.chat", per_hour=60, per_day=500, raise_on_limit=False)
-def _ask_claude_with_tools(message: str, context: str, max_turns: int = 6) -> tuple[str, list[dict]]:
-    """Multi-turn function calling : Claude peut appeler les tools nova_tools.
+def _ask_claude_with_tools(message: str, context: str, chat_id: str = "", max_turns: int = 6) -> tuple[str, list[dict]]:
+    """Multi-turn function calling avec :
+    - Mémoire conversationnelle (charge les 20 derniers messages)
+    - Extended thinking (Claude réfléchit 5k tokens avant)
+    - Prompt caching (économie tokens sur system + skills)
+    - Web search natif
 
     Retourne (réponse_finale_texte, liste_actions_executées).
     """
@@ -176,48 +231,107 @@ def _ask_claude_with_tools(message: str, context: str, max_turns: int = 6) -> tu
 
     client = Anthropic(api_key=settings.anthropic_api_key)
     model = settings.claude_model_deep or settings.claude_model_fast
-    messages: list[dict[str, Any]] = [
-        {"role": "user", "content": f"{context}\n---\n\nMongazi : {message}"}
+
+    # 1) Charger l'historique conversationnel (mémoire)
+    history = _load_chat_history(chat_id, limit=20) if chat_id else []
+
+    # 2) Ajouter le nouveau message user (avec contexte injecté)
+    current_user_content = f"[CONTEXTE LIVE]\n{context}\n---\n\n{message}"
+    messages: list[dict[str, Any]] = history + [
+        {"role": "user", "content": current_user_content}
     ]
+
+    # 3) System prompt avec prompt caching pour économiser
+    system_blocks = [
+        {"type": "text", "text": SYSTEM_PROMPT_CHAT,
+         "cache_control": {"type": "ephemeral"}}
+    ]
+
     actions_log: list[dict] = []
+    final_text = ""
 
     for turn in range(max_turns):
         try:
-            resp = client.messages.create(
-                model=model,
-                max_tokens=2000,
-                system=SYSTEM_PROMPT_CHAT,
-                tools=TOOLS_SCHEMA,
-                messages=messages,
-            )
-        except Exception as e:
-            log.exception(f"Claude API failed (turn {turn}): {e}")
-            return (f"⚠️ Erreur Claude : {str(e)[:200]}", actions_log)
+            # Extended thinking activé (budget 5k tokens de réflexion)
+            kwargs = {
+                "model": model,
+                "max_tokens": 4000,
+                "system": system_blocks,
+                "tools": TOOLS_SCHEMA,
+                "messages": messages,
+            }
+            # Extended thinking : NOVA réfléchit avant de répondre
+            # (uniquement pour Opus 4.7 — fallback automatique si modèle ne supporte pas)
+            if "opus" in model.lower():
+                kwargs["thinking"] = {"type": "enabled", "budget_tokens": 5000}
+                # En mode thinking, on doit avoir max_tokens > budget_tokens
+                kwargs["max_tokens"] = 8000
 
-        # Récupère le texte ET les tool_use blocks de la réponse
+            resp = client.messages.create(**kwargs)
+        except Exception as e:
+            err_str = str(e)
+            # Si thinking non supporté → retry sans
+            if "thinking" in err_str.lower() and turn == 0:
+                log.warning("Extended thinking non supporté, fallback sans")
+                try:
+                    resp = client.messages.create(
+                        model=model, max_tokens=4000,
+                        system=system_blocks, tools=TOOLS_SCHEMA, messages=messages,
+                    )
+                except Exception as e2:
+                    log.exception(f"Claude API failed (turn {turn}): {e2}")
+                    return (f"⚠️ Erreur Claude : {str(e2)[:200]}", actions_log)
+            else:
+                log.exception(f"Claude API failed (turn {turn}): {e}")
+                return (f"⚠️ Erreur Claude : {err_str[:200]}", actions_log)
+
+        # Récupère le texte, les tool_use blocks ET les thinking blocks
         text_parts: list[str] = []
         tool_uses: list[dict] = []
+        thinking_text = ""
         for block in resp.content or []:
-            if getattr(block, "type", "") == "text":
+            btype = getattr(block, "type", "")
+            if btype == "text":
                 text_parts.append(getattr(block, "text", ""))
-            elif getattr(block, "type", "") == "tool_use":
+            elif btype == "tool_use":
                 tool_uses.append({
                     "id": block.id,
                     "name": block.name,
                     "input": block.input,
                 })
+            elif btype == "thinking":
+                thinking_text = getattr(block, "thinking", "")[:1500]
+
+        usage = getattr(resp, "usage", None)
+        tokens_in = getattr(usage, "input_tokens", 0) if usage else 0
+        tokens_out = getattr(usage, "output_tokens", 0) if usage else 0
 
         # Pas de tool call → réponse finale
         if not tool_uses:
-            return ("\n".join(t for t in text_parts if t).strip(), actions_log)
+            final_text = "\n".join(t for t in text_parts if t).strip()
+            # Persist le message assistant final
+            if chat_id and final_text:
+                _save_chat_message(chat_id, "assistant", final_text,
+                                    thinking_summary=thinking_text,
+                                    tokens_in=tokens_in, tokens_out=tokens_out,
+                                    model=model)
+            return (final_text, actions_log)
 
         # On a des tool calls — on les exécute et on continue la boucle
-        # 1) Ajouter le message assistant avec ses content blocks (text + tool_use)
         assistant_content = []
         for block in resp.content or []:
-            if getattr(block, "type", "") == "text":
+            btype = getattr(block, "type", "")
+            if btype == "thinking":
+                # Important : Anthropic exige que les blocs thinking soient renvoyés tels quels
+                # dans le tour suivant pour préserver la chain of thought
+                assistant_content.append({
+                    "type": "thinking",
+                    "thinking": getattr(block, "thinking", ""),
+                    "signature": getattr(block, "signature", ""),
+                })
+            elif btype == "text":
                 assistant_content.append({"type": "text", "text": block.text})
-            elif getattr(block, "type", "") == "tool_use":
+            elif btype == "tool_use":
                 assistant_content.append({
                     "type": "tool_use",
                     "id": block.id,
@@ -226,7 +340,7 @@ def _ask_claude_with_tools(message: str, context: str, max_turns: int = 6) -> tu
                 })
         messages.append({"role": "assistant", "content": assistant_content})
 
-        # 2) Exécuter chaque tool et préparer les tool_results
+        # Exécuter chaque tool et préparer les tool_results
         tool_results: list[dict] = []
         for tu in tool_uses:
             result = execute_tool(tu["name"], tu["input"] or {})
@@ -241,11 +355,13 @@ def _ask_claude_with_tools(message: str, context: str, max_turns: int = 6) -> tu
                 "content": json.dumps(result, default=str, ensure_ascii=False)[:5000],
             })
 
-        # 3) Ajouter le message user avec les tool_results
         messages.append({"role": "user", "content": tool_results})
 
-    # Fin de la boucle sans réponse finale → on renvoie ce qu'on a
-    return ("(NOVA a utilisé trop d'outils, réponse incomplète)", actions_log)
+    # Fin de la boucle sans réponse finale
+    final_text = "(NOVA a utilisé trop d'outils, réponse incomplète)"
+    if chat_id:
+        _save_chat_message(chat_id, "assistant", final_text, model=model)
+    return (final_text, actions_log)
 
 
 # ---------------------------------------------------------------------------
@@ -440,13 +556,16 @@ def handle_incoming_message(update: dict[str, Any]) -> dict[str, Any]:
 
     log.info(f"Chat from Mongazi: {text[:120]}")
 
-    # 1. Construire le contexte
+    # 1. Persister le message user (memoire conversationnelle)
+    _save_chat_message(chat_id, "user", text)
+
+    # 2. Construire le contexte live (mission, skills, stats, top hot)
     context = _gather_context()
 
-    # 2. Demander à Claude avec function calling multi-turn
-    reply_text, actions_log = _ask_claude_with_tools(text, context)
+    # 3. Demander à Claude avec function calling multi-turn + memoire + thinking + cache
+    reply_text, actions_log = _ask_claude_with_tools(text, context, chat_id=chat_id)
 
-    # 3. Envoyer la réponse principale
+    # 4. Envoyer la réponse principale
     if reply_text.strip():
         send_message(_format_for_telegram(reply_text))
     else:
