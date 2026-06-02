@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr" style="--a:#10b981">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — {{ product_name }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="/static/vendora-ui.css" rel="stylesheet">
+<style>
+  .astats{display:grid;grid-template-columns:repeat(3,1fr);background:var(--core);border:1px solid var(--hair);
+    border-radius:var(--r-md);overflow:hidden;box-shadow:var(--inset),var(--shadow);margin-top:16px}
+  .astats .stat{border-top:1px solid var(--hair-soft)}
+  .astats .stat:nth-child(-n+3){border-top:none}
+  @media(max-width:560px){.astats{grid-template-columns:repeat(2,1fr)}.astats .stat:nth-child(3){border-top:1px solid var(--hair-soft)}}
+  .mrow{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:15px 0;border-top:1px solid var(--hair-soft)}
+  .mrow:first-of-type{border-top:none}
+  .mrow .mid{min-width:180px;flex:1}
+  .mrow .mn{font-weight:700;font-size:.97rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .mrow .ms{color:var(--mut);font-size:.8rem;margin-top:4px}
+  .mrow .mx{display:flex;gap:18px;font-size:.8rem;color:var(--mut)}
+  .mrow .mx b{display:block;color:var(--txt);font-size:1rem;font-weight:700}
+  .mrow .ma{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
+  .badge{font-size:.66rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+    padding:3px 10px;border-radius:100px;border:1px solid var(--hair)}
+  .badge.active{color:var(--a);border-color:var(--a-line);background:var(--a-soft)}
+  .badge.wait{color:#ffcf8b;border-color:rgba(255,180,80,.3);background:rgba(255,180,80,.08)}
+  .badge.pay{color:var(--mut);}
+  .badge.susp{color:#ff9d9d;border-color:rgba(255,95,95,.3);background:rgba(255,95,95,.08)}
+  .ref{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:#ffcf8b}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5z"/><path d="M9 12l2 2 4-4"/></symbol>
+    <symbol id="i-store" viewBox="0 0 24 24"><path d="M3 7l1.2-3.2A1 1 0 0 1 5.1 3h13.8a1 1 0 0 1 .9.8L21 7M4 7v12a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7M3 7h18M9.5 20v-5.5h5V20"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h13a1 1 0 0 1 1 1v2M3 7v10a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3M3 7h16a2 2 0 0 1 2 2v2h-5a2 2 0 0 0 0 4h5"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1.5 1.5M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1.5-1.5"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 2h6M10 2v6.5L4.7 18A1.5 1.5 0 0 0 6 20.3h12A1.5 1.5 0 0 0 19.3 18L14 8.5V2M7.5 14h9"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 4v16M15 4v16"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></symbol>
+  </g></defs></svg>
+
+<div class="topbar">
+  <div class="brand"><span class="glyph"><svg viewBox="0 0 24 24"><use href="#i-shield"/></svg></span>{{ product_name }} Admin</div>
+  <span class="pill">{{ glob.merchants }} boutique(s)</span>
+</div>
+
+<div class="wrap">
+  <span class="eyebrow" style="margin-top:28px"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><use href="#i-shield"/></svg> Console NEBULA</span>
+  <h1>Tableau de bord</h1>
+  <p class="lead">Toutes les boutiques Vendora, leurs paiements et leurs ventes, au même endroit.</p>
+  <div class="thread"></div>
+
+  <!-- STATS GLOBALES -->
+  <div class="astats">
+    <div class="stat"><div class="sv mono">{{ glob.merchants }}</div><div class="sl">Boutiques</div></div>
+    <div class="stat"><div class="sv mono">{{ glob.active }}</div><div class="sl">Actives</div></div>
+    <div class="stat"><div class="sv mono">{{ glob.pending }}</div><div class="sl">À valider</div></div>
+    <div class="stat"><div class="sv mono">{{ glob.orders }}</div><div class="sl">Commandes</div></div>
+    <div class="stat"><div class="sv mono">{{ "{:,}".format(glob.sales|int).replace(",", " ") }}</div><div class="sl">F CFA de ventes</div></div>
+    <div class="stat"><div class="sv mono">{{ "{:,}".format(glob.mrr|int).replace(",", " ") }}</div><div class="sl">F CFA / mois (abos)</div></div>
+  </div>
+
+  <!-- PAIEMENTS À VALIDER -->
+  {% if pending %}
+  <section style="margin-top:34px">
+    <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-clock"/></svg></div><h2>Paiements à valider ({{ pending|length }})</h2></div>
+    <div class="panel">
+      {% for r in pending %}
+      <div class="mrow" data-id="{{ r.m.id }}">
+        <div class="mid">
+          <div class="mn">{{ r.m.business_name }} <span class="badge wait">{{ r.plan_label }}</span></div>
+          <div class="ms">Réf. MoMo : <span class="ref">{{ r.m.activation_ref or '—' }}</span> · {{ "{:,}".format(r.price).replace(",", " ") }} F/mois · {{ r.m.owner_whatsapp or r.m.whatsapp_business or '—' }}</div>
+        </div>
+        <div class="ma">
+          <button class="btn acc sm" type="button" onclick="activate('{{ r.m.id }}')"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Valider l'abonnement</button>
+          <a class="btn gho sm" href="/boutique/{{ r.m.id }}"><svg viewBox="0 0 24 24"><use href="#i-link"/></svg>Back-office</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- TOUTES LES BOUTIQUES -->
+  <section style="margin-top:34px">
+    <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-store"/></svg></div><h2>Toutes les boutiques</h2></div>
+    <div class="panel">
+      {% if rows %}
+        {% for r in rows %}
+        <div class="mrow" data-id="{{ r.m.id }}">
+          <div class="mid">
+            <div class="mn">{{ r.m.business_name }}
+              {% if r.status == 'active' %}<span class="badge active">Active</span>
+              {% elif r.status == 'paid_pending_validation' %}<span class="badge wait">À valider</span>
+              {% elif r.status == 'suspended' %}<span class="badge susp">Suspendue</span>
+              {% else %}<span class="badge pay">En attente paiement</span>{% endif %}
+              <span class="badge">{{ r.plan_label }}</span>
+            </div>
+            <div class="ms">{{ r.m.sector or '—' }} · {{ r.m.city or '—' }} · {{ r.m.owner_whatsapp or r.m.whatsapp_business or '—' }}{% if r.m.momo_number %} · MoMo {{ r.m.momo_number }} ({{ r.m.momo_network or '—' }}){% endif %}</div>
+          </div>
+          <div class="mx">
+            <div><b class="mono">{{ r.products }}</b>produits</div>
+            <div><b class="mono">{{ r.orders }}</b>commandes</div>
+            <div><b class="mono">{{ "{:,}".format(r.revenue|int).replace(",", " ") }}</b>F vendus</div>
+          </div>
+          <div class="ma">
+            {% if r.status in ('paid_pending_validation','suspended','pending_payment') %}
+              <button class="btn acc sm" type="button" onclick="activate('{{ r.m.id }}')"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Activer</button>
+            {% endif %}
+            {% if r.status == 'active' %}
+              <button class="btn dang sm" type="button" onclick="suspend('{{ r.m.id }}')"><svg viewBox="0 0 24 24"><use href="#i-pause"/></svg>Suspendre</button>
+            {% endif %}
+            <a class="btn gho sm" href="/boutique/{{ r.m.id }}"><svg viewBox="0 0 24 24"><use href="#i-link"/></svg>Gérer</a>
+            <a class="btn gho sm" href="/essai/{{ r.m.id }}"><svg viewBox="0 0 24 24"><use href="#i-flask"/></svg>Tester</a>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty">Aucune boutique pour l'instant.</div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const TOKEN = "{{ token }}";
+const toast = document.getElementById('toast');
+function notify(msg, err){
+  toast.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="'+(err?'#i-trash':'#i-check')+'"/></svg>'+msg;
+  toast.className = 'show' + (err ? ' err' : '');
+  setTimeout(()=>{ toast.className=''; }, err ? 4000 : 2000);
+}
+async function post(url, body){
+  const r = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json','X-Admin-Token':TOKEN}, body: body?JSON.stringify(body):null });
+  return r.json();
+}
+async function activate(id){
+  if(!confirm('Valider l\'abonnement et activer cette boutique ?')) return;
+  const d = await post(`/api/admin/merchants/${id}/activate`);
+  if(d.ok){ notify('Boutique activée'); setTimeout(()=>location.reload(),700); } else notify(d.error||'Erreur', true);
+}
+async function suspend(id){
+  if(!confirm('Suspendre cette boutique ? Son agent cessera de vendre.')) return;
+  const d = await post(`/api/admin/merchants/${id}/status`, { status:'suspended' });
+  if(d.ok){ notify('Boutique suspendue'); setTimeout(()=>location.reload(),700); } else notify(d.error||'Erreur', true);
+}
+</script>
+</body>
+</html>

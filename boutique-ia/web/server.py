@@ -286,6 +286,123 @@ async def boutique_backoffice(request: Request, merchant_id: str):
     )
 
 
+# ---------------------------------------------------------------------------
+# ÉTAGE 4 — Tableau de bord admin (Mongazi) : toutes les boutiques, paiements, ventes
+# ---------------------------------------------------------------------------
+
+def _admin_ok(token: str | None) -> bool:
+    expected = settings.admin_token
+    return bool(expected) and token == expected
+
+
+@app.get("/admin", response_class=HTMLResponse)
+async def admin_dashboard(request: Request, token: str = ""):
+    from db.client import (
+        all_orders_brief,
+        all_products_brief,
+        list_all_merchants,
+    )
+    if not settings.admin_token:
+        return HTMLResponse(
+            "<body style='font-family:sans-serif;background:#0a0a0c;color:#eee;padding:40px'>"
+            "<h2>Admin non configuré</h2><p>Définis la variable <code>ADMIN_TOKEN</code> "
+            "(Railway + .env), puis ouvre <code>/admin?token=TON_TOKEN</code>.</p></body>",
+            status_code=503,
+        )
+    if not _admin_ok(token):
+        return HTMLResponse(
+            "<body style='font-family:sans-serif;background:#0a0a0c;color:#eee;padding:40px'>"
+            "<h2>Accès refusé</h2><p>Ajoute <code>?token=TON_TOKEN</code> à l'URL.</p></body>",
+            status_code=401,
+        )
+
+    merchants = list_all_merchants()
+    orders = all_orders_brief()
+    products = all_products_brief()
+
+    # Agrégations en mémoire (peu de boutiques au départ)
+    orders_by_m: dict[str, dict] = {}
+    for o in orders:
+        mid = o.get("merchant_id")
+        agg = orders_by_m.setdefault(mid, {"count": 0, "revenue": 0.0})
+        agg["count"] += 1
+        try:
+            agg["revenue"] += float(o.get("total") or 0)
+        except (TypeError, ValueError):
+            pass
+    prod_by_m: dict[str, int] = {}
+    for p in products:
+        prod_by_m[p.get("merchant_id")] = prod_by_m.get(p.get("merchant_id"), 0) + 1
+
+    rows, mrr, total_sales = [], 0, 0.0
+    counts = {"active": 0, "paid_pending_validation": 0, "pending_payment": 0, "suspended": 0}
+    for m in merchants:
+        mid = m.get("id")
+        st = m.get("status") or "pending_payment"
+        counts[st] = counts.get(st, 0) + 1
+        oc = orders_by_m.get(mid, {"count": 0, "revenue": 0.0})
+        total_sales += oc["revenue"]
+        price = price_for_plan(m.get("plan"))
+        if st == "active":
+            mrr += price
+        rows.append({
+            "m": m,
+            "plan_label": PLAN_LABELS[normalize_plan(m.get("plan"))],
+            "price": price,
+            "products": prod_by_m.get(mid, 0),
+            "orders": oc["count"],
+            "revenue": oc["revenue"],
+            "status": st,
+        })
+
+    pending = [r for r in rows if r["status"] == "paid_pending_validation"]
+    glob = {
+        "merchants": len(merchants),
+        "active": counts.get("active", 0),
+        "pending": counts.get("paid_pending_validation", 0),
+        "orders": len(orders),
+        "sales": total_sales,
+        "mrr": mrr,
+    }
+    return templates.TemplateResponse(
+        request, "admin.html",
+        _ctx(request, token=token, rows=rows, pending=pending, glob=glob),
+    )
+
+
+@app.post("/api/admin/merchants/{merchant_id}/activate")
+async def admin_activate(request: Request, merchant_id: str):
+    from db.client import activate_merchant
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        m = activate_merchant(merchant_id)
+    except Exception as e:  # noqa: BLE001
+        log.exception("admin activate échoué")
+        return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
+    return {"ok": bool(m), "merchant": m}
+
+
+@app.post("/api/admin/merchants/{merchant_id}/status")
+async def admin_set_status(request: Request, merchant_id: str):
+    from db.client import set_merchant_status
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    status = (body.get("status") or "").strip()
+    if status not in {"active", "suspended", "pending_payment", "paid_pending_validation"}:
+        return JSONResponse({"ok": False, "error": "Statut invalide."}, status_code=400)
+    try:
+        m = set_merchant_status(merchant_id, status)
+    except Exception as e:  # noqa: BLE001
+        log.exception("admin set_status échoué")
+        return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
+    return {"ok": bool(m), "merchant": m}
+
+
 @app.post("/api/merchants/{merchant_id}/order")
 async def merchant_order_endpoint(request: Request, merchant_id: str):
     """Le commerçant donne un ordre à son agent (langage naturel). Quota/jour selon forfait."""
@@ -473,6 +590,12 @@ async def whatsapp_twilio(request: Request):
         return _twiml(
             "Bonjour 🌟 Pour discuter avec une boutique, ouvrez son lien Vendora "
             "(ou demandez-lui de vous l'envoyer). À très vite !"
+        )
+
+    # Boutique suspendue → l'agent ne vend plus.
+    if merchant.get("status") == "suspended":
+        return _twiml(
+            "Cette boutique est momentanément indisponible. Merci de réessayer plus tard 🙏"
         )
 
     # 2. Nettoyer le marqueur de routing du message

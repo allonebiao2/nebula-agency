@@ -136,6 +136,52 @@ def list_products(merchant_id: str) -> list[dict[str, Any]]:
     )
 
 
+def list_all_merchants() -> list[dict[str, Any]]:
+    """Toutes les boutiques, de la plus récente à la plus ancienne (admin étage 4)."""
+    db = get_db()
+    return (
+        db.table("bia_merchants").select("*").order("created_at", desc=True).execute().data
+        or []
+    )
+
+
+def activate_merchant(merchant_id: str) -> dict[str, Any]:
+    """Valide l'abonnement : passe la boutique en 'active' (abonnement payé)."""
+    from datetime import datetime, timezone
+    db = get_db()
+    result = (
+        db.table("bia_merchants")
+        .update({"status": "active", "activated_at": datetime.now(timezone.utc).isoformat()})
+        .eq("id", merchant_id)
+        .execute()
+    )
+    return result.data[0] if result.data else {}
+
+
+def set_merchant_status(merchant_id: str, status: str) -> dict[str, Any]:
+    """Change le statut d'une boutique (ex: suspended / active / pending_payment)."""
+    db = get_db()
+    result = (
+        db.table("bia_merchants").update({"status": status}).eq("id", merchant_id).execute()
+    )
+    return result.data[0] if result.data else {}
+
+
+def all_orders_brief() -> list[dict[str, Any]]:
+    """Toutes les commandes (champs légers) pour agrégation admin."""
+    db = get_db()
+    return (
+        db.table("bia_orders").select("merchant_id, total, status, created_at").execute().data
+        or []
+    )
+
+
+def all_products_brief() -> list[dict[str, Any]]:
+    """Tous les produits (id + merchant) pour comptage admin."""
+    db = get_db()
+    return db.table("bia_products").select("id, merchant_id").execute().data or []
+
+
 def get_latest_merchant() -> dict[str, Any] | None:
     """Dernière boutique inscrite — pratique pour les tests sur le sandbox WhatsApp."""
     db = get_db()
