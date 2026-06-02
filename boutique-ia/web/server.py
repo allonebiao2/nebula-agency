@@ -15,7 +15,7 @@ from pathlib import Path
 from urllib.parse import quote
 from xml.sax.saxutils import escape
 
-from fastapi import FastAPI, Request
+from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -28,6 +28,7 @@ from config import (
     daily_orders_for_plan,
     normalize_plan,
     price_for_plan,
+    prospection_daily_for_plan,
     settings,
 )
 
@@ -254,11 +255,17 @@ async def boutique_backoffice(request: Request, merchant_id: str):
         list_recent_conversations,
         order_stats,
     )
+    from core.prospecting import CATEGORIES
+    from db.client import (
+        count_prospection_sent_today,
+        list_campaigns,
+    )
     merchant, products = None, []
     stats = {"count": 0, "revenue": 0}
-    recent_orders, conversations, plans = [], [], []
+    recent_orders, conversations, plans, campaigns = [], [], [], []
     plan, plan_label = "demarrage", "Démarrage"
     daily_limit, used_today = 5, 0
+    prospect_daily, prospect_used = 0, 0
     try:
         merchant = get_merchant(merchant_id)
         if merchant:
@@ -271,18 +278,25 @@ async def boutique_backoffice(request: Request, merchant_id: str):
             daily_limit = daily_orders_for_plan(plan)
             used_today = count_manager_orders_today(merchant_id)
             plans = _plans_overview(plan)
+            prospect_daily = prospection_daily_for_plan(plan)
+            prospect_used = count_prospection_sent_today("merchant", merchant_id)
+            campaigns = list_campaigns("merchant", merchant_id, limit=6)
     except Exception as e:  # noqa: BLE001
         log.warning("back-office: lecture impossible: %s", e)
     wa_link = _wa_link(merchant.get("code")) if merchant else ""
     remaining = -1 if daily_limit < 0 else max(0, daily_limit - used_today)
     accent = (merchant.get("brand_color") if merchant else None) or "#10b981"
+    cats = [{"key": k, "label": v["label"]} for k, v in CATEGORIES.items()]
     return templates.TemplateResponse(
         request, "boutique.html",
         _ctx(request, merchant=merchant, merchant_id=merchant_id,
              products=products, wa_link=wa_link, stats=stats,
              recent_orders=recent_orders, conversations=conversations,
              plan=plan, plan_label=plan_label, plans=plans, accent=accent,
-             daily_limit=daily_limit, used_today=used_today, remaining=remaining),
+             daily_limit=daily_limit, used_today=used_today, remaining=remaining,
+             categories=cats, campaigns=campaigns,
+             prospect_daily=prospect_daily, prospect_used=prospect_used,
+             prospect_remaining=max(0, prospect_daily - prospect_used)),
     )
 
 
@@ -364,9 +378,16 @@ async def admin_dashboard(request: Request, token: str = ""):
         "sales": total_sales,
         "mrr": mrr,
     }
+    from core.prospecting import CATEGORIES
+    from db.client import count_prospection_sent_today, list_campaigns
+    cats = [{"key": k, "label": v["label"]} for k, v in CATEGORIES.items()]
+    campaigns = list_campaigns("admin", None, limit=8)
+    prospect_used = count_prospection_sent_today("admin", None)
     return templates.TemplateResponse(
         request, "admin.html",
-        _ctx(request, token=token, rows=rows, pending=pending, glob=glob),
+        _ctx(request, token=token, rows=rows, pending=pending, glob=glob,
+             categories=cats, campaigns=campaigns,
+             prospect_used=prospect_used, prospect_daily=settings.prospection_admin_daily),
     )
 
 
@@ -401,6 +422,78 @@ async def admin_set_status(request: Request, merchant_id: str):
         log.exception("admin set_status échoué")
         return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
     return {"ok": bool(m), "merchant": m}
+
+
+@app.post("/api/merchants/{merchant_id}/prospection/launch")
+async def merchant_prospection_launch(request: Request, merchant_id: str, bg: BackgroundTasks):
+    """Le commerçant lance une campagne de prospection (clients/partenaires pros)."""
+    from core import prospecting
+    from db.client import (
+        count_prospection_sent_today,
+        create_campaign,
+        get_merchant,
+    )
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"ok": False, "error": "JSON invalide"}, status_code=400)
+    category = (body.get("category") or "").strip()
+    city = (body.get("city") or "").strip()
+    if category not in prospecting.CATEGORIES or not city:
+        return JSONResponse({"ok": False, "error": "Catégorie ou ville invalide."}, status_code=400)
+
+    merchant = get_merchant(merchant_id)
+    if not merchant:
+        return JSONResponse({"ok": False, "error": "Boutique introuvable."}, status_code=404)
+    plan = normalize_plan(merchant.get("plan"))
+    daily = prospection_daily_for_plan(plan)
+    if daily <= 0:
+        return {"ok": True, "locked": True,
+                "message": "La prospection est incluse à partir du forfait Business. "
+                           "Passez à un forfait supérieur pour l'activer 🚀"}
+    if count_prospection_sent_today("merchant", merchant_id) >= daily:
+        return {"ok": True, "limit_reached": True,
+                "message": f"Limite de {daily} emails de prospection atteinte aujourd'hui."}
+
+    camp = create_campaign({
+        "owner_type": "merchant", "merchant_id": merchant_id, "mode": "client",
+        "title": f"{prospecting.CATEGORIES[category]['label']} · {city}",
+        "category": category, "city": city, "status": "sourcing",
+    })
+    bg.add_task(prospecting.run_full_campaign, camp["id"], "client", category, city,
+                daily, "merchant", merchant_id)
+    return {"ok": True, "campaign_id": camp.get("id"),
+            "message": "Campagne lancée — recherche des prospects en cours…"}
+
+
+@app.post("/api/admin/prospection/launch")
+async def admin_prospection_launch(request: Request, bg: BackgroundTasks):
+    """Vendora (admin) lance une campagne de recrutement de nouvelles boutiques."""
+    from core import prospecting
+    from db.client import count_prospection_sent_today, create_campaign
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    category = (body.get("category") or "").strip()
+    city = (body.get("city") or "").strip()
+    if category not in prospecting.CATEGORIES or not city:
+        return JSONResponse({"ok": False, "error": "Catégorie ou ville invalide."}, status_code=400)
+    daily = settings.prospection_admin_daily
+    if count_prospection_sent_today("admin", None) >= daily:
+        return {"ok": True, "limit_reached": True,
+                "message": f"Limite admin de {daily} emails atteinte aujourd'hui."}
+    camp = create_campaign({
+        "owner_type": "admin", "merchant_id": None, "mode": "recrutement",
+        "title": f"Recrutement · {prospecting.CATEGORIES[category]['label']} · {city}",
+        "category": category, "city": city, "status": "sourcing",
+    })
+    bg.add_task(prospecting.run_full_campaign, camp["id"], "recrutement", category, city,
+                daily, "admin", None)
+    return {"ok": True, "campaign_id": camp.get("id"),
+            "message": "Campagne de recrutement lancée…"}
 
 
 @app.post("/api/merchants/{merchant_id}/order")

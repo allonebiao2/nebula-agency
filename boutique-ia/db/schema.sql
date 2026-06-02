@@ -116,3 +116,31 @@ create table if not exists bia_manager_commands (
   created_at timestamptz default now()
 );
 create index if not exists bia_manager_cmd_idx on bia_manager_commands(merchant_id, created_at);
+
+-- 7. Prospection autonome (étage 5) : campagnes + prospects sourcés/contactés
+create table if not exists bia_campaigns (
+  id uuid primary key default gen_random_uuid(),
+  owner_type  text not null default 'merchant',  -- 'merchant' | 'admin'
+  merchant_id uuid references bia_merchants(id) on delete cascade,
+  mode        text not null default 'client',     -- 'client' | 'recrutement'
+  title text, category text, city text,
+  status text default 'sourcing',                 -- sourcing|ready|sending|done|failed
+  found int default 0, emailable int default 0, sent int default 0, failed int default 0,
+  subject text, body text,
+  created_at timestamptz default now()
+);
+create index if not exists bia_campaigns_owner_idx on bia_campaigns(owner_type, merchant_id, created_at);
+
+create table if not exists bia_prospects (
+  id uuid primary key default gen_random_uuid(),
+  campaign_id uuid not null references bia_campaigns(id) on delete cascade,
+  merchant_id uuid references bia_merchants(id) on delete cascade,
+  owner_type text not null default 'merchant',
+  name text, sector text, city text, country text, website text, email text, phone text,
+  source_external_id text,
+  status text default 'new',                       -- new|sent|failed|skipped|blacklisted
+  error text, sent_at timestamptz,
+  created_at timestamptz default now()
+);
+create index if not exists bia_prospects_campaign_idx on bia_prospects(campaign_id);
+create index if not exists bia_prospects_email_idx on bia_prospects(owner_type, merchant_id, email);

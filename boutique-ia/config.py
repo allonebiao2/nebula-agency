@@ -62,6 +62,13 @@ class Settings(BaseSettings):
     # --- Sécurité admin ---
     admin_token: str = ""
 
+    # --- Prospection (étage 5) — envoi via Gmail SMTP (réutilise le compte NOVA) ---
+    gmail_user: str = ""              # ex: allonebiao2@gmail.com
+    gmail_app_password: str = ""      # App Password Gmail (16 car.)
+    email_reply_to: str = ""          # adresse de réponse par défaut (admin/recrutement)
+    gmail_daily_cap: int = 90         # plafond global d'envois/jour (sécurité compte Gmail)
+    prospection_admin_daily: int = 60 # quota/jour pour les campagnes admin (recrutement)
+
     env: str = "development"
 
     def require(self, *keys: str) -> None:
@@ -120,17 +127,24 @@ PLAN_EXTRA_FEATURES = {
     ],
     "business": [
         ("30 ordres/jour pour piloter votre agent", True),
-        ("Alerte commande aussi sur votre propre WhatsApp", False),
+        ("Prospection : 20 emails/jour à des clients pros", True),
         ("Support prioritaire", True),
     ],
     "empire": [
         ("Ordres illimités pour piloter votre agent", True),
+        ("Prospection : 50 emails/jour à des clients pros", True),
         ("Alerte commande aussi sur votre propre WhatsApp", False),
         ("Support prioritaire", True),
         ("Numéro WhatsApp dédié à votre boutique", False),
-        ("Agent de prospection automatique de clients", False),
         ("Accompagnement personnalisé", True),
     ],
+}
+
+# Prospection autonome : nb d'emails/jour selon le forfait (vrai différenciateur).
+PLAN_PROSPECTION_DAILY = {
+    "demarrage": 0,    # non inclus → upsell
+    "business": 20,
+    "empire": 50,
 }
 
 
@@ -146,3 +160,8 @@ def price_for_plan(plan: str | None) -> int:
 def daily_orders_for_plan(plan: str | None) -> int:
     """Quota d'ordres/jour du forfait (-1 = illimité)."""
     return PLAN_DAILY_ORDERS[normalize_plan(plan)]
+
+
+def prospection_daily_for_plan(plan: str | None) -> int:
+    """Quota d'emails de prospection/jour du forfait (0 = non inclus)."""
+    return PLAN_PROSPECTION_DAILY[normalize_plan(plan)]

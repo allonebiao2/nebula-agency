@@ -182,6 +182,108 @@ def all_products_brief() -> list[dict[str, Any]]:
     return db.table("bia_products").select("id, merchant_id").execute().data or []
 
 
+# ---------------------------------------------------------------------------
+# Prospection (bia_campaigns / bia_prospects) — étage 5
+# ---------------------------------------------------------------------------
+
+def create_campaign(payload: dict[str, Any]) -> dict[str, Any]:
+    db = get_db()
+    r = db.table("bia_campaigns").insert(payload).execute()
+    return r.data[0] if r.data else {}
+
+
+def update_campaign(campaign_id: str, fields: dict[str, Any]) -> dict[str, Any]:
+    db = get_db()
+    r = db.table("bia_campaigns").update(fields).eq("id", campaign_id).execute()
+    return r.data[0] if r.data else {}
+
+
+def get_campaign(campaign_id: str) -> dict[str, Any] | None:
+    db = get_db()
+    r = db.table("bia_campaigns").select("*").eq("id", campaign_id).limit(1).execute()
+    return r.data[0] if r.data else None
+
+
+def list_campaigns(owner_type: str, merchant_id: str | None = None, limit: int = 10) -> list[dict[str, Any]]:
+    db = get_db()
+    q = db.table("bia_campaigns").select("*").eq("owner_type", owner_type)
+    if merchant_id:
+        q = q.eq("merchant_id", merchant_id)
+    return q.order("created_at", desc=True).limit(limit).execute().data or []
+
+
+def add_prospects(campaign_id: str, merchant_id: str | None, owner_type: str,
+                  prospects: list[dict[str, Any]]) -> int:
+    """Insère les prospects d'une campagne. Dédup sur l'email DANS la campagne."""
+    seen, rows = set(), []
+    for p in prospects:
+        email = (p.get("email") or "").strip().lower()
+        if not email or email in seen:
+            continue
+        seen.add(email)
+        rows.append({
+            "campaign_id": campaign_id, "merchant_id": merchant_id, "owner_type": owner_type,
+            "name": p.get("name"), "sector": p.get("sector"), "city": p.get("city"),
+            "country": p.get("country"), "website": p.get("website"),
+            "email": email, "phone": p.get("phone"),
+            "source_external_id": p.get("source_external_id"), "status": "new",
+        })
+    if not rows:
+        return 0
+    return len(get_db().table("bia_prospects").insert(rows).execute().data or [])
+
+
+def list_prospects(campaign_id: str, limit: int = 200) -> list[dict[str, Any]]:
+    db = get_db()
+    return (
+        db.table("bia_prospects").select("*").eq("campaign_id", campaign_id)
+        .order("created_at").limit(limit).execute().data or []
+    )
+
+
+def mark_prospect(prospect_id: str, status: str, error: str | None = None,
+                  sent_at: str | None = None) -> None:
+    fields: dict[str, Any] = {"status": status}
+    if error is not None:
+        fields["error"] = error[:300]
+    if sent_at is not None:
+        fields["sent_at"] = sent_at
+    get_db().table("bia_prospects").update(fields).eq("id", prospect_id).execute()
+
+
+def _today_start_iso() -> str:
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT00:00:00+00:00")
+
+
+def count_prospection_sent_today(owner_type: str, merchant_id: str | None = None) -> int:
+    db = get_db()
+    q = (db.table("bia_prospects").select("id", count="exact", head=True)
+         .eq("status", "sent").gte("sent_at", _today_start_iso()).eq("owner_type", owner_type))
+    if merchant_id:
+        q = q.eq("merchant_id", merchant_id)
+    return q.execute().count or 0
+
+
+def count_prospection_sent_today_global() -> int:
+    """Tous les envois du jour (sécurité plafond Gmail)."""
+    db = get_db()
+    r = (db.table("bia_prospects").select("id", count="exact", head=True)
+         .eq("status", "sent").gte("sent_at", _today_start_iso()).execute())
+    return r.count or 0
+
+
+def email_already_contacted(owner_type: str, merchant_id: str | None, email: str) -> bool:
+    """Cet email a-t-il déjà été contacté (ou blacklisté) par ce propriétaire ?"""
+    db = get_db()
+    q = (db.table("bia_prospects").select("id", count="exact", head=True)
+         .eq("owner_type", owner_type).eq("email", (email or "").strip().lower())
+         .in_("status", ["sent", "blacklisted"]))
+    if merchant_id:
+        q = q.eq("merchant_id", merchant_id)
+    return (q.execute().count or 0) > 0
+
+
 def get_latest_merchant() -> dict[str, Any] | None:
     """Dernière boutique inscrite — pratique pour les tests sur le sandbox WhatsApp."""
     db = get_db()

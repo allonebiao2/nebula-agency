@@ -44,6 +44,8 @@
     <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 2h6M10 2v6.5L4.7 18A1.5 1.5 0 0 0 6 20.3h12A1.5 1.5 0 0 0 19.3 18L14 8.5V2M7.5 14h9"/></symbol>
     <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 4v16M15 4v16"/></symbol>
     <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
   </g></defs></svg>
 
 <div class="topbar">
@@ -127,6 +129,37 @@
       {% endif %}
     </div>
   </section>
+
+  <!-- RECRUTEMENT (prospection admin) -->
+  <section style="margin-top:34px">
+    <div class="shead">
+      <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-target"/></svg></div>
+      <h2>Recruter de nouvelles boutiques</h2>
+      <div class="act"><span class="quota">{{ (prospect_daily - prospect_used) if prospect_daily > prospect_used else 0 }}/{{ prospect_daily }} emails aujourd'hui</span></div>
+    </div>
+    <p class="hint">Vendora cherche des commerçants (par secteur + ville) et leur envoie un email proposant l'abonnement Vendora. Recherche + envoi automatiques, avec garde-fous.</p>
+    <div class="panel">
+      <div class="grid2">
+        <div><label>Cible</label><select id="pr_cat">{% for c in categories %}<option value="{{ c.key }}">{{ c.label }}</option>{% endfor %}</select></div>
+        <div><label>Ville</label><input id="pr_city" list="d-city" placeholder="ex : Cotonou"></div>
+      </div>
+      <datalist id="d-city"><option>Cotonou</option><option>Porto-Novo</option><option>Calavi</option><option>Lomé</option><option>Abidjan</option><option>Dakar</option><option>Ouagadougou</option></datalist>
+      <div style="margin-top:14px"><button class="btn acc" type="button" onclick="launchRecrutement()"><svg viewBox="0 0 24 24"><use href="#i-target"/></svg>Lancer le recrutement</button></div>
+    </div>
+    {% if campaigns %}
+    <div class="panel" style="margin-top:14px">
+      <div class="ah">Campagnes de recrutement</div>
+      {% for c in campaigns %}
+      <div class="mrow">
+        <div class="mid">
+          <div class="mn">{{ c.title or (c.category ~ ' · ' ~ c.city) }} <span class="badge {{ 'active' if c.status in ('done','ready') else 'pay' }}">{{ c.status }}</span></div>
+          <div class="ms"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" style="vertical-align:-2px"><use href="#i-mail"/></svg> {{ c.sent or 0 }} envoyés · {{ c.emailable or 0 }} contacts trouvés · {{ c.found or 0 }} entreprises scannées</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </section>
 </div>
 
 <div id="toast"></div>
@@ -152,6 +185,15 @@ async function suspend(id){
   if(!confirm('Suspendre cette boutique ? Son agent cessera de vendre.')) return;
   const d = await post(`/api/admin/merchants/${id}/status`, { status:'suspended' });
   if(d.ok){ notify('Boutique suspendue'); setTimeout(()=>location.reload(),700); } else notify(d.error||'Erreur', true);
+}
+async function launchRecrutement(){
+  const cat = document.getElementById('pr_cat').value;
+  const city = document.getElementById('pr_city').value.trim();
+  if(!city){ notify('Indiquez une ville.', true); return; }
+  const d = await post(`/api/admin/prospection/launch`, { category:cat, city });
+  if(!d.ok){ notify(d.error||'Erreur', true); return; }
+  if(d.limit_reached){ notify(d.message, true); return; }
+  notify('Campagne de recrutement lancée'); setTimeout(()=>location.reload(),1800);
 }
 </script>
 </body>
