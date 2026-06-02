@@ -20,7 +20,32 @@ from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from config import normalize_plan, price_for_plan, settings
+from config import (
+    PLAN_CORE_FEATURES,
+    PLAN_EXTRA_FEATURES,
+    PLAN_LABELS,
+    PLAN_PRICES,
+    daily_orders_for_plan,
+    normalize_plan,
+    price_for_plan,
+    settings,
+)
+
+
+def _plans_overview(current_plan: str) -> list[dict]:
+    """Les 3 forfaits avec leurs fonctionnalités réelles, pour le back-office."""
+    out = []
+    for key in ("demarrage", "business", "empire"):
+        feats = [{"label": f, "live": True} for f in PLAN_CORE_FEATURES]
+        feats += [{"label": lbl, "live": live} for lbl, live in PLAN_EXTRA_FEATURES.get(key, [])]
+        out.append({
+            "key": key,
+            "label": PLAN_LABELS[key],
+            "price": PLAN_PRICES[key],
+            "current": key == current_plan,
+            "features": feats,
+        })
+    return out
 
 
 def _gen_code(n: int = 6) -> str:
@@ -212,6 +237,178 @@ async def submit_payment(request: Request, merchant_id: str):
 @app.get("/api/health")
 async def health():
     return {"ok": True, "product": settings.product_name}
+
+
+# ---------------------------------------------------------------------------
+# Back-office commerçant — gérer sa fiche et ses produits soi-même
+# (lien privé /boutique/{merchant_id} ; l'agent lit les changements en direct)
+# ---------------------------------------------------------------------------
+
+@app.get("/boutique/{merchant_id}", response_class=HTMLResponse)
+async def boutique_backoffice(request: Request, merchant_id: str):
+    from db.client import (
+        count_manager_orders_today,
+        get_merchant,
+        list_orders,
+        list_products,
+        list_recent_conversations,
+        order_stats,
+    )
+    merchant, products = None, []
+    stats = {"count": 0, "revenue": 0}
+    recent_orders, conversations, plans = [], [], []
+    plan, plan_label = "demarrage", "Démarrage"
+    daily_limit, used_today = 5, 0
+    try:
+        merchant = get_merchant(merchant_id)
+        if merchant:
+            products = list_products(merchant_id)
+            stats = order_stats(merchant_id)
+            recent_orders = list_orders(merchant_id, limit=8)
+            conversations = list_recent_conversations(merchant_id, limit=8)
+            plan = normalize_plan(merchant.get("plan"))
+            plan_label = PLAN_LABELS[plan]
+            daily_limit = daily_orders_for_plan(plan)
+            used_today = count_manager_orders_today(merchant_id)
+            plans = _plans_overview(plan)
+    except Exception as e:  # noqa: BLE001
+        log.warning("back-office: lecture impossible: %s", e)
+    wa_link = _wa_link(merchant.get("code")) if merchant else ""
+    remaining = -1 if daily_limit < 0 else max(0, daily_limit - used_today)
+    accent = (merchant.get("brand_color") if merchant else None) or "#10b981"
+    return templates.TemplateResponse(
+        request, "boutique.html",
+        _ctx(request, merchant=merchant, merchant_id=merchant_id,
+             products=products, wa_link=wa_link, stats=stats,
+             recent_orders=recent_orders, conversations=conversations,
+             plan=plan, plan_label=plan_label, plans=plans, accent=accent,
+             daily_limit=daily_limit, used_today=used_today, remaining=remaining),
+    )
+
+
+@app.post("/api/merchants/{merchant_id}/order")
+async def merchant_order_endpoint(request: Request, merchant_id: str):
+    """Le commerçant donne un ordre à son agent (langage naturel). Quota/jour selon forfait."""
+    from core import manager
+    from db.client import (
+        count_manager_orders_today,
+        get_merchant,
+        log_manager_order,
+    )
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"ok": False, "error": "JSON invalide"}, status_code=400)
+    order_text = (body.get("message") or "").strip()
+    if not order_text:
+        return JSONResponse({"ok": False, "error": "Ordre vide."}, status_code=400)
+
+    try:
+        merchant = get_merchant(merchant_id)
+        if not merchant:
+            return JSONResponse({"ok": False, "error": "Boutique introuvable."}, status_code=404)
+
+        plan = normalize_plan(merchant.get("plan"))
+        limit = daily_orders_for_plan(plan)
+        if limit >= 0:
+            used = count_manager_orders_today(merchant_id)
+            if used >= limit:
+                return {
+                    "ok": True, "limit_reached": True, "remaining": 0,
+                    "reply": (f"Vous avez atteint votre limite de {limit} ordres aujourd'hui "
+                              f"(forfait {PLAN_LABELS[plan]}). Passez à un forfait supérieur "
+                              f"pour piloter votre agent sans limite 🚀"),
+                    "actions": [],
+                }
+
+        result = manager.run_order(merchant, order_text)
+        log_manager_order(merchant_id, order_text, result.get("reply", ""))
+
+        remaining = -1
+        if limit >= 0:
+            remaining = max(0, limit - count_manager_orders_today(merchant_id))
+    except Exception as e:  # noqa: BLE001
+        log.exception("ordre commerçant échoué")
+        return JSONResponse({"ok": False, "error": str(e)[:300]}, status_code=500)
+
+    return {
+        "ok": True, "limit_reached": False, "remaining": remaining,
+        "reply": result.get("reply", ""), "actions": result.get("actions", []),
+    }
+
+
+@app.post("/api/merchants/{merchant_id}/update")
+async def update_merchant_endpoint(request: Request, merchant_id: str):
+    """Le commerçant modifie sa fiche (infos boutique, livraison, MoMo, ton…)."""
+    from db.client import update_merchant
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"ok": False, "error": "JSON invalide"}, status_code=400)
+    # Normalise : "" → None pour les champs vides
+    fields = {k: (v.strip() or None if isinstance(v, str) else v) for k, v in body.items()}
+    if not (fields.get("business_name") if "business_name" in fields else True):
+        return JSONResponse({"ok": False, "error": "Le nom de la boutique est obligatoire."}, status_code=400)
+    try:
+        merchant = update_merchant(merchant_id, fields)
+    except Exception as e:  # noqa: BLE001
+        log.exception("update merchant échoué")
+        return JSONResponse({"ok": False, "error": str(e)[:300]}, status_code=500)
+    return {"ok": True, "merchant": merchant}
+
+
+@app.post("/api/merchants/{merchant_id}/products")
+async def add_product_endpoint(request: Request, merchant_id: str):
+    """Ajoute un produit/service à la boutique."""
+    from db.client import add_products
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"ok": False, "error": "JSON invalide"}, status_code=400)
+    name = (body.get("name") or "").strip()
+    if not name:
+        return JSONResponse({"ok": False, "error": "Le nom du produit est obligatoire."}, status_code=400)
+    try:
+        count = add_products(merchant_id, [body])
+    except Exception as e:  # noqa: BLE001
+        log.exception("ajout produit échoué")
+        return JSONResponse({"ok": False, "error": str(e)[:300]}, status_code=500)
+    return {"ok": True, "added": count}
+
+
+@app.post("/api/merchants/{merchant_id}/products/{product_id}")
+async def update_product_endpoint(request: Request, merchant_id: str, product_id: str):
+    """Modifie un produit (nom, prix, description, disponibilité)."""
+    from db.client import update_product
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"ok": False, "error": "JSON invalide"}, status_code=400)
+    fields = dict(body)
+    if "name" in fields:
+        fields["name"] = (fields.get("name") or "").strip()
+        if not fields["name"]:
+            return JSONResponse({"ok": False, "error": "Le nom du produit est obligatoire."}, status_code=400)
+    try:
+        product = update_product(product_id, merchant_id, fields)
+    except Exception as e:  # noqa: BLE001
+        log.exception("update produit échoué")
+        return JSONResponse({"ok": False, "error": str(e)[:300]}, status_code=500)
+    if not product:
+        return JSONResponse({"ok": False, "error": "Produit introuvable."}, status_code=404)
+    return {"ok": True, "product": product}
+
+
+@app.delete("/api/merchants/{merchant_id}/products/{product_id}")
+async def delete_product_endpoint(merchant_id: str, product_id: str):
+    """Supprime un produit de la boutique."""
+    from db.client import delete_product
+    try:
+        ok = delete_product(product_id, merchant_id)
+    except Exception as e:  # noqa: BLE001
+        log.exception("suppression produit échouée")
+        return JSONResponse({"ok": False, "error": str(e)[:300]}, status_code=500)
+    return {"ok": ok}
 
 
 # ---------------------------------------------------------------------------

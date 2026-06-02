@@ -94,9 +94,16 @@ def build_system_prompt(merchant: dict, products: list[dict]) -> str:
         for p in products:
             if p.get("available") is False:
                 continue
-            line = f"- {p.get('name')} : {_format_price(p.get('price'))}"
+            kind = (p.get("kind") or "").strip()
+            prefix = "Service" if kind == "service" else None
+            label = f"{prefix} — " if prefix else ""
+            line = f"- {label}{p.get('name')} : {_format_price(p.get('price'))}"
+            if p.get("duration"):
+                line += f" ({p['duration']})"
             if p.get("description"):
                 line += f" — {p['description']}"
+            if p.get("options"):
+                line += f" [options : {p['options']}]"
             lines.append(line)
         catalogue = "\n".join(lines) if lines else "(aucun produit disponible pour le moment)"
     else:

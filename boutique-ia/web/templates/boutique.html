@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="fr" style="--a: {{ accent|default('#10b981') }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Espace boutique — {{ product_name }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="/static/vendora-ui.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Icônes SVG (sprite, zéro emoji) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <symbol id="i-store" viewBox="0 0 24 24"><path d="M3 7l1.2-3.2A1 1 0 0 1 5.1 3h13.8a1 1 0 0 1 .9.8L21 7M4 7v12a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7M3 7h18M9.5 20v-5.5h5V20"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16zM3.3 7l8.7 5 8.7-5M12 22V12"/></symbol>
+    <symbol id="i-truck" viewBox="0 0 24 24"><path d="M3 4h11v11H3zM14 8h4l3 3v4h-7M6.5 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17.5 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.7 5.8L19.5 10l-5.8 1.7L12 17l-1.7-5.3L4.5 10l5.8-1.2zM18.5 16l.7 2.3 2.3.7-2.3.7-.7 2.3-.7-2.3-2.3-.7 2.3-.7z"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v17a1 1 0 0 0 1 1h17M7.5 16v-4M12 16V8.5M16.5 16v-6.5"/></symbol>
+    <symbol id="i-rocket" viewBox="0 0 24 24"><path d="M5 15c-1.5 1.2-2 5-2 5s3.8-.5 5-2c.7-.8.7-2-.1-2.8a2 2 0 0 0-2.9-.2zM12 15l-3-3a22 22 0 0 1 8-10c2 0 4 2 4 4a22 22 0 0 1-10 8zM9 12H4s.5-3 2-4c1.6-1 5 0 5 0M12 15v5s3-.5 4-2c1-1.6 0-5 0-5"/><circle cx="15" cy="9" r="1.4"/></symbol>
+    <symbol id="i-wand" viewBox="0 0 24 24"><path d="M15 4V2M9 8H7M9 4 8 3M19 8h2M16.5 5.5 18 4M3 21 14 10M12.5 7.5 16 11"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M10 11v6M14 11v6"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M9.9 5.2A9.5 9.5 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 3.9M6.2 6.2A17 17 0 0 0 2 12s3.5 7 10 7a9.5 9.5 0 0 0 3.9-.8M3 3l18 18"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><path d="M9 9h11a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V10a1 1 0 0 1 1-1zM4 15a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 2h6M10 2v6.5L4.7 18A1.5 1.5 0 0 0 6 20.3h12A1.5 1.5 0 0 0 19.3 18L14 8.5V2M7.5 14h9"/></symbol>
+    <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 1 0-20 9 9 0 0 1 8 14c-.8 1.4-2.7 1-2.7-1 0-1.4-1-2-2.3-2H13a2 2 0 0 1 0-4"/><circle cx="7.5" cy="11" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="11" r="1"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1.5 1.5M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1.5-1.5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  </g></defs></svg>
+
+{% if not merchant %}
+<div class="wrap">
+  <div class="topbar"><div class="brand"><span class="glyph"><svg viewBox="0 0 24 24"><use href="#i-store"/></svg></span>{{ product_name }}</div></div>
+  <h1>Boutique introuvable</h1>
+  <p class="lead">Vérifiez votre lien d'espace boutique.</p>
+</div>
+{% else %}
+
+<!-- Datalists : suggestions (choix) tout en laissant la saisie libre -->
+<datalist id="d-sector"><option>Bijoux</option><option>Mode & vêtements</option><option>Cosmétiques & beauté</option><option>Restauration</option><option>Chaussures</option><option>Accessoires</option><option>Décoration</option><option>Électronique</option><option>Services</option></datalist>
+<datalist id="d-network"><option>MTN</option><option>Moov</option><option>Celtis</option><option>Wave</option></datalist>
+<datalist id="d-tone"><option>Chaleureux et professionnel</option><option>Formel et élégant</option><option>Jeune et dynamique</option><option>Luxe et raffiné</option><option>Proche et amical</option></datalist>
+<datalist id="d-lang"><option>Français</option><option>Français et Fon</option><option>Français et anglais</option></datalist>
+<datalist id="d-duration"><option>30 min</option><option>1h</option><option>1h30</option><option>2h</option><option>Demi-journée</option></datalist>
+
+<div class="topbar">
+  <div class="brand"><span class="glyph"><svg viewBox="0 0 24 24"><use href="#i-store"/></svg></span>{{ merchant.business_name }}</div>
+  <span class="pill">Espace boutique</span>
+</div>
+
+<div class="wrap">
+  <span class="eyebrow reveal" style="margin-top:28px"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><use href="#i-wand"/></svg> Pilotez votre agent vendeur</span>
+  <h1 class="reveal">{{ merchant.business_name }}</h1>
+  <p class="lead reveal">Gérez votre boutique en quelques gestes. Chaque changement est appliqué <b style="color:var(--txt)">tout de suite</b> par votre agent vendeur.</p>
+  <div class="thread reveal"></div>
+
+  {% if wa_link %}
+  <div class="share bezel reveal"><div class="bezel-in">
+    <div class="lbl"><svg viewBox="0 0 24 24"><use href="#i-link"/></svg> Votre lien WhatsApp à partager à vos clients</div>
+    <div class="row">
+      <input id="walink" class="mono" readonly value="{{ wa_link }}">
+      <button class="btn gho sm" type="button" onclick="copyLink(this)"><svg viewBox="0 0 24 24"><use href="#i-copy"/></svg>Copier</button>
+    </div>
+    <div class="links">
+      <a class="btn gho sm" href="/essai/{{ merchant_id }}"><svg viewBox="0 0 24 24"><use href="#i-flask"/></svg>Tester mon agent</a>
+      {% if merchant.status != 'active' %}<a class="btn acc sm" href="/activation/{{ merchant_id }}">Activer ma boutique<span class="bib"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></span></a>{% endif %}
+    </div>
+  </div></div>
+  {% endif %}
+
+  <!-- STATS -->
+  <div class="stats reveal" style="margin-top:16px">
+    <div class="stat"><div class="sv mono">{{ stats.count }}</div><div class="sl">Commandes</div></div>
+    <div class="stat"><div class="sv mono">{{ "{:,}".format(stats.revenue|int).replace(",", " ") }}</div><div class="sl">F CFA de ventes</div></div>
+    <div class="stat"><div class="sv mono">{{ conversations|length }}</div><div class="sl">Conversations</div></div>
+    <div class="stat"><div class="sv txt">{{ plan_label }}</div><div class="sl">Forfait actif</div></div>
+  </div>
+
+  <!-- PILOTER -->
+  <section class="reveal" style="margin-top:34px">
+    <div class="shead">
+      <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-wand"/></svg></div>
+      <h2>Piloter mon agent</h2>
+      <div class="act"><span class="quota" id="quota">{% if remaining < 0 %}Ordres illimités{% else %}{{ remaining }}/{{ daily_limit }} aujourd'hui{% endif %}</span></div>
+    </div>
+    <p class="hint">Donnez vos ordres en langage simple : « ajoute un bracelet en or à 12000 », « mets le collier nacré en rupture », « passe le ton à plus formel ».</p>
+    <div class="bezel"><div class="bezel-in">
+      <div id="orderLog"></div>
+      <form id="orderForm">
+        <input id="orderInput" placeholder="Tapez votre ordre…" autocomplete="off" {% if remaining == 0 %}disabled{% endif %}>
+        <button class="btn acc" type="submit" {% if remaining == 0 %}disabled{% endif %}><svg viewBox="0 0 24 24"><use href="#i-send"/></svg></button>
+      </form>
+      {% if remaining == 0 %}<p class="hint" style="color:#ff9d9d;margin:11px 0 0">Limite du jour atteinte — <a href="#forfaits">passez à un forfait supérieur</a>.</p>{% endif %}
+    </div></div>
+  </section>
+
+  <!-- PRODUITS -->
+  <section class="reveal">
+    <div class="shead">
+      <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-box"/></svg></div>
+      <h2>Mes produits & services</h2>
+      <div class="act"><button class="btn pri sm" type="button" onclick="toggleAdd()"><svg viewBox="0 0 24 24"><use href="#i-plus"/></svg>Ajouter</button></div>
+    </div>
+
+    <div id="addForm" class="panel hide" style="margin-bottom:14px">
+      <div class="grid2">
+        <div><label>Type</label>
+          <select id="a_kind"><option value="produit">Produit</option><option value="service">Service</option></select></div>
+        <div><label>Nom</label><input id="a_name" placeholder="ex : Collier perle nacrée"></div>
+      </div>
+      <div class="grid2">
+        <div><label>Prix (F CFA)</label><input id="a_price" type="number" min="0" placeholder="ex : 7000"></div>
+        <div><label>Durée <span style="color:var(--mut2)">(si service)</span></label><input id="a_duration" list="d-duration" placeholder="ex : 1h30"></div>
+      </div>
+      <label>Description</label>
+      <textarea id="a_desc" placeholder="ex : argent 925, fait main, ajustable"></textarea>
+      <label>Options <span style="color:var(--mut2)">(variantes)</span></label>
+      <input id="a_options" placeholder="ex : tailles S/M/L · couleurs or, argent">
+      <div style="display:flex;gap:9px;margin-top:14px">
+        <button class="btn acc sm" type="button" onclick="addProduct()">Ajouter au catalogue</button>
+        <button class="btn gho sm" type="button" onclick="toggleAdd()">Annuler</button>
+      </div>
+    </div>
+
+    <div class="panel">
+    <div id="prodList">
+    {% if products %}
+      {% for p in products %}
+      <div class="prod {% if p.available == false %}off{% endif %}" data-id="{{ p.id }}">
+        <div class="prow view">
+          <div>
+            <div class="pn">{{ p.name }}{% if p.kind == 'service' %} <span class="tag">Service</span>{% endif %}{% if p.duration %} <span class="tag">{{ p.duration }}</span>{% endif %}</div>
+            {% if p.description %}<div class="pd">{{ p.description }}</div>{% endif %}
+            {% if p.options %}<div class="pd">Options : {{ p.options }}</div>{% endif %}
+            {% if p.available == false %}<span class="dot rupt">En rupture</span>{% else %}<span class="dot">Disponible</span>{% endif %}
+          </div>
+          <div class="pp">{% if p.price is not none %}<span class="mono">{{ "{:,}".format(p.price|int).replace(",", " ") }}</span> F{% else %}sur demande{% endif %}</div>
+          <div class="pbtns">
+            <button class="btn gho ico" title="Modifier" type="button" onclick="editRow(this)"><svg viewBox="0 0 24 24"><use href="#i-edit"/></svg></button>
+            <button class="btn gho ico" title="Disponibilité" type="button" onclick="toggleAvail(this,{{ 'false' if p.available == false else 'true' }})"><svg viewBox="0 0 24 24"><use href="{{ '#i-eyeoff' if p.available == false else '#i-eye' }}"/></svg></button>
+            <button class="btn dang ico" title="Supprimer" type="button" onclick="delProduct(this,'{{ p.name|e }}')"><svg viewBox="0 0 24 24"><use href="#i-trash"/></svg></button>
+          </div>
+        </div>
+        <div class="edit hide" style="padding-top:13px">
+          <div class="grid2">
+            <div><label>Type</label>
+              <select class="e_kind"><option value="produit" {{ 'selected' if p.kind != 'service' }}>Produit</option><option value="service" {{ 'selected' if p.kind == 'service' }}>Service</option></select></div>
+            <div><label>Nom</label><input class="e_name" value="{{ p.name|e }}"></div>
+          </div>
+          <div class="grid2">
+            <div><label>Prix (F CFA)</label><input class="e_price" type="number" min="0" value="{{ p.price|int if p.price is not none else '' }}"></div>
+            <div><label>Durée</label><input class="e_duration" list="d-duration" value="{{ p.duration or '' }}" placeholder="ex : 1h30"></div>
+          </div>
+          <label>Description</label>
+          <textarea class="e_desc" placeholder="ex : argent 925, fait main">{{ p.description or '' }}</textarea>
+          <label>Options</label>
+          <input class="e_options" value="{{ p.options or '' }}" placeholder="ex : tailles S/M/L">
+          <div style="display:flex;gap:9px;margin-top:14px">
+            <button class="btn acc sm" type="button" onclick="saveRow(this)">Enregistrer</button>
+            <button class="btn gho sm" type="button" onclick="cancelRow(this)">Annuler</button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty">Aucun produit pour l'instant. Cliquez sur « Ajouter » pour créer votre premier article.</div>
+    {% endif %}
+    </div>
+    </div>
+  </section>
+
+  <!-- INFOS -->
+  <section class="reveal">
+    <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-store"/></svg></div><h2>Infos de ma boutique</h2></div>
+    <div class="panel">
+      <div class="grid2">
+        <div><label>Nom de la boutique</label><input id="f_business_name" value="{{ merchant.business_name or '' }}" placeholder="ex : Little Sun Pearls"></div>
+        <div><label>Secteur</label><input id="f_sector" list="d-sector" value="{{ merchant.sector or '' }}" placeholder="ex : Bijoux"></div>
+      </div>
+      <label>Description <span style="color:var(--mut2)">(ce que vous vendez, en 2 lignes)</span></label>
+      <textarea id="f_description" placeholder="ex : Bijoux dorés et argentés faits main pour femmes élégantes">{{ merchant.description or '' }}</textarea>
+      <div class="grid2">
+        <div><label>Ville</label><input id="f_city" value="{{ merchant.city or '' }}" placeholder="ex : Cotonou"></div>
+        <div><label>Horaires</label><input id="f_business_hours" value="{{ merchant.business_hours or '' }}" placeholder="ex : Lun-Sam 9h-19h"></div>
+      </div>
+      <label>WhatsApp où vos clients vous écrivent</label>
+      <input id="f_whatsapp_business" value="{{ merchant.whatsapp_business or '' }}" placeholder="ex : +229 01 67 97 56 26">
+
+      <label style="margin-top:18px;display:flex;align-items:center;gap:7px"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="var(--mut)" stroke-width="1.5"><use href="#i-palette"/></svg> Couleur de ma marque</label>
+      <div class="brandrow">
+        <input type="color" id="f_brand_color" value="{{ merchant.brand_color or accent }}" oninput="previewBrand(this.value)">
+        <div class="bt">Personnalise <b>tout votre espace</b> à vos couleurs. Choisissez la couleur de votre logo.</div>
+      </div>
+
+      <div style="margin-top:18px"><button class="btn pri" type="button" onclick="saveMerchant(['business_name','sector','description','city','business_hours','whatsapp_business','brand_color'])">Enregistrer les infos</button></div>
+    </div>
+  </section>
+
+  <!-- LIVRAISON & PAIEMENT -->
+  <section class="reveal">
+    <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-truck"/></svg></div><h2>Livraison & paiement</h2></div>
+    <div class="panel">
+      <label>Zones de livraison</label>
+      <input id="f_delivery_zones" value="{{ merchant.delivery_zones or '' }}" placeholder="ex : Cotonou, Calavi, Abomey-Calavi">
+      <label>Frais de livraison</label>
+      <input id="f_delivery_fee_info" value="{{ merchant.delivery_fee_info or '' }}" placeholder="ex : Cotonou 1000F, hors ville 2000F">
+      <div class="grid2">
+        <div><label>Numéro Mobile Money</label><input id="f_momo_number" value="{{ merchant.momo_number or '' }}" placeholder="ex : 97 00 00 00"></div>
+        <div><label>Nom du compte MoMo</label><input id="f_momo_name" value="{{ merchant.momo_name or '' }}" placeholder="ex : nom du titulaire"></div>
+      </div>
+      <label>Réseau</label>
+      <input id="f_momo_network" list="d-network" value="{{ merchant.momo_network or '' }}" placeholder="ex : MTN">
+      <div style="margin-top:18px"><button class="btn pri" type="button" onclick="saveMerchant(['delivery_zones','delivery_fee_info','momo_number','momo_name','momo_network'])">Enregistrer livraison & paiement</button></div>
+    </div>
+  </section>
+
+  <!-- STYLE AGENT -->
+  <section class="reveal">
+    <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg></div><h2>Style de mon agent vendeur</h2></div>
+    <div class="panel">
+      <div class="grid2">
+        <div><label>Ton</label><input id="f_ai_tone" list="d-tone" value="{{ merchant.ai_tone or '' }}" placeholder="ex : Chaleureux et professionnel"></div>
+        <div><label>Langue(s)</label><input id="f_languages" list="d-lang" value="{{ merchant.languages or '' }}" placeholder="ex : Français"></div>
+      </div>
+      <label>Règles de la boutique <span style="color:var(--mut2)">(acompte, retours, garanties…)</span></label>
+      <textarea id="f_policies" placeholder="ex : acompte de 50% pour toute commande sur mesure">{{ merchant.policies or '' }}</textarea>
+      <label>Infos utiles à connaître <span style="color:var(--mut2)">(FAQ, précisions…)</span></label>
+      <textarea id="f_extra_info" placeholder="ex : emballage cadeau offert sur demande">{{ merchant.extra_info or '' }}</textarea>
+      <div style="margin-top:18px"><button class="btn pri" type="button" onclick="saveMerchant(['ai_tone','languages','policies','extra_info'])">Enregistrer le style</button></div>
+    </div>
+  </section>
+
+  <!-- ACTIVITÉ -->
+  <section class="reveal">
+    <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg></div><h2>Activité de mon agent</h2></div>
+    <div class="panel">
+      <div class="ah">Dernières commandes</div>
+      {% if recent_orders %}
+        {% for o in recent_orders %}
+        <div class="actrow">
+          <div>
+            <div class="an">{{ o.customer_name or o.customer_whatsapp or 'Client' }}
+              {% if o.delivery_mode %}<span class="tag">{{ o.delivery_mode }}</span>{% endif %}
+              <span class="tag acc">{{ o.status }}</span>
+            </div>
+            <div class="ad">{% if o["items"] %}{% for it in o["items"] %}{{ it.quantite }}× {{ it.produit }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}</div>
+          </div>
+          <div class="pp">{% if o.total is not none %}<span class="mono">{{ "{:,}".format(o.total|int).replace(",", " ") }}</span> F{% endif %}</div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty">Aucune commande pour l'instant. Partagez votre lien WhatsApp à vos clients.</div>
+      {% endif %}
+
+      <div class="ah" style="margin-top:24px">Dernières conversations</div>
+      {% if conversations %}
+        {% for c in conversations %}
+        <div class="actrow"><div>
+          <div class="an">{{ c.customer }} <span class="tag">{{ c.count }} msg</span></div>
+          <div class="ad">{{ ('Agent : ' if c.last_role == 'assistant' else 'Client : ') }}{{ c.last[:90] if c.last else '' }}</div>
+        </div></div>
+        {% endfor %}
+      {% else %}
+        <div class="empty">Aucune conversation pour l'instant.</div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- FORFAITS -->
+  <section class="reveal" id="forfaits">
+    <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-rocket"/></svg></div><h2>Mon forfait & fonctionnalités</h2></div>
+    <p class="hint">Forfait actuel : <b style="color:var(--a)">{{ plan_label }}</b>. Montez en gamme pour débloquer plus de puissance.</p>
+    <div class="plans">
+      {% for pl in plans %}
+      <div class="plan {% if pl.current %}cur{% endif %}">
+        <div class="ph"><div class="pname">{{ pl.label }}</div>{% if pl.current %}<span class="curtag">Actif</span>{% endif %}</div>
+        <div class="pprice"><span class="mono">{{ "{:,}".format(pl.price).replace(",", " ") }}</span> F<span>/mois</span></div>
+        <ul>
+          {% for f in pl.features %}
+          <li class="{% if not f.live %}soon{% endif %}"><svg viewBox="0 0 24 24"><use href="{{ '#i-check' if f.live else '#i-spark' }}"/></svg><span>{{ f.label }}</span>{% if not f.live %}<span class="soontag">bientôt</span>{% endif %}</li>
+          {% endfor %}
+        </ul>
+        {% if not pl.current %}<a class="btn {{ 'acc' if pl.key == 'empire' else 'gho' }} sm" href="/activation/{{ merchant_id }}">Choisir {{ pl.label }}{% if pl.key == 'empire' %}<span class="bib"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></span>{% endif %}</a>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    <p class="hint" style="margin-top:14px;display:flex;align-items:center;gap:7px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--mut2)" stroke-width="1.5"><use href="#i-spark"/></svg> « bientôt » = fonctionnalité en cours de déploiement, incluse dès sa sortie.</p>
+  </section>
+</div>
+{% endif %}
+
+<div id="toast"></div>
+
+<script>
+const MID = "{{ merchant_id }}";
+const root = document.documentElement;
+const toast = document.getElementById('toast');
+function notify(msg, err){
+  toast.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="'+(err?'#i-trash':'#i-check')+'"/></svg>' + msg;
+  toast.className = 'show' + (err ? ' err' : '');
+  setTimeout(()=>{ toast.className=''; }, err ? 4000 : 2200);
+}
+async function api(url, method, payload){
+  const opt = { method, headers:{'Content-Type':'application/json'} };
+  if(payload) opt.body = JSON.stringify(payload);
+  return (await fetch(url, opt)).json();
+}
+function copyLink(btn){ navigator.clipboard.writeText(document.getElementById('walink').value); btn.innerHTML='<svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Copié'; }
+function previewBrand(c){ root.style.setProperty('--a', c); }
+
+/* Reveal au scroll */
+const io = new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.setProperty('--d',(i%5)*55+'ms');io.observe(el);});
+
+/* Produits */
+function toggleAdd(){ document.getElementById('addForm').classList.toggle('hide'); }
+async function addProduct(){
+  const name = document.getElementById('a_name').value.trim();
+  if(!name){ notify('Le nom est obligatoire.', true); return; }
+  const pv = document.getElementById('a_price').value;
+  const d = await api(`/api/merchants/${MID}/products`, 'POST', {
+    name, price: pv===''?null:Number(pv),
+    kind: document.getElementById('a_kind').value,
+    duration: document.getElementById('a_duration').value.trim() || null,
+    description: document.getElementById('a_desc').value.trim() || null,
+    options: document.getElementById('a_options').value.trim() || null
+  });
+  if(d.ok){ notify('Produit ajouté'); setTimeout(()=>location.reload(),600); } else notify(d.error||'Erreur', true);
+}
+function editRow(b){ const c=b.closest('.prod'); c.querySelector('.view').classList.add('hide'); c.querySelector('.edit').classList.remove('hide'); }
+function cancelRow(b){ const c=b.closest('.prod'); c.querySelector('.edit').classList.add('hide'); c.querySelector('.view').classList.remove('hide'); }
+async function saveRow(b){
+  const c=b.closest('.prod'); const pid=c.dataset.id;
+  const name=c.querySelector('.e_name').value.trim();
+  if(!name){ notify('Le nom est obligatoire.', true); return; }
+  const pv=c.querySelector('.e_price').value;
+  const d = await api(`/api/merchants/${MID}/products/${pid}`, 'POST', {
+    name, price: pv===''?null:Number(pv),
+    kind: c.querySelector('.e_kind').value,
+    duration: c.querySelector('.e_duration').value.trim() || null,
+    description: c.querySelector('.e_desc').value.trim() || null,
+    options: c.querySelector('.e_options').value.trim() || null
+  });
+  if(d.ok){ notify('Produit modifié'); setTimeout(()=>location.reload(),600); } else notify(d.error||'Erreur', true);
+}
+async function toggleAvail(b,cur){ const c=b.closest('.prod'); const d=await api(`/api/merchants/${MID}/products/${c.dataset.id}`,'POST',{available:!cur});
+  if(d.ok){ notify(cur?'Marqué en rupture':'Marqué disponible'); setTimeout(()=>location.reload(),600);} else notify(d.error||'Erreur',true); }
+async function delProduct(b,name){ if(!confirm(`Supprimer « ${name} » ? Action définitive.`)) return;
+  const c=b.closest('.prod'); const d=await api(`/api/merchants/${MID}/products/${c.dataset.id}`,'DELETE');
+  if(d.ok){ notify('Produit supprimé'); setTimeout(()=>location.reload(),600);} else notify(d.error||'Erreur',true); }
+
+/* Piloter */
+const oLog=document.getElementById('orderLog');
+function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function oBubble(html,cls){ const d=document.createElement('div'); d.className='ob '+cls; d.innerHTML=html; oLog.appendChild(d); oLog.scrollTop=oLog.scrollHeight; return d; }
+const oForm=document.getElementById('orderForm');
+if(oForm){ oForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const inp=document.getElementById('orderInput'); const text=inp.value.trim(); if(!text) return;
+  oBubble(esc(text),'me'); inp.value=''; inp.focus();
+  const typing=oBubble('<span class="pulse"></span>l\'agent exécute…','typing');
+  try{
+    const d=await api(`/api/merchants/${MID}/order`,'POST',{message:text});
+    typing.remove();
+    if(!d.ok){ oBubble('⚠ '+esc(d.error||'Erreur'),'ag'); return; }
+    (d.actions||[]).forEach(a=>oBubble('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg>'+esc(a),'act'));
+    if(d.reply) oBubble(esc(d.reply),'ag');
+    const q=document.getElementById('quota'); if(q && d.remaining>=0) q.textContent=d.remaining+'/{{ daily_limit }} aujourd\'hui';
+    if(d.limit_reached){ inp.disabled=true; oForm.querySelector('button').disabled=true; }
+    if((d.actions||[]).length){ notify('Boutique mise à jour'); setTimeout(()=>location.reload(),1500); }
+  }catch(ex){ typing.remove(); oBubble('⚠ '+esc(ex.message),'ag'); }
+});}
+
+/* Fiche */
+async function saveMerchant(fields){
+  const payload={}; fields.forEach(f=>{ const el=document.getElementById('f_'+f); if(el) payload[f]=el.value; });
+  if('business_name' in payload && !payload.business_name.trim()){ notify('Le nom de la boutique est obligatoire.', true); return; }
+  const d=await api(`/api/merchants/${MID}/update`,'POST',payload);
+  if(d.ok) notify('Enregistré'); else notify(d.error||'Erreur', true);
+}
+</script>
+</body>
+</html>

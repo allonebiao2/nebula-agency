@@ -56,6 +56,9 @@ create table if not exists bia_products (
   description text,
   photo_url   text,
   available   boolean default true,
+  kind        text,                  -- 'produit' | 'service'
+  duration    text,                  -- durée (pour les services)
+  options     text,                  -- variantes : tailles, couleurs, formules…
   created_at  timestamptz default now()
 );
 create index if not exists bia_products_merchant_idx on bia_products(merchant_id);
@@ -92,9 +95,24 @@ create index if not exists bia_messages_conv_idx on bia_messages(merchant_id, cu
 alter table bia_merchants add column if not exists code text;  -- code court par boutique
 create unique index if not exists bia_merchants_code_idx on bia_merchants(code);
 
+-- Back-office : couleur de marque du client (accent de SON back-office)
+alter table bia_merchants add column if not exists brand_color text;
+
 -- Quelle boutique un client WhatsApp est en train de contacter (mémoire de session)
 create table if not exists bia_wa_sessions (
   customer_whatsapp text primary key,
   merchant_id uuid not null references bia_merchants(id) on delete cascade,
   updated_at timestamptz default now()
 );
+
+-- 6. Ordres donnés par le commerçant à son agent depuis le back-office
+--    (langage naturel : "ajoute X", "mets Y en rupture"…). Sert aussi à
+--    appliquer le quota d'ordres/jour selon le forfait.
+create table if not exists bia_manager_commands (
+  id uuid primary key default gen_random_uuid(),
+  merchant_id uuid not null references bia_merchants(id) on delete cascade,
+  command    text,
+  reply      text,
+  created_at timestamptz default now()
+);
+create index if not exists bia_manager_cmd_idx on bia_manager_commands(merchant_id, created_at);

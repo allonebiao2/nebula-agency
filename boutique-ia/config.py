@@ -30,9 +30,14 @@ class Settings(BaseSettings):
     supabase_url: str = ""
     supabase_service_role_key: str = ""
 
-    # --- IA (étage 2) ---
+    # --- IA : un modèle par tâche (qualité ↔ coût) ---
     anthropic_api_key: str = ""
-    claude_model: str = "claude-haiku-4-5-20251001"  # léger + rapide + bon marché pour la vente WhatsApp
+    # Vendeur WhatsApp face aux clients : léger, rapide, économique (gros volume)
+    claude_model: str = "claude-haiku-4-5-20251001"
+    # Ordres du commerçant (« piloter mon agent ») : Sonnet, raisonnement fiable
+    manager_model: str = "claude-sonnet-4-6"
+    # Création / génération du back-office & contenus riches : Opus, qualité max
+    builder_model: str = "claude-opus-4-8"
 
     # --- Alertes Mongazi (réutilise le bot Telegram NOVA) ---
     telegram_bot_token: str = ""
@@ -88,6 +93,46 @@ PLAN_LABELS = {
     "empire": "Empire",
 }
 
+# Nombre d'ORDRES/jour que le commerçant peut donner à son agent depuis le
+# back-office (piloter sa boutique en langage naturel). Vrai différenciateur,
+# réellement appliqué côté serveur. -1 = illimité.
+PLAN_DAILY_ORDERS = {
+    "demarrage": 5,
+    "business": 30,
+    "empire": -1,   # illimité
+}
+
+# Fonctionnalités affichées par forfait sur le back-office (UNIQUEMENT des
+# fonctions réelles de Vendora). `live=False` = annoncé « Bientôt » (honnête).
+# Les fonctions communes (live aujourd'hui) sont héritées par tous les forfaits.
+PLAN_CORE_FEATURES = [
+    "Agent vendeur sur WhatsApp 24h/24",
+    "Catalogue de produits & services illimité",
+    "Prise de commande automatique",
+    "Alerte à chaque nouvelle commande",
+    "Back-office de gestion en ligne",
+    "Statistiques de ventes & conversations",
+    "Techniques de vente (ventes additionnelles, relances)",
+]
+PLAN_EXTRA_FEATURES = {
+    "demarrage": [
+        ("5 ordres/jour pour piloter votre agent", True),
+    ],
+    "business": [
+        ("30 ordres/jour pour piloter votre agent", True),
+        ("Alerte commande aussi sur votre propre WhatsApp", False),
+        ("Support prioritaire", True),
+    ],
+    "empire": [
+        ("Ordres illimités pour piloter votre agent", True),
+        ("Alerte commande aussi sur votre propre WhatsApp", False),
+        ("Support prioritaire", True),
+        ("Numéro WhatsApp dédié à votre boutique", False),
+        ("Agent de prospection automatique de clients", False),
+        ("Accompagnement personnalisé", True),
+    ],
+}
+
 
 def normalize_plan(plan: str | None) -> str:
     p = (plan or "").strip().lower()
@@ -96,3 +141,8 @@ def normalize_plan(plan: str | None) -> str:
 
 def price_for_plan(plan: str | None) -> int:
     return PLAN_PRICES[normalize_plan(plan)]
+
+
+def daily_orders_for_plan(plan: str | None) -> int:
+    """Quota d'ordres/jour du forfait (-1 = illimité)."""
+    return PLAN_DAILY_ORDERS[normalize_plan(plan)]
