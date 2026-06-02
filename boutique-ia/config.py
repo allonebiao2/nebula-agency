@@ -32,7 +32,7 @@ class Settings(BaseSettings):
 
     # --- IA (étage 2) ---
     anthropic_api_key: str = ""
-    claude_model: str = "claude-sonnet-4-6"
+    claude_model: str = "claude-haiku-4-5-20251001"  # léger + rapide + bon marché pour la vente WhatsApp
 
     # --- Alertes Mongazi (réutilise le bot Telegram NOVA) ---
     telegram_bot_token: str = ""
