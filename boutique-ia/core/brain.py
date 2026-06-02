@@ -193,6 +193,25 @@ def _text_of(resp) -> str:
     return "\n".join(parts).strip()
 
 
+def _fallback_after_order(merchant: dict) -> str:
+    """Message de secours si l'agent enregistre la commande sans rien écrire au client."""
+    momo_number = merchant.get("momo_number") or ""
+    momo_name = merchant.get("momo_name") or ""
+    momo_network = merchant.get("momo_network") or ""
+    if momo_number:
+        who = f" ({momo_name})" if momo_name else ""
+        net = f"{momo_network} " if momo_network else ""
+        return (
+            "C'est noté, votre commande est enregistrée ✅\n"
+            f"Pour payer, envoyez le montant au {net}{momo_number}{who}, "
+            "puis envoyez-moi la capture ou la référence du SMS. Merci 🙏"
+        )
+    return (
+        "C'est noté, votre commande est enregistrée ✅ "
+        "La boutique vous contacte tout de suite pour le paiement. Merci 🙏"
+    )
+
+
 def reply(
     merchant: dict,
     products: list[dict],
@@ -245,7 +264,9 @@ def reply(
         messages.append({"role": "assistant", "content": resp.content})
         results = []
         for tu in tool_uses:
-            note = "Commande enregistrée et propriétaire prévenu."
+            note = ("Commande enregistrée et propriétaire prévenu. Confirme maintenant "
+                    "au client en 2-3 lignes WhatsApp et donne les instructions de "
+                    "paiement Mobile Money.")
             if tu.name == "enregistrer_commande":
                 if on_order:
                     try:
@@ -255,7 +276,8 @@ def reply(
                         note = ("Impossible d'enregistrer pour l'instant — continue "
                                 "normalement et donne les instructions de paiement.")
                 else:
-                    note = "Commande notée (mode démo, non enregistrée)."
+                    note = ("Commande notée (mode démo, non enregistrée). Confirme au "
+                            "client et donne les instructions de paiement Mobile Money.")
             else:
                 note = "Outil inconnu, ignore-le."
             results.append({"type": "tool_result", "tool_use_id": tu.id, "content": note})
@@ -268,4 +290,5 @@ def reply(
         system=system,
         messages=messages,
     )
-    return _text_of(resp) or "…"
+    # Si l'agent reste muet après avoir enregistré la commande, on confirme nous-mêmes.
+    return _text_of(resp) or (_fallback_after_order(merchant) if did_tool else "…")
