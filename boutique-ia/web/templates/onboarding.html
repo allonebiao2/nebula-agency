@@ -3,175 +3,307 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ product_name }} — Créez votre vendeur WhatsApp</title>
+<title>{{ product_name }} — {{ tagline }}</title>
+<link rel="icon" href="/static/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0d0b1f; --card:#17142e; --line:#2a2547; --txt:#f4f2ff; --muted:#a59fce;
-    --accent:#7c5cff; --accent2:#00d9a3; --danger:#ff5c7c; --radius:16px;
+    --bg:#07070d; --panel:#0f0f1a; --panel2:#13131f; --line:rgba(255,255,255,.08);
+    --txt:#f5f6fa; --muted:#9aa0b4; --v:#8B5CFF; --c:#22D3EE; --danger:#ff5c7c;
+    --grad:linear-gradient(100deg,var(--v),var(--c));
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.55;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:680px;margin:0 auto;padding:20px 16px 80px}
-  header{text-align:center;padding:32px 0 20px}
-  .logo{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:1.1rem;letter-spacing:.5px;
-        background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
-  h1{font-size:1.9rem;margin:14px 0 8px;font-weight:800;line-height:1.2}
-  h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .sub{color:var(--muted);font-size:1.02rem;max-width:520px;margin:0 auto}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px 18px;margin-top:18px}
-  .card h2{font-size:1.05rem;display:flex;align-items:center;gap:8px;margin-bottom:4px}
-  .card .hint{color:var(--muted);font-size:.86rem;margin-bottom:16px}
-  label{display:block;font-size:.85rem;color:var(--muted);margin:14px 0 6px;font-weight:600}
-  label .req{color:var(--danger)}
-  input,textarea,select{width:100%;background:#0f0d24;border:1px solid var(--line);border-radius:10px;
-        color:var(--txt);padding:12px 13px;font-size:.98rem;font-family:inherit}
-  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent)}
-  textarea{min-height:74px;resize:vertical}
-  .row{display:flex;gap:12px}.row>*{flex:1}
-  .product{border:1px dashed var(--line);border-radius:12px;padding:14px;margin-top:12px;position:relative}
-  .product .del{position:absolute;top:10px;right:10px;background:transparent;border:none;color:var(--danger);
-        cursor:pointer;font-size:1.1rem}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;overflow-x:hidden}
+  h1,h2,h3,.brand{font-family:'Sora',sans-serif}
+  .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+  a{color:inherit;text-decoration:none}
+
+  /* glow background */
+  .glow{position:fixed;inset:0;z-index:-1;overflow:hidden}
+  .glow::before,.glow::after{content:"";position:absolute;width:560px;height:560px;border-radius:50%;filter:blur(120px);opacity:.22}
+  .glow::before{background:var(--v);top:-180px;left:-120px}
+  .glow::after{background:var(--c);bottom:-220px;right:-140px}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(7,7,13,.7);border-bottom:1px solid var(--line)}
+  nav .row{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700}
+  .logo img{width:34px;height:34px}
+  .logo .brand{font-size:1.25rem;letter-spacing:.5px}
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:12px;
-        font-size:1rem;font-weight:700;cursor:pointer;padding:14px 20px;width:100%}
-  .btn-add{background:#241f44;color:var(--txt);border:1px solid var(--line);margin-top:12px}
-  .btn-go{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;margin-top:24px;font-size:1.08rem;padding:16px}
+       font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;transition:transform .15s,box-shadow .2s}
+  .btn-primary{background:var(--grad);color:#06060c;padding:12px 22px;box-shadow:0 8px 30px rgba(139,92,255,.35)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(34,211,238,.4)}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--txt);padding:11px 20px}
+  nav .btn{font-size:.92rem;padding:10px 18px}
+
+  /* hero */
+  .hero{text-align:center;padding:84px 0 60px}
+  .tagpill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--panel);
+        border-radius:30px;padding:7px 16px;font-size:.82rem;color:var(--muted);margin-bottom:26px}
+  .tagpill .dot{width:8px;height:8px;border-radius:50%;background:var(--c);box-shadow:0 0 10px var(--c)}
+  .hero h1{font-size:clamp(2.2rem,6vw,4rem);font-weight:800;line-height:1.05;letter-spacing:-1px;margin-bottom:22px}
+  .hero p.sub{font-size:clamp(1rem,2.4vw,1.25rem);color:var(--muted);max-width:680px;margin:0 auto 34px}
+  .hero .cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .hero .btn{font-size:1.05rem;padding:15px 30px}
+
+  /* marquee */
+  .marquee{margin-top:64px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+        padding:18px 0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+  .track{display:flex;gap:18px;width:max-content;animation:scroll 32s linear infinite}
+  .chip{display:inline-flex;align-items:center;gap:9px;white-space:nowrap;color:var(--muted);font-size:.95rem;
+        border:1px solid var(--line);background:var(--panel);border-radius:30px;padding:9px 18px}
+  .chip b{color:var(--txt);font-weight:600}
+  @keyframes scroll{to{transform:translateX(-50%)}}
+
+  /* sections */
+  section{padding:80px 0}
+  .eyebrow{color:var(--c);font-weight:600;font-size:.85rem;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:12px}
+  .sec-title{text-align:center;font-size:clamp(1.7rem,4vw,2.6rem);font-weight:700;letter-spacing:-.5px;margin-bottom:14px}
+  .sec-sub{text-align:center;color:var(--muted);max-width:620px;margin:0 auto 50px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
+        border-radius:18px;padding:26px;position:relative;overflow:hidden}
+  .card .ic{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+        font-size:1.4rem;background:rgba(139,92,255,.12);border:1px solid var(--line);margin-bottom:16px}
+  .card h3{font-size:1.12rem;margin-bottom:8px}
+  .card p{color:var(--muted);font-size:.95rem}
+
+  /* steps */
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;counter-reset:s}
+  .step{position:relative;padding-left:8px}
+  .step .n{font-family:'Sora';font-size:2.4rem;font-weight:800;line-height:1}
+  .step h3{margin:10px 0 6px;font-size:1.15rem}
+  .step p{color:var(--muted);font-size:.95rem}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  /* form */
+  .formwrap{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
+        border-radius:24px;padding:10px;max-width:720px;margin:0 auto}
+  .formwrap .inner{padding:22px}
+  .fcard{border:1px solid var(--line);border-radius:16px;padding:20px 18px;margin-top:16px;background:rgba(255,255,255,.015)}
+  .fcard:first-of-type{margin-top:0}
+  .fcard h3{font-size:1.02rem;display:flex;align-items:center;gap:9px;margin-bottom:3px}
+  .fcard .hint{color:var(--muted);font-size:.84rem;margin-bottom:14px}
+  label{display:block;font-size:.82rem;color:var(--muted);margin:13px 0 6px;font-weight:600}
+  label .req{color:var(--danger)}
+  input,textarea,select{width:100%;background:#0a0a14;border:1px solid var(--line);border-radius:11px;
+        color:var(--txt);padding:12px 13px;font-size:.97rem;font-family:inherit;transition:border-color .15s}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--v);box-shadow:0 0 0 3px rgba(139,92,255,.15)}
+  textarea{min-height:72px;resize:vertical}
+  .frow{display:flex;gap:12px}.frow>*{flex:1}
+  .product{border:1px dashed var(--line);border-radius:13px;padding:14px;margin-top:12px;position:relative}
+  .product .del{position:absolute;top:8px;right:8px;background:transparent;border:none;color:var(--danger);cursor:pointer;font-size:1.1rem}
+  .btn-add{width:100%;background:rgba(139,92,255,.1);color:var(--txt);border:1px solid var(--line);padding:13px;margin-top:12px;border-radius:12px}
+  .price-banner{background:linear-gradient(100deg,rgba(139,92,255,.14),rgba(34,211,238,.1));
+        border:1px solid var(--line);border-radius:16px;padding:18px;text-align:center;margin-top:18px}
+  .price-banner b{font-size:1.4rem}
+  .btn-go{width:100%;background:var(--grad);color:#06060c;margin-top:20px;font-size:1.08rem;padding:17px;border-radius:14px;
+        box-shadow:0 10px 36px rgba(139,92,255,.35)}
   .btn-go:disabled{opacity:.6;cursor:wait}
-  .price-banner{background:linear-gradient(90deg,rgba(124,92,255,.15),rgba(0,217,163,.12));
-        border:1px solid var(--line);border-radius:var(--radius);padding:16px;text-align:center;margin-top:18px}
-  .price-banner b{font-size:1.3rem;color:var(--accent2)}
-  .err{background:rgba(255,92,124,.12);border:1px solid var(--danger);color:#ffb3c2;padding:12px;border-radius:10px;margin-top:16px;display:none}
-  footer{text-align:center;color:var(--muted);font-size:.8rem;margin-top:28px}
-  .steps{display:flex;justify-content:center;gap:18px;margin-top:18px;flex-wrap:wrap;color:var(--muted);font-size:.82rem}
-  .steps span{display:flex;align-items:center;gap:6px}
-  .dot{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:inline-flex;
-        align-items:center;justify-content:center;font-size:.75rem;font-weight:700}
+  .err{background:rgba(255,92,124,.1);border:1px solid var(--danger);color:#ffb3c2;padding:12px;border-radius:11px;margin-top:14px;display:none}
+
+  footer{border-top:1px solid var(--line);padding:36px 0;text-align:center;color:var(--muted);font-size:.85rem}
+  footer .logo{justify-content:center;margin-bottom:10px}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="logo">✦ {{ product_name }}</div>
-    <h1>Votre <span>vendeur WhatsApp</span><br>qui ne dort jamais</h1>
-    <p class="sub">Remplissez votre fiche. En quelques minutes, une IA répond à vos clients,
-       prend les commandes et vous prévient à chaque vente — 24h/24.</p>
-    <div class="steps">
-      <span><i class="dot">1</i> Votre fiche</span>
-      <span><i class="dot">2</i> Paiement Mobile Money</span>
-      <span><i class="dot">3</i> Activation</span>
-    </div>
-  </header>
+<div class="glow"></div>
 
-  <form id="form">
-    <!-- BOUTIQUE -->
-    <div class="card">
-      <h2>🏪 Votre boutique</h2>
-      <div class="hint">L'IA utilisera ces infos pour parler comme vous à vos clients.</div>
-      <label>Nom de la boutique <span class="req">*</span></label>
-      <input name="business_name" placeholder="Ex : Little Sun Pearls" required>
-      <div class="row">
-        <div><label>Secteur</label>
-          <input name="sector" placeholder="Bijoux, vêtements, resto…"></div>
-        <div><label>Ville</label>
-          <input name="city" placeholder="Cotonou"></div>
+<nav>
+  <div class="wrap row">
+    <div class="logo"><img src="/static/logo.svg" alt="{{ product_name }}"><span class="brand grad">{{ product_name }}</span></div>
+    <a href="#creer" class="btn btn-primary">Créer mon agent</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="tagpill"><span class="dot"></span> Agent vendeur doté d'intelligence artificielle · WhatsApp</div>
+    <h1>Votre boutique vend<br>même quand <span class="grad">vous dormez</span>.</h1>
+    <p class="sub">{{ product_name }} crée pour vous un <b>agent vendeur doté d'intelligence artificielle</b> :
+       il répond à vos clients sur WhatsApp, conseille, prend les commandes et encaisse en Mobile Money — 24h/24, sans jamais s'arrêter.</p>
+    <div class="cta-row">
+      <a href="#creer" class="btn btn-primary">Créer mon agent vendeur →</a>
+      <a href="#avantages" class="btn btn-ghost">Voir les avantages</a>
+    </div>
+  </div>
+
+  <!-- MARQUEE -->
+  <div class="marquee">
+    <div class="track" id="track"></div>
+  </div>
+</header>
+
+<!-- AVANTAGES -->
+<section id="avantages">
+  <div class="wrap">
+    <div class="eyebrow reveal">Pourquoi {{ product_name }}</div>
+    <h2 class="sec-title reveal">Un vendeur d'élite, pour chaque boutique.</h2>
+    <p class="sec-sub reveal">Pas un salaire à payer. Pas de jour de repos. Juste un agent vendeur qui connaît vos produits par cœur et ne laisse jamais filer une vente.</p>
+    <div class="grid">
+      <div class="card reveal"><div class="ic">🌙</div><h3>Disponible 24h/24</h3><p>Il répond la nuit, le week-end, les jours fériés. Chaque message reçoit une réponse immédiate.</p></div>
+      <div class="card reveal"><div class="ic">💳</div><h3>Encaisse en Mobile Money</h3><p>Il guide le client jusqu'au paiement Mobile Money et confirme la commande automatiquement.</p></div>
+      <div class="card reveal"><div class="ic">🧠</div><h3>Adapté à VOTRE boutique</h3><p>Vos produits, vos prix, votre ton. Il parle comme vous le feriez, jamais hors catalogue.</p></div>
+      <div class="card reveal"><div class="ic">📈</div><h3>Vend vraiment</h3><p>Conseils, ventes additionnelles, relances : un vrai talent commercial, pas un simple répondeur.</p></div>
+      <div class="card reveal"><div class="ic">🔔</div><h3>Vous tient informé</h3><p>À chaque commande, vous êtes prévenu. Vous gardez le contrôle, lui fait le travail.</p></div>
+      <div class="card reveal"><div class="ic">⚡</div><h3>Prêt en minutes</h3><p>Remplissez votre fiche, testez-le gratuitement, activez. Aucune compétence technique requise.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMENT -->
+<section style="padding-top:20px">
+  <div class="wrap">
+    <div class="eyebrow reveal">Comment ça marche</div>
+    <h2 class="sec-title reveal">3 étapes. Quelques minutes.</h2>
+    <div class="steps" style="margin-top:40px">
+      <div class="step reveal"><div class="n grad">01</div><h3>Décrivez votre boutique</h3><p>Vos produits, vos prix, votre style. Une seule fiche à remplir.</p></div>
+      <div class="step reveal"><div class="n grad">02</div><h3>Testez gratuitement</h3><p>Discutez avec votre agent vendeur comme un vrai client, tout de suite.</p></div>
+      <div class="step reveal"><div class="n grad">03</div><h3>Activez & vendez</h3><p>Un paiement Mobile Money et votre agent prend le relais sur WhatsApp.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FORMULAIRE -->
+<section id="creer">
+  <div class="wrap">
+    <div class="eyebrow reveal">Créez le vôtre</div>
+    <h2 class="sec-title reveal">Donnez vie à votre agent vendeur</h2>
+    <p class="sec-sub reveal">Plus votre fiche est détaillée, plus votre agent vend bien.</p>
+
+    <div class="formwrap reveal">
+      <div class="inner">
+        <form id="form">
+          <div class="fcard">
+            <h3>🏪 Votre boutique</h3>
+            <div class="hint">Ces infos permettent à l'agent de parler comme vous à vos clients.</div>
+            <label>Nom de la boutique <span class="req">*</span></label>
+            <input name="business_name" placeholder="Ex : Little Sun Pearls" required>
+            <div class="frow">
+              <div><label>Secteur</label><input name="sector" placeholder="Bijoux, vêtements, resto…"></div>
+              <div><label>Ville</label><input name="city" placeholder="Cotonou"></div>
+            </div>
+            <label>Décrivez votre activité</label>
+            <textarea name="description" placeholder="Ex : Je vends des bijoux faits main, dorés et argentés, pour femmes élégantes…"></textarea>
+          </div>
+
+          <div class="fcard">
+            <h3>📱 Contacts</h3>
+            <div class="hint">Où vos clients écrivent, et où VOUS recevez les alertes de vente.</div>
+            <label>WhatsApp de la boutique (les clients écrivent ici) <span class="req">*</span></label>
+            <input name="whatsapp_business" placeholder="+229 01 67 97 56 26" required>
+            <div class="frow">
+              <div><label>Votre WhatsApp perso (alertes)</label><input name="owner_whatsapp" placeholder="+229 …"></div>
+              <div><label>Email (optionnel)</label><input name="owner_email" type="email" placeholder="vous@email.com"></div>
+            </div>
+          </div>
+
+          <div class="fcard">
+            <h3>💳 Comment vos clients vous paient</h3>
+            <div class="hint">L'agent donnera ce numéro Mobile Money à vos clients pour encaisser.</div>
+            <div class="frow">
+              <div><label>Numéro Mobile Money</label><input name="momo_number" placeholder="97 XX XX XX"></div>
+              <div><label>Réseau</label>
+                <select name="momo_network">
+                  <option value="">—</option><option>MTN</option><option>Moov</option>
+                  <option>Celtis</option><option>Wave</option><option>Autre</option>
+                </select></div>
+            </div>
+            <label>Nom du titulaire du compte MoMo</label>
+            <input name="momo_name" placeholder="Le nom qui s'affiche au paiement">
+          </div>
+
+          <div class="fcard">
+            <h3>🚚 Livraison</h3>
+            <div class="hint">Pour que l'agent réponde aux questions de livraison tout seul.</div>
+            <label>Zones livrées</label>
+            <input name="delivery_zones" placeholder="Cotonou, Calavi, Abomey-Calavi…">
+            <label>Frais de livraison</label>
+            <input name="delivery_fee_info" placeholder="Cotonou 1000F · hors ville 2000F · retrait gratuit">
+          </div>
+
+          <div class="fcard">
+            <h3>📦 Vos produits</h3>
+            <div class="hint">Ajoutez ce que vous vendez. L'agent proposera ces produits, avec les prix.</div>
+            <div id="products"></div>
+            <button type="button" class="btn btn-add" id="addProduct">+ Ajouter un produit</button>
+          </div>
+
+          <div class="fcard">
+            <h3>🤖 Personnalité de votre agent vendeur</h3>
+            <div class="hint">Comment votre agent doit parler à vos clients.</div>
+            <div class="frow">
+              <div><label>Ton</label>
+                <select name="ai_tone">
+                  <option>chaleureux et professionnel</option>
+                  <option>jeune et amical</option>
+                  <option>très professionnel et sobre</option>
+                  <option>luxe et élégant</option>
+                </select></div>
+              <div><label>Langues</label><input name="languages" value="français"></div>
+            </div>
+            <label>Horaires</label>
+            <input name="business_hours" placeholder="Lun-Sam 9h-19h">
+            <label>Règles (acompte, retours, garanties…)</label>
+            <textarea name="policies" placeholder="Ex : acompte 50% pour toute commande sur mesure, pas de remboursement…"></textarea>
+            <label>Autres infos utiles à l'agent (FAQ, détails…)</label>
+            <textarea name="extra_info" placeholder="Tout ce qu'un bon vendeur devrait savoir sur votre boutique."></textarea>
+          </div>
+
+          <div class="price-banner">
+            Essai gratuit, puis activation : <b class="grad">{{ "{:,}".format(price).replace(",", " ") }} F CFA / mois</b><br>
+            <span style="color:var(--muted);font-size:.88rem">Vous testez votre agent avant de payer</span>
+          </div>
+
+          <div class="err" id="err"></div>
+          <button type="submit" class="btn btn-go" id="submit">Créer mon agent vendeur →</button>
+        </form>
       </div>
-      <label>Décrivez votre activité (l'IA s'en servira)</label>
-      <textarea name="description" placeholder="Ex : Je vends des bijoux faits main, dorés et argentés, pour femmes élégantes…"></textarea>
     </div>
+  </div>
+</section>
 
-    <!-- CONTACT -->
-    <div class="card">
-      <h2>📱 Contacts</h2>
-      <div class="hint">Où vos clients écrivent, et où VOUS recevez les alertes de vente.</div>
-      <label>WhatsApp de la boutique (les clients écrivent ici) <span class="req">*</span></label>
-      <input name="whatsapp_business" placeholder="+229 01 67 97 56 26" required>
-      <div class="row">
-        <div><label>Votre WhatsApp perso (alertes)</label>
-          <input name="owner_whatsapp" placeholder="+229 …"></div>
-        <div><label>Email (optionnel)</label>
-          <input name="owner_email" type="email" placeholder="vous@email.com"></div>
-      </div>
-    </div>
-
-    <!-- PAIEMENT CLIENT -->
-    <div class="card">
-      <h2>💳 Comment vos clients vous paient</h2>
-      <div class="hint">L'IA donnera ce numéro Mobile Money à vos clients pour encaisser.</div>
-      <div class="row">
-        <div><label>Numéro Mobile Money</label>
-          <input name="momo_number" placeholder="97 XX XX XX"></div>
-        <div><label>Réseau</label>
-          <select name="momo_network">
-            <option value="">—</option><option>MTN</option><option>Moov</option>
-            <option>Celtis</option><option>Wave</option><option>Autre</option>
-          </select></div>
-      </div>
-      <label>Nom du titulaire du compte MoMo</label>
-      <input name="momo_name" placeholder="Le nom qui s'affiche au paiement">
-    </div>
-
-    <!-- LIVRAISON -->
-    <div class="card">
-      <h2>🚚 Livraison</h2>
-      <div class="hint">Pour que l'IA réponde aux questions de livraison toute seule.</div>
-      <label>Zones livrées</label>
-      <input name="delivery_zones" placeholder="Cotonou, Calavi, Abomey-Calavi…">
-      <label>Frais de livraison</label>
-      <input name="delivery_fee_info" placeholder="Cotonou 1000F · hors ville 2000F · retrait gratuit">
-    </div>
-
-    <!-- PRODUITS -->
-    <div class="card">
-      <h2>📦 Vos produits</h2>
-      <div class="hint">Ajoutez ce que vous vendez. L'IA proposera ces produits, avec les prix.</div>
-      <div id="products"></div>
-      <button type="button" class="btn btn-add" id="addProduct">+ Ajouter un produit</button>
-    </div>
-
-    <!-- PERSONNALITÉ IA -->
-    <div class="card">
-      <h2>🤖 Personnalité de votre vendeur IA</h2>
-      <div class="hint">Comment l'assistant doit parler à vos clients.</div>
-      <div class="row">
-        <div><label>Ton</label>
-          <select name="ai_tone">
-            <option>chaleureux et professionnel</option>
-            <option>jeune et amical</option>
-            <option>très professionnel et sobre</option>
-            <option>luxe et élégant</option>
-          </select></div>
-        <div><label>Langues</label>
-          <input name="languages" value="français"></div>
-      </div>
-      <label>Horaires</label>
-      <input name="business_hours" placeholder="Lun-Sam 9h-19h">
-      <label>Règles (acompte, retours, garanties…)</label>
-      <textarea name="policies" placeholder="Ex : acompte 50% pour toute commande sur mesure, pas de remboursement…"></textarea>
-      <label>Autres infos utiles à l'IA (FAQ, détails…)</label>
-      <textarea name="extra_info" placeholder="Tout ce qu'un bon vendeur devrait savoir sur votre boutique."></textarea>
-    </div>
-
-    <div class="price-banner">
-      Activation : <b>{{ "{:,}".format(price).replace(",", " ") }} F CFA / mois</b><br>
-      <span style="color:var(--muted);font-size:.88rem">Paiement Mobile Money à l'étape suivante</span>
-    </div>
-
-    <div class="err" id="err"></div>
-    <button type="submit" class="btn btn-go" id="submit">Créer mon vendeur IA →</button>
-  </form>
-
-  <footer>✦ {{ product_name }} — {{ tagline }}</footer>
-</div>
+<footer>
+  <div class="wrap">
+    <div class="logo"><img src="/static/logo.svg" alt="" style="width:28px;height:28px"><span class="brand grad">{{ product_name }}</span></div>
+    {{ tagline }}
+  </div>
+</footer>
 
 <script>
+  // Marquee chips
+  const benefits = [
+    ["🌙","Répond 24h/24"],["💳","Encaisse en Mobile Money"],["🧠","Connaît vos produits"],
+    ["📈","Augmente vos ventes"],["🔔","Vous prévient à chaque vente"],["💬","Parle votre langue"],
+    ["⚡","Réponse immédiate"],["🤝","Toujours poli"],["🚫","Zéro client perdu"]
+  ];
+  const track = document.getElementById('track');
+  const make = () => benefits.map(b=>`<span class="chip"><span>${b[0]}</span><b>${b[1]}</b></span>`).join('');
+  track.innerHTML = make() + make(); // doublé pour la boucle infinie
+
+  // Reveal au scroll
+  const io = new IntersectionObserver((es)=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} }),{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // Produits dynamiques
   const productsEl = document.getElementById('products');
   function addProduct(){
-    const div = document.createElement('div');
-    div.className = 'product';
+    const div = document.createElement('div'); div.className='product';
     div.innerHTML = `
       <button type="button" class="del" title="Retirer">✕</button>
       <label>Nom du produit</label>
       <input class="p-name" placeholder="Ex : Boucles dorées 'Soleil'">
-      <div class="row">
+      <div class="frow">
         <div><label>Prix (F CFA)</label><input class="p-price" type="number" min="0" placeholder="3500"></div>
         <div><label>Photo (lien URL, optionnel)</label><input class="p-photo" placeholder="https://…"></div>
       </div>
@@ -181,23 +313,20 @@
     productsEl.appendChild(div);
   }
   document.getElementById('addProduct').onclick = addProduct;
-  addProduct(); // un produit par défaut
+  addProduct();
 
+  // Soumission
   document.getElementById('form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const btn = document.getElementById('submit');
-    const err = document.getElementById('err');
-    err.style.display = 'none';
-    const f = e.target;
-    const get = n => (f.elements[n] ? f.elements[n].value.trim() : '');
-
+    const btn = document.getElementById('submit'), err = document.getElementById('err');
+    err.style.display='none';
+    const f = e.target; const get = n => (f.elements[n] ? f.elements[n].value.trim() : '');
     const products = [...document.querySelectorAll('.product')].map(p => ({
-      name: p.querySelector('.p-name').value.trim(),
-      price: p.querySelector('.p-price').value ? Number(p.querySelector('.p-price').value) : null,
-      photo_url: p.querySelector('.p-photo').value.trim(),
-      description: p.querySelector('.p-desc').value.trim(),
-    })).filter(p => p.name);
-
+      name:p.querySelector('.p-name').value.trim(),
+      price:p.querySelector('.p-price').value ? Number(p.querySelector('.p-price').value) : null,
+      photo_url:p.querySelector('.p-photo').value.trim(),
+      description:p.querySelector('.p-desc').value.trim(),
+    })).filter(p=>p.name);
     const payload = {
       business_name:get('business_name'), sector:get('sector'), city:get('city'),
       description:get('description'), whatsapp_business:get('whatsapp_business'),
@@ -207,25 +336,16 @@
       ai_tone:get('ai_tone'), languages:get('languages'), business_hours:get('business_hours'),
       policies:get('policies'), extra_info:get('extra_info'), products
     };
-
     if(!payload.business_name || !payload.whatsapp_business){
-      err.textContent = "Le nom de la boutique et le WhatsApp sont obligatoires.";
-      err.style.display = 'block'; return;
+      err.textContent="Le nom de la boutique et le WhatsApp sont obligatoires."; err.style.display='block'; return;
     }
-
-    btn.disabled = true; btn.textContent = 'Création en cours…';
+    btn.disabled=true; btn.textContent='Création en cours…';
     try{
-      const r = await fetch('/api/merchants', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify(payload)
-      });
+      const r = await fetch('/api/merchants',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
       const data = await r.json();
-      if(data.ok){ window.location.href = '/activation/' + data.merchant_id; }
-      else { throw new Error(data.error || 'Erreur inconnue'); }
-    }catch(ex){
-      err.textContent = ex.message; err.style.display = 'block';
-      btn.disabled = false; btn.textContent = 'Créer mon vendeur IA →';
-    }
+      if(data.ok){ window.location.href='/essai/'+data.merchant_id; }
+      else throw new Error(data.error||'Erreur inconnue');
+    }catch(ex){ err.textContent=ex.message; err.style.display='block'; btn.disabled=false; btn.textContent='Créer mon agent vendeur →'; }
   });
 </script>
 </body>

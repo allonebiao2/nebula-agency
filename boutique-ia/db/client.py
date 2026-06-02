@@ -73,3 +73,58 @@ def list_products(merchant_id: str) -> list[dict[str, Any]]:
         db.table("bia_products").select("*").eq("merchant_id", merchant_id).execute().data
         or []
     )
+
+
+def get_latest_merchant() -> dict[str, Any] | None:
+    """Dernière boutique inscrite — pratique pour les tests sur le sandbox WhatsApp."""
+    db = get_db()
+    result = (
+        db.table("bia_merchants").select("*").order("created_at", desc=True).limit(1).execute()
+    )
+    return result.data[0] if result.data else None
+
+
+# ---------------------------------------------------------------------------
+# Mémoire des conversations (bia_messages)
+# ---------------------------------------------------------------------------
+
+def save_message(merchant_id: str, customer: str, role: str, content: str) -> None:
+    """role = 'customer' ou 'assistant'."""
+    db = get_db()
+    db.table("bia_messages").insert({
+        "merchant_id": merchant_id,
+        "customer_whatsapp": customer,
+        "role": role,
+        "content": content,
+    }).execute()
+
+
+def count_customer_messages(merchant_id: str, customer: str) -> int:
+    """Nombre de messages envoyés par le client (pour la limite d'essai gratuit)."""
+    db = get_db()
+    r = (
+        db.table("bia_messages")
+        .select("id", count="exact", head=True)
+        .eq("merchant_id", merchant_id)
+        .eq("customer_whatsapp", customer)
+        .eq("role", "customer")
+        .execute()
+    )
+    return r.count or 0
+
+
+def load_history(merchant_id: str, customer: str, limit: int = 20) -> list[dict[str, Any]]:
+    """Derniers messages d'une conversation, du plus ancien au plus récent."""
+    db = get_db()
+    rows = (
+        db.table("bia_messages")
+        .select("role, content, created_at")
+        .eq("merchant_id", merchant_id)
+        .eq("customer_whatsapp", customer)
+        .order("created_at", desc=True)
+        .limit(limit)
+        .execute()
+        .data
+        or []
+    )
+    return list(reversed(rows))

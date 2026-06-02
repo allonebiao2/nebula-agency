@@ -12,6 +12,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from config import settings
@@ -22,6 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 app = FastAPI(title=settings.product_name, description=settings.product_tagline)
+app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
 
 def _ctx(request: Request, **extra) -> dict:
@@ -29,6 +31,7 @@ def _ctx(request: Request, **extra) -> dict:
         "product_name": settings.product_name,
         "tagline": settings.product_tagline,
         "price": settings.saas_price_fcfa,
+        "free_trial_messages": settings.free_trial_messages,
         "saas_momo_number": settings.saas_momo_number,
         "saas_momo_name": settings.saas_momo_name,
         "saas_momo_network": settings.saas_momo_network,
@@ -153,3 +156,95 @@ async def submit_payment(request: Request, merchant_id: str):
 @app.get("/api/health")
 async def health():
     return {"ok": True, "product": settings.product_name}
+
+
+# ---------------------------------------------------------------------------
+# ÉTAGE 2 — Le cerveau IA (testable dans le navigateur, sans WhatsApp)
+# ---------------------------------------------------------------------------
+
+@app.get("/demo/{merchant_id}", response_class=HTMLResponse)
+async def demo_chat(request: Request, merchant_id: str):
+    """Simulateur de chat : parle à ton vendeur IA comme un client."""
+    from db.client import get_merchant
+    merchant = None
+    try:
+        merchant = get_merchant(merchant_id)
+    except Exception as e:  # noqa: BLE001
+        log.warning("demo: lecture merchant impossible: %s", e)
+    return templates.TemplateResponse(
+        request, "demo.html", _ctx(request, merchant=merchant, merchant_id=merchant_id)
+    )
+
+
+@app.get("/essai/{merchant_id}", response_class=HTMLResponse)
+async def essai(request: Request, merchant_id: str):
+    """Page d'essai après inscription : teste ton vendeur IA (messages limités) puis active."""
+    from db.client import get_merchant
+    merchant = None
+    try:
+        merchant = get_merchant(merchant_id)
+    except Exception as e:  # noqa: BLE001
+        log.warning("essai: lecture merchant impossible: %s", e)
+    return templates.TemplateResponse(
+        request, "essai.html", _ctx(request, merchant=merchant, merchant_id=merchant_id)
+    )
+
+
+@app.post("/api/chat")
+async def chat(request: Request):
+    """Reçoit un message client, fait répondre le vendeur IA, persiste la conversation."""
+    from core import brain
+    from db.client import (
+        count_customer_messages,
+        get_merchant,
+        list_products,
+        load_history,
+        save_message,
+    )
+
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"ok": False, "error": "JSON invalide"}, status_code=400)
+
+    merchant_id = (body.get("merchant_id") or "").strip()
+    customer = (body.get("customer_id") or "demo-web").strip()
+    message = (body.get("message") or "").strip()
+    preview = bool(body.get("preview"))  # essai gratuit depuis la page de vente
+    if not merchant_id or not message:
+        return JSONResponse(
+            {"ok": False, "error": "merchant_id et message requis."}, status_code=400
+        )
+
+    try:
+        merchant = get_merchant(merchant_id)
+        if not merchant:
+            return JSONResponse({"ok": False, "error": "Boutique introuvable."}, status_code=404)
+
+        # Essai gratuit : on limite le nombre de messages tant que la boutique
+        # n'est pas activée (active = abonnement payé → messages illimités).
+        limit = settings.free_trial_messages
+        if preview and merchant.get("status") != "active":
+            already = count_customer_messages(merchant_id, customer)
+            if already >= limit:
+                return {
+                    "ok": True,
+                    "reply": "",
+                    "trial_over": True,
+                    "remaining": 0,
+                }
+
+        products = list_products(merchant_id)
+        save_message(merchant_id, customer, "customer", message)
+        history = load_history(merchant_id, customer, limit=brain.HISTORY_LIMIT)
+        answer = brain.reply(merchant, products, history)
+        save_message(merchant_id, customer, "assistant", answer)
+
+        remaining = None
+        if preview and merchant.get("status") != "active":
+            remaining = max(0, limit - count_customer_messages(merchant_id, customer))
+    except Exception as e:  # noqa: BLE001
+        log.exception("chat échoué")
+        return JSONResponse({"ok": False, "error": str(e)[:300]}, status_code=500)
+
+    return {"ok": True, "reply": answer, "remaining": remaining, "trial_over": False}

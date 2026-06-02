@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Activez votre vendeur IA — {{ product_name }}</title>
+<title>Activez votre agent vendeur — {{ product_name }}</title>
 <style>
   :root{--bg:#0d0b1f;--card:#17142e;--line:#2a2547;--txt:#f4f2ff;--muted:#a59fce;
         --accent:#7c5cff;--accent2:#00d9a3;--danger:#ff5c7c;--radius:16px}
@@ -37,7 +37,7 @@
   <div class="check">✓</div>
   <h1>Boutique créée !</h1>
   <p class="sub">{% if merchant %}<b>{{ merchant.business_name }}</b> est prête.{% endif %}
-     Dernière étape : activez votre vendeur IA.</p>
+     Dernière étape : activez votre agent vendeur.</p>
 
   <div class="card pay">
     <div class="label">Montant à payer</div>
@@ -60,7 +60,7 @@
       <input id="ref" placeholder="Ex : MP240601.1234.A56789" required>
       <button type="submit" class="btn" id="payBtn">J'ai payé, activer ma boutique</button>
     </form>
-    <div class="ok" id="ok">✅ Merci ! Nous vérifions votre paiement et activons votre vendeur IA très vite.
+    <div class="ok" id="ok">✅ Merci ! Nous vérifions votre paiement et activons votre agent vendeur très vite.
        Vous serez prévenu sur WhatsApp.</div>
     <div class="err" id="err"></div>
   </div>

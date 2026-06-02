@@ -23,8 +23,8 @@ class Settings(BaseSettings):
     )
 
     # --- Marque du produit (change ici pour renommer partout) ---
-    product_name: str = "Boutique IA"
-    product_tagline: str = "Votre vendeur WhatsApp intelligent, 24h/24"
+    product_name: str = "Vendora"
+    product_tagline: str = "L'agent vendeur doté d'intelligence artificielle pour votre boutique"
 
     # --- Supabase (mêmes que NOVA possible) ---
     supabase_url: str = ""
@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     # --- Alertes Mongazi (réutilise le bot Telegram NOVA) ---
     telegram_bot_token: str = ""
     telegram_chat_id_mongazi: str = ""
+
+    # --- Essai gratuit (démo sur la page de vente) ---
+    free_trial_messages: int = 6              # nb de messages testables avant activation
 
     # --- Abonnement SaaS : comment le commerçant paie pour activer ---
     saas_price_fcfa: int = 5000               # prix mensuel d'activation
