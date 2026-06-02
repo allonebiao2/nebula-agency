@@ -9,6 +9,7 @@ Testable sans WhatsApp via web/server.py : POST /api/chat.
 from __future__ import annotations
 
 import logging
+from typing import Callable
 
 import anthropic
 
@@ -18,6 +19,45 @@ log = logging.getLogger("boutique-ia.brain")
 
 # Combien de messages d'historique on garde en mémoire par conversation
 HISTORY_LIMIT = 20
+
+# Garde-fou anti-boucle : nb max d'allers-retours outil dans un même tour
+MAX_TOOL_TURNS = 4
+
+# Outil que le vendeur IA appelle quand une vente se conclut (étage 3)
+ORDER_TOOL = {
+    "name": "enregistrer_commande",
+    "description": (
+        "Enregistre une commande FERME dans le système de la boutique et prévient "
+        "immédiatement le/la propriétaire. À appeler UNIQUEMENT quand le client a "
+        "confirmé ce qu'il veut acheter : le(s) produit(s), la quantité, et le mode de "
+        "réception (livraison ou retrait, plus l'adresse si livraison). Appelle cet "
+        "outil AVANT de donner les instructions de paiement, et une SEULE fois par "
+        "commande. N'invente jamais une commande que le client n'a pas confirmée."
+    ),
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "articles": {
+                "type": "array",
+                "description": "Les articles commandés.",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "produit": {"type": "string", "description": "Nom exact du produit du catalogue."},
+                        "quantite": {"type": "integer", "description": "Quantité commandée."},
+                        "prix_unitaire": {"type": "number", "description": "Prix unitaire en F CFA."},
+                    },
+                    "required": ["produit", "quantite"],
+                },
+            },
+            "total": {"type": "number", "description": "Total à payer en F CFA, livraison comprise."},
+            "mode_livraison": {"type": "string", "enum": ["livraison", "retrait"]},
+            "adresse": {"type": "string", "description": "Adresse de livraison (si livraison)."},
+            "nom_client": {"type": "string", "description": "Nom du client s'il est connu."},
+        },
+        "required": ["articles", "total", "mode_livraison"],
+    },
+}
 
 
 def _format_price(value) -> str:
@@ -114,7 +154,10 @@ Tu réponds aux clients sur WhatsApp à la place du/de la propriétaire.
 - Salue, comprends le besoin, propose le bon produit avec son prix.
 - Commande : confirme produit + quantité, livraison ou retrait, puis l'adresse si livraison.
 - Calcule le total (produits + livraison) et annonce-le avant le paiement.
-- Donne ensuite les instructions de paiement Mobile Money.
+- Dès que le client a CONFIRMÉ sa commande (produit + quantité + livraison/retrait + adresse si livraison),
+  appelle l'outil « enregistrer_commande » pour la transmettre au propriétaire. Fais-le une seule fois,
+  puis donne les instructions de paiement dans ta réponse au client.
+- N'enregistre jamais une commande que le client n'a pas clairement confirmée.
 - Jamais de produit ou prix hors catalogue. Si on te le demande, dis que tu vérifies avec la boutique.
 - Cas délicat (réclamation, demande spéciale) → propose de transmettre au/à la propriétaire.
 - Si tu ne sais pas, dis-le simplement. Ne mens jamais.
@@ -145,8 +188,23 @@ def _to_anthropic_messages(history: list[dict]) -> list[dict]:
     return msgs
 
 
-def reply(merchant: dict, products: list[dict], history: list[dict]) -> str:
-    """Génère la réponse du vendeur IA. `history` doit finir par le message client."""
+def _text_of(resp) -> str:
+    parts = [b.text for b in resp.content if getattr(b, "type", None) == "text"]
+    return "\n".join(parts).strip()
+
+
+def reply(
+    merchant: dict,
+    products: list[dict],
+    history: list[dict],
+    on_order: Callable[[dict], None] | None = None,
+) -> str:
+    """Génère la réponse du vendeur IA. `history` doit finir par le message client.
+
+    `on_order` : callback appelé avec les détails quand l'agent conclut une vente
+    (enregistrement commande + alerte commerçant). Si None (mode démo/essai),
+    l'agent confirme quand même au client mais rien n'est persisté.
+    """
     settings.require("anthropic_api_key")
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
 
@@ -156,15 +214,58 @@ def reply(merchant: dict, products: list[dict], history: list[dict]) -> str:
         # Pas de message client exploitable → réponse d'accueil par défaut
         messages = [{"role": "user", "content": "Bonjour"}]
 
+    system = [{
+        "type": "text",
+        "text": system_text,
+        "cache_control": {"type": "ephemeral"},  # cache la fiche (réutilisée à chaque tour)
+    }]
+
+    did_tool = False
+    for _ in range(MAX_TOOL_TURNS):
+        resp = client.messages.create(
+            model=settings.claude_model,
+            max_tokens=500,  # réponses WhatsApp courtes → tokens économisés
+            system=system,
+            messages=messages,
+            tools=[ORDER_TOOL],
+        )
+
+        tool_uses = [b for b in resp.content if getattr(b, "type", None) == "tool_use"]
+        if not tool_uses:
+            text = _text_of(resp)
+            if text or not did_tool:
+                return text or "…"
+            # Une commande a été traitée mais l'agent n'a pas écrit au client :
+            # on sort pour forcer un dernier message (confirmation + paiement).
+            # `messages` se termine déjà sur le tool_result → prompt valide.
+            break
+
+        # L'agent veut enregistrer une (ou des) commande(s).
+        did_tool = True
+        messages.append({"role": "assistant", "content": resp.content})
+        results = []
+        for tu in tool_uses:
+            note = "Commande enregistrée et propriétaire prévenu."
+            if tu.name == "enregistrer_commande":
+                if on_order:
+                    try:
+                        on_order(dict(tu.input or {}))
+                    except Exception:  # noqa: BLE001
+                        log.exception("enregistrement commande échoué")
+                        note = ("Impossible d'enregistrer pour l'instant — continue "
+                                "normalement et donne les instructions de paiement.")
+                else:
+                    note = "Commande notée (mode démo, non enregistrée)."
+            else:
+                note = "Outil inconnu, ignore-le."
+            results.append({"type": "tool_result", "tool_use_id": tu.id, "content": note})
+        messages.append({"role": "user", "content": results})
+
+    # Sécurité : on a épuisé les tours d'outil → demande un dernier message texte.
     resp = client.messages.create(
         model=settings.claude_model,
-        max_tokens=400,  # réponses WhatsApp courtes → tokens économisés
-        system=[{
-            "type": "text",
-            "text": system_text,
-            "cache_control": {"type": "ephemeral"},  # cache la fiche (réutilisée à chaque tour)
-        }],
+        max_tokens=500,
+        system=system,
         messages=messages,
     )
-    parts = [b.text for b in resp.content if getattr(b, "type", None) == "text"]
-    return "\n".join(parts).strip() or "…"
+    return _text_of(resp) or "…"

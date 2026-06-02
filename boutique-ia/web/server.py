@@ -38,6 +38,39 @@ def _wa_link(code: str) -> str:
 
 log = logging.getLogger("boutique-ia.server")
 
+
+def _order_recorder(merchant: dict, customer_whatsapp: str | None):
+    """Construit le callback que le cerveau appelle quand une vente se conclut."""
+    from db.client import create_order
+    from notify import notify_new_order
+
+    def _on_order(data: dict) -> None:
+        articles = data.get("articles") or []
+        items = [
+            {
+                "produit": (a.get("produit") or "").strip(),
+                "quantite": a.get("quantite") or 1,
+                "prix_unitaire": a.get("prix_unitaire"),
+            }
+            for a in articles
+            if (a.get("produit") or "").strip()
+        ]
+        order = create_order(
+            merchant_id=merchant["id"],
+            customer_whatsapp=customer_whatsapp,
+            items=items,
+            total=data.get("total"),
+            delivery_mode=(data.get("mode_livraison") or "").strip() or None,
+            delivery_address=(data.get("adresse") or "").strip() or None,
+            customer_name=(data.get("nom_client") or "").strip() or None,
+        )
+        try:
+            notify_new_order(merchant, order, items)
+        except Exception:  # noqa: BLE001
+            log.warning("alerte commande échouée", exc_info=True)
+
+    return _on_order
+
 BASE_DIR = Path(__file__).resolve().parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
@@ -253,7 +286,9 @@ async def whatsapp_twilio(request: Request):
         save_message(merchant["id"], from_, "customer", clean)
         history = load_history(merchant["id"], from_, limit=brain.HISTORY_LIMIT)
         products = list_products(merchant["id"])
-        answer = brain.reply(merchant, products, history)
+        answer = brain.reply(
+            merchant, products, history, on_order=_order_recorder(merchant, from_)
+        )
         save_message(merchant["id"], from_, "assistant", answer)
     except Exception as e:  # noqa: BLE001
         log.exception("whatsapp reply échoué")
@@ -346,7 +381,10 @@ async def chat(request: Request):
         products = list_products(merchant_id)
         save_message(merchant_id, customer, "customer", message)
         history = load_history(merchant_id, customer, limit=brain.HISTORY_LIMIT)
-        answer = brain.reply(merchant, products, history)
+        # Essai gratuit (preview) → on ne persiste pas de commande (données de test).
+        # Simulateur /demo et vrais clients → commande enregistrée + patron prévenu.
+        on_order = None if preview else _order_recorder(merchant, customer)
+        answer = brain.reply(merchant, products, history, on_order=on_order)
         save_message(merchant_id, customer, "assistant", answer)
 
         remaining = None

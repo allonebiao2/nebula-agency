@@ -140,6 +140,54 @@ def get_wa_session_merchant_id(customer: str) -> str | None:
     return result.data[0]["merchant_id"] if result.data else None
 
 
+# ---------------------------------------------------------------------------
+# Commandes (bia_orders) — étage 3
+# ---------------------------------------------------------------------------
+
+def create_order(
+    merchant_id: str,
+    customer_whatsapp: str | None,
+    items: list[dict[str, Any]],
+    total: Any,
+    delivery_mode: str | None = None,
+    delivery_address: str | None = None,
+    customer_name: str | None = None,
+    status: str = "pending",
+) -> dict[str, Any]:
+    """Enregistre une commande conclue par le vendeur IA. Retourne la ligne créée."""
+    db = get_db()
+    result = (
+        db.table("bia_orders")
+        .insert({
+            "merchant_id": merchant_id,
+            "customer_whatsapp": customer_whatsapp,
+            "customer_name": customer_name,
+            "items": items,
+            "total": total,
+            "delivery_mode": delivery_mode,
+            "delivery_address": delivery_address,
+            "status": status,
+        })
+        .execute()
+    )
+    return result.data[0] if result.data else {}
+
+
+def list_orders(merchant_id: str, limit: int = 50) -> list[dict[str, Any]]:
+    """Commandes d'une boutique, de la plus récente à la plus ancienne (admin étage 4)."""
+    db = get_db()
+    return (
+        db.table("bia_orders")
+        .select("*")
+        .eq("merchant_id", merchant_id)
+        .order("created_at", desc=True)
+        .limit(limit)
+        .execute()
+        .data
+        or []
+    )
+
+
 def load_history(merchant_id: str, customer: str, limit: int = 20) -> list[dict[str, Any]]:
     """Derniers messages d'une conversation, du plus ancien au plus récent."""
     db = get_db()

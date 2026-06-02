@@ -49,6 +49,10 @@ class Settings(BaseSettings):
 
     # --- WhatsApp (numéro Vendora partagé, type sandbox Twilio) ---
     vendora_whatsapp_number: str = ""   # ex: +14155238886 (numéro sandbox Twilio)
+    # Identifiants Twilio — requis UNIQUEMENT pour alerter le patron par WhatsApp
+    # (étage 3). Le webhook entrant (TwiML) n'en a pas besoin. Dormant si vides.
+    twilio_account_sid: str = ""
+    twilio_auth_token: str = ""
 
     # --- Sécurité admin ---
     admin_token: str = ""
