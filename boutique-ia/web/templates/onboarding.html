@@ -113,6 +113,30 @@
 
   footer{border-top:1px solid var(--line);padding:36px 0;text-align:center;color:var(--muted);font-size:.85rem}
   footer .logo{justify-content:center;margin-bottom:10px}
+
+  /* pricing */
+  .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:22px;align-items:stretch;margin-top:46px}
+  .plan{display:flex;flex-direction:column;background:linear-gradient(180deg,var(--panel),var(--panel2));
+        border:1px solid var(--line);border-radius:20px;padding:28px 24px;position:relative}
+  .plan.pop{border:1.5px solid transparent;
+        background:linear-gradient(var(--panel),var(--panel)) padding-box, var(--grad) border-box;
+        transform:translateY(-8px);box-shadow:0 22px 60px rgba(139,92,255,.28)}
+  .plan .badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--grad);color:#06060c;
+        font-weight:700;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;padding:5px 15px;border-radius:20px;white-space:nowrap}
+  .plan .pname{font-family:'Sora';font-weight:700;font-size:1.18rem;margin-bottom:5px}
+  .plan .ptag{color:var(--muted);font-size:.85rem;margin-bottom:16px;min-height:40px}
+  .plan .price{font-family:'Sora';font-weight:800;font-size:2.1rem;line-height:1}
+  .plan .price small{font-size:.88rem;color:var(--muted);font-weight:500}
+  .plan ul{list-style:none;margin:18px 0;display:flex;flex-direction:column;gap:11px;flex:1}
+  .plan li{font-size:.92rem;display:flex;gap:9px;align-items:flex-start}
+  .plan li.off{color:var(--muted);opacity:.55}
+  .plan li .ck{color:var(--c);flex-shrink:0;font-weight:700}
+  .plan li .x{color:var(--muted);flex-shrink:0}
+  .plan .pbtn{display:block;text-align:center;border-radius:12px;padding:13px;font-weight:700;font-family:'Sora';
+        text-decoration:none;border:1px solid var(--line);color:var(--txt);transition:transform .2s}
+  .plan.pop .pbtn{background:var(--grad);color:#06060c;border:none;box-shadow:0 8px 26px rgba(139,92,255,.35)}
+  .plan .pbtn:hover{transform:translateY(-2px)}
+  .plans-note{text-align:center;color:var(--muted);font-size:.85rem;margin-top:24px}
 </style>
 </head>
 <body>
@@ -121,7 +145,10 @@
 <nav>
   <div class="wrap row">
     <div class="logo"><img src="/static/logo.svg" alt="{{ product_name }}"><span class="brand grad">{{ product_name }}</span></div>
-    <a href="#creer" class="btn btn-primary">Créer mon agent</a>
+    <div style="display:flex;align-items:center;gap:16px">
+      <a href="#tarifs" style="color:var(--muted);font-weight:600;font-size:.92rem">Tarifs</a>
+      <a href="#creer" class="btn btn-primary">Créer mon agent</a>
+    </div>
   </div>
 </nav>
 
@@ -171,6 +198,64 @@
       <div class="step reveal"><div class="n grad">02</div><h3>Testez gratuitement</h3><p>Discutez avec votre agent vendeur comme un vrai client, tout de suite.</p></div>
       <div class="step reveal"><div class="n grad">03</div><h3>Activez & vendez</h3><p>Un paiement Mobile Money et votre agent prend le relais sur WhatsApp.</p></div>
     </div>
+  </div>
+</section>
+
+<!-- TARIFS -->
+<section id="tarifs">
+  <div class="wrap">
+    <div class="eyebrow reveal">Tarifs</div>
+    <h2 class="sec-title reveal">Un agent vendeur, à votre échelle.</h2>
+    <p class="sec-sub reveal">Testez gratuitement. Vous ne payez que si vous êtes convaincu. Sans engagement, par Mobile Money.</p>
+    <div class="plans">
+
+      <div class="plan reveal">
+        <div class="pname">🌱 Démarrage</div>
+        <div class="ptag">Pour démarrer et automatiser vos premières ventes.</div>
+        <div class="price">5 000 <small>F / mois</small></div>
+        <ul>
+          <li><span class="ck">✓</span> Agent vendeur sur WhatsApp</li>
+          <li><span class="ck">✓</span> Jusqu'à 25 produits</li>
+          <li><span class="ck">✓</span> ~300 conversations / mois</li>
+          <li><span class="ck">✓</span> Alertes de vente</li>
+          <li class="off"><span class="x">✕</span> Tableau de bord des ventes</li>
+          <li class="off"><span class="x">✕</span> Numéro WhatsApp dédié</li>
+        </ul>
+        <a class="pbtn" href="#creer">Choisir Démarrage</a>
+      </div>
+
+      <div class="plan pop reveal">
+        <div class="badge">★ Populaire</div>
+        <div class="pname">⭐ Business</div>
+        <div class="ptag">Pour les boutiques qui veulent vraiment vendre plus.</div>
+        <div class="price">15 000 <small>F / mois</small></div>
+        <ul>
+          <li><span class="ck">✓</span> Produits illimités</li>
+          <li><span class="ck">✓</span> ~1 500 conversations / mois</li>
+          <li><span class="ck">✓</span> Tableau de bord des ventes</li>
+          <li><span class="ck">✓</span> Relances clients automatiques</li>
+          <li><span class="ck">✓</span> Ton 100 % personnalisé</li>
+          <li class="off"><span class="x">✕</span> Numéro WhatsApp dédié</li>
+        </ul>
+        <a class="pbtn" href="#creer">Choisir Business</a>
+      </div>
+
+      <div class="plan reveal">
+        <div class="pname">👑 Empire</div>
+        <div class="ptag">Pour les business sérieux et multi-boutiques.</div>
+        <div class="price">40 000 <small>F / mois</small></div>
+        <ul>
+          <li><span class="ck">✓</span> Tout Business, sans limite</li>
+          <li><span class="ck">✓</span> Conversations illimitées</li>
+          <li><span class="ck">✓</span> Numéro WhatsApp dédié</li>
+          <li><span class="ck">✓</span> Jusqu'à 3 boutiques / agents</li>
+          <li><span class="ck">✓</span> Support prioritaire</li>
+        </ul>
+        <a class="pbtn" href="#creer">Choisir Empire</a>
+      </div>
+
+    </div>
+    <p class="plans-note">💡 2 mois offerts en payant à l'année · Paiement Mobile Money · Sans engagement</p>
   </div>
 </section>
 
