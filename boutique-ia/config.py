@@ -1,0 +1,66 @@
+"""Configuration centralisée Boutique IA — chargée depuis .env.
+
+Réutilise les mêmes credentials Supabase / Telegram que NOVA si tu veux :
+copie-colle simplement les valeurs depuis nebula-prospector/.env.
+"""
+from __future__ import annotations
+
+from functools import lru_cache
+from pathlib import Path
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+ROOT_DIR = Path(__file__).resolve().parent
+ENV_FILE = ROOT_DIR / ".env"
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=ENV_FILE,
+        env_file_encoding="utf-8",
+        extra="ignore",
+        case_sensitive=False,
+    )
+
+    # --- Marque du produit (change ici pour renommer partout) ---
+    product_name: str = "Boutique IA"
+    product_tagline: str = "Votre vendeur WhatsApp intelligent, 24h/24"
+
+    # --- Supabase (mêmes que NOVA possible) ---
+    supabase_url: str = ""
+    supabase_service_role_key: str = ""
+
+    # --- IA (étage 2) ---
+    anthropic_api_key: str = ""
+    claude_model: str = "claude-sonnet-4-6"
+
+    # --- Alertes Mongazi (réutilise le bot Telegram NOVA) ---
+    telegram_bot_token: str = ""
+    telegram_chat_id_mongazi: str = ""
+
+    # --- Abonnement SaaS : comment le commerçant paie pour activer ---
+    saas_price_fcfa: int = 5000               # prix mensuel d'activation
+    saas_momo_number: str = ""                # TON numéro Mobile Money (Mongazi)
+    saas_momo_name: str = "NEBULA Agency"     # nom affiché sur l'écran de paiement
+    saas_momo_network: str = "MTN / Moov"     # réseaux acceptés
+
+    # --- Sécurité admin ---
+    admin_token: str = ""
+
+    env: str = "development"
+
+    def require(self, *keys: str) -> None:
+        missing = [k for k in keys if not getattr(self, k, None)]
+        if missing:
+            raise RuntimeError(
+                f"Configuration manquante dans .env : {', '.join(missing)}. "
+                f"Voir .env.example."
+            )
+
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()
+
+
+settings = get_settings()
