@@ -87,3 +87,14 @@ create table if not exists bia_messages (
   created_at  timestamptz default now()
 );
 create index if not exists bia_messages_conv_idx on bia_messages(merchant_id, customer_whatsapp);
+
+-- 5. Routing WhatsApp (étage 2b) — un seul numéro Vendora sert toutes les boutiques
+alter table bia_merchants add column if not exists code text;  -- code court par boutique
+create unique index if not exists bia_merchants_code_idx on bia_merchants(code);
+
+-- Quelle boutique un client WhatsApp est en train de contacter (mémoire de session)
+create table if not exists bia_wa_sessions (
+  customer_whatsapp text primary key,
+  merchant_id uuid not null references bia_merchants(id) on delete cascade,
+  updated_at timestamptz default now()
+);

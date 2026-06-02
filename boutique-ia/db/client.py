@@ -26,6 +26,15 @@ def create_merchant(payload: dict[str, Any]) -> dict[str, Any]:
     return result.data[0] if result.data else {}
 
 
+def get_merchant_by_code(code: str) -> dict[str, Any] | None:
+    """Retrouve une boutique par son code court (routing WhatsApp)."""
+    db = get_db()
+    result = (
+        db.table("bia_merchants").select("*").eq("code", code).limit(1).execute()
+    )
+    return result.data[0] if result.data else None
+
+
 def get_merchant(merchant_id: str) -> dict[str, Any] | None:
     db = get_db()
     result = (
@@ -111,6 +120,24 @@ def count_customer_messages(merchant_id: str, customer: str) -> int:
         .execute()
     )
     return r.count or 0
+
+
+def upsert_wa_session(customer: str, merchant_id: str) -> None:
+    """Mémorise quelle boutique ce client WhatsApp est en train de contacter."""
+    db = get_db()
+    db.table("bia_wa_sessions").upsert(
+        {"customer_whatsapp": customer, "merchant_id": merchant_id, "updated_at": "now()"},
+        on_conflict="customer_whatsapp",
+    ).execute()
+
+
+def get_wa_session_merchant_id(customer: str) -> str | None:
+    db = get_db()
+    result = (
+        db.table("bia_wa_sessions").select("merchant_id")
+        .eq("customer_whatsapp", customer).limit(1).execute()
+    )
+    return result.data[0]["merchant_id"] if result.data else None
 
 
 def load_history(merchant_id: str, customer: str, limit: int = 20) -> list[dict[str, Any]]:

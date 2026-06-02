@@ -47,6 +47,9 @@ class Settings(BaseSettings):
     saas_momo_name: str = "NEBULA Agency"     # nom affiché sur l'écran de paiement
     saas_momo_network: str = "MTN / Moov"     # réseaux acceptés
 
+    # --- WhatsApp (numéro Vendora partagé, type sandbox Twilio) ---
+    vendora_whatsapp_number: str = ""   # ex: +14155238886 (numéro sandbox Twilio)
+
     # --- Sécurité admin ---
     admin_token: str = ""
 

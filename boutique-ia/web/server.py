@@ -8,14 +8,33 @@ Puis ouvrir http://localhost:8010/
 from __future__ import annotations
 
 import logging
+import re
+import secrets
+import string
 from pathlib import Path
+from urllib.parse import quote
+from xml.sax.saxutils import escape
 
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from config import normalize_plan, price_for_plan, settings
+
+
+def _gen_code(n: int = 6) -> str:
+    """Code court unique-ish pour router les messages WhatsApp vers la bonne boutique."""
+    return "".join(secrets.choice(string.ascii_lowercase + string.digits) for _ in range(n))
+
+
+def _wa_link(code: str) -> str:
+    """Lien wa.me partageable par la boutique (numéro Vendora partagé + code)."""
+    number = re.sub(r"\D", "", settings.vendora_whatsapp_number or "")
+    if not number or not code:
+        return ""
+    text = quote(f"Bonjour ! (vendora:{code})")
+    return f"https://wa.me/{number}?text={text}"
 
 log = logging.getLogger("boutique-ia.server")
 
@@ -91,6 +110,7 @@ async def create_merchant_endpoint(request: Request):
 
     merchant_payload = {
         "business_name": business_name,
+        "code": _gen_code(),
         "plan": normalize_plan(body.get("plan")),
         "sector": (body.get("sector") or "").strip() or None,
         "description": (body.get("description") or "").strip() or None,
@@ -162,6 +182,87 @@ async def health():
 
 
 # ---------------------------------------------------------------------------
+# ÉTAGE 2b — WhatsApp réel (webhook Twilio, réponse TwiML)
+# ---------------------------------------------------------------------------
+
+def _twiml(message: str) -> Response:
+    """Réponse TwiML : Twilio enverra ce message au client. Pas besoin de clé API."""
+    xml = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        f"<Response><Message>{escape(message)}</Message></Response>"
+    )
+    return Response(content=xml, media_type="application/xml")
+
+
+@app.post("/api/whatsapp/twilio")
+async def whatsapp_twilio(request: Request):
+    """Reçoit un message WhatsApp (via Twilio), identifie la boutique, répond avec l'agent.
+
+    Un seul numéro Vendora sert toutes les boutiques. Le routing se fait via un
+    code (vendora:XXXX) présent dans le lien wa.me que chaque boutique partage,
+    puis mémorisé pour la suite de la conversation.
+    """
+    from core import brain
+    from db.client import (
+        get_merchant,
+        get_merchant_by_code,
+        get_wa_session_merchant_id,
+        list_products,
+        load_history,
+        save_message,
+        upsert_wa_session,
+    )
+
+    try:
+        form = await request.form()
+    except Exception:
+        return _twiml("Désolé, message illisible. Réessayez 🙏")
+
+    from_ = (form.get("From") or "").strip()      # ex : "whatsapp:+22997..."
+    body = (form.get("Body") or "").strip()
+
+    # 1. Identifier la boutique
+    merchant = None
+    m = re.search(r"vendora:([A-Za-z0-9]+)", body, re.I)
+    if m:
+        merchant = get_merchant_by_code(m.group(1).lower())
+        if merchant:
+            try:
+                upsert_wa_session(from_, merchant["id"])
+            except Exception:
+                log.warning("wa session upsert échoué", exc_info=True)
+    if not merchant and from_:
+        try:
+            mid = get_wa_session_merchant_id(from_)
+            if mid:
+                merchant = get_merchant(mid)
+        except Exception:
+            log.warning("wa session lookup échoué", exc_info=True)
+
+    if not merchant:
+        return _twiml(
+            "Bonjour 🌟 Pour discuter avec une boutique, ouvrez son lien Vendora "
+            "(ou demandez-lui de vous l'envoyer). À très vite !"
+        )
+
+    # 2. Nettoyer le marqueur de routing du message
+    clean = re.sub(r"\(?\s*vendora:[A-Za-z0-9]+\s*\)?", "", body, flags=re.I).strip() or "Bonjour"
+
+    # 3. Faire répondre l'agent vendeur
+    try:
+        save_message(merchant["id"], from_, "customer", clean)
+        history = load_history(merchant["id"], from_, limit=brain.HISTORY_LIMIT)
+        products = list_products(merchant["id"])
+        answer = brain.reply(merchant, products, history)
+        save_message(merchant["id"], from_, "assistant", answer)
+    except Exception as e:  # noqa: BLE001
+        log.exception("whatsapp reply échoué")
+        return _twiml("Un instant, je vérifie avec la boutique et je reviens vers vous 🙏")
+
+    return _twiml(answer)
+
+
+# ---------------------------------------------------------------------------
 # ÉTAGE 2 — Le cerveau IA (testable dans le navigateur, sans WhatsApp)
 # ---------------------------------------------------------------------------
 
@@ -190,9 +291,11 @@ async def essai(request: Request, merchant_id: str):
         log.warning("essai: lecture merchant impossible: %s", e)
     price = price_for_plan(merchant.get("plan")) if merchant else settings.saas_price_fcfa
     plan_label = (merchant.get("plan") or "demarrage").capitalize() if merchant else ""
+    wa_link = _wa_link(merchant.get("code")) if merchant else ""
     return templates.TemplateResponse(
         request, "essai.html",
-        _ctx(request, merchant=merchant, merchant_id=merchant_id, price=price, plan_label=plan_label),
+        _ctx(request, merchant=merchant, merchant_id=merchant_id, price=price,
+             plan_label=plan_label, wa_link=wa_link),
     )
 
 
