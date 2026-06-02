@@ -15,7 +15,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from config import settings
+from config import normalize_plan, price_for_plan, settings
 
 log = logging.getLogger("boutique-ia.server")
 
@@ -59,8 +59,10 @@ async def activation(request: Request, merchant_id: str):
         merchant = get_merchant(merchant_id)
     except Exception as e:  # noqa: BLE001
         log.warning("activation: lecture merchant impossible: %s", e)
+    price = price_for_plan(merchant.get("plan")) if merchant else settings.saas_price_fcfa
     return templates.TemplateResponse(
-        request, "activation.html", _ctx(request, merchant=merchant, merchant_id=merchant_id)
+        request, "activation.html",
+        _ctx(request, merchant=merchant, merchant_id=merchant_id, price=price),
     )
 
 
@@ -89,6 +91,7 @@ async def create_merchant_endpoint(request: Request):
 
     merchant_payload = {
         "business_name": business_name,
+        "plan": normalize_plan(body.get("plan")),
         "sector": (body.get("sector") or "").strip() or None,
         "description": (body.get("description") or "").strip() or None,
         "city": (body.get("city") or "").strip() or None,
@@ -185,8 +188,11 @@ async def essai(request: Request, merchant_id: str):
         merchant = get_merchant(merchant_id)
     except Exception as e:  # noqa: BLE001
         log.warning("essai: lecture merchant impossible: %s", e)
+    price = price_for_plan(merchant.get("plan")) if merchant else settings.saas_price_fcfa
+    plan_label = (merchant.get("plan") or "demarrage").capitalize() if merchant else ""
     return templates.TemplateResponse(
-        request, "essai.html", _ctx(request, merchant=merchant, merchant_id=merchant_id)
+        request, "essai.html",
+        _ctx(request, merchant=merchant, merchant_id=merchant_id, price=price, plan_label=plan_label),
     )
 
 

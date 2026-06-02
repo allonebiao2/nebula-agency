@@ -67,3 +67,25 @@ def get_settings() -> Settings:
 
 
 settings = get_settings()
+
+
+# --- Offres (le prix dépend de l'offre choisie) ---
+PLAN_PRICES = {
+    "demarrage": 5000,
+    "business": 15000,
+    "empire": 40000,
+}
+PLAN_LABELS = {
+    "demarrage": "Démarrage",
+    "business": "Business",
+    "empire": "Empire",
+}
+
+
+def normalize_plan(plan: str | None) -> str:
+    p = (plan or "").strip().lower()
+    return p if p in PLAN_PRICES else "demarrage"
+
+
+def price_for_plan(plan: str | None) -> int:
+    return PLAN_PRICES[normalize_plan(plan)]

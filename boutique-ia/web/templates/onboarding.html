@@ -221,7 +221,7 @@
           <li class="off"><span class="x">✕</span> Tableau de bord des ventes</li>
           <li class="off"><span class="x">✕</span> Numéro WhatsApp dédié</li>
         </ul>
-        <a class="pbtn" href="#creer">Choisir Démarrage</a>
+        <a class="pbtn" href="#creer" onclick="selectPlan('demarrage')">Choisir Démarrage</a>
       </div>
 
       <div class="plan pop reveal">
@@ -237,7 +237,7 @@
           <li><span class="ck">✓</span> Ton 100 % personnalisé</li>
           <li class="off"><span class="x">✕</span> Numéro WhatsApp dédié</li>
         </ul>
-        <a class="pbtn" href="#creer">Choisir Business</a>
+        <a class="pbtn" href="#creer" onclick="selectPlan('business')">Choisir Business</a>
       </div>
 
       <div class="plan reveal">
@@ -251,7 +251,7 @@
           <li><span class="ck">✓</span> Jusqu'à 3 boutiques / agents</li>
           <li><span class="ck">✓</span> Support prioritaire</li>
         </ul>
-        <a class="pbtn" href="#creer">Choisir Empire</a>
+        <a class="pbtn" href="#creer" onclick="selectPlan('empire')">Choisir Empire</a>
       </div>
 
     </div>
@@ -346,8 +346,8 @@
           </div>
 
           <div class="price-banner">
-            Essai gratuit, puis activation : <b class="grad">{{ "{:,}".format(price).replace(",", " ") }} F CFA / mois</b><br>
-            <span style="color:var(--muted);font-size:.88rem">Vous testez votre agent avant de payer</span>
+            Offre <b id="planLabel">Démarrage</b> · Essai gratuit, puis <b class="grad" id="planPrice">5 000 F CFA / mois</b><br>
+            <span style="color:var(--muted);font-size:.88rem">Vous testez votre agent gratuitement avant de payer</span>
           </div>
 
           <div class="err" id="err"></div>
@@ -379,6 +379,17 @@
   // Reveal au scroll
   const io = new IntersectionObserver((es)=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} }),{threshold:.12});
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // Offre sélectionnée → met à jour le prix affiché dans le formulaire
+  let selectedPlan = 'demarrage';
+  const PLAN_PRICES = {demarrage:5000, business:15000, empire:40000};
+  const PLAN_LABELS = {demarrage:'Démarrage', business:'Business', empire:'Empire'};
+  function fmt(n){ return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,' '); }
+  function selectPlan(p){
+    selectedPlan = p;
+    document.getElementById('planLabel').textContent = PLAN_LABELS[p];
+    document.getElementById('planPrice').textContent = fmt(PLAN_PRICES[p]) + ' F CFA / mois';
+  }
 
   // Produits dynamiques
   const productsEl = document.getElementById('products');
@@ -419,7 +430,7 @@
       momo_number:get('momo_number'), momo_network:get('momo_network'), momo_name:get('momo_name'),
       delivery_zones:get('delivery_zones'), delivery_fee_info:get('delivery_fee_info'),
       ai_tone:get('ai_tone'), languages:get('languages'), business_hours:get('business_hours'),
-      policies:get('policies'), extra_info:get('extra_info'), products
+      policies:get('policies'), extra_info:get('extra_info'), plan:selectedPlan, products
     };
     if(!payload.business_name || !payload.whatsapp_business){
       err.textContent="Le nom de la boutique et le WhatsApp sont obligatoires."; err.style.display='block'; return;
