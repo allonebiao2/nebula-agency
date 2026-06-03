@@ -553,13 +553,29 @@ async def admin_dashboard(request: Request, token: str = ""):
     total_recruited = sum((c.get("sent") or 0) for c in list_campaigns("admin", None, limit=200))
     auto_enabled = get_setting_bool("auto_prospection_enabled", settings.auto_prospection_enabled)
     auto_daily = get_setting_int("auto_prospection_daily", settings.auto_prospection_daily)
+
+    # Cerveau d'apprentissage (auto-amélioration)
+    from db.client import get_latest_lessons, get_setting
+    learn_enabled = get_setting_bool("learning_enabled", True)
+    learn_last = get_setting("learning_last_run")
+    latest = get_latest_lessons("global") or {}
+    lstats = latest.get("stats") or {}
+    learn = {
+        "enabled": learn_enabled,
+        "last_run": learn_last,
+        "lessons": latest.get("lessons") or "",
+        "lessons_at": latest.get("created_at"),
+        "convos": lstats.get("conversations", 0),
+        "won": lstats.get("won", 0),
+        "lost": lstats.get("lost", 0),
+    }
     return templates.TemplateResponse(
         request, "admin.html",
         _ctx(request, token=token, rows=rows, pending=pending, glob=glob,
              categories=cats, campaigns=campaigns,
              prospect_used=prospect_used, prospect_daily=settings.prospection_admin_daily,
              auto_enabled=auto_enabled, auto_daily=auto_daily,
-             total_recruited=total_recruited),
+             total_recruited=total_recruited, learn=learn),
     )
 
 
@@ -773,6 +789,36 @@ async def admin_prospection_auto(request: Request, bg: BackgroundTasks):
     return {"ok": True, "message": "Cycle de recrutement automatique lancé."}
 
 
+@app.post("/api/admin/learning/run")
+async def admin_learning_run(request: Request, bg: BackgroundTasks):
+    """Déclenche manuellement un cycle d'auto-amélioration (cerveau d'apprentissage)."""
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    # send_digests=False par défaut sur un lancement manuel (test sans spammer les patrons).
+    send = bool(body.get("send_digests"))
+    bg.add_task(run_learning_job, send)
+    return {"ok": True, "message": "Analyse lancée — résumé sur Telegram dans un instant."}
+
+
+@app.post("/api/admin/learning/settings")
+async def admin_learning_settings(request: Request):
+    """Active / met en pause le cerveau d'apprentissage (sans redéploiement)."""
+    from db.client import set_setting
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    if "enabled" in body:
+        set_setting("learning_enabled", "true" if body.get("enabled") else "false")
+    return {"ok": True}
+
+
 def run_billing_cycle() -> dict:
     """Cycle d'abonnement : suspend les expirés + relance ceux qui arrivent à échéance."""
     from db.client import days_left, list_all_merchants, mark_reminder_sent, set_merchant_status
@@ -846,8 +892,60 @@ def run_merchant_auto_prospection() -> int:
     return launched
 
 
+LEARNING_INTERVAL_DAYS = 7  # auto-amélioration : 1 cycle par semaine
+
+
+def _learning_due() -> bool:
+    """Le cerveau d'apprentissage doit-il tourner ? (1×/semaine, piloté en base)."""
+    from datetime import datetime, timezone
+
+    from db.client import get_setting, get_setting_bool
+    if not get_setting_bool("learning_enabled", True):
+        return False
+    last = get_setting("learning_last_run")
+    if not last:
+        return True
+    try:
+        prev = datetime.fromisoformat(str(last).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return True
+    return (datetime.now(timezone.utc) - prev).total_seconds() >= LEARNING_INTERVAL_DAYS * 86400
+
+
+def run_learning_job(send_digests: bool = True) -> dict:
+    """Cycle d'auto-amélioration : apprend des conversations + résumés (Mongazi + commerçants)."""
+    from datetime import datetime, timezone
+
+    from core import learning
+    from db.client import set_setting, subscription_active
+    from notify import notify_learning_summary, notify_weekly_digest
+
+    result = learning.run_learning_cycle()
+    set_setting("learning_last_run", datetime.now(timezone.utc).isoformat())
+    try:
+        notify_learning_summary(result)
+    except Exception:  # noqa: BLE001
+        log.warning("notify learning summary", exc_info=True)
+
+    # Bonus : résumé hebdo à chaque commerçant actif ayant eu de l'activité (preuve de valeur).
+    if send_digests and not result.get("skipped"):
+        try:
+            stats = learning.merchant_week_stats(days=7)
+            for mid, s in stats.items():
+                m = s.get("merchant") or {}
+                if not subscription_active(m) or s.get("conversations", 0) < 1:
+                    continue
+                try:
+                    notify_weekly_digest(m, s)
+                except Exception:  # noqa: BLE001
+                    log.warning("digest hebdo boutique %s", mid, exc_info=True)
+        except Exception:  # noqa: BLE001
+            log.warning("digests hebdo", exc_info=True)
+    return result
+
+
 async def _auto_prospection_loop():
-    """Boucle de fond : facturation (toujours) + recrutement/jour si ACTIVÉ."""
+    """Boucle de fond : facturation (toujours) + recrutement/jour si ACTIVÉ + apprentissage hebdo."""
     import asyncio
     from datetime import datetime, timezone
 
@@ -875,6 +973,12 @@ async def _auto_prospection_loop():
                 await asyncio.to_thread(run_merchant_auto_prospection)
         except Exception:  # noqa: BLE001
             log.warning("auto-prospection merchants loop", exc_info=True)
+        try:
+            # Cerveau d'apprentissage (auto-amélioration) : 1 cycle par semaine.
+            if await asyncio.to_thread(_learning_due):
+                await asyncio.to_thread(run_learning_job)
+        except Exception:  # noqa: BLE001
+            log.warning("learning loop", exc_info=True)
         await asyncio.sleep(1800)  # vérifie toutes les 30 min
 
 
@@ -1084,6 +1188,7 @@ async def whatsapp_twilio(request: Request):
     """
     from core import brain
     from db.client import (
+        get_active_lessons,
         get_merchant,
         get_merchant_by_code,
         get_wa_session_merchant_id,
@@ -1184,11 +1289,16 @@ async def whatsapp_twilio(request: Request):
             return ("Photo(s) envoyée(s) au client." if len(media_urls) > n_before
                     else "Aucune photo disponible pour ce produit — décris-le.")
 
+        try:
+            lessons = get_active_lessons(merchant["id"])
+        except Exception:  # noqa: BLE001
+            lessons = ""
         answer = brain.reply(
             merchant, products, history,
             on_order=_order_recorder(merchant, from_),
             on_escalate=_escalation_notifier(merchant, from_),
             on_show=_on_show,
+            lessons=lessons,
         )
         save_message(merchant["id"], from_, "assistant", answer)
     except Exception as e:  # noqa: BLE001
@@ -1241,6 +1351,7 @@ async def chat(request: Request):
     from core import brain
     from db.client import (
         count_customer_messages,
+        get_active_lessons,
         get_merchant,
         list_products,
         load_history,
@@ -1286,7 +1397,12 @@ async def chat(request: Request):
         # Simulateur /demo et vrais clients → commande enregistrée + patron prévenu.
         on_order = None if preview else _order_recorder(merchant, customer)
         on_escalate = None if preview else _escalation_notifier(merchant, customer)
-        answer = brain.reply(merchant, products, history, on_order=on_order, on_escalate=on_escalate)
+        try:
+            lessons = get_active_lessons(merchant_id)
+        except Exception:  # noqa: BLE001
+            lessons = ""
+        answer = brain.reply(merchant, products, history, on_order=on_order,
+                             on_escalate=on_escalate, lessons=lessons)
         save_message(merchant_id, customer, "assistant", answer)
 
         remaining = None

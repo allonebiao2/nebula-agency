@@ -114,6 +114,8 @@
   .panel{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
     border-radius:18px;padding:20px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
   .hint{color:var(--mut);font-size:.92rem;margin-bottom:14px}
+  .lessons{white-space:pre-wrap;font-size:.92rem;line-height:1.65;color:var(--txt);
+    background:var(--a-soft);border:1px solid var(--a-line);border-radius:12px;padding:14px 16px}
 
   /* PILOTE panel (vedette) */
   .pilot{position:relative;border:1px solid var(--line);border-radius:20px;overflow:hidden;
@@ -219,6 +221,7 @@
     <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h13a1 1 0 0 1 1 1v2M3 7v10a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-3M3 7h16a2 2 0 0 1 2 2v2h-5a2 2 0 0 0 0 4h5"/></symbol>
     <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v17a1 1 0 0 0 1 1h17M7.5 16v-4M12 16V8.5M16.5 16v-6.5"/></symbol>
     <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></symbol>
+    <symbol id="i-brain" viewBox="0 0 24 24"><path d="M9 3a3 3 0 0 0-3 3 3 3 0 0 0-1.5 5.6A3 3 0 0 0 6 17a3 3 0 0 0 3 3V3zM15 3a3 3 0 0 1 3 3 3 3 0 0 1 1.5 5.6A3 3 0 0 1 18 17a3 3 0 0 1-3 3V3z"/></symbol>
   </g></defs></svg>
 
 <div class="topbar">
@@ -281,6 +284,44 @@
         <span>Rédaction : <b>Sonnet 4.6</b></span>
       </div>
     </div>
+  </section>
+
+  <!-- CERVEAU D'APPRENTISSAGE (auto-amélioration) -->
+  <section class="rv">
+    <div class="shead">
+      <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-brain"/></svg></div>
+      <h2>Cerveau d'apprentissage</h2>
+    </div>
+    <p class="hint">Chaque semaine, Vendora relit les conversations (ventes conclues vs perdues), en tire des leçons de vente et les réinjecte dans tous les agents. Plus il y a de boutiques, plus les agents deviennent bons — c'est l'intelligence collective.</p>
+    <div class="pilot {{ 'on' if learn.enabled }}" id="brain">
+      <div class="body">
+        <div class="statezone">
+          <div class="orb"></div>
+          <div>
+            <div class="stt" id="brainState">{{ 'APPRENTISSAGE ACTIF' if learn.enabled else 'EN PAUSE' }}</div>
+            <div class="sub">{% if learn.last_run %}Dernière analyse : {{ learn.last_run[:10] }}{% else %}Jamais lancé pour l'instant{% endif %}</div>
+          </div>
+        </div>
+        <div class="ctrls">
+          <label class="switch" title="Activer / mettre en pause">
+            <input type="checkbox" id="learnToggle" {{ 'checked' if learn.enabled }} onchange="toggleLearn(this.checked)">
+            <span class="track"></span>
+          </label>
+          <button class="btn gho" type="button" onclick="runLearn()"><svg viewBox="0 0 24 24"><use href="#i-play"/></svg>Lancer l'analyse</button>
+        </div>
+      </div>
+      <div class="foot">
+        <span>Conversations analysées : <b>{{ learn.convos }}</b></span>
+        <span>Conclues : <b>{{ learn.won }}</b> · Perdues : <b>{{ learn.lost }}</b></span>
+        <span>Modèle : <b>Sonnet 4.6</b></span>
+      </div>
+    </div>
+    {% if learn.lessons %}
+    <div class="panel" style="margin-top:14px">
+      <div class="ah">Leçons de vente actuelles{% if learn.lessons_at %} · maj {{ learn.lessons_at[:10] }}{% endif %}</div>
+      <div class="lessons">{{ learn.lessons }}</div>
+    </div>
+    {% endif %}
   </section>
 
   <!-- PAIEMENTS À VALIDER -->
@@ -412,6 +453,22 @@ async function launchAuto(){
   if(!confirm('Lancer un cycle de recrutement maintenant ? (vrais emails)')) return;
   const d = await post('/api/admin/prospection/auto');
   notify(d.ok ? 'Cycle lancé — résumé sur Telegram' : (d.error||'Erreur'), !d.ok);
+}
+
+/* Cerveau d'apprentissage */
+async function toggleLearn(on){
+  const d = await post('/api/admin/learning/settings', { enabled: on });
+  const p = document.getElementById('brain');
+  if(d.ok){
+    p.classList.toggle('on', on);
+    document.getElementById('brainState').textContent = on ? 'APPRENTISSAGE ACTIF' : 'EN PAUSE';
+    notify(on ? 'Apprentissage activé' : 'Apprentissage en pause');
+  } else { notify(d.error||'Erreur', true); document.getElementById('learnToggle').checked = !on; }
+}
+async function runLearn(){
+  if(!confirm('Analyser les conversations maintenant et mettre à jour les leçons de vente ?')) return;
+  const d = await post('/api/admin/learning/run');
+  notify(d.ok ? 'Analyse lancée — résumé sur Telegram puis recharge la page' : (d.error||'Erreur'), !d.ok);
 }
 
 /* Boutiques */

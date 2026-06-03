@@ -174,6 +174,53 @@ def notify_hot_lead(merchant: dict, customer: str | None, raison: str,
     _whatsapp_owner(merchant.get("owner_whatsapp"), merchant.get("country"), plain)
 
 
+def notify_weekly_digest(merchant: dict, stats: dict) -> None:
+    """Résumé hebdo au commerçant : preuve de valeur (anti-résiliation).
+
+    « Ton agent a parlé à X clients cette semaine et conclu Y ventes. »
+    """
+    name = merchant.get("business_name", "votre boutique")
+    convos = int(stats.get("conversations") or 0)
+    won = int(stats.get("won") or 0)
+    revenue = stats.get("revenue") or 0
+
+    notify_mongazi(
+        "📊 <b>Bilan hebdo Vendora</b>\n\n"
+        f"🏪 {name}\n"
+        f"💬 {convos} client(s) servis par l'agent\n"
+        f"🛒 {won} vente(s) conclue(s)\n"
+        f"💰 {_fmt_fcfa(revenue)} générés\n"
+        f"🆔 <code>{merchant.get('id')}</code>"
+    )
+    ventes = f"conclu {won} vente(s)" if won else "engagé plusieurs clients"
+    rev = f" pour {_fmt_fcfa(revenue)}" if won and revenue else ""
+    _whatsapp_owner(
+        merchant.get("owner_whatsapp"), merchant.get("country"),
+        f"📊 Bilan de la semaine — {name}\n\n"
+        f"Votre agent Vendora a parlé à {convos} client(s) et {ventes}{rev}. "
+        f"Il travaille pour vous 24h/24 👌"
+    )
+
+
+def notify_learning_summary(result: dict) -> None:
+    """Résumé à Mongazi après un cycle d'auto-amélioration (cerveau d'apprentissage)."""
+    if result.get("skipped"):
+        notify_mongazi(
+            "🧠 <b>Cerveau d'apprentissage</b>\n\n"
+            f"Analyse passée : {result.get('reason', 'pas assez de données.')}"
+        )
+        return
+    notify_mongazi(
+        "🧠 <b>Vendora a appris de ses conversations</b>\n\n"
+        f"💬 {result.get('conversations', 0)} conversation(s) analysées "
+        f"({result.get('won', 0)} conclues / {result.get('lost', 0)} perdues)\n"
+        f"📚 Leçons collectives : <b>{'mises à jour' if result.get('global_updated') else 'inchangées'}</b>\n"
+        f"🏪 Boutiques améliorées individuellement : <b>{result.get('merchants_analyzed', 0)}</b>\n"
+        f"🤖 Modèle : {result.get('model', '—')}\n\n"
+        "Les agents vendeurs appliquent désormais ces leçons."
+    )
+
+
 def _to_e164(number: str | None, country: str | None) -> str | None:
     """Normalisation best-effort d'un numéro local en format international (+...)."""
     if not number:

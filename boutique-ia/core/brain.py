@@ -114,8 +114,14 @@ def _format_price(value) -> str:
         return str(value)
 
 
-def build_system_prompt(merchant: dict, products: list[dict]) -> str:
-    """Construit la personnalité + les connaissances du vendeur IA."""
+def build_system_prompt(merchant: dict, products: list[dict],
+                        lessons: str | None = None) -> str:
+    """Construit la personnalité + les connaissances du vendeur IA.
+
+    `lessons` : leçons de vente apprises automatiquement (cerveau d'apprentissage,
+    cf. core/learning.py) — réinjectées pour que l'agent s'améliore avec l'expérience
+    collective de toutes les boutiques.
+    """
     name = merchant.get("business_name") or "la boutique"
     sector = merchant.get("sector") or ""
     desc = merchant.get("description") or ""
@@ -199,6 +205,14 @@ def build_system_prompt(merchant: dict, products: list[dict]) -> str:
             "la valeur (qualité, service, livraison) avec le sourire, sans céder sur le prix."
         )
 
+    # Leçons de vente apprises (cerveau d'apprentissage) — réinjectées si présentes.
+    lessons_block = ""
+    if lessons and lessons.strip():
+        lessons_block = (
+            "\n\n# Leçons de vente apprises (tirées de vraies conversations — applique-les)\n"
+            + lessons.strip()
+        )
+
     return f"""Tu es le vendeur de la boutique « {name} »{f' ({sector})' if sector else ''}.
 Tu réponds aux clients sur WhatsApp à la place du/de la propriétaire.
 
@@ -255,7 +269,7 @@ Tu réponds aux clients sur WhatsApp à la place du/de la propriétaire.
 - Crée une envie ou une légère urgence UNIQUEMENT si c'est vrai (ex : pièce unique faite main). Ne mens jamais sur le stock.
 - Utilise une preuve sociale légère si c'est crédible (« nos clientes adorent ce modèle »).
 - Termine TOUJOURS par une question ou une proposition claire qui fait avancer vers l'achat (CTA).
-- Reste respectueux : si le client hésite, accompagne-le, ne le harcèle pas.
+- Reste respectueux : si le client hésite, accompagne-le, ne le harcèle pas.{lessons_block}
 """
 
 
@@ -304,17 +318,19 @@ def reply(
     on_order: Callable[[dict], None] | None = None,
     on_escalate: Callable[[dict], None] | None = None,
     on_show: Callable[[dict], str] | None = None,
+    lessons: str | None = None,
 ) -> str:
     """Génère la réponse du vendeur IA. `history` doit finir par le message client.
 
     `on_order` : callback quand l'agent conclut une vente (enregistre + alerte).
     `on_escalate` : callback quand l'agent juge qu'un humain est nécessaire
     (lead chaud, négociation, réclamation) → alerte le commerçant.
+    `lessons` : leçons de vente apprises (cerveau d'apprentissage) à réinjecter.
     """
     settings.require("anthropic_api_key")
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
 
-    system_text = build_system_prompt(merchant, products)
+    system_text = build_system_prompt(merchant, products, lessons=lessons)
     messages = _to_anthropic_messages(history)
     if not messages:
         # Pas de message client exploitable → réponse d'accueil par défaut

@@ -616,3 +616,99 @@ def load_history(merchant_id: str, customer: str, limit: int = 20) -> list[dict[
         or []
     )
     return list(reversed(rows))
+
+
+# ---------------------------------------------------------------------------
+# Cerveau d'apprentissage (auto-amélioration) — bia_lessons
+# ---------------------------------------------------------------------------
+
+def _window_iso(days: int) -> str:
+    from datetime import datetime, timedelta, timezone
+    return (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+
+
+def recent_messages(days: int, merchant_id: str | None = None,
+                    limit: int = 4000) -> list[dict[str, Any]]:
+    """Messages des N derniers jours (toutes boutiques ou une seule), du + ancien au + récent."""
+    db = get_db()
+    q = (
+        db.table("bia_messages")
+        .select("merchant_id, customer_whatsapp, role, content, created_at")
+        .gte("created_at", _window_iso(days))
+    )
+    if merchant_id:
+        q = q.eq("merchant_id", merchant_id)
+    rows = q.order("created_at", desc=False).limit(limit).execute().data or []
+    return rows
+
+
+def recent_orders(days: int, merchant_id: str | None = None) -> list[dict[str, Any]]:
+    """Commandes des N derniers jours (pour croiser conversations conclues vs perdues)."""
+    db = get_db()
+    q = (
+        db.table("bia_orders")
+        .select("merchant_id, customer_whatsapp, total, status, created_at")
+        .gte("created_at", _window_iso(days))
+    )
+    if merchant_id:
+        q = q.eq("merchant_id", merchant_id)
+    return q.execute().data or []
+
+
+def save_lessons(scope: str, merchant_id: str | None, lessons: str,
+                 stats: dict[str, Any] | None = None, model: str | None = None) -> dict[str, Any]:
+    """Enregistre une nouvelle synthèse de leçons (on garde l'historique, on lit la + récente)."""
+    db = get_db()
+    row = {
+        "scope": scope,
+        "merchant_id": merchant_id,
+        "lessons": lessons,
+        "stats": stats or {},
+        "model": model,
+    }
+    r = db.table("bia_lessons").insert(row).execute()
+    _LESSON_CACHE.clear()
+    return r.data[0] if r.data else {}
+
+
+def get_latest_lessons(scope: str = "global",
+                       merchant_id: str | None = None) -> dict[str, Any] | None:
+    """Dernière synthèse de leçons pour un scope donné."""
+    db = get_db()
+    q = db.table("bia_lessons").select("*").eq("scope", scope)
+    if scope == "merchant" and merchant_id:
+        q = q.eq("merchant_id", merchant_id)
+    r = q.order("created_at", desc=True).limit(1).execute()
+    return r.data[0] if r.data else None
+
+
+# Petit cache mémoire (le webhook WhatsApp lit les leçons à CHAQUE message ;
+# on évite une requête DB à chaque fois). TTL court — les leçons changent ~1×/semaine.
+_LESSON_CACHE: dict[str, tuple[float, str]] = {}
+_LESSON_TTL = 600.0  # secondes
+
+
+def get_active_lessons(merchant_id: str | None = None) -> str:
+    """Texte des leçons à injecter dans le prompt du vendeur (global + boutique). Caché."""
+    import time as _time
+    key = merchant_id or "_global"
+    hit = _LESSON_CACHE.get(key)
+    if hit and (_time.time() - hit[0]) < _LESSON_TTL:
+        return hit[1]
+    parts: list[str] = []
+    try:
+        g = get_latest_lessons("global")
+        if g and (g.get("lessons") or "").strip():
+            parts.append(g["lessons"].strip())
+    except Exception:  # noqa: BLE001
+        pass
+    if merchant_id:
+        try:
+            m = get_latest_lessons("merchant", merchant_id)
+            if m and (m.get("lessons") or "").strip():
+                parts.append("Spécifique à ta boutique :\n" + m["lessons"].strip())
+        except Exception:  # noqa: BLE001
+            pass
+    text = "\n\n".join(parts)
+    _LESSON_CACHE[key] = (_time.time(), text)
+    return text

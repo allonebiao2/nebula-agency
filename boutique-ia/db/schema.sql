@@ -161,3 +161,18 @@ create table if not exists bia_prospects (
 );
 create index if not exists bia_prospects_campaign_idx on bia_prospects(campaign_id);
 create index if not exists bia_prospects_email_idx on bia_prospects(owner_type, merchant_id, email);
+
+-- 8. Cerveau d'apprentissage (auto-amélioration) : leçons de vente extraites
+--    automatiquement des conversations (conclues vs perdues) et RÉINJECTÉES dans
+--    le prompt des agents. scope='global' = intelligence collective (toutes les
+--    boutiques) ; scope='merchant' + merchant_id = leçons propres à une boutique.
+create table if not exists bia_lessons (
+  id uuid primary key default gen_random_uuid(),
+  scope       text not null default 'global',   -- 'global' | 'merchant'
+  merchant_id uuid references bia_merchants(id) on delete cascade,
+  lessons     text not null,                     -- synthèse injectée dans le system prompt
+  stats       jsonb,                             -- {conversations, won, lost, revenue, ...}
+  model       text,                              -- modèle ayant produit la synthèse
+  created_at  timestamptz default now()
+);
+create index if not exists bia_lessons_scope_idx on bia_lessons(scope, merchant_id, created_at desc);
