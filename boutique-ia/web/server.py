@@ -563,6 +563,7 @@ async def admin_dashboard(request: Request, token: str = ""):
     learn = {
         "enabled": learn_enabled,
         "last_run": learn_last,
+        "last_trigger": get_setting("learning_last_trigger"),
         "lessons": latest.get("lessons") or "",
         "lessons_at": latest.get("created_at"),
         "convos": lstats.get("conversations", 0),
@@ -800,7 +801,7 @@ async def admin_learning_run(request: Request, bg: BackgroundTasks):
         body = {}
     # send_digests=False par défaut sur un lancement manuel (test sans spammer les patrons).
     send = bool(body.get("send_digests"))
-    bg.add_task(run_learning_job, send)
+    bg.add_task(run_learning_job, send, "Lancement manuel depuis le cockpit")
     return {"ok": True, "message": "Analyse lancée — résumé sur Telegram dans un instant."}
 
 
@@ -892,27 +893,17 @@ def run_merchant_auto_prospection() -> int:
     return launched
 
 
-LEARNING_INTERVAL_DAYS = 7  # auto-amélioration : 1 cycle par semaine
-
-
-def _learning_due() -> bool:
-    """Le cerveau d'apprentissage doit-il tourner ? (1×/semaine, piloté en base)."""
-    from datetime import datetime, timezone
-
+def _learning_decision() -> tuple[bool, str]:
+    """Le cerveau décide LUI-MÊME s'il doit apprendre maintenant (+ pourquoi)."""
+    from core import learning
     from db.client import get_setting, get_setting_bool
     if not get_setting_bool("learning_enabled", True):
-        return False
+        return False, ""
     last = get_setting("learning_last_run")
-    if not last:
-        return True
-    try:
-        prev = datetime.fromisoformat(str(last).replace("Z", "+00:00"))
-    except (TypeError, ValueError):
-        return True
-    return (datetime.now(timezone.utc) - prev).total_seconds() >= LEARNING_INTERVAL_DAYS * 86400
+    return learning.should_learn(last)
 
 
-def run_learning_job(send_digests: bool = True) -> dict:
+def run_learning_job(send_digests: bool = True, trigger_reason: str | None = None) -> dict:
     """Cycle d'auto-amélioration : apprend des conversations + résumés (Mongazi + commerçants)."""
     from datetime import datetime, timezone
 
@@ -921,7 +912,10 @@ def run_learning_job(send_digests: bool = True) -> dict:
     from notify import notify_learning_summary, notify_weekly_digest
 
     result = learning.run_learning_cycle()
+    result["trigger_reason"] = trigger_reason or ""
     set_setting("learning_last_run", datetime.now(timezone.utc).isoformat())
+    if trigger_reason:
+        set_setting("learning_last_trigger", trigger_reason)
     try:
         notify_learning_summary(result)
     except Exception:  # noqa: BLE001
@@ -974,9 +968,13 @@ async def _auto_prospection_loop():
         except Exception:  # noqa: BLE001
             log.warning("auto-prospection merchants loop", exc_info=True)
         try:
-            # Cerveau d'apprentissage (auto-amélioration) : 1 cycle par semaine.
-            if await asyncio.to_thread(_learning_due):
-                await asyncio.to_thread(run_learning_job)
+            # Cerveau d'apprentissage : il décide LUI-MÊME quand apprendre
+            # (volume de nouvelles conversations OU baisse de conversion), avec
+            # garde-fous de cadence (18h mini / 14j maxi).
+            due, why = await asyncio.to_thread(_learning_decision)
+            if due:
+                log.info("learning: déclenchement auto — %s", why)
+                await asyncio.to_thread(run_learning_job, True, why)
         except Exception:  # noqa: BLE001
             log.warning("learning loop", exc_info=True)
         await asyncio.sleep(1800)  # vérifie toutes les 30 min

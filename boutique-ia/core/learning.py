@@ -40,6 +40,70 @@ MERCHANT_MIN_CONVOS = 8
 # Nb max de boutiques analysées individuellement par cycle (coût maîtrisé).
 MAX_MERCHANTS_PER_CYCLE = 8
 
+# --- Déclencheur AUTONOME : le cerveau décide lui-même quand apprendre ---
+# Garde-fous de cadence
+TRIGGER_MIN_HOURS = 18      # jamais relancer avant ce délai (anti-gaspillage)
+TRIGGER_MAX_DAYS = 14       # au-delà, on relance dès qu'il y a du nouveau (anti-obsolescence)
+# Seuils de volume (matière nouvelle depuis la dernière analyse)
+TRIGGER_NEW_MSGS = 40       # nb de messages clients nouveaux qui justifient d'apprendre
+TRIGGER_NEW_ORDERS = 5      # ou ce nb de nouvelles ventes
+# Urgence : baisse de conversion récente → apprendre tout de suite
+URGENT_WINDOW_DAYS = 4
+URGENT_MIN_CONVOS = 6       # il faut un minimum de volume pour que le signal soit fiable
+URGENT_MAX_WIN_RATE = 0.25  # < 25 % de ventes parmi les clients engagés = problème
+
+
+def should_learn(last_run_iso: str | None) -> tuple[bool, str]:
+    """Le cerveau doit-il apprendre MAINTENANT ? Décision intelligente et peu coûteuse.
+
+    Combine : volume de nouvelles conversations, urgence (chute de conversion),
+    et garde-fous de cadence (mini 18h, maxi 14j). Retourne (oui/non, raison lisible).
+    La raison est affichée à Mongazi (Telegram + cockpit) pour qu'il voie POURQUOI
+    le cerveau a décidé d'apprendre.
+    """
+    from datetime import datetime, timezone
+
+    from db.client import count_messages_since, count_orders_since, recent_messages, recent_orders
+
+    if not last_run_iso:
+        return True, "première analyse"
+    try:
+        prev = datetime.fromisoformat(str(last_run_iso).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return True, "horodatage illisible — analyse de remise à niveau"
+
+    elapsed_h = (datetime.now(timezone.utc) - prev).total_seconds() / 3600
+    if elapsed_h < TRIGGER_MIN_HOURS:
+        return False, ""  # garde-fou : trop tôt depuis la dernière fois
+
+    new_msgs = count_messages_since(last_run_iso, role="customer")
+    if new_msgs == 0:
+        return False, ""  # rien de nouveau à apprendre
+    new_orders = count_orders_since(last_run_iso)
+    elapsed_days = elapsed_h / 24
+
+    # 1) Garde-fou haut : ça fait longtemps et il y a du nouveau → on rafraîchit.
+    if elapsed_days >= TRIGGER_MAX_DAYS:
+        return True, f"analyse périodique ({new_msgs} nouveaux messages en {int(elapsed_days)}j)"
+
+    # 2) Volume : assez de matière nouvelle pour apprendre quelque chose d'utile.
+    if new_msgs >= TRIGGER_NEW_MSGS or new_orders >= TRIGGER_NEW_ORDERS:
+        return True, f"assez de nouvelles conversations ({new_msgs} messages, {new_orders} ventes)"
+
+    # 3) Urgence : la conversion récente chute → on apprend tout de suite pour corriger.
+    try:
+        convos = _build_conversations(
+            recent_messages(URGENT_WINDOW_DAYS), recent_orders(URGENT_WINDOW_DAYS))
+        engaged = len(convos)
+        won = sum(1 for c in convos if c["won"])
+        if engaged >= URGENT_MIN_CONVOS and (won / engaged) < URGENT_MAX_WIN_RATE:
+            return True, (f"baisse de conversion détectée ({won}/{engaged} ventes "
+                          f"sur {URGENT_WINDOW_DAYS}j) — apprentissage prioritaire")
+    except Exception:  # noqa: BLE001
+        log.warning("should_learn: contrôle d'urgence échoué", exc_info=True)
+
+    return False, ""  # pas encore le bon moment
+
 
 def _norm_phone(s: Any) -> str:
     import re

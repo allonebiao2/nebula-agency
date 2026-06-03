@@ -292,14 +292,14 @@
       <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-brain"/></svg></div>
       <h2>Cerveau d'apprentissage</h2>
     </div>
-    <p class="hint">Chaque semaine, Vendora relit les conversations (ventes conclues vs perdues), en tire des leçons de vente et les réinjecte dans tous les agents. Plus il y a de boutiques, plus les agents deviennent bons — c'est l'intelligence collective.</p>
+    <p class="hint">Vendora décide <b>lui-même</b> quand apprendre : dès qu'assez de nouvelles conversations s'accumulent, ou tout de suite s'il détecte une <b>baisse de conversion</b> (garde-fous : 18h mini, 14j maxi). Il relit les ventes conclues vs perdues, en tire des leçons et les réinjecte dans tous les agents — intelligence collective. Tu peux aussi forcer l'analyse.</p>
     <div class="pilot {{ 'on' if learn.enabled }}" id="brain">
       <div class="body">
         <div class="statezone">
           <div class="orb"></div>
           <div>
-            <div class="stt" id="brainState">{{ 'APPRENTISSAGE ACTIF' if learn.enabled else 'EN PAUSE' }}</div>
-            <div class="sub">{% if learn.last_run %}Dernière analyse : {{ learn.last_run[:10] }}{% else %}Jamais lancé pour l'instant{% endif %}</div>
+            <div class="stt" id="brainState">{{ 'APPRENTISSAGE AUTONOME' if learn.enabled else 'EN PAUSE' }}</div>
+            <div class="sub">{% if learn.last_run %}Dernière analyse : {{ learn.last_run[:10] }}{% if learn.last_trigger %} · {{ learn.last_trigger }}{% endif %}{% else %}Jamais lancé pour l'instant{% endif %}</div>
           </div>
         </div>
         <div class="ctrls">

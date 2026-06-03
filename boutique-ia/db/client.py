@@ -642,6 +642,27 @@ def recent_messages(days: int, merchant_id: str | None = None,
     return rows
 
 
+def count_messages_since(iso: str, role: str | None = None,
+                         merchant_id: str | None = None) -> int:
+    """Nb de messages depuis un horodatage (décision d'apprentissage — requête légère)."""
+    db = get_db()
+    q = db.table("bia_messages").select("id", count="exact", head=True).gte("created_at", iso)
+    if role:
+        q = q.eq("role", role)
+    if merchant_id:
+        q = q.eq("merchant_id", merchant_id)
+    return q.execute().count or 0
+
+
+def count_orders_since(iso: str, merchant_id: str | None = None) -> int:
+    """Nb de commandes depuis un horodatage (décision d'apprentissage — requête légère)."""
+    db = get_db()
+    q = db.table("bia_orders").select("id", count="exact", head=True).gte("created_at", iso)
+    if merchant_id:
+        q = q.eq("merchant_id", merchant_id)
+    return q.execute().count or 0
+
+
 def recent_orders(days: int, merchant_id: str | None = None) -> list[dict[str, Any]]:
     """Commandes des N derniers jours (pour croiser conversations conclues vs perdues)."""
     db = get_db()

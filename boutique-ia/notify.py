@@ -210,8 +210,11 @@ def notify_learning_summary(result: dict) -> None:
             f"Analyse passée : {result.get('reason', 'pas assez de données.')}"
         )
         return
+    reason = (result.get("trigger_reason") or "").strip()
+    reason_line = f"⚡ Déclenché : {reason}\n" if reason else ""
     notify_mongazi(
         "🧠 <b>Vendora a appris de ses conversations</b>\n\n"
+        f"{reason_line}"
         f"💬 {result.get('conversations', 0)} conversation(s) analysées "
         f"({result.get('won', 0)} conclues / {result.get('lost', 0)} perdues)\n"
         f"📚 Leçons collectives : <b>{'mises à jour' if result.get('global_updated') else 'inchangées'}</b>\n"
