@@ -1047,8 +1047,23 @@ async def whatsapp_twilio(request: Request):
             "Cette boutique est momentanément indisponible. Merci de réessayer plus tard 🙏"
         )
 
-    # 2. Nettoyer le marqueur de routing du message
-    clean = re.sub(r"\(?\s*vendora:[A-Za-z0-9]+\s*\)?", "", body, flags=re.I).strip() or "Bonjour"
+    # 2a. Message VOCAL ? → transcription (booster). Le client peut parler au lieu d'écrire.
+    try:
+        num_media = int(form.get("NumMedia") or "0")
+    except (TypeError, ValueError):
+        num_media = 0
+    ctype0 = (form.get("MediaContentType0") or "")
+    if num_media > 0 and ctype0.startswith("audio") and form.get("MediaUrl0"):
+        from core.transcribe import transcribe_audio
+        spoken = transcribe_audio(form.get("MediaUrl0"), ctype0)
+        if spoken:
+            clean = spoken
+        else:
+            return _twiml("Je n'ai pas réussi à écouter votre vocal 🙏 "
+                          "Pouvez-vous l'écrire en quelques mots ?")
+    else:
+        # 2b. Nettoyer le marqueur de routing du message texte
+        clean = re.sub(r"\(?\s*vendora:[A-Za-z0-9]+\s*\)?", "", body, flags=re.I).strip() or "Bonjour"
 
     # Opt-out WhatsApp : le client écrit STOP / désabonner
     if clean.strip().lower() in {"stop", "stopp", "unsubscribe", "désabonner",

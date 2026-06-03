@@ -57,9 +57,13 @@ class Settings(BaseSettings):
     # --- WhatsApp (numéro Vendora partagé, type sandbox Twilio) ---
     vendora_whatsapp_number: str = ""   # ex: +14155238886 (numéro sandbox Twilio)
     # Identifiants Twilio — requis UNIQUEMENT pour alerter le patron par WhatsApp
-    # (étage 3). Le webhook entrant (TwiML) n'en a pas besoin. Dormant si vides.
+    # (étage 3) + télécharger les vocaux WhatsApp. Le webhook TwiML n'en a pas besoin.
     twilio_account_sid: str = ""
     twilio_auth_token: str = ""
+
+    # --- Transcription des messages vocaux (booster) — Groq Whisper (gratuit) ---
+    groq_api_key: str = ""
+    groq_whisper_model: str = "whisper-large-v3-turbo"
 
     # --- Sécurité admin ---
     admin_token: str = ""
