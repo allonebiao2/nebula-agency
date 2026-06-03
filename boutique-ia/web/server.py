@@ -539,15 +539,25 @@ async def admin_dashboard(request: Request, token: str = ""):
         "mrr": mrr,
     }
     from core.prospecting import CATEGORIES
-    from db.client import count_prospection_sent_today, list_campaigns
+    from db.client import (
+        count_prospection_sent_today,
+        get_setting_bool,
+        get_setting_int,
+        list_campaigns,
+    )
     cats = [{"key": k, "label": v["label"]} for k, v in CATEGORIES.items()]
     campaigns = list_campaigns("admin", None, limit=8)
     prospect_used = count_prospection_sent_today("admin", None)
+    total_recruited = sum((c.get("sent") or 0) for c in list_campaigns("admin", None, limit=200))
+    auto_enabled = get_setting_bool("auto_prospection_enabled", settings.auto_prospection_enabled)
+    auto_daily = get_setting_int("auto_prospection_daily", settings.auto_prospection_daily)
     return templates.TemplateResponse(
         request, "admin.html",
         _ctx(request, token=token, rows=rows, pending=pending, glob=glob,
              categories=cats, campaigns=campaigns,
-             prospect_used=prospect_used, prospect_daily=settings.prospection_admin_daily),
+             prospect_used=prospect_used, prospect_daily=settings.prospection_admin_daily,
+             auto_enabled=auto_enabled, auto_daily=auto_daily,
+             total_recruited=total_recruited),
     )
 
 
@@ -706,16 +716,17 @@ def _auto_ran_today() -> bool:
 def _run_auto_cycle() -> dict:
     """Lance UN cycle de recrutement automatique (sourcing→rédaction→envoi) + résumé."""
     from core import prospecting
-    from db.client import create_campaign, get_campaign
+    from db.client import create_campaign, get_campaign, get_setting_int
     from notify import notify_mongazi
     cat, city = _next_auto_target()
     label = prospecting.CATEGORIES.get(cat, {}).get("label", cat)
+    daily = get_setting_int("auto_prospection_daily", settings.auto_prospection_daily)
     camp = create_campaign({
         "owner_type": "admin", "merchant_id": None, "mode": "recrutement",
         "title": f"Auto · {label} · {city}", "category": cat, "city": city, "status": "sourcing",
     })
     prospecting.run_full_campaign(camp["id"], "recrutement", cat, city,
-                                  settings.auto_prospection_daily, "admin", None)
+                                  daily, "admin", None)
     final = get_campaign(camp["id"]) or {}
     try:
         notify_mongazi(
@@ -730,6 +741,27 @@ def _run_auto_cycle() -> dict:
             "target": f"{label} · {city}"}
 
 
+@app.post("/api/admin/recruit-settings")
+async def admin_recruit_settings(request: Request):
+    """Pilote du recrutement automatique : ON/OFF + volume/jour (en direct, sans redeploy)."""
+    from db.client import set_setting
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    if "enabled" in body:
+        set_setting("auto_prospection_enabled", "true" if body.get("enabled") else "false")
+    if "daily" in body:
+        try:
+            d = max(1, min(80, int(body.get("daily"))))
+            set_setting("auto_prospection_daily", d)
+        except (TypeError, ValueError):
+            pass
+    return {"ok": True}
+
+
 @app.post("/api/admin/prospection/auto")
 async def admin_prospection_auto(request: Request, bg: BackgroundTasks):
     """Déclenche manuellement un cycle de recrutement auto (test, ou cron externe)."""
@@ -740,15 +772,22 @@ async def admin_prospection_auto(request: Request, bg: BackgroundTasks):
 
 
 async def _auto_prospection_loop():
-    """Boucle de fond : 1 campagne de recrutement/jour (si activé), à l'heure prévue."""
+    """Boucle de fond : 1 campagne de recrutement/jour si ACTIVÉ (réglage en base, live)."""
     import asyncio
     from datetime import datetime, timezone
+
+    from db.client import get_setting_bool
+    await asyncio.sleep(20)  # laisse le serveur démarrer tranquillement
     while True:
         try:
-            if (settings.auto_prospection_enabled
-                    and datetime.now(timezone.utc).hour >= settings.auto_prospection_hour
-                    and not _auto_ran_today()):
-                await asyncio.to_thread(_run_auto_cycle)
+            # NB : appels Supabase = bloquants → toujours via to_thread pour ne pas
+            # geler l'event loop (sinon toutes les requêtes HTTP se figent).
+            enabled = await asyncio.to_thread(
+                get_setting_bool, "auto_prospection_enabled", settings.auto_prospection_enabled)
+            if enabled and datetime.now(timezone.utc).hour >= settings.auto_prospection_hour:
+                ran = await asyncio.to_thread(_auto_ran_today)
+                if not ran:
+                    await asyncio.to_thread(_run_auto_cycle)
         except Exception:  # noqa: BLE001
             log.warning("auto-prospection loop", exc_info=True)
         await asyncio.sleep(1800)  # vérifie toutes les 30 min
@@ -756,11 +795,10 @@ async def _auto_prospection_loop():
 
 @app.on_event("startup")
 async def _start_auto_prospection():
+    # On démarre TOUJOURS la boucle : l'activation se pilote en direct depuis l'admin
+    # (réglage en base), sans redéploiement.
     import asyncio
-    if settings.auto_prospection_enabled:
-        asyncio.create_task(_auto_prospection_loop())
-        log.info("Recrutement autonome ACTIVÉ (%s/jour à %sh UTC)",
-                 settings.auto_prospection_daily, settings.auto_prospection_hour)
+    asyncio.create_task(_auto_prospection_loop())
 
 
 @app.post("/api/merchants/{merchant_id}/order")

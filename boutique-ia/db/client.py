@@ -146,6 +146,38 @@ def list_products(merchant_id: str) -> list[dict[str, Any]]:
     )
 
 
+# ---------------------------------------------------------------------------
+# Réglages dynamiques (bia_settings) — pilotables depuis l'admin, sans redéploiement
+# ---------------------------------------------------------------------------
+
+def get_setting(key: str, default: Any = None) -> Any:
+    try:
+        r = get_db().table("bia_settings").select("value").eq("key", key).limit(1).execute()
+        return r.data[0]["value"] if r.data else default
+    except Exception:  # noqa: BLE001
+        return default
+
+
+def set_setting(key: str, value: Any) -> None:
+    get_db().table("bia_settings").upsert(
+        {"key": key, "value": str(value), "updated_at": "now()"}, on_conflict="key"
+    ).execute()
+
+
+def get_setting_bool(key: str, default: bool) -> bool:
+    v = get_setting(key)
+    if v is None:
+        return default
+    return str(v).strip().lower() in ("1", "true", "yes", "on", "oui")
+
+
+def get_setting_int(key: str, default: int) -> int:
+    try:
+        return int(get_setting(key, default))
+    except (TypeError, ValueError):
+        return default
+
+
 def list_all_merchants() -> list[dict[str, Any]]:
     """Toutes les boutiques, de la plus récente à la plus ancienne (admin étage 4)."""
     db = get_db()
