@@ -26,8 +26,27 @@
   --shadow:0 26px 64px -28px rgba(0,0,0,.75), 0 6px 20px -14px rgba(0,0,0,.6);
 }
 
+/* ☀️ Mode jour (clair) — bascule via data-theme="light" sur <html> */
+:root[data-theme="light"]{
+  --bg:#f5f6f8; --bg2:#eceef1; --shell:rgba(0,0,0,.025); --core:#ffffff; --core2:#f5f6f8;
+  --hair:rgba(0,0,0,.10); --hair-soft:rgba(0,0,0,.055); --txt:#16181d; --mut:#5c6573; --mut2:#9aa2ad;
+  --inset:inset 0 1px 0 rgba(255,255,255,.7);
+  --shadow:0 16px 42px -24px rgba(20,30,50,.22), 0 4px 14px -10px rgba(20,30,50,.12);
+}
+
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
+
+/* Bouton bascule jour/nuit (flottant) */
+.theme-tog{position:fixed;top:14px;right:14px;z-index:55;width:42px;height:42px;border-radius:12px;
+  background:var(--core);border:1px solid var(--hair);color:var(--txt);cursor:pointer;display:flex;
+  align-items:center;justify-content:center;box-shadow:var(--shadow);transition:color .2s,border-color .2s,transform .15s var(--ease)}
+.theme-tog:hover{border-color:var(--a-line);color:var(--a)}
+.theme-tog:active{transform:scale(.92)}
+.theme-tog svg{width:19px;height:19px}
+.theme-tog .ico-sun{display:none}
+:root[data-theme="light"] .theme-tog .ico-sun{display:block}
+:root[data-theme="light"] .theme-tog .ico-moon{display:none}
 body{
   font-family:'Plus Jakarta Sans',system-ui,sans-serif;
   background:var(--bg);color:var(--txt);line-height:1.55;
@@ -146,6 +165,9 @@ section{margin-bottom:34px}
 .btn.sm{padding:8px 13px;font-size:.8rem}
 .btn.ico{padding:9px;border-radius:11px}
 .btn:disabled{opacity:.4;cursor:default}.btn:disabled:active{transform:none}
+/* En mode jour, le bouton clair deviendrait invisible → on le passe en sombre */
+:root[data-theme="light"] .btn.pri{background:#16181d;color:#fff}
+:root[data-theme="light"] .btn.pri:hover{background:#2a2d34;box-shadow:0 8px 24px -12px rgba(20,30,50,.4)}
 /* button-in-button : icône logée dans son cercle, glisse au survol */
 .btn .bib{width:26px;height:26px;border-radius:100px;background:rgba(0,0,0,.12);
   display:flex;align-items:center;justify-content:center;margin:-4px -8px -4px 2px;

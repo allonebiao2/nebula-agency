@@ -1,86 +1,86 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" style="--a: {{ merchant.brand_color if merchant and merchant.brand_color else '#10b981' }}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Démo — vendeur IA {% if merchant %}{{ merchant.business_name }}{% endif %}</title>
+<title>Démo — {% if merchant %}{{ merchant.business_name }}{% endif %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="/static/vendora-ui.css" rel="stylesheet">
+<script src="/static/theme.js"></script>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Segoe UI',system-ui,sans-serif;background:#0b141a;height:100vh;display:flex;flex-direction:column}
-  .chat{max-width:560px;width:100%;margin:0 auto;display:flex;flex-direction:column;height:100vh;background:#0b141a}
-  header{background:#202c33;color:#e9edef;padding:14px 16px;display:flex;align-items:center;gap:12px}
-  .ava{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#25d366,#128c7e);
-       display:flex;align-items:center;justify-content:center;font-size:1.2rem}
-  header .t{font-weight:600;font-size:1rem}
-  header .s{font-size:.78rem;color:#8696a0}
-  #log{flex:1;overflow-y:auto;padding:18px 14px;display:flex;flex-direction:column;gap:8px;
-       background-image:linear-gradient(rgba(11,20,26,.96),rgba(11,20,26,.96))}
-  .b{max-width:78%;padding:8px 12px;border-radius:10px;font-size:.95rem;line-height:1.4;white-space:pre-wrap;word-wrap:break-word}
-  .me{align-self:flex-end;background:#005c4b;color:#e9edef;border-bottom-right-radius:2px}
-  .ia{align-self:flex-start;background:#202c33;color:#e9edef;border-bottom-left-radius:2px}
-  .sys{align-self:center;background:#182229;color:#8696a0;font-size:.8rem;border-radius:8px;text-align:center}
-  .typing{align-self:flex-start;color:#8696a0;font-size:.85rem;font-style:italic;padding:4px 12px}
-  form{display:flex;gap:8px;padding:10px 12px;background:#202c33}
-  input{flex:1;background:#2a3942;border:none;border-radius:22px;color:#e9edef;padding:11px 16px;font-size:.98rem}
-  input:focus{outline:none}
-  button{background:#00a884;border:none;border-radius:50%;width:46px;height:46px;color:#fff;font-size:1.2rem;cursor:pointer}
-  button:disabled{opacity:.5}
+  body{display:flex;flex-direction:column;min-height:100dvh}
+  .chat{max-width:600px;width:100%;margin:0 auto;flex:1;display:flex;flex-direction:column;
+    background:var(--core);border-left:1px solid var(--hair);border-right:1px solid var(--hair)}
+  .chead{display:flex;align-items:center;gap:12px;padding:15px 16px;border-bottom:1px solid var(--hair)}
+  .ava{width:42px;height:42px;border-radius:50%;background:var(--a-soft);border:1px solid var(--a-line);
+    display:flex;align-items:center;justify-content:center;color:var(--a)}
+  .ava svg{width:21px;height:21px}
+  .chead .t{font-weight:700}.chead .s{font-size:.76rem;color:var(--a);display:flex;align-items:center;gap:6px}
+  .sdot{width:7px;height:7px;border-radius:50%;background:var(--a);box-shadow:0 0 8px var(--a)}
+  #log{flex:1;overflow-y:auto;padding:18px 16px;display:flex;flex-direction:column;gap:9px}
+  .b{max-width:82%;padding:10px 13px;border-radius:15px;font-size:.93rem;line-height:1.5;white-space:pre-wrap;word-wrap:break-word;animation:pop .3s var(--ease)}
+  @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .me{align-self:flex-end;background:var(--a-soft);border:1px solid var(--a-line);border-bottom-right-radius:4px}
+  .ia{align-self:flex-start;background:var(--core2);border:1px solid var(--hair);border-bottom-left-radius:4px;box-shadow:var(--inset)}
+  .sys{align-self:center;border:1px dashed var(--hair);color:var(--mut);font-size:.82rem;text-align:center;border-radius:12px}
+  .typing{align-self:flex-start;color:var(--mut);font-size:.85rem;display:inline-flex;gap:6px;align-items:center}
+  .typing .pulse{width:7px;height:7px;border-radius:50%;background:var(--a);animation:beat 1s infinite}
+  @keyframes beat{0%,100%{opacity:.3}50%{opacity:1}}
+  form{display:flex;gap:9px;padding:13px 14px;border-top:1px solid var(--hair)}
+  form input{flex:1}
+  .send{flex:none;width:46px;height:46px;border-radius:13px;border:none;background:var(--a);color:var(--a-ink);
+    cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s var(--ease)}
+  .send:active{transform:scale(.93)}.send:disabled{opacity:.4}.send svg{width:19px;height:19px}
 </style>
 </head>
 <body>
+<button class="theme-tog" onclick="toggleTheme()" title="Mode jour / nuit" aria-label="Changer de thème">
+  <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  <svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19"/></svg>
+</button>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <symbol id="i-store" viewBox="0 0 24 24"><path d="M3 7l1.2-3.2A1 1 0 0 1 5.1 3h13.8a1 1 0 0 1 .9.8L21 7M4 7v12a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7M3 7h18M9.5 20v-5.5h5V20"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></symbol>
+  </g></defs></svg>
+
 <div class="chat">
-  <header>
-    <div class="ava">🛍️</div>
-    <div>
-      <div class="t">{% if merchant %}{{ merchant.business_name }}{% else %}Boutique{% endif %}</div>
-      <div class="s">Vendeur IA · en ligne</div>
-    </div>
-  </header>
+  <div class="chead">
+    <div class="ava"><svg viewBox="0 0 24 24"><use href="#i-store"/></svg></div>
+    <div><div class="t">{% if merchant %}{{ merchant.business_name }}{% else %}Boutique{% endif %}</div>
+    <div class="s"><span class="sdot"></span>Agent vendeur · en ligne</div></div>
+  </div>
   <div id="log">
-    {% if merchant %}
-    <div class="b sys">Vous discutez avec le vendeur IA de « {{ merchant.business_name }} ».<br>Écrivez comme un vrai client 👇</div>
-    {% else %}
-    <div class="b sys">⚠️ Boutique introuvable. Vérifiez le lien.</div>
-    {% endif %}
+    {% if merchant %}<div class="b sys">Vous discutez avec l'agent de « {{ merchant.business_name }} ». Écrivez comme un vrai client 👇</div>
+    {% else %}<div class="b sys">⚠️ Boutique introuvable. Vérifiez le lien.</div>{% endif %}
   </div>
   <form id="f">
     <input id="m" placeholder="Écrivez un message…" autocomplete="off" {% if not merchant %}disabled{% endif %}>
-    <button type="submit" {% if not merchant %}disabled{% endif %}>➤</button>
+    <button type="submit" class="send" {% if not merchant %}disabled{% endif %}><svg viewBox="0 0 24 24"><use href="#i-send"/></svg></button>
   </form>
 </div>
 
 <script>
   const merchantId = "{{ merchant_id }}";
   const log = document.getElementById('log');
-  // Identifiant client unique par navigateur (simule un numéro WhatsApp)
   let customerId = localStorage.getItem('bia_demo_cust');
-  if(!customerId){ customerId = 'demo-' + Math.random().toString(36).slice(2,10); localStorage.setItem('bia_demo_cust', customerId); }
-
-  function bubble(text, cls){
-    const d = document.createElement('div');
-    d.className = 'b ' + cls; d.textContent = text;
-    log.appendChild(d); log.scrollTop = log.scrollHeight; return d;
-  }
-
+  if(!customerId){ customerId='demo-'+Math.random().toString(36).slice(2,10); localStorage.setItem('bia_demo_cust',customerId); }
+  function bubble(text,cls){ const d=document.createElement('div'); d.className='b '+cls; d.textContent=text; log.appendChild(d); log.scrollTop=log.scrollHeight; return d; }
   document.getElementById('f').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const input = document.getElementById('m');
-    const text = input.value.trim();
-    if(!text) return;
-    bubble(text, 'me'); input.value = ''; input.focus();
-    const typing = document.createElement('div');
-    typing.className = 'typing'; typing.textContent = 'le vendeur écrit…';
-    log.appendChild(typing); log.scrollTop = log.scrollHeight;
+    const input=document.getElementById('m'); const text=input.value.trim(); if(!text) return;
+    bubble(text,'me'); input.value=''; input.focus();
+    const typing=document.createElement('div'); typing.className='b typing'; typing.innerHTML='<span class="pulse"></span>le vendeur écrit…';
+    log.appendChild(typing); log.scrollTop=log.scrollHeight;
     try{
-      const r = await fetch('/api/chat', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ merchant_id: merchantId, customer_id: customerId, message: text })
-      });
-      const data = await r.json();
-      typing.remove();
-      if(data.ok){ bubble(data.reply, 'ia'); }
-      else { bubble('⚠️ ' + (data.error || 'Erreur'), 'sys'); }
-    }catch(ex){ typing.remove(); bubble('⚠️ ' + ex.message, 'sys'); }
+      const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({merchant_id:merchantId,customer_id:customerId,message:text})});
+      const data=await r.json(); typing.remove();
+      if(data.ok){ bubble(data.reply,'ia'); } else { bubble('⚠️ '+(data.error||'Erreur'),'sys'); }
+    }catch(ex){ typing.remove(); bubble('⚠️ '+ex.message,'sys'); }
   });
 </script>
 </body>

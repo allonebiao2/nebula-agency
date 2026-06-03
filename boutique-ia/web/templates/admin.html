@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="/static/theme.js"></script>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   :root{
@@ -17,6 +18,23 @@
     --warn:#ffcf6b; --danger:#ff6b7d;
     --ease:cubic-bezier(.16,1,.3,1);
   }
+  /* ☀️ Mode jour pour le cockpit */
+  :root[data-theme="light"]{
+    --bg:#eef1f6; --panel:#ffffff; --panel2:#f5f7fb; --line:rgba(0,0,0,.08); --line2:rgba(0,0,0,.14);
+    --txt:#0f141a; --mut:#5a6573; --mut2:#9aa3af;
+  }
+  :root[data-theme="light"] .topbar{background:rgba(255,255,255,.82)}
+  :root[data-theme="light"] #toast{background:rgba(255,255,255,.95)}
+  :root[data-theme="light"] h1 .sweep{background:linear-gradient(90deg,#0f141a,var(--a),#0f141a)}
+  :root[data-theme="light"] body::after{opacity:.25}
+  /* Bouton bascule jour/nuit (dans la topbar) */
+  .theme-tog{width:40px;height:40px;border-radius:11px;flex:none;
+    background:var(--panel);border:1px solid var(--line2);color:var(--txt);cursor:pointer;display:flex;
+    align-items:center;justify-content:center;transition:.18s}
+  .theme-tog:hover{border-color:var(--a-line);color:var(--a)}
+  .theme-tog svg{width:18px;height:18px}.theme-tog .ico-sun{display:none}
+  :root[data-theme="light"] .theme-tog .ico-sun{display:block}
+  :root[data-theme="light"] .theme-tog .ico-moon{display:none}
   html{scroll-behavior:smooth}
   body{font-family:'Rajdhani',system-ui,sans-serif;background:var(--bg);color:var(--txt);
     line-height:1.45;-webkit-font-smoothing:antialiased;overflow-x:hidden;position:relative;font-size:16px}
@@ -207,6 +225,10 @@
   <span class="glyph"><svg viewBox="0 0 24 24"><use href="#i-shield"/></svg></span>
   <span class="brand">VEN<b>DORA</b> · CONSOLE</span>
   <span class="live"><span class="ddot"></span>{{ glob.merchants }} boutiques</span>
+  <button class="theme-tog" onclick="toggleTheme()" title="Mode jour / nuit" aria-label="Changer de thème">
+    <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19"/></svg>
+  </button>
 </div>
 
 <div class="wrap">
