@@ -94,6 +94,12 @@ def notify_new_order(merchant: dict, order: dict, items: list[dict]) -> None:
     addr = order.get("delivery_address")
     deliv = order.get("delivery_mode") or "—"
     deliv_line = f"🚚 {deliv}" + (f" → {addr}" if addr else "")
+    pm = order.get("payment_method")
+    pay_line = ""
+    if pm == "livraison":
+        pay_line = "\n💵 Paiement : <b>à la livraison</b> (encaisser à la remise)"
+    elif pm == "mobile_money":
+        pay_line = "\n💳 Paiement : Mobile Money (avance)"
 
     notify_mongazi(
         "🛒 <b>Nouvelle commande !</b>\n\n"
@@ -101,7 +107,7 @@ def notify_new_order(merchant: dict, order: dict, items: list[dict]) -> None:
         f"👤 Client : {client}\n\n"
         f"{_fmt_items(items)}\n\n"
         f"💰 Total : <b>{_fmt_fcfa(order.get('total'))}</b>\n"
-        f"{deliv_line}\n"
+        f"{deliv_line}{pay_line}\n"
         f"🆔 <code>{order.get('id')}</code>"
     )
 

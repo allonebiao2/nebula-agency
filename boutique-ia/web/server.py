@@ -126,6 +126,8 @@ def _order_recorder(merchant: dict, customer_whatsapp: str | None):
             for a in articles
             if (a.get("produit") or "").strip()
         ]
+        pay = (data.get("paiement") or "").strip().lower()
+        payment_method = "livraison" if "livr" in pay else ("mobile_money" if pay else None)
         order = create_order(
             merchant_id=merchant["id"],
             customer_whatsapp=customer_whatsapp,
@@ -134,6 +136,7 @@ def _order_recorder(merchant: dict, customer_whatsapp: str | None):
             delivery_mode=(data.get("mode_livraison") or "").strip() or None,
             delivery_address=(data.get("adresse") or "").strip() or None,
             customer_name=(data.get("nom_client") or "").strip() or None,
+            payment_method=payment_method,
         )
         try:
             notify_new_order(merchant, order, items)

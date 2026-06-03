@@ -262,7 +262,14 @@
         <button class="chip" type="button" onclick="pick('f_momo_network','Wave',this)">Wave</button>
       </div>
       <input id="f_momo_network" value="{{ merchant.momo_network or '' }}" placeholder="ex : MTN">
-      <div style="margin-top:18px"><button class="btn pri" type="button" onclick="saveMerchant(['delivery_zones','delivery_fee_info','momo_number','momo_name','momo_network'])">Enregistrer livraison & paiement</button></div>
+
+      <label class="switch">
+        <input type="checkbox" id="f_cod_enabled" {{ 'checked' if merchant.cod_enabled }}>
+        <span class="track"></span>
+        <span class="lbl-t">Paiement à la livraison<small>Le client paie en recevant — booste les ventes (recommandé)</small></span>
+      </label>
+
+      <div style="margin-top:18px"><button class="btn pri" type="button" onclick="saveMerchant(['delivery_zones','delivery_fee_info','momo_number','momo_name','momo_network','cod_enabled'])">Enregistrer livraison & paiement</button></div>
     </div>
   </section>
 
@@ -290,7 +297,16 @@
       <textarea id="f_policies" placeholder="ex : acompte de 50% pour toute commande sur mesure">{{ merchant.policies or '' }}</textarea>
       <label>Infos utiles à connaître <span style="color:var(--mut2)">(FAQ, précisions…)</span></label>
       <textarea id="f_extra_info" placeholder="ex : emballage cadeau offert sur demande">{{ merchant.extra_info or '' }}</textarea>
-      <div style="margin-top:18px"><button class="btn pri" type="button" onclick="saveMerchant(['ai_tone','languages','policies','extra_info'])">Enregistrer le style</button></div>
+
+      <label class="switch">
+        <input type="checkbox" id="f_negotiation_enabled" {{ 'checked' if merchant.negotiation_enabled }}>
+        <span class="track"></span>
+        <span class="lbl-t">Autoriser la négociation<small>L'agent peut marchander dans la limite que vous fixez</small></span>
+      </label>
+      <label style="margin-top:12px">Limite de négociation <span style="color:var(--mut2)">(jusqu'où l'agent peut baisser)</span></label>
+      <input id="f_negotiation_rule" value="{{ merchant.negotiation_rule or '' }}" placeholder="ex : jusqu'à -10% · ou -500F dès 2 articles">
+
+      <div style="margin-top:18px"><button class="btn pri" type="button" onclick="saveMerchant(['ai_tone','languages','policies','extra_info','negotiation_enabled','negotiation_rule'])">Enregistrer le style</button></div>
     </div>
   </section>
 
@@ -515,7 +531,7 @@ async function launchProspection(){
 
 /* Fiche */
 async function saveMerchant(fields){
-  const payload={}; fields.forEach(f=>{ const el=document.getElementById('f_'+f); if(el) payload[f]=el.value; });
+  const payload={}; fields.forEach(f=>{ const el=document.getElementById('f_'+f); if(el) payload[f]=(el.type==='checkbox'?el.checked:el.value); });
   if('business_name' in payload && !payload.business_name.trim()){ notify('Le nom de la boutique est obligatoire.', true); return; }
   const d=await api(`/api/merchants/${MID}/update`,'POST',payload);
   if(d.ok) notify('Enregistré'); else notify(d.error||'Erreur', true);

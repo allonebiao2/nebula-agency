@@ -50,9 +50,11 @@ ORDER_TOOL = {
                     "required": ["produit", "quantite"],
                 },
             },
-            "total": {"type": "number", "description": "Total à payer en F CFA, livraison comprise."},
+            "total": {"type": "number", "description": "Total à payer en F CFA (négocié si négociation), livraison comprise."},
             "mode_livraison": {"type": "string", "enum": ["livraison", "retrait"]},
             "adresse": {"type": "string", "description": "Adresse de livraison (si livraison)."},
+            "paiement": {"type": "string", "enum": ["mobile_money", "à_la_livraison"],
+                          "description": "Comment le client paie : Mobile Money (avance) ou à la livraison."},
             "nom_client": {"type": "string", "description": "Nom du client s'il est connu."},
         },
         "required": ["articles", "total", "mode_livraison"],
@@ -111,6 +113,10 @@ def build_system_prompt(merchant: dict, products: list[dict]) -> str:
     momo_name = merchant.get("momo_name") or ""
     momo_network = merchant.get("momo_network") or ""
 
+    cod_enabled = bool(merchant.get("cod_enabled"))
+    negociation_on = bool(merchant.get("negotiation_enabled"))
+    negociation_rule = (merchant.get("negotiation_rule") or "").strip()
+
     # Catalogue produits
     if products:
         lines = []
@@ -147,6 +153,31 @@ def build_system_prompt(merchant: dict, products: list[dict]) -> str:
             "pour le paiement (le numéro Mobile Money n'est pas encore configuré)."
         )
 
+    if cod_enabled:
+        paiement += (
+            "\n\nPAIEMENT À LA LIVRAISON disponible ✅ : le client peut payer EN RECEVANT sa "
+            "commande. Mets bien cette option en avant pour rassurer les hésitants (ils ne "
+            "paient qu'à la réception). Dans ce cas, pas de preuve de paiement à l'avance : "
+            "confirme juste la commande + l'adresse. Demande au client s'il préfère payer "
+            "maintenant (Mobile Money) ou à la livraison."
+        )
+
+    if negociation_on:
+        negociation = (
+            "Tu peux NÉGOCIER le prix TOI-MÊME, mais STRICTEMENT dans cette limite fixée par la "
+            f"boutique : « {negociation_rule or 'une petite remise raisonnable'} ». "
+            "Ne descends JAMAIS en dessous de cette limite. Négocie avec le sourire, comme un "
+            "bon vendeur au marché ; ne lâche une remise que si le client hésite vraiment, et "
+            "annonce clairement le prix final convenu avant d'enregistrer la commande. "
+            "N'alerte PAS le/la propriétaire juste pour négocier : gère-le toi-même. "
+            "N'alerte que si le client EXIGE un prix SOUS ta limite."
+        )
+    else:
+        negociation = (
+            "Tu ne baisses PAS les prix. Si le client marchande, reste chaleureux et justifie "
+            "la valeur (qualité, service, livraison) avec le sourire, sans céder sur le prix."
+        )
+
     return f"""Tu es le vendeur de la boutique « {name} »{f' ({sector})' if sector else ''}.
 Tu réponds aux clients sur WhatsApp à la place du/de la propriétaire.
 
@@ -164,6 +195,9 @@ Tu réponds aux clients sur WhatsApp à la place du/de la propriétaire.
 
 # Paiement
 {paiement}
+
+# Prix & négociation
+{negociation}
 
 # Règles de la boutique
 {policies or "(aucune règle particulière)"}
@@ -296,8 +330,9 @@ def reply(
         results = []
         for tu in tool_uses:
             note = ("Commande enregistrée et propriétaire prévenu. Confirme maintenant "
-                    "au client en 2-3 lignes WhatsApp et donne les instructions de "
-                    "paiement Mobile Money.")
+                    "au client en 2-3 lignes WhatsApp : s'il paie en Mobile Money, donne "
+                    "les instructions ; s'il paie à la livraison, confirme simplement que "
+                    "la commande est prise et sera livrée.")
             if tu.name == "enregistrer_commande":
                 if on_order:
                     try:

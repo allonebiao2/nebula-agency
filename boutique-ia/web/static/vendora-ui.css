@@ -177,6 +177,18 @@ textarea{resize:vertical;min-height:70px;line-height:1.55}
 .chip.active{color:var(--a-ink);background:var(--a);border-color:var(--a)}
 .choices + input,.choices + textarea{margin-top:0}
 
+/* Interrupteur (toggle) */
+.switch{display:inline-flex;align-items:center;gap:11px;cursor:pointer;user-select:none;margin-top:14px}
+.switch input{display:none}
+.switch .track{width:44px;height:25px;border-radius:100px;background:#26262e;border:1px solid var(--hair);
+  position:relative;transition:background .2s,border-color .2s;flex:none}
+.switch .track::after{content:"";position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;
+  background:#8a8a96;transition:transform .22s var(--ease),background .2s}
+.switch input:checked + .track{background:var(--a-soft);border-color:var(--a-line)}
+.switch input:checked + .track::after{transform:translateX(19px);background:var(--a)}
+.switch .lbl-t{font-size:.9rem;font-weight:600;color:var(--txt)}
+.switch .lbl-t small{display:block;font-weight:400;color:var(--mut);font-size:.78rem;margin-top:1px}
+
 /* ---- Produits ---- */
 .prod{border-top:1px solid var(--hair-soft);padding:15px 0}
 .prod:first-of-type{border-top:none}

@@ -51,7 +51,7 @@ EDITABLE_MERCHANT_FIELDS = {
     "momo_number", "momo_name", "momo_network",
     "delivery_zones", "delivery_fee_info",
     "ai_tone", "languages", "business_hours", "policies", "extra_info",
-    "brand_color",
+    "brand_color", "cod_enabled", "negotiation_enabled", "negotiation_rule",
 }
 EDITABLE_PRODUCT_FIELDS = {"name", "price", "description", "photo_url", "available",
                           "kind", "duration", "options"}
@@ -400,6 +400,7 @@ def create_order(
     delivery_mode: str | None = None,
     delivery_address: str | None = None,
     customer_name: str | None = None,
+    payment_method: str | None = None,
     status: str = "pending",
 ) -> dict[str, Any]:
     """Enregistre une commande conclue par le vendeur IA. Retourne la ligne créée."""
@@ -414,6 +415,7 @@ def create_order(
             "total": total,
             "delivery_mode": delivery_mode,
             "delivery_address": delivery_address,
+            "payment_method": payment_method,
             "status": status,
         })
         .execute()

@@ -101,6 +101,12 @@ alter table bia_merchants add column if not exists brand_color text;
 -- Sécurité back-office : code d'accès (hash PBKDF2) — étage "piliers"
 alter table bia_merchants add column if not exists access_pin text;
 
+-- Conversion : paiement à la livraison + marchandage encadré
+alter table bia_merchants add column if not exists cod_enabled boolean default false;
+alter table bia_merchants add column if not exists negotiation_enabled boolean default false;
+alter table bia_merchants add column if not exists negotiation_rule text;
+alter table bia_orders   add column if not exists payment_method text;  -- 'mobile_money' | 'livraison'
+
 -- Réponses entrantes : désinscriptions / opt-out (STOP, unsub, bounce, plainte)
 create table if not exists bia_optouts (
   contact    text primary key,   -- email (minuscule) OU numéro WhatsApp
