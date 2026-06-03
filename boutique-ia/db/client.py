@@ -52,6 +52,7 @@ EDITABLE_MERCHANT_FIELDS = {
     "delivery_zones", "delivery_fee_info",
     "ai_tone", "languages", "business_hours", "policies", "extra_info",
     "brand_color", "cod_enabled", "negotiation_enabled", "negotiation_rule",
+    "auto_prospect_enabled", "auto_prospect_category", "auto_prospect_city",
 }
 EDITABLE_PRODUCT_FIELDS = {"name", "price", "description", "photo_url", "available",
                           "kind", "duration", "options"}

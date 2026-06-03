@@ -801,6 +801,51 @@ def run_billing_cycle() -> dict:
     return {"suspended": suspended, "reminded": reminded}
 
 
+def run_merchant_auto_prospection() -> int:
+    """Chaque boutique avec le pilote auto activé prospecte ses clients (1×/jour)."""
+    from datetime import datetime, timezone
+
+    from core import prospecting
+    from db.client import (
+        count_prospection_sent_today,
+        create_campaign,
+        list_all_merchants,
+        list_campaigns,
+        subscription_active,
+    )
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    launched = 0
+    for m in list_all_merchants():
+        if not m.get("auto_prospect_enabled") or not subscription_active(m):
+            continue
+        plan = normalize_plan(m.get("plan"))
+        daily = prospection_daily_for_plan(plan)
+        if daily <= 0:
+            continue
+        cat = (m.get("auto_prospect_category") or "").strip()
+        city = (m.get("auto_prospect_city") or m.get("city") or "").strip()
+        if cat not in prospecting.CATEGORIES or not city:
+            continue
+        mid = m["id"]
+        if count_prospection_sent_today("merchant", mid) >= daily:
+            continue
+        # Déjà prospecté aujourd'hui ?
+        if any((c.get("created_at") or "").startswith(today)
+               for c in list_campaigns("merchant", mid, limit=5)):
+            continue
+        camp = create_campaign({
+            "owner_type": "merchant", "merchant_id": mid, "mode": "client",
+            "title": f"Auto · {prospecting.CATEGORIES[cat]['label']} · {city}",
+            "category": cat, "city": city, "status": "sourcing",
+        })
+        try:
+            prospecting.run_full_campaign(camp["id"], "client", cat, city, daily, "merchant", mid)
+            launched += 1
+        except Exception:  # noqa: BLE001
+            log.warning("auto-prospection commerçant KO (%s)", mid, exc_info=True)
+    return launched
+
+
 async def _auto_prospection_loop():
     """Boucle de fond : facturation (toujours) + recrutement/jour si ACTIVÉ."""
     import asyncio
@@ -824,6 +869,12 @@ async def _auto_prospection_loop():
                     await asyncio.to_thread(_run_auto_cycle)
         except Exception:  # noqa: BLE001
             log.warning("auto-prospection loop", exc_info=True)
+        try:
+            # Pilote auto des COMMERÇANTS (chaque boutique éligible prospecte 1×/jour)
+            if datetime.now(timezone.utc).hour >= settings.auto_prospection_hour:
+                await asyncio.to_thread(run_merchant_auto_prospection)
+        except Exception:  # noqa: BLE001
+            log.warning("auto-prospection merchants loop", exc_info=True)
         await asyncio.sleep(1800)  # vérifie toutes les 30 min
 
 

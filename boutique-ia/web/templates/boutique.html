@@ -371,6 +371,23 @@
       </div>
       <datalist id="d-citycible"><option>Cotonou</option><option>Porto-Novo</option><option>Calavi</option><option>Lomé</option><option>Abidjan</option><option>Dakar</option></datalist>
       <div style="margin-top:14px"><button class="btn acc" type="button" onclick="launchProspection()"><svg viewBox="0 0 24 24"><use href="#i-target"/></svg>Lancer la prospection</button></div>
+
+      <div style="border-top:1px solid var(--hair);margin-top:18px;padding-top:16px">
+        <label class="switch">
+          <input type="checkbox" id="f_auto_prospect_enabled" {{ 'checked' if merchant.auto_prospect_enabled }}>
+          <span class="track"></span>
+          <span class="lbl-t">Pilote automatique<small>Votre agent prospecte tout seul, chaque jour ({{ prospect_daily }} emails/j)</small></span>
+        </label>
+        <div class="grid2" style="margin-top:12px">
+          <div><label>Cible auto</label>
+            <select id="f_auto_prospect_category">
+              <option value="">— choisir —</option>
+              {% for c in categories %}<option value="{{ c.key }}" {{ 'selected' if merchant.auto_prospect_category == c.key }}>{{ c.label }}</option>{% endfor %}
+            </select></div>
+          <div><label>Ville auto</label><input id="f_auto_prospect_city" value="{{ merchant.auto_prospect_city or merchant.city or '' }}" placeholder="ex : Cotonou"></div>
+        </div>
+        <div style="margin-top:14px"><button class="btn pri sm" type="button" onclick="saveMerchant(['auto_prospect_enabled','auto_prospect_category','auto_prospect_city'])">Enregistrer le pilote auto</button></div>
+      </div>
     </div>
     {% else %}
     <div class="panel" style="display:flex;gap:14px;align-items:center">
