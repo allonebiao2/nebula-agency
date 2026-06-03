@@ -124,6 +124,37 @@ def notify_new_order(merchant: dict, order: dict, items: list[dict]) -> None:
     _whatsapp_owner(merchant.get("owner_whatsapp"), merchant.get("country"), plain)
 
 
+def notify_subscription_reminder(merchant: dict, days: int, price: int) -> None:
+    """Relance avant l'échéance de l'abonnement."""
+    notify_mongazi(
+        "⏳ <b>Abonnement à renouveler</b>\n\n"
+        f"🏪 {merchant.get('business_name','?')}\n"
+        f"⏰ Expire dans <b>{days} jour(s)</b>\n"
+        f"💰 {price:,} F/mois".replace(",", " ") +
+        f"\n🆔 <code>{merchant.get('id')}</code>"
+    )
+    _whatsapp_owner(
+        merchant.get("owner_whatsapp"), merchant.get("country"),
+        f"Bonjour 👋 Votre abonnement Vendora ({merchant.get('business_name','votre boutique')}) "
+        f"expire dans {days} jour(s). Pensez à renouveler pour que votre agent continue à vendre. Merci !"
+    )
+
+
+def notify_subscription_expired(merchant: dict) -> None:
+    """Abonnement expiré → boutique suspendue."""
+    notify_mongazi(
+        "🛑 <b>Abonnement expiré — boutique suspendue</b>\n\n"
+        f"🏪 {merchant.get('business_name','?')}\n"
+        f"➡️ L'agent ne vend plus jusqu'au renouvellement.\n"
+        f"🆔 <code>{merchant.get('id')}</code>"
+    )
+    _whatsapp_owner(
+        merchant.get("owner_whatsapp"), merchant.get("country"),
+        f"Votre abonnement Vendora ({merchant.get('business_name','votre boutique')}) a expiré. "
+        f"Votre agent est en pause. Renouvelez pour le réactiver — merci !"
+    )
+
+
 def notify_hot_lead(merchant: dict, customer: str | None, raison: str,
                     resume: str, nom_client: str | None = None) -> None:
     """Prévient le commerçant qu'un client a besoin d'attention (lead chaud / réclamation)."""

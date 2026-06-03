@@ -81,6 +81,10 @@ class Settings(BaseSettings):
     # URL publique (pour le lien de désinscription dans les emails de prospection)
     public_base_url: str = "https://vendora-agent.up.railway.app"
 
+    # --- Abonnement (facturation MoMo direct, cycle automatique) ---
+    subscription_days: int = 30      # durée d'un abonnement après validation paiement
+    reminder_days: int = 3           # relance quand il reste ≤ N jours
+
     # --- Recrutement AUTONOME (Vendora se trouve des clients tout seul) ---
     auto_prospection_enabled: bool = False   # interrupteur maître (OFF = sécurité)
     auto_prospection_daily: int = 12         # volume/jour (échauffement ; monter progressivement)

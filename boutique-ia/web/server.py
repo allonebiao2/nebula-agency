@@ -474,6 +474,7 @@ async def admin_dashboard(request: Request, token: str = ""):
     from db.client import (
         all_orders_brief,
         all_products_brief,
+        days_left,
         list_all_merchants,
     )
     if not settings.admin_token:
@@ -527,6 +528,7 @@ async def admin_dashboard(request: Request, token: str = ""):
             "orders": oc["count"],
             "revenue": oc["revenue"],
             "status": st,
+            "dleft": days_left(m),
         })
 
     pending = [r for r in rows if r["status"] == "paid_pending_validation"]
@@ -771,14 +773,46 @@ async def admin_prospection_auto(request: Request, bg: BackgroundTasks):
     return {"ok": True, "message": "Cycle de recrutement automatique lancé."}
 
 
+def run_billing_cycle() -> dict:
+    """Cycle d'abonnement : suspend les expirés + relance ceux qui arrivent à échéance."""
+    from db.client import days_left, list_all_merchants, mark_reminder_sent, set_merchant_status
+    from notify import notify_subscription_expired, notify_subscription_reminder
+    suspended = reminded = 0
+    for m in list_all_merchants():
+        if m.get("status") != "active" or not m.get("period_end"):
+            continue
+        d = days_left(m)
+        if d is None:
+            continue
+        if d <= 0:
+            set_merchant_status(m["id"], "suspended")
+            try:
+                notify_subscription_expired(m)
+            except Exception:  # noqa: BLE001
+                pass
+            suspended += 1
+        elif d <= settings.reminder_days and m.get("reminder_sent_for") != m.get("period_end"):
+            mark_reminder_sent(m["id"], m.get("period_end"))
+            try:
+                notify_subscription_reminder(m, d, price_for_plan(m.get("plan")))
+            except Exception:  # noqa: BLE001
+                pass
+            reminded += 1
+    return {"suspended": suspended, "reminded": reminded}
+
+
 async def _auto_prospection_loop():
-    """Boucle de fond : 1 campagne de recrutement/jour si ACTIVÉ (réglage en base, live)."""
+    """Boucle de fond : facturation (toujours) + recrutement/jour si ACTIVÉ."""
     import asyncio
     from datetime import datetime, timezone
 
     from db.client import get_setting_bool
     await asyncio.sleep(20)  # laisse le serveur démarrer tranquillement
     while True:
+        try:
+            await asyncio.to_thread(run_billing_cycle)  # cycle d'abonnement, à chaque tick
+        except Exception:  # noqa: BLE001
+            log.warning("billing cycle", exc_info=True)
         try:
             # NB : appels Supabase = bloquants → toujours via to_thread pour ne pas
             # geler l'event loop (sinon toutes les requêtes HTTP se figent).
@@ -1005,8 +1039,10 @@ async def whatsapp_twilio(request: Request):
             "(ou demandez-lui de vous l'envoyer). À très vite !"
         )
 
-    # Boutique suspendue → l'agent ne vend plus.
-    if merchant.get("status") == "suspended":
+    # Boutique suspendue OU abonnement expiré → l'agent ne vend plus.
+    from db.client import days_left as _days_left
+    _exp = _days_left(merchant)
+    if merchant.get("status") == "suspended" or (_exp is not None and _exp <= 0):
         return _twiml(
             "Cette boutique est momentanément indisponible. Merci de réessayer plus tard 🙏"
         )

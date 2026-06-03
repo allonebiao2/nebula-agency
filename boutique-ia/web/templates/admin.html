@@ -318,6 +318,7 @@
               {% elif r.status == 'suspended' %}<span class="badge susp">Suspendue</span>
               {% else %}<span class="badge">Attente paiement</span>{% endif %}
               <span class="badge">{{ r.plan_label }}</span>
+              {% if r.dleft is not none %}<span class="badge {{ 'active' if r.dleft > 3 else ('wait' if r.dleft > 0 else 'susp') }}">{% if r.dleft > 0 %}{{ r.dleft }}j restants{% else %}expiré{% endif %}</span>{% endif %}
             </div>
             <div class="ms">{{ r.m.sector or '—' }} · {{ r.m.city or '—' }} · {{ r.m.owner_whatsapp or r.m.whatsapp_business or '—' }}</div>
           </div>

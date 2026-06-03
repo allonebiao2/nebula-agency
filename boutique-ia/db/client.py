@@ -187,17 +187,71 @@ def list_all_merchants() -> list[dict[str, Any]]:
     )
 
 
-def activate_merchant(merchant_id: str) -> dict[str, Any]:
-    """Valide l'abonnement : passe la boutique en 'active' (abonnement payé)."""
-    from datetime import datetime, timezone
+def _parse_dt(s: Any):
+    from datetime import datetime
+    if not s:
+        return None
+    try:
+        return datetime.fromisoformat(str(s).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+
+
+def activate_merchant(merchant_id: str, days: int | None = None) -> dict[str, Any]:
+    """Valide un paiement : active la boutique + prolonge l'abonnement de N jours.
+
+    Renouvellement : on ajoute les jours à la date d'échéance en cours si elle
+    est encore future, sinon à partir d'aujourd'hui.
+    """
+    from datetime import datetime, timedelta, timezone
+
+    from config import settings
+    days = days or settings.subscription_days
+    now = datetime.now(timezone.utc)
+    m = get_merchant(merchant_id) or {}
+    cur_end = _parse_dt(m.get("period_end"))
+    base = cur_end if (cur_end and cur_end > now) else now
+    fields: dict[str, Any] = {
+        "status": "active",
+        "period_end": (base + timedelta(days=days)).isoformat(),
+        "last_payment_at": now.isoformat(),
+        "reminder_sent_for": None,
+    }
+    if not m.get("activated_at"):
+        fields["activated_at"] = now.isoformat()
     db = get_db()
-    result = (
-        db.table("bia_merchants")
-        .update({"status": "active", "activated_at": datetime.now(timezone.utc).isoformat()})
-        .eq("id", merchant_id)
-        .execute()
-    )
+    result = db.table("bia_merchants").update(fields).eq("id", merchant_id).execute()
     return result.data[0] if result.data else {}
+
+
+def subscription_active(merchant: dict[str, Any] | None) -> bool:
+    """L'abonnement est-il valide MAINTENANT ? (statut active + échéance non dépassée)"""
+    m = merchant or {}
+    if m.get("status") != "active":
+        return False
+    end = _parse_dt(m.get("period_end"))
+    if end is None:
+        return True  # actif sans échéance (legacy) → toléré
+    from datetime import datetime, timezone
+    return end >= datetime.now(timezone.utc)
+
+
+def days_left(merchant: dict[str, Any] | None) -> int | None:
+    """Jours restants d'abonnement (None si pas d'échéance, négatif si expiré)."""
+    end = _parse_dt((merchant or {}).get("period_end"))
+    if end is None:
+        return None
+    from datetime import datetime, timezone
+    secs = (end - datetime.now(timezone.utc)).total_seconds()
+    import math
+    return math.ceil(secs / 86400)  # >0 = jours restants, <=0 = expiré
+
+
+def mark_reminder_sent(merchant_id: str, period_end: Any) -> None:
+    """Mémorise qu'une relance a été envoyée pour cette échéance (anti-doublon)."""
+    get_db().table("bia_merchants").update(
+        {"reminder_sent_for": str(period_end)}
+    ).eq("id", merchant_id).execute()
 
 
 def set_merchant_status(merchant_id: str, status: str) -> dict[str, Any]:
