@@ -62,11 +62,16 @@ class Settings(BaseSettings):
     # --- Sécurité admin ---
     admin_token: str = ""
 
-    # --- Prospection (étage 5) — envoi via Gmail SMTP (réutilise le compte NOVA) ---
-    gmail_user: str = ""              # ex: allonebiao2@gmail.com
-    gmail_app_password: str = ""      # App Password Gmail (16 car.)
+    # --- Prospection (étage 5) — envoi via Resend (API HTTP, marche sur Railway) ---
+    # ⚠️ Railway bloque le SMTP sortant → on N'UTILISE PAS Gmail SMTP en prod.
+    resend_api_key: str = ""                          # réutilise la clé NOVA
+    email_from_address: str = "contact@nebula-agency.com"  # domaine vérifié sur Resend
+    email_from_name: str = "Mongazi · NEBULA Agency"
     email_reply_to: str = ""          # adresse de réponse par défaut (admin/recrutement)
-    gmail_daily_cap: int = 90         # plafond global d'envois/jour (sécurité compte Gmail)
+    # (Gmail SMTP gardé en repli local uniquement ; inutile sur Railway)
+    gmail_user: str = ""
+    gmail_app_password: str = ""
+    gmail_daily_cap: int = 90         # plafond global d'envois/jour (sécurité)
     prospection_admin_daily: int = 60 # quota/jour pour les campagnes admin (recrutement)
 
     env: str = "development"

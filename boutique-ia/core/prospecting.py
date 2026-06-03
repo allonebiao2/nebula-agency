@@ -174,11 +174,41 @@ def personalize(template: str, prospect: dict[str, Any]) -> str:
     return template.replace("[NOM]", name).replace("{nom}", name)
 
 
-# --- Envoi Gmail SMTP --------------------------------------------------------
-def send_email(to: str, subject: str, body: str, *, reply_to: str | None = None,
-               from_name: str = "Mongazi · NEBULA Agency") -> dict[str, Any]:
+# --- Envoi email ------------------------------------------------------------
+# Resend (API HTTP, port 443) = backend par défaut, fonctionne sur Railway.
+# Gmail SMTP (port 465) gardé en repli LOCAL uniquement (bloqué par Railway).
+def _send_resend(to: str, subject: str, body: str, reply_to: str | None,
+                 from_name: str) -> dict[str, Any]:
+    if not settings.resend_api_key:
+        return {"ok": False, "error": "RESEND_API_KEY manquante"}
+    payload = {
+        "from": f"{from_name or settings.email_from_name} <{settings.email_from_address}>",
+        "to": [to],
+        "subject": subject,
+        "text": body,
+    }
+    rt = reply_to or settings.email_reply_to
+    if rt:
+        payload["reply_to"] = rt
+    try:
+        r = httpx.post(
+            "https://api.resend.com/emails",
+            headers={"Authorization": f"Bearer {settings.resend_api_key}",
+                     "Content-Type": "application/json"},
+            json=payload, timeout=20.0,
+        )
+        if r.status_code in (200, 201):
+            return {"ok": True, "error": None}
+        return {"ok": False, "error": f"resend {r.status_code}: {r.text[:160]}"}
+    except Exception as e:  # noqa: BLE001
+        log.warning("Resend send KO: %s", e)
+        return {"ok": False, "error": str(e)[:200]}
+
+
+def _send_gmail_smtp(to: str, subject: str, body: str, reply_to: str | None,
+                     from_name: str) -> dict[str, Any]:
     if not (settings.gmail_user and settings.gmail_app_password):
-        return {"ok": False, "error": "Gmail non configuré (GMAIL_USER / GMAIL_APP_PASSWORD)"}
+        return {"ok": False, "error": "Gmail non configuré"}
     msg = MIMEMultipart("alternative")
     msg["From"] = f"{from_name} <{settings.gmail_user}>"
     msg["To"] = to
@@ -193,8 +223,15 @@ def send_email(to: str, subject: str, body: str, *, reply_to: str | None = None,
             srv.send_message(msg)
         return {"ok": True, "error": None}
     except Exception as e:  # noqa: BLE001
-        log.warning("Gmail send KO: %s", e)
         return {"ok": False, "error": str(e)[:200]}
+
+
+def send_email(to: str, subject: str, body: str, *, reply_to: str | None = None,
+               from_name: str = "Mongazi · NEBULA Agency") -> dict[str, Any]:
+    """Envoie via Resend (défaut). Repli Gmail SMTP si pas de clé Resend (local)."""
+    if settings.resend_api_key:
+        return _send_resend(to, subject, body, reply_to, from_name)
+    return _send_gmail_smtp(to, subject, body, reply_to, from_name)
 
 
 # --- Orchestration : envoi d'une campagne (tâche de fond, avec garde-fous) ----
