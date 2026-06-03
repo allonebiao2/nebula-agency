@@ -324,6 +324,38 @@
     {% endif %}
   </section>
 
+  <!-- RELANCES AUTONOMES -->
+  <section class="rv">
+    <div class="shead">
+      <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-mail"/></svg></div>
+      <h2>Relances automatiques</h2>
+    </div>
+    <p class="hint">L'agent recontacte de lui-même les clients qui allaient être perdus : ceux qui ont demandé un prix puis n'ont plus répondu, et les paniers non payés. Message rédigé dans le ton de la boutique, dans la fenêtre 6-22h. Garde-fous : 1 relance/client/3j, opt-out respecté, boutiques actives. {% if not followups.twilio_ready %}<b style="color:var(--warn,#e0a93b)">⚠ Twilio requis pour l'envoi sortant (pas encore configuré).</b>{% endif %}</p>
+    <div class="pilot {{ 'on' if followups.enabled }}" id="fup">
+      <div class="body">
+        <div class="statezone">
+          <div class="orb"></div>
+          <div>
+            <div class="stt" id="fupState">{{ 'RELANCES ACTIVES' if followups.enabled else 'EN PAUSE' }}</div>
+            <div class="sub">L'agent récupère les ventes en train d'être perdues</div>
+          </div>
+        </div>
+        <div class="ctrls">
+          <label class="switch" title="Autoriser / mettre en pause">
+            <input type="checkbox" id="fupToggle" {{ 'checked' if followups.enabled }} onchange="toggleFup(this.checked)">
+            <span class="track"></span>
+          </label>
+          <button class="btn gho" type="button" onclick="runFup()"><svg viewBox="0 0 24 24"><use href="#i-play"/></svg>Lancer maintenant</button>
+        </div>
+      </div>
+      <div class="foot">
+        <span>Aujourd'hui : <b>{{ followups.today }}</b></span>
+        <span>Total relances : <b>{{ followups.total }}</b></span>
+        <span>Canal : <b>WhatsApp</b></span>
+      </div>
+    </div>
+  </section>
+
   <!-- PAIEMENTS À VALIDER -->
   {% if pending %}
   <section class="rv">
@@ -469,6 +501,22 @@ async function runLearn(){
   if(!confirm('Analyser les conversations maintenant et mettre à jour les leçons de vente ?')) return;
   const d = await post('/api/admin/learning/run');
   notify(d.ok ? 'Analyse lancée — résumé sur Telegram puis recharge la page' : (d.error||'Erreur'), !d.ok);
+}
+
+/* Relances autonomes */
+async function toggleFup(on){
+  const d = await post('/api/admin/followups/settings', { enabled: on });
+  const p = document.getElementById('fup');
+  if(d.ok){
+    p.classList.toggle('on', on);
+    document.getElementById('fupState').textContent = on ? 'RELANCES ACTIVES' : 'EN PAUSE';
+    notify(on ? 'Relances activées' : 'Relances en pause');
+  } else { notify(d.error||'Erreur', true); document.getElementById('fupToggle').checked = !on; }
+}
+async function runFup(){
+  if(!confirm('Lancer une vague de relances maintenant ? (vrais messages WhatsApp aux clients)')) return;
+  const d = await post('/api/admin/followups/run');
+  notify(d.ok ? 'Relances lancées — résumé sur Telegram' : (d.error||'Erreur'), !d.ok);
 }
 
 /* Boutiques */

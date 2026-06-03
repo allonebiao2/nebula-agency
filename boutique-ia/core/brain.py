@@ -273,6 +273,48 @@ Tu réponds aux clients sur WhatsApp à la place du/de la propriétaire.
 """
 
 
+def followup_message(merchant: dict, products: list[dict], history: list[dict],
+                     lessons: str | None = None, kind: str = "silent",
+                     hours: int | None = None) -> str:
+    """Rédige UN message de relance (le client n'a pas répondu / n'a pas payé).
+
+    Utilise la fiche de la boutique + les leçons apprises pour relancer dans le bon
+    ton, avec une légère urgence honnête. Un seul message court, sans outil.
+    `kind` : 'silent' (devis sans réponse) | 'cart' (commande non payée).
+    """
+    settings.require("anthropic_api_key")
+    client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
+
+    system_text = build_system_prompt(merchant, products, lessons=lessons)
+    messages = _to_anthropic_messages(history) or [{"role": "user", "content": "Bonjour"}]
+
+    delai = f" (cela fait environ {hours}h)" if hours else ""
+    if kind == "cart":
+        consigne = (
+            f"INSTRUCTION INTERNE (ne pas mentionner ceci au client) : le client a confirmé "
+            f"sa commande mais n'a pas encore réglé{delai}. Écris UN SEUL message WhatsApp court "
+            "et chaleureux pour l'aider à finaliser le paiement, rappelle brièvement ce qui est "
+            "réservé pour lui, rassure (paiement simple, ou à la livraison si dispo), et propose "
+            "de l'accompagner. Légère urgence honnête, jamais de pression. 2-3 lignes."
+        )
+    else:
+        consigne = (
+            f"INSTRUCTION INTERNE (ne pas mentionner ceci au client) : le client s'est montré "
+            f"intéressé puis n'a plus répondu{delai}. Écris UN SEUL message WhatsApp court et "
+            "naturel pour relancer la conversation, lever sa dernière hésitation et l'inviter à "
+            "avancer vers l'achat. Reprends le fil de l'échange (le produit dont il parlait). "
+            "Légère urgence honnête si c'est vrai (ex: pièce qui part vite). 2-3 lignes, 1 emoji max."
+        )
+    # On termine sur un tour "user" → le modèle produit le message de relance (assistant).
+    messages = messages + [{"role": "user", "content": consigne}]
+
+    system = [{"type": "text", "text": system_text, "cache_control": {"type": "ephemeral"}}]
+    resp = client.messages.create(
+        model=settings.claude_model, max_tokens=300, system=system, messages=messages,
+    )
+    return _text_of(resp)
+
+
 def _to_anthropic_messages(history: list[dict]) -> list[dict]:
     """Convertit l'historique (role customer/assistant) en messages Anthropic."""
     msgs = []

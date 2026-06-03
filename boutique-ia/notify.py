@@ -245,6 +245,52 @@ def _to_e164(number: str | None, country: str | None) -> str | None:
     return None
 
 
+def send_customer_whatsapp(customer_whatsapp: str | None, text: str) -> bool:
+    """Envoie un message WhatsApp à un CLIENT via Twilio (relances autonomes).
+
+    `customer_whatsapp` est au format Twilio « whatsapp:+229... » (tel que stocké).
+    ⚠️ WhatsApp n'autorise les messages libres que dans la fenêtre de 24h après le
+    dernier message du client (sinon il faut un template approuvé — WhatsApp prod).
+    Les relances visent justement cette fenêtre. Retourne True si l'envoi part.
+    """
+    sid = settings.twilio_account_sid
+    token = settings.twilio_auth_token
+    from_number = settings.vendora_whatsapp_number
+    if not (sid and token and from_number and customer_whatsapp):
+        return False
+    to = customer_whatsapp.strip()
+    if not to.startswith("whatsapp:"):
+        e164 = _to_e164(to, "BJ")
+        if not e164:
+            return False
+        to = f"whatsapp:{e164}"
+    from_e164 = "+" + re.sub(r"\D", "", from_number)
+    try:
+        r = httpx.post(
+            f"https://api.twilio.com/2010-04-01/Accounts/{sid}/Messages.json",
+            data={"From": f"whatsapp:{from_e164}", "To": to, "Body": text},
+            auth=(sid, token),
+            timeout=10.0,
+        )
+        return r.status_code in (200, 201)
+    except Exception as e:  # noqa: BLE001
+        log.warning("[notify] WhatsApp client échoué : %s", e)
+        return False
+
+
+def notify_followups_summary(stats: dict) -> None:
+    """Résumé Telegram après une vague de relances (seulement si quelque chose est parti)."""
+    sent = int(stats.get("sent") or 0)
+    if sent <= 0:
+        return
+    notify_mongazi(
+        "📲 <b>Relances automatiques</b>\n\n"
+        f"L'agent a recontacté <b>{sent}</b> client(s) de lui-même "
+        f"(💬 {stats.get('silent', 0)} silencieux · 🛒 {stats.get('cart', 0)} paniers).\n"
+        "Objectif : récupérer des ventes qui allaient être perdues."
+    )
+
+
 def _whatsapp_owner(owner_number: str | None, country: str | None, text: str) -> None:
     """Envoie un WhatsApp au patron via l'API Twilio, si les identifiants existent."""
     sid = settings.twilio_account_sid

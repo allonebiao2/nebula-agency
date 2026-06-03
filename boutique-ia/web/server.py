@@ -554,8 +554,19 @@ async def admin_dashboard(request: Request, token: str = ""):
     auto_enabled = get_setting_bool("auto_prospection_enabled", settings.auto_prospection_enabled)
     auto_daily = get_setting_int("auto_prospection_daily", settings.auto_prospection_daily)
 
+    # Relances autonomes (clients silencieux + paniers abandonnés)
+    from db.client import count_followups_since, count_followups_today, get_setting
+    twilio_ready = bool(settings.twilio_account_sid and settings.twilio_auth_token
+                        and settings.vendora_whatsapp_number)
+    followups = {
+        "enabled": get_setting_bool("followups_enabled", False),
+        "today": count_followups_today() if twilio_ready else 0,
+        "total": count_followups_since("2000-01-01T00:00:00+00:00") if twilio_ready else 0,
+        "twilio_ready": twilio_ready,
+    }
+
     # Cerveau d'apprentissage (auto-amélioration)
-    from db.client import get_latest_lessons, get_setting
+    from db.client import get_latest_lessons
     learn_enabled = get_setting_bool("learning_enabled", True)
     learn_last = get_setting("learning_last_run")
     latest = get_latest_lessons("global") or {}
@@ -576,7 +587,7 @@ async def admin_dashboard(request: Request, token: str = ""):
              categories=cats, campaigns=campaigns,
              prospect_used=prospect_used, prospect_daily=settings.prospection_admin_daily,
              auto_enabled=auto_enabled, auto_daily=auto_daily,
-             total_recruited=total_recruited, learn=learn),
+             total_recruited=total_recruited, learn=learn, followups=followups),
     )
 
 
@@ -820,6 +831,31 @@ async def admin_learning_settings(request: Request):
     return {"ok": True}
 
 
+@app.post("/api/admin/followups/settings")
+async def admin_followups_settings(request: Request):
+    """Autorise / met en pause les relances autonomes (OFF par défaut)."""
+    from db.client import set_setting
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    if "enabled" in body:
+        set_setting("followups_enabled", "true" if body.get("enabled") else "false")
+    return {"ok": True}
+
+
+@app.post("/api/admin/followups/run")
+async def admin_followups_run(request: Request, bg: BackgroundTasks):
+    """Déclenche manuellement une vague de relances (test)."""
+    from core.followup import run_followups
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    bg.add_task(run_followups)
+    return {"ok": True, "message": "Relances lancées — résumé sur Telegram si des envois partent."}
+
+
 def run_billing_cycle() -> dict:
     """Cycle d'abonnement : suspend les expirés + relance ceux qui arrivent à échéance."""
     from db.client import days_left, list_all_merchants, mark_reminder_sent, set_merchant_status
@@ -977,6 +1013,13 @@ async def _auto_prospection_loop():
                 await asyncio.to_thread(run_learning_job, True, why)
         except Exception:  # noqa: BLE001
             log.warning("learning loop", exc_info=True)
+        try:
+            # Relances autonomes (clients silencieux + paniers abandonnés).
+            # OFF par défaut ; gating + garde-fous gérés dans run_followups.
+            from core.followup import run_followups
+            await asyncio.to_thread(run_followups)
+        except Exception:  # noqa: BLE001
+            log.warning("followups loop", exc_info=True)
         await asyncio.sleep(1800)  # vérifie toutes les 30 min
 
 

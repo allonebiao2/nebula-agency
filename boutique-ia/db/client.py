@@ -709,6 +709,47 @@ _LESSON_CACHE: dict[str, tuple[float, str]] = {}
 _LESSON_TTL = 600.0  # secondes
 
 
+def record_followup(merchant_id: str, customer: str, kind: str,
+                    message: str, order_id: str | None = None) -> None:
+    """Trace une relance envoyée (anti-doublon + reporting)."""
+    get_db().table("bia_followups").insert({
+        "merchant_id": merchant_id, "customer_whatsapp": customer, "kind": kind,
+        "message": message, "order_id": order_id,
+    }).execute()
+
+
+def followed_up_recently(merchant_id: str, customer: str, days: int = 3) -> bool:
+    """Ce client a-t-il déjà été relancé récemment (par cette boutique) ? (cooldown)."""
+    r = (
+        get_db().table("bia_followups").select("id", count="exact", head=True)
+        .eq("merchant_id", merchant_id).eq("customer_whatsapp", customer)
+        .gte("sent_at", _window_iso(days)).execute()
+    )
+    return (r.count or 0) > 0
+
+
+def count_followups_since(iso: str, merchant_id: str | None = None) -> int:
+    """Nb de relances envoyées depuis un horodatage (plafond/jour)."""
+    db = get_db()
+    q = db.table("bia_followups").select("id", count="exact", head=True).gte("sent_at", iso)
+    if merchant_id:
+        q = q.eq("merchant_id", merchant_id)
+    return q.execute().count or 0
+
+
+def list_pending_orders(days: int) -> list[dict[str, Any]]:
+    """Commandes en attente de paiement sur N jours (paniers à relancer)."""
+    return (
+        get_db().table("bia_orders").select("*")
+        .eq("status", "pending").gte("created_at", _window_iso(days))
+        .order("created_at", desc=True).execute().data or []
+    )
+
+
+def count_followups_today(merchant_id: str | None = None) -> int:
+    return count_followups_since(_today_start_iso(), merchant_id)
+
+
 def get_active_lessons(merchant_id: str | None = None) -> str:
     """Texte des leçons à injecter dans le prompt du vendeur (global + boutique). Caché."""
     import time as _time

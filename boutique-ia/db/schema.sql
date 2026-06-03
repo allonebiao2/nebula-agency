@@ -176,3 +176,17 @@ create table if not exists bia_lessons (
   created_at  timestamptz default now()
 );
 create index if not exists bia_lessons_scope_idx on bia_lessons(scope, merchant_id, created_at desc);
+
+-- 9. Relances automatiques (autonomie) : l'agent recontacte de lui-même les clients
+--    silencieux (devis sans réponse) et les paniers abandonnés (commande non payée),
+--    dans ses garde-fous. Sert aussi d'anti-doublon (cooldown) + reporting.
+create table if not exists bia_followups (
+  id uuid primary key default gen_random_uuid(),
+  merchant_id uuid not null references bia_merchants(id) on delete cascade,
+  customer_whatsapp text,
+  kind        text,          -- 'silent' (client muet) | 'cart' (panier/commande non payée)
+  order_id    uuid,          -- renseigné pour une relance de panier
+  message     text,
+  sent_at     timestamptz default now()
+);
+create index if not exists bia_followups_idx on bia_followups(merchant_id, customer_whatsapp, sent_at desc);
