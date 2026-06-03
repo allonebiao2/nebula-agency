@@ -7,16 +7,32 @@
 <link rel="icon" href="/static/logo.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="/static/theme.js"></script>
 <style>
   :root{
     --bg:#07070d; --panel:#0f0f1a; --panel2:#13131f; --line:rgba(255,255,255,.08);
     --txt:#f5f6fa; --muted:#9aa0b4; --v:#8B5CFF; --c:#22D3EE; --danger:#ff5c7c;
     --grad:linear-gradient(100deg,var(--v),var(--c));
   }
+  /* ☀️ Mode jour (le hero cosmique reste sombre, le reste s'éclaircit) */
+  :root[data-theme="light"]{
+    --bg:#f4f5f8; --panel:#ffffff; --panel2:#f5f6f9; --line:rgba(0,0,0,.10);
+    --txt:#13151b; --muted:#5b6573;
+  }
+  :root[data-theme="light"] nav{background:rgba(255,255,255,.78)}
+  :root[data-theme="light"] .glow{opacity:.5}
+  :root[data-theme="light"] input,:root[data-theme="light"] textarea,:root[data-theme="light"] select{background:#fff}
+  .theme-tog{width:40px;height:40px;border-radius:11px;flex:none;background:var(--panel);
+    border:1px solid var(--line);color:var(--txt);cursor:pointer;display:inline-flex;align-items:center;
+    justify-content:center;transition:.18s}
+  .theme-tog:hover{border-color:var(--c);color:var(--c)}
+  .theme-tog svg{width:18px;height:18px}.theme-tog .ico-sun{display:none}
+  :root[data-theme="light"] .theme-tog .ico-sun{display:block}
+  :root[data-theme="light"] .theme-tog .ico-moon{display:none}
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
-  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;overflow-x:hidden}
+  body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;overflow-x:hidden}
   h1,h2,h3,.brand{font-family:'Sora',sans-serif}
   .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
   .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
@@ -149,8 +165,12 @@
 <nav>
   <div class="wrap row">
     <div class="logo"><img src="/static/logo.svg" alt="{{ product_name }}"><span class="brand grad">{{ product_name }}</span></div>
-    <div style="display:flex;align-items:center;gap:16px">
+    <div style="display:flex;align-items:center;gap:14px">
       <a href="#tarifs" style="color:var(--muted);font-weight:600;font-size:.92rem">Tarifs</a>
+      <button class="theme-tog" onclick="toggleTheme()" title="Mode jour / nuit" aria-label="Changer de thème">
+        <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19"/></svg>
+      </button>
       <a href="#creer" class="btn btn-primary">Créer mon agent</a>
     </div>
   </div>
@@ -216,15 +236,15 @@
 
       <div class="plan reveal">
         <div class="pname">🌱 Démarrage</div>
-        <div class="ptag">Pour démarrer et automatiser vos premières ventes.</div>
+        <div class="ptag">Pour se lancer et automatiser ses premières ventes.</div>
         <div class="price">5 000 <small>F / mois</small></div>
         <ul>
-          <li><span class="ck">✓</span> Agent vendeur sur WhatsApp</li>
-          <li><span class="ck">✓</span> Jusqu'à 25 produits</li>
-          <li><span class="ck">✓</span> ~300 conversations / mois</li>
-          <li><span class="ck">✓</span> Alertes de vente</li>
-          <li class="off"><span class="x">✕</span> Tableau de bord des ventes</li>
-          <li class="off"><span class="x">✕</span> Numéro WhatsApp dédié</li>
+          <li><span class="ck">✓</span> Agent vendeur sur WhatsApp 24h/24</li>
+          <li><span class="ck">✓</span> Catalogue produits & services illimité</li>
+          <li><span class="ck">✓</span> Prise de commande + alertes</li>
+          <li><span class="ck">✓</span> Paiement à la livraison & marchandage</li>
+          <li><span class="ck">✓</span> 5 ordres/jour pour piloter l'agent</li>
+          <li class="off"><span class="x">✕</span> Prospection automatique</li>
         </ul>
         <a class="pbtn" href="#creer" onclick="selectPlan('demarrage')">Choisir Démarrage</a>
       </div>
@@ -232,14 +252,14 @@
       <div class="plan pop reveal">
         <div class="badge">★ Populaire</div>
         <div class="pname">⭐ Business</div>
-        <div class="ptag">Pour les boutiques qui veulent vraiment vendre plus.</div>
+        <div class="ptag">Pour vendre plus ET trouver de nouveaux clients.</div>
         <div class="price">15 000 <small>F / mois</small></div>
         <ul>
-          <li><span class="ck">✓</span> Produits illimités</li>
-          <li><span class="ck">✓</span> ~1 500 conversations / mois</li>
+          <li><span class="ck">✓</span> Tout Démarrage, en illimité</li>
+          <li><span class="ck">✓</span> 30 ordres/jour pour piloter l'agent</li>
+          <li><span class="ck">✓</span> Prospection : 20 emails/jour à des clients pros</li>
           <li><span class="ck">✓</span> Tableau de bord des ventes</li>
-          <li><span class="ck">✓</span> Relances clients automatiques</li>
-          <li><span class="ck">✓</span> Ton 100 % personnalisé</li>
+          <li><span class="ck">✓</span> Support prioritaire</li>
           <li class="off"><span class="x">✕</span> Numéro WhatsApp dédié</li>
         </ul>
         <a class="pbtn" href="#creer" onclick="selectPlan('business')">Choisir Business</a>
@@ -247,20 +267,50 @@
 
       <div class="plan reveal">
         <div class="pname">👑 Empire</div>
-        <div class="ptag">Pour les business sérieux et multi-boutiques.</div>
+        <div class="ptag">Pour les business sérieux qui passent à l'échelle.</div>
         <div class="price">40 000 <small>F / mois</small></div>
         <ul>
-          <li><span class="ck">✓</span> Tout Business, sans limite</li>
-          <li><span class="ck">✓</span> Conversations illimitées</li>
-          <li><span class="ck">✓</span> Numéro WhatsApp dédié</li>
-          <li><span class="ck">✓</span> Jusqu'à 3 boutiques / agents</li>
-          <li><span class="ck">✓</span> Support prioritaire</li>
+          <li><span class="ck">✓</span> Tout Business, en illimité</li>
+          <li><span class="ck">✓</span> Ordres illimités pour piloter l'agent</li>
+          <li><span class="ck">✓</span> Prospection : 50 emails/jour</li>
+          <li><span class="ck">✓</span> Accompagnement personnalisé</li>
+          <li><span class="ck">✓</span> Numéro WhatsApp dédié <small style="opacity:.7">(bientôt)</small></li>
         </ul>
         <a class="pbtn" href="#creer" onclick="selectPlan('empire')">Choisir Empire</a>
       </div>
 
     </div>
     <p class="plans-note">💡 2 mois offerts en payant à l'année · Paiement Mobile Money · Sans engagement</p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="padding-top:20px">
+  <div class="wrap" style="max-width:760px">
+    <div class="eyebrow reveal">Questions fréquentes</div>
+    <h2 class="sec-title reveal">Tout ce que vous vous demandez</h2>
+    <div style="margin-top:40px;display:flex;flex-direction:column;gap:12px">
+      <details class="card reveal" style="padding:0">
+        <summary style="cursor:pointer;list-style:none;padding:20px 24px;font-family:'Sora';font-weight:600">C'est compliqué à installer ?</summary>
+        <p style="color:var(--muted);padding:0 24px 20px">Non, aucune compétence technique. Vous remplissez une fiche, vous testez gratuitement, vous activez. C'est tout — votre agent est prêt en quelques minutes.</p>
+      </details>
+      <details class="card reveal" style="padding:0">
+        <summary style="cursor:pointer;list-style:none;padding:20px 24px;font-family:'Sora';font-weight:600">Et si je ne suis pas convaincu ?</summary>
+        <p style="color:var(--muted);padding:0 24px 20px">Vous testez votre agent gratuitement AVANT de payer. Vous ne payez que si vous êtes convaincu, par Mobile Money, sans engagement.</p>
+      </details>
+      <details class="card reveal" style="padding:0">
+        <summary style="cursor:pointer;list-style:none;padding:20px 24px;font-family:'Sora';font-weight:600">Comment suis-je payé ?</summary>
+        <p style="color:var(--muted);padding:0 24px 20px">Directement en Mobile Money sur votre numéro — zéro intermédiaire. L'agent guide le client jusqu'au paiement, et vous pouvez aussi proposer le paiement à la livraison.</p>
+      </details>
+      <details class="card reveal" style="padding:0">
+        <summary style="cursor:pointer;list-style:none;padding:20px 24px;font-family:'Sora';font-weight:600">L'agent peut-il inventer des prix ou des produits ?</summary>
+        <p style="color:var(--muted);padding:0 24px 20px">Jamais. Il ne sort pas de votre catalogue. S'il ne sait pas, il propose de transmettre au propriétaire — vous gardez le contrôle.</p>
+      </details>
+      <details class="card reveal" style="padding:0">
+        <summary style="cursor:pointer;list-style:none;padding:20px 24px;font-family:'Sora';font-weight:600">Est-ce que je garde le contrôle ?</summary>
+        <p style="color:var(--muted);padding:0 24px 20px">Oui. Vous êtes prévenu à chaque commande, et vous pilotez tout depuis votre téléphone (produits, prix, ton) — même en parlant à l'agent en langage normal.</p>
+      </details>
+    </div>
   </div>
 </section>
 
