@@ -104,6 +104,16 @@ def set_merchant_payment_ref(merchant_id: str, ref: str) -> dict[str, Any]:
     return result.data[0] if result.data else {}
 
 
+def set_merchant_pin(merchant_id: str, pin_hash: str | None) -> dict[str, Any]:
+    """Définit (ou réinitialise si None) le code d'accès du back-office."""
+    db = get_db()
+    result = (
+        db.table("bia_merchants").update({"access_pin": pin_hash})
+        .eq("id", merchant_id).execute()
+    )
+    return result.data[0] if result.data else {}
+
+
 def add_products(merchant_id: str, products: list[dict[str, Any]]) -> int:
     """Insère les produits d'une boutique. Retourne le nombre inséré."""
     rows = []
@@ -282,6 +292,44 @@ def email_already_contacted(owner_type: str, merchant_id: str | None, email: str
     if merchant_id:
         q = q.eq("merchant_id", merchant_id)
     return (q.execute().count or 0) > 0
+
+
+# ---------------------------------------------------------------------------
+# Opt-out / désinscription (bia_optouts) — étage 4 (réponses entrantes)
+# ---------------------------------------------------------------------------
+
+def add_optout(contact: str, channel: str, reason: str = "manual") -> None:
+    contact = (contact or "").strip().lower()
+    if not contact:
+        return
+    get_db().table("bia_optouts").upsert(
+        {"contact": contact, "channel": channel, "reason": reason},
+        on_conflict="contact",
+    ).execute()
+
+
+def is_opted_out(contact: str) -> bool:
+    contact = (contact or "").strip().lower()
+    if not contact:
+        return False
+    r = (
+        get_db().table("bia_optouts").select("contact", count="exact", head=True)
+        .eq("contact", contact).execute()
+    )
+    return (r.count or 0) > 0
+
+
+def blacklist_prospect_email(email: str, reason: str = "bounce") -> int:
+    """Marque tous les prospects ayant cet email comme blacklistés (+ opt-out)."""
+    email = (email or "").strip().lower()
+    if not email:
+        return 0
+    add_optout(email, "email", reason)
+    r = (
+        get_db().table("bia_prospects").update({"status": "blacklisted", "error": reason})
+        .eq("email", email).execute()
+    )
+    return len(r.data or [])
 
 
 def get_latest_merchant() -> dict[str, Any] | None:

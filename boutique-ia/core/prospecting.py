@@ -12,6 +12,9 @@ Deux modes :
 """
 from __future__ import annotations
 
+import base64
+import hashlib
+import hmac
 import logging
 import smtplib
 import time
@@ -25,6 +28,38 @@ import httpx
 from config import settings
 
 log = logging.getLogger("boutique-ia.prospecting")
+
+
+# --- Désinscription (lien signé par email) -----------------------------------
+def _unsub_secret() -> str:
+    return settings.session_secret or settings.admin_token or "vendora-unsub"
+
+
+def unsub_token(email: str) -> str:
+    payload = base64.urlsafe_b64encode((email or "").strip().lower().encode()).decode().rstrip("=")
+    sig = hmac.new(_unsub_secret().encode(), payload.encode(), hashlib.sha256).hexdigest()[:16]
+    return f"{payload}.{sig}"
+
+
+def verify_unsub_token(token: str) -> str | None:
+    """Retourne l'email si le token est valide, sinon None."""
+    try:
+        payload, sig = token.rsplit(".", 1)
+    except ValueError:
+        return None
+    good = hmac.new(_unsub_secret().encode(), payload.encode(), hashlib.sha256).hexdigest()[:16]
+    if not hmac.compare_digest(good, sig):
+        return None
+    pad = "=" * (-len(payload) % 4)
+    try:
+        return base64.urlsafe_b64decode(payload + pad).decode().lower()
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _unsub_footer(email: str) -> str:
+    url = settings.public_base_url.rstrip("/") + "/unsub/" + unsub_token(email)
+    return f"Pour ne plus recevoir nos emails, cliquez ici : {url}"
 
 # --- Sourcing OSM (repris de NOVA, découplé) ---------------------------------
 OVERPASS_ENDPOINTS = [
@@ -164,8 +199,7 @@ def generate_outreach(mode: str, ctx: dict[str, Any]) -> dict[str, str]:
         # Repli minimal si le modèle dévie
         subject = subject or "Une proposition pour [NOM]"
         body = body or f"Bonjour [NOM],\n\n{about}\n\nÇa vous intéresse ?\n\n— Mongazi · NEBULA Agency"
-    if _OPT_OUT not in body:
-        body += f"\n\n{_OPT_OUT}"
+    # NB : le lien de désinscription (unique par destinataire) est ajouté à l'envoi.
     return {"subject": subject, "body": body}
 
 
@@ -248,6 +282,7 @@ def execute_campaign(campaign_id: str, plan_daily: int, *,
         count_prospection_sent_today_global,
         email_already_contacted,
         get_campaign,
+        is_opted_out,
         list_prospects,
         mark_prospect,
         update_campaign,
@@ -276,11 +311,14 @@ def execute_campaign(campaign_id: str, plan_daily: int, *,
             email = (p.get("email") or "").strip()
             if not email:
                 mark_prospect(p["id"], "skipped", "pas d'email"); continue
+            if is_opted_out(email):
+                mark_prospect(p["id"], "skipped", "désinscrit"); continue
             if email_already_contacted(owner_type, merchant_id, email):
                 mark_prospect(p["id"], "skipped", "déjà contacté"); continue
 
+            body = personalize(body_tpl, p) + "\n\n" + _unsub_footer(email)
             res = send_email(
-                email, personalize(subject_tpl, p), personalize(body_tpl, p),
+                email, personalize(subject_tpl, p), body,
                 reply_to=reply_to, from_name=from_name,
             )
             if res.get("ok"):

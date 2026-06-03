@@ -416,7 +416,9 @@ function notify(msg, err){
 async function api(url, method, payload){
   const opt = { method, headers:{'Content-Type':'application/json'} };
   if(payload) opt.body = JSON.stringify(payload);
-  return (await fetch(url, opt)).json();
+  const r = await fetch(url, opt);
+  if(r.status === 401){ location.reload(); return { ok:false, error:'Session expirée' }; }
+  return r.json();
 }
 function copyLink(btn){ navigator.clipboard.writeText(document.getElementById('walink').value); btn.innerHTML='<svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Copié'; }
 function previewBrand(c){ root.style.setProperty('--a', c); }

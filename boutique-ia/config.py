@@ -61,6 +61,9 @@ class Settings(BaseSettings):
 
     # --- Sécurité admin ---
     admin_token: str = ""
+    # Secret pour signer les sessions du back-office commerçant (cookie).
+    # Si vide, on retombe sur admin_token. À définir en prod pour plus de robustesse.
+    session_secret: str = ""
 
     # --- Prospection (étage 5) — envoi via Resend (API HTTP, marche sur Railway) ---
     # ⚠️ Railway bloque le SMTP sortant → on N'UTILISE PAS Gmail SMTP en prod.
@@ -73,6 +76,8 @@ class Settings(BaseSettings):
     gmail_app_password: str = ""
     gmail_daily_cap: int = 90         # plafond global d'envois/jour (sécurité)
     prospection_admin_daily: int = 60 # quota/jour pour les campagnes admin (recrutement)
+    # URL publique (pour le lien de désinscription dans les emails de prospection)
+    public_base_url: str = "https://vendora-agent.up.railway.app"
 
     env: str = "development"
 

@@ -118,6 +118,25 @@ def notify_new_order(merchant: dict, order: dict, items: list[dict]) -> None:
     _whatsapp_owner(merchant.get("owner_whatsapp"), merchant.get("country"), plain)
 
 
+def notify_hot_lead(merchant: dict, customer: str | None, raison: str,
+                    resume: str, nom_client: str | None = None) -> None:
+    """Prévient le commerçant qu'un client a besoin d'attention (lead chaud / réclamation)."""
+    who = nom_client or customer or "—"
+    text = (
+        "🔥 <b>Client à rappeler !</b>\n\n"
+        f"🏪 {merchant.get('business_name','?')}\n"
+        f"👤 {who}\n"
+        f"📌 {raison}\n"
+        f"💬 {resume}"
+    )
+    notify_mongazi(text)
+    plain = (
+        f"🔥 Client à rappeler — {merchant.get('business_name','votre boutique')}\n"
+        f"Client : {who}\n{raison} : {resume}"
+    )
+    _whatsapp_owner(merchant.get("owner_whatsapp"), merchant.get("country"), plain)
+
+
 def _to_e164(number: str | None, country: str | None) -> str | None:
     """Normalisation best-effort d'un numéro local en format international (+...)."""
     if not number:

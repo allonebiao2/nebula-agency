@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr" style="--a: {{ accent|default('#10b981') }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accès — {{ business_name }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="/static/vendora-ui.css" rel="stylesheet">
+<style>
+  .gate{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .card{width:100%;max-width:380px}
+  .lock{width:54px;height:54px;border-radius:16px;background:var(--a-soft);border:1px solid var(--a-line);
+    display:flex;align-items:center;justify-content:center;color:var(--a);margin-bottom:18px}
+  .lock svg{width:26px;height:26px}
+  .gt{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin-bottom:6px}
+  .gs{color:var(--mut);font-size:.92rem;margin-bottom:22px;line-height:1.5}
+  #pin{font-family:'JetBrains Mono',monospace;font-size:1.5rem;letter-spacing:.4em;text-align:center;padding:15px}
+  .err{color:#ff9d9d;font-size:.85rem;margin-top:10px;min-height:18px}
+  .foot{color:var(--mut2);font-size:.78rem;margin-top:18px;line-height:1.5}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10.5" width="16" height="10" rx="2.2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  </g></defs></svg>
+
+<div class="gate"><div class="card">
+  <div class="lock"><svg viewBox="0 0 24 24"><use href="#i-lock"/></svg></div>
+  {% if has_pin %}
+    <div class="gt">Espace boutique</div>
+    <div class="gs"><b style="color:var(--txt)">{{ business_name }}</b><br>Entrez votre code d'accès pour gérer votre boutique.</div>
+  {% else %}
+    <div class="gt">Protégez votre boutique</div>
+    <div class="gs"><b style="color:var(--txt)">{{ business_name }}</b><br>Créez un code d'accès (4 à 8 chiffres). Il sera demandé pour entrer dans votre espace — comme un code Mobile Money.</div>
+  {% endif %}
+
+  <input id="pin" type="tel" inputmode="numeric" maxlength="8" autocomplete="off"
+         placeholder="• • • •" autofocus>
+  <div class="err" id="err"></div>
+  <button class="btn acc" type="button" style="width:100%;justify-content:center" onclick="go()">
+    {% if has_pin %}Entrer{% else %}Créer mon code{% endif %}
+    <span class="bib"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></span>
+  </button>
+
+  <div class="foot">🔒 Votre espace reste ouvert 30 jours sur cet appareil. Code oublié ? Contactez NEBULA pour le réinitialiser.</div>
+</div></div>
+
+<script>
+const MID = "{{ merchant_id }}";
+const MODE = {{ 'false' if has_pin else 'true' }} ? "set" : "login";
+const pin = document.getElementById('pin');
+const err = document.getElementById('err');
+pin.addEventListener('keydown', e => { if(e.key === 'Enter') go(); });
+async function go(){
+  const v = pin.value.trim();
+  err.textContent = "";
+  if(!/^[0-9]{4,8}$/.test(v)){ err.textContent = "Entrez 4 à 8 chiffres."; return; }
+  try{
+    const r = await fetch(`/api/merchants/${MID}/auth`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ pin:v, mode:MODE })
+    });
+    const d = await r.json();
+    if(d.ok){ location.reload(); }
+    else { err.textContent = d.error || "Erreur"; pin.value=""; pin.focus(); }
+  }catch(ex){ err.textContent = ex.message; }
+}
+</script>
+</body>
+</html>

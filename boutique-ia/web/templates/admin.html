@@ -121,6 +121,7 @@
             {% endif %}
             <a class="btn gho sm" href="/boutique/{{ r.m.id }}"><svg viewBox="0 0 24 24"><use href="#i-link"/></svg>Gérer</a>
             <a class="btn gho sm" href="/essai/{{ r.m.id }}"><svg viewBox="0 0 24 24"><use href="#i-flask"/></svg>Tester</a>
+            <button class="btn gho sm" type="button" onclick="resetPin('{{ r.m.id }}')">Code</button>
           </div>
         </div>
         {% endfor %}
@@ -185,6 +186,11 @@ async function suspend(id){
   if(!confirm('Suspendre cette boutique ? Son agent cessera de vendre.')) return;
   const d = await post(`/api/admin/merchants/${id}/status`, { status:'suspended' });
   if(d.ok){ notify('Boutique suspendue'); setTimeout(()=>location.reload(),700); } else notify(d.error||'Erreur', true);
+}
+async function resetPin(id){
+  if(!confirm("Réinitialiser le code d'accès de cette boutique ? Le commerçant devra en recréer un.")) return;
+  const d = await post(`/api/admin/merchants/${id}/reset-pin`);
+  if(d.ok){ notify('Code réinitialisé'); } else notify(d.error||'Erreur', true);
 }
 async function launchRecrutement(){
   const cat = document.getElementById('pr_cat').value;

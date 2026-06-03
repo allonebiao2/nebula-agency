@@ -7,10 +7,13 @@ Puis ouvrir http://localhost:8010/
 """
 from __future__ import annotations
 
+import hashlib
+import hmac
 import logging
 import re
 import secrets
 import string
+import time
 from pathlib import Path
 from urllib.parse import quote
 from xml.sax.saxutils import escape
@@ -65,6 +68,48 @@ def _wa_link(code: str) -> str:
 log = logging.getLogger("boutique-ia.server")
 
 
+# ---------------------------------------------------------------------------
+# Authentification back-office commerçant (code d'accès + session cookie signé)
+# ---------------------------------------------------------------------------
+SESSION_COOKIE = "bo_session"
+SESSION_DAYS = 30
+
+
+def _sess_secret() -> str:
+    return settings.session_secret or settings.admin_token or "vendora-dev-secret"
+
+
+def _hash_pin(pin: str, merchant_id: str) -> str:
+    return hashlib.pbkdf2_hmac("sha256", pin.encode(), merchant_id.encode(), 120_000).hex()
+
+
+def _make_session(merchant_id: str) -> str:
+    exp = int(time.time()) + SESSION_DAYS * 86400
+    payload = f"{merchant_id}.{exp}"
+    sig = hmac.new(_sess_secret().encode(), payload.encode(), hashlib.sha256).hexdigest()
+    return f"{payload}.{sig}"
+
+
+def _session_ok(request: Request, merchant_id: str) -> bool:
+    token = request.cookies.get(SESSION_COOKIE, "")
+    try:
+        mid, exp, sig = token.rsplit(".", 2)
+    except ValueError:
+        return False
+    payload = f"{mid}.{exp}"
+    good = hmac.new(_sess_secret().encode(), payload.encode(), hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(good, sig):
+        return False
+    return mid == merchant_id and int(exp) > time.time()
+
+
+def _need_session(request: Request, merchant_id: str):
+    """Retourne une réponse 401 si la session est absente/invalide, sinon None."""
+    if not _session_ok(request, merchant_id):
+        return JSONResponse({"ok": False, "error": "Session requise.", "auth": True}, status_code=401)
+    return None
+
+
 def _order_recorder(merchant: dict, customer_whatsapp: str | None):
     """Construit le callback que le cerveau appelle quand une vente se conclut."""
     from db.client import create_order
@@ -96,6 +141,25 @@ def _order_recorder(merchant: dict, customer_whatsapp: str | None):
             log.warning("alerte commande échouée", exc_info=True)
 
     return _on_order
+
+
+def _escalation_notifier(merchant: dict, customer: str | None):
+    """Callback appelé quand l'agent escalade un client vers le/la propriétaire."""
+    from notify import notify_hot_lead
+
+    def _on_escalate(data: dict) -> None:
+        try:
+            notify_hot_lead(
+                merchant, customer,
+                raison=(data.get("raison") or "À rappeler").strip(),
+                resume=(data.get("resume") or "").strip(),
+                nom_client=(data.get("nom_client") or "").strip() or None,
+            )
+        except Exception:  # noqa: BLE001
+            log.warning("alerte lead chaud échouée", exc_info=True)
+
+    return _on_escalate
+
 
 BASE_DIR = Path(__file__).resolve().parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
@@ -241,6 +305,84 @@ async def health():
 
 
 # ---------------------------------------------------------------------------
+# ÉTAGE 4 — Réponses entrantes : désinscription + webhook Resend (bounces/plaintes)
+# ---------------------------------------------------------------------------
+
+@app.get("/unsub/{token}", response_class=HTMLResponse)
+async def unsubscribe(token: str):
+    """Lien de désinscription des emails de prospection (signé)."""
+    from core.prospecting import verify_unsub_token
+    from db.client import add_optout
+    email = verify_unsub_token(token)
+    page = ("<body style='font-family:system-ui,sans-serif;background:#0a0a0c;color:#ededf0;"
+            "text-align:center;padding:64px 24px'>")
+    if not email:
+        return HTMLResponse(page + "<h2>Lien invalide</h2><p>Ce lien de désinscription n'est pas valide.</p></body>",
+                            status_code=400)
+    try:
+        add_optout(email, "email", "unsubscribe")
+    except Exception:  # noqa: BLE001
+        log.warning("optout enregistrement échoué", exc_info=True)
+    return HTMLResponse(
+        page + "<h2 style='color:#10b981'>Désinscription confirmée ✓</h2>"
+        f"<p><b>{escape(email)}</b> ne recevra plus nos emails.<br>Merci, et désolé pour le dérangement.</p></body>"
+    )
+
+
+@app.post("/api/webhooks/resend")
+async def resend_webhook(request: Request):
+    """Reçoit les événements Resend : bounce / plainte spam → blacklist l'email."""
+    from db.client import blacklist_prospect_email
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"ok": False}, status_code=400)
+    etype = (body.get("type") or "").lower()
+    data = body.get("data") or {}
+    to = data.get("to") or data.get("email") or data.get("recipient")
+    if isinstance(to, list):
+        to = to[0] if to else None
+    if to and ("bounce" in etype or "complain" in etype):
+        reason = "complaint" if "complain" in etype else "bounce"
+        try:
+            blacklist_prospect_email(to, reason)
+            log.info("Resend %s → blacklist %s", etype, to)
+        except Exception:  # noqa: BLE001
+            log.warning("blacklist échoué", exc_info=True)
+    return {"ok": True}
+
+
+@app.post("/api/merchants/{merchant_id}/auth")
+async def merchant_auth(request: Request, merchant_id: str):
+    """Crée (mode 'set') ou vérifie (mode 'login') le code d'accès → pose la session."""
+    from db.client import get_merchant, set_merchant_pin
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"ok": False, "error": "JSON invalide"}, status_code=400)
+    pin = (body.get("pin") or "").strip()
+    mode = (body.get("mode") or "login").strip()
+    if not (pin.isdigit() and 4 <= len(pin) <= 8):
+        return JSONResponse({"ok": False, "error": "Le code doit faire 4 à 8 chiffres."}, status_code=400)
+    merchant = get_merchant(merchant_id)
+    if not merchant:
+        return JSONResponse({"ok": False, "error": "Boutique introuvable."}, status_code=404)
+    h = _hash_pin(pin, merchant_id)
+    if mode == "set":
+        if merchant.get("access_pin"):
+            return JSONResponse({"ok": False, "error": "Un code existe déjà — connectez-vous."}, status_code=400)
+        set_merchant_pin(merchant_id, h)
+    else:
+        existing = merchant.get("access_pin") or ""
+        if not existing or not hmac.compare_digest(existing, h):
+            return JSONResponse({"ok": False, "error": "Code incorrect."}, status_code=401)
+    resp = JSONResponse({"ok": True})
+    resp.set_cookie(SESSION_COOKIE, _make_session(merchant_id),
+                    max_age=SESSION_DAYS * 86400, httponly=True, samesite="lax", path="/")
+    return resp
+
+
+# ---------------------------------------------------------------------------
 # Back-office commerçant — gérer sa fiche et ses produits soi-même
 # (lien privé /boutique/{merchant_id} ; l'agent lit les changements en direct)
 # ---------------------------------------------------------------------------
@@ -260,6 +402,21 @@ async def boutique_backoffice(request: Request, merchant_id: str):
         count_prospection_sent_today,
         list_campaigns,
     )
+
+    # --- Garde d'accès : si pas de session valide → écran de code ---
+    try:
+        _m = get_merchant(merchant_id)
+    except Exception:  # noqa: BLE001
+        _m = None
+    if _m and not _session_ok(request, merchant_id):
+        return templates.TemplateResponse(
+            request, "boutique_gate.html",
+            _ctx(request, merchant_id=merchant_id,
+                 business_name=_m.get("business_name") or "Ma boutique",
+                 has_pin=bool(_m.get("access_pin")),
+                 accent=(_m.get("brand_color") or "#10b981")),
+        )
+
     merchant, products = None, []
     stats = {"count": 0, "revenue": 0}
     recent_orders, conversations, plans, campaigns = [], [], [], []
@@ -424,6 +581,19 @@ async def admin_set_status(request: Request, merchant_id: str):
     return {"ok": bool(m), "merchant": m}
 
 
+@app.post("/api/admin/merchants/{merchant_id}/reset-pin")
+async def admin_reset_pin(request: Request, merchant_id: str):
+    """Réinitialise le code d'accès d'une boutique (le commerçant en recrée un)."""
+    from db.client import set_merchant_pin
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        set_merchant_pin(merchant_id, None)
+    except Exception as e:  # noqa: BLE001
+        return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
+    return {"ok": True}
+
+
 @app.post("/api/merchants/{merchant_id}/prospection/launch")
 async def merchant_prospection_launch(request: Request, merchant_id: str, bg: BackgroundTasks):
     """Le commerçant lance une campagne de prospection (clients/partenaires pros)."""
@@ -433,6 +603,9 @@ async def merchant_prospection_launch(request: Request, merchant_id: str, bg: Ba
         create_campaign,
         get_merchant,
     )
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
     try:
         body = await request.json()
     except Exception:
@@ -505,6 +678,9 @@ async def merchant_order_endpoint(request: Request, merchant_id: str):
         get_merchant,
         log_manager_order,
     )
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
     try:
         body = await request.json()
     except Exception:
@@ -551,6 +727,9 @@ async def merchant_order_endpoint(request: Request, merchant_id: str):
 async def update_merchant_endpoint(request: Request, merchant_id: str):
     """Le commerçant modifie sa fiche (infos boutique, livraison, MoMo, ton…)."""
     from db.client import update_merchant
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
     try:
         body = await request.json()
     except Exception:
@@ -571,6 +750,9 @@ async def update_merchant_endpoint(request: Request, merchant_id: str):
 async def add_product_endpoint(request: Request, merchant_id: str):
     """Ajoute un produit/service à la boutique."""
     from db.client import add_products
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
     try:
         body = await request.json()
     except Exception:
@@ -590,6 +772,9 @@ async def add_product_endpoint(request: Request, merchant_id: str):
 async def update_product_endpoint(request: Request, merchant_id: str, product_id: str):
     """Modifie un produit (nom, prix, description, disponibilité)."""
     from db.client import update_product
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
     try:
         body = await request.json()
     except Exception:
@@ -610,9 +795,12 @@ async def update_product_endpoint(request: Request, merchant_id: str, product_id
 
 
 @app.delete("/api/merchants/{merchant_id}/products/{product_id}")
-async def delete_product_endpoint(merchant_id: str, product_id: str):
+async def delete_product_endpoint(request: Request, merchant_id: str, product_id: str):
     """Supprime un produit de la boutique."""
     from db.client import delete_product
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
     try:
         ok = delete_product(product_id, merchant_id)
     except Exception as e:  # noqa: BLE001
@@ -694,13 +882,26 @@ async def whatsapp_twilio(request: Request):
     # 2. Nettoyer le marqueur de routing du message
     clean = re.sub(r"\(?\s*vendora:[A-Za-z0-9]+\s*\)?", "", body, flags=re.I).strip() or "Bonjour"
 
+    # Opt-out WhatsApp : le client écrit STOP / désabonner
+    if clean.strip().lower() in {"stop", "stopp", "unsubscribe", "désabonner",
+                                 "desabonner", "arret", "arrêt", "arreter", "arrêter"}:
+        try:
+            from db.client import add_optout
+            add_optout(from_, "whatsapp", "stop")
+        except Exception:  # noqa: BLE001
+            log.warning("optout WhatsApp échoué", exc_info=True)
+        return _twiml("C'est noté ✅ Vous ne recevrez plus de messages. "
+                      "Écrivez-nous quand vous voulez revenir 🙏")
+
     # 3. Faire répondre l'agent vendeur
     try:
         save_message(merchant["id"], from_, "customer", clean)
         history = load_history(merchant["id"], from_, limit=brain.HISTORY_LIMIT)
         products = list_products(merchant["id"])
         answer = brain.reply(
-            merchant, products, history, on_order=_order_recorder(merchant, from_)
+            merchant, products, history,
+            on_order=_order_recorder(merchant, from_),
+            on_escalate=_escalation_notifier(merchant, from_),
         )
         save_message(merchant["id"], from_, "assistant", answer)
     except Exception as e:  # noqa: BLE001
@@ -797,7 +998,8 @@ async def chat(request: Request):
         # Essai gratuit (preview) → on ne persiste pas de commande (données de test).
         # Simulateur /demo et vrais clients → commande enregistrée + patron prévenu.
         on_order = None if preview else _order_recorder(merchant, customer)
-        answer = brain.reply(merchant, products, history, on_order=on_order)
+        on_escalate = None if preview else _escalation_notifier(merchant, customer)
+        answer = brain.reply(merchant, products, history, on_order=on_order, on_escalate=on_escalate)
         save_message(merchant_id, customer, "assistant", answer)
 
         remaining = None

@@ -59,6 +59,29 @@ ORDER_TOOL = {
     },
 }
 
+# Outil d'escalade : prévenir le/la propriétaire quand un humain est nécessaire
+# (lead chaud, négociation, réclamation, demande spéciale).
+ESCALATE_TOOL = {
+    "name": "alerter_le_patron",
+    "description": (
+        "Prévient immédiatement le/la propriétaire de la boutique qu'un client a besoin "
+        "de son attention humaine. À appeler quand : le client est TRÈS intéressé mais "
+        "hésite/veut négocier, fait une réclamation, demande quelque chose hors catalogue "
+        "ou hors de tes capacités, ou demande explicitement à parler au responsable. "
+        "Après l'appel, rassure le client en lui disant que la boutique va le recontacter. "
+        "N'en abuse pas : seulement quand c'est vraiment utile."
+    ),
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "raison": {"type": "string", "description": "Type : lead chaud, négociation, réclamation, demande spéciale…"},
+            "resume": {"type": "string", "description": "Résumé en 1 phrase de ce que veut le client."},
+            "nom_client": {"type": "string", "description": "Nom du client si connu."},
+        },
+        "required": ["raison", "resume"],
+    },
+}
+
 
 def _format_price(value) -> str:
     if value is None:
@@ -224,12 +247,13 @@ def reply(
     products: list[dict],
     history: list[dict],
     on_order: Callable[[dict], None] | None = None,
+    on_escalate: Callable[[dict], None] | None = None,
 ) -> str:
     """Génère la réponse du vendeur IA. `history` doit finir par le message client.
 
-    `on_order` : callback appelé avec les détails quand l'agent conclut une vente
-    (enregistrement commande + alerte commerçant). Si None (mode démo/essai),
-    l'agent confirme quand même au client mais rien n'est persisté.
+    `on_order` : callback quand l'agent conclut une vente (enregistre + alerte).
+    `on_escalate` : callback quand l'agent juge qu'un humain est nécessaire
+    (lead chaud, négociation, réclamation) → alerte le commerçant.
     """
     settings.require("anthropic_api_key")
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
@@ -253,7 +277,7 @@ def reply(
             max_tokens=500,  # réponses WhatsApp courtes → tokens économisés
             system=system,
             messages=messages,
-            tools=[ORDER_TOOL],
+            tools=[ORDER_TOOL, ESCALATE_TOOL],
         )
 
         tool_uses = [b for b in resp.content if getattr(b, "type", None) == "tool_use"]
@@ -285,6 +309,14 @@ def reply(
                 else:
                     note = ("Commande notée (mode démo, non enregistrée). Confirme au "
                             "client et donne les instructions de paiement Mobile Money.")
+            elif tu.name == "alerter_le_patron":
+                if on_escalate:
+                    try:
+                        on_escalate(dict(tu.input or {}))
+                    except Exception:  # noqa: BLE001
+                        log.exception("escalade échouée")
+                note = ("Le/la propriétaire est prévenu(e). Rassure le client : la boutique "
+                        "va le recontacter très vite. Reste utile en attendant.")
             else:
                 note = "Outil inconnu, ignore-le."
             results.append({"type": "tool_result", "tool_use_id": tu.id, "content": note})

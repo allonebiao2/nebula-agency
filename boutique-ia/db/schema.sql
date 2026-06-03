@@ -98,6 +98,17 @@ create unique index if not exists bia_merchants_code_idx on bia_merchants(code);
 -- Back-office : couleur de marque du client (accent de SON back-office)
 alter table bia_merchants add column if not exists brand_color text;
 
+-- Sécurité back-office : code d'accès (hash PBKDF2) — étage "piliers"
+alter table bia_merchants add column if not exists access_pin text;
+
+-- Réponses entrantes : désinscriptions / opt-out (STOP, unsub, bounce, plainte)
+create table if not exists bia_optouts (
+  contact    text primary key,   -- email (minuscule) OU numéro WhatsApp
+  channel    text,               -- 'email' | 'whatsapp'
+  reason     text,               -- stop | unsubscribe | bounce | complaint | manual
+  created_at timestamptz default now()
+);
+
 -- Quelle boutique un client WhatsApp est en train de contacter (mémoire de session)
 create table if not exists bia_wa_sessions (
   customer_whatsapp text primary key,
