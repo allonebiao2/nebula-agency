@@ -180,7 +180,7 @@ def generate_outreach(mode: str, ctx: dict[str, Any]) -> dict[str, str]:
     )
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
     resp = client.messages.create(
-        model=settings.builder_model, max_tokens=700,
+        model=settings.writer_model, max_tokens=700,
         system=system,
         messages=[{"role": "user", "content": f"Contexte : {about}. Rédige l'email."}],
     )

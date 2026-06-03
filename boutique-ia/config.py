@@ -36,7 +36,9 @@ class Settings(BaseSettings):
     claude_model: str = "claude-haiku-4-5-20251001"
     # Ordres du commerçant (« piloter mon agent ») : Sonnet, raisonnement fiable
     manager_model: str = "claude-sonnet-4-6"
-    # Création / génération du back-office & contenus riches : Opus, qualité max
+    # Rédaction (emails de prospection, copies de vente) : Sonnet = qualité/coût optimal
+    writer_model: str = "claude-sonnet-4-6"
+    # Création lourde si vraiment nécessaire : Opus, qualité max (réservé, peu utilisé)
     builder_model: str = "claude-opus-4-8"
 
     # --- Alertes Mongazi (réutilise le bot Telegram NOVA) ---
