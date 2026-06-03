@@ -124,18 +124,34 @@
     </div>
 
     <div id="addForm" class="panel hide" style="margin-bottom:14px">
+      <label>C'est quoi ?</label>
+      <div class="choices">
+        <button class="chip active" type="button" onclick="pick('a_kind','produit',this)">Un produit</button>
+        <button class="chip" type="button" onclick="pick('a_kind','service',this)">Un service</button>
+      </div>
+      <input type="hidden" id="a_kind" value="produit">
       <div class="grid2">
-        <div><label>Type</label>
-          <select id="a_kind"><option value="produit">Produit</option><option value="service">Service</option></select></div>
         <div><label>Nom</label><input id="a_name" placeholder="ex : Collier perle nacrée"></div>
-      </div>
-      <div class="grid2">
         <div><label>Prix (F CFA)</label><input id="a_price" type="number" min="0" placeholder="ex : 7000"></div>
-        <div><label>Durée <span style="color:var(--mut2)">(si service)</span></label><input id="a_duration" list="d-duration" placeholder="ex : 1h30"></div>
       </div>
+      <label>Durée <span style="color:var(--mut2)">(si c'est un service)</span></label>
+      <div class="choices">
+        <button class="chip" type="button" onclick="pick('a_duration','30 min',this)">30 min</button>
+        <button class="chip" type="button" onclick="pick('a_duration','1h',this)">1h</button>
+        <button class="chip" type="button" onclick="pick('a_duration','1h30',this)">1h30</button>
+        <button class="chip" type="button" onclick="pick('a_duration','2h',this)">2h</button>
+        <button class="chip" type="button" onclick="pick('a_duration','Demi-journée',this)">Demi-journée</button>
+      </div>
+      <input id="a_duration" placeholder="ou écrivez (ex : 1h30)">
       <label>Description</label>
       <textarea id="a_desc" placeholder="ex : argent 925, fait main, ajustable"></textarea>
-      <label>Options <span style="color:var(--mut2)">(variantes)</span></label>
+      <label>Options <span style="color:var(--mut2)">(cliquez pour ajouter)</span></label>
+      <div class="choices">
+        <button class="chip" type="button" onclick="addChip('a_options','Plusieurs tailles',this)">Tailles</button>
+        <button class="chip" type="button" onclick="addChip('a_options','Plusieurs couleurs',this)">Couleurs</button>
+        <button class="chip" type="button" onclick="addChip('a_options','Sur mesure',this)">Sur mesure</button>
+        <button class="chip" type="button" onclick="addChip('a_options','Emballage cadeau',this)">Emballage cadeau</button>
+      </div>
       <input id="a_options" placeholder="ex : tailles S/M/L · couleurs or, argent">
       <div style="display:flex;gap:9px;margin-top:14px">
         <button class="btn acc sm" type="button" onclick="addProduct()">Ajouter au catalogue</button>
@@ -194,10 +210,19 @@
   <section class="reveal" id="infos">
     <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-store"/></svg></div><h2>Infos de ma boutique</h2></div>
     <div class="panel">
-      <div class="grid2">
-        <div><label>Nom de la boutique</label><input id="f_business_name" value="{{ merchant.business_name or '' }}" placeholder="ex : Little Sun Pearls"></div>
-        <div><label>Secteur</label><input id="f_sector" list="d-sector" value="{{ merchant.sector or '' }}" placeholder="ex : Bijoux"></div>
+      <label>Nom de la boutique</label>
+      <input id="f_business_name" value="{{ merchant.business_name or '' }}" placeholder="ex : Little Sun Pearls">
+      <label>Secteur</label>
+      <div class="choices">
+        <button class="chip" type="button" onclick="pick('f_sector','Bijoux',this)">Bijoux</button>
+        <button class="chip" type="button" onclick="pick('f_sector','Mode & vêtements',this)">Mode & vêtements</button>
+        <button class="chip" type="button" onclick="pick('f_sector','Cosmétiques & beauté',this)">Cosmétiques</button>
+        <button class="chip" type="button" onclick="pick('f_sector','Restauration',this)">Restauration</button>
+        <button class="chip" type="button" onclick="pick('f_sector','Chaussures',this)">Chaussures</button>
+        <button class="chip" type="button" onclick="pick('f_sector','Décoration',this)">Décoration</button>
+        <button class="chip" type="button" onclick="pick('f_sector','Services',this)">Services</button>
       </div>
+      <input id="f_sector" value="{{ merchant.sector or '' }}" placeholder="ou écrivez (ex : Bijoux)">
       <label>Description <span style="color:var(--mut2)">(ce que vous vendez, en 2 lignes)</span></label>
       <textarea id="f_description" placeholder="ex : Bijoux dorés et argentés faits main pour femmes élégantes">{{ merchant.description or '' }}</textarea>
       <div class="grid2">
@@ -229,8 +254,14 @@
         <div><label>Numéro Mobile Money</label><input id="f_momo_number" value="{{ merchant.momo_number or '' }}" placeholder="ex : 97 00 00 00"></div>
         <div><label>Nom du compte MoMo</label><input id="f_momo_name" value="{{ merchant.momo_name or '' }}" placeholder="ex : nom du titulaire"></div>
       </div>
-      <label>Réseau</label>
-      <input id="f_momo_network" list="d-network" value="{{ merchant.momo_network or '' }}" placeholder="ex : MTN">
+      <label>Réseau Mobile Money</label>
+      <div class="choices">
+        <button class="chip" type="button" onclick="pick('f_momo_network','MTN',this)">MTN</button>
+        <button class="chip" type="button" onclick="pick('f_momo_network','Moov',this)">Moov</button>
+        <button class="chip" type="button" onclick="pick('f_momo_network','Celtis',this)">Celtis</button>
+        <button class="chip" type="button" onclick="pick('f_momo_network','Wave',this)">Wave</button>
+      </div>
+      <input id="f_momo_network" value="{{ merchant.momo_network or '' }}" placeholder="ex : MTN">
       <div style="margin-top:18px"><button class="btn pri" type="button" onclick="saveMerchant(['delivery_zones','delivery_fee_info','momo_number','momo_name','momo_network'])">Enregistrer livraison & paiement</button></div>
     </div>
   </section>
@@ -239,10 +270,22 @@
   <section class="reveal" id="style">
     <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg></div><h2>Style de mon agent vendeur</h2></div>
     <div class="panel">
-      <div class="grid2">
-        <div><label>Ton</label><input id="f_ai_tone" list="d-tone" value="{{ merchant.ai_tone or '' }}" placeholder="ex : Chaleureux et professionnel"></div>
-        <div><label>Langue(s)</label><input id="f_languages" list="d-lang" value="{{ merchant.languages or '' }}" placeholder="ex : Français"></div>
+      <label>Ton de l'agent</label>
+      <div class="choices">
+        <button class="chip" type="button" onclick="pick('f_ai_tone','Chaleureux et professionnel',this)">Chaleureux</button>
+        <button class="chip" type="button" onclick="pick('f_ai_tone','Formel et élégant',this)">Formel & élégant</button>
+        <button class="chip" type="button" onclick="pick('f_ai_tone','Jeune et dynamique',this)">Jeune & dynamique</button>
+        <button class="chip" type="button" onclick="pick('f_ai_tone','Luxe et raffiné',this)">Luxe & raffiné</button>
+        <button class="chip" type="button" onclick="pick('f_ai_tone','Proche et amical',this)">Proche & amical</button>
       </div>
+      <input id="f_ai_tone" value="{{ merchant.ai_tone or '' }}" placeholder="ou écrivez votre ton">
+      <label>Langue(s)</label>
+      <div class="choices">
+        <button class="chip" type="button" onclick="pick('f_languages','Français',this)">Français</button>
+        <button class="chip" type="button" onclick="pick('f_languages','Français et Fon',this)">Français + Fon</button>
+        <button class="chip" type="button" onclick="pick('f_languages','Français et anglais',this)">Français + anglais</button>
+      </div>
+      <input id="f_languages" value="{{ merchant.languages or '' }}" placeholder="ex : Français">
       <label>Règles de la boutique <span style="color:var(--mut2)">(acompte, retours, garanties…)</span></label>
       <textarea id="f_policies" placeholder="ex : acompte de 50% pour toute commande sur mesure">{{ merchant.policies or '' }}</textarea>
       <label>Infos utiles à connaître <span style="color:var(--mut2)">(FAQ, précisions…)</span></label>
@@ -377,6 +420,21 @@ async function api(url, method, payload){
 }
 function copyLink(btn){ navigator.clipboard.writeText(document.getElementById('walink').value); btn.innerHTML='<svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Copié'; }
 function previewBrand(c){ root.style.setProperty('--a', c); }
+
+/* Choix cliquables (chips) */
+function pick(targetId, val, el){
+  const inp = document.getElementById(targetId);
+  if(inp) inp.value = val;
+  if(el && el.parentElement) el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  if(el) el.classList.add('active');
+}
+function addChip(targetId, val, el){
+  const inp = document.getElementById(targetId);
+  if(!inp) return;
+  const cur = inp.value.trim();
+  inp.value = cur ? (cur + ' · ' + val) : val;
+  if(el) el.classList.add('active');
+}
 
 /* Reveal au scroll */
 const io = new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -40px 0px'});

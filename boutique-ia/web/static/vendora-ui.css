@@ -167,6 +167,16 @@ textarea{resize:vertical;min-height:70px;line-height:1.55}
 @media(max-width:520px){.grid2{grid-template-columns:1fr}}
 .hide{display:none!important}
 
+/* Choix rapides (questions à choix multiple, tap-friendly) */
+.choices{display:flex;flex-wrap:wrap;gap:7px;margin:2px 0 6px}
+.chip{font-family:inherit;font-size:.8rem;font-weight:600;color:var(--mut);
+  background:rgba(255,255,255,.03);border:1px solid var(--hair);padding:8px 14px;
+  border-radius:100px;cursor:pointer;transition:color .18s,background .18s,border-color .18s,transform .12s var(--ease)}
+.chip:hover{color:var(--txt);border-color:var(--a-line)}
+.chip:active{transform:scale(.96)}
+.chip.active{color:var(--a-ink);background:var(--a);border-color:var(--a)}
+.choices + input,.choices + textarea{margin-top:0}
+
 /* ---- Produits ---- */
 .prod{border-top:1px solid var(--hair-soft);padding:15px 0}
 .prod:first-of-type{border-top:none}
