@@ -170,6 +170,7 @@
       {% for p in products %}
       <div class="prod {% if p.available == false %}off{% endif %}" data-id="{{ p.id }}">
         <div class="prow view">
+          {% if p.photo_url %}<img src="{{ p.photo_url }}" alt="" style="width:52px;height:52px;border-radius:11px;object-fit:cover;border:1px solid var(--hair);flex:none">{% endif %}
           <div>
             <div class="pn">{{ p.name }}{% if p.kind == 'service' %} <span class="tag">Service</span>{% endif %}{% if p.duration %} <span class="tag">{{ p.duration }}</span>{% endif %}</div>
             {% if p.description %}<div class="pd">{{ p.description }}</div>{% endif %}
@@ -197,6 +198,9 @@
           <textarea class="e_desc" placeholder="ex : argent 925, fait main">{{ p.description or '' }}</textarea>
           <label>Options</label>
           <input class="e_options" value="{{ p.options or '' }}" placeholder="ex : tailles S/M/L">
+          <label>Photo {% if p.photo_url %}<span style="color:var(--a)">✓ ajoutée</span>{% endif %}</label>
+          <input type="file" accept="image/*" onchange="uploadPhoto(this,'{{ p.id }}')" style="padding:9px">
+          <div class="hint" style="margin:6px 0 0">L'agent enverra cette photo au client qui demande à voir le produit.</div>
           <div style="display:flex;gap:9px;margin-top:14px">
             <button class="btn acc sm" type="button" onclick="saveRow(this)">Enregistrer</button>
             <button class="btn gho sm" type="button" onclick="cancelRow(this)">Annuler</button>
@@ -516,6 +520,18 @@ async function toggleAvail(b,cur){ const c=b.closest('.prod'); const d=await api
 async function delProduct(b,name){ if(!confirm(`Supprimer « ${name} » ? Action définitive.`)) return;
   const c=b.closest('.prod'); const d=await api(`/api/merchants/${MID}/products/${c.dataset.id}`,'DELETE');
   if(d.ok){ notify('Produit supprimé'); setTimeout(()=>location.reload(),600);} else notify(d.error||'Erreur',true); }
+async function uploadPhoto(input, pid){
+  const file = input.files && input.files[0]; if(!file) return;
+  if(file.size > 6000000){ notify('Image trop lourde (max 6 Mo).', true); input.value=''; return; }
+  notify('Envoi de la photo…');
+  const fd = new FormData(); fd.append('photo', file);
+  try{
+    const r = await fetch(`/api/merchants/${MID}/products/${pid}/photo`, { method:'POST', body: fd });
+    if(r.status === 401){ location.reload(); return; }
+    const d = await r.json();
+    if(d.ok){ notify('Photo ajoutée'); setTimeout(()=>location.reload(), 700); } else notify(d.error||'Erreur', true);
+  }catch(ex){ notify(ex.message, true); }
+}
 
 /* Piloter */
 const oLog=document.getElementById('orderLog');

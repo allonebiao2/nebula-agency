@@ -84,6 +84,25 @@ ESCALATE_TOOL = {
     },
 }
 
+# Outil photo : envoyer la photo d'un/des produit(s) au client (WhatsApp).
+SHOW_TOOL = {
+    "name": "montrer_produit",
+    "description": (
+        "Envoie la PHOTO d'un ou plusieurs produits au client. À appeler quand le client "
+        "demande à voir un produit (« montre-moi », « tu as une photo ? », « ça ressemble à quoi ? ») "
+        "ET que le produit a une photo disponible (indiqué par [photo] dans le catalogue). "
+        "Donne les noms EXACTS des produits. Continue ta réponse normalement après."
+    ),
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "produits": {"type": "array", "items": {"type": "string"},
+                          "description": "Noms exacts des produits dont envoyer la photo."},
+        },
+        "required": ["produits"],
+    },
+}
+
 
 def _format_price(value) -> str:
     if value is None:
@@ -133,6 +152,8 @@ def build_system_prompt(merchant: dict, products: list[dict]) -> str:
                 line += f" — {p['description']}"
             if p.get("options"):
                 line += f" [options : {p['options']}]"
+            if p.get("photo_url"):
+                line += " [photo]"
             lines.append(line)
         catalogue = "\n".join(lines) if lines else "(aucun produit disponible pour le moment)"
     else:
@@ -282,6 +303,7 @@ def reply(
     history: list[dict],
     on_order: Callable[[dict], None] | None = None,
     on_escalate: Callable[[dict], None] | None = None,
+    on_show: Callable[[dict], str] | None = None,
 ) -> str:
     """Génère la réponse du vendeur IA. `history` doit finir par le message client.
 
@@ -311,7 +333,7 @@ def reply(
             max_tokens=500,  # réponses WhatsApp courtes → tokens économisés
             system=system,
             messages=messages,
-            tools=[ORDER_TOOL, ESCALATE_TOOL],
+            tools=[ORDER_TOOL, ESCALATE_TOOL, SHOW_TOOL],
         )
 
         tool_uses = [b for b in resp.content if getattr(b, "type", None) == "tool_use"]
@@ -352,6 +374,16 @@ def reply(
                         log.exception("escalade échouée")
                 note = ("Le/la propriétaire est prévenu(e). Rassure le client : la boutique "
                         "va le recontacter très vite. Reste utile en attendant.")
+            elif tu.name == "montrer_produit":
+                if on_show:
+                    try:
+                        note = on_show(dict(tu.input or {}))
+                    except Exception:  # noqa: BLE001
+                        log.exception("envoi photo échoué")
+                        note = "Photo indisponible pour l'instant — décris le produit au client."
+                else:
+                    note = ("Photo non envoyable ici (mode démo). Sur WhatsApp elle serait "
+                            "envoyée ; décris le produit au client.")
             else:
                 note = "Outil inconnu, ignore-le."
             results.append({"type": "tool_result", "tool_use_id": tu.id, "content": note})

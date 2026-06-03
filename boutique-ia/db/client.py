@@ -139,6 +139,23 @@ def add_products(merchant_id: str, products: list[dict[str, Any]]) -> int:
     return len(result.data or [])
 
 
+def upload_product_photo(merchant_id: str, product_id: str, data: bytes,
+                         content_type: str = "image/jpeg", ext: str = "jpg") -> str:
+    """Upload une photo produit sur Supabase Storage (bucket public) + maj photo_url."""
+    import time
+    db = get_db()
+    path = f"{merchant_id}/{product_id}.{ext}"
+    opts = {"content-type": content_type or "image/jpeg", "upsert": "true"}
+    try:
+        db.storage.from_("bia-products").upload(path, data, opts)
+    except Exception:  # noqa: BLE001 — déjà présent → on remplace
+        db.storage.from_("bia-products").update(path, data, opts)
+    url = db.storage.from_("bia-products").get_public_url(path).split("?")[0]
+    url = f"{url}?v={int(time.time())}"  # cache-bust
+    update_product(product_id, merchant_id, {"photo_url": url})
+    return url
+
+
 def list_products(merchant_id: str) -> list[dict[str, Any]]:
     db = get_db()
     return (

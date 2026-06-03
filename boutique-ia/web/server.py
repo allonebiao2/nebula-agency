@@ -1011,6 +1011,39 @@ async def update_product_endpoint(request: Request, merchant_id: str, product_id
     return {"ok": True, "product": product}
 
 
+@app.post("/api/merchants/{merchant_id}/products/{product_id}/photo")
+async def upload_photo_endpoint(request: Request, merchant_id: str, product_id: str):
+    """Upload une photo pour un produit (Supabase Storage)."""
+    from db.client import upload_product_photo
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    try:
+        form = await request.form()
+    except Exception:
+        return JSONResponse({"ok": False, "error": "Formulaire invalide"}, status_code=400)
+    file = form.get("photo")
+    if file is None or not hasattr(file, "read"):
+        return JSONResponse({"ok": False, "error": "Aucune image."}, status_code=400)
+    data = await file.read()
+    if not data:
+        return JSONResponse({"ok": False, "error": "Image vide."}, status_code=400)
+    if len(data) > 6_000_000:
+        return JSONResponse({"ok": False, "error": "Image trop lourde (max 6 Mo)."}, status_code=400)
+    ctype = (getattr(file, "content_type", "") or "image/jpeg")
+    if not ctype.startswith("image/"):
+        return JSONResponse({"ok": False, "error": "Le fichier doit être une image."}, status_code=400)
+    ext = ctype.split("/")[-1].split(";")[0].lower() or "jpg"
+    if ext == "jpeg":
+        ext = "jpg"
+    try:
+        url = upload_product_photo(merchant_id, product_id, data, ctype, ext)
+    except Exception as e:  # noqa: BLE001
+        log.exception("upload photo échoué")
+        return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
+    return {"ok": True, "url": url}
+
+
 @app.delete("/api/merchants/{merchant_id}/products/{product_id}")
 async def delete_product_endpoint(request: Request, merchant_id: str, product_id: str):
     """Supprime un produit de la boutique."""
@@ -1030,11 +1063,13 @@ async def delete_product_endpoint(request: Request, merchant_id: str, product_id
 # ÉTAGE 2b — WhatsApp réel (webhook Twilio, réponse TwiML)
 # ---------------------------------------------------------------------------
 
-def _twiml(message: str) -> Response:
-    """Réponse TwiML : Twilio enverra ce message au client. Pas besoin de clé API."""
+def _twiml(message: str, media: list[str] | None = None) -> Response:
+    """Réponse TwiML : Twilio enverra ce message (+ photos) au client."""
+    body = f"<Body>{escape(message)}</Body>"
+    medias = "".join(f"<Media>{escape(u)}</Media>" for u in (media or []) if u)
     xml = (
         '<?xml version="1.0" encoding="UTF-8"?>'
-        f"<Response><Message>{escape(message)}</Message></Response>"
+        f"<Response><Message>{body}{medias}</Message></Response>"
     )
     return Response(content=xml, media_type="application/xml")
 
@@ -1132,17 +1167,35 @@ async def whatsapp_twilio(request: Request):
         save_message(merchant["id"], from_, "customer", clean)
         history = load_history(merchant["id"], from_, limit=brain.HISTORY_LIMIT)
         products = list_products(merchant["id"])
+
+        media_urls: list[str] = []
+        def _on_show(data: dict) -> str:
+            names = data.get("produits") or []
+            n_before = len(media_urls)
+            for raw in names:
+                nl = (raw or "").strip().lower()
+                if not nl:
+                    continue
+                for p in products:
+                    if p.get("photo_url") and nl in (p.get("name") or "").lower():
+                        if p["photo_url"] not in media_urls:
+                            media_urls.append(p["photo_url"])
+                        break
+            return ("Photo(s) envoyée(s) au client." if len(media_urls) > n_before
+                    else "Aucune photo disponible pour ce produit — décris-le.")
+
         answer = brain.reply(
             merchant, products, history,
             on_order=_order_recorder(merchant, from_),
             on_escalate=_escalation_notifier(merchant, from_),
+            on_show=_on_show,
         )
         save_message(merchant["id"], from_, "assistant", answer)
     except Exception as e:  # noqa: BLE001
         log.exception("whatsapp reply échoué")
         return _twiml("Un instant, je vérifie avec la boutique et je reviens vers vous 🙏")
 
-    return _twiml(answer)
+    return _twiml(answer, media_urls)
 
 
 # ---------------------------------------------------------------------------
