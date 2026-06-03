@@ -81,6 +81,11 @@ class Settings(BaseSettings):
     # URL publique (pour le lien de désinscription dans les emails de prospection)
     public_base_url: str = "https://vendora-agent.up.railway.app"
 
+    # --- Recrutement AUTONOME (Vendora se trouve des clients tout seul) ---
+    auto_prospection_enabled: bool = False   # interrupteur maître (OFF = sécurité)
+    auto_prospection_daily: int = 12         # volume/jour (échauffement ; monter progressivement)
+    auto_prospection_hour: int = 9           # heure UTC de lancement quotidien
+
     env: str = "development"
 
     def require(self, *keys: str) -> None:

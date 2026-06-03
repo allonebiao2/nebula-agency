@@ -672,6 +672,97 @@ async def admin_prospection_launch(request: Request, bg: BackgroundTasks):
             "message": "Campagne de recrutement lancée…"}
 
 
+# ---------------------------------------------------------------------------
+# Recrutement AUTONOME — Vendora se trouve des clients tout seul (pilote auto)
+# ---------------------------------------------------------------------------
+# Cibles tournantes (catégorie, ville) pour ne pas épuiser une seule zone.
+AUTO_TARGETS = [
+    ("restaurant", "Cotonou"), ("fashion", "Cotonou"), ("beauty", "Cotonou"),
+    ("retail", "Cotonou"), ("hospitality", "Cotonou"), ("health", "Cotonou"),
+    ("restaurant", "Porto-Novo"), ("fashion", "Calavi"),
+    ("restaurant", "Lomé"), ("fashion", "Lomé"), ("beauty", "Lomé"),
+    ("restaurant", "Abidjan"), ("fashion", "Abidjan"), ("beauty", "Abidjan"),
+    ("restaurant", "Dakar"), ("fashion", "Dakar"),
+    ("restaurant", "Ouagadougou"), ("fashion", "Ouagadougou"),
+]
+
+
+def _next_auto_target() -> tuple[str, str]:
+    from datetime import datetime, timezone
+    idx = datetime.now(timezone.utc).timetuple().tm_yday % len(AUTO_TARGETS)
+    return AUTO_TARGETS[idx]
+
+
+def _auto_ran_today() -> bool:
+    from datetime import datetime, timezone
+    from db.client import list_campaigns
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    for c in list_campaigns("admin", None, limit=12):
+        if (c.get("title") or "").startswith("Auto ·") and (c.get("created_at") or "").startswith(today):
+            return True
+    return False
+
+
+def _run_auto_cycle() -> dict:
+    """Lance UN cycle de recrutement automatique (sourcing→rédaction→envoi) + résumé."""
+    from core import prospecting
+    from db.client import create_campaign, get_campaign
+    from notify import notify_mongazi
+    cat, city = _next_auto_target()
+    label = prospecting.CATEGORIES.get(cat, {}).get("label", cat)
+    camp = create_campaign({
+        "owner_type": "admin", "merchant_id": None, "mode": "recrutement",
+        "title": f"Auto · {label} · {city}", "category": cat, "city": city, "status": "sourcing",
+    })
+    prospecting.run_full_campaign(camp["id"], "recrutement", cat, city,
+                                  settings.auto_prospection_daily, "admin", None)
+    final = get_campaign(camp["id"]) or {}
+    try:
+        notify_mongazi(
+            "🤖 <b>Vendora s'est recruté des clients</b>\n\n"
+            f"🎯 {label} · {city}\n"
+            f"📨 {final.get('sent', 0)} boutiques contactées "
+            f"({final.get('found', 0)} trouvées)"
+        )
+    except Exception:  # noqa: BLE001
+        pass
+    return {"sent": final.get("sent", 0), "found": final.get("found", 0),
+            "target": f"{label} · {city}"}
+
+
+@app.post("/api/admin/prospection/auto")
+async def admin_prospection_auto(request: Request, bg: BackgroundTasks):
+    """Déclenche manuellement un cycle de recrutement auto (test, ou cron externe)."""
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    bg.add_task(_run_auto_cycle)
+    return {"ok": True, "message": "Cycle de recrutement automatique lancé."}
+
+
+async def _auto_prospection_loop():
+    """Boucle de fond : 1 campagne de recrutement/jour (si activé), à l'heure prévue."""
+    import asyncio
+    from datetime import datetime, timezone
+    while True:
+        try:
+            if (settings.auto_prospection_enabled
+                    and datetime.now(timezone.utc).hour >= settings.auto_prospection_hour
+                    and not _auto_ran_today()):
+                await asyncio.to_thread(_run_auto_cycle)
+        except Exception:  # noqa: BLE001
+            log.warning("auto-prospection loop", exc_info=True)
+        await asyncio.sleep(1800)  # vérifie toutes les 30 min
+
+
+@app.on_event("startup")
+async def _start_auto_prospection():
+    import asyncio
+    if settings.auto_prospection_enabled:
+        asyncio.create_task(_auto_prospection_loop())
+        log.info("Recrutement autonome ACTIVÉ (%s/jour à %sh UTC)",
+                 settings.auto_prospection_daily, settings.auto_prospection_hour)
+
+
 @app.post("/api/merchants/{merchant_id}/order")
 async def merchant_order_endpoint(request: Request, merchant_id: str):
     """Le commerçant donne un ordre à son agent (langage naturel). Quota/jour selon forfait."""
