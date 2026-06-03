@@ -50,7 +50,23 @@ body::after{
 .mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-feature-settings:"tnum"}
 a{color:var(--a);text-decoration:none}
 ::selection{background:var(--a-soft)}
+html{scroll-behavior:smooth}
 .wrap{max-width:780px;margin:0 auto;padding:0 20px 110px}
+
+/* Garde-fou icônes : taille par défaut sûre (empêche tout SVG géant).
+   Les règles spécifiques (.btn svg, .shead .ic svg…) restent prioritaires. */
+:where(.topbar, .wrap) svg{width:1em;height:1em;flex:none}
+
+/* Onglets de navigation rapide (collants) */
+.tabs{position:sticky;top:66px;z-index:20;display:flex;gap:8px;overflow-x:auto;
+  margin:18px -20px 4px;padding:10px 20px;scrollbar-width:none;
+  background:linear-gradient(180deg,var(--bg) 60%,transparent);}
+.tabs::-webkit-scrollbar{display:none}
+.tabs a{flex:none;font-size:.82rem;font-weight:600;color:var(--mut);
+  border:1px solid var(--hair);background:rgba(255,255,255,.03);padding:8px 15px;
+  border-radius:100px;white-space:nowrap;transition:color .2s,border-color .2s,background .2s}
+.tabs a:hover{color:var(--txt);border-color:var(--a-line);background:var(--a-soft)}
+section[id], div[id="prospection"]{scroll-margin-top:124px}
 
 /* ---- Reveal au scroll (IntersectionObserver ajoute .in) ---- */
 .reveal{opacity:0;transform:translateY(22px);filter:blur(6px);

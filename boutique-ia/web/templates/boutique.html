@@ -64,6 +64,17 @@
   <p class="lead reveal">Gérez votre boutique en quelques gestes. Chaque changement est appliqué <b style="color:var(--txt)">tout de suite</b> par votre agent vendeur.</p>
   <div class="thread reveal"></div>
 
+  <nav class="tabs">
+    <a href="#piloter">Agent</a>
+    <a href="#produits">Produits</a>
+    <a href="#infos">Infos</a>
+    <a href="#livraison">Livraison</a>
+    <a href="#style">Style</a>
+    <a href="#prospection">Prospection</a>
+    <a href="#activite">Activité</a>
+    <a href="#forfaits">Forfait</a>
+  </nav>
+
   {% if wa_link %}
   <div class="share bezel reveal"><div class="bezel-in">
     <div class="lbl"><svg viewBox="0 0 24 24"><use href="#i-link"/></svg> Votre lien WhatsApp à partager à vos clients</div>
@@ -87,7 +98,7 @@
   </div>
 
   <!-- PILOTER -->
-  <section class="reveal" style="margin-top:34px">
+  <section class="reveal" id="piloter" style="margin-top:34px">
     <div class="shead">
       <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-wand"/></svg></div>
       <h2>Piloter mon agent</h2>
@@ -105,7 +116,7 @@
   </section>
 
   <!-- PRODUITS -->
-  <section class="reveal">
+  <section class="reveal" id="produits">
     <div class="shead">
       <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-box"/></svg></div>
       <h2>Mes produits & services</h2>
@@ -180,7 +191,7 @@
   </section>
 
   <!-- INFOS -->
-  <section class="reveal">
+  <section class="reveal" id="infos">
     <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-store"/></svg></div><h2>Infos de ma boutique</h2></div>
     <div class="panel">
       <div class="grid2">
@@ -207,7 +218,7 @@
   </section>
 
   <!-- LIVRAISON & PAIEMENT -->
-  <section class="reveal">
+  <section class="reveal" id="livraison">
     <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-truck"/></svg></div><h2>Livraison & paiement</h2></div>
     <div class="panel">
       <label>Zones de livraison</label>
@@ -225,7 +236,7 @@
   </section>
 
   <!-- STYLE AGENT -->
-  <section class="reveal">
+  <section class="reveal" id="style">
     <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg></div><h2>Style de mon agent vendeur</h2></div>
     <div class="panel">
       <div class="grid2">
@@ -241,7 +252,7 @@
   </section>
 
   <!-- ACTIVITÉ -->
-  <section class="reveal">
+  <section class="reveal" id="activite">
     <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg></div><h2>Activité de mon agent</h2></div>
     <div class="panel">
       <div class="ah">Dernières commandes</div>
