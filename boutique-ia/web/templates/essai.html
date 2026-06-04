@@ -61,8 +61,8 @@
 <div class="wrap">
 {% if merchant %}
   <div class="hero">
-    <h1>🎉 Votre agent vendeur « {{ merchant.business_name }} » est prêt</h1>
-    <p>Discutez avec lui comme le ferait un client. Convaincu ? Activez en bas 👇</p>
+    <h1>Votre agent vendeur « {{ merchant.business_name }} » est prêt</h1>
+    <p>Discutez avec lui comme le ferait un client. Convaincu ? Choisissez votre offre en bas.</p>
     <span class="count" id="count">{{ free_trial_messages }} messages d'essai</span>
   </div>
 
@@ -82,7 +82,7 @@
       <div class="ava"><svg viewBox="0 0 24 24"><use href="#i-store"/></svg></div>
       <div><div class="t">{{ merchant.business_name }}</div><div class="s"><span class="sdot"></span>Agent vendeur · en ligne</div></div>
     </div>
-    <div id="log"><div class="b sys">Écrivez comme un client 👇 (ex : « bonjour, vous avez quoi ? »)</div></div>
+    <div id="log"><div class="b sys">Écrivez comme un client (ex : « bonjour, vous avez quoi ? »)</div></div>
     <div id="overzone"></div>
     <form class="cf" id="f">
       <input id="m" placeholder="Écrivez un message…" autocomplete="off">
@@ -96,7 +96,7 @@
 
 {% if merchant %}
 <div class="cta-bar">
-  <a class="btn acc" href="/activation/{{ merchant_id }}">✅ Activer ma boutique — {{ "{:,}".format(price).replace(",", " ") }} F/mois</a>
+  <a class="btn acc" href="/activation/{{ merchant_id }}">Choisir mon offre et activer →</a>
 </div>
 {% endif %}
 
@@ -109,7 +109,7 @@
   function endTrial(){
     document.getElementById('m').disabled=true; document.querySelector('.send').disabled=true;
     if(countEl) countEl.textContent="Essai terminé";
-    document.getElementById('overzone').innerHTML='<div class="over"><p>🚀 Essai terminé ! Activez votre boutique pour des conversations illimitées avec vos vrais clients.</p></div>';
+    document.getElementById('overzone').innerHTML='<div class="over"><p>Essai terminé ! Choisissez votre offre pour des conversations illimitées avec vos vrais clients.</p></div>';
   }
   const f = document.getElementById('f');
   if(f) f.addEventListener('submit', async (e) => {

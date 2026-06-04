@@ -160,13 +160,71 @@
 </style>
 </head>
 <body>
+<!-- Jeu d'icônes (ligne, futuriste) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 7-7M14 8h6v6"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></symbol>
+  <symbol id="i-store" viewBox="0 0 24 24"><path d="M3 7l1.2-3.2A1 1 0 0 1 5.1 3h13.8a1 1 0 0 1 .9.8L21 7M4 7v12a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7M3 7h18M9.5 20v-5.5h5V20"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><path d="M3 4h11v11H3zM14 8h4l3 3v4h-7M6.5 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17.5 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16zM3.3 7l8.7 5 8.7-5M12 22V12"/></symbol>
+  <symbol id="i-robot" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="11" rx="3"/><circle cx="9" cy="13.5" r="1.2"/><circle cx="15" cy="13.5" r="1.2"/><path d="M12 4v4M10 2h4"/></symbol>
+  <symbol id="i-rocket" viewBox="0 0 24 24"><path d="M5 15c-1.5 1.2-2 5-2 5s3.8-.5 5-2c.7-.8.7-2-.1-2.8a2 2 0 0 0-2.9-.2zM12 15l-3-3a22 22 0 0 1 8-10c2 0 4 2 4 4a22 22 0 0 1-10 8z"/><circle cx="15" cy="9" r="1.4"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.6 6.3L21 10l-5 4.2L17.5 21 12 17.3 6.5 21 8 14.2 3 10l6.4-.7z"/></symbol>
+  <symbol id="i-crown" viewBox="0 0 24 24"><path d="M3 7l4 4 5-7 5 7 4-4-1.5 13H4.5z"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.7 5.8L19.5 10l-5.8 1.7L12 17l-1.7-5.3L4.5 10l5.8-1.2z"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v5c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></symbol>
+  <symbol id="i-handshake" viewBox="0 0 24 24"><path d="M8 13l2 2 3-3 3 3 3-3M2 9l4-3 6 2 6-2 4 3v6l-4 3-4-3"/></symbol>
+</svg>
+<style>
+  .ic svg,.tb-ic svg{width:24px;height:24px;stroke:var(--c);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .pname svg{width:20px;height:20px;stroke:var(--c);fill:none;stroke-width:1.7;vertical-align:-4px;margin-right:5px}
+  .fcard h3 svg{width:18px;height:18px;stroke:var(--c);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .chip svg{width:16px;height:16px;stroke:var(--c);fill:none;stroke-width:1.7}
+  /* Bloc essai gratuit — séparé des offres */
+  .trial-band{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:30px;
+        border-radius:20px;padding:24px 26px;position:relative;
+        background:linear-gradient(var(--panel),var(--panel)) padding-box,var(--grad) border-box;border:1.5px solid transparent}
+  .trial-band .tb-ic{width:52px;height:52px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;
+        background:rgba(34,211,238,.12);border:1px solid var(--line)}
+  .trial-band .tb-ic svg{width:26px;height:26px}
+  .trial-band .tb-txt{flex:1;min-width:220px}
+  .trial-band h3{font-size:1.18rem;margin-bottom:4px}
+  .trial-band p{color:var(--muted);font-size:.92rem;margin:0}
+  .trial-band .btn{font-size:1rem;padding:14px 26px;white-space:nowrap}
+  /* nav links */
+  .navlinks{display:flex;align-items:center;gap:22px}
+  .navlinks a{color:var(--muted);font-weight:600;font-size:.92rem;transition:color .15s}
+  .navlinks a:hover{color:var(--txt)}
+  @media(max-width:860px){.navlinks .nlk{display:none}}
+  /* boutons de fin de formulaire : créer + (essai, si Démarrage) */
+  .go-row{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;align-items:stretch}
+  .go-row .btn-go{flex:1;margin-top:0;min-width:240px}
+  .go-row #trialBtn{flex:none;padding:17px 22px}
+  /* note "testable" sur l'offre Démarrage */
+  .freenote{display:inline-flex;align-items:center;gap:6px;color:var(--c);font-size:.8rem;font-weight:700;margin-top:8px}
+  .freenote svg{width:15px;height:15px;stroke:var(--c);fill:none;stroke-width:2.2}
+</style>
 <div class="glow"></div>
 
 <nav>
   <div class="wrap row">
     <div class="logo"><img src="/static/logo.svg" alt="{{ product_name }}"><span class="brand grad">{{ product_name }}</span></div>
-    <div style="display:flex;align-items:center;gap:14px">
-      <a href="#tarifs" style="color:var(--muted);font-weight:600;font-size:.92rem">Tarifs</a>
+    <div class="navlinks">
+      <a class="nlk" href="#avantages">Avantages</a>
+      <a class="nlk" href="#comment">Comment ça marche</a>
+      <a class="nlk" href="#tarifs">Tarifs</a>
+      <a class="nlk" href="#essai">Essai gratuit</a>
+      <a class="nlk" href="#faq">FAQ</a>
       <button class="theme-tog" onclick="toggleTheme()" title="Mode jour / nuit" aria-label="Changer de thème">
         <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
         <svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19"/></svg>
@@ -203,18 +261,18 @@
     <h2 class="sec-title reveal">Un vendeur d'élite, pour chaque boutique.</h2>
     <p class="sec-sub reveal">Pas un salaire à payer. Pas de jour de repos. Juste un agent vendeur qui connaît vos produits par cœur et ne laisse jamais filer une vente.</p>
     <div class="grid">
-      <div class="card reveal"><div class="ic">🌙</div><h3>Disponible 24h/24</h3><p>Il répond la nuit, le week-end, les jours fériés. Chaque message reçoit une réponse immédiate.</p></div>
-      <div class="card reveal"><div class="ic">💳</div><h3>Encaisse en Mobile Money</h3><p>Il guide le client jusqu'au paiement Mobile Money et confirme la commande automatiquement.</p></div>
-      <div class="card reveal"><div class="ic">🧠</div><h3>Adapté à VOTRE boutique</h3><p>Vos produits, vos prix, votre ton. Il parle comme vous le feriez, jamais hors catalogue.</p></div>
-      <div class="card reveal"><div class="ic">📈</div><h3>Vend vraiment</h3><p>Conseils, ventes additionnelles, relances : un vrai talent commercial, pas un simple répondeur.</p></div>
-      <div class="card reveal"><div class="ic">🔔</div><h3>Vous tient informé</h3><p>À chaque commande, vous êtes prévenu. Vous gardez le contrôle, lui fait le travail.</p></div>
-      <div class="card reveal"><div class="ic">⚡</div><h3>Prêt en minutes</h3><p>Remplissez votre fiche et activez. Test gratuit possible avant, si vous voulez. Aucune compétence technique requise.</p></div>
+      <div class="card reveal"><div class="ic"><svg><use href="#i-moon"/></svg></div><h3>Disponible 24h/24</h3><p>Il répond la nuit, le week-end, les jours fériés. Chaque message reçoit une réponse immédiate.</p></div>
+      <div class="card reveal"><div class="ic"><svg><use href="#i-card"/></svg></div><h3>Encaisse en Mobile Money</h3><p>Il guide le client jusqu'au paiement Mobile Money et confirme la commande automatiquement.</p></div>
+      <div class="card reveal"><div class="ic"><svg><use href="#i-cpu"/></svg></div><h3>Adapté à VOTRE boutique</h3><p>Vos produits, vos prix, votre ton. Il parle comme vous le feriez, jamais hors catalogue.</p></div>
+      <div class="card reveal"><div class="ic"><svg><use href="#i-trend"/></svg></div><h3>Vend vraiment</h3><p>Conseils, ventes additionnelles, relances : un vrai talent commercial, pas un simple répondeur.</p></div>
+      <div class="card reveal"><div class="ic"><svg><use href="#i-bell"/></svg></div><h3>Vous tient informé</h3><p>À chaque commande, vous êtes prévenu. Vous gardez le contrôle, lui fait le travail.</p></div>
+      <div class="card reveal"><div class="ic"><svg><use href="#i-bolt"/></svg></div><h3>Prêt en minutes</h3><p>Remplissez votre fiche et activez. Aucune compétence technique requise.</p></div>
     </div>
   </div>
 </section>
 
 <!-- COMMENT -->
-<section style="padding-top:20px">
+<section id="comment" style="padding-top:20px">
   <div class="wrap">
     <div class="eyebrow reveal">Comment ça marche</div>
     <h2 class="sec-title reveal">3 étapes. Quelques minutes.</h2>
@@ -231,13 +289,14 @@
   <div class="wrap">
     <div class="eyebrow reveal">Tarifs</div>
     <h2 class="sec-title reveal">Un agent vendeur, à votre échelle.</h2>
-    <p class="sec-sub reveal">Souscrivez directement, ou testez gratuitement d'abord — comme vous préférez. Sans engagement, par Mobile Money.</p>
+    <p class="sec-sub reveal">Choisissez votre offre. Sans engagement, paiement par Mobile Money. Pas encore décidé ? Un <a href="#essai" style="color:var(--c);font-weight:600">essai gratuit</a> vous attend juste en dessous.</p>
     <div class="plans">
 
       <div class="plan reveal">
-        <div class="pname">🌱 Démarrage</div>
+        <div class="pname"><svg><use href="#i-rocket"/></svg>Démarrage</div>
         <div class="ptag">Pour se lancer et automatiser ses premières ventes.</div>
         <div class="price">5 000 <small>F / mois</small></div>
+        <div class="freenote"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg> Testable gratuitement avant de payer</div>
         <ul>
           <li><span class="ck">✓</span> Agent vendeur sur WhatsApp 24h/24</li>
           <li><span class="ck">✓</span> Catalogue produits & services illimité</li>
@@ -250,8 +309,8 @@
       </div>
 
       <div class="plan pop reveal">
-        <div class="badge">★ Populaire</div>
-        <div class="pname">⭐ Business</div>
+        <div class="badge">Populaire</div>
+        <div class="pname"><svg><use href="#i-star"/></svg>Business</div>
         <div class="ptag">Pour vendre plus ET trouver de nouveaux clients.</div>
         <div class="price">15 000 <small>F / mois</small></div>
         <ul>
@@ -266,7 +325,7 @@
       </div>
 
       <div class="plan reveal">
-        <div class="pname">👑 Empire</div>
+        <div class="pname"><svg><use href="#i-crown"/></svg>Empire</div>
         <div class="ptag">Pour les business sérieux qui passent à l'échelle.</div>
         <div class="price">40 000 <small>F / mois</small></div>
         <ul>
@@ -280,7 +339,17 @@
       </div>
 
     </div>
-    <p class="plans-note">💡 2 mois offerts en payant à l'année · Paiement Mobile Money · Sans engagement</p>
+    <p class="plans-note">2 mois offerts en payant à l'année · Paiement Mobile Money · Sans engagement</p>
+
+    <!-- ESSAI GRATUIT — réservé à l'offre Démarrage -->
+    <div class="trial-band reveal" id="essai">
+      <div class="tb-ic"><svg><use href="#i-spark"/></svg></div>
+      <div class="tb-txt">
+        <h3>Hésitant ? L'offre Démarrage est testable gratuitement.</h3>
+        <p>Remplissez votre fiche, puis un bouton <b>« Tester gratuitement »</b> apparaît à côté de la création. Vous essayez l'agent <b>sans payer</b> et n'activez que si vous êtes convaincu.</p>
+      </div>
+      <a href="#creer" class="btn btn-ghost" onclick="selectPlan('demarrage')">Tester l'offre Démarrage →</a>
+    </div>
   </div>
 </section>
 
@@ -325,7 +394,7 @@
       <div class="inner">
         <form id="form">
           <div class="fcard">
-            <h3>🏪 Votre boutique</h3>
+            <h3><svg><use href="#i-store"/></svg> Votre boutique</h3>
             <div class="hint">Ces infos permettent à l'agent de parler comme vous à vos clients.</div>
             <label>Nom de la boutique <span class="req">*</span></label>
             <input name="business_name" placeholder="Ex : Little Sun Pearls" required>
@@ -338,7 +407,7 @@
           </div>
 
           <div class="fcard">
-            <h3>📱 Contacts</h3>
+            <h3><svg><use href="#i-phone"/></svg> Contacts</h3>
             <div class="hint">Où vos clients écrivent, et où VOUS recevez les alertes de vente.</div>
             <label>WhatsApp de la boutique (les clients écrivent ici) <span class="req">*</span></label>
             <input name="whatsapp_business" placeholder="+229 01 67 97 56 26" required>
@@ -349,7 +418,7 @@
           </div>
 
           <div class="fcard">
-            <h3>💳 Comment vos clients vous paient</h3>
+            <h3><svg><use href="#i-card"/></svg> Comment vos clients vous paient</h3>
             <div class="hint">L'agent donnera ce numéro Mobile Money à vos clients pour encaisser.</div>
             <div class="frow">
               <div><label>Numéro Mobile Money</label><input name="momo_number" placeholder="97 XX XX XX"></div>
@@ -364,7 +433,7 @@
           </div>
 
           <div class="fcard">
-            <h3>🚚 Livraison</h3>
+            <h3><svg><use href="#i-truck"/></svg> Livraison</h3>
             <div class="hint">Pour que l'agent réponde aux questions de livraison tout seul.</div>
             <label>Zones livrées</label>
             <input name="delivery_zones" placeholder="Cotonou, Calavi, Abomey-Calavi…">
@@ -373,14 +442,14 @@
           </div>
 
           <div class="fcard">
-            <h3>📦 Vos produits</h3>
+            <h3><svg><use href="#i-box"/></svg> Vos produits</h3>
             <div class="hint">Ajoutez ce que vous vendez. L'agent proposera ces produits, avec les prix.</div>
             <div id="products"></div>
             <button type="button" class="btn btn-add" id="addProduct">+ Ajouter un produit</button>
           </div>
 
           <div class="fcard">
-            <h3>🤖 Personnalité de votre agent vendeur</h3>
+            <h3><svg><use href="#i-robot"/></svg> Personnalité de votre agent vendeur</h3>
             <div class="hint">Comment votre agent doit parler à vos clients.</div>
             <div class="frow">
               <div><label>Ton</label>
@@ -402,11 +471,14 @@
 
           <div class="price-banner">
             Offre <b id="planLabel">Démarrage</b> · <b class="grad" id="planPrice">5 000 F CFA / mois</b><br>
-            <span style="color:var(--muted);font-size:.88rem">Activez directement, ou testez gratuitement avant (optionnel)</span>
+            <span style="color:var(--muted);font-size:.88rem">Sans engagement · paiement par Mobile Money</span>
           </div>
 
           <div class="err" id="err"></div>
-          <button type="submit" class="btn btn-go" id="submit">Créer mon agent vendeur →</button>
+          <div class="go-row">
+            <button type="submit" class="btn btn-go" id="submit" onclick="goTrial=false">Créer mon agent vendeur →</button>
+            <button type="button" class="btn btn-ghost" id="trialBtn" onclick="startTrial()">Tester gratuitement d'abord</button>
+          </div>
         </form>
       </div>
     </div>
@@ -465,14 +537,14 @@ void main(void){vec2 uv=(FC-.5*R)/MN,st=uv*vec2(2,1);vec3 col=vec3(0);float bg=c
     io.observe(canvas);
   })();
 
-  // Marquee chips
+  // Marquee chips (icônes au lieu d'émojis)
   const benefits = [
-    ["🌙","Répond 24h/24"],["💳","Encaisse en Mobile Money"],["🧠","Connaît vos produits"],
-    ["📈","Augmente vos ventes"],["🔔","Vous prévient à chaque vente"],["💬","Parle votre langue"],
-    ["⚡","Réponse immédiate"],["🤝","Toujours poli"],["🚫","Zéro client perdu"]
+    ["i-moon","Répond 24h/24"],["i-card","Encaisse en Mobile Money"],["i-cpu","Connaît vos produits"],
+    ["i-trend","Augmente vos ventes"],["i-bell","Vous prévient à chaque vente"],["i-globe","Parle votre langue"],
+    ["i-bolt","Réponse immédiate"],["i-handshake","Toujours poli"],["i-ban","Zéro client perdu"]
   ];
   const track = document.getElementById('track');
-  const make = () => benefits.map(b=>`<span class="chip"><span>${b[0]}</span><b>${b[1]}</b></span>`).join('');
+  const make = () => benefits.map(b=>`<span class="chip"><svg viewBox="0 0 24 24"><use href="#${b[0]}"/></svg><b>${b[1]}</b></span>`).join('');
   track.innerHTML = make() + make(); // doublé pour la boucle infinie
 
   // Reveal au scroll
@@ -481,14 +553,20 @@ void main(void){vec2 uv=(FC-.5*R)/MN,st=uv*vec2(2,1);vec3 col=vec3(0);float bg=c
 
   // Offre sélectionnée → met à jour le prix affiché dans le formulaire
   let selectedPlan = 'demarrage';
+  let goTrial = false;  // true si on clique « Tester gratuitement » (Démarrage uniquement)
   const PLAN_PRICES = {demarrage:5000, business:15000, empire:40000};
   const PLAN_LABELS = {demarrage:'Démarrage', business:'Business', empire:'Empire'};
   function fmt(n){ return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,' '); }
-  function selectPlan(p){
-    selectedPlan = p;
-    document.getElementById('planLabel').textContent = PLAN_LABELS[p];
-    document.getElementById('planPrice').textContent = fmt(PLAN_PRICES[p]) + ' F CFA / mois';
+  function refreshOffer(){
+    document.getElementById('planLabel').textContent = PLAN_LABELS[selectedPlan];
+    document.getElementById('planPrice').textContent = fmt(PLAN_PRICES[selectedPlan]) + ' F CFA / mois';
+    // L'essai gratuit n'est proposé QUE pour l'offre Démarrage (5 000 F).
+    const tb = document.getElementById('trialBtn');
+    if(tb) tb.style.display = (selectedPlan === 'demarrage') ? '' : 'none';
   }
+  function selectPlan(p){ selectedPlan = p; goTrial = false; refreshOffer(); }
+  function startTrial(){ goTrial = true; document.getElementById('form').requestSubmit(); }  // crée la fiche puis va à l'essai
+  refreshOffer();
 
   // Produits dynamiques
   const productsEl = document.getElementById('products');
@@ -538,7 +616,7 @@ void main(void){vec2 uv=(FC-.5*R)/MN,st=uv*vec2(2,1);vec3 col=vec3(0);float bg=c
     try{
       const r = await fetch('/api/merchants',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
       const data = await r.json();
-      if(data.ok){ window.location.href='/activation/'+data.merchant_id; }
+      if(data.ok){ window.location.href = (goTrial ? '/essai/' : '/activation/') + data.merchant_id; }
       else throw new Error(data.error||'Erreur inconnue');
     }catch(ex){ err.textContent=ex.message; err.style.display='block'; btn.disabled=false; btn.textContent='Créer mon agent vendeur →'; }
   });

@@ -24,6 +24,15 @@
   .steps li{counter-increment:s;display:flex;gap:12px;align-items:flex-start;font-size:.92rem;color:var(--txt)}
   .steps li::before{content:counter(s);flex:none;width:24px;height:24px;border-radius:50%;background:var(--a-soft);
     border:1px solid var(--a-line);color:var(--a);font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:center}
+  .plan-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 4px}
+  .pp{display:flex;flex-direction:column;gap:3px;align-items:center;padding:11px 6px;border-radius:13px;cursor:pointer;
+      background:var(--core2);border:1.5px solid var(--hair);color:var(--txt);transition:.15s;font-family:inherit}
+  .pp:hover{border-color:var(--a-line)}
+  .pp.on{border-color:var(--a);background:var(--a-soft);box-shadow:0 0 0 1px var(--a) inset}
+  .pp .ppl{font-weight:700;font-size:.9rem}
+  .pp .ppp{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--a)}
+  .pp .ppp small{font-size:.7rem;color:var(--mut)}
+  @media(max-width:420px){.plan-pick{grid-template-columns:1fr}.pp{flex-direction:row;justify-content:space-between}}
   .ok,.err{padding:14px;border-radius:13px;margin-top:16px;text-align:center;font-weight:600;display:none}
   .ok{background:var(--a-soft);border:1px solid var(--a-line);color:var(--a)}
   .err{background:rgba(255,107,125,.1);border:1px solid rgba(255,107,125,.3);color:#ff9d9d}
@@ -42,14 +51,25 @@
 <div class="wrap">
   <div class="hero">
     <div class="check"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg></div>
-    <h1>Boutique créée 🎉</h1>
-    <p>{% if merchant %}<b style="color:var(--txt)">{{ merchant.business_name }}</b> est prête.{% endif %} Dernière étape : activez votre agent vendeur.</p>
-    <p style="margin-top:10px;font-size:.92rem">Pas encore décidé ? <a href="/essai/{{ merchant_id }}" style="color:var(--a);font-weight:600;text-decoration:none">Testez-le gratuitement d'abord →</a> <span style="color:var(--mut)">(optionnel)</span></p>
+    <h1>{% if merchant %}{{ merchant.business_name }} {% endif %}est prête</h1>
+    <p>Dernière étape : activez votre agent. <a href="/essai/{{ merchant_id }}" style="color:var(--a);font-weight:600;text-decoration:none;white-space:nowrap">ou testez gratuitement →</a></p>
   </div>
+
+  {% if plans %}
+  <div class="lbl" style="margin-top:18px;text-align:center">Choisissez votre offre</div>
+  <div class="plan-pick" id="planPick">
+    {% for p in plans %}
+    <button type="button" class="pp{{ ' on' if p.key == current_plan }}" data-plan="{{ p.key }}" data-price="{{ p.price }}" onclick="pickPlan(this)">
+      <span class="ppl">{{ p.label }}</span>
+      <span class="ppp">{{ "{:,}".format(p.price).replace(",", " ") }} F<small>/mois</small></span>
+    </button>
+    {% endfor %}
+  </div>
+  {% endif %}
 
   <div class="bezel" style="margin-top:14px"><div class="bezel-in" style="text-align:center">
     <div class="lbl">Montant à payer</div>
-    <div class="amount">{{ "{:,}".format(price).replace(",", " ") }} F</div>
+    <div class="amount" id="amount">{{ "{:,}".format(price).replace(",", " ") }} F</div>
     <div class="lbl" style="margin-top:16px">Envoyez par Mobile Money au</div>
     <div class="momo">{{ saas_momo_number or "(numéro à configurer)" }}</div>
     <div class="lbl">{{ saas_momo_name }} · {{ saas_momo_network }}</div>
@@ -57,9 +77,8 @@
 
   <div class="panel" style="margin-top:14px">
     <ol class="steps">
-      <li>Envoyez <b>{{ "{:,}".format(price).replace(",", " ") }} F</b> au numéro ci-dessus par Mobile Money.</li>
-      <li>Notez l'<b>ID de transaction</b> reçu par SMS.</li>
-      <li>Collez-le ci-dessous et validez.</li>
+      <li>Envoyez le montant au numéro ci-dessus (Mobile Money).</li>
+      <li>Collez l'<b>ID de transaction</b> du SMS ci-dessous et validez.</li>
     </ol>
     <form id="payForm" style="margin-top:16px">
       <label>ID de transaction (SMS Mobile Money)</label>
@@ -78,6 +97,14 @@
 
 <script>
   const merchantId = "{{ merchant_id }}";
+  let selectedPlan = "{{ current_plan }}";
+  function pickPlan(btn){
+    document.querySelectorAll('#planPick .pp').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    selectedPlan = btn.dataset.plan;
+    const n = Number(btn.dataset.price).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+    document.getElementById('amount').textContent = n + ' F';
+  }
   document.getElementById('payForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('payBtn');
@@ -89,7 +116,7 @@
     try{
       const r = await fetch('/api/merchants/' + merchantId + '/payment', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ ref })
+        body: JSON.stringify({ ref, plan: selectedPlan })
       });
       const data = await r.json();
       if(data.ok){ ok.style.display='block'; document.getElementById('payForm').style.display='none'; }

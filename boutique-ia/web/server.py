@@ -227,10 +227,13 @@ async def activation(request: Request, merchant_id: str):
         merchant = get_merchant(merchant_id)
     except Exception as e:  # noqa: BLE001
         log.warning("activation: lecture merchant impossible: %s", e)
-    price = price_for_plan(merchant.get("plan")) if merchant else settings.saas_price_fcfa
+    cur_plan = normalize_plan(merchant.get("plan")) if merchant else "demarrage"
+    price = price_for_plan(cur_plan)
+    plans = [{"key": k, "label": PLAN_LABELS[k], "price": v} for k, v in PLAN_PRICES.items()]
     return templates.TemplateResponse(
         request, "activation.html",
-        _ctx(request, merchant=merchant, merchant_id=merchant_id, price=price),
+        _ctx(request, merchant=merchant, merchant_id=merchant_id, price=price,
+             plans=plans, current_plan=cur_plan),
     )
 
 
@@ -309,8 +312,8 @@ async def create_merchant_endpoint(request: Request):
 
 @app.post("/api/merchants/{merchant_id}/payment")
 async def submit_payment(request: Request, merchant_id: str):
-    """Le commerçant déclare avoir payé l'abonnement (référence MoMo)."""
-    from db.client import get_merchant, set_merchant_payment_ref
+    """Le commerçant déclare avoir payé l'abonnement (référence MoMo + offre choisie)."""
+    from db.client import get_merchant, set_merchant_payment_ref, set_merchant_plan
     from notify import notify_payment_submitted
 
     try:
@@ -323,6 +326,10 @@ async def submit_payment(request: Request, merchant_id: str):
             {"ok": False, "error": "Référence de paiement requise."}, status_code=400
         )
     try:
+        # L'offre est choisie à l'activation (essai = indépendant de l'offre).
+        plan = (body.get("plan") or "").strip().lower()
+        if plan in PLAN_PRICES:
+            set_merchant_plan(merchant_id, plan, immediate=True)
         set_merchant_payment_ref(merchant_id, ref)
         merchant = get_merchant(merchant_id)
         notify_payment_submitted(merchant or {"id": merchant_id}, ref)
