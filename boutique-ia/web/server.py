@@ -491,6 +491,34 @@ async def boutique_backoffice(request: Request, merchant_id: str):
     cats = [{"key": k, "label": v["label"]} for k, v in CATEGORIES.items()]
     from core.capabilities import capabilities_context, has_capability
     caps_ctx = capabilities_context(merchant) if merchant else None
+    # Guide de démarrage : rend le back-office explicite dès l'arrivée (étapes + état).
+    guide = None
+    if merchant:
+        is_active = merchant.get("status") == "active"
+        steps = [
+            {"title": "Ajoutez vos produits ou services",
+             "desc": "Pour que votre agent ait quelque chose à vendre à vos clients.",
+             "done": bool(products), "target": "produits", "cta": "Ajouter"},
+            {"title": "Composez votre vendeur",
+             "desc": "Choisissez ce que votre agent sait faire : photos, paiement à la livraison, rendez-vous…",
+             "done": bool(merchant.get("enabled_capabilities")), "target": "capacites", "cta": "Configurer"},
+            {"title": "Réglez paiement & livraison",
+             "desc": "Votre numéro Mobile Money et vos zones de livraison, pour qu'il puisse conclure les ventes.",
+             "done": bool(merchant.get("momo_number")), "target": "livraison", "cta": "Renseigner"},
+            {"title": "Testez votre agent",
+             "desc": "Discutez avec lui comme si vous étiez un client, pour voir comment il répond.",
+             "done": None, "href": f"/essai/{merchant_id}", "cta": "Tester"},
+            {"title": "Partagez votre lien WhatsApp",
+             "desc": "Envoyez ce lien à vos clients : ils tombent directement sur votre vendeur.",
+             "done": None, "target": "partager", "cta": "Voir mon lien"},
+        ]
+        if not is_active:
+            steps.append({"title": "Activez votre abonnement",
+                          "desc": "Pour que votre agent travaille pour vous 24h/24, en vrai.",
+                          "done": False, "href": f"/activation/{merchant_id}", "cta": "Activer"})
+        tracked = [s for s in steps if s["done"] is not None]
+        guide = {"steps": steps, "done": sum(1 for s in tracked if s["done"]),
+                 "total": len(tracked), "all_done": all(s["done"] for s in tracked)}
     rdv_on = bool(merchant) and has_capability(merchant, "rdv")
     appointments = []
     if rdv_on:
@@ -507,7 +535,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              plan=plan, plan_label=plan_label, plans=plans, accent=accent,
              daily_limit=daily_limit, used_today=used_today, remaining=remaining,
              categories=cats, campaigns=campaigns, inbox=inbox, caps=caps_ctx,
-             rdv_on=rdv_on, appointments=appointments,
+             guide=guide, rdv_on=rdv_on, appointments=appointments,
              prospect_daily=prospect_daily, prospect_used=prospect_used,
              prospect_remaining=max(0, prospect_daily - prospect_used)),
     )

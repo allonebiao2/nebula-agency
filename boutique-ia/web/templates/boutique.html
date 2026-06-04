@@ -69,6 +69,59 @@
   <p class="lead reveal">Gérez votre boutique en quelques gestes. Chaque changement est appliqué <b style="color:var(--txt)">tout de suite</b> par votre agent vendeur.</p>
   <div class="thread reveal"></div>
 
+  <!-- GUIDE DE DÉMARRAGE -->
+  {% if guide %}
+  <section class="guide reveal" id="guide">
+    <style>
+      .guide{border:1.5px solid var(--a,#10b981);border-radius:18px;padding:20px 20px 8px;margin-top:22px;
+             background:linear-gradient(180deg,rgba(16,185,129,.07),transparent)}
+      .g-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
+      .g-title{font-family:'Sora',sans-serif;font-weight:800;font-size:1.18rem}
+      .g-sub{color:var(--muted,#8a8a99);font-size:.9rem;margin-top:4px;max-width:560px;line-height:1.45}
+      .g-prog{flex-shrink:0;font-weight:800;font-size:.92rem;color:var(--a,#10b981);
+              border:1px solid var(--a,#10b981);border-radius:20px;padding:5px 13px}
+      .g-steps{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+      .g-step{display:flex;align-items:center;gap:13px;padding:12px 14px;border:1px solid var(--line,#26262e);
+              border-radius:13px;background:var(--panel,#15151b)}
+      .g-step.ok{opacity:.62}
+      .g-num{flex-shrink:0;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+             font-weight:800;font-size:.92rem;background:var(--line2,#23232b);color:var(--muted,#8a8a99)}
+      .g-step.ok .g-num{background:var(--a,#10b981);color:#06120d}
+      .g-num svg{width:17px;height:17px;stroke:#06120d;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+      .g-body{flex:1;min-width:0}
+      .g-t{font-weight:700;font-size:.96rem}
+      .g-d{color:var(--muted,#8a8a99);font-size:.83rem;margin-top:2px;line-height:1.4}
+      .g-step .btn{flex-shrink:0}
+      .g-done{margin:14px 0 12px;color:var(--a,#10b981);font-weight:700;font-size:.95rem}
+      @media(max-width:560px){.g-step{flex-wrap:wrap}.g-step .btn{margin-left:43px}}
+    </style>
+    <div class="g-head">
+      <div>
+        <div class="g-title">👋 Bienvenue dans votre espace</div>
+        <div class="g-sub">Votre vendeur IA répond à vos clients sur WhatsApp 24h/24. Ici, vous le réglez. Suivez ces étapes dans l'ordre :</div>
+      </div>
+      <div class="g-prog">{{ guide.done }}/{{ guide.total }} fait</div>
+    </div>
+    {% if guide.all_done %}<div class="g-done">✓ Tout est prêt ! Votre agent est opérationnel. Partagez votre lien et laissez-le vendre 🚀</div>{% endif %}
+    <div class="g-steps">
+      {% for s in guide.steps %}
+      <div class="g-step {{ 'ok' if s.done }}">
+        <div class="g-num">{% if s.done %}<svg viewBox="0 0 24 24"><use href="#i-check"/></svg>{% else %}{{ loop.index }}{% endif %}</div>
+        <div class="g-body">
+          <div class="g-t">{{ s.title }}</div>
+          <div class="g-d">{{ s.desc }}</div>
+        </div>
+        {% if s.href %}
+        <a class="btn {{ 'gho' if s.done else 'pri' }} sm" href="{{ s.href }}">{{ s.cta }}</a>
+        {% else %}
+        <button class="btn {{ 'gho' if s.done else 'pri' }} sm" type="button" onclick="goTo('{{ s.target }}')">{{ s.cta }}</button>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
   <nav class="tabs">
     <a href="#piloter">Agent</a>
     <a href="#capacites">Capacités</a>
@@ -84,7 +137,7 @@
   </nav>
 
   {% if wa_link %}
-  <div class="share bezel reveal"><div class="bezel-in">
+  <div class="share bezel reveal" id="partager"><div class="bezel-in">
     <div class="lbl"><svg viewBox="0 0 24 24"><use href="#i-link"/></svg> Votre lien WhatsApp à partager à vos clients</div>
     <div class="row">
       <input id="walink" class="mono" readonly value="{{ wa_link }}">
@@ -296,6 +349,7 @@
   <!-- INFOS -->
   <section class="reveal" id="infos">
     <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-store"/></svg></div><h2>Infos de ma boutique</h2></div>
+    <p class="hint">Les bases de votre boutique. Votre agent s'en sert pour se présenter et conseiller vos clients.</p>
     <div class="panel">
       <label>Nom de la boutique</label>
       <input id="f_business_name" value="{{ merchant.business_name or '' }}" placeholder="ex : Little Sun Pearls">
@@ -332,10 +386,24 @@
   <!-- LIVRAISON & PAIEMENT -->
   <section class="reveal" id="livraison">
     <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-truck"/></svg></div><h2>Livraison & paiement</h2></div>
+    <p class="hint">Comment vos clients reçoivent et payent. L'agent donnera ces infos automatiquement pendant la vente.</p>
     <div class="panel">
-      <label>Zones de livraison</label>
-      <input id="f_delivery_zones" value="{{ merchant.delivery_zones or '' }}" placeholder="ex : Cotonou, Calavi, Abomey-Calavi">
+      <label>Zones de livraison <span style="color:var(--mut2)">(cliquez vos villes)</span></label>
+      <div class="choices">
+        <button class="chip" type="button" onclick="addChip('f_delivery_zones','Cotonou',this)">Cotonou</button>
+        <button class="chip" type="button" onclick="addChip('f_delivery_zones','Calavi',this)">Calavi</button>
+        <button class="chip" type="button" onclick="addChip('f_delivery_zones','Abomey-Calavi',this)">Abomey-Calavi</button>
+        <button class="chip" type="button" onclick="addChip('f_delivery_zones','Porto-Novo',this)">Porto-Novo</button>
+        <button class="chip" type="button" onclick="addChip('f_delivery_zones','Parakou',this)">Parakou</button>
+        <button class="chip" type="button" onclick="addChip('f_delivery_zones','Tout le Bénin',this)">Tout le Bénin</button>
+      </div>
+      <input id="f_delivery_zones" value="{{ merchant.delivery_zones or '' }}" placeholder="ex : Cotonou · Calavi · Abomey-Calavi">
       <label>Frais de livraison</label>
+      <div class="choices">
+        <button class="chip" type="button" onclick="pick('f_delivery_fee_info','Livraison gratuite',this)">Gratuite</button>
+        <button class="chip" type="button" onclick="pick('f_delivery_fee_info','Cotonou 1000F, hors ville 2000F',this)">Cotonou 1000F / hors ville 2000F</button>
+        <button class="chip" type="button" onclick="pick('f_delivery_fee_info','Selon la distance',this)">Selon la distance</button>
+      </div>
       <input id="f_delivery_fee_info" value="{{ merchant.delivery_fee_info or '' }}" placeholder="ex : Cotonou 1000F, hors ville 2000F">
       <div class="grid2">
         <div><label>Numéro Mobile Money</label><input id="f_momo_number" value="{{ merchant.momo_number or '' }}" placeholder="ex : 97 00 00 00"></div>
@@ -363,6 +431,7 @@
   <!-- STYLE AGENT -->
   <section class="reveal" id="style">
     <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg></div><h2>Style de mon agent vendeur</h2></div>
+    <p class="hint">La personnalité de votre agent : son ton, sa langue et vos règles. C'est ce qui le rend unique à votre boutique.</p>
     <div class="panel">
       <label>Ton de l'agent</label>
       <div class="choices">
@@ -441,11 +510,32 @@
       <h2>Rendez-vous</h2>
     </div>
     <p class="hint">Réglez vos disponibilités : l'agent propose des créneaux <b>dans ces limites</b>, enregistre la demande et vous prévient (Telegram + votre WhatsApp). Vous confirmez ensuite avec le client.</p>
-    <div class="grid2">
-      <div><label>Jours d'ouverture aux RDV</label><input id="f_rdv_days" value="{{ merchant.rdv_days or '' }}" placeholder="Ex : Mer, Sam"></div>
-      <div><label>Horaires</label><input id="f_rdv_hours" value="{{ merchant.rdv_hours or '' }}" placeholder="Ex : 09:00-17:00"></div>
+    <label>Jours d'ouverture aux RDV <span style="color:var(--mut2)">(cliquez ceux qui s'appliquent)</span></label>
+    <div class="choices">
+      <button class="chip" type="button" onclick="addChip('f_rdv_days','Lun',this)">Lun</button>
+      <button class="chip" type="button" onclick="addChip('f_rdv_days','Mar',this)">Mar</button>
+      <button class="chip" type="button" onclick="addChip('f_rdv_days','Mer',this)">Mer</button>
+      <button class="chip" type="button" onclick="addChip('f_rdv_days','Jeu',this)">Jeu</button>
+      <button class="chip" type="button" onclick="addChip('f_rdv_days','Ven',this)">Ven</button>
+      <button class="chip" type="button" onclick="addChip('f_rdv_days','Sam',this)">Sam</button>
+      <button class="chip" type="button" onclick="addChip('f_rdv_days','Dim',this)">Dim</button>
     </div>
-    <div style="margin-top:12px"><label>Précision (lieu, à distance, durée…)</label><input id="f_rdv_note" value="{{ merchant.rdv_note or '' }}" placeholder="Ex : Sur place à la clinique · séance 45 min"></div>
+    <input id="f_rdv_days" value="{{ merchant.rdv_days or '' }}" placeholder="ex : Mer · Sam">
+    <label style="margin-top:12px">Horaires</label>
+    <div class="choices">
+      <button class="chip" type="button" onclick="pick('f_rdv_hours','09:00-17:00',this)">09:00-17:00</button>
+      <button class="chip" type="button" onclick="pick('f_rdv_hours','08:00-18:00',this)">08:00-18:00</button>
+      <button class="chip" type="button" onclick="pick('f_rdv_hours','10:00-16:00',this)">10:00-16:00</button>
+    </div>
+    <input id="f_rdv_hours" value="{{ merchant.rdv_hours or '' }}" placeholder="ex : 09:00-17:00">
+    <label style="margin-top:12px">Précision <span style="color:var(--mut2)">(lieu, durée…)</span></label>
+    <div class="choices">
+      <button class="chip" type="button" onclick="addChip('f_rdv_note','Sur place',this)">Sur place</button>
+      <button class="chip" type="button" onclick="addChip('f_rdv_note','À distance',this)">À distance</button>
+      <button class="chip" type="button" onclick="addChip('f_rdv_note','Séance 30 min',this)">Séance 30 min</button>
+      <button class="chip" type="button" onclick="addChip('f_rdv_note','Séance 1h',this)">Séance 1h</button>
+    </div>
+    <input id="f_rdv_note" value="{{ merchant.rdv_note or '' }}" placeholder="ex : Sur place à la clinique · séance 45 min">
     <div style="margin-top:16px"><button class="btn pri" type="button" onclick="saveMerchant(['rdv_days','rdv_hours','rdv_note'])">Enregistrer mes disponibilités</button></div>
 
     <h3 style="margin:24px 0 10px;font-size:1rem">Demandes de rendez-vous</h3>
@@ -612,6 +702,7 @@ async function api(url, method, payload){
   return r.json();
 }
 function copyLink(btn){ navigator.clipboard.writeText(document.getElementById('walink').value); btn.innerHTML='<svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Copié'; }
+function goTo(id){ const el=document.getElementById(id); if(el){ el.scrollIntoView({behavior:'smooth', block:'start'}); } }
 function previewBrand(c){ root.style.setProperty('--a', c); }
 
 /* Choix cliquables (chips) */
