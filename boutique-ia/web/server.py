@@ -443,6 +443,18 @@ async def boutique_backoffice(request: Request, merchant_id: str):
             campaigns = list_campaigns("merchant", merchant_id, limit=6)
     except Exception as e:  # noqa: BLE001
         log.warning("back-office: lecture impossible: %s", e)
+    # Réponses email à valider (mode supervisé) + état de la boîte boutique
+    from db.client import get_setting_bool, list_pending_drafts
+    inbox = {"on": False, "mode": "review", "drafts": []}
+    if merchant:
+        try:
+            inbox = {
+                "on": get_setting_bool("boutique_inbox_enabled", False),
+                "mode": (merchant.get("inbox_mode") or "review"),
+                "drafts": list_pending_drafts(merchant_id),
+            }
+        except Exception:  # noqa: BLE001
+            log.warning("back-office: lecture brouillons KO", exc_info=True)
     wa_link = _wa_link(merchant.get("code")) if merchant else ""
     remaining = -1 if daily_limit < 0 else max(0, daily_limit - used_today)
     accent = (merchant.get("brand_color") if merchant else None) or "#10b981"
@@ -454,7 +466,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              recent_orders=recent_orders, conversations=conversations,
              plan=plan, plan_label=plan_label, plans=plans, accent=accent,
              daily_limit=daily_limit, used_today=used_today, remaining=remaining,
-             categories=cats, campaigns=campaigns,
+             categories=cats, campaigns=campaigns, inbox=inbox,
              prospect_daily=prospect_daily, prospect_used=prospect_used,
              prospect_remaining=max(0, prospect_daily - prospect_used)),
     )
@@ -569,6 +581,21 @@ async def admin_dashboard(request: Request, token: str = ""):
         "twilio_ready": twilio_ready,
     }
 
+    # Boîte email entrante (recrutement → l'agent convertit ; boutiques → supervisé/auto)
+    from datetime import datetime, timezone
+    from core.inbox import configured as _inbox_configured
+    from db.client import count_inbox_out_since, count_pending_drafts
+    inbox_ready = _inbox_configured() and bool(settings.resend_api_key)
+    _today0 = datetime.now(timezone.utc).strftime("%Y-%m-%dT00:00:00+00:00")
+    inbox = {
+        "enabled": get_setting_bool("inbox_enabled", False),
+        "boutique_enabled": get_setting_bool("boutique_inbox_enabled", False),
+        "ready": inbox_ready,
+        "today": count_inbox_out_since(_today0) if inbox_ready else 0,
+        "total": count_inbox_out_since("2000-01-01T00:00:00+00:00") if inbox_ready else 0,
+        "drafts": count_pending_drafts() if inbox_ready else 0,
+    }
+
     # Cerveau d'apprentissage (auto-amélioration)
     from db.client import get_latest_lessons
     learn_enabled = get_setting_bool("learning_enabled", False)
@@ -602,6 +629,22 @@ async def admin_dashboard(request: Request, token: str = ""):
         "variants": exp_active,
         "recent_winners": list_experiments("retired", limit=4),
     }
+    # Canaux entrants — Messenger + Instagram (Meta). Liens Page/compte → boutique.
+    from core import messenger_meta, whatsapp_meta
+    from db.client import list_settings_prefix
+    code_by_id = {m.get("id"): m.get("code") for m in merchants}
+    links = []
+    for s in list_settings_prefix("page_merchant_"):
+        pid = (s.get("key") or "").replace("page_merchant_", "", 1)
+        val = (s.get("value") or "").strip()
+        if pid and val:
+            links.append({"page_id": pid, "code": val})
+    channels = {
+        "messenger_ready": messenger_meta.configured(),
+        "whatsapp_ready": whatsapp_meta.configured(),
+        "links": links,
+        "codes": sorted(c for c in code_by_id.values() if c),
+    }
     return templates.TemplateResponse(
         request, "admin.html",
         _ctx(request, token=token, rows=rows, pending=pending, glob=glob,
@@ -609,7 +652,7 @@ async def admin_dashboard(request: Request, token: str = ""):
              prospect_used=prospect_used, prospect_daily=settings.prospection_admin_daily,
              auto_enabled=auto_enabled, auto_daily=auto_daily,
              total_recruited=total_recruited, learn=learn, followups=followups,
-             ceo=ceo, experiments=experiments),
+             ceo=ceo, experiments=experiments, channels=channels, inbox=inbox),
     )
 
 
@@ -910,6 +953,33 @@ async def admin_followups_run(request: Request, bg: BackgroundTasks):
     return {"ok": True, "message": "Relances lancées — résumé sur Telegram si des envois partent."}
 
 
+@app.post("/api/admin/inbox/settings")
+async def admin_inbox_settings(request: Request):
+    """Autorise / met en pause les réponses email entrantes (OFF par défaut)."""
+    from db.client import set_setting
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    if "enabled" in body:
+        set_setting("inbox_enabled", "true" if body.get("enabled") else "false")
+    if "boutique_enabled" in body:
+        set_setting("boutique_inbox_enabled", "true" if body.get("boutique_enabled") else "false")
+    return {"ok": True}
+
+
+@app.post("/api/admin/inbox/run")
+async def admin_inbox_run(request: Request, bg: BackgroundTasks):
+    """Lit la boîte et répond aux prospects maintenant (test). Garde-fous appliqués."""
+    from core.inbox import run_inbox
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    bg.add_task(run_inbox)
+    return {"ok": True, "message": "Boîte email vérifiée — l'agent répond aux prospects connus."}
+
+
 CEO_INTERVAL_DAYS = 7  # revue stratégique : 1×/semaine
 
 
@@ -980,6 +1050,31 @@ async def admin_experiments_settings(request: Request):
     if "enabled" in body:
         set_setting("experiments_enabled", "true" if body.get("enabled") else "false")
     return {"ok": True}
+
+
+@app.post("/api/admin/messenger/link")
+async def admin_messenger_link(request: Request):
+    """Associe une Page Facebook / compte Instagram à une boutique (par son code).
+
+    body : {page_id, code}. Si `code` est vide → on supprime l'association (valeur vide).
+    Permet aux visiteurs Messenger/IG d'atteindre la bonne boutique sans taper de code.
+    """
+    from db.client import get_merchant_by_code, set_setting
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    page_id = str(body.get("page_id") or "").strip()
+    code = str(body.get("code") or "").strip().lower()
+    if not page_id:
+        return JSONResponse({"ok": False, "error": "page_id requis."}, status_code=400)
+    if code and not get_merchant_by_code(code):
+        return JSONResponse({"ok": False, "error": f"Aucune boutique au code « {code} »."},
+                            status_code=404)
+    set_setting(f"page_merchant_{page_id}", code)
+    return {"ok": True, "page_id": page_id, "code": code}
 
 
 @app.post("/api/admin/experiments/run")
@@ -1204,6 +1299,13 @@ async def _auto_prospection_loop():
         except Exception:  # noqa: BLE001
             log.warning("followups loop", exc_info=True)
         try:
+            # Boîte email entrante : l'agent répond aux réponses de recrutement.
+            # OFF par défaut ; gating + garde-fous gérés dans run_inbox.
+            from core.inbox import run_inbox
+            await asyncio.to_thread(run_inbox)
+        except Exception:  # noqa: BLE001
+            log.warning("inbox loop", exc_info=True)
+        try:
             # Cerveau CEO : revue stratégique autonome 1×/semaine (il PROPOSE, Mongazi valide).
             if await asyncio.to_thread(_ceo_due):
                 log.info("ceo: revue hebdomadaire autonome")
@@ -1296,6 +1398,69 @@ async def update_merchant_endpoint(request: Request, merchant_id: str):
         log.exception("update merchant échoué")
         return JSONResponse({"ok": False, "error": str(e)[:300]}, status_code=500)
     return {"ok": True, "merchant": merchant}
+
+
+@app.post("/api/merchants/{merchant_id}/inbox/mode")
+async def merchant_inbox_mode(request: Request, merchant_id: str):
+    """Le commerçant choisit comment l'agent gère ses réponses email :
+    'review' (il valide chaque réponse) ou 'auto' (l'agent envoie directement)."""
+    from db.client import set_merchant_inbox_mode
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    mode = "auto" if str(body.get("mode")).strip().lower() == "auto" else "review"
+    try:
+        set_merchant_inbox_mode(merchant_id, mode)
+    except Exception as e:  # noqa: BLE001
+        return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
+    return {"ok": True, "mode": mode}
+
+
+@app.post("/api/merchants/{merchant_id}/inbox/draft/{row_id}")
+async def merchant_inbox_draft(request: Request, merchant_id: str, row_id: str):
+    """Valide (envoie), modifie+envoie, ou rejette un brouillon de réponse.
+
+    body : {action:'send'|'reject', body?:'texte modifié'}.
+    """
+    from db.client import (get_inbox_row, get_merchant, record_inbox,
+                           set_inbox_row)
+    from core.prospecting import merchant_email_alias, send_email, _unsub_footer
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    action = str(body.get("action") or "send").strip().lower()
+    row = get_inbox_row(row_id)
+    if not row or row.get("merchant_id") != merchant_id or row.get("status") != "draft":
+        return JSONResponse({"ok": False, "error": "Brouillon introuvable."}, status_code=404)
+
+    if action == "reject":
+        set_inbox_row(row_id, {"status": "rejected"})
+        return {"ok": True, "action": "reject"}
+
+    # Envoi : texte éventuellement modifié par le commerçant
+    text = (body.get("body") or row.get("body") or "").strip()
+    to_email = row.get("prospect_email") or ""
+    merchant = get_merchant(merchant_id) or {}
+    alias = merchant_email_alias(merchant)
+    subject = row.get("subject") or "Votre message"
+    full = text + "\n\n" + _unsub_footer(to_email)
+    res = send_email(to_email, subject, full, reply_to=alias,
+                     from_name=merchant.get("business_name") or "Boutique",
+                     from_address=alias)
+    if not res.get("ok"):
+        return JSONResponse({"ok": False, "error": res.get("error") or "Envoi impossible."},
+                            status_code=502)
+    # Le brouillon devient la réponse envoyée
+    set_inbox_row(row_id, {"status": "sent", "body": text})
+    return {"ok": True, "action": "send"}
 
 
 @app.post("/api/merchants/{merchant_id}/products")
@@ -1616,6 +1781,84 @@ async def whatsapp_meta_webhook(request: Request, bg: BackgroundTasks):
         return {"status": "ignored"}
     for msg in whatsapp_meta.parse_incoming(payload):
         bg.add_task(_process_meta_message, msg)
+    return {"status": "ok"}
+
+
+# ---------------------------------------------------------------------------
+# Inbound Messenger + Instagram Direct (Meta Messenger Platform). Dormant tant
+# que le PAGE token n'est pas configuré. Réutilise _agent_handle (canal-agnostique).
+# ---------------------------------------------------------------------------
+
+@app.get("/api/messenger/meta")
+async def messenger_meta_verify(request: Request):
+    """Vérification d'abonnement du webhook Messenger/Instagram (hub.challenge)."""
+    from core import messenger_meta
+    qp = request.query_params
+    challenge = messenger_meta.verify_webhook(
+        qp.get("hub.mode"), qp.get("hub.verify_token"), qp.get("hub.challenge"))
+    if challenge is not None:
+        return Response(content=challenge, media_type="text/plain")
+    return Response(content="Forbidden", status_code=403)
+
+
+def _process_messenger_message(msg: dict) -> None:
+    """Traite UN message Messenger/Instagram (tâche de fond) : agent → réponse."""
+    from core import messenger_meta
+    sender = (msg.get("from") or "").strip()
+    if not sender:
+        return
+    platform = msg.get("platform") or "messenger"
+    customer = f"{platform}:{sender}"  # distinct des clients WhatsApp (whatsapp:+…)
+
+    # Résolution Page/compte IG → boutique : un visiteur Messenger/IG dit juste
+    # « Bonjour » (pas de code vendora:). On mappe l'ID de la Page à un code boutique
+    # via bia_settings (clé page_merchant_{page_id}) et on pré-amorce la session.
+    page_id = (msg.get("page_id") or "").strip()
+    if page_id:
+        try:
+            from db.client import (get_merchant_by_code, get_setting,
+                                   get_wa_session_merchant_id, upsert_wa_session)
+            if not get_wa_session_merchant_id(customer):
+                code = get_setting(f"page_merchant_{page_id}")
+                if code:
+                    mer = get_merchant_by_code(str(code).strip().lower())
+                    if mer:
+                        upsert_wa_session(customer, mer["id"])
+        except Exception:  # noqa: BLE001
+            log.warning("messenger page→boutique mapping échoué", exc_info=True)
+
+    has_audio = msg.get("type") == "audio" and bool(msg.get("audio_url"))
+    transcribe_fn = None
+    if has_audio:
+        from core.transcribe import transcribe_bytes
+        aurl, actype = msg.get("audio_url"), msg.get("audio_ctype")
+
+        def transcribe_fn():  # noqa: E306
+            got = messenger_meta.fetch_media(aurl)
+            return transcribe_bytes(got[0], got[1]) if got else None
+
+    try:
+        res = _agent_handle(customer, msg.get("text") or "", has_audio=has_audio,
+                            transcribe_fn=transcribe_fn)
+    except Exception:  # noqa: BLE001
+        log.exception("messenger reply échoué")
+        messenger_meta.send_text(sender, "Un instant, je reviens vers vous 🙏")
+        return
+    messenger_meta.send_text(sender, res["text"])
+    for url in (res.get("media") or []):
+        messenger_meta.send_image(sender, url)
+
+
+@app.post("/api/messenger/meta")
+async def messenger_meta_webhook(request: Request, bg: BackgroundTasks):
+    """Reçoit les messages Messenger + Instagram Direct. Répond 200 vite, traite en fond."""
+    from core import messenger_meta
+    try:
+        payload = await request.json()
+    except Exception:
+        return {"status": "ignored"}
+    for msg in messenger_meta.parse_incoming(payload):
+        bg.add_task(_process_messenger_message, msg)
     return {"status": "ok"}
 
 

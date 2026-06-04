@@ -316,6 +316,47 @@ def followup_message(merchant: dict, products: list[dict], history: list[dict],
     return _text_of(resp)
 
 
+def email_reply(merchant: dict, products: list[dict], thread: list[dict],
+                lessons: str | None = None) -> str:
+    """Rédige la réponse EMAIL d'une boutique à un prospect qui a répondu.
+
+    `thread` = fil [{direction:'in'|'out', body}] du plus ancien au récent. L'agent
+    vend les produits/services de la boutique, répond à la question/objection, et
+    pousse vers l'achat/la commande. Texte email (un peu plus posé que WhatsApp),
+    signé du nom de la boutique. Retourne le corps en texte brut.
+    """
+    settings.require("anthropic_api_key")
+    client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
+
+    system_text = build_system_prompt(merchant, products, lessons=lessons)
+    msgs = []
+    for m in thread:
+        role = "user" if m.get("direction") == "in" else "assistant"
+        body = (m.get("body") or "").strip()
+        if body:
+            msgs.append({"role": role, "content": body})
+    while msgs and msgs[0]["role"] != "user":
+        msgs.pop(0)
+    if not msgs:
+        msgs = [{"role": "user", "content": "Bonjour, j'ai vu votre message."}]
+
+    name = merchant.get("business_name") or "la boutique"
+    consigne = (
+        "INSTRUCTION INTERNE (ne pas mentionner ceci) : tu réponds par EMAIL à ce "
+        "prospect professionnel. Réponds précisément à sa question/objection, mets en "
+        "avant ce qui l'intéresse dans notre offre, et propose une étape concrète "
+        "(commande, devis, rendez-vous). Ton chaleureux et professionnel, 4-6 phrases, "
+        f"sans jargon. Termine par une signature simple « — {name} ». Écris UNIQUEMENT "
+        "le corps de l'email (pas d'objet)."
+    )
+    msgs = msgs + [{"role": "user", "content": consigne}]
+    system = [{"type": "text", "text": system_text, "cache_control": {"type": "ephemeral"}}]
+    resp = client.messages.create(
+        model=settings.claude_model, max_tokens=500, system=system, messages=msgs,
+    )
+    return _text_of(resp) or f"Merci pour votre message ! Dites-nous comment nous pouvons vous aider. — {name}"
+
+
 def _to_anthropic_messages(history: list[dict]) -> list[dict]:
     """Convertit l'historique (role customer/assistant) en messages Anthropic."""
     msgs = []

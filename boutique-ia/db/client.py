@@ -196,6 +196,16 @@ def get_setting_int(key: str, default: int) -> int:
         return default
 
 
+def list_settings_prefix(prefix: str) -> list[dict[str, Any]]:
+    """Réglages dont la clé commence par `prefix` (ex: 'page_merchant_'). [] si KO."""
+    try:
+        r = (get_db().table("bia_settings").select("key,value")
+             .like("key", f"{prefix}%").execute())
+        return r.data or []
+    except Exception:  # noqa: BLE001
+        return []
+
+
 def list_all_merchants() -> list[dict[str, Any]]:
     """Toutes les boutiques, de la plus récente à la plus ancienne (admin étage 4)."""
     db = get_db()
@@ -460,6 +470,133 @@ def blacklist_prospect_email(email: str, reason: str = "bounce") -> int:
         .eq("email", email).execute()
     )
     return len(r.data or [])
+
+
+# ---------------------------------------------------------------------------
+# Boîte email entrante (bia_inbox) — réponses de prospection RECRUTEMENT
+# ---------------------------------------------------------------------------
+
+def find_recruitment_prospect(email: str) -> dict[str, Any] | None:
+    """Le prospect (recrutement) qu'on a contacté à cet email, s'il existe. None sinon.
+
+    Sécurité : l'agent ne répond QU'AUX gens qu'on a réellement contactés (pas aux
+    inconnus / newsletters / spam qui atterriraient dans la boîte).
+    """
+    email = (email or "").strip().lower()
+    if not email:
+        return None
+    r = (get_db().table("bia_prospects").select("*")
+         .eq("owner_type", "admin").eq("email", email)
+         .order("created_at", desc=True).limit(1).execute())
+    return r.data[0] if r.data else None
+
+
+def find_merchant_prospect(merchant_id: str, email: str) -> dict[str, Any] | None:
+    """Le prospect d'une BOUTIQUE à cet email (owner_type='merchant'). None sinon."""
+    email = (email or "").strip().lower()
+    if not (merchant_id and email):
+        return None
+    r = (get_db().table("bia_prospects").select("*")
+         .eq("owner_type", "merchant").eq("merchant_id", merchant_id).eq("email", email)
+         .order("created_at", desc=True).limit(1).execute())
+    return r.data[0] if r.data else None
+
+
+def inbox_message_seen(message_id: str) -> bool:
+    """Ce Message-ID entrant a-t-il déjà été traité ? (dédup IMAP)."""
+    mid = (message_id or "").strip()
+    if not mid:
+        return False
+    r = (get_db().table("bia_inbox").select("id", count="exact", head=True)
+         .eq("message_id", mid).execute())
+    return (r.count or 0) > 0
+
+
+def record_inbox(prospect_email: str, direction: str, subject: str | None,
+                 body: str | None, message_id: str | None = None,
+                 merchant_id: str | None = None, status: str = "sent") -> str | None:
+    """Trace un email entrant ('in') ou une réponse ('out'). Retourne l'id de la ligne.
+
+    `merchant_id` None = recrutement (admin) ; sinon = réponse pour une boutique.
+    `status` 'draft' = brouillon en attente de validation du commerçant.
+    """
+    r = get_db().table("bia_inbox").insert({
+        "prospect_email": (prospect_email or "").strip().lower(),
+        "merchant_id": merchant_id,
+        "direction": direction,
+        "status": status,
+        "subject": (subject or "")[:300],
+        "body": (body or "")[:8000],
+        "message_id": (message_id or None),
+    }).execute()
+    return (r.data[0]["id"] if r.data else None)
+
+
+def list_inbox_thread(prospect_email: str, merchant_id: str | None = None,
+                      limit: int = 20) -> list[dict[str, Any]]:
+    """Le fil d'échanges avec ce prospect (du plus ancien au récent).
+
+    merchant_id None = fil de recrutement ; sinon = fil de la boutique. On exclut les
+    brouillons rejetés du contexte.
+    """
+    email = (prospect_email or "").strip().lower()
+    if not email:
+        return []
+    q = (get_db().table("bia_inbox").select("direction,subject,body,status,created_at")
+         .eq("prospect_email", email).neq("status", "rejected"))
+    q = q.eq("merchant_id", merchant_id) if merchant_id else q.is_("merchant_id", "null")
+    r = q.order("created_at", desc=True).limit(limit).execute()
+    return list(reversed(r.data or []))
+
+
+def list_pending_drafts(merchant_id: str, limit: int = 50) -> list[dict[str, Any]]:
+    """Brouillons de réponse en attente de validation pour cette boutique."""
+    r = (get_db().table("bia_inbox").select("*")
+         .eq("merchant_id", merchant_id).eq("direction", "out").eq("status", "draft")
+         .order("created_at", desc=True).limit(limit).execute())
+    return r.data or []
+
+
+def get_inbox_row(row_id: str) -> dict[str, Any] | None:
+    r = get_db().table("bia_inbox").select("*").eq("id", row_id).limit(1).execute()
+    return r.data[0] if r.data else None
+
+
+def set_inbox_row(row_id: str, fields: dict[str, Any]) -> None:
+    get_db().table("bia_inbox").update(fields).eq("id", row_id).execute()
+
+
+def count_pending_drafts(merchant_id: str | None = None) -> int:
+    """Nombre de brouillons à valider (toutes boutiques si merchant_id None)."""
+    q = (get_db().table("bia_inbox").select("id", count="exact", head=True)
+         .eq("direction", "out").eq("status", "draft"))
+    if merchant_id:
+        q = q.eq("merchant_id", merchant_id)
+    return q.execute().count or 0
+
+
+def set_merchant_inbox_mode(merchant_id: str, mode: str) -> None:
+    """Mode de réponse email d'une boutique : 'review' (supervisé) ou 'auto'."""
+    mode = "auto" if str(mode).strip().lower() == "auto" else "review"
+    get_db().table("bia_merchants").update({"inbox_mode": mode}).eq("id", merchant_id).execute()
+
+
+def count_inbox_out_since(iso_ts: str) -> int:
+    """Nombre de réponses envoyées par l'agent depuis `iso_ts` (plafond/jour)."""
+    r = (get_db().table("bia_inbox").select("id", count="exact", head=True)
+         .eq("direction", "out").gte("created_at", iso_ts).execute())
+    return r.count or 0
+
+
+def inbox_out_recently(prospect_email: str, since_iso: str) -> bool:
+    """L'agent a-t-il déjà répondu à ce prospect depuis `since_iso` ? (anti-boucle)."""
+    email = (prospect_email or "").strip().lower()
+    if not email:
+        return False
+    r = (get_db().table("bia_inbox").select("id", count="exact", head=True)
+         .eq("prospect_email", email).eq("direction", "out")
+         .gte("created_at", since_iso).execute())
+    return (r.count or 0) > 0
 
 
 def get_latest_merchant() -> dict[str, Any] | None:

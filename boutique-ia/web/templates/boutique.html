@@ -76,6 +76,7 @@
     <a href="#livraison">Livraison</a>
     <a href="#style">Style</a>
     <a href="#prospection">Prospection</a>
+    {% if inbox.on %}<a href="#reponses">Réponses{% if inbox.drafts %} ({{ inbox.drafts|length }}){% endif %}</a>{% endif %}
     <a href="#activite">Activité</a>
     <a href="#forfaits">Forfait</a>
   </nav>
@@ -421,6 +422,42 @@
     {% endif %}
   </section>
 
+  <!-- RÉPONSES EMAIL À VALIDER -->
+  {% if inbox.on %}
+  <section class="reveal" id="reponses">
+    <div class="shead">
+      <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-mail"/></svg></div>
+      <h2>Réponses à vos prospects</h2>
+    </div>
+    <p class="hint">Quand un prospect répond à votre email, votre agent <b>prépare une réponse pour vous</b>. En mode <b>supervisé</b>, vous validez (ou modifiez) avant l'envoi. En mode <b>automatique</b>, l'agent répond seul.</p>
+    <div class="panel">
+      <label class="switch">
+        <input type="checkbox" id="inboxAuto" {{ 'checked' if inbox.mode == 'auto' }} onchange="setInboxMode(this.checked)">
+        <span class="track"></span>
+        <span class="lbl-t">Réponses automatiques<small>Si activé, l'agent envoie sans vous demander. Sinon, il vous soumet chaque réponse.</small></span>
+      </label>
+    </div>
+
+    {% if inbox.drafts %}
+    <div class="panel" style="margin-top:14px">
+      <div class="ah">À valider ({{ inbox.drafts|length }})</div>
+      {% for d in inbox.drafts %}
+      <div class="draft" data-id="{{ d.id }}" style="border-top:1px solid var(--hair);padding:14px 0">
+        <div class="ad" style="margin-bottom:6px"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" style="vertical-align:-2px"><use href="#i-mail"/></svg> À <b>{{ d.prospect_email }}</b> · {{ d.subject }}</div>
+        <textarea id="dtxt-{{ d.id }}" rows="6" style="width:100%;resize:vertical">{{ d.body }}</textarea>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn acc sm" type="button" onclick="sendDraft('{{ d.id }}')"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Valider &amp; envoyer</button>
+          <button class="btn gho sm" type="button" onclick="rejectDraft('{{ d.id }}')">Rejeter</button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="panel" style="margin-top:14px"><div class="hint" style="margin:0">Aucune réponse en attente.</div></div>
+    {% endif %}
+  </section>
+  {% endif %}
+
   <!-- FORFAITS -->
   <section class="reveal" id="forfaits">
     <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-rocket"/></svg></div><h2>Mon forfait & fonctionnalités</h2></div>
@@ -531,6 +568,24 @@ async function uploadPhoto(input, pid){
     const d = await r.json();
     if(d.ok){ notify('Photo ajoutée'); setTimeout(()=>location.reload(), 700); } else notify(d.error||'Erreur', true);
   }catch(ex){ notify(ex.message, true); }
+}
+
+/* Réponses email à valider */
+async function setInboxMode(auto){
+  const d = await api(`/api/merchants/${MID}/inbox/mode`,'POST',{mode: auto?'auto':'review'});
+  notify(d.ok ? (auto?'Réponses automatiques activées':'Mode supervisé activé') : (d.error||'Erreur'), !d.ok);
+}
+async function sendDraft(id){
+  const txt = (document.getElementById('dtxt-'+id)||{}).value || '';
+  const d = await api(`/api/merchants/${MID}/inbox/draft/${id}`,'POST',{action:'send', body:txt});
+  if(d.ok){ notify('Réponse envoyée'); const el=document.querySelector('.draft[data-id="'+id+'"]'); if(el) el.remove(); }
+  else notify(d.error||'Erreur', true);
+}
+async function rejectDraft(id){
+  if(!confirm('Rejeter cette réponse ?')) return;
+  const d = await api(`/api/merchants/${MID}/inbox/draft/${id}`,'POST',{action:'reject'});
+  if(d.ok){ notify('Brouillon rejeté'); const el=document.querySelector('.draft[data-id="'+id+'"]'); if(el) el.remove(); }
+  else notify(d.error||'Erreur', true);
 }
 
 /* Piloter */

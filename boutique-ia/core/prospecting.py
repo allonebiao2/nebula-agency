@@ -208,15 +208,61 @@ def personalize(template: str, prospect: dict[str, Any]) -> str:
     return template.replace("[NOM]", name).replace("{nom}", name)
 
 
+def compose_recruitment_reply(thread: list[dict[str, Any]], prospect: dict[str, Any]) -> str:
+    """Rédige la réponse de l'agent à un prospect (recrutement) qui a répondu.
+
+    `thread` = fil d'échanges [{direction:'in'|'out', subject, body}], du plus ancien
+    au plus récent. Objectif : répondre à sa question/objection et l'amener à s'inscrire
+    à Vendora. Texte court, chaleureux, signé — SANS le pied de page de désinscription
+    (ajouté à l'envoi). Retourne le corps en texte brut.
+    """
+    name = prospect.get("name") or "vous"
+    sector = prospect.get("sector") or ""
+    convo = []
+    for m in thread[-8:]:
+        who = "PROSPECT" if m.get("direction") == "in" else "TOI (Vendora)"
+        body = (m.get("body") or "").strip()
+        if body:
+            convo.append(f"{who} : {body[:1200]}")
+    transcript = "\n\n".join(convo) or "(le prospect vient de répondre)"
+
+    system = (
+        "Tu es Mongazi, fondateur de NEBULA Agency (Cotonou). Tu réponds par EMAIL à un "
+        "commerçant qui a répondu à ta proposition VENDORA : un agent vendeur doté "
+        "d'intelligence artificielle qui répond et vend aux clients sur WhatsApp 24h/24, "
+        "à la place du commerçant. Inscription en ligne, paiement Mobile Money, à partir de "
+        "5 000 F CFA/mois. Page : https://vendora-agent.up.railway.app\n"
+        "Style : français d'Afrique de l'Ouest, direct, chaleureux, tutoiement, court "
+        "(5 phrases max), 1 emoji maximum, jamais de jargon ni de ton « IA ». Réponds "
+        "précisément à sa question/objection, lève le doute, et termine par UN appel à "
+        "l'action simple (s'inscrire via le lien, ou poser sa dernière question). Si le "
+        "prospect n'est pas intéressé ou demande l'arrêt, reste poli et n'insiste pas. "
+        "Signe « — Mongazi · NEBULA Agency ». Réponds UNIQUEMENT le corps de l'email "
+        "(pas d'objet, pas de JSON)."
+    )
+    user = (f"Prospect : {name}{f' (secteur {sector})' if sector else ''}.\n\n"
+            f"Échange jusqu'ici :\n{transcript}\n\nRédige ta réponse.")
+    client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
+    resp = client.messages.create(
+        model=settings.writer_model, max_tokens=600,
+        system=system, messages=[{"role": "user", "content": user}],
+    )
+    text = "".join(b.text for b in resp.content if getattr(b, "type", None) == "text").strip()
+    return text or ("Merci pour ton retour ! Vendora s'installe en quelques minutes sur "
+                    "https://vendora-agent.up.railway.app — dis-moi si tu veux que je "
+                    "t'accompagne. — Mongazi · NEBULA Agency")
+
+
 # --- Envoi email ------------------------------------------------------------
 # Resend (API HTTP, port 443) = backend par défaut, fonctionne sur Railway.
 # Gmail SMTP (port 465) gardé en repli LOCAL uniquement (bloqué par Railway).
 def _send_resend(to: str, subject: str, body: str, reply_to: str | None,
-                 from_name: str) -> dict[str, Any]:
+                 from_name: str, from_address: str | None = None) -> dict[str, Any]:
     if not settings.resend_api_key:
         return {"ok": False, "error": "RESEND_API_KEY manquante"}
+    sender = from_address or settings.email_from_address  # doit être sur le domaine vérifié
     payload = {
-        "from": f"{from_name or settings.email_from_name} <{settings.email_from_address}>",
+        "from": f"{from_name or settings.email_from_name} <{sender}>",
         "to": [to],
         "subject": subject,
         "text": body,
@@ -260,11 +306,29 @@ def _send_gmail_smtp(to: str, subject: str, body: str, reply_to: str | None,
         return {"ok": False, "error": str(e)[:200]}
 
 
+def merchant_email_alias(merchant: dict[str, Any]) -> str | None:
+    """Adresse email « pro » d'une boutique sur le domaine vérifié, ex: code@domaine.
+
+    Sert d'expéditeur ET d'adresse de réponse pour sa prospection → les réponses
+    reviennent sur notre domaine (lisibles par l'agent). None si pas de code.
+    """
+    code = (merchant.get("code") or "").strip().lower()
+    if not code:
+        return None
+    domain = settings.email_from_address.split("@")[-1] if "@" in settings.email_from_address else "nebula-agency.online"
+    return f"{code}@{domain}"
+
+
 def send_email(to: str, subject: str, body: str, *, reply_to: str | None = None,
-               from_name: str = "Mongazi · NEBULA Agency") -> dict[str, Any]:
-    """Envoie via Resend (défaut). Repli Gmail SMTP si pas de clé Resend (local)."""
+               from_name: str = "Mongazi · NEBULA Agency",
+               from_address: str | None = None) -> dict[str, Any]:
+    """Envoie via Resend (défaut). Repli Gmail SMTP si pas de clé Resend (local).
+
+    `from_address` doit être sur le domaine vérifié (sinon Resend refuse). Permet à
+    chaque boutique d'envoyer depuis son alias `code@domaine`.
+    """
     if settings.resend_api_key:
-        return _send_resend(to, subject, body, reply_to, from_name)
+        return _send_resend(to, subject, body, reply_to, from_name, from_address)
     return _send_gmail_smtp(to, subject, body, reply_to, from_name)
 
 
@@ -273,7 +337,8 @@ SEND_DELAY_S = 6  # délai court entre 2 envois (anti-spam)
 
 
 def execute_campaign(campaign_id: str, plan_daily: int, *,
-                     reply_to: str | None = None, from_name: str = "Mongazi · NEBULA Agency") -> None:
+                     reply_to: str | None = None, from_name: str = "Mongazi · NEBULA Agency",
+                     from_address: str | None = None) -> None:
     """Envoie les emails d'une campagne en respectant les quotas (plan + Gmail global)."""
     from datetime import datetime, timezone
 
@@ -319,7 +384,7 @@ def execute_campaign(campaign_id: str, plan_daily: int, *,
             body = personalize(body_tpl, p) + "\n\n" + _unsub_footer(email)
             res = send_email(
                 email, personalize(subject_tpl, p), body,
-                reply_to=reply_to, from_name=from_name,
+                reply_to=reply_to, from_name=from_name, from_address=from_address,
             )
             if res.get("ok"):
                 mark_prospect(p["id"], "sent",
@@ -345,13 +410,24 @@ def run_full_campaign(campaign_id: str, mode: str, category: str, city: str,
 
     reply_to = None
     from_name = "Mongazi · NEBULA Agency"
+    from_address = None
     try:
         # 1. Contexte email
         if mode == "client" and merchant_id:
             m = get_merchant(merchant_id) or {}
             ctx = m
-            reply_to = m.get("owner_email") or settings.email_reply_to or None
             from_name = m.get("business_name") or from_name
+            # Si la boîte boutique est ACTIVÉE (catch-all configuré) → la boutique
+            # prospecte depuis son alias `code@domaine` et les réponses reviennent
+            # chez nous (l'agent les gère). Sinon, comportement actuel : réponses
+            # directes dans la boîte du commerçant.
+            from db.client import get_setting_bool
+            alias = merchant_email_alias(m)
+            if alias and get_setting_bool("boutique_inbox_enabled", False):
+                from_address = alias
+                reply_to = alias
+            else:
+                reply_to = m.get("owner_email") or settings.email_reply_to or None
         else:
             ctx = {}
             reply_to = settings.email_reply_to or None
@@ -366,7 +442,8 @@ def run_full_campaign(campaign_id: str, mode: str, category: str, city: str,
             "subject": tpl["subject"], "body": tpl["body"], "status": "ready",
         })
         # 4. Envoi
-        execute_campaign(campaign_id, plan_daily, reply_to=reply_to, from_name=from_name)
+        execute_campaign(campaign_id, plan_daily, reply_to=reply_to,
+                         from_name=from_name, from_address=from_address)
     except Exception as e:  # noqa: BLE001
         log.exception("run_full_campaign KO")
         update_campaign(campaign_id, {"status": "failed"})

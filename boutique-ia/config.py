@@ -69,6 +69,13 @@ class Settings(BaseSettings):
     whatsapp_app_secret: str = ""         # secret de l'app (signature des webhooks, optionnel)
     whatsapp_graph_version: str = "v21.0"
 
+    # --- Messenger + Instagram Direct (inbound, même Graph API que WhatsApp) ---
+    # Dormant tant que `messenger_page_token` n'est pas posé : l'agent ne répond
+    # ni sur Messenger ni sur Instagram. Le PAGE token couvre les deux (l'IG est
+    # rattaché à la Page Facebook). Le jeton de vérif retombe sur celui de WhatsApp.
+    messenger_page_token: str = ""        # Page Access Token (longue durée, System User)
+    messenger_verify_token: str = ""      # jeton de vérif du webhook (sinon = whatsapp_verify_token)
+
     # --- Transcription des messages vocaux (booster) — Groq Whisper (gratuit) ---
     groq_api_key: str = ""
     groq_whisper_model: str = "whisper-large-v3-turbo"

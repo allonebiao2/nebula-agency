@@ -176,6 +176,8 @@
     background:#6b7682;transition:.3s var(--ease)}
   .switch input:checked + .track{background:var(--a-soft);border-color:var(--a)}
   .switch input:checked + .track::after{transform:translateX(30px);background:var(--a);box-shadow:0 0 14px var(--a-glow)}
+  .lbl-t{margin-left:12px;font-weight:600;font-size:.92rem;display:flex;flex-direction:column;gap:2px}
+  .lbl-t small{font-weight:400;color:var(--mut);font-size:.78rem}
 
   /* Buttons */
   .btn{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.92rem;letter-spacing:.03em;
@@ -213,6 +215,11 @@
   .badge.active{color:var(--a);border-color:var(--a-line);background:var(--a-soft)}
   .badge.wait{color:var(--warn);border-color:rgba(255,207,107,.3);background:rgba(255,207,107,.08)}
   .badge.susp{color:var(--danger);border-color:rgba(255,107,125,.3);background:rgba(255,107,125,.08)}
+  .chrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .linkform{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .linkform input{flex:1;min-width:160px;background:var(--card2,#13131a);border:1px solid var(--line2);border-radius:10px;padding:9px 12px;color:var(--ink,#eee);font-size:.86rem}
+  .linkform input:focus{outline:none;border-color:var(--a-line)}
+  .links{margin-top:12px;display:flex;flex-direction:column;gap:8px}
   .ref{font-family:'Orbitron',sans-serif;font-size:.72rem;color:var(--warn)}
   .ah{font-family:'Orbitron',sans-serif;font-size:.72rem;color:var(--mut);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
   .empty{color:var(--mut);text-align:center;padding:24px;border:1px dashed var(--line);border-radius:14px}
@@ -266,6 +273,8 @@
   <a href="#sec-learn">Apprentissage</a>
   <a href="#sec-exp">Expériences</a>
   <a href="#sec-relances">Relances</a>
+  <a href="#sec-canaux">Canaux</a>
+  <a href="#sec-inbox">Boîte email</a>
   <a href="#sec-pilote">Recrutement</a>
   {% if pending %}<a href="#sec-paiements">Paiements</a>{% endif %}
   <a href="#sec-boutiques">Boutiques</a>
@@ -493,6 +502,78 @@
     </div>
   </section>
 
+  <!-- CANAUX ENTRANTS — Messenger + Instagram -->
+  <section class="rv" id="sec-canaux">
+    <div class="shead">
+      <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-mail"/></svg></div>
+      <h2>Canaux entrants</h2>
+    </div>
+    <p class="hint">L'agent répond aussi sur <b>Facebook Messenger</b> et <b>Instagram Direct</b> (même cerveau, même catalogue que WhatsApp). Pour qu'un visiteur qui dit juste « Bonjour » sur une Page atteigne la bonne boutique, associe l'<b>ID de la Page / du compte Instagram</b> au <b>code</b> de la boutique. Dormant tant que le jeton Meta (Page) n'est pas posé sur Railway.</p>
+    <div class="panel">
+      <div class="chrow">
+        <span class="badge {{ 'active' if channels.messenger_ready else 'wait' }}">Messenger / Instagram : {{ 'connecté' if channels.messenger_ready else 'dormant' }}</span>
+        <span class="badge {{ 'active' if channels.whatsapp_ready else 'wait' }}">WhatsApp Meta : {{ 'connecté' if channels.whatsapp_ready else 'dormant' }}</span>
+      </div>
+      <div class="linkform">
+        <input id="pgId" type="text" placeholder="ID de la Page / compte Instagram" autocomplete="off">
+        <input id="pgCode" type="text" placeholder="code boutique (ex : test)" autocomplete="off" list="codeList">
+        <datalist id="codeList">{% for c in channels.codes %}<option value="{{ c }}">{% endfor %}</datalist>
+        <button class="btn acc sm" type="button" onclick="linkPage()"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Associer</button>
+      </div>
+      {% if channels.links %}
+      <div class="links">
+        {% for l in channels.links %}
+        <div class="mrow">
+          <div class="mid"><div class="mn">Page <span class="ref">{{ l.page_id }}</span></div><div class="ms">→ boutique <b>{{ l.code }}</b></div></div>
+          <div class="ma"><button class="btn gho sm" type="button" onclick="unlinkPage('{{ l.page_id }}')"><svg viewBox="0 0 24 24"><use href="#i-x"/></svg>Retirer</button></div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="hint" style="margin:10px 0 0">Aucune Page associée pour l'instant.</p>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- BOÎTE EMAIL ENTRANTE — réponses de recrutement -->
+  <section class="rv" id="sec-inbox">
+    <div class="shead">
+      <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-mail"/></svg></div>
+      <h2>Boîte email — réponses</h2>
+    </div>
+    <p class="hint">Quand un commerçant <b>répond</b> à un email de recrutement Vendora, l'agent lit la réponse et <b>réplique tout seul</b> pour le convertir en boutique (réponse rédigée dans ton ton, lien d'inscription, signée « Mongazi · NEBULA Agency »). Garde-fous : il ne répond <b>qu'aux gens déjà contactés</b> (jamais aux inconnus), respecte le STOP/désinscription, plafond {{ '60' }}/jour, 1 réponse/prospect/12h. {% if not inbox.ready %}<b style="color:var(--warn,#e0a93b)">⚠ Nécessite GMAIL_USER + GMAIL_APP_PASSWORD + Resend (à poser sur Railway).</b>{% endif %}</p>
+    <div class="pilot {{ 'on' if inbox.enabled }}" id="inb">
+      <div class="body">
+        <div class="statezone">
+          <div class="orb"></div>
+          <div>
+            <div class="stt" id="inbState">{{ 'RÉPONSES ACTIVES' if inbox.enabled else 'EN PAUSE' }}</div>
+            <div class="sub">L'agent transforme les réponses en inscriptions</div>
+          </div>
+        </div>
+        <div class="ctrls">
+          <label class="switch" title="Autoriser / mettre en pause">
+            <input type="checkbox" id="inbToggle" {{ 'checked' if inbox.enabled }} onchange="toggleInbox(this.checked)">
+            <span class="track"></span>
+          </label>
+          <button class="btn gho" type="button" onclick="runInbox()"><svg viewBox="0 0 24 24"><use href="#i-play"/></svg>Vérifier maintenant</button>
+        </div>
+      </div>
+      <div class="foot">
+        <span>Réponses aujourd'hui : <b>{{ inbox.today }}</b></span>
+        <span>Total réponses : <b>{{ inbox.total }}</b></span>
+        <span>Brouillons à valider : <b>{{ inbox.drafts }}</b></span>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <label class="switch">
+        <input type="checkbox" id="boutiqueInbox" {{ 'checked' if inbox.boutique_enabled }} onchange="toggleBoutiqueInbox(this.checked)">
+        <span class="track"></span>
+        <span class="lbl-t">Réponses email pour les BOUTIQUES<small>Chaque boutique prospecte depuis son alias (code@domaine) et l'agent gère ses réponses (mode supervisé/auto choisi par la boutique). Nécessite le renvoi catch-all du domaine.</small></span>
+      </label>
+    </div>
+  </section>
+
   <!-- PAIEMENTS À VALIDER -->
   {% if pending %}
   <section class="rv" id="sec-paiements">
@@ -691,6 +772,42 @@ async function runExp(){
   if(!confirm('Lancer / évaluer les expériences de vente maintenant ?')) return;
   const d = await post('/api/admin/experiments/run');
   notify(d.ok ? 'Cycle lancé — recharge la page dans un instant' : (d.error||'Erreur'), !d.ok);
+}
+
+/* Boîte email entrante — réponses de recrutement */
+async function toggleInbox(on){
+  const d = await post('/api/admin/inbox/settings', { enabled: on });
+  const p = document.getElementById('inb');
+  if(d.ok){
+    p.classList.toggle('on', on);
+    document.getElementById('inbState').textContent = on ? 'RÉPONSES ACTIVES' : 'EN PAUSE';
+    notify(on ? 'Réponses email activées' : 'Réponses email en pause');
+  } else { notify(d.error||'Erreur', true); document.getElementById('inbToggle').checked = !on; }
+}
+async function runInbox(){
+  const d = await post('/api/admin/inbox/run');
+  notify(d.ok ? 'Boîte vérifiée — réponses envoyées aux prospects connus' : (d.error||'Erreur'), !d.ok);
+}
+async function toggleBoutiqueInbox(on){
+  const d = await post('/api/admin/inbox/settings', { boutique_enabled: on });
+  if(d.ok) notify(on ? 'Réponses boutiques activées' : 'Réponses boutiques en pause');
+  else { notify(d.error||'Erreur', true); document.getElementById('boutiqueInbox').checked = !on; }
+}
+
+/* Canaux entrants — associer une Page Messenger/Instagram à une boutique */
+async function linkPage(){
+  const page_id = (document.getElementById('pgId').value||'').trim();
+  const code = (document.getElementById('pgCode').value||'').trim();
+  if(!page_id){ notify('Renseigne l\'ID de la Page', true); return; }
+  const d = await post('/api/admin/messenger/link', { page_id, code });
+  if(d.ok){ notify(code ? 'Page associée' : 'Association retirée'); setTimeout(()=>location.reload(), 700); }
+  else notify(d.error||'Erreur', true);
+}
+async function unlinkPage(page_id){
+  if(!confirm('Retirer cette association ?')) return;
+  const d = await post('/api/admin/messenger/link', { page_id, code: '' });
+  if(d.ok){ notify('Association retirée'); setTimeout(()=>location.reload(), 700); }
+  else notify(d.error||'Erreur', true);
 }
 
 /* Cerveau CEO — décisions du directeur */

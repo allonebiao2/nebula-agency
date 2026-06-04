@@ -240,3 +240,22 @@ create table if not exists bia_experiment_assignments (
   created_at  timestamptz default now(),
   primary key (merchant_id, customer)
 );
+
+-- 12. Boîte email entrante : fil des réponses de PROSPECTION RECRUTEMENT (les
+--     réponses au recrutement reviennent dans notre boîte = reply-to ; l'agent y
+--     répond pour convertir en boutique). direction 'in' = reçu, 'out' = envoyé.
+create table if not exists bia_inbox (
+  id uuid primary key default gen_random_uuid(),
+  prospect_email text not null,
+  merchant_id uuid references bia_merchants(id) on delete cascade,  -- null = recrutement (admin)
+  direction text not null,            -- 'in' | 'out'
+  status text default 'sent',         -- 'sent' | 'draft' (à valider) | 'rejected'
+  subject text, body text,
+  message_id text,                    -- Message-ID (dédup des entrants)
+  created_at timestamptz default now()
+);
+create index if not exists bia_inbox_email_idx on bia_inbox(prospect_email, created_at desc);
+create index if not exists bia_inbox_msgid_idx on bia_inbox(message_id);
+create index if not exists bia_inbox_merchant_idx on bia_inbox(merchant_id, status, created_at desc);
+-- Mode de réponse email par boutique : 'review' = l'agent rédige, le commerçant valide ;
+-- 'auto' = l'agent envoie directement. (colonne bia_merchants.inbox_mode, défaut 'review')
