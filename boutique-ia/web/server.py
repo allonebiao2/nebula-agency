@@ -14,6 +14,7 @@ import re
 import secrets
 import string
 import time
+from collections import deque
 from pathlib import Path
 from urllib.parse import quote
 from xml.sax.saxutils import escape
@@ -644,6 +645,9 @@ async def admin_dashboard(request: Request, token: str = ""):
         "whatsapp_ready": whatsapp_meta.configured(),
         "links": links,
         "codes": sorted(c for c in code_by_id.values() if c),
+        "c2dm_enabled": get_setting_bool("c2dm_enabled", False),
+        "c2dm_public_reply": get_setting_bool("c2dm_public_reply", True),
+        "c2dm_keyword": get_setting("c2dm_keyword") or "",
     }
     return templates.TemplateResponse(
         request, "admin.html",
@@ -1075,6 +1079,29 @@ async def admin_messenger_link(request: Request):
                             status_code=404)
     set_setting(f"page_merchant_{page_id}", code)
     return {"ok": True, "page_id": page_id, "code": code}
+
+
+@app.post("/api/admin/c2dm/settings")
+async def admin_c2dm_settings(request: Request):
+    """Comment-to-DM : activer/désactiver, mot-clé déclencheur, réponse publique.
+
+    body : {enabled?, public_reply?, keyword?}. OFF par défaut (acquisition sociale
+    conforme : l'agent ne répond QU'aux commentaires, jamais de cold DM).
+    """
+    from db.client import set_setting
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    if "enabled" in body:
+        set_setting("c2dm_enabled", "true" if body.get("enabled") else "false")
+    if "public_reply" in body:
+        set_setting("c2dm_public_reply", "true" if body.get("public_reply") else "false")
+    if "keyword" in body:
+        set_setting("c2dm_keyword", str(body.get("keyword") or "").strip())
+    return {"ok": True}
 
 
 @app.post("/api/admin/experiments/run")
@@ -1849,6 +1876,78 @@ def _process_messenger_message(msg: dict) -> None:
         messenger_meta.send_image(sender, url)
 
 
+# --- Comment-to-DM : acquisition sociale CONFORME (Meta « Private Replies ») ----
+# Quand quelqu'un commente une publication d'une boutique, l'agent lui répond en
+# privé (DM opt-in : le commentaire = son consentement). Cold DM = interdit Meta,
+# on ne le fait JAMAIS. OFF par défaut (toggle cockpit). Opener templaté = ZÉRO
+# appel modèle ; le cerveau ne s'allume que si le client répond dans le DM.
+
+_c2dm_seen: set[str] = set()        # dédup des commentaires déjà traités (webhooks Meta rejouent)
+_c2dm_order: deque[str] = deque()   # ordre FIFO pour borner la mémoire à 1000
+
+
+def _c2dm_is_new(comment_id: str) -> bool:
+    """True si ce commentaire n'a pas encore été traité. Borne mémoire à 1000.
+
+    Backstop : Meta refuse de toute façon une 2e réponse privée au même commentaire.
+    """
+    if comment_id in _c2dm_seen:
+        return False
+    _c2dm_seen.add(comment_id)
+    _c2dm_order.append(comment_id)
+    if len(_c2dm_order) > 1000:
+        _c2dm_seen.discard(_c2dm_order.popleft())
+    return True
+
+
+def _process_comment(c: dict) -> None:
+    """Traite UN commentaire (tâche de fond) : réponse privée (DM) + ack public."""
+    from core import messenger_meta
+    from db.client import (days_left, get_merchant_by_code, get_setting,
+                           get_setting_bool, upsert_wa_session)
+    if not messenger_meta.configured():
+        return
+    if not get_setting_bool("c2dm_enabled", False):
+        return  # OFF par défaut
+    comment_id = (c.get("comment_id") or "").strip()
+    page_id = (c.get("page_id") or "").strip()
+    if not (comment_id and page_id):
+        return
+    if not _c2dm_is_new(comment_id):
+        return
+    # On n'agit QUE sur les Pages associées à une boutique connue (jamais d'inconnu).
+    code = get_setting(f"page_merchant_{page_id}")
+    if not code:
+        return
+    merchant = get_merchant_by_code(str(code).strip().lower())
+    if not merchant:
+        return
+    exp = days_left(merchant)
+    if merchant.get("status") == "suspended" or (exp is not None and exp <= 0):
+        return  # boutique suspendue/expirée → pas de DM
+    # Filtre mot-clé optionnel : ne répondre qu'aux commentaires pertinents.
+    kw = (get_setting("c2dm_keyword") or "").strip().lower()
+    if kw and kw not in (c.get("text") or "").lower():
+        return
+    platform = c.get("platform") or "messenger"
+    # Pré-amorce la session DM → la réponse du client tombera sur la bonne boutique.
+    from_id = (c.get("from_id") or "").strip()
+    if from_id:
+        try:
+            upsert_wa_session(f"{platform}:{from_id}", merchant["id"])
+        except Exception:  # noqa: BLE001
+            log.warning("c2dm pré-amorçage session KO", exc_info=True)
+    name = merchant.get("business_name") or "notre boutique"
+    opener = (f"Bonjour 🌟 Merci pour votre commentaire ! Ici {name}. Je vous "
+              f"réponds en privé : dites-moi ce qui vous intéresse et je vous "
+              f"renseigne tout de suite (prix, disponibilité, livraison) 😊")
+    if not messenger_meta.send_private_reply(page_id, comment_id, opener):
+        return
+    if get_setting_bool("c2dm_public_reply", True):
+        messenger_meta.reply_public_comment(
+            comment_id, "Je vous réponds en message privé 📩", platform)
+
+
 @app.post("/api/messenger/meta")
 async def messenger_meta_webhook(request: Request, bg: BackgroundTasks):
     """Reçoit les messages Messenger + Instagram Direct. Répond 200 vite, traite en fond."""
@@ -1859,6 +1958,8 @@ async def messenger_meta_webhook(request: Request, bg: BackgroundTasks):
         return {"status": "ignored"}
     for msg in messenger_meta.parse_incoming(payload):
         bg.add_task(_process_messenger_message, msg)
+    for c in messenger_meta.parse_comments(payload):
+        bg.add_task(_process_comment, c)
     return {"status": "ok"}
 
 

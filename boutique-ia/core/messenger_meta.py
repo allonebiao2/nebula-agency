@@ -148,3 +148,108 @@ def parse_incoming(payload: dict) -> list[dict[str, Any]]:
     except Exception:  # noqa: BLE001
         log.warning("parse webhook Messenger KO", exc_info=True)
     return out
+
+
+# ---------------------------------------------------------------------------
+# COMMENT-TO-DM — acquisition sociale CONFORME (Meta « Private Replies »)
+#
+# Quand quelqu'un COMMENTE une publication de la Page/du compte IG d'une boutique,
+# on a le droit de lui envoyer UNE réponse privée (DM). Le commentaire = son
+# consentement. C'est le seul canal d'acquisition sociale autorisé par Meta : le
+# cold DM (écrire le premier à un inconnu) est interdit ET techniquement bloqué
+# (fenêtre 24h). Une fois le DM ouvert, la conversation retombe sur l'agent normal.
+#
+# Webhook : les commentaires arrivent sous `entry[].changes[]` (≠ `messaging[]`) :
+# - Facebook Page   → field "feed",     value.item == "comment", verb == "add" ;
+# - Instagram       → field "comments", value.id == id du commentaire.
+# ---------------------------------------------------------------------------
+
+
+def parse_comments(payload: dict) -> list[dict[str, Any]]:
+    """Extrait les nouveaux commentaires (FB feed + IG comments) d'un webhook.
+
+    Ignore : nos propres commentaires (auteur == la Page/compte), les
+    modifications/suppressions (verb != add), les événements non-commentaire
+    (réactions, posts, partages). Renvoie {comment_id, page_id, platform,
+    from_id, from_name, text, post_id}.
+    """
+    platform = "instagram" if payload.get("object") == "instagram" else "messenger"
+    out: list[dict[str, Any]] = []
+    try:
+        for entry in payload.get("entry", []) or []:
+            page_id = str(entry.get("id") or "")
+            for ch in entry.get("changes", []) or []:
+                field = ch.get("field")
+                val = ch.get("value") or {}
+                frm = val.get("from") or {}
+                from_id = str(frm.get("id") or "")
+                # On n'agit jamais sur nos propres commentaires (évite les boucles
+                # avec la réponse publique qu'on poste).
+                if from_id and from_id == page_id:
+                    continue
+                if field == "feed":  # Facebook Page
+                    if val.get("item") != "comment" or val.get("verb") != "add":
+                        continue
+                    comment_id = str(val.get("comment_id") or "")
+                    post_id = str(val.get("post_id") or "")
+                    text = val.get("message") or ""
+                    from_name = frm.get("name") or ""
+                elif field == "comments":  # Instagram
+                    comment_id = str(val.get("id") or "")
+                    post_id = str((val.get("media") or {}).get("id") or "")
+                    text = val.get("text") or ""
+                    from_name = frm.get("username") or ""
+                else:
+                    continue
+                if not comment_id:
+                    continue
+                out.append({"comment_id": comment_id, "page_id": page_id,
+                            "platform": platform, "from_id": from_id,
+                            "from_name": from_name, "text": text, "post_id": post_id})
+    except Exception:  # noqa: BLE001
+        log.warning("parse commentaires Messenger/IG KO", exc_info=True)
+    return out
+
+
+def send_private_reply(page_id: str, comment_id: str, text: str) -> bool:
+    """Réponse PRIVÉE (DM) à l'auteur d'un commentaire — Meta « Private Replies ».
+
+    Une seule par commentaire est autorisée : Meta refuse la 2e (backstop). On
+    cible le commentaire (`recipient.comment_id`), pas un PSID. Marche pour
+    Messenger ET Instagram via `POST /{page_id}/messages` + Page token.
+    """
+    if not (configured() and page_id and comment_id and text):
+        return False
+    payload = {"recipient": {"comment_id": str(comment_id)},
+               "message": {"text": text[:1900]}}
+    try:
+        r = httpx.post(_graph(f"{page_id}/messages"),
+                       params={"access_token": settings.messenger_page_token},
+                       json=payload, timeout=15.0)
+        if r.status_code not in (200, 201):
+            log.warning("private reply %s: %s", r.status_code, r.text[:200])
+        return r.status_code in (200, 201)
+    except Exception as e:  # noqa: BLE001
+        log.warning("private reply KO: %s", e)
+        return False
+
+
+def reply_public_comment(comment_id: str, text: str, platform: str = "messenger") -> bool:
+    """Réponse PUBLIQUE sous le commentaire (« Je vous réponds en privé 📩 »).
+
+    Endpoints différents : Facebook → `/{comment_id}/comments`, Instagram →
+    `/{comment_id}/replies`. Optionnel (toggle cockpit) ; échoue en silence.
+    """
+    if not (configured() and comment_id and text):
+        return False
+    path = f"{comment_id}/replies" if platform == "instagram" else f"{comment_id}/comments"
+    try:
+        r = httpx.post(_graph(path),
+                       params={"access_token": settings.messenger_page_token},
+                       json={"message": text[:1900]}, timeout=15.0)
+        if r.status_code not in (200, 201):
+            log.warning("public reply %s: %s", r.status_code, r.text[:200])
+        return r.status_code in (200, 201)
+    except Exception as e:  # noqa: BLE001
+        log.warning("public reply KO: %s", e)
+        return False

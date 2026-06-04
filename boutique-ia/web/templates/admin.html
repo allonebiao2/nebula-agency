@@ -533,6 +533,26 @@
       <p class="hint" style="margin:10px 0 0">Aucune Page associée pour l'instant.</p>
       {% endif %}
     </div>
+
+    <!-- COMMENT-TO-DM — acquisition sociale conforme -->
+    <p class="hint" style="margin:18px 0 8px"><b>Comment-to-DM</b> — quand quelqu'un <b>commente</b> une publication d'une boutique (Page FB / compte IG associé ci-dessus), l'agent lui répond <b>en privé</b> pour démarrer la vente. C'est le seul canal d'acquisition sociale <b>autorisé par Meta</b> : le commentaire vaut consentement. <b>Jamais</b> de message à un inconnu qui n'a rien écrit (cold DM = interdit + bannissement). Une seule réponse privée par commentaire, uniquement sur les Pages associées à une boutique active.</p>
+    <div class="panel">
+      <label class="switch">
+        <input type="checkbox" id="c2dmToggle" {{ 'checked' if channels.c2dm_enabled }} onchange="toggleC2dm(this.checked)">
+        <span class="track"></span>
+        <span class="lbl-t">Répondre aux commentaires en privé<small>L'opener est un message type (zéro coût) ; le cerveau IA ne s'allume que quand le client répond dans le DM. Dormant tant que le jeton Meta (Page) n'est pas posé.</small></span>
+      </label>
+      <div class="linkform" style="margin-top:12px">
+        <input id="c2dmKw" type="text" value="{{ channels.c2dm_keyword }}" placeholder="mot-clé déclencheur (optionnel, ex : PRIX)" autocomplete="off">
+        <button class="btn acc sm" type="button" onclick="saveC2dmKw()"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Enregistrer</button>
+      </div>
+      <p class="hint" style="margin:8px 0 0">Si un mot-clé est renseigné, l'agent ne répond <b>qu'aux</b> commentaires qui le contiennent (ex : « PRIX », « INFO »). Vide = il répond à tous les commentaires.</p>
+      <label class="switch" style="margin-top:12px">
+        <input type="checkbox" id="c2dmPub" {{ 'checked' if channels.c2dm_public_reply }} onchange="toggleC2dmPub(this.checked)">
+        <span class="track"></span>
+        <span class="lbl-t">Répondre aussi publiquement sous le commentaire<small>Un court « Je vous réponds en message privé 📩 » sous le commentaire (rassure les autres lecteurs).</small></span>
+      </label>
+    </div>
   </section>
 
   <!-- BOÎTE EMAIL ENTRANTE — réponses de recrutement -->
@@ -808,6 +828,23 @@ async function unlinkPage(page_id){
   const d = await post('/api/admin/messenger/link', { page_id, code: '' });
   if(d.ok){ notify('Association retirée'); setTimeout(()=>location.reload(), 700); }
   else notify(d.error||'Erreur', true);
+}
+
+/* Comment-to-DM — acquisition sociale conforme */
+async function toggleC2dm(on){
+  const d = await post('/api/admin/c2dm/settings', { enabled: on });
+  if(d.ok) notify(on ? 'Comment-to-DM activé' : 'Comment-to-DM en pause');
+  else { notify(d.error||'Erreur', true); document.getElementById('c2dmToggle').checked = !on; }
+}
+async function toggleC2dmPub(on){
+  const d = await post('/api/admin/c2dm/settings', { public_reply: on });
+  if(d.ok) notify(on ? 'Réponse publique activée' : 'Réponse publique désactivée');
+  else { notify(d.error||'Erreur', true); document.getElementById('c2dmPub').checked = !on; }
+}
+async function saveC2dmKw(){
+  const keyword = (document.getElementById('c2dmKw').value||'').trim();
+  const d = await post('/api/admin/c2dm/settings', { keyword });
+  notify(d.ok ? (keyword ? ('Mot-clé : « '+keyword+' »') : 'Mot-clé retiré (répond à tous)') : (d.error||'Erreur'), !d.ok);
 }
 
 /* Cerveau CEO — décisions du directeur */
