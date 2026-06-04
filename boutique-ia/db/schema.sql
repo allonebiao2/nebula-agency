@@ -209,3 +209,27 @@ create table if not exists bia_decisions (
   decided_at     timestamptz
 );
 create index if not exists bia_decisions_status_idx on bia_decisions(status, created_at desc);
+
+-- 11. Auto-expérimentation (le « ML » de Vendora) : l'agent teste des VARIANTES de
+--     stratégie de vente (champion vs challenger), mesure laquelle conclut le plus,
+--     et GARDE la gagnante. variant_text = bloc de tactiques injecté dans le prompt
+--     du vendeur. Assignation STABLE par client (pour attribuer le résultat).
+create table if not exists bia_experiments (
+  id uuid primary key default gen_random_uuid(),
+  name        text,
+  hypothesis  text,                 -- l'hypothèse testée (pour Mongazi)
+  variant_text text default '',      -- tactiques injectées (vide = approche standard)
+  status      text default 'active', -- active | retired | winner
+  total       int default 0,         -- conversations attribuées (calculé à l'évaluation)
+  won         int default 0,         -- ventes conclues
+  created_at  timestamptz default now()
+);
+create index if not exists bia_experiments_status_idx on bia_experiments(status, created_at desc);
+
+create table if not exists bia_experiment_assignments (
+  merchant_id uuid not null references bia_merchants(id) on delete cascade,
+  customer    text not null,
+  variant_id  uuid not null references bia_experiments(id) on delete cascade,
+  created_at  timestamptz default now(),
+  primary key (merchant_id, customer)
+);

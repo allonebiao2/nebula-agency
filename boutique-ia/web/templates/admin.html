@@ -380,6 +380,55 @@
     {% endif %}
   </section>
 
+  <!-- AUTO-EXPÉRIMENTATION DES VENTES (A/B) -->
+  <section class="rv">
+    <div class="shead">
+      <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-flask"/></svg></div>
+      <h2>Expériences de vente (A/B)</h2>
+    </div>
+    <p class="hint">Vendora teste plusieurs façons de vendre en parallèle, mesure laquelle conclut le plus de ventes, et garde la gagnante — tout seul. C'est sa capacité d'apprentissage automatique : il ne suit pas des règles figées, il découvre ce qui marche.</p>
+    <div class="pilot {{ 'on' if experiments.enabled }}" id="exp">
+      <div class="body">
+        <div class="statezone">
+          <div class="orb"></div>
+          <div>
+            <div class="stt" id="expState">{{ 'EXPÉRIMENTATION ACTIVE' if experiments.enabled else 'EN PAUSE' }}</div>
+            <div class="sub">{{ experiments.variants|length }} variante(s) en test · promotion auto du gagnant</div>
+          </div>
+        </div>
+        <div class="ctrls">
+          <label class="switch" title="Autoriser / mettre en pause">
+            <input type="checkbox" id="expToggle" {{ 'checked' if experiments.enabled }} onchange="toggleExp(this.checked)">
+            <span class="track"></span>
+          </label>
+          <button class="btn gho" type="button" onclick="runExp()"><svg viewBox="0 0 24 24"><use href="#i-play"/></svg>Lancer / évaluer</button>
+        </div>
+      </div>
+    </div>
+    {% if experiments.variants %}
+    <div class="panel" style="margin-top:14px">
+      <div class="ah">Variantes en test</div>
+      {% for v in experiments.variants %}
+      <div class="mrow">
+        <div class="mid">
+          <div class="mn">{{ v.name }} {% if not v.variant_text %}<span class="badge">référence</span>{% else %}<span class="badge active">challenger</span>{% endif %}</div>
+          <div class="ms">{{ v.hypothesis or '—' }}</div>
+        </div>
+        <div class="mx">
+          <div><b class="num">{{ v.total }}</b><span>clients</span></div>
+          <div><b class="num">{{ v.won }}</b><span>ventes</span></div>
+          <div><b class="num">{{ v.conv_pct }}</b><span>% conv.</span></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% if experiments.recent_winners %}
+    <div class="ah" style="margin-top:14px">Variantes retirées (perdantes)</div>
+    <div class="ms" style="padding:0 4px">{% for v in experiments.recent_winners %}{{ v.name }}{% if not loop.last %} · {% endif %}{% endfor %}</div>
+    {% endif %}
+  </section>
+
   <!-- RELANCES AUTONOMES -->
   <section class="rv">
     <div class="shead">
@@ -573,6 +622,22 @@ async function runFup(){
   if(!confirm('Lancer une vague de relances maintenant ? (vrais messages WhatsApp aux clients)')) return;
   const d = await post('/api/admin/followups/run');
   notify(d.ok ? 'Relances lancées — résumé sur Telegram' : (d.error||'Erreur'), !d.ok);
+}
+
+/* Auto-expérimentation des ventes (A/B) */
+async function toggleExp(on){
+  const d = await post('/api/admin/experiments/settings', { enabled: on });
+  const p = document.getElementById('exp');
+  if(d.ok){
+    p.classList.toggle('on', on);
+    document.getElementById('expState').textContent = on ? 'EXPÉRIMENTATION ACTIVE' : 'EN PAUSE';
+    notify(on ? 'Expérimentation activée' : 'Expérimentation en pause');
+  } else { notify(d.error||'Erreur', true); document.getElementById('expToggle').checked = !on; }
+}
+async function runExp(){
+  if(!confirm('Lancer / évaluer les expériences de vente maintenant ?')) return;
+  const d = await post('/api/admin/experiments/run');
+  notify(d.ok ? 'Cycle lancé — recharge la page dans un instant' : (d.error||'Erreur'), !d.ok);
 }
 
 /* Cerveau CEO — décisions du directeur */

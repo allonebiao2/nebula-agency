@@ -582,11 +582,21 @@ async def admin_dashboard(request: Request, token: str = ""):
         "lost": lstats.get("lost", 0),
     }
     # Cerveau CEO (directeur autonome) — décisions à valider
-    from db.client import list_decisions
+    from db.client import list_decisions, list_experiments
     ceo = {
         "enabled": get_setting_bool("ceo_enabled", True),
         "last_run": get_setting("ceo_last_run"),
         "decisions": list_decisions("proposed", limit=12),
+    }
+    # Auto-expérimentation des ventes (A/B)
+    exp_active = list_experiments("active", limit=10)
+    for v in exp_active:
+        t = v.get("total") or 0
+        v["conv_pct"] = round(100 * (v.get("won") or 0) / t, 1) if t else 0.0
+    experiments = {
+        "enabled": get_setting_bool("experiments_enabled", False),
+        "variants": exp_active,
+        "recent_winners": list_experiments("retired", limit=4),
     }
     return templates.TemplateResponse(
         request, "admin.html",
@@ -594,7 +604,8 @@ async def admin_dashboard(request: Request, token: str = ""):
              categories=cats, campaigns=campaigns,
              prospect_used=prospect_used, prospect_daily=settings.prospection_admin_daily,
              auto_enabled=auto_enabled, auto_daily=auto_daily,
-             total_recruited=total_recruited, learn=learn, followups=followups, ceo=ceo),
+             total_recruited=total_recruited, learn=learn, followups=followups,
+             ceo=ceo, experiments=experiments),
     )
 
 
@@ -918,6 +929,31 @@ async def admin_ceo_settings(request: Request):
     return {"ok": True}
 
 
+@app.post("/api/admin/experiments/settings")
+async def admin_experiments_settings(request: Request):
+    """Autorise / met en pause l'auto-expérimentation des ventes (OFF par défaut)."""
+    from db.client import set_setting
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    if "enabled" in body:
+        set_setting("experiments_enabled", "true" if body.get("enabled") else "false")
+    return {"ok": True}
+
+
+@app.post("/api/admin/experiments/run")
+async def admin_experiments_run(request: Request, bg: BackgroundTasks):
+    """Déclenche manuellement un cycle d'expérimentation (amorce / évalue / promeut)."""
+    from core.experiment import run_experiment_cycle
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    bg.add_task(run_experiment_cycle)
+    return {"ok": True, "message": "Cycle d'expérimentation lancé."}
+
+
 @app.post("/api/admin/ceo/decision/{decision_id}")
 async def admin_ceo_decision(request: Request, decision_id: str):
     """Mongazi valide ✓ ou rejette ✗ une recommandation du directeur."""
@@ -1035,6 +1071,13 @@ def run_learning_job(send_digests: bool = True, trigger_reason: str | None = Non
         notify_learning_summary(result)
     except Exception:  # noqa: BLE001
         log.warning("notify learning summary", exc_info=True)
+
+    # Auto-expérimentation : amorce/évalue/promeut les variantes de vente (le « ML »).
+    try:
+        from core.experiment import run_experiment_cycle
+        run_experiment_cycle()
+    except Exception:  # noqa: BLE001
+        log.warning("experiment cycle", exc_info=True)
 
     # Bonus : résumé hebdo à chaque commerçant actif ayant eu de l'activité (preuve de valeur).
     if send_digests and not result.get("skipped"):
@@ -1420,6 +1463,13 @@ async def whatsapp_twilio(request: Request):
             lessons = get_active_lessons(merchant["id"])
         except Exception:  # noqa: BLE001
             lessons = ""
+        try:
+            from core.experiment import pick_variant_text
+            vtext = pick_variant_text(merchant["id"], from_)
+            if vtext:
+                lessons = (lessons + "\n\n" + vtext) if lessons else vtext
+        except Exception:  # noqa: BLE001
+            pass
         answer = brain.reply(
             merchant, products, history,
             on_order=_order_recorder(merchant, from_),
@@ -1528,6 +1578,14 @@ async def chat(request: Request):
             lessons = get_active_lessons(merchant_id)
         except Exception:  # noqa: BLE001
             lessons = ""
+        if not preview:  # pas d'A/B sur l'essai gratuit (ne pollue pas les stats de conversion)
+            try:
+                from core.experiment import pick_variant_text
+                vtext = pick_variant_text(merchant_id, customer)
+                if vtext:
+                    lessons = (lessons + "\n\n" + vtext) if lessons else vtext
+            except Exception:  # noqa: BLE001
+                pass
         answer = brain.reply(merchant, products, history, on_order=on_order,
                              on_escalate=on_escalate, lessons=lessons)
         save_message(merchant_id, customer, "assistant", answer)

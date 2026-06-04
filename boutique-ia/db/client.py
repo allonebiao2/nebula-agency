@@ -801,6 +801,54 @@ def count_decisions(status: str | None = None) -> int:
     return q.execute().count or 0
 
 
+# ---------------------------------------------------------------------------
+# Auto-expérimentation (le « ML » de Vendora) — bia_experiments / assignments
+# ---------------------------------------------------------------------------
+
+def create_experiment(name: str, hypothesis: str, variant_text: str,
+                      status: str = "active") -> dict[str, Any]:
+    r = get_db().table("bia_experiments").insert({
+        "name": name, "hypothesis": hypothesis,
+        "variant_text": variant_text or "", "status": status,
+    }).execute()
+    return r.data[0] if r.data else {}
+
+
+def list_experiments(status: str | None = None, limit: int = 30) -> list[dict[str, Any]]:
+    db = get_db()
+    q = db.table("bia_experiments").select("*")
+    if status:
+        q = q.eq("status", status)
+    return q.order("created_at", desc=True).limit(limit).execute().data or []
+
+
+def set_experiment_status(experiment_id: str, status: str) -> None:
+    get_db().table("bia_experiments").update({"status": status}).eq("id", experiment_id).execute()
+
+
+def update_experiment_counters(experiment_id: str, total: int, won: int) -> None:
+    get_db().table("bia_experiments").update(
+        {"total": total, "won": won}).eq("id", experiment_id).execute()
+
+
+def get_assignment(merchant_id: str, customer: str) -> str | None:
+    r = (get_db().table("bia_experiment_assignments").select("variant_id")
+         .eq("merchant_id", merchant_id).eq("customer", customer).limit(1).execute())
+    return r.data[0]["variant_id"] if r.data else None
+
+
+def set_assignment(merchant_id: str, customer: str, variant_id: str) -> None:
+    get_db().table("bia_experiment_assignments").upsert(
+        {"merchant_id": merchant_id, "customer": customer, "variant_id": variant_id},
+        on_conflict="merchant_id,customer",
+    ).execute()
+
+
+def list_assignments() -> list[dict[str, Any]]:
+    return (get_db().table("bia_experiment_assignments")
+            .select("merchant_id, customer, variant_id").execute().data or [])
+
+
 def get_active_lessons(merchant_id: str | None = None) -> str:
     """Texte des leçons à injecter dans le prompt du vendeur (global + boutique). Caché."""
     import time as _time

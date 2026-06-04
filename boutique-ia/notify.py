@@ -224,6 +224,21 @@ def notify_learning_summary(result: dict) -> None:
     )
 
 
+def notify_experiment_update(out: dict) -> None:
+    """Annonce une avancée de l'auto-expérimentation (promotion / nouvelle variante)."""
+    parts = []
+    if out.get("seeded"):
+        parts.append("🧪 Première expérience de vente lancée (champion vs challenger).")
+    if out.get("promoted"):
+        parts.append(f"🏆 Variante gagnante adoptée : <b>{out['promoted']}</b> "
+                     "(elle conclut le plus de ventes — gardée par défaut).")
+    if out.get("spawned"):
+        parts.append(f"🔬 Nouvelle variante mise à l'épreuve : <b>{out['spawned']}</b>.")
+    if not parts:
+        return
+    notify_mongazi("🧬 <b>Auto-amélioration des ventes</b>\n\n" + "\n\n".join(parts))
+
+
 def notify_ceo_review(result: dict) -> None:
     """Le directeur autonome présente ses décisions à Mongazi (Telegram)."""
     recos = result.get("recommendations") or []
