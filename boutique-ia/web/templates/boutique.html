@@ -309,10 +309,14 @@
             {% if p.available == false %}<span class="dot rupt">En rupture</span>{% else %}<span class="dot">Disponible</span>{% endif %}
           </div>
           <div class="pp">{% if p.price is not none %}<span class="mono">{{ "{:,}".format(p.price|int).replace(",", " ") }}</span> F{% else %}sur demande{% endif %}</div>
-          <div class="pbtns">
-            <button class="btn gho ico" title="Modifier" type="button" onclick="editRow(this)"><svg viewBox="0 0 24 24"><use href="#i-edit"/></svg></button>
-            <button class="btn gho ico" title="Disponibilité" type="button" onclick="toggleAvail(this,{{ 'false' if p.available == false else 'true' }})"><svg viewBox="0 0 24 24"><use href="{{ '#i-eyeoff' if p.available == false else '#i-eye' }}"/></svg></button>
-            <button class="btn dang ico" title="Supprimer" type="button" onclick="delProduct(this,'{{ p.name|e }}')"><svg viewBox="0 0 24 24"><use href="#i-trash"/></svg></button>
+          <div class="pbtns" style="flex-wrap:wrap;gap:6px">
+            <button class="btn gho sm" type="button" onclick="editRow(this)"><svg viewBox="0 0 24 24"><use href="#i-edit"/></svg>Modifier</button>
+            {% if p.available == false %}
+            <button class="btn gho sm" type="button" onclick="toggleAvail(this,false)"><svg viewBox="0 0 24 24"><use href="#i-eye"/></svg>Remettre en vente</button>
+            {% else %}
+            <button class="btn gho sm" type="button" onclick="toggleAvail(this,true)"><svg viewBox="0 0 24 24"><use href="#i-eyeoff"/></svg>Mettre en rupture</button>
+            {% endif %}
+            <button class="btn dang sm" type="button" onclick="delProduct(this,'{{ p.name|e }}')"><svg viewBox="0 0 24 24"><use href="#i-trash"/></svg>Supprimer</button>
           </div>
         </div>
         <div class="edit hide" style="padding-top:13px">
