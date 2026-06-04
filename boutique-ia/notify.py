@@ -174,6 +174,31 @@ def notify_hot_lead(merchant: dict, customer: str | None, raison: str,
     _whatsapp_owner(merchant.get("owner_whatsapp"), merchant.get("country"), plain)
 
 
+def notify_appointment(merchant: dict, appt: dict) -> None:
+    """Prévient le commerçant d'une nouvelle demande de rendez-vous."""
+    who = appt.get("customer_name") or appt.get("customer_whatsapp") or "—"
+    service = (appt.get("service") or "").strip()
+    when = (appt.get("requested_time") or "—").strip()
+    note = (appt.get("note") or "").strip()
+    text = (
+        "📅 <b>Nouvelle demande de rendez-vous !</b>\n\n"
+        f"🏪 {merchant.get('business_name','?')}\n"
+        f"👤 {who}\n"
+        f"🗓️ {when}\n"
+        + (f"💼 {service}\n" if service else "")
+        + (f"📝 {note}\n" if note else "")
+        + "\nÀ confirmer avec le client 🙏"
+    )
+    notify_mongazi(text)
+    plain = (
+        f"📅 Demande de RDV — {merchant.get('business_name','votre boutique')}\n"
+        f"Client : {who}\nQuand : {when}"
+        + (f"\nPrestation : {service}" if service else "")
+        + (f"\nNote : {note}" if note else "")
+    )
+    _whatsapp_owner(merchant.get("owner_whatsapp"), merchant.get("country"), plain)
+
+
 def notify_weekly_digest(merchant: dict, stats: dict) -> None:
     """Résumé hebdo au commerçant : preuve de valeur (anti-résiliation).
 

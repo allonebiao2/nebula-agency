@@ -147,6 +147,28 @@ def _order_recorder(merchant: dict, customer_whatsapp: str | None):
     return _on_order
 
 
+def _appointment_recorder(merchant: dict, customer: str | None):
+    """Callback appelé quand l'agent enregistre une demande de rendez-vous."""
+    from db.client import create_appointment
+    from notify import notify_appointment
+
+    def _on_appointment(data: dict) -> None:
+        appt = create_appointment(
+            merchant["id"], customer,
+            service=(data.get("service") or "").strip() or None,
+            requested_time=(data.get("date_souhaitee") or "").strip() or None,
+            customer_name=(data.get("nom_client") or "").strip() or None,
+            note=" · ".join(x for x in [(data.get("telephone") or "").strip(),
+                                        (data.get("note") or "").strip()] if x) or None,
+        )
+        try:
+            notify_appointment(merchant, appt)
+        except Exception:  # noqa: BLE001
+            log.warning("alerte rendez-vous échouée", exc_info=True)
+
+    return _on_appointment
+
+
 def _escalation_notifier(merchant: dict, customer: str | None):
     """Callback appelé quand l'agent escalade un client vers le/la propriétaire."""
     from notify import notify_hot_lead
@@ -257,6 +279,13 @@ async def create_merchant_endpoint(request: Request):
         "policies": (body.get("policies") or "").strip() or None,
         "extra_info": (body.get("extra_info") or "").strip() or None,
     }
+
+    # Defaults intelligents : l'agent démarre déjà équipé selon le métier + le
+    # forfait (jamais de page blanche). Le commerçant ajuste ensuite librement.
+    from core.capabilities import default_capabilities_for, serialize_caps
+    _cat = (body.get("category") or body.get("sector") or "").strip().lower()
+    merchant_payload["enabled_capabilities"] = serialize_caps(
+        default_capabilities_for(_cat, merchant_payload["plan"]))
 
     try:
         merchant = create_merchant(merchant_payload)
@@ -460,6 +489,16 @@ async def boutique_backoffice(request: Request, merchant_id: str):
     remaining = -1 if daily_limit < 0 else max(0, daily_limit - used_today)
     accent = (merchant.get("brand_color") if merchant else None) or "#10b981"
     cats = [{"key": k, "label": v["label"]} for k, v in CATEGORIES.items()]
+    from core.capabilities import capabilities_context, has_capability
+    caps_ctx = capabilities_context(merchant) if merchant else None
+    rdv_on = bool(merchant) and has_capability(merchant, "rdv")
+    appointments = []
+    if rdv_on:
+        try:
+            from db.client import list_appointments
+            appointments = list_appointments(merchant_id, limit=20)
+        except Exception:  # noqa: BLE001
+            log.warning("back-office: lecture RDV KO", exc_info=True)
     return templates.TemplateResponse(
         request, "boutique.html",
         _ctx(request, merchant=merchant, merchant_id=merchant_id,
@@ -467,7 +506,8 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              recent_orders=recent_orders, conversations=conversations,
              plan=plan, plan_label=plan_label, plans=plans, accent=accent,
              daily_limit=daily_limit, used_today=used_today, remaining=remaining,
-             categories=cats, campaigns=campaigns, inbox=inbox,
+             categories=cats, campaigns=campaigns, inbox=inbox, caps=caps_ctx,
+             rdv_on=rdv_on, appointments=appointments,
              prospect_daily=prospect_daily, prospect_used=prospect_used,
              prospect_remaining=max(0, prospect_daily - prospect_used)),
     )
@@ -1192,10 +1232,13 @@ def run_merchant_auto_prospection() -> int:
         list_campaigns,
         subscription_active,
     )
+    from core.capabilities import has_capability
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     launched = 0
     for m in list_all_merchants():
         if not m.get("auto_prospect_enabled") or not subscription_active(m):
+            continue
+        if not has_capability(m, "prospection"):  # capacité du forfait
             continue
         plan = normalize_plan(m.get("plan"))
         daily = prospection_daily_for_plan(plan)
@@ -1427,6 +1470,40 @@ async def update_merchant_endpoint(request: Request, merchant_id: str):
     return {"ok": True, "merchant": merchant}
 
 
+@app.post("/api/merchants/{merchant_id}/capabilities")
+async def merchant_capabilities(request: Request, merchant_id: str):
+    """« Composez votre vendeur » : enregistre les capacités choisies.
+
+    body : {ids:[...]}. La grille (palier + nombre selon forfait) est appliquée
+    CÔTÉ SERVEUR — on ne fait jamais confiance au navigateur. Retourne le set
+    réellement actif (socle + modules retenus).
+    """
+    from core.capabilities import (effective_capabilities, sanitize_selection,
+                                    serialize_caps)
+    from db.client import get_merchant, set_merchant_capabilities
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    merchant = get_merchant(merchant_id)
+    if not merchant:
+        return JSONResponse({"ok": False, "error": "Boutique introuvable."}, status_code=404)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    ids = body.get("ids")
+    if not isinstance(ids, list):
+        return JSONResponse({"ok": False, "error": "Liste de capacités attendue."},
+                            status_code=400)
+    kept = sanitize_selection(merchant.get("plan"), ids)
+    try:
+        set_merchant_capabilities(merchant_id, serialize_caps(kept))
+    except Exception as e:  # noqa: BLE001
+        return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
+    merchant["enabled_capabilities"] = serialize_caps(kept)
+    return {"ok": True, "active": sorted(effective_capabilities(merchant)), "modules": kept}
+
+
 @app.post("/api/merchants/{merchant_id}/inbox/mode")
 async def merchant_inbox_mode(request: Request, merchant_id: str):
     """Le commerçant choisit comment l'agent gère ses réponses email :
@@ -1646,6 +1723,12 @@ def _agent_handle(customer: str, body_text: str, has_audio: bool = False,
         return {"status": "unavailable", "media": [], "text":
                 "Cette boutique est momentanément indisponible. Merci de réessayer plus tard 🙏"}
 
+    from core.capabilities import has_capability
+    if has_audio and not has_capability(merchant, "vocal"):
+        # Forfait sans le module « notes vocales » → on invite à écrire (pas de transcription).
+        return {"status": "no_vocal", "media": [], "text":
+                "Je préfère que vous m'écriviez votre demande en quelques mots 🙏 "
+                "Je vous réponds tout de suite !"}
     if has_audio and transcribe_fn:
         spoken = None
         try:
@@ -1706,6 +1789,7 @@ def _agent_handle(customer: str, body_text: str, has_audio: bool = False,
         on_order=_order_recorder(merchant, customer),
         on_escalate=_escalation_notifier(merchant, customer),
         on_show=_on_show,
+        on_appointment=_appointment_recorder(merchant, customer),
         lessons=lessons,
     )
     save_message(merchant["id"], customer, "assistant", answer)
@@ -1854,6 +1938,19 @@ def _process_messenger_message(msg: dict) -> None:
         except Exception:  # noqa: BLE001
             log.warning("messenger page→boutique mapping échoué", exc_info=True)
 
+    # Garde capacité : la boutique doit avoir le module « multi-canal » (Messenger/IG).
+    # Si la boutique est connue mais hors forfait, l'agent ne répond pas sur ce canal.
+    try:
+        from core.capabilities import has_capability
+        from db.client import get_merchant, get_wa_session_merchant_id
+        _mid = get_wa_session_merchant_id(customer)
+        if _mid:
+            _m = get_merchant(_mid)
+            if _m and not has_capability(_m, "multicanal"):
+                return
+    except Exception:  # noqa: BLE001
+        log.warning("messenger multicanal gate échoué", exc_info=True)
+
     has_audio = msg.get("type") == "audio" and bool(msg.get("audio_url"))
     transcribe_fn = None
     if has_audio:
@@ -1922,6 +2019,9 @@ def _process_comment(c: dict) -> None:
     merchant = get_merchant_by_code(str(code).strip().lower())
     if not merchant:
         return
+    from core.capabilities import has_capability
+    if not has_capability(merchant, "comment_to_dm"):
+        return  # acquisition sociale = capacité du forfait (Empire)
     exp = days_left(merchant)
     if merchant.get("status") == "suspended" or (exp is not None and exp <= 0):
         return  # boutique suspendue/expirée → pas de DM

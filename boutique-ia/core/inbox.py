@@ -239,6 +239,10 @@ def run_inbox() -> dict[str, Any]:
             summary["skipped"] += 1; continue  # déjà traité (dédup)
 
         merchant = _route_merchant(m.get("to_email")) if boutique_on else None
+        if merchant:
+            from core.capabilities import has_capability
+            if not has_capability(merchant, "email_pro"):
+                summary["skipped"] += 1; continue  # forfait sans module email pro
 
         if merchant:
             _handle_boutique(merchant, m, from_email, body, mid, summary,

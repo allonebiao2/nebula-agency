@@ -100,10 +100,13 @@ def run_followups() -> dict[str, Any]:
         return merchants[mid]
 
     def _eligible(mid: str, customer: str) -> bool:
+        from core.capabilities import has_capability
         if not _is_real_customer(customer) or is_opted_out(customer):
             return False
         m = _merchant(mid)
         if not m or not subscription_active(m):
+            return False
+        if not has_capability(m, "relances"):  # capacité du forfait de la boutique
             return False
         if followed_up_recently(mid, customer, COOLDOWN_DAYS):
             return False

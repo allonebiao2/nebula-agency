@@ -71,10 +71,12 @@
 
   <nav class="tabs">
     <a href="#piloter">Agent</a>
+    <a href="#capacites">Capacités</a>
     <a href="#produits">Produits</a>
     <a href="#infos">Infos</a>
     <a href="#livraison">Livraison</a>
     <a href="#style">Style</a>
+    {% if rdv_on %}<a href="#rdv">Rendez-vous</a>{% endif %}
     <a href="#prospection">Prospection</a>
     {% if inbox.on %}<a href="#reponses">Réponses{% if inbox.drafts %} ({{ inbox.drafts|length }}){% endif %}</a>{% endif %}
     <a href="#activite">Activité</a>
@@ -102,6 +104,81 @@
     <div class="stat"><div class="sv mono">{{ conversations|length }}</div><div class="sl">Conversations</div></div>
     <div class="stat"><div class="sv txt">{{ plan_label }}</div><div class="sl">Forfait actif</div></div>
   </div>
+
+  <!-- COMPOSEZ VOTRE VENDEUR -->
+  {% if caps %}
+  <section class="reveal" id="capacites" style="margin-top:34px">
+    <style>
+      .caps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(216px,1fr));gap:12px;margin-top:11px}
+      .capcard{position:relative;border:1.5px solid var(--line,#26262e);border-radius:14px;padding:14px 14px 13px;
+               background:var(--panel,#15151b);cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s;
+               display:flex;flex-direction:column;gap:5px}
+      .capcard:hover{transform:translateY(-2px)}
+      .capcard .cn{font-weight:700;font-size:.95rem;display:flex;align-items:center;gap:8px}
+      .capcard .cp{color:var(--muted,#8a8a99);font-size:.82rem;line-height:1.35}
+      .capcard svg{width:18px;height:18px;flex-shrink:0;stroke:var(--a,#10b981);fill:none;stroke-width:2;
+                   stroke-linecap:round;stroke-linejoin:round}
+      .capcard.on{border-color:var(--a,#10b981);box-shadow:0 0 0 1px var(--a,#10b981) inset,0 8px 24px rgba(16,185,129,.12)}
+      .capcard.on .tick{position:absolute;top:11px;right:13px;color:var(--a,#10b981);font-weight:800}
+      .capcard.locked{cursor:not-allowed;opacity:.6}
+      .capcard.locked svg{stroke:var(--muted,#8a8a99)}
+      .capcard .lock{position:absolute;top:10px;right:12px;font-size:.71rem;color:var(--muted,#8a8a99);
+                     border:1px solid var(--line,#33333c);border-radius:20px;padding:1px 8px;font-weight:600}
+      .caps-sub{color:var(--muted,#8a8a99);font-size:.78rem;font-weight:700;text-transform:uppercase;
+                letter-spacing:.05em;margin-top:20px}
+      .caps-pills{display:flex;flex-wrap:wrap;gap:9px;margin-top:9px}
+      .pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line,#2a2a32);border-radius:20px;
+            padding:6px 12px;font-size:.85rem;background:var(--panel,#15151b)}
+      .pill svg{width:15px;height:15px;stroke:var(--a,#10b981);fill:none;stroke-width:2}
+    </style>
+    <div class="shead">
+      <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-wand"/></svg></div>
+      <h2>Composez votre vendeur</h2>
+      <div class="act"><span class="quota" id="capCount"></span></div>
+    </div>
+    <p class="hint">Choisissez ce que votre agent sait faire. Votre forfait <b>{{ caps.plan_label }}</b> vous donne
+      {% if caps.unlimited %}<b>toutes les capacités</b>{% else %}<b>{{ caps.limit }} modules</b>{% endif %}
+      en plus du socle. Cliquez une carte pour l'activer ou la couper — modifiable à tout moment.</p>
+
+    <div class="caps-sub">Toujours inclus</div>
+    <div class="caps-pills">
+      {% for c in caps.socle %}
+      <span class="pill"><svg viewBox="0 0 24 24"><use href="#{{ c.icon }}"/></svg>{{ c.label }}</span>
+      {% endfor %}
+    </div>
+
+    <div class="caps-sub">Modules — au choix</div>
+    <div class="caps-grid">
+      {% for c in caps.modules %}
+      <div class="capcard {{ 'on' if c.enabled }} {{ 'locked' if not c.available }}"
+           data-cap="{{ c.id }}" data-available="{{ '1' if c.available else '0' }}" data-min="{{ c.min_plan_label }}"
+           onclick="toggleCap(this)">
+        {% if c.available %}<span class="tick">✓</span>{% else %}<span class="lock">🔒 {{ c.min_plan_label }}</span>{% endif %}
+        <div class="cn"><svg viewBox="0 0 24 24"><use href="#{{ c.icon }}"/></svg>{{ c.label }}</div>
+        <div class="cp">{{ c.promise }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="caps-sub">Super-pouvoirs — Empire</div>
+    <div class="caps-grid">
+      {% for c in caps.premium %}
+      <div class="capcard {{ 'on' if c.enabled }} {{ 'locked' if not c.available }}"
+           data-cap="{{ c.id }}" data-available="{{ '1' if c.available else '0' }}" data-min="{{ c.min_plan_label }}"
+           onclick="toggleCap(this)">
+        {% if c.available %}<span class="tick">✓</span>{% else %}<span class="lock">🔒 {{ c.min_plan_label }}</span>{% endif %}
+        <div class="cn"><svg viewBox="0 0 24 24"><use href="#{{ c.icon }}"/></svg>{{ c.label }}</div>
+        <div class="cp">{{ c.promise }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div style="margin-top:20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <button class="btn pri" type="button" onclick="saveCaps()">Enregistrer mon vendeur</button>
+      <a class="btn gho sm" href="#forfaits">Débloquer plus <svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></a>
+    </div>
+  </section>
+  {% endif %}
 
   <!-- PILOTER -->
   <section class="reveal" id="piloter" style="margin-top:34px">
@@ -356,6 +433,40 @@
     </div>
   </section>
 
+  <!-- RENDEZ-VOUS -->
+  {% if rdv_on %}
+  <section class="reveal" id="rdv">
+    <div class="shead">
+      <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-flask"/></svg></div>
+      <h2>Rendez-vous</h2>
+    </div>
+    <p class="hint">Réglez vos disponibilités : l'agent propose des créneaux <b>dans ces limites</b>, enregistre la demande et vous prévient (Telegram + votre WhatsApp). Vous confirmez ensuite avec le client.</p>
+    <div class="grid2">
+      <div><label>Jours d'ouverture aux RDV</label><input id="f_rdv_days" value="{{ merchant.rdv_days or '' }}" placeholder="Ex : Mer, Sam"></div>
+      <div><label>Horaires</label><input id="f_rdv_hours" value="{{ merchant.rdv_hours or '' }}" placeholder="Ex : 09:00-17:00"></div>
+    </div>
+    <div style="margin-top:12px"><label>Précision (lieu, à distance, durée…)</label><input id="f_rdv_note" value="{{ merchant.rdv_note or '' }}" placeholder="Ex : Sur place à la clinique · séance 45 min"></div>
+    <div style="margin-top:16px"><button class="btn pri" type="button" onclick="saveMerchant(['rdv_days','rdv_hours','rdv_note'])">Enregistrer mes disponibilités</button></div>
+
+    <h3 style="margin:24px 0 10px;font-size:1rem">Demandes de rendez-vous</h3>
+    {% if appointments %}
+    <div class="list">
+      {% for a in appointments %}
+      <div class="prod"><div class="view" style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;width:100%">
+        <div>
+          <div style="font-weight:700">{{ a.customer_name or a.customer_whatsapp or 'Client' }} · <span style="color:var(--a)">{{ a.requested_time or '—' }}</span></div>
+          <div style="color:var(--muted);font-size:.85rem;margin-top:3px">{% if a.service %}{{ a.service }}{% endif %}{% if a.note %} · {{ a.note }}{% endif %}</div>
+        </div>
+        <span class="pill">{{ a.status or 'pending' }}</span>
+      </div></div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty">Aucune demande de rendez-vous pour l'instant.</div>
+    {% endif %}
+  </section>
+  {% endif %}
+
   <!-- PROSPECTION -->
   <section class="reveal" id="prospection">
     <div class="shead">
@@ -485,6 +596,7 @@
 
 <script>
 const MID = "{{ merchant_id }}";
+const CAP_LIMIT = {{ caps.limit if caps else -1 }};
 const root = document.documentElement;
 const toast = document.getElementById('toast');
 function notify(msg, err){
@@ -629,6 +741,34 @@ async function saveMerchant(fields){
   const d=await api(`/api/merchants/${MID}/update`,'POST',payload);
   if(d.ok) notify('Enregistré'); else notify(d.error||'Erreur', true);
 }
+
+/* Composez votre vendeur — capacités */
+function countCaps(){ return document.querySelectorAll('.capcard.on').length; }
+function updateCapCount(){
+  const el = document.getElementById('capCount'); if(!el) return;
+  const n = countCaps();
+  el.textContent = CAP_LIMIT < 0 ? (n + ' capacités actives') : (n + '/' + CAP_LIMIT + ' modules');
+}
+function toggleCap(card){
+  if(card.dataset.available !== '1'){
+    notify('Disponible avec le forfait ' + card.dataset.min + ' — voir l\'onglet Forfait', true);
+    return;
+  }
+  const on = card.classList.contains('on');
+  if(!on && CAP_LIMIT >= 0 && countCaps() >= CAP_LIMIT){
+    notify('Limite atteinte (' + CAP_LIMIT + '). Coupez-en un, ou passez à un forfait supérieur.', true);
+    return;
+  }
+  card.classList.toggle('on');
+  updateCapCount();
+}
+async function saveCaps(){
+  const ids = Array.from(document.querySelectorAll('.capcard.on')).map(c=>c.dataset.cap);
+  const d = await api(`/api/merchants/${MID}/capabilities`, 'POST', { ids });
+  if(d.ok){ notify('Votre vendeur est à jour ✓'); }
+  else notify(d.error||'Erreur', true);
+}
+updateCapCount();
 </script>
 </body>
 </html>

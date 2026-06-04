@@ -110,6 +110,28 @@ alter table bia_merchants add column if not exists negotiation_enabled boolean d
 alter table bia_merchants add column if not exists negotiation_rule text;
 alter table bia_orders   add column if not exists payment_method text;  -- 'mobile_money' | 'livraison'
 
+-- « Composez votre vendeur » : capacités choisies (ids séparés par virgule, cf.
+-- core/capabilities). NULL = jamais réglé → repli sur les anciens interrupteurs.
+alter table bia_merchants add column if not exists enabled_capabilities text;
+
+-- Prise de rendez-vous (capacité « rdv ») : disponibilités de la boutique.
+alter table bia_merchants add column if not exists rdv_days text;   -- ex : "Mer, Sam"
+alter table bia_merchants add column if not exists rdv_hours text;  -- ex : "09:00-17:00"
+alter table bia_merchants add column if not exists rdv_note text;   -- ex : "Sur place, clinique"
+
+create table if not exists bia_appointments (
+  id uuid primary key default gen_random_uuid(),
+  merchant_id uuid not null references bia_merchants(id) on delete cascade,
+  customer_whatsapp text,
+  customer_name text,
+  service text,
+  requested_time text,            -- créneau souhaité, tel que dit par le client
+  note text,
+  status text default 'pending',  -- pending | confirmed | cancelled
+  created_at timestamptz default now()
+);
+create index if not exists bia_appointments_idx on bia_appointments(merchant_id, created_at);
+
 -- Réponses entrantes : désinscriptions / opt-out (STOP, unsub, bounce, plainte)
 create table if not exists bia_optouts (
   contact    text primary key,   -- email (minuscule) OU numéro WhatsApp

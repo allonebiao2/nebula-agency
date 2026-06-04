@@ -53,6 +53,7 @@ EDITABLE_MERCHANT_FIELDS = {
     "ai_tone", "languages", "business_hours", "policies", "extra_info",
     "brand_color", "cod_enabled", "negotiation_enabled", "negotiation_rule",
     "auto_prospect_enabled", "auto_prospect_category", "auto_prospect_city",
+    "rdv_days", "rdv_hours", "rdv_note",
 }
 EDITABLE_PRODUCT_FIELDS = {"name", "price", "description", "photo_url", "available",
                           "kind", "duration", "options"}
@@ -110,6 +111,43 @@ def set_merchant_pin(merchant_id: str, pin_hash: str | None) -> dict[str, Any]:
     db = get_db()
     result = (
         db.table("bia_merchants").update({"access_pin": pin_hash})
+        .eq("id", merchant_id).execute()
+    )
+    return result.data[0] if result.data else {}
+
+
+def create_appointment(merchant_id: str, customer_whatsapp: str | None, *,
+                       service: str | None = None, requested_time: str | None = None,
+                       customer_name: str | None = None,
+                       note: str | None = None) -> dict[str, Any]:
+    """Enregistre une demande de rendez-vous (statut pending)."""
+    db = get_db()
+    row = {"merchant_id": merchant_id, "customer_whatsapp": customer_whatsapp,
+           "service": service, "requested_time": requested_time,
+           "customer_name": customer_name, "note": note, "status": "pending"}
+    result = db.table("bia_appointments").insert(row).execute()
+    return result.data[0] if result.data else {}
+
+
+def list_appointments(merchant_id: str, limit: int = 20) -> list[dict[str, Any]]:
+    """Derniers rendez-vous d'une boutique (plus récents d'abord)."""
+    db = get_db()
+    result = (
+        db.table("bia_appointments").select("*").eq("merchant_id", merchant_id)
+        .order("created_at", desc=True).limit(limit).execute()
+    )
+    return result.data or []
+
+
+def set_merchant_capabilities(merchant_id: str, caps_csv: str) -> dict[str, Any]:
+    """Enregistre les capacités choisies (« Composez votre vendeur »).
+
+    `caps_csv` = ids modules/premium séparés par virgule, DÉJÀ filtrés/plafonnés
+    selon le forfait par l'appelant (core/capabilities). Le socle reste implicite.
+    """
+    db = get_db()
+    result = (
+        db.table("bia_merchants").update({"enabled_capabilities": caps_csv})
         .eq("id", merchant_id).execute()
     )
     return result.data[0] if result.data else {}

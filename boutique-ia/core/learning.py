@@ -288,10 +288,13 @@ def run_learning_cycle(days: int = DEFAULT_WINDOW_DAYS) -> dict[str, Any]:
         by_merchant.setdefault(c["merchant_id"], []).append(c)
     # Les boutiques les plus actives d'abord (coût maîtrisé).
     ranked = sorted(by_merchant.items(), key=lambda kv: len(kv[1]), reverse=True)
+    from core.capabilities import has_capability
     for mid, mconvos in ranked[:MAX_MERCHANTS_PER_CYCLE]:
         if len(mconvos) < MERCHANT_MIN_CONVOS:
             continue
         m = merchants.get(mid) or {}
+        if not has_capability(m, "apprentissage_perso"):
+            continue  # leçons PERSONNALISÉES = super-pouvoir Empire (le collectif reste pour tous)
         name = m.get("business_name") or "cette boutique"
         sector = m.get("sector")
         sys = _SYSTEM_MERCHANT.format(name=name, sector=f", {sector}" if sector else "")

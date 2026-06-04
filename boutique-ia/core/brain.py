@@ -14,6 +14,7 @@ from typing import Callable
 import anthropic
 
 from config import settings
+from core import capabilities
 
 log = logging.getLogger("boutique-ia.brain")
 
@@ -104,6 +105,30 @@ SHOW_TOOL = {
 }
 
 
+# Outil rendez-vous : enregistrer une demande de RDV (capacité « rdv », Business+).
+RDV_TOOL = {
+    "name": "enregistrer_rendezvous",
+    "description": (
+        "Enregistre une demande de RENDEZ-VOUS et prévient le/la propriétaire. À appeler "
+        "quand le client veut prendre rendez-vous (consultation, prestation, visite) ET "
+        "qu'il a indiqué ce qu'il souhaite + un moment qui lui convient (jour + heure). "
+        "Propose toujours un créneau DANS les disponibilités de la boutique. Appelle l'outil "
+        "une seule fois, puis confirme au client que la boutique va valider le créneau."
+    ),
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "service": {"type": "string", "description": "Prestation / motif du rendez-vous."},
+            "date_souhaitee": {"type": "string", "description": "Jour + heure souhaités (ex : samedi 14h)."},
+            "nom_client": {"type": "string", "description": "Nom du client s'il est connu."},
+            "telephone": {"type": "string", "description": "Téléphone/contact si donné."},
+            "note": {"type": "string", "description": "Précision utile (lieu, à distance, remarque)."},
+        },
+        "required": ["date_souhaitee"],
+    },
+}
+
+
 def _format_price(value) -> str:
     if value is None:
         return "prix sur demande"
@@ -115,13 +140,18 @@ def _format_price(value) -> str:
 
 
 def build_system_prompt(merchant: dict, products: list[dict],
-                        lessons: str | None = None) -> str:
+                        lessons: str | None = None,
+                        caps: set[str] | None = None) -> str:
     """Construit la personnalité + les connaissances du vendeur IA.
 
     `lessons` : leçons de vente apprises automatiquement (cerveau d'apprentissage,
     cf. core/learning.py) — réinjectées pour que l'agent s'améliore avec l'expérience
     collective de toutes les boutiques.
+    `caps` : capacités actives de la boutique (cf. core/capabilities). Si None, on
+    les calcule depuis la fiche. Pilote COD, marchandage, photos, RDV.
     """
+    if caps is None:
+        caps = capabilities.effective_capabilities(merchant)
     name = merchant.get("business_name") or "la boutique"
     sector = merchant.get("sector") or ""
     desc = merchant.get("description") or ""
@@ -138,8 +168,10 @@ def build_system_prompt(merchant: dict, products: list[dict],
     momo_name = merchant.get("momo_name") or ""
     momo_network = merchant.get("momo_network") or ""
 
-    cod_enabled = bool(merchant.get("cod_enabled"))
-    negociation_on = bool(merchant.get("negotiation_enabled"))
+    cod_enabled = "cod" in caps
+    negociation_on = "negociation" in caps
+    photos_on = "photos" in caps
+    rdv_on = "rdv" in caps
     negociation_rule = (merchant.get("negotiation_rule") or "").strip()
 
     # Catalogue produits
@@ -158,7 +190,7 @@ def build_system_prompt(merchant: dict, products: list[dict],
                 line += f" — {p['description']}"
             if p.get("options"):
                 line += f" [options : {p['options']}]"
-            if p.get("photo_url"):
+            if photos_on and p.get("photo_url"):
                 line += " [photo]"
             lines.append(line)
         catalogue = "\n".join(lines) if lines else "(aucun produit disponible pour le moment)"
@@ -205,6 +237,30 @@ def build_system_prompt(merchant: dict, products: list[dict],
             "la valeur (qualité, service, livraison) avec le sourire, sans céder sur le prix."
         )
 
+    # Rendez-vous (capacité « rdv ») — l'agent propose et enregistre des RDV.
+    rdv_block = ""
+    if rdv_on:
+        days = (merchant.get("rdv_days") or "").strip()
+        hrs = (merchant.get("rdv_hours") or "").strip()
+        rnote = (merchant.get("rdv_note") or "").strip()
+        dispo = []
+        if days:
+            dispo.append(f"jours : {days}")
+        if hrs:
+            dispo.append(f"horaires : {hrs}")
+        if rnote:
+            dispo.append(rnote)
+        dispo_txt = (" — ".join(dispo) if dispo
+                     else "demande au client ses disponibilités et propose un créneau adapté")
+        rdv_block = (
+            "\n\n# Rendez-vous\n"
+            f"Tu peux PRENDRE DES RENDEZ-VOUS pour la boutique. Disponibilités : {dispo_txt}.\n"
+            "Propose un créneau DANS ces disponibilités (jamais en dehors). Quand le client "
+            "choisit un jour + une heure, appelle l'outil « enregistrer_rendezvous » UNE seule "
+            "fois, puis confirme-lui chaleureusement que la boutique valide le créneau et le "
+            "recontacte pour confirmer."
+        )
+
     # Leçons de vente apprises (cerveau d'apprentissage) — réinjectées si présentes.
     lessons_block = ""
     if lessons and lessons.strip():
@@ -232,7 +288,7 @@ Tu réponds aux clients sur WhatsApp à la place du/de la propriétaire.
 {paiement}
 
 # Prix & négociation
-{negociation}
+{negociation}{rdv_block}
 
 # Règles de la boutique
 {policies or "(aucune règle particulière)"}
@@ -402,6 +458,7 @@ def reply(
     on_order: Callable[[dict], None] | None = None,
     on_escalate: Callable[[dict], None] | None = None,
     on_show: Callable[[dict], str] | None = None,
+    on_appointment: Callable[[dict], None] | None = None,
     lessons: str | None = None,
 ) -> str:
     """Génère la réponse du vendeur IA. `history` doit finir par le message client.
@@ -414,7 +471,8 @@ def reply(
     settings.require("anthropic_api_key")
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
 
-    system_text = build_system_prompt(merchant, products, lessons=lessons)
+    caps = capabilities.effective_capabilities(merchant)
+    system_text = build_system_prompt(merchant, products, lessons=lessons, caps=caps)
     messages = _to_anthropic_messages(history)
     if not messages:
         # Pas de message client exploitable → réponse d'accueil par défaut
@@ -426,6 +484,13 @@ def reply(
         "cache_control": {"type": "ephemeral"},  # cache la fiche (réutilisée à chaque tour)
     }]
 
+    # Outils selon les capacités de la boutique (photo/RDV offerts seulement si activés).
+    tools = [ORDER_TOOL, ESCALATE_TOOL]
+    if "photos" in caps:
+        tools.append(SHOW_TOOL)
+    if "rdv" in caps:
+        tools.append(RDV_TOOL)
+
     did_tool = False
     for _ in range(MAX_TOOL_TURNS):
         resp = client.messages.create(
@@ -433,7 +498,7 @@ def reply(
             max_tokens=500,  # réponses WhatsApp courtes → tokens économisés
             system=system,
             messages=messages,
-            tools=[ORDER_TOOL, ESCALATE_TOOL, SHOW_TOOL],
+            tools=tools,
         )
 
         tool_uses = [b for b in resp.content if getattr(b, "type", None) == "tool_use"]
@@ -484,6 +549,20 @@ def reply(
                 else:
                     note = ("Photo non envoyable ici (mode démo). Sur WhatsApp elle serait "
                             "envoyée ; décris le produit au client.")
+            elif tu.name == "enregistrer_rendezvous":
+                if on_appointment:
+                    try:
+                        on_appointment(dict(tu.input or {}))
+                        note = ("Rendez-vous enregistré et propriétaire prévenu. Confirme au "
+                                "client en 2-3 lignes : le créneau souhaité est bien noté, la "
+                                "boutique valide et le recontacte pour confirmer. Reste chaleureux.")
+                    except Exception:  # noqa: BLE001
+                        log.exception("enregistrement RDV échoué")
+                        note = ("Impossible d'enregistrer le RDV pour l'instant — propose au "
+                                "client de réessayer ou transmets sa demande au/à la propriétaire.")
+                else:
+                    note = ("RDV noté (mode démo, non enregistré). Confirme au client que la "
+                            "boutique validera le créneau et le recontactera.")
             else:
                 note = "Outil inconnu, ignore-le."
             results.append({"type": "tool_result", "tool_use_id": tu.id, "content": note})
