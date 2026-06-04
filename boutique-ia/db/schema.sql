@@ -190,3 +190,22 @@ create table if not exists bia_followups (
   sent_at     timestamptz default now()
 );
 create index if not exists bia_followups_idx on bia_followups(merchant_id, customer_whatsapp, sent_at desc);
+
+-- 10. Cerveau CEO (autonomie stratégique) : le directeur autonome de Vendora
+--     analyse le business de lui-même et PROPOSE des décisions (prix, modèle/
+--     intelligence, prospection, rétention). Mongazi valide ✓/✗ (le financier
+--     reste à son niveau). Journal des décisions = mémoire stratégique.
+create table if not exists bia_decisions (
+  id uuid primary key default gen_random_uuid(),
+  category       text,                       -- prix | modele | prospection | retention | produit | autre
+  title          text not null,
+  finding        text,                       -- le constat (ce que l'agent a observé)
+  recommendation text,                       -- ce qu'il propose de faire
+  impact         text,                       -- impact estimé
+  level          text default 'validation',  -- 'auto' (réversible) | 'validation' (Mongazi)
+  financial      boolean default false,      -- touche à l'argent → toujours Mongazi
+  status         text default 'proposed',    -- proposed | approved | rejected | done
+  created_at     timestamptz default now(),
+  decided_at     timestamptz
+);
+create index if not exists bia_decisions_status_idx on bia_decisions(status, created_at desc);

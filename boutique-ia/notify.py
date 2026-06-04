@@ -224,6 +224,29 @@ def notify_learning_summary(result: dict) -> None:
     )
 
 
+def notify_ceo_review(result: dict) -> None:
+    """Le directeur autonome présente ses décisions à Mongazi (Telegram)."""
+    recos = result.get("recommendations") or []
+    if not recos:
+        notify_mongazi(
+            "🧭 <b>Revue du directeur Vendora</b>\n\n"
+            "Pas de recommandation cette fois (données insuffisantes ou rien d'urgent). "
+            "Je continue d'observer."
+        )
+        return
+    lines = []
+    for i, r in enumerate(recos[:5], 1):
+        tag = "💰" if r.get("financier") else ("🤖" if r.get("categorie") == "modele" else "•")
+        lines.append(f"{i}. {tag} <b>{r.get('titre','?')}</b>\n   {r.get('recommandation','')}")
+    notify_mongazi(
+        "🧭 <b>Le directeur Vendora a réfléchi — décisions à valider</b>\n\n"
+        f"MRR {int(result.get('mrr',0)):,} F".replace(",", " ") +
+        f" · {result.get('merchants',0)} boutiques · conversion ventes {result.get('sales_conversion_pct',0)} %\n\n"
+        + "\n\n".join(lines) +
+        "\n\n➡️ Ouvre le cockpit (panneau « Décisions du directeur ») pour valider ✓ ou rejeter ✗."
+    )
+
+
 def _to_e164(number: str | None, country: str | None) -> str | None:
     """Normalisation best-effort d'un numéro local en format international (+...)."""
     if not number:

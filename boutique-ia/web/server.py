@@ -581,13 +581,20 @@ async def admin_dashboard(request: Request, token: str = ""):
         "won": lstats.get("won", 0),
         "lost": lstats.get("lost", 0),
     }
+    # Cerveau CEO (directeur autonome) — décisions à valider
+    from db.client import list_decisions
+    ceo = {
+        "enabled": get_setting_bool("ceo_enabled", True),
+        "last_run": get_setting("ceo_last_run"),
+        "decisions": list_decisions("proposed", limit=12),
+    }
     return templates.TemplateResponse(
         request, "admin.html",
         _ctx(request, token=token, rows=rows, pending=pending, glob=glob,
              categories=cats, campaigns=campaigns,
              prospect_used=prospect_used, prospect_daily=settings.prospection_admin_daily,
              auto_enabled=auto_enabled, auto_daily=auto_daily,
-             total_recruited=total_recruited, learn=learn, followups=followups),
+             total_recruited=total_recruited, learn=learn, followups=followups, ceo=ceo),
     )
 
 
@@ -856,6 +863,78 @@ async def admin_followups_run(request: Request, bg: BackgroundTasks):
     return {"ok": True, "message": "Relances lancées — résumé sur Telegram si des envois partent."}
 
 
+CEO_INTERVAL_DAYS = 7  # revue stratégique : 1×/semaine
+
+
+def _ceo_due() -> bool:
+    """La revue du directeur doit-elle tourner ? (hebdo ; ON par défaut car il ne fait que proposer)."""
+    from datetime import datetime, timezone
+
+    from db.client import get_setting, get_setting_bool
+    if not get_setting_bool("ceo_enabled", True):
+        return False
+    last = get_setting("ceo_last_run")
+    if not last:
+        return True
+    try:
+        prev = datetime.fromisoformat(str(last).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return True
+    return (datetime.now(timezone.utc) - prev).total_seconds() >= CEO_INTERVAL_DAYS * 86400
+
+
+def run_ceo_job() -> dict:
+    """Revue du directeur autonome + mémorise la date (cerveau CEO)."""
+    from datetime import datetime, timezone
+
+    from core import strategist
+    from db.client import set_setting
+    res = strategist.run_ceo_review()
+    set_setting("ceo_last_run", datetime.now(timezone.utc).isoformat())
+    return res
+
+
+@app.post("/api/admin/ceo/run")
+async def admin_ceo_run(request: Request, bg: BackgroundTasks):
+    """Déclenche manuellement une revue du directeur autonome."""
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    bg.add_task(run_ceo_job)
+    return {"ok": True, "message": "Le directeur analyse le business — décisions sur Telegram + cockpit."}
+
+
+@app.post("/api/admin/ceo/settings")
+async def admin_ceo_settings(request: Request):
+    """Active / met en pause la revue autonome hebdomadaire du directeur."""
+    from db.client import set_setting
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    if "enabled" in body:
+        set_setting("ceo_enabled", "true" if body.get("enabled") else "false")
+    return {"ok": True}
+
+
+@app.post("/api/admin/ceo/decision/{decision_id}")
+async def admin_ceo_decision(request: Request, decision_id: str):
+    """Mongazi valide ✓ ou rejette ✗ une recommandation du directeur."""
+    from db.client import set_decision_status
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    status = body.get("status")
+    if status not in ("approved", "rejected", "done"):
+        return JSONResponse({"ok": False, "error": "Statut invalide."}, status_code=400)
+    d = set_decision_status(decision_id, status)
+    return {"ok": bool(d), "decision": d}
+
+
 def run_billing_cycle() -> dict:
     """Cycle d'abonnement : suspend les expirés + relance ceux qui arrivent à échéance."""
     from db.client import days_left, list_all_merchants, mark_reminder_sent, set_merchant_status
@@ -1020,6 +1099,13 @@ async def _auto_prospection_loop():
             await asyncio.to_thread(run_followups)
         except Exception:  # noqa: BLE001
             log.warning("followups loop", exc_info=True)
+        try:
+            # Cerveau CEO : revue stratégique autonome 1×/semaine (il PROPOSE, Mongazi valide).
+            if await asyncio.to_thread(_ceo_due):
+                log.info("ceo: revue hebdomadaire autonome")
+                await asyncio.to_thread(run_ceo_job)
+        except Exception:  # noqa: BLE001
+            log.warning("ceo loop", exc_info=True)
         await asyncio.sleep(1800)  # vérifie toutes les 30 min
 
 

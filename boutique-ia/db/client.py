@@ -750,6 +750,57 @@ def count_followups_today(merchant_id: str | None = None) -> int:
     return count_followups_since(_today_start_iso(), merchant_id)
 
 
+# ---------------------------------------------------------------------------
+# Cerveau CEO (autonomie stratégique) — bia_decisions
+# ---------------------------------------------------------------------------
+
+def save_decisions(decisions: list[dict[str, Any]]) -> int:
+    """Enregistre les recommandations proposées par le directeur autonome."""
+    rows = []
+    for d in decisions or []:
+        title = (d.get("title") or d.get("titre") or "").strip()
+        if not title:
+            continue
+        rows.append({
+            "category": (d.get("category") or d.get("categorie") or "autre")[:40],
+            "title": title[:200],
+            "finding": (d.get("finding") or d.get("constat") or "").strip() or None,
+            "recommendation": (d.get("recommendation") or d.get("recommandation") or "").strip() or None,
+            "impact": (d.get("impact") or d.get("impact_estime") or "").strip() or None,
+            "level": "auto" if (d.get("level") or d.get("niveau")) == "auto" else "validation",
+            "financial": bool(d.get("financial") or d.get("financier")),
+            "status": "proposed",
+        })
+    if not rows:
+        return 0
+    return len(get_db().table("bia_decisions").insert(rows).execute().data or [])
+
+
+def list_decisions(status: str | None = None, limit: int = 30) -> list[dict[str, Any]]:
+    db = get_db()
+    q = db.table("bia_decisions").select("*")
+    if status:
+        q = q.eq("status", status)
+    return q.order("created_at", desc=True).limit(limit).execute().data or []
+
+
+def set_decision_status(decision_id: str, status: str) -> dict[str, Any]:
+    from datetime import datetime, timezone
+    fields: dict[str, Any] = {"status": status}
+    if status in ("approved", "rejected", "done"):
+        fields["decided_at"] = datetime.now(timezone.utc).isoformat()
+    r = get_db().table("bia_decisions").update(fields).eq("id", decision_id).execute()
+    return r.data[0] if r.data else {}
+
+
+def count_decisions(status: str | None = None) -> int:
+    db = get_db()
+    q = db.table("bia_decisions").select("id", count="exact", head=True)
+    if status:
+        q = q.eq("status", status)
+    return q.execute().count or 0
+
+
 def get_active_lessons(merchant_id: str | None = None) -> str:
     """Texte des leçons à injecter dans le prompt du vendeur (global + boutique). Caché."""
     import time as _time
