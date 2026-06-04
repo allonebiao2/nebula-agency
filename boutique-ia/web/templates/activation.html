@@ -44,6 +44,7 @@
     <div class="check"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg></div>
     <h1>Boutique créée 🎉</h1>
     <p>{% if merchant %}<b style="color:var(--txt)">{{ merchant.business_name }}</b> est prête.{% endif %} Dernière étape : activez votre agent vendeur.</p>
+    <p style="margin-top:10px;font-size:.92rem">Pas encore décidé ? <a href="/essai/{{ merchant_id }}" style="color:var(--a);font-weight:600;text-decoration:none">Testez-le gratuitement d'abord →</a> <span style="color:var(--mut)">(optionnel)</span></p>
   </div>
 
   <div class="bezel" style="margin-top:14px"><div class="bezel-in" style="text-align:center">

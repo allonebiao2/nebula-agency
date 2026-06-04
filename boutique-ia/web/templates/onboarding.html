@@ -208,7 +208,7 @@
       <div class="card reveal"><div class="ic">🧠</div><h3>Adapté à VOTRE boutique</h3><p>Vos produits, vos prix, votre ton. Il parle comme vous le feriez, jamais hors catalogue.</p></div>
       <div class="card reveal"><div class="ic">📈</div><h3>Vend vraiment</h3><p>Conseils, ventes additionnelles, relances : un vrai talent commercial, pas un simple répondeur.</p></div>
       <div class="card reveal"><div class="ic">🔔</div><h3>Vous tient informé</h3><p>À chaque commande, vous êtes prévenu. Vous gardez le contrôle, lui fait le travail.</p></div>
-      <div class="card reveal"><div class="ic">⚡</div><h3>Prêt en minutes</h3><p>Remplissez votre fiche, testez-le gratuitement, activez. Aucune compétence technique requise.</p></div>
+      <div class="card reveal"><div class="ic">⚡</div><h3>Prêt en minutes</h3><p>Remplissez votre fiche et activez. Test gratuit possible avant, si vous voulez. Aucune compétence technique requise.</p></div>
     </div>
   </div>
 </section>
@@ -220,8 +220,8 @@
     <h2 class="sec-title reveal">3 étapes. Quelques minutes.</h2>
     <div class="steps" style="margin-top:40px">
       <div class="step reveal"><div class="n grad">01</div><h3>Décrivez votre boutique</h3><p>Vos produits, vos prix, votre style. Une seule fiche à remplir.</p></div>
-      <div class="step reveal"><div class="n grad">02</div><h3>Testez gratuitement</h3><p>Discutez avec votre agent vendeur comme un vrai client, tout de suite.</p></div>
-      <div class="step reveal"><div class="n grad">03</div><h3>Activez & vendez</h3><p>Un paiement Mobile Money et votre agent prend le relais sur WhatsApp.</p></div>
+      <div class="step reveal"><div class="n grad">02</div><h3>Activez en 1 paiement</h3><p>Un paiement Mobile Money et votre agent prend le relais sur WhatsApp. (Vous pouvez aussi le tester gratuitement avant — c'est optionnel.)</p></div>
+      <div class="step reveal"><div class="n grad">03</div><h3>Vendez 24h/24</h3><p>Votre agent répond, conseille et conclut les ventes à votre place, jour et nuit.</p></div>
     </div>
   </div>
 </section>
@@ -231,7 +231,7 @@
   <div class="wrap">
     <div class="eyebrow reveal">Tarifs</div>
     <h2 class="sec-title reveal">Un agent vendeur, à votre échelle.</h2>
-    <p class="sec-sub reveal">Testez gratuitement. Vous ne payez que si vous êtes convaincu. Sans engagement, par Mobile Money.</p>
+    <p class="sec-sub reveal">Souscrivez directement, ou testez gratuitement d'abord — comme vous préférez. Sans engagement, par Mobile Money.</p>
     <div class="plans">
 
       <div class="plan reveal">
@@ -292,11 +292,11 @@
     <div style="margin-top:40px;display:flex;flex-direction:column;gap:12px">
       <details class="card reveal" style="padding:0">
         <summary style="cursor:pointer;list-style:none;padding:20px 24px;font-family:'Sora';font-weight:600">C'est compliqué à installer ?</summary>
-        <p style="color:var(--muted);padding:0 24px 20px">Non, aucune compétence technique. Vous remplissez une fiche, vous testez gratuitement, vous activez. C'est tout — votre agent est prêt en quelques minutes.</p>
+        <p style="color:var(--muted);padding:0 24px 20px">Non, aucune compétence technique. Vous remplissez une fiche et vous activez (vous pouvez tester gratuitement avant, si vous voulez). C'est tout — votre agent est prêt en quelques minutes.</p>
       </details>
       <details class="card reveal" style="padding:0">
         <summary style="cursor:pointer;list-style:none;padding:20px 24px;font-family:'Sora';font-weight:600">Et si je ne suis pas convaincu ?</summary>
-        <p style="color:var(--muted);padding:0 24px 20px">Vous testez votre agent gratuitement AVANT de payer. Vous ne payez que si vous êtes convaincu, par Mobile Money, sans engagement.</p>
+        <p style="color:var(--muted);padding:0 24px 20px">Vous pouvez tester votre agent gratuitement AVANT de payer (c'est optionnel) — ou souscrire directement si vous êtes déjà convaincu. Par Mobile Money, sans engagement.</p>
       </details>
       <details class="card reveal" style="padding:0">
         <summary style="cursor:pointer;list-style:none;padding:20px 24px;font-family:'Sora';font-weight:600">Comment suis-je payé ?</summary>
@@ -401,8 +401,8 @@
           </div>
 
           <div class="price-banner">
-            Offre <b id="planLabel">Démarrage</b> · Essai gratuit, puis <b class="grad" id="planPrice">5 000 F CFA / mois</b><br>
-            <span style="color:var(--muted);font-size:.88rem">Vous testez votre agent gratuitement avant de payer</span>
+            Offre <b id="planLabel">Démarrage</b> · <b class="grad" id="planPrice">5 000 F CFA / mois</b><br>
+            <span style="color:var(--muted);font-size:.88rem">Activez directement, ou testez gratuitement avant (optionnel)</span>
           </div>
 
           <div class="err" id="err"></div>
@@ -538,7 +538,7 @@ void main(void){vec2 uv=(FC-.5*R)/MN,st=uv*vec2(2,1);vec3 col=vec3(0);float bg=c
     try{
       const r = await fetch('/api/merchants',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
       const data = await r.json();
-      if(data.ok){ window.location.href='/essai/'+data.merchant_id; }
+      if(data.ok){ window.location.href='/activation/'+data.merchant_id; }
       else throw new Error(data.error||'Erreur inconnue');
     }catch(ex){ err.textContent=ex.message; err.style.display='block'; btn.disabled=false; btn.textContent='Créer mon agent vendeur →'; }
   });

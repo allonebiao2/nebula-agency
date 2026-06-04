@@ -237,7 +237,33 @@ def activate_merchant(merchant_id: str, days: int | None = None) -> dict[str, An
     }
     if not m.get("activated_at"):
         fields["activated_at"] = now.isoformat()
+    # Forfait flexible : un changement programmé (ex. downgrade) s'applique AU
+    # renouvellement — le client a profité de son forfait payé jusqu'ici.
+    pending = (m.get("pending_plan") or "").strip()
+    if pending and pending != (m.get("plan") or ""):
+        fields["plan"] = pending
+        fields["pending_plan"] = None
     db = get_db()
+    result = db.table("bia_merchants").update(fields).eq("id", merchant_id).execute()
+    return result.data[0] if result.data else {}
+
+
+def set_merchant_plan(merchant_id: str, plan: str, immediate: bool) -> dict[str, Any]:
+    """Change le forfait d'une boutique.
+
+    immediate=True  → applique TOUT DE SUITE (ex. upgrade payé).
+    immediate=False → programme le changement au PROCHAIN renouvellement (downgrade) :
+                      la boutique garde son forfait actuel jusqu'à l'échéance.
+    """
+    from config import normalize_plan
+    plan = normalize_plan(plan)
+    db = get_db()
+    if immediate:
+        fields = {"plan": plan, "pending_plan": None}
+    else:
+        m = get_merchant(merchant_id) or {}
+        # Si on reprogramme le même forfait que l'actuel → on annule juste tout pending.
+        fields = {"pending_plan": None if plan == normalize_plan(m.get("plan")) else plan}
     result = db.table("bia_merchants").update(fields).eq("id", merchant_id).execute()
     return result.data[0] if result.data else {}
 

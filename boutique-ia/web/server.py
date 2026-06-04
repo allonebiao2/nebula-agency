@@ -520,9 +520,13 @@ async def admin_dashboard(request: Request, token: str = ""):
         price = price_for_plan(m.get("plan"))
         if st == "active":
             mrr += price
+        pplan = (m.get("pending_plan") or "").strip()
         rows.append({
             "m": m,
+            "plan_key": normalize_plan(m.get("plan")),
             "plan_label": PLAN_LABELS[normalize_plan(m.get("plan"))],
+            "pending_plan": pplan or None,
+            "pending_label": PLAN_LABELS.get(normalize_plan(pplan)) if pplan else None,
             "price": price,
             "products": prod_by_m.get(mid, 0),
             "orders": oc["count"],
@@ -640,6 +644,38 @@ async def admin_set_status(request: Request, merchant_id: str):
         log.exception("admin set_status échoué")
         return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
     return {"ok": bool(m), "merchant": m}
+
+
+@app.post("/api/admin/merchants/{merchant_id}/plan")
+async def admin_set_plan(request: Request, merchant_id: str):
+    """Change le forfait d'une boutique. apply='now' (immédiat) ou 'renewal' (au renouvellement).
+
+    Recommandé : downgrade → 'renewal' (garde le forfait payé jusqu'à l'échéance) ;
+    upgrade → 'now' (le client paie la différence). Mongazi décide (financier).
+    """
+    from db.client import get_merchant, set_merchant_plan
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    plan = (body.get("plan") or "").strip().lower()
+    if plan not in PLAN_PRICES:
+        return JSONResponse({"ok": False, "error": "Forfait invalide."}, status_code=400)
+    immediate = (body.get("apply") or "renewal") == "now"
+    try:
+        cur = get_merchant(merchant_id) or {}
+        cur_plan = normalize_plan(cur.get("plan"))
+        # Garde-fou : un downgrade ne s'applique jamais « maintenant » (le client a payé
+        # son forfait en cours) — on le force au renouvellement, même si on demande 'now'.
+        if immediate and PLAN_PRICES[plan] < PLAN_PRICES[cur_plan]:
+            immediate = False
+        m = set_merchant_plan(merchant_id, plan, immediate)
+    except Exception as e:  # noqa: BLE001
+        log.exception("admin set_plan échoué")
+        return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
+    return {"ok": bool(m), "merchant": m, "applied_now": immediate}
 
 
 @app.post("/api/admin/merchants/{merchant_id}/reset-pin")

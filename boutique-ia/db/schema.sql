@@ -101,6 +101,9 @@ alter table bia_merchants add column if not exists brand_color text;
 -- Sécurité back-office : code d'accès (hash PBKDF2) — étage "piliers"
 alter table bia_merchants add column if not exists access_pin text;
 
+-- Forfait flexible : changement de forfait programmé (downgrade au renouvellement)
+alter table bia_merchants add column if not exists pending_plan text;
+
 -- Conversion : paiement à la livraison + marchandage encadré
 alter table bia_merchants add column if not exists cod_enabled boolean default false;
 alter table bia_merchants add column if not exists negotiation_enabled boolean default false;

@@ -137,6 +137,9 @@
   .deci-l span{display:inline-block;min-width:62px;color:var(--mut);font-weight:700;
     text-transform:uppercase;font-size:.72rem;letter-spacing:.05em;margin-right:6px}
   .deci.gone{opacity:.4;filter:saturate(.3)}
+  .planpick{background:var(--panel2);border:1px solid var(--line2);color:var(--txt);
+    border-radius:9px;padding:6px 8px;font-family:'Rajdhani',sans-serif;font-weight:600;
+    font-size:.8rem;cursor:pointer}
 
   /* PILOTE panel (vedette) */
   .pilot{position:relative;border:1px solid var(--line);border-radius:20px;overflow:hidden;
@@ -525,6 +528,7 @@
               {% elif r.status == 'suspended' %}<span class="badge susp">Suspendue</span>
               {% else %}<span class="badge">Attente paiement</span>{% endif %}
               <span class="badge">{{ r.plan_label }}</span>
+              {% if r.pending_plan %}<span class="badge wait">→ {{ r.pending_label }} au renouv.</span>{% endif %}
               {% if r.dleft is not none %}<span class="badge {{ 'active' if r.dleft > 3 else ('wait' if r.dleft > 0 else 'susp') }}">{% if r.dleft > 0 %}{{ r.dleft }}j restants{% else %}expiré{% endif %}</span>{% endif %}
             </div>
             <div class="ms">{{ r.m.sector or '—' }} · {{ r.m.city or '—' }} · {{ r.m.owner_whatsapp or r.m.whatsapp_business or '—' }}</div>
@@ -539,6 +543,11 @@
             {% if r.status == 'active' %}<button class="btn dang sm" type="button" onclick="suspend('{{ r.m.id }}')"><svg viewBox="0 0 24 24"><use href="#i-pause"/></svg>Suspendre</button>{% endif %}
             <a class="btn gho sm" href="/boutique/{{ r.m.id }}"><svg viewBox="0 0 24 24"><use href="#i-link"/></svg>Gérer</a>
             <a class="btn gho sm" href="/essai/{{ r.m.id }}"><svg viewBox="0 0 24 24"><use href="#i-flask"/></svg>Tester</a>
+            <select class="planpick" title="Changer de forfait" onchange="changePlan('{{ r.m.id }}', this.value, '{{ r.plan_key }}')">
+              <option value="demarrage" {{ 'selected' if r.plan_key=='demarrage' }}>Démarrage</option>
+              <option value="business" {{ 'selected' if r.plan_key=='business' }}>Business</option>
+              <option value="empire" {{ 'selected' if r.plan_key=='empire' }}>Empire</option>
+            </select>
             <button class="btn gho sm" type="button" onclick="resetPin('{{ r.m.id }}')">Code</button>
           </div>
         </div>
@@ -715,6 +724,20 @@ async function decide(id, status){
 async function activate(id){ if(!confirm('Valider l\'abonnement et activer ?')) return; const d=await post(`/api/admin/merchants/${id}/activate`); if(d.ok){notify('Boutique activée');setTimeout(()=>location.reload(),700);}else notify(d.error||'Erreur',true); }
 async function suspend(id){ if(!confirm('Suspendre cette boutique ?')) return; const d=await post(`/api/admin/merchants/${id}/status`,{status:'suspended'}); if(d.ok){notify('Suspendue');setTimeout(()=>location.reload(),700);}else notify(d.error||'Erreur',true); }
 async function resetPin(id){ if(!confirm('Réinitialiser le code d\'accès ?')) return; const d=await post(`/api/admin/merchants/${id}/reset-pin`); notify(d.ok?'Code réinitialisé':(d.error||'Erreur'),!d.ok); }
+const PLAN_RANK={demarrage:1,business:2,empire:3};
+async function changePlan(id, plan, current){
+  if(plan===current){ notify('Déjà sur ce forfait'); return; }
+  const isUpgrade = (PLAN_RANK[plan]||0) > (PLAN_RANK[current]||0);
+  let apply='renewal';
+  if(isUpgrade){
+    apply = confirm('UPGRADE vers '+plan+'.\n\nOK = appliquer MAINTENANT (le client paie la différence)\nAnnuler = au prochain renouvellement') ? 'now' : 'renewal';
+  } else {
+    if(!confirm('Le client repassera à '+plan+' au PROCHAIN renouvellement (il garde son forfait actuel jusqu\'à l\'échéance). Confirmer ?')){ location.reload(); return; }
+  }
+  const d = await post('/api/admin/merchants/'+id+'/plan', {plan, apply});
+  if(d.ok){ notify(d.applied_now ? 'Forfait changé maintenant' : 'Changement programmé au renouvellement'); setTimeout(()=>location.reload(),900); }
+  else { notify(d.error||'Erreur', true); }
+}
 async function launchRecrutement(){
   const cat=document.getElementById('pr_cat').value, city=document.getElementById('pr_city').value.trim();
   if(!city){ notify('Indiquez une ville.',true); return; }
