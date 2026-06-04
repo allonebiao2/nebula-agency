@@ -95,6 +95,10 @@ class Settings(BaseSettings):
     # (Gmail SMTP gardé en repli local uniquement ; inutile sur Railway)
     gmail_user: str = ""
     gmail_app_password: str = ""
+    # Boîte entrante : l'agent ne lit QUE ce libellé Gmail (JAMAIS toute la boîte
+    # perso). Un filtre Gmail applique ce libellé aux réponses Vendora. Si le
+    # libellé n'existe pas → l'agent ne lit RIEN (sécurité : boîte perso intouchée).
+    inbox_mailbox: str = "Vendora"
     gmail_daily_cap: int = 90         # plafond global d'envois/jour (sécurité)
     prospection_admin_daily: int = 60 # quota/jour pour les campagnes admin (recrutement)
     # URL publique (pour le lien de désinscription dans les emails de prospection)

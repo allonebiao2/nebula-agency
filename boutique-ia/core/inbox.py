@@ -159,14 +159,24 @@ def parse_email_bytes(raw: bytes) -> dict[str, Any]:
 
 
 def fetch_unseen(limit: int = FETCH_LIMIT) -> list[dict[str, Any]]:
-    """Récupère les emails NON LUS de la boîte et les marque \\Seen. [] si KO/dormant."""
+    """Emails NON LUS du LIBELLÉ DÉDIÉ uniquement (jamais la boîte perso). Marque \\Seen.
+
+    On ne lit QUE `settings.inbox_mailbox` (libellé Gmail « Vendora » par défaut). Si
+    ce libellé n'existe pas, on ne lit RIEN — la boîte perso n'est jamais touchée.
+    """
     if not configured():
         return []
     out: list[dict[str, Any]] = []
+    mbox = (settings.inbox_mailbox or "Vendora").strip()
     try:
         srv = imaplib.IMAP4_SSL(IMAP_HOST, IMAP_PORT)
         srv.login(settings.gmail_user, settings.gmail_app_password)
-        srv.select("INBOX")
+        typ, _ = srv.select(f'"{mbox}"')   # le libellé Gmail = un dossier IMAP
+        if typ != "OK":
+            log.warning("IMAP: libellé « %s » introuvable → rien lu (boîte perso intouchée). "
+                        "Crée le libellé + un filtre Gmail pour activer.", mbox)
+            srv.logout()
+            return []
         typ, data = srv.search(None, "UNSEEN")
         if typ == "OK":
             ids = (data[0] or b"").split()
