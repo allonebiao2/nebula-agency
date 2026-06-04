@@ -1362,6 +1362,128 @@ async def delete_product_endpoint(request: Request, merchant_id: str, product_id
 # ÉTAGE 2b — WhatsApp réel (webhook Twilio, réponse TwiML)
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# Logique d'agent PARTAGÉE entre les transports WhatsApp (Twilio sandbox + Meta prod)
+# ---------------------------------------------------------------------------
+
+def _agent_handle(customer: str, body_text: str, has_audio: bool = False,
+                  transcribe_fn=None) -> dict:
+    """Traite un message client entrant → {status, text, media}. Indépendant du canal.
+
+    Identification boutique (code vendora: ou session), garde suspension/expiration,
+    vocal, opt-out, réponse du vendeur IA (leçons + variante A/B), photos.
+    `transcribe_fn` : callable ()→str|None, appelé seulement si has_audio ET après
+    identification de la boutique (on ne transcrit pas pour rien).
+    """
+    from core import brain
+    from db.client import (
+        add_optout,
+        days_left as _days_left,
+        get_active_lessons,
+        get_merchant,
+        get_merchant_by_code,
+        get_wa_session_merchant_id,
+        list_products,
+        load_history,
+        save_message,
+        upsert_wa_session,
+    )
+
+    body = (body_text or "").strip()
+
+    merchant = None
+    m = re.search(r"vendora:([A-Za-z0-9]+)", body, re.I)
+    if m:
+        merchant = get_merchant_by_code(m.group(1).lower())
+        if merchant:
+            try:
+                upsert_wa_session(customer, merchant["id"])
+            except Exception:
+                log.warning("wa session upsert échoué", exc_info=True)
+    if not merchant and customer:
+        try:
+            mid = get_wa_session_merchant_id(customer)
+            if mid:
+                merchant = get_merchant(mid)
+        except Exception:
+            log.warning("wa session lookup échoué", exc_info=True)
+
+    if not merchant:
+        return {"status": "greeting", "media": [], "text":
+                "Bonjour 🌟 Pour discuter avec une boutique, ouvrez son lien Vendora "
+                "(ou demandez-lui de vous l'envoyer). À très vite !"}
+
+    _exp = _days_left(merchant)
+    if merchant.get("status") == "suspended" or (_exp is not None and _exp <= 0):
+        return {"status": "unavailable", "media": [], "text":
+                "Cette boutique est momentanément indisponible. Merci de réessayer plus tard 🙏"}
+
+    if has_audio and transcribe_fn:
+        spoken = None
+        try:
+            spoken = transcribe_fn()
+        except Exception:  # noqa: BLE001
+            log.warning("transcription échouée", exc_info=True)
+        if not spoken:
+            return {"status": "audio_fail", "media": [], "text":
+                    "Je n'ai pas réussi à écouter votre vocal 🙏 Pouvez-vous l'écrire en quelques mots ?"}
+        clean = spoken
+    else:
+        clean = re.sub(r"\(?\s*vendora:[A-Za-z0-9]+\s*\)?", "", body, flags=re.I).strip() or "Bonjour"
+
+    if clean.strip().lower() in {"stop", "stopp", "unsubscribe", "désabonner",
+                                 "desabonner", "arret", "arrêt", "arreter", "arrêter"}:
+        try:
+            add_optout(customer, "whatsapp", "stop")
+        except Exception:  # noqa: BLE001
+            log.warning("optout WhatsApp échoué", exc_info=True)
+        return {"status": "optout", "media": [], "text":
+                "C'est noté ✅ Vous ne recevrez plus de messages. Écrivez-nous quand vous voulez revenir 🙏"}
+
+    save_message(merchant["id"], customer, "customer", clean)
+    history = load_history(merchant["id"], customer, limit=brain.HISTORY_LIMIT)
+    products = list_products(merchant["id"])
+
+    media_urls: list[str] = []
+
+    def _on_show(data: dict) -> str:
+        names = data.get("produits") or []
+        n_before = len(media_urls)
+        for raw in names:
+            nl = (raw or "").strip().lower()
+            if not nl:
+                continue
+            for p in products:
+                if p.get("photo_url") and nl in (p.get("name") or "").lower():
+                    if p["photo_url"] not in media_urls:
+                        media_urls.append(p["photo_url"])
+                    break
+        return ("Photo(s) envoyée(s) au client." if len(media_urls) > n_before
+                else "Aucune photo disponible pour ce produit — décris-le.")
+
+    try:
+        lessons = get_active_lessons(merchant["id"])
+    except Exception:  # noqa: BLE001
+        lessons = ""
+    try:
+        from core.experiment import pick_variant_text
+        vtext = pick_variant_text(merchant["id"], customer)
+        if vtext:
+            lessons = (lessons + "\n\n" + vtext) if lessons else vtext
+    except Exception:  # noqa: BLE001
+        pass
+
+    answer = brain.reply(
+        merchant, products, history,
+        on_order=_order_recorder(merchant, customer),
+        on_escalate=_escalation_notifier(merchant, customer),
+        on_show=_on_show,
+        lessons=lessons,
+    )
+    save_message(merchant["id"], customer, "assistant", answer)
+    return {"status": "reply", "text": answer, "media": media_urls}
+
+
 def _twiml(message: str, media: list[str] | None = None) -> Response:
     """Réponse TwiML : Twilio enverra ce message (+ photos) au client."""
     body = f"<Body>{escape(message)}</Body>"
@@ -1375,24 +1497,7 @@ def _twiml(message: str, media: list[str] | None = None) -> Response:
 
 @app.post("/api/whatsapp/twilio")
 async def whatsapp_twilio(request: Request):
-    """Reçoit un message WhatsApp (via Twilio), identifie la boutique, répond avec l'agent.
-
-    Un seul numéro Vendora sert toutes les boutiques. Le routing se fait via un
-    code (vendora:XXXX) présent dans le lien wa.me que chaque boutique partage,
-    puis mémorisé pour la suite de la conversation.
-    """
-    from core import brain
-    from db.client import (
-        get_active_lessons,
-        get_merchant,
-        get_merchant_by_code,
-        get_wa_session_merchant_id,
-        list_products,
-        load_history,
-        save_message,
-        upsert_wa_session,
-    )
-
+    """Reçoit un message WhatsApp via Twilio (sandbox) et répond avec l'agent (TwiML)."""
     try:
         form = await request.form()
     except Exception:
@@ -1400,114 +1505,82 @@ async def whatsapp_twilio(request: Request):
 
     from_ = (form.get("From") or "").strip()      # ex : "whatsapp:+22997..."
     body = (form.get("Body") or "").strip()
-
-    # 1. Identifier la boutique
-    merchant = None
-    m = re.search(r"vendora:([A-Za-z0-9]+)", body, re.I)
-    if m:
-        merchant = get_merchant_by_code(m.group(1).lower())
-        if merchant:
-            try:
-                upsert_wa_session(from_, merchant["id"])
-            except Exception:
-                log.warning("wa session upsert échoué", exc_info=True)
-    if not merchant and from_:
-        try:
-            mid = get_wa_session_merchant_id(from_)
-            if mid:
-                merchant = get_merchant(mid)
-        except Exception:
-            log.warning("wa session lookup échoué", exc_info=True)
-
-    if not merchant:
-        return _twiml(
-            "Bonjour 🌟 Pour discuter avec une boutique, ouvrez son lien Vendora "
-            "(ou demandez-lui de vous l'envoyer). À très vite !"
-        )
-
-    # Boutique suspendue OU abonnement expiré → l'agent ne vend plus.
-    from db.client import days_left as _days_left
-    _exp = _days_left(merchant)
-    if merchant.get("status") == "suspended" or (_exp is not None and _exp <= 0):
-        return _twiml(
-            "Cette boutique est momentanément indisponible. Merci de réessayer plus tard 🙏"
-        )
-
-    # 2a. Message VOCAL ? → transcription (booster). Le client peut parler au lieu d'écrire.
     try:
         num_media = int(form.get("NumMedia") or "0")
     except (TypeError, ValueError):
         num_media = 0
     ctype0 = (form.get("MediaContentType0") or "")
-    if num_media > 0 and ctype0.startswith("audio") and form.get("MediaUrl0"):
+    media_url0 = form.get("MediaUrl0")
+    has_audio = num_media > 0 and ctype0.startswith("audio") and bool(media_url0)
+    transcribe_fn = None
+    if has_audio:
         from core.transcribe import transcribe_audio
-        spoken = transcribe_audio(form.get("MediaUrl0"), ctype0)
-        if spoken:
-            clean = spoken
-        else:
-            return _twiml("Je n'ai pas réussi à écouter votre vocal 🙏 "
-                          "Pouvez-vous l'écrire en quelques mots ?")
-    else:
-        # 2b. Nettoyer le marqueur de routing du message texte
-        clean = re.sub(r"\(?\s*vendora:[A-Za-z0-9]+\s*\)?", "", body, flags=re.I).strip() or "Bonjour"
+        transcribe_fn = lambda: transcribe_audio(media_url0, ctype0)  # noqa: E731
 
-    # Opt-out WhatsApp : le client écrit STOP / désabonner
-    if clean.strip().lower() in {"stop", "stopp", "unsubscribe", "désabonner",
-                                 "desabonner", "arret", "arrêt", "arreter", "arrêter"}:
-        try:
-            from db.client import add_optout
-            add_optout(from_, "whatsapp", "stop")
-        except Exception:  # noqa: BLE001
-            log.warning("optout WhatsApp échoué", exc_info=True)
-        return _twiml("C'est noté ✅ Vous ne recevrez plus de messages. "
-                      "Écrivez-nous quand vous voulez revenir 🙏")
-
-    # 3. Faire répondre l'agent vendeur
     try:
-        save_message(merchant["id"], from_, "customer", clean)
-        history = load_history(merchant["id"], from_, limit=brain.HISTORY_LIMIT)
-        products = list_products(merchant["id"])
-
-        media_urls: list[str] = []
-        def _on_show(data: dict) -> str:
-            names = data.get("produits") or []
-            n_before = len(media_urls)
-            for raw in names:
-                nl = (raw or "").strip().lower()
-                if not nl:
-                    continue
-                for p in products:
-                    if p.get("photo_url") and nl in (p.get("name") or "").lower():
-                        if p["photo_url"] not in media_urls:
-                            media_urls.append(p["photo_url"])
-                        break
-            return ("Photo(s) envoyée(s) au client." if len(media_urls) > n_before
-                    else "Aucune photo disponible pour ce produit — décris-le.")
-
-        try:
-            lessons = get_active_lessons(merchant["id"])
-        except Exception:  # noqa: BLE001
-            lessons = ""
-        try:
-            from core.experiment import pick_variant_text
-            vtext = pick_variant_text(merchant["id"], from_)
-            if vtext:
-                lessons = (lessons + "\n\n" + vtext) if lessons else vtext
-        except Exception:  # noqa: BLE001
-            pass
-        answer = brain.reply(
-            merchant, products, history,
-            on_order=_order_recorder(merchant, from_),
-            on_escalate=_escalation_notifier(merchant, from_),
-            on_show=_on_show,
-            lessons=lessons,
-        )
-        save_message(merchant["id"], from_, "assistant", answer)
-    except Exception as e:  # noqa: BLE001
-        log.exception("whatsapp reply échoué")
+        res = _agent_handle(from_, body, has_audio=has_audio, transcribe_fn=transcribe_fn)
+    except Exception:  # noqa: BLE001
+        log.exception("whatsapp (twilio) reply échoué")
         return _twiml("Un instant, je vérifie avec la boutique et je reviens vers vous 🙏")
+    return _twiml(res["text"], res.get("media"))
 
-    return _twiml(answer, media_urls)
+
+# ---------------------------------------------------------------------------
+# Pilier 2 — WhatsApp PRODUCTION (Meta Cloud API). Dormant tant que non configuré.
+# ---------------------------------------------------------------------------
+
+@app.get("/api/whatsapp/meta")
+async def whatsapp_meta_verify(request: Request):
+    """Vérification d'abonnement du webhook Meta (renvoie le hub.challenge si OK)."""
+    from core import whatsapp_meta
+    qp = request.query_params
+    challenge = whatsapp_meta.verify_webhook(
+        qp.get("hub.mode"), qp.get("hub.verify_token"), qp.get("hub.challenge"))
+    if challenge is not None:
+        return Response(content=challenge, media_type="text/plain")
+    return Response(content="Forbidden", status_code=403)
+
+
+def _process_meta_message(msg: dict) -> None:
+    """Traite UN message Meta (en tâche de fond) : agent → envoi de la réponse."""
+    from core import whatsapp_meta
+    wa_id = (msg.get("from") or "").strip()
+    if not wa_id:
+        return
+    customer = f"whatsapp:+{whatsapp_meta._to_digits(wa_id)}"
+    has_audio = msg.get("type") == "audio" and bool(msg.get("audio_id"))
+    transcribe_fn = None
+    if has_audio:
+        from core.transcribe import transcribe_bytes
+        aid, actype = msg.get("audio_id"), msg.get("audio_ctype")
+
+        def transcribe_fn():  # noqa: E306
+            got = whatsapp_meta.fetch_media(aid)
+            return transcribe_bytes(got[0], got[1]) if got else None
+
+    try:
+        res = _agent_handle(customer, msg.get("text") or "", has_audio=has_audio,
+                            transcribe_fn=transcribe_fn)
+    except Exception:  # noqa: BLE001
+        log.exception("whatsapp (meta) reply échoué")
+        whatsapp_meta.send_text(wa_id, "Un instant, je reviens vers vous 🙏")
+        return
+    whatsapp_meta.send_text(wa_id, res["text"])
+    for url in (res.get("media") or []):
+        whatsapp_meta.send_image(wa_id, url)
+
+
+@app.post("/api/whatsapp/meta")
+async def whatsapp_meta_webhook(request: Request, bg: BackgroundTasks):
+    """Reçoit les messages WhatsApp via Meta Cloud API. Répond 200 vite, traite en fond."""
+    from core import whatsapp_meta
+    try:
+        payload = await request.json()
+    except Exception:
+        return {"status": "ignored"}
+    for msg in whatsapp_meta.parse_incoming(payload):
+        bg.add_task(_process_meta_message, msg)
+    return {"status": "ok"}
 
 
 # ---------------------------------------------------------------------------

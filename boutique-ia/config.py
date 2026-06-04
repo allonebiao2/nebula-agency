@@ -61,6 +61,14 @@ class Settings(BaseSettings):
     twilio_account_sid: str = ""
     twilio_auth_token: str = ""
 
+    # --- WhatsApp PRODUCTION — Meta Cloud API (Pilier 2, gratuit, sans Twilio) ---
+    # Dormant tant que ces vars ne sont pas posées : le sandbox Twilio reste actif.
+    whatsapp_token: str = ""              # token d'accès Cloud API (System User, longue durée)
+    whatsapp_phone_number_id: str = ""    # ID du numéro WhatsApp (dans Meta)
+    whatsapp_verify_token: str = ""       # jeton de vérification du webhook (choisi par nous)
+    whatsapp_app_secret: str = ""         # secret de l'app (signature des webhooks, optionnel)
+    whatsapp_graph_version: str = "v21.0"
+
     # --- Transcription des messages vocaux (booster) — Groq Whisper (gratuit) ---
     groq_api_key: str = ""
     groq_whisper_model: str = "whisper-large-v3-turbo"
