@@ -761,6 +761,7 @@ def save_decisions(decisions: list[dict[str, Any]]) -> int:
         title = (d.get("title") or d.get("titre") or "").strip()
         if not title:
             continue
+        action = (d.get("action") or "").strip().lower() or None
         rows.append({
             "category": (d.get("category") or d.get("categorie") or "autre")[:40],
             "title": title[:200],
@@ -769,6 +770,8 @@ def save_decisions(decisions: list[dict[str, Any]]) -> int:
             "impact": (d.get("impact") or d.get("impact_estime") or "").strip() or None,
             "level": "auto" if (d.get("level") or d.get("niveau")) == "auto" else "validation",
             "financial": bool(d.get("financial") or d.get("financier")),
+            "action": action,
+            "action_params": d.get("action_params") or {},
             "status": "proposed",
         })
     if not rows:
@@ -782,6 +785,11 @@ def list_decisions(status: str | None = None, limit: int = 30) -> list[dict[str,
     if status:
         q = q.eq("status", status)
     return q.order("created_at", desc=True).limit(limit).execute().data or []
+
+
+def get_decision(decision_id: str) -> dict[str, Any] | None:
+    r = get_db().table("bia_decisions").select("*").eq("id", decision_id).limit(1).execute()
+    return r.data[0] if r.data else None
 
 
 def set_decision_status(decision_id: str, status: str) -> dict[str, Any]:

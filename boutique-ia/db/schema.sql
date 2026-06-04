@@ -209,6 +209,10 @@ create table if not exists bia_decisions (
   decided_at     timestamptz
 );
 create index if not exists bia_decisions_status_idx on bia_decisions(status, created_at desc);
+-- Action exécutable (autonomie #2) : si une reco est réversible/interne, l'agent peut
+-- l'APPLIQUER tout seul dès que Mongazi la valide (toggles sûrs uniquement).
+alter table bia_decisions add column if not exists action text;        -- ex: enable_followups
+alter table bia_decisions add column if not exists action_params jsonb; -- ex: {"daily": 20}
 
 -- 11. Auto-expérimentation (le « ML » de Vendora) : l'agent teste des VARIANTES de
 --     stratégie de vente (champion vs challenger), mesure laquelle conclut le plus,

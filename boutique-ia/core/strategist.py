@@ -211,6 +211,16 @@ TOOLS = [
                             "niveau": {"type": "string", "enum": ["auto", "validation"],
                                        "description": "auto = réversible/interne ; validation = Mongazi décide."},
                             "financier": {"type": "boolean", "description": "true si ça touche à l'argent/aux prix."},
+                            "action": {"type": "string",
+                                        "enum": ["aucune", "activer_relances", "activer_prospection",
+                                                 "activer_experiences", "regler_volume_prospection"],
+                                        "description": ("Si ta reco correspond EXACTEMENT à l'un de ces leviers "
+                                                        "internes/réversibles, indique-le : il sera APPLIQUÉ "
+                                                        "automatiquement dès que Mongazi validera. Sinon 'aucune'. "
+                                                        "Mets alors niveau='auto' et financier=false.")},
+                            "action_params": {"type": "object",
+                                                "properties": {"volume": {"type": "integer",
+                                                               "description": "Pour regler_volume_prospection : emails/jour."}}},
                         },
                         "required": ["titre", "categorie", "recommandation"],
                     },
@@ -241,6 +251,10 @@ Méthode (réfléchis par toi-même) :
 Règles :
 - Tu PROPOSES, Mongazi VALIDE. Tout ce qui est financier (prix, investissement) = `financier:true`
   et `niveau:"validation"`. Ne décide jamais d'un prix toi-même.
+- Si une reco correspond EXACTEMENT à un levier interne réversible (activer les relances
+  automatiques, activer la prospection auto, activer l'auto-expérimentation, régler le volume
+  de prospection), renseigne le champ `action` correspondant + `niveau:"auto"` + `financier:false` :
+  elle sera APPLIQUÉE automatiquement dès validation de Mongazi. Pour tout le reste, `action:"aucune"`.
 - Sois concret et honnête : si les données sont trop faibles pour conclure, dis-le et propose
   surtout de collecter plus de données.
 - Pense revenus récurrents, rétention (anti-résiliation), et autonomie (faire tourner la machine).
@@ -282,6 +296,39 @@ def _run_tool(name: str, args: dict) -> str:
     except Exception as e:  # noqa: BLE001
         log.warning("skill CEO %s échoué", name, exc_info=True)
         return f"Donnée indisponible pour le moment ({str(e)[:80]})."
+
+
+# Leviers internes/réversibles que l'agent peut APPLIQUER seul une fois la reco validée
+# par Mongazi (jamais rien de financier ni d'irréversible — uniquement des interrupteurs).
+def execute_decision(decision: dict) -> tuple[bool, str]:
+    """Applique l'action d'une décision validée, si elle est sûre. Retourne (appliquée, message)."""
+    from db.client import set_setting
+    if not decision or decision.get("financial") or decision.get("level") != "auto":
+        return False, ""
+    action = (decision.get("action") or "").strip().lower()
+    params = decision.get("action_params") or {}
+    try:
+        if action == "activer_relances":
+            set_setting("followups_enabled", "true")
+            return True, "Relances automatiques activées."
+        if action == "activer_experiences":
+            set_setting("experiments_enabled", "true")
+            return True, "Auto-expérimentation des ventes activée."
+        if action == "activer_prospection":
+            set_setting("auto_prospection_enabled", "true")
+            v = params.get("volume")
+            if v:
+                set_setting("auto_prospection_daily", max(1, min(80, int(v))))
+            return True, "Prospection automatique activée."
+        if action == "regler_volume_prospection":
+            v = int(params.get("volume") or 0)
+            if v:
+                set_setting("auto_prospection_daily", max(1, min(80, v)))
+                return True, f"Volume de prospection réglé à {max(1, min(80, v))}/jour."
+    except Exception as e:  # noqa: BLE001
+        log.warning("exécution décision échouée", exc_info=True)
+        return False, f"Échec d'application : {str(e)[:80]}"
+    return False, ""  # action inconnue / 'aucune' → rien à exécuter (Mongazi agit lui-même)
 
 
 def run_ceo_review() -> dict[str, Any]:

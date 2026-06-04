@@ -956,8 +956,13 @@ async def admin_experiments_run(request: Request, bg: BackgroundTasks):
 
 @app.post("/api/admin/ceo/decision/{decision_id}")
 async def admin_ceo_decision(request: Request, decision_id: str):
-    """Mongazi valide ✓ ou rejette ✗ une recommandation du directeur."""
-    from db.client import set_decision_status
+    """Mongazi valide ✓ ou rejette ✗ une recommandation du directeur.
+
+    Si la décision validée porte une action sûre (niveau:auto, non financière),
+    l'agent l'APPLIQUE tout seul dans la foulée (#2 de l'autonomie).
+    """
+    from core.strategist import execute_decision
+    from db.client import get_decision, set_decision_status
     if not _admin_ok(request.headers.get("x-admin-token")):
         return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
     try:
@@ -967,6 +972,22 @@ async def admin_ceo_decision(request: Request, decision_id: str):
     status = body.get("status")
     if status not in ("approved", "rejected", "done"):
         return JSONResponse({"ok": False, "error": "Statut invalide."}, status_code=400)
+
+    applied_msg = ""
+    if status == "approved":
+        dec = get_decision(decision_id) or {}
+        applied, applied_msg = execute_decision(dec)
+        # Appliquée tout seul → on marque 'done' (et on le dit à Mongazi).
+        set_decision_status(decision_id, "done" if applied else "approved")
+        if applied:
+            try:
+                from notify import notify_mongazi
+                notify_mongazi(f"⚙️ <b>Décision appliquée automatiquement</b>\n\n"
+                               f"« {dec.get('title','?')} » → {applied_msg}")
+            except Exception:  # noqa: BLE001
+                pass
+        return {"ok": True, "applied": applied, "applied_message": applied_msg}
+
     d = set_decision_status(decision_id, status)
     return {"ok": bool(d), "decision": d}
 

@@ -325,6 +325,7 @@
         <div class="deci-h">
           <span class="badge {{ 'wait' if d.financial else 'active' }}">{{ d.category }}</span>
           {% if d.financial %}<span class="badge wait">financier</span>{% endif %}
+          {% if d.action and d.action != 'aucune' %}<span class="badge active">✓ = appliqué auto</span>{% endif %}
           <b>{{ d.title }}</b>
         </div>
         {% if d.finding %}<div class="deci-l"><span>Constat</span> {{ d.finding }}</div>{% endif %}
@@ -662,7 +663,8 @@ async function decide(id, status){
   if(d.ok){
     const el = document.getElementById('deci-'+id);
     if(el) el.classList.add('gone');
-    notify(status==='approved' ? 'Validée ✓' : 'Rejetée');
+    if(status==='approved' && d.applied) notify('Validée ✓ — appliquée : '+(d.applied_message||''));
+    else notify(status==='approved' ? 'Validée ✓' : 'Rejetée');
   } else notify(d.error||'Erreur', true);
 }
 
