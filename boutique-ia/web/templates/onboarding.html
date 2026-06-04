@@ -213,6 +213,19 @@
   /* note "testable" sur l'offre Démarrage */
   .freenote{display:inline-flex;align-items:center;gap:6px;color:var(--c);font-size:.8rem;font-weight:700;margin-top:8px}
   .freenote svg{width:15px;height:15px;stroke:var(--c);fill:none;stroke-width:2.2}
+  /* ===== Mobile (téléphone) ===== */
+  @media(max-width:560px){
+    section{padding:54px 0}
+    .hero{padding:60px 0 40px}
+    .frow{flex-direction:column}                 /* champs côte à côte → empilés */
+    .go-row{flex-direction:column}               /* boutons créer/tester → empilés */
+    .go-row .btn-go{min-width:0}
+    .go-row #trialBtn{width:100%}
+    .trial-band{text-align:center;justify-content:center}
+    .trial-band .btn{width:100%}
+    .formwrap .inner{padding:16px}
+    .fcard{padding:16px 14px}
+  }
 </style>
 <div class="glow"></div>
 
@@ -240,11 +253,10 @@
   <div class="wrap">
     <div class="tagpill"><span class="dot"></span> Agent vendeur doté d'intelligence artificielle · WhatsApp</div>
     <h1>Votre boutique vend<br>même quand <span class="grad">vous dormez</span>.</h1>
-    <p class="sub">{{ product_name }} crée pour vous un <b>agent vendeur doté d'intelligence artificielle</b> :
-       il répond à vos clients sur WhatsApp, conseille, prend les commandes et encaisse en Mobile Money — 24h/24, sans jamais s'arrêter.</p>
+    <p class="sub">{{ product_name }} vous crée un <b>vendeur qui ne dort jamais</b> : il répond, conseille, prend les commandes et encaisse en Mobile Money sur WhatsApp — pendant que vous faites autre chose.</p>
     <div class="cta-row">
       <a href="#creer" class="btn btn-primary">Créer mon agent vendeur →</a>
-      <a href="#avantages" class="btn btn-ghost">Voir les avantages</a>
+      <a href="#essai" class="btn btn-ghost">Tester gratuitement →</a>
     </div>
   </div>
 

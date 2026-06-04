@@ -54,8 +54,8 @@
     <div class="s"><span class="sdot"></span>Agent vendeur · en ligne</div></div>
   </div>
   <div id="log">
-    {% if merchant %}<div class="b sys">Vous discutez avec l'agent de « {{ merchant.business_name }} ». Écrivez comme un vrai client 👇</div>
-    {% else %}<div class="b sys">⚠️ Boutique introuvable. Vérifiez le lien.</div>{% endif %}
+    {% if merchant %}<div class="b sys">Vous discutez avec l'agent de « {{ merchant.business_name }} ». Écrivez comme un vrai client.</div>
+    {% else %}<div class="b sys">Boutique introuvable. Vérifiez le lien.</div>{% endif %}
   </div>
   <form id="f">
     <input id="m" placeholder="Écrivez un message…" autocomplete="off" {% if not merchant %}disabled{% endif %}>
@@ -79,8 +79,8 @@
       const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({merchant_id:merchantId,customer_id:customerId,message:text})});
       const data=await r.json(); typing.remove();
-      if(data.ok){ bubble(data.reply,'ia'); } else { bubble('⚠️ '+(data.error||'Erreur'),'sys'); }
-    }catch(ex){ typing.remove(); bubble('⚠️ '+ex.message,'sys'); }
+      if(data.ok){ bubble(data.reply,'ia'); } else { bubble(data.error||'Erreur','sys'); }
+    }catch(ex){ typing.remove(); bubble(ex.message,'sys'); }
   });
 </script>
 </body>

@@ -129,8 +129,8 @@
           countEl.textContent=data.remaining+' message'+(data.remaining>1?'s':'')+' restant'+(data.remaining>1?'s':'');
           if(data.remaining<=0) endTrial();
         }
-      } else bubble('⚠️ '+(data.error||'Erreur'),'sys');
-    }catch(ex){ typing.remove(); bubble('⚠️ '+ex.message,'sys'); }
+      } else bubble(data.error||'Erreur','sys');
+    }catch(ex){ typing.remove(); bubble(ex.message,'sys'); }
   });
 </script>
 </body>
