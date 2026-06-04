@@ -567,7 +567,7 @@ async def admin_dashboard(request: Request, token: str = ""):
 
     # Cerveau d'apprentissage (auto-amélioration)
     from db.client import get_latest_lessons
-    learn_enabled = get_setting_bool("learning_enabled", True)
+    learn_enabled = get_setting_bool("learning_enabled", False)
     learn_last = get_setting("learning_last_run")
     latest = get_latest_lessons("global") or {}
     lstats = latest.get("stats") or {}
@@ -584,7 +584,7 @@ async def admin_dashboard(request: Request, token: str = ""):
     # Cerveau CEO (directeur autonome) — décisions à valider
     from db.client import list_decisions, list_experiments
     ceo = {
-        "enabled": get_setting_bool("ceo_enabled", True),
+        "enabled": get_setting_bool("ceo_enabled", False),
         "last_run": get_setting("ceo_last_run"),
         "decisions": list_decisions("proposed", limit=12),
     }
@@ -882,7 +882,9 @@ def _ceo_due() -> bool:
     from datetime import datetime, timezone
 
     from db.client import get_setting, get_setting_bool
-    if not get_setting_bool("ceo_enabled", True):
+    # OFF par défaut : la revue tourne sur Opus (coûteuse) — pas d'auto-dépense sans
+    # vrais clients. Mongazi lance la revue à la main pour tester.
+    if not get_setting_bool("ceo_enabled", False):
         return False
     last = get_setting("ceo_last_run")
     if not last:
@@ -1069,7 +1071,9 @@ def _learning_decision() -> tuple[bool, str]:
     """Le cerveau décide LUI-MÊME s'il doit apprendre maintenant (+ pourquoi)."""
     from core import learning
     from db.client import get_setting, get_setting_bool
-    if not get_setting_bool("learning_enabled", True):
+    # OFF par défaut : pas de dépense de tokens en autonomie tant qu'il n'y a pas de
+    # vrais clients. Mongazi active quand il veut (ou lance une analyse à la main).
+    if not get_setting_bool("learning_enabled", False):
         return False, ""
     last = get_setting("learning_last_run")
     return learning.should_learn(last)

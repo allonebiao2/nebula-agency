@@ -67,6 +67,22 @@
   .topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:13px;
     padding:16px 22px;margin:0 -22px 6px;background:rgba(5,5,7,.72);
     border-bottom:1px solid var(--line);backdrop-filter:blur(16px) saturate(1.3)}
+  /* Onglets de navigation (sticky sous la barre de marque) */
+  .tabs{position:sticky;top:65px;z-index:29;display:flex;gap:7px;overflow-x:auto;
+    margin:0 -22px 4px;padding:9px 22px;background:rgba(5,5,7,.72);
+    border-bottom:1px solid var(--line);backdrop-filter:blur(16px) saturate(1.3);
+    scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .tabs::-webkit-scrollbar{display:none}
+  :root[data-theme="light"] .tabs{background:rgba(255,255,255,.82)}
+  .tabs a{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+    padding:7px 13px;border-radius:9px;border:1px solid var(--line2);color:var(--mut);
+    font-family:'Rajdhani',sans-serif;font-weight:600;font-size:.82rem;letter-spacing:.02em;
+    text-decoration:none;transition:.2s}
+  .tabs a:hover{color:var(--txt);border-color:var(--a-line)}
+  .tabs a.active{color:var(--a);border-color:var(--a-line);background:var(--a-soft);box-shadow:0 0 16px -8px var(--a-glow)}
+  .tabs a .dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.55}
+  section[id],.stats[id]{scroll-margin-top:124px}
+  html{scroll-behavior:smooth}
   .topbar .glyph{width:34px;height:34px;border-radius:9px;border:1px solid var(--a-line);
     background:var(--a-soft);display:flex;align-items:center;justify-content:center;color:var(--a);
     box-shadow:0 0 18px -4px var(--a-glow)}
@@ -241,6 +257,18 @@
   </button>
 </div>
 
+<nav class="tabs" id="tabs" aria-label="Sections">
+  <a href="#sec-stats"><span class="dot"></span>Vue d'ensemble</a>
+  <a href="#sec-ceo">Directeur</a>
+  <a href="#sec-learn">Apprentissage</a>
+  <a href="#sec-exp">Expériences</a>
+  <a href="#sec-relances">Relances</a>
+  <a href="#sec-pilote">Recrutement</a>
+  {% if pending %}<a href="#sec-paiements">Paiements</a>{% endif %}
+  <a href="#sec-boutiques">Boutiques</a>
+  <a href="#sec-recrut">Recrut. manuel</a>
+</nav>
+
 <div class="wrap">
   <span class="eyebrow rv"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8"><use href="#i-shield"/></svg> Console NEBULA</span>
   <h1 class="rv">Centre de <span class="sweep">commande</span></h1>
@@ -248,7 +276,7 @@
   <div class="thread rv"></div>
 
   <!-- STATS -->
-  <div class="stats rv">
+  <div class="stats rv" id="sec-stats">
     <div class="stat"><div class="sv num" data-target="{{ glob.merchants }}">0</div><div class="sl">Boutiques</div></div>
     <div class="stat"><div class="sv num" data-target="{{ glob.active }}">0</div><div class="sl">Actives</div></div>
     <div class="stat"><div class="sv num" data-target="{{ glob.pending }}">0</div><div class="sl">À valider</div></div>
@@ -258,7 +286,7 @@
   </div>
 
   <!-- PILOTE DE RECRUTEMENT -->
-  <section class="rv">
+  <section class="rv" id="sec-pilote">
     <div class="shead">
       <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-bolt"/></svg></div>
       <h2>Pilote de recrutement</h2>
@@ -294,7 +322,7 @@
   </section>
 
   <!-- CERVEAU CEO : DÉCISIONS DU DIRECTEUR AUTONOME -->
-  <section class="rv">
+  <section class="rv" id="sec-ceo">
     <div class="shead">
       <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-compass"/></svg></div>
       <h2>Décisions du directeur</h2>
@@ -344,7 +372,7 @@
   </section>
 
   <!-- CERVEAU D'APPRENTISSAGE (auto-amélioration) -->
-  <section class="rv">
+  <section class="rv" id="sec-learn">
     <div class="shead">
       <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-brain"/></svg></div>
       <h2>Cerveau d'apprentissage</h2>
@@ -382,7 +410,7 @@
   </section>
 
   <!-- AUTO-EXPÉRIMENTATION DES VENTES (A/B) -->
-  <section class="rv">
+  <section class="rv" id="sec-exp">
     <div class="shead">
       <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-flask"/></svg></div>
       <h2>Expériences de vente (A/B)</h2>
@@ -431,7 +459,7 @@
   </section>
 
   <!-- RELANCES AUTONOMES -->
-  <section class="rv">
+  <section class="rv" id="sec-relances">
     <div class="shead">
       <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-mail"/></svg></div>
       <h2>Relances automatiques</h2>
@@ -464,7 +492,7 @@
 
   <!-- PAIEMENTS À VALIDER -->
   {% if pending %}
-  <section class="rv">
+  <section class="rv" id="sec-paiements">
     <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-clock"/></svg></div><h2>Paiements à valider ({{ pending|length }})</h2></div>
     <div class="panel">
       {% for r in pending %}
@@ -484,7 +512,7 @@
   {% endif %}
 
   <!-- BOUTIQUES -->
-  <section class="rv">
+  <section class="rv" id="sec-boutiques">
     <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-store"/></svg></div><h2>Toutes les boutiques</h2></div>
     <div class="panel">
       {% if rows %}
@@ -520,7 +548,7 @@
   </section>
 
   <!-- RECRUTEMENT MANUEL -->
-  <section class="rv">
+  <section class="rv" id="sec-recrut">
     <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-target"/></svg></div><h2>Recrutement manuel</h2></div>
     <div class="panel">
       <p class="hint">Lancer une campagne ponctuelle sur une cible précise.</p>
@@ -572,6 +600,21 @@ function countUp(el){
 /* Reveal + déclenche les compteurs */
 const io = new IntersectionObserver((es)=>{es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); e.target.querySelectorAll?.('.num[data-target]').forEach(countUp); io.unobserve(e.target);} });},{threshold:.12});
 document.querySelectorAll('.rv').forEach((el,i)=>{ el.style.setProperty('--d',(i%5)*60+'ms'); io.observe(el); });
+
+/* Onglets : surbrillance de la section visible (scrollspy) */
+(function(){
+  const tabs = [...document.querySelectorAll('.tabs a')];
+  const map = {}; tabs.forEach(a => { const id=a.getAttribute('href').slice(1); map[id]=a; });
+  const targets = Object.keys(map).map(id => document.getElementById(id)).filter(Boolean);
+  if(!targets.length) return;
+  function setActive(id){ tabs.forEach(a=>a.classList.toggle('active', a.getAttribute('href').slice(1)===id)); }
+  const spy = new IntersectionObserver((es)=>{
+    es.forEach(e=>{ if(e.isIntersecting) setActive(e.target.id); });
+  },{rootMargin:'-130px 0px -65% 0px',threshold:0});
+  targets.forEach(t=>spy.observe(t));
+  // Clic onglet : surbrillance immédiate + garde l'onglet visible dans la barre
+  tabs.forEach(a=>a.addEventListener('click',()=>{ setActive(a.getAttribute('href').slice(1)); a.scrollIntoView({inline:'center',block:'nearest'}); }));
+})();
 
 /* Pilote */
 async function toggleAuto(on){
