@@ -226,6 +226,26 @@
     .formwrap .inner{padding:16px}
     .fcard{padding:16px 14px}
   }
+  /* ROI / comparaison vendeur humain vs Vendora */
+  .roi-compare{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:34px}
+  .roi-col{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:18px;padding:24px}
+  .roi-col.best{border:1.5px solid transparent;background:linear-gradient(var(--panel),var(--panel)) padding-box,var(--grad) border-box;box-shadow:0 18px 50px rgba(139,92,255,.22)}
+  .roi-h{font-family:'Sora',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:16px;display:flex;align-items:center;gap:9px}
+  .roi-h svg{width:22px;height:22px;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .roi-col ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+  .roi-col li{display:flex;gap:10px;align-items:flex-start;font-size:.93rem;color:var(--muted)}
+  .roi-col.best li{color:var(--txt)}
+  .roi-col li svg{width:17px;height:17px;flex:none;margin-top:2px;fill:none;stroke-width:2}
+  .roi-col li.neg svg{stroke:var(--muted)}
+  .roi-col li.pos svg{stroke:var(--c)}
+  .roi-punch{text-align:center;margin-top:28px;font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(1.15rem,3.4vw,1.6rem)}
+  /* bande réassurance (risque zéro) */
+  .reassure{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:26px}
+  .reassure .ra{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);background:var(--panel);
+        border-radius:30px;padding:10px 18px;font-size:.9rem;font-weight:600}
+  .reassure .ra svg{width:18px;height:18px;stroke:var(--c);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .founder{text-align:center;margin-top:18px;color:var(--c);font-weight:600;font-size:.9rem}
+  @media(max-width:560px){.roi-compare{grid-template-columns:1fr}}
 </style>
 <div class="glow"></div>
 
@@ -234,7 +254,7 @@
     <div class="logo"><img src="/static/logo.svg" alt="{{ product_name }}"><span class="brand grad">{{ product_name }}</span></div>
     <div class="navlinks">
       <a class="nlk" href="#avantages">Avantages</a>
-      <a class="nlk" href="#comment">Comment ça marche</a>
+      <a class="nlk" href="#roi">Rentabilité</a>
       <a class="nlk" href="#tarifs">Tarifs</a>
       <a class="nlk" href="#essai">Essai gratuit</a>
       <a class="nlk" href="#faq">FAQ</a>
@@ -296,6 +316,36 @@
   </div>
 </section>
 
+<!-- ROI -->
+<section id="roi" style="padding-top:20px">
+  <div class="wrap">
+    <div class="eyebrow reveal">Ce que ça vous rapporte</div>
+    <h2 class="sec-title reveal">Moins cher qu'un vendeur. Jamais en repos.</h2>
+    <p class="sec-sub reveal">Une seule vente récupérée — un client qui aurait filé la nuit, ou faute de réponse assez rapide — et votre abonnement est déjà remboursé.</p>
+    <div class="roi-compare reveal">
+      <div class="roi-col">
+        <div class="roi-h"><svg viewBox="0 0 24 24" style="stroke:var(--muted)"><use href="#i-store"/></svg>Un vendeur humain</div>
+        <ul>
+          <li class="neg"><svg viewBox="0 0 24 24"><use href="#i-ban"/></svg>30 000 à 50 000 F de salaire / mois</li>
+          <li class="neg"><svg viewBox="0 0 24 24"><use href="#i-ban"/></svg>Dort, prend des congés, tombe malade</li>
+          <li class="neg"><svg viewBox="0 0 24 24"><use href="#i-ban"/></svg>Rate les messages de la nuit et du week-end</li>
+          <li class="neg"><svg viewBox="0 0 24 24"><use href="#i-ban"/></svg>Oublie de relancer les clients hésitants</li>
+        </ul>
+      </div>
+      <div class="roi-col best">
+        <div class="roi-h"><svg viewBox="0 0 24 24" style="stroke:var(--c)"><use href="#i-robot"/></svg>Votre agent Vendora</div>
+        <ul>
+          <li class="pos"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Dès 5 000 F / mois</li>
+          <li class="pos"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Répond 24h/24, 7j/7, sans jamais s'arrêter</li>
+          <li class="pos"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Ne rate aucun message, même à 3h du matin</li>
+          <li class="pos"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Relance, conseille et conclut tout seul</li>
+        </ul>
+      </div>
+    </div>
+    <div class="roi-punch reveal">Une seule vente récupérée = <span class="grad">votre abonnement remboursé.</span></div>
+  </div>
+</section>
+
 <!-- TARIFS -->
 <section id="tarifs">
   <div class="wrap">
@@ -352,6 +402,13 @@
 
     </div>
     <p class="plans-note">2 mois offerts en payant à l'année · Paiement Mobile Money · Sans engagement</p>
+    <div class="reassure reveal">
+      <span class="ra"><svg viewBox="0 0 24 24"><use href="#i-ban"/></svg>Sans engagement</span>
+      <span class="ra"><svg viewBox="0 0 24 24"><use href="#i-card"/></svg>Sans carte bancaire</span>
+      <span class="ra"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Annulez quand vous voulez</span>
+      <span class="ra"><svg viewBox="0 0 24 24"><use href="#i-shield"/></svg>Satisfait ou remboursé</span>
+    </div>
+    <div class="founder reveal">Offre « membre fondateur » — prix de lancement réservé aux premières boutiques.</div>
 
     <!-- ESSAI GRATUIT — réservé à l'offre Démarrage -->
     <div class="trial-band reveal" id="essai">
