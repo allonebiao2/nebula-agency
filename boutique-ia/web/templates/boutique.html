@@ -69,6 +69,17 @@
   <p class="lead reveal">Gérez votre boutique en quelques gestes. Chaque changement est appliqué <b style="color:var(--txt)">tout de suite</b> par votre agent vendeur.</p>
   <div class="thread reveal"></div>
 
+  <!-- BANDEAU BOUTIQUE EN PAUSE (essai fini ou abonnement expiré) -->
+  {% if suspended %}
+  <div class="bezel reveal" style="margin-top:16px;border:1px solid #e0a93b"><div class="bezel-in" style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+    <div>
+      <div style="font-weight:800;font-size:1.02rem;color:#e0a93b">⏸️ Votre boutique est en pause{% if merchant.is_trial %} — essai terminé{% else %} — abonnement expiré{% endif %}</div>
+      <div class="hint" style="margin-top:3px">Votre agent ne vend plus pour l'instant, mais <b>toutes vos données et conversations sont conservées</b>. Réactivez en 1 paiement pour reprendre exactement là où vous en étiez.</div>
+    </div>
+    <a class="btn acc" href="/activation/{{ merchant_id }}">Réactiver ma boutique</a>
+  </div></div>
+  {% endif %}
+
   <!-- BANDEAU ESSAI -->
   {% if trial %}
   <div class="bezel reveal" style="margin-top:16px;border:1px solid var(--a)"><div class="bezel-in" style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">

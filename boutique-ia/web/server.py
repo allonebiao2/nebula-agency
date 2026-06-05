@@ -536,10 +536,15 @@ async def boutique_backoffice(request: Request, merchant_id: str):
         tracked = [s for s in steps if s["done"] is not None]
         guide = {"steps": steps, "done": sum(1 for s in tracked if s["done"]),
                  "total": len(tracked), "all_done": all(s["done"] for s in tracked)}
+    # Bannière essai : seulement pendant l'essai RÉEL (active + jours restants > 0).
+    # Bannière « en pause » : pour toute boutique suspendue (essai fini OU abo expiré).
     trial = None
-    if merchant and merchant.get("is_trial"):
+    suspended = bool(merchant and merchant.get("status") == "suspended")
+    if merchant and merchant.get("is_trial") and merchant.get("status") == "active":
         from db.client import days_left as _days_left_bo
-        trial = {"days_left": max(0, _days_left_bo(merchant) or 0)}
+        _dl = _days_left_bo(merchant)
+        if _dl is not None and _dl > 0:
+            trial = {"days_left": _dl}
     rdv_on = bool(merchant) and has_capability(merchant, "rdv")
     appointments = []
     if rdv_on:
@@ -556,7 +561,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              plan=plan, plan_label=plan_label, plans=plans, accent=accent,
              daily_limit=daily_limit, used_today=used_today, remaining=remaining,
              categories=cats, campaigns=campaigns, inbox=inbox, caps=caps_ctx,
-             guide=guide, trial=trial, rdv_on=rdv_on, appointments=appointments,
+             guide=guide, trial=trial, suspended=suspended, rdv_on=rdv_on, appointments=appointments,
              prospect_daily=prospect_daily, prospect_used=prospect_used,
              prospect_remaining=max(0, prospect_daily - prospect_used)),
     )
