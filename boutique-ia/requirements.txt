@@ -17,3 +17,6 @@ httpx>=0.27.0
 python-dotenv>=1.0.1
 pydantic>=2.9.0
 pydantic-settings>=2.6.0
+
+# Vendora Social — génération d'images de posts (templates brandés, sans IA payante)
+pillow>=10.4.0

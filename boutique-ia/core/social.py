@@ -1,9 +1,12 @@
-"""Vendora Social — moteur de contenu (Phase 2, brique 1).
+"""Vendora Social — moteur de contenu (module dans Vendora, futur « Postora »).
 
-Génère des idées de posts réseaux sociaux ANCRÉES sur le catalogue de la boutique
-(« du social qui vend »), + un mini calendrier. Brique SÛRE : aucune publication
-automatique ici (pas de dépendance Meta) — on rédige, le commerçant valide/copie.
-La publication via API officielle viendra en Phase 3 (compte connecté + App Review).
+Génère des idées de posts ANCRÉES sur le catalogue (« du social qui vend »), avec :
+- du COPYWRITING qui vend (accroche, bénéfice, urgence honnête, CTA fort) ;
+- une ADAPTATION PAR RÉSEAU : une variante NATIVE optimisée pour chaque réseau
+  (Facebook, Instagram…) plutôt que le même texte partout.
+
+Brique sûre : on rédige, le commerçant valide/copie. La PUBLICATION auto via API
+officielle + la génération d'IMAGES (core/social_image) sont des briques à part.
 
 Coût maîtrisé : généré À LA DEMANDE (clic), jamais en autonomie.
 """
@@ -22,6 +25,24 @@ log = logging.getLogger("boutique-ia.social")
 
 _JOURS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
 
+# Réseaux du MVP + leur style natif (l'IA adapte le post à chacun).
+_NETWORKS: dict[str, str] = {
+    "Facebook": ("3 à 5 lignes, ton chaleureux et communautaire, on peut contextualiser/raconter, "
+                 "numéro ou invitation à écrire OK, 2 à 4 hashtags max."),
+    "Instagram": ("2 à 3 lignes percutantes, accroche forte dès la 1ère ligne, 1 à 3 emojis, "
+                  "pensé pour le visuel, 8 à 15 hashtags ciblés."),
+}
+
+_COPY_RULES = (
+    "RÈGLES DE COPYWRITING (style qui VEND, applique-les) :\n"
+    "- 1ère ligne = ACCROCHE qui stoppe le scroll (question, bénéfice choc, curiosité).\n"
+    "- Parle BÉNÉFICE pour le client, pas seulement caractéristiques.\n"
+    "- Crée le désir + une urgence HONNÊTE (stock limité, pièce unique, promo du jour) UNIQUEMENT si c'est vrai.\n"
+    "- Preuve sociale légère si crédible (« nos clientes adorent… »).\n"
+    "- Termine TOUJOURS par un CTA clair : « Écris-nous en privé pour commander », « Réserve le tien »…\n"
+    "- Jamais de produit/prix hors catalogue."
+)
+
 
 def _catalogue_brief(products: list[dict], limit: int = 12) -> str:
     lines = []
@@ -37,11 +58,16 @@ def _catalogue_brief(products: list[dict], limit: int = 12) -> str:
     return "\n".join(lines) or "(catalogue vide)"
 
 
+def _clean_hashtags(h) -> str:
+    if isinstance(h, list):
+        return " ".join(str(x).strip() for x in h if str(x).strip())
+    return str(h or "").strip()
+
+
 def _parse_posts(text: str) -> list[dict[str, Any]]:
-    """Extrait le tableau JSON de posts de la réponse du modèle (robuste)."""
+    """Extrait le tableau JSON de posts (robuste) → posts avec variantes par réseau."""
     if not text:
         return []
-    # Tente de récupérer le 1er bloc [...] JSON.
     m = re.search(r"\[.*\]", text, re.S)
     raw = m.group(0) if m else text
     try:
@@ -52,27 +78,31 @@ def _parse_posts(text: str) -> list[dict[str, Any]]:
     for i, item in enumerate(data if isinstance(data, list) else []):
         if not isinstance(item, dict):
             continue
-        legende = (item.get("legende") or item.get("caption") or "").strip()
-        if not legende:
-            continue
-        hashtags = item.get("hashtags") or ""
-        if isinstance(hashtags, list):
-            hashtags = " ".join(str(h).strip() for h in hashtags if str(h).strip())
+        reseaux = []
+        for net in _NETWORKS:
+            v = item.get(net.lower()) or item.get(net)
+            if isinstance(v, dict) and (v.get("legende") or v.get("caption")):
+                reseaux.append({"reseau": net,
+                                "legende": str(v.get("legende") or v.get("caption")).strip(),
+                                "hashtags": _clean_hashtags(v.get("hashtags"))})
+        # Repli : pas de variantes → on réutilise une légende à plat pour tous les réseaux.
+        if not reseaux:
+            flat = str(item.get("legende") or item.get("caption") or "").strip()
+            if not flat:
+                continue
+            reseaux = [{"reseau": net, "legende": flat,
+                        "hashtags": _clean_hashtags(item.get("hashtags"))} for net in _NETWORKS]
         out.append({
-            "jour": (str(item.get("jour") or item.get("day") or _JOURS[i % 7])).strip(),
-            "type": (str(item.get("type") or "post")).strip(),
-            "legende": legende,
-            "hashtags": str(hashtags).strip(),
-            "idee_visuelle": (str(item.get("idee_visuelle") or item.get("visuel") or "")).strip(),
+            "jour": str(item.get("jour") or item.get("day") or _JOURS[i % 7]).strip(),
+            "type": str(item.get("type") or "post").strip(),
+            "idee_visuelle": str(item.get("idee_visuelle") or item.get("visuel") or "").strip(),
+            "reseaux": reseaux,
         })
     return out
 
 
 def generate_posts(merchant: dict, products: list[dict], n: int = 5) -> list[dict[str, Any]]:
-    """Génère `n` idées de posts (légende + hashtags + idée visuelle) pour la boutique.
-
-    Contenu orienté VENTE, ancré sur le catalogue. Retourne [] si génération KO.
-    """
+    """Génère `n` posts (copy qui vend + variante NATIVE par réseau). [] si KO."""
     settings.require("anthropic_api_key")
     name = merchant.get("business_name") or "la boutique"
     sector = merchant.get("sector") or ""
@@ -80,28 +110,30 @@ def generate_posts(merchant: dict, products: list[dict], n: int = 5) -> list[dic
     city = merchant.get("city") or ""
     desc = merchant.get("description") or ""
     catalogue = _catalogue_brief(products)
+    nets_doc = "\n".join(f"- {net} : {style}" for net, style in _NETWORKS.items())
 
     system_text = (
-        f"Tu es un social media manager expert pour « {name} »"
+        f"Tu es un social media manager + copywriter d'élite pour « {name} »"
         f"{f' ({sector})' if sector else ''}{f', à {city}' if city else ''}.\n"
-        f"Description : {desc or '(non fournie)'}\n\n"
-        "Ton rôle : créer des idées de posts pour Facebook/Instagram qui font VENDRE — "
-        "ancrés sur les vrais produits ci-dessous, jamais génériques. Style adapté au ton "
-        f"« {tone} », adapté à une clientèle d'Afrique de l'Ouest. Chaque post doit donner "
-        "envie d'écrire en privé pour commander.\n\n"
-        f"Catalogue :\n{catalogue}"
+        f"Description : {desc or '(non fournie)'}\n"
+        f"Ton de marque : {tone}. Clientèle : Afrique de l'Ouest.\n\n"
+        f"{_COPY_RULES}\n\n"
+        "ADAPTATION PAR RÉSEAU — ne mets PAS le même texte partout, écris une variante "
+        f"NATIVE pour chaque réseau selon son style :\n{nets_doc}\n\n"
+        f"Catalogue (ancre-toi dessus, jamais d'invention) :\n{catalogue}"
     )
     consigne = (
         f"Génère exactement {n} idées de posts variées (produit phare, promo, conseil, "
-        "preuve sociale, nouveauté…). Réponds UNIQUEMENT par un tableau JSON, sans texte "
-        "autour, au format : "
-        '[{"jour":"Lundi","type":"produit","legende":"texte du post (2-4 lignes, 1-2 emojis, '
-        'appel à écrire en privé)","hashtags":"#x #y","idee_visuelle":"quoi montrer en photo"}]'
+        "preuve sociale, nouveauté…). Pour CHAQUE post, écris une variante Facebook ET une "
+        "variante Instagram. Réponds UNIQUEMENT par un tableau JSON, sans texte autour, au format : "
+        '[{"jour":"Lundi","type":"produit","idee_visuelle":"quoi montrer en photo",'
+        '"facebook":{"legende":"...","hashtags":"#x #y"},'
+        '"instagram":{"legende":"...","hashtags":"#x #y #z"}}]'
     )
     try:
         client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
         resp = client.messages.create(
-            model=settings.writer_model, max_tokens=1500,
+            model=settings.writer_model, max_tokens=2800,
             system=[{"type": "text", "text": system_text,
                      "cache_control": {"type": "ephemeral"}}],
             messages=[{"role": "user", "content": consigne}],

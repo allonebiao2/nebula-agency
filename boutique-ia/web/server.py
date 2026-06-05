@@ -1619,6 +1619,51 @@ async def merchant_social_generate(request: Request, merchant_id: str):
     return {"ok": True, "posts": posts}
 
 
+@app.post("/api/merchants/{merchant_id}/social/image")
+async def merchant_social_image(request: Request, merchant_id: str):
+    """Vendora Social : génère une IMAGE de post brandée pour un produit (template, gratuit).
+
+    body : {product_id, headline?}. Compose photo produit + accroche + prix + marque,
+    upload sur le stockage, renvoie l'URL. Session + capacité « social » requises.
+    """
+    import httpx
+    from core import social_image
+    from core.capabilities import has_capability
+    from db.client import get_merchant, list_products, upload_social_image
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    merchant = get_merchant(merchant_id)
+    if not merchant:
+        return JSONResponse({"ok": False, "error": "Boutique introuvable."}, status_code=404)
+    if not has_capability(merchant, "social"):
+        return JSONResponse({"ok": False, "error": "Module « Réseaux sociaux » non inclus."}, status_code=403)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    pid = str(body.get("product_id") or "").strip()
+    product = next((p for p in list_products(merchant_id) if str(p.get("id")) == pid), None)
+    if not product:
+        return JSONResponse({"ok": False, "error": "Choisissez un produit."}, status_code=400)
+    headline = (body.get("headline") or product.get("name") or "").strip()
+    price = product.get("price")
+    price_text = (f"{int(float(price)):,} F".replace(",", " ")) if price not in (None, "") else None
+    img_bytes = None
+    if product.get("photo_url"):
+        try:
+            img_bytes = httpx.get(product["photo_url"], follow_redirects=True, timeout=20).content
+        except Exception:  # noqa: BLE001
+            img_bytes = None
+    try:
+        png = social_image.render_post_image(merchant, headline, price_text, img_bytes)
+        url = upload_social_image(merchant_id, png)
+    except Exception as e:  # noqa: BLE001
+        log.exception("génération image social échouée")
+        return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
+    return {"ok": True, "url": url}
+
+
 @app.post("/api/merchants/{merchant_id}/inbox/mode")
 async def merchant_inbox_mode(request: Request, merchant_id: str):
     """Le commerçant choisit comment l'agent gère ses réponses email :

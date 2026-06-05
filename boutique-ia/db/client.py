@@ -217,6 +217,19 @@ def upload_product_photo(merchant_id: str, product_id: str, data: bytes,
     return url
 
 
+def upload_social_image(merchant_id: str, data: bytes) -> str:
+    """Upload une image de post réseau social (PNG) sur Supabase Storage → URL publique."""
+    import time
+    db = get_db()
+    path = f"{merchant_id}/social/{int(time.time() * 1000)}.png"
+    opts = {"content-type": "image/png", "upsert": "true"}
+    try:
+        db.storage.from_("bia-products").upload(path, data, opts)
+    except Exception:  # noqa: BLE001
+        db.storage.from_("bia-products").update(path, data, opts)
+    return db.storage.from_("bia-products").get_public_url(path).split("?")[0]
+
+
 def list_products(merchant_id: str) -> list[dict[str, Any]]:
     db = get_db()
     return (
