@@ -66,6 +66,23 @@
     <span class="count" id="count">{{ free_trial_messages }} messages d'essai</span>
   </div>
 
+  {% if trial %}
+  <div class="bezel" style="margin-top:16px"><div class="bezel-in">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div>
+        <div style="font-weight:800;font-size:1.05rem">🎁 Essai gratuit actif — il vous reste <span style="color:var(--a)">{{ trial.days_left }} jour{{ 's' if trial.days_left > 1 else '' }}</span></div>
+        <div class="hint" style="margin-top:4px">À la fin, votre agent se met en pause — <b>vos données et conversations sont gardées</b>. Activez quand vous voulez pour reprendre.</div>
+      </div>
+      <a class="btn acc sm" href="/activation/{{ merchant_id }}">Activer maintenant</a>
+    </div>
+    {% if trial.stats.conversations or trial.stats.orders %}
+    <div class="hint" style="margin-top:10px;border-top:1px solid var(--hair);padding-top:10px">
+      📈 Depuis le début : <b>{{ trial.stats.conversations }}</b> client(s) servi(s){% if trial.stats.orders %} · <b>{{ trial.stats.orders }}</b> commande(s){% if trial.stats.revenue %} ({{ "{:,}".format(trial.stats.revenue|int).replace(",", " ") }} F){% endif %}{% endif %}.
+    </div>
+    {% endif %}
+  </div></div>
+  {% endif %}
+
   {% if wa_link %}
   <div class="bezel" style="margin-top:16px"><div class="bezel-in">
     <div class="hint" style="display:flex;align-items:center;gap:7px;margin-bottom:9px"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="var(--mut)" stroke-width="1.6"><use href="#i-link"/></svg> Votre lien WhatsApp à partager à vos clients</div>

@@ -140,6 +140,59 @@ def notify_subscription_reminder(merchant: dict, days: int, price: int) -> None:
     )
 
 
+def _trial_value_line(stats: dict | None) -> str:
+    """Phrase de preuve de valeur de l'essai (vide si rien à montrer)."""
+    s = stats or {}
+    convos = int(s.get("conversations") or 0)
+    orders = int(s.get("orders") or 0)
+    rev = s.get("revenue") or 0
+    if not (convos or orders):
+        return ""
+    bits = []
+    if convos:
+        bits.append(f"{convos} client(s) servi(s)")
+    if orders:
+        bits.append(f"{orders} commande(s)" + (f" ({_fmt_fcfa(rev)})" if rev else ""))
+    return " · ".join(bits)
+
+
+def notify_trial_reminder(merchant: dict, days: int, price: int, stats: dict | None = None) -> None:
+    """Rappel J-1 avant la fin de l'essai gratuit (avec preuve de valeur)."""
+    val = _trial_value_line(stats)
+    notify_mongazi(
+        "⏳ <b>Essai gratuit bientôt terminé</b>\n\n"
+        f"🏪 {merchant.get('business_name','?')}\n"
+        f"⏰ Fin dans <b>{days} jour(s)</b>\n"
+        + (f"📈 Pendant l'essai : {val}\n" if val else "")
+        + f"💰 Activation {price:,} F/mois".replace(",", " ")
+        + f"\n🆔 <code>{merchant.get('id')}</code>"
+    )
+    extra = f" Pendant l'essai, votre agent a déjà {val}." if val else ""
+    _whatsapp_owner(
+        merchant.get("owner_whatsapp"), merchant.get("country"),
+        f"Bonjour 👋 Votre essai gratuit Vendora ({merchant.get('business_name','votre boutique')}) "
+        f"se termine dans {days} jour(s).{extra} Activez pour ne pas perdre votre agent — merci !"
+    )
+
+
+def notify_trial_ended(merchant: dict, stats: dict | None = None) -> None:
+    """Fin de l'essai gratuit → boutique suspendue (données conservées) + preuve de valeur."""
+    val = _trial_value_line(stats)
+    notify_mongazi(
+        "🎁 <b>Essai gratuit terminé — boutique en pause</b>\n\n"
+        f"🏪 {merchant.get('business_name','?')}\n"
+        + (f"📈 Bilan de l'essai : {val}\n" if val else "")
+        + "➡️ Relance-le pour le convertir (ses données sont conservées).\n"
+        + f"🆔 <code>{merchant.get('id')}</code>"
+    )
+    extra = f" Pendant l'essai, votre agent a {val}." if val else ""
+    _whatsapp_owner(
+        merchant.get("owner_whatsapp"), merchant.get("country"),
+        f"Votre essai gratuit Vendora ({merchant.get('business_name','votre boutique')}) est terminé.{extra} "
+        f"Votre agent et toutes vos données sont gardés — activez en 1 paiement pour reprendre là où vous en étiez."
+    )
+
+
 def notify_subscription_expired(merchant: dict) -> None:
     """Abonnement expiré → boutique suspendue."""
     notify_mongazi(

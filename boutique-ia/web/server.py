@@ -301,13 +301,23 @@ async def create_merchant_endpoint(request: Request):
             {"ok": False, "error": f"Erreur enregistrement : {e}"}, status_code=500
         )
 
+    # Essai gratuit 3 jours (bouton « Tester gratuitement » → offre Démarrage) :
+    # la boutique devient active mais non payante, suspendue auto à J+3.
+    trial = bool(body.get("trial")) and merchant_id
+    if trial:
+        try:
+            from db.client import start_trial
+            merchant = start_trial(merchant_id, days=3) or merchant
+        except Exception:  # noqa: BLE001
+            log.warning("démarrage essai échoué", exc_info=True)
+
     # Alerte Mongazi (best-effort, ne bloque jamais l'inscription)
     try:
         notify_new_merchant(merchant, count)
     except Exception:  # noqa: BLE001
         pass
 
-    return {"ok": True, "merchant_id": merchant_id, "products": count}
+    return {"ok": True, "merchant_id": merchant_id, "products": count, "trial": bool(trial)}
 
 
 @app.post("/api/merchants/{merchant_id}/payment")
@@ -501,7 +511,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
     # Guide de démarrage : rend le back-office explicite dès l'arrivée (étapes + état).
     guide = None
     if merchant:
-        is_active = merchant.get("status") == "active"
+        is_active = merchant.get("status") == "active" and not merchant.get("is_trial")
         steps = [
             {"title": "Ajoutez vos produits ou services",
              "desc": "Pour que votre agent ait quelque chose à vendre à vos clients.",
@@ -526,6 +536,10 @@ async def boutique_backoffice(request: Request, merchant_id: str):
         tracked = [s for s in steps if s["done"] is not None]
         guide = {"steps": steps, "done": sum(1 for s in tracked if s["done"]),
                  "total": len(tracked), "all_done": all(s["done"] for s in tracked)}
+    trial = None
+    if merchant and merchant.get("is_trial"):
+        from db.client import days_left as _days_left_bo
+        trial = {"days_left": max(0, _days_left_bo(merchant) or 0)}
     rdv_on = bool(merchant) and has_capability(merchant, "rdv")
     appointments = []
     if rdv_on:
@@ -542,7 +556,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              plan=plan, plan_label=plan_label, plans=plans, accent=accent,
              daily_limit=daily_limit, used_today=used_today, remaining=remaining,
              categories=cats, campaigns=campaigns, inbox=inbox, caps=caps_ctx,
-             guide=guide, rdv_on=rdv_on, appointments=appointments,
+             guide=guide, trial=trial, rdv_on=rdv_on, appointments=appointments,
              prospect_daily=prospect_daily, prospect_used=prospect_used,
              prospect_remaining=max(0, prospect_daily - prospect_used)),
     )
@@ -597,7 +611,7 @@ async def admin_dashboard(request: Request, token: str = ""):
     for p in products:
         prod_by_m[p.get("merchant_id")] = prod_by_m.get(p.get("merchant_id"), 0) + 1
 
-    rows, mrr, total_sales = [], 0, 0.0
+    rows, mrr, total_sales, trials = [], 0, 0.0, 0
     counts = {"active": 0, "paid_pending_validation": 0, "pending_payment": 0, "suspended": 0}
     for m in merchants:
         mid = m.get("id")
@@ -606,8 +620,10 @@ async def admin_dashboard(request: Request, token: str = ""):
         oc = orders_by_m.get(mid, {"count": 0, "revenue": 0.0})
         total_sales += oc["revenue"]
         price = price_for_plan(m.get("plan"))
-        if st == "active":
-            mrr += price
+        if st == "active" and not m.get("is_trial"):
+            mrr += price        # un essai est actif mais NON payant → exclu du MRR
+        if m.get("is_trial"):
+            trials += 1
         pplan = (m.get("pending_plan") or "").strip()
         rows.append({
             "m": m,
@@ -627,6 +643,7 @@ async def admin_dashboard(request: Request, token: str = ""):
     glob = {
         "merchants": len(merchants),
         "active": counts.get("active", 0),
+        "trials": trials,
         "pending": counts.get("paid_pending_validation", 0),
         "orders": len(orders),
         "sales": total_sales,
@@ -1228,9 +1245,15 @@ async def admin_ceo_decision(request: Request, decision_id: str):
 
 
 def run_billing_cycle() -> dict:
-    """Cycle d'abonnement : suspend les expirés + relance ceux qui arrivent à échéance."""
-    from db.client import days_left, list_all_merchants, mark_reminder_sent, set_merchant_status
-    from notify import notify_subscription_expired, notify_subscription_reminder
+    """Cycle d'abonnement + essais : suspend les expirés/essais finis + relance à l'échéance.
+
+    Pour un ESSAI (`is_trial`) : rappel à J-1 (pas à J-3) et, à la fin, suspension +
+    « preuve de valeur » (ce que l'agent a fait pendant l'essai). Jamais de suppression.
+    """
+    from db.client import (days_left, list_all_merchants, mark_reminder_sent,
+                           set_merchant_status, trial_stats)
+    from notify import (notify_subscription_expired, notify_subscription_reminder,
+                        notify_trial_ended, notify_trial_reminder)
     suspended = reminded = 0
     for m in list_all_merchants():
         if m.get("status") != "active" or not m.get("period_end"):
@@ -1238,20 +1261,30 @@ def run_billing_cycle() -> dict:
         d = days_left(m)
         if d is None:
             continue
+        is_trial = bool(m.get("is_trial"))
         if d <= 0:
             set_merchant_status(m["id"], "suspended")
             try:
-                notify_subscription_expired(m)
+                if is_trial:
+                    notify_trial_ended(m, trial_stats(m["id"]))
+                else:
+                    notify_subscription_expired(m)
             except Exception:  # noqa: BLE001
                 pass
             suspended += 1
-        elif d <= settings.reminder_days and m.get("reminder_sent_for") != m.get("period_end"):
-            mark_reminder_sent(m["id"], m.get("period_end"))
-            try:
-                notify_subscription_reminder(m, d, price_for_plan(m.get("plan")))
-            except Exception:  # noqa: BLE001
-                pass
-            reminded += 1
+        else:
+            # Essai : on relance à J-1. Abonnement payant : à ≤ reminder_days.
+            window = 1 if is_trial else settings.reminder_days
+            if d <= window and m.get("reminder_sent_for") != m.get("period_end"):
+                mark_reminder_sent(m["id"], m.get("period_end"))
+                try:
+                    if is_trial:
+                        notify_trial_reminder(m, d, price_for_plan(m.get("plan")), trial_stats(m["id"]))
+                    else:
+                        notify_subscription_reminder(m, d, price_for_plan(m.get("plan")))
+                except Exception:  # noqa: BLE001
+                    pass
+                reminded += 1
     return {"suspended": suspended, "reminded": reminded}
 
 
@@ -2128,10 +2161,15 @@ async def essai(request: Request, merchant_id: str):
     price = price_for_plan(merchant.get("plan")) if merchant else settings.saas_price_fcfa
     plan_label = (merchant.get("plan") or "demarrage").capitalize() if merchant else ""
     wa_link = _wa_link(merchant.get("code")) if merchant else ""
+    # Essai 3 jours : jours restants + preuve de valeur (à afficher dans la page).
+    trial = None
+    if merchant and merchant.get("is_trial"):
+        from db.client import days_left, trial_stats
+        trial = {"days_left": max(0, days_left(merchant) or 0), "stats": trial_stats(merchant_id)}
     return templates.TemplateResponse(
         request, "essai.html",
         _ctx(request, merchant=merchant, merchant_id=merchant_id, price=price,
-             plan_label=plan_label, wa_link=wa_link),
+             plan_label=plan_label, wa_link=wa_link, trial=trial),
     )
 
 

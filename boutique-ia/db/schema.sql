@@ -114,6 +114,10 @@ alter table bia_orders   add column if not exists payment_method text;  -- 'mobi
 -- core/capabilities). NULL = jamais réglé → repli sur les anciens interrupteurs.
 alter table bia_merchants add column if not exists enabled_capabilities text;
 
+-- Essai gratuit 3 jours : la boutique est active mais NON payante (is_trial=true).
+-- À l'échéance (period_end), le cycle de facturation la suspend (jamais supprimée).
+alter table bia_merchants add column if not exists is_trial boolean default false;
+
 -- Prise de rendez-vous (capacité « rdv ») : disponibilités de la boutique.
 alter table bia_merchants add column if not exists rdv_days text;   -- ex : "Mer, Sam"
 alter table bia_merchants add column if not exists rdv_hours text;  -- ex : "09:00-17:00"

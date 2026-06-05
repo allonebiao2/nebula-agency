@@ -676,7 +676,7 @@ void main(void){vec2 uv=(FC-.5*R)/MN,st=uv*vec2(2,1);vec3 col=vec3(0);float bg=c
       momo_number:get('momo_number'), momo_network:get('momo_network'), momo_name:get('momo_name'),
       delivery_zones:get('delivery_zones'), delivery_fee_info:get('delivery_fee_info'),
       ai_tone:get('ai_tone'), languages:get('languages'), business_hours:get('business_hours'),
-      policies:get('policies'), extra_info:get('extra_info'), plan:selectedPlan, products
+      policies:get('policies'), extra_info:get('extra_info'), plan:selectedPlan, trial:goTrial, products
     };
     if(!payload.business_name || !payload.whatsapp_business){
       err.textContent="Le nom de la boutique et le WhatsApp sont obligatoires."; err.style.display='block'; return;

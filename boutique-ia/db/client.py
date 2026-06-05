@@ -279,6 +279,7 @@ def activate_merchant(merchant_id: str, days: int | None = None) -> dict[str, An
     base = cur_end if (cur_end and cur_end > now) else now
     fields: dict[str, Any] = {
         "status": "active",
+        "is_trial": False,   # un paiement met fin à l'essai (devient payante)
         "period_end": (base + timedelta(days=days)).isoformat(),
         "last_payment_at": now.isoformat(),
         "reminder_sent_for": None,
@@ -294,6 +295,48 @@ def activate_merchant(merchant_id: str, days: int | None = None) -> dict[str, An
     db = get_db()
     result = db.table("bia_merchants").update(fields).eq("id", merchant_id).execute()
     return result.data[0] if result.data else {}
+
+
+def start_trial(merchant_id: str, days: int = 3) -> dict[str, Any]:
+    """Démarre un essai gratuit : la boutique devient active mais NON payante.
+
+    `is_trial=True` + `period_end = maintenant + days`. À l'échéance, le cycle de
+    facturation la suspend automatiquement (données conservées, jamais supprimées).
+    """
+    from datetime import datetime, timedelta, timezone
+    now = datetime.now(timezone.utc)
+    fields = {
+        "status": "active",
+        "is_trial": True,
+        "period_end": (now + timedelta(days=days)).isoformat(),
+        "reminder_sent_for": None,
+    }
+    m = get_merchant(merchant_id) or {}
+    if not m.get("activated_at"):
+        fields["activated_at"] = now.isoformat()
+    db = get_db()
+    result = db.table("bia_merchants").update(fields).eq("id", merchant_id).execute()
+    return result.data[0] if result.data else {}
+
+
+def trial_stats(merchant_id: str) -> dict[str, Any]:
+    """Preuve de valeur de l'essai : {conversations, orders, revenue}."""
+    stats = {"conversations": 0, "orders": 0, "revenue": 0}
+    try:
+        st = order_stats(merchant_id) or {}
+        stats["orders"] = st.get("count", 0) or 0
+        stats["revenue"] = st.get("revenue", 0) or 0
+    except Exception:  # noqa: BLE001
+        pass
+    try:
+        db = get_db()
+        r = (db.table("bia_messages").select("customer_whatsapp")
+             .eq("merchant_id", merchant_id).execute())
+        stats["conversations"] = len({(row.get("customer_whatsapp") or "")
+                                      for row in (r.data or []) if row.get("customer_whatsapp")})
+    except Exception:  # noqa: BLE001
+        pass
+    return stats
 
 
 def set_merchant_plan(merchant_id: str, plan: str, immediate: bool) -> dict[str, Any]:
