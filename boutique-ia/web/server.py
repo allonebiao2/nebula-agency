@@ -561,6 +561,14 @@ async def boutique_backoffice(request: Request, merchant_id: str):
             social_posts = get_latest_social_posts(merchant_id)
         except Exception:  # noqa: BLE001
             log.warning("back-office: lecture social KO", exc_info=True)
+    coach_on = bool(merchant) and has_capability(merchant, "coach")
+    coaching = None
+    if coach_on:
+        try:
+            from db.client import get_latest_coaching
+            coaching = get_latest_coaching(merchant_id)
+        except Exception:  # noqa: BLE001
+            log.warning("back-office: lecture coaching KO", exc_info=True)
     return templates.TemplateResponse(
         request, "boutique.html",
         _ctx(request, merchant=merchant, merchant_id=merchant_id,
@@ -571,6 +579,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              categories=cats, campaigns=campaigns, inbox=inbox, caps=caps_ctx,
              guide=guide, trial=trial, suspended=suspended, rdv_on=rdv_on, appointments=appointments,
              social_on=social_on, social_posts=social_posts,
+             coach_on=coach_on, coaching=coaching,
              prospect_daily=prospect_daily, prospect_used=prospect_used,
              prospect_remaining=max(0, prospect_daily - prospect_used)),
     )
@@ -1617,6 +1626,34 @@ async def merchant_social_generate(request: Request, merchant_id: str):
         log.exception("génération social échouée")
         return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
     return {"ok": True, "posts": posts}
+
+
+@app.post("/api/merchants/{merchant_id}/coach/generate")
+async def merchant_coach_generate(request: Request, merchant_id: str):
+    """Coach commercial : génère le conseil de la semaine à partir des chiffres réels.
+
+    Session + capacité « coach » requises. À la demande (coût maîtrisé).
+    """
+    from core import coach
+    from core.capabilities import has_capability
+    from db.client import get_merchant, save_coaching
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    merchant = get_merchant(merchant_id)
+    if not merchant:
+        return JSONResponse({"ok": False, "error": "Boutique introuvable."}, status_code=404)
+    if not has_capability(merchant, "coach"):
+        return JSONResponse({"ok": False, "error": "Module « Coach commercial » non inclus."}, status_code=403)
+    try:
+        res = coach.generate_coaching(merchant)
+        if not res.get("advice"):
+            return JSONResponse({"ok": False, "error": "Conseil indisponible, réessayez."}, status_code=502)
+        save_coaching(merchant_id, res["advice"], res.get("snapshot") or {})
+    except Exception as e:  # noqa: BLE001
+        log.exception("génération coaching échouée")
+        return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
+    return {"ok": True, "advice": res["advice"], "snapshot": res.get("snapshot") or {}}
 
 
 @app.post("/api/merchants/{merchant_id}/social/image")

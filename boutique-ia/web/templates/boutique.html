@@ -153,6 +153,7 @@
     <a href="#style">Style</a>
     {% if rdv_on %}<a href="#rdv">Rendez-vous</a>{% endif %}
     {% if social_on %}<a href="#social">Réseaux</a>{% endif %}
+    {% if coach_on %}<a href="#coach">Coach</a>{% endif %}
     <a href="#prospection">Prospection</a>
     {% if inbox.on %}<a href="#reponses">Réponses{% if inbox.drafts %} ({{ inbox.drafts|length }}){% endif %}</a>{% endif %}
     <a href="#activite">Activité</a>
@@ -492,6 +493,25 @@
       <div style="margin-top:18px"><button class="btn pri" type="button" onclick="saveMerchant(['ai_tone','languages','policies','extra_info','negotiation_enabled','negotiation_rule'])">Enregistrer le style</button></div>
     </div>
   </section>
+
+  <!-- COACH COMMERCIAL -->
+  {% if coach_on %}
+  <section class="reveal" id="coach">
+    <div class="shead">
+      <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg></div>
+      <h2>Mon coach commercial</h2>
+      <div class="act"><button class="btn pri sm" type="button" onclick="genCoach(this)"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg>Mon conseil de la semaine</button></div>
+    </div>
+    <p class="hint">Votre directeur commercial IA analyse vos chiffres (ventes, conversion, produits) et vous dit <b>quoi faire pour vendre plus</b> cette semaine.</p>
+    <div id="coachOut">
+      {% if coaching and coaching.advice %}
+      <div class="panel" style="white-space:pre-wrap">{{ coaching.advice }}</div>
+      {% else %}
+      <div class="empty">Aucun conseil pour l'instant. Cliquez « Mon conseil de la semaine » → l'agent analyse vos chiffres.</div>
+      {% endif %}
+    </div>
+  </section>
+  {% endif %}
 
   <!-- ACTIVITÉ -->
   <section class="reveal" id="activite">
@@ -905,6 +925,19 @@ async function saveMerchant(fields){
   if('business_name' in payload && !payload.business_name.trim()){ notify('Le nom de la boutique est obligatoire.', true); return; }
   const d=await api(`/api/merchants/${MID}/update`,'POST',payload);
   if(d.ok) notify('Enregistré'); else notify(d.error||'Erreur', true);
+}
+
+/* Coach commercial */
+async function genCoach(btn){
+  btn.disabled = true; const old = btn.innerHTML; btn.textContent = 'Analyse…';
+  const d = await api(`/api/merchants/${MID}/coach/generate`, 'POST', {});
+  btn.disabled = false; btn.innerHTML = old;
+  if(d.ok){
+    const out = document.getElementById('coachOut'); out.innerHTML = '';
+    const div = document.createElement('div'); div.className = 'panel';
+    div.style.whiteSpace = 'pre-wrap'; div.textContent = d.advice;
+    out.appendChild(div); notify('Conseils prêts ✓');
+  } else notify(d.error||'Erreur', true);
 }
 
 /* Réseaux sociaux — Vendora Social */

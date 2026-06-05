@@ -118,6 +118,16 @@ alter table bia_merchants add column if not exists enabled_capabilities text;
 -- À l'échéance (period_end), le cycle de facturation la suspend (jamais supprimée).
 alter table bia_merchants add column if not exists is_trial boolean default false;
 
+-- Coach commercial : dernier conseil hebdo généré pour la boutique (+ snapshot).
+create table if not exists bia_coaching (
+  id uuid primary key default gen_random_uuid(),
+  merchant_id uuid not null references bia_merchants(id) on delete cascade,
+  advice text,
+  snapshot text,                  -- JSON des chiffres au moment du conseil
+  created_at timestamptz default now()
+);
+create index if not exists bia_coaching_idx on bia_coaching(merchant_id, created_at);
+
 -- Vendora Social (Phase 2) : brouillons de posts réseaux sociaux générés par l'agent.
 create table if not exists bia_social_posts (
   id uuid primary key default gen_random_uuid(),

@@ -78,6 +78,9 @@ CAPABILITIES: list[dict] = [
     {"id": "social", "group": "premium", "min_plan": "empire", "icon": "i-spark",
      "label": "Réseaux sociaux gérés",
      "promise": "Crée vos posts qui vendent (Facebook / Instagram)."},
+    {"id": "coach", "group": "premium", "min_plan": "empire", "icon": "i-chart",
+     "label": "Coach commercial",
+     "promise": "Des conseils chiffrés pour vendre plus, chaque semaine."},
 ]
 
 BY_ID: dict[str, dict] = {c["id"]: c for c in CAPABILITIES}

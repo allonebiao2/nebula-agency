@@ -139,6 +139,35 @@ def list_appointments(merchant_id: str, limit: int = 20) -> list[dict[str, Any]]
     return result.data or []
 
 
+def save_coaching(merchant_id: str, advice: str, snapshot: dict[str, Any]) -> None:
+    """Enregistre le dernier conseil du coach commercial (+ snapshot chiffré)."""
+    import json as _json
+    get_db().table("bia_coaching").insert(
+        {"merchant_id": merchant_id, "advice": advice,
+         "snapshot": _json.dumps(snapshot, ensure_ascii=False)}
+    ).execute()
+
+
+def get_latest_coaching(merchant_id: str) -> dict[str, Any] | None:
+    """Dernier conseil du coach pour une boutique (None si aucun)."""
+    import json as _json
+    try:
+        r = (get_db().table("bia_coaching").select("advice,snapshot,created_at")
+             .eq("merchant_id", merchant_id).order("created_at", desc=True).limit(1).execute())
+        if r.data:
+            row = r.data[0]
+            snap = {}
+            try:
+                snap = _json.loads(row.get("snapshot") or "{}")
+            except Exception:  # noqa: BLE001
+                snap = {}
+            return {"advice": row.get("advice") or "", "snapshot": snap,
+                    "created_at": row.get("created_at")}
+    except Exception:  # noqa: BLE001
+        pass
+    return None
+
+
 def save_social_posts(merchant_id: str, posts: list[dict[str, Any]]) -> None:
     """Enregistre un lot de brouillons de posts réseaux sociaux (Vendora Social)."""
     import json as _json
