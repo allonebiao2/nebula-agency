@@ -610,10 +610,21 @@
     <div class="shead">
       <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg></div>
       <h2>Réseaux sociaux</h2>
-      <div class="act"><button class="btn pri sm" type="button" onclick="genSocial(this)"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg>Générer mes posts</button></div>
     </div>
-    <p class="hint">Votre agent rédige des idées de posts Facebook/Instagram <b>qui vendent</b>, adaptés à chaque réseau, à partir de votre catalogue. Vous validez, modifiez ou copiez. <i>(Publication automatique : bientôt.)</i></p>
+    <p class="hint">Votre agent rédige et <b>planifie</b> des posts Facebook/Instagram <b>qui vendent</b>, adaptés à chaque réseau, à partir de votre catalogue. Vous validez, modifiez ou copiez. <i>(Publication automatique : bientôt.)</i></p>
 
+    <div class="panel" style="margin-top:12px">
+      <div style="font-weight:700;margin-bottom:8px">🗓️ Planifier mon calendrier de posts</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+        <label style="margin:0;color:var(--mut);font-size:.85rem">Posts / semaine
+          <select id="socPerWeek" style="width:auto;margin-left:6px"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label>
+        <label style="margin:0;color:var(--mut);font-size:.85rem">Pendant
+          <select id="socWeeks" style="width:auto;margin-left:6px"><option>1</option><option selected>2</option><option>3</option><option>4</option></select> semaine(s)</label>
+        <button class="btn pri sm" type="button" onclick="genSocial(this)"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg>Planifier mon calendrier</button>
+      </div>
+    </div>
+
+    {% if social_images_on %}
     <div class="panel" style="margin-top:12px">
       <div style="font-weight:700;margin-bottom:8px">🖼️ Créer une image de post</div>
       <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:center">
@@ -626,12 +637,15 @@
       </div>
       <div id="socImgOut" style="margin-top:12px"></div>
     </div>
+    {% else %}
+    <p class="hint" style="margin-top:10px">🖼️ Les <b>images de marque</b> pour vos posts sont incluses dans le forfait <b>Empire</b>.</p>
+    {% endif %}
 
     <div id="socialList">
       {% if social_posts %}
         {% for p in social_posts %}
         <div class="panel" style="margin-top:12px">
-          <div style="font-weight:700">{{ p.jour }}{% if p.type %} · <span style="color:var(--a)">{{ p.type }}</span>{% endif %}{% if p.idee_visuelle %} <span class="hint" style="font-weight:400">· 📸 {{ p.idee_visuelle }}</span>{% endif %}</div>
+          <div style="font-weight:700">{% if p.date %}<span style="color:var(--a)">{{ p.jour }} {{ p.date }}</span>{% else %}{{ p.jour }}{% endif %}{% if p.type %} · {{ p.type }}{% endif %}{% if p.idee_visuelle %} <span class="hint" style="font-weight:400">· 📸 {{ p.idee_visuelle }}</span>{% endif %}</div>
           {% for r in p.reseaux %}
           <div class="netpost" style="margin-top:10px;border-top:1px solid var(--hair);padding-top:10px">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
@@ -645,7 +659,7 @@
         </div>
         {% endfor %}
       {% else %}
-        <div class="empty">Aucun post pour l'instant. Cliquez « Générer mes posts » → l'agent vous propose une semaine de contenu, adapté à chaque réseau.</div>
+        <div class="empty">Aucun post planifié. Choisissez une fréquence + une période, puis « Planifier mon calendrier ».</div>
       {% endif %}
     </div>
   </section>
@@ -942,9 +956,11 @@ async function genCoach(btn){
 
 /* Réseaux sociaux — Vendora Social */
 async function genSocial(btn){
-  btn.disabled = true; const old = btn.innerHTML; btn.textContent = 'Génération…';
-  const d = await api(`/api/merchants/${MID}/social/generate`, 'POST', {});
-  if(d.ok){ notify('Posts générés ✓'); setTimeout(()=>location.reload(), 700); }
+  const per_week = parseInt((document.getElementById('socPerWeek')||{}).value || '3', 10);
+  const weeks = parseInt((document.getElementById('socWeeks')||{}).value || '2', 10);
+  btn.disabled = true; const old = btn.innerHTML; btn.textContent = 'Planification…';
+  const d = await api(`/api/merchants/${MID}/social/generate`, 'POST', { per_week, weeks });
+  if(d.ok){ notify('Calendrier planifié ✓'); setTimeout(()=>location.reload(), 700); }
   else { notify(d.error||'Erreur', true); btn.disabled = false; btn.innerHTML = old; }
 }
 async function genSocialImage(btn){

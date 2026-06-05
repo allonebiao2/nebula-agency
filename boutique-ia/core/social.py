@@ -15,6 +15,7 @@ from __future__ import annotations
 import json
 import logging
 import re
+from datetime import date, timedelta
 from typing import Any
 
 import anthropic
@@ -143,3 +144,33 @@ def generate_posts(merchant: dict, products: list[dict], n: int = 5) -> list[dic
     except Exception:  # noqa: BLE001
         log.warning("génération posts social KO", exc_info=True)
         return []
+
+
+def _spread_dates(per_week: int, weeks: int, count: int) -> list:
+    """Répartit `count` posts sur la période : `per_week` par semaine, jours espacés (dès demain)."""
+    base = date.today() + timedelta(days=1)
+    out = []
+    for i in range(count):
+        wk, slot = i // per_week, i % per_week
+        out.append(base + timedelta(days=wk * 7 + round(slot * 7 / per_week)))
+    return out
+
+
+def generate_calendar(merchant: dict, products: list[dict],
+                      per_week: int = 3, weeks: int = 2) -> list[dict[str, Any]]:
+    """Planifie un calendrier de posts (texte par réseau) sur la période choisie par le client.
+
+    `per_week` (1-7) × `weeks` (1-4), plafonné à 12 posts (coût maîtrisé). Chaque post
+    reçoit une DATE de publication prévue. La publication auto à ces dates = Phase 3 (Meta).
+    """
+    per_week = max(1, min(7, int(per_week or 3)))
+    weeks = max(1, min(4, int(weeks or 2)))
+    n = min(12, per_week * weeks)
+    posts = generate_posts(merchant, products, n=n)
+    dates = _spread_dates(per_week, weeks, len(posts))
+    for i, p in enumerate(posts):
+        if i < len(dates):
+            d = dates[i]
+            p["date"] = d.strftime("%d/%m")
+            p["jour"] = _JOURS[d.weekday()]
+    return posts

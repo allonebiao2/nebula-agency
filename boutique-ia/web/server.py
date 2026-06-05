@@ -554,6 +554,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
         except Exception:  # noqa: BLE001
             log.warning("back-office: lecture RDV KO", exc_info=True)
     social_on = bool(merchant) and has_capability(merchant, "social")
+    social_images_on = bool(merchant) and has_capability(merchant, "social_images")
     social_posts = []
     if social_on:
         try:
@@ -578,7 +579,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              daily_limit=daily_limit, used_today=used_today, remaining=remaining,
              categories=cats, campaigns=campaigns, inbox=inbox, caps=caps_ctx,
              guide=guide, trial=trial, suspended=suspended, rdv_on=rdv_on, appointments=appointments,
-             social_on=social_on, social_posts=social_posts,
+             social_on=social_on, social_images_on=social_images_on, social_posts=social_posts,
              coach_on=coach_on, coaching=coaching,
              prospect_daily=prospect_daily, prospect_used=prospect_used,
              prospect_remaining=max(0, prospect_daily - prospect_used)),
@@ -1616,8 +1617,14 @@ async def merchant_social_generate(request: Request, merchant_id: str):
         return JSONResponse({"ok": False, "error": "Module « Réseaux sociaux » non inclus dans votre forfait."},
                             status_code=403)
     try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    per_week = body.get("per_week", 3)
+    weeks = body.get("weeks", 2)
+    try:
         products = list_products(merchant_id)
-        posts = social.generate_posts(merchant, products, n=5)
+        posts = social.generate_calendar(merchant, products, per_week=per_week, weeks=weeks)
         if not posts:
             return JSONResponse({"ok": False, "error": "Génération impossible pour l'instant, réessayez."},
                                 status_code=502)
@@ -1673,8 +1680,8 @@ async def merchant_social_image(request: Request, merchant_id: str):
     merchant = get_merchant(merchant_id)
     if not merchant:
         return JSONResponse({"ok": False, "error": "Boutique introuvable."}, status_code=404)
-    if not has_capability(merchant, "social"):
-        return JSONResponse({"ok": False, "error": "Module « Réseaux sociaux » non inclus."}, status_code=403)
+    if not has_capability(merchant, "social_images"):
+        return JSONResponse({"ok": False, "error": "Images de marque : réservées au forfait Empire."}, status_code=403)
     try:
         body = await request.json()
     except Exception:

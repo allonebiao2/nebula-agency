@@ -64,6 +64,9 @@ CAPABILITIES: list[dict] = [
     {"id": "prospection", "group": "module", "min_plan": "business", "icon": "i-target",
      "label": "Va chercher des clients",
      "promise": "Trouve et contacte de nouveaux acheteurs."},
+    {"id": "social", "group": "module", "min_plan": "business", "icon": "i-spark",
+     "label": "Réseaux sociaux : posts + planning",
+     "promise": "Rédige et planifie vos posts qui vendent (Facebook / Instagram)."},
 
     # 🟣 SUPER-POUVOIRS — Empire
     {"id": "apprentissage_perso", "group": "premium", "min_plan": "empire", "icon": "i-chart",
@@ -75,9 +78,9 @@ CAPABILITIES: list[dict] = [
     {"id": "comment_to_dm", "group": "premium", "min_plan": "empire", "icon": "i-send",
      "label": "Acquisition sur les réseaux",
      "promise": "Répond en privé à ceux qui commentent vos publications."},
-    {"id": "social", "group": "premium", "min_plan": "empire", "icon": "i-spark",
-     "label": "Réseaux sociaux gérés",
-     "promise": "Crée vos posts qui vendent (Facebook / Instagram)."},
+    {"id": "social_images", "group": "premium", "min_plan": "empire", "icon": "i-eye",
+     "label": "Images de marque pour vos posts",
+     "promise": "Génère de belles images de post depuis vos produits (vidéo : bientôt)."},
     {"id": "coach", "group": "premium", "min_plan": "empire", "icon": "i-chart",
      "label": "Coach commercial",
      "promise": "Des conseils chiffrés pour vendre plus, chaque semaine."},
