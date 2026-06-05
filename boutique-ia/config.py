@@ -157,30 +157,28 @@ PLAN_DAILY_ORDERS = {
 # fonctions réelles de Vendora). `live=False` = annoncé « Bientôt » (honnête).
 # Les fonctions communes (live aujourd'hui) sont héritées par tous les forfaits.
 PLAN_CORE_FEATURES = [
-    "Agent vendeur sur WhatsApp 24h/24",
+    "Agent vendeur WhatsApp 24h/24 + prise de commande",
     "Catalogue de produits & services illimité",
-    "Prise de commande automatique",
-    "Alerte à chaque nouvelle commande",
-    "Back-office de gestion en ligne",
+    "Alerte à chaque commande + client chaud",
+    "Back-office + « Composez votre vendeur »",
     "Statistiques de ventes & conversations",
-    "Techniques de vente (ventes additionnelles, relances)",
 ]
 PLAN_EXTRA_FEATURES = {
     "demarrage": [
+        ("2 super-pouvoirs au choix : vocaux, photos, paiement à la livraison, marchandage", True),
         ("5 ordres/jour pour piloter votre agent", True),
     ],
     "business": [
+        ("5 super-pouvoirs au choix : relances auto, rendez-vous, Messenger + Instagram, prospection…", True),
         ("30 ordres/jour pour piloter votre agent", True),
-        ("Prospection : 20 emails/jour à des clients pros", True),
-        ("Support prioritaire", True),
+        ("Tableau de bord des ventes + support prioritaire", True),
     ],
     "empire": [
-        ("Ordres illimités pour piloter votre agent", True),
-        ("Prospection : 50 emails/jour à des clients pros", True),
-        ("Alerte commande aussi sur votre propre WhatsApp", False),
-        ("Support prioritaire", True),
-        ("Numéro WhatsApp dédié à votre boutique", False),
-        ("Accompagnement personnalisé", True),
+        ("Tous les super-pouvoirs + ordres illimités", True),
+        ("Coach commercial : conseils chiffrés pour vendre plus", True),
+        ("Réseaux sociaux : posts qui vendent + images de marque", True),
+        ("Email pro + acquisition sur les réseaux", True),
+        ("S'améliore sur VOTRE boutique + accompagnement personnalisé", True),
     ],
 }
 
