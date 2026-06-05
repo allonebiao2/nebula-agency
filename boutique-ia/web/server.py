@@ -553,6 +553,14 @@ async def boutique_backoffice(request: Request, merchant_id: str):
             appointments = list_appointments(merchant_id, limit=20)
         except Exception:  # noqa: BLE001
             log.warning("back-office: lecture RDV KO", exc_info=True)
+    social_on = bool(merchant) and has_capability(merchant, "social")
+    social_posts = []
+    if social_on:
+        try:
+            from db.client import get_latest_social_posts
+            social_posts = get_latest_social_posts(merchant_id)
+        except Exception:  # noqa: BLE001
+            log.warning("back-office: lecture social KO", exc_info=True)
     return templates.TemplateResponse(
         request, "boutique.html",
         _ctx(request, merchant=merchant, merchant_id=merchant_id,
@@ -562,6 +570,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              daily_limit=daily_limit, used_today=used_today, remaining=remaining,
              categories=cats, campaigns=campaigns, inbox=inbox, caps=caps_ctx,
              guide=guide, trial=trial, suspended=suspended, rdv_on=rdv_on, appointments=appointments,
+             social_on=social_on, social_posts=social_posts,
              prospect_daily=prospect_daily, prospect_used=prospect_used,
              prospect_remaining=max(0, prospect_daily - prospect_used)),
     )
@@ -1575,6 +1584,39 @@ async def merchant_capabilities(request: Request, merchant_id: str):
         return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
     merchant["enabled_capabilities"] = serialize_caps(kept)
     return {"ok": True, "active": sorted(effective_capabilities(merchant)), "modules": kept}
+
+
+@app.post("/api/merchants/{merchant_id}/social/generate")
+async def merchant_social_generate(request: Request, merchant_id: str):
+    """Vendora Social : génère un lot de posts réseaux sociaux (à la demande).
+
+    Garde-fous : session valide + capacité « social » du forfait. Génération via
+    le writer model, ancrée sur le catalogue. Les posts sont des BROUILLONS (le
+    commerçant valide/copie ; pas de publication automatique en V1).
+    """
+    from core import social
+    from core.capabilities import has_capability
+    from db.client import get_merchant, list_products, save_social_posts
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    merchant = get_merchant(merchant_id)
+    if not merchant:
+        return JSONResponse({"ok": False, "error": "Boutique introuvable."}, status_code=404)
+    if not has_capability(merchant, "social"):
+        return JSONResponse({"ok": False, "error": "Module « Réseaux sociaux » non inclus dans votre forfait."},
+                            status_code=403)
+    try:
+        products = list_products(merchant_id)
+        posts = social.generate_posts(merchant, products, n=5)
+        if not posts:
+            return JSONResponse({"ok": False, "error": "Génération impossible pour l'instant, réessayez."},
+                                status_code=502)
+        save_social_posts(merchant_id, posts)
+    except Exception as e:  # noqa: BLE001
+        log.exception("génération social échouée")
+        return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
+    return {"ok": True, "posts": posts}
 
 
 @app.post("/api/merchants/{merchant_id}/inbox/mode")

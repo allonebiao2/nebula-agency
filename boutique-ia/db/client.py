@@ -139,6 +139,29 @@ def list_appointments(merchant_id: str, limit: int = 20) -> list[dict[str, Any]]
     return result.data or []
 
 
+def save_social_posts(merchant_id: str, posts: list[dict[str, Any]]) -> None:
+    """Enregistre un lot de brouillons de posts réseaux sociaux (Vendora Social)."""
+    import json as _json
+    get_db().table("bia_social_posts").insert(
+        {"merchant_id": merchant_id, "posts": _json.dumps(posts, ensure_ascii=False)}
+    ).execute()
+
+
+def get_latest_social_posts(merchant_id: str) -> list[dict[str, Any]]:
+    """Dernier lot de posts générés pour une boutique ([] si aucun)."""
+    import json as _json
+    try:
+        r = (get_db().table("bia_social_posts").select("posts")
+             .eq("merchant_id", merchant_id).order("created_at", desc=True)
+             .limit(1).execute())
+        if r.data and r.data[0].get("posts"):
+            data = _json.loads(r.data[0]["posts"])
+            return data if isinstance(data, list) else []
+    except Exception:  # noqa: BLE001
+        pass
+    return []
+
+
 def set_merchant_capabilities(merchant_id: str, caps_csv: str) -> dict[str, Any]:
     """Enregistre les capacités choisies (« Composez votre vendeur »).
 

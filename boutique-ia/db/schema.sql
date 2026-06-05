@@ -118,6 +118,15 @@ alter table bia_merchants add column if not exists enabled_capabilities text;
 -- À l'échéance (period_end), le cycle de facturation la suspend (jamais supprimée).
 alter table bia_merchants add column if not exists is_trial boolean default false;
 
+-- Vendora Social (Phase 2) : brouillons de posts réseaux sociaux générés par l'agent.
+create table if not exists bia_social_posts (
+  id uuid primary key default gen_random_uuid(),
+  merchant_id uuid not null references bia_merchants(id) on delete cascade,
+  posts text,                     -- JSON : liste de posts (jour/type/legende/hashtags/idee_visuelle)
+  created_at timestamptz default now()
+);
+create index if not exists bia_social_posts_idx on bia_social_posts(merchant_id, created_at);
+
 -- Prise de rendez-vous (capacité « rdv ») : disponibilités de la boutique.
 alter table bia_merchants add column if not exists rdv_days text;   -- ex : "Mer, Sam"
 alter table bia_merchants add column if not exists rdv_hours text;  -- ex : "09:00-17:00"
