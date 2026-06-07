@@ -562,6 +562,13 @@ async def boutique_backoffice(request: Request, merchant_id: str):
             social_posts = get_latest_social_posts(merchant_id)
         except Exception:  # noqa: BLE001
             log.warning("back-office: lecture social KO", exc_info=True)
+    social_publish_ready = False
+    if social_on:
+        try:
+            from core import messenger_meta
+            social_publish_ready = messenger_meta.configured() and bool(_merchant_facebook_page(merchant))
+        except Exception:  # noqa: BLE001
+            social_publish_ready = False
     coach_on = bool(merchant) and has_capability(merchant, "coach")
     coaching = None
     if coach_on:
@@ -580,6 +587,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              categories=cats, campaigns=campaigns, inbox=inbox, caps=caps_ctx,
              guide=guide, trial=trial, suspended=suspended, rdv_on=rdv_on, appointments=appointments,
              social_on=social_on, social_images_on=social_images_on, social_posts=social_posts,
+             social_publish_ready=social_publish_ready,
              coach_on=coach_on, coaching=coaching,
              prospect_daily=prospect_daily, prospect_used=prospect_used,
              prospect_remaining=max(0, prospect_daily - prospect_used)),
@@ -1723,6 +1731,66 @@ async def merchant_coach_generate(request: Request, merchant_id: str):
         log.exception("génération coaching échouée")
         return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
     return {"ok": True, "advice": res["advice"], "snapshot": res.get("snapshot") or {}}
+
+
+def _merchant_facebook_page(merchant: dict) -> str | None:
+    """Retrouve l'ID de la Page Facebook liée à la boutique (mapping page_merchant_)."""
+    code = (merchant.get("code") or "").strip().lower()
+    if not code:
+        return None
+    try:
+        from db.client import list_settings_prefix
+        for s in list_settings_prefix("page_merchant_"):
+            if (s.get("value") or "").strip().lower() == code:
+                return (s.get("key") or "").replace("page_merchant_", "", 1) or None
+    except Exception:  # noqa: BLE001
+        log.warning("lookup page Facebook KO", exc_info=True)
+    return None
+
+
+@app.post("/api/merchants/{merchant_id}/social/publish")
+async def merchant_social_publish(request: Request, merchant_id: str):
+    """Publie un post planifié sur la Page Facebook liée (1 clic). Session + capacité.
+
+    ⚠️ La publication 100% AUTOMATIQUE (sans clic, multi-clients) nécessite l'App
+    Review Meta — ici c'est manuel + sur la page liée (marche dès qu'un token Page est posé).
+    """
+    from core import messenger_meta
+    from core.capabilities import has_capability
+    from db.client import get_latest_social_posts, get_merchant
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    merchant = get_merchant(merchant_id)
+    if not merchant:
+        return JSONResponse({"ok": False, "error": "Boutique introuvable."}, status_code=404)
+    if not has_capability(merchant, "social"):
+        return JSONResponse({"ok": False, "error": "Module « Réseaux sociaux » non inclus."}, status_code=403)
+    if not messenger_meta.configured():
+        return JSONResponse({"ok": False, "error": "Publication Meta pas encore activée (jeton Page manquant)."}, status_code=503)
+    page_id = _merchant_facebook_page(merchant)
+    if not page_id:
+        return JSONResponse({"ok": False, "error": "Aucune Page Facebook liée à votre boutique."}, status_code=400)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    posts = get_latest_social_posts(merchant_id)
+    try:
+        idx = int(body.get("index"))
+        post = posts[idx]
+    except Exception:
+        return JSONResponse({"ok": False, "error": "Post introuvable."}, status_code=400)
+    reseaux = post.get("reseaux") or []
+    fb = next((r for r in reseaux if r.get("reseau") == "Facebook"), reseaux[0] if reseaux else {})
+    text = (fb.get("legende") or "").strip()
+    if fb.get("hashtags"):
+        text += "\n\n" + fb["hashtags"]
+    if not text:
+        return JSONResponse({"ok": False, "error": "Post vide."}, status_code=400)
+    if not messenger_meta.publish_facebook(page_id, text):
+        return JSONResponse({"ok": False, "error": "Échec de la publication Facebook."}, status_code=502)
+    return {"ok": True}
 
 
 @app.post("/api/merchants/{merchant_id}/social/image")

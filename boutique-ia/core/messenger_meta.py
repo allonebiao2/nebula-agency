@@ -234,6 +234,52 @@ def send_private_reply(page_id: str, comment_id: str, text: str) -> bool:
         return False
 
 
+def publish_facebook(page_id: str, message: str, image_url: str | None = None) -> bool:
+    """Publie un post sur une Page Facebook (texte, ou photo+légende). Page token.
+
+    ⚠️ Pour publier sur la page d'un VRAI client à l'échelle, l'app doit avoir
+    `pages_manage_posts` approuvé (App Review). Marche sur nos propres pages en mode dev.
+    """
+    if not (configured() and page_id and message):
+        return False
+    if image_url:
+        path, payload = f"{page_id}/photos", {"url": image_url, "caption": message[:1900]}
+    else:
+        path, payload = f"{page_id}/feed", {"message": message[:1900]}
+    try:
+        r = httpx.post(_graph(path),
+                       params={"access_token": settings.messenger_page_token},
+                       json=payload, timeout=20.0)
+        if r.status_code not in (200, 201):
+            log.warning("publish FB %s: %s", r.status_code, r.text[:200])
+        return r.status_code in (200, 201)
+    except Exception as e:  # noqa: BLE001
+        log.warning("publish FB KO: %s", e)
+        return False
+
+
+def publish_instagram(ig_user_id: str, caption: str, image_url: str) -> bool:
+    """Publie sur Instagram (2 étapes : créer le média, puis publier). Image requise."""
+    if not (configured() and ig_user_id and image_url):
+        return False
+    try:
+        c = httpx.post(_graph(f"{ig_user_id}/media"),
+                       params={"access_token": settings.messenger_page_token},
+                       json={"image_url": image_url, "caption": (caption or "")[:1900]}, timeout=20.0)
+        if c.status_code not in (200, 201):
+            log.warning("IG media %s: %s", c.status_code, c.text[:200]); return False
+        creation_id = (c.json() or {}).get("id")
+        if not creation_id:
+            return False
+        p = httpx.post(_graph(f"{ig_user_id}/media_publish"),
+                       params={"access_token": settings.messenger_page_token},
+                       json={"creation_id": creation_id}, timeout=20.0)
+        return p.status_code in (200, 201)
+    except Exception as e:  # noqa: BLE001
+        log.warning("publish IG KO: %s", e)
+        return False
+
+
 def reply_public_comment(comment_id: str, text: str, platform: str = "messenger") -> bool:
     """Réponse PUBLIQUE sous le commentaire (« Je vous réponds en privé 📩 »).
 
