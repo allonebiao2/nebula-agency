@@ -117,6 +117,8 @@ alter table bia_merchants add column if not exists enabled_capabilities text;
 -- Essai gratuit 3 jours : la boutique est active mais NON payante (is_trial=true).
 -- À l'échéance (period_end), le cycle de facturation la suspend (jamais supprimée).
 alter table bia_merchants add column if not exists is_trial boolean default false;
+-- Win-back : date du dernier message de reconquête envoyé à une boutique suspendue.
+alter table bia_merchants add column if not exists winback_at timestamptz;
 
 -- Coach commercial : dernier conseil hebdo généré pour la boutique (+ snapshot).
 create table if not exists bia_coaching (

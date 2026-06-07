@@ -193,6 +193,24 @@ def notify_trial_ended(merchant: dict, stats: dict | None = None) -> None:
     )
 
 
+def notify_winback(merchant: dict) -> None:
+    """Reconquête d'une boutique en pause (essai fini / abo expiré) — données conservées."""
+    name = merchant.get("business_name", "votre boutique")
+    raison = "votre essai" if merchant.get("is_trial") else "votre abonnement"
+    notify_mongazi(
+        "💌 <b>Win-back — boutique à reconquérir</b>\n\n"
+        f"🏪 {name}\n"
+        f"⏸️ En pause ({raison} terminé) — relance envoyée.\n"
+        f"🆔 <code>{merchant.get('id')}</code>"
+    )
+    _whatsapp_owner(
+        merchant.get("owner_whatsapp"), merchant.get("country"),
+        f"Bonjour 👋 Votre agent Vendora ({name}) est en pause, mais "
+        f"<b>toutes vos données et conversations sont gardées</b>. Réactivez en 1 paiement "
+        f"pour reprendre exactement où vous en étiez — vos clients vous attendent 🙂".replace("<b>", "").replace("</b>", "")
+    )
+
+
 def notify_subscription_expired(merchant: dict) -> None:
     """Abonnement expiré → boutique suspendue."""
     notify_mongazi(

@@ -454,6 +454,19 @@ def mark_reminder_sent(merchant_id: str, period_end: Any) -> None:
     ).eq("id", merchant_id).execute()
 
 
+def list_suspended_for_winback(limit: int = 50) -> list[dict[str, Any]]:
+    """Boutiques suspendues jamais relancées en win-back (winback_at vide)."""
+    db = get_db()
+    r = (db.table("bia_merchants").select("*").eq("status", "suspended")
+         .is_("winback_at", "null").limit(limit).execute())
+    return r.data or []
+
+
+def mark_winback(merchant_id: str) -> None:
+    """Marque qu'un message de win-back a été envoyé (anti-spam)."""
+    get_db().table("bia_merchants").update({"winback_at": "now()"}).eq("id", merchant_id).execute()
+
+
 def set_merchant_status(merchant_id: str, status: str) -> dict[str, Any]:
     """Change le statut d'une boutique (ex: suspended / active / pending_payment)."""
     db = get_db()

@@ -696,6 +696,7 @@ async def admin_dashboard(request: Request, token: str = ""):
         "today": count_followups_today() if twilio_ready else 0,
         "total": count_followups_since("2000-01-01T00:00:00+00:00") if twilio_ready else 0,
         "twilio_ready": twilio_ready,
+        "winback_enabled": get_setting_bool("winback_enabled", False),
     }
 
     # Boîte email entrante (recrutement → l'agent convertit ; boutiques → supervisé/auto)
@@ -1073,6 +1074,30 @@ async def admin_followups_run(request: Request, bg: BackgroundTasks):
     return {"ok": True, "message": "Relances lancées — résumé sur Telegram si des envois partent."}
 
 
+@app.post("/api/admin/winback/settings")
+async def admin_winback_settings(request: Request):
+    """Autorise / met en pause le win-back des boutiques suspendues (OFF par défaut)."""
+    from db.client import set_setting
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    if "enabled" in body:
+        set_setting("winback_enabled", "true" if body.get("enabled") else "false")
+    return {"ok": True}
+
+
+@app.post("/api/admin/winback/run")
+async def admin_winback_run(request: Request, bg: BackgroundTasks):
+    """Déclenche manuellement une vague de win-back (test)."""
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    bg.add_task(run_winback)
+    return {"ok": True, "message": "Win-back lancé — résumé sur Telegram si des relances partent."}
+
+
 @app.post("/api/admin/inbox/settings")
 async def admin_inbox_settings(request: Request):
     """Autorise / met en pause les réponses email entrantes (OFF par défaut)."""
@@ -1312,6 +1337,28 @@ def run_billing_cycle() -> dict:
     return {"suspended": suspended, "reminded": reminded}
 
 
+def run_winback() -> dict:
+    """Win-back : relance les boutiques en pause (1 fois) pour les reconquérir.
+
+    OFF par défaut (`winback_enabled`). Message templaté (zéro token), 1 seul par
+    boutique (anti-spam via winback_at). Données toujours conservées.
+    """
+    from db.client import get_setting_bool, list_suspended_for_winback, mark_winback
+    from notify import notify_winback
+    stats = {"enabled": False, "sent": 0}
+    if not get_setting_bool("winback_enabled", False):
+        return stats
+    stats["enabled"] = True
+    for m in list_suspended_for_winback():
+        try:
+            notify_winback(m)
+            mark_winback(m["id"])
+            stats["sent"] += 1
+        except Exception:  # noqa: BLE001
+            log.warning("winback %s échoué", m.get("id"), exc_info=True)
+    return stats
+
+
 def run_merchant_auto_prospection() -> int:
     """Chaque boutique avec le pilote auto activé prospecte ses clients (1×/jour)."""
     from datetime import datetime, timezone
@@ -1467,6 +1514,11 @@ async def _auto_prospection_loop():
             await asyncio.to_thread(run_inbox)
         except Exception:  # noqa: BLE001
             log.warning("inbox loop", exc_info=True)
+        try:
+            # Win-back des boutiques en pause (OFF par défaut, 1 relance/boutique).
+            await asyncio.to_thread(run_winback)
+        except Exception:  # noqa: BLE001
+            log.warning("winback loop", exc_info=True)
         try:
             # Cerveau CEO : revue stratégique autonome 1×/semaine (il PROPOSE, Mongazi valide).
             if await asyncio.to_thread(_ceo_due):

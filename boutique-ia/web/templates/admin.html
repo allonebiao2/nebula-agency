@@ -500,6 +500,14 @@
         <span>Canal : <b>WhatsApp</b></span>
       </div>
     </div>
+    <div class="panel" style="margin-top:14px">
+      <label class="switch">
+        <input type="checkbox" id="winbackToggle" {{ 'checked' if followups.winback_enabled }} onchange="toggleWinback(this.checked)">
+        <span class="track"></span>
+        <span class="lbl-t">Win-back des boutiques en pause<small>Relance auto (1 fois) les boutiques suspendues (essai fini / abo expiré) pour les reconquérir — données conservées.</small></span>
+      </label>
+      <div style="margin-top:10px"><button class="btn gho sm" type="button" onclick="runWinback()"><svg viewBox="0 0 24 24"><use href="#i-play"/></svg>Lancer le win-back</button></div>
+    </div>
   </section>
 
   <!-- CANAUX ENTRANTS — Messenger + Instagram -->
@@ -776,6 +784,16 @@ async function runFup(){
   if(!confirm('Lancer une vague de relances maintenant ? (vrais messages WhatsApp aux clients)')) return;
   const d = await post('/api/admin/followups/run');
   notify(d.ok ? 'Relances lancées — résumé sur Telegram' : (d.error||'Erreur'), !d.ok);
+}
+async function toggleWinback(on){
+  const d = await post('/api/admin/winback/settings', { enabled: on });
+  if(d.ok) notify(on ? 'Win-back activé' : 'Win-back en pause');
+  else { notify(d.error||'Erreur', true); document.getElementById('winbackToggle').checked = !on; }
+}
+async function runWinback(){
+  if(!confirm('Lancer le win-back des boutiques en pause maintenant ?')) return;
+  const d = await post('/api/admin/winback/run');
+  notify(d.ok ? 'Win-back lancé — résumé sur Telegram' : (d.error||'Erreur'), !d.ok);
 }
 
 /* Auto-expérimentation des ventes (A/B) */
