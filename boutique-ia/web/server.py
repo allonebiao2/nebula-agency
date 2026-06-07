@@ -1852,6 +1852,33 @@ async def upload_photo_endpoint(request: Request, merchant_id: str, product_id: 
     return {"ok": True, "url": url}
 
 
+@app.post("/api/merchants/{merchant_id}/products/import")
+async def import_products_endpoint(request: Request, merchant_id: str):
+    """Import express : colle une liste en texte libre → l'IA structure + ajoute les produits."""
+    from core import catalog_import
+    from db.client import add_products
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    text = (body.get("text") or "").strip()
+    if not text:
+        return JSONResponse({"ok": False, "error": "Collez votre liste de produits."}, status_code=400)
+    try:
+        parsed = catalog_import.parse_products(text)
+        if not parsed:
+            return JSONResponse({"ok": False, "error": "Aucun produit reconnu. Réessayez en listant un produit par ligne."},
+                                status_code=502)
+        count = add_products(merchant_id, parsed)
+    except Exception as e:  # noqa: BLE001
+        log.exception("import produits échoué")
+        return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
+    return {"ok": True, "count": count}
+
+
 @app.delete("/api/merchants/{merchant_id}/products/{product_id}")
 async def delete_product_endpoint(request: Request, merchant_id: str, product_id: str):
     """Supprime un produit de la boutique."""

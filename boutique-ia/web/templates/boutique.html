@@ -280,7 +280,23 @@
     <div class="shead">
       <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-box"/></svg></div>
       <h2>Mes produits & services</h2>
-      <div class="act"><button class="btn pri sm" type="button" onclick="toggleAdd()"><svg viewBox="0 0 24 24"><use href="#i-plus"/></svg>Ajouter</button></div>
+      <div class="act" style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn gho sm" type="button" onclick="toggleImport()"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg>Import express</button>
+        <button class="btn pri sm" type="button" onclick="toggleAdd()"><svg viewBox="0 0 24 24"><use href="#i-plus"/></svg>Ajouter</button>
+      </div>
+    </div>
+
+    <div id="importForm" class="panel hide" style="margin-bottom:14px">
+      <label>Collez votre liste de produits <span style="color:var(--mut2)">(un par ligne, l'IA structure tout)</span></label>
+      <textarea id="imp_text" placeholder="Ex :
+Collier perle nacrée 7500
+Boucles dorées Soleil 3500 — argent 925, fait main
+Bracelet jonc 5000"></textarea>
+      <div style="display:flex;gap:9px;margin-top:12px;align-items:center">
+        <button class="btn acc sm" type="button" onclick="importProducts(this)"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg>Importer mes produits</button>
+        <button class="btn gho sm" type="button" onclick="toggleImport()">Annuler</button>
+      </div>
+      <div class="hint" style="margin-top:8px">💡 Idéal pour monter une boutique en 1 minute : collez votre catalogue, vérifiez, c'est prêt.</div>
     </div>
 
     <div id="addForm" class="panel hide" style="margin-bottom:14px">
@@ -834,6 +850,15 @@ document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.setProperty('--d'
 
 /* Produits */
 function toggleAdd(){ document.getElementById('addForm').classList.toggle('hide'); }
+function toggleImport(){ document.getElementById('importForm').classList.toggle('hide'); }
+async function importProducts(btn){
+  const text = (document.getElementById('imp_text').value||'').trim();
+  if(!text){ notify('Collez votre liste de produits', true); return; }
+  btn.disabled = true; const old = btn.innerHTML; btn.textContent = 'Import en cours…';
+  const d = await api(`/api/merchants/${MID}/products/import`, 'POST', { text });
+  if(d.ok){ notify(d.count + ' produit(s) importé(s) ✓'); setTimeout(()=>location.reload(), 800); }
+  else { notify(d.error||'Erreur', true); btn.disabled = false; btn.innerHTML = old; }
+}
 async function addProduct(){
   const name = document.getElementById('a_name').value.trim();
   if(!name){ notify('Le nom est obligatoire.', true); return; }
