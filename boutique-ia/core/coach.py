@@ -66,8 +66,12 @@ def _fmt_top(top: list) -> str:
     return ", ".join(f"{n} (×{q})" for n, q in top) or "aucune vente enregistrée pour l'instant"
 
 
-def generate_coaching(merchant: dict) -> dict:
-    """Conseil de la semaine pour la boutique : {snapshot, advice}. advice='' si KO."""
+def generate_coaching(merchant: dict, lessons: str | None = None) -> dict:
+    """Conseil de la semaine pour la boutique : {snapshot, advice}. advice='' si KO.
+
+    `lessons` : leçons de vente apprises (auto-amélioration) → le coaching profite
+    de l'expérience collective.
+    """
     settings.require("anthropic_api_key")
     snap = _snapshot(merchant)
     name = merchant.get("business_name") or "la boutique"
@@ -90,13 +94,25 @@ def generate_coaching(merchant: dict) -> dict:
         f"- Paiement à la livraison : {'activé' if snap['cod'] else 'désactivé'} · "
         f"Négociation : {'activée' if snap['nego'] else 'désactivée'}"
     )
+    # Intelligence collective : repère anonymisé du secteur (vide si trop peu de pairs).
+    try:
+        from core import collective
+        bench = collective.benchmark_for(merchant)
+        if bench:
+            data += "\n- " + bench
+    except Exception:  # noqa: BLE001
+        pass
     consigne = (
         "Donne 3 à 5 conseils NUMÉROTÉS, chacun = UNE action concrète à faire CETTE SEMAINE "
         "(quel produit pousser, quel prix ou promo, quoi réapprovisionner ou retirer du catalogue, "
         "à quelles heures être actif, relancer qui, activer le paiement à la livraison ou la "
         "négociation si pertinent). 1 à 2 phrases max par conseil, chiffré quand possible. "
-        "Termine par UNE phrase d'encouragement. N'invente aucun chiffre non fourni."
+        "Termine par UNE phrase d'encouragement. N'invente aucun chiffre non fourni. "
+        "Si un repère secteur est fourni, situe la boutique par rapport (mieux/moins bien) et "
+        "conseille en conséquence."
     )
+    if lessons and lessons.strip():
+        data += "\n\n# Leçons de vente apprises (appuie-toi dessus)\n" + lessons.strip()
     try:
         client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
         resp = client.messages.create(

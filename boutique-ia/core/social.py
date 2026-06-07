@@ -102,8 +102,13 @@ def _parse_posts(text: str) -> list[dict[str, Any]]:
     return out
 
 
-def generate_posts(merchant: dict, products: list[dict], n: int = 5) -> list[dict[str, Any]]:
-    """Génère `n` posts (copy qui vend + variante NATIVE par réseau). [] si KO."""
+def generate_posts(merchant: dict, products: list[dict], n: int = 5,
+                   lessons: str | None = None) -> list[dict[str, Any]]:
+    """Génère `n` posts (copy qui vend + variante NATIVE par réseau). [] si KO.
+
+    `lessons` : leçons de vente apprises (cerveau d'apprentissage) → le contenu
+    s'améliore avec l'expérience collective (auto-amélioration).
+    """
     settings.require("anthropic_api_key")
     name = merchant.get("business_name") or "la boutique"
     sector = merchant.get("sector") or ""
@@ -122,6 +127,8 @@ def generate_posts(merchant: dict, products: list[dict], n: int = 5) -> list[dic
         "ADAPTATION PAR RÉSEAU — ne mets PAS le même texte partout, écris une variante "
         f"NATIVE pour chaque réseau selon son style :\n{nets_doc}\n\n"
         f"Catalogue (ancre-toi dessus, jamais d'invention) :\n{catalogue}"
+        + (f"\n\n# Leçons de vente apprises (applique-les)\n{lessons.strip()}"
+           if lessons and lessons.strip() else "")
     )
     consigne = (
         f"Génère exactement {n} idées de posts variées (produit phare, promo, conseil, "
@@ -157,7 +164,8 @@ def _spread_dates(per_week: int, weeks: int, count: int) -> list:
 
 
 def generate_calendar(merchant: dict, products: list[dict],
-                      per_week: int = 3, weeks: int = 2) -> list[dict[str, Any]]:
+                      per_week: int = 3, weeks: int = 2,
+                      lessons: str | None = None) -> list[dict[str, Any]]:
     """Planifie un calendrier de posts (texte par réseau) sur la période choisie par le client.
 
     `per_week` (1-7) × `weeks` (1-4), plafonné à 12 posts (coût maîtrisé). Chaque post
@@ -166,7 +174,7 @@ def generate_calendar(merchant: dict, products: list[dict],
     per_week = max(1, min(7, int(per_week or 3)))
     weeks = max(1, min(4, int(weeks or 2)))
     n = min(12, per_week * weeks)
-    posts = generate_posts(merchant, products, n=n)
+    posts = generate_posts(merchant, products, n=n, lessons=lessons)
     dates = _spread_dates(per_week, weeks, len(posts))
     for i, p in enumerate(posts):
         if i < len(dates):

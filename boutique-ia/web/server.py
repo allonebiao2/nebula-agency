@@ -1623,8 +1623,13 @@ async def merchant_social_generate(request: Request, merchant_id: str):
     per_week = body.get("per_week", 3)
     weeks = body.get("weeks", 2)
     try:
+        from db.client import get_active_lessons
+        try:
+            lessons = get_active_lessons(merchant_id)
+        except Exception:  # noqa: BLE001
+            lessons = ""
         products = list_products(merchant_id)
-        posts = social.generate_calendar(merchant, products, per_week=per_week, weeks=weeks)
+        posts = social.generate_calendar(merchant, products, per_week=per_week, weeks=weeks, lessons=lessons)
         if not posts:
             return JSONResponse({"ok": False, "error": "Génération impossible pour l'instant, réessayez."},
                                 status_code=502)
@@ -1653,7 +1658,12 @@ async def merchant_coach_generate(request: Request, merchant_id: str):
     if not has_capability(merchant, "coach"):
         return JSONResponse({"ok": False, "error": "Module « Coach commercial » non inclus."}, status_code=403)
     try:
-        res = coach.generate_coaching(merchant)
+        from db.client import get_active_lessons
+        try:
+            lessons = get_active_lessons(merchant_id)
+        except Exception:  # noqa: BLE001
+            lessons = ""
+        res = coach.generate_coaching(merchant, lessons=lessons)
         if not res.get("advice"):
             return JSONResponse({"ok": False, "error": "Conseil indisponible, réessayez."}, status_code=502)
         save_coaching(merchant_id, res["advice"], res.get("snapshot") or {})
