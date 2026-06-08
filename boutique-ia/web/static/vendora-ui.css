@@ -294,3 +294,59 @@ textarea{resize:vertical;min-height:70px;line-height:1.55}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #toast.err{border-color:rgba(255,95,95,.4);color:#ff9d9d}
 #toast svg{width:16px;height:16px}
+
+/* =====================================================================
+   MOBILE — adaptation téléphone (fluidité + zéro débordement)
+   Couche partagée : profite à tout l'espace back-office et aux pages liées.
+   ===================================================================== */
+/* Défilement à inertie + pas de rebond parasite sur les zones scrollables */
+.tabs,#orderLog{-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+/* Médias (photos, aperçus) : jamais plus larges que l'écran */
+img,svg,video,canvas{max-width:100%}
+
+@media(max-width:600px){
+  /* iOS : police >= 16px sur les champs = pas de zoom automatique au focus */
+  input,textarea,select{font-size:16px!important}
+  /* Respirations un peu plus serrées sur petit écran */
+  .wrap{padding-left:15px;padding-right:15px}
+  .bezel-in{padding:16px}
+  .panel{padding:16px}
+  h1{margin-top:14px}
+
+  /* En-tête de section : le bouton d'action passe sous le titre (pas de débordement) */
+  .shead{flex-wrap:wrap}
+  .shead .act{margin-left:0;width:100%}
+  .shead .act .btn{width:100%;justify-content:center}
+
+  /* Ligne produit : prix à droite du nom, boutons en pleine largeur dessous */
+  .prow{flex-wrap:wrap}
+  .prow .pn{flex:1;min-width:0}
+  .prow .pbtns{margin-left:0;width:100%;margin-top:11px}
+  .prow .pbtns .btn{flex:1;justify-content:center}
+
+  /* Ligne d'activité : le montant repasse sous le texte */
+  .actrow{flex-wrap:wrap}
+  .actrow .pp{margin-left:0;margin-top:6px}
+
+  /* Topbar plus compacte ; on masque le libellé secondaire pour gagner de la place */
+  .topbar{padding:8px 8px 8px 13px;gap:8px}
+  .topbar .pill{display:none}
+
+  /* Chat d'ordres : bulles plus larges */
+  .ob{max-width:94%}
+
+  /* Cibles tactiles un poil plus généreuses */
+  .btn{padding:12px 18px}
+  .btn.sm{padding:10px 14px}
+
+  /* Partage du lien : l'input et les boutons s'empilent proprement */
+  .share .row{flex-wrap:wrap}
+  .share .row input{flex:1 1 100%}
+}
+
+/* Très petits écrans (< 380px) : forfaits et actions toujours lisibles */
+@media(max-width:380px){
+  .bezel-in{padding:13px}
+  .btn{font-size:.84rem}
+  .stat .sv{font-size:1.4rem}
+}

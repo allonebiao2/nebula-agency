@@ -200,6 +200,17 @@
   input.fi:focus,select.fi:focus{outline:none;border-color:var(--a);box-shadow:0 0 0 3px var(--a-soft)}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
   @media(max-width:520px){.grid2{grid-template-columns:1fr}}
+  /* MOBILE cockpit : pas de zoom iOS au focus + actions confortables au doigt */
+  @media(max-width:600px){
+    input,select,textarea{font-size:16px!important}
+    .wrap{padding-left:15px;padding-right:15px}
+    .mrow .ma{width:100%;margin-left:0}
+    .mrow .ma .btn{flex:1;justify-content:center}
+    .mrow .mx{gap:14px}
+    .pilot .body{padding:18px;gap:18px}
+    .pilot .foot{padding:13px 18px}
+    .deci-l span{min-width:0;margin-right:6px}
+  }
 
   /* Rows (boutiques / campagnes) */
   .mrow{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:15px 0;border-top:1px solid var(--line)}

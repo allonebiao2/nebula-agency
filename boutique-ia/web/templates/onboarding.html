@@ -131,6 +131,27 @@
   .btn-go:disabled{opacity:.6;cursor:wait}
   .err{background:rgba(255,92,124,.1);border:1px solid var(--danger);color:#ffb3c2;padding:12px;border-radius:11px;margin-top:14px;display:none}
 
+  /* Démarrage rapide : ne demander que l'essentiel */
+  .start-note{background:rgba(34,211,238,.08);border:1px solid var(--line);border-radius:14px;
+        padding:13px 16px;margin-bottom:18px;font-size:.9rem;color:var(--muted);line-height:1.5}
+  .start-note b{color:var(--txt)}
+  /* Bloc « plus de détails » repliable (optionnel) */
+  .more{margin-top:16px;border:1px dashed var(--line);border-radius:16px}
+  .more>summary{list-style:none;cursor:pointer;padding:16px 18px;font-weight:600;
+        display:flex;align-items:center;gap:9px;color:var(--txt)}
+  .more>summary::-webkit-details-marker{display:none}
+  .more>summary svg{width:18px;height:18px;stroke:var(--c);fill:none;stroke-width:1.7;
+        stroke-linecap:round;stroke-linejoin:round;flex:none}
+  .more>summary::after{content:"+";margin-left:auto;font-size:1.3rem;color:var(--muted);line-height:1}
+  .more[open]>summary::after{content:"\2013"}
+  .more>summary .opt{color:var(--muted);font-weight:400;font-size:.84rem}
+  .more .fcard{margin:0 14px 14px}
+  /* Quand l'essai gratuit est l'action principale (offre Démarrage) */
+  .go-row.trial-first #trialBtn{order:-1;flex:1;min-width:240px;background:var(--grad);color:#06060c;
+        border:none;box-shadow:0 10px 36px rgba(139,92,255,.35);font-size:1.08rem;font-weight:600}
+  .go-row.trial-first #submit{order:1;flex:none;width:auto;background:transparent;
+        border:1px solid var(--line);color:var(--txt);box-shadow:none;font-size:1rem;padding:17px 22px}
+
   footer{border-top:1px solid var(--line);padding:36px 0;text-align:center;color:var(--muted);font-size:.85rem}
   footer .logo{justify-content:center;margin-bottom:10px}
 
@@ -247,7 +268,129 @@
   .founder{text-align:center;margin-top:18px;color:var(--c);font-weight:600;font-size:.9rem}
   @media(max-width:560px){.roi-compare{grid-template-columns:1fr}}
 </style>
+<style>
+  /* ============================================================
+     COUCHE ANIMATIONS & FINITION UI/UX (fluidité, micro-interactions)
+     GPU-friendly (transform/opacity). Le lourd est coupé si l'appareil
+     préfère moins d'animation, et le spotlight est réservé à la souris.
+     ============================================================ */
+
+  /* Barre de progression de lecture */
+  .scroll-progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:60;pointer-events:none}
+  .scroll-progress i{display:block;height:100%;width:0;background:var(--grad);
+        box-shadow:0 0 12px rgba(139,92,255,.55);border-radius:0 3px 3px 0}
+
+  /* Ancres : ne pas passer sous la barre de nav collante */
+  section[id],#essai,#creer{scroll-margin-top:84px}
+
+  /* Profondeur de la nav au défilement */
+  nav{transition:box-shadow .25s ease,background .25s ease}
+  nav.scrolled{box-shadow:0 8px 30px rgba(0,0,0,.28)}
+
+  /* CTA flottant mobile (toujours à portée de pouce) */
+  .mcta{position:fixed;left:12px;right:12px;bottom:12px;z-index:55;display:none;
+        background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:10px;
+        box-shadow:0 14px 40px rgba(0,0,0,.38);transform:translateY(160%);
+        transition:transform .45s cubic-bezier(.2,.7,.2,1)}
+  .mcta.show{transform:none}
+  .mcta a{display:block;text-align:center;background:var(--grad);color:#06060c;
+        font-family:'Sora',sans-serif;font-weight:700;border-radius:12px;padding:14px;font-size:1rem}
+  @media(max-width:560px){.mcta{display:block}}
+
+  /* Champs / formulaire plus vivants */
+  input,textarea,select{transition:border-color .18s ease,box-shadow .18s ease,background .18s ease}
+  .fcard{transition:border-color .25s ease}
+  .fcard:focus-within{border-color:rgba(139,92,255,.4)}
+  .formwrap{transition:border-color .3s ease,box-shadow .3s ease}
+  .formwrap:focus-within{border-color:rgba(139,92,255,.3);
+        box-shadow:0 0 0 1px rgba(139,92,255,.14),0 30px 80px rgba(139,92,255,.10)}
+  .more{transition:border-color .2s ease,background .2s ease}
+  .more[open]{border-color:rgba(139,92,255,.32)}
+  .more>summary{transition:background .18s ease,color .18s ease}
+  .more>summary:hover{background:rgba(139,92,255,.06)}
+
+  /* Pause du défilé au survol + pression des boutons */
+  .marquee:hover .track{animation-play-state:paused}
+  .btn:active,.pbtn:active,.btn-go:active,.btn-add:active{transform:translateY(1px) scale(.99)}
+
+  @media (prefers-reduced-motion: no-preference){
+    /* Entrée séquencée du héro */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+    .hero .tagpill{animation:fadeUp .7s .05s both}
+    .hero h1{animation:fadeUp .8s .16s both}
+    .hero p.sub{animation:fadeUp .8s .30s both}
+    .hero .cta-row{animation:fadeUp .8s .44s both}
+
+    /* Point « live » qui respire */
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(34,211,238,.5)}50%{box-shadow:0 0 0 7px rgba(34,211,238,0)}}
+    .tagpill .dot{animation:pulse 2.4s ease-in-out infinite}
+
+    /* Reveal enrichi : montée + flou qui se dissipe + cascade dans les grilles */
+    .reveal{filter:blur(5px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1),filter .7s ease}
+    .reveal.in{filter:blur(0)}
+    .grid>.reveal,.steps>.reveal,.plans>.reveal{transition-delay:calc(var(--i,0)*70ms)}
+    .grid>*:nth-child(2),.steps>*:nth-child(2),.plans>*:nth-child(2){--i:1}
+    .grid>*:nth-child(3),.steps>*:nth-child(3),.plans>*:nth-child(3){--i:2}
+    .grid>*:nth-child(4){--i:3}.grid>*:nth-child(5){--i:4}.grid>*:nth-child(6){--i:5}
+
+    /* Apparition douce du contenu replié */
+    .more[open] .fcard{animation:fadeUp .35s ease both}
+
+    /* Brillance qui balaie les boutons au survol */
+    .btn-primary,.btn-go,.pbtn,.btn-add{position:relative;overflow:hidden}
+    .btn-primary::after,.btn-go::after,.pbtn::after,.btn-add::after{
+        content:"";position:absolute;top:-50%;left:-130%;width:55%;height:200%;transform:skewX(-20deg);
+        pointer-events:none;background:linear-gradient(100deg,transparent,rgba(255,255,255,.4),transparent);
+        transition:left .65s ease}
+    .btn-primary:hover::after,.btn-go:hover::after,.pbtn:hover::after,.btn-add:hover::after{left:170%}
+  }
+
+  /* Réactions au survol (souris uniquement) : lift + lumière qui suit le curseur */
+  @media (hover:hover) and (prefers-reduced-motion: no-preference){
+    .card,.plan,.roi-col{isolation:isolate;
+        transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .3s ease,border-color .3s ease,opacity .7s ease,filter .7s ease}
+    .card::before,.plan::before,.roi-col::before{content:"";position:absolute;inset:0;border-radius:inherit;
+        z-index:-1;opacity:0;transition:opacity .35s ease;pointer-events:none;
+        background:radial-gradient(360px circle at var(--mx,50%) var(--my,50%),rgba(139,92,255,.16),transparent 62%)}
+    .card:hover::before,.plan:hover::before,.roi-col:hover::before{opacity:1}
+    .card:hover,.roi-col:hover{transform:translateY(-6px);border-color:rgba(139,92,255,.45);
+        box-shadow:0 22px 55px rgba(139,92,255,.16)}
+    .plan:hover{transform:translateY(-6px);box-shadow:0 26px 60px rgba(139,92,255,.22)}
+    .plan.pop:hover{transform:translateY(-12px)}
+    .step:hover .n{filter:drop-shadow(0 6px 16px rgba(139,92,255,.4))}
+    .ra:hover,.chip:hover{border-color:var(--c);transform:translateY(-2px);transition:.2s}
+  }
+
+  /* ===== Bouton d'essai gratuit : AIMANT À CLIC (lévitation + halo + étoiles) ===== */
+  @media (prefers-reduced-motion: no-preference){
+    .go-row.trial-first #trialBtn{
+      overflow:visible;
+      background:linear-gradient(100deg,var(--v),var(--c),var(--v));background-size:220% 100%;
+      animation:trialFloat 3.4s ease-in-out infinite,
+                trialPulse 2.6s ease-in-out infinite,
+                trialSheen 5s linear infinite;
+    }
+    @keyframes trialFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+    @keyframes trialPulse{
+      0%,100%{box-shadow:0 10px 30px -8px var(--v),0 0 0 0 rgba(139,92,255,.45)}
+      50%{box-shadow:0 16px 44px -6px var(--c),0 0 28px 7px rgba(34,211,238,.4)}}
+    @keyframes trialSheen{to{background-position:220% 0}}
+  }
+  /* Étoiles scintillantes (générées en JS, débordent autour du bouton) */
+  #trialBtn .spark{position:absolute;pointer-events:none;z-index:3;
+    width:var(--sz,12px);height:var(--sz,12px);
+    margin:calc(var(--sz,12px) / -2) 0 0 calc(var(--sz,12px) / -2);
+    animation:sparkPop var(--dur,1.1s) ease-out forwards}
+  #trialBtn .spark svg{width:100%;height:100%;display:block;fill:#fff;
+    filter:drop-shadow(0 0 5px var(--c)) drop-shadow(0 0 2px #fff)}
+  @keyframes sparkPop{
+    0%{opacity:0;transform:translate(0,0) scale(.2) rotate(0)}
+    22%{opacity:1}
+    100%{opacity:0;transform:translate(var(--dx,0),var(--dy,-30px)) scale(1) rotate(150deg)}}
+</style>
 <div class="glow"></div>
+<div class="scroll-progress" aria-hidden="true"><i></i></div>
+<div class="mcta"><a href="#creer">Créer mon agent vendeur →</a></div>
 
 <nav>
   <div class="wrap row">
@@ -460,6 +603,9 @@
     <div class="formwrap reveal">
       <div class="inner">
         <form id="form">
+          <div class="start-note">
+            <b>2 infos suffisent pour démarrer</b> — le nom de la boutique et votre WhatsApp. Tout le reste est optionnel et se modifie en un clic après. Ça prend 2 minutes.
+          </div>
           <div class="fcard">
             <h3><svg><use href="#i-store"/></svg> Votre boutique</h3>
             <div class="hint">Ces infos permettent à l'agent de parler comme vous à vos clients.</div>
@@ -477,18 +623,20 @@
             <h3><svg><use href="#i-phone"/></svg> Contacts</h3>
             <div class="hint">Où vos clients écrivent, et où VOUS recevez les alertes de vente.</div>
             <label>WhatsApp de la boutique (les clients écrivent ici) <span class="req">*</span></label>
-            <input name="whatsapp_business" placeholder="+229 01 67 97 56 26" required>
+            <input name="whatsapp_business" type="tel" inputmode="tel" autocomplete="tel" placeholder="+229 01 67 97 56 26" required>
             <div class="frow">
-              <div><label>Votre WhatsApp perso (alertes)</label><input name="owner_whatsapp" placeholder="+229 …"></div>
+              <div><label>Votre WhatsApp perso (alertes)</label><input name="owner_whatsapp" type="tel" inputmode="tel" placeholder="+229 …"></div>
               <div><label>Email (optionnel)</label><input name="owner_email" type="email" placeholder="vous@email.com"></div>
             </div>
           </div>
 
+          <details class="more">
+          <summary><svg><use href="#i-card"/></svg> Paiement &amp; livraison <span class="opt">— optionnel, modifiable après</span></summary>
           <div class="fcard">
             <h3><svg><use href="#i-card"/></svg> Comment vos clients vous paient</h3>
             <div class="hint">L'agent donnera ce numéro Mobile Money à vos clients pour encaisser.</div>
             <div class="frow">
-              <div><label>Numéro Mobile Money</label><input name="momo_number" placeholder="97 XX XX XX"></div>
+              <div><label>Numéro Mobile Money</label><input name="momo_number" type="tel" inputmode="numeric" placeholder="97 XX XX XX"></div>
               <div><label>Réseau</label>
                 <select name="momo_network">
                   <option value="">—</option><option>MTN</option><option>Moov</option>
@@ -507,6 +655,7 @@
             <label>Frais de livraison</label>
             <input name="delivery_fee_info" placeholder="Cotonou 1000F · hors ville 2000F · retrait gratuit">
           </div>
+          </details>
 
           <div class="fcard">
             <h3><svg><use href="#i-box"/></svg> Vos produits</h3>
@@ -515,6 +664,8 @@
             <button type="button" class="btn btn-add" id="addProduct">+ Ajouter un produit</button>
           </div>
 
+          <details class="more">
+          <summary><svg><use href="#i-robot"/></svg> Personnalité &amp; règles de votre agent <span class="opt">— optionnel</span></summary>
           <div class="fcard">
             <h3><svg><use href="#i-robot"/></svg> Personnalité de votre agent vendeur</h3>
             <div class="hint">Comment votre agent doit parler à vos clients.</div>
@@ -535,6 +686,7 @@
             <label>Autres infos utiles à l'agent (FAQ, détails…)</label>
             <textarea name="extra_info" placeholder="Tout ce qu'un bon vendeur devrait savoir sur votre boutique."></textarea>
           </div>
+          </details>
 
           <div class="price-banner">
             Offre <b id="planLabel">Démarrage</b> · <b class="grad" id="planPrice">5 000 F CFA / mois</b><br>
@@ -544,7 +696,7 @@
           <div class="err" id="err"></div>
           <div class="go-row">
             <button type="submit" class="btn btn-go" id="submit" onclick="goTrial=false">Créer mon agent vendeur →</button>
-            <button type="button" class="btn btn-ghost" id="trialBtn" onclick="startTrial()">Tester gratuitement d'abord</button>
+            <button type="button" class="btn btn-ghost" id="trialBtn" onclick="startTrial()">Tester gratuitement 3 jours →</button>
           </div>
         </form>
       </div>
@@ -628,8 +780,12 @@ void main(void){vec2 uv=(FC-.5*R)/MN,st=uv*vec2(2,1);vec3 col=vec3(0);float bg=c
     document.getElementById('planLabel').textContent = PLAN_LABELS[selectedPlan];
     document.getElementById('planPrice').textContent = fmt(PLAN_PRICES[selectedPlan]) + ' F CFA / mois';
     // L'essai gratuit n'est proposé QUE pour l'offre Démarrage (5 000 F).
+    // Quand il est dispo, il devient l'action principale (CTA mis en avant).
+    const isDem = selectedPlan === 'demarrage';
     const tb = document.getElementById('trialBtn');
-    if(tb) tb.style.display = (selectedPlan === 'demarrage') ? '' : 'none';
+    if(tb) tb.style.display = isDem ? '' : 'none';
+    const gr = document.querySelector('.go-row');
+    if(gr) gr.classList.toggle('trial-first', isDem);
   }
   function selectPlan(p){ selectedPlan = p; goTrial = false; refreshOffer(); }
   function startTrial(){ goTrial = true; document.getElementById('form').requestSubmit(); }  // crée la fiche puis va à l'essai
@@ -687,6 +843,71 @@ void main(void){vec2 uv=(FC-.5*R)/MN,st=uv*vec2(2,1);vec3 col=vec3(0);float bg=c
       else throw new Error(data.error||'Erreur inconnue');
     }catch(ex){ err.textContent=ex.message; err.style.display='block'; btn.disabled=false; btn.textContent='Créer mon agent vendeur →'; }
   });
+
+  // ===== Couche d'animation / fluidité (progression, spotlight, CTA mobile) =====
+  (function(){
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Barre de progression de lecture + ombre de nav
+    const bar = document.querySelector('.scroll-progress > i');
+    const navEl = document.querySelector('nav');
+    function onScroll(){
+      const h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+      if(bar) bar.style.width = (max > 0 ? (h.scrollTop / max * 100) : 0).toFixed(1) + '%';
+      if(navEl) navEl.classList.toggle('scrolled', h.scrollTop > 12);
+    }
+    addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+    // Lumière qui suit le curseur sur les cartes (souris uniquement, throttlé rAF)
+    if(!reduce && matchMedia('(hover:hover)').matches){
+      document.querySelectorAll('.card,.plan,.roi-col').forEach(c=>{
+        let tick=false;
+        c.addEventListener('pointermove', e=>{
+          if(tick) return; tick=true;
+          requestAnimationFrame(()=>{
+            const r=c.getBoundingClientRect();
+            c.style.setProperty('--mx',(e.clientX-r.left)+'px');
+            c.style.setProperty('--my',(e.clientY-r.top)+'px');
+            tick=false;
+          });
+        });
+      });
+    }
+
+    // CTA flottant mobile : visible après le héro, masqué quand le formulaire est à l'écran
+    const mcta = document.querySelector('.mcta');
+    const hero = document.querySelector('.hero');
+    const creer = document.getElementById('creer');
+    if(mcta && hero && creer){
+      let heroOut=false, formIn=false;
+      const upd = ()=> mcta.classList.toggle('show', heroOut && !formIn);
+      new IntersectionObserver(es=>{ heroOut = !es[0].isIntersecting; upd(); }, {threshold:0}).observe(hero);
+      new IntersectionObserver(es=>{ formIn = es[0].isIntersecting; upd(); }, {threshold:.12}).observe(creer);
+    }
+  })();
+
+  // ===== Bouton d'essai gratuit : étoiles scintillantes =====
+  (function(){
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const btn = document.getElementById('trialBtn');
+    if(!btn) return;
+    const STAR = '<svg viewBox="0 0 24 24"><path d="M12 1.5l2.8 7.7 7.7 2.8-7.7 2.8L12 22.5 9.2 14.8 1.5 12l7.7-2.8z"/></svg>';
+    function spark(){
+      if(typeof selectedPlan !== 'undefined' && selectedPlan !== 'demarrage') return; // n'apparaît que si l'essai est proposé
+      if(btn.offsetParent === null) return;                                            // bouton masqué
+      const s = document.createElement('i'); s.className = 'spark'; s.innerHTML = STAR;
+      s.style.left = (8 + Math.random()*84) + '%';
+      s.style.top  = (12 + Math.random()*76) + '%';
+      s.style.setProperty('--dx', (Math.random()*54 - 27).toFixed(1) + 'px');
+      s.style.setProperty('--dy', (-18 - Math.random()*40).toFixed(1) + 'px');
+      s.style.setProperty('--dur', (0.9 + Math.random()*0.7).toFixed(2) + 's');
+      s.style.setProperty('--sz', (8 + Math.random()*9).toFixed(0) + 'px');
+      btn.appendChild(s);
+      setTimeout(() => s.remove(), 1700);
+    }
+    setInterval(spark, 470);                                                            // scintillement continu
+    btn.addEventListener('pointerenter', () => { for(let i=0;i<7;i++) setTimeout(spark, i*55); }); // rafale au survol
+  })();
 </script>
 </body>
 </html>
