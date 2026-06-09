@@ -141,6 +141,25 @@ def source_osm(city: str, category: str, *, with_email_only: bool = True,
 _OPT_OUT = "Pour ne plus recevoir de message, répondez STOP."
 
 
+# === CONNAISSANCES VENDORA — bonnes pratiques cold email (délivrabilité + conversion) ===
+# Injectées dans TOUTE rédaction d'email sortant : recrutement (Mongazi) ET prospection
+# des boutiques pour LEURS clients. Source de vérité « comment écrire un email pro ».
+EMAIL_GUIDELINES = (
+    "RÈGLES EMAIL PRO (à respecter absolument) :\n"
+    "- Délivrabilité : AUCUN déclencheur spam (« gratuit !!! », « urgent », « promo », "
+    "MOTS EN MAJUSCULES, points d'exclamation multiples, symboles $/€/💰). Pas de pièce jointe. "
+    "UN seul lien maximum.\n"
+    "- Objet : court (< 55 car.), personnalisé, jamais racoleur ni trompeur (pas de faux « Re: »).\n"
+    "- 1re phrase = un BÉNÉFICE concret pour le destinataire (pas « j'ai un produit »), "
+    "avec si possible un détail qui montre qu'on s'adresse à LUI précisément.\n"
+    "- Corps : 3-5 phrases, UNE seule idée, langage humain et simple (jamais une tournure qui sonne IA).\n"
+    "- Fin : UNE question douce ou une mini-proposition (« je vous montre en 2 min ? »), "
+    "jamais de vente agressive ni d'injonction d'achat.\n"
+    "- Respect : ton poli ; le destinataire doit pouvoir dire « non merci » sans gêne "
+    "(le lien de désinscription est ajouté automatiquement à l'envoi)."
+)
+
+
 def generate_outreach(mode: str, ctx: dict[str, Any]) -> dict[str, str]:
     """Rédige un modèle d'email (subject + body avec le marqueur [NOM]).
 
@@ -172,7 +191,8 @@ def generate_outreach(mode: str, ctx: dict[str, Any]) -> dict[str, str]:
     system = (
         "Tu rédiges un cold email B2B en français pour l'Afrique de l'Ouest. Style direct, "
         "chaleureux, court (5 phrases max), tutoiement, AUCUN jargon, 1 emoji maximum, "
-        "jamais de formule qui sonne IA. Le destinataire doit pouvoir répondre en 1 phrase.\n"
+        "jamais de formule qui sonne IA. Le destinataire doit pouvoir répondre en 1 phrase.\n\n"
+        + EMAIL_GUIDELINES + "\n\n"
         + guide +
         "\nUtilise le marqueur [NOM] là où le nom de l'entreprise destinataire doit apparaître.\n"
         'Réponds en JSON STRICT, rien d\'autre : {"subject":"...","body":"..."} '
