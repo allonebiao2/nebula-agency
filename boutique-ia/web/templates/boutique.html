@@ -144,6 +144,31 @@
   </section>
   {% endif %}
 
+  <!-- DIDACTICIEL : comment utiliser son espace (repliable, zéro jargon) -->
+  <details class="howto reveal" id="howto">
+    <style>
+      .howto{margin-top:14px;border:1px solid var(--line,#26262e);border-radius:14px;background:var(--panel,#15151b);overflow:hidden}
+      .howto>summary{cursor:pointer;list-style:none;padding:15px 18px;font-weight:700;font-size:1rem;display:flex;align-items:center;gap:10px}
+      .howto>summary::-webkit-details-marker{display:none}
+      .howto>summary::after{content:'+';margin-left:auto;font-size:1.35rem;color:var(--a,#10b981);line-height:1}
+      .howto[open]>summary::after{content:'–'}
+      .howto .ht-body{padding:0 18px 14px}
+      .howto .ht{padding:11px 0;border-top:1px solid var(--line,#26262e)}
+      .howto .ht b{color:var(--txt,#fff)}
+      .howto .ht span{display:block;color:var(--mut,#8a8a99);font-size:.88rem;margin-top:2px;line-height:1.45}
+    </style>
+    <summary><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--a,#10b981)" stroke-width="1.7"><use href="#i-wand"/></svg> Comment utiliser mon espace (guide rapide)</summary>
+    <div class="ht-body">
+      <div class="ht"><b>1. Votre lien WhatsApp (tout en haut)</b><span>C'est LE plus important : partagez-le partout (bio Instagram, page Facebook, flyers, statut WhatsApp). C'est par ce lien que vos clients arrivent et que l'agent les reconnaît.</span></div>
+      <div class="ht"><b>Capacités</b><span>Choisissez ce que votre vendeur sait faire (notes vocales, photos, paiement à la livraison, rendez-vous…). Vous cochez, c'est appliqué tout de suite.</span></div>
+      <div class="ht"><b>Produits & services</b><span>Ajoutez vos articles avec prix et photo. Plus c'est complet, mieux l'agent vend. Astuce : « Import express » pour tout coller d'un coup.</span></div>
+      <div class="ht"><b>Piloter mon agent</b><span>Donnez-lui des ordres en langage normal : « ajoute un sac à 15 000 », « mets le henné en rupture ». Il exécute, sans menu compliqué.</span></div>
+      <div class="ht"><b>Infos · Livraison · Style</b><span>Vos horaires, zones de livraison, façon d'encaisser, et le ton de votre vendeur. Ça rend ses réponses justes et à votre image.</span></div>
+      <div class="ht"><b>Activité</b><span>Suivez en direct les conversations, commandes et ventes de votre agent.</span></div>
+      <div class="ht"><b>Forfait</b><span>Changez d'offre quand vous voulez. Besoin de plus de capacités ? Passez au forfait supérieur.</span></div>
+    </div>
+  </details>
+
   <nav class="tabs">
     <a href="#piloter">Agent</a>
     <a href="#capacites">Capacités</a>
