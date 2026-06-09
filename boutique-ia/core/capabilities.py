@@ -39,10 +39,11 @@ CAPABILITIES: list[dict] = [
      "label": "Vous prévient si un client est chaud",
      "promise": "Vous alerte quand c'est sérieux (lead chaud, réclamation)."},
 
-    # 🔵 MODULES — à la carte (verrouillés par forfait)
-    {"id": "vocal", "group": "module", "min_plan": "demarrage", "icon": "i-send",
+    {"id": "vocal", "group": "socle", "min_plan": "demarrage", "icon": "i-send",
      "label": "Comprend les notes vocales",
      "promise": "Vos clients parlent, il comprend et répond."},
+
+    # 🔵 MODULES — à la carte (verrouillés par forfait)
     {"id": "photos", "group": "module", "min_plan": "demarrage", "icon": "i-eye",
      "label": "Envoie les photos des produits",
      "promise": "Montre vos produits, pas seulement les décrit."},

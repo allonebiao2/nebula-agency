@@ -280,6 +280,7 @@
 
 <nav class="tabs" id="tabs" aria-label="Sections">
   <a href="#sec-stats"><span class="dot"></span>Vue d'ensemble</a>
+  <a href="#sec-actions">Actions</a>
   <a href="#sec-ceo">Directeur</a>
   <a href="#sec-learn">Apprentissage</a>
   <a href="#sec-exp">Expériences</a>
@@ -307,6 +308,48 @@
     <div class="stat"><div class="sv num" data-target="{{ glob.sales|int }}" data-fmt="1">0</div><div class="sl">F CFA ventes</div></div>
     <div class="stat"><div class="sv num" data-target="{{ glob.mrr|int }}" data-fmt="1">0</div><div class="sl">F CFA / mois</div></div>
   </div>
+
+  <!-- CENTRE DE COMMANDE — actions rapides (tout en 1 clic) -->
+  <section class="rv qa-wrap" id="sec-actions">
+    <style>
+      .qa-wrap{margin-top:18px}
+      .qa-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+      .qa{display:flex;align-items:center;gap:13px;text-decoration:none;padding:15px 16px;border-radius:15px;
+          border:1px solid var(--line,#23232b);background:var(--panel,#15151b);transition:transform .18s,border-color .18s,box-shadow .18s}
+      .qa:hover{border-color:var(--a,#10b981);transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.30)}
+      .qa .qi{flex-shrink:0;width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+              background:rgba(16,185,129,.14);background:color-mix(in srgb,var(--a,#10b981) 16%,transparent)}
+      .qa .qi svg{width:21px;height:21px;stroke:var(--a,#10b981);fill:none;stroke-width:1.7}
+      .qa .qt{display:block;font-weight:800;font-size:.98rem;color:var(--txt,#fff);line-height:1.15}
+      .qa .qd{display:block;color:var(--muted,#8a8a99);font-size:.8rem;margin-top:2px;line-height:1.3}
+      .qa.alert{border-color:#e0a93b}
+      .qa.alert .qi{background:rgba(224,169,59,.16)} .qa.alert .qi svg{stroke:#e0a93b}
+    </style>
+    <div class="qa-grid">
+      {% if pending %}
+      <a class="qa alert" href="#sec-paiements">
+        <span class="qi"><svg viewBox="0 0 24 24"><use href="#i-clock"/></svg></span>
+        <span><span class="qt">{{ pending|length }} paiement{{ 's' if pending|length > 1 else '' }} à valider</span><span class="qd">Active une boutique en 1 clic</span></span>
+      </a>
+      {% endif %}
+      <a class="qa" href="#sec-pilote">
+        <span class="qi"><svg viewBox="0 0 24 24"><use href="#i-bolt"/></svg></span>
+        <span><span class="qt">Prospection auto</span><span class="qd">Allumer le pilote / lancer un cycle</span></span>
+      </a>
+      <a class="qa" href="#sec-recrut">
+        <span class="qi"><svg viewBox="0 0 24 24"><use href="#i-target"/></svg></span>
+        <span><span class="qt">Recruter manuellement</span><span class="qd">Cibler une ville / un secteur</span></span>
+      </a>
+      <a class="qa" href="#sec-boutiques">
+        <span class="qi"><svg viewBox="0 0 24 24"><use href="#i-store"/></svg></span>
+        <span><span class="qt">Mes boutiques ({{ glob.merchants }})</span><span class="qd">Gérer, tester, suspendre</span></span>
+      </a>
+      <a class="qa" href="#sec-relances">
+        <span class="qi"><svg viewBox="0 0 24 24"><use href="#i-bolt"/></svg></span>
+        <span><span class="qt">Relances & rétention</span><span class="qd">Récupérer clients & boutiques en pause</span></span>
+      </a>
+    </div>
+  </section>
 
   <!-- PILOTE DE RECRUTEMENT -->
   <section class="rv" id="sec-pilote">

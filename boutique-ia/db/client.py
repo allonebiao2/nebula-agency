@@ -43,6 +43,78 @@ def get_merchant(merchant_id: str) -> dict[str, Any] | None:
     return result.data[0] if result.data else None
 
 
+# Mots vides ignorés quand un client écrit une phrase au lieu du seul nom.
+_NAME_STOPWORDS = {
+    "bonjour", "bonsoir", "salut", "coucou", "hello", "hi", "slt", "cc",
+    "la", "le", "les", "boutique", "magasin", "chez", "pour", "avec",
+    "je", "jai", "cherche", "veux", "voudrais", "aimerais", "svp", "stp",
+    "merci", "est", "cest", "ce", "the", "shop", "store", "de", "du", "des",
+    "un", "une", "et", "ou", "vendora", "infos", "info", "information",
+}
+
+
+def find_merchant_by_name(text: str, limit: int = 4) -> list[dict[str, Any]]:
+    """Filet de routage WhatsApp : retrouve la/les boutique(s) ACTIVE(s) dont le nom
+    correspond au texte du client, quand il n'y a NI code `vendora:` NI session
+    (client qui a écrit au numéro brut sans passer par le lien). Insensible à la
+    casse et aux accents. Retourne 0 (rien), 1 (match sûr → on route direct) ou
+    plusieurs (ambigu → on demande de préciser)."""
+    import re
+    import unicodedata
+
+    def norm(s: str) -> str:
+        s = (s or "").lower().strip()
+        s = "".join(c for c in unicodedata.normalize("NFD", s)
+                    if unicodedata.category(c) != "Mn")
+        s = re.sub(r"[^a-z0-9\s]", " ", s)
+        return re.sub(r"\s+", " ", s).strip()
+
+    nt = norm(text)
+    if len(nt) < 3:
+        return []
+    nt_tokens = {t for t in nt.split() if t not in _NAME_STOPWORDS and len(t) > 1}
+    if not nt_tokens:
+        return []  # ex. juste « Bonjour » → on n'a aucun indice de boutique
+
+    try:
+        db = get_db()
+        rows = (db.table("bia_merchants")
+                .select("id,business_name,code,status")
+                .eq("status", "active").limit(400).execute().data or [])
+    except Exception:
+        return []
+
+    scored: list[tuple[int, dict[str, Any]]] = []
+    for m in rows:
+        nn = norm(m.get("business_name") or "")
+        if len(nn) < 2:
+            continue
+        nn_tokens = {t for t in nn.split() if len(t) > 1}
+        if nt == nn:
+            score = 100
+        elif nn in nt:                       # le nom complet apparaît dans la phrase
+            score = 80
+        elif len(nt) >= 4 and nt in nn:      # le client a tapé un bout du nom
+            score = 60
+        else:
+            common = nt_tokens & nn_tokens
+            score = (30 + 10 * len(common)
+                     if common and len(common) >= max(1, len(nn_tokens) // 2) else 0)
+        if score:
+            scored.append((score, {"id": m["id"],
+                                   "business_name": m.get("business_name"),
+                                   "code": m.get("code")}))
+
+    if not scored:
+        return []
+    scored.sort(key=lambda x: x[0], reverse=True)
+    top = scored[0][0]
+    # Un match domine nettement les autres → routage sûr, on ne renvoie que lui.
+    if top >= 60 and (len(scored) == 1 or scored[1][0] <= top - 30):
+        return [scored[0][1]]
+    return [d for _, d in scored[:limit]]
+
+
 # Champs de la fiche que le commerçant peut modifier lui-même (back-office).
 # On EXCLUT volontairement : id, code, plan, status, activation_ref (facturation/sécurité).
 EDITABLE_MERCHANT_FIELDS = {

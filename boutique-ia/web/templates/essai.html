@@ -102,7 +102,8 @@
     <div id="log"><div class="b sys">Écrivez comme un client (ex : « bonjour, vous avez quoi ? »)</div></div>
     <div id="overzone"></div>
     <form class="cf" id="f">
-      <input id="m" placeholder="Écrivez un message…" autocomplete="off">
+      <button type="button" class="mic" id="mic" title="Note vocale" aria-label="Note vocale" style="background:none;border:0;cursor:pointer;color:var(--muted,#8a8a99);display:flex;align-items:center;padding:0 6px"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2Z" fill="currentColor"/></svg></button>
+      <input id="m" placeholder="Écrivez ou parlez…" autocomplete="off">
       <button type="submit" class="send"><svg viewBox="0 0 24 24"><use href="#i-send"/></svg></button>
     </form>
   </div>
@@ -128,11 +129,9 @@
     if(countEl) countEl.textContent="Essai terminé";
     document.getElementById('overzone').innerHTML='<div class="over"><p>Essai terminé ! Choisissez votre offre pour des conversations illimitées avec vos vrais clients.</p></div>';
   }
-  const f = document.getElementById('f');
-  if(f) f.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const input=document.getElementById('m'); const text=input.value.trim(); if(!text) return;
-    bubble(text,'me'); input.value=''; input.focus();
+  async function sendText(text){
+    if(!text) return;
+    bubble(text,'me');
     const typing=document.createElement('div'); typing.className='b typing'; typing.innerHTML='<span class="pulse"></span>le vendeur écrit…';
     log.appendChild(typing); log.scrollTop=log.scrollHeight;
     try{
@@ -148,7 +147,45 @@
         }
       } else bubble(data.error||'Erreur','sys');
     }catch(ex){ typing.remove(); bubble(ex.message,'sys'); }
+  }
+  const f = document.getElementById('f');
+  if(f) f.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const input=document.getElementById('m'); const text=input.value.trim(); if(!text) return;
+    input.value=''; input.focus(); sendText(text);
   });
+
+  // --- Note vocale : enregistre (max 30 s), transcrit (gratuit, Groq), envoie comme un message ---
+  (function(){
+    const mic=document.getElementById('mic'); const input=document.getElementById('m');
+    if(!mic || !navigator.mediaDevices || !window.MediaRecorder){ if(mic) mic.style.display='none'; return; }
+    let rec=null, chunks=[], stopTimer=null, recording=false;
+    function setRec(on){ recording=on; mic.style.color = on ? '#e5484d' : ''; input.placeholder = on ? 'Enregistrement… touchez le micro pour arrêter' : 'Écrivez ou parlez…'; }
+    function stop(){ if(stopTimer){clearTimeout(stopTimer); stopTimer=null;} if(rec && rec.state!=='inactive') rec.stop(); }
+    async function start(){
+      let stream;
+      try{ stream=await navigator.mediaDevices.getUserMedia({audio:true}); }
+      catch(e){ bubble("Micro refusé. Autorisez le micro pour parler à l'agent.","sys"); return; }
+      chunks=[]; rec=new MediaRecorder(stream);
+      rec.ondataavailable=e=>{ if(e.data && e.data.size) chunks.push(e.data); };
+      rec.onstop=async ()=>{
+        stream.getTracks().forEach(t=>t.stop()); setRec(false);
+        const blob=new Blob(chunks,{type:(rec.mimeType||'audio/webm')});
+        if(!blob.size) return;
+        const typing=bubble("transcription du vocal…","typing");
+        try{
+          const fd=new FormData(); fd.append('file', blob, 'vocal.webm');
+          const r=await fetch('/api/transcribe',{method:'POST',body:fd});
+          const data=await r.json(); typing.remove();
+          if(data.ok && data.text){ sendText(data.text); }
+          else bubble(data.error||"Je n'ai pas compris le vocal.","sys");
+        }catch(ex){ typing.remove(); bubble("Vocal non envoyé.","sys"); }
+      };
+      rec.start(); setRec(true);
+      stopTimer=setTimeout(()=>{ if(recording) stop(); }, 30000); // garde-fou 30 s
+    }
+    mic.addEventListener('click', ()=>{ if(recording) stop(); else start(); });
+  })();
 </script>
 </body>
 </html>

@@ -19,8 +19,8 @@ from pathlib import Path
 from urllib.parse import quote
 from xml.sax.saxutils import escape
 
-from fastapi import BackgroundTasks, FastAPI, Request
-from fastapi.responses import HTMLResponse, JSONResponse, Response
+from fastapi import BackgroundTasks, FastAPI, File, Request, UploadFile
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -65,6 +65,15 @@ def _wa_link(code: str) -> str:
         return ""
     text = quote(f"Bonjour ! (vendora:{code})")
     return f"https://wa.me/{number}?text={text}"
+
+
+def _wa_short_link(code: str) -> str:
+    """Lien COURT et propre à partager (redirige vers le vrai lien wa.me).
+    Ex: https://vendora-agent.up.railway.app/go/3cdfd1 — pas de `vendora:` visible."""
+    if not code:
+        return ""
+    base = (settings.public_base_url or "").rstrip("/")
+    return f"{base}/go/{code}"
 
 log = logging.getLogger("boutique-ia.server")
 
@@ -216,6 +225,14 @@ def _ctx(request: Request, **extra) -> dict:
 async def onboarding(request: Request):
     """Page publique : la fiche d'inscription du commerçant."""
     return templates.TemplateResponse(request, "onboarding.html", _ctx(request))
+
+
+@app.get("/go/{code}")
+async def wa_redirect(code: str):
+    """Lien court partageable → redirige vers le vrai lien wa.me (avec le code de
+    routage). Permet de partager `…/go/CODE` au lieu du long lien wa.me + vendora:."""
+    target = _wa_link((code or "").strip().lower())
+    return RedirectResponse(target or "/", status_code=302)
 
 
 @app.get("/activation/{merchant_id}", response_class=HTMLResponse)
@@ -502,7 +519,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
             }
         except Exception:  # noqa: BLE001
             log.warning("back-office: lecture brouillons KO", exc_info=True)
-    wa_link = _wa_link(merchant.get("code")) if merchant else ""
+    wa_link = _wa_short_link(merchant.get("code")) if merchant else ""
     remaining = -1 if daily_limit < 0 else max(0, daily_limit - used_today)
     accent = (merchant.get("brand_color") if merchant else None) or "#10b981"
     cats = [{"key": k, "label": v["label"]} for k, v in CATEGORIES.items()]
@@ -2075,9 +2092,32 @@ def _agent_handle(customer: str, body_text: str, has_audio: bool = False,
             log.warning("wa session lookup échoué", exc_info=True)
 
     if not merchant:
-        return {"status": "greeting", "media": [], "text":
-                "Bonjour 🌟 Pour discuter avec une boutique, ouvrez son lien Vendora "
-                "(ou demandez-lui de vous l'envoyer). À très vite !"}
+        # Filet de sécurité : ni code vendora: ni session (le client a écrit au
+        # numéro brut sans passer par le lien). On tente de reconnaître la boutique
+        # à son NOM ; sinon on demande gentiment lequel (aucune écriture en base
+        # tant qu'on n'a pas identifié la boutique).
+        try:
+            from db.client import find_merchant_by_name
+            cand = find_merchant_by_name(body)
+        except Exception:
+            cand = []
+            log.warning("recherche boutique par nom échouée", exc_info=True)
+        if len(cand) == 1:
+            merchant = get_merchant(cand[0]["id"])
+            if merchant and customer:
+                try:
+                    upsert_wa_session(customer, merchant["id"])
+                except Exception:
+                    log.warning("wa session upsert (nom) échoué", exc_info=True)
+        elif len(cand) > 1:
+            noms = ", ".join(c["business_name"] for c in cand if c.get("business_name"))
+            return {"status": "disambiguate", "media": [], "text":
+                    "Il y a plusieurs boutiques 🙏 Vous cherchez laquelle : "
+                    f"{noms} ? Écrivez son nom exact (ou ouvrez son lien)."}
+        if not merchant:
+            return {"status": "greeting", "media": [], "text":
+                    "Bonjour 🌟 Vous cherchez quelle boutique ? Écrivez-moi son nom "
+                    "et je vous mets en relation. (Le plus simple : ouvrir son lien WhatsApp.)"}
 
     _exp = _days_left(merchant)
     if merchant.get("status") == "suspended" or (_exp is not None and _exp <= 0):
@@ -2453,7 +2493,7 @@ async def essai(request: Request, merchant_id: str):
         log.warning("essai: lecture merchant impossible: %s", e)
     price = price_for_plan(merchant.get("plan")) if merchant else settings.saas_price_fcfa
     plan_label = (merchant.get("plan") or "demarrage").capitalize() if merchant else ""
-    wa_link = _wa_link(merchant.get("code")) if merchant else ""
+    wa_link = _wa_short_link(merchant.get("code")) if merchant else ""
     # Essai 3 jours : jours restants + preuve de valeur (à afficher dans la page).
     trial = None
     if merchant and merchant.get("is_trial"):
@@ -2542,3 +2582,30 @@ async def chat(request: Request):
         return JSONResponse({"ok": False, "error": str(e)[:300]}, status_code=500)
 
     return {"ok": True, "reply": answer, "remaining": remaining, "trial_over": False}
+
+
+@app.post("/api/transcribe")
+async def transcribe_voice(file: UploadFile = File(...)):
+    """Transcrit une note vocale (simulateur web) en texte via Groq Whisper.
+
+    GRATUIT (Groq). Le front renvoie ensuite ce texte à /api/chat → donc le vocal
+    COMPTE dans la limite d'essai (pas d'abus). Garde-fous tokens/coût : taille
+    max + transcription tronquée (un vocal qui s'éternise ne fait pas exploser
+    les tokens de la réponse)."""
+    if not settings.groq_api_key:
+        return JSONResponse({"ok": False, "error": "Vocal indisponible pour le moment."},
+                            status_code=503)
+    try:
+        audio = await file.read()
+    except Exception:  # noqa: BLE001
+        return JSONResponse({"ok": False, "error": "Audio illisible."}, status_code=400)
+    if not audio:
+        return JSONResponse({"ok": False, "error": "Audio vide."}, status_code=400)
+    if len(audio) > 6_000_000:  # ~6 Mo : un vocal de 30-60 s pèse bien moins
+        return JSONResponse({"ok": False, "error": "Vocal trop long."}, status_code=413)
+    from core import transcribe as _t
+    text = _t.transcribe_bytes(audio, file.content_type)
+    if not text:
+        return JSONResponse({"ok": False, "error": "Je n'ai pas réussi à écouter le vocal."},
+                            status_code=502)
+    return {"ok": True, "text": text.strip()[:500]}  # garde-fou tokens
