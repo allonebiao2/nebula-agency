@@ -251,8 +251,10 @@ def capabilities_context(merchant: dict) -> dict:
     socle = [{"id": c["id"], "label": c["label"], "promise": c["promise"],
               "icon": c.get("icon") or "i-check"}
              for c in CAPABILITIES if c["group"] == "socle"]
-    modules = [_row(c) for c in CAPABILITIES if c["group"] == "module"]
-    premium = [_row(c) for c in CAPABILITIES if c["group"] == "premium"]
+    # On ne montre QUE le concret : les capacités « bientôt » (soon) sont masquées
+    # de l'UI (le flag reste dans le registre pour le futur / le gating).
+    modules = [_row(c) for c in CAPABILITIES if c["group"] == "module" and not c.get("soon")]
+    premium = [_row(c) for c in CAPABILITIES if c["group"] == "premium" and not c.get("soon")]
     used = sum(1 for c in (modules + premium) if c["enabled"])
     lim = module_limit(plan)
     return {"plan": plan, "plan_label": PLAN_LABELS.get(plan, plan),

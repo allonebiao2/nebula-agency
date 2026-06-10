@@ -173,15 +173,14 @@ PLAN_EXTRA_FEATURES = {
         ("5 ordres/jour pour piloter votre agent", True),
     ],
     "business": [
-        ("5 super-pouvoirs au choix : relances auto, rendez-vous, Messenger + Instagram, prospection, réseaux sociaux (calendrier)…", True),
+        ("5 super-pouvoirs au choix : relances auto, rendez-vous, réseaux sociaux (calendrier), photos, marchandage…", True),
         ("30 ordres/jour pour piloter votre agent", True),
         ("Tableau de bord des ventes + support prioritaire", True),
     ],
     "empire": [
         ("Tous les super-pouvoirs + ordres illimités", True),
         ("Coach commercial : conseils chiffrés pour vendre plus", True),
-        ("Réseaux sociaux : posts planifiés + images de marque (vidéo bientôt)", True),
-        ("Email pro + acquisition sur les réseaux", True),
+        ("Réseaux sociaux : posts planifiés + images de marque", True),
         ("S'améliore sur VOTRE boutique + accompagnement personnalisé", True),
     ],
 }

@@ -193,7 +193,7 @@
     {% if coach_on %}<a href="#coach">Coach</a>{% endif %}
     {% if rdv_on %}<a href="#rdv">Rendez-vous</a>{% endif %}
     {% if social_on %}<a href="#social">Réseaux</a>{% endif %}
-    <a href="#prospection">Prospection</a>
+    {% if not prospection_soon %}<a href="#prospection">Prospection</a>{% endif %}
     {% if inbox.on %}<a href="#reponses">Réponses{% if inbox.drafts %} ({{ inbox.drafts|length }}){% endif %}</a>{% endif %}
     <a href="#forfaits">Forfait</a>
   </nav>
@@ -310,7 +310,7 @@
       <div class="capcard {{ 'on' if c.enabled }} {{ 'locked' if (not c.available or c.soon) }}{{ ' soon' if c.soon }}"
            data-cap="{{ c.id }}" data-available="{{ '1' if c.available else '0' }}" data-soon="{{ '1' if c.soon else '0' }}" data-min="{{ c.min_plan_label }}"
            onclick="toggleCap(this)">
-        {% if c.soon %}<span class="lock soon-b">Bientôt</span>{% elif c.available %}<span class="tick">✓</span>{% else %}<span class="lock">🔒 {{ c.min_plan_label }}</span>{% endif %}
+        {% if c.available %}<span class="tick">✓</span>{% else %}<span class="lock">🔒 {{ c.min_plan_label }}</span>{% endif %}
         <div class="cn"><svg viewBox="0 0 24 24"><use href="#{{ c.icon }}"/></svg>{{ c.label }}</div>
         <div class="cp">{{ c.promise }}</div>
       </div>
@@ -323,7 +323,7 @@
       <div class="capcard {{ 'on' if c.enabled }} {{ 'locked' if (not c.available or c.soon) }}{{ ' soon' if c.soon }}"
            data-cap="{{ c.id }}" data-available="{{ '1' if c.available else '0' }}" data-soon="{{ '1' if c.soon else '0' }}" data-min="{{ c.min_plan_label }}"
            onclick="toggleCap(this)">
-        {% if c.soon %}<span class="lock soon-b">Bientôt</span>{% elif c.available %}<span class="tick">✓</span>{% else %}<span class="lock">🔒 {{ c.min_plan_label }}</span>{% endif %}
+        {% if c.available %}<span class="tick">✓</span>{% else %}<span class="lock">🔒 {{ c.min_plan_label }}</span>{% endif %}
         <div class="cn"><svg viewBox="0 0 24 24"><use href="#{{ c.icon }}"/></svg>{{ c.label }}</div>
         <div class="cp">{{ c.promise }}</div>
       </div>
@@ -711,7 +711,7 @@ Bracelet jonc 5000"></textarea>
       <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg></div>
       <h2>Réseaux sociaux</h2>
     </div>
-    <p class="hint">Votre agent rédige et <b>planifie</b> des posts Facebook/Instagram <b>qui vendent</b>, adaptés à chaque réseau, à partir de votre catalogue. Vous validez, modifiez ou copiez. <i>(Publication automatique : bientôt.)</i></p>
+    <p class="hint">Votre agent rédige et <b>planifie</b> des posts Facebook/Instagram <b>qui vendent</b>, adaptés à chaque réseau, à partir de votre catalogue. Vous validez, modifiez ou copiez.</p>
 
     <div class="panel" style="margin-top:12px">
       <div style="font-weight:700;margin-bottom:8px">🗓️ Planifier mon calendrier de posts</div>
@@ -741,9 +741,6 @@ Bracelet jonc 5000"></textarea>
     <p class="hint" style="margin-top:10px">🖼️ Les <b>images de marque</b> pour vos posts sont incluses dans le forfait <b>Empire</b>.</p>
     {% endif %}
 
-    {% if not social_publish_ready %}
-    <p class="hint" style="margin-top:10px">📣 Pour <b>publier en 1 clic</b> sur Facebook, liez votre page (via NEBULA). <i>Publication 100 % automatique sans intervention : bientôt.</i></p>
-    {% endif %}
 
     <div id="socialList">
       {% if social_posts %}
@@ -772,7 +769,8 @@ Bracelet jonc 5000"></textarea>
   </section>
   {% endif %}
 
-  <!-- PROSPECTION -->
+  <!-- PROSPECTION (masquée tant que « bientôt » — on ne montre que le concret) -->
+  {% if not prospection_soon %}
   <section class="reveal" id="prospection">
     <div class="shead">
       <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-target"/></svg></div>
@@ -782,15 +780,7 @@ Bracelet jonc 5000"></textarea>
         {% else %}<span class="quota" style="color:var(--mut);background:none">Business / Empire</span>{% endif %}
       </div>
     </div>
-    {% if prospection_soon %}
-    <div class="panel" style="display:flex;gap:14px;align-items:center">
-      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="var(--a)" stroke-width="1.5"><use href="#i-target"/></svg>
-      <div style="flex:1">
-        <div style="font-weight:700">Bientôt disponible</div>
-        <div class="hint" style="margin:4px 0 0">La prospection automatique arrive très vite. On la peaufine pour qu'elle trouve les bons prospects et reste 100 % conforme.</div>
-      </div>
-    </div>
-    {% elif prospect_daily > 0 %}
+    {% if prospect_daily > 0 %}
     <p class="hint">Votre agent cherche des entreprises locales (par secteur + ville) et leur envoie un email personnalisé pour leur proposer vos produits. Recherche et envoi 100% automatiques, avec garde-fous (anti-spam, désinscription).</p>
     <div class="panel">
       <div class="grid2">
@@ -845,6 +835,7 @@ Bracelet jonc 5000"></textarea>
     </div>
     {% endif %}
   </section>
+  {% endif %}
 
   <!-- RÉPONSES EMAIL À VALIDER -->
   {% if inbox.on %}
@@ -900,7 +891,6 @@ Bracelet jonc 5000"></textarea>
       </div>
       {% endfor %}
     </div>
-    <p class="hint" style="margin-top:14px;display:flex;align-items:center;gap:7px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--mut2)" stroke-width="1.5"><use href="#i-spark"/></svg> « bientôt » = fonctionnalité en cours de déploiement, incluse dès sa sortie.</p>
   </section>
   </div><!-- /.secwrap -->
 </div>
@@ -1154,10 +1144,6 @@ function updateCapCount(){
   el.textContent = CAP_LIMIT < 0 ? (n + ' capacités actives') : (n + '/' + CAP_LIMIT + ' modules');
 }
 function toggleCap(card){
-  if(card.dataset.soon === '1'){
-    notify('Bientôt disponible — fonctionnalité en cours de déploiement', true);
-    return;
-  }
   if(card.dataset.available !== '1'){
     notify('Disponible avec le forfait ' + card.dataset.min + ' — voir l\'onglet Forfait', true);
     return;
