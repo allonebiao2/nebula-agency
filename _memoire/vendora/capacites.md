@@ -10,8 +10,8 @@
 - Modules : photos produits, paiement à la livraison, négociation encadrée, relances auto, prise de RDV.
 - Premium : apprentissage perso, images de marque (Pillow), coach commercial, réseaux sociaux (rédige + planifie ; publication 1-clic manuelle).
 
-## « Bientôt » (affichés badge vert, NON activables — feuille de route)
-Marqués `"soon": True` dans `capabilities.py` (exclus de l'activation + de l'auto-assignation) :
+## Masqués de l'UI — on ne montre QUE le concret (décidé 2026-06-10)
+Marqués `"soon": True` dans `capabilities.py` → **retirés** de « Composez votre vendeur », de la page de vente et des forfaits (filtrés dans `capabilities_context` ; exclus activation/auto-assignation/gating). Plus de badge « Bientôt » affiché. Flag conservé pour le futur :
 - **Messenger + Instagram** (`multicanal`) → dépend de l'App Review Meta. Voir [[canaux]].
 - **Acquisition réseaux / comment-to-DM** → App Review + setup page.
 - **Email pro + réponses auto** → boîte email par boutique, dormante.
