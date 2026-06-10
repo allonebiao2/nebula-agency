@@ -729,6 +729,7 @@
             <div><b class="num">{{ r.products }}</b><span>produits</span></div>
             <div><b class="num">{{ r.orders }}</b><span>commandes</span></div>
             <div><b class="num">{{ "{:,}".format(r.revenue|int).replace(",", " ") }}</b><span>F vendus</span></div>
+            {% if r.usage %}<div><b class="num" {% if r.usage.status=='over' %}style="color:#ff6b6b"{% elif r.usage.status=='warning' %}style="color:#e0a93b"{% endif %}>{% if r.usage.unlimited %}∞{% else %}{{ r.usage.used }}/{{ r.usage.allowance }}{% endif %}</b><span>conv./mois{% if r.credits %} · +{{ r.credits }} cr.{% endif %}</span></div>{% endif %}
           </div>
           <div class="ma">
             {% if r.status in ('paid_pending_validation','suspended','pending_payment') %}<button class="btn acc sm" type="button" onclick="activate('{{ r.m.id }}')"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Activer</button>{% endif %}
@@ -741,6 +742,7 @@
               <option value="empire" {{ 'selected' if r.plan_key=='empire' }}>Empire</option>
             </select>
             <button class="btn gho sm" type="button" onclick="resetPin('{{ r.m.id }}')">Code</button>
+            <button class="btn gho sm" type="button" onclick="addCredits('{{ r.m.id }}')" title="Créditer des conversations (recharge MoMo reçue)">+Crédits</button>
           </div>
         </div>
         {% endfor %}
@@ -1002,6 +1004,15 @@ async function changePlan(id, plan, current){
   }
   const d = await post('/api/admin/merchants/'+id+'/plan', {plan, apply});
   if(d.ok){ notify(d.applied_now ? 'Forfait changé maintenant' : 'Changement programmé au renouvellement'); setTimeout(()=>location.reload(),900); }
+  else { notify(d.error||'Erreur', true); }
+}
+async function addCredits(id){
+  const v = prompt('Recharge reçue (MoMo) — combien de conversations créditer ?\n\nPacks : 100 = 2000 F · 300 = 5000 F · 1000 = 12000 F\n(nombre négatif pour corriger)');
+  if(v===null) return;
+  const n = parseInt(v, 10);
+  if(!n){ notify('Nombre invalide', true); return; }
+  const d = await post('/api/admin/merchants/'+id+'/credits', {conversations:n});
+  if(d.ok){ notify('Crédité : +'+d.added+' (solde '+d.credits+')'); setTimeout(()=>location.reload(),900); }
   else { notify(d.error||'Erreur', true); }
 }
 async function launchRecrutement(){

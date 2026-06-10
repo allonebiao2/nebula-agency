@@ -192,6 +192,30 @@ PLAN_PROSPECTION_DAILY = {
     "empire": 50,
 }
 
+# ── Metering : conversations CLIENTS incluses par forfait (par MOIS calendaire).
+# RÈGLE D'OR : le vendeur n'est JAMAIS coupé (soft cap). Ces nombres servent à
+# PACKAGER la valeur + déclencher recharge/upgrade, jamais à brider une vente.
+# Limites volontairement GÉNÉREUSES (le coût réel par conversation sur Haiku est
+# faible) → invisibles pour un usage normal. -1 = illimité (fair-use). Décision
+# financière de Mongazi (ajustable ici sans risque : pur affichage + nudge).
+PLAN_CONV_INCLUDED = {
+    "demarrage": 300,    # ~10 conversations/jour
+    "business": 1200,    # ~40/jour
+    "empire": -1,        # illimité
+}
+
+# Recharges de crédits = conversations SUPPLÉMENTAIRES (modèle prépayé MoMo, sans
+# expiration courte → de la valeur, pas une punition). Prix DÉGRESSIF voulu : le
+# petit pack coûte plus cher/conversation que le tarif d'un forfait, pour que
+# recharger en boucle pousse NATURELLEMENT vers l'upgrade. Montants = à valider
+# par Mongazi (financier). Encaissement = MoMo manuel (l'admin crédite après).
+CREDIT_PACKS = [
+    {"id": "pack100",  "conversations": 100,  "price": 2000},   # 20 F/conv
+    {"id": "pack300",  "conversations": 300,  "price": 5000},   # ~16,7 F/conv
+    {"id": "pack1000", "conversations": 1000, "price": 12000},  # 12 F/conv (~ tarif Business)
+]
+CREDIT_PACKS_BY_ID = {p["id"]: p for p in CREDIT_PACKS}
+
 
 def normalize_plan(plan: str | None) -> str:
     p = (plan or "").strip().lower()
@@ -205,6 +229,11 @@ def price_for_plan(plan: str | None) -> int:
 def daily_orders_for_plan(plan: str | None) -> int:
     """Quota d'ordres/jour du forfait (-1 = illimité)."""
     return PLAN_DAILY_ORDERS[normalize_plan(plan)]
+
+
+def conv_included_for_plan(plan: str | None) -> int:
+    """Conversations clients incluses/mois du forfait (-1 = illimité)."""
+    return PLAN_CONV_INCLUDED[normalize_plan(plan)]
 
 
 def prospection_daily_for_plan(plan: str | None) -> int:

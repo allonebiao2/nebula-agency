@@ -333,3 +333,8 @@ create table if not exists bia_agenda (
   created_at  timestamptz default now()
 );
 create index if not exists bia_agenda_idx on bia_agenda(merchant_id, status, remind_at);
+
+-- 14. Metering : crédits de conversations supplémentaires (recharge prépayée MoMo,
+--     persistants). SOFT CAP — ne bride jamais la vente ; sert l'affichage + le
+--     nudge recharge/upgrade. Conversations incluses/mois = config.PLAN_CONV_INCLUDED.
+alter table bia_merchants add column if not exists conv_credits integer not null default 0;

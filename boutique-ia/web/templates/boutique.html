@@ -372,6 +372,36 @@
     </div></div>
   </section>
 
+  {% if usage %}
+  <!-- CONVERSATIONS (metering, soft cap) -->
+  <section class="reveal" id="usagebox" style="order:2;margin-top:18px">
+    <div class="shead">
+      <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg></div>
+      <h2>Vos conversations ce mois</h2>
+      <div class="act"><span class="quota">{% if usage.unlimited %}Illimité{% else %}{{ usage.used }} / {{ usage.allowance }}{% endif %}</span></div>
+    </div>
+    {% if usage.unlimited %}
+      <p class="hint">Votre agent a géré <b>{{ usage.used }}</b> conversation(s) clients ce mois 💪 Forfait illimité — vendez sans compter.</p>
+    {% else %}
+      <div class="bezel"><div class="bezel-in">
+        <p class="hint" style="margin:0 0 10px">Votre agent a géré <b>{{ usage.used }}</b> conversation(s) clients ce mois 💪 (inclus : {{ usage.included }}{% if usage.credits %} + {{ usage.credits }} crédits{% endif %})</p>
+        <div class="g-bar"><i style="width:{{ usage.pct }}%{% if usage.status=='over' %};background:#ff6b6b{% elif usage.status=='warning' %};background:#e0a93b{% endif %}"></i></div>
+        {% if usage.status == 'over' %}
+          <p class="hint" style="color:#ff9d9d;margin:11px 0 0">Vous avez dépassé votre forfait — bonne nouvelle, votre agent <b>continue de vendre</b> 🙌 Pour rester serein, rechargez des conversations ou <a href="#forfaits">passez au forfait supérieur</a>.</p>
+        {% elif usage.status == 'warning' %}
+          <p class="hint" style="margin:11px 0 0">Vous approchez de votre limite (et votre agent ne s'arrêtera pas de vendre). Rechargez des conversations ou <a href="#forfaits">passez au forfait supérieur</a> pour vendre l'esprit tranquille.</p>
+        {% endif %}
+        {% if usage.status in ['warning','over'] and usage.packs %}
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+            {% for p in usage.packs %}<span class="pill">+{{ p.conversations }} conversations — {{ p.price }} F</span>{% endfor %}
+          </div>
+          <p class="hint" style="margin:10px 0 0">Pour recharger : payez le pack par Mobile Money puis envoyez la preuve à NEBULA — vos crédits sont ajoutés aussitôt.</p>
+        {% endif %}
+      </div></div>
+    {% endif %}
+  </section>
+  {% endif %}
+
   <!-- PRODUITS -->
   <section class="reveal" id="produits">
     <div class="shead">

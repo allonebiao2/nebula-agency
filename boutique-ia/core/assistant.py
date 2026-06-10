@@ -346,6 +346,29 @@ def agenda_set(merchant_id: str, agenda_id: str, status: str) -> str:
     return f"« {row.get('title')} » {verb}."
 
 
+def usage_view(merchant_id: str) -> str:
+    """État RÉEL du forfait : conversations consommées ce mois + crédits + restant."""
+    from db.client import conversation_usage, get_merchant
+    m = get_merchant(merchant_id)
+    if not m:
+        return "(boutique introuvable)"
+    u = conversation_usage(m)
+    if u["unlimited"]:
+        return (f"DONNÉES RÉELLES — forfait {u['plan']} : conversations ILLIMITÉES. "
+                f"{u['used']} client(s) servi(s) ce mois.")
+    credits = f" + {u['credits']} crédits" if u["credits"] else ""
+    lines = [f"DONNÉES RÉELLES — forfait {u['plan']} :",
+             f"- Conversations ce mois : {u['used']} / {u['allowance']} (inclus {u['included']}{credits})",
+             f"- Restant : {u['remaining']}"]
+    if u["status"] == "over":
+        lines.append("- Limite dépassée : l'agent CONTINUE de vendre. On peut recharger des "
+                     "conversations (crédits) ou passer au forfait supérieur.")
+    elif u["status"] == "warning":
+        lines.append("- Proche de la limite (l'agent ne s'arrête jamais). Penser à recharger "
+                     "ou monter de forfait.")
+    return "\n".join(lines)
+
+
 # ---------------------------------------------------------------------------
 # Le cerveau de l'assistant — outils (lecture + agenda) + intelligence générale
 # ---------------------------------------------------------------------------
@@ -395,6 +418,13 @@ TOOLS = [
         "name": "rendez_vous",
         "description": ("Liste RÉELLE des rendez-vous CLIENTS enregistrés (pris par le vendeur). "
                         "À appeler pour « mes rendez-vous clients », « qui vient »."),
+        "input_schema": {"type": "object", "properties": {}},
+    },
+    {
+        "name": "etat_forfait",
+        "description": ("État RÉEL du forfait : conversations clients consommées ce mois, "
+                        "crédits, restant. À appeler pour « où j'en suis », « combien de "
+                        "conversations ce mois », « il me reste combien », « mon forfait »."),
         "input_schema": {"type": "object", "properties": {}},
     },
     {
@@ -458,6 +488,8 @@ def _exec_tool(merchant_id: str, name: str, args: dict) -> str:
             return client_info(merchant_id, args.get("recherche") or "")
         if name == "rendez_vous":
             return appointments_view(merchant_id)
+        if name == "etat_forfait":
+            return usage_view(merchant_id)
         if name == "noter_agenda":
             return agenda_add(merchant_id, args.get("titre") or "",
                               args.get("quand_texte"), args.get("rappel_iso"))

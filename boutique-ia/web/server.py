@@ -602,6 +602,16 @@ async def boutique_backoffice(request: Request, merchant_id: str):
             coaching = get_latest_coaching(merchant_id)
         except Exception:  # noqa: BLE001
             log.warning("back-office: lecture coaching KO", exc_info=True)
+    # Metering : conversations clients ce mois (soft cap — informatif + nudge).
+    usage = None
+    if merchant:
+        try:
+            from config import CREDIT_PACKS
+            from db.client import conversation_usage
+            usage = conversation_usage(merchant)
+            usage["packs"] = CREDIT_PACKS
+        except Exception:  # noqa: BLE001
+            log.warning("back-office: usage KO", exc_info=True)
     return templates.TemplateResponse(
         request, "boutique.html",
         _ctx(request, merchant=merchant, merchant_id=merchant_id,
@@ -613,7 +623,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              guide=guide, trial=trial, suspended=suspended, rdv_on=rdv_on, appointments=appointments,
              social_on=social_on, social_images_on=social_images_on, social_posts=social_posts,
              social_publish_ready=social_publish_ready,
-             coach_on=coach_on, coaching=coaching,
+             coach_on=coach_on, coaching=coaching, usage=usage,
              prospect_daily=prospect_daily, prospect_used=prospect_used, prospection_soon=prospection_soon,
              prospect_remaining=max(0, prospect_daily - prospect_used)),
     )
@@ -633,6 +643,7 @@ async def admin_dashboard(request: Request, token: str = ""):
     from db.client import (
         all_orders_brief,
         all_products_brief,
+        conversation_usage,
         days_left,
         list_all_merchants,
     )
@@ -682,6 +693,10 @@ async def admin_dashboard(request: Request, token: str = ""):
         if m.get("is_trial"):
             trials += 1
         pplan = (m.get("pending_plan") or "").strip()
+        try:
+            usage = conversation_usage(m)
+        except Exception:  # noqa: BLE001
+            usage = None
         rows.append({
             "m": m,
             "plan_key": normalize_plan(m.get("plan")),
@@ -694,6 +709,8 @@ async def admin_dashboard(request: Request, token: str = ""):
             "revenue": oc["revenue"],
             "status": st,
             "dleft": days_left(m),
+            "usage": usage,
+            "credits": int(m.get("conv_credits") or 0),
         })
 
     pending = [r for r in rows if r["status"] == "paid_pending_validation"]
@@ -875,6 +892,40 @@ async def admin_set_plan(request: Request, merchant_id: str):
         log.exception("admin set_plan échoué")
         return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
     return {"ok": bool(m), "merchant": m, "applied_now": immediate}
+
+
+@app.post("/api/admin/merchants/{merchant_id}/credits")
+async def admin_add_credits(request: Request, merchant_id: str):
+    """Crédite des conversations à une boutique (après une recharge MoMo reçue).
+
+    Encaissement MoMo manuel (comme l'activation) : Mongazi valide → on ajoute les
+    crédits. `pack` (id de config.CREDIT_PACKS) OU `conversations` (nombre direct,
+    peut être négatif pour corriger). Action ADMIN — Mongazi pilote le financier.
+    """
+    from config import CREDIT_PACKS_BY_ID
+    from db.client import add_conversation_credits
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    n = 0
+    pack = (body.get("pack") or "").strip()
+    if pack and pack in CREDIT_PACKS_BY_ID:
+        n = CREDIT_PACKS_BY_ID[pack]["conversations"]
+    else:
+        try:
+            n = int(body.get("conversations") or 0)
+        except (TypeError, ValueError):
+            n = 0
+    if not n:
+        return JSONResponse({"ok": False, "error": "Indiquez un pack ou un nombre de conversations."},
+                            status_code=400)
+    m = add_conversation_credits(merchant_id, n)
+    if not m:
+        return JSONResponse({"ok": False, "error": "Boutique introuvable."}, status_code=404)
+    return {"ok": True, "credits": int(m.get("conv_credits") or 0), "added": n}
 
 
 @app.post("/api/admin/merchants/{merchant_id}/reset-pin")

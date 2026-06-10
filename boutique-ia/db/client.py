@@ -1434,3 +1434,79 @@ def mark_agenda_reminded(item_id: str) -> None:
          .eq("id", item_id).execute())
     except Exception:  # noqa: BLE001
         pass
+
+
+# ---------------------------------------------------------------------------
+# Metering — conversations clients consommées ce mois (soft cap + crédits)
+# ---------------------------------------------------------------------------
+
+def _month_start_iso() -> str:
+    """Début du mois calendaire courant en heure du Bénin (WAT), au format UTC."""
+    from datetime import datetime, timedelta, timezone
+    wat = timezone(timedelta(hours=1))
+    now = datetime.now(wat)
+    start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    return start.astimezone(timezone.utc).isoformat()
+
+
+def conversations_used_this_month(merchant_id: str) -> int:
+    """Nb de clients DIFFÉRENTS que l'agent a gérés ce mois (= conversations).
+
+    Une « conversation » = un numéro client distinct ayant écrit ce mois-ci. On
+    lit la colonne customer_whatsapp des messages clients et on déduplique.
+    """
+    try:
+        rows = (
+            get_db().table("bia_messages")
+            .select("customer_whatsapp")
+            .eq("merchant_id", merchant_id).eq("role", "customer")
+            .gte("created_at", _month_start_iso())
+            .limit(20000).execute().data or []
+        )
+    except Exception:  # noqa: BLE001
+        return 0
+    return len({r.get("customer_whatsapp") for r in rows if r.get("customer_whatsapp")})
+
+
+def conversation_usage(merchant: dict[str, Any]) -> dict[str, Any]:
+    """État d'usage prêt pour l'UI : inclus / crédits / utilisés / restant / statut.
+
+    SOFT CAP : informatif uniquement (le vendeur n'est jamais coupé). statut :
+    'unlimited' | 'ok' | 'warning' (≥80%) | 'over' (dépassement → recharge/upgrade).
+    """
+    from config import conv_included_for_plan, normalize_plan
+    plan = normalize_plan(merchant.get("plan"))
+    included = conv_included_for_plan(plan)
+    credits = int(merchant.get("conv_credits") or 0)
+    used = conversations_used_this_month(merchant["id"])
+    if included < 0:
+        return {"plan": plan, "unlimited": True, "used": used, "included": -1,
+                "credits": credits, "allowance": -1, "remaining": -1,
+                "pct": 0, "status": "unlimited"}
+    allowance = included + credits
+    remaining = allowance - used
+    pct = int(min(100, round(100 * used / allowance))) if allowance > 0 else 100
+    if used > allowance:
+        status = "over"
+    elif allowance > 0 and used >= 0.8 * allowance:
+        status = "warning"
+    else:
+        status = "ok"
+    return {"plan": plan, "unlimited": False, "used": used, "included": included,
+            "credits": credits, "allowance": allowance,
+            "remaining": max(0, remaining), "pct": pct, "status": status}
+
+
+def add_conversation_credits(merchant_id: str, n: int) -> dict[str, Any]:
+    """Ajoute (ou retire si n<0) des crédits de conversations. Action ADMIN
+    (après réception d'une recharge MoMo). Retourne la fiche mise à jour."""
+    m = get_merchant(merchant_id)
+    if not m:
+        return {}
+    new_balance = max(0, int(m.get("conv_credits") or 0) + int(n))
+    try:
+        res = (get_db().table("bia_merchants").update({"conv_credits": new_balance})
+               .eq("id", merchant_id).execute())
+        return res.data[0] if res.data else {}
+    except Exception:  # noqa: BLE001
+        return {}
