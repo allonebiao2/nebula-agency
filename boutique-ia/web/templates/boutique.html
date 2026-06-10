@@ -355,6 +355,23 @@
     </div></div>
   </section>
 
+  <!-- ASSISTANT PERSONNEL -->
+  <section class="reveal" id="assistbox" style="order:1;margin-top:18px">
+    <div class="shead">
+      <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg></div>
+      <h2>Demandez à votre assistant</h2>
+      <div class="act"><span class="quota">Sans limite</span></div>
+    </div>
+    <p class="hint">Votre copilote IA. Posez n'importe quelle question : « combien de commandes aujourd'hui ? », « fais le point de la semaine », « ce client était comment ? », « quelle heure ? », « rédige-moi un message pour… ». Il connaît vos chiffres réels et vous aide sur tout le reste.</p>
+    <div class="bezel"><div class="bezel-in">
+      <div id="askLog"></div>
+      <form id="askForm">
+        <input id="askInput" placeholder="Posez votre question…" autocomplete="off">
+        <button class="btn acc" type="submit"><svg viewBox="0 0 24 24"><use href="#i-send"/></svg></button>
+      </form>
+    </div></div>
+  </section>
+
   <!-- PRODUITS -->
   <section class="reveal" id="produits">
     <div class="shead">
@@ -1034,6 +1051,24 @@ if(oForm){ oForm.addEventListener('submit', async (e)=>{
     if(d.limit_reached){ inp.disabled=true; oForm.querySelector('button').disabled=true; }
     if((d.actions||[]).length){ notify('Boutique mise à jour'); setTimeout(()=>location.reload(),1500); }
   }catch(ex){ typing.remove(); oBubble('⚠ '+esc(ex.message),'ag'); }
+});}
+
+/* Assistant personnel (questions / rapports / copilote) */
+const aLog=document.getElementById('askLog');
+const askHist=[];
+function aBubble(html,cls){ const d=document.createElement('div'); d.className='ob '+cls; d.innerHTML=html; aLog.appendChild(d); aLog.scrollTop=aLog.scrollHeight; return d; }
+const aForm=document.getElementById('askForm');
+if(aForm){ aForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const inp=document.getElementById('askInput'); const text=inp.value.trim(); if(!text) return;
+  aBubble(esc(text),'me'); inp.value=''; inp.focus();
+  const typing=aBubble('<span class="pulse"></span>l\'assistant réfléchit…','typing');
+  try{
+    const d=await api(`/api/merchants/${MID}/assistant`,'POST',{message:text, history:askHist.slice(-8)});
+    typing.remove();
+    if(!d.ok){ aBubble('⚠ '+esc(d.error||'Erreur'),'ag'); return; }
+    if(d.reply){ aBubble(esc(d.reply),'ag'); askHist.push({role:'user',content:text},{role:'assistant',content:d.reply}); }
+  }catch(ex){ typing.remove(); aBubble('⚠ '+esc(ex.message),'ag'); }
 });}
 
 /* Prospection */

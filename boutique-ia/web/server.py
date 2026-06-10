@@ -1640,6 +1640,37 @@ async def merchant_order_endpoint(request: Request, merchant_id: str):
     }
 
 
+@app.post("/api/merchants/{merchant_id}/assistant")
+async def merchant_assistant_endpoint(request: Request, merchant_id: str):
+    """L'assistant personnel du commerçant (questions, rapports, copilote IA).
+
+    Lecture seule, SANS quota (ce ne sont pas des ordres de gestion). La session
+    back-office authentifie déjà la patronne (verrou n°1 satisfait).
+    """
+    from core import assistant
+    from db.client import get_merchant
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"ok": False, "error": "JSON invalide"}, status_code=400)
+    question = (body.get("message") or "").strip()
+    if not question:
+        return JSONResponse({"ok": False, "error": "Question vide."}, status_code=400)
+    history = body.get("history") if isinstance(body.get("history"), list) else None
+    try:
+        merchant = get_merchant(merchant_id)
+        if not merchant:
+            return JSONResponse({"ok": False, "error": "Boutique introuvable."}, status_code=404)
+        answer = assistant.reply(merchant, question, history=history)
+    except Exception as e:  # noqa: BLE001
+        log.exception("assistant commerçant échoué")
+        return JSONResponse({"ok": False, "error": str(e)[:300]}, status_code=500)
+    return {"ok": True, "reply": answer}
+
+
 @app.post("/api/merchants/{merchant_id}/update")
 async def update_merchant_endpoint(request: Request, merchant_id: str):
     """Le commerçant modifie sa fiche (infos boutique, livraison, MoMo, ton…)."""
@@ -2190,6 +2221,18 @@ def _agent_handle(customer: str, body_text: str, has_audio: bool = False,
             log.warning("optout WhatsApp échoué", exc_info=True)
         return {"status": "optout", "media": [], "text":
                 "C'est noté ✅ Vous ne recevrez plus de messages. Écrivez-nous quand vous voulez revenir 🙏"}
+
+    # ── Verrou n°1 : la PATRONNE écrit (numéro en liste blanche) → mode ASSISTANT.
+    # Son copilote IA (rapports + intelligence générale), JAMAIS le vendeur. On ne
+    # persiste pas ces messages dans les conversations clients (pas de pollution
+    # des analytics ni de l'apprentissage). Une cliente ne passe jamais ici.
+    try:
+        from core import assistant
+        if assistant.is_owner(merchant, customer):
+            ans = assistant.reply(merchant, clean)
+            return {"status": "assistant", "media": [], "text": ans}
+    except Exception:  # noqa: BLE001
+        log.exception("assistant propriétaire échoué — repli vendeur")
 
     save_message(merchant["id"], customer, "customer", clean)
     history = load_history(merchant["id"], customer, limit=brain.HISTORY_LIMIT)
