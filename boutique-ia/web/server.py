@@ -523,34 +523,42 @@ async def boutique_backoffice(request: Request, merchant_id: str):
     remaining = -1 if daily_limit < 0 else max(0, daily_limit - used_today)
     accent = (merchant.get("brand_color") if merchant else None) or "#10b981"
     cats = [{"key": k, "label": v["label"]} for k, v in CATEGORIES.items()]
-    from core.capabilities import capabilities_context, has_capability
+    from core.capabilities import BY_ID, capabilities_context, has_capability
     caps_ctx = capabilities_context(merchant) if merchant else None
+    prospection_soon = bool(BY_ID.get("prospection", {}).get("soon"))
     # Guide de démarrage : rend le back-office explicite dès l'arrivée (étapes + état).
     guide = None
     if merchant:
         is_active = merchant.get("status") == "active" and not merchant.get("is_trial")
         steps = [
+            {"title": "Indiquez votre numéro WhatsApp",
+             "desc": "Le numéro où vos clients vous écrivent. Votre agent y répondra pour vous, jour et nuit.",
+             "done": bool(merchant.get("whatsapp_business")), "target": "whatsapp", "cta": "Indiquer"},
             {"title": "Ajoutez vos produits ou services",
-             "desc": "Pour que votre agent ait quelque chose à vendre à vos clients.",
+             "desc": "Donnez à votre agent de quoi vendre : nom, prix, photo. Astuce : « Import express » colle toute votre liste d'un coup.",
              "done": bool(products), "target": "produits", "cta": "Ajouter"},
             {"title": "Composez votre vendeur",
-             "desc": "Choisissez ce que votre agent sait faire : photos, paiement à la livraison, rendez-vous…",
+             "desc": "Cochez ce qu'il sait faire : photos, paiement à la livraison, rendez-vous, notes vocales…",
              "done": bool(merchant.get("enabled_capabilities")), "target": "capacites", "cta": "Configurer"},
             {"title": "Réglez paiement & livraison",
-             "desc": "Votre numéro Mobile Money et vos zones de livraison, pour qu'il puisse conclure les ventes.",
+             "desc": "Votre numéro Mobile Money et vos zones de livraison, pour qu'il conclue les ventes tout seul.",
              "done": bool(merchant.get("momo_number")), "target": "livraison", "cta": "Renseigner"},
             {"title": "Testez votre agent",
-             "desc": "Discutez avec lui comme si vous étiez un client, pour voir comment il répond.",
+             "desc": "Discutez avec lui comme un vrai client. Vous verrez : il vend déjà.",
              "done": None, "href": f"/essai/{merchant_id}", "cta": "Tester"},
             {"title": "Partagez votre lien WhatsApp",
-             "desc": "Envoyez ce lien à vos clients : ils tombent directement sur votre vendeur.",
-             "done": None, "target": "partager", "cta": "Voir mon lien"},
+             "desc": "Collez-le dans votre bio Instagram, votre statut WhatsApp, vos flyers. Vos clients arrivent direct sur votre vendeur.",
+             "done": None, "target": "whatsapp", "cta": "Voir mon lien"},
         ]
         if not is_active:
             steps.append({"title": "Activez votre abonnement",
-                          "desc": "Pour que votre agent travaille pour vous 24h/24, en vrai.",
+                          "desc": "Pour que votre agent travaille 24h/24, en vrai, sans interruption.",
                           "done": False, "href": f"/activation/{merchant_id}", "cta": "Activer"})
         tracked = [s for s in steps if s["done"] is not None]
+        # Étape « à faire maintenant » : la 1re non terminée (parmi celles à état trackable).
+        _cur = next((s for s in steps if s["done"] is False), None)
+        for s in steps:
+            s["current"] = (s is _cur)
         guide = {"steps": steps, "done": sum(1 for s in tracked if s["done"]),
                  "total": len(tracked), "all_done": all(s["done"] for s in tracked)}
     # Bannière essai : seulement pendant l'essai RÉEL (active + jours restants > 0).
@@ -606,7 +614,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              social_on=social_on, social_images_on=social_images_on, social_posts=social_posts,
              social_publish_ready=social_publish_ready,
              coach_on=coach_on, coaching=coaching,
-             prospect_daily=prospect_daily, prospect_used=prospect_used,
+             prospect_daily=prospect_daily, prospect_used=prospect_used, prospection_soon=prospection_soon,
              prospect_remaining=max(0, prospect_daily - prospect_used)),
     )
 
@@ -791,9 +799,11 @@ async def admin_dashboard(request: Request, token: str = ""):
         "c2dm_public_reply": get_setting_bool("c2dm_public_reply", True),
         "c2dm_keyword": get_setting("c2dm_keyword") or "",
     }
+    from core import model_config
     return templates.TemplateResponse(
         request, "admin.html",
         _ctx(request, token=token, rows=rows, pending=pending, glob=glob,
+             model_cfg=model_config.current_config(),
              categories=cats, campaigns=campaigns,
              prospect_used=prospect_used, prospect_daily=settings.prospection_admin_daily,
              auto_enabled=auto_enabled, auto_daily=auto_daily,
@@ -1033,6 +1043,20 @@ async def admin_recruit_settings(request: Request):
         except (TypeError, ValueError):
             pass
     return {"ok": True}
+
+
+@app.post("/api/admin/models")
+async def admin_models(request: Request):
+    """Modèle + effort par tâche (vendeur / manager / rédaction / créatif-CEO) — en direct, sans redeploy."""
+    from core import model_config
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:  # noqa: BLE001
+        body = {}
+    cfg = model_config.save_config(body or {})
+    return {"ok": True, "config": cfg}
 
 
 @app.post("/api/admin/prospection/auto")
@@ -1637,6 +1661,21 @@ async def update_merchant_endpoint(request: Request, merchant_id: str):
         log.exception("update merchant échoué")
         return JSONResponse({"ok": False, "error": str(e)[:300]}, status_code=500)
     return {"ok": True, "merchant": merchant}
+
+
+@app.post("/api/merchants/{merchant_id}/payment-accounts")
+async def merchant_payment_accounts(request: Request, merchant_id: str):
+    """Comptes Mobile Money additionnels (réseau + numéro + nom). L'agent donne le bon selon le réseau du client."""
+    from db.client import save_payment_accounts
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    try:
+        body = await request.json()
+    except Exception:  # noqa: BLE001
+        return JSONResponse({"ok": False, "error": "JSON invalide"}, status_code=400)
+    accounts = save_payment_accounts(merchant_id, body.get("accounts") or [])
+    return {"ok": True, "accounts": accounts}
 
 
 @app.post("/api/merchants/{merchant_id}/capabilities")

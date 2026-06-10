@@ -283,6 +283,7 @@
   <a href="#sec-actions">Actions</a>
   <a href="#sec-ceo">Directeur</a>
   <a href="#sec-learn">Apprentissage</a>
+  <a href="#sec-modeles">Modèles</a>
   <a href="#sec-exp">Expériences</a>
   <a href="#sec-relances">Relances</a>
   <a href="#sec-canaux">Canaux</a>
@@ -474,6 +475,34 @@
     </div>
     {% endif %}
   </section>
+
+  <!-- MODÈLES & EFFORT PAR TÂCHE (piloté en direct) -->
+  {% if model_cfg %}
+  <section class="rv" id="sec-modeles">
+    <div class="shead">
+      <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-bolt"/></svg></div>
+      <h2>Modèles &amp; effort de Vendora</h2>
+    </div>
+    <p class="hint">Choisis le <b>modèle IA</b> et le <b>niveau d'effort</b> de chaque tâche — appliqué <b>en direct, sans redéploiement</b>. Règle : Sonnet pour le texte client, Opus pour le lourd créatif. Effort = <b>éco</b> (réponses + courtes, - chères) · <b>standard</b> · <b>max</b> (+ détaillées).</p>
+    <div class="panel">
+      {% for t in model_cfg.tasks %}
+      <div class="mrow" data-task="{{ t.key }}" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 0;border-top:1px solid var(--hair,#26262e)">
+        <div style="font-weight:600;min-width:170px;flex:1">{{ t.label }}</div>
+        <div style="display:flex;gap:9px;flex-wrap:wrap">
+          <select class="m-model" style="min-width:210px">
+            {% for m in model_cfg.models %}<option value="{{ m.id }}" {{ 'selected' if m.id == t.model }}>{{ m.label }}</option>{% endfor %}
+          </select>
+          <select class="m-effort" style="min-width:120px">
+            {% for e in model_cfg.efforts %}<option value="{{ e }}" {{ 'selected' if e == t.effort }}>{{ {'eco':'Éco','standard':'Standard','max':'Max'}[e] }}</option>{% endfor %}
+          </select>
+        </div>
+      </div>
+      {% endfor %}
+      <div style="margin-top:15px"><button class="btn pri" type="button" onclick="saveModels()"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Enregistrer modèles &amp; effort</button></div>
+    </div>
+    <p class="hint" style="margin-top:10px">⚠️ Opus coûte nettement plus cher (surtout le vendeur = gros volume). Sonnet = le bon défaut ; Haiku = éco si budget serré.</p>
+  </section>
+  {% endif %}
 
   <!-- AUTO-EXPÉRIMENTATION DES VENTES (A/B) -->
   <section class="rv" id="sec-exp">
@@ -789,6 +818,17 @@ document.querySelectorAll('.rv').forEach((el,i)=>{ el.style.setProperty('--d',(i
 })();
 
 /* Pilote */
+async function saveModels(){
+  const tasks = {};
+  document.querySelectorAll('#sec-modeles .mrow').forEach(row=>{
+    tasks[row.dataset.task] = {
+      model: row.querySelector('.m-model').value,
+      effort: row.querySelector('.m-effort').value
+    };
+  });
+  const d = await post('/api/admin/models', tasks);
+  notify(d.ok ? 'Modèles & effort enregistrés ✓' : (d.error||'Erreur'), !d.ok);
+}
 async function toggleAuto(on){
   const d = await post('/api/admin/recruit-settings', { enabled: on });
   const p = document.getElementById('pilot');

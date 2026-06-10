@@ -29,9 +29,9 @@ MODULE_LIMIT = {"demarrage": 2, "business": 5, "empire": -1}
 # `promise` = bénéfice affiché au commerçant (jamais de jargon technique).
 CAPABILITIES: list[dict] = [
     # 🟢 SOCLE — toujours inclus
-    {"id": "vente", "group": "socle", "min_plan": "demarrage", "icon": "i-store",
-     "label": "Vend 24h/24 et prend les commandes",
-     "promise": "Répond et vend même quand vous dormez."},
+    {"id": "vente", "group": "socle", "min_plan": "demarrage", "icon": "i-chat",
+     "label": "Vend sur WhatsApp 24h/24 et prend les commandes",
+     "promise": "Répond et vend sur votre WhatsApp, même quand vous dormez."},
     {"id": "conseil", "group": "socle", "min_plan": "demarrage", "icon": "i-check",
      "label": "Conseille : prix, disponibilité, livraison",
      "promise": "Renseigne vos clients comme un bon vendeur."},
@@ -59,10 +59,10 @@ CAPABILITIES: list[dict] = [
     {"id": "rdv", "group": "module", "min_plan": "business", "icon": "i-flask",
      "label": "Prise de rendez-vous",
      "promise": "Remplit votre agenda tout seul (salons, cliniques…)."},
-    {"id": "multicanal", "group": "module", "min_plan": "business", "icon": "i-mail",
+    {"id": "multicanal", "group": "module", "min_plan": "business", "icon": "i-mail", "soon": True,
      "label": "Messenger + Instagram",
-     "promise": "Un seul vendeur, sur tous vos réseaux."},
-    {"id": "prospection", "group": "module", "min_plan": "business", "icon": "i-target",
+     "promise": "Le même vendeur, aussi sur Messenger et Instagram (en plus de WhatsApp)."},
+    {"id": "prospection", "group": "module", "min_plan": "business", "icon": "i-target", "soon": True,
      "label": "Va chercher des clients",
      "promise": "Trouve et contacte de nouveaux acheteurs."},
     {"id": "social", "group": "module", "min_plan": "business", "icon": "i-spark",
@@ -73,10 +73,10 @@ CAPABILITIES: list[dict] = [
     {"id": "apprentissage_perso", "group": "premium", "min_plan": "empire", "icon": "i-chart",
      "label": "S'améliore sur VOTRE boutique",
      "promise": "Plus il vend, meilleur il devient pour vous."},
-    {"id": "email_pro", "group": "premium", "min_plan": "empire", "icon": "i-mail",
+    {"id": "email_pro", "group": "premium", "min_plan": "empire", "icon": "i-mail", "soon": True,
      "label": "Email pro + réponses automatiques",
      "promise": "Vend aussi par email, depuis votre adresse pro."},
-    {"id": "comment_to_dm", "group": "premium", "min_plan": "empire", "icon": "i-send",
+    {"id": "comment_to_dm", "group": "premium", "min_plan": "empire", "icon": "i-send", "soon": True,
      "label": "Acquisition sur les réseaux",
      "promise": "Répond en privé à ceux qui commentent vos publications."},
     {"id": "social_images", "group": "premium", "min_plan": "empire", "icon": "i-eye",
@@ -159,7 +159,8 @@ def default_capabilities_for(category: str | None, plan: str) -> list[str]:
         if lim >= 0 and len(chosen) >= lim:
             break
         cap = BY_ID.get(cid)
-        if cap and cap["group"] == "module" and is_available(cap, plan) and cid not in chosen:
+        if cap and cap["group"] == "module" and is_available(cap, plan) \
+                and not cap.get("soon") and cid not in chosen:
             chosen.append(cid)
     return chosen
 
@@ -189,7 +190,8 @@ def effective_capabilities(merchant: dict) -> set[str]:
     active: list[str] = []
     for cid in chosen:
         cap = BY_ID.get(cid)
-        if cap and cap["group"] in ("module", "premium") and is_available(cap, plan):
+        if cap and cap["group"] in ("module", "premium") and is_available(cap, plan) \
+                and not cap.get("soon"):
             if cid not in active:
                 active.append(cid)
     lim = module_limit(plan)
@@ -224,7 +226,8 @@ def sanitize_selection(plan: str, ids) -> list[str]:
     for raw in ids or []:
         cid = str(raw).strip().lower()
         cap = BY_ID.get(cid)
-        if cap and cap["group"] in ("module", "premium") and is_available(cap, plan) and cid not in out:
+        if cap and cap["group"] in ("module", "premium") and is_available(cap, plan) \
+                and not cap.get("soon") and cid not in out:
             out.append(cid)
     if lim >= 0:
         out = out[:lim]
@@ -240,6 +243,7 @@ def capabilities_context(merchant: dict) -> dict:
         return {"id": c["id"], "label": c["label"], "promise": c["promise"],
                 "icon": c.get("icon") or "i-check",
                 "available": is_available(c, plan),
+                "soon": bool(c.get("soon")),
                 "enabled": c["id"] in active,
                 "min_plan": c["min_plan"],
                 "min_plan_label": PLAN_LABELS.get(c["min_plan"], c["min_plan"])}

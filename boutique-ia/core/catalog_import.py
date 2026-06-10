@@ -14,6 +14,7 @@ from typing import Any
 import anthropic
 
 from config import settings
+from core import model_config
 
 log = logging.getLogger("boutique-ia.catalog_import")
 
@@ -74,7 +75,7 @@ def parse_products(text: str, limit: int = 40) -> list[dict[str, Any]]:
     try:
         client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
         resp = client.messages.create(
-            model=settings.manager_model, max_tokens=2000,
+            model=model_config.model_for("manager"), max_tokens=model_config.tokens_for("manager", 2000),
             system=[{"type": "text", "text": system}],
             messages=[{"role": "user", "content": consigne}],
         )

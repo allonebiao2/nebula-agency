@@ -28,6 +28,7 @@ from typing import Any
 import anthropic
 
 from config import settings
+from core import model_config
 
 log = logging.getLogger("boutique-ia.experiment")
 
@@ -104,7 +105,7 @@ def generate_challenger(lessons: str = "") -> dict | None:
            "loin, pas une simple répétition) :\n" + lessons) if lessons else ""
     try:
         resp = client.messages.create(
-            model=settings.writer_model, max_tokens=500, system=_GEN_SYSTEM,
+            model=model_config.model_for("writer"), max_tokens=model_config.tokens_for("writer", 500), system=_GEN_SYSTEM,
             messages=[{"role": "user", "content": "Propose une variante de stratégie à tester." + ctx}],
         )
         raw = "".join(b.text for b in resp.content if getattr(b, "type", None) == "text").strip()

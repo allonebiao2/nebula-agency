@@ -21,6 +21,7 @@ from typing import Any
 import anthropic
 
 from config import settings
+from core import model_config
 
 log = logging.getLogger("boutique-ia.social")
 
@@ -141,7 +142,7 @@ def generate_posts(merchant: dict, products: list[dict], n: int = 5,
     try:
         client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
         resp = client.messages.create(
-            model=settings.writer_model, max_tokens=2800,
+            model=model_config.model_for("writer"), max_tokens=model_config.tokens_for("writer", 2800),
             system=[{"type": "text", "text": system_text,
                      "cache_control": {"type": "ephemeral"}}],
             messages=[{"role": "user", "content": consigne}],

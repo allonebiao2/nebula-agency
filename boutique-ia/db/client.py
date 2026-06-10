@@ -1,6 +1,7 @@
 """Client Supabase + helpers boutiques/produits (étage 1)."""
 from __future__ import annotations
 
+import json
 from functools import lru_cache
 from typing import Any
 
@@ -32,7 +33,11 @@ def get_merchant_by_code(code: str) -> dict[str, Any] | None:
     result = (
         db.table("bia_merchants").select("*").eq("code", code).limit(1).execute()
     )
-    return result.data[0] if result.data else None
+    if not result.data:
+        return None
+    m = result.data[0]
+    m["payment_accounts"] = _payment_accounts(m.get("id"))
+    return m
 
 
 def get_merchant(merchant_id: str) -> dict[str, Any] | None:
@@ -40,7 +45,44 @@ def get_merchant(merchant_id: str) -> dict[str, Any] | None:
     result = (
         db.table("bia_merchants").select("*").eq("id", merchant_id).limit(1).execute()
     )
-    return result.data[0] if result.data else None
+    if not result.data:
+        return None
+    m = result.data[0]
+    m["payment_accounts"] = _payment_accounts(m.get("id"))
+    return m
+
+
+def _payment_accounts(merchant_id) -> list[dict[str, Any]]:
+    """Comptes Mobile Money additionnels d'une boutique (réseau + numéro + nom).
+
+    Stockés dans `bia_settings` (clé `pay_accounts_{id}`) → aucune migration. L'agent
+    s'en sert pour donner au client le compte de SON réseau (évite les frais inter-réseaux).
+    """
+    try:
+        raw = get_setting(f"pay_accounts_{merchant_id}")
+        if raw:
+            data = json.loads(raw) if isinstance(raw, str) else raw
+            if isinstance(data, list):
+                return [a for a in data if isinstance(a, dict) and a.get("number")]
+    except Exception:  # noqa: BLE001
+        pass
+    return []
+
+
+def save_payment_accounts(merchant_id: str, accounts: list) -> list[dict[str, Any]]:
+    """Valide + enregistre la liste de comptes (max 8). Renvoie la liste nettoyée."""
+    clean: list[dict[str, Any]] = []
+    for a in (accounts or [])[:8]:
+        if not isinstance(a, dict):
+            continue
+        num = str(a.get("number") or "").strip()
+        if not num:
+            continue
+        clean.append({"network": str(a.get("network") or "").strip()[:40],
+                      "number": num[:40],
+                      "name": str(a.get("name") or "").strip()[:80]})
+    set_setting(f"pay_accounts_{merchant_id}", json.dumps(clean))
+    return clean
 
 
 # Mots vides ignorés quand un client écrit une phrase au lieu du seul nom.

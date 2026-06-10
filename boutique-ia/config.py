@@ -32,13 +32,17 @@ class Settings(BaseSettings):
 
     # --- IA : un modèle par tâche (qualité ↔ coût) ---
     anthropic_api_key: str = ""
-    # Vendeur WhatsApp face aux clients : léger, rapide, économique (gros volume)
-    claude_model: str = "claude-haiku-4-5-20251001"
+    # RÈGLE MODÈLES (validée Mongazi) : Sonnet pour TOUT le texte client (réponses
+    # du vendeur + rédaction) ; Opus réservé au lourd créatif (visuels, images,
+    # back-office luxueux adapté au client + mobile, raisonnement CEO). Jamais Opus
+    # sur les réponses client (coût + pas nécessaire) ; Sonnet > Haiku pour vendre.
+    # Vendeur WhatsApp face aux clients : Sonnet (qualité de vente = revenu)
+    claude_model: str = "claude-sonnet-4-6"
     # Ordres du commerçant (« piloter mon agent ») : Sonnet, raisonnement fiable
     manager_model: str = "claude-sonnet-4-6"
     # Rédaction (emails de prospection, copies de vente) : Sonnet = qualité/coût optimal
     writer_model: str = "claude-sonnet-4-6"
-    # Création lourde si vraiment nécessaire : Opus, qualité max (réservé, peu utilisé)
+    # Lourd créatif uniquement (visuels/images/back-office, raisonnement CEO) : Opus
     builder_model: str = "claude-opus-4-8"
 
     # --- Alertes Mongazi (réutilise le bot Telegram NOVA) ---

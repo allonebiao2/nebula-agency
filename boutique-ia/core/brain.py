@@ -14,7 +14,7 @@ from typing import Callable
 import anthropic
 
 from config import settings
-from core import capabilities
+from core import capabilities, model_config
 
 log = logging.getLogger("boutique-ia.brain")
 
@@ -197,14 +197,31 @@ def build_system_prompt(merchant: dict, products: list[dict],
     else:
         catalogue = "(catalogue vide pour le moment)"
 
-    # Instructions de paiement Mobile Money (manuel)
+    # Instructions de paiement Mobile Money (manuel) — un ou PLUSIEURS comptes (par réseau)
+    pay_accounts: list[dict] = []
     if momo_number:
+        pay_accounts.append({"network": momo_network, "number": momo_number, "name": momo_name})
+    for a in (merchant.get("payment_accounts") or []):
+        if a.get("number"):
+            pay_accounts.append({"network": a.get("network") or "", "number": a.get("number"),
+                                 "name": a.get("name") or ""})
+
+    def _acct_line(a: dict) -> str:
+        who = f" ({a['name']})" if a.get("name") else ""
+        return f"  • {a.get('network') or 'Mobile Money'} : {a['number']}{who}\n"
+
+    if pay_accounts:
+        if len(pay_accounts) == 1:
+            intro = "Quand un client veut payer, donne-lui ces instructions Mobile Money :\n"
+        else:
+            intro = ("Quand un client veut payer, demande-lui D'ABORD son réseau Mobile Money, puis "
+                     "donne UNIQUEMENT le compte de SON réseau (s'il n'y est pas, propose le plus pratique) :\n")
         paiement = (
-            f"Quand un client veut payer, donne-lui ces instructions Mobile Money :\n"
-            f"  • Envoyer le montant au numéro {momo_network} : {momo_number} ({momo_name})\n"
-            f"  • Puis t'envoyer la CAPTURE ou la référence du SMS de confirmation\n"
-            f"Après réception de la preuve, remercie le client et dis-lui que la boutique "
-            f"valide et prépare sa commande."
+            intro
+            + "".join(_acct_line(a) for a in pay_accounts)
+            + "  • Puis t'envoyer la CAPTURE ou la référence du SMS de confirmation\n"
+            "Après réception de la preuve, remercie le client et dis-lui que la boutique "
+            "valide et prépare sa commande."
         )
     else:
         paiement = (
@@ -367,7 +384,8 @@ def followup_message(merchant: dict, products: list[dict], history: list[dict],
 
     system = [{"type": "text", "text": system_text, "cache_control": {"type": "ephemeral"}}]
     resp = client.messages.create(
-        model=settings.claude_model, max_tokens=300, system=system, messages=messages,
+        model=model_config.model_for("vendeur"),
+        max_tokens=model_config.tokens_for("vendeur", 300), system=system, messages=messages,
     )
     return _text_of(resp)
 
@@ -408,7 +426,8 @@ def email_reply(merchant: dict, products: list[dict], thread: list[dict],
     msgs = msgs + [{"role": "user", "content": consigne}]
     system = [{"type": "text", "text": system_text, "cache_control": {"type": "ephemeral"}}]
     resp = client.messages.create(
-        model=settings.claude_model, max_tokens=500, system=system, messages=msgs,
+        model=model_config.model_for("vendeur"),
+        max_tokens=model_config.tokens_for("vendeur", 500), system=system, messages=msgs,
     )
     return _text_of(resp) or f"Merci pour votre message ! Dites-nous comment nous pouvons vous aider. — {name}"
 
@@ -494,8 +513,8 @@ def reply(
     did_tool = False
     for _ in range(MAX_TOOL_TURNS):
         resp = client.messages.create(
-            model=settings.claude_model,
-            max_tokens=500,  # réponses WhatsApp courtes → tokens économisés
+            model=model_config.model_for("vendeur"),
+            max_tokens=model_config.tokens_for("vendeur", 500),  # WhatsApp court · ajusté par l'effort
             system=system,
             messages=messages,
             tools=tools,
@@ -570,8 +589,8 @@ def reply(
 
     # Sécurité : on a épuisé les tours d'outil → demande un dernier message texte.
     resp = client.messages.create(
-        model=settings.claude_model,
-        max_tokens=500,
+        model=model_config.model_for("vendeur"),
+        max_tokens=model_config.tokens_for("vendeur", 500),
         system=system,
         messages=messages,
     )

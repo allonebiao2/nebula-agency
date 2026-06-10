@@ -41,6 +41,7 @@
     <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></symbol>
     <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
     <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.5L3 21l2-5.6A8.5 8.5 0 1 1 21 11.5z"/></symbol>
   </g></defs></svg>
 
 {% if not merchant %}
@@ -95,48 +96,59 @@
   {% if guide %}
   <section class="guide reveal" id="guide">
     <style>
-      .guide{border:1.5px solid var(--a,#10b981);border-radius:18px;padding:20px 20px 8px;margin-top:22px;
+      .guide{border:1.5px solid var(--a,#10b981);border-radius:18px;padding:20px 20px 14px;margin-top:22px;
              background:linear-gradient(180deg,rgba(16,185,129,.07),transparent)}
       .g-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
       .g-title{font-family:'Sora',sans-serif;font-weight:800;font-size:1.18rem}
-      .g-sub{color:var(--muted,#8a8a99);font-size:.9rem;margin-top:4px;max-width:560px;line-height:1.45}
+      .g-sub{color:var(--muted,#8a8a99);font-size:.9rem;margin-top:4px;max-width:600px;line-height:1.45}
       .g-prog{flex-shrink:0;font-weight:800;font-size:.92rem;color:var(--a,#10b981);
               border:1px solid var(--a,#10b981);border-radius:20px;padding:5px 13px}
-      .g-steps{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+      .g-bar{height:7px;border-radius:6px;background:var(--line2,#23232b);margin:15px 0 4px;overflow:hidden}
+      .g-bar>i{display:block;height:100%;border-radius:6px;background:var(--a,#10b981);transition:width .7s cubic-bezier(.4,0,.2,1)}
+      .g-steps{margin-top:14px;display:flex;flex-direction:column;gap:9px}
       .g-step{display:flex;align-items:center;gap:13px;padding:12px 14px;border:1px solid var(--line,#26262e);
-              border-radius:13px;background:var(--panel,#15151b)}
-      .g-step.ok{opacity:.62}
+              border-radius:13px;background:var(--panel,#15151b);transition:border-color .2s,opacity .2s,box-shadow .2s}
+      .g-step.ok{opacity:.5}
+      .g-step.todo{opacity:.55}
+      .g-step.current{opacity:1;border-color:var(--a,#10b981);box-shadow:0 0 0 1px var(--a,#10b981) inset,0 10px 28px rgba(16,185,129,.14)}
       .g-num{flex-shrink:0;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
              font-weight:800;font-size:.92rem;background:var(--line2,#23232b);color:var(--muted,#8a8a99)}
       .g-step.ok .g-num{background:var(--a,#10b981);color:#06120d}
+      .g-step.current .g-num{background:var(--a,#10b981);color:#06120d;animation:gpulse 1.8s ease-in-out infinite}
+      @keyframes gpulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.55)}50%{box-shadow:0 0 0 7px rgba(16,185,129,0)}}
       .g-num svg{width:17px;height:17px;stroke:#06120d;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
       .g-body{flex:1;min-width:0}
+      .g-now{display:inline-block;font-size:.67rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--a,#10b981);margin-bottom:1px}
       .g-t{font-weight:700;font-size:.96rem}
       .g-d{color:var(--muted,#8a8a99);font-size:.83rem;margin-top:2px;line-height:1.4}
       .g-step .btn{flex-shrink:0}
-      .g-done{margin:14px 0 12px;color:var(--a,#10b981);font-weight:700;font-size:.95rem}
+      .g-done{margin:14px 0 4px;color:var(--a,#10b981);font-weight:700;font-size:.95rem}
       @media(max-width:560px){.g-step{flex-wrap:wrap}.g-step .btn{margin-left:43px}}
     </style>
     <div class="g-head">
       <div>
-        <div class="g-title">👋 Bienvenue dans votre espace</div>
-        <div class="g-sub">Votre vendeur IA répond à vos clients sur WhatsApp 24h/24. Ici, vous le réglez. Suivez ces étapes dans l'ordre :</div>
+        <div class="g-title">👋 Lançons votre agent — pas à pas</div>
+        <div class="g-sub">Votre vendeur IA répond à vos clients sur WhatsApp 24h/24. Faites simplement <b style="color:var(--txt,#fff)">l'étape en surbrillance</b> : on vous guide jusqu'à ce qu'il vende pour vous.</div>
       </div>
-      <div class="g-prog">{{ guide.done }}/{{ guide.total }} fait</div>
+      <div class="g-prog">{{ guide.done }}/{{ guide.total }}</div>
     </div>
+    <div class="g-bar"><i style="width:{{ (guide.done / guide.total * 100)|round|int if guide.total else 0 }}%"></i></div>
     {% if guide.all_done %}<div class="g-done">✓ Tout est prêt ! Votre agent est opérationnel. Partagez votre lien et laissez-le vendre 🚀</div>{% endif %}
     <div class="g-steps">
       {% for s in guide.steps %}
-      <div class="g-step {{ 'ok' if s.done }}">
+      <div class="g-step {% if s.done %}ok{% elif s.current %}current{% else %}todo{% endif %}">
         <div class="g-num">{% if s.done %}<svg viewBox="0 0 24 24"><use href="#i-check"/></svg>{% else %}{{ loop.index }}{% endif %}</div>
         <div class="g-body">
+          {% if s.current %}<span class="g-now">À faire maintenant</span>{% endif %}
           <div class="g-t">{{ s.title }}</div>
           <div class="g-d">{{ s.desc }}</div>
         </div>
-        {% if s.href %}
-        <a class="btn {{ 'gho' if s.done else 'pri' }} sm" href="{{ s.href }}">{{ s.cta }}</a>
-        {% else %}
-        <button class="btn {{ 'gho' if s.done else 'pri' }} sm" type="button" onclick="goTo('{{ s.target }}')">{{ s.cta }}</button>
+        {% if not s.done %}
+          {% if s.href %}
+          <a class="btn {{ 'pri' if s.current else 'gho' }} sm" href="{{ s.href }}">{{ s.cta }}</a>
+          {% else %}
+          <button class="btn {{ 'pri' if s.current else 'gho' }} sm" type="button" onclick="goTo('{{ s.target }}')">{{ s.cta }}</button>
+          {% endif %}
         {% endif %}
       </div>
       {% endfor %}
@@ -170,42 +182,83 @@
   </details>
 
   <nav class="tabs">
+    <a href="#whatsapp">WhatsApp</a>
     <a href="#piloter">Agent</a>
-    <a href="#capacites">Capacités</a>
+    <a href="#activite">Activité</a>
     <a href="#produits">Produits</a>
+    <a href="#capacites">Capacités</a>
     <a href="#infos">Infos</a>
     <a href="#livraison">Livraison</a>
     <a href="#style">Style</a>
+    {% if coach_on %}<a href="#coach">Coach</a>{% endif %}
     {% if rdv_on %}<a href="#rdv">Rendez-vous</a>{% endif %}
     {% if social_on %}<a href="#social">Réseaux</a>{% endif %}
-    {% if coach_on %}<a href="#coach">Coach</a>{% endif %}
     <a href="#prospection">Prospection</a>
     {% if inbox.on %}<a href="#reponses">Réponses{% if inbox.drafts %} ({{ inbox.drafts|length }}){% endif %}</a>{% endif %}
-    <a href="#activite">Activité</a>
     <a href="#forfaits">Forfait</a>
   </nav>
 
-  {% if wa_link %}
-  <div class="share bezel reveal" id="partager"><div class="bezel-in">
-    <div class="lbl"><svg viewBox="0 0 24 24"><use href="#i-link"/></svg> Votre lien WhatsApp à partager à vos clients</div>
-    <div class="row">
-      <input id="walink" class="mono" readonly value="{{ wa_link }}">
-      <button class="btn gho sm" type="button" onclick="copyLink(this)"><svg viewBox="0 0 24 24"><use href="#i-copy"/></svg>Copier</button>
+  <!-- ★ VOTRE AGENT WHATSAPP — le cœur du back-office (canal autonome) -->
+  <section class="wa-hero reveal" id="whatsapp">
+    <style>
+      .wa-hero{border:1.5px solid var(--a,#10b981);border-radius:18px;padding:20px;margin-top:20px;
+               background:linear-gradient(180deg,rgba(16,185,129,.08),transparent)}
+      .wa-head{display:flex;gap:13px;align-items:flex-start}
+      .wa-ic{flex-shrink:0;width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:var(--a,#10b981)}
+      .wa-ic svg{width:21px;height:21px;stroke:#06120d;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+      .wa-title{font-family:'Sora',sans-serif;font-weight:800;font-size:1.18rem;margin:0}
+      .wa-sub{color:var(--muted,#8a8a99);font-size:.9rem;margin-top:3px;line-height:1.45;max-width:580px}
+      .wa-hero .share{margin-top:15px}
+      .wa-num{margin-top:13px}
+      .wa-num>label{font-size:.85rem;color:var(--muted,#8a8a99);margin-bottom:6px;font-weight:600;display:flex;align-items:center;gap:7px}
+      .wa-num-row{display:flex;gap:9px;flex-wrap:wrap}
+      .wa-num-row input{flex:1;min-width:200px}
+    </style>
+    <div class="wa-head">
+      <div class="wa-ic"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg></div>
+      <div>
+        <h2 class="wa-title">Votre agent WhatsApp</h2>
+        <div class="wa-sub">C'est ici que tout se passe. Votre vendeur IA répond à vos clients sur WhatsApp, 24h/24. Partagez votre lien — il s'occupe du reste.</div>
+      </div>
     </div>
-    <div class="links">
-      <a class="btn gho sm" href="/essai/{{ merchant_id }}"><svg viewBox="0 0 24 24"><use href="#i-flask"/></svg>Tester mon agent</a>
-      {% if merchant.status != 'active' %}<a class="btn acc sm" href="/activation/{{ merchant_id }}">Activer ma boutique<span class="bib"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></span></a>{% endif %}
-    </div>
-  </div></div>
-  {% endif %}
 
-  <!-- STATS -->
-  <div class="stats reveal" style="margin-top:16px">
-    <div class="stat"><div class="sv mono">{{ stats.count }}</div><div class="sl">Commandes</div></div>
-    <div class="stat"><div class="sv mono">{{ "{:,}".format(stats.revenue|int).replace(",", " ") }}</div><div class="sl">F CFA de ventes</div></div>
-    <div class="stat"><div class="sv mono">{{ conversations|length }}</div><div class="sl">Conversations</div></div>
-    <div class="stat"><div class="sv txt">{{ plan_label }}</div><div class="sl">Forfait actif</div></div>
-  </div>
+    {% if wa_link %}
+    <div class="share bezel" id="partager"><div class="bezel-in">
+      <div class="lbl"><svg viewBox="0 0 24 24"><use href="#i-link"/></svg> Votre lien WhatsApp à partager à vos clients</div>
+      <div class="row">
+        <input id="walink" class="mono" readonly value="{{ wa_link }}">
+        <button class="btn gho sm" type="button" onclick="copyLink(this)"><svg viewBox="0 0 24 24"><use href="#i-copy"/></svg>Copier</button>
+      </div>
+      <div class="links">
+        <a class="btn gho sm" href="/essai/{{ merchant_id }}"><svg viewBox="0 0 24 24"><use href="#i-flask"/></svg>Tester mon agent</a>
+        {% if merchant.status != 'active' %}<a class="btn acc sm" href="/activation/{{ merchant_id }}">Activer ma boutique<span class="bib"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></span></a>{% endif %}
+      </div>
+    </div></div>
+    {% endif %}
+
+    <div class="wa-num">
+      <label><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="var(--mut)" stroke-width="1.6"><use href="#i-chat"/></svg> Le WhatsApp où vos clients vous écrivent</label>
+      <div class="wa-num-row">
+        <input id="f_whatsapp_business" value="{{ merchant.whatsapp_business or '' }}" placeholder="ex : +229 01 67 97 56 26">
+        <button class="btn pri sm" type="button" onclick="saveMerchant(['whatsapp_business'])">Enregistrer</button>
+      </div>
+    </div>
+
+    <div class="stats" style="margin-top:16px">
+      <div class="stat"><div class="sv mono">{{ stats.count }}</div><div class="sl">Commandes</div></div>
+      <div class="stat"><div class="sv mono">{{ "{:,}".format(stats.revenue|int).replace(",", " ") }}</div><div class="sl">F CFA de ventes</div></div>
+      <div class="stat"><div class="sv mono">{{ conversations|length }}</div><div class="sl">Conversations</div></div>
+      <div class="stat"><div class="sv txt">{{ plan_label }}</div><div class="sl">Forfait actif</div></div>
+    </div>
+  </section>
+
+  <!-- Réordonnancement WhatsApp-first : l'ordre visuel des sections est piloté ici -->
+  <style>
+    .secwrap{display:flex;flex-direction:column}
+    .secwrap>section{margin-top:34px!important}
+    #piloter{order:1}#activite{order:2}#produits{order:3}#capacites{order:4}#infos{order:5}#livraison{order:6}#style{order:7}#coach{order:8}#rdv{order:9}#social{order:10}#prospection{order:11}#reponses{order:12}#forfaits{order:13}
+  </style>
+  <div class="secwrap">
 
   <!-- COMPOSEZ VOTRE VENDEUR -->
   {% if caps %}
@@ -226,6 +279,8 @@
       .capcard.locked svg{stroke:var(--muted,#8a8a99)}
       .capcard .lock{position:absolute;top:10px;right:12px;font-size:.71rem;color:var(--muted,#8a8a99);
                      border:1px solid var(--line,#33333c);border-radius:20px;padding:1px 8px;font-weight:600}
+      .capcard .soon-b{color:var(--a,#10b981);border-color:var(--a,#10b981)}
+      .capcard.soon{opacity:.72}
       .caps-sub{color:var(--muted,#8a8a99);font-size:.78rem;font-weight:700;text-transform:uppercase;
                 letter-spacing:.05em;margin-top:20px}
       .caps-pills{display:flex;flex-wrap:wrap;gap:9px;margin-top:9px}
@@ -252,10 +307,10 @@
     <div class="caps-sub">Modules — au choix</div>
     <div class="caps-grid">
       {% for c in caps.modules %}
-      <div class="capcard {{ 'on' if c.enabled }} {{ 'locked' if not c.available }}"
-           data-cap="{{ c.id }}" data-available="{{ '1' if c.available else '0' }}" data-min="{{ c.min_plan_label }}"
+      <div class="capcard {{ 'on' if c.enabled }} {{ 'locked' if (not c.available or c.soon) }}{{ ' soon' if c.soon }}"
+           data-cap="{{ c.id }}" data-available="{{ '1' if c.available else '0' }}" data-soon="{{ '1' if c.soon else '0' }}" data-min="{{ c.min_plan_label }}"
            onclick="toggleCap(this)">
-        {% if c.available %}<span class="tick">✓</span>{% else %}<span class="lock">🔒 {{ c.min_plan_label }}</span>{% endif %}
+        {% if c.soon %}<span class="lock soon-b">Bientôt</span>{% elif c.available %}<span class="tick">✓</span>{% else %}<span class="lock">🔒 {{ c.min_plan_label }}</span>{% endif %}
         <div class="cn"><svg viewBox="0 0 24 24"><use href="#{{ c.icon }}"/></svg>{{ c.label }}</div>
         <div class="cp">{{ c.promise }}</div>
       </div>
@@ -265,10 +320,10 @@
     <div class="caps-sub">Super-pouvoirs — Empire</div>
     <div class="caps-grid">
       {% for c in caps.premium %}
-      <div class="capcard {{ 'on' if c.enabled }} {{ 'locked' if not c.available }}"
-           data-cap="{{ c.id }}" data-available="{{ '1' if c.available else '0' }}" data-min="{{ c.min_plan_label }}"
+      <div class="capcard {{ 'on' if c.enabled }} {{ 'locked' if (not c.available or c.soon) }}{{ ' soon' if c.soon }}"
+           data-cap="{{ c.id }}" data-available="{{ '1' if c.available else '0' }}" data-soon="{{ '1' if c.soon else '0' }}" data-min="{{ c.min_plan_label }}"
            onclick="toggleCap(this)">
-        {% if c.available %}<span class="tick">✓</span>{% else %}<span class="lock">🔒 {{ c.min_plan_label }}</span>{% endif %}
+        {% if c.soon %}<span class="lock soon-b">Bientôt</span>{% elif c.available %}<span class="tick">✓</span>{% else %}<span class="lock">🔒 {{ c.min_plan_label }}</span>{% endif %}
         <div class="cn"><svg viewBox="0 0 24 24"><use href="#{{ c.icon }}"/></svg>{{ c.label }}</div>
         <div class="cp">{{ c.promise }}</div>
       </div>
@@ -439,16 +494,13 @@ Bracelet jonc 5000"></textarea>
         <div><label>Ville</label><input id="f_city" value="{{ merchant.city or '' }}" placeholder="ex : Cotonou"></div>
         <div><label>Horaires</label><input id="f_business_hours" value="{{ merchant.business_hours or '' }}" placeholder="ex : Lun-Sam 9h-19h"></div>
       </div>
-      <label>WhatsApp où vos clients vous écrivent</label>
-      <input id="f_whatsapp_business" value="{{ merchant.whatsapp_business or '' }}" placeholder="ex : +229 01 67 97 56 26">
-
       <label style="margin-top:18px;display:flex;align-items:center;gap:7px"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="var(--mut)" stroke-width="1.5"><use href="#i-palette"/></svg> Couleur de ma marque</label>
       <div class="brandrow">
         <input type="color" id="f_brand_color" value="{{ merchant.brand_color or accent }}" oninput="previewBrand(this.value)">
         <div class="bt">Personnalise <b>tout votre espace</b> à vos couleurs. Choisissez la couleur de votre logo.</div>
       </div>
 
-      <div style="margin-top:18px"><button class="btn pri" type="button" onclick="saveMerchant(['business_name','sector','description','city','business_hours','whatsapp_business','brand_color'])">Enregistrer les infos</button></div>
+      <div style="margin-top:18px"><button class="btn pri" type="button" onclick="saveMerchant(['business_name','sector','description','city','business_hours','brand_color'])">Enregistrer les infos</button></div>
     </div>
   </section>
 
@@ -487,7 +539,14 @@ Bracelet jonc 5000"></textarea>
       </div>
       <input id="f_momo_network" value="{{ merchant.momo_network or '' }}" placeholder="ex : MTN">
 
-      <label class="switch">
+      <div style="border-top:1px solid var(--hair);margin-top:16px;padding-top:14px">
+        <label>Autres comptes Mobile Money <span style="color:var(--mut2)">(autres réseaux — l'agent donne le bon compte selon le réseau du client)</span></label>
+        <div id="payAccounts"></div>
+        <button class="btn gho sm" type="button" onclick="addPayAccount()"><svg viewBox="0 0 24 24"><use href="#i-plus"/></svg>Ajouter un compte</button>
+        <div style="margin-top:10px"><button class="btn pri sm" type="button" onclick="savePayAccounts()">Enregistrer les comptes</button></div>
+      </div>
+
+      <label class="switch" style="margin-top:16px">
         <input type="checkbox" id="f_cod_enabled" {{ 'checked' if merchant.cod_enabled }}>
         <span class="track"></span>
         <span class="lbl-t">Paiement à la livraison<small>Le client paie en recevant — booste les ventes (recommandé)</small></span>
@@ -723,7 +782,15 @@ Bracelet jonc 5000"></textarea>
         {% else %}<span class="quota" style="color:var(--mut);background:none">Business / Empire</span>{% endif %}
       </div>
     </div>
-    {% if prospect_daily > 0 %}
+    {% if prospection_soon %}
+    <div class="panel" style="display:flex;gap:14px;align-items:center">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="var(--a)" stroke-width="1.5"><use href="#i-target"/></svg>
+      <div style="flex:1">
+        <div style="font-weight:700">Bientôt disponible</div>
+        <div class="hint" style="margin:4px 0 0">La prospection automatique arrive très vite. On la peaufine pour qu'elle trouve les bons prospects et reste 100 % conforme.</div>
+      </div>
+    </div>
+    {% elif prospect_daily > 0 %}
     <p class="hint">Votre agent cherche des entreprises locales (par secteur + ville) et leur envoie un email personnalisé pour leur proposer vos produits. Recherche et envoi 100% automatiques, avec garde-fous (anti-spam, désinscription).</p>
     <div class="panel">
       <div class="grid2">
@@ -835,6 +902,7 @@ Bracelet jonc 5000"></textarea>
     </div>
     <p class="hint" style="margin-top:14px;display:flex;align-items:center;gap:7px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--mut2)" stroke-width="1.5"><use href="#i-spark"/></svg> « bientôt » = fonctionnalité en cours de déploiement, incluse dès sa sortie.</p>
   </section>
+  </div><!-- /.secwrap -->
 </div>
 {% endif %}
 
@@ -998,6 +1066,33 @@ async function saveMerchant(fields){
   if(d.ok) notify('Enregistré'); else notify(d.error||'Erreur', true);
 }
 
+/* Comptes Mobile Money additionnels */
+const PAY_ACCOUNTS = {{ (merchant.payment_accounts or []) | tojson }};
+function payRowHtml(a){
+  a = a || {};
+  const v = s => (s||'').replace(/"/g,'&quot;');
+  return '<div class="payrow" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">'
+    + '<input class="p-net" placeholder="Réseau (ex : Moov)" value="'+v(a.network)+'" style="flex:1;min-width:110px">'
+    + '<input class="p-num" placeholder="Numéro" value="'+v(a.number)+'" style="flex:1;min-width:110px">'
+    + '<input class="p-name" placeholder="Nom du titulaire" value="'+v(a.name)+'" style="flex:1;min-width:110px">'
+    + '<button class="btn gho sm" type="button" onclick="this.closest(\'.payrow\').remove()">✕</button></div>';
+}
+function renderPayAccounts(){
+  const box = document.getElementById('payAccounts'); if(!box) return;
+  box.innerHTML = (PAY_ACCOUNTS||[]).map(payRowHtml).join('');
+}
+function addPayAccount(){ const b=document.getElementById('payAccounts'); if(b) b.insertAdjacentHTML('beforeend', payRowHtml({})); }
+async function savePayAccounts(){
+  const accounts = [];
+  document.querySelectorAll('#payAccounts .payrow').forEach(r=>{
+    const num = r.querySelector('.p-num').value.trim();
+    if(num) accounts.push({network: r.querySelector('.p-net').value.trim(), number: num, name: r.querySelector('.p-name').value.trim()});
+  });
+  const d = await api(`/api/merchants/${MID}/payment-accounts`, 'POST', {accounts});
+  notify(d.ok ? 'Comptes enregistrés ✓' : (d.error||'Erreur'), !d.ok);
+}
+renderPayAccounts();
+
 /* Coach commercial */
 async function genCoach(btn){
   btn.disabled = true; const old = btn.innerHTML; btn.textContent = 'Analyse…';
@@ -1059,6 +1154,10 @@ function updateCapCount(){
   el.textContent = CAP_LIMIT < 0 ? (n + ' capacités actives') : (n + '/' + CAP_LIMIT + ' modules');
 }
 function toggleCap(card){
+  if(card.dataset.soon === '1'){
+    notify('Bientôt disponible — fonctionnalité en cours de déploiement', true);
+    return;
+  }
   if(card.dataset.available !== '1'){
     notify('Disponible avec le forfait ' + card.dataset.min + ' — voir l\'onglet Forfait', true);
     return;

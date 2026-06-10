@@ -21,6 +21,7 @@ from typing import Any
 import anthropic
 
 from config import settings
+from core import model_config
 
 log = logging.getLogger("boutique-ia.learning")
 
@@ -214,8 +215,8 @@ def _extract_lessons(system: str, digest: str) -> str:
     settings.require("anthropic_api_key")
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
     resp = client.messages.create(
-        model=settings.writer_model,
-        max_tokens=900,
+        model=model_config.model_for("writer"),
+        max_tokens=model_config.tokens_for("writer", 900),
         system=system,
         messages=[{
             "role": "user",
@@ -256,7 +257,7 @@ def run_learning_cycle(days: int = DEFAULT_WINDOW_DAYS) -> dict[str, Any]:
         "won": won,
         "lost": lost,
         "revenue": revenue,
-        "model": settings.writer_model,
+        "model": model_config.model_for("writer"),
         "global_updated": False,
         "merchants_analyzed": 0,
         "skipped": False,
@@ -276,7 +277,7 @@ def run_learning_cycle(days: int = DEFAULT_WINDOW_DAYS) -> dict[str, Any]:
         if lessons:
             save_lessons("global", None, lessons,
                          stats={"conversations": len(convos), "won": won,
-                                "lost": lost, "revenue": revenue}, model=settings.writer_model)
+                                "lost": lost, "revenue": revenue}, model=model_config.model_for("writer"))
             result["global_updated"] = True
             result["global_lessons"] = lessons
     except Exception:  # noqa: BLE001
@@ -305,7 +306,7 @@ def run_learning_cycle(days: int = DEFAULT_WINDOW_DAYS) -> dict[str, Any]:
                 mw = sum(1 for c in mconvos if c["won"])
                 save_lessons("merchant", mid, lessons,
                              stats={"conversations": len(mconvos), "won": mw,
-                                    "lost": len(mconvos) - mw}, model=settings.writer_model)
+                                    "lost": len(mconvos) - mw}, model=model_config.model_for("writer"))
                 result["merchants_analyzed"] += 1
         except Exception:  # noqa: BLE001
             log.warning("learning: extraction boutique %s échouée", mid, exc_info=True)

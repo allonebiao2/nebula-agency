@@ -29,6 +29,7 @@ from config import (
     price_for_plan,
     settings,
 )
+from core import model_config
 
 log = logging.getLogger("boutique-ia.strategist")
 
@@ -138,10 +139,10 @@ def gather_snapshot() -> dict[str, Any]:
         "plan_prices": PLAN_PRICES,
         "plan_quota_orders": PLAN_DAILY_ORDERS,
         "models": {
-            "vendeur": settings.claude_model,
-            "gestion": settings.manager_model,
-            "redaction": settings.writer_model,
-            "creation_ceo": settings.builder_model,
+            "vendeur": model_config.model_for("vendeur"),
+            "gestion": model_config.model_for("manager"),
+            "redaction": model_config.model_for("writer"),
+            "creation_ceo": model_config.model_for("builder"),
         },
     }
 
@@ -347,7 +348,7 @@ def run_ceo_review() -> dict[str, Any]:
     reasoning = ""
     for _ in range(MAX_TOOL_TURNS):
         resp = client.messages.create(
-            model=settings.builder_model, max_tokens=1500,
+            model=model_config.model_for("builder"), max_tokens=model_config.tokens_for("builder", 1500),
             system=system, messages=messages, tools=TOOLS,
         )
         reasoning = "\n".join(b.text for b in resp.content
@@ -377,7 +378,7 @@ def run_ceo_review() -> dict[str, Any]:
         "mrr": snapshot["mrr"],
         "merchants": snapshot["merchants_total"],
         "sales_conversion_pct": snapshot["sales_conversion_pct"],
-        "model": settings.builder_model,
+        "model": model_config.model_for("builder"),
     }
     try:
         notify_ceo_review(result)

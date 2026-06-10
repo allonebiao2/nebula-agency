@@ -13,6 +13,7 @@ import logging
 import anthropic
 
 from config import settings
+from core import model_config
 from db.client import (
     add_products,
     delete_product,
@@ -192,7 +193,7 @@ def run_order(merchant: dict, order_text: str) -> dict:
 
     for _ in range(MAX_TOOL_TURNS):
         resp = client.messages.create(
-            model=settings.manager_model, max_tokens=500,
+            model=model_config.model_for("manager"), max_tokens=model_config.tokens_for("manager", 500),
             system=system, messages=messages, tools=TOOLS,
         )
         tool_uses = [b for b in resp.content if getattr(b, "type", None) == "tool_use"]
@@ -211,7 +212,7 @@ def run_order(merchant: dict, order_text: str) -> dict:
 
     # Dernier tour sans outil pour conclure proprement.
     resp = client.messages.create(
-        model=settings.manager_model, max_tokens=400, system=system, messages=messages,
+        model=model_config.model_for("manager"), max_tokens=model_config.tokens_for("manager", 400), system=system, messages=messages,
     )
     text = "\n".join(b.text for b in resp.content if getattr(b, "type", None) == "text").strip()
     return {"reply": text or "C'est fait.", "actions": actions}

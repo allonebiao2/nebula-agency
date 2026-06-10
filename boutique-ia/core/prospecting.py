@@ -26,6 +26,7 @@ import anthropic
 import httpx
 
 from config import settings
+from core import model_config
 
 log = logging.getLogger("boutique-ia.prospecting")
 
@@ -200,7 +201,7 @@ def generate_outreach(mode: str, ctx: dict[str, Any]) -> dict[str, str]:
     )
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
     resp = client.messages.create(
-        model=settings.writer_model, max_tokens=700,
+        model=model_config.model_for("writer"), max_tokens=model_config.tokens_for("writer", 700),
         system=system,
         messages=[{"role": "user", "content": f"Contexte : {about}. Rédige l'email."}],
     )
@@ -264,7 +265,7 @@ def compose_recruitment_reply(thread: list[dict[str, Any]], prospect: dict[str, 
             f"Échange jusqu'ici :\n{transcript}\n\nRédige ta réponse.")
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
     resp = client.messages.create(
-        model=settings.writer_model, max_tokens=600,
+        model=model_config.model_for("writer"), max_tokens=model_config.tokens_for("writer", 600),
         system=system, messages=[{"role": "user", "content": user}],
     )
     text = "".join(b.text for b in resp.content if getattr(b, "type", None) == "text").strip()
