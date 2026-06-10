@@ -1569,6 +1569,13 @@ async def _auto_prospection_loop():
         except Exception:  # noqa: BLE001
             log.warning("winback loop", exc_info=True)
         try:
+            # Rappels d'agenda de l'assistant perso → poussés au patron UNIQUEMENT
+            # dans la fenêtre WhatsApp 24h (gratuit/conforme). Garde-fous internes.
+            from core.assistant import run_assistant_reminders
+            await asyncio.to_thread(run_assistant_reminders)
+        except Exception:  # noqa: BLE001
+            log.warning("assistant reminders loop", exc_info=True)
+        try:
             # Cerveau CEO : revue stratégique autonome 1×/semaine (il PROPOSE, Mongazi valide).
             if await asyncio.to_thread(_ceo_due):
                 log.info("ceo: revue hebdomadaire autonome")
@@ -1659,12 +1666,11 @@ async def merchant_assistant_endpoint(request: Request, merchant_id: str):
     question = (body.get("message") or "").strip()
     if not question:
         return JSONResponse({"ok": False, "error": "Question vide."}, status_code=400)
-    history = body.get("history") if isinstance(body.get("history"), list) else None
     try:
         merchant = get_merchant(merchant_id)
         if not merchant:
             return JSONResponse({"ok": False, "error": "Boutique introuvable."}, status_code=404)
-        answer = assistant.reply(merchant, question, history=history)
+        answer = assistant.converse(merchant, question, channel="backoffice")
     except Exception as e:  # noqa: BLE001
         log.exception("assistant commerçant échoué")
         return JSONResponse({"ok": False, "error": str(e)[:300]}, status_code=500)
@@ -2229,7 +2235,7 @@ def _agent_handle(customer: str, body_text: str, has_audio: bool = False,
     try:
         from core import assistant
         if assistant.is_owner(merchant, customer):
-            ans = assistant.reply(merchant, clean)
+            ans = assistant.converse(merchant, clean, channel="whatsapp")
             return {"status": "assistant", "media": [], "text": ans}
     except Exception:  # noqa: BLE001
         log.exception("assistant propriétaire échoué — repli vendeur")

@@ -306,3 +306,30 @@ create index if not exists bia_inbox_msgid_idx on bia_inbox(message_id);
 create index if not exists bia_inbox_merchant_idx on bia_inbox(merchant_id, status, created_at desc);
 -- Mode de réponse email par boutique : 'review' = l'agent rédige, le commerçant valide ;
 -- 'auto' = l'agent envoie directement. (colonne bia_merchants.inbox_mode, défaut 'review')
+
+-- 13. Assistant personnel du/de la propriétaire (Phase B) — mémoire de fil + agenda.
+--     SÉPARÉ de bia_messages : ces tours NE polluent JAMAIS les conversations clients
+--     ni le cerveau d'apprentissage. Le patron est identifié par owner_whatsapp (verrou).
+create table if not exists bia_assistant_chat (
+  id uuid primary key default gen_random_uuid(),
+  merchant_id uuid not null references bia_merchants(id) on delete cascade,
+  role       text not null,                 -- 'user' (patron) | 'assistant'
+  channel    text default 'whatsapp',       -- 'whatsapp' | 'backoffice'
+  content    text,
+  created_at timestamptz default now()
+);
+create index if not exists bia_assistant_chat_idx on bia_assistant_chat(merchant_id, created_at desc);
+
+-- Agenda / rappels du patron (écriture par l'assistant : « note-moi… »). remind_at
+-- daté → rappel proactif poussé UNIQUEMENT dans la fenêtre WhatsApp 24h (gratuit/conforme).
+create table if not exists bia_agenda (
+  id uuid primary key default gen_random_uuid(),
+  merchant_id uuid not null references bia_merchants(id) on delete cascade,
+  title       text not null,
+  when_text   text,                          -- tel que dit ("demain 15h", "lundi")
+  remind_at   timestamptz,                   -- moment du rappel si déterminable (UTC)
+  status      text default 'pending',        -- pending | done | cancelled
+  reminded_at timestamptz,                   -- anti-doublon de notification
+  created_at  timestamptz default now()
+);
+create index if not exists bia_agenda_idx on bia_agenda(merchant_id, status, remind_at);

@@ -30,12 +30,20 @@ import anthropic
 from config import settings
 from core import model_config
 from db.client import (
+    add_agenda_item,
     count_messages_since,
+    due_agenda_reminders,
+    list_agenda,
     list_appointments,
     list_orders,
     list_recent_conversations,
+    load_assistant_history,
     load_history,
     list_products,
+    mark_agenda_reminded,
+    owner_active_within,
+    save_assistant_message,
+    set_agenda_status,
 )
 
 log = logging.getLogger("boutique-ia.assistant")
@@ -292,7 +300,54 @@ def client_info(merchant_id: str, recherche: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Le cerveau de l'assistant — outils (lecture seule) + intelligence générale
+# Phase B — Agenda / rappels (ÉCRITURE) : « note-moi… », « rappelle-moi… »
+# ---------------------------------------------------------------------------
+
+def _iso_to_utc(value) -> str | None:
+    """Normalise un ISO (idéalement en WAT) vers un timestamptz UTC, sinon None."""
+    dt = _parse_dt(value)
+    return dt.astimezone(timezone.utc).isoformat() if dt else None
+
+
+def agenda_add(merchant_id: str, titre: str, quand_texte: str | None = None,
+               rappel_iso: str | None = None) -> str:
+    titre = (titre or "").strip()
+    if not titre:
+        return "(rien à noter : intitulé manquant)"
+    remind_at = _iso_to_utc(rappel_iso)
+    row = add_agenda_item(merchant_id, titre, (quand_texte or "").strip() or None, remind_at)
+    if not row:
+        return "(impossible d'enregistrer dans l'agenda pour l'instant)"
+    quand = f" — {quand_texte.strip()}" if (quand_texte or "").strip() else ""
+    rappel = " · rappel programmé ✅" if remind_at else ""
+    return f"NOTÉ dans l'agenda : « {titre} »{quand}{rappel}"
+
+
+def agenda_view(merchant_id: str, scope: str = "upcoming") -> str:
+    items = list_agenda(merchant_id, "upcoming" if scope not in ("done", "all") else scope)
+    if not items:
+        return "DONNÉES RÉELLES — agenda vide (rien de prévu)."
+    lines = ["DONNÉES RÉELLES — agenda :"]
+    for it in items:
+        dt = _parse_dt(it.get("remind_at"))
+        quand = (dt.astimezone(WAT).strftime("%d/%m %Hh%M") if dt
+                 else (it.get("when_text") or "sans date"))
+        flag = "✅ " if it.get("status") == "done" else ""
+        lines.append(f"- [id={it.get('id')}] {flag}{it.get('title')} ({quand})")
+    lines.append("(pour terminer/supprimer un point, utilise son id)")
+    return "\n".join(lines)
+
+
+def agenda_set(merchant_id: str, agenda_id: str, status: str) -> str:
+    row = set_agenda_status((agenda_id or "").strip(), merchant_id, status)
+    if not row:
+        return "(point d'agenda introuvable — vérifie l'id via voir_agenda)"
+    verb = "marqué comme fait ✅" if status == "done" else "supprimé"
+    return f"« {row.get('title')} » {verb}."
+
+
+# ---------------------------------------------------------------------------
+# Le cerveau de l'assistant — outils (lecture + agenda) + intelligence générale
 # ---------------------------------------------------------------------------
 
 TOOLS = [
@@ -338,9 +393,57 @@ TOOLS = [
     },
     {
         "name": "rendez_vous",
-        "description": ("Liste RÉELLE des rendez-vous enregistrés (à venir / récents). À appeler "
-                        "pour « mes rendez-vous », « qui vient », « agenda »."),
+        "description": ("Liste RÉELLE des rendez-vous CLIENTS enregistrés (pris par le vendeur). "
+                        "À appeler pour « mes rendez-vous clients », « qui vient »."),
         "input_schema": {"type": "object", "properties": {}},
+    },
+    {
+        "name": "noter_agenda",
+        "description": ("Enregistre une note ou un RAPPEL dans l'agenda PERSONNEL du patron. À "
+                        "appeler pour « note-moi… », « rappelle-moi… », « ajoute à mon agenda… ». "
+                        "Si un moment est donné (demain 15h, lundi, vendredi…), calcule-le à partir "
+                        "de la date/heure actuelles et passe-le dans `rappel_iso` (ISO 8601 avec "
+                        "fuseau +01:00), EN PLUS de `quand_texte`."),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "titre": {"type": "string", "description": "Ce qu'il faut retenir / faire."},
+                "quand_texte": {"type": "string", "description": "Le moment tel que dit (ex: demain 15h)."},
+                "rappel_iso": {"type": "string", "description": "Moment exact ISO 8601 +01:00 si datable."},
+            },
+            "required": ["titre"],
+        },
+    },
+    {
+        "name": "voir_agenda",
+        "description": ("Liste l'agenda PERSONNEL du patron (ses notes/rappels). À appeler pour "
+                        "« mon agenda », « qu'est-ce que j'ai prévu », « mes rappels », ou avant de "
+                        "terminer/supprimer un point (pour avoir son id)."),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "scope": {"type": "string", "enum": ["upcoming", "done", "all"],
+                          "description": "upcoming = à faire (défaut)."},
+            },
+        },
+    },
+    {
+        "name": "terminer_agenda",
+        "description": "Marque un point d'agenda comme FAIT. Utilise l'id exact donné par voir_agenda.",
+        "input_schema": {
+            "type": "object",
+            "properties": {"agenda_id": {"type": "string"}},
+            "required": ["agenda_id"],
+        },
+    },
+    {
+        "name": "supprimer_agenda",
+        "description": "Supprime un point d'agenda. Utilise l'id exact donné par voir_agenda.",
+        "input_schema": {
+            "type": "object",
+            "properties": {"agenda_id": {"type": "string"}},
+            "required": ["agenda_id"],
+        },
     },
 ]
 
@@ -355,6 +458,15 @@ def _exec_tool(merchant_id: str, name: str, args: dict) -> str:
             return client_info(merchant_id, args.get("recherche") or "")
         if name == "rendez_vous":
             return appointments_view(merchant_id)
+        if name == "noter_agenda":
+            return agenda_add(merchant_id, args.get("titre") or "",
+                              args.get("quand_texte"), args.get("rappel_iso"))
+        if name == "voir_agenda":
+            return agenda_view(merchant_id, args.get("scope") or "upcoming")
+        if name == "terminer_agenda":
+            return agenda_set(merchant_id, args.get("agenda_id") or "", "done")
+        if name == "supprimer_agenda":
+            return agenda_set(merchant_id, args.get("agenda_id") or "", "cancelled")
     except Exception as e:  # noqa: BLE001
         log.exception("outil assistant échoué")
         return f"(impossible de lire cette donnée pour l'instant : {e})"
@@ -389,6 +501,14 @@ son copilote IA de confiance, son bras droit. Tu l'aides sur DEUX plans.
 
 Date et heure actuelles (Bénin, heure locale) : {date_fr}.
 Utilise-les pour toute question d'heure, de date ou de jour.
+
+AGENDA — tu tiens son agenda perso et tu peux le lui rappeler (outils noter_agenda /
+voir_agenda / terminer_agenda / supprimer_agenda). Quand il dit « note-moi… »,
+« rappelle-moi… », « ajoute à mon agenda… » : appelle noter_agenda. S'il précise
+un moment (demain 15h, lundi, samedi…), calcule le moment EXACT à partir de la
+date/heure ci-dessus et passe-le en `rappel_iso` (ISO 8601, fuseau +01:00), en plus
+de `quand_texte`. Pour terminer ou supprimer un point, appelle d'abord voir_agenda
+pour récupérer son id. Confirme toujours brièvement ce que tu as noté.
 
 HONNÊTETÉ (capital) : si tu n'es pas sûr d'un fait précis (une adresse, un prix
 ailleurs, une info locale, une actu récente), dis-le simplement et propose
@@ -445,3 +565,64 @@ def reply(merchant: dict, question: str, history: list[dict] | None = None) -> s
     text = "\n".join(b.text for b in resp.content
                      if getattr(b, "type", None) == "text").strip()
     return text or "Je suis là 🙂 Que voulez-vous savoir ?"
+
+
+def converse(merchant: dict, question: str, channel: str = "whatsapp") -> str:
+    """Point d'entrée des DEUX canaux (WhatsApp owner + back-office) : charge la
+    mémoire de fil, répond, puis mémorise le tour. Ne lève jamais (repli gracieux)
+    pour que le patron reçoive toujours une réponse d'assistant."""
+    merchant_id = merchant["id"]
+    q = (question or "").strip()
+    try:
+        history = load_assistant_history(merchant_id, limit=10)
+    except Exception:  # noqa: BLE001
+        history = []
+    try:
+        text = reply(merchant, q, history=history)
+    except Exception:  # noqa: BLE001
+        log.exception("assistant converse échoué")
+        text = "Désolé, j'ai eu un petit souci pour traiter ça 🙏 Reformulez en un mot ?"
+    try:
+        save_assistant_message(merchant_id, "user", q, channel)
+        save_assistant_message(merchant_id, "assistant", text, channel)
+    except Exception:  # noqa: BLE001
+        pass
+    return text
+
+
+def run_assistant_reminders() -> dict:
+    """Pousse les rappels d'agenda échus au patron — UNIQUEMENT dans la fenêtre
+    WhatsApp 24h (conversation de service = gratuit/conforme Meta). Hors fenêtre,
+    le rappel reste en attente (il partira au prochain message du patron)."""
+    from core import whatsapp_meta
+    from db.client import get_merchant, get_setting_bool
+
+    if not get_setting_bool("assistant_reminders_enabled", True):
+        return {"sent": 0, "skipped": 0, "off": True}
+    if not whatsapp_meta.configured():
+        return {"sent": 0, "skipped": 0, "no_wa": True}
+
+    sent = skipped = 0
+    for item in due_agenda_reminders(50):
+        mid = item.get("merchant_id")
+        merchant = get_merchant(mid) if mid else None
+        owner = (merchant or {}).get("owner_whatsapp")
+        if not merchant or not owner or merchant.get("status") == "suspended":
+            skipped += 1
+            continue
+        if not owner_active_within(mid, 24):  # hors fenêtre 24h → on attend
+            skipped += 1
+            continue
+        when = (item.get("when_text") or "").strip()
+        body = f"⏰ Rappel : {item.get('title')}" + (f" ({when})" if when else "")
+        ok = False
+        try:
+            ok = whatsapp_meta.send_text(owner, body)
+        except Exception:  # noqa: BLE001
+            log.warning("envoi rappel agenda échoué", exc_info=True)
+        if ok:
+            mark_agenda_reminded(item["id"])
+            sent += 1
+        else:
+            skipped += 1
+    return {"sent": sent, "skipped": skipped}

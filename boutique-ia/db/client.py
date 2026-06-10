@@ -1317,3 +1317,120 @@ def get_active_lessons(merchant_id: str | None = None) -> str:
     text = "\n\n".join(parts)
     _LESSON_CACHE[key] = (_time.time(), text)
     return text
+
+
+# ---------------------------------------------------------------------------
+# Phase B — Assistant personnel du propriétaire : mémoire de fil + agenda/rappels
+# (Tables bia_assistant_chat / bia_agenda. SÉPARÉES de bia_messages pour ne JAMAIS
+#  polluer les conversations clients ni le cerveau d'apprentissage.)
+# ---------------------------------------------------------------------------
+
+def save_assistant_message(merchant_id: str, role: str, content: str,
+                           channel: str = "whatsapp") -> None:
+    """Mémorise un tour de l'assistant perso (role 'user'=patron | 'assistant')."""
+    if not (content or "").strip():
+        return
+    try:
+        get_db().table("bia_assistant_chat").insert({
+            "merchant_id": merchant_id, "role": role,
+            "channel": channel, "content": content,
+        }).execute()
+    except Exception:  # noqa: BLE001
+        pass  # la mémoire est un confort, jamais bloquant
+
+
+def load_assistant_history(merchant_id: str, limit: int = 10) -> list[dict[str, Any]]:
+    """Derniers tours de l'assistant perso (du + ancien au + récent)."""
+    try:
+        rows = (
+            get_db().table("bia_assistant_chat")
+            .select("role, content, created_at")
+            .eq("merchant_id", merchant_id)
+            .order("created_at", desc=True).limit(limit).execute().data or []
+        )
+    except Exception:  # noqa: BLE001
+        return []
+    return list(reversed(rows))
+
+
+def owner_active_within(merchant_id: str, hours: int = 24) -> bool:
+    """True si le patron a écrit sur WhatsApp dans la fenêtre (règle Meta 24h).
+
+    Sert à n'envoyer un rappel proactif QUE dans la fenêtre de service gratuite.
+    """
+    from datetime import datetime, timedelta, timezone
+    since = (datetime.now(timezone.utc) - timedelta(hours=hours)).isoformat()
+    try:
+        r = (
+            get_db().table("bia_assistant_chat")
+            .select("id", count="exact", head=True)
+            .eq("merchant_id", merchant_id).eq("role", "user").eq("channel", "whatsapp")
+            .gte("created_at", since).execute()
+        )
+        return (r.count or 0) > 0
+    except Exception:  # noqa: BLE001
+        return False
+
+
+def add_agenda_item(merchant_id: str, title: str, when_text: str | None = None,
+                    remind_at: str | None = None) -> dict[str, Any]:
+    """Crée une note / un rappel dans l'agenda du patron."""
+    row = {"merchant_id": merchant_id, "title": title,
+           "when_text": when_text, "remind_at": remind_at, "status": "pending"}
+    try:
+        res = get_db().table("bia_agenda").insert(row).execute()
+        return res.data[0] if res.data else {}
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def list_agenda(merchant_id: str, scope: str = "upcoming",
+                limit: int = 30) -> list[dict[str, Any]]:
+    """Éléments d'agenda. scope: 'upcoming' (en cours) | 'done' | 'all'."""
+    try:
+        q = (get_db().table("bia_agenda").select("*").eq("merchant_id", merchant_id))
+        if scope == "upcoming":
+            q = q.eq("status", "pending")
+        elif scope == "done":
+            q = q.eq("status", "done")
+        # remind_at d'abord (les datés en tête), puis les non datés
+        rows = q.order("remind_at", desc=False).order("created_at", desc=False) \
+                .limit(limit).execute().data or []
+        return rows
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def set_agenda_status(item_id: str, merchant_id: str, status: str) -> dict[str, Any]:
+    """Passe un élément à 'done' ou 'cancelled' (scopé à la boutique = sécurité)."""
+    try:
+        res = (get_db().table("bia_agenda").update({"status": status})
+               .eq("id", item_id).eq("merchant_id", merchant_id).execute())
+        return res.data[0] if res.data else {}
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def due_agenda_reminders(limit: int = 50) -> list[dict[str, Any]]:
+    """Rappels à pousser MAINTENANT (pending, datés, échus, jamais notifiés)."""
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc).isoformat()
+    try:
+        return (
+            get_db().table("bia_agenda").select("*")
+            .eq("status", "pending").is_("reminded_at", "null")
+            .lte("remind_at", now).not_.is_("remind_at", "null")
+            .order("remind_at", desc=False).limit(limit).execute().data or []
+        )
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def mark_agenda_reminded(item_id: str) -> None:
+    from datetime import datetime, timezone
+    try:
+        (get_db().table("bia_agenda")
+         .update({"reminded_at": datetime.now(timezone.utc).isoformat()})
+         .eq("id", item_id).execute())
+    except Exception:  # noqa: BLE001
+        pass
