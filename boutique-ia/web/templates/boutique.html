@@ -64,6 +64,70 @@
   <span class="pill">Espace boutique</span>
 </div>
 
+<!-- MENU LATÉRAL VERTICAL (desktop) -->
+<style>
+  html{scroll-behavior:smooth}
+  .secwrap>section{scroll-margin-top:18px}
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:250px;background:var(--panel,#13131a);
+           border-right:1px solid var(--line,#23232b);overflow-y:auto;z-index:60;padding:18px 12px 34px;display:none}
+  .sb-brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:1rem;padding:6px 10px 12px;
+            color:var(--txt,#eef);font-family:'Plus Jakarta Sans',sans-serif}
+  .sb-brand .glyph{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:var(--a,#10b981);flex:none}
+  .sb-brand .glyph svg{width:17px;height:17px;stroke:#06120d;fill:none;stroke-width:2}
+  .sb-group{margin-top:13px}
+  .sb-h{font-size:.69rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted,#8a8a99);font-weight:700;padding:0 11px 5px}
+  .sb-link{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:10px;color:var(--muted,#9aa3b2);
+           text-decoration:none;font-weight:600;font-size:.9rem;transition:background .15s,color .15s,box-shadow .15s}
+  .sb-link svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7}
+  .sb-link:hover{background:rgba(127,127,127,.09);color:var(--txt,#eef)}
+  .sb-link.active{color:var(--a,#10b981);background:rgba(127,127,127,.1);box-shadow:inset 3px 0 0 var(--a,#10b981)}
+  .sb-badge{margin-left:auto;background:var(--a,#10b981);color:#06120d;font-size:.68rem;font-weight:800;border-radius:20px;padding:1px 7px}
+  @media(min-width:1080px){
+    .sidebar{display:block}
+    body{padding-left:250px}
+    .tabs{display:none!important}
+  }
+</style>
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand"><span class="glyph"><svg viewBox="0 0 24 24"><use href="#i-store"/></svg></span><span>{{ merchant.business_name }}</span></div>
+  <nav class="sb-nav">
+    <div class="sb-group"><div class="sb-h">Mon agent</div>
+      <a class="sb-link" href="#whatsapp"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg>WhatsApp &amp; QR</a>
+      <a class="sb-link" href="#piloter"><svg viewBox="0 0 24 24"><use href="#i-wand"/></svg>Piloter l'agent</a>
+      <a class="sb-link" href="#assistbox"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg>Assistant</a>
+      <a class="sb-link" href="#capacites"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Capacités</a>
+    </div>
+    <div class="sb-group"><div class="sb-h">Activité</div>
+      {% if notif %}<a class="sb-link" href="#notifications"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg>Notifications{% if notif.total %} <span class="sb-badge">{{ notif.total }}</span>{% endif %}</a>{% endif %}
+      {% if to_validate %}<a class="sb-link" href="#validation"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Validation{% if notif and notif.pay_count %} <span class="sb-badge">{{ notif.pay_count }}</span>{% endif %}</a>{% endif %}
+      <a class="sb-link" href="#activite"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg>Activité</a>
+      {% if top_clients %}<a class="sb-link" href="#clients"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg>Clients</a>{% endif %}
+    </div>
+    <div class="sb-group"><div class="sb-h">Gestion</div>
+      {% if cashbox %}<a class="sb-link" href="#caisse"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg>Caisse</a>{% endif %}
+      {% if ardoise %}<a class="sb-link" href="#ardoise"><svg viewBox="0 0 24 24"><use href="#i-box"/></svg>Ardoise</a>{% endif %}
+      <a class="sb-link" href="#documents"><svg viewBox="0 0 24 24"><use href="#i-mail"/></svg>Documents</a>
+      <a class="sb-link" href="#produits"><svg viewBox="0 0 24 24"><use href="#i-box"/></svg>Produits</a>
+      {% if rdv_on %}<a class="sb-link" href="#rdv"><svg viewBox="0 0 24 24"><use href="#i-flask"/></svg>Rendez-vous</a>{% endif %}
+    </div>
+    <div class="sb-group"><div class="sb-h">Croissance</div>
+      {% if coach_on %}<a class="sb-link" href="#coach"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg>Coach</a>{% endif %}
+      {% if social_on %}<a class="sb-link" href="#social"><svg viewBox="0 0 24 24"><use href="#i-send"/></svg>Réseaux</a>{% endif %}
+      {% if not prospection_soon %}<a class="sb-link" href="#prospection"><svg viewBox="0 0 24 24"><use href="#i-target"/></svg>Prospection</a>{% endif %}
+      {% if inbox.on %}<a class="sb-link" href="#reponses"><svg viewBox="0 0 24 24"><use href="#i-mail"/></svg>Réponses</a>{% endif %}
+    </div>
+    <div class="sb-group"><div class="sb-h">Ma boutique</div>
+      <a class="sb-link" href="#infos"><svg viewBox="0 0 24 24"><use href="#i-store"/></svg>Infos</a>
+      <a class="sb-link" href="#livraison"><svg viewBox="0 0 24 24"><use href="#i-truck"/></svg>Livraison</a>
+      <a class="sb-link" href="#style"><svg viewBox="0 0 24 24"><use href="#i-palette"/></svg>Style</a>
+      <a class="sb-link" href="#forfaits"><svg viewBox="0 0 24 24"><use href="#i-rocket"/></svg>Forfait</a>
+    </div>
+    <div class="sb-group"><div class="sb-h">Aide</div>
+      <a class="sb-link" href="#support"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg>Support</a>
+    </div>
+  </nav>
+</aside>
+
 <div class="wrap">
   <span class="eyebrow reveal" style="margin-top:28px"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><use href="#i-wand"/></svg> Pilotez votre agent vendeur</span>
   <h1 class="reveal">{{ merchant.business_name }}</h1>
@@ -1213,6 +1277,17 @@ function addChip(targetId, val, el){
 /* Reveal au scroll */
 const io = new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -40px 0px'});
 document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.setProperty('--d',(i%5)*55+'ms');io.observe(el);});
+
+/* Menu vertical : surligne la section active (scrollspy) */
+(function(){
+  const links = [...document.querySelectorAll('.sb-link')];
+  if(!links.length) return;
+  const byId = {}; links.forEach(a=>{ byId[a.getAttribute('href').slice(1)] = a; });
+  const spy = new IntersectionObserver((es)=>{
+    es.forEach(e=>{ if(e.isIntersecting){ const a=byId[e.target.id]; if(a){ links.forEach(l=>l.classList.remove('active')); a.classList.add('active'); } } });
+  },{rootMargin:'-45% 0px -50% 0px',threshold:0});
+  Object.keys(byId).forEach(id=>{ const s=document.getElementById(id); if(s) spy.observe(s); });
+})();
 
 /* Produits */
 function toggleAdd(){ document.getElementById('addForm').classList.toggle('hide'); }
