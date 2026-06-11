@@ -691,6 +691,15 @@ async def boutique_backoffice(request: Request, merchant_id: str):
     # QR du lien WhatsApp (à imprimer/partager) + lien du back-office (à enregistrer).
     wa_qr = _qr_data_uri(wa_link)
     backoffice_link = str(request.base_url).rstrip("/") + f"/boutique/{merchant_id}"
+    # Support in-app : fil d'aide + indication si l'équipe NEBULA gère manuellement.
+    support_thread, support_human = [], False
+    if merchant:
+        try:
+            from db.client import get_setting_bool as _gsb, list_support_thread
+            support_thread = list_support_thread(merchant_id, limit=40)
+            support_human = _gsb(f"support_human_{merchant_id}", False)
+        except Exception:  # noqa: BLE001
+            log.warning("back-office: support KO", exc_info=True)
     return templates.TemplateResponse(
         request, "boutique.html",
         _ctx(request, merchant=merchant, merchant_id=merchant_id,
@@ -705,6 +714,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              coach_on=coach_on, coaching=coaching, usage=usage,
              to_validate=to_validate, notif=notif,
              wa_qr=wa_qr, backoffice_link=backoffice_link,
+             support_thread=support_thread, support_human=support_human,
              prospect_daily=prospect_daily, prospect_used=prospect_used, prospection_soon=prospection_soon,
              prospect_remaining=max(0, prospect_daily - prospect_used)),
     )
@@ -897,6 +907,25 @@ async def admin_dashboard(request: Request, token: str = ""):
         "c2dm_public_reply": get_setting_bool("c2dm_public_reply", True),
         "c2dm_keyword": get_setting("c2dm_keyword") or "",
     }
+    # Support in-app : fils d'aide des commerçants (Mongazi répond / reprend la main).
+    from db.client import list_support_thread, support_threads_overview
+    mname = {m.get("id"): m for m in merchants}
+    support_threads = []
+    for t in support_threads_overview():
+        m = mname.get(t["merchant_id"])
+        if not m:
+            continue
+        support_threads.append({
+            "merchant_id": t["merchant_id"],
+            "name": m.get("business_name") or "—",
+            "last": t.get("last"), "last_role": t.get("last_role"),
+            "open": get_setting_bool(f"support_open_{t['merchant_id']}", False),
+            "human": get_setting_bool(f"support_human_{t['merchant_id']}", False),
+            "thread": list_support_thread(t["merchant_id"], 12),
+        })
+    support_threads.sort(key=lambda x: 0 if x["open"] else 1)
+    support_open_count = sum(1 for x in support_threads if x["open"])
+
     from core import model_config
     return templates.TemplateResponse(
         request, "admin.html",
@@ -906,7 +935,8 @@ async def admin_dashboard(request: Request, token: str = ""):
              prospect_used=prospect_used, prospect_daily=settings.prospection_admin_daily,
              auto_enabled=auto_enabled, auto_daily=auto_daily,
              total_recruited=total_recruited, learn=learn, followups=followups,
-             ceo=ceo, experiments=experiments, channels=channels, inbox=inbox),
+             ceo=ceo, experiments=experiments, channels=channels, inbox=inbox,
+             support_threads=support_threads, support_open_count=support_open_count),
     )
 
 
@@ -1887,6 +1917,103 @@ async def merchant_notification_done(request: Request, merchant_id: str, notif_i
     if not row:
         return JSONResponse({"ok": False, "error": "Notification introuvable."}, status_code=404)
     return {"ok": True}
+
+
+@app.post("/api/merchants/{merchant_id}/support")
+async def merchant_support_endpoint(request: Request, merchant_id: str):
+    """Support in-app : le commerçant écrit, l'IA Vendora répond (ou ack si Mongazi gère)."""
+    from core import support
+    from db.client import (
+        add_support_message,
+        get_merchant,
+        get_setting_bool,
+        list_support_thread,
+        recent_support_problems,
+        set_setting,
+    )
+    from notify import notify_mongazi, notify_support_problem
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"ok": False, "error": "JSON invalide"}, status_code=400)
+    message = (body.get("message") or "").strip()
+    if not message:
+        return JSONResponse({"ok": False, "error": "Message vide."}, status_code=400)
+    merchant = get_merchant(merchant_id)
+    if not merchant:
+        return JSONResponse({"ok": False, "error": "Boutique introuvable."}, status_code=404)
+
+    add_support_message(merchant_id, "merchant", message)
+
+    # Mode « Mongazi gère » : pas de réponse IA, on l'alerte + accusé de réception.
+    if get_setting_bool(f"support_human_{merchant_id}", False):
+        set_setting(f"support_open_{merchant_id}", "1")
+        try:
+            notify_mongazi(f"💬 <b>Message support</b> (vous gérez) — "
+                           f"{merchant.get('business_name','?')} :\n{message[:400]}")
+        except Exception:  # noqa: BLE001
+            log.warning("notif message support échouée", exc_info=True)
+        return {"ok": True, "reply": "Votre message est bien reçu 🙏 L'équipe NEBULA vous "
+                                     "répond au plus vite.", "by": "owner"}
+
+    history = list_support_thread(merchant_id, limit=20)
+    known = support.format_known_issues(recent_support_problems(limit=8))
+
+    def on_problem(data: dict) -> None:
+        cat = (data.get("categorie") or "autre").strip()
+        resume = (data.get("resume") or message).strip()
+        add_support_message(merchant_id, "ai", f"[{cat}] {resume}", kind="problem")
+        set_setting(f"support_open_{merchant_id}", "1")
+        try:
+            notify_support_problem(merchant, cat, resume)
+        except Exception:  # noqa: BLE001
+            log.warning("alerte problème support échouée", exc_info=True)
+
+    try:
+        reply = support.support_reply(merchant, message, history=history[:-1],
+                                      known_issues=known, on_problem=on_problem)
+    except Exception as e:  # noqa: BLE001
+        log.exception("support IA échoué")
+        return JSONResponse({"ok": False, "error": str(e)[:300]}, status_code=500)
+    add_support_message(merchant_id, "ai", reply)
+    return {"ok": True, "reply": reply, "by": "ai"}
+
+
+@app.post("/api/admin/support/{merchant_id}/reply")
+async def admin_support_reply(request: Request, merchant_id: str):
+    """Mongazi répond lui-même à un commerçant (apparaît dans son onglet Support)."""
+    from db.client import add_support_message, set_setting
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    message = (body.get("message") or "").strip()
+    if not message:
+        return JSONResponse({"ok": False, "error": "Message vide."}, status_code=400)
+    add_support_message(merchant_id, "owner", message)
+    set_setting(f"support_open_{merchant_id}", "0")  # traité
+    return {"ok": True}
+
+
+@app.post("/api/admin/support/{merchant_id}/mode")
+async def admin_support_mode(request: Request, merchant_id: str):
+    """Bascule « je gère » (IA OFF) / « rendre à l'IA » pour un commerçant."""
+    from db.client import set_setting
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    human = bool(body.get("human"))
+    set_setting(f"support_human_{merchant_id}", "1" if human else "0")
+    set_setting(f"support_open_{merchant_id}", "1" if human else "0")
+    return {"ok": True, "human": human}
 
 
 @app.post("/api/merchants/{merchant_id}/update")

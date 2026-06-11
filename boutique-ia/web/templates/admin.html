@@ -281,6 +281,7 @@
 <nav class="tabs" id="tabs" aria-label="Sections">
   <a href="#sec-stats"><span class="dot"></span>Vue d'ensemble</a>
   <a href="#sec-assistant">Assistant</a>
+  <a href="#sec-support">Support{% if support_open_count %} ({{ support_open_count }}){% endif %}</a>
   <a href="#sec-actions">Actions</a>
   <a href="#sec-ceo">Directeur</a>
   <a href="#sec-learn">Apprentissage</a>
@@ -321,6 +322,33 @@
         <input class="fi" id="faInput" placeholder="Posez votre question…" autocomplete="off" style="flex:1">
         <button class="btn acc" type="submit"><svg viewBox="0 0 24 24"><use href="#i-send"/></svg></button>
       </form>
+    </div>
+  </section>
+
+  <!-- SUPPORT CLIENT — Vendora répond ; Mongazi peut reprendre la main -->
+  <section class="rv" id="sec-support" style="margin-top:18px">
+    <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg></div><h2>Support client{% if support_open_count %} &nbsp;<span class="badge susp">{{ support_open_count }} à traiter</span>{% endif %}</h2></div>
+    <div class="panel">
+      <p class="hint">Vendora répond aux commerçants en direct et vous signale les vrais problèmes. Vous pouvez reprendre la main (« Je gère ») et répondre vous-même.</p>
+      {% if support_threads %}
+        {% for s in support_threads %}
+        <div style="border:1px solid {{ '#ff6b6b' if s.open else 'var(--line,#26262e)' }};border-radius:12px;padding:13px;margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">
+            <div class="mn">{{ s.name }} {% if s.open %}<span class="badge susp">à traiter</span>{% endif %} {% if s.human %}<span class="badge wait">vous gérez</span>{% else %}<span class="badge active">IA</span>{% endif %}</div>
+            <button class="btn gho sm" type="button" onclick="supToggle('{{ s.merchant_id }}', {{ 'false' if s.human else 'true' }})">{{ "Rendre à l'IA" if s.human else "Je gère" }}</button>
+          </div>
+          <div style="margin-top:9px;display:flex;flex-direction:column;gap:6px;max-height:240px;overflow:auto">
+            {% for m in s.thread %}
+            <div style="font-size:13px;padding:7px 10px;border-radius:9px;{{ 'align-self:flex-end;background:rgba(124,92,255,.16)' if m.role=='merchant' else 'align-self:flex-start;border:1px solid var(--line,#26262e)' }}"><b>{{ 'Commerçant' if m.role=='merchant' else ('NEBULA' if m.role=='owner' else 'Vendora') }} :</b> {{ m.content }}</div>
+            {% endfor %}
+          </div>
+          <form onsubmit="return supReply(event,'{{ s.merchant_id }}')" style="display:flex;gap:8px;margin-top:10px">
+            <input class="fi" id="supr-{{ s.merchant_id }}" placeholder="Répondre vous-même…" style="flex:1">
+            <button class="btn acc sm" type="submit">Répondre</button>
+          </form>
+        </div>
+        {% endfor %}
+      {% else %}<div class="empty">Aucune demande de support pour l'instant.</div>{% endif %}
     </div>
   </section>
 
@@ -1050,6 +1078,21 @@ if(faForm){ faForm.addEventListener('submit', async(e)=>{
     faBubble(d.reply||'…','ag'); faHist.push({role:'user',content:t},{role:'assistant',content:d.reply});
   }catch(ex){ typing.remove(); faBubble('⚠ '+ex.message,'ag'); }
 });}
+
+/* Support client */
+async function supToggle(id, human){
+  const d = await post('/api/admin/support/'+id+'/mode', {human});
+  if(d.ok){ notify(human?'Vous gérez ce commerçant':'Rendu à l\'IA'); setTimeout(()=>location.reload(),700); }
+  else notify(d.error||'Erreur', true);
+}
+async function supReply(ev, id){
+  ev.preventDefault();
+  const inp=document.getElementById('supr-'+id); const t=inp.value.trim(); if(!t) return false;
+  const d=await post('/api/admin/support/'+id+'/reply', {message:t});
+  if(d.ok){ notify('Réponse envoyée'); setTimeout(()=>location.reload(),700); }
+  else notify(d.error||'Erreur', true);
+  return false;
+}
 
 async function launchRecrutement(){
   const cat=document.getElementById('pr_cat').value, city=document.getElementById('pr_city').value.trim();

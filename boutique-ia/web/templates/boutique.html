@@ -197,6 +197,7 @@
     {% if social_on %}<a href="#social">Réseaux</a>{% endif %}
     {% if not prospection_soon %}<a href="#prospection">Prospection</a>{% endif %}
     {% if inbox.on %}<a href="#reponses">Réponses{% if inbox.drafts %} ({{ inbox.drafts|length }}){% endif %}</a>{% endif %}
+    <a href="#support">Support</a>
     <a href="#forfaits">Forfait</a>
   </nav>
 
@@ -424,6 +425,26 @@
     {% endif %}
   </section>
   {% endif %}
+
+  <!-- SUPPORT & AIDE -->
+  <section class="reveal" id="support" style="order:12">
+    <div class="shead">
+      <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg></div>
+      <h2>Support &amp; aide</h2>
+    </div>
+    <p class="hint">Une question, un souci ? Écrivez ici — Vendora vous répond tout de suite et prévient l'équipe NEBULA si besoin.{% if support_human %} <b>L'équipe NEBULA suit votre demande en personne.</b>{% endif %}</p>
+    <div class="bezel"><div class="bezel-in">
+      <div id="supLog">
+        {% for m in support_thread %}
+        <div class="ob {{ 'me' if m.role=='merchant' else 'ag' }}">{% if m.role=='owner' %}<b>NEBULA :</b> {% endif %}{{ m.content }}</div>
+        {% endfor %}
+      </div>
+      <form id="supForm">
+        <input id="supInput" placeholder="Décrivez votre question ou votre souci…" autocomplete="off">
+        <button class="btn acc" type="submit"><svg viewBox="0 0 24 24"><use href="#i-send"/></svg></button>
+      </form>
+    </div></div>
+  </section>
 
   <!-- PRODUITS -->
   <section class="reveal" id="produits">
@@ -1210,6 +1231,23 @@ async function notifDone(id, btn){
     notify('Marqué comme traité');
   }catch(ex){ notify(ex.message, true); btn.disabled=false; }
 }
+
+/* Support & aide */
+const supLog=document.getElementById('supLog');
+function supBubble(html,cls){ const d=document.createElement('div'); d.className='ob '+cls; d.innerHTML=html; supLog.appendChild(d); supLog.scrollTop=supLog.scrollHeight; return d; }
+const supForm=document.getElementById('supForm');
+if(supForm){ supForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const inp=document.getElementById('supInput'); const text=inp.value.trim(); if(!text) return;
+  supBubble(esc(text),'me'); inp.value=''; inp.focus();
+  const typing=supBubble('<span class="pulse"></span>Vendora vous répond…','typing');
+  try{
+    const d=await api(`/api/merchants/${MID}/support`,'POST',{message:text});
+    typing.remove();
+    if(!d.ok){ supBubble('⚠ '+esc(d.error||'Erreur'),'ag'); return; }
+    if(d.reply) supBubble((d.by==='owner'?'<b>NEBULA :</b> ':'')+esc(d.reply),'ag');
+  }catch(ex){ typing.remove(); supBubble('⚠ '+esc(ex.message),'ag'); }
+});}
 
 /* Validation des paiements */
 async function validateOrder(id, action, btn){

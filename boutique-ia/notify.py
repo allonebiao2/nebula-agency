@@ -312,6 +312,18 @@ def notify_hot_lead(merchant: dict, customer: str | None, raison: str,
     _whatsapp_owner(merchant.get("owner_whatsapp"), merchant.get("country"), plain)
 
 
+def notify_support_problem(merchant: dict, categorie: str, resume: str) -> None:
+    """Prévient Mongazi qu'un commerçant a un problème (support in-app)."""
+    notify_mongazi(
+        "🆘 <b>Problème support à traiter</b>\n\n"
+        f"🏪 {merchant.get('business_name','?')}\n"
+        f"🏷️ {categorie or 'autre'}\n"
+        f"💬 {resume}\n\n"
+        f"Répondez dans le cockpit (onglet Support) — vous pouvez reprendre la main.\n"
+        f"🆔 <code>{merchant.get('id')}</code>"
+    )
+
+
 def notify_appointment(merchant: dict, appt: dict) -> None:
     """Prévient le commerçant d'une nouvelle demande de rendez-vous."""
     who = appt.get("customer_name") or appt.get("customer_whatsapp") or "—"

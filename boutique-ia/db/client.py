@@ -1632,3 +1632,72 @@ def set_notification_status(notif_id: str, merchant_id: str, status: str) -> dic
         return res.data[0] if res.data else {}
     except Exception:  # noqa: BLE001
         return {}
+
+
+# ---------------------------------------------------------------------------
+# Support client IN-APP (bia_support) — commerçant ↔ IA Vendora ↔ NEBULA
+# ---------------------------------------------------------------------------
+
+def add_support_message(merchant_id: str, role: str, content: str,
+                        kind: str = "message") -> dict[str, Any]:
+    """Ajoute un message au fil de support (role merchant|ai|owner)."""
+    if not (content or "").strip():
+        return {}
+    try:
+        res = get_db().table("bia_support").insert({
+            "merchant_id": merchant_id, "role": role,
+            "content": content, "kind": kind,
+        }).execute()
+        return res.data[0] if res.data else {}
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def list_support_thread(merchant_id: str, limit: int = 40) -> list[dict[str, Any]]:
+    """Fil de support VISIBLE (kind='message'), du plus ancien au plus récent.
+    Les enregistrements kind='problem' sont internes (cerveau), non affichés."""
+    try:
+        rows = (get_db().table("bia_support").select("role, content, kind, created_at")
+                .eq("merchant_id", merchant_id).eq("kind", "message")
+                .order("created_at", desc=True).limit(limit).execute().data or [])
+    except Exception:  # noqa: BLE001
+        return []
+    return list(reversed(rows))
+
+
+def recent_support_problems(merchant_id: str | None = None, limit: int = 8) -> list[dict[str, Any]]:
+    """Derniers PROBLÈMES signalés (cerveau support : éviter la répétition)."""
+    try:
+        q = (get_db().table("bia_support").select("merchant_id, content, created_at")
+             .eq("kind", "problem"))
+        if merchant_id:
+            q = q.eq("merchant_id", merchant_id)
+        return q.order("created_at", desc=True).limit(limit).execute().data or []
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def support_threads_overview(limit_scan: int = 600) -> list[dict[str, Any]]:
+    """Pour le cockpit : 1 ligne par boutique ayant écrit au support (dernier msg, nb)."""
+    try:
+        rows = (get_db().table("bia_support")
+                .select("merchant_id, role, content, kind, created_at")
+                .order("created_at", desc=True).limit(limit_scan).execute().data or [])
+    except Exception:  # noqa: BLE001
+        return []
+    threads: dict[str, dict[str, Any]] = {}
+    for r in rows:
+        mid = r.get("merchant_id")
+        if not mid:
+            continue
+        t = threads.setdefault(mid, {"merchant_id": mid, "count": 0, "last": None,
+                                     "last_role": None, "last_at": None, "has_problem": False})
+        if r.get("kind") == "problem":
+            t["has_problem"] = True
+            continue  # enregistrement interne (cerveau) : pas un message affichable
+        t["count"] += 1
+        if t["last"] is None:  # 1er message visible rencontré = le plus récent
+            t["last"] = r.get("content")
+            t["last_role"] = r.get("role")
+            t["last_at"] = r.get("created_at")
+    return [t for t in threads.values() if t["last"] is not None or t["has_problem"]]

@@ -361,3 +361,18 @@ create table if not exists bia_notifications (
   created_at timestamptz default now()
 );
 create index if not exists bia_notifications_idx on bia_notifications(merchant_id, status, created_at desc);
+
+-- 17. Support client IN-APP : fil d'aide commerçant ↔ IA Vendora ↔ NEBULA (Mongazi
+--     peut reprendre la main). role merchant|ai|owner ; kind message|problem. Les
+--     'problem' alimentent le cerveau support (auto-amélioration, éviter la répétition).
+--     Bascule « je gère » + drapeau « à traiter » via bia_settings (support_human_*/support_open_*).
+create table if not exists bia_support (
+  id uuid primary key default gen_random_uuid(),
+  merchant_id uuid not null references bia_merchants(id) on delete cascade,
+  role       text not null,             -- 'merchant' | 'ai' | 'owner'
+  content    text,
+  kind       text default 'message',    -- 'message' | 'problem'
+  created_at timestamptz default now()
+);
+create index if not exists bia_support_idx on bia_support(merchant_id, created_at);
+create index if not exists bia_support_problem_idx on bia_support(kind, created_at desc);
