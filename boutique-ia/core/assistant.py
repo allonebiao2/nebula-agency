@@ -908,7 +908,10 @@ de suite — on fait ça ? »). Reste toujours professionnel, POSITIF et ENJOUÉ
 STYLE : adopte le style choisi par la boutique → « {tone} ». WhatsApp — réponses
 courtes, naturelles, directes. 1-2 emojis maximum. Pas de markdown lourd (pas de **,
 pas de #). Pour une liste de chiffres, des petits tirets suffisent. Va droit au but.
-Tutoie ou vouvoie selon elle ; par défaut, reste poli et proche.{manage_block}{limit_note}"""
+Tutoie ou vouvoie selon elle ; par défaut, reste poli et proche.
+LANGUE : réponds dans la langue de la patronne. Si elle écrit en fon (ou mélange
+français-fon), tu comprends ; réponds en fon SIMPLE quand tu es sûr, sinon bascule
+chaleureusement en français — jamais de fon approximatif/cassé.{manage_block}{limit_note}"""
 
 
 def reply(merchant: dict, question: str, history: list[dict] | None = None,
