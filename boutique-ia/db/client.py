@@ -1585,3 +1585,50 @@ def add_conversation_credits(merchant_id: str, n: int) -> dict[str, Any]:
         return res.data[0] if res.data else {}
     except Exception:  # noqa: BLE001
         return {}
+
+
+# ---------------------------------------------------------------------------
+# Notifications « événement » du back-office (leads chauds…) — bia_notifications
+# ---------------------------------------------------------------------------
+
+def add_notification(merchant_id: str, ntype: str, title: str | None = None,
+                     body: str | None = None, customer: str | None = None) -> dict[str, Any]:
+    """Enregistre une alerte pour le back-office (en plus de Telegram/WhatsApp)."""
+    try:
+        res = get_db().table("bia_notifications").insert({
+            "merchant_id": merchant_id, "type": ntype,
+            "title": title, "body": body, "customer": customer,
+        }).execute()
+        return res.data[0] if res.data else {}
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def list_notifications(merchant_id: str, status: str = "unread",
+                       limit: int = 20) -> list[dict[str, Any]]:
+    try:
+        q = (get_db().table("bia_notifications").select("*").eq("merchant_id", merchant_id))
+        if status:
+            q = q.eq("status", status)
+        return q.order("created_at", desc=True).limit(limit).execute().data or []
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def count_notifications(merchant_id: str, status: str = "unread") -> int:
+    try:
+        r = (get_db().table("bia_notifications").select("id", count="exact", head=True)
+             .eq("merchant_id", merchant_id).eq("status", status).execute())
+        return r.count or 0
+    except Exception:  # noqa: BLE001
+        return 0
+
+
+def set_notification_status(notif_id: str, merchant_id: str, status: str) -> dict[str, Any]:
+    """Marque une notification (done = traitée). Scopé à la boutique (sécurité)."""
+    try:
+        res = (get_db().table("bia_notifications").update({"status": status})
+               .eq("id", notif_id).eq("merchant_id", merchant_id).execute())
+        return res.data[0] if res.data else {}
+    except Exception:  # noqa: BLE001
+        return {}

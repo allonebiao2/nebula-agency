@@ -200,18 +200,24 @@ def _payment_recorder(merchant: dict, customer: str | None):
 
 def _escalation_notifier(merchant: dict, customer: str | None):
     """Callback appelé quand l'agent escalade un client vers le/la propriétaire."""
+    from db.client import add_notification
     from notify import notify_hot_lead
 
     def _on_escalate(data: dict) -> None:
+        raison = (data.get("raison") or "À rappeler").strip()
+        resume = (data.get("resume") or "").strip()
+        nom = (data.get("nom_client") or "").strip() or None
         try:
-            notify_hot_lead(
-                merchant, customer,
-                raison=(data.get("raison") or "À rappeler").strip(),
-                resume=(data.get("resume") or "").strip(),
-                nom_client=(data.get("nom_client") or "").strip() or None,
-            )
+            notify_hot_lead(merchant, customer, raison=raison, resume=resume, nom_client=nom)
         except Exception:  # noqa: BLE001
             log.warning("alerte lead chaud échouée", exc_info=True)
+        # On la stocke aussi pour l'onglet Notifications (en plus de Telegram/WhatsApp).
+        try:
+            add_notification(merchant["id"], "hot_lead",
+                             title=f"{nom or 'Client'} — {raison}", body=resume,
+                             customer=customer)
+        except Exception:  # noqa: BLE001
+            log.warning("notification lead chaud non enregistrée", exc_info=True)
 
     return _on_escalate
 
@@ -636,19 +642,31 @@ async def boutique_backoffice(request: Request, merchant_id: str):
     to_validate, notif = [], None
     if merchant:
         try:
-            from db.client import days_left as _dleft, list_orders_to_validate
+            from db.client import (
+                days_left as _dleft,
+                list_notifications,
+                list_orders_to_validate,
+            )
             to_validate = list_orders_to_validate(merchant_id, limit=50)
             pay_count = sum(1 for o in to_validate if o.get("status") == "paid_pending_validation")
             pend_orders = sum(1 for o in to_validate if o.get("status") == "pending")
             pend_appts = [a for a in (appointments or []) if a.get("status") == "pending"]
+            hot_leads = [h for h in list_notifications(merchant_id, "unread", limit=20)
+                         if h.get("type") == "hot_lead"]
+            for h in hot_leads:  # lien « Rappeler » si c'est un numéro WhatsApp
+                cust = h.get("customer") or ""
+                digits = re.sub(r"\D", "", cust)
+                h["call"] = f"https://wa.me/{digits}" if cust.startswith("whatsapp:") and digits else None
             notif = {
                 "pay_count": pay_count,
                 "pending_orders": pend_orders,
                 "appts": len(pend_appts),
                 "appointments": pend_appts[:10],
+                "hot_leads": hot_leads,
+                "hot_count": len(hot_leads),
                 "days_left": _dleft(merchant),
                 "suspended": suspended,
-                "total": pay_count + len(pend_appts),
+                "total": pay_count + len(pend_appts) + len(hot_leads),
             }
         except Exception:  # noqa: BLE001
             log.warning("back-office: validation/notif KO", exc_info=True)
@@ -1812,6 +1830,19 @@ async def merchant_validate_order_endpoint(request: Request, merchant_id: str, o
         log.exception("validation commande échouée")
         return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
     return {"ok": True, "status": order.get("status")}
+
+
+@app.post("/api/merchants/{merchant_id}/notifications/{notif_id}/done")
+async def merchant_notification_done(request: Request, merchant_id: str, notif_id: str):
+    """Marque une notification (ex. lead chaud) comme traitée → elle disparaît du feed."""
+    from db.client import set_notification_status
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    row = set_notification_status(notif_id, merchant_id, "done")
+    if not row:
+        return JSONResponse({"ok": False, "error": "Notification introuvable."}, status_code=404)
+    return {"ok": True}
 
 
 @app.post("/api/merchants/{merchant_id}/update")

@@ -345,3 +345,19 @@ alter table bia_merchants add column if not exists conv_credits integer not null
 alter table bia_orders add column if not exists payment_ref text;        -- ID/référence de transaction MoMo
 alter table bia_orders add column if not exists payment_network text;    -- MTN / Moov / Celtis / Wave
 alter table bia_orders add column if not exists validated_at timestamptz; -- horodatage de la confirmation
+
+-- 16. Notifications « événement » du back-office (leads chauds à rappeler…). Les
+--     alertes « état » (paiements à valider, RDV, abo) restent DÉRIVÉES de leurs
+--     tables ; ici on stocke les événements transitoires sans table source. L'onglet
+--     Notifications les affiche (en plus de Telegram/WhatsApp) ; status done = traité.
+create table if not exists bia_notifications (
+  id uuid primary key default gen_random_uuid(),
+  merchant_id uuid not null references bia_merchants(id) on delete cascade,
+  type       text not null,             -- 'hot_lead' (extensible)
+  title      text,
+  body       text,
+  customer   text,                      -- contact client (pour rappeler), si pertinent
+  status     text default 'unread',     -- unread | done
+  created_at timestamptz default now()
+);
+create index if not exists bia_notifications_idx on bia_notifications(merchant_id, status, created_at desc);
