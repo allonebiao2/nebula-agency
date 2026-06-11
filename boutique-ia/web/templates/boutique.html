@@ -134,6 +134,11 @@
     h1{font-size:1.5rem}h2{font-size:1.16rem}
     .fab-chat span{display:none}.fab-chat{padding:15px;border-radius:50%}
   }
+  .bdz{border:1.5px dashed var(--hair);border-radius:11px;padding:13px;text-align:center;cursor:pointer;color:var(--mut2);font-size:13px;line-height:1.5;transition:border-color .15s,background .15s}
+  .bdz:hover{border-color:var(--a)}
+  .bdz.drag{border-color:var(--a);background:rgba(16,185,129,.08)}
+  .bdz b{color:var(--a)}
+  .bdz small{opacity:.8}
 </style>
 <div class="m-appbar">
   <button class="burger" onclick="sbOpen()" aria-label="Ouvrir le menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
@@ -800,7 +805,10 @@ Bracelet jonc 5000"></textarea>
             </div>
             {% endfor %}
           </div>
-          <input type="file" accept="image/*" multiple onchange="uploadPhoto(this,'{{ p.id }}')" style="padding:9px">
+          <div class="bdz" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="bdzDrop(event,'{{ p.id }}')" onclick="this.querySelector('input').click()">
+            <input type="file" accept="image/*" multiple onchange="uploadFiles(this.files,'{{ p.id }}');this.value=''" style="display:none">
+            <span>📷 Glissez vos photos ici, ou <b>parcourir</b><br><small>plusieurs possibles · pleine qualité · max 6 Mo</small></span>
+          </div>
           <div class="hint" style="margin:6px 0 0">L'agent montre ces photos au client qui demande à voir le produit. La 1re est la couverture.</div>
           <div style="display:flex;gap:9px;margin-top:14px">
             <button class="btn acc sm" type="button" onclick="saveRow(this)">Enregistrer</button>
@@ -1616,8 +1624,14 @@ async function toggleAvail(b,cur){ const c=b.closest('.prod'); const d=await api
 async function delProduct(b,name){ if(!confirm(`Supprimer « ${name} » ? Action définitive.`)) return;
   const c=b.closest('.prod'); const d=await api(`/api/merchants/${MID}/products/${c.dataset.id}`,'DELETE');
   if(d.ok){ notify('Produit supprimé'); setTimeout(()=>location.reload(),600);} else notify(d.error||'Erreur',true); }
-async function uploadPhoto(input, pid){
-  const files = [...(input.files||[])]; if(!files.length) return;
+function bdzDrop(e, pid){
+  e.preventDefault();
+  if(e.currentTarget) e.currentTarget.classList.remove('drag');
+  uploadFiles(e.dataTransfer ? e.dataTransfer.files : null, pid);
+}
+async function uploadFiles(fileList, pid){
+  const files = [...(fileList||[])].filter(f=>f && f.type && f.type.startsWith('image/'));
+  if(!files.length) return;
   notify('Envoi de '+files.length+' photo(s)…');
   let ok=0;
   for(const file of files){
