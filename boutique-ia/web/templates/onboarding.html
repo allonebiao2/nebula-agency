@@ -3,7 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ product_name }} — {{ tagline }}</title>
+<title>{{ product_name }} — un vendeur IA qui parle la langue de vos clients</title>
+<meta name="description" content="{{ product_name }} : votre vendeur doté d'IA sur WhatsApp, 24h/24. Il parle la langue de vos clients — français, fon, yoruba, hausa, mina — vend, encaisse en Mobile Money et vous prévient. Fait pour l'Afrique de l'Ouest, dès 5 000 F/mois, sans engagement.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://vendora-agent.up.railway.app/">
+<meta property="og:title" content="{{ product_name }} — un vendeur IA qui parle la langue de VOS clients">
+<meta property="og:description" content="Français, Fon, Yoruba, Hausa, Mina… Votre agent comprend vos clients et vend pour vous sur WhatsApp, jour et nuit. Fait pour chez nous. Dès 5 000 F/mois, sans engagement.">
+<meta property="og:image" content="https://vendora-agent.up.railway.app/static/logo.svg">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ product_name }} — un vendeur IA qui parle la langue de vos clients">
+<meta name="twitter:description" content="Il parle français, fon, yoruba, hausa, mina. Il vend et encaisse pour vous sur WhatsApp, 24h/24. Fait pour l'Afrique de l'Ouest.">
+<meta name="twitter:image" content="https://vendora-agent.up.railway.app/static/logo.svg">
 <link rel="icon" href="/static/logo.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -397,6 +408,7 @@
     <div class="logo"><img src="/static/logo.svg" alt="{{ product_name }}"><span class="brand grad">{{ product_name }}</span></div>
     <div class="navlinks">
       <a class="nlk" href="#avantages">Avantages</a>
+      <a class="nlk" href="#langues">Langues</a>
       <a class="nlk" href="#roi">Rentabilité</a>
       <a class="nlk" href="#tarifs">Tarifs</a>
       <a class="nlk" href="#essai">Essai gratuit</a>
@@ -443,6 +455,35 @@
       <div class="card reveal"><div class="ic"><svg><use href="#i-bell"/></svg></div><h3>Vous tient informé</h3><p>À chaque commande, vous êtes prévenu. Vous gardez le contrôle, lui fait le travail.</p></div>
       <div class="card reveal"><div class="ic"><svg><use href="#i-bolt"/></svg></div><h3>Prêt en minutes</h3><p>Remplissez votre fiche et activez. Aucune compétence technique requise.</p></div>
     </div>
+  </div>
+</section>
+
+<!-- LANGUES — fait pour chez nous -->
+<style>
+  .langband{background:linear-gradient(180deg,rgba(16,185,129,.10),transparent)}
+  .langpill{display:inline-flex;align-items:center;padding:10px 20px;border-radius:30px;font-weight:800;font-size:1.05rem;
+            background:linear-gradient(135deg,var(--c,#10b981),#0e9f6e);color:#04210f;box-shadow:0 8px 24px rgba(16,185,129,.28)}
+  .langpill.ghost{background:transparent;color:var(--mut,#8a8a99);border:1px solid var(--line,#2a2a32);box-shadow:none}
+</style>
+<section id="langues" class="langband" style="padding-top:20px">
+  <div class="wrap">
+    <div class="eyebrow reveal">Fait pour chez nous</div>
+    <h2 class="sec-title reveal">Il parle la langue de <span class="grad">vos clients.</span></h2>
+    <p class="sec-sub reveal">Vos clients écrivent comme ils parlent au marché. Votre agent <b>les comprend et répond dans leur langue</b>. Et un client qui se sent compris, c'est un client qui achète.</p>
+    <div class="reveal" style="display:flex;gap:11px;flex-wrap:wrap;justify-content:center;margin:28px 0 4px">
+      <span class="langpill">Français</span>
+      <span class="langpill">Fon</span>
+      <span class="langpill">Yoruba</span>
+      <span class="langpill">Hausa</span>
+      <span class="langpill">Mina</span>
+      <span class="langpill ghost">+ et plus</span>
+    </div>
+    <div class="grid" style="margin-top:36px">
+      <div class="card reveal"><div class="ic"><svg><use href="#i-handshake"/></svg></div><h3>Comme un vendeur d'ici</h3><p>Il salue, conseille et rassure dans la langue locale, avec la chaleur de chez nous. Vos clients se sentent à la maison — pas devant un robot étranger.</p></div>
+      <div class="card reveal"><div class="ic"><svg><use href="#i-chat"/></svg></div><h3>Personne n'est laissé de côté</h3><p>Même le client qui n'écrit pas bien le français est compris et servi. Fini les ventes perdues à cause de la langue.</p></div>
+      <div class="card reveal"><div class="ic"><svg><use href="#i-globe"/></svg></div><h3>Pensé pour l'Afrique de l'Ouest</h3><p>Pas un outil importé qui ignore nos langues : une intelligence faite pour notre marché, nos habitudes et notre façon de vendre.</p></div>
+    </div>
+    <p class="sec-sub reveal" style="margin-top:32px;font-weight:600;color:var(--txt)">Et on est honnêtes : sur les langues les moins écrites, il fait le simple puis bascule en français — <b>jamais de charabia</b>. Toujours pro, toujours juste, toujours de chez nous. 🌍</p>
   </div>
 </section>
 
