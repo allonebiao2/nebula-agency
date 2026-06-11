@@ -286,6 +286,7 @@
   <a href="#sec-ceo">Directeur</a>
   <a href="#sec-learn">Apprentissage</a>
   <a href="#sec-modeles">Modèles</a>
+  <a href="#sec-couts">Coûts</a>
   <a href="#sec-exp">Expériences</a>
   <a href="#sec-relances">Relances</a>
   <a href="#sec-canaux">Canaux</a>
@@ -545,6 +546,51 @@
     <p class="hint" style="margin-top:10px">⚠️ Opus coûte nettement plus cher (surtout le vendeur = gros volume). Sonnet = le bon défaut ; Haiku = éco si budget serré.</p>
   </section>
   {% endif %}
+
+  <!-- COÛTS IA (F3 — mesure réelle des tokens facturés) -->
+  <section class="rv" id="sec-couts">
+    <div class="shead">
+      <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-bolt"/></svg></div>
+      <h2>Coûts IA{% if costs and costs.available %} <span style="font-weight:500;opacity:.55;font-size:.62em">· {{ costs.days }} derniers jours</span>{% endif %}</h2>
+    </div>
+    {% if costs and costs.available %}
+    <p class="hint">Coût réel de l'intelligence (tokens facturés par Anthropic), mesuré sur chaque réponse. Le <b>taux de cache</b> indique si le cache fonctionne : plus il est haut, moins tu paies (correctif F1). Se remplit au fil des conversations.</p>
+    <div class="panel">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px">
+        <div style="padding:14px;border:1px solid var(--hair,#26262e);border-radius:12px">
+          <div style="font-size:12px;opacity:.6">Coût total</div>
+          <div style="font-size:26px;font-weight:800">{{ "{:,}".format(costs.cost_fcfa).replace(",", " ") }} <span style="font-size:.5em;opacity:.6">F CFA</span></div>
+          <div style="font-size:12px;opacity:.55">≈ {{ costs.cost_usd }} $</div>
+        </div>
+        <div style="padding:14px;border:1px solid var(--hair,#26262e);border-radius:12px">
+          <div style="font-size:12px;opacity:.6">Taux de cache</div>
+          <div style="font-size:26px;font-weight:800;color:{{ '#10b981' if costs.cache_hit_rate >= 0.5 else ('#f59e0b' if costs.cache_hit_rate >= 0.2 else '#f43f5e') }}">{{ (costs.cache_hit_rate*100)|round(0)|int }}<span style="font-size:.5em;opacity:.6">%</span></div>
+          <div style="font-size:12px;opacity:.55">+ haut = + d'économie</div>
+        </div>
+        <div style="padding:14px;border:1px solid var(--hair,#26262e);border-radius:12px">
+          <div style="font-size:12px;opacity:.6">Appels IA</div>
+          <div style="font-size:26px;font-weight:800">{{ "{:,}".format(costs.calls).replace(",", " ") }}</div>
+          <div style="font-size:12px;opacity:.55">réponses mesurées</div>
+        </div>
+      </div>
+      {% if costs.by_task %}
+      <div style="margin-top:16px">
+        <div style="font-size:12px;opacity:.6;margin-bottom:6px">Par fonction</div>
+        {% set tlabels = {'vendeur':'Vendeur (clients)','manager':'Copilote / gestion','support':'Support','writer':'Rédaction','builder':'Créatif / CEO'} %}
+        {% for k, v in costs.by_task.items() %}
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--hair,#26262e)">
+          <span>{{ tlabels.get(k, k) }}</span>
+          <span style="font-weight:700">{{ "{:,}".format((v*600)|round(0)|int).replace(",", " ") }} F <span style="opacity:.5;font-weight:400">({{ v }} $)</span></span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    <p class="hint" style="margin-top:10px">Repère : un tour de conversation ≈ 7 F sur Sonnet, ≈ 2 F sur Haiku. Le routage F2 bascule le trivial sur Haiku automatiquement.</p>
+    {% else %}
+    <p class="hint">La mesure démarre dès la prochaine conversation (la table est prête). Reviens ici après quelques échanges pour voir le coût réel et le taux de cache.</p>
+    {% endif %}
+  </section>
 
   <!-- AUTO-EXPÉRIMENTATION DES VENTES (A/B) -->
   <section class="rv" id="sec-exp">

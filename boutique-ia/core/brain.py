@@ -582,6 +582,7 @@ def reply(
     model = model_config.model_for_vendeur(history)
 
     did_tool = False
+    order_done = payment_done = appt_done = False  # F4 — anti-doublon dans ce tour
     for _ in range(MAX_TOOL_TURNS):
         resp = client.messages.create(
             model=model,
@@ -612,9 +613,13 @@ def reply(
                     "les instructions ; s'il paie à la livraison, confirme simplement que "
                     "la commande est prise et sera livrée.")
             if tu.name == "enregistrer_commande":
-                if on_order:
+                if order_done:  # F4 — déjà enregistrée dans ce tour → pas de doublon
+                    note = ("Cette commande vient d'être enregistrée — ne la ré-enregistre "
+                            "pas. Confirme simplement au client et donne le paiement.")
+                elif on_order:
                     try:
                         on_order(dict(tu.input or {}))
+                        order_done = True
                     except Exception:  # noqa: BLE001
                         log.exception("enregistrement commande échoué")
                         note = ("Impossible d'enregistrer pour l'instant — continue "
@@ -631,9 +636,13 @@ def reply(
                 note = ("Le/la propriétaire est prévenu(e). Rassure le client : la boutique "
                         "va le recontacter très vite. Reste utile en attendant.")
             elif tu.name == "enregistrer_paiement":
-                if on_payment:
+                if payment_done:  # F4 — déjà transmis dans ce tour
+                    note = ("Paiement déjà transmis à l'instant — ne le re-signale pas. "
+                            "Remercie le client et dis que la boutique vérifie.")
+                elif on_payment:
                     try:
                         on_payment(dict(tu.input or {}))
+                        payment_done = True
                         note = ("Paiement signalé et propriétaire prévenu pour validation. "
                                 "Remercie le client, confirme que tu as bien noté sa référence, "
                                 "et dis que la boutique vérifie puis confirme la commande très vite.")
@@ -655,9 +664,13 @@ def reply(
                     note = ("Photo non envoyable ici (mode démo). Sur WhatsApp elle serait "
                             "envoyée ; décris le produit au client.")
             elif tu.name == "enregistrer_rendezvous":
-                if on_appointment:
+                if appt_done:  # F4 — déjà enregistré dans ce tour
+                    note = ("Ce rendez-vous vient d'être enregistré — ne le ré-enregistre pas. "
+                            "Confirme simplement au client.")
+                elif on_appointment:
                     try:
                         on_appointment(dict(tu.input or {}))
+                        appt_done = True
                         note = ("Rendez-vous enregistré et propriétaire prévenu. Confirme au "
                                 "client en 2-3 lignes : le créneau souhaité est bien noté, la "
                                 "boutique valide et le recontacte pour confirmer. Reste chaleureux.")

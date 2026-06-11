@@ -1041,10 +1041,12 @@ async def admin_dashboard(request: Request, token: str = ""):
     support_open_count = sum(1 for x in support_threads if x["open"])
 
     from core import model_config
+    from db.client import usage_summary
+    costs = usage_summary(30)  # F3 — coût IA réel des 30 derniers jours
     return templates.TemplateResponse(
         request, "admin.html",
         _ctx(request, token=token, rows=rows, pending=pending, glob=glob,
-             model_cfg=model_config.current_config(),
+             model_cfg=model_config.current_config(), costs=costs,
              categories=cats, campaigns=campaigns,
              prospect_used=prospect_used, prospect_daily=settings.prospection_admin_daily,
              auto_enabled=auto_enabled, auto_daily=auto_daily,

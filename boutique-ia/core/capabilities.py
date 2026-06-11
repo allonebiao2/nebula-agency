@@ -195,7 +195,16 @@ def effective_capabilities(merchant: dict) -> set[str]:
             if cid not in active:
                 active.append(cid)
     lim = module_limit(plan)
-    if lim >= 0:
+    if lim >= 0 and len(active) > lim:
+        # F6 — dépassement (ex: après un downgrade de forfait) : on garde les
+        # capacités les plus UTILES (priorité métier) plutôt que le simple ordre
+        # de stockage, pour ne pas perdre la plus rentable au profit d'une mineure.
+        cat = (merchant.get("category") or merchant.get("sector") or "").strip().lower()
+        pref = CATEGORY_RECO.get(cat, []) + _FILLER
+        rank: dict[str, int] = {}
+        for i, cid in enumerate(pref):
+            rank.setdefault(cid, i)  # 1re occurrence = priorité métier d'abord
+        active.sort(key=lambda c: rank.get(c, len(pref)))  # tri stable
         active = active[:lim]
     return set(SOCLE_IDS) | set(active)
 
