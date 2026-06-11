@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vendora — Présentation investisseurs</title>
+<style>
+  :root{
+    --bg:#06110c; --eme:#2ee6a0; --eme2:#10b981; --teal:#27d3ee; --mint:#9af5cf;
+    --txt:#eafaf2; --mut:#9db4a9; --dim:#6f8a7d; --line:rgba(255,255,255,.10);
+    --serif:Georgia,'Times New Roman',serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",system-ui,-apple-system,sans-serif;color:var(--txt);background:#06110c;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .aurora{position:fixed;inset:0;z-index:-2;background:
+    radial-gradient(58vw 50vh at 80% 10%, rgba(46,230,160,.16), transparent 60%),
+    radial-gradient(52vw 46vh at 10% 90%, rgba(39,211,238,.12), transparent 60%),
+    radial-gradient(50vw 50vh at 50% 50%, rgba(16,185,129,.08), transparent 65%),
+    linear-gradient(160deg,#06110c 0%,#08160f 50%,#050d09 100%);}
+  .grain{position:fixed;inset:0;z-index:-1;opacity:.04;background-image:radial-gradient(rgba(255,255,255,.6) .5px,transparent .5px);background-size:3px 3px;pointer-events:none}
+  .deck{scroll-snap-type:y proximity}
+  section{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:8vh clamp(24px,8vw,140px);scroll-snap-align:start;position:relative}
+  .eyebrow{letter-spacing:.38em;text-transform:uppercase;font-size:12px;font-weight:700;color:var(--eme);margin-bottom:22px}
+  h1{font-family:var(--serif);font-weight:700;font-size:clamp(46px,9vw,118px);line-height:.98;letter-spacing:-1px}
+  h2{font-family:var(--serif);font-weight:700;font-size:clamp(28px,4.6vw,56px);line-height:1.06;letter-spacing:-.5px}
+  .eme{color:var(--eme)} .teal{color:var(--teal)} .mint{color:var(--mint)}
+  .lead{color:var(--mut);font-size:clamp(15px,1.7vw,21px);line-height:1.6;max-width:64ch;margin-top:20px;font-weight:300}
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity 1s cubic-bezier(.2,.7,.2,1),transform 1s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  .d1{transition-delay:.1s}.d2{transition-delay:.22s}.d3{transition-delay:.34s}.d4{transition-delay:.46s}.d5{transition-delay:.58s}.d6{transition-delay:.7s}
+  .thin{height:1px;width:80px;background:linear-gradient(90deg,var(--eme),transparent);margin:24px 0}
+  .huge{font-family:var(--serif);font-weight:700;font-size:clamp(60px,13vw,150px);line-height:.92;background:linear-gradient(120deg,#9af5cf,#2ee6a0 45%,#27d3ee);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .unit{font-size:.2em;color:var(--mut);font-family:"Segoe UI",sans-serif;font-weight:400;letter-spacing:.04em}
+  .nav{position:fixed;right:20px;top:50%;transform:translateY(-50%);z-index:50;display:flex;flex-direction:column;gap:11px}
+  .nav a{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.22);transition:.3s;display:block}
+  .nav a.active{background:var(--eme);box-shadow:0 0 12px var(--eme);transform:scale(1.4)}
+  .hint{position:fixed;left:20px;bottom:16px;z-index:50;color:var(--dim);font-size:11px;letter-spacing:.1em}
+  .three{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:42px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:38px}
+  @media(max-width:820px){.three,.two{grid-template-columns:1fr;gap:18px}}
+  .lvl{border-top:1px solid var(--line);padding-top:18px}
+  .lvl .n{font-family:var(--serif);font-size:26px;color:var(--eme)}
+  .lvl h3{font-size:18px;font-weight:600;margin:8px 0 6px}
+  .lvl p{color:var(--mut);font-size:14px;line-height:1.55;font-weight:300}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:42px}
+  @media(max-width:820px){.stats{grid-template-columns:1fr}}
+  .stat .k{font-family:var(--serif);font-size:clamp(40px,6vw,64px);color:var(--eme);line-height:1}
+  .stat .l{color:var(--mut);font-size:14px;margin-top:8px;font-weight:300;line-height:1.5}
+  .steps{margin-top:40px;max-width:760px}
+  .steps .it{display:flex;gap:20px;align-items:flex-start;padding:16px 0;border-bottom:1px solid var(--line)}
+  .steps .num{font-family:var(--serif);font-size:24px;color:var(--eme);min-width:38px}
+  .steps .tx{font-size:16px}.steps .tx b{font-weight:600}.steps .tx span{display:block;color:var(--mut);font-size:13.5px;font-weight:300;margin-top:3px}
+  table.cmp{width:100%;border-collapse:collapse;margin-top:38px;font-size:14px}
+  table.cmp th,table.cmp td{padding:13px 16px;text-align:left;border-bottom:1px solid var(--line)}
+  table.cmp th{color:var(--mut);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+  table.cmp .vy{color:var(--eme);font-weight:600}
+  table.cmp td:first-child{color:var(--txt);font-weight:600}
+  .price3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:38px}
+  @media(max-width:820px){.price3{grid-template-columns:1fr}}
+  .pcard{border:1px solid var(--line);border-radius:16px;padding:22px 18px;background:rgba(255,255,255,.02);text-align:center}
+  .pcard .nm{font-size:14px;color:var(--mut);font-weight:600}
+  .pcard .pr{font-family:var(--serif);font-size:34px;color:var(--eme);margin:8px 0}
+  .pcard .pr small{font-size:14px;color:var(--mut)}
+  .pcard .ds{font-size:12.5px;color:var(--mut);font-weight:300}
+  .note{margin-top:28px;color:var(--dim);font-size:12px;max-width:78ch;line-height:1.6}
+  .big-quote{font-family:var(--serif);font-size:clamp(26px,4.4vw,56px);line-height:1.22;max-width:22ch}
+  .chips{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+  .chip{border:1px solid var(--line);border-radius:30px;padding:10px 17px;font-size:13.5px;background:rgba(255,255,255,.03)}
+  .chip b{color:var(--eme)}
+  .scrolldown{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);color:var(--dim);font-size:11px;letter-spacing:.25em;animation:bob 2.4s infinite}
+  @keyframes bob{0%,100%{opacity:.4;transform:translate(-50%,0)}50%{opacity:1;transform:translate(-50%,7px)}}
+  @media print{
+    @page{ size:A4 landscape; margin:0; }
+    html,body{ -webkit-print-color-adjust:exact; print-color-adjust:exact; background:#06110c; }
+    .nav,.hint,.scrolldown{ display:none !important; }
+    .deck{ scroll-snap-type:none; }
+    section{ min-height:auto; height:auto; display:block; padding:13mm 16mm; page-break-after:always; break-after:page; break-inside:avoid; }
+    section:last-child{ page-break-after:auto; break-after:auto; }
+    .reveal{ opacity:1 !important; transform:none !important; transition:none !important; }
+    .three,.two,.stats,.steps,.price3,.chips{ margin-top:16px; } .huge{font-size:96px}
+    table.cmp{margin-top:14px} .aurora{position:fixed;inset:0}
+  }
+</style>
+</head>
+<body>
+<div class="aurora"></div><div class="grain"></div>
+<div class="nav" id="nav"></div>
+<div class="hint">↓ défile · flèches ↑↓</div>
+
+<div class="deck">
+
+<!-- COVER -->
+<section>
+  <div class="eyebrow reveal">Présentation confidentielle · NEBULA Agency</div>
+  <h1 class="reveal d1"><span class="eme">Vendora</span></h1>
+  <p class="lead reveal d2" style="font-size:clamp(18px,2.4vw,30px);color:var(--txt);max-width:24ch;font-weight:400">L'employé qui vend, encaisse et ne dort jamais — pour des millions de commerçants africains.</p>
+  <p class="lead reveal d3">Le vendeur intelligent qui vit sur WhatsApp, parle la langue du client, prend les commandes et encaisse en Mobile Money. Déjà en production.</p>
+  <div class="scrolldown">DÉFILER</div>
+</section>
+
+<!-- PROBLÈME -->
+<section>
+  <div class="eyebrow reveal">Le problème</div>
+  <h2 class="reveal d1">Des millions de commerçants vendent sur WhatsApp.<br><span class="eme">Tous perdent des ventes.</span></h2>
+  <p class="lead reveal d2">En Afrique francophone, le commerce se fait sur WhatsApp et Instagram. Mais le commerçant est seul : il dort, il sert un client en boutique, il rate des messages. Chaque réponse en retard, c'est une vente partie chez le concurrent.</p>
+  <div class="three">
+    <div class="lvl reveal d3"><div class="n">Trop tard</div><h3>La réponse lente tue la vente</h3><p>Un client qui n'a pas de réponse en quelques minutes achète ailleurs. La nuit et le week-end, tout est perdu.</p></div>
+    <div class="lvl reveal d4"><div class="n">Pas d'équipe</div><h3>Embaucher coûte trop cher</h3><p>Le micro-commerçant ne peut pas payer un vendeur à plein temps, encore moins 24h/24.</p></div>
+    <div class="lvl reveal d5"><div class="n">Pas d'outils</div><h3>Le logiciel existant n'est pas pour lui</h3><p>Les solutions sont chères, en anglais, pensées pour de grandes entreprises occidentales.</p></div>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section>
+  <div class="eyebrow reveal">La solution</div>
+  <h2 class="reveal d1">Vendora, <span class="eme">un employé commercial intelligent</span></h2>
+  <p class="lead reveal d2">Pas un logiciel de plus. Un vendeur qui travaille pour le commerçant, sur le canal qu'il utilise déjà — son WhatsApp — sans jamais s'arrêter.</p>
+  <div class="two">
+    <div class="lvl reveal d2"><div class="n">Il vend</div><h3>Répond, conseille, conclut 24/7</h3><p>Il connaît le catalogue et les prix, répond en 2 secondes dans la langue du client, négocie dans les limites fixées, et prend la commande.</p></div>
+    <div class="lvl reveal d3"><div class="n">Il encaisse</div><h3>Paiement Mobile Money intégré</h3><p>Il guide le client vers le paiement et prévient le patron. L'argent rentre, sans carte bancaire, sur l'infrastructure que tout le monde utilise déjà.</p></div>
+    <div class="lvl reveal d4"><div class="n">Il gère</div><h3>Bien plus qu'un chatbot</h3><p>Relances, rendez-vous, caisse, stock, factures, réseaux sociaux. Un véritable employé numérique qui apprend en vendant.</p></div>
+    <div class="lvl reveal d5"><div class="n">Il parle local</div><h3>Français d'Afrique + langues locales</h3><p>Conçu pour le terrain : il comprend les notes vocales et le mélange de langues, comme un vrai vendeur du marché.</p></div>
+  </div>
+</section>
+
+<!-- COMMENT -->
+<section>
+  <div class="eyebrow reveal">Comment ça marche</div>
+  <h2 class="reveal d1">Mise en route en <span class="eme">quelques minutes</span></h2>
+  <div class="steps">
+    <div class="it reveal d2"><div class="num">1</div><div class="tx"><b>Le commerçant compose son vendeur</b><span>Il décrit sa boutique en langage simple (ou on le fait pour lui). Produits, prix, ton, livraison : l'agent est prêt.</span></div></div>
+    <div class="it reveal d3"><div class="num">2</div><div class="tx"><b>L'agent prend le relais sur WhatsApp</b><span>Il répond à chaque client, jour et nuit, vend, négocie, prend les commandes et les rendez-vous.</span></div></div>
+    <div class="it reveal d4"><div class="num">3</div><div class="tx"><b>L'argent rentre, le patron est prévenu</b><span>Encaissement Mobile Money, alerte à chaque vente, tableau de bord. Le commerçant garde le contrôle, l'agent fait le travail.</span></div></div>
+    <div class="it reveal d5"><div class="num">4</div><div class="tx"><b>Le commerçant paie un abonnement mensuel</b><span>En Mobile Money. Récurrent, simple, sans engagement lourd. Il reste tant que ça lui rapporte — c'est-à-dire toujours.</span></div></div>
+  </div>
+</section>
+
+<!-- MARCHÉ -->
+<section>
+  <div class="eyebrow reveal">Le marché</div>
+  <h2 class="reveal d1">Un terrain <span class="eme">immense et sous-équipé</span></h2>
+  <p class="lead reveal d2">L'infrastructure est déjà là — WhatsApp et Mobile Money sont massivement adoptés. Ce qui manque, c'est l'outil pensé pour ce marché. (Repères Bénin, vérifiés fin 2025.)</p>
+  <div class="stats">
+    <div class="stat reveal d2"><div class="k">11,6 M</div><div class="l">comptes Mobile Money actifs au Bénin — encaisser est un problème résolu, sans carte bancaire.</div></div>
+    <div class="stat reveal d3"><div class="k">8,5 M</div><div class="l">internautes ; WhatsApp et Facebook ultra-dominants. Vendre sur WhatsApp est déjà une habitude.</div></div>
+    <div class="stat reveal d4"><div class="k">90 %</div><div class="l">des emplois sont informels ; à peine 30 % des PME ont accès au crédit. Un marché énorme, sous-outillé.</div></div>
+  </div>
+  <p class="note reveal d5">Et le Bénin n'est qu'une porte d'entrée : le même besoin existe en Côte d'Ivoire, au Sénégal, au Togo, au Cameroun… toute l'Afrique francophone. ⚠️ Données marché publiques ; projections à confirmer pays par pays.</p>
+</section>
+
+<!-- POURQUOI MAINTENANT -->
+<section>
+  <div class="eyebrow reveal">Pourquoi maintenant</div>
+  <h2 class="reveal d1">Trois vagues qui <span class="eme">se rencontrent</span></h2>
+  <div class="three">
+    <div class="lvl reveal d2"><div class="n">01</div><h3>WhatsApp = le magasin</h3><p>Le commerce conversationnel est déjà le réflexe n°1. Pas besoin d'éduquer le marché : il est là.</p></div>
+    <div class="lvl reveal d3"><div class="n">02</div><h3>Mobile Money = la caisse</h3><p>L'encaissement digital est généralisé. Le maillon paiement, longtemps bloquant en Afrique, est résolu.</p></div>
+    <div class="lvl reveal d4"><div class="n">03</div><h3>L'IA = enfin abordable</h3><p>Un vendeur IA de qualité coûte aujourd'hui quelques centimes par conversation. Hier impossible, aujourd'hui rentable.</p></div>
+  </div>
+  <p class="lead reveal d5">La fenêtre est ouverte maintenant : celui qui équipe ce marché en premier, dans sa langue, devient la référence.</p>
+</section>
+
+<!-- BUSINESS MODEL -->
+<section>
+  <div class="eyebrow reveal">Le modèle économique</div>
+  <h2 class="reveal d1">Du <span class="eme">récurrent</span>, simple et marge logicielle</h2>
+  <p class="lead reveal d2">Abonnement mensuel en Mobile Money. Trois paliers selon les besoins. Le coût IA réel par client est faible (quelques centaines de FCFA) → marge élevée et qui s'améliore avec l'échelle.</p>
+  <div class="price3">
+    <div class="pcard reveal d2"><div class="nm">Démarrage</div><div class="pr">5 000<small> F/mois</small></div><div class="ds">Le vendeur WhatsApp + prise de commande.</div></div>
+    <div class="pcard reveal d3"><div class="nm">Business</div><div class="pr">15 000<small> F/mois</small></div><div class="ds">+ relances, rendez-vous, plus de pouvoirs.</div></div>
+    <div class="pcard reveal d4"><div class="nm">Empire</div><div class="pr">40 000<small> F/mois</small></div><div class="ds">Tout : coach, réseaux sociaux, sur-mesure.</div></div>
+  </div>
+  <p class="note reveal d5">Revenu récurrent qui s'empile : un client gardé paie chaque mois. Faible coût d'acquisition (WhatsApp, founder-led, affiliés) + rétention forte (l'agent est intégré au quotidien) = économie de SaaS classique, sur un marché neuf.</p>
+</section>
+
+<!-- TRACTION -->
+<section>
+  <div class="eyebrow reveal">Où nous en sommes</div>
+  <h2 class="reveal d1">Le produit est <span class="eme">construit et en production</span></h2>
+  <p class="lead reveal d2">Ce n'est pas une maquette. Vendora tourne en ligne, en multi-boutiques, avec un niveau de fonctionnalités rare pour ce marché. La phase actuelle : décrocher les premiers clients payants.</p>
+  <div class="chips">
+    <div class="chip reveal d2"><b>En production</b> hébergé, multi-boutiques</div>
+    <div class="chip reveal d2"><b>Vente + commandes</b> sur WhatsApp</div>
+    <div class="chip reveal d3"><b>Mobile Money</b> intégré</div>
+    <div class="chip reveal d3"><b>Relances & rendez-vous</b> automatiques</div>
+    <div class="chip reveal d4"><b>Multicanal</b> Messenger + Instagram</div>
+    <div class="chip reveal d4"><b>Cerveau d'apprentissage</b> qui s'améliore</div>
+    <div class="chip reveal d5"><b>Vocal</b> (notes vocales comprises)</div>
+    <div class="chip reveal d5"><b>Back-office + cockpit</b> de pilotage</div>
+  </div>
+  <p class="note reveal d6">Avantage clé : un seul moteur, multi-locataire. Chaque nouveau client se branche sans reconstruire. Et le même moteur ouvre d'autres verticaux (voir la vision). ⚠️ Stade : pré-revenu / premiers clients en cours d'acquisition.</p>
+</section>
+
+<!-- MOAT -->
+<section>
+  <div class="eyebrow reveal">L'avantage défendable</div>
+  <h2 class="reveal d1">Pourquoi c'est <span class="eme">difficile à copier</span></h2>
+  <div class="two">
+    <div class="lvl reveal d2"><div class="n">Local</div><h3>Pensé pour l'Afrique francophone</h3><p>Français d'Afrique, langues et notes vocales locales, Mobile Money, réalités du terrain. Les acteurs anglophones ne parlent pas à ce client.</p></div>
+    <div class="lvl reveal d3"><div class="n">Prix</div><h3>5 à 40× moins cher que les concurrents</h3><p>Les solutions existantes (type Wati, Zoko) sont hors de portée du micro-commerçant. Vendora est calibré pour lui.</p></div>
+    <div class="lvl reveal d4"><div class="n">Avance produit</div><h3>Le moteur est déjà construit</h3><p>Un concurrent devrait rebâtir des mois de produit. Nous, on ajoute des verticaux sur une base qui tourne.</p></div>
+    <div class="lvl reveal d5"><div class="n">Effet réseau</div><h3>Plus il vend, meilleur il devient</h3><p>Le cerveau apprend des conversations de toutes les boutiques. La donnée terrain crée un avantage qui se creuse.</p></div>
+  </div>
+</section>
+
+<!-- CONCURRENCE -->
+<section>
+  <div class="eyebrow reveal">La concurrence</div>
+  <h2 class="reveal d1">Le créneau que <span class="eme">personne n'occupe</span></h2>
+  <table class="cmp">
+    <tr><th></th><th>Solutions existantes (Wati, Zoko…)</th><th class="vy">Vendora</th></tr>
+    <tr><td>Langue</td><td>Anglais</td><td class="vy">Français d'Afrique + langues locales</td></tr>
+    <tr><td>Cible</td><td>Grandes entreprises</td><td class="vy">Micro & petits commerçants</td></tr>
+    <tr><td>Prix</td><td>Élevé (dizaines de $/mois)</td><td class="vy">À partir de 5 000 F/mois</td></tr>
+    <tr><td>Paiement</td><td>Carte bancaire</td><td class="vy">Mobile Money natif</td></tr>
+    <tr><td>Rôle</td><td>Chatbot / support</td><td class="vy">Employé qui VEND et gère</td></tr>
+  </table>
+  <p class="note reveal d5">Le marché du micro-commerçant africain francophone est largement vierge. La vraie course n'est pas contre un concurrent : c'est la vitesse d'acquisition.</p>
+</section>
+
+<!-- VISION -->
+<section>
+  <div class="eyebrow reveal">La vision · 3 à 5 ans</div>
+  <p class="big-quote reveal d1">Un <span class="eme">employé IA</span> dans la poche de chaque commerçant africain.</p>
+  <p class="lead reveal d2">Vendora aujourd'hui, c'est le vendeur WhatsApp. Demain, c'est une plateforme d'employés numériques pour tous les métiers — le même moteur, des cerveaux spécialisés.</p>
+  <div class="three">
+    <div class="lvl reveal d3"><div class="n">Verticaux</div><h3>Un agent par métier</h3><p>Prise de rendez-vous, recouvrement, support client, standardiste vocal, agro-conseil… Chacun un nouveau marché récurrent.</p></div>
+    <div class="lvl reveal d4"><div class="n">Multi-pays</div><h3>Toute l'Afrique francophone</h3><p>Le même produit se déploie de Cotonou à Abidjan, Dakar, Douala. Marché adressable de centaines de millions.</p></div>
+    <div class="lvl reveal d5"><div class="n">Plateforme</div><h3>La couche commerciale de l'Afrique</h3><p>Vendre, encaisser, fidéliser — par la conversation, dans la langue locale. L'infrastructure que les commerces utiliseront par défaut.</p></div>
+  </div>
+</section>
+
+<!-- PROJECTIONS -->
+<section>
+  <div class="eyebrow reveal">La trajectoire · illustratif</div>
+  <h2 class="reveal d1">La force du <span class="eme">récurrent</span></h2>
+  <p class="lead reveal d2">Panier moyen ~12 000 F/mois par boutique. Le revenu mensuel récurrent (MRR) suit le nombre de clients — et il s'empile.</p>
+  <div class="stats">
+    <div class="stat reveal d2"><div class="k">100</div><div class="l">boutiques payantes<br>→ ≈ <b class="eme">1,2 M F/mois</b> récurrents</div></div>
+    <div class="stat reveal d3"><div class="k">1 000</div><div class="l">boutiques payantes<br>→ ≈ <b class="eme">12 M F/mois</b> récurrents</div></div>
+    <div class="stat reveal d4"><div class="k">10 000</div><div class="l">boutiques payantes<br>→ ≈ <b class="eme">120 M F/mois</b> récurrents</div></div>
+  </div>
+  <p class="note reveal d5">⚠️ Projections illustratives pour montrer la mécanique, pas une garantie. Le levier décisif est l'acquisition ; le produit et la marge sont déjà en place.</p>
+</section>
+
+<!-- ÉQUIPE + ASK -->
+<section>
+  <div class="eyebrow reveal">L'équipe & la suite</div>
+  <h2 class="reveal d1">Bâti depuis <span class="eme">Cotonou</span></h2>
+  <p class="lead reveal d2"><b style="color:var(--txt)">Mongazi</b> — fondateur de NEBULA Agency. Vendora est né du terrain : des vraies boutiques, de vrais besoins, une exécution rapide. Le produit existe, il tourne, il est prêt à grandir.</p>
+  <div class="two">
+    <div class="lvl reveal d3"><div class="n">Ce qu'on cherche</div><h3>Des partenaires pour accélérer</h3><p>Capital, distribution, ou réseau de terrain — pour transformer une avance produit en leadership de marché avant les autres.</p></div>
+    <div class="lvl reveal d4"><div class="n">Pourquoi maintenant</div><h3>L'avance est réelle, la fenêtre est ouverte</h3><p>Produit construit + marché prêt + personne d'autre sur ce créneau. Il s'agit d'aller vite, ensemble.</p></div>
+  </div>
+  <div class="thin reveal d5"></div>
+  <p class="reveal d5" style="color:var(--mut);font-size:15px">Parlons-en — <b style="color:var(--txt)">WhatsApp +229 96 74 07 32</b> · contact@nebula-agency.online · vendora.nebula-agency.online</p>
+  <p class="note reveal d6">Document confidentiel — NEBULA Agency, Cotonou, Bénin. Chiffres marché publics ; projections à confirmer.</p>
+</section>
+
+</div>
+
+<script>
+const PRINT = new URLSearchParams(location.search).has('print');
+function finalizeAll(){
+  document.querySelectorAll('[data-count]').forEach(el=>el.textContent=(+el.dataset.count).toLocaleString('fr-FR'));
+  document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));
+}
+window.addEventListener('beforeprint', finalizeAll);
+if(PRINT){ finalizeAll(); }
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+const secs=[...document.querySelectorAll('section')];const nav=document.getElementById('nav');
+secs.forEach(()=>{const a=document.createElement('a');a.href='#';nav.appendChild(a)});
+const links=[...nav.children];
+const ion=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const i=secs.indexOf(e.target);links.forEach(l=>l.classList.remove('active'));if(links[i])links[i].classList.add('active')}}),{threshold:.5});
+secs.forEach(s=>ion.observe(s));
+links.forEach((l,i)=>l.addEventListener('click',ev=>{ev.preventDefault();secs[i].scrollIntoView({behavior:'smooth'})}));
+let cur=0;const ioc=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)cur=secs.indexOf(e.target)}),{threshold:.5});secs.forEach(s=>ioc.observe(s));
+addEventListener('keydown',e=>{if(e.key==='ArrowDown'||e.key==='PageDown'){e.preventDefault();secs[Math.min(secs.length-1,cur+1)].scrollIntoView({behavior:'smooth'})}if(e.key==='ArrowUp'||e.key==='PageUp'){e.preventDefault();secs[Math.max(0,cur-1)].scrollIntoView({behavior:'smooth'})}});
+</script>
+</body>
+</html>
