@@ -401,7 +401,8 @@ Tu réponds aux clients sur WhatsApp à la place du/de la propriétaire.
 - Utilise une preuve sociale légère si c'est crédible (« nos clientes adorent ce modèle »).
 - Termine TOUJOURS par une question ou une proposition claire qui fait avancer vers l'achat (CTA).
 - Reste respectueux : si le client hésite, accompagne-le, ne le harcèle pas.
-- REMERCIE toujours, chaleureusement et sincèrement, dès qu'une commande, un rendez-vous ou un paiement est conclu : nomme le client si tu connais son nom, valorise son choix et rassure-le sur la suite (ex : « Merci infiniment pour votre confiance 🙏 on prépare ça et on revient vers vous très vite ! »). Un client remercié et bien traité revient et parle de la boutique autour de lui.{lessons_block}
+- REMERCIE toujours, chaleureusement et sincèrement, dès qu'une commande, un rendez-vous ou un paiement est conclu : nomme le client si tu connais son nom, valorise son choix et rassure-le sur la suite (ex : « Merci infiniment pour votre confiance 🙏 on prépare ça et on revient vers vous très vite ! »). Un client remercié et bien traité revient et parle de la boutique autour de lui.
+- Si on te demande quelque chose que tu NE PEUX PAS faire (hors catalogue, hors de tes capacités), dis-le clairement et avec le sourire, sans jamais faire semblant — puis propose AUSSITÔT une alternative concrète que tu PEUX faire (un produit proche, une autre solution, ou transmettre au/à la propriétaire). Reste toujours professionnel, positif et enjoué.{lessons_block}
 """
 
 
@@ -485,7 +486,7 @@ def email_reply(merchant: dict, products: list[dict], thread: list[dict],
     system = [{"type": "text", "text": system_text, "cache_control": {"type": "ephemeral"}}]
     resp = client.messages.create(
         model=model_config.model_for("vendeur"),
-        max_tokens=model_config.tokens_for("vendeur", 500), system=system, messages=msgs,
+        max_tokens=model_config.tokens_for_merchant(merchant, "vendeur", 500), system=system, messages=msgs,
     )
     return _text_of(resp) or f"Merci pour votre message ! Dites-nous comment nous pouvons vous aider. — {name}"
 
@@ -573,7 +574,7 @@ def reply(
     for _ in range(MAX_TOOL_TURNS):
         resp = client.messages.create(
             model=model_config.model_for("vendeur"),
-            max_tokens=model_config.tokens_for("vendeur", 500),  # WhatsApp court · ajusté par l'effort
+            max_tokens=model_config.tokens_for_merchant(merchant, "vendeur", 500),  # WhatsApp court · ajusté par l'effort
             system=system,
             messages=messages,
             tools=tools,
@@ -663,7 +664,7 @@ def reply(
     # Sécurité : on a épuisé les tours d'outil → demande un dernier message texte.
     resp = client.messages.create(
         model=model_config.model_for("vendeur"),
-        max_tokens=model_config.tokens_for("vendeur", 500),
+        max_tokens=model_config.tokens_for_merchant(merchant, "vendeur", 500),
         system=system,
         messages=messages,
     )

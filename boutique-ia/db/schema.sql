@@ -437,3 +437,6 @@ alter table bia_merchants add column if not exists objections text;
 alter table bia_merchants add column if not exists avoid_topics text;
 alter table bia_merchants add column if not exists presence text;
 alter table bia_merchants add column if not exists socials text;
+
+-- Effort/intelligence du modèle choisi par le commerçant (eco | standard | max ; NULL=standard).
+alter table bia_merchants add column if not exists ai_effort text;

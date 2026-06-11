@@ -812,6 +812,7 @@ def _exec_tool(merchant_id: str, name: str, args: dict,
 def _system(merchant: dict, allow_manage: bool = False,
             manage_limit_reached: bool = False) -> str:
     name = merchant.get("business_name") or "la boutique"
+    tone = (merchant.get("ai_tone") or "chaleureux, positif et enjoué").strip()
     now = _now_wat()
     jours = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
     mois = ["", "janvier", "février", "mars", "avril", "mai", "juin", "juillet",
@@ -888,15 +889,26 @@ OUTILS DE GESTION — tu es son employé numérique, tu gères aussi :
 - FIDÉLITÉ & CLIENTS : clients_fideles (meilleurs clients, qui récompenser), noter_client (note/préférence ou anniversaire). Pour « mes meilleurs clients », « note que X aime… », « l'anniversaire de Y est le… ».
 Utilise TOUJOURS l'outil adapté pour ces tâches (jamais inventer un solde, une dette, un stock ou un classement).
 
+FAIS À SA PLACE : si la patronne trouve quelque chose compliqué, hésite, ou te
+demande de t'en occuper, FAIS-LE entièrement pour elle (ajoute le produit, crée la
+facture, note la vente…), sans jamais la renvoyer vers un menu ou un réglage à
+remplir. Tu es là pour lui mâcher le travail. Si une info te manque, pose UNE
+question simple, puis exécute. Propose même spontanément de t'en charger.
+
 HONNÊTETÉ (capital) : si tu n'es pas sûr d'un fait précis (une adresse, un prix
 ailleurs, une info locale, une actu récente), dis-le simplement et propose
 comment le vérifier. Ne fabrique jamais un fait précis : mieux vaut « je ne suis
 pas sûr » que de te tromper. C'est ce qui fait qu'elle te fait confiance.
 
-STYLE : WhatsApp — réponses courtes, naturelles, directes, chaleureuses. 1-2
-emojis maximum. Pas de markdown lourd (pas de **, pas de #). Pour une liste de
-chiffres, des petits tirets suffisent. Va droit au but. Tutoie ou vouvoie selon
-elle ; par défaut, reste poli et proche.{manage_block}{limit_note}"""
+QUAND TU NE PEUX PAS faire une tâche : dis-le TOUT DE SUITE, clairement et avec le
+sourire (jamais faire semblant ni inventer), PUIS propose aussitôt une alternative
+que tu PEUX réaliser toi-même (« je ne peux pas faire X, mais je peux faire Y tout
+de suite — on fait ça ? »). Reste toujours professionnel, POSITIF et ENJOUÉ.
+
+STYLE : adopte le style choisi par la boutique → « {tone} ». WhatsApp — réponses
+courtes, naturelles, directes. 1-2 emojis maximum. Pas de markdown lourd (pas de **,
+pas de #). Pour une liste de chiffres, des petits tirets suffisent. Va droit au but.
+Tutoie ou vouvoie selon elle ; par défaut, reste poli et proche.{manage_block}{limit_note}"""
 
 
 def reply(merchant: dict, question: str, history: list[dict] | None = None,
@@ -931,7 +943,7 @@ def reply(merchant: dict, question: str, history: list[dict] | None = None,
     for _ in range(MAX_TOOL_TURNS):
         resp = client.messages.create(
             model=model_config.model_for("manager"),
-            max_tokens=model_config.tokens_for("manager", 700),
+            max_tokens=model_config.tokens_for_merchant(merchant, "manager", 700),
             system=system, messages=messages, tools=tools,
         )
         tool_uses = [b for b in resp.content if getattr(b, "type", None) == "tool_use"]
@@ -949,7 +961,7 @@ def reply(merchant: dict, question: str, history: list[dict] | None = None,
     # Dernier tour sans outil pour conclure proprement.
     resp = client.messages.create(
         model=model_config.model_for("manager"),
-        max_tokens=model_config.tokens_for("manager", 500),
+        max_tokens=model_config.tokens_for_merchant(merchant, "manager", 500),
         system=system, messages=messages,
     )
     text = "\n".join(b.text for b in resp.content

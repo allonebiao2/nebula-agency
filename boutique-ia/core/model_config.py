@@ -83,6 +83,15 @@ def tokens_for(task: str, base: int) -> int:
     return max(120, min(4096, int(base * _EFFORT_MULT.get(eff, 1.0))))
 
 
+def tokens_for_merchant(merchant: dict | None, task: str, base: int) -> int:
+    """Comme tokens_for, mais priorité à l'EFFORT choisi par le commerçant
+    (`bia_merchants.ai_effort` : eco/standard/max). Repli : effort global de la tâche."""
+    eff = ((merchant or {}).get("ai_effort") or "").strip().lower()
+    if eff in _EFFORT_MULT:
+        return max(120, min(4096, int(base * _EFFORT_MULT[eff])))
+    return tokens_for(task, base)
+
+
 def current_config() -> dict:
     """Données prêtes pour le cockpit admin."""
     cfg = _load()

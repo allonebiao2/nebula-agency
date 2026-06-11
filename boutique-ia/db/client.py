@@ -165,6 +165,7 @@ EDITABLE_MERCHANT_FIELDS = {
     "momo_number", "momo_name", "momo_network",
     "delivery_zones", "delivery_fee_info",
     "ai_tone", "languages", "business_hours", "policies", "extra_info",
+    "ai_effort",
     "brand_color", "cod_enabled", "negotiation_enabled", "negotiation_rule",
     "auto_prospect_enabled", "auto_prospect_category", "auto_prospect_city",
     "rdv_days", "rdv_hours", "rdv_note",
