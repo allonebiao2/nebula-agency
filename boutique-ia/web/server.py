@@ -75,6 +75,24 @@ def _wa_short_link(code: str) -> str:
     base = (settings.public_base_url or "").rstrip("/")
     return f"{base}/go/{code}"
 
+
+def _qr_data_uri(text: str) -> str:
+    """QR code (PNG base64) d'un lien — affichable/imprimable dans le back-office.
+    Le client le met sur sa boutique/ses réseaux ; ses clients scannent → WhatsApp."""
+    if not text:
+        return ""
+    try:
+        import base64
+        import io
+
+        import qrcode
+        buf = io.BytesIO()
+        qrcode.make(text).save(buf, format="PNG")
+        return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
+    except Exception:  # noqa: BLE001
+        logging.getLogger("boutique-ia.server").warning("génération QR échouée", exc_info=True)
+        return ""
+
 log = logging.getLogger("boutique-ia.server")
 
 
@@ -670,6 +688,9 @@ async def boutique_backoffice(request: Request, merchant_id: str):
             }
         except Exception:  # noqa: BLE001
             log.warning("back-office: validation/notif KO", exc_info=True)
+    # QR du lien WhatsApp (à imprimer/partager) + lien du back-office (à enregistrer).
+    wa_qr = _qr_data_uri(wa_link)
+    backoffice_link = str(request.base_url).rstrip("/") + f"/boutique/{merchant_id}"
     return templates.TemplateResponse(
         request, "boutique.html",
         _ctx(request, merchant=merchant, merchant_id=merchant_id,
@@ -683,6 +704,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              social_publish_ready=social_publish_ready,
              coach_on=coach_on, coaching=coaching, usage=usage,
              to_validate=to_validate, notif=notif,
+             wa_qr=wa_qr, backoffice_link=backoffice_link,
              prospect_daily=prospect_daily, prospect_used=prospect_used, prospection_soon=prospection_soon,
              prospect_remaining=max(0, prospect_daily - prospect_used)),
     )

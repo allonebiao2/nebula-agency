@@ -231,10 +231,31 @@
         <input id="walink" class="mono" readonly value="{{ wa_link }}">
         <button class="btn gho sm" type="button" onclick="copyLink(this)"><svg viewBox="0 0 24 24"><use href="#i-copy"/></svg>Copier</button>
       </div>
+      {% if wa_qr %}
+      <div style="display:flex;gap:16px;align-items:center;margin-top:15px;flex-wrap:wrap">
+        <img src="{{ wa_qr }}" alt="QR code de votre lien WhatsApp" width="134" height="134" style="border-radius:12px;background:#fff;padding:8px;border:1px solid var(--hair);flex:none">
+        <div style="flex:1;min-width:210px">
+          <div style="font-weight:700;margin-bottom:4px">Votre QR code</div>
+          <div class="ad" style="font-size:13px;opacity:.85;margin-bottom:10px">Vos clients le scannent pour vous écrire sur WhatsApp. Imprimez-le pour votre boutique, mettez-le sur vos réseaux, vos flyers, votre carte de visite.</div>
+          <a class="btn gho sm" download="qr-{{ merchant.code or 'vendora' }}.png" href="{{ wa_qr }}"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg>Télécharger le QR</a>
+        </div>
+      </div>
+      {% endif %}
       <div class="links">
         <a class="btn gho sm" href="/essai/{{ merchant_id }}"><svg viewBox="0 0 24 24"><use href="#i-flask"/></svg>Tester mon agent</a>
         {% if merchant.status != 'active' %}<a class="btn acc sm" href="/activation/{{ merchant_id }}">Activer ma boutique<span class="bib"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></span></a>{% endif %}
       </div>
+    </div></div>
+    {% endif %}
+
+    {% if backoffice_link %}
+    <div class="share bezel" style="margin-top:14px"><div class="bezel-in">
+      <div class="lbl"><svg viewBox="0 0 24 24"><use href="#i-link"/></svg> Le lien de VOTRE espace (gardez-le précieusement)</div>
+      <div class="row">
+        <input id="bolink" class="mono" readonly value="{{ backoffice_link }}">
+        <button class="btn gho sm" type="button" onclick="copyBoLink(this)"><svg viewBox="0 0 24 24"><use href="#i-copy"/></svg>Copier</button>
+      </div>
+      <div class="ad" style="font-size:13px;opacity:.85;margin-top:9px">C'est l'adresse de votre tableau de bord. <b>Enregistrez-la</b> et ajoutez-la à l'écran d'accueil de votre téléphone (menu du navigateur → « Ajouter à l'écran d'accueil ») pour y revenir en un clic. Votre code d'accès secret la protège.</div>
     </div></div>
     {% endif %}
 
@@ -1039,6 +1060,7 @@ async function api(url, method, payload){
   return r.json();
 }
 function copyLink(btn){ navigator.clipboard.writeText(document.getElementById('walink').value); btn.innerHTML='<svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Copié'; }
+function copyBoLink(btn){ navigator.clipboard.writeText(document.getElementById('bolink').value); btn.innerHTML='<svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Copié'; }
 function goTo(id){ const el=document.getElementById(id); if(el){ el.scrollIntoView({behavior:'smooth', block:'start'}); } }
 function previewBrand(c){ root.style.setProperty('--a', c); }
 

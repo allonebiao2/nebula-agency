@@ -20,3 +20,6 @@ pydantic-settings>=2.6.0
 
 # Vendora Social — génération d'images de posts (templates brandés, sans IA payante)
 pillow>=10.4.0
+
+# QR code du lien WhatsApp de chaque boutique (back-office)
+qrcode>=7.4.2
