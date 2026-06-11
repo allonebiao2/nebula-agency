@@ -124,6 +124,73 @@ def notify_new_order(merchant: dict, order: dict, items: list[dict]) -> None:
     _whatsapp_owner(merchant.get("owner_whatsapp"), merchant.get("country"), plain)
 
 
+def notify_payment_to_validate(merchant: dict, order: dict, data: dict) -> None:
+    """Prévient le commerçant qu'un client annonce un PAIEMENT à valider (Mobile Money).
+
+    Le commerçant retrouve la même alerte dans son back-office (onglet Validation),
+    où il confirme (vert) ou rejette (rouge).
+    """
+    client = (order.get("customer_name") or order.get("customer_whatsapp")
+              or data.get("nom_client") or "—")
+    ref = (data.get("transaction_id") or order.get("payment_ref") or "—")
+    net = (data.get("reseau") or order.get("payment_network") or "")
+    montant = order.get("total") if order.get("total") is not None else data.get("montant")
+    notify_mongazi(
+        "💳 <b>Paiement à valider !</b>\n\n"
+        f"🏪 {merchant.get('business_name','?')}\n"
+        f"👤 Client : {client}\n"
+        f"🔖 Réseau : {net or '—'}\n"
+        f"🧾 Transaction : <code>{ref}</code>\n"
+        f"💰 Montant : <b>{_fmt_fcfa(montant)}</b>\n\n"
+        "À confirmer dans votre back-office (onglet Validation) ✅/❌"
+    )
+    plain = (
+        f"💳 Paiement à valider — {merchant.get('business_name','votre boutique')}\n"
+        f"Client : {client}\n"
+        f"Réseau : {net or '—'} · Transaction : {ref}\n"
+        f"Montant : {_fmt_fcfa(montant)}\n"
+        "Ouvrez votre espace (onglet Validation) pour confirmer ou rejeter."
+    )
+    _whatsapp_owner(merchant.get("owner_whatsapp"), merchant.get("country"), plain)
+
+
+def notify_customer_payment_result(customer_whatsapp: str | None, business_name: str,
+                                   confirmed: bool) -> None:
+    """Informe le CLIENT que son paiement a été confirmé (ou non) par la boutique."""
+    if confirmed:
+        msg = (f"Bonne nouvelle 🎉 Votre paiement est confirmé. {business_name} prépare "
+               "votre commande et revient vers vous très vite. Merci pour votre confiance 🙏")
+    else:
+        msg = (f"Bonjour 🙏 Nous n'avons pas encore retrouvé votre paiement chez {business_name}. "
+               "Pouvez-vous vérifier et renvoyer la référence du SMS Mobile Money ? Merci !")
+    try:
+        send_customer_whatsapp(customer_whatsapp, msg)
+    except Exception as e:  # noqa: BLE001
+        log.warning("[notify] message paiement client échoué : %s", e)
+
+
+def notify_activated(merchant: dict) -> None:
+    """Prévient le commerçant que son abonnement est ACTIVÉ + lui donne le lien de
+    son espace de gestion (back-office) et comment y accéder (créer son code)."""
+    base = (getattr(settings, "public_base_url", None) or "https://vendora-agent.up.railway.app").rstrip("/")
+    link = f"{base}/boutique/{merchant.get('id')}"
+    name = merchant.get("business_name") or "votre boutique"
+    notify_mongazi(
+        "✅ <b>Boutique activée</b>\n\n"
+        f"🏪 {name}\n"
+        f"🔗 {link}\n"
+        f"🆔 <code>{merchant.get('id')}</code>"
+    )
+    _whatsapp_owner(
+        merchant.get("owner_whatsapp"), merchant.get("country"),
+        f"🎉 Félicitations ! Votre agent vendeur « {name} » est ACTIVÉ.\n\n"
+        f"Votre espace de gestion : {link}\n\n"
+        "À votre première visite, créez votre code d'accès secret (4 à 8 chiffres) : "
+        "il protège votre espace. Ensuite, partagez votre lien WhatsApp à vos clients "
+        "et laissez l'agent vendre pour vous 🚀"
+    )
+
+
 def notify_subscription_reminder(merchant: dict, days: int, price: int) -> None:
     """Relance avant l'échéance de l'abonnement."""
     notify_mongazi(

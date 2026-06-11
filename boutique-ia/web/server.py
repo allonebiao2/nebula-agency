@@ -178,6 +178,26 @@ def _appointment_recorder(merchant: dict, customer: str | None):
     return _on_appointment
 
 
+def _payment_recorder(merchant: dict, customer: str | None):
+    """Callback : le client annonce un paiement → on attache la preuve à sa dernière
+    commande (passe en 'à valider') et on prévient le/la propriétaire."""
+    from db.client import attach_payment_to_latest_pending
+    from notify import notify_payment_to_validate
+
+    def _on_payment(data: dict) -> None:
+        order = attach_payment_to_latest_pending(
+            merchant["id"], customer,
+            ref=(data.get("transaction_id") or "").strip() or None,
+            network=(data.get("reseau") or "").strip() or None,
+        )
+        try:
+            notify_payment_to_validate(merchant, order or {}, data)
+        except Exception:  # noqa: BLE001
+            log.warning("alerte paiement à valider échouée", exc_info=True)
+
+    return _on_payment
+
+
 def _escalation_notifier(merchant: dict, customer: str | None):
     """Callback appelé quand l'agent escalade un client vers le/la propriétaire."""
     from notify import notify_hot_lead
@@ -612,6 +632,26 @@ async def boutique_backoffice(request: Request, merchant_id: str):
             usage["packs"] = CREDIT_PACKS
         except Exception:  # noqa: BLE001
             log.warning("back-office: usage KO", exc_info=True)
+    # Validation des paiements + Notifications (alertes dans le back-office).
+    to_validate, notif = [], None
+    if merchant:
+        try:
+            from db.client import days_left as _dleft, list_orders_to_validate
+            to_validate = list_orders_to_validate(merchant_id, limit=50)
+            pay_count = sum(1 for o in to_validate if o.get("status") == "paid_pending_validation")
+            pend_orders = sum(1 for o in to_validate if o.get("status") == "pending")
+            pend_appts = [a for a in (appointments or []) if a.get("status") == "pending"]
+            notif = {
+                "pay_count": pay_count,
+                "pending_orders": pend_orders,
+                "appts": len(pend_appts),
+                "appointments": pend_appts[:10],
+                "days_left": _dleft(merchant),
+                "suspended": suspended,
+                "total": pay_count + len(pend_appts),
+            }
+        except Exception:  # noqa: BLE001
+            log.warning("back-office: validation/notif KO", exc_info=True)
     return templates.TemplateResponse(
         request, "boutique.html",
         _ctx(request, merchant=merchant, merchant_id=merchant_id,
@@ -624,6 +664,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              social_on=social_on, social_images_on=social_images_on, social_posts=social_posts,
              social_publish_ready=social_publish_ready,
              coach_on=coach_on, coaching=coaching, usage=usage,
+             to_validate=to_validate, notif=notif,
              prospect_daily=prospect_daily, prospect_used=prospect_used, prospection_soon=prospection_soon,
              prospect_remaining=max(0, prospect_daily - prospect_used)),
     )
@@ -836,6 +877,12 @@ async def admin_activate(request: Request, merchant_id: str):
         return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
     try:
         m = activate_merchant(merchant_id)
+        if m:
+            try:
+                from notify import notify_activated
+                notify_activated(m)
+            except Exception:  # noqa: BLE001
+                log.warning("notif activation commerçant échouée", exc_info=True)
     except Exception as e:  # noqa: BLE001
         log.exception("admin activate échoué")
         return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
@@ -1728,6 +1775,45 @@ async def merchant_assistant_endpoint(request: Request, merchant_id: str):
     return {"ok": True, "reply": answer}
 
 
+@app.post("/api/merchants/{merchant_id}/orders/{order_id}/validate")
+async def merchant_validate_order_endpoint(request: Request, merchant_id: str, order_id: str):
+    """Le commerçant CONFIRME (vert) ou REJETTE (rouge) un paiement client.
+
+    Confirm → commande 'confirmed' + on prévient le client. Reject → retour 'pending'
+    (le paiement n'est pas validé, la vente reste ouverte) + on invite le client à
+    renvoyer sa référence. Le vendeur n'est jamais perdu.
+    """
+    from db.client import get_merchant, set_order_status
+    from notify import notify_customer_payment_result
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    action = (body.get("action") or "").strip().lower()
+    if action not in ("confirm", "reject"):
+        return JSONResponse({"ok": False, "error": "Action invalide."}, status_code=400)
+    confirmed = action == "confirm"
+    try:
+        merchant = get_merchant(merchant_id)
+        if not merchant:
+            return JSONResponse({"ok": False, "error": "Boutique introuvable."}, status_code=404)
+        order = set_order_status(order_id, merchant_id, "confirmed" if confirmed else "pending")
+        if not order:
+            return JSONResponse({"ok": False, "error": "Commande introuvable."}, status_code=404)
+        try:
+            notify_customer_payment_result(order.get("customer_whatsapp"),
+                                           merchant.get("business_name") or "la boutique", confirmed)
+        except Exception:  # noqa: BLE001
+            log.warning("notif client paiement échouée", exc_info=True)
+    except Exception as e:  # noqa: BLE001
+        log.exception("validation commande échouée")
+        return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
+    return {"ok": True, "status": order.get("status")}
+
+
 @app.post("/api/merchants/{merchant_id}/update")
 async def update_merchant_endpoint(request: Request, merchant_id: str):
     """Le commerçant modifie sa fiche (infos boutique, livraison, MoMo, ton…)."""
@@ -2330,6 +2416,7 @@ def _agent_handle(customer: str, body_text: str, has_audio: bool = False,
         on_escalate=_escalation_notifier(merchant, customer),
         on_show=_on_show,
         on_appointment=_appointment_recorder(merchant, customer),
+        on_payment=_payment_recorder(merchant, customer),
         lessons=lessons,
     )
     save_message(merchant["id"], customer, "assistant", answer)

@@ -129,6 +129,29 @@ RDV_TOOL = {
 }
 
 
+# Outil paiement : le client annonce avoir payé (Mobile Money) → preuve à valider.
+PAYMENT_TOOL = {
+    "name": "enregistrer_paiement",
+    "description": (
+        "Enregistre que le client DIT avoir PAYÉ par Mobile Money et transmet la preuve "
+        "au/à la propriétaire pour validation. À appeler quand le client confirme avoir "
+        "envoyé l'argent ET donne une référence : l'ID/numéro de transaction du SMS MoMo "
+        "(et son réseau si possible : MTN, Moov, Celtis…). Appelle-le UNE seule fois, puis "
+        "remercie le client et dis-lui que la boutique vérifie et confirme. N'invente JAMAIS "
+        "une référence : si le client n'en donne pas, demande-la-lui gentiment."
+    ),
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "transaction_id": {"type": "string", "description": "Référence/ID de la transaction MoMo donnée par le client."},
+            "reseau": {"type": "string", "description": "Réseau Mobile Money (MTN, Moov, Celtis, Wave…) si connu."},
+            "montant": {"type": "number", "description": "Montant payé en F CFA si précisé."},
+        },
+        "required": ["transaction_id"],
+    },
+}
+
+
 def _format_price(value) -> str:
     if value is None:
         return "prix sur demande"
@@ -478,6 +501,7 @@ def reply(
     on_escalate: Callable[[dict], None] | None = None,
     on_show: Callable[[dict], str] | None = None,
     on_appointment: Callable[[dict], None] | None = None,
+    on_payment: Callable[[dict], None] | None = None,
     lessons: str | None = None,
 ) -> str:
     """Génère la réponse du vendeur IA. `history` doit finir par le message client.
@@ -504,7 +528,7 @@ def reply(
     }]
 
     # Outils selon les capacités de la boutique (photo/RDV offerts seulement si activés).
-    tools = [ORDER_TOOL, ESCALATE_TOOL]
+    tools = [ORDER_TOOL, ESCALATE_TOOL, PAYMENT_TOOL]
     if "photos" in caps:
         tools.append(SHOW_TOOL)
     if "rdv" in caps:
@@ -558,6 +582,20 @@ def reply(
                         log.exception("escalade échouée")
                 note = ("Le/la propriétaire est prévenu(e). Rassure le client : la boutique "
                         "va le recontacter très vite. Reste utile en attendant.")
+            elif tu.name == "enregistrer_paiement":
+                if on_payment:
+                    try:
+                        on_payment(dict(tu.input or {}))
+                        note = ("Paiement signalé et propriétaire prévenu pour validation. "
+                                "Remercie le client, confirme que tu as bien noté sa référence, "
+                                "et dis que la boutique vérifie puis confirme la commande très vite.")
+                    except Exception:  # noqa: BLE001
+                        log.exception("enregistrement paiement échoué")
+                        note = ("Impossible d'enregistrer le paiement maintenant — remercie le "
+                                "client et dis que la boutique vérifie manuellement.")
+                else:
+                    note = ("Paiement noté (mode démo, non enregistré). Remercie le client et "
+                            "dis que la boutique valide puis confirme la commande.")
             elif tu.name == "montrer_produit":
                 if on_show:
                     try:

@@ -338,3 +338,10 @@ create index if not exists bia_agenda_idx on bia_agenda(merchant_id, status, rem
 --     persistants). SOFT CAP — ne bride jamais la vente ; sert l'affichage + le
 --     nudge recharge/upgrade. Conversations incluses/mois = config.PLAN_CONV_INCLUDED.
 alter table bia_merchants add column if not exists conv_credits integer not null default 0;
+
+-- 15. Validation des paiements clients (onglet Validation du back-office). L'agent
+--     capture la preuve quand le client dit avoir payé → 'paid_pending_validation' ;
+--     le commerçant confirme (→ 'confirmed') ou rejette (→ 'pending').
+alter table bia_orders add column if not exists payment_ref text;        -- ID/référence de transaction MoMo
+alter table bia_orders add column if not exists payment_network text;    -- MTN / Moov / Celtis / Wave
+alter table bia_orders add column if not exists validated_at timestamptz; -- horodatage de la confirmation

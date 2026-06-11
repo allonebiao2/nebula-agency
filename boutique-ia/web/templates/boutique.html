@@ -184,6 +184,8 @@
   <nav class="tabs">
     <a href="#whatsapp">WhatsApp</a>
     <a href="#piloter">Agent</a>
+    {% if notif and notif.total %}<a href="#notifications">Notifications ({{ notif.total }})</a>{% endif %}
+    {% if to_validate %}<a href="#validation">Validation{% if notif and notif.pay_count %} ({{ notif.pay_count }}){% endif %}</a>{% endif %}
     <a href="#activite">Activité</a>
     <a href="#produits">Produits</a>
     <a href="#capacites">Capacités</a>
@@ -660,6 +662,65 @@ Bracelet jonc 5000"></textarea>
   </section>
   {% endif %}
 
+  {% if notif %}
+  <!-- NOTIFICATIONS -->
+  <section class="reveal" id="notifications" style="order:1">
+    <div class="shead">
+      <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg></div>
+      <h2>Notifications</h2>
+      {% if notif.total %}<div class="act"><span class="quota" style="color:#e0a93b">{{ notif.total }}</span></div>{% endif %}
+    </div>
+    <p class="hint">Vos alertes importantes, ici en plus de WhatsApp.</p>
+    <div class="bezel"><div class="bezel-in" style="display:flex;flex-direction:column;gap:10px">
+      {% if notif.suspended %}<div class="nrow" style="padding:11px 13px;border-radius:11px;border:1px solid #ff6b6b;color:#ff9d9d">⛔ Boutique en pause — <a href="#forfaits">renouvelez votre abonnement</a> pour que l'agent reprenne la vente.</div>{% endif %}
+      {% if notif.pay_count %}<div class="nrow" style="padding:11px 13px;border-radius:11px;border:1px solid var(--hair)">💳 <b>{{ notif.pay_count }}</b> paiement(s) à valider → <a href="#validation">ouvrir la validation</a></div>{% endif %}
+      {% if notif.pending_orders %}<div class="nrow" style="padding:11px 13px;border-radius:11px;border:1px solid var(--hair)">🛒 <b>{{ notif.pending_orders }}</b> commande(s) en attente de paiement</div>{% endif %}
+      {% if notif.appts %}<div class="nrow" style="padding:11px 13px;border-radius:11px;border:1px solid var(--hair)">📅 <b>{{ notif.appts }}</b> rendez-vous à confirmer{% if rdv_on %} → <a href="#rdv">ouvrir</a>{% endif %}</div>{% endif %}
+      {% if notif.days_left is not none and notif.days_left > 0 and notif.days_left <= 3 %}<div class="nrow" style="padding:11px 13px;border-radius:11px;border:1px solid #e0a93b;color:#f0c674">⏳ Abonnement : {{ notif.days_left }} jour(s) restants — pensez à renouveler.</div>{% endif %}
+      {% if not (notif.suspended or notif.pay_count or notif.pending_orders or notif.appts) %}<div class="empty">Rien de neuf, tout est à jour ✨</div>{% endif %}
+    </div></div>
+  </section>
+  {% endif %}
+
+  {% if to_validate %}
+  <!-- VALIDATION DES PAIEMENTS -->
+  <section class="reveal" id="validation" style="order:2">
+    <div class="shead">
+      <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg></div>
+      <h2>Validation des paiements</h2>
+      {% if notif and notif.pay_count %}<div class="act"><span class="quota" style="color:#16f08b">{{ notif.pay_count }} à confirmer</span></div>{% endif %}
+    </div>
+    <p class="hint">Quand un client annonce un paiement Mobile Money, vérifiez-le ici. <b>Confirmez</b> si l'argent est bien reçu sur votre compte, sinon <b>Rejetez</b> (le client est invité à renvoyer sa référence — la vente reste ouverte).</p>
+    <div class="panel">
+      {% for o in to_validate %}
+      <div class="vrow" data-id="{{ o.id }}" style="border:1px solid var(--hair);border-radius:14px;padding:14px;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start">
+          <div>
+            <div class="an" style="font-weight:700">{{ o.customer_name or o.customer_whatsapp or 'Client' }}
+              {% if o.status == 'paid_pending_validation' %}<span class="tag" style="background:#e0a93b;color:#111">paiement annoncé</span>{% else %}<span class="tag">en attente de paiement</span>{% endif %}
+            </div>
+            <div class="ad" style="margin-top:4px">{% if o["items"] %}{% for it in o["items"] %}{{ it.quantite }}× {{ it.produit }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}</div>
+            <div class="ad" style="margin-top:6px;font-size:13px;opacity:.85">
+              {% if o.payment_network %}Réseau : <b>{{ o.payment_network }}</b> · {% endif %}
+              {% if o.payment_ref %}Transaction : <span class="mono">{{ o.payment_ref }}</span> · {% endif %}
+              {% if o.customer_whatsapp %}{{ o.customer_whatsapp }}{% endif %}
+            </div>
+          </div>
+          <div class="pp" style="text-align:right">
+            {% if o.total is not none %}<div><span class="mono" style="font-size:18px;font-weight:800">{{ "{:,}".format(o.total|int).replace(",", " ") }}</span> F</div>{% endif %}
+            {% if o.delivery_mode %}<div class="tag">{{ o.delivery_mode }}</div>{% endif %}
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:13px">
+          <button class="btn" type="button" onclick="validateOrder('{{ o.id }}','confirm',this)" style="background:#16f08b;color:#062b18;border-color:#16f08b;box-shadow:0 0 18px rgba(22,240,139,.45);font-weight:800">✓ Confirmer</button>
+          <button class="btn" type="button" onclick="validateOrder('{{ o.id }}','reject',this)" style="background:#ff2d55;color:#fff;border-color:#ff2d55;box-shadow:0 0 18px rgba(255,45,85,.45);font-weight:800">✕ Rejeter</button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
   <!-- ACTIVITÉ -->
   <section class="reveal" id="activite">
     <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg></div><h2>Activité de mon agent</h2></div>
@@ -1100,6 +1161,20 @@ if(aForm){ aForm.addEventListener('submit', async (e)=>{
     if(d.reply){ aBubble(esc(d.reply),'ag'); askHist.push({role:'user',content:text},{role:'assistant',content:d.reply}); }
   }catch(ex){ typing.remove(); aBubble('⚠ '+esc(ex.message),'ag'); }
 });}
+
+/* Validation des paiements */
+async function validateOrder(id, action, btn){
+  if(action==='reject' && !confirm('Rejeter ce paiement ? La commande reste ouverte et le client est invité à renvoyer sa référence.')) return;
+  const row = btn.closest('.vrow');
+  const btns = btn.parentElement.querySelectorAll('button'); btns.forEach(b=>b.disabled=true);
+  try{
+    const d = await api(`/api/merchants/${MID}/orders/${id}/validate`, 'POST', {action});
+    if(!d.ok){ notify(d.error||'Erreur', true); btns.forEach(b=>b.disabled=false); return; }
+    notify(action==='confirm' ? 'Paiement confirmé ✅ Le client est prévenu.' : 'Paiement rejeté — le client est invité à renvoyer sa référence.');
+    if(row){ row.style.transition='opacity .3s'; row.style.opacity='0'; setTimeout(()=>row.remove(), 320); }
+    setTimeout(()=>location.reload(), 1100);
+  }catch(ex){ notify(ex.message, true); btns.forEach(b=>b.disabled=false); }
+}
 
 /* Prospection */
 async function launchProspection(){

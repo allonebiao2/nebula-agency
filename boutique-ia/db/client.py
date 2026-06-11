@@ -1013,6 +1013,81 @@ def order_stats(merchant_id: str) -> dict[str, Any]:
     return {"count": len(rows), "revenue": total}
 
 
+# --- Validation des paiements clients (onglet Validation du back-office) ---
+
+# Statuts qui demandent une action du commerçant.
+_TO_VALIDATE = ("pending", "paid_pending_validation")
+
+
+def list_orders_to_validate(merchant_id: str, limit: int = 50) -> list[dict[str, Any]]:
+    """Commandes à traiter : paiement annoncé à valider, puis en attente de paiement."""
+    try:
+        rows = (
+            get_db().table("bia_orders").select("*")
+            .eq("merchant_id", merchant_id).in_("status", list(_TO_VALIDATE))
+            .order("created_at", desc=True).limit(limit).execute().data or []
+        )
+    except Exception:  # noqa: BLE001
+        return []
+    # Les paiements annoncés (à confirmer) d'abord, puis les commandes non payées.
+    rows.sort(key=lambda o: 0 if o.get("status") == "paid_pending_validation" else 1)
+    return rows
+
+
+def count_orders_to_validate(merchant_id: str) -> int:
+    """Nb de paiements ANNONCÉS en attente de confirmation (badge Validation)."""
+    try:
+        r = (get_db().table("bia_orders").select("id", count="exact", head=True)
+             .eq("merchant_id", merchant_id).eq("status", "paid_pending_validation")
+             .execute())
+        return r.count or 0
+    except Exception:  # noqa: BLE001
+        return 0
+
+
+def set_order_status(order_id: str, merchant_id: str, status: str) -> dict[str, Any]:
+    """Change le statut d'une commande (scopé à la boutique = sécurité)."""
+    from datetime import datetime, timezone
+    fields: dict[str, Any] = {"status": status}
+    if status == "confirmed":
+        fields["validated_at"] = datetime.now(timezone.utc).isoformat()
+    try:
+        res = (get_db().table("bia_orders").update(fields)
+               .eq("id", order_id).eq("merchant_id", merchant_id).execute())
+        return res.data[0] if res.data else {}
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def attach_payment_to_latest_pending(merchant_id: str, customer: str | None,
+                                     ref: str | None, network: str | None) -> dict[str, Any]:
+    """Le client annonce un paiement : on attache la preuve à sa dernière commande
+    'pending' et on la passe en 'paid_pending_validation'. Retourne la commande."""
+    if not customer:
+        return {}
+    try:
+        rows = (
+            get_db().table("bia_orders").select("*")
+            .eq("merchant_id", merchant_id).eq("customer_whatsapp", customer)
+            .eq("status", "pending").order("created_at", desc=True).limit(1)
+            .execute().data or []
+        )
+    except Exception:  # noqa: BLE001
+        return {}
+    if not rows:
+        return {}
+    oid = rows[0]["id"]
+    fields = {"status": "paid_pending_validation",
+              "payment_ref": (ref or "").strip() or None,
+              "payment_network": (network or "").strip() or None,
+              "payment_method": "mobile_money"}
+    try:
+        res = (get_db().table("bia_orders").update(fields).eq("id", oid).execute())
+        return res.data[0] if res.data else {}
+    except Exception:  # noqa: BLE001
+        return {}
+
+
 def list_recent_conversations(merchant_id: str, limit: int = 8) -> list[dict[str, Any]]:
     """Dernières conversations clients : 1 ligne par client (dernier message + nb)."""
     rows = (
