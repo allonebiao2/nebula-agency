@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Politique de confidentialité — {{ product_name }}</title>
+<meta name="robots" content="index,follow">
+<link rel="icon" href="/static/logo.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0b0b10;--panel:#13131a;--txt:#eef0f4;--mut:#9aa3b2;--c:#10b981;--line:#23232b}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',system-ui,sans-serif;line-height:1.7}
+  .wrap{max-width:780px;margin:0 auto;padding:30px 20px 70px}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:26px;flex-wrap:wrap}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-family:'Sora',sans-serif}
+  .logo img{width:30px;height:30px}
+  .back{color:var(--mut);text-decoration:none;font-weight:600;font-size:.9rem;border:1px solid var(--line);border-radius:10px;padding:9px 14px}
+  .back:hover{color:var(--txt);border-color:var(--c)}
+  h1{font-family:'Sora',sans-serif;font-size:2rem;font-weight:800;margin:6px 0 4px}
+  .date{color:var(--mut);font-size:.9rem;margin-bottom:26px}
+  h2{font-family:'Sora',sans-serif;font-size:1.2rem;margin:34px 0 10px;padding-top:8px;border-top:1px solid var(--line)}
+  p,li{color:#d7dbe2;font-size:.97rem}
+  a{color:var(--c)}
+  ul{padding-left:20px;display:flex;flex-direction:column;gap:6px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-top:14px}
+  strong{color:#fff}
+  footer{color:var(--mut);font-size:.85rem;margin-top:40px;border-top:1px solid var(--line);padding-top:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="logo"><img src="/static/logo.svg" alt=""> {{ product_name }}</div>
+    <a class="back" href="/">← Retour au site</a>
+  </div>
+
+  <h1>Politique de confidentialité</h1>
+  <div class="date">{{ product_name }}, un service de NEBULA Agency (Cotonou, Bénin). Dernière mise à jour : juin 2026.</div>
+
+  <p>Chez {{ product_name }}, nous prenons vos données — et celles de vos clients — au sérieux. Cette page explique, simplement et honnêtement, ce que nous collectons, pourquoi, et avec qui ces données sont traitées. <strong>Nous ne vendons jamais vos données.</strong></p>
+
+  <h2>1. Qui est responsable ?</h2>
+  <p>NEBULA Agency, basée à Cotonou (Bénin), éditrice du service {{ product_name }}. Contact : <a href="mailto:contact@nebula-agency.online">contact@nebula-agency.online</a>.</p>
+
+  <h2>2. Quelles données nous traitons</h2>
+  <ul>
+    <li><strong>Votre boutique</strong> : nom, secteur, ville, description, horaires, vos produits et prix, votre logo/photos.</li>
+    <li><strong>Vos contacts</strong> : votre numéro WhatsApp, votre numéro perso pour les alertes, votre email (si fourni).</li>
+    <li><strong>Vos clients</strong> : leur numéro WhatsApp et les messages échangés avec votre agent (pour pouvoir leur répondre et suivre les commandes).</li>
+    <li><strong>Paiements</strong> : les <strong>références</strong> de transactions Mobile Money que vos clients communiquent. Nous ne stockons <strong>aucune donnée de carte bancaire</strong>.</li>
+    <li><strong>Vos outils</strong> : ce que vous notez (caisse, ardoise, stock, agenda, documents) reste rattaché à votre boutique.</li>
+    <li><strong>Données d'usage</strong> : informations techniques minimales pour faire fonctionner et sécuriser le service.</li>
+  </ul>
+
+  <h2>3. Pourquoi nous les utilisons</h2>
+  <p>Uniquement pour <strong>faire fonctionner votre agent</strong> : répondre à vos clients sur WhatsApp, prendre les commandes, gérer votre boutique (caisse, stock, documents, rendez-vous), vous prévenir, et améliorer le service. Pas de publicité tierce, pas de revente.</p>
+
+  <h2>4. Avec qui ces données sont traitées (prestataires)</h2>
+  <p>Pour fournir le service, nous nous appuyons sur des prestataires techniques de confiance, chacun pour une tâche précise :</p>
+  <ul>
+    <li><strong>Anthropic (Claude)</strong> — l'intelligence qui rédige les réponses de votre agent.</li>
+    <li><strong>Supabase</strong> — hébergement sécurisé de la base de données.</li>
+    <li><strong>Meta (WhatsApp) / Twilio</strong> — l'acheminement des messages WhatsApp.</li>
+    <li><strong>Groq</strong> — la transcription des notes vocales en texte.</li>
+    <li><strong>Resend</strong> — l'envoi d'emails (le cas échéant).</li>
+  </ul>
+  <p>Ces prestataires n'utilisent pas vos données à d'autres fins que la fourniture de leur service.</p>
+
+  <h2>5. Conservation &amp; sécurité</h2>
+  <p>Vos données sont conservées tant que votre compte est actif, puis pour la durée nécessaire au suivi (commandes, comptabilité). L'accès à votre espace est protégé par un <strong>code d'accès secret</strong> et une session sécurisée. Vous pouvez demander la suppression de votre boutique à tout moment.</p>
+
+  <h2>6. Vos droits</h2>
+  <p>Vous pouvez à tout moment <strong>consulter, corriger ou supprimer</strong> vos données. Écrivez-nous à <a href="mailto:support@nebula-agency.online">support@nebula-agency.online</a> et nous donnons suite rapidement.</p>
+
+  <h2>7. Cookies</h2>
+  <p>Le site n'utilise pas de cookies publicitaires. Votre espace boutique utilise un <strong>cookie de session</strong> strictement nécessaire pour vous garder connecté en toute sécurité.</p>
+
+  <h2>8. Modifications</h2>
+  <p>Nous pouvons faire évoluer cette politique. La date de mise à jour ci-dessus fait foi ; les changements importants vous seront signalés.</p>
+
+  <h2 id="conditions">Conditions d'utilisation (résumé)</h2>
+  <ul>
+    <li><strong>Le service</strong> : un agent vendeur doté d'IA sur WhatsApp + des outils de gestion. Il assiste, mais <strong>vous gardez le contrôle</strong> (vous êtes prévenu, vous validez les paiements).</li>
+    <li><strong>Abonnement</strong> : mensuel, payé par Mobile Money, <strong>sans engagement</strong>. Vous pouvez arrêter quand vous voulez ; le service reste actif jusqu'à la fin de la période payée.</li>
+    <li><strong>Usage honnête</strong> : vous vous engagez à vendre des produits/services licites et à ne pas détourner le service (spam, contenu illégal).</li>
+    <li><strong>Disponibilité</strong> : nous faisons tout pour un service fiable 24/7, sans pouvoir garantir l'absence totale d'interruption (dépendances WhatsApp/Internet).</li>
+    <li><strong>Honnêteté de l'agent</strong> : il s'appuie sur les informations que vous fournissez ; gardez votre fiche à jour pour des réponses justes.</li>
+  </ul>
+
+  <footer>
+    Une question sur vos données ? Écrivez-nous : <a href="mailto:support@nebula-agency.online">support@nebula-agency.online</a> · WhatsApp <a href="https://wa.me/22962046155" target="_blank" rel="noopener">+229 62 04 61 55</a>.<br>
+    © {{ product_name }} — NEBULA Agency, Cotonou, Bénin.
+  </footer>
+</div>
+</body>
+</html>

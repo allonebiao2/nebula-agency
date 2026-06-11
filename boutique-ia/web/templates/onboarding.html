@@ -525,7 +525,7 @@
   <div class="wrap">
     <div class="eyebrow reveal">Tarifs</div>
     <h2 class="sec-title reveal">Un agent vendeur, à votre échelle.</h2>
-    <p class="sec-sub reveal">Choisissez votre offre. Sans engagement, paiement par Mobile Money. Pas encore décidé ? Un <a href="#essai" style="color:var(--c);font-weight:600">essai gratuit</a> vous attend juste en dessous.</p>
+    <p class="sec-sub reveal">Toutes les offres incluent votre <b style="color:var(--txt)">employé numérique</b> : vendeur 24h/24 + caisse, stock, ardoise, factures et assistant. Sans engagement, paiement par Mobile Money. Pas encore décidé ? Un <a href="#essai" style="color:var(--c);font-weight:600">essai gratuit</a> vous attend juste en dessous.</p>
     <div class="plans">
 
       <div class="plan reveal">
@@ -538,6 +538,7 @@
           <li><span class="ck">✓</span> Catalogue produits & services illimité</li>
           <li><span class="ck">✓</span> Alerte à chaque commande + client chaud</li>
           <li><span class="ck">✓</span> Comprend les notes vocales (inclus pour tous)</li>
+          <li><span class="ck">✓</span> <b>Vos outils inclus</b> : caisse, stock, ardoise clients, factures/devis/reçus, assistant personnel</li>
           <li><span class="ck">✓</span> 2 super-pouvoirs au choix : photos, paiement à la livraison, marchandage</li>
           <li><span class="ck">✓</span> 5 ordres/jour pour piloter l'agent</li>
           <li class="off"><span class="x">✕</span> Relances, rendez-vous, réseaux sociaux (Business)</li>
@@ -722,6 +723,26 @@
             <span style="color:var(--muted);font-size:.88rem">Sans engagement · paiement par Mobile Money</span>
           </div>
 
+          <style>
+            .prebuy{border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-top:18px;background:rgba(127,127,127,.04)}
+            .prebuy h4{font-family:'Sora',sans-serif;font-size:1rem;margin:0 0 11px;display:flex;align-items:center;gap:8px}
+            .prebuy h4 svg{width:18px;height:18px;stroke:var(--c);fill:none;stroke-width:1.8}
+            .prebuy ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:9px}
+            .prebuy li{color:var(--muted);font-size:.9rem;line-height:1.5}.prebuy li b{color:var(--txt)}
+            .consent{display:flex;align-items:flex-start;gap:10px;margin-top:15px;color:var(--muted);font-size:.9rem;cursor:pointer}
+            .consent input{margin-top:2px;flex:none;width:18px;height:18px;accent-color:var(--c)}
+            .consent a{color:var(--c);font-weight:600}
+          </style>
+          <div class="prebuy reveal">
+            <h4><svg viewBox="0 0 24 24"><use href="#i-shield"/></svg> À savoir avant de continuer</h4>
+            <ul>
+              <li>Paiement par <b>Mobile Money</b>, validé par notre équipe. <b>Sans engagement</b> — vous annulez quand vous voulez.</li>
+              <li><b>Juste après le paiement</b> : vous recevez le lien de VOTRE espace, vous créez votre code d'accès secret, vous partagez votre lien WhatsApp — et votre agent commence à vendre.</li>
+              <li>Vos données (boutique, produits, conversations) servent <b>uniquement</b> à faire fonctionner votre agent. <b>Elles ne sont jamais vendues.</b></li>
+            </ul>
+            <label class="consent"><input type="checkbox" id="consent"> <span>J'ai lu et j'accepte la <a href="/confidentialite" target="_blank" rel="noopener">politique de confidentialité</a> et les conditions d'utilisation.</span></label>
+          </div>
+
           <div class="err" id="err"></div>
           <div class="go-row">
             <button type="submit" class="btn btn-go" id="submit" onclick="goTrial=false">Créer mon agent vendeur →</button>
@@ -733,12 +754,46 @@
   </div>
 </section>
 
+<style>
+  footer .foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:26px;text-align:left;padding-bottom:24px;border-bottom:1px solid var(--line)}
+  footer .foot-brand p{color:var(--muted);font-size:.85rem;margin:8px 0 0;max-width:300px}
+  footer .foot-col h5{font-family:'Sora',sans-serif;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--txt);margin:0 0 12px}
+  footer .foot-col a{display:block;color:var(--muted);font-size:.88rem;margin-bottom:9px;text-decoration:none;transition:color .15s}
+  footer .foot-col a:hover{color:var(--c)}
+  footer .foot-bottom{text-align:center;color:var(--muted);font-size:.82rem;padding-top:20px}
+  @media(max-width:760px){footer .foot-grid{grid-template-columns:1fr 1fr;gap:22px}footer .foot-brand{grid-column:1/-1}}
+</style>
 <footer>
   <div class="wrap">
-    <div class="logo"><img src="/static/logo.svg" alt="" style="width:28px;height:28px"><span class="brand grad">{{ product_name }}</span></div>
-    {{ tagline }}
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="logo"><img src="/static/logo.svg" alt="" style="width:28px;height:28px"><span class="brand grad">{{ product_name }}</span></div>
+        <p>{{ tagline }}</p>
+        <p style="opacity:.8">NEBULA Agency · Cotonou, Bénin</p>
+      </div>
+      <div class="foot-col">
+        <h5>Aide &amp; contact</h5>
+        <a href="https://wa.me/22962046155" target="_blank" rel="noopener">Support sur WhatsApp</a>
+        <a href="mailto:support@nebula-agency.online">support@nebula-agency.online</a>
+        <a href="mailto:contact@nebula-agency.online">contact@nebula-agency.online</a>
+      </div>
+      <div class="foot-col">
+        <h5>Réseaux</h5>
+        <a href="https://www.instagram.com/vendora_bj" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.facebook.com/" target="_blank" rel="noopener">Facebook</a>
+        <a href="https://wa.me/22962046155" target="_blank" rel="noopener">WhatsApp</a>
+      </div>
+      <div class="foot-col">
+        <h5>Infos</h5>
+        <a href="/confidentialite">Politique de confidentialité</a>
+        <a href="/confidentialite#conditions">Conditions d'utilisation</a>
+        <a href="#tarifs">Tarifs</a>
+      </div>
+    </div>
+    <div class="foot-bottom">© <span id="yr">2026</span> NEBULA Agency — {{ product_name }}. Tous droits réservés.</div>
   </div>
 </footer>
+<script>try{document.getElementById('yr').textContent=new Date().getFullYear();}catch(e){}</script>
 
 <script>
   // ===== Fond animé WebGL (shader cosmique, adapté de Matthias Hurrle @atzedent) =====
@@ -863,6 +918,11 @@ void main(void){vec2 uv=(FC-.5*R)/MN,st=uv*vec2(2,1);vec3 col=vec3(0);float bg=c
     };
     if(!payload.business_name || !payload.whatsapp_business){
       err.textContent="Le nom de la boutique et le WhatsApp sont obligatoires."; err.style.display='block'; return;
+    }
+    const consent = document.getElementById('consent');
+    if(consent && !consent.checked){
+      err.textContent="Merci d'accepter la politique de confidentialité pour continuer."; err.style.display='block';
+      document.querySelector('.prebuy') && document.querySelector('.prebuy').scrollIntoView({behavior:'smooth',block:'center'}); return;
     }
     btn.disabled=true; btn.textContent='Création en cours…';
     try{

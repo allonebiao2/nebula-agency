@@ -332,6 +332,12 @@ async def onboarding(request: Request):
     return templates.TemplateResponse(request, "onboarding.html", _ctx(request))
 
 
+@app.get("/confidentialite", response_class=HTMLResponse)
+async def privacy_page(request: Request):
+    """Politique de confidentialité + conditions d'utilisation (publique)."""
+    return templates.TemplateResponse(request, "confidentialite.html", _ctx(request))
+
+
 @app.get("/go/{code}")
 async def wa_redirect(code: str):
     """Lien court partageable → redirige vers le vrai lien wa.me (avec le code de
