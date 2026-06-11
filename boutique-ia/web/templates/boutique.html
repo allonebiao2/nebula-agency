@@ -56,7 +56,7 @@
 <datalist id="d-sector"><option>Bijoux</option><option>Mode & vêtements</option><option>Cosmétiques & beauté</option><option>Restauration</option><option>Chaussures</option><option>Accessoires</option><option>Décoration</option><option>Électronique</option><option>Services</option></datalist>
 <datalist id="d-network"><option>MTN</option><option>Moov</option><option>Celtis</option><option>Wave</option></datalist>
 <datalist id="d-tone"><option>Chaleureux et professionnel</option><option>Formel et élégant</option><option>Jeune et dynamique</option><option>Luxe et raffiné</option><option>Proche et amical</option></datalist>
-<datalist id="d-lang"><option>Français</option><option>Français et Fon</option><option>Français et anglais</option></datalist>
+<datalist id="d-lang"><option>Français</option><option>Français · Fon</option><option>Français · Fon · Yoruba</option><option>Français · Fon · Yoruba · Hausa · Mina</option><option>Français · Anglais</option></datalist>
 <datalist id="d-duration"><option>30 min</option><option>1h</option><option>1h30</option><option>2h</option><option>Demi-journée</option></datalist>
 
 <div class="topbar">
@@ -1038,13 +1038,17 @@ Bracelet jonc 5000"></textarea>
       </div>
       <input id="f_ai_effort" type="hidden" value="{{ merchant.ai_effort or 'standard' }}">
 
-      <label>Langue(s)</label>
+      <label>Langue(s) <span style="color:var(--mut2)">(cliquez pour en combiner plusieurs)</span></label>
       <div class="choices">
-        <button class="chip" type="button" onclick="pick('f_languages','Français',this)">Français</button>
-        <button class="chip" type="button" onclick="pick('f_languages','Français et Fon',this)">Français + Fon</button>
-        <button class="chip" type="button" onclick="pick('f_languages','Français et anglais',this)">Français + anglais</button>
+        <button class="chip" type="button" onclick="addChip('f_languages','Français',this)">Français</button>
+        <button class="chip" type="button" onclick="addChip('f_languages','Fon',this)">Fon</button>
+        <button class="chip" type="button" onclick="addChip('f_languages','Yoruba',this)">Yoruba</button>
+        <button class="chip" type="button" onclick="addChip('f_languages','Hausa',this)">Hausa</button>
+        <button class="chip" type="button" onclick="addChip('f_languages','Mina (Gen)',this)">Mina</button>
+        <button class="chip" type="button" onclick="addChip('f_languages','Anglais',this)">Anglais</button>
       </div>
-      <input id="f_languages" value="{{ merchant.languages or '' }}" placeholder="ex : Français">
+      <input id="f_languages" value="{{ merchant.languages or '' }}" placeholder="ex : Français · Fon · Yoruba">
+      <div class="hint" style="margin:6px 0 0">L'agent répond dans la langue du client. Pour le fon / yoruba / mina (peu écrits), il fait le simple puis bascule en français au besoin — jamais de charabia.</div>
       <label>Règles de la boutique <span style="color:var(--mut2)">(acompte, retours, garanties…)</span></label>
       <textarea id="f_policies" placeholder="ex : acompte de 50% pour toute commande sur mesure">{{ merchant.policies or '' }}</textarea>
       <label>Infos utiles à connaître <span style="color:var(--mut2)">(FAQ, précisions…)</span></label>
