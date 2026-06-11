@@ -13,6 +13,7 @@ chaque message.
 from __future__ import annotations
 
 import json
+import re
 import time
 
 from config import settings
@@ -119,3 +120,67 @@ def save_config(updates: dict) -> dict:
     _cache["data"] = out
     _cache["ts"] = time.time()
     return out
+
+
+# ---------------------------------------------------------------------------
+# F2 — Routage de modèle par message (vendeur). On ne paie le modèle « fort »
+# (Sonnet/Opus configuré) que lorsqu'il y a un signal d'achat / négociation, ou
+# que la conversation est engagée. Les « bonjour / merci / c'est dispo ? » tôt
+# dans l'échange partent sur le modèle ÉCO (Haiku). On PROTÈGE la conversion :
+# au moindre doute → modèle fort. Désactivable depuis le cockpit.
+# ---------------------------------------------------------------------------
+
+CHEAP_VENDEUR = "claude-haiku-4-5-20251001"
+
+_BUY_RE = re.compile(
+    r"prix|combien|co[uû]te|achet|command|payer|paiement|paie\b|momo|mobile money|"
+    r"livr|n[ée]goc|marchand|remise|r[ée]duction|je\s+(prends|veux|command)|"
+    r"dispo|disponible|stock|taille|couleur|pointure|r[ée]serv|c'?est combien|"
+    r"[çc]a fait|combien c",
+    re.I,
+)
+
+_route_cache: dict = {"on": True, "ts": 0.0}
+
+
+def _routing_on() -> bool:
+    """Interrupteur cockpit `vendeur_smart_routing` (défaut ON), mis en cache (TTL)."""
+    now = time.time()
+    if (now - _route_cache["ts"]) < _TTL:
+        return _route_cache["on"]
+    on = True
+    try:
+        from db.client import get_setting
+        raw = get_setting("vendeur_smart_routing")
+        if raw is not None:
+            on = str(raw).strip().lower() not in ("0", "false", "off", "no", "non")
+    except Exception:  # noqa: BLE001
+        pass
+    _route_cache["on"] = on
+    _route_cache["ts"] = now
+    return on
+
+
+def model_for_vendeur(history: list[dict] | None) -> str:
+    """Modèle du vendeur, routé selon le message courant (cf. F2).
+
+    - Signal d'achat/négociation OU conversation engagée (≥3 tours client) → modèle
+      CONFIGURÉ (qualité de vente : on protège la conversion = le revenu).
+    - Petit message trivial en début d'échange → modèle ÉCO (Haiku).
+    Repli sur le modèle configuré si le routage est désactivé, ou si le modèle
+    configuré est déjà Haiku (rien à économiser).
+    """
+    strong = model_for("vendeur")
+    if strong == CHEAP_VENDEUR or not _routing_on():
+        return strong
+    last, turns = "", 0
+    for h in (history or []):
+        if h.get("role") == "customer":
+            turns += 1
+            last = h.get("content") or last
+    text = (last or "").strip().lower()
+    if not text or _BUY_RE.search(text) or turns >= 3:
+        return strong
+    if len(text.split()) <= 12 and not any(c.isdigit() for c in text):
+        return CHEAP_VENDEUR
+    return strong

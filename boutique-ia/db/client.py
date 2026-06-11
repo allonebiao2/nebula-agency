@@ -27,6 +27,55 @@ def create_merchant(payload: dict[str, Any]) -> dict[str, Any]:
     return result.data[0] if result.data else {}
 
 
+# ---------------------------------------------------------------------------
+# Mesure du coût IA (F3) — bia_usage. Guardé : sans la table (migration non
+# appliquée), on ignore silencieusement (jamais bloquer une réponse).
+# ---------------------------------------------------------------------------
+
+def record_usage(merchant_id, task: str, model: str, input_tokens: int,
+                 output_tokens: int, cache_read_tokens: int,
+                 cache_write_tokens: int, cost_usd: float) -> None:
+    """Insère une ligne d'usage IA. Ne lève jamais."""
+    try:
+        get_db().table("bia_usage").insert({
+            "merchant_id": merchant_id, "task": task, "model": model,
+            "input_tokens": int(input_tokens or 0),
+            "output_tokens": int(output_tokens or 0),
+            "cache_read_tokens": int(cache_read_tokens or 0),
+            "cache_write_tokens": int(cache_write_tokens or 0),
+            "cost_usd": round(float(cost_usd or 0), 6),
+        }).execute()
+    except Exception:  # noqa: BLE001
+        pass  # table absente / base indispo → on n'enregistre pas, c'est tout
+
+
+def usage_summary(days: int = 30) -> dict[str, Any]:
+    """Agrégat du coût IA des `days` derniers jours : total (USD + FCFA), par tâche,
+    et TAUX DE CACHE (rend visible l'efficacité du cache — cf. F1)."""
+    try:
+        from datetime import datetime, timedelta, timezone
+        since = (datetime.now(timezone.utc) - timedelta(days=max(1, days))).isoformat()
+        rows = (get_db().table("bia_usage").select("*")
+                .gte("created_at", since).limit(50000).execute().data) or []
+    except Exception:  # noqa: BLE001
+        return {"available": False}
+    total = sum(float(r.get("cost_usd") or 0) for r in rows)
+    in_tok = sum(int(r.get("input_tokens") or 0) for r in rows)
+    cr = sum(int(r.get("cache_read_tokens") or 0) for r in rows)
+    cw = sum(int(r.get("cache_write_tokens") or 0) for r in rows)
+    by_task: dict[str, float] = {}
+    for r in rows:
+        t = r.get("task") or "?"
+        by_task[t] = by_task.get(t, 0.0) + float(r.get("cost_usd") or 0)
+    cache_base = in_tok + cr + cw
+    return {
+        "available": True, "days": days, "calls": len(rows),
+        "cost_usd": round(total, 4), "cost_fcfa": int(total * 600),
+        "cache_hit_rate": round(cr / cache_base, 3) if cache_base else 0.0,
+        "by_task": {k: round(v, 4) for k, v in sorted(by_task.items())},
+    }
+
+
 def get_merchant_by_code(code: str) -> dict[str, Any] | None:
     """Retrouve une boutique par son code court (routing WhatsApp)."""
     db = get_db()

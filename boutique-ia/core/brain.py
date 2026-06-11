@@ -14,7 +14,7 @@ from typing import Callable
 import anthropic
 
 from config import settings
-from core import capabilities, model_config
+from core import capabilities, model_config, usage
 
 log = logging.getLogger("boutique-ia.brain")
 
@@ -578,15 +578,19 @@ def reply(
     if "rdv" in caps:
         tools.append(RDV_TOOL)
 
+    # F2 — routage du modèle selon le message courant (éco si trivial, fort si vente).
+    model = model_config.model_for_vendeur(history)
+
     did_tool = False
     for _ in range(MAX_TOOL_TURNS):
         resp = client.messages.create(
-            model=model_config.model_for("vendeur"),
+            model=model,
             max_tokens=model_config.tokens_for_merchant(merchant, "vendeur", 500),  # WhatsApp court · ajusté par l'effort
             system=system,
             messages=messages,
             tools=tools,
         )
+        usage.track("vendeur", model, resp, merchant.get("id"))  # F3 — mesure coût
 
         tool_uses = [b for b in resp.content if getattr(b, "type", None) == "tool_use"]
         if not tool_uses:
@@ -671,10 +675,11 @@ def reply(
 
     # Sécurité : on a épuisé les tours d'outil → demande un dernier message texte.
     resp = client.messages.create(
-        model=model_config.model_for("vendeur"),
+        model=model,
         max_tokens=model_config.tokens_for_merchant(merchant, "vendeur", 500),
         system=system,
         messages=messages,
     )
+    usage.track("vendeur", model, resp, merchant.get("id"))  # F3 — mesure coût
     # Si l'agent reste muet après avoir enregistré la commande, on confirme nous-mêmes.
     return _text_of(resp) or (_fallback_after_order(merchant) if did_tool else "…")

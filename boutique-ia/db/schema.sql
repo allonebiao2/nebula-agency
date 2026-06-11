@@ -455,3 +455,19 @@ create table if not exists bia_product_images (
 );
 create index if not exists bia_product_images_idx on bia_product_images(product_id, position);
 create index if not exists bia_product_images_m_idx on bia_product_images(merchant_id);
+
+-- Mesure du COÛT IA (F3) : un enregistrement par appel modèle (tokens + coût estimé).
+create table if not exists bia_usage (
+  id uuid primary key default gen_random_uuid(),
+  merchant_id uuid,
+  task text,
+  model text,
+  input_tokens       int default 0,
+  output_tokens      int default 0,
+  cache_read_tokens  int default 0,
+  cache_write_tokens int default 0,
+  cost_usd numeric default 0,
+  created_at timestamptz default now()
+);
+create index if not exists bia_usage_created_idx on bia_usage(created_at);
+create index if not exists bia_usage_merchant_idx on bia_usage(merchant_id);

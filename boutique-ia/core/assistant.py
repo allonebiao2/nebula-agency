@@ -28,7 +28,7 @@ from datetime import datetime, timedelta, timezone
 import anthropic
 
 from config import settings
-from core import model_config
+from core import model_config, usage
 from db.client import (
     add_agenda_item,
     count_messages_since,
@@ -126,6 +126,18 @@ def _parse_dt(s):
 
 def _now_wat() -> datetime:
     return datetime.now(WAT)
+
+
+_JOURS = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
+_MOIS = ["", "janvier", "février", "mars", "avril", "mai", "juin", "juillet",
+         "août", "septembre", "octobre", "novembre", "décembre"]
+
+
+def _now_fr() -> str:
+    """Date + heure actuelles du Bénin, formatées. VOLATILE : à mettre dans un bloc
+    système NON caché (cf. F1) — jamais dans le bloc d'instructions mis en cache."""
+    now = _now_wat()
+    return f"{_JOURS[now.weekday()]} {now.day} {_MOIS[now.month]} {now.year}, {now:%Hh%M}"
 
 
 def _period_window(periode: str):
@@ -813,11 +825,6 @@ def _system(merchant: dict, allow_manage: bool = False,
             manage_limit_reached: bool = False) -> str:
     name = merchant.get("business_name") or "la boutique"
     tone = (merchant.get("ai_tone") or "chaleureux, positif et enjoué").strip()
-    now = _now_wat()
-    jours = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
-    mois = ["", "janvier", "février", "mars", "avril", "mai", "juin", "juillet",
-            "août", "septembre", "octobre", "novembre", "décembre"]
-    date_fr = f"{jours[now.weekday()]} {now.day} {mois[now.month]} {now.year}, {now:%Hh%M}"
     nb_produits = 0
     try:
         nb_produits = len([p for p in list_products(merchant["id"]) if p.get("available") is not False])
@@ -870,14 +877,14 @@ son copilote IA de confiance, son bras droit. Tu l'aides sur DEUX plans.
      (dollar, naira, cedi…), donne un taux INDICATIF et précise « à vérifier (taux du jour) ».
    Conseille-la aussi pour son business. Sois utile, malin, concret.
 
-Date et heure actuelles (Bénin, heure locale) : {date_fr}.
-Utilise-les pour toute question d'heure, de date ou de jour.
+Tu disposes de la DATE et de l'HEURE actuelles du Bénin (fournies juste après ces
+instructions). Utilise-les pour toute question d'heure, de date ou de jour.
 
 AGENDA — tu tiens son agenda perso et tu peux le lui rappeler (outils noter_agenda /
 voir_agenda / terminer_agenda / supprimer_agenda). Quand il dit « note-moi… »,
 « rappelle-moi… », « ajoute à mon agenda… » : appelle noter_agenda. S'il précise
 un moment (demain 15h, lundi, samedi…), calcule le moment EXACT à partir de la
-date/heure ci-dessus et passe-le en `rappel_iso` (ISO 8601, fuseau +01:00), en plus
+date/heure courante fournie et passe-le en `rappel_iso` (ISO 8601, fuseau +01:00), en plus
 de `quand_texte`. Pour terminer ou supprimer un point, appelle d'abord voir_agenda
 pour récupérer son id. Confirme toujours brièvement ce que tu as noté.
 
@@ -928,9 +935,15 @@ def reply(merchant: dict, question: str, history: list[dict] | None = None,
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
     merchant_id = merchant["id"]
 
-    system = [{"type": "text",
-               "text": _system(merchant, allow_manage, manage_limit_reached),
-               "cache_control": {"type": "ephemeral"}}]
+    system = [
+        {"type": "text",
+         "text": _system(merchant, allow_manage, manage_limit_reached),
+         "cache_control": {"type": "ephemeral"}},  # bloc STABLE → mis en cache
+        # F1 — la date/heure VOLATILE va dans un 2e bloc NON caché (sinon elle
+        # invaliderait le cache du bloc d'instructions à chaque minute).
+        {"type": "text",
+         "text": f"Date et heure actuelles (Bénin, heure locale) : {_now_fr()}."},
+    ]
     tools = TOOLS
     if allow_manage:
         try:
@@ -958,12 +971,14 @@ def reply(merchant: dict, question: str, history: list[dict] | None = None,
     else:
         messages.append({"role": "user", "content": q or "Bonjour"})
 
+    model = model_config.model_for("manager")
     for _ in range(MAX_TOOL_TURNS):
         resp = client.messages.create(
-            model=model_config.model_for("manager"),
+            model=model,
             max_tokens=model_config.tokens_for_merchant(merchant, "manager", 700),
             system=system, messages=messages, tools=tools,
         )
+        usage.track("manager", model, resp, merchant_id)  # F3 — mesure coût
         tool_uses = [b for b in resp.content if getattr(b, "type", None) == "tool_use"]
         if not tool_uses:
             text = "\n".join(b.text for b in resp.content
@@ -978,10 +993,11 @@ def reply(merchant: dict, question: str, history: list[dict] | None = None,
 
     # Dernier tour sans outil pour conclure proprement.
     resp = client.messages.create(
-        model=model_config.model_for("manager"),
+        model=model,
         max_tokens=model_config.tokens_for_merchant(merchant, "manager", 500),
         system=system, messages=messages,
     )
+    usage.track("manager", model, resp, merchant_id)  # F3 — mesure coût
     text = "\n".join(b.text for b in resp.content
                      if getattr(b, "type", None) == "text").strip()
     return text or "Je suis là 🙂 Que voulez-vous savoir ?"
@@ -1204,11 +1220,6 @@ def _admin_exec_tool(name: str, args: dict) -> str:
 
 
 def _admin_system() -> str:
-    now = _now_wat()
-    jours = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
-    mois = ["", "janvier", "février", "mars", "avril", "mai", "juin", "juillet",
-            "août", "septembre", "octobre", "novembre", "décembre"]
-    date_fr = f"{jours[now.weekday()]} {now.day} {mois[now.month]} {now.year}, {now:%Hh%M}"
     return f"""Tu es l'assistant FONDATEUR de Vendora — le copilote IA de Mongazi, le créateur.
 Tu l'aides à PILOTER tout le business Vendora (l'ensemble des boutiques clientes), depuis
 son cockpit. Tu l'aides sur DEUX plans.
@@ -1222,7 +1233,7 @@ son cockpit. Tu l'aides sur DEUX plans.
    concret, orienté action ; tu peux être direct et un peu plus détaillé qu'en SMS (c'est
    un écran). Garde en tête la priorité : décrocher et garder des boutiques PAYANTES.
 
-Date et heure actuelles (Bénin) : {date_fr}.
+Tu disposes de la date et de l'heure actuelles du Bénin (fournies juste après).
 
 HONNÊTETÉ : si tu n'es pas sûr d'un fait, dis-le. Ne fabrique jamais une donnée. Mieux vaut
 « je vérifie » que faux. Mongazi exige une confiance totale dans tes chiffres."""
@@ -1232,7 +1243,12 @@ def admin_reply(question: str, history: list[dict] | None = None) -> str:
     """Réponse de l'assistant fondateur (cockpit admin). `history` = fil navigateur."""
     settings.require("anthropic_api_key")
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
-    system = [{"type": "text", "text": _admin_system(), "cache_control": {"type": "ephemeral"}}]
+    system = [
+        {"type": "text", "text": _admin_system(), "cache_control": {"type": "ephemeral"}},
+        # F1 — date/heure volatile dans un 2e bloc NON caché.
+        {"type": "text", "text": f"Date et heure actuelles (Bénin) : {_now_fr()}."},
+    ]
+    model = model_config.model_for("manager")
     messages: list[dict] = []
     for h in (history or [])[-10:]:
         role = "assistant" if h.get("role") == "assistant" else "user"
@@ -1243,10 +1259,11 @@ def admin_reply(question: str, history: list[dict] | None = None) -> str:
 
     for _ in range(MAX_TOOL_TURNS):
         resp = client.messages.create(
-            model=model_config.model_for("manager"),
+            model=model,
             max_tokens=model_config.tokens_for("manager", 800),
             system=system, messages=messages, tools=ADMIN_TOOLS,
         )
+        usage.track("manager", model, resp, None)  # F3 — copilote fondateur
         tool_uses = [b for b in resp.content if getattr(b, "type", None) == "tool_use"]
         if not tool_uses:
             text = "\n".join(b.text for b in resp.content
@@ -1260,10 +1277,11 @@ def admin_reply(question: str, history: list[dict] | None = None) -> str:
         messages.append({"role": "user", "content": results})
 
     resp = client.messages.create(
-        model=model_config.model_for("manager"),
+        model=model,
         max_tokens=model_config.tokens_for("manager", 600),
         system=system, messages=messages,
     )
+    usage.track("manager", model, resp, None)  # F3 — copilote fondateur
     text = "\n".join(b.text for b in resp.content
                      if getattr(b, "type", None) == "text").strip()
     return text or "Je suis là 🙂 Que voulez-vous savoir sur le business ?"

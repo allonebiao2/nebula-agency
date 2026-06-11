@@ -20,7 +20,7 @@ from typing import Callable
 import anthropic
 
 from config import settings
-from core import model_config
+from core import model_config, usage
 
 log = logging.getLogger("boutique-ia.support")
 
@@ -68,7 +68,6 @@ def _system(merchant: dict, known_issues: str = "") -> str:
     name = merchant.get("business_name") or "la boutique"
     plan = merchant.get("plan") or "—"
     status = merchant.get("status") or "—"
-    now = datetime.now(WAT)
     issues_block = ""
     if known_issues.strip():
         issues_block = (
@@ -77,7 +76,7 @@ def _system(merchant: dict, known_issues: str = "") -> str:
         )
     return f"""Tu es le SUPPORT CLIENT de Vendora. Tu aides « {name} » (un commerçant qui utilise
 Vendora) à se servir de la plateforme et à résoudre ses soucis. Tu réponds DANS l'espace du
-commerçant (onglet Support). Forfait : {plan}. Statut boutique : {status}. Date : {now:%d/%m/%Y %Hh%M}.
+commerçant (onglet Support). Forfait : {plan}. Statut boutique : {status}.
 
 Ton rôle :
 - Réponds avec EMPATHIE, clarté et patience. Rassure toujours. Le commerçant n'est pas technique.
@@ -98,8 +97,14 @@ def support_reply(merchant: dict, question: str, history: list[dict] | None = No
     """Réponse du support IA au commerçant. `on_problem` : callback d'escalade."""
     settings.require("anthropic_api_key")
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
-    system = [{"type": "text", "text": _system(merchant, known_issues),
-               "cache_control": {"type": "ephemeral"}}]
+    system = [
+        {"type": "text", "text": _system(merchant, known_issues),
+         "cache_control": {"type": "ephemeral"}},
+        # F1 — date volatile dans un 2e bloc NON caché (préserve le cache du 1er).
+        {"type": "text",
+         "text": f"Date du jour (Bénin) : {datetime.now(WAT):%d/%m/%Y %Hh%M}."},
+    ]
+    model = model_config.model_for("manager")
     messages: list[dict] = []
     for h in (history or [])[-10:]:
         role = "assistant" if h.get("role") in ("ai", "owner", "assistant") else "user"
@@ -110,10 +115,11 @@ def support_reply(merchant: dict, question: str, history: list[dict] | None = No
 
     for _ in range(MAX_TOOL_TURNS):
         resp = client.messages.create(
-            model=model_config.model_for("manager"),
+            model=model,
             max_tokens=model_config.tokens_for("manager", 600),
             system=system, messages=messages, tools=[PROBLEM_TOOL],
         )
+        usage.track("support", model, resp, merchant.get("id"))  # F3 — mesure coût
         tool_uses = [b for b in resp.content if getattr(b, "type", None) == "tool_use"]
         if not tool_uses:
             text = "\n".join(b.text for b in resp.content
@@ -134,10 +140,11 @@ def support_reply(merchant: dict, question: str, history: list[dict] | None = No
         messages.append({"role": "user", "content": results})
 
     resp = client.messages.create(
-        model=model_config.model_for("manager"),
+        model=model,
         max_tokens=model_config.tokens_for("manager", 400),
         system=system, messages=messages,
     )
+    usage.track("support", model, resp, merchant.get("id"))  # F3 — mesure coût
     text = "\n".join(b.text for b in resp.content
                      if getattr(b, "type", None) == "text").strip()
     return text or "Je suis là pour vous aider 🙂 Dites-moi tout."
