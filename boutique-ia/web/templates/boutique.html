@@ -64,32 +64,71 @@
   <span class="pill">Espace boutique</span>
 </div>
 
-<!-- MENU LATÉRAL VERTICAL (desktop) -->
+<!-- MENU LATÉRAL VERTICAL (desktop) + TIROIR (mobile) -->
 <style>
   html{scroll-behavior:smooth}
+  body{overflow-x:hidden}
+  .tabs{display:none!important}                 /* remplacé par sidebar (desktop) / tiroir (mobile) */
   .secwrap>section{scroll-margin-top:18px}
-  .sidebar{position:fixed;left:0;top:0;bottom:0;width:250px;background:var(--panel,#13131a);
-           border-right:1px solid var(--line,#23232b);overflow-y:auto;z-index:60;padding:18px 12px 34px;display:none}
-  .sb-brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:1rem;padding:6px 10px 12px;
-            color:var(--txt,#eef);font-family:'Plus Jakarta Sans',sans-serif}
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:min(84vw,290px);background:var(--panel,#13131a);
+           border-right:1px solid var(--line,#23232b);overflow-y:auto;z-index:80;padding:14px 12px 34px;
+           transform:translateX(-100%);transition:transform .26s cubic-bezier(.4,0,.2,1)}
+  .sb-head{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:4px 6px 8px}
+  .sb-brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:1rem;color:var(--txt,#eef);font-family:'Plus Jakarta Sans',sans-serif;min-width:0}
+  .sb-brand span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .sb-brand .glyph{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:var(--a,#10b981);flex:none}
   .sb-brand .glyph svg{width:17px;height:17px;stroke:#06120d;fill:none;stroke-width:2}
+  .sb-close{display:none;align-items:center;justify-content:center;width:34px;height:34px;border:0;border-radius:9px;background:rgba(127,127,127,.12);color:var(--txt,#eee);font-size:1.4rem;line-height:1;cursor:pointer;flex:none}
   .sb-group{margin-top:13px}
   .sb-h{font-size:.69rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted,#8a8a99);font-weight:700;padding:0 11px 5px}
-  .sb-link{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:10px;color:var(--muted,#9aa3b2);
-           text-decoration:none;font-weight:600;font-size:.9rem;transition:background .15s,color .15s,box-shadow .15s}
+  .sb-link{display:flex;align-items:center;gap:11px;padding:11px;border-radius:10px;color:var(--muted,#9aa3b2);
+           text-decoration:none;font-weight:600;font-size:.92rem;transition:background .15s,color .15s,box-shadow .15s}
   .sb-link svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7}
-  .sb-link:hover{background:rgba(127,127,127,.09);color:var(--txt,#eef)}
+  .sb-link:hover,.sb-link:active{background:rgba(127,127,127,.09);color:var(--txt,#eef)}
   .sb-link.active{color:var(--a,#10b981);background:rgba(127,127,127,.1);box-shadow:inset 3px 0 0 var(--a,#10b981)}
   .sb-badge{margin-left:auto;background:var(--a,#10b981);color:#06120d;font-size:.68rem;font-weight:800;border-radius:20px;padding:1px 7px}
+  .sb-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:75;opacity:0;visibility:hidden;transition:opacity .26s}
+  body.sb-open .sidebar{transform:none}
+  body.sb-open .sb-overlay{opacity:1;visibility:visible}
+  body.sb-open{overflow:hidden}
+  /* Barre mobile (☰ + nom) */
+  .m-appbar{position:sticky;top:0;z-index:70;display:flex;align-items:center;gap:11px;padding:9px 58px 9px 12px;
+            background:var(--bg,#0f1115);border-bottom:1px solid var(--line,#23232b)}
+  .m-appbar .burger{display:flex;align-items:center;justify-content:center;width:42px;height:42px;flex:none;
+            border:1px solid var(--line,#26262e);border-radius:11px;background:var(--panel,#15151b);color:var(--txt,#eee);cursor:pointer}
+  .m-appbar .burger svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
+  .m-appbar .mt{font-weight:700;font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   @media(min-width:1080px){
-    .sidebar{display:block}
+    .sidebar{transform:none;width:250px;z-index:60;padding-top:18px}
     body{padding-left:250px}
-    .tabs{display:none!important}
+    .m-appbar,.sb-overlay,.sb-close{display:none!important}
+  }
+  @media(max-width:1079px){
+    .sb-close{display:flex}
+    .topbar{display:none}                       /* la barre mobile la remplace */
+  }
+  /* Ergonomie mobile : anti-zoom iOS, cibles tactiles, anti-débordement */
+  @media(max-width:680px){
+    input,select,textarea{font-size:16px}
+    input,select{max-width:100%}
+    .btn{min-height:42px}
+    .row,form{flex-wrap:wrap}
+    .secwrap>section{scroll-margin-top:64px}
+    .wrap{padding-left:15px;padding-right:15px}
+    h1{font-size:1.5rem}
+    .bezel-in{padding:14px}
   }
 </style>
+<div class="m-appbar">
+  <button class="burger" onclick="sbOpen()" aria-label="Ouvrir le menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  <span class="mt">{{ merchant.business_name }}</span>
+</div>
+<div class="sb-overlay" onclick="sbClose()"></div>
 <aside class="sidebar" id="sidebar">
-  <div class="sb-brand"><span class="glyph"><svg viewBox="0 0 24 24"><use href="#i-store"/></svg></span><span>{{ merchant.business_name }}</span></div>
+  <div class="sb-head">
+    <div class="sb-brand"><span class="glyph"><svg viewBox="0 0 24 24"><use href="#i-store"/></svg></span><span>{{ merchant.business_name }}</span></div>
+    <button class="sb-close" onclick="sbClose()" aria-label="Fermer le menu">×</button>
+  </div>
   <nav class="sb-nav">
     <div class="sb-group"><div class="sb-h">Mon agent</div>
       <a class="sb-link" href="#whatsapp"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg>WhatsApp &amp; QR</a>
@@ -1288,6 +1327,12 @@ document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.setProperty('--d'
   },{rootMargin:'-45% 0px -50% 0px',threshold:0});
   Object.keys(byId).forEach(id=>{ const s=document.getElementById(id); if(s) spy.observe(s); });
 })();
+
+/* Tiroir mobile (☰) */
+function sbOpen(){ document.body.classList.add('sb-open'); }
+function sbClose(){ document.body.classList.remove('sb-open'); }
+document.querySelectorAll('.sb-link').forEach(a=>a.addEventListener('click', sbClose));
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') sbClose(); });
 
 /* Produits */
 function toggleAdd(){ document.getElementById('addForm').classList.toggle('hide'); }
