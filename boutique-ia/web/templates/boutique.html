@@ -801,7 +801,118 @@ Bracelet jonc 5000"></textarea>
         <div class="bt">Personnalise <b>tout votre espace</b> à vos couleurs. Choisissez la couleur de votre logo.</div>
       </div>
 
-      <div style="margin-top:18px"><button class="btn pri" type="button" onclick="saveMerchant(['business_name','sector','description','city','business_hours','brand_color'])">Enregistrer les infos</button></div>
+      <!-- FICHE ENRICHIE — mieux l'agent connaît, mieux il vend -->
+      <div style="border-top:1px solid var(--hair);margin-top:22px;padding-top:16px">
+        <p class="hint" style="margin-top:0">Plus vous en dites, mieux votre agent connaît votre business et vend juste. Cliquez les choix ou écrivez les vôtres.</p>
+        <div class="grid2">
+          <div><label>Depuis quand ?</label>
+            <div class="choices">
+              <button class="chip" type="button" onclick="pick('f_founded','Cette année',this)">Cette année</button>
+              <button class="chip" type="button" onclick="pick('f_founded','1-2 ans',this)">1-2 ans</button>
+              <button class="chip" type="button" onclick="pick('f_founded','3-5 ans',this)">3-5 ans</button>
+              <button class="chip" type="button" onclick="pick('f_founded','Plus de 5 ans',this)">+5 ans</button>
+            </div>
+            <input id="f_founded" value="{{ merchant.founded or '' }}" placeholder="ou écrivez"></div>
+          <div><label>Positionnement / gamme</label>
+            <div class="choices">
+              <button class="chip" type="button" onclick="pick('f_price_range','Accessible',this)">Accessible</button>
+              <button class="chip" type="button" onclick="pick('f_price_range','Milieu de gamme',this)">Milieu</button>
+              <button class="chip" type="button" onclick="pick('f_price_range','Premium',this)">Premium</button>
+              <button class="chip" type="button" onclick="pick('f_price_range','Luxe',this)">Luxe</button>
+            </div>
+            <input id="f_price_range" value="{{ merchant.price_range or '' }}" placeholder="ou écrivez"></div>
+        </div>
+
+        <label style="margin-top:16px">Présence</label>
+        <div class="choices">
+          <button class="chip" type="button" onclick="pick('f_presence','Boutique physique',this)">Boutique physique</button>
+          <button class="chip" type="button" onclick="pick('f_presence','En ligne uniquement',this)">En ligne</button>
+          <button class="chip" type="button" onclick="pick('f_presence','Marché',this)">Marché</button>
+          <button class="chip" type="button" onclick="pick('f_presence','À domicile',this)">À domicile</button>
+          <button class="chip" type="button" onclick="pick('f_presence','Showroom',this)">Showroom</button>
+        </div>
+        <input id="f_presence" value="{{ merchant.presence or '' }}" placeholder="ou écrivez (ex : 2 boutiques à Cotonou)">
+
+        <label style="margin-top:16px">Ce qui rend votre boutique unique</label>
+        <div class="choices">
+          <button class="chip" type="button" onclick="addChip('f_unique_selling','Fait main',this)">Fait main</button>
+          <button class="chip" type="button" onclick="addChip('f_unique_selling','Qualité supérieure',this)">Qualité supérieure</button>
+          <button class="chip" type="button" onclick="addChip('f_unique_selling','Prix imbattables',this)">Prix imbattables</button>
+          <button class="chip" type="button" onclick="addChip('f_unique_selling','Exclusivité',this)">Exclusivité</button>
+          <button class="chip" type="button" onclick="addChip('f_unique_selling','Sur-mesure',this)">Sur-mesure</button>
+          <button class="chip" type="button" onclick="addChip('f_unique_selling','Made in Bénin',this)">Made in Bénin</button>
+        </div>
+        <input id="f_unique_selling" value="{{ merchant.unique_selling or '' }}" placeholder="ou écrivez votre force">
+
+        <div class="grid2" style="margin-top:16px">
+          <div><label>Produits phares / best-sellers</label>
+            <input id="f_bestsellers" value="{{ merchant.bestsellers or '' }}" placeholder="ex : colliers dorés, bracelets jonc"></div>
+          <div><label>Promo / offre du moment</label>
+            <input id="f_promotions" value="{{ merchant.promotions or '' }}" placeholder="ex : -10% dès 2 articles ce mois"></div>
+        </div>
+
+        <label style="margin-top:16px">Clientèle cible <span style="color:var(--mut2)">(plusieurs possibles)</span></label>
+        <div class="choices">
+          <button class="chip" type="button" onclick="addChip('f_target_audience','Femmes',this)">Femmes</button>
+          <button class="chip" type="button" onclick="addChip('f_target_audience','Hommes',this)">Hommes</button>
+          <button class="chip" type="button" onclick="addChip('f_target_audience','Jeunes',this)">Jeunes</button>
+          <button class="chip" type="button" onclick="addChip('f_target_audience','Professionnels',this)">Professionnels</button>
+          <button class="chip" type="button" onclick="addChip('f_target_audience','Mamans',this)">Mamans</button>
+          <button class="chip" type="button" onclick="addChip('f_target_audience','Mariées',this)">Mariées</button>
+        </div>
+        <input id="f_target_audience" value="{{ merchant.target_audience or '' }}" placeholder="ou écrivez">
+
+        <label style="margin-top:16px">Occasions d'achat <span style="color:var(--mut2)">(plusieurs)</span></label>
+        <div class="choices">
+          <button class="chip" type="button" onclick="addChip('f_occasions','Quotidien',this)">Quotidien</button>
+          <button class="chip" type="button" onclick="addChip('f_occasions','Cadeaux',this)">Cadeaux</button>
+          <button class="chip" type="button" onclick="addChip('f_occasions','Mariage',this)">Mariage</button>
+          <button class="chip" type="button" onclick="addChip('f_occasions','Cérémonies',this)">Cérémonies</button>
+          <button class="chip" type="button" onclick="addChip('f_occasions','Fêtes',this)">Fêtes</button>
+        </div>
+        <input id="f_occasions" value="{{ merchant.occasions or '' }}" placeholder="ou écrivez">
+
+        <label style="margin-top:16px">Paiements acceptés <span style="color:var(--mut2)">(plusieurs)</span></label>
+        <div class="choices">
+          <button class="chip" type="button" onclick="addChip('f_payment_methods','Mobile Money',this)">Mobile Money</button>
+          <button class="chip" type="button" onclick="addChip('f_payment_methods','Espèces',this)">Espèces</button>
+          <button class="chip" type="button" onclick="addChip('f_payment_methods','À la livraison',this)">À la livraison</button>
+          <button class="chip" type="button" onclick="addChip('f_payment_methods','Virement',this)">Virement</button>
+          <button class="chip" type="button" onclick="addChip('f_payment_methods','Carte',this)">Carte</button>
+        </div>
+        <input id="f_payment_methods" value="{{ merchant.payment_methods or '' }}" placeholder="ou écrivez">
+
+        <label style="margin-top:16px">Arguments à mettre en avant <span style="color:var(--mut2)">(plusieurs)</span></label>
+        <div class="choices">
+          <button class="chip" type="button" onclick="addChip('f_selling_points','Qualité',this)">Qualité</button>
+          <button class="chip" type="button" onclick="addChip('f_selling_points','Prix',this)">Prix</button>
+          <button class="chip" type="button" onclick="addChip('f_selling_points','Rapidité',this)">Rapidité</button>
+          <button class="chip" type="button" onclick="addChip('f_selling_points','Service client',this)">Service client</button>
+          <button class="chip" type="button" onclick="addChip('f_selling_points','Livraison',this)">Livraison</button>
+        </div>
+        <input id="f_selling_points" value="{{ merchant.selling_points or '' }}" placeholder="ou écrivez">
+
+        <label style="margin-top:16px">Réassurance / garanties <span style="color:var(--mut2)">(plusieurs)</span></label>
+        <div class="choices">
+          <button class="chip" type="button" onclick="addChip('f_guarantees','Satisfait ou remboursé',this)">Satisfait ou remboursé</button>
+          <button class="chip" type="button" onclick="addChip('f_guarantees','Échange possible',this)">Échange possible</button>
+          <button class="chip" type="button" onclick="addChip('f_guarantees','Produits authentiques',this)">Produits authentiques</button>
+          <button class="chip" type="button" onclick="addChip('f_guarantees','Garantie après-vente',this)">Garantie après-vente</button>
+        </div>
+        <input id="f_guarantees" value="{{ merchant.guarantees or '' }}" placeholder="ou écrivez">
+
+        <label style="margin-top:16px">Objections fréquentes &amp; comment y répondre</label>
+        <textarea id="f_objections" placeholder="ex : « c'est cher » → la qualité dure des années ; « la livraison ? » → 24h à Cotonou">{{ merchant.objections or '' }}</textarea>
+
+        <div class="grid2" style="margin-top:16px">
+          <div><label>À NE PAS dire / promettre <span style="color:var(--mut2)">(limites)</span></label>
+            <input id="f_avoid_topics" value="{{ merchant.avoid_topics or '' }}" placeholder="ex : ne jamais promettre hors Bénin"></div>
+          <div><label>Réseaux sociaux</label>
+            <input id="f_socials" value="{{ merchant.socials or '' }}" placeholder="ex : Instagram @maboutique"></div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px"><button class="btn pri" type="button" onclick="saveMerchant(['business_name','sector','description','city','business_hours','brand_color','founded','price_range','presence','unique_selling','bestsellers','promotions','target_audience','occasions','payment_methods','selling_points','guarantees','objections','avoid_topics','socials'])">Enregistrer les infos</button></div>
     </div>
   </section>
 

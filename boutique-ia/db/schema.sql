@@ -420,3 +420,20 @@ create table if not exists bia_customer_notes (
 );
 create index if not exists bia_customer_notes_idx on bia_customer_notes(merchant_id);
 create index if not exists bia_customer_notes_bd_idx on bia_customer_notes(birthday_md);
+
+-- 20. Fiche boutique ENRICHIE : l'agent connaît vraiment le business (positionnement,
+--     clientèle, arguments, objections, garanties…). Choix multiples + écriture libre.
+alter table bia_merchants add column if not exists founded text;
+alter table bia_merchants add column if not exists price_range text;
+alter table bia_merchants add column if not exists target_audience text;
+alter table bia_merchants add column if not exists occasions text;
+alter table bia_merchants add column if not exists bestsellers text;
+alter table bia_merchants add column if not exists unique_selling text;
+alter table bia_merchants add column if not exists selling_points text;
+alter table bia_merchants add column if not exists payment_methods text;
+alter table bia_merchants add column if not exists guarantees text;
+alter table bia_merchants add column if not exists promotions text;
+alter table bia_merchants add column if not exists objections text;
+alter table bia_merchants add column if not exists avoid_topics text;
+alter table bia_merchants add column if not exists presence text;
+alter table bia_merchants add column if not exists socials text;

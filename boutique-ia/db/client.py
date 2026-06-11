@@ -168,6 +168,10 @@ EDITABLE_MERCHANT_FIELDS = {
     "brand_color", "cod_enabled", "negotiation_enabled", "negotiation_rule",
     "auto_prospect_enabled", "auto_prospect_category", "auto_prospect_city",
     "rdv_days", "rdv_hours", "rdv_note",
+    # Fiche enrichie : pour que l'agent connaisse vraiment le business
+    "founded", "price_range", "target_audience", "occasions", "bestsellers",
+    "unique_selling", "selling_points", "payment_methods", "guarantees",
+    "promotions", "objections", "avoid_topics", "presence", "socials",
 }
 EDITABLE_PRODUCT_FIELDS = {"name", "price", "description", "photo_url", "available",
                           "kind", "duration", "options", "stock_qty"}

@@ -197,6 +197,40 @@ def build_system_prompt(merchant: dict, products: list[dict],
     rdv_on = "rdv" in caps
     negociation_rule = (merchant.get("negotiation_rule") or "").strip()
 
+    # Fiche enrichie : identité, positionnement, arguments → l'agent connaît le business.
+    def _f(key: str) -> str:
+        return (merchant.get(key) or "").strip()
+
+    _identite = [
+        ("Depuis", _f("founded")),
+        ("Positionnement / gamme", _f("price_range")),
+        ("Présence", _f("presence")),
+        ("Ce qui rend la boutique unique", _f("unique_selling")),
+        ("Produits phares / best-sellers", _f("bestsellers")),
+        ("Promo / offre du moment", _f("promotions")),
+        ("Clientèle cible", _f("target_audience")),
+        ("Occasions d'achat", _f("occasions")),
+        ("Paiements acceptés", _f("payment_methods")),
+        ("Réseaux sociaux", _f("socials")),
+    ]
+    _vente = [
+        ("Arguments à mettre en avant", _f("selling_points")),
+        ("Réassurance / garanties", _f("guarantees")),
+        ("Objections fréquentes & comment y répondre", _f("objections")),
+    ]
+    _id_lines = "\n".join(f"- {k} : {v}" for k, v in _identite if v)
+    _vente_lines = "\n".join(f"- {k} : {v}" for k, v in _vente if v)
+    _avoid = _f("avoid_topics")
+    identite_block = (f"\n\n# Identité & positionnement de la boutique\n{_id_lines}"
+                      if _id_lines else "")
+    vente_block = ""
+    if _vente_lines or _avoid:
+        vente_block = "\n\n# Pour bien vendre cette boutique (applique-le avec finesse)\n"
+        if _vente_lines:
+            vente_block += _vente_lines + "\n"
+        if _avoid:
+            vente_block += f"- À NE JAMAIS dire ni promettre : {_avoid}\n"
+
     # Catalogue produits
     if products:
         lines = []
@@ -334,7 +368,7 @@ Tu réponds aux clients sur WhatsApp à la place du/de la propriétaire.
 {policies or "(aucune règle particulière)"}
 
 # Infos utiles
-{extra or "(rien de plus)"}
+{extra or "(rien de plus)"}{identite_block}{vente_block}
 
 # Style de réponse (TRÈS IMPORTANT)
 - Ton : {tone}. Langue : {languages}.
