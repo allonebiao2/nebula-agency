@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>NEBULA — Kit du partenaire</title>
+<style>
+  @page { size: A4; margin: 13mm 12mm 16mm 12mm; }
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  :root{
+    --p:#6B46E5; --p2:#4f33b3; --c:#0E9BB8; --pl:#efeafd; --cl:#e2f6fb; --ink:#191629; --mut:#5f5b73;
+    --line:#e1ddee; --red:#e3433a; --rl:#fdeceb; --gn:#eafaf0; --g2:#0f9d58; --bub:#f0eef6;
+  }
+  body{ font-family:"Segoe UI",system-ui,Arial,sans-serif; color:var(--ink); font-size:11px; line-height:1.5; }
+  h1,h2,h3{ line-height:1.12; }
+  .page{ page-break-after:always; }
+  .nb{ page-break-inside:avoid; }
+  .cover{ height:271mm; background:linear-gradient(155deg,#6B46E5 0%,#5a39cf 45%,#0E9BB8 100%); color:#fff; padding:26mm 18mm; position:relative; }
+  .cover .eyebrow{ letter-spacing:.32em; font-size:12px; font-weight:700; opacity:.92; }
+  .cover h1{ font-size:54px; font-weight:800; margin-top:14px; letter-spacing:-1px; }
+  .cover .tag{ font-size:19px; margin-top:14px; max-width:26ch; font-weight:600; opacity:.96; }
+  .cover .sub{ font-size:13px; margin-top:22px; max-width:46ch; opacity:.92; line-height:1.6; }
+  .cover .chips{ margin-top:30px; display:flex; gap:10px; flex-wrap:wrap; }
+  .cover .chip{ background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.32); border-radius:30px; padding:8px 15px; font-size:12px; font-weight:600; }
+  .cover .foot{ position:absolute; bottom:20mm; left:18mm; font-size:12px; opacity:.85; }
+  .cover .badge{ position:absolute; top:26mm; right:18mm; width:120px; height:120px; border-radius:50%; background:rgba(255,255,255,.12); border:2px solid rgba(255,255,255,.35); display:flex; align-items:center; justify-content:center; text-align:center; font-weight:800; font-size:13px; }
+  .kicker{ display:inline-block; background:var(--pl); color:var(--p2); font-weight:800; font-size:10px; letter-spacing:.12em; text-transform:uppercase; padding:4px 10px; border-radius:6px; }
+  h2.title{ font-size:25px; font-weight:800; margin:8px 0 4px; color:var(--ink); }
+  h2.title .em{ color:var(--p); }
+  .lead{ color:var(--mut); font-size:12px; max-width:70ch; margin-bottom:10px; }
+  .rule{ height:3px; width:60px; background:linear-gradient(90deg,var(--p),var(--c)); border-radius:3px; margin:6px 0 14px; }
+  p{ margin-bottom:7px; } b{ color:var(--ink); } .small{ font-size:10px; color:var(--mut); }
+  .dlg{ margin:7px 0; }
+  .bulle{ position:relative; border-radius:12px; padding:8px 12px; margin:5px 0; font-size:11px; max-width:88%; }
+  .bulle .who{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; display:block; margin-bottom:2px; }
+  .bulle.client{ background:var(--bub); color:#2b2740; border:1px solid var(--line); }
+  .bulle.client .who{ color:#857fa0; }
+  .bulle.vous{ background:var(--p); color:#fff; margin-left:auto; }
+  .bulle.vous .who{ color:#e0d7fb; }
+  .branch{ border-left:3px solid var(--p); background:#f8f6ff; border-radius:0 8px 8px 0; padding:8px 12px; margin:8px 0; }
+  .branch .if{ font-weight:800; color:var(--p2); font-size:11px; }
+  ol.steps{ counter-reset:s; list-style:none; }
+  ol.steps li{ counter-increment:s; position:relative; padding:5px 0 5px 30px; font-size:11px; }
+  ol.steps li::before{ content:counter(s); position:absolute; left:0; top:4px; width:21px; height:21px; background:var(--p); color:#fff; border-radius:50%; font-weight:800; font-size:11px; display:flex; align-items:center; justify-content:center; }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:9px; }
+  .card{ border:1px solid var(--line); border-radius:12px; padding:11px 13px; background:#fff; }
+  .card h3{ font-size:12.5px; font-weight:800; margin-bottom:4px; }
+  .price{ text-align:center; border:1px solid var(--line); border-radius:12px; padding:11px 8px; background:#fff; }
+  .price .nm{ font-size:11px; font-weight:800; }
+  .price .pr{ font-size:18px; font-weight:800; color:var(--p); margin:3px 0; }
+  .price .ds{ font-size:9px; color:var(--mut); }
+  .obj{ border:1px solid var(--line); border-radius:12px; overflow:hidden; margin-bottom:9px; }
+  .obj .q{ background:var(--rl); color:#b3322b; font-weight:800; padding:8px 12px; font-size:11.5px; }
+  .obj .q::before{ content:"« "; } .obj .q::after{ content:" »"; }
+  .obj .a{ padding:9px 12px; font-size:11px; }
+  .obj .a .lab{ display:inline-block; background:var(--pl); color:var(--p2); font-weight:800; font-size:9px; padding:2px 7px; border-radius:5px; margin-right:5px; text-transform:uppercase; letter-spacing:.05em; }
+  .call{ background:var(--pl); border:1px solid #d4c8f7; border-radius:12px; padding:11px 14px; margin:10px 0; font-size:11px; }
+  .call .t{ font-weight:800; color:var(--p2); display:block; margin-bottom:3px; }
+  .call.cyan{ background:var(--cl); border-color:#b6e7f1; } .call.cyan .t{ color:#0a6f85; }
+  .warn{ background:#fff7e8; border:1px solid #f3d595; } .warn .t{ color:#9a6a00; }
+  .flow{ margin:8px 0; }
+  .fstep{ background:#fff; border:2px solid var(--p); border-radius:12px; padding:9px 13px; font-size:11px; font-weight:600; position:relative; margin:0 auto 26px; max-width:80%; text-align:center; }
+  .fstep .n{ position:absolute; left:-12px; top:-12px; width:24px; height:24px; background:var(--p); color:#fff; border-radius:50%; font-weight:800; display:flex; align-items:center; justify-content:center; font-size:11px; }
+  .fstep::after{ content:"▼"; position:absolute; bottom:-22px; left:50%; transform:translateX(-50%); color:var(--p); font-size:14px; }
+  .fstep.last{ background:linear-gradient(90deg,var(--p),var(--c)); color:#fff; border:none; } .fstep.last::after{ content:""; }
+  .fbranch{ display:flex; gap:10px; justify-content:center; margin:0 0 26px; }
+  .fbranch .fb{ flex:1; border:2px dashed var(--c); border-radius:10px; padding:8px; font-size:10px; text-align:center; background:#f3fcfe; }
+  table.cheat{ width:100%; border-collapse:collapse; font-size:10.5px; }
+  table.cheat td{ border:1px solid var(--line); padding:7px 9px; vertical-align:top; }
+  table.cheat td.k{ background:var(--pl); font-weight:800; color:var(--p2); width:34%; }
+  .pill{ display:inline-block; background:var(--p); color:#fff; border-radius:20px; padding:2px 9px; font-size:9.5px; font-weight:700; }
+  .footer-note{ margin-top:14px; border-top:1px solid var(--line); padding-top:8px; }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover page">
+  <div class="badge">COMMISSION<br>SUR CHAQUE<br>PROJET</div>
+  <div class="eyebrow">KIT DU PARTENAIRE</div>
+  <h1>NEBULA</h1>
+  <div class="tag">Vends des vitrines qui font passer une marque pour du luxe.</div>
+  <div class="sub">Ton kit complet pour décrocher des projets NEBULA : vitrines premium, catalogues digitaux, fiches Google. Scripts mot pour mot, réponses à toutes les objections, et le moment exact où tu prends l'acompte. Tu lis, tu appliques, tu signes.</div>
+  <div class="chips">
+    <div class="chip">Scripts par métier</div>
+    <div class="chip">Le menu & les prix</div>
+    <div class="chip">Objections traitées</div>
+    <div class="chip">Closing acompte</div>
+  </div>
+  <div class="foot">Cotonou · Bénin — à usage des partenaires NEBULA. Ne pas diffuser publiquement.</div>
+</div>
+
+<!-- LIS CA D'ABORD -->
+<div class="page">
+  <span class="kicker">À lire en premier · 3 minutes</span>
+  <h2 class="title">Ce que tu vends, c'est de la <span class="em">crédibilité</span></h2>
+  <div class="rule"></div>
+  <p>Salut, bienvenue dans l'équipe. Suis ce kit mot pour mot et tu peux signer ton premier projet cette semaine, même sans expérience. Tout est écrit : la phrase d'accroche, les réponses du client, ta réplique à chaque cas, jusqu'à l'acompte.</p>
+
+  <div class="call">
+    <span class="t">NEBULA en une phrase (apprends-la par cœur)</span>
+    « On crée des <b>vitrines digitales premium</b> qui donnent à une marque l'image d'une grande maison — pour qu'elle attire des clients haut de gamme et vende plus cher, <b>livrées en 5 à 7 jours</b>. »
+  </div>
+
+  <p>La vérité du marché : <b>9 marques sur 10 ici n'ont qu'une page Instagram et un WhatsApp.</b> Pour un client exigeant, ça fait “petit”, pas sérieux. Toi, tu leur apportes l'écrin qui fait monter la confiance — et le panier moyen avec.</p>
+
+  <div class="grid2 nb">
+    <div class="card"><h3>Ce que ça change pour la marque</h3><p class="small">Elle passe d'“une page Insta parmi mille” à une <b>vraie référence</b>. Le client haut de gamme ose acheter, paie plus cher, et la recommande. Crédibilité = ventes.</p></div>
+    <div class="card"><h3>Ce que ça change pour toi</h3><p class="small">Tu touches une <b>commission sur chaque projet signé</b> — et les projets se chiffrent en dizaines de milliers de FCFA. Quelques signatures = un vrai revenu.</p></div>
+  </div>
+
+  <div class="call warn nb">
+    <span class="t">La règle qui change tout</span>
+    Ne vends pas “un site web”. Tout le monde croit qu'un site c'est gadget. Vends ce que ça <b>rapporte</b> : plus de crédibilité → des clients qui paient plus cher → une marque qu'on prend au sérieux. Parle résultat, pas technique.
+  </div>
+
+  <h3 style="margin:12px 0 5px;font-size:13px;color:var(--p2)">Comment utiliser ce kit</h3>
+  <ol class="steps">
+    <li>Connais <b>le menu et les prix</b> (page suivante) — c'est ton arsenal.</li>
+    <li>Repère le <b>profil</b> du prospect → va à son script.</li>
+    <li>Lance l'<b>accroche</b>, écoute, suis la <b>branche</b> qui correspond.</li>
+    <li>Objection → <b>Mur des objections</b>, prends la phrase, reviens.</li>
+    <li>Il est chaud → <b>closing à l'acompte</b>, et le projet démarre.</li>
+  </ol>
+</div>
+
+<!-- LE MENU -->
+<div class="page">
+  <span class="kicker">Ton arsenal · le menu & les prix</span>
+  <h2 class="title">Ce que tu peux <span class="em">vendre (et combiner)</span></h2>
+  <div class="rule"></div>
+  <p class="lead">Connais ces offres par cœur. Le secret : tu entres souvent par la vitrine, puis tu ajoutes les options (Google Maps, avis, catalogue). Plus tu combines, plus le projet — et ta commission — montent.</p>
+
+  <div class="grid3 nb">
+    <div class="price"><div class="nm">Vitrine Digitale + QR</div><div class="pr">150 000 F</div><div class="ds">Le site vitrine premium. + 15 000 F/mois maintenance (option).</div></div>
+    <div class="price"><div class="nm">Catalogue Digital + QR</div><div class="pr">50 000 F</div><div class="ds">Pour montrer tous les produits proprement. Idéal en entrée de gamme.</div></div>
+    <div class="price"><div class="nm">Fiche Google Maps</div><div class="pr">20 000 F</div><div class="ds">Pour être trouvé sur Google quand on cherche dans la ville.</div></div>
+    <div class="price"><div class="nm">QR Code Avis Google</div><div class="pr">30 000 F</div><div class="ds">Pour collecter des avis 5 étoiles et inspirer confiance.</div></div>
+    <div class="price"><div class="nm">Avatar IA — Essentiel</div><div class="pr">30 000 F/mois</div><div class="ds">3 vidéos/mois avec un présentateur IA de la marque.</div></div>
+    <div class="price"><div class="nm">Avatar IA — Pro</div><div class="pr">100 000 F/mois</div><div class="ds">10 vidéos + scripts + publication + rapport.</div></div>
+  </div>
+
+  <div class="call cyan nb" style="margin-top:14px"><span class="t">L'argument “délai” qui ferme la bouche</span>
+    « Livré en <b>5 à 7 jours</b>. Pas dans 3 mois, pas ‘un jour’. La semaine prochaine ta marque a son écrin. » Le délai court rassure et donne envie de démarrer maintenant.
+  </div>
+  <div class="call nb"><span class="t">La technique du combo (upsell naturel)</span>
+    Tu signes une vitrine à 150 000 ? Enchaîne : « On ajoute la fiche Google Maps + le QR avis pour 50 000 de plus, comme ça non seulement t'as un beau site, mais on te trouve sur Google ET tu collectes des avis 5 étoiles. » → projet à 200 000, client mieux servi.
+  </div>
+</div>
+
+<!-- 5 REGLES -->
+<div class="page">
+  <span class="kicker">Le bon état d'esprit</span>
+  <h2 class="title">Les 5 règles d'or du <span class="em">closer NEBULA</span></h2>
+  <div class="rule"></div>
+  <div class="grid2">
+    <div class="card nb"><h3>1. Vends l'image, pas le site</h3><p class="small">« Aujourd'hui ta marque mérite mieux que sa page Insta. » Touche sa fierté et son ambition. Personne ne veut paraître amateur.</p></div>
+    <div class="card nb"><h3>2. Montre une vraie réalisation</h3><p class="small">Une preuve vaut tous les discours. Sors une vitrine NEBULA déjà faite sur ton téléphone : « Regarde le niveau. Voilà ce que je te fais. »</p></div>
+    <div class="card nb"><h3>3. Parle au client de SON client</h3><p class="small">« Quand une cliente haut de gamme tombe sur une simple page Insta, elle doute. Sur une vraie vitrine, elle achète sans hésiter. »</p></div>
+    <div class="card nb"><h3>4. Crée l'urgence saine</h3><p class="small">« Livré en 5-7 jours. On peut démarrer cette semaine — la semaine prochaine ta marque a déjà changé de dimension. »</p></div>
+    <div class="card nb"><h3>5. Close à l'acompte</h3><p class="small">Le projet démarre avec un acompte. Dès qu'il dit oui : « On lance avec l'acompte, je t'envoie le numéro, et l'équipe démarre aujourd'hui. »</p></div>
+    <div class="card nb" style="background:var(--pl);border-color:#d4c8f7"><h3 style="color:var(--p2)">+ Le secret</h3><p class="small">Tu ne vends pas un truc cher, tu vends un <b>investissement qui rapporte</b>. Une seule grosse cliente gagnée grâce à l'image, et la vitrine est remboursée. Dis-le.</p></div>
+  </div>
+  <div class="call nb" style="margin-top:14px"><span class="t">Le pitch de 20 secondes (partout)</span>
+    « Ta marque est belle, mais en ligne elle ressemble à toutes les autres pages Insta. Je te crée une vraie vitrine premium, le genre de site qui fait dire ‘ah, eux c'est du sérieux’ — livré en une semaine. Je te montre un exemple vite fait ? »
+  </div>
+</div>
+
+<!-- SCRIPT A — BEAUTE/CLINIQUE -->
+<div class="page">
+  <span class="kicker">Script A · Institut · spa · clinique esthétique</span>
+  <h2 class="title">L'institut de beauté <span class="em">haut de gamme</span></h2>
+  <div class="rule"></div>
+  <p class="lead">Profil : prestations premium, clientèle qui cherche la confiance avant de réserver. Point sensible : <b>l'image doit inspirer le luxe et le sérieux, sinon la cliente n'ose pas.</b></p>
+  <div class="dlg">
+    <div class="bulle vous"><span class="who">Toi — l'accroche</span>« Vos soins ont l'air superbes. Petite question : quand une nouvelle cliente vous découvre en ligne, elle tombe sur quoi — juste votre Instagram ? »</div>
+    <div class="bulle client"><span class="who">Elle</span>« Oui pour l'instant on a que l'Insta et le WhatsApp »</div>
+    <div class="bulle vous"><span class="who">Toi</span>« C'est là qu'on perd les meilleures clientes : celles qui paient le plus veulent du sérieux avant de réserver. Je vous crée une vraie vitrine premium — vos soins, vos tarifs, vos photos, la prise de rendez-vous — qui donne l'image d'un institut de référence. Je vous montre un exemple ? »</div>
+  </div>
+  <div class="branch nb"><span class="if">→ « Montrez-moi »</span><br>Tu sors une réalisation NEBULA (institut/clinique) sur ton téléphone. « Voilà le niveau. Imaginez ça à vos couleurs, avec vos soins. » <span class="pill">va au CLOSING</span></div>
+  <div class="branch nb"><span class="if">→ « J'ai déjà Instagram, ça suffit »</span><br>« Instagram c'est parfait pour publier, mais ça appartient à Instagram et ça se ressemble toutes. Une vitrine à VOUS, c'est votre vitrine de luxe à vous, qui vous démarque et qu'on prend au sérieux. Les deux se complètent. »</div>
+  <div class="branch nb"><span class="if">→ « C'est combien ? »</span><br>« La vitrine complète c'est 150 000, livrée en 5-7 jours. Une seule cliente VIP gagnée grâce à l'image, et c'est remboursé. Et on peut y ajouter Google Maps pour qu'on vous trouve en cherchant ‘institut’ dans la ville. »</div>
+  <div class="dlg nb">
+    <div class="bulle client"><span class="who">Elle</span>« 150 000 quand même… »</div>
+    <div class="bulle vous"><span class="who">Toi</span>« Je comprends. Mais ce n'est pas une dépense, c'est ce qui fait monter votre niveau de cliente. On peut démarrer avec un acompte aujourd'hui, vous voyez la maquette dans quelques jours, et vous validez. On lance ? »</div>
+    <div class="bulle client"><span class="who">Elle</span>« Ok d'accord »</div>
+    <div class="bulle vous"><span class="who">Toi</span>« Parfait, excellente décision. On démarre tout de suite avec l'acompte. » <span class="pill">CLOSING</span></div>
+  </div>
+</div>
+
+<!-- SCRIPT B — MARQUE COSMETIQUE -->
+<div class="page">
+  <span class="kicker">Script B · Marque de cosmétique / créateur de produits</span>
+  <h2 class="title">La marque qui veut <span class="em">grandir</span></h2>
+  <div class="rule"></div>
+  <p class="lead">Profil : gamme de produits, ambition de marque. Point sensible : <b>elle veut être prise pour une vraie marque, pas une vente Insta improvisée</b> — et montrer toute sa gamme proprement.</p>
+  <div class="dlg">
+    <div class="bulle vous"><span class="who">Toi — l'accroche</span>« Votre gamme est belle. Vous voulez en faire une vraie marque qui dure, ou rester une page Insta parmi d'autres ? »</div>
+    <div class="bulle client"><span class="who">Elle</span>« Une vraie marque évidemment ! »</div>
+    <div class="bulle vous"><span class="who">Toi</span>« Alors il vous faut l'écrin qui va avec : une vitrine premium qui raconte votre histoire et présente toute votre gamme proprement. C'est ce qui fait la différence entre ‘une vendeuse’ et ‘une marque’. »</div>
+  </div>
+  <div class="branch nb"><span class="if">→ « J'ai beaucoup de produits »</span><br>« Parfait — soit on fait la vitrine complète, soit on commence par un catalogue digital à 50 000 qui range tous vos produits avec photos et prix, et on passe à la vitrine ensuite. On bâtit étape par étape. »</div>
+  <div class="branch nb"><span class="if">→ « Je débute, j'ai pas un gros budget »</span><br>« Je comprends, on commence malin : le catalogue digital à 50 000 vous donne déjà une présence pro, et quand les ventes montent on passe à la vitrine. On démarre par là ? » <i>(la descente d'offre garde la vente vivante.)</i></div>
+  <div class="branch nb"><span class="if">→ « Montrez ce que ça donne »</span><br>Sors une réalisation. « Voilà. Maintenant imaginez VOTRE marque comme ça. » <span class="pill">CLOSING</span></div>
+</div>
+
+<!-- SCRIPT C — RESTO + D — CREATEUR -->
+<div class="page">
+  <span class="kicker">Script C · Restaurant · traiteur · pâtisserie premium</span>
+  <h2 class="title">La table / le traiteur <span class="em">qui veut du standing</span></h2>
+  <div class="rule"></div>
+  <p class="lead">Point sensible : <b>donner faim et confiance avant la réservation</b>, et être trouvé sur Google.</p>
+  <div class="dlg">
+    <div class="bulle vous"><span class="who">Toi — l'accroche</span>« Quand quelqu'un veut réserver une bonne table pour un événement, il cherche sur Google et veut voir un endroit qui inspire confiance. Aujourd'hui, on vous trouve comment ? »</div>
+    <div class="bulle client"><span class="who">Lui</span>« Bah surtout sur Insta… »</div>
+    <div class="bulle vous"><span class="who">Toi</span>« Je vous mets une vitrine qui donne faim et confiance — vos plats, votre carte, la réservation — PLUS votre fiche Google Maps pour qu'on vous trouve en cherchant ‘restaurant’ dans la ville. Vous passez devant les concurrents qui n'ont rien. »</div>
+  </div>
+  <div class="branch nb"><span class="if">→ « Google Maps c'est utile ? »</span><br>« Énormément : 8 personnes sur 10 cherchent un resto sur Google avant d'y aller. Sans fiche, vous êtes invisible. À 20 000 c'est l'investissement le plus rentable que vous ferez. »</div>
+
+  <span class="kicker" style="margin-top:14px;display:inline-block">Script D · Créateur · styliste · artisan · bijoutier (marque perso)</span>
+  <h2 class="title" style="font-size:20px">Le talent qui mérite une <span class="em">vraie vitrine</span></h2>
+  <div class="rule"></div>
+  <p class="lead">Point sensible : <b>la fierté du travail</b> mal mise en valeur sur une page Insta encombrée.</p>
+  <div class="dlg">
+    <div class="bulle vous"><span class="who">Toi — l'accroche</span>« Votre travail est magnifique, mais noyé dans le fil Instagram il perd de sa valeur. Vous ne voulez pas un endroit à VOUS, où chaque pièce est présentée comme une œuvre ? »</div>
+    <div class="bulle client"><span class="who">Lui/Elle</span>« Ce serait classe oui… mais ça coûte sûrement cher »</div>
+    <div class="bulle vous"><span class="who">Toi</span>« On a plusieurs niveaux. On peut commencer par un catalogue digital à 50 000 qui présente vos pièces magnifiquement, et monter vers la vitrine complète quand vous voulez. L'important c'est de sortir du lot dès maintenant. »</div>
+  </div>
+  <div class="call cyan nb" style="margin-top:10px"><span class="t">Réflexe gagnant tous métiers</span>Toujours : <b>fierté/ambition → montrer une réalisation → adapter l'offre au budget → acompte aujourd'hui.</b></div>
+</div>
+
+<!-- SCRIPT E — SERVICES -->
+<div class="page">
+  <span class="kicker">Script E · Prestataire · profession libérale · coach · consultant</span>
+  <h2 class="title">Le pro qui vend <span class="em">sa crédibilité</span></h2>
+  <div class="rule"></div>
+  <p class="lead">Profil : avocat, médecin, coach, consultant, école, agence. Point sensible : <b>sa crédibilité EST son produit</b> — sans présence pro, il perd des contrats face à plus “installé”.</p>
+  <div class="dlg">
+    <div class="bulle vous"><span class="who">Toi — l'accroche</span>« Dans votre métier, la confiance c'est tout. Quand un client sérieux vous cherche en ligne avant de signer, il trouve quoi sur vous aujourd'hui ? »</div>
+    <div class="bulle client"><span class="who">Lui</span>« Pas grand-chose en vrai »</div>
+    <div class="bulle vous"><span class="who">Toi</span>« Et c'est exactement là que des contrats vous échappent au profit de quelqu'un qui paraît plus installé — pas forcément meilleur. Une vitrine pro règle ça : elle vous positionne comme la référence. On vous trouve, on vous prend au sérieux, on vous contacte. »</div>
+  </div>
+  <div class="branch nb"><span class="if">→ « Je marche au bouche-à-oreille, ça va »</span><br>« Le bouche-à-oreille c'est en or — mais la personne à qui on vous recommande va quand même vous chercher en ligne pour vérifier. Si elle trouve une vraie vitrine, elle est rassurée et elle appelle. Sinon, le doute s'installe. La vitrine protège votre bouche-à-oreille. »</div>
+  <div class="branch nb"><span class="if">→ « C'est combien et ça prend combien de temps ? »</span><br>« 150 000, livré en 5 à 7 jours. Un seul bon contrat décroché grâce à votre image sérieuse, et c'est remboursé largement. On démarre cette semaine ? »</div>
+</div>
+
+<!-- MUR DES OBJECTIONS -->
+<div class="page">
+  <span class="kicker">Le mur des objections · les barrages</span>
+  <h2 class="title">Chaque <span class="em">« non »</span> a sa réponse</h2>
+  <div class="rule"></div>
+  <p class="lead">Le « non » cache presque toujours une peur (le prix, l'utilité, ou “est-ce que ça vaut le coup”). Réponds calmement en 1-2 phrases, puis <b>reviens à l'action</b>.</p>
+
+  <div class="obj nb"><div class="q">J'ai déjà Instagram / Facebook, ça suffit</div><div class="a"><span class="lab">Réponds</span>« Les réseaux c'est pour publier, et ça appartient à Meta — ça peut fermer demain, et ça se ressemble toutes. Une vitrine, c'est VOTRE territoire, à vos couleurs, qui vous démarque et qu'on prend au sérieux. Les deux travaillent ensemble. »</div></div>
+
+  <div class="obj nb"><div class="q">C'est trop cher, 150 000</div><div class="a"><span class="lab">Réponds</span>« Cher par rapport à quoi ? Une seule grosse cliente gagnée grâce à votre image, et c'est remboursé. Et si le budget est serré aujourd'hui, on commence par le catalogue à 50 000 et on monte ensuite. »</div></div>
+
+  <div class="obj nb"><div class="q">À quoi ça sert un site, personne va dessus</div><div class="a"><span class="lab">Réponds</span>« On n'y va pas pour s'y promener — on y va pour VÉRIFIER avant d'acheter. Quand on vous recommande, ou qu'on hésite, on cherche en ligne. Ce qu'on trouve décide si on vous fait confiance ou pas. »</div></div>
+
+  <div class="obj nb"><div class="q">Je peux le faire moi-même (Canva, Wix…)</div><div class="a"><span class="lab">Réponds</span>« Vous pouvez — mais ça se voit tout de suite, et ça fait l'inverse de l'effet voulu : ça fait amateur. Nous on fait du premium, du sur-mesure, qui donne l'image d'une grande maison. C'est tout l'intérêt. Et vous gardez votre temps pour votre métier. »</div></div>
+
+  <div class="obj nb"><div class="q">Je vais réfléchir</div><div class="a"><span class="lab">Réponds</span>« Bien sûr. Réfléchissez à ça : chaque semaine sans vitrine, c'est des clients qui doutent et vont voir ailleurs. On démarre avec un petit acompte, vous voyez la maquette, et vous validez seulement si ça vous plaît. Vous ne perdez rien. »</div></div>
+
+  <div class="obj nb"><div class="q">Envoie-moi des exemples / un devis, je verrai</div><div class="a"><span class="lab">Réponds</span>« Avec plaisir — regardez, en voilà un tout de suite (montre une réalisation). C'est exactement ce niveau que je vous fais. Plutôt que d'attendre, on bloque votre place cette semaine et l'équipe démarre ? »</div></div>
+
+  <div class="obj nb"><div class="q">Pas maintenant, peut-être après les fêtes / plus tard</div><div class="a"><span class="lab">Réponds</span>« Justement, les périodes fortes c'est QUAND il faut être déjà prêt et crédible. Livré en 5-7 jours, si on démarre maintenant vous êtes au top pile au bon moment, pas en retard. »</div></div>
+
+  <div class="obj nb"><div class="q">Je dois en parler à mon associé / ma famille</div><div class="a"><span class="lab">Réponds</span>« Normal. Pour les convaincre, rien de mieux que de leur montrer la maquette concrète. On démarre, je vous prépare un aperçu à vos couleurs, vous le montrez — et là c'est facile de dire oui ensemble. »</div></div>
+</div>
+
+<!-- SCENARIOS -->
+<div class="page">
+  <span class="kicker">Scénarios délicats · ne rien lâcher proprement</span>
+  <h2 class="title">Quand le client <span class="em">recule ou disparaît</span></h2>
+  <div class="rule"></div>
+
+  <div class="card nb" style="margin-bottom:10px"><h3>① Il était chaud puis « finalement non »</h3>
+    <div class="bulle vous" style="max-width:100%"><span class="who">Toi</span>« Pas de souci. Juste pour comprendre : c'est le budget, le timing, ou un doute sur l'utilité ? »</div>
+    <p class="small">→ Il révèle la vraie raison. Tu vas au Mur, tu réponds CETTE objection précise, et tu reproposes de démarrer petit (catalogue 50k ou acompte). 8 fois sur 10, c'était une seule peur.</p>
+  </div>
+  <div class="card nb" style="margin-bottom:10px"><h3>② Le fantôme (silence radio)</h3>
+    <div class="bulle vous" style="max-width:100%"><span class="who">Relance 1 (J+2)</span>« Bonjour ! Je vous avais réservé un créneau de production cette semaine. On lance votre vitrine pendant que la place est dispo ? »</div>
+    <div class="bulle vous" style="max-width:100%"><span class="who">Relance 2 (quelques jours après)</span>« Dernier message et je vous laisse 🙂 : vos concurrents qui ont une vraie vitrine raflent les clients sérieux. Ce serait dommage de leur laisser ça. On en parle 2 min ? »</div>
+  </div>
+  <div class="grid2 nb">
+    <div class="card"><h3>③ « Montre-moi tes réalisations »</h3><p class="small">C'est un signal d'achat ! Montre fièrement 1-2 vitrines NEBULA. Puis : « C'est exactement ce niveau que je vous fais. On démarre la vôtre ? »</p></div>
+    <div class="card"><h3>④ Il négocie le prix</h3><p class="small">Ne casse pas le prix (ça dévalue). Descends plutôt d'OFFRE : « Le prix est juste pour ce niveau. Mais on peut commencer par le catalogue à 50 000 et monter après. »</p></div>
+  </div>
+  <div class="call warn nb" style="margin-top:12px"><span class="t">Règle d'or des barrages</span>Réponds en 1-2 phrases, puis <b>reviens tout de suite à “on démarre ?”</b>. Et n'oublie jamais ton arme : <b>montrer une vraie réalisation</b> coupe court à 80% des doutes.</div>
+</div>
+
+<!-- SCHEMA -->
+<div class="page">
+  <span class="kicker">Le schéma · la vente en un coup d'œil</span>
+  <h2 class="title">Le <span class="em">chemin de la vente</span></h2>
+  <div class="rule"></div>
+  <p class="lead">Suis les flèches. Le but : descendre jusqu'au violet (projet signé + acompte).</p>
+  <div class="flow">
+    <div class="fstep"><span class="n">1</span>ACCROCHE — parle de son image / sa crédibilité en ligne</div>
+    <div class="fstep"><span class="n">2</span>ÉCOUTE — il admet qu'il n'a “que l'Insta”</div>
+    <div class="fstep"><span class="n">3</span>MONTRE — une vraie réalisation NEBULA sur ton téléphone</div>
+    <div class="fstep"><span class="n">4</span>ADAPTE — la bonne offre à son budget (vitrine / catalogue / combo)</div>
+    <div class="fbranch">
+      <div class="fb">🟠 OBJECTION ?<br>→ Mur des objections,<br>réponds, reviens ici</div>
+      <div class="fb">🟣 IL EST CHAUD ?<br>→ descends à la clôture</div>
+    </div>
+    <div class="fstep"><span class="n">5</span>CLÔTURE — « on démarre cette semaine, livré en 5-7 jours »</div>
+    <div class="fstep last">✅ ACOMPTE REÇU → PROJET LANCÉ → COMMISSION</div>
+  </div>
+  <div class="call nb"><span class="t">Si tu te perds, reviens à ça</span>Image → Montre une réalisation → Bonne offre → Acompte. Le reste n'est qu'un détour avant de revenir sur ce chemin.</div>
+</div>
+
+<!-- CLOSING -->
+<div class="page">
+  <span class="kicker">La clôture · le moment qui compte</span>
+  <h2 class="title">Le moment <span class="em">acompte</span></h2>
+  <div class="rule"></div>
+  <p class="lead">Le projet démarre avec un acompte. Dès qu'il dit oui, tu actes — tu ne laisses pas refroidir.</p>
+  <ol class="steps nb">
+    <li><b>Verrouille le oui par un choix :</b> « Super. On part sur la vitrine seule, ou la vitrine + Google Maps & avis pour qu'on vous trouve aussi sur Google ? » <i>(choix entre deux oui.)</i></li>
+    <li><b>Pose le démarrage comme une évidence :</b> « Parfait. Pour bloquer votre place de production cette semaine, on démarre avec un acompte. »</li>
+    <li><b>Donne le numéro Mobile Money + le nom</b>, et reste avec lui pendant l'envoi. Confirme la réception.</li>
+    <li><b>Rassure sur la suite :</b> « Reçu ✅ ! L'équipe démarre, vous recevez un premier aperçu dans quelques jours, et c'est livré en 5-7 jours. »</li>
+    <li><b>Sème la suivante :</b> « Vous connaissez d'autres marques qui mériteraient ça ? Envoyez-les-moi. »</li>
+  </ol>
+  <div class="call nb"><span class="t">Phrases qui closent (apprends-en 2)</span>
+    • « On démarre cette semaine, la semaine prochaine votre marque a changé de dimension. »<br>
+    • « Vous validez seulement si la maquette vous plaît — vous ne risquez rien. »<br>
+    • « La seule erreur, c'est de laisser une page Insta amateur représenter une marque qui mérite mieux. »
+  </div>
+  <div class="call warn nb"><span class="t">Ne fais jamais ça</span>Ne pars pas sur « envoyez-moi un mail et je reviendrai ». Ne casse pas le prix (ça tue la valeur premium). Tu fais avancer vers l'acompte, calmement, sûr de toi.</div>
+</div>
+
+<!-- ANTISECHE -->
+<div>
+  <span class="kicker">Aide-mémoire · garde-le sur ton téléphone</span>
+  <h2 class="title">La <span class="em">antisèche</span> du closer</h2>
+  <div class="rule"></div>
+  <table class="cheat nb">
+    <tr><td class="k">La phrase magique</td><td>« Une vitrine premium qui fait passer votre marque pour une grande maison, livrée en 5-7 jours. »</td></tr>
+    <tr><td class="k">Toujours commencer par</td><td>L'IMAGE / la crédibilité (ce que pense SON client), jamais par “un site web”.</td></tr>
+    <tr><td class="k">L'arme fatale</td><td>MONTRER une vraie réalisation NEBULA sur ton téléphone.</td></tr>
+    <tr><td class="k">Budget serré ?</td><td>Descends d'offre (catalogue 50 000) — jamais casser le prix de la vitrine.</td></tr>
+    <tr><td class="k">Les prix</td><td>Vitrine 150 000 · Catalogue 50 000 · Google Maps 20 000 · QR Avis 30 000 · Avatar IA 30 000–100 000/mois. Combine pour faire monter le projet.</td></tr>
+    <tr><td class="k">L'argument délai</td><td>« Livré en 5 à 7 jours. » Court = rassurant = on démarre maintenant.</td></tr>
+    <tr><td class="k">Objection ?</td><td>1-2 phrases → puis « on démarre ? ». Montre une réalisation pour couper le doute.</td></tr>
+    <tr><td class="k">Closer</td><td>Choix entre 2 offres → acompte Mobile Money tout de suite → confirme → demande un autre contact.</td></tr>
+  </table>
+  <div class="call nb" style="margin-top:14px"><span class="t">Le mot de la fin (de moi à toi)</span>
+    Le travail est là, la qualité est là, les prix sont justes. Ce qui te sépare de tes premières signatures, c'est d'<b>aller parler à des marques</b> et de leur montrer ce qu'elles pourraient devenir. Parle image, montre une réalisation, prends l'acompte. Tu vas y arriver. — <b>Mongazi, NEBULA</b>
+  </div>
+  <div class="call nb" style="margin-top:12px;text-align:center"><span class="t">Une question ? Un client prêt à démarrer ?</span>
+    Écris-moi directement — <b>WhatsApp +229 96 74 07 32</b> &nbsp;·&nbsp; <b>contact@nebula-agency.online</b><br>
+    Mongazi — NEBULA Agency &nbsp;·&nbsp; www.nebula-agency.online</div>
+  <p class="small footer-note">Document partenaire NEBULA · Cotonou, Bénin. Réservé aux partenaires. Les tarifs peuvent évoluer ; confirme l'offre en cours avant de signer.</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>VENDORA — Kit du partenaire</title>
+<style>
+  @page { size: A4; margin: 13mm 12mm 16mm 12mm; }
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  :root{
+    --g:#0f9d58; --g2:#0b7a43; --gl:#e7f6ee; --ink:#15211b; --mut:#5c6b62;
+    --line:#d8e3dc; --amber:#f59e0b; --red:#e3433a; --rl:#fdeceb; --grn:#0f9d58; --gn:#eafaf0;
+    --bub:#eef2f0; --paper:#ffffff;
+  }
+  body{ font-family:"Segoe UI",system-ui,Arial,sans-serif; color:var(--ink); font-size:11px; line-height:1.5; }
+  h1,h2,h3{ line-height:1.12; }
+  .page{ page-break-after:always; }
+  .nb{ page-break-inside:avoid; }
+  /* ---------- COVER ---------- */
+  .cover{ height:271mm; background:linear-gradient(160deg,#0f9d58 0%,#0b7a43 55%,#0a5f37 100%); color:#fff; padding:26mm 18mm; position:relative; }
+  .cover .eyebrow{ letter-spacing:.32em; font-size:12px; font-weight:700; opacity:.9; }
+  .cover h1{ font-size:58px; font-weight:800; margin-top:14px; letter-spacing:-1px; }
+  .cover .tag{ font-size:20px; margin-top:14px; max-width:24ch; font-weight:600; opacity:.95; }
+  .cover .sub{ font-size:13px; margin-top:22px; max-width:46ch; opacity:.92; line-height:1.6; }
+  .cover .chips{ margin-top:30px; display:flex; gap:10px; flex-wrap:wrap; }
+  .cover .chip{ background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3); border-radius:30px; padding:8px 15px; font-size:12px; font-weight:600; }
+  .cover .foot{ position:absolute; bottom:20mm; left:18mm; font-size:12px; opacity:.85; }
+  .cover .badge{ position:absolute; top:26mm; right:18mm; width:120px; height:120px; border-radius:50%; background:rgba(255,255,255,.12); border:2px solid rgba(255,255,255,.35); display:flex; align-items:center; justify-content:center; text-align:center; font-weight:800; font-size:13px; }
+  /* ---------- GENERIC ---------- */
+  .sec{ margin-bottom:9px; }
+  .kicker{ display:inline-block; background:var(--gl); color:var(--g2); font-weight:800; font-size:10px; letter-spacing:.12em; text-transform:uppercase; padding:4px 10px; border-radius:6px; }
+  h2.title{ font-size:25px; font-weight:800; margin:8px 0 4px; color:var(--ink); }
+  h2.title .em{ color:var(--g); }
+  .lead{ color:var(--mut); font-size:12px; max-width:70ch; margin-bottom:10px; }
+  .rule{ height:3px; width:60px; background:var(--g); border-radius:3px; margin:6px 0 14px; }
+  p{ margin-bottom:7px; }
+  b{ color:var(--ink); }
+  .small{ font-size:10px; color:var(--mut); }
+  /* dialogue bubbles */
+  .dlg{ margin:7px 0; }
+  .bulle{ position:relative; border-radius:12px; padding:8px 12px; margin:5px 0; font-size:11px; max-width:88%; }
+  .bulle .who{ font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; display:block; margin-bottom:2px; }
+  .bulle.client{ background:var(--bub); color:#27332c; border:1px solid var(--line); }
+  .bulle.client .who{ color:#7a8a80; }
+  .bulle.vous{ background:var(--g); color:#fff; margin-left:auto; }
+  .bulle.vous .who{ color:#d6f4e3; }
+  /* branch */
+  .branch{ border-left:3px solid var(--g); background:#f6fbf8; border-radius:0 8px 8px 0; padding:8px 12px; margin:8px 0; }
+  .branch .if{ font-weight:800; color:var(--g2); font-size:11px; }
+  .branch .then{ font-size:11px; }
+  /* steps */
+  ol.steps{ counter-reset:s; list-style:none; }
+  ol.steps li{ counter-increment:s; position:relative; padding:5px 0 5px 30px; font-size:11px; }
+  ol.steps li::before{ content:counter(s); position:absolute; left:0; top:4px; width:21px; height:21px; background:var(--g); color:#fff; border-radius:50%; font-weight:800; font-size:11px; display:flex; align-items:center; justify-content:center; }
+  /* cards */
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .card{ border:1px solid var(--line); border-radius:12px; padding:11px 13px; background:#fff; }
+  .card h3{ font-size:12.5px; font-weight:800; margin-bottom:4px; }
+  /* objection card */
+  .obj{ border:1px solid var(--line); border-radius:12px; overflow:hidden; margin-bottom:9px; }
+  .obj .q{ background:var(--rl); color:#b3322b; font-weight:800; padding:8px 12px; font-size:11.5px; }
+  .obj .q::before{ content:"« "; } .obj .q::after{ content:" »"; }
+  .obj .a{ padding:9px 12px; font-size:11px; }
+  .obj .a .lab{ display:inline-block; background:var(--gn); color:var(--g2); font-weight:800; font-size:9px; padding:2px 7px; border-radius:5px; margin-right:5px; text-transform:uppercase; letter-spacing:.05em; }
+  /* callout */
+  .call{ background:var(--gl); border:1px solid #bfe6cf; border-radius:12px; padding:11px 14px; margin:10px 0; font-size:11px; }
+  .call .t{ font-weight:800; color:var(--g2); display:block; margin-bottom:3px; }
+  .warn{ background:#fff7e8; border:1px solid #f3d595; }
+  .warn .t{ color:#9a6a00; }
+  /* flow */
+  .flow{ margin:8px 0; }
+  .fstep{ background:#fff; border:2px solid var(--g); border-radius:12px; padding:9px 13px; font-size:11px; font-weight:600; position:relative; margin:0 auto 26px; max-width:78%; text-align:center; }
+  .fstep .n{ position:absolute; left:-12px; top:-12px; width:24px; height:24px; background:var(--g); color:#fff; border-radius:50%; font-weight:800; display:flex; align-items:center; justify-content:center; font-size:11px; }
+  .fstep::after{ content:"▼"; position:absolute; bottom:-22px; left:50%; transform:translateX(-50%); color:var(--g); font-size:14px; }
+  .fstep.last{ background:var(--g); color:#fff; }
+  .fstep.last::after{ content:""; }
+  .fbranch{ display:flex; gap:10px; justify-content:center; margin:0 0 26px; }
+  .fbranch .fb{ flex:1; border:2px dashed var(--amber); border-radius:10px; padding:8px; font-size:10px; text-align:center; background:#fffaf0; }
+  table.cheat{ width:100%; border-collapse:collapse; font-size:10.5px; }
+  table.cheat td{ border:1px solid var(--line); padding:7px 9px; vertical-align:top; }
+  table.cheat td.k{ background:var(--gl); font-weight:800; color:var(--g2); width:34%; }
+  .pill{ display:inline-block; background:var(--g); color:#fff; border-radius:20px; padding:2px 9px; font-size:9.5px; font-weight:700; }
+  .arrowln{ text-align:center; color:var(--g); font-weight:800; margin:2px 0; }
+  .footer-note{ margin-top:14px; border-top:1px solid var(--line); padding-top:8px; }
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<div class="cover page">
+  <div class="badge">COMMISSION<br>À CHAQUE<br>VENTE</div>
+  <div class="eyebrow">KIT DU PARTENAIRE · NEBULA</div>
+  <h1>VENDORA</h1>
+  <div class="tag">Le vendeur qui ne dort jamais.</div>
+  <div class="sub">Ton kit complet pour décrocher des abonnements Vendora. Des scripts mot pour mot, les réponses à TOUTES les objections, et le moment exact où tu encaisses. Tu lis, tu appliques, tu vends. Même si c'est ton premier jour.</div>
+  <div class="chips">
+    <div class="chip">Scripts par métier</div>
+    <div class="chip">Toutes les objections traitées</div>
+    <div class="chip">Schéma de vente</div>
+    <div class="chip">Closing Mobile Money</div>
+  </div>
+  <div class="foot">Cotonou · Bénin — à usage des partenaires NEBULA. Ne pas diffuser publiquement.</div>
+</div>
+
+<!-- ============ LIS ÇA D'ABORD ============ -->
+<div class="page">
+  <span class="kicker">À lire en premier · 3 minutes</span>
+  <h2 class="title">Avant de vendre, comprends <span class="em">ce que tu vends</span></h2>
+  <div class="rule"></div>
+  <p>Salut, et bienvenue dans l'équipe. Je vais être direct : ce kit, si tu le suis mot pour mot, tu peux faire tes premières ventes <b>aujourd'hui</b>. Pas besoin d'être un pro. Tout est écrit. Tu lis la ligne, tu la dis, tu écoutes la réponse, et tu vas à la page qui correspond.</p>
+
+  <div class="call">
+    <span class="t">Vendora en une phrase (apprends-la par cœur)</span>
+    « C'est un <b>vendeur intelligent qui répond et vend sur le WhatsApp du commerçant, 24h/24, même la nuit et le dimanche</b> — il discute avec les clients, donne les prix, prend la commande et prévient le patron. »
+  </div>
+
+  <p><b>Tu ne vends pas un “logiciel”. Tu ne vends pas de l'“IA”.</b> Personne ne se réveille en voulant acheter de l'IA. Tu vends une chose simple que TOUT commerçant comprend : <b>« arrête de perdre des ventes parce que tu réponds en retard. »</b></p>
+
+  <div class="grid2 nb">
+    <div class="card"><h3>Ce que ça change pour lui</h3>
+      <p class="small">Il dort, l'agent vend. Il est occupé, l'agent répond en 2 secondes. Le client n'attend plus, donc il n'achète plus ailleurs. Plus de ventes, moins de stress.</p></div>
+    <div class="card"><h3>Ce que ça change pour toi</h3>
+      <p class="small">Tu touches une <b>commission à chaque commerçant que tu fais payer</b>, et ça revient chaque mois tant qu'il reste. Plus tu en signes, plus ça s'accumule.</p></div>
+  </div>
+
+  <div class="call warn">
+    <span class="t">La seule règle qui compte</span>
+    Ne récite pas une fiche technique. <b>Fais parler le commerçant de SON problème</b> (les ventes ratées), puis montre que Vendora le règle. Celui qui pose les questions mène la vente.
+  </div>
+
+  <h3 style="margin:12px 0 5px;font-size:13px;color:var(--g2)">Comment utiliser ce kit</h3>
+  <ol class="steps">
+    <li>Repère le <b>métier</b> du commerçant (mode, beauté, resto, bijoux, autre) → va à son script.</li>
+    <li>Lance <b>l'accroche</b> telle qu'elle est écrite.</li>
+    <li>Écoute sa réponse → suis la <b>branche</b> qui correspond (chaque réponse possible est prévue).</li>
+    <li>Une objection ? Va au <b>Mur des objections</b> (page dédiée), trouve la phrase, reviens.</li>
+    <li>Dès qu'il est chaud → <b>la clôture Mobile Money</b>. Tu fais payer sur place.</li>
+  </ol>
+</div>
+
+<!-- ============ 5 RÈGLES D'OR ============ -->
+<div class="page">
+  <span class="kicker">Le bon état d'esprit</span>
+  <h2 class="title">Les 5 règles d'or du <span class="em">closer Vendora</span></h2>
+  <div class="rule"></div>
+  <div class="grid2">
+    <div class="card nb"><h3>1. Parle argent, pas technologie</h3><p class="small">« Combien de fois un client t'écrit la nuit et tu réponds le lendemain ? À ce moment-là il a déjà acheté ailleurs. » Le commerçant doit SENTIR l'argent qu'il perd.</p></div>
+    <div class="card nb"><h3>2. Montre, ne décris pas</h3><p class="small">Une démo vaut 100 phrases. Fais-lui écrire un message à l'agent devant toi. Quand il voit la réponse arriver toute seule, c'est gagné.</p></div>
+    <div class="card nb"><h3>3. Pose des questions, écoute</h3><p class="small">« Tu vends quoi surtout ? Tu reçois beaucoup de messages ? » Plus il parle, plus il se vend tout seul. Toi tu confirmes.</p></div>
+    <div class="card nb"><h3>4. Propose l'essai</h3><p class="small">« On le teste sur ta boutique, tu vois par toi-même. » Tu enlèves le risque. Un “oui pour essayer” mène au “oui pour payer”.</p></div>
+    <div class="card nb"><h3>5. Close tout de suite, en Mobile Money</h3><p class="small">Le chaud refroidit vite. Dès qu'il dit oui → tu sors le numéro MoMo et tu actives. « On le met en route maintenant, comme ça tu vends dès ce soir. »</p></div>
+    <div class="card nb" style="background:var(--gl);border-color:#bfe6cf"><h3 style="color:var(--g2)">+ Le secret</h3><p class="small">Sois <b>calme et sûr de toi</b>. Tu ne supplies pas, tu rends service. Tu apportes une solution qui rapporte de l'argent. Tiens-toi comme tel.</p></div>
+  </div>
+
+  <div class="call" style="margin-top:14px">
+    <span class="t">Le pitch de 20 secondes (à dégainer partout)</span>
+    « Tu sais ce que c'est de rater une vente parce que t'as répondu trop tard ? Moi je te mets un vendeur sur ton WhatsApp qui répond à tous tes clients en 2 secondes, jour et nuit, donne les prix, prend les commandes et te prévient. Tu veux que je te montre vite fait sur ta boutique ? »
+  </div>
+</div>
+
+<!-- ============ SCRIPT A — MODE ============ -->
+<div class="page">
+  <span class="kicker">Script A · Boutique mode & vêtements</span>
+  <h2 class="title">La vendeuse de <span class="em">mode / friperie / prêt-à-porter</span></h2>
+  <div class="rule"></div>
+  <p class="lead">Profil : elle vend sur WhatsApp/Instagram, beaucoup de messages, beaucoup de « c'est combien ? » et de gens qui disparaissent. Son point sensible : <b>les clients qui n'attendent pas</b>.</p>
+
+  <div class="dlg">
+    <div class="bulle vous"><span class="who">Toi — l'accroche</span>« Bonjour ! J'adore tes modèles. Petite question : quand une cliente t'écrit le soir pour un ensemble et que tu réponds le lendemain… elle achète encore, ou elle a déjà pris ailleurs ? »</div>
+    <div class="bulle client"><span class="who">Elle (réponse fréquente)</span>« Ahh souvent elles disparaissent oui 😩 »</div>
+    <div class="bulle vous"><span class="who">Toi</span>« Voilà. Chaque message en retard = une vente qui part. Je te règle ça : un vendeur sur ton WhatsApp qui répond à TOUTES tes clientes en 2 secondes, même à 23h, donne les prix, la taille dispo, prend la commande et te prévient. Tu veux voir en vrai sur ta boutique ? »</div>
+  </div>
+
+  <p style="margin-top:10px;font-weight:800;color:var(--g2)">Ses réponses possibles — et où tu vas :</p>
+
+  <div class="branch nb"><span class="if">→ Si elle dit « Oui montre-moi »</span><br>
+    <span class="then">Parfait. Tu fais la démo (voir encadré). Puis tu enchaînes sur l'essai et la clôture. <span class="pill">va au CLOSING</span></span></div>
+
+  <div class="branch nb"><span class="if">→ Si elle dit « C'est combien ? »</span><br>
+    <span class="then">« Moins cher qu'une seule vente ratée. Ça démarre à <b>5 000 F/mois</b>, et il te ramène des ventes dès le premier soir. Je te le mets en route, tu juges par toi-même. » <i>(Ne donne jamais le prix sans la valeur juste avant.)</i></span></div>
+
+  <div class="branch nb"><span class="if">→ Si elle dit « Je réponds moi-même, ça va »</span><br>
+    <span class="then">« Bien sûr, et tu réponds bien. Mais tu ne peux pas être sur ton téléphone à 2h du matin ni pendant que tu sers une cliente en boutique. Lui, il ne rate aucun message. Il travaille AVEC toi, pas à ta place. »</span></div>
+
+  <div class="branch nb"><span class="if">→ Si elle dit « Envoie-moi les infos »</span><br>
+    <span class="then">Piège classique. « Je fais mieux : 2 minutes, je te le montre en direct sur ta boutique, tu vois la vraie chose au lieu de lire. T'as ton téléphone là ? » <span class="pill">force la démo</span></span></div>
+
+  <div class="call nb">
+    <span class="t">La démo qui fait dire oui (30 secondes)</span>
+    « Écris à ce numéro comme si t'étais une cliente : demande le prix d'une robe. » → l'agent répond instantanément, propose, prend la commande. Elle voit. Tu dis : « Imagine ça avec TES produits et TON nom, pour chaque cliente, tout le temps. »
+  </div>
+
+  <div class="dlg nb">
+    <div class="bulle client"><span class="who">Elle</span>« Ah c'est fort ça… mais l'IA elle va pas dire n'importe quoi sur mes prix ? »</div>
+    <div class="bulle vous"><span class="who">Toi</span>« Non — il ne connaît QUE tes produits et tes prix, ceux que tu mets toi. Il n'invente rien. Et toi tu reçois chaque commande pour valider. Tu gardes le contrôle, lui fait juste le travail pénible. »</div>
+    <div class="bulle client"><span class="who">Elle</span>« Ok ça m'intéresse, je vais réfléchir »</div>
+    <div class="bulle vous"><span class="who">Toi (ne lâche pas)</span>« Réfléchir à quoi de plus que de vendre plus 😄 ? On fait simple : on l'active aujourd'hui, tu testes ce week-end où t'as le plus de messages. Si ça t'apporte rien, t'arrêtes. Tu risques zéro. On y va ? » <span class="pill">CLOSING</span></div>
+  </div>
+</div>
+
+<!-- ============ SCRIPT B — BEAUTÉ ============ -->
+<div class="page">
+  <span class="kicker">Script B · Cosmétique & institut de beauté</span>
+  <h2 class="title">L'institut, le <span class="em">spa, la marque de soins</span></h2>
+  <div class="rule"></div>
+  <p class="lead">Profil : prestations + produits. Point sensible : <b>les demandes de rendez-vous et de prix qui restent sans réponse</b> pendant qu'elle a les mains occupées sur une cliente.</p>
+
+  <div class="dlg">
+    <div class="bulle vous"><span class="who">Toi — l'accroche</span>« Bonjour ! Quand tu es en plein soin et qu'une cliente écrit pour réserver ou demander un prix… tu réponds quand, franchement ? »</div>
+    <div class="bulle client"><span class="who">Elle</span>« Quand j'ai fini, parfois 2-3h après »</div>
+    <div class="bulle vous"><span class="who">Toi</span>« Et en 2-3h, la cliente a appelé l'institut d'à côté. Je te mets un assistant sur ton WhatsApp qui répond tout de suite, donne tes tarifs, et propose même un créneau de rendez-vous — pendant que toi tu travailles tranquille. »</div>
+  </div>
+
+  <p style="margin-top:10px;font-weight:800;color:var(--g2)">Branches :</p>
+  <div class="branch nb"><span class="if">→ « Il peut prendre les rendez-vous ? »</span><br><span class="then">« Oui, c'est même son point fort pour toi : il propose tes créneaux libres, note la cliente, et te prévient. Fini les allers-retours. » <i>(C'est l'argument qui fait mouche dans la beauté — appuie dessus.)</i></span></div>
+  <div class="branch nb"><span class="if">→ « Mes clientes aiment qu'on leur parle gentiment »</span><br><span class="then">« Et il parle comme toi — chaleureux, ton institut, ton style. Tu choisis le ton. Les clientes sentent juste qu'on leur répond vite et bien. »</span></div>
+  <div class="branch nb"><span class="if">→ « C'est compliqué à utiliser ? »</span><br><span class="then">« Zéro. C'est nous qui le configurons avec tes soins et tes prix. Toi tu reçois juste les rendez-vous et les commandes sur ton téléphone, comme d'habitude. »</span></div>
+
+  <div class="dlg nb">
+    <div class="bulle client"><span class="who">Elle</span>« Et ça coûte combien par mois ? »</div>
+    <div class="bulle vous"><span class="who">Toi</span>« Moins qu'un seul soin par mois. Ça part de 5 000 F, et l'offre qui prend les rendez-vous automatiquement, c'est 15 000 F — largement remboursé dès que tu récupères 2-3 clientes qui sinon partaient. On l'active et tu vois ? »</div>
+    <div class="bulle client"><span class="who">Elle</span>« Bon… ok on essaie »</div>
+    <div class="bulle vous"><span class="who">Toi</span>« Excellente décision. On le met en route maintenant, comme ça dès demain matin tes clientes sont déjà prises en charge. » <span class="pill">CLOSING MoMo</span></div>
+  </div>
+</div>
+
+<!-- ============ SCRIPT C — RESTO/FOOD ============ -->
+<div class="page">
+  <span class="kicker">Script C · Restaurant · pâtisserie · fast-food</span>
+  <h2 class="title">Le resto, la <span class="em">pâtissière, le point food</span></h2>
+  <div class="rule"></div>
+  <p class="lead">Profil : commandes par WhatsApp, rush aux heures de repas, beaucoup de « vous livrez ? c'est combien ? c'est dispo ? ». Point sensible : <b>au rush, personne ne répond et les commandes filent</b>.</p>
+
+  <div class="dlg">
+    <div class="bulle vous"><span class="who">Toi — l'accroche</span>« Le midi quand ça rush, les messages WhatsApp tombent et personne peut répondre, c'est ça ? Combien de commandes tu perds juste parce que t'as pas vu le message à temps ? »</div>
+    <div class="bulle client"><span class="who">Lui</span>« Ahh le midi c'est chaud, on rate des trucs c'est sûr »</div>
+    <div class="bulle vous"><span class="who">Toi</span>« Je te mets un agent qui prend les commandes tout seul même en plein rush : il donne le menu, les prix, dit si tu livres, prend la commande et te l'envoie prête. Tu cuisines, lui encaisse les clients. »</div>
+  </div>
+
+  <div class="branch nb"><span class="if">→ « Et la livraison / le paiement ? »</span><br><span class="then">« Il explique ta zone de livraison et tes frais, et il peut proposer le paiement Mobile Money ou à la livraison — comme tu veux. Tu reçois la commande complète, prête à préparer. »</span></div>
+  <div class="branch nb"><span class="if">→ « Mes plats changent souvent »</span><br><span class="then">« Pas de souci : tu lui écris ‘aujourd'hui pas de poulet’ et il le sait direct. Tu pilotes ton menu en une phrase. »</span></div>
+  <div class="branch nb"><span class="if">→ « On est déjà débordés, pas le temps de gérer un truc en plus »</span><br><span class="then">« Justement — c'est LUI qui enlève le travail, pas qui en ajoute. Tu ne gères rien : tu reçois juste les commandes propres. C'est nous qui installons. »</span></div>
+
+  <div class="dlg nb">
+    <div class="bulle client"><span class="who">Lui</span>« Ça coûte cher votre affaire ? »</div>
+    <div class="bulle vous"><span class="who">Toi</span>« 5 000 F par mois pour commencer. Tu récupères ça avec UNE commande sauvée. Et au rush il t'en sauve dix. On le branche tout de suite ? »</div>
+    <div class="bulle client"><span class="who">Lui</span>« Vas-y on tente »</div>
+    <div class="bulle vous"><span class="who">Toi</span>« Top. On l'active maintenant pour qu'il soit prêt pour le rush de midi. » <span class="pill">CLOSING MoMo</span></div>
+  </div>
+</div>
+
+<!-- ============ SCRIPT D — BIJOUX + E — DIVERS ============ -->
+<div class="page">
+  <span class="kicker">Script D · Bijoux & accessoires</span>
+  <h2 class="title">Le/la vendeur·se de <span class="em">bijoux, sacs, accessoires</span></h2>
+  <div class="rule"></div>
+  <p class="lead">Profil : pièces parfois uniques, photos++, clientes qui hésitent et négocient. Point sensible : <b>l'hésitation et la négociation qui font traîner et perdre la vente</b>.</p>
+  <div class="dlg">
+    <div class="bulle vous"><span class="who">Toi — l'accroche</span>« Tes clientes te demandent souvent une photo, le prix, puis elles hésitent et disparaissent, non ? Et quand tu réponds tard, c'est mort. »</div>
+    <div class="bulle client"><span class="who">Elle</span>« Exactement, et certaines négocient à l'infini »</div>
+    <div class="bulle vous"><span class="who">Toi</span>« L'agent gère tout ça : il envoie les photos, donne le prix, et peut même négocier dans la limite que TU fixes — sans jamais casser tes prix. Il conclut pendant que la cliente est encore chaude. »</div>
+  </div>
+  <div class="branch nb"><span class="if">→ « Il peut négocier vraiment ? »</span><br><span class="then">« Oui, mais c'est toi qui mets la règle : par ex. ‘jamais en dessous de tel prix’. Il négocie comme un bon vendeur de marché, avec le sourire, sans brader. »</span></div>
+  <div class="branch nb"><span class="if">→ « Mes pièces sont uniques, faut expliquer »</span><br><span class="then">« Parfait, tu lui donnes l'histoire de chaque pièce, et il la raconte mieux et plus vite que personne, à chaque cliente. »</span></div>
+
+  <span class="kicker" style="margin-top:14px;display:inline-block">Script E · Quincaillerie · revendeur · divers</span>
+  <h2 class="title" style="font-size:20px">Tout autre <span class="em">commerce qui vend par WhatsApp</span></h2>
+  <div class="rule"></div>
+  <p class="lead">Profil : pièces détachées, électronique, gros volume de « vous avez ça ? c'est combien ? ». Point sensible : <b>répondre 100 fois la même question</b>.</p>
+  <div class="dlg">
+    <div class="bulle vous"><span class="who">Toi — l'accroche</span>« Tu réponds combien de fois par jour à ‘vous avez ça ?’ et ‘c'est combien ?’. Imagine que quelqu'un réponde à toutes ces questions à ta place, instantanément, sans jamais se fatiguer. »</div>
+    <div class="bulle client"><span class="who">Lui</span>« Ce serait pas mal, je passe ma journée là-dessus »</div>
+    <div class="bulle vous"><span class="who">Toi</span>« C'est exactement ça Vendora. Il connaît tout ton stock et tes prix, répond à tout le monde en 2 secondes, et te laisse juste les vraies commandes. Tu récupères tes journées. On le met en place ? »</div>
+  </div>
+  <div class="call nb" style="margin-top:12px"><span class="t">Astuce universelle</span>Quel que soit le métier, la formule gagnante est toujours la même : <b>1) le problème (ventes ratées) → 2) la démo → 3) l'essai sans risque → 4) le paiement Mobile Money tout de suite.</b></div>
+</div>
+
+<!-- ============ MUR DES OBJECTIONS ============ -->
+<div class="page">
+  <span class="kicker">Le mur des objections · les barrages</span>
+  <h2 class="title">Chaque <span class="em">« non »</span> a sa réponse</h2>
+  <div class="rule"></div>
+  <p class="lead">Un « non » n'est presque jamais un vrai non — c'est une question déguisée. Trouve la phrase, dis-la calmement, puis <b>reviens à la clôture</b>. Ne te justifie jamais trop : réponds, rassure, avance.</p>
+
+  <div class="obj nb"><div class="q">C'est trop cher</div><div class="a"><span class="lab">Réponds</span>« Trop cher comparé à quoi ? À une seule vente ratée dans la semaine, c'est déjà remboursé. Ce n'est pas une dépense, c'est ce qui te ramène des clients que tu perds aujourd'hui. » <b>Puis :</b> « On commence par la petite offre à 5 000 F, tu montes quand tu vois les résultats. »</div></div>
+
+  <div class="obj nb"><div class="q">Je gère déjà mon WhatsApp moi-même</div><div class="a"><span class="lab">Réponds</span>« Et tu le gères bien. Mais tu dors, tu manges, tu sers des clients en personne. Pendant ce temps, les messages tombent. Lui ne rate rien, jamais. Il bosse AVEC toi, sur tes heures creuses et tes nuits. »</div></div>
+
+  <div class="obj nb"><div class="q">L'IA va dire des bêtises / se tromper sur mes prix</div><div class="a"><span class="lab">Réponds</span>« Il ne connaît QUE ce que tu lui donnes : tes produits, tes prix, tes règles. Il n'invente rien. Et chaque commande te revient pour validation. Tu gardes la main, lui fait le travail. »</div></div>
+
+  <div class="obj nb"><div class="q">Mes clients préfèrent parler à un humain</div><div class="a"><span class="lab">Réponds</span>« Ce que tes clients détestent, c'est attendre. Lui répond tout de suite, dans ton ton, et dès que c'est sérieux il te passe la main. Le client est mieux servi, pas moins. »</div></div>
+
+  <div class="obj nb"><div class="q">Je vais réfléchir</div><div class="a"><span class="lab">Réponds</span>« Bien sûr. Mais réfléchir te coûte des ventes chaque jour où il n'est pas activé. Faisons l'inverse : on l'active aujourd'hui, tu réfléchis EN voyant les résultats sur ta vraie boutique. Si ça t'apporte rien, tu coupes. Tu risques zéro. »</div></div>
+
+  <div class="obj nb"><div class="q">Je n'ai pas le temps de m'en occuper</div><div class="a"><span class="lab">Réponds</span>« C'est tout l'intérêt : tu n'as RIEN à faire. On l'installe pour toi avec tes produits. Toi tu reçois juste les commandes. Il te fait gagner du temps, il ne t'en prend pas. »</div></div>
+
+  <div class="obj nb"><div class="q">Envoie-moi la doc, je verrai plus tard</div><div class="a"><span class="lab">Réponds</span>« La doc tu vas pas la lire, soyons francs 😄. 2 minutes en direct sur ta boutique, c'est cent fois plus parlant. T'as ton téléphone ? On regarde maintenant. »</div></div>
+
+  <div class="obj nb nb"><div class="q">Je dois en parler à mon associé / mon mari</div><div class="a"><span class="lab">Réponds</span>« Normal. Pour qu'il dise oui les yeux fermés, le mieux c'est qu'il VOIE le résultat : on l'active en essai, tu lui montres les commandes que ça ramène, et là c'est lui qui va vouloir continuer. »</div></div>
+
+  <div class="obj nb"><div class="q">Ça ne marche pas pour mon type de business</div><div class="a"><span class="lab">Réponds</span>« Si tu vends et que tes clients t'écrivent sur WhatsApp, ça marche pour toi. On l'a déjà fait pour [mode, beauté, resto, bijoux…]. On le configure exactement pour TON commerce. »</div></div>
+</div>
+
+<!-- ============ SCÉNARIOS SPÉCIAUX ============ -->
+<div class="page">
+  <span class="kicker">Scénarios délicats · ne rien lâcher proprement</span>
+  <h2 class="title">Quand le client <span class="em">recule ou disparaît</span></h2>
+  <div class="rule"></div>
+
+  <div class="card nb" style="margin-bottom:10px"><h3>① Il était chaud puis « finalement non »</h3>
+    <p class="small">Ne panique pas, et ne pousse pas plus fort. Recule d'un cran et cherche la VRAIE raison :</p>
+    <div class="bulle vous" style="max-width:100%"><span class="who">Toi</span>« Pas de souci. Juste pour comprendre : c'est le prix, le moment, ou un doute sur si ça va marcher chez toi ? » </div>
+    <p class="small">→ Il te donne la vraie objection. Tu vas à la page du Mur, tu réponds CETTE objection-là, et tu reproposes l'essai sans risque. 8 fois sur 10, le « non » cachait une seule petite peur.</p>
+  </div>
+
+  <div class="card nb" style="margin-bottom:10px"><h3>② Le fantôme (il ne répond plus)</h3>
+    <p class="small">Relance courte, légère, sans reproche, après 1-2 jours :</p>
+    <div class="bulle vous" style="max-width:100%"><span class="who">Relance 1</span>« Coucou ! Je t'avais gardé une activation rapide pour ta boutique. On le branche cette semaine pendant que t'as du monde qui écrit ? »</div>
+    <div class="bulle vous" style="max-width:100%"><span class="who">Relance 2 (quelques jours après)</span>« Dernière chose et je te laisse : un commerçant comme toi récupère facile 3-4 ventes/semaine juste en répondant à temps. Ça vaut le test, non ? 😊 »</div>
+  </div>
+
+  <div class="grid2 nb">
+    <div class="card"><h3>③ « Je vais réfléchir » (encore)</h3><p class="small">Transforme la réflexion en test : « Réfléchis EN testant, pas à la place de tester. On l'active, tu décides après. »</p></div>
+    <div class="card"><h3>④ Il négocie le prix avec TOI</h3><p class="small">« Le prix est déjà au plus juste — c'est moins qu'une vente. Mais commence par l'offre à 5 000 F, et tu montes quand ça t'aura déjà rapporté. »</p></div>
+  </div>
+
+  <div class="call warn nb" style="margin-top:12px"><span class="t">Règle d'or des barrages</span>Tu réponds à l'objection en <b>1 ou 2 phrases maximum</b>, puis tu <b>reviens tout de suite à l'action</b> (« on l'active ? »). Ne reste jamais coincé à te justifier : réponds, rassure, avance vers le oui.</div>
+</div>
+
+<!-- ============ SCHÉMA ============ -->
+<div class="page">
+  <span class="kicker">Le schéma · la vente en un coup d'œil</span>
+  <h2 class="title">Le <span class="em">chemin de la vente</span></h2>
+  <div class="rule"></div>
+  <p class="lead">Suis les flèches. Tu seras toujours quelque part sur ce schéma. Le but : descendre jusqu'au vert.</p>
+
+  <div class="flow">
+    <div class="fstep"><span class="n">1</span>ACCROCHE — parle de son problème (ventes ratées)</div>
+    <div class="fstep"><span class="n">2</span>ÉCOUTE — il confirme le problème (« oui ça arrive »)</div>
+    <div class="fstep"><span class="n">3</span>DÉMO — il écrit à l'agent, il voit la réponse arriver</div>
+    <div class="fstep"><span class="n">4</span>ESSAI — « on teste sur ta boutique, tu risques zéro »</div>
+    <div class="fbranch">
+      <div class="fb">🟠 OBJECTION ?<br>→ va au Mur des objections,<br>réponds, puis reviens ici</div>
+      <div class="fb">🟢 IL EST CHAUD ?<br>→ descends direct<br>à la clôture</div>
+    </div>
+    <div class="fstep"><span class="n">5</span>CLÔTURE — « on l'active maintenant, tu vends dès ce soir »</div>
+    <div class="fstep last">✅ PAIEMENT MOBILE MONEY + ACTIVATION → CLIENT SIGNÉ</div>
+  </div>
+
+  <div class="call nb"><span class="t">Si tu te perds, reviens à ça</span>Problème → Démo → Essai → Paiement. Tout le reste (objections, hésitations) n'est qu'un détour temporaire avant de revenir sur ce chemin.</div>
+</div>
+
+<!-- ============ CLOSING ============ -->
+<div class="page">
+  <span class="kicker">La clôture · le moment qui compte</span>
+  <h2 class="title">Le moment <span class="em">Mobile Money</span></h2>
+  <div class="rule"></div>
+  <p class="lead">C'est là que beaucoup échouent : ils ont un « oui » et ils le laissent refroidir. <b>Dès qu'il est d'accord, tu actes, tu n'attends pas.</b></p>
+
+  <ol class="steps nb">
+    <li><b>Verrouille le oui :</b> « Super décision. On part sur quelle offre — Démarrage à 5 000 ou Business à 15 000 avec les rendez-vous/relances ? » <i>(tu fais choisir entre deux oui, jamais entre oui et non.)</i></li>
+    <li><b>Annonce le paiement comme une évidence :</b> « Parfait. Pour l'activer tout de suite, tu envoies [montant] sur ce numéro Mobile Money, et je te le mets en route dans la foulée. »</li>
+    <li><b>Donne le numéro + le nom</b> et reste en ligne pendant qu'il paie (ne disparais pas, n'attends pas “plus tard”).</li>
+    <li><b>Confirme et rassure :</b> « Reçu ✅ ! Je configure ta boutique avec tes produits, et ce soir ton vendeur est déjà en train de répondre à tes clients. »</li>
+    <li><b>Sème la prochaine vente :</b> « Si un ami commerçant galère pareil, envoie-le-moi — je m'occupe de lui aussi. »</li>
+  </ol>
+
+  <div class="call nb"><span class="t">Phrases qui closent (apprends-en 2 par cœur)</span>
+    • « On le met en route maintenant, comme ça tu vends dès ce soir. »<br>
+    • « Tu risques zéro : si ça t'apporte rien, tu coupes quand tu veux. »<br>
+    • « La seule erreur, ce serait de continuer à perdre des ventes une semaine de plus. »
+  </div>
+
+  <div class="call warn nb"><span class="t">Ne fais jamais ça</span>Ne dis pas « réfléchis et reviens vers moi ». Ne laisse pas “demain”. Le chaud d'aujourd'hui est froid demain. Tu encaisses <b>pendant</b> que l'envie est là.</div>
+</div>
+
+<!-- ============ AIDE-MÉMOIRE ============ -->
+<div>
+  <span class="kicker">Aide-mémoire · garde-le sur ton téléphone</span>
+  <h2 class="title">La <span class="em">antisèche</span> du closer</h2>
+  <div class="rule"></div>
+  <table class="cheat nb">
+    <tr><td class="k">La phrase magique</td><td>« Un vendeur sur ton WhatsApp qui répond à tes clients en 2 secondes, jour et nuit, et prend les commandes. »</td></tr>
+    <tr><td class="k">Toujours commencer par</td><td>Le PROBLÈME (ventes ratées par réponse lente), jamais par la technologie.</td></tr>
+    <tr><td class="k">L'arme fatale</td><td>La DÉMO en direct sur sa boutique. Fais-le écrire à l'agent.</td></tr>
+    <tr><td class="k">Enlever la peur</td><td>« On teste, tu risques zéro, tu coupes quand tu veux. »</td></tr>
+    <tr><td class="k">Les prix</td><td>Démarrage 5 000 F · Business 15 000 F (rendez-vous, relances) · Empire 40 000 F (tout). Donne le prix APRÈS la valeur.</td></tr>
+    <tr><td class="k">Objection ?</td><td>1-2 phrases max → puis « on l'active ? ». Ne te justifie pas trop.</td></tr>
+    <tr><td class="k">Closer</td><td>Choix entre 2 offres → numéro MoMo tout de suite → confirme → demande un autre contact.</td></tr>
+    <tr><td class="k">Ton attitude</td><td>Calme, sûr, utile. Tu ne supplies pas : tu apportes de l'argent.</td></tr>
+  </table>
+
+  <div class="call nb" style="margin-top:14px"><span class="t">Le mot de la fin (de moi à toi)</span>
+    Le produit marche. Le seul truc qui te sépare de tes 10 ventes du jour, c'est de <b>parler à 10 commerçants</b> et de suivre ce kit sans broder. Va leur parler de leurs ventes ratées, montre, fais payer. Tu vas y arriver. — <b>Mongazi, NEBULA</b>
+  </div>
+  <div class="call nb" style="margin-top:12px;text-align:center"><span class="t">Une question ? Un commerçant prêt à signer ?</span>
+    Écris-moi directement — <b>WhatsApp +229 96 74 07 32</b> &nbsp;·&nbsp; <b>contact@nebula-agency.online</b><br>
+    Mongazi — NEBULA Agency &nbsp;·&nbsp; www.nebula-agency.online</div>
+  <p class="small footer-note">Document partenaire NEBULA · Vendora · Cotonou, Bénin. Réservé aux partenaires. Les tarifs peuvent évoluer ; confirme l'offre en cours avant l'activation.</p>
+</div>
+
+</body>
+</html>
