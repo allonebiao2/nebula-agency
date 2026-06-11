@@ -416,4 +416,17 @@
 
 ---
 
+## 2026-06-11 — Vendora : honnêteté marketing (langues masquées), employé numérique, conformité, glisser-déposer photos
+
+- **Contexte** : grosse session UX/produit sur Vendora. Plusieurs arbitrages importants pris avec Mongazi.
+- **Décisions** :
+  1. **Cacher les langues du marketing** (fon/yoruba/hausa/mina codés et fonctionnels en interne, mais retirés de la page de vente). **Raison** : sur-promesse — au Bénin le fon s'écrit peu (surtout à l'oral), et **Whisper ne transcrit pas le fon vocal** (le vrai usage). Mieux vaut ne PAS promettre que baragouiner. Le backend reste (repli français, jamais de charabia), on n'en fait juste plus la pub.
+  2. **Recadrer le marketing sur le RÉEL = « employé numérique »** : section « Il vend ET gère toute votre boutique » (caisse/stock/ardoise/papiers/RDV/assistant). Différenciateur unique, vrai, plus fort que les langues.
+  3. **Conformité + confiance** : page **/confidentialite** (honnête : données + prestataires nommés, jamais vendues + Conditions), **écran « à savoir avant de payer » + consentement OBLIGATOIRE**, footer **support + email pro + réseaux** (IG @vendora_bj, FB, support@/contact@nebula-agency.online vérifiés). Exigé par Meta pour les apps + rassure le client.
+  4. **Glisser-déposer des photos** (inscription + back-office) à la place du champ URL inutilisable, **pleine qualité**. À l'inscription, la création **ouvre une session** → upload dans la foulée + commerçant déjà connecté.
+- **Alternatives écartées** : garder la pub langues (malhonnête vu le vocal fon) ; uploader les images en base64 dans le payload d'inscription (payload trop lourd) → préféré le cookie de session + upload après création.
+- **Conséquences** : page de vente honnête et plus vendeuse ; tunnel d'inscription avec consentement ; piège déploiement noté (reference_railway-cli) : `railway up` depuis `boutique-ia/` + relancer si « Deploy failed » transitoire. **Priorité maintenant = acquisition des 1ers clients payants.**
+
+---
+
 <!-- Ajouter les nouvelles décisions au-dessus -->
