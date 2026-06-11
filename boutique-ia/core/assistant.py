@@ -658,3 +658,197 @@ def run_assistant_reminders() -> dict:
         else:
             skipped += 1
     return {"sent": sent, "skipped": skipped}
+
+
+# ===========================================================================
+# ASSISTANT FONDATEUR — le copilote IA de Mongazi DANS le cockpit admin.
+# Même esprit que l'assistant commerçant, mais au niveau de TOUT le business
+# Vendora (toutes les boutiques). Données réelles via outils, jamais inventées.
+# ===========================================================================
+
+def admin_dashboard() -> str:
+    """Point business GROUNDED : boutiques, MRR, ventes (toutes boutiques)."""
+    from config import normalize_plan, price_for_plan
+    from db.client import all_orders_brief, list_all_merchants
+    ms = list_all_merchants()
+    by_status: dict[str, int] = {}
+    mrr = 0
+    trials = 0
+    for m in ms:
+        st = m.get("status") or "pending_payment"
+        by_status[st] = by_status.get(st, 0) + 1
+        if m.get("is_trial"):
+            trials += 1
+        elif st == "active":
+            mrr += price_for_plan(normalize_plan(m.get("plan")))
+    orders = all_orders_brief()
+    sales = sum(_to_float(o.get("total")) for o in orders)
+    return "\n".join([
+        "DONNÉES RÉELLES — business Vendora :",
+        f"- Boutiques : {len(ms)} (actives {by_status.get('active', 0)}, "
+        f"essais {trials}, à valider {by_status.get('paid_pending_validation', 0)}, "
+        f"en pause {by_status.get('suspended', 0)})",
+        f"- MRR (abonnements actifs payants) : {_money(mrr)}",
+        f"- Commandes toutes boutiques : {len(orders)} · Ventes cumulées : {_money(sales)}",
+    ])
+
+
+def admin_shops(filtre: str = "") -> str:
+    """Liste GROUNDED des boutiques, filtrable (expirent / en pause / essais / à valider)."""
+    from config import PLAN_LABELS, normalize_plan
+    from db.client import days_left, list_all_merchants
+    ms = list_all_merchants()
+    f = (filtre or "").lower()
+    out = []
+    for m in ms:
+        st = m.get("status")
+        dl = days_left(m)
+        if "expir" in f or "bientôt" in f or "renouv" in f:
+            keep = dl is not None and 0 < dl <= 5
+        elif "pause" in f or "suspend" in f:
+            keep = st == "suspended"
+        elif "essai" in f or "trial" in f:
+            keep = bool(m.get("is_trial"))
+        elif "valider" in f or "paiement" in f:
+            keep = st == "paid_pending_validation"
+        elif "actif" in f or "active" in f:
+            keep = st == "active"
+        else:
+            keep = True
+        if keep:
+            out.append((m, dl))
+    if not out:
+        return f"DONNÉES RÉELLES — aucune boutique pour « {filtre or 'tout'} »."
+    lines = [f"DONNÉES RÉELLES — boutiques ({filtre or 'toutes'}, {len(out)}) :"]
+    for m, dl in out[:30]:
+        dl_s = f"{dl}j" if dl is not None else "—"
+        contact = m.get("owner_whatsapp") or m.get("whatsapp_business") or ""
+        lines.append(f"- {m.get('business_name')} · {PLAN_LABELS.get(normalize_plan(m.get('plan')))} "
+                     f"· {m.get('status')} · {dl_s} · {contact}")
+    return "\n".join(lines)
+
+
+def admin_shop_info(recherche: str) -> str:
+    """Fiche GROUNDED d'une boutique : forfait, statut, ventes, conversations."""
+    from config import PLAN_LABELS, normalize_plan
+    from db.client import (conversation_usage, days_left, find_merchant_by_name,
+                           get_merchant, order_stats)
+    q = (recherche or "").strip()
+    if not q:
+        return "Indiquez le nom de la boutique."
+    cand = find_merchant_by_name(q)
+    if not cand:
+        return f"Aucune boutique trouvée pour « {q} »."
+    m = get_merchant(cand[0]["id"]) or cand[0]
+    stats = order_stats(m["id"])
+    usage = conversation_usage(m)
+    dl = days_left(m)
+    used = usage.get("used", 0)
+    allow = "illimité" if usage.get("unlimited") else usage.get("allowance")
+    return "\n".join([
+        f"DONNÉES RÉELLES — {m.get('business_name')} :",
+        f"- Forfait {PLAN_LABELS.get(normalize_plan(m.get('plan')))} · statut {m.get('status')}"
+        + (f" · {dl}j restants" if dl is not None else ""),
+        f"- Commandes : {stats.get('count', 0)} · Ventes : {_money(stats.get('revenue'))}",
+        f"- Conversations ce mois : {used}/{allow}"
+        + (f" · {usage.get('credits')} crédits" if usage.get('credits') else ""),
+        f"- Contact : {m.get('owner_whatsapp') or m.get('whatsapp_business') or '—'}",
+    ])
+
+
+ADMIN_TOOLS = [
+    {"name": "tableau_de_bord",
+     "description": ("Point business RÉEL de Vendora : nombre de boutiques (actives/essais/à "
+                     "valider/en pause), MRR, ventes cumulées. Pour « fais le point », « bilan », "
+                     "« combien de boutiques », « mon MRR »."),
+     "input_schema": {"type": "object", "properties": {}}},
+    {"name": "liste_boutiques",
+     "description": ("Liste RÉELLE des boutiques, filtrable. Pour « quelles boutiques expirent "
+                     "bientôt », « les boutiques en pause », « les essais », « à valider »."),
+     "input_schema": {"type": "object", "properties": {
+         "filtre": {"type": "string", "description": "ex: expirent / en pause / essais / à valider / actives (vide = toutes)."}}}},
+    {"name": "info_boutique",
+     "description": "Fiche RÉELLE d'une boutique (forfait, statut, ventes, conversations). Pour « parle-moi de X ».",
+     "input_schema": {"type": "object", "properties": {
+         "recherche": {"type": "string", "description": "Nom de la boutique."}}, "required": ["recherche"]}},
+]
+
+
+def _admin_exec_tool(name: str, args: dict) -> str:
+    try:
+        if name == "tableau_de_bord":
+            return admin_dashboard()
+        if name == "liste_boutiques":
+            return admin_shops(args.get("filtre") or "")
+        if name == "info_boutique":
+            return admin_shop_info(args.get("recherche") or "")
+    except Exception as e:  # noqa: BLE001
+        log.exception("outil admin assistant échoué")
+        return f"(impossible de lire cette donnée : {e})"
+    return "(outil inconnu)"
+
+
+def _admin_system() -> str:
+    now = _now_wat()
+    jours = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
+    mois = ["", "janvier", "février", "mars", "avril", "mai", "juin", "juillet",
+            "août", "septembre", "octobre", "novembre", "décembre"]
+    date_fr = f"{jours[now.weekday()]} {now.day} {mois[now.month]} {now.year}, {now:%Hh%M}"
+    return f"""Tu es l'assistant FONDATEUR de Vendora — le copilote IA de Mongazi, le créateur.
+Tu l'aides à PILOTER tout le business Vendora (l'ensemble des boutiques clientes), depuis
+son cockpit. Tu l'aides sur DEUX plans.
+
+1) LE BUSINESS — pour TOUT chiffre ou fait (boutiques, MRR, ventes, statuts, expirations),
+   tu DOIS appeler l'outil correspondant et utiliser SON résultat. N'invente JAMAIS un
+   chiffre ni un nom de boutique.
+
+2) TOUT LE RESTE — comme un copilote stratégique brillant : analyses, idées de croissance,
+   rédaction (un message à une boutique, une annonce), explications, calculs. Sois lucide,
+   concret, orienté action ; tu peux être direct et un peu plus détaillé qu'en SMS (c'est
+   un écran). Garde en tête la priorité : décrocher et garder des boutiques PAYANTES.
+
+Date et heure actuelles (Bénin) : {date_fr}.
+
+HONNÊTETÉ : si tu n'es pas sûr d'un fait, dis-le. Ne fabrique jamais une donnée. Mieux vaut
+« je vérifie » que faux. Mongazi exige une confiance totale dans tes chiffres."""
+
+
+def admin_reply(question: str, history: list[dict] | None = None) -> str:
+    """Réponse de l'assistant fondateur (cockpit admin). `history` = fil navigateur."""
+    settings.require("anthropic_api_key")
+    client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
+    system = [{"type": "text", "text": _admin_system(), "cache_control": {"type": "ephemeral"}}]
+    messages: list[dict] = []
+    for h in (history or [])[-10:]:
+        role = "assistant" if h.get("role") == "assistant" else "user"
+        content = (h.get("content") or "").strip()
+        if content:
+            messages.append({"role": role, "content": content})
+    messages.append({"role": "user", "content": (question or "").strip() or "Fais le point"})
+
+    for _ in range(MAX_TOOL_TURNS):
+        resp = client.messages.create(
+            model=model_config.model_for("manager"),
+            max_tokens=model_config.tokens_for("manager", 800),
+            system=system, messages=messages, tools=ADMIN_TOOLS,
+        )
+        tool_uses = [b for b in resp.content if getattr(b, "type", None) == "tool_use"]
+        if not tool_uses:
+            text = "\n".join(b.text for b in resp.content
+                             if getattr(b, "type", None) == "text").strip()
+            return text or "Je suis là 🙂 Que voulez-vous savoir sur le business ?"
+        messages.append({"role": "assistant", "content": resp.content})
+        results = []
+        for tu in tool_uses:
+            results.append({"type": "tool_result", "tool_use_id": tu.id,
+                            "content": _admin_exec_tool(tu.name, dict(tu.input or {}))})
+        messages.append({"role": "user", "content": results})
+
+    resp = client.messages.create(
+        model=model_config.model_for("manager"),
+        max_tokens=model_config.tokens_for("manager", 600),
+        system=system, messages=messages,
+    )
+    text = "\n".join(b.text for b in resp.content
+                     if getattr(b, "type", None) == "text").strip()
+    return text or "Je suis là 🙂 Que voulez-vous savoir sur le business ?"

@@ -280,6 +280,7 @@
 
 <nav class="tabs" id="tabs" aria-label="Sections">
   <a href="#sec-stats"><span class="dot"></span>Vue d'ensemble</a>
+  <a href="#sec-assistant">Assistant</a>
   <a href="#sec-actions">Actions</a>
   <a href="#sec-ceo">Directeur</a>
   <a href="#sec-learn">Apprentissage</a>
@@ -309,6 +310,19 @@
     <div class="stat"><div class="sv num" data-target="{{ glob.sales|int }}" data-fmt="1">0</div><div class="sl">F CFA ventes</div></div>
     <div class="stat"><div class="sv num" data-target="{{ glob.mrr|int }}" data-fmt="1">0</div><div class="sl">F CFA / mois</div></div>
   </div>
+
+  <!-- ASSISTANT FONDATEUR — copilote business (même esprit que l'assistant commerçant) -->
+  <section class="rv" id="sec-assistant" style="margin-top:18px">
+    <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg></div><h2>Assistant fondateur</h2></div>
+    <div class="panel">
+      <p class="hint">Votre copilote business. Demandez : « fais le point », « quelles boutiques expirent bientôt ? », « mon MRR ? », « parle-moi de [boutique] », « rédige un message pour relancer les boutiques en pause »…</p>
+      <div id="faLog" style="display:flex;flex-direction:column;gap:9px;margin-bottom:12px"></div>
+      <form id="faForm" style="display:flex;gap:9px">
+        <input class="fi" id="faInput" placeholder="Posez votre question…" autocomplete="off" style="flex:1">
+        <button class="btn acc" type="submit"><svg viewBox="0 0 24 24"><use href="#i-send"/></svg></button>
+      </form>
+    </div>
+  </section>
 
   <!-- CENTRE DE COMMANDE — actions rapides (tout en 1 clic) -->
   <section class="rv qa-wrap" id="sec-actions">
@@ -1015,6 +1029,28 @@ async function addCredits(id){
   if(d.ok){ notify('Crédité : +'+d.added+' (solde '+d.credits+')'); setTimeout(()=>location.reload(),900); }
   else { notify(d.error||'Erreur', true); }
 }
+/* Assistant fondateur (copilote business) */
+const faLog=document.getElementById('faLog');
+const faHist=[];
+function faBubble(text, who){
+  const d=document.createElement('div');
+  d.style.cssText='max-width:88%;padding:9px 12px;border-radius:12px;white-space:pre-wrap;line-height:1.45;font-size:14px;'+(who==='me'?'align-self:flex-end;background:#7c5cff;color:#fff':'align-self:flex-start;border:1px solid var(--line,#26262e);background:var(--panel,#15151b)');
+  d.textContent=text; faLog.appendChild(d); faLog.scrollTop=faLog.scrollHeight; return d;
+}
+const faForm=document.getElementById('faForm');
+if(faForm){ faForm.addEventListener('submit', async(e)=>{
+  e.preventDefault();
+  const inp=document.getElementById('faInput'); const t=inp.value.trim(); if(!t) return;
+  faBubble(t,'me'); inp.value=''; inp.focus();
+  const typing=faBubble('…','ag');
+  try{
+    const d=await post('/api/admin/assistant',{message:t, history:faHist.slice(-8)});
+    typing.remove();
+    if(!d.ok){ faBubble('⚠ '+(d.error||'Erreur'),'ag'); return; }
+    faBubble(d.reply||'…','ag'); faHist.push({role:'user',content:t},{role:'assistant',content:d.reply});
+  }catch(ex){ typing.remove(); faBubble('⚠ '+ex.message,'ag'); }
+});}
+
 async function launchRecrutement(){
   const cat=document.getElementById('pr_cat').value, city=document.getElementById('pr_city').value.trim();
   if(!city){ notify('Indiquez une ville.',true); return; }

@@ -929,6 +929,28 @@ async def admin_activate(request: Request, merchant_id: str):
     return {"ok": bool(m), "merchant": m}
 
 
+@app.post("/api/admin/assistant")
+async def admin_assistant_endpoint(request: Request):
+    """L'assistant FONDATEUR (copilote business de Mongazi) dans le cockpit."""
+    from core import assistant
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    question = (body.get("message") or "").strip()
+    if not question:
+        return JSONResponse({"ok": False, "error": "Question vide."}, status_code=400)
+    history = body.get("history") if isinstance(body.get("history"), list) else None
+    try:
+        answer = assistant.admin_reply(question, history=history)
+    except Exception as e:  # noqa: BLE001
+        log.exception("assistant fondateur échoué")
+        return JSONResponse({"ok": False, "error": str(e)[:300]}, status_code=500)
+    return {"ok": True, "reply": answer}
+
+
 @app.post("/api/admin/merchants/{merchant_id}/status")
 async def admin_set_status(request: Request, merchant_id: str):
     from db.client import set_merchant_status
