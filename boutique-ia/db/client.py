@@ -168,7 +168,7 @@ EDITABLE_MERCHANT_FIELDS = {
     "ai_effort",
     "brand_color", "cod_enabled", "negotiation_enabled", "negotiation_rule",
     "auto_prospect_enabled", "auto_prospect_category", "auto_prospect_city",
-    "rdv_days", "rdv_hours", "rdv_note",
+    "rdv_days", "rdv_hours", "rdv_note", "rdv_weekdays", "rdv_off_dates",
     # Fiche enrichie : pour que l'agent connaisse vraiment le business
     "founded", "price_range", "target_audience", "occasions", "bestsellers",
     "unique_selling", "selling_points", "payment_methods", "guarantees",
@@ -237,19 +237,35 @@ def set_merchant_pin(merchant_id: str, pin_hash: str | None) -> dict[str, Any]:
 
 def create_appointment(merchant_id: str, customer_whatsapp: str | None, *,
                        service: str | None = None, requested_time: str | None = None,
-                       customer_name: str | None = None,
-                       note: str | None = None) -> dict[str, Any]:
-    """Enregistre une demande de rendez-vous (statut pending)."""
+                       customer_name: str | None = None, note: str | None = None,
+                       scheduled_at: str | None = None,
+                       status: str = "pending") -> dict[str, Any]:
+    """Enregistre un rendez-vous (demande pending, ou RDV planifié si scheduled_at)."""
     db = get_db()
     row = {"merchant_id": merchant_id, "customer_whatsapp": customer_whatsapp,
            "service": service, "requested_time": requested_time,
-           "customer_name": customer_name, "note": note, "status": "pending"}
+           "customer_name": customer_name, "note": note, "status": status,
+           "scheduled_at": scheduled_at}
     result = db.table("bia_appointments").insert(row).execute()
     return result.data[0] if result.data else {}
 
 
-def list_appointments(merchant_id: str, limit: int = 20) -> list[dict[str, Any]]:
-    """Derniers rendez-vous d'une boutique (plus récents d'abord)."""
+def update_appointment(appt_id: str, merchant_id: str, fields: dict[str, Any]) -> dict[str, Any]:
+    """Met à jour un RDV (créneau, statut, service…). Scopé à la boutique (sécurité)."""
+    allowed = {"scheduled_at", "status", "service", "customer_name", "note", "requested_time"}
+    clean = {k: v for k, v in fields.items() if k in allowed}
+    if not clean:
+        return {}
+    try:
+        res = (get_db().table("bia_appointments").update(clean)
+               .eq("id", appt_id).eq("merchant_id", merchant_id).execute())
+        return res.data[0] if res.data else {}
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def list_appointments(merchant_id: str, limit: int = 200) -> list[dict[str, Any]]:
+    """Rendez-vous d'une boutique (plus récents d'abord)."""
     db = get_db()
     result = (
         db.table("bia_appointments").select("*").eq("merchant_id", merchant_id)

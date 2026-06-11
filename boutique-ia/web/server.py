@@ -95,6 +95,67 @@ def _qr_data_uri(text: str) -> str:
 
 log = logging.getLogger("boutique-ia.server")
 
+_AG_JOURS = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
+_AG_MOIS = ["", "janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.",
+            "août", "sept.", "oct.", "nov.", "déc."]
+
+
+def _build_agenda(merchant: dict, appointments: list) -> dict:
+    """Assemble la vue Agenda : demandes à planifier + RDV groupés par jour (14 j)."""
+    from datetime import datetime, timedelta, timezone
+    wat = timezone(timedelta(hours=1))
+    today = datetime.now(wat).date()
+
+    def _p(s):
+        try:
+            dt = datetime.fromisoformat(str(s).replace("Z", "+00:00"))
+            return (dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)).astimezone(wat)
+        except Exception:  # noqa: BLE001
+            return None
+
+    weekdays = {int(x) for x in (merchant.get("rdv_weekdays") or "").split(",")
+                if x.strip().isdigit()}
+    off_dates = {d.strip() for d in (merchant.get("rdv_off_dates") or "").split(",") if d.strip()}
+
+    by_day: dict[str, list] = {}
+    pending: list = []
+    for a in appointments:
+        if a.get("status") == "cancelled":
+            continue
+        dt = _p(a.get("scheduled_at")) if a.get("scheduled_at") else None
+        if dt:
+            row = dict(a)
+            row["_time"] = dt.strftime("%Hh%M")
+            by_day.setdefault(dt.date().isoformat(), []).append((dt, row))
+        elif a.get("status") == "pending":
+            pending.append(a)
+
+    days = []
+    for i in range(14):
+        d = today + timedelta(days=i)
+        diso = d.isoformat()
+        is_off = (diso in off_dates) or (bool(weekdays) and (d.weekday() + 1) not in weekdays)
+        items = [r for _dt, r in sorted(by_day.get(diso, []), key=lambda t: t[0])]
+        if not items and is_off:
+            continue  # jour fermé et vide → on n'encombre pas
+        days.append({"label": f"{_AG_JOURS[d.weekday()]} {d.day} {_AG_MOIS[d.month]}",
+                     "iso": diso, "today": i == 0, "is_off": is_off, "items": items})
+    return {"days": days, "pending": pending,
+            "weekdays": sorted(weekdays), "off_dates": sorted(off_dates)}
+
+
+def _wat_iso(date_s: str | None, time_s: str | None) -> str | None:
+    """Construit un timestamptz ISO en heure du Bénin depuis 'YYYY-MM-DD' + 'HH:MM'."""
+    from datetime import datetime, timedelta, timezone
+    try:
+        d = datetime.strptime((date_s or "").strip(), "%Y-%m-%d")
+        parts = ((time_s or "09:00").strip() + ":00").split(":")
+        dt = d.replace(hour=int(parts[0]), minute=int(parts[1]),
+                       tzinfo=timezone(timedelta(hours=1)))
+        return dt.isoformat()
+    except Exception:  # noqa: BLE001
+        return None
+
 
 # ---------------------------------------------------------------------------
 # Authentification back-office commerçant (code d'accès + session cookie signé)
@@ -615,11 +676,12 @@ async def boutique_backoffice(request: Request, merchant_id: str):
         if _dl is not None and _dl > 0:
             trial = {"days_left": _dl}
     rdv_on = bool(merchant) and has_capability(merchant, "rdv")
-    appointments = []
+    appointments, agenda = [], None
     if rdv_on:
         try:
             from db.client import list_appointments
-            appointments = list_appointments(merchant_id, limit=20)
+            appointments = list_appointments(merchant_id, limit=200)
+            agenda = _build_agenda(merchant, appointments)
         except Exception:  # noqa: BLE001
             log.warning("back-office: lecture RDV KO", exc_info=True)
     social_on = bool(merchant) and has_capability(merchant, "social")
@@ -741,7 +803,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              plan=plan, plan_label=plan_label, plans=plans, accent=accent,
              daily_limit=daily_limit, used_today=used_today, remaining=remaining,
              categories=cats, campaigns=campaigns, inbox=inbox, caps=caps_ctx,
-             guide=guide, trial=trial, suspended=suspended, rdv_on=rdv_on, appointments=appointments,
+             guide=guide, trial=trial, suspended=suspended, rdv_on=rdv_on, appointments=appointments, agenda=agenda,
              social_on=social_on, social_images_on=social_images_on, social_posts=social_posts,
              social_publish_ready=social_publish_ready,
              coach_on=coach_on, coaching=coaching, usage=usage,
@@ -2140,6 +2202,59 @@ async def merchant_debt_paid(request: Request, merchant_id: str, debt_id: str):
     row = set_debt_paid(debt_id, merchant_id)
     if not row:
         return JSONResponse({"ok": False, "error": "Dette introuvable."}, status_code=404)
+    return {"ok": True}
+
+
+@app.post("/api/merchants/{merchant_id}/appointments")
+async def merchant_appointment_create(request: Request, merchant_id: str):
+    """Ajoute un RDV planifié manuellement depuis l'agenda."""
+    from db.client import create_appointment
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    iso = _wat_iso(body.get("date"), body.get("time"))
+    if not iso:
+        return JSONResponse({"ok": False, "error": "Date et heure requises."}, status_code=400)
+    create_appointment(
+        merchant_id, None,
+        service=(body.get("service") or "").strip() or None,
+        customer_name=(body.get("customer_name") or "").strip() or None,
+        note=(body.get("note") or "").strip() or None,
+        scheduled_at=iso, status="confirmed",
+    )
+    return {"ok": True}
+
+
+@app.post("/api/merchants/{merchant_id}/appointments/{appt_id}")
+async def merchant_appointment_update(request: Request, merchant_id: str, appt_id: str):
+    """Planifie (date+heure), confirme ou annule un RDV."""
+    from db.client import update_appointment
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    action = (body.get("action") or "").strip()
+    if action == "cancel":
+        fields = {"status": "cancelled"}
+    elif action == "confirm":
+        fields = {"status": "confirmed"}
+    elif action == "schedule":
+        iso = _wat_iso(body.get("date"), body.get("time"))
+        if not iso:
+            return JSONResponse({"ok": False, "error": "Date et heure requises."}, status_code=400)
+        fields = {"scheduled_at": iso, "status": "confirmed"}
+    else:
+        return JSONResponse({"ok": False, "error": "Action invalide."}, status_code=400)
+    row = update_appointment(appt_id, merchant_id, fields)
+    if not row:
+        return JSONResponse({"ok": False, "error": "Rendez-vous introuvable."}, status_code=404)
     return {"ok": True}
 
 

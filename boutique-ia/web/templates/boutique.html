@@ -1185,58 +1185,106 @@ Bracelet jonc 5000"></textarea>
     </div>
   </section>
 
-  <!-- RENDEZ-VOUS -->
+  <!-- AGENDA & RENDEZ-VOUS -->
   {% if rdv_on %}
   <section class="reveal" id="rdv">
+    <style>
+      .ag-day{border:1px solid var(--line,#26262e);border-radius:14px;overflow:hidden;margin-bottom:11px;background:var(--panel,#15151b)}
+      .ag-dh{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;background:rgba(127,127,127,.06);font-weight:700;font-size:.92rem}
+      .ag-dh.today{color:var(--a,#10b981)}
+      .ag-dh .off{font-size:.7rem;font-weight:700;color:#e0a93b;text-transform:uppercase;letter-spacing:.05em}
+      .ag-slot{display:flex;align-items:center;gap:12px;padding:11px 14px;border-top:1px solid var(--line,#26262e)}
+      .ag-time{font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--a,#10b981);min-width:56px}
+      .ag-meta{flex:1;min-width:0} .ag-meta .who{font-weight:700} .ag-meta .svc{color:var(--muted,#8a8a99);font-size:.84rem}
+      .ag-empty{padding:10px 14px;color:var(--muted,#8a8a99);font-size:.84rem;border-top:1px dashed var(--line,#26262e)}
+      .pend{border:1px solid #e0a93b;border-radius:13px;padding:13px;margin-bottom:11px;background:rgba(224,169,59,.06)}
+      #wkChips .chip.on{background:var(--a,#10b981);color:#06120d;border-color:var(--a,#10b981)}
+    </style>
     <div class="shead">
       <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-flask"/></svg></div>
-      <h2>Rendez-vous</h2>
+      <h2>Agenda &amp; rendez-vous</h2>
+      <div class="act"><button class="btn acc sm" type="button" onclick="document.getElementById('addRdvForm').classList.toggle('hide')"><svg viewBox="0 0 24 24"><use href="#i-plus"/></svg>Ajouter</button></div>
     </div>
-    <p class="hint">Réglez vos disponibilités : l'agent propose des créneaux <b>dans ces limites</b>, enregistre la demande et vous prévient (Telegram + votre WhatsApp). Vous confirmez ensuite avec le client.</p>
-    <label>Jours d'ouverture aux RDV <span style="color:var(--mut2)">(cliquez ceux qui s'appliquent)</span></label>
-    <div class="choices">
-      <button class="chip" type="button" onclick="addChip('f_rdv_days','Lun',this)">Lun</button>
-      <button class="chip" type="button" onclick="addChip('f_rdv_days','Mar',this)">Mar</button>
-      <button class="chip" type="button" onclick="addChip('f_rdv_days','Mer',this)">Mer</button>
-      <button class="chip" type="button" onclick="addChip('f_rdv_days','Jeu',this)">Jeu</button>
-      <button class="chip" type="button" onclick="addChip('f_rdv_days','Ven',this)">Ven</button>
-      <button class="chip" type="button" onclick="addChip('f_rdv_days','Sam',this)">Sam</button>
-      <button class="chip" type="button" onclick="addChip('f_rdv_days','Dim',this)">Dim</button>
-    </div>
-    <input id="f_rdv_days" value="{{ merchant.rdv_days or '' }}" placeholder="ex : Mer · Sam">
-    <label style="margin-top:12px">Horaires</label>
-    <div class="choices">
-      <button class="chip" type="button" onclick="pick('f_rdv_hours','09:00-17:00',this)">09:00-17:00</button>
-      <button class="chip" type="button" onclick="pick('f_rdv_hours','08:00-18:00',this)">08:00-18:00</button>
-      <button class="chip" type="button" onclick="pick('f_rdv_hours','10:00-16:00',this)">10:00-16:00</button>
-    </div>
-    <input id="f_rdv_hours" value="{{ merchant.rdv_hours or '' }}" placeholder="ex : 09:00-17:00">
-    <label style="margin-top:12px">Précision <span style="color:var(--mut2)">(lieu, durée…)</span></label>
-    <div class="choices">
-      <button class="chip" type="button" onclick="addChip('f_rdv_note','Sur place',this)">Sur place</button>
-      <button class="chip" type="button" onclick="addChip('f_rdv_note','À distance',this)">À distance</button>
-      <button class="chip" type="button" onclick="addChip('f_rdv_note','Séance 30 min',this)">Séance 30 min</button>
-      <button class="chip" type="button" onclick="addChip('f_rdv_note','Séance 1h',this)">Séance 1h</button>
-    </div>
-    <input id="f_rdv_note" value="{{ merchant.rdv_note or '' }}" placeholder="ex : Sur place à la clinique · séance 45 min">
-    <div style="margin-top:16px"><button class="btn pri" type="button" onclick="saveMerchant(['rdv_days','rdv_hours','rdv_note'])">Enregistrer mes disponibilités</button></div>
+    <p class="hint">Votre agenda visuel. L'agent prend les RDV dans vos disponibilités et vous prévient ; vous fixez le créneau ici en un geste.</p>
 
-    <h3 style="margin:24px 0 10px;font-size:1rem">Demandes de rendez-vous</h3>
-    {% if appointments %}
-    <div class="list">
-      {% for a in appointments %}
-      <div class="prod"><div class="view" style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;width:100%">
-        <div>
-          <div style="font-weight:700">{{ a.customer_name or a.customer_whatsapp or 'Client' }} · <span style="color:var(--a)">{{ a.requested_time or '—' }}</span></div>
-          <div style="color:var(--muted);font-size:.85rem;margin-top:3px">{% if a.service %}{{ a.service }}{% endif %}{% if a.note %} · {{ a.note }}{% endif %}</div>
-        </div>
-        <span class="pill">{{ a.status or 'pending' }}</span>
-      </div></div>
-      {% endfor %}
+    <div id="addRdvForm" class="bezel hide" style="margin-bottom:14px"><div class="bezel-in">
+      <div class="grid2">
+        <div><label>Client</label><input id="ar_name" placeholder="ex : Awa"></div>
+        <div><label>Service</label><input id="ar_service" placeholder="ex : Consultation"></div>
+        <div><label>Date</label><input id="ar_date" type="date"></div>
+        <div><label>Heure</label><input id="ar_time" type="time" value="09:00"></div>
+      </div>
+      <div style="margin-top:12px"><button class="btn pri" type="button" onclick="addRdv()">Ajouter au planning</button></div>
+    </div></div>
+
+    {% if agenda and agenda.pending %}
+    <h3 style="margin:6px 0 10px;font-size:1rem">À planifier ({{ agenda.pending|length }})</h3>
+    {% for a in agenda.pending %}
+    <div class="pend" id="appt-{{ a.id }}">
+      <div style="font-weight:700">{{ a.customer_name or a.customer_whatsapp or 'Client' }}{% if a.service %} · {{ a.service }}{% endif %}</div>
+      <div style="color:var(--muted);font-size:.85rem;margin-top:2px">Souhaité : {{ a.requested_time or '—' }}{% if a.note %} · {{ a.note }}{% endif %}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:flex-end">
+        <div><label style="font-size:.76rem">Date</label><input type="date" id="pd-{{ a.id }}"></div>
+        <div><label style="font-size:.76rem">Heure</label><input type="time" id="pt-{{ a.id }}" value="09:00"></div>
+        <button class="btn acc sm" type="button" onclick="schedRdv('{{ a.id }}')">Planifier</button>
+        <button class="btn gho sm" type="button" onclick="cancelRdv('{{ a.id }}')">Refuser</button>
+      </div>
     </div>
-    {% else %}
-    <div class="empty">Aucune demande de rendez-vous pour l'instant.</div>
+    {% endfor %}
     {% endif %}
+
+    <h3 style="margin:18px 0 10px;font-size:1rem">Mon agenda · 14 jours</h3>
+    {% if agenda and agenda.days %}
+      {% for d in agenda.days %}
+      <div class="ag-day">
+        <div class="ag-dh {{ 'today' if d.today }}"><span>{{ d.label }}{% if d.today %} · aujourd'hui{% endif %}</span>{% if d.is_off %}<span class="off">Fermé</span>{% endif %}</div>
+        {% for a in d['items'] %}
+        <div class="ag-slot" id="appt-{{ a.id }}">
+          <div class="ag-time">{{ a._time }}</div>
+          <div class="ag-meta"><div class="who">{{ a.customer_name or a.customer_whatsapp or 'Client' }}</div><div class="svc">{% if a.service %}{{ a.service }}{% endif %}{% if a.note %} · {{ a.note }}{% endif %}</div></div>
+          <button class="btn gho sm" type="button" onclick="cancelRdv('{{ a.id }}')">Annuler</button>
+        </div>
+        {% endfor %}
+        {% if not d['items'] %}<div class="ag-empty">— libre —</div>{% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty">Aucun rendez-vous planifié. Réglez vos disponibilités ci-dessous, l'agent remplira votre agenda.</div>
+    {% endif %}
+
+    <h3 style="margin:22px 0 10px;font-size:1rem">Mes disponibilités</h3>
+    <div class="panel">
+      <label>Jours ouverts aux RDV</label>
+      {% set wd = agenda.weekdays if agenda else [] %}
+      <div class="choices" id="wkChips">
+        <button class="chip {{ 'on' if 1 in wd }}" type="button" data-d="1" onclick="toggleWk(this)">Lun</button>
+        <button class="chip {{ 'on' if 2 in wd }}" type="button" data-d="2" onclick="toggleWk(this)">Mar</button>
+        <button class="chip {{ 'on' if 3 in wd }}" type="button" data-d="3" onclick="toggleWk(this)">Mer</button>
+        <button class="chip {{ 'on' if 4 in wd }}" type="button" data-d="4" onclick="toggleWk(this)">Jeu</button>
+        <button class="chip {{ 'on' if 5 in wd }}" type="button" data-d="5" onclick="toggleWk(this)">Ven</button>
+        <button class="chip {{ 'on' if 6 in wd }}" type="button" data-d="6" onclick="toggleWk(this)">Sam</button>
+        <button class="chip {{ 'on' if 7 in wd }}" type="button" data-d="7" onclick="toggleWk(this)">Dim</button>
+      </div>
+      <input id="f_rdv_weekdays" type="hidden" value="{{ merchant.rdv_weekdays or '' }}">
+      <label style="margin-top:14px">Horaires</label>
+      <div class="choices">
+        <button class="chip" type="button" onclick="pick('f_rdv_hours','09:00-17:00',this)">09:00-17:00</button>
+        <button class="chip" type="button" onclick="pick('f_rdv_hours','08:00-18:00',this)">08:00-18:00</button>
+        <button class="chip" type="button" onclick="pick('f_rdv_hours','10:00-16:00',this)">10:00-16:00</button>
+      </div>
+      <input id="f_rdv_hours" value="{{ merchant.rdv_hours or '' }}" placeholder="ex : 09:00-17:00">
+      <label style="margin-top:14px">Jours fermés / congés</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+        <input type="date" id="offDateInput"><button class="btn gho sm" type="button" onclick="addOff()">Ajouter</button>
+      </div>
+      <div id="offList" style="display:flex;gap:7px;flex-wrap:wrap;margin-top:10px">
+        {% for o in (agenda.off_dates if agenda else []) %}<span class="pill" data-o="{{ o }}">{{ o }} <b style="cursor:pointer" onclick="rmOff('{{ o }}')">×</b></span>{% endfor %}
+      </div>
+      <input id="f_rdv_off_dates" type="hidden" value="{{ merchant.rdv_off_dates or '' }}">
+      <label style="margin-top:14px">Précision <span style="color:var(--mut2)">(lieu, durée…)</span></label>
+      <input id="f_rdv_note" value="{{ merchant.rdv_note or '' }}" placeholder="ex : Sur place à la clinique · séance 45 min">
+      <div style="margin-top:16px"><button class="btn pri" type="button" onclick="saveMerchant(['rdv_weekdays','rdv_hours','rdv_off_dates','rdv_note'])">Enregistrer mes disponibilités</button></div>
+    </div>
   </section>
   {% endif %}
 
@@ -1679,6 +1727,38 @@ async function debtPaid(id){
   const d=await api(`/api/merchants/${MID}/debt/${id}/paid`,'POST',{});
   if(d.ok){ const r=document.getElementById('debt-'+id); if(r){ r.style.transition='opacity .3s'; r.style.opacity='0'; setTimeout(()=>r.remove(),320); } notify('Dette soldée ✅'); setTimeout(()=>location.reload(),900); }
   else notify(d.error||'Erreur', true);
+}
+
+/* Agenda / Rendez-vous */
+function toggleWk(el){
+  el.classList.toggle('on');
+  const days=[...document.querySelectorAll('#wkChips .chip.on')].map(c=>c.getAttribute('data-d'));
+  document.getElementById('f_rdv_weekdays').value=days.join(',');
+}
+function _offVals(){ return (document.getElementById('f_rdv_off_dates').value||'').split(',').map(s=>s.trim()).filter(Boolean); }
+function _setOff(arr){
+  document.getElementById('f_rdv_off_dates').value=arr.join(',');
+  const list=document.getElementById('offList'); list.innerHTML='';
+  arr.forEach(o=>{ const s=document.createElement('span'); s.className='pill'; s.innerHTML=esc(o)+' <b style="cursor:pointer">×</b>'; s.querySelector('b').onclick=()=>rmOff(o); list.appendChild(s); });
+}
+function addOff(){ const el=document.getElementById('offDateInput'); const v=el.value; if(!v) return; const a=_offVals(); if(!a.includes(v)){ a.push(v); a.sort(); _setOff(a); } el.value=''; }
+function rmOff(o){ _setOff(_offVals().filter(x=>x!==o)); }
+async function addRdv(){
+  const date=document.getElementById('ar_date').value, time=document.getElementById('ar_time').value;
+  if(!date||!time){ notify('Date et heure requises', true); return; }
+  const d=await api(`/api/merchants/${MID}/appointments`,'POST',{customer_name:document.getElementById('ar_name').value.trim(), service:document.getElementById('ar_service').value.trim(), date, time});
+  if(d.ok){ notify('RDV ajouté ✅'); setTimeout(()=>location.reload(),700); } else notify(d.error||'Erreur', true);
+}
+async function schedRdv(id){
+  const date=document.getElementById('pd-'+id).value, time=document.getElementById('pt-'+id).value;
+  if(!date||!time){ notify('Choisissez la date et l\'heure', true); return; }
+  const d=await api(`/api/merchants/${MID}/appointments/${id}`,'POST',{action:'schedule', date, time});
+  if(d.ok){ notify('RDV planifié ✅'); setTimeout(()=>location.reload(),800); } else notify(d.error||'Erreur', true);
+}
+async function cancelRdv(id){
+  if(!confirm('Annuler ce rendez-vous ?')) return;
+  const d=await api(`/api/merchants/${MID}/appointments/${id}`,'POST',{action:'cancel'});
+  if(d.ok){ const r=document.getElementById('appt-'+id); if(r){ r.style.transition='opacity .3s'; r.style.opacity='0'; setTimeout(()=>r.remove(),320); } notify('RDV annulé'); setTimeout(()=>location.reload(),900); } else notify(d.error||'Erreur', true);
 }
 
 /* Validation des paiements */

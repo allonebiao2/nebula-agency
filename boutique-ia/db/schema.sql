@@ -140,9 +140,13 @@ create table if not exists bia_social_posts (
 create index if not exists bia_social_posts_idx on bia_social_posts(merchant_id, created_at);
 
 -- Prise de rendez-vous (capacité « rdv ») : disponibilités de la boutique.
-alter table bia_merchants add column if not exists rdv_days text;   -- ex : "Mer, Sam"
+alter table bia_merchants add column if not exists rdv_days text;   -- (ancien, texte libre)
 alter table bia_merchants add column if not exists rdv_hours text;  -- ex : "09:00-17:00"
 alter table bia_merchants add column if not exists rdv_note text;   -- ex : "Sur place, clinique"
+-- Agenda visuel : disponibilités structurées + créneau fixé par RDV.
+alter table bia_merchants add column if not exists rdv_weekdays text;  -- jours ouvrés CSV 1..7 (Lun..Dim)
+alter table bia_merchants add column if not exists rdv_off_dates text; -- jours fermés CSV YYYY-MM-DD
+alter table bia_appointments add column if not exists scheduled_at timestamptz; -- créneau confirmé
 
 create table if not exists bia_appointments (
   id uuid primary key default gen_random_uuid(),

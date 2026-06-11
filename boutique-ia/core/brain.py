@@ -314,14 +314,21 @@ def build_system_prompt(merchant: dict, products: list[dict],
     # Rendez-vous (capacité « rdv ») — l'agent propose et enregistre des RDV.
     rdv_block = ""
     if rdv_on:
-        days = (merchant.get("rdv_days") or "").strip()
+        _wdn = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
+        _wk = [int(x) for x in (merchant.get("rdv_weekdays") or "").split(",")
+               if x.strip().isdigit() and 1 <= int(x) <= 7]
+        days = (", ".join(_wdn[w - 1] for w in sorted(_wk)) if _wk
+                else (merchant.get("rdv_days") or "").strip())
         hrs = (merchant.get("rdv_hours") or "").strip()
         rnote = (merchant.get("rdv_note") or "").strip()
+        off = (merchant.get("rdv_off_dates") or "").strip()
         dispo = []
         if days:
-            dispo.append(f"jours : {days}")
+            dispo.append(f"jours ouverts : {days}")
         if hrs:
             dispo.append(f"horaires : {hrs}")
+        if off:
+            dispo.append(f"FERMÉ (ne propose jamais ces dates) : {off}")
         if rnote:
             dispo.append(rnote)
         dispo_txt = (" — ".join(dispo) if dispo
