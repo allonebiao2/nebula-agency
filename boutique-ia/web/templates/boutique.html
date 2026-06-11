@@ -107,16 +107,32 @@
     .sb-close{display:flex}
     .topbar{display:none}                       /* la barre mobile la remplace */
   }
-  /* Ergonomie mobile : anti-zoom iOS, cibles tactiles, anti-débordement */
-  @media(max-width:680px){
-    input,select,textarea{font-size:16px}
-    input,select{max-width:100%}
-    .btn{min-height:42px}
-    .row,form{flex-wrap:wrap}
-    .secwrap>section{scroll-margin-top:64px}
-    .wrap{padding-left:15px;padding-right:15px}
-    h1{font-size:1.5rem}
-    .bezel-in{padding:14px}
+  /* Bouton lumineux « Mon agent » — accès rapide à la conversation (scintille) */
+  .fab-chat{position:fixed;right:16px;bottom:18px;z-index:65;display:flex;align-items:center;gap:8px;border:0;
+            border-radius:30px;padding:13px 18px;font-weight:800;font-size:.92rem;cursor:pointer;
+            background:var(--a,#10b981);color:#06120d;box-shadow:0 8px 26px rgba(0,0,0,.3);
+            animation:fabGlow 2.1s ease-in-out infinite}
+  .fab-chat svg{width:20px;height:20px;stroke:#06120d;fill:none;stroke-width:2}
+  .fab-chat:hover{filter:brightness(1.05)}
+  @keyframes fabGlow{0%,100%{box-shadow:0 8px 22px rgba(0,0,0,.3),0 0 0 0 rgba(0,0,0,0)}
+    50%{box-shadow:0 10px 28px rgba(0,0,0,.35),0 0 24px 5px var(--a,#10b981)}}
+  /* Ergonomie mobile : lisible, aéré, pro */
+  @media(max-width:760px){
+    .wrap{padding-left:16px;padding-right:16px}
+    .grid2{grid-template-columns:1fr!important;gap:12px}
+    input:not([type=color]):not([type=checkbox]),select,textarea{width:100%;max-width:100%;font-size:16px;box-sizing:border-box}
+    input:not([type=color]):not([type=checkbox]),select{min-height:46px}
+    textarea{min-height:92px}
+    form{flex-wrap:wrap;gap:10px}
+    form>input,form>select,form>textarea,form>.btn,form>button{flex:1 1 100%}
+    .row{flex-wrap:wrap}.row>input{flex:1 1 100%}
+    .choices{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:5px}
+    .choices::-webkit-scrollbar{display:none}
+    .choices .chip{flex:0 0 auto}
+    .secwrap>section{margin-top:22px!important;scroll-margin-top:64px}
+    .bezel-in{padding:15px}
+    h1{font-size:1.5rem}h2{font-size:1.16rem}
+    .fab-chat span{display:none}.fab-chat{padding:15px;border-radius:50%}
   }
 </style>
 <div class="m-appbar">
@@ -131,9 +147,8 @@
   </div>
   <nav class="sb-nav">
     <div class="sb-group"><div class="sb-h">Mon agent</div>
+      <a class="sb-link" href="#assistbox"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg>Discuter avec l'agent</a>
       <a class="sb-link" href="#whatsapp"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg>WhatsApp &amp; QR</a>
-      <a class="sb-link" href="#piloter"><svg viewBox="0 0 24 24"><use href="#i-wand"/></svg>Piloter l'agent</a>
-      <a class="sb-link" href="#assistbox"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg>Assistant</a>
       <a class="sb-link" href="#capacites"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Capacités</a>
     </div>
     <div class="sb-group"><div class="sb-h">Activité</div>
@@ -166,6 +181,9 @@
     </div>
   </nav>
 </aside>
+<button class="fab-chat" onclick="goAgent()" aria-label="Discuter avec mon agent" title="Discuter avec mon agent">
+  <svg viewBox="0 0 24 24"><use href="#i-spark"/></svg><span>Mon agent</span>
+</button>
 
 <div class="wrap">
   <span class="eyebrow reveal" style="margin-top:28px"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><use href="#i-wand"/></svg> Pilotez votre agent vendeur</span>
@@ -468,38 +486,22 @@
   </section>
   {% endif %}
 
-  <!-- PILOTER -->
-  <section class="reveal" id="piloter" style="margin-top:34px">
-    <div class="shead">
-      <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-wand"/></svg></div>
-      <h2>Piloter mon agent</h2>
-      <div class="act"><span class="quota" id="quota">{% if remaining < 0 %}Ordres illimités{% else %}{{ remaining }}/{{ daily_limit }} aujourd'hui{% endif %}</span></div>
-    </div>
-    <p class="hint">Donnez vos ordres en langage simple : « ajoute un bracelet en or à 12000 », « mets le collier nacré en rupture », « passe le ton à plus formel ».</p>
-    <div class="bezel"><div class="bezel-in">
-      <div id="orderLog"></div>
-      <form id="orderForm">
-        <input id="orderInput" placeholder="Tapez votre ordre…" autocomplete="off" {% if remaining == 0 %}disabled{% endif %}>
-        <button class="btn acc" type="submit" {% if remaining == 0 %}disabled{% endif %}><svg viewBox="0 0 24 24"><use href="#i-send"/></svg></button>
-      </form>
-      {% if remaining == 0 %}<p class="hint" style="color:#ff9d9d;margin:11px 0 0">Limite du jour atteinte — <a href="#forfaits">passez à un forfait supérieur</a>.</p>{% endif %}
-    </div></div>
-  </section>
-
-  <!-- ASSISTANT PERSONNEL -->
-  <section class="reveal" id="assistbox" style="order:1;margin-top:18px">
+  <!-- MON AGENT — une seule conversation : questions + gestion -->
+  <section class="reveal" id="assistbox" style="order:1;margin-top:14px">
     <div class="shead">
       <div class="ic"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg></div>
-      <h2>Demandez à votre assistant</h2>
-      <div class="act"><span class="quota">Sans limite</span></div>
+      <h2>Discuter avec mon agent</h2>
+      <div class="act"><span class="quota">Questions illimitées</span></div>
     </div>
-    <p class="hint">Votre copilote IA. Posez-lui tout : « combien de commandes aujourd'hui ? », « fais le point de la semaine », « j'ai vendu pour 5000 », « X me doit 3000 », « fais une facture pour Awa : 2 colliers à 3500 », « traduis ça en anglais », « écris-moi une lettre pour la mairie ». Il connaît vos chiffres réels et vous aide sur tout le reste.</p>
+    <p class="hint">Une seule conversation pour <b>tout</b> : posez vos questions <b>et</b> donnez vos ordres.<br>
+      « combien de commandes aujourd'hui ? » · « fais le point de la semaine » · « ajoute un bracelet à 12000 » · « mets le collier nacré en rupture » · « j'ai vendu pour 5000 » · « X me doit 3000 » · « fais une facture pour Awa : 2 colliers à 3500 » · « traduis ça en anglais » · « écris-moi une lettre ».</p>
     <div class="bezel"><div class="bezel-in">
       <div id="askLog"></div>
       <form id="askForm">
-        <input id="askInput" placeholder="Posez votre question…" autocomplete="off">
+        <input id="askInput" placeholder="Écrivez à votre agent…" autocomplete="off">
         <button class="btn acc" type="submit"><svg viewBox="0 0 24 24"><use href="#i-send"/></svg></button>
       </form>
+      <p class="hint" style="margin:10px 0 0;font-size:12px">Questions, rapports et outils : <b>illimités</b>. Seules les <b>modifications de votre boutique</b> (produits, fiche) comptent dans votre forfait.</p>
     </div></div>
   </section>
 
@@ -1444,6 +1446,15 @@ function sbOpen(){ document.body.classList.add('sb-open'); }
 function sbClose(){ document.body.classList.remove('sb-open'); }
 document.querySelectorAll('.sb-link').forEach(a=>a.addEventListener('click', sbClose));
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') sbClose(); });
+
+/* Bouton lumineux → va à la conversation avec l'agent */
+function goAgent(){
+  try{ sbClose(); }catch(e){}
+  const el=document.getElementById('assistbox');
+  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  const i=document.getElementById('askInput');
+  if(i) setTimeout(()=>i.focus(), 450);
+}
 
 /* Produits */
 function toggleAdd(){ document.getElementById('addForm').classList.toggle('hide'); }

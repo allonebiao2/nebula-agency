@@ -745,8 +745,18 @@ TOOLS = [
 ]
 
 
-def _exec_tool(merchant_id: str, name: str, args: dict) -> str:
+_MANAGE_NAMES = {"ajouter_produit", "modifier_produit", "supprimer_produit", "modifier_boutique"}
+
+
+def _exec_tool(merchant_id: str, name: str, args: dict,
+               manage_actions: list | None = None) -> str:
     try:
+        if name in _MANAGE_NAMES:
+            from core import manager
+            note, human = manager._exec_tool(merchant_id, name, args)
+            if human and manage_actions is not None:
+                manage_actions.append(human)
+            return note
         if name == "rapport_ventes":
             return sales_report(merchant_id, args.get("periode") or "aujourd_hui")
         if name == "liste_commandes":
@@ -799,7 +809,8 @@ def _exec_tool(merchant_id: str, name: str, args: dict) -> str:
     return "(outil inconnu)"
 
 
-def _system(merchant: dict) -> str:
+def _system(merchant: dict, allow_manage: bool = False,
+            manage_limit_reached: bool = False) -> str:
     name = merchant.get("business_name") or "la boutique"
     now = _now_wat()
     jours = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
@@ -811,6 +822,29 @@ def _system(merchant: dict) -> str:
         nb_produits = len([p for p in list_products(merchant["id"]) if p.get("available") is not False])
     except Exception:  # noqa: BLE001
         pass
+
+    manage_block = ""
+    if allow_manage:
+        try:
+            from core import manager
+            manage_block = (
+                "\n\n# GÉRER LA BOUTIQUE (modifications réelles, sur ordre)\n"
+                "Tu peux MODIFIER la boutique : ajouter_produit / modifier_produit / "
+                "supprimer_produit (catalogue) et modifier_boutique (infos, ton, livraison, "
+                "paiement…). Pour modifier/supprimer, utilise le product_id EXACT du catalogue "
+                "ci-dessous. Confirme en 1 phrase claire. Ces MODIFICATIONS comptent dans le "
+                "quota du forfait (les questions, elles, restent illimitées).\n\n"
+                "Catalogue (avec product_id) :\n" + manager._catalogue(list_products(merchant["id"]))
+            )
+        except Exception:  # noqa: BLE001
+            manage_block = ""
+    limit_note = ""
+    if manage_limit_reached:
+        limit_note = ("\n\n⚠️ LIMITE ATTEINTE : toutes les MODIFICATIONS de boutique du jour ont "
+                      "été utilisées (forfait). Tu peux tout faire d'autre normalement ; mais si "
+                      "elle demande d'ajouter/modifier un produit ou la fiche, explique gentiment "
+                      "que la limite du jour est atteinte et propose un forfait supérieur (ou de "
+                      "réessayer demain). Ne modifie rien.")
 
     return f"""Tu es l'ASSISTANT PERSONNEL du/de la propriétaire de la boutique « {name} ».
 Tu n'écris PAS à un client : tu parles à la PATRONNE / au PATRON, en privé. Tu es
@@ -862,18 +896,30 @@ pas sûr » que de te tromper. C'est ce qui fait qu'elle te fait confiance.
 STYLE : WhatsApp — réponses courtes, naturelles, directes, chaleureuses. 1-2
 emojis maximum. Pas de markdown lourd (pas de **, pas de #). Pour une liste de
 chiffres, des petits tirets suffisent. Va droit au but. Tutoie ou vouvoie selon
-elle ; par défaut, reste poli et proche."""
+elle ; par défaut, reste poli et proche.{manage_block}{limit_note}"""
 
 
-def reply(merchant: dict, question: str, history: list[dict] | None = None) -> str:
+def reply(merchant: dict, question: str, history: list[dict] | None = None,
+          allow_manage: bool = False, manage_actions: list | None = None,
+          manage_limit_reached: bool = False) -> str:
     """Réponse de l'assistant personnel à la patronne. `history` optionnel
-    (liste [{role:'user'|'assistant', content}]) pour un fil multi-tours."""
+    (liste [{role:'user'|'assistant', content}]) pour un fil multi-tours.
+    `allow_manage` : ajoute les outils de MODIFICATION de la boutique (quota).
+    `manage_actions` : liste remplie des modifs réelles effectuées (pour le quota)."""
     settings.require("anthropic_api_key")
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
     merchant_id = merchant["id"]
 
-    system = [{"type": "text", "text": _system(merchant),
+    system = [{"type": "text",
+               "text": _system(merchant, allow_manage, manage_limit_reached),
                "cache_control": {"type": "ephemeral"}}]
+    tools = TOOLS
+    if allow_manage:
+        try:
+            from core import manager
+            tools = TOOLS + manager.TOOLS
+        except Exception:  # noqa: BLE001
+            tools = TOOLS
     messages: list[dict] = []
     for h in (history or []):
         role = "assistant" if h.get("role") == "assistant" else "user"
@@ -886,7 +932,7 @@ def reply(merchant: dict, question: str, history: list[dict] | None = None) -> s
         resp = client.messages.create(
             model=model_config.model_for("manager"),
             max_tokens=model_config.tokens_for("manager", 700),
-            system=system, messages=messages, tools=TOOLS,
+            system=system, messages=messages, tools=tools,
         )
         tool_uses = [b for b in resp.content if getattr(b, "type", None) == "tool_use"]
         if not tool_uses:
@@ -896,7 +942,7 @@ def reply(merchant: dict, question: str, history: list[dict] | None = None) -> s
         messages.append({"role": "assistant", "content": resp.content})
         results = []
         for tu in tool_uses:
-            note = _exec_tool(merchant_id, tu.name, dict(tu.input or {}))
+            note = _exec_tool(merchant_id, tu.name, dict(tu.input or {}), manage_actions)
             results.append({"type": "tool_result", "tool_use_id": tu.id, "content": note})
         messages.append({"role": "user", "content": results})
 
@@ -921,11 +967,33 @@ def converse(merchant: dict, question: str, channel: str = "whatsapp") -> str:
         history = load_assistant_history(merchant_id, limit=10)
     except Exception:  # noqa: BLE001
         history = []
+
+    # Quota : les QUESTIONS sont illimitées ; seules les MODIFICATIONS de la boutique
+    # (ajout/édition de produit, fiche…) comptent dans le quota d'ordres du forfait.
+    allow_manage, limit_reached = True, False
     try:
-        text = reply(merchant, q, history=history)
+        from config import daily_orders_for_plan, normalize_plan
+        from db.client import count_manager_orders_today
+        limit = daily_orders_for_plan(normalize_plan(merchant.get("plan")))
+        if limit >= 0 and count_manager_orders_today(merchant_id) >= limit:
+            allow_manage, limit_reached = False, True
+    except Exception:  # noqa: BLE001
+        pass
+
+    manage_actions: list = []
+    try:
+        text = reply(merchant, q, history=history, allow_manage=allow_manage,
+                     manage_actions=manage_actions, manage_limit_reached=limit_reached)
     except Exception:  # noqa: BLE001
         log.exception("assistant converse échoué")
         text = "Désolé, j'ai eu un petit souci pour traiter ça 🙏 Reformulez en un mot ?"
+
+    if manage_actions:  # une vraie modif de boutique a eu lieu → compte 1 au quota
+        try:
+            from db.client import log_manager_order
+            log_manager_order(merchant_id, q, " · ".join(manage_actions)[:300])
+        except Exception:  # noqa: BLE001
+            pass
     try:
         save_assistant_message(merchant_id, "user", q, channel)
         save_assistant_message(merchant_id, "assistant", text, channel)
