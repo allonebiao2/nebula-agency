@@ -791,9 +791,17 @@ Bracelet jonc 5000"></textarea>
           <textarea class="e_desc" placeholder="ex : argent 925, fait main">{{ p.description or '' }}</textarea>
           <label>Options</label>
           <input class="e_options" value="{{ p.options or '' }}" placeholder="ex : tailles S/M/L">
-          <label>Photo {% if p.photo_url %}<span style="color:var(--a)">✓ ajoutée</span>{% endif %}</label>
-          <input type="file" accept="image/*" onchange="uploadPhoto(this,'{{ p.id }}')" style="padding:9px">
-          <div class="hint" style="margin:6px 0 0">L'agent enverra cette photo au client qui demande à voir le produit.</div>
+          <label>Photos <span style="color:var(--mut2)">(plusieurs possibles)</span></label>
+          <div class="pgal" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+            {% for img in gallery.get(p.id, []) %}
+            <div style="position:relative" id="pimg-{{ img.id }}">
+              <img src="{{ img.url }}" alt="" style="width:60px;height:60px;border-radius:10px;object-fit:cover;border:1px solid var(--hair);display:block">
+              <button type="button" onclick="delImg('{{ p.id }}','{{ img.id }}')" title="Supprimer" style="position:absolute;top:-7px;right:-7px;width:20px;height:20px;border-radius:50%;border:0;background:#ff2d55;color:#fff;font-size:13px;line-height:1;cursor:pointer">×</button>
+            </div>
+            {% endfor %}
+          </div>
+          <input type="file" accept="image/*" multiple onchange="uploadPhoto(this,'{{ p.id }}')" style="padding:9px">
+          <div class="hint" style="margin:6px 0 0">L'agent montre ces photos au client qui demande à voir le produit. La 1re est la couverture.</div>
           <div style="display:flex;gap:9px;margin-top:14px">
             <button class="btn acc sm" type="button" onclick="saveRow(this)">Enregistrer</button>
             <button class="btn gho sm" type="button" onclick="cancelRow(this)">Annuler</button>
@@ -1605,16 +1613,26 @@ async function delProduct(b,name){ if(!confirm(`Supprimer « ${name} » ? Action
   const c=b.closest('.prod'); const d=await api(`/api/merchants/${MID}/products/${c.dataset.id}`,'DELETE');
   if(d.ok){ notify('Produit supprimé'); setTimeout(()=>location.reload(),600);} else notify(d.error||'Erreur',true); }
 async function uploadPhoto(input, pid){
-  const file = input.files && input.files[0]; if(!file) return;
-  if(file.size > 6000000){ notify('Image trop lourde (max 6 Mo).', true); input.value=''; return; }
-  notify('Envoi de la photo…');
-  const fd = new FormData(); fd.append('photo', file);
-  try{
-    const r = await fetch(`/api/merchants/${MID}/products/${pid}/photo`, { method:'POST', body: fd });
-    if(r.status === 401){ location.reload(); return; }
-    const d = await r.json();
-    if(d.ok){ notify('Photo ajoutée'); setTimeout(()=>location.reload(), 700); } else notify(d.error||'Erreur', true);
-  }catch(ex){ notify(ex.message, true); }
+  const files = [...(input.files||[])]; if(!files.length) return;
+  notify('Envoi de '+files.length+' photo(s)…');
+  let ok=0;
+  for(const file of files){
+    if(file.size > 6000000){ notify('« '+file.name+' » trop lourde (max 6 Mo), ignorée.', true); continue; }
+    const fd = new FormData(); fd.append('photo', file);
+    try{
+      const r = await fetch(`/api/merchants/${MID}/products/${pid}/photo`, { method:'POST', body: fd });
+      if(r.status === 401){ location.reload(); return; }
+      const d = await r.json();
+      if(d.ok){ ok++; } else notify(d.error||'Erreur', true);
+    }catch(ex){ notify(ex.message, true); }
+  }
+  if(ok){ notify(ok+' photo(s) ajoutée(s)'); setTimeout(()=>location.reload(), 700); }
+}
+async function delImg(pid, imgId){
+  if(!confirm('Supprimer cette image ?')) return;
+  const d = await api(`/api/merchants/${MID}/products/${pid}/images/${imgId}/delete`,'POST',{});
+  if(d.ok){ const el=document.getElementById('pimg-'+imgId); if(el) el.remove(); notify('Image supprimée'); }
+  else notify(d.error||'Erreur', true);
 }
 
 /* Réponses email à valider */

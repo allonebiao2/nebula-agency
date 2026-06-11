@@ -115,13 +115,19 @@ def parse_incoming(payload: dict) -> list[dict[str, Any]]:
                 for msg in value.get("messages", []) or []:
                     mtype = msg.get("type")
                     item: dict[str, Any] = {"from": msg.get("from"), "type": mtype,
-                                            "text": "", "audio_id": None, "audio_ctype": None}
+                                            "text": "", "audio_id": None, "audio_ctype": None,
+                                            "image_id": None, "image_ctype": None}
                     if mtype == "text":
                         item["text"] = (msg.get("text") or {}).get("body", "")
                     elif mtype == "audio":
                         au = msg.get("audio") or {}
                         item["audio_id"] = au.get("id")
                         item["audio_ctype"] = au.get("mime_type") or "audio/ogg"
+                    elif mtype == "image":
+                        im = msg.get("image") or {}
+                        item["image_id"] = im.get("id")
+                        item["image_ctype"] = im.get("mime_type") or "image/jpeg"
+                        item["text"] = im.get("caption") or ""
                     elif mtype in ("button", "interactive"):
                         # Réponses à des boutons/templates → on prend le texte si présent
                         item["text"] = ((msg.get("button") or {}).get("text")

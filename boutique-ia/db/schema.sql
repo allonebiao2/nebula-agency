@@ -444,3 +444,14 @@ alter table bia_merchants add column if not exists socials text;
 
 -- Effort/intelligence du modèle choisi par le commerçant (eco | standard | max ; NULL=standard).
 alter table bia_merchants add column if not exists ai_effort text;
+
+-- Galerie : plusieurs images par produit (bia_products.photo_url = couverture).
+create table if not exists bia_product_images (
+  id uuid primary key default gen_random_uuid(),
+  merchant_id uuid not null references bia_merchants(id) on delete cascade,
+  product_id  uuid not null references bia_products(id) on delete cascade,
+  url text not null, position int default 0,
+  created_at timestamptz default now()
+);
+create index if not exists bia_product_images_idx on bia_product_images(product_id, position);
+create index if not exists bia_product_images_m_idx on bia_product_images(merchant_id);

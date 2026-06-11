@@ -913,11 +913,13 @@ Tutoie ou vouvoie selon elle ; par défaut, reste poli et proche.{manage_block}{
 
 def reply(merchant: dict, question: str, history: list[dict] | None = None,
           allow_manage: bool = False, manage_actions: list | None = None,
-          manage_limit_reached: bool = False) -> str:
+          manage_limit_reached: bool = False, images: list | None = None) -> str:
     """Réponse de l'assistant personnel à la patronne. `history` optionnel
     (liste [{role:'user'|'assistant', content}]) pour un fil multi-tours.
     `allow_manage` : ajoute les outils de MODIFICATION de la boutique (quota).
-    `manage_actions` : liste remplie des modifs réelles effectuées (pour le quota)."""
+    `manage_actions` : liste remplie des modifs réelles effectuées (pour le quota).
+    `images` : liste d'images envoyées par la patronne [{media_type, data(base64)}]
+    → l'assistant les COMPREND (vision)."""
     settings.require("anthropic_api_key")
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
     merchant_id = merchant["id"]
@@ -938,7 +940,19 @@ def reply(merchant: dict, question: str, history: list[dict] | None = None,
         content = (h.get("content") or "").strip()
         if content:
             messages.append({"role": role, "content": content})
-    messages.append({"role": "user", "content": (question or "").strip() or "Bonjour"})
+    q = (question or "").strip()
+    if images:
+        blocks = ([{"type": "text", "text": q}] if q else
+                  [{"type": "text", "text": "Voici une/des image(s). Regarde et aide-moi."}])
+        for im in images[:4]:
+            if im.get("data"):
+                blocks.append({"type": "image", "source": {
+                    "type": "base64",
+                    "media_type": im.get("media_type") or "image/jpeg",
+                    "data": im["data"]}})
+        messages.append({"role": "user", "content": blocks})
+    else:
+        messages.append({"role": "user", "content": q or "Bonjour"})
 
     for _ in range(MAX_TOOL_TURNS):
         resp = client.messages.create(
@@ -969,10 +983,12 @@ def reply(merchant: dict, question: str, history: list[dict] | None = None,
     return text or "Je suis là 🙂 Que voulez-vous savoir ?"
 
 
-def converse(merchant: dict, question: str, channel: str = "whatsapp") -> str:
+def converse(merchant: dict, question: str, channel: str = "whatsapp",
+             images: list | None = None) -> str:
     """Point d'entrée des DEUX canaux (WhatsApp owner + back-office) : charge la
     mémoire de fil, répond, puis mémorise le tour. Ne lève jamais (repli gracieux)
-    pour que le patron reçoive toujours une réponse d'assistant."""
+    pour que le patron reçoive toujours une réponse d'assistant.
+    `images` : images envoyées par la patronne (vision)."""
     merchant_id = merchant["id"]
     q = (question or "").strip()
     try:
@@ -995,10 +1011,13 @@ def converse(merchant: dict, question: str, channel: str = "whatsapp") -> str:
     manage_actions: list = []
     try:
         text = reply(merchant, q, history=history, allow_manage=allow_manage,
-                     manage_actions=manage_actions, manage_limit_reached=limit_reached)
+                     manage_actions=manage_actions, manage_limit_reached=limit_reached,
+                     images=images)
     except Exception:  # noqa: BLE001
         log.exception("assistant converse échoué")
         text = "Désolé, j'ai eu un petit souci pour traiter ça 🙏 Reformulez en un mot ?"
+    if images and not q:
+        q = "[photo envoyée]"  # pour la mémoire de fil
 
     if manage_actions:  # une vraie modif de boutique a eu lieu → compte 1 au quota
         try:

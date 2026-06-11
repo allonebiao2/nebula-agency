@@ -589,7 +589,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
                  accent=(_m.get("brand_color") or "#10b981")),
         )
 
-    merchant, products = None, []
+    merchant, products, gallery = None, [], {}
     stats = {"count": 0, "revenue": 0}
     recent_orders, conversations, plans, campaigns = [], [], [], []
     plan, plan_label = "demarrage", "Démarrage"
@@ -599,6 +599,8 @@ async def boutique_backoffice(request: Request, merchant_id: str):
         merchant = get_merchant(merchant_id)
         if merchant:
             products = list_products(merchant_id)
+            from db.client import product_images_map as _pim
+            gallery = _pim(merchant_id)
             stats = order_stats(merchant_id)
             recent_orders = list_orders(merchant_id, limit=8)
             conversations = list_recent_conversations(merchant_id, limit=8)
@@ -798,7 +800,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
     return templates.TemplateResponse(
         request, "boutique.html",
         _ctx(request, merchant=merchant, merchant_id=merchant_id,
-             products=products, wa_link=wa_link, stats=stats,
+             products=products, gallery=gallery, wa_link=wa_link, stats=stats,
              recent_orders=recent_orders, conversations=conversations,
              plan=plan, plan_label=plan_label, plans=plans, accent=accent,
              daily_limit=daily_limit, used_today=used_today, remaining=remaining,
@@ -2625,8 +2627,8 @@ async def update_product_endpoint(request: Request, merchant_id: str, product_id
 
 @app.post("/api/merchants/{merchant_id}/products/{product_id}/photo")
 async def upload_photo_endpoint(request: Request, merchant_id: str, product_id: str):
-    """Upload une photo pour un produit (Supabase Storage)."""
-    from db.client import upload_product_photo
+    """Ajoute une image à la GALERIE d'un produit (plusieurs possibles ; la 1re = couverture)."""
+    from db.client import add_product_image
     auth = _need_session(request, merchant_id)
     if auth:
         return auth
@@ -2649,11 +2651,25 @@ async def upload_photo_endpoint(request: Request, merchant_id: str, product_id: 
     if ext == "jpeg":
         ext = "jpg"
     try:
-        url = upload_product_photo(merchant_id, product_id, data, ctype, ext)
+        url = add_product_image(merchant_id, product_id, data, ctype, ext)
     except Exception as e:  # noqa: BLE001
-        log.exception("upload photo échoué")
+        log.exception("upload image échoué")
         return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
     return {"ok": True, "url": url}
+
+
+@app.post("/api/merchants/{merchant_id}/products/{product_id}/images/{image_id}/delete")
+async def delete_product_image_endpoint(request: Request, merchant_id: str,
+                                        product_id: str, image_id: str):
+    """Supprime une image de la galerie d'un produit."""
+    from db.client import delete_product_image
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    ok = delete_product_image(image_id, merchant_id)
+    if not ok:
+        return JSONResponse({"ok": False, "error": "Image introuvable."}, status_code=404)
+    return {"ok": True}
 
 
 @app.post("/api/merchants/{merchant_id}/products/import")
@@ -2707,7 +2723,7 @@ async def delete_product_endpoint(request: Request, merchant_id: str, product_id
 # ---------------------------------------------------------------------------
 
 def _agent_handle(customer: str, body_text: str, has_audio: bool = False,
-                  transcribe_fn=None) -> dict:
+                  transcribe_fn=None, image_fn=None) -> dict:
     """Traite un message client entrant → {status, text, media}. Indépendant du canal.
 
     Identification boutique (code vendora: ou session), garde suspension/expiration,
@@ -2816,7 +2832,17 @@ def _agent_handle(customer: str, body_text: str, has_audio: bool = False,
     try:
         from core import assistant
         if assistant.is_owner(merchant, customer):
-            ans = assistant.converse(merchant, clean, channel="whatsapp")
+            imgs = None
+            if image_fn:
+                try:
+                    got = image_fn()  # (octets, content_type) ou None
+                    if got and got[0]:
+                        import base64 as _b64
+                        imgs = [{"media_type": got[1] or "image/jpeg",
+                                 "data": _b64.b64encode(got[0]).decode()}]
+                except Exception:  # noqa: BLE001
+                    imgs = None
+            ans = assistant.converse(merchant, clean, channel="whatsapp", images=imgs)
             return {"status": "assistant", "media": [], "text": ans}
     except Exception:  # noqa: BLE001
         log.exception("assistant propriétaire échoué — repli vendeur")
@@ -2824,6 +2850,11 @@ def _agent_handle(customer: str, body_text: str, has_audio: bool = False,
     save_message(merchant["id"], customer, "customer", clean)
     history = load_history(merchant["id"], customer, limit=brain.HISTORY_LIMIT)
     products = list_products(merchant["id"])
+    try:
+        from db.client import product_images_map
+        _gallery = product_images_map(merchant["id"])
+    except Exception:  # noqa: BLE001
+        _gallery = {}
 
     media_urls: list[str] = []
 
@@ -2835,10 +2866,15 @@ def _agent_handle(customer: str, body_text: str, has_audio: bool = False,
             if not nl:
                 continue
             for p in products:
-                if p.get("photo_url") and nl in (p.get("name") or "").lower():
-                    if p["photo_url"] not in media_urls:
-                        media_urls.append(p["photo_url"])
-                    break
+                if nl not in (p.get("name") or "").lower():
+                    continue
+                # Toute la galerie du produit (ou la couverture), max 4 par produit.
+                urls = [x["url"] for x in _gallery.get(p.get("id"), [])] or (
+                    [p["photo_url"]] if p.get("photo_url") else [])
+                for u in urls[:4]:
+                    if u and u not in media_urls:
+                        media_urls.append(u)
+                break
         return ("Photo(s) envoyée(s) au client." if len(media_urls) > n_before
                 else "Aucune photo disponible pour ce produit — décris-le.")
 
@@ -2900,8 +2936,20 @@ async def whatsapp_twilio(request: Request):
         from core.transcribe import transcribe_audio
         transcribe_fn = lambda: transcribe_audio(media_url0, ctype0)  # noqa: E731
 
+    image_fn = None
+    if num_media > 0 and ctype0.startswith("image") and media_url0:
+        def image_fn():  # noqa: E306
+            try:
+                auth = ((settings.twilio_account_sid, settings.twilio_auth_token)
+                        if settings.twilio_account_sid else None)
+                r = httpx.get(media_url0, auth=auth, follow_redirects=True, timeout=20)
+                return (r.content, ctype0) if r.status_code == 200 else None
+            except Exception:  # noqa: BLE001
+                return None
+
     try:
-        res = _agent_handle(from_, body, has_audio=has_audio, transcribe_fn=transcribe_fn)
+        res = _agent_handle(from_, body, has_audio=has_audio, transcribe_fn=transcribe_fn,
+                            image_fn=image_fn)
     except Exception:  # noqa: BLE001
         log.exception("whatsapp (twilio) reply échoué")
         return _twiml("Un instant, je vérifie avec la boutique et je reviens vers vous 🙏")
@@ -2941,9 +2989,17 @@ def _process_meta_message(msg: dict) -> None:
             got = whatsapp_meta.fetch_media(aid)
             return transcribe_bytes(got[0], got[1]) if got else None
 
+    image_fn = None
+    if msg.get("type") == "image" and msg.get("image_id"):
+        iid, ict = msg.get("image_id"), msg.get("image_ctype")
+
+        def image_fn():  # noqa: E306
+            got = whatsapp_meta.fetch_media(iid)
+            return (got[0], ict or got[1]) if got else None
+
     try:
         res = _agent_handle(customer, msg.get("text") or "", has_audio=has_audio,
-                            transcribe_fn=transcribe_fn)
+                            transcribe_fn=transcribe_fn, image_fn=image_fn)
     except Exception:  # noqa: BLE001
         log.exception("whatsapp (meta) reply échoué")
         whatsapp_meta.send_text(wa_id, "Un instant, je reviens vers vous 🙏")

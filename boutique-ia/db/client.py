@@ -381,6 +381,81 @@ def upload_product_photo(merchant_id: str, product_id: str, data: bytes,
     return url
 
 
+def add_product_image(merchant_id: str, product_id: str, data: bytes,
+                      content_type: str = "image/jpeg", ext: str = "jpg") -> str:
+    """Ajoute UNE image à la galerie d'un produit (plusieurs possibles). Définit la
+    couverture (photo_url) si elle est vide. Retourne l'URL publique."""
+    import time
+    import uuid as _uuid
+    db = get_db()
+    path = f"{merchant_id}/{product_id}/{_uuid.uuid4().hex}.{ext}"
+    opts = {"content-type": content_type or "image/jpeg", "upsert": "true"}
+    try:
+        db.storage.from_("bia-products").upload(path, data, opts)
+    except Exception:  # noqa: BLE001
+        db.storage.from_("bia-products").update(path, data, opts)
+    url = db.storage.from_("bia-products").get_public_url(path).split("?")[0]
+    url = f"{url}?v={int(time.time())}"
+    try:
+        existing = list_product_images(product_id)
+        db.table("bia_product_images").insert({
+            "merchant_id": merchant_id, "product_id": product_id,
+            "url": url, "position": len(existing)}).execute()
+    except Exception:  # noqa: BLE001
+        pass
+    # Couverture si absente
+    try:
+        p = next((x for x in list_products(merchant_id) if x.get("id") == product_id), None)
+        if p and not (p.get("photo_url") or "").strip():
+            update_product(product_id, merchant_id, {"photo_url": url})
+    except Exception:  # noqa: BLE001
+        pass
+    return url
+
+
+def list_product_images(product_id: str) -> list[dict[str, Any]]:
+    try:
+        return (get_db().table("bia_product_images").select("id, url, position")
+                .eq("product_id", product_id).order("position", desc=False)
+                .execute().data or [])
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def delete_product_image(image_id: str, merchant_id: str) -> bool:
+    """Supprime une image de galerie. Réaffecte la couverture si besoin."""
+    db = get_db()
+    try:
+        rows = (db.table("bia_product_images").select("url, product_id")
+                .eq("id", image_id).eq("merchant_id", merchant_id).limit(1).execute().data or [])
+        if not rows:
+            return False
+        url, pid = rows[0].get("url"), rows[0].get("product_id")
+        db.table("bia_product_images").delete().eq("id", image_id).eq("merchant_id", merchant_id).execute()
+        # Si c'était la couverture, on en remet une autre (ou rien)
+        p = next((x for x in list_products(merchant_id) if x.get("id") == pid), None)
+        if p and (p.get("photo_url") or "") == url:
+            remaining = list_product_images(pid)
+            update_product(pid, merchant_id, {"photo_url": remaining[0]["url"] if remaining else None})
+        return True
+    except Exception:  # noqa: BLE001
+        return False
+
+
+def product_images_map(merchant_id: str) -> dict[str, list[dict[str, Any]]]:
+    """{product_id: [{id, url}]} pour la galerie (UI back-office + vendeur + catalogue)."""
+    try:
+        rows = (get_db().table("bia_product_images").select("id, product_id, url, position")
+                .eq("merchant_id", merchant_id).order("position", desc=False)
+                .limit(2000).execute().data or [])
+    except Exception:  # noqa: BLE001
+        return {}
+    out: dict[str, list[dict[str, Any]]] = {}
+    for r in rows:
+        out.setdefault(r.get("product_id"), []).append({"id": r.get("id"), "url": r.get("url")})
+    return out
+
+
 def upload_social_image(merchant_id: str, data: bytes) -> str:
     """Upload une image de post réseau social (PNG) sur Supabase Storage → URL publique."""
     import time
