@@ -626,6 +626,19 @@
 </section>
 
 <!-- FORMULAIRE -->
+<style>
+  .dropz{border:1.5px dashed var(--line);border-radius:12px;padding:14px;margin-top:6px;cursor:pointer;transition:border-color .15s,background .15s;text-align:center}
+  .dropz.drag{border-color:var(--c);background:rgba(16,185,129,.06)}
+  .dropz .dz-empty{color:var(--muted);font-size:.88rem;line-height:1.5}
+  .dropz .dz-empty svg{vertical-align:-4px;margin-right:4px}
+  .dropz .dz-empty small{display:block;margin-top:3px;opacity:.8}
+  .dropz .dz-pick{color:var(--c);font-weight:600;text-decoration:underline}
+  .dropz.has .dz-empty{font-size:.8rem;margin-top:10px}
+  .dz-thumbs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .dz-t{position:relative;width:66px;height:66px}
+  .dz-t img{width:66px;height:66px;object-fit:cover;border-radius:10px;border:1px solid var(--line);display:block}
+  .dz-t .dz-x{position:absolute;top:-7px;right:-7px;width:20px;height:20px;border:0;border-radius:50%;background:#ef4444;color:#fff;font-size:12px;line-height:1;cursor:pointer}
+</style>
 <section id="creer">
   <div class="wrap">
     <div class="eyebrow reveal">Créez le vôtre</div>
@@ -878,18 +891,40 @@ void main(void){vec2 uv=(FC-.5*R)/MN,st=uv*vec2(2,1);vec3 col=vec3(0);float bg=c
   // Produits dynamiques
   const productsEl = document.getElementById('products');
   function addProduct(){
-    const div = document.createElement('div'); div.className='product';
+    const div = document.createElement('div'); div.className='product'; div._imgs=[];
     div.innerHTML = `
       <button type="button" class="del" title="Retirer">✕</button>
       <label>Nom du produit</label>
       <input class="p-name" placeholder="Ex : Boucles dorées 'Soleil'">
-      <div class="frow">
-        <div><label>Prix (F CFA)</label><input class="p-price" type="number" min="0" placeholder="3500"></div>
-        <div><label>Photo (lien URL, optionnel)</label><input class="p-photo" placeholder="https://…"></div>
-      </div>
+      <label>Prix (F CFA)</label>
+      <input class="p-price" type="number" min="0" placeholder="3500">
       <label>Description</label>
-      <textarea class="p-desc" placeholder="Détails, tailles, couleurs…"></textarea>`;
+      <textarea class="p-desc" placeholder="Détails, tailles, couleurs…"></textarea>
+      <label>Photos <span class="opt">— glissez-déposez, plusieurs possibles, pleine qualité</span></label>
+      <div class="dropz">
+        <div class="dz-thumbs"></div>
+        <div class="dz-empty"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7"><use href="#i-box"/></svg> Glissez vos photos ici, ou <span class="dz-pick">parcourir</span><br><small>JPG / PNG · pleine qualité · jusqu'à 6 Mo par photo</small></div>
+        <input type="file" class="p-files" accept="image/*" multiple style="display:none">
+      </div>`;
     div.querySelector('.del').onclick = () => div.remove();
+    const dz = div.querySelector('.dropz'), input = div.querySelector('.p-files'), thumbs = div.querySelector('.dz-thumbs');
+    function render(){
+      thumbs.innerHTML='';
+      div._imgs.forEach((f,idx)=>{
+        const t=document.createElement('div'); t.className='dz-t';
+        t.innerHTML='<img src="'+URL.createObjectURL(f)+'" alt=""><button type="button" class="dz-x" title="Retirer">✕</button>';
+        t.querySelector('.dz-x').onclick=(e)=>{ e.stopPropagation(); div._imgs.splice(idx,1); render(); };
+        thumbs.appendChild(t);
+      });
+      dz.classList.toggle('has', div._imgs.length>0);
+    }
+    function add(files){ [...files].forEach(f=>{ if(f&&f.type&&f.type.startsWith('image/')) div._imgs.push(f); }); render(); }
+    dz.querySelector('.dz-pick').onclick=(e)=>{ e.stopPropagation(); input.click(); };
+    dz.onclick=()=>input.click();
+    input.onchange=()=>{ add(input.files); input.value=''; };
+    dz.addEventListener('dragover', e=>{ e.preventDefault(); dz.classList.add('drag'); });
+    dz.addEventListener('dragleave', ()=> dz.classList.remove('drag'));
+    dz.addEventListener('drop', e=>{ e.preventDefault(); dz.classList.remove('drag'); add(e.dataTransfer.files); });
     productsEl.appendChild(div);
   }
   document.getElementById('addProduct').onclick = addProduct;
@@ -901,12 +936,12 @@ void main(void){vec2 uv=(FC-.5*R)/MN,st=uv*vec2(2,1);vec3 col=vec3(0);float bg=c
     const btn = document.getElementById('submit'), err = document.getElementById('err');
     err.style.display='none';
     const f = e.target; const get = n => (f.elements[n] ? f.elements[n].value.trim() : '');
-    const products = [...document.querySelectorAll('.product')].map(p => ({
+    const namedCards = [...document.querySelectorAll('.product')].filter(p=>p.querySelector('.p-name').value.trim());
+    const products = namedCards.map(p => ({
       name:p.querySelector('.p-name').value.trim(),
       price:p.querySelector('.p-price').value ? Number(p.querySelector('.p-price').value) : null,
-      photo_url:p.querySelector('.p-photo').value.trim(),
       description:p.querySelector('.p-desc').value.trim(),
-    })).filter(p=>p.name);
+    }));
     const payload = {
       business_name:get('business_name'), sector:get('sector'), city:get('city'),
       description:get('description'), whatsapp_business:get('whatsapp_business'),
@@ -928,7 +963,24 @@ void main(void){vec2 uv=(FC-.5*R)/MN,st=uv*vec2(2,1);vec3 col=vec3(0);float bg=c
     try{
       const r = await fetch('/api/merchants',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
       const data = await r.json();
-      if(data.ok){ window.location.href = (goTrial ? '/essai/' : '/activation/') + data.merchant_id; }
+      if(data.ok){
+        // Envoi des photos produits (la session vient d'être ouverte par la création)
+        const ids = data.product_ids || [];
+        const totalImgs = namedCards.reduce((n,c)=>n+((c._imgs||[]).length),0);
+        if(totalImgs){
+          btn.textContent='Envoi des photos…';
+          for(let i=0;i<namedCards.length;i++){
+            const pid = ids[i]; if(!pid) continue;
+            for(const f of (namedCards[i]._imgs||[])){
+              if(f.size>6000000){ continue; }
+              try{ const fd=new FormData(); fd.append('photo',f);
+                await fetch('/api/merchants/'+data.merchant_id+'/products/'+pid+'/photo',{method:'POST',body:fd});
+              }catch(e){}
+            }
+          }
+        }
+        window.location.href = (goTrial ? '/essai/' : '/activation/') + data.merchant_id;
+      }
       else throw new Error(data.error||'Erreur inconnue');
     }catch(ex){ err.textContent=ex.message; err.style.display='block'; btn.disabled=false; btn.textContent='Créer mon agent vendeur →'; }
   });

@@ -340,8 +340,9 @@ def set_merchant_capabilities(merchant_id: str, caps_csv: str) -> dict[str, Any]
     return result.data[0] if result.data else {}
 
 
-def add_products(merchant_id: str, products: list[dict[str, Any]]) -> int:
-    """Insère les produits d'une boutique. Retourne le nombre inséré."""
+def add_products(merchant_id: str, products: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Insère les produits d'une boutique. Retourne les LIGNES créées (avec id),
+    dans l'ordre d'insertion (utile pour rattacher des images ensuite)."""
     rows = []
     for p in products:
         name = (p.get("name") or "").strip()
@@ -358,10 +359,10 @@ def add_products(merchant_id: str, products: list[dict[str, Any]]) -> int:
             "options": (p.get("options") or "").strip() or None,
         })
     if not rows:
-        return 0
+        return []
     db = get_db()
     result = db.table("bia_products").insert(rows).execute()
-    return len(result.data or [])
+    return result.data or []
 
 
 def upload_product_photo(merchant_id: str, product_id: str, data: bytes,

@@ -422,7 +422,9 @@ async def create_merchant_endpoint(request: Request):
         merchant = create_merchant(merchant_payload)
         merchant_id = merchant.get("id")
         products = body.get("products") or []
-        count = add_products(merchant_id, products) if merchant_id else 0
+        created = add_products(merchant_id, products) if merchant_id else []
+        count = len(created)
+        product_ids = [r.get("id") for r in created]
     except Exception as e:  # noqa: BLE001
         log.exception("création boutique échouée")
         return JSONResponse(
@@ -445,7 +447,14 @@ async def create_merchant_endpoint(request: Request):
     except Exception:  # noqa: BLE001
         pass
 
-    return {"ok": True, "merchant_id": merchant_id, "products": count, "trial": bool(trial)}
+    # On ouvre une session pour la boutique tout juste créée : ça permet d'uploader
+    # ses photos produits dans la foulée (et le commerçant arrive déjà connecté).
+    resp = JSONResponse({"ok": True, "merchant_id": merchant_id, "products": count,
+                         "product_ids": product_ids, "trial": bool(trial)})
+    if merchant_id:
+        resp.set_cookie(SESSION_COOKIE, _make_session(merchant_id),
+                        max_age=SESSION_DAYS * 86400, httponly=True, samesite="lax", path="/")
+    return resp
 
 
 @app.post("/api/merchants/{merchant_id}/payment")
@@ -2598,7 +2607,7 @@ async def add_product_endpoint(request: Request, merchant_id: str):
     if not name:
         return JSONResponse({"ok": False, "error": "Le nom du produit est obligatoire."}, status_code=400)
     try:
-        count = add_products(merchant_id, [body])
+        count = len(add_products(merchant_id, [body]))
     except Exception as e:  # noqa: BLE001
         log.exception("ajout produit échoué")
         return JSONResponse({"ok": False, "error": str(e)[:300]}, status_code=500)
@@ -2698,7 +2707,7 @@ async def import_products_endpoint(request: Request, merchant_id: str):
         if not parsed:
             return JSONResponse({"ok": False, "error": "Aucun produit reconnu. Réessayez en listant un produit par ligne."},
                                 status_code=502)
-        count = add_products(merchant_id, parsed)
+        count = len(add_products(merchant_id, parsed))
     except Exception as e:  # noqa: BLE001
         log.exception("import produits échoué")
         return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
