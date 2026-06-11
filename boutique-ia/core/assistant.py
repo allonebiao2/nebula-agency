@@ -370,7 +370,131 @@ def usage_view(merchant_id: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Le cerveau de l'assistant — outils (lecture + agenda) + intelligence générale
+# Mini-outils — caisse, ardoise (crédits clients), stock, documents
+# ---------------------------------------------------------------------------
+
+def cash_record(merchant_id: str, sens: str, montant, libelle: str | None) -> str:
+    from db.client import add_cash_entry
+    row = add_cash_entry(merchant_id, sens, montant, libelle)
+    if not row:
+        return "(impossible d'enregistrer en caisse)"
+    kind = "Dépense" if row.get("direction") == "out" else "Recette"
+    lib = f" — {row.get('label')}" if row.get("label") else ""
+    return f"NOTÉ en caisse : {kind} {_money(row.get('amount'))}{lib}"
+
+
+def cash_view(merchant_id: str, periode: str = "aujourd_hui") -> str:
+    from db.client import cash_summary
+    start, _end, label = _period_window(periode)
+    since = start.astimezone(timezone.utc).isoformat() if start else None
+    s = cash_summary(merchant_id, since)
+    return "\n".join([f"DONNÉES RÉELLES — caisse ({label}) :",
+                      f"- Recettes : {_money(s['in'])}",
+                      f"- Dépenses : {_money(s['out'])}",
+                      f"- Solde : {_money(s['net'])}",
+                      f"- Opérations : {s['count']}"])
+
+
+def debt_record(merchant_id: str, client: str, montant, motif: str | None,
+                contact: str | None = None) -> str:
+    from db.client import add_debt
+    row = add_debt(merchant_id, client, montant, motif, contact)
+    if not row:
+        return "(impossible d'enregistrer la dette)"
+    return (f"NOTÉ sur l'ardoise : {client or 'client'} doit {_money(montant)}"
+            + (f" ({motif})" if motif else ""))
+
+
+def debts_view(merchant_id: str, client: str | None = None) -> str:
+    from db.client import debts_total, list_debts
+    rows = list_debts(merchant_id, "open")
+    if client:
+        cl = client.strip().lower()
+        rows = [r for r in rows if cl in (r.get("customer_name") or "").lower()]
+    if not rows:
+        return (f"DONNÉES RÉELLES — {client} ne doit rien." if client
+                else "DONNÉES RÉELLES — ardoise vide (personne ne doit rien).")
+    lines = [f"DONNÉES RÉELLES — ardoise (dû total {_money(debts_total(merchant_id))}) :"]
+    for r in rows[:30]:
+        dt = _parse_dt(r.get("created_at"))
+        when = dt.astimezone(WAT).strftime("%d/%m") if dt else "?"
+        motif = f" — {r.get('reason')}" if r.get("reason") else ""
+        lines.append(f"- [id={r.get('id')}] {r.get('customer_name') or 'client'} : "
+                     f"{_money(r.get('amount'))} (depuis {when}){motif}")
+    lines.append("(pour solder une dette, utilise son id)")
+    return "\n".join(lines)
+
+
+def debt_settle(merchant_id: str, debt_id: str) -> str:
+    from db.client import set_debt_paid
+    row = set_debt_paid((debt_id or "").strip(), merchant_id)
+    if not row:
+        return "(dette introuvable — vérifie l'id via voir_ardoise)"
+    return f"« {row.get('customer_name') or 'client'} » a soldé sa dette de {_money(row.get('amount'))} ✅"
+
+
+def stock_set(merchant_id: str, produit: str, quantite) -> str:
+    from db.client import find_product_by_name, set_product_stock
+    p = find_product_by_name(merchant_id, produit)
+    if not p:
+        return f"(produit « {produit} » introuvable au catalogue)"
+    set_product_stock(p["id"], merchant_id, _to_int(quantite))
+    return f"STOCK : {p.get('name')} = {max(0, _to_int(quantite))} en stock"
+
+
+def stock_adjust(merchant_id: str, produit: str, variation) -> str:
+    from db.client import adjust_product_stock, find_product_by_name
+    p = find_product_by_name(merchant_id, produit)
+    if not p:
+        return f"(produit « {produit} » introuvable au catalogue)"
+    r = adjust_product_stock(p["id"], merchant_id, _to_int(variation))
+    return f"STOCK : {p.get('name')} = {_to_int(r.get('stock_qty'))} en stock"
+
+
+def stock_view(merchant_id: str, produit: str | None = None) -> str:
+    from db.client import find_product_by_name, list_products
+    if produit:
+        p = find_product_by_name(merchant_id, produit)
+        if not p:
+            return f"(produit « {produit} » introuvable)"
+        q = p.get("stock_qty")
+        return (f"DONNÉES RÉELLES — {p.get('name')} : "
+                + (f"{_to_int(q)} en stock" if q is not None else "stock non suivi"))
+    tracked = [p for p in list_products(merchant_id) if p.get("stock_qty") is not None]
+    if not tracked:
+        return "DONNÉES RÉELLES — aucun produit suivi en stock (dis-moi « le collier a 10 en stock »)."
+    lines = ["DONNÉES RÉELLES — stock :"]
+    for p in tracked[:40]:
+        q = _to_int(p.get("stock_qty"))
+        lines.append(f"- {p.get('name')} : {q}" + (" ⚠️ bas" if q <= 3 else ""))
+    return "\n".join(lines)
+
+
+def document_create(merchant_id: str, doc_type: str, client: str | None,
+                    articles: list, note: str | None = None, contact: str | None = None) -> str:
+    from db.client import create_document
+    items, total = [], 0.0
+    for a in (articles or []):
+        nom = (a.get("produit") or a.get("nom") or "").strip()
+        if not nom:
+            continue
+        qte = _to_int(a.get("quantite") or a.get("qty") or 1) or 1
+        pu = _to_float(a.get("prix_unitaire") or a.get("prix") or 0)
+        items.append({"produit": nom, "quantite": qte, "prix_unitaire": pu})
+        total += qte * pu
+    if not items:
+        return "(aucun article valide pour le document)"
+    doc = create_document(merchant_id, doc_type, client, items, total, note, contact)
+    if not doc:
+        return "(impossible de créer le document)"
+    base = (getattr(settings, "public_base_url", None) or "https://vendora-agent.up.railway.app").rstrip("/")
+    label = {"facture": "Facture", "proforma": "Pro forma", "devis": "Devis"}.get(doc.get("doc_type"), "Document")
+    return (f"{label} {doc.get('number')} créé(e) pour {client or 'client'} — total {_money(total)}.\n"
+            f"Lien à partager (imprimable) : {base}/doc/{doc.get('id')}")
+
+
+# ---------------------------------------------------------------------------
+# Le cerveau de l'assistant — outils (lecture + agenda + mini-outils) + intelligence
 # ---------------------------------------------------------------------------
 
 TOOLS = [
@@ -475,6 +599,85 @@ TOOLS = [
             "required": ["agenda_id"],
         },
     },
+    # ── Caisse (cahier de comptes) ──
+    {
+        "name": "noter_caisse",
+        "description": ("Enregistre une RECETTE (argent entré) ou une DÉPENSE (argent sorti) "
+                        "dans le cahier de caisse. Pour « j'ai vendu pour 5000 », « j'ai dépensé "
+                        "2000 de transport », « note une dépense/recette »."),
+        "input_schema": {"type": "object", "properties": {
+            "sens": {"type": "string", "enum": ["entree", "sortie"], "description": "entree=recette, sortie=dépense."},
+            "montant": {"type": "number"},
+            "libelle": {"type": "string", "description": "De quoi il s'agit (ex: vente bijoux, taxi)."}},
+            "required": ["sens", "montant"]},
+    },
+    {
+        "name": "bilan_caisse",
+        "description": ("Bilan de caisse RÉEL : recettes, dépenses, solde sur une période. Pour "
+                        "« combien j'ai en caisse », « mon bilan du jour/de la semaine », « solde »."),
+        "input_schema": {"type": "object", "properties": {
+            "periode": {"type": "string", "enum": ["aujourd_hui", "hier", "semaine", "mois", "tout"]}}},
+    },
+    # ── Ardoise (crédits clients) ──
+    {
+        "name": "noter_dette",
+        "description": ("Enregistre qu'un client DOIT de l'argent à la boutique (vente à crédit). "
+                        "Pour « X me doit 3000 », « note une ardoise / un crédit »."),
+        "input_schema": {"type": "object", "properties": {
+            "client": {"type": "string"}, "montant": {"type": "number"},
+            "motif": {"type": "string", "description": "Pour quoi (ex: 2 colliers)."},
+            "contact": {"type": "string", "description": "Téléphone du client si donné."}},
+            "required": ["client", "montant"]},
+    },
+    {
+        "name": "voir_ardoise",
+        "description": "Liste RÉELLE des dettes clients en cours (qui doit quoi). Filtre par client possible.",
+        "input_schema": {"type": "object", "properties": {
+            "client": {"type": "string", "description": "Nom d'un client pour ne voir que sa dette (optionnel)."}}},
+    },
+    {
+        "name": "solder_dette",
+        "description": "Marque une dette comme PAYÉE. Utilise l'id exact donné par voir_ardoise.",
+        "input_schema": {"type": "object", "properties": {"dette_id": {"type": "string"}},
+                         "required": ["dette_id"]},
+    },
+    # ── Stock ──
+    {
+        "name": "definir_stock",
+        "description": "Fixe la quantité en stock d'un produit. Pour « le collier doré a 10 en stock ».",
+        "input_schema": {"type": "object", "properties": {
+            "produit": {"type": "string"}, "quantite": {"type": "integer"}},
+            "required": ["produit", "quantite"]},
+    },
+    {
+        "name": "ajuster_stock",
+        "description": ("Ajoute/retire au stock d'un produit (variation, +/-). Pour « +5 bracelets reçus », "
+                        "« j'ai vendu 2 colliers en boutique »."),
+        "input_schema": {"type": "object", "properties": {
+            "produit": {"type": "string"}, "variation": {"type": "integer", "description": "Positif = entrée, négatif = sortie."}},
+            "required": ["produit", "variation"]},
+    },
+    {
+        "name": "etat_stock",
+        "description": "État RÉEL du stock (tout ou un produit), avec alerte si bas. Pour « il me reste combien de X », « mon stock ».",
+        "input_schema": {"type": "object", "properties": {"produit": {"type": "string"}}},
+    },
+    # ── Documents : factures / pro formas / devis ──
+    {
+        "name": "creer_document",
+        "description": ("Crée une FACTURE, un PRO FORMA ou un DEVIS et renvoie un lien imprimable à "
+                        "partager. Pour « fais une facture/un devis pour X : 2 colliers à 3500 ». "
+                        "Demande le client et les articles (nom, quantité, prix) si besoin."),
+        "input_schema": {"type": "object", "properties": {
+            "type": {"type": "string", "enum": ["facture", "proforma", "devis"]},
+            "client": {"type": "string"},
+            "articles": {"type": "array", "items": {"type": "object", "properties": {
+                "produit": {"type": "string"}, "quantite": {"type": "integer"},
+                "prix_unitaire": {"type": "number"}}, "required": ["produit", "prix_unitaire"]}},
+            "note": {"type": "string", "description": "Mention/condition (ex: validité 15j, acompte)."},
+            "contact": {"type": "string"}},
+            "required": ["type", "articles"]},
+    },
 ]
 
 
@@ -499,6 +702,28 @@ def _exec_tool(merchant_id: str, name: str, args: dict) -> str:
             return agenda_set(merchant_id, args.get("agenda_id") or "", "done")
         if name == "supprimer_agenda":
             return agenda_set(merchant_id, args.get("agenda_id") or "", "cancelled")
+        if name == "noter_caisse":
+            return cash_record(merchant_id, args.get("sens") or "entree",
+                               args.get("montant"), args.get("libelle"))
+        if name == "bilan_caisse":
+            return cash_view(merchant_id, args.get("periode") or "aujourd_hui")
+        if name == "noter_dette":
+            return debt_record(merchant_id, args.get("client") or "", args.get("montant"),
+                               args.get("motif"), args.get("contact"))
+        if name == "voir_ardoise":
+            return debts_view(merchant_id, args.get("client"))
+        if name == "solder_dette":
+            return debt_settle(merchant_id, args.get("dette_id") or "")
+        if name == "definir_stock":
+            return stock_set(merchant_id, args.get("produit") or "", args.get("quantite"))
+        if name == "ajuster_stock":
+            return stock_adjust(merchant_id, args.get("produit") or "", args.get("variation"))
+        if name == "etat_stock":
+            return stock_view(merchant_id, args.get("produit"))
+        if name == "creer_document":
+            return document_create(merchant_id, args.get("type") or "facture",
+                                   args.get("client"), args.get("articles") or [],
+                                   args.get("note"), args.get("contact"))
     except Exception as e:  # noqa: BLE001
         log.exception("outil assistant échoué")
         return f"(impossible de lire cette donnée pour l'instant : {e})"
@@ -541,6 +766,13 @@ un moment (demain 15h, lundi, samedi…), calcule le moment EXACT à partir de l
 date/heure ci-dessus et passe-le en `rappel_iso` (ISO 8601, fuseau +01:00), en plus
 de `quand_texte`. Pour terminer ou supprimer un point, appelle d'abord voir_agenda
 pour récupérer son id. Confirme toujours brièvement ce que tu as noté.
+
+OUTILS DE GESTION — tu es son employé numérique, tu gères aussi :
+- CAISSE (cahier de comptes) : noter_caisse (recette/dépense), bilan_caisse (solde du jour/semaine/mois). Pour « j'ai vendu/dépensé… », « combien j'ai en caisse ».
+- ARDOISE (crédits clients) : noter_dette, voir_ardoise, solder_dette. Pour « X me doit 3000 », « qui me doit de l'argent ».
+- STOCK : definir_stock, ajuster_stock, etat_stock. Pour « il me reste combien de X », « +5 reçus ».
+- DOCUMENTS : creer_document (facture / pro forma / devis) → tu renvoies un lien imprimable à partager. Demande le client et les articles (nom, quantité, prix) si besoin, puis crée.
+Utilise TOUJOURS l'outil adapté pour ces tâches (jamais inventer un solde, une dette ou un stock).
 
 HONNÊTETÉ (capital) : si tu n'es pas sûr d'un fait précis (une adresse, un prix
 ailleurs, une info locale, une actu récente), dis-le simplement et propose

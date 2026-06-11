@@ -187,6 +187,9 @@
     {% if notif and notif.total %}<a href="#notifications">Notifications ({{ notif.total }})</a>{% endif %}
     {% if to_validate %}<a href="#validation">Validation{% if notif and notif.pay_count %} ({{ notif.pay_count }}){% endif %}</a>{% endif %}
     <a href="#activite">Activité</a>
+    <a href="#caisse">Caisse</a>
+    <a href="#ardoise">Ardoise</a>
+    <a href="#documents">Documents</a>
     <a href="#produits">Produits</a>
     <a href="#capacites">Capacités</a>
     <a href="#infos">Infos</a>
@@ -445,6 +448,81 @@
       </form>
     </div></div>
   </section>
+
+  {% if cashbox %}
+  <!-- CAISSE -->
+  <section class="reveal" id="caisse" style="order:2">
+    <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg></div><h2>Caisse</h2></div>
+    <p class="hint">Vos recettes et dépenses. Vous pouvez aussi dire à votre assistant : « j'ai vendu pour 5000 », « dépense 2000 de transport ».</p>
+    <div class="bezel"><div class="bezel-in">
+      <div class="stats">
+        <div class="stat"><div class="sv mono">{{ "{:,}".format(cashbox.today.net|int).replace(",", " ") }}</div><div class="sl">Solde du jour (F)</div></div>
+        <div class="stat"><div class="sv mono">{{ "{:,}".format(cashbox.month.net|int).replace(",", " ") }}</div><div class="sl">30 derniers jours</div></div>
+        <div class="stat"><div class="sv mono">{{ "{:,}".format(cashbox.all.net|int).replace(",", " ") }}</div><div class="sl">Solde total</div></div>
+      </div>
+      <form id="cashForm" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+        <select id="cashSens" class="fi" style="max-width:130px"><option value="in">Recette</option><option value="out">Dépense</option></select>
+        <input id="cashAmt" class="fi" type="number" placeholder="Montant" style="max-width:130px">
+        <input id="cashLbl" class="fi" placeholder="Libellé (ex: vente bijoux)" style="flex:1;min-width:150px">
+        <button class="btn acc" type="submit">Ajouter</button>
+      </form>
+      {% if cashbox.entries %}<div style="margin-top:14px">
+        {% for e in cashbox.entries %}
+        <div class="actrow"><div><div class="an">{{ e.label or ('Recette' if e.direction=='in' else 'Dépense') }}</div></div>
+          <div class="pp mono" style="color:{{ '#16f08b' if e.direction=='in' else '#ff9d9d' }}">{{ '+' if e.direction=='in' else '−' }}{{ "{:,}".format(e.amount|int).replace(",", " ") }} F</div></div>
+        {% endfor %}
+      </div>{% endif %}
+    </div></div>
+  </section>
+  {% endif %}
+
+  {% if ardoise %}
+  <!-- ARDOISE -->
+  <section class="reveal" id="ardoise" style="order:2">
+    <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-box"/></svg></div><h2>Ardoise — crédits clients</h2>
+      <div class="act"><span class="quota">{{ "{:,}".format(ardoise.total|int).replace(",", " ") }} F dûs</span></div>
+    </div>
+    <p class="hint">Qui vous doit de l'argent. Dites « X me doit 3000 » à votre assistant, ou ajoutez ici.</p>
+    <div class="bezel"><div class="bezel-in">
+      <form id="debtForm" style="display:flex;gap:8px;flex-wrap:wrap">
+        <input id="debtClient" class="fi" placeholder="Client" style="max-width:160px">
+        <input id="debtAmt" class="fi" type="number" placeholder="Montant" style="max-width:120px">
+        <input id="debtMotif" class="fi" placeholder="Motif (ex: 2 colliers)" style="flex:1;min-width:140px">
+        <button class="btn acc" type="submit">Ajouter</button>
+      </form>
+      {% if ardoise.debts %}<div style="margin-top:14px">
+        {% for d in ardoise.debts %}
+        <div class="actrow" id="debt-{{ d.id }}"><div>
+          <div class="an">{{ d.customer_name or 'Client' }} {% if d.reason %}<span class="tag">{{ d.reason }}</span>{% endif %}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="pp mono">{{ "{:,}".format(d.amount|int).replace(",", " ") }} F</span>
+          <button class="btn gho sm" type="button" onclick="debtPaid('{{ d.id }}')">Soldé</button>
+        </div></div>
+        {% endfor %}
+      </div>{% else %}<div class="empty" style="margin-top:12px">Personne ne vous doit rien 👍</div>{% endif %}
+    </div></div>
+  </section>
+  {% endif %}
+
+  {% if merchant %}
+  <!-- DOCUMENTS -->
+  <section class="reveal" id="documents" style="order:2">
+    <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-mail"/></svg></div><h2>Factures, devis &amp; pro formas</h2></div>
+    <p class="hint">Demandez à votre assistant : « fais une facture pour Awa : 2 colliers à 3500 ». Vos documents apparaissent ici avec un lien à partager et à imprimer.</p>
+    <div class="bezel"><div class="bezel-in">
+      {% if documents %}
+        {% for d in documents %}
+        <div class="actrow"><div>
+          <div class="an">{{ d.number }} <span class="tag">{{ d.doc_type }}</span></div>
+          <div class="ad">{{ d.customer_name or '—' }} · {{ "{:,}".format((d.total or 0)|int).replace(",", " ") }} F</div>
+        </div>
+        <a class="btn gho sm" href="/doc/{{ d.id }}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><use href="#i-link"/></svg>Ouvrir</a></div>
+        {% endfor %}
+      {% else %}<div class="empty">Aucun document pour l'instant. Demandez-en un à votre assistant 🙂</div>{% endif %}
+    </div></div>
+  </section>
+  {% endif %}
 
   <!-- PRODUITS -->
   <section class="reveal" id="produits">
@@ -733,8 +811,9 @@ Bracelet jonc 5000"></textarea>
       {% if notif.pay_count %}<div class="nrow" style="padding:11px 13px;border-radius:11px;border:1px solid var(--hair)">💳 <b>{{ notif.pay_count }}</b> paiement(s) à valider → <a href="#validation">ouvrir la validation</a></div>{% endif %}
       {% if notif.pending_orders %}<div class="nrow" style="padding:11px 13px;border-radius:11px;border:1px solid var(--hair)">🛒 <b>{{ notif.pending_orders }}</b> commande(s) en attente de paiement</div>{% endif %}
       {% if notif.appts %}<div class="nrow" style="padding:11px 13px;border-radius:11px;border:1px solid var(--hair)">📅 <b>{{ notif.appts }}</b> rendez-vous à confirmer{% if rdv_on %} → <a href="#rdv">ouvrir</a>{% endif %}</div>{% endif %}
+      {% if notif.low_count %}<div class="nrow" style="padding:11px 13px;border-radius:11px;border:1px solid #e0a93b">📦 <b>{{ notif.low_count }}</b> produit(s) en stock bas : {% for p in notif.low_stock %}{{ p.name }} ({{ p.stock_qty }}){% if not loop.last %}, {% endif %}{% endfor %}</div>{% endif %}
       {% if notif.days_left is not none and notif.days_left > 0 and notif.days_left <= 3 %}<div class="nrow" style="padding:11px 13px;border-radius:11px;border:1px solid #e0a93b;color:#f0c674">⏳ Abonnement : {{ notif.days_left }} jour(s) restants — pensez à renouveler.</div>{% endif %}
-      {% if not (notif.suspended or notif.pay_count or notif.pending_orders or notif.appts or notif.hot_count) %}<div class="empty">Rien de neuf, tout est à jour ✨</div>{% endif %}
+      {% if not (notif.suspended or notif.pay_count or notif.pending_orders or notif.appts or notif.hot_count or notif.low_count) %}<div class="empty">Rien de neuf, tout est à jour ✨</div>{% endif %}
     </div></div>
   </section>
   {% endif %}
@@ -1248,6 +1327,31 @@ if(supForm){ supForm.addEventListener('submit', async (e)=>{
     if(d.reply) supBubble((d.by==='owner'?'<b>NEBULA :</b> ':'')+esc(d.reply),'ag');
   }catch(ex){ typing.remove(); supBubble('⚠ '+esc(ex.message),'ag'); }
 });}
+
+/* Caisse */
+const cashForm=document.getElementById('cashForm');
+if(cashForm){ cashForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const amt=parseFloat(document.getElementById('cashAmt').value); if(!amt||amt<=0){ notify('Montant invalide', true); return; }
+  const d=await api(`/api/merchants/${MID}/cash`,'POST',{sens:document.getElementById('cashSens').value, montant:amt, libelle:document.getElementById('cashLbl').value.trim()});
+  if(d.ok){ notify('Enregistré en caisse'); setTimeout(()=>location.reload(),700); } else notify(d.error||'Erreur', true);
+});}
+
+/* Ardoise */
+const debtForm=document.getElementById('debtForm');
+if(debtForm){ debtForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const client=document.getElementById('debtClient').value.trim(); const amt=parseFloat(document.getElementById('debtAmt').value);
+  if(!client||!amt||amt<=0){ notify('Client et montant requis', true); return; }
+  const d=await api(`/api/merchants/${MID}/debt`,'POST',{client, montant:amt, motif:document.getElementById('debtMotif').value.trim()});
+  if(d.ok){ notify('Ardoise mise à jour'); setTimeout(()=>location.reload(),700); } else notify(d.error||'Erreur', true);
+});}
+async function debtPaid(id){
+  if(!confirm('Marquer cette dette comme payée ?')) return;
+  const d=await api(`/api/merchants/${MID}/debt/${id}/paid`,'POST',{});
+  if(d.ok){ const r=document.getElementById('debt-'+id); if(r){ r.style.transition='opacity .3s'; r.style.opacity='0'; setTimeout(()=>r.remove(),320); } notify('Dette soldée ✅'); setTimeout(()=>location.reload(),900); }
+  else notify(d.error||'Erreur', true);
+}
 
 /* Validation des paiements */
 async function validateOrder(id, action, btn){

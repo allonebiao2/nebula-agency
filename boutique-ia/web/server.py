@@ -675,6 +675,8 @@ async def boutique_backoffice(request: Request, merchant_id: str):
                 cust = h.get("customer") or ""
                 digits = re.sub(r"\D", "", cust)
                 h["call"] = f"https://wa.me/{digits}" if cust.startswith("whatsapp:") and digits else None
+            from db.client import low_stock as _low
+            low = _low(merchant_id)
             notif = {
                 "pay_count": pay_count,
                 "pending_orders": pend_orders,
@@ -682,9 +684,11 @@ async def boutique_backoffice(request: Request, merchant_id: str):
                 "appointments": pend_appts[:10],
                 "hot_leads": hot_leads,
                 "hot_count": len(hot_leads),
+                "low_stock": low,
+                "low_count": len(low),
                 "days_left": _dleft(merchant),
                 "suspended": suspended,
-                "total": pay_count + len(pend_appts) + len(hot_leads),
+                "total": pay_count + len(pend_appts) + len(hot_leads) + len(low),
             }
         except Exception:  # noqa: BLE001
             log.warning("back-office: validation/notif KO", exc_info=True)
@@ -700,6 +704,25 @@ async def boutique_backoffice(request: Request, merchant_id: str):
             support_human = _gsb(f"support_human_{merchant_id}", False)
         except Exception:  # noqa: BLE001
             log.warning("back-office: support KO", exc_info=True)
+    # Mini-outils : caisse (jour/mois/total), ardoise (dettes), documents.
+    cashbox, ardoise, documents = None, None, []
+    if merchant:
+        try:
+            from datetime import datetime, timedelta, timezone
+            from db.client import cash_summary, debts_total, list_cash, list_debts, list_documents
+            wat = timezone(timedelta(hours=1))
+            now = datetime.now(wat)
+            today_iso = now.replace(hour=0, minute=0, second=0, microsecond=0).astimezone(timezone.utc).isoformat()
+            month_iso = (now - timedelta(days=30)).astimezone(timezone.utc).isoformat()
+            cashbox = {"today": cash_summary(merchant_id, today_iso),
+                       "month": cash_summary(merchant_id, month_iso),
+                       "all": cash_summary(merchant_id, None),
+                       "entries": list_cash(merchant_id, 12)}
+            ardoise = {"total": debts_total(merchant_id),
+                       "debts": list_debts(merchant_id, "open", 50)}
+            documents = list_documents(merchant_id, 20)
+        except Exception:  # noqa: BLE001
+            log.warning("back-office: mini-outils KO", exc_info=True)
     return templates.TemplateResponse(
         request, "boutique.html",
         _ctx(request, merchant=merchant, merchant_id=merchant_id,
@@ -715,6 +738,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              to_validate=to_validate, notif=notif,
              wa_qr=wa_qr, backoffice_link=backoffice_link,
              support_thread=support_thread, support_human=support_human,
+             cashbox=cashbox, ardoise=ardoise, documents=documents,
              prospect_daily=prospect_daily, prospect_used=prospect_used, prospection_soon=prospection_soon,
              prospect_remaining=max(0, prospect_daily - prospect_used)),
     )
@@ -2014,6 +2038,84 @@ async def admin_support_mode(request: Request, merchant_id: str):
     set_setting(f"support_human_{merchant_id}", "1" if human else "0")
     set_setting(f"support_open_{merchant_id}", "1" if human else "0")
     return {"ok": True, "human": human}
+
+
+@app.get("/doc/{doc_id}", response_class=HTMLResponse)
+async def public_document(request: Request, doc_id: str):
+    """Page publique imprimable d'un document (facture / pro forma / devis)."""
+    from datetime import datetime
+    from db.client import get_document, get_merchant
+    doc = get_document(doc_id)
+    if not doc:
+        return HTMLResponse("<body style='font-family:sans-serif;padding:40px'>"
+                            "Document introuvable.</body>", status_code=404)
+    merchant = get_merchant(doc.get("merchant_id")) or {}
+    label = {"facture": "FACTURE", "proforma": "PRO FORMA",
+             "devis": "DEVIS"}.get(doc.get("doc_type"), "DOCUMENT")
+    try:
+        date_fr = datetime.fromisoformat(
+            str(doc.get("created_at")).replace("Z", "+00:00")).strftime("%d/%m/%Y")
+    except Exception:  # noqa: BLE001
+        date_fr = ""
+    return templates.TemplateResponse(request, "doc.html",
+                                      {"doc": doc, "merchant": merchant,
+                                       "label": label, "date_fr": date_fr})
+
+
+@app.post("/api/merchants/{merchant_id}/cash")
+async def merchant_cash_endpoint(request: Request, merchant_id: str):
+    """Ajout rapide d'une recette/dépense en caisse depuis le back-office."""
+    from db.client import add_cash_entry
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    try:
+        montant = float(body.get("montant") or 0)
+    except (TypeError, ValueError):
+        montant = 0
+    if montant <= 0:
+        return JSONResponse({"ok": False, "error": "Montant invalide."}, status_code=400)
+    add_cash_entry(merchant_id, body.get("sens") or "in", montant, body.get("libelle"))
+    return {"ok": True}
+
+
+@app.post("/api/merchants/{merchant_id}/debt")
+async def merchant_debt_add(request: Request, merchant_id: str):
+    """Ajout rapide d'une dette client (ardoise) depuis le back-office."""
+    from db.client import add_debt
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    client = (body.get("client") or "").strip()
+    try:
+        montant = float(body.get("montant") or 0)
+    except (TypeError, ValueError):
+        montant = 0
+    if not client or montant <= 0:
+        return JSONResponse({"ok": False, "error": "Client et montant requis."}, status_code=400)
+    add_debt(merchant_id, client, montant, body.get("motif"), body.get("contact"))
+    return {"ok": True}
+
+
+@app.post("/api/merchants/{merchant_id}/debt/{debt_id}/paid")
+async def merchant_debt_paid(request: Request, merchant_id: str, debt_id: str):
+    """Marque une dette comme payée (soldée)."""
+    from db.client import set_debt_paid
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    row = set_debt_paid(debt_id, merchant_id)
+    if not row:
+        return JSONResponse({"ok": False, "error": "Dette introuvable."}, status_code=404)
+    return {"ok": True}
 
 
 @app.post("/api/merchants/{merchant_id}/update")

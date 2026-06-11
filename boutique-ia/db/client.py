@@ -170,7 +170,7 @@ EDITABLE_MERCHANT_FIELDS = {
     "rdv_days", "rdv_hours", "rdv_note",
 }
 EDITABLE_PRODUCT_FIELDS = {"name", "price", "description", "photo_url", "available",
-                          "kind", "duration", "options"}
+                          "kind", "duration", "options", "stock_qty"}
 
 
 def update_merchant(merchant_id: str, fields: dict[str, Any]) -> dict[str, Any]:
@@ -1701,3 +1701,191 @@ def support_threads_overview(limit_scan: int = 600) -> list[dict[str, Any]]:
             t["last_role"] = r.get("role")
             t["last_at"] = r.get("created_at")
     return [t for t in threads.values() if t["last"] is not None or t["has_problem"]]
+
+
+# ---------------------------------------------------------------------------
+# Mini-outils — Caisse (bia_cashbook)
+# ---------------------------------------------------------------------------
+
+def add_cash_entry(merchant_id: str, direction: str, amount: float,
+                   label: str | None = None) -> dict[str, Any]:
+    """Ajoute une recette ('in') ou une dépense ('out') au cahier de caisse."""
+    try:
+        res = get_db().table("bia_cashbook").insert({
+            "merchant_id": merchant_id,
+            "direction": "out" if str(direction).lower().startswith(("out", "dep", "sort")) else "in",
+            "amount": float(amount or 0), "label": (label or "").strip() or None,
+        }).execute()
+        return res.data[0] if res.data else {}
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def list_cash(merchant_id: str, limit: int = 50) -> list[dict[str, Any]]:
+    try:
+        return (get_db().table("bia_cashbook").select("*").eq("merchant_id", merchant_id)
+                .order("created_at", desc=True).limit(limit).execute().data or [])
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def cash_summary(merchant_id: str, since_iso: str | None = None) -> dict[str, Any]:
+    """Recettes / dépenses / solde depuis une date (ou tout)."""
+    try:
+        q = get_db().table("bia_cashbook").select("direction, amount").eq("merchant_id", merchant_id)
+        if since_iso:
+            q = q.gte("created_at", since_iso)
+        rows = q.limit(5000).execute().data or []
+    except Exception:  # noqa: BLE001
+        rows = []
+    cin = cout = 0.0
+    for r in rows:
+        try:
+            v = float(r.get("amount") or 0)
+        except (TypeError, ValueError):
+            v = 0.0
+        if r.get("direction") == "out":
+            cout += v
+        else:
+            cin += v
+    return {"in": cin, "out": cout, "net": cin - cout, "count": len(rows)}
+
+
+# ---------------------------------------------------------------------------
+# Mini-outils — Ardoise / crédits clients (bia_debts)
+# ---------------------------------------------------------------------------
+
+def add_debt(merchant_id: str, customer_name: str, amount: float,
+             reason: str | None = None, contact: str | None = None) -> dict[str, Any]:
+    try:
+        res = get_db().table("bia_debts").insert({
+            "merchant_id": merchant_id, "customer_name": (customer_name or "").strip() or None,
+            "amount": float(amount or 0), "reason": (reason or "").strip() or None,
+            "customer_contact": (contact or "").strip() or None, "status": "open",
+        }).execute()
+        return res.data[0] if res.data else {}
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def list_debts(merchant_id: str, status: str = "open", limit: int = 100) -> list[dict[str, Any]]:
+    try:
+        q = get_db().table("bia_debts").select("*").eq("merchant_id", merchant_id)
+        if status:
+            q = q.eq("status", status)
+        return q.order("created_at", desc=True).limit(limit).execute().data or []
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def debts_total(merchant_id: str) -> float:
+    rows = list_debts(merchant_id, "open", limit=1000)
+    total = 0.0
+    for r in rows:
+        try:
+            total += float(r.get("amount") or 0)
+        except (TypeError, ValueError):
+            pass
+    return total
+
+
+def set_debt_paid(debt_id: str, merchant_id: str) -> dict[str, Any]:
+    from datetime import datetime, timezone
+    try:
+        res = (get_db().table("bia_debts")
+               .update({"status": "paid", "paid_at": datetime.now(timezone.utc).isoformat()})
+               .eq("id", debt_id).eq("merchant_id", merchant_id).execute())
+        return res.data[0] if res.data else {}
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+# ---------------------------------------------------------------------------
+# Mini-outils — Stock (colonne bia_products.stock_qty)
+# ---------------------------------------------------------------------------
+
+def find_product_by_name(merchant_id: str, name: str) -> dict[str, Any] | None:
+    """Trouve un produit par nom approximatif (pour les outils stock/documents)."""
+    nl = (name or "").strip().lower()
+    if not nl:
+        return None
+    prods = list_products(merchant_id)
+    for p in prods:
+        if nl == (p.get("name") or "").strip().lower():
+            return p
+    for p in prods:
+        if nl in (p.get("name") or "").strip().lower():
+            return p
+    return None
+
+
+def set_product_stock(product_id: str, merchant_id: str, qty: int) -> dict[str, Any]:
+    return update_product(product_id, merchant_id, {"stock_qty": max(0, int(qty))})
+
+
+def adjust_product_stock(product_id: str, merchant_id: str, delta: int) -> dict[str, Any]:
+    prods = list_products(merchant_id)
+    cur = next((p for p in prods if p.get("id") == product_id), None)
+    base = int(cur.get("stock_qty") or 0) if cur else 0
+    return update_product(product_id, merchant_id, {"stock_qty": max(0, base + int(delta))})
+
+
+def low_stock(merchant_id: str, threshold: int = 3) -> list[dict[str, Any]]:
+    out = []
+    for p in list_products(merchant_id):
+        q = p.get("stock_qty")
+        if q is not None and int(q) <= threshold:
+            out.append(p)
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Mini-outils — Documents (factures / pro formas / devis) — bia_documents
+# ---------------------------------------------------------------------------
+
+_DOC_PREFIX = {"facture": "FAC", "proforma": "PRO", "devis": "DEV"}
+
+
+def _next_doc_number(merchant_id: str, doc_type: str) -> str:
+    from datetime import datetime, timezone
+    try:
+        r = (get_db().table("bia_documents").select("id", count="exact", head=True)
+             .eq("merchant_id", merchant_id).eq("doc_type", doc_type).execute())
+        n = (r.count or 0) + 1
+    except Exception:  # noqa: BLE001
+        n = 1
+    return f"{_DOC_PREFIX.get(doc_type, 'DOC')}-{datetime.now(timezone.utc).year}-{n:04d}"
+
+
+def create_document(merchant_id: str, doc_type: str, customer_name: str | None,
+                    items: list[dict[str, Any]], total: float,
+                    note: str | None = None, contact: str | None = None) -> dict[str, Any]:
+    doc_type = doc_type if doc_type in _DOC_PREFIX else "facture"
+    try:
+        res = get_db().table("bia_documents").insert({
+            "merchant_id": merchant_id, "doc_type": doc_type,
+            "number": _next_doc_number(merchant_id, doc_type),
+            "customer_name": (customer_name or "").strip() or None,
+            "customer_contact": (contact or "").strip() or None,
+            "items": items or [], "total": float(total or 0),
+            "note": (note or "").strip() or None,
+        }).execute()
+        return res.data[0] if res.data else {}
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def list_documents(merchant_id: str, limit: int = 40) -> list[dict[str, Any]]:
+    try:
+        return (get_db().table("bia_documents").select("*").eq("merchant_id", merchant_id)
+                .order("created_at", desc=True).limit(limit).execute().data or [])
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def get_document(doc_id: str) -> dict[str, Any] | None:
+    try:
+        rows = get_db().table("bia_documents").select("*").eq("id", doc_id).limit(1).execute().data or []
+        return rows[0] if rows else None
+    except Exception:  # noqa: BLE001
+        return None

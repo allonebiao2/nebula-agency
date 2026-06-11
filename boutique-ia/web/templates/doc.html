@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ label }} {{ doc.number }} — {{ merchant.business_name or 'Boutique' }}</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#eef0f4;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#16181d;padding:18px}
+  .sheet{max-width:720px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.12);overflow:hidden}
+  .top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:26px 28px;border-bottom:3px solid #111}
+  .biz{font-size:1.35rem;font-weight:800}
+  .biz small{display:block;font-weight:500;color:#6b7280;font-size:.8rem;margin-top:3px}
+  .dt{text-align:right}
+  .dt .lbl{font-size:1.5rem;font-weight:800;letter-spacing:.06em}
+  .dt .num{color:#6b7280;font-size:.86rem;margin-top:4px}
+  .meta{padding:18px 28px;color:#374151;font-size:.92rem}
+  .meta b{color:#16181d}
+  table{width:100%;border-collapse:collapse;margin:6px 0}
+  th,td{padding:11px 28px;text-align:left;font-size:.92rem}
+  thead th{background:#f3f4f6;color:#6b7280;text-transform:uppercase;font-size:.72rem;letter-spacing:.05em}
+  tbody td{border-bottom:1px solid #eceef1}
+  td.r,th.r{text-align:right}
+  .tot{display:flex;justify-content:flex-end;padding:16px 28px}
+  .tot .box{min-width:240px}
+  .tot .row{display:flex;justify-content:space-between;padding:6px 0}
+  .tot .grand{border-top:2px solid #111;margin-top:6px;padding-top:10px;font-size:1.18rem;font-weight:800}
+  .note{padding:4px 28px 20px;color:#6b7280;font-size:.86rem}
+  .foot{padding:18px 28px;background:#fafbfc;border-top:1px solid #eceef1;color:#6b7280;font-size:.85rem;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .pbar{max-width:720px;margin:14px auto 0;text-align:center}
+  .pbar button{background:#111;color:#fff;border:0;border-radius:10px;padding:11px 22px;font-weight:700;cursor:pointer;font-size:.95rem}
+  @media print{body{background:#fff;padding:0}.sheet{box-shadow:none;border-radius:0;max-width:100%}.pbar{display:none}}
+</style></head>
+<body>
+  <div class="sheet">
+    <div class="top">
+      <div class="biz">{{ merchant.business_name or 'Boutique' }}
+        <small>{% if merchant.city %}{{ merchant.city }}{% endif %}{% if merchant.whatsapp_business %} · {{ merchant.whatsapp_business }}{% endif %}</small>
+      </div>
+      <div class="dt">
+        <div class="lbl">{{ label }}</div>
+        <div class="num">N° {{ doc.number }}{% if date_fr %} · {{ date_fr }}{% endif %}</div>
+      </div>
+    </div>
+    {% if doc.customer_name %}<div class="meta"><b>Client :</b> {{ doc.customer_name }}{% if doc.customer_contact %} · {{ doc.customer_contact }}{% endif %}</div>{% endif %}
+    <table>
+      <thead><tr><th>Désignation</th><th class="r">Qté</th><th class="r">P.U.</th><th class="r">Montant</th></tr></thead>
+      <tbody>
+        {% for it in doc["items"] %}
+        <tr>
+          <td>{{ it.produit }}</td>
+          <td class="r">{{ it.quantite }}</td>
+          <td class="r">{{ "{:,}".format((it.prix_unitaire or 0)|int).replace(",", " ") }}</td>
+          <td class="r">{{ "{:,}".format(((it.quantite or 0) * (it.prix_unitaire or 0))|int).replace(",", " ") }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="tot"><div class="box">
+      <div class="row grand"><span>TOTAL</span><span>{{ "{:,}".format((doc.total or 0)|int).replace(",", " ") }} F CFA</span></div>
+    </div></div>
+    {% if doc.note %}<div class="note">{{ doc.note }}</div>{% endif %}
+    <div class="foot">
+      <span>Merci pour votre confiance 🙏</span>
+      <span>{% if label == 'DEVIS' or label == 'PRO FORMA' %}Document non contractuel.{% endif %} Généré par {{ merchant.business_name or 'la boutique' }}</span>
+    </div>
+  </div>
+  <div class="pbar"><button onclick="window.print()">Imprimer / Enregistrer en PDF</button></div>
+</body></html>

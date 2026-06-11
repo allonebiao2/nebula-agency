@@ -376,3 +376,35 @@ create table if not exists bia_support (
 );
 create index if not exists bia_support_idx on bia_support(merchant_id, created_at);
 create index if not exists bia_support_problem_idx on bia_support(kind, created_at desc);
+
+-- 18. Mini-outils « employé numérique » : caisse, ardoise, stock, documents.
+create table if not exists bia_cashbook (
+  id uuid primary key default gen_random_uuid(),
+  merchant_id uuid not null references bia_merchants(id) on delete cascade,
+  direction text not null,            -- 'in' (recette) | 'out' (dépense)
+  amount numeric not null, label text,
+  created_at timestamptz default now()
+);
+create index if not exists bia_cashbook_idx on bia_cashbook(merchant_id, created_at desc);
+
+create table if not exists bia_debts (   -- ardoise : crédits clients
+  id uuid primary key default gen_random_uuid(),
+  merchant_id uuid not null references bia_merchants(id) on delete cascade,
+  customer_name text, customer_contact text,
+  amount numeric not null, reason text,
+  status text default 'open',           -- open | paid
+  created_at timestamptz default now(), paid_at timestamptz
+);
+create index if not exists bia_debts_idx on bia_debts(merchant_id, status, created_at desc);
+
+alter table bia_products add column if not exists stock_qty integer;  -- NULL = non suivi
+
+create table if not exists bia_documents (   -- factures / pro formas / devis
+  id uuid primary key default gen_random_uuid(),
+  merchant_id uuid not null references bia_merchants(id) on delete cascade,
+  doc_type text not null,               -- facture | proforma | devis
+  number text, customer_name text, customer_contact text,
+  items jsonb, total numeric, note text,
+  created_at timestamptz default now()
+);
+create index if not exists bia_documents_idx on bia_documents(merchant_id, created_at desc);
