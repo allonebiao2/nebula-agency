@@ -296,6 +296,16 @@ def client_info(merchant_id: str, recherche: str) -> str:
     if last_msg:
         lines.append(f"- Dernier échange{f' ({last_when})' if last_when else ''} : "
                      f"« {last_msg[:120]} »")
+    try:
+        from db.client import get_customer_note
+        cn = get_customer_note(merchant_id, contact=target,
+                               name=name if isinstance(name, str) else None)
+        if cn and cn.get("note"):
+            lines.append(f"- Note : {cn['note']}")
+        if cn and cn.get("birthday"):
+            lines.append(f"- Anniversaire : {cn['birthday']}")
+    except Exception:  # noqa: BLE001
+        pass
     return "\n".join(lines)
 
 
@@ -488,9 +498,41 @@ def document_create(merchant_id: str, doc_type: str, client: str | None,
     if not doc:
         return "(impossible de créer le document)"
     base = (getattr(settings, "public_base_url", None) or "https://vendora-agent.up.railway.app").rstrip("/")
-    label = {"facture": "Facture", "proforma": "Pro forma", "devis": "Devis"}.get(doc.get("doc_type"), "Document")
+    label = {"facture": "Facture", "proforma": "Pro forma", "devis": "Devis",
+             "recu": "Reçu"}.get(doc.get("doc_type"), "Document")
     return (f"{label} {doc.get('number')} créé(e) pour {client or 'client'} — total {_money(total)}.\n"
             f"Lien à partager (imprimable) : {base}/doc/{doc.get('id')}")
+
+
+def loyalty_view(merchant_id: str, seuil: int = 5) -> str:
+    from db.client import top_customers
+    tops = top_customers(merchant_id, 20)
+    if not tops:
+        return "DONNÉES RÉELLES — pas encore de clients fidèles (aucune commande)."
+    seuil = max(1, _to_int(seuil) or 5)
+    lines = ["DONNÉES RÉELLES — clients fidèles (par nombre d'achats) :"]
+    for c in tops[:15]:
+        who = c.get("name") or c.get("contact") or "client"
+        star = " ⭐ à récompenser" if c["orders"] >= seuil else ""
+        lines.append(f"- {who} : {c['orders']} achat(s) · {_money(c['spent'])}{star}")
+    lines.append(f"(seuil « à récompenser » = {seuil}+ achats)")
+    return "\n".join(lines)
+
+
+def crm_note(merchant_id: str, client: str, note: str | None = None,
+             anniversaire: str | None = None, anniv_mmdd: str | None = None,
+             contact: str | None = None) -> str:
+    from db.client import upsert_customer_note
+    row = upsert_customer_note(merchant_id, contact, name=client, note=note,
+                               birthday=anniversaire, birthday_md=anniv_mmdd)
+    if not row:
+        return "(impossible d'enregistrer la fiche client)"
+    bits = []
+    if note:
+        bits.append("note")
+    if anniversaire:
+        bits.append(f"anniversaire {anniversaire}")
+    return f"FICHE CLIENT mise à jour : {client}" + (f" ({', '.join(bits)})" if bits else "")
 
 
 # ---------------------------------------------------------------------------
@@ -665,11 +707,11 @@ TOOLS = [
     # ── Documents : factures / pro formas / devis ──
     {
         "name": "creer_document",
-        "description": ("Crée une FACTURE, un PRO FORMA ou un DEVIS et renvoie un lien imprimable à "
-                        "partager. Pour « fais une facture/un devis pour X : 2 colliers à 3500 ». "
-                        "Demande le client et les articles (nom, quantité, prix) si besoin."),
+        "description": ("Crée une FACTURE, un PRO FORMA, un DEVIS ou un REÇU et renvoie un lien "
+                        "imprimable à partager. Pour « fais une facture/un devis/un reçu pour X : "
+                        "2 colliers à 3500 ». Demande le client et les articles si besoin."),
         "input_schema": {"type": "object", "properties": {
-            "type": {"type": "string", "enum": ["facture", "proforma", "devis"]},
+            "type": {"type": "string", "enum": ["facture", "proforma", "devis", "recu"]},
             "client": {"type": "string"},
             "articles": {"type": "array", "items": {"type": "object", "properties": {
                 "produit": {"type": "string"}, "quantite": {"type": "integer"},
@@ -677,6 +719,28 @@ TOOLS = [
             "note": {"type": "string", "description": "Mention/condition (ex: validité 15j, acompte)."},
             "contact": {"type": "string"}},
             "required": ["type", "articles"]},
+    },
+    # ── Fidélité & CRM clients ──
+    {
+        "name": "clients_fideles",
+        "description": ("Classement RÉEL des meilleurs clients (nb d'achats + total dépensé), avec "
+                        "ceux à récompenser. Pour « mes meilleurs clients », « qui est fidèle », "
+                        "« qui récompenser »."),
+        "input_schema": {"type": "object", "properties": {
+            "seuil": {"type": "integer", "description": "Nb d'achats à partir duquel récompenser (défaut 5)."}}},
+    },
+    {
+        "name": "noter_client",
+        "description": ("Enregistre une note/préférence ou l'ANNIVERSAIRE d'un client (mini-CRM). Pour "
+                        "« note que Awa aime les colliers dorés », « l'anniversaire de Bintou est le "
+                        "12 mars ». Si une date est donnée, calcule aussi anniv_mmdd au format MM-DD."),
+        "input_schema": {"type": "object", "properties": {
+            "client": {"type": "string"},
+            "note": {"type": "string", "description": "Préférence/info à retenir."},
+            "anniversaire": {"type": "string", "description": "Date d'anniversaire telle que dite (ex: 12 mars)."},
+            "anniv_mmdd": {"type": "string", "description": "Anniversaire au format MM-DD (ex: 03-12) si datable."},
+            "contact": {"type": "string", "description": "Numéro WhatsApp du client si connu."}},
+            "required": ["client"]},
     },
 ]
 
@@ -724,6 +788,11 @@ def _exec_tool(merchant_id: str, name: str, args: dict) -> str:
             return document_create(merchant_id, args.get("type") or "facture",
                                    args.get("client"), args.get("articles") or [],
                                    args.get("note"), args.get("contact"))
+        if name == "clients_fideles":
+            return loyalty_view(merchant_id, args.get("seuil") or 5)
+        if name == "noter_client":
+            return crm_note(merchant_id, args.get("client") or "", args.get("note"),
+                            args.get("anniversaire"), args.get("anniv_mmdd"), args.get("contact"))
     except Exception as e:  # noqa: BLE001
         log.exception("outil assistant échoué")
         return f"(impossible de lire cette donnée pour l'instant : {e})"
@@ -759,6 +828,11 @@ son copilote IA de confiance, son bras droit. Tu l'aides sur DEUX plans.
    • RÉDACTEUR : écris tout ce qu'elle demande — message à un client, lettre, demande
      administrative, description de produit qui vend, légende pour les réseaux, mot
      d'excuse, annonce de promo… Soigne le ton et propose, ne te contente pas du minimum.
+   • CALCULS COMMERCIAUX : marge et prix de vente (ex: coût 4000 + 30% → 5200), rendu de
+     monnaie, frais Mobile Money, partages. Sois exact dans les calculs.
+   • CONVERSION DE DEVISES : le FCFA (XOF) a une parité FIXE avec l'euro : 1 € = 655,957 FCFA
+     (donc 1000 FCFA ≈ 1,52 €) — utilise-la telle quelle, c'est exact. Pour les autres devises
+     (dollar, naira, cedi…), donne un taux INDICATIF et précise « à vérifier (taux du jour) ».
    Conseille-la aussi pour son business. Sois utile, malin, concret.
 
 Date et heure actuelles (Bénin, heure locale) : {date_fr}.
@@ -776,8 +850,9 @@ OUTILS DE GESTION — tu es son employé numérique, tu gères aussi :
 - CAISSE (cahier de comptes) : noter_caisse (recette/dépense), bilan_caisse (solde du jour/semaine/mois). Pour « j'ai vendu/dépensé… », « combien j'ai en caisse ».
 - ARDOISE (crédits clients) : noter_dette, voir_ardoise, solder_dette. Pour « X me doit 3000 », « qui me doit de l'argent ».
 - STOCK : definir_stock, ajuster_stock, etat_stock. Pour « il me reste combien de X », « +5 reçus ».
-- DOCUMENTS : creer_document (facture / pro forma / devis) → tu renvoies un lien imprimable à partager. Demande le client et les articles (nom, quantité, prix) si besoin, puis crée.
-Utilise TOUJOURS l'outil adapté pour ces tâches (jamais inventer un solde, une dette ou un stock).
+- DOCUMENTS : creer_document (facture / pro forma / devis / reçu) → tu renvoies un lien imprimable à partager. Demande le client et les articles (nom, quantité, prix) si besoin, puis crée.
+- FIDÉLITÉ & CLIENTS : clients_fideles (meilleurs clients, qui récompenser), noter_client (note/préférence ou anniversaire). Pour « mes meilleurs clients », « note que X aime… », « l'anniversaire de Y est le… ».
+Utilise TOUJOURS l'outil adapté pour ces tâches (jamais inventer un solde, une dette, un stock ou un classement).
 
 HONNÊTETÉ (capital) : si tu n'es pas sûr d'un fait précis (une adresse, un prix
 ailleurs, une info locale, une actu récente), dis-le simplement et propose

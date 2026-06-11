@@ -190,6 +190,7 @@
     <a href="#caisse">Caisse</a>
     <a href="#ardoise">Ardoise</a>
     <a href="#documents">Documents</a>
+    <a href="#clients">Clients</a>
     <a href="#produits">Produits</a>
     <a href="#capacites">Capacités</a>
     <a href="#infos">Infos</a>
@@ -509,7 +510,18 @@
   <!-- DOCUMENTS -->
   <section class="reveal" id="documents" style="order:2">
     <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-mail"/></svg></div><h2>Factures, devis &amp; pro formas</h2></div>
-    <p class="hint">Demandez à votre assistant : « fais une facture pour Awa : 2 colliers à 3500 ». Vos documents apparaissent ici avec un lien à partager et à imprimer.</p>
+    <p class="hint">Demandez à votre assistant : « fais une facture/un reçu/un devis pour Awa : 2 colliers à 3500 ». Vos documents apparaissent ici avec un lien à partager et à imprimer.</p>
+    {% if catalogue_link %}
+    <div class="share bezel" style="margin-bottom:12px"><div class="bezel-in">
+      <div class="lbl"><svg viewBox="0 0 24 24"><use href="#i-box"/></svg> Votre catalogue en ligne (liste de prix à partager)</div>
+      <div class="row">
+        <input id="catlink" class="mono" readonly value="{{ catalogue_link }}">
+        <button class="btn gho sm" type="button" onclick="copyCat(this)"><svg viewBox="0 0 24 24"><use href="#i-copy"/></svg>Copier</button>
+        <a class="btn gho sm" href="{{ catalogue_link }}" target="_blank" rel="noopener">Voir</a>
+      </div>
+      <div class="ad" style="font-size:13px;opacity:.85;margin-top:7px">Tous vos produits disponibles, avec photos et prix, à jour automatiquement. Envoyez ce lien à un client qui demande « c'est combien ? ».</div>
+    </div></div>
+    {% endif %}
     <div class="bezel"><div class="bezel-in">
       {% if documents %}
         {% for d in documents %}
@@ -520,6 +532,23 @@
         <a class="btn gho sm" href="/doc/{{ d.id }}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><use href="#i-link"/></svg>Ouvrir</a></div>
         {% endfor %}
       {% else %}<div class="empty">Aucun document pour l'instant. Demandez-en un à votre assistant 🙂</div>{% endif %}
+    </div></div>
+  </section>
+  {% endif %}
+
+  {% if top_clients %}
+  <!-- CLIENTS / FIDÉLITÉ -->
+  <section class="reveal" id="clients" style="order:2">
+    <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg></div><h2>Clients fidèles</h2></div>
+    <p class="hint">Vos meilleurs clients (par nombre d'achats). Dites à votre assistant « note que X aime les colliers », « l'anniversaire de Y est le 12 mars », « qui récompenser ? ».</p>
+    <div class="bezel"><div class="bezel-in">
+      {% for c in top_clients %}
+      <div class="actrow"><div>
+        <div class="an">{{ c.name or c.contact or 'Client' }} {% if c.orders >= 5 %}<span class="tag acc">⭐ fidèle</span>{% endif %}</div>
+        <div class="ad">{{ c.orders }} achat(s){% if c.contact %} · {{ c.contact }}{% endif %}</div>
+      </div>
+      <div class="pp mono">{{ "{:,}".format(c.spent|int).replace(",", " ") }} F</div></div>
+      {% endfor %}
     </div></div>
   </section>
   {% endif %}
@@ -812,8 +841,9 @@ Bracelet jonc 5000"></textarea>
       {% if notif.pending_orders %}<div class="nrow" style="padding:11px 13px;border-radius:11px;border:1px solid var(--hair)">🛒 <b>{{ notif.pending_orders }}</b> commande(s) en attente de paiement</div>{% endif %}
       {% if notif.appts %}<div class="nrow" style="padding:11px 13px;border-radius:11px;border:1px solid var(--hair)">📅 <b>{{ notif.appts }}</b> rendez-vous à confirmer{% if rdv_on %} → <a href="#rdv">ouvrir</a>{% endif %}</div>{% endif %}
       {% if notif.low_count %}<div class="nrow" style="padding:11px 13px;border-radius:11px;border:1px solid #e0a93b">📦 <b>{{ notif.low_count }}</b> produit(s) en stock bas : {% for p in notif.low_stock %}{{ p.name }} ({{ p.stock_qty }}){% if not loop.last %}, {% endif %}{% endfor %}</div>{% endif %}
+      {% if notif.bday_count %}<div class="nrow" style="padding:11px 13px;border-radius:11px;border:1px solid var(--a,#10b981)">🎂 Anniversaire aujourd'hui : {% for b in notif.birthdays %}<b>{{ b.name or 'un client' }}</b>{% if not loop.last %}, {% endif %}{% endfor %} — un petit mot fait plaisir (et fidélise) !</div>{% endif %}
       {% if notif.days_left is not none and notif.days_left > 0 and notif.days_left <= 3 %}<div class="nrow" style="padding:11px 13px;border-radius:11px;border:1px solid #e0a93b;color:#f0c674">⏳ Abonnement : {{ notif.days_left }} jour(s) restants — pensez à renouveler.</div>{% endif %}
-      {% if not (notif.suspended or notif.pay_count or notif.pending_orders or notif.appts or notif.hot_count or notif.low_count) %}<div class="empty">Rien de neuf, tout est à jour ✨</div>{% endif %}
+      {% if not (notif.suspended or notif.pay_count or notif.pending_orders or notif.appts or notif.hot_count or notif.low_count or notif.bday_count) %}<div class="empty">Rien de neuf, tout est à jour ✨</div>{% endif %}
     </div></div>
   </section>
   {% endif %}
@@ -1161,6 +1191,7 @@ async function api(url, method, payload){
 }
 function copyLink(btn){ navigator.clipboard.writeText(document.getElementById('walink').value); btn.innerHTML='<svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Copié'; }
 function copyBoLink(btn){ navigator.clipboard.writeText(document.getElementById('bolink').value); btn.innerHTML='<svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Copié'; }
+function copyCat(btn){ navigator.clipboard.writeText(document.getElementById('catlink').value); btn.innerHTML='<svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Copié'; }
 function goTo(id){ const el=document.getElementById(id); if(el){ el.scrollIntoView({behavior:'smooth', block:'start'}); } }
 function previewBrand(c){ root.style.setProperty('--a', c); }
 

@@ -675,8 +675,11 @@ async def boutique_backoffice(request: Request, merchant_id: str):
                 cust = h.get("customer") or ""
                 digits = re.sub(r"\D", "", cust)
                 h["call"] = f"https://wa.me/{digits}" if cust.startswith("whatsapp:") and digits else None
-            from db.client import low_stock as _low
+            from datetime import datetime, timedelta, timezone
+            from db.client import birthdays_today, low_stock as _low
             low = _low(merchant_id)
+            mmdd = datetime.now(timezone(timedelta(hours=1))).strftime("%m-%d")
+            bdays = birthdays_today(merchant_id, mmdd)
             notif = {
                 "pay_count": pay_count,
                 "pending_orders": pend_orders,
@@ -686,9 +689,11 @@ async def boutique_backoffice(request: Request, merchant_id: str):
                 "hot_count": len(hot_leads),
                 "low_stock": low,
                 "low_count": len(low),
+                "birthdays": bdays,
+                "bday_count": len(bdays),
                 "days_left": _dleft(merchant),
                 "suspended": suspended,
-                "total": pay_count + len(pend_appts) + len(hot_leads) + len(low),
+                "total": pay_count + len(pend_appts) + len(hot_leads) + len(low) + len(bdays),
             }
         except Exception:  # noqa: BLE001
             log.warning("back-office: validation/notif KO", exc_info=True)
@@ -704,12 +709,14 @@ async def boutique_backoffice(request: Request, merchant_id: str):
             support_human = _gsb(f"support_human_{merchant_id}", False)
         except Exception:  # noqa: BLE001
             log.warning("back-office: support KO", exc_info=True)
-    # Mini-outils : caisse (jour/mois/total), ardoise (dettes), documents.
-    cashbox, ardoise, documents = None, None, []
+    # Mini-outils : caisse (jour/mois/total), ardoise (dettes), documents, fidélité.
+    cashbox, ardoise, documents, top_clients = None, None, [], []
+    catalogue_link = ""
     if merchant:
         try:
             from datetime import datetime, timedelta, timezone
-            from db.client import cash_summary, debts_total, list_cash, list_debts, list_documents
+            from db.client import (cash_summary, debts_total, list_cash, list_debts,
+                                   list_documents, top_customers)
             wat = timezone(timedelta(hours=1))
             now = datetime.now(wat)
             today_iso = now.replace(hour=0, minute=0, second=0, microsecond=0).astimezone(timezone.utc).isoformat()
@@ -721,6 +728,9 @@ async def boutique_backoffice(request: Request, merchant_id: str):
             ardoise = {"total": debts_total(merchant_id),
                        "debts": list_debts(merchant_id, "open", 50)}
             documents = list_documents(merchant_id, 20)
+            top_clients = top_customers(merchant_id, 12)
+            if merchant.get("code"):
+                catalogue_link = str(request.base_url).rstrip("/") + f"/catalogue/{merchant.get('code')}"
         except Exception:  # noqa: BLE001
             log.warning("back-office: mini-outils KO", exc_info=True)
     return templates.TemplateResponse(
@@ -739,6 +749,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              wa_qr=wa_qr, backoffice_link=backoffice_link,
              support_thread=support_thread, support_human=support_human,
              cashbox=cashbox, ardoise=ardoise, documents=documents,
+             top_clients=top_clients, catalogue_link=catalogue_link,
              prospect_daily=prospect_daily, prospect_used=prospect_used, prospection_soon=prospection_soon,
              prospect_remaining=max(0, prospect_daily - prospect_used)),
     )
@@ -2051,7 +2062,7 @@ async def public_document(request: Request, doc_id: str):
                             "Document introuvable.</body>", status_code=404)
     merchant = get_merchant(doc.get("merchant_id")) or {}
     label = {"facture": "FACTURE", "proforma": "PRO FORMA",
-             "devis": "DEVIS"}.get(doc.get("doc_type"), "DOCUMENT")
+             "devis": "DEVIS", "recu": "REÇU"}.get(doc.get("doc_type"), "DOCUMENT")
     try:
         date_fr = datetime.fromisoformat(
             str(doc.get("created_at")).replace("Z", "+00:00")).strftime("%d/%m/%Y")
@@ -2060,6 +2071,20 @@ async def public_document(request: Request, doc_id: str):
     return templates.TemplateResponse(request, "doc.html",
                                       {"doc": doc, "merchant": merchant,
                                        "label": label, "date_fr": date_fr})
+
+
+@app.get("/catalogue/{code}", response_class=HTMLResponse)
+async def public_catalogue(request: Request, code: str):
+    """Catalogue public d'une boutique (liste de prix partageable + bouton commander)."""
+    from db.client import get_merchant_by_code, list_products
+    merchant = get_merchant_by_code((code or "").strip().lower())
+    if not merchant:
+        return HTMLResponse("<body style='font-family:sans-serif;padding:40px'>"
+                            "Catalogue introuvable.</body>", status_code=404)
+    products = [p for p in list_products(merchant["id"]) if p.get("available") is not False]
+    return templates.TemplateResponse(request, "catalogue.html",
+                                      {"merchant": merchant, "products": products,
+                                       "wa_link": _wa_short_link(merchant.get("code"))})
 
 
 @app.post("/api/merchants/{merchant_id}/cash")

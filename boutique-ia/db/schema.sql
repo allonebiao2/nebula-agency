@@ -399,12 +399,24 @@ create index if not exists bia_debts_idx on bia_debts(merchant_id, status, creat
 
 alter table bia_products add column if not exists stock_qty integer;  -- NULL = non suivi
 
-create table if not exists bia_documents (   -- factures / pro formas / devis
+create table if not exists bia_documents (   -- factures / pro formas / devis / reçus
   id uuid primary key default gen_random_uuid(),
   merchant_id uuid not null references bia_merchants(id) on delete cascade,
-  doc_type text not null,               -- facture | proforma | devis
+  doc_type text not null,               -- facture | proforma | devis | recu
   number text, customer_name text, customer_contact text,
   items jsonb, total numeric, note text,
   created_at timestamptz default now()
 );
 create index if not exists bia_documents_idx on bia_documents(merchant_id, created_at desc);
+
+-- 19. Mini-CRM : fiches clients (note/préférences + anniversaire). La fidélité se
+--     dérive des commandes (bia_orders) ; ici ce qui ne s'y trouve pas.
+create table if not exists bia_customer_notes (
+  id uuid primary key default gen_random_uuid(),
+  merchant_id uuid not null references bia_merchants(id) on delete cascade,
+  contact text, name text, note text,
+  birthday text, birthday_md text,      -- 'MM-DD' pour le rappel d'anniversaire
+  created_at timestamptz default now(), updated_at timestamptz default now()
+);
+create index if not exists bia_customer_notes_idx on bia_customer_notes(merchant_id);
+create index if not exists bia_customer_notes_bd_idx on bia_customer_notes(birthday_md);

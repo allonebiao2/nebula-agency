@@ -1843,7 +1843,7 @@ def low_stock(merchant_id: str, threshold: int = 3) -> list[dict[str, Any]]:
 # Mini-outils — Documents (factures / pro formas / devis) — bia_documents
 # ---------------------------------------------------------------------------
 
-_DOC_PREFIX = {"facture": "FAC", "proforma": "PRO", "devis": "DEV"}
+_DOC_PREFIX = {"facture": "FAC", "proforma": "PRO", "devis": "DEV", "recu": "REC"}
 
 
 def _next_doc_number(merchant_id: str, doc_type: str) -> str:
@@ -1889,3 +1889,104 @@ def get_document(doc_id: str) -> dict[str, Any] | None:
         return rows[0] if rows else None
     except Exception:  # noqa: BLE001
         return None
+
+
+# ---------------------------------------------------------------------------
+# Mini-outils — Fidélité (dérivée des commandes) + CRM (bia_customer_notes)
+# ---------------------------------------------------------------------------
+
+def top_customers(merchant_id: str, limit: int = 20) -> list[dict[str, Any]]:
+    """Clients agrégés depuis les commandes : nb d'achats + total dépensé."""
+    agg: dict[str, dict[str, Any]] = {}
+    for o in list_orders(merchant_id, 500):
+        key = o.get("customer_whatsapp") or o.get("customer_name")
+        if not key:
+            continue
+        c = agg.setdefault(key, {"contact": o.get("customer_whatsapp"),
+                                 "name": o.get("customer_name"), "orders": 0, "spent": 0.0})
+        c["orders"] += 1
+        if not c["name"] and o.get("customer_name"):
+            c["name"] = o.get("customer_name")
+        try:
+            c["spent"] += float(o.get("total") or 0)
+        except (TypeError, ValueError):
+            pass
+    rows = sorted(agg.values(), key=lambda x: (-x["orders"], -x["spent"]))
+    return rows[:limit]
+
+
+def upsert_customer_note(merchant_id: str, contact: str | None, name: str | None = None,
+                         note: str | None = None, birthday: str | None = None,
+                         birthday_md: str | None = None) -> dict[str, Any]:
+    """Crée/maj une fiche client (rapprochée par contact, sinon par nom)."""
+    from datetime import datetime, timezone
+    db = get_db()
+    existing = None
+    try:
+        if contact:
+            r = db.table("bia_customer_notes").select("*").eq("merchant_id", merchant_id) \
+                  .eq("contact", contact).limit(1).execute().data or []
+            existing = r[0] if r else None
+        if not existing and name:
+            r = db.table("bia_customer_notes").select("*").eq("merchant_id", merchant_id) \
+                  .ilike("name", name).limit(1).execute().data or []
+            existing = r[0] if r else None
+    except Exception:  # noqa: BLE001
+        existing = None
+    fields: dict[str, Any] = {"updated_at": datetime.now(timezone.utc).isoformat()}
+    if name:
+        fields["name"] = name
+    if contact:
+        fields["contact"] = contact
+    if note is not None:
+        fields["note"] = note
+    if birthday:
+        fields["birthday"] = birthday
+    if birthday_md:
+        fields["birthday_md"] = birthday_md
+    try:
+        if existing:
+            res = db.table("bia_customer_notes").update(fields).eq("id", existing["id"]).execute()
+        else:
+            fields["merchant_id"] = merchant_id
+            res = db.table("bia_customer_notes").insert(fields).execute()
+        return res.data[0] if res.data else {}
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def get_customer_note(merchant_id: str, contact: str | None = None,
+                      name: str | None = None) -> dict[str, Any] | None:
+    db = get_db()
+    try:
+        if contact:
+            r = db.table("bia_customer_notes").select("*").eq("merchant_id", merchant_id) \
+                  .eq("contact", contact).limit(1).execute().data or []
+            if r:
+                return r[0]
+        if name:
+            r = db.table("bia_customer_notes").select("*").eq("merchant_id", merchant_id) \
+                  .ilike("name", name).limit(1).execute().data or []
+            if r:
+                return r[0]
+    except Exception:  # noqa: BLE001
+        pass
+    return None
+
+
+def list_customer_notes(merchant_id: str, limit: int = 50) -> list[dict[str, Any]]:
+    try:
+        return (get_db().table("bia_customer_notes").select("*").eq("merchant_id", merchant_id)
+                .order("updated_at", desc=True).limit(limit).execute().data or [])
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def birthdays_today(merchant_id: str, mmdd: str) -> list[dict[str, Any]]:
+    if not mmdd:
+        return []
+    try:
+        return (get_db().table("bia_customer_notes").select("name, contact, birthday")
+                .eq("merchant_id", merchant_id).eq("birthday_md", mmdd).limit(50).execute().data or [])
+    except Exception:  # noqa: BLE001
+        return []
