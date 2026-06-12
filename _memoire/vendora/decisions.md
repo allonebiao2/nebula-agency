@@ -1,5 +1,10 @@
 # Décisions produit (datées)
 
+## 2026-06-12
+- **Vendora Support = 2e pilier** : l'agent peut faire du SUPPORT, pas que vendre. Mode `agent_role` (vendeur|support), base de connaissances (FAQ + PDF + lecture auto du site), canaux WhatsApp + **widget site** « Discuter avec nous », escalade → ticket + notif patron, rapport (récurrents + corrections + visiteurs). Choix à l'inscription + onglet back-office. **LIVRÉ + déployé.** Voir [[capacites]].
+- **Packaging support** : base (WhatsApp + FAQ + escalade) dans TOUS les forfaits ; premium (widget / PDF / lecture site / rapport) réservé **Business/Empire** (protéger la marge — le support peut faire un GROS volume). Ce n'est PAS une offre séparée : même produit, 2 visages, un métier à la fois.
+- **Cerveau mis à jour** : `_VENDORA_FACTS` (`core/support.py`) sait désormais expliquer/proposer le mode support → les agents qui parlent de Vendora l'intègrent.
+
 ## 2026-06-10
 - **Modèles** : réponses client + rédaction = **Sonnet** ; Opus réservé au lourd créatif. Posé dans `config.py` + variable Railway `CLAUDE_MODEL` (staged). Voir [[modeles]].
 - **Back-office client réorganisé WhatsApp-first** : bloc « Votre agent WhatsApp » en haut (lien + numéro + stats), onglets réordonnés, Réseaux repoussé, **super-guide pas-à-pas** (étape « à faire maintenant » en surbrillance). `boutique.html` + `server.py`.

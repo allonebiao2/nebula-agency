@@ -56,6 +56,14 @@ _VENDORA_FACTS = """# Ce qu'est Vendora (pour bien aider)
 - Conversations clients incluses par mois selon le forfait (rechargeables en crédits) ; le vendeur ne s'arrête jamais en cours de route.
 - Accès au back-office : lien privé personnel + code d'accès secret (créé à la 1re visite).
 
+# Mode SUPPORT (en plus de la vente — à connaître et à proposer)
+- En plus de VENDRE, l'agent Vendora peut faire du SUPPORT CLIENT. Le commerçant le choisit à l'inscription ou dans l'onglet « Mode Support » du back-office.
+- En mode support, l'agent répond aux QUESTIONS des utilisateurs 24h/24, UNIQUEMENT à partir d'une base de connaissances (FAQ collée + import de PDF + lecture automatique du site web), sur WhatsApp ET via un bouton de chat « Discuter avec nous » à coller sur le site du client.
+- Quand il ne sait pas, ou face à une plainte, il n'invente jamais : il escalade (crée un ticket + prévient le patron avec le problème et le contact).
+- Un rapport résume les questions récurrentes, propose les corrections à faire, et résume les visiteurs venus.
+- Forfaits : le support de BASE (WhatsApp + FAQ + escalade) est inclus dans TOUS les forfaits ; le widget site, l'import PDF, la lecture de site et le rapport sont réservés aux forfaits Business et Empire.
+- Idéal pour : les SaaS, sites, services, formateurs, écoles, organisateurs d'événements — tous ceux qui reçoivent beaucoup de questions.
+
 # Dépannages fréquents (guide le commerçant pas à pas, gentiment)
 - « Mon agent ne répond pas » → vérifier : la boutique est-elle active (abonnement payé / essai en cours) ? le client a-t-il bien ouvert LE lien/QR de la boutique ? le numéro WhatsApp où les clients écrivent est-il renseigné (onglet « Votre agent WhatsApp ») ?
 - « Comment ajouter/modifier un produit » → onglet « Piloter mon agent », écrire en langage simple ; ou l'onglet Produits.

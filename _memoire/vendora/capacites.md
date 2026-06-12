@@ -10,6 +10,15 @@
 - Modules : photos produits, paiement à la livraison, négociation encadrée, relances auto, prise de RDV.
 - Premium : apprentissage perso, images de marque (Pillow), coach commercial, réseaux sociaux (rédige + planifie ; publication 1-clic manuelle).
 
+## Mode SUPPORT — 2e métier de l'agent (2026-06-12, LIVRÉ + déployé)
+En plus de VENDRE, l'agent peut faire du **SUPPORT CLIENT**. Réglage `agent_role` (`vendeur` | `support`) par boutique, choisi **à l'inscription** ou dans l'onglet **« Mode Support »** du back-office. Même produit, 2 visages (un agent fait UN métier à la fois).
+- **Base de connaissances** : FAQ collée + import **PDF** (pypdf) + **lecture auto du site** (URL → crawl) ; l'agent répond UNIQUEMENT à partir de ça (grounded), sinon il escalade (ticket + notif patron).
+- **Canaux** : WhatsApp + **widget « Discuter avec nous »** sur le site (1 ligne `<script src=…/widget.js?code=…>`, bouton lumineux aux couleurs de la marque).
+- **Rapport** : questions récurrentes + corrections suggérées + résumé des visiteurs (le widget logge chaque visiteur).
+- **Cible** : SaaS, sites, services, formateurs, écoles, organisateurs d'événements (pilote : Abakar / WE ACT).
+- **Gating** : support de base (WhatsApp + FAQ + escalade) dans TOUS les forfaits ; premium (widget, PDF, lecture site, rapport) = **Business/Empire** (`_support_premium_ok` dans `server.py`).
+- **Code** : `core/support_agent.py`, `core/site_reader.py`, `core/support_report.py` · tables `bia_knowledge` + `bia_support_tickets` · le cerveau du bot de support (`_VENDORA_FACTS` dans `core/support.py`) connaît maintenant ce mode et sait le proposer.
+
 ## Masqués de l'UI — on ne montre QUE le concret (décidé 2026-06-10)
 Marqués `"soon": True` dans `capabilities.py` → **retirés** de « Composez votre vendeur », de la page de vente et des forfaits (filtrés dans `capabilities_context` ; exclus activation/auto-assignation/gating). Plus de badge « Bientôt » affiché. Flag conservé pour le futur :
 - **Messenger + Instagram** (`multicanal`) → dépend de l'App Review Meta. Voir [[canaux]].
