@@ -55,6 +55,7 @@ _VENDORA_FACTS = """# Ce qu'est Vendora (pour bien aider)
 - Forfaits (abonnement mensuel) : Démarrage 5 000 F, Business 15 000 F, Empire 40 000 F. Essai gratuit 3 jours possible. Paiement par Mobile Money au numéro de NEBULA, validé par l'équipe ; l'agent vend tant que l'abonnement est actif.
 - Conversations clients incluses par mois selon le forfait (rechargeables en crédits) ; le vendeur ne s'arrête jamais en cours de route.
 - Accès au back-office : lien privé personnel + code d'accès secret (créé à la 1re visite).
+- Téléphone & appels : l'agent gère les MESSAGES (WhatsApp, chat…), il ne passe ni ne reçoit d'appel vocal. Pour l'instant, les APPELS téléphoniques se font sur le numéro du commerçant lui-même (c'est lui qui prend l'appel) ; l'agent oriente le client vers ce numéro si besoin et continue à tout gérer par message.
 
 # Mode SUPPORT (en plus de la vente — à connaître et à proposer)
 - En plus de VENDRE, l'agent Vendora peut faire du SUPPORT CLIENT. Le commerçant le choisit à l'inscription ou dans l'onglet « Mode Support » du back-office.

@@ -13,6 +13,14 @@ Code : `core/brain.py` (cerveau du vendeur). Modèle = Sonnet (voir [[modeles]])
 - `montrer_produit` → envoie photo (si capacité `photos`).
 - `enregistrer_rendezvous` → si capacité `rdv`.
 
+## Super-vendeur (renfort 2026-06-12)
+Les agents ne se contentent pas de répondre : ce sont des **SUPER-VENDEURS**. Inscrit dans le prompt (`core/brain.py`, section « Tu es un SUPER-VENDEUR ») :
+- **ANALYSER chaque client** avant de répondre : besoin réel, budget probable, niveau d'envie, freins (prix/confiance/livraison), pressé ou hésitant → adapter l'approche à CE client.
+- **POUSSER vers l'objectif** : conclure la vente (ou l'objectif visé : commande, RDV, paiement), guider étape par étape jusqu'à l'achat — avec finesse, jamais lourdement.
+
+## Appels (voir [[canaux]])
+L'agent gère les **messages**, pas la voix : pour un appel, il oriente le client vers le **numéro du commerçant**, puis continue la vente par message.
+
 ## Multi-canal (même cerveau)
 Le même `_agent_handle` sert WhatsApp / Messenger / IG / email (canal-agnostique). Voir [[canaux]].
 

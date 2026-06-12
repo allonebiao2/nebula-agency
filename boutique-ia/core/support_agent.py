@@ -62,6 +62,22 @@ def build_support_prompt(merchant: dict, kb_text: str = "", kb_instructions: str
     docs_block = f"\n\n# Documents fournis par le responsable\n{docs}" if docs else ""
     consignes_block = (f"\n\n# Consignes du responsable (à respecter strictement)\n{consignes}"
                        if consignes else "")
+    # Politique d'appels — commune à tous les agents Vendora : l'agent gère les MESSAGES,
+    # pas la voix. Pour un appel, on oriente vers le numéro du business.
+    biz_phone = (merchant.get("whatsapp_business") or "").strip()
+    if biz_phone:
+        appels_block = (
+            "\n\n# Téléphone & appels\n"
+            "Tu réponds ici par message, tu ne passes ni ne reçois d'appel vocal. Si l'utilisateur "
+            f"veut téléphoner, donne-lui le numéro du service : {biz_phone}. Tout le reste se règle "
+            "très bien ici, par message."
+        )
+    else:
+        appels_block = (
+            "\n\n# Téléphone & appels\n"
+            "Tu réponds ici par message, tu ne passes ni ne reçois d'appel vocal. Si l'utilisateur "
+            "tient à un appel, propose-lui de laisser son numéro pour être rappelé, et escalade au besoin."
+        )
     return f"""Tu es l'agent de SUPPORT de « {name} ». Tu réponds à SES utilisateurs (ses clients),
 sur WhatsApp et sur son site. Tu n'es PAS un vendeur : tu aides, tu expliques, tu dépannes,
 tu rassures.
@@ -84,7 +100,7 @@ et que tu es sûr, sinon français). Messages clairs et courts, sans jargon, san
 Patient, pédagogue et rassurant, toujours.
 
 # Base de connaissances de {name}
-{kb}{docs_block}{consignes_block}"""
+{kb}{docs_block}{consignes_block}{appels_block}"""
 
 
 def _text_of(resp) -> str:

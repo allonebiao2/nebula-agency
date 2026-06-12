@@ -11,6 +11,12 @@
 - Page FB **Vendora** + IG pro **@vendora_bj** créés (2026-06). Reste : lien IG↔Page (propagation), token, webhook, App Review.
 - Stratégie : FB/IG = **aimant/contenu** qui ramène vers WhatsApp (où l'agent ferme). Auto-post sur notre propre page = OK sans review ; réponse auto au public = App Review.
 
+## Téléphone & appels — règle COMMUNE à tous les agents
+- Les agents Vendora gèrent les **MESSAGES** (WhatsApp, chat site, Messenger/IG, email). Ils **ne passent ni ne reçoivent d'appel vocal** (pas de voix pour l'instant).
+- **Les appels téléphoniques se font sur le numéro du COMMERÇANT** (son `whatsapp_business`) : c'est lui qui prend l'appel. Si un client veut téléphoner/être appelé, l'agent lui donne ce numéro, puis continue à tout régler par message et à pousser vers l'achat.
+- Si la boutique n'a pas de numéro renseigné → l'agent propose au client de laisser son numéro pour être rappelé.
+- Inscrit dans **tous les cerveaux** : vendeur (`core/brain.py`), support (`core/support_agent.py`), support Vendora (`core/support.py`), copilote commerçant (`core/assistant.py`).
+
 ## Email
 - Sortant via **Resend** (domaine vérifié `nebula-agency.online`, SPF/DKIM). Entrant via catch-all → libellé Vendora.
 - Boîte par boutique = alias `code@nebula-agency.online` (réponses dans le back-office). Dormante jusqu'à 1ère boutique active.

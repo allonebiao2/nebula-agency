@@ -277,6 +277,43 @@ def _payment_recorder(merchant: dict, customer: str | None):
     return _on_payment
 
 
+def _forget_recorder(merchant: dict, customer: str | None, flag: dict):
+    """Callback APDP : le client demande l'effacement → supprime ses données + prévient
+    le commerçant. `flag['done']` passe à True pour que l'on n'enregistre pas la suite."""
+    from db.client import delete_customer_data
+    from notify import notify_data_deletion
+
+    def _on_forget(_data: dict) -> None:
+        if not customer:
+            return
+        try:
+            delete_customer_data(merchant["id"], customer)
+        except Exception:  # noqa: BLE001
+            log.warning("effacement données client échoué", exc_info=True)
+        flag["done"] = True
+        try:
+            notify_data_deletion(merchant, customer)
+        except Exception:  # noqa: BLE001
+            log.warning("alerte effacement échouée", exc_info=True)
+
+    return _on_forget
+
+
+def _optin_recorder(merchant: dict, customer: str | None):
+    """Callback : le client accepte/refuse les promos → enregistre son consentement."""
+    from db.client import set_optin
+
+    def _on_optin(data: dict) -> None:
+        if not customer:
+            return
+        try:
+            set_optin(merchant["id"], customer, bool(data.get("accepte")))
+        except Exception:  # noqa: BLE001
+            log.warning("enregistrement opt-in échoué", exc_info=True)
+
+    return _on_optin
+
+
 def _escalation_notifier(merchant: dict, customer: str | None):
     """Callback appelé quand l'agent escalade un client vers le/la propriétaire."""
     from db.client import add_notification
@@ -3198,6 +3235,7 @@ def _agent_handle(customer: str, body_text: str, has_audio: bool = False,
     except Exception:  # noqa: BLE001
         pass
 
+    _forgot = {"done": False}
     answer = brain.reply(
         merchant, products, history,
         on_order=_order_recorder(merchant, customer),
@@ -3205,9 +3243,14 @@ def _agent_handle(customer: str, body_text: str, has_audio: bool = False,
         on_show=_on_show,
         on_appointment=_appointment_recorder(merchant, customer),
         on_payment=_payment_recorder(merchant, customer),
+        on_forget=_forget_recorder(merchant, customer, _forgot),
+        on_optin=_optin_recorder(merchant, customer),
         lessons=lessons,
     )
-    save_message(merchant["id"], customer, "assistant", answer)
+    # Droit à l'effacement : si le client a demandé la suppression, on NE ré-enregistre
+    # PAS sa conversation (sinon on recréerait la donnée qu'on vient d'effacer).
+    if not _forgot["done"]:
+        save_message(merchant["id"], customer, "assistant", answer)
     return {"status": "reply", "text": answer, "media": media_urls}
 
 

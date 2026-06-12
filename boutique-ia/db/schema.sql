@@ -501,3 +501,15 @@ create table if not exists bia_support_tickets (
   created_at timestamptz default now()
 );
 create index if not exists bia_support_tickets_m_idx on bia_support_tickets(merchant_id, status);
+
+-- 21. Conformité APDP / Code du numérique (Bénin) — consentement marketing (opt-in)
+--     du client final, par boutique. Désinscription (STOP) = bia_optouts (déjà existant).
+--     Le droit à l'effacement (delete_customer_data) et la rétention (purge_old_messages)
+--     n'ont pas besoin de table : ils agissent sur les tables existantes.
+create table if not exists bia_optin (
+  merchant_id       uuid not null references bia_merchants(id) on delete cascade,
+  customer_whatsapp text not null,
+  opted_in          boolean not null default false,
+  updated_at        timestamptz default now(),
+  primary key (merchant_id, customer_whatsapp)
+);

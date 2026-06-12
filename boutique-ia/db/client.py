@@ -1167,6 +1167,98 @@ def get_wa_session_merchant_id(customer: str) -> str | None:
 
 
 # ---------------------------------------------------------------------------
+# Conformité APDP / Code du numérique (Bénin) — droits & rétention
+#   Chaque opération est défensive : si une table/colonne manque, on ignore
+#   (no-op silencieux) sans casser le reste. cf. _audit/analyse-vendora-produit.
+# ---------------------------------------------------------------------------
+
+def delete_customer_data(merchant_id: str, customer: str) -> dict:
+    """Droit à l'effacement : supprime les données personnelles d'UN client pour
+    UNE boutique. Les commandes sont ANONYMISÉES (gardées pour la comptabilité,
+    sans identifiant client) plutôt que supprimées. Retourne un récap des actions.
+
+    ⚠️ ON NE TOUCHE JAMAIS aux données d'apprentissage de Vendora : les leçons
+    anonymisées (`bia_lessons`), les expériences A/B (`bia_experiments`), la mesure
+    de coût (`bia_usage`) et l'intelligence collective sont CONSERVÉES — elles
+    n'identifient aucun client et servent à l'auto-amélioration des agents, même
+    si le client part. On n'efface que les identifiants personnels (obligation légale)."""
+    db = get_db()
+    out: dict[str, Any] = {}
+
+    def _del(table: str, col: str) -> None:
+        try:
+            r = (db.table(table).delete().eq("merchant_id", merchant_id)
+                 .eq(col, customer).execute())
+            out[table] = len(r.data or [])
+        except Exception:  # noqa: BLE001 — table/colonne absente ou erreur → on ignore
+            out[table] = "skip"
+
+    _del("bia_messages", "customer_whatsapp")
+    _del("bia_followups", "customer_whatsapp")
+    _del("bia_appointments", "customer_whatsapp")
+    _del("bia_customer_notes", "contact")
+    _del("bia_debts", "customer_contact")
+    _del("bia_optin", "customer_whatsapp")
+    # Session de routage (clé globale, pas de merchant_id dans le where)
+    try:
+        db.table("bia_wa_sessions").delete().eq("customer_whatsapp", customer).execute()
+        out["bia_wa_sessions"] = "ok"
+    except Exception:  # noqa: BLE001
+        out["bia_wa_sessions"] = "skip"
+    # Commandes : on anonymise (obligation comptable), on ne supprime pas.
+    try:
+        r = (db.table("bia_orders")
+             .update({"customer_whatsapp": None, "customer_name": "client supprimé",
+                      "delivery_address": None})
+             .eq("merchant_id", merchant_id).eq("customer_whatsapp", customer).execute())
+        out["bia_orders_anonymises"] = len(r.data or [])
+    except Exception:  # noqa: BLE001
+        out["bia_orders_anonymises"] = "skip"
+    return out
+
+
+def purge_old_messages(months: int = 12) -> int:
+    """Rétention : efface les conversations inactives depuis plus de `months` mois.
+    Retourne le nombre de messages supprimés (0 si rien / table absente).
+
+    Utilitaire MANUEL — volontairement PAS planifié en automatique : Mongazi veut
+    garder les données pour que les agents s'auto-améliorent. Les leçons apprises
+    (`bia_lessons`) sont de toute façon conservées séparément, donc l'intelligence
+    de Vendora survit, qu'on purge ou non les conversations brutes."""
+    from datetime import datetime, timedelta, timezone
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=30 * months)).isoformat()
+    try:
+        r = get_db().table("bia_messages").delete().lt("created_at", cutoff).execute()
+        return len(r.data or [])
+    except Exception:  # noqa: BLE001
+        return 0
+
+
+def get_optin(merchant_id: str, customer: str) -> bool | None:
+    """Préférence marketing du client : True (accepte), False (refuse), None (jamais demandé)."""
+    try:
+        r = (get_db().table("bia_optin").select("opted_in")
+             .eq("merchant_id", merchant_id).eq("customer_whatsapp", customer)
+             .limit(1).execute())
+        return r.data[0]["opted_in"] if r.data else None
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def set_optin(merchant_id: str, customer: str, opted_in: bool) -> bool:
+    """Enregistre le consentement (opt-in) du client aux promos/nouveautés."""
+    try:
+        get_db().table("bia_optin").upsert(
+            {"merchant_id": merchant_id, "customer_whatsapp": customer,
+             "opted_in": opted_in, "updated_at": "now()"},
+            on_conflict="merchant_id,customer_whatsapp",
+        ).execute()
+        return True
+    except Exception:  # noqa: BLE001
+        return False
+
+
+# ---------------------------------------------------------------------------
 # Commandes (bia_orders) — étage 3
 # ---------------------------------------------------------------------------
 

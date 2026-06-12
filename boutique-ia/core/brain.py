@@ -152,6 +152,44 @@ PAYMENT_TOOL = {
 }
 
 
+# Outil conformité (APDP) : droit à l'effacement — le client demande de supprimer ses données.
+FORGET_TOOL = {
+    "name": "effacer_mes_donnees",
+    "description": (
+        "Enregistre et exécute la demande d'un client de SUPPRIMER ses données personnelles "
+        "(droit à l'effacement, loi béninoise). À appeler UNIQUEMENT quand le client demande "
+        "clairement d'effacer / supprimer / oublier ses informations (« supprime mes données », "
+        "« oublie-moi »). Après l'appel, confirme-lui chaleureusement que c'est fait."
+    ),
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "confirme": {"type": "boolean",
+                          "description": "true quand le client a clairement demandé la suppression."},
+        },
+        "required": ["confirme"],
+    },
+}
+
+# Outil consentement marketing : le client accepte/refuse les promos & nouveautés (opt-in).
+OPTIN_TOOL = {
+    "name": "definir_preference_promos",
+    "description": (
+        "Enregistre si le client ACCEPTE ou REFUSE de recevoir, plus tard, des promos / "
+        "nouveautés (consentement marketing requis avant tout message non sollicité). À appeler "
+        "APRÈS lui avoir posé la question, une seule fois, en fonction de sa réponse."
+    ),
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "accepte": {"type": "boolean",
+                         "description": "true si le client accepte les promos/nouveautés, false s'il refuse."},
+        },
+        "required": ["accepte"],
+    },
+}
+
+
 def _format_price(value) -> str:
     if value is None:
         return "prix sur demande"
@@ -342,6 +380,26 @@ def build_system_prompt(merchant: dict, products: list[dict],
             "recontacte pour confirmer."
         )
 
+    # Appels téléphoniques — POLITIQUE COMMUNE À TOUS LES AGENTS VENDORA.
+    # L'agent ne passe ni ne reçoit d'appel vocal : il gère TOUT par message.
+    # Pour un appel, on oriente vers le numéro de la boutique (le commerçant prend l'appel).
+    boutique_phone = (merchant.get("whatsapp_business") or "").strip()
+    if boutique_phone:
+        appels_block = (
+            "\n\n# Téléphone & appels (IMPORTANT)\n"
+            "C'est TOI qui réponds ici, par message, 24h/24 — tu ne passes ni ne reçois d'appel vocal. "
+            f"Si le client veut téléphoner ou être appelé, donne-lui le numéro de la boutique : {boutique_phone} "
+            "(c'est la boutique qui prendra l'appel). Mais rassure-le : tout se règle très bien ici, par "
+            "message, et continue à l'accompagner vers l'achat sans le renvoyer trop vite vers l'appel."
+        )
+    else:
+        appels_block = (
+            "\n\n# Téléphone & appels (IMPORTANT)\n"
+            "C'est TOI qui réponds ici, par message, 24h/24 — tu ne passes ni ne reçois d'appel vocal. "
+            "Si le client tient vraiment à un appel, propose-lui de laisser son numéro pour que la boutique "
+            "le rappelle. Mais montre-lui qu'on peut tout régler ici, par message, et avance vers l'achat."
+        )
+
     # Leçons de vente apprises (cerveau d'apprentissage) — réinjectées si présentes.
     lessons_block = ""
     if lessons and lessons.strip():
@@ -375,7 +433,7 @@ Tu réponds aux clients sur WhatsApp à la place du/de la propriétaire.
 {policies or "(aucune règle particulière)"}
 
 # Infos utiles
-{extra or "(rien de plus)"}{identite_block}{vente_block}
+{extra or "(rien de plus)"}{identite_block}{vente_block}{appels_block}
 
 # Style de réponse (TRÈS IMPORTANT)
 - Ton : {tone}. Langue : {languages}.
@@ -400,8 +458,9 @@ Tu réponds aux clients sur WhatsApp à la place du/de la propriétaire.
 - Si tu ne sais pas, dis-le simplement. Ne mens jamais.
 - Tu REÇOIS toujours le message du client. Ne dis JAMAIS que tu ne reçois pas / n'as pas reçu / ne vois pas son message — ce serait faux et ça casse la confiance. Si un message est vague, très court ou peu clair, NE prétends pas à un souci technique : relance avec le sourire par une question utile qui fait avancer la vente (ex : « Vous cherchez plutôt un collier ou des boucles ? » ou propose un produit phare).
 
-# Tes talents de vendeur (applique-les avec finesse, jamais lourdement)
-- VENDS, ne te contente pas de répondre : ton objectif est de conclure la vente, en douceur.
+# Tu es un SUPER-VENDEUR (applique-le avec finesse, jamais lourdement)
+- ANALYSE chaque client avant de répondre : ce qu'il cherche vraiment, son budget probable, son niveau d'envie, ses freins (prix ? confiance ? livraison ?), s'il est pressé ou hésitant. Adapte ton approche à CE client précis (rassurer un hésitant ≠ aider un client pressé à décider tout de suite).
+- VENDS, ne te contente pas de répondre : ton OBJECTIF est de CONCLURE — la vente (ou l'objectif visé : commande, prise de rendez-vous, paiement). Garde-le en tête à chaque message et fais avancer le client, étape par étape, jusqu'à l'achat.
 - Parle BÉNÉFICES, pas seulement caractéristiques (« sublime votre tenue », « cadeau qui marque »).
 - Propose intelligemment un produit complémentaire ou une quantité supérieure (upsell/cross-sell), quand c'est pertinent.
 - Rassure et lève les objections (prix, livraison, confiance) avec des arguments simples et honnêtes.
@@ -410,7 +469,12 @@ Tu réponds aux clients sur WhatsApp à la place du/de la propriétaire.
 - Termine TOUJOURS par une question ou une proposition claire qui fait avancer vers l'achat (CTA).
 - Reste respectueux : si le client hésite, accompagne-le, ne le harcèle pas.
 - REMERCIE toujours, chaleureusement et sincèrement, dès qu'une commande, un rendez-vous ou un paiement est conclu : nomme le client si tu connais son nom, valorise son choix et rassure-le sur la suite (ex : « Merci infiniment pour votre confiance 🙏 on prépare ça et on revient vers vous très vite ! »). Un client remercié et bien traité revient et parle de la boutique autour de lui.
-- Si on te demande quelque chose que tu NE PEUX PAS faire (hors catalogue, hors de tes capacités), dis-le clairement et avec le sourire, sans jamais faire semblant — puis propose AUSSITÔT une alternative concrète que tu PEUX faire (un produit proche, une autre solution, ou transmettre au/à la propriétaire). Reste toujours professionnel, positif et enjoué.{lessons_block}
+- Si on te demande quelque chose que tu NE PEUX PAS faire (hors catalogue, hors de tes capacités), dis-le clairement et avec le sourire, sans jamais faire semblant — puis propose AUSSITÔT une alternative concrète que tu PEUX faire (un produit proche, une autre solution, ou transmettre au/à la propriétaire). Reste toujours professionnel, positif et enjoué.
+
+# Données personnelles & consentement (conformité — important)
+- Rassure si besoin : les infos du client servent UNIQUEMENT à traiter sa demande/commande, elles ne sont jamais revendues.
+- DROIT À L'EFFACEMENT : si le client demande d'effacer / supprimer / oublier ses données (« supprime mes infos », « oublie-moi »), appelle l'outil « effacer_mes_donnees », puis confirme-lui gentiment que c'est pris en compte.
+- PROMOS (consentement) : ne propose JAMAIS d'envoyer des promotions ou nouveautés sans accord. UNIQUEMENT après une commande réussie, tu peux demander UNE seule fois, légèrement : « Vous voulez que je vous prévienne de nos promos et nouveautés ? » Selon sa réponse, appelle « definir_preference_promos » (accepte = true/false). S'il refuse, n'insiste pas et reste chaleureux.{lessons_block}
 """
 
 
@@ -546,6 +610,8 @@ def reply(
     on_show: Callable[[dict], str] | None = None,
     on_appointment: Callable[[dict], None] | None = None,
     on_payment: Callable[[dict], None] | None = None,
+    on_forget: Callable[[dict], None] | None = None,
+    on_optin: Callable[[dict], None] | None = None,
     lessons: str | None = None,
 ) -> str:
     """Génère la réponse du vendeur IA. `history` doit finir par le message client.
@@ -572,7 +638,8 @@ def reply(
     }]
 
     # Outils selon les capacités de la boutique (photo/RDV offerts seulement si activés).
-    tools = [ORDER_TOOL, ESCALATE_TOOL, PAYMENT_TOOL]
+    # FORGET/OPTIN = conformité : disponibles partout, sans condition de forfait.
+    tools = [ORDER_TOOL, ESCALATE_TOOL, PAYMENT_TOOL, FORGET_TOOL, OPTIN_TOOL]
     if "photos" in caps:
         tools.append(SHOW_TOOL)
     if "rdv" in caps:
@@ -681,6 +748,31 @@ def reply(
                 else:
                     note = ("RDV noté (mode démo, non enregistré). Confirme au client que la "
                             "boutique validera le créneau et le recontactera.")
+            elif tu.name == "effacer_mes_donnees":
+                if on_forget:
+                    try:
+                        on_forget(dict(tu.input or {}))
+                        note = ("Données du client supprimées. Confirme-lui chaleureusement que "
+                                "ses informations ont bien été effacées et qu'il ne sera plus "
+                                "recontacté. Reste poli et bref.")
+                    except Exception:  # noqa: BLE001
+                        log.exception("effacement données échoué")
+                        note = ("Impossible de tout effacer maintenant — rassure le client : sa "
+                                "demande est transmise et sera traitée rapidement.")
+                else:
+                    note = ("Demande d'effacement notée (mode démo). Confirme au client que c'est "
+                            "pris en compte.")
+            elif tu.name == "definir_preference_promos":
+                if on_optin:
+                    try:
+                        on_optin(dict(tu.input or {}))
+                    except Exception:  # noqa: BLE001
+                        log.exception("enregistrement opt-in échoué")
+                accepte = bool((tu.input or {}).get("accepte"))
+                note = ("Préférence enregistrée (le client accepte les promos). Remercie-le "
+                        "brièvement." if accepte else
+                        "Préférence enregistrée (le client ne veut pas de promos). Respecte son "
+                        "choix, n'insiste pas, reste chaleureux.")
             else:
                 note = "Outil inconnu, ignore-le."
             results.append({"type": "tool_result", "tool_use_id": tu.id, "content": note})

@@ -324,6 +324,24 @@ def notify_support_problem(merchant: dict, categorie: str, resume: str) -> None:
     )
 
 
+def notify_data_deletion(merchant: dict, customer: str | None) -> None:
+    """Prévient le commerçant qu'un client a exercé son droit à l'effacement (APDP)."""
+    who = customer or "—"
+    notify_mongazi(
+        "🗑️ <b>Demande de suppression de données (client)</b>\n\n"
+        f"🏪 {merchant.get('business_name','?')}\n"
+        f"👤 {who}\n"
+        "Les données de ce client ont été effacées (conversations, notes, ardoise). "
+        "Commandes anonymisées (gardées pour la comptabilité)."
+    )
+    plain = (
+        f"🗑️ Un client a demandé la suppression de ses données — "
+        f"{merchant.get('business_name','votre boutique')}\n"
+        f"Client : {who}\nC'est fait automatiquement (conforme à la loi)."
+    )
+    _whatsapp_owner(merchant.get("owner_whatsapp"), merchant.get("country"), plain)
+
+
 def notify_appointment(merchant: dict, appt: dict) -> None:
     """Prévient le commerçant d'une nouvelle demande de rendez-vous."""
     who = appt.get("customer_name") or appt.get("customer_whatsapp") or "—"
