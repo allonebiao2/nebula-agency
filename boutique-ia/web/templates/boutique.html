@@ -155,6 +155,7 @@
       <a class="sb-link" href="#assistbox"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg>Discuter avec l'agent</a>
       <a class="sb-link" href="#whatsapp"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg>WhatsApp &amp; QR</a>
       <a class="sb-link" href="#capacites"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Capacités</a>
+      <a class="sb-link" href="#mode-support"><svg viewBox="0 0 24 24"><use href="#i-mail"/></svg>Mode Support</a>
     </div>
     <div class="sb-group"><div class="sb-h">Activité</div>
       {% if notif %}<a class="sb-link" href="#notifications"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg>Notifications{% if notif.total %} <span class="sb-badge">{{ notif.total }}</span>{% endif %}</a>{% endif %}
@@ -825,6 +826,51 @@ Bracelet jonc 5000"></textarea>
   </section>
 
   <!-- INFOS -->
+  <!-- VENDORA SUPPORT — mode support + base de connaissances -->
+  <section class="reveal" id="mode-support">
+    <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-mail"/></svg></div><h2>Mode Support</h2></div>
+    <p class="hint">Votre agent peut aussi faire du <b>support</b> au lieu de vendre : il répond aux questions de vos utilisateurs 24h/24, <b>uniquement</b> à partir de la base ci-dessous (il n'invente jamais), et vous prévient (ticket + notification) dès qu'il ne sait pas ou qu'un client se plaint.</p>
+    <div class="panel">
+      <label>Rôle de l'agent</label>
+      <div class="choices">
+        <button class="chip" type="button" onclick="pick('f_agent_role','vendeur',this)">Vendeur (vend mes produits)</button>
+        <button class="chip" type="button" onclick="pick('f_agent_role','support',this)">Support (répond aux questions)</button>
+      </div>
+      <input id="f_agent_role" value="{{ merchant.agent_role or 'vendeur' }}" placeholder="vendeur ou support">
+
+      <label style="margin-top:16px">Base de connaissances <span style="color:var(--mut2)">(FAQ, infos, procédures — l'agent répond UNIQUEMENT à partir de ça)</span></label>
+      <textarea id="f_kb_text" rows="10" placeholder="Ex :
+Q : Comment réinitialiser mon mot de passe ?
+R : Allez dans Paramètres > Sécurité > Réinitialiser, vous recevez un email.
+
+Q : Quels sont vos tarifs ?
+R : Starter 5 000 F/mois, Pro 15 000 F/mois.
+
+Horaires du support : 9h-18h, du lundi au vendredi.">{{ merchant.kb_text or '' }}</textarea>
+
+      <label style="margin-top:16px">Consignes à l'agent <span style="color:var(--mut2)">(en langage simple : ce qu'il doit faire ou ne jamais dire)</span></label>
+      <textarea id="f_kb_instructions" rows="4" placeholder="Ex : Sois toujours rassurant et patient. Ne promets jamais de remboursement. Si on demande un partenariat ou un devis, escalade-moi.">{{ merchant.kb_instructions or '' }}</textarea>
+
+      <div style="margin-top:18px"><button class="btn pri" type="button" onclick="saveMerchant(['agent_role','kb_text','kb_instructions'])">Enregistrer le mode support</button></div>
+      <p class="hint" style="margin-top:12px">Pour tester : passez en mode Support, enregistrez, puis écrivez à votre agent depuis un <b>autre</b> numéro WhatsApp. (Import de PDF et widget pour votre site : bientôt.)</p>
+    </div>
+
+    {% if support_role %}
+    <div class="panel" style="margin-top:14px">
+      <h2 style="font-size:16px;margin:0 0 8px">Tickets escaladés{% if support_tickets %} ({{ support_tickets|length }}){% endif %}</h2>
+      {% if support_tickets %}
+        {% for t in support_tickets %}
+        <div style="border-top:1px solid var(--hair);padding:9px 0;font-size:13.5px">
+          <b>{{ t.user_contact or 'Utilisateur' }}</b> — {{ t.summary }}<span style="opacity:.6"> · {{ t.severity or 'normal' }}</span>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p class="hint" style="margin:0">Aucun ticket pour l'instant. Quand l'agent escalade un problème, il apparaît ici et vous êtes notifié·e tout de suite.</p>
+      {% endif %}
+    </div>
+    {% endif %}
+  </section>
+
   <section class="reveal" id="infos">
     <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-store"/></svg></div><h2>Infos de ma boutique</h2></div>
     <p class="hint">Les bases de votre boutique. Votre agent s'en sert pour se présenter et conseiller vos clients.</p>

@@ -812,6 +812,12 @@ async def boutique_backoffice(request: Request, merchant_id: str):
                 catalogue_link = str(request.base_url).rstrip("/") + f"/catalogue/{merchant.get('code')}"
         except Exception:  # noqa: BLE001
             log.warning("back-office: mini-outils KO", exc_info=True)
+    support_role = (merchant.get("agent_role") or "vendeur") == "support"
+    try:
+        from db.client import list_support_tickets
+        support_tickets = list_support_tickets(merchant_id, "open", 30) if support_role else []
+    except Exception:  # noqa: BLE001
+        support_tickets = []
     return templates.TemplateResponse(
         request, "boutique.html",
         _ctx(request, merchant=merchant, merchant_id=merchant_id,
@@ -830,7 +836,8 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              cashbox=cashbox, ardoise=ardoise, documents=documents,
              top_clients=top_clients, catalogue_link=catalogue_link,
              prospect_daily=prospect_daily, prospect_used=prospect_used, prospection_soon=prospection_soon,
-             prospect_remaining=max(0, prospect_daily - prospect_used)),
+             prospect_remaining=max(0, prospect_daily - prospect_used),
+             support_role=support_role, support_tickets=support_tickets),
     )
 
 
