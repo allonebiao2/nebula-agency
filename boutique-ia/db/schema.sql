@@ -525,3 +525,20 @@ create table if not exists bia_ai_pause (
   updated_at        timestamptz default now(),
   primary key (merchant_id, customer_whatsapp)
 );
+
+-- 23. Abonnements NEBULA Agency (vitrines / catalogues) — facturation trimestrielle
+--     + rappels d'échéance. Distinct des forfaits Vendora (bia_merchants).
+create table if not exists nebula_abonnements (
+  id              uuid primary key default gen_random_uuid(),
+  client_name     text not null,
+  offer           text not null default 'vitrine',   -- vitrine | catalogue
+  amount          numeric not null default 0,
+  client_whatsapp text,
+  client_email    text,
+  next_due        date not null,
+  period_months   int not null default 3,
+  status          text not null default 'active',
+  notif_pre_sent  boolean not null default false,
+  notif_due_sent  boolean not null default false,
+  created_at      timestamptz default now()
+);

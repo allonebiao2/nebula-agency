@@ -295,6 +295,7 @@
   {% if pending %}<a href="#sec-paiements">Paiements</a>{% endif %}
   <a href="#sec-boutiques">Boutiques</a>
   <a href="#sec-recrut">Recrut. manuel</a>
+  <a href="#sec-nebula">Abonnements site</a>
 </nav>
 
 <div class="wrap">
@@ -861,6 +862,44 @@
       {% endif %}
     </div>
   </section>
+
+  <!-- ABONNEMENTS NEBULA (vitrines / catalogues) -->
+  <section class="rv" id="sec-nebula" style="margin-top:18px">
+    <h2>Abonnements site (vitrines / catalogues)</h2>
+    <p class="muted">Échéances trimestrielles + rappels automatiques (J-7 puis le jour J) : Telegram + email toujours, WhatsApp client dès qu'un template Meta est approuvé.</p>
+    <div class="card">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:10px">
+        <input id="ns_name" placeholder="Nom du client" style="padding:9px;border-radius:9px;border:1px solid var(--line,#26262e);background:#0f0f15;color:#eee">
+        <select id="ns_offer" onchange="nsAmount()" style="padding:9px;border-radius:9px;border:1px solid var(--line,#26262e);background:#0f0f15;color:#eee">
+          <option value="vitrine">Vitrine — 15 000 F / 3 mois</option>
+          <option value="catalogue">Catalogue — 5 000 F / 3 mois</option>
+        </select>
+        <input id="ns_amount" type="number" value="15000" style="padding:9px;border-radius:9px;border:1px solid var(--line,#26262e);background:#0f0f15;color:#eee">
+        <input id="ns_wa" placeholder="WhatsApp client (+229…)" style="padding:9px;border-radius:9px;border:1px solid var(--line,#26262e);background:#0f0f15;color:#eee">
+        <input id="ns_email" type="email" placeholder="Email client" style="padding:9px;border-radius:9px;border:1px solid var(--line,#26262e);background:#0f0f15;color:#eee">
+        <input id="ns_due" type="date" style="padding:9px;border-radius:9px;border:1px solid var(--line,#26262e);background:#0f0f15;color:#eee">
+      </div>
+      <button class="btn acc sm" onclick="nsCreate()">+ Ajouter l'abonnement</button>
+    </div>
+    {% if nebula_subs %}
+    <div class="card" style="margin-top:12px">
+      {% for s in nebula_subs %}
+      <div class="mrow">
+        <div class="mid">
+          <div class="mn">{{ s.client_name }} <span class="badge">{{ 'Vitrine' if s.offer == 'vitrine' else 'Catalogue' }}</span></div>
+          <div class="ms">{{ "{:,}".format(s.amount|int).replace(",", " ") }} F / 3 mois · échéance <b>{{ s.next_due }}</b>{% if s.client_whatsapp %} · {{ s.client_whatsapp }}{% endif %}{% if s.client_email %} · {{ s.client_email }}{% endif %}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn acc sm" onclick="nsPaid('{{ s.id }}')">Payé (+3 mois)</button>
+          <button class="btn sm" style="border-color:#ff2d55;color:#ff2d55" onclick="nsCancel('{{ s.id }}')">Arrêter</button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="muted" style="margin-top:10px">Aucun abonnement suivi pour l'instant. Ajoutez vos clients vitrine/catalogue ci-dessus.</p>
+    {% endif %}
+  </section>
 </div>
 
 <div id="toast"></div>
@@ -877,6 +916,19 @@ async function post(url, body){
   const r = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json','X-Admin-Token':TOKEN}, body: body?JSON.stringify(body):null });
   return r.json();
 }
+
+/* Abonnements NEBULA (vitrines / catalogues) */
+function nsVal(id){ const e=document.getElementById(id); return e?String(e.value).trim():''; }
+function nsAmount(){ document.getElementById('ns_amount').value = (document.getElementById('ns_offer').value==='catalogue'?5000:15000); }
+async function nsCreate(){
+  const b={client_name:nsVal('ns_name'), offer:nsVal('ns_offer'), amount:(+nsVal('ns_amount')||0),
+           client_whatsapp:nsVal('ns_wa'), client_email:nsVal('ns_email'), next_due:nsVal('ns_due')};
+  if(!b.client_name||!b.next_due){ notify("Nom du client et date d'échéance requis", true); return; }
+  const d=await post('/api/admin/nebula-subs', b);
+  if(d.ok){ notify('Abonnement ajouté ✅'); setTimeout(()=>location.reload(),700); } else notify(d.error||'Erreur', true);
+}
+async function nsPaid(id){ const d=await post(`/api/admin/nebula-subs/${id}/paid`); if(d.ok){ notify('Encaissé — échéance repoussée de 3 mois ✅'); setTimeout(()=>location.reload(),700);} else notify(d.error||'Erreur', true); }
+async function nsCancel(id){ if(!confirm('Arrêter le suivi de cet abonnement ?')) return; const d=await post(`/api/admin/nebula-subs/${id}/cancel`); if(d.ok){ notify('Suivi arrêté'); setTimeout(()=>location.reload(),700);} else notify(d.error||'Erreur', true); }
 
 /* Compteurs animés */
 function countUp(el){

@@ -1271,6 +1271,11 @@ async def admin_dashboard(request: Request, token: str = ""):
     from core import model_config
     from db.client import usage_summary
     costs = usage_summary(30)  # F3 — coût IA réel des 30 derniers jours
+    try:
+        from core.nebula_subs import list_subs as _nsubs
+        nebula_subs_list = _nsubs("active")
+    except Exception:  # noqa: BLE001
+        nebula_subs_list = []
     return templates.TemplateResponse(
         request, "admin.html",
         _ctx(request, token=token, rows=rows, pending=pending, glob=glob,
@@ -1280,7 +1285,8 @@ async def admin_dashboard(request: Request, token: str = ""):
              auto_enabled=auto_enabled, auto_daily=auto_daily,
              total_recruited=total_recruited, learn=learn, followups=followups,
              ceo=ceo, experiments=experiments, channels=channels, inbox=inbox,
-             support_threads=support_threads, support_open_count=support_open_count),
+             support_threads=support_threads, support_open_count=support_open_count,
+             nebula_subs=nebula_subs_list),
     )
 
 
@@ -1301,6 +1307,52 @@ async def admin_activate(request: Request, merchant_id: str):
         log.exception("admin activate échoué")
         return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
     return {"ok": bool(m), "merchant": m}
+
+
+@app.post("/api/admin/nebula-subs")
+async def admin_nebula_sub_create(request: Request):
+    """Crée un abonnement NEBULA (vitrine/catalogue) à suivre + relancer."""
+    from core import nebula_subs
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    name = (body.get("client_name") or "").strip()
+    due = (body.get("next_due") or "").strip()
+    if not name or not due:
+        return JSONResponse({"ok": False, "error": "Nom du client et date d'échéance requis."},
+                            status_code=400)
+    try:
+        sub = nebula_subs.create_sub(
+            client_name=name, offer=body.get("offer") or "vitrine",
+            amount=body.get("amount"), client_whatsapp=body.get("client_whatsapp"),
+            client_email=body.get("client_email"), next_due=due,
+            period_months=int(body.get("period_months") or 3))
+    except Exception as e:  # noqa: BLE001
+        log.exception("création abonnement NEBULA échouée")
+        return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
+    return {"ok": bool(sub), "sub": sub}
+
+
+@app.post("/api/admin/nebula-subs/{sub_id}/paid")
+async def admin_nebula_sub_paid(request: Request, sub_id: str):
+    """Encaissé : repousse l'échéance de 3 mois et réarme les rappels."""
+    from core import nebula_subs
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    sub = nebula_subs.mark_paid(sub_id)
+    return {"ok": bool(sub), "sub": sub}
+
+
+@app.post("/api/admin/nebula-subs/{sub_id}/cancel")
+async def admin_nebula_sub_cancel(request: Request, sub_id: str):
+    """Arrête le suivi d'un abonnement NEBULA."""
+    from core import nebula_subs
+    if not _admin_ok(request.headers.get("x-admin-token")):
+        return JSONResponse({"ok": False, "error": "Non autorisé."}, status_code=401)
+    return {"ok": nebula_subs.set_status(sub_id, "cancelled")}
 
 
 @app.post("/api/admin/assistant")
@@ -2116,6 +2168,13 @@ async def _auto_prospection_loop():
                 await asyncio.to_thread(run_ceo_job)
         except Exception:  # noqa: BLE001
             log.warning("ceo loop", exc_info=True)
+        try:
+            # Rappels d'échéance des abonnements NEBULA (vitrines/catalogues) : J-7 + jour J.
+            # Idempotent (drapeaux par cycle) → safe à chaque tick.
+            from core.nebula_subs import run_nebula_reminders
+            await asyncio.to_thread(run_nebula_reminders)
+        except Exception:  # noqa: BLE001
+            log.warning("nebula reminders loop", exc_info=True)
         await asyncio.sleep(1800)  # vérifie toutes les 30 min
 
 
