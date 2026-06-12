@@ -866,6 +866,31 @@ Horaires du support : 9h-18h, du lundi au vendredi.">{{ merchant.kb_text or '' }
         <p class="hint" style="margin:4px 0">Votre code de boutique sera généré à l'activation — le code du widget apparaîtra alors ici.</p>
         {% endif %}
       </div>
+
+      <div style="border-top:1px solid var(--hair);margin-top:18px;padding-top:14px">
+        <label>Documents (PDF) <span style="color:var(--mut2)">(guides, CGU, fiches… l'agent les lit)</span></label>
+        {% if kb_docs_list %}
+        <div style="margin:6px 0 10px">
+          {% for d in kb_docs_list %}
+          <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--hair);padding:7px 0;font-size:13px">
+            <span>📄 {{ d.title or 'Document' }}</span>
+            <button class="btn ghost sm" type="button" onclick="delDoc('{{ d.id }}')">Supprimer</button>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input type="file" id="pdfFile" accept="application/pdf">
+          <button class="btn pri sm" type="button" onclick="uploadPdf()">Importer le PDF</button>
+        </div>
+        <p class="hint" style="margin:6px 0 0">L'agent lira ce document pour répondre. (PDF texte ; un PDF scanné en image n'est pas lisible.)</p>
+      </div>
+
+      <div style="border-top:1px solid var(--hair);margin-top:18px;padding-top:14px">
+        <label>Rapport support <span style="color:var(--mut2)">(questions récurrentes + corrections à faire)</span></label>
+        <div style="margin-top:6px"><button class="btn pri sm" type="button" onclick="genReport()">Générer mon rapport</button></div>
+        <div id="reportBox" class="hint" style="white-space:pre-wrap;margin-top:10px"></div>
+      </div>
     </div>
 
     {% if support_role %}
@@ -1581,6 +1606,16 @@ async function api(url, method, payload){
 function copyLink(btn){ navigator.clipboard.writeText(document.getElementById('walink').value); btn.innerHTML='<svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Copié'; }
 function copyBoLink(btn){ navigator.clipboard.writeText(document.getElementById('bolink').value); btn.innerHTML='<svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Copié'; }
 function copyWidget(btn){ navigator.clipboard.writeText(document.getElementById('widgetcode').value); btn.textContent='Copié'; }
+async function uploadPdf(){
+  const el=document.getElementById('pdfFile'); const f=el&&el.files[0];
+  if(!f){ notify('Choisissez un PDF', true); return; }
+  const fd=new FormData(); fd.append('pdf', f); notify('Lecture du PDF…');
+  try{ const r=await fetch(`/api/merchants/${MID}/support/pdf`,{method:'POST',body:fd}); const d=await r.json();
+    if(d.ok){ notify('PDF importé ✓ ('+d.chars+' caractères)'); setTimeout(()=>location.reload(),700); }
+    else notify(d.error||'Erreur', true); }catch(e){ notify("Échec de l'import", true); }
+}
+async function delDoc(id){ const d=await api(`/api/merchants/${MID}/support/knowledge/${id}/delete`,'POST',{}); if(d&&d.ok) location.reload(); else notify('Erreur', true); }
+async function genReport(){ const b=document.getElementById('reportBox'); b.textContent='Génération en cours…'; const d=await api(`/api/merchants/${MID}/support/report`,'POST',{}); b.textContent=(d&&d.ok)?d.report:((d&&d.error)||'Erreur'); }
 function copyCat(btn){ navigator.clipboard.writeText(document.getElementById('catlink').value); btn.innerHTML='<svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Copié'; }
 function goTo(id){ const el=document.getElementById(id); if(el){ el.scrollIntoView({behavior:'smooth', block:'start'}); } }
 function previewBrand(c){ root.style.setProperty('--a', c); }

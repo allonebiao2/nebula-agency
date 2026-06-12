@@ -312,6 +312,25 @@ def add_knowledge(merchant_id: str, content: str, title: str | None = None,
         return {}
 
 
+def list_knowledge(merchant_id: str, limit: int = 100) -> list[dict[str, Any]]:
+    """Liste les documents de connaissance d'un client (sans le contenu lourd)."""
+    try:
+        return (get_db().table("bia_knowledge").select("id,title,kind,created_at")
+                .eq("merchant_id", merchant_id).order("created_at", desc=True)
+                .limit(limit).execute().data) or []
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def delete_knowledge(knowledge_id: str, merchant_id: str) -> bool:
+    try:
+        get_db().table("bia_knowledge").delete().eq("id", knowledge_id).eq(
+            "merchant_id", merchant_id).execute()
+        return True
+    except Exception:  # noqa: BLE001
+        return False
+
+
 def update_product(product_id: str, merchant_id: str, fields: dict[str, Any]) -> dict[str, Any]:
     """Met à jour un produit (scopé à sa boutique pour la sécurité)."""
     clean = {k: v for k, v in fields.items() if k in EDITABLE_PRODUCT_FIELDS}

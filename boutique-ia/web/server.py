@@ -942,6 +942,11 @@ async def boutique_backoffice(request: Request, merchant_id: str):
         support_tickets = list_support_tickets(merchant_id, "open", 30) if support_role else []
     except Exception:  # noqa: BLE001
         support_tickets = []
+    try:
+        from db.client import list_knowledge
+        kb_docs_list = list_knowledge(merchant_id) if support_role else []
+    except Exception:  # noqa: BLE001
+        kb_docs_list = []
     public_base = (getattr(settings, "public_base_url", None) or str(request.base_url)).rstrip("/")
     return templates.TemplateResponse(
         request, "boutique.html",
@@ -963,7 +968,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              prospect_daily=prospect_daily, prospect_used=prospect_used, prospection_soon=prospection_soon,
              prospect_remaining=max(0, prospect_daily - prospect_used),
              support_role=support_role, support_tickets=support_tickets,
-             public_base=public_base),
+             kb_docs_list=kb_docs_list, public_base=public_base),
     )
 
 
@@ -2806,6 +2811,65 @@ async def upload_photo_endpoint(request: Request, merchant_id: str, product_id: 
         log.exception("upload image échoué")
         return JSONResponse({"ok": False, "error": str(e)[:200]}, status_code=500)
     return {"ok": True, "url": url}
+
+
+@app.post("/api/merchants/{merchant_id}/support/pdf")
+async def upload_support_pdf(request: Request, merchant_id: str):
+    """Importe un PDF dans la base de connaissances de l'agent support (texte extrait)."""
+    from db.client import add_knowledge
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    try:
+        form = await request.form()
+    except Exception:  # noqa: BLE001
+        return JSONResponse({"ok": False, "error": "Formulaire invalide"}, status_code=400)
+    file = form.get("pdf")
+    if file is None or not hasattr(file, "read"):
+        return JSONResponse({"ok": False, "error": "Aucun fichier."}, status_code=400)
+    data = await file.read()
+    if not data:
+        return JSONResponse({"ok": False, "error": "Fichier vide."}, status_code=400)
+    if len(data) > 12_000_000:
+        return JSONResponse({"ok": False, "error": "PDF trop lourd (max 12 Mo)."}, status_code=400)
+    name = (getattr(file, "filename", "") or "document.pdf")[:120]
+    try:
+        import io
+        import pypdf
+        reader = pypdf.PdfReader(io.BytesIO(data))
+        text = "\n".join((pg.extract_text() or "") for pg in reader.pages).strip()
+    except Exception:  # noqa: BLE001
+        log.exception("extraction PDF échouée")
+        return JSONResponse({"ok": False, "error": "Impossible de lire ce PDF."}, status_code=400)
+    if not text:
+        return JSONResponse({"ok": False, "error": "Aucun texte lisible (PDF scanné en image ?)."},
+                            status_code=400)
+    add_knowledge(merchant_id, content=text[:60000], title=name, kind="pdf")
+    return {"ok": True, "title": name, "chars": len(text)}
+
+
+@app.post("/api/merchants/{merchant_id}/support/knowledge/{knowledge_id}/delete")
+async def delete_support_knowledge(request: Request, merchant_id: str, knowledge_id: str):
+    """Supprime un document de la base de connaissances."""
+    from db.client import delete_knowledge
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    return {"ok": delete_knowledge(knowledge_id, merchant_id)}
+
+
+@app.post("/api/merchants/{merchant_id}/support/report")
+async def support_report_endpoint(request: Request, merchant_id: str):
+    """Génère le rapport support (volume, récurrents, corrections suggérées)."""
+    from core import support_report
+    from db.client import get_merchant
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    m = get_merchant(merchant_id)
+    if not m:
+        return JSONResponse({"ok": False, "error": "Boutique introuvable"}, status_code=404)
+    return {"ok": True, "report": support_report.generate_report(m)}
 
 
 @app.post("/api/merchants/{merchant_id}/products/{product_id}/images/{image_id}/delete")

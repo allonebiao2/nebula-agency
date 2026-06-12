@@ -23,3 +23,6 @@ pillow>=10.4.0
 
 # QR code du lien WhatsApp de chaque boutique (back-office)
 qrcode>=7.4.2
+
+# Vendora Support — lecture des PDF de la base de connaissances
+pypdf>=4.0.0
