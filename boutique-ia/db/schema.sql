@@ -471,3 +471,33 @@ create table if not exists bia_usage (
 );
 create index if not exists bia_usage_created_idx on bia_usage(created_at);
 create index if not exists bia_usage_merchant_idx on bia_usage(merchant_id);
+
+-- ── Vendora Support (v1) — 2e pilier : agent de support + base de connaissances ──
+-- Additif et inerte tant que agent_role reste 'vendeur' (défaut) → aucune régression.
+alter table bia_merchants add column if not exists agent_role text default 'vendeur';  -- vendeur | support
+alter table bia_merchants add column if not exists kb_text text;          -- FAQ / infos collées
+alter table bia_merchants add column if not exists kb_instructions text;  -- « apprends à l'agent » (langage naturel)
+
+-- Morceaux de connaissance (surtout PDF extraits / liens)
+create table if not exists bia_knowledge (
+  id uuid primary key default gen_random_uuid(),
+  merchant_id uuid not null references bia_merchants(id) on delete cascade,
+  kind text default 'text',     -- faq | pdf | link | text
+  title text,
+  content text,
+  created_at timestamptz default now()
+);
+create index if not exists bia_knowledge_m_idx on bia_knowledge(merchant_id);
+
+-- Tickets escaladés par l'agent de support
+create table if not exists bia_support_tickets (
+  id uuid primary key default gen_random_uuid(),
+  merchant_id uuid not null references bia_merchants(id) on delete cascade,
+  user_contact text,
+  channel text,                 -- whatsapp | widget | ...
+  summary text,
+  severity text,                -- info | normal | urgent
+  status text default 'open',   -- open | done
+  created_at timestamptz default now()
+);
+create index if not exists bia_support_tickets_m_idx on bia_support_tickets(merchant_id, status);
