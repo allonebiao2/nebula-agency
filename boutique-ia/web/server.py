@@ -396,12 +396,25 @@ _WIDGET_JS = r'''
 '''
 
 
+_SUPPORT_PREMIUM_RANK = {"demarrage": 0, "business": 1, "empire": 2}
+
+
+def _support_premium_ok(merchant: dict) -> bool:
+    """Pièces support PREMIUM (widget, PDF, lecture du site, rapport) = Business et +.
+    Le support de base (WhatsApp + FAQ + escalade) reste accessible à tous les forfaits."""
+    from config import normalize_plan
+    return _SUPPORT_PREMIUM_RANK.get(normalize_plan((merchant or {}).get("plan")), 0) >= 1
+
+
 @app.get("/widget.js")
 async def support_widget_js(code: str = ""):
     """Sert le widget de chat support à embarquer sur le site du client."""
     import json as _json
     from db.client import get_merchant_by_code
     m = get_merchant_by_code((code or "").strip().lower()) if code else None
+    if m and not _support_premium_ok(m):
+        return Response(content="console.warn('Vendora: widget reserve aux forfaits Business/Empire');",
+                        media_type="application/javascript", headers={"Access-Control-Allow-Origin": "*"})
     cfg = _json.dumps({
         "name": (m.get("business_name") if m else "") or "nous",
         "color": (m.get("brand_color") if m else "") or "#10b981",
@@ -545,6 +558,9 @@ async def create_merchant_endpoint(request: Request):
         "business_hours": (body.get("business_hours") or "").strip() or None,
         "policies": (body.get("policies") or "").strip() or None,
         "extra_info": (body.get("extra_info") or "").strip() or None,
+        "agent_role": ("support" if (body.get("agent_role") or "").strip().lower() == "support"
+                       else "vendeur"),
+        "kb_text": (body.get("kb_text") or "").strip() or None,
     }
 
     # Defaults intelligents : l'agent démarre déjà équipé selon le métier + le
@@ -959,6 +975,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
         kb_docs_list = list_knowledge(merchant_id) if support_role else []
     except Exception:  # noqa: BLE001
         kb_docs_list = []
+    support_premium = _support_premium_ok(merchant)
     public_base = (getattr(settings, "public_base_url", None) or str(request.base_url)).rstrip("/")
     return templates.TemplateResponse(
         request, "boutique.html",
@@ -980,7 +997,8 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              prospect_daily=prospect_daily, prospect_used=prospect_used, prospection_soon=prospection_soon,
              prospect_remaining=max(0, prospect_daily - prospect_used),
              support_role=support_role, support_tickets=support_tickets,
-             kb_docs_list=kb_docs_list, public_base=public_base),
+             kb_docs_list=kb_docs_list, public_base=public_base,
+             support_premium=support_premium),
     )
 
 
@@ -2828,10 +2846,12 @@ async def upload_photo_endpoint(request: Request, merchant_id: str, product_id: 
 @app.post("/api/merchants/{merchant_id}/support/pdf")
 async def upload_support_pdf(request: Request, merchant_id: str):
     """Importe un PDF dans la base de connaissances de l'agent support (texte extrait)."""
-    from db.client import add_knowledge
+    from db.client import add_knowledge, get_merchant
     auth = _need_session(request, merchant_id)
     if auth:
         return auth
+    if not _support_premium_ok(get_merchant(merchant_id) or {}):
+        return JSONResponse({"ok": False, "error": "L'import de PDF est réservé aux forfaits Business et Empire."}, status_code=403)
     try:
         form = await request.form()
     except Exception:  # noqa: BLE001
@@ -2881,6 +2901,8 @@ async def support_report_endpoint(request: Request, merchant_id: str):
     m = get_merchant(merchant_id)
     if not m:
         return JSONResponse({"ok": False, "error": "Boutique introuvable"}, status_code=404)
+    if not _support_premium_ok(m):
+        return JSONResponse({"ok": False, "error": "Le rapport est réservé aux forfaits Business et Empire."}, status_code=403)
     return {"ok": True, "report": support_report.generate_report(m)}
 
 
@@ -2888,10 +2910,12 @@ async def support_report_endpoint(request: Request, merchant_id: str):
 async def read_support_site(request: Request, merchant_id: str):
     """Lit le site du client (URL) et l'ajoute à la base de connaissances de l'agent."""
     from core import site_reader
-    from db.client import add_knowledge
+    from db.client import add_knowledge, get_merchant
     auth = _need_session(request, merchant_id)
     if auth:
         return auth
+    if not _support_premium_ok(get_merchant(merchant_id) or {}):
+        return JSONResponse({"ok": False, "error": "La lecture de site est réservée aux forfaits Business et Empire."}, status_code=403)
     try:
         body = await request.json()
     except Exception:  # noqa: BLE001

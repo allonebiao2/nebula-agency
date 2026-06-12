@@ -854,6 +854,8 @@ Horaires du support : 9h-18h, du lundi au vendredi.">{{ merchant.kb_text or '' }
       <div style="margin-top:18px"><button class="btn pri" type="button" onclick="saveMerchant(['agent_role','kb_text','kb_instructions'])">Enregistrer le mode support</button></div>
       <p class="hint" style="margin-top:12px">Pour tester : passez en mode Support, enregistrez, puis écrivez à votre agent depuis un <b>autre</b> numéro WhatsApp. (Import de PDF : bientôt.)</p>
 
+      {% if not support_premium %}<p class="hint" style="margin-top:16px;border-top:1px solid var(--hair);padding-top:14px">⭐ Le <b>widget site</b>, l'<b>import PDF</b>, la <b>lecture de site</b> et le <b>rapport</b> sont réservés aux forfaits <b>Business</b> et <b>Empire</b>. Le support de base (WhatsApp + FAQ + escalade) reste inclus dans votre forfait.</p>{% endif %}
+
       <div style="border-top:1px solid var(--hair);margin-top:18px;padding-top:14px">
         <label>Bouton « Discuter avec nous » pour votre site <span style="color:var(--mut2)">(widget de chat)</span></label>
         {% if merchant.code %}

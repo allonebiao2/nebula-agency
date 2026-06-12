@@ -665,6 +665,18 @@
           </div>
 
           <div class="fcard">
+            <h3><svg><use href="#i-spark"/></svg> Que doit faire votre agent ?</h3>
+            <div class="hint">Vendre vos produits, ou faire du support (répondre aux questions de vos clients, sur WhatsApp et votre site). Vous pourrez changer à tout moment.</div>
+            <label style="display:flex;align-items:center;gap:8px;font-weight:600;cursor:pointer"><input type="radio" name="agent_role" value="vendeur" checked onchange="document.getElementById('kbWrap').style.display='none'"> Il VEND mes produits (boutique)</label>
+            <label style="display:flex;align-items:center;gap:8px;font-weight:600;cursor:pointer;margin-top:6px"><input type="radio" name="agent_role" value="support" onchange="document.getElementById('kbWrap').style.display='block'"> Il fait du SUPPORT (répond aux questions)</label>
+            <div id="kbWrap" style="display:none;margin-top:10px">
+              <label>Base de connaissances (FAQ, infos)</label>
+              <textarea name="kb_text" placeholder="Ex : Q : Comment réinitialiser mon mot de passe ? R : Allez dans Paramètres > Sécurité. — Horaires : 9h-18h, lundi au vendredi."></textarea>
+              <div class="hint">L'agent répondra UNIQUEMENT à partir de ça (vous ajouterez PDF et lecture de site dans votre espace).</div>
+            </div>
+          </div>
+
+          <div class="fcard">
             <h3><svg><use href="#i-phone"/></svg> Contacts</h3>
             <div class="hint">Où vos clients écrivent, et où VOUS recevez les alertes de vente.</div>
             <label>WhatsApp de la boutique (les clients écrivent ici) <span class="req">*</span></label>
@@ -949,7 +961,10 @@ void main(void){vec2 uv=(FC-.5*R)/MN,st=uv*vec2(2,1);vec3 col=vec3(0);float bg=c
       momo_number:get('momo_number'), momo_network:get('momo_network'), momo_name:get('momo_name'),
       delivery_zones:get('delivery_zones'), delivery_fee_info:get('delivery_fee_info'),
       ai_tone:get('ai_tone'), languages:get('languages'), business_hours:get('business_hours'),
-      policies:get('policies'), extra_info:get('extra_info'), plan:selectedPlan, trial:goTrial, products
+      policies:get('policies'), extra_info:get('extra_info'),
+      agent_role:(document.querySelector('input[name="agent_role"]:checked')||{}).value||'vendeur',
+      kb_text:get('kb_text'),
+      plan:selectedPlan, trial:goTrial, products
     };
     if(!payload.business_name || !payload.whatsapp_business){
       err.textContent="Le nom de la boutique et le WhatsApp sont obligatoires."; err.style.display='block'; return;
