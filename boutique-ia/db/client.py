@@ -222,6 +222,8 @@ EDITABLE_MERCHANT_FIELDS = {
     "founded", "price_range", "target_audience", "occasions", "bestsellers",
     "unique_selling", "selling_points", "payment_methods", "guarantees",
     "promotions", "objections", "avoid_topics", "presence", "socials",
+    # Vendora Support (v1)
+    "agent_role", "kb_text", "kb_instructions",
 }
 EDITABLE_PRODUCT_FIELDS = {"name", "price", "description", "photo_url", "available",
                           "kind", "duration", "options", "stock_qty"}
@@ -237,6 +239,77 @@ def update_merchant(merchant_id: str, fields: dict[str, Any]) -> dict[str, Any]:
         db.table("bia_merchants").update(clean).eq("id", merchant_id).execute()
     )
     return result.data[0] if result.data else {}
+
+
+# ---------------------------------------------------------------------------
+# Vendora Support (v1) — base de connaissances + tickets escaladés
+# ---------------------------------------------------------------------------
+
+def knowledge_text_for(merchant_id: str, limit_chars: int = 12000) -> str:
+    """Concatène les morceaux de connaissance (PDF / liens / texte) d'un client en un
+    bloc injectable. '' si rien. Plafonné (v1 ; RAG = phase 2)."""
+    try:
+        rows = (get_db().table("bia_knowledge").select("title,content,kind")
+                .eq("merchant_id", merchant_id).limit(200).execute().data) or []
+    except Exception:  # noqa: BLE001
+        return ""
+    parts: list[str] = []
+    for r in rows:
+        c = (r.get("content") or "").strip()
+        if not c:
+            continue
+        t = (r.get("title") or "").strip()
+        parts.append(f"## {t}\n{c}" if t else c)
+    return "\n\n".join(parts)[:limit_chars]
+
+
+def create_support_ticket(merchant_id: str, user_contact: str | None = None,
+                          channel: str | None = None, summary: str | None = None,
+                          severity: str | None = None) -> dict[str, Any]:
+    """Crée un ticket escaladé par l'agent de support. Ne lève jamais."""
+    try:
+        res = get_db().table("bia_support_tickets").insert({
+            "merchant_id": merchant_id, "user_contact": user_contact,
+            "channel": channel, "summary": (summary or "")[:500],
+            "severity": severity or "normal", "status": "open",
+        }).execute()
+        return res.data[0] if res.data else {}
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def list_support_tickets(merchant_id: str, status: str | None = None,
+                         limit: int = 100) -> list[dict[str, Any]]:
+    try:
+        q = (get_db().table("bia_support_tickets").select("*")
+             .eq("merchant_id", merchant_id).order("created_at", desc=True).limit(limit))
+        if status:
+            q = q.eq("status", status)
+        return q.execute().data or []
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def set_ticket_status(ticket_id: str, merchant_id: str, status: str) -> dict[str, Any]:
+    try:
+        res = (get_db().table("bia_support_tickets").update({"status": status})
+               .eq("id", ticket_id).eq("merchant_id", merchant_id).execute())
+        return res.data[0] if res.data else {}
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def add_knowledge(merchant_id: str, content: str, title: str | None = None,
+                  kind: str = "text") -> dict[str, Any]:
+    """Ajoute un morceau de connaissance (ex. texte extrait d'un PDF). Ne lève jamais."""
+    try:
+        res = get_db().table("bia_knowledge").insert({
+            "merchant_id": merchant_id, "kind": kind,
+            "title": (title or "")[:200] or None, "content": content,
+        }).execute()
+        return res.data[0] if res.data else {}
+    except Exception:  # noqa: BLE001
+        return {}
 
 
 def update_product(product_id: str, merchant_id: str, fields: dict[str, Any]) -> dict[str, Any]:

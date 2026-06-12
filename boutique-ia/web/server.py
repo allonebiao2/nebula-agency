@@ -2864,6 +2864,40 @@ def _agent_handle(customer: str, body_text: str, has_audio: bool = False,
     except Exception:  # noqa: BLE001
         log.exception("assistant propriétaire échoué — repli vendeur")
 
+    # ── Agent SUPPORT (2e pilier) : si la boutique est en mode support, l'agent
+    # répond aux UTILISATEURS depuis SA base de connaissances (pas le vendeur).
+    if (merchant.get("agent_role") or "vendeur") == "support":
+        from core import support_agent
+        from db.client import create_support_ticket, knowledge_text_for
+        save_message(merchant["id"], customer, "customer", clean)
+        s_hist = load_history(merchant["id"], customer, limit=12)
+        try:
+            kb_docs = knowledge_text_for(merchant["id"])
+        except Exception:  # noqa: BLE001
+            kb_docs = ""
+
+        def _on_escalate(d: dict) -> None:
+            try:
+                create_support_ticket(merchant["id"], user_contact=customer,
+                                      channel="whatsapp", summary=d.get("probleme"),
+                                      severity=d.get("gravite"))
+            except Exception:  # noqa: BLE001
+                log.warning("ticket support non créé", exc_info=True)
+            try:
+                _escalation_notifier(merchant, customer)(
+                    {"raison": "Support — escalade", "resume": d.get("probleme") or "",
+                     "nom_client": ""})
+            except Exception:  # noqa: BLE001
+                log.warning("notif support échouée", exc_info=True)
+
+        s_ans = support_agent.reply(
+            merchant, clean, history=s_hist,
+            kb_text=merchant.get("kb_text") or "",
+            kb_instructions=merchant.get("kb_instructions") or "",
+            kb_docs=kb_docs, on_escalate=_on_escalate)
+        save_message(merchant["id"], customer, "assistant", s_ans)
+        return {"status": "support", "media": [], "text": s_ans}
+
     save_message(merchant["id"], customer, "customer", clean)
     history = load_history(merchant["id"], customer, limit=brain.HISTORY_LIMIT)
     products = list_products(merchant["id"])
