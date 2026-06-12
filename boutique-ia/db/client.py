@@ -1148,6 +1148,40 @@ def count_customer_messages(merchant_id: str, customer: str) -> int:
     return r.count or 0
 
 
+def count_customer_messages_window(merchant_id: str, customer: str, hours: int = 24) -> int:
+    """Nb de messages envoyés par le client dans les `hours` dernières heures (anti-spam)."""
+    if not customer:
+        return 0
+    from datetime import datetime, timedelta, timezone
+    since = (datetime.now(timezone.utc) - timedelta(hours=hours)).isoformat()
+    try:
+        r = (get_db().table("bia_messages").select("id", count="exact", head=True)
+             .eq("merchant_id", merchant_id).eq("customer_whatsapp", customer)
+             .eq("role", "customer").gte("created_at", since).execute())
+        return r.count or 0
+    except Exception:  # noqa: BLE001
+        return 0
+
+
+def export_merchant_data(merchant_id: str) -> dict[str, Any]:
+    """Portabilité (droit d'accès APDP) : toutes les données métier d'une boutique,
+    pour export. Défensif : chaque bloc est indépendant."""
+    from datetime import datetime, timezone
+    out: dict[str, Any] = {"exported_at": datetime.now(timezone.utc).isoformat(),
+                           "merchant_id": merchant_id}
+    def _safe(key, fn):
+        try:
+            out[key] = fn()
+        except Exception:  # noqa: BLE001
+            out[key] = []
+    _safe("products", lambda: list_products(merchant_id))
+    _safe("orders", lambda: list_orders(merchant_id, limit=1000))
+    _safe("customers", lambda: list_customer_notes(merchant_id, limit=1000))
+    _safe("cashbook", lambda: list_cash(merchant_id, 1000))
+    _safe("debts", lambda: list_debts(merchant_id, None, 1000))
+    return out
+
+
 def upsert_wa_session(customer: str, merchant_id: str) -> None:
     """Mémorise quelle boutique ce client WhatsApp est en train de contacter."""
     db = get_db()

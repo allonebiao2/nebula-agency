@@ -1295,11 +1295,14 @@ Horaires du support : 9h-18h, du lundi au vendredi.">{{ merchant.kb_text or '' }
         {% endfor %}
       </div>
       {% if analytics.top_revenue %}
-      <div style="font-size:13px;color:var(--mut2);margin:2px 0 18px">
+      <div style="font-size:13px;color:var(--mut2);margin:2px 0 12px">
         🏆 Top produits (par chiffre d'affaires) :
         {% for name, rev in analytics.top_revenue %}<b style="color:var(--txt,#eee)">{{ name }}</b> ({{ "{:,}".format(rev|int).replace(",", " ") }} F){% if not loop.last %} · {% endif %}{% endfor %}
       </div>
       {% endif %}
+      <div style="margin:2px 0 18px">
+        <a class="btn" href="/api/merchants/{{ merchant_id }}/export" style="padding:7px 12px;font-size:13px;text-decoration:none">⬇️ Exporter mes données</a>
+      </div>
       {% endif %}
 
       <div class="ah">Dernières commandes</div>

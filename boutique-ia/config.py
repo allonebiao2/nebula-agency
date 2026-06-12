@@ -52,6 +52,10 @@ class Settings(BaseSettings):
     # --- Essai gratuit (démo sur la page de vente) ---
     free_trial_messages: int = 6              # nb de messages testables avant activation
 
+    # --- Anti-spam : plafond de messages d'UN client / 24h (au-delà → l'agent se tait,
+    #     pas d'appel modèle = protection tokens). Très haut → seul l'abus est bloqué. ---
+    customer_daily_msg_cap: int = 60
+
     # --- Abonnement SaaS : comment le commerçant paie pour activer ---
     saas_price_fcfa: int = 5000               # prix mensuel d'activation
     saas_momo_number: str = ""                # TON numéro Mobile Money (Mongazi)

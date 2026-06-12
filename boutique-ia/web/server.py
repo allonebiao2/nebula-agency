@@ -2302,6 +2302,25 @@ async def merchant_conversation_send(request: Request, merchant_id: str):
     return {"ok": True}
 
 
+@app.get("/api/merchants/{merchant_id}/export")
+async def merchant_export(request: Request, merchant_id: str):
+    """Portabilité / droit d'accès (APDP) : la patronne télécharge ses données (JSON)."""
+    import json as _json
+    from db.client import export_merchant_data, get_merchant
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    m = get_merchant(merchant_id)
+    if not m:
+        return JSONResponse({"ok": False, "error": "Boutique introuvable."}, status_code=404)
+    data = export_merchant_data(merchant_id)
+    data["business_name"] = m.get("business_name")
+    fname = f"vendora-export-{merchant_id[:8]}.json"
+    return Response(content=_json.dumps(data, ensure_ascii=False, indent=2, default=str),
+                    media_type="application/json",
+                    headers={"Content-Disposition": f'attachment; filename="{fname}"'})
+
+
 @app.post("/api/merchants/{merchant_id}/notifications/{notif_id}/done")
 async def merchant_notification_done(request: Request, merchant_id: str, notif_id: str):
     """Marque une notification (ex. lead chaud) comme traitée → elle disparaît du feed."""
@@ -3248,6 +3267,17 @@ def _agent_handle(customer: str, body_text: str, has_audio: bool = False,
     except Exception:  # noqa: BLE001
         log.warning("vérif pause IA échouée", exc_info=True)
 
+    # ── Anti-spam : un client qui dépasse le plafond de messages / 24h → l'agent se
+    # tait (aucun appel modèle = protection des tokens). Plafond très haut : seul l'abus.
+    try:
+        from db.client import count_customer_messages_window
+        if count_customer_messages_window(merchant["id"], customer) >= settings.customer_daily_msg_cap:
+            save_message(merchant["id"], customer, "customer", clean)
+            log.warning("anti-spam : client %s plafonné (boutique %s)", customer, merchant.get("id"))
+            return {"status": "rate_limited", "media": [], "text": ""}
+    except Exception:  # noqa: BLE001
+        log.warning("vérif anti-spam échouée", exc_info=True)
+
     # ── Agent SUPPORT (2e pilier) : si la boutique est en mode support, l'agent
     # répond aux UTILISATEURS depuis SA base de connaissances (pas le vendeur).
     if (merchant.get("agent_role") or "vendeur") == "support":
@@ -3361,6 +3391,29 @@ def _text_with_options(res: dict) -> str:
     return text
 
 
+def _alert_agent_down(reason: str) -> None:
+    """Alerte Mongazi quand l'agent ne PEUT PAS répondre (échec d'envoi WhatsApp =
+    token Meta expiré / webhook KO). Throttlé à 1 alerte / 30 min pour éviter le spam."""
+    import time
+    try:
+        from db.client import get_setting, set_setting
+        from notify import notify_mongazi
+        try:
+            last = float(get_setting("agent_down_alert_ts", 0) or 0)
+        except (TypeError, ValueError):
+            last = 0.0
+        if time.time() - last < 1800:
+            return
+        set_setting("agent_down_alert_ts", str(time.time()))
+        notify_mongazi(
+            "🚨 <b>Vendora ne peut pas répondre aux clients</b>\n\n"
+            f"{reason}\n\nÀ vérifier d'urgence : le token WhatsApp (Meta) est-il toujours "
+            "valide ? Le webhook répond-il ? Tant que ce n'est pas réglé, les boutiques sont muettes."
+        )
+    except Exception:  # noqa: BLE001
+        log.warning("alerte agent-down échouée", exc_info=True)
+
+
 def _twiml(message: str, media: list[str] | None = None) -> Response:
     """Réponse TwiML : Twilio enverra ce message (+ photos) au client."""
     body = f"<Body>{escape(message)}</Body>"
@@ -3411,7 +3464,7 @@ async def whatsapp_twilio(request: Request):
     except Exception:  # noqa: BLE001
         log.exception("whatsapp (twilio) reply échoué")
         return _twiml("Un instant, je vérifie avec la boutique et je reviens vers vous 🙏")
-    if res.get("status") == "paused":
+    if res.get("status") in ("paused", "rate_limited"):
         return Response(content='<?xml version="1.0" encoding="UTF-8"?><Response></Response>',
                         media_type="application/xml")  # reprise humaine : aucune réponse auto
     return _twiml(_text_with_options(res), res.get("media"))
@@ -3465,13 +3518,16 @@ def _process_meta_message(msg: dict) -> None:
         log.exception("whatsapp (meta) reply échoué")
         whatsapp_meta.send_text(wa_id, "Un instant, je reviens vers vous 🙏")
         return
-    if res.get("status") == "paused":
+    if res.get("status") in ("paused", "rate_limited"):
         return  # reprise humaine : l'agent ne répond pas, la patronne gère
     btns = res.get("buttons") or []
     if btns:
-        whatsapp_meta.send_choice(wa_id, res["text"], btns)  # boutons/liste natifs
+        ok = whatsapp_meta.send_choice(wa_id, res["text"], btns)  # boutons/liste natifs
     else:
-        whatsapp_meta.send_text(wa_id, res["text"])
+        ok = whatsapp_meta.send_text(wa_id, res["text"])
+    if not ok and (res.get("text") or btns):
+        # L'agent a produit une réponse mais l'envoi a échoué → alerter (token/webhook ?).
+        _alert_agent_down("Échec d'envoi d'une réponse WhatsApp à un client (Cloud API).")
     for url in (res.get("media") or []):
         whatsapp_meta.send_image(wa_id, url)
 
@@ -3562,7 +3618,7 @@ def _process_messenger_message(msg: dict) -> None:
         log.exception("messenger reply échoué")
         messenger_meta.send_text(sender, "Un instant, je reviens vers vous 🙏")
         return
-    if res.get("status") == "paused":
+    if res.get("status") in ("paused", "rate_limited"):
         return  # reprise humaine : pas de réponse auto
     messenger_meta.send_text(sender, _text_with_options(res))  # repli texte des options
     for url in (res.get("media") or []):
