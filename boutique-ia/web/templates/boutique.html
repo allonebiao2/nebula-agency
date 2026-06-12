@@ -887,6 +887,15 @@ Horaires du support : 9h-18h, du lundi au vendredi.">{{ merchant.kb_text or '' }
       </div>
 
       <div style="border-top:1px solid var(--hair);margin-top:18px;padding-top:14px">
+        <label>Lire mon site automatiquement <span style="color:var(--mut2)">(l'agent parcourt vos pages et apprend)</span></label>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:4px">
+          <input id="siteUrl" placeholder="https://votre-site.com" style="flex:1;min-width:200px">
+          <button class="btn pri sm" type="button" onclick="readSite()">Lire mon site</button>
+        </div>
+        <p class="hint" style="margin:6px 0 0">Donnez l'adresse de votre site : l'agent en lit le contenu (plusieurs pages) et l'ajoute à sa base. Refaites-le quand votre site change.</p>
+      </div>
+
+      <div style="border-top:1px solid var(--hair);margin-top:18px;padding-top:14px">
         <label>Rapport support <span style="color:var(--mut2)">(questions récurrentes + corrections à faire)</span></label>
         <div style="margin-top:6px"><button class="btn pri sm" type="button" onclick="genReport()">Générer mon rapport</button></div>
         <div id="reportBox" class="hint" style="white-space:pre-wrap;margin-top:10px"></div>
@@ -1616,6 +1625,7 @@ async function uploadPdf(){
 }
 async function delDoc(id){ const d=await api(`/api/merchants/${MID}/support/knowledge/${id}/delete`,'POST',{}); if(d&&d.ok) location.reload(); else notify('Erreur', true); }
 async function genReport(){ const b=document.getElementById('reportBox'); b.textContent='Génération en cours…'; const d=await api(`/api/merchants/${MID}/support/report`,'POST',{}); b.textContent=(d&&d.ok)?d.report:((d&&d.error)||'Erreur'); }
+async function readSite(){ const u=(document.getElementById('siteUrl').value||'').trim(); if(!u){notify("Entrez l'adresse de votre site", true); return;} notify('Lecture du site en cours…'); const d=await api(`/api/merchants/${MID}/support/site`,'POST',{url:u}); if(d&&d.ok){ notify('Site lu ✓ ('+d.chars+' caractères ajoutés)'); setTimeout(()=>location.reload(),800); } else notify((d&&d.error)||'Erreur', true); }
 function copyCat(btn){ navigator.clipboard.writeText(document.getElementById('catlink').value); btn.innerHTML='<svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Copié'; }
 function goTo(id){ const el=document.getElementById(id); if(el){ el.scrollIntoView({behavior:'smooth', block:'start'}); } }
 function previewBrand(c){ root.style.setProperty('--a', c); }

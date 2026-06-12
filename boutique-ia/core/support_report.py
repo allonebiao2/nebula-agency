@@ -28,6 +28,8 @@ et actionnable pour le patron (non technique). Structure :
 4) CORRECTIONS SUGGÉRÉES (la partie la plus importante) — dis concrètement au patron
    quoi AJOUTER à sa FAQ, quoi CLARIFIER, ou quoi CORRIGER dans son produit/service
    pour que ces problèmes ne reviennent plus.
+5) RÉSUMÉ DES PRINCIPAUX VISITEURS — à partir de la liste fournie, dis en quelques
+   lignes qui est venu et ce que chacun voulait (regroupe les cas similaires).
 
 Règles : n'invente RIEN (uniquement à partir des données fournies). Pas de markdown
 lourd (pas de #, pas de **), des tirets simples. Ton direct, bienveillant et utile."""
@@ -53,12 +55,23 @@ def generate_report(merchant: dict) -> str:
 
     q_block = "\n".join("- " + q[:220] for q in questions[:150]) or "(aucune)"
     t_block = "\n".join("- " + (t.get("summary") or "")[:180] for t in tickets[:50]) or "(aucun)"
+    by_visitor: dict[str, list[str]] = {}
+    for mrow in msgs:
+        if mrow.get("role") != "customer":
+            continue
+        c = (mrow.get("content") or "").strip()
+        if c:
+            by_visitor.setdefault(mrow.get("customer_whatsapp") or "?", []).append(c)
+    vis_block = "\n".join("- " + who + " : " + (" | ".join(qs))[:300]
+                         for who, qs in list(by_visitor.items())[:25]) or "(aucun)"
     name = merchant.get("business_name") or "le business"
     user = (f"Business : {name}\n"
             f"Questions reçues (7 derniers jours) : {len(questions)}\n"
-            f"Tickets escaladés : {len(tickets)}\n\n"
+            f"Tickets escaladés : {len(tickets)}\n"
+            f"Visiteurs distincts : {len(by_visitor)}\n\n"
             f"QUESTIONS DES UTILISATEURS :\n{q_block}\n\n"
-            f"TICKETS ESCALADÉS :\n{t_block}")
+            f"TICKETS ESCALADÉS :\n{t_block}\n\n"
+            f"VISITEURS & CE QU'ILS ONT DEMANDÉ :\n{vis_block}")
     try:
         settings.require("anthropic_api_key")
         client = anthropic.Anthropic(api_key=settings.anthropic_api_key)

@@ -357,6 +357,7 @@ _WIDGET_JS = r'''
   var name=C.name||'nous'; var api=(C.api||'').replace(/\/+$/,''); var code=C.code||'';
   if(!code) return;
   var hist=[];
+  var vid=''; try{vid=localStorage.getItem('vsb_vid')||'';if(!vid){vid='v'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);localStorage.setItem('vsb_vid',vid);}}catch(e){}
   var css=document.createElement('style'); css.textContent=
     '.vsb-btn{position:fixed;right:20px;bottom:20px;z-index:2147483000;display:flex;align-items:center;gap:9px;background:'+color+';color:#fff;border:none;border-radius:40px;padding:13px 18px;font:600 14px system-ui,sans-serif;cursor:pointer;box-shadow:0 8px 26px '+color+'66;animation:vsbp 2.2s infinite}'
    +'@keyframes vsbp{0%{box-shadow:0 8px 26px '+color+'66,0 0 0 0 '+color+'66}70%{box-shadow:0 8px 26px '+color+'66,0 0 0 16px '+color+'00}100%{box-shadow:0 8px 26px '+color+'66,0 0 0 0 '+color+'00}}'
@@ -387,7 +388,7 @@ _WIDGET_JS = r'''
   btn.onclick=function(){p.classList.contains('vopen')?p.classList.remove('vopen'):op();};
   p.querySelector('.vsb-x').onclick=function(){p.classList.remove('vopen');};
   function go(){var t=inp.value.trim();if(!t)return;inp.value='';add('u',t);hist.push({role:'customer',content:t});var ty=add('a','...');
-    fetch(api+'/api/support/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code,message:t,history:hist})})
+    fetch(api+'/api/support/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code,message:t,history:hist,visitor:vid})})
     .then(function(r){return r.json();}).then(function(d){ty.textContent=d.reply||'Desole, reessayez.';hist.push({role:'assistant',content:ty.textContent});})
     .catch(function(){ty.textContent='Connexion impossible, reessayez.';});}
   snd.onclick=go; inp.addEventListener('keydown',function(e){if(e.key==='Enter')go();});
@@ -441,7 +442,13 @@ async def support_chat(request: Request):
     hist = [{"role": ("assistant" if h.get("role") == "assistant" else "customer"),
              "content": (h.get("content") or "")} for h in (body.get("history") or [])[-12:]
             if h.get("content")]
-    contact = (body.get("contact") or "(visiteur site web)")
+    visitor = "site:" + ((body.get("visitor") or "").strip()[:40] or "anon")
+    contact = (body.get("contact") or visitor)
+    try:
+        from db.client import save_message
+        save_message(merchant["id"], visitor, "customer", msg)  # log visiteur (rapport)
+    except Exception:  # noqa: BLE001
+        pass
 
     def _on_escalate(d: dict) -> None:
         try:
@@ -467,6 +474,11 @@ async def support_chat(request: Request):
     except Exception:  # noqa: BLE001
         log.exception("support widget chat échoué")
         ans = "Désolé, petit souci technique — réessayez dans un instant 🙏"
+    try:
+        from db.client import save_message
+        save_message(merchant["id"], visitor, "assistant", ans)
+    except Exception:  # noqa: BLE001
+        pass
     return JSONResponse({"reply": ans}, headers=cors)
 
 
@@ -2870,6 +2882,30 @@ async def support_report_endpoint(request: Request, merchant_id: str):
     if not m:
         return JSONResponse({"ok": False, "error": "Boutique introuvable"}, status_code=404)
     return {"ok": True, "report": support_report.generate_report(m)}
+
+
+@app.post("/api/merchants/{merchant_id}/support/site")
+async def read_support_site(request: Request, merchant_id: str):
+    """Lit le site du client (URL) et l'ajoute à la base de connaissances de l'agent."""
+    from core import site_reader
+    from db.client import add_knowledge
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    try:
+        body = await request.json()
+    except Exception:  # noqa: BLE001
+        return JSONResponse({"ok": False, "error": "JSON invalide"}, status_code=400)
+    url = (body.get("url") or "").strip()
+    if not url:
+        return JSONResponse({"ok": False, "error": "Donnez l'adresse de votre site."}, status_code=400)
+    text = site_reader.fetch_site_text(url)
+    if not text:
+        return JSONResponse({"ok": False,
+                             "error": "Impossible de lire ce site (adresse invalide ou inaccessible)."},
+                            status_code=400)
+    add_knowledge(merchant_id, content=text, title="Site : " + url[:120], kind="link")
+    return {"ok": True, "chars": len(text)}
 
 
 @app.post("/api/merchants/{merchant_id}/products/{product_id}/images/{image_id}/delete")
