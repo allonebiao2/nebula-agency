@@ -346,6 +346,130 @@ async def wa_redirect(code: str):
     return RedirectResponse(target or "/", status_code=302)
 
 
+# ---------------------------------------------------------------------------
+# Vendora Support — widget de chat à embarquer sur le site du client (lot 6)
+# Une ligne <script src=".../widget.js?code=CODE"> → bouton lumineux + chat.
+# ---------------------------------------------------------------------------
+_WIDGET_JS = r'''
+(function(){
+  if(window.__vendoraSupport) return; window.__vendoraSupport=1;
+  var C=window.VENDORA_CFG||{}; var color=C.color||'#10b981';
+  var name=C.name||'nous'; var api=(C.api||'').replace(/\/+$/,''); var code=C.code||'';
+  if(!code) return;
+  var hist=[];
+  var css=document.createElement('style'); css.textContent=
+    '.vsb-btn{position:fixed;right:20px;bottom:20px;z-index:2147483000;display:flex;align-items:center;gap:9px;background:'+color+';color:#fff;border:none;border-radius:40px;padding:13px 18px;font:600 14px system-ui,sans-serif;cursor:pointer;box-shadow:0 8px 26px '+color+'66;animation:vsbp 2.2s infinite}'
+   +'@keyframes vsbp{0%{box-shadow:0 8px 26px '+color+'66,0 0 0 0 '+color+'66}70%{box-shadow:0 8px 26px '+color+'66,0 0 0 16px '+color+'00}100%{box-shadow:0 8px 26px '+color+'66,0 0 0 0 '+color+'00}}'
+   +'.vsb-btn svg{width:20px;height:20px}'
+   +'.vsb-panel{position:fixed;right:20px;bottom:86px;z-index:2147483000;width:360px;max-width:calc(100vw - 32px);height:520px;max-height:calc(100vh - 120px);background:#fff;border-radius:18px;box-shadow:0 18px 60px rgba(0,0,0,.28);display:none;flex-direction:column;overflow:hidden;font:14px system-ui,sans-serif}'
+   +'.vsb-panel.vopen{display:flex}'
+   +'.vsb-h{background:'+color+';color:#fff;padding:15px 18px;font-weight:700;display:flex;justify-content:space-between;align-items:center}'
+   +'.vsb-h small{display:block;font-weight:400;opacity:.85;font-size:11.5px;margin-top:2px}'
+   +'.vsb-x{cursor:pointer;font-size:22px;line-height:1;background:none;border:none;color:#fff}'
+   +'.vsb-m{flex:1;overflow-y:auto;padding:16px;background:#f6f7f9;display:flex;flex-direction:column;gap:9px}'
+   +'.vsb-b{max-width:82%;padding:9px 12px;border-radius:14px;line-height:1.45;white-space:pre-wrap;word-wrap:break-word}'
+   +'.vsb-b.u{align-self:flex-end;background:'+color+';color:#fff;border-bottom-right-radius:4px}'
+   +'.vsb-b.a{align-self:flex-start;background:#fff;color:#1a1a1a;border:1px solid #e6e8ec;border-bottom-left-radius:4px}'
+   +'.vsb-f{display:flex;gap:8px;padding:10px;border-top:1px solid #eee;background:#fff}'
+   +'.vsb-f input{flex:1;border:1px solid #dfe2e7;border-radius:22px;padding:10px 14px;font:14px system-ui;outline:none}'
+   +'.vsb-f button{background:'+color+';color:#fff;border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:15px}'
+   +'.vsb-c{text-align:center;font-size:10px;color:#9aa1ab;padding:5px}';
+  document.head.appendChild(css);
+  var btn=document.createElement('button'); btn.className='vsb-btn';
+  btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Discuter avec nous</span>';
+  document.body.appendChild(btn);
+  var p=document.createElement('div'); p.className='vsb-panel';
+  p.innerHTML='<div class="vsb-h"><div>'+name+'<small>On vous repond tout de suite</small></div><button class="vsb-x">&times;</button></div><div class="vsb-m"></div><div class="vsb-f"><input placeholder="Votre message..."><button>&#10148;</button></div><div class="vsb-c">Propulse par Vendora</div>';
+  document.body.appendChild(p);
+  var m=p.querySelector('.vsb-m'), inp=p.querySelector('input'), snd=p.querySelector('.vsb-f button');
+  function add(r,t){var d=document.createElement('div');d.className='vsb-b '+(r==='u'?'u':'a');d.textContent=t;m.appendChild(d);m.scrollTop=m.scrollHeight;return d;}
+  function op(){p.classList.add('vopen');if(!hist.length)add('a','Bonjour ! Comment puis-je vous aider ?');inp.focus();}
+  btn.onclick=function(){p.classList.contains('vopen')?p.classList.remove('vopen'):op();};
+  p.querySelector('.vsb-x').onclick=function(){p.classList.remove('vopen');};
+  function go(){var t=inp.value.trim();if(!t)return;inp.value='';add('u',t);hist.push({role:'customer',content:t});var ty=add('a','...');
+    fetch(api+'/api/support/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code,message:t,history:hist})})
+    .then(function(r){return r.json();}).then(function(d){ty.textContent=d.reply||'Desole, reessayez.';hist.push({role:'assistant',content:ty.textContent});})
+    .catch(function(){ty.textContent='Connexion impossible, reessayez.';});}
+  snd.onclick=go; inp.addEventListener('keydown',function(e){if(e.key==='Enter')go();});
+})();
+'''
+
+
+@app.get("/widget.js")
+async def support_widget_js(code: str = ""):
+    """Sert le widget de chat support à embarquer sur le site du client."""
+    import json as _json
+    from db.client import get_merchant_by_code
+    m = get_merchant_by_code((code or "").strip().lower()) if code else None
+    cfg = _json.dumps({
+        "name": (m.get("business_name") if m else "") or "nous",
+        "color": (m.get("brand_color") if m else "") or "#10b981",
+        "api": (getattr(settings, "public_base_url", None) or "").rstrip("/"),
+        "code": (code or "").strip().lower(),
+    })
+    js = "window.VENDORA_CFG=" + cfg + ";\n" + _WIDGET_JS
+    return Response(content=js, media_type="application/javascript",
+                    headers={"Access-Control-Allow-Origin": "*", "Cache-Control": "public, max-age=300"})
+
+
+@app.options("/api/support/chat")
+async def support_chat_preflight():
+    return Response(status_code=204, headers={
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+    })
+
+
+@app.post("/api/support/chat")
+async def support_chat(request: Request):
+    """Endpoint du widget : l'agent support répond aux visiteurs du site du client."""
+    from core import support_agent
+    from db.client import create_support_ticket, get_merchant_by_code, knowledge_text_for
+    cors = {"Access-Control-Allow-Origin": "*"}
+    try:
+        body = await request.json()
+    except Exception:  # noqa: BLE001
+        return JSONResponse({"error": "bad_json"}, status_code=400, headers=cors)
+    code = (body.get("code") or "").strip().lower()
+    msg = (body.get("message") or "").strip()
+    merchant = get_merchant_by_code(code) if code else None
+    if not merchant:
+        return JSONResponse({"error": "unknown"}, status_code=404, headers=cors)
+    if (merchant.get("agent_role") or "vendeur") != "support":
+        return JSONResponse({"reply": "Le support en ligne n'est pas activé."}, headers=cors)
+    hist = [{"role": ("assistant" if h.get("role") == "assistant" else "customer"),
+             "content": (h.get("content") or "")} for h in (body.get("history") or [])[-12:]
+            if h.get("content")]
+    contact = (body.get("contact") or "(visiteur site web)")
+
+    def _on_escalate(d: dict) -> None:
+        try:
+            create_support_ticket(merchant["id"], user_contact=contact, channel="widget",
+                                  summary=d.get("probleme"), severity=d.get("gravite"))
+        except Exception:  # noqa: BLE001
+            pass
+        try:
+            _escalation_notifier(merchant, contact)(
+                {"raison": "Support (site web)", "resume": d.get("probleme") or "", "nom_client": ""})
+        except Exception:  # noqa: BLE001
+            pass
+
+    try:
+        kb_docs = knowledge_text_for(merchant["id"])
+    except Exception:  # noqa: BLE001
+        kb_docs = ""
+    try:
+        ans = support_agent.reply(merchant, msg, history=hist,
+                                  kb_text=merchant.get("kb_text") or "",
+                                  kb_instructions=merchant.get("kb_instructions") or "",
+                                  kb_docs=kb_docs, on_escalate=_on_escalate)
+    except Exception:  # noqa: BLE001
+        log.exception("support widget chat échoué")
+        ans = "Désolé, petit souci technique — réessayez dans un instant 🙏"
+    return JSONResponse({"reply": ans}, headers=cors)
+
+
 @app.get("/activation/{merchant_id}", response_class=HTMLResponse)
 async def activation(request: Request, merchant_id: str):
     """Écran 'payez par Mobile Money pour activer'."""
@@ -818,6 +942,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
         support_tickets = list_support_tickets(merchant_id, "open", 30) if support_role else []
     except Exception:  # noqa: BLE001
         support_tickets = []
+    public_base = (getattr(settings, "public_base_url", None) or str(request.base_url)).rstrip("/")
     return templates.TemplateResponse(
         request, "boutique.html",
         _ctx(request, merchant=merchant, merchant_id=merchant_id,
@@ -837,7 +962,8 @@ async def boutique_backoffice(request: Request, merchant_id: str):
              top_clients=top_clients, catalogue_link=catalogue_link,
              prospect_daily=prospect_daily, prospect_used=prospect_used, prospection_soon=prospection_soon,
              prospect_remaining=max(0, prospect_daily - prospect_used),
-             support_role=support_role, support_tickets=support_tickets),
+             support_role=support_role, support_tickets=support_tickets,
+             public_base=public_base),
     )
 
 
