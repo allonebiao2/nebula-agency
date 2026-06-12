@@ -1258,6 +1258,44 @@ def set_optin(merchant_id: str, customer: str, opted_in: bool) -> bool:
         return False
 
 
+# --- Pause IA / reprise humaine (§3 robustesse) ---
+
+def is_ai_paused(merchant_id: str, customer: str) -> bool:
+    """L'agent est-il en PAUSE pour cette conversation (la patronne gère à la main) ?"""
+    if not customer:
+        return False
+    try:
+        r = (get_db().table("bia_ai_pause").select("paused")
+             .eq("merchant_id", merchant_id).eq("customer_whatsapp", customer)
+             .limit(1).execute())
+        return bool(r.data and r.data[0].get("paused"))
+    except Exception:  # noqa: BLE001
+        return False  # défaut sûr : en cas de souci, l'agent répond normalement
+
+
+def set_ai_pause(merchant_id: str, customer: str, paused: bool) -> bool:
+    """Met en pause (ou reprend) l'agent pour une conversation précise."""
+    try:
+        get_db().table("bia_ai_pause").upsert(
+            {"merchant_id": merchant_id, "customer_whatsapp": customer,
+             "paused": bool(paused), "updated_at": "now()"},
+            on_conflict="merchant_id,customer_whatsapp",
+        ).execute()
+        return True
+    except Exception:  # noqa: BLE001
+        return False
+
+
+def paused_customers(merchant_id: str) -> set[str]:
+    """Ensemble des clients dont la conversation est en pause (pour l'affichage back-office)."""
+    try:
+        rows = (get_db().table("bia_ai_pause").select("customer_whatsapp")
+                .eq("merchant_id", merchant_id).eq("paused", True).execute().data or [])
+        return {r.get("customer_whatsapp") for r in rows if r.get("customer_whatsapp")}
+    except Exception:  # noqa: BLE001
+        return set()
+
+
 # ---------------------------------------------------------------------------
 # Commandes (bia_orders) — étage 3
 # ---------------------------------------------------------------------------

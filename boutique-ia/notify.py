@@ -351,6 +351,27 @@ def notify_support_problem(merchant: dict, categorie: str, resume: str) -> None:
     )
 
 
+def notify_paused_inbound(merchant: dict, customer: str | None, text: str) -> None:
+    """Conversation en PAUSE (reprise humaine) : un client a écrit, l'agent s'est tu.
+    On prévient la patronne pour qu'elle réponde elle-même (depuis le back-office)."""
+    who = customer or "—"
+    extrait = (text or "").strip()[:160]
+    notify_mongazi(
+        "✋ <b>Message d'un client (agent en pause)</b>\n\n"
+        f"🏪 {merchant.get('business_name','?')}\n"
+        f"👤 {who}\n"
+        f"💬 {extrait}\n\n"
+        "Vous gérez cette conversation : répondez depuis votre espace (onglet Activité) "
+        "ou réactivez l'agent."
+    )
+    plain = (
+        f"✋ Client en attente (agent en pause) — {merchant.get('business_name','votre boutique')}\n"
+        f"{who} : {extrait}\n"
+        "Répondez depuis votre espace, ou réactivez l'agent."
+    )
+    _whatsapp_owner(merchant.get("owner_whatsapp"), merchant.get("country"), plain)
+
+
 def notify_data_deletion(merchant: dict, customer: str | None) -> None:
     """Prévient le commerçant qu'un client a exercé son droit à l'effacement (APDP)."""
     who = customer or "—"

@@ -819,6 +819,13 @@ async def boutique_backoffice(request: Request, merchant_id: str):
             recent_orders = list_orders(merchant_id, limit=8)
             conversations = list_recent_conversations(merchant_id, limit=8)
             try:
+                from db.client import paused_customers
+                _pset = paused_customers(merchant_id)
+                for c in conversations:
+                    c["paused"] = c.get("customer") in _pset
+            except Exception:  # noqa: BLE001
+                pass
+            try:
                 from db.client import revenue_analytics
                 analytics = revenue_analytics(merchant_id)
             except Exception:  # noqa: BLE001
@@ -2243,6 +2250,58 @@ async def merchant_validate_order_endpoint(request: Request, merchant_id: str, o
     return {"ok": True, "status": order.get("status")}
 
 
+@app.post("/api/merchants/{merchant_id}/conversation/pause")
+async def merchant_conversation_pause(request: Request, merchant_id: str):
+    """Met en pause (ou réactive) l'agent pour UNE conversation client (reprise humaine)."""
+    from db.client import set_ai_pause
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    customer = (body.get("customer") or "").strip()
+    paused = bool(body.get("paused"))
+    if not customer:
+        return JSONResponse({"ok": False, "error": "Client requis."}, status_code=400)
+    ok = set_ai_pause(merchant_id, customer, paused)
+    return {"ok": ok, "paused": paused}
+
+
+@app.post("/api/merchants/{merchant_id}/conversation/send")
+async def merchant_conversation_send(request: Request, merchant_id: str):
+    """Reprise humaine : la patronne envoie elle-même un message au client (via WhatsApp
+    Cloud), puis on l'enregistre dans la conversation. Met aussi la conv en pause."""
+    from db.client import get_merchant, save_message, set_ai_pause
+    from core import whatsapp_meta
+    auth = _need_session(request, merchant_id)
+    if auth:
+        return auth
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    customer = (body.get("customer") or "").strip()
+    text = (body.get("text") or "").strip()
+    if not customer or not text:
+        return JSONResponse({"ok": False, "error": "Client et message requis."}, status_code=400)
+    if not get_merchant(merchant_id):
+        return JSONResponse({"ok": False, "error": "Boutique introuvable."}, status_code=404)
+    if not whatsapp_meta.configured():
+        return JSONResponse({"ok": False, "error": "Envoi direct indisponible (canal WhatsApp "
+                             "non configuré). Répondez depuis votre WhatsApp habituel."}, status_code=503)
+    sent = whatsapp_meta.send_text(customer, text)
+    if not sent:
+        return JSONResponse({"ok": False, "error": "Échec de l'envoi. Réessayez."}, status_code=502)
+    try:
+        save_message(merchant_id, customer, "assistant", text)
+        set_ai_pause(merchant_id, customer, True)  # tant qu'elle gère, l'agent reste en pause
+    except Exception:  # noqa: BLE001
+        log.warning("save manual reply échoué", exc_info=True)
+    return {"ok": True}
+
+
 @app.post("/api/merchants/{merchant_id}/notifications/{notif_id}/done")
 async def merchant_notification_done(request: Request, merchant_id: str, notif_id: str):
     """Marque une notification (ex. lead chaud) comme traitée → elle disparaît du feed."""
@@ -3174,6 +3233,21 @@ def _agent_handle(customer: str, body_text: str, has_audio: bool = False,
     except Exception:  # noqa: BLE001
         log.exception("assistant propriétaire échoué — repli vendeur")
 
+    # ── Pause IA / reprise humaine : si la patronne a pris la main sur cette
+    # conversation, l'agent SE TAIT (on garde le message client + on la prévient).
+    try:
+        from db.client import is_ai_paused
+        if is_ai_paused(merchant["id"], customer):
+            save_message(merchant["id"], customer, "customer", clean)
+            try:
+                from notify import notify_paused_inbound
+                notify_paused_inbound(merchant, customer, clean)
+            except Exception:  # noqa: BLE001
+                log.warning("notif message en pause échouée", exc_info=True)
+            return {"status": "paused", "media": [], "text": ""}
+    except Exception:  # noqa: BLE001
+        log.warning("vérif pause IA échouée", exc_info=True)
+
     # ── Agent SUPPORT (2e pilier) : si la boutique est en mode support, l'agent
     # répond aux UTILISATEURS depuis SA base de connaissances (pas le vendeur).
     if (merchant.get("agent_role") or "vendeur") == "support":
@@ -3337,6 +3411,9 @@ async def whatsapp_twilio(request: Request):
     except Exception:  # noqa: BLE001
         log.exception("whatsapp (twilio) reply échoué")
         return _twiml("Un instant, je vérifie avec la boutique et je reviens vers vous 🙏")
+    if res.get("status") == "paused":
+        return Response(content='<?xml version="1.0" encoding="UTF-8"?><Response></Response>',
+                        media_type="application/xml")  # reprise humaine : aucune réponse auto
     return _twiml(_text_with_options(res), res.get("media"))
 
 
@@ -3388,6 +3465,8 @@ def _process_meta_message(msg: dict) -> None:
         log.exception("whatsapp (meta) reply échoué")
         whatsapp_meta.send_text(wa_id, "Un instant, je reviens vers vous 🙏")
         return
+    if res.get("status") == "paused":
+        return  # reprise humaine : l'agent ne répond pas, la patronne gère
     btns = res.get("buttons") or []
     if btns:
         whatsapp_meta.send_choice(wa_id, res["text"], btns)  # boutons/liste natifs
@@ -3483,6 +3562,8 @@ def _process_messenger_message(msg: dict) -> None:
         log.exception("messenger reply échoué")
         messenger_meta.send_text(sender, "Un instant, je reviens vers vous 🙏")
         return
+    if res.get("status") == "paused":
+        return  # reprise humaine : pas de réponse auto
     messenger_meta.send_text(sender, _text_with_options(res))  # repli texte des options
     for url in (res.get("media") or []):
         messenger_meta.send_image(sender, url)

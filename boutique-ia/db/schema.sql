@@ -516,3 +516,12 @@ create table if not exists bia_optin (
 
 -- Paiement en chat (semi-auto MoMo) : montant ANNONCÉ par le client (rapprochement / total).
 alter table bia_orders add column if not exists payment_amount numeric;
+
+-- 22. Pause IA / reprise humaine : conversation (merchant, client) où l'agent se tait.
+create table if not exists bia_ai_pause (
+  merchant_id       uuid not null references bia_merchants(id) on delete cascade,
+  customer_whatsapp text not null,
+  paused            boolean not null default true,
+  updated_at        timestamptz default now(),
+  primary key (merchant_id, customer_whatsapp)
+);

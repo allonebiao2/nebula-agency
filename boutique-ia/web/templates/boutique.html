@@ -1321,11 +1321,19 @@ Horaires du support : 9h-18h, du lundi au vendredi.">{{ merchant.kb_text or '' }
       {% endif %}
 
       <div class="ah" style="margin-top:24px">Dernières conversations</div>
+      <p class="hint" style="margin-top:-4px">Vous pouvez <b>mettre l'agent en pause</b> sur une conversation pour répondre vous-même, puis le réactiver.</p>
       {% if conversations %}
         {% for c in conversations %}
-        <div class="actrow"><div>
-          <div class="an">{{ c.customer }} <span class="tag">{{ c.count }} msg</span></div>
+        <div class="actrow" data-cust="{{ c.customer }}"><div style="flex:1;min-width:0">
+          <div class="an">{{ c.customer }} <span class="tag">{{ c.count }} msg</span>{% if c.paused %} <span class="tag" style="background:#e0a93b;color:#111">agent en pause</span>{% endif %}</div>
           <div class="ad">{{ ('Agent : ' if c.last_role == 'assistant' else 'Client : ') }}{{ c.last[:90] if c.last else '' }}</div>
+          <div style="display:flex;gap:8px;margin-top:9px;flex-wrap:wrap;align-items:center">
+            <button class="btn" type="button" style="padding:7px 12px;font-size:13px" onclick="togglePause('{{ c.customer }}', {{ 'false' if c.paused else 'true' }}, this)">{{ "Réactiver l'agent" if c.paused else 'Pause IA (je gère)' }}</button>
+            {% if c.paused %}
+            <input class="manual-msg" type="text" placeholder="Votre réponse au client…" style="flex:1;min-width:160px;padding:8px 11px;border-radius:10px;border:1px solid var(--hair);background:var(--panel,#15151b);color:var(--txt,#eee);font-size:13px">
+            <button class="btn" type="button" style="padding:7px 12px;font-size:13px;background:#16f08b;color:#062b18;border-color:#16f08b" onclick="sendManual('{{ c.customer }}', this)">Envoyer</button>
+            {% endif %}
+          </div>
         </div></div>
         {% endfor %}
       {% else %}
@@ -1950,6 +1958,31 @@ async function validateOrder(id, action, btn){
     if(row){ row.style.transition='opacity .3s'; row.style.opacity='0'; setTimeout(()=>row.remove(), 320); }
     setTimeout(()=>location.reload(), 1100);
   }catch(ex){ notify(ex.message, true); btns.forEach(b=>b.disabled=false); }
+}
+
+/* Pause IA / reprise humaine */
+async function togglePause(customer, paused, btn){
+  btn.disabled = true;
+  try{
+    const d = await api(`/api/merchants/${MID}/conversation/pause`, 'POST', {customer, paused});
+    if(!d.ok){ notify(d.error||'Erreur', true); btn.disabled=false; return; }
+    notify(paused ? 'Agent en pause sur cette conversation — à vous de jouer 🙂' : "Agent réactivé ✅");
+    setTimeout(()=>location.reload(), 700);
+  }catch(ex){ notify(ex.message, true); btn.disabled=false; }
+}
+async function sendManual(customer, btn){
+  const row = btn.closest('.actrow');
+  const input = row ? row.querySelector('.manual-msg') : null;
+  const text = input ? input.value.trim() : '';
+  if(!text){ notify('Écrivez un message.', true); return; }
+  btn.disabled = true;
+  try{
+    const d = await api(`/api/merchants/${MID}/conversation/send`, 'POST', {customer, text});
+    if(!d.ok){ notify(d.error||'Envoi impossible', true); btn.disabled=false; return; }
+    notify('Message envoyé au client ✅');
+    if(input) input.value='';
+    btn.disabled=false;
+  }catch(ex){ notify(ex.message, true); btn.disabled=false; }
 }
 
 /* Prospection */
