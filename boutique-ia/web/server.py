@@ -260,17 +260,26 @@ def _appointment_recorder(merchant: dict, customer: str | None):
 def _payment_recorder(merchant: dict, customer: str | None):
     """Callback : le client annonce un paiement → on attache la preuve à sa dernière
     commande (passe en 'à valider') et on prévient le/la propriétaire."""
-    from db.client import attach_payment_to_latest_pending
+    from db.client import attach_payment_to_latest_pending, payment_ref_already_used
     from notify import notify_payment_to_validate
 
     def _on_payment(data: dict) -> None:
+        ref = (data.get("transaction_id") or "").strip() or None
         order = attach_payment_to_latest_pending(
             merchant["id"], customer,
-            ref=(data.get("transaction_id") or "").strip() or None,
+            ref=ref,
             network=(data.get("reseau") or "").strip() or None,
+            amount=data.get("montant"),
         )
+        # Anti-fraude léger : la même référence a-t-elle déjà servi ?
+        reused = False
         try:
-            notify_payment_to_validate(merchant, order or {}, data)
+            reused = payment_ref_already_used(merchant["id"], ref,
+                                              exclude_order_id=(order or {}).get("id"))
+        except Exception:  # noqa: BLE001
+            pass
+        try:
+            notify_payment_to_validate(merchant, order or {}, data, reused=reused)
         except Exception:  # noqa: BLE001
             log.warning("alerte paiement à valider échouée", exc_info=True)
 

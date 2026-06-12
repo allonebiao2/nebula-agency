@@ -1248,6 +1248,13 @@ Horaires du support : 9h-18h, du lundi au vendredi.">{{ merchant.kb_text or '' }
               {% if o.payment_ref %}Transaction : <span class="mono">{{ o.payment_ref }}</span> · {% endif %}
               {% if o.customer_whatsapp %}{{ o.customer_whatsapp }}{% endif %}
             </div>
+            {% if o.payment_amount is not none and o.total is not none %}
+            <div class="ad" style="margin-top:4px;font-size:13px;font-weight:700">
+              {% if (o.payment_amount - o.total)|abs < 1 %}<span style="color:#16f08b">✅ Montant annoncé OK</span>
+              {% elif o.payment_amount < o.total %}<span style="color:#e0a93b">⚠️ Annoncé {{ "{:,}".format(o.payment_amount|int).replace(",", " ") }} F &lt; total {{ "{:,}".format(o.total|int).replace(",", " ") }} F</span>
+              {% else %}<span style="color:#e0a93b">⚠️ Annoncé {{ "{:,}".format(o.payment_amount|int).replace(",", " ") }} F &gt; total</span>{% endif %}
+            </div>
+            {% endif %}
           </div>
           <div class="pp" style="text-align:right">
             {% if o.total is not none %}<div><span class="mono" style="font-size:18px;font-weight:800">{{ "{:,}".format(o.total|int).replace(",", " ") }}</span> F</div>{% endif %}

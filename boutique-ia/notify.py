@@ -124,9 +124,27 @@ def notify_new_order(merchant: dict, order: dict, items: list[dict]) -> None:
     _whatsapp_owner(merchant.get("owner_whatsapp"), merchant.get("country"), plain)
 
 
-def notify_payment_to_validate(merchant: dict, order: dict, data: dict) -> None:
+def _payment_match_line(total, paid) -> str:
+    """Compare le montant ANNONCÉ par le client au total de la commande.
+    Retourne une ligne courte (✅ concorde / ⚠️ écart), ou '' si pas comparable."""
+    try:
+        if total is None or paid is None:
+            return ""
+        t, p = float(total), float(paid)
+    except (TypeError, ValueError):
+        return ""
+    if abs(p - t) < 1:
+        return f"✅ Montant annoncé OK ({_fmt_fcfa(p)})"
+    if p < t:
+        return f"⚠️ Montant annoncé INSUFFISANT : {_fmt_fcfa(p)} pour un total de {_fmt_fcfa(t)}"
+    return f"⚠️ Montant annoncé SUPÉRIEUR : {_fmt_fcfa(p)} pour un total de {_fmt_fcfa(t)}"
+
+
+def notify_payment_to_validate(merchant: dict, order: dict, data: dict,
+                               reused: bool = False) -> None:
     """Prévient le commerçant qu'un client annonce un PAIEMENT à valider (Mobile Money).
 
+    `reused` : la référence de transaction a déjà servi (alerte anti-fraude).
     Le commerçant retrouve la même alerte dans son back-office (onglet Validation),
     où il confirme (vert) ou rejette (rouge).
     """
@@ -134,22 +152,31 @@ def notify_payment_to_validate(merchant: dict, order: dict, data: dict) -> None:
               or data.get("nom_client") or "—")
     ref = (data.get("transaction_id") or order.get("payment_ref") or "—")
     net = (data.get("reseau") or order.get("payment_network") or "")
-    montant = order.get("total") if order.get("total") is not None else data.get("montant")
+    total = order.get("total")
+    paid = order.get("payment_amount") if order.get("payment_amount") is not None else data.get("montant")
+    montant = total if total is not None else paid
+    match = _payment_match_line(total, paid)
+    reused_line = ("⚠️ <b>Référence DÉJÀ utilisée</b> pour une autre commande — à vérifier !"
+                   if reused else "")
     notify_mongazi(
         "💳 <b>Paiement à valider !</b>\n\n"
         f"🏪 {merchant.get('business_name','?')}\n"
         f"👤 Client : {client}\n"
         f"🔖 Réseau : {net or '—'}\n"
         f"🧾 Transaction : <code>{ref}</code>\n"
-        f"💰 Montant : <b>{_fmt_fcfa(montant)}</b>\n\n"
-        "À confirmer dans votre back-office (onglet Validation) ✅/❌"
+        f"💰 Total commande : <b>{_fmt_fcfa(montant)}</b>\n"
+        + (f"{match}\n" if match else "")
+        + (f"{reused_line}\n" if reused_line else "")
+        + "\nÀ confirmer dans votre back-office (onglet Validation) ✅/❌"
     )
     plain = (
         f"💳 Paiement à valider — {merchant.get('business_name','votre boutique')}\n"
         f"Client : {client}\n"
         f"Réseau : {net or '—'} · Transaction : {ref}\n"
-        f"Montant : {_fmt_fcfa(montant)}\n"
-        "Ouvrez votre espace (onglet Validation) pour confirmer ou rejeter."
+        f"Total : {_fmt_fcfa(montant)}\n"
+        + (f"{match}\n" if match else "")
+        + ("⚠️ Référence déjà utilisée — à vérifier !\n" if reused else "")
+        + "Ouvrez votre espace (onglet Validation) pour confirmer ou rejeter."
     )
     _whatsapp_owner(merchant.get("owner_whatsapp"), merchant.get("country"), plain)
 

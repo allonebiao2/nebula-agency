@@ -136,7 +136,9 @@ PAYMENT_TOOL = {
         "Enregistre que le client DIT avoir PAYÉ par Mobile Money et transmet la preuve "
         "au/à la propriétaire pour validation. À appeler quand le client confirme avoir "
         "envoyé l'argent ET donne une référence : l'ID/numéro de transaction du SMS MoMo "
-        "(et son réseau si possible : MTN, Moov, Celtis…). Appelle-le UNE seule fois, puis "
+        "(et son réseau si possible : MTN, Moov, Celtis…). Renseigne AUSSI le « montant » "
+        "payé s'il l'indique ou s'il correspond au total convenu : ça permet à la boutique "
+        "de vérifier que la somme reçue est la bonne. Appelle-le UNE seule fois, puis "
         "remercie le client et dis-lui que la boutique vérifie et confirme. N'invente JAMAIS "
         "une référence : si le client n'en donne pas, demande-la-lui gentiment."
     ),

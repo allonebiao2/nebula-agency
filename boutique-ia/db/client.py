@@ -1390,9 +1390,11 @@ def set_order_status(order_id: str, merchant_id: str, status: str) -> dict[str, 
 
 
 def attach_payment_to_latest_pending(merchant_id: str, customer: str | None,
-                                     ref: str | None, network: str | None) -> dict[str, Any]:
+                                     ref: str | None, network: str | None,
+                                     amount: Any = None) -> dict[str, Any]:
     """Le client annonce un paiement : on attache la preuve à sa dernière commande
-    'pending' et on la passe en 'paid_pending_validation'. Retourne la commande."""
+    'pending' et on la passe en 'paid_pending_validation'. `amount` = montant ANNONCÉ
+    par le client (pour le rapprocher du total). Retourne la commande."""
     if not customer:
         return {}
     try:
@@ -1407,15 +1409,35 @@ def attach_payment_to_latest_pending(merchant_id: str, customer: str | None,
     if not rows:
         return {}
     oid = rows[0]["id"]
-    fields = {"status": "paid_pending_validation",
+    fields: dict[str, Any] = {"status": "paid_pending_validation",
               "payment_ref": (ref or "").strip() or None,
               "payment_network": (network or "").strip() or None,
               "payment_method": "mobile_money"}
+    try:
+        fields["payment_amount"] = float(amount) if amount is not None else None
+    except (TypeError, ValueError):
+        pass
     try:
         res = (get_db().table("bia_orders").update(fields).eq("id", oid).execute())
         return res.data[0] if res.data else {}
     except Exception:  # noqa: BLE001
         return {}
+
+
+def payment_ref_already_used(merchant_id: str, ref: str | None,
+                             exclude_order_id: str | None = None) -> bool:
+    """Anti-fraude léger : cette référence de transaction a-t-elle DÉJÀ servi pour
+    une autre commande de la boutique ? (même preuve réutilisée)."""
+    ref = (ref or "").strip()
+    if not ref:
+        return False
+    try:
+        rows = (get_db().table("bia_orders").select("id")
+                .eq("merchant_id", merchant_id).eq("payment_ref", ref)
+                .limit(5).execute().data or [])
+    except Exception:  # noqa: BLE001
+        return False
+    return any(r.get("id") != exclude_order_id for r in rows)
 
 
 def list_recent_conversations(merchant_id: str, limit: int = 8) -> list[dict[str, Any]]:

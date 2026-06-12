@@ -513,3 +513,6 @@ create table if not exists bia_optin (
   updated_at        timestamptz default now(),
   primary key (merchant_id, customer_whatsapp)
 );
+
+-- Paiement en chat (semi-auto MoMo) : montant ANNONCÉ par le client (rapprochement / total).
+alter table bia_orders add column if not exists payment_amount numeric;
