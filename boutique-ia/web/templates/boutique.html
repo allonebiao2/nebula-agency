@@ -1275,6 +1275,33 @@ Horaires du support : 9h-18h, du lundi au vendredi.">{{ merchant.kb_text or '' }
   <section class="reveal" id="activite">
     <div class="shead"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg></div><h2>Activité de mon agent</h2></div>
     <div class="panel">
+      {% if analytics %}
+      <div class="ah">Mes chiffres</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px;margin-bottom:6px">
+        {% set acards = [
+          ('CA ce mois', "{:,}".format(analytics.ca_month|int).replace(",", " ") ~ ' F', analytics.orders_month ~ ' commande(s)'),
+          ('CA cette semaine', "{:,}".format(analytics.ca_week|int).replace(",", " ") ~ ' F', analytics.orders_week ~ ' commande(s)'),
+          ("CA aujourd'hui", "{:,}".format(analytics.ca_today|int).replace(",", " ") ~ ' F', analytics.orders_today ~ ' commande(s)'),
+          ('Panier moyen', "{:,}".format(analytics.panier_moyen|int).replace(",", " ") ~ ' F', analytics.orders_total ~ ' au total'),
+          ('Taux de conversion', analytics.conversion ~ ' %', analytics.conversations ~ ' clients ont écrit'),
+          ('Clients fidèles', analytics.repeat_clients|string, 'ont commandé +1 fois')
+        ] %}
+        {% for title, val, sub in acards %}
+        <div style="border:1px solid var(--line,#26262e);border-radius:12px;padding:12px;background:var(--panel,#15151b)">
+          <div style="font-size:12px;color:var(--mut2)">{{ title }}</div>
+          <div style="font-weight:800;font-size:18px"><span class="mono">{{ val }}</span></div>
+          <div style="font-size:11px;color:var(--mut2)">{{ sub }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      {% if analytics.top_revenue %}
+      <div style="font-size:13px;color:var(--mut2);margin:2px 0 18px">
+        🏆 Top produits (par chiffre d'affaires) :
+        {% for name, rev in analytics.top_revenue %}<b style="color:var(--txt,#eee)">{{ name }}</b> ({{ "{:,}".format(rev|int).replace(",", " ") }} F){% if not loop.last %} · {% endif %}{% endfor %}
+      </div>
+      {% endif %}
+      {% endif %}
+
       <div class="ah">Dernières commandes</div>
       {% if recent_orders %}
         {% for o in recent_orders %}

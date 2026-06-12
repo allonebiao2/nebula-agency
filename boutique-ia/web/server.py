@@ -804,6 +804,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
 
     merchant, products, gallery = None, [], {}
     stats = {"count": 0, "revenue": 0}
+    analytics = None
     recent_orders, conversations, plans, campaigns = [], [], [], []
     plan, plan_label = "demarrage", "Démarrage"
     daily_limit, used_today = 5, 0
@@ -817,6 +818,11 @@ async def boutique_backoffice(request: Request, merchant_id: str):
             stats = order_stats(merchant_id)
             recent_orders = list_orders(merchant_id, limit=8)
             conversations = list_recent_conversations(merchant_id, limit=8)
+            try:
+                from db.client import revenue_analytics
+                analytics = revenue_analytics(merchant_id)
+            except Exception:  # noqa: BLE001
+                analytics = None
             plan = normalize_plan(merchant.get("plan"))
             plan_label = PLAN_LABELS[plan]
             daily_limit = daily_orders_for_plan(plan)
@@ -1027,6 +1033,7 @@ async def boutique_backoffice(request: Request, merchant_id: str):
         request, "boutique.html",
         _ctx(request, merchant=merchant, merchant_id=merchant_id,
              products=products, gallery=gallery, wa_link=wa_link, stats=stats,
+             analytics=analytics,
              recent_orders=recent_orders, conversations=conversations,
              plan=plan, plan_label=plan_label, plans=plans, accent=accent,
              daily_limit=daily_limit, used_today=used_today, remaining=remaining,

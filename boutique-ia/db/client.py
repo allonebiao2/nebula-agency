@@ -1328,6 +1328,78 @@ def log_manager_order(merchant_id: str, command: str, reply: str) -> None:
     }).execute()
 
 
+def revenue_analytics(merchant_id: str) -> dict[str, Any]:
+    """Tableau de bord REVENU/funnel d'une boutique : CA par période, panier moyen,
+    conversion (clients qui écrivent → commandes), top produits par CA, clients fidèles.
+    Défensif : renvoie des zéros si la lecture échoue."""
+    from datetime import datetime, timedelta, timezone
+    now = datetime.now(timezone.utc)
+    d_today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    d_week, d_month = now - timedelta(days=7), now - timedelta(days=30)
+    out: dict[str, Any] = {
+        "ca_total": 0.0, "ca_today": 0.0, "ca_week": 0.0, "ca_month": 0.0,
+        "orders_total": 0, "orders_today": 0, "orders_week": 0, "orders_month": 0,
+        "panier_moyen": 0, "conversion": 0.0, "conversations": 0,
+        "repeat_clients": 0, "top_revenue": []}
+    try:
+        rows = (get_db().table("bia_orders")
+                .select("total, items, customer_whatsapp, created_at")
+                .eq("merchant_id", merchant_id).order("created_at", desc=True)
+                .limit(1000).execute().data or [])
+    except Exception:  # noqa: BLE001
+        rows = []
+
+    def _parse(ts: Any):
+        try:
+            return datetime.fromisoformat(str(ts).replace("Z", "+00:00"))
+        except (ValueError, TypeError):
+            return None
+
+    rev_by_prod: dict[str, float] = {}
+    cust_orders: dict[str, int] = {}
+    for o in rows:
+        try:
+            t = float(o.get("total") or 0)
+        except (TypeError, ValueError):
+            t = 0.0
+        out["ca_total"] += t
+        out["orders_total"] += 1
+        dt = _parse(o.get("created_at"))
+        if dt:
+            if dt >= d_today:
+                out["ca_today"] += t; out["orders_today"] += 1
+            if dt >= d_week:
+                out["ca_week"] += t; out["orders_week"] += 1
+            if dt >= d_month:
+                out["ca_month"] += t; out["orders_month"] += 1
+        c = o.get("customer_whatsapp")
+        if c:
+            cust_orders[c] = cust_orders.get(c, 0) + 1
+        for it in (o.get("items") or []):
+            name = (it.get("produit") or "").strip()
+            if not name:
+                continue
+            try:
+                line = float(it.get("prix_unitaire") or 0) * int(it.get("quantite") or 1)
+            except (TypeError, ValueError):
+                line = 0.0
+            rev_by_prod[name] = rev_by_prod.get(name, 0.0) + line
+    if out["orders_total"]:
+        out["panier_moyen"] = round(out["ca_total"] / out["orders_total"])
+    out["repeat_clients"] = sum(1 for v in cust_orders.values() if v > 1)
+    out["top_revenue"] = sorted(rev_by_prod.items(), key=lambda kv: kv[1], reverse=True)[:5]
+    try:
+        r = (get_db().table("bia_messages").select("customer_whatsapp")
+             .eq("merchant_id", merchant_id).limit(5000).execute().data or [])
+        out["conversations"] = len({(x.get("customer_whatsapp") or "")
+                                    for x in r if x.get("customer_whatsapp")})
+    except Exception:  # noqa: BLE001
+        pass
+    if out["conversations"]:
+        out["conversion"] = round(100 * out["orders_total"] / out["conversations"], 1)
+    return out
+
+
 def order_stats(merchant_id: str) -> dict[str, Any]:
     """Nb de commandes + total des ventes (pour le tableau de bord)."""
     rows = (
