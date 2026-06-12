@@ -577,9 +577,15 @@ async def create_merchant_endpoint(request: Request):
 
     business_name = (body.get("business_name") or "").strip()
     whatsapp_business = (body.get("whatsapp_business") or "").strip()
+    owner_email = (body.get("owner_email") or "").strip()
     if not business_name or not whatsapp_business:
         return JSONResponse(
             {"ok": False, "error": "Nom de la boutique et WhatsApp obligatoires."},
+            status_code=400,
+        )
+    if not owner_email:
+        return JSONResponse(
+            {"ok": False, "error": "Email obligatoire (pour recevoir les rappels et le suivi)."},
             status_code=400,
         )
 
@@ -1321,8 +1327,12 @@ async def admin_nebula_sub_create(request: Request):
         body = {}
     name = (body.get("client_name") or "").strip()
     due = (body.get("next_due") or "").strip()
+    email = (body.get("client_email") or "").strip()
     if not name or not due:
         return JSONResponse({"ok": False, "error": "Nom du client et date d'échéance requis."},
+                            status_code=400)
+    if not email:
+        return JSONResponse({"ok": False, "error": "Email du client obligatoire (canal du rappel)."},
                             status_code=400)
     try:
         sub = nebula_subs.create_sub(

@@ -683,7 +683,7 @@
             <input name="whatsapp_business" type="tel" inputmode="tel" autocomplete="tel" placeholder="+229 01 67 97 56 26" required>
             <div class="frow">
               <div><label>Votre WhatsApp perso (alertes)</label><input name="owner_whatsapp" type="tel" inputmode="tel" placeholder="+229 …"></div>
-              <div><label>Email (optionnel)</label><input name="owner_email" type="email" placeholder="vous@email.com"></div>
+              <div><label>Email <span style="color:#10b981">(obligatoire)</span></label><input name="owner_email" type="email" placeholder="vous@email.com" required></div>
             </div>
           </div>
 
@@ -968,6 +968,9 @@ void main(void){vec2 uv=(FC-.5*R)/MN,st=uv*vec2(2,1);vec3 col=vec3(0);float bg=c
     };
     if(!payload.business_name || !payload.whatsapp_business){
       err.textContent="Le nom de la boutique et le WhatsApp sont obligatoires."; err.style.display='block'; return;
+    }
+    if(!payload.owner_email || !payload.owner_email.trim()){
+      err.textContent="L'email est obligatoire (pour vos rappels et le suivi de votre compte)."; err.style.display='block'; return;
     }
     const consent = document.getElementById('consent');
     if(consent && !consent.checked){

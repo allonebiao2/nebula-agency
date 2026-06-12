@@ -876,7 +876,7 @@
         </select>
         <input id="ns_amount" type="number" value="15000" style="padding:9px;border-radius:9px;border:1px solid var(--line,#26262e);background:#0f0f15;color:#eee">
         <input id="ns_wa" placeholder="WhatsApp client (+229…)" style="padding:9px;border-radius:9px;border:1px solid var(--line,#26262e);background:#0f0f15;color:#eee">
-        <input id="ns_email" type="email" placeholder="Email client (pour le rappel) ★" style="padding:9px;border-radius:9px;border:1px solid var(--line,#26262e);background:#0f0f15;color:#eee">
+        <input id="ns_email" type="email" placeholder="Email client (OBLIGATOIRE — rappel) ★" required style="padding:9px;border-radius:9px;border:1px solid var(--line,#26262e);background:#0f0f15;color:#eee">
         <input id="ns_due" type="date" style="padding:9px;border-radius:9px;border:1px solid var(--line,#26262e);background:#0f0f15;color:#eee">
       </div>
       <button class="btn acc sm" onclick="nsCreate()">+ Ajouter l'abonnement</button>
@@ -924,7 +924,7 @@ async function nsCreate(){
   const b={client_name:nsVal('ns_name'), offer:nsVal('ns_offer'), amount:(+nsVal('ns_amount')||0),
            client_whatsapp:nsVal('ns_wa'), client_email:nsVal('ns_email'), next_due:nsVal('ns_due')};
   if(!b.client_name||!b.next_due){ notify("Nom du client et date d'échéance requis", true); return; }
-  if(!b.client_email && !confirm("Sans email, le CLIENT ne recevra pas le rappel (seul toi, via Telegram). Continuer quand même ?")) return;
+  if(!b.client_email){ notify("Email du client OBLIGATOIRE (c'est par là que part le rappel)", true); return; }
   const d=await post('/api/admin/nebula-subs', b);
   if(d.ok){ notify('Abonnement ajouté ✅'); setTimeout(()=>location.reload(),700); } else notify(d.error||'Erreur', true);
 }
