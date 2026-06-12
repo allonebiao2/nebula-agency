@@ -25,3 +25,10 @@ secrets/
 
 # Captures d'écran locales — ne pas versionner
 _tmp_screenshots/
+
+# Cloudflare Wrangler — cache de build local
+.wrangler/
+
+# Fichiers temporaires / diagnostics
+_tmp_build_pdf.py
+boutique-ia/_diag_osm.py

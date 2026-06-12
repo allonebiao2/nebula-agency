@@ -229,13 +229,15 @@ webhooks / API) quand tu auras le temps. Pas urgent.
 - [x] **F3** — module `core/usage.py` + `bia_usage` (schema) + `record_usage`/`usage_summary` (db) ; télémétrie branchée sur vendeur (brain), copilote+fondateur (assistant), gestion (manager), support. Donne coût (USD+FCFA) + **taux de cache** par tâche/boutique. ⚠️ nécessite la migration `bia_usage` pour enregistrer (sinon no-op silencieux).
 - [x] **F2** — `model_config.model_for_vendeur()` : Haiku par défaut, Sonnet/Opus configuré dès signal d'achat / négociation / conversation engagée. Interrupteur cockpit `vendeur_smart_routing` (défaut ON). Branché dans `brain.reply`. Testé hors-ligne ✅.
 
+**Suite F3 — ✅ onglet « Coûts » du cockpit (2026-06-11)** : lit `usage_summary()`, affiche coût FCFA+USD, **taux de cache** et ventilation par fonction. Section `#sec-couts` dans `admin.html`.
+
 **Vague 2 — robustesse :**
-- [ ] **F4** — idempotence commande/paiement.
-- [ ] **F5/F7** — réglage seuils tokens après F2.
+- [x] **F4** — anti-doublon dans un tour du vendeur (commande / paiement / RDV). Testé.
+- [ ] **F5/F7** — réglage seuils tokens après F2 (à faire si on observe des coupures).
 
 **Vague 3 — dette (quand le temps le permet) :**
-- [ ] **F6** — tri des capacités avant troncature.
-- [ ] **F8** — découpage de `server.py`.
+- [x] **F6** — tri des capacités par priorité métier avant troncature (downgrade). Testé.
+- [ ] **F8** — découpage de `server.py` — **reporté** (gros refactor, faible ROI tant que ça tient).
 
 ---
 

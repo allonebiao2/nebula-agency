@@ -19,6 +19,14 @@ En plus de VENDRE, l'agent peut faire du **SUPPORT CLIENT**. Réglage `agent_rol
 - **Gating** : support de base (WhatsApp + FAQ + escalade) dans TOUS les forfaits ; premium (widget, PDF, lecture site, rapport) = **Business/Empire** (`_support_premium_ok` dans `server.py`).
 - **Code** : `core/support_agent.py`, `core/site_reader.py`, `core/support_report.py` · tables `bia_knowledge` + `bia_support_tickets` · le cerveau du bot de support (`_VENDORA_FACTS` dans `core/support.py`) connaît maintenant ce mode et sait le proposer.
 
+## Nouveautés 2026-06-12 (LIVRÉ + déployé)
+- **Conformité APDP** : droit à l'effacement client (`effacer_mes_donnees`), opt-in promos (`definir_preference_promos`/`bia_optin`), `/confidentialite` (DPA). On garde TOUJOURS l'intelligence anonymisée de Vendora même si le client part. Voir [[garde-fous]].
+- **Paiement en chat (semi-auto MoMo)** : rapprochement montant vs total + anti-réutilisation de référence (notif + onglet Validation).
+- **Messages interactifs WhatsApp** : `proposer_boutons` → boutons (≤3) / liste (4-10) sur Cloud API, repli texte ailleurs.
+- **Analytics revenu** : section « Mes chiffres » (CA mois/sem/jour, panier moyen, conversion, top par CA, clients fidèles).
+- **Robustesse** : pause IA / reprise humaine (réponse manuelle back-office), anti-spam (plafond/24h), alerting « agent down », export des données. Sécurité : RLS activé sur toutes les tables `bia_*`.
+- **Appels** : l'agent gère les messages ; pour un appel → numéro du commerçant. **Super-vendeur** : analyse le client + pousse vers l'objectif. Voir [[vente]], [[canaux]].
+
 ## Masqués de l'UI — on ne montre QUE le concret (décidé 2026-06-10)
 Marqués `"soon": True` dans `capabilities.py` → **retirés** de « Composez votre vendeur », de la page de vente et des forfaits (filtrés dans `capabilities_context` ; exclus activation/auto-assignation/gating). Plus de badge « Bientôt » affiché. Flag conservé pour le futur :
 - **Messenger + Instagram** (`multicanal`) → dépend de l'App Review Meta. Voir [[canaux]].
