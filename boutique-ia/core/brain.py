@@ -154,6 +154,32 @@ PAYMENT_TOOL = {
 }
 
 
+# Outil UX : proposer des BOUTONS / une LISTE de réponses rapides (WhatsApp Cloud).
+# Repli automatique en texte sur les autres canaux (Twilio, page de test, Messenger).
+CHOICE_TOOL = {
+    "name": "proposer_boutons",
+    "description": (
+        "Propose au client des CHOIX rapides à taper (boutons si 2-3 options, liste si 4-10). "
+        "À utiliser quand un choix clair fait avancer la vente : confirmer (Oui / Non), choisir "
+        "le mode de paiement (Mobile Money / À la livraison), le mode de réception (Livraison / "
+        "Retrait), choisir parmi quelques produits, etc. Donne des libellés TRÈS courts (≤ 20 "
+        "caractères). Écris AUSSI ta phrase normalement : elle s'affiche au-dessus des boutons. "
+        "N'en abuse pas : seulement quand ça aide vraiment, jamais à chaque message."
+    ),
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "options": {
+                "type": "array",
+                "description": "Les libellés courts proposés au client (2 à 10).",
+                "items": {"type": "string"},
+            },
+        },
+        "required": ["options"],
+    },
+}
+
+
 # Outil conformité (APDP) : droit à l'effacement — le client demande de supprimer ses données.
 FORGET_TOOL = {
     "name": "effacer_mes_donnees",
@@ -614,6 +640,7 @@ def reply(
     on_payment: Callable[[dict], None] | None = None,
     on_forget: Callable[[dict], None] | None = None,
     on_optin: Callable[[dict], None] | None = None,
+    on_buttons: Callable[[dict], None] | None = None,
     lessons: str | None = None,
 ) -> str:
     """Génère la réponse du vendeur IA. `history` doit finir par le message client.
@@ -640,8 +667,8 @@ def reply(
     }]
 
     # Outils selon les capacités de la boutique (photo/RDV offerts seulement si activés).
-    # FORGET/OPTIN = conformité : disponibles partout, sans condition de forfait.
-    tools = [ORDER_TOOL, ESCALATE_TOOL, PAYMENT_TOOL, FORGET_TOOL, OPTIN_TOOL]
+    # FORGET/OPTIN = conformité ; CHOICE = UX. Disponibles partout, sans condition de forfait.
+    tools = [ORDER_TOOL, ESCALATE_TOOL, PAYMENT_TOOL, FORGET_TOOL, OPTIN_TOOL, CHOICE_TOOL]
     if "photos" in caps:
         tools.append(SHOW_TOOL)
     if "rdv" in caps:
@@ -775,6 +802,17 @@ def reply(
                         "brièvement." if accepte else
                         "Préférence enregistrée (le client ne veut pas de promos). Respecte son "
                         "choix, n'insiste pas, reste chaleureux.")
+            elif tu.name == "proposer_boutons":
+                opts = [(o or "").strip() for o in ((tu.input or {}).get("options") or [])]
+                opts = [o for o in opts if o][:10]
+                if on_buttons and opts:
+                    try:
+                        on_buttons({"options": opts})
+                    except Exception:  # noqa: BLE001
+                        log.exception("capture boutons échouée")
+                note = ("Boutons ajoutés (le client pourra taper sur un choix). Écris/termine "
+                        "ta phrase COURTE au-dessus ; n'écris PAS la liste des options en texte, "
+                        "les boutons s'en chargent.")
             else:
                 note = "Outil inconnu, ignore-le."
             results.append({"type": "tool_result", "tool_use_id": tu.id, "content": note})

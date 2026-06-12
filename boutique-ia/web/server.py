@@ -3245,6 +3245,11 @@ def _agent_handle(customer: str, body_text: str, has_audio: bool = False,
         pass
 
     _forgot = {"done": False}
+    _buttons: dict = {"options": []}
+
+    def _capture_buttons(d: dict) -> None:
+        _buttons["options"] = d.get("options") or []
+
     answer = brain.reply(
         merchant, products, history,
         on_order=_order_recorder(merchant, customer),
@@ -3254,13 +3259,25 @@ def _agent_handle(customer: str, body_text: str, has_audio: bool = False,
         on_payment=_payment_recorder(merchant, customer),
         on_forget=_forget_recorder(merchant, customer, _forgot),
         on_optin=_optin_recorder(merchant, customer),
+        on_buttons=_capture_buttons,
         lessons=lessons,
     )
     # Droit à l'effacement : si le client a demandé la suppression, on NE ré-enregistre
     # PAS sa conversation (sinon on recréerait la donnée qu'on vient d'effacer).
     if not _forgot["done"]:
         save_message(merchant["id"], customer, "assistant", answer)
-    return {"status": "reply", "text": answer, "media": media_urls}
+    return {"status": "reply", "text": answer, "media": media_urls,
+            "buttons": _buttons["options"]}
+
+
+def _text_with_options(res: dict) -> str:
+    """Repli texte pour les canaux SANS boutons natifs (Twilio, Messenger, page de test) :
+    on ajoute les options sous la réponse pour que le client puisse répondre."""
+    text = res.get("text") or ""
+    opts = res.get("buttons") or []
+    if opts:
+        text = (text + "\n\n👉 " + " · ".join(opts[:10])).strip()
+    return text
 
 
 def _twiml(message: str, media: list[str] | None = None) -> Response:
@@ -3313,7 +3330,7 @@ async def whatsapp_twilio(request: Request):
     except Exception:  # noqa: BLE001
         log.exception("whatsapp (twilio) reply échoué")
         return _twiml("Un instant, je vérifie avec la boutique et je reviens vers vous 🙏")
-    return _twiml(res["text"], res.get("media"))
+    return _twiml(_text_with_options(res), res.get("media"))
 
 
 # ---------------------------------------------------------------------------
@@ -3364,7 +3381,11 @@ def _process_meta_message(msg: dict) -> None:
         log.exception("whatsapp (meta) reply échoué")
         whatsapp_meta.send_text(wa_id, "Un instant, je reviens vers vous 🙏")
         return
-    whatsapp_meta.send_text(wa_id, res["text"])
+    btns = res.get("buttons") or []
+    if btns:
+        whatsapp_meta.send_choice(wa_id, res["text"], btns)  # boutons/liste natifs
+    else:
+        whatsapp_meta.send_text(wa_id, res["text"])
     for url in (res.get("media") or []):
         whatsapp_meta.send_image(wa_id, url)
 
@@ -3455,7 +3476,7 @@ def _process_messenger_message(msg: dict) -> None:
         log.exception("messenger reply échoué")
         messenger_meta.send_text(sender, "Un instant, je reviens vers vous 🙏")
         return
-    messenger_meta.send_text(sender, res["text"])
+    messenger_meta.send_text(sender, _text_with_options(res))  # repli texte des options
     for url in (res.get("media") or []):
         messenger_meta.send_image(sender, url)
 
@@ -3656,8 +3677,13 @@ async def chat(request: Request):
                     lessons = (lessons + "\n\n" + vtext) if lessons else vtext
             except Exception:  # noqa: BLE001
                 pass
+        _btns: dict = {"options": []}
         answer = brain.reply(merchant, products, history, on_order=on_order,
-                             on_escalate=on_escalate, lessons=lessons)
+                             on_escalate=on_escalate, lessons=lessons,
+                             on_buttons=lambda d: _btns.update(options=d.get("options") or []))
+        # Page de test = texte simple → on ajoute les options sous la réponse.
+        if _btns["options"]:
+            answer = (answer + "\n\n👉 " + " · ".join(_btns["options"][:10])).strip()
         save_message(merchant_id, customer, "assistant", answer)
 
         remaining = None

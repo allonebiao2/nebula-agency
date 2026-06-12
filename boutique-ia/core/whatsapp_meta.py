@@ -83,6 +83,56 @@ def send_image(to: str, link: str, caption: str | None = None) -> bool:
         return False
 
 
+def send_buttons(to: str, body: str, options: list[str]) -> bool:
+    """Message interactif à BOUTONS de réponse rapide (max 3, titres ≤ 20 car.)."""
+    opts = [o.strip() for o in options if o and o.strip()][:3]
+    if not (configured() and to and body and opts):
+        return False
+    buttons = [{"type": "reply", "reply": {"id": f"opt_{i}", "title": o[:20]}}
+               for i, o in enumerate(opts)]
+    payload = {"messaging_product": "whatsapp", "to": _to_digits(to), "type": "interactive",
+               "interactive": {"type": "button", "body": {"text": body[:1024]},
+                               "action": {"buttons": buttons}}}
+    return _post_message(payload, "send_buttons")
+
+
+def send_list(to: str, body: str, options: list[str], button_label: str = "Choisir") -> bool:
+    """Message interactif à LISTE déroulante (max 10 lignes, titres ≤ 24 car.)."""
+    opts = [o.strip() for o in options if o and o.strip()][:10]
+    if not (configured() and to and body and opts):
+        return False
+    rows = [{"id": f"opt_{i}", "title": o[:24]} for i, o in enumerate(opts)]
+    payload = {"messaging_product": "whatsapp", "to": _to_digits(to), "type": "interactive",
+               "interactive": {"type": "list", "body": {"text": body[:1024]},
+                               "action": {"button": button_label[:20],
+                                          "sections": [{"title": "Options", "rows": rows}]}}}
+    return _post_message(payload, "send_list")
+
+
+def send_choice(to: str, body: str, options: list[str]) -> bool:
+    """Choisit le bon format : ≤3 options → boutons, 4-10 → liste. Repli send_text si KO."""
+    opts = [o.strip() for o in options if o and o.strip()]
+    if not opts:
+        return send_text(to, body)
+    ok = send_buttons(to, body, opts) if len(opts) <= 3 else send_list(to, body, opts)
+    if not ok:  # repli : on n'abandonne jamais le message
+        extra = "\n\n👉 " + " · ".join(opts[:10])
+        return send_text(to, (body or "") + extra)
+    return True
+
+
+def _post_message(payload: dict, label: str) -> bool:
+    try:
+        r = httpx.post(_graph(f"{settings.whatsapp_phone_number_id}/messages"),
+                       headers=_headers(), json=payload, timeout=15.0)
+        if r.status_code not in (200, 201):
+            log.warning("Meta %s %s: %s", label, r.status_code, r.text[:200])
+        return r.status_code in (200, 201)
+    except Exception as e:  # noqa: BLE001
+        log.warning("Meta %s KO: %s", label, e)
+        return False
+
+
 def fetch_media(media_id: str) -> tuple[bytes, str] | None:
     """Récupère un média (vocal) : id → url → octets. Retourne (octets, content_type)."""
     if not (configured() and media_id):
@@ -129,9 +179,11 @@ def parse_incoming(payload: dict) -> list[dict[str, Any]]:
                         item["image_ctype"] = im.get("mime_type") or "image/jpeg"
                         item["text"] = im.get("caption") or ""
                     elif mtype in ("button", "interactive"):
-                        # Réponses à des boutons/templates → on prend le texte si présent
+                        # Réponses à des boutons/listes/templates → on prend le titre choisi
+                        inter = msg.get("interactive") or {}
                         item["text"] = ((msg.get("button") or {}).get("text")
-                                        or (((msg.get("interactive") or {}).get("button_reply") or {}).get("title"))
+                                        or (inter.get("button_reply") or {}).get("title")
+                                        or (inter.get("list_reply") or {}).get("title")
                                         or "")
                     out.append(item)
     except Exception:  # noqa: BLE001
