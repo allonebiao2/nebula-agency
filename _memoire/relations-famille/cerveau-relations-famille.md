@@ -1,11 +1,29 @@
 # Relations, Famille & Lien humain — Cerveau (exploration business)
 
-> Niche explorée 13-14/06/2026 avec Mongazi : aider sur la douleur **relations hommes-femmes, familles, couples, sécurité des proches** (marché AO francophone, Bénin). 3 directions A/B/C ci-dessous. Choix + lancement à faire plus tard ("l'améliorer après").
+> Niche explorée 13-14/06/2026 avec Mongazi : aider sur la douleur **relations hommes-femmes, familles, couples, sécurité des proches**. **Ambition : panafricain dès le départ → mondial** (beachhead Bénin/Cotonou). **Décision Mongazi (14/06) : on part sur A « Cercle » (sécurité), PAS le coach** (B/C gardés en réserve).
 
 ## ⚠️ GARDE-FOU ABSOLU (ne JAMAIS franchir)
 **Aucun pistage / surveillance d'un adulte à son insu.** Interdit de construire OU de marketer : « savoir si mon conjoint me trompe », « est-il dans un hôtel avec quelqu'un », profilage émotionnel caché d'un adulte via ses déplacements.
 → = **stalkerware** : illégal (vie privée / APDP), **banni d'Apple & Google**, **paiements gelés** (Stripe / PayPal / **MoMo / FedaPay**), responsabilité légale, et **outil n°1 des violences conjugales**. Ça **détruit** le business (ban + procès) ET empoisonne tout produit légitime. Mongazi a poussé 3 fois vers ça ; ligne tenue à chaque fois — **la garder**.
 **Autorisé** (règle Google Play) : **partage de position MUTUEL et consenti** (chacun voit chacun, notification permanente, modèle Life360) + **contrôle parental de mineurs** + soins d'un **proche âgé consentant**. Jamais se vendre comme « espion ».
+
+## Ambition & expansion (panafricain → mondial)
+**Pensé mondial dès le départ, lancé local d'abord** (sinon dilution face au gratuit entrenched). Rampe : **Bénin/Cotonou (beachhead)** → **AO francophone** → **Afrique** (multi-langues) → **diaspora & monde**. Produit *global-ready* (multi-langues, multi-paiement, infra scalable) ; go-to-market *local-first*. « Toucher le monde » = surtout via la **diaspora** (paie en devises fortes pour la famille au pays) + **marque blanche** pour opérateurs/assureurs par pays.
+
+## Monétisation (Cercle) — analyse
+**Cœur = freemium → abonnement familial récurrent** (modèle Life360, prouvé) :
+- **Gratuit** (volume/viralité) : 1 cercle, position de base, SOS simple, **+ Alerte Disparition communautaire** (l'aimant).
+- **Famille (payant)** : SOS avancé, historique, geofencing illimité, plus de membres, check-in. **Un seul payeur couvre tout le cercle** → on vend au **parent** (pouvoir d'achat + angoisse). Prix bas via **MoMo** (mensuel/annuel).
+
+**Robinets de revenus (à empiler) :**
+1. **Abonnement familial MoMo** = le moteur (collant car = sécurité, faible churn).
+2. **Diaspora** : abonnements en **€/$** pour protéger la famille au pays = pont « monde » + devises fortes (souvent le plus rentable pour un produit AO).
+3. **B2B2C** : **écoles** (« trajet école sécurisé »), **assureurs**, **opérateurs télé** (MTN/Moov bundle), employeurs → contrats récurrents + distribution massive.
+4. **SOS premium** relié à des **services de réponse** locaux (sécurité privée/ambulance) = commission/abo.
+5. **Marque blanche / licence** par pays = scale international rapide.
+6. (plus tard) **hardware** : balises enfants/objets (modèle Life360 + Tile) = marge produit.
+
+**⚠️ Réalité** : ARPU faible en AO + concurrents **gratuits** (Find My, Family Link) → on gagne par le **VOLUME** (aimant communautaire + ambition panafricaine) **ET** par les payeurs à fort pouvoir d'achat (**diaspora, B2B**). Prix grand public **bas** ; valeur locale (MoMo + douleurs locales + alerte) **évidente**.
 
 ## Marché (recherche vérifiée)
 - Apps de tracking familial : **0,75 Md$ (2025) → 4,5 Md$ (2033)**, CAGR **27 %** (BusinessResearchInsights).
@@ -46,6 +64,23 @@
 ## Décisions / état
 - Douleur « confiance couple » → **Coach (B)**, jamais surveillance.
 - Disparitions enfants Bénin → **Sécurité (A)**, consent-first + alerte communautaire.
-- Choix A/B/C **pas encore tranché** par Mongazi → à décider + lancer la prochaine session. À enrichir au fil des discussions.
+- **14/06/2026 — CHOIX TRANCHÉ : on construit A « Cercle » (sécurité).** Mongazi a aussi décidé d'aller **DIRECT au MVP app Android natif** (il assume le risque « build avant preuve de paiement » ; validation-page écartée).
+
+## CONSTRUCTION — Cercle (app native)
+- **Nom de marque : Cercle.** Dossier repo : `cercle/` (top-level, comme vitrina/boutique-ia).
+- **Stack tranchée** (machine sans Flutter/Java/Android SDK, Mongazi sans CB) :
+  - **Expo (React Native + TypeScript)** — utilise Node déjà présent, pas d'install Android SDK local.
+  - **EAS Build (cloud, gratuit)** → APK, **pas de CB**, évite frais Google Play 25 $ + revue stricte GPS-background.
+  - **Distribution = APK partagé par WhatsApp** (sideload) pour beachhead Cotonou. Pas de Play Store au MVP.
+  - **Test dev = Expo Go** (QR) sur le tel de Mongazi.
+  - **Backend = Supabase** (gratuit) : Auth + Postgres + **RLS** + **Realtime** + Storage.
+- **Confidentialité (cœur)** : on ne voit la position de qqn QUE si on partage un cercle (RLS `shares_circle`). Anti-stalkerware par construction.
+- **AUTH : pivot 14/06 → VRAI EMAIL + mot de passe** (Mongazi : « les gens doivent mettre leur Gmail, comme toute appli »). Plus de raccourci synthétique. Vérification email + mot de passe oublié inclus. Profil auto-créé par trigger SQL `handle_new_user`. Suppression de compte via RPC `delete_my_account`. ⚠️ Mongazi a **désactivé "Confirm email"** dans Supabase → inscription connecte direct (OK pour tester) ; **réactiver vérif + SMTP gratuit (Brevo/Resend, sans CB) avant lancement public**.
+- **CARTE : Leaflet + OpenStreetMap dans une WebView** (`react-native-webview`), PAS react-native-maps → car Google Maps Android exige clé + facturation (CB). Gratuit, sans Google, marche dans Expo Go.
+- **Supabase projet `cercle` = ref `horedtmvgyorqaispldz`** (org nahrrxbheydxsdfnrdbs, région eu-north-1). Schéma appliqué via MCP. `.env` rempli (URL + anon, gitignoré).
+- **Directive Mongazi 14/06 : construire TOUTE la liste d'une vraie app + idées de Claude.** À faire : ✅ vrai login email · ✅ carte visuelle · ✅ profil/compte (nom/tel/déconnexion/suppr) · ⏳ photo de profil · ⏳ réglages (notifs/confidentialité/partage) · ⏳ notifications push (« arrivé », SOS) · ⏳ SOS · ⏳ Alerte Disparition · ⏳ page confidentialité/consentement · ⏳ icône/splash/identité · ⏳ GPS arrière-plan + notif permanente (build EAS, anti-ban).
+- **Vagues** : 1) ✅ FAIT+compile : auth email + onglets Carte/Cercles/Profil + carte Leaflet live + créer/rejoindre cercle + invitation WhatsApp + profil + suppression compte. (testable Expo Go) 2) ⏳ réglages + confidentialité/consentement + branding. 3) ⏳ SOS + push. 4) ⏳ Alerte Disparition. 5) ⏳ GPS arrière-plan (EAS).
+- **Fichiers clés** : `cercle/supabase/schema.sql` (tables+RLS+RPC+triggers), `cercle/src/` (lib/screens/components/context), `cercle/App.tsx` (tabs+stack), `cercle/README.md`.
+- **Pour tester (Mongazi)** : installer **Expo Go** (Play Store) → dans `cercle/` lancer `npx expo start` → scanner le QR.
 
 Liens : [[../vitrina/cerveau-vitrina]] (même moteur réutilisable pour B) · [[cerveau]] (NEBULA).

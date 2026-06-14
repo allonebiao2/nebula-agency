@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Cercle",
+    "slug": "cercle",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "cercle",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0E1B33",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "online.nebula.cercle"
+    },
+    "android": {
+      "package": "online.nebula.cercle",
+      "adaptiveIcon": {
+        "backgroundColor": "#0E1B33",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Cercle partage votre position avec les membres consentants de votre cercle familial. Personne ne peut vous suivre à votre insu.",
+          "locationWhenInUsePermission": "Cercle partage votre position avec les membres consentants de votre cercle familial.",
+          "isAndroidBackgroundLocationEnabled": false
+        }
+      ]
+    ]
+  }
+}
