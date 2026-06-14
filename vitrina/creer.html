@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vitrina — Crée ta vitrine</title>
+<style>
+  :root{--ink:#15110E;--cream:#FBF7F2;--paper:#fff;--gold:#A77E37;--gold2:#C79B4E;--muted:#6B6157;--line:#EAE2D6;--shadow:0 18px 50px rgba(21,17,14,.10)}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--cream);line-height:1.55}
+  .serif{font-family:Georgia,"Times New Roman",serif}
+  a{text-decoration:none;color:inherit}
+  nav{height:60px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:40}
+  .logo{font-size:21px;font-weight:700}.logo span{color:var(--gold)}
+  .nav-back{font-size:14px;color:var(--muted)}
+  .layout{display:grid;grid-template-columns:minmax(0,460px) 1fr;gap:0;min-height:calc(100vh - 60px)}
+  .form{padding:0 26px 60px;overflow-y:auto;max-height:calc(100vh - 60px)}
+  .form h1{font-size:24px;margin-bottom:4px}
+  .form .sub{color:var(--muted);font-size:14px;margin-bottom:16px}
+  .fgroup{margin-bottom:18px}
+  label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--ink)}
+  input[type=text],input[type=tel],textarea,select{width:100%;border:1.5px solid var(--line);border-radius:11px;padding:12px 14px;font-size:14.5px;font-family:inherit;background:#fff;transition:border-color .15s}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold2)}
+  textarea{resize:vertical;min-height:64px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .section-t{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:700;margin:26px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  /* PACK BAR (haut) */
+  .packbar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;position:sticky;top:0;background:var(--cream);padding:16px 0 12px;z-index:20}
+  .packbar button{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:12px 6px;cursor:pointer;font-weight:700;font-size:14px;display:flex;flex-direction:column;gap:2px;align-items:center;transition:.15s}
+  .packbar button span{font-weight:500;font-size:11.5px;color:var(--muted)}
+  .packbar button.on{border-color:var(--ink);background:#15110E;color:#fff;box-shadow:0 8px 20px rgba(0,0,0,.12)}
+  .packbar button.on span{color:#C9BEB1}
+  .packhint{font-size:12.5px;color:var(--gold);text-align:center;margin-bottom:14px;font-weight:600;min-height:16px}
+  /* GATE (verrouillage) */
+  .gate{position:relative}
+  .gate.locked > *:not(.lockmsg){opacity:.35;pointer-events:none;filter:grayscale(.4)}
+  .lockmsg{display:none;position:absolute;inset:0;z-index:6;align-items:center;justify-content:center;flex-direction:column;gap:7px;background:rgba(251,247,242,.55);border-radius:12px;text-align:center}
+  .gate.locked .lockmsg{display:flex}
+  .lockmsg b{font-size:13px;color:var(--ink)}
+  .lockmsg button{background:#15110E;color:#fff;border:none;border-radius:999px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer}
+  .themes{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+  .theme-card{border:1.5px solid var(--line);border-radius:12px;padding:13px 10px;text-align:center;cursor:pointer;background:#fff;transition:.15s;position:relative}
+  .theme-card.on{border-color:var(--ink);box-shadow:0 6px 16px rgba(0,0,0,.08)}
+  .theme-card.locked{opacity:.45}
+  .theme-card.locked::after{content:'🔒';position:absolute;top:4px;right:6px;font-size:11px}
+  .theme-card b{display:block;font-size:14px}
+  .theme-card span{font-size:10.5px;color:var(--muted)}
+  .svc{display:grid;grid-template-columns:1fr 90px 30px;gap:8px;margin-bottom:8px;align-items:start}
+  .svc input{padding:10px 11px;font-size:13.5px}
+  .svc .del{background:none;border:none;color:#c0392b;font-size:18px;cursor:pointer;padding:8px 0}
+  .svc-desc{grid-column:1 / 3}
+  .addbtn{background:#fff;border:1.5px dashed var(--gold2);color:var(--gold);border-radius:11px;padding:11px;width:100%;font-weight:600;cursor:pointer;font-size:14px}
+  .addbtn:disabled{border-style:solid;color:var(--muted);cursor:pointer}
+  .colorrow{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+  .swatch{width:34px;height:34px;border-radius:50%;cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 1.5px var(--line);position:relative}
+  .swatch.on{box-shadow:0 0 0 2.5px var(--ink)}
+  .swatch.locked{opacity:.4}
+  .swatch.locked::after{content:'🔒';position:absolute;top:-2px;right:-4px;font-size:10px}
+  .photos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .photo-slot{aspect-ratio:1;border:1.5px dashed var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--muted);cursor:pointer;background:#fff;overflow:hidden;position:relative}
+  .photo-slot img{width:100%;height:100%;object-fit:cover}
+  .photo-slot input{display:none}
+  .photo-slot.locked{opacity:.45;border-style:solid}
+  .photo-slot.locked::after{content:'🔒';position:absolute;font-size:15px}
+  .logo-up{display:flex;align-items:center;gap:12px;border:1.5px dashed var(--line);border-radius:12px;padding:11px 14px;cursor:pointer;background:#fff;font-size:13.5px;color:var(--muted)}
+  .logo-up img{height:38px;border-radius:8px}
+  .logo-up input{display:none}
+  .pubcard{background:var(--ink);color:#fff;border-radius:16px;padding:22px;margin-top:28px;text-align:center}
+  .pubcard p{font-size:13.5px;color:#C9BEB1;margin-bottom:14px}
+  .btn-gold{display:block;width:100%;background:linear-gradient(135deg,#C79B4E,#A77E37);color:#fff;border:none;border-radius:999px;padding:15px;font-weight:700;font-size:15px;cursor:pointer}
+  .modal{display:none;position:fixed;inset:0;background:rgba(21,17,14,.55);z-index:80;align-items:center;justify-content:center;padding:18px}
+  .modal-box{background:#fff;border-radius:20px;max-width:420px;width:100%;max-height:92vh;overflow-y:auto;padding:28px;position:relative}
+  .modal-x{position:absolute;top:14px;right:16px;background:none;border:none;font-size:26px;color:var(--muted);cursor:pointer;line-height:1}
+  .modal-sub{color:var(--muted);font-size:14px;margin:6px 0 16px}
+  .pay-instr{background:#FBF3E6;border:1px solid #EAD9B8;border-radius:12px;padding:14px 16px;font-size:13.5px;line-height:1.7;margin-bottom:8px}
+  .pay-instr b{color:var(--ink)}
+  .modal label{margin-top:12px}
+  .modal input,.modal select{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px 13px;font-size:14px;font-family:inherit;margin-top:5px}
+  .modal .btn-gold{margin-top:20px}
+  .preview{background:#E8E0D5;padding:30px;display:flex;flex-direction:column;align-items:center;position:sticky;top:60px;height:calc(100vh - 60px)}
+  .preview .ptitle{font-size:13px;color:var(--muted);margin-bottom:14px;font-weight:600;letter-spacing:.05em}
+  .frame{width:340px;max-width:100%;flex:1;background:#fff;border-radius:24px;box-shadow:0 30px 70px rgba(0,0,0,.18);overflow:hidden;border:10px solid #15110E}
+  iframe{width:100%;height:100%;border:none;display:block}
+  @media(max-width:900px){
+    .layout{grid-template-columns:1fr}
+    .preview{position:static;height:auto;order:-1;padding:20px}
+    .frame{width:300px;height:520px;flex:none}
+    .form{max-height:none}
+    .packbar{position:static}
+  }
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">Vitri<span>na</span></div>
+  <a href="index.html" class="nav-back">← Retour</a>
+</nav>
+
+<div class="layout">
+  <div class="form">
+    <div class="packbar" id="packbar">
+      <button data-p="express">Express<span>15 000 F</span></button>
+      <button data-p="pro" class="on">Pro<span>25 000 F</span></button>
+      <button data-p="business">Business<span>45 000 F</span></button>
+    </div>
+    <p class="packhint" id="packhint"></p>
+
+    <div class="section-t">Ton activité</div>
+    <div class="fgroup"><label>Nom de ton activité</label><input type="text" id="f_name" value="Maison Léa" placeholder="Ex : Maison Léa"></div>
+    <div class="fgroup"><label>Type d'activité</label><input type="text" id="f_type" value="Institut de beauté · Cotonou" placeholder="Ex : Institut de beauté · Cotonou"></div>
+    <div class="fgroup"><label>Ton accroche</label><input type="text" id="f_slogan" value="Beauté & bien-être, sur rendez-vous." placeholder="Une phrase qui te décrit"></div>
+    <div class="fgroup gate" data-need="pro">
+      <label>À propos (optionnel)</label>
+      <textarea id="f_about" placeholder="Présente ton activité en 1 ou 2 phrases">Chez Maison Léa, chaque soin est un moment rien que pour vous. Expertise, douceur et produits de qualité au cœur de Cotonou.</textarea>
+      <div class="lockmsg"><b>🔒 Disponible en Pro</b><button type="button" onclick="setPack('pro')">Passer au Pro</button></div>
+    </div>
+    <div class="fgroup gate" data-need="pro">
+      <label>Ton logo (optionnel)</label>
+      <label class="logo-up" id="logoSlot">
+        <img id="logoThumb" style="display:none" alt="">
+        <span id="logoTxt">+ Charger mon logo</span>
+        <input type="file" accept="image/*" id="f_logo">
+      </label>
+      <div class="lockmsg"><b>🔒 Disponible en Pro</b><button type="button" onclick="setPack('pro')">Passer au Pro</button></div>
+    </div>
+
+    <div class="section-t">Style de la vitrine</div>
+    <div class="themes" id="themes">
+      <div class="theme-card on" data-t="elegance"><b>Élégance</b><span>Chic & raffiné</span></div>
+      <div class="theme-card" data-t="minimal"><b>Minimal</b><span>Épuré & moderne</span></div>
+      <div class="theme-card" data-t="audace"><b>Audace</b><span>Sombre & fort</span></div>
+    </div>
+    <div class="colorrow" id="colors"></div>
+
+    <div class="section-t">Tes prestations</div>
+    <div id="services"></div>
+    <button class="addbtn" id="addBtn">+ Ajouter une prestation</button>
+
+    <div class="section-t">Tes photos</div>
+    <div class="photos" id="photos"></div>
+
+    <div class="section-t">Te contacter</div>
+    <div class="fgroup"><label>Numéro WhatsApp (avec indicatif)</label><input type="tel" id="f_wa" value="22900000000" placeholder="Ex : 22997000000"></div>
+    <div class="gate" data-need="pro">
+      <div class="row2">
+        <div class="fgroup"><label>Adresse</label><input type="text" id="f_addr" value="Haie Vive, Cotonou"></div>
+        <div class="fgroup"><label>Horaires</label><input type="text" id="f_hours" value="Lun–Sam · 9h–19h"></div>
+      </div>
+      <div class="lockmsg"><b>🔒 Localisation & horaires — Pro</b><button type="button" onclick="setPack('pro')">Passer au Pro</button></div>
+    </div>
+
+    <div class="section-t">Prise de rendez-vous</div>
+    <div class="fgroup gate" data-need="business">
+      <label style="display:flex;align-items:center;gap:9px;cursor:pointer;font-weight:500"><input type="checkbox" id="f_booking" style="width:auto;margin:0"> Activer un bouton « Réserver un créneau »</label>
+      <div class="lockmsg"><b>🔒 Disponible en Business</b><button type="button" onclick="setPack('business')">Passer au Business</button></div>
+    </div>
+
+    <div class="pubcard">
+      <p>Ton aperçu est gratuit. Pour mettre ta vitrine en ligne et la mettre dans ta bio :</p>
+      <button class="btn-gold" id="goPublish">Mettre en ligne — <span id="pubprice">25 000</span> F</button>
+    </div>
+  </div>
+
+  <div class="preview">
+    <div class="ptitle">Aperçu en direct · ton site</div>
+    <div class="frame"><iframe id="preview"></iframe></div>
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <button class="modal-x" id="modalX">&times;</button>
+    <div id="checkoutStep">
+      <h2 class="serif" style="font-size:22px">Mettre ta vitrine en ligne</h2>
+      <p class="modal-sub">Pack <b id="m_pack">Pro</b> — <b id="m_price">25 000</b> F</p>
+      <div class="pay-instr">
+        <b>1.</b> Envoie le montant par Mobile Money au numéro :<br>
+        <b id="i_num" style="font-size:18px">— — —</b> <span id="i_net"></span><br>
+        <span style="color:var(--muted)">au nom de <b id="i_name">—</b></span><br>
+        <b>2.</b> Remplis ci-dessous et envoie ta commande.
+      </div>
+      <label>Ton nom</label><input id="c_name" type="text" placeholder="Ton nom">
+      <label>Ton WhatsApp</label><input id="c_wa" type="tel" placeholder="229...">
+      <label>Ton email <span style="color:var(--muted);font-weight:400">(pour le rappel d'échéance hébergement)</span></label><input id="c_email" type="email" placeholder="nom@email.com">
+      <label>Réseau utilisé</label><select id="c_net"><option>MTN</option><option>Moov</option><option>Autre</option></select>
+      <label>Référence de la transaction (optionnel)</label><input id="c_ref" type="text" placeholder="Ex : MP240612...">
+      <button class="btn-gold" id="sendOrder">J'ai payé — envoyer ma commande</button>
+    </div>
+    <div id="doneStep" style="display:none;text-align:center;padding:10px 0">
+      <div style="font-size:44px;color:#1f8f5c">✓</div>
+      <h2 class="serif" style="font-size:22px">Commande reçue</h2>
+      <p class="modal-sub">On vérifie ton paiement et ta vitrine sera mise en ligne. Tu seras prévenue sur WhatsApp avec ton lien.</p>
+      <a id="apercuLink" class="btn-gold" href="#" target="_blank" style="text-decoration:none">Voir l'aperçu de mon site</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const COLORS = ["#6b4a44","#A77E37","#1f6f5c","#2c3e70","#8e3b4f","#3a3a3a"];
+let accent = COLORS[0];
+let theme = 'elegance';
+let photos = [null,null,null,null,null,null];
+let logo = null;
+let pack = 'pro';
+let booking = false;
+
+const PF = {
+  express:{price:'15 000', themes:['elegance'],                     colors:2, services:5,  photos:1, hint:"Passe au Pro pour débloquer galerie, couleurs, logo, à propos…"},
+  pro:    {price:'25 000', themes:['elegance','minimal','audace'],  colors:6, services:99, photos:6, hint:"Pro : galerie, couleurs, logo, à propos, localisation."},
+  business:{price:'45 000',themes:['elegance','minimal','audace'],  colors:6, services:99, photos:6, hint:"Business : tout le Pro + prise de rendez-vous (et logo créé pour toi)."}
+};
+
+const WA_SVG = '<svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><path d="M12 .5A11.4 11.4 0 0 0 2.3 17.7L.6 23.5l6-1.6A11.4 11.4 0 1 0 12 .5zm0 20.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.5.9.9-3.4-.2-.4a9.3 9.3 0 1 1 8.2 4.5zm5.2-7c-.3-.1-1.7-.8-1.9-.9s-.4-.1-.6.1-.7.9-.8 1-.3.2-.5.1a7.6 7.6 0 0 1-2.2-1.4 8.4 8.4 0 0 1-1.6-1.9c-.2-.3 0-.4.1-.6l.4-.5.3-.5v-.5c0-.1-.6-1.5-.8-2s-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4 5.3 5.3 0 0 0 3.2.7 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.6-.3z"/></svg>';
+
+const THEMES = {
+  elegance:{ css:(a,d)=>`
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;color:#2A1D1A;background:#FFF8F3;line-height:1.6}
+    .serif{font-family:'Playfair Display',Georgia,serif}.wrap{max-width:720px;margin:0 auto;padding:0 20px}a{text-decoration:none}
+    header{background:linear-gradient(165deg,${d},${a});color:#fff;text-align:center;padding:64px 20px 52px}
+    header .k{font-size:11px;letter-spacing:.24em;text-transform:uppercase;opacity:.85}
+    header h1{font-family:'Playfair Display',serif;font-size:44px;font-weight:600;margin:12px 0 10px}
+    header p{opacity:.92;font-size:15px;max-width:360px;margin:0 auto 22px}
+    .wa{display:inline-block;background:#25D366;color:#fff;font-weight:600;padding:14px 30px;border-radius:999px;font-size:14.5px;box-shadow:0 12px 28px rgba(37,211,102,.35)}
+    section{padding:46px 0}.st{text-align:center;margin-bottom:28px}.st .k{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:${a};font-weight:700}
+    .st h2{font-family:'Playfair Display',serif;font-size:30px;font-weight:600;margin-top:8px}.about{text-align:center;color:#6b5d57;font-size:16px;max-width:540px;margin:0 auto;font-style:italic}
+    .srow{display:flex;justify-content:space-between;align-items:baseline;padding:16px 0;border-bottom:1px solid #EFE2DB}
+    .n{font-size:17px;font-weight:600}.n .d{display:block;font-size:13px;color:#8a7a74;font-weight:400;margin-top:3px}.p{font-size:17px;font-weight:700;color:${a};white-space:nowrap;padding-left:14px}
+    .gal{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.gal>div{aspect-ratio:1;border-radius:14px;background-size:cover;background-position:center}
+    .ph0{background:linear-gradient(135deg,#E9D2CB,#D9A39A)}.ph1{background:linear-gradient(135deg,#E9D9B8,#C79B4E)}.ph2{background:linear-gradient(135deg,#D9A39A,${d})}
+    .contact{text-align:center;background:#fff;border-top:1px solid #EFE2DB}.info{display:flex;justify-content:center;gap:34px;flex-wrap:wrap;margin:20px 0 26px;color:#8a7a74;font-size:13px}.info b{display:block;color:#2A1D1A;font-size:15px}
+    footer{text-align:center;padding:24px;font-size:11px;color:#9a8a84;background:#fff}
+    .wafloat{position:fixed;bottom:18px;right:18px;background:#25D366;width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 26px rgba(37,211,102,.5);z-index:99}` },
+  minimal:{ css:(a,d)=>`
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;color:#111;background:#fff;line-height:1.6}
+    .serif{font-family:'Inter',sans-serif}.wrap{max-width:760px;margin:0 auto;padding:0 24px}a{text-decoration:none}
+    header{background:#fff;color:#111;text-align:center;padding:78px 24px 50px;border-bottom:1px solid #eee}
+    header .k{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:${a};font-weight:700}
+    header h1{font-size:50px;font-weight:800;letter-spacing:-.03em;margin:14px 0 12px}
+    header p{color:#666;font-size:16px;max-width:400px;margin:0 auto 24px}
+    .wa{display:inline-block;background:#111;color:#fff;font-weight:600;padding:14px 30px;border-radius:8px;font-size:14px}
+    section{padding:54px 0}.st{text-align:center;margin-bottom:30px}.st .k{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:${a};font-weight:700}
+    .st h2{font-size:28px;font-weight:700;letter-spacing:-.02em;margin-top:6px}.about{text-align:center;color:#555;font-size:17px;max-width:560px;margin:0 auto}
+    .srow{display:flex;justify-content:space-between;align-items:baseline;padding:18px 0;border-bottom:1px solid #eee}
+    .n{font-size:16px;font-weight:600}.n .d{display:block;font-size:13px;color:#888;font-weight:400;margin-top:3px}.p{font-size:16px;font-weight:600;color:#111;padding-left:14px;white-space:nowrap}
+    .gal{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.gal>div{aspect-ratio:1;border-radius:4px;background-size:cover;background-position:center}
+    .ph0,.ph1,.ph2{background:#f2f2f2}
+    .contact{background:#fafafa;border-top:1px solid #eee;text-align:center}.info{display:flex;justify-content:center;gap:34px;flex-wrap:wrap;margin:20px 0 26px;color:#888;font-size:13px}.info b{display:block;color:#111;font-size:15px}
+    footer{text-align:center;padding:24px;font-size:11px;color:#aaa}
+    .wafloat{position:fixed;bottom:18px;right:18px;background:#25D366;width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 26px rgba(37,211,102,.5);z-index:99}` },
+  audace:{ css:(a,d)=>`
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;color:#fff;background:#0E0E10;line-height:1.6}
+    .serif{font-family:'Space Grotesk',sans-serif}.wrap{max-width:760px;margin:0 auto;padding:0 22px}a{text-decoration:none}
+    header{background:radial-gradient(circle at 50% -10%, ${a}40, #0E0E10 60%);text-align:center;padding:80px 22px 56px}
+    header .k{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:${a};font-weight:700}
+    header h1{font-family:'Space Grotesk',sans-serif;font-size:54px;font-weight:700;letter-spacing:-.02em;margin:14px 0 12px;line-height:1.03}
+    header p{color:#b8b8c0;font-size:16px;max-width:400px;margin:0 auto 24px}
+    .wa{display:inline-block;background:${a};color:#0E0E10;font-weight:700;padding:15px 32px;border-radius:999px;font-size:14.5px}
+    section{padding:52px 0}.st{text-align:center;margin-bottom:30px}.st .k{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:${a};font-weight:700}
+    .st h2{font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:700;margin-top:6px}.about{text-align:center;color:#b8b8c0;font-size:17px;max-width:560px;margin:0 auto}
+    .srow{display:flex;justify-content:space-between;align-items:baseline;padding:16px 0;border-bottom:1px solid #232327}
+    .n{font-size:17px;font-weight:600;color:#fff}.n .d{display:block;font-size:13px;color:#8a8a93;font-weight:400;margin-top:3px}.p{font-size:17px;font-weight:700;color:${a};padding-left:14px;white-space:nowrap}
+    .gal{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.gal>div{aspect-ratio:1;border-radius:10px;background-size:cover;background-position:center}
+    .ph0,.ph1,.ph2{background:linear-gradient(135deg,#232327,${a}55)}
+    .contact{background:#08080a;border-top:1px solid #232327;text-align:center}.info{display:flex;justify-content:center;gap:34px;flex-wrap:wrap;margin:20px 0 26px;color:#8a8a93;font-size:13px}.info b{display:block;color:#fff;font-size:15px}
+    footer{text-align:center;padding:24px;font-size:11px;color:#55555f}
+    .wafloat{position:fixed;bottom:18px;right:18px;background:#25D366;width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 26px rgba(37,211,102,.5);z-index:99}` }
+};
+
+// ---- couleurs ----
+const cwrap = document.getElementById('colors');
+COLORS.forEach((c,i)=>{
+  const dd=document.createElement('div');dd.className='swatch'+(i===0?' on':'');dd.style.background=c;
+  dd.onclick=()=>{
+    if(dd.classList.contains('locked')){setPack('pro');return;}
+    accent=c;document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('on'));dd.classList.add('on');render();
+  };
+  cwrap.appendChild(dd);
+});
+
+// ---- thèmes ----
+document.querySelectorAll('.theme-card').forEach(c=>c.onclick=()=>{
+  if(c.classList.contains('locked')){setPack('pro');return;}
+  theme=c.dataset.t;document.querySelectorAll('.theme-card').forEach(x=>x.classList.remove('on'));c.classList.add('on');render();
+});
+
+// ---- prestations ----
+const defaultSvc=[["Soin visage éclat","Nettoyage profond + hydratation","10 000 F"],["Pose d'ongles gel","Manucure complète","8 000 F"],["Maquillage professionnel","Événement, mariage","15 000 F"]];
+const svcWrap=document.getElementById('services');
+function addService(n="",d="",p=""){
+  const row=document.createElement('div');row.className='svc';
+  row.innerHTML=`<input class="s-name" placeholder="Prestation" value="${n}">
+    <input class="s-price" placeholder="Prix" value="${p}">
+    <button class="del" title="Supprimer">×</button>
+    <input class="s-desc svc-desc" placeholder="Petite description (optionnel)" value="${d}">`;
+  row.querySelector('.del').onclick=()=>{row.remove();updateServiceLimit();render();};
+  row.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',render));
+  svcWrap.appendChild(row);
+}
+defaultSvc.forEach(s=>addService(s[0],s[1],s[2]));
+const addBtn=document.getElementById('addBtn');
+function updateServiceLimit(){
+  const count=document.querySelectorAll('.svc').length, lim=PF[pack].services;
+  if(count>=lim){addBtn.disabled=true;addBtn.textContent='Prestations illimitées → Pro';addBtn.onclick=()=>setPack('pro');}
+  else{addBtn.disabled=false;addBtn.textContent='+ Ajouter une prestation';addBtn.onclick=()=>{addService();updateServiceLimit();render();};}
+}
+
+// ---- photos ----
+const pWrap=document.getElementById('photos');
+for(let i=0;i<6;i++){
+  const slot=document.createElement('label');slot.className='photo-slot';slot.dataset.i=i;
+  slot.innerHTML=`+<input type="file" accept="image/*">`;
+  slot.addEventListener('click',e=>{ if(slot.classList.contains('locked')){e.preventDefault();setPack('pro');} });
+  slot.querySelector('input').addEventListener('change',e=>{
+    const file=e.target.files[0];if(!file)return;
+    const r=new FileReader();r.onload=ev=>{photos[i]=ev.target.result;slot.innerHTML=`<img src="${ev.target.result}">`;render();};
+    r.readAsDataURL(file);
+  });
+  pWrap.appendChild(slot);
+}
+
+// ---- logo ----
+document.getElementById('f_logo').addEventListener('change',e=>{
+  const file=e.target.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=ev=>{logo=ev.target.result;const t=document.getElementById('logoThumb');t.src=logo;t.style.display='block';document.getElementById('logoTxt').textContent='Logo ajouté — cliquer pour changer';render();};
+  r.readAsDataURL(file);
+});
+document.getElementById('f_booking').addEventListener('change',e=>{booking=e.target.checked;render();});
+
+function val(id){return document.getElementById(id).value;}
+function getServices(){
+  return [...document.querySelectorAll('.svc')].map(r=>({
+    name:r.querySelector('.s-name').value, desc:r.querySelector('.s-desc').value, price:r.querySelector('.s-price').value
+  })).filter(s=>s.name.trim());
+}
+function darken(hex){
+  const n=parseInt(hex.slice(1),16);let r=(n>>16)&255,g=(n>>8)&255,b=n&255;
+  r=Math.round(r*.45);g=Math.round(g*.45);b=Math.round(b*.45);
+  return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+
+// ---- application du pack (verrouillage des champs) ----
+function setPack(p){
+  pack=p;
+  document.querySelectorAll('#packbar button').forEach(b=>b.classList.toggle('on',b.dataset.p===p));
+  applyPack();render();
+}
+function applyPack(){
+  const f=PF[pack];
+  document.getElementById('packhint').textContent=f.hint;
+  document.getElementById('pubprice').textContent=f.price;
+  // champs génériques verrouillables
+  document.querySelectorAll('.gate').forEach(g=>{
+    const need=g.dataset.need;
+    const ok=(need==='pro')?(pack!=='express'):(pack==='business');
+    g.classList.toggle('locked',!ok);
+  });
+  // thèmes
+  document.querySelectorAll('.theme-card').forEach(c=>c.classList.toggle('locked',!f.themes.includes(c.dataset.t)));
+  if(!f.themes.includes(theme)){theme='elegance';document.querySelectorAll('.theme-card').forEach(x=>x.classList.toggle('on',x.dataset.t==='elegance'));}
+  // couleurs
+  document.querySelectorAll('#colors .swatch').forEach((s,i)=>s.classList.toggle('locked',i>=f.colors));
+  if(COLORS.indexOf(accent)>=f.colors){accent=COLORS[0];document.querySelectorAll('#colors .swatch').forEach((s,i)=>s.classList.toggle('on',i===0));}
+  // photos
+  document.querySelectorAll('.photo-slot').forEach((s,i)=>s.classList.toggle('locked',i>=f.photos));
+  // prestations
+  updateServiceLimit();
+  // rdv
+  if(!f.themes.includes(theme)) booking=false;
+  if(pack!=='business'){booking=false;document.getElementById('f_booking').checked=false;}
+}
+
+function buildSite(){
+  const name=val('f_name')||'Mon activité', type=val('f_type'), slogan=val('f_slogan');
+  const about=PF[pack].photos>1?val('f_about'):'';          // about masqué hors Pro
+  const wa=val('f_wa').replace(/[^0-9]/g,''), dark=darken(accent);
+  const showContact=(pack!=='express');
+  const addr=showContact?val('f_addr'):'', hours=showContact?val('f_hours'):'';
+  const useLogo=(pack!=='express')?logo:null;
+  const svcs=getServices().slice(0,PF[pack].services);
+  const maxPhotos=PF[pack].photos;
+  const cta=(pack==='business'&&booking)?'Réserver un créneau':'Prendre rendez-vous';
+  const waLink=`https://wa.me/${wa}?text=Bonjour%20${encodeURIComponent(name)}%2C%20je%20veux%20un%20rendez-vous`;
+  const desc=(slogan||('Bienvenue chez '+name)).slice(0,150);
+  const svcRows=svcs.map(s=>`<div class="srow"><div class="n">${s.name}${s.desc?`<span class="d">${s.desc}</span>`:''}</div><div class="p">${s.price||''}</div></div>`).join('');
+  const gal=photos.slice(0,maxPhotos).map((p,i)=>p?`<div style="background-image:url('${p}')"></div>`:`<div class="ph${i%3}"></div>`).join('');
+  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>${name} — ${type||'Vitrine'}</title>
+  <meta name="description" content="${desc}">
+  <meta property="og:title" content="${name}"><meta property="og:description" content="${desc}"><meta property="og:type" content="website">${useLogo?`<meta property="og:image" content="${useLogo}">`:''}
+  <style>${THEMES[theme].css(accent,dark)}</style></head><body>
+  <header>${useLogo?`<img src="${useLogo}" alt="logo" style="max-height:60px;margin-bottom:16px;border-radius:10px">`:''}<div class="k">${type||''}</div><h1 class="serif">${name}</h1><p>${slogan||''}</p><a class="wa" href="${waLink}">${cta}</a></header>
+  ${about?`<section><div class="wrap"><p class="about">${about}</p></div></section>`:''}
+  ${svcRows?`<section style="padding-top:${about?'0':'46px'}"><div class="wrap"><div class="st"><div class="k">Nos prestations</div><h2 class="serif">Soins & tarifs</h2></div>${svcRows}</div></section>`:''}
+  <section style="padding-top:0"><div class="wrap"><div class="st"><div class="k">Galerie</div><h2 class="serif">Nos réalisations</h2></div><div class="gal">${gal}</div></div></section>
+  <section class="contact"><div class="wrap"><div class="st"><div class="k">Nous trouver</div><h2 class="serif">${cta}</h2></div><div class="info">${addr?`<div>Adresse<b>${addr}</b></div>`:''}${hours?`<div>Horaires<b>${hours}</b></div>`:''}</div><a class="wa" href="${waLink}">Discuter sur WhatsApp</a></div></section>
+  <footer>Site créé avec Vitrina</footer>
+  <a class="wafloat" href="${waLink}" aria-label="WhatsApp">${WA_SVG}</a>
+  </body></html>`;
+}
+function render(){document.getElementById('preview').srcdoc=buildSite();}
+
+// pack bar
+document.querySelectorAll('#packbar button').forEach(b=>b.onclick=()=>setPack(b.dataset.p));
+document.querySelectorAll('#f_name,#f_type,#f_slogan,#f_about,#f_wa,#f_addr,#f_hours').forEach(i=>i.addEventListener('input',render));
+
+// ---- commande / paiement ----
+fetch('/api/config').then(r=>r.json()).then(cfg=>{
+  document.getElementById('i_num').textContent=cfg.momo_number||'(à configurer)';
+  document.getElementById('i_net').textContent=cfg.momo_network?('· '+cfg.momo_network):'';
+  document.getElementById('i_name').textContent=cfg.momo_name||'NEBULA';
+}).catch(()=>{});
+const modal=document.getElementById('modal');
+document.getElementById('goPublish').onclick=()=>{
+  document.getElementById('m_pack').textContent=pack.charAt(0).toUpperCase()+pack.slice(1);
+  document.getElementById('m_price').textContent=PF[pack].price;
+  document.getElementById('checkoutStep').style.display='block';
+  document.getElementById('doneStep').style.display='none';
+  modal.style.display='flex';
+};
+document.getElementById('modalX').onclick=()=>modal.style.display='none';
+modal.onclick=e=>{if(e.target===modal)modal.style.display='none';};
+document.getElementById('sendOrder').onclick=async()=>{
+  const cname=document.getElementById('c_name').value.trim();
+  const cwa=document.getElementById('c_wa').value.trim();
+  const cemail=document.getElementById('c_email').value.trim();
+  if(!cname||!cwa||!cemail){alert('Remplis ton nom, ton WhatsApp et ton email.');return;}
+  const btn=document.getElementById('sendOrder');btn.disabled=true;btn.textContent='Envoi...';
+  try{
+    const res=await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      pack, biz_name:val('f_name'), client_name:cname,
+      whatsapp:cwa, email:cemail, network:document.getElementById('c_net').value,
+      ref:document.getElementById('c_ref').value, html:buildSite()
+    })});
+    const d=await res.json();
+    document.getElementById('apercuLink').href='/v/'+d.slug;
+    document.getElementById('checkoutStep').style.display='none';
+    document.getElementById('doneStep').style.display='block';
+  }catch(e){alert('Erreur réseau, réessaie.');}
+  btn.disabled=false;btn.textContent="J'ai payé — envoyer ma commande";
+};
+
+// init
+applyPack();
+render();
+</script>
+</body>
+</html>

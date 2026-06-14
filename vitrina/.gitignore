@@ -1,0 +1,4 @@
+.env
+vitrina.db
+__pycache__/
+*.pyc

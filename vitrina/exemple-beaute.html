@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maison Léa — Institut de beauté · Cotonou</title>
+<style>
+  :root{
+    --ink:#2A1D1A; --cream:#FFF7F4; --paper:#fff; --gold:#A77E37; --gold2:#C79B4E;
+    --rose:#6b4a44; --rose-soft:#D9A39A; --muted:#7a6a64; --line:#F0E3DE;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6}
+  .serif{font-family:Georgia,"Times New Roman",serif}
+  .wrap{max-width:960px;margin:0 auto;padding:0 22px}
+  a{text-decoration:none;color:inherit}
+  .back{position:fixed;top:16px;left:16px;z-index:60;background:rgba(255,255,255,.9);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:999px;padding:9px 16px;font-size:13px;font-weight:600;color:var(--rose);box-shadow:0 6px 18px rgba(0,0,0,.08)}
+
+  header{background:linear-gradient(165deg,#3a2a26,#6b4a44);color:#fff;text-align:center;padding:84px 22px 70px}
+  header .k{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:#E9C9C0}
+  header h1{font-size:clamp(40px,8vw,68px);margin:14px 0 10px}
+  header p{font-size:17px;opacity:.9;max-width:480px;margin:0 auto 28px}
+  .wa{display:inline-block;background:#25D366;color:#fff;font-weight:700;padding:15px 30px;border-radius:999px;box-shadow:0 12px 30px rgba(37,211,102,.4)}
+  .wa.alt{background:#fff;color:var(--rose);margin-left:10px}
+
+  section{padding:64px 0}
+  .sec-title{text-align:center;margin-bottom:40px}
+  .sec-title .k{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  .sec-title h2{font-size:clamp(28px,4vw,40px);margin-top:10px}
+
+  .services{max-width:640px;margin:0 auto}
+  .srow{display:flex;justify-content:space-between;align-items:baseline;padding:18px 0;border-bottom:1px solid var(--line)}
+  .srow .n{font-size:18px;font-weight:600}
+  .srow .d{font-size:13.5px;color:var(--muted);display:block;font-weight:400;margin-top:2px}
+  .srow .p{font-size:18px;font-weight:700;color:var(--rose);white-space:nowrap;padding-left:18px}
+
+  .gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .gallery div{aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#E9D2CB,#D9A39A)}
+  .gallery div:nth-child(3n){background:linear-gradient(135deg,#E9D9B8,#C79B4E)}
+  .gallery div:nth-child(4n){background:linear-gradient(135deg,#D9A39A,#6b4a44)}
+  @media(max-width:640px){.gallery{grid-template-columns:repeat(2,1fr)}}
+
+  .reviews{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .rcard{background:var(--cream);border-radius:16px;padding:26px}
+  .stars{color:var(--gold2);letter-spacing:2px;margin-bottom:10px}
+  .rcard p{font-style:italic;color:var(--ink);font-size:15px}
+  .rcard b{display:block;margin-top:14px;font-size:14px}
+  @media(max-width:760px){.rgrid{grid-template-columns:1fr}}
+
+  .contact{text-align:center}
+  .info{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;margin:24px 0 30px;color:var(--muted);font-size:15px}
+  .info b{display:block;color:var(--ink);font-size:16px}
+
+  footer{text-align:center;padding:34px 22px;font-size:13px;color:var(--muted);background:#fff;border-top:1px solid var(--line)}
+  footer b{color:var(--gold)}
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back">← Retour à Vitrina</a>
+
+<header>
+  <div class="k">Institut de beauté · Cotonou</div>
+  <h1 class="serif">Maison Léa</h1>
+  <p>Beauté & bien-être, sur rendez-vous. Un soin, un moment pour toi.</p>
+  <div>
+    <a href="https://wa.me/22900000000?text=Bonjour%20Maison%20L%C3%A9a%2C%20je%20veux%20un%20rendez-vous" class="wa">Prendre rendez-vous</a>
+    <a href="https://wa.me/22900000000" class="wa alt">WhatsApp</a>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="sec-title"><div class="k">Nos prestations</div><h2 class="serif">Soins & tarifs</h2></div>
+    <div class="services">
+      <div class="srow"><div class="n">Soin visage éclat <span class="d">Nettoyage profond + hydratation</span></div><div class="p">10 000 F</div></div>
+      <div class="srow"><div class="n">Pose d'ongles gel <span class="d">Manucure complète, couleur au choix</span></div><div class="p">8 000 F</div></div>
+      <div class="srow"><div class="n">Maquillage professionnel <span class="d">Événement, mariage, shooting</span></div><div class="p">15 000 F</div></div>
+      <div class="srow"><div class="n">Épilation <span class="d">À la cire, zones au choix</span></div><div class="p">dès 5 000 F</div></div>
+      <div class="srow"><div class="n">Massage relaxant <span class="d">45 minutes de détente</span></div><div class="p">12 000 F</div></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-title"><div class="k">Galerie</div><h2 class="serif">Nos réalisations</h2></div>
+    <div class="gallery">
+      <div></div><div></div><div></div><div></div>
+      <div></div><div></div><div></div><div></div>
+    </div>
+  </div>
+</section>
+
+<section class="reviews">
+  <div class="wrap">
+    <div class="sec-title"><div class="k">Avis clientes</div><h2 class="serif">Elles nous font confiance</h2></div>
+    <div class="rgrid">
+      <div class="rcard"><div class="stars">★★★★★</div><p>"Un accueil parfait et un résultat magnifique. Je ne vais plus ailleurs."</p><b>— Sandrine</b></div>
+      <div class="rcard"><div class="stars">★★★★★</div><p>"Léa a des mains en or. Mon maquillage de mariage a tenu toute la journée."</p><b>— Bénédicte</b></div>
+      <div class="rcard"><div class="stars">★★★★★</div><p>"Propre, professionnel, ponctuel. Exactement ce que je cherchais."</p><b>— Christelle</b></div>
+    </div>
+  </div>
+</section>
+
+<section class="contact">
+  <div class="wrap">
+    <div class="sec-title"><div class="k">Nous trouver</div><h2 class="serif">Prends rendez-vous</h2></div>
+    <div class="info">
+      <div>Adresse<b>Haie Vive, Cotonou</b></div>
+      <div>Horaires<b>Lun–Sam · 9h–19h</b></div>
+      <div>Téléphone<b>+229 00 00 00 00</b></div>
+    </div>
+    <a href="https://wa.me/22900000000?text=Bonjour%20Maison%20L%C3%A9a%2C%20je%20veux%20un%20rendez-vous" class="wa">Discuter sur WhatsApp</a>
+  </div>
+</section>
+
+<footer>
+  Site créé en 5 minutes avec <b>Vitrina</b> · Maquette de démonstration
+</footer>
+
+</body>
+</html>
