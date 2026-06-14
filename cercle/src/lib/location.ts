@@ -10,12 +10,12 @@ export async function startSharing(): Promise<boolean> {
   if (status !== 'granted') return false;
 
   const pos = await Location.getCurrentPositionAsync({
-    accuracy: Location.Accuracy.Balanced,
+    accuracy: Location.Accuracy.High,
   });
   await upsertMyLocation(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy ?? null);
 
   sub = await Location.watchPositionAsync(
-    { accuracy: Location.Accuracy.Balanced, timeInterval: 15000, distanceInterval: 25 },
+    { accuracy: Location.Accuracy.High, timeInterval: 3000, distanceInterval: 5 },
     (p) => {
       upsertMyLocation(p.coords.latitude, p.coords.longitude, p.coords.accuracy ?? null).catch(
         () => {},

@@ -25,7 +25,7 @@ export default function MapScreen() {
       .channel('loc-all')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'locations' }, () => load())
       .subscribe();
-    const t = setInterval(load, 20000);
+    const t = setInterval(load, 5000);
     return () => {
       supabase.removeChannel(ch);
       clearInterval(t);
