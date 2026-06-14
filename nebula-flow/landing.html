@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXO — Vos employés IA, sur WhatsApp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#07070d;--panel:#0e0e17;--panel2:#13131f;--line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.16);
+    --txt:#f3f4fa;--mut:#9aa0b4;--mut2:#656b82;--v:#8B5CFF;--c:#22D3EE;--green:#43e09a;
+    --grad:linear-gradient(100deg,var(--v),var(--c));
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;overflow-x:hidden}
+  h1,h2,h3{font-family:'Sora',sans-serif;letter-spacing:-.02em}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+  .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:'Sora';font-weight:700;font-size:.95rem;
+    border-radius:12px;padding:13px 22px;cursor:pointer;border:none;transition:transform .15s,box-shadow .2s,filter .2s}
+  .btn.pri{background:var(--grad);color:#06060c;box-shadow:0 10px 30px -10px var(--v)}
+  .btn.pri:hover{transform:translateY(-2px);filter:brightness(1.07)}
+  .btn.gho{background:rgba(255,255,255,.04);border:1px solid var(--line2);color:var(--txt)}
+  .btn.gho:hover{border-color:var(--c)}
+
+  /* glow */
+  body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:radial-gradient(60% 40% at 50% -5%,rgba(139,92,255,.18),transparent 70%),
+              radial-gradient(40% 30% at 100% 10%,rgba(34,211,238,.10),transparent 70%),var(--bg)}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(7,7,13,.72);border-bottom:1px solid var(--line)}
+  nav .row{display:flex;align-items:center;gap:18px;padding:13px 0}
+  .logo{display:flex;align-items:center;gap:10px;font-family:'Sora';font-weight:800;font-size:1.15rem}
+  .logo .mk{width:30px;height:30px;border-radius:9px;background:var(--grad);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px -6px var(--v)}
+  .logo .mk svg{width:18px;height:18px;stroke:#06060c;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .tabs{display:flex;gap:6px;margin-left:auto}
+  .tabs a{color:var(--mut);font-weight:600;font-size:.9rem;padding:8px 13px;border-radius:9px;transition:.15s}
+  .tabs a:hover{color:var(--txt);background:rgba(255,255,255,.05)}
+  nav .cta{display:flex;gap:9px;align-items:center}
+  nav .btn{padding:10px 17px;font-size:.88rem}
+  @media(max-width:820px){.tabs{display:none}}
+
+  /* hero */
+  header{text-align:center;padding:90px 0 60px}
+  .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--panel);
+    border-radius:30px;padding:7px 15px;font-size:.8rem;color:var(--mut);margin-bottom:26px}
+  .pill .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
+  header h1{font-size:clamp(2.3rem,6.5vw,4.2rem);font-weight:800;line-height:1.04;margin-bottom:20px}
+  header p{font-size:clamp(1.05rem,2.4vw,1.25rem);color:var(--mut);max-width:640px;margin:0 auto 32px}
+  .cta-row{display:flex;gap:13px;justify-content:center;flex-wrap:wrap}
+  .hero-note{margin-top:18px;font-size:.84rem;color:var(--mut2)}
+
+  /* sections */
+  section{padding:66px 0}
+  .eyebrow{color:var(--c);font-weight:700;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;text-align:center;margin-bottom:12px}
+  .stitle{text-align:center;font-size:clamp(1.7rem,4vw,2.5rem);font-weight:800;margin-bottom:12px}
+  .ssub{text-align:center;color:var(--mut);max-width:620px;margin:0 auto 44px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:18px;padding:24px;transition:.2s}
+  .card:hover{border-color:var(--line2);transform:translateY(-3px)}
+  .card .ic{width:46px;height:46px;border-radius:12px;background:rgba(139,92,255,.13);border:1px solid rgba(139,92,255,.28);
+    display:flex;align-items:center;justify-content:center;margin-bottom:15px}
+  .card .ic svg{width:23px;height:23px;stroke:var(--c);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .card h3{font-size:1.12rem;margin-bottom:7px}
+  .card p{color:var(--mut);font-size:.92rem}
+  .card .tagp{display:inline-block;margin-top:12px;font-size:.72rem;font-weight:700;color:var(--green);
+    background:rgba(67,224,154,.1);border:1px solid rgba(67,224,154,.28);padding:3px 10px;border-radius:100px}
+
+  /* steps */
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;counter-reset:s}
+  .step .n{font-family:'Sora';font-size:2.3rem;font-weight:800;line-height:1}
+  .step h3{margin:9px 0 6px;font-size:1.1rem}
+  .step p{color:var(--mut);font-size:.93rem}
+
+  /* pricing */
+  .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;align-items:stretch;margin-top:14px}
+  .plan{display:flex;flex-direction:column;background:linear-gradient(180deg,var(--panel),var(--panel2));
+    border:1px solid var(--line);border-radius:20px;padding:26px 22px;position:relative}
+  .plan.pop{border:1.5px solid transparent;background:linear-gradient(var(--panel),var(--panel)) padding-box,var(--grad) border-box;
+    box-shadow:0 22px 56px -28px var(--v)}
+  .plan .badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--grad);color:#06060c;
+    font-weight:800;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;padding:5px 13px;border-radius:20px;white-space:nowrap}
+  .plan .pn{font-family:'Sora';font-weight:700;font-size:1.1rem}
+  .plan .pt{color:var(--mut);font-size:.84rem;margin:5px 0 14px;min-height:36px}
+  .plan .pr{font-family:'Sora';font-weight:800;font-size:1.9rem;line-height:1}
+  .plan .pr small{font-size:.8rem;color:var(--mut);font-weight:500}
+  .plan .setup{font-size:.78rem;color:var(--c);margin-top:6px;font-weight:600}
+  .plan ul{list-style:none;display:flex;flex-direction:column;gap:9px;margin:16px 0 18px;flex:1}
+  .plan li{font-size:.88rem;color:var(--mut);display:flex;gap:9px;align-items:flex-start;line-height:1.45}
+  .plan li svg{width:16px;height:16px;flex:none;margin-top:2px;stroke:var(--c);fill:none;stroke-width:2.4}
+  .plan .pbtn{text-align:center;border-radius:11px;padding:12px;font-family:'Sora';font-weight:700;font-size:.9rem;
+    border:1px solid var(--line2);color:var(--txt);transition:.15s}
+  .plan.pop .pbtn{background:var(--grad);color:#06060c;border:none}
+  .plan .pbtn:hover{transform:translateY(-2px)}
+  .pnote{text-align:center;color:var(--mut);font-size:.86rem;margin-top:24px}
+
+  /* faq */
+  .faq{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:11px}
+  .faq details{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:0}
+  .faq summary{cursor:pointer;list-style:none;padding:17px 20px;font-family:'Sora';font-weight:600;font-size:1rem}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq p{color:var(--mut);padding:0 20px 18px;font-size:.92rem}
+
+  /* final */
+  .final{text-align:center;background:linear-gradient(180deg,rgba(139,92,255,.08),transparent);
+    border:1px solid var(--line);border-radius:24px;padding:54px 24px;margin:20px 0}
+  .final h2{font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:14px}
+  .final p{color:var(--mut);max-width:520px;margin:0 auto 26px}
+  footer{border-top:1px solid var(--line);padding:34px 0;text-align:center;color:var(--mut);font-size:.85rem}
+  footer .logo{justify-content:center;margin-bottom:10px}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <symbol id="i-logo" viewBox="0 0 24 24"><path d="M5 7h6M5 12h14M5 17h9M16 5l3 3-3 3"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.4 12.4a1 1 0 0 0 1 .8h9.3a1 1 0 0 0 1-.8L21 7H6"/></symbol>
+  <symbol id="i-fb" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></symbol>
+  <symbol id="i-cash" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 21a6 6 0 0 1 12 0M16 4a3.5 3.5 0 0 1 0 7M22 21a6 6 0 0 0-5-5.9"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path d="M4 21l1.5-4A8 8 0 1 1 9 19l-5 2z"/><path d="M8.5 9.5c0 4 3 6 5.5 6.5"/></symbol>
+  </g></defs></svg>
+
+<nav>
+  <div class="wrap row">
+    <a class="logo" href="#top"><span class="mk"><svg viewBox="0 0 24 24"><use href="#i-logo"/></svg></span>NEXO</a>
+    <div class="tabs">
+      <a href="#agents">Agents IA</a>
+      <a href="#tarifs">Tarifs</a>
+      <a href="#comment">Comment ça marche</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="cta">
+      <a href="/app" class="btn gho">Se connecter</a>
+      <a href="/app" class="btn pri">Commencer</a>
+    </div>
+  </div>
+</nav>
+
+<header id="top">
+  <div class="wrap">
+    <div class="pill"><span class="dot"></span> Propulsé par l'IA · WhatsApp · Mobile Money</div>
+    <h1>Vos <span class="grad">employés IA</span>.<br>Sur WhatsApp.</h1>
+    <p>NEXO installe pour vous des employés intelligents qui répondent à vos clients, vendent, prennent les rendez-vous et encaissent — 24h/24, pendant que vous faites autre chose.</p>
+    <div class="cta-row">
+      <a href="/app" class="btn pri">Créer mon premier agent →</a>
+      <a href="#agents" class="btn gho">Voir les agents</a>
+    </div>
+    <div class="hero-note">Sans engagement · on configure tout pour vous · paiement Mobile Money</div>
+  </div>
+</header>
+
+<!-- AGENTS -->
+<section id="agents">
+  <div class="wrap">
+    <div class="eyebrow">Vos employés IA</div>
+    <h2 class="stitle">Un agent pour chaque tâche</h2>
+    <p class="ssub">Vous ne gérez plus des « workflows ». Vous embauchez un employé numérique, déjà prêt, qui travaille sur WhatsApp.</p>
+    <div class="grid">
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-cart"/></svg></div>
+        <h3>Agent Commercial</h3><p>Répond aux prospects WhatsApp, conseille, prend les commandes, relance et vous prévient à chaque vente.</p><span class="tagp">Le plus demandé</span></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-fb"/></svg></div>
+        <h3>Agent Facebook → WhatsApp</h3><p>Récupère vos prospects des pubs Facebook et leur écrit sur WhatsApp instantanément. Plus aucun lead perdu.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-cal"/></svg></div>
+        <h3>Agent Secrétaire</h3><p>Gère les rendez-vous, répond aux questions fréquentes, envoie les rappels. Idéal cliniques, salons, coachs.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-cash"/></svg></div>
+        <h3>Agent Recouvrement</h3><p>Relance par WhatsApp et SMS les factures impayées, suit les paiements et informe le dirigeant. L'argent rentre plus vite.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-users"/></svg></div>
+        <h3>Agent Recrutement</h3><p>Reçoit les CV, pré-qualifie les candidats, les classe et planifie les entretiens.</p></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg></div>
+        <h3>Agent Service Client</h3><p>Répond 24h/24 aux questions, traite les demandes et passe la main à un humain quand il le faut.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMENT -->
+<section id="comment">
+  <div class="wrap">
+    <div class="eyebrow">Clé en main</div>
+    <h2 class="stitle">Prêt en 48 heures</h2>
+    <p class="ssub">Vous n'avez rien à configurer. On s'occupe de tout.</p>
+    <div class="steps">
+      <div class="step"><div class="n grad">01</div><h3>On récupère vos infos</h3><p>Vos produits, vos services et votre numéro WhatsApp. C'est tout.</p></div>
+      <div class="step"><div class="n grad">02</div><h3>On installe votre agent</h3><p>On le configure et le règle selon votre activité. Vous validez le ton.</p></div>
+      <div class="step"><div class="n grad">03</div><h3>Il se met à travailler</h3><p>Il répond, vend et encaisse. Vous suivez tout depuis votre téléphone.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TARIFS -->
+<section id="tarifs">
+  <div class="wrap">
+    <div class="eyebrow">Tarifs</div>
+    <h2 class="stitle">Des prix pensés pour l'Afrique</h2>
+    <p class="ssub">Essayez gratuitement. Quand vous êtes prêt, on vous installe votre employé IA, clé en main.</p>
+    <div class="plans">
+
+      <div class="plan">
+        <div class="pn">Découverte</div>
+        <div class="pt">Pour tester par vous-même.</div>
+        <div class="pr">Gratuit</div>
+        <div class="setup">&nbsp;</div>
+        <ul>
+          <li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>2 automatisations</li>
+          <li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Construction par l'IA (texte ou voix)</li>
+          <li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Tests illimités</li>
+        </ul>
+        <a href="/app" class="pbtn">Commencer gratuitement</a>
+      </div>
+
+      <div class="plan">
+        <div class="pn">Starter</div>
+        <div class="pt">1 employé IA, micro-entreprise.</div>
+        <div class="pr">15 000 <small>F / mois</small></div>
+        <div class="setup">+ installation dès 100 000 F</div>
+        <ul>
+          <li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>1 agent installé clé en main</li>
+          <li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>~500 conversations / mois</li>
+          <li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Alerte à chaque vente</li>
+        </ul>
+        <a href="/app" class="pbtn">Choisir Starter</a>
+      </div>
+
+      <div class="plan pop">
+        <div class="badge">Le plus populaire</div>
+        <div class="pn">Business</div>
+        <div class="pt">Plusieurs agents, PME.</div>
+        <div class="pr">50 000 <small>F / mois</small></div>
+        <div class="setup">+ installation dès 200 000 F</div>
+        <ul>
+          <li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Jusqu'à 3 employés IA</li>
+          <li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Rapports de ventes</li>
+          <li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Prospection automatique</li>
+          <li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Support prioritaire</li>
+        </ul>
+        <a href="/app" class="pbtn">Choisir Business</a>
+      </div>
+
+      <div class="plan">
+        <div class="pn">Pro</div>
+        <div class="pt">Entreprises structurées.</div>
+        <div class="pr">150 000 <small>F / mois</small></div>
+        <div class="setup">+ installation dès 350 000 F</div>
+        <ul>
+          <li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Employés illimités</li>
+          <li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Intégrations sur mesure</li>
+          <li><svg viewBox="0 0 24 24"><use href="#i-check"/></svg>Accompagnement dédié</li>
+        </ul>
+        <a href="/app" class="pbtn">Choisir Pro</a>
+      </div>
+
+    </div>
+    <div class="pnote">Besoin d'un déploiement sur mesure pour une grande structure ? <b style="color:var(--txt)">Offre Entreprise dès 500 000 F/mois</b> — parlons-en.</div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="wrap">
+    <div class="eyebrow">Questions fréquentes</div>
+    <h2 class="stitle">Tout ce que vous vous demandez</h2>
+    <div class="faq">
+      <details><summary>Je n'y connais rien en informatique, c'est pour moi ?</summary><p>Oui. Vous n'avez rien à configurer : on installe et règle votre employé IA pour vous. Vous le pilotez ensuite depuis votre téléphone, en français simple.</p></details>
+      <details><summary>Pourquoi des frais d'installation ?</summary><p>Parce qu'on fait le travail à votre place : on monte votre agent clé en main, avec vos produits et votre WhatsApp. Vous payez une solution prête à vendre, pas un logiciel à construire vous-même.</p></details>
+      <details><summary>L'IA peut-elle dire n'importe quoi à mes clients ?</summary><p>Non. Elle reste dans votre catalogue et vos règles, et vous êtes prévenu à chaque commande. Vous gardez le contrôle.</p></details>
+      <details><summary>Comment je suis payé ?</summary><p>Directement en Mobile Money, sur votre numéro. L'agent guide le client jusqu'au paiement.</p></details>
+      <details><summary>Et si je veux juste essayer ?</summary><p>L'offre Découverte est gratuite : créez et testez vos automatisations vous-même, sans payer.</p></details>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="final">
+      <h2>Votre commercial qui ne dort jamais.</h2>
+      <p>Lancez votre premier employé IA aujourd'hui. Plus aucun client perdu.</p>
+      <a href="/app" class="btn pri">Créer mon agent →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="logo"><span class="mk"><svg viewBox="0 0 24 24"><use href="#i-logo"/></svg></span><span class="grad">NEXO</span></div>
+    Vos employés IA, sur WhatsApp · Afrique de l'Ouest · NEBULA
+  </div>
+</footer>
+
+</body>
+</html>

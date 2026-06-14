@@ -1,0 +1,7 @@
+nexo.db
+data_store.json
+secret.key
+active.json
+_check.js
+*.b64
+__pycache__/

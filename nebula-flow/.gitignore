@@ -1,0 +1,9 @@
+# Secrets & données runtime — NE JAMAIS COMMITER
+secret.key
+nexo.db
+data_store.json
+active.json
+_check.js
+*.b64
+__pycache__/
+*.pyc

@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXO — l'orchestrateur d'automatisations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#07070d; --panel:#0e0e17; --panel2:#13131f; --line:rgba(255,255,255,.08);
+    --line2:rgba(255,255,255,.14); --txt:#f3f4fa; --mut:#9aa0b4; --mut2:#646b82;
+    --v:#8B5CFF; --c:#22D3EE; --amber:#f5b14c; --green:#43e09a; --danger:#ff5c7c;
+    --grad:linear-gradient(100deg,var(--v),var(--c));
+    --r:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);overflow:hidden;
+    -webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:'Sora',sans-serif}
+  button{font-family:inherit;cursor:pointer;border:none;color:inherit}
+  .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* ---- Layout ---- */
+  .app{display:grid;grid-template-rows:auto auto 1fr;height:100vh}
+  /* Topbar */
+  .top{display:flex;align-items:center;gap:14px;padding:11px 16px;border-bottom:1px solid var(--line);
+    background:rgba(14,14,23,.7);backdrop-filter:blur(14px);z-index:30}
+  .brand{display:flex;align-items:center;gap:10px;font-family:'Sora';font-weight:800;font-size:1.05rem;letter-spacing:.3px}
+  .brand .logo{width:30px;height:30px;border-radius:9px;background:var(--grad);display:flex;align-items:center;
+    justify-content:center;box-shadow:0 6px 20px -6px var(--v)}
+  .brand .logo svg{width:18px;height:18px;stroke:#06060c;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .brand small{font-family:'Inter';font-weight:500;color:var(--mut);font-size:.7rem;display:block;letter-spacing:.2px;margin-top:-2px}
+  .top .sp{flex:1}
+  .tbtn{display:inline-flex;align-items:center;gap:7px;font-size:.85rem;font-weight:600;padding:9px 14px;border-radius:10px;
+    background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--txt);transition:.15s}
+  .tbtn:hover{border-color:var(--line2);background:rgba(255,255,255,.07)}
+  .tbtn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .tbtn.run{background:var(--grad);color:#06060c;border:none;box-shadow:0 8px 24px -10px var(--v)}
+  .tbtn.run:hover{filter:brightness(1.08)}
+  .tbtn.danger{color:#ff9db0}.tbtn.danger:hover{border-color:rgba(255,92,124,.4)}
+
+  /* AI bar */
+  .aibar{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line);
+    background:linear-gradient(100deg,rgba(139,92,255,.07),rgba(34,211,238,.05))}
+  .aibar .spark{width:30px;height:30px;flex:none;border-radius:9px;background:rgba(139,92,255,.14);
+    border:1px solid rgba(139,92,255,.3);display:flex;align-items:center;justify-content:center}
+  .aibar .spark svg{width:17px;height:17px;stroke:var(--c);fill:none;stroke-width:1.8}
+  .aibar input{flex:1;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:10px;color:var(--txt);
+    padding:11px 14px;font-size:.92rem;font-family:inherit}
+  .aibar input:focus{outline:none;border-color:rgba(139,92,255,.5);box-shadow:0 0 0 3px rgba(139,92,255,.13)}
+  .aibar input::placeholder{color:var(--mut2)}
+  .aibar .build{background:var(--grad);color:#06060c;font-weight:700;font-size:.88rem;padding:11px 18px;border-radius:10px;
+    white-space:nowrap;box-shadow:0 8px 22px -10px var(--v)}
+  .aibar .build:hover{filter:brightness(1.08)}
+  .aibar .mic{width:42px;height:42px;flex:none;border-radius:10px;background:rgba(255,255,255,.04);
+    border:1px solid var(--line);color:var(--txt);display:flex;align-items:center;justify-content:center;transition:.15s}
+  .aibar .mic:hover{border-color:var(--line2);color:var(--c)}
+  .aibar .mic svg{width:18px;height:18px}
+  .aibar .mic.rec{background:rgba(255,92,124,.16);border-color:var(--danger);color:#ff9db0;animation:micpulse 1.1s infinite}
+  @keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(255,92,124,.45)}50%{box-shadow:0 0 0 7px rgba(255,92,124,0)}}
+
+  /* Main 3 columns */
+  .main{display:grid;grid-template-columns:236px 1fr 290px;min-height:0}
+
+  /* Palette */
+  .palette{border-right:1px solid var(--line);background:var(--panel);overflow-y:auto;padding:14px 12px}
+  .palette .cat{font-size:.66rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--mut2);
+    margin:16px 6px 8px}
+  .palette .cat:first-child{margin-top:2px}
+  .pnode{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:11px;border:1px solid var(--line);
+    background:var(--panel2);margin-bottom:7px;cursor:grab;transition:.13s;user-select:none}
+  .pnode:hover{border-color:var(--line2);transform:translateX(2px)}
+  .pnode:active{cursor:grabbing}
+  .pnode .pi{width:28px;height:28px;flex:none;border-radius:8px;display:flex;align-items:center;justify-content:center}
+  .pnode .pi svg{width:16px;height:16px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .pnode .pl{font-size:.82rem;font-weight:600;line-height:1.2}
+
+  /* Canvas */
+  .canvas{position:relative;overflow:hidden;background:
+    radial-gradient(circle at 1px 1px, rgba(255,255,255,.05) 1px, transparent 0) 0 0/24px 24px,
+    var(--bg);cursor:grab}
+  .canvas.panning{cursor:grabbing}
+  .world{position:absolute;top:0;left:0;width:100%;height:100%;transform-origin:0 0}
+  .wires{position:absolute;top:0;left:0;width:6000px;height:4000px;pointer-events:none;overflow:visible}
+  .wires path{fill:none;stroke-width:2.4}
+  .wire{stroke:url(#wg)}
+  .wire.sel{stroke:var(--c);stroke-width:3}
+  .wire-tmp{stroke:var(--c);stroke-dasharray:5 5;opacity:.8}
+
+  .node{position:absolute;width:194px;background:var(--panel2);border:1px solid var(--line2);border-radius:13px;
+    box-shadow:0 18px 40px -20px rgba(0,0,0,.8);user-select:none;transition:box-shadow .15s,border-color .15s}
+  .node.sel{border-color:var(--c);box-shadow:0 0 0 1px var(--c),0 22px 50px -18px rgba(34,211,238,.25)}
+  .node.running{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber),0 0 34px -6px var(--amber)}
+  .node.done{border-color:var(--green)}
+  .node .nhead{display:flex;align-items:center;gap:9px;padding:10px 11px;cursor:grab;border-bottom:1px solid var(--line)}
+  .node .nhead:active{cursor:grabbing}
+  .node .nic{width:26px;height:26px;flex:none;border-radius:7px;display:flex;align-items:center;justify-content:center}
+  .node .nic svg{width:15px;height:15px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .node .nt{font-size:.8rem;font-weight:700;line-height:1.15;flex:1;min-width:0;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .node .nx{width:18px;height:18px;flex:none;border-radius:5px;color:var(--mut2);display:flex;align-items:center;
+    justify-content:center;font-size:13px;line-height:1}
+  .node .nx:hover{color:var(--danger);background:rgba(255,92,124,.12)}
+  .node .nbody{padding:9px 11px;font-size:.72rem;color:var(--mut);line-height:1.4;min-height:8px}
+  .node .nbody .sub{color:var(--mut2)}
+  .node .ports-out{position:absolute;right:-7px;top:0;height:100%;display:flex;flex-direction:column;justify-content:center;gap:14px;padding:34px 0}
+  .port{width:14px;height:14px;border-radius:50%;background:var(--panel);border:2px solid var(--c);cursor:crosshair;
+    position:relative;transition:.12s}
+  .port:hover{transform:scale(1.3);box-shadow:0 0 0 4px rgba(34,211,238,.2)}
+  .port.in{position:absolute;left:-7px;top:calc(50% - 7px);border-color:var(--v)}
+  .port .plab{position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:.6rem;color:var(--mut);
+    white-space:nowrap;pointer-events:none}
+
+  /* Inspector */
+  .inspect{border-left:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0}
+  .itabs{display:flex;border-bottom:1px solid var(--line)}
+  .itab{flex:1;padding:12px;font-size:.78rem;font-weight:700;color:var(--mut);background:none;border-bottom:2px solid transparent}
+  .itab.on{color:var(--txt);border-bottom-color:var(--c)}
+  .ipane{flex:1;overflow-y:auto;padding:16px}
+  .ipane.hide{display:none}
+  .ihead{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .ihead .nic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex:none}
+  .ihead .nic svg{width:17px;height:17px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .ihead h3{font-size:.95rem}
+  .ihint{font-size:.76rem;color:var(--mut);line-height:1.5;margin-bottom:14px}
+  .fld{margin-bottom:13px}
+  .fld label{display:block;font-size:.72rem;color:var(--mut);font-weight:600;margin-bottom:5px}
+  .fld input,.fld textarea,.fld select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--line);
+    border-radius:9px;color:var(--txt);padding:9px 11px;font-size:.85rem;font-family:inherit}
+  .fld textarea{min-height:64px;resize:vertical;line-height:1.5}
+  .fld input:focus,.fld textarea:focus,.fld select:focus{outline:none;border-color:var(--c);box-shadow:0 0 0 3px rgba(34,211,238,.12)}
+  .empty{color:var(--mut2);font-size:.82rem;text-align:center;padding:40px 10px;line-height:1.6}
+  .empty svg{width:34px;height:34px;stroke:var(--mut2);fill:none;stroke-width:1.5;margin-bottom:12px;opacity:.6}
+
+  /* Log */
+  #log{font-family:ui-monospace,'SF Mono',monospace;font-size:.74rem;line-height:1.7}
+  .lline{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);animation:lin .25s ease}
+  @keyframes lin{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
+  .lline .lt{color:var(--mut2);flex:none}
+  .lline.ok .lm{color:var(--green)}
+  .lline.run .lm{color:var(--amber)}
+  .lline.info .lm{color:var(--c)}
+  .lline.end .lm{color:var(--txt);font-weight:700}
+
+  /* misc */
+  .hint-pill{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:.74rem;color:var(--mut);
+    background:rgba(14,14,23,.85);border:1px solid var(--line);padding:7px 14px;border-radius:100px;
+    backdrop-filter:blur(8px);pointer-events:none}
+  ::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:9px}
+  ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.2)}
+
+  @media(max-width:880px){
+    .main{grid-template-columns:1fr}
+    .palette,.inspect{display:none}
+    .aibar{flex-wrap:wrap}
+  }
+
+  /* ===== Écrans cloud (connexion + tableau de bord) ===== */
+  .screen{position:fixed;inset:0;z-index:200;background:var(--bg);display:none;flex-direction:column}
+  .gate{align-items:center;justify-content:center;
+    background:radial-gradient(60% 50% at 50% 0%,rgba(139,92,255,.16),transparent 70%),var(--bg)}
+  .gcard{width:380px;max-width:92vw;background:var(--panel2);border:1px solid var(--line);border-radius:20px;
+    padding:30px 28px;box-shadow:0 30px 80px -30px rgba(0,0,0,.9)}
+  .gcard .brand{justify-content:center;font-size:1.6rem;margin-bottom:4px}
+  .gcard .brand .logo{width:38px;height:38px}.gcard .brand .logo svg{width:22px;height:22px}
+  .gtag{text-align:center;color:var(--mut);font-size:.88rem;margin-bottom:22px}
+  .gtabs{display:flex;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:11px;padding:4px;margin-bottom:18px}
+  .gtab{flex:1;padding:9px;font-size:.84rem;font-weight:600;color:var(--mut);border-radius:8px}
+  .gtab.on{background:var(--panel);color:var(--txt);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+  .gfield{margin-bottom:13px}
+  .gfield label{display:block;font-size:.74rem;color:var(--mut);font-weight:600;margin-bottom:6px}
+  .gfield input{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:10px;color:var(--txt);
+    padding:11px 13px;font-size:.92rem;font-family:inherit}
+  .gfield input:focus{outline:none;border-color:rgba(139,92,255,.5);box-shadow:0 0 0 3px rgba(139,92,255,.13)}
+  .gerr{color:#ff9db0;font-size:.8rem;min-height:18px;margin-bottom:6px}
+  .gbtn{width:100%;background:var(--grad);color:#06060c;font-weight:700;font-size:.95rem;padding:13px;border-radius:11px;
+    box-shadow:0 10px 28px -10px var(--v)}
+  .gbtn:hover{filter:brightness(1.08)}
+
+  #dash .dhead{display:flex;align-items:center;gap:14px;padding:14px 22px;border-bottom:1px solid var(--line)}
+  #dash .uname{font-size:.85rem;color:var(--mut)}
+  .dwrap{flex:1;overflow-y:auto;padding:34px 22px;max-width:1000px;width:100%;margin:0 auto}
+  .dtitle{font-size:1.5rem;margin-bottom:22px}
+  .dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+  .wfnew{display:flex;align-items:center;justify-content:center;gap:8px;min-height:128px;border-radius:16px;
+    border:1.5px dashed var(--line2);background:rgba(255,255,255,.02);color:var(--mut);font-weight:600;font-size:.92rem;transition:.15s}
+  .wfnew:hover{border-color:var(--v);color:var(--txt);background:rgba(139,92,255,.06)}
+  .wfnew span{font-size:1.5rem;color:var(--v)}
+  .wfcard{min-height:128px;border-radius:16px;border:1px solid var(--line);background:var(--panel2);padding:16px;
+    display:flex;flex-direction:column;gap:8px;transition:.15s}
+  .wfcard:hover{border-color:var(--line2);transform:translateY(-2px)}
+  .wfh{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .wfh b{font-size:1rem;font-family:'Sora'}
+  .wfdot{font-size:.62rem;font-weight:700;color:var(--green);background:rgba(67,224,154,.12);
+    border:1px solid rgba(67,224,154,.3);padding:3px 8px;border-radius:100px}
+  .wfm{font-size:.76rem;color:var(--mut2);flex:1}
+  .wfa{display:flex;gap:7px}
+  .wfa button{font-size:.76rem;font-weight:600;padding:7px 11px;border-radius:8px;background:rgba(255,255,255,.05);
+    border:1px solid var(--line);color:var(--txt)}
+  .wfa button:hover{border-color:var(--line2)}
+  .wfa button.d{color:#ff9db0}
+
+  /* ===== Guide intégré ===== */
+  #guide{align-items:center;justify-content:center;background:rgba(0,0,0,.66);z-index:210}
+  #guide .gcard{width:680px;max-width:94vw;max-height:88vh;overflow-y:auto;text-align:left;padding:26px}
+  .gd-h{font-family:'Sora',sans-serif;font-weight:800;font-size:1.45rem;margin-bottom:4px}
+  .gd-sub{color:var(--mut);font-size:.9rem;margin-bottom:18px;line-height:1.5}
+  .gd-sec{border:1px solid var(--line);border-radius:13px;padding:14px 16px;margin-bottom:11px;background:rgba(255,255,255,.02)}
+  .gd-sec h4{font-size:1rem;display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .gd-sec h4 .n{width:24px;height:24px;flex:none;border-radius:7px;background:var(--grad);color:#06060c;
+    display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800}
+  .gd-sec p{color:var(--mut);font-size:.88rem;line-height:1.6}
+  .gd-sec b{color:var(--txt)}
+  .gd-sec ul{margin:7px 0 0;list-style:none;display:flex;flex-direction:column;gap:7px}
+  .gd-sec li{color:var(--mut);font-size:.88rem;line-height:1.55;display:flex;gap:9px}
+  .gd-sec li::before{content:"→";color:var(--c);flex:none;font-weight:700}
+  .gd-sec li b{color:var(--txt)}
+  .gd-tag{display:inline-block;font-size:.66rem;font-weight:700;color:var(--c);background:rgba(34,211,238,.12);
+    border:1px solid rgba(34,211,238,.3);padding:2px 8px;border-radius:100px;margin-left:6px;vertical-align:middle}
+  .tbtn.q{padding:9px 11px}
+</style>
+</head>
+<body>
+
+<!-- ÉCRAN CONNEXION -->
+<div id="gate" class="screen gate" style="display:flex">
+  <div class="gcard">
+    <div class="brand"><span class="logo"><svg viewBox="0 0 24 24"><path d="M5 7h6M5 12h14M5 17h9M16 5l3 3-3 3"/></svg></span>NEXO</div>
+    <p class="gtag">L'orchestrateur d'automatisations, pensé pour l'Afrique.</p>
+    <div class="gtabs">
+      <button class="gtab on" data-m="login">Connexion</button>
+      <button class="gtab" data-m="signup">Créer un compte</button>
+    </div>
+    <div class="gfield" id="gNameWrap" style="display:none"><label>Votre nom</label><input id="gName" placeholder="Ex : Mongazi"></div>
+    <div class="gfield"><label>Email</label><input id="gEmail" type="email" placeholder="vous@email.com" autocomplete="email"></div>
+    <div class="gfield"><label>Mot de passe</label><input id="gPw" type="password" placeholder="••••••" autocomplete="current-password"></div>
+    <div class="gerr" id="gErr"></div>
+    <button class="gbtn" id="gSubmit">Se connecter</button>
+  </div>
+</div>
+
+<!-- TABLEAU DE BORD -->
+<div id="dash" class="screen">
+  <div class="dhead">
+    <div class="brand"><span class="logo"><svg viewBox="0 0 24 24"><path d="M5 7h6M5 12h14M5 17h9M16 5l3 3-3 3"/></svg></span><div>NEXO<small>Mes automatisations</small></div></div>
+    <div class="sp" style="flex:1"></div>
+    <span id="planBadge" style="font-size:.7rem;font-weight:700;color:var(--c);background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.3);padding:5px 11px;border-radius:100px"></span>
+    <button class="tbtn" id="btnPro" style="display:none"><svg viewBox="0 0 24 24"><path d="M5 16l-2-9 5.5 4L12 5l3.5 6L21 7l-2 9z"/></svg>Passer Pro</button>
+    <button class="tbtn" id="btnGuide"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.2a2.4 2.4 0 0 1 4.7.5c0 1.6-2.3 2-2.3 3.4"/><path d="M12 17h.01"/></svg>Guide</button>
+    <span class="uname" id="uname"></span>
+    <button class="tbtn" id="btnLogout"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Déconnexion</button>
+  </div>
+  <div class="dwrap">
+    <h2 class="dtitle" style="margin-bottom:14px">Démarrer avec un modèle</h2>
+    <div class="dgrid" id="tplGrid" style="margin-bottom:36px"></div>
+    <h2 class="dtitle">Mes automatisations</h2>
+    <div class="dgrid" id="dashGrid"></div>
+  </div>
+</div>
+
+<!-- MODALE PRO (facturation Mobile Money) -->
+<div id="pro" class="screen" style="align-items:center;justify-content:center;background:rgba(0,0,0,.65)">
+  <div class="gcard" style="width:430px">
+    <div class="brand" style="justify-content:center;font-size:1.3rem;margin-bottom:6px"><span class="logo"><svg viewBox="0 0 24 24"><path d="M5 7h6M5 12h14M5 17h9M16 5l3 3-3 3"/></svg></span>NEXO Pro</div>
+    <p class="gtag">Automatisations illimitées + mise en ligne réelle des webhooks.</p>
+    <div style="background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:15px;margin-bottom:14px;font-size:.86rem;line-height:1.7">
+      <div>1. Envoyez <b id="proPrice">5 000 FCFA</b> en Mobile Money au :</div>
+      <div style="font-size:1.2rem;font-weight:800;color:var(--c)" id="proNum">0196740732</div>
+      <div style="color:var(--mut)" id="proName">BIAO Mongazi Yan Karl</div>
+      <div style="margin-top:9px">2. Collez l'<b>ID de la transaction</b> reçu par SMS ci-dessous.</div>
+    </div>
+    <div class="gfield"><label>ID de transaction Mobile Money</label><input id="proRef" placeholder="Ex : MP240608.1234.A56789"></div>
+    <div class="gerr" id="proErr"></div>
+    <button class="gbtn" id="proSubmit">J'ai payé — activer mon Pro</button>
+    <button class="tbtn" id="proClose" style="width:100%;justify-content:center;margin-top:10px">Plus tard</button>
+  </div>
+</div>
+
+<!-- GUIDE INTÉGRÉ (du débutant à l'avancé) -->
+<div id="guide" class="screen">
+  <div class="gcard">
+    <div class="gd-h">Bienvenue sur NEXO 👋</div>
+    <div class="gd-sub">Vos employés IA qui travaillent sur WhatsApp. Voici comment vous en servir — du plus simple au plus avancé. Vous pouvez rouvrir ce guide à tout moment avec le bouton « Guide ».</div>
+
+    <div class="gd-sec">
+      <h4><span class="n">1</span> C'est quoi une « automatisation » ?</h4>
+      <p>C'est un employé qui exécute une suite d'étapes tout seul. Il y a toujours <b>un déclencheur</b> (le moment où ça démarre) puis <b>des actions</b> (ce qu'il fait).</p>
+      <ul><li><b>Exemple :</b> un client écrit sur WhatsApp <i>(déclencheur)</i> → l'IA répond <i>(action)</i> → on enregistre la commande <i>(action)</i>.</li></ul>
+    </div>
+
+    <div class="gd-sec">
+      <h4><span class="n">2</span> 3 façons de créer la vôtre</h4>
+      <ul>
+        <li>🟢 <b>Le plus simple :</b> en haut du tableau de bord, cliquez un <b>Modèle</b> — il est déjà prêt.</li>
+        <li>🪄 <b>Le plus magique :</b> dans la barre du haut, <b>écrivez ou dictez</b> (🎤) ce que vous voulez. Ex : « récupère un prospect Facebook et envoie-lui un WhatsApp ». L'IA construit tout.</li>
+        <li>🧩 <b>Le plus libre :</b> <b>glissez les blocs</b> depuis la gauche et reliez-les (tirez un fil depuis le point bleu d'un bloc vers le point violet du suivant).</li>
+      </ul>
+    </div>
+
+    <div class="gd-sec">
+      <h4><span class="n">3</span> Régler un bloc</h4>
+      <p>Cliquez sur un bloc → le panneau <b>Réglages</b> (à droite) s'ouvre. Remplissez le message, le numéro, la consigne donnée à l'IA…</p>
+      <ul><li><b>Astuce :</b> écrivez <b>{{ia}}</b> dans un message pour y insérer automatiquement la réponse de l'IA.</li></ul>
+    </div>
+
+    <div class="gd-sec">
+      <h4><span class="n">4</span> Tester</h4>
+      <p>Cliquez <b>« Tester le flux »</b> : vous voyez chaque étape s'exécuter en direct dans le <b>Journal</b>. C'est un essai — rien n'est envoyé pour de vrai.</p>
+    </div>
+
+    <div class="gd-sec">
+      <h4><span class="n">5</span> Mettre en ligne <span class="gd-tag">Pro</span></h4>
+      <p>Cliquez <b>« Déployer »</b> : votre automatisation tourne pour de vrai. Si elle a un bloc <b>Webhook</b>, vous obtenez une <b>URL</b> à appeler depuis un autre outil pour la déclencher.</p>
+    </div>
+
+    <div class="gd-sec">
+      <h4><span class="n">6</span> Les blocs, en bref</h4>
+      <ul>
+        <li><b>Déclencheurs</b> (le départ) : message WhatsApp reçu, prospect Facebook, webhook, planifié, formulaire.</li>
+        <li><b>Actions</b> : envoyer un WhatsApp / un email, demander à l'IA, encaisser en Mobile Money, enregistrer, appeler une API, action Vendora.</li>
+        <li><b>Logique</b> : condition (Si / Sinon), attendre un délai.</li>
+      </ul>
+    </div>
+
+    <div class="gd-sec">
+      <h4><span class="n">7</span> Forfaits</h4>
+      <ul>
+        <li><b>Gratuit :</b> jusqu'à 2 automatisations, pour essayer et tester.</li>
+        <li><b>Pro :</b> automatisations illimitées + mise en ligne réelle des webhooks (bouton « Passer Pro », paiement Mobile Money).</li>
+      </ul>
+    </div>
+
+    <button class="gbtn" id="guideStart">J'ai compris, c'est parti →</button>
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- TOPBAR -->
+  <div class="top">
+    <div class="brand">
+      <span class="logo"><svg viewBox="0 0 24 24"><path d="M5 7h6M5 12h14M5 17h9M16 5l3 3-3 3"/></svg></span>
+      <div>NEXO<small>Automatisations, sans code</small></div>
+    </div>
+    <button class="tbtn" id="btnBack" style="display:none"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Mes flux</button>
+    <span id="wfName" style="font-size:.85rem;color:var(--txt);font-weight:600"></span>
+    <span id="engine" style="font-size:.72rem;color:var(--mut);display:inline-flex;align-items:center;gap:6px;margin-left:4px"><i style="width:7px;height:7px;border-radius:50%;background:var(--mut2);display:inline-block"></i><span>moteur…</span></span>
+    <div class="sp"></div>
+    <button class="tbtn q" id="btnGuideE" title="Guide"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.2a2.4 2.4 0 0 1 4.7.5c0 1.6-2.3 2-2.3 3.4"/><path d="M12 17h.01"/></svg></button>
+    <button class="tbtn" id="btnImport"><svg viewBox="0 0 24 24"><path d="M12 16V4M8 8l4-4 4 4M4 20h16"/></svg>Importer</button>
+    <button class="tbtn" id="btnExport"><svg viewBox="0 0 24 24"><path d="M12 4v12M8 12l4 4 4-4M4 20h16"/></svg>Exporter</button>
+    <button class="tbtn danger" id="btnClear"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>Vider</button>
+    <button class="tbtn" id="btnDeploy"><svg viewBox="0 0 24 24"><path d="M5 15c-1.5 1.2-2 5-2 5s3.8-.5 5-2c.7-.8.7-2-.1-2.8a2 2 0 0 0-2.9-.2zM12 15l-3-3a22 22 0 0 1 8-10c2 0 4 2 4 4a22 22 0 0 1-10 8z"/></svg>Déployer</button>
+    <button class="tbtn run" id="btnRun"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg>Tester le flux</button>
+  </div>
+
+  <!-- AI BAR -->
+  <div class="aibar">
+    <span class="spark"><svg viewBox="0 0 24 24"><path d="M12 3l1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6z"/></svg></span>
+    <input id="aiInput" placeholder="Décris (ou dicte 🎤) ton automatisation… ex : « récupère un prospect Facebook et envoie-lui un message WhatsApp »">
+    <button class="mic" id="btnMic" title="Dicter à la voix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg></button>
+    <button class="build" id="btnBuild">Construire avec l'IA ✨</button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- PALETTE -->
+    <div class="palette" id="palette"></div>
+
+    <!-- CANVAS -->
+    <div class="canvas" id="canvas">
+      <div class="world" id="world">
+        <svg class="wires" id="wires">
+          <defs>
+            <linearGradient id="wg" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#8B5CFF"/><stop offset="1" stop-color="#22D3EE"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <!-- nodes injected here -->
+      </div>
+      <div class="hint-pill" id="hintPill">Glisse un bloc depuis la gauche, ou écris une phrase à l'IA ↑</div>
+    </div>
+
+    <!-- INSPECTOR -->
+    <div class="inspect">
+      <div class="itabs">
+        <button class="itab on" data-pane="props">Réglages</button>
+        <button class="itab" data-pane="log">Journal</button>
+      </div>
+      <div class="ipane" id="paneProps">
+        <div class="empty" id="propsEmpty">
+          <svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3zM12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>
+          Sélectionne un bloc pour le configurer.
+        </div>
+        <div id="propsForm"></div>
+      </div>
+      <div class="ipane hide" id="paneLog">
+        <div id="log"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<input type="file" id="fileImport" accept="application/json" style="display:none">
+
+<script>
+/* ============================================================
+   NEBULA Flow — éditeur de workflows (vanilla JS, zéro dépendance)
+   Vague 1 : palette, glisser-déposer, câblage, réglages,
+   exécution simulée, construction par IA (règles), save/load.
+   ============================================================ */
+
+// ---- Registre des blocs (briques africaines natives incluses) ----
+const ICONS = {
+  whatsapp:'<path d="M4 21l1.5-4A8 8 0 1 1 9 19l-5 2z"/><path d="M8.5 9.5c0 4 3 6 5.5 6.5"/>',
+  webhook:'<path d="M12 8a4 4 0 0 0-4 4M6 18a4 4 0 0 1 0-8M18 12a4 4 0 0 1-4 8M9 18h6"/><circle cx="12" cy="8" r="1.5"/>',
+  clock:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
+  form:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/>',
+  social:'<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',
+  mic:'<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/>',
+  send:'<path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/>',
+  mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  cash:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/>',
+  ai:'<path d="M12 3l1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/>',
+  http:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"/>',
+  db:'<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+  branch:'<circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M8 7l8 4M8 17l8-4"/>',
+  delay:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4M9 2h6"/>',
+  store:'<path d="M3 7l1.2-3.2A1 1 0 0 1 5.1 3h13.8a1 1 0 0 1 .9.8L21 7M4 7v12a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7M3 7h18"/>',
+};
+const C = { trig:'#8B5CFF', act:'#22D3EE', logic:'#f5b14c', ai:'#43e09a' };
+
+const TYPES = {
+  // Déclencheurs
+  'trigger-whatsapp':{cat:'trig',label:'Message WhatsApp reçu',color:C.trig,icon:'whatsapp',outs:['out'],
+    hint:"Démarre quand un client écrit sur votre WhatsApp.",
+    fields:[{k:'numero',l:'Numéro WhatsApp Business',ph:'+229 …'}], summary:n=>n.p.numero||'tout numéro'},
+  'trigger-webhook':{cat:'trig',label:'Webhook (URL)',color:C.trig,icon:'webhook',outs:['out'],
+    hint:"Démarre quand une URL est appelée (par un autre outil).",
+    fields:[{k:'chemin',l:'Chemin de l’URL',ph:'/commande-recue'}], summary:n=>n.p.chemin||'/webhook'},
+  'trigger-facebook':{cat:'trig',label:'Prospect Facebook',color:C.trig,icon:'social',outs:['out'],
+    hint:"Démarre quand un nouveau prospect arrive de Facebook ou Messenger.",
+    fields:[{k:'page',l:'Page Facebook',ph:'Ma boutique'}], summary:n=>n.p.page||'Facebook / Messenger'},
+  'trigger-schedule':{cat:'trig',label:'Planifié (heure)',color:C.trig,icon:'clock',outs:['out'],
+    hint:"Démarre automatiquement à une heure précise.",
+    fields:[{k:'quand',l:'Fréquence',type:'select',opts:['Chaque jour à 8h','Chaque heure','Chaque lundi','Chaque fin de mois']}],
+    summary:n=>n.p.quand||'chaque jour'},
+  'trigger-form':{cat:'trig',label:'Formulaire envoyé',color:C.trig,icon:'form',outs:['out'],
+    hint:"Démarre quand un client remplit votre formulaire.",
+    fields:[{k:'nom',l:'Nom du formulaire',ph:'Demande de devis'}], summary:n=>n.p.nom||'formulaire'},
+
+  // Actions
+  'action-whatsapp':{cat:'act',label:'Envoyer un WhatsApp',color:C.act,icon:'send',ins:['in'],outs:['out'],
+    hint:"Envoie un message WhatsApp à un client.",
+    fields:[{k:'message',l:'Message',type:'area',ph:'Bonjour ! Merci pour votre commande…'}],
+    summary:n=>n.p.message?('« '+n.p.message.slice(0,40)+(n.p.message.length>40?'…':'')+' »'):'message vide'},
+  'action-email':{cat:'act',label:'Envoyer un email',color:C.act,icon:'mail',ins:['in'],outs:['out'],
+    hint:"Envoie un email.",
+    fields:[{k:'a',l:'Destinataire',ph:'client@email.com'},{k:'objet',l:'Objet',ph:'Votre commande'}],
+    summary:n=>n.p.a||'destinataire'},
+  'action-momo':{cat:'act',label:'Encaisser Mobile Money',color:C.act,icon:'cash',ins:['in'],outs:['out'],
+    hint:"Demande un paiement Mobile Money au client.",
+    fields:[{k:'montant',l:'Montant (FCFA)',ph:'5000'},{k:'numero',l:'Numéro à créditer',ph:'01 96 74 07 32'}],
+    summary:n=>n.p.montant?(n.p.montant+' FCFA'):'montant'},
+  'action-ai':{cat:'ai',label:'Demander à l’IA (Claude)',color:C.ai,icon:'ai',ins:['in'],outs:['out'],
+    hint:"L’IA génère une réponse intelligente à partir du message reçu.",
+    fields:[{k:'consigne',l:'Consigne donnée à l’IA',type:'area',ph:'Réponds poliment, propose le produit adapté, prends la commande.'}],
+    summary:n=>n.p.consigne?('IA : '+n.p.consigne.slice(0,34)+'…'):'consigne IA'},
+  'action-http':{cat:'act',label:'Appel HTTP / API',color:C.act,icon:'http',ins:['in'],outs:['out'],
+    hint:"Appelle n’importe quelle API externe.",
+    fields:[{k:'methode',l:'Méthode',type:'select',opts:['GET','POST','PUT','DELETE']},{k:'url',l:'URL',ph:'https://api.exemple.com/…'}],
+    summary:n=>(n.p.methode||'GET')+' '+(n.p.url||'…')},
+  'action-db':{cat:'act',label:'Enregistrer (base de données)',color:C.act,icon:'db',ins:['in'],outs:['out'],
+    hint:"Enregistre les données (commande, contact…) dans votre base.",
+    fields:[{k:'table',l:'Table / collection',ph:'commandes'}], summary:n=>n.p.table||'table'},
+  'action-vendora':{cat:'act',label:'Action Vendora',color:C.act,icon:'store',ins:['in'],outs:['out'],
+    hint:"Déclenche une action dans votre agent vendeur Vendora.",
+    fields:[{k:'action',l:'Action',type:'select',opts:['Créer une commande','Alerter le patron','Relancer le client','Mettre en rupture']}],
+    summary:n=>n.p.action||'action'},
+
+  // Logique
+  'logic-if':{cat:'logic',label:'Condition (Si / Sinon)',color:C.logic,icon:'branch',ins:['in'],outs:['oui','non'],
+    hint:"Aiguille le flux selon une condition.",
+    fields:[{k:'condition',l:'Si…',ph:'le client a confirmé'}], summary:n=>n.p.condition||'condition'},
+  'logic-delay':{cat:'logic',label:'Attendre (délai)',color:C.logic,icon:'delay',ins:['in'],outs:['out'],
+    hint:"Met le flux en pause avant l’étape suivante.",
+    fields:[{k:'duree',l:'Durée',type:'select',opts:['5 minutes','1 heure','1 jour','3 jours']}],
+    summary:n=>n.p.duree||'délai'},
+};
+
+const CATS = [
+  ['Déclencheurs',['trigger-whatsapp','trigger-facebook','trigger-webhook','trigger-schedule','trigger-form']],
+  ['Actions',['action-whatsapp','action-ai','action-momo','action-db','action-email','action-http','action-vendora']],
+  ['Logique',['logic-if','logic-delay']],
+];
+
+// ---- État ----
+let state = { nodes:[], conns:[] };  // node:{id,type,x,y,p:{}}  conn:{from,fromPort,to}
+let uid = 1;
+let selected = null;
+let pan = {x:0,y:0};
+
+const $ = s=>document.querySelector(s);
+const world = $('#world'), wires = $('#wires'), canvas = $('#canvas');
+
+// ---- Palette ----
+function buildPalette(){
+  const pal = $('#palette'); pal.innerHTML='';
+  CATS.forEach(([title,types])=>{
+    pal.insertAdjacentHTML('beforeend',`<div class="cat">${title}</div>`);
+    types.forEach(t=>{
+      const T=TYPES[t];
+      const el=document.createElement('div');
+      el.className='pnode'; el.draggable=true; el.dataset.type=t;
+      el.innerHTML=`<span class="pi" style="background:${hex(T.color,.14)};border:1px solid ${hex(T.color,.32)}">
+        <svg viewBox="0 0 24 24" style="stroke:${T.color}">${ICONS[T.icon]}</svg></span>
+        <span class="pl">${T.label}</span>`;
+      el.addEventListener('dragstart',e=>e.dataTransfer.setData('type',t));
+      pal.appendChild(el);
+    });
+  });
+}
+function hex(c,a){ // hex -> rgba
+  const n=parseInt(c.slice(1),16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`;
+}
+
+// ---- Drag depuis la palette vers le canvas ----
+canvas.addEventListener('dragover',e=>e.preventDefault());
+canvas.addEventListener('drop',e=>{
+  e.preventDefault();
+  const t=e.dataTransfer.getData('type'); if(!TYPES[t]) return;
+  const r=world.getBoundingClientRect();
+  addNode(t, e.clientX-r.left-90, e.clientY-r.top-22);
+});
+
+function addNode(type,x,y,params){
+  const T=TYPES[type];
+  const n={id:'n'+(uid++),type,x:Math.round(x),y:Math.round(y),p:params||{}};
+  // valeurs par défaut (select)
+  (T.fields||[]).forEach(f=>{ if(f.type==='select'&&n.p[f.k]===undefined) n.p[f.k]=f.opts[0]; });
+  state.nodes.push(n); renderNode(n); select(n); drawWires(); save(); updateHint();
+  return n;
+}
+
+// ---- Rendu d'un nœud ----
+function renderNode(n){
+  const T=TYPES[n.type];
+  let el=document.getElementById(n.id);
+  if(!el){ el=document.createElement('div'); el.className='node'; el.id=n.id; world.appendChild(el); }
+  el.style.left=n.x+'px'; el.style.top=n.y+'px';
+  const outs=(T.outs||[]); const ins=(T.ins||[]);
+  el.innerHTML=`
+    <div class="nhead">
+      <span class="nic" style="background:${hex(T.color,.16)}"><svg viewBox="0 0 24 24" style="stroke:${T.color}">${ICONS[T.icon]}</svg></span>
+      <span class="nt">${T.label}</span>
+      <button class="nx" title="Supprimer">✕</button>
+    </div>
+    <div class="nbody"><span class="sub">${(T.summary?T.summary(n):'')||'à configurer'}</span></div>
+    ${ins.map(()=>`<div class="port in" data-node="${n.id}" data-dir="in"></div>`).join('')}
+    <div class="ports-out">
+      ${outs.map(o=>`<div class="port out" data-node="${n.id}" data-dir="out" data-port="${o}">${outs.length>1?`<span class="plab">${o==='oui'?'Oui':'Non'}</span>`:''}</div>`).join('')}
+    </div>`;
+  // sélection + drag du nœud
+  const head=el.querySelector('.nhead');
+  head.addEventListener('pointerdown',e=>{ if(e.target.classList.contains('nx'))return; startDragNode(e,n,el); });
+  el.addEventListener('pointerdown',()=>select(n));
+  el.querySelector('.nx').addEventListener('click',e=>{e.stopPropagation();removeNode(n);});
+  // ports de sortie -> démarre un câble
+  el.querySelectorAll('.port.out').forEach(p=>{
+    p.addEventListener('pointerdown',e=>{e.stopPropagation();startWire(e,n,p.dataset.port||'out');});
+  });
+  el.classList.toggle('sel',selected===n);
+}
+
+// ---- Déplacement d'un nœud ----
+function startDragNode(e,n,el){
+  e.preventDefault();
+  let lx=e.clientX, ly=e.clientY;
+  const move=ev=>{ n.x+=ev.clientX-lx; n.y+=ev.clientY-ly; lx=ev.clientX; ly=ev.clientY;
+    el.style.left=n.x+'px'; el.style.top=n.y+'px'; drawWires(); };
+  const up=()=>{ document.removeEventListener('pointermove',move); document.removeEventListener('pointerup',up); save(); };
+  document.addEventListener('pointermove',move); document.addEventListener('pointerup',up);
+}
+
+function removeNode(n){
+  state.conns=state.conns.filter(c=>c.from!==n.id&&c.to!==n.id);
+  state.nodes=state.nodes.filter(x=>x!==n);
+  document.getElementById(n.id)?.remove();
+  if(selected===n) select(null);
+  drawWires(); save(); updateHint();
+}
+
+// ---- Câblage ----
+let tmpWire=null;
+function portCenter(nodeId,dir,port){
+  const sel=dir==='out'?`.port.out${port?`[data-port="${port}"]`:''}`:'.port.in';
+  const el=document.getElementById(nodeId)?.querySelector(sel);
+  if(!el) return null;
+  const wr=world.getBoundingClientRect(), pr=el.getBoundingClientRect();
+  return {x:pr.left+pr.width/2-wr.left, y:pr.top+pr.height/2-wr.top};
+}
+function startWire(e,n,port){
+  e.preventDefault();
+  const from=portCenter(n.id,'out',port);
+  tmpWire=document.createElementNS('http://www.w3.org/2000/svg','path');
+  tmpWire.setAttribute('class','wire-tmp'); wires.appendChild(tmpWire);
+  const move=ev=>{ const wr=world.getBoundingClientRect();
+    setPath(tmpWire,from,{x:ev.clientX-wr.left,y:ev.clientY-wr.top}); };
+  const up=ev=>{
+    document.removeEventListener('pointermove',move); document.removeEventListener('pointerup',up);
+    const tgt=document.elementFromPoint(ev.clientX,ev.clientY);
+    const inPort=tgt&&tgt.closest('.port.in');
+    if(inPort){ const toId=inPort.dataset.node;
+      if(toId!==n.id && !state.conns.some(c=>c.from===n.id&&c.fromPort===port&&c.to===toId)){
+        state.conns.push({from:n.id,fromPort:port,to:toId}); save();
+      }
+    }
+    tmpWire.remove(); tmpWire=null; drawWires();
+  };
+  document.addEventListener('pointermove',move); document.addEventListener('pointerup',up);
+}
+function setPath(path,a,b){
+  if(!a||!b) return;
+  const dx=Math.max(40,Math.abs(b.x-a.x)/2);
+  path.setAttribute('d',`M ${a.x} ${a.y} C ${a.x+dx} ${a.y}, ${b.x-dx} ${b.y}, ${b.x} ${b.y}`);
+}
+function drawWires(){
+  wires.querySelectorAll('path.wire').forEach(p=>p.remove());
+  state.conns.forEach(c=>{
+    const a=portCenter(c.from,'out',c.fromPort), b=portCenter(c.to,'in');
+    if(!a||!b) return;
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('class','wire'); setPath(path,a,b);
+    path.style.pointerEvents='stroke'; path.style.cursor='pointer';
+    path.addEventListener('click',()=>{ state.conns=state.conns.filter(x=>x!==c); save(); drawWires(); });
+    wires.appendChild(path);
+  });
+}
+
+// ---- Sélection + inspecteur ----
+function select(n){
+  selected=n;
+  document.querySelectorAll('.node').forEach(el=>el.classList.toggle('sel',el.id===(n&&n.id)));
+  renderInspector();
+}
+function renderInspector(){
+  const empty=$('#propsEmpty'), form=$('#propsForm');
+  if(!selected){ empty.style.display='block'; form.innerHTML=''; return; }
+  empty.style.display='none';
+  const T=TYPES[selected.type];
+  let h=`<div class="ihead"><span class="nic" style="background:${hex(T.color,.16)}">
+      <svg viewBox="0 0 24 24" style="stroke:${T.color}">${ICONS[T.icon]}</svg></span><h3>${T.label}</h3></div>
+    <div class="ihint">${T.hint||''}</div>`;
+  (T.fields||[]).forEach(f=>{
+    const v=selected.p[f.k]||'';
+    h+=`<div class="fld"><label>${f.l}</label>`;
+    if(f.type==='area') h+=`<textarea data-k="${f.k}" placeholder="${f.ph||''}">${v}</textarea>`;
+    else if(f.type==='select') h+=`<select data-k="${f.k}">${f.opts.map(o=>`<option ${o===v?'selected':''}>${o}</option>`).join('')}</select>`;
+    else h+=`<input data-k="${f.k}" value="${String(v).replace(/"/g,'&quot;')}" placeholder="${f.ph||''}">`;
+    h+=`</div>`;
+  });
+  form.innerHTML=h;
+  form.querySelectorAll('[data-k]').forEach(inp=>{
+    inp.addEventListener('input',()=>{ selected.p[inp.dataset.k]=inp.value; renderNode(selected); drawWires(); save(); });
+  });
+  if(selected.type==='trigger-webhook'){
+    const ch=(selected.p.chemin||'/webhook'); const c=ch.startsWith('/')?ch:'/'+ch;
+    const url=(S&&S.hook)?`${location.origin}/api/hook/${S.hook}${c}`:'(déploie l’automatisation pour activer l’URL)';
+    form.insertAdjacentHTML('beforeend',`<div class="fld"><label>URL de déclenchement (après « Déployer »)</label>
+      <input readonly value="${url}" onclick="this.select()" style="font-size:.73rem;color:var(--c)"></div>`);
+  }
+}
+
+// ---- Pan du canvas ----
+canvas.addEventListener('pointerdown',e=>{
+  if(e.target!==canvas&&e.target!==world&&e.target.tagName!=='svg') return;
+  select(null);
+  canvas.classList.add('panning');
+  let lx=e.clientX, ly=e.clientY;
+  const move=ev=>{ pan.x+=ev.clientX-lx; pan.y+=ev.clientY-ly; lx=ev.clientX; ly=ev.clientY;
+    world.style.transform=`translate(${pan.x}px,${pan.y}px)`; };
+  const up=()=>{ canvas.classList.remove('panning'); document.removeEventListener('pointermove',move); document.removeEventListener('pointerup',up); };
+  document.addEventListener('pointermove',move); document.addEventListener('pointerup',up);
+});
+
+// ---- Exécution simulée ----
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function logLine(cls,msg){
+  const t=new Date().toLocaleTimeString('fr-FR');
+  $('#log').insertAdjacentHTML('beforeend',`<div class="lline ${cls}"><span class="lt">${t}</span><span class="lm">${msg}</span></div>`);
+  $('#paneLog').scrollTop=1e9;
+}
+async function run(){
+  switchPane('log'); $('#log').innerHTML='';
+  document.querySelectorAll('.node').forEach(el=>el.classList.remove('running','done'));
+  if(!state.nodes.length){ logLine('info','⚠ Le canevas est vide.'); return; }
+  let data;
+  try{
+    const res=await fetch('/api/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(state)});
+    if(!res.ok) throw 0;
+    data=await res.json();
+  }catch(e){
+    logLine('info','(moteur hors-ligne — simulation locale)');
+    return runLocal();
+  }
+  // Rejoue le journal RÉEL renvoyé par le moteur, en animant les blocs
+  for(const l of (data.log||[])){
+    const el=l.node?document.getElementById(l.node):null;
+    if(el&&l.cls==='run'){ el.classList.remove('done'); el.classList.add('running'); }
+    logLine(l.cls,l.msg);
+    await wait(l.cls==='run'?420:130);
+    if(el&&l.cls==='run'){ el.classList.remove('running'); el.classList.add('done'); }
+  }
+}
+async function runLocal(){
+  const triggers=state.nodes.filter(n=>TYPES[n.type].cat==='trig');
+  if(!triggers.length){ logLine('info','⚠ Ajoute un déclencheur (ex : Message WhatsApp reçu) pour démarrer.'); return; }
+  logLine('info','▶ Simulation locale…');
+  for(const t of triggers) await execFrom(t,'out',new Set());
+  logLine('end','✓ Flux terminé.');
+}
+async function deploy(){
+  switchPane('log');
+  if(!S.wid){ logLine('info','Ouvre une automatisation d’abord.'); return; }
+  try{
+    const d=await api('/api/workflows/'+S.wid+'/deploy',{method:'POST',body:JSON.stringify({graph:state})});
+    if(d.hooks&&d.hooks.length){
+      logLine('info','🚀 Déployé — webhooks ACTIFS (appelle ces URL pour déclencher en vrai) :');
+      d.hooks.forEach(h=>logLine('ok','   '+location.origin+h));
+    }else{
+      logLine('info','🚀 Déployé ('+(d.nodes||0)+' blocs). Ajoute un bloc « Webhook (URL) » pour obtenir une URL.');
+    }
+  }catch(e){ logLine('info','⚠ '+e); if(/Pro/i.test(String(e))) openPro(); }
+}
+async function execFrom(node,port,seen){
+  if(seen.has(node.id+port)) return; seen.add(node.id+port);
+  const el=document.getElementById(node.id); const T=TYPES[node.type];
+  el.classList.add('running'); el.scrollIntoView&&0;
+  logLine('run','● '+T.label+(T.summary?(' — '+T.summary(node)):''));
+  await wait(550);
+  el.classList.remove('running'); el.classList.add('done');
+  // simulation de sortie
+  const out={
+    'action-ai':'→ Réponse générée par l’IA',
+    'action-whatsapp':'→ WhatsApp envoyé',
+    'action-momo':'→ Demande de paiement envoyée',
+    'action-db':'→ Données enregistrées',
+    'action-email':'→ Email envoyé',
+    'logic-if':'→ Condition évaluée : OUI',
+  }[node.type];
+  if(out) logLine('ok','   '+out);
+  // suivre les connexions
+  let nextPort = node.type==='logic-if' ? 'oui' : (port||'out');
+  const outs=state.conns.filter(c=>c.from===node.id);
+  for(const c of outs){
+    const target=state.nodes.find(x=>x.id===c.to); if(!target) continue;
+    await wait(150);
+    await execFrom(target,'out',seen);
+  }
+}
+
+// ---- Construction par IA : Claude génère le workflow (repli sur règles) ----
+function applyGraph(g){
+  state={nodes:(g.nodes||[]).map(n=>({id:n.id,type:n.type,x:n.x||80,y:n.y||160,p:n.p||{}})),conns:g.conns||[]};
+  uid=state.nodes.reduce((m,n)=>Math.max(m,parseInt(String(n.id).slice(1))||0),0)+1;
+  select(null); renderAll(); save();
+}
+async function aiBuild(text){
+  if(!S || !S.wid){ logLine('info','Ouvre une automatisation d’abord.'); return; }
+  switchPane('log'); $('#log').innerHTML=''; logLine('info','✨ L’IA construit votre automatisation…');
+  try{
+    const d=await api('/api/ai-build',{method:'POST',body:JSON.stringify({prompt:text})});
+    if(!d.graph||!d.graph.nodes||!d.graph.nodes.length) throw new Error('vide');
+    applyGraph(d.graph);
+    logLine('ok','✓ Workflow généré par l’IA ('+d.graph.nodes.length+' blocs). Ajuste-le puis clique « Tester ».');
+  }catch(e){
+    logLine('info','(IA indisponible — assemblage par règles)');
+    aiBuildLocal(text);
+  }
+}
+// ---- Repli : moteur de règles local ----
+function aiBuildLocal(text){
+  const s=text.toLowerCase();
+  const seq=[];
+  // 1) déclencheur
+  if(/facebook|messenger|insta/.test(s)) seq.push('trigger-facebook');
+  else if(/webhook|url|appel/.test(s)) seq.push('trigger-webhook');
+  else if(/chaque jour|planifi|tous les|heure|matin|rappel/.test(s)) seq.push('trigger-schedule');
+  else if(/formulaire|devis|inscription/.test(s)) seq.push('trigger-form');
+  else seq.push('trigger-whatsapp'); // défaut : WhatsApp
+  // 2) actions dans l'ordre d'apparition
+  const rules=[
+    [/\b(ia|claude|intelligen|génér|repond|répond|réponse)\b/,'action-ai'],
+    [/\b(si|condition|sinon|selon)\b/,'logic-if'],
+    [/\b(attend|délai|delai|plus tard|patiente|jour)\b/,'logic-delay'],
+    [/\b(paiement|payer|mobile money|momo|encaiss|acompte)\b/,'action-momo'],
+    [/\b(enregistr|base|supabase|commande|sauvegarde|stock)\b/,'action-db'],
+    [/\b(whatsapp|message|envoi|envoie|répond)\b/,'action-whatsapp'],
+    [/\b(email|mail|courriel)\b/,'action-email'],
+    [/\b(vendora|vendeur|patron|alerte)\b/,'action-vendora'],
+    [/\b(api|http|externe)\b/,'action-http'],
+  ];
+  const order=[]; rules.forEach(([re,t])=>{ const m=s.match(re); if(m) order.push([s.indexOf(m[0]),t]); });
+  order.sort((a,b)=>a[0]-b[0]); order.forEach(([,t])=>{ if(!seq.includes(t)||t.startsWith('action')) seq.push(t); });
+  if(seq.length===1) seq.push('action-ai','action-whatsapp'); // garde-fou : au moins une action
+
+  // place et relie en chaîne
+  clearAll(true);
+  let x=80, prev=null;
+  seq.forEach((t,i)=>{
+    const n=addNode(t,x, 120 + (i%2)*30);
+    if(prev) state.conns.push({from:prev.id,fromPort:TYPES[prev.type].outs[0],to:n.id});
+    prev=n; x+=250;
+  });
+  drawWires(); save(); select(null);
+  switchPane('log'); $('#log').innerHTML='';
+  logLine('info','✨ Workflow construit à partir de ta phrase ('+seq.length+' blocs). Clique « Tester le flux » pour le voir tourner.');
+}
+
+// ---- Persistance ----
+let saveTimer=null;
+function save(){
+  if(!S || !S.wid) return;                       // sauvegarde cloud uniquement si un workflow est ouvert
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{ api('/api/workflows/'+S.wid,{method:'PUT',body:JSON.stringify({graph:state})}).catch(()=>{}); },600);
+}
+function load(){
+  try{ const d=JSON.parse(localStorage.getItem('nebula_flow'));
+    if(d&&d.state&&d.state.nodes.length){ state=d.state; uid=d.uid||(state.nodes.length+1); renderAll(); return true; }
+  }catch(e){}
+  return false;
+}
+function renderAll(){ world.querySelectorAll('.node').forEach(e=>e.remove()); state.nodes.forEach(renderNode); drawWires(); updateHint(); }
+function clearAll(silent){
+  state={nodes:[],conns:[]}; world.querySelectorAll('.node').forEach(e=>e.remove()); drawWires();
+  select(null); save(); updateHint();
+  if(!silent){ switchPane('log'); $('#log').innerHTML=''; }
+}
+function updateHint(){ $('#hintPill').style.display=state.nodes.length?'none':'block'; }
+
+// ---- Export / Import ----
+function exportJSON(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='nebula-flow.json'; a.click();
+}
+$('#fileImport').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const rd=new FileReader(); rd.onload=()=>{ try{ const d=JSON.parse(rd.result);
+    if(d.nodes){ state=d; uid=state.nodes.length+1; renderAll(); save(); select(null);} }catch(err){alert('Fichier invalide');} };
+  rd.readAsText(f); e.target.value='';
+});
+
+// ---- Onglets inspecteur ----
+function switchPane(p){
+  document.querySelectorAll('.itab').forEach(t=>t.classList.toggle('on',t.dataset.pane===p));
+  $('#paneProps').classList.toggle('hide',p!=='props');
+  $('#paneLog').classList.toggle('hide',p!=='log');
+}
+document.querySelectorAll('.itab').forEach(t=>t.addEventListener('click',()=>switchPane(t.dataset.pane)));
+
+// ---- Boutons ----
+$('#btnRun').addEventListener('click',run);
+$('#btnDeploy').addEventListener('click',deploy);
+$('#btnExport').addEventListener('click',exportJSON);
+$('#btnImport').addEventListener('click',()=>$('#fileImport').click());
+$('#btnClear').addEventListener('click',()=>{ if(confirm('Vider tout le workflow ?')) clearAll(); });
+$('#btnBuild').addEventListener('click',()=>{ const v=$('#aiInput').value.trim(); if(v) aiBuild(v); });
+
+// Indicateur : moteur d'exécution connecté ? IA réelle dispo ?
+fetch('/api/health').then(r=>r.json()).then(h=>{
+  const e=$('#engine'); if(!e) return;
+  e.querySelector('i').style.background='var(--green)';
+  e.querySelector('span').textContent='moteur connecté'+(h.ia?' · IA réelle':'');
+}).catch(()=>{ const e=$('#engine'); if(e) e.querySelector('span').textContent='mode local'; });
+$('#aiInput').addEventListener('keydown',e=>{ if(e.key==='Enter'){ const v=e.target.value.trim(); if(v) aiBuild(v); } });
+document.addEventListener('keydown',e=>{ if((e.key==='Delete'||e.key==='Backspace')&&selected&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA'&&document.activeElement.tagName!=='SELECT'){ removeNode(selected); } });
+
+// ============================================================
+//  NEXO cloud : comptes, tableau de bord, sauvegarde par utilisateur
+// ============================================================
+let S = { user:null, wid:null, hook:null };
+
+async function api(path, opts={}){
+  const r = await fetch(path, {headers:{'Content-Type':'application/json'}, credentials:'same-origin', ...opts});
+  let d=null; try{ d=await r.json(); }catch(e){}
+  if(!r.ok) throw ((d&&d.error)||('Erreur '+r.status));
+  return d;
+}
+const esc = s => (s||'').replace(/[&<>"]/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+function rel(t){ if(!t) return ''; const d=Date.now()/1000 - t;
+  if(d<60) return "à l'instant"; if(d<3600) return Math.floor(d/60)+' min';
+  if(d<86400) return Math.floor(d/3600)+' h'; return Math.floor(d/86400)+' j'; }
+
+// ---- Navigation entre écrans ----
+function hideOverlays(){ $('#gate').style.display='none'; $('#dash').style.display='none'; }
+function showGate(){ hideOverlays(); $('#gate').style.display='flex'; $('#btnBack').style.display='none'; $('#wfName').textContent=''; }
+function showEditor(){ hideOverlays(); $('#btnBack').style.display=''; }
+async function showDash(){
+  hideOverlays(); $('#dash').style.display='flex';
+  $('#uname').textContent = S.user ? (S.user.name||S.user.email) : '';
+  S.wid=null; S.hook=null; $('#wfName').textContent=''; document.title='NEXO';
+  refreshBilling(); renderTemplates();
+  try{ renderDashList(await api('/api/workflows')); }catch(e){ renderDashList([]); }
+}
+
+// ---- Authentification ----
+let authMode='login';
+function setMode(m){ authMode=m;
+  document.querySelectorAll('.gtab').forEach(t=>t.classList.toggle('on',t.dataset.m===m));
+  $('#gNameWrap').style.display = m==='signup'?'':'none';
+  $('#gSubmit').textContent = m==='signup'?'Créer mon compte':'Se connecter';
+  $('#gErr').textContent=''; }
+document.querySelectorAll('.gtab').forEach(t=>t.addEventListener('click',()=>setMode(t.dataset.m)));
+async function submitAuth(){
+  const email=$('#gEmail').value.trim(), password=$('#gPw').value, name=$('#gName').value.trim();
+  $('#gErr').textContent='';
+  try{
+    S.user = await api('/api/'+(authMode==='signup'?'signup':'login'),{method:'POST',body:JSON.stringify({email,password,name})});
+    showDash();
+  }catch(e){ $('#gErr').textContent=e; }
+}
+$('#gSubmit').addEventListener('click',submitAuth);
+$('#gPw').addEventListener('keydown',e=>{ if(e.key==='Enter') submitAuth(); });
+$('#btnLogout').addEventListener('click',async()=>{ try{await api('/api/logout',{method:'POST'});}catch(e){} S.user=null; showGate(); });
+$('#btnBack').addEventListener('click',showDash);
+
+// ---- Tableau de bord ----
+function renderDashList(list){
+  const g=$('#dashGrid');
+  g.innerHTML = `<button class="wfnew" id="wfNew"><span>+</span> Nouvelle automatisation</button>` +
+    list.map(w=>`<div class="wfcard">
+      <div class="wfh"><b>${esc(w.name)}</b>${w.deployed?'<span class="wfdot">en ligne</span>':''}</div>
+      <div class="wfm">${w.webhook?'🔗 webhook · ':''}modifié ${rel(w.updated)}</div>
+      <div class="wfa"><button data-open="${w.id}">Ouvrir</button><button data-ren="${w.id}">Renommer</button><button class="d" data-del="${w.id}">Suppr.</button></div>
+    </div>`).join('');
+  $('#wfNew').addEventListener('click',()=>createWorkflow(list.length===0));
+  g.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>openWorkflow(b.dataset.open)));
+  g.querySelectorAll('[data-ren]').forEach(b=>b.addEventListener('click',()=>renameWorkflow(b.dataset.ren)));
+  g.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>deleteWorkflow(b.dataset.del)));
+}
+async function createWorkflow(seed){
+  const name=prompt("Nom de l'automatisation ?", 'Mon automatisation'); if(name===null) return;
+  const w=await api('/api/workflows',{method:'POST',body:JSON.stringify({name:name||'Mon automatisation'})});
+  S.wid=w.id; S.hook=w.hook; state={nodes:[],conns:[]}; uid=1;
+  world.querySelectorAll('.node').forEach(e=>e.remove()); drawWires();
+  if(seed){
+    const a=addNode('trigger-whatsapp',70,150,{numero:'+229 …'});
+    const b=addNode('action-ai',330,150,{consigne:'Réponds, conseille et prends la commande.'});
+    const c=addNode('action-whatsapp',590,150,{message:'Merci ! Votre commande est enregistrée. 🎉'});
+    state.conns.push({from:a.id,fromPort:'out',to:b.id},{from:b.id,fromPort:'out',to:c.id});
+    drawWires(); save();
+  }
+  select(null); $('#wfName').textContent=w.name; document.title='NEXO — '+w.name; updateHint(); showEditor();
+}
+async function openWorkflow(id){
+  const w=await api('/api/workflows/'+id);
+  S.wid=w.id; S.hook=w.hook;
+  state=(w.graph&&w.graph.nodes)?w.graph:{nodes:[],conns:[]};
+  uid=state.nodes.reduce((m,n)=>Math.max(m,parseInt(String(n.id).slice(1))||0),0)+1;
+  select(null); renderAll(); $('#wfName').textContent=w.name; document.title='NEXO — '+w.name; showEditor();
+}
+async function renameWorkflow(id){
+  const name=prompt('Nouveau nom ?'); if(!name) return;
+  await api('/api/workflows/'+id,{method:'PUT',body:JSON.stringify({name})}); showDash();
+}
+async function deleteWorkflow(id){
+  if(!confirm('Supprimer cette automatisation ?')) return;
+  await api('/api/workflows/'+id,{method:'DELETE'}); showDash();
+}
+
+// ---- Modèles prêts (embryon du futur catalogue d'agents) ----
+async function renderTemplates(){
+  let tpls=[]; try{ tpls=await api('/api/templates'); }catch(e){}
+  const g=$('#tplGrid'); if(!g) return;
+  g.innerHTML = tpls.map(t=>`<div class="wfcard">
+      <div class="wfh"><b>${esc(t.name)}</b></div>
+      <div class="wfm">${esc(t.desc)}</div>
+      <div class="wfa"><button data-tpl="${t.id}">Utiliser ce modèle →</button></div>
+    </div>`).join('');
+  g.querySelectorAll('[data-tpl]').forEach(b=>b.addEventListener('click',()=>installTemplate(tpls.find(x=>x.id===b.dataset.tpl))));
+}
+async function installTemplate(tpl){
+  if(!tpl) return;
+  try{
+    const w=await api('/api/workflows',{method:'POST',body:JSON.stringify({name:tpl.name,graph:tpl.graph})});
+    S.wid=w.id; S.hook=w.hook; state=w.graph||{nodes:[],conns:[]};
+    uid=state.nodes.reduce((m,n)=>Math.max(m,parseInt(String(n.id).slice(1))||0),0)+1;
+    select(null); renderAll(); $('#wfName').textContent=w.name; document.title='NEXO — '+w.name; showEditor();
+  }catch(e){ if(/Pro|limite/i.test(String(e))) openPro(); else alert(e); }
+}
+
+// ---- Facturation (badge + offre Pro Mobile Money) ----
+async function refreshBilling(){
+  try{
+    const bl=await api('/api/billing');
+    if($('#planBadge')) $('#planBadge').textContent = bl.pending ? 'Pro en attente…' : bl.label;
+    if($('#btnPro')) $('#btnPro').style.display = (bl.plan==='pro') ? 'none' : '';
+    if($('#proPrice')) $('#proPrice').textContent = (bl.price||5000).toLocaleString('fr-FR')+' FCFA';
+    if($('#proNum')) $('#proNum').textContent = bl.momo_number||'';
+    if($('#proName')) $('#proName').textContent = bl.momo_name||'';
+  }catch(e){}
+}
+function openPro(){ $('#proErr').textContent=''; $('#pro').style.display='flex'; }
+$('#btnPro').addEventListener('click',openPro);
+$('#proClose').addEventListener('click',()=>$('#pro').style.display='none');
+$('#proSubmit').addEventListener('click',async()=>{
+  const ref=$('#proRef').value.trim(); $('#proErr').textContent='';
+  if(!ref){ $('#proErr').textContent='Collez l’ID de la transaction Mobile Money.'; return; }
+  try{ const d=await api('/api/billing/request',{method:'POST',body:JSON.stringify({ref})});
+    $('#pro').style.display='none'; refreshBilling();
+    switchPane('log'); logLine('ok','✓ '+(d.message||'Paiement enregistré, en attente de validation.'));
+  }catch(e){ $('#proErr').textContent=e; }
+});
+
+// ---- Guide intégré ----
+function openGuide(){ $('#guide').style.display='flex'; }
+function closeGuide(){ $('#guide').style.display='none'; localStorage.setItem('nexo_guide_vu','1'); }
+$('#btnGuide').addEventListener('click',openGuide);
+$('#btnGuideE').addEventListener('click',openGuide);
+$('#guideStart').addEventListener('click',closeGuide);
+$('#guide').addEventListener('click',e=>{ if(e.target.id==='guide') closeGuide(); });
+
+// ---- Dictée vocale (« même en vocal ») : reconnaissance vocale du navigateur ----
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recog=null;
+$('#btnMic').addEventListener('click',()=>{
+  if(recog){ try{recog.stop();}catch(e){} return; }
+  if(!SR){ alert('La dictée vocale fonctionne dans Chrome / Edge. Tu peux aussi écrire ta phrase.'); return; }
+  recog=new SR(); recog.lang='fr-FR'; recog.interimResults=true; recog.continuous=false;
+  const mic=$('#btnMic'), inp=$('#aiInput'); const ph=inp.placeholder;
+  recog.onstart=()=>{ mic.classList.add('rec'); inp.value=''; inp.placeholder='🎤 Parlez…'; };
+  recog.onresult=e=>{ let t=''; for(const r of e.results) t+=r[0].transcript; inp.value=t; };
+  recog.onerror=()=>{ mic.classList.remove('rec'); inp.placeholder=ph; };
+  recog.onend=()=>{ mic.classList.remove('rec'); inp.placeholder=ph; recog=null; const v=inp.value.trim(); if(v) aiBuild(v); };
+  recog.start();
+});
+
+// ---- Démarrage ----
+buildPalette();
+(async function boot(){
+  try{
+    const r=await fetch('/api/me',{credentials:'same-origin'});
+    if(r.ok){ S.user=await r.json(); showDash(); } else { showGate(); }
+  }catch(e){ showGate(); $('#gErr').textContent='Moteur hors-ligne — lance server.py.'; }
+})();
+</script>
+</body>
+</html>
