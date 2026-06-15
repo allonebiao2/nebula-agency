@@ -12,11 +12,21 @@ import HomeScreen from './src/screens/HomeScreen';
 import CircleScreen from './src/screens/CircleScreen';
 import MapScreen from './src/screens/MapScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
-import type { CerclesStackParamList, TabParamList } from './src/types';
+import PrivacyScreen from './src/screens/PrivacyScreen';
+import AlertsScreen from './src/screens/AlertsScreen';
+import ReportMissingScreen from './src/screens/ReportMissingScreen';
+import type {
+  CerclesStackParamList,
+  AlertsStackParamList,
+  ProfileStackParamList,
+  TabParamList,
+} from './src/types';
 import { COLORS } from './src/lib/config';
 
 const Tab = createBottomTabNavigator<TabParamList>();
 const CerclesStack = createNativeStackNavigator<CerclesStackParamList>();
+const AlertsStack = createNativeStackNavigator<AlertsStackParamList>();
+const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 
 const theme = {
   ...DefaultTheme,
@@ -38,6 +48,24 @@ function CerclesNavigator() {
   );
 }
 
+function AlertsNavigator() {
+  return (
+    <AlertsStack.Navigator screenOptions={stackOptions}>
+      <AlertsStack.Screen name="AlertsList" component={AlertsScreen} options={{ title: 'Alertes Disparition' }} />
+      <AlertsStack.Screen name="ReportMissing" component={ReportMissingScreen} options={{ title: 'Signaler une disparition' }} />
+    </AlertsStack.Navigator>
+  );
+}
+
+function ProfileNavigator() {
+  return (
+    <ProfileStack.Navigator screenOptions={stackOptions}>
+      <ProfileStack.Screen name="ProfileMain" component={ProfileScreen} options={{ title: 'Profil' }} />
+      <ProfileStack.Screen name="Privacy" component={PrivacyScreen} options={{ title: 'Confidentialité' }} />
+    </ProfileStack.Navigator>
+  );
+}
+
 function Tabs() {
   return (
     <Tab.Navigator
@@ -52,14 +80,17 @@ function Tabs() {
               ? 'map'
               : route.name === 'Cercles'
                 ? 'people'
-                : 'person-circle';
+                : route.name === 'Alertes'
+                  ? 'alert-circle'
+                  : 'person-circle';
           return <Ionicons name={icon as any} size={size} color={color} />;
         },
       })}
     >
       <Tab.Screen name="Carte" component={MapScreen} />
       <Tab.Screen name="Cercles" component={CerclesNavigator} />
-      <Tab.Screen name="Profil" component={ProfileScreen} />
+      <Tab.Screen name="Alertes" component={AlertsNavigator} />
+      <Tab.Screen name="Profil" component={ProfileNavigator} />
     </Tab.Navigator>
   );
 }

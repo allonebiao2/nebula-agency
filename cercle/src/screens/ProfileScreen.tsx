@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   Alert,
-  Linking,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,8 +13,11 @@ import { useAuth } from '../context/AuthContext';
 import { deleteMyAccount, getMyProfile, updateMyProfile } from '../lib/api';
 import { COLORS } from '../lib/config';
 import { supabase } from '../lib/supabase';
+import type { ProfileStackParamList } from '../types';
 
-export default function ProfileScreen() {
+type Props = NativeStackScreenProps<ProfileStackParamList, 'ProfileMain'>;
+
+export default function ProfileScreen({ navigation }: Props) {
   const { signOut } = useAuth();
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -95,10 +98,7 @@ export default function ProfileScreen() {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity
-        style={s.row}
-        onPress={() => Linking.openURL('https://nebula-agency.online/cercle/confidentialite')}
-      >
+      <TouchableOpacity style={s.row} onPress={() => navigation.navigate('Privacy')}>
         <Text style={s.rowText}>Confidentialité & sécurité</Text>
         <Text style={s.chevron}>›</Text>
       </TouchableOpacity>

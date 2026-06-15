@@ -3,9 +3,20 @@ export type CerclesStackParamList = {
   CircleDetail: { circleId: string; name: string; inviteCode: string };
 };
 
+export type AlertsStackParamList = {
+  AlertsList: undefined;
+  ReportMissing: undefined;
+};
+
+export type ProfileStackParamList = {
+  ProfileMain: undefined;
+  Privacy: undefined;
+};
+
 export type TabParamList = {
   Carte: undefined;
   Cercles: undefined;
+  Alertes: undefined;
   Profil: undefined;
 };
 
