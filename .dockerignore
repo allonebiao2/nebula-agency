@@ -1,0 +1,3 @@
+# Contexte de build limité au seul sous-projet affiliés (évite d'envoyer tout le monorepo).
+*
+!nebula-affilies
