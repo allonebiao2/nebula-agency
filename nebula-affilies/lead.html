@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Demande — NEBULA Agency</title>
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<div class="bg-orbs"></div>
+<div class="bg-grain"></div>
+
+<div class="gate">
+  <div class="box">
+    <div id="form-wrap">
+      <div class="center mb24">
+        <div class="flex" style="justify-content:center;margin-bottom:18px">
+          <div style="width:50px;height:50px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#07060e;font-weight:700;font-family:'Space Grotesk';font-size:1.3rem;box-shadow:var(--glow)">N</div>
+        </div>
+        <span class="eyebrow"><span class="dot"></span>NEBULA Agency</span>
+        <h1 class="big mt16" style="font-size:clamp(1.8rem,5vw,2.6rem)">Parlons de votre projet.</h1>
+        <p class="lead mt16" id="intro">Vous êtes recommandé par <b id="who" style="color:var(--ink)">…</b>. Laissez vos infos, on vous rappelle vite.</p>
+      </div>
+
+      <div class="card glow"><div class="in">
+        <div class="bento" style="gap:0 14px">
+          <div class="col-6 field"><label>Prénom</label><div class="wrap"><input id="prenom" placeholder="Votre prénom"></div></div>
+          <div class="col-6 field"><label>Nom</label><div class="wrap"><input id="nom" placeholder="Votre nom"></div></div>
+        </div>
+        <div class="field"><label>Numéro WhatsApp</label><div class="wrap"><input id="numero" inputmode="tel" placeholder="Ex : 01 96 74 07 32"></div></div>
+        <div class="field"><label>Service souhaité</label><div class="wrap"><select id="service"></select></div></div>
+        <div class="field"><label>Votre message <span class="faint">(facultatif)</span></label><div class="wrap"><textarea id="message" placeholder="Dites-nous en quelques mots ce que vous voulez…"></textarea></div></div>
+        <button class="btn primary block mt8" id="go">Envoyer ma demande<span class="ico" id="a-go"></span></button>
+        <p class="center faint mt16" style="font-size:.78rem">Vos informations restent confidentielles · NEBULA Agency, Cotonou</p>
+      </div></div>
+    </div>
+
+    <div id="done" class="hide">
+      <div class="card glow"><div class="in center" style="padding:42px 26px">
+        <div class="avatar" id="check" style="margin:0 auto 18px;width:64px;height:64px;background:linear-gradient(135deg,var(--ok),#1f9e6e)"></div>
+        <h2 style="font-size:1.7rem">C'est envoyé !</h2>
+        <p class="lead mt16">Merci 🙌 Votre demande est bien arrivée chez NEBULA Agency.<br>On vous recontacte très vite sur WhatsApp.</p>
+        <a class="btn ghost mt24" id="wa" target="_blank" rel="noopener">Écrire sur WhatsApp<span class="ico" id="a-wa"></span></a>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+<script>
+  const { icon, api, toast, sound, celebrate } = NA;
+  document.getElementById('a-go').innerHTML = icon('arrow');
+  document.getElementById('a-wa').innerHTML = icon('phone');
+  document.getElementById('check').innerHTML = icon('check');
+  const code = decodeURIComponent(location.pathname.split('/r/')[1] || '').toUpperCase();
+  let CFG = null;
+
+  (async function init() {
+    try { CFG = await api('/api/config'); } catch (e) {}
+    if (CFG) {
+      const sel = document.getElementById('service');
+      Object.entries(CFG.services).forEach(([k, v]) => { if (k !== 'autre') sel.appendChild(NA.el(`<option value="${k}">${NA.esc(v.label)}</option>`)); });
+      sel.appendChild(NA.el(`<option value="autre">Autre / à discuter</option>`));
+      const wa = document.getElementById('wa');
+      wa.href = 'https://wa.me/' + (CFG.whatsapp || '').replace(/[^0-9]/g, '');
+    }
+    try { const a = await api('/api/affiliate/' + encodeURIComponent(code) + '/public'); document.getElementById('who').textContent = a.name; }
+    catch (e) { document.getElementById('intro').innerHTML = 'Laissez vos infos, NEBULA Agency vous recontacte vite.'; }
+  })();
+
+  document.getElementById('go').onclick = async () => {
+    const body = {
+      code,
+      prenom: document.getElementById('prenom').value.trim(),
+      nom: document.getElementById('nom').value.trim(),
+      numero: document.getElementById('numero').value.trim(),
+      service: document.getElementById('service').value,
+      message: document.getElementById('message').value.trim(),
+    };
+    if (!(body.prenom || body.nom) || !body.numero) return toast('Nom et numéro obligatoires', 'bad');
+    try {
+      await api('/api/lead', { body });
+      document.getElementById('form-wrap').classList.add('hide');
+      document.getElementById('done').classList.remove('hide');
+      celebrate();
+    } catch (e) { toast(e.data?.error || "Échec de l'envoi", 'bad'); }
+  };
+</script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Console NEBULA — Affiliés</title>
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<div class="bg-orbs"></div>
+<div class="bg-grain"></div>
+
+<div class="app">
+  <aside class="dock">
+    <div class="logo">N</div>
+    <nav id="nav" class="flex" style="flex-direction:column;gap:8px"></nav>
+    <div class="nav-sp"></div>
+    <button class="nav-i" id="logout" title="Quitter"></button>
+  </aside>
+
+  <main class="work">
+    <header class="topbar">
+      <div class="who">
+        <span class="eyebrow"><span class="dot"></span>Console NEBULA</span>
+        <h2 style="font-size:1.5rem;margin-top:6px" id="title">Tableau de bord</h2>
+      </div>
+      <div class="flex gap8">
+        <button class="icon-btn" id="snd" title="Sons"></button>
+        <button class="icon-btn" id="amb" title="Ambiance sonore"></button>
+        <button class="icon-btn" id="bell" title="Notifications"></button>
+      </div>
+    </header>
+
+    <section class="view" id="v-dash"></section>
+    <section class="view" id="v-aff"></section>
+    <section class="view" id="v-leads"></section>
+  </main>
+</div>
+
+<!-- Modal nouveau partenaire -->
+<div class="scrim" id="modal"><div class="card modal glow"><div class="in" id="modal-in"></div></div></div>
+
+<!-- Notifications -->
+<div class="scrim" id="notif-scrim"><div class="card modal"><div class="in">
+  <div class="flex between mb16"><h3>Notifications</h3><button class="icon-btn" id="notif-close" style="width:34px;height:34px"></button></div>
+  <div id="notif-list"></div>
+</div></div></div>
+
+<script src="/static/app.js"></script>
+<script>
+const { icon, api, toast, sound, countUp, reveal, esc, fmt, ago, el } = NA;
+let CFG = null, OVER = null, AFFS = [], LEADS = [];
+
+const NAV = [
+  { id: 'dash', icon: 'chart', label: 'Tableau de bord' },
+  { id: 'aff', icon: 'users', label: 'Affiliés' },
+  { id: 'leads', icon: 'folder', label: 'Clients' },
+];
+const TITLES = { dash: 'Tableau de bord', aff: 'Réseau d\'affiliés', leads: 'Clients du réseau' };
+
+function statusPill(st) { const s = CFG.statuses[st] || { label: st, color: '#888' }; return `<span class="pill" style="--c:${s.color}"><span class="d"></span>${esc(s.label)}</span>`; }
+function payDot(p) { return `<span class="pay ${p ? 'ok' : ''}"><span class="dot"></span>${p ? 'Payé' : 'Non payé'}</span>`; }
+function initials(n) { return (n || '?').split(' ').filter(Boolean).slice(0, 2).map(x => x[0]).join('').toUpperCase(); }
+
+function buildDock() {
+  const nav = document.getElementById('nav');
+  NAV.forEach(n => { const b = el(`<button class="nav-i" data-v="${n.id}" title="${n.label}">${icon(n.icon)}</button>`); b.onclick = () => switchView(n.id); nav.appendChild(b); });
+  document.getElementById('logout').innerHTML = icon('logout');
+  document.getElementById('logout').onclick = async () => { await api('/api/logout', { body: {} }); location.href = '/'; };
+}
+function switchView(id) {
+  sound.sfx.tab();
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
+  document.getElementById('v-' + id).classList.add('on');
+  document.querySelectorAll('.nav-i[data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === id));
+  document.getElementById('title').textContent = TITLES[id];
+  ({ dash: renderDash, aff: renderAff, leads: renderLeads }[id])();
+  reveal();
+}
+
+async function refresh() {
+  [OVER, AFFS, LEADS] = await Promise.all([
+    api('/api/admin/overview'),
+    api('/api/admin/affiliates').then(d => d.affiliates),
+    api('/api/admin/leads').then(d => d.leads),
+  ]);
+}
+
+/* ---------- DASHBOARD ---------- */
+function renderDash() {
+  const board = AFFS.slice(0, 5);
+  document.getElementById('v-dash').innerHTML = `
+    <div class="bento">
+      <div class="col-3 rv"><div class="card glow"><div class="in stat"><div class="lbl">Affiliés actifs</div><div class="num accent mono" id="k-aff">0</div></div></div></div>
+      <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">Clients reçus</div><div class="num mono" id="k-leads">0</div></div></div></div>
+      <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">Payés</div><div class="num mono" style="color:var(--ok)" id="k-paid">0</div></div></div></div>
+      <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">Commissions dues</div><div class="num mono" style="color:var(--gold)" id="k-com">0</div><div class="sub">F CFA</div></div></div></div>
+
+      <div class="col-5 rv"><div class="card"><div class="in">
+        <h3 class="mb16">Pipeline</h3>
+        ${['attente', 'en_cours', 'termine', 'annule'].map(k => `
+          <div class="flex between" style="padding:11px 0;border-bottom:1px solid var(--hair)">
+            ${statusPill(k)}<b class="mono">${OVER.by_status[k] || 0}</b></div>`).join('')}
+        <div class="flex between mt16"><span class="muted">CA encaissé</span><b class="mono" style="color:var(--ok)">${fmt(OVER.ca_paye)} F</b></div>
+      </div></div></div>
+
+      <div class="col-7 rv"><div class="card"><div class="in">
+        <div class="flex between mb16"><h3>🏆 Classement</h3><button class="btn sm ghost" onclick="switchView('aff')">Tout voir<span class="ico">${icon('arrow')}</span></button></div>
+        ${board.length ? board.map((a, i) => `
+          <div class="row" style="grid-template-columns:auto 42px 1fr auto;margin-bottom:9px">
+            <div class="mono faint" style="width:22px;font-weight:700">${i + 1}</div>
+            <div class="emblem" style="width:42px;height:42px;font-size:1.2rem;border-radius:13px">${a.rank.emoji}</div>
+            <div><div class="ttl">${esc((a.prenom || '') + ' ' + (a.nom || '')) || a.code}</div><div class="meta">${a.rank.label} · ${a.nb_real} clients</div></div>
+            <div class="center"><div class="mono" style="font-weight:700">${a.score}</div><div class="meta">pts</div></div>
+          </div>`).join('') : `<p class="muted center" style="padding:20px">Aucun affilié. Crée ton premier partenaire dans l'onglet Affiliés.</p>`}
+      </div></div></div>
+    </div>`;
+  countUp(document.getElementById('k-aff'), OVER.affiliates);
+  countUp(document.getElementById('k-leads'), OVER.leads);
+  countUp(document.getElementById('k-paid'), OVER.paid);
+  countUp(document.getElementById('k-com'), OVER.commissions_dues, { money: true });
+}
+
+/* ---------- AFFILIÉS ---------- */
+function renderAff() {
+  document.getElementById('v-aff').innerHTML = `
+    <div class="flex between wrap mb24 rv"><div><span class="eyebrow"><span class="dot"></span>Réseau</span><h2 class="mt8" style="font-size:1.8rem">Tes partenaires</h2></div>
+      <button class="btn primary" id="new-aff">Nouveau partenaire<span class="ico">${icon('plus')}</span></button></div>
+    <div id="aff-list">${AFFS.length ? AFFS.map(affRow).join('') : `<div class="card"><div class="in center" style="padding:40px"><p class="muted">Aucun partenaire. Clique « Nouveau partenaire » pour générer un code + PIN.</p></div></div>`}</div>`;
+  document.getElementById('new-aff').onclick = openNewAff;
+  AFFS.forEach(a => { const t = document.getElementById('tog-' + a.id); if (t) t.onclick = () => toggleAff(a.id); });
+}
+function affRow(a) {
+  const name = ((a.prenom || '') + ' ' + (a.nom || '')).trim() || a.code;
+  return `<div class="rv"><div class="card"><div class="in">
+    <div class="flex between wrap" style="gap:14px">
+      <div class="flex" style="gap:13px">
+        <div class="emblem" style="width:52px;height:52px;font-size:1.4rem;border-radius:15px;--c:${a.accent}">${a.rank.emoji}</div>
+        <div><div class="ttl" style="font-size:1.05rem">${esc(name)} <span class="chip" style="margin-left:6px">${a.code}</span></div>
+          <div class="meta">${a.rank.label} · Niv ${a.rank.level} · ${a.nb_real} clients${a.actif ? '' : ' · <span style="color:var(--bad)">suspendu</span>'}</div>
+          <div class="meta mt8">${esc(a.momo_reseau || '—')} · ${esc(a.momo_number || '—')}</div></div>
+      </div>
+      <div class="flex gap8 wrap" style="justify-content:flex-end">
+        <div class="center"><div class="mono" style="font-weight:700">${a.score}</div><div class="meta">score</div></div>
+        <div class="center"><div class="mono" style="color:var(--accent);font-weight:700">${fmt(a.rcm)}</div><div class="meta">RCM (F)</div></div>
+        <button class="btn sm ghost" id="tog-${a.id}">${a.actif ? 'Suspendre' : 'Réactiver'}</button>
+      </div>
+    </div>
+    <div class="xp"><div class="track"><div class="fill" style="width:${a.rank.xp_pct}%;--accent:${a.accent}"></div></div>
+      <div class="meta">${a.rank.next_label ? `Encore ${a.rank.to_next} pour ${a.rank.next_emoji} ${a.rank.next_label}` : 'Rang max'}</div></div>
+  </div></div></div>`;
+}
+async function toggleAff(id) { try { await api('/api/admin/affiliates/' + id + '/toggle', { body: {} }); sound.sfx.click(); await refresh(); renderAff(); reveal(); } catch (e) { toast('Erreur', 'bad'); } }
+
+function openNewAff() {
+  sound.sfx.open();
+  document.getElementById('modal-in').innerHTML = `
+    <div class="flex between mb16"><h3>Nouveau partenaire</h3><button class="icon-btn" id="m-close" style="width:34px;height:34px">${icon('close')}</button></div>
+    <div class="bento" style="gap:0 14px">
+      <div class="col-6 field"><label>Prénom</label><div class="wrap"><input id="na-prenom" placeholder="Rodrigue"></div></div>
+      <div class="col-6 field"><label>Nom</label><div class="wrap"><input id="na-nom" placeholder="Akpaki"></div></div>
+    </div>
+    <div class="field"><label>Numéro Mobile Money</label><div class="wrap"><input id="na-momo" inputmode="tel" placeholder="01 90 00 00 00"></div></div>
+    <div class="field"><label>Réseau</label><div class="wrap"><select id="na-res">${CFG.reseaux.map(r => `<option>${r}</option>`).join('')}</select></div></div>
+    <button class="btn primary block mt8" id="na-go">Générer le code partenaire<span class="ico">${icon('bolt')}</span></button>`;
+  document.getElementById('modal').classList.add('on');
+  document.getElementById('m-close').onclick = closeModal;
+  document.getElementById('na-go').onclick = createAff;
+}
+function closeModal() { document.getElementById('modal').classList.remove('on'); }
+document.getElementById('modal').onclick = e => { if (e.target.id === 'modal') closeModal(); };
+
+async function createAff() {
+  const body = { prenom: document.getElementById('na-prenom').value.trim(), nom: document.getElementById('na-nom').value.trim(), momo_number: document.getElementById('na-momo').value.trim(), momo_reseau: document.getElementById('na-res').value };
+  if (!(body.prenom || body.nom)) return toast('Nom requis', 'bad');
+  try {
+    const d = await api('/api/admin/affiliates', { body });
+    const link = location.origin + '/r/' + d.code;
+    sound.sfx.cash();
+    document.getElementById('modal-in').innerHTML = `
+      <div class="center" style="padding:8px">
+        <div class="avatar" style="margin:0 auto 16px;width:60px;height:60px;background:linear-gradient(135deg,var(--ok),#1f9e6e)">${icon('check')}</div>
+        <h3>Partenaire créé 🎉</h3>
+        <p class="muted mt8 mb16">Transmets-lui ces accès (à montrer une seule fois).</p>
+        <div class="card"><div class="in">
+          <div class="flex between"><span class="muted">Code</span><b class="mono" style="font-size:1.3rem;letter-spacing:.18em;color:var(--accent)">${d.code}</b></div>
+          <div class="divider"></div>
+          <div class="flex between"><span class="muted">Code PIN</span><b class="mono" style="font-size:1.3rem;letter-spacing:.18em">${d.pin}</b></div>
+        </div>
+        <div class="flex gap8 mt16" style="justify-content:center;flex-wrap:wrap">
+          <button class="btn sm primary" id="cp-all">Copier les accès<span class="ico">${icon('copy')}</span></button>
+          <button class="btn sm ghost" id="m-done">Terminé</button>
+        </div>
+      </div>`;
+    document.getElementById('cp-all').onclick = () => { navigator.clipboard?.writeText(`NEBULA Affiliés — tes accès\nLien : ${link}\nCode : ${d.code}\nPIN : ${d.pin}\nConnexion : ${location.origin}/partenaire`); toast('Accès copiés ✓', 'ok'); };
+    document.getElementById('m-done').onclick = async () => { closeModal(); await refresh(); renderAff(); reveal(); };
+  } catch (e) { toast(e.data?.error || 'Erreur', 'bad'); }
+}
+
+/* ---------- CLIENTS (le cœur : Mongazi pilote les statuts) ---------- */
+function renderLeads() {
+  document.getElementById('v-leads').innerHTML = `
+    <div class="rv mb24"><span class="eyebrow"><span class="dot"></span>Pilotage</span><h2 class="mt8" style="font-size:1.8rem">Chaque client du réseau</h2>
+    <p class="muted mt8">Change le statut → l'affilié est notifié. Marque le paiement → le point passe au vert fluo.</p></div>
+    <div id="leads-list">${LEADS.length ? LEADS.map(leadCard).join('') : `<div class="card"><div class="in center" style="padding:40px"><p class="muted">Aucun client pour l'instant.</p></div></div>`}</div>`;
+  LEADS.forEach(wireLead);
+}
+function leadCard(l) {
+  const name = `${l.prenom || ''} ${l.nom || ''}`.trim();
+  return `<div class="rv" id="lead-${l.id}"><div class="card"><div class="in">
+    <div class="flex between wrap" style="gap:14px">
+      <div class="flex" style="gap:12px">
+        <div class="avatar">${initials(name)}</div>
+        <div><div class="ttl">${esc(name)} <span class="muted" style="font-weight:400">· ${esc(l.numero)}</span></div>
+          <div class="meta">${esc(l.service_label)} · via <b style="color:var(--ink)">${esc(l.affiliate.name)}</b> · ${ago(l.created)}</div>
+          ${l.message ? `<div class="meta mt8" style="font-style:italic">« ${esc(l.message)} »</div>` : ''}</div>
+      </div>
+      <div class="center"><div class="mono" style="color:var(--accent);font-weight:700">${fmt(l.commission)} F</div><div class="meta">commission</div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="flex between wrap" style="gap:12px">
+      <div class="seg" id="seg-${l.id}">${Object.entries(CFG.statuses).map(([k, v]) => `<button data-st="${k}" style="--c:${v.color}" class="${k === l.status ? 'on' : ''}">${esc(v.label)}</button>`).join('')}</div>
+      <button class="btn sm ${l.paye ? 'primary' : 'ghost'}" id="pay-${l.id}">${payDot(l.paye)}</button>
+    </div>
+  </div></div></div>`;
+}
+function wireLead(l) {
+  document.querySelectorAll(`#seg-${l.id} button`).forEach(b => b.onclick = () => setStatus(l.id, b.dataset.st));
+  document.getElementById('pay-' + l.id).onclick = () => setPay(l.id, l.paye ? 0 : 1);
+}
+async function setStatus(id, st) {
+  try { await api(`/api/admin/leads/${id}/status`, { body: { status: st } }); sound.sfx.ok(); toast('Statut mis à jour · affilié notifié', 'ok'); await refresh(); renderLeads(); reveal(); }
+  catch (e) { toast('Erreur', 'bad'); }
+}
+async function setPay(id, paye) {
+  try { await api(`/api/admin/leads/${id}/payment`, { body: { paye } }); if (paye) { sound.sfx.cash(); toast('Paiement enregistré 💸', 'ok'); } else sound.sfx.click(); await refresh(); renderLeads(); reveal(); }
+  catch (e) { toast('Erreur', 'bad'); }
+}
+
+/* ---------- notifications ---------- */
+async function refreshNotifs() {
+  try {
+    const d = await api('/api/admin/notifs');
+    const bell = document.getElementById('bell'); bell.querySelector('.badge')?.remove();
+    if (d.unread) bell.appendChild(el(`<span class="badge">${d.unread}</span>`));
+    document.getElementById('notif-list').innerHTML = d.notifs.length
+      ? d.notifs.map(n => `<div class="row" style="grid-template-columns:1fr auto;${n.lu ? '' : 'border-color:var(--hair-2)'}"><div>${esc(n.text)}</div><div class="meta">${ago(n.created)}</div></div>`).join('')
+      : `<p class="muted center" style="padding:20px">Aucune notification.</p>`;
+  } catch (e) {}
+}
+document.getElementById('bell').onclick = async () => { sound.sfx.click(); document.getElementById('notif-scrim').classList.add('on'); await api('/api/admin/notifs/read', { body: {} }); setTimeout(refreshNotifs, 400); };
+document.getElementById('notif-close').onclick = () => document.getElementById('notif-scrim').classList.remove('on');
+document.getElementById('notif-scrim').onclick = e => { if (e.target.id === 'notif-scrim') e.target.classList.remove('on'); };
+document.getElementById('notif-close').innerHTML = icon('close');
+
+/* ---------- son ---------- */
+function syncSnd() { document.getElementById('snd').innerHTML = icon(sound.enabled ? 'sound' : 'mute'); document.getElementById('amb').innerHTML = icon('music'); document.getElementById('amb').style.color = sound.ambient ? 'var(--accent)' : ''; }
+document.getElementById('snd').onclick = () => { sound.toggle(); syncSnd(); };
+document.getElementById('amb').onclick = () => { sound.toggleAmbient(); syncSnd(); };
+
+/* ---------- boot ---------- */
+(async function boot() {
+  try { CFG = await api('/api/config'); } catch (e) {}
+  try { await refresh(); } catch (e) { location.href = '/'; return; }
+  buildDock(); syncSnd(); NA.nova('le stratège de Mongazi'); switchView('dash'); refreshNotifs();
+})();
+</script>
+</body>
+</html>
