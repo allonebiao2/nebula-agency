@@ -178,6 +178,14 @@ def init_db():
             momo_number TEXT, momo_reseau TEXT, message TEXT,
             status TEXT DEFAULT 'pending',       -- 'pending' | 'approved' | 'rejected'
             created REAL)""")
+        c.execute("""CREATE TABLE IF NOT EXISTS commissions(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            lead_id INTEGER NOT NULL,
+            beneficiary_id INTEGER NOT NULL,     -- affilié qui touche
+            level TEXT,                          -- 'direct' | 'n1' | 'n2'
+            amount REAL,
+            status TEXT DEFAULT 'due',           -- 'due' | 'claimed' | 'paid' | 'void'
+            created REAL, claimed_at REAL, paid_at REAL)""")
 init_db()
 
 def migrate():
@@ -318,24 +326,24 @@ def _paid_value(aid: int) -> Tuple[int, int]:
     return len(paid), int(val)
 
 def network_of(aid: int) -> Dict[str, Any]:
-    """Réseau d'un affilié : N1 (recrues directes, 10%) + N2 (recrues des recrues, 5%)."""
-    with db() as c:
-        n1 = c.execute("SELECT * FROM affiliates WHERE parrain_id=? AND actif=1", (aid,)).fetchall()
-    n1_ids = [a["id"] for a in n1]
-    n2 = []
-    if n1_ids:
-        ph = ",".join("?" * len(n1_ids))
-        with db() as c:
-            n2 = c.execute(f"SELECT * FROM affiliates WHERE actif=1 AND parrain_id IN ({ph})", n1_ids).fetchall()
+    """Réseau d'un affilié en ARBRE : N1 (recrues directes, 10%), chaque N1 portant ses N2 (5%)."""
     def line(a, rate):
         cnt, val = _paid_value(a["id"])
         return {"name": affiliate_label(a), "code": a["code"], "ventes": cnt, "commission": int(round(val * rate))}
-    n1_list = [line(a, DEPTH_N1) for a in n1]
-    n2_list = [line(a, DEPTH_N2) for a in n2]
-    n1_comm = sum(x["commission"] for x in n1_list)
-    n2_comm = sum(x["commission"] for x in n2_list)
+    with db() as c:
+        n1 = c.execute("SELECT * FROM affiliates WHERE parrain_id=? AND actif=1 ORDER BY created", (aid,)).fetchall()
+    n1_list = []; n1_comm = 0; n2_comm = 0; n2_count = 0
+    for a in n1:
+        with db() as c:
+            kids = c.execute("SELECT * FROM affiliates WHERE parrain_id=? AND actif=1 ORDER BY created", (a["id"],)).fetchall()
+        children = [line(k, DEPTH_N2) for k in kids]
+        n2_count += len(children)
+        n2_comm += sum(x["commission"] for x in children)
+        node = line(a, DEPTH_N1); node["children"] = children
+        n1_comm += node["commission"]
+        n1_list.append(node)
     return {
-        "n1": n1_list, "n2": n2_list, "n1_count": len(n1_list), "n2_count": len(n2_list),
+        "n1": n1_list, "n1_count": len(n1_list), "n2_count": n2_count,
         "n1_commission": n1_comm, "n2_commission": n2_comm, "network_total": n1_comm + n2_comm,
     }
 
@@ -360,6 +368,57 @@ def new_code(c) -> str:
         code = "".join(secrets.choice(alpha) for _ in range(5))
         if not c.execute("SELECT 1 FROM affiliates WHERE code=?", (code,)).fetchone():
             return code
+
+def fmoney(n) -> str:
+    return f"{int(round(n or 0)):,}".replace(",", " ")
+
+def generate_commissions(lead: sqlite3.Row):
+    """À la vente PAYÉE : crée auto les commissions direct + N1 + N2 et alerte chaque bénéficiaire."""
+    entries = []  # (beneficiary_id, level, amount)
+    with db() as c:
+        if c.execute("SELECT COUNT(*) n FROM commissions WHERE lead_id=? AND status!='void'", (lead["id"],)).fetchone()["n"]:
+            return  # idempotent : déjà généré
+        aff = c.execute("SELECT * FROM affiliates WHERE id=?", (lead["affiliate_id"],)).fetchone()
+        if not aff:
+            return
+        price = lead["montant"] if lead["montant"] else SERVICES.get(lead["service"], {}).get("price", 0)
+        rate = stats_of(aff["id"])["direct_rate"]
+        entries.append((aff["id"], "direct", int(round(price * rate))))
+        p1 = c.execute("SELECT * FROM affiliates WHERE id=? AND actif=1", (aff["parrain_id"] or 0,)).fetchone()
+        if p1:
+            entries.append((p1["id"], "n1", int(round(price * DEPTH_N1))))
+            p2 = c.execute("SELECT * FROM affiliates WHERE id=? AND actif=1", (p1["parrain_id"] or 0,)).fetchone()
+            if p2:
+                entries.append((p2["id"], "n2", int(round(price * DEPTH_N2))))
+        now = time.time()
+        for bid, lvl, amt in entries:
+            if amt > 0:
+                c.execute("INSERT INTO commissions(lead_id,beneficiary_id,level,amount,status,created) VALUES(?,?,?,?,'due',?)",
+                          (lead["id"], bid, lvl, amt, now))
+    client = (str(lead["prenom"] or "") + " " + str(lead["nom"] or "")).strip()
+    labels = {"direct": "vente directe", "n1": "réseau N1", "n2": "réseau N2"}
+    nb = 0
+    for bid, lvl, amt in entries:
+        if amt > 0:
+            nb += 1
+            notify("affiliate", bid, f"Commission à réclamer : {fmoney(amt)} F ({labels[lvl]}) sur la vente de {client}.", lead["id"])
+    notify("admin", 0, f"Commissions générées sur la vente de {client} — {nb} bénéficiaire(s) à payer.", lead["id"])
+
+def void_commissions(lead_id: int):
+    with db() as c:
+        c.execute("UPDATE commissions SET status='void' WHERE lead_id=? AND status!='paid'", (lead_id,))
+
+def earnings_of(aid: int) -> Dict[str, int]:
+    """Bilan complet (à vie) des commissions d'un affilié, depuis le registre tracé."""
+    with db() as c:
+        rows = c.execute("SELECT level, amount, status FROM commissions WHERE beneficiary_id=? AND status!='void'", (aid,)).fetchall()
+    g = {"generated": 0, "paid": 0, "due": 0, "claimed": 0, "direct": 0, "n1": 0, "n2": 0}
+    for r in rows:
+        a = r["amount"] or 0
+        g["generated"] += a
+        g[r["status"]] = g.get(r["status"], 0) + a
+        g[r["level"]] = g.get(r["level"], 0) + a
+    return {k: int(v) for k, v in g.items()}
 
 def seed():
     with db() as c:
@@ -567,7 +626,7 @@ def admin_affiliates(naff_session: Optional[str] = Cookie(default=None)):
             "actif": a["actif"], "accent": a["accent"],
             "score": s["score"], "rcm": s["rcm"], "potentiel": s["potentiel"],
             "rank": s["rank"], "palier": s["palier"], "ventes": s["ventes"], "ventes_mois": s["ventes_mois"],
-            "nb_real": s["nb_real"], "by_status": s["by_status"],
+            "nb_real": s["nb_real"], "by_status": s["by_status"], "generated": earnings_of(a["id"])["generated"],
         })
     # classement par score décroissant
     out.sort(key=lambda x: x["score"], reverse=True)
@@ -658,10 +717,11 @@ async def admin_set_payment(lid: int, req: Request, naff_session: Optional[str] 
             return JSONResponse({"ok": False}, status_code=404)
         m = float(montant) if (montant is not None and str(montant) != "") else r["montant"]
         c.execute("UPDATE leads SET paye=?, montant=?, updated=? WHERE id=?", (paye, m, time.time(), lid))
+        r = c.execute("SELECT * FROM leads WHERE id=?", (lid,)).fetchone()
     if paye:
-        com = commission_of(r["service"], r["montant"])
-        client = (str(r["prenom"] or "") + " " + str(r["nom"] or "")).strip()
-        notify("affiliate", r["affiliate_id"], f"{client} : paiement reçu — commission +{com:,} F".replace(",", " "), lid)
+        generate_commissions(r)      # crée + alerte direct / N1 / N2 automatiquement
+    else:
+        void_commissions(lid)
     return {"ok": True}
 
 @app.get("/api/admin/notifs")
@@ -722,6 +782,72 @@ def admin_recruit_reject(rid: int, naff_session: Optional[str] = Cookie(default=
         c.execute("UPDATE recruits SET status='rejected' WHERE id=?", (rid,))
     return {"ok": True}
 
+@app.get("/api/admin/network")
+def admin_network(naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        affs = c.execute("SELECT * FROM affiliates WHERE actif=1 ORDER BY created").fetchall()
+    by_parent: Dict[int, list] = {}
+    info: Dict[int, dict] = {}
+    for a in affs:
+        by_parent.setdefault(a["parrain_id"] or 0, []).append(a)
+        s = stats_of(a["id"])
+        info[a["id"]] = {"id": a["id"], "name": affiliate_label(a), "code": a["code"],
+                         "ventes": s["ventes"], "rank": s["rank"]["label"], "palier": s["palier"]["label"]}
+    def build(pid: int, depth: int):
+        out = []
+        for a in by_parent.get(pid, []):
+            node = dict(info[a["id"]])
+            node["children"] = build(a["id"], depth + 1) if depth < 8 else []
+            out.append(node)
+        return out
+    return {"roots": build(0, 0), "total": len(affs)}
+
+@app.get("/api/admin/commissions")
+def admin_commissions(naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        rows = c.execute("""SELECT cm.*, a.code acode, a.nom anom, a.prenom aprenom, a.momo_number, a.momo_reseau,
+                                   l.nom lnom, l.prenom lprenom
+                            FROM commissions cm JOIN affiliates a ON a.id=cm.beneficiary_id JOIN leads l ON l.id=cm.lead_id
+                            WHERE cm.status IN ('due','claimed') ORDER BY cm.created""").fetchall()
+    LBL = {"direct": "Direct", "n1": "N1", "n2": "N2"}
+    groups = {}; total_due = 0; total_claimed = 0
+    for r in rows:
+        bid = r["beneficiary_id"]
+        g = groups.get(bid)
+        if not g:
+            g = {"affiliate_id": bid, "name": (str(r["aprenom"] or "") + " " + str(r["anom"] or "")).strip() or r["acode"],
+                 "code": r["acode"], "momo_number": r["momo_number"], "momo_reseau": r["momo_reseau"],
+                 "total": 0, "claimed": 0, "has_claim": False, "entries": []}
+            groups[bid] = g
+        g["total"] += r["amount"]; total_due += r["amount"]
+        if r["status"] == "claimed":
+            g["claimed"] += r["amount"]; g["has_claim"] = True; total_claimed += r["amount"]
+        g["entries"].append({"level": LBL.get(r["level"], r["level"]), "amount": int(r["amount"]), "status": r["status"],
+                             "client": (str(r["lprenom"] or "") + " " + str(r["lnom"] or "")).strip()})
+    out = sorted(groups.values(), key=lambda g: (not g["has_claim"], -g["total"]))
+    for g in out:
+        g["total"] = int(g["total"]); g["claimed"] = int(g["claimed"])
+    return {"groups": out, "total_due": int(total_due), "total_claimed": int(total_claimed)}
+
+@app.post("/api/admin/commissions/pay")
+async def admin_pay(req: Request, naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    d = await req.json()
+    aff_id = int(d.get("affiliate_id") or 0)
+    with db() as c:
+        rows = c.execute("SELECT * FROM commissions WHERE beneficiary_id=? AND status IN ('due','claimed')", (aff_id,)).fetchall()
+        total = int(sum(x["amount"] for x in rows)); n = len(rows)
+        if n:
+            c.execute("UPDATE commissions SET status='paid', paid_at=? WHERE beneficiary_id=? AND status IN ('due','claimed')", (time.time(), aff_id))
+    if n:
+        notify("affiliate", aff_id, f"Paiement reçu : {fmoney(total)} F versés par NEBULA ({n} commission(s)). Merci pour ton travail !")
+    return {"ok": True, "paid": n, "total": total}
+
 # ===========================  AFFILIÉ  ======================================
 def need_affiliate(naff_session) -> Optional[int]:
     ac = actor(naff_session)
@@ -743,7 +869,7 @@ def partner_me(naff_session: Optional[str] = Cookie(default=None)):
         "code": a["code"], "nom": a["nom"], "prenom": a["prenom"],
         "name": affiliate_label(a), "accent": a["accent"],
         "momo_number": a["momo_number"], "momo_reseau": a["momo_reseau"],
-        "stats": s, "network": network_of(aid),
+        "stats": s, "network": network_of(aid), "earnings": earnings_of(aid),
     }
 
 @app.get("/api/partenaire/leads")
@@ -764,6 +890,42 @@ def partner_leads(naff_session: Optional[str] = Cookie(default=None)):
             "created": r["created"], "updated": r["updated"],
         })
     return {"leads": out}
+
+@app.get("/api/partenaire/commissions")
+def partner_commissions(naff_session: Optional[str] = Cookie(default=None)):
+    aid = need_affiliate(naff_session)
+    if aid is None:
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        rows = c.execute("""SELECT cm.*, l.nom lnom, l.prenom lprenom, l.service lservice
+                            FROM commissions cm JOIN leads l ON l.id=cm.lead_id
+                            WHERE cm.beneficiary_id=? AND cm.status!='void' ORDER BY cm.created DESC""", (aid,)).fetchall()
+    LBL = {"direct": "Vente directe", "n1": "Réseau N1 · 10%", "n2": "Réseau N2 · 5%"}
+    out = []; due = claimed = paid = 0
+    for r in rows:
+        if r["status"] == "due": due += r["amount"]
+        elif r["status"] == "claimed": claimed += r["amount"]
+        elif r["status"] == "paid": paid += r["amount"]
+        out.append({"id": r["id"], "level": r["level"], "level_label": LBL.get(r["level"], r["level"]),
+                    "amount": int(r["amount"]), "status": r["status"], "created": r["created"],
+                    "client": (str(r["lprenom"] or "") + " " + str(r["lnom"] or "")).strip(),
+                    "service": SERVICES.get(r["lservice"], {}).get("label", r["lservice"])})
+    return {"commissions": out, "summary": earnings_of(aid)}
+
+@app.post("/api/partenaire/commissions/claim")
+def partner_claim(naff_session: Optional[str] = Cookie(default=None)):
+    aid = need_affiliate(naff_session)
+    if aid is None:
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        rows = c.execute("SELECT * FROM commissions WHERE beneficiary_id=? AND status='due'", (aid,)).fetchall()
+        total = int(sum(x["amount"] for x in rows)); n = len(rows)
+        if n:
+            c.execute("UPDATE commissions SET status='claimed', claimed_at=? WHERE beneficiary_id=? AND status='due'", (time.time(), aid))
+        a = c.execute("SELECT * FROM affiliates WHERE id=?", (aid,)).fetchone()
+    if n:
+        notify("admin", 0, f"{affiliate_label(a)} réclame {fmoney(total)} F ({n} commission(s)) — payer sur {a['momo_reseau']} {a['momo_number']}.")
+    return {"ok": True, "claimed": n, "total": total}
 
 @app.post("/api/partenaire/theme")
 async def partner_theme(req: Request, naff_session: Optional[str] = Cookie(default=None)):

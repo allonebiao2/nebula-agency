@@ -34,7 +34,9 @@
 
     <section class="view" id="v-dash"></section>
     <section class="view" id="v-aff"></section>
+    <section class="view" id="v-reseau"></section>
     <section class="view" id="v-leads"></section>
+    <section class="view" id="v-paiements"></section>
     <section class="view" id="v-recrues"></section>
   </main>
 </div>
@@ -56,10 +58,12 @@ let CFG = null, OVER = null, AFFS = [], LEADS = [];
 const NAV = [
   { id: 'dash', icon: 'chart', label: 'Tableau de bord' },
   { id: 'aff', icon: 'users', label: 'Affiliés' },
+  { id: 'reseau', icon: 'spark', label: 'Réseau' },
   { id: 'leads', icon: 'folder', label: 'Clients' },
+  { id: 'paiements', icon: 'coins', label: 'Paiements' },
   { id: 'recrues', icon: 'plus', label: 'Recrues' },
 ];
-const TITLES = { dash: 'Tableau de bord', aff: 'Réseau d\'affiliés', leads: 'Clients du réseau', recrues: 'Candidatures de recrues' };
+const TITLES = { dash: 'Tableau de bord', aff: 'Réseau d\'affiliés', reseau: 'Arborescence du réseau', leads: 'Clients du réseau', paiements: 'Commissions à verser', recrues: 'Candidatures de recrues' };
 
 function statusPill(st) { const s = CFG.statuses[st] || { label: st, color: '#888' }; return `<span class="pill" style="--c:${s.color}"><span class="d"></span>${esc(s.label)}</span>`; }
 function payDot(p) { return `<span class="pay ${p ? 'ok' : ''}"><span class="dot"></span>${p ? 'Payé' : 'Non payé'}</span>`; }
@@ -77,7 +81,7 @@ function switchView(id) {
   document.getElementById('v-' + id).classList.add('on');
   document.querySelectorAll('.nav-i[data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === id));
   document.getElementById('title').textContent = TITLES[id];
-  ({ dash: renderDash, aff: renderAff, leads: renderLeads, recrues: renderRecrues }[id])();
+  ({ dash: renderDash, aff: renderAff, reseau: renderReseauAdmin, leads: renderLeads, paiements: renderPaiements, recrues: renderRecrues }[id])();
   reveal();
 }
 
@@ -206,6 +210,53 @@ async function createAff() {
 }
 
 /* ---------- CLIENTS (le cœur : Mongazi pilote les statuts) ---------- */
+function netNode(n) {
+  return `<div class="card nl1">
+    <div class="nhead"><div class="flex" style="gap:11px;align-items:center"><div class="avatar">${initials(n.name)}</div>
+      <div><div class="ttl">${esc(n.name)} <span class="chip" style="margin-left:4px">${n.code}</span></div><div class="meta">${n.rank} · ${n.ventes} vente${n.ventes > 1 ? 's' : ''} · palier ${n.palier}</div></div></div></div>
+    ${n.children && n.children.length ? `<div class="nkids">${n.children.map(netNode).join('')}</div>` : ''}
+  </div>`;
+}
+async function renderReseauAdmin() {
+  let d; try { d = await api('/api/admin/network'); } catch (e) { return; }
+  document.getElementById('v-reseau').innerHTML = `
+    <div class="rv mb24"><span class="eyebrow"><span class="dot"></span>Réseau</span><h2 class="mt8" style="font-size:1.8rem">L'arborescence complète</h2>
+    <p class="muted mt8">${d.total} affilié(s) · qui a recruté qui, sur toutes les branches.</p></div>
+    <div class="ntree">${d.roots.length ? d.roots.map(netNode).join('') : '<p class="muted center" style="padding:20px">Aucun affilié.</p>'}</div>`;
+}
+
+async function renderPaiements() {
+  let d; try { d = await api('/api/admin/commissions'); } catch (e) { return; }
+  const groups = d.groups.length ? d.groups.map(paymentCard).join('')
+    : `<div class="card"><div class="in center" style="padding:40px"><p class="muted">Aucune commission à payer — tout est à jour.</p></div></div>`;
+  document.getElementById('v-paiements').innerHTML = `
+    <div class="flex between wrap mb24 rv" style="gap:16px">
+      <div><span class="eyebrow"><span class="dot"></span>Paiements</span><h2 class="mt8" style="font-size:1.8rem">Commissions à verser</h2>
+        <p class="muted mt8">1 paiement MoMo par affilié couvre toutes ses commissions. Les réclamations passent en tête.</p></div>
+      <div class="flex gap8 wrap"><span class="chip">Total dû · <b>${fmt(d.total_due)} F</b></span><span class="chip" style="border-color:var(--goldline);color:var(--gold)">Réclamé · <b>${fmt(d.total_claimed)} F</b></span></div>
+    </div>${groups}`;
+  d.groups.forEach(g => { document.getElementById('pay-' + g.affiliate_id).onclick = () => payAffiliate(g.affiliate_id, g.name); });
+}
+function paymentCard(g) {
+  return `<div class="rv"><div class="card${g.has_claim ? ' gold' : ''}"><div class="in">
+    <div class="flex between wrap" style="gap:14px">
+      <div class="flex" style="gap:12px"><div class="avatar">${initials(g.name)}</div>
+        <div><div class="ttl">${esc(g.name)} <span class="chip" style="margin-left:6px">${g.code}</span>${g.has_claim ? ' <span class="pill" style="--c:var(--gold);margin-left:4px"><span class="d"></span>a réclamé</span>' : ''}</div>
+          <div class="meta">Payer sur : <b style="color:var(--ink)">${esc(g.momo_reseau || '—')} ${esc(g.momo_number || '')}</b> · ${g.entries.length} commission(s)</div></div></div>
+      <div class="flex gap8 wrap" style="justify-content:flex-end;align-items:center">
+        <div class="center"><div class="mono" style="color:var(--accent);font-weight:700;font-size:1.25rem">${fmt(g.total)} F</div><div class="meta">${fmt(g.claimed)} réclamé</div></div>
+        <button class="btn sm primary" id="pay-${g.affiliate_id}">Marquer payé<span class="ico">${icon('check')}</span></button>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="flex gap8 wrap">${g.entries.map(x => `<span class="chip" style="font-size:.72rem">${x.level} · ${fmt(x.amount)} F · ${esc(x.client)}${x.status === 'claimed' ? ' · réclamé' : ''}</span>`).join('')}</div>
+  </div></div></div>`;
+}
+async function payAffiliate(id, name) {
+  try { const r = await api('/api/admin/commissions/pay', { body: { affiliate_id: id } }); sound.sfx.cash(); toast(`${fmt(r.total)} F marqués payés à ${name}`, 'ok'); renderPaiements(); refreshNotifs(); refresh(); }
+  catch (e) { toast('Erreur', 'bad'); }
+}
+
 async function renderRecrues() {
   let d; try { d = await api('/api/admin/recruits'); } catch (e) { return; }
   const list = d.recruits.length ? d.recruits.map(recruitCard).join('')

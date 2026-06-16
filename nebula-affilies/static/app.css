@@ -256,6 +256,20 @@ input,select,textarea{font-family:inherit}
 .pal-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:100px;font-family:'Space Grotesk';font-weight:700;font-size:.8rem;letter-spacing:.1em;
   background:color-mix(in srgb,var(--c) 15%,transparent);border:1px solid color-mix(in srgb,var(--c) 45%,transparent);color:var(--c)}
 .pal-badge::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c);box-shadow:0 0 10px var(--c)}
+/* ---- arbre réseau (arborescence des filleuls) ---- */
+.ntree{display:flex;flex-direction:column;gap:14px}
+.nroot{display:inline-flex;align-items:center;gap:11px;padding:11px 18px;border-radius:14px;align-self:flex-start;font-family:'Space Grotesk';font-weight:700;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 22%,transparent),transparent);border:1px solid color-mix(in srgb,var(--accent) 45%,transparent)}
+.nroot svg{width:20px;height:20px;stroke:var(--accent);fill:none;stroke-width:1.5}
+.nl1{padding:16px 18px}
+.nl1 .nhead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.nbadge{font-family:'Space Grotesk';font-weight:700;font-size:.66rem;letter-spacing:.08em;padding:3px 9px;border-radius:100px;
+  background:color-mix(in srgb,var(--accent) 16%,transparent);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);color:var(--accent)}
+.nbadge.n2{background:var(--glass2);border-color:var(--hair);color:var(--muted)}
+.nkids{margin-top:12px;padding-top:12px;border-top:1px dashed var(--hair);display:flex;flex-direction:column;gap:8px}
+.nkid{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 13px 9px 16px;border-radius:11px;flex-wrap:wrap;
+  background:rgba(255,255,255,.02);border-left:2px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+.nkids .nl1{margin:0;background:rgba(255,255,255,.02)}
 
 /* ---- Mobile ---- */
 @media(max-width:860px){

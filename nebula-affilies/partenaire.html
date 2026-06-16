@@ -36,6 +36,8 @@
 
     <!-- MON QG -->
     <section class="view" id="v-home"></section>
+    <!-- MES GAINS -->
+    <section class="view" id="v-gains"></section>
     <!-- MES CLIENTS -->
     <section class="view" id="v-clients"></section>
     <!-- MON RÉSEAU -->
@@ -61,6 +63,7 @@ let ME = null, LEADS = [], CFG = null;
 
 const NAV = [
   { id: 'home', icon: 'chart', label: 'Mon QG' },
+  { id: 'gains', icon: 'coins', label: 'Mes gains' },
   { id: 'clients', icon: 'folder', label: 'Mes clients' },
   { id: 'reseau', icon: 'users', label: 'Mon réseau' },
   { id: 'link', icon: 'link', label: 'Mon lien' },
@@ -91,7 +94,7 @@ function switchView(id) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
   document.getElementById('v-' + id).classList.add('on');
   document.querySelectorAll('.nav-i[data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === id));
-  ({ home: renderHome, clients: renderClients, reseau: renderReseau, link: renderLink, perso: renderPerso }[id])();
+  ({ home: renderHome, gains: renderGains, clients: renderClients, reseau: renderReseau, link: renderLink, perso: renderPerso }[id])();
   reveal();
 }
 
@@ -122,7 +125,7 @@ function renderHome() {
           <div class="meta"><span>${nextPal}</span><span class="mono">${s.ventes_mois} ce mois</span></div></div>
       </div></div></div>
 
-      <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">RCM · gagné (payé)</div><div class="num accent mono" id="n-rcm">0</div><div class="sub">à ton taux actuel</div></div></div></div>
+      <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">RCM · total généré (à vie)</div><div class="num accent mono" id="n-rcm">0</div><div class="sub" id="n-rcm-sub">tracé</div></div></div></div>
       <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">En attente de paiement</div><div class="num mono" style="color:var(--warn)" id="n-pot">0</div><div class="sub">F potentiels</div></div></div></div>
       <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">Ventes carrière</div><div class="num mono" style="color:var(--ok)" id="n-ven">0</div><div class="sub">= ton rang</div></div></div></div>
       <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">Clients actifs</div><div class="num mono" style="color:var(--info)" id="n-cli">0</div><div class="sub">attente + en cours</div></div></div></div>
@@ -133,7 +136,9 @@ function renderHome() {
       </div></div></div>
     </div>`;
   requestAnimationFrame(() => { document.getElementById('xpfill').style.width = r.xp_pct + '%'; document.getElementById('palfill').style.width = palPct + '%'; });
-  countUp(document.getElementById('n-rcm'), s.rcm, { money: true });
+  const _e = ME.earnings || { generated: 0, paid: 0, due: 0 };
+  countUp(document.getElementById('n-rcm'), _e.generated, { money: true });
+  document.getElementById('n-rcm-sub').textContent = 'payé ' + fmt(_e.paid) + ' F · à réclamer ' + fmt(_e.due) + ' F';
   countUp(document.getElementById('n-pot'), s.potentiel, { money: true });
   countUp(document.getElementById('n-ven'), s.ventes);
   countUp(document.getElementById('n-cli'), (s.by_status.attente || 0) + (s.by_status.en_cours || 0));
@@ -161,6 +166,54 @@ function renderClients() {
     <p class="muted mt8">NEBULA met à jour les statuts — tu suis l'évolution ici.</p></div>${html}`;
 }
 
+async function renderGains() {
+  let d; try { d = await api('/api/partenaire/commissions'); } catch (e) { return; }
+  const e = d.summary;
+  const ST = { due: ['À réclamer', 'var(--warn)'], claimed: ['Réclamé', 'var(--info)'], paid: ['Payé', 'var(--ok)'] };
+  const rows = d.commissions.length ? d.commissions.map(c => {
+    const [lab, col] = ST[c.status] || ['—', 'var(--muted)'];
+    return `<div class="row" style="grid-template-columns:1fr auto auto;gap:14px;align-items:center">
+      <div><div class="ttl">${esc(c.client)} <span class="chip" style="margin-left:6px">${esc(c.level_label)}</span></div><div class="meta">${esc(c.service)} · ${ago(c.created)}</div></div>
+      <div class="pill" style="--c:${col}"><span class="d"></span>${lab}</div>
+      <div class="center"><div class="mono" style="color:var(--accent);font-weight:700">${fmt(c.amount)} F</div></div>
+    </div>`;
+  }).join('') : `<p class="muted center" style="padding:18px">Aucune commission encore. Elles apparaissent dès qu'une de tes ventes (ou de ton réseau) est payée.</p>`;
+  document.getElementById('v-gains').innerHTML = `
+    <div class="bento">
+      <div class="col-12 rv"><div class="card glow"><div class="in">
+        <div class="flex between wrap" style="gap:20px;align-items:flex-end">
+          <div><span class="eyebrow"><span class="dot"></span>RCM · ton bilan complet à vie</span>
+            <div class="num accent mono" id="g-gen" style="font-size:2.9rem;margin-top:10px">0</div>
+            <div class="muted" style="font-size:.82rem">total généré depuis le début</div></div>
+          ${e.due > 0 ? `<button class="btn primary" id="g-claim">Réclamer ${fmt(e.due)} F<span class="ico">${icon('coins')}</span></button>` : ''}
+        </div>
+        <div class="divider"></div>
+        <div class="bento" style="gap:14px">
+          <div class="col-4"><div class="card"><div class="in stat"><div class="lbl">Déjà payé</div><div class="num mono" style="color:var(--ok)" id="g-paid">0</div></div></div></div>
+          <div class="col-4"><div class="card"><div class="in stat"><div class="lbl">À réclamer</div><div class="num mono" style="color:var(--warn)" id="g-due">0</div></div></div></div>
+          <div class="col-4"><div class="card"><div class="in stat"><div class="lbl">Réclamé · en attente</div><div class="num mono" style="color:var(--info)" id="g-claimed">0</div></div></div></div>
+        </div>
+        <div class="flex gap8 mt16 wrap">
+          <span class="chip">Direct : <b style="color:var(--ink)">${fmt(e.direct)}</b> F</span>
+          <span class="chip">Réseau N1 (10%) : <b style="color:var(--ink)">${fmt(e.n1)}</b> F</span>
+          <span class="chip">Réseau N2 (5%) : <b style="color:var(--ink)">${fmt(e.n2)}</b> F</span>
+        </div>
+      </div></div></div>
+      <div class="col-12 rv"><div class="card"><div class="in">
+        <h3 class="mb16">Historique tracé de tes commissions</h3>${rows}
+      </div></div></div>
+    </div>`;
+  countUp(document.getElementById('g-gen'), e.generated, { money: true });
+  countUp(document.getElementById('g-paid'), e.paid, { money: true });
+  countUp(document.getElementById('g-due'), e.due, { money: true });
+  countUp(document.getElementById('g-claimed'), e.claimed, { money: true });
+  const cb = document.getElementById('g-claim');
+  if (cb) cb.onclick = async () => {
+    try { const r = await api('/api/partenaire/commissions/claim', { body: {} }); sound.sfx.cash(); toast(`${fmt(r.total)} F réclamés — NEBULA est prévenue`, 'ok'); ME = await api('/api/partenaire/me'); renderGains(); refreshNotifs(); }
+    catch (e) { toast('Erreur', 'bad'); }
+  };
+}
+
 function renderReseau() {
   const net = ME.network || { n1: [], n2: [], n1_commission: 0, n2_commission: 0, network_total: 0, n1_count: 0, n2_count: 0 };
   const link = location.origin + '/rejoindre/' + ME.code;
@@ -184,10 +237,20 @@ function renderReseau() {
         <div class="flex gap8 mt16 wrap"><span class="chip">${net.n1_count} recrue${net.n1_count > 1 ? 's' : ''} N1</span><span class="chip">${net.n2_count} en N2</span></div>
       </div></div></div>
       <div class="col-12 rv"><div class="card"><div class="in">
-        <h3 class="mb16">Tes recrues directes — N1 · 10%</h3>
-        ${net.n1.length ? net.n1.map(x => row(x, 'N1', '10% sur ses ventes')).join('') : `<p class="muted center" style="padding:18px">Aucune recrue encore. Partage ton lien de recrutement pour bâtir ton réseau.</p>`}
+        <h3 class="mb16">L'arborescence de ton réseau</h3>
+        <div class="ntree">
+          <div class="nroot">${icon('users')}<span>Toi — ${esc(ME.name)}</span></div>
+          ${net.n1.length ? net.n1.map(a => `
+            <div class="card nl1">
+              <div class="nhead">
+                <div class="flex" style="gap:11px;align-items:center"><div class="avatar">${initials(a.name)}</div>
+                  <div><div class="ttl">${esc(a.name)} <span class="nbadge">N1 · 10%</span></div><div class="meta">${a.ventes} vente${a.ventes > 1 ? 's' : ''}</div></div></div>
+                <div class="center"><div class="mono" style="color:var(--accent);font-weight:700">${fmt(a.commission)} F</div><div class="meta">pour toi</div></div>
+              </div>
+              ${a.children.length ? `<div class="nkids">${a.children.map(k => `<div class="nkid"><div><b>${esc(k.name)}</b> <span class="nbadge n2">N2 · 5%</span> <span class="meta">· ${k.ventes} vente${k.ventes > 1 ? 's' : ''}</span></div><div class="mono" style="color:var(--accent);font-weight:700">${fmt(k.commission)} F</div></div>`).join('')}</div>` : ''}
+            </div>`).join('') : `<p class="muted center" style="padding:18px">Aucune recrue encore. Partage ton lien de recrutement pour bâtir ton réseau.</p>`}
+        </div>
       </div></div></div>
-      ${net.n2.length ? `<div class="col-12 rv"><div class="card"><div class="in"><h3 class="mb16">Ton réseau étendu — N2 · 5%</h3>${net.n2.map(x => row(x, 'N2', '5% sur ses ventes')).join('')}</div></div></div>` : ''}
     </div>`;
   countUp(document.getElementById('n-net'), net.network_total, { money: true });
   document.getElementById('rcopy').onclick = () => { navigator.clipboard?.writeText(link); sound.sfx.cash(); toast('Lien de recrutement copié ✓', 'ok'); };
