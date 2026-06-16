@@ -69,6 +69,10 @@ function statusPill(st) { const s = CFG.statuses[st] || { label: st, color: '#88
 function payDot(p) { return `<span class="pay ${p ? 'ok' : ''}"><span class="dot"></span>${p ? 'Payé' : 'En attente'}</span>`; }
 function initials(n) { return (n || '?').split(' ').filter(Boolean).slice(0, 2).map(x => x[0]).join('').toUpperCase(); }
 
+const RANK_ICON = { 'Recrue': 'spark', 'Météore': 'meteor', 'Comète': 'comet', 'Planète': 'planet', 'Étoile': 'star', 'Supernova': 'supernova', 'Nébuleuse': 'nebula', 'Galaxie': 'crown' };
+const PALIER_COLOR = { 'STARTER': '#9aa0c0', 'SILVER': '#cdd6ef', 'GOLD': '#e7c987' };
+function rankSvg(label) { return icon(RANK_ICON[label] || 'spark'); }
+
 function buildDock() {
   const nav = document.getElementById('nav');
   NAV.forEach(n => {
@@ -89,43 +93,49 @@ function switchView(id) {
 }
 
 function renderHome() {
-  const s = ME.stats, r = s.rank;
-  const next = r.next_label ? `Encore <b style="color:var(--ink)">${r.to_next}</b> client${r.to_next > 1 ? 's' : ''} pour ${r.next_emoji} ${r.next_label}` : 'Rang maximum atteint 👑';
+  const s = ME.stats, r = s.rank, p = s.palier;
+  const nextRank = r.next_label ? `Encore <b style="color:var(--ink)">${r.to_next}</b> vente${r.to_next > 1 ? 's' : ''} pour le rang ${r.next_label}` : 'Galaxie — rang suprême atteint';
+  const nextPal = p.next_label ? `Encore <b style="color:var(--ink)">${p.to_next}</b> vente${p.to_next > 1 ? 's' : ''} ce mois → ${p.next_label} ${p.next_pct}%` : 'GOLD — palier max ce mois';
+  const palPct = p.next_min ? Math.min(100, Math.round(s.ventes_mois * 100 / p.next_min)) : 100;
+  const perVitrine = fmt(Math.round(150000 * p.rate));
   document.getElementById('v-home').innerHTML = `
     <div class="bento">
       <div class="col-7 rv"><div class="card glow"><div class="in">
-        <span class="eyebrow"><span class="dot"></span>Ton rang</span>
+        <span class="eyebrow"><span class="dot"></span>Ton rang · prestige (ventes cumulées)</span>
         <div class="rank mt16">
-          <div class="emblem">${r.emoji}</div>
-          <div><div class="r-name">${esc(r.label)}</div><div class="r-sub">Niveau ${r.level} / ${r.max_level} · ${s.score} pts</div></div>
+          <div class="emblem${r.label === 'Galaxie' ? ' king' : ''}">${rankSvg(r.label)}</div>
+          <div><div class="r-name">${esc(r.label)}</div><div class="r-sub">Niveau ${r.level} / ${r.max_level} · ${s.ventes} vente${s.ventes > 1 ? 's' : ''} cumulée${s.ventes > 1 ? 's' : ''}</div></div>
         </div>
         <div class="xp"><div class="track"><div class="fill" id="xpfill"></div></div>
-          <div class="meta"><span>${next}</span><span class="mono">${r.xp_pct}%</span></div></div>
+          <div class="meta"><span>${nextRank}</span><span class="mono">${r.xp_pct}%</span></div></div>
       </div></div></div>
       <div class="col-5 rv"><div class="card"><div class="in">
-        <span class="eyebrow"><span class="dot"></span>Tes commissions</span>
-        <div class="stat mt16"><div class="lbl">RCM · gagné (payé)</div><div class="num accent mono" id="n-rcm">0</div><div class="sub">+ <span class="mono" id="n-pot">0</span> F en attente de paiement</div></div>
+        <span class="eyebrow"><span class="dot"></span>Ton palier du mois · commission directe</span>
+        <div class="mt16" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <div style="font-family:'Space Grotesk';font-weight:700;font-size:1.5rem;color:${PALIER_COLOR[p.label] || 'var(--ink)'}">${esc(p.label)}</div>
+          <div class="r-sub">Commission directe <b style="color:var(--accent)">${p.pct}%</b> — <span class="mono">${perVitrine}</span> F / vitrine</div>
+        </div>
+        <div class="xp"><div class="track"><div class="fill" id="palfill" style="background:linear-gradient(90deg,var(--accent),var(--ok))"></div></div>
+          <div class="meta"><span>${nextPal}</span><span class="mono">${s.ventes_mois} ce mois</span></div></div>
       </div></div></div>
 
-      <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">Clients</div><div class="num mono" id="n-cli">0</div><div class="sub">ramenés à NEBULA</div></div></div></div>
-      <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">En attente</div><div class="num mono" style="color:var(--warn)" id="n-att">0</div><div class="sub">à valider</div></div></div></div>
-      <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">En cours</div><div class="num mono" style="color:var(--info)" id="n-enc">0</div><div class="sub">NEBULA travaille</div></div></div></div>
-      <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">Terminés</div><div class="num mono" style="color:var(--ok)" id="n-ter">0</div><div class="sub">livrés</div></div></div></div>
+      <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">RCM · gagné (payé)</div><div class="num accent mono" id="n-rcm">0</div><div class="sub">à ton taux actuel</div></div></div></div>
+      <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">En attente de paiement</div><div class="num mono" style="color:var(--warn)" id="n-pot">0</div><div class="sub">F potentiels</div></div></div></div>
+      <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">Ventes carrière</div><div class="num mono" style="color:var(--ok)" id="n-ven">0</div><div class="sub">= ton rang</div></div></div></div>
+      <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">Clients actifs</div><div class="num mono" style="color:var(--info)" id="n-cli">0</div><div class="sub">attente + en cours</div></div></div></div>
 
       <div class="col-12 rv"><div class="card"><div class="in">
         <div class="flex between mb16"><h3>Coup d'œil</h3><button class="btn sm ghost" onclick="switchView('clients')">Voir mes clients<span class="ico">${icon('arrow')}</span></button></div>
         <div id="recent"></div>
       </div></div></div>
     </div>`;
-  requestAnimationFrame(() => document.getElementById('xpfill').style.width = r.xp_pct + '%');
+  requestAnimationFrame(() => { document.getElementById('xpfill').style.width = r.xp_pct + '%'; document.getElementById('palfill').style.width = palPct + '%'; });
   countUp(document.getElementById('n-rcm'), s.rcm, { money: true });
   countUp(document.getElementById('n-pot'), s.potentiel, { money: true });
-  countUp(document.getElementById('n-cli'), s.nb_real);
-  countUp(document.getElementById('n-att'), s.by_status.attente);
-  countUp(document.getElementById('n-enc'), s.by_status.en_cours);
-  countUp(document.getElementById('n-ter'), s.by_status.termine);
+  countUp(document.getElementById('n-ven'), s.ventes);
+  countUp(document.getElementById('n-cli'), (s.by_status.attente || 0) + (s.by_status.en_cours || 0));
   const rec = document.getElementById('recent');
-  if (!LEADS.length) rec.innerHTML = `<p class="muted center" style="padding:20px">Aucun client encore. Partage ton lien pour démarrer 🚀</p>`;
+  if (!LEADS.length) rec.innerHTML = `<p class="muted center" style="padding:20px">Aucun client encore. Partage ton lien pour démarrer.</p>`;
   else rec.innerHTML = LEADS.slice(0, 4).map(l => clientRow(l, true)).join('');
 }
 
@@ -141,7 +151,7 @@ function clientRow(l, compact) {
 
 function renderClients() {
   const html = !LEADS.length
-    ? `<div class="card"><div class="in center" style="padding:40px"><p class="muted">Aucun client pour l'instant.<br>Va dans <b style="color:var(--ink)">Mon lien</b> et partage-le sur WhatsApp 🚀</p></div></div>`
+    ? `<div class="card"><div class="in center" style="padding:40px"><p class="muted">Aucun client pour l'instant.<br>Va dans <b style="color:var(--ink)">Mon lien</b> et partage-le sur WhatsApp.</p></div></div>`
     : LEADS.map(l => `<div class="rv">${clientRow(l)}</div>`).join('');
   document.getElementById('v-clients').innerHTML = `
     <div class="rv mb16"><span class="eyebrow"><span class="dot"></span>Mes clients</span><h2 class="mt8" style="font-size:1.8rem">Tes clients, en direct</h2>
@@ -175,7 +185,7 @@ function renderLink() {
         <p class="muted" style="font-size:.85rem">Imprime-le ou montre-le. On le scanne, le formulaire s'ouvre.</p>
       </div></div></div>
     </div>`;
-  document.getElementById('wa').href = 'https://wa.me/?text=' + encodeURIComponent('Bonjour 👋 Je travaille avec NEBULA Agency (vitrines digitales, Google Maps, avatars IA). Dites-moi votre projet ici : ' + link);
+  document.getElementById('wa').href = 'https://wa.me/?text=' + encodeURIComponent('Bonjour, je travaille avec NEBULA Agency (vitrines digitales, Google Maps, avatars IA). Dites-moi votre projet ici : ' + link);
   document.getElementById('copy').onclick = () => { navigator.clipboard?.writeText(link); sound.sfx.cash(); toast('Lien copié ✓', 'ok'); };
 }
 
@@ -233,8 +243,8 @@ document.getElementById('amb').onclick = () => { sound.toggleAmbient(); syncSnd(
   try { ME = await api('/api/partenaire/me'); } catch (e) { location.href = '/'; return; }
   if (ME.accent) ROOT.style.setProperty('--accent', ME.accent);
   document.getElementById('p-name').textContent = ME.name;
-  document.getElementById('p-rank').textContent = ME.stats.rank.emoji + ' ' + ME.stats.rank.label;
-  document.getElementById('top-emblem').textContent = ME.stats.rank.emoji;
+  document.getElementById('p-rank').textContent = ME.stats.rank.label;
+  document.getElementById('top-emblem').innerHTML = rankSvg(ME.stats.rank.label);
   try { LEADS = (await api('/api/partenaire/leads')).leads; } catch (e) {}
   buildDock(); syncSnd(); nova('ton coach perso'); switchView('home'); refreshNotifs();
   const lvl = ME.stats.rank.level, prev = +(localStorage.getItem('na_rank_' + ME.code) || lvl);

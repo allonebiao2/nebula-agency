@@ -250,6 +250,12 @@ input,select,textarea{font-family:inherit}
 
 /* ---- Confetti ---- */
 .confetti{position:fixed;inset:0;z-index:75;pointer-events:none}
+/* ---- icône de rang (SVG pro) + badge de palier ---- */
+.emblem svg{width:42px;height:42px;stroke:var(--accent);fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.emblem.king svg{stroke:var(--gold)}
+.pal-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:100px;font-family:'Space Grotesk';font-weight:700;font-size:.8rem;letter-spacing:.1em;
+  background:color-mix(in srgb,var(--c) 15%,transparent);border:1px solid color-mix(in srgb,var(--c) 45%,transparent);color:var(--c)}
+.pal-badge::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c);box-shadow:0 0 10px var(--c)}
 
 /* ---- Mobile ---- */
 @media(max-width:860px){

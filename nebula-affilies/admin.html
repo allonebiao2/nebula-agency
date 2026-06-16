@@ -110,7 +110,7 @@ function renderDash() {
         ${board.length ? board.map((a, i) => `
           <div class="row" style="grid-template-columns:auto 42px 1fr auto;margin-bottom:9px">
             <div class="mono faint" style="width:22px;font-weight:700">${i + 1}</div>
-            <div class="emblem" style="width:42px;height:42px;font-size:1.2rem;border-radius:13px">${a.rank.emoji}</div>
+            <div class="emblem" style="width:42px;height:42px;border-radius:13px">${rankSvg(a.rank.label)}</div>
             <div><div class="ttl">${esc((a.prenom || '') + ' ' + (a.nom || '')) || a.code}</div><div class="meta">${a.rank.label} · ${a.nb_real} clients</div></div>
             <div class="center"><div class="mono" style="font-weight:700">${a.score}</div><div class="meta">pts</div></div>
           </div>`).join('') : `<p class="muted center" style="padding:20px">Aucun affilié. Crée ton premier partenaire dans l'onglet Affiliés.</p>`}
@@ -131,14 +131,19 @@ function renderAff() {
   document.getElementById('new-aff').onclick = openNewAff;
   AFFS.forEach(a => { const t = document.getElementById('tog-' + a.id); if (t) t.onclick = () => toggleAff(a.id); });
 }
+const RANK_ICON = { 'Recrue': 'spark', 'Météore': 'meteor', 'Comète': 'comet', 'Planète': 'planet', 'Étoile': 'star', 'Supernova': 'supernova', 'Nébuleuse': 'nebula', 'Galaxie': 'crown' };
+const PALIER_COLOR = { 'STARTER': '#9aa0c0', 'SILVER': '#cdd6ef', 'GOLD': '#e7c987' };
+function rankSvg(label) { return icon(RANK_ICON[label] || 'spark'); }
+function palBadge(p) { return `<span class="pal-badge" style="--c:${PALIER_COLOR[p.label] || '#9aa0c0'}">${esc(p.label)}</span>`; }
+
 function affRow(a) {
   const name = ((a.prenom || '') + ' ' + (a.nom || '')).trim() || a.code;
   return `<div class="rv"><div class="card"><div class="in">
     <div class="flex between wrap" style="gap:14px">
       <div class="flex" style="gap:13px">
-        <div class="emblem" style="width:52px;height:52px;font-size:1.4rem;border-radius:15px;--c:${a.accent}">${a.rank.emoji}</div>
+        <div class="emblem${a.rank.label === 'Galaxie' ? ' king' : ''}" style="width:52px;height:52px;border-radius:15px;--c:${a.accent}">${rankSvg(a.rank.label)}</div>
         <div><div class="ttl" style="font-size:1.05rem">${esc(name)} <span class="chip" style="margin-left:6px">${a.code}</span></div>
-          <div class="meta">${a.rank.label} · Niv ${a.rank.level} · ${a.nb_real} clients${a.actif ? '' : ' · <span style="color:var(--bad)">suspendu</span>'}</div>
+          <div class="meta" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${a.rank.label} · ${a.ventes} vente${a.ventes > 1 ? 's' : ''} · ${palBadge(a.palier)} ${a.palier.pct}%${a.actif ? '' : ' · <span style="color:var(--bad)">suspendu</span>'}</div>
           <div class="meta mt8">${esc(a.momo_reseau || '—')} · ${esc(a.momo_number || '—')}</div></div>
       </div>
       <div class="flex gap8 wrap" style="justify-content:flex-end">
@@ -181,7 +186,7 @@ async function createAff() {
     document.getElementById('modal-in').innerHTML = `
       <div class="center" style="padding:8px">
         <div class="avatar" style="margin:0 auto 16px;width:60px;height:60px;background:linear-gradient(135deg,var(--ok),#1f9e6e)">${icon('check')}</div>
-        <h3>Partenaire créé 🎉</h3>
+        <h3>Partenaire créé</h3>
         <p class="muted mt8 mb16">Transmets-lui ces accès (à montrer une seule fois).</p>
         <div class="card"><div class="in">
           <div class="flex between"><span class="muted">Code</span><b class="mono" style="font-size:1.3rem;letter-spacing:.18em;color:var(--accent)">${d.code}</b></div>
@@ -234,7 +239,7 @@ async function setStatus(id, st) {
   catch (e) { toast('Erreur', 'bad'); }
 }
 async function setPay(id, paye) {
-  try { await api(`/api/admin/leads/${id}/payment`, { body: { paye } }); if (paye) { sound.sfx.cash(); toast('Paiement enregistré 💸', 'ok'); } else sound.sfx.click(); await refresh(); renderLeads(); reveal(); }
+  try { await api(`/api/admin/leads/${id}/payment`, { body: { paye } }); if (paye) { sound.sfx.cash(); toast('Paiement enregistré', 'ok'); } else sound.sfx.click(); await refresh(); renderLeads(); reveal(); }
   catch (e) { toast('Erreur', 'bad'); }
 }
 

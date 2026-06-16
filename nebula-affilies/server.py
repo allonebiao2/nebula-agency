@@ -20,7 +20,7 @@ paiement (gris → vert fluo) : l'affilié est notifié à chaque étape.
 Lancement local :  uvicorn server:app --port 8780 --reload
 Stack identique à NEXO/Vendora (FastAPI + SQLite, 100% gratuit, sans CB).
 """
-import os, json, time, pathlib, sqlite3, hmac, hashlib, base64, secrets, re, threading
+import os, json, time, pathlib, sqlite3, hmac, hashlib, base64, secrets, re, threading, datetime
 from typing import Any, Dict, List, Optional, Tuple
 
 import httpx
@@ -101,16 +101,27 @@ STATUSES: Dict[str, Dict[str, str]] = {
 STATUS_POINTS = {"attente": 10, "en_cours": 35, "termine": 70, "annule": 0}
 PAID_BONUS = 30
 
-# ---- Rangs (paliers « jeu vidéo », selon le nb de clients ramenés) ----
+# ---- RANKS cosmiques : PRESTIGE, selon les VENTES CUMULÉES (toute la carrière) ----
 RANKS: List[Tuple[int, str, str]] = [
-    (0,  "Recrue",  "🌱"),
-    (1,  "Bronze",  "🥉"),
-    (3,  "Argent",  "🥈"),
-    (6,  "Or",      "🥇"),
-    (10, "Platine", "🔷"),
-    (20, "Diamant", "💎"),
-    (40, "Légende", "👑"),
+    (0,   "Recrue",    "✦"),
+    (1,   "Météore",   "🌑"),
+    (6,   "Comète",    "☄️"),
+    (16,  "Planète",   "🪐"),
+    (36,  "Étoile",    "⭐"),
+    (66,  "Supernova", "💥"),
+    (111, "Nébuleuse", "🌌"),
+    (151, "Galaxie",   "👑"),
 ]
+# ---- PALIERS mensuels : ta COMMISSION DIRECTE, selon les ventes DU MOIS (remis à zéro) ----
+# (seuil mini de ventes du mois, label, emoji, taux direct)
+PALIERS: List[Tuple[int, str, str, float]] = [
+    (0,  "STARTER", "⬜", 0.25),   # 1 à 4 ventes / mois
+    (5,  "SILVER",  "🟣", 0.30),   # 5 à 9 ventes / mois
+    (10, "GOLD",    "🟡", 0.35),   # 10+ ventes / mois
+]
+# ---- Profondeurs réseau (FIXES, identiques pour tous — Vague B : parrainage) ----
+DEPTH_N1 = 0.10   # sur les ventes de tes recrues directes
+DEPTH_N2 = 0.05   # sur les ventes des recrues de tes recrues
 # Réseaux Mobile Money du Bénin
 RESEAUX = ["MTN MoMo", "Moov Money", "Celtiis Cash"]
 
@@ -238,32 +249,58 @@ def rank_for(n: int) -> Dict[str, Any]:
         "next_threshold": nxt[0] if nxt else None,
     }
 
-def commission_of(service: str, montant: float) -> int:
+def month_start_ts() -> float:
+    now = datetime.datetime.now()
+    return datetime.datetime(now.year, now.month, 1).timestamp()
+
+def palier_for(ventes_mois: int) -> Dict[str, Any]:
+    cur = PALIERS[0]; nxt = None
+    for i, p in enumerate(PALIERS):
+        if ventes_mois >= p[0]:
+            cur = p; nxt = PALIERS[i+1] if i+1 < len(PALIERS) else None
+    return {
+        "label": cur[1], "emoji": cur[2], "rate": cur[3], "pct": int(round(cur[3] * 100)),
+        "next_label": nxt[1] if nxt else None, "next_emoji": nxt[2] if nxt else None,
+        "next_pct": int(round(nxt[3] * 100)) if nxt else None,
+        "to_next": max(0, nxt[0] - ventes_mois) if nxt else 0,
+        "min": cur[0], "next_min": nxt[0] if nxt else None,
+    }
+
+def commission_of(service: str, montant: float, rate: float = 0.25) -> int:
     base = montant if montant and montant > 0 else SERVICES.get(service, {}).get("price", 0)
-    return int(round(base * COMMISSION_RATE))
+    return int(round(base * rate))
 
 def stats_of(affiliate_id: int) -> Dict[str, Any]:
     with db() as c:
         rows = c.execute("SELECT * FROM leads WHERE affiliate_id=?", (affiliate_id,)).fetchall()
     by_status = {k: 0 for k in STATUSES}
-    score = 0; rcm = 0; potentiel = 0; nb_real = 0
+    ms = month_start_ts()
+    score = 0; nb_real = 0; ventes = 0; ventes_mois = 0
     for r in rows:
         st = r["status"] or "attente"
         by_status[st] = by_status.get(st, 0) + 1
         score += STATUS_POINTS.get(st, 0)
         if r["paye"]:
             score += PAID_BONUS
+            ventes += 1                                   # une VENTE = un client qui a payé
+            if (r["updated"] or 0) >= ms:
+                ventes_mois += 1
         if st != "annule":
             nb_real += 1
-        com = commission_of(r["service"], r["montant"])
+    pal = palier_for(ventes_mois)                         # palier du mois -> taux direct
+    rate = pal["rate"]
+    rcm = 0; potentiel = 0
+    for r in rows:
+        com = commission_of(r["service"], r["montant"], rate)
         if r["paye"]:
             rcm += com
-        elif st != "annule":
+        elif (r["status"] or "attente") != "annule":
             potentiel += com
-    rk = rank_for(nb_real)
     return {
         "nb_total": len(rows), "nb_real": nb_real, "by_status": by_status,
-        "score": score, "rcm": rcm, "potentiel": potentiel, "rank": rk,
+        "score": score, "ventes": ventes, "ventes_mois": ventes_mois,
+        "rcm": rcm, "potentiel": potentiel, "direct_rate": rate,
+        "rank": rank_for(ventes), "palier": pal,
     }
 
 def notify(role: str, target_id: int, text: str, lead_id: Optional[int] = None):
@@ -307,7 +344,7 @@ def seed():
             c.execute("""INSERT INTO leads(affiliate_id,nom,prenom,numero,service,message,status,paye,created,updated)
                          VALUES(?,?,?,?,?,?,?,?,?,?)""",
                       (aid, nom, prenom, num, svc, msg, st, paye, now - (i+1)*3600, now - (i+1)*1800))
-    notify("admin", 0, "👋 Bienvenue dans NEBULA Affiliés — voici un affilié démo (code DEMO).")
+    notify("admin", 0, "Bienvenue dans NEBULA Affiliés — voici un affilié démo (code DEMO).")
 seed()
 
 # ----------------------------------------------------------------------------
@@ -344,6 +381,8 @@ def api_config():
         "services": SERVICES, "statuses": STATUSES, "reseaux": RESEAUX,
         "commission_rate": COMMISSION_RATE, "momo": {"number": MOMO_NUMBER, "name": MOMO_NAME},
         "whatsapp": WHATSAPP, "ranks": [{"min": r[0], "label": r[1], "emoji": r[2]} for r in RANKS],
+        "paliers": [{"min": p[0], "label": p[1], "emoji": p[2], "pct": int(round(p[3] * 100))} for p in PALIERS],
+        "depths": {"n1": int(DEPTH_N1 * 100), "n2": int(DEPTH_N2 * 100)},
     }
 
 # =====================  PUBLIC : formulaire de parrainage  ====================
@@ -377,8 +416,8 @@ async def create_lead(req: Request):
         lead_id = cur.lastrowid
     client = (prenom + " " + nom).strip()
     svc = SERVICES[service]["label"]
-    notify("admin", 0, f"🎯 Nouveau client via {affiliate_label(a)} : {client} — {svc}", lead_id)
-    notify("affiliate", a["id"], f"🎉 {client} a rempli ton formulaire — en attente de validation.", lead_id)
+    notify("admin", 0, f"Nouveau client via {affiliate_label(a)} : {client} — {svc}", lead_id)
+    notify("affiliate", a["id"], f"{client} a rempli ton formulaire — en attente de validation.", lead_id)
     return {"ok": True}
 
 # =============================  AUTH  ========================================
@@ -435,14 +474,17 @@ def admin_overview(naff_session: Optional[str] = Cookie(default=None)):
         affs = c.execute("SELECT COUNT(*) n FROM affiliates WHERE actif=1").fetchone()["n"]
         leads = c.execute("SELECT * FROM leads").fetchall()
     by_status = {k: 0 for k in STATUSES}
-    paid = 0; ca_paye = 0; commissions = 0
+    paid = 0; ca_paye = 0; commissions = 0; rate_cache = {}
     for r in leads:
         by_status[r["status"]] = by_status.get(r["status"], 0) + 1
         if r["paye"]:
             paid += 1
             base = r["montant"] if r["montant"] else SERVICES.get(r["service"], {}).get("price", 0)
             ca_paye += base
-            commissions += commission_of(r["service"], r["montant"])
+            aid = r["affiliate_id"]
+            if aid not in rate_cache:
+                rate_cache[aid] = stats_of(aid)["direct_rate"]
+            commissions += commission_of(r["service"], r["montant"], rate_cache[aid])
     return {
         "affiliates": affs, "leads": len(leads), "by_status": by_status,
         "paid": paid, "ca_paye": ca_paye, "commissions_dues": commissions,
@@ -462,7 +504,8 @@ def admin_affiliates(naff_session: Optional[str] = Cookie(default=None)):
             "momo_number": a["momo_number"], "momo_reseau": a["momo_reseau"],
             "actif": a["actif"], "accent": a["accent"],
             "score": s["score"], "rcm": s["rcm"], "potentiel": s["potentiel"],
-            "rank": s["rank"], "nb_real": s["nb_real"], "by_status": s["by_status"],
+            "rank": s["rank"], "palier": s["palier"], "ventes": s["ventes"], "ventes_mois": s["ventes_mois"],
+            "nb_real": s["nb_real"], "by_status": s["by_status"],
         })
     # classement par score décroissant
     out.sort(key=lambda x: x["score"], reverse=True)
@@ -504,13 +547,17 @@ def admin_leads(naff_session: Optional[str] = Cookie(default=None)):
         rows = c.execute("""SELECT l.*, a.code acode, a.nom anom, a.prenom aprenom
                             FROM leads l JOIN affiliates a ON a.id=l.affiliate_id
                             ORDER BY l.created DESC""").fetchall()
+    rate_cache = {}
     out = []
     for r in rows:
+        aid = r["affiliate_id"]
+        if aid not in rate_cache:
+            rate_cache[aid] = stats_of(aid)["direct_rate"]
         out.append({
             "id": r["id"], "nom": r["nom"], "prenom": r["prenom"], "numero": r["numero"],
             "service": r["service"], "service_label": SERVICES.get(r["service"], {}).get("label", r["service"]),
             "message": r["message"], "status": r["status"], "paye": r["paye"],
-            "commission": commission_of(r["service"], r["montant"]),
+            "commission": commission_of(r["service"], r["montant"], rate_cache[aid]),
             "created": r["created"], "updated": r["updated"],
             "affiliate": {"code": r["acode"], "name": (str(r["aprenom"] or "") + " " + str(r["anom"] or "")).strip() or r["acode"]},
         })
@@ -533,7 +580,7 @@ async def admin_set_status(lid: int, req: Request, naff_session: Optional[str] =
         c.execute("INSERT INTO history(lead_id,old_status,new_status,note,at) VALUES(?,?,?,?,?)",
                   (lid, old, st, "", time.time()))
     client = (str(r["prenom"] or "") + " " + str(r["nom"] or "")).strip()
-    notify("affiliate", r["affiliate_id"], f"🔄 {client} : statut → {STATUSES[st]['label']}", lid)
+    notify("affiliate", r["affiliate_id"], f"{client} : statut → {STATUSES[st]['label']}", lid)
     return {"ok": True}
 
 @app.post("/api/admin/leads/{lid}/payment")
@@ -552,7 +599,7 @@ async def admin_set_payment(lid: int, req: Request, naff_session: Optional[str] 
     if paye:
         com = commission_of(r["service"], r["montant"])
         client = (str(r["prenom"] or "") + " " + str(r["nom"] or "")).strip()
-        notify("affiliate", r["affiliate_id"], f"💸 {client} : paiement reçu — commission +{com:,} F".replace(",", " "), lid)
+        notify("affiliate", r["affiliate_id"], f"{client} : paiement reçu — commission +{com:,} F".replace(",", " "), lid)
     return {"ok": True}
 
 @app.get("/api/admin/notifs")
@@ -601,6 +648,7 @@ def partner_leads(naff_session: Optional[str] = Cookie(default=None)):
     aid = need_affiliate(naff_session)
     if aid is None:
         return JSONResponse({"error": "auth"}, status_code=401)
+    rate = stats_of(aid)["direct_rate"]
     with db() as c:
         rows = c.execute("SELECT * FROM leads WHERE affiliate_id=? ORDER BY created DESC", (aid,)).fetchall()
     out = []
@@ -609,7 +657,7 @@ def partner_leads(naff_session: Optional[str] = Cookie(default=None)):
             "id": r["id"], "nom": r["nom"], "prenom": r["prenom"], "numero": r["numero"],
             "service": r["service"], "service_label": SERVICES.get(r["service"], {}).get("label", r["service"]),
             "status": r["status"], "paye": r["paye"],
-            "commission": commission_of(r["service"], r["montant"]),
+            "commission": commission_of(r["service"], r["montant"], rate),
             "created": r["created"], "updated": r["updated"],
         })
     return {"leads": out}
@@ -680,15 +728,20 @@ def brain_context_aff(aid: int) -> str:
     with db() as c:
         a = c.execute("SELECT * FROM affiliates WHERE id=?", (aid,)).fetchone()
         leads = c.execute("SELECT * FROM leads WHERE affiliate_id=? ORDER BY created DESC", (aid,)).fetchall()
-    s = stats_of(aid); rk = s["rank"]
-    nxt = (f"Encore {rk['to_next']} client(s) pour le rang {rk['next_label']} {rk['next_emoji']}."
-           if rk["next_label"] else "Rang maximum atteint, bravo.")
+    s = stats_of(aid); rk = s["rank"]; pal = s["palier"]
+    nxt = (f"Encore {rk['to_next']} vente(s) pour le rang {rk['next_label']} {rk['next_emoji']}."
+           if rk["next_label"] else "Rang Galaxie (suprême) atteint, bravo.")
+    palnxt = (f"Encore {pal['to_next']} vente(s) CE MOIS pour passer {pal['next_label']} ({pal['next_pct']}% en direct)."
+              if pal["next_label"] else "Palier GOLD (max) atteint ce mois.")
     cl = [f"- {(str(l['prenom'] or '')+' '+str(l['nom'] or '')).strip()} : "
           f"{SERVICES.get(l['service'], {}).get('label', l['service'])} — {STATUSES[l['status']]['label']}"
           f"{' — PAYÉ' if l['paye'] else ''}" for l in leads]
-    return (f"TON PROFIL : {affiliate_label(a)} (code {a['code']}), rang {rk['label']} {rk['emoji']}, "
-            f"{s['nb_real']} clients, score {s['score']}, RCM {s['rcm']} F "
-            f"(commission potentielle {s['potentiel']} F). {nxt}\nTES CLIENTS :\n"
+    return (f"TON PROFIL : {affiliate_label(a)} (code {a['code']}).\n"
+            f"RANG (prestige, ventes cumulées) : {rk['label']} {rk['emoji']} — {s['ventes']} ventes au total. {nxt}\n"
+            f"PALIER DU MOIS (ta commission DIRECTE) : {pal['label']} {pal['emoji']} = {pal['pct']}% — "
+            f"{s['ventes_mois']} ventes ce mois. {palnxt}\n"
+            f"Profondeurs réseau (fixes) : N1 = 10%, N2 = 5%. "
+            f"RCM gagné {s['rcm']} F, potentiel {s['potentiel']} F.\nTES CLIENTS :\n"
             + ("\n".join(cl) if cl else "(aucun pour l'instant)"))
 
 async def nova_reply(system: str, hist: List[sqlite3.Row]) -> str:

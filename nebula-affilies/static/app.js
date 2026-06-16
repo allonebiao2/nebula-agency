@@ -50,6 +50,13 @@ const NA = (() => {
     chart: P('<path d="M4 19V5M4 19h16"/><path d="M8 16l3-4 3 2 4-6"/>'),
     medal: P('<circle cx="12" cy="14" r="5"/><path d="M9 9L7 3M15 9l2-6"/>'),
     phone: P('<rect x="6" y="3" width="12" height="18" rx="3"/><path d="M11 18h2"/>'),
+    meteor: P('<circle cx="14" cy="10" r="4.2"/><path d="M10.8 13.2L4 20M8 6.5L5.5 4M13.2 5.4L15 3.6M6.4 12L4.6 11"/>'),
+    comet: P('<circle cx="16" cy="8" r="3.3"/><path d="M13.3 10.4L4 19M17 4.2l1.6-1.4M19.3 7l1.4-1.2"/><circle cx="8" cy="15" r="1"/>'),
+    planet: P('<circle cx="12" cy="12" r="6"/><ellipse cx="12" cy="12" rx="11" ry="3.6" transform="rotate(-22 12 12)"/>'),
+    star: P('<path d="M12 3.5l2.6 5.6 6 .7-4.4 4.1 1.2 6L12 17l-5.4 3 1.2-6L3.4 9.8l6-.7z"/>'),
+    supernova: P('<circle cx="12" cy="12" r="2.6"/><path d="M12 2.4v3.4M12 18.2V21.6M2.4 12h3.4M18.2 12h3.4M5.2 5.2l2.3 2.3M16.5 16.5l2.3 2.3M18.8 5.2l-2.3 2.3M7.5 16.5l-2.3 2.3"/>'),
+    nebula: P('<path d="M8 15a3.5 3.5 0 0 1 .6-6.9A4.5 4.5 0 0 1 17 8.6a3 3 0 0 1-.5 6.4z"/><circle cx="10.5" cy="11" r="1"/><circle cx="14" cy="12.6" r="1"/>'),
+    crown: P('<path d="M4 8l3.5 3L12 5l4.5 6L20 8l-1.5 10h-13z"/><path d="M5.5 18h13"/>'),
   };
   const icon = (n) => ICON[n] || '';
 
