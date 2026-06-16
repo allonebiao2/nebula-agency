@@ -26,6 +26,7 @@
         <h2 style="font-size:1.5rem;margin-top:6px" id="title">Tableau de bord</h2>
       </div>
       <div class="flex gap8">
+        <button class="icon-btn" id="help" title="Guide d'utilisation"></button>
         <button class="icon-btn" id="snd" title="Sons"></button>
         <button class="icon-btn" id="amb" title="Ambiance sonore"></button>
         <button class="icon-btn" id="bell" title="Notifications"></button>
@@ -65,6 +66,16 @@ const NAV = [
 ];
 const TITLES = { dash: 'Tableau de bord', aff: 'Réseau d\'affiliés', reseau: 'Arborescence du réseau', leads: 'Clients du réseau', paiements: 'Commissions à verser', recrues: 'Candidatures de recrues' };
 
+const TOUR = [
+  { icon: 'spark', title: 'Bienvenue dans ta console NEBULA', text: 'Le poste de pilotage de ton réseau d\'affiliés : tu suis les clients, tu valides les recrues, et tu paies les commissions. Voici chaque zone.' },
+  { icon: 'chart', title: 'Tableau de bord', text: 'Vue d\'ensemble : affiliés actifs, clients reçus, payés, commissions dues, et le classement de tes meilleurs partenaires.' },
+  { icon: 'users', title: 'Affiliés', text: 'Tes partenaires : rang, palier, ventes, RCM. Crée un nouveau partenaire (code + PIN générés), suspends/réactive si besoin.' },
+  { icon: 'spark', title: 'Réseau', text: 'L\'arborescence complète : qui a recruté qui, sur toutes les branches (N1, N2…).' },
+  { icon: 'folder', title: 'Clients', text: 'Tous les clients du réseau. Change le statut (attente → en cours → terminé) et marque le <b>paiement</b> : ça génère <b>automatiquement</b> les commissions (vendeur + N1 + N2) et alerte chacun.' },
+  { icon: 'coins', title: 'Paiements', text: 'Les commissions à verser, groupées par affilié avec leur <b>numéro MoMo</b>. Les réclamations passent en tête. Après ton virement, clique <b>Marquer payé</b>.' },
+  { icon: 'plus', title: 'Recrues', text: 'Les candidatures de nouveaux affiliés (via les liens de recrutement). Valide → le partenaire est créé et rattaché à son parrain.' },
+  { icon: 'spark', title: 'NOVA — ton cerveau IA', text: 'Le bouton en bas à droite : pose-lui des questions sur ton réseau (qui pousser, qui relancer), il connaît tes vraies données en temps réel.' },
+];
 function statusPill(st) { const s = CFG.statuses[st] || { label: st, color: '#888' }; return `<span class="pill" style="--c:${s.color}"><span class="d"></span>${esc(s.label)}</span>`; }
 function payDot(p) { return `<span class="pay ${p ? 'ok' : ''}"><span class="dot"></span>${p ? 'Payé' : 'Non payé'}</span>`; }
 function initials(n) { return (n || '?').split(' ').filter(Boolean).slice(0, 2).map(x => x[0]).join('').toUpperCase(); }
@@ -373,6 +384,9 @@ document.getElementById('amb').onclick = () => { sound.toggleAmbient(); syncSnd(
   try { CFG = await api('/api/config'); } catch (e) {}
   try { await refresh(); } catch (e) { location.href = '/'; return; }
   buildDock(); syncSnd(); NA.nova('le stratège de Mongazi'); switchView('dash'); refreshNotifs();
+  document.getElementById('help').innerHTML = icon('help');
+  document.getElementById('help').onclick = () => NA.tour(TOUR);
+  if (!localStorage.getItem('na_tour_a')) setTimeout(() => NA.tour(TOUR, 'na_tour_a'), 1000);
 })();
 </script>
 </body>

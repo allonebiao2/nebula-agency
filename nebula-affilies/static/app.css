@@ -270,6 +270,13 @@ input,select,textarea{font-family:inherit}
 .nkid{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 13px 9px 16px;border-radius:11px;flex-wrap:wrap;
   background:rgba(255,255,255,.02);border-left:2px solid color-mix(in srgb,var(--accent) 30%,transparent)}
 .nkids .nl1{margin:0;background:rgba(255,255,255,.02)}
+/* ---- didacticiel / guide ---- */
+.tour-scrim .tour-card{width:min(540px,100%)}
+.tour-ic{width:64px;height:64px;border-radius:18px;display:grid;place-items:center;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 22%,transparent),transparent);border:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+.tour-ic svg{width:30px;height:30px;stroke:var(--accent);fill:none;stroke-width:1.5}
+.tour-dot{width:7px;height:7px;border-radius:50%;background:var(--line2);transition:all .3s var(--ease)}
+.tour-dot.on{background:var(--accent);box-shadow:0 0 8px var(--accent);width:18px;border-radius:4px}
 
 /* ---- Mobile ---- */
 @media(max-width:860px){

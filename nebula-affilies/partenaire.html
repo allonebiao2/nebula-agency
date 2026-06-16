@@ -28,6 +28,7 @@
         </div>
       </div>
       <div class="flex gap8">
+        <button class="icon-btn" id="help" title="Guide d'utilisation"></button>
         <button class="icon-btn" id="snd" title="Sons"></button>
         <button class="icon-btn" id="amb" title="Ambiance sonore"></button>
         <button class="icon-btn" id="bell" title="Notifications"></button>
@@ -78,6 +79,17 @@ function initials(n) { return (n || '?').split(' ').filter(Boolean).slice(0, 2).
 const RANK_ICON = { 'Recrue': 'spark', 'Météore': 'meteor', 'Comète': 'comet', 'Planète': 'planet', 'Étoile': 'star', 'Supernova': 'supernova', 'Nébuleuse': 'nebula', 'Galaxie': 'crown' };
 const PALIER_COLOR = { 'STARTER': '#9aa0c0', 'SILVER': '#cdd6ef', 'GOLD': '#e7c987' };
 function rankSvg(label) { return icon(RANK_ICON[label] || 'spark'); }
+
+const TOUR = [
+  { icon: 'spark', title: 'Bienvenue dans ton bureau NEBULA', text: 'En quelques écrans : tu amènes des clients, tu recrutes des partenaires, et tu encaisses tes commissions. Suivons le guide ensemble.' },
+  { icon: 'chart', title: 'Mon QG', text: 'Ta vue d\'ensemble : ton <b>rang</b> (prestige, selon tes ventes cumulées), ton <b>palier du mois</b> (ta commission directe, de 25% à 35%), et ton <b>RCM</b> (total généré à vie).' },
+  { icon: 'coins', title: 'Mes gains', text: 'Toutes tes commissions, tracées. Quand un montant est « à réclamer », clique <b>Réclamer</b> : NEBULA est prévenue et te paie en Mobile Money.' },
+  { icon: 'folder', title: 'Mes clients', text: 'Les commerçants que tu as amenés. NEBULA met à jour les statuts (en cours, terminé) et le paiement — tu suis tout en direct.' },
+  { icon: 'users', title: 'Mon réseau', text: 'Recrute des partenaires avec ton <b>lien de recrutement</b>. Tu gagnes <b>10%</b> sur leurs ventes (N1) et <b>5%</b> sur celles de leurs recrues (N2). Ton arbre est ici.' },
+  { icon: 'link', title: 'Mon lien', text: 'Ton lien magique à partager sur WhatsApp : un commerçant le remplit → il devient ton client. Plus tu partages, plus tu gagnes.' },
+  { icon: 'palette', title: 'Personnaliser', text: 'Choisis la couleur de ton espace et ton pseudo de joueur (visible au classement).' },
+  { icon: 'check', title: 'À toi de jouer', text: 'Va dans <b>Mon lien</b> et partage-le maintenant — ta première commission t\'attend ! Tu peux rouvrir ce guide via le « ? » en haut.' },
+];
 
 function buildDock() {
   const nav = document.getElementById('nav');
@@ -346,6 +358,9 @@ document.getElementById('amb').onclick = () => { sound.toggleAmbient(); syncSnd(
   document.getElementById('top-emblem').innerHTML = rankSvg(ME.stats.rank.label);
   try { LEADS = (await api('/api/partenaire/leads')).leads; } catch (e) {}
   buildDock(); syncSnd(); nova('ton coach perso'); switchView('home'); refreshNotifs();
+  document.getElementById('help').innerHTML = icon('help');
+  document.getElementById('help').onclick = () => NA.tour(TOUR);
+  if (!localStorage.getItem('na_tour_p')) setTimeout(() => NA.tour(TOUR, 'na_tour_p'), 1000);
   const lvl = ME.stats.rank.level, prev = +(localStorage.getItem('na_rank_' + ME.code) || lvl);
   if (lvl > prev) setTimeout(celebrate, 700);
   localStorage.setItem('na_rank_' + ME.code, lvl);

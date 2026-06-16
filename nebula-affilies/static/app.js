@@ -57,6 +57,7 @@ const NA = (() => {
     supernova: P('<circle cx="12" cy="12" r="2.6"/><path d="M12 2.4v3.4M12 18.2V21.6M2.4 12h3.4M18.2 12h3.4M5.2 5.2l2.3 2.3M16.5 16.5l2.3 2.3M18.8 5.2l-2.3 2.3M7.5 16.5l-2.3 2.3"/>'),
     nebula: P('<path d="M8 15a3.5 3.5 0 0 1 .6-6.9A4.5 4.5 0 0 1 17 8.6a3 3 0 0 1-.5 6.4z"/><circle cx="10.5" cy="11" r="1"/><circle cx="14" cy="12.6" r="1"/>'),
     crown: P('<path d="M4 8l3.5 3L12 5l4.5 6L20 8l-1.5 10h-13z"/><path d="M5.5 18h13"/>'),
+    help: P('<circle cx="12" cy="12" r="9"/><path d="M9.3 9.3a2.7 2.7 0 0 1 5.2 1c0 1.8-2.7 2-2.7 3.8"/><path d="M12 17.4v.01"/>'),
   };
   const icon = (n) => ICON[n] || '';
 
@@ -202,5 +203,30 @@ const NA = (() => {
     input.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
   }
 
-  return { el, esc, fmt, ago, api, icon, sound: Sound, toast, countUp, reveal, qr, celebrate, nova };
+  /* ---------- didacticiel / guide pas-à-pas ---------- */
+  function tour(steps, key) {
+    let i = 0;
+    const scrim = el('<div class="scrim tour-scrim"></div>');
+    scrim.appendChild(el('<div class="card tour-card"><div class="in"></div></div>'));
+    document.body.appendChild(scrim);
+    const inn = scrim.querySelector('.in');
+    function render() {
+      const s = steps[i];
+      inn.innerHTML = `<div class="flex between" style="margin-bottom:14px"><span class="eyebrow"><span class="dot"></span>Guide · ${i + 1}/${steps.length}</span><button class="icon-btn tx" style="width:32px;height:32px">${icon('close')}</button></div>`
+        + `<div class="tour-ic">${icon(s.icon || 'spark')}</div>`
+        + `<h2 style="font-size:1.5rem;margin:16px 0 10px">${esc(s.title)}</h2>`
+        + `<p style="font-size:14.5px;line-height:1.6;color:var(--muted)">${s.text}</p>`
+        + `<div class="flex between" style="margin-top:24px;align-items:center">`
+        + `<button class="btn sm ghost tp" ${i === 0 ? 'style="visibility:hidden"' : ''}>← Précédent</button>`
+        + `<div class="flex gap8" style="align-items:center">${steps.map((_, k) => `<span class="tour-dot${k === i ? ' on' : ''}"></span>`).join('')}</div>`
+        + `<button class="btn sm primary tn">${i === steps.length - 1 ? 'Terminer' : 'Suivant →'}</button></div>`;
+      inn.querySelector('.tx').onclick = close;
+      inn.querySelector('.tp').onclick = () => { if (i > 0) { i--; render(); Sound.sfx.tab(); } };
+      inn.querySelector('.tn').onclick = () => { if (i < steps.length - 1) { i++; render(); Sound.sfx.tab(); } else close(); };
+    }
+    function close() { scrim.remove(); if (key) localStorage.setItem(key, '1'); }
+    scrim.classList.add('on'); render(); Sound.sfx.open();
+  }
+
+  return { el, esc, fmt, ago, api, icon, sound: Sound, toast, countUp, reveal, qr, celebrate, nova, tour };
 })();
