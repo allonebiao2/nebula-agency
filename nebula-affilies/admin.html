@@ -35,6 +35,7 @@
     <section class="view" id="v-dash"></section>
     <section class="view" id="v-aff"></section>
     <section class="view" id="v-leads"></section>
+    <section class="view" id="v-recrues"></section>
   </main>
 </div>
 
@@ -56,8 +57,9 @@ const NAV = [
   { id: 'dash', icon: 'chart', label: 'Tableau de bord' },
   { id: 'aff', icon: 'users', label: 'Affiliés' },
   { id: 'leads', icon: 'folder', label: 'Clients' },
+  { id: 'recrues', icon: 'plus', label: 'Recrues' },
 ];
-const TITLES = { dash: 'Tableau de bord', aff: 'Réseau d\'affiliés', leads: 'Clients du réseau' };
+const TITLES = { dash: 'Tableau de bord', aff: 'Réseau d\'affiliés', leads: 'Clients du réseau', recrues: 'Candidatures de recrues' };
 
 function statusPill(st) { const s = CFG.statuses[st] || { label: st, color: '#888' }; return `<span class="pill" style="--c:${s.color}"><span class="d"></span>${esc(s.label)}</span>`; }
 function payDot(p) { return `<span class="pay ${p ? 'ok' : ''}"><span class="dot"></span>${p ? 'Payé' : 'Non payé'}</span>`; }
@@ -75,7 +77,7 @@ function switchView(id) {
   document.getElementById('v-' + id).classList.add('on');
   document.querySelectorAll('.nav-i[data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === id));
   document.getElementById('title').textContent = TITLES[id];
-  ({ dash: renderDash, aff: renderAff, leads: renderLeads }[id])();
+  ({ dash: renderDash, aff: renderAff, leads: renderLeads, recrues: renderRecrues }[id])();
   reveal();
 }
 
@@ -204,6 +206,57 @@ async function createAff() {
 }
 
 /* ---------- CLIENTS (le cœur : Mongazi pilote les statuts) ---------- */
+async function renderRecrues() {
+  let d; try { d = await api('/api/admin/recruits'); } catch (e) { return; }
+  const list = d.recruits.length ? d.recruits.map(recruitCard).join('')
+    : `<div class="card"><div class="in center" style="padding:40px"><p class="muted">Aucune candidature de recrue en attente.</p></div></div>`;
+  document.getElementById('v-recrues').innerHTML = `
+    <div class="rv mb24"><span class="eyebrow"><span class="dot"></span>Recrutement</span><h2 class="mt8" style="font-size:1.8rem">Candidatures de recrues</h2>
+    <p class="muted mt8">Valide une recrue → elle devient affiliée, rattachée à son parrain (N1). Tu génères son code + PIN.</p></div>${list}`;
+  d.recruits.forEach(r => {
+    document.getElementById('rok-' + r.id).onclick = () => approveRecruit(r.id);
+    document.getElementById('rno-' + r.id).onclick = () => rejectRecruit(r.id);
+  });
+}
+function recruitCard(r) {
+  const name = `${r.prenom || ''} ${r.nom || ''}`.trim();
+  return `<div class="rv"><div class="card"><div class="in"><div class="flex between wrap" style="gap:14px">
+    <div class="flex" style="gap:12px"><div class="avatar">${initials(name)}</div>
+      <div><div class="ttl">${esc(name)} <span class="muted" style="font-weight:400">· ${esc(r.numero)}</span></div>
+        <div class="meta">Parrain : <b style="color:var(--ink)">${esc(r.parrain.name)}</b> · ${esc(r.momo_reseau || '—')} ${esc(r.momo_number || '')} · ${ago(r.created)}</div>
+        ${r.message ? `<div class="meta mt8" style="font-style:italic">« ${esc(r.message)} »</div>` : ''}</div></div>
+    <div class="flex gap8 wrap" style="justify-content:flex-end"><button class="btn sm primary" id="rok-${r.id}">Valider<span class="ico">${icon('check')}</span></button><button class="btn sm ghost" id="rno-${r.id}">Refuser</button></div>
+  </div></div></div></div>`;
+}
+async function approveRecruit(id) {
+  try {
+    const d = await api(`/api/admin/recruits/${id}/approve`, { body: {} });
+    sound.sfx.cash();
+    document.getElementById('modal-in').innerHTML = `
+      <div class="center" style="padding:8px">
+        <div class="avatar" style="margin:0 auto 16px;width:60px;height:60px;background:linear-gradient(135deg,var(--ok),#1f9e6e)">${icon('check')}</div>
+        <h3>Recrue validée</h3><p class="muted mt8 mb16">Transmets-lui ses accès partenaire.</p>
+        <div class="card"><div class="in">
+          <div class="flex between"><span class="muted">Code</span><b class="mono" style="font-size:1.3rem;letter-spacing:.18em;color:var(--accent)">${d.code}</b></div>
+          <div class="divider"></div>
+          <div class="flex between"><span class="muted">Code PIN</span><b class="mono" style="font-size:1.3rem;letter-spacing:.18em">${d.pin}</b></div>
+        </div>
+        <div class="flex gap8 mt16" style="justify-content:center;flex-wrap:wrap">
+          <button class="btn sm primary" id="rcp">Copier les accès<span class="ico">${icon('copy')}</span></button>
+          <button class="btn sm ghost" id="rdone">Terminé</button>
+        </div>
+      </div>`;
+    document.getElementById('modal').classList.add('on');
+    document.getElementById('rcp').onclick = () => { navigator.clipboard?.writeText(`NEBULA Affiliés — tes accès\nCode : ${d.code}\nPIN : ${d.pin}\nConnexion : ${location.origin}/partenaire`); toast('Accès copiés ✓', 'ok'); };
+    document.getElementById('rdone').onclick = async () => { closeModal(); await refresh(); renderRecrues(); reveal(); };
+    renderRecrues();
+  } catch (e) { toast('Erreur', 'bad'); }
+}
+async function rejectRecruit(id) {
+  try { await api(`/api/admin/recruits/${id}/reject`, { body: {} }); sound.sfx.click(); toast('Candidature refusée'); renderRecrues(); }
+  catch (e) { toast('Erreur', 'bad'); }
+}
+
 function renderLeads() {
   document.getElementById('v-leads').innerHTML = `
     <div class="rv mb24"><span class="eyebrow"><span class="dot"></span>Pilotage</span><h2 class="mt8" style="font-size:1.8rem">Chaque client du réseau</h2>

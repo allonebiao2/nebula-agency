@@ -171,11 +171,18 @@ def init_db():
             scope_id INTEGER DEFAULT 0,   -- id affilié (0 = admin)
             who TEXT,                     -- 'user' | 'nova'
             text TEXT, created REAL)""")
+        c.execute("""CREATE TABLE IF NOT EXISTS recruits(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            parrain_id INTEGER NOT NULL,         -- affilié qui recrute
+            nom TEXT, prenom TEXT, numero TEXT,
+            momo_number TEXT, momo_reseau TEXT, message TEXT,
+            status TEXT DEFAULT 'pending',       -- 'pending' | 'approved' | 'rejected'
+            created REAL)""")
 init_db()
 
 def migrate():
     with db() as c:
-        for col, ddl in [("pseudo", "TEXT DEFAULT ''")]:
+        for col, ddl in [("pseudo", "TEXT DEFAULT ''"), ("parrain_id", "INTEGER DEFAULT 0")]:
             try:
                 c.execute(f"ALTER TABLE affiliates ADD COLUMN {col} {ddl}")
             except Exception:
@@ -303,6 +310,35 @@ def stats_of(affiliate_id: int) -> Dict[str, Any]:
         "rank": rank_for(ventes), "palier": pal,
     }
 
+def _paid_value(aid: int) -> Tuple[int, int]:
+    """(nb ventes payées, valeur totale FCFA) d'un affilié."""
+    with db() as c:
+        paid = c.execute("SELECT service, montant FROM leads WHERE affiliate_id=? AND paye=1", (aid,)).fetchall()
+    val = sum((r["montant"] if r["montant"] else SERVICES.get(r["service"], {}).get("price", 0)) for r in paid)
+    return len(paid), int(val)
+
+def network_of(aid: int) -> Dict[str, Any]:
+    """Réseau d'un affilié : N1 (recrues directes, 10%) + N2 (recrues des recrues, 5%)."""
+    with db() as c:
+        n1 = c.execute("SELECT * FROM affiliates WHERE parrain_id=? AND actif=1", (aid,)).fetchall()
+    n1_ids = [a["id"] for a in n1]
+    n2 = []
+    if n1_ids:
+        ph = ",".join("?" * len(n1_ids))
+        with db() as c:
+            n2 = c.execute(f"SELECT * FROM affiliates WHERE actif=1 AND parrain_id IN ({ph})", n1_ids).fetchall()
+    def line(a, rate):
+        cnt, val = _paid_value(a["id"])
+        return {"name": affiliate_label(a), "code": a["code"], "ventes": cnt, "commission": int(round(val * rate))}
+    n1_list = [line(a, DEPTH_N1) for a in n1]
+    n2_list = [line(a, DEPTH_N2) for a in n2]
+    n1_comm = sum(x["commission"] for x in n1_list)
+    n2_comm = sum(x["commission"] for x in n2_list)
+    return {
+        "n1": n1_list, "n2": n2_list, "n1_count": len(n1_list), "n2_count": len(n2_list),
+        "n1_commission": n1_comm, "n2_commission": n2_comm, "network_total": n1_comm + n2_comm,
+    }
+
 def notify(role: str, target_id: int, text: str, lead_id: Optional[int] = None):
     with db() as c:
         c.execute("INSERT INTO notifs(target_role,target_id,lead_id,text,lu,created) VALUES(?,?,?,?,0,?)",
@@ -374,6 +410,10 @@ def partner_page():
 def referral_page(code: str):
     return page("lead.html")
 
+@app.get("/rejoindre/{code}", response_class=HTMLResponse)
+def recruit_page(code: str):
+    return page("rejoindre.html")
+
 # ---- Config publique (catalogue, statuts, réseaux) pour les fronts ----
 @app.get("/api/config")
 def api_config():
@@ -418,6 +458,28 @@ async def create_lead(req: Request):
     svc = SERVICES[service]["label"]
     notify("admin", 0, f"Nouveau client via {affiliate_label(a)} : {client} — {svc}", lead_id)
     notify("affiliate", a["id"], f"{client} a rempli ton formulaire — en attente de validation.", lead_id)
+    return {"ok": True}
+
+@app.post("/api/recruit")
+async def create_recruit(req: Request):
+    d = await req.json()
+    code = clean(d.get("code"), 12).upper()
+    with db() as c:
+        a = c.execute("SELECT * FROM affiliates WHERE code=? AND actif=1", (code,)).fetchone()
+        if not a:
+            return JSONResponse({"ok": False, "error": "Lien parrain invalide."}, status_code=404)
+        nom = clean(d.get("nom"), 80); prenom = clean(d.get("prenom"), 80)
+        numero = clean(d.get("numero"), 30)
+        momo = clean(d.get("momo_number"), 30); reseau = clean(d.get("momo_reseau"), 30) or RESEAUX[0]
+        msg = clean(d.get("message"), 300)
+        if not (nom or prenom) or not numero:
+            return JSONResponse({"ok": False, "error": "Nom et numéro obligatoires."}, status_code=400)
+        c.execute("""INSERT INTO recruits(parrain_id,nom,prenom,numero,momo_number,momo_reseau,message,status,created)
+                     VALUES(?,?,?,?,?,?,?,'pending',?)""",
+                  (a["id"], nom, prenom, numero, momo, reseau, msg, time.time()))
+    who = (prenom + " " + nom).strip()
+    notify("admin", 0, f"Nouvelle recrue : {who} ({numero}) — parrainé(e) par {affiliate_label(a)}")
+    notify("affiliate", a["id"], f"{who} veut rejoindre via ton lien — en attente de validation NEBULA.")
     return {"ok": True}
 
 # =============================  AUTH  ========================================
@@ -619,6 +681,47 @@ def admin_notifs_read(naff_session: Optional[str] = Cookie(default=None)):
         c.execute("UPDATE notifs SET lu=1 WHERE target_role='admin'")
     return {"ok": True}
 
+@app.get("/api/admin/recruits")
+def admin_recruits(naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        rows = c.execute("""SELECT r.*, a.code pcode, a.nom pnom, a.prenom pprenom
+                            FROM recruits r JOIN affiliates a ON a.id=r.parrain_id
+                            WHERE r.status='pending' ORDER BY r.created DESC""").fetchall()
+    return {"recruits": [{
+        "id": r["id"], "nom": r["nom"], "prenom": r["prenom"], "numero": r["numero"],
+        "momo_number": r["momo_number"], "momo_reseau": r["momo_reseau"], "message": r["message"],
+        "created": r["created"],
+        "parrain": {"code": r["pcode"], "name": (str(r["pprenom"] or "") + " " + str(r["pnom"] or "")).strip() or r["pcode"]},
+    } for r in rows]}
+
+@app.post("/api/admin/recruits/{rid}/approve")
+def admin_recruit_approve(rid: int, naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        r = c.execute("SELECT * FROM recruits WHERE id=? AND status='pending'", (rid,)).fetchone()
+        if not r:
+            return JSONResponse({"ok": False}, status_code=404)
+        pin = "".join(secrets.choice("0123456789") for _ in range(4))
+        code = new_code(c)
+        c.execute("""INSERT INTO affiliates(code,nom,prenom,momo_number,momo_reseau,pin,accent,actif,created,parrain_id)
+                     VALUES(?,?,?,?,?,?,?,1,?,?)""",
+                  (code, r["nom"], r["prenom"], r["momo_number"], r["momo_reseau"], hash_pw(pin), "#7b5cff", time.time(), r["parrain_id"]))
+        c.execute("UPDATE recruits SET status='approved' WHERE id=?", (rid,))
+    who = (str(r["prenom"] or "") + " " + str(r["nom"] or "")).strip()
+    notify("affiliate", r["parrain_id"], f"Ta recrue {who} est validée — elle rejoint ton réseau (N1).")
+    return {"ok": True, "code": code, "pin": pin}
+
+@app.post("/api/admin/recruits/{rid}/reject")
+def admin_recruit_reject(rid: int, naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        c.execute("UPDATE recruits SET status='rejected' WHERE id=?", (rid,))
+    return {"ok": True}
+
 # ===========================  AFFILIÉ  ======================================
 def need_affiliate(naff_session) -> Optional[int]:
     ac = actor(naff_session)
@@ -640,7 +743,7 @@ def partner_me(naff_session: Optional[str] = Cookie(default=None)):
         "code": a["code"], "nom": a["nom"], "prenom": a["prenom"],
         "name": affiliate_label(a), "accent": a["accent"],
         "momo_number": a["momo_number"], "momo_reseau": a["momo_reseau"],
-        "stats": s,
+        "stats": s, "network": network_of(aid),
     }
 
 @app.get("/api/partenaire/leads")

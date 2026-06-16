@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Devenir partenaire — NEBULA Agency</title>
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<div class="bg-orbs"></div>
+<div class="bg-grain"></div>
+
+<div class="gate">
+  <div class="box">
+    <div id="form-wrap">
+      <div class="center mb24">
+        <div class="flex" style="justify-content:center;margin-bottom:18px">
+          <div style="width:50px;height:50px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#07060e;font-weight:700;font-family:'Space Grotesk';font-size:1.3rem;box-shadow:var(--glow)">N</div>
+        </div>
+        <span class="eyebrow"><span class="dot"></span>Programme partenaires NEBULA</span>
+        <h1 class="big mt16" style="font-size:clamp(1.8rem,5vw,2.6rem)">Deviens partenaire.</h1>
+        <p class="lead mt16" id="intro"><b id="who" style="color:var(--ink)">…</b> t'invite à rejoindre NEBULA. Vends des vitrines, monte en rang, encaisse — sans stock ni capital.</p>
+      </div>
+
+      <div class="card glow"><div class="in">
+        <div class="bento" style="gap:0 14px">
+          <div class="col-6 field"><label>Prénom</label><div class="wrap"><input id="prenom" placeholder="Ton prénom"></div></div>
+          <div class="col-6 field"><label>Nom</label><div class="wrap"><input id="nom" placeholder="Ton nom"></div></div>
+        </div>
+        <div class="field"><label>Numéro WhatsApp</label><div class="wrap"><input id="numero" inputmode="tel" placeholder="Ex : 01 96 74 07 32"></div></div>
+        <div class="bento" style="gap:0 14px">
+          <div class="col-6 field"><label>Numéro Mobile Money</label><div class="wrap"><input id="momo" inputmode="tel" placeholder="Pour être payé"></div></div>
+          <div class="col-6 field"><label>Réseau</label><div class="wrap"><select id="reseau"></select></div></div>
+        </div>
+        <div class="field"><label>Un mot sur toi <span class="faint">(facultatif)</span></label><div class="wrap"><textarea id="message" placeholder="Pourquoi tu veux rejoindre, ce que tu fais…"></textarea></div></div>
+        <button class="btn primary block mt8" id="go">Envoyer ma candidature<span class="ico" id="a-go"></span></button>
+        <p class="center faint mt16" style="font-size:.78rem">NEBULA valide ta candidature et t'envoie tes accès · Cotonou</p>
+      </div></div>
+    </div>
+
+    <div id="done" class="hide">
+      <div class="card glow"><div class="in center" style="padding:42px 26px">
+        <div class="avatar" id="check" style="margin:0 auto 18px;width:64px;height:64px;background:linear-gradient(135deg,var(--ok),#1f9e6e)"></div>
+        <h2 style="font-size:1.7rem">Candidature envoyée !</h2>
+        <p class="lead mt16">Merci ! NEBULA examine ta candidature et te recontacte vite sur WhatsApp avec ton lien et tes accès partenaire.</p>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+<script>
+  const { icon, api, toast, celebrate, esc, el } = NA;
+  document.getElementById('a-go').innerHTML = icon('arrow');
+  document.getElementById('check').innerHTML = icon('check');
+  const code = decodeURIComponent(location.pathname.split('/rejoindre/')[1] || '').toUpperCase();
+
+  (async function init() {
+    try { const cfg = await api('/api/config'); const sel = document.getElementById('reseau'); (cfg.reseaux || ['MTN MoMo']).forEach(r => sel.appendChild(el(`<option>${esc(r)}</option>`))); } catch (e) {}
+    try { const a = await api('/api/affiliate/' + encodeURIComponent(code) + '/public'); document.getElementById('who').textContent = a.name; }
+    catch (e) { document.getElementById('intro').innerHTML = 'Rejoins le programme partenaires NEBULA. Vends des vitrines, monte en rang, encaisse.'; }
+  })();
+
+  document.getElementById('go').onclick = async () => {
+    const body = {
+      code,
+      prenom: document.getElementById('prenom').value.trim(),
+      nom: document.getElementById('nom').value.trim(),
+      numero: document.getElementById('numero').value.trim(),
+      momo_number: document.getElementById('momo').value.trim(),
+      momo_reseau: document.getElementById('reseau').value,
+      message: document.getElementById('message').value.trim(),
+    };
+    if (!(body.prenom || body.nom) || !body.numero) return toast('Nom et numéro obligatoires', 'bad');
+    try {
+      await api('/api/recruit', { body });
+      document.getElementById('form-wrap').classList.add('hide');
+      document.getElementById('done').classList.remove('hide');
+      celebrate();
+    } catch (e) { toast(e.data?.error || "Échec de l'envoi", 'bad'); }
+  };
+</script>
+</body>
+</html>

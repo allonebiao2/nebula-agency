@@ -38,6 +38,8 @@
     <section class="view" id="v-home"></section>
     <!-- MES CLIENTS -->
     <section class="view" id="v-clients"></section>
+    <!-- MON RÉSEAU -->
+    <section class="view" id="v-reseau"></section>
     <!-- MON LIEN -->
     <section class="view" id="v-link"></section>
     <!-- PERSONNALISER -->
@@ -60,6 +62,7 @@ let ME = null, LEADS = [], CFG = null;
 const NAV = [
   { id: 'home', icon: 'chart', label: 'Mon QG' },
   { id: 'clients', icon: 'folder', label: 'Mes clients' },
+  { id: 'reseau', icon: 'users', label: 'Mon réseau' },
   { id: 'link', icon: 'link', label: 'Mon lien' },
   { id: 'perso', icon: 'palette', label: 'Personnaliser' },
 ];
@@ -88,7 +91,7 @@ function switchView(id) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
   document.getElementById('v-' + id).classList.add('on');
   document.querySelectorAll('.nav-i[data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === id));
-  ({ home: renderHome, clients: renderClients, link: renderLink, perso: renderPerso }[id])();
+  ({ home: renderHome, clients: renderClients, reseau: renderReseau, link: renderLink, perso: renderPerso }[id])();
   reveal();
 }
 
@@ -156,6 +159,39 @@ function renderClients() {
   document.getElementById('v-clients').innerHTML = `
     <div class="rv mb16"><span class="eyebrow"><span class="dot"></span>Mes clients</span><h2 class="mt8" style="font-size:1.8rem">Tes clients, en direct</h2>
     <p class="muted mt8">NEBULA met à jour les statuts — tu suis l'évolution ici.</p></div>${html}`;
+}
+
+function renderReseau() {
+  const net = ME.network || { n1: [], n2: [], n1_commission: 0, n2_commission: 0, network_total: 0, n1_count: 0, n2_count: 0 };
+  const link = location.origin + '/rejoindre/' + ME.code;
+  const row = (x, lvl, rate) => `<div class="row" style="grid-template-columns:42px 1fr auto"><div class="avatar">${initials(x.name)}</div><div><div class="ttl">${esc(x.name)} <span class="chip" style="margin-left:6px">${lvl}</span></div><div class="meta">${x.ventes} vente${x.ventes > 1 ? 's' : ''} · ${rate}</div></div><div class="center"><div class="mono" style="color:var(--accent);font-weight:700">${fmt(x.commission)} F</div><div class="meta">pour toi</div></div></div>`;
+  document.getElementById('v-reseau').innerHTML = `
+    <div class="bento">
+      <div class="col-7 rv"><div class="card glow"><div class="in">
+        <span class="eyebrow"><span class="dot"></span>Ton lien de recrutement</span>
+        <h2 class="mt8" style="font-size:1.5rem">Recrute, et touche sur leurs ventes.</h2>
+        <p class="muted mt8 mb16">Partage ce lien : qui le remplit devient ta recrue (après validation NEBULA). Tu gagnes <b style="color:var(--ink)">10%</b> sur tes recrues (N1) et <b style="color:var(--ink)">5%</b> sur leurs recrues (N2).</p>
+        <div class="field"><div class="wrap"><input id="rlk" readonly value="${esc(link)}" style="font-family:JetBrains Mono;font-size:.85rem"></div></div>
+        <div class="flex gap8 wrap">
+          <button class="btn primary" id="rcopy">Copier le lien<span class="ico">${icon('copy')}</span></button>
+          <a class="btn ghost" id="rwa" target="_blank" rel="noopener">Partager sur WhatsApp<span class="ico">${icon('phone')}</span></a>
+        </div>
+      </div></div></div>
+      <div class="col-5 rv"><div class="card"><div class="in">
+        <span class="eyebrow"><span class="dot"></span>Tes gains réseau</span>
+        <div class="stat mt16"><div class="lbl">Commissions de profondeur</div><div class="num accent mono" id="n-net">0</div>
+          <div class="sub">N1 (10%) <span class="mono">${fmt(net.n1_commission)}</span> F · N2 (5%) <span class="mono">${fmt(net.n2_commission)}</span> F</div></div>
+        <div class="flex gap8 mt16 wrap"><span class="chip">${net.n1_count} recrue${net.n1_count > 1 ? 's' : ''} N1</span><span class="chip">${net.n2_count} en N2</span></div>
+      </div></div></div>
+      <div class="col-12 rv"><div class="card"><div class="in">
+        <h3 class="mb16">Tes recrues directes — N1 · 10%</h3>
+        ${net.n1.length ? net.n1.map(x => row(x, 'N1', '10% sur ses ventes')).join('') : `<p class="muted center" style="padding:18px">Aucune recrue encore. Partage ton lien de recrutement pour bâtir ton réseau.</p>`}
+      </div></div></div>
+      ${net.n2.length ? `<div class="col-12 rv"><div class="card"><div class="in"><h3 class="mb16">Ton réseau étendu — N2 · 5%</h3>${net.n2.map(x => row(x, 'N2', '5% sur ses ventes')).join('')}</div></div></div>` : ''}
+    </div>`;
+  countUp(document.getElementById('n-net'), net.network_total, { money: true });
+  document.getElementById('rcopy').onclick = () => { navigator.clipboard?.writeText(link); sound.sfx.cash(); toast('Lien de recrutement copié ✓', 'ok'); };
+  document.getElementById('rwa').href = 'https://wa.me/?text=' + encodeURIComponent('Rejoins le programme partenaires NEBULA avec moi — vends des vitrines digitales et gagne des commissions : ' + link);
 }
 
 function renderLink() {
