@@ -1212,11 +1212,10 @@ document.querySelectorAll('.metric-num,.stat-big').forEach(el=>counterObs.observ
     const p=audio.play();
     if(p&&p.catch){
       p.then(()=>{
+        started=true;
         btn.classList.add('is-playing');
         fadeTo(TARGET_VOL,FADE_MS);
-      }).catch(()=>{
-        // autoplay refusé : on attend une vraie action utilisateur
-      });
+      }).catch(()=>{});
     }
   }
 
@@ -1227,12 +1226,11 @@ document.querySelectorAll('.metric-num,.stat-big').forEach(el=>counterObs.observ
 
   function tryStart(){
     if(started||userMuted)return;
-    started=true;
     play();
   }
 
-  ['click','touchstart','scroll','keydown'].forEach(ev=>{
-    window.addEventListener(ev,tryStart,{once:true,passive:true});
+  ['pointerdown','touchstart','keydown'].forEach(ev=>{
+    window.addEventListener(ev,tryStart,{passive:true});
   });
 
   btn.addEventListener('click',(e)=>{
@@ -1242,10 +1240,12 @@ document.querySelectorAll('.metric-num,.stat-big').forEach(el=>counterObs.observ
       localStorage.setItem(STORAGE_KEY,'playing');
       started=true;
       play();
+      if(window.NEBULA_SFX){window.NEBULA_SFX.muted=false;window.NEBULA_SFX.unlock();window.NEBULA_SFX.play.click();}
     }else{
       userMuted=true;
       localStorage.setItem(STORAGE_KEY,'muted');
       stop();
+      if(window.NEBULA_SFX)window.NEBULA_SFX.muted=true;
     }
   });
 
@@ -1267,7 +1267,7 @@ if(document.getElementById('fc_qr').checked)f.push('Affiche PDF A4');
 if(document.getElementById('fc_maps').checked)f.push('Google Maps');
 if(document.getElementById('fc_avis').checked)f.push('Section avis');
 const msg=['🚀 *NOUVELLE COMMANDE — NEBULA AGENCY*','═══════════════════════════════','','👤 *CONTACT*','• Nom : '+nom,'• WhatsApp : '+tel,'• Marque : '+marque,'• Secteur : '+secteur,'• Ville : '+ville,'','🎯 *PROJET*','• Service : '+niveau,'• Couleurs : '+(couleurs||'À définir ensemble'),'• Logo : '+logo,'• Délai : '+delai,'','✅ *OPTIONS SUPPLÉMENTAIRES*',f.length?f.map(x=>'• '+x).join('\n'):'• Aucune option supplémentaire','','📝 *DESCRIPTION*',desc,'','═══════════════════════════════','📩 Envoyé via nebula-agency.online'].join('\n');
-window.open('https://wa.me/22996740732?text='+encodeURIComponent(msg),'_blank');}
+if(window.NEBULA_SFX)window.NEBULA_SFX.play.cash();window.open('https://wa.me/22996740732?text='+encodeURIComponent(msg),'_blank');}
 </script>
 
 <audio id="nebula-jazz" src="audio/jazz-loop.mp3" loop preload="none"></audio>
@@ -1341,6 +1341,101 @@ window.open('https://wa.me/22996740732?text='+encodeURIComponent(msg),'_blank');
       card.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%');
     },{passive:true});
   });
+})();
+</script>
+
+<!-- ============ SON + INTRO + BORDURE + BANDEAU ============ -->
+<style id="fx-sound-extras">
+/* Intro / rideau d'ouverture */
+#introCurtain{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:22px;background:radial-gradient(120% 120% at 50% 38%,#0a0d1a 0%,#05060d 72%);transition:opacity .8s var(--ease-out-expo),transform .9s var(--ease-out-expo);}
+#introCurtain.out{opacity:0;transform:translateY(-14px);pointer-events:none;}
+.intro-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(1.9rem,7vw,3.1rem);letter-spacing:.04em;background:linear-gradient(110deg,var(--blue2),#fff 40%,var(--violet2) 70%,var(--cyan));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;opacity:0;transform:translateY(14px) scale(.96);animation:introLogo .9s var(--ease-out-expo) .15s forwards;}
+.intro-sub{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--text3);opacity:0;animation:introLogo .8s var(--ease-out-expo) .45s forwards;}
+.intro-line{width:0;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--blue),var(--violet),var(--cyan));box-shadow:0 0 16px rgba(124,92,255,.6);animation:introLine 1.1s var(--ease-out-expo) .3s forwards;}
+@keyframes introLogo{to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes introLine{to{width:210px}}
+/* Bordure lumineuse qui tourne */
+@property --ang{syntax:'<angle>';inherits:false;initial-value:0deg;}
+.fx-glowwrap{position:relative;}
+.fx-glowring{position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:conic-gradient(from var(--ang,0deg),transparent 0 6%,var(--blue) 20%,var(--violet) 38%,var(--cyan) 54%,transparent 66% 100%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.9;animation:fxAngle 5.5s linear infinite;z-index:1;}
+@keyframes fxAngle{to{--ang:360deg}}
+/* Bandeau de confiance défilant */
+.fx-marquee{position:relative;overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(10,13,26,.6),rgba(5,6,13,.55));padding:15px 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);}
+.fx-marquee-track{display:inline-flex;white-space:nowrap;animation:fxMarquee 32s linear infinite;will-change:transform;}
+.fx-marquee:hover .fx-marquee-track{animation-play-state:paused;}
+.fx-marquee-item{display:inline-flex;align-items:center;gap:13px;padding:0 30px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.95rem;color:var(--text2);}
+.fx-marquee-item::before{content:"";width:6px;height:6px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--cyan));box-shadow:0 0 10px rgba(79,111,255,.8);flex-shrink:0;}
+@keyframes fxMarquee{to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.fx-glowring,.fx-marquee-track{animation:none}.intro-logo,.intro-sub,.intro-line{animation-duration:.01ms}}
+</style>
+<script>
+(function(){
+  /* ---- Bruitage synthétisé (Web Audio · iOS-safe · boost mobile) ---- */
+  var ctx,master,comp;
+  var muted=localStorage.getItem('nebula_audio_state')==='muted';
+  var isMobile=matchMedia('(max-width:860px)').matches;
+  function ensure(){
+    if(ctx)return; var AC=window.AudioContext||window.webkitAudioContext; if(!AC)return;
+    ctx=new AC(); comp=ctx.createDynamicsCompressor();
+    master=ctx.createGain(); master.gain.value=isMobile?0.5:0.34; master.connect(comp); comp.connect(ctx.destination);
+    var b=ctx.createBuffer(1,1,22050),s=ctx.createBufferSource(); s.buffer=b; s.connect(ctx.destination); s.start(0);
+  }
+  function tone(o){
+    if(!ctx||muted)return;
+    var osc=ctx.createOscillator(),gn=ctx.createGain(),now=ctx.currentTime;
+    osc.type=o.t||'sine'; osc.frequency.setValueAtTime(o.f,now);
+    if(o.g)osc.frequency.exponentialRampToValueAtTime(o.g,now+(o.d||0.12));
+    gn.gain.setValueAtTime(0,now); gn.gain.linearRampToValueAtTime(o.v||0.22,now+(o.a||0.006));
+    gn.gain.exponentialRampToValueAtTime(0.0001,now+(o.d||0.12));
+    osc.connect(gn); gn.connect(master); osc.start(now); osc.stop(now+(o.d||0.12)+0.03);
+  }
+  var SFX={
+    tap:function(){tone({f:300,g:470,d:0.06,v:0.13,t:'triangle'});},
+    click:function(){tone({f:340,g:640,d:0.1,v:0.2,t:'sine'});},
+    nav:function(){tone({f:240,g:680,d:0.16,v:0.16,t:'sine'});},
+    cash:function(){[988,1319].forEach(function(f,i){setTimeout(function(){tone({f:f,d:0.13,v:0.2,t:'square'});},i*85);});}
+  };
+  function unlock(){ensure(); if(ctx&&ctx.state==='suspended')ctx.resume();}
+  ['pointerdown','touchstart','keydown'].forEach(function(ev){window.addEventListener(ev,unlock,{once:true,passive:true});});
+  window.NEBULA_SFX={get muted(){return muted;},set muted(v){muted=v;localStorage.setItem('nebula_audio_state',v?'muted':'playing');},play:SFX,unlock:unlock};
+  document.addEventListener('pointerdown',function(e){
+    if(muted)return; ensure();
+    var t=e.target.closest('a,button,.svc,.port-card,.why-item,.stat-box,label,select,input,textarea');
+    if(!t||t.id==='audioToggle')return;
+    if(t.matches('.nav-cta,.btn-primary,.svc-cta,.btn-submit,.vendora-fab,.nav-ov-cta'))SFX.click();
+    else if(t.id==='navBurger'||t.closest('.nav-overlay'))SFX.nav();
+    else SFX.tap();
+  },{passive:true});
+
+  /* ---- Rideau d'intro (1x par session) ---- */
+  try{
+    if(!sessionStorage.getItem('nebula_intro')){
+      sessionStorage.setItem('nebula_intro','1');
+      var c=document.createElement('div'); c.id='introCurtain';
+      c.innerHTML='<div class="intro-logo">NEBULA AGENCY</div><div class="intro-line"></div><div class="intro-sub">Présence digitale premium</div>';
+      document.body.appendChild(c); document.body.style.overflow='hidden';
+      setTimeout(function(){c.classList.add('out');document.body.style.overflow='';},1500);
+      setTimeout(function(){if(c&&c.parentNode)c.parentNode.removeChild(c);},2500);
+    }
+  }catch(e){}
+
+  /* ---- Bordure lumineuse qui tourne (carte service phare) ---- */
+  try{
+    var feat=document.querySelector('.services-grid .svc');
+    if(feat){feat.classList.add('fx-glowwrap');var ring=document.createElement('i');ring.className='fx-glowring';feat.insertBefore(ring,feat.firstChild);}
+  }catch(e){}
+
+  /* ---- Bandeau de confiance défilant (après le hero) ---- */
+  try{
+    var hero=document.querySelector('section.hero');
+    if(hero){
+      var items=['Livraison en 5 à 7 jours','Paiement Mobile Money','WhatsApp intégré','100% responsive mobile','Sans abonnement caché','Conçu à Cotonou','Support réactif sous 2h','Vous gardez 100% de vos ventes'];
+      var one=items.map(function(t){return '<span class="fx-marquee-item">'+t+'</span>';}).join('');
+      var m=document.createElement('div'); m.className='fx-marquee';
+      m.innerHTML='<div class="fx-marquee-track">'+one+one+'</div>';
+      hero.insertAdjacentElement('afterend',m);
+    }
+  }catch(e){}
 })();
 </script>
 
