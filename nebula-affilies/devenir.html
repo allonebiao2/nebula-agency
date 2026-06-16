@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Devenir partenaire — NEBULA Agency</title>
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<div class="bg-orbs"></div>
+<div class="bg-grain"></div>
+
+<div class="gate">
+  <div class="box" style="max-width:640px">
+
+    <!-- ÉTAPE 1 — FORMULAIRE -->
+    <div id="form-wrap">
+      <div class="center mb24">
+        <div class="flex" style="justify-content:center;margin-bottom:18px">
+          <div style="width:52px;height:52px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#07060e;font-weight:700;font-family:'Space Grotesk';font-size:1.35rem;box-shadow:var(--glow)">N</div>
+        </div>
+        <span class="eyebrow"><span class="dot"></span>Programme partenaires NEBULA</span>
+        <h1 class="big mt16" style="font-size:clamp(1.8rem,5vw,2.7rem)">Deviens partenaire NEBULA.</h1>
+        <p class="lead mt16">Présente nos vitrines digitales aux commerçants, monte en rang, encaisse des commissions — <b style="color:var(--ink)">sans stock ni capital</b>.</p>
+      </div>
+
+      <div class="card glow"><div class="in">
+        <div class="bento" style="gap:0 14px">
+          <div class="col-6 field"><label>Prénom</label><div class="wrap"><input id="prenom" placeholder="Ton prénom"></div></div>
+          <div class="col-6 field"><label>Nom</label><div class="wrap"><input id="nom" placeholder="Ton nom"></div></div>
+        </div>
+        <div class="bento" style="gap:0 14px">
+          <div class="col-6 field"><label>Numéro WhatsApp</label><div class="wrap"><input id="numero" inputmode="tel" placeholder="Ex : 01 96 74 07 32"></div></div>
+          <div class="col-6 field"><label>Ville</label><div class="wrap"><input id="ville" placeholder="Cotonou, Calavi…"></div></div>
+        </div>
+        <div class="field"><label>Email <span class="faint">(facultatif)</span></label><div class="wrap"><input id="email" type="email" placeholder="pour recevoir tes accès"></div></div>
+        <div class="bento" style="gap:0 14px">
+          <div class="col-6 field"><label>Numéro Mobile Money</label><div class="wrap"><input id="momo" inputmode="tel" placeholder="Pour être payé"></div></div>
+          <div class="col-6 field"><label>Réseau</label><div class="wrap"><select id="reseau"></select></div></div>
+        </div>
+        <div class="field"><label>Ton expérience en vente</label><div class="wrap"><select id="experience">
+          <option value="Débutant motivé">Je débute, mais je suis motivé(e)</option>
+          <option value="Un peu d'expérience">J'ai déjà vendu un peu</option>
+          <option value="Vendeur régulier">Je vends régulièrement / commercial</option>
+        </select></div></div>
+        <div class="field"><label>Où comptes-tu promouvoir ? <span class="faint">(facultatif)</span></label><div class="wrap"><input id="canaux" placeholder="WhatsApp, Facebook, en personne, mon entourage…"></div></div>
+        <div class="field"><label>Un mot sur toi <span class="faint">(facultatif)</span></label><div class="wrap"><textarea id="motivation" placeholder="Pourquoi tu veux rejoindre NEBULA, ce que tu fais déjà…"></textarea></div></div>
+        <div class="field"><label>Code de ton parrain <span class="faint">(si quelqu'un t'a invité)</span></label><div class="wrap"><input id="parrain" placeholder="Ex : DEMO" style="text-transform:uppercase;letter-spacing:.15em"></div></div>
+        <button class="btn primary block mt8" id="next">Continuer vers les conditions<span class="ico" id="a-next"></span></button>
+        <p class="center faint mt16" style="font-size:.78rem">NEBULA examine ta candidature et t'envoie tes accès partenaire · Cotonou, Bénin</p>
+      </div></div>
+    </div>
+
+    <!-- ÉTAPE 2 — CONDITIONS GÉNÉRALES -->
+    <div id="terms-wrap" class="hide">
+      <div class="center mb24">
+        <div class="flex" style="justify-content:center;margin-bottom:14px"><div class="avatar" id="shield-ic" style="width:54px;height:54px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#07060e"></div></div>
+        <span class="eyebrow"><span class="dot"></span>Dernière étape · cadre légal</span>
+        <h2 class="mt16" style="font-size:1.7rem">Conditions générales</h2>
+        <p class="muted mt8">Lis-les, puis coche la case pour valider ta candidature.</p>
+      </div>
+      <div class="card glow"><div class="in">
+        <div class="cgu-box" id="cgu"><p class="muted center" style="padding:30px">Chargement…</p></div>
+        <label class="accept-row" id="accept-row">
+          <span class="cbx" id="cbx"></span>
+          <span>J'ai lu et j'accepte les <b style="color:var(--ink)">Conditions Générales du Programme Partenaires NEBULA</b>.</span>
+        </label>
+        <div class="flex gap8 mt16 wrap">
+          <button class="btn ghost" id="back">← Modifier ma fiche</button>
+          <button class="btn primary grow" id="submit" disabled style="flex:1">Envoyer ma candidature<span class="ico" id="a-go"></span></button>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- SUCCÈS -->
+    <div id="done" class="hide">
+      <div class="card glow"><div class="in center" style="padding:46px 26px">
+        <div class="avatar" id="check" style="margin:0 auto 18px;width:66px;height:66px;background:linear-gradient(135deg,var(--ok),#1f9e6e)"></div>
+        <h2 style="font-size:1.8rem">Candidature envoyée !</h2>
+        <p class="lead mt16">Merci ! NEBULA examine ta candidature et te recontacte vite sur WhatsApp avec ton lien et tes accès partenaire.</p>
+        <a class="btn ghost mt24" href="/">Retour à l'accueil</a>
+      </div></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+<script>
+  const { icon, api, toast, celebrate, esc, el, sound } = NA;
+  let accepted = false, TERMS = null;
+  ['a-next','a-go'].forEach(id => document.getElementById(id).innerHTML = icon('arrow'));
+  document.getElementById('shield-ic').innerHTML = icon('shield');
+  document.getElementById('check').innerHTML = icon('check');
+
+  (async function init() {
+    try { const cfg = await api('/api/config'); const sel = document.getElementById('reseau'); (cfg.reseaux || ['MTN MoMo']).forEach(r => sel.appendChild(el(`<option>${esc(r)}</option>`))); } catch (e) {}
+    // pré-remplit le parrain si on arrive via ?parrain=CODE ou /devenir?p=CODE
+    const p = new URLSearchParams(location.search).get('parrain') || new URLSearchParams(location.search).get('p');
+    if (p) document.getElementById('parrain').value = p.toUpperCase();
+    try { TERMS = await api('/api/terms'); document.getElementById('cgu').innerHTML = TERMS.html; } catch (e) { document.getElementById('cgu').innerHTML = '<p class="muted">Conditions indisponibles, réessaie.</p>'; }
+  })();
+
+  function collect() {
+    return {
+      prenom: document.getElementById('prenom').value.trim(),
+      nom: document.getElementById('nom').value.trim(),
+      numero: document.getElementById('numero').value.trim(),
+      ville: document.getElementById('ville').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      momo_number: document.getElementById('momo').value.trim(),
+      momo_reseau: document.getElementById('reseau').value,
+      experience: document.getElementById('experience').value,
+      canaux: document.getElementById('canaux').value.trim(),
+      motivation: document.getElementById('motivation').value.trim(),
+      parrain_code: document.getElementById('parrain').value.trim().toUpperCase(),
+    };
+  }
+
+  document.getElementById('next').onclick = () => {
+    const d = collect();
+    if (!(d.prenom || d.nom) || !d.numero) return toast('Prénom/nom et numéro WhatsApp obligatoires', 'bad');
+    sound.sfx.tab();
+    document.getElementById('form-wrap').classList.add('hide');
+    document.getElementById('terms-wrap').classList.remove('hide');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  document.getElementById('back').onclick = () => {
+    sound.sfx.click();
+    document.getElementById('terms-wrap').classList.add('hide');
+    document.getElementById('form-wrap').classList.remove('hide');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  document.getElementById('accept-row').onclick = () => {
+    accepted = !accepted;
+    document.getElementById('cbx').classList.toggle('on', accepted);
+    document.getElementById('submit').disabled = !accepted;
+    sound.sfx.click();
+  };
+
+  document.getElementById('submit').onclick = async () => {
+    if (!accepted) return toast('Coche la case pour accepter les conditions', 'bad');
+    const body = collect(); body.accept = true;
+    try {
+      await api('/api/candidature', { body });
+      document.getElementById('terms-wrap').classList.add('hide');
+      document.getElementById('done').classList.remove('hide');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      celebrate();
+    } catch (e) { toast(e.data?.error || "Échec de l'envoi", 'bad'); }
+  };
+</script>
+</body>
+</html>

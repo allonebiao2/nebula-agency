@@ -45,10 +45,17 @@
     <section class="view" id="v-reseau"></section>
     <!-- MON LIEN -->
     <section class="view" id="v-link"></section>
+    <!-- DOCUMENTATION -->
+    <section class="view" id="v-docs"></section>
+    <!-- PUBLICATION -->
+    <section class="view" id="v-publi"></section>
     <!-- PERSONNALISER -->
     <section class="view" id="v-perso"></section>
   </main>
 </div>
+
+<!-- Lecteur de document -->
+<div class="scrim" id="doc-scrim"><div class="card modal glow"><div class="in" id="doc-in"></div></div></div>
 
 <!-- Notifications -->
 <div class="scrim" id="notif-scrim"><div class="card modal"><div class="in">
@@ -68,6 +75,8 @@ const NAV = [
   { id: 'clients', icon: 'folder', label: 'Mes clients' },
   { id: 'reseau', icon: 'users', label: 'Mon réseau' },
   { id: 'link', icon: 'link', label: 'Mon lien' },
+  { id: 'docs', icon: 'doc', label: 'Documentation' },
+  { id: 'publi', icon: 'megaphone', label: 'Publication' },
   { id: 'perso', icon: 'palette', label: 'Personnaliser' },
 ];
 const SWATCHES = ['#7b5cff','#22d3ee','#36f5a0','#e6c34c','#ff5c7a','#4c8cff','#ff8a3c','#d957ff'];
@@ -87,6 +96,8 @@ const TOUR = [
   { icon: 'folder', title: 'Mes clients', text: 'Les commerçants que tu as amenés. NEBULA met à jour les statuts (en cours, terminé) et le paiement — tu suis tout en direct.' },
   { icon: 'users', title: 'Mon réseau', text: 'Recrute des partenaires avec ton <b>lien de recrutement</b>. Tu gagnes <b>10%</b> sur leurs ventes (N1) et <b>5%</b> sur celles de leurs recrues (N2). Ton arbre est ici.' },
   { icon: 'link', title: 'Mon lien', text: 'Ton lien magique à partager sur WhatsApp : un commerçant le remplit → il devient ton client. Plus tu partages, plus tu gagnes.' },
+  { icon: 'doc', title: 'Documentation', text: 'Tes <b>munitions de vente</b> : guides, fiches produits, argumentaires, réponses aux objections. NEBULA les met à jour — tu as toujours la dernière version. Lis-les pour exceller.' },
+  { icon: 'megaphone', title: 'Publication', text: 'Des <b>contenus prêts à poster</b> (textes, visuels, vidéos, scripts) sur WhatsApp, Facebook, Instagram… Copie, télécharge, partage — et fais venir les clients.' },
   { icon: 'palette', title: 'Personnaliser', text: 'Choisis la couleur de ton espace et ton pseudo de joueur (visible au classement).' },
   { icon: 'check', title: 'À toi de jouer', text: 'Va dans <b>Mon lien</b> et partage-le maintenant — ta première commission t\'attend ! Tu peux rouvrir ce guide via le « ? » en haut.' },
 ];
@@ -106,7 +117,7 @@ function switchView(id) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
   document.getElementById('v-' + id).classList.add('on');
   document.querySelectorAll('.nav-i[data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === id));
-  ({ home: renderHome, gains: renderGains, clients: renderClients, reseau: renderReseau, link: renderLink, perso: renderPerso }[id])();
+  ({ home: renderHome, gains: renderGains, clients: renderClients, reseau: renderReseau, link: renderLink, docs: renderDocs, publi: renderPubli, perso: renderPerso }[id])();
   reveal();
 }
 
@@ -324,6 +335,101 @@ function renderPerso() {
   });
   document.getElementById('t-snd').onclick = () => { sound.toggle(); renderPerso(); };
   document.getElementById('t-amb').onclick = () => { sound.toggleAmbient(); renderPerso(); };
+}
+
+/* ---- DOCUMENTATION ---- */
+let DOCS = [], DOC_CAT = 'Tous';
+function isNew(ts) { return (Date.now() / 1000 - ts) < 7 * 86400; }
+const DOC_ICON = { note: 'doc', pdf: 'download', link: 'link' };
+async function renderDocs() {
+  let d; try { d = await api('/api/partenaire/documents'); } catch (e) { return; }
+  DOCS = d.documents;
+  const counts = {}; DOCS.forEach(x => counts[x.category] = (counts[x.category] || 0) + 1);
+  const cats = ['Tous', ...d.categories];
+  const tabs = cats.map(c => `<div class="cat-tab${c === DOC_CAT ? ' on' : ''}" data-cat="${esc(c)}">${esc(c)}${c !== 'Tous' && counts[c] ? ` · ${counts[c]}` : ''}</div>`).join('');
+  const items = DOCS.filter(x => DOC_CAT === 'Tous' || x.category === DOC_CAT);
+  const list = items.length ? items.map(docCard).join('') : `<div class="card"><div class="in center" style="padding:36px"><p class="muted">Rien dans cette catégorie pour l'instant.</p></div></div>`;
+  document.getElementById('v-docs').innerHTML = `
+    <div class="rv mb16"><span class="eyebrow"><span class="dot"></span>Documentation</span><h2 class="mt8" style="font-size:1.8rem">Pour mieux vendre & exceller</h2>
+    <p class="muted mt8">Guides, fiches produits, argumentaires. NEBULA les met à jour — tu as toujours la dernière version.</p></div>
+    <div class="cat-tabs">${tabs}</div>
+    <div id="doc-list">${list}</div>`;
+  document.querySelectorAll('.cat-tab').forEach(t => t.onclick = () => { DOC_CAT = t.dataset.cat; sound.sfx.tab(); renderDocs(); });
+  items.forEach(x => { const b = document.getElementById('doc-open-' + x.id); if (b) b.onclick = () => openDoc(x.id); });
+}
+function docCard(x) {
+  const act = x.kind === 'note'
+    ? `<button class="btn sm primary" id="doc-open-${x.id}">Lire<span class="ico">${icon('arrow')}</span></button>`
+    : (x.kind === 'pdf' && x.has_file)
+      ? `<a class="btn sm primary" href="/api/doc/${x.id}" target="_blank" rel="noopener">Télécharger<span class="ico">${icon('download')}</span></a>`
+      : (x.url ? `<a class="btn sm primary" href="${esc(x.url)}" target="_blank" rel="noopener">Ouvrir<span class="ico">${icon('arrow')}</span></a>` : '');
+  return `<div class="rv"><div class="card"><div class="in">
+    <div class="flex between wrap" style="gap:14px">
+      <div class="flex" style="gap:13px;align-items:center">
+        <div class="dico">${icon(DOC_ICON[x.kind] || 'doc')}</div>
+        <div><div class="ttl" style="font-size:1.05rem">${esc(x.title)} ${isNew(x.updated) ? '<span class="new-badge">nouveau</span>' : ''}</div>
+          <div class="meta">${esc(x.category)} · maj ${ago(x.updated)}</div>
+          ${x.description ? `<div class="meta mt8">${esc(x.description)}</div>` : ''}</div>
+      </div>
+      <div class="flex" style="align-items:center">${act}</div>
+    </div>
+  </div></div></div>`;
+}
+function openDoc(id) {
+  const x = DOCS.find(d => d.id === id); if (!x) return;
+  sound.sfx.open();
+  document.getElementById('doc-in').innerHTML = `
+    <div class="flex between mb16"><div><span class="eyebrow"><span class="dot"></span>${esc(x.category)}</span><h3 class="mt8">${esc(x.title)}</h3></div>
+      <button class="icon-btn" id="doc-x" style="width:34px;height:34px">${icon('close')}</button></div>
+    <div class="doc-read">${x.body || '<p class="muted">Document vide.</p>'}</div>`;
+  document.getElementById('doc-scrim').classList.add('on');
+  document.getElementById('doc-x').onclick = () => document.getElementById('doc-scrim').classList.remove('on');
+}
+document.getElementById('doc-scrim').onclick = e => { if (e.target.id === 'doc-scrim') e.target.classList.remove('on'); };
+
+/* ---- PUBLICATION ---- */
+let PUBS = [];
+const PUB_ICON = { post: 'megaphone', image: 'image', video: 'video', script: 'edit' };
+async function renderPubli() {
+  let d; try { d = await api('/api/partenaire/publications'); } catch (e) { return; }
+  PUBS = d.publications;
+  const list = PUBS.length ? PUBS.map(pubCard).join('')
+    : `<div class="card"><div class="in center" style="padding:36px"><p class="muted">Aucun contenu pour l'instant. NEBULA publiera bientôt des posts, visuels et scripts à partager.</p></div></div>`;
+  document.getElementById('v-publi').innerHTML = `
+    <div class="rv mb16"><span class="eyebrow"><span class="dot"></span>Publication</span><h2 class="mt8" style="font-size:1.8rem">Contenus prêts à poster</h2>
+    <p class="muted mt8">Copie le texte, télécharge le visuel, partage. Du contenu pro pour alimenter tes réseaux et vendre.</p></div>
+    <div id="pub-list">${list}</div>`;
+  PUBS.forEach(wirePub);
+}
+function pubCard(x) {
+  const plats = x.platforms.map(p => `<span class="plat-chip">${esc(p)}</span>`).join(' ');
+  const media = (x.media_kind === 'image' && x.has_media)
+    ? `<div style="margin-top:12px"><img src="/api/pub/${x.id}/media" alt="" style="max-width:100%;border-radius:14px;border:1px solid var(--hair)"></div>`
+    : (x.media_kind === 'video' && x.has_media)
+      ? `<a class="btn sm ghost" style="margin-top:12px" href="/api/pub/${x.id}/media" target="_blank" rel="noopener">Télécharger la vidéo<span class="ico">${icon('download')}</span></a>`
+      : (x.media_url ? `<a class="btn sm ghost" style="margin-top:12px" href="${esc(x.media_url)}" target="_blank" rel="noopener">Ouvrir le média<span class="ico">${icon('arrow')}</span></a>` : '');
+  return `<div class="rv"><div class="card"><div class="in">
+    <div class="flex" style="gap:13px;align-items:flex-start">
+      <div class="dico">${icon(PUB_ICON[x.ptype] || 'megaphone')}</div>
+      <div class="grow"><div class="ttl" style="font-size:1.05rem">${esc(x.title)} ${isNew(x.updated) ? '<span class="new-badge">nouveau</span>' : ''}</div>
+        <div class="meta">${esc(x.type_label)} · maj ${ago(x.updated)}</div>
+        ${plats ? `<div class="flex gap8 mt8 wrap">${plats}</div>` : ''}</div>
+    </div>
+    ${x.body ? `<div class="pub-body">${esc(x.body)}</div>` : ''}
+    ${media}
+    ${x.script ? `<details style="margin-top:12px"><summary class="muted" style="cursor:pointer;font-size:.85rem">Voir le script détaillé</summary><div class="pub-body" style="margin-top:8px">${esc(x.script)}</div></details>` : ''}
+    <div class="divider"></div>
+    <div class="flex gap8 wrap">
+      ${x.body ? `<button class="btn sm primary" data-copy="${x.id}">Copier le texte<span class="ico">${icon('copy')}</span></button>` : ''}
+      ${x.body ? `<a class="btn sm ghost" data-wa="${x.id}" target="_blank" rel="noopener">Partager WhatsApp<span class="ico">${icon('phone')}</span></a>` : ''}
+      ${x.script ? `<button class="btn sm ghost" data-copys="${x.id}">Copier le script<span class="ico">${icon('edit')}</span></button>` : ''}
+    </div>
+  </div></div></div>`;
+}
+function wirePub(x) {
+  const cp = document.querySelector(`[data-copy="${x.id}"]`); if (cp) cp.onclick = () => { navigator.clipboard?.writeText(x.body); sound.sfx.cash(); toast('Texte copié ✓', 'ok'); };
+  const cs = document.querySelector(`[data-copys="${x.id}"]`); if (cs) cs.onclick = () => { navigator.clipboard?.writeText(x.script); sound.sfx.click(); toast('Script copié ✓', 'ok'); };
+  const wa = document.querySelector(`[data-wa="${x.id}"]`); if (wa) wa.href = 'https://wa.me/?text=' + encodeURIComponent(x.body || '');
 }
 
 /* ---- notifications ---- */

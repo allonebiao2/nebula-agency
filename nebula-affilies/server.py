@@ -24,7 +24,7 @@ import os, json, time, pathlib, sqlite3, hmac, hashlib, base64, secrets, re, thr
 from typing import Any, Dict, List, Optional, Tuple
 
 import httpx
-from fastapi import FastAPI, Request, Response, Cookie
+from fastapi import FastAPI, Request, Response, Cookie, UploadFile, File, Form
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -125,6 +125,50 @@ DEPTH_N2 = 0.05   # sur les ventes des recrues de tes recrues
 # Réseaux Mobile Money du Bénin
 RESEAUX = ["MTN MoMo", "Moov Money", "Celtiis Cash"]
 
+# ---- Documentation & Publication (bibliothèques gérées par l'admin) ----
+UP_DIR = DATA_DIR / "uploads"
+UP_DIR.mkdir(parents=True, exist_ok=True)
+DOC_CATEGORIES = ["Vente", "Formation", "Produits", "Juridique", "Marketing", "Autre"]
+PLATFORMS = ["WhatsApp", "Facebook", "Instagram", "TikTok", "Statut/Story", "Autre"]
+PUB_TYPES = {"post": "Publication", "image": "Visuel", "video": "Vidéo", "script": "Script"}
+
+# ---- Conditions Générales du Programme Partenaires (acceptation obligatoire) ----
+TERMS_VERSION = "1.0"   # incrémenter à chaque révision -> ré-acceptation tracée
+TERMS_HTML = """
+<h3>Conditions Générales du Programme Partenaires NEBULA Agency</h3>
+<p class="faint">Version 1.0 — Cotonou, Bénin. En soumettant ta candidature, tu reconnais avoir lu et accepté l'intégralité des présentes conditions.</p>
+
+<h4>1. Objet</h4>
+<p>Les présentes conditions régissent la relation entre <b>NEBULA Agency</b> (« NEBULA ») et toute personne admise comme <b>partenaire apporteur d'affaires</b> (« le Partenaire »). Le Partenaire présente les produits et services de NEBULA (vitrines digitales, catalogues, fiches Google, avatars IA et services associés) à des clients potentiels, en échange de commissions.</p>
+
+<h4>2. Adhésion</h4>
+<p>L'adhésion est <b>gratuite</b> et soumise à validation de NEBULA, qui reste libre d'accepter ou de refuser une candidature. À la validation, le Partenaire reçoit un code d'accès personnel et un code PIN, strictement personnels et confidentiels.</p>
+
+<h4>3. Statut du Partenaire</h4>
+<p>Le Partenaire agit en <b>professionnel indépendant</b>. Les présentes ne créent <b>aucun contrat de travail</b>, ni mandat de représentation légale, ni société entre les parties. Le Partenaire ne peut ni engager NEBULA, ni encaisser de paiement au nom de NEBULA, ni promettre des prestations non prévues.</p>
+
+<h4>4. Commissions</h4>
+<p>La commission directe du Partenaire dépend de son <b>palier mensuel</b> (de 25% à 35% selon le nombre de ventes du mois). Le Partenaire perçoit également une commission de <b>profondeur</b> sur son réseau : <b>10% (Niveau&nbsp;1)</b> sur les ventes de ses recrues directes et <b>5% (Niveau&nbsp;2)</b> sur celles de leurs recrues. Une commission n'est due que lorsque le <b>client a effectivement payé</b> NEBULA. Le versement se fait par Mobile Money sur le numéro déclaré par le Partenaire, après réclamation et validation.</p>
+
+<h4>5. Obligations & éthique</h4>
+<p>Le Partenaire s'engage à représenter NEBULA avec honnêteté : pas de fausses promesses, pas de prix inventés, pas de spam ni de pratiques trompeuses, respect de l'image de NEBULA et des personnes contactées. Tout manquement peut entraîner la suspension ou l'exclusion.</p>
+
+<h4>6. Propriété intellectuelle</h4>
+<p>Les documents, visuels, vidéos et scripts mis à disposition restent la propriété de NEBULA et sont fournis <b>uniquement</b> pour promouvoir ses offres. Toute autre utilisation, modification dénaturante ou revente est interdite.</p>
+
+<h4>7. Données personnelles (loi béninoise / APDP)</h4>
+<p>Les informations collectées (identité, contact, Mobile Money) servent uniquement à la gestion du programme et au versement des commissions. Elles ne sont pas cédées à des tiers à des fins commerciales. Le Partenaire peut demander l'accès, la rectification ou l'effacement de ses données.</p>
+
+<h4>8. Durée & résiliation</h4>
+<p>L'adhésion est à durée indéterminée. Chaque partie peut y mettre fin à tout moment. Les commissions dûment acquises sur des ventes déjà payées restent versées. NEBULA peut suspendre un accès en cas de manquement aux présentes.</p>
+
+<h4>9. Modification</h4>
+<p>NEBULA peut faire évoluer les présentes conditions et la grille de commissions. Le Partenaire en est informé ; la poursuite de l'activité vaut acceptation de la version en vigueur.</p>
+
+<h4>10. Droit applicable</h4>
+<p>Les présentes sont régies par le <b>droit béninois</b>. En cas de différend, les parties privilégient un règlement amiable avant toute action.</p>
+"""
+
 # ----------------------------------------------------------------------------
 # Base de données (SQLite — mémoire persistante, tout interconnecté)
 # ----------------------------------------------------------------------------
@@ -186,6 +230,31 @@ def init_db():
             amount REAL,
             status TEXT DEFAULT 'due',           -- 'due' | 'claimed' | 'paid' | 'void'
             created REAL, claimed_at REAL, paid_at REAL)""")
+        c.execute("""CREATE TABLE IF NOT EXISTS candidatures(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nom TEXT, prenom TEXT, email TEXT, numero TEXT, ville TEXT,
+            momo_number TEXT, momo_reseau TEXT,
+            experience TEXT, motivation TEXT, canaux TEXT,
+            parrain_code TEXT DEFAULT '',
+            terms_version TEXT, accepted_at REAL, ip TEXT,
+            status TEXT DEFAULT 'pending',       -- 'pending' | 'approved' | 'rejected'
+            created REAL)""")
+        c.execute("""CREATE TABLE IF NOT EXISTS documents(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT, category TEXT, description TEXT,
+            kind TEXT DEFAULT 'note',            -- 'note' (texte) | 'pdf' (fichier) | 'link'
+            body TEXT DEFAULT '',                -- contenu HTML pour 'note'
+            url TEXT DEFAULT '',                 -- pour 'link'
+            filename TEXT DEFAULT '', size INTEGER DEFAULT 0,
+            updated REAL, created REAL)""")
+        c.execute("""CREATE TABLE IF NOT EXISTS publications(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT, ptype TEXT DEFAULT 'post',   -- post | image | video | script
+            body TEXT DEFAULT '', script TEXT DEFAULT '',
+            platforms TEXT DEFAULT '',               -- csv
+            media_kind TEXT DEFAULT 'none',          -- none | image | video | link
+            media_url TEXT DEFAULT '', filename TEXT DEFAULT '',
+            updated REAL, created REAL)""")
 init_db()
 
 def migrate():
@@ -420,6 +489,74 @@ def earnings_of(aid: int) -> Dict[str, int]:
         g[r["level"]] = g.get(r["level"], 0) + a
     return {k: int(v) for k, v in g.items()}
 
+async def store_upload(up: UploadFile, prefix: str) -> Tuple[str, int]:
+    """Enregistre un fichier uploadé sur le volume et renvoie (nom_stocké, taille)."""
+    safe = re.sub(r"[^a-zA-Z0-9._-]", "_", (up.filename or "fichier"))[:60]
+    name = f"{prefix}_{int(time.time())}_{secrets.token_hex(3)}_{safe}"
+    data = await up.read()
+    (UP_DIR / name).write_bytes(data)
+    return name, len(data)
+
+def seed_content():
+    """Documents & publications de départ (modèles NEBULA pro, immédiatement utiles)."""
+    now = time.time()
+    with db() as c:
+        if not c.execute("SELECT COUNT(*) n FROM documents").fetchone()["n"]:
+            docs = [
+                ("Guide de démarrage du partenaire", "Formation",
+                 "Tes 3 premières ventes, pas à pas.",
+                 "<h4>Bienvenue dans l'équipe NEBULA</h4><p>Ton métier : présenter nos offres à des commerçants et encaisser des commissions. Pas de stock, pas de capital.</p>"
+                 "<h4>1. Récupère ton lien</h4><p>Onglet <b>Mon lien</b> → copie-le. Tout client qui le remplit devient le tien automatiquement.</p>"
+                 "<h4>2. Vise les bons commerçants</h4><ul><li>Boutiques de mode, cosmétiques, pâtisseries, bijoux</li><li>Prestataires (coiffure, déco, événementiel)</li><li>Toute personne qui vend déjà sur WhatsApp</li></ul>"
+                 "<h4>3. Le bon message</h4><p>« Bonjour, j'aide les commerçants à avoir une <b>vitrine digitale pro + QR code</b> pour vendre mieux sur WhatsApp. Je peux vous montrer un exemple ? »</p>"
+                 "<h4>4. Envoie ton lien</h4><p>Le commerçant remplit, NEBULA s'occupe de la réalisation, tu touches ta commission quand il paie. Vise 3 contacts par jour.</p>"),
+                ("Vitrine Digitale + QR — fiche produit & argumentaire", "Produits",
+                 "Le produit phare à 150 000 F.",
+                 "<h4>C'est quoi</h4><p>Un site vitrine moderne (mobile, rapide, élégant) avec galerie, services, témoignages, bouton WhatsApp, + un <b>QR code</b> à coller en boutique et sur les emballages.</p>"
+                 "<h4>Prix</h4><p><b>150 000 FCFA</b>. C'est ton produit le plus rémunérateur.</p>"
+                 "<h4>Pourquoi le commerçant en a besoin</h4><ul><li>Il paraît 10× plus professionnel qu'un concurrent sans site</li><li>Il partage <b>un seul lien</b> au lieu de répéter prix et photos</li><li>Le QR transforme chaque client en visiteur de sa vitrine</li></ul>"
+                 "<h4>Phrase qui marche</h4><p>« Aujourd'hui, un client qui hésite va voir si vous avez une présence sérieuse en ligne. Cette vitrine, c'est votre boutique ouverte 24h/24. »</p>"),
+                ("Catalogue Digital + QR — fiche produit & argumentaire", "Produits",
+                 "Le produit d'appel facile à vendre à 50 000 F.",
+                 "<h4>C'est quoi</h4><p>Un catalogue digital de produits (photos, prix, descriptions) avec QR code. Plus léger que la vitrine, idéal pour démarrer.</p>"
+                 "<h4>Prix</h4><p><b>50 000 FCFA</b> — la porte d'entrée parfaite : petit budget, grand effet.</p>"
+                 "<h4>Argument clé</h4><p>« Au lieu d'envoyer 20 photos une par une sur WhatsApp, vous envoyez <b>un seul lien</b> où tout est rangé, avec les prix. Vos clients commandent plus vite. »</p>"
+                 "<h4>Astuce</h4><p>Beaucoup de commerçants commencent par le catalogue, puis prennent la vitrine. Commence petit, monte ensuite.</p>"),
+                ("Répondre aux objections", "Vente",
+                 "Les 5 phrases qui débloquent une vente.",
+                 "<h4>« C'est trop cher »</h4><p>« Je comprends. Combien vous rapporte <b>un seul</b> nouveau client par semaine ? La vitrine se rembourse en quelques ventes, et elle travaille pour vous tous les jours. »</p>"
+                 "<h4>« Je vais réfléchir »</h4><p>« Bien sûr. Pour vous aider à décider : qu'est-ce qui vous retient — le budget, le moment, ou vous voulez voir un exemple ? »</p>"
+                 "<h4>« J'ai déjà Facebook »</h4><p>« Parfait, on ne le remplace pas, on le renforce : votre vitrine, c'est l'endroit sérieux où vous envoyez les gens depuis Facebook et WhatsApp. »</p>"
+                 "<h4>« Ça marche vraiment ? »</h4><p>Montre un exemple réalisé par NEBULA. Une preuve vaut mille arguments.</p>"
+                 "<h4>« Je n'ai pas le temps »</h4><p>« Justement, vous n'avez rien à faire : vous m'envoyez vos photos et infos, NEBULA s'occupe de tout. »</p>"),
+                ("Tes commissions expliquées", "Formation",
+                 "Paliers, profondeurs, paiement.",
+                 "<h4>Ta commission directe (palier du mois)</h4><ul><li><b>STARTER</b> (1 à 4 ventes/mois) : 25%</li><li><b>SILVER</b> (5 à 9 ventes/mois) : 30%</li><li><b>GOLD</b> (10+ ventes/mois) : 35%</li></ul><p>Remis à zéro chaque mois : plus tu vends dans le mois, plus ton % monte.</p>"
+                 "<h4>Ton réseau (profondeurs)</h4><p>Tu gagnes aussi <b>10%</b> sur les ventes des partenaires que tu recrutes (N1) et <b>5%</b> sur celles de leurs recrues (N2).</p>"
+                 "<h4>Quand es-tu payé ?</h4><p>Dès que ton client a payé NEBULA, ta commission apparaît dans <b>Mes gains</b>. Tu cliques <b>Réclamer</b>, et NEBULA te verse sur ton Mobile Money.</p>"),
+            ]
+            for t, cat, desc, body in docs:
+                c.execute("INSERT INTO documents(title,category,description,kind,body,updated,created) VALUES(?,?,?,'note',?,?,?)",
+                          (t, cat, desc, body, now, now))
+        if not c.execute("SELECT COUNT(*) n FROM publications").fetchone()["n"]:
+            pubs = [
+                ("Script d'approche WhatsApp", "script", "WhatsApp",
+                 "Bonjour 👋 Je travaille avec NEBULA Agency. J'aide les commerçants comme vous à avoir une vitrine digitale professionnelle (+ QR code) pour vendre plus facilement sur WhatsApp. Je peux vous montrer un exemple, sans engagement ?",
+                 "Étape 1 : saluer + qui tu es.\nÉtape 2 : la valeur en 1 phrase (vendre plus facilement).\nÉtape 3 : proposer un exemple (petite demande, facile à accepter).\nÉtape 4 : s'il dit oui → envoie ton lien et un exemple de vitrine."),
+                ("Post de présentation — Facebook", "post", "Facebook",
+                 "Commerçant(e) à Cotonou ? 📲 Offrez à votre business une VITRINE DIGITALE professionnelle + QR code : vos produits, vos prix, votre WhatsApp — tout au même endroit, accessible 24h/24.\n\nÀ partir de 50 000 FCFA (catalogue) — vitrine complète 150 000 FCFA.\nÉcrivez-moi en privé 👇",
+                 ""),
+                ("Légende Instagram", "post", "Instagram",
+                 "Votre boutique mérite mieux qu'un feed. ✨\nUne vitrine digitale pro + QR code pour transformer vos visiteurs en clients.\n\n#Cotonou #Bénin #commerce #digital #QRcode #NEBULA",
+                 ""),
+                ("Script de relance (48h sans réponse)", "script", "WhatsApp",
+                 "Bonjour, je reviens vers vous 🙂 Avez-vous eu le temps de regarder l'exemple de vitrine que je vous ai envoyé ? Je peux répondre à vos questions ou vous montrer une autre réalisation si vous préférez.",
+                 "Reste léger et utile, jamais insistant. Une seule relance polie. Propose de la valeur (un autre exemple), pas de pression."),
+            ]
+            for t, pt, plat, body, script in pubs:
+                c.execute("INSERT INTO publications(title,ptype,body,script,platforms,media_kind,updated,created) VALUES(?,?,?,?,?,'none',?,?)",
+                          (t, pt, body, script, plat, now, now))
+
 def seed():
     with db() as c:
         if c.execute("SELECT COUNT(*) n FROM affiliates").fetchone()["n"]:
@@ -441,6 +578,7 @@ def seed():
                       (aid, nom, prenom, num, svc, msg, st, paye, now - (i+1)*3600, now - (i+1)*1800))
     notify("admin", 0, "Bienvenue dans NEBULA Affiliés — voici un affilié démo (code DEMO).")
 seed()
+seed_content()
 
 # ----------------------------------------------------------------------------
 # App
@@ -472,6 +610,10 @@ def referral_page(code: str):
 @app.get("/rejoindre/{code}", response_class=HTMLResponse)
 def recruit_page(code: str):
     return page("rejoindre.html")
+
+@app.get("/devenir", response_class=HTMLResponse)
+def devenir_page():
+    return page("devenir.html")
 
 # ---- Config publique (catalogue, statuts, réseaux) pour les fronts ----
 @app.get("/api/config")
@@ -958,6 +1100,256 @@ def partner_notifs_read(naff_session: Optional[str] = Cookie(default=None)):
     with db() as c:
         c.execute("UPDATE notifs SET lu=1 WHERE target_role='affiliate' AND target_id=?", (aid,))
     return {"ok": True}
+
+# ==================  CANDIDATURE PUBLIQUE « Devenir partenaire »  ============
+@app.get("/api/terms")
+def api_terms():
+    return {"version": TERMS_VERSION, "html": TERMS_HTML}
+
+@app.post("/api/candidature")
+async def create_candidature(req: Request):
+    d = await req.json()
+    if not d.get("accept"):
+        return JSONResponse({"ok": False, "error": "Tu dois accepter les conditions générales."}, status_code=400)
+    nom = clean(d.get("nom"), 80); prenom = clean(d.get("prenom"), 80)
+    numero = clean(d.get("numero"), 30)
+    if not (nom or prenom) or not numero:
+        return JSONResponse({"ok": False, "error": "Nom et numéro WhatsApp obligatoires."}, status_code=400)
+    email = clean(d.get("email"), 120); ville = clean(d.get("ville"), 80)
+    momo = clean(d.get("momo_number"), 30); reseau = clean(d.get("momo_reseau"), 30) or RESEAUX[0]
+    exp = clean(d.get("experience"), 60); motiv = clean(d.get("motivation"), 600)
+    canaux = clean(d.get("canaux"), 200); parrain = clean(d.get("parrain_code"), 12).upper()
+    ip = (req.headers.get("x-forwarded-for", "").split(",")[0].strip() or (req.client.host if req.client else ""))[:60]
+    with db() as c:
+        c.execute("""INSERT INTO candidatures(nom,prenom,email,numero,ville,momo_number,momo_reseau,
+                     experience,motivation,canaux,parrain_code,terms_version,accepted_at,ip,status,created)
+                     VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?, 'pending', ?)""",
+                  (nom, prenom, email, numero, ville, momo, reseau, exp, motiv, canaux, parrain,
+                   TERMS_VERSION, time.time(), ip, time.time()))
+    who = (prenom + " " + nom).strip()
+    notify("admin", 0, f"Nouvelle candidature partenaire : {who} ({numero}){' · ville ' + ville if ville else ''} — CGU v{TERMS_VERSION} acceptées.")
+    tg_send(f"NEBULA Affiliés — nouvelle candidature partenaire : {who} ({numero}).")
+    return {"ok": True}
+
+@app.get("/api/admin/candidatures")
+def admin_candidatures(naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        rows = c.execute("SELECT * FROM candidatures WHERE status='pending' ORDER BY created DESC").fetchall()
+    return {"candidatures": [{
+        "id": r["id"], "nom": r["nom"], "prenom": r["prenom"], "email": r["email"], "numero": r["numero"],
+        "ville": r["ville"], "momo_number": r["momo_number"], "momo_reseau": r["momo_reseau"],
+        "experience": r["experience"], "motivation": r["motivation"], "canaux": r["canaux"],
+        "parrain_code": r["parrain_code"], "terms_version": r["terms_version"],
+        "accepted_at": r["accepted_at"], "created": r["created"],
+    } for r in rows]}
+
+@app.post("/api/admin/candidatures/{cid}/approve")
+def admin_candidature_approve(cid: int, naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        r = c.execute("SELECT * FROM candidatures WHERE id=? AND status='pending'", (cid,)).fetchone()
+        if not r:
+            return JSONResponse({"ok": False}, status_code=404)
+        parrain_id = 0
+        if r["parrain_code"]:
+            p = c.execute("SELECT id FROM affiliates WHERE code=? AND actif=1", (r["parrain_code"],)).fetchone()
+            if p:
+                parrain_id = p["id"]
+        pin = "".join(secrets.choice("0123456789") for _ in range(4))
+        code = new_code(c)
+        c.execute("""INSERT INTO affiliates(code,nom,prenom,momo_number,momo_reseau,pin,accent,actif,created,parrain_id)
+                     VALUES(?,?,?,?,?,?,?,1,?,?)""",
+                  (code, r["nom"], r["prenom"], r["momo_number"], r["momo_reseau"], hash_pw(pin), "#7b5cff", time.time(), parrain_id))
+        c.execute("UPDATE candidatures SET status='approved' WHERE id=?", (cid,))
+        if parrain_id:
+            who = (str(r["prenom"] or "") + " " + str(r["nom"] or "")).strip()
+            notify("affiliate", parrain_id, f"Ta recrue {who} est validée — elle rejoint ton réseau (N1).")
+    return {"ok": True, "code": code, "pin": pin}
+
+@app.post("/api/admin/candidatures/{cid}/reject")
+def admin_candidature_reject(cid: int, naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        c.execute("UPDATE candidatures SET status='rejected' WHERE id=?", (cid,))
+    return {"ok": True}
+
+# ===========================  DOCUMENTATION (PDF / notes)  ===================
+def doc_public(r: sqlite3.Row) -> Dict[str, Any]:
+    return {"id": r["id"], "title": r["title"], "category": r["category"], "description": r["description"],
+            "kind": r["kind"], "body": r["body"] if r["kind"] == "note" else "",
+            "url": r["url"], "size": r["size"], "has_file": bool(r["filename"]),
+            "updated": r["updated"], "created": r["created"]}
+
+@app.get("/api/partenaire/documents")
+def partner_documents(naff_session: Optional[str] = Cookie(default=None)):
+    if need_affiliate(naff_session) is None:
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        rows = c.execute("SELECT * FROM documents ORDER BY updated DESC").fetchall()
+    return {"documents": [doc_public(r) for r in rows], "categories": DOC_CATEGORIES}
+
+@app.get("/api/admin/documents")
+def admin_documents(naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        rows = c.execute("SELECT * FROM documents ORDER BY updated DESC").fetchall()
+    return {"documents": [doc_public(r) for r in rows], "categories": DOC_CATEGORIES}
+
+@app.post("/api/admin/documents")
+async def admin_doc_save(
+    doc_id: str = Form(""), title: str = Form(...), category: str = Form("Autre"),
+    description: str = Form(""), kind: str = Form("note"), body: str = Form(""),
+    url: str = Form(""), file: Optional[UploadFile] = File(None),
+    naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    title = clean(title, 120)
+    if not title:
+        return JSONResponse({"ok": False, "error": "Titre requis."}, status_code=400)
+    if category not in DOC_CATEGORIES:
+        category = "Autre"
+    fname = ""; size = 0
+    if file is not None and file.filename:
+        fname, size = await store_upload(file, "doc")
+        kind = "pdf"
+    now = time.time()
+    with db() as c:
+        if doc_id and str(doc_id).isdigit():
+            old = c.execute("SELECT * FROM documents WHERE id=?", (int(doc_id),)).fetchone()
+            if old:
+                nf = fname or old["filename"]; ns = size or old["size"]
+                nk = kind if (fname or kind != "pdf") else (old["kind"] if not fname else "pdf")
+                if fname and old["filename"]:
+                    try: (UP_DIR / old["filename"]).unlink()
+                    except Exception: pass
+                c.execute("""UPDATE documents SET title=?,category=?,description=?,kind=?,body=?,url=?,filename=?,size=?,updated=? WHERE id=?""",
+                          (title, category, clean(description, 300), nk, body, clean(url, 400), nf, ns, now, int(doc_id)))
+                return {"ok": True, "id": int(doc_id)}
+        cur = c.execute("""INSERT INTO documents(title,category,description,kind,body,url,filename,size,updated,created)
+                           VALUES(?,?,?,?,?,?,?,?,?,?)""",
+                        (title, category, clean(description, 300), kind, body, clean(url, 400), fname, size, now, now))
+        new_id = cur.lastrowid
+    return {"ok": True, "id": new_id}
+
+@app.post("/api/admin/documents/{did}/delete")
+def admin_doc_delete(did: int, naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        r = c.execute("SELECT filename FROM documents WHERE id=?", (did,)).fetchone()
+        if r and r["filename"]:
+            try: (UP_DIR / r["filename"]).unlink()
+            except Exception: pass
+        c.execute("DELETE FROM documents WHERE id=?", (did,))
+    return {"ok": True}
+
+@app.get("/api/doc/{did}")
+def serve_doc(did: int, naff_session: Optional[str] = Cookie(default=None)):
+    if actor(naff_session) is None:
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        r = c.execute("SELECT * FROM documents WHERE id=?", (did,)).fetchone()
+    if not r or not r["filename"]:
+        return JSONResponse({"error": "introuvable"}, status_code=404)
+    fp = UP_DIR / r["filename"]
+    if not fp.exists():
+        return JSONResponse({"error": "introuvable"}, status_code=404)
+    dl = re.sub(r"[^a-zA-Z0-9._-]", "_", (r["title"] or "document"))[:60] + ".pdf"
+    return FileResponse(str(fp), media_type="application/pdf", filename=dl)
+
+# ===========================  PUBLICATION (contenus à poster)  ===============
+def pub_public(r: sqlite3.Row) -> Dict[str, Any]:
+    return {"id": r["id"], "title": r["title"], "ptype": r["ptype"], "type_label": PUB_TYPES.get(r["ptype"], r["ptype"]),
+            "body": r["body"], "script": r["script"],
+            "platforms": [p for p in (r["platforms"] or "").split(",") if p],
+            "media_kind": r["media_kind"], "media_url": r["media_url"],
+            "has_media": bool(r["filename"]), "updated": r["updated"], "created": r["created"]}
+
+@app.get("/api/partenaire/publications")
+def partner_publications(naff_session: Optional[str] = Cookie(default=None)):
+    if need_affiliate(naff_session) is None:
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        rows = c.execute("SELECT * FROM publications ORDER BY updated DESC").fetchall()
+    return {"publications": [pub_public(r) for r in rows], "platforms": PLATFORMS}
+
+@app.get("/api/admin/publications")
+def admin_publications(naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        rows = c.execute("SELECT * FROM publications ORDER BY updated DESC").fetchall()
+    return {"publications": [pub_public(r) for r in rows], "platforms": PLATFORMS, "types": PUB_TYPES}
+
+@app.post("/api/admin/publications")
+async def admin_pub_save(
+    pub_id: str = Form(""), title: str = Form(...), ptype: str = Form("post"),
+    body: str = Form(""), script: str = Form(""), platforms: str = Form(""),
+    media_url: str = Form(""), file: Optional[UploadFile] = File(None),
+    naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    title = clean(title, 120)
+    if not title:
+        return JSONResponse({"ok": False, "error": "Titre requis."}, status_code=400)
+    if ptype not in PUB_TYPES:
+        ptype = "post"
+    plats = ",".join(p for p in clean(platforms, 200).split(",") if p in PLATFORMS)
+    media_kind = "none"; murl = clean(media_url, 400)
+    if murl:
+        media_kind = "video" if ptype == "video" else "link"
+    fname = ""
+    if file is not None and file.filename:
+        fname, _ = await store_upload(file, "pub")
+        media_kind = "video" if ptype == "video" else "image"
+    now = time.time()
+    with db() as c:
+        if pub_id and str(pub_id).isdigit():
+            old = c.execute("SELECT * FROM publications WHERE id=?", (int(pub_id),)).fetchone()
+            if old:
+                nf = fname or old["filename"]
+                nmk = media_kind if (fname or murl) else old["media_kind"]
+                if fname and old["filename"]:
+                    try: (UP_DIR / old["filename"]).unlink()
+                    except Exception: pass
+                c.execute("""UPDATE publications SET title=?,ptype=?,body=?,script=?,platforms=?,media_kind=?,media_url=?,filename=?,updated=? WHERE id=?""",
+                          (title, ptype, body, script, plats, nmk, murl or old["media_url"], nf, now, int(pub_id)))
+                return {"ok": True, "id": int(pub_id)}
+        cur = c.execute("""INSERT INTO publications(title,ptype,body,script,platforms,media_kind,media_url,filename,updated,created)
+                           VALUES(?,?,?,?,?,?,?,?,?,?)""",
+                        (title, ptype, body, script, plats, media_kind, murl, fname, now, now))
+        new_id = cur.lastrowid
+    return {"ok": True, "id": new_id}
+
+@app.post("/api/admin/publications/{pid}/delete")
+def admin_pub_delete(pid: int, naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        r = c.execute("SELECT filename FROM publications WHERE id=?", (pid,)).fetchone()
+        if r and r["filename"]:
+            try: (UP_DIR / r["filename"]).unlink()
+            except Exception: pass
+        c.execute("DELETE FROM publications WHERE id=?", (pid,))
+    return {"ok": True}
+
+@app.get("/api/pub/{pid}/media")
+def serve_pub_media(pid: int, naff_session: Optional[str] = Cookie(default=None)):
+    if actor(naff_session) is None:
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        r = c.execute("SELECT * FROM publications WHERE id=?", (pid,)).fetchone()
+    if not r or not r["filename"]:
+        return JSONResponse({"error": "introuvable"}, status_code=404)
+    fp = UP_DIR / r["filename"]
+    if not fp.exists():
+        return JSONResponse({"error": "introuvable"}, status_code=404)
+    return FileResponse(str(fp), filename=r["filename"].split("_", 3)[-1])
 
 # ===========================  CERVEAU IA « NOVA »  ==========================
 NOVA_ADMIN_SYS = (

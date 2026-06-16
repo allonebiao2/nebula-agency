@@ -58,6 +58,16 @@ const NA = (() => {
     nebula: P('<path d="M8 15a3.5 3.5 0 0 1 .6-6.9A4.5 4.5 0 0 1 17 8.6a3 3 0 0 1-.5 6.4z"/><circle cx="10.5" cy="11" r="1"/><circle cx="14" cy="12.6" r="1"/>'),
     crown: P('<path d="M4 8l3.5 3L12 5l4.5 6L20 8l-1.5 10h-13z"/><path d="M5.5 18h13"/>'),
     help: P('<circle cx="12" cy="12" r="9"/><path d="M9.3 9.3a2.7 2.7 0 0 1 5.2 1c0 1.8-2.7 2-2.7 3.8"/><path d="M12 17.4v.01"/>'),
+    coins: P('<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.66 3.13 3 7 3s7-1.34 7-3V6"/><path d="M5 12c0 1.66 3.13 3 7 3s7-1.34 7-3"/>'),
+    doc: P('<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 16.5h4"/>'),
+    megaphone: P('<path d="M4 10v4a1 1 0 0 0 1 1h2l5 4V6L7 10H5a1 1 0 0 0-1 0z"/><path d="M16 8.5a4 4 0 0 1 0 7"/>'),
+    download: P('<path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M5 21h14"/>'),
+    video: P('<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9l5 3-5 3z"/>'),
+    edit: P('<path d="M4 20h4l10.5-10.5a2 2 0 0 0-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>'),
+    shield: P('<path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/>'),
+    upload: P('<path d="M12 21V9"/><path d="M7 13l5-5 5 5"/><path d="M5 4h14"/>'),
+    trash: P('<path d="M4 7h16"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/>'),
+    image: P('<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8.5" cy="9.5" r="1.8"/><path d="M21 16l-5-5L5 20"/>'),
   };
   const icon = (n) => ICON[n] || '';
 
