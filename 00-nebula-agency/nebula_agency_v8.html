@@ -170,9 +170,41 @@ h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacin
 .nav-cta:hover::before{opacity:1;}
 .nav-cta span{position:relative;z-index:1;}
 
-@media(max-width:900px){.nav{padding:10px 14px;}.nav-brand-img{width:34px;}.nav-brand-text{display:none;}.nav-links a{padding:7px 9px;font-size:11.5px;}.nav-cta{padding:7px 12px;font-size:11px;}}
-@media(max-width:560px){.nav-inner{gap:6px;}.nav-links a{padding:6px 7px;font-size:10.5px;letter-spacing:0;}.nav-cta{padding:6px 10px;font-size:10.5px;}.nav-brand-img{width:30px;}}
-@media(max-width:380px){.nav-links a{padding:5px 5px;font-size:9.5px;}.nav-cta{padding:5px 8px;font-size:10px;}}
+/* ---- Burger (mobile) ---- */
+.nav-burger{display:none;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;border-radius:12px;background:rgba(124,139,199,0.08);border:1px solid var(--border);cursor:pointer;flex-shrink:0;transition:background .3s var(--ease-out-expo),border-color .3s;}
+.nav-burger:hover{background:rgba(79,111,255,.12);border-color:var(--bord2);}
+.nav-burger span{display:block;width:18px;height:2px;margin:0 auto;border-radius:2px;background:var(--text);transition:transform .45s var(--ease-out-expo),opacity .25s ease;}
+.nav-burger.open{background:rgba(79,111,255,.14);}
+.nav-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.nav-burger.open span:nth-child(2){opacity:0;}
+.nav-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* ---- Overlay plein écran (glass) ---- */
+.nav-overlay{position:fixed;inset:0;z-index:99;display:flex;align-items:flex-start;justify-content:center;padding:24px;background:rgba(5,6,13,0.92);backdrop-filter:blur(30px) saturate(160%);-webkit-backdrop-filter:blur(30px) saturate(160%);opacity:0;visibility:hidden;transition:opacity .5s var(--ease-out-expo),visibility .5s;}
+.nav-overlay.open{opacity:1;visibility:visible;}
+.nav-overlay-inner{width:100%;max-width:440px;margin-top:86px;display:flex;flex-direction:column;}
+.nav-ov-eyebrow{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.22em;text-transform:uppercase;color:var(--text3);margin:6px 0 8px;display:flex;align-items:center;gap:8px;}
+.nav-ov-eyebrow em{color:var(--blue2);font-style:normal;}
+.nav-ov-links{display:flex;flex-direction:column;}
+.nav-ov-link{font-family:'Space Grotesk',sans-serif;font-size:1.65rem;font-weight:600;color:var(--text);text-decoration:none;padding:12px 0;border-bottom:1px solid var(--border);transform:translateY(16px);opacity:0;transition:color .3s ease,transform .6s var(--ease-out-expo),opacity .6s ease;}
+.nav-overlay.open .nav-ov-link{transform:translateY(0);opacity:1;}
+.nav-ov-link:active,.nav-ov-link:hover{color:var(--blue2);}
+.nav-ov-aff{font-size:1.28rem;color:var(--blue2);}
+.nav-ov-divider{height:1px;background:linear-gradient(90deg,transparent,var(--bord2),transparent);margin:18px 0 6px;}
+.nav-ov-cta{display:flex;justify-content:center;margin-top:22px;padding:15px;font-size:14px;transform:translateY(16px);opacity:0;transition:transform .6s var(--ease-out-expo) .28s,opacity .6s ease .28s,box-shadow .25s,background .3s;}
+.nav-overlay.open .nav-ov-cta{transform:translateY(0);opacity:1;}
+.nav-overlay.open .nav-ov-links .nav-ov-link:nth-child(1){transition-delay:.06s;}
+.nav-overlay.open .nav-ov-links .nav-ov-link:nth-child(2){transition-delay:.12s;}
+.nav-overlay.open .nav-ov-links .nav-ov-link:nth-child(3){transition-delay:.18s;}
+
+@media(max-width:900px){
+  .nav{padding:11px 16px;}
+  .nav.scrolled{padding:9px 16px;}
+  .nav-brand-img{width:34px;}
+  .nav-links,.nav-cta-desktop{display:none;}
+  .nav-burger{display:flex;}
+}
+@media(max-width:380px){.nav-brand-tag{display:none;}.nav-ov-link{font-size:1.5rem;}}
 
 /* ============ SECTIONS ============ */
 section{position:relative;z-index:2;padding:110px 24px;max-width:100vw;overflow:hidden;}
@@ -500,9 +532,28 @@ section{position:relative;z-index:2;padding:110px 24px;max-width:100vw;overflow:
       <li><a href="https://nebula-affilies-production.up.railway.app/devenir" target="_blank" rel="noopener" class="nav-link" title="Rejoindre le programme partenaires NEBULA — remplis le formulaire">Devenir partenaire</a></li>
       <li><a href="https://nebula-affilies-production.up.railway.app/" target="_blank" rel="noopener" class="nav-link" title="Connexion réservée aux partenaires affiliés NEBULA — accède à ton back-office" style="color:#a78bfa">Connexion partenaires</a></li>
     </ul>
-    <a href="https://wa.me/22996740732" target="_blank" class="nav-cta"><span>WhatsApp</span></a>
+    <a href="https://wa.me/22996740732" target="_blank" class="nav-cta nav-cta-desktop"><span>WhatsApp</span></a>
+    <button class="nav-burger" id="navBurger" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
 </nav>
+
+<div class="nav-overlay" id="navOverlay">
+  <div class="nav-overlay-inner">
+    <span class="nav-ov-eyebrow">Navigation</span>
+    <nav class="nav-ov-links">
+      <a href="#services" class="nav-ov-link">Services</a>
+      <a href="#portfolio" class="nav-ov-link">Portfolio</a>
+      <a href="#order" class="nav-ov-link">Commander</a>
+    </nav>
+    <div class="nav-ov-divider"></div>
+    <span class="nav-ov-eyebrow">Espace partenaires <em>· réservé aux affiliés NEBULA</em></span>
+    <nav class="nav-ov-links">
+      <a href="https://nebula-affilies-production.up.railway.app/devenir" target="_blank" rel="noopener" class="nav-ov-link nav-ov-aff">Devenir partenaire</a>
+      <a href="https://nebula-affilies-production.up.railway.app/" target="_blank" rel="noopener" class="nav-ov-link nav-ov-aff">Connexion partenaires</a>
+    </nav>
+    <a href="https://wa.me/22996740732" target="_blank" class="nav-cta nav-ov-cta"><span>Discuter sur WhatsApp</span></a>
+  </div>
+</div>
 
 <section class="hero">
   <div class="hero-grid">
@@ -1025,6 +1076,10 @@ if(window.innerWidth<768){cg.style.display='none';}
 // ===== NAV =====
 const nav=document.getElementById('nav');const links=document.querySelectorAll('.nav-link');const sections=['services','portfolio','order'].map(id=>document.getElementById(id));
 window.addEventListener('scroll',function(){nav.classList.toggle('scrolled',scrollY>40);let cur='';sections.forEach(s=>{if(!s)return;const r=s.getBoundingClientRect();if(r.top<=120&&r.bottom>=120)cur=s.id;});links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+cur));});
+// ===== BURGER / OVERLAY MOBILE =====
+const navBurger=document.getElementById('navBurger'),navOverlay=document.getElementById('navOverlay');
+function closeNavMenu(){if(!navOverlay)return;navOverlay.classList.remove('open');navBurger.classList.remove('open');document.body.style.overflow='';navBurger.setAttribute('aria-expanded','false');}
+if(navBurger){navBurger.addEventListener('click',function(){const o=!navOverlay.classList.contains('open');navOverlay.classList.toggle('open',o);navBurger.classList.toggle('open',o);document.body.style.overflow=o?'hidden':'';navBurger.setAttribute('aria-expanded',o?'true':'false');});navOverlay.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeNavMenu));window.addEventListener('keydown',function(e){if(e.key==='Escape')closeNavMenu();});}
 
 // ===== REVEAL ALL TYPES =====
 const obs=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('in')),{threshold:.1,rootMargin:'0px 0px -60px 0px'});
