@@ -606,6 +606,15 @@ app.mount("/static", StaticFiles(directory=str(HERE / "static")), name="static")
 def page(name: str) -> FileResponse:
     return FileResponse(str(HERE / name), media_type="text/html")
 
+def served_page(name: str, request: Request) -> HTMLResponse:
+    """Sert une page HTML en injectant l'URL absolue ({{BASE}}) pour les aperçus de lien (Open Graph)."""
+    html = (HERE / name).read_text(encoding="utf-8")
+    if "{{BASE}}" in html:
+        host = request.headers.get("x-forwarded-host") or request.headers.get("host") or "nebula-affilies-production.up.railway.app"
+        proto = (request.headers.get("x-forwarded-proto") or "https").split(",")[0].strip()
+        html = html.replace("{{BASE}}", f"{proto}://{host}")
+    return HTMLResponse(html)
+
 @app.get("/", response_class=HTMLResponse)
 def home():
     return page("index.html")
@@ -619,20 +628,20 @@ def partner_page():
     return page("partenaire.html")
 
 @app.get("/r/{code}", response_class=HTMLResponse)
-def referral_page(code: str):
-    return page("lead.html")
+def referral_page(code: str, request: Request):
+    return served_page("lead.html", request)
 
 @app.get("/rejoindre/{code}", response_class=HTMLResponse)
-def recruit_page(code: str):
-    return page("rejoindre.html")
+def recruit_page(code: str, request: Request):
+    return served_page("rejoindre.html", request)
 
 @app.get("/devenir", response_class=HTMLResponse)
-def devenir_page():
-    return page("devenir.html")
+def devenir_page(request: Request):
+    return served_page("devenir.html", request)
 
 @app.get("/p/{code}", response_class=HTMLResponse)
-def hub_page(code: str):
-    return page("hub.html")
+def hub_page(code: str, request: Request):
+    return served_page("hub.html", request)
 
 # ---- Config publique (catalogue, statuts, réseaux) pour les fronts ----
 @app.get("/api/config")
