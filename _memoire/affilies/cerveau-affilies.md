@@ -13,7 +13,8 @@ Dernière grosse mise à jour : **2026-06-17**.
 - **Espaces** :
   - `/` portail (connexion partenaire OU admin) — marqué « réservé aux partenaires »
   - `/partenaire` espace partenaire (code + PIN)
-  - `/admin` console NEBULA (Mongazi)
+  - **`/qg-mongazi-x7q2`** = **page de connexion admin PRIVÉE** (URL secrète, `console.html`, `noindex`, surchargeable par env `NAFF_ADMIN_PATH`). Le portail `/` n'expose PLUS l'admin (partenaire-only).
+  - `/admin` console NEBULA (dashboard) — **servie uniquement à une session admin** ; sinon **302 → `/`** (ne révèle jamais l'URL secrète).
   - `/p/<code>` **lien unique** partenaire (client OU recrutement)
   - `/devenir` candidature publique (avec CGU)
   - `/r/<code>` formulaire client direct · `/rejoindre/<code>` recrutement direct (rétrocompat)
