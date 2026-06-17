@@ -142,7 +142,7 @@ const NA = (() => {
       ({
         client: sfx.client, vente: sfx.vente, recrue: sfx.recrue,
         commission: sfx.cash, paiement: sfx.cash, statut: sfx.statut,
-        message: sfx.incoming,
+        message: sfx.incoming, publication: sfx.client,
       }[kind] || sfx.ding)();
     }
     return {
@@ -292,5 +292,29 @@ const NA = (() => {
     scrim.classList.add('on'); render(); Sound.sfx.open();
   }
 
-  return { el, esc, fmt, ago, api, icon, sound: Sound, toast, countUp, reveal, qr, celebrate, nova, agencyChat, tour };
+  /* ---------- INSIGNES DE RANG (un médaillon unique par rang) ---------- */
+  // Chaque rang a son icône, ses couleurs, son anneau et sa lueur propres.
+  const RANK_META = {
+    'Recrue':    { icon: 'spark',     c1: '#b9c2dd', c2: '#7b86a8', ring: 'solid' },
+    'Météore':   { icon: 'meteor',    c1: '#ff9a5a', c2: '#d8401a', ring: 'solid' },
+    'Comète':    { icon: 'comet',     c1: '#67e8ff', c2: '#2a7bff', ring: 'solid' },
+    'Planète':   { icon: 'planet',    c1: '#4df0a6', c2: '#0f9e6e', ring: 'orbit' },
+    'Étoile':    { icon: 'star',      c1: '#ffe27a', c2: '#e0a615', ring: 'rays'  },
+    'Supernova': { icon: 'supernova', c1: '#ff8ad4', c2: '#ff2d6e', ring: 'burst' },
+    'Nébuleuse': { icon: 'nebula',    c1: '#c79bff', c2: '#6d3bff', ring: 'orbit' },
+    'Galaxie':   { icon: 'crown',     c1: '#ffe9a8', c2: '#a06bff', ring: 'cosmic' },
+  };
+  const RANK_ORDER = ['Recrue', 'Météore', 'Comète', 'Planète', 'Étoile', 'Supernova', 'Nébuleuse', 'Galaxie'];
+  function rankSlug(label) { return 'rk-' + (RANK_ORDER.indexOf(label) + 1); }
+  // size: 'sm' | 'md' | 'lg' ; opts.glow pour la lueur (défaut true)
+  function rankBadge(label, opts = {}) {
+    const m = RANK_META[label] || RANK_META['Recrue'];
+    const size = opts.size || 'md';
+    const glow = opts.glow === false ? ' no-glow' : '';
+    return `<span class="rk ${rankSlug(label)} rk-${size} ring-${m.ring}${glow}" style="--c1:${m.c1};--c2:${m.c2}" title="${esc(label)}">`
+      + `<span class="rk-ring"></span><span class="rk-core">${icon(m.icon)}</span></span>`;
+  }
+  function rankName(label) { return `<span class="rk-name" style="--c1:${(RANK_META[label] || RANK_META['Recrue']).c1};--c2:${(RANK_META[label] || RANK_META['Recrue']).c2}">${esc(label)}</span>`; }
+
+  return { el, esc, fmt, ago, api, icon, sound: Sound, toast, countUp, reveal, qr, celebrate, nova, agencyChat, tour, rankBadge, rankName, RANK_META, RANK_ORDER };
 })();

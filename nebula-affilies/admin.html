@@ -593,20 +593,40 @@ async function deletePub(id) {
 }
 
 /* ---------- CLASSEMENT (NEBULA voit tout le réseau) ---------- */
+let LB = [];
 async function renderClassement() {
   let d; try { d = await api('/api/leaderboard'); } catch (e) { return; }
-  const rows = d.leaderboard.map(a => {
-    const ava = a.photo ? `<div class="lb-ava"><img class="av-img" src="${esc(a.photo)}" alt=""></div>` : `<div class="lb-ava" style="color:${a.accent || 'var(--accent)'}">${initials(a.name)}</div>`;
-    return `<div class="lb-row">
-      <div class="lb-pos${a.position <= 3 ? ' top' : ''}">${a.position}</div>${ava}
+  LB = d.leaderboard;
+  const rows = LB.map(a => `
+    <div class="lb-row" data-uid="${a.uid}" style="cursor:pointer">
+      <div class="lb-pos${a.position <= 3 ? ' top' : ''}">${a.position}</div>${NA.rankBadge(a.rank, { size: 'md' })}
       <div style="min-width:0"><div class="ttl" style="font-size:1rem">${esc(a.name)} <span class="chip" style="margin-left:4px">${a.code}</span></div>
-        <div class="meta">${esc(a.rank)} · palier ${esc(a.palier)} ${a.palier_pct}% · ${a.ventes} vente${a.ventes > 1 ? 's' : ''} · ${a.clients_actifs} actif${a.clients_actifs > 1 ? 's' : ''}</div></div>
+        <div class="meta">${NA.rankName(a.rank)} · palier ${esc(a.palier)} ${a.palier_pct}% · ${a.ventes} vente${a.ventes > 1 ? 's' : ''}</div></div>
       <div class="center"><div class="mono" style="color:var(--accent);font-weight:700">${fmt(a.rcm)} F</div><div class="meta">RCM · ${a.score} pts</div></div>
-    </div>`;
-  }).join('');
+    </div>`).join('');
   document.getElementById('v-classement').innerHTML = `
     <div class="rv mb24"><span class="eyebrow"><span class="dot"></span>Classement</span><h2 class="mt8" style="font-size:1.8rem">Le niveau de tout le réseau</h2>
-    <p class="muted mt8">Rang, ventes, RCM et performance de chaque partenaire, en temps réel.</p></div>${rows || '<p class="muted center" style="padding:30px">Aucun partenaire.</p>'}`;
+    <p class="muted mt8">Chaque rang a son insigne. Clique un partenaire pour voir ses stats et lui écrire.</p></div>${rows || '<p class="muted center" style="padding:30px">Aucun partenaire.</p>'}`;
+  document.querySelectorAll('#v-classement .lb-row[data-uid]').forEach(r => r.onclick = () => openPartner(r.dataset.uid));
+}
+function openPartner(uid) {
+  const a = LB.find(x => x.uid === uid); if (!a) return;
+  sound.sfx.open();
+  const st = v => `<div class="pstat"><div class="pstat-n mono">${v[0]}</div><div class="pstat-l">${v[1]}</div></div>`;
+  document.getElementById('modal-in').innerHTML = `
+    <div class="flex between" style="align-items:flex-start"><div class="flex" style="gap:14px;align-items:center">
+      ${a.photo ? `<div class="emblem" style="width:60px;height:60px;border-radius:18px"><img class="av-img" src="${esc(a.photo)}" alt=""></div>` : NA.rankBadge(a.rank, { size: 'lg' })}
+      <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:1.2rem">${esc(a.name)} <span class="chip">${a.code}</span></div>
+        <div class="meta mt8">${NA.rankName(a.rank)} · #${a.position} au classement</div></div>
+    </div><button class="icon-btn" id="pp-x" style="width:34px;height:34px">${icon('close')}</button></div>
+    <div class="pstats mt16">
+      ${st([a.ventes, 'Ventes (carrière)'])}${st([a.ventes_mois, 'Ventes ce mois'])}${st([a.palier_pct + '%', 'Palier ' + esc(a.palier)])}
+      ${st([fmt(a.rcm) + ' F', 'RCM à vie'])}${st([a.clients_actifs, 'Clients actifs'])}${st([a.score + ' pts', 'Score'])}
+    </div>
+    <button class="btn primary block mt16" id="pp-msg">Envoyer un message<span class="ico">${icon('send')}</span></button>`;
+  document.getElementById('modal').classList.add('on');
+  document.getElementById('pp-x').onclick = closeModal;
+  document.getElementById('pp-msg').onclick = () => { closeModal(); switchView('messages'); setTimeout(() => openConv(a.uid, a.name), 150); };
 }
 
 /* ---------- MESSAGES (NEBULA participe) ---------- */
@@ -734,7 +754,7 @@ const NKIND = {
   client: { c: 'var(--ok)', t: 'Nouveau client' }, vente: { c: '#36f5a0', t: 'Vente' },
   recrue: { c: 'var(--accent)', t: 'Recrue' }, commission: { c: '#e6c34c', t: 'Commission' },
   paiement: { c: '#e6c34c', t: 'Paiement' }, statut: { c: '#22d3ee', t: 'Statut' },
-  info: { c: 'var(--muted)', t: 'Info' },
+  publication: { c: '#a06bff', t: 'Publication' }, info: { c: 'var(--muted)', t: 'Info' },
 };
 function ringBell() { const b = document.getElementById('bell'); b.classList.remove('bell-ring'); void b.offsetWidth; b.classList.add('bell-ring'); }
 async function refreshNotifs() {

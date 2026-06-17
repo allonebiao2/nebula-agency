@@ -1125,12 +1125,19 @@ def partner_me(naff_session: Optional[str] = Cookie(default=None)):
     if not a:
         return JSONResponse({"error": "auth"}, status_code=401)
     s = stats_of(aid)
+    parrain = None
+    if a["parrain_id"]:
+        with db() as c:
+            p = c.execute("SELECT code,nom,prenom FROM affiliates WHERE id=? AND actif=1", (a["parrain_id"],)).fetchone()
+        if p:
+            parrain = {"name": (str(p["prenom"] or "") + " " + str(p["nom"] or "")).strip() or p["code"], "code": p["code"]}
     return {
         "code": a["code"], "nom": a["nom"], "prenom": a["prenom"],
         "name": affiliate_label(a), "accent": a["accent"],
         "momo_number": a["momo_number"], "momo_reseau": a["momo_reseau"],
         "photo": photo_url("a" + str(aid)),
         "stats": s, "network": network_of(aid), "earnings": earnings_of(aid),
+        "parrain": parrain,
     }
 
 @app.get("/api/partenaire/leads")
@@ -1460,7 +1467,11 @@ async def admin_pub_save(
                            VALUES(?,?,?,?,?,?,?,?,?,?)""",
                         (title, ptype, body, script, plats, media_kind, murl, fname, now, now))
         new_id = cur.lastrowid
-    return {"ok": True, "id": new_id}
+        ids = [r["id"] for r in c.execute("SELECT id FROM affiliates WHERE actif=1").fetchall()]
+    tlabel = PUB_TYPES.get(ptype, "Contenu")
+    for aid in ids:
+        notify("affiliate", aid, f"Nouveau contenu à partager — {tlabel} : « {title} ». Disponible dans l'onglet Publication.", kind="publication")
+    return {"ok": True, "id": new_id, "notified": len(ids)}
 
 @app.post("/api/admin/publications/{pid}/delete")
 def admin_pub_delete(pid: int, naff_session: Optional[str] = Cookie(default=None)):

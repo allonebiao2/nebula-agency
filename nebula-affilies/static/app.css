@@ -238,6 +238,81 @@ input,select,textarea{font-family:inherit}
   .nova-panel.ag{left:12px;right:12px;bottom:84px;width:auto}
 }
 
+/* ---- INSIGNES DE RANG : un médaillon unique par rang ---- */
+.rk{position:relative;display:inline-grid;place-items:center;flex:0 0 auto;border-radius:50%;
+  background:radial-gradient(120% 120% at 30% 25%,color-mix(in srgb,var(--c1) 92%,#fff 8%),var(--c2) 75%);
+  box-shadow:inset 0 1px 2px rgba(255,255,255,.5),inset 0 -3px 8px color-mix(in srgb,var(--c2) 60%,#000 40%),
+    0 6px 16px -6px color-mix(in srgb,var(--c2) 75%,transparent);isolation:isolate}
+.rk.no-glow{box-shadow:inset 0 1px 2px rgba(255,255,255,.5),inset 0 -3px 8px color-mix(in srgb,var(--c2) 60%,#000 40%)}
+.rk-sm{width:30px;height:30px}.rk-md{width:46px;height:46px}.rk-lg{width:86px;height:86px}
+.rk-core{display:grid;place-items:center;z-index:2}
+.rk-core svg{stroke:#fff;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.45))}
+.rk-sm .rk-core svg{width:15px;height:15px}.rk-md .rk-core svg{width:23px;height:23px}.rk-lg .rk-core svg{width:42px;height:42px}
+.rk-core::after{content:"";position:absolute;inset:14% 0 auto 0;height:34%;margin:0 16%;border-radius:50%;
+  background:linear-gradient(rgba(255,255,255,.55),transparent);z-index:3;pointer-events:none}
+/* Anneaux */
+.rk-ring{position:absolute;inset:-5px;border-radius:50%;z-index:1;pointer-events:none}
+.ring-solid .rk-ring{border:2px solid color-mix(in srgb,var(--c1) 70%,transparent)}
+.ring-orbit .rk-ring{border:1.5px dashed color-mix(in srgb,var(--c1) 75%,transparent);animation:rkspin 9s linear infinite}
+.ring-rays .rk-ring{background:conic-gradient(from 0deg,color-mix(in srgb,var(--c1) 85%,transparent) 0 3deg,transparent 3deg 30deg);
+  -webkit-mask:radial-gradient(transparent 58%,#000 60%);mask:radial-gradient(transparent 58%,#000 60%);animation:rkspin 14s linear infinite}
+.ring-burst .rk-ring{border:2px solid color-mix(in srgb,var(--c1) 70%,transparent);animation:rkpulse 2.4s ease-in-out infinite}
+.ring-cosmic .rk-ring{inset:-4px;background:conic-gradient(from 0deg,#ffe9a8,#ff8ad4,#6d3bff,#67e8ff,#4df0a6,#ffe9a8);
+  -webkit-mask:radial-gradient(transparent 60%,#000 62%);mask:radial-gradient(transparent 60%,#000 62%);animation:rkspin 6s linear infinite}
+.ring-cosmic.rk{box-shadow:inset 0 1px 2px rgba(255,255,255,.6),inset 0 -3px 8px color-mix(in srgb,var(--c2) 55%,#000 45%),
+    0 0 22px -2px color-mix(in srgb,var(--c1) 70%,transparent),0 8px 22px -6px color-mix(in srgb,var(--c2) 80%,transparent)}
+@keyframes rkspin{to{transform:rotate(360deg)}}
+@keyframes rkpulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--c1) 55%,transparent)}55%{box-shadow:0 0 0 7px transparent}}
+@media(prefers-reduced-motion:reduce){.rk-ring{animation:none!important}}
+/* Nom du rang coloré assorti */
+.rk-name{font-weight:700;background:linear-gradient(90deg,var(--c1),var(--c2));-webkit-background-clip:text;
+  background-clip:text;color:transparent;letter-spacing:.01em}
+
+/* ---- Fiche partenaire (stats) ---- */
+.pstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pstat{padding:13px 12px;border-radius:14px;background:var(--glass);border:1px solid var(--hair);text-align:center}
+.pstat-n{font-size:1.12rem;font-weight:700;color:var(--accent);line-height:1.1}
+.pstat-l{font-size:.72rem;color:var(--muted);margin-top:4px;letter-spacing:.02em}
+@media(max-width:560px){.pstats{grid-template-columns:repeat(2,1fr)}}
+
+/* ---- Schéma d'équipe (parrain → toi → filleuls) + note anti-Ponzi ---- */
+.anti-ponzi{display:flex;gap:13px;align-items:flex-start;padding:14px 16px;border-radius:14px;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--ok) 14%,transparent),transparent);
+  border:1px solid color-mix(in srgb,var(--ok) 35%,transparent);font-size:.85rem;line-height:1.55;color:var(--muted)}
+.anti-ponzi .ap-ico{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+  background:color-mix(in srgb,var(--ok) 20%,transparent);color:var(--ok)}
+.anti-ponzi .ap-ico svg{width:18px;height:18px}
+.anti-ponzi b{color:var(--ink);font-weight:600}
+.pyr{display:flex;flex-direction:column;align-items:center;text-align:center;margin-top:22px}
+.pyr-lvl{display:flex;justify-content:center;gap:14px}
+.pyr-lvl.wrap{flex-wrap:wrap;align-items:flex-start}
+.pyr-conn{width:2px;height:24px;background:linear-gradient(var(--hair-2),color-mix(in srgb,var(--hair-2) 20%,transparent))}
+.pyr-team-lbl{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:6px 0 14px}
+.pyr-node{display:flex;align-items:center;gap:11px;padding:12px 16px;border-radius:15px;background:var(--glass);
+  border:1px solid var(--hair);text-align:left;min-width:186px;transition:transform .3s var(--ease),border-color .3s var(--ease)}
+.pyr-node:hover{border-color:var(--hair-2);transform:translateY(-2px)}
+.pyr-av{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:0 0 auto;overflow:hidden;
+  background:var(--glass-2);border:1px solid var(--hair);font-weight:700;color:var(--accent)}
+.pyr-av.sm{width:32px;height:32px;font-size:.78rem}
+.pyr-av svg{width:20px;height:20px;color:var(--accent)}
+.pyr-av .av-img{width:100%;height:100%;object-fit:cover}
+.pyr-tx b{display:block;font-weight:600;font-size:.92rem;line-height:1.25}
+.pyr-tx small{color:var(--muted);font-size:.74rem}
+.pyr-node.me{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 13%,transparent);
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent),var(--glow);transform:scale(1.05)}
+.pyr-node.me:hover{transform:scale(1.05) translateY(-2px)}
+.pyr-node.par,.pyr-node.top{border-style:dashed;opacity:.9}
+.pyr-branch{display:flex;flex-direction:column;align-items:center}
+.pyr-subconn{width:2px;height:15px;background:var(--hair-2)}
+.pyr-kids{display:flex;flex-direction:column;gap:7px}
+.pyr-node.n2{min-width:158px;padding:8px 12px}
+.pyr-empty{color:var(--muted);font-size:.86rem;max-width:380px}
+@media(max-width:680px){
+  .pyr-lvl.wrap{flex-direction:column;align-items:center}
+  .pyr-node{min-width:0;width:100%;max-width:300px}
+}
+
 /* ---- Toast ---- */
 .toasts{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:80;display:flex;flex-direction:column;gap:10px;align-items:center}
 .toast{padding:13px 20px;border-radius:15px;background:rgba(12,12,20,.92);border:1px solid var(--hair-2);
