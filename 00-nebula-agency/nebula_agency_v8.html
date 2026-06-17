@@ -1276,27 +1276,6 @@ if(window.NEBULA_SFX)window.NEBULA_SFX.play.cash();window.open('https://wa.me/22
   <svg class="icon-playing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
 </button>
 
-<!-- ============ BOUTON FLOTTANT VENDORA ============ -->
-<style>
-.vendora-fab{position:fixed;bottom:18px;left:18px;z-index:202;display:inline-flex;align-items:center;gap:10px;
-  padding:13px 20px;border-radius:40px;text-decoration:none;font-family:inherit;font-weight:700;font-size:.95rem;
-  color:#06060c;background:linear-gradient(100deg,#8B5CFF,#22D3EE);
-  box-shadow:0 8px 30px rgba(139,92,255,.5);animation:vendoraPulse 2.6s ease-in-out infinite;
-  transition:transform .25s ease;white-space:nowrap;}
-.vendora-fab:hover{transform:translateY(-3px) scale(1.05);}
-.vendora-fab .vdot{width:9px;height:9px;border-radius:50%;background:#06060c;animation:vendoraBlink 1.5s ease-in-out infinite;}
-.vendora-fab .varrow{font-size:1.1rem;transition:transform .25s ease;}
-.vendora-fab:hover .varrow{transform:translateX(4px);}
-@keyframes vendoraPulse{0%,100%{box-shadow:0 8px 28px rgba(139,92,255,.45);}50%{box-shadow:0 10px 48px rgba(34,211,238,.8);}}
-@keyframes vendoraBlink{0%,100%{opacity:1;}50%{opacity:.35;}}
-@media(max-width:600px){.vendora-fab{font-size:.8rem;padding:11px 15px;bottom:14px;left:14px;gap:7px;}}
-</style>
-<a class="vendora-fab" href="https://vendora-agent.up.railway.app/" target="_blank" rel="noopener">
-  <span class="vdot"></span>
-  <span>Votre vendeur IA qui vend 24h/24</span>
-  <span class="varrow">→</span>
-</a>
-
 <!-- ============ COUCHE PREMIUM — interactions haut de gamme ============ -->
 <style id="fx-premium">
 /* Spotlight curseur + élévation lumineuse sur les cartes */
@@ -1402,7 +1381,7 @@ if(window.NEBULA_SFX)window.NEBULA_SFX.play.cash();window.open('https://wa.me/22
     if(muted)return; ensure();
     var t=e.target.closest('a,button,.svc,.port-card,.why-item,.stat-box,label,select,input,textarea');
     if(!t||t.id==='audioToggle')return;
-    if(t.matches('.nav-cta,.btn-primary,.svc-cta,.btn-submit,.vendora-fab,.nav-ov-cta'))SFX.click();
+    if(t.matches('.nav-cta,.btn-primary,.svc-cta,.btn-submit,.nav-ov-cta'))SFX.click();
     else if(t.id==='navBurger'||t.closest('.nav-overlay'))SFX.nav();
     else SFX.tap();
   },{passive:true});
