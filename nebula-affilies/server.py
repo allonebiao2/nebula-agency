@@ -1883,6 +1883,15 @@ async def agency_chat(req: Request):
         pass
     return {"ok": True, "reply": reply}
 
+@app.get("/api/admin/agency-chats")
+def admin_agency_chats(naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        rows = c.execute("SELECT id,question,answer,created FROM agency_chats ORDER BY id DESC LIMIT 200").fetchall()
+        total = c.execute("SELECT COUNT(*) n FROM agency_chats").fetchone()["n"]
+    return {"total": total, "chats": [dict(r) for r in rows]}
+
 @app.post("/api/brain")
 async def brain(req: Request, naff_session: Optional[str] = Cookie(default=None)):
     ac = actor(naff_session)

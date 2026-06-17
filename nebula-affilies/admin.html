@@ -45,6 +45,7 @@
     <section class="view" id="v-messages"></section>
     <section class="view" id="v-docs"></section>
     <section class="view" id="v-publi"></section>
+    <section class="view" id="v-questions"></section>
   </main>
 </div>
 
@@ -73,8 +74,9 @@ const NAV = [
   { id: 'messages', icon: 'chat', label: 'Messages' },
   { id: 'docs', icon: 'doc', label: 'Documentation' },
   { id: 'publi', icon: 'megaphone', label: 'Publication' },
+  { id: 'questions', icon: 'help', label: 'Questions prospects' },
 ];
-const TITLES = { dash: 'Tableau de bord', aff: 'Réseau d\'affiliés', reseau: 'Arborescence du réseau', leads: 'Clients du réseau', paiements: 'Commissions à verser', recrues: 'Candidatures & recrues', classement: 'Classement du réseau', messages: 'Messagerie', docs: 'Documentation partenaires', publi: 'Contenus à publier' };
+const TITLES = { dash: 'Tableau de bord', aff: 'Réseau d\'affiliés', reseau: 'Arborescence du réseau', leads: 'Clients du réseau', paiements: 'Commissions à verser', recrues: 'Candidatures & recrues', classement: 'Classement du réseau', messages: 'Messagerie', docs: 'Documentation partenaires', publi: 'Contenus à publier', questions: 'Questions des prospects' };
 
 const TOUR = [
   { icon: 'spark', title: 'Bienvenue dans ta console NEBULA', text: 'Le poste de pilotage de ton réseau d\'affiliés : tu suis les clients, tu valides les recrues, et tu paies les commissions. Voici chaque zone.' },
@@ -88,6 +90,7 @@ const TOUR = [
   { icon: 'chat', title: 'Messages', text: 'Communique avec tes partenaires : en privé ou dans le <b>salon NEBULA</b>. Tu peux mettre ta photo. Une tonalité sonne dès qu\'il y a du mouvement.' },
   { icon: 'doc', title: 'Documentation', text: 'La bibliothèque que voient tes partenaires (guides, fiches produits, argumentaires). Ajoute une note, un PDF ou un lien — la mise à jour est instantanée pour tout le monde.' },
   { icon: 'megaphone', title: 'Publication', text: 'Les contenus prêts à poster que tu donnes à tes partenaires (textes, visuels, vidéos, scripts) pour qu\'ils alimentent leurs réseaux et fassent venir des clients.' },
+  { icon: 'help', title: 'Questions prospects', text: 'Tout ce que les visiteurs demandent à l\'assistant « Discuter avec NEBULA Agency » (site, hub, back-offices). Une mine d\'or : tu vois les <b>vraies questions</b> et objections de tes futurs clients.' },
   { icon: 'spark', title: 'NOVA — ton cerveau IA', text: 'Le bouton en bas à droite : pose-lui des questions sur ton réseau (qui pousser, qui relancer), il connaît tes vraies données en temps réel.' },
 ];
 function statusPill(st) { const s = CFG.statuses[st] || { label: st, color: '#888' }; return `<span class="pill" style="--c:${s.color}"><span class="d"></span>${esc(s.label)}</span>`; }
@@ -106,7 +109,7 @@ function switchView(id) {
   document.getElementById('v-' + id).classList.add('on');
   document.querySelectorAll('.nav-i[data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === id));
   document.getElementById('title').textContent = TITLES[id];
-  ({ dash: renderDash, aff: renderAff, reseau: renderReseauAdmin, leads: renderLeads, paiements: renderPaiements, recrues: renderRecrues, classement: renderClassement, messages: renderMessages, docs: renderDocsAdmin, publi: renderPubliAdmin }[id])();
+  ({ dash: renderDash, aff: renderAff, reseau: renderReseauAdmin, leads: renderLeads, paiements: renderPaiements, recrues: renderRecrues, classement: renderClassement, messages: renderMessages, docs: renderDocsAdmin, publi: renderPubliAdmin, questions: renderQuestions }[id])();
   reveal();
 }
 
@@ -676,6 +679,34 @@ function msgRow(m) {
 function startConvPoll() { stopConvPoll(); CHAT.convTimer = setInterval(() => { if (document.getElementById('v-messages').classList.contains('on') && CHAT.channel) loadConv(); }, 5000); }
 function stopConvPoll() { if (CHAT.convTimer) { clearInterval(CHAT.convTimer); CHAT.convTimer = null; } }
 function setMsgBadge(n) { const b = document.getElementById('navi-messages'); if (!b) return; const old = b.querySelector('.badge'); if (old) old.remove(); if (n > 0) b.appendChild(el(`<span class="badge">${n}</span>`)); }
+
+/* ---------- QUESTIONS DES PROSPECTS (assistant « Discuter avec NEBULA Agency ») ---------- */
+function qaCard(x) {
+  return `<div class="rv"><div class="card"><div class="in">
+    <div class="flex between" style="gap:12px;align-items:flex-start">
+      <div class="ttl" style="font-size:1.04rem;line-height:1.45">${esc(x.question)}</div>
+      <div class="meta" style="white-space:nowrap;flex:0 0 auto">${ago(x.created)}</div>
+    </div>
+    <div class="divider"></div>
+    <div class="meta" style="line-height:1.6;color:var(--muted);white-space:pre-wrap">${esc(x.answer)}</div>
+  </div></div></div>`;
+}
+async function renderQuestions() {
+  let d; try { d = await api('/api/admin/agency-chats'); } catch (e) { d = { total: 0, chats: [] }; }
+  document.getElementById('v-questions').innerHTML = `
+    <div class="flex between wrap mb24 rv"><div>
+      <span class="eyebrow"><span class="dot"></span>Assistant « Discuter avec NEBULA Agency »</span>
+      <h2 class="mt8" style="font-size:1.8rem">Questions des prospects</h2>
+      <p class="muted mt8" style="max-width:560px">Tout ce que les visiteurs demandent à NEBULA Agency (site, lien hub, back-offices). Repère les <b>objections</b> et les <b>besoins récurrents</b> pour affûter ton discours.</p>
+    </div>
+      <div class="flex gap8" style="align-items:center"><span class="chip" style="color:var(--accent)">${d.total} question${d.total > 1 ? 's' : ''}</span>
+      <button class="btn sm ghost" id="q-refresh">Actualiser<span class="ico">${icon('arrow')}</span></button></div></div>
+    <div id="q-list">${d.chats.length
+      ? d.chats.map(qaCard).join('')
+      : `<div class="card"><div class="in center" style="padding:44px"><p class="muted">Aucune question pour l'instant. Dès qu'un visiteur discute avec NEBULA Agency, sa question et la réponse apparaissent ici.</p></div></div>`}</div>`;
+  const r = document.getElementById('q-refresh'); if (r) r.onclick = () => { sound.sfx.click(); renderQuestions(); };
+  reveal();
+}
 
 /* ---------- TEMPS RÉEL : signaux + sons ---------- */
 let SIG = { notif: 0, chat: 0 };
