@@ -763,13 +763,35 @@ async def api_qr(data: str, size: int = 440):
         return JSONResponse({"error": "qr indisponible"}, status_code=502)
 
 # =============================  AUTH  ========================================
+# --- Anti-force brute sur la console admin (limiteur en mémoire, par IP) ---
+_LOGIN_FAILS: Dict[str, list] = {}
+LOGIN_WINDOW = 900     # fenêtre de 15 min
+LOGIN_MAX = 6          # échecs tolérés avant blocage temporaire
+
+def _client_ip(req: Request) -> str:
+    return ((req.headers.get("x-forwarded-for", "").split(",")[0].strip()
+             or (req.client.host if req.client else "")) or "?")[:60]
+
+def login_locked(ip: str) -> int:
+    """Secondes de blocage restantes (0 = pas bloqué)."""
+    now = time.time()
+    fails = [t for t in _LOGIN_FAILS.get(ip, []) if now - t < LOGIN_WINDOW]
+    _LOGIN_FAILS[ip] = fails
+    return int(LOGIN_WINDOW - (now - fails[0])) + 1 if len(fails) >= LOGIN_MAX else 0
+
 @app.post("/api/admin/login")
 async def admin_login(req: Request, resp: Response):
+    ip = _client_ip(req)
+    wait = login_locked(ip)
+    if wait:
+        return JSONResponse({"ok": False, "error": f"Trop de tentatives. Réessaie dans {wait // 60 + 1} min."}, status_code=429)
     d = await req.json()
     email = clean(d.get("email"), 120).lower()
     if email in ADMIN_EMAILS and (d.get("password") or "") == ADMIN_PASS:
+        _LOGIN_FAILS.pop(ip, None)
         set_cookie(resp, "admin", 0)
         return {"ok": True}
+    _LOGIN_FAILS.setdefault(ip, []).append(time.time())
     return JSONResponse({"ok": False, "error": "Identifiants incorrects."}, status_code=401)
 
 @app.post("/api/partenaire/login")
