@@ -179,6 +179,9 @@
     try { await api('/api/recruit', { body }); show('done-partner'); celebrate(); }
     catch (e) { toast(e.data?.error || "Échec de l'envoi", 'bad'); }
   };
+
+  /* Assistant public « Discuter avec NEBULA Agency » */
+  NA.agencyChat({ side: 'right' });
 </script>
 </body>
 </html>

@@ -225,6 +225,9 @@ def init_db():
             scope_id INTEGER DEFAULT 0,   -- id affilié (0 = admin)
             who TEXT,                     -- 'user' | 'nova'
             text TEXT, created REAL)""")
+        c.execute("""CREATE TABLE IF NOT EXISTS agency_chats(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ip TEXT, question TEXT, answer TEXT, created REAL)""")  # assistant public « NEBULA Agency »
         c.execute("""CREATE TABLE IF NOT EXISTS recruits(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             parrain_id INTEGER NOT NULL,         -- affilié qui recrute
@@ -1789,6 +1792,96 @@ async def nova_reply(system: str, hist: List[sqlite3.Row]) -> str:
             "Branche-la dans nebula-affilies/.env pour le cerveau complet.\n\n"
             "En attendant : concentre-toi sur les clients en « Attente » et « En cours », "
             "relance ceux sans nouvelle depuis 48 h, et vise le prochain palier de rang.")
+
+# ===========================  ASSISTANT PUBLIC « NEBULA AGENCY »  ============
+# Cerveau propre : répond AU NOM de NEBULA Agency aux questions des visiteurs.
+# Persona = NEBULA Agency (on ne met pas en avant que c'est une IA). Branché sur
+# le hub public ET dans chaque back-office affilié.
+def agency_brain() -> str:
+    cat = "\n".join(f"- {v['label']} : {fmoney(v['price'])} FCFA"
+                    for k, v in SERVICES.items() if k != "autre" and v.get("price"))
+    return (
+        "Tu es l'assistant officiel de NEBULA Agency. Tu réponds AU NOM de NEBULA Agency "
+        "(dis « nous », « chez NEBULA »). Style : français, chaleureux, professionnel, clair, CONCIS, sans emoji. "
+        "Ton rôle : répondre à toutes les questions des visiteurs sur NEBULA Agency, nos services, nos prix, "
+        "nos délais, et les guider vers la prise de contact.\n\n"
+        "QUI NOUS SOMMES : NEBULA Agency, agence digitale à Cotonou (Bénin), au service de l'Afrique de l'Ouest "
+        "francophone. Mission : donner aux commerçants et entrepreneurs une présence digitale professionnelle "
+        "(vitrines / sites, catalogues, QR codes) et de l'automatisation par intelligence artificielle, "
+        "livrée vite et clé en main.\n\n"
+        f"NOS OFFRES & PRIX :\n{cat}\n"
+        "- Avatar IA : un assistant qui répond automatiquement aux clients (devis selon les besoins).\n\n"
+        "DÉLAI : une vitrine est livrée en 5 à 7 jours en moyenne.\n"
+        f"CONTACT / COMMANDER : par WhatsApp au {WHATSAPP}. Invite le visiteur à nous écrire sur WhatsApp pour "
+        "démarrer un projet ou obtenir un devis précis.\n\n"
+        "RÈGLES STRICTES :\n"
+        "- Reste TOUJOURS sur NEBULA Agency et nos services ; si on te pose une question hors sujet, ramène "
+        "poliment vers ce que NEBULA peut apporter.\n"
+        "- N'invente JAMAIS de prix ni de promesses : utilise seulement les infos ci-dessus ; sinon propose un "
+        "devis sur WhatsApp.\n"
+        "- Tu te présentes comme « l'assistant de NEBULA Agency ». Inutile de parler de technologie. Si on te "
+        "demande explicitement si tu es un robot, réponds simplement que tu es l'assistant virtuel de NEBULA "
+        "Agency, là pour aider — sans en faire un sujet et sans prétendre être un humain.\n"
+        "- Réponses courtes (2 à 6 phrases), concrètes, et termine souvent par une invitation à passer à "
+        "l'action (devis WhatsApp, choisir une offre)."
+    )
+
+async def agency_reply(messages: List[dict]) -> str:
+    key = anthropic_key()
+    if key:
+        try:
+            async with httpx.AsyncClient(timeout=45) as cli:
+                r = await cli.post(
+                    "https://api.anthropic.com/v1/messages",
+                    headers={"x-api-key": key, "anthropic-version": "2023-06-01",
+                             "content-type": "application/json"},
+                    json={"model": BRAIN_MODEL, "max_tokens": 600, "system": agency_brain(), "messages": messages})
+            if r.status_code == 200:
+                data = r.json()
+                txt = "".join(b.get("text", "") for b in data.get("content", []) if b.get("type") == "text").strip()
+                if txt:
+                    return txt
+        except Exception:
+            pass
+    return ("Merci pour votre message ! Pour une réponse précise et rapide, écrivez-nous directement sur "
+            f"WhatsApp au {WHATSAPP} — l'équipe NEBULA Agency vous répond avec plaisir.")
+
+_AGENCY_HITS: Dict[str, list] = {}
+AGENCY_WINDOW = 900    # 15 min
+AGENCY_MAX = 30        # messages max / fenêtre / IP (anti-abus & coûts)
+
+@app.post("/api/agency-chat")
+async def agency_chat(req: Request):
+    ip = _client_ip(req)
+    now = time.time()
+    hits = [t for t in _AGENCY_HITS.get(ip, []) if now - t < AGENCY_WINDOW]
+    if len(hits) >= AGENCY_MAX:
+        return JSONResponse({"ok": False, "reply": "Beaucoup de questions d'un coup ! Réessayez dans quelques "
+                             f"minutes, ou écrivez-nous directement sur WhatsApp au {WHATSAPP}."}, status_code=429)
+    hits.append(now); _AGENCY_HITS[ip] = hits
+    try:
+        d = await req.json()
+    except Exception:
+        d = {}
+    raw = d.get("messages") or []
+    msgs: List[dict] = []
+    for m in raw[-8:]:
+        role = "assistant" if m.get("role") == "assistant" else "user"
+        content = clean(m.get("content"), 1000)
+        if content:
+            msgs.append({"role": role, "content": content})
+    while msgs and msgs[0]["role"] != "user":
+        msgs = msgs[1:]
+    if not msgs:
+        msgs = [{"role": "user", "content": "Bonjour"}]
+    reply = await agency_reply(msgs)
+    try:
+        with db() as c:
+            c.execute("INSERT INTO agency_chats(ip,question,answer,created) VALUES(?,?,?,?)",
+                      (ip, msgs[-1]["content"][:500], reply[:2000], now))
+    except Exception:
+        pass
+    return {"ok": True, "reply": reply}
 
 @app.post("/api/brain")
 async def brain(req: Request, naff_session: Optional[str] = Cookie(default=None)):

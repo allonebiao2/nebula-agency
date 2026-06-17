@@ -232,6 +232,41 @@ const NA = (() => {
     input.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
   }
 
+  /* ---------- « Discuter avec NEBULA Agency » (assistant public, cerveau propre) ---------- */
+  function agencyChat(opts = {}) {
+    const side = opts.side === 'left' ? 'left' : 'right';
+    const fab = el(`<button class="ag-fab ${side}" title="Discuter avec NEBULA Agency"><span class="ag-dot"></span><span class="ag-lbl">Discuter avec NEBULA&nbsp;Agency</span></button>`);
+    const panel = el(`<div class="nova-panel ag ${side}">
+      <div class="nova-head"><div class="orb"></div><div class="grow"><div style="font-family:Space Grotesk;font-weight:700">NEBULA Agency</div><div class="faint" style="font-size:.74rem">On répond à vos questions</div></div><button class="icon-btn close" style="width:34px;height:34px">${icon('close')}</button></div>
+      <div class="nova-log"></div>
+      <div class="nova-foot"><input placeholder="Posez votre question…" /><button class="nova-send">${icon('send')}</button></div>
+    </div>`);
+    document.body.append(fab, panel);
+    const log = panel.querySelector('.nova-log'), input = panel.querySelector('input');
+    const hist = [];
+    const add = (who, text) => { const m = el(`<div class="nova-msg ${who === 'user' ? 'u' : 'n'}">${esc(text)}</div>`); log.appendChild(m); log.scrollTop = log.scrollHeight; return m; };
+    let open = false, greeted = false;
+    function greet() {
+      if (greeted) return; greeted = true;
+      add('agency', "Bonjour et bienvenue chez NEBULA Agency. Posez-moi vos questions sur nos sites vitrines, catalogues, QR codes, délais et tarifs — je suis là pour vous aider.");
+    }
+    async function send() {
+      const msg = input.value.trim(); if (!msg) return; input.value = '';
+      add('user', msg); hist.push({ role: 'user', content: msg }); Sound.sfx.click();
+      const typing = el(`<div class="nova-msg n"><span class="typing"><i></i><i></i><i></i></span></div>`); log.appendChild(typing); log.scrollTop = log.scrollHeight;
+      try {
+        const d = await api('/api/agency-chat', { body: { messages: hist.slice(-8) } });
+        typing.remove(); add('agency', d.reply); hist.push({ role: 'assistant', content: d.reply }); Sound.sfx.open();
+      } catch (e) {
+        typing.remove(); add('agency', "Désolé, petite coupure. Réessayez dans un instant, ou écrivez-nous sur WhatsApp.");
+      }
+    }
+    function toggle() { open = !open; panel.classList.toggle('on', open); if (open) { Sound.sfx.open(); greet(); setTimeout(() => input.focus(), 200); } }
+    fab.onclick = toggle; panel.querySelector('.close').onclick = toggle;
+    panel.querySelector('.nova-send').onclick = send;
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+  }
+
   /* ---------- didacticiel / guide pas-à-pas ---------- */
   function tour(steps, key) {
     let i = 0;
@@ -257,5 +292,5 @@ const NA = (() => {
     scrim.classList.add('on'); render(); Sound.sfx.open();
   }
 
-  return { el, esc, fmt, ago, api, icon, sound: Sound, toast, countUp, reveal, qr, celebrate, nova, tour };
+  return { el, esc, fmt, ago, api, icon, sound: Sound, toast, countUp, reveal, qr, celebrate, nova, agencyChat, tour };
 })();
