@@ -630,6 +630,10 @@ def recruit_page(code: str):
 def devenir_page():
     return page("devenir.html")
 
+@app.get("/p/{code}", response_class=HTMLResponse)
+def hub_page(code: str):
+    return page("hub.html")
+
 # ---- Config publique (catalogue, statuts, réseaux) pour les fronts ----
 @app.get("/api/config")
 def api_config():

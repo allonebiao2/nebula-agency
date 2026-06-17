@@ -212,7 +212,7 @@ async function createAff() {
   if (!(body.prenom || body.nom)) return toast('Nom requis', 'bad');
   try {
     const d = await api('/api/admin/affiliates', { body });
-    const link = location.origin + '/r/' + d.code;
+    const link = location.origin + '/p/' + d.code;
     sound.sfx.cash();
     document.getElementById('modal-in').innerHTML = `
       <div class="center" style="padding:8px">

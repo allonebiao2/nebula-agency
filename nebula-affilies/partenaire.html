@@ -105,7 +105,7 @@ const TOUR = [
   { icon: 'users', title: 'Mon réseau', text: 'Recrute des partenaires avec ton <b>lien de recrutement</b>. Tu gagnes <b>10%</b> sur leurs ventes (N1) et <b>5%</b> sur celles de leurs recrues (N2). Ton arbre est ici.' },
   { icon: 'trophy', title: 'Classement', text: 'Vois le niveau de <b>toute l\'équipe</b> : rang, ventes, RCM, performance. Les clients de chacun restent privés — ici, on compare les scores. Grimpe !' },
   { icon: 'chat', title: 'Messages', text: 'Ton bureau est vivant : écris à un partenaire en privé, ou à toute l\'équipe dans le <b>salon NEBULA</b>. Une tonalité sonne dès que ça bouge sur la plateforme.' },
-  { icon: 'link', title: 'Mon lien', text: 'Ton lien magique à partager sur WhatsApp : un commerçant le remplit → il devient ton client. Plus tu partages, plus tu gagnes.' },
+  { icon: 'link', title: 'Mon lien', text: 'Ton <b>lien unique</b> à partager partout : celui qui l\'ouvre choisit de <b>demander une vitrine</b> (il devient ton client) ou de <b>devenir partenaire</b> (il rejoint ton réseau). Un seul lien, un seul QR — tout t\'est attribué.' },
   { icon: 'doc', title: 'Documentation', text: 'Tes <b>munitions de vente</b> : guides, fiches produits, argumentaires, réponses aux objections. NEBULA les met à jour — tu as toujours la dernière version. Lis-les pour exceller.' },
   { icon: 'megaphone', title: 'Publication', text: 'Des <b>contenus prêts à poster</b> (textes, visuels, vidéos, scripts) sur WhatsApp, Facebook, Instagram… Copie, télécharge, partage — et fais venir les clients.' },
   { icon: 'palette', title: 'Personnaliser', text: 'Choisis la couleur de ton espace et ton pseudo de joueur (visible au classement).' },
@@ -249,7 +249,7 @@ async function renderGains() {
 
 function renderReseau() {
   const net = ME.network || { n1: [], n2: [], n1_commission: 0, n2_commission: 0, network_total: 0, n1_count: 0, n2_count: 0 };
-  const link = location.origin + '/rejoindre/' + ME.code;
+  const link = location.origin + '/p/' + ME.code + '?go=partenaire';
   const row = (x, lvl, rate) => `<div class="row" style="grid-template-columns:42px 1fr auto"><div class="avatar">${initials(x.name)}</div><div><div class="ttl">${esc(x.name)} <span class="chip" style="margin-left:6px">${lvl}</span></div><div class="meta">${x.ventes} vente${x.ventes > 1 ? 's' : ''} · ${rate}</div></div><div class="center"><div class="mono" style="color:var(--accent);font-weight:700">${fmt(x.commission)} F</div><div class="meta">pour toi</div></div></div>`;
   document.getElementById('v-reseau').innerHTML = `
     <div class="bento">
@@ -291,33 +291,35 @@ function renderReseau() {
 }
 
 function renderLink() {
-  const link = location.origin + '/r/' + ME.code;
+  const link = location.origin + '/p/' + ME.code;
   const s = ME.stats;
   document.getElementById('v-link').innerHTML = `
     <div class="bento">
       <div class="col-7 rv"><div class="card glow"><div class="in">
-        <span class="eyebrow"><span class="dot"></span>Ton lien magique</span>
-        <h2 class="mt8" style="font-size:1.6rem">Partage. Ils remplissent. Tu encaisses.</h2>
-        <p class="muted mt8 mb16">Envoie ce lien à un commerçant. Dès qu'il remplit le formulaire, il apparaît chez toi et NEBULA est prévenue.</p>
+        <span class="eyebrow"><span class="dot"></span>Ton lien unique</span>
+        <h2 class="mt8" style="font-size:1.6rem">Un seul lien. Deux pouvoirs.</h2>
+        <p class="muted mt8 mb16">Partage ce lien partout. Celui qui l'ouvre choisit : <b style="color:var(--ink)">demander une vitrine</b> (il devient ton client) ou <b style="color:var(--ink)">devenir partenaire</b> (il rejoint ton réseau). Tout t'est attribué automatiquement.</p>
         <div class="field"><div class="wrap"><input id="lk" readonly value="${esc(link)}" style="font-family:JetBrains Mono;font-size:.85rem"></div></div>
         <div class="flex gap8 wrap">
           <button class="btn primary" id="copy">Copier le lien<span class="ico">${icon('copy')}</span></button>
-          <a class="btn ghost" id="wa" target="_blank" rel="noopener">Partager sur WhatsApp<span class="ico">${icon('phone')}</span></a>
+          <a class="btn ghost" id="wa-client" target="_blank" rel="noopener">Partager (client)<span class="ico">${icon('phone')}</span></a>
+          <a class="btn ghost" id="wa-part" target="_blank" rel="noopener">Partager (recruter)<span class="ico">${icon('users')}</span></a>
         </div>
         <div class="divider"></div>
         <div class="flex gap8 wrap">
-          <span class="chip">Total reçus · <b>${s.nb_total}</b></span>
+          <span class="chip">Clients reçus · <b>${s.nb_total}</b></span>
           <span class="chip" style="color:var(--ok)">Terminés · <b>${s.by_status.termine}</b></span>
           <span class="chip" style="color:var(--accent)">Code · <b>${ME.code}</b></span>
         </div>
       </div></div></div>
       <div class="col-5 rv"><div class="card"><div class="in center">
-        <span class="eyebrow"><span class="dot"></span>QR Code</span>
+        <span class="eyebrow"><span class="dot"></span>QR Code unique</span>
         <div style="background:#0b0b12;border-radius:18px;padding:14px;margin:16px auto;width:max-content;border:1px solid var(--hair)"><img src="${qr(link, 220)}" alt="QR" width="220" height="220" style="display:block;border-radius:8px"></div>
-        <p class="muted" style="font-size:.85rem">Imprime-le ou montre-le. On le scanne, le formulaire s'ouvre.</p>
+        <p class="muted" style="font-size:.85rem">Imprime-le ou montre-le. On le scanne, le lien s'ouvre — client OU partenaire.</p>
       </div></div></div>
     </div>`;
-  document.getElementById('wa').href = 'https://wa.me/?text=' + encodeURIComponent('Bonjour, je travaille avec NEBULA Agency (vitrines digitales, Google Maps, avatars IA). Dites-moi votre projet ici : ' + link);
+  document.getElementById('wa-client').href = 'https://wa.me/?text=' + encodeURIComponent('Bonjour, je travaille avec NEBULA Agency (vitrines digitales, catalogues, QR codes). Dites-moi votre projet ici : ' + link);
+  document.getElementById('wa-part').href = 'https://wa.me/?text=' + encodeURIComponent("Tu veux gagner de l'argent avec NEBULA ? Vends des vitrines digitales et touche des commissions, sans stock. Rejoins-moi ici : " + link + '?go=partenaire');
   document.getElementById('copy').onclick = () => { navigator.clipboard?.writeText(link); sound.sfx.cash(); toast('Lien copié ✓', 'ok'); };
 }
 

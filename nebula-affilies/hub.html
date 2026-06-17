@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NEBULA Agency — Rejoindre</title>
+<link rel="icon" type="image/png" href="/static/favicon.png">
+<link rel="apple-touch-icon" href="/static/favicon.png">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<div class="bg-orbs"></div>
+<div class="bg-grain"></div>
+
+<div class="gate">
+  <div class="box" style="max-width:620px">
+
+    <!-- CHOOSER -->
+    <section id="choose">
+      <div class="center mb24">
+        <div class="flex" style="justify-content:center;margin-bottom:14px"><img src="/static/nebula-logo.png" alt="NEBULA Agency" style="width:min(230px,64vw);height:auto;filter:drop-shadow(0 10px 34px rgba(123,92,255,.45))"></div>
+        <span class="eyebrow"><span class="dot"></span>NEBULA Agency · Cotonou</span>
+        <h1 class="big mt16" style="font-size:clamp(1.7rem,5vw,2.5rem)"><b id="who" style="color:var(--ink)">…</b> t'invite chez NEBULA.</h1>
+        <p class="lead mt16">Que veux-tu faire aujourd'hui ?</p>
+      </div>
+      <div class="portal-grid">
+        <div class="card portal-card glow" id="pick-client">
+          <div class="in center">
+            <div class="emblem" style="width:56px;height:56px;border-radius:16px;margin:0 auto 14px" id="ic-client"></div>
+            <h3 style="font-size:1.2rem">J'ai un business</h3>
+            <p class="muted mt8" style="font-size:.88rem">Je veux une <b style="color:var(--ink)">vitrine / un site pro</b> qui présente mes produits et fait vendre sur WhatsApp.</p>
+            <div class="btn primary block mt16">Demander mon site<span class="ico" id="a-client"></span></div>
+          </div>
+        </div>
+        <div class="card portal-card" id="pick-partner">
+          <div class="in center">
+            <div class="emblem" style="width:56px;height:56px;border-radius:16px;margin:0 auto 14px" id="ic-partner"></div>
+            <h3 style="font-size:1.2rem">Je veux gagner avec NEBULA</h3>
+            <p class="muted mt8" style="font-size:.88rem">Devenir <b style="color:var(--ink)">partenaire</b> : présenter NEBULA et toucher des commissions, sans stock ni capital.</p>
+            <div class="btn ghost block mt16" style="border-color:var(--hair-2)">Devenir partenaire<span class="ico" id="a-partner"></span></div>
+          </div>
+        </div>
+      </div>
+      <p class="center faint mt24" style="font-size:.8rem">Un seul lien · tu choisis ton chemin</p>
+    </section>
+
+    <!-- CLIENT FORM -->
+    <section id="client" class="hide">
+      <button class="btn sm ghost mb16" data-back>← Retour</button>
+      <div class="center mb24"><span class="eyebrow"><span class="dot"></span>Votre projet</span><h2 class="mt8" style="font-size:1.6rem">Parlons de votre site.</h2>
+        <p class="muted mt8">Laissez vos infos, NEBULA vous recontacte vite sur WhatsApp.</p></div>
+      <div class="card glow"><div class="in">
+        <div class="bento" style="gap:0 14px">
+          <div class="col-6 field"><label>Prénom</label><div class="wrap"><input id="c-prenom" placeholder="Votre prénom"></div></div>
+          <div class="col-6 field"><label>Nom</label><div class="wrap"><input id="c-nom" placeholder="Votre nom"></div></div>
+        </div>
+        <div class="field"><label>Numéro WhatsApp</label><div class="wrap"><input id="c-numero" inputmode="tel" placeholder="Ex : 01 96 74 07 32"></div></div>
+        <div class="field"><label>Service souhaité</label><div class="wrap"><select id="c-service"></select></div></div>
+        <div class="field"><label>Votre message <span class="faint">(facultatif)</span></label><div class="wrap"><textarea id="c-message" placeholder="Dites-nous en quelques mots ce que vous voulez…"></textarea></div></div>
+        <button class="btn primary block mt8" id="c-go">Envoyer ma demande<span class="ico" id="ac-go"></span></button>
+        <p class="center faint mt16" style="font-size:.78rem">Vos informations restent confidentielles</p>
+      </div></div>
+    </section>
+
+    <!-- PARTNER FORM -->
+    <section id="partner" class="hide">
+      <button class="btn sm ghost mb16" data-back>← Retour</button>
+      <div class="center mb24"><span class="eyebrow"><span class="dot"></span>Devenir partenaire</span><h2 class="mt8" style="font-size:1.6rem">Rejoins l'équipe.</h2>
+        <p class="muted mt8">Vends des vitrines, monte en rang, encaisse. NEBULA valide ta candidature et t'envoie tes accès.</p></div>
+      <div class="card glow"><div class="in">
+        <div class="bento" style="gap:0 14px">
+          <div class="col-6 field"><label>Prénom</label><div class="wrap"><input id="p-prenom" placeholder="Ton prénom"></div></div>
+          <div class="col-6 field"><label>Nom</label><div class="wrap"><input id="p-nom" placeholder="Ton nom"></div></div>
+        </div>
+        <div class="field"><label>Numéro WhatsApp</label><div class="wrap"><input id="p-numero" inputmode="tel" placeholder="Ex : 01 96 74 07 32"></div></div>
+        <div class="bento" style="gap:0 14px">
+          <div class="col-6 field"><label>Numéro Mobile Money</label><div class="wrap"><input id="p-momo" inputmode="tel" placeholder="Pour être payé"></div></div>
+          <div class="col-6 field"><label>Réseau</label><div class="wrap"><select id="p-reseau"></select></div></div>
+        </div>
+        <div class="field"><label>Un mot sur toi <span class="faint">(facultatif)</span></label><div class="wrap"><textarea id="p-message" placeholder="Pourquoi tu veux rejoindre, ce que tu fais…"></textarea></div></div>
+        <button class="btn primary block mt8" id="p-go">Envoyer ma candidature<span class="ico" id="ap-go"></span></button>
+        <p class="center faint mt16" style="font-size:.78rem">NEBULA Agency · Cotonou, Bénin</p>
+      </div></div>
+    </section>
+
+    <!-- SUCCÈS CLIENT -->
+    <section id="done-client" class="hide">
+      <div class="card glow"><div class="in center" style="padding:44px 26px">
+        <div class="avatar" id="ck-client" style="margin:0 auto 18px;width:64px;height:64px;background:linear-gradient(135deg,var(--ok),#1f9e6e)"></div>
+        <h2 style="font-size:1.7rem">C'est envoyé !</h2>
+        <p class="lead mt16">Merci ! Votre demande est bien arrivée chez NEBULA Agency. On vous recontacte très vite sur WhatsApp.</p>
+        <a class="btn ghost mt24" id="wa-client" target="_blank" rel="noopener">Écrire sur WhatsApp<span class="ico" id="awc"></span></a>
+      </div></div>
+    </section>
+
+    <!-- SUCCÈS PARTENAIRE -->
+    <section id="done-partner" class="hide">
+      <div class="card glow"><div class="in center" style="padding:44px 26px">
+        <div class="avatar" id="ck-partner" style="margin:0 auto 18px;width:64px;height:64px;background:linear-gradient(135deg,var(--ok),#1f9e6e)"></div>
+        <h2 style="font-size:1.7rem">Candidature envoyée !</h2>
+        <p class="lead mt16">Merci ! NEBULA examine ta candidature et te recontacte vite avec ton lien et tes accès partenaire.</p>
+      </div></div>
+    </section>
+
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+<script>
+  const { icon, api, toast, sound, celebrate, esc, el } = NA;
+  const code = decodeURIComponent(location.pathname.split('/p/')[1] || '').toUpperCase();
+  let CFG = null;
+  document.getElementById('ic-client').innerHTML = icon('image');
+  document.getElementById('ic-partner').innerHTML = icon('coins');
+  ['a-client', 'a-partner', 'ac-go', 'ap-go'].forEach(id => { const e = document.getElementById(id); if (e) e.innerHTML = icon('arrow'); });
+  document.getElementById('awc').innerHTML = icon('phone');
+  document.getElementById('ck-client').innerHTML = icon('check');
+  document.getElementById('ck-partner').innerHTML = icon('check');
+
+  const SECTIONS = ['choose', 'client', 'partner', 'done-client', 'done-partner'];
+  function show(id) { SECTIONS.forEach(s => document.getElementById(s).classList.toggle('hide', s !== id)); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+  (async function init() {
+    try { CFG = await api('/api/config'); } catch (e) {}
+    if (CFG) {
+      const sel = document.getElementById('c-service');
+      Object.entries(CFG.services).forEach(([k, v]) => { if (k !== 'autre') sel.appendChild(el(`<option value="${k}">${esc(v.label)}</option>`)); });
+      sel.appendChild(el(`<option value="autre">Autre / à discuter</option>`));
+      const rsel = document.getElementById('p-reseau');
+      (CFG.reseaux || ['MTN MoMo']).forEach(r => rsel.appendChild(el(`<option>${esc(r)}</option>`)));
+      const wa = document.getElementById('wa-client'); wa.href = 'https://wa.me/' + (CFG.whatsapp || '').replace(/[^0-9]/g, '');
+    }
+    try { const a = await api('/api/affiliate/' + encodeURIComponent(code) + '/public'); document.getElementById('who').textContent = a.name; }
+    catch (e) { document.getElementById('who').textContent = 'NEBULA'; }
+    const go = new URLSearchParams(location.search).get('go');
+    if (go === 'client') show('client');
+    else if (go === 'partenaire' || go === 'partner') show('partner');
+  })();
+
+  document.getElementById('pick-client').onclick = () => { sound.sfx.tab(); show('client'); };
+  document.getElementById('pick-partner').onclick = () => { sound.sfx.tab(); show('partner'); };
+  document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => { sound.sfx.click(); show('choose'); });
+
+  document.getElementById('c-go').onclick = async () => {
+    const body = { code,
+      prenom: document.getElementById('c-prenom').value.trim(), nom: document.getElementById('c-nom').value.trim(),
+      numero: document.getElementById('c-numero').value.trim(), service: document.getElementById('c-service').value,
+      message: document.getElementById('c-message').value.trim() };
+    if (!(body.prenom || body.nom) || !body.numero) return toast('Nom et numéro obligatoires', 'bad');
+    try { await api('/api/lead', { body }); show('done-client'); celebrate(); }
+    catch (e) { toast(e.data?.error || "Échec de l'envoi", 'bad'); }
+  };
+  document.getElementById('p-go').onclick = async () => {
+    const body = { code,
+      prenom: document.getElementById('p-prenom').value.trim(), nom: document.getElementById('p-nom').value.trim(),
+      numero: document.getElementById('p-numero').value.trim(), momo_number: document.getElementById('p-momo').value.trim(),
+      momo_reseau: document.getElementById('p-reseau').value, message: document.getElementById('p-message').value.trim() };
+    if (!(body.prenom || body.nom) || !body.numero) return toast('Nom et numéro obligatoires', 'bad');
+    try { await api('/api/recruit', { body }); show('done-partner'); celebrate(); }
+    catch (e) { toast(e.data?.error || "Échec de l'envoi", 'bad'); }
+  };
+</script>
+</body>
+</html>
