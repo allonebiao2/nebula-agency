@@ -1418,5 +1418,73 @@ if(window.NEBULA_SFX)window.NEBULA_SFX.play.cash();window.open('https://wa.me/22
 })();
 </script>
 
+<!-- ============ ASSISTANT « DISCUTER AVEC NEBULA AGENCY » ============ -->
+<style>
+.na-chat-fab{position:fixed;right:22px;bottom:22px;z-index:300;display:inline-flex;align-items:center;gap:10px;
+  padding:14px 20px;border-radius:40px;border:1px solid rgba(255,255,255,.18);cursor:pointer;
+  font-family:'Space Grotesk','Inter',sans-serif;font-weight:700;font-size:.9rem;color:#05060d;
+  background:linear-gradient(100deg,#4f6fff,#06b6d4);box-shadow:0 12px 34px -8px rgba(79,111,255,.6);
+  transition:transform .25s ease,box-shadow .25s ease;}
+.na-chat-fab:hover{transform:translateY(-3px);box-shadow:0 18px 44px -8px rgba(6,182,212,.7);}
+.na-chat-fab .ncd{width:9px;height:9px;border-radius:50%;background:#05060d;animation:ncBlink 1.5s infinite;}
+@keyframes ncBlink{0%,100%{opacity:1}50%{opacity:.3}}
+.na-chat-panel{position:fixed;right:22px;bottom:92px;z-index:300;width:min(400px,calc(100vw - 28px));
+  height:min(600px,72dvh);display:none;flex-direction:column;border-radius:22px;overflow:hidden;
+  background:rgba(10,13,26,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(122,142,255,.25);box-shadow:0 30px 80px -20px rgba(0,0,0,.85);font-family:'Inter',sans-serif;}
+.na-chat-panel.on{display:flex;animation:ncIn .4s cubic-bezier(.22,1,.36,1) both;}
+@keyframes ncIn{from{opacity:0;transform:translateY(20px) scale(.98)}to{opacity:1;transform:none}}
+.na-chat-head{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid rgba(122,142,255,.18);}
+.na-chat-head .nco{width:40px;height:40px;border-radius:13px;flex:0 0 auto;
+  background:linear-gradient(135deg,#4f6fff,#06b6d4);box-shadow:0 6px 20px -4px rgba(79,111,255,.6);}
+.na-chat-head b{font-family:'Space Grotesk',sans-serif;font-size:1rem;color:#ecf0ff;display:block;line-height:1.1;}
+.na-chat-head small{font-size:.72rem;color:#a8b2d1;}
+.na-chat-head .ncx{margin-left:auto;background:none;border:none;color:#a8b2d1;cursor:pointer;font-size:1.5rem;line-height:1;padding:2px 8px;}
+.na-chat-log{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;}
+.na-msg{max-width:86%;padding:12px 14px;border-radius:16px;font-size:.9rem;line-height:1.5;white-space:pre-wrap;color:#ecf0ff;}
+.na-msg.u{align-self:flex-end;background:linear-gradient(120deg,rgba(79,111,255,.28),rgba(6,182,212,.2));border:1px solid rgba(122,142,255,.35);}
+.na-msg.a{align-self:flex-start;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);}
+.na-chat-foot{padding:14px;border-top:1px solid rgba(122,142,255,.18);display:flex;gap:9px;}
+.na-chat-foot input{flex:1;background:rgba(0,0,0,.35);border:1px solid rgba(122,142,255,.25);border-radius:14px;
+  padding:13px 14px;color:#ecf0ff;font-size:16px;font-family:'Inter',sans-serif;}
+.na-chat-foot input:focus{outline:none;border-color:#4f6fff;}
+.na-chat-foot button{width:46px;height:46px;border-radius:13px;border:none;cursor:pointer;flex:0 0 auto;
+  background:linear-gradient(135deg,#4f6fff,#06b6d4);color:#05060d;font-size:1.1rem;}
+.na-typing{display:inline-flex;gap:4px;}.na-typing i{width:7px;height:7px;border-radius:50%;background:#a8b2d1;animation:ncBlink 1.2s infinite;}
+.na-typing i:nth-child(2){animation-delay:.2s}.na-typing i:nth-child(3){animation-delay:.4s}
+@media(max-width:560px){.na-chat-fab{right:14px;bottom:14px;font-size:.78rem;padding:12px 15px;}
+  .na-chat-panel{right:10px;left:10px;bottom:84px;width:auto;}}
+</style>
+<button class="na-chat-fab" id="naChatFab" type="button"><span class="ncd"></span>Discuter avec NEBULA Agency</button>
+<div class="na-chat-panel" id="naChatPanel">
+  <div class="na-chat-head"><span class="nco"></span><div><b>NEBULA Agency</b><small>On répond à vos questions</small></div><button class="ncx" id="naChatClose" type="button" aria-label="Fermer">&times;</button></div>
+  <div class="na-chat-log" id="naChatLog"></div>
+  <div class="na-chat-foot"><input id="naChatInput" placeholder="Posez votre question…" autocomplete="off"><button id="naChatSend" type="button" aria-label="Envoyer">&#10148;</button></div>
+</div>
+<script>
+(function(){
+  var API='https://nebula-affilies-production.up.railway.app/api/agency-chat';
+  var fab=document.getElementById('naChatFab'),panel=document.getElementById('naChatPanel'),
+      log=document.getElementById('naChatLog'),input=document.getElementById('naChatInput'),
+      sendBtn=document.getElementById('naChatSend'),closeBtn=document.getElementById('naChatClose');
+  var hist=[],greeted=false,isOpen=false;
+  function esc(s){return String(s||'').replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+  function add(who,text){var m=document.createElement('div');m.className='na-msg '+(who==='u'?'u':'a');m.innerHTML=esc(text);log.appendChild(m);log.scrollTop=log.scrollHeight;return m;}
+  function greet(){if(greeted)return;greeted=true;add('a',"Bonjour et bienvenue chez NEBULA Agency. Posez-moi vos questions sur nos sites vitrines, catalogues, QR codes, délais et tarifs — je suis là pour vous aider.");}
+  function toggle(){isOpen=!isOpen;panel.classList.toggle('on',isOpen);if(isOpen){greet();setTimeout(function(){input.focus();},200);}}
+  function ask(){
+    var msg=input.value.trim();if(!msg)return;input.value='';
+    add('u',msg);hist.push({role:'user',content:msg});
+    var t=document.createElement('div');t.className='na-msg a';t.innerHTML='<span class="na-typing"><i></i><i></i><i></i></span>';log.appendChild(t);log.scrollTop=log.scrollHeight;
+    fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:hist.slice(-8)})})
+      .then(function(r){return r.json();})
+      .then(function(d){t.remove();var rep=(d&&d.reply)||"Désolé, réessayez dans un instant.";add('a',rep);hist.push({role:'assistant',content:rep});})
+      .catch(function(){t.remove();add('a',"Petite coupure. Réessayez, ou écrivez-nous sur WhatsApp au +229 96 74 07 32.");});
+  }
+  fab.onclick=toggle;closeBtn.onclick=toggle;sendBtn.onclick=ask;
+  input.addEventListener('keydown',function(e){if(e.key==='Enter')ask();});
+})();
+</script>
+
 </body>
 </html>
