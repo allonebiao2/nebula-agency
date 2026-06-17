@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>Console NEBULA — Affiliés</title>
+<link rel="icon" type="image/png" href="/static/favicon.png">
+<link rel="apple-touch-icon" href="/static/favicon.png">
 <link rel="stylesheet" href="/static/app.css">
 </head>
 <body>
@@ -13,7 +15,7 @@
 
 <div class="app">
   <aside class="dock">
-    <div class="logo">N</div>
+    <div class="logo"><img class="brandmark" src="/static/nebula-mark.png" alt="NEBULA"></div>
     <nav id="nav" class="flex" style="flex-direction:column;gap:8px"></nav>
     <div class="nav-sp"></div>
     <button class="nav-i" id="logout" title="Quitter"></button>
@@ -599,7 +601,7 @@ async function renderMessages() {
   document.getElementById('v-messages').innerHTML = `
     <div class="flex between wrap mb16 rv" style="gap:14px;align-items:center">
       <div><span class="eyebrow"><span class="dot"></span>Messages</span><h2 class="mt8" style="font-size:1.8rem">Communique avec ton réseau</h2></div>
-      <div class="flex" style="gap:11px;align-items:center"><div class="chat-ava" id="myAva" style="width:42px;height:42px">${icon('grid')}</div>
+      <div class="flex" style="gap:11px;align-items:center"><div class="chat-ava" id="myAva" style="width:42px;height:42px"><img class="av-img" src="/static/nebula-mark.png" alt=""></div>
         <label class="btn sm ghost" for="adminPfpInput">Changer ma photo<span class="ico">${icon('camera')}</span></label>
         <input type="file" id="adminPfpInput" accept="image/*" style="display:none"></div>
     </div>
@@ -616,7 +618,7 @@ async function uploadAdminPhoto() {
 }
 async function loadContacts() {
   let d; try { d = await api('/api/chat/contacts'); } catch (e) { return; }
-  const my = document.getElementById('myAva'); if (my) my.innerHTML = d.my.photo ? `<img class="av-img" src="${esc(d.my.photo)}?t=${Date.now()}" alt="">` : icon('grid');
+  const my = document.getElementById('myAva'); if (my) my.innerHTML = d.my.photo ? `<img class="av-img" src="${esc(d.my.photo)}?t=${Date.now()}" alt="">` : '<img class="av-img" src="/static/nebula-mark.png" alt="">';
   const side = document.getElementById('chatSide'); if (!side) return;
   let html = `<div class="chat-sechead">Salon d'équipe</div>` + contactRow('general', 'Salon NEBULA', '', 'grp', d.general.unread, d.general.last, true);
   html += `<div class="chat-sechead">Partenaires</div>` + d.contacts.map(c => contactRow(c.uid, c.name, c.photo, '', c.unread, c.last, false, c.accent, c.sub)).join('');
@@ -625,7 +627,7 @@ async function loadContacts() {
   setMsgBadge(d.contacts.reduce((s, c) => s + c.unread, 0) + d.general.unread);
 }
 function contactRow(uid, name, photo, grp, unread, last, isGen, accent, sub) {
-  const ava = grp === 'grp' ? `<div class="chat-ava grp">${icon('users')}</div>`
+  const ava = grp === 'grp' ? `<div class="chat-ava"><img class="av-img" src="/static/nebula-mark.png" alt=""></div>`
     : (photo ? `<div class="chat-ava"><img class="av-img" src="${esc(photo)}" alt=""></div>` : `<div class="chat-ava" style="color:${accent || 'var(--accent)'}">${initials(name)}</div>`);
   const subtxt = last || sub || (isGen ? "Toute l'équipe" : '');
   return `<div class="chat-contact${CHAT.channel === uid ? ' on' : ''}" data-uid="${uid}" data-name="${esc(name)}">
@@ -636,7 +638,7 @@ async function openConv(channel, name) {
   CHAT.channel = channel; CHAT.convName = name;
   const w = document.getElementById('chatWrap'); if (w) w.classList.add('conv-open');
   document.querySelectorAll('.chat-contact').forEach(x => x.classList.toggle('on', x.dataset.uid === channel));
-  const headAva = channel === 'general' ? `<div class="chat-ava grp" style="width:38px;height:38px">${icon('users')}</div>` : `<div class="chat-ava" style="width:38px;height:38px">${initials(name)}</div>`;
+  const headAva = channel === 'general' ? `<div class="chat-ava" style="width:38px;height:38px"><img class="av-img" src="/static/nebula-mark.png" alt=""></div>` : `<div class="chat-ava" style="width:38px;height:38px">${initials(name)}</div>`;
   document.getElementById('chatConv').innerHTML = `
     <div class="chat-head"><div class="chat-back" id="chatBack">${icon('arrow')}</div>${headAva}
       <div><div class="ttl" style="font-size:.98rem">${esc(name)}</div><div class="meta">${channel === 'general' ? "Salon d'équipe" : 'Conversation privée'}</div></div></div>
