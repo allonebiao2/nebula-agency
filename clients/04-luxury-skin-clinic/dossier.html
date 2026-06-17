@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Dossier Beauté — Luxury Skin Clinic</title>
+<meta name="description" content="Outil interne — Dossier Beauté & suivi de soin · Mme Sabrina">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --noir:#0a0a0a; --noir-2:#141210; --noir-3:#211d16;
+  --creme:#faf6ec; --nacre:#f4eede;
+  --or:#c9a84c; --or-fonce:#a8862f; --or-clair:#e6d3a0;
+  --texte:#e7decb; --texte-doux:#a99a7c;
+  --ligne:rgba(201,168,76,.22);
+  --vert:#7fb59a; --rose:#bd7d8e; --rouge:#d97a7a;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--noir);color:var(--texte);font-family:'Jost',system-ui,sans-serif;
+  font-weight:300;line-height:1.55;min-height:100vh;
+  background-image:
+    radial-gradient(ellipse 50% 40% at 0% 0%,rgba(201,168,76,.08),transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 100%,rgba(127,181,154,.06),transparent 60%);}
+h1,h2,h3,h4{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;color:var(--creme);}
+a{color:var(--or-clair);text-decoration:none;}
+a:hover{color:var(--or);}
+
+/* HEADER */
+.head{position:sticky;top:0;z-index:50;background:rgba(10,10,10,.92);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--ligne);
+  padding:14px 26px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+.head-l{display:flex;align-items:baseline;gap:14px;}
+.head-mark{font-family:'Cormorant Garamond',serif;font-size:1.3rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--or-clair);}
+.head-tag{font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--texte-doux);}
+.head-r{display:flex;gap:10px;flex-wrap:wrap;}
+.head-link{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:9px;
+  background:rgba(201,168,76,.12);border:1px solid var(--ligne);
+  font-size:.78rem;letter-spacing:.04em;color:var(--creme);transition:all .25s ease;cursor:pointer;
+  font-family:'Jost',sans-serif;}
+.head-link:hover{background:rgba(201,168,76,.25);border-color:var(--or);color:var(--creme);}
+.head-link svg{width:14px;height:14px;}
+.head-link.primary{background:linear-gradient(135deg,#e6d3a0,#c9a84c 70%,#a8862f);color:#0a0a0a;
+  font-weight:600;border-color:rgba(255,255,255,.25);}
+.head-link.primary:hover{transform:translateY(-1px);box-shadow:0 8px 16px -4px rgba(201,168,76,.5);}
+
+/* LAYOUT */
+.main{max-width:920px;margin:0 auto;padding:36px 26px 80px;}
+.intro{text-align:center;margin-bottom:32px;}
+.intro-eyebrow{font-size:9.5px;letter-spacing:.32em;text-transform:uppercase;color:var(--or);margin-bottom:8px;}
+.intro h1{font-size:2.4rem;letter-spacing:.04em;margin-bottom:10px;}
+.intro p{font-size:.92rem;color:var(--texte-doux);max-width:600px;margin:0 auto;line-height:1.65;}
+
+/* SECTIONS */
+.sec{background:linear-gradient(160deg,rgba(33,29,22,.65),rgba(20,18,16,.85));
+  border:1px solid var(--ligne);border-radius:16px;padding:24px 26px;margin-bottom:18px;
+  transition:border-color .3s ease;}
+.sec:hover{border-color:rgba(201,168,76,.35);}
+.sec-h{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:14px;
+  border-bottom:1px solid var(--ligne);}
+.sec-n{width:34px;height:34px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  border-radius:50%;background:linear-gradient(135deg,#e6d3a0,#c9a84c 70%,#a8862f);
+  color:#0a0a0a;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:.95rem;}
+.sec-h h2{font-size:1.22rem;letter-spacing:.04em;font-weight:500;flex:1;line-height:1.25;}
+.sec-h-tag{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--or);
+  padding:4px 10px;background:rgba(201,168,76,.12);border:1px solid var(--ligne);border-radius:10px;
+  white-space:nowrap;}
+
+/* FIELDS */
+.fld{margin-bottom:14px;}
+.fld:last-child{margin-bottom:0;}
+.fld>label{display:block;font-size:.84rem;color:var(--creme);margin-bottom:7px;font-weight:400;line-height:1.45;}
+.fld .hint{font-size:.72rem;color:var(--texte-doux);font-weight:300;}
+.fld input,.fld textarea,.fld select{width:100%;padding:10px 13px;border-radius:8px;background:rgba(10,10,10,.5);
+  border:1px solid var(--ligne);color:var(--creme);font-family:'Jost',sans-serif;font-size:.88rem;
+  transition:all .2s ease;}
+.fld textarea{min-height:84px;resize:vertical;line-height:1.55;}
+.fld input:focus,.fld textarea:focus,.fld select:focus{outline:none;border-color:var(--or);
+  box-shadow:0 0 0 3px rgba(201,168,76,.18);background:rgba(10,10,10,.7);}
+.fgrid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.fgrid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+@media(max-width:680px){.fgrid-2,.fgrid-3{grid-template-columns:1fr;}}
+
+/* FOOTER ACTIONS */
+.actions{position:sticky;bottom:0;z-index:40;background:linear-gradient(180deg,
+  rgba(10,10,10,0),rgba(10,10,10,.85) 30%,rgba(10,10,10,.95));
+  padding:20px 26px 24px;margin:30px -26px -80px;
+  display:flex;justify-content:center;gap:12px;flex-wrap:wrap;
+  border-top:1px solid var(--ligne);backdrop-filter:blur(12px);}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:11px;
+  font-family:'Jost',sans-serif;font-size:.86rem;letter-spacing:.04em;font-weight:500;
+  border:1px solid var(--ligne);cursor:pointer;transition:all .25s ease;
+  background:rgba(10,10,10,.6);color:var(--creme);}
+.btn:hover{border-color:var(--or);background:rgba(201,168,76,.12);}
+.btn svg{width:16px;height:16px;}
+.btn.primary{background:linear-gradient(135deg,#e6d3a0,#c9a84c 70%,#a8862f);color:#0a0a0a;
+  font-weight:600;border-color:rgba(255,255,255,.25);box-shadow:0 6px 18px -6px rgba(201,168,76,.5);}
+.btn.primary:hover{transform:translateY(-1px);box-shadow:0 10px 24px -6px rgba(201,168,76,.7);
+  background:linear-gradient(135deg,#f0dfac,#d2b25a 70%,#b69334);}
+.btn.danger{color:var(--rose);}
+.btn.danger:hover{border-color:var(--rose);background:rgba(189,125,142,.08);}
+
+/* TOAST */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);opacity:0;
+  background:rgba(20,18,16,.95);color:var(--creme);padding:14px 22px;border-radius:11px;
+  border:1px solid var(--or);font-size:.86rem;z-index:200;
+  transition:all .35s var(--ease);pointer-events:none;backdrop-filter:blur(12px);
+  box-shadow:0 12px 30px rgba(0,0,0,.5);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.err{border-color:var(--rouge);}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid transparent;
+  border-top-color:currentColor;border-right-color:currentColor;border-radius:50%;
+  animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:780px){
+  .main{padding:24px 16px 60px;}
+  .sec{padding:18px 18px;}
+  .sec-h h2{font-size:1.05rem;}
+  .head{padding:12px 16px;}
+  .head-tag{display:none;}
+  .intro h1{font-size:1.7rem;}
+  .actions{margin:30px -16px -60px;padding:16px;}
+  .btn{padding:11px 16px;font-size:.8rem;}
+}
+
+/* ===== PDF STAGE (vrai dossier médical de luxe) ===== */
+.pdf-stage{position:fixed;top:0;left:-9999px;width:794px;background:#fff;color:#1a1612;
+  font-family:'Jost',sans-serif;font-size:12px;line-height:1.6;padding:52px 60px;}
+.pdf-stage *{box-sizing:border-box;}
+
+.pdf-top{display:flex;justify-content:space-between;align-items:flex-start;
+  padding-bottom:22px;border-bottom:2.5px solid #c9a84c;margin-bottom:26px;}
+.pdf-brand{display:flex;align-items:center;gap:16px;flex:1;}
+.pdf-seal{width:62px;height:62px;border-radius:50%;flex-shrink:0;
+  border:2px solid #c9a84c;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 50% 35%,#fbf7eb,#f3e8c9);color:#a8862f;
+  font-family:'Cormorant Garamond',serif;}
+.pdf-seal-mono{font-size:20px;font-weight:700;letter-spacing:.04em;line-height:1;}
+.pdf-seal-sub{font-size:6px;letter-spacing:.18em;text-transform:uppercase;margin-top:2px;color:#a8862f;}
+.pdf-brand-tx{display:flex;flex-direction:column;}
+.pdf-brand-mark{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;
+  color:#1a1612;letter-spacing:.07em;line-height:1.05;}
+.pdf-brand-sub{font-size:10px;color:#a8862f;font-style:italic;letter-spacing:.03em;
+  font-family:'Cormorant Garamond',serif;margin-top:3px;}
+.pdf-brand-info{font-size:9.5px;color:#5a4f3e;line-height:1.55;margin-top:5px;}
+.pdf-brand-info b{color:#1a1612;}
+.pdf-dos-box{text-align:right;background:#fbf7eb;border:1.5px solid #c9a84c;
+  padding:13px 16px;border-radius:8px;min-width:172px;}
+.pdf-dos-box-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;
+  color:#a8862f;letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px;line-height:1.1;}
+.pdf-dos-box-row{font-size:10px;color:#5a4f3e;margin-bottom:3px;}
+.pdf-dos-box-row b{color:#1a1612;font-family:'Cormorant Garamond',serif;font-size:11.5px;}
+
+.pdf-client{background:#f7f0e0;border-left:3px solid #c9a84c;padding:14px 18px;
+  border-radius:0 8px 8px 0;margin-bottom:26px;}
+.pdf-client-h{font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:#a8862f;
+  font-weight:600;margin-bottom:9px;}
+.pdf-client-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 24px;font-size:11px;}
+.pdf-client-row{display:flex;gap:8px;}
+.pdf-client-row b{color:#5a4f3e;min-width:96px;font-size:9.5px;letter-spacing:.04em;
+  text-transform:uppercase;font-weight:600;padding-top:1px;}
+.pdf-client-row span{color:#1a1612;font-weight:500;}
+
+/* Blocs protocole */
+.pdf-block{margin-bottom:16px;border:1px solid #ecdfbd;border-radius:9px;overflow:hidden;}
+.pdf-block-h{display:flex;align-items:center;gap:10px;padding:9px 16px;
+  background:#1a1612;color:#fff;}
+.pdf-block-n{width:22px;height:22px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#e6d3a0,#c9a84c 70%,#a8862f);color:#1a1612;
+  font-family:'Cormorant Garamond',serif;font-weight:700;font-size:11px;
+  display:flex;align-items:center;justify-content:center;}
+.pdf-block-t{font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;}
+.pdf-block-body{padding:12px 16px 13px 16px;font-size:11.5px;color:#2a241b;
+  background:#fff;line-height:1.65;}
+.pdf-block-body.alt{background:#fbf7eb;}
+.pdf-ul{list-style:none;padding:0;margin:0;}
+.pdf-ul li{position:relative;padding-left:16px;margin-bottom:4px;}
+.pdf-ul li:last-child{margin-bottom:0;}
+.pdf-ul li::before{content:'';position:absolute;left:2px;top:7px;width:5px;height:5px;
+  background:#c9a84c;border-radius:50%;}
+.pdf-empty{color:#9c8c6f;font-style:italic;}
+
+/* Prochain RDV (encadré or, mis en avant) */
+.pdf-rdv{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:linear-gradient(135deg,#c9a84c,#a8862f);color:#fff;border-radius:9px;
+  padding:14px 20px;margin:6px 0 22px;}
+.pdf-rdv-l{display:flex;align-items:center;gap:12px;}
+.pdf-rdv-ico{width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.18);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pdf-rdv-ico svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:1.8;}
+.pdf-rdv-lbl{font-size:9px;letter-spacing:.22em;text-transform:uppercase;opacity:.9;}
+.pdf-rdv-sub{font-size:10px;opacity:.85;margin-top:1px;}
+.pdf-rdv-date{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;
+  letter-spacing:.03em;text-align:right;line-height:1.1;}
+
+/* Signature + pied */
+.pdf-sign{display:flex;justify-content:space-between;align-items:flex-end;
+  margin-top:8px;margin-bottom:18px;gap:30px;}
+.pdf-sign-note{font-size:9px;color:#5a4f3e;font-style:italic;max-width:330px;line-height:1.5;}
+.pdf-sign-box{text-align:center;min-width:200px;}
+.pdf-sign-line{border-bottom:1px solid #c9a84c;height:30px;margin-bottom:6px;}
+.pdf-sign-lbl{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#a8862f;font-weight:600;}
+.pdf-sign-name{font-family:'Cormorant Garamond',serif;font-size:13px;color:#1a1612;font-weight:600;margin-top:2px;}
+
+.pdf-foot{text-align:center;padding-top:14px;border-top:1px dashed #c9a84c;}
+.pdf-foot-thanks{font-family:'Cormorant Garamond',serif;font-size:17px;color:#a8862f;
+  font-style:italic;margin-bottom:5px;}
+.pdf-foot-brand{font-size:9px;color:#5a4f3e;letter-spacing:.2em;text-transform:uppercase;}
+
+</style>
+</head>
+<body>
+
+<header class="head">
+  <div class="head-l">
+    <span class="head-mark">Dossier Beauté</span>
+    <span class="head-tag">Luxury Skin Clinic · Mme Sabrina</span>
+  </div>
+  <nav class="head-r">
+    <a class="head-link" href="admin.html">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.7"><path d="M15 18l-6-6 6-6"/></svg>
+      Tableau de bord
+    </a>
+    <button class="head-link" id="btnReset" type="button">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.7"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg>
+      Nouveau dossier
+    </button>
+    <button class="head-link primary" id="btnPdf" type="button">
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Générer le dossier
+    </button>
+  </nav>
+</header>
+
+<main class="main">
+
+  <div class="intro">
+    <div class="intro-eyebrow">Protocole de soin personnalisé</div>
+    <h1>Dossier Beauté</h1>
+    <p>Remplissez la fiche de suivi après chaque séance, puis générez un dossier PDF élégant à remettre à la cliente. Elle repart avec un véritable protocole de soin — pas un simple reçu.</p>
+  </div>
+
+  <form id="dossier" autocomplete="off">
+
+    <!-- SECTION 1 : IDENTITÉ -->
+    <section class="sec">
+      <div class="sec-h"><div class="sec-n">1</div><h2>Identité de la cliente</h2>
+        <span class="sec-h-tag">Fiche</span></div>
+      <div class="fgrid-2">
+        <div class="fld"><label>Nom &amp; prénom *</label><input type="text" id="cliNom" required></div>
+        <div class="fld"><label>Téléphone <span class="hint">(facultatif)</span></label><input type="tel" id="cliTel"></div>
+        <div class="fld"><label>Date de la consultation</label><input type="date" id="cliDate"></div>
+        <div class="fld"><label>Type de peau <span class="hint">(facultatif)</span></label>
+          <select id="cliPeau">
+            <option value="">— À préciser —</option>
+            <option>Peau normale</option>
+            <option>Peau sèche</option>
+            <option>Peau grasse</option>
+            <option>Peau mixte</option>
+            <option>Peau sensible</option>
+            <option>Peau mature</option>
+            <option>Peau à imperfections / acnéique</option>
+            <option>Peau déshydratée</option>
+            <option>Hyperpigmentation</option>
+          </select>
+        </div>
+        <div class="fld"><label>N° de dossier</label><input type="text" id="cliNum"></div>
+        <div class="fld"><label>Praticienne</label><input type="text" id="cliPraticienne" value="Mme Sabrina"></div>
+      </div>
+    </section>
+
+    <!-- SECTION 2 : DIAGNOSTIC & PROTOCOLE -->
+    <section class="sec">
+      <div class="sec-h"><div class="sec-n">2</div><h2>Diagnostic &amp; protocole</h2>
+        <span class="sec-h-tag">Séance</span></div>
+      <div class="fld"><label>Diagnostic de la peau *</label>
+        <textarea id="diag" placeholder="État de la peau observé : déshydratation, taches, pores dilatés, sensibilité, signes de l'âge…"></textarea></div>
+      <div class="fld"><label>Soin réalisé *</label>
+        <textarea id="soin" placeholder="Ex. Nettoyage profond + Hydrafacial + masque apaisant + massage drainant + protection solaire."></textarea></div>
+      <div class="fld"><label>Produits recommandés <span class="hint">(une ligne par produit)</span></label>
+        <textarea id="produits" placeholder="Sérum Glass Skin — matin&#10;Crème hydratante — matin & soir&#10;Protection solaire SPF 50 — chaque matin"></textarea></div>
+    </section>
+
+    <!-- SECTION 3 : SUIVI -->
+    <section class="sec">
+      <div class="sec-h"><div class="sec-n">3</div><h2>Suivi &amp; prochain rendez-vous</h2>
+        <span class="sec-h-tag">Objectif</span></div>
+      <div class="fld"><label>Objectif du mois prochain *</label>
+        <textarea id="objectif" placeholder="Ex. Unifier le teint et réduire les taches. Renforcer l'hydratation et la barrière cutanée."></textarea></div>
+      <div class="fld"><label>Conseils à domicile <span class="hint">(facultatif)</span></label>
+        <textarea id="conseils" placeholder="Ex. Boire 1,5 L d'eau/jour. Ne pas exposer la peau au soleil sans protection. Démaquillage chaque soir."></textarea></div>
+      <div class="fgrid-2">
+        <div class="fld"><label>Date du prochain rendez-vous *</label><input type="date" id="prochain"></div>
+        <div class="fld"><label>Heure <span class="hint">(facultatif)</span></label><input type="time" id="prochainH"></div>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button class="btn danger" id="btnReset2" type="button">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg>
+        Nouveau dossier
+      </button>
+      <button class="btn primary" id="btnPdf2" type="button">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Générer le dossier (PDF)
+      </button>
+    </div>
+
+  </form>
+</main>
+
+<div class="toast" id="toast"></div>
+<div class="pdf-stage" id="pdfStage" aria-hidden="true"></div>
+
+<!-- jsPDF + html2canvas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+
+/* ===== FORMAT ===== */
+function fmtDate(iso){if(!iso)return '';const d=new Date(iso);if(isNaN(d))return iso;
+  return d.toLocaleDateString('fr-FR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});}
+function fmtDateShort(iso){if(!iso)return '';const d=new Date(iso);if(isNaN(d))return iso;
+  return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});}
+function todayIso(){return new Date().toISOString().slice(0,10);}
+function esc(s){return String(s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function multiline(s){const t=esc(String(s||'').trim());return t?t.replace(/\n/g,'<br>'):'';}
+function bullets(s){
+  const lines=String(s||'').split('\n').map(x=>x.trim()).filter(Boolean);
+  if(!lines.length)return '';
+  return '<ul class="pdf-ul">'+lines.map(l=>`<li>${esc(l)}</li>`).join('')+'</ul>';
+}
+function cap(s){s=String(s||'');return s.charAt(0).toUpperCase()+s.slice(1);}
+
+/* ===== N° DOSSIER AUTO ===== */
+function genNum(){
+  const d=new Date();
+  const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),j=String(d.getDate()).padStart(2,'0');
+  const r=Math.floor(Math.random()*900+100);
+  return `LSC-${y}${m}${j}-${r}`;
+}
+
+/* ===== TOAST ===== */
+const toast=$('toast');let toastT=null;
+function showToast(msg,err){
+  toast.textContent=msg;toast.classList.toggle('err',!!err);toast.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>toast.classList.remove('show'),2800);
+}
+
+/* ===== COLLECTE ===== */
+function collect(){
+  let rdv=fmtDateShort($('prochain').value);
+  const h=$('prochainH').value;
+  if(rdv && h)rdv+=` à ${h}`;
+  return {
+    nom:($('cliNom').value||'').trim(),
+    tel:($('cliTel').value||'').trim(),
+    date:$('cliDate').value||todayIso(),
+    peau:($('cliPeau').value||'').trim(),
+    num:($('cliNum').value||'').trim()||genNum(),
+    praticienne:($('cliPraticienne').value||'').trim()||'Mme Sabrina',
+    diag:($('diag').value||'').trim(),
+    soin:($('soin').value||'').trim(),
+    produits:($('produits').value||'').trim(),
+    objectif:($('objectif').value||'').trim(),
+    conseils:($('conseils').value||'').trim(),
+    rdv,
+  };
+}
+
+/* ===== BUILD PDF STAGE ===== */
+const pdfStage=$('pdfStage');
+function block(n,title,bodyHtml,alt){
+  return `<div class="pdf-block">
+    <div class="pdf-block-h"><div class="pdf-block-n">${n}</div><div class="pdf-block-t">${title}</div></div>
+    <div class="pdf-block-body${alt?' alt':''}">${bodyHtml||'<span class="pdf-empty">— Non renseigné —</span>'}</div>
+  </div>`;
+}
+function buildPdfStage(d){
+  pdfStage.innerHTML=`
+    <div class="pdf-top">
+      <div class="pdf-brand">
+        <div class="pdf-seal">
+          <div class="pdf-seal-mono">LSC</div>
+          <div class="pdf-seal-sub">Clinic</div>
+        </div>
+        <div class="pdf-brand-tx">
+          <div class="pdf-brand-mark">LUXURY SKIN CLINIC</div>
+          <div class="pdf-brand-sub">Médecine esthétique &amp; soins de la peau · Cotonou, Bénin</div>
+          <div class="pdf-brand-info">
+            <b>Praticienne :</b> ${esc(d.praticienne)} &nbsp;·&nbsp; <b>WhatsApp :</b> +229 01 67 97 56 26
+          </div>
+        </div>
+      </div>
+      <div class="pdf-dos-box">
+        <div class="pdf-dos-box-title">Dossier<br>Beauté</div>
+        <div class="pdf-dos-box-row">N° <b>${esc(d.num)}</b></div>
+        <div class="pdf-dos-box-row">Le <b>${esc(fmtDateShort(d.date))}</b></div>
+      </div>
+    </div>
+
+    <div class="pdf-client">
+      <div class="pdf-client-h">Fiche de suivi personnalisée</div>
+      <div class="pdf-client-grid">
+        <div class="pdf-client-row"><b>Cliente</b><span>${esc(d.nom)||'—'}</span></div>
+        <div class="pdf-client-row"><b>Téléphone</b><span>${esc(d.tel)||'—'}</span></div>
+        <div class="pdf-client-row"><b>Consultation</b><span>${cap(esc(fmtDate(d.date)))}</span></div>
+        <div class="pdf-client-row"><b>Type de peau</b><span>${esc(d.peau)||'À préciser'}</span></div>
+        <div class="pdf-client-row"><b>Praticienne</b><span>${esc(d.praticienne)}</span></div>
+        <div class="pdf-client-row"><b>Dossier n°</b><span>${esc(d.num)}</span></div>
+      </div>
+    </div>
+
+    ${block(1,'Diagnostic de la peau',multiline(d.diag))}
+    ${block(2,'Soin réalisé',multiline(d.soin),true)}
+    ${block(3,'Produits recommandés',bullets(d.produits)||'<span class="pdf-empty">— Aucun produit recommandé —</span>')}
+    ${block(4,'Objectif du mois prochain',multiline(d.objectif),true)}
+    ${d.conseils?block(5,'Conseils à domicile',multiline(d.conseils)):''}
+
+    <div class="pdf-rdv">
+      <div class="pdf-rdv-l">
+        <div class="pdf-rdv-ico">
+          <svg viewBox="0 0 24 24"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div class="pdf-rdv-lbl">Prochain rendez-vous</div>
+          <div class="pdf-rdv-sub">Pour la continuité de votre protocole</div>
+        </div>
+      </div>
+      <div class="pdf-rdv-date">${d.rdv?cap(esc(d.rdv)):'À fixer ensemble'}</div>
+    </div>
+
+    <div class="pdf-sign">
+      <div class="pdf-sign-note">Ce dossier est strictement personnel et confidentiel. Il retrace votre protocole de soin
+        et le suivi recommandé par votre praticienne pour des résultats durables.</div>
+      <div class="pdf-sign-box">
+        <div class="pdf-sign-line"></div>
+        <div class="pdf-sign-lbl">La praticienne</div>
+        <div class="pdf-sign-name">${esc(d.praticienne)}</div>
+      </div>
+    </div>
+
+    <div class="pdf-foot">
+      <div class="pdf-foot-thanks">Votre peau mérite ce qu'il y a de plus précieux ✦</div>
+      <div class="pdf-foot-brand">Luxury Skin Clinic · Cotonou</div>
+    </div>
+  `;
+}
+
+/* ===== GÉNÉRATION PDF ===== */
+async function generatePdf(){
+  const d=collect();
+  if(!d.nom){showToast('Veuillez renseigner le nom de la cliente.',1);$('cliNom').focus();return;}
+  if(!d.diag && !d.soin){showToast('Renseignez au moins le diagnostic ou le soin réalisé.',1);$('diag').focus();return;}
+  if(!$('cliNum').value)$('cliNum').value=d.num;
+
+  const btn=$('btnPdf'),btn2=$('btnPdf2');
+  const orig=btn.innerHTML,orig2=btn2.innerHTML;
+  btn.innerHTML='<span class="spinner"></span> Génération...';
+  btn2.innerHTML='<span class="spinner"></span> Génération...';
+  btn.disabled=true;btn2.disabled=true;
+  try{
+    buildPdfStage(d);
+    await new Promise(r=>setTimeout(r,60));
+    const stage=pdfStage;
+    const canvas=await html2canvas(stage,{
+      scale:2,backgroundColor:'#ffffff',logging:false,useCORS:true,
+      windowWidth:stage.scrollWidth,windowHeight:stage.scrollHeight,
+    });
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF('p','mm','a4');
+    const pdfW=210,pdfH=297,imgW=pdfW;
+    const imgH=(canvas.height*imgW)/canvas.width;
+    let heightLeft=imgH,position=0;
+    const imgData=canvas.toDataURL('image/jpeg',0.94);
+    pdf.addImage(imgData,'JPEG',0,position,imgW,imgH);
+    heightLeft-=pdfH;
+    while(heightLeft>0){
+      position=heightLeft-imgH;pdf.addPage();
+      pdf.addImage(imgData,'JPEG',0,position,imgW,imgH);
+      heightLeft-=pdfH;
+    }
+    const nom=d.nom.replace(/[^a-zA-Z0-9-_ ]/g,'').trim().replace(/\s+/g,'_');
+    pdf.save(`Dossier_Beaute_${nom||d.num}.pdf`);
+    showToast('Dossier généré ✦ — remettez-le à la cliente');
+  }catch(err){
+    console.error(err);showToast('Erreur lors de la génération du dossier',1);
+  }finally{
+    btn.innerHTML=orig;btn2.innerHTML=orig2;btn.disabled=false;btn2.disabled=false;
+    pdfStage.innerHTML='';
+  }
+}
+$('btnPdf').addEventListener('click',generatePdf);
+$('btnPdf2').addEventListener('click',generatePdf);
+
+/* ===== RESET ===== */
+function reset(){
+  if(!confirm('Démarrer un nouveau dossier ? Les informations saisies seront effacées.'))return;
+  ['cliNom','cliTel','cliNum','diag','soin','produits','objectif','conseils','prochain','prochainH'].forEach(id=>$(id).value='');
+  $('cliPeau').value='';
+  $('cliDate').value=todayIso();
+  $('cliPraticienne').value='Mme Sabrina';
+  $('cliNum').value=genNum();
+  window.scrollTo({top:0,behavior:'smooth'});
+  showToast('Nouveau dossier prêt');
+}
+$('btnReset').addEventListener('click',reset);
+$('btnReset2').addEventListener('click',reset);
+
+/* ===== INIT ===== */
+(function init(){
+  $('cliDate').value=todayIso();
+  $('cliNum').value=genNum();
+})();
+</script>
+</body>
+</html>

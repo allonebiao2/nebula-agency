@@ -13,7 +13,7 @@ Dernière grosse mise à jour : **2026-06-17**.
 - **Espaces** :
   - `/` portail (connexion partenaire OU admin) — marqué « réservé aux partenaires »
   - `/partenaire` espace partenaire (code + PIN)
-  - **`/qg-mongazi-x7q2`** = **page de connexion admin PRIVÉE** (URL secrète, `console.html`, `noindex`, surchargeable par env `NAFF_ADMIN_PATH`). Le portail `/` n'expose PLUS l'admin (partenaire-only).
+  - **Page de connexion admin PRIVÉE** sur une **URL secrète** (`console.html`, `noindex`) définie par l'env **`NAFF_ADMIN_PATH`** (valeur PROD réelle posée sur Railway, **hors git** → voir mémoire locale `.claude` ; défaut code `qg-mongazi-x7q2` inactif en prod). Mot de passe admin = env **`NAFF_ADMIN_PASS`** (renforcé, plus `founder123`). Le portail `/` n'expose PLUS l'admin (partenaire-only).
   - `/admin` console NEBULA (dashboard) — **servie uniquement à une session admin** ; sinon **302 → `/`** (ne révèle jamais l'URL secrète).
   - `/p/<code>` **lien unique** partenaire (client OU recrutement)
   - `/devenir` candidature publique (avec CGU)
