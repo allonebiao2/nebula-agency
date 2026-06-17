@@ -24,6 +24,7 @@ import os, json, time, pathlib, sqlite3, hmac, hashlib, base64, secrets, re, thr
 from typing import Any, Dict, List, Optional, Tuple
 
 import httpx
+from urllib.parse import quote
 from fastapi import FastAPI, Request, Response, Cookie, UploadFile, File, Form
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -270,6 +271,10 @@ def init_db():
             PRIMARY KEY(uid, channel))""")
         c.execute("""CREATE TABLE IF NOT EXISTS app_settings(
             k TEXT PRIMARY KEY, v TEXT)""")
+        c.execute("""CREATE TABLE IF NOT EXISTS link_events(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            affiliate_id INTEGER, kind TEXT,   -- 'open' | 'client' | 'partner'
+            created REAL)""")
 init_db()
 
 def migrate():
@@ -661,7 +666,9 @@ def affiliate_public(code: str):
         a = c.execute("SELECT * FROM affiliates WHERE code=? AND actif=1", (code.upper(),)).fetchone()
     if not a:
         return JSONResponse({"ok": False, "error": "Lien partenaire introuvable."}, status_code=404)
-    return {"ok": True, "code": a["code"], "name": affiliate_label(a)}
+    s = stats_of(a["id"])
+    return {"ok": True, "code": a["code"], "name": affiliate_label(a),
+            "photo": photo_url("a" + str(a["id"])), "rank": s["rank"]["label"]}
 
 @app.post("/api/lead")
 async def create_lead(req: Request):
@@ -710,6 +717,31 @@ async def create_recruit(req: Request):
     notify("admin", 0, f"Nouvelle recrue : {who} ({numero}) — parrainé(e) par {affiliate_label(a)}")
     notify("affiliate", a["id"], f"{who} veut rejoindre via ton lien — en attente de validation NEBULA.")
     return {"ok": True}
+
+# ==================  TRACKING DU LIEN + QR (carte de visite)  ================
+@app.post("/api/track")
+async def api_track(req: Request):
+    d = await req.json()
+    code = clean(d.get("code"), 12).upper()
+    kind = clean(d.get("kind"), 12)
+    if kind not in ("open", "client", "partner"):
+        return JSONResponse({"ok": False}, status_code=400)
+    with db() as c:
+        a = c.execute("SELECT id FROM affiliates WHERE code=? AND actif=1", (code,)).fetchone()
+        if a:
+            c.execute("INSERT INTO link_events(affiliate_id,kind,created) VALUES(?,?,?)", (a["id"], kind, time.time()))
+    return {"ok": True}
+
+@app.get("/api/qr")
+async def api_qr(data: str, size: int = 440):
+    size = max(120, min(800, int(size)))
+    url = f"https://api.qrserver.com/v1/create-qr-code/?size={size}x{size}&margin=12&data={quote(data, safe='')}"
+    try:
+        async with httpx.AsyncClient(timeout=12) as cli:
+            r = await cli.get(url)
+        return Response(content=r.content, media_type="image/png")
+    except Exception:
+        return JSONResponse({"error": "qr indisponible"}, status_code=502)
 
 # =============================  AUTH  ========================================
 @app.post("/api/admin/login")
@@ -1061,6 +1093,23 @@ def partner_leads(naff_session: Optional[str] = Cookie(default=None)):
             "created": r["created"], "updated": r["updated"],
         })
     return {"leads": out}
+
+@app.get("/api/partenaire/linkstats")
+def partner_linkstats(naff_session: Optional[str] = Cookie(default=None)):
+    aid = need_affiliate(naff_session)
+    if aid is None:
+        return JSONResponse({"error": "auth"}, status_code=401)
+    ms = month_start_ts()
+    out = {"open": 0, "client": 0, "partner": 0, "open_month": 0, "client_month": 0, "partner_month": 0}
+    with db() as c:
+        rows = c.execute("SELECT kind, created FROM link_events WHERE affiliate_id=?", (aid,)).fetchall()
+    for r in rows:
+        k = r["kind"]
+        if k in ("open", "client", "partner"):
+            out[k] += 1
+            if (r["created"] or 0) >= ms:
+                out[k + "_month"] += 1
+    return out
 
 @app.get("/api/partenaire/commissions")
 def partner_commissions(naff_session: Optional[str] = Cookie(default=None)):

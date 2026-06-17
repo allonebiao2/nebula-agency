@@ -304,6 +304,7 @@ function renderLink() {
           <button class="btn primary" id="copy">Copier le lien<span class="ico">${icon('copy')}</span></button>
           <a class="btn ghost" id="wa-client" target="_blank" rel="noopener">Partager (client)<span class="ico">${icon('phone')}</span></a>
           <a class="btn ghost" id="wa-part" target="_blank" rel="noopener">Partager (recruter)<span class="ico">${icon('users')}</span></a>
+          <button class="btn ghost" id="mk-card">Ma carte de visite<span class="ico">${icon('image')}</span></button>
         </div>
         <div class="divider"></div>
         <div class="flex gap8 wrap">
@@ -317,10 +318,72 @@ function renderLink() {
         <div style="background:#0b0b12;border-radius:18px;padding:14px;margin:16px auto;width:max-content;border:1px solid var(--hair)"><img src="${qr(link, 220)}" alt="QR" width="220" height="220" style="display:block;border-radius:8px"></div>
         <p class="muted" style="font-size:.85rem">Imprime-le ou montre-le. On le scanne, le lien s'ouvre — client OU partenaire.</p>
       </div></div></div>
+      <div class="col-12 rv"><div class="card"><div class="in">
+        <div class="flex between mb16"><h3>Ton lien en chiffres</h3><span class="chip">temps réel</span></div>
+        <div class="bento" style="gap:14px">
+          <div class="col-4"><div class="card"><div class="in stat"><div class="lbl">Ouvertures</div><div class="num accent mono" id="ls-open">0</div><div class="sub" id="ls-open-m">ce mois 0</div></div></div></div>
+          <div class="col-4"><div class="card"><div class="in stat"><div class="lbl">Intéressés site</div><div class="num mono" style="color:var(--ok)" id="ls-client">0</div><div class="sub" id="ls-client-m">ce mois 0</div></div></div></div>
+          <div class="col-4"><div class="card"><div class="in stat"><div class="lbl">Intéressés partenaire</div><div class="num mono" style="color:var(--info)" id="ls-partner">0</div><div class="sub" id="ls-partner-m">ce mois 0</div></div></div></div>
+        </div>
+      </div></div></div>
     </div>`;
   document.getElementById('wa-client').href = 'https://wa.me/?text=' + encodeURIComponent('Bonjour, je travaille avec NEBULA Agency (vitrines digitales, catalogues, QR codes). Dites-moi votre projet ici : ' + link);
   document.getElementById('wa-part').href = 'https://wa.me/?text=' + encodeURIComponent("Tu veux gagner de l'argent avec NEBULA ? Vends des vitrines digitales et touche des commissions, sans stock. Rejoins-moi ici : " + link + '?go=partenaire');
   document.getElementById('copy').onclick = () => { navigator.clipboard?.writeText(link); sound.sfx.cash(); toast('Lien copié ✓', 'ok'); };
+  document.getElementById('mk-card').onclick = makeCard;
+  api('/api/partenaire/linkstats').then(d => {
+    countUp(document.getElementById('ls-open'), d.open);
+    countUp(document.getElementById('ls-client'), d.client);
+    countUp(document.getElementById('ls-partner'), d.partner);
+    document.getElementById('ls-open-m').textContent = 'ce mois ' + d.open_month;
+    document.getElementById('ls-client-m').textContent = 'ce mois ' + d.client_month;
+    document.getElementById('ls-partner-m').textContent = 'ce mois ' + d.partner_month;
+  }).catch(() => {});
+}
+async function makeCard() {
+  toast('Génération de ta carte…');
+  const link = location.origin + '/p/' + ME.code;
+  const W = 1080, H = 1350, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const x = cv.getContext('2d'); const acc = ME.accent || '#7b5cff';
+  const bg = x.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#0b0b1a'); bg.addColorStop(1, '#05060d'); x.fillStyle = bg; x.fillRect(0, 0, W, H);
+  const rg = x.createRadialGradient(W / 2, 340, 40, W / 2, 340, 560); rg.addColorStop(0, acc + '33'); rg.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = rg; x.fillRect(0, 0, W, 760);
+  const load = src => new Promise(res => { const im = new Image(); im.crossOrigin = 'anonymous'; im.onload = () => res(im); im.onerror = () => res(null); im.src = src; });
+  const [logo, photo, qr] = await Promise.all([load('/static/nebula-logo.png'), ME.photo ? load(ME.photo) : Promise.resolve(null), load('/api/qr?size=460&data=' + encodeURIComponent(link))]);
+  if (logo) { const lw = 470, lh = lw * logo.height / logo.width; x.drawImage(logo, (W - lw) / 2, 56, lw, lh); }
+  const cy = 560, r = 112;
+  x.save(); x.beginPath(); x.arc(W / 2, cy, r, 0, Math.PI * 2); x.closePath(); x.clip();
+  if (photo) x.drawImage(photo, W / 2 - r, cy - r, 2 * r, 2 * r);
+  else { x.fillStyle = '#15151f'; x.fillRect(W / 2 - r, cy - r, 2 * r, 2 * r); x.fillStyle = acc; x.font = '700 86px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(initials(ME.name), W / 2, cy); }
+  x.restore();
+  x.strokeStyle = acc; x.lineWidth = 6; x.beginPath(); x.arc(W / 2, cy, r + 7, 0, Math.PI * 2); x.stroke();
+  x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+  x.fillStyle = '#fff'; x.font = '700 58px sans-serif'; x.fillText(ME.name, W / 2, cy + r + 86);
+  x.fillStyle = '#9d9db6'; x.font = '500 34px sans-serif'; x.fillText('Partenaire NEBULA · ' + ME.stats.rank.label, W / 2, cy + r + 134);
+  x.fillStyle = '#d7d8ef'; x.font = '600 40px sans-serif'; x.fillText('Ton site pro, ou deviens partenaire', W / 2, 902);
+  const qs = 380, qx = (W - qs) / 2, qy = 948; x.fillStyle = '#fff'; x.fillRect(qx - 22, qy - 22, qs + 44, qs + 44);
+  if (qr) x.drawImage(qr, qx, qy, qs, qs);
+  x.fillStyle = acc; x.font = '600 32px monospace'; x.fillText(link.replace(/^https?:\/\//, ''), W / 2, qy + qs + 74);
+  cv.toBlob(blob => {
+    if (!blob) return toast('Échec de la génération', 'bad');
+    const url = URL.createObjectURL(blob);
+    document.getElementById('doc-in').innerHTML = `
+      <div class="flex between mb16"><h3>Ta carte de visite</h3><button class="icon-btn" id="card-x" style="width:34px;height:34px">${icon('close')}</button></div>
+      <img src="${url}" alt="carte" style="width:100%;border-radius:16px;border:1px solid var(--hair)">
+      <div class="flex gap8 mt16 wrap">
+        <a class="btn primary" href="${url}" download="carte-nebula-${ME.code}.png">Télécharger<span class="ico">${icon('download')}</span></a>
+        <button class="btn ghost" id="card-share">Partager<span class="ico">${icon('phone')}</span></button>
+      </div>
+      <p class="muted mt16" style="font-size:.82rem">Télécharge-la et publie-la en statut WhatsApp, ou imprime-la. Le QR ouvre ton lien unique.</p>`;
+    document.getElementById('doc-scrim').classList.add('on');
+    document.getElementById('card-x').onclick = () => document.getElementById('doc-scrim').classList.remove('on');
+    document.getElementById('card-share').onclick = async () => {
+      try { const file = new File([blob], 'carte-nebula.png', { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) await navigator.share({ files: [file], title: 'NEBULA Agency', text: link });
+        else toast('Télécharge la carte puis publie-la en statut', 'ok');
+      } catch (e) {}
+    };
+    sound.sfx.cash();
+  }, 'image/png');
 }
 
 function renderPerso() {

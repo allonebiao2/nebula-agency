@@ -30,6 +30,7 @@
     <section id="choose">
       <div class="center mb24">
         <div class="flex" style="justify-content:center;margin-bottom:14px"><img src="/static/nebula-logo.png" alt="NEBULA Agency" style="width:min(230px,64vw);height:auto;filter:drop-shadow(0 10px 34px rgba(123,92,255,.45))"></div>
+        <div id="who-ava-wrap" class="hide" style="display:flex;justify-content:center;margin:4px 0 2px"><div class="pfp" id="who-ava" style="width:66px;height:66px;display:grid;place-items:center;font-weight:700;font-size:1.35rem;color:var(--accent)"></div></div>
         <span class="eyebrow"><span class="dot"></span>NEBULA Agency · Cotonou</span>
         <h1 class="big mt16" style="font-size:clamp(1.7rem,5vw,2.5rem)"><b id="who" style="color:var(--ink)">…</b> t'invite chez NEBULA.</h1>
         <p class="lead mt16">Que veux-tu faire aujourd'hui ?</p>
@@ -121,6 +122,8 @@
   const { icon, api, toast, sound, celebrate, esc, el } = NA;
   const code = decodeURIComponent(location.pathname.split('/p/')[1] || '').toUpperCase();
   let CFG = null;
+  const initials = n => (n || '?').split(' ').filter(Boolean).slice(0, 2).map(x => x[0]).join('').toUpperCase();
+  function track(kind) { try { const body = JSON.stringify({ code, kind }); if (navigator.sendBeacon) navigator.sendBeacon('/api/track', new Blob([body], { type: 'application/json' })); else api('/api/track', { body: { code, kind } }); } catch (e) {} }
   document.getElementById('ic-client').innerHTML = icon('image');
   document.getElementById('ic-partner').innerHTML = icon('coins');
   ['a-client', 'a-partner', 'ac-go', 'ap-go'].forEach(id => { const e = document.getElementById(id); if (e) e.innerHTML = icon('arrow'); });
@@ -141,15 +144,21 @@
       (CFG.reseaux || ['MTN MoMo']).forEach(r => rsel.appendChild(el(`<option>${esc(r)}</option>`)));
       const wa = document.getElementById('wa-client'); wa.href = 'https://wa.me/' + (CFG.whatsapp || '').replace(/[^0-9]/g, '');
     }
-    try { const a = await api('/api/affiliate/' + encodeURIComponent(code) + '/public'); document.getElementById('who').textContent = a.name; }
-    catch (e) { document.getElementById('who').textContent = 'NEBULA'; }
+    try {
+      const a = await api('/api/affiliate/' + encodeURIComponent(code) + '/public');
+      document.getElementById('who').textContent = a.name;
+      const av = document.getElementById('who-ava');
+      av.innerHTML = a.photo ? `<img class="av-img" src="${a.photo}" alt="">` : initials(a.name);
+      document.getElementById('who-ava-wrap').classList.remove('hide');
+    } catch (e) { document.getElementById('who').textContent = 'NEBULA'; }
+    track('open');
     const go = new URLSearchParams(location.search).get('go');
     if (go === 'client') show('client');
     else if (go === 'partenaire' || go === 'partner') show('partner');
   })();
 
-  document.getElementById('pick-client').onclick = () => { sound.sfx.tab(); show('client'); };
-  document.getElementById('pick-partner').onclick = () => { sound.sfx.tab(); show('partner'); };
+  document.getElementById('pick-client').onclick = () => { sound.sfx.tab(); track('client'); show('client'); };
+  document.getElementById('pick-partner').onclick = () => { sound.sfx.tab(); track('partner'); show('partner'); };
   document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => { sound.sfx.click(); show('choose'); });
 
   document.getElementById('c-go').onclick = async () => {
