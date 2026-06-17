@@ -160,7 +160,10 @@ function renderAff() {
       <button class="btn primary" id="new-aff">Nouveau partenaire<span class="ico">${icon('plus')}</span></button></div>
     <div id="aff-list">${AFFS.length ? AFFS.map(affRow).join('') : `<div class="card"><div class="in center" style="padding:40px"><p class="muted">Aucun partenaire. Clique « Nouveau partenaire » pour générer un code + PIN.</p></div></div>`}</div>`;
   document.getElementById('new-aff').onclick = openNewAff;
-  AFFS.forEach(a => { const t = document.getElementById('tog-' + a.id); if (t) t.onclick = () => toggleAff(a.id); });
+  AFFS.forEach(a => {
+    const t = document.getElementById('tog-' + a.id); if (t) t.onclick = () => toggleAff(a.id);
+    const p = document.getElementById('pin-' + a.id); if (p) p.onclick = () => resetPin(a.id, ((a.prenom || '') + ' ' + (a.nom || '')).trim() || a.code);
+  });
 }
 const RANK_ICON = { 'Recrue': 'spark', 'Météore': 'meteor', 'Comète': 'comet', 'Planète': 'planet', 'Étoile': 'star', 'Supernova': 'supernova', 'Nébuleuse': 'nebula', 'Galaxie': 'crown' };
 const PALIER_COLOR = { 'STARTER': '#9aa0c0', 'SILVER': '#cdd6ef', 'GOLD': '#e7c987' };
@@ -180,6 +183,7 @@ function affRow(a) {
       <div class="flex gap8 wrap" style="justify-content:flex-end">
         <div class="center"><div class="mono" style="font-weight:700">${a.score}</div><div class="meta">score</div></div>
         <div class="center"><div class="mono" style="color:var(--accent);font-weight:700">${fmt(a.rcm)}</div><div class="meta">RCM (F)</div></div>
+        <button class="btn sm ghost" id="pin-${a.id}" title="Régénérer et renvoyer le PIN">Renvoyer accès<span class="ico">${icon('copy')}</span></button>
         <button class="btn sm ghost" id="tog-${a.id}">${a.actif ? 'Suspendre' : 'Réactiver'}</button>
       </div>
     </div>
@@ -212,26 +216,14 @@ async function createAff() {
   if (!(body.prenom || body.nom)) return toast('Nom requis', 'bad');
   try {
     const d = await api('/api/admin/affiliates', { body });
-    const link = location.origin + '/p/' + d.code;
     sound.sfx.cash();
-    document.getElementById('modal-in').innerHTML = `
-      <div class="center" style="padding:8px">
-        <div class="avatar" style="margin:0 auto 16px;width:60px;height:60px;background:linear-gradient(135deg,var(--ok),#1f9e6e)">${icon('check')}</div>
-        <h3>Partenaire créé</h3>
-        <p class="muted mt8 mb16">Transmets-lui ces accès (à montrer une seule fois).</p>
-        <div class="card"><div class="in">
-          <div class="flex between"><span class="muted">Code</span><b class="mono" style="font-size:1.3rem;letter-spacing:.18em;color:var(--accent)">${d.code}</b></div>
-          <div class="divider"></div>
-          <div class="flex between"><span class="muted">Code PIN</span><b class="mono" style="font-size:1.3rem;letter-spacing:.18em">${d.pin}</b></div>
-        </div>
-        <div class="flex gap8 mt16" style="justify-content:center;flex-wrap:wrap">
-          <button class="btn sm primary" id="cp-all">Copier les accès<span class="ico">${icon('copy')}</span></button>
-          <button class="btn sm ghost" id="m-done">Terminé</button>
-        </div>
-      </div>`;
-    document.getElementById('cp-all').onclick = () => { navigator.clipboard?.writeText(`NEBULA Affiliés — tes accès\nLien : ${link}\nCode : ${d.code}\nPIN : ${d.pin}\nConnexion : ${location.origin}/partenaire`); toast('Accès copiés ✓', 'ok'); };
-    document.getElementById('m-done').onclick = async () => { closeModal(); await refresh(); renderAff(); reveal(); };
+    renderAccessKit({ title: 'Partenaire créé', code: d.code, pin: d.pin, name: (body.prenom + ' ' + body.nom).trim(), onDone: renderAff });
   } catch (e) { toast(e.data?.error || 'Erreur', 'bad'); }
+}
+async function resetPin(id, name) {
+  if (!confirm(`Générer un NOUVEAU PIN pour ${name} ? L'ancien ne fonctionnera plus.`)) return;
+  try { const d = await api(`/api/admin/affiliates/${id}/reset-pin`, { body: {} }); sound.sfx.cash(); renderAccessKit({ title: 'Accès réinitialisés', code: d.code, pin: d.pin, name, onDone: renderAff }); }
+  catch (e) { toast('Erreur', 'bad'); }
 }
 
 /* ---------- CLIENTS (le cœur : Mongazi pilote les statuts) ---------- */
@@ -315,25 +307,44 @@ function candCard(c) {
     <div class="flex gap8 wrap" style="justify-content:flex-end"><button class="btn sm primary" id="cok-${c.id}">Valider<span class="ico">${icon('check')}</span></button><button class="btn sm ghost" id="cno-${c.id}">Refuser</button></div>
   </div></div></div></div>`;
 }
-function showAccessModal(title, code, pin, onDone) {
+/* Message de bienvenue prêt à envoyer : accès + lien à partager */
+function welcomeMessage(code, pin, name) {
+  const hub = location.origin + '/p/' + code;
+  return `NEBULA Affilies — Bienvenue${name ? ' ' + name : ''} !\n`
+    + `Tu es desormais partenaire officiel de NEBULA Agency.\n\n`
+    + `Ton espace partenaire : ${location.origin}/partenaire\n`
+    + `   Code : ${code}\n`
+    + `   PIN : ${pin}\n\n`
+    + `Ton lien unique a partager (clients ET recrues) :\n   ${hub}\n\n`
+    + `Connecte-toi, partage ton lien, suis tes clients et tes commissions. On t'accompagne.`;
+}
+/* Carte d'accès réutilisable : Copier + Envoyer sur WhatsApp */
+function renderAccessKit({ title, code, pin, name, onDone }) {
+  const msg = welcomeMessage(code, pin, name);
   document.getElementById('modal-in').innerHTML = `
     <div class="center" style="padding:8px">
       <div class="avatar" style="margin:0 auto 16px;width:60px;height:60px;background:linear-gradient(135deg,var(--ok),#1f9e6e)">${icon('check')}</div>
-      <h3>${esc(title)}</h3><p class="muted mt8 mb16">Transmets-lui ses accès partenaire.</p>
+      <h3>${esc(title)}</h3><p class="muted mt8 mb16">Envoie-lui ce kit de bienvenue (accès + lien à partager).</p>
       <div class="card"><div class="in">
         <div class="flex between"><span class="muted">Code</span><b class="mono" style="font-size:1.3rem;letter-spacing:.18em;color:var(--accent)">${code}</b></div>
         <div class="divider"></div>
         <div class="flex between"><span class="muted">Code PIN</span><b class="mono" style="font-size:1.3rem;letter-spacing:.18em">${pin}</b></div>
-      </div>
+        <div class="divider"></div>
+        <div class="flex between"><span class="muted">Lien à partager</span><b class="mono" style="font-size:.82rem;color:var(--accent)">/p/${code}</b></div>
+      </div></div>
       <div class="flex gap8 mt16" style="justify-content:center;flex-wrap:wrap">
-        <button class="btn sm primary" id="am-cp">Copier les accès<span class="ico">${icon('copy')}</span></button>
+        <a class="btn sm primary" id="am-wa" target="_blank" rel="noopener">Envoyer sur WhatsApp<span class="ico">${icon('phone')}</span></a>
+        <button class="btn sm ghost" id="am-cp">Copier le kit<span class="ico">${icon('copy')}</span></button>
         <button class="btn sm ghost" id="am-done">Terminé</button>
       </div>
     </div>`;
   document.getElementById('modal').classList.add('on');
-  document.getElementById('am-cp').onclick = () => { navigator.clipboard?.writeText(`NEBULA Affiliés — tes accès\nCode : ${code}\nPIN : ${pin}\nConnexion : ${location.origin}/partenaire`); toast('Accès copiés ✓', 'ok'); };
+  document.getElementById('am-wa').href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+  document.getElementById('am-wa').onclick = () => sound.sfx.cash();
+  document.getElementById('am-cp').onclick = () => { navigator.clipboard?.writeText(msg); sound.sfx.ok(); toast('Kit copié ✓', 'ok'); };
   document.getElementById('am-done').onclick = async () => { closeModal(); await refresh(); if (onDone) onDone(); reveal(); };
 }
+function showAccessModal(title, code, pin, onDone) { renderAccessKit({ title, code, pin, onDone }); }
 async function approveCand(id) {
   try { const d = await api(`/api/admin/candidatures/${id}/approve`, { body: {} }); sound.sfx.cash(); showAccessModal('Candidature validée', d.code, d.pin, renderRecrues); renderRecrues(); }
   catch (e) { toast('Erreur', 'bad'); }
@@ -677,23 +688,32 @@ async function pollSignals(first) {
   const active = document.querySelector('.view.on');
   if (!first) {
     if (d.notif_unread > SIG.notif) {
-      sound.sfx.ding(); refreshNotifs(); try { await refresh(); } catch (e) {}
+      sound.notif(d.notif_top && d.notif_top.kind); ringBell();
+      refreshNotifs(); try { await refresh(); } catch (e) {}
       if (active) { if (active.id === 'v-dash') renderDash(); else if (active.id === 'v-leads') renderLeads(); else if (active.id === 'v-paiements') renderPaiements(); else if (active.id === 'v-recrues') renderRecrues(); else if (active.id === 'v-aff') renderAff(); }
     }
-    if (d.chat_unread > SIG.chat) { sound.sfx.ding(); if (active && active.id === 'v-messages') { loadContacts(); if (CHAT.channel) loadConv(); } }
+    if (d.chat_unread > SIG.chat) { sound.notif('message'); if (active && active.id === 'v-messages') { loadContacts(); if (CHAT.channel) loadConv(); } }
   }
   if (active && active.id === 'v-classement') renderClassement();
   SIG.notif = d.notif_unread; SIG.chat = d.chat_unread;
 }
 
 /* ---------- notifications ---------- */
+const NKIND = {
+  client: { c: 'var(--ok)', t: 'Nouveau client' }, vente: { c: '#36f5a0', t: 'Vente' },
+  recrue: { c: 'var(--accent)', t: 'Recrue' }, commission: { c: '#e6c34c', t: 'Commission' },
+  paiement: { c: '#e6c34c', t: 'Paiement' }, statut: { c: '#22d3ee', t: 'Statut' },
+  info: { c: 'var(--muted)', t: 'Info' },
+};
+function ringBell() { const b = document.getElementById('bell'); b.classList.remove('bell-ring'); void b.offsetWidth; b.classList.add('bell-ring'); }
 async function refreshNotifs() {
   try {
     const d = await api('/api/admin/notifs');
     const bell = document.getElementById('bell'); bell.querySelector('.badge')?.remove();
     if (d.unread) bell.appendChild(el(`<span class="badge">${d.unread}</span>`));
+    const head = `<div class="nhead">${d.unread ? `<span class="pill">${d.unread}</span> non lue${d.unread > 1 ? 's' : ''} · ${d.notifs.length} au total` : `Tout est lu · ${d.notifs.length} notification${d.notifs.length > 1 ? 's' : ''}`}</div>`;
     document.getElementById('notif-list').innerHTML = d.notifs.length
-      ? d.notifs.map(n => `<div class="row" style="grid-template-columns:1fr auto;${n.lu ? '' : 'border-color:var(--hair-2)'}"><div>${esc(n.text)}</div><div class="meta">${ago(n.created)}</div></div>`).join('')
+      ? head + d.notifs.map(n => { const k = NKIND[n.kind] || NKIND.info; return `<div class="row" style="grid-template-columns:auto 1fr auto;${n.lu ? 'opacity:.6' : 'border-color:var(--hair-2)'}"><span class="ndot" style="color:${k.c};background:${k.c}"></span><div>${esc(n.text)}</div><div class="meta">${ago(n.created)}</div></div>`; }).join('')
       : `<p class="muted center" style="padding:20px">Aucune notification.</p>`;
   } catch (e) {}
 }

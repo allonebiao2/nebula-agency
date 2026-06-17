@@ -629,27 +629,35 @@ async function pollSignals(first) {
   const active = document.querySelector('.view.on');
   if (!first) {
     if (d.notif_unread > SIG.notif) {
-      sound.sfx.ding(); refreshNotifs();
+      sound.notif(d.notif_top && d.notif_top.kind); ringBell(); refreshNotifs();
       try { ME = await api('/api/partenaire/me'); LEADS = (await api('/api/partenaire/leads')).leads; } catch (e) {}
       if (active && active.id === 'v-home') renderHome();
       else if (active && active.id === 'v-clients') renderClients();
       else if (active && active.id === 'v-gains') renderGains();
     }
-    if (d.chat_unread > SIG.chat) { sound.sfx.ding(); if (active && active.id === 'v-messages') { loadContacts(); if (CHAT.channel) loadConv(); } }
+    if (d.chat_unread > SIG.chat) { sound.notif('message'); if (active && active.id === 'v-messages') { loadContacts(); if (CHAT.channel) loadConv(); } }
   }
   if (active && active.id === 'v-classement') renderClassement();
   SIG.notif = d.notif_unread; SIG.chat = d.chat_unread;
 }
 
 /* ---- notifications ---- */
+const NKIND = {
+  client: { c: 'var(--ok)', t: 'Nouveau client' }, vente: { c: '#36f5a0', t: 'Vente' },
+  recrue: { c: 'var(--accent)', t: 'Recrue' }, commission: { c: '#e6c34c', t: 'Commission' },
+  paiement: { c: '#e6c34c', t: 'Paiement' }, statut: { c: '#22d3ee', t: 'Statut' },
+  info: { c: 'var(--muted)', t: 'Info' },
+};
+function ringBell() { const b = document.getElementById('bell'); b.classList.remove('bell-ring'); void b.offsetWidth; b.classList.add('bell-ring'); }
 async function refreshNotifs() {
   try {
     const d = await api('/api/partenaire/notifs');
     const bell = document.getElementById('bell');
     bell.querySelector('.badge')?.remove();
     if (d.unread) bell.appendChild(el(`<span class="badge">${d.unread}</span>`));
+    const head = `<div class="nhead">${d.unread ? `<span class="pill">${d.unread}</span> non lue${d.unread > 1 ? 's' : ''} · ${d.notifs.length} au total` : `Tout est lu · ${d.notifs.length} notification${d.notifs.length > 1 ? 's' : ''}`}</div>`;
     document.getElementById('notif-list').innerHTML = d.notifs.length
-      ? d.notifs.map(n => `<div class="row" style="grid-template-columns:1fr auto;${n.lu ? '' : 'border-color:var(--hair-2)'}"><div>${esc(n.text)}</div><div class="meta">${ago(n.created)}</div></div>`).join('')
+      ? head + d.notifs.map(n => { const k = NKIND[n.kind] || NKIND.info; return `<div class="row" style="grid-template-columns:auto 1fr auto;${n.lu ? 'opacity:.6' : 'border-color:var(--hair-2)'}"><span class="ndot" style="color:${k.c};background:${k.c}"></span><div>${esc(n.text)}</div><div class="meta">${ago(n.created)}</div></div>`; }).join('')
       : `<p class="muted center" style="padding:20px">Aucune notification.</p>`;
   } catch (e) {}
 }

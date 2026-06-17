@@ -214,7 +214,8 @@ def init_db():
             target_role TEXT NOT NULL,    -- 'admin' | 'affiliate'
             target_id INTEGER DEFAULT 0,  -- id affilié (0 = admin global)
             lead_id INTEGER,
-            text TEXT, lu INTEGER DEFAULT 0, created REAL)""")
+            text TEXT, lu INTEGER DEFAULT 0, created REAL,
+            kind TEXT DEFAULT 'info')""")  # kind: client|vente|recrue|commission|paiement|statut|info
         c.execute("""CREATE TABLE IF NOT EXISTS brain_msgs(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             scope TEXT NOT NULL,          -- 'admin' | 'aff'
@@ -282,6 +283,11 @@ def migrate():
         for col, ddl in [("pseudo", "TEXT DEFAULT ''"), ("parrain_id", "INTEGER DEFAULT 0"), ("photo", "TEXT DEFAULT ''")]:
             try:
                 c.execute(f"ALTER TABLE affiliates ADD COLUMN {col} {ddl}")
+            except Exception:
+                pass
+        for col, ddl in [("kind", "TEXT DEFAULT 'info'")]:
+            try:
+                c.execute(f"ALTER TABLE notifs ADD COLUMN {col} {ddl}")
             except Exception:
                 pass
 migrate()
@@ -436,10 +442,10 @@ def network_of(aid: int) -> Dict[str, Any]:
         "n1_commission": n1_comm, "n2_commission": n2_comm, "network_total": n1_comm + n2_comm,
     }
 
-def notify(role: str, target_id: int, text: str, lead_id: Optional[int] = None):
+def notify(role: str, target_id: int, text: str, lead_id: Optional[int] = None, kind: str = "info"):
     with db() as c:
-        c.execute("INSERT INTO notifs(target_role,target_id,lead_id,text,lu,created) VALUES(?,?,?,?,0,?)",
-                  (role, target_id, lead_id, text, time.time()))
+        c.execute("INSERT INTO notifs(target_role,target_id,lead_id,text,lu,created,kind) VALUES(?,?,?,?,0,?,?)",
+                  (role, target_id, lead_id, text, time.time(), kind))
 
 def affiliate_label(a: sqlite3.Row) -> str:
     nom = " ".join(x for x in [a["prenom"], a["nom"]] if x).strip()
@@ -490,8 +496,8 @@ def generate_commissions(lead: sqlite3.Row):
     for bid, lvl, amt in entries:
         if amt > 0:
             nb += 1
-            notify("affiliate", bid, f"Commission à réclamer : {fmoney(amt)} F ({labels[lvl]}) sur la vente de {client}.", lead["id"])
-    notify("admin", 0, f"Commissions générées sur la vente de {client} — {nb} bénéficiaire(s) à payer.", lead["id"])
+            notify("affiliate", bid, f"Commission à réclamer : {fmoney(amt)} F ({labels[lvl]}) sur la vente de {client}.", lead["id"], kind="commission")
+    notify("admin", 0, f"Commissions générées sur la vente de {client} — {nb} bénéficiaire(s) à payer.", lead["id"], kind="vente")
 
 def void_commissions(lead_id: int):
     with db() as c:
@@ -692,8 +698,8 @@ async def create_lead(req: Request):
         lead_id = cur.lastrowid
     client = (prenom + " " + nom).strip()
     svc = SERVICES[service]["label"]
-    notify("admin", 0, f"Nouveau client via {affiliate_label(a)} : {client} — {svc}", lead_id)
-    notify("affiliate", a["id"], f"{client} a rempli ton formulaire — en attente de validation.", lead_id)
+    notify("admin", 0, f"Nouveau client via {affiliate_label(a)} : {client} — {svc}", lead_id, kind="client")
+    notify("affiliate", a["id"], f"{client} a rempli ton formulaire — en attente de validation.", lead_id, kind="client")
     return {"ok": True}
 
 @app.post("/api/recruit")
@@ -714,8 +720,8 @@ async def create_recruit(req: Request):
                      VALUES(?,?,?,?,?,?,?,'pending',?)""",
                   (a["id"], nom, prenom, numero, momo, reseau, msg, time.time()))
     who = (prenom + " " + nom).strip()
-    notify("admin", 0, f"Nouvelle recrue : {who} ({numero}) — parrainé(e) par {affiliate_label(a)}")
-    notify("affiliate", a["id"], f"{who} veut rejoindre via ton lien — en attente de validation NEBULA.")
+    notify("admin", 0, f"Nouvelle recrue : {who} ({numero}) — parrainé(e) par {affiliate_label(a)}", kind="recrue")
+    notify("affiliate", a["id"], f"{who} veut rejoindre via ton lien — en attente de validation NEBULA.", kind="recrue")
     return {"ok": True}
 
 # ==================  TRACKING DU LIEN + QR (carte de visite)  ================
@@ -862,6 +868,20 @@ def admin_toggle_affiliate(aid: int, naff_session: Optional[str] = Cookie(defaul
         c.execute("UPDATE affiliates SET actif=? WHERE id=?", (0 if a["actif"] else 1, aid))
     return {"ok": True}
 
+@app.post("/api/admin/affiliates/{aid}/reset-pin")
+def admin_reset_pin(aid: int, naff_session: Optional[str] = Cookie(default=None)):
+    """Régénère un nouveau PIN (l'ancien est haché, donc irrécupérable) — pour ré-envoyer les accès."""
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        a = c.execute("SELECT code FROM affiliates WHERE id=?", (aid,)).fetchone()
+        if not a:
+            return JSONResponse({"ok": False}, status_code=404)
+        pin = "".join(secrets.choice("0123456789") for _ in range(4))
+        c.execute("UPDATE affiliates SET pin=? WHERE id=?", (hash_pw(pin), aid))
+    notify("affiliate", aid, "Tes accès ont été réinitialisés par NEBULA — nouveau PIN envoyé.", kind="info")
+    return {"ok": True, "code": a["code"], "pin": pin}
+
 @app.get("/api/admin/leads")
 def admin_leads(naff_session: Optional[str] = Cookie(default=None)):
     if not need_admin(naff_session):
@@ -903,7 +923,7 @@ async def admin_set_status(lid: int, req: Request, naff_session: Optional[str] =
         c.execute("INSERT INTO history(lead_id,old_status,new_status,note,at) VALUES(?,?,?,?,?)",
                   (lid, old, st, "", time.time()))
     client = (str(r["prenom"] or "") + " " + str(r["nom"] or "")).strip()
-    notify("affiliate", r["affiliate_id"], f"{client} : statut → {STATUSES[st]['label']}", lid)
+    notify("affiliate", r["affiliate_id"], f"{client} : statut → {STATUSES[st]['label']}", lid, kind="statut")
     return {"ok": True}
 
 @app.post("/api/admin/leads/{lid}/payment")
@@ -973,7 +993,7 @@ def admin_recruit_approve(rid: int, naff_session: Optional[str] = Cookie(default
                   (code, r["nom"], r["prenom"], r["momo_number"], r["momo_reseau"], hash_pw(pin), "#7b5cff", time.time(), r["parrain_id"]))
         c.execute("UPDATE recruits SET status='approved' WHERE id=?", (rid,))
     who = (str(r["prenom"] or "") + " " + str(r["nom"] or "")).strip()
-    notify("affiliate", r["parrain_id"], f"Ta recrue {who} est validée — elle rejoint ton réseau (N1).")
+    notify("affiliate", r["parrain_id"], f"Ta recrue {who} est validée — elle rejoint ton réseau (N1).", kind="recrue")
     return {"ok": True, "code": code, "pin": pin}
 
 @app.post("/api/admin/recruits/{rid}/reject")
@@ -1047,7 +1067,7 @@ async def admin_pay(req: Request, naff_session: Optional[str] = Cookie(default=N
         if n:
             c.execute("UPDATE commissions SET status='paid', paid_at=? WHERE beneficiary_id=? AND status IN ('due','claimed')", (time.time(), aff_id))
     if n:
-        notify("affiliate", aff_id, f"Paiement reçu : {fmoney(total)} F versés par NEBULA ({n} commission(s)). Merci pour ton travail !")
+        notify("affiliate", aff_id, f"Paiement reçu : {fmoney(total)} F versés par NEBULA ({n} commission(s)). Merci pour ton travail !", kind="paiement")
     return {"ok": True, "paid": n, "total": total}
 
 # ===========================  AFFILIÉ  ======================================
@@ -1144,7 +1164,7 @@ def partner_claim(naff_session: Optional[str] = Cookie(default=None)):
             c.execute("UPDATE commissions SET status='claimed', claimed_at=? WHERE beneficiary_id=? AND status='due'", (time.time(), aid))
         a = c.execute("SELECT * FROM affiliates WHERE id=?", (aid,)).fetchone()
     if n:
-        notify("admin", 0, f"{affiliate_label(a)} réclame {fmoney(total)} F ({n} commission(s)) — payer sur {a['momo_reseau']} {a['momo_number']}.")
+        notify("admin", 0, f"{affiliate_label(a)} réclame {fmoney(total)} F ({n} commission(s)) — payer sur {a['momo_reseau']} {a['momo_number']}.", kind="commission")
     return {"ok": True, "claimed": n, "total": total}
 
 @app.post("/api/partenaire/theme")
@@ -1205,7 +1225,7 @@ async def create_candidature(req: Request):
                   (nom, prenom, email, numero, ville, momo, reseau, exp, motiv, canaux, parrain,
                    TERMS_VERSION, time.time(), ip, time.time()))
     who = (prenom + " " + nom).strip()
-    notify("admin", 0, f"Nouvelle candidature partenaire : {who} ({numero}){' · ville ' + ville if ville else ''} — CGU v{TERMS_VERSION} acceptées.")
+    notify("admin", 0, f"Nouvelle candidature partenaire : {who} ({numero}){' · ville ' + ville if ville else ''} — CGU v{TERMS_VERSION} acceptées.", kind="recrue")
     tg_send(f"NEBULA Affiliés — nouvelle candidature partenaire : {who} ({numero}).")
     return {"ok": True}
 
@@ -1244,7 +1264,7 @@ def admin_candidature_approve(cid: int, naff_session: Optional[str] = Cookie(def
         c.execute("UPDATE candidatures SET status='approved' WHERE id=?", (cid,))
         if parrain_id:
             who = (str(r["prenom"] or "") + " " + str(r["nom"] or "")).strip()
-            notify("affiliate", parrain_id, f"Ta recrue {who} est validée — elle rejoint ton réseau (N1).")
+            notify("affiliate", parrain_id, f"Ta recrue {who} est validée — elle rejoint ton réseau (N1).", kind="recrue")
     return {"ok": True, "code": code, "pin": pin}
 
 @app.post("/api/admin/candidatures/{cid}/reject")
@@ -1649,11 +1669,14 @@ def api_signals(naff_session: Optional[str] = Cookie(default=None)):
     if me == "admin":
         with db() as c:
             nun = c.execute("SELECT COUNT(*) n FROM notifs WHERE target_role='admin' AND lu=0").fetchone()["n"]
+            top = c.execute("SELECT id,kind,text FROM notifs WHERE target_role='admin' AND lu=0 ORDER BY id DESC LIMIT 1").fetchone()
     else:
         aid = int(me[1:])
         with db() as c:
             nun = c.execute("SELECT COUNT(*) n FROM notifs WHERE target_role='affiliate' AND target_id=? AND lu=0", (aid,)).fetchone()["n"]
-    return {"notif_unread": nun, "chat_unread": chat_unread_total(me), "ts": time.time()}
+            top = c.execute("SELECT id,kind,text FROM notifs WHERE target_role='affiliate' AND target_id=? AND lu=0 ORDER BY id DESC LIMIT 1", (aid,)).fetchone()
+    return {"notif_unread": nun, "notif_top": (dict(top) if top else None),
+            "chat_unread": chat_unread_total(me), "ts": time.time()}
 
 # ===========================  CERVEAU IA « NOVA »  ==========================
 NOVA_ADMIN_SYS = (

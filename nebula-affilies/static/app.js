@@ -130,9 +130,23 @@ const NA = (() => {
       open() { tone({ f: 420, g: 760, d: 0.2, v: 0.18, t: 'sine' }); },
       ding() {[0, 1].forEach(i => setTimeout(() => tone({ f: [880, 1175][i], d: 0.3, v: 0.22, t: 'sine' }), i * 130)); },
       msg() { tone({ f: 520, g: 780, d: 0.1, v: 0.15, t: 'triangle' }); },
+      /* --- tonalités d'événement (« il y a du mouvement ») --- */
+      client() {[0,1,2,3].forEach(i => setTimeout(() => tone({ f: [659, 880, 1109, 1319][i], d: 0.26, v: 0.2, t: 'sine' }), i * 85)); },   // nouveau client : arpège cristallin ascendant
+      vente() {[0,1,2].forEach(i => setTimeout(() => tone({ f: [784, 1047, 1319][i], d: 0.22, v: 0.22, t: 'triangle' }), i * 90)); },        // vente conclue : triade lumineuse
+      recrue() {[0,1].forEach(i => setTimeout(() => tone({ f: [587, 880][i], d: 0.24, v: 0.2, t: 'triangle' }), i * 120)); },               // nouvelle recrue : « bienvenue » chaleureux
+      statut() { tone({ f: 600, g: 920, d: 0.16, v: 0.16, t: 'sine' }); },                                                                  // changement de statut : blip de progression
+      incoming() { tone({ f: 680, g: 940, d: 0.11, v: 0.16, t: 'sine' }); setTimeout(() => tone({ f: 940, d: 0.09, v: 0.12, t: 'sine' }), 75); }, // message reçu : pop doux
     };
+    // dispatcher : choisit la tonalité selon le type d'événement reçu du serveur
+    function notif(kind) {
+      ({
+        client: sfx.client, vente: sfx.vente, recrue: sfx.recrue,
+        commission: sfx.cash, paiement: sfx.cash, statut: sfx.statut,
+        message: sfx.incoming,
+      }[kind] || sfx.ding)();
+    }
     return {
-      unlock, sfx,
+      unlock, sfx, notif,
       get enabled() { return enabled; },
       get ambient() { return ambientOn; },
       toggle() { enabled = !enabled; localStorage.setItem('na_sfx', enabled ? '1' : '0'); if (enabled) { ensure(); sfx.ok(); } return enabled; },

@@ -124,7 +124,16 @@ input,select,textarea{font-family:inherit}
 .icon-btn:hover{color:var(--ink);transform:translateY(-2px)}
 .icon-btn svg{width:19px;height:19px}
 .icon-btn .badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;
-  background:var(--bad);color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center}
+  background:var(--bad);color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center;
+  animation:badgePop .45s var(--ease) both,badgePulse 2.4s ease-in-out infinite}
+@keyframes badgePop{from{transform:scale(0)}60%{transform:scale(1.25)}to{transform:scale(1)}}
+@keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--bad) 65%,transparent)}55%{box-shadow:0 0 0 7px transparent}}
+.bell-ring{animation:bellShake .7s var(--ease)}
+@keyframes bellShake{0%,100%{transform:none}15%{transform:rotate(-14deg)}30%{transform:rotate(11deg)}45%{transform:rotate(-8deg)}60%{transform:rotate(6deg)}75%{transform:rotate(-3deg)}}
+/* pastille de type dans la fenêtre de notifications */
+.ndot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;margin-top:5px;box-shadow:0 0 8px currentColor}
+.nhead{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--muted);margin-bottom:12px}
+.nhead .pill{background:var(--bad);color:#fff;font-weight:700;border-radius:9px;padding:1px 8px;font-size:.78rem}
 
 /* ---- Vues (transitions « changement de pièce ») ---- */
 .view{display:none}

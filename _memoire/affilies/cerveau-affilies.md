@@ -60,7 +60,10 @@ Dernière grosse mise à jour : **2026-06-17**.
   - **Classement public** : chacun voit rang/RCM/ventes/perf de tous (**clients privés**).
   - **Messagerie** : salon d'équipe + DM 1-à-1 (partenaires ↔ NEBULA), photos, badges, polling.
   - **Photos de profil** : chacun (et NEBULA) ; visibles partout.
-  - **Temps réel** : polling `/api/signals` (12 s) → badges qui se remplissent + **son « ding »** quand ça bouge.
+  - **Temps réel** : polling `/api/signals` (12 s) → badges qui se remplissent + **son quand ça bouge** (voir notifs typées ci-dessous).
+- **Notifications typées + sonores stylées** (2026-06-17 soir) : colonne `notifs.kind` (`client|vente|recrue|commission|paiement|statut|info`) posée à chaque `notify(kind=)` ; `/api/signals` renvoie `notif_top` (id+kind+text) → le front joue **une tonalité Web Audio distincte par type** via `sound.notif(kind)` (dispatcher dans `static/app.js` : client=arpège montant, vente=triade, recrue=« bienvenue », commission/paiement=cash, statut=blip, message=pop). Fenêtre de notif enrichie (compteur « X non lues · Y total », **pastille couleur par type** `.ndot`, **badge qui pulse**, **cloche qui sonne** `ringBell()`). Admin + partenaire.
+- **Renvoyer / réinitialiser le PIN** (2026-06-17 soir) : `POST /api/admin/affiliates/{id}/reset-pin` régénère un PIN (l'ancien haché est irrécupérable) et notifie le partenaire ; bouton **« Renvoyer accès »** par partenaire dans `/admin`. Indispensable : sans ça un partenaire qui perd son PIN était bloqué.
+- **Kit de bienvenue 1-tap** (2026-06-17 soir) : `renderAccessKit()` + `welcomeMessage()` (admin) → carte commune (création / validation candidature / renvoi d'accès) avec **espace `/partenaire` + Code + PIN + lien `/p/CODE`** et boutons **« Envoyer sur WhatsApp »** (wa.me pré-rempli, **sans destinataire forcé** — numéros Bénin ambigus) + « Copier le kit ».
 - **Didacticiel** : guide pas-à-pas par zone (auto au 1er login + bouton « ? »).
 - **Logo NEBULA partout** : favicon, dock, hub, pages publiques, filigrane de fond, avatar Salon NEBULA. Assets `static/nebula-mark.png` / `nebula-logo.png` / `favicon.png` / `og-image.png` (générés par PIL depuis `_partage/logo nebula agency.JPG`).
 - **Lien unique « hub »** `/p/<code>` : logo + photo + nom du partenaire → 2 chemins (client / devenir partenaire). 1 seul QR. Deep-link `?go=client|partenaire`.
