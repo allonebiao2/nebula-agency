@@ -20,7 +20,7 @@ paiement (gris → vert fluo) : l'affilié est notifié à chaque étape.
 Lancement local :  uvicorn server:app --port 8780 --reload
 Stack identique à NEXO/Vendora (FastAPI + SQLite, 100% gratuit, sans CB).
 """
-import os, json, time, pathlib, sqlite3, hmac, hashlib, base64, secrets, re, threading, datetime
+import os, json, time, pathlib, sqlite3, hmac, hashlib, base64, secrets, re, threading, datetime, contextlib
 from typing import Any, Dict, List, Optional, Tuple
 
 import httpx
@@ -172,10 +172,15 @@ TERMS_HTML = """
 # ----------------------------------------------------------------------------
 # Base de données (SQLite — mémoire persistante, tout interconnecté)
 # ----------------------------------------------------------------------------
+@contextlib.contextmanager
 def db():
     c = sqlite3.connect(DBF, timeout=30)
     c.row_factory = sqlite3.Row
-    return c
+    try:
+        yield c
+        c.commit()
+    finally:
+        c.close()
 
 def init_db():
     with db() as c:
@@ -255,11 +260,21 @@ def init_db():
             media_kind TEXT DEFAULT 'none',          -- none | image | video | link
             media_url TEXT DEFAULT '', filename TEXT DEFAULT '',
             updated REAL, created REAL)""")
+        c.execute("""CREATE TABLE IF NOT EXISTS messages(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            scope TEXT,                  -- 'general' | 'dm'
+            pair TEXT DEFAULT '',        -- pour 'dm' : 'uidA|uidB' trié
+            sender_uid TEXT, text TEXT, created REAL)""")
+        c.execute("""CREATE TABLE IF NOT EXISTS chat_reads(
+            uid TEXT, channel TEXT, last_read REAL,
+            PRIMARY KEY(uid, channel))""")
+        c.execute("""CREATE TABLE IF NOT EXISTS app_settings(
+            k TEXT PRIMARY KEY, v TEXT)""")
 init_db()
 
 def migrate():
     with db() as c:
-        for col, ddl in [("pseudo", "TEXT DEFAULT ''"), ("parrain_id", "INTEGER DEFAULT 0")]:
+        for col, ddl in [("pseudo", "TEXT DEFAULT ''"), ("parrain_id", "INTEGER DEFAULT 0"), ("photo", "TEXT DEFAULT ''")]:
             try:
                 c.execute(f"ALTER TABLE affiliates ADD COLUMN {col} {ddl}")
             except Exception:
@@ -1011,6 +1026,7 @@ def partner_me(naff_session: Optional[str] = Cookie(default=None)):
         "code": a["code"], "nom": a["nom"], "prenom": a["prenom"],
         "name": affiliate_label(a), "accent": a["accent"],
         "momo_number": a["momo_number"], "momo_reseau": a["momo_reseau"],
+        "photo": photo_url("a" + str(aid)),
         "stats": s, "network": network_of(aid), "earnings": earnings_of(aid),
     }
 
@@ -1350,6 +1366,232 @@ def serve_pub_media(pid: int, naff_session: Optional[str] = Cookie(default=None)
     if not fp.exists():
         return JSONResponse({"error": "introuvable"}, status_code=404)
     return FileResponse(str(fp), filename=r["filename"].split("_", 3)[-1])
+
+# ============  PROFILS · CLASSEMENT · MESSAGERIE (bureaux virtuels)  =========
+def me_uid(naff_session) -> Optional[str]:
+    ac = actor(naff_session)
+    if not ac:
+        return None
+    return "admin" if ac[0] == "admin" else "a" + str(ac[1])
+
+def setting_get(k: str) -> str:
+    with db() as c:
+        r = c.execute("SELECT v FROM app_settings WHERE k=?", (k,)).fetchone()
+    return r["v"] if r else ""
+
+def setting_set(k: str, v: str):
+    with db() as c:
+        c.execute("INSERT INTO app_settings(k,v) VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v", (k, v))
+
+def photo_url(who: str) -> str:
+    """who = 'admin' ou 'a<id>'. Renvoie l'URL de la photo si elle existe, sinon ''."""
+    if who == "admin":
+        return "/api/photo/admin" if setting_get("admin_photo") else ""
+    if who.startswith("a"):
+        try:
+            aid = int(who[1:])
+        except Exception:
+            return ""
+        with db() as c:
+            r = c.execute("SELECT photo FROM affiliates WHERE id=?", (aid,)).fetchone()
+        return f"/api/photo/{aid}" if (r and r["photo"]) else ""
+    return ""
+
+def participants_map() -> Dict[str, Dict[str, Any]]:
+    with db() as c:
+        affs = c.execute("SELECT * FROM affiliates WHERE actif=1 ORDER BY created").fetchall()
+    out: Dict[str, Dict[str, Any]] = {"admin": {
+        "uid": "admin", "name": "NEBULA Agency", "role": "admin",
+        "accent": "#7b5cff", "photo": photo_url("admin"), "sub": "Quartier général"}}
+    for a in affs:
+        uid = "a" + str(a["id"])
+        out[uid] = {"uid": uid, "name": affiliate_label(a), "role": "affiliate",
+                    "accent": a["accent"] or "#7b5cff", "photo": photo_url(uid),
+                    "sub": rank_for(_paid_value(a["id"])[0])["label"], "aid": a["id"]}
+    return out
+
+def dm_pair(u1: str, u2: str) -> str:
+    return "|".join(sorted([u1, u2]))
+
+def chan_key(scope: str, pair: str) -> str:
+    return "general" if scope == "general" else ("dm:" + pair)
+
+def chat_lastread(uid: str, channel: str) -> float:
+    with db() as c:
+        r = c.execute("SELECT last_read FROM chat_reads WHERE uid=? AND channel=?", (uid, channel)).fetchone()
+    return r["last_read"] if r else 0.0
+
+def chat_mark_read(uid: str, channel: str):
+    with db() as c:
+        c.execute("INSERT INTO chat_reads(uid,channel,last_read) VALUES(?,?,?) "
+                  "ON CONFLICT(uid,channel) DO UPDATE SET last_read=excluded.last_read", (uid, channel, time.time()))
+
+def chat_unread_total(me: str) -> int:
+    total = 0
+    with db() as c:
+        lrg = chat_lastread(me, "general")
+        total += c.execute("SELECT COUNT(*) n FROM messages WHERE scope='general' AND created>? AND sender_uid!=?", (lrg, me)).fetchone()["n"]
+        pairs = c.execute("SELECT DISTINCT pair FROM messages WHERE scope='dm' AND (pair LIKE ? OR pair LIKE ?)", (me + "|%", "%|" + me)).fetchall()
+        for p in pairs:
+            lr = chat_lastread(me, "dm:" + p["pair"])
+            total += c.execute("SELECT COUNT(*) n FROM messages WHERE scope='dm' AND pair=? AND created>? AND sender_uid!=?", (p["pair"], lr, me)).fetchone()["n"]
+    return total
+
+@app.post("/api/me/photo")
+async def upload_my_photo(file: UploadFile = File(...), naff_session: Optional[str] = Cookie(default=None)):
+    me = me_uid(naff_session)
+    if not me:
+        return JSONResponse({"error": "auth"}, status_code=401)
+    if not file or not file.filename:
+        return JSONResponse({"ok": False, "error": "Aucun fichier."}, status_code=400)
+    fname, _ = await store_upload(file, "photo")
+    if me == "admin":
+        old = setting_get("admin_photo")
+        if old:
+            try: (UP_DIR / old).unlink()
+            except Exception: pass
+        setting_set("admin_photo", fname)
+    else:
+        aid = int(me[1:])
+        with db() as c:
+            r = c.execute("SELECT photo FROM affiliates WHERE id=?", (aid,)).fetchone()
+            if r and r["photo"]:
+                try: (UP_DIR / r["photo"]).unlink()
+                except Exception: pass
+            c.execute("UPDATE affiliates SET photo=? WHERE id=?", (fname, aid))
+    return {"ok": True, "url": photo_url(me)}
+
+@app.get("/api/photo/{who}")
+def serve_photo(who: str, naff_session: Optional[str] = Cookie(default=None)):
+    if actor(naff_session) is None:
+        return JSONResponse({"error": "auth"}, status_code=401)
+    fname = ""
+    if who == "admin":
+        fname = setting_get("admin_photo")
+    else:
+        try:
+            aid = int(who)
+            with db() as c:
+                r = c.execute("SELECT photo FROM affiliates WHERE id=?", (aid,)).fetchone()
+            fname = r["photo"] if r else ""
+        except Exception:
+            fname = ""
+    if not fname:
+        return JSONResponse({"error": "introuvable"}, status_code=404)
+    fp = UP_DIR / fname
+    if not fp.exists():
+        return JSONResponse({"error": "introuvable"}, status_code=404)
+    return FileResponse(str(fp))
+
+@app.get("/api/leaderboard")
+def api_leaderboard(naff_session: Optional[str] = Cookie(default=None)):
+    me = me_uid(naff_session)
+    if not me:
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        affs = c.execute("SELECT * FROM affiliates WHERE actif=1").fetchall()
+    out = []
+    for a in affs:
+        s = stats_of(a["id"]); e = earnings_of(a["id"]); b = s["by_status"]
+        uid = "a" + str(a["id"])
+        out.append({
+            "uid": uid, "name": affiliate_label(a), "code": a["code"], "photo": photo_url(uid),
+            "accent": a["accent"] or "#7b5cff", "rank": s["rank"]["label"], "rank_level": s["rank"]["level"],
+            "palier": s["palier"]["label"], "palier_pct": s["palier"]["pct"],
+            "ventes": s["ventes"], "ventes_mois": s["ventes_mois"], "score": s["score"],
+            "rcm": e["generated"], "paid": e["paid"], "nb_real": s["nb_real"],
+            "clients_actifs": (b.get("attente", 0) + b.get("en_cours", 0)), "termine": b.get("termine", 0),
+            "is_me": uid == me,
+        })
+    out.sort(key=lambda x: (x["score"], x["rcm"]), reverse=True)
+    for i, r in enumerate(out):
+        r["position"] = i + 1
+    return {"leaderboard": out, "me": me}
+
+@app.get("/api/chat/contacts")
+def chat_contacts(naff_session: Optional[str] = Cookie(default=None)):
+    me = me_uid(naff_session)
+    if not me:
+        return JSONResponse({"error": "auth"}, status_code=401)
+    pm = participants_map()
+    with db() as c:
+        lrg = chat_lastread(me, "general")
+        gen_unread = c.execute("SELECT COUNT(*) n FROM messages WHERE scope='general' AND created>? AND sender_uid!=?", (lrg, me)).fetchone()["n"]
+        gen_last = c.execute("SELECT text,created FROM messages WHERE scope='general' ORDER BY id DESC LIMIT 1").fetchone()
+    contacts = []
+    for uid, info in pm.items():
+        if uid == me:
+            continue
+        pr = dm_pair(me, uid)
+        with db() as c:
+            lr = chat_lastread(me, "dm:" + pr)
+            unread = c.execute("SELECT COUNT(*) n FROM messages WHERE scope='dm' AND pair=? AND created>? AND sender_uid!=?", (pr, lr, me)).fetchone()["n"]
+            last = c.execute("SELECT text,created FROM messages WHERE scope='dm' AND pair=? ORDER BY id DESC LIMIT 1", (pr,)).fetchone()
+        contacts.append({**info, "unread": unread, "last": (last["text"] if last else ""), "last_at": (last["created"] if last else 0)})
+    contacts.sort(key=lambda c0: (c0["unread"] == 0, -(c0["last_at"] or 0)))
+    return {"me": me, "my": pm.get(me, {"uid": me, "name": "Moi", "photo": "", "accent": "#7b5cff"}),
+            "general": {"unread": gen_unread, "last": (gen_last["text"] if gen_last else ""), "last_at": (gen_last["created"] if gen_last else 0)},
+            "contacts": contacts}
+
+@app.get("/api/chat/history")
+def chat_history(channel: str = "general", naff_session: Optional[str] = Cookie(default=None)):
+    me = me_uid(naff_session)
+    if not me:
+        return JSONResponse({"error": "auth"}, status_code=401)
+    if channel == "general":
+        scope, pair = "general", ""
+    else:
+        scope, pair = "dm", dm_pair(me, channel)
+    with db() as c:
+        if scope == "general":
+            rows = c.execute("SELECT * FROM messages WHERE scope='general' ORDER BY id DESC LIMIT 100").fetchall()
+        else:
+            rows = c.execute("SELECT * FROM messages WHERE scope='dm' AND pair=? ORDER BY id DESC LIMIT 100", (pair,)).fetchall()
+    rows = list(reversed(rows))
+    pm = participants_map()
+    msgs = []
+    for r in rows:
+        snd = pm.get(r["sender_uid"], {"name": "Ancien partenaire", "photo": "", "accent": "#6b6b86"})
+        msgs.append({"id": r["id"], "uid": r["sender_uid"], "name": snd["name"], "photo": snd.get("photo", ""),
+                     "accent": snd.get("accent", "#7b5cff"), "text": r["text"], "created": r["created"], "mine": r["sender_uid"] == me})
+    chat_mark_read(me, chan_key(scope, pair))
+    return {"messages": msgs, "channel": channel}
+
+@app.post("/api/chat/send")
+async def chat_send(req: Request, naff_session: Optional[str] = Cookie(default=None)):
+    me = me_uid(naff_session)
+    if not me:
+        return JSONResponse({"error": "auth"}, status_code=401)
+    d = await req.json()
+    to = clean(d.get("to"), 20) or "general"
+    text = clean(d.get("text"), 800)
+    if not text:
+        return JSONResponse({"ok": False, "error": "Message vide."}, status_code=400)
+    pm = participants_map()
+    if to == "general":
+        scope, pair = "general", ""
+    else:
+        if to not in pm or to == me:
+            return JSONResponse({"ok": False, "error": "Destinataire introuvable."}, status_code=404)
+        scope, pair = "dm", dm_pair(me, to)
+    with db() as c:
+        c.execute("INSERT INTO messages(scope,pair,sender_uid,text,created) VALUES(?,?,?,?,?)", (scope, pair, me, text, time.time()))
+    chat_mark_read(me, chan_key(scope, pair))
+    return {"ok": True}
+
+@app.get("/api/signals")
+def api_signals(naff_session: Optional[str] = Cookie(default=None)):
+    me = me_uid(naff_session)
+    if not me:
+        return JSONResponse({"error": "auth"}, status_code=401)
+    if me == "admin":
+        with db() as c:
+            nun = c.execute("SELECT COUNT(*) n FROM notifs WHERE target_role='admin' AND lu=0").fetchone()["n"]
+    else:
+        aid = int(me[1:])
+        with db() as c:
+            nun = c.execute("SELECT COUNT(*) n FROM notifs WHERE target_role='affiliate' AND target_id=? AND lu=0", (aid,)).fetchone()["n"]
+    return {"notif_unread": nun, "chat_unread": chat_unread_total(me), "ts": time.time()}
 
 # ===========================  CERVEAU IA « NOVA »  ==========================
 NOVA_ADMIN_SYS = (

@@ -45,6 +45,10 @@
     <section class="view" id="v-reseau"></section>
     <!-- MON LIEN -->
     <section class="view" id="v-link"></section>
+    <!-- CLASSEMENT -->
+    <section class="view" id="v-classement"></section>
+    <!-- MESSAGES -->
+    <section class="view" id="v-messages"></section>
     <!-- DOCUMENTATION -->
     <section class="view" id="v-docs"></section>
     <!-- PUBLICATION -->
@@ -74,6 +78,8 @@ const NAV = [
   { id: 'gains', icon: 'coins', label: 'Mes gains' },
   { id: 'clients', icon: 'folder', label: 'Mes clients' },
   { id: 'reseau', icon: 'users', label: 'Mon réseau' },
+  { id: 'classement', icon: 'trophy', label: 'Classement' },
+  { id: 'messages', icon: 'chat', label: 'Messages' },
   { id: 'link', icon: 'link', label: 'Mon lien' },
   { id: 'docs', icon: 'doc', label: 'Documentation' },
   { id: 'publi', icon: 'megaphone', label: 'Publication' },
@@ -95,6 +101,8 @@ const TOUR = [
   { icon: 'coins', title: 'Mes gains', text: 'Toutes tes commissions, tracées. Quand un montant est « à réclamer », clique <b>Réclamer</b> : NEBULA est prévenue et te paie en Mobile Money.' },
   { icon: 'folder', title: 'Mes clients', text: 'Les commerçants que tu as amenés. NEBULA met à jour les statuts (en cours, terminé) et le paiement — tu suis tout en direct.' },
   { icon: 'users', title: 'Mon réseau', text: 'Recrute des partenaires avec ton <b>lien de recrutement</b>. Tu gagnes <b>10%</b> sur leurs ventes (N1) et <b>5%</b> sur celles de leurs recrues (N2). Ton arbre est ici.' },
+  { icon: 'trophy', title: 'Classement', text: 'Vois le niveau de <b>toute l\'équipe</b> : rang, ventes, RCM, performance. Les clients de chacun restent privés — ici, on compare les scores. Grimpe !' },
+  { icon: 'chat', title: 'Messages', text: 'Ton bureau est vivant : écris à un partenaire en privé, ou à toute l\'équipe dans le <b>salon NEBULA</b>. Une tonalité sonne dès que ça bouge sur la plateforme.' },
   { icon: 'link', title: 'Mon lien', text: 'Ton lien magique à partager sur WhatsApp : un commerçant le remplit → il devient ton client. Plus tu partages, plus tu gagnes.' },
   { icon: 'doc', title: 'Documentation', text: 'Tes <b>munitions de vente</b> : guides, fiches produits, argumentaires, réponses aux objections. NEBULA les met à jour — tu as toujours la dernière version. Lis-les pour exceller.' },
   { icon: 'megaphone', title: 'Publication', text: 'Des <b>contenus prêts à poster</b> (textes, visuels, vidéos, scripts) sur WhatsApp, Facebook, Instagram… Copie, télécharge, partage — et fais venir les clients.' },
@@ -105,7 +113,7 @@ const TOUR = [
 function buildDock() {
   const nav = document.getElementById('nav');
   NAV.forEach(n => {
-    const b = el(`<button class="nav-i" data-v="${n.id}" title="${n.label}">${icon(n.icon)}</button>`);
+    const b = el(`<button class="nav-i" id="navi-${n.id}" data-v="${n.id}" title="${n.label}">${icon(n.icon)}</button>`);
     b.onclick = () => switchView(n.id);
     nav.appendChild(b);
   });
@@ -117,7 +125,7 @@ function switchView(id) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
   document.getElementById('v-' + id).classList.add('on');
   document.querySelectorAll('.nav-i[data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === id));
-  ({ home: renderHome, gains: renderGains, clients: renderClients, reseau: renderReseau, link: renderLink, docs: renderDocs, publi: renderPubli, perso: renderPerso }[id])();
+  ({ home: renderHome, gains: renderGains, clients: renderClients, reseau: renderReseau, classement: renderClassement, messages: renderMessages, link: renderLink, docs: renderDocs, publi: renderPubli, perso: renderPerso }[id])();
   reveal();
 }
 
@@ -314,6 +322,19 @@ function renderLink() {
 function renderPerso() {
   document.getElementById('v-perso').innerHTML = `
     <div class="bento">
+      <div class="col-12 rv"><div class="card glow"><div class="in">
+        <span class="eyebrow"><span class="dot"></span>Photo de profil</span>
+        <h2 class="mt8" style="font-size:1.5rem">Montre ton visage, pro.</h2>
+        <p class="muted mt8 mb16">Une vraie photo (visage bien visible) inspire confiance et te démarque au classement et dans les messages.</p>
+        <div class="flex" style="gap:18px;align-items:center;flex-wrap:wrap">
+          <div class="pfp-wrap">
+            <div class="pfp" id="pfpPreview" style="width:92px;height:92px;display:grid;place-items:center;font-weight:700;font-size:1.6rem;color:var(--accent)">${ME.photo ? `<img class="av-img" src="${ME.photo}" alt="">` : initials(ME.name)}</div>
+            <label class="pfp-edit" for="pfpInput">${icon('camera')}</label>
+            <input type="file" id="pfpInput" accept="image/*" style="display:none">
+          </div>
+          <div class="muted" style="font-size:.85rem;max-width:300px">JPG ou PNG · idéalement carrée · ton visage bien visible. Elle apparaît partout sur la plateforme.</div>
+        </div>
+      </div></div></div>
       <div class="col-7 rv"><div class="card glow"><div class="in">
         <span class="eyebrow"><span class="dot"></span>Couleur de ton QG</span>
         <h2 class="mt8" style="font-size:1.6rem">Fais-en ton espace.</h2>
@@ -335,6 +356,20 @@ function renderPerso() {
   });
   document.getElementById('t-snd').onclick = () => { sound.toggle(); renderPerso(); };
   document.getElementById('t-amb').onclick = () => { sound.toggleAmbient(); renderPerso(); };
+  const pin = document.getElementById('pfpInput');
+  if (pin) pin.onchange = async () => {
+    const f = pin.files[0]; if (!f) return;
+    const fd = new FormData(); fd.append('file', f);
+    try {
+      const r = await fetch('/api/me/photo', { method: 'POST', credentials: 'same-origin', body: fd });
+      const j = await r.json();
+      if (j.ok) {
+        ME.photo = j.url + '?t=' + Date.now(); sound.sfx.cash(); toast('Photo mise à jour ✓', 'ok');
+        document.getElementById('pfpPreview').innerHTML = `<img class="av-img" src="${ME.photo}" alt="">`;
+        document.getElementById('top-emblem').innerHTML = `<img class="av-img" src="${ME.photo}" alt="">`;
+      } else toast(j.error || 'Erreur', 'bad');
+    } catch (e) { toast('Erreur', 'bad'); }
+  };
 }
 
 /* ---- DOCUMENTATION ---- */
@@ -432,6 +467,113 @@ function wirePub(x) {
   const wa = document.querySelector(`[data-wa="${x.id}"]`); if (wa) wa.href = 'https://wa.me/?text=' + encodeURIComponent(x.body || '');
 }
 
+/* ---- CLASSEMENT (chacun voit le niveau de tous) ---- */
+async function renderClassement() {
+  let d; try { d = await api('/api/leaderboard'); } catch (e) { return; }
+  const rows = d.leaderboard.map(a => {
+    const ava = a.photo ? `<div class="lb-ava"><img class="av-img" src="${esc(a.photo)}" alt=""></div>` : `<div class="lb-ava" style="color:${a.accent || 'var(--accent)'}">${initials(a.name)}</div>`;
+    return `<div class="lb-row${a.is_me ? ' me' : ''}">
+      <div class="lb-pos${a.position <= 3 ? ' top' : ''}">${a.position}</div>
+      ${ava}
+      <div style="min-width:0">
+        <div class="ttl" style="font-size:1rem">${esc(a.name)}${a.is_me ? ' <span class="chip" style="margin-left:4px">toi</span>' : ''}</div>
+        <div class="meta">${esc(a.rank)} · palier ${esc(a.palier)} ${a.palier_pct}% · ${a.ventes} vente${a.ventes > 1 ? 's' : ''} · ${a.clients_actifs} actif${a.clients_actifs > 1 ? 's' : ''}</div>
+      </div>
+      <div class="center"><div class="mono" style="color:var(--accent);font-weight:700">${fmt(a.rcm)} F</div><div class="meta">RCM · ${a.score} pts</div></div>
+    </div>`;
+  }).join('');
+  document.getElementById('v-classement').innerHTML = `
+    <div class="rv mb16"><span class="eyebrow"><span class="dot"></span>Classement</span><h2 class="mt8" style="font-size:1.8rem">Le niveau de toute l'équipe</h2>
+    <p class="muted mt8">Rang, ventes, RCM et performance de chacun, en temps réel. <b style="color:var(--ink)">Les clients de chaque partenaire restent privés</b> — ici, ce sont les scores qui parlent.</p></div>
+    ${rows || '<p class="muted center" style="padding:30px">Aucun partenaire actif.</p>'}`;
+}
+
+/* ---- MESSAGES (bureaux virtuels : 1-à-1 + salon d'équipe) ---- */
+let CHAT = { channel: null, convName: '', convTimer: null };
+async function renderMessages() {
+  document.getElementById('v-messages').innerHTML = `
+    <div class="rv mb16"><span class="eyebrow"><span class="dot"></span>Messages</span><h2 class="mt8" style="font-size:1.8rem">Le bureau, ensemble</h2>
+    <p class="muted mt8">Écris à un partenaire en privé, ou à toute l'équipe dans le salon NEBULA.</p></div>
+    <div class="chat-wrap" id="chatWrap">
+      <div class="chat-side" id="chatSide"></div>
+      <div class="chat-conv" id="chatConv"><div class="chat-empty">Choisis une conversation pour commencer.</div></div>
+    </div>`;
+  await loadContacts();
+  if (CHAT.channel) openConv(CHAT.channel, CHAT.convName);
+}
+async function loadContacts() {
+  let d; try { d = await api('/api/chat/contacts'); } catch (e) { return; }
+  const side = document.getElementById('chatSide'); if (!side) return;
+  let html = `<div class="chat-sechead">Salon d'équipe</div>` + contactRow('general', 'Salon NEBULA', '', 'grp', d.general.unread, d.general.last, true);
+  html += `<div class="chat-sechead">Partenaires & NEBULA</div>` + d.contacts.map(c => contactRow(c.uid, c.name, c.photo, '', c.unread, c.last, false, c.accent, c.sub)).join('');
+  side.innerHTML = html;
+  side.querySelectorAll('[data-uid]').forEach(x => x.onclick = () => { sound.sfx.tab(); openConv(x.dataset.uid, x.dataset.name); });
+  setMsgBadge(d.contacts.reduce((s, c) => s + c.unread, 0) + d.general.unread);
+}
+function contactRow(uid, name, photo, grp, unread, last, isGen, accent, sub) {
+  const ava = grp === 'grp' ? `<div class="chat-ava grp">${icon('users')}</div>`
+    : (photo ? `<div class="chat-ava"><img class="av-img" src="${esc(photo)}" alt=""></div>` : `<div class="chat-ava" style="color:${accent || 'var(--accent)'}">${initials(name)}</div>`);
+  const subtxt = last || sub || (isGen ? "Toute l'équipe" : '');
+  return `<div class="chat-contact${CHAT.channel === uid ? ' on' : ''}" data-uid="${uid}" data-name="${esc(name)}">
+    ${ava}<div style="min-width:0"><div class="ttl" style="font-size:.92rem">${esc(name)}</div><div class="meta" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(subtxt)}</div></div>
+    ${unread ? `<div class="chat-cdot">${unread}</div>` : '<span></span>'}</div>`;
+}
+async function openConv(channel, name) {
+  CHAT.channel = channel; CHAT.convName = name;
+  document.getElementById('chatWrap') && document.getElementById('chatWrap').classList.add('conv-open');
+  document.querySelectorAll('.chat-contact').forEach(x => x.classList.toggle('on', x.dataset.uid === channel));
+  const conv = document.getElementById('chatConv');
+  const headAva = channel === 'general' ? `<div class="chat-ava grp" style="width:38px;height:38px">${icon('users')}</div>` : `<div class="chat-ava" style="width:38px;height:38px">${initials(name)}</div>`;
+  conv.innerHTML = `
+    <div class="chat-head"><div class="chat-back" id="chatBack">${icon('arrow')}</div>${headAva}
+      <div><div class="ttl" style="font-size:.98rem">${esc(name)}</div><div class="meta">${channel === 'general' ? "Salon d'équipe" : 'Conversation privée'}</div></div></div>
+    <div class="chat-msgs" id="chatMsgs"><p class="muted center" style="padding:20px">Chargement…</p></div>
+    <div class="chat-foot"><input id="chatInput" placeholder="Écris ton message…" maxlength="800"><button class="chat-sendbtn" id="chatSendBtn">${icon('send')}</button></div>`;
+  document.getElementById('chatBack').onclick = () => { const w = document.getElementById('chatWrap'); w && w.classList.remove('conv-open'); CHAT.channel = null; stopConvPoll(); document.querySelectorAll('.chat-contact').forEach(x => x.classList.remove('on')); };
+  const input = document.getElementById('chatInput');
+  const send = async () => { const text = input.value.trim(); if (!text) return; input.value = ''; try { await api('/api/chat/send', { body: { to: channel, text } }); sound.sfx.msg(); await loadConv(); loadContacts(); } catch (e) { toast('Échec', 'bad'); } };
+  document.getElementById('chatSendBtn').onclick = send;
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+  await loadConv(); startConvPoll(); loadContacts();
+}
+async function loadConv() {
+  if (!CHAT.channel) return;
+  let d; try { d = await api('/api/chat/history?channel=' + encodeURIComponent(CHAT.channel)); } catch (e) { return; }
+  const box = document.getElementById('chatMsgs'); if (!box) return;
+  box.innerHTML = d.messages.length ? d.messages.map(msgRow).join('') : `<p class="muted center" style="padding:20px">Aucun message. Lance la conversation !</p>`;
+  box.scrollTop = box.scrollHeight;
+}
+function msgRow(m) {
+  const ava = m.photo ? `<div class="msg-ava"><img class="av-img" src="${esc(m.photo)}" alt=""></div>` : `<div class="msg-ava" style="color:${m.accent || 'var(--accent)'}">${initials(m.name)}</div>`;
+  return `<div class="msg${m.mine ? ' me' : ''}">${ava}<div class="msg-col">${m.mine ? '' : `<div class="msg-name">${esc(m.name)}</div>`}<div class="msg-bub">${esc(m.text)}</div><div class="msg-time">${ago(m.created)}</div></div></div>`;
+}
+function startConvPoll() { stopConvPoll(); CHAT.convTimer = setInterval(() => { if (document.getElementById('v-messages').classList.contains('on') && CHAT.channel) loadConv(); }, 5000); }
+function stopConvPoll() { if (CHAT.convTimer) { clearInterval(CHAT.convTimer); CHAT.convTimer = null; } }
+function setMsgBadge(n) { const b = document.getElementById('navi-messages'); if (!b) return; const old = b.querySelector('.badge'); if (old) old.remove(); if (n > 0) b.appendChild(el(`<span class="badge">${n}</span>`)); }
+
+/* ---- TEMPS RÉEL : signaux + sons quand ça bouge ---- */
+let SIG = { notif: 0, chat: 0 };
+async function startSignals() { await pollSignals(true); setInterval(() => pollSignals(false), 12000); }
+async function pollSignals(first) {
+  let d; try { d = await api('/api/signals'); } catch (e) { return; }
+  setMsgBadge(d.chat_unread);
+  const bell = document.getElementById('bell'); const ob = bell.querySelector('.badge'); if (ob) ob.remove();
+  if (d.notif_unread) bell.appendChild(el(`<span class="badge">${d.notif_unread}</span>`));
+  const active = document.querySelector('.view.on');
+  if (!first) {
+    if (d.notif_unread > SIG.notif) {
+      sound.sfx.ding(); refreshNotifs();
+      try { ME = await api('/api/partenaire/me'); LEADS = (await api('/api/partenaire/leads')).leads; } catch (e) {}
+      if (active && active.id === 'v-home') renderHome();
+      else if (active && active.id === 'v-clients') renderClients();
+      else if (active && active.id === 'v-gains') renderGains();
+    }
+    if (d.chat_unread > SIG.chat) { sound.sfx.ding(); if (active && active.id === 'v-messages') { loadContacts(); if (CHAT.channel) loadConv(); } }
+  }
+  if (active && active.id === 'v-classement') renderClassement();
+  SIG.notif = d.notif_unread; SIG.chat = d.chat_unread;
+}
+
 /* ---- notifications ---- */
 async function refreshNotifs() {
   try {
@@ -461,9 +603,9 @@ document.getElementById('amb').onclick = () => { sound.toggleAmbient(); syncSnd(
   if (ME.accent) ROOT.style.setProperty('--accent', ME.accent);
   document.getElementById('p-name').textContent = ME.name;
   document.getElementById('p-rank').textContent = ME.stats.rank.label;
-  document.getElementById('top-emblem').innerHTML = rankSvg(ME.stats.rank.label);
+  document.getElementById('top-emblem').innerHTML = ME.photo ? `<img class="av-img" src="${ME.photo}" alt="">` : rankSvg(ME.stats.rank.label);
   try { LEADS = (await api('/api/partenaire/leads')).leads; } catch (e) {}
-  buildDock(); syncSnd(); nova('ton coach perso'); switchView('home'); refreshNotifs();
+  buildDock(); syncSnd(); nova('ton coach perso'); switchView('home'); refreshNotifs(); startSignals();
   document.getElementById('help').innerHTML = icon('help');
   document.getElementById('help').onclick = () => NA.tour(TOUR);
   if (!localStorage.getItem('na_tour_p')) setTimeout(() => NA.tour(TOUR, 'na_tour_p'), 1000);

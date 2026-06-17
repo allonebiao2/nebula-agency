@@ -68,6 +68,9 @@ const NA = (() => {
     upload: P('<path d="M12 21V9"/><path d="M7 13l5-5 5 5"/><path d="M5 4h14"/>'),
     trash: P('<path d="M4 7h16"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/>'),
     image: P('<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8.5" cy="9.5" r="1.8"/><path d="M21 16l-5-5L5 20"/>'),
+    trophy: P('<path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 5H4v1.5A3 3 0 0 0 7 9.5M17 5h3v1.5a3 3 0 0 1-3 3"/><path d="M12 13v3M9 20h6M9.7 20l.6-4M14.3 20l-.6-4"/>'),
+    chat: P('<path d="M4 5.5a1.5 1.5 0 0 1 1.5-1.5h13A1.5 1.5 0 0 1 20 5.5v8a1.5 1.5 0 0 1-1.5 1.5H9l-5 4z"/><path d="M8 8.5h8M8 11h5"/>'),
+    camera: P('<path d="M3 8.5a2 2 0 0 1 2-2h1.6L8 4.5h8l1.4 2H19a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.5" r="3.2"/>'),
   };
   const icon = (n) => ICON[n] || '';
 
@@ -125,6 +128,8 @@ const NA = (() => {
       rank() {[0,1,2,3].forEach(i => setTimeout(() => tone({ f: [523, 659, 784, 1047][i], d: 0.28, v: 0.26, t: 'sawtooth' }), i * 110)); },
       err() { tone({ f: 180, g: 90, d: 0.25, v: 0.2, t: 'sawtooth' }); },
       open() { tone({ f: 420, g: 760, d: 0.2, v: 0.18, t: 'sine' }); },
+      ding() {[0, 1].forEach(i => setTimeout(() => tone({ f: [880, 1175][i], d: 0.3, v: 0.22, t: 'sine' }), i * 130)); },
+      msg() { tone({ f: 520, g: 780, d: 0.1, v: 0.15, t: 'triangle' }); },
     };
     return {
       unlock, sfx,

@@ -39,6 +39,8 @@
     <section class="view" id="v-leads"></section>
     <section class="view" id="v-paiements"></section>
     <section class="view" id="v-recrues"></section>
+    <section class="view" id="v-classement"></section>
+    <section class="view" id="v-messages"></section>
     <section class="view" id="v-docs"></section>
     <section class="view" id="v-publi"></section>
   </main>
@@ -65,10 +67,12 @@ const NAV = [
   { id: 'leads', icon: 'folder', label: 'Clients' },
   { id: 'paiements', icon: 'coins', label: 'Paiements' },
   { id: 'recrues', icon: 'plus', label: 'Recrues' },
+  { id: 'classement', icon: 'trophy', label: 'Classement' },
+  { id: 'messages', icon: 'chat', label: 'Messages' },
   { id: 'docs', icon: 'doc', label: 'Documentation' },
   { id: 'publi', icon: 'megaphone', label: 'Publication' },
 ];
-const TITLES = { dash: 'Tableau de bord', aff: 'Réseau d\'affiliés', reseau: 'Arborescence du réseau', leads: 'Clients du réseau', paiements: 'Commissions à verser', recrues: 'Candidatures & recrues', docs: 'Documentation partenaires', publi: 'Contenus à publier' };
+const TITLES = { dash: 'Tableau de bord', aff: 'Réseau d\'affiliés', reseau: 'Arborescence du réseau', leads: 'Clients du réseau', paiements: 'Commissions à verser', recrues: 'Candidatures & recrues', classement: 'Classement du réseau', messages: 'Messagerie', docs: 'Documentation partenaires', publi: 'Contenus à publier' };
 
 const TOUR = [
   { icon: 'spark', title: 'Bienvenue dans ta console NEBULA', text: 'Le poste de pilotage de ton réseau d\'affiliés : tu suis les clients, tu valides les recrues, et tu paies les commissions. Voici chaque zone.' },
@@ -78,6 +82,8 @@ const TOUR = [
   { icon: 'folder', title: 'Clients', text: 'Tous les clients du réseau. Change le statut (attente → en cours → terminé) et marque le <b>paiement</b> : ça génère <b>automatiquement</b> les commissions (vendeur + N1 + N2) et alerte chacun.' },
   { icon: 'coins', title: 'Paiements', text: 'Les commissions à verser, groupées par affilié avec leur <b>numéro MoMo</b>. Les réclamations passent en tête. Après ton virement, clique <b>Marquer payé</b>.' },
   { icon: 'plus', title: 'Recrues', text: 'Les candidatures de nouveaux affiliés : les <b>candidatures publiques</b> (via « Devenir partenaire » sur le site, avec CGU acceptées) et les <b>recrues parrainées</b>. Valide → le partenaire est créé et rattaché à son parrain.' },
+  { icon: 'trophy', title: 'Classement', text: 'Le niveau de tout ton réseau (rang, ventes, RCM, performance), en temps réel — pratique pour repérer qui pousser.' },
+  { icon: 'chat', title: 'Messages', text: 'Communique avec tes partenaires : en privé ou dans le <b>salon NEBULA</b>. Tu peux mettre ta photo. Une tonalité sonne dès qu\'il y a du mouvement.' },
   { icon: 'doc', title: 'Documentation', text: 'La bibliothèque que voient tes partenaires (guides, fiches produits, argumentaires). Ajoute une note, un PDF ou un lien — la mise à jour est instantanée pour tout le monde.' },
   { icon: 'megaphone', title: 'Publication', text: 'Les contenus prêts à poster que tu donnes à tes partenaires (textes, visuels, vidéos, scripts) pour qu\'ils alimentent leurs réseaux et fassent venir des clients.' },
   { icon: 'spark', title: 'NOVA — ton cerveau IA', text: 'Le bouton en bas à droite : pose-lui des questions sur ton réseau (qui pousser, qui relancer), il connaît tes vraies données en temps réel.' },
@@ -88,7 +94,7 @@ function initials(n) { return (n || '?').split(' ').filter(Boolean).slice(0, 2).
 
 function buildDock() {
   const nav = document.getElementById('nav');
-  NAV.forEach(n => { const b = el(`<button class="nav-i" data-v="${n.id}" title="${n.label}">${icon(n.icon)}</button>`); b.onclick = () => switchView(n.id); nav.appendChild(b); });
+  NAV.forEach(n => { const b = el(`<button class="nav-i" id="navi-${n.id}" data-v="${n.id}" title="${n.label}">${icon(n.icon)}</button>`); b.onclick = () => switchView(n.id); nav.appendChild(b); });
   document.getElementById('logout').innerHTML = icon('logout');
   document.getElementById('logout').onclick = async () => { await api('/api/logout', { body: {} }); location.href = '/'; };
 }
@@ -98,7 +104,7 @@ function switchView(id) {
   document.getElementById('v-' + id).classList.add('on');
   document.querySelectorAll('.nav-i[data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === id));
   document.getElementById('title').textContent = TITLES[id];
-  ({ dash: renderDash, aff: renderAff, reseau: renderReseauAdmin, leads: renderLeads, paiements: renderPaiements, recrues: renderRecrues, docs: renderDocsAdmin, publi: renderPubliAdmin }[id])();
+  ({ dash: renderDash, aff: renderAff, reseau: renderReseauAdmin, leads: renderLeads, paiements: renderPaiements, recrues: renderRecrues, classement: renderClassement, messages: renderMessages, docs: renderDocsAdmin, publi: renderPubliAdmin }[id])();
   reveal();
 }
 
@@ -570,6 +576,114 @@ async function deletePub(id) {
   catch (e) { toast('Erreur', 'bad'); }
 }
 
+/* ---------- CLASSEMENT (NEBULA voit tout le réseau) ---------- */
+async function renderClassement() {
+  let d; try { d = await api('/api/leaderboard'); } catch (e) { return; }
+  const rows = d.leaderboard.map(a => {
+    const ava = a.photo ? `<div class="lb-ava"><img class="av-img" src="${esc(a.photo)}" alt=""></div>` : `<div class="lb-ava" style="color:${a.accent || 'var(--accent)'}">${initials(a.name)}</div>`;
+    return `<div class="lb-row">
+      <div class="lb-pos${a.position <= 3 ? ' top' : ''}">${a.position}</div>${ava}
+      <div style="min-width:0"><div class="ttl" style="font-size:1rem">${esc(a.name)} <span class="chip" style="margin-left:4px">${a.code}</span></div>
+        <div class="meta">${esc(a.rank)} · palier ${esc(a.palier)} ${a.palier_pct}% · ${a.ventes} vente${a.ventes > 1 ? 's' : ''} · ${a.clients_actifs} actif${a.clients_actifs > 1 ? 's' : ''}</div></div>
+      <div class="center"><div class="mono" style="color:var(--accent);font-weight:700">${fmt(a.rcm)} F</div><div class="meta">RCM · ${a.score} pts</div></div>
+    </div>`;
+  }).join('');
+  document.getElementById('v-classement').innerHTML = `
+    <div class="rv mb24"><span class="eyebrow"><span class="dot"></span>Classement</span><h2 class="mt8" style="font-size:1.8rem">Le niveau de tout le réseau</h2>
+    <p class="muted mt8">Rang, ventes, RCM et performance de chaque partenaire, en temps réel.</p></div>${rows || '<p class="muted center" style="padding:30px">Aucun partenaire.</p>'}`;
+}
+
+/* ---------- MESSAGES (NEBULA participe) ---------- */
+let CHAT = { channel: null, convName: '', convTimer: null };
+async function renderMessages() {
+  document.getElementById('v-messages').innerHTML = `
+    <div class="flex between wrap mb16 rv" style="gap:14px;align-items:center">
+      <div><span class="eyebrow"><span class="dot"></span>Messages</span><h2 class="mt8" style="font-size:1.8rem">Communique avec ton réseau</h2></div>
+      <div class="flex" style="gap:11px;align-items:center"><div class="chat-ava" id="myAva" style="width:42px;height:42px">${icon('grid')}</div>
+        <label class="btn sm ghost" for="adminPfpInput">Changer ma photo<span class="ico">${icon('camera')}</span></label>
+        <input type="file" id="adminPfpInput" accept="image/*" style="display:none"></div>
+    </div>
+    <div class="chat-wrap" id="chatWrap"><div class="chat-side" id="chatSide"></div>
+      <div class="chat-conv" id="chatConv"><div class="chat-empty">Choisis une conversation pour commencer.</div></div></div>`;
+  document.getElementById('adminPfpInput').onchange = uploadAdminPhoto;
+  await loadContacts();
+  if (CHAT.channel) openConv(CHAT.channel, CHAT.convName);
+}
+async function uploadAdminPhoto() {
+  const inp = document.getElementById('adminPfpInput'); const f = inp.files[0]; if (!f) return;
+  const fd = new FormData(); fd.append('file', f);
+  try { const r = await fetch('/api/me/photo', { method: 'POST', credentials: 'same-origin', body: fd }); const j = await r.json(); if (j.ok) { sound.sfx.cash(); toast('Photo mise à jour ✓', 'ok'); loadContacts(); } else toast(j.error || 'Erreur', 'bad'); } catch (e) { toast('Erreur', 'bad'); }
+}
+async function loadContacts() {
+  let d; try { d = await api('/api/chat/contacts'); } catch (e) { return; }
+  const my = document.getElementById('myAva'); if (my) my.innerHTML = d.my.photo ? `<img class="av-img" src="${esc(d.my.photo)}?t=${Date.now()}" alt="">` : icon('grid');
+  const side = document.getElementById('chatSide'); if (!side) return;
+  let html = `<div class="chat-sechead">Salon d'équipe</div>` + contactRow('general', 'Salon NEBULA', '', 'grp', d.general.unread, d.general.last, true);
+  html += `<div class="chat-sechead">Partenaires</div>` + d.contacts.map(c => contactRow(c.uid, c.name, c.photo, '', c.unread, c.last, false, c.accent, c.sub)).join('');
+  side.innerHTML = html;
+  side.querySelectorAll('[data-uid]').forEach(x => x.onclick = () => { sound.sfx.tab(); openConv(x.dataset.uid, x.dataset.name); });
+  setMsgBadge(d.contacts.reduce((s, c) => s + c.unread, 0) + d.general.unread);
+}
+function contactRow(uid, name, photo, grp, unread, last, isGen, accent, sub) {
+  const ava = grp === 'grp' ? `<div class="chat-ava grp">${icon('users')}</div>`
+    : (photo ? `<div class="chat-ava"><img class="av-img" src="${esc(photo)}" alt=""></div>` : `<div class="chat-ava" style="color:${accent || 'var(--accent)'}">${initials(name)}</div>`);
+  const subtxt = last || sub || (isGen ? "Toute l'équipe" : '');
+  return `<div class="chat-contact${CHAT.channel === uid ? ' on' : ''}" data-uid="${uid}" data-name="${esc(name)}">
+    ${ava}<div style="min-width:0"><div class="ttl" style="font-size:.92rem">${esc(name)}</div><div class="meta" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(subtxt)}</div></div>
+    ${unread ? `<div class="chat-cdot">${unread}</div>` : '<span></span>'}</div>`;
+}
+async function openConv(channel, name) {
+  CHAT.channel = channel; CHAT.convName = name;
+  const w = document.getElementById('chatWrap'); if (w) w.classList.add('conv-open');
+  document.querySelectorAll('.chat-contact').forEach(x => x.classList.toggle('on', x.dataset.uid === channel));
+  const headAva = channel === 'general' ? `<div class="chat-ava grp" style="width:38px;height:38px">${icon('users')}</div>` : `<div class="chat-ava" style="width:38px;height:38px">${initials(name)}</div>`;
+  document.getElementById('chatConv').innerHTML = `
+    <div class="chat-head"><div class="chat-back" id="chatBack">${icon('arrow')}</div>${headAva}
+      <div><div class="ttl" style="font-size:.98rem">${esc(name)}</div><div class="meta">${channel === 'general' ? "Salon d'équipe" : 'Conversation privée'}</div></div></div>
+    <div class="chat-msgs" id="chatMsgs"><p class="muted center" style="padding:20px">Chargement…</p></div>
+    <div class="chat-foot"><input id="chatInput" placeholder="Écris ton message…" maxlength="800"><button class="chat-sendbtn" id="chatSendBtn">${icon('send')}</button></div>`;
+  document.getElementById('chatBack').onclick = () => { const w2 = document.getElementById('chatWrap'); if (w2) w2.classList.remove('conv-open'); CHAT.channel = null; stopConvPoll(); document.querySelectorAll('.chat-contact').forEach(x => x.classList.remove('on')); };
+  const input = document.getElementById('chatInput');
+  const send = async () => { const text = input.value.trim(); if (!text) return; input.value = ''; try { await api('/api/chat/send', { body: { to: channel, text } }); sound.sfx.msg(); await loadConv(); loadContacts(); } catch (e) { toast('Échec', 'bad'); } };
+  document.getElementById('chatSendBtn').onclick = send;
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+  await loadConv(); startConvPoll(); loadContacts();
+}
+async function loadConv() {
+  if (!CHAT.channel) return;
+  let d; try { d = await api('/api/chat/history?channel=' + encodeURIComponent(CHAT.channel)); } catch (e) { return; }
+  const box = document.getElementById('chatMsgs'); if (!box) return;
+  box.innerHTML = d.messages.length ? d.messages.map(msgRow).join('') : `<p class="muted center" style="padding:20px">Aucun message. Lance la conversation !</p>`;
+  box.scrollTop = box.scrollHeight;
+}
+function msgRow(m) {
+  const ava = m.photo ? `<div class="msg-ava"><img class="av-img" src="${esc(m.photo)}" alt=""></div>` : `<div class="msg-ava" style="color:${m.accent || 'var(--accent)'}">${initials(m.name)}</div>`;
+  return `<div class="msg${m.mine ? ' me' : ''}">${ava}<div class="msg-col">${m.mine ? '' : `<div class="msg-name">${esc(m.name)}</div>`}<div class="msg-bub">${esc(m.text)}</div><div class="msg-time">${ago(m.created)}</div></div></div>`;
+}
+function startConvPoll() { stopConvPoll(); CHAT.convTimer = setInterval(() => { if (document.getElementById('v-messages').classList.contains('on') && CHAT.channel) loadConv(); }, 5000); }
+function stopConvPoll() { if (CHAT.convTimer) { clearInterval(CHAT.convTimer); CHAT.convTimer = null; } }
+function setMsgBadge(n) { const b = document.getElementById('navi-messages'); if (!b) return; const old = b.querySelector('.badge'); if (old) old.remove(); if (n > 0) b.appendChild(el(`<span class="badge">${n}</span>`)); }
+
+/* ---------- TEMPS RÉEL : signaux + sons ---------- */
+let SIG = { notif: 0, chat: 0 };
+async function startSignals() { await pollSignals(true); setInterval(() => pollSignals(false), 12000); }
+async function pollSignals(first) {
+  let d; try { d = await api('/api/signals'); } catch (e) { return; }
+  setMsgBadge(d.chat_unread);
+  const bell = document.getElementById('bell'); const ob = bell.querySelector('.badge'); if (ob) ob.remove();
+  if (d.notif_unread) bell.appendChild(el(`<span class="badge">${d.notif_unread}</span>`));
+  const active = document.querySelector('.view.on');
+  if (!first) {
+    if (d.notif_unread > SIG.notif) {
+      sound.sfx.ding(); refreshNotifs(); try { await refresh(); } catch (e) {}
+      if (active) { if (active.id === 'v-dash') renderDash(); else if (active.id === 'v-leads') renderLeads(); else if (active.id === 'v-paiements') renderPaiements(); else if (active.id === 'v-recrues') renderRecrues(); else if (active.id === 'v-aff') renderAff(); }
+    }
+    if (d.chat_unread > SIG.chat) { sound.sfx.ding(); if (active && active.id === 'v-messages') { loadContacts(); if (CHAT.channel) loadConv(); } }
+  }
+  if (active && active.id === 'v-classement') renderClassement();
+  SIG.notif = d.notif_unread; SIG.chat = d.chat_unread;
+}
+
 /* ---------- notifications ---------- */
 async function refreshNotifs() {
   try {
@@ -595,7 +709,7 @@ document.getElementById('amb').onclick = () => { sound.toggleAmbient(); syncSnd(
 (async function boot() {
   try { CFG = await api('/api/config'); } catch (e) {}
   try { await refresh(); } catch (e) { location.href = '/'; return; }
-  buildDock(); syncSnd(); NA.nova('le stratège de Mongazi'); switchView('dash'); refreshNotifs();
+  buildDock(); syncSnd(); NA.nova('le stratège de Mongazi'); switchView('dash'); refreshNotifs(); startSignals();
   document.getElementById('help').innerHTML = icon('help');
   document.getElementById('help').onclick = () => NA.tour(TOUR);
   if (!localStorage.getItem('na_tour_a')) setTimeout(() => NA.tour(TOUR, 'na_tour_a'), 1000);
