@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>NEBULA · Console</title>
+<link rel="icon" type="image/png" href="/static/favicon.png">
+<link rel="apple-touch-icon" href="/static/favicon.png">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<div class="bg-orbs"></div>
+<div class="bg-grain"></div>
+
+<div class="gate">
+  <div class="box">
+
+    <div class="center mb24">
+      <div class="flex" style="justify-content:center;margin-bottom:18px">
+        <img src="/static/nebula-mark.png" alt="NEBULA" style="width:62px;height:62px;border-radius:16px;filter:drop-shadow(0 10px 30px rgba(123,92,255,.4))">
+      </div>
+      <span class="eyebrow"><span class="dot"></span>Accès privé</span>
+      <h1 class="big mt16" style="font-size:clamp(1.6rem,5vw,2.2rem)">Console NEBULA</h1>
+    </div>
+
+    <section id="login-admin">
+      <div class="card"><div class="in">
+        <p class="muted mb24" style="font-size:.9rem">Accès réservé à Mongazi.</p>
+        <div class="field"><label>Email</label><div class="wrap"><input id="a-email" type="email" autocomplete="username" placeholder="••••••••"></div></div>
+        <div class="field"><label>Mot de passe</label><div class="wrap"><input id="a-pass" type="password" autocomplete="current-password" placeholder="••••••••"></div></div>
+        <button class="btn primary block mt8" id="a-go">Ouvrir la console<span class="ico" id="a-ago"></span></button>
+      </div></div>
+    </section>
+
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+<script>
+  const { icon, api, toast, sound } = NA;
+  document.getElementById('a-ago').innerHTML = icon('arrow');
+
+  async function adminLogin() {
+    const email = document.getElementById('a-email').value.trim(), password = document.getElementById('a-pass').value;
+    if (!email || !password) return toast('Email et mot de passe requis', 'bad');
+    try { await api('/api/admin/login', { body: { email, password } }); sound.sfx.ok(); location.href = '/admin'; }
+    catch (e) { toast(e.data?.error || 'Identifiants incorrects', 'bad'); }
+  }
+  document.getElementById('a-go').onclick = adminLogin;
+  document.getElementById('a-pass').addEventListener('keydown', e => e.key === 'Enter' && adminLogin());
+  document.getElementById('a-email').addEventListener('keydown', e => e.key === 'Enter' && document.getElementById('a-pass').focus());
+
+  // déjà connecté en admin → on entre directement.
+  api('/api/me').then(d => { if (d.role === 'admin') location.href = '/admin'; }).catch(() => {});
+</script>
+</body>
+</html>

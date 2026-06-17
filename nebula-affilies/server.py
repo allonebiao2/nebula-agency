@@ -59,6 +59,9 @@ ADMIN_EMAILS = set(e.strip().lower() for e in os.getenv(
     "NAFF_ADMIN_EMAILS",
     "allonebiao@gmail.com,allonebiao2@gmail.com,mongazi@nebula-agency.online").split(",") if e.strip())
 ADMIN_PASS = os.getenv("NAFF_ADMIN_PASS", "founder123")
+# Zone de connexion admin PRIVÉE : non listée sur le portail public, URL secrète.
+# Modifiable sans toucher au code via la variable d'env NAFF_ADMIN_PATH.
+ADMIN_PATH = (os.getenv("NAFF_ADMIN_PATH", "qg-mongazi-x7q2").strip().strip("/")) or "qg-mongazi-x7q2"
 
 # ---- Cerveau IA « NOVA » (Claude) ----
 BRAIN_MODEL = os.getenv("NAFF_BRAIN_MODEL", "claude-sonnet-4-6")
@@ -618,21 +621,31 @@ def page(name: str) -> FileResponse:
     return FileResponse(str(HERE / name), media_type="text/html")
 
 def served_page(name: str, request: Request) -> HTMLResponse:
-    """Sert une page HTML en injectant l'URL absolue ({{BASE}}) pour les aperçus de lien (Open Graph)."""
+    """Sert une page HTML en injectant l'URL absolue ({{BASE}}) + le chemin admin privé ({{ADMIN_PATH}})."""
     html = (HERE / name).read_text(encoding="utf-8")
     if "{{BASE}}" in html:
         host = request.headers.get("x-forwarded-host") or request.headers.get("host") or "nebula-affilies-production.up.railway.app"
         proto = (request.headers.get("x-forwarded-proto") or "https").split(",")[0].strip()
         html = html.replace("{{BASE}}", f"{proto}://{host}")
+    if "{{ADMIN_PATH}}" in html:
+        html = html.replace("{{ADMIN_PATH}}", "/" + ADMIN_PATH)
     return HTMLResponse(html)
 
 @app.get("/", response_class=HTMLResponse)
 def home():
     return page("index.html")
 
+# Console NEBULA : dashboard servi UNIQUEMENT à un admin connecté (sinon retour au portail public,
+# sans jamais révéler l'URL secrète de connexion). La page de login admin vit sur ADMIN_PATH.
 @app.get("/admin", response_class=HTMLResponse)
-def admin_page():
-    return page("admin.html")
+def admin_page(request: Request, naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return RedirectResponse("/", status_code=302)
+    return served_page("admin.html", request)
+
+@app.get("/" + ADMIN_PATH, response_class=HTMLResponse)
+def admin_login_page(request: Request):
+    return served_page("console.html", request)
 
 @app.get("/partenaire", response_class=HTMLResponse)
 def partner_page():

@@ -98,7 +98,7 @@ function buildDock() {
   const nav = document.getElementById('nav');
   NAV.forEach(n => { const b = el(`<button class="nav-i" id="navi-${n.id}" data-v="${n.id}" title="${n.label}">${icon(n.icon)}</button>`); b.onclick = () => switchView(n.id); nav.appendChild(b); });
   document.getElementById('logout').innerHTML = icon('logout');
-  document.getElementById('logout').onclick = async () => { await api('/api/logout', { body: {} }); location.href = '/'; };
+  document.getElementById('logout').onclick = async () => { await api('/api/logout', { body: {} }); location.href = '{{ADMIN_PATH}}'; };
 }
 function switchView(id) {
   sound.sfx.tab();
@@ -730,7 +730,7 @@ document.getElementById('amb').onclick = () => { sound.toggleAmbient(); syncSnd(
 /* ---------- boot ---------- */
 (async function boot() {
   try { CFG = await api('/api/config'); } catch (e) {}
-  try { await refresh(); } catch (e) { location.href = '/'; return; }
+  try { await refresh(); } catch (e) { location.href = '{{ADMIN_PATH}}'; return; }
   buildDock(); syncSnd(); NA.nova('le stratège de Mongazi'); switchView('dash'); refreshNotifs(); startSignals();
   document.getElementById('help').innerHTML = icon('help');
   document.getElementById('help').onclick = () => NA.tour(TOUR);

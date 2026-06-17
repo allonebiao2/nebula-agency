@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>NEBULA Affiliés — Bureau Virtuel</title>
+<title>NEBULA Affiliés — Espace Partenaire</title>
 <link rel="icon" type="image/png" href="/static/favicon.png">
 <link rel="apple-touch-icon" href="/static/favicon.png">
 <link rel="stylesheet" href="/static/app.css">
@@ -16,45 +16,18 @@
 <div class="gate">
   <div class="box">
 
-    <!-- CHOIX -->
-    <section id="choice">
-      <div class="center mb24">
-        <div class="flex" style="justify-content:center;gap:14px;margin-bottom:22px">
-          <img src="/static/nebula-logo.png" alt="NEBULA Agency" style="width:min(250px,66vw);height:auto;filter:drop-shadow(0 10px 36px rgba(123,92,255,.45))">
-        </div>
-        <span class="eyebrow"><span class="dot"></span>Bureau virtuel · réseau partenaires</span>
-        <h1 class="big mt16">Ton QG.<br>Ton ascension.</h1>
-        <p class="lead mt16">L'espace de travail des partenaires <b style="color:var(--ink)">NEBULA&nbsp;Agency</b>.<br>Ramène des clients. Monte en rang. Encaisse.</p>
+    <div class="center mb24">
+      <div class="flex" style="justify-content:center;gap:14px;margin-bottom:22px">
+        <img src="/static/nebula-logo.png" alt="NEBULA Agency" style="width:min(250px,66vw);height:auto;filter:drop-shadow(0 10px 36px rgba(123,92,255,.45))">
       </div>
-
-      <div class="portal-grid">
-        <div class="card portal-card glow" data-go="partner">
-          <div class="in center">
-            <div class="avatar" style="margin:0 auto 14px;width:50px;height:50px" id="i-part"></div>
-            <h3 style="font-size:1.2rem">Espace Partenaire</h3>
-            <p class="muted mt8" style="font-size:.88rem">Suis tes clients en temps réel, vois ton rang grimper, encaisse tes commissions.</p>
-            <div class="btn primary block mt16">Entrer<span class="ico" id="a-part"></span></div>
-          </div>
-        </div>
-        <div class="card portal-card" data-go="admin">
-          <div class="in center">
-            <div class="avatar" style="margin:0 auto 14px;width:50px;height:50px;background:linear-gradient(135deg,#2a2a3a,#15151f)" id="i-adm"></div>
-            <h3 style="font-size:1.2rem">Espace NEBULA</h3>
-            <p class="muted mt8" style="font-size:.88rem">Pilote ton réseau d'affiliés, suis chaque client, fais évoluer les statuts.</p>
-            <div class="btn ghost block mt16" style="border-color:var(--hair-2)">Console admin<span class="ico" id="a-adm"></span></div>
-          </div>
-        </div>
-      </div>
-      <div class="center mt24">
-        <p class="faint" style="font-size:.8rem">Accès strictement réservé aux partenaires affiliés NEBULA · Mobile Money · WhatsApp</p>
-        <p class="muted mt8" style="font-size:.9rem">Pas encore partenaire ? <a href="/devenir" style="color:var(--accent);font-weight:600">Devenir partenaire NEBULA →</a></p>
-      </div>
-    </section>
+      <span class="eyebrow"><span class="dot"></span>Bureau virtuel · réseau partenaires</span>
+      <h1 class="big mt16">Ton QG.<br>Ton ascension.</h1>
+      <p class="lead mt16">L'espace de travail des partenaires <b style="color:var(--ink)">NEBULA&nbsp;Agency</b>.<br>Ramène des clients. Monte en rang. Encaisse.</p>
+    </div>
 
     <!-- LOGIN PARTENAIRE -->
-    <section id="login-partner" class="hide">
+    <section id="login-partner">
       <div class="card glow"><div class="in">
-        <button class="btn sm ghost mb16" data-back>← Retour</button>
         <h2 style="font-size:1.5rem">Espace Partenaire</h2>
         <p class="muted mb24" style="font-size:.9rem">Entre ton code partenaire et ton code PIN.</p>
         <div class="field"><label>Code partenaire</label><div class="wrap"><input id="p-code" placeholder="Ex : DEMO" autocapitalize="characters" style="text-transform:uppercase;letter-spacing:.2em"></div></div>
@@ -62,18 +35,10 @@
         <button class="btn primary block mt8" id="p-go">Accéder à mon QG<span class="ico" id="a-pgo"></span></button>
         <p class="center faint mt16" style="font-size:.78rem">Démo : code <b style="color:var(--muted)">DEMO</b> · PIN <b style="color:var(--muted)">1234</b></p>
       </div></div>
-    </section>
-
-    <!-- LOGIN ADMIN -->
-    <section id="login-admin" class="hide">
-      <div class="card"><div class="in">
-        <button class="btn sm ghost mb16" data-back>← Retour</button>
-        <h2 style="font-size:1.5rem">Console NEBULA</h2>
-        <p class="muted mb24" style="font-size:.9rem">Accès réservé à Mongazi.</p>
-        <div class="field"><label>Email</label><div class="wrap"><input id="a-email" type="email" placeholder="allonebiao@gmail.com"></div></div>
-        <div class="field"><label>Mot de passe</label><div class="wrap"><input id="a-pass" type="password" placeholder="••••••••"></div></div>
-        <button class="btn primary block mt8" id="a-go">Ouvrir la console<span class="ico" id="a-ago"></span></button>
-      </div></div>
+      <div class="center mt24">
+        <p class="faint" style="font-size:.8rem">Accès strictement réservé aux partenaires affiliés NEBULA · Mobile Money · WhatsApp</p>
+        <p class="muted mt8" style="font-size:.9rem">Pas encore partenaire ? <a href="/devenir" style="color:var(--accent);font-weight:600">Devenir partenaire NEBULA →</a></p>
+      </div>
     </section>
 
   </div>
@@ -82,13 +47,7 @@
 <script src="/static/app.js"></script>
 <script>
   const { icon, api, toast, sound } = NA;
-  document.getElementById('i-part').innerHTML = icon('users');
-  document.getElementById('i-adm').innerHTML = icon('grid');
-  ['a-part','a-adm','a-pgo','a-ago'].forEach(id => { const e = document.getElementById(id); if (e) e.innerHTML = icon('arrow'); });
-
-  const show = (id) => { ['choice','login-partner','login-admin'].forEach(s => document.getElementById(s).classList.toggle('hide', s !== id)); };
-  document.querySelectorAll('.portal-card').forEach(c => c.addEventListener('click', () => { sound.sfx.tab(); show(c.dataset.go === 'partner' ? 'login-partner' : 'login-admin'); }));
-  document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => { sound.sfx.click(); show('choice'); }));
+  document.getElementById('a-pgo').innerHTML = icon('arrow');
 
   async function partnerLogin() {
     const code = document.getElementById('p-code').value.trim(), pin = document.getElementById('p-pin').value.trim();
@@ -96,22 +55,12 @@
     try { await api('/api/partenaire/login', { body: { code, pin } }); sound.sfx.ok(); location.href = '/partenaire'; }
     catch (e) { toast(e.data?.error || 'Code ou PIN incorrect', 'bad'); }
   }
-  async function adminLogin() {
-    const email = document.getElementById('a-email').value.trim(), password = document.getElementById('a-pass').value;
-    if (!email || !password) return toast('Email et mot de passe requis', 'bad');
-    try { await api('/api/admin/login', { body: { email, password } }); sound.sfx.ok(); location.href = '/admin'; }
-    catch (e) { toast(e.data?.error || 'Identifiants incorrects', 'bad'); }
-  }
   document.getElementById('p-go').onclick = partnerLogin;
-  document.getElementById('a-go').onclick = adminLogin;
   document.getElementById('p-pin').addEventListener('keydown', e => e.key === 'Enter' && partnerLogin());
-  document.getElementById('a-pass').addEventListener('keydown', e => e.key === 'Enter' && adminLogin());
+  document.getElementById('p-code').addEventListener('keydown', e => e.key === 'Enter' && document.getElementById('p-pin').focus());
 
-  // déjà connecté → propose de continuer
-  api('/api/me').then(d => {
-    if (d.role === 'admin') location.href = '/admin';
-    else if (d.role === 'affiliate') location.href = '/partenaire';
-  }).catch(() => {});
+  // déjà connecté en partenaire → on continue ; un admin déjà connecté reste libre d'aller sur sa console.
+  api('/api/me').then(d => { if (d.role === 'affiliate') location.href = '/partenaire'; }).catch(() => {});
 </script>
 </body>
 </html>
