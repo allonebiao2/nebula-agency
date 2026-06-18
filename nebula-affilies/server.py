@@ -792,6 +792,31 @@ async def partner_login(req: Request, resp: Response):
         return {"ok": True}
     return JSONResponse({"ok": False, "error": "Code ou PIN incorrect."}, status_code=401)
 
+# --- PIN oublié : le partenaire demande, NEBULA (admin) lui renvoie ses accès sur WhatsApp ---
+_FORGOT_HITS: Dict[str, list] = {}
+@app.post("/api/partenaire/forgot")
+async def partner_forgot(req: Request):
+    ip = _client_ip(req); now = time.time()
+    hits = [t for t in _FORGOT_HITS.get(ip, []) if now - t < 900]
+    if len(hits) >= 6:
+        return {"ok": True}            # silencieux (anti-spam)
+    hits.append(now); _FORGOT_HITS[ip] = hits
+    try:
+        d = await req.json()
+    except Exception:
+        d = {}
+    query = clean(d.get("query"), 40)
+    if query:
+        qcode = query.upper().strip(); qd = re.sub(r"\D", "", query)
+        with db() as c:
+            rows = c.execute("SELECT * FROM affiliates WHERE actif=1").fetchall()
+        a = next((r for r in rows if (r["code"] or "").upper() == qcode
+                  or (qd and re.sub(r"\D", "", r["momo_number"] or "") == qd)), None)
+        if a:
+            notify("admin", 0, f"Réinitialisation PIN demandée : {affiliate_label(a)} (code {a['code']}). "
+                   f"Va dans Affiliés et clique « Renvoyer accès » sur sa fiche pour régénérer son PIN et l'envoyer sur WhatsApp.", kind="recrue")
+    return {"ok": True}                # réponse générique (ne révèle pas si le code existe)
+
 @app.post("/api/logout")
 def logout(resp: Response):
     resp.delete_cookie(COOKIE)

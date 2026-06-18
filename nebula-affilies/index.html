@@ -33,6 +33,13 @@
         <div class="field"><label>Code partenaire</label><div class="wrap"><input id="p-code" placeholder="Ton code" autocapitalize="characters" style="text-transform:uppercase;letter-spacing:.2em"></div></div>
         <div class="field"><label>Code PIN</label><div class="wrap"><input id="p-pin" type="password" inputmode="numeric" placeholder="••••"></div></div>
         <button class="btn primary block mt8" id="p-go">Accéder à mon QG<span class="ico" id="a-pgo"></span></button>
+        <p class="center mt16" style="font-size:.8rem"><a id="forgot-link" style="color:var(--accent);font-weight:600;cursor:pointer">Code ou PIN oublié ?</a></p>
+
+        <div id="forgot-box" class="hide" style="margin-top:14px;border-top:1px solid var(--hair);padding-top:16px">
+          <p class="muted mb16" style="font-size:.86rem">Entre ton <b style="color:var(--ink)">code partenaire</b> ou ton <b style="color:var(--ink)">numéro Mobile Money</b>. NEBULA te renverra tes accès sur WhatsApp.</p>
+          <div class="field"><div class="wrap"><input id="forgot-q" placeholder="Ton code ou ton numéro"></div></div>
+          <button class="btn primary block mt8" id="forgot-go">Demander mes accès<span class="ico" id="a-fgo"></span></button>
+        </div>
         <p class="center faint mt16" style="font-size:.78rem">Tes accès t'ont été envoyés par NEBULA sur WhatsApp.</p>
       </div></div>
       <div class="center mt24">
@@ -58,6 +65,20 @@
   document.getElementById('p-go').onclick = partnerLogin;
   document.getElementById('p-pin').addEventListener('keydown', e => e.key === 'Enter' && partnerLogin());
   document.getElementById('p-code').addEventListener('keydown', e => e.key === 'Enter' && document.getElementById('p-pin').focus());
+
+  // Code/PIN oublié
+  document.getElementById('a-fgo').innerHTML = icon('phone');
+  document.getElementById('forgot-link').onclick = () => { document.getElementById('forgot-box').classList.toggle('hide'); document.getElementById('forgot-q').focus(); sound.sfx.click(); };
+  async function forgotGo() {
+    const q = document.getElementById('forgot-q').value.trim();
+    if (!q) return toast('Entre ton code ou ton numéro', 'bad');
+    try { await api('/api/partenaire/forgot', { body: { query: q } }); sound.sfx.ok();
+      toast('Demande envoyée ✓ — NEBULA te renvoie tes accès sur WhatsApp.', 'ok');
+      document.getElementById('forgot-box').classList.add('hide'); document.getElementById('forgot-q').value = '';
+    } catch (e) { toast('Réessaie dans un instant', 'bad'); }
+  }
+  document.getElementById('forgot-go').onclick = forgotGo;
+  document.getElementById('forgot-q').addEventListener('keydown', e => e.key === 'Enter' && forgotGo());
 
   // déjà connecté en partenaire → on continue ; un admin déjà connecté reste libre d'aller sur sa console.
   api('/api/me').then(d => { if (d.role === 'affiliate') location.href = '/partenaire'; }).catch(() => {});
