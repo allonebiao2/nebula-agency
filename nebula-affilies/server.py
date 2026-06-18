@@ -590,25 +590,8 @@ def seed_content():
                           (t, pt, body, script, plat, now, now))
 
 def seed():
-    with db() as c:
-        if c.execute("SELECT COUNT(*) n FROM affiliates").fetchone()["n"]:
-            return
-        # Affilié démo : code DEMO, PIN 1234
-        c.execute("""INSERT INTO affiliates(code,nom,prenom,momo_number,momo_reseau,pin,accent,actif,created)
-                     VALUES('DEMO','Akpaki','Rodrigue','0190000000','MTN MoMo',?,?,1,?)""",
-                  (hash_pw("1234"), "#7b5cff", time.time()))
-        aid = c.execute("SELECT id FROM affiliates WHERE code='DEMO'").fetchone()["id"]
-        demo = [
-            ("Sossou", "Mariam", "0197111111", "vitrine",   "Boutique de pagnes, veut une vitrine", "termine",  1),
-            ("Dossou", "Karl",   "0197222222", "catalogue", "Catalogue cosmétiques",                "en_cours", 0),
-            ("Adjovi", "Bénédicta","0197333333","avatar_pro","Veut des vidéos avatar IA",            "attente",  0),
-        ]
-        now = time.time()
-        for i, (nom, prenom, num, svc, msg, st, paye) in enumerate(demo):
-            c.execute("""INSERT INTO leads(affiliate_id,nom,prenom,numero,service,message,status,paye,created,updated)
-                         VALUES(?,?,?,?,?,?,?,?,?,?)""",
-                      (aid, nom, prenom, num, svc, msg, st, paye, now - (i+1)*3600, now - (i+1)*1800))
-    notify("admin", 0, "Bienvenue dans NEBULA Affiliés — voici un affilié démo (code DEMO).")
+    # Plus de compte démo : la plateforme démarre vide, prête pour de vrais partenaires.
+    return
 seed()
 seed_content()
 
@@ -919,6 +902,27 @@ def admin_reset_pin(aid: int, naff_session: Optional[str] = Cookie(default=None)
         c.execute("UPDATE affiliates SET pin=? WHERE id=?", (hash_pw(pin), aid))
     notify("affiliate", aid, "Tes accès ont été réinitialisés par NEBULA — nouveau PIN envoyé.", kind="info")
     return {"ok": True, "code": a["code"], "pin": pin}
+
+@app.post("/api/admin/affiliates/{aid}/delete")
+def admin_delete_affiliate(aid: int, naff_session: Optional[str] = Cookie(default=None)):
+    """Supprime définitivement un partenaire et ses données liées (clients, commissions, etc.)."""
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        a = c.execute("SELECT code, photo FROM affiliates WHERE id=?", (aid,)).fetchone()
+        if not a:
+            return JSONResponse({"ok": False}, status_code=404)
+        c.execute("DELETE FROM leads WHERE affiliate_id=?", (aid,))
+        c.execute("DELETE FROM commissions WHERE beneficiary_id=?", (aid,))
+        c.execute("DELETE FROM link_events WHERE affiliate_id=?", (aid,))
+        c.execute("DELETE FROM recruits WHERE parrain_id=?", (aid,))
+        c.execute("DELETE FROM notifs WHERE target_role='affiliate' AND target_id=?", (aid,))
+        c.execute("UPDATE affiliates SET parrain_id=0 WHERE parrain_id=?", (aid,))
+        c.execute("DELETE FROM affiliates WHERE id=?", (aid,))
+    if a["photo"]:
+        try: (UP_DIR / a["photo"]).unlink()
+        except Exception: pass
+    return {"ok": True, "code": a["code"]}
 
 @app.get("/api/admin/leads")
 def admin_leads(naff_session: Optional[str] = Cookie(default=None)):

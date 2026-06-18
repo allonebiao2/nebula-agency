@@ -202,8 +202,8 @@ function openNewAff() {
   document.getElementById('modal-in').innerHTML = `
     <div class="flex between mb16"><h3>Nouveau partenaire</h3><button class="icon-btn" id="m-close" style="width:34px;height:34px">${icon('close')}</button></div>
     <div class="bento" style="gap:0 14px">
-      <div class="col-6 field"><label>Prénom</label><div class="wrap"><input id="na-prenom" placeholder="Rodrigue"></div></div>
-      <div class="col-6 field"><label>Nom</label><div class="wrap"><input id="na-nom" placeholder="Akpaki"></div></div>
+      <div class="col-6 field"><label>Prénom</label><div class="wrap"><input id="na-prenom" placeholder="Prénom du partenaire"></div></div>
+      <div class="col-6 field"><label>Nom</label><div class="wrap"><input id="na-nom" placeholder="Nom du partenaire"></div></div>
     </div>
     <div class="field"><label>Numéro Mobile Money</label><div class="wrap"><input id="na-momo" inputmode="tel" placeholder="01 90 00 00 00"></div></div>
     <div class="field"><label>Réseau</label><div class="wrap"><select id="na-res">${CFG.reseaux.map(r => `<option>${r}</option>`).join('')}</select></div></div>
