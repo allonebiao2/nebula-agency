@@ -46,6 +46,8 @@ const NA = (() => {
     mute: P('<path d="M5 9v6h4l5 4V5L9 9z"/><path d="M22 9l-5 6M17 9l5 6"/>'),
     music: P('<path d="M9 18V6l11-2v12"/><circle cx="6" cy="18" r="2.6"/><circle cx="17" cy="16" r="2.6"/>'),
     close: P('<path d="M6 6l12 12M18 6L6 18"/>'),
+    lock: P('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'),
+    search: P('<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>'),
     send: P('<path d="M5 12l15-7-7 15-2-6z"/>'),
     chart: P('<path d="M4 19V5M4 19h16"/><path d="M8 16l3-4 3 2 4-6"/>'),
     medal: P('<circle cx="12" cy="14" r="5"/><path d="M9 9L7 3M15 9l2-6"/>'),
@@ -316,5 +318,51 @@ const NA = (() => {
   }
   function rankName(label) { return `<span class="rk-name" style="--c1:${(RANK_META[label] || RANK_META['Recrue']).c1};--c2:${(RANK_META[label] || RANK_META['Recrue']).c2}">${esc(label)}</span>`; }
 
-  return { el, esc, fmt, ago, api, icon, sound: Sound, toast, countUp, reveal, qr, celebrate, nova, agencyChat, tour, rankBadge, rankName, RANK_META, RANK_ORDER };
+  /* ---------- ÉCHELLE DES RANGS (clic sur le rang → tout voir) ---------- */
+  let _cfgCache = null;
+  async function rankLadder(opts = {}) {
+    if (!_cfgCache) { try { _cfgCache = await api('/api/config'); } catch (e) { _cfgCache = { ranks: [], paliers: [] }; } }
+    const ranks = _cfgCache.ranks || [], paliers = _cfgCache.paliers || [];
+    const ventes = Number(opts.ventes) || 0;
+    let cur = 0; ranks.forEach((r, i) => { if (ventes >= r.min) cur = i; });
+    if (opts.label) { const li = ranks.findIndex(r => r.label === opts.label); if (li >= 0) cur = li; }
+    const next = ranks[cur + 1]; const toNext = next ? Math.max(0, next.min - ventes) : 0;
+    const who = opts.name ? esc(opts.name) : 'Toi';
+    const head = next
+      ? `${who} · <b>${ranks[cur] ? esc(ranks[cur].label) : ''}</b> — encore <b>${toNext}</b> vente${toNext > 1 ? 's' : ''} pour ${rankName(next.label)}`
+      : `${who} · <b>${ranks[cur] ? esc(ranks[cur].label) : ''}</b> — rang suprême atteint.`;
+    const pct = next && next.min > (ranks[cur] ? ranks[cur].min : 0)
+      ? Math.min(100, Math.round((ventes - ranks[cur].min) / (next.min - ranks[cur].min) * 100)) : 100;
+    const rows = ranks.map((r, i) => {
+      const isCur = i === cur, reached = i <= cur;
+      const need = i === 0 ? 'Rang de départ' : `dès ${r.min} vente${r.min > 1 ? 's' : ''} au total`;
+      const st = isCur ? '<span class="rl-you">Toi</span>' : (reached ? `<span class="rl-ok">${icon('check')}</span>` : `<span class="rl-lock">${icon('lock')}</span>`);
+      return `<div class="rl-row ${isCur ? 'cur' : reached ? 'done' : 'lock'}">${rankBadge(r.label, { size: 'md', glow: isCur })}
+        <div class="rl-tx"><b>${esc(r.label)}</b><small>${need}</small></div><div class="rl-st">${st}</div></div>`;
+    }).join('');
+    const pals = paliers.map((p, i) => {
+      const lo = p.min === 0 ? 1 : p.min, hi = paliers[i + 1] ? paliers[i + 1].min - 1 : null;
+      const rng = hi ? `${lo} à ${hi}` : `${lo}+`;
+      return `<div class="rl-pal"><b>${esc(p.label)}</b><small>${rng} ventes / mois</small><em>${p.pct}%</em></div>`;
+    }).join('');
+    const scrim = el(`<div class="scrim rl-scrim"><div class="card rl-card"><div class="in">
+      <div class="flex between" style="align-items:flex-start"><div><span class="eyebrow"><span class="dot"></span>Progression</span>
+        <h2 style="font-size:1.5rem;margin-top:8px">L'échelle des rangs</h2></div>
+        <button class="icon-btn rl-x" style="width:34px;height:34px">${icon('close')}</button></div>
+      <p class="muted mt8" style="font-size:.92rem">${head}</p>
+      <div class="rl-bar"><span style="width:${pct}%"></span></div>
+      <div class="rl-list">${rows}</div>
+      <div class="rl-paltitle">Ta commission du mois — selon tes ventes du mois</div>
+      <div class="rl-pals">${pals}</div>
+      <div class="rl-foot">Profondeurs réseau (fixes) : N1 ${_cfgCache.depths ? _cfgCache.depths.n1 : 10}% · N2 ${_cfgCache.depths ? _cfgCache.depths.n2 : 5}% sur ton réseau.</div>
+    </div></div></div>`);
+    document.body.appendChild(scrim);
+    requestAnimationFrame(() => scrim.classList.add('on'));
+    Sound.sfx.open();
+    const close = () => { scrim.classList.remove('on'); setTimeout(() => scrim.remove(), 250); };
+    scrim.querySelector('.rl-x').onclick = close;
+    scrim.onclick = e => { if (e.target === scrim) close(); };
+  }
+
+  return { el, esc, fmt, ago, api, icon, sound: Sound, toast, countUp, reveal, qr, celebrate, nova, agencyChat, tour, rankBadge, rankName, rankLadder, RANK_META, RANK_ORDER };
 })();

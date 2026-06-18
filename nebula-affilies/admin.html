@@ -617,7 +617,7 @@ function openPartner(uid) {
     <div class="flex between" style="align-items:flex-start"><div class="flex" style="gap:14px;align-items:center">
       ${a.photo ? `<div class="emblem" style="width:60px;height:60px;border-radius:18px"><img class="av-img" src="${esc(a.photo)}" alt=""></div>` : NA.rankBadge(a.rank, { size: 'lg' })}
       <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:1.2rem">${esc(a.name)} <span class="chip">${a.code}</span></div>
-        <div class="meta mt8">${NA.rankName(a.rank)} · #${a.position} au classement</div></div>
+        <div class="meta mt8"><span class="rank-click" data-ladder="1" title="Voir l'échelle des rangs">${NA.rankName(a.rank)}</span> · #${a.position} au classement</div></div>
     </div><button class="icon-btn" id="pp-x" style="width:34px;height:34px">${icon('close')}</button></div>
     <div class="pstats mt16">
       ${st([a.ventes, 'Ventes (carrière)'])}${st([a.ventes_mois, 'Ventes ce mois'])}${st([a.palier_pct + '%', 'Palier ' + esc(a.palier)])}
@@ -625,6 +625,7 @@ function openPartner(uid) {
     </div>
     <button class="btn primary block mt16" id="pp-msg">Envoyer un message<span class="ico">${icon('send')}</span></button>`;
   document.getElementById('modal').classList.add('on');
+  const ld = document.querySelector('#modal-in [data-ladder]'); if (ld) ld.onclick = () => NA.rankLadder({ label: a.rank, ventes: a.ventes, name: a.name });
   document.getElementById('pp-x').onclick = closeModal;
   document.getElementById('pp-msg').onclick = () => { closeModal(); switchView('messages'); setTimeout(() => openConv(a.uid, a.name), 150); };
 }
@@ -650,15 +651,51 @@ async function uploadAdminPhoto() {
   const fd = new FormData(); fd.append('file', f);
   try { const r = await fetch('/api/me/photo', { method: 'POST', credentials: 'same-origin', body: fd }); const j = await r.json(); if (j.ok) { sound.sfx.cash(); toast('Photo mise à jour ✓', 'ok'); loadContacts(); } else toast(j.error || 'Erreur', 'bad'); } catch (e) { toast('Erreur', 'bad'); }
 }
+let CHAT_DATA = { general: null, contacts: [] };
+let CHAT_FILTER = { q: '', f: 'all' };
 async function loadContacts() {
   let d; try { d = await api('/api/chat/contacts'); } catch (e) { return; }
   const my = document.getElementById('myAva'); if (my) my.innerHTML = d.my.photo ? `<img class="av-img" src="${esc(d.my.photo)}?t=${Date.now()}" alt="">` : '<img class="av-img" src="/static/nebula-mark.png" alt="">';
+  CHAT_DATA = { general: d.general, contacts: d.contacts };
   const side = document.getElementById('chatSide'); if (!side) return;
-  let html = `<div class="chat-sechead">Salon d'équipe</div>` + contactRow('general', 'Salon NEBULA', '', 'grp', d.general.unread, d.general.last, true);
-  html += `<div class="chat-sechead">Partenaires</div>` + d.contacts.map(c => contactRow(c.uid, c.name, c.photo, '', c.unread, c.last, false, c.accent, c.sub)).join('');
-  side.innerHTML = html;
-  side.querySelectorAll('[data-uid]').forEach(x => x.onclick = () => { sound.sfx.tab(); openConv(x.dataset.uid, x.dataset.name); });
+  if (!document.getElementById('chatSearch')) buildChatShell(side);
+  renderChatFilters(); renderChatList();
   setMsgBadge(d.contacts.reduce((s, c) => s + c.unread, 0) + d.general.unread);
+}
+function buildChatShell(side) {
+  side.innerHTML = `<div class="chat-search">
+      <div class="cs-box">${icon('search')}<input id="chatSearch" placeholder="Rechercher un partenaire…" autocomplete="off"></div>
+      <div class="chat-filters" id="chatFilters"></div>
+    </div><div id="chatList"></div>`;
+  const inp = document.getElementById('chatSearch');
+  inp.value = CHAT_FILTER.q;
+  inp.oninput = () => { CHAT_FILTER.q = inp.value; renderChatList(); };
+}
+function renderChatFilters() {
+  const wrap = document.getElementById('chatFilters'); if (!wrap) return;
+  const palOrder = ['STARTER', 'SILVER', 'GOLD'];
+  const pals = palOrder.filter(p => CHAT_DATA.contacts.some(c => c.palier === p));
+  const ranks = [...new Set(CHAT_DATA.contacts.map(c => c.rank).filter(Boolean))].sort((a, b) => NA.RANK_ORDER.indexOf(a) - NA.RANK_ORDER.indexOf(b));
+  const chip = (v, lbl) => `<span class="chat-chip${CHAT_FILTER.f === v ? ' on' : ''}" data-chip="${v}">${esc(lbl)}</span>`;
+  let h = chip('all', 'Tous');
+  h += pals.map(p => chip('p:' + p, p[0] + p.slice(1).toLowerCase())).join('');
+  h += ranks.map(r => chip('r:' + r, r)).join('');
+  wrap.innerHTML = h;
+  wrap.querySelectorAll('[data-chip]').forEach(x => x.onclick = () => { CHAT_FILTER.f = x.dataset.chip; renderChatFilters(); renderChatList(); });
+}
+function renderChatList() {
+  const box = document.getElementById('chatList'); if (!box) return;
+  const q = CHAT_FILTER.q.trim().toLowerCase(), f = CHAT_FILTER.f;
+  let list = CHAT_DATA.contacts.filter(c =>
+    (!q || (c.name || '').toLowerCase().includes(q) || (c.rank || '').toLowerCase().includes(q)) &&
+    (f === 'all' || (f.startsWith('p:') ? c.palier === f.slice(2) : c.rank === f.slice(2))));
+  let html = '';
+  if (f === 'all' && !q) html += `<div class="chat-sechead">Salon d'équipe</div>` + contactRow('general', 'Salon NEBULA', '', 'grp', CHAT_DATA.general.unread, CHAT_DATA.general.last, true);
+  html += `<div class="chat-sechead">Partenaires · ${list.length}</div>`;
+  html += list.length ? list.map(c => contactRow(c.uid, c.name, c.photo, '', c.unread, c.last, false, c.accent, c.sub)).join('')
+    : `<div class="chat-empty-filter">Aucun partenaire ne correspond.</div>`;
+  box.innerHTML = html;
+  box.querySelectorAll('[data-uid]').forEach(x => x.onclick = () => { sound.sfx.tab(); openConv(x.dataset.uid, x.dataset.name); });
 }
 function contactRow(uid, name, photo, grp, unread, last, isGen, accent, sub) {
   const ava = grp === 'grp' ? `<div class="chat-ava"><img class="av-img" src="/static/nebula-mark.png" alt=""></div>`

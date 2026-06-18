@@ -269,6 +269,41 @@ input,select,textarea{font-family:inherit}
 .rk-name{font-weight:700;background:linear-gradient(90deg,var(--c1),var(--c2));-webkit-background-clip:text;
   background-clip:text;color:transparent;letter-spacing:.01em}
 
+/* ---- Échelle des rangs (modale) ---- */
+.rl-card{width:min(460px,calc(100vw - 32px));max-height:88dvh;overflow-y:auto;background:var(--glass);border:1px solid var(--hair-2);border-radius:24px}
+.rl-bar{height:8px;border-radius:6px;background:rgba(255,255,255,.07);overflow:hidden;margin:14px 0 18px}
+.rl-bar span{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--accent-2));box-shadow:var(--glow)}
+.rl-list{display:flex;flex-direction:column;gap:8px}
+.rl-row{display:grid;grid-template-columns:auto 1fr auto;gap:13px;align-items:center;padding:10px 13px;border-radius:14px;border:1px solid var(--hair);background:rgba(255,255,255,.02);transition:all .25s var(--ease)}
+.rl-row.cur{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent)}
+.rl-row.lock{opacity:.5}
+.rl-tx b{display:block;font-family:'Space Grotesk';font-size:.98rem;line-height:1.1}
+.rl-tx small{font-size:.76rem;color:var(--muted)}
+.rl-st svg{width:18px;height:18px}
+.rl-ok{color:var(--ok)}.rl-lock{color:var(--faint)}
+.rl-you{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#07060e;background:linear-gradient(100deg,var(--accent-2),var(--accent));padding:4px 10px;border-radius:20px}
+.rl-paltitle{margin:20px 0 10px;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.rl-pals{display:flex;gap:9px}
+.rl-pal{flex:1;text-align:center;padding:12px 8px;border-radius:13px;background:rgba(255,255,255,.03);border:1px solid var(--hair)}
+.rl-pal b{display:block;font-family:'Space Grotesk';font-size:.84rem}
+.rl-pal small{display:block;font-size:.68rem;color:var(--muted);margin:3px 0 6px}
+.rl-pal em{font-style:normal;font-family:'Space Grotesk';font-weight:700;font-size:1.1rem;background:linear-gradient(100deg,var(--accent-2),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
+.rl-foot{margin-top:16px;font-size:.74rem;color:var(--muted);text-align:center;border-top:1px solid var(--hair);padding-top:12px}
+.rank-click{cursor:pointer;transition:transform .2s var(--ease)}
+.rank-click:hover{transform:translateY(-1px);filter:brightness(1.12)}
+
+/* ---- Recherche + filtres du chat ---- */
+.chat-search{position:sticky;top:0;z-index:3;background:var(--bg-2,rgba(12,12,20,.92));backdrop-filter:blur(8px);padding:12px 12px 8px;border-bottom:1px solid var(--hair)}
+.chat-search .cs-box{display:flex;align-items:center;gap:9px;background:rgba(0,0,0,.3);border:1px solid var(--hair);border-radius:13px;padding:9px 12px}
+.chat-search .cs-box:focus-within{border-color:color-mix(in srgb,var(--accent) 55%,transparent)}
+.chat-search .cs-box svg{width:16px;height:16px;color:var(--muted);flex:0 0 auto}
+.chat-search input{flex:1;background:none;border:none;outline:none;color:var(--ink);font-size:15px;min-width:0}
+.chat-filters{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.chat-chip{font-size:.72rem;font-weight:600;letter-spacing:.02em;color:var(--muted);background:rgba(255,255,255,.04);border:1px solid var(--hair);border-radius:20px;padding:5px 11px;cursor:pointer;transition:all .2s var(--ease);white-space:nowrap}
+.chat-chip:hover{color:var(--ink);border-color:var(--hair-2)}
+.chat-chip.on{color:#07060e;background:linear-gradient(100deg,var(--accent-2),var(--accent));border-color:transparent}
+.chat-empty-filter{padding:24px 16px;text-align:center;color:var(--muted);font-size:.86rem}
+
 /* ---- Fiche partenaire (stats) ---- */
 .pstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .pstat{padding:13px 12px;border-radius:14px;background:var(--glass);border:1px solid var(--hair);text-align:center}

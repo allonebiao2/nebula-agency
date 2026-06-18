@@ -1658,7 +1658,11 @@ def chat_contacts(naff_session: Optional[str] = Cookie(default=None)):
             lr = chat_lastread(me, "dm:" + pr)
             unread = c.execute("SELECT COUNT(*) n FROM messages WHERE scope='dm' AND pair=? AND created>? AND sender_uid!=?", (pr, lr, me)).fetchone()["n"]
             last = c.execute("SELECT text,created FROM messages WHERE scope='dm' AND pair=? ORDER BY id DESC LIMIT 1", (pr,)).fetchone()
-        contacts.append({**info, "unread": unread, "last": (last["text"] if last else ""), "last_at": (last["created"] if last else 0)})
+        extra = {}
+        if info.get("aid"):
+            s = stats_of(info["aid"])
+            extra = {"rank": s["rank"]["label"], "palier": s["palier"]["label"], "ventes": s["ventes"]}
+        contacts.append({**info, **extra, "unread": unread, "last": (last["text"] if last else ""), "last_at": (last["created"] if last else 0)})
     contacts.sort(key=lambda c0: (c0["unread"] == 0, -(c0["last_at"] or 0)))
     return {"me": me, "my": pm.get(me, {"uid": me, "name": "Moi", "photo": "", "accent": "#7b5cff"}),
             "general": {"unread": gen_unread, "last": (gen_last["text"] if gen_last else ""), "last_at": (gen_last["created"] if gen_last else 0)},
