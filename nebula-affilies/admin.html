@@ -126,12 +126,12 @@ function renderDash() {
   const board = AFFS.slice(0, 5);
   document.getElementById('v-dash').innerHTML = `
     <div class="bento">
-      <div class="col-3 rv"><div class="card glow"><div class="in stat"><div class="lbl">Affiliés actifs</div><div class="num accent mono" id="k-aff">0</div></div></div></div>
-      <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">Clients reçus</div><div class="num mono" id="k-leads">0</div></div></div></div>
-      <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">Payés</div><div class="num mono" style="color:var(--ok)" id="k-paid">0</div></div></div></div>
-      <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">Commissions dues</div><div class="num mono" style="color:var(--gold)" id="k-com">0</div><div class="sub">F CFA</div></div></div></div>
+      <div class="col-3 rv"><div class="card glow clickable" data-go="aff"><div class="in stat"><div class="lbl">Affiliés actifs</div><div class="num accent mono" id="k-aff">0</div></div></div></div>
+      <div class="col-3 rv"><div class="card clickable" data-go="leads"><div class="in stat"><div class="lbl">Clients reçus</div><div class="num mono" id="k-leads">0</div></div></div></div>
+      <div class="col-3 rv"><div class="card clickable" data-go="leads"><div class="in stat"><div class="lbl">Payés</div><div class="num mono" style="color:var(--ok)" id="k-paid">0</div></div></div></div>
+      <div class="col-3 rv"><div class="card clickable" data-go="paiements"><div class="in stat"><div class="lbl">Commissions dues</div><div class="num mono" style="color:var(--gold)" id="k-com">0</div><div class="sub">F CFA</div></div></div></div>
 
-      <div class="col-5 rv"><div class="card"><div class="in">
+      <div class="col-5 rv"><div class="card clickable" data-go="leads"><div class="in">
         <h3 class="mb16">Pipeline</h3>
         ${['attente', 'en_cours', 'termine', 'annule'].map(k => `
           <div class="flex between" style="padding:11px 0;border-bottom:1px solid var(--hair)">
@@ -140,9 +140,9 @@ function renderDash() {
       </div></div></div>
 
       <div class="col-7 rv"><div class="card"><div class="in">
-        <div class="flex between mb16"><h3>🏆 Classement</h3><button class="btn sm ghost" onclick="switchView('aff')">Tout voir<span class="ico">${icon('arrow')}</span></button></div>
+        <div class="flex between mb16"><h3>Classement</h3><button class="btn sm ghost" onclick="switchView('classement')">Tout voir<span class="ico">${icon('arrow')}</span></button></div>
         ${board.length ? board.map((a, i) => `
-          <div class="row" style="grid-template-columns:auto 42px 1fr auto;margin-bottom:9px">
+          <div class="row clickable" data-go="classement" style="grid-template-columns:auto 42px 1fr auto;margin-bottom:9px">
             <div class="mono faint" style="width:22px;font-weight:700">${i + 1}</div>
             <div class="emblem" style="width:42px;height:42px;border-radius:13px">${rankSvg(a.rank.label)}</div>
             <div><div class="ttl">${esc((a.prenom || '') + ' ' + (a.nom || '')) || a.code}</div><div class="meta">${a.rank.label} · ${a.nb_real} clients</div></div>
@@ -154,6 +154,7 @@ function renderDash() {
   countUp(document.getElementById('k-leads'), OVER.leads);
   countUp(document.getElementById('k-paid'), OVER.paid);
   countUp(document.getElementById('k-com'), OVER.commissions_dues, { money: true });
+  document.querySelectorAll('#v-dash [data-go]').forEach(el => el.onclick = () => switchView(el.dataset.go));
 }
 
 /* ---------- AFFILIÉS ---------- */

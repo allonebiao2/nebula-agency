@@ -139,8 +139,8 @@ function renderHome() {
   const perVitrine = fmt(Math.round(150000 * p.rate));
   document.getElementById('v-home').innerHTML = `
     <div class="bento">
-      <div class="col-7 rv"><div class="card glow"><div class="in">
-        <span class="eyebrow"><span class="dot"></span>Ton rang · prestige (ventes cumulées)</span>
+      <div class="col-7 rv"><div class="card glow clickable" id="home-rank-card"><div class="in">
+        <span class="eyebrow"><span class="dot"></span>Ton rang · prestige (ventes cumulées) <span class="tap-hint">voir l'échelle</span></span>
         <div class="rank mt16">
           <div class="emblem${r.label === 'Galaxie' ? ' king' : ''}">${rankSvg(r.label)}</div>
           <div><div class="r-name">${esc(r.label)}</div><div class="r-sub">Niveau ${r.level} / ${r.max_level} · ${s.ventes} vente${s.ventes > 1 ? 's' : ''} cumulée${s.ventes > 1 ? 's' : ''}</div></div>
@@ -148,7 +148,7 @@ function renderHome() {
         <div class="xp"><div class="track"><div class="fill" id="xpfill"></div></div>
           <div class="meta"><span>${nextRank}</span><span class="mono">${r.xp_pct}%</span></div></div>
       </div></div></div>
-      <div class="col-5 rv"><div class="card"><div class="in">
+      <div class="col-5 rv"><div class="card clickable" id="home-pal-card"><div class="in">
         <span class="eyebrow"><span class="dot"></span>Ton palier du mois · commission directe</span>
         <div class="mt16" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
           <div style="font-family:'Space Grotesk';font-weight:700;font-size:1.5rem;color:${PALIER_COLOR[p.label] || 'var(--ink)'}">${esc(p.label)}</div>
@@ -158,10 +158,10 @@ function renderHome() {
           <div class="meta"><span>${nextPal}</span><span class="mono">${s.ventes_mois} ce mois</span></div></div>
       </div></div></div>
 
-      <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">RCM · total généré (à vie)</div><div class="num accent mono" id="n-rcm">0</div><div class="sub" id="n-rcm-sub">tracé</div></div></div></div>
-      <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">En attente de paiement</div><div class="num mono" style="color:var(--warn)" id="n-pot">0</div><div class="sub">F potentiels</div></div></div></div>
-      <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">Ventes carrière</div><div class="num mono" style="color:var(--ok)" id="n-ven">0</div><div class="sub">= ton rang</div></div></div></div>
-      <div class="col-3 rv"><div class="card"><div class="in stat"><div class="lbl">Clients actifs</div><div class="num mono" style="color:var(--info)" id="n-cli">0</div><div class="sub">attente + en cours</div></div></div></div>
+      <div class="col-3 rv"><div class="card clickable" data-go="gains"><div class="in stat"><div class="lbl">RCM · total généré (à vie)</div><div class="num accent mono" id="n-rcm">0</div><div class="sub" id="n-rcm-sub">tracé</div></div></div></div>
+      <div class="col-3 rv"><div class="card clickable" data-go="gains"><div class="in stat"><div class="lbl">En attente de paiement</div><div class="num mono" style="color:var(--warn)" id="n-pot">0</div><div class="sub">F potentiels</div></div></div></div>
+      <div class="col-3 rv"><div class="card clickable" data-ladder="1"><div class="in stat"><div class="lbl">Ventes carrière</div><div class="num mono" style="color:var(--ok)" id="n-ven">0</div><div class="sub">= ton rang</div></div></div></div>
+      <div class="col-3 rv"><div class="card clickable" data-go="clients"><div class="in stat"><div class="lbl">Clients actifs</div><div class="num mono" style="color:var(--info)" id="n-cli">0</div><div class="sub">attente + en cours</div></div></div></div>
 
       <div class="col-12 rv"><div class="card"><div class="in">
         <div class="flex between mb16"><h3>Coup d'œil</h3><button class="btn sm ghost" onclick="switchView('clients')">Voir mes clients<span class="ico">${icon('arrow')}</span></button></div>
@@ -178,6 +178,11 @@ function renderHome() {
   const rec = document.getElementById('recent');
   if (!LEADS.length) rec.innerHTML = `<p class="muted center" style="padding:20px">Aucun client encore. Partage ton lien pour démarrer.</p>`;
   else rec.innerHTML = LEADS.slice(0, 4).map(l => clientRow(l, true)).join('');
+  const openLadder = () => NA.rankLadder({ label: r.label, ventes: s.ventes });
+  document.getElementById('home-rank-card').onclick = openLadder;
+  document.getElementById('home-pal-card').onclick = openLadder;
+  document.querySelectorAll('#v-home [data-ladder]').forEach(el => el.onclick = openLadder);
+  document.querySelectorAll('#v-home [data-go]').forEach(el => el.onclick = () => switchView(el.dataset.go));
 }
 
 function clientRow(l, compact) {
@@ -755,7 +760,7 @@ document.getElementById('amb').onclick = () => { sound.toggleAmbient(); syncSnd(
   const rankBlock = document.querySelector('.topbar .rank');
   if (rankBlock) { rankBlock.classList.add('rank-click'); rankBlock.title = 'Voir l\'échelle des rangs'; rankBlock.onclick = () => NA.rankLadder({ label: ME.stats.rank.label, ventes: ME.stats.ventes }); }
   try { LEADS = (await api('/api/partenaire/leads')).leads; } catch (e) {}
-  buildDock(); syncSnd(); nova('ton coach perso'); NA.agencyChat({ side: 'left' }); switchView('home'); refreshNotifs(); startSignals();
+  buildDock(); syncSnd(); nova('ton coach perso'); NA.agencyChat({ side: 'above' }); switchView('home'); refreshNotifs(); startSignals();
   document.getElementById('help').innerHTML = icon('help');
   document.getElementById('help').onclick = () => NA.tour(TOUR);
   if (!localStorage.getItem('na_tour_p')) setTimeout(() => NA.tour(TOUR, 'na_tour_p'), 1000);
