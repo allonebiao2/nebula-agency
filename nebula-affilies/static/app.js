@@ -88,7 +88,7 @@ const NA = (() => {
       const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
       ctx = new AC();
       comp = ctx.createDynamicsCompressor();
-      master = ctx.createGain(); master.gain.value = isMobile ? 0.5 : 0.32;   // boost mobile
+      master = ctx.createGain(); master.gain.value = isMobile ? 0.72 : 0.55;   // volume audible (boost)
       master.connect(comp); comp.connect(ctx.destination);
       const b = ctx.createBuffer(1, 1, 22050), s = ctx.createBufferSource();  // déblocage iOS
       s.buffer = b; s.connect(ctx.destination); s.start(0);
@@ -107,8 +107,8 @@ const NA = (() => {
     function startAmbient() {
       if (!ctx || ambient) return;
       const g = ctx.createGain(); g.gain.value = 0.0; g.connect(master);
-      g.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 3);
-      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 600; lp.connect(g);
+      g.gain.linearRampToValueAtTime(0.14, ctx.currentTime + 3);   // musique d'ambiance audible
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 720; lp.connect(g);
       const lfo = ctx.createOscillator(), lfoG = ctx.createGain();
       lfo.frequency.value = 0.06; lfoG.gain.value = 220; lfo.connect(lfoG); lfoG.connect(lp.frequency); lfo.start();
       const oscs = [110, 164.81, 220].map((f, i) => {
@@ -155,7 +155,8 @@ const NA = (() => {
       toggleAmbient() { ambientOn = !ambientOn; localStorage.setItem('na_amb', ambientOn ? '1' : '0'); ensure(); ambientOn ? startAmbient() : stopAmbient(); return ambientOn; },
     };
   })();
-  ['pointerdown', 'keydown', 'touchstart'].forEach(ev => addEventListener(ev, () => Sound.unlock(), { once: true }));
+  // déverrouillage audio robuste : à CHAQUE interaction on s'assure que le contexte tourne (politique autoplay)
+  ['pointerdown', 'keydown', 'touchstart', 'click'].forEach(ev => addEventListener(ev, () => Sound.unlock()));
 
   /* ---------- toast ---------- */
   let toastWrap;

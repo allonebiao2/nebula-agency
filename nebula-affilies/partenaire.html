@@ -31,8 +31,8 @@
       </div>
       <div class="flex gap8">
         <button class="icon-btn" id="help" title="Guide d'utilisation"></button>
-        <button class="icon-btn" id="snd" title="Sons"></button>
-        <button class="icon-btn" id="amb" title="Ambiance sonore"></button>
+        <button class="icon-btn" id="snd" title="Son des notifications (activer / couper)"></button>
+        <button class="icon-btn" id="amb" title="Musique d'ambiance"></button>
         <button class="icon-btn" id="bell" title="Notifications"></button>
       </div>
     </header>
@@ -781,7 +781,7 @@ document.getElementById('amb').onclick = () => { sound.toggleAmbient(); syncSnd(
   const rankBlock = document.querySelector('.topbar .rank');
   if (rankBlock) { rankBlock.classList.add('rank-click'); rankBlock.title = 'Voir l\'échelle des rangs'; rankBlock.onclick = () => NA.rankLadder({ label: ME.stats.rank.label, ventes: ME.stats.ventes }); }
   try { LEADS = (await api('/api/partenaire/leads')).leads; } catch (e) {}
-  buildDock(); syncSnd(); nova('ton coach perso'); NA.agencyChat({ side: 'above' }); switchView('home'); refreshNotifs(); startSignals();
+  buildDock(); syncSnd(); document.getElementById('bell').innerHTML = icon('bell'); nova('ton coach perso'); NA.agencyChat({ side: 'above' }); switchView('home'); refreshNotifs(); startSignals();
   document.getElementById('help').innerHTML = icon('help');
   document.getElementById('help').onclick = () => NA.tour(TOUR);
   if (!localStorage.getItem('na_tour_p')) setTimeout(() => NA.tour(TOUR, 'na_tour_p'), 1000);

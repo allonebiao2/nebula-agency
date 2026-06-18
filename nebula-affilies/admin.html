@@ -29,8 +29,8 @@
       </div>
       <div class="flex gap8">
         <button class="icon-btn" id="help" title="Guide d'utilisation"></button>
-        <button class="icon-btn" id="snd" title="Sons"></button>
-        <button class="icon-btn" id="amb" title="Ambiance sonore"></button>
+        <button class="icon-btn" id="snd" title="Son des notifications (activer / couper)"></button>
+        <button class="icon-btn" id="amb" title="Musique d'ambiance"></button>
         <button class="icon-btn" id="bell" title="Notifications"></button>
       </div>
     </header>
@@ -841,7 +841,7 @@ document.getElementById('amb').onclick = () => { sound.toggleAmbient(); syncSnd(
 (async function boot() {
   try { CFG = await api('/api/config'); } catch (e) {}
   try { await refresh(); } catch (e) { location.href = '{{ADMIN_PATH}}'; return; }
-  buildDock(); syncSnd(); NA.nova('le stratège de Mongazi'); switchView('dash'); refreshNotifs(); startSignals();
+  buildDock(); syncSnd(); document.getElementById('bell').innerHTML = icon('bell'); NA.nova('le stratège de Mongazi'); switchView('dash'); refreshNotifs(); startSignals();
   document.getElementById('help').innerHTML = icon('help');
   document.getElementById('help').onclick = () => NA.tour(TOUR);
   if (!localStorage.getItem('na_tour_a')) setTimeout(() => NA.tour(TOUR, 'na_tour_a'), 1000);
