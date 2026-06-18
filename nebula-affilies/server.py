@@ -1538,7 +1538,7 @@ def participants_map() -> Dict[str, Dict[str, Any]]:
         uid = "a" + str(a["id"])
         out[uid] = {"uid": uid, "name": affiliate_label(a), "role": "affiliate",
                     "accent": a["accent"] or "#7b5cff", "photo": photo_url(uid),
-                    "sub": rank_for(_paid_value(a["id"])[0])["label"], "aid": a["id"]}
+                    "sub": rank_for(_paid_value(a["id"])[0])["label"], "aid": a["id"], "code": a["code"]}
     return out
 
 def dm_pair(u1: str, u2: str) -> str:

@@ -246,7 +246,8 @@ input,select,textarea{font-family:inherit}
   box-shadow:inset 0 1px 2px rgba(255,255,255,.5),inset 0 -3px 8px color-mix(in srgb,var(--c2) 60%,#000 40%),
     0 6px 16px -6px color-mix(in srgb,var(--c2) 75%,transparent);isolation:isolate}
 .rk.no-glow{box-shadow:inset 0 1px 2px rgba(255,255,255,.5),inset 0 -3px 8px color-mix(in srgb,var(--c2) 60%,#000 40%)}
-.rk-sm{width:30px;height:30px}.rk-md{width:46px;height:46px}.rk-lg{width:86px;height:86px}
+.rk-xs{width:20px;height:20px}.rk-sm{width:30px;height:30px}.rk-md{width:46px;height:46px}.rk-lg{width:86px;height:86px}
+.rk-xs .rk-core svg{width:11px;height:11px}.rk-xs .rk-ring{inset:-2px}
 .rk-core{display:grid;place-items:center;z-index:2}
 .rk-core svg{stroke:#fff;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;
   filter:drop-shadow(0 1px 2px rgba(0,0,0,.45))}
@@ -308,6 +309,12 @@ input,select,textarea{font-family:inherit}
 .chat-chip:hover{color:var(--ink);border-color:var(--hair-2)}
 .chat-chip.on{color:#07060e;background:linear-gradient(100deg,var(--accent-2),var(--accent));border-color:transparent}
 .chat-empty-filter{padding:24px 16px;text-align:center;color:var(--muted);font-size:.86rem}
+.chat-rankmeta{display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-rankmeta .rk{flex:0 0 auto}
+.chat-sortrow{display:flex;align-items:center;gap:8px;margin-top:9px}
+.chat-sortrow label{font-size:.7rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.chat-sort{flex:1;background:rgba(0,0,0,.3);border:1px solid var(--hair);border-radius:10px;padding:7px 10px;color:var(--ink);font-size:.82rem;font-family:inherit}
+.chat-sort:focus{outline:none;border-color:color-mix(in srgb,var(--accent) 55%,transparent)}
 
 /* ---- Fiche partenaire (stats) ---- */
 .pstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}

@@ -611,7 +611,7 @@ async function renderMessages() {
   if (CHAT.channel) openConv(CHAT.channel, CHAT.convName);
 }
 let CHAT_DATA = { general: null, contacts: [] };
-let CHAT_FILTER = { q: '', f: 'all' };
+let CHAT_FILTER = { q: '', f: 'all', sort: 'rank' };
 async function loadContacts() {
   let d; try { d = await api('/api/chat/contacts'); } catch (e) { return; }
   CHAT_DATA = { general: d.general, contacts: d.contacts };
@@ -622,12 +622,29 @@ async function loadContacts() {
 }
 function buildChatShell(side) {
   side.innerHTML = `<div class="chat-search">
-      <div class="cs-box">${icon('search')}<input id="chatSearch" placeholder="Rechercher une personne…" autocomplete="off"></div>
+      <div class="cs-box">${icon('search')}<input id="chatSearch" placeholder="Rechercher (nom, rang, palier, code)…" autocomplete="off"></div>
       <div class="chat-filters" id="chatFilters"></div>
+      <div class="chat-sortrow"><label>Trier</label><select class="chat-sort" id="chatSort">
+        <option value="rank">Par rang</option><option value="ventes">Par ventes</option><option value="az">A → Z</option><option value="recent">Activité récente</option>
+      </select></div>
     </div><div id="chatList"></div>`;
   const inp = document.getElementById('chatSearch');
   inp.value = CHAT_FILTER.q;
   inp.oninput = () => { CHAT_FILTER.q = inp.value; renderChatList(); };
+  const sel = document.getElementById('chatSort');
+  sel.value = CHAT_FILTER.sort;
+  sel.onchange = () => { CHAT_FILTER.sort = sel.value; renderChatList(); };
+}
+function contactCard(c) {
+  const ava = c.photo ? `<div class="chat-ava"><img class="av-img" src="${esc(c.photo)}" alt=""></div>`
+    : `<div class="chat-ava" style="color:${c.accent || 'var(--accent)'}">${initials(c.name)}</div>`;
+  const meta = c.rank
+    ? `${NA.rankBadge(c.rank, { size: 'xs', glow: false })}<span>${NA.rankName(c.rank)}${c.palier ? ` · ${esc(c.palier)}` : ''}${typeof c.ventes === 'number' ? ` · ${c.ventes}v` : ''}</span>`
+    : `<span>${esc(c.sub || '')}</span>`;
+  return `<div class="chat-contact${CHAT.channel === c.uid ? ' on' : ''}" data-uid="${c.uid}" data-name="${esc(c.name)}">
+    ${ava}<div style="min-width:0"><div class="ttl" style="font-size:.92rem">${esc(c.name)}</div>
+      <div class="meta chat-rankmeta">${meta}</div></div>
+    ${c.unread ? `<div class="chat-cdot">${c.unread}</div>` : '<span></span>'}</div>`;
 }
 function renderChatFilters() {
   const wrap = document.getElementById('chatFilters'); if (!wrap) return;
@@ -645,13 +662,17 @@ function renderChatList() {
   const box = document.getElementById('chatList'); if (!box) return;
   const q = CHAT_FILTER.q.trim().toLowerCase(), f = CHAT_FILTER.f;
   let list = CHAT_DATA.contacts.filter(c =>
-    (!q || (c.name || '').toLowerCase().includes(q) || (c.rank || '').toLowerCase().includes(q)) &&
+    (!q || [c.name, c.rank, c.palier, c.code].some(v => (v || '').toLowerCase().includes(q))) &&
     (f === 'all' || (f.startsWith('p:') ? c.palier === f.slice(2) : c.rank === f.slice(2))));
+  const ro = (NA.RANK_ORDER || []);
+  const cmp = { rank: (a, b) => (ro.indexOf(b.rank) - ro.indexOf(a.rank)) || ((b.ventes || 0) - (a.ventes || 0)),
+    ventes: (a, b) => (b.ventes || 0) - (a.ventes || 0), az: (a, b) => (a.name || '').localeCompare(b.name || ''),
+    recent: (a, b) => (b.last_at || 0) - (a.last_at || 0) };
+  list = [...list].sort(cmp[CHAT_FILTER.sort] || cmp.rank);
   let html = '';
   if (f === 'all' && !q) html += `<div class="chat-sechead">Salon d'équipe</div>` + contactRow('general', 'Salon NEBULA', '', 'grp', CHAT_DATA.general.unread, CHAT_DATA.general.last, true);
   html += `<div class="chat-sechead">Partenaires & NEBULA · ${list.length}</div>`;
-  html += list.length ? list.map(c => contactRow(c.uid, c.name, c.photo, '', c.unread, c.last, false, c.accent, c.sub)).join('')
-    : `<div class="chat-empty-filter">Personne ne correspond à ta recherche.</div>`;
+  html += list.length ? list.map(contactCard).join('') : `<div class="chat-empty-filter">Personne ne correspond à ta recherche.</div>`;
   box.innerHTML = html;
   box.querySelectorAll('[data-uid]').forEach(x => x.onclick = () => { sound.sfx.tab(); openConv(x.dataset.uid, x.dataset.name); });
 }
