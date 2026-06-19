@@ -12,7 +12,9 @@ export default {
     headers.set("X-Forwarded-Host", url.host);
     headers.set("X-Forwarded-Proto", "https");
 
-    const init = { method: request.method, headers, redirect: "manual" };
+    // cf.cacheTtl:0 -> l'edge Cloudflare ne met PAS en cache la réponse de Railway
+    // (sinon CSS/JS gelés jusqu'à 4h après chaque mise à jour)
+    const init = { method: request.method, headers, redirect: "manual", cf: { cacheTtl: 0, cacheEverything: false } };
     if (request.method !== "GET" && request.method !== "HEAD") init.body = request.body;
 
     let resp;
@@ -21,10 +23,9 @@ export default {
     } catch (e) {
       return new Response("Relais indisponible. Reessayez dans un instant.", { status: 502 });
     }
-    return new Response(resp.body, {
-      status: resp.status,
-      statusText: resp.statusText,
-      headers: new Headers(resp.headers),
-    });
+    const out = new Headers(resp.headers);
+    // pas de cache navigateur sur les assets actifs : les corrections apparaissent tout de suite
+    out.set("Cache-Control", "no-cache, must-revalidate");
+    return new Response(resp.body, { status: resp.status, statusText: resp.statusText, headers: out });
   },
 };
