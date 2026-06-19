@@ -141,7 +141,7 @@ input,select,textarea{font-family:inherit}
 @keyframes roomIn{from{opacity:0;transform:translateY(18px) scale(.99);filter:blur(8px)}to{opacity:1;transform:none;filter:blur(0)}}
 
 /* ---- Grilles bento ---- */
-.bento{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+.bento{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}
 .col-3{grid-column:span 3}.col-4{grid-column:span 4}.col-5{grid-column:span 5}
 .col-6{grid-column:span 6}.col-7{grid-column:span 7}.col-8{grid-column:span 8}.col-12{grid-column:span 12}
 
@@ -438,11 +438,56 @@ input,select,textarea{font-family:inherit}
   .dock .nav-i{flex:0 0 auto}
   .dock .logo,.nav-sp{display:none}
   .nav-i.on::before{left:50%;top:-8px;transform:translateX(-50%);width:24px;height:4px}
-  .work{padding:18px 16px 110px}
+  .work{padding:18px 16px 108px}
   .col-3,.col-4,.col-5,.col-6,.col-7,.col-8{grid-column:span 12}
   .portal-grid{grid-template-columns:1fr}
   .nova-panel{right:12px;left:12px;bottom:92px;width:auto}
   .nova-fab{right:16px;bottom:78px}
+  /* barre d'onglets du bas : indicateur visuel qu'on peut faire glisser */
+  .dock{padding:7px 30px 7px 8px;scroll-snap-type:x proximity;
+    -webkit-mask:linear-gradient(90deg,#000 calc(100% - 26px),transparent);mask:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
+  .dock .nav-i{scroll-snap-align:center;width:46px;height:46px}
+  .dock .nav-i svg{width:20px;height:20px}
+  .nav-i.on::before{left:50%;top:auto;bottom:-7px;transform:translateX(-50%);width:22px;height:3px}
+}
+
+/* ===== MOBILE FIN : anti-débordement + lisibilité premium (≤560px) ===== */
+@media(max-width:560px){
+  .app{overflow-x:clip}
+  .work{padding:16px 13px 108px;min-width:0}
+  .view{min-width:0}
+  .bento{gap:12px}
+  .card{padding:5px}
+  .card>.in{padding:16px}
+  /* titres en pastille : ne débordent plus, passent à la ligne proprement */
+  .eyebrow{white-space:normal;line-height:1.4;letter-spacing:.14em;font-size:9.5px;max-width:100%}
+  /* gros chiffres : jamais coupés */
+  .stat .num{font-size:clamp(1.5rem,8.5vw,2.2rem);overflow-wrap:anywhere;word-break:break-word}
+  .stat .lbl{letter-spacing:.1em}
+  .rank .r-name{font-size:1.28rem}
+  .topbar{margin-bottom:20px;gap:10px}
+  .topbar .who{gap:11px;min-width:0;flex:1}
+  .topbar .who>div{min-width:0}
+  .topbar .who .r-sub,.topbar .who [id$="name"]{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42vw}
+  .icon-btn{width:40px;height:40px}
+  .flex.gap8{gap:7px}
+  /* lignes de données : le texte s'adapte, rien ne dépasse */
+  .row{padding:13px;gap:11px}
+  .row>div{min-width:0}
+  .row .ttl{overflow-wrap:anywhere}
+  .row .meta{overflow-wrap:anywhere;white-space:normal}
+  .row .mono{white-space:nowrap}
+  /* sous-titres (ex : "Commission directe 40% — 60 000 F / vitrine") s'enroulent */
+  .r-sub{min-width:0;overflow-wrap:anywhere}
+  /* en-têtes de carte avec bouton : passent à la ligne au lieu d'être coupés */
+  .card .flex.between{flex-wrap:wrap;row-gap:10px}
+  .card .flex.between .btn{flex-shrink:0}
+  h2{overflow-wrap:anywhere}
+  h2[style*="1.8rem"]{font-size:1.5rem!important}
+  .big{font-size:clamp(1.9rem,8vw,2.6rem)}
+  /* échelle des rangs + fiches en plein écran agréable */
+  .pstats{grid-template-columns:1fr 1fr;gap:9px}
+  .pyr-node{min-width:0;width:100%;max-width:none}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}}
 

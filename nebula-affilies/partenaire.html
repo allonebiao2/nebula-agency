@@ -786,6 +786,7 @@ document.getElementById('amb').onclick = () => { sound.toggleAmbient(); syncSnd(
   buildDock(); syncSnd(); document.getElementById('bell').innerHTML = icon('bell'); nova('ton coach perso'); NA.agencyChat({ side: 'above' }); switchView('home'); refreshNotifs(); startSignals();
   document.getElementById('help').innerHTML = icon('help');
   document.getElementById('help').onclick = () => NA.tour(TOUR);
+  if (!localStorage.getItem('na_tour_p')) setTimeout(() => NA.tour(TOUR, 'na_tour_p'), 900);
   const lvl = ME.stats.rank.level, prev = +(localStorage.getItem('na_rank_' + ME.code) || lvl);
   if (lvl > prev) setTimeout(celebrate, 700);
   localStorage.setItem('na_rank_' + ME.code, lvl);
