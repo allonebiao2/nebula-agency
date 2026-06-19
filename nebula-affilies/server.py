@@ -977,6 +977,29 @@ async def admin_set_rate(aid: int, req: Request, naff_session: Optional[str] = C
         c.execute("UPDATE affiliates SET direct_rate_override=? WHERE id=?", (rate, aid))
     return {"ok": True, "code": a["code"], "rate": rate, "pct": int(round(rate * 100))}
 
+@app.post("/api/admin/affiliates/{aid}/edit")
+async def admin_edit_affiliate(aid: int, req: Request, naff_session: Optional[str] = Cookie(default=None)):
+    """Modifie les infos d'un partenaire (nom, prénom, numéro Mobile Money, réseau)."""
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    d = await req.json()
+    fields, vals = [], []
+    if d.get("prenom") is not None: fields.append("prenom=?"); vals.append(clean(d.get("prenom"), 80))
+    if d.get("nom") is not None: fields.append("nom=?"); vals.append(clean(d.get("nom"), 80))
+    if d.get("momo_number") is not None: fields.append("momo_number=?"); vals.append(clean(d.get("momo_number"), 30))
+    if d.get("momo_reseau") is not None:
+        res = clean(d.get("momo_reseau"), 30)
+        fields.append("momo_reseau=?"); vals.append(res if res in RESEAUX else RESEAUX[0])
+    if not fields:
+        return {"ok": True}
+    vals.append(aid)
+    with db() as c:
+        a = c.execute("SELECT code FROM affiliates WHERE id=?", (aid,)).fetchone()
+        if not a:
+            return JSONResponse({"ok": False}, status_code=404)
+        c.execute(f"UPDATE affiliates SET {','.join(fields)} WHERE id=?", vals)
+    return {"ok": True, "code": a["code"]}
+
 @app.get("/api/admin/leads")
 def admin_leads(naff_session: Optional[str] = Cookie(default=None)):
     if not need_admin(naff_session):
