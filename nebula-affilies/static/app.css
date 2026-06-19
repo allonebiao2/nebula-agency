@@ -443,9 +443,10 @@ input,select,textarea{font-family:inherit}
   .portal-grid{grid-template-columns:1fr}
   .nova-panel{right:12px;left:12px;bottom:92px;width:auto}
   .nova-fab{right:16px;bottom:78px}
-  /* barre d'onglets du bas : indicateur visuel qu'on peut faire glisser */
-  .dock{padding:7px 30px 7px 8px;scroll-snap-type:x proximity;
-    -webkit-mask:linear-gradient(90deg,#000 calc(100% - 26px),transparent);mask:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
+  /* barre d'onglets du bas : opaque et nette (pas de flou ni de bords rognés) */
+  .dock{padding:8px 10px;background:#0b0b14;backdrop-filter:none;-webkit-backdrop-filter:none;
+    border-top:1px solid var(--hair-2);box-shadow:0 -8px 24px -10px rgba(0,0,0,.7);
+    scroll-snap-type:x proximity}
   .dock .nav-i{scroll-snap-align:center;width:46px;height:46px}
   .dock .nav-i svg{width:20px;height:20px}
   .nav-i.on::before{left:50%;top:auto;bottom:-7px;transform:translateX(-50%);width:22px;height:3px}
