@@ -286,7 +286,8 @@ init_db()
 
 def migrate():
     with db() as c:
-        for col, ddl in [("pseudo", "TEXT DEFAULT ''"), ("parrain_id", "INTEGER DEFAULT 0"), ("photo", "TEXT DEFAULT ''")]:
+        for col, ddl in [("pseudo", "TEXT DEFAULT ''"), ("parrain_id", "INTEGER DEFAULT 0"), ("photo", "TEXT DEFAULT ''"),
+                         ("direct_rate_override", "REAL DEFAULT 0")]:
             try:
                 c.execute(f"ALTER TABLE affiliates ADD COLUMN {col} {ddl}")
             except Exception:
@@ -389,6 +390,8 @@ def commission_of(service: str, montant: float, rate: float = 0.25) -> int:
 def stats_of(affiliate_id: int) -> Dict[str, Any]:
     with db() as c:
         rows = c.execute("SELECT * FROM leads WHERE affiliate_id=?", (affiliate_id,)).fetchall()
+        _ov = c.execute("SELECT direct_rate_override FROM affiliates WHERE id=?", (affiliate_id,)).fetchone()
+    override = float(_ov["direct_rate_override"]) if (_ov and _ov["direct_rate_override"]) else 0.0
     by_status = {k: 0 for k in STATUSES}
     ms = month_start_ts()
     score = 0; nb_real = 0; ventes = 0; ventes_mois = 0
@@ -405,6 +408,11 @@ def stats_of(affiliate_id: int) -> Dict[str, Any]:
             nb_real += 1
     pal = palier_for(ventes_mois)                         # palier du mois -> taux direct
     rate = pal["rate"]
+    if override > 0:                                       # partenaire à taux personnalisé (ex : Romaric 40%)
+        rate = override
+        pal = {"label": "SPÉCIAL", "emoji": "★", "rate": override, "pct": int(round(override * 100)),
+               "next_label": None, "next_emoji": None, "next_pct": None, "to_next": 0,
+               "min": 0, "next_min": None}
     rcm = 0; potentiel = 0
     for r in rows:
         com = commission_of(r["service"], r["montant"], rate)
@@ -948,6 +956,26 @@ def admin_delete_affiliate(aid: int, naff_session: Optional[str] = Cookie(defaul
         try: (UP_DIR / a["photo"]).unlink()
         except Exception: pass
     return {"ok": True, "code": a["code"]}
+
+@app.post("/api/admin/affiliates/{aid}/rate")
+async def admin_set_rate(aid: int, req: Request, naff_session: Optional[str] = Cookie(default=None)):
+    """Fixe un taux de commission directe personnalisé (ex : partenaire privilégié 40%). 0 = retour au système des paliers."""
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    d = await req.json()
+    try:
+        rate = float(d.get("rate") or 0)
+    except Exception:
+        rate = 0.0
+    if rate > 1:           # accepte 40 (=> 0.40) ou 0.40
+        rate = rate / 100.0
+    rate = max(0.0, min(0.95, rate))
+    with db() as c:
+        a = c.execute("SELECT code FROM affiliates WHERE id=?", (aid,)).fetchone()
+        if not a:
+            return JSONResponse({"ok": False}, status_code=404)
+        c.execute("UPDATE affiliates SET direct_rate_override=? WHERE id=?", (rate, aid))
+    return {"ok": True, "code": a["code"], "rate": rate, "pct": int(round(rate * 100))}
 
 @app.get("/api/admin/leads")
 def admin_leads(naff_session: Optional[str] = Cookie(default=None)):

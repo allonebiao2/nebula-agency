@@ -94,7 +94,7 @@ function payDot(p) { return `<span class="pay ${p ? 'ok' : ''}"><span class="dot
 function initials(n) { return (n || '?').split(' ').filter(Boolean).slice(0, 2).map(x => x[0]).join('').toUpperCase(); }
 
 const RANK_ICON = { 'Recrue': 'spark', 'Météore': 'meteor', 'Comète': 'comet', 'Planète': 'planet', 'Étoile': 'star', 'Supernova': 'supernova', 'Nébuleuse': 'nebula', 'Galaxie': 'crown' };
-const PALIER_COLOR = { 'STARTER': '#9aa0c0', 'SILVER': '#cdd6ef', 'GOLD': '#e7c987' };
+const PALIER_COLOR = { 'STARTER': '#9aa0c0', 'SILVER': '#cdd6ef', 'GOLD': '#e7c987', 'SPÉCIAL': '#e6c34c' };
 function rankSvg(label) { return icon(RANK_ICON[label] || 'spark'); }
 
 const TOUR = [
@@ -134,7 +134,7 @@ function switchView(id) {
 function renderHome() {
   const s = ME.stats, r = s.rank, p = s.palier;
   const nextRank = r.next_label ? `Encore <b style="color:var(--ink)">${r.to_next}</b> vente${r.to_next > 1 ? 's' : ''} pour le rang ${r.next_label}` : 'Galaxie — rang suprême atteint';
-  const nextPal = p.next_label ? `Encore <b style="color:var(--ink)">${p.to_next}</b> vente${p.to_next > 1 ? 's' : ''} ce mois → ${p.next_label} ${p.next_pct}%` : 'GOLD — palier max ce mois';
+  const nextPal = p.next_label ? `Encore <b style="color:var(--ink)">${p.to_next}</b> vente${p.to_next > 1 ? 's' : ''} ce mois → ${p.next_label} ${p.next_pct}%` : (p.label === 'SPÉCIAL' ? 'Taux spécial — partenaire privilégié' : 'GOLD — palier max ce mois');
   const palPct = p.next_min ? Math.min(100, Math.round(s.ventes_mois * 100 / p.next_min)) : 100;
   const perVitrine = fmt(Math.round(150000 * p.rate));
   document.getElementById('v-home').innerHTML = `
@@ -756,10 +756,12 @@ async function refreshNotifs() {
     if (d.unread) bell.appendChild(el(`<span class="badge">${d.unread}</span>`));
     const head = `<div class="nhead">${d.unread ? `<span class="pill">${d.unread}</span> non lue${d.unread > 1 ? 's' : ''} · ${d.notifs.length} au total` : `Tout est lu · ${d.notifs.length} notification${d.notifs.length > 1 ? 's' : ''}`}</div>`;
     document.getElementById('notif-list').innerHTML = d.notifs.length
-      ? head + d.notifs.map(n => { const k = NKIND[n.kind] || NKIND.info; return `<div class="row" style="grid-template-columns:auto 1fr auto;${n.lu ? 'opacity:.6' : 'border-color:var(--hair-2)'}"><span class="ndot" style="color:${k.c};background:${k.c}"></span><div>${esc(n.text)}</div><div class="meta">${ago(n.created)}</div></div>`; }).join('')
+      ? head + d.notifs.map(n => { const k = NKIND[n.kind] || NKIND.info; const go = NOTIF_NAV[n.kind]; return `<div class="row${go ? ' clickable' : ''}" ${go ? `data-go="${go}"` : ''} style="grid-template-columns:auto 1fr auto;${n.lu ? 'opacity:.6' : 'border-color:var(--hair-2)'}"><span class="ndot" style="color:${k.c};background:${k.c}"></span><div>${esc(n.text)}${go ? ` <span class="meta">— ouvrir</span>` : ''}</div><div class="meta">${ago(n.created)}</div></div>`; }).join('')
       : `<p class="muted center" style="padding:20px">Aucune notification.</p>`;
+    document.querySelectorAll('#notif-list [data-go]').forEach(r => r.onclick = () => { sound.sfx.tab(); document.getElementById('notif-scrim').classList.remove('on'); switchView(r.dataset.go); });
   } catch (e) {}
 }
+const NOTIF_NAV = { client: 'clients', statut: 'clients', commission: 'gains', paiement: 'gains', recrue: 'reseau', publication: 'publi' };
 document.getElementById('bell').onclick = async () => { sound.sfx.click(); document.getElementById('notif-scrim').classList.add('on'); await api('/api/partenaire/notifs/read', { body: {} }); setTimeout(refreshNotifs, 400); };
 document.getElementById('notif-close').onclick = () => document.getElementById('notif-scrim').classList.remove('on');
 document.getElementById('notif-scrim').onclick = e => { if (e.target.id === 'notif-scrim') e.target.classList.remove('on'); };
@@ -784,7 +786,6 @@ document.getElementById('amb').onclick = () => { sound.toggleAmbient(); syncSnd(
   buildDock(); syncSnd(); document.getElementById('bell').innerHTML = icon('bell'); nova('ton coach perso'); NA.agencyChat({ side: 'above' }); switchView('home'); refreshNotifs(); startSignals();
   document.getElementById('help').innerHTML = icon('help');
   document.getElementById('help').onclick = () => NA.tour(TOUR);
-  if (!localStorage.getItem('na_tour_p')) setTimeout(() => NA.tour(TOUR, 'na_tour_p'), 1000);
   const lvl = ME.stats.rank.level, prev = +(localStorage.getItem('na_rank_' + ME.code) || lvl);
   if (lvl > prev) setTimeout(celebrate, 700);
   localStorage.setItem('na_rank_' + ME.code, lvl);

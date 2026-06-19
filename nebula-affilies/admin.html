@@ -170,7 +170,7 @@ function renderAff() {
   });
 }
 const RANK_ICON = { 'Recrue': 'spark', 'Météore': 'meteor', 'Comète': 'comet', 'Planète': 'planet', 'Étoile': 'star', 'Supernova': 'supernova', 'Nébuleuse': 'nebula', 'Galaxie': 'crown' };
-const PALIER_COLOR = { 'STARTER': '#9aa0c0', 'SILVER': '#cdd6ef', 'GOLD': '#e7c987' };
+const PALIER_COLOR = { 'STARTER': '#9aa0c0', 'SILVER': '#cdd6ef', 'GOLD': '#e7c987', 'SPÉCIAL': '#e6c34c' };
 function rankSvg(label) { return icon(RANK_ICON[label] || 'spark'); }
 function palBadge(p) { return `<span class="pal-badge" style="--c:${PALIER_COLOR[p.label] || '#9aa0c0'}">${esc(p.label)}</span>`; }
 
@@ -823,10 +823,12 @@ async function refreshNotifs() {
     if (d.unread) bell.appendChild(el(`<span class="badge">${d.unread}</span>`));
     const head = `<div class="nhead">${d.unread ? `<span class="pill">${d.unread}</span> non lue${d.unread > 1 ? 's' : ''} · ${d.notifs.length} au total` : `Tout est lu · ${d.notifs.length} notification${d.notifs.length > 1 ? 's' : ''}`}</div>`;
     document.getElementById('notif-list').innerHTML = d.notifs.length
-      ? head + d.notifs.map(n => { const k = NKIND[n.kind] || NKIND.info; return `<div class="row" style="grid-template-columns:auto 1fr auto;${n.lu ? 'opacity:.6' : 'border-color:var(--hair-2)'}"><span class="ndot" style="color:${k.c};background:${k.c}"></span><div>${esc(n.text)}</div><div class="meta">${ago(n.created)}</div></div>`; }).join('')
+      ? head + d.notifs.map(n => { const k = NKIND[n.kind] || NKIND.info; const go = NOTIF_NAV[n.kind]; return `<div class="row${go ? ' clickable' : ''}" ${go ? `data-go="${go}"` : ''} style="grid-template-columns:auto 1fr auto;${n.lu ? 'opacity:.6' : 'border-color:var(--hair-2)'}"><span class="ndot" style="color:${k.c};background:${k.c}"></span><div>${esc(n.text)}${go ? ` <span class="meta">— ouvrir</span>` : ''}</div><div class="meta">${ago(n.created)}</div></div>`; }).join('')
       : `<p class="muted center" style="padding:20px">Aucune notification.</p>`;
+    document.querySelectorAll('#notif-list [data-go]').forEach(r => r.onclick = () => { sound.sfx.tab(); document.getElementById('notif-scrim').classList.remove('on'); switchView(r.dataset.go); });
   } catch (e) {}
 }
+const NOTIF_NAV = { client: 'leads', vente: 'leads', statut: 'leads', commission: 'paiements', paiement: 'paiements', recrue: 'recrues', publication: 'publi' };
 document.getElementById('bell').onclick = async () => { sound.sfx.click(); document.getElementById('notif-scrim').classList.add('on'); await api('/api/admin/notifs/read', { body: {} }); setTimeout(refreshNotifs, 400); };
 document.getElementById('notif-close').onclick = () => document.getElementById('notif-scrim').classList.remove('on');
 document.getElementById('notif-scrim').onclick = e => { if (e.target.id === 'notif-scrim') e.target.classList.remove('on'); };
@@ -844,7 +846,6 @@ document.getElementById('amb').onclick = () => { sound.toggleAmbient(); syncSnd(
   buildDock(); syncSnd(); document.getElementById('bell').innerHTML = icon('bell'); NA.nova('le stratège de Mongazi'); switchView('dash'); refreshNotifs(); startSignals();
   document.getElementById('help').innerHTML = icon('help');
   document.getElementById('help').onclick = () => NA.tour(TOUR);
-  if (!localStorage.getItem('na_tour_a')) setTimeout(() => NA.tour(TOUR, 'na_tour_a'), 1000);
 })();
 </script>
 </body>
