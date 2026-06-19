@@ -292,6 +292,7 @@ const NA = (() => {
       inn.querySelector('.tn').onclick = () => { if (i < steps.length - 1) { i++; render(); Sound.sfx.tab(); } else close(); };
     }
     function close() { scrim.remove(); if (key) localStorage.setItem(key, '1'); }
+    scrim.addEventListener('click', e => { if (e.target === scrim) close(); }); // fermer en touchant en dehors
     scrim.classList.add('on'); render(); Sound.sfx.open();
   }
 
