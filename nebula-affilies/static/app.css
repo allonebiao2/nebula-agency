@@ -444,11 +444,16 @@ input,select,textarea{font-family:inherit}
   .nova-panel{right:12px;left:12px;bottom:92px;width:auto}
   .nova-fab{right:16px;bottom:78px}
   /* barre d'onglets du bas : opaque et nette (pas de flou ni de bords rognés) */
-  .dock{padding:8px 10px;background:#0b0b14;backdrop-filter:none;-webkit-backdrop-filter:none;
+  .dock{padding:8px 12px;background:#0b0b14;backdrop-filter:none;-webkit-backdrop-filter:none;
     border-top:1px solid var(--hair-2);box-shadow:0 -8px 24px -10px rgba(0,0,0,.7);
-    scroll-snap-type:x proximity}
-  .dock .nav-i{scroll-snap-align:center;width:46px;height:46px}
+    align-items:center;scroll-snap-type:x proximity}
+  /* le <nav> a un flex-direction:column en ligne -> on le neutralise : ses onglets
+     deviennent enfants directs de la barre, donc TOUT (onglets + déconnexion) tient
+     sur UNE seule ligne horizontale, défilable. */
+  .dock>#nav{display:contents}
+  .dock .nav-i{scroll-snap-align:center;width:46px;height:46px;flex:0 0 auto}
   .dock .nav-i svg{width:20px;height:20px}
+  #logout{margin-left:6px;border-left:1px solid var(--hair);padding-left:0;color:var(--bad)}
   .nav-i.on::before{left:50%;top:auto;bottom:-7px;transform:translateX(-50%);width:22px;height:3px}
 }
 
