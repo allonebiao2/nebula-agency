@@ -231,12 +231,16 @@ input,select,textarea{font-family:inherit}
 .ag-fab.above{right:26px;bottom:100px}
 .ag-fab:hover{transform:translateY(-3px);box-shadow:0 16px 38px -10px color-mix(in srgb,var(--accent) 85%,transparent)}
 .ag-fab .ag-dot{width:9px;height:9px;border-radius:50%;background:#07060e;animation:blink 1.5s infinite;flex:0 0 auto}
+.ag-fab .ag-ico{display:inline-flex;flex:0 0 auto}
+.ag-fab .ag-ico svg{width:18px;height:18px;stroke:#07060e;fill:none;stroke-width:1.9}
 .nova-panel.ag.left{right:auto;left:26px}
 @media(max-width:680px){
-  .ag-fab{font-size:.76rem;padding:11px 14px;bottom:16px}
-  .ag-fab.right{right:12px}.ag-fab.left{left:12px}
-  .ag-fab.above{right:12px;bottom:148px}
-  .ag-fab .ag-lbl{max-width:42vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  /* bouton compact : juste l'icône ronde (le long texte prenait trop de place) */
+  .ag-fab{padding:0;width:52px;height:52px;border-radius:50%;justify-content:center;bottom:16px}
+  .ag-fab.right{right:14px}.ag-fab.left{left:14px}
+  .ag-fab.above{right:14px;bottom:150px}
+  .ag-fab .ag-lbl{display:none}
+  .ag-fab .ag-ico svg{width:23px;height:23px}
   .nova-panel.ag{left:12px;right:12px;bottom:84px;width:auto}
 }
 
@@ -478,7 +482,14 @@ input,select,textarea{font-family:inherit}
   /* titre de page : 2 lignes MAXIMUM (sinon « … »), coupe entre les mots */
   #title{font-size:1.18rem!important;line-height:1.22;overflow-wrap:normal;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .topbar .who .r-sub,.topbar .who [id$="name"]{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60vw}
+  /* en-tête partenaire (emblème + nom + ligne palier) : tout se tronque, ne déborde plus sur les icônes */
+  .topbar .rank{min-width:0;max-width:100%;gap:10px!important}
+  .topbar .rank>.emblem{width:44px!important;height:44px!important}
+  .topbar .rank>div:not(.emblem){min-width:0;flex:1}
+  .topbar #p-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .topbar #p-rank{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .topbar #p-rank>span{max-width:100%}
+  .topbar .who .r-sub,.topbar .who [id$="name"]{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .icon-btn{width:40px;height:40px}
   .flex.gap8{gap:7px}
   /* lignes de données : le texte s'adapte, rien ne dépasse */
