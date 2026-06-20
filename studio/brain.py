@@ -51,16 +51,27 @@ FORMATS = [
     "Le saviez-vous", "Métaphore visuelle", "Défi de 7 jours", "Coup de gueule",
     "Lettre à un commerçant",
 ]
+# UNE seule marque : NEBULA Agency. Son agent IA s'appelle NOVA.
 BRANDS = {
-    "NEBULA Agency": "Agence qui crée des vitrines digitales pro (+ QR code) et des "
-        "automatisations IA pour les commerçants et PME d'Afrique de l'Ouest francophone. "
-        "Promesse : être visible, paraître pro, vendre plus, gagner du temps. Cotonou, Bénin.",
-    "Vendora": "Le vendeur IA sur WhatsApp pour les commerçants : il répond aux clients, "
-        "prend les commandes et gère la boutique 24/7, payable en Mobile Money. "
-        "Un employé numérique, pas un logiciel compliqué.",
-    "AXIO IA": "L'école qui rend l'intelligence artificielle simple et utile pour les "
-        "Africains : apprendre à se servir de l'IA pour son travail et son business.",
+    "NEBULA Agency": "NEBULA Agency crée des vitrines digitales professionnelles "
+        "(+ QR code) et des automatisations IA pour les commerçants et PME d'Afrique "
+        "de l'Ouest francophone. Son agent IA s'appelle NOVA : il répond aux clients, "
+        "prend les commandes et travaille sur WhatsApp 24/7. Promesse : être visible, "
+        "paraître pro, vendre plus, gagner du temps, encaisser en Mobile Money. Cotonou, Bénin.",
 }
+# Sujets de départ (varient l'angle SANS changer de marque)
+THEMES = [
+    "une vitrine web qui vend, pas juste une jolie page",
+    "le QR code qui ramène des clients vers ta boutique",
+    "NOVA, l'agent IA de NEBULA sur WhatsApp qui répond et vend 24/7",
+    "l'automatisation qui te fait gagner des heures chaque jour",
+    "être trouvable en ligne au moment où un client te cherche",
+    "passer d'une image amateur à une image vraiment pro",
+    "ne plus jamais rater un client qui écrit la nuit",
+    "encaisser en Mobile Money sans friction",
+    "transformer des vues et des likes en vraies commandes",
+    "déléguer le service client à NOVA et se concentrer sur son métier",
+]
 TONES = ["inspirant", "audacieux", "pédagogue et complice", "premium et sobre",
          "urgent et direct", "optimiste", "provocateur malin", "chaleureux"]
 VISUAL_STYLES = ["kinetic", "stat", "quote", "manifesto", "list", "split"]
@@ -96,10 +107,8 @@ def choose_axes(recent):
     used_formats = [e.get("format") for e in recent[-8:]]
     fmt_pool = [f for f in FORMATS if f not in used_formats] or FORMATS
 
-    last_brand = recent[-1].get("brand") if recent else None
-    brand_pool = [b for b in BRANDS if b != last_brand] or list(BRANDS)
-    # NEBULA Agency revient plus souvent (c'est la marque mère)
-    weighted = brand_pool + (["NEBULA Agency"] if "NEBULA Agency" in brand_pool else [])
+    used_themes = [e.get("theme") for e in recent[-6:]]
+    theme_pool = [t for t in THEMES if t not in used_themes] or THEMES
 
     used_styles = [e.get("visual", {}).get("style") for e in recent[-3:]]
     style_pool = [s for s in VISUAL_STYLES if s not in used_styles] or VISUAL_STYLES
@@ -111,7 +120,8 @@ def choose_axes(recent):
 
     return {
         "format": random.choice(fmt_pool),
-        "brand": random.choice(weighted),
+        "brand": "NEBULA Agency",
+        "theme": random.choice(theme_pool),
         "tone": random.choice(TONES),
         "style": random.choice(style_pool),
         "accent_name": accent[0],
@@ -128,14 +138,19 @@ francophone (Bénin, Togo, Côte d'Ivoire…). Ton français est impeccable, viv
 sans clichés corporate, sans emoji dans les textes destinés à l'écran. \
 Tu crées des contenus courts (format vertical, 12 à 22 secondes) qui ARRÊTENT le \
 scroll dès la première seconde et donnent envie d'agir. Tu réponds UNIQUEMENT par \
-un objet JSON valide, rien d'autre."""
+un objet JSON valide, rien d'autre.
+
+Règle de marque ABSOLUE : la marque est TOUJOURS « NEBULA Agency ». Son agent IA \
+s'appelle « NOVA » (sur WhatsApp). N'invente JAMAIS un autre nom de marque ni un \
+autre nom d'agent (jamais « Vendora », « AXIO », etc.)."""
 
 PROMPT_TMPL = """Crée le contenu du jour. Il doit être PROFESSIONNEL, INATTENDU et \
 TOTALEMENT DIFFÉRENT de tout ce qui a déjà été fait (voir l'historique).
 
 Contraintes imposées pour aujourd'hui :
-- Marque : {brand}
+- Marque : {brand} (la SEULE marque ; agent IA = NOVA)
   ({brand_desc})
+- Sujet de départ : {theme}
 - Format éditorial : « {format} »
 - Ton : {tone}
 - Plateforme cible : {platform}
@@ -192,7 +207,7 @@ def generate(model=None):
     ) or "(aucun historique : c'est le tout premier contenu)"
 
     prompt = PROMPT_TMPL.format(
-        brand=axes["brand"], brand_desc=BRANDS[axes["brand"]],
+        brand=axes["brand"], brand_desc=BRANDS[axes["brand"]], theme=axes["theme"],
         format=axes["format"], tone=axes["tone"], platform=axes["platform"],
         style=axes["style"], history=history,
     )
@@ -207,6 +222,7 @@ def generate(model=None):
     concept = {
         "date": today,
         "brand": axes["brand"],
+        "theme": axes["theme"],
         "format": axes["format"],
         "tone": axes["tone"],
         "platform": axes["platform"],
@@ -223,8 +239,8 @@ def generate(model=None):
         "model": model,
     }
     append_ledger({
-        "date": today, "brand": concept["brand"], "format": concept["format"],
-        "title": concept["title"], "hook": concept["hook"],
+        "date": today, "brand": concept["brand"], "theme": axes["theme"],
+        "format": concept["format"], "title": concept["title"], "hook": concept["hook"],
         "accent": axes["accent"], "visual": {"style": axes["style"]},
     })
     return concept

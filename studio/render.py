@@ -1,92 +1,84 @@
 # -*- coding: utf-8 -*-
 """
-NEBULA Studio Quotidien — MOTEUR VIDÉO (gratuit, illimité).
+NEBULA Studio Quotidien — MOTEUR VIDÉO (gratuit, illimité, FLUIDE).
 
-Transforme un concept (storyboard) en vidéo verticale 1080x1920 de marque :
-  - charge le gabarit kinetic.html avec window.CONCEPT
-  - Playwright (Chromium) ENREGISTRE l'animation → .webm
-  - si ffmpeg est présent → transcode en .mp4 (H.264, compatible partout)
-  - capture aussi une affiche (poster.png)
+Rendu DÉTERMINISTE image par image (≠ enregistrement temps réel) :
+  - le gabarit expose __DURATION et __seek(t) ; aucune animation CSS.
+  - on calcule chaque frame à un temps EXACT (t = i/fps) et on la capture en
+    pleine résolution → vitesse parfaite, zéro ralenti, zéro frame perdue.
+  - ffmpeg assemble la séquence PNG en MP4 1080×1920 (9:16), 30 i/s, H.264 net.
 
-Aucune dépendance payante. ffmpeg est optionnel en local ; en CI il est installé.
+Le navigateur sans écran peut être lent : peu importe, on l'ATTEND frame par frame.
 """
 import os, json, shutil, subprocess, pathlib
 
 HERE = pathlib.Path(__file__).resolve().parent
 TEMPLATE = (HERE / "templates" / "kinetic.html").resolve()
+FPS = 30
+W, H = 1080, 1920
 
 def _find_ffmpeg():
     ff = shutil.which("ffmpeg")
     if ff:
         return ff
-    try:                                   # binaire ffmpeg embarqué (pip)
+    try:
         import imageio_ffmpeg
         return imageio_ffmpeg.get_ffmpeg_exe()
     except Exception:
         return None
 
-def _to_mp4(webm, mp4):
-    ff = _find_ffmpeg()
-    if not ff:
-        return False
-    cmd = [ff, "-y", "-i", str(webm), "-c:v", "libx264", "-pix_fmt", "yuv420p",
-           "-vf", "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,fps=30",
-           "-movflags", "+faststart", "-an", str(mp4)]
-    try:
-        subprocess.run(cmd, check=True, capture_output=True)
-        return mp4.exists()
-    except Exception as e:
-        print("ffmpeg KO:", e)
-        return False
-
-def render(concept, out_dir):
+def render(concept, out_dir, fps=FPS):
     from playwright.sync_api import sync_playwright
     out_dir = pathlib.Path(out_dir); out_dir.mkdir(parents=True, exist_ok=True)
-    viddir = out_dir / "_vid"; viddir.mkdir(exist_ok=True)
+    frames = out_dir / "_frames"
+    if frames.exists():
+        shutil.rmtree(frames, ignore_errors=True)
+    frames.mkdir(parents=True, exist_ok=True)
     poster = out_dir / "poster.png"
-    webm = out_dir / "video.webm"
     mp4 = out_dir / "video.mp4"
 
     cjson = json.dumps(concept, ensure_ascii=False)
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True, args=["--autoplay-policy=no-user-gesture-required"])
-        ctx = browser.new_context(
-            viewport={"width": 1080, "height": 1920},
-            device_scale_factor=1,
-            record_video_dir=str(viddir),
-            record_video_size={"width": 1080, "height": 1920},
-        )
+        browser = p.chromium.launch(headless=True, args=[
+            "--force-color-profile=srgb", "--hide-scrollbars", "--disable-gpu"])
+        ctx = browser.new_context(viewport={"width": W, "height": H}, device_scale_factor=1)
         page = ctx.new_page()
         page.add_init_script("window.CONCEPT = " + cjson + ";")
-        page.goto(TEMPLATE.as_uri())
-        # attendre que le gabarit annonce la durée totale, puis filmer jusqu'à la fin
-        page.wait_for_function("window.__NEBULA_TOTAL > 0", timeout=20000)
-        total = page.evaluate("window.__NEBULA_TOTAL")
-        # affiche = la scène la plus percutante, pleinement révélée (signalée par le gabarit)
+        # domcontentloaded : ne PAS bloquer sur le réseau (polices Google) → évite les timeouts
+        page.goto(TEMPLATE.as_uri(), wait_until="domcontentloaded", timeout=45000)
+        page.wait_for_function("window.__DURATION > 0", timeout=20000)
         try:
-            page.wait_for_function("window.__POSTER_OK === true", timeout=15000)
-            page.wait_for_timeout(120)
+            page.wait_for_function("window.__FONTS_READY === true", timeout=9000)
         except Exception:
-            page.wait_for_timeout(int(total * 0.3))
-        page.screenshot(path=str(poster))
-        page.wait_for_function("window.__NEBULA_DONE === true", timeout=int(total) + 12000)
-        page.wait_for_timeout(250)
-        ctx.close()            # <- déclenche l'écriture du .webm
-        browser.close()
+            pass
+        total = page.evaluate("window.__DURATION")
+        poster_t = page.evaluate("window.__POSTER_T")
 
-    # récupérer le webm produit par Playwright (nom aléatoire) → video.webm
-    vids = sorted(viddir.glob("*.webm"), key=lambda f: f.stat().st_mtime)
-    if vids:
-        if webm.exists():
-            webm.unlink()
-        shutil.move(str(vids[-1]), str(webm))
-    shutil.rmtree(viddir, ignore_errors=True)
+        # affiche (scène la plus percutante, pleinement révélée)
+        page.evaluate("window.__seek(%f)" % poster_t)
+        page.screenshot(path=str(poster))
+
+        # toutes les frames, à des temps exacts
+        nframes = int(round(total / 1000.0 * fps))
+        for f in range(nframes + 1):
+            page.evaluate("window.__seek(%f)" % (f / fps * 1000.0))
+            page.screenshot(path=str(frames / ("%05d.png" % f)))
+        ctx.close(); browser.close()
 
     result = {"poster": str(poster) if poster.exists() else None,
-              "webm": str(webm) if webm.exists() else None, "mp4": None}
-    if webm.exists() and _to_mp4(webm, mp4):
-        result["mp4"] = str(mp4)
-    result["video"] = result["mp4"] or result["webm"]
+              "mp4": None, "webm": None, "video": None}
+    ff = _find_ffmpeg()
+    if ff:
+        cmd = [ff, "-y", "-framerate", str(fps), "-i", str(frames / "%05d.png"),
+               "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "17",
+               "-preset", "medium", "-movflags", "+faststart", "-an", str(mp4)]
+        try:
+            subprocess.run(cmd, check=True, capture_output=True)
+            if mp4.exists():
+                result["mp4"] = result["video"] = str(mp4)
+        except Exception as e:
+            print("ffmpeg KO:", getattr(e, "stderr", b"")[-500:] if hasattr(e, "stderr") else e)
+    shutil.rmtree(frames, ignore_errors=True)
     return result
 
 if __name__ == "__main__":
