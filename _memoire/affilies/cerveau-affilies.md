@@ -8,8 +8,10 @@ Dernière grosse mise à jour : **2026-06-17**.
 
 ## 1. Accès & URLs
 
-- **App LIVE** : https://nebula-affilies-production.up.railway.app
-- **Domaine custom** : `partenaires.nebula-agency.online` → ⏳ **SSL bloqué** (voir §7).
+- **App LIVE** : **https://partenaires.nebula-agency.online** (HTTPS valide via **relais Cloudflare Pages gratuit** — voir §5) + secours `https://nebula-affilies-production.up.railway.app`.
+- **Admin Mongazi** : `…/cockpit-d59fa50d` (URL secrète, env `NAFF_ADMIN_PATH`) · `allonebiao@gmail.com` / **`dylanfurax`** (env `NAFF_ADMIN_PASS`). Anti-force-brute + portail `/` partenaire-only.
+- **Partenaire** : `/` (code + PIN) · **« Code/PIN oublié ? »** → notifie l'admin qui renvoie les accès. Plus de compte DEMO (plateforme démarre vide).
+- **Romaric DJANKAKI** = partenaire privilégié **40%** (code `RBNXF`, PIN `0067`, WhatsApp +229 67 21 82 56) ; réseau N1 10%/N2 5% normal. Taux perso = colonne `direct_rate_override` + endpoint admin `/rate`.
 - **Espaces** :
   - `/` portail (connexion partenaire OU admin) — marqué « réservé aux partenaires »
   - `/partenaire` espace partenaire (code + PIN)
