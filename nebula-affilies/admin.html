@@ -7,7 +7,7 @@
 <title>Console NEBULA — Affiliés</title>
 <link rel="icon" type="image/png" href="/static/favicon.png">
 <link rel="apple-touch-icon" href="/static/favicon.png">
-<link rel="stylesheet" href="/static/app.css?v=20260620b">
+<link rel="stylesheet" href="/static/app.css?v=20260620c">
 </head>
 <body>
 <div class="bg-orbs"></div>
@@ -58,7 +58,7 @@
   <div id="notif-list"></div>
 </div></div></div>
 
-<script src="/static/app.js?v=20260620b"></script>
+<script src="/static/app.js?v=20260620c"></script>
 <script>
 const { icon, api, toast, sound, countUp, reveal, esc, fmt, ago, el } = NA;
 let CFG = null, OVER = null, AFFS = [], LEADS = [];
@@ -248,16 +248,21 @@ function orgComputeTeam(n) {
 function orgCard(n, tc, apex) {
   const teamCount = n._team || 0;
   const head = apex
-    ? `<img src="/static/nebula-logo.png?v=20260620b" alt="NEBULA Agency"><div class="oname">NEBULA Agency</div>`
+    ? `<img src="/static/nebula-logo.png?v=20260620c" alt="NEBULA Agency"><div class="oname">NEBULA Agency</div>`
     : `<div class="ohead">${NA.rankBadge(n.rank, { size: 'sm', glow: false })}
         <div style="min-width:0"><div class="oname">${esc(n.name)}</div><div class="ocode">${esc(n.code)}</div></div></div>`;
+  const owedChip = (!apex && n.owed > 0)
+    ? `<span class="ochip owed" title="Commissions à verser">${fmt(n.owed)} F ${n.claimed > 0 ? 'à payer' : 'dû'}</span>` : '';
   const stats = apex
     ? `<div class="ostats"><span class="ochip"><b>${ORG.total}</b> affiliés</span><span class="ochip"><b>${fmt(ORG.totalVentes)}</b> ventes réseau</span></div>`
     : `<div class="orank">${NA.rankName(n.rank)} · palier ${esc(n.palier)}</div>
        <div class="ostats"><span class="ochip"><b>${n.ventes}</b> vente${n.ventes > 1 ? 's' : ''}</span>
-       ${teamCount ? `<span class="ochip team" title="Toute la branche sous ${esc(n.name)}"><b>${teamCount}</b> équipe</span><span class="ochip team"><b>${fmt(n._teamVentes)}</b> ventes équipe</span>` : ''}</div>`;
+       ${n.clients ? `<span class="ochip"><b>${n.clients}</b> client${n.clients > 1 ? 's' : ''}</span>` : ''}
+       ${owedChip}
+       ${teamCount ? `<span class="ochip team" title="Toute la branche sous ${esc(n.name)}"><b>${teamCount}</b> équipe</span>` : ''}</div>`;
   const toggle = (teamCount && !apex) ? `<button class="otoggle" title="Replier / déplier la branche">− ${teamCount}</button>` : '';
-  return `<div class="onode ${apex ? 'apex' : ''}" style="--tc:${tc}" data-name="${esc((n.name || '').toLowerCase())}" data-code="${esc((n.code || '').toLowerCase())}">${head}${stats}${toggle}</div>`;
+  const cls = `onode ${apex ? 'apex' : ''} ${(!apex && n.owed > 0) ? 'owed' : ''} ${(!apex && n.claimed > 0) ? 'urgent' : ''}`;
+  return `<div class="${cls}" style="--tc:${tc}" data-id="${apex ? '' : (n.id || '')}" data-name="${esc((n.name || '').toLowerCase())}" data-code="${esc((n.code || '').toLowerCase())}">${head}${stats}${toggle}</div>`;
 }
 
 function orgLi(n, tc, apex) {
@@ -291,10 +296,11 @@ async function renderReseauAdmin() {
   wireOrg();
 }
 
+let ORG_CTRL = null;
 function wireOrg() {
   const stage = document.getElementById('org-stage'), pan = document.getElementById('org-pan');
-  if (!stage || !pan) return;
-  let scale = 1, tx = 0, ty = 0, drag = false, sx = 0, sy = 0;
+  if (!stage || !pan) { ORG_CTRL = null; return; }
+  let scale = 1, tx = 0, ty = 0, drag = false, moved = false, sx = 0, sy = 0, dx0 = 0, dy0 = 0;
   const apply = () => { pan.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`; };
   const clampS = (s) => Math.max(0.2, Math.min(2.6, s));
   const setTog = (t, sign) => { t.textContent = sign + ' ' + t.textContent.replace(/^[+\-]\s*/, ''); };
@@ -304,14 +310,32 @@ function wireOrg() {
     scale = clampS(Math.min(sw / cw, sh / ch, 1));
     tx = Math.max(10, (sw - cw * scale) / 2); ty = 16; apply();
   }
+  function expandAncestors(node) {
+    let p = node.closest('li');
+    while (p) { p.classList.remove('collapsed'); const t = p.querySelector(':scope > .onode .otoggle'); if (t) setTog(t, '−'); p = p.parentElement ? p.parentElement.closest('li') : null; }
+  }
+  function centerOn(node) {
+    const sr = stage.getBoundingClientRect(), nr = node.getBoundingClientRect();
+    tx += (sr.width / 2 - (nr.left - sr.left + nr.width / 2));
+    ty += (sr.height / 2 - (nr.top - sr.top + nr.height / 2)); apply();
+  }
+  function focusNode(node) {
+    pan.querySelectorAll('.onode.hit').forEach(n => n.classList.remove('hit'));
+    expandAncestors(node); node.classList.add('hit'); requestAnimationFrame(() => centerOn(node));
+  }
+  function focusById(id) { const n = pan.querySelector('.onode[data-id="' + String(id) + '"]'); if (!n) return false; focusNode(n); return true; }
+  ORG_CTRL = { fit, focusById };
+
   pan.addEventListener('click', e => {
-    const t = e.target.closest('.otoggle'); if (!t) return;
-    const li = t.closest('li'); if (!li) return;
-    setTog(t, li.classList.toggle('collapsed') ? '+' : '−'); sound.sfx.tab();
+    if (moved) return;                                   // glissement, pas un clic
+    const tog = e.target.closest('.otoggle');
+    if (tog) { const li = tog.closest('li'); if (li) { setTog(tog, li.classList.toggle('collapsed') ? '+' : '−'); sound.sfx.tab(); } return; }
+    const node = e.target.closest('.onode');
+    if (node && node.dataset.id) { pan.querySelectorAll('.onode.hit').forEach(n => n.classList.remove('hit')); node.classList.add('hit'); openAffiliate(node.dataset.id); }
   });
-  stage.addEventListener('pointerdown', e => { drag = true; stage.classList.add('grabbing'); sx = e.clientX - tx; sy = e.clientY - ty; try { stage.setPointerCapture(e.pointerId); } catch (x) {} });
-  stage.addEventListener('pointermove', e => { if (!drag) return; tx = e.clientX - sx; ty = e.clientY - sy; apply(); });
-  const end = () => { drag = false; stage.classList.remove('grabbing'); };
+  stage.addEventListener('pointerdown', e => { drag = true; moved = false; dx0 = e.clientX; dy0 = e.clientY; sx = e.clientX - tx; sy = e.clientY - ty; stage.classList.add('grabbing'); try { stage.setPointerCapture(e.pointerId); } catch (x) {} });
+  stage.addEventListener('pointermove', e => { if (!drag) return; if (Math.abs(e.clientX - dx0) + Math.abs(e.clientY - dy0) > 6) moved = true; tx = e.clientX - sx; ty = e.clientY - sy; apply(); });
+  const end = () => { drag = false; stage.classList.remove('grabbing'); setTimeout(() => { moved = false; }, 40); };
   stage.addEventListener('pointerup', end); stage.addEventListener('pointercancel', end);
   stage.addEventListener('wheel', e => {
     e.preventDefault();
@@ -335,23 +359,93 @@ function wireOrg() {
   const q = document.getElementById('org-q');
   if (q) q.addEventListener('keydown', e => {
     if (e.key !== 'Enter') return;
-    orgSearch(q.value.trim().toLowerCase(), stage, pan, () => ({ scale, tx, ty }), s => { scale = s.scale; tx = s.tx; ty = s.ty; apply(); });
+    const qq = q.value.trim().toLowerCase();
+    pan.querySelectorAll('.onode.hit').forEach(n => n.classList.remove('hit'));
+    if (!qq) return;
+    const node = [...pan.querySelectorAll('.onode')].find(n => (n.dataset.name || '').includes(qq) || (n.dataset.code || '').includes(qq));
+    if (!node) { toast('Aucun partenaire trouvé', 'bad'); return; }
+    focusNode(node); sound.sfx.ok();
   });
   setTimeout(fit, 80);
 }
 
-function orgSearch(qq, stage, pan, get, set) {
-  pan.querySelectorAll('.onode.hit').forEach(n => n.classList.remove('hit'));
-  if (!qq) return;
-  const node = [...pan.querySelectorAll('.onode')].find(n => (n.dataset.name || '').includes(qq) || (n.dataset.code || '').includes(qq));
-  if (!node) { toast('Aucun partenaire trouvé', 'bad'); return; }
-  let p = node.closest('li');
-  while (p) { p.classList.remove('collapsed'); const t = p.querySelector(':scope > .onode .otoggle'); if (t) t.textContent = '− ' + t.textContent.replace(/^[+\-]\s*/, ''); p = p.parentElement ? p.parentElement.closest('li') : null; }
-  node.classList.add('hit');
-  const st = get(), sr = stage.getBoundingClientRect(), nr = node.getBoundingClientRect();
-  const ncx = nr.left - sr.left + nr.width / 2, ncy = nr.top - sr.top + nr.height / 2;
-  set({ scale: st.scale, tx: st.tx + (sr.width / 2 - ncx), ty: st.ty + (sr.height / 2 - ncy) });
-  sound.sfx.ok();
+/* ---------- FICHE AFFILIÉ (tiroir cliquable depuis la pyramide / les notifs) ---------- */
+async function openAffiliate(aid) {
+  let d; try { d = await api('/api/admin/affiliate/' + aid + '/detail'); } catch (e) { toast('Fiche indisponible', 'bad'); return; }
+  sound.sfx.open(); renderAffiliateModal(d);
+}
+function renderAffiliateModal(d) {
+  const p = d.profile;
+  const stB = s => s === 'claimed'
+    ? '<span class="chip" style="border-color:var(--goldline);color:var(--gold)">réclamé</span>'
+    : '<span class="chip">dû</span>';
+  const up = u => u ? `<button class="aff-link" data-aff="${u.id}">${esc(u.name)} <span class="meta">· ${esc(u.level)}</span></button>` : '<span class="meta">—</span>';
+  const pend = d.pending.length
+    ? d.pending.map(x => `<div class="aff-row"><div><b>${fmt(x.amount)} F</b> <span class="meta">· ${esc(x.level)}${x.client ? ' · ' + esc(x.client) : ''}</span></div>${stB(x.status)}</div>`).join('')
+    : '<p class="muted" style="padding:6px 0">Rien à payer pour l\'instant.</p>';
+  const clients = d.clients.length
+    ? d.clients.map(c => `<div class="aff-row"><div><b>${esc(c.name)}</b> <span class="meta">· ${esc(c.service)} · ${esc(c.status_label || c.status)}</span></div>${c.paye ? '<span class="chip" style="border-color:color-mix(in srgb,var(--ok) 45%,transparent);color:var(--ok)">payé</span>' : `<button class="btn sm primary" data-lead="${c.id}">Valider paiement</button>`}</div>`).join('')
+    : '<p class="muted" style="padding:6px 0">Aucun client.</p>';
+  const fill = d.filleuls.length
+    ? d.filleuls.map(f => `<button class="aff-link" data-aff="${f.id}" style="width:100%;justify-content:space-between;margin-bottom:6px"><span>${esc(f.name)} <span class="meta">· ${esc(f.code)}</span></span>${f.owed ? `<span class="ochip owed">${fmt(f.owed)} F</span>` : '<span class="meta">à jour</span>'}</button>`).join('')
+    : '<p class="muted" style="padding:6px 0">Aucun filleul direct.</p>';
+  document.getElementById('modal-in').innerHTML = `
+    <div class="aff-scroll">
+      <div class="flex between" style="align-items:flex-start">
+        <div class="flex" style="gap:14px;align-items:center">
+          ${p.photo ? `<div class="emblem" style="width:60px;height:60px;border-radius:18px"><img class="av-img" src="${esc(p.photo)}" alt=""></div>` : NA.rankBadge(p.rank, { size: 'lg' })}
+          <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:1.2rem">${esc(p.name)} <span class="chip">${esc(p.code)}</span></div>
+            <div class="meta mt8">${NA.rankName(p.rank)} · palier ${esc(p.palier)} ${p.palier_pct}% · ${p.ventes} vente${p.ventes > 1 ? 's' : ''}</div></div>
+        </div><button class="icon-btn" id="aff-x" style="width:34px;height:34px">${icon('close')}</button>
+      </div>
+      <div class="aff-sec">
+        <div class="eyebrow"><span class="dot"></span>Position dans le réseau</div>
+        <div class="aff-row"><span class="meta">Parrain — touche le N1 sur ses ventes</span>${up(d.parrain)}</div>
+        <div class="aff-row"><span class="meta">Grand-parrain — touche le N2</span>${up(d.grandparrain)}</div>
+        <div class="flex gap8 mt8 wrap"><span class="chip">${d.n1_count} filleul${d.n1_count > 1 ? 's' : ''} (N1)</span><span class="chip">${d.n2_count} (N2)</span><span class="chip">RCM ${fmt(p.rcm)} F</span>${p.momo_number ? `<span class="chip">${esc(p.momo_reseau || '')} ${esc(p.momo_number)}</span>` : ''}</div>
+        <button class="btn sm ghost block mt8" id="aff-center">Le situer dans la pyramide</button>
+      </div>
+      <div class="aff-sec">
+        <div class="flex between"><div class="eyebrow"><span class="dot"></span>À payer</div><div class="mono" style="color:var(--gold);font-weight:700">${fmt(d.total_owed)} F</div></div>
+        ${pend}
+        ${d.total_owed > 0 ? `<button class="btn primary block mt8" id="aff-pay">Marquer payé (${fmt(d.total_owed)} F)</button>` : ''}
+      </div>
+      <div class="aff-sec">
+        <div class="eyebrow"><span class="dot"></span>Ses clients (${d.clients.length})</div>${clients}
+      </div>
+      <div class="aff-sec">
+        <div class="eyebrow"><span class="dot"></span>Ses filleuls — sa branche (${d.n1_count})</div>${fill}
+      </div>
+    </div>`;
+  document.getElementById('modal').classList.add('on');
+  const $ = id => document.getElementById(id);
+  $('aff-x').onclick = closeModal;
+  if ($('aff-center')) $('aff-center').onclick = () => { closeModal(); gotoAffiliate(p.id, false); };
+  if ($('aff-pay')) $('aff-pay').onclick = async () => {
+    const b = $('aff-pay'); b.disabled = true;
+    try { const r = await api('/api/admin/commissions/pay', { body: { affiliate_id: p.id } }); sound.sfx.cash(); toast(`${fmt(r.total)} F marqués payés à ${esc(p.name)}`, 'ok'); }
+    catch (e) { toast('Erreur', 'bad'); b.disabled = false; return; }
+    await renderReseauAdmin(); refreshNotifs(); try { await refresh(); } catch (e) {} openAffiliate(p.id);
+  };
+  document.querySelectorAll('#modal-in [data-aff]').forEach(b => b.onclick = () => openAffiliate(b.dataset.aff));
+  document.querySelectorAll('#modal-in [data-lead]').forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    try { await api(`/api/admin/leads/${b.dataset.lead}/payment`, { body: { paye: true } }); sound.sfx.cash(); toast('Paiement validé · commissions générées', 'ok'); }
+    catch (e) { toast('Erreur', 'bad'); b.disabled = false; return; }
+    await renderReseauAdmin(); refreshNotifs(); try { await refresh(); } catch (e) {} openAffiliate(p.id);
+  });
+}
+
+function gotoAffiliate(aid, openDrawer = true) {
+  aid = String(aid);
+  const active = document.querySelector('.view.on');
+  const tryFocus = tries => {
+    if (ORG_CTRL && ORG_CTRL.focusById(aid)) { if (openDrawer) openAffiliate(aid); return; }
+    if (tries > 0) setTimeout(() => tryFocus(tries - 1), 220);
+    else if (openDrawer) openAffiliate(aid);
+  };
+  if (active && active.id === 'v-reseau') tryFocus(8);
+  else { switchView('reseau'); setTimeout(() => tryFocus(16), 350); }
 }
 
 async function renderPaiements() {
@@ -931,9 +1025,18 @@ async function refreshNotifs() {
     if (d.unread) bell.appendChild(el(`<span class="badge">${d.unread}</span>`));
     const head = `<div class="nhead">${d.unread ? `<span class="pill">${d.unread}</span> non lue${d.unread > 1 ? 's' : ''} · ${d.notifs.length} au total` : `Tout est lu · ${d.notifs.length} notification${d.notifs.length > 1 ? 's' : ''}`}</div>`;
     document.getElementById('notif-list').innerHTML = d.notifs.length
-      ? head + d.notifs.map(n => { const k = NKIND[n.kind] || NKIND.info; const go = NOTIF_NAV[n.kind]; return `<div class="row${go ? ' clickable' : ''}" ${go ? `data-go="${go}"` : ''} style="grid-template-columns:auto 1fr auto;${n.lu ? 'opacity:.6' : 'border-color:var(--hair-2)'}"><span class="ndot" style="color:${k.c};background:${k.c}"></span><div>${esc(n.text)}${go ? ` <span class="meta">— ouvrir</span>` : ''}</div><div class="meta">${ago(n.created)}</div></div>`; }).join('')
+      ? head + d.notifs.map(n => {
+          const k = NKIND[n.kind] || NKIND.info;
+          const aff = (n.ref_aff && n.ref_aff > 0) ? n.ref_aff : 0;
+          const go = aff ? '' : (NOTIF_NAV[n.kind] || '');
+          const clickable = aff || go;
+          const label = aff ? '— voir dans la pyramide' : (go ? '— ouvrir' : '');
+          return `<div class="row${clickable ? ' clickable' : ''}" ${aff ? `data-aff="${aff}"` : (go ? `data-go="${go}"` : '')} style="grid-template-columns:auto 1fr auto;${n.lu ? 'opacity:.6' : 'border-color:var(--hair-2)'}"><span class="ndot" style="color:${k.c};background:${k.c}"></span><div>${esc(n.text)}${clickable ? ` <span class="meta">${label}</span>` : ''}</div><div class="meta">${ago(n.created)}</div></div>`;
+        }).join('')
       : `<p class="muted center" style="padding:20px">Aucune notification.</p>`;
-    document.querySelectorAll('#notif-list [data-go]').forEach(r => r.onclick = () => { sound.sfx.tab(); document.getElementById('notif-scrim').classList.remove('on'); switchView(r.dataset.go); });
+    const closeNotif = () => document.getElementById('notif-scrim').classList.remove('on');
+    document.querySelectorAll('#notif-list [data-aff]').forEach(r => r.onclick = () => { sound.sfx.tab(); closeNotif(); gotoAffiliate(r.dataset.aff); });
+    document.querySelectorAll('#notif-list [data-go]').forEach(r => r.onclick = () => { sound.sfx.tab(); closeNotif(); switchView(r.dataset.go); });
   } catch (e) {}
 }
 const NOTIF_NAV = { client: 'leads', vente: 'leads', statut: 'leads', commission: 'paiements', paiement: 'paiements', recrue: 'recrues', publication: 'publi' };

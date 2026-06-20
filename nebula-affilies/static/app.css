@@ -651,6 +651,18 @@ input,select,textarea{font-family:inherit}
   background:rgba(255,255,255,.04);border:1px solid var(--hair);color:var(--muted)}
 .ochip b{color:var(--ink);font-family:'JetBrains Mono'}
 .ochip.team{background:color-mix(in srgb,var(--tc) 15%,transparent);border-color:color-mix(in srgb,var(--tc) 40%,transparent);color:color-mix(in srgb,var(--tc) 88%,white)}
+.ochip.owed{background:color-mix(in srgb,var(--gold) 18%,transparent);border-color:color-mix(in srgb,var(--gold) 52%,transparent);color:var(--gold)}
+.onode{cursor:pointer}
+.onode.owed{border-color:color-mix(in srgb,var(--gold) 42%,transparent)}
+.onode.urgent{animation:owedPulse 2.1s ease-in-out infinite}
+@keyframes owedPulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--gold) 55%,transparent),var(--sh-soft)}55%{box-shadow:0 0 0 7px transparent,var(--sh-soft)}}
+/* tiroir fiche affilié */
+.aff-scroll{max-height:74vh;overflow:auto;margin:-4px -4px 0;padding:4px}
+.aff-sec{border:1px solid var(--hair);border-radius:16px;padding:14px;margin-top:12px;background:rgba(255,255,255,.02)}
+.aff-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--hair)}
+.aff-row:last-child{border-bottom:0}
+.aff-link{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:11px;background:var(--glass);border:1px solid var(--hair);cursor:pointer;font-weight:600;font-size:.86rem;color:var(--ink);text-align:left}
+.aff-link:hover{border-color:var(--hair-2)}
 
 /* apex NEBULA Agency */
 .onode.apex{width:272px;align-items:center;text-align:center;gap:12px;padding:20px 20px 22px;
