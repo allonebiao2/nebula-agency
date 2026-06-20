@@ -7,7 +7,7 @@
 <title>Console NEBULA — Affiliés</title>
 <link rel="icon" type="image/png" href="/static/favicon.png">
 <link rel="apple-touch-icon" href="/static/favicon.png">
-<link rel="stylesheet" href="/static/app.css?v=20260620a">
+<link rel="stylesheet" href="/static/app.css?v=20260620b">
 </head>
 <body>
 <div class="bg-orbs"></div>
@@ -58,7 +58,7 @@
   <div id="notif-list"></div>
 </div></div></div>
 
-<script src="/static/app.js?v=20260620a"></script>
+<script src="/static/app.js?v=20260620b"></script>
 <script>
 const { icon, api, toast, sound, countUp, reveal, esc, fmt, ago, el } = NA;
 let CFG = null, OVER = null, AFFS = [], LEADS = [];
@@ -231,19 +231,127 @@ async function resetPin(id, name) {
 }
 
 /* ---------- CLIENTS (le cœur : Mongazi pilote les statuts) ---------- */
-function netNode(n) {
-  return `<div class="card nl1">
-    <div class="nhead"><div class="flex" style="gap:11px;align-items:center"><div class="avatar">${initials(n.name)}</div>
-      <div><div class="ttl">${esc(n.name)} <span class="chip" style="margin-left:4px">${n.code}</span></div><div class="meta">${n.rank} · ${n.ventes} vente${n.ventes > 1 ? 's' : ''} · palier ${n.palier}</div></div></div></div>
-    ${n.children && n.children.length ? `<div class="nkids">${n.children.map(netNode).join('')}</div>` : ''}
-  </div>`;
+/* ===== Arborescence NEBULA — org-chart pyramide (apex = NEBULA Agency) ===== */
+const ORG_COLORS = ['#7b5cff', '#22d3ee', '#36f5a0', '#e6c34c', '#ff5c7a', '#4cc6ff', '#c79bff', '#ff9a5a'];
+let ORG = null;
+
+function orgComputeTeam(n) {
+  let size = 0, ventes = 0;
+  (n.children || []).forEach(ch => {
+    const t = orgComputeTeam(ch);
+    size += 1 + t.size; ventes += (ch.ventes || 0) + t.ventes;
+  });
+  n._team = size; n._teamVentes = ventes;
+  return { size, ventes };
 }
+
+function orgCard(n, tc, apex) {
+  const teamCount = n._team || 0;
+  const head = apex
+    ? `<img src="/static/nebula-logo.png?v=20260620b" alt="NEBULA Agency"><div class="oname">NEBULA Agency</div>`
+    : `<div class="ohead">${NA.rankBadge(n.rank, { size: 'sm', glow: false })}
+        <div style="min-width:0"><div class="oname">${esc(n.name)}</div><div class="ocode">${esc(n.code)}</div></div></div>`;
+  const stats = apex
+    ? `<div class="ostats"><span class="ochip"><b>${ORG.total}</b> affiliés</span><span class="ochip"><b>${fmt(ORG.totalVentes)}</b> ventes réseau</span></div>`
+    : `<div class="orank">${NA.rankName(n.rank)} · palier ${esc(n.palier)}</div>
+       <div class="ostats"><span class="ochip"><b>${n.ventes}</b> vente${n.ventes > 1 ? 's' : ''}</span>
+       ${teamCount ? `<span class="ochip team" title="Toute la branche sous ${esc(n.name)}"><b>${teamCount}</b> équipe</span><span class="ochip team"><b>${fmt(n._teamVentes)}</b> ventes équipe</span>` : ''}</div>`;
+  const toggle = (teamCount && !apex) ? `<button class="otoggle" title="Replier / déplier la branche">− ${teamCount}</button>` : '';
+  return `<div class="onode ${apex ? 'apex' : ''}" style="--tc:${tc}" data-name="${esc((n.name || '').toLowerCase())}" data-code="${esc((n.code || '').toLowerCase())}">${head}${stats}${toggle}</div>`;
+}
+
+function orgLi(n, tc, apex) {
+  const kids = n.children || [];
+  let html = orgCard(n, tc, apex);
+  if (kids.length) html += `<ul>${kids.map((ch, i) => orgLi(ch, apex ? ORG_COLORS[i % ORG_COLORS.length] : tc, false)).join('')}</ul>`;
+  return `<li>${html}</li>`;
+}
+
 async function renderReseauAdmin() {
   let d; try { d = await api('/api/admin/network'); } catch (e) { return; }
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#7b5cff';
+  const apex = { name: 'NEBULA Agency', code: '', rank: 'Galaxie', palier: '', ventes: 0, children: d.roots || [] };
+  orgComputeTeam(apex); d.totalVentes = apex._teamVentes; ORG = d;
+  const body = (d.roots && d.roots.length)
+    ? `<ul class="org">${orgLi(apex, accent, true)}</ul>`
+    : `<div class="org-empty">Aucun affilié pour l'instant.</div>`;
   document.getElementById('v-reseau').innerHTML = `
-    <div class="rv mb24"><span class="eyebrow"><span class="dot"></span>Réseau</span><h2 class="mt8" style="font-size:1.8rem">L'arborescence complète</h2>
-    <p class="muted mt8">${d.total} affilié(s) · qui a recruté qui, sur toutes les branches.</p></div>
-    <div class="ntree">${d.roots.length ? d.roots.map(netNode).join('') : '<p class="muted center" style="padding:20px">Aucun affilié.</p>'}</div>`;
+    <div class="rv mb16"><span class="eyebrow"><span class="dot"></span>Réseau</span>
+      <h2 class="mt8" style="font-size:1.8rem">L'arborescence NEBULA Agency</h2>
+      <p class="muted mt8">${d.total} affilié(s) · toute la pyramide : équipes, branches, ventes. Glisse pour déplacer · molette / pince pour zoomer.</p></div>
+    <div class="org-toolbar rv">
+      <div class="org-search">${icon('search')}<input id="org-q" placeholder="Chercher un partenaire (nom ou code)…"></div>
+      <button class="org-btn" id="org-fit">${icon('grid')}Ajuster</button>
+      <button class="org-btn" id="org-zin">${icon('plus')}</button>
+      <button class="org-btn" id="org-zout">−</button>
+      <button class="org-btn" id="org-expand">Tout déplier</button>
+      <button class="org-btn" id="org-collapse">Vue d'ensemble</button>
+    </div>
+    <div class="org-stage rv" id="org-stage"><div class="org-pan" id="org-pan">${body}</div></div>`;
+  wireOrg();
+}
+
+function wireOrg() {
+  const stage = document.getElementById('org-stage'), pan = document.getElementById('org-pan');
+  if (!stage || !pan) return;
+  let scale = 1, tx = 0, ty = 0, drag = false, sx = 0, sy = 0;
+  const apply = () => { pan.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`; };
+  const clampS = (s) => Math.max(0.2, Math.min(2.6, s));
+  const setTog = (t, sign) => { t.textContent = sign + ' ' + t.textContent.replace(/^[+\-]\s*/, ''); };
+  function fit() {
+    const cw = pan.scrollWidth, ch = pan.scrollHeight, sw = stage.clientWidth, sh = stage.clientHeight;
+    if (!cw || !ch) return;
+    scale = clampS(Math.min(sw / cw, sh / ch, 1));
+    tx = Math.max(10, (sw - cw * scale) / 2); ty = 16; apply();
+  }
+  pan.addEventListener('click', e => {
+    const t = e.target.closest('.otoggle'); if (!t) return;
+    const li = t.closest('li'); if (!li) return;
+    setTog(t, li.classList.toggle('collapsed') ? '+' : '−'); sound.sfx.tab();
+  });
+  stage.addEventListener('pointerdown', e => { drag = true; stage.classList.add('grabbing'); sx = e.clientX - tx; sy = e.clientY - ty; try { stage.setPointerCapture(e.pointerId); } catch (x) {} });
+  stage.addEventListener('pointermove', e => { if (!drag) return; tx = e.clientX - sx; ty = e.clientY - sy; apply(); });
+  const end = () => { drag = false; stage.classList.remove('grabbing'); };
+  stage.addEventListener('pointerup', end); stage.addEventListener('pointercancel', end);
+  stage.addEventListener('wheel', e => {
+    e.preventDefault();
+    const r = stage.getBoundingClientRect(), cx = e.clientX - r.left, cy = e.clientY - r.top;
+    const ns = clampS(scale * (e.deltaY < 0 ? 1.12 : 0.89));
+    tx = cx - (cx - tx) * (ns / scale); ty = cy - (cy - ty) * (ns / scale); scale = ns; apply();
+  }, { passive: false });
+  document.getElementById('org-fit').onclick = fit;
+  document.getElementById('org-zin').onclick = () => { scale = clampS(scale * 1.18); apply(); };
+  document.getElementById('org-zout').onclick = () => { scale = clampS(scale * 0.85); apply(); };
+  document.getElementById('org-expand').onclick = () => {
+    pan.querySelectorAll('li.collapsed').forEach(li => li.classList.remove('collapsed'));
+    pan.querySelectorAll('.otoggle').forEach(t => setTog(t, '−')); fit();
+  };
+  document.getElementById('org-collapse').onclick = () => {
+    pan.querySelectorAll('.org > li > ul > li').forEach(li => {
+      const t = li.querySelector(':scope > .onode .otoggle');
+      if (t) { li.classList.add('collapsed'); setTog(t, '+'); }
+    }); fit();
+  };
+  const q = document.getElementById('org-q');
+  if (q) q.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    orgSearch(q.value.trim().toLowerCase(), stage, pan, () => ({ scale, tx, ty }), s => { scale = s.scale; tx = s.tx; ty = s.ty; apply(); });
+  });
+  setTimeout(fit, 80);
+}
+
+function orgSearch(qq, stage, pan, get, set) {
+  pan.querySelectorAll('.onode.hit').forEach(n => n.classList.remove('hit'));
+  if (!qq) return;
+  const node = [...pan.querySelectorAll('.onode')].find(n => (n.dataset.name || '').includes(qq) || (n.dataset.code || '').includes(qq));
+  if (!node) { toast('Aucun partenaire trouvé', 'bad'); return; }
+  let p = node.closest('li');
+  while (p) { p.classList.remove('collapsed'); const t = p.querySelector(':scope > .onode .otoggle'); if (t) t.textContent = '− ' + t.textContent.replace(/^[+\-]\s*/, ''); p = p.parentElement ? p.parentElement.closest('li') : null; }
+  node.classList.add('hit');
+  const st = get(), sr = stage.getBoundingClientRect(), nr = node.getBoundingClientRect();
+  const ncx = nr.left - sr.left + nr.width / 2, ncy = nr.top - sr.top + nr.height / 2;
+  set({ scale: st.scale, tx: st.tx + (sr.width / 2 - ncx), ty: st.ty + (sr.height / 2 - ncy) });
+  sound.sfx.ok();
 }
 
 async function renderPaiements() {
