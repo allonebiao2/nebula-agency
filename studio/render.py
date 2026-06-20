@@ -1,20 +1,25 @@
 # -*- coding: utf-8 -*-
 """
-NEBULA Studio Quotidien — MOTEUR VIDÉO (gratuit, illimité, FLUIDE).
+NEBULA Studio Quotidien — MOTEUR VIDÉO (gratuit, illimité, 4K @ 60 i/s, FLUIDE).
 
 Rendu DÉTERMINISTE image par image (≠ enregistrement temps réel) :
   - le gabarit expose __DURATION et __seek(t) ; aucune animation CSS.
-  - on calcule chaque frame à un temps EXACT (t = i/fps) et on la capture en
-    pleine résolution → vitesse parfaite, zéro ralenti, zéro frame perdue.
-  - ffmpeg assemble la séquence PNG en MP4 1080×1920 (9:16), 30 i/s, H.264 net.
+  - mise en page logique en 1080×1920, capturée en ×2 → 2160×3840 (4K) ;
+  - chaque frame est calculée à un temps EXACT (t = i/60s) puis capturée
+    (JPEG, rapide) → vitesse parfaite, zéro ralenti, zéro frame perdue ;
+  - ffmpeg assemble en MP4 4K vertical (9:16), 60 i/s, H.264 net.
 
-Le navigateur sans écran peut être lent : peu importe, on l'ATTEND frame par frame.
+Le vrai logo NEBULA Agency (studio/assets) est injecté (fond noir effacé via
+mix-blend screen côté gabarit). Le navigateur sans écran peut être lent : on
+l'ATTEND frame par frame, donc la qualité reste parfaite.
 """
-import os, json, shutil, subprocess, pathlib
+import os, json, base64, shutil, subprocess, pathlib
 
 HERE = pathlib.Path(__file__).resolve().parent
 TEMPLATE = (HERE / "templates" / "kinetic.html").resolve()
-FPS = 30
+LOGO_FILE = HERE / "assets" / "nebula-logo.png"
+FPS = 60
+SCALE = 2          # 1080×1920 logique → 2160×3840 (4K)
 W, H = 1080, 1920
 
 def _find_ffmpeg():
@@ -24,6 +29,12 @@ def _find_ffmpeg():
     try:
         import imageio_ffmpeg
         return imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception:
+        return None
+
+def _logo_uri():
+    try:
+        return "data:image/png;base64," + base64.b64encode(LOGO_FILE.read_bytes()).decode()
     except Exception:
         return None
 
@@ -38,13 +49,15 @@ def render(concept, out_dir, fps=FPS):
     mp4 = out_dir / "video.mp4"
 
     cjson = json.dumps(concept, ensure_ascii=False)
+    logo = _logo_uri()
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True, args=[
             "--force-color-profile=srgb", "--hide-scrollbars", "--disable-gpu"])
-        ctx = browser.new_context(viewport={"width": W, "height": H}, device_scale_factor=1)
+        ctx = browser.new_context(viewport={"width": W, "height": H}, device_scale_factor=SCALE)
         page = ctx.new_page()
         page.add_init_script("window.CONCEPT = " + cjson + ";")
-        # domcontentloaded : ne PAS bloquer sur le réseau (polices Google) → évite les timeouts
+        if logo:
+            page.add_init_script("window.__LOGO = " + json.dumps(logo) + ";")
         page.goto(TEMPLATE.as_uri(), wait_until="domcontentloaded", timeout=45000)
         page.wait_for_function("window.__DURATION > 0", timeout=20000)
         try:
@@ -54,23 +67,20 @@ def render(concept, out_dir, fps=FPS):
         total = page.evaluate("window.__DURATION")
         poster_t = page.evaluate("window.__POSTER_T")
 
-        # affiche (scène la plus percutante, pleinement révélée)
         page.evaluate("window.__seek(%f)" % poster_t)
-        page.screenshot(path=str(poster))
+        page.screenshot(path=str(poster))                              # affiche PNG nette
 
-        # toutes les frames, à des temps exacts
         nframes = int(round(total / 1000.0 * fps))
         for f in range(nframes + 1):
             page.evaluate("window.__seek(%f)" % (f / fps * 1000.0))
-            page.screenshot(path=str(frames / ("%05d.png" % f)))
+            page.screenshot(path=str(frames / ("%05d.jpg" % f)), type="jpeg", quality=92)
         ctx.close(); browser.close()
 
-    result = {"poster": str(poster) if poster.exists() else None,
-              "mp4": None, "webm": None, "video": None}
+    result = {"poster": str(poster) if poster.exists() else None, "mp4": None, "webm": None, "video": None}
     ff = _find_ffmpeg()
     if ff:
-        cmd = [ff, "-y", "-framerate", str(fps), "-i", str(frames / "%05d.png"),
-               "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "17",
+        cmd = [ff, "-y", "-framerate", str(fps), "-i", str(frames / "%05d.jpg"),
+               "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18",
                "-preset", "medium", "-movflags", "+faststart", "-an", str(mp4)]
         try:
             subprocess.run(cmd, check=True, capture_output=True)

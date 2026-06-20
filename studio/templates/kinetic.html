@@ -5,126 +5,117 @@
 <title>NEBULA Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  /* RENDU DÉTERMINISTE : aucune animation/transition CSS. Tout l'état visuel est
-     posé en style inline par __seek(t) → capture image par image, vitesse exacte. */
-  :root{ --accent:#7b5cff; --bg:#060509; --ink:#ECEAF6; --muted:#a6a6c2; }
+  /* RENDU DÉTERMINISTE : aucune animation/transition CSS. __seek(t) pose tout en
+     inline → capture image par image (4K @ 60 i/s), vitesse exacte. */
+  :root{ --accent:#7b5cff; --bg:#060509; --ink:#F2F1FA; --muted:#aeaecb;
+         --e:cubic-bezier(.32,.72,0,1); }
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg);color:var(--ink);
-    font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+    font-family:'Exo 2',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
   #stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:var(--bg)}
 
-  /* décor : gradients radieux (légers, pas de filtre flou) + vignette */
   .bgwrap{position:absolute;inset:-6%;z-index:0;will-change:transform}
   .bg{position:absolute;inset:0;
     background:
-      radial-gradient(46% 32% at 14% 10%, color-mix(in srgb,var(--accent) 60%,transparent), transparent 60%),
-      radial-gradient(42% 30% at 88% 16%, rgba(34,211,238,.40), transparent 62%),
-      radial-gradient(60% 44% at 72% 104%, color-mix(in srgb,var(--accent) 42%,transparent), transparent 66%),
+      radial-gradient(46% 32% at 14% 10%, color-mix(in srgb,var(--accent) 62%,transparent), transparent 60%),
+      radial-gradient(42% 30% at 88% 16%, rgba(34,211,238,.42), transparent 62%),
+      radial-gradient(60% 44% at 72% 104%, color-mix(in srgb,var(--accent) 44%,transparent), transparent 66%),
       radial-gradient(50% 40% at 8% 96%, rgba(34,211,238,.18), transparent 64%)}
-  .vign{position:absolute;inset:0;z-index:1;pointer-events:none;
-    background:radial-gradient(125% 78% at 50% 32%, transparent 42%, rgba(0,0,0,.62) 100%)}
+  .grid{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.06;
+    background-image:linear-gradient(rgba(255,255,255,.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.6) 1px,transparent 1px);
+    background-size:72px 72px;mask-image:radial-gradient(72% 60% at 50% 40%,#000,transparent 80%)}
+  .vign{position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:radial-gradient(125% 78% at 50% 32%, transparent 42%, rgba(0,0,0,.64) 100%)}
 
-  .top{position:absolute;z-index:5;left:84px;right:84px;top:96px;display:flex;align-items:center;justify-content:space-between}
-  .brand{display:flex;align-items:center;gap:18px}
-  .mark{width:64px;height:64px;border-radius:18px;display:grid;place-items:center;
-    background:linear-gradient(135deg,var(--accent),#22d3ee);box-shadow:0 14px 40px -8px var(--accent)}
-  .mark svg{width:34px;height:34px}
-  .brand b{font-family:'Space Grotesk';font-weight:700;font-size:35px;letter-spacing:-.01em}
-  .tag{font-family:'Space Grotesk';font-weight:600;font-size:25px;color:#06060b;
+  .top{position:absolute;z-index:6;left:84px;right:84px;top:92px;display:flex;align-items:center;justify-content:space-between}
+  .logo-top{height:124px;width:auto;filter:drop-shadow(0 6px 26px rgba(123,92,255,.45))}
+  .tag{font-family:'Orbitron';font-weight:600;font-size:24px;letter-spacing:.06em;color:#06060b;
     background:var(--accent);padding:13px 24px;border-radius:999px;box-shadow:0 10px 34px -10px var(--accent)}
-  .pbar{position:absolute;z-index:5;left:84px;right:84px;top:192px;height:6px;border-radius:6px;
+  .pbar{position:absolute;z-index:6;left:84px;right:84px;top:236px;height:6px;border-radius:6px;
     background:rgba(255,255,255,.10);overflow:hidden}
   .pbar i{display:block;height:100%;width:0;border-radius:6px;background:linear-gradient(90deg,var(--accent),#22d3ee)}
 
   .scene{position:absolute;z-index:4;left:84px;right:84px;top:0;bottom:0;
-    display:flex;flex-direction:column;justify-content:center;gap:36px;opacity:0;will-change:opacity}
-  .kicker{font-family:'Space Grotesk';font-weight:600;font-size:35px;letter-spacing:.14em;
+    display:flex;flex-direction:column;justify-content:center;gap:38px;opacity:0;will-change:opacity}
+  .kicker{font-family:'Orbitron';font-weight:600;font-size:33px;letter-spacing:.16em;
     text-transform:uppercase;color:var(--accent)}
   .accentline{height:9px;width:128px;border-radius:9px;background:var(--accent);
     box-shadow:0 0 26px var(--accent);transform-origin:left;transform:scaleX(0)}
-  .line{font-family:'Space Grotesk';font-weight:700;font-size:122px;line-height:1.02;letter-spacing:-.03em;
+  .line{font-family:'Exo 2';font-weight:800;font-size:120px;line-height:1.02;letter-spacing:-.02em;
     overflow-wrap:break-word;word-break:break-word}
   .line .w{display:inline-block;will-change:transform,opacity}
-  .sub{font-size:44px;line-height:1.3;color:var(--muted);max-width:860px;font-weight:500}
+  .sub{font-family:'Exo 2';font-size:45px;line-height:1.32;color:var(--muted);max-width:870px;font-weight:500}
 
-  .v-manifesto .line{text-transform:uppercase}
-  /* stat : couleur SOLIDE + lueur accent (le background-clip:text ne marche pas
-     avec nos mots en inline-block → titre invisible). On garde un blanc éclatant. */
-  .v-stat .line{letter-spacing:-.02em;color:#fff;
-    text-shadow:0 0 48px color-mix(in srgb,var(--accent) 52%,transparent)}
+  .v-manifesto .line{text-transform:uppercase;font-weight:800}
+  .v-stat .line{letter-spacing:-.01em;color:#fff;
+    text-shadow:0 0 50px color-mix(in srgb,var(--accent) 55%,transparent)}
   .v-stat .line .w{color:#fff}
-  .v-quote .qmark{font-family:'Space Grotesk';font-weight:700;font-size:150px;line-height:.4;color:var(--accent)}
+  .qmark{font-family:'Exo 2';font-weight:800;font-size:150px;line-height:.4;color:var(--accent)}
 
   .outro{position:absolute;z-index:6;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:42px;opacity:0;text-align:center;padding:0 90px;will-change:opacity}
-  .outro .bigmark{width:158px;height:158px;border-radius:40px;display:grid;place-items:center;
-    background:linear-gradient(135deg,var(--accent),#22d3ee);box-shadow:0 24px 80px -14px var(--accent)}
-  .outro .bigmark svg{width:88px;height:88px}
-  .outro h2{font-family:'Space Grotesk';font-weight:700;font-size:84px;letter-spacing:-.02em}
-  .outro .cta{font-size:48px;font-weight:600}
-  .pill{font-family:'Space Grotesk';font-weight:600;font-size:33px;color:#06060b;
-    background:var(--accent);padding:19px 40px;border-radius:999px;box-shadow:0 14px 44px -10px var(--accent)}
-  .handle{font-size:35px;color:var(--muted);letter-spacing:.04em}
+    gap:30px;opacity:0;text-align:center;padding:0 90px;will-change:opacity}
+  .logo-big{width:760px;max-width:84%;height:auto;
+    filter:drop-shadow(0 14px 60px rgba(123,92,255,.5))}
+  .outro .cta{font-family:'Exo 2';font-size:50px;font-weight:600;margin-top:6px}
+  .pill{font-family:'Orbitron';font-weight:600;font-size:30px;letter-spacing:.04em;color:#06060b;
+    background:var(--accent);padding:18px 40px;border-radius:999px;box-shadow:0 14px 44px -10px var(--accent)}
+  .handle{font-family:'Exo 2';font-size:34px;color:var(--muted);letter-spacing:.05em}
 </style>
 </head>
 <body>
 <div id="stage">
   <div class="bgwrap" id="bgwrap"><div class="bg"></div></div>
+  <div class="grid"></div>
   <div class="vign"></div>
   <div class="top">
-    <div class="brand"><span class="mark" id="mark"></span><b id="brandName">NEBULA</b></div>
-    <span class="tag" id="formatTag">Studio</span>
+    <img class="logo-top" id="logoTop" alt="NEBULA Agency">
+    <span class="tag" id="formatTag">Le saviez-vous</span>
   </div>
   <div class="pbar"><i id="pbarFill"></i></div>
   <div id="sceneHost"></div>
   <div class="outro" id="outro">
-    <span class="bigmark" id="bigmark"></span>
-    <h2 id="outroBrand">NEBULA Agency</h2>
+    <img class="logo-big" id="logoBig" alt="NEBULA Agency">
     <div class="cta" id="outroCta"></div>
     <span class="pill" id="outroPill"></span>
     <div class="handle" id="outroHandle"></div>
   </div>
 </div>
 <script>
-const MARK = '<svg viewBox="0 0 24 24" fill="none" stroke="#06060b" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>';
-const FALLBACK = { brand:"NEBULA Agency", accent:"#7b5cff", cta:"Écris-nous sur WhatsApp", platform:"TikTok", format:"Studio",
+const FALLBACK = { brand:"NEBULA Agency", accent:"#7b5cff", cta:"NEBULA Agency — le digital expliqué simplement", platform:"TikTok", format:"Le saviez-vous",
   visual:{ style:"kinetic", scenes:[
-    {kicker:"NEBULA", line:"Ta vitrine en 5 jours", sub:"Visible, pro, prête à vendre."},
-    {kicker:"Pourquoi", line:"Tes clients te cherchent en ligne", sub:"Sois là où ils regardent."},
-    {kicker:"Action", line:"On s'occupe de tout", sub:"Toi tu vends."}]}};
+    {kicker:"Le saviez-vous", line:"3 secondes pour convaincre", sub:"C'est le temps qu'un client passe avant de juger ton site."},
+    {kicker:"Pourquoi", line:"La première image fait foi", sub:"Photo nette, message clair, et il reste."},
+    {kicker:"À retenir", line:"Soigne ta vitrine", sub:"En ligne, l'apparence, c'est la confiance."}]}};
 
 const C = Object.assign({}, FALLBACK, window.CONCEPT || {});
+const LOGO = window.__LOGO || null;
 const style = (C.visual && C.visual.style) || "kinetic";
 const scenes = (C.visual && C.visual.scenes && C.visual.scenes.length) ? C.visual.scenes : FALLBACK.visual.scenes;
-const HANDLES = {"NEBULA Agency":"nebula-agency.online","Vendora":"vendora.nebula-agency.online","AXIO IA":"axio-ia"};
+const HANDLES = {"NEBULA Agency":"nebula-agency.online"};
 
 document.documentElement.style.setProperty('--accent', C.accent || "#7b5cff");
 document.body.classList.add('v-' + style);
-document.getElementById('mark').innerHTML = MARK;
-document.getElementById('bigmark').innerHTML = MARK;
-document.getElementById('brandName').textContent = C.brand || "NEBULA";
-document.getElementById('formatTag').textContent = C.format || "Studio";
-document.getElementById('outroBrand').textContent = C.brand || "NEBULA Agency";
+if (LOGO) { document.getElementById('logoTop').src = LOGO; document.getElementById('logoBig').src = LOGO; }
+else { document.getElementById('logoTop').style.display='none'; document.getElementById('logoBig').style.display='none'; }
+document.getElementById('formatTag').textContent = C.format || "Le saviez-vous";
 document.getElementById('outroCta').textContent = C.cta || "";
-document.getElementById('outroPill').textContent = C.platform ? ("Pour " + C.platform) : "NEBULA";
+document.getElementById('outroPill').textContent = C.platform ? ("Pour " + C.platform) : "NEBULA Agency";
 document.getElementById('outroHandle').textContent = HANDLES[C.brand] || "nebula-agency.online";
 
 const words = (s) => String(s || "").split(/\s+/).filter(Boolean);
 const clamp = (x) => x < 0 ? 0 : x > 1 ? 1 : x;
 const ease  = (x) => 1 - Math.pow(1 - clamp(x), 3);
-// taille de police AUTO : le titre tient toujours à l'écran (sinon il déborde et disparaît)
-function fitFont(line) {
+function fitFont(line){
   const n = String(line || "").length;
-  let fs = n <= 9 ? 168 : n <= 16 ? 132 : n <= 24 ? 106 : n <= 34 ? 86 : 72;
+  let fs = n <= 9 ? 170 : n <= 16 ? 134 : n <= 24 ? 108 : n <= 34 ? 88 : 74;
   if (style === 'manifesto') fs = Math.round(fs * 0.92);
   return fs;
 }
 
-// --- construire les scènes (statique) + la frise chronologique ---
 const host = document.getElementById('sceneHost');
-const INTRO = 460, OUTRO = 2300, OUT_FADE = 300;
+const INTRO = 460, OUTRO = 2500, OUT_FADE = 300;
 const refs = []; let cursor = INTRO; let heroIdx = 0, heroLen = -1;
 scenes.forEach((s, i) => {
   const node = document.createElement('div'); node.className = 'scene';
@@ -137,7 +128,7 @@ scenes.forEach((s, i) => {
     (s.sub ? `<div class="sub">${s.sub}</div>` : '');
   host.appendChild(node);
   node.querySelector('.line').style.fontSize = fitFont(s.line) + 'px';
-  const dur = Math.max(1700, 1050 + wl.length * 145 + (s.sub ? 300 : 0));
+  const dur = Math.max(1750, 1100 + wl.length * 150 + (s.sub ? 320 : 0));
   refs.push({ node, start: cursor, dur,
     kicker: node.querySelector('.kicker'), accent: node.querySelector('.accentline'),
     ws: [...node.querySelectorAll('.w')], sub: node.querySelector('.sub') });

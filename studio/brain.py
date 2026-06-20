@@ -42,35 +42,38 @@ def load_env():
 # --------------------------------------------------------------------------- #
 #  Taxonomie créative
 # --------------------------------------------------------------------------- #
+# Formats ÉDUCATIFS / de VALEUR (informer, apprendre — pas de pub)
 FORMATS = [
-    "Mythe à briser", "Avis impopulaire", "Étude de cas express", "Coulisses",
-    "Avant / Après", "Une journée avec…", "Prédiction", "Calcul de ROI chiffré",
-    "Tueur d'objection", "Détournement de tendance", "Histoire vraie", "Top 3",
-    "Question provocante", "Démonstration en 30s", "L'erreur qui coûte cher",
-    "Secret d'initié", "Comparaison choc", "Manifeste", "Statistique qui dérange",
-    "Le saviez-vous", "Métaphore visuelle", "Défi de 7 jours", "Coup de gueule",
-    "Lettre à un commerçant",
+    "Le saviez-vous", "Astuce express", "Le chiffre du jour", "Mythe à briser",
+    "L'erreur qui coûte cher", "Top 3 à connaître", "Vrai ou faux", "3 signes que…",
+    "Avant / Après", "À éviter absolument", "Comparaison claire", "Idée reçue",
+    "La question que tout commerçant se pose", "Statistique qui dérange",
+    "Métaphore visuelle", "Checklist express", "Le bon réflexe",
+    "Le détail qui change tout", "Petit cours express", "Le pourquoi du comment",
+    "Ce que personne ne t'explique", "Le contre-intuitif",
 ]
-# UNE seule marque : NEBULA Agency. Son agent IA s'appelle NOVA.
+# UNE seule marque : NEBULA Agency. Contenu de VALEUR (éducation digitale), PAS de pub produit.
 BRANDS = {
-    "NEBULA Agency": "NEBULA Agency crée des vitrines digitales professionnelles "
-        "(+ QR code) et des automatisations IA pour les commerçants et PME d'Afrique "
-        "de l'Ouest francophone. Son agent IA s'appelle NOVA : il répond aux clients, "
-        "prend les commandes et travaille sur WhatsApp 24/7. Promesse : être visible, "
-        "paraître pro, vendre plus, gagner du temps, encaisser en Mobile Money. Cotonou, Bénin.",
+    "NEBULA Agency": "NEBULA Agency est une agence digitale à Cotonou (Bénin) qui aide "
+        "les commerçants, artisans et PME d'Afrique de l'Ouest francophone à réussir en "
+        "ligne : vitrines digitales pro, sites web, QR codes, visibilité sur Google et les "
+        "réseaux. Sa mission de contenu : INFORMER et rendre les gens plus malins sur le "
+        "digital, chaque jour — apporter de la vraie valeur, pas de la publicité.",
 }
-# Sujets de départ (varient l'angle SANS changer de marque)
+# Sujets éducatifs du jour (le digital expliqué simplement, utile pour tout commerçant)
 THEMES = [
-    "une vitrine web qui vend, pas juste une jolie page",
-    "le QR code qui ramène des clients vers ta boutique",
-    "NOVA, l'agent IA de NEBULA sur WhatsApp qui répond et vend 24/7",
-    "l'automatisation qui te fait gagner des heures chaque jour",
-    "être trouvable en ligne au moment où un client te cherche",
-    "passer d'une image amateur à une image vraiment pro",
-    "ne plus jamais rater un client qui écrit la nuit",
-    "encaisser en Mobile Money sans friction",
-    "transformer des vues et des likes en vraies commandes",
-    "déléguer le service client à NOVA et se concentrer sur son métier",
+    "ce qu'un client juge en 3 secondes sur ton site (et comment le réussir)",
+    "pourquoi une vraie vitrine web vend mieux qu'une simple page Facebook",
+    "le QR code : l'outil le plus sous-estimé du commerce local",
+    "être trouvable sur Google quand quelqu'un te cherche (les bases)",
+    "la vitesse de chargement : pourquoi 3 secondes de trop = des ventes perdues",
+    "les avis clients : la preuve sociale qui rassure et fait acheter",
+    "photo pro vs photo floue : l'effet réel sur la confiance et les ventes",
+    "le mobile d'abord : la majorité de tes clients te regardent sur téléphone",
+    "un nom de domaine pro vs un lien gratuit : ce que ça dit de ton sérieux",
+    "présence en ligne 24/7 : pourquoi être visible même quand tu dors change tout",
+    "transformer des vues en visites, puis des visites en clients",
+    "par où commencer le digital quand on tient un commerce local",
 ]
 TONES = ["inspirant", "audacieux", "pédagogue et complice", "premium et sobre",
          "urgent et direct", "optimiste", "provocateur malin", "chaleureux"]
@@ -140,17 +143,27 @@ Tu crées des contenus courts (format vertical, 12 à 22 secondes) qui ARRÊTENT
 scroll dès la première seconde et donnent envie d'agir. Tu réponds UNIQUEMENT par \
 un objet JSON valide, rien d'autre.
 
-Règle de marque ABSOLUE : la marque est TOUJOURS « NEBULA Agency ». Son agent IA \
-s'appelle « NOVA » (sur WhatsApp). N'invente JAMAIS un autre nom de marque ni un \
-autre nom d'agent (jamais « Vendora », « AXIO », etc.)."""
+MISSION = APPORTER DE LA VALEUR, PAS DE LA PUB. Chaque vidéo INFORME et apprend \
+quelque chose d'UTILE sur le digital (esprit « le saviez-vous ? », astuce, fait, \
+chiffre) pour que les commerçants/PME soient plus malins en ligne. Sujets : \
+vitrines digitales, sites web, QR codes, présence en ligne, Google, réseaux, \
+mobile, confiance, vitesse, avis clients… Concret, vérifiable, pas de blabla.
+
+Règles ABSOLUES :
+- Marque = « NEBULA Agency » (l'agence digitale qui éduque). C'est la SEULE marque.
+- NE VENDS PAS un produit. NE cite AUCUN nom d'agent/outil/produit (jamais « NOVA », \
+« Vendora », etc.). On enseigne, on n'fait pas la réclame.
+- L'appel à l'action final est LÉGER et de marque (ex. « NEBULA Agency — le digital \
+expliqué simplement », « Suis NEBULA Agency pour apprendre », « NEBULA Agency \
+t'accompagne »). Jamais « achète », jamais « active »."""
 
 PROMPT_TMPL = """Crée le contenu du jour. Il doit être PROFESSIONNEL, INATTENDU et \
 TOTALEMENT DIFFÉRENT de tout ce qui a déjà été fait (voir l'historique).
 
 Contraintes imposées pour aujourd'hui :
-- Marque : {brand} (la SEULE marque ; agent IA = NOVA)
+- Marque : {brand} (la SEULE marque — l'agence qui ÉDUQUE, pas qui vend)
   ({brand_desc})
-- Sujet de départ : {theme}
+- Sujet à enseigner : {theme}
 - Format éditorial : « {format} »
 - Ton : {tone}
 - Plateforme cible : {platform}
@@ -161,12 +174,13 @@ majuscules ; list = liste animée ; split = avant/après)
 HISTORIQUE RÉCENT À NE PAS RÉPÉTER (angles, titres déjà sortis) :
 {history}
 
-Écris un contenu neuf, surprenant, mémorable. Le script doit pouvoir être lu en \
-voix off ET fonctionner en texte à l'écran. Donne une vraie idée, une vraie \
-accroche, un vrai bénéfice concret (chiffres réalistes si pertinent), un appel à \
-l'action clair vers la marque.
+Écris un contenu neuf, surprenant, mémorable, qui APPREND quelque chose d'utile. \
+Le script doit pouvoir être lu en voix off ET fonctionner en texte à l'écran. \
+Donne une vraie info (un fait, une astuce, un chiffre réaliste), expliquée \
+simplement, avec un « ah, je ne savais pas ! ». L'appel à l'action final est \
+LÉGER et de marque (pas de vente).
 
-Réponds par CE JSON exactement (5 à 7 scènes, chaque scène = un plan de la vidéo) :
+Réponds par CE JSON exactement (4 à 6 scènes, chaque scène = un plan de la vidéo) :
 {{
   "title": "titre interne court",
   "hook": "la toute première phrase qui arrête le scroll (max 9 mots)",
