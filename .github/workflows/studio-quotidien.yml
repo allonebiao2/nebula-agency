@@ -17,7 +17,7 @@ concurrency:
 jobs:
   studio:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 45        # le rendu 4K/60 est plus lourd
     steps:
       - uses: actions/checkout@v4
 
