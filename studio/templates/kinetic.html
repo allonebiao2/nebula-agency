@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEBULA Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --accent:#7b5cff; --bg:#060509; --ink:#ECEAF6; --muted:#9d9db6;
+    --e:cubic-bezier(.32,.72,0,1); }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg);color:var(--ink);
+    font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  #stage{position:relative;width:1080px;height:1920px;overflow:hidden}
+
+  /* --- décor : orbes + grain (Ethereal Glass) --- */
+  .orbs{position:absolute;inset:0;z-index:0}
+  .orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;animation:drift 14s ease-in-out infinite alternate}
+  .orb.a{width:780px;height:780px;left:-160px;top:-160px;
+    background:radial-gradient(circle,var(--accent),transparent 65%)}
+  .orb.b{width:680px;height:680px;right:-180px;top:18%;
+    background:radial-gradient(circle,#22d3ee,transparent 66%);opacity:.32;animation-delay:-4s}
+  .orb.c{width:900px;height:900px;left:8%;bottom:-280px;
+    background:radial-gradient(circle,var(--accent),transparent 70%);opacity:.32;animation-delay:-8s}
+  @keyframes drift{from{transform:translate3d(-3%,-2%,0) scale(1)}to{transform:translate3d(3%,3%,0) scale(1.08)}}
+  .grain{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .vign{position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(120% 80% at 50% 30%,transparent 40%,rgba(0,0,0,.55) 100%)}
+
+  /* --- chrome haut : marque + format + progression --- */
+  .top{position:absolute;z-index:5;left:84px;right:84px;top:96px;display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:18px}
+  .mark{width:62px;height:62px;border-radius:18px;display:grid;place-items:center;
+    background:linear-gradient(135deg,var(--accent),#22d3ee);box-shadow:0 0 40px -6px var(--accent)}
+  .mark svg{width:34px;height:34px}
+  .brand b{font-family:'Space Grotesk';font-weight:700;font-size:34px;letter-spacing:-.01em}
+  .tag{font-family:'Space Grotesk';font-weight:600;font-size:24px;color:var(--bg);
+    background:var(--accent);padding:12px 22px;border-radius:999px;box-shadow:0 0 30px -8px var(--accent)}
+  .pbar{position:absolute;z-index:5;left:84px;right:84px;top:188px;height:6px;border-radius:6px;
+    background:rgba(255,255,255,.08);overflow:hidden}
+  .pbar i{display:block;height:100%;width:0;border-radius:6px;
+    background:linear-gradient(90deg,var(--accent),#22d3ee);box-shadow:0 0 18px var(--accent)}
+
+  /* --- scène --- */
+  .scene{position:absolute;z-index:4;left:84px;right:84px;top:0;bottom:0;
+    display:flex;flex-direction:column;justify-content:center;gap:34px;opacity:0}
+  .scene.in{opacity:1}
+  .scene.out{opacity:0;transition:opacity .42s ease}
+  .kicker{font-family:'Space Grotesk';font-weight:600;font-size:34px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--accent);opacity:0;transform:translateY(16px)}
+  .scene.in .kicker{animation:rise .6s var(--e) .05s forwards}
+  .line{font-family:'Space Grotesk';font-weight:700;font-size:118px;line-height:1.02;letter-spacing:-.03em}
+  .line .w{display:inline-block;opacity:0;transform:translateY(46px) rotate(2deg);filter:blur(8px)}
+  .scene.in .line .w{animation:word .6s var(--e) forwards}
+  .sub{font-size:42px;line-height:1.32;color:var(--muted);max-width:820px;opacity:0;transform:translateY(18px)}
+  .scene.in .sub{animation:rise .7s var(--e) .25s forwards}
+  @keyframes word{to{opacity:1;transform:none;filter:blur(0)}}
+  @keyframes rise{to{opacity:1;transform:none}}
+
+  /* variantes de style */
+  .v-manifesto .line{text-transform:uppercase;font-size:104px;font-weight:700}
+  .v-stat .line{font-size:230px;letter-spacing:-.04em;
+    background:linear-gradient(135deg,#fff,var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .v-quote .line::before{content:"“";color:var(--accent);font-size:160px;line-height:0;display:block;margin-bottom:30px}
+  .v-split #stage{}
+  .accentline{height:8px;width:120px;border-radius:8px;background:var(--accent);box-shadow:0 0 24px var(--accent);
+    opacity:0;transform:scaleX(0);transform-origin:left}
+  .scene.in .accentline{animation:grow .6s var(--e) .15s forwards}
+  @keyframes grow{to{opacity:1;transform:scaleX(1)}}
+
+  /* --- outro --- */
+  .outro{position:absolute;z-index:6;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:40px;opacity:0;text-align:center;padding:0 90px}
+  .outro.in{opacity:1;transition:opacity .5s ease}
+  .outro .bigmark{width:150px;height:150px;border-radius:38px;display:grid;place-items:center;
+    background:linear-gradient(135deg,var(--accent),#22d3ee);box-shadow:0 0 80px -10px var(--accent)}
+  .outro .bigmark svg{width:84px;height:84px}
+  .outro h2{font-family:'Space Grotesk';font-weight:700;font-size:80px;letter-spacing:-.02em}
+  .outro .cta{font-size:46px;color:var(--ink);font-weight:600}
+  .outro .handle{font-size:34px;color:var(--muted);letter-spacing:.04em}
+  .pill{display:inline-block;margin-top:8px;font-family:'Space Grotesk';font-weight:600;font-size:32px;
+    color:var(--bg);background:var(--accent);padding:18px 38px;border-radius:999px;box-shadow:0 0 40px -8px var(--accent)}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="orbs"><span class="orb a"></span><span class="orb b"></span><span class="orb c"></span></div>
+  <div class="vign"></div>
+  <div class="top">
+    <div class="brand"><span class="mark" id="mark"></span><b id="brandName">NEBULA</b></div>
+    <span class="tag" id="formatTag">Studio</span>
+  </div>
+  <div class="pbar"><i id="pbarFill"></i></div>
+  <div id="sceneHost"></div>
+  <div class="outro" id="outro">
+    <span class="bigmark" id="bigmark"></span>
+    <h2 id="outroBrand">NEBULA Agency</h2>
+    <div class="cta" id="outroCta"></div>
+    <span class="pill" id="outroPill"></span>
+    <div class="handle" id="outroHandle"></div>
+  </div>
+</div>
+<script>
+const MARK = '<svg viewBox="0 0 24 24" fill="none" stroke="#060509" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>';
+
+const FALLBACK = {
+  brand:"NEBULA Agency", accent:"#7b5cff", cta:"Écris-nous sur WhatsApp",
+  platform:"TikTok", format:"Studio",
+  visual:{ style:"kinetic", scenes:[
+    {kicker:"NEBULA", line:"Ta vitrine digitale en 5 jours", sub:"Visible, pro, prête à vendre."},
+    {kicker:"Pourquoi", line:"Tes clients te cherchent en ligne", sub:"Sois là où ils regardent."},
+    {kicker:"Action", line:"On s'occupe de tout", sub:"Toi tu vends."},
+  ]}
+};
+
+const C = Object.assign({}, FALLBACK, window.CONCEPT || {});
+const style = (C.visual && C.visual.style) || "kinetic";
+const scenes = (C.visual && C.visual.scenes && C.visual.scenes.length ? C.visual.scenes : FALLBACK.visual.scenes);
+
+document.documentElement.style.setProperty('--accent', C.accent || "#7b5cff");
+document.body.classList.add('v-' + style);
+document.getElementById('mark').innerHTML = MARK;
+document.getElementById('bigmark').innerHTML = MARK;
+document.getElementById('brandName').textContent = C.brand || "NEBULA";
+document.getElementById('formatTag').textContent = C.format || "Studio";
+document.getElementById('outroBrand').textContent = C.brand || "NEBULA Agency";
+document.getElementById('outroCta').textContent = C.cta || "";
+const HANDLES = {"NEBULA Agency":"nebula-agency.online","Vendora":"vendora.nebula-agency.online","AXIO IA":"AXIO IA"};
+document.getElementById('outroHandle').textContent = HANDLES[C.brand] || "nebula-agency.online";
+document.getElementById('outroPill').textContent = (C.platform ? "Pour " + C.platform : "NEBULA");
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function words(line){ return String(line||"").split(/\s+/).filter(Boolean); }
+function sceneDuration(s){
+  const n = words(s.line).length + words(s.sub||"").length;
+  return Math.max(2300, 1500 + n * 260);
+}
+function buildScene(s){
+  const host = document.createElement('div');
+  host.className = 'scene';
+  const ws = words(s.line).map((w,i)=>`<span class="w" style="animation-delay:${i*70}ms">${w}&nbsp;</span>`).join('');
+  host.innerHTML =
+    (s.kicker ? `<div class="kicker">${s.kicker}</div>` : '') +
+    `<div class="accentline"></div>` +
+    `<div class="line">${ws}</div>` +
+    (s.sub ? `<div class="sub">${s.sub}</div>` : '');
+  return host;
+}
+
+// durée totale (exposée pour le moteur de rendu)
+const OUTRO = 3300;
+let total = 700; scenes.forEach(s => total += sceneDuration(s) + 420); total += OUTRO;
+window.__NEBULA_TOTAL = 0;     // posé une fois prêt
+window.__NEBULA_DONE = false;
+window.__POSTER_OK = false;    // posé quand la scène-affiche est pleinement révélée
+
+async function run(){
+  try { await document.fonts.ready; } catch(e){}
+  await sleep(120);
+  window.__NEBULA_TOTAL = total;
+  const host = document.getElementById('sceneHost');
+  const fill = document.getElementById('pbarFill');
+  const t0 = performance.now();
+  (function tick(){ const k=Math.min(1,(performance.now()-t0)/total); fill.style.width=(k*100)+'%';
+    if(k<1) requestAnimationFrame(tick); })();
+
+  // meilleure image d'affiche = la scène la plus percutante (ligne la plus longue)
+  let heroIndex = 0, heroLen = -1;
+  scenes.forEach((s, i) => { const l = words(s.line).length; if (l > heroLen){ heroLen = l; heroIndex = i; } });
+
+  await sleep(600);
+  let idx = 0;
+  for (const s of scenes){
+    const node = buildScene(s); host.appendChild(node);
+    void node.offsetWidth; node.classList.add('in');
+    if (idx === heroIndex) setTimeout(() => { window.__POSTER_OK = true; }, 950);
+    await sleep(sceneDuration(s));
+    node.classList.remove('in'); node.classList.add('out');
+    await sleep(420); node.remove();
+    idx++;
+  }
+  document.getElementById('outro').classList.add('in');
+  await sleep(OUTRO);
+  window.__NEBULA_DONE = true;
+}
+run();
+</script>
+</body>
+</html>

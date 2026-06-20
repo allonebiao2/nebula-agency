@@ -1,0 +1,8 @@
+# sorties générées (vidéos, posters) — pas dans le repo
+out/
+**/_vid/
+# secrets locaux
+.env
+
+*.log
+__pycache__/

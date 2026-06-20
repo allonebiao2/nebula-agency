@@ -1,0 +1,56 @@
+name: NEBULA Studio Quotidien
+
+# Lance le studio CHAQUE matin et livre 2 posts sur Telegram AVANT 13h.
+# 07:00 UTC = 08:00 à Cotonou (UTC+1) → large marge avant 13h même si GitHub tarde.
+on:
+  schedule:
+    - cron: "0 7 * * *"
+  workflow_dispatch:        # bouton "Run workflow" pour un essai manuel
+
+permissions:
+  contents: write           # pour committer le registre (anti-répétition)
+
+concurrency:
+  group: studio-quotidien
+  cancel-in-progress: false
+
+jobs:
+  studio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installer ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Installer les dépendances
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r studio/requirements.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Générer + livrer les 2 posts
+        working-directory: studio
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          HEYGEN_API_KEY: ${{ secrets.HEYGEN_API_KEY }}
+          STUDIO_COUNT: "2"
+          STUDIO_VIDEO: kinetic
+          STUDIO_MODEL: claude-opus-4-8
+          PYTHONIOENCODING: utf-8
+        run: python run_daily.py
+
+      - name: Mémoriser le registre (ne jamais se répéter)
+        run: |
+          git config user.name "nebula-studio-bot"
+          git config user.email "studio@nebula-agency.online"
+          git add studio/ledger.jsonl || true
+          git commit -m "studio: registre du jour (anti-répétition)" || echo "rien à committer"
+          git push || echo "push ignoré"
