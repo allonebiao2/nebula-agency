@@ -5,7 +5,10 @@
 <title>NEBULA Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Exo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- polices NON bloquantes (media=print->all) : ne retardent jamais le chargement/le script -->
+<link rel="stylesheet" media="print" onload="this.media='all'"
+  href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Exo+2:wght@400;500;600;700;800&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Exo+2:wght@400;500;600;700;800&display=swap"></noscript>
 <style>
   /* RENDU DÉTERMINISTE : aucune animation/transition CSS. __seek(t) pose tout en
      inline → capture image par image (4K @ 60 i/s), vitesse exacte. */

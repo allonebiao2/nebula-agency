@@ -50,31 +50,40 @@ def render(concept, out_dir, fps=FPS):
 
     cjson = json.dumps(concept, ensure_ascii=False)
     logo = _logo_uri()
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True, args=[
-            "--force-color-profile=srgb", "--hide-scrollbars", "--disable-gpu"])
-        ctx = browser.new_context(viewport={"width": W, "height": H}, device_scale_factor=SCALE)
-        page = ctx.new_page()
-        page.add_init_script("window.CONCEPT = " + cjson + ";")
-        if logo:
-            page.add_init_script("window.__LOGO = " + json.dumps(logo) + ";")
-        page.goto(TEMPLATE.as_uri(), wait_until="domcontentloaded", timeout=45000)
-        page.wait_for_function("window.__DURATION > 0", timeout=20000)
+
+    def _capture():                                  # une tentative complète
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True, args=[
+                "--force-color-profile=srgb", "--hide-scrollbars", "--disable-gpu"])
+            ctx = browser.new_context(viewport={"width": W, "height": H}, device_scale_factor=SCALE)
+            page = ctx.new_page()
+            page.add_init_script("window.CONCEPT = " + cjson + ";")
+            if logo:
+                page.add_init_script("window.__LOGO = " + json.dumps(logo) + ";")
+            page.goto(TEMPLATE.as_uri(), wait_until="commit", timeout=60000)
+            page.wait_for_function("window.__DURATION > 0", timeout=30000)
+            try:
+                page.wait_for_function("window.__FONTS_READY === true", timeout=9000)
+            except Exception:
+                pass
+            total = page.evaluate("window.__DURATION")
+            poster_t = page.evaluate("window.__POSTER_T")
+            page.evaluate("window.__seek(%f)" % poster_t)
+            page.screenshot(path=str(poster))                          # affiche PNG nette
+            nframes = int(round(total / 1000.0 * fps))
+            for f in range(nframes + 1):
+                page.evaluate("window.__seek(%f)" % (f / fps * 1000.0))
+                page.screenshot(path=str(frames / ("%05d.jpg" % f)), type="jpeg", quality=92)
+            ctx.close(); browser.close()
+
+    last = None
+    for attempt in range(2):                          # 1 reprise auto si timeout/contention
         try:
-            page.wait_for_function("window.__FONTS_READY === true", timeout=9000)
-        except Exception:
-            pass
-        total = page.evaluate("window.__DURATION")
-        poster_t = page.evaluate("window.__POSTER_T")
-
-        page.evaluate("window.__seek(%f)" % poster_t)
-        page.screenshot(path=str(poster))                              # affiche PNG nette
-
-        nframes = int(round(total / 1000.0 * fps))
-        for f in range(nframes + 1):
-            page.evaluate("window.__seek(%f)" % (f / fps * 1000.0))
-            page.screenshot(path=str(frames / ("%05d.jpg" % f)), type="jpeg", quality=92)
-        ctx.close(); browser.close()
+            _capture(); last = None; break
+        except Exception as e:
+            last = e; print(f"  rendu: tentative {attempt + 1} échouée ({e}); reprise…")
+    if last:
+        raise last
 
     result = {"poster": str(poster) if poster.exists() else None, "mp4": None, "webm": None, "video": None}
     ff = _find_ffmpeg()
