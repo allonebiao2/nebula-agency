@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Le Saviez-Vous — Vitrine Digitale</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:#06020f;
+  display:flex;justify-content:center;align-items:center;
+  min-height:100vh;
+  font-family:'Segoe UI',Arial,sans-serif;
+}
+
+/* ── CONTENEUR 9:16 ── */
+#vc{
+  width:540px;height:960px;
+  position:relative;overflow:hidden;
+  border-radius:20px;
+  box-shadow:0 0 60px rgba(140,60,255,.5);
+}
+
+/* ── FOND GLOBAL ── */
+.bg{
+  position:absolute;inset:0;z-index:0;
+  background:radial-gradient(ellipse at 40% 10%, #1e0050 0%, #06020f 65%);
+}
+/* étoiles statiques */
+.bg::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    radial-gradient(1px 1px at  8% 12%,#fff 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 22% 5%,#ffd700 0%,transparent 100%),
+    radial-gradient(1px 1px at 38% 18%,#fff 0%,transparent 100%),
+    radial-gradient(1px 1px at 55%  8%,#c8a2ff 0%,transparent 100%),
+    radial-gradient(2px 2px at 72% 22%,#fff 0%,transparent 100%),
+    radial-gradient(1px 1px at 88% 11%,#ffd700 0%,transparent 100%),
+    radial-gradient(1px 1px at  5% 35%,#fff 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 18% 48%,#c8a2ff 0%,transparent 100%),
+    radial-gradient(1px 1px at 65% 40%,#fff 0%,transparent 100%),
+    radial-gradient(1px 1px at 82% 55%,#ffd700 0%,transparent 100%),
+    radial-gradient(1px 1px at 30% 70%,#fff 0%,transparent 100%),
+    radial-gradient(2px 2px at 90% 75%,#c8a2ff 0%,transparent 100%),
+    radial-gradient(1px 1px at 14% 88%,#fff 0%,transparent 100%),
+    radial-gradient(1px 1px at 47% 92%,#ffd700 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 76% 87%,#fff 0%,transparent 100%);
+}
+@keyframes twinkle{0%,100%{opacity:.5}50%{opacity:1}}
+.bg::after{
+  content:'';position:absolute;inset:0;
+  background-image:
+    radial-gradient(1px 1px at 33% 25%,#fff 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 60% 62%,#ffd700 0%,transparent 100%),
+    radial-gradient(1px 1px at 92%  3%,#c8a2ff 0%,transparent 100%),
+    radial-gradient(1px 1px at  3% 62%,#fff 0%,transparent 100%),
+    radial-gradient(2px 2px at 50% 50%,#ffd700 0%,transparent 100%);
+  animation:twinkle 2.8s infinite;
+}
+
+/* ── SCÈNES ── */
+.scene{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:36px 28px;
+  opacity:0;transition:opacity .5s ease;pointer-events:none;
+  z-index:1;
+}
+.scene.active{opacity:1;pointer-events:auto;}
+
+/* ── TYPO COMMUNE ── */
+.tag{
+  font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  color:#ffd700;margin-bottom:14px;text-align:center;opacity:.9;
+}
+h1{
+  font-size:32px;font-weight:900;line-height:1.1;
+  text-align:center;color:#fff;
+  text-shadow:0 0 30px rgba(160,80,255,.7);
+}
+h2{font-size:22px;font-weight:800;line-height:1.2;text-align:center;color:#fff;}
+.sub{font-size:13px;color:rgba(255,255,255,.6);text-align:center;margin-top:10px;line-height:1.5;}
+.gold{color:#ffd700;}
+.purple{color:#c084fc;}
+
+.divider{
+  width:50px;height:3px;margin:14px auto;
+  background:linear-gradient(90deg,#7c3aed,#ffd700);
+  border-radius:2px;
+}
+
+/* ═══════════════════════════════════
+   SCÈNE 1 — HOOK "Le saviez-vous ?"
+═══════════════════════════════════ */
+
+/* ampoule CSS */
+.bulb-wrap{position:relative;width:90px;height:110px;margin:0 auto 20px;}
+.bulb-globe{
+  width:70px;height:72px;
+  background:radial-gradient(circle at 38% 35%,#ffe877,#ffd700 50%,#d4a000);
+  border-radius:50% 50% 42% 42%;
+  position:absolute;top:0;left:10px;
+  box-shadow:0 0 28px 10px rgba(255,215,0,.4),0 0 55px 20px rgba(255,215,0,.15);
+}
+@keyframes pulse-bulb{0%,100%{box-shadow:0 0 28px 10px rgba(255,215,0,.4),0 0 55px 20px rgba(255,215,0,.15)}50%{box-shadow:0 0 38px 16px rgba(255,215,0,.65),0 0 80px 30px rgba(255,215,0,.25)}}
+.bulb-globe{animation:pulse-bulb 1.6s ease-in-out infinite;}
+.bulb-shine{
+  width:14px;height:24px;
+  background:rgba(255,255,255,.55);
+  border-radius:50%;
+  position:absolute;top:10px;left:22px;
+  transform:rotate(-25deg);
+  filter:blur(2px);
+}
+.bulb-base1{
+  width:44px;height:10px;
+  background:linear-gradient(90deg,#b8860b,#ffd700,#b8860b);
+  border-radius:2px;
+  position:absolute;bottom:22px;left:23px;
+}
+.bulb-base2{
+  width:36px;height:10px;
+  background:linear-gradient(90deg,#b8860b,#ffd700,#b8860b);
+  border-radius:2px;
+  position:absolute;bottom:10px;left:27px;
+}
+.bulb-tip{
+  width:24px;height:8px;
+  background:#b8860b;
+  border-radius:0 0 4px 4px;
+  position:absolute;bottom:2px;left:33px;
+}
+/* rayons */
+@keyframes ray-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.rays{
+  position:absolute;top:-10px;left:0;
+  width:90px;height:90px;
+  animation:ray-spin 8s linear infinite;
+}
+.ray{
+  position:absolute;
+  width:2px;height:14px;
+  background:rgba(255,215,0,.5);
+  border-radius:1px;
+  top:10px;left:44px;
+  transform-origin:bottom center;
+}
+.ray:nth-child(1){transform:rotate(0deg) translateY(-36px);}
+.ray:nth-child(2){transform:rotate(45deg) translateY(-36px);}
+.ray:nth-child(3){transform:rotate(90deg) translateY(-36px);}
+.ray:nth-child(4){transform:rotate(135deg) translateY(-36px);}
+.ray:nth-child(5){transform:rotate(180deg) translateY(-36px);}
+.ray:nth-child(6){transform:rotate(225deg) translateY(-36px);}
+.ray:nth-child(7){transform:rotate(270deg) translateY(-36px);}
+.ray:nth-child(8){transform:rotate(315deg) translateY(-36px);}
+
+.big-question{
+  font-size:44px;font-weight:900;
+  color:#fff;text-align:center;
+  text-shadow:0 0 40px rgba(255,215,0,.6);
+  line-height:1.1;
+}
+.big-question .em{color:#ffd700;}
+
+/* ═══════════════════════════════════
+   SCÈNE 2 — Fait #1 : Smartphone + stats
+═══════════════════════════════════ */
+
+/* phone CSS */
+.phone{
+  width:120px;height:200px;
+  background:linear-gradient(135deg,#1a1a2e,#16213e);
+  border-radius:18px;
+  border:3px solid rgba(255,255,255,.15);
+  position:relative;
+  margin:0 auto 22px;
+  box-shadow:0 8px 32px rgba(0,0,0,.6), 0 0 20px rgba(124,58,237,.3);
+}
+.phone-notch{
+  width:40px;height:6px;
+  background:#0d0d1a;
+  border-radius:3px;
+  position:absolute;top:8px;left:50%;transform:translateX(-50%);
+}
+.phone-screen{
+  position:absolute;top:20px;left:6px;right:6px;bottom:12px;
+  background:#0d0d1a;border-radius:12px;overflow:hidden;
+}
+/* mini barre de navigation */
+.phone-nav{
+  height:16px;
+  background:linear-gradient(90deg,#7c3aed,#4f46e5);
+  display:flex;align-items:center;padding:0 6px;gap:3px;
+}
+.nav-dot{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.5);}
+/* mini graphique animé */
+.phone-chart{padding:6px;}
+.chart-title{font-size:5px;color:#c084fc;margin-bottom:4px;letter-spacing:.5px;}
+.bar-group{display:flex;align-items:flex-end;gap:4px;height:60px;}
+.bar{
+  flex:1;
+  background:linear-gradient(to top,#7c3aed,#c084fc);
+  border-radius:2px 2px 0 0;
+  animation:bar-grow 1.5s ease-out forwards;
+  transform-origin:bottom;
+}
+@keyframes bar-grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.bar:nth-child(1){height:30%;animation-delay:.1s;}
+.bar:nth-child(2){height:50%;animation-delay:.2s;}
+.bar:nth-child(3){height:45%;animation-delay:.3s;}
+.bar:nth-child(4){height:70%;animation-delay:.4s;}
+.bar:nth-child(5){height:65%;animation-delay:.5s;}
+.bar:nth-child(6){height:85%;animation-delay:.6s;}
+/* notification animée */
+.notif{
+  position:absolute;top:-10px;right:-12px;
+  background:#ff4444;border-radius:10px;
+  padding:3px 7px;font-size:9px;color:#fff;font-weight:700;
+  white-space:nowrap;
+  animation:notif-pop .4s ease;
+}
+@keyframes notif-pop{from{transform:scale(0)}to{transform:scale(1)}}
+.ping{
+  width:8px;height:8px;border-radius:50%;background:#ffd700;
+  position:absolute;top:2px;right:2px;
+  animation:ping 1s ease-out infinite;
+}
+@keyframes ping{0%{transform:scale(1);opacity:1}70%{transform:scale(2.5);opacity:0}100%{transform:scale(2.5);opacity:0}}
+
+/* fact card */
+.fact-card{
+  background:rgba(124,58,237,.15);
+  border:1px solid rgba(124,58,237,.4);
+  border-radius:16px;
+  padding:18px 20px;
+  width:100%;text-align:center;
+}
+.fact-number{
+  font-size:64px;font-weight:900;
+  color:#ffd700;line-height:1;
+  text-shadow:0 0 20px rgba(255,215,0,.5);
+}
+.fact-label{font-size:14px;color:#fff;margin-top:6px;font-weight:600;line-height:1.4;}
+.fact-sub{font-size:11px;color:rgba(255,255,255,.55);margin-top:4px;line-height:1.4;}
+
+/* ═══════════════════════════════════
+   SCÈNE 3 — Fait #2 : Carte Afrique + points
+═══════════════════════════════════ */
+
+/* SVG carte Afrique simplifiée */
+.africa-wrap{
+  position:relative;
+  width:170px;height:180px;
+  margin:0 auto 18px;
+}
+.africa-svg{width:100%;height:100%;filter:drop-shadow(0 0 12px rgba(255,215,0,.3));}
+
+/* points lumineux sur les pays */
+.dot{
+  position:absolute;
+  border-radius:50%;
+  background:#ffd700;
+  animation:dot-pulse 1.5s ease-in-out infinite;
+}
+@keyframes dot-pulse{
+  0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,215,0,.6)}
+  50%{transform:scale(1.3);box-shadow:0 0 0 5px rgba(255,215,0,0)}
+}
+/* positions des dots sur la carte */
+.dot.benin  {width:8px;height:8px;top:52%;left:47%;animation-delay:0s;}
+.dot.senegal{width:7px;height:7px;top:38%;left:28%;animation-delay:.3s;}
+.dot.nigeria{width:10px;height:10px;top:50%;left:51%;animation-delay:.6s;}
+.dot.cote   {width:7px;height:7px;top:54%;left:36%;animation-delay:.9s;}
+.dot.ghana  {width:7px;height:7px;top:53%;left:42%;animation-delay:.2s;}
+.dot.mali   {width:6px;height:6px;top:32%;left:38%;animation-delay:.5s;}
+.dot.togo   {width:6px;height:6px;top:52%;left:45%;animation-delay:.7s;}
+
+/* onde émise */
+.wave-ring{
+  position:absolute;
+  border-radius:50%;
+  border:2px solid rgba(255,215,0,.4);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  animation:ring-expand 2s ease-out infinite;
+}
+.wave-ring:nth-child(2){animation-delay:.7s;}
+.wave-ring:nth-child(3){animation-delay:1.4s;}
+@keyframes ring-expand{
+  from{width:20px;height:20px;opacity:.8}
+  to{width:180px;height:180px;opacity:0}
+}
+
+/* ═══════════════════════════════════
+   SCÈNE 4 — Fait #3 : Horloge + 24/7
+═══════════════════════════════════ */
+
+/* horloge CSS */
+.clock-wrap{
+  position:relative;width:140px;height:140px;
+  margin:0 auto 20px;
+}
+.clock-face{
+  width:140px;height:140px;border-radius:50%;
+  background:radial-gradient(circle,#1a0050,#0d0020);
+  border:3px solid rgba(124,58,237,.5);
+  position:relative;
+  box-shadow:0 0 25px rgba(124,58,237,.3),inset 0 0 20px rgba(0,0,0,.4);
+}
+/* graduations */
+.tick{
+  position:absolute;
+  width:2px;height:10px;
+  background:rgba(255,255,255,.3);
+  left:50%;top:6px;
+  transform-origin:1px 64px;
+  border-radius:1px;
+}
+/* heure */
+.hand{
+  position:absolute;
+  border-radius:2px;
+  transform-origin:bottom center;
+  left:50%;bottom:50%;
+}
+.hand-h{
+  width:4px;height:36px;
+  background:linear-gradient(to top,#7c3aed,#c084fc);
+  margin-left:-2px;
+  animation:hour-hand 120s linear infinite;
+}
+.hand-m{
+  width:3px;height:50px;
+  background:linear-gradient(to top,#ffd700,#fff);
+  margin-left:-1.5px;
+  animation:min-hand 10s linear infinite;
+}
+.hand-s{
+  width:1.5px;height:56px;
+  background:#ff4444;
+  margin-left:-.75px;
+  animation:sec-hand 1s linear infinite;
+}
+@keyframes hour-hand{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes min-hand{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes sec-hand{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.center-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:#ffd700;
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  z-index:2;
+  box-shadow:0 0 8px #ffd700;
+}
+/* chiffres de l'horloge */
+.clock-num{
+  position:absolute;font-size:9px;
+  font-weight:700;color:rgba(255,255,255,.7);
+}
+.n12{top:10px;left:50%;transform:translateX(-50%);}
+.n3{right:10px;top:50%;transform:translateY(-50%);}
+.n6{bottom:10px;left:50%;transform:translateX(-50%);}
+.n9{left:10px;top:50%;transform:translateY(-50%);}
+
+/* chips avantages */
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px;width:100%;}
+.chip{
+  padding:7px 14px;border-radius:20px;
+  font-size:12px;font-weight:700;
+  background:rgba(124,58,237,.2);
+  border:1px solid rgba(124,58,237,.5);
+  color:#c084fc;
+  animation:chip-in .4s ease both;
+}
+@keyframes chip-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.chip.gold-chip{background:rgba(255,215,0,.12);border-color:rgba(255,215,0,.4);color:#ffd700;}
+.chip:nth-child(1){animation-delay:.1s}
+.chip:nth-child(2){animation-delay:.25s}
+.chip:nth-child(3){animation-delay:.4s}
+.chip:nth-child(4){animation-delay:.55s}
+
+/* ═══════════════════════════════════
+   SCÈNE 5 — OUTRO
+═══════════════════════════════════ */
+
+.outro-glow{
+  position:absolute;
+  width:300px;height:300px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(124,58,237,.25) 0%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  animation:glow-out 3s ease-in-out infinite;
+  z-index:0;
+}
+@keyframes glow-out{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.15)}}
+
+.nebula-logo{
+  font-size:52px;font-weight:900;
+  color:#fff;letter-spacing:5px;
+  text-shadow:0 0 40px rgba(160,80,255,.9),0 0 80px rgba(160,80,255,.4);
+  animation:logo-glow 2s ease-in-out infinite;
+  position:relative;z-index:1;
+}
+@keyframes logo-glow{
+  0%,100%{text-shadow:0 0 40px rgba(160,80,255,.9)}
+  50%{text-shadow:0 0 65px rgba(160,80,255,1),0 0 110px rgba(160,80,255,.5)}
+}
+.nebula-sub{
+  font-size:12px;letter-spacing:4px;color:#ffd700;
+  text-transform:uppercase;margin-top:6px;
+  position:relative;z-index:1;
+}
+.outro-tagline{
+  font-size:13px;color:rgba(255,255,255,.6);
+  text-align:center;line-height:1.6;margin-top:16px;
+  position:relative;z-index:1;
+}
+.cta-pill{
+  background:linear-gradient(135deg,#7c3aed,#9c27b0);
+  border-radius:50px;
+  padding:14px 30px;
+  font-size:14px;font-weight:800;color:#fff;
+  text-align:center;margin-top:22px;
+  box-shadow:0 0 25px rgba(124,58,237,.5);
+  position:relative;z-index:1;
+  width:100%;
+}
+.cta-pill .wa{color:#25D366;}
+
+/* ── BARRE DE PROGRESSION ── */
+#pb{
+  position:absolute;bottom:0;left:0;height:3px;
+  background:linear-gradient(90deg,#7c3aed,#ffd700);
+  z-index:100;transition:width .1s linear;border-radius:0 2px 2px 0;
+}
+
+/* ── CONTRÔLES ── */
+#ctrl{
+  position:fixed;bottom:24px;
+  display:flex;gap:10px;z-index:200;
+}
+#ctrl button{
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);
+  color:#fff;padding:9px 20px;border-radius:30px;
+  font-size:13px;cursor:pointer;backdrop-filter:blur(8px);
+  transition:background .2s;
+}
+#ctrl button:hover{background:rgba(255,255,255,.2);}
+</style>
+</head>
+<body>
+
+<div id="vc">
+  <div class="bg"></div>
+  <div id="pb" style="width:0%"></div>
+
+  <!-- ══════════════════════════════════
+       SCÈNE 1 — HOOK (0–5s)
+  ══════════════════════════════════ -->
+  <div class="scene active" id="s1">
+    <!-- ampoule -->
+    <div class="bulb-wrap">
+      <div class="rays">
+        <div class="ray"></div><div class="ray"></div>
+        <div class="ray"></div><div class="ray"></div>
+        <div class="ray"></div><div class="ray"></div>
+        <div class="ray"></div><div class="ray"></div>
+      </div>
+      <div class="bulb-globe"><div class="bulb-shine"></div></div>
+      <div class="bulb-base1"></div>
+      <div class="bulb-base2"></div>
+      <div class="bulb-tip"></div>
+    </div>
+
+    <div class="big-question">LE<br><span class="em">SAVIEZ</span>-<br>VOUS ?</div>
+    <div class="divider"></div>
+    <div class="sub">Des faits qui vont changer<br>votre façon de voir votre business</div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       SCÈNE 2 — FAIT #1 : 70% (5–13s)
+  ══════════════════════════════════ -->
+  <div class="scene" id="s2">
+    <!-- téléphone CSS illustré -->
+    <div style="position:relative;display:inline-block;">
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-nav">
+            <div class="nav-dot"></div>
+            <div class="nav-dot"></div>
+            <div class="nav-dot"></div>
+          </div>
+          <div class="phone-chart">
+            <div class="chart-title">CLIENTS EN LIGNE</div>
+            <div class="bar-group">
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+            </div>
+          </div>
+          <!-- mini icônes clients -->
+          <div style="display:flex;gap:5px;padding:6px 6px 0;flex-wrap:wrap;">
+            <div style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#c084fc);"></div>
+            <div style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#c084fc);"></div>
+            <div style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#ffd700);"></div>
+            <div style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#c084fc);"></div>
+            <div style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.15);border:1px dashed rgba(255,255,255,.3);font-size:8px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);">+</div>
+          </div>
+        </div>
+      </div>
+      <div class="notif">3 nouveaux clients !</div>
+      <div class="ping"></div>
+    </div>
+
+    <div class="fact-card">
+      <div class="fact-number" id="counter1">70<span style="font-size:36px;">%</span></div>
+      <div class="fact-label">des consommateurs cherchent<br>en ligne <strong>avant</strong> d'acheter</div>
+      <div class="fact-sub">Source : Google Consumer Insights</div>
+    </div>
+
+    <div class="sub" style="margin-top:12px;">
+      Sans vitrine digitale,<br>vous êtes <span style="color:#ff6b6b;font-weight:700;">invisible</span> pour la majorité.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       SCÈNE 3 — FAIT #2 : Afrique Mobile (13–22s)
+  ══════════════════════════════════ -->
+  <div class="scene" id="s3">
+    <div class="tag">Afrique de l'Ouest · 2024</div>
+
+    <!-- Carte Afrique SVG simplifiée -->
+    <div class="africa-wrap">
+      <div class="wave-ring"></div>
+      <div class="wave-ring"></div>
+      <div class="wave-ring"></div>
+      <svg class="africa-svg" viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="
+          M75,10 L90,8 L110,12 L130,18 L145,28 L155,42 L160,58
+          L162,75 L158,88 L155,100 L160,112 L165,125
+          L168,140 L164,158 L155,172 L140,185
+          L120,198 L100,205 L82,200 L65,188
+          L50,172 L38,155 L30,138 L28,120
+          L32,105 L40,92 L38,78 L34,65
+          L35,50 L42,37 L55,25 L68,15 Z
+        " fill="rgba(124,58,237,0.25)" stroke="rgba(192,132,252,0.6)" stroke-width="1.5"/>
+        <!-- Golfe de Guinée indent -->
+        <path d="M38,110 Q28,120 30,138 L38,155" stroke="rgba(192,132,252,0.4)" stroke-width="1" fill="none"/>
+      </svg>
+      <!-- Points lumineux -->
+      <div class="dot benin"></div>
+      <div class="dot senegal"></div>
+      <div class="dot nigeria"></div>
+      <div class="dot cote"></div>
+      <div class="dot ghana"></div>
+      <div class="dot mali"></div>
+      <div class="dot togo"></div>
+    </div>
+
+    <div class="fact-card">
+      <div class="fact-number">65M+</div>
+      <div class="fact-label">utilisateurs mobiles actifs<br>en Afrique de l'Ouest</div>
+      <div class="fact-sub">dont des millions au Bénin, Nigeria, Sénégal, Côte d'Ivoire…</div>
+    </div>
+
+    <div class="sub" style="margin-top:12px;">
+      Votre futur client est sur son téléphone<br>
+      <span class="gold" style="font-weight:700;">en ce moment même.</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       SCÈNE 4 — FAIT #3 : 24/7 (22–28s)
+  ══════════════════════════════════ -->
+  <div class="scene" id="s4">
+    <div class="tag">Le secret des entrepreneurs qui réussissent</div>
+    <h2 style="margin-bottom:18px;">Votre <span class="gold">meilleur vendeur</span><br>ne dort jamais</h2>
+
+    <!-- Horloge CSS -->
+    <div class="clock-wrap">
+      <div class="clock-face">
+        <span class="clock-num n12">12</span>
+        <span class="clock-num n3">3</span>
+        <span class="clock-num n6">6</span>
+        <span class="clock-num n9">9</span>
+        <!-- graduations (12 ticks) -->
+        <div class="tick" style="transform:rotate(0deg) translateX(-1px)"></div>
+        <div class="tick" style="transform:rotate(30deg) translateX(-1px)"></div>
+        <div class="tick" style="transform:rotate(60deg) translateX(-1px)"></div>
+        <div class="tick" style="transform:rotate(90deg) translateX(-1px)"></div>
+        <div class="tick" style="transform:rotate(120deg) translateX(-1px)"></div>
+        <div class="tick" style="transform:rotate(150deg) translateX(-1px)"></div>
+        <div class="tick" style="transform:rotate(180deg) translateX(-1px)"></div>
+        <div class="tick" style="transform:rotate(210deg) translateX(-1px)"></div>
+        <div class="tick" style="transform:rotate(240deg) translateX(-1px)"></div>
+        <div class="tick" style="transform:rotate(270deg) translateX(-1px)"></div>
+        <div class="tick" style="transform:rotate(300deg) translateX(-1px)"></div>
+        <div class="tick" style="transform:rotate(330deg) translateX(-1px)"></div>
+        <!-- Aiguilles -->
+        <div class="hand hand-h" style="transform:rotate(90deg);"></div>
+        <div class="hand hand-m"></div>
+        <div class="hand hand-s"></div>
+        <div class="center-dot"></div>
+      </div>
+    </div>
+
+    <div class="chips">
+      <div class="chip gold-chip">✅ 24h/24</div>
+      <div class="chip gold-chip">✅ 7j/7</div>
+      <div class="chip">🌙 Même la nuit</div>
+      <div class="chip">🎉 Jours fériés inclus</div>
+    </div>
+
+    <div class="sub" style="margin-top:14px;">
+      Une vitrine digitale présente vos services<br>et <span class="gold" style="font-weight:700;">encaisse des clients</span> pendant votre sommeil.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       SCÈNE 5 — OUTRO (28–30s)
+  ══════════════════════════════════ -->
+  <div class="scene" id="s5">
+    <div class="outro-glow"></div>
+    <div class="nebula-logo">NEBULA</div>
+    <div class="nebula-sub">Agency</div>
+    <div class="divider"></div>
+    <div class="outro-tagline">
+      Votre vitrine digitale<br>
+      <strong style="color:#fff;">professionnelle en 48h</strong><br>
+      <span style="color:rgba(255,255,255,.45);font-size:11px;">Design · Mobile · WhatsApp · Cotonou, Bénin</span>
+    </div>
+    <div class="cta-pill">
+      <span class="wa">💬</span> Contactez-nous sur WhatsApp
+    </div>
+  </div>
+</div>
+
+<div id="ctrl">
+  <button onclick="go(0)">↺ Restart</button>
+  <button onclick="togglePlay()" id="btn">⏸ Pause</button>
+</div>
+
+<script>
+const TOTAL = 30;
+const SCENES = [
+  {id:'s1', start:0,  end:5},
+  {id:'s2', start:5,  end:13},
+  {id:'s3', start:13, end:22},
+  {id:'s4', start:22, end:28},
+  {id:'s5', start:28, end:30},
+];
+
+let t = 0, running = true, lastTs = null;
+
+function render(elapsed){
+  SCENES.forEach(s=>{
+    const el = document.getElementById(s.id);
+    if(elapsed >= s.start && elapsed < s.end) el.classList.add('active');
+    else el.classList.remove('active');
+  });
+  document.getElementById('pb').style.width = Math.min(100,(elapsed/TOTAL)*100)+'%';
+}
+
+function frame(ts){
+  if(!running){lastTs=null;return;}
+  if(lastTs!==null){
+    t += (ts-lastTs)/1000;
+    if(t >= TOTAL) t = 0;
+  }
+  lastTs = ts;
+  render(t);
+  requestAnimationFrame(frame);
+}
+
+function go(v){t=v;}
+function togglePlay(){
+  running=!running;
+  document.getElementById('btn').textContent=running?'⏸ Pause':'▶ Play';
+  if(running) requestAnimationFrame(frame);
+}
+
+render(0);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
