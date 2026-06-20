@@ -1,14 +1,31 @@
 {
-  "used": [],
-  "queue": [
+  "used": [
     {
       "id": "mobile-first",
       "title": "Mobile First en Afrique",
       "hook": "95% des Africains surfent sur téléphone. Et votre boutique ?",
       "facts": [
-        { "num": "95", "unit": "%", "label": "des internautes africains\nnaviguent sur mobile", "source": "GSMA Africa Report 2024", "illustration": "phone" },
-        { "num": "3x", "unit": "", "label": "plus de ventes pour les sites\noptimisés mobile", "source": "Google Africa Insights", "illustration": "chart" },
-        { "num": "8s", "unit": "", "label": "c'est le temps max\navant qu'un client parte", "source": "Nielsen Digital Report", "illustration": "clock" }
+        {
+          "num": "95",
+          "unit": "%",
+          "label": "des internautes africains\nnaviguent sur mobile",
+          "source": "GSMA Africa Report 2024",
+          "illustration": "phone"
+        },
+        {
+          "num": "3x",
+          "unit": "",
+          "label": "plus de ventes pour les sites\noptimisés mobile",
+          "source": "Google Africa Insights",
+          "illustration": "chart"
+        },
+        {
+          "num": "8s",
+          "unit": "",
+          "label": "c'est le temps max\navant qu'un client parte",
+          "source": "Nielsen Digital Report",
+          "illustration": "clock"
+        }
       ],
       "cta": "Votre vitrine NEBULA est 100% mobile"
     },
@@ -17,20 +34,58 @@
       "title": "WhatsApp Business = Votre Vendeur",
       "hook": "Vos clients vous contactent sur WhatsApp. Mais vendez-vous vraiment ?",
       "facts": [
-        { "num": "2Mrd", "unit": "", "label": "d'utilisateurs WhatsApp\ndans le monde", "source": "Meta 2024", "illustration": "chat" },
-        { "num": "98", "unit": "%", "label": "de taux d'ouverture\ndes messages WhatsApp", "source": "Hootsuite 2024", "illustration": "check" },
-        { "num": "5x", "unit": "", "label": "plus de conversions via\nWhatsApp vs email", "source": "SalesFront Africa", "illustration": "rocket" }
+        {
+          "num": "2Mrd",
+          "unit": "",
+          "label": "d'utilisateurs WhatsApp\ndans le monde",
+          "source": "Meta 2024",
+          "illustration": "chat"
+        },
+        {
+          "num": "98",
+          "unit": "%",
+          "label": "de taux d'ouverture\ndes messages WhatsApp",
+          "source": "Hootsuite 2024",
+          "illustration": "check"
+        },
+        {
+          "num": "5x",
+          "unit": "",
+          "label": "plus de conversions via\nWhatsApp vs email",
+          "source": "SalesFront Africa",
+          "illustration": "rocket"
+        }
       ],
       "cta": "Intégrez WhatsApp Business à votre vitrine"
-    },
+    }
+  ],
+  "queue": [
     {
       "id": "confiance-en-ligne",
       "title": "Construire la Confiance Sans Se Voir",
       "hook": "Comment convaincre quelqu'un de vous payer sans jamais se rencontrer ?",
       "facts": [
-        { "num": "88", "unit": "%", "label": "des clients lisent les avis\navant d'acheter en ligne", "source": "BrightLocal 2024", "illustration": "star" },
-        { "num": "7", "unit": "sec", "label": "pour faire une première\nimpression en ligne", "source": "MIT Research", "illustration": "clock" },
-        { "num": "63", "unit": "%", "label": "des acheteurs préfèrent un\nsite pro à une page Facebook", "source": "Statista Africa", "illustration": "chart" }
+        {
+          "num": "88",
+          "unit": "%",
+          "label": "des clients lisent les avis\navant d'acheter en ligne",
+          "source": "BrightLocal 2024",
+          "illustration": "star"
+        },
+        {
+          "num": "7",
+          "unit": "sec",
+          "label": "pour faire une première\nimpression en ligne",
+          "source": "MIT Research",
+          "illustration": "clock"
+        },
+        {
+          "num": "63",
+          "unit": "%",
+          "label": "des acheteurs préfèrent un\nsite pro à une page Facebook",
+          "source": "Statista Africa",
+          "illustration": "chart"
+        }
       ],
       "cta": "Une vitrine pro = confiance instantanée"
     },
@@ -39,9 +94,27 @@
       "title": "La Photo qui Fait Vendre",
       "hook": "Une seule photo peut multiplier vos ventes par 3. Voici pourquoi.",
       "facts": [
-        { "num": "3x", "unit": "", "label": "plus de ventes avec des\nphotos professionnelles", "source": "Shopify Commerce Report", "illustration": "camera" },
-        { "num": "75", "unit": "%", "label": "des clients jugent\nla qualité sur les photos", "source": "MDG Advertising", "illustration": "chart" },
-        { "num": "40", "unit": "%", "label": "d'engagement en plus\npour les posts avec photos", "source": "Buffer Social 2024", "illustration": "rocket" }
+        {
+          "num": "3x",
+          "unit": "",
+          "label": "plus de ventes avec des\nphotos professionnelles",
+          "source": "Shopify Commerce Report",
+          "illustration": "camera"
+        },
+        {
+          "num": "75",
+          "unit": "%",
+          "label": "des clients jugent\nla qualité sur les photos",
+          "source": "MDG Advertising",
+          "illustration": "chart"
+        },
+        {
+          "num": "40",
+          "unit": "%",
+          "label": "d'engagement en plus\npour les posts avec photos",
+          "source": "Buffer Social 2024",
+          "illustration": "rocket"
+        }
       ],
       "cta": "Présentez vos produits sous leur meilleur jour"
     },
@@ -50,9 +123,27 @@
       "title": "L'Heure Qui Fait la Différence",
       "hook": "Vous postez au mauvais moment. Voici l'heure idéale en Afrique de l'Ouest.",
       "facts": [
-        { "num": "19h", "unit": "", "label": "pic d'audience Facebook\nBénin / Nigeria / Sénégal", "source": "Meta Business Suite", "illustration": "clock" },
-        { "num": "3x", "unit": "", "label": "plus de portée en postant\naux heures de pointe", "source": "Hootsuite Africa 2024", "illustration": "chart" },
-        { "num": "12h", "unit": "", "label": "et 13h : 2ème meilleure\nfenêtre de publication", "source": "Sprout Social Africa", "illustration": "phone" }
+        {
+          "num": "19h",
+          "unit": "",
+          "label": "pic d'audience Facebook\nBénin / Nigeria / Sénégal",
+          "source": "Meta Business Suite",
+          "illustration": "clock"
+        },
+        {
+          "num": "3x",
+          "unit": "",
+          "label": "plus de portée en postant\naux heures de pointe",
+          "source": "Hootsuite Africa 2024",
+          "illustration": "chart"
+        },
+        {
+          "num": "12h",
+          "unit": "",
+          "label": "et 13h : 2ème meilleure\nfenêtre de publication",
+          "source": "Sprout Social Africa",
+          "illustration": "phone"
+        }
       ],
       "cta": "Planifiez vos posts au bon moment"
     },
@@ -61,9 +152,27 @@
       "title": "Afficher Ses Prix = Vendre Plus",
       "hook": "Cacher vos prix fait fuir vos clients. La preuve en chiffres.",
       "facts": [
-        { "num": "76", "unit": "%", "label": "des clients quittent un site\nsans prix affiché", "source": "HubSpot 2024", "illustration": "chart" },
-        { "num": "2x", "unit": "", "label": "plus de demandes de contact\nquand les prix sont visibles", "source": "Capterra Research", "illustration": "phone" },
-        { "num": "30", "unit": "%", "label": "d'augmentation du panier moyen\navec une grille tarifaire claire", "source": "Shopify Commerce", "illustration": "rocket" }
+        {
+          "num": "76",
+          "unit": "%",
+          "label": "des clients quittent un site\nsans prix affiché",
+          "source": "HubSpot 2024",
+          "illustration": "chart"
+        },
+        {
+          "num": "2x",
+          "unit": "",
+          "label": "plus de demandes de contact\nquand les prix sont visibles",
+          "source": "Capterra Research",
+          "illustration": "phone"
+        },
+        {
+          "num": "30",
+          "unit": "%",
+          "label": "d'augmentation du panier moyen\navec une grille tarifaire claire",
+          "source": "Shopify Commerce",
+          "illustration": "rocket"
+        }
       ],
       "cta": "Affichez vos prix, vendez plus"
     },
@@ -72,9 +181,27 @@
       "title": "Le Pouvoir des Témoignages",
       "hook": "Vos clients satisfaits sont vos meilleurs vendeurs. Les utilisez-vous ?",
       "facts": [
-        { "num": "92", "unit": "%", "label": "des consommateurs font\nconfiance aux avis clients", "source": "Nielsen Research", "illustration": "star" },
-        { "num": "270", "unit": "%", "label": "d'augmentation des conversions\ngrâce aux témoignages", "source": "Power Reviews 2024", "illustration": "chart" },
-        { "num": "50", "unit": "+", "label": "avis minimum pour inspirer\nla vraie confiance en ligne", "source": "BrightLocal Survey", "illustration": "check" }
+        {
+          "num": "92",
+          "unit": "%",
+          "label": "des consommateurs font\nconfiance aux avis clients",
+          "source": "Nielsen Research",
+          "illustration": "star"
+        },
+        {
+          "num": "270",
+          "unit": "%",
+          "label": "d'augmentation des conversions\ngrâce aux témoignages",
+          "source": "Power Reviews 2024",
+          "illustration": "chart"
+        },
+        {
+          "num": "50",
+          "unit": "+",
+          "label": "avis minimum pour inspirer\nla vraie confiance en ligne",
+          "source": "BrightLocal Survey",
+          "illustration": "check"
+        }
       ],
       "cta": "Collectez et affichez vos témoignages"
     },
@@ -83,9 +210,27 @@
       "title": "Apparaître en Premier sur Google",
       "hook": "Quand quelqu'un cherche votre métier à Cotonou, qui apparaît en premier ?",
       "facts": [
-        { "num": "46", "unit": "%", "label": "des recherches Google\ncherchent un commerce local", "source": "Google Search Report", "illustration": "phone" },
-        { "num": "28", "unit": "%", "label": "des recherches locales\ndeviennent un achat le jour même", "source": "Think With Google", "illustration": "rocket" },
-        { "num": "1ère", "unit": "", "label": "page Google = 90% des\nclics. Après : quasi zéro.", "source": "Advanced Web Ranking", "illustration": "chart" }
+        {
+          "num": "46",
+          "unit": "%",
+          "label": "des recherches Google\ncherchent un commerce local",
+          "source": "Google Search Report",
+          "illustration": "phone"
+        },
+        {
+          "num": "28",
+          "unit": "%",
+          "label": "des recherches locales\ndeviennent un achat le jour même",
+          "source": "Think With Google",
+          "illustration": "rocket"
+        },
+        {
+          "num": "1ère",
+          "unit": "",
+          "label": "page Google = 90% des\nclics. Après : quasi zéro.",
+          "source": "Advanced Web Ranking",
+          "illustration": "chart"
+        }
       ],
       "cta": "Votre vitrine NEBULA est optimisée SEO"
     },
@@ -94,9 +239,27 @@
       "title": "Les Couleurs Qui Font Vendre",
       "hook": "La couleur de votre bouton peut augmenter vos ventes de 21%. Comment ?",
       "facts": [
-        { "num": "85", "unit": "%", "label": "des décisions d'achat\nsont influencées par la couleur", "source": "Colorcom Research", "illustration": "star" },
-        { "num": "21", "unit": "%", "label": "d'augmentation des clics\nwith un bouton rouge vs vert", "source": "HubSpot A/B Test", "illustration": "chart" },
-        { "num": "90", "unit": "s", "label": "suffisent à un client pour\njuger votre marque visuellement", "source": "KISSmetrics Research", "illustration": "clock" }
+        {
+          "num": "85",
+          "unit": "%",
+          "label": "des décisions d'achat\nsont influencées par la couleur",
+          "source": "Colorcom Research",
+          "illustration": "star"
+        },
+        {
+          "num": "21",
+          "unit": "%",
+          "label": "d'augmentation des clics\nwith un bouton rouge vs vert",
+          "source": "HubSpot A/B Test",
+          "illustration": "chart"
+        },
+        {
+          "num": "90",
+          "unit": "s",
+          "label": "suffisent à un client pour\njuger votre marque visuellement",
+          "source": "KISSmetrics Research",
+          "illustration": "clock"
+        }
       ],
       "cta": "Design stratégique dans chaque vitrine NEBULA"
     },
@@ -105,9 +268,27 @@
       "title": "Instagram Transforme Votre Business",
       "hook": "Un Africain passe 3h/jour sur Instagram. Est-ce que vous y êtes visible ?",
       "facts": [
-        { "num": "500M", "unit": "", "label": "stories Instagram vues\nchaque jour dans le monde", "source": "Meta Business 2024", "illustration": "phone" },
-        { "num": "44", "unit": "%", "label": "des utilisateurs achètent\nun produit vu sur Instagram", "source": "Facebook IQ Study", "illustration": "chart" },
-        { "num": "130M", "unit": "", "label": "de personnes cliquent\nchaque mois sur des produits", "source": "Instagram for Business", "illustration": "rocket" }
+        {
+          "num": "500M",
+          "unit": "",
+          "label": "stories Instagram vues\nchaque jour dans le monde",
+          "source": "Meta Business 2024",
+          "illustration": "phone"
+        },
+        {
+          "num": "44",
+          "unit": "%",
+          "label": "des utilisateurs achètent\nun produit vu sur Instagram",
+          "source": "Facebook IQ Study",
+          "illustration": "chart"
+        },
+        {
+          "num": "130M",
+          "unit": "",
+          "label": "de personnes cliquent\nchaque mois sur des produits",
+          "source": "Instagram for Business",
+          "illustration": "rocket"
+        }
       ],
       "cta": "Reliez Instagram à votre vitrine NEBULA"
     },
@@ -116,9 +297,27 @@
       "title": "1 Seconde = Des Milliers de Clients Perdus",
       "hook": "Si votre site charge en plus de 3 secondes, vous perdez la moitié de vos clients.",
       "facts": [
-        { "num": "53", "unit": "%", "label": "des visiteurs quittent\naprès 3s de chargement", "source": "Google/SOASTA Study", "illustration": "clock" },
-        { "num": "7", "unit": "%", "label": "de conversions perdues\npour chaque seconde de délai", "source": "Akamai Research", "illustration": "chart" },
-        { "num": "100ms", "unit": "", "label": "de vitesse en plus = 1%\nde revenus supplémentaires", "source": "Amazon Performance", "illustration": "rocket" }
+        {
+          "num": "53",
+          "unit": "%",
+          "label": "des visiteurs quittent\naprès 3s de chargement",
+          "source": "Google/SOASTA Study",
+          "illustration": "clock"
+        },
+        {
+          "num": "7",
+          "unit": "%",
+          "label": "de conversions perdues\npour chaque seconde de délai",
+          "source": "Akamai Research",
+          "illustration": "chart"
+        },
+        {
+          "num": "100ms",
+          "unit": "",
+          "label": "de vitesse en plus = 1%\nde revenus supplémentaires",
+          "source": "Amazon Performance",
+          "illustration": "rocket"
+        }
       ],
       "cta": "Vitrines NEBULA : chargement ultra-rapide"
     },
@@ -127,9 +326,27 @@
       "title": "Facebook Ads : Touchez Exactement Vos Clients",
       "hook": "Facebook connaît mieux vos clients que vous. Voici comment en profiter.",
       "facts": [
-        { "num": "2.9Md", "unit": "", "label": "d'utilisateurs actifs Facebook\ndont 170M en Afrique", "source": "Meta Q4 2024", "illustration": "phone" },
-        { "num": "0.50$", "unit": "", "label": "coût moyen par clic\nen Afrique de l'Ouest", "source": "WordStream Africa", "illustration": "chart" },
-        { "num": "9.21", "unit": "%", "label": "taux de conversion moyen\ndes publicités Facebook", "source": "WordStream Benchmark", "illustration": "rocket" }
+        {
+          "num": "2.9Md",
+          "unit": "",
+          "label": "d'utilisateurs actifs Facebook\ndont 170M en Afrique",
+          "source": "Meta Q4 2024",
+          "illustration": "phone"
+        },
+        {
+          "num": "0.50$",
+          "unit": "",
+          "label": "coût moyen par clic\nen Afrique de l'Ouest",
+          "source": "WordStream Africa",
+          "illustration": "chart"
+        },
+        {
+          "num": "9.21",
+          "unit": "%",
+          "label": "taux de conversion moyen\ndes publicités Facebook",
+          "source": "WordStream Benchmark",
+          "illustration": "rocket"
+        }
       ],
       "cta": "Connectez vos ads à votre vitrine NEBULA"
     },
@@ -138,9 +355,27 @@
       "title": "Bouche-à-Oreille Digital vs Traditionnel",
       "hook": "Le bouche-à-oreille existe depuis toujours. Mais le digital le multiplie par 1000.",
       "facts": [
-        { "num": "2.4x", "unit": "", "label": "plus de conversions via\nle partage en ligne", "source": "McKinsey Social Commerce", "illustration": "chat" },
-        { "num": "1000", "unit": "x", "label": "la portée d'un partage digital\nvs bouche-à-oreille traditionnel", "source": "Nielsen Social Trust", "illustration": "rocket" },
-        { "num": "74", "unit": "%", "label": "des consommateurs suivent\nles recommandations en ligne", "source": "Ogilvy Research", "illustration": "star" }
+        {
+          "num": "2.4x",
+          "unit": "",
+          "label": "plus de conversions via\nle partage en ligne",
+          "source": "McKinsey Social Commerce",
+          "illustration": "chat"
+        },
+        {
+          "num": "1000",
+          "unit": "x",
+          "label": "la portée d'un partage digital\nvs bouche-à-oreille traditionnel",
+          "source": "Nielsen Social Trust",
+          "illustration": "rocket"
+        },
+        {
+          "num": "74",
+          "unit": "%",
+          "label": "des consommateurs suivent\nles recommandations en ligne",
+          "source": "Ogilvy Research",
+          "illustration": "star"
+        }
       ],
       "cta": "Facilitez le partage avec votre vitrine NEBULA"
     },
@@ -149,9 +384,27 @@
       "title": "La Vidéo : Reine du Contenu",
       "hook": "Une vidéo vaut 1,8 million de mots. Et vous n'en avez pas encore ?",
       "facts": [
-        { "num": "80", "unit": "%", "label": "du trafic internet mondial\nsera vidéo d'ici 2025", "source": "Cisco Visual Networking", "illustration": "phone" },
-        { "num": "3x", "unit": "", "label": "plus de temps passé sur\nune page avec vidéo", "source": "Wistia Video Report", "illustration": "clock" },
-        { "num": "64", "unit": "%", "label": "des clients achètent après\navoir regardé une vidéo", "source": "Forbes Research 2024", "illustration": "chart" }
+        {
+          "num": "80",
+          "unit": "%",
+          "label": "du trafic internet mondial\nsera vidéo d'ici 2025",
+          "source": "Cisco Visual Networking",
+          "illustration": "phone"
+        },
+        {
+          "num": "3x",
+          "unit": "",
+          "label": "plus de temps passé sur\nune page avec vidéo",
+          "source": "Wistia Video Report",
+          "illustration": "clock"
+        },
+        {
+          "num": "64",
+          "unit": "%",
+          "label": "des clients achètent après\navoir regardé une vidéo",
+          "source": "Forbes Research 2024",
+          "illustration": "chart"
+        }
       ],
       "cta": "Intégrez des vidéos à votre vitrine NEBULA"
     },
@@ -160,9 +413,27 @@
       "title": "Générer des Clients Sans Bouger",
       "hook": "Les meilleurs entrepreneurs de 2024 génèrent des clients pendant leur sommeil.",
       "facts": [
-        { "num": "61", "unit": "%", "label": "des marketeurs disent\nle SEO génère le plus de leads", "source": "HubSpot Marketing 2024", "illustration": "chart" },
-        { "num": "14.6", "unit": "%", "label": "taux de conversion moyen\ndes leads inbound (vs 1.7% outbound)", "source": "Search Engine Journal", "illustration": "rocket" },
-        { "num": "24h", "unit": "", "label": "sur 24 : votre vitrine capture\ndes prospects en continu", "source": "NEBULA Agency", "illustration": "clock" }
+        {
+          "num": "61",
+          "unit": "%",
+          "label": "des marketeurs disent\nle SEO génère le plus de leads",
+          "source": "HubSpot Marketing 2024",
+          "illustration": "chart"
+        },
+        {
+          "num": "14.6",
+          "unit": "%",
+          "label": "taux de conversion moyen\ndes leads inbound (vs 1.7% outbound)",
+          "source": "Search Engine Journal",
+          "illustration": "rocket"
+        },
+        {
+          "num": "24h",
+          "unit": "",
+          "label": "sur 24 : votre vitrine capture\ndes prospects en continu",
+          "source": "NEBULA Agency",
+          "illustration": "clock"
+        }
       ],
       "cta": "Transformez votre vitrine en machine à leads"
     },
@@ -171,9 +442,27 @@
       "title": "Page Facebook vs Vraie Vitrine",
       "hook": "Vous avez une page Facebook. Mais avez-vous vraiment une présence digitale ?",
       "facts": [
-        { "num": "5", "unit": "%", "label": "seulement de vos fans\nvoient naturellement vos posts", "source": "Hootsuite Facebook Report", "illustration": "chart" },
-        { "num": "0", "unit": "", "label": "contrôle sur Facebook : ils\npeuvent supprimer votre page", "source": "Meta Terms of Service", "illustration": "phone" },
-        { "num": "100", "unit": "%", "label": "de contrôle sur votre\nvitrine digitale personnelle", "source": "NEBULA Agency", "illustration": "check" }
+        {
+          "num": "5",
+          "unit": "%",
+          "label": "seulement de vos fans\nvoient naturellement vos posts",
+          "source": "Hootsuite Facebook Report",
+          "illustration": "chart"
+        },
+        {
+          "num": "0",
+          "unit": "",
+          "label": "contrôle sur Facebook : ils\npeuvent supprimer votre page",
+          "source": "Meta Terms of Service",
+          "illustration": "phone"
+        },
+        {
+          "num": "100",
+          "unit": "%",
+          "label": "de contrôle sur votre\nvitrine digitale personnelle",
+          "source": "NEBULA Agency",
+          "illustration": "check"
+        }
       ],
       "cta": "Votre vitrine vous appartient à 100%"
     },
@@ -182,9 +471,27 @@
       "title": "Vendre Sans Être Présent",
       "hook": "Les entrepreneurs les plus productifs vendent sans répondre à chaque message.",
       "facts": [
-        { "num": "35", "unit": "%", "label": "des revenus Amazon viennent\nde recommandations automatiques", "source": "McKinsey & Company", "illustration": "rocket" },
-        { "num": "5h", "unit": "/sem", "label": "économisées en moyenne\ngrâce à l'automatisation", "source": "Salesforce Research", "illustration": "clock" },
-        { "num": "300", "unit": "%", "label": "de ROI moyen pour les\nbusinesses qui automatisent", "source": "Nucleus Research", "illustration": "chart" }
+        {
+          "num": "35",
+          "unit": "%",
+          "label": "des revenus Amazon viennent\nde recommandations automatiques",
+          "source": "McKinsey & Company",
+          "illustration": "rocket"
+        },
+        {
+          "num": "5h",
+          "unit": "/sem",
+          "label": "économisées en moyenne\ngrâce à l'automatisation",
+          "source": "Salesforce Research",
+          "illustration": "clock"
+        },
+        {
+          "num": "300",
+          "unit": "%",
+          "label": "de ROI moyen pour les\nbusinesses qui automatisent",
+          "source": "Nucleus Research",
+          "illustration": "chart"
+        }
       ],
       "cta": "Automatisez avec votre vitrine NEBULA + n8n"
     },
@@ -193,9 +500,27 @@
       "title": "Votre Nom de Domaine, Votre Identité",
       "hook": "Un nom de domaine professionnel double la crédibilité de votre business.",
       "facts": [
-        { "num": "2x", "unit": "", "label": "plus de crédibilité avec\nun email @votrebusiness.com", "source": "Verisign Domain Report", "illustration": "check" },
-        { "num": "15", "unit": "€", "label": "par an : le coût d'un\nnom de domaine professionnel", "source": "Domain Market 2024", "illustration": "chart" },
-        { "num": "75", "unit": "%", "label": "des clients jugent\nla crédibilité sur l'adresse web", "source": "Stanford Web Credibility", "illustration": "star" }
+        {
+          "num": "2x",
+          "unit": "",
+          "label": "plus de crédibilité avec\nun email @votrebusiness.com",
+          "source": "Verisign Domain Report",
+          "illustration": "check"
+        },
+        {
+          "num": "15",
+          "unit": "€",
+          "label": "par an : le coût d'un\nnom de domaine professionnel",
+          "source": "Domain Market 2024",
+          "illustration": "chart"
+        },
+        {
+          "num": "75",
+          "unit": "%",
+          "label": "des clients jugent\nla crédibilité sur l'adresse web",
+          "source": "Stanford Web Credibility",
+          "illustration": "star"
+        }
       ],
       "cta": "Vitrine NEBULA avec votre nom de domaine"
     },
@@ -204,9 +529,27 @@
       "title": "Les Données : Votre Avantage Concurrentiel",
       "hook": "Connaissez-vous vraiment vos clients ? Les données le savent mieux que vous.",
       "facts": [
-        { "num": "89", "unit": "%", "label": "des entreprises data-driven\nbattent leurs concurrents", "source": "McKinsey Analytics", "illustration": "chart" },
-        { "num": "23x", "unit": "", "label": "plus rentables les entreprises\nqui acquèrent bien leurs clients", "source": "Bain & Company Research", "illustration": "rocket" },
-        { "num": "0", "unit": "€", "label": "le coût de Google Analytics\npour analyser vos visiteurs", "source": "Google Analytics", "illustration": "phone" }
+        {
+          "num": "89",
+          "unit": "%",
+          "label": "des entreprises data-driven\nbattent leurs concurrents",
+          "source": "McKinsey Analytics",
+          "illustration": "chart"
+        },
+        {
+          "num": "23x",
+          "unit": "",
+          "label": "plus rentables les entreprises\nqui acquèrent bien leurs clients",
+          "source": "Bain & Company Research",
+          "illustration": "rocket"
+        },
+        {
+          "num": "0",
+          "unit": "€",
+          "label": "le coût de Google Analytics\npour analyser vos visiteurs",
+          "source": "Google Analytics",
+          "illustration": "phone"
+        }
       ],
       "cta": "Analytics intégré dans chaque vitrine NEBULA"
     },
@@ -215,9 +558,27 @@
       "title": "La Landing Page Qui Convertit",
       "hook": "Une seule page bien conçue peut rapporter plus qu'un site entier mal fait.",
       "facts": [
-        { "num": "2.35", "unit": "%", "label": "taux de conversion moyen\nd'un site ordinaire", "source": "WordStream Benchmark", "illustration": "chart" },
-        { "num": "11.45", "unit": "%", "label": "taux de conversion d'une\nbonne landing page", "source": "Unbounce Report 2024", "illustration": "rocket" },
-        { "num": "5x", "unit": "", "label": "plus de leads avec une\npage dédiée vs page d'accueil", "source": "HubSpot Research", "illustration": "check" }
+        {
+          "num": "2.35",
+          "unit": "%",
+          "label": "taux de conversion moyen\nd'un site ordinaire",
+          "source": "WordStream Benchmark",
+          "illustration": "chart"
+        },
+        {
+          "num": "11.45",
+          "unit": "%",
+          "label": "taux de conversion d'une\nbonne landing page",
+          "source": "Unbounce Report 2024",
+          "illustration": "rocket"
+        },
+        {
+          "num": "5x",
+          "unit": "",
+          "label": "plus de leads avec une\npage dédiée vs page d'accueil",
+          "source": "HubSpot Research",
+          "illustration": "check"
+        }
       ],
       "cta": "Vitrines NEBULA conçues pour convertir"
     },
@@ -226,9 +587,27 @@
       "title": "L'E-Commerce Explose en Afrique",
       "hook": "L'Afrique est le marché e-commerce à la croissance la plus rapide au monde.",
       "facts": [
-        { "num": "37Md$", "unit": "", "label": "valeur de l'e-commerce\nafricain en 2024", "source": "Statista Africa E-Commerce", "illustration": "chart" },
-        { "num": "+25", "unit": "%", "label": "de croissance annuelle\nde l'e-commerce en Afrique", "source": "IFC Digital Commerce", "illustration": "rocket" },
-        { "num": "1", "unit": "er", "label": "L'Afrique de l'Ouest :\ncœur de la croissance digitale", "source": "Google Africa Report", "illustration": "phone" }
+        {
+          "num": "37Md$",
+          "unit": "",
+          "label": "valeur de l'e-commerce\nafricain en 2024",
+          "source": "Statista Africa E-Commerce",
+          "illustration": "chart"
+        },
+        {
+          "num": "+25",
+          "unit": "%",
+          "label": "de croissance annuelle\nde l'e-commerce en Afrique",
+          "source": "IFC Digital Commerce",
+          "illustration": "rocket"
+        },
+        {
+          "num": "1",
+          "unit": "er",
+          "label": "L'Afrique de l'Ouest :\ncœur de la croissance digitale",
+          "source": "Google Africa Report",
+          "illustration": "phone"
+        }
       ],
       "cta": "Positionnez-vous maintenant avec NEBULA"
     },
@@ -237,9 +616,27 @@
       "title": "Pourquoi Vos Clients Achètent Vraiment",
       "hook": "Vos clients n'achètent pas un produit. Ils achètent une émotion.",
       "facts": [
-        { "num": "95", "unit": "%", "label": "des décisions d'achat sont\nprises par l'inconscient", "source": "Harvard Business School", "illustration": "star" },
-        { "num": "3s", "unit": "", "label": "pour déclencher l'émotion\nqui pousse à l'achat", "source": "Nielsen Neuroscience", "illustration": "clock" },
-        { "num": "8x", "unit": "", "label": "plus efficace une pub\némotionnelle vs rationnelle", "source": "IPA Databank Study", "illustration": "rocket" }
+        {
+          "num": "95",
+          "unit": "%",
+          "label": "des décisions d'achat sont\nprises par l'inconscient",
+          "source": "Harvard Business School",
+          "illustration": "star"
+        },
+        {
+          "num": "3s",
+          "unit": "",
+          "label": "pour déclencher l'émotion\nqui pousse à l'achat",
+          "source": "Nielsen Neuroscience",
+          "illustration": "clock"
+        },
+        {
+          "num": "8x",
+          "unit": "",
+          "label": "plus efficace une pub\némotionnelle vs rationnelle",
+          "source": "IPA Databank Study",
+          "illustration": "rocket"
+        }
       ],
       "cta": "Design émotionnel dans chaque vitrine NEBULA"
     },
@@ -248,9 +645,27 @@
       "title": "Google Maps : Vos Clients Vous Cherchent",
       "hook": "3 milliards de recherches Google par jour mentionnent un lieu. Êtes-vous sur la carte ?",
       "facts": [
-        { "num": "76", "unit": "%", "label": "des gens qui cherchent\nlocalement visitent dans 24h", "source": "Think With Google", "illustration": "phone" },
-        { "num": "0", "unit": "€", "label": "le coût de Google\nBusiness Profile", "source": "Google 2024", "illustration": "check" },
-        { "num": "5x", "unit": "", "label": "plus de visites pour\nles entreprises sur Maps", "source": "Google Local Study", "illustration": "rocket" }
+        {
+          "num": "76",
+          "unit": "%",
+          "label": "des gens qui cherchent\nlocalement visitent dans 24h",
+          "source": "Think With Google",
+          "illustration": "phone"
+        },
+        {
+          "num": "0",
+          "unit": "€",
+          "label": "le coût de Google\nBusiness Profile",
+          "source": "Google 2024",
+          "illustration": "check"
+        },
+        {
+          "num": "5x",
+          "unit": "",
+          "label": "plus de visites pour\nles entreprises sur Maps",
+          "source": "Google Local Study",
+          "illustration": "rocket"
+        }
       ],
       "cta": "Vitrine NEBULA + Google Maps = visibilité maximale"
     },
@@ -259,9 +674,27 @@
       "title": "L'Email : Le Canal le Plus Rentable",
       "hook": "Pour chaque 1$ investi en email marketing, vous récupérez 42$. Vous utilisez ça ?",
       "facts": [
-        { "num": "42x", "unit": "", "label": "le ROI de l'email\nvs autres canaux marketing", "source": "DMA National Client Email", "illustration": "rocket" },
-        { "num": "4Mrd", "unit": "", "label": "d'utilisateurs email\ndans le monde en 2024", "source": "Statista Email 2024", "illustration": "chart" },
-        { "num": "21", "unit": "%", "label": "taux d'ouverture moyen\ndes emails en Afrique", "source": "Mailchimp Benchmarks", "illustration": "check" }
+        {
+          "num": "42x",
+          "unit": "",
+          "label": "le ROI de l'email\nvs autres canaux marketing",
+          "source": "DMA National Client Email",
+          "illustration": "rocket"
+        },
+        {
+          "num": "4Mrd",
+          "unit": "",
+          "label": "d'utilisateurs email\ndans le monde en 2024",
+          "source": "Statista Email 2024",
+          "illustration": "chart"
+        },
+        {
+          "num": "21",
+          "unit": "%",
+          "label": "taux d'ouverture moyen\ndes emails en Afrique",
+          "source": "Mailchimp Benchmarks",
+          "illustration": "check"
+        }
       ],
       "cta": "Collectez des emails via votre vitrine NEBULA"
     },
@@ -270,9 +703,27 @@
       "title": "TikTok : La Nouvelle Arme des Entrepreneurs",
       "hook": "TikTok vous donne une portée organique gratuite que Facebook ne donne plus.",
       "facts": [
-        { "num": "1Mrd", "unit": "", "label": "d'utilisateurs actifs\nsur TikTok en 2024", "source": "TikTok for Business", "illustration": "phone" },
-        { "num": "30", "unit": "%", "label": "des jeunes Africains de 18-34\nut utilise TikTok pour découvrir", "source": "We Are Social Africa", "illustration": "chart" },
-        { "num": "9x", "unit": "", "label": "plus de portée organique\nTikTok vs Instagram", "source": "Social Insider 2024", "illustration": "rocket" }
+        {
+          "num": "1Mrd",
+          "unit": "",
+          "label": "d'utilisateurs actifs\nsur TikTok en 2024",
+          "source": "TikTok for Business",
+          "illustration": "phone"
+        },
+        {
+          "num": "30",
+          "unit": "%",
+          "label": "des jeunes Africains de 18-34\nut utilise TikTok pour découvrir",
+          "source": "We Are Social Africa",
+          "illustration": "chart"
+        },
+        {
+          "num": "9x",
+          "unit": "",
+          "label": "plus de portée organique\nTikTok vs Instagram",
+          "source": "Social Insider 2024",
+          "illustration": "rocket"
+        }
       ],
       "cta": "Renvoyez votre TikTok vers votre vitrine NEBULA"
     },
@@ -281,9 +732,27 @@
       "title": "Votre Marque : Votre Richesse Invisible",
       "hook": "Une marque forte se vend 20% plus cher. C'est votre capital invisible.",
       "facts": [
-        { "num": "73", "unit": "%", "label": "des consommateurs paient plus\npour une marque qu'ils reconnaissent", "source": "Edelman Trust Barometer", "illustration": "star" },
-        { "num": "20", "unit": "%", "label": "de prix premium en moyenne\npour les marques bien établies", "source": "McKinsey Brand Study", "illustration": "chart" },
-        { "num": "10", "unit": "+", "label": "touchpoints nécessaires avant\nqu'un client vous fasse confiance", "source": "Marketing Rule of 10", "illustration": "clock" }
+        {
+          "num": "73",
+          "unit": "%",
+          "label": "des consommateurs paient plus\npour une marque qu'ils reconnaissent",
+          "source": "Edelman Trust Barometer",
+          "illustration": "star"
+        },
+        {
+          "num": "20",
+          "unit": "%",
+          "label": "de prix premium en moyenne\npour les marques bien établies",
+          "source": "McKinsey Brand Study",
+          "illustration": "chart"
+        },
+        {
+          "num": "10",
+          "unit": "+",
+          "label": "touchpoints nécessaires avant\nqu'un client vous fasse confiance",
+          "source": "Marketing Rule of 10",
+          "illustration": "clock"
+        }
       ],
       "cta": "Construisez votre marque avec NEBULA Agency"
     },
@@ -292,9 +761,27 @@
       "title": "Le Client Fidèle Vaut 5x le Nouveau",
       "hook": "Acquérir un nouveau client coûte 5x plus cher que fidéliser l'existant.",
       "facts": [
-        { "num": "5x", "unit": "", "label": "moins cher de fidéliser\nun client que d'en acquérir un", "source": "Bain & Company Research", "illustration": "chart" },
-        { "num": "67", "unit": "%", "label": "de dépenses en plus\ndes clients fidèles vs nouveaux", "source": "Bain & Company", "illustration": "rocket" },
-        { "num": "80", "unit": "%", "label": "de vos revenus futurs proviendront\nde 20% de vos clients actuels", "source": "Gartner Research", "illustration": "star" }
+        {
+          "num": "5x",
+          "unit": "",
+          "label": "moins cher de fidéliser\nun client que d'en acquérir un",
+          "source": "Bain & Company Research",
+          "illustration": "chart"
+        },
+        {
+          "num": "67",
+          "unit": "%",
+          "label": "de dépenses en plus\ndes clients fidèles vs nouveaux",
+          "source": "Bain & Company",
+          "illustration": "rocket"
+        },
+        {
+          "num": "80",
+          "unit": "%",
+          "label": "de vos revenus futurs proviendront\nde 20% de vos clients actuels",
+          "source": "Gartner Research",
+          "illustration": "star"
+        }
       ],
       "cta": "Système de fidélité intégré dans votre vitrine"
     },
@@ -303,9 +790,27 @@
       "title": "L'IA Répond à Vos Clients 24h/24",
       "hook": "Et si votre assistant virtuel répondait à 80% des questions clients automatiquement ?",
       "facts": [
-        { "num": "80", "unit": "%", "label": "des questions fréquentes\ntraitées par un chatbot IA", "source": "IBM Watson Research", "illustration": "chat" },
-        { "num": "30", "unit": "%", "label": "de réduction des coûts\nde support client avec l'IA", "source": "Juniper Research 2024", "illustration": "chart" },
-        { "num": "2.5Md$", "unit": "", "label": "économisés par les entreprises\navec les chatbots d'ici 2025", "source": "Chatbot Magazine", "illustration": "rocket" }
+        {
+          "num": "80",
+          "unit": "%",
+          "label": "des questions fréquentes\ntraitées par un chatbot IA",
+          "source": "IBM Watson Research",
+          "illustration": "chat"
+        },
+        {
+          "num": "30",
+          "unit": "%",
+          "label": "de réduction des coûts\nde support client avec l'IA",
+          "source": "Juniper Research 2024",
+          "illustration": "chart"
+        },
+        {
+          "num": "2.5Md$",
+          "unit": "",
+          "label": "économisés par les entreprises\navec les chatbots d'ici 2025",
+          "source": "Chatbot Magazine",
+          "illustration": "rocket"
+        }
       ],
       "cta": "Chatbot IA intégré dans votre vitrine NEBULA"
     },
@@ -314,9 +819,27 @@
       "title": "Votre Portfolio : Votre Meilleure Pub",
       "hook": "Montrer votre travail est 10x plus efficace qu'expliquer ce que vous faites.",
       "facts": [
-        { "num": "10x", "unit": "", "label": "plus convaincant de montrer\nson travail que d'en parler", "source": "Nielsen Trust Study", "illustration": "star" },
-        { "num": "56", "unit": "%", "label": "des clients décident\naprès avoir vu des exemples", "source": "LinkedIn B2B Report", "illustration": "chart" },
-        { "num": "3", "unit": "min", "label": "de temps moyen passé\nsur un beau portfolio en ligne", "source": "Hotjar Behavior 2024", "illustration": "clock" }
+        {
+          "num": "10x",
+          "unit": "",
+          "label": "plus convaincant de montrer\nson travail que d'en parler",
+          "source": "Nielsen Trust Study",
+          "illustration": "star"
+        },
+        {
+          "num": "56",
+          "unit": "%",
+          "label": "des clients décident\naprès avoir vu des exemples",
+          "source": "LinkedIn B2B Report",
+          "illustration": "chart"
+        },
+        {
+          "num": "3",
+          "unit": "min",
+          "label": "de temps moyen passé\nsur un beau portfolio en ligne",
+          "source": "Hotjar Behavior 2024",
+          "illustration": "clock"
+        }
       ],
       "cta": "Affichez votre portfolio dans votre vitrine NEBULA"
     },
@@ -325,9 +848,27 @@
       "title": "Mobile Money : Encaissez en 1 Clic",
       "hook": "En Afrique, plus de transactions se font par téléphone qu'en banque. Vous encaissez comment ?",
       "facts": [
-        { "num": "1.4Md$", "unit": "", "label": "transigés chaque jour\nvia Mobile Money en Afrique", "source": "GSMA Mobile Money 2024", "illustration": "phone" },
-        { "num": "621M", "unit": "", "label": "de comptes Mobile Money\nactifs en Afrique Subsaharienne", "source": "GSMA Report 2024", "illustration": "chart" },
-        { "num": "3s", "unit": "", "label": "pour recevoir un paiement\nFedaPay / MTN / Moov", "source": "FedaPay Benin", "illustration": "rocket" }
+        {
+          "num": "1.4Md$",
+          "unit": "",
+          "label": "transigés chaque jour\nvia Mobile Money en Afrique",
+          "source": "GSMA Mobile Money 2024",
+          "illustration": "phone"
+        },
+        {
+          "num": "621M",
+          "unit": "",
+          "label": "de comptes Mobile Money\nactifs en Afrique Subsaharienne",
+          "source": "GSMA Report 2024",
+          "illustration": "chart"
+        },
+        {
+          "num": "3s",
+          "unit": "",
+          "label": "pour recevoir un paiement\nFedaPay / MTN / Moov",
+          "source": "FedaPay Benin",
+          "illustration": "rocket"
+        }
       ],
       "cta": "Paiement Mobile Money dans votre vitrine NEBULA"
     },
@@ -336,9 +877,27 @@
       "title": "De 0 à Professionnel en 48 Heures",
       "hook": "En 2024, attendre 3 mois pour un site web, c'est 90 jours de clients perdus.",
       "facts": [
-        { "num": "48h", "unit": "", "label": "pour lancer une vitrine\nNEBULA professionnelle", "source": "NEBULA Agency", "illustration": "clock" },
-        { "num": "3", "unit": "mois", "label": "délai moyen d'une agence\ntraditionnelle pour un site web", "source": "Web Agency Survey 2024", "illustration": "chart" },
-        { "num": "90", "unit": "%", "label": "moins cher qu'une agence\neuropéenne pour la même qualité", "source": "NEBULA Agency Benin", "illustration": "rocket" }
+        {
+          "num": "48h",
+          "unit": "",
+          "label": "pour lancer une vitrine\nNEBULA professionnelle",
+          "source": "NEBULA Agency",
+          "illustration": "clock"
+        },
+        {
+          "num": "3",
+          "unit": "mois",
+          "label": "délai moyen d'une agence\ntraditionnelle pour un site web",
+          "source": "Web Agency Survey 2024",
+          "illustration": "chart"
+        },
+        {
+          "num": "90",
+          "unit": "%",
+          "label": "moins cher qu'une agence\neuropéenne pour la même qualité",
+          "source": "NEBULA Agency Benin",
+          "illustration": "rocket"
+        }
       ],
       "cta": "Lancez votre vitrine en 48h avec NEBULA"
     }
