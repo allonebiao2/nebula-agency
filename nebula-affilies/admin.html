@@ -7,7 +7,7 @@
 <title>Console NEBULA — Affiliés</title>
 <link rel="icon" type="image/png" href="/static/favicon.png">
 <link rel="apple-touch-icon" href="/static/favicon.png">
-<link rel="stylesheet" href="/static/app.css?v=20260620c">
+<link rel="stylesheet" href="/static/app.css?v=20260620d">
 </head>
 <body>
 <div class="bg-orbs"></div>
@@ -58,7 +58,7 @@
   <div id="notif-list"></div>
 </div></div></div>
 
-<script src="/static/app.js?v=20260620c"></script>
+<script src="/static/app.js?v=20260620d"></script>
 <script>
 const { icon, api, toast, sound, countUp, reveal, esc, fmt, ago, el } = NA;
 let CFG = null, OVER = null, AFFS = [], LEADS = [];
@@ -248,7 +248,7 @@ function orgComputeTeam(n) {
 function orgCard(n, tc, apex) {
   const teamCount = n._team || 0;
   const head = apex
-    ? `<img src="/static/nebula-logo.png?v=20260620c" alt="NEBULA Agency"><div class="oname">NEBULA Agency</div>`
+    ? `<img src="/static/nebula-logo.png?v=20260620d" alt="NEBULA Agency"><div class="oname">NEBULA Agency</div>`
     : `<div class="ohead">${NA.rankBadge(n.rank, { size: 'sm', glow: false })}
         <div style="min-width:0"><div class="oname">${esc(n.name)}</div><div class="ocode">${esc(n.code)}</div></div></div>`;
   const owedChip = (!apex && n.owed > 0)
@@ -403,7 +403,7 @@ function renderAffiliateModal(d) {
         <div class="aff-row"><span class="meta">Parrain — touche le N1 sur ses ventes</span>${up(d.parrain)}</div>
         <div class="aff-row"><span class="meta">Grand-parrain — touche le N2</span>${up(d.grandparrain)}</div>
         <div class="flex gap8 mt8 wrap"><span class="chip">${d.n1_count} filleul${d.n1_count > 1 ? 's' : ''} (N1)</span><span class="chip">${d.n2_count} (N2)</span><span class="chip">RCM ${fmt(p.rcm)} F</span>${p.momo_number ? `<span class="chip">${esc(p.momo_reseau || '')} ${esc(p.momo_number)}</span>` : ''}</div>
-        <button class="btn sm ghost block mt8" id="aff-center">Le situer dans la pyramide</button>
+        <div class="flex gap8 mt8"><button class="btn sm ghost" style="flex:1" id="aff-center">Le situer dans la pyramide</button><button class="btn sm ghost" style="flex:1" id="aff-msg">Lui écrire</button></div>
       </div>
       <div class="aff-sec">
         <div class="flex between"><div class="eyebrow"><span class="dot"></span>À payer</div><div class="mono" style="color:var(--gold);font-weight:700">${fmt(d.total_owed)} F</div></div>
@@ -421,6 +421,7 @@ function renderAffiliateModal(d) {
   const $ = id => document.getElementById(id);
   $('aff-x').onclick = closeModal;
   if ($('aff-center')) $('aff-center').onclick = () => { closeModal(); gotoAffiliate(p.id, false); };
+  if ($('aff-msg')) $('aff-msg').onclick = () => { closeModal(); switchView('messages'); setTimeout(() => openConv('a' + p.id, p.name), 160); };
   if ($('aff-pay')) $('aff-pay').onclick = async () => {
     const b = $('aff-pay'); b.disabled = true;
     try { const r = await api('/api/admin/commissions/pay', { body: { affiliate_id: p.id } }); sound.sfx.cash(); toast(`${fmt(r.total)} F marqués payés à ${esc(p.name)}`, 'ok'); }
@@ -810,7 +811,7 @@ async function renderClassement() {
   document.getElementById('v-classement').innerHTML = `
     <div class="rv mb24"><span class="eyebrow"><span class="dot"></span>Classement</span><h2 class="mt8" style="font-size:1.8rem">Le niveau de tout le réseau</h2>
     <p class="muted mt8">Chaque rang a son insigne. Clique un partenaire pour voir ses stats et lui écrire.</p></div>${rows || '<p class="muted center" style="padding:30px">Aucun partenaire.</p>'}`;
-  document.querySelectorAll('#v-classement .lb-row[data-uid]').forEach(r => r.onclick = () => openPartner(r.dataset.uid));
+  document.querySelectorAll('#v-classement .lb-row[data-uid]').forEach(r => r.onclick = () => openAffiliate(r.dataset.uid.replace(/^a/, '')));
 }
 function openPartner(uid) {
   const a = LB.find(x => x.uid === uid); if (!a) return;
