@@ -13,10 +13,10 @@ Esthétique premium accessible — pas de templates génériques.
 
 ## Grille tarifaire actuelle (2026-05-30)
 
-| Service | Setup | Mensuel |
+| Service | Setup | Récurrent |
 |---|---|---|
-| Vitrine Digitale + QR Code | **150 000 FCFA** | 15 000 F/mois *si modification demandée dans le mois* |
-| Catalogue Digital + QR Code | **50 000 FCFA** | 15 000 F/mois *si modification demandée dans le mois* |
+| Vitrine Digitale + QR Code | **150 000 FCFA** | 15 000 F / 6 mois *(hébergement & sécurité)* |
+| Catalogue Digital + QR Code | **50 000 FCFA** | 15 000 F / 6 mois *(hébergement & sécurité)* |
 | Création Fiche Google Maps | **20 000 FCFA** | — |
 | Création QR Code Google Review | **30 000 FCFA** | — |
 | Forfait Avatar IA ESSENTIEL | — | 30 000 F/mois (3 vidéos) |
@@ -25,8 +25,9 @@ Esthétique premium accessible — pas de templates génériques.
 **Délai affiché** : **5 à 7 jours** partout (hero, métriques, why, étapes, CTAs).
 Ancien « 48h / 48-72h » remplacé le 2026-05-30.
 
-**Frais mensuel** : ne s'applique QUE si le client demande au moins une
-modification dans le mois — pas de récurrence automatique.
+**Hébergement & sécurité** : **15 000 FCFA tous les 6 mois** (par semestre) pour la
+Vitrine et le Catalogue Digital. Frais d'hébergement récurrent, indépendant des
+modifications. *(Corrigé le 2026-06-20 : était affiché par erreur « /mois ».)*
 
 ## État
 
@@ -39,9 +40,9 @@ modification dans le mois — pas de récurrence automatique.
 
 #### v8 — 2026-05-30 (grille tarifaire + délai + portfolio INA)
 - **Vitrine Digitale** : 70 000 → **150 000 FCFA** setup
-- **Mensuel** : 10 000 → **15 000 FCFA/mois**, applicable uniquement
-  si le client demande au moins une modification dans le mois
-  (formulé clairement dans la note bleue sous les features)
+- **Mensuel** : 10 000 → **15 000 FCFA/mois** *(modèle initial v8)*.
+  **Corrigé le 2026-06-20** → hébergement & sécurité = **15 000 F / 6 mois**
+  (par semestre, voir la grille en tête).
 - **Fiche Google Maps** : 15 550 → **20 000 FCFA**
 - **QR Code Review** renommé **QR Code Google Review**, 20 550 → **30 000 FCFA**
 - **Délai** : « 48h / 48 à 72h » → **« 5 à 7 jours »** partout
