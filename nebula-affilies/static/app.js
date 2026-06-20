@@ -179,9 +179,55 @@ const NA = (() => {
     requestAnimationFrame(step);
   }
 
-  /* ---------- reveal au scroll ---------- */
-  const io = new IntersectionObserver((ents) => ents.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.12 });
-  function reveal(root = document) { root.querySelectorAll('.rv:not(.in)').forEach((n, i) => { n.style.transitionDelay = (i % 6) * 60 + 'ms'; io.observe(n); }); }
+  /* ---------- reveal au scroll — AUTO-RÉVEIL ROBUSTE ----------
+     Problème historique : les vues sont rendues en async (await api…) puis
+     reveal() était appelé AVANT que le contenu n'existe → les cartes .rv
+     restaient à opacity:0 (invisibles), ou apparaissaient une fraction de
+     seconde (ancien contenu révélé) avant d'être remplacées (« ça clignote
+     et ça disparaît »). Désormais le réveil est AUTOMATIQUE : tout .rv ajouté
+     au DOM — rendu synchrone, rendu async, ou rafraîchissement par polling —
+     est pris en charge, peu importe QUAND il arrive. Filet de sécurité en
+     prime : si l'observer ne se déclenche pas (webview mobile capricieuse,
+     vue masquée au moment de l'injection…), on force l'affichage dès que
+     l'élément est réellement dans le viewport. Le contenu ne peut JAMAIS
+     rester invisible. */
+  const io = new IntersectionObserver((ents) => ents.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }), { threshold: 0.06, rootMargin: '0px 0px -4% 0px' });
+  let _rvN = 0;
+  const _inView = (n) => { const r = n.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.top < (innerHeight || 0) && r.bottom > 0 && r.left < (innerWidth || 0) && r.right > 0; };
+  function _rvWatch(n) {
+    if (!n || n.nodeType !== 1 || n.dataset.rvOn === '1') return;
+    n.dataset.rvOn = '1';
+    n.style.transitionDelay = (_rvN++ % 6) * 55 + 'ms';
+    // Contenu d'une VUE applicative (back-office partenaire/admin) : il doit
+    // TOUJOURS être visible dès que sa vue s'affiche — JAMAIS conditionné au
+    // scroll. C'est la cause profonde du « du texte qui doit être là mais
+    // n'apparaît pas » : les cartes sous la ligne de flottaison restaient
+    // invisibles. On les révèle donc directement (l'entrée animée de la vue,
+    // .view.on → roomIn, suffit à l'effet premium).
+    if (n.closest && n.closest('.view')) {
+      requestAnimationFrame(() => n.classList.add('in'));
+      setTimeout(() => { if (!n.classList.contains('in')) n.classList.add('in'); }, 600);  // filet
+      return;
+    }
+    // Pages publiques (longues) : reveal au scroll classique, avec filet de
+    // sécurité si l'IntersectionObserver ne se déclenche pas (webview mobile
+    // capricieuse) ET que l'élément est réellement dans le viewport.
+    io.observe(n);
+    setTimeout(() => { if (!n.classList.contains('in') && _inView(n)) { n.classList.add('in'); io.unobserve(n); } }, 700);
+  }
+  function reveal(root = document) { (root || document).querySelectorAll('.rv').forEach(_rvWatch); }
+  // surveille TOUT ajout de .rv au DOM (rendus async, polling, modales…)
+  const _rvMo = new MutationObserver(ms => {
+    for (const m of ms) for (const node of m.addedNodes) {
+      if (node.nodeType !== 1) continue;
+      if (node.classList && node.classList.contains('rv')) _rvWatch(node);
+      if (node.querySelectorAll) node.querySelectorAll('.rv').forEach(_rvWatch);
+    }
+  });
+  function _rvStart() { if (document.body) { _rvMo.observe(document.body, { childList: true, subtree: true }); reveal(); } }
+  if (document.readyState !== 'loading') _rvStart(); else addEventListener('DOMContentLoaded', _rvStart);
 
   /* ---------- QR (recoloré à l'accent) ---------- */
   function qr(data, size = 220) {
