@@ -69,20 +69,6 @@ BRAIN_MODEL = os.getenv("NAFF_BRAIN_MODEL", "claude-sonnet-4-6")
 def anthropic_key() -> str:
     return os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY") or ""
 
-# ---- Notifications Telegram (push réel pour Mongazi — gratuit, optionnel) ----
-TG_TOKEN = os.getenv("NAFF_TG_TOKEN", "")
-TG_CHAT = os.getenv("NAFF_TG_CHAT", "")
-def tg_send(text: str):
-    if not (TG_TOKEN and TG_CHAT):
-        return
-    def _go():
-        try:
-            httpx.post(f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage",
-                       json={"chat_id": TG_CHAT, "text": text}, timeout=6)
-        except Exception:
-            pass
-    threading.Thread(target=_go, daemon=True).start()
-
 # ---- Catalogue NEBULA (grille tarifaire réelle, sert au calcul RCM) ----
 SERVICES: Dict[str, Dict[str, Any]] = {
     "vitrine":          {"label": "Vitrine Digitale + QR Code",   "price": 150000},
@@ -606,6 +592,39 @@ def affiliate_label(a: sqlite3.Row) -> str:
 def clean(s: Any, n: int = 200) -> str:
     return re.sub(r"\s+", " ", str(s or "")).strip()[:n]
 
+# ---- Anti-doublon par numéro de téléphone -----------------------------------
+def phone_key(s: Any) -> str:
+    """Forme canonique d'un numéro (Bénin) pour comparer : chiffres seuls, sans
+    indicatif 229 ni zéros de tête. '0196999185', '+229 0196999185', '196999185' → même clé."""
+    d = re.sub(r"\D", "", str(s or ""))
+    if d.startswith("229"):
+        d = d[3:]
+    return d.lstrip("0")
+
+def phone_is_affiliate(c, *nums) -> bool:
+    """True si l'un des numéros correspond déjà à un partenaire ACTIF (anti-doublon)."""
+    cand = {k for k in (phone_key(n) for n in nums) if len(k) >= 6}
+    if not cand:
+        return False
+    for row in c.execute("SELECT momo_number FROM affiliates WHERE actif=1").fetchall():
+        if phone_key(row["momo_number"]) in cand:
+            return True
+    return False
+
+def phone_is_pending(c, *nums) -> bool:
+    """True si une candidature/recrue EN ATTENTE existe déjà avec ce numéro (anti double-envoi)."""
+    cand = {k for k in (phone_key(n) for n in nums) if len(k) >= 6}
+    if not cand:
+        return False
+    for tbl in ("candidatures", "recruits"):
+        try:
+            for row in c.execute(f"SELECT numero, momo_number FROM {tbl} WHERE status='pending'").fetchall():
+                if phone_key(row["numero"]) in cand or phone_key(row["momo_number"]) in cand:
+                    return True
+        except Exception:
+            pass
+    return False
+
 # ----------------------------------------------------------------------------
 # Email d'accès (Resend) — envoyé automatiquement à la validation
 # ----------------------------------------------------------------------------
@@ -1040,6 +1059,10 @@ async def create_recruit(req: Request):
         msg = clean(d.get("message"), 300)
         if not (nom or prenom) or not numero:
             return JSONResponse({"ok": False, "error": "Nom et numéro obligatoires."}, status_code=400)
+        if phone_is_affiliate(c, numero, momo):
+            return JSONResponse({"ok": False, "error": "Ce numéro est déjà partenaire NEBULA. Connecte-toi à ton espace partenaire — pas besoin de t'inscrire à nouveau."}, status_code=409)
+        if phone_is_pending(c, numero, momo):
+            return JSONResponse({"ok": False, "error": "Une demande avec ce numéro est déjà en cours de validation. Patiente, NEBULA revient vers toi très vite."}, status_code=409)
         c.execute("""INSERT INTO recruits(parrain_id,nom,prenom,numero,email,momo_number,momo_reseau,message,status,created)
                      VALUES(?,?,?,?,?,?,?,?,'pending',?)""",
                   (a["id"], nom, prenom, numero, email, momo, reseau, msg, time.time()))
@@ -1471,6 +1494,9 @@ def admin_recruit_approve(rid: int, naff_session: Optional[str] = Cookie(default
         r = c.execute("SELECT * FROM recruits WHERE id=? AND status='pending'", (rid,)).fetchone()
         if not r:
             return JSONResponse({"ok": False}, status_code=404)
+        if phone_is_affiliate(c, r["numero"], r["momo_number"]):
+            c.execute("UPDATE recruits SET status='rejected' WHERE id=?", (rid,))   # doublon : pas de 2e compte
+            return JSONResponse({"ok": False, "error": "Ce numéro est déjà un partenaire actif — doublon évité, la demande a été archivée."}, status_code=409)
         pin = "".join(secrets.choice("0123456789") for _ in range(4))
         code = new_code(c)
         try:
@@ -1863,6 +1889,10 @@ async def create_candidature(req: Request):
     canaux = clean(d.get("canaux"), 200); parrain = clean(d.get("parrain_code"), 12).upper()
     ip = (req.headers.get("x-forwarded-for", "").split(",")[0].strip() or (req.client.host if req.client else ""))[:60]
     with db() as c:
+        if phone_is_affiliate(c, numero, momo):
+            return JSONResponse({"ok": False, "error": "Ce numéro est déjà partenaire NEBULA. Connecte-toi à ton espace partenaire — inutile de candidater à nouveau."}, status_code=409)
+        if phone_is_pending(c, numero, momo):
+            return JSONResponse({"ok": False, "error": "Une candidature avec ce numéro est déjà en cours de validation. Patiente, NEBULA revient vers toi."}, status_code=409)
         c.execute("""INSERT INTO candidatures(nom,prenom,email,numero,ville,momo_number,momo_reseau,
                      experience,motivation,canaux,parrain_code,terms_version,accepted_at,ip,status,created)
                      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?, 'pending', ?)""",
@@ -1870,7 +1900,7 @@ async def create_candidature(req: Request):
                    TERMS_VERSION, time.time(), ip, time.time()))
     who = (prenom + " " + nom).strip()
     notify("admin", 0, f"Nouvelle candidature partenaire : {who} ({numero}){' · ville ' + ville if ville else ''} — CGU v{TERMS_VERSION} acceptées.", kind="recrue")
-    tg_send(f"NEBULA Affiliés — nouvelle candidature partenaire : {who} ({numero}).")
+    tg_admin(f"🔔 NEBULA Affiliés — nouvelle candidature partenaire : {who} ({numero}).")
     return {"ok": True}
 
 @app.get("/api/admin/candidatures")
@@ -1895,6 +1925,9 @@ def admin_candidature_approve(cid: int, naff_session: Optional[str] = Cookie(def
         r = c.execute("SELECT * FROM candidatures WHERE id=? AND status='pending'", (cid,)).fetchone()
         if not r:
             return JSONResponse({"ok": False}, status_code=404)
+        if phone_is_affiliate(c, r["numero"], r["momo_number"]):
+            c.execute("UPDATE candidatures SET status='rejected' WHERE id=?", (cid,))   # doublon : pas de 2e compte
+            return JSONResponse({"ok": False, "error": "Ce numéro est déjà un partenaire actif — doublon évité, la candidature a été archivée."}, status_code=409)
         parrain_id = 0; parrain_name = None
         if r["parrain_code"]:
             p = c.execute("SELECT id,nom,prenom FROM affiliates WHERE code=? AND actif=1", (r["parrain_code"],)).fetchone()

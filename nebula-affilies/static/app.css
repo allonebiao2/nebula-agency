@@ -378,8 +378,14 @@ input,select,textarea{font-family:inherit}
 .modal{width:min(460px,100%);max-height:88dvh;overflow-y:auto}
 
 /* ---- Reveal au scroll ---- */
-.rv{opacity:0;transform:translateY(26px);filter:blur(6px);transition:opacity .8s var(--ease),transform .8s var(--ease),filter .8s var(--ease)}
-.rv.in{opacity:1;transform:none;filter:blur(0)}
+/* Reveal au scroll, AVEC filet de sécurité : si le JS n'ajoute jamais .in (cache/erreur),
+   la carte se révèle d'elle-même après 2,5 s → le contenu n'est JAMAIS bloqué invisible
+   (on peut toujours voir et défiler vers les cartes du bas). */
+.rv{opacity:0;transform:translateY(26px);filter:blur(6px);
+  transition:opacity .8s var(--ease),transform .8s var(--ease),filter .8s var(--ease);
+  animation:rvSafe 0s linear 2.5s forwards}
+.rv.in{opacity:1;transform:none;filter:blur(0);animation:none}
+@keyframes rvSafe{to{opacity:1;transform:none;filter:blur(0)}}
 
 /* ---- Login / portail ---- */
 .gate{min-height:100dvh;display:grid;place-items:center;padding:24px;position:relative;z-index:1}
