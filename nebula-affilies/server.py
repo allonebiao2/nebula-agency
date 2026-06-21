@@ -312,6 +312,12 @@ def migrate():
                 c.execute(f"ALTER TABLE affiliates ADD COLUMN {col} {ddl}")
             except Exception:
                 pass
+        # leads : provenance (affilie | site) pour distinguer les clients directs du site agence
+        for col, ddl in [("source", "TEXT DEFAULT 'affilie'")]:
+            try:
+                c.execute(f"ALTER TABLE leads ADD COLUMN {col} {ddl}")
+            except Exception:
+                pass
         for col, ddl in [("kind", "TEXT DEFAULT 'info'"), ("ref_aff", "INTEGER DEFAULT 0")]:
             try:
                 c.execute(f"ALTER TABLE notifs ADD COLUMN {col} {ddl}")
@@ -500,6 +506,8 @@ def _month_paid_count(aid: int) -> int:
 
 def _downline_ids(aid: int) -> List[int]:
     """IDs de tout le réseau descendant ACTIF (N1 + N2) d'un affilié."""
+    if not aid:                       # aid=0 = client direct (pas un affilié) : pas de descendance
+        return []
     ids: List[int] = []
     with db() as c:
         n1 = [r["id"] for r in c.execute("SELECT id FROM affiliates WHERE parrain_id=? AND actif=1", (aid,)).fetchall()]
@@ -511,6 +519,8 @@ def _downline_ids(aid: int) -> List[int]:
 
 def team_cumul_count(aid: int) -> int:
     """Ventes payées CUMULÉES de l'affilié + tout son réseau (N1+N2). Base du RANG (pour TOUS)."""
+    if not aid:
+        return 0
     total = _paid_value(aid)[0]
     for did in _downline_ids(aid):
         total += _paid_value(did)[0]
@@ -518,6 +528,8 @@ def team_cumul_count(aid: int) -> int:
 
 def team_month_count(aid: int) -> int:
     """Clients payés CE MOIS par l'affilié + tout son réseau (N1+N2). Base du palier SUPERVISEUR."""
+    if not aid:
+        return 0
     total = _month_paid_count(aid)
     for did in _downline_ids(aid):
         total += _month_paid_count(did)
@@ -562,6 +574,14 @@ def tg_notify(chat: Any, text: str):
     if chat:
         threading.Thread(target=tg_send, args=(chat, text), daemon=True).start()
 
+def admin_tg_chat() -> str:
+    """Chat Telegram de Mongazi (admin) : lié via le cockpit (setting) ou variable d'env."""
+    return setting_get("admin_tg_chat") or os.getenv("NAFF_TG_ADMIN_CHAT", "") or os.getenv("NAFF_TG_CHAT", "")
+
+def tg_admin(text: str):
+    """Alerte Telegram à l'admin (même bot partagé que les partenaires)."""
+    tg_notify(admin_tg_chat(), text)
+
 def notify(role: str, target_id: int, text: str, lead_id: Optional[int] = None, kind: str = "info", ref_aff: int = 0):
     # ref_aff = l'affilié CONCERNÉ par la notif (pour cliquer → sa position dans la pyramide)
     tgchat = ""
@@ -573,8 +593,11 @@ def notify(role: str, target_id: int, text: str, lead_id: Optional[int] = None, 
             if row:
                 tgchat = row["tg_chat"] or ""
     # Telegram UNIQUEMENT pour les événements importants (pas de bruit : ni statut, ni chat, ni info)
-    if tgchat and kind in ("client", "vente", "commission", "paiement", "recrue"):
-        tg_notify(tgchat, "🔔 NEBULA — " + text)
+    if kind in ("client", "vente", "commission", "paiement", "recrue"):
+        if role == "affiliate" and tgchat:
+            tg_notify(tgchat, "🔔 NEBULA — " + text)
+        elif role == "admin":
+            tg_admin("🔔 NEBULA Agency — " + text)
 
 def affiliate_label(a: sqlite3.Row) -> str:
     nom = " ".join(x for x in [a["prenom"], a["nom"]] if x).strip()
@@ -895,6 +918,39 @@ async def create_lead(req: Request):
     notify("affiliate", a["id"], f"{client} a rempli ton formulaire — en attente de validation.", lead_id, kind="client")
     return {"ok": True}
 
+def map_service(raw: str) -> str:
+    """Devine la clé SERVICES depuis le libellé libre du formulaire du site."""
+    t = (raw or "").lower()
+    if "catalog" in t: return "catalogue"
+    if "vitrine" in t or "site" in t or "boutique" in t: return "vitrine"
+    if "maps" in t or "google" in t or "fiche" in t: return "maps"
+    if "avis" in t or "review" in t or "qr" in t: return "review"
+    if "avatar" in t and ("pro" in t or "100" in t): return "avatar_pro"
+    if "avatar" in t: return "avatar_essentiel"
+    return "autre"
+
+@app.post("/api/site-lead")
+async def create_site_lead(req: Request):
+    """Client DIRECT depuis le site NEBULA Agency (sans affilié). affiliate_id=0, source='site'.
+    Notifie l'admin (back-office + Telegram) avec le brief complet."""
+    d = await req.json()
+    nom = clean(d.get("nom"), 90); numero = clean(d.get("numero"), 30)
+    if not nom or not numero:
+        return JSONResponse({"ok": False, "error": "Nom et numéro obligatoires."}, status_code=400)
+    service = map_service(d.get("service"))
+    brief = clean(d.get("message"), 1800)            # le brief complet (déjà mis en forme par le site)
+    now = time.time()
+    with db() as c:
+        cur = c.execute("""INSERT INTO leads(affiliate_id,nom,prenom,numero,service,message,status,paye,created,updated,source)
+                           VALUES(0,?,?,?,?,?,'attente',0,?,?,'site')""",
+                        (nom, "", numero, service, brief, now, now))
+        lead_id = cur.lastrowid
+    svc = SERVICES.get(service, {}).get("label", service)
+    notify("admin", 0, f"NOUVEAU CLIENT (site) : {nom} ({numero}) — {svc}", lead_id, kind="client")
+    # Brief complet en second message Telegram (lisible, hors fil de notif in-app)
+    tg_admin(f"📝 Brief de {nom} ({numero}) :\n\n{brief or '(pas de description)'}")
+    return {"ok": True}
+
 @app.post("/api/recruit")
 async def create_recruit(req: Request):
     d = await req.json()
@@ -1052,7 +1108,7 @@ def admin_overview(naff_session: Optional[str] = Cookie(default=None)):
             ca_paye += base
             aid = r["affiliate_id"]
             if aid not in rate_cache:
-                rate_cache[aid] = stats_of(aid)["direct_rate"]
+                rate_cache[aid] = 0 if not aid else stats_of(aid)["direct_rate"]
             commissions += commission_of(r["service"], r["montant"], rate_cache[aid])
     return {
         "affiliates": affs, "leads": len(leads), "by_status": by_status,
@@ -1232,21 +1288,29 @@ def admin_leads(naff_session: Optional[str] = Cookie(default=None)):
         return JSONResponse({"error": "auth"}, status_code=401)
     with db() as c:
         rows = c.execute("""SELECT l.*, a.code acode, a.nom anom, a.prenom aprenom
-                            FROM leads l JOIN affiliates a ON a.id=l.affiliate_id
+                            FROM leads l LEFT JOIN affiliates a ON a.id=l.affiliate_id
                             ORDER BY l.created DESC""").fetchall()
+        # heure de début = 1re fois passé « en cours » (depuis l'historique)
+        starts = {r["lead_id"]: r["t"] for r in c.execute(
+            "SELECT lead_id, MIN(at) t FROM history WHERE new_status='en_cours' GROUP BY lead_id").fetchall()}
     rate_cache = {}
     out = []
     for r in rows:
         aid = r["affiliate_id"]
+        direct = not aid
         if aid not in rate_cache:
-            rate_cache[aid] = stats_of(aid)["direct_rate"]
+            rate_cache[aid] = 0 if direct else stats_of(aid)["direct_rate"]
+        aff = ({"code": "", "name": "Client direct (site)", "direct": True} if direct
+               else {"code": r["acode"], "name": (str(r["aprenom"] or "") + " " + str(r["anom"] or "")).strip() or r["acode"], "direct": False})
         out.append({
             "id": r["id"], "nom": r["nom"], "prenom": r["prenom"], "numero": r["numero"],
             "service": r["service"], "service_label": SERVICES.get(r["service"], {}).get("label", r["service"]),
             "message": r["message"], "status": r["status"], "paye": r["paye"],
-            "commission": commission_of(r["service"], r["montant"], rate_cache[aid]),
-            "created": r["created"], "updated": r["updated"],
-            "affiliate": {"code": r["acode"], "name": (str(r["aprenom"] or "") + " " + str(r["anom"] or "")).strip() or r["acode"]},
+            "commission": 0 if direct else commission_of(r["service"], r["montant"], rate_cache[aid]),
+            "montant": int(r["montant"] or 0),
+            "source": (r["source"] if "source" in r.keys() else "affilie") or "affilie",
+            "created": r["created"], "updated": r["updated"], "started_at": starts.get(r["id"]),
+            "affiliate": aff,
         })
     return {"leads": out}
 
@@ -1267,7 +1331,8 @@ async def admin_set_status(lid: int, req: Request, naff_session: Optional[str] =
         c.execute("INSERT INTO history(lead_id,old_status,new_status,note,at) VALUES(?,?,?,?,?)",
                   (lid, old, st, "", time.time()))
     client = (str(r["prenom"] or "") + " " + str(r["nom"] or "")).strip()
-    notify("affiliate", r["affiliate_id"], f"{client} : statut → {STATUSES[st]['label']}", lid, kind="statut")
+    if r["affiliate_id"]:        # client d'affilié → on le notifie ; client direct (0) → rien
+        notify("affiliate", r["affiliate_id"], f"{client} : statut → {STATUSES[st]['label']}", lid, kind="statut")
     return {"ok": True}
 
 @app.post("/api/admin/leads/{lid}/payment")
@@ -1649,6 +1714,24 @@ def partner_tg_unlink(naff_session: Optional[str] = Cookie(default=None)):
         c.execute("UPDATE affiliates SET tg_chat='' WHERE id=?", (aid,))
     return {"ok": True}
 
+@app.get("/api/admin/telegram")
+def admin_tg_status(naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    token = setting_get("admin_tg_token")
+    if not token:
+        token = "adm" + secrets.token_urlsafe(9); setting_set("admin_tg_token", token)
+    user = os.getenv("NAFF_TG_BOT_USERNAME", "")
+    return {"linked": bool(admin_tg_chat()), "bot": user,
+            "link_url": (f"https://t.me/{user}?start={token}" if user else "")}
+
+@app.post("/api/admin/telegram/unlink")
+def admin_tg_unlink(naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    setting_set("admin_tg_chat", "")
+    return {"ok": True}
+
 @app.post("/api/telegram/webhook")
 async def telegram_webhook(req: Request):
     if req.headers.get("x-telegram-bot-api-secret-token", "") != os.getenv("NAFF_TG_SECRET", "__none__"):
@@ -1665,6 +1748,11 @@ async def telegram_webhook(req: Request):
     if text.startswith("/start"):
         parts = text.split(maxsplit=1)
         token = parts[1].strip() if len(parts) > 1 else ""
+        # 1) lien ADMIN (Mongazi) ?
+        if token and token == (setting_get("admin_tg_token") or "__none__"):
+            setting_set("admin_tg_chat", str(chat))
+            tg_send(chat, "✅ Telegram lié à ton cockpit NEBULA Agency, Mongazi !\n\nTu recevras ici en temps réel : nouveaux clients (site + réseau), ventes, commissions et paiements.")
+            return {"ok": True}
         a = None
         if token:
             with db() as c:

@@ -699,3 +699,19 @@ input,select,textarea{font-family:inherit}
 .pg-ico{flex:0 0 40px;width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:var(--accent);color:#0b0b12}
 .pg-ico svg{width:22px;height:22px}
 @media(max-width:560px){.pg-grid{grid-template-columns:1fr 1fr}}
+
+/* ---------- Pilotage clients (admin) : filtres + cartes de suivi ---------- */
+.lead-tabs{display:flex;gap:8px;flex-wrap:wrap}
+.lead-tab{display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:100px;cursor:pointer;
+  background:var(--glass);border:1px solid var(--hair);color:var(--muted);font-size:.85rem;font-weight:600;transition:all .2s}
+.lead-tab b{font-family:'JetBrains Mono';color:var(--ink)}
+.lead-tab:hover{border-color:var(--hair-2)}
+.lead-tab.on{background:color-mix(in srgb,var(--accent) 18%,transparent);border-color:color-mix(in srgb,var(--accent) 50%,transparent);color:var(--ink)}
+.lead-src{display:inline-flex;align-items:center;font-size:.68rem;font-weight:700;letter-spacing:.03em;padding:2px 9px;border-radius:100px;
+  background:rgba(255,255,255,.05);border:1px solid var(--hair);color:var(--muted)}
+.lead-src.site{background:color-mix(in srgb,var(--accent) 18%,transparent);border-color:color-mix(in srgb,var(--accent) 45%,transparent);color:color-mix(in srgb,var(--accent) 90%,white)}
+.lead-track{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:600;color:var(--muted)}
+.lead-track svg{width:15px;height:15px}
+.lead-track.warn{color:#f5b14c}.lead-track.info{color:#4cc6ff}.lead-track.ok{color:var(--ok)}
+.lead-note{font-size:.88rem;line-height:1.5;color:var(--ink);background:rgba(255,255,255,.03);border:1px solid var(--hair);
+  border-left:2px solid color-mix(in srgb,var(--accent) 55%,transparent);border-radius:10px;padding:9px 12px;white-space:pre-wrap;max-width:640px}

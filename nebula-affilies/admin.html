@@ -138,6 +138,8 @@ function renderDash() {
         <span class="btn sm primary">Voir<span class="ico">${icon('arrow')}</span></span>
       </div></button></div>
 
+      <div class="col-12 rv" id="dash-tg"></div>
+
       <div class="col-5 rv"><div class="card clickable" data-go="leads"><div class="in">
         <h3 class="mb16">Pipeline</h3>
         ${['attente', 'en_cours', 'termine', 'annule'].map(k => `
@@ -163,6 +165,22 @@ function renderDash() {
   countUp(document.getElementById('k-com'), OVER.commissions_dues, { money: true });
   document.querySelectorAll('#v-dash [data-go]').forEach(el => el.onclick = () => switchView(el.dataset.go));
   { const dp = document.getElementById('dash-pay'); if (dp) dp.onclick = () => NA.payGuide({ mode: 'admin', onGoto: () => switchView('paiements') }); }
+  wireAdminTelegram();
+}
+async function wireAdminTelegram() {
+  const box = document.getElementById('dash-tg'); if (!box) return;
+  let d; try { d = await api('/api/admin/telegram'); } catch (e) { return; }
+  if (d.linked) {
+    box.innerHTML = `<div class="card"><div class="in" style="display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap">
+      <div class="flex" style="gap:11px;align-items:center"><span class="pg-ico" style="background:var(--ok)">${icon('check')}</span><div><div style="font-weight:700">Alertes Telegram activées</div><div class="meta">Tu reçois les nouveaux clients, ventes et paiements sur Telegram.</div></div></div>
+      <button class="btn sm ghost" id="tg-unlink">Délier</button></div></div>`;
+    const u = document.getElementById('tg-unlink');
+    if (u) u.onclick = async () => { try { await api('/api/admin/telegram/unlink', { body: {} }); sound.sfx.click(); toast('Telegram délié', 'ok'); wireAdminTelegram(); } catch (e) {} };
+  } else if (d.link_url) {
+    box.innerHTML = `<div class="card pg-cta"><div class="in" style="display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap">
+      <div class="flex" style="gap:11px;align-items:center"><span class="pg-ico">${icon('bell')}</span><div><div style="font-weight:700">Reçois tes alertes sur Telegram</div><div class="meta">Nouveau client (site + réseau), vente, paiement — même quand le cockpit est fermé.</div></div></div>
+      <a class="btn sm primary" href="${d.link_url}" target="_blank" rel="noopener">Activer Telegram<span class="ico">${icon('arrow')}</span></a></div></div>`;
+  }
 }
 
 /* ---------- AFFILIÉS ---------- */
@@ -626,24 +644,60 @@ async function rejectRecruit(id) {
   catch (e) { toast('Erreur', 'bad'); }
 }
 
+let LEAD_FILTER = 'all';
+function daysSince(ts) {
+  const d = Math.floor((Date.now() / 1000 - (ts || 0)) / 86400);
+  if (d <= 0) return "aujourd'hui";
+  if (d === 1) return 'depuis 1 jour';
+  return `depuis ${d} jours`;
+}
+function fmtDateTime(ts) {
+  if (!ts) return '';
+  const d = new Date(ts * 1000);
+  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }) + ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+}
+function waLink(numero, text) {
+  let n = String(numero || '').replace(/\D/g, '');
+  if (n && !n.startsWith('229')) { n = n.replace(/^0+/, ''); if (n.length <= 10) n = '229' + n; }
+  return 'https://wa.me/' + n + (text ? '?text=' + encodeURIComponent(text) : '');
+}
 function renderLeads() {
+  const counts = { all: LEADS.length, attente: 0, en_cours: 0, termine: 0, annule: 0 };
+  LEADS.forEach(l => { counts[l.status] = (counts[l.status] || 0) + 1; });
+  const direct = LEADS.filter(l => l.source === 'site').length;
+  const tab = (k, label) => `<button class="lead-tab${LEAD_FILTER === k ? ' on' : ''}" data-f="${k}">${label} <b>${counts[k] || 0}</b></button>`;
+  const list = LEADS.filter(l => LEAD_FILTER === 'all' || l.status === LEAD_FILTER);
   document.getElementById('v-leads').innerHTML = `
-    <div class="rv mb24"><span class="eyebrow"><span class="dot"></span>Pilotage</span><h2 class="mt8" style="font-size:1.8rem">Chaque client du réseau</h2>
-    <p class="muted mt8">Change le statut → l'affilié est notifié. Marque le paiement → le point passe au vert fluo.</p></div>
-    <div id="leads-list">${LEADS.length ? LEADS.map(leadCard).join('') : `<div class="card"><div class="in center" style="padding:40px"><p class="muted">Aucun client pour l'instant.</p></div></div>`}</div>`;
-  LEADS.forEach(wireLead);
+    <div class="rv mb16"><span class="eyebrow"><span class="dot"></span>Pilotage</span><h2 class="mt8" style="font-size:1.8rem">Mes clients & le travail en cours</h2>
+    <p class="muted mt8">Valide un nouveau client → passe « En cours » pour démarrer → « Terminé » quand c'est livré. ${direct ? `<b style="color:var(--ink)">${direct}</b> client(s) direct(s) du site.` : ''}</p></div>
+    <div class="lead-tabs rv mb16">${tab('all', 'Tous')}${tab('attente', 'À valider')}${tab('en_cours', 'En cours')}${tab('termine', 'Terminés')}${tab('annule', 'Annulés')}</div>
+    <div id="leads-list">${list.length ? list.map(leadCard).join('') : `<div class="card"><div class="in center" style="padding:40px"><p class="muted">Aucun client dans cette vue.</p></div></div>`}</div>`;
+  document.querySelectorAll('#v-leads .lead-tab').forEach(b => b.onclick = () => { LEAD_FILTER = b.dataset.f; sound.sfx.tab(); renderLeads(); reveal(); });
+  list.forEach(wireLead);
 }
 function leadCard(l) {
-  const name = `${l.prenom || ''} ${l.nom || ''}`.trim();
+  const name = `${l.prenom || ''} ${l.nom || ''}`.trim() || 'Client';
+  const direct = l.affiliate && l.affiliate.direct;
+  const srcBadge = direct
+    ? `<span class="lead-src site">Client direct · site</span>`
+    : `<span class="lead-src">via ${esc(l.affiliate.name)}</span>`;
+  // ligne de suivi selon le statut
+  let track = '';
+  if (l.status === 'attente') track = `<span class="lead-track warn">${icon('bell')} En attente de validation · ${daysSince(l.created)}</span>`;
+  else if (l.status === 'en_cours') track = `<span class="lead-track info">${icon('bolt')} Travail en cours${l.started_at ? ' · démarré le ' + fmtDateTime(l.started_at) : ''}</span>`;
+  else if (l.status === 'termine') track = `<span class="lead-track ok">${icon('check')} Livré${l.started_at ? ' · démarré le ' + fmtDateTime(l.started_at) : ''}</span>`;
+  else if (l.status === 'annule') track = `<span class="lead-track">Annulé</span>`;
+  const wa = waLink(l.numero, `Bonjour ${name}, ici NEBULA Agency. Merci pour votre demande`);
   return `<div class="rv" id="lead-${l.id}"><div class="card"><div class="in">
     <div class="flex between wrap" style="gap:14px">
-      <div class="flex" style="gap:12px">
+      <div class="flex" style="gap:12px;min-width:0">
         <div class="avatar">${initials(name)}</div>
-        <div><div class="ttl">${esc(name)} <span class="muted" style="font-weight:400">· ${esc(l.numero)}</span></div>
-          <div class="meta">${esc(l.service_label)} · via <b style="color:var(--ink)">${esc(l.affiliate.name)}</b> · ${ago(l.created)}</div>
-          ${l.message ? `<div class="meta mt8" style="font-style:italic">« ${esc(l.message)} »</div>` : ''}</div>
+        <div style="min-width:0"><div class="ttl">${esc(name)} <span class="muted" style="font-weight:400">· ${esc(l.numero)}</span></div>
+          <div class="meta" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${esc(l.service_label)} ${srcBadge} · reçu ${ago(l.created)}</div>
+          <div class="mt8">${track}</div>
+          ${l.message ? `<div class="lead-note mt8">${esc(l.message)}</div>` : ''}</div>
       </div>
-      <div class="center"><div class="mono" style="color:var(--accent);font-weight:700">${fmt(l.commission)} F</div><div class="meta">commission</div></div>
+      <div class="center">${direct ? `<a class="btn sm ghost" href="${wa}" target="_blank" rel="noopener">WhatsApp<span class="ico">${icon('phone')}</span></a>` : `<div class="mono" style="color:var(--accent);font-weight:700">${fmt(l.commission)} F</div><div class="meta">commission</div>`}</div>
     </div>
     <div class="divider"></div>
     <div class="flex between wrap" style="gap:12px">

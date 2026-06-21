@@ -1267,7 +1267,10 @@ if(document.getElementById('fc_qr').checked)f.push('Affiche PDF A4');
 if(document.getElementById('fc_maps').checked)f.push('Google Maps');
 if(document.getElementById('fc_avis').checked)f.push('Section avis');
 const msg=['🚀 *NOUVELLE COMMANDE — NEBULA AGENCY*','═══════════════════════════════','','👤 *CONTACT*','• Nom : '+nom,'• WhatsApp : '+tel,'• Marque : '+marque,'• Secteur : '+secteur,'• Ville : '+ville,'','🎯 *PROJET*','• Service : '+niveau,'• Couleurs : '+(couleurs||'À définir ensemble'),'• Logo : '+logo,'• Délai : '+delai,'','✅ *OPTIONS SUPPLÉMENTAIRES*',f.length?f.map(x=>'• '+x).join('\n'):'• Aucune option supplémentaire','','📝 *DESCRIPTION*',desc,'','═══════════════════════════════','📩 Envoyé via nebula-agency.online'].join('\n');
-if(window.NEBULA_SFX)window.NEBULA_SFX.play.cash();window.open('https://wa.me/22996740732?text='+encodeURIComponent(msg),'_blank');}
+if(window.NEBULA_SFX)window.NEBULA_SFX.play.cash();
+// Enregistre le client dans le back-office NEBULA (notif + Telegram + suivi) — sans bloquer l'ouverture WhatsApp
+try{fetch('https://nebula-affilies-production.up.railway.app/api/site-lead',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({nom:nom,numero:tel,service:niveau,message:msg})}).catch(function(){});}catch(e){}
+window.open('https://wa.me/22996740732?text='+encodeURIComponent(msg),'_blank');}
 </script>
 
 <audio id="nebula-jazz" src="audio/jazz-loop.mp3" loop preload="none"></audio>
