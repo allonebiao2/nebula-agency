@@ -138,14 +138,18 @@ const NA = (() => {
       recrue() {[0,1].forEach(i => setTimeout(() => tone({ f: [587, 880][i], d: 0.24, v: 0.2, t: 'triangle' }), i * 120)); },               // nouvelle recrue : « bienvenue » chaleureux
       statut() { tone({ f: 600, g: 920, d: 0.16, v: 0.16, t: 'sine' }); },                                                                  // changement de statut : blip de progression
       incoming() { tone({ f: 680, g: 940, d: 0.11, v: 0.16, t: 'sine' }); setTimeout(() => tone({ f: 940, d: 0.09, v: 0.12, t: 'sine' }), 75); }, // message reçu : pop doux
+      /* --- ALERTE notification : carillon clair et fort (3 cloches montantes, dernière tenue) --- */
+      alert() { [0, 1, 2].forEach(i => setTimeout(() => tone({ f: [880, 1175, 1397][i], d: i === 2 ? 0.62 : 0.16, v: 0.4, t: 'triangle', a: 0.004 }), i * 130)); },
     };
-    // dispatcher : choisit la tonalité selon le type d'événement reçu du serveur
+    // dispatcher : carillon d'alerte FORT + vibration mobile, puis la tonalité typée
     function notif(kind) {
-      ({
+      try { if (navigator.vibrate) navigator.vibrate([180, 90, 180]); } catch (e) {}
+      sfx.alert();
+      setTimeout(() => ({
         client: sfx.client, vente: sfx.vente, recrue: sfx.recrue,
         commission: sfx.cash, paiement: sfx.cash, statut: sfx.statut,
         message: sfx.incoming, publication: sfx.client,
-      }[kind] || sfx.ding)();
+      }[kind] || (() => {}))(), 320);
     }
     return {
       unlock, sfx, notif,
