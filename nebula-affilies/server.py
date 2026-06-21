@@ -490,7 +490,8 @@ def notify(role: str, target_id: int, text: str, lead_id: Optional[int] = None, 
             row = c.execute("SELECT tg_chat FROM affiliates WHERE id=?", (target_id,)).fetchone()
             if row:
                 tgchat = row["tg_chat"] or ""
-    if tgchat:
+    # Telegram UNIQUEMENT pour les événements importants (pas de bruit : ni statut, ni chat, ni info)
+    if tgchat and kind in ("client", "vente", "commission", "paiement", "recrue"):
         tg_notify(tgchat, "🔔 NEBULA — " + text)
 
 def affiliate_label(a: sqlite3.Row) -> str:
