@@ -35,6 +35,7 @@ try:
     HERE0 = pathlib.Path(__file__).resolve().parent
     load_dotenv(HERE0 / ".env")
     load_dotenv(HERE0.parent / "boutique-ia" / ".env", override=False)   # repli clé Claude (démo)
+    load_dotenv(HERE0.parent / "nebula-prospector" / ".env", override=False)   # repli clé Resend (email) en local
 except Exception:
     pass
 
@@ -287,7 +288,7 @@ init_db()
 def migrate():
     with db() as c:
         for col, ddl in [("pseudo", "TEXT DEFAULT ''"), ("parrain_id", "INTEGER DEFAULT 0"), ("photo", "TEXT DEFAULT ''"),
-                         ("direct_rate_override", "REAL DEFAULT 0")]:
+                         ("direct_rate_override", "REAL DEFAULT 0"), ("email", "TEXT DEFAULT ''")]:
             try:
                 c.execute(f"ALTER TABLE affiliates ADD COLUMN {col} {ddl}")
             except Exception:
@@ -295,6 +296,11 @@ def migrate():
         for col, ddl in [("kind", "TEXT DEFAULT 'info'"), ("ref_aff", "INTEGER DEFAULT 0")]:
             try:
                 c.execute(f"ALTER TABLE notifs ADD COLUMN {col} {ddl}")
+            except Exception:
+                pass
+        for col, ddl in [("email", "TEXT DEFAULT ''")]:
+            try:
+                c.execute(f"ALTER TABLE recruits ADD COLUMN {col} {ddl}")
             except Exception:
                 pass
 migrate()
@@ -469,6 +475,75 @@ def affiliate_label(a: sqlite3.Row) -> str:
 
 def clean(s: Any, n: int = 200) -> str:
     return re.sub(r"\s+", " ", str(s or "")).strip()[:n]
+
+# ----------------------------------------------------------------------------
+# Email d'accès (Resend) — envoyé automatiquement à la validation
+# ----------------------------------------------------------------------------
+def esc_html(s: Any) -> str:
+    return (str(s if s is not None else "")).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+
+def public_base() -> str:
+    return (os.getenv("NAFF_PUBLIC_BASE") or "https://partenaires.nebula-agency.online").rstrip("/")
+
+def access_email_html(name: str, code: str, pin: str, parrain_name: Optional[str] = None) -> str:
+    base = public_base()
+    logo = base + "/static/nebula-logo.png"
+    hub = f"{base}/p/{code}"
+    parr = f'<p style="margin:0 0 14px;color:#5a5a72;font-size:14px">Tu rejoins le réseau de <b style="color:#1a1a2e">{esc_html(parrain_name)}</b>.</p>' if parrain_name else ""
+    return f"""<!DOCTYPE html><html><body style="margin:0;background:#0b0b14;font-family:Segoe UI,Arial,sans-serif">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0b0b14;padding:28px 14px">
+<tr><td align="center">
+  <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:20px;overflow:hidden">
+    <tr><td style="background:linear-gradient(135deg,#7b5cff,#22d3ee);padding:34px 30px;text-align:center">
+      <img src="{logo}" alt="NEBULA Agency" width="190" style="max-width:70%;height:auto;display:inline-block">
+    </td></tr>
+    <tr><td style="padding:34px 34px 10px">
+      <h1 style="margin:0 0 8px;color:#13132a;font-size:23px">Bienvenue, {esc_html(name)} !</h1>
+      <p style="margin:0 0 16px;color:#444;font-size:15px;line-height:1.6">Ta candidature au programme partenaires <b>NEBULA Agency</b> est <b style="color:#16a34a">validée</b>. Voici tes accès personnels — garde-les précieusement.</p>
+      {parr}
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 20px;background:#f4f3fb;border:1px solid #e6e4f5;border-radius:14px">
+        <tr><td style="padding:18px 22px">
+          <div style="color:#7a7a93;font-size:12px;text-transform:uppercase;letter-spacing:1px">Ton code partenaire</div>
+          <div style="color:#13132a;font-size:30px;font-weight:800;letter-spacing:3px;font-family:Consolas,monospace">{esc_html(code)}</div>
+          <div style="height:10px"></div>
+          <div style="color:#7a7a93;font-size:12px;text-transform:uppercase;letter-spacing:1px">Ton code PIN</div>
+          <div style="color:#7b5cff;font-size:30px;font-weight:800;letter-spacing:6px;font-family:Consolas,monospace">{esc_html(pin)}</div>
+        </td></tr>
+      </table>
+      <a href="{base}/partenaire" style="display:block;background:#7b5cff;color:#fff;text-decoration:none;text-align:center;padding:15px;border-radius:12px;font-weight:700;font-size:15px">Ouvrir mon espace partenaire</a>
+      <p style="margin:18px 0 6px;color:#444;font-size:14px;line-height:1.6"><b>Ton lien unique</b> à partager (clients ET nouvelles recrues) :</p>
+      <p style="margin:0 0 18px"><a href="{hub}" style="color:#7b5cff;font-size:14px;word-break:break-all">{hub}</a></p>
+      <p style="margin:0 0 6px;color:#444;font-size:14px;line-height:1.6">Tes premiers pas : connecte-toi, complète ta photo, et partage ton lien. Tu gagnes sur tes ventes <b>et</b> sur celles de ton équipe.</p>
+    </td></tr>
+    <tr><td style="padding:18px 34px 30px;border-top:1px solid #eee">
+      <p style="margin:0;color:#9a9ab0;font-size:12px;line-height:1.6">NEBULA Agency · Cotonou, Bénin · Une question ? Réponds simplement à cet email.</p>
+    </td></tr>
+  </table>
+</td></tr></table></body></html>"""
+
+def send_access_email(to: str, name: str, code: str, pin: str, parrain_name: Optional[str] = None) -> Dict[str, Any]:
+    """Envoie l'email d'accès via Resend. Ne lève jamais — renvoie {ok, error}."""
+    key = os.getenv("RESEND_API_KEY", "")
+    to = (to or "").strip()
+    if not key or "@" not in to:
+        return {"ok": False, "error": "email ou clé Resend indisponible"}
+    frm_addr = os.getenv("EMAIL_FROM_ADDRESS", "").strip() or "onboarding@resend.dev"
+    frm_name = os.getenv("EMAIL_FROM_NAME", "").strip() or "NEBULA Agency"
+    payload = {"from": f"{frm_name} <{frm_addr}>", "to": [to],
+               "subject": "Bienvenue chez NEBULA Agency — tes accès partenaire",
+               "html": access_email_html(name, code, pin, parrain_name)}
+    reply = os.getenv("EMAIL_REPLY_TO", "").strip()
+    if reply:
+        payload["reply_to"] = reply
+    try:
+        r = httpx.post("https://api.resend.com/emails",
+                       headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+                       json=payload, timeout=20)
+        if r.status_code in (200, 201):
+            return {"ok": True, "id": (r.json() or {}).get("id")}
+        return {"ok": False, "error": f"Resend {r.status_code}: {r.text[:160]}"}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
 
 # ----------------------------------------------------------------------------
 # Seed : compte démo pour cliquer tout de suite
@@ -720,14 +795,14 @@ async def create_recruit(req: Request):
         if not a:
             return JSONResponse({"ok": False, "error": "Lien parrain invalide."}, status_code=404)
         nom = clean(d.get("nom"), 80); prenom = clean(d.get("prenom"), 80)
-        numero = clean(d.get("numero"), 30)
+        numero = clean(d.get("numero"), 30); email = clean(d.get("email"), 120)
         momo = clean(d.get("momo_number"), 30); reseau = clean(d.get("momo_reseau"), 30) or RESEAUX[0]
         msg = clean(d.get("message"), 300)
         if not (nom or prenom) or not numero:
             return JSONResponse({"ok": False, "error": "Nom et numéro obligatoires."}, status_code=400)
-        c.execute("""INSERT INTO recruits(parrain_id,nom,prenom,numero,momo_number,momo_reseau,message,status,created)
-                     VALUES(?,?,?,?,?,?,?,'pending',?)""",
-                  (a["id"], nom, prenom, numero, momo, reseau, msg, time.time()))
+        c.execute("""INSERT INTO recruits(parrain_id,nom,prenom,numero,email,momo_number,momo_reseau,message,status,created)
+                     VALUES(?,?,?,?,?,?,?,?,'pending',?)""",
+                  (a["id"], nom, prenom, numero, email, momo, reseau, msg, time.time()))
     who = (prenom + " " + nom).strip()
     notify("admin", 0, f"Nouvelle recrue : {who} ({numero}) — parrainé(e) par {affiliate_label(a)}", kind="recrue", ref_aff=a["id"])
     notify("affiliate", a["id"], f"{who} veut rejoindre via ton lien — en attente de validation NEBULA.", kind="recrue")
@@ -938,6 +1013,27 @@ def admin_reset_pin(aid: int, naff_session: Optional[str] = Cookie(default=None)
     notify("affiliate", aid, "Tes accès ont été réinitialisés par NEBULA — nouveau PIN envoyé.", kind="info")
     return {"ok": True, "code": a["code"], "pin": pin}
 
+@app.post("/api/admin/affiliates/{aid}/email-access")
+def admin_email_access(aid: int, naff_session: Optional[str] = Cookie(default=None)):
+    """Envoi (ou renvoi) des accès par EMAIL. Régénère un PIN (l'ancien est haché)."""
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        a = c.execute("SELECT * FROM affiliates WHERE id=?", (aid,)).fetchone()
+        if not a:
+            return JSONResponse({"ok": False}, status_code=404)
+        email = clean(a["email"], 120)
+        if "@" not in email:
+            return {"ok": False, "error": "no_email"}
+        pin = "".join(secrets.choice("0123456789") for _ in range(4))
+        c.execute("UPDATE affiliates SET pin=? WHERE id=?", (hash_pw(pin), aid))
+        pr = c.execute("SELECT nom,prenom FROM affiliates WHERE id=?", (a["parrain_id"] or 0,)).fetchone()
+    parrain_name = (str(pr["prenom"] or "") + " " + str(pr["nom"] or "")).strip() if pr else None
+    sent = send_access_email(email, affiliate_label(a), a["code"], pin, parrain_name)
+    if sent.get("ok"):
+        notify("affiliate", aid, "Tes accès viennent de t'être envoyés par email.", kind="info", ref_aff=aid)
+    return {"ok": bool(sent.get("ok")), "email": email, "error": sent.get("error")}
+
 @app.post("/api/admin/affiliates/{aid}/delete")
 def admin_delete_affiliate(aid: int, naff_session: Optional[str] = Cookie(default=None)):
     """Supprime définitivement un partenaire et ses données liées (clients, commissions, etc.)."""
@@ -1108,13 +1204,20 @@ def admin_recruit_approve(rid: int, naff_session: Optional[str] = Cookie(default
             return JSONResponse({"ok": False}, status_code=404)
         pin = "".join(secrets.choice("0123456789") for _ in range(4))
         code = new_code(c)
-        c.execute("""INSERT INTO affiliates(code,nom,prenom,momo_number,momo_reseau,pin,accent,actif,created,parrain_id)
-                     VALUES(?,?,?,?,?,?,?,1,?,?)""",
-                  (code, r["nom"], r["prenom"], r["momo_number"], r["momo_reseau"], hash_pw(pin), "#7b5cff", time.time(), r["parrain_id"]))
+        try:
+            email = clean(r["email"], 120)
+        except Exception:
+            email = ""
+        c.execute("""INSERT INTO affiliates(code,nom,prenom,momo_number,momo_reseau,pin,accent,actif,created,parrain_id,email)
+                     VALUES(?,?,?,?,?,?,?,1,?,?,?)""",
+                  (code, r["nom"], r["prenom"], r["momo_number"], r["momo_reseau"], hash_pw(pin), "#7b5cff", time.time(), r["parrain_id"], email))
         c.execute("UPDATE recruits SET status='approved' WHERE id=?", (rid,))
+        pr = c.execute("SELECT nom,prenom FROM affiliates WHERE id=?", (r["parrain_id"],)).fetchone()
+    parrain_name = (str(pr["prenom"] or "") + " " + str(pr["nom"] or "")).strip() if pr else None
     who = (str(r["prenom"] or "") + " " + str(r["nom"] or "")).strip()
-    notify("affiliate", r["parrain_id"], f"Ta recrue {who} est validée — elle rejoint ton réseau (N1).", kind="recrue")
-    return {"ok": True, "code": code, "pin": pin}
+    notify("affiliate", r["parrain_id"], f"Ta recrue {who} est validée — elle rejoint ton réseau (N1).", kind="recrue", ref_aff=r["parrain_id"])
+    sent = send_access_email(email, who or code, code, pin, parrain_name) if email else {"ok": False}
+    return {"ok": True, "code": code, "pin": pin, "email": email, "email_sent": bool(sent.get("ok"))}
 
 @app.post("/api/admin/recruits/{rid}/reject")
 def admin_recruit_reject(rid: int, naff_session: Optional[str] = Cookie(default=None)):
@@ -1199,7 +1302,7 @@ def admin_affiliate_detail(aid: int, naff_session: Optional[str] = Cookie(defaul
         "profile": {"id": a["id"], "name": affiliate_label(a), "code": a["code"],
                     "rank": s["rank"]["label"], "palier": s["palier"]["label"], "palier_pct": s["palier"]["pct"],
                     "rate_pct": int(round(rate * 100)), "photo": photo_url("a" + str(aid)),
-                    "momo_number": a["momo_number"], "momo_reseau": a["momo_reseau"],
+                    "momo_number": a["momo_number"], "momo_reseau": a["momo_reseau"], "email": (a["email"] or ""),
                     "ventes": s["ventes"], "ventes_mois": s["ventes_mois"], "rcm": int(s["rcm"]), "created": a["created"]},
         "parrain": nm(p1, "N1 · 10%"), "grandparrain": nm(p2, "N2 · 5%"),
         "earnings": e,
@@ -1442,21 +1545,24 @@ def admin_candidature_approve(cid: int, naff_session: Optional[str] = Cookie(def
         r = c.execute("SELECT * FROM candidatures WHERE id=? AND status='pending'", (cid,)).fetchone()
         if not r:
             return JSONResponse({"ok": False}, status_code=404)
-        parrain_id = 0
+        parrain_id = 0; parrain_name = None
         if r["parrain_code"]:
-            p = c.execute("SELECT id FROM affiliates WHERE code=? AND actif=1", (r["parrain_code"],)).fetchone()
+            p = c.execute("SELECT id,nom,prenom FROM affiliates WHERE code=? AND actif=1", (r["parrain_code"],)).fetchone()
             if p:
-                parrain_id = p["id"]
+                parrain_id = p["id"]; parrain_name = (str(p["prenom"] or "") + " " + str(p["nom"] or "")).strip() or None
         pin = "".join(secrets.choice("0123456789") for _ in range(4))
         code = new_code(c)
-        c.execute("""INSERT INTO affiliates(code,nom,prenom,momo_number,momo_reseau,pin,accent,actif,created,parrain_id)
-                     VALUES(?,?,?,?,?,?,?,1,?,?)""",
-                  (code, r["nom"], r["prenom"], r["momo_number"], r["momo_reseau"], hash_pw(pin), "#7b5cff", time.time(), parrain_id))
+        email = clean(r["email"], 120)
+        c.execute("""INSERT INTO affiliates(code,nom,prenom,momo_number,momo_reseau,pin,accent,actif,created,parrain_id,email)
+                     VALUES(?,?,?,?,?,?,?,1,?,?,?)""",
+                  (code, r["nom"], r["prenom"], r["momo_number"], r["momo_reseau"], hash_pw(pin), "#7b5cff", time.time(), parrain_id, email))
         c.execute("UPDATE candidatures SET status='approved' WHERE id=?", (cid,))
         if parrain_id:
             who = (str(r["prenom"] or "") + " " + str(r["nom"] or "")).strip()
-            notify("affiliate", parrain_id, f"Ta recrue {who} est validée — elle rejoint ton réseau (N1).", kind="recrue")
-    return {"ok": True, "code": code, "pin": pin}
+            notify("affiliate", parrain_id, f"Ta recrue {who} est validée — elle rejoint ton réseau (N1).", kind="recrue", ref_aff=parrain_id)
+    name = (str(r["prenom"] or "") + " " + str(r["nom"] or "")).strip() or code
+    sent = send_access_email(email, name, code, pin, parrain_name) if email else {"ok": False}
+    return {"ok": True, "code": code, "pin": pin, "email": email, "email_sent": bool(sent.get("ok"))}
 
 @app.post("/api/admin/candidatures/{cid}/reject")
 def admin_candidature_reject(cid: int, naff_session: Optional[str] = Cookie(default=None)):

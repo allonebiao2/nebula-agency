@@ -39,6 +39,7 @@
           <div class="col-6 field"><label>Nom</label><div class="wrap"><input id="nom" placeholder="Ton nom"></div></div>
         </div>
         <div class="field"><label>Numéro WhatsApp</label><div class="wrap"><input id="numero" inputmode="tel" placeholder="Ex : 01 96 74 07 32"></div></div>
+        <div class="field"><label>Email <span class="faint">(pour recevoir tes accès)</span></label><div class="wrap"><input id="email" type="email" inputmode="email" placeholder="ton@email.com"></div></div>
         <div class="bento" style="gap:0 14px">
           <div class="col-6 field"><label>Numéro Mobile Money</label><div class="wrap"><input id="momo" inputmode="tel" placeholder="Pour être payé"></div></div>
           <div class="col-6 field"><label>Réseau</label><div class="wrap"><select id="reseau"></select></div></div>
@@ -78,6 +79,7 @@
       prenom: document.getElementById('prenom').value.trim(),
       nom: document.getElementById('nom').value.trim(),
       numero: document.getElementById('numero').value.trim(),
+      email: document.getElementById('email').value.trim(),
       momo_number: document.getElementById('momo').value.trim(),
       momo_reseau: document.getElementById('reseau').value,
       message: document.getElementById('message').value.trim(),

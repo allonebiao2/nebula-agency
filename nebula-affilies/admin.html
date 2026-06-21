@@ -7,7 +7,7 @@
 <title>Console NEBULA — Affiliés</title>
 <link rel="icon" type="image/png" href="/static/favicon.png">
 <link rel="apple-touch-icon" href="/static/favicon.png">
-<link rel="stylesheet" href="/static/app.css?v=20260620d">
+<link rel="stylesheet" href="/static/app.css?v=20260620e">
 </head>
 <body>
 <div class="bg-orbs"></div>
@@ -58,7 +58,7 @@
   <div id="notif-list"></div>
 </div></div></div>
 
-<script src="/static/app.js?v=20260620d"></script>
+<script src="/static/app.js?v=20260620e"></script>
 <script>
 const { icon, api, toast, sound, countUp, reveal, esc, fmt, ago, el } = NA;
 let CFG = null, OVER = null, AFFS = [], LEADS = [];
@@ -248,7 +248,7 @@ function orgComputeTeam(n) {
 function orgCard(n, tc, apex) {
   const teamCount = n._team || 0;
   const head = apex
-    ? `<img src="/static/nebula-logo.png?v=20260620d" alt="NEBULA Agency"><div class="oname">NEBULA Agency</div>`
+    ? `<img src="/static/nebula-logo.png?v=20260620e" alt="NEBULA Agency"><div class="oname">NEBULA Agency</div>`
     : `<div class="ohead">${NA.rankBadge(n.rank, { size: 'sm', glow: false })}
         <div style="min-width:0"><div class="oname">${esc(n.name)}</div><div class="ocode">${esc(n.code)}</div></div></div>`;
   const owedChip = (!apex && n.owed > 0)
@@ -402,8 +402,9 @@ function renderAffiliateModal(d) {
         <div class="eyebrow"><span class="dot"></span>Position dans le réseau</div>
         <div class="aff-row"><span class="meta">Parrain — touche le N1 sur ses ventes</span>${up(d.parrain)}</div>
         <div class="aff-row"><span class="meta">Grand-parrain — touche le N2</span>${up(d.grandparrain)}</div>
-        <div class="flex gap8 mt8 wrap"><span class="chip">${d.n1_count} filleul${d.n1_count > 1 ? 's' : ''} (N1)</span><span class="chip">${d.n2_count} (N2)</span><span class="chip">RCM ${fmt(p.rcm)} F</span>${p.momo_number ? `<span class="chip">${esc(p.momo_reseau || '')} ${esc(p.momo_number)}</span>` : ''}</div>
+        <div class="flex gap8 mt8 wrap"><span class="chip">${d.n1_count} filleul${d.n1_count > 1 ? 's' : ''} (N1)</span><span class="chip">${d.n2_count} (N2)</span><span class="chip">RCM ${fmt(p.rcm)} F</span>${p.momo_number ? `<span class="chip">${esc(p.momo_reseau || '')} ${esc(p.momo_number)}</span>` : ''}${p.email ? `<span class="chip">${esc(p.email)}</span>` : ''}</div>
         <div class="flex gap8 mt8"><button class="btn sm ghost" style="flex:1" id="aff-center">Le situer dans la pyramide</button><button class="btn sm ghost" style="flex:1" id="aff-msg">Lui écrire</button></div>
+        ${p.email ? `<button class="btn sm ghost block mt8" id="aff-email">Envoyer ses accès par email</button>` : `<p class="meta mt8">Pas d'email enregistré — envoie les accès via WhatsApp (kit de validation).</p>`}
       </div>
       <div class="aff-sec">
         <div class="flex between"><div class="eyebrow"><span class="dot"></span>À payer</div><div class="mono" style="color:var(--gold);font-weight:700">${fmt(d.total_owed)} F</div></div>
@@ -422,6 +423,15 @@ function renderAffiliateModal(d) {
   $('aff-x').onclick = closeModal;
   if ($('aff-center')) $('aff-center').onclick = () => { closeModal(); gotoAffiliate(p.id, false); };
   if ($('aff-msg')) $('aff-msg').onclick = () => { closeModal(); switchView('messages'); setTimeout(() => openConv('a' + p.id, p.name), 160); };
+  if ($('aff-email')) $('aff-email').onclick = async () => {
+    if (!confirm('Envoyer les accès par email à ' + p.name + ' ? Un nouveau PIN sera généré et envoyé.')) return;
+    const b = $('aff-email'); b.disabled = true; b.textContent = 'Envoi…';
+    try { const r = await api('/api/admin/affiliates/' + p.id + '/email-access', { body: {} });
+      if (r.ok) { sound.sfx.cash(); toast('Accès envoyés par email à ' + r.email, 'ok'); }
+      else { toast(r.error === 'no_email' ? 'Pas d\'email enregistré' : 'Échec de l\'envoi', 'bad'); } }
+    catch (e) { toast('Erreur', 'bad'); }
+    b.disabled = false; b.textContent = 'Envoyer ses accès par email';
+  };
   if ($('aff-pay')) $('aff-pay').onclick = async () => {
     const b = $('aff-pay'); b.disabled = true;
     try { const r = await api('/api/admin/commissions/pay', { body: { affiliate_id: p.id } }); sound.sfx.cash(); toast(`${fmt(r.total)} F marqués payés à ${esc(p.name)}`, 'ok'); }
@@ -526,8 +536,11 @@ function welcomeMessage(code, pin, name) {
     + `Connecte-toi, partage ton lien, suis tes clients et tes commissions. On t'accompagne.`;
 }
 /* Carte d'accès réutilisable : Copier + Envoyer sur WhatsApp */
-function renderAccessKit({ title, code, pin, name, onDone }) {
+function renderAccessKit({ title, code, pin, name, onDone, emailSent, email }) {
   const msg = welcomeMessage(code, pin, name);
+  const emailLine = emailSent
+    ? `<div class="card mt12" style="border-color:color-mix(in srgb,var(--ok) 45%,transparent)"><div class="in" style="padding:12px 16px;color:var(--ok)">✓ Email d'accès envoyé automatiquement à <b>${esc(email)}</b>.</div></div>`
+    : (email ? `<p class="meta mt8">Email non envoyé (${esc(email)}) — utilise WhatsApp ci-dessous.</p>` : '');
   document.getElementById('modal-in').innerHTML = `
     <div class="center" style="padding:8px">
       <div class="avatar" style="margin:0 auto 16px;width:60px;height:60px;background:linear-gradient(135deg,var(--ok),#1f9e6e)">${icon('check')}</div>
@@ -539,6 +552,7 @@ function renderAccessKit({ title, code, pin, name, onDone }) {
         <div class="divider"></div>
         <div class="flex between"><span class="muted">Lien à partager</span><b class="mono" style="font-size:.82rem;color:var(--accent)">/p/${code}</b></div>
       </div></div>
+      ${emailLine}
       <div class="flex gap8 mt16" style="justify-content:center;flex-wrap:wrap">
         <a class="btn sm primary" id="am-wa" target="_blank" rel="noopener">Envoyer sur WhatsApp<span class="ico">${icon('phone')}</span></a>
         <button class="btn sm ghost" id="am-cp">Copier le kit<span class="ico">${icon('copy')}</span></button>
@@ -551,9 +565,9 @@ function renderAccessKit({ title, code, pin, name, onDone }) {
   document.getElementById('am-cp').onclick = () => { navigator.clipboard?.writeText(msg); sound.sfx.ok(); toast('Kit copié ✓', 'ok'); };
   document.getElementById('am-done').onclick = async () => { closeModal(); await refresh(); if (onDone) onDone(); reveal(); };
 }
-function showAccessModal(title, code, pin, onDone) { renderAccessKit({ title, code, pin, onDone }); }
+function showAccessModal(title, code, pin, onDone, emailSent, email) { renderAccessKit({ title, code, pin, onDone, emailSent, email }); }
 async function approveCand(id) {
-  try { const d = await api(`/api/admin/candidatures/${id}/approve`, { body: {} }); sound.sfx.cash(); showAccessModal('Candidature validée', d.code, d.pin, renderRecrues); renderRecrues(); }
+  try { const d = await api(`/api/admin/candidatures/${id}/approve`, { body: {} }); sound.sfx.cash(); showAccessModal('Candidature validée', d.code, d.pin, renderRecrues, d.email_sent, d.email); renderRecrues(); }
   catch (e) { toast('Erreur', 'bad'); }
 }
 async function rejectCand(id) {
@@ -574,23 +588,7 @@ async function approveRecruit(id) {
   try {
     const d = await api(`/api/admin/recruits/${id}/approve`, { body: {} });
     sound.sfx.cash();
-    document.getElementById('modal-in').innerHTML = `
-      <div class="center" style="padding:8px">
-        <div class="avatar" style="margin:0 auto 16px;width:60px;height:60px;background:linear-gradient(135deg,var(--ok),#1f9e6e)">${icon('check')}</div>
-        <h3>Recrue validée</h3><p class="muted mt8 mb16">Transmets-lui ses accès partenaire.</p>
-        <div class="card"><div class="in">
-          <div class="flex between"><span class="muted">Code</span><b class="mono" style="font-size:1.3rem;letter-spacing:.18em;color:var(--accent)">${d.code}</b></div>
-          <div class="divider"></div>
-          <div class="flex between"><span class="muted">Code PIN</span><b class="mono" style="font-size:1.3rem;letter-spacing:.18em">${d.pin}</b></div>
-        </div>
-        <div class="flex gap8 mt16" style="justify-content:center;flex-wrap:wrap">
-          <button class="btn sm primary" id="rcp">Copier les accès<span class="ico">${icon('copy')}</span></button>
-          <button class="btn sm ghost" id="rdone">Terminé</button>
-        </div>
-      </div>`;
-    document.getElementById('modal').classList.add('on');
-    document.getElementById('rcp').onclick = () => { navigator.clipboard?.writeText(`NEBULA Affiliés — tes accès\nCode : ${d.code}\nPIN : ${d.pin}\nConnexion : ${location.origin}/partenaire`); toast('Accès copiés ✓', 'ok'); };
-    document.getElementById('rdone').onclick = async () => { closeModal(); await refresh(); renderRecrues(); reveal(); };
+    showAccessModal('Recrue validée', d.code, d.pin, renderRecrues, d.email_sent, d.email);
     renderRecrues();
   } catch (e) { toast('Erreur', 'bad'); }
 }
