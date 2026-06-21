@@ -815,47 +815,52 @@ def seed_content():
                 c.execute("INSERT INTO publications(title,ptype,body,script,platforms,media_kind,updated,created) VALUES(?,?,?,?,?,'none',?,?)",
                           (t, pt, body, script, plat, now, now))
 
-def seed_brochure():
-    """Publie automatiquement la brochure premium (PDF livré dans le repo) dans la
-    Documentation, visible côté partenaire ET admin. Idempotent : copie le PDF sur le
-    volume persistant (UP_DIR) puis crée/répare l'entrée 'documents'. Mise à jour =
-    bumper BROCHURE_VERSION pour re-déployer un nouveau PDF aux partenaires."""
-    BROCHURE_VERSION = "2026-06-21"   # ⬅️ bumper quand on régénère le PDF
-    title = "Brochure du Programme Partenaires (PDF premium)"
-    src = HERE / "assets" / "NEBULA_Programme_Partenaires.pdf"
-    if not src.exists():
-        return
-    desc = ("La présentation complète à montrer aux prospects et à garder sous la main : "
-            "vision, offres et prix (dont 15 000 F/6 mois d'hébergement), commissions 25-40% + réseau N1/N2, "
-            "rangs, et l'exemple chiffré du réseau. 14 pages, prête à partager.")
-    try:
-        marker = f"brochure_{BROCHURE_VERSION}.pdf"
-        with db() as c:
-            row = c.execute("SELECT * FROM documents WHERE title=?", (title,)).fetchone()
-            need_copy = (not row) or (row["filename"] != marker)
-            if need_copy:
-                data = src.read_bytes()
+def seed_docs():
+    """Publie automatiquement les PDF livrés dans le repo (assets/) dans la Documentation,
+    visibles côté partenaire ET admin. Idempotent. Pour pousser une nouvelle version d'un PDF :
+    remplacer le fichier dans assets/ et bumper sa 'version' ci-dessous."""
+    BUNDLED = [
+        ("NEBULA_Programme_Partenaires.pdf", "2026-06-21",
+         "Brochure du Programme Partenaires (PDF premium)", "Formation",
+         "La présentation complète à montrer aux prospects et à garder sous la main : "
+         "vision, offres et prix (dont 15 000 F/6 mois d'hébergement), commissions 25-40% + réseau N1/N2, "
+         "rangs, et l'exemple chiffré du réseau. 14 pages, prête à partager."),
+        ("kit-nebula.pdf", "2026-06-21",
+         "Kit NEBULA — l'essentiel du partenaire (PDF)", "Formation",
+         "Le kit de démarrage à garder sous la main : qui nous sommes, nos offres, et les arguments "
+         "clés pour présenter NEBULA à un commerçant. À partager sans modération."),
+    ]
+    for fkey, version, title, cat, desc in BUNDLED:
+        src = HERE / "assets" / fkey
+        if not src.exists():
+            continue
+        marker = re.sub(r"[^a-zA-Z0-9]", "_", fkey) + "_" + version + ".pdf"
+        try:
+            with db() as c:
+                row = c.execute("SELECT * FROM documents WHERE title=?", (title,)).fetchone()
+                if row and row["filename"] == marker:
+                    continue  # déjà à jour
+                data = src.read_bytes(); size = len(data); now = time.time()
                 (UP_DIR / marker).write_bytes(data)
-                size = len(data); now = time.time()
                 if row and row["filename"] and row["filename"] != marker:
                     try: (UP_DIR / row["filename"]).unlink()
                     except Exception: pass
                 if row:
                     c.execute("UPDATE documents SET category=?,description=?,kind='pdf',filename=?,size=?,updated=? WHERE id=?",
-                              ("Formation", desc, marker, size, now, row["id"]))
+                              (cat, desc, marker, size, now, row["id"]))
                 else:
                     c.execute("""INSERT INTO documents(title,category,description,kind,body,url,filename,size,updated,created)
                                  VALUES(?,?,?,'pdf','','',?,?,?,?)""",
-                              (title, "Formation", desc, marker, size, now, now))
-    except Exception as e:
-        print("seed_brochure:", e)
+                              (title, cat, desc, marker, size, now, now))
+        except Exception as e:
+            print("seed_docs:", fkey, e)
 
 def seed():
     # Plus de compte démo : la plateforme démarre vide, prête pour de vrais partenaires.
     return
 seed()
 seed_content()
-seed_brochure()
+seed_docs()
 
 # ----------------------------------------------------------------------------
 # App
@@ -865,19 +870,42 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"],
                    allow_headers=["*"], allow_credentials=True)
 app.mount("/static", StaticFiles(directory=str(HERE / "static")), name="static")
 
-def page(name: str) -> FileResponse:
-    return FileResponse(str(HERE / name), media_type="text/html")
+def _asset_ver() -> str:
+    """Version automatique des assets = empreinte (taille+mtime) de app.js + app.css.
+    Change à CHAQUE déploiement où ces fichiers changent → le navigateur refetch tout seul.
+    Fini les bugs de cache périmé (barre de message absente, vues vides, classement vide…)."""
+    sig = []
+    for f in ("app.js", "app.css"):
+        try:
+            st = (HERE / "static" / f).stat()
+            sig.append(f"{int(st.st_mtime)}-{st.st_size}")
+        except Exception:
+            sig.append("0")
+    raw = "|".join(sig)
+    return hashlib.md5(raw.encode()).hexdigest()[:10]
 
-def served_page(name: str, request: Request) -> HTMLResponse:
-    """Sert une page HTML en injectant l'URL absolue ({{BASE}}) + le chemin admin privé ({{ADMIN_PATH}})."""
+ASSET_VER = _asset_ver()
+_ASSET_RE = re.compile(r'(app\.(?:js|css)\?v=)[0-9A-Za-z]+')
+
+def _render_html(name: str, request: Optional[Request] = None) -> HTMLResponse:
+    """Lit une page HTML, force la version d'asset auto (anti-cache) + injecte BASE/ADMIN_PATH."""
     html = (HERE / name).read_text(encoding="utf-8")
+    html = _ASSET_RE.sub(lambda m: m.group(1) + ASSET_VER, html)
     if "{{BASE}}" in html:
-        host = request.headers.get("x-forwarded-host") or request.headers.get("host") or "nebula-affilies-production.up.railway.app"
-        proto = (request.headers.get("x-forwarded-proto") or "https").split(",")[0].strip()
+        host = (request.headers.get("x-forwarded-host") if request else None) or (request.headers.get("host") if request else None) or "nebula-affilies-production.up.railway.app"
+        proto = ((request.headers.get("x-forwarded-proto") if request else None) or "https").split(",")[0].strip()
         html = html.replace("{{BASE}}", f"{proto}://{host}")
     if "{{ADMIN_PATH}}" in html:
         html = html.replace("{{ADMIN_PATH}}", "/" + ADMIN_PATH)
-    return HTMLResponse(html)
+    # HTML jamais figé en cache → le navigateur revalide et voit toujours la dernière version d'asset
+    return HTMLResponse(html, headers={"Cache-Control": "no-cache, must-revalidate"})
+
+def page(name: str) -> HTMLResponse:
+    return _render_html(name)
+
+def served_page(name: str, request: Request) -> HTMLResponse:
+    """Sert une page HTML en injectant l'URL absolue ({{BASE}}) + le chemin admin privé ({{ADMIN_PATH}}) + version d'asset auto."""
+    return _render_html(name, request)
 
 @app.get("/", response_class=HTMLResponse)
 def home():
