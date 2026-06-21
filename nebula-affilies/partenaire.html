@@ -838,11 +838,18 @@ async function loadConv() {
   let d; try { d = await api('/api/chat/history?channel=' + encodeURIComponent(CHAT.channel)); } catch (e) { return; }
   const box = document.getElementById('chatMsgs'); if (!box) return;
   box.innerHTML = d.messages.length ? d.messages.map(msgRow).join('') : `<p class="muted center" style="padding:20px">Aucun message. Lance la conversation !</p>`;
+  box.querySelectorAll('[data-del]').forEach(b => b.onclick = () => delMsg(b.dataset.del));
   box.scrollTop = box.scrollHeight;
 }
 function msgRow(m) {
   const ava = m.photo ? `<div class="msg-ava"><img class="av-img" src="${esc(m.photo)}" alt=""></div>` : `<div class="msg-ava" style="color:${m.accent || 'var(--accent)'}">${initials(m.name)}</div>`;
-  return `<div class="msg${m.mine ? ' me' : ''}">${ava}<div class="msg-col">${m.mine ? '' : `<div class="msg-name">${esc(m.name)}</div>`}<div class="msg-bub">${esc(m.text)}</div><div class="msg-time">${ago(m.created)}</div></div></div>`;
+  const del = m.can_delete ? `<button class="msg-del" data-del="${m.id}" title="Supprimer ce message">${icon('trash')}</button>` : '';
+  return `<div class="msg${m.mine ? ' me' : ''}">${ava}<div class="msg-col">${m.mine ? '' : `<div class="msg-name">${esc(m.name)}</div>`}<div class="msg-bub">${esc(m.text)}</div><div class="msg-time">${ago(m.created)}</div></div>${del}</div>`;
+}
+async function delMsg(id) {
+  if (!confirm('Supprimer ce message ?')) return;
+  try { await api('/api/chat/delete', { body: { id: Number(id) } }); sound.sfx.click(); await loadConv(); loadContacts(); }
+  catch (e) { toast(e.data?.error || 'Échec', 'bad'); }
 }
 function startConvPoll() { stopConvPoll(); CHAT.convTimer = setInterval(() => { if (document.getElementById('v-messages').classList.contains('on') && CHAT.channel) loadConv(); }, 5000); }
 function stopConvPoll() { if (CHAT.convTimer) { clearInterval(CHAT.convTimer); CHAT.convTimer = null; } }

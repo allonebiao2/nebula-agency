@@ -2194,6 +2194,21 @@ def chat_mark_read(uid: str, channel: str):
         c.execute("INSERT INTO chat_reads(uid,channel,last_read) VALUES(?,?,?) "
                   "ON CONFLICT(uid,channel) DO UPDATE SET last_read=excluded.last_read", (uid, channel, time.time()))
 
+CHAT_TTL = 7 * 86400   # les messages ne restent pas plus d'une semaine
+_chat_purge_at = 0.0
+def purge_old_messages(force: bool = False):
+    """Supprime les messages de plus de 7 jours. Léger : au plus 1 fois / heure."""
+    global _chat_purge_at
+    now = time.time()
+    if not force and now - _chat_purge_at < 3600:
+        return
+    _chat_purge_at = now
+    try:
+        with db() as c:
+            c.execute("DELETE FROM messages WHERE created < ?", (now - CHAT_TTL,))
+    except Exception as e:
+        print("purge_old_messages:", e)
+
 def chat_unread_total(me: str) -> int:
     total = 0
     with db() as c:
@@ -2311,6 +2326,8 @@ def chat_history(channel: str = "general", naff_session: Optional[str] = Cookie(
     me = me_uid(naff_session)
     if not me:
         return JSONResponse({"error": "auth"}, status_code=401)
+    purge_old_messages()
+    is_admin = me == "admin"
     if channel == "general":
         scope, pair = "general", ""
     else:
@@ -2325,10 +2342,34 @@ def chat_history(channel: str = "general", naff_session: Optional[str] = Cookie(
     msgs = []
     for r in rows:
         snd = pm.get(r["sender_uid"], {"name": "Ancien partenaire", "photo": "", "accent": "#6b6b86"})
+        mine = r["sender_uid"] == me
         msgs.append({"id": r["id"], "uid": r["sender_uid"], "name": snd["name"], "photo": snd.get("photo", ""),
-                     "accent": snd.get("accent", "#7b5cff"), "text": r["text"], "created": r["created"], "mine": r["sender_uid"] == me})
+                     "accent": snd.get("accent", "#7b5cff"), "text": r["text"], "created": r["created"],
+                     "mine": mine, "can_delete": bool(mine or is_admin)})
     chat_mark_read(me, chan_key(scope, pair))
     return {"messages": msgs, "channel": channel}
+
+@app.post("/api/chat/delete")
+async def chat_delete(req: Request, naff_session: Optional[str] = Cookie(default=None)):
+    """Supprime un message : son auteur OU l'admin (qui peut nettoyer n'importe quel message)."""
+    me = me_uid(naff_session)
+    if not me:
+        return JSONResponse({"error": "auth"}, status_code=401)
+    d = await req.json()
+    try:
+        mid = int(d.get("id") or 0)
+    except Exception:
+        mid = 0
+    if not mid:
+        return JSONResponse({"ok": False, "error": "id manquant"}, status_code=400)
+    with db() as c:
+        r = c.execute("SELECT sender_uid FROM messages WHERE id=?", (mid,)).fetchone()
+        if not r:
+            return JSONResponse({"ok": False}, status_code=404)
+        if me != "admin" and r["sender_uid"] != me:
+            return JSONResponse({"ok": False, "error": "Tu ne peux supprimer que tes propres messages."}, status_code=403)
+        c.execute("DELETE FROM messages WHERE id=?", (mid,))
+    return {"ok": True}
 
 @app.post("/api/chat/send")
 async def chat_send(req: Request, naff_session: Optional[str] = Cookie(default=None)):
@@ -2350,6 +2391,7 @@ async def chat_send(req: Request, naff_session: Optional[str] = Cookie(default=N
     with db() as c:
         c.execute("INSERT INTO messages(scope,pair,sender_uid,text,created) VALUES(?,?,?,?,?)", (scope, pair, me, text, time.time()))
     chat_mark_read(me, chan_key(scope, pair))
+    purge_old_messages()
     return {"ok": True}
 
 @app.get("/api/signals")
@@ -2587,6 +2629,7 @@ def brain_history(naff_session: Optional[str] = Cookie(default=None)):
                          (scope, scope_id)).fetchall()
     return {"messages": [dict(r) for r in reversed(rows)]}
 
+purge_old_messages(force=True)   # nettoyage initial des messages > 7 jours (après tous les défs)
 
 if __name__ == "__main__":
     import uvicorn
