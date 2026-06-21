@@ -357,8 +357,9 @@ const NA = (() => {
     'Supernova': { icon: 'supernova', c1: '#ff8ad4', c2: '#ff2d6e', ring: 'burst' },
     'Nébuleuse': { icon: 'nebula',    c1: '#c79bff', c2: '#6d3bff', ring: 'orbit' },
     'Galaxie':   { icon: 'crown',     c1: '#ffe9a8', c2: '#a06bff', ring: 'cosmic' },
+    'Big Bang':  { icon: 'supernova', c1: '#fff3b0', c2: '#ff4dd8', ring: 'cosmic' },  // fondateur : rang suprême, fixe
   };
-  const RANK_ORDER = ['Recrue', 'Météore', 'Comète', 'Planète', 'Étoile', 'Supernova', 'Nébuleuse', 'Galaxie'];
+  const RANK_ORDER = ['Recrue', 'Météore', 'Comète', 'Planète', 'Étoile', 'Supernova', 'Nébuleuse', 'Galaxie', 'Big Bang'];
   function rankSlug(label) { return 'rk-' + (RANK_ORDER.indexOf(label) + 1); }
   // size: 'sm' | 'md' | 'lg' ; opts.glow pour la lueur (défaut true)
   function rankBadge(label, opts = {}) {
@@ -369,33 +370,48 @@ const NA = (() => {
       + `<span class="rk-ring"></span><span class="rk-core">${icon(m.icon)}</span></span>`;
   }
   function rankName(label) { return `<span class="rk-name" style="--c1:${(RANK_META[label] || RANK_META['Recrue']).c1};--c2:${(RANK_META[label] || RANK_META['Recrue']).c2}">${esc(label)}</span>`; }
+  // Badge de RÔLE spécial (ex : Superviseur, Fondateur) — distinct de l'insigne de rang cosmique.
+  function roleBadge(label, opts = {}) {
+    if (!label) return '';
+    const sm = opts.size === 'sm';
+    return `<span class="role-badge" title="${esc(label)}" style="display:inline-flex;align-items:center;gap:5px;`
+      + `padding:${sm ? '2px 8px' : '3px 10px'};border-radius:999px;font-size:${sm ? '.66rem' : '.72rem'};`
+      + `font-weight:700;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;`
+      + `background:linear-gradient(135deg,rgba(123,92,255,.22),rgba(34,211,238,.16));`
+      + `border:1px solid rgba(123,92,255,.5);color:#d6c8ff;vertical-align:middle">`
+      + `<span style="width:13px;height:13px;display:inline-flex">${icon('shield')}</span>${esc(label)}</span>`;
+  }
 
   /* ---------- ÉCHELLE DES RANGS (clic sur le rang → tout voir) ---------- */
   let _cfgCache = null;
   async function rankLadder(opts = {}) {
     if (!_cfgCache) { try { _cfgCache = await api('/api/config'); } catch (e) { _cfgCache = { ranks: [], paliers: [] }; } }
-    const ranks = _cfgCache.ranks || [], paliers = _cfgCache.paliers || [];
+    const ranks = _cfgCache.ranks || [];
+    const paliers = opts.paliers || _cfgCache.paliers || [];   // échelle perso (ex : superviseur) si fournie
+    const palTeam = opts.palScope === 'team';                  // paliers basés sur l'équipe ?
     const ventes = Number(opts.ventes) || 0;
     let cur = 0; ranks.forEach((r, i) => { if (ventes >= r.min) cur = i; });
     if (opts.label) { const li = ranks.findIndex(r => r.label === opts.label); if (li >= 0) cur = li; }
     const next = ranks[cur + 1]; const toNext = next ? Math.max(0, next.min - ventes) : 0;
     const who = opts.name ? esc(opts.name) : 'Toi';
     const head = next
-      ? `${who} · <b>${ranks[cur] ? esc(ranks[cur].label) : ''}</b> — encore <b>${toNext}</b> vente${toNext > 1 ? 's' : ''} pour ${rankName(next.label)}`
+      ? `${who} · <b>${ranks[cur] ? esc(ranks[cur].label) : ''}</b> — encore <b>${toNext}</b> vente${toNext > 1 ? 's' : ''} (toi + équipe) pour ${rankName(next.label)}`
       : `${who} · <b>${ranks[cur] ? esc(ranks[cur].label) : ''}</b> — rang suprême atteint.`;
     const pct = next && next.min > (ranks[cur] ? ranks[cur].min : 0)
       ? Math.min(100, Math.round((ventes - ranks[cur].min) / (next.min - ranks[cur].min) * 100)) : 100;
     const rows = ranks.map((r, i) => {
       const isCur = i === cur, reached = i <= cur;
-      const need = i === 0 ? 'Rang de départ' : `dès ${r.min} vente${r.min > 1 ? 's' : ''} au total`;
+      const need = i === 0 ? 'Rang de départ' : `dès ${r.min} vente${r.min > 1 ? 's' : ''} au total (toi + équipe)`;
       const st = isCur ? '<span class="rl-you">Toi</span>' : (reached ? `<span class="rl-ok">${icon('check')}</span>` : `<span class="rl-lock">${icon('lock')}</span>`);
       return `<div class="rl-row ${isCur ? 'cur' : reached ? 'done' : 'lock'}">${rankBadge(r.label, { size: 'md', glow: isCur })}
         <div class="rl-tx"><b>${esc(r.label)}</b><small>${need}</small></div><div class="rl-st">${st}</div></div>`;
     }).join('');
+    const palUnit = palTeam ? "clients d'équipe / mois" : 'ventes / mois';
     const pals = paliers.map((p, i) => {
-      const lo = p.min === 0 ? 1 : p.min, hi = paliers[i + 1] ? paliers[i + 1].min - 1 : null;
-      const rng = hi ? `${lo} à ${hi}` : `${lo}+`;
-      return `<div class="rl-pal"><b>${esc(p.label)}</b><small>${rng} ventes / mois</small><em>${p.pct}%</em></div>`;
+      const lo = (p.min === 0 && !palTeam) ? 1 : p.min;
+      const hi = paliers[i + 1] ? paliers[i + 1].min - 1 : null;
+      const rng = hi != null ? `${lo} à ${hi}` : `${lo}+`;
+      return `<div class="rl-pal"><b>${esc(p.label)}</b><small>${rng} ${palUnit}</small><em>${p.pct}%</em></div>`;
     }).join('');
     const scrim = el(`<div class="scrim rl-scrim"><div class="card rl-card"><div class="in">
       <div class="flex between" style="align-items:flex-start"><div><span class="eyebrow"><span class="dot"></span>Progression</span>
@@ -404,7 +420,7 @@ const NA = (() => {
       <p class="muted mt8" style="font-size:.92rem">${head}</p>
       <div class="rl-bar"><span style="width:${pct}%"></span></div>
       <div class="rl-list">${rows}</div>
-      <div class="rl-paltitle">Ta commission du mois — selon tes ventes du mois</div>
+      <div class="rl-paltitle">${palTeam ? 'Ta commission du mois — selon les clients du mois de ton équipe (toi + branches)' : 'Ta commission du mois — selon tes ventes du mois'}</div>
       <div class="rl-pals">${pals}</div>
       <div class="rl-foot">Profondeurs réseau (fixes) : N1 ${_cfgCache.depths ? _cfgCache.depths.n1 : 10}% · N2 ${_cfgCache.depths ? _cfgCache.depths.n2 : 5}% sur ton réseau.</div>
     </div></div></div>`);
@@ -416,5 +432,5 @@ const NA = (() => {
     scrim.onclick = e => { if (e.target === scrim) close(); };
   }
 
-  return { el, esc, fmt, ago, api, icon, sound: Sound, toast, countUp, reveal, qr, celebrate, nova, agencyChat, tour, rankBadge, rankName, rankLadder, RANK_META, RANK_ORDER };
+  return { el, esc, fmt, ago, api, icon, sound: Sound, toast, countUp, reveal, qr, celebrate, nova, agencyChat, tour, rankBadge, rankName, roleBadge, rankLadder, RANK_META, RANK_ORDER };
 })();

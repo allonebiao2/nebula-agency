@@ -124,6 +124,23 @@ PALIERS: List[Tuple[int, str, str, float]] = [
     (5,  "SILVER",  "🟣", 0.30),   # 5 à 9 ventes / mois
     (10, "GOLD",    "🟡", 0.35),   # 10+ ventes / mois
 ]
+# ---- PALIERS SUPERVISEUR : 2 niveaux seulement, sur les ventes DU MOIS de l'ÉQUIPE ----
+# Pour les partenaires « superviseur » (ex : Romaric DJANKAKI). Le palier est déterminé
+# par le total de clients du mois de l'équipe entière (lui + ses branches N1+N2), mais le
+# taux ne s'applique qu'à SES ventes directes (ses branches lui rapportent toujours 10/5%).
+# (seuil mini de ventes d'équipe du mois, label, emoji, taux direct)
+PALIERS_SUP: List[Tuple[int, str, str, float]] = [
+    (0, "STARTER", "⬜", 0.25),   # 0 à 2 clients d'équipe / mois  → 25%
+    (3, "SILVER",  "🟣", 0.40),   # 3+ clients d'équipe / mois     → 40%
+]
+# ---- Rôles spéciaux (au-delà de la recrue standard) ----
+ROLE_LABELS = {"superviseur": "Superviseur"}
+
+# ---- FONDATEUR (Mongazi) : titre + rang FIXES, au sommet du réseau (n'évoluent jamais) ----
+FOUNDER_NAME  = os.getenv("NAFF_FOUNDER_NAME", "Mongazi")
+FOUNDER_TITLE = os.getenv("NAFF_FOUNDER_TITLE", "Fondateur")
+FOUNDER_RANK  = os.getenv("NAFF_FOUNDER_RANK", "Big Bang")   # rang suprême, origine du réseau
+
 # ---- Profondeurs réseau (FIXES, identiques pour tous — Vague B : parrainage) ----
 DEPTH_N1 = 0.10   # sur les ventes de tes recrues directes
 DEPTH_N2 = 0.05   # sur les ventes des recrues de tes recrues
@@ -289,7 +306,8 @@ def migrate():
     with db() as c:
         for col, ddl in [("pseudo", "TEXT DEFAULT ''"), ("parrain_id", "INTEGER DEFAULT 0"), ("photo", "TEXT DEFAULT ''"),
                          ("direct_rate_override", "REAL DEFAULT 0"), ("email", "TEXT DEFAULT ''"),
-                         ("tg_chat", "TEXT DEFAULT ''"), ("tg_token", "TEXT DEFAULT ''")]:
+                         ("tg_chat", "TEXT DEFAULT ''"), ("tg_token", "TEXT DEFAULT ''"),
+                         ("role", "TEXT DEFAULT ''")]:
             try:
                 c.execute(f"ALTER TABLE affiliates ADD COLUMN {col} {ddl}")
             except Exception:
@@ -390,6 +408,22 @@ def palier_for(ventes_mois: int) -> Dict[str, Any]:
         "min": cur[0], "next_min": nxt[0] if nxt else None,
     }
 
+def palier_sup_for(team_mois: int) -> Dict[str, Any]:
+    """Palier d'un SUPERVISEUR : 2 niveaux, déterminés par les clients du mois de
+    son équipe entière (lui + branches). Le taux s'applique à ses ventes directes."""
+    cur = PALIERS_SUP[0]; nxt = None
+    for i, p in enumerate(PALIERS_SUP):
+        if team_mois >= p[0]:
+            cur = p; nxt = PALIERS_SUP[i+1] if i+1 < len(PALIERS_SUP) else None
+    return {
+        "label": cur[1], "emoji": cur[2], "rate": cur[3], "pct": int(round(cur[3] * 100)),
+        "next_label": nxt[1] if nxt else None, "next_emoji": nxt[2] if nxt else None,
+        "next_pct": int(round(nxt[3] * 100)) if nxt else None,
+        "to_next": max(0, nxt[0] - team_mois) if nxt else 0,
+        "min": cur[0], "next_min": nxt[0] if nxt else None,
+        "scope": "team", "team_mois": team_mois,
+    }
+
 def commission_of(service: str, montant: float, rate: float = 0.25) -> int:
     base = montant if montant and montant > 0 else SERVICES.get(service, {}).get("price", 0)
     return int(round(base * rate))
@@ -397,8 +431,9 @@ def commission_of(service: str, montant: float, rate: float = 0.25) -> int:
 def stats_of(affiliate_id: int) -> Dict[str, Any]:
     with db() as c:
         rows = c.execute("SELECT * FROM leads WHERE affiliate_id=?", (affiliate_id,)).fetchall()
-        _ov = c.execute("SELECT direct_rate_override FROM affiliates WHERE id=?", (affiliate_id,)).fetchone()
-    override = float(_ov["direct_rate_override"]) if (_ov and _ov["direct_rate_override"]) else 0.0
+        arow = c.execute("SELECT direct_rate_override, role FROM affiliates WHERE id=?", (affiliate_id,)).fetchone()
+    override = float(arow["direct_rate_override"]) if (arow and arow["direct_rate_override"]) else 0.0
+    role = (arow["role"] or "").strip().lower() if arow else ""
     by_status = {k: 0 for k in STATUSES}
     ms = month_start_ts()
     score = 0; nb_real = 0; ventes = 0; ventes_mois = 0
@@ -413,13 +448,25 @@ def stats_of(affiliate_id: int) -> Dict[str, Any]:
                 ventes_mois += 1
         if st != "annule":
             nb_real += 1
-    pal = palier_for(ventes_mois)                         # palier du mois -> taux direct
-    rate = pal["rate"]
-    if override > 0:                                       # partenaire à taux personnalisé (ex : Romaric 40%)
-        rate = override
-        pal = {"label": "SPÉCIAL", "emoji": "★", "rate": override, "pct": int(round(override * 100)),
-               "next_label": None, "next_emoji": None, "next_pct": None, "to_next": 0,
-               "min": 0, "next_min": None}
+    # --- RANG (pour TOUS) : on grimpe sur ses ventes + celles de son équipe (N1+N2) ---
+    ventes_rank = team_cumul_count(affiliate_id)          # inclut déjà ses propres ventes
+    team_ventes = max(0, ventes_rank - ventes)            # part apportée par les branches
+    # --- PALIER du mois -> taux de commission DIRECTE ---
+    if role == "superviseur":
+        team_mois = team_month_count(affiliate_id)        # clients du mois : lui + ses branches
+        pal = palier_sup_for(team_mois)
+        rate = pal["rate"]                                # s'applique à SES ventes directes
+        paliers_scale = PALIERS_SUP
+    else:
+        team_mois = None
+        pal = palier_for(ventes_mois)                     # palier du mois -> taux direct
+        rate = pal["rate"]
+        if override > 0:                                  # taux personnalisé fixe (legacy)
+            rate = override
+            pal = {"label": "SPÉCIAL", "emoji": "★", "rate": override, "pct": int(round(override * 100)),
+                   "next_label": None, "next_emoji": None, "next_pct": None, "to_next": 0,
+                   "min": 0, "next_min": None}
+        paliers_scale = PALIERS
     rcm = 0; potentiel = 0
     for r in rows:
         com = commission_of(r["service"], r["montant"], rate)
@@ -430,8 +477,11 @@ def stats_of(affiliate_id: int) -> Dict[str, Any]:
     return {
         "nb_total": len(rows), "nb_real": nb_real, "by_status": by_status,
         "score": score, "ventes": ventes, "ventes_mois": ventes_mois,
+        "ventes_rank": ventes_rank, "team_ventes": team_ventes, "team_mois": team_mois,
         "rcm": rcm, "potentiel": potentiel, "direct_rate": rate,
-        "rank": rank_for(ventes), "palier": pal,
+        "rank": rank_for(ventes_rank), "palier": pal,
+        "role": role, "role_label": ROLE_LABELS.get(role, ""), "is_supervisor": role == "superviseur",
+        "paliers": [{"min": p[0], "label": p[1], "emoji": p[2], "pct": int(round(p[3] * 100))} for p in paliers_scale],
     }
 
 def _paid_value(aid: int) -> Tuple[int, int]:
@@ -441,12 +491,44 @@ def _paid_value(aid: int) -> Tuple[int, int]:
     val = sum((r["montant"] if r["montant"] else SERVICES.get(r["service"], {}).get("price", 0)) for r in paid)
     return len(paid), int(val)
 
+def _month_paid_count(aid: int) -> int:
+    """Nombre de clients PAYÉS ce mois-ci pour un affilié."""
+    ms = month_start_ts()
+    with db() as c:
+        return c.execute("SELECT COUNT(*) n FROM leads WHERE affiliate_id=? AND paye=1 AND COALESCE(updated,0)>=?",
+                         (aid, ms)).fetchone()["n"]
+
+def _downline_ids(aid: int) -> List[int]:
+    """IDs de tout le réseau descendant ACTIF (N1 + N2) d'un affilié."""
+    ids: List[int] = []
+    with db() as c:
+        n1 = [r["id"] for r in c.execute("SELECT id FROM affiliates WHERE parrain_id=? AND actif=1", (aid,)).fetchall()]
+    ids += n1
+    for n1id in n1:
+        with db() as c:
+            ids += [r["id"] for r in c.execute("SELECT id FROM affiliates WHERE parrain_id=? AND actif=1", (n1id,)).fetchall()]
+    return ids
+
+def team_cumul_count(aid: int) -> int:
+    """Ventes payées CUMULÉES de l'affilié + tout son réseau (N1+N2). Base du RANG (pour TOUS)."""
+    total = _paid_value(aid)[0]
+    for did in _downline_ids(aid):
+        total += _paid_value(did)[0]
+    return total
+
+def team_month_count(aid: int) -> int:
+    """Clients payés CE MOIS par l'affilié + tout son réseau (N1+N2). Base du palier SUPERVISEUR."""
+    total = _month_paid_count(aid)
+    for did in _downline_ids(aid):
+        total += _month_paid_count(did)
+    return total
+
 def network_of(aid: int) -> Dict[str, Any]:
     """Réseau d'un affilié en ARBRE : N1 (recrues directes, 10%), chaque N1 portant ses N2 (5%)."""
     def line(a, rate):
         cnt, val = _paid_value(a["id"])
         return {"name": affiliate_label(a), "code": a["code"], "ventes": cnt,
-                "rank": rank_for(cnt)["label"], "commission": int(round(val * rate))}
+                "rank": rank_for(team_cumul_count(a["id"]))["label"], "commission": int(round(val * rate))}
     with db() as c:
         n1 = c.execute("SELECT * FROM affiliates WHERE parrain_id=? AND actif=1 ORDER BY created", (aid,)).fetchall()
     n1_list = []; n1_comm = 0; n2_comm = 0; n2_count = 0
@@ -771,7 +853,9 @@ def api_config():
         "commission_rate": COMMISSION_RATE, "momo": {"number": MOMO_NUMBER, "name": MOMO_NAME},
         "whatsapp": WHATSAPP, "ranks": [{"min": r[0], "label": r[1], "emoji": r[2]} for r in RANKS],
         "paliers": [{"min": p[0], "label": p[1], "emoji": p[2], "pct": int(round(p[3] * 100))} for p in PALIERS],
+        "paliers_sup": [{"min": p[0], "label": p[1], "emoji": p[2], "pct": int(round(p[3] * 100))} for p in PALIERS_SUP],
         "depths": {"n1": int(DEPTH_N1 * 100), "n2": int(DEPTH_N2 * 100)},
+        "founder": {"name": FOUNDER_NAME, "title": FOUNDER_TITLE, "rank": FOUNDER_RANK},
     }
 
 # =====================  PUBLIC : formulaire de parrainage  ====================
@@ -990,6 +1074,8 @@ def admin_affiliates(naff_session: Optional[str] = Cookie(default=None)):
             "actif": a["actif"], "accent": a["accent"],
             "score": s["score"], "rcm": s["rcm"], "potentiel": s["potentiel"],
             "rank": s["rank"], "palier": s["palier"], "ventes": s["ventes"], "ventes_mois": s["ventes_mois"],
+            "ventes_rank": s["ventes_rank"], "team_ventes": s["team_ventes"], "team_mois": s["team_mois"],
+            "role": s["role"], "role_label": s["role_label"], "is_supervisor": s["is_supervisor"],
             "nb_real": s["nb_real"], "by_status": s["by_status"], "generated": earnings_of(a["id"])["generated"],
         })
     # classement par score décroissant
@@ -1099,6 +1185,23 @@ async def admin_set_rate(aid: int, req: Request, naff_session: Optional[str] = C
             return JSONResponse({"ok": False}, status_code=404)
         c.execute("UPDATE affiliates SET direct_rate_override=? WHERE id=?", (rate, aid))
     return {"ok": True, "code": a["code"], "rate": rate, "pct": int(round(rate * 100))}
+
+@app.post("/api/admin/affiliates/{aid}/role")
+async def admin_set_role(aid: int, req: Request, naff_session: Optional[str] = Cookie(default=None)):
+    """Définit le rôle spécial d'un partenaire. 'superviseur' = barème 2 paliers d'équipe
+    (Starter 25% <3 clients/mois, Silver 40% dès 3), titre « Superviseur ». '' = recrue standard."""
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    d = await req.json()
+    role = clean(d.get("role"), 20).lower()
+    if role not in ROLE_LABELS:
+        role = ""
+    with db() as c:
+        a = c.execute("SELECT code FROM affiliates WHERE id=?", (aid,)).fetchone()
+        if not a:
+            return JSONResponse({"ok": False}, status_code=404)
+        c.execute("UPDATE affiliates SET role=? WHERE id=?", (role, aid))
+    return {"ok": True, "code": a["code"], "role": role, "role_label": ROLE_LABELS.get(role, "")}
 
 @app.post("/api/admin/affiliates/{aid}/edit")
 async def admin_edit_affiliate(aid: int, req: Request, naff_session: Optional[str] = Cookie(default=None)):
@@ -1327,6 +1430,9 @@ def admin_affiliate_detail(aid: int, naff_session: Optional[str] = Cookie(defaul
         "profile": {"id": a["id"], "name": affiliate_label(a), "code": a["code"],
                     "rank": s["rank"]["label"], "palier": s["palier"]["label"], "palier_pct": s["palier"]["pct"],
                     "rate_pct": int(round(rate * 100)), "photo": photo_url("a" + str(aid)),
+                    "role": s["role"], "role_label": s["role_label"], "is_supervisor": s["is_supervisor"],
+                    "paliers": s["paliers"], "ventes_rank": s["ventes_rank"], "team_ventes": s["team_ventes"],
+                    "team_mois": s["team_mois"], "rate_override": float(a["direct_rate_override"] or 0),
                     "momo_number": a["momo_number"], "momo_reseau": a["momo_reseau"], "email": (a["email"] or ""),
                     "ventes": s["ventes"], "ventes_mois": s["ventes_mois"], "rcm": int(s["rcm"]), "created": a["created"]},
         "parrain": nm(p1, "N1 · 10%"), "grandparrain": nm(p2, "N2 · 5%"),
@@ -1870,7 +1976,7 @@ def participants_map() -> Dict[str, Dict[str, Any]]:
         uid = "a" + str(a["id"])
         out[uid] = {"uid": uid, "name": affiliate_label(a), "role": "affiliate",
                     "accent": a["accent"] or "#7b5cff", "photo": photo_url(uid),
-                    "sub": rank_for(_paid_value(a["id"])[0])["label"], "aid": a["id"], "code": a["code"]}
+                    "sub": rank_for(team_cumul_count(a["id"]))["label"], "aid": a["id"], "code": a["code"]}
     return out
 
 def dm_pair(u1: str, u2: str) -> str:
@@ -1961,7 +2067,8 @@ def api_leaderboard(naff_session: Optional[str] = Cookie(default=None)):
             "uid": uid, "name": affiliate_label(a), "code": a["code"], "photo": photo_url(uid),
             "accent": a["accent"] or "#7b5cff", "rank": s["rank"]["label"], "rank_level": s["rank"]["level"],
             "palier": s["palier"]["label"], "palier_pct": s["palier"]["pct"],
-            "ventes": s["ventes"], "ventes_mois": s["ventes_mois"], "score": s["score"],
+            "role": s["role"], "role_label": s["role_label"], "is_supervisor": s["is_supervisor"],
+            "ventes": s["ventes"], "ventes_mois": s["ventes_mois"], "ventes_rank": s["ventes_rank"], "score": s["score"],
             "rcm": e["generated"], "paid": e["paid"], "nb_real": s["nb_real"],
             "clients_actifs": (b.get("attente", 0) + b.get("en_cours", 0)), "termine": b.get("termine", 0),
             "is_me": uid == me,

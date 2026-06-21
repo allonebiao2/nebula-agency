@@ -133,17 +133,20 @@ function switchView(id) {
 
 function renderHome() {
   const s = ME.stats, r = s.rank, p = s.palier;
-  const nextRank = r.next_label ? `Encore <b style="color:var(--ink)">${r.to_next}</b> vente${r.to_next > 1 ? 's' : ''} pour le rang ${r.next_label}` : 'Galaxie — rang suprême atteint';
-  const nextPal = p.next_label ? `Encore <b style="color:var(--ink)">${p.to_next}</b> vente${p.to_next > 1 ? 's' : ''} ce mois → ${p.next_label} ${p.next_pct}%` : (p.label === 'SPÉCIAL' ? 'Taux spécial — partenaire privilégié' : 'GOLD — palier max ce mois');
-  const palPct = p.next_min ? Math.min(100, Math.round(s.ventes_mois * 100 / p.next_min)) : 100;
+  const sup = s.is_supervisor;
+  const palBase = sup ? (s.team_mois || 0) : s.ventes_mois;        // ce qui fait monter le palier
+  const palUnit = sup ? 'client' : 'vente';                         // superviseur : clients d'équipe
+  const nextRank = r.next_label ? `Encore <b style="color:var(--ink)">${r.to_next}</b> vente${r.to_next > 1 ? 's' : ''} (toi + équipe) pour le rang ${r.next_label}` : 'Galaxie — rang suprême atteint';
+  const nextPal = p.next_label ? `Encore <b style="color:var(--ink)">${p.to_next}</b> ${palUnit}${p.to_next > 1 ? 's' : ''}${sup ? " d'équipe" : ''} ce mois → ${p.next_label} ${p.next_pct}%` : (p.label === 'SPÉCIAL' ? 'Taux spécial — partenaire privilégié' : (sup ? 'SILVER — palier max ce mois' : 'GOLD — palier max ce mois'));
+  const palPct = p.next_min ? Math.min(100, Math.round(palBase * 100 / p.next_min)) : 100;
   const perVitrine = fmt(Math.round(150000 * p.rate));
   document.getElementById('v-home').innerHTML = `
     <div class="bento">
       <div class="col-7 rv"><div class="card glow clickable" id="home-rank-card"><div class="in">
-        <span class="eyebrow"><span class="dot"></span>Ton rang · prestige (ventes cumulées) <span class="tap-hint">voir l'échelle</span></span>
+        <span class="eyebrow"><span class="dot"></span>Ton rang · prestige (toi + équipe) <span class="tap-hint">voir l'échelle</span></span>
         <div class="rank mt16">
           <div class="emblem${r.label === 'Galaxie' ? ' king' : ''}">${rankSvg(r.label)}</div>
-          <div><div class="r-name">${esc(r.label)}</div><div class="r-sub">Niveau ${r.level} / ${r.max_level} · ${s.ventes} vente${s.ventes > 1 ? 's' : ''} cumulée${s.ventes > 1 ? 's' : ''}</div></div>
+          <div><div class="r-name" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${esc(r.label)}${sup ? NA.roleBadge(s.role_label, { size: 'sm' }) : ''}</div><div class="r-sub">Niveau ${r.level} / ${r.max_level} · ${s.ventes_rank} vente${s.ventes_rank > 1 ? 's' : ''} (toi + équipe)</div></div>
         </div>
         <div class="xp"><div class="track"><div class="fill" id="xpfill"></div></div>
           <div class="meta"><span>${nextRank}</span><span class="mono">${r.xp_pct}%</span></div></div>
@@ -155,12 +158,12 @@ function renderHome() {
           <div class="r-sub">Commission directe <b style="color:var(--accent)">${p.pct}%</b> — <span class="mono">${perVitrine}</span> F / vitrine</div>
         </div>
         <div class="xp"><div class="track"><div class="fill" id="palfill" style="background:linear-gradient(90deg,var(--accent),var(--ok))"></div></div>
-          <div class="meta"><span>${nextPal}</span><span class="mono">${s.ventes_mois} ce mois</span></div></div>
+          <div class="meta"><span>${nextPal}</span><span class="mono">${palBase}${sup ? " d'équipe" : ''} ce mois</span></div></div>
       </div></div></div>
 
       <div class="col-3 rv"><div class="card clickable" data-go="gains"><div class="in stat"><div class="lbl">RCM · total généré (à vie)</div><div class="num accent mono" id="n-rcm">0</div><div class="sub" id="n-rcm-sub">tracé</div></div></div></div>
       <div class="col-3 rv"><div class="card clickable" data-go="gains"><div class="in stat"><div class="lbl">En attente de paiement</div><div class="num mono" style="color:var(--warn)" id="n-pot">0</div><div class="sub">F potentiels</div></div></div></div>
-      <div class="col-3 rv"><div class="card clickable" data-ladder="1"><div class="in stat"><div class="lbl">Ventes carrière</div><div class="num mono" style="color:var(--ok)" id="n-ven">0</div><div class="sub">= ton rang</div></div></div></div>
+      <div class="col-3 rv"><div class="card clickable" data-ladder="1"><div class="in stat"><div class="lbl">Ventes (toi + équipe)</div><div class="num mono" style="color:var(--ok)" id="n-ven">0</div><div class="sub">= ton rang${sup ? ' · perso : ' + s.ventes : ''}</div></div></div></div>
       <div class="col-3 rv"><div class="card clickable" data-go="clients"><div class="in stat"><div class="lbl">Clients actifs</div><div class="num mono" style="color:var(--info)" id="n-cli">0</div><div class="sub">attente + en cours</div></div></div></div>
 
       <div class="col-12 rv"><div class="card"><div class="in">
@@ -173,12 +176,12 @@ function renderHome() {
   countUp(document.getElementById('n-rcm'), _e.generated, { money: true });
   document.getElementById('n-rcm-sub').textContent = 'payé ' + fmt(_e.paid) + ' F · à réclamer ' + fmt(_e.due) + ' F';
   countUp(document.getElementById('n-pot'), s.potentiel, { money: true });
-  countUp(document.getElementById('n-ven'), s.ventes);
+  countUp(document.getElementById('n-ven'), s.ventes_rank);
   countUp(document.getElementById('n-cli'), (s.by_status.attente || 0) + (s.by_status.en_cours || 0));
   const rec = document.getElementById('recent');
   if (!LEADS.length) rec.innerHTML = `<p class="muted center" style="padding:20px">Aucun client encore. Partage ton lien pour démarrer.</p>`;
   else rec.innerHTML = LEADS.slice(0, 4).map(l => clientRow(l, true)).join('');
-  const openLadder = () => NA.rankLadder({ label: r.label, ventes: s.ventes });
+  const openLadder = () => NA.rankLadder({ label: r.label, ventes: s.ventes_rank, paliers: s.paliers, palScope: sup ? 'team' : '' });
   document.getElementById('home-rank-card').onclick = openLadder;
   document.getElementById('home-pal-card').onclick = openLadder;
   document.querySelectorAll('#v-home [data-ladder]').forEach(el => el.onclick = openLadder);
@@ -893,7 +896,7 @@ document.getElementById('amb').onclick = () => { sound.toggleAmbient(); syncSnd(
   try { ME = await api('/api/partenaire/me'); } catch (e) { location.href = '/'; return; }
   if (ME.accent) ROOT.style.setProperty('--accent', ME.accent);
   document.getElementById('p-name').textContent = ME.name;
-  document.getElementById('p-rank').innerHTML = `<span style="display:inline-flex;align-items:center;gap:7px">${NA.rankBadge(ME.stats.rank.label, { size: 'sm', glow: false })}${NA.rankName(ME.stats.rank.label)}<span class="meta">· palier ${esc(ME.stats.palier.label)} ${ME.stats.palier.pct}%</span></span>`;
+  document.getElementById('p-rank').innerHTML = `<span style="display:inline-flex;align-items:center;gap:7px">${NA.rankBadge(ME.stats.rank.label, { size: 'sm', glow: false })}${NA.rankName(ME.stats.rank.label)}${ME.stats.is_supervisor ? NA.roleBadge(ME.stats.role_label, { size: 'sm' }) : ''}<span class="meta">· palier ${esc(ME.stats.palier.label)} ${ME.stats.palier.pct}%</span></span>`;
   document.getElementById('top-emblem').innerHTML = ME.photo ? `<img class="av-img" src="${ME.photo}" alt="">` : NA.rankBadge(ME.stats.rank.label, { size: 'md' });
   const rankBlock = document.querySelector('.topbar .rank');
   if (rankBlock) { rankBlock.classList.add('rank-click'); rankBlock.title = 'Voir l\'échelle des rangs'; rankBlock.onclick = () => NA.rankLadder({ label: ME.stats.rank.label, ventes: ME.stats.ventes }); }
