@@ -815,11 +815,47 @@ def seed_content():
                 c.execute("INSERT INTO publications(title,ptype,body,script,platforms,media_kind,updated,created) VALUES(?,?,?,?,?,'none',?,?)",
                           (t, pt, body, script, plat, now, now))
 
+def seed_brochure():
+    """Publie automatiquement la brochure premium (PDF livré dans le repo) dans la
+    Documentation, visible côté partenaire ET admin. Idempotent : copie le PDF sur le
+    volume persistant (UP_DIR) puis crée/répare l'entrée 'documents'. Mise à jour =
+    bumper BROCHURE_VERSION pour re-déployer un nouveau PDF aux partenaires."""
+    BROCHURE_VERSION = "2026-06-21"   # ⬅️ bumper quand on régénère le PDF
+    title = "Brochure du Programme Partenaires (PDF premium)"
+    src = HERE / "assets" / "NEBULA_Programme_Partenaires.pdf"
+    if not src.exists():
+        return
+    desc = ("La présentation complète à montrer aux prospects et à garder sous la main : "
+            "vision, offres et prix (dont 15 000 F/6 mois d'hébergement), commissions 25-40% + réseau N1/N2, "
+            "rangs, et l'exemple chiffré du réseau. 14 pages, prête à partager.")
+    try:
+        marker = f"brochure_{BROCHURE_VERSION}.pdf"
+        with db() as c:
+            row = c.execute("SELECT * FROM documents WHERE title=?", (title,)).fetchone()
+            need_copy = (not row) or (row["filename"] != marker)
+            if need_copy:
+                data = src.read_bytes()
+                (UP_DIR / marker).write_bytes(data)
+                size = len(data); now = time.time()
+                if row and row["filename"] and row["filename"] != marker:
+                    try: (UP_DIR / row["filename"]).unlink()
+                    except Exception: pass
+                if row:
+                    c.execute("UPDATE documents SET category=?,description=?,kind='pdf',filename=?,size=?,updated=? WHERE id=?",
+                              ("Formation", desc, marker, size, now, row["id"]))
+                else:
+                    c.execute("""INSERT INTO documents(title,category,description,kind,body,url,filename,size,updated,created)
+                                 VALUES(?,?,?,'pdf','','',?,?,?,?)""",
+                              (title, "Formation", desc, marker, size, now, now))
+    except Exception as e:
+        print("seed_brochure:", e)
+
 def seed():
     # Plus de compte démo : la plateforme démarre vide, prête pour de vrais partenaires.
     return
 seed()
 seed_content()
+seed_brochure()
 
 # ----------------------------------------------------------------------------
 # App
