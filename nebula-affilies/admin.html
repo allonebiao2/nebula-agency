@@ -7,7 +7,7 @@
 <title>Console NEBULA — Affiliés</title>
 <link rel="icon" type="image/png" href="/static/favicon.png">
 <link rel="apple-touch-icon" href="/static/favicon.png">
-<link rel="stylesheet" href="/static/app.css?v=20260620e">
+<link rel="stylesheet" href="/static/app.css?v=20260620f">
 </head>
 <body>
 <div class="bg-orbs"></div>
@@ -42,6 +42,7 @@
     <section class="view" id="v-paiements"></section>
     <section class="view" id="v-recrues"></section>
     <section class="view" id="v-classement"></section>
+    <section class="view" id="v-rangs"></section>
     <section class="view" id="v-messages"></section>
     <section class="view" id="v-docs"></section>
     <section class="view" id="v-publi"></section>
@@ -58,7 +59,7 @@
   <div id="notif-list"></div>
 </div></div></div>
 
-<script src="/static/app.js?v=20260620e"></script>
+<script src="/static/app.js?v=20260620f"></script>
 <script>
 const { icon, api, toast, sound, countUp, reveal, esc, fmt, ago, el } = NA;
 let CFG = null, OVER = null, AFFS = [], LEADS = [];
@@ -71,12 +72,13 @@ const NAV = [
   { id: 'paiements', icon: 'coins', label: 'Paiements' },
   { id: 'recrues', icon: 'plus', label: 'Recrues' },
   { id: 'classement', icon: 'trophy', label: 'Classement' },
+  { id: 'rangs', icon: 'medal', label: 'Rangs' },
   { id: 'messages', icon: 'chat', label: 'Messages' },
   { id: 'docs', icon: 'doc', label: 'Documentation' },
   { id: 'publi', icon: 'megaphone', label: 'Publication' },
   { id: 'questions', icon: 'help', label: 'Questions prospects' },
 ];
-const TITLES = { dash: 'Tableau de bord', aff: 'Réseau d\'affiliés', reseau: 'Arborescence du réseau', leads: 'Clients du réseau', paiements: 'Commissions à verser', recrues: 'Candidatures & recrues', classement: 'Classement du réseau', messages: 'Messagerie', docs: 'Documentation partenaires', publi: 'Contenus à publier', questions: 'Questions des prospects' };
+const TITLES = { dash: 'Tableau de bord', aff: 'Réseau d\'affiliés', reseau: 'Arborescence du réseau', leads: 'Clients du réseau', paiements: 'Commissions à verser', recrues: 'Candidatures & recrues', classement: 'Classement du réseau', rangs: 'L\'échelle des rangs', messages: 'Messagerie', docs: 'Documentation partenaires', publi: 'Contenus à publier', questions: 'Questions des prospects' };
 
 const TOUR = [
   { icon: 'spark', title: 'Bienvenue dans ta console NEBULA', text: 'Le poste de pilotage de ton réseau d\'affiliés : tu suis les clients, tu valides les recrues, et tu paies les commissions. Voici chaque zone.' },
@@ -109,7 +111,7 @@ function switchView(id) {
   document.getElementById('v-' + id).classList.add('on');
   document.querySelectorAll('.nav-i[data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === id));
   document.getElementById('title').textContent = TITLES[id];
-  ({ dash: renderDash, aff: renderAff, reseau: renderReseauAdmin, leads: renderLeads, paiements: renderPaiements, recrues: renderRecrues, classement: renderClassement, messages: renderMessages, docs: renderDocsAdmin, publi: renderPubliAdmin, questions: renderQuestions }[id])();
+  ({ dash: renderDash, aff: renderAff, reseau: renderReseauAdmin, leads: renderLeads, paiements: renderPaiements, recrues: renderRecrues, classement: renderClassement, rangs: renderRangs, messages: renderMessages, docs: renderDocsAdmin, publi: renderPubliAdmin, questions: renderQuestions }[id])();
   reveal();
 }
 
@@ -248,7 +250,7 @@ function orgComputeTeam(n) {
 function orgCard(n, tc, apex) {
   const teamCount = n._team || 0;
   const head = apex
-    ? `<img src="/static/nebula-logo.png?v=20260620e" alt="NEBULA Agency"><div class="oname">NEBULA Agency</div>`
+    ? `<img src="/static/nebula-logo.png?v=20260620f" alt="NEBULA Agency"><div class="oname">NEBULA Agency</div>`
     : `<div class="ohead">${NA.rankBadge(n.rank, { size: 'sm', glow: false })}
         <div style="min-width:0"><div class="oname">${esc(n.name)}</div><div class="ocode">${esc(n.code)}</div></div></div>`;
   const owedChip = (!apex && n.owed > 0)
@@ -811,6 +813,35 @@ async function renderClassement() {
     <p class="muted mt8">Chaque rang a son insigne. Clique un partenaire pour voir ses stats et lui écrire.</p></div>${rows || '<p class="muted center" style="padding:30px">Aucun partenaire.</p>'}`;
   document.querySelectorAll('#v-classement .lb-row[data-uid]').forEach(r => r.onclick = () => openAffiliate(r.dataset.uid.replace(/^a/, '')));
 }
+/* ---------- RANGS (échelle de prestige : qui est à quel rang) ---------- */
+async function renderRangs() {
+  let d; try { d = await api('/api/leaderboard'); } catch (e) { return; }
+  const LBr = d.leaderboard || [];
+  const order = NA.RANK_ORDER.slice().reverse(); // Galaxie (haut) → Recrue (bas)
+  const lanes = order.map((rk, i) => {
+    const mem = LBr.filter(a => a.rank === rk);
+    const cards = mem.length ? mem.map(a => `
+      <button class="rank-mem" data-uid="${a.uid}" style="display:flex;align-items:center;gap:9px;text-align:left;padding:9px 12px;border-radius:12px;background:var(--glass-2);border:1px solid var(--hair);cursor:pointer;color:var(--ink);max-width:250px;transition:border-color .2s">
+        ${NA.rankBadge(a.rank, { size: 'sm', glow: false })}
+        <span style="min-width:0"><span style="font-family:'Space Grotesk';font-weight:600;font-size:.9rem;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(a.name)}</span><span class="meta">${a.ventes} vente${a.ventes > 1 ? 's' : ''} · ${fmt(a.rcm)} F</span></span>
+      </button>`).join('') : `<span class="muted" style="font-size:.85rem;padding:8px 2px">Personne encore à ce rang.</span>`;
+    return `<div class="rv" style="border:1px solid var(--hair);border-radius:18px;padding:16px;margin-bottom:12px;background:radial-gradient(120% 80% at 0% 0%, color-mix(in srgb,var(--accent) ${Math.max(3, (order.length - i) * 2)}%,transparent), transparent 62%)">
+      <div class="flex" style="gap:14px;align-items:center;margin-bottom:12px">
+        ${NA.rankBadge(rk, { size: 'md' })}
+        <div style="flex:1;min-width:0"><div style="font-family:'Space Grotesk';font-weight:700;font-size:1.1rem">${NA.rankName(rk)}</div>
+          <div class="meta">${mem.length} partenaire${mem.length > 1 ? 's' : ''}${i === 0 ? ' · sommet' : ''}</div></div>
+      </div>
+      <div class="flex gap8 wrap">${cards}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('v-rangs').innerHTML = `
+    <div class="rv mb16"><span class="eyebrow"><span class="dot"></span>Progression du réseau</span>
+      <h2 class="mt8" style="font-size:1.8rem">L'échelle des rangs</h2>
+      <p class="muted mt8">Qui est à quel rang, du sommet (Galaxie) à la base (Recrue). Touche un partenaire pour ouvrir sa fiche complète.</p></div>
+    ${lanes}`;
+  document.querySelectorAll('#v-rangs .rank-mem[data-uid]').forEach(b => b.onclick = () => openAffiliate(b.dataset.uid.replace(/^a/, '')));
+}
+
 function openPartner(uid) {
   const a = LB.find(x => x.uid === uid); if (!a) return;
   sound.sfx.open();
