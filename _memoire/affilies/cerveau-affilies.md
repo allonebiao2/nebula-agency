@@ -107,6 +107,18 @@ Dernière grosse mise à jour : **2026-06-17**.
 
 ---
 
+## 9. Vague 2026-06-20/21 — Cockpit, alertes, NOVA (toutes LIVE)
+
+- **Arborescence = org-chart pyramide + poste de pilotage des paiements (admin)** : apex NEBULA (logo), connecteurs, insigne de rang, métriques d'équipe, zoom/pan/recherche/replier. **Tout cliquable** : badge or « dû/à payer » (pulsant si réclamé) sur qui doit recevoir (qu'il réclame ou non) ; clic → fiche `openAffiliate` (parrain/grand-parrain N1/N2, commissions + **Marquer payé**, clients + **Valider paiement**, filleuls) ; **notifs cliquables** → centrent+ouvrent la personne (`notifs.ref_aff`). Back : `/api/admin/affiliate/{id}/detail` + `/api/admin/network` enrichi (owed/clients/parrain). **Classement** ouvre aussi cette fiche + « Lui écrire ».
+- **Pyramide d'équipe côté PARTENAIRE** : sa branche (lui→N1→N2), clic filleul = fiche **lecture seule** (confidentialité : jamais clients/gains privés des autres). `network_of` renvoie `rank`.
+- **Vue « Rangs »** (onglet admin) : échelle Galaxie→Recrue, qui est à quel rang, cliquable.
+- **Email d'accès automatique** (validation candidature/recrue) via **Resend** : `send_access_email`/`access_email_html`, colonnes `affiliates.email`/`recruits.email`, champ email au formulaire de recrutement, bouton admin « Envoyer ses accès par email » (`/api/admin/affiliates/{id}/email-access`). **Expéditeur = `contact@nebula-agency.online`** (seul domaine vérifié Resend). Vars Railway : `RESEND_API_KEY`,`EMAIL_FROM_ADDRESS`,`EMAIL_FROM_NAME`,`EMAIL_REPLY_TO`.
+- **Carte de visite pro à imprimer** : `makeCard()` → paysage 2100×1200 (~600 DPI, 8,9×5,1 cm), logo + photo + nom/rang + QR blanc scannable + lien, polices marque.
+- **Alertes renforcées** : (son) carillon fort `sfx.alert` + **vibration** (`navigator.vibrate`) à chaque notif ; (Telegram) bot **@Nova_de_nebula_bot** (webhook repris de Vendora), le partenaire relie son Telegram (Profil → Alertes Telegram → deep-link `?start=<tg_token>`), `notify()` envoie aussi en Telegram (thread). **Anti-bruit** : seulement `client|vente|commission|paiement|recrue`, opt-in (`tg_chat`), jamais en boucle. Webhook `/api/telegram/webhook` (secret `NAFF_TG_SECRET`), vars `TELEGRAM_BOT_TOKEN`,`NAFF_TG_BOT_USERNAME`. ⚠️ un seul webhook par bot → si Vendora redémarre, lui rebrancher le sien.
+- **NOVA partout** : dashboard partenaire = NOVA seul (retiré « Discuter avec NEBULA Agency ») ; assistant public (app.js) + widget du site agence rebrandés **NOVA**.
+- **Versions assets** : `app.css/app.js?v=20260621b` (partenaire/admin/hub). Bug de révélation `.rv` corrigé (moteur auto MutationObserver dans app.js).
+- ⚠️ **Piège PowerShell** : ne jamais éditer un .py/.html via `Get-Content -Raw | Set-Content -Encoding utf8` (double-encodage UTF-8 → mojibake + BOM). Toujours l'outil Edit.
+
 ## 8. Liens mémoire
 
 Brain lié à la mémoire auto `project-nebula-affilies` (la plus à jour, détail technique par vague) et à [[reference-railway-cli]] (API/CLI Railway), [[project-boutique-ia]] (Vendora, dont le domaine custom a été retiré pour libérer le slot), [[reference-domaines]].

@@ -429,4 +429,37 @@
 
 ---
 
+## 2026-06-20 — Hébergement vitrine/catalogue : 15 000 F / 6 mois (et non /mois)
+
+- **Contexte** : le site agence affichait « 15 000 FCFA/mois » pour l'hébergement de la Vitrine et du Catalogue. Mongazi précise que c'est tous les 6 mois.
+- **Décision** : hébergement & sécurité = **15 000 F / 6 mois** (par semestre), frais récurrent indépendant des modifications. Corrigé partout (site v8, CONTEXT, kit de vente, présentation ROI).
+- **Conséquences** : les forfaits Avatar IA restent mensuels ; seul l'hébergement vitrine/catalogue est semestriel.
+
+---
+
+## 2026-06-21 — NOVA = agent officiel unique de NEBULA Agency
+
+- **Contexte** : doublon d'assistants (« Discuter avec NEBULA Agency » + NOVA) sur les dashboards ; incohérence de marque.
+- **Décision** : **NOVA partout**. Un seul assistant par surface. Dashboard partenaire = NOVA seul (retiré l'autre). Assistant public (affiliés + site agence) rebrandé « NOVA ». Le Studio Quotidien ne fait plus de pub « NOVA » comme produit — NOVA est l'**agent**, la **marque** est NEBULA Agency.
+- **Raison** : clarté de marque, un agent identifiable.
+
+---
+
+## 2026-06-21 — Alertes Telegram partenaires : réutiliser le bot existant
+
+- **Contexte** : pour alerter les partenaires sur Telegram (même app fermée), il faut un bot avec webhook. Le bot @Nova_de_nebula_bot a déjà un webhook (Vendora/boutique-ia).
+- **Décision** : **réutiliser @Nova_de_nebula_bot** (Vendora est coupé) ; le webhook est repris vers les affiliés. Choix validé par Mongazi.
+- **Alternatives écartées** : bot dédié (plus propre mais demande une création BotFather) — recommandé si réactivation de Vendora.
+- **Conséquences** : un seul webhook par bot → si Vendora redémarre, lui rebrancher son webhook. **Anti-bruit** : Telegram uniquement sur événements importants (client, vente, commission, paiement, recrue), opt-in, jamais en boucle.
+
+---
+
+## 2026-06-21 — Resend : envoyer depuis le domaine .online
+
+- **Contexte** : email d'accès auto via Resend. La config historique pointait `contact@nebula-agency.com` → 403 (domaine non vérifié).
+- **Décision** : expéditeur = **`contact@nebula-agency.online`** (seul domaine vérifié DKIM+SPF sur le compte Resend). Variables posées sur Railway affiliés.
+- **Conséquences** : `.com` n'est pas vérifié sur Resend ; toujours envoyer depuis `.online`.
+
+---
+
 <!-- Ajouter les nouvelles décisions au-dessus -->
