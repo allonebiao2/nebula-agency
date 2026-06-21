@@ -7,7 +7,7 @@
 <title>Mon QG — NEBULA Affiliés</title>
 <link rel="icon" type="image/png" href="/static/favicon.png">
 <link rel="apple-touch-icon" href="/static/favicon.png">
-<link rel="stylesheet" href="/static/app.css?v=20260621c">
+<link rel="stylesheet" href="/static/app.css?v=20260621d">
 </head>
 <body>
 <div class="bg-orbs"></div>
@@ -69,7 +69,7 @@
   <div id="notif-list"></div>
 </div></div></div>
 
-<script src="/static/app.js?v=20260621c"></script>
+<script src="/static/app.js?v=20260621d"></script>
 <script>
 const { icon, api, toast, sound, countUp, reveal, qr, celebrate, nova, esc, fmt, ago, el } = NA;
 const ROOT = document.documentElement;
@@ -767,7 +767,9 @@ function buildChatShell(side) {
 function contactCard(c) {
   const ava = c.photo ? `<div class="chat-ava"><img class="av-img" src="${esc(c.photo)}" alt=""></div>`
     : `<div class="chat-ava" style="color:${c.accent || 'var(--accent)'}">${initials(c.name)}</div>`;
-  const meta = c.rank
+  const meta = c.role_label
+    ? `${NA.roleBadge(c.role_label, { size: 'sm' })}<span>${esc(c.sub || '')}</span>`
+    : c.rank
     ? `${NA.rankBadge(c.rank, { size: 'xs', glow: false })}<span>${NA.rankName(c.rank)}${c.palier ? ` · ${esc(c.palier)}` : ''}${typeof c.ventes === 'number' ? ` · ${c.ventes}v` : ''}</span>`
     : `<span>${esc(c.sub || '')}</span>`;
   return `<div class="chat-contact${CHAT.channel === c.uid ? ' on' : ''}" data-uid="${c.uid}" data-name="${esc(c.name)}">
@@ -791,7 +793,7 @@ function renderChatList() {
   const box = document.getElementById('chatList'); if (!box) return;
   const q = CHAT_FILTER.q.trim().toLowerCase(), f = CHAT_FILTER.f;
   let list = CHAT_DATA.contacts.filter(c =>
-    (!q || [c.name, c.rank, c.palier, c.code].some(v => (v || '').toLowerCase().includes(q))) &&
+    (!q || [c.name, c.rank, c.palier, c.code, c.role_label, c.sub].some(v => (v || '').toLowerCase().includes(q))) &&
     (f === 'all' || (f.startsWith('p:') ? c.palier === f.slice(2) : c.rank === f.slice(2))));
   const ro = (NA.RANK_ORDER || []);
   const cmp = { rank: (a, b) => (ro.indexOf(b.rank) - ro.indexOf(a.rank)) || ((b.ventes || 0) - (a.ventes || 0)),

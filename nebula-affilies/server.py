@@ -688,37 +688,48 @@ def new_code(c) -> str:
 def fmoney(n) -> str:
     return f"{int(round(n or 0)):,}".replace(",", " ")
 
-def generate_commissions(lead: sqlite3.Row):
-    """À la vente PAYÉE : crée auto les commissions direct + N1 + N2 et alerte chaque bénéficiaire."""
-    entries = []  # (beneficiary_id, level, amount)
+def generate_commissions(lead: sqlite3.Row) -> Dict[str, Any]:
+    """À la vente PAYÉE : crée auto les commissions direct + N1 + N2, alerte chaque bénéficiaire,
+    et RENVOIE le détail complet (qui touche combien, quel %, MoMo) pour l'afficher tout de suite à l'admin."""
+    client = (str(lead["prenom"] or "") + " " + str(lead["nom"] or "")).strip() or "ce client"
+    price = lead["montant"] if lead["montant"] else SERVICES.get(lead["service"], {}).get("price", 0)
+    svc = SERVICES.get(lead["service"], {}).get("label", lead["service"])
+    empty = {"client": client, "price": int(price or 0), "service": svc, "lines": [], "total": 0, "already": False}
+    entries = []  # (beneficiary_row, level, pct, amount)
     with db() as c:
         if c.execute("SELECT COUNT(*) n FROM commissions WHERE lead_id=? AND status!='void'", (lead["id"],)).fetchone()["n"]:
-            return  # idempotent : déjà généré
+            return {**empty, "already": True}  # idempotent : déjà généré
         aff = c.execute("SELECT * FROM affiliates WHERE id=?", (lead["affiliate_id"],)).fetchone()
         if not aff:
-            return
-        price = lead["montant"] if lead["montant"] else SERVICES.get(lead["service"], {}).get("price", 0)
+            return empty                                   # client direct (site) : aucune commission
         rate = stats_of(aff["id"])["direct_rate"]
-        entries.append((aff["id"], "direct", int(round(price * rate))))
+        entries.append((aff, "direct", rate, int(round(price * rate))))
         p1 = c.execute("SELECT * FROM affiliates WHERE id=? AND actif=1", (aff["parrain_id"] or 0,)).fetchone()
         if p1:
-            entries.append((p1["id"], "n1", int(round(price * DEPTH_N1))))
+            entries.append((p1, "n1", DEPTH_N1, int(round(price * DEPTH_N1))))
             p2 = c.execute("SELECT * FROM affiliates WHERE id=? AND actif=1", (p1["parrain_id"] or 0,)).fetchone()
             if p2:
-                entries.append((p2["id"], "n2", int(round(price * DEPTH_N2))))
+                entries.append((p2, "n2", DEPTH_N2, int(round(price * DEPTH_N2))))
         now = time.time()
-        for bid, lvl, amt in entries:
+        for ben, lvl, pct, amt in entries:
             if amt > 0:
                 c.execute("INSERT INTO commissions(lead_id,beneficiary_id,level,amount,status,created) VALUES(?,?,?,?,'due',?)",
-                          (lead["id"], bid, lvl, amt, now))
-    client = (str(lead["prenom"] or "") + " " + str(lead["nom"] or "")).strip()
+                          (lead["id"], ben["id"], lvl, amt, now))
     labels = {"direct": "vente directe", "n1": "réseau N1", "n2": "réseau N2"}
-    nb = 0
-    for bid, lvl, amt in entries:
-        if amt > 0:
-            nb += 1
-            notify("affiliate", bid, f"Commission à réclamer : {fmoney(amt)} F ({labels[lvl]}) sur la vente de {client}.", lead["id"], kind="commission", ref_aff=bid)
-    notify("admin", 0, f"Commissions générées sur la vente de {client} — {nb} bénéficiaire(s) à payer.", lead["id"], kind="vente", ref_aff=lead["affiliate_id"])
+    lines = []
+    for ben, lvl, pct, amt in entries:
+        if amt <= 0:
+            continue
+        pc = int(round(pct * 100))
+        notify("affiliate", ben["id"], f"Commission à réclamer : {fmoney(amt)} F ({labels[lvl]}, {pc}%) sur la vente de {client}.", lead["id"], kind="commission", ref_aff=ben["id"])
+        lines.append({"name": affiliate_label(ben), "level": lvl, "level_label": labels[lvl], "pct": pc,
+                      "amount": amt, "momo_number": ben["momo_number"] or "", "momo_reseau": ben["momo_reseau"] or "",
+                      "beneficiary_id": ben["id"]})
+    total = sum(x["amount"] for x in lines)
+    if lines:
+        detail = " · ".join(f"{x['name']} {fmoney(x['amount'])} F ({x['pct']}%)" for x in lines)
+        notify("admin", 0, f"À VERSER sur {client} ({svc}, {fmoney(price)} F) → {detail}", lead["id"], kind="vente", ref_aff=lead["affiliate_id"])
+    return {"client": client, "price": int(price or 0), "service": svc, "lines": lines, "total": total, "already": False}
 
 def void_commissions(lead_id: int):
     with db() as c:
@@ -1349,11 +1360,12 @@ async def admin_set_payment(lid: int, req: Request, naff_session: Optional[str] 
         m = float(montant) if (montant is not None and str(montant) != "") else r["montant"]
         c.execute("UPDATE leads SET paye=?, montant=?, updated=? WHERE id=?", (paye, m, time.time(), lid))
         r = c.execute("SELECT * FROM leads WHERE id=?", (lid,)).fetchone()
+    breakdown = None
     if paye:
-        generate_commissions(r)      # crée + alerte direct / N1 / N2 automatiquement
+        breakdown = generate_commissions(r)      # crée + alerte direct / N1 / N2 + RENVOIE le détail
     else:
         void_commissions(lid)
-    return {"ok": True}
+    return {"ok": True, "breakdown": breakdown}
 
 @app.get("/api/admin/notifs")
 def admin_notifs(naff_session: Optional[str] = Cookie(default=None)):
@@ -2058,11 +2070,13 @@ def participants_map() -> Dict[str, Dict[str, Any]]:
     with db() as c:
         affs = c.execute("SELECT * FROM affiliates WHERE actif=1 ORDER BY created").fetchall()
     out: Dict[str, Dict[str, Any]] = {"admin": {
-        "uid": "admin", "name": "NEBULA Agency", "role": "admin",
-        "accent": "#7b5cff", "photo": photo_url("admin"), "sub": "Quartier général"}}
+        "uid": "admin", "name": FOUNDER_NAME, "role": "admin", "role_label": "CEO",
+        "accent": "#e6c34c", "photo": photo_url("admin"), "sub": FOUNDER_TITLE + " · NEBULA Agency"}}
     for a in affs:
         uid = "a" + str(a["id"])
+        arole = (a["role"] or "").strip().lower() if "role" in a.keys() else ""
         out[uid] = {"uid": uid, "name": affiliate_label(a), "role": "affiliate",
+                    "role_label": ROLE_LABELS.get(arole, ""),
                     "accent": a["accent"] or "#7b5cff", "photo": photo_url(uid),
                     "sub": rank_for(team_cumul_count(a["id"]))["label"], "aid": a["id"], "code": a["code"]}
     return out

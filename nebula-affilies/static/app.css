@@ -487,8 +487,9 @@ input,select,textarea{font-family:inherit}
   .topbar .rank>.emblem{width:44px!important;height:44px!important}
   .topbar .rank>div:not(.emblem){min-width:0;flex:1}
   .topbar #p-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .topbar #p-rank{max-width:100%;overflow:hidden;text-overflow:ellipsis}
-  .topbar #p-rank>span{max-width:100%}
+  /* ligne rang+badge : passe à la ligne au lieu de rogner le badge de rôle (CEO/Superviseur) */
+  .topbar #p-rank{max-width:100%;overflow:visible}
+  .topbar #p-rank>span{max-width:100%;flex-wrap:wrap;white-space:normal;row-gap:5px}
   .topbar .who .r-sub,.topbar .who [id$="name"]{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .icon-btn{width:40px;height:40px}
   .flex.gap8{gap:7px}
@@ -715,3 +716,28 @@ input,select,textarea{font-family:inherit}
 .lead-track.warn{color:#f5b14c}.lead-track.info{color:#4cc6ff}.lead-track.ok{color:var(--ok)}
 .lead-note{font-size:.88rem;line-height:1.5;color:var(--ink);background:rgba(255,255,255,.03);border:1px solid var(--hair);
   border-left:2px solid color-mix(in srgb,var(--accent) 55%,transparent);border-radius:10px;padding:9px 12px;white-space:pre-wrap;max-width:640px}
+
+/* ---------- Badge de RÔLE (CEO / Superviseur) : brille & s'illumine ---------- */
+.role-badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;font-weight:700;letter-spacing:.05em;
+  text-transform:uppercase;white-space:nowrap;vertical-align:middle;flex-shrink:0;width:max-content;line-height:1.1;
+  background:linear-gradient(135deg,rgba(123,92,255,.30),rgba(34,211,238,.20));
+  border:1px solid rgba(140,120,255,.65);color:#e7defff2;
+  box-shadow:0 0 10px rgba(123,92,255,.45), inset 0 0 7px rgba(160,140,255,.25);
+  animation:roleGlow 2.6s ease-in-out infinite;position:relative;overflow:hidden}
+.role-badge .role-ico{width:13px;height:13px;display:inline-flex;flex-shrink:0}
+.role-badge .role-ico svg{width:100%;height:100%}
+/* reflet qui balaie le badge (shine) */
+.role-badge::after{content:"";position:absolute;top:0;left:-60%;width:45%;height:100%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-18deg);
+  animation:roleShine 3.4s ease-in-out infinite}
+@keyframes roleGlow{0%,100%{box-shadow:0 0 9px rgba(123,92,255,.40), inset 0 0 6px rgba(160,140,255,.22)}
+  50%{box-shadow:0 0 17px rgba(123,92,255,.75), inset 0 0 10px rgba(160,140,255,.40)}}
+@keyframes roleShine{0%{left:-60%}55%,100%{left:130%}}
+/* CEO : doré royal */
+.role-badge.role-ceo{background:linear-gradient(135deg,rgba(230,195,76,.34),rgba(255,150,80,.20));
+  border-color:rgba(245,210,120,.75);color:#fff2cf;
+  box-shadow:0 0 12px rgba(230,195,76,.55), inset 0 0 8px rgba(255,220,140,.30)}
+.role-badge.role-ceo{animation:roleGlowGold 2.6s ease-in-out infinite}
+@keyframes roleGlowGold{0%,100%{box-shadow:0 0 10px rgba(230,195,76,.5), inset 0 0 7px rgba(255,220,140,.28)}
+  50%{box-shadow:0 0 20px rgba(245,205,90,.9), inset 0 0 12px rgba(255,225,150,.5)}}
+@media(prefers-reduced-motion:reduce){.role-badge,.role-badge.role-ceo{animation:none}.role-badge::after{display:none}}

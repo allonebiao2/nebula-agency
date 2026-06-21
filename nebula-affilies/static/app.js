@@ -370,16 +370,17 @@ const NA = (() => {
       + `<span class="rk-ring"></span><span class="rk-core">${icon(m.icon)}</span></span>`;
   }
   function rankName(label) { return `<span class="rk-name" style="--c1:${(RANK_META[label] || RANK_META['Recrue']).c1};--c2:${(RANK_META[label] || RANK_META['Recrue']).c2}">${esc(label)}</span>`; }
-  // Badge de RÔLE spécial (ex : Superviseur, Fondateur) — distinct de l'insigne de rang cosmique.
+  // Badge de RÔLE spécial (CEO, Superviseur…) — distinct de l'insigne de rang cosmique.
+  // Brille/s'illumine (classe .role-badge animée). CEO = doré royal, autres = violet/cyan.
   function roleBadge(label, opts = {}) {
     if (!label) return '';
     const sm = opts.size === 'sm';
-    return `<span class="role-badge" title="${esc(label)}" style="display:inline-flex;align-items:center;gap:5px;`
-      + `padding:${sm ? '2px 8px' : '3px 10px'};border-radius:999px;font-size:${sm ? '.66rem' : '.72rem'};`
-      + `font-weight:700;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;`
-      + `background:linear-gradient(135deg,rgba(123,92,255,.22),rgba(34,211,238,.16));`
-      + `border:1px solid rgba(123,92,255,.5);color:#d6c8ff;vertical-align:middle">`
-      + `<span style="width:13px;height:13px;display:inline-flex">${icon('shield')}</span>${esc(label)}</span>`;
+    const ceo = /ceo|fondateur|founder/i.test(label);
+    const ico = ceo ? 'crown' : 'shield';
+    const cls = 'role-badge' + (ceo ? ' role-ceo' : '');
+    return `<span class="${cls}" title="${esc(label)}" style="`
+      + `padding:${sm ? '2px 9px' : '3px 11px'};font-size:${sm ? '.66rem' : '.72rem'}">`
+      + `<span class="role-ico">${icon(ico)}</span>${esc(label)}</span>`;
   }
 
   /* ---------- ÉCHELLE DES RANGS (clic sur le rang → tout voir) ---------- */
