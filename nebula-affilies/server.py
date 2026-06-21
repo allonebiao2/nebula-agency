@@ -438,7 +438,8 @@ def network_of(aid: int) -> Dict[str, Any]:
     """Réseau d'un affilié en ARBRE : N1 (recrues directes, 10%), chaque N1 portant ses N2 (5%)."""
     def line(a, rate):
         cnt, val = _paid_value(a["id"])
-        return {"name": affiliate_label(a), "code": a["code"], "ventes": cnt, "commission": int(round(val * rate))}
+        return {"name": affiliate_label(a), "code": a["code"], "ventes": cnt,
+                "rank": rank_for(cnt)["label"], "commission": int(round(val * rate))}
     with db() as c:
         n1 = c.execute("SELECT * FROM affiliates WHERE parrain_id=? AND actif=1 ORDER BY created", (aid,)).fetchall()
     n1_list = []; n1_comm = 0; n2_comm = 0; n2_count = 0

@@ -7,7 +7,7 @@
 <title>Mon QG — NEBULA Affiliés</title>
 <link rel="icon" type="image/png" href="/static/favicon.png">
 <link rel="apple-touch-icon" href="/static/favicon.png">
-<link rel="stylesheet" href="/static/app.css?v=20260620a">
+<link rel="stylesheet" href="/static/app.css?v=20260620d">
 </head>
 <body>
 <div class="bg-orbs"></div>
@@ -69,7 +69,7 @@
   <div id="notif-list"></div>
 </div></div></div>
 
-<script src="/static/app.js?v=20260620a"></script>
+<script src="/static/app.js?v=20260620d"></script>
 <script>
 const { icon, api, toast, sound, countUp, reveal, qr, celebrate, nova, esc, fmt, ago, el } = NA;
 const ROOT = document.documentElement;
@@ -255,6 +255,9 @@ async function renderGains() {
 function renderReseau() {
   const net = ME.network || { n1: [], n2: [], n1_commission: 0, n2_commission: 0, network_total: 0, n1_count: 0, n2_count: 0 };
   const link = location.origin + '/p/' + ME.code + '?go=partenaire';
+  MYNET = {};
+  const MY_APEX = { name: ME.name, code: ME.code, ventes: ME.stats.ventes, rank: ME.stats.rank.label, children: net.n1 || [] };
+  computeMyTeam(MY_APEX);
   const row = (x, lvl, rate) => `<div class="row" style="grid-template-columns:42px 1fr auto"><div class="avatar">${initials(x.name)}</div><div><div class="ttl">${esc(x.name)} <span class="chip" style="margin-left:6px">${lvl}</span></div><div class="meta">${x.ventes} vente${x.ventes > 1 ? 's' : ''} · ${rate}</div></div><div class="center"><div class="mono" style="color:var(--accent);font-weight:700">${fmt(x.commission)} F</div><div class="meta">pour toi</div></div></div>`;
   document.getElementById('v-reseau').innerHTML = `
     <div class="bento">
@@ -280,32 +283,92 @@ function renderReseau() {
           <div class="ap-ico">${icon('shield')}</div>
           <div><b>Ce n'est pas un système pyramidal.</b> Ici, <b>chacun est son propre patron</b> : ton revenu vient d'abord de <b>tes</b> ventes. Quand une personne que tu as parrainée réussit, tu touches un bonus de remerciement (N1&nbsp;10%, N2&nbsp;5%) — sans rien retirer à personne. Un filleul peut très bien gagner plus que son parrain.</div>
         </div>
-        <div class="pyr">
-          ${ME.parrain ? `
-            <div class="pyr-lvl"><div class="pyr-node par"><div class="pyr-av">${initials(ME.parrain.name)}</div><div class="pyr-tx"><b>${esc(ME.parrain.name)}</b><small>Ton parrain</small></div></div></div>
-            <div class="pyr-conn"></div>`
-          : `
-            <div class="pyr-lvl"><div class="pyr-node top"><div class="pyr-av">${icon('crown')}</div><div class="pyr-tx"><b>Tu es à la tête</b><small>de ta propre équipe</small></div></div></div>
-            <div class="pyr-conn"></div>`}
-          <div class="pyr-lvl"><div class="pyr-node me">
-            <div class="pyr-av">${ME.photo ? `<img class="av-img" src="${ME.photo}" alt="">` : initials(ME.name)}</div>
-            <div class="pyr-tx"><b>${esc(ME.name)} — toi</b><small>${esc(ME.stats.rank.label)} · ${ME.stats.ventes} vente${ME.stats.ventes > 1 ? 's' : ''}</small></div>
-          </div></div>
-          ${net.n1.length ? `
-            <div class="pyr-conn"></div>
-            <div class="pyr-team-lbl">Ton équipe — ${net.n1_count} filleul${net.n1_count > 1 ? 's' : ''} N1${net.n2_count ? ` · ${net.n2_count} en N2` : ''}</div>
-            <div class="pyr-lvl wrap">${net.n1.map(a => `
-              <div class="pyr-branch">
-                <div class="pyr-node n1"><div class="pyr-av">${initials(a.name)}</div><div class="pyr-tx"><b>${esc(a.name)}</b><small>N1 · 10% pour toi · ${a.ventes} vente${a.ventes > 1 ? 's' : ''}</small></div></div>
-                ${a.children.length ? `<div class="pyr-subconn"></div><div class="pyr-kids">${a.children.map(k => `<div class="pyr-node n2"><div class="pyr-av sm">${initials(k.name)}</div><div class="pyr-tx"><b>${esc(k.name)}</b><small>N2 · 5% pour toi</small></div></div>`).join('')}</div>` : ''}
-              </div>`).join('')}</div>`
-          : `<div class="pyr-conn"></div><div class="pyr-empty">Pas encore de filleul. Partage ton lien de recrutement ci-dessus, et ton équipe apparaîtra ici, sous toi.</div>`}
+        ${net.n1.length ? `
+        <div class="org-toolbar mt16">
+          <div class="org-search">${icon('search')}<input id="myorg-q" placeholder="Trouver un filleul (nom ou code)…"></div>
+          <button class="org-btn" id="myorg-fit">${icon('grid')}Ajuster</button>
+          <button class="org-btn" id="myorg-zin">${icon('plus')}</button>
+          <button class="org-btn" id="myorg-zout">−</button>
+          <button class="org-btn" id="myorg-expand">Tout déplier</button>
+          <button class="org-btn" id="myorg-collapse">Vue d'ensemble</button>
         </div>
+        <div class="org-stage mt8" id="myorg-stage"><div class="org-pan" id="myorg-pan"><ul class="org">${pLi(MY_APEX, true, 0)}</ul></div></div>
+        <p class="muted center mt8" style="font-size:.8rem">Touche un filleul pour voir son niveau et ce qu'il te rapporte. Glisse pour déplacer · molette / pince pour zoomer.</p>`
+        : `<div class="pyr-empty mt16">Pas encore de filleul. Partage ton lien de recrutement ci-dessus, et ton équipe apparaîtra ici, sous toi, en pyramide interactive.</div>`}
       </div></div></div>
     </div>`;
   countUp(document.getElementById('n-net'), net.network_total, { money: true });
+  if (net.n1.length) wireMyOrg();
   document.getElementById('rcopy').onclick = () => { navigator.clipboard?.writeText(link); sound.sfx.cash(); toast('Lien de recrutement copié ✓', 'ok'); };
   document.getElementById('rwa').href = 'https://wa.me/?text=' + encodeURIComponent('Rejoins le programme partenaires NEBULA avec moi — vends des vitrines digitales et gagne des commissions : ' + link);
+}
+
+/* ---------- Ma pyramide d'équipe (org-chart interactif, lecture seule) ---------- */
+let MYNET = {};
+function computeMyTeam(n) { let s = 0; (n.children || []).forEach(ch => { s += 1 + computeMyTeam(ch); }); n._team = s; return s; }
+function pCard(n, apex, level) {
+  if (apex) {
+    return `<div class="onode apex" style="--tc:var(--accent)" data-code="">
+      ${ME.photo ? `<div class="emblem" style="width:104px;height:104px;border-radius:28px"><img class="av-img" src="${esc(ME.photo)}" alt=""></div>` : NA.rankBadge(n.rank, { size: 'lg' })}
+      <div class="oname">${esc(n.name)} — toi</div>
+      <div class="ostats"><span class="ochip"><b>${n.ventes}</b> vente${n.ventes > 1 ? 's' : ''}</span><span class="ochip"><b>${n._team || 0}</b> dans ton équipe</span></div></div>`;
+  }
+  const lvlLabel = level === 1 ? 'N1 · 10% pour toi' : 'N2 · 5% pour toi';
+  const teamCount = n._team || 0;
+  const toggle = teamCount ? `<button class="otoggle" title="Replier / déplier">− ${teamCount}</button>` : '';
+  return `<div class="onode" style="--tc:${level === 1 ? 'var(--accent)' : '#22d3ee'}" data-code="${esc(n.code || '')}" data-name="${esc((n.name || '').toLowerCase())}">
+    <div class="ohead">${NA.rankBadge(n.rank || 'Recrue', { size: 'sm', glow: false })}<div style="min-width:0"><div class="oname">${esc(n.name)}</div><div class="ocode">${esc(n.code)}</div></div></div>
+    <div class="orank">${lvlLabel}</div>
+    <div class="ostats"><span class="ochip"><b>${n.ventes}</b> vente${n.ventes > 1 ? 's' : ''}</span>${n.commission ? `<span class="ochip team"><b>+${fmt(n.commission)}</b> F pour toi</span>` : ''}${teamCount ? `<span class="ochip"><b>${teamCount}</b> équipe</span>` : ''}</div>
+    ${toggle}</div>`;
+}
+function pLi(n, apex, level) {
+  if (!apex && n.code) MYNET[n.code] = { node: n, level };
+  const kids = n.children || [];
+  let html = pCard(n, apex, level);
+  if (kids.length) html += `<ul>${kids.map(k => pLi(k, false, level + 1)).join('')}</ul>`;
+  return `<li>${html}</li>`;
+}
+function openFilleul(code) {
+  const e = MYNET[code]; if (!e) return; const n = e.node; sound.sfx.open();
+  const lvl = e.level === 1 ? 'Filleul direct (N1) — tu touches 10% sur ses ventes' : 'Filleul de filleul (N2) — tu touches 5% sur ses ventes';
+  document.getElementById('doc-in').innerHTML = `
+    <div class="flex between" style="align-items:flex-start"><div class="flex" style="gap:14px;align-items:center">
+      ${NA.rankBadge(n.rank || 'Recrue', { size: 'lg' })}
+      <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:1.2rem">${esc(n.name)} <span class="chip">${esc(n.code)}</span></div>
+        <div class="meta mt8">${NA.rankName(n.rank || 'Recrue')} · ${n.ventes} vente${n.ventes > 1 ? 's' : ''}</div></div>
+    </div><button class="icon-btn" id="fil-x" style="width:34px;height:34px">${icon('close')}</button></div>
+    <div class="aff-sec"><div class="eyebrow"><span class="dot"></span>Ta relation avec ce filleul</div>
+      <p class="muted" style="font-size:.92rem">${lvl}.</p>
+      <div class="flex gap8 mt8 wrap"><span class="chip">${n.ventes} vente${n.ventes > 1 ? 's' : ''}</span><span class="ochip team"><b>+${fmt(n.commission || 0)}</b> F pour toi</span>${(n._team || 0) ? `<span class="chip">${n._team} dans sa branche</span>` : ''}</div>
+    </div>
+    <p class="muted center" style="font-size:.8rem;margin-top:10px">Les clients et les gains personnels de chaque partenaire restent privés.</p>`;
+  document.getElementById('doc-scrim').classList.add('on');
+  document.getElementById('fil-x').onclick = () => document.getElementById('doc-scrim').classList.remove('on');
+}
+function wireMyOrg() {
+  const stage = document.getElementById('myorg-stage'), pan = document.getElementById('myorg-pan');
+  if (!stage || !pan) return;
+  let scale = 1, tx = 0, ty = 0, drag = false, moved = false, sx = 0, sy = 0, dx0 = 0, dy0 = 0;
+  const apply = () => { pan.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`; };
+  const clampS = s => Math.max(0.2, Math.min(2.6, s));
+  const setTog = (t, sign) => { t.textContent = sign + ' ' + t.textContent.replace(/^[+\-]\s*/, ''); };
+  function fit() { const cw = pan.scrollWidth, ch = pan.scrollHeight, sw = stage.clientWidth, sh = stage.clientHeight; if (!cw || !ch) return; scale = clampS(Math.min(sw / cw, sh / ch, 1)); tx = Math.max(10, (sw - cw * scale) / 2); ty = 16; apply(); }
+  function focusNode(node) { pan.querySelectorAll('.onode.hit').forEach(n => n.classList.remove('hit')); let p = node.closest('li'); while (p) { p.classList.remove('collapsed'); const t = p.querySelector(':scope > .onode .otoggle'); if (t) setTog(t, '−'); p = p.parentElement ? p.parentElement.closest('li') : null; } node.classList.add('hit'); const sr = stage.getBoundingClientRect(), nr = node.getBoundingClientRect(); tx += (sr.width / 2 - (nr.left - sr.left + nr.width / 2)); ty += (sr.height / 2 - (nr.top - sr.top + nr.height / 2)); apply(); }
+  pan.addEventListener('click', e => { if (moved) return; const tog = e.target.closest('.otoggle'); if (tog) { const li = tog.closest('li'); if (li) { setTog(tog, li.classList.toggle('collapsed') ? '+' : '−'); sound.sfx.tab(); } return; } const node = e.target.closest('.onode'); if (node && node.dataset.code) openFilleul(node.dataset.code); });
+  stage.addEventListener('pointerdown', e => { drag = true; moved = false; dx0 = e.clientX; dy0 = e.clientY; sx = e.clientX - tx; sy = e.clientY - ty; stage.classList.add('grabbing'); try { stage.setPointerCapture(e.pointerId); } catch (x) {} });
+  stage.addEventListener('pointermove', e => { if (!drag) return; if (Math.abs(e.clientX - dx0) + Math.abs(e.clientY - dy0) > 6) moved = true; tx = e.clientX - sx; ty = e.clientY - sy; apply(); });
+  const end = () => { drag = false; stage.classList.remove('grabbing'); setTimeout(() => { moved = false; }, 40); };
+  stage.addEventListener('pointerup', end); stage.addEventListener('pointercancel', end);
+  stage.addEventListener('wheel', e => { e.preventDefault(); const r = stage.getBoundingClientRect(), cx = e.clientX - r.left, cy = e.clientY - r.top; const ns = clampS(scale * (e.deltaY < 0 ? 1.12 : 0.89)); tx = cx - (cx - tx) * (ns / scale); ty = cy - (cy - ty) * (ns / scale); scale = ns; apply(); }, { passive: false });
+  document.getElementById('myorg-fit').onclick = fit;
+  document.getElementById('myorg-zin').onclick = () => { scale = clampS(scale * 1.18); apply(); };
+  document.getElementById('myorg-zout').onclick = () => { scale = clampS(scale * 0.85); apply(); };
+  document.getElementById('myorg-expand').onclick = () => { pan.querySelectorAll('li.collapsed').forEach(li => li.classList.remove('collapsed')); pan.querySelectorAll('.otoggle').forEach(t => setTog(t, '−')); fit(); };
+  document.getElementById('myorg-collapse').onclick = () => { pan.querySelectorAll('.org > li > ul > li').forEach(li => { const t = li.querySelector(':scope > .onode .otoggle'); if (t) { li.classList.add('collapsed'); setTog(t, '+'); } }); fit(); };
+  const q = document.getElementById('myorg-q');
+  if (q) q.addEventListener('keydown', e => { if (e.key !== 'Enter') return; const qq = q.value.trim().toLowerCase(); pan.querySelectorAll('.onode.hit').forEach(n => n.classList.remove('hit')); if (!qq) return; const node = [...pan.querySelectorAll('.onode')].find(n => (n.dataset.name || '').includes(qq) || (n.dataset.code || '').includes(qq)); if (!node) { toast('Aucun filleul trouvé', 'bad'); return; } focusNode(node); sound.sfx.ok(); });
+  setTimeout(fit, 80);
 }
 
 function renderLink() {
