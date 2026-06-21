@@ -1455,9 +1455,9 @@ if(window.NEBULA_SFX)window.NEBULA_SFX.play.cash();window.open('https://wa.me/22
 @media(max-width:560px){.na-chat-fab{right:14px;bottom:14px;font-size:.78rem;padding:12px 15px;}
   .na-chat-panel{right:10px;left:10px;bottom:84px;width:auto;}}
 </style>
-<button class="na-chat-fab" id="naChatFab" type="button"><span class="ncd"></span>Discuter avec NEBULA Agency</button>
+<button class="na-chat-fab" id="naChatFab" type="button"><span class="ncd"></span>Discuter avec NOVA</button>
 <div class="na-chat-panel" id="naChatPanel">
-  <div class="na-chat-head"><span class="nco"></span><div><b>NEBULA Agency</b><small>On répond à vos questions</small></div><button class="ncx" id="naChatClose" type="button" aria-label="Fermer">&times;</button></div>
+  <div class="na-chat-head"><span class="nco"></span><div><b>NOVA</b><small>L'assistant de NEBULA Agency</small></div><button class="ncx" id="naChatClose" type="button" aria-label="Fermer">&times;</button></div>
   <div class="na-chat-log" id="naChatLog"></div>
   <div class="na-chat-foot"><input id="naChatInput" placeholder="Posez votre question…" autocomplete="off"><button id="naChatSend" type="button" aria-label="Envoyer">&#10148;</button></div>
 </div>
@@ -1470,7 +1470,7 @@ if(window.NEBULA_SFX)window.NEBULA_SFX.play.cash();window.open('https://wa.me/22
   var hist=[],greeted=false,isOpen=false;
   function esc(s){return String(s||'').replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
   function add(who,text){var m=document.createElement('div');m.className='na-msg '+(who==='u'?'u':'a');m.innerHTML=esc(text);log.appendChild(m);log.scrollTop=log.scrollHeight;return m;}
-  function greet(){if(greeted)return;greeted=true;add('a',"Bonjour et bienvenue chez NEBULA Agency. Posez-moi vos questions sur nos sites vitrines, catalogues, QR codes, délais et tarifs — je suis là pour vous aider.");}
+  function greet(){if(greeted)return;greeted=true;add('a',"Bonjour, je suis NOVA, l'assistant de NEBULA Agency. Posez-moi vos questions sur nos sites vitrines, catalogues, QR codes, délais et tarifs — je suis là pour vous aider.");}
   function toggle(){isOpen=!isOpen;panel.classList.toggle('on',isOpen);if(isOpen){greet();setTimeout(function(){input.focus();},200);}}
   function ask(){
     var msg=input.value.trim();if(!msg)return;input.value='';

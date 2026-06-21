@@ -288,7 +288,8 @@ init_db()
 def migrate():
     with db() as c:
         for col, ddl in [("pseudo", "TEXT DEFAULT ''"), ("parrain_id", "INTEGER DEFAULT 0"), ("photo", "TEXT DEFAULT ''"),
-                         ("direct_rate_override", "REAL DEFAULT 0"), ("email", "TEXT DEFAULT ''")]:
+                         ("direct_rate_override", "REAL DEFAULT 0"), ("email", "TEXT DEFAULT ''"),
+                         ("tg_chat", "TEXT DEFAULT ''"), ("tg_token", "TEXT DEFAULT ''")]:
             try:
                 c.execute(f"ALTER TABLE affiliates ADD COLUMN {col} {ddl}")
             except Exception:
@@ -463,11 +464,34 @@ def network_of(aid: int) -> Dict[str, Any]:
         "n1_commission": n1_comm, "n2_commission": n2_comm, "network_total": n1_comm + n2_comm,
     }
 
+def tg_send(chat: Any, text: str):
+    """Envoi Telegram OUTBOUND (bot partagé Nova_de_nebula_bot). Silencieux si échec."""
+    tok = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    if not tok or not chat:
+        return
+    try:
+        httpx.post(f"https://api.telegram.org/bot{tok}/sendMessage",
+                   json={"chat_id": chat, "text": text, "disable_web_page_preview": True}, timeout=8)
+    except Exception:
+        pass
+
+def tg_notify(chat: Any, text: str):
+    """Envoi non bloquant (thread) pour ne pas ralentir la requête."""
+    if chat:
+        threading.Thread(target=tg_send, args=(chat, text), daemon=True).start()
+
 def notify(role: str, target_id: int, text: str, lead_id: Optional[int] = None, kind: str = "info", ref_aff: int = 0):
     # ref_aff = l'affilié CONCERNÉ par la notif (pour cliquer → sa position dans la pyramide)
+    tgchat = ""
     with db() as c:
         c.execute("INSERT INTO notifs(target_role,target_id,lead_id,text,lu,created,kind,ref_aff) VALUES(?,?,?,?,0,?,?,?)",
                   (role, target_id, lead_id, text, time.time(), kind, ref_aff or 0))
+        if role == "affiliate" and target_id:
+            row = c.execute("SELECT tg_chat FROM affiliates WHERE id=?", (target_id,)).fetchone()
+            if row:
+                tgchat = row["tg_chat"] or ""
+    if tgchat:
+        tg_notify(tgchat, "🔔 NEBULA — " + text)
 
 def affiliate_label(a: sqlite3.Row) -> str:
     nom = " ".join(x for x in [a["prenom"], a["nom"]] if x).strip()
@@ -1491,6 +1515,61 @@ def partner_notifs_read(naff_session: Optional[str] = Cookie(default=None)):
         return JSONResponse({"error": "auth"}, status_code=401)
     with db() as c:
         c.execute("UPDATE notifs SET lu=1 WHERE target_role='affiliate' AND target_id=?", (aid,))
+    return {"ok": True}
+
+# ----------------------  TELEGRAM (alertes partenaires)  ---------------------
+@app.get("/api/partenaire/telegram")
+def partner_tg(naff_session: Optional[str] = Cookie(default=None)):
+    aid = need_affiliate(naff_session)
+    if aid is None:
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        a = c.execute("SELECT tg_chat, tg_token FROM affiliates WHERE id=?", (aid,)).fetchone()
+        token = a["tg_token"] or ""
+        if not token:
+            token = "af" + secrets.token_urlsafe(9)
+            c.execute("UPDATE affiliates SET tg_token=? WHERE id=?", (token, aid))
+    user = os.getenv("NAFF_TG_BOT_USERNAME", "")
+    return {"linked": bool(a["tg_chat"]), "bot": user,
+            "link_url": (f"https://t.me/{user}?start={token}" if user else "")}
+
+@app.post("/api/partenaire/telegram/unlink")
+def partner_tg_unlink(naff_session: Optional[str] = Cookie(default=None)):
+    aid = need_affiliate(naff_session)
+    if aid is None:
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        c.execute("UPDATE affiliates SET tg_chat='' WHERE id=?", (aid,))
+    return {"ok": True}
+
+@app.post("/api/telegram/webhook")
+async def telegram_webhook(req: Request):
+    if req.headers.get("x-telegram-bot-api-secret-token", "") != os.getenv("NAFF_TG_SECRET", "__none__"):
+        return JSONResponse({"ok": False}, status_code=403)
+    try:
+        upd = await req.json()
+    except Exception:
+        return {"ok": True}
+    msg = upd.get("message") or upd.get("edited_message") or {}
+    chat = (msg.get("chat") or {}).get("id")
+    text = (msg.get("text") or "").strip()
+    if not chat:
+        return {"ok": True}
+    if text.startswith("/start"):
+        parts = text.split(maxsplit=1)
+        token = parts[1].strip() if len(parts) > 1 else ""
+        a = None
+        if token:
+            with db() as c:
+                a = c.execute("SELECT * FROM affiliates WHERE tg_token=? AND actif=1", (token,)).fetchone()
+                if a:
+                    c.execute("UPDATE affiliates SET tg_chat=? WHERE id=?", (str(chat), a["id"]))
+        if a:
+            tg_send(chat, f"✅ Telegram lié à ton compte NEBULA, {affiliate_label(a)} !\n\nTu recevras ici tes alertes en temps réel : nouveaux clients, ventes, commissions, validations. À très vite !")
+        else:
+            tg_send(chat, "Bonjour 👋 Ce lien d'activation n'est pas valide. Ouvre ton espace NEBULA partenaire → « Alertes Telegram » et clique sur le bouton de liaison.")
+    else:
+        tg_send(chat, "Bonjour 👋 Je suis l'assistant d'alertes NEBULA. Pour recevoir tes alertes ici, ouvre ton espace partenaire → « Alertes Telegram ».")
     return {"ok": True}
 
 # ==================  CANDIDATURE PUBLIQUE « Devenir partenaire »  ============

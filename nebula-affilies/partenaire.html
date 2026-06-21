@@ -7,7 +7,7 @@
 <title>Mon QG — NEBULA Affiliés</title>
 <link rel="icon" type="image/png" href="/static/favicon.png">
 <link rel="apple-touch-icon" href="/static/favicon.png">
-<link rel="stylesheet" href="/static/app.css?v=20260621a">
+<link rel="stylesheet" href="/static/app.css?v=20260621b">
 </head>
 <body>
 <div class="bg-orbs"></div>
@@ -69,7 +69,7 @@
   <div id="notif-list"></div>
 </div></div></div>
 
-<script src="/static/app.js?v=20260621a"></script>
+<script src="/static/app.js?v=20260621b"></script>
 <script>
 const { icon, api, toast, sound, countUp, reveal, qr, celebrate, nova, esc, fmt, ago, el } = NA;
 const ROOT = document.documentElement;
@@ -523,6 +523,12 @@ function renderPerso() {
         <div class="divider"></div>
         <div class="flex between"><div><b>Musique d'ambiance</b><div class="muted" style="font-size:.82rem">Nappe sonore immersive</div></div><button class="btn sm ${sound.ambient ? 'primary' : 'ghost'}" id="t-amb">${sound.ambient ? 'En cours' : 'Coupée'}</button></div>
       </div></div></div>
+      <div class="col-12 rv"><div class="card glow"><div class="in">
+        <span class="eyebrow"><span class="dot"></span>Alertes Telegram</span>
+        <h2 class="mt8" style="font-size:1.5rem">Sois alerté, même app fermée.</h2>
+        <p class="muted mt8 mb16">Relie ton Telegram : reçois une alerte instantanée à chaque nouveau client, vente, commission ou validation — même quand tu n'es pas sur la plateforme.</p>
+        <div id="tg-zone"><span class="muted">Chargement…</span></div>
+      </div></div></div>
     </div>`;
   const sw = document.getElementById('sw');
   SWATCHES.forEach(c => {
@@ -546,6 +552,24 @@ function renderPerso() {
       } else toast(j.error || 'Erreur', 'bad');
     } catch (e) { toast('Erreur', 'bad'); }
   };
+  wireTelegram();
+}
+
+async function wireTelegram() {
+  const z = document.getElementById('tg-zone'); if (!z) return;
+  let d; try { d = await api('/api/partenaire/telegram'); } catch (e) { z.innerHTML = '<span class="muted">Indisponible pour l\'instant.</span>'; return; }
+  if (!d.bot || !d.link_url) { z.innerHTML = '<span class="muted">Les alertes Telegram seront bientôt activées.</span>'; return; }
+  if (d.linked) {
+    z.innerHTML = `<div class="flex gap8 wrap" style="align-items:center"><span class="chip" style="border-color:color-mix(in srgb,var(--ok) 45%,transparent);color:var(--ok)">Telegram lié ✓ — tu reçois tes alertes</span><button class="btn sm ghost" id="tg-unlink">Délier</button></div>`;
+    document.getElementById('tg-unlink').onclick = async () => { try { await api('/api/partenaire/telegram/unlink', { body: {} }); sound.sfx.click(); toast('Telegram délié', 'ok'); wireTelegram(); } catch (e) {} };
+  } else {
+    z.innerHTML = `<div class="flex gap8 wrap" style="align-items:center">
+        <a class="btn primary" href="${d.link_url}" target="_blank" rel="noopener" id="tg-link">Recevoir mes alertes sur Telegram<span class="ico">${icon('send')}</span></a>
+        <button class="btn sm ghost" id="tg-refresh">J'ai lié — actualiser</button></div>
+      <p class="muted mt8" style="font-size:.8rem">Ouvre Telegram, appuie sur « Démarrer », puis reviens et clique « actualiser ».</p>`;
+    document.getElementById('tg-link').onclick = () => sound.sfx.open();
+    document.getElementById('tg-refresh').onclick = () => wireTelegram();
+  }
 }
 
 /* ---- DOCUMENTATION ---- */
@@ -874,7 +898,7 @@ document.getElementById('amb').onclick = () => { sound.toggleAmbient(); syncSnd(
   const rankBlock = document.querySelector('.topbar .rank');
   if (rankBlock) { rankBlock.classList.add('rank-click'); rankBlock.title = 'Voir l\'échelle des rangs'; rankBlock.onclick = () => NA.rankLadder({ label: ME.stats.rank.label, ventes: ME.stats.ventes }); }
   try { LEADS = (await api('/api/partenaire/leads')).leads; } catch (e) {}
-  buildDock(); syncSnd(); document.getElementById('bell').innerHTML = icon('bell'); nova('ton coach perso'); NA.agencyChat({ side: 'above' }); switchView('home'); refreshNotifs(); startSignals();
+  buildDock(); syncSnd(); document.getElementById('bell').innerHTML = icon('bell'); nova('ton coach perso'); switchView('home'); refreshNotifs(); startSignals();
   document.getElementById('help').innerHTML = icon('help');
   document.getElementById('help').onclick = () => NA.tour(TOUR);
   if (!localStorage.getItem('na_tour_p')) setTimeout(() => NA.tour(TOUR, 'na_tour_p'), 900);

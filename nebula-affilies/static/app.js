@@ -288,9 +288,9 @@ const NA = (() => {
   /* ---------- « Discuter avec NEBULA Agency » (assistant public, cerveau propre) ---------- */
   function agencyChat(opts = {}) {
     const side = ['left', 'right', 'above'].includes(opts.side) ? opts.side : 'right';
-    const fab = el(`<button class="ag-fab ${side}" title="Discuter avec NEBULA Agency"><span class="ag-ico">${icon('chat')}</span><span class="ag-lbl">Discuter avec NEBULA&nbsp;Agency</span></button>`);
+    const fab = el(`<button class="ag-fab ${side}" title="Discuter avec NOVA"><span class="ag-ico">${icon('chat')}</span><span class="ag-lbl">Discuter avec NOVA</span></button>`);
     const panel = el(`<div class="nova-panel ag ${side}">
-      <div class="nova-head"><div class="orb"></div><div class="grow"><div style="font-family:Space Grotesk;font-weight:700">NEBULA Agency</div><div class="faint" style="font-size:.74rem">On répond à vos questions</div></div><button class="icon-btn close" style="width:34px;height:34px">${icon('close')}</button></div>
+      <div class="nova-head"><div class="orb"></div><div class="grow"><div style="font-family:Space Grotesk;font-weight:700">NOVA</div><div class="faint" style="font-size:.74rem">L'assistant de NEBULA Agency</div></div><button class="icon-btn close" style="width:34px;height:34px">${icon('close')}</button></div>
       <div class="nova-log"></div>
       <div class="nova-foot"><input placeholder="Posez votre question…" /><button class="nova-send">${icon('send')}</button></div>
     </div>`);
@@ -301,7 +301,7 @@ const NA = (() => {
     let open = false, greeted = false;
     function greet() {
       if (greeted) return; greeted = true;
-      add('agency', "Bonjour et bienvenue chez NEBULA Agency. Posez-moi vos questions sur nos sites vitrines, catalogues, QR codes, délais et tarifs — je suis là pour vous aider.");
+      add('agency', "Bonjour, je suis NOVA, l'assistant de NEBULA Agency. Posez-moi vos questions sur nos sites vitrines, catalogues, QR codes, délais et tarifs — je suis là pour vous aider.");
     }
     async function send() {
       const msg = input.value.trim(); if (!msg) return; input.value = '';

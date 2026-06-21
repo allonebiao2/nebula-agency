@@ -7,7 +7,7 @@
 <title>Console NEBULA — Affiliés</title>
 <link rel="icon" type="image/png" href="/static/favicon.png">
 <link rel="apple-touch-icon" href="/static/favicon.png">
-<link rel="stylesheet" href="/static/app.css?v=20260621a">
+<link rel="stylesheet" href="/static/app.css?v=20260621b">
 </head>
 <body>
 <div class="bg-orbs"></div>
@@ -59,7 +59,7 @@
   <div id="notif-list"></div>
 </div></div></div>
 
-<script src="/static/app.js?v=20260621a"></script>
+<script src="/static/app.js?v=20260621b"></script>
 <script>
 const { icon, api, toast, sound, countUp, reveal, esc, fmt, ago, el } = NA;
 let CFG = null, OVER = null, AFFS = [], LEADS = [];
@@ -250,7 +250,7 @@ function orgComputeTeam(n) {
 function orgCard(n, tc, apex) {
   const teamCount = n._team || 0;
   const head = apex
-    ? `<img src="/static/nebula-logo.png?v=20260621a" alt="NEBULA Agency"><div class="oname">NEBULA Agency</div>`
+    ? `<img src="/static/nebula-logo.png?v=20260621b" alt="NEBULA Agency"><div class="oname">NEBULA Agency</div>`
     : `<div class="ohead">${NA.rankBadge(n.rank, { size: 'sm', glow: false })}
         <div style="min-width:0"><div class="oname">${esc(n.name)}</div><div class="ocode">${esc(n.code)}</div></div></div>`;
   const owedChip = (!apex && n.owed > 0)
