@@ -133,6 +133,11 @@ function renderDash() {
       <div class="col-3 rv"><div class="card clickable" data-go="leads"><div class="in stat"><div class="lbl">Payés</div><div class="num mono" style="color:var(--ok)" id="k-paid">0</div></div></div></div>
       <div class="col-3 rv"><div class="card clickable" data-go="paiements"><div class="in stat"><div class="lbl">Commissions dues</div><div class="num mono" style="color:var(--gold)" id="k-com">0</div><div class="sub">F CFA</div></div></div></div>
 
+      <div class="col-12 rv"><button class="card pg-cta clickable" id="dash-pay" style="width:100%;text-align:left;cursor:pointer;color:var(--ink)"><div class="in" style="display:flex;align-items:center;gap:14px;justify-content:space-between;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:13px"><span class="pg-ico">${icon('coins')}</span><div><div style="font-weight:700">Plan de rémunération &amp; paiements</div><div class="meta">Paliers, réseau N1/N2, superviseur, et comment chaque partenaire est payé — tout au clair.</div></div></div>
+        <span class="btn sm primary">Voir<span class="ico">${icon('arrow')}</span></span>
+      </div></button></div>
+
       <div class="col-5 rv"><div class="card clickable" data-go="leads"><div class="in">
         <h3 class="mb16">Pipeline</h3>
         ${['attente', 'en_cours', 'termine', 'annule'].map(k => `
@@ -157,6 +162,7 @@ function renderDash() {
   countUp(document.getElementById('k-paid'), OVER.paid);
   countUp(document.getElementById('k-com'), OVER.commissions_dues, { money: true });
   document.querySelectorAll('#v-dash [data-go]').forEach(el => el.onclick = () => switchView(el.dataset.go));
+  { const dp = document.getElementById('dash-pay'); if (dp) dp.onclick = () => NA.payGuide({ mode: 'admin', onGoto: () => switchView('paiements') }); }
 }
 
 /* ---------- AFFILIÉS ---------- */
@@ -183,7 +189,7 @@ function affRow(a) {
       <div class="flex" style="gap:13px">
         <div class="emblem${a.rank.label === 'Galaxie' ? ' king' : ''}" style="width:52px;height:52px;border-radius:15px;--c:${a.accent}">${rankSvg(a.rank.label)}</div>
         <div><div class="ttl" style="font-size:1.05rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap">${esc(name)} <span class="chip">${a.code}</span>${a.is_supervisor ? NA.roleBadge(a.role_label, { size: 'sm' }) : ''}</div>
-          <div class="meta" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${a.rank.label} · ${a.ventes_rank} vente${a.ventes_rank > 1 ? 's' : ''} (avec équipe) · ${palBadge(a.palier)} ${a.palier.pct}%${a.actif ? '' : ' · <span style="color:var(--bad)">suspendu</span>'}</div>
+          <div class="meta" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${a.rank.label} · <b style="color:var(--ink)">${a.ventes}</b> perso${a.team_ventes ? ' + <b style="color:var(--ink)">' + a.team_ventes + '</b> équipe' : ''} · ${palBadge(a.palier)} ${a.palier.pct}%${a.actif ? '' : ' · <span style="color:var(--bad)">suspendu</span>'}</div>
           <div class="meta mt8">${esc(a.momo_reseau || '—')} · ${esc(a.momo_number || '—')}</div></div>
       </div>
       <div class="flex gap8 wrap" style="justify-content:flex-end">
@@ -398,7 +404,7 @@ function renderAffiliateModal(d) {
         <div class="flex" style="gap:14px;align-items:center">
           ${p.photo ? `<div class="emblem" style="width:60px;height:60px;border-radius:18px"><img class="av-img" src="${esc(p.photo)}" alt=""></div>` : NA.rankBadge(p.rank, { size: 'lg' })}
           <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:1.2rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap">${esc(p.name)} <span class="chip">${esc(p.code)}</span>${p.is_supervisor ? NA.roleBadge(p.role_label, { size: 'sm' }) : ''}</div>
-            <div class="meta mt8">${NA.rankName(p.rank)} · palier ${esc(p.palier)} ${p.palier_pct}% · ${p.ventes_rank} vente${p.ventes_rank > 1 ? 's' : ''} (avec équipe)</div></div>
+            <div class="meta mt8">${NA.rankName(p.rank)} · palier ${esc(p.palier)} ${p.palier_pct}% · <b style="color:var(--ink)">${p.ventes}</b> perso${p.team_ventes ? ' + <b style="color:var(--ink)">' + p.team_ventes + '</b> équipe' : ''} · rang ${p.ventes_rank}</div></div>
         </div><button class="icon-btn" id="aff-x" style="width:34px;height:34px">${icon('close')}</button>
       </div>
       <div class="aff-sec">
@@ -489,8 +495,9 @@ async function renderPaiements() {
     <div class="flex between wrap mb24 rv" style="gap:16px">
       <div><span class="eyebrow"><span class="dot"></span>Paiements</span><h2 class="mt8" style="font-size:1.8rem">Commissions à verser</h2>
         <p class="muted mt8">1 paiement MoMo par affilié couvre toutes ses commissions. Les réclamations passent en tête.</p></div>
-      <div class="flex gap8 wrap"><span class="chip">Total dû · <b>${fmt(d.total_due)} F</b></span><span class="chip" style="border-color:var(--goldline);color:var(--gold)">Réclamé · <b>${fmt(d.total_claimed)} F</b></span></div>
+      <div class="flex gap8 wrap"><button class="btn sm ghost" id="pay-guide">Plan de rémunération expliqué</button><span class="chip">Total dû · <b>${fmt(d.total_due)} F</b></span><span class="chip" style="border-color:var(--goldline);color:var(--gold)">Réclamé · <b>${fmt(d.total_claimed)} F</b></span></div>
     </div>${groups}`;
+  { const pg = document.getElementById('pay-guide'); if (pg) pg.onclick = () => NA.payGuide({ mode: 'admin' }); }
   d.groups.forEach(g => { document.getElementById('pay-' + g.affiliate_id).onclick = () => payAffiliate(g.affiliate_id, g.name); });
 }
 function paymentCard(g) {

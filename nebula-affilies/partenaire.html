@@ -162,9 +162,14 @@ function renderHome() {
       </div></div></div>
 
       <div class="col-3 rv"><div class="card clickable" data-go="gains"><div class="in stat"><div class="lbl">RCM · total généré (à vie)</div><div class="num accent mono" id="n-rcm">0</div><div class="sub" id="n-rcm-sub">tracé</div></div></div></div>
-      <div class="col-3 rv"><div class="card clickable" data-go="gains"><div class="in stat"><div class="lbl">En attente de paiement</div><div class="num mono" style="color:var(--warn)" id="n-pot">0</div><div class="sub">F potentiels</div></div></div></div>
-      <div class="col-3 rv"><div class="card clickable" data-ladder="1"><div class="in stat"><div class="lbl">Ventes (toi + équipe)</div><div class="num mono" style="color:var(--ok)" id="n-ven">0</div><div class="sub">= ton rang${sup ? ' · perso : ' + s.ventes : ''}</div></div></div></div>
+      <div class="col-3 rv"><div class="card clickable" data-ladder="1"><div class="in stat"><div class="lbl">Mes ventes (perso)</div><div class="num mono" style="color:var(--ok)" id="n-ven">0</div><div class="sub">ce que TU as vendu</div></div></div></div>
+      <div class="col-3 rv"><div class="card clickable" data-go="reseau"><div class="in stat"><div class="lbl">Ventes de mon équipe</div><div class="num mono" style="color:var(--info)" id="n-team">0</div><div class="sub">${s.team_ventes ? 'tes branches → ' + s.ventes_rank + ' au total (rang)' : 'recrute pour démarrer'}</div></div></div></div>
       <div class="col-3 rv"><div class="card clickable" data-go="clients"><div class="in stat"><div class="lbl">Clients actifs</div><div class="num mono" style="color:var(--info)" id="n-cli">0</div><div class="sub">attente + en cours</div></div></div></div>
+
+      <div class="col-12 rv"><button class="card pg-cta clickable" id="home-pay" style="width:100%;text-align:left;cursor:pointer;color:var(--ink)"><div class="in" style="display:flex;align-items:center;gap:14px;justify-content:space-between;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:13px"><span class="pg-ico">${icon('coins')}</span><div><div style="font-weight:700">Ma rémunération — tout est clair</div><div class="meta">Mes paliers, mes 3 sources de gains (vente directe + réseau N1/N2), et comment je suis payé.</div></div></div>
+        <span class="btn sm primary">Voir<span class="ico">${icon('arrow')}</span></span>
+      </div></button></div>
 
       <div class="col-12 rv"><div class="card"><div class="in">
         <div class="flex between mb16"><h3>Coup d'œil</h3><button class="btn sm ghost" onclick="switchView('clients')">Voir mes clients<span class="ico">${icon('arrow')}</span></button></div>
@@ -175,8 +180,8 @@ function renderHome() {
   const _e = ME.earnings || { generated: 0, paid: 0, due: 0 };
   countUp(document.getElementById('n-rcm'), _e.generated, { money: true });
   document.getElementById('n-rcm-sub').textContent = 'payé ' + fmt(_e.paid) + ' F · à réclamer ' + fmt(_e.due) + ' F';
-  countUp(document.getElementById('n-pot'), s.potentiel, { money: true });
-  countUp(document.getElementById('n-ven'), s.ventes_rank);
+  countUp(document.getElementById('n-ven'), s.ventes);
+  countUp(document.getElementById('n-team'), s.team_ventes || 0);
   countUp(document.getElementById('n-cli'), (s.by_status.attente || 0) + (s.by_status.en_cours || 0));
   const rec = document.getElementById('recent');
   if (!LEADS.length) rec.innerHTML = `<p class="muted center" style="padding:20px">Aucun client encore. Partage ton lien pour démarrer.</p>`;
@@ -185,6 +190,12 @@ function renderHome() {
   document.getElementById('home-rank-card').onclick = openLadder;
   document.getElementById('home-pal-card').onclick = openLadder;
   document.querySelectorAll('#v-home [data-ladder]').forEach(el => el.onclick = openLadder);
+  const payBtn = document.getElementById('home-pay');
+  if (payBtn) payBtn.onclick = () => NA.payGuide({
+    mode: 'partner', stats: ME.stats, earnings: ME.earnings,
+    onGoto: () => switchView('gains'),
+    onClaim: async () => { try { const r2 = await api('/api/partenaire/commissions/claim', { body: {} }); sound.sfx.cash(); toast(fmt(r2.total) + ' F réclamés — NEBULA est prévenue', 'ok'); ME = await api('/api/partenaire/me'); switchView('gains'); } catch (e) { toast('Erreur', 'bad'); } }
+  });
   document.querySelectorAll('#v-home [data-go]').forEach(el => el.onclick = () => switchView(el.dataset.go));
 }
 

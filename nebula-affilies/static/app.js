@@ -432,5 +432,65 @@ const NA = (() => {
     scrim.onclick = e => { if (e.target === scrim) close(); };
   }
 
-  return { el, esc, fmt, ago, api, icon, sound: Sound, toast, countUp, reveal, qr, celebrate, nova, agencyChat, tour, rankBadge, rankName, roleBadge, rankLadder, RANK_META, RANK_ORDER };
+  /* ---------- GUIDE RÉMUNÉRATION & PAIEMENTS (clic → tout est expliqué) ---------- */
+  async function payGuide(opts = {}) {
+    if (!_cfgCache) { try { _cfgCache = await api('/api/config'); } catch (e) { _cfgCache = {}; } }
+    const cfg = _cfgCache, dN1 = (cfg.depths || {}).n1 || 10, dN2 = (cfg.depths || {}).n2 || 5;
+    const admin = opts.mode === 'admin';
+    const s = opts.stats || {}, e = opts.earnings || {};
+    const isSup = !!s.is_supervisor, pal = s.palier || {};
+    const rate = s.direct_rate || pal.rate || 0.25;
+    const money = n => fmt(n || 0) + ' F';
+    const sec = (title, body) => `<div class="pg-sec"><div class="eyebrow"><span class="dot"></span>${title}</div>${body}</div>`;
+    const scale = (!admin && s.paliers && s.paliers.length) ? s.paliers : (cfg.paliers || []);
+    const palUnit = (!admin && isSup) ? "clients d'équipe / mois" : 'ventes / mois';
+    const palRows = scale.map((p, i) => {
+      const lo = (p.min === 0 && !(isSup && !admin)) ? 1 : p.min, hi = scale[i + 1] ? scale[i + 1].min - 1 : null;
+      const rng = hi != null ? `${lo}–${hi}` : `${lo}+`;
+      const cur = !admin && pal.label === p.label;
+      return `<div class="pg-pal${cur ? ' cur' : ''}"><b>${esc(p.label)}</b><span>${rng} ${palUnit}</span><em>${p.pct}%</em></div>`;
+    }).join('');
+    const supScale = (admin && (cfg.paliers_sup || []).length)
+      ? `<p class="muted mt8" style="font-size:.86rem">Superviseur (ex : Romaric) — barème d'équipe : ${(cfg.paliers_sup).map(p => `<b>${esc(p.label)} ${p.pct}%</b>`).join(' · ')} (selon les clients du mois de toute sa branche ; % sur ses ventes directes).</p>` : '';
+    const sources = `<div class="pg-srcs">
+      <div class="pg-src"><div class="pg-n">1</div><div><b>Vente directe</b> — le palier du mois.
+        ${admin ? `Chaque partenaire touche le % de son palier sur les ventes qu'il fait lui-même.`
+                : `Tu es <b style="color:var(--accent)">${esc(pal.label || '')} ${pal.pct || Math.round(rate * 100)}%</b> → sur une vitrine de 150 000 F tu gagnes <b>${money(Math.round(150000 * rate))}</b>.`}
+        <div class="pg-pals">${palRows}</div>${supScale}</div></div>
+      <div class="pg-src"><div class="pg-n">2</div><div><b>Réseau niveau 1 — ${dN1}%</b> sur chaque vente de ${admin ? 'ses' : 'tes'} filleuls directs.</div></div>
+      <div class="pg-src"><div class="pg-n">3</div><div><b>Réseau niveau 2 — ${dN2}%</b> sur chaque vente des filleuls de ${admin ? 'ses' : 'tes'} filleuls.</div></div>
+      ${(isSup && !admin) ? `<p class="muted mt8">Tu es <b style="color:var(--ink)">Superviseur</b> : ton palier monte avec les clients de TOUTE ton équipe (toi + branches), mais le % s'applique à tes ventes directes — tes branches te rapportent en plus le ${dN1}% / ${dN2}%.</p>` : ''}</div>`;
+    const earn = admin ? '' : sec('Mes gains (à vie, tracés)', `<div class="pg-grid">
+        <div class="pg-stat"><div class="num mono accent">${money(e.generated)}</div><small>généré au total</small></div>
+        <div class="pg-stat"><div class="num mono" style="color:var(--ok)">${money(e.paid)}</div><small>déjà payé</small></div>
+        <div class="pg-stat"><div class="num mono" style="color:#e6c34c">${money(e.due)}</div><small>à réclamer</small></div>
+        <div class="pg-stat"><div class="num mono">${money(e.claimed)}</div><small>réclamé (en cours)</small></div>
+      </div><p class="muted mt8">Répartition : vente directe ${money(e.direct)} · réseau N1 ${money(e.n1)} · réseau N2 ${money(e.n2)}.</p>`);
+    const how = sec(admin ? 'Comment NEBULA paie' : 'Comment je suis payé', `<div class="pg-steps">
+        <div><b>1.</b> ${admin ? 'Le partenaire clique' : 'Tu cliques'} <b>Réclamer</b> dès qu'une vente est payée.</div>
+        <div><b>2.</b> ${admin ? 'Tu reçois' : 'NEBULA reçoit'} l'alerte avec le numéro Mobile Money.</div>
+        <div><b>3.</b> ${admin ? 'Tu paies en une fois (groupé) puis cliques' : 'NEBULA paie sur Mobile Money, puis clique'} <b>Marquer payé</b>.</div>
+        <div><b>4.</b> ${admin ? 'Le partenaire est notifié — tout reste tracé à vie.' : 'Tu es notifié — tout reste tracé à vie.'}</div>
+      </div>`);
+    const claimBtn = (!admin && (e.due || 0) > 0) ? `<button class="btn primary" id="pg-claim">Réclamer mes gains (${money(e.due)})</button>` : '';
+    const gotoBtn = opts.onGoto ? `<button class="btn ghost" id="pg-goto">${admin ? 'Aller aux paiements du réseau' : 'Voir le détail → Mes gains'}</button>` : '';
+    const scrim = el(`<div class="scrim rl-scrim"><div class="card rl-card"><div class="in">
+      <div class="flex between" style="align-items:flex-start"><div><span class="eyebrow"><span class="dot"></span>Rémunération</span>
+        <h2 style="font-size:1.5rem;margin-top:8px">${admin ? 'Plan de rémunération & paiements' : 'Ma rémunération — tout est clair'}</h2></div>
+        <button class="icon-btn pg-x" style="width:34px;height:34px">${icon('close')}</button></div>
+      ${sec(admin ? 'Comment chaque partenaire gagne (3 sources)' : 'Comment je gagne (3 sources)', sources)}
+      ${earn}${how}
+      <div class="flex gap8 wrap" style="margin-top:18px">${claimBtn}${gotoBtn}</div>
+    </div></div></div>`);
+    document.body.appendChild(scrim);
+    requestAnimationFrame(() => scrim.classList.add('on'));
+    Sound.sfx.open();
+    const close = () => { scrim.classList.remove('on'); setTimeout(() => scrim.remove(), 250); };
+    scrim.querySelector('.pg-x').onclick = close;
+    scrim.onclick = ev => { if (ev.target === scrim) close(); };
+    const cb = scrim.querySelector('#pg-claim'); if (cb) cb.onclick = () => { close(); opts.onClaim && opts.onClaim(); };
+    const gb = scrim.querySelector('#pg-goto'); if (gb) gb.onclick = () => { close(); opts.onGoto && opts.onGoto(); };
+  }
+
+  return { el, esc, fmt, ago, api, icon, sound: Sound, toast, countUp, reveal, qr, celebrate, nova, agencyChat, tour, rankBadge, rankName, roleBadge, rankLadder, payGuide, RANK_META, RANK_ORDER };
 })();
