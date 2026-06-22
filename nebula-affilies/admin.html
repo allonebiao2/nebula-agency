@@ -695,7 +695,8 @@ function leadCard(l) {
       <div class="flex" style="gap:12px;min-width:0">
         <div class="avatar">${initials(name)}</div>
         <div style="min-width:0"><div class="ttl">${esc(name)} <span class="muted" style="font-weight:400">· ${esc(l.numero)}</span></div>
-          <div class="meta" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${esc(l.service_label)} ${srcBadge} · reçu ${ago(l.created)}</div>
+          <div class="meta" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><b style="color:var(--ink)">${esc(l.service_label)}</b> ${srcBadge} · reçu ${ago(l.created)}</div>
+          ${l.service_raw && l.service_raw !== l.service_label ? `<div class="meta mt4">Demandé par le client : <b style="color:var(--ink)">${esc(l.service_raw)}</b></div>` : ''}
           <div class="mt8">${track}</div>
           ${l.message ? `<div class="lead-note mt8">${esc(l.message)}</div>` : ''}</div>
       </div>
@@ -706,11 +707,27 @@ function leadCard(l) {
       <div class="seg" id="seg-${l.id}">${Object.entries(CFG.statuses).map(([k, v]) => `<button data-st="${k}" style="--c:${v.color}" class="${k === l.status ? 'on' : ''}">${esc(v.label)}</button>`).join('')}</div>
       <button class="btn sm ${l.paye ? 'primary' : 'ghost'}" id="pay-${l.id}">${payDot(l.paye)}</button>
     </div>
+    <div class="lead-svc-row mt12">
+      <span class="meta">${icon('tag') || ''} Service retenu</span>
+      <select class="lead-svc" id="svc-${l.id}">${svcOptions(l.service)}</select>
+    </div>
   </div></div></div>`;
+}
+function svcOptions(sel) {
+  return Object.entries(CFG.services || {}).map(([k, v]) => `<option value="${k}"${k === sel ? ' selected' : ''}>${esc(v.label)}</option>`).join('');
 }
 function wireLead(l) {
   document.querySelectorAll(`#seg-${l.id} button`).forEach(b => b.onclick = () => setStatus(l.id, b.dataset.st));
   document.getElementById('pay-' + l.id).onclick = () => setPay(l.id, l.paye ? 0 : 1);
+  const sv = document.getElementById('svc-' + l.id);
+  if (sv) sv.onchange = () => setService(l.id, sv.value);
+}
+async function setService(id, key) {
+  try {
+    const r = await api(`/api/admin/leads/${id}/service`, { body: { service: key } });
+    sound.sfx.ok(); toast('Service du client enregistré : ' + r.service_label, 'ok');
+    await refresh(); renderLeads(); reveal();
+  } catch (e) { toast('Erreur', 'bad'); }
 }
 async function setStatus(id, st) {
   try { await api(`/api/admin/leads/${id}/status`, { body: { status: st } }); sound.sfx.ok(); toast('Statut mis à jour · affilié notifié', 'ok'); await refresh(); renderLeads(); reveal(); }

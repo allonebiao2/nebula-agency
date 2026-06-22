@@ -298,12 +298,20 @@ def migrate():
                 c.execute(f"ALTER TABLE affiliates ADD COLUMN {col} {ddl}")
             except Exception:
                 pass
-        # leads : provenance (affilie | site) pour distinguer les clients directs du site agence
-        for col, ddl in [("source", "TEXT DEFAULT 'affilie'")]:
+        # leads : provenance (affilie | site) + libellé EXACT du service choisi par le client
+        for col, ddl in [("source", "TEXT DEFAULT 'affilie'"), ("service_raw", "TEXT DEFAULT ''")]:
             try:
                 c.execute(f"ALTER TABLE leads ADD COLUMN {col} {ddl}")
             except Exception:
                 pass
+        # backfill : récupère le service exact des anciens leads (avant la colonne) depuis le brief « Service : ... »
+        try:
+            for row in c.execute("SELECT id, message FROM leads WHERE COALESCE(service_raw,'')=''").fetchall():
+                m = re.search(r"Service[^:\n]*:\s*([^\n]+)", row["message"] or "")
+                if m:
+                    c.execute("UPDATE leads SET service_raw=? WHERE id=?", (m.group(1).strip()[:200], row["id"]))
+        except Exception:
+            pass
         for col, ddl in [("kind", "TEXT DEFAULT 'info'"), ("ref_aff", "INTEGER DEFAULT 0")]:
             try:
                 c.execute(f"ALTER TABLE notifs ADD COLUMN {col} {ddl}")
@@ -1004,9 +1012,9 @@ async def create_lead(req: Request):
         if service not in SERVICES:
             service = "autre"
         now = time.time()
-        cur = c.execute("""INSERT INTO leads(affiliate_id,nom,prenom,numero,service,message,status,paye,created,updated)
-                           VALUES(?,?,?,?,?,?,'attente',0,?,?)""",
-                        (a["id"], nom, prenom, numero, service, message, now, now))
+        cur = c.execute("""INSERT INTO leads(affiliate_id,nom,prenom,numero,service,service_raw,message,status,paye,created,updated)
+                           VALUES(?,?,?,?,?,?,?,'attente',0,?,?)""",
+                        (a["id"], nom, prenom, numero, service, SERVICES[service]["label"], message, now, now))
         lead_id = cur.lastrowid
     client = (prenom + " " + nom).strip()
     svc = SERVICES[service]["label"]
@@ -1034,14 +1042,16 @@ async def create_site_lead(req: Request):
     if not nom or not numero:
         return JSONResponse({"ok": False, "error": "Nom et numéro obligatoires."}, status_code=400)
     service = map_service(d.get("service"))
+    # libellé EXACT choisi par le client (ce qu'il a réellement pris), pour l'afficher tel quel
+    service_raw = clean(d.get("service"), 200) or SERVICES.get(service, {}).get("label", service)
     brief = clean(d.get("message"), 1800)            # le brief complet (déjà mis en forme par le site)
     now = time.time()
     with db() as c:
-        cur = c.execute("""INSERT INTO leads(affiliate_id,nom,prenom,numero,service,message,status,paye,created,updated,source)
-                           VALUES(0,?,?,?,?,?,'attente',0,?,?,'site')""",
-                        (nom, "", numero, service, brief, now, now))
+        cur = c.execute("""INSERT INTO leads(affiliate_id,nom,prenom,numero,service,service_raw,message,status,paye,created,updated,source)
+                           VALUES(0,?,?,?,?,?,?,'attente',0,?,?,'site')""",
+                        (nom, "", numero, service, service_raw, brief, now, now))
         lead_id = cur.lastrowid
-    svc = SERVICES.get(service, {}).get("label", service)
+    svc = service_raw
     notify("admin", 0, f"NOUVEAU CLIENT (site) : {nom} ({numero}) — {svc}", lead_id, kind="client")
     # Brief complet en second message Telegram (lisible, hors fil de notif in-app)
     tg_admin(f"📝 Brief de {nom} ({numero}) :\n\n{brief or '(pas de description)'}")
@@ -1405,6 +1415,7 @@ def admin_leads(naff_session: Optional[str] = Cookie(default=None)):
         out.append({
             "id": r["id"], "nom": r["nom"], "prenom": r["prenom"], "numero": r["numero"],
             "service": r["service"], "service_label": SERVICES.get(r["service"], {}).get("label", r["service"]),
+            "service_raw": (r["service_raw"] if "service_raw" in r.keys() else "") or "",
             "message": r["message"], "status": r["status"], "paye": r["paye"],
             "commission": 0 if direct else commission_of(r["service"], r["montant"], rate_cache[aid]),
             "montant": int(r["montant"] or 0),
@@ -1434,6 +1445,25 @@ async def admin_set_status(lid: int, req: Request, naff_session: Optional[str] =
     if r["affiliate_id"]:        # client d'affilié → on le notifie ; client direct (0) → rien
         notify("affiliate", r["affiliate_id"], f"{client} : statut → {STATUSES[st]['label']}", lid, kind="statut")
     return {"ok": True}
+
+@app.post("/api/admin/leads/{lid}/service")
+async def admin_set_service(lid: int, req: Request, naff_session: Optional[str] = Cookie(default=None)):
+    """Fixer/confirmer LE service que le client a finalement pris (utile surtout pour
+    les demandes « plusieurs services / besoin de conseils »). Met à jour la clé service
+    (= base de commission) ET le libellé affiché."""
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    d = await req.json()
+    key = clean(d.get("service"), 30)
+    if key not in SERVICES:
+        return JSONResponse({"ok": False, "error": "Service inconnu."}, status_code=400)
+    label = SERVICES[key]["label"]
+    with db() as c:
+        r = c.execute("SELECT id FROM leads WHERE id=?", (lid,)).fetchone()
+        if not r:
+            return JSONResponse({"ok": False}, status_code=404)
+        c.execute("UPDATE leads SET service=?, service_raw=?, updated=? WHERE id=?", (key, label, time.time(), lid))
+    return {"ok": True, "service": key, "service_label": label}
 
 @app.post("/api/admin/leads/{lid}/payment")
 async def admin_set_payment(lid: int, req: Request, naff_session: Optional[str] = Cookie(default=None)):
