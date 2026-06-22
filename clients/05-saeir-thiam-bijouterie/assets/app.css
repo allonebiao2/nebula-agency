@@ -299,6 +299,13 @@ p{max-width:66ch}
 .info-row b{display:block;font-size:.95rem}
 .info-row span,.info-row a{color:var(--muted);font-size:.92rem}
 .info-row a:hover{color:var(--azure-deep)}
+.hours{margin-top:6px;display:flex;flex-direction:column;gap:4px}
+.hours .h{display:flex;justify-content:space-between;gap:18px;font-size:.92rem;max-width:300px}
+.hours .h span:first-child{color:var(--text)}
+.hours .h span:last-child{color:var(--muted);font-variant-numeric:tabular-nums}
+.hours .h.today{font-weight:600}
+.hours .h.today span:last-child{color:var(--azure-deep)}
+.hours .h.closed span:last-child{color:var(--silver-deep)}
 
 /* ---------- CTA band ---------- */
 .cta{position:relative;overflow:hidden;border-radius:28px;padding:clamp(40px,6vw,68px);text-align:center;

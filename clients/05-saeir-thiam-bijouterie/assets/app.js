@@ -51,6 +51,16 @@
     reveals.forEach(function (el) { io.observe(el); });
   }
 
+  /* ---------- Horaires : surligner le jour courant ---------- */
+  var hours = document.querySelector("[data-hours]");
+  if (hours) {
+    var today = new Date().getDay(); // 0=dim … 6=sam
+    hours.querySelectorAll(".h").forEach(function (row) {
+      var days = (row.getAttribute("data-day") || "").split(/\s+/);
+      if (days.indexOf(String(today)) !== -1) row.classList.add("today");
+    });
+  }
+
   /* ---------- Galerie : filtre par catégorie ---------- */
   var gfilter = document.querySelector(".gfilter");
   var tiles = Array.prototype.slice.call(document.querySelectorAll(".gitem"));

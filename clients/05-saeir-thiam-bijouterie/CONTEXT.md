@@ -66,9 +66,12 @@ Hub multi-pages dans `clients/05-saeir-thiam-bijouterie/` :
 - [x] Google Maps (adresse + itinéraire intégrés)
 - [x] Section avis (⚠️ 3 exemples « à valider » — remplacer par de vrais avis)
 
+## Horaires ✅ (intégrés — page bijouterie + footer accueil)
+- Lundi – Vendredi : **9h30 – 20h00** · Samedi : **9h30 – 19h00** · Dimanche : **Fermé**
+- Affichés avec **surlignage automatique du jour courant** (JS `data-day` / `getDay()`).
+
 ## Reste à récupérer / faire
 - [ ] **Avis clients réels** (remplacer les exemples)
-- [ ] Horaires d'ouverture exacts
 - [ ] Noms officiels + contenu des pôles Communication / Événementiel (quand prêts) + les 2 events en tête
 - [ ] Musique : piste libre de droits du client (sinon pad d'ambiance synthétisé par défaut)
 - [ ] Validation finale de Mr THIAM (textes « à valider »)
