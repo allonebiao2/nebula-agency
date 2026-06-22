@@ -36,4 +36,10 @@ Reste (client) : avis réels + horaires ; domaine `djambarteam.com` (mapping ult
 
 ---
 
+## 2026-06-22 (suite) — Ajout de `frontend-design` à la boîte à outils
+- Skill **`frontend-design:frontend-design`** (plugin officiel) invoqué et **intégré à la procédure** (PHASE 1, étape 4 ; orchestration SKILLS-ET-OUTILS § A/F ; SPEC § 6).
+- **Rôle / complémentarité** : `ui-ux-pro-max` = *quoi* (design system data-driven) ; `frontend-design` = *comment le rendre mémorable* (direction esthétique BOLD anti-« AI slop » : typo distinctive, motion page-load, composition non générique, atmosphère). À enchaîner **après** le design system, **avant/pendant** l'écriture.
+- ⚠️ Périmètre : `frontend-design` = **web responsive** ; pour un **canvas fixe** (affiche A4 / poster) → skill **visual-design**, pas frontend-design.
+- À refléter dans le futur skill : étape « direction esthétique » distincte de l'étape « design system ».
+
 <!-- Prochaines entrées : ajouter ici au fil des vitrines suivantes, avant la création du skill. -->

@@ -47,7 +47,7 @@
 - [ ] Mémoire écrite + commit (push selon autorisation).
 
 ## 6. Orchestration interne (briques — voir `SKILLS-ET-OUTILS.md`)
-`/ui-ux-pro-max` (design system) → Write socle+pages → `impeccable` (auto) → `_build_assets.py` (Pillow) → `segno` (QR) → `http.server` + **Edge headless** (QA + mesure + PDF) → `wrangler` (deploy) → `git` + mémoire.
+`/ui-ux-pro-max` (design system : *quoi*) → `/frontend-design` (direction esthétique BOLD : *comment le rendre mémorable*) → Write socle+pages → `impeccable` (auto) → `_build_assets.py` (Pillow) → `segno` (QR) → `http.server` + **Edge headless** (QA + mesure + PDF) → `wrangler` (deploy) → `git` + mémoire.
 
 ## 7. Garde-fous (hérités des CONVENTIONS)
 - Secrets jamais affichés/commités ; **stage git sélectif** ; **avertir des risques** sortants ; **vérifier avant d'affirmer** ; **réponses courtes** ; contenu manquant = version pro « à valider ».

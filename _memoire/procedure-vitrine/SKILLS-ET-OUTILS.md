@@ -7,6 +7,7 @@
 | Skill | Rôle | Comment invoqué |
 |---|---|---|
 | **`ui-ux-pro-max`** | Design intelligence (67 styles, 96 palettes, 57 paires de polices, stacks). Génère un **design system grounded**. | Installé via npm `uipro-cli` (v2.2.3) → `.claude/skills/ui-ux-pro-max/`. Usage : `python .claude/skills/ui-ux-pro-max/scripts/search.py "<requête>" --design-system -p "<Marque>" -f markdown` (+ `--domain style/typography/color/landing`, `--stack html-tailwind`). |
+| **`frontend-design`** (plugin `frontend-design:frontend-design`) | **Direction esthétique** anti-« AI slop ». Guide les choix BOLD et intentionnels : typo distinctive (jamais Inter/Roboto/Arial/system), couleur/thème cohérent, **motion** (page-load staggered, hover surprenants), **composition spatiale** (asymétrie, overlap, grid-breaking), **atmosphère** (gradient mesh, grain, ombres dramatiques, textures). | `/frontend-design`. **Complémentaire** de `ui-ux-pro-max` : ui-ux-pro-max = *quoi* (design system data-driven : palette/typo/pattern) ; frontend-design = *comment le rendre mémorable* (parti-pris créatif + finition). À invoquer **après** le design system, **avant/pendant** l'écriture des pages. ⚠️ pour du **web responsive** (≠ canvas fixe type affiche/poster → là c'est le skill visual-design). |
 | **`impeccable`** | QA design **automatique** (hook PostToolUse à chaque écriture HTML/CSS). Détecte em-dash overuse, single-font, overused-font, gradient-text, etc. | Tourne tout seul. Audit manuel : `/impeccable audit`. Ignorer une règle (avec confirmation user) : `/impeccable hooks ignore-value … --shared`. |
 
 > ⚠️ **Faux positifs récurrents à connaître** :
@@ -40,7 +41,8 @@
 
 ## F. Ordre d'invocation observé (Djambar Team)
 1. `npm install -g uipro-cli` → `uipro init --ai claude` (installe le skill `ui-ux-pro-max`).
-2. `/ui-ux-pro-max` → `search.py --design-system` (design system).
+2. `/ui-ux-pro-max` → `search.py --design-system` (design system : *quoi*).
+2b. `/frontend-design` → parti-pris esthétique BOLD (*comment le rendre mémorable*) : typo, motion, composition, atmosphère — appliqué au socle + pages.
 3. Write `app.css` / `app.js` / pages → **hook `impeccable`** à chaque écriture.
 4. `_build_assets.py` (Pillow) : logo + favicons + OG + galerie.
 5. `pip install segno` → QR.

@@ -27,8 +27,9 @@ Actions :
 1. Invoquer **`/ui-ux-pro-max`** → `python .claude/skills/ui-ux-pro-max/scripts/search.py "<secteur mots-clés>" --design-system -p "<Marque>" -f markdown`.
 2. **Écraser** les recos de l'outil par : (a) la **palette imposée** par le client, (b) la **réalité terrain** (perf mobile/4G en Afrique de l'Ouest → tempérer les effets lourds type liquid glass).
 3. **Garder** ce qui est bon (souvent la typo). *Ex.* : on a gardé **Cormorant** (titres) ; on a remplacé le body par **Jost** (Montserrat jugé « sur-utilisé » par le hook impeccable).
+4. Invoquer **`/frontend-design`** pour transformer ce design system en **parti-pris esthétique BOLD** : choisir un ton extrême et cohérent (luxe/éditorial, minimal, brutaliste…), une **typo distinctive** (jamais Inter/Roboto/Arial/system), un **moment de motion** fort (page-load staggered), une **composition** non générique (asymétrie/overlap/grid-breaking), une **atmosphère** (gradient mesh, grain, ombres). But : éviter le rendu « AI slop ». ⚠️ web responsive (≠ affiche A4 = skill visual-design).
 
-**Livrable** : pattern + style + palette (hex) + typo + effets + anti-patterns retenus.
+**Livrable** : pattern + style + palette (hex) + typo + effets + anti-patterns + **direction esthétique** assumée.
 
 ---
 
