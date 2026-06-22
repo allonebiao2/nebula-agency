@@ -66,6 +66,16 @@ Hub multi-pages dans `clients/05-saeir-thiam-bijouterie/` :
 - [x] Google Maps (adresse + itinéraire intégrés)
 - [x] Section avis (⚠️ 3 exemples « à valider » — remplacer par de vrais avis)
 
+## Passe « Check-list 10 000 $ » (V4, 2026-06-22) ✅
+Corrections demandées par Mongazi (check-list 1, 8 points) sur le thème sombre :
+- **05 Imagerie** : art-direction `_build_gallery_v2.py` (ré-exécutable) → curatage des meilleures sources + **grade unifié vers le nuit** + **vignette** (focus bijou, noie fonds parasites) + crops carrés. Hero Chadé regradé. ⚠️ watermarks client (n° + logo) **conservés** = décision anti-vol de Mr THIAM ; vrai cran « 10k » = reshoot fond noir / retrait watermark (à lui de décider).
+- **06 Motion** : suppression du fade-up générique → **séquence d'entrée chorégraphiée du hero** (stagger au chargement) + reveals **dé-gatés** (`.js` sur `<html>` ; sans JS = visible, conforme règle impeccable).
+- **07 Mobile** : vraies décisions (marquee redimensionné, hero `background-position:62%` garde le pendentif, légendes galerie visibles au tap car pas de hover tactile).
+- **08 Invisible** : **contraste AA vérifié par calcul** (min 7.25, tout ≥4.5) ; **polices non-bloquantes** (preload+swap, noscript) ; **preload du hero** ; **canonical + og:url** ; `theme-color` #050d1f. HTML prod ~0,65 s.
+- 02/03/04 (typo/couleur/hiérarchie) déjà ✅, renforcés.
+Cache-bust `?v=20260622g`. LIVE + redeploy Pages OK.
+⚠️ RESTE pour atteindre vraiment 10k (cf. mon audit honnête) : photos sans watermark, **vrais avis**, **domaine final**, **analytics**, schema SEO, test WhatsApp réel.
+
 ## Refonte visuelle V3 — THÈME SOMBRE LUXE (inspiration immersive, 2026-06-22) ✅
 Mongazi voulait **le mood** de l'inspiration (`_partage/inspiration.jpg`), pas que la structure → bascule en **thème sombre immersif** : fond bleu nuit profond (`--bg #050d1f`) partout, texte blanc, accents or, cartes en verre sombre, **hero avec photo produit dramatique en fond** (collier Chadé sur velours bleu → `hero-bijou.jpg`), bande **« GET SOCIAL »** (6 vignettes → Instagram). Interprétation « bleu/blanc » de Mr THIAM en version sombre (bleu = base, blanc = texte). PAS de faux discount/compte à rebours (malhonnête pour un vrai bijoutier) : on garde le traitement visuel, pas la fausse promo.
 ⚠️ Bug attrapé en QA visuelle : token `--gold-deep` était `#B8924` (hex invalide) → corrigé `#A8842F` (cassait le dégradé des boutons or). Leçon : toujours QA visuelle après réécriture CSS.

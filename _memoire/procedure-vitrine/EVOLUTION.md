@@ -63,4 +63,13 @@ Leçon forte (le client a dû recadrer) : quand on donne une image d'inspiration
 - **QA visuelle obligatoire après réécriture CSS** : un token couleur invalide (`--gold-deep:#B8924`, 5 chiffres) cassait les boutons or — invisible sans regarder le rendu. Toujours screenshoter + corriger.
 - Thème sombre : prévoir tokens `--bg/--bg-2/--bg-3`, surfaces en **verre** (`rgba(255,255,255,.035)` + bordure `.10`), texte clair, nav verre sombre, map `filter:grayscale(.2)`.
 
+## 2026-06-22 (suite) — Grille « 10 000 $ » : patterns pour franchir le niveau premium
+Mongazi a fait auditer le site contre 2 check-lists (« 10k$ vs 200$ » et « IA vs pro »). Honnêteté exigée. Verdict : belle COQUILLE, moitié contenu/invisible manquante. Corrections check-list 1 appliquées → **patterns réutilisables pour le skill** :
+- **Imagerie (le tell n°1)** : des **photos catalogue WhatsApp** (fonds hétérogènes + watermark) = signature « 200$ ». Pipeline d'art-direction (`_build_gallery_v2.py`) : **curate** (meilleures sources) + **grade unifié** (autocontrast léger, contraste +, luminosité -, blend multiply navy 0.10) + **vignette radiale** (assombrit bords → focus produit + noie fonds/watermarks) + crops cohérents. NE PAS retirer un watermark client sans son accord (anti-vol). Dire la vérité : le vrai cran = reshoot fond noir.
+- **Motion sans le tell AOS** : `<html>.js` (script inline AVANT le CSS) ; `.js .reveal{opacity:0}` → **sans JS = visible** (jamais cacher le contenu derrière une classe). **Hero = séquence chorégraphiée au chargement** (stagger nth-child + keyframes `forwards`), pas un fade-up uniforme. Toujours fallback `prefers-reduced-motion`.
+- **Perf / « invisible »** : polices Google **non-bloquantes** (`rel=preload as=style onload=this.rel='stylesheet'` + `<noscript>`), **preload de l'image hero**, `canonical` + `og:url`, `theme-color` = couleur du fond réel.
+- **Contraste AA = par le calcul, pas à l'œil** : petit script luminance relative ; viser ≥4.5 (texte) / ≥3 (grand). Les thèmes sombres passent facilement, mais le VÉRIFIER.
+- **Mobile = décisions, pas rétrécissement** : `background-position` qui garde le sujet cadré, tailles de marquee dédiées, légendes visibles au tap (pas de hover tactile).
+- **Le design ne sauve pas le fond** : un thème (clair/sombre) ne corrige NI les photos watermarkées, NI les faux avis, NI l'absence de SEO/analytics/domaine. Pour un vrai « 10k », prévoir dès le devis : photos pro, vrais témoignages + signaux de confiance, domaine, analytics, schema, tests réels.
+
 <!-- Prochaines entrées : ajouter ici au fil des vitrines suivantes, avant la création du skill. -->

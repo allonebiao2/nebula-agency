@@ -363,11 +363,30 @@ p{max-width:66ch}
 .fab-audio.playing .eq i:nth-child(3){animation-delay:.4s}
 @keyframes eq{0%,100%{height:5px}50%{height:17px}}
 
-/* ---------- Reveal ---------- */
-.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+/* ---------- Reveal (gaté par .js : sans JS = visible) ---------- */
+.js .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
 .reveal.in{opacity:1;transform:none}
-.reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}.reveal.d3{transition-delay:.24s}
-@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.fab-wa::after{animation:none}.fab-audio.playing .eq i{animation:none}}
+.js .reveal.d1{transition-delay:.08s}.js .reveal.d2{transition-delay:.16s}.js .reveal.d3{transition-delay:.24s}
+
+/* ---------- Hero : séquence d'entrée chorégraphiée (au chargement) ---------- */
+.js .hero-inner > *{opacity:0;transform:translateY(20px);animation:heroIn .9s var(--ease) forwards}
+.js .hero-inner > *:nth-child(1){animation-delay:.15s}
+.js .hero-inner > *:nth-child(2){animation-delay:.28s}
+.js .hero-inner > *:nth-child(3){animation-delay:.41s}
+.js .hero-inner > *:nth-child(4){animation-delay:.54s}
+.js .hero-inner > *:nth-child(5){animation-delay:.67s}
+.js .hero-inner > *:nth-child(6){animation-delay:.8s}
+@keyframes heroIn{to{opacity:1;transform:none}}
+.js .hero-bg{animation:heroZoom 1.6s var(--ease) forwards}
+@keyframes heroZoom{from{transform:scale(1.12);opacity:.4}to{transform:scale(1.05);opacity:1}}
+
+@media (prefers-reduced-motion:reduce){
+  .js .reveal{opacity:1;transform:none;transition:none}
+  .js .hero-inner > *{opacity:1;transform:none;animation:none}
+  .js .hero-bg{animation:none}
+  .fab-wa::after{animation:none}
+  .fab-audio.playing .eq i{animation:none}
+}
 
 /* ---------- Mobile ---------- */
 @media (max-width:980px){
@@ -399,7 +418,14 @@ p{max-width:66ch}
   .social-strip{grid-template-columns:repeat(3,1fr)}
   .footer-grid{grid-template-columns:1fr}
   .hero{min-height:auto;padding-block:calc(var(--nav-h) + 54px) 64px}
-  .hero-meta{gap:18px}
+  .hero-bg{background-position:62% center} /* garde le pendentif cadré sur petit écran */
+  .hero-meta{gap:14px 18px}
+  .hero-meta span{font-size:.8rem}
+  .marquee .seg span{font-size:1.15rem}
+  .marquee .seg .d{margin:0 18px}
+  /* tactile : pas de hover → légendes galerie toujours lisibles */
+  .gitem .cap{opacity:1;transform:none}
+  .coll .lab .go{color:#fff}
   p{font-size:.98rem}
 }
 @media (max-width:420px){
