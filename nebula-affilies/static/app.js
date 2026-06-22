@@ -377,18 +377,31 @@ const NA = (() => {
     const sm = opts.size === 'sm';
     const ceo = /ceo|fondateur|founder/i.test(label);
     const ico = ceo ? 'crown' : 'shield';
-    const cls = 'role-badge' + (ceo ? ' role-ceo' : '');
+    const cls = 'role-badge' + (ceo ? ' role-ceo' : '') + (opts.iconOnly ? ' role-ico-only' : '');
+    if (opts.iconOnly) {
+      const dim = { xs: 24, sm: 30, md: 40, lg: 58 }[opts.size || 'md'];
+      const ic = Math.round(dim * 0.5);
+      return `<span class="${cls}" title="${esc(label)}" style="width:${dim}px;height:${dim}px">`
+        + `<span class="role-ico" style="width:${ic}px;height:${ic}px">${icon(ico)}</span></span>`;
+    }
     return `<span class="${cls}" title="${esc(label)}" style="`
       + `padding:${sm ? '2px 9px' : '3px 11px'};font-size:${sm ? '.66rem' : '.72rem'}">`
       + `<span class="role-ico">${icon(ico)}</span>${esc(label)}</span>`;
   }
-  // Identité visuelle d'une personne : son RÔLE spécial (CEO / Superviseur, scintillant, SANS rang)
-  // s'il en a un, sinon son insigne de RANG cosmique. Source unique de vérité pour tout afficher.
+  // Nom stylé d'un rôle (scintillant léger), pendant texte du roleBadge — pour les lignes méta.
+  function roleName(label) {
+    const ceo = /ceo|fondateur|founder/i.test(label);
+    return `<span class="rk-name role-name" style="--c1:${ceo ? '#ffe9a8' : '#cdbcff'};--c2:${ceo ? '#e6c34c' : '#7b5cff'}">${esc(label)}</span>`;
+  }
+  // Identité visuelle d'une personne : RÔLE spécial (CEO / Superviseur) s'il en a un, sinon son RANG.
+  // idBadge = l'insigne (rôle → emblème ICÔNE seule ; rang → insigne de rang).
+  // idName  = le nom (rôle → « Superviseur »/« CEO » ; rang → nom du rang). Les deux sont
+  // COMPLÉMENTAIRES (jamais le mot deux fois) : un appelant affiche idBadge + idName côte à côte.
   function idBadge(o, opts = {}) {
-    return (o && o.role_label) ? roleBadge(o.role_label, opts) : rankBadge((o && o.rank) || 'Recrue', opts);
+    return (o && o.role_label) ? roleBadge(o.role_label, { ...opts, iconOnly: true }) : rankBadge((o && o.rank) || 'Recrue', opts);
   }
   function idName(o) {
-    return (o && o.role_label) ? roleBadge(o.role_label) : rankName((o && o.rank) || 'Recrue');
+    return (o && o.role_label) ? roleName(o.role_label) : rankName((o && o.rank) || 'Recrue');
   }
   const hasRole = (o) => !!(o && o.role_label);
 
@@ -502,5 +515,5 @@ const NA = (() => {
     const gb = scrim.querySelector('#pg-goto'); if (gb) gb.onclick = () => { close(); opts.onGoto && opts.onGoto(); };
   }
 
-  return { el, esc, fmt, ago, api, icon, sound: Sound, toast, countUp, reveal, qr, celebrate, nova, agencyChat, tour, rankBadge, rankName, roleBadge, idBadge, idName, hasRole, rankLadder, payGuide, RANK_META, RANK_ORDER };
+  return { el, esc, fmt, ago, api, icon, sound: Sound, toast, countUp, reveal, qr, celebrate, nova, agencyChat, tour, rankBadge, rankName, roleBadge, roleName, idBadge, idName, hasRole, rankLadder, payGuide, RANK_META, RANK_ORDER };
 })();

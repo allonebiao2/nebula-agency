@@ -753,6 +753,9 @@ input,select,textarea{font-family:inherit}
   animation:roleGlow 2.6s ease-in-out infinite;position:relative;overflow:hidden}
 .role-badge .role-ico{width:13px;height:13px;display:inline-flex;flex-shrink:0}
 .role-badge .role-ico svg{width:100%;height:100%}
+/* emblème icône seule (pour l'insigne, comme un rang) : cercle scintillant */
+.role-badge.role-ico-only{padding:0;border-radius:50%;display:inline-grid;place-items:center;flex:0 0 auto;letter-spacing:0}
+.role-name{font-weight:700}
 /* reflet qui balaie le badge (shine) */
 .role-badge::after{content:"";position:absolute;top:0;left:-60%;width:45%;height:100%;
   background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-18deg);
