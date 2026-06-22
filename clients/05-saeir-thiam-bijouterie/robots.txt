@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://djambar-team.pages.dev/sitemap.xml

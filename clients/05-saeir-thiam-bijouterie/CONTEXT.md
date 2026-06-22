@@ -66,6 +66,14 @@ Hub multi-pages dans `clients/05-saeir-thiam-bijouterie/` :
 - [x] Google Maps (adresse + itinéraire intégrés)
 - [x] Section avis (⚠️ 3 exemples « à valider » — remplacer par de vrais avis)
 
+## Passe « Check-list 2 — IA vs pro » (V5, 2026-06-23) ✅
+- **#6 SEO technique** : JSON-LD **JewelryStore** (adresse, horaires, tél, makesOffer, sameAs réseaux, hasMap) sur bijouterie + **Organization** (subOrganization JewelryStore) sur accueil ; **robots.txt** + **sitemap.xml** (4 URLs). JSON-LD validés (parse strict).
+- **#3 Copywriting + #9 Conversion** : **barre de confiance** (4 piliers VRAIS : fait main à Cotonou, or & argent, sur-mesure & gravure, devis gratuit) + ligne de **réassurance** sous le CTA final (devis gratuit · sans engagement · réponse rapide · visite en boutique). **Aucun faux chiffre ni fausse urgence** (honnêteté). Avis = toujours exemples « à valider » (vrais avis = livrable client).
+- **#4 Vitesse** : 1er écran ~180 Ko + polices, TTFB ~0,6 s (CDN Cloudflare), polices non-bloquantes, images lazy. Rapide (pas de Lighthouse formel).
+- **#10 Analytics** : **Cloudflare Web Analytics** = bon choix (gratuit, sans CB, sans cookie) MAIS le token API de déploiement n'a pas le scope Analytics → **activation = 1 clic dashboard par Mongazi** (Cloudflare → Web Analytics → Add site `djambar-team.pages.dev`, ou Pages > projet > Metrics > Enable). Non fait côté code (pas de script bidon).
+- **#1/2/5/7** déjà ✅. **#8** : robots/sitemap = déploiement + propre ; domaine final + test WhatsApp réel = côté Mongazi/client.
+Cache `?v=20260622h`. LIVE + redeploy Pages OK.
+
 ## Passe « Check-list 10 000 $ » (V4, 2026-06-22) ✅
 Corrections demandées par Mongazi (check-list 1, 8 points) sur le thème sombre :
 - **05 Imagerie** : art-direction `_build_gallery_v2.py` (ré-exécutable) → curatage des meilleures sources + **grade unifié vers le nuit** + **vignette** (focus bijou, noie fonds parasites) + crops carrés. Hero Chadé regradé. ⚠️ watermarks client (n° + logo) **conservés** = décision anti-vol de Mr THIAM ; vrai cran « 10k » = reshoot fond noir / retrait watermark (à lui de décider).

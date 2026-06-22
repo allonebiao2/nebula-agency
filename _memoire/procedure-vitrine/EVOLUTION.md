@@ -72,4 +72,11 @@ Mongazi a fait auditer le site contre 2 check-lists (« 10k$ vs 200$ » et « IA
 - **Mobile = décisions, pas rétrécissement** : `background-position` qui garde le sujet cadré, tailles de marquee dédiées, légendes visibles au tap (pas de hover tactile).
 - **Le design ne sauve pas le fond** : un thème (clair/sombre) ne corrige NI les photos watermarkées, NI les faux avis, NI l'absence de SEO/analytics/domaine. Pour un vrai « 10k », prévoir dès le devis : photos pro, vrais témoignages + signaux de confiance, domaine, analytics, schema, tests réels.
 
+## 2026-06-23 — Check-list 2 (IA vs pro) : SEO + conversion + analytics → patterns skill
+- **SEO technique = systématiser** dans le skill (souvent oublié) : JSON-LD **LocalBusiness/JewelryStore** (nom, adresse, `openingHoursSpecification`, `telephone`, `makesOffer`, `sameAs` réseaux, `hasMap`) sur la page commerce + **Organization** sur l'accueil (lier via `subOrganization`/`parentOrganization`) ; **robots.txt** + **sitemap.xml** par défaut. Valider le JSON-LD (parse strict) avant deploy.
+- **Conversion honnête** : barre de confiance avec piliers **VRAIS et vérifiables** (fait main, matières, sur-mesure, devis gratuit) + microcopie de réassurance près des CTA (gratuit · sans engagement · réponse rapide). **JAMAIS** de faux chiffres (« 500 clients »), fausse urgence ou faux avis — règle dure (cf. l'inspiration qui en abusait). Vrais avis = livrable client, pas à inventer.
+- **Analytics gratuit sans CB** : sur Cloudflare Pages → **Cloudflare Web Analytics** (cookieless). ⚠️ le token de déploiement Pages n'a pas le scope RUM/Analytics (`/accounts/{id}/rum/...` → 10001) → activation = **1 clic dashboard** (à déléguer au client/Mongazi), ne pas injecter de script non fonctionnel.
+- **Perf à chiffrer** : mesurer le poids 1er écran (curl -A) + TTFB ; viser <200 Ko 1er écran, polices non-bloquantes, images lazy. Donner un vrai chiffre, pas « c'est rapide ».
+- **Le design ne remplace pas** : un site « beau » reste 200$ s'il manque SEO/analytics/contenu réel. Le skill doit traiter ces couches « invisibles » par défaut, pas seulement le visuel.
+
 <!-- Prochaines entrées : ajouter ici au fil des vitrines suivantes, avant la création du skill. -->
