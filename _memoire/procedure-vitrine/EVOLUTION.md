@@ -54,4 +54,13 @@ Mongazi a fourni une **capture d'inspiration** (`_partage/inspiration.jpg`) + co
 - **Vérif anti-régression** : à chaque refonte, **remesurer `over=0`** (le marquee/nowrap peut déborder) + **DOM-dump** des hauteurs si masonry (ne pas se fier aux captures headless : `decoding=async` non peint).
 - À intégrer au skill : ces 4 composants comme **blocs optionnels** activables selon le secteur (la galerie masonry + collections = idéal bijouterie/mode/déco).
 
+## 2026-06-22 (suite) — « S'inspirer » = capturer le MOOD, pas juste la structure
+Leçon forte (le client a dû recadrer) : quand on donne une image d'inspiration, il veut **l'ambiance globale** (ici : sombre, immersif, cinématographique), pas seulement des composants ajoutés sur un thème clair. **Règle pour le skill** :
+- **Identifier le THÈME de l'inspiration** (clair vs **sombre**, dense vs aéré, mood) AVANT de coder, et l'appliquer à **tout le site** — puis le **traduire dans la palette client** (ici « bleu/blanc » imposé → interprété en **sombre bleu nuit + blanc + or**, parfaitement valide).
+- **Hero = photo produit dramatique en fond** + voile dégradé navy (pattern fort de l'inspiration). Choisir une photo client déjà sur fond sombre/coloré (ici collier sur **velours bleu** = idéal, déjà dans la charte).
+- **Bande « GET SOCIAL »** (grille de vignettes → Instagram) = pattern social de l'inspiration, conforme (renvoie au compte).
+- **Honnêteté** : ne PAS copier les fausses urgences de l'inspiration (badges « -50% », compte à rebours) pour un vrai commerçant sans promo réelle. Reprendre le **traitement visuel**, pas le mensonge commercial.
+- **QA visuelle obligatoire après réécriture CSS** : un token couleur invalide (`--gold-deep:#B8924`, 5 chiffres) cassait les boutons or — invisible sans regarder le rendu. Toujours screenshoter + corriger.
+- Thème sombre : prévoir tokens `--bg/--bg-2/--bg-3`, surfaces en **verre** (`rgba(255,255,255,.035)` + bordure `.10`), texte clair, nav verre sombre, map `filter:grayscale(.2)`.
+
 <!-- Prochaines entrées : ajouter ici au fil des vitrines suivantes, avant la création du skill. -->

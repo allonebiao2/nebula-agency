@@ -66,7 +66,11 @@ Hub multi-pages dans `clients/05-saeir-thiam-bijouterie/` :
 - [x] Google Maps (adresse + itinéraire intégrés)
 - [x] Section avis (⚠️ 3 exemples « à valider » — remplacer par de vrais avis)
 
-## Refonte visuelle V2 (inspiration éditoriale luxe, 2026-06-22) ✅
+## Refonte visuelle V3 — THÈME SOMBRE LUXE (inspiration immersive, 2026-06-22) ✅
+Mongazi voulait **le mood** de l'inspiration (`_partage/inspiration.jpg`), pas que la structure → bascule en **thème sombre immersif** : fond bleu nuit profond (`--bg #050d1f`) partout, texte blanc, accents or, cartes en verre sombre, **hero avec photo produit dramatique en fond** (collier Chadé sur velours bleu → `hero-bijou.jpg`), bande **« GET SOCIAL »** (6 vignettes → Instagram). Interprétation « bleu/blanc » de Mr THIAM en version sombre (bleu = base, blanc = texte). PAS de faux discount/compte à rebours (malhonnête pour un vrai bijoutier) : on garde le traitement visuel, pas la fausse promo.
+⚠️ Bug attrapé en QA visuelle : token `--gold-deep` était `#B8924` (hex invalide) → corrigé `#A8842F` (cassait le dégradé des boutons or). Leçon : toujours QA visuelle après réécriture CSS.
+
+## Refonte visuelle V2 (composants éditoriaux, 2026-06-22) ✅
 Inspiration fournie par Mongazi (`_partage/inspiration.jpg`, « The Ancient Coin Collector ») — **transposée** sans trahir la charte (on RESTE bleu nuit/blanc/or, PAS le sépia de la réf). Skill `frontend-design` appliqué.
 - **Section « Collections »** : 3 grandes cartes-image éditoriales (Colliers / Bracelets / Bagues & Alliances) avec libellé en surimpression + liseré or au survol → **cliquables = filtre** de la galerie (scroll auto).
 - **Galerie masonry** : hauteurs naturelles (fini les carrés plats), **spans calculés en JS** (`grid-auto-rows` + `getBoundingClientRect`), **hover pro** (zoom image, liseré or, légende qui monte), **apparition échelonnée** au scroll.
