@@ -30,6 +30,11 @@
 - Lien court : `https://maps.app.goo.gl/CWuoF2epYVKeAQs57`
 - Place Google : **SAEIR THIAM BIJOUTERIE** — cid `0x102357cccd8885c1:0x43fda23d25e44dcc`.
 
+## Réseaux sociaux ✅ (câblés footers + affiche)
+- **Instagram** : https://www.instagram.com/djambarteam_bijoucomevent (handle = bijou + com + event → confirme les 3 pôles)
+- **TikTok** : https://www.tiktok.com/@saeirthiam
+- **Facebook** : https://www.facebook.com/share/18koUwZtUH/
+
 ## Activité (texte fourni par le client)
 > Création • Réparation • Vente de bijoux
 > Or • Argent • Bijoux personnalisés
