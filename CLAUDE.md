@@ -73,6 +73,7 @@
 | 02 | Cédène | Little Sun Pearls - bijoux | En attente photos | - |
 | 03 | Abakar | WECS - montage vidéo | En cours | - |
 | 04 | Gloria | Luxury Skin Clinic - cosmétique (hub 4 pages) | Structure créée | 0167975626 |
+| 05 | Saeir Thiam | Saeir Thiam Bijouterie - bijoux (or/argent/sur-mesure), Cotonou | En cours (fiche reçue 22/06, acceptée) | 0197967671 |
 
 ## Mémoire générale
 - Voir _memoire/cerveau.md pour contexte complet
