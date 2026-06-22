@@ -275,13 +275,13 @@ function orgCard(n, tc, apex) {
   const teamCount = n._team || 0;
   const head = apex
     ? `<img src="/static/nebula-logo.png?v=20260621b" alt="NEBULA Agency"><div class="oname">NEBULA Agency</div>`
-    : `<div class="ohead">${NA.rankBadge(n.rank, { size: 'sm', glow: false })}
+    : `<div class="ohead">${NA.idBadge(n, { size: 'sm', glow: false })}
         <div style="min-width:0"><div class="oname">${esc(n.name)}</div><div class="ocode">${esc(n.code)}</div></div></div>`;
   const owedChip = (!apex && n.owed > 0)
     ? `<span class="ochip owed" title="Commissions à verser">${fmt(n.owed)} F ${n.claimed > 0 ? 'à payer' : 'dû'}</span>` : '';
   const stats = apex
     ? `<div class="ostats"><span class="ochip"><b>${ORG.total}</b> affiliés</span><span class="ochip"><b>${fmt(ORG.totalVentes)}</b> ventes réseau</span></div>`
-    : `<div class="orank">${NA.rankName(n.rank)} · palier ${esc(n.palier)}</div>
+    : `<div class="orank">${n.role_label ? NA.idName(n) : NA.rankName(n.rank)} · palier ${esc(n.palier)}</div>
        <div class="ostats"><span class="ochip"><b>${n.ventes}</b> vente${n.ventes > 1 ? 's' : ''}</span>
        ${n.clients ? `<span class="ochip"><b>${n.clients}</b> client${n.clients > 1 ? 's' : ''}</span>` : ''}
        ${owedChip}

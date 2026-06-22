@@ -525,8 +525,10 @@ def network_of(aid: int) -> Dict[str, Any]:
     """Réseau d'un affilié en ARBRE : N1 (recrues directes, 10%), chaque N1 portant ses N2 (5%)."""
     def line(a, rate):
         cnt, val = _paid_value(a["id"])
+        arole = (a["role"] or "").strip().lower() if "role" in a.keys() else ""
         return {"name": affiliate_label(a), "code": a["code"], "ventes": cnt,
-                "rank": rank_for(team_cumul_count(a["id"]))["label"], "commission": int(round(val * rate))}
+                "rank": rank_for(team_cumul_count(a["id"]))["label"],
+                "role_label": ROLE_LABELS.get(arole, ""), "commission": int(round(val * rate))}
     with db() as c:
         n1 = c.execute("SELECT * FROM affiliates WHERE parrain_id=? AND actif=1 ORDER BY created", (aid,)).fetchall()
     n1_list = []; n1_comm = 0; n2_comm = 0; n2_count = 0
@@ -1544,6 +1546,7 @@ def admin_network(naff_session: Optional[str] = Cookie(default=None)):
         due = due_by.get(a["id"], 0); claimed = claimed_by.get(a["id"], 0)
         info[a["id"]] = {"id": a["id"], "name": affiliate_label(a), "code": a["code"],
                          "ventes": s["ventes"], "rank": s["rank"]["label"], "palier": s["palier"]["label"],
+                         "role_label": s["role_label"],
                          "due": due, "claimed": claimed, "owed": due + claimed,
                          "clients": clients_n.get(a["id"], 0), "clients_paid": clients_p.get(a["id"], 0),
                          "parrain_id": a["parrain_id"] or 0}
