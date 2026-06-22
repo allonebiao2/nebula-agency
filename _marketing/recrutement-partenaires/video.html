@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>NEBULA Agency — Recrutement Partenaires</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Polices non bloquantes — chargées en arrière-plan, ne ralentissent pas __seek -->
+<link rel="stylesheet" media="print" onload="this.media='all'"
+  href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700;800;900&display=swap">
+<noscript>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700;800;900&display=swap">
+</noscript>
+<style>
+/*
+  ═══════════════════════════════════════════════════════════════════
+  NEBULA Agency — Vidéo Recrutement Partenaires
+  Format : 1080×1920 logique → 2160×3840 (4K) via render.py (×2)
+  Toutes les animations passent par window.__seek(t) — ZÉRO CSS anim.
+  ═══════════════════════════════════════════════════════════════════
+*/
+:root {
+  --purple:  #7b5cff;
+  --purple2: #a78bfa;
+  --cyan:    #22d3ee;
+  --gold:    #f59e0b;
+  --gold2:   #fbbf24;
+  --bg:      #04030a;
+  --ink:     #F2F1FA;
+  --muted:   #aeaecb;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  width: 1080px; height: 1920px;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Exo 2', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+#stage {
+  position: relative;
+  width: 1080px; height: 1920px;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* ── FOND COSMIQUE ───────────────────────────────────────── */
+.nebula-wrap {
+  position: absolute; inset: -8%; z-index: 0;
+  will-change: transform;
+}
+.nebula-glow {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(58% 40% at 16% 10%,  rgba(123,92,255,.72),  transparent 58%),
+    radial-gradient(42% 30% at 88% 16%,  rgba(34,211,238,.50),  transparent 62%),
+    radial-gradient(66% 50% at 76% 108%, rgba(123,92,255,.50),  transparent 66%),
+    radial-gradient(52% 44% at 6%  96%,  rgba(34,211,238,.22),  transparent 68%),
+    radial-gradient(30% 22% at 50% 52%,  rgba(245,158,11,.10),  transparent 72%);
+}
+.nebula-grid {
+  position: absolute; inset: 0; z-index: 1;
+  pointer-events: none; opacity: .042;
+  background-image:
+    linear-gradient(rgba(255,255,255,.55) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.55) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(72% 60% at 50% 44%, #000, transparent 82%);
+}
+.vignette {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: radial-gradient(122% 76% at 50% 32%, transparent 38%, rgba(0,0,0,.75) 100%);
+}
+
+/* Étoiles — canvas -->  z-index:1 sous les scènes */
+#starCanvas { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+
+/* ── TOP BAR ─────────────────────────────────────────────── */
+#topBar {
+  position: absolute; z-index: 8;
+  left: 72px; right: 72px; top: 80px;
+  display: flex; align-items: center; justify-content: space-between;
+  will-change: opacity, transform;
+}
+#logoTop {
+  height: 104px; width: auto;
+  filter: drop-shadow(0 5px 24px rgba(123,92,255,.55));
+}
+.on-recrute {
+  font-family: 'Orbitron'; font-weight: 700; font-size: 22px;
+  letter-spacing: .06em; text-transform: uppercase; color: #04030a;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  padding: 13px 28px; border-radius: 999px;
+  box-shadow: 0 8px 32px -8px rgba(245,158,11,.75);
+}
+
+/* ── PROGRESS BAR ────────────────────────────────────────── */
+#pbar {
+  position: absolute; z-index: 8;
+  left: 72px; right: 72px; top: 214px;
+  height: 5px; border-radius: 5px;
+  background: rgba(255,255,255,.10); overflow: hidden;
+}
+#pbarFill {
+  display: block; height: 100%; width: 0; border-radius: 5px;
+  background: linear-gradient(90deg, var(--purple), var(--cyan));
+}
+
+/* ── SCÈNES (communes) ───────────────────────────────────── */
+.scene {
+  position: absolute; z-index: 5;
+  left: 72px; right: 72px; top: 0; bottom: 0;
+  display: flex; flex-direction: column;
+  justify-content: center; gap: 34px;
+  opacity: 0; will-change: opacity;
+}
+.kicker {
+  font-family: 'Orbitron'; font-weight: 700; font-size: 28px;
+  letter-spacing: .18em; text-transform: uppercase;
+  will-change: opacity, transform;
+}
+.kicker-purple { color: var(--purple); }
+.kicker-cyan   { color: var(--cyan);   }
+.kicker-gold   { color: var(--gold);   }
+
+.accent-bar {
+  height: 8px; border-radius: 8px;
+  transform-origin: left; transform: scaleX(0); will-change: transform;
+}
+.bar-purple { width:130px; background:var(--purple); box-shadow:0 0 26px var(--purple); }
+.bar-cyan   { width:130px; background:var(--cyan);   box-shadow:0 0 26px var(--cyan);   }
+.bar-gold   { width:130px; background:var(--gold);   box-shadow:0 0 26px var(--gold);   }
+
+.big-line {
+  font-family: 'Exo 2'; font-weight: 900;
+  line-height: 1.02; letter-spacing: -.022em;
+  overflow-wrap: break-word; word-break: break-word;
+}
+.big-line .w { display: inline-block; will-change: transform, opacity; }
+
+.sub-text {
+  font-family: 'Exo 2'; font-size: 42px; font-weight: 500;
+  color: var(--muted); line-height: 1.38; max-width: 910px;
+  will-change: opacity, transform;
+}
+
+/* ── SCÈNE 4 (GAINS) — accentuation dorée ────────────────── */
+#s4 .big-line {
+  color: var(--gold);
+  text-shadow: 0 0 56px rgba(245,158,11,.50);
+}
+
+/* ── OUTRO ───────────────────────────────────────────────── */
+#outro {
+  position: absolute; z-index: 8; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 36px; text-align: center; padding: 0 80px;
+  opacity: 0; will-change: opacity;
+}
+#logoBig {
+  width: 700px; max-width: 84%; height: auto;
+  filter: drop-shadow(0 14px 58px rgba(123,92,255,.58));
+}
+.outro-tagline {
+  font-family: 'Exo 2'; font-weight: 700; font-size: 52px;
+  line-height: 1.2; color: var(--ink);
+  will-change: opacity, transform;
+}
+.outro-pill {
+  font-family: 'Orbitron'; font-weight: 700; font-size: 30px;
+  letter-spacing: .05em; color: #04030a;
+  background: linear-gradient(135deg, var(--purple), var(--cyan));
+  padding: 18px 44px; border-radius: 999px;
+  box-shadow: 0 14px 44px -10px rgba(123,92,255,.72);
+  will-change: opacity, transform;
+}
+.outro-url {
+  font-family: 'Exo 2'; font-size: 38px; font-weight: 500;
+  color: var(--cyan); letter-spacing: .04em;
+  will-change: opacity, transform;
+}
+
+/* ── FLASH DORÉ (transition scène 4) ────────────────────── */
+#goldFlash {
+  position: absolute; z-index: 7; inset: 0;
+  background: radial-gradient(60% 50% at 50% 50%, rgba(245,158,11,.30), transparent 70%);
+  opacity: 0; pointer-events: none; will-change: opacity;
+}
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- Fond cosmique -->
+  <div class="nebula-wrap" id="nebulaBg">
+    <div class="nebula-glow"></div>
+    <div class="nebula-grid"></div>
+  </div>
+  <canvas id="starCanvas"></canvas>
+  <div class="vignette"></div>
+
+  <!-- Flash doré scène 4 -->
+  <div id="goldFlash"></div>
+
+  <!-- Top bar -->
+  <div id="topBar">
+    <img id="logoTop" alt="NEBULA Agency">
+    <span class="on-recrute">On recrute</span>
+  </div>
+  <div id="pbar"><span id="pbarFill"></span></div>
+
+  <!-- ── SCÈNES ─────────────────────────────────────────── -->
+
+  <!-- S1 — ACCROCHE -->
+  <div class="scene" id="s1">
+    <div class="kicker kicker-purple">STOP SCROLLE</div>
+    <div class="accent-bar bar-purple"></div>
+    <div class="big-line" id="s1-line"></div>
+    <div class="sub-text">Si tu connais des gens qui ont besoin du digital — tu as une opportunité réelle.</div>
+  </div>
+
+  <!-- S2 — LE MARCHÉ -->
+  <div class="scene" id="s2">
+    <div class="kicker kicker-cyan">LE MARCHÉ</div>
+    <div class="accent-bar bar-cyan"></div>
+    <div class="big-line" id="s2-line"></div>
+    <div class="sub-text">Bénin · Togo · Côte d'Ivoire · Sénégal — le marché est devant toi.</div>
+  </div>
+
+  <!-- S3 — MISSION -->
+  <div class="scene" id="s3">
+    <div class="kicker kicker-purple">TA MISSION</div>
+    <div class="accent-bar bar-purple"></div>
+    <div class="big-line" id="s3-line"></div>
+    <div class="sub-text">NEBULA crée des vitrines digitales + IA. Tu amènes le client. On fait le reste.</div>
+  </div>
+
+  <!-- S4 — GAINS (dorée) -->
+  <div class="scene" id="s4">
+    <div class="kicker kicker-gold">TES GAINS</div>
+    <div class="accent-bar bar-gold"></div>
+    <div class="big-line" id="s4-line"></div>
+    <div class="sub-text">+10% sur les ventes de tes recrues. +5% sur leurs recrues. Un vrai réseau.</div>
+  </div>
+
+  <!-- S5 — RANG COSMIQUE -->
+  <div class="scene" id="s5">
+    <div class="kicker kicker-cyan">TON RANG</div>
+    <div class="accent-bar bar-cyan"></div>
+    <div class="big-line" id="s5-line"></div>
+    <div class="sub-text">Chaque vente te propulse. Chaque recrue t'élève. Le ciel n'est pas la limite.</div>
+  </div>
+
+  <!-- Outro -->
+  <div id="outro">
+    <img id="logoBig" alt="NEBULA Agency">
+    <div class="outro-tagline">Rejoins la galaxie NEBULA</div>
+    <span class="outro-pill">Devenir partenaire</span>
+    <div class="outro-url">partenaires.nebula-agency.online</div>
+  </div>
+
+</div><!-- #stage -->
+
+<script>
+/* ════════════════════════════════════════════════════════════════
+   NEBULA Agency — Recrutement Partenaires — Moteur __seek(t)
+   Rendu déterministe : AUCUNE animation CSS, tout via __seek(t).
+   Compatible render.py : window.__LOGO injecté avant chargement.
+   ════════════════════════════════════════════════════════════════ */
+
+// ── LOGO ──────────────────────────────────────────────────
+const LOGO = window.__LOGO || null;
+const logoTop = document.getElementById('logoTop');
+const logoBig = document.getElementById('logoBig');
+if (LOGO) {
+  logoTop.src = LOGO;
+  logoBig.src = LOGO;
+} else {
+  logoTop.style.display = 'none';
+  logoBig.style.display = 'none';
+}
+
+// ── HELPERS ───────────────────────────────────────────────
+const clamp  = x => Math.max(0, Math.min(1, x));
+const ease   = x => 1 - Math.pow(1 - clamp(x), 3);          // ease-out-cubic
+const easeIn = x => Math.pow(clamp(x), 2.4);                 // ease-in
+const words  = s => String(s || '').split(/\s+/).filter(Boolean);
+const mkWords = (el, text) => {
+  el.innerHTML = words(text).map(w => `<span class="w">${w}&nbsp;</span>`).join('');
+  return [...el.querySelectorAll('.w')];
+};
+
+// ── CONTENU DES LIGNES ────────────────────────────────────
+const LINES = {
+  s1: { text: "Ton téléphone peut te payer",    size: 112 },
+  s2: { text: "730 000 PME africaines sans site web", size: 82 },
+  s3: { text: "Présente. On livre. Tu encaisses.", size: 98 },
+  s4: { text: "Jusqu'à 35 % par vente",         size: 110 },
+  s5: { text: "Météore → Galaxie",               size: 124 }
+};
+
+const wordRefs = {};
+for (const [id, cfg] of Object.entries(LINES)) {
+  const el = document.getElementById(id + '-line');
+  el.style.fontSize = cfg.size + 'px';
+  wordRefs[id] = mkWords(el, cfg.text);
+}
+
+// ── MINUTAGE DES SCÈNES ───────────────────────────────────
+const INTRO  = 320;   // ms avant la 1ère scène
+const OUTRO  = 2900;  // ms pour l'outro
+const FADE   = 260;   // ms fade-out inter-scène
+const SCENES = [
+  { id:'s1', dur:3400 },
+  { id:'s2', dur:3650 },
+  { id:'s3', dur:3500 },
+  { id:'s4', dur:3650 },
+  { id:'s5', dur:3400 }
+];
+
+let cursor = INTRO;
+const sceneData = SCENES.map(sc => {
+  const node = document.getElementById(sc.id);
+  const kicker    = node.querySelector('.kicker');
+  const accentBar = node.querySelector('.accent-bar');
+  const subText   = node.querySelector('.sub-text');
+  const ws        = wordRefs[sc.id];
+  const d = { node, kicker, accentBar, subText, ws, start: cursor, dur: sc.dur };
+  cursor += sc.dur;
+  return d;
+});
+
+const scenesEnd      = cursor;
+window.__DURATION    = scenesEnd + OUTRO;
+window.__POSTER_T    = sceneData[1].start + 880;   // Poster = scène 2
+
+// ── ÉTOILES ───────────────────────────────────────────────
+const starCanvas = document.getElementById('starCanvas');
+starCanvas.width  = 1080;
+starCanvas.height = 1920;
+const sCtx = starCanvas.getContext('2d');
+const STARS = Array.from({ length: 280 }, () => ({
+  x:     Math.random() * 1080,
+  y:     Math.random() * 1920,
+  r:     Math.random() * 1.9 + 0.25,
+  phase: Math.random() * Math.PI * 2,
+  freq:  Math.random() * 0.0007 + 0.00025,
+  blue:  Math.random() > 0.72
+}));
+
+function drawStars(t) {
+  sCtx.clearRect(0, 0, 1080, 1920);
+  for (const s of STARS) {
+    const op = 0.22 + 0.55 * (0.5 + 0.5 * Math.sin(s.phase + t * s.freq * 1000));
+    sCtx.globalAlpha = clamp(op);
+    sCtx.fillStyle   = s.blue ? '#22d3ee' : '#ffffff';
+    sCtx.beginPath();
+    sCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    sCtx.fill();
+  }
+  sCtx.globalAlpha = 1;
+}
+
+// ── ÉLÉMENTS GLOBAUX ──────────────────────────────────────
+const nebulaBg  = document.getElementById('nebulaBg');
+const pbarFill  = document.getElementById('pbarFill');
+const topBar    = document.getElementById('topBar');
+const outro     = document.getElementById('outro');
+const goldFlash = document.getElementById('goldFlash');
+
+const outroTagline = outro.querySelector('.outro-tagline');
+const outroPill    = outro.querySelector('.outro-pill');
+const outroUrl     = outro.querySelector('.outro-url');
+
+// ── FONCTION PRINCIPALE ───────────────────────────────────
+window.__seek = function (t) {
+  // Barre de progression
+  pbarFill.style.width = (clamp(t / window.__DURATION) * 100) + '%';
+
+  // Parallaxe fond
+  nebulaBg.style.transform =
+    `translate(${Math.sin(t / 3300) * 1.7}%, ${Math.cos(t / 4100) * 1.2}%) scale(1.06)`;
+
+  // Étoiles
+  drawStars(t);
+
+  // Top bar (fade in au démarrage)
+  const tb = ease(t / 480);
+  topBar.style.opacity   = tb;
+  topBar.style.transform = `translateY(${(1 - tb) * -22}px)`;
+
+  // Flash doré au début de la scène 4
+  const s4Start = sceneData[3].start;
+  const gf = t >= s4Start - 80 && t < s4Start + 420
+    ? ease(clamp((t - (s4Start - 80)) / 160)) * (1 - ease(clamp((t - (s4Start + 160)) / 240)))
+    : 0;
+  goldFlash.style.opacity = gf;
+
+  // ── SCÈNES ────────────────────────────────────────────
+  for (const r of sceneData) {
+    const lt = t - r.start;
+    if (t < r.start || t > r.start + r.dur) {
+      r.node.style.opacity = 0;
+      continue;
+    }
+    // Opacité scène
+    let op = 1;
+    if (lt < 200) op = ease(lt / 200);
+    else if (lt > r.dur - FADE) op = 1 - ease((lt - (r.dur - FADE)) / FADE);
+    r.node.style.opacity = op;
+
+    // Kicker
+    const kp = ease(lt / 380);
+    r.kicker.style.opacity   = kp;
+    r.kicker.style.transform = `translateY(${(1 - kp) * 20}px)`;
+
+    // Accent bar
+    r.accentBar.style.transform = `scaleX(${ease((lt - 100) / 420)})`;
+
+    // Mots (kinétique mot par mot)
+    r.ws.forEach((w, j) => {
+      const p = ease((lt - (140 + j * 56)) / 340);
+      w.style.opacity   = p;
+      w.style.transform = `translateY(${(1 - p) * 54}px)`;
+    });
+
+    // Sous-titre
+    if (r.subText) {
+      const sp = ease((lt - 240) / 460);
+      r.subText.style.opacity   = sp;
+      r.subText.style.transform = `translateY(${(1 - sp) * 20}px)`;
+    }
+  }
+
+  // ── OUTRO ─────────────────────────────────────────────
+  if (t >= scenesEnd) {
+    const ot = t - scenesEnd;
+    outro.style.opacity = ease(ot / 540);
+
+    // Éléments de l'outro en cascade
+    const tp = p => ease((ot - p) / 480);
+    logoBig.style.opacity        = tp(0);
+    logoBig.style.transform      = `scale(${0.88 + 0.12 * ease(ot / 560)})`;
+    outroTagline.style.opacity   = tp(220);
+    outroTagline.style.transform = `translateY(${(1 - tp(220)) * 22}px)`;
+    outroPill.style.opacity      = tp(440);
+    outroPill.style.transform    = `translateY(${(1 - tp(440)) * 22}px)`;
+    outroUrl.style.opacity       = tp(640);
+    outroUrl.style.transform     = `translateY(${(1 - tp(640)) * 16}px)`;
+  } else {
+    outro.style.opacity = 0;
+  }
+};
+
+// Initialisation
+window.__seek(0);
+document.fonts && document.fonts.ready.then(() => {
+  window.__FONTS_READY = true;
+  window.__seek(0);
+});
+</script>
+</body>
+</html>
