@@ -66,6 +66,14 @@ Hub multi-pages dans `clients/05-saeir-thiam-bijouterie/` :
 - [x] Google Maps (adresse + itinéraire intégrés)
 - [x] Section avis (⚠️ 3 exemples « à valider » — remplacer par de vrais avis)
 
+## Refonte visuelle V2 (inspiration éditoriale luxe, 2026-06-22) ✅
+Inspiration fournie par Mongazi (`_partage/inspiration.jpg`, « The Ancient Coin Collector ») — **transposée** sans trahir la charte (on RESTE bleu nuit/blanc/or, PAS le sépia de la réf). Skill `frontend-design` appliqué.
+- **Section « Collections »** : 3 grandes cartes-image éditoriales (Colliers / Bracelets / Bagues & Alliances) avec libellé en surimpression + liseré or au survol → **cliquables = filtre** de la galerie (scroll auto).
+- **Galerie masonry** : hauteurs naturelles (fini les carrés plats), **spans calculés en JS** (`grid-auto-rows` + `getBoundingClientRect`), **hover pro** (zoom image, liseré or, légende qui monte), **apparition échelonnée** au scroll.
+- **Bandeau défilant (marquee)** éditorial : Création · Réparation · Or · Argent… (losange or, `overflow:hidden` → 0 débordement, pause au survol, off si reduced-motion). Présent aussi sur l'accueil.
+- **Bandeau éditorial avec IMAGE BRACELET EN FOND** (`assets/images/bg-bracelet.jpg` = chaîne torsadée traitée Pillow : recadrage large, voile bleu nuit, flou léger) + voile dégradé navy → « Chaque pièce raconte une histoire » + CTA. `background-attachment:fixed` (parallax) desktop.
+- QA : DOM vérifié (images chargées, spans OK), **over=0** mobile (390px), tout 200 en prod. Cache-bust `?v=20260622e`. ⚠️ captures headless ne peignent pas les images `decoding=async` (artefact, OK en vrai navigateur).
+
 ## Horaires ✅ (intégrés — page bijouterie + footer accueil)
 - Lundi – Vendredi : **9h30 – 20h00** · Samedi : **9h30 – 19h00** · Dimanche : **Fermé**
 - Affichés avec **surlignage automatique du jour courant** (JS `data-day` / `getDay()`).

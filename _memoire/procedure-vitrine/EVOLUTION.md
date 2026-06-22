@@ -42,4 +42,16 @@ Reste (client) : avis réels + horaires ; domaine `djambarteam.com` (mapping ult
 - ⚠️ Périmètre : `frontend-design` = **web responsive** ; pour un **canvas fixe** (affiche A4 / poster) → skill **visual-design**, pas frontend-design.
 - À refléter dans le futur skill : étape « direction esthétique » distincte de l'étape « design system ».
 
+## 2026-06-22 (suite) — Refonte visuelle V2 à partir d'une image d'inspiration
+Mongazi a fourni une **capture d'inspiration** (`_partage/inspiration.jpg`) + consigne : s'en inspirer **profondément SANS sortir des envies du client**. Patterns dégagés (réutilisables par le skill) :
+- **Traduire, pas copier** : on garde la **charte client** (ici bleu/blanc/or), on n'importe QUE la *structure/compo/animation* de la réf (sépia de la réf rejeté). Régle pour le skill : « inspiration = squelette & énergie, jamais la palette si le client en impose une ».
+- **Composants éditoriaux réutilisables ajoutés au kit** :
+  1. **Cartes Collections** (image + dégradé + libellé surimpression + liseré or), cliquables → filtre galerie + scroll.
+  2. **Galerie masonry** : `grid-auto-rows:8px` + gap, **span calculé en JS** depuis la hauteur image (recalcul on load/resize/filter), hover (zoom + liseré or + légende), reveal échelonné. ⚠️ images en `loading=lazy` → recalcul on `load` ; défaut `span 24` pour limiter le saut.
+  3. **Marquee** défilant (`white-space:nowrap` + `overflow:hidden` OBLIGATOIRE sinon débordement ; translateX -50% avec 2 segments identiques ; pause hover ; off si reduced-motion).
+  4. **Bandeau éditorial à image de fond** (photo produit traitée Pillow + voile dégradé navy + `background-attachment:fixed` desktop) → ancrage émotionnel.
+- **Traitement Pillow d'une photo en fond** : recadrage large 16:10, `GaussianBlur` léger, `Brightness 0.6`, **blend multiply navy 0.55** pour forcer la charte, q80. + voile CSS dégradé par-dessus (contraste texte AA).
+- **Vérif anti-régression** : à chaque refonte, **remesurer `over=0`** (le marquee/nowrap peut déborder) + **DOM-dump** des hauteurs si masonry (ne pas se fier aux captures headless : `decoding=async` non peint).
+- À intégrer au skill : ces 4 composants comme **blocs optionnels** activables selon le secteur (la galerie masonry + collections = idéal bijouterie/mode/déco).
+
 <!-- Prochaines entrées : ajouter ici au fil des vitrines suivantes, avant la création du skill. -->

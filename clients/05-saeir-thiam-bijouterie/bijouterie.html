@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/app.css?v=20260622d">
+<link rel="stylesheet" href="assets/app.css?v=20260622e">
 </head>
 <body>
 
@@ -73,6 +73,14 @@
   </div>
 </section>
 
+<!-- ====================== MARQUEE ====================== -->
+<div class="marquee" aria-hidden="true">
+  <div class="track">
+    <div class="seg"><span>Création</span><i class="d"></i><span>Réparation</span><i class="d"></i><span>Vente</span><i class="d"></i><span>Or</span><i class="d"></i><span>Argent</span><i class="d"></i><span>Sur-mesure</span><i class="d"></i><span>L'élégance dans chaque détail</span><i class="d"></i></div>
+    <div class="seg"><span>Création</span><i class="d"></i><span>Réparation</span><i class="d"></i><span>Vente</span><i class="d"></i><span>Or</span><i class="d"></i><span>Argent</span><i class="d"></i><span>Sur-mesure</span><i class="d"></i><span>L'élégance dans chaque détail</span><i class="d"></i></div>
+  </div>
+</div>
+
 <!-- ====================== SAVOIR-FAIRE ====================== -->
 <section class="section" id="savoir-faire">
   <div class="wrap">
@@ -115,6 +123,19 @@
   </div>
 </section>
 
+<!-- ====================== BANDEAU ÉDITORIAL (fond bracelet) ====================== -->
+<section class="section editorial">
+  <div class="bg" aria-hidden="true"></div>
+  <div class="wrap">
+    <span class="kicker center">Notre signature</span>
+    <h2 class="serif">Chaque pièce raconte<br>une histoire</h2>
+    <p>Du choix du métal à la gravure finale, nos bijoux sont façonnés à la main, pensés pour durer et se transmettre. Confiez-nous votre idée : nous lui donnons forme.</p>
+    <div class="btn-row" style="justify-content:center">
+      <a class="btn btn-gold btn-lg" href="https://wa.me/2290197967671?text=Bonjour%2C%20j'aimerais%20cr%C3%A9er%20un%20bijou%20sur-mesure.%20Voici%20mon%20id%C3%A9e%20%3A" target="_blank" rel="noopener">Créer ma pièce sur-mesure</a>
+    </div>
+  </div>
+</section>
+
 <!-- ====================== GALERIE ====================== -->
 <section class="section" id="galerie">
   <div class="wrap">
@@ -122,6 +143,27 @@
       <span class="kicker center">Galerie</span>
       <h2 class="eyebrow-gap">Nos créations</h2>
       <p class="lead" style="margin:.6rem auto 0">Colliers, bracelets, bagues et alliances, en or et en argent. Cliquez pour agrandir.</p>
+    </div>
+
+    <div class="collections reveal">
+      <a class="coll" data-coll="colliers" href="#galerie" aria-label="Voir les colliers">
+        <img src="assets/images/gallery/colliers/g4.jpg" alt="Collection de colliers — Saeir Thiam Bijouterie" loading="lazy" decoding="async">
+        <span class="ring"></span>
+        <div class="lab"><span class="k">Collection</span><h3>Colliers</h3>
+          <span class="go">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+      </a>
+      <a class="coll" data-coll="bracelets" href="#galerie" aria-label="Voir les bracelets">
+        <img src="assets/images/gallery/bracelets/g6.jpg" alt="Collection de bracelets — Saeir Thiam Bijouterie" loading="lazy" decoding="async">
+        <span class="ring"></span>
+        <div class="lab"><span class="k">Collection</span><h3>Bracelets</h3>
+          <span class="go">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+      </a>
+      <a class="coll" data-coll="bagues" href="#galerie" aria-label="Voir les bagues et alliances">
+        <img src="assets/images/gallery/bagues/g2.jpg" alt="Collection de bagues et alliances — Saeir Thiam Bijouterie" loading="lazy" decoding="async">
+        <span class="ring"></span>
+        <div class="lab"><span class="k">Collection</span><h3>Bagues &amp; Alliances</h3>
+          <span class="go">Découvrir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+      </a>
     </div>
 
     <div class="gfilter reveal" role="tablist" aria-label="Filtrer la galerie">

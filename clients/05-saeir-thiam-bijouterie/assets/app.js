@@ -61,18 +61,94 @@
     });
   }
 
-  /* ---------- Galerie : filtre par catégorie ---------- */
+  /* ---------- Galerie : masonry + filtre + collections + reveal ---------- */
   var gfilter = document.querySelector(".gfilter");
+  var gallery = document.querySelector(".gallery");
   var tiles = Array.prototype.slice.call(document.querySelectorAll(".gitem"));
-  if (gfilter) {
-    gfilter.addEventListener("click", function (e) {
-      var b = e.target.closest("button");
-      if (!b) return;
-      gfilter.querySelectorAll("button").forEach(function (x) { x.classList.remove("active"); });
-      b.classList.add("active");
-      var cat = b.getAttribute("data-cat");
+  var ROW = 8, GAP = 16; // doivent matcher grid-auto-rows / gap du CSS
+
+  function spanTile(t) {
+    if (t.classList.contains("hide")) return;
+    var img = t.querySelector("img");
+    if (!img) return;
+    var h = img.getBoundingClientRect().height;
+    if (!h) return;
+    var rows = Math.ceil((h + GAP) / (ROW + GAP));
+    t.style.gridRowEnd = "span " + rows;
+  }
+  function layout() { tiles.forEach(spanTile); }
+
+  if (gallery) {
+    // légende au survol (générée depuis data-cap)
+    tiles.forEach(function (t) {
+      var cap = t.getAttribute("data-cap");
+      if (cap && !t.querySelector(".cap")) {
+        var el = document.createElement("span");
+        el.className = "cap";
+        el.innerHTML = "<b></b>";
+        el.firstChild.textContent = cap;
+        t.appendChild(el);
+      }
+    });
+    // (re)calcul des hauteurs masonry
+    tiles.forEach(function (t) {
+      var img = t.querySelector("img");
+      if (img) {
+        if (img.complete) spanTile(t);
+        img.addEventListener("load", function () { spanTile(t); });
+      }
+    });
+    window.addEventListener("load", layout);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
+    var rT;
+    window.addEventListener("resize", function () { clearTimeout(rT); rT = setTimeout(layout, 150); }, { passive: true });
+
+    // apparition échelonnée (quand la galerie entre dans le viewport)
+    function revealVisible() {
+      var i = 0;
+      tiles.forEach(function (t) {
+        if (t.classList.contains("hide") || t.classList.contains("in")) return;
+        t.style.transitionDelay = Math.min(i * 45, 480) + "ms";
+        t.classList.add("in");
+        i++;
+      });
+      setTimeout(function () { tiles.forEach(function (t) { t.style.transitionDelay = ""; }); }, 900);
+    }
+    if (reduce || !("IntersectionObserver" in window)) {
+      tiles.forEach(function (t) { t.classList.add("in"); });
+    } else {
+      var gio = new IntersectionObserver(function (es) {
+        es.forEach(function (e) { if (e.isIntersecting) { revealVisible(); gio.disconnect(); } });
+      }, { threshold: 0.06 });
+      gio.observe(gallery);
+    }
+
+    // filtre commun (pills + collections)
+    window.applyGalleryFilter = function (cat, doScroll) {
+      if (gfilter) gfilter.querySelectorAll("button").forEach(function (x) {
+        x.classList.toggle("active", x.getAttribute("data-cat") === cat);
+      });
       tiles.forEach(function (t) {
         t.classList.toggle("hide", cat !== "all" && t.getAttribute("data-cat") !== cat);
+      });
+      layout();
+      tiles.forEach(function (t) { if (!t.classList.contains("hide")) t.classList.add("in"); });
+      if (doScroll && gallery) {
+        var y = gallery.getBoundingClientRect().top + window.scrollY - 90;
+        window.scrollTo({ top: y, behavior: reduce ? "auto" : "smooth" });
+      }
+    };
+
+    if (gfilter) gfilter.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (b) window.applyGalleryFilter(b.getAttribute("data-cat"), false);
+    });
+
+    // cartes Collections -> filtre + scroll vers la galerie
+    document.querySelectorAll("[data-coll]").forEach(function (c) {
+      c.addEventListener("click", function (e) {
+        e.preventDefault();
+        window.applyGalleryFilter(c.getAttribute("data-coll"), true);
       });
     });
   }
