@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Affiche A4 — Saeir Thiam Bijouterie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;0,700;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 0; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:#fff}
+  body{font-family:"Jost",sans-serif;color:#0E1B33;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .serif{font-family:"Cormorant",serif}
+  .page{position:relative;width:210mm;height:297mm;overflow:hidden;background:#fff}
+
+  /* Header navy */
+  .top{position:relative;height:74mm;background:#07142E;color:#fff;overflow:hidden;
+       display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+  .top::before{content:"";position:absolute;inset:0;background:
+    radial-gradient(60% 90% at 80% 0%,rgba(46,107,230,.30),transparent 60%),
+    radial-gradient(50% 80% at 12% 110%,rgba(201,162,75,.22),transparent 60%)}
+  .top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3mm;
+    background:linear-gradient(90deg,#A8842F,#E7D6A3 50%,#A8842F)}
+  .top > *{position:relative;z-index:1}
+  .logo{height:24mm;width:auto;margin-bottom:4mm}
+  .brandname{font-family:"Cormorant",serif;font-weight:700;font-size:30pt;letter-spacing:.5pt;line-height:1}
+  .brandsub{font-size:9pt;letter-spacing:.42em;text-transform:uppercase;color:#E7D6A3;margin-top:3mm}
+
+  /* Body */
+  .body{padding:11mm 14mm 9mm}
+  .slogan{font-family:"Cormorant",serif;font-style:italic;font-weight:600;font-size:25pt;
+    text-align:center;color:#0B1E45;line-height:1.1;margin-bottom:1mm}
+  .rule{width:26mm;height:1.1mm;background:linear-gradient(90deg,#C9A24B,#E7D6A3);margin:5mm auto;border-radius:2px}
+
+  .services{display:flex;justify-content:center;gap:6mm;flex-wrap:wrap;margin-bottom:8mm}
+  .chip{font-size:10.5pt;font-weight:600;letter-spacing:.04em;color:#0E1B33;
+    border:0.4mm solid #DCE4F2;border-radius:999px;padding:2.4mm 6mm;background:#F5F8FE}
+  .chip b{color:#A8842F}
+
+  .photos{display:flex;gap:4mm;margin-bottom:8mm}
+  .photos .ph{flex:1;aspect-ratio:1/1;border-radius:4mm;overflow:hidden;border:0.4mm solid #DCE4F2}
+  .photos .ph img{width:100%;height:100%;object-fit:cover;display:block}
+
+  .matieres{text-align:center;font-size:11pt;color:#4A5871;margin-bottom:9mm}
+  .matieres b{color:#0B1E45}
+
+  /* Contact */
+  .contact{display:flex;gap:8mm;align-items:center;background:#F5F8FE;border:0.4mm solid #DCE4F2;
+    border-radius:5mm;padding:7mm 8mm}
+  .qrs{display:flex;gap:8mm}
+  .qr{text-align:center}
+  .qr img{width:30mm;height:30mm;display:block;border:0.6mm solid #DCE4F2;border-radius:2mm;background:#fff}
+  .qr span{display:block;font-size:8.5pt;font-weight:600;color:#0B1E45;margin-top:2mm;letter-spacing:.02em}
+  .qr small{display:block;font-size:7pt;color:#4A5871}
+  .cinfo{flex:1;border-left:0.4mm solid #DCE4F2;padding-left:8mm}
+  .cinfo .lbl{font-size:8pt;letter-spacing:.28em;text-transform:uppercase;color:#A8842F;font-weight:600}
+  .cinfo .phone{font-family:"Cormorant",serif;font-weight:700;font-size:22pt;color:#0B1E45;line-height:1.1;margin:1mm 0 3mm}
+  .cinfo .addr{font-size:9.5pt;color:#4A5871;line-height:1.4}
+  .cinfo .addr b{color:#0E1B33}
+
+  .foot{position:absolute;left:0;right:0;bottom:0;height:8mm;display:flex;align-items:center;justify-content:center;
+    font-size:7.5pt;letter-spacing:.06em;color:#9AA5B8;background:#fff}
+  .foot b{color:#0B1E45}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="top">
+    <img class="logo" src="assets/images/logo-full-white.png" alt="Djambar Team">
+    <div class="brandname">Saeir Thiam Bijouterie</div>
+    <div class="brandsub">Le Bijoutier · Djambar Team</div>
+  </div>
+
+  <div class="body">
+    <div class="slogan">« L'élégance dans chaque détail. »</div>
+    <div class="rule"></div>
+
+    <div class="services">
+      <span class="chip">Création</span>
+      <span class="chip">Réparation</span>
+      <span class="chip">Vente</span>
+    </div>
+
+    <div class="photos">
+      <div class="ph"><img src="assets/images/gallery/colliers/g1.jpg" alt="Collier"></div>
+      <div class="ph"><img src="assets/images/gallery/bracelets/g6.jpg" alt="Bracelet"></div>
+      <div class="ph"><img src="assets/images/gallery/bagues/g2.jpg" alt="Alliances"></div>
+    </div>
+
+    <div class="matieres"><b>Or</b> &nbsp;·&nbsp; <b>Argent</b> &nbsp;·&nbsp; <b>Bijoux personnalisés sur-mesure</b></div>
+
+    <div class="contact">
+      <div class="qrs">
+        <div class="qr">
+          <img src="assets/images/qr-whatsapp.png" alt="QR WhatsApp">
+          <span>Commander</span><small>WhatsApp</small>
+        </div>
+        <div class="qr">
+          <img src="assets/images/qr-maps.png" alt="QR Google Maps">
+          <span>Nous trouver</span><small>Google Maps</small>
+        </div>
+      </div>
+      <div class="cinfo">
+        <div class="lbl">Contact</div>
+        <div class="phone">+229 01 97 96 76 71</div>
+        <div class="addr"><b>Agla Gbodjètin</b>, à proximité du CEG de l'Entente — Cotonou, Bénin.<br>
+          Repère : depuis la Pharmacie Archange, goudron vers Akogbato, 5ᵉ von à droite puis 1ʳᵉ von à droite.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">Créé par <b>&nbsp;NEBULA Agency</b></div>
+</div>
+</body>
+</html>

@@ -1,7 +1,13 @@
 # CONTEXT — Djambar Team (pôle Saeir Thiam Bijouterie)
 
 > Client #05 · Fiche reçue le **2026-06-22** via le formulaire de `nebula-agency.online`.
-> Commande **acceptée**. Statut : **Site en construction** (assets réels intégrés).
+> Commande **acceptée**. Statut : **EN LIGNE (provisoire)** — https://djambar-team.pages.dev · assets réels intégrés, affiche PDF générée.
+
+## 🌐 Mise en ligne
+- **LIVE provisoire** : **https://djambar-team.pages.dev** (Cloudflare Pages, projet `djambar-team`, branche `main`, HTTPS auto).
+- Déploiement via `npx wrangler pages deploy` (token `secrets/cloudflare.env`). Dossier déployé = build propre (HTML + `assets/app.*` + `assets/images/{logos,og,favicon,gallery}`), **sans** les photos sources lourdes.
+- ⚠️ **Domaine final = `djambarteam.com`** (Mr THIAM va l'acheter) → quand prêt : mapper le domaine custom sur le projet Pages + régénérer l'affiche avec un QR « site ». En attendant, le QR de l'affiche pointe vers **WhatsApp + Google Maps** (stables).
+- Re-déployer après modif : rebuild du dossier propre puis `wrangler pages deploy`.
 
 ## ⭐ Architecture de marque (vision du client, à respecter absolument)
 - **Djambar Team = structure MÈRE** (marque ombrelle). Le site porte ce nom dès le départ.
@@ -36,7 +42,7 @@
 
 ## Direction artistique (appliquée)
 - **Palette imposée** : **Bleu nuit + Blanc**, accents **or/argent** (rappel du métier).
-- **Style** : luxe éditorial, verre dépoli léger (perf mobile/4G). Typo **Cormorant** (titres) + **Montserrat** (texte).
+- **Style** : luxe éditorial, verre dépoli léger (perf mobile/4G). Typo **Cormorant** (titres) + **Jost** (texte — choisi pour plus de caractère vs Montserrat, jugé trop répandu).
 - Design system généré via le skill **UI/UX Pro Max** (palette/typo grounded), reco rose/or écrasée par la palette client.
 
 ## Architecture du site (construite)
@@ -51,7 +57,7 @@ Hub multi-pages dans `clients/05-saeir-thiam-bijouterie/` :
 - [x] Boutons WhatsApp (pré-remplis par contexte de page)
 - [x] Galerie photos (lightbox + filtre par catégorie)
 - [x] Musique d'ambiance (lecteur flottant, baseline audio mobile, OFF par défaut)
-- [ ] **Affiche PDF A4** (à générer)
+- [x] **Affiche PDF A4** (`assets/docs/Affiche_Saeir_Thiam_Djambar_A4.pdf` — générée via `affiche.html` + Edge ; 2 QR : WhatsApp + Maps)
 - [x] Google Maps (adresse + itinéraire intégrés)
 - [x] Section avis (⚠️ 3 exemples « à valider » — remplacer par de vrais avis)
 
@@ -60,9 +66,8 @@ Hub multi-pages dans `clients/05-saeir-thiam-bijouterie/` :
 - [ ] Horaires d'ouverture exacts
 - [ ] Noms officiels + contenu des pôles Communication / Événementiel (quand prêts) + les 2 events en tête
 - [ ] Musique : piste libre de droits du client (sinon pad d'ambiance synthétisé par défaut)
-- [ ] **Affiche PDF A4**
 - [ ] Validation finale de Mr THIAM (textes « à valider »)
-- [ ] Mise en ligne **Cloudflare Pages** (sous-domaine type `djambar.nebula-agency.online` — à valider avec Mongazi)
+- [ ] **Domaine final `djambarteam.com`** : mapper sur le projet Pages quand acheté + régénérer l'affiche (QR site)
 
 ## État d'avancement
 - [x] Fiche reçue + commande acceptée + back-office (lead id=4, En cours)
@@ -71,10 +76,12 @@ Hub multi-pages dans `clients/05-saeir-thiam-bijouterie/` :
 - [x] 4 pages construites (accueil groupe + bijouterie + 2 pôles « Bientôt »)
 - [x] Assets réels reçus (logo 2 versions + photos 3 catégories) + adresse/Maps
 - [x] Intégration logo + photos + Maps + renommage pôle « Saeir Thiam Bijouterie »
-- [ ] Affiche PDF A4
+- [x] Police Jost (ajustement design)
+- [x] Affiche PDF A4 (2 QR : WhatsApp + Maps)
+- [x] **Mis en ligne (provisoire)** : https://djambar-team.pages.dev
 - [ ] Avis réels + horaires
 - [ ] Validé par le client
-- [ ] Livré + mis en ligne (Cloudflare Pages)
+- [ ] Domaine final `djambarteam.com` (quand acheté)
 
 ## Décisions importantes
 - **Marque** : site = **Djambar Team** (groupe) ; pôle bijoux = **Saeir Thiam Bijouterie** (enseigne) ; tagline **« Le Bijoutier »**.
