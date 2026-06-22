@@ -94,8 +94,12 @@ Hub multi-pages dans `clients/05-saeir-thiam-bijouterie/` :
 - **Images en relatif** (pas base64) pour ce hub multi-pages (perf + évolutivité).
 - Watermarks des photos **conservés** (branding client).
 
+## Procédure → futur skill
+- Ce projet est le **gold standard** documenté dans la branche cerveau **`_memoire/procedure-vitrine/`** (procédure end-to-end vitrine/catalogue+QR, pour créer un skill autonome « formulaire → produit fini »).
+
 ## Liens
 - Back-office (lead site) : https://partenaires.nebula-agency.online (clients « site », En cours)
+- Procédure / futur skill : `_memoire/procedure-vitrine/`
 - Google Maps : https://maps.app.goo.gl/CWuoF2epYVKeAQs57
 - Assets : `assets/` (`images/` dont `Logo/`, `Colliers/`, `Bracelet/`, `Bague D'alliance en Or et Argent/`, `gallery/`)
 - Site : `index.html` · `bijouterie.html` · `communication.html` · `evenementiel.html`
