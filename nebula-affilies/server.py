@@ -304,12 +304,21 @@ def migrate():
                 c.execute(f"ALTER TABLE leads ADD COLUMN {col} {ddl}")
             except Exception:
                 pass
-        # backfill : récupère le service exact des anciens leads (avant la colonne) depuis le brief « Service : ... »
+        # backfill / correction : service exact depuis le brief « Service : ... »
+        # (clean() écrase les retours à la ligne → on borne la capture au champ suivant)
         try:
-            for row in c.execute("SELECT id, message FROM leads WHERE COALESCE(service_raw,'')=''").fetchall():
-                m = re.search(r"Service[^:\n]*:\s*([^\n]+)", row["message"] or "")
+            _fields = r"Couleurs|Logo|D[eé]lai|Options|Description|Marque|Secteur|Ville|WhatsApp|Num[eé]ro"
+            _rx = re.compile(r"Service[^:]*:\s*(.+?)(?=\s+(?:%s)\s*:|$)" % _fields, re.I)
+            for row in c.execute("SELECT id, message, service_raw, source FROM leads").fetchall():
+                cur_raw = row["service_raw"] or ""
+                # à (re)calculer si vide, OU si une vieille capture a aspiré plusieurs champs (« ... : ... »)
+                if cur_raw and not (row["source"] == "site" and " : " in cur_raw):
+                    continue
+                m = _rx.search(row["message"] or "")
                 if m:
-                    c.execute("UPDATE leads SET service_raw=? WHERE id=?", (m.group(1).strip()[:200], row["id"]))
+                    val = m.group(1).strip()[:200]
+                    if val and val != cur_raw:
+                        c.execute("UPDATE leads SET service_raw=? WHERE id=?", (val, row["id"]))
         except Exception:
             pass
         for col, ddl in [("kind", "TEXT DEFAULT 'info'"), ("ref_aff", "INTEGER DEFAULT 0")]:
