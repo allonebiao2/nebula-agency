@@ -382,6 +382,15 @@ const NA = (() => {
       + `padding:${sm ? '2px 9px' : '3px 11px'};font-size:${sm ? '.66rem' : '.72rem'}">`
       + `<span class="role-ico">${icon(ico)}</span>${esc(label)}</span>`;
   }
+  // Identité visuelle d'une personne : son RÔLE spécial (CEO / Superviseur, scintillant, SANS rang)
+  // s'il en a un, sinon son insigne de RANG cosmique. Source unique de vérité pour tout afficher.
+  function idBadge(o, opts = {}) {
+    return (o && o.role_label) ? roleBadge(o.role_label, opts) : rankBadge((o && o.rank) || 'Recrue', opts);
+  }
+  function idName(o) {
+    return (o && o.role_label) ? roleBadge(o.role_label) : rankName((o && o.rank) || 'Recrue');
+  }
+  const hasRole = (o) => !!(o && o.role_label);
 
   /* ---------- ÉCHELLE DES RANGS (clic sur le rang → tout voir) ---------- */
   let _cfgCache = null;
@@ -493,5 +502,5 @@ const NA = (() => {
     const gb = scrim.querySelector('#pg-goto'); if (gb) gb.onclick = () => { close(); opts.onGoto && opts.onGoto(); };
   }
 
-  return { el, esc, fmt, ago, api, icon, sound: Sound, toast, countUp, reveal, qr, celebrate, nova, agencyChat, tour, rankBadge, rankName, roleBadge, rankLadder, payGuide, RANK_META, RANK_ORDER };
+  return { el, esc, fmt, ago, api, icon, sound: Sound, toast, countUp, reveal, qr, celebrate, nova, agencyChat, tour, rankBadge, rankName, roleBadge, idBadge, idName, hasRole, rankLadder, payGuide, RANK_META, RANK_ORDER };
 })();
