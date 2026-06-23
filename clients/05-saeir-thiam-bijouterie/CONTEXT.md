@@ -47,6 +47,7 @@
 
 ## Direction artistique (appliquée)
 - **Palette imposée** : **Bleu nuit + Blanc**, accents **or/argent** (rappel du métier).
+- **THÈME ACTUEL = CLAIR LUXE** (V6, 2026-06-23, demandé par Mongazi) : blanc dominant + bleu très clair (sections alternées) + nuance or douce ; bleu nuit & or réservés aux **accents** et aux **sections sombres ponctuelles** (CTA, hero photo flouté, pages « Bientôt », footer). **Halo lumineux** doré/bleu qui suit le curseur (desktop, off mobile/reduced-motion). ⚠️ Avant V6 le site était **SOMBRE** (V3) ; bascule complète sombre→clair faite + QA.
 - **Style** : luxe éditorial, verre dépoli léger (perf mobile/4G). Typo **Cormorant** (titres) + **Jost** (texte — choisi pour plus de caractère vs Montserrat, jugé trop répandu).
 - Design system généré via le skill **UI/UX Pro Max** (palette/typo grounded), reco rose/or écrasée par la palette client.
 
@@ -65,6 +66,18 @@ Hub multi-pages dans `clients/05-saeir-thiam-bijouterie/` :
 - [x] **Affiche PDF A4** (`assets/docs/Affiche_Saeir_Thiam_Djambar_A4.pdf` — générée via `affiche.html` + Edge ; 2 QR : WhatsApp + Maps)
 - [x] Google Maps (adresse + itinéraire intégrés)
 - [x] Section avis (⚠️ 3 exemples « à valider » — remplacer par de vrais avis)
+
+## Passe « ABSOLUE — Check-list 2 max perf » (V6, 2026-06-23) ✅
+Mongazi : « fais l'absolue correction avec ton maximum de performance sur la check-list 2 ». Exécutée sur le **thème CLAIR** (choix confirmé : finir la bascule clair entamée). Corrections appliquées + **vérifiées en prod** :
+- **Bascule clair finalisée + bugs corrigés** : la nav gardait du texte/logo **blanc** (hérité du hero sombre) → **illisible sur le nouveau hero clair**. Refonte de la logique nav : par défaut texte+logo **sombres** (hero clair = accueil/bijouterie) ; classe **`body.dark-hero`** pour les pages à hero sombre (communication/événementiel) → nav blanche au sommet, repasse sombre au scroll. Logo hero accueil = `logo-full-dark.png` (était white, invisible). Kickers hero en `--gold-ink` (lisible sur blanc).
+- **#6 SEO+** : ajout **WebSite** (accueil) + **BreadcrumbList** (bijouterie/communication/événementiel). Tous les JSON-LD re-validés (parse strict OK).
+- **Clean URLs (Cloudflare Pages)** : la plateforme force `/page.html`→308→`/page`. Migration **complète** de tous les liens internes + `canonical` + `og:url` + JSON-LD + `sitemap.xml` en **clean URLs** (`/bijouterie`…). Vérifié en prod : chaque clean URL = **200 direct** (plus de hop 308), 0 `href .html` dans le HTML servi.
+- **#9 Conversion** : barre de **réassurance** ajoutée aussi sous le CTA de l'accueil (devis gratuits · sans engagement · réponse rapide).
+- **#4 Perf (mesurée en prod, compressé CDN)** : 1er écran **accueil ~79 Ko**, **bijouterie ~115 Ko** ; TTFB ~0,44–0,64 s. Galerie : `aspect-ratio:1/1` + `width/height` sur les 24 tuiles → **0 CLS**. `fetchpriority=high` sur le logo hero accueil.
+- **A11y** : **skip-link** « Aller au contenu » sur les 4 pages (cible `#contenu` sur le hero).
+- **Contraste AA recalculé** (thème clair) : tous les textes ≥ 4,5 (min 4,84 = or sur fond crème) ; titres 16,3 ; liens 7,4. ✅
+- **#10 Analytics** : inchangé (Cloudflare Web Analytics = 1 clic dashboard côté Mongazi, token déploiement sans scope RUM).
+Cache **`?v=20260623b`** (css+js). Staging propre (3,88 Mo, sans photos sources) → **2 redeploys Cloudflare Pages** ; prod re-vérifiée (clean URLs 200, JSON-LD, perf, captures live OK).
 
 ## Passe « Check-list 2 — IA vs pro » (V5, 2026-06-23) ✅
 - **#6 SEO technique** : JSON-LD **JewelryStore** (adresse, horaires, tél, makesOffer, sameAs réseaux, hasMap) sur bijouterie + **Organization** (subOrganization JewelryStore) sur accueil ; **robots.txt** + **sitemap.xml** (4 URLs). JSON-LD validés (parse strict).

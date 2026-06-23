@@ -12,14 +12,14 @@
 <meta property="og:description" content="Groupe multisectoriel à Cotonou. La bijouterie d'exception en tête, communication et événementiel à venir.">
 <meta property="og:image" content="assets/images/og-djambar.jpg">
 <meta property="og:url" content="https://djambar-team.pages.dev/">
-<meta name="theme-color" content="#050d1f">
+<meta name="theme-color" content="#ffffff">
 <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-32.png?v=20260622b">
 <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png?v=20260622b">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap"></noscript>
-<link rel="stylesheet" href="assets/app.css?v=20260622h">
+<link rel="stylesheet" href="assets/app.css?v=20260623b">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -36,16 +36,26 @@
     "https://www.tiktok.com/@saeirthiam",
     "https://www.facebook.com/share/18koUwZtUH/"
   ],
-  "subOrganization": { "@type": "JewelryStore", "name": "Saeir Thiam Bijouterie", "url": "https://djambar-team.pages.dev/bijouterie.html" }
+  "subOrganization": { "@type": "JewelryStore", "name": "Saeir Thiam Bijouterie", "url": "https://djambar-team.pages.dev/bijouterie" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Djambar Team",
+  "url": "https://djambar-team.pages.dev/",
+  "inLanguage": "fr"
 }
 </script>
 </head>
 <body>
+<a class="skip-link" href="#contenu">Aller au contenu</a>
 
 <!-- ====================== NAV ====================== -->
 <header class="nav" id="nav">
   <div class="wrap">
-    <a class="brand" href="index.html" aria-label="Accueil Djambar Team">
+    <a class="brand" href="/" aria-label="Accueil Djambar Team">
       <img class="mark mark-white" src="assets/images/logo-mark-white.png" alt="Djambar Team" width="48" height="40">
       <img class="mark mark-dark" src="assets/images/logo-mark-dark.png" alt="" aria-hidden="true" width="48" height="40">
       <span class="bt"><b>Djambar Team</b><span>Groupe</span></span>
@@ -54,10 +64,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
     <nav class="nav-links" id="navlinks">
-      <a href="index.html" class="active">Accueil</a>
-      <a href="bijouterie.html">Bijouterie</a>
-      <a href="communication.html">Communication</a>
-      <a href="evenementiel.html">Événementiel</a>
+      <a href="/" class="active">Accueil</a>
+      <a href="/bijouterie">Bijouterie</a>
+      <a href="/communication">Communication</a>
+      <a href="/evenementiel">Événementiel</a>
       <a href="#contact">Contact</a>
       <span class="nav-cta"><a class="btn btn-gold" href="https://wa.me/2290197967671?text=Bonjour%20Djambar%20Team%2C%20je%20vous%20%C3%A9cris%20depuis%20votre%20site." target="_blank" rel="noopener">WhatsApp</a></span>
     </nav>
@@ -65,7 +75,7 @@
 </header>
 
 <!-- ====================== HERO ====================== -->
-<section class="hero">
+<section class="hero" id="contenu">
   <div class="hero-grid" aria-hidden="true"></div>
   <svg class="sparkles" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <g fill="#E7D6A3">
@@ -79,12 +89,12 @@
   </svg>
   <div class="wrap">
     <div class="hero-inner">
-      <img src="assets/images/logo-full-white.png" alt="Djambar Team" width="82" height="96" style="height:96px;width:auto;margin-bottom:20px">
-      <span class="kicker" style="color:var(--gold-soft)">Groupe Djambar Team · Cotonou</span>
+      <img src="assets/images/logo-full-dark.png" alt="Djambar Team" width="82" height="96" fetchpriority="high" style="height:96px;width:auto;margin-bottom:20px">
+      <span class="kicker" style="color:var(--gold-ink)">Groupe Djambar Team · Cotonou</span>
       <h1>L'excellence,<br><em>sous toutes ses formes.</em></h1>
       <p class="lead">Djambar Team réunit plusieurs univers d'exception sous une même signature. Aujourd'hui, notre joaillerie ouvre la voie&nbsp;: création, réparation et vente de bijoux en or, argent et sur-mesure. Demain, la communication et l'événementiel.</p>
       <div class="btn-row">
-        <a class="btn btn-gold btn-lg" href="bijouterie.html">
+        <a class="btn btn-gold btn-lg" href="/bijouterie">
           Découvrir la bijouterie
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
@@ -149,7 +159,7 @@
     <div class="grid g-3">
 
       <!-- Bijouterie (LIVE) -->
-      <a class="card pole flagship reveal" href="bijouterie.html">
+      <a class="card pole flagship reveal" href="/bijouterie">
         <span class="badge live">Ouvert</span>
         <div class="pole-top">
           <svg viewBox="0 0 320 170" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -170,7 +180,7 @@
       </a>
 
       <!-- Communication (SOON) -->
-      <a class="card pole reveal d1" href="communication.html">
+      <a class="card pole reveal d1" href="/communication">
         <span class="badge soon">Bientôt</span>
         <div class="pole-top">
           <svg viewBox="0 0 320 170" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -191,7 +201,7 @@
       </a>
 
       <!-- Événementiel (SOON) -->
-      <a class="card pole reveal d2" href="evenementiel.html">
+      <a class="card pole reveal d2" href="/evenementiel">
         <span class="badge soon">Bientôt</span>
         <div class="pole-top">
           <svg viewBox="0 0 320 170" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -226,7 +236,12 @@
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1 1 12 20zm4.4-6c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.6-1.2.1-.1 0-.3 0-.4l-.7-1.7c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1 4.9 4.9 0 0 0 1 2.6 11 11 0 0 0 4.3 3.8c1.6.6 1.9.5 2.6.5a2.4 2.4 0 0 0 1.6-1.1 2 2 0 0 0 .1-1.1c-.1-.1-.3-.2-.5-.3z"/></svg>
           Écrire sur WhatsApp
         </a>
-        <a class="btn btn-ghost btn-lg" href="bijouterie.html">Voir la bijouterie</a>
+        <a class="btn btn-ghost btn-lg" href="/bijouterie">Voir la bijouterie</a>
+      </div>
+      <div class="reassure">
+        <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Conseils & devis gratuits</i>
+        <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Sans engagement</i>
+        <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Réponse rapide sur WhatsApp</i>
       </div>
     </div>
   </div>
@@ -237,7 +252,7 @@
   <div class="wrap">
     <div class="footer-grid">
       <div>
-        <a class="brand" href="index.html" style="color:#fff">
+        <a class="brand" href="/" style="color:#fff">
           <img class="mark mark-white" src="assets/images/logo-mark-white.png" alt="Djambar Team" width="48" height="40" style="display:block">
           <span class="bt"><b>Djambar Team</b><span>Groupe</span></span>
         </a>
@@ -250,16 +265,16 @@
       </div>
       <div>
         <h4>Nos pôles</h4>
-        <a href="bijouterie.html">Bijouterie</a>
-        <a href="communication.html">Communication <span style="opacity:.6">· bientôt</span></a>
-        <a href="evenementiel.html">Événementiel &amp; Showbiz <span style="opacity:.6">· bientôt</span></a>
+        <a href="/bijouterie">Bijouterie</a>
+        <a href="/communication">Communication <span style="opacity:.6">· bientôt</span></a>
+        <a href="/evenementiel">Événementiel &amp; Showbiz <span style="opacity:.6">· bientôt</span></a>
       </div>
       <div>
         <h4>Navigation</h4>
-        <a href="index.html">Accueil</a>
+        <a href="/">Accueil</a>
         <a href="#groupe">Le groupe</a>
         <a href="#poles">Les pôles</a>
-        <a href="bijouterie.html#galerie">Galerie</a>
+        <a href="/bijouterie#galerie">Galerie</a>
       </div>
       <div>
         <h4>Contact</h4>
@@ -284,6 +299,6 @@
   <span class="on-ic eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
 </button>
 
-<script src="assets/app.js?v=20260622b"></script>
+<script src="assets/app.js?v=20260623b"></script>
 </body>
 </html>

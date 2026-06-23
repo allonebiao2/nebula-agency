@@ -13,6 +13,29 @@
     el.textContent = new Date().getFullYear();
   });
 
+  /* ---------- Halo lumineux qui suit la navigation (desktop) ---------- */
+  if (!reduce && window.matchMedia("(hover:hover) and (pointer:fine)").matches) {
+    var halo = document.createElement("div");
+    halo.className = "halo";
+    halo.setAttribute("aria-hidden", "true");
+    document.body.appendChild(halo);
+    var tx = window.innerWidth / 2, ty = window.innerHeight * 0.3, cx = tx, cy = ty, raf = null, shown = false;
+    function tick() {
+      cx += (tx - cx) * 0.14; cy += (ty - cy) * 0.14;
+      halo.style.left = cx.toFixed(1) + "px";
+      halo.style.top = cy.toFixed(1) + "px";
+      if (Math.abs(tx - cx) > 0.5 || Math.abs(ty - cy) > 0.5) { raf = requestAnimationFrame(tick); }
+      else { raf = null; }
+    }
+    window.addEventListener("pointermove", function (e) {
+      tx = e.clientX; ty = e.clientY;
+      if (!shown) { shown = true; halo.classList.add("on"); }
+      if (!raf) raf = requestAnimationFrame(tick);
+    }, { passive: true });
+    document.addEventListener("mouseleave", function () { halo.classList.remove("on"); });
+    document.addEventListener("mouseenter", function () { if (shown) halo.classList.add("on"); });
+  }
+
   /* ---------- Nav : état scrollé + burger ---------- */
   var nav = document.querySelector(".nav");
   var links = document.querySelector(".nav-links");
