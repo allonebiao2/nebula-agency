@@ -69,6 +69,14 @@ Hub multi-pages dans `clients/05-saeir-thiam-bijouterie/` :
 - [x] Google Maps (adresse + itinéraire intégrés)
 - [x] Section avis (⚠️ 3 exemples « à valider » — remplacer par de vrais avis)
 
+## Passe « Fonds média : flou allégé + colliers + vidéo sur pages Bientôt » (V14, 2026-06-23) ✅
+Mongazi : flou des images de fond **plus léger** (voir un peu l'image) ; **images de colliers en fond** sur d'autres pages ; **vidéo `thiam.MP4` en fond** sur une page « Bientôt » (flou **très léger**).
+- **Flous allégés** : hero-bg base 16→**9px** ; hero nuit bijouterie 14→**8px** (brightness .66→.74, opacity .42→.52) ; bandeau éditorial 14→**8px** ; vidéo CTA 5→**4px**. On voit nettement mieux les pièces.
+- **Fonds collier ajoutés** : **accueil** (hero, `colliers/g7` ghosté sous le voile clair, subtil) + **événementiel** (soon-hero, `colliers/g1`, bien visible sur le fond sombre).
+- **Vidéo de fond** : **communication** (soon-hero) = `thiam.MP4` en fond, **flou 4px** (« très léger »), poster `colliers/g3`. Nouveau système réutilisable `.soon-media` (img|video) + `.soon-media-veil` (voile navy lisibilité) ; JS bg-vidéo généralisé (`video.cta-media, video.soon-media` : pause hors-écran + reduced-motion).
+- **Contraste AA** (calcul, pire cas zone claire du collier sous voile) : texte blanc **4,93** (image) / **4,78** (vidéo) ≥ 4,5 ✓ ; cas typique ~9,5.
+- **QA** : rendus communication + événementiel (texte lisible, texture visible) ; index = changement le plus sûr (collier sous le voile blanc, z-index ::before>bg). Cache **`?v=20260623j`**. Déployé + prod vérifiée (4 pages 200, vidéo/images servies, CSS flous allégés + JS généralisé). Socle synchronisé dans le skill `nebula-site`.
+
 ## Passe « Domaine final djambarteam.com EN LIGNE » (V13, 2026-06-23) ✅
 - **Domaine raccordé** : Hostinger (registrar) → nameservers Cloudflare → zone Cloudflare (2 CNAME proxied `@`+`www` → `djambar-team.pages.dev`) → custom domains Pages active. **HTTPS valide** vérifié (200 sur les 4 pages + 404 + sitemap + vidéo, via résolution forcée sur l'IP Cloudflare pour contourner le cache DNS local).
 - **Migration URLs** : 26 occurrences `djambar-team.pages.dev` → `https://djambarteam.com` (canonical, og:url, JSON-LD, sitemap.xml, robots.txt). JSON-LD re-validés. Redeploy Pages OK.

@@ -452,21 +452,21 @@
     upd();
   })();
 
-  /* ---------- Vidéo de fond du volet « commander » : pause hors-écran + reduced-motion ---------- */
-  var ctaVid = document.querySelector("video.cta-media");
-  if (ctaVid) {
+  /* ---------- Vidéos de fond (volet « commander » + hero « Bientôt ») : pause hors-écran + reduced-motion ---------- */
+  var bgVids = document.querySelectorAll("video.cta-media, video.soon-media");
+  bgVids.forEach(function (vid) {
     if (reduce) {
-      ctaVid.removeAttribute("autoplay");
-      ctaVid.pause();
+      vid.removeAttribute("autoplay");
+      vid.pause();
     } else if ("IntersectionObserver" in window) {
       new IntersectionObserver(function (es) {
         es.forEach(function (e) {
-          if (e.isIntersecting) { var p = ctaVid.play(); if (p && p.catch) p.catch(function () {}); }
-          else ctaVid.pause();
+          if (e.isIntersecting) { var p = vid.play(); if (p && p.catch) p.catch(function () {}); }
+          else vid.pause();
         });
-      }, { threshold: 0.12 }).observe(ctaVid);
+      }, { threshold: 0.12 }).observe(vid);
     }
-  }
+  });
 
   /* ---------- Formulaire de devis -> message WhatsApp pré-rempli ---------- */
   var devisForm = document.querySelector("#devis-form");

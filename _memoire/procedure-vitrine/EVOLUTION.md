@@ -150,5 +150,12 @@ Recette validée à mettre dans le skill (cas « domaine final »). Pré-requis 
 - ⚠️ Ne pas bundler de `__pycache__` dans les templates (bytecode, créé par `py_compile` — supprimé).
 - **Reste à faire** : tester `nebula-site` sur un **nouveau formulaire client** (run-to-completion réel) → comparer à Djambar Team, puis itérer (ici + dans le SKILL.md).
 
+## 2026-06-23 (V14 Djambar) — Fonds média réutilisables (image/vidéo) + dosage flou
+- **Pattern `.soon-media`** (réutilisable, ajouté au socle) : un `<img>` OU `<video>` en fond plein écran (`object-fit:cover`, z-index 0) + `.soon-media-veil` (voile navy dégradé) pour garder le texte blanc lisible. Marche pour image (collier) et vidéo. JS bg-vidéo **généralisé** : `querySelectorAll("video.cta-media, video.soon-media")` → pause hors-écran (IntersectionObserver) + pause/retrait si `prefers-reduced-motion`.
+- **Dosage flou « on voit l'image »** : flou de fond **8–9px** (image hero/éditorial), **4px** pour une vidéo (« très léger »). Le **voile** (pas le flou) porte la lisibilité → on peut alléger le flou tant que le voile reste assez dense.
+- **Contraste sur média assombri = à CALCULER** : `composite = img*(1-veil) + navy*veil`, prendre le **pire cas** (zone claire du média ~blanc → brightness(.5)). Viser ≥ 4,5 pour le texte blanc. Ici voile navy ~.66→.82 + brightness .5 → pire cas 4,8–4,9 ✓.
+- **Art-direction par page** : le même socle sert un fond **collier** (image) sur une page et un fond **vidéo** sur une autre (pages « Bientôt »), + un fond ghosté subtil sur un hero **clair** (sous le voile blanc — `::before` z-index 1 > bg z-index 0, le texte sombre reste lisible).
+- **⚠️ QA headless** : une **animation CSS infinie** (ex. `.marquee`) empêche `--screenshot` de « settle » même en `--disable-javascript` (timeout) → screenshoter plutôt une page **sans** l'animation infinie, ou accepter le timeout et valider par le calcul + la structure. (Les pages « Bientôt » sans marquee se rendent, l'accueil avec marquee timeoute.)
+
 <!-- Prochaines entrées : ajouter ici au fil des vitrines suivantes. Toute leçon → ici ; toute évolution DU SKILL → aussi dans .claude/skills/nebula-site/SKILL.md (§ Journal). -->
 <!-- Après édition du SKILL.md : re-copier vers _memoire/procedure-vitrine/SKILL.md (mirroir versionné). -->
