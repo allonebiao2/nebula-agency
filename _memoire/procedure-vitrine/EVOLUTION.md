@@ -157,5 +157,12 @@ Recette validée à mettre dans le skill (cas « domaine final »). Pré-requis 
 - **Art-direction par page** : le même socle sert un fond **collier** (image) sur une page et un fond **vidéo** sur une autre (pages « Bientôt »), + un fond ghosté subtil sur un hero **clair** (sous le voile blanc — `::before` z-index 1 > bg z-index 0, le texte sombre reste lisible).
 - **⚠️ QA headless** : une **animation CSS infinie** (ex. `.marquee`) empêche `--screenshot` de « settle » même en `--disable-javascript` (timeout) → screenshoter plutôt une page **sans** l'animation infinie, ou accepter le timeout et valider par le calcul + la structure. (Les pages « Bientôt » sans marquee se rendent, l'accueil avec marquee timeoute.)
 
+## 2026-06-23 (V14b) — Vidéo de fond qui « ne bouge pas » : autoplay fiable
+Symptôme : la vidéo de fond reste figée sur le poster. Causes + correctif (intégré au socle) :
+- **`preload="metadata"` sur une vidéo de fond en haut de page = pas assez bufferisé pour démarrer en autoplay** → mettre **`preload="auto"`** sur une vidéo hero (qui doit jouer tout de suite). Garder `metadata` pour une vidéo sous la ligne de flottaison (joue au scroll).
+- **Forcer `muted` EN JS** (pas seulement l'attribut) : `vid.muted=true; vid.defaultMuted=true; vid.playsInline=true;` — certains navigateurs n'autorisent l'autoplay que si la propriété (pas juste l'attribut) est vraie au moment du `play()`.
+- **Relancer `play()`** à `loadeddata`/`canplay` + si `readyState>=2`, `vid.load()`, et **repli au 1er geste** (`pointerdown`/`touchstart` once) si `play()` est rejeté. IntersectionObserver `threshold:0.01` pour (re)jouer dès visible / pause hors-écran.
+- **Vérifier réellement la lecture en headless** : `--autoplay-policy=no-user-gesture-required` + lire `video.paused`/`currentTime`/`readyState` (écrire dans `document.title`, `--dump-dom`). OK = `paused=false`, `currentTime>0`, `readyState=4`.
+
 <!-- Prochaines entrées : ajouter ici au fil des vitrines suivantes. Toute leçon → ici ; toute évolution DU SKILL → aussi dans .claude/skills/nebula-site/SKILL.md (§ Journal). -->
 <!-- Après édition du SKILL.md : re-copier vers _memoire/procedure-vitrine/SKILL.md (mirroir versionné). -->

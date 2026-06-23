@@ -452,20 +452,41 @@
     upd();
   })();
 
-  /* ---------- Vidéos de fond (volet « commander » + hero « Bientôt ») : pause hors-écran + reduced-motion ---------- */
+  /* ---------- Vidéos de fond (volet « commander » + hero « Bientôt ») ----------
+     Autoplay fiable : muted/playsinline forcés EN JS (l'attribut seul ne suffit pas sur
+     certains navigateurs) + play() relancé (au load, à la visibilité, au 1er tap).
+     Pause hors-écran (économie) ; reduced-motion = figé sur le poster. */
   var bgVids = document.querySelectorAll("video.cta-media, video.soon-media");
   bgVids.forEach(function (vid) {
-    if (reduce) {
-      vid.removeAttribute("autoplay");
-      vid.pause();
-    } else if ("IntersectionObserver" in window) {
+    vid.muted = true; vid.defaultMuted = true; vid.playsInline = true;
+    vid.setAttribute("muted", ""); vid.setAttribute("playsinline", "");
+    if (reduce) { vid.removeAttribute("autoplay"); try { vid.pause(); } catch (e) {} return; }
+
+    var wantPlay = true;
+    function tryPlay() {
+      if (!wantPlay) return;
+      var p = vid.play();
+      if (p && p.catch) p.catch(function () {
+        // autoplay refusé : réessaie au 1er geste utilisateur
+        var once = function () { vid.play().catch(function () {}); document.removeEventListener("pointerdown", once); document.removeEventListener("touchstart", once); };
+        document.addEventListener("pointerdown", once, { once: true, passive: true });
+        document.addEventListener("touchstart", once, { once: true, passive: true });
+      });
+    }
+    // lance dès que des données sont prêtes
+    if (vid.readyState >= 2) tryPlay();
+    vid.addEventListener("loadeddata", tryPlay);
+    vid.addEventListener("canplay", tryPlay);
+    try { vid.load(); } catch (e) {}
+
+    if ("IntersectionObserver" in window) {
       new IntersectionObserver(function (es) {
         es.forEach(function (e) {
-          if (e.isIntersecting) { var p = vid.play(); if (p && p.catch) p.catch(function () {}); }
-          else vid.pause();
+          wantPlay = e.isIntersecting;
+          if (e.isIntersecting) tryPlay(); else { try { vid.pause(); } catch (x) {} }
         });
-      }, { threshold: 0.12 }).observe(vid);
-    }
+      }, { threshold: 0.01 }).observe(vid);
+    } else { tryPlay(); }
   });
 
   /* ---------- Formulaire de devis -> message WhatsApp pré-rempli ---------- */
