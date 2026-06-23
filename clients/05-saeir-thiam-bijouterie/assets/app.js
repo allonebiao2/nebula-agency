@@ -460,6 +460,65 @@
     }
   }
 
+  /* ---------- Formulaire de devis -> message WhatsApp pré-rempli ---------- */
+  var devisForm = document.querySelector("#devis-form");
+  if (devisForm) {
+    var WA = "2290197967671";
+    function fieldOf(name) { var el = devisForm.querySelector('[name="' + name + '"]'); return el ? el.closest(".field") : null; }
+    function val(name) {
+      var els = devisForm.querySelectorAll('[name="' + name + '"]');
+      if (!els.length) return "";
+      if (els[0].type === "radio") { var c = devisForm.querySelector('[name="' + name + '"]:checked'); return c ? c.value : ""; }
+      return (els[0].value || "").trim();
+    }
+    // Taille de bague : visible seulement pour Bague / Alliance.
+    var ringField = devisForm.querySelector(".field-ring");
+    function syncRing() { var b = val("bijou"); if (ringField) ringField.hidden = !(b === "Bague" || b === "Alliance"); }
+    devisForm.querySelectorAll('[name="bijou"]').forEach(function (r) { r.addEventListener("change", syncRing); });
+    syncRing();
+
+    var errBox = devisForm.querySelector(".form-error");
+    devisForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      devisForm.querySelectorAll(".field.invalid").forEach(function (f) { f.classList.remove("invalid"); });
+      var req = ["prenom", "nom", "tel", "service", "bijou"], bad = null;
+      req.forEach(function (n) {
+        if (!val(n)) { var f = fieldOf(n); if (f) { f.classList.add("invalid"); if (!bad) bad = f; } }
+      });
+      if (bad) {
+        if (errBox) errBox.hidden = false;
+        bad.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+        var fo = bad.querySelector("input.inp, textarea.inp, input[type=radio]");
+        if (fo && fo.focus) { try { fo.focus({ preventScroll: true }); } catch (_) { fo.focus(); } }
+        return;
+      }
+      if (errBox) errBox.hidden = true;
+
+      var L = [];
+      L.push("Bonjour Saeir Thiam Bijouterie, voici ma demande de devis :");
+      L.push("");
+      L.push("Client : " + val("prenom") + " " + val("nom"));
+      L.push("Numéro : " + val("tel"));
+      if (val("indication")) L.push("Quartier : " + val("indication"));
+      if (val("premiere")) L.push("Première visite en bijouterie : " + val("premiere"));
+      L.push("");
+      L.push("Service : " + val("service"));
+      L.push("Bijou : " + val("bijou"));
+      if (val("matiere")) L.push("Matière : " + val("matiere"));
+      if (val("modele")) L.push("Modèle de référence : " + val("modele"));
+      if (ringField && !ringField.hidden && val("taille")) L.push("Taille (bague) : " + val("taille"));
+      if (val("motif")) L.push("Motif / idée : " + val("motif"));
+      if (val("gravure")) L.push("Gravure : " + val("gravure"));
+      if (val("occasion")) L.push("Occasion / échéance : " + val("occasion"));
+      L.push("");
+      L.push("(Envoyé depuis le site Djambar Team)");
+
+      var url = "https://wa.me/" + WA + "?text=" + encodeURIComponent(L.join("\n"));
+      var w = window.open(url, "_blank", "noopener");
+      if (!w) window.location.href = url;
+    });
+  }
+
   /* ---------- Boutons aimantés + tilt des cartes (desktop fin uniquement) ---------- */
   var fine = window.matchMedia("(hover:hover) and (pointer:fine)").matches;
   if (fine && !reduce) {

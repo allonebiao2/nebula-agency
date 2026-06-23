@@ -67,6 +67,15 @@ Hub multi-pages dans `clients/05-saeir-thiam-bijouterie/` :
 - [x] Google Maps (adresse + itinéraire intégrés)
 - [x] Section avis (⚠️ 3 exemples « à valider » — remplacer par de vrais avis)
 
+## Passe « Formulaire de devis → WhatsApp pré-rempli » (V11, 2026-06-23) ✅
+Mongazi : un formulaire de commande côté THIAM (nom/prénom/numéro/indication, « 1ʳᵉ fois en bijouterie ? », zones à choix multiples) qui redirige vers WhatsApp.
+- **Architecture** : 100% **client-side**, fidèle au modèle du site (tout passe par WhatsApp, pas de backend). Le formulaire **assemble les réponses en un message** et ouvre `wa.me/2290197967671?text=…` pré-rempli (l'utilisateur n'a qu'à appuyer « envoyer »).
+- **Champs (analyse de la demande + ajouts)** : **Vous** = prénom*, nom*, numéro WhatsApp*, quartier/indication, « première fois en bijouterie ? » (Oui/Non). **Projet** = type de service* (Création/Réparation/Reproduction), type de bijou* (Chaîne/Pendentif/Boucles/Bague/Alliance/Bracelet/Autre), **matière** (Or/Argent/à conseiller — ajout), **modèle de référence** (boutique / propre modèle / à définir), **taille de bague** (ajout, **affichée uniquement si Bague/Alliance** sélectionné — JS), **description du motif**, **gravure** (ajout), **occasion/échéance** (ajout). (*) = requis.
+- **UX** : zones à **choix multiples en pills tactiles** (radio stylés), validation douce (champs requis surlignés + scroll vers l'erreur), section warm + carte blanche, **pas de faux budget** (prix = discussion WhatsApp, honnêteté). Astuce « envoyez une photo dans WhatsApp » pour le modèle.
+- **Les 2 CTA « commander »** (nav + bandeau sur-mesure) pointent désormais vers **`#devis`** (le formulaire) au lieu d'un WhatsApp générique → parcours qualifié.
+- **Accents** : message WhatsApp en **français correct** (UTF-8 encodé, vérifié transmis OK).
+- **QA** : génération du message **testée bout-en-bout** (harnais : autofill → submit → URL `wa.me` décodée = champs corrects, taille de bague apparue car Bague, optionnels vides omis) ; layout desktop+mobile rendu (carte, pills, sections) ; **overflow mobile mesuré = `scrollW==vw`, 0 débordement** (le « coupé » des captures = artefact canvas headless < viewport, pas un vrai bug) ; bouton submit passé en `white-space:normal` + label court « Envoyer sur WhatsApp » (marge de sécurité petits écrans). JS `node --check` OK. Cache **`?v=20260623h`** (5 pages). **Déployé + prod vérifiée** (form live, champ conditionnel, builder JS, CTAs→#devis, 4 pages 200).
+
 ## Passe « Vidéo de fond dans le volet commander » (V10, 2026-06-23) ✅
 Mongazi : « dans le volet commander, la vidéo `assets/videos/thiam.MP4` en fond, avec un flou gaussien très léger (on aperçoit quand même la scène) ».
 - **Cible** = le **volet de conversion** en bas de la page Bijouterie (la `.cta` « Offrez-vous une pièce unique / Demander un devis » = le panneau où l'on commande).
