@@ -1,13 +1,15 @@
 # CONTEXT — Djambar Team (pôle Saeir Thiam Bijouterie)
 
 > Client #05 · Fiche reçue le **2026-06-22** via le formulaire de `nebula-agency.online`.
-> Commande **acceptée**. Statut : **EN LIGNE (provisoire)** — https://djambar-team.pages.dev · assets réels intégrés, affiche PDF générée.
+> Commande **acceptée**. Statut : **EN LIGNE sur domaine final** — https://djambarteam.com · assets réels intégrés, affiche PDF générée.
 
 ## 🌐 Mise en ligne
-- **LIVE provisoire** : **https://djambar-team.pages.dev** (Cloudflare Pages, projet `djambar-team`, branche `main`, HTTPS auto).
-- Déploiement via `npx wrangler pages deploy` (token `secrets/cloudflare.env`). Dossier déployé = build propre (HTML + `assets/app.*` + `assets/images/{logos,og,favicon,gallery}`), **sans** les photos sources lourdes.
-- ⚠️ **Domaine final = `djambarteam.com`** (Mr THIAM va l'acheter) → quand prêt : mapper le domaine custom sur le projet Pages + régénérer l'affiche avec un QR « site ». En attendant, le QR de l'affiche pointe vers **WhatsApp + Google Maps** (stables).
-- Re-déployer après modif : rebuild du dossier propre puis `wrangler pages deploy`.
+- **LIVE (domaine final)** : **https://djambarteam.com** (+ `www`) — Cloudflare Pages, projet `djambar-team`, HTTPS auto valide. URL d'origine technique : `djambar-team.pages.dev`.
+- **DNS = Cloudflare** (2026-06-23) : domaine acheté chez **Hostinger**, nameservers déplacés vers Cloudflare (`paul`/`rosemary.ns.cloudflare.com`). Zone Cloudflare = 2 CNAME **proxied** (`@` et `www` → `djambar-team.pages.dev`). Custom domains Pages = `djambarteam.com` + `www` (status active). Pas d'email sur le domaine (rien à préserver à la bascule).
+- Toutes les URLs internes/canonical/og:url/JSON-LD/sitemap/robots migrées **`pages.dev` → `https://djambarteam.com`** (V13).
+- ⚠️ Le **token `secrets/cloudflare.env` est « Pages » uniquement** : il déploie Pages MAIS ne peut PAS créer de zone ni éditer le DNS (fait à la main par Mongazi au dashboard). 
+- Déploiement via `npx wrangler pages deploy` (build propre : HTML + `assets/app.*` + `assets/images/{logos,og,favicon,gallery}` + `assets/videos/thiam.MP4`, **sans** les photos sources lourdes).
+- ▶️ **Reste optionnel** : (a) redirection **www → apex** (301, via Cloudflare Redirect Rule — actuellement www sert le site en direct, canonical pointe sur l'apex = OK SEO) ; (b) **régénérer l'affiche PDF** avec un QR « site » → `https://djambarteam.com` (le QR actuel pointe WhatsApp + Maps).
 
 ## ⭐ Architecture de marque (vision du client, à respecter absolument)
 - **Djambar Team = structure MÈRE** (marque ombrelle). Le site porte ce nom dès le départ.
@@ -66,6 +68,12 @@ Hub multi-pages dans `clients/05-saeir-thiam-bijouterie/` :
 - [x] **Affiche PDF A4** (`assets/docs/Affiche_Saeir_Thiam_Djambar_A4.pdf` — générée via `affiche.html` + Edge ; 2 QR : WhatsApp + Maps)
 - [x] Google Maps (adresse + itinéraire intégrés)
 - [x] Section avis (⚠️ 3 exemples « à valider » — remplacer par de vrais avis)
+
+## Passe « Domaine final djambarteam.com EN LIGNE » (V13, 2026-06-23) ✅
+- **Domaine raccordé** : Hostinger (registrar) → nameservers Cloudflare → zone Cloudflare (2 CNAME proxied `@`+`www` → `djambar-team.pages.dev`) → custom domains Pages active. **HTTPS valide** vérifié (200 sur les 4 pages + 404 + sitemap + vidéo, via résolution forcée sur l'IP Cloudflare pour contourner le cache DNS local).
+- **Migration URLs** : 26 occurrences `djambar-team.pages.dev` → `https://djambarteam.com` (canonical, og:url, JSON-LD, sitemap.xml, robots.txt). JSON-LD re-validés. Redeploy Pages OK.
+- Setup fait **étape par étape** avec Mongazi (dashboard Cloudflare + Hostinger) car le token est Pages-only. Email : aucun sur le domaine → bascule sans risque.
+- ▶️ Optionnel restant : redirection www→apex (301) + régénérer l'affiche avec QR site.
 
 ## Passe « Conversion : descriptions d'images + commander partout » (V12, 2026-06-23) ✅
 Mongazi : une description à chaque image (et plus sur certaines), pousser le visiteur à commander, sur toute la plateforme.
