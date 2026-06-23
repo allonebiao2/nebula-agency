@@ -69,6 +69,16 @@ Hub multi-pages dans `clients/05-saeir-thiam-bijouterie/` :
 - [x] Google Maps (adresse + itinéraire intégrés)
 - [x] Section avis (⚠️ 3 exemples « à valider » — remplacer par de vrais avis)
 
+## Passe « Ergonomie & fluidité mobile + PC » (V17, 2026-06-23) ✅
+Mongazi : version mobile **ultra-ergonomique et fluide**, PC aussi.
+- **Anti-zoom iOS** : tous les `.inp` du formulaire passés à **`font-size:16px`** (sous 16px, iOS zoome au focus = saut désagréable).
+- **Cibles tactiles ≥ 44px** : `min-height:44px` sur les filtres galerie (`.gfilter button`) + les pills du formulaire (`.choice span`) — confort du pouce (Apple HIG/Material).
+- **Fluidité mobile** : le canvas **beams** (blur 34px/frame, coûteux) est **désactivé sur mobile + data-saver** (`!isMobile && !saveData`) → plus de risque de saccade (le hero garde vidéo/photo + sparkles + grille). Flag `navigator.connection.saveData` ajouté.
+- **Feel natif** : `-webkit-tap-highlight-color:transparent` (pas de flash gris au tap) + `touch-action:manipulation` sur `a`/`button` (supprime le délai de 300ms + le double-tap-zoom sur les contrôles).
+- **0 débordement horizontal** : ajout de **`overflow-x:hidden` sur `html`** (le `body` seul ne suffisait pas → la vidéo hero scalée + le marquee fuyaient ~6px = « wiggle » latéral mobile). Mesuré DOM : `scrollWidth==clientWidth`, **overflow=false**.
+- **Safe-area iOS** : FABs en `bottom:calc(22px + env(safe-area-inset-bottom))` (ne passent plus sous la barre d'accueil iPhone).
+- **QA** : rendu mobile 390px (hero ciné net, boutons pleine largeur, flux OK), mesure overflow=false, JS `node --check` OK. Cache **`?v=20260623n`**. Déployé + prod vérifiée (4 pages 200, fixes servis CSS+JS). Socle synchronisé dans le skill `nebula-site`.
+
 ## Passe « Vidéos qui marchent partout (H.264) + hero accueil cinématique » (V16, 2026-06-23) ✅
 Mongazi : « les vidéos ne bougent pas / fais en sorte qu'elles marchent à l'accueil et dans la bijouterie ».
 - **🎯 CAUSE RACINE = codec HEVC** : les 2 vidéos (`Fond vidéo*.mp4`, filmées iPhone) étaient en **H.265/HEVC** (`hvc1`) → **illisibles dans Chrome/Firefox** (OK seulement Safari/iOS). D'où « ça ne marche pas ». **Transcodées en H.264** (`avc1`, universel) via **ffmpeg du paquet pip `imageio-ffmpeg`** (ffmpeg système absent) : `-c:v libx264 -pix_fmt yuv420p -an -vf scale=960,fps=30 -crf 30 -movflags +faststart` → 2,0/2,4 Mo (sans audio, bg muet). **À refaire pour toute vidéo client iPhone.**

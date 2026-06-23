@@ -155,6 +155,7 @@ URL provisoire qui mourra) ; ajouter le QR « site » quand le **domaine final**
 - [ ] Affiche **PDF A4** générée, sans débordement, QR stables (si option).
 - [ ] Hook **`impeccable`** traité (défauts corrigés, faux positifs classés).
 - [ ] A11y de base (contraste ≥ 4.5:1, focus visibles, alt, labels) ; `prefers-reduced-motion`.
+- [ ] **Ergonomie mobile** : inputs `font-size:16px` (anti-zoom iOS) ; cibles tactiles ≥ 44px ; `html{overflow-x:hidden}` ; `touch-action:manipulation` + `-webkit-tap-highlight-color:transparent` ; effets lourds (canvas blur) gated `!isMobile && !saveData` ; FABs en `env(safe-area-inset-bottom)`.
 - [ ] **Audio baseline mobile** intégré (OFF par défaut).
 - [ ] **Cache-bust `?v=`** à jour sur app.css/app.js.
 - [ ] Mémoire écrite + commit (push selon autorisation).

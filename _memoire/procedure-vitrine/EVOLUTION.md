@@ -169,5 +169,14 @@ Symptôme : la vidéo de fond reste figée sur le poster. Causes + correctif (in
 - **🐛 Cache immutable + remplacement de contenu** : avec `_headers` `/assets/* immutable`, **remplacer le contenu d'un fichier au même nom (vidéo/image) ne se propage PAS** (le CDN/navigateur sert l'ancien pendant 1 an). → **cache-buster aussi les médias** qui changent : `...mp4?v=AAAAMMJJx` (pas seulement app.css/js). Vérifier le **contenu réellement servi** (télécharger + `grep avc1/hvc1`), pas juste le HTTP 200.
 - **Hero vidéo lisible** = sombre. Une vidéo de fond derrière du texte doit être **assombrie** (brightness ~.5 + voile uniforme ~.66-.74) pour garder le texte blanc lisible (≥4.5). Sur un hero CLAIR, la vidéo sous voile blanc est quasi invisible (« on ne voit pas que ça tourne ») → si le client veut la vidéo VISIBLE, basculer le hero en **cinématique sombre** (réutiliser `hero-night` + un voile uniforme `hero-cine`), texte blanc, logo blanc, `body.dark-hero` pour la nav.
 
+## 2026-06-23 (V17) — Checklist « ergonomie & fluidité mobile » (à systématiser dans le skill)
+Six réglages à appliquer d'office sur toute vitrine (mobile-first, Afrique 4G/téléphones modestes) :
+1. **Inputs `font-size:16px` minimum** → sinon iOS zoome au focus (saut de viewport). Non négociable sur tout `<input>/<textarea>/<select>`.
+2. **Cibles tactiles `min-height:44px`** (boutons-pills, filtres, petits liens d'action) — confort du pouce.
+3. **`html{overflow-x:hidden}`** (PAS seulement `body`) — un fond scalé (vidéo/photo `scale(1.06+)`) ou un marquee peut fuir quelques px et créer le « wiggle » latéral ; le `body` seul ne le contient pas toujours. **Mesurer** `scrollWidth>clientWidth` dans le DOM, pas à l'œil.
+4. **`touch-action:manipulation` sur `a`/`button`** (supprime le délai 300ms + double-tap-zoom) + **`-webkit-tap-highlight-color:transparent`** sur `html` (pas de flash gris natif au tap).
+5. **Effets lourds gated mobile** : un canvas avec `filter:blur(30px+)` par frame, ou tout effet coûteux, doit être **désactivé sur mobile + data-saver** (`window.matchMedia("(max-width:760px)")` + `navigator.connection?.saveData`). Le hero reste beau (vidéo/photo + SVG sparkles + grille CSS) sans la boucle gourmande. (Cf. V8 : déjà pause hors-écran/onglet caché via IntersectionObserver.)
+6. **Safe-area iOS** : éléments fixés en bas (FAB) en `bottom:calc(Xpx + env(safe-area-inset-bottom))` pour ne pas passer sous la barre d'accueil iPhone.
+
 <!-- Prochaines entrées : ajouter ici au fil des vitrines suivantes. Toute leçon → ici ; toute évolution DU SKILL → aussi dans .claude/skills/nebula-site/SKILL.md (§ Journal). -->
 <!-- Après édition du SKILL.md : re-copier vers _memoire/procedure-vitrine/SKILL.md (mirroir versionné). -->

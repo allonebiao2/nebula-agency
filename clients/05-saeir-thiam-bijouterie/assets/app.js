@@ -7,6 +7,7 @@
   "use strict";
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var isMobile = window.matchMedia("(max-width: 760px)").matches;
+  var saveData = !!(navigator.connection && navigator.connection.saveData);
 
   /* ---------- Année ---------- */
   document.querySelectorAll("[data-year]").forEach(function (el) {
@@ -42,8 +43,10 @@
      Perf : DPR plafonné, ne tourne que si le hero est visible, pause onglet caché.
      reduced-motion : une seule frame statique (aurore figée), aucune boucle.
   ------------------------------------------------------------------------------- */
+  // Beams = canvas avec blur(34px) par frame (coûteux). Réservé au desktop : sur mobile
+  // (et en data-saver), le hero garde sa vidéo/photo + sparkles + grille → fluidité préservée.
   var beamCanvas = document.querySelector(".hero-beams");
-  if (beamCanvas) {
+  if (beamCanvas && !isMobile && !saveData) {
     var heroEl = beamCanvas.closest(".hero") || beamCanvas.parentElement;
     var bctx = beamCanvas.getContext("2d");
     var beams = [];
