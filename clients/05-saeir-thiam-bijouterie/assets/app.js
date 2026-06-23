@@ -49,20 +49,22 @@
     var beams = [];
     var braf = null;
     var DPRb = Math.min(window.devicePixelRatio || 1, 2);
+    // Hero NUIT (page Bijouterie) : faisceaux plus nombreux & lumineux (blend screen).
+    var night = heroEl.classList.contains("hero-night");
 
     function mkBeam(w, h) {
-      var gold = Math.random() < 0.42;
+      var gold = Math.random() < (night ? 0.5 : 0.42);
       return {
         x: Math.random() * w,
         y: Math.random() * h * 1.3,
-        w: 40 + Math.random() * 70,
+        w: (night ? 50 : 40) + Math.random() * (night ? 80 : 70),
         len: h * 1.6,
         angle: -32 + Math.random() * 8,
-        speed: 0.25 + Math.random() * 0.5,
-        op: 0.08 + Math.random() * 0.13,
+        speed: (night ? 0.4 : 0.25) + Math.random() * (night ? 0.6 : 0.5),
+        op: (night ? 0.14 : 0.08) + Math.random() * (night ? 0.16 : 0.13),
         hue: gold ? 40 + Math.random() * 8 : 212 + Math.random() * 14,
         sat: gold ? 72 : 66,
-        light: gold ? 56 : 58,
+        light: gold ? (night ? 62 : 56) : (night ? 64 : 58),
         pulse: Math.random() * Math.PI * 2,
         pulseSpeed: 0.012 + Math.random() * 0.02
       };
@@ -75,7 +77,7 @@
       beamCanvas.style.width = w + "px";
       beamCanvas.style.height = h + "px";
       bctx.setTransform(DPRb, 0, 0, DPRb, 0, 0);
-      var n = window.innerWidth < 760 ? 12 : 22;
+      var n = window.innerWidth < 760 ? (night ? 16 : 12) : (night ? 30 : 22);
       beams = [];
       for (var i = 0; i < n; i++) beams.push(mkBeam(w, h));
     }
@@ -98,7 +100,7 @@
     function renderBeams() {
       var w = beamCanvas.width / DPRb, h = beamCanvas.height / DPRb;
       bctx.clearRect(0, 0, w, h);
-      bctx.filter = "blur(30px)";
+      bctx.filter = "blur(" + (night ? 34 : 30) + "px)";
       for (var i = 0; i < beams.length; i++) {
         var b = beams[i];
         b.y -= b.speed; b.pulse += b.pulseSpeed;

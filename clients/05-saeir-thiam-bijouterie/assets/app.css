@@ -210,6 +210,28 @@ body.dark-hero .nav:not(.scrolled) .burger svg{stroke:#fff}
 .hero.soon-hero h1{color:#fff}.hero.soon-hero .lead{color:var(--on-ink-soft)}
 .hero.soon-hero .btn-ghost{border-color:rgba(255,255,255,.55);color:#fff}
 
+/* ---------- Hero NUIT — faisceaux lumineux (page Bijouterie) ----------
+   Variante sombre dramatique : la photo bijou devient un fond de nuit, les
+   faisceaux (canvas, blend screen) montent comme des lumières d'atelier.
+   + aura dorée qui « respire » (port du breathing overlay du composant). */
+.hero.hero-night{background:radial-gradient(125% 100% at 50% -10%,#0d2657 0%,#081838 55%,#050f24 100%);color:var(--on-ink)}
+.hero.hero-night .hero-bg{opacity:.42;filter:blur(14px) saturate(1.1) brightness(.66)}
+.hero.hero-night::before{background:
+  radial-gradient(60% 55% at 50% 0%,rgba(46,107,230,.22),transparent 62%),
+  linear-gradient(180deg,rgba(5,14,33,.5) 0%,rgba(5,14,33,.32) 42%,rgba(5,14,33,.85) 100%)}
+.hero.hero-night .hero-beams{mix-blend-mode:screen}
+.hero.hero-night .hero-aura{position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(64% 56% at 50% 32%,rgba(201,162,75,.12),transparent 70%);animation:auraBreath 10s ease-in-out infinite}
+@keyframes auraBreath{0%,100%{opacity:.35}50%{opacity:1}}
+.hero.hero-night h1{color:#fff}
+.hero.hero-night h1 em{color:var(--gold-soft)}
+.hero.hero-night .lead{color:var(--on-ink-soft)}
+.hero.hero-night .hero-meta{color:var(--on-ink-soft)}
+.hero.hero-night .hero-meta b{color:#fff}
+.hero.hero-night .btn-ghost{border-color:rgba(255,255,255,.5);color:#fff}
+.hero.hero-night .btn-ghost:hover{background:rgba(255,255,255,.16);border-color:#fff;color:#fff}
+@media (prefers-reduced-motion:reduce){.hero.hero-night .hero-aura{animation:none;opacity:.6}}
+
 /* ---------- Cards / Grids ---------- */
 .grid{display:grid;gap:22px}
 .g-3{grid-template-columns:repeat(3,1fr)}

@@ -67,6 +67,17 @@ Hub multi-pages dans `clients/05-saeir-thiam-bijouterie/` :
 - [x] Google Maps (adresse + itinéraire intégrés)
 - [x] Section avis (⚠️ 3 exemples « à valider » — remplacer par de vrais avis)
 
+## Passe « Hero NUIT à faisceaux lumineux — page Bijouterie » (V9, 2026-06-23) ✅
+Mongazi a fourni un **composant React « Beams Background »** (`motion/react` + canvas, style shadcn) et demandé « ceci, animé, sur la page d'accueil de l'onglet bijouterie ».
+- **Décision honnête** : le site est **HTML/CSS/JS vanilla statique** (Cloudflare Pages), **PAS** React/shadcn/Tailwind/TS. Installer ce toolchain casserait le modèle de déploiement → **refusé**. Livré **le même effet en natif** (le site avait déjà un port vanilla des « beams » sur le hero accueil → réutilisé/enrichi).
+- **Direction validée via AskUserQuestion** : **Hero NUIT dramatique** (vs hero clair + faisceaux doux). Choix = nuit.
+- **Implémentation** : hero Bijouterie en **bleu nuit profond** (`.hero-night`), **photo bijou en fond de nuit** (opacity .42 + brightness .66), **faisceaux canvas plus nombreux & lumineux** (`night` : 30 desktop / 16 mobile, or & azur, lightness ↑, **`mix-blend-mode:screen`** = ajoute de la lumière sur le sombre), **aura dorée qui « respire »** (port du breathing overlay du composant React, CSS pur), texte blanc/champagne. **Le reste du site reste clair** (art-direction par section, conforme au register brand).
+- **Nav** : `body.dark-hero` (réutilise le pattern des pages « Bientôt ») → nav blanche lisible au sommet, repasse sombre au scroll vers le contenu clair. `theme-color` du hero = `#0B1E45`.
+- **Contraste AA (calcul)** sur le hero nuit : tout ≥ 10,2 (blanc 17,5 ; or/lead 10–12). ✅
+- **Perf/robustesse** : faisceaux GPU (transform/opacity, blend), pausés hors-écran/onglet caché (IntersectionObserver déjà en place), **`prefers-reduced-motion`** → 1 frame statique + aura figée. Mobile plafonné à 16 faisceaux.
+- **QA** : JS `node --check` OK ; rendu statique (JS off) desktop+mobile = hero nuit net + transition vers le contenu clair OK ; **faisceaux animés capturés** via harnais « rAF plafonné » (sinon la boucle infinie fait timeout les captures headless ; soft-render = sous-représente, le vrai navigateur/GPU est plus vif). Cache **`?v=20260623f`** (les 5 pages). **Déployé + prod vérifiée** (hero-night servi, screen blend, JS night, 4 pages 200).
+- ⚠️ Intensité réglée « luxe » (mesurée) ; **calibrable** (op/aura/nombre de faisceaux) selon le ressenti de Mongazi en vrai sur son téléphone.
+
 ## Passe « Motion & fluidité MAX + infra pro » (V8, 2026-06-23) ✅
 Mongazi : « au maximum, plus d'animation et de fluidité, mobile surtout mais aussi PC ». Skill **frontend-design + impeccable/animate**. Tout en **transform/opacity/filter** (GPU), pensé pour le **mobile 4G/low-end de Cotonou**, `prefers-reduced-motion` respecté partout.
 - **Transitions de page natives** (cross-document **View Transitions**, `@view-transition{navigation:auto}`) → fondu fluide entre toutes les pages du hub (mobile + PC), coût quasi nul, ignoré si non supporté.
