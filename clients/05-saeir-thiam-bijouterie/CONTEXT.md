@@ -69,6 +69,12 @@ Hub multi-pages dans `clients/05-saeir-thiam-bijouterie/` :
 - [x] Google Maps (adresse + itinéraire intégrés)
 - [x] Section avis (⚠️ 3 exemples « à valider » — remplacer par de vrais avis)
 
+## Passe « Vidéos de marque (remplacement + accueil) » (V15, 2026-06-23) ✅
+Mongazi a fourni 2 vidéos. **`thiam.MP4` remplacé** par **`fond-video.mp4`** (← « Fond vidéo .mp4 », copie web-safe) sur **communication** (hero) + **volet commander** (bijouterie). **`fond-video-2.mp4`** (← « Fond vidéo 2.mp4 ») ajoutée en **fond du hero de l'accueil**, flou léger.
+- **Noms web-safe** : sources avec espaces+accent → copies `fond-video.mp4` / `fond-video-2.mp4` (URL propres ; copie via PowerShell `-LiteralPath` + match wildcard car Git Bash ne résout pas le `é`). `thiam.MP4` retiré du repo.
+- **Hero accueil (clair)** : `.hero .hero-media` (vidéo `object-fit:cover`, **flou 6px**, opacity .6, z-index 0) **sous le voile blanc** `::before` → vidéo ghostée + motion, texte sombre lisible. JS bg-vidéo étendu (`video.cta-media, video.soon-media, video.hero-media`).
+- **Autoplay vérifié** (headless) sur les 2 : `paused=false, currentTime>0, readyState=4`. Cache **`?v=20260623l`**. Déployé + prod OK (4 pages 200, 2 vidéos servies).
+
 ## Passe « Fonds média : flou allégé + colliers + vidéo sur pages Bientôt » (V14, 2026-06-23) ✅
 Mongazi : flou des images de fond **plus léger** (voir un peu l'image) ; **images de colliers en fond** sur d'autres pages ; **vidéo `thiam.MP4` en fond** sur une page « Bientôt » (flou **très léger**).
 - **Flous allégés** : hero-bg base 16→**9px** ; hero nuit bijouterie 14→**8px** (brightness .66→.74, opacity .42→.52) ; bandeau éditorial 14→**8px** ; vidéo CTA 5→**4px**. On voit nettement mieux les pièces.

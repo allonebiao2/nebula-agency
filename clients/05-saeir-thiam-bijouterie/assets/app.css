@@ -240,6 +240,10 @@ body.dark-hero .nav:not(.scrolled) .burger svg{stroke:#fff}
 .soon-hero video.soon-media{filter:blur(4px) brightness(.52) saturate(1.08)} /* « très léger flou » sur la vidéo */
 .soon-hero .soon-media-veil{position:absolute;inset:0;z-index:0;
   background:linear-gradient(180deg,rgba(5,14,33,.66),rgba(5,14,33,.55) 45%,rgba(5,14,33,.82))}
+/* Vidéo de fond du hero CLAIR (accueil) : flou léger, ghostée sous le voile blanc (texte sombre lisible) */
+.hero .hero-media{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;
+  filter:blur(6px) saturate(1.06);opacity:.6;transform:scale(1.06);pointer-events:none}
+@media (prefers-reduced-motion:reduce){.hero video.hero-media{opacity:.42}}
 @media (prefers-reduced-motion:reduce){.soon-hero video.soon-media{display:none}}
 
 /* ---------- Cards / Grids ---------- */

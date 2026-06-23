@@ -456,7 +456,7 @@
      Autoplay fiable : muted/playsinline forcés EN JS (l'attribut seul ne suffit pas sur
      certains navigateurs) + play() relancé (au load, à la visibilité, au 1er tap).
      Pause hors-écran (économie) ; reduced-motion = figé sur le poster. */
-  var bgVids = document.querySelectorAll("video.cta-media, video.soon-media");
+  var bgVids = document.querySelectorAll("video.cta-media, video.soon-media, video.hero-media");
   bgVids.forEach(function (vid) {
     vid.muted = true; vid.defaultMuted = true; vid.playsInline = true;
     vid.setAttribute("muted", ""); vid.setAttribute("playsinline", "");
