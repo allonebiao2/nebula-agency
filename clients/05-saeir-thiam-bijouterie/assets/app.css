@@ -105,6 +105,14 @@ p{max-width:66ch;text-wrap:pretty}
 .gold-text{color:var(--gold-ink)}
 .hr-gold{width:64px;height:2px;border:0;margin:0;background:linear-gradient(90deg,var(--gold),var(--gold-soft));border-radius:2px}
 .center .hr-gold{margin-inline:auto}
+/* En-têtes éditoriaux : le titre porte la section (l'eyebrow n'est plus systématique).
+   .deck = phrase de présentation ; .rule = filet or discret quand il n'y a pas de kicker. */
+.head>h2:first-child{margin-top:0}
+.head .deck{margin-top:1rem;color:var(--muted);font-size:clamp(1.02rem,1.5vw,1.18rem);line-height:1.55;max-width:62ch;text-wrap:pretty}
+.head.center .deck{margin-inline:auto}
+.head .rule{width:50px;height:2px;border:0;margin:18px 0 0;background:linear-gradient(90deg,var(--gold),var(--gold-soft));border-radius:2px}
+.head.center .rule{margin-inline:auto}
+.on-ink .head .deck,.editorial .head .deck{color:var(--on-ink-soft)}
 
 /* surfaces */
 .soft{background:var(--bg-2);border-block:1px solid var(--line-soft)}
@@ -177,6 +185,8 @@ body.dark-hero .nav:not(.scrolled) .burger svg{stroke:#fff}
   background:
     radial-gradient(55% 60% at 78% 30%,rgba(46,107,230,.10),transparent 60%),
     linear-gradient(100deg,rgba(255,255,255,.94) 0%,rgba(255,255,255,.82) 46%,rgba(255,255,255,.62) 100%)}
+.hero-beams{position:absolute;inset:0;z-index:2;pointer-events:none;mix-blend-mode:multiply}
+@media (prefers-reduced-motion:reduce){.hero-beams{opacity:.85}}
 .hero-grid{position:absolute;inset:0;z-index:1;opacity:.5;
   background-image:linear-gradient(rgba(11,30,69,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(11,30,69,.05) 1px,transparent 1px);
   background-size:64px 64px;mask-image:radial-gradient(72% 72% at 50% 40%,#000,transparent 78%)}
@@ -193,6 +203,10 @@ body.dark-hero .nav:not(.scrolled) .burger svg{stroke:#fff}
 .sparkles{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:.5}
 /* hero sombre ponctuel (pages "Bientôt") */
 .hero.soon-hero{background:linear-gradient(135deg,var(--ink),var(--ink-2));color:var(--on-ink)}
+/* le hero sombre n'a pas de photo à voiler : on retire le voile blanc du hero clair
+   (sinon il délave le navy → texte blanc illisible) + on adapte la grille au fond sombre */
+.hero.soon-hero::before{background:radial-gradient(60% 70% at 80% 10%,rgba(46,107,230,.22),transparent 60%)}
+.hero.soon-hero .hero-grid{background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px)}
 .hero.soon-hero h1{color:#fff}.hero.soon-hero .lead{color:var(--on-ink-soft)}
 .hero.soon-hero .btn-ghost{border-color:rgba(255,255,255,.55);color:#fff}
 
@@ -224,6 +238,16 @@ body.dark-hero .nav:not(.scrolled) .burger svg{stroke:#fff}
 .badge{position:absolute;top:16px;right:16px;z-index:2;font-size:.66rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:6px 12px;border-radius:var(--radius-pill)}
 .badge.soon{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(4px)}
 .badge.live{background:linear-gradient(135deg,var(--gold-soft),var(--gold));color:#241a05}
+
+/* ---------- Le credo de la maison (remplace la grille de 4 cartes identiques) ---------- */
+.creed{position:relative;overflow:hidden;background:linear-gradient(158deg,var(--ink),var(--ink-2));border-radius:var(--radius);padding:8px 32px;color:var(--on-ink);box-shadow:var(--shadow)}
+.creed::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(60% 80% at 100% 0%,rgba(201,162,75,.18),transparent 60%)}
+.creed-row{position:relative;display:flex;gap:16px;align-items:flex-start;padding:20px 0;border-top:1px solid rgba(255,255,255,.1)}
+.creed-row:first-child{border-top:0}
+.creed-row .ic{width:42px;height:42px;flex:0 0 auto;border-radius:12px;display:grid;place-items:center;background:rgba(201,162,75,.14);border:1px solid rgba(201,162,75,.32);color:var(--gold-soft)}
+.creed-row .ic svg{width:21px;height:21px}
+.creed-row h3{color:#fff;font-size:1.22rem;line-height:1.2;margin-bottom:.2rem}
+.creed-row p{color:var(--on-ink-soft);font-size:.93rem;margin:0;max-width:42ch}
 
 /* ---------- Matières ---------- */
 .mat{display:flex;gap:18px;align-items:flex-start;padding:24px;border-radius:var(--radius-sm);background:var(--bg-3);border:1px solid var(--line);transition:transform .25s var(--ease),box-shadow .25s,border-color .25s}
@@ -490,3 +514,109 @@ body.dark-hero .nav:not(.scrolled) .burger svg{stroke:#fff}
 .marquee .seg .d{width:7px;height:7px;flex:0 0 auto;margin:0 28px;background:var(--gold);transform:rotate(45deg);border-radius:1px}
 @keyframes marq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @media (prefers-reduced-motion:reduce){.marquee .track{animation:none}}
+
+/* ============================================================
+   MOTION SYSTEM (V8) — fluidité + animation, mobile-first, GPU-only
+   Tout en transform/opacity/filter ; scroll-driven CSS (hors main-thread) ;
+   transitions de page natives ; fallback prefers-reduced-motion complet.
+   ============================================================ */
+:root{
+  --ease-quart:cubic-bezier(.25,1,.5,1);
+  --ease-quint:cubic-bezier(.22,1,.36,1);
+  --ease-expo: cubic-bezier(.16,1,.3,1);
+  --z-progress:55;
+}
+/* ancrage : les liens internes ne passent plus sous la nav fixe */
+[id]{scroll-margin-top:calc(var(--nav-h) + 14px)}
+
+/* ---- Transitions de page (View Transitions, hub multi-pages) ---- */
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:vtOut .26s var(--ease-quart) both}
+::view-transition-new(root){animation:vtIn .44s var(--ease-quint) both}
+@keyframes vtOut{to{opacity:0;transform:translateY(-6px)}}
+@keyframes vtIn{from{opacity:0;transform:translateY(10px)}}
+
+/* ---- Barre de progression de lecture (scroll-driven, 0 JS de calcul) ---- */
+.scroll-progress{position:fixed;inset:0 0 auto 0;height:2px;z-index:var(--z-progress);transform:scaleX(0);transform-origin:0 50%;
+  background:linear-gradient(90deg,var(--gold-deep),var(--gold),var(--gold-soft));box-shadow:0 0 10px rgba(201,162,75,.5);pointer-events:none}
+@supports (animation-timeline:scroll()){
+  .scroll-progress{animation:spGrow linear both;animation-timeline:scroll(root)}
+}
+@keyframes spGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+/* ---- Easing global affiné des reveals existants ---- */
+.js .reveal{transition-timing-function:var(--ease-expo);transition-duration:.75s}
+.js .reveal.d4{transition-delay:.32s}.js .reveal.d5{transition-delay:.4s}
+/* variantes de reveal (chaque révélation épouse son contenu, pas un fade-up uniforme) */
+.js .reveal-right{transform:translateX(46px)}
+.js .reveal-right.in{transform:none}
+.js .reveal-scale{transform:translateY(22px) scale(.965)}
+.js .reveal-scale.in{transform:none}
+/* stagger interne du panneau « credo » quand il entre */
+.js .reveal .creed-row{opacity:0;transform:translateY(14px)}
+.js .reveal.in .creed-row{animation:rowIn .6s var(--ease-quint) forwards}
+.js .reveal.in .creed-row:nth-child(1){animation-delay:.14s}
+.js .reveal.in .creed-row:nth-child(2){animation-delay:.24s}
+.js .reveal.in .creed-row:nth-child(3){animation-delay:.34s}
+.js .reveal.in .creed-row:nth-child(4){animation-delay:.44s}
+@keyframes rowIn{to{opacity:1;transform:none}}
+
+/* ---- Parallax de héros + bandeau éditorial (scroll-driven, marche aussi mobile) ---- */
+@supports (animation-timeline:scroll()){
+  @media (prefers-reduced-motion:no-preference){
+    .sparkles{animation:floatUp linear both;animation-timeline:scroll(root);animation-range:0 92vh}
+    .hero .wrap{animation:heroSink linear both;animation-timeline:scroll(root);animation-range:0 86vh}
+    .hero-grid{animation:gridDrift linear both;animation-timeline:scroll(root);animation-range:0 92vh}
+    .editorial .bg{animation:edPar linear both;animation-timeline:view();animation-range:cover}
+  }
+}
+@keyframes floatUp{to{transform:translateY(-72px)}}
+@keyframes gridDrift{to{transform:translateY(34px)}}
+@keyframes heroSink{to{transform:translateY(46px);opacity:.5}}
+@keyframes edPar{from{transform:scale(1.12) translateY(-5%)}to{transform:scale(1.12) translateY(6%)}}
+
+/* ---- Boutons : balayage doré + appui ---- */
+.btn{position:relative;overflow:hidden;isolation:isolate}
+.btn-gold::after,.btn-wa::after,.btn-outline::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(105deg,transparent 32%,rgba(255,255,255,.5) 50%,transparent 68%);transform:translateX(-130%);transition:transform .75s var(--ease-quint)}
+.btn-gold:hover::after,.btn-wa:hover::after,.btn-outline:hover::after{transform:translateX(130%)}
+.btn:active{transform:scale(.965)}
+
+/* ---- Nav : soulignement qui se dessine au survol ---- */
+.nav-links a:not(.active)::after{content:"";position:absolute;left:14px;right:14px;bottom:3px;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,var(--gold),var(--gold-soft));transform:scaleX(0);transform-origin:0 50%;transition:transform .32s var(--ease-quint)}
+.nav-links a:not(.active):hover::after{transform:scaleX(1)}
+
+/* ---- Tilt (desktop) : la carte garde son lift, JS pilote la rotation ---- */
+.pole,.coll{transform-style:preserve-3d;will-change:transform}
+
+/* ---- Feedback tactile (mobile : pas de :hover, on répond au :active) ---- */
+@media (hover:none){
+  .btn:active{transform:scale(.95)}
+  .card:active,.pole:active,.coll:active,.gitem:active,.mat:active,.soon-feat:active,.creed:active{transform:scale(.985)}
+  .nav-links a:active{background:var(--sky);color:var(--azure-deep)}
+  .socials a:active,.social-strip a:active,.gfilter button:active{transform:scale(.94)}
+  .fab:active{transform:scale(.92)}
+}
+
+/* ---- Menu mobile : entrée échelonnée des liens ---- */
+@media (max-width:760px){
+  .nav-links a,.nav-cta{opacity:0;transform:translateY(-8px);transition:opacity .3s var(--ease-quint),transform .3s var(--ease-quint),background .2s,color .2s}
+  .nav-links.open a,.nav-links.open .nav-cta{opacity:1;transform:none}
+  .nav-links.open a:nth-child(1){transition-delay:.04s}
+  .nav-links.open a:nth-child(2){transition-delay:.08s}
+  .nav-links.open a:nth-child(3){transition-delay:.12s}
+  .nav-links.open a:nth-child(4){transition-delay:.16s}
+  .nav-links.open a:nth-child(5){transition-delay:.2s}
+  .nav-links.open .nav-cta{transition-delay:.24s}
+}
+
+/* ---- Respect total de prefers-reduced-motion ---- */
+@media (prefers-reduced-motion:reduce){
+  ::view-transition-old(root),::view-transition-new(root){animation:none}
+  .scroll-progress{display:none}
+  .js .reveal .creed-row{opacity:1;transform:none;animation:none}
+  .js .reveal-right,.js .reveal-scale{transform:none}
+  .btn-gold::after,.btn-wa::after,.btn-outline::after{display:none}
+  .nav-links a,.nav-cta{opacity:1;transform:none;transition:none}
+}

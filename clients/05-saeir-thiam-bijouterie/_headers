@@ -1,0 +1,14 @@
+# Cloudflare Pages — en-têtes de sécurité + cache
+# (pas de CSP stricte ici : le site a des handlers inline légitimes — onload des fonts, classList.add('js')
+#  — qu'une CSP sans 'unsafe-inline' casserait. On pose les en-têtes à fort ROI et zéro risque.)
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=()
+  Strict-Transport-Security: max-age=31536000
+
+# Assets versionnés par ?v= → cache long immuable (perf, revisites instantanées)
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable

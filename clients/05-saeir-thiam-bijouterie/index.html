@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap"></noscript>
-<link rel="stylesheet" href="assets/app.css?v=20260623b">
+<link rel="stylesheet" href="assets/app.css?v=20260623e">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -76,6 +76,7 @@
 
 <!-- ====================== HERO ====================== -->
 <section class="hero" id="contenu">
+  <canvas class="hero-beams" aria-hidden="true"></canvas>
   <div class="hero-grid" aria-hidden="true"></div>
   <svg class="sparkles" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <g fill="#E7D6A3">
@@ -122,26 +123,29 @@
   <div class="wrap">
     <div class="grid g-2" style="align-items:center;gap:48px">
       <div class="reveal">
-        <span class="kicker">Le groupe</span>
-        <h2 class="eyebrow-gap">Une maison, plusieurs savoir-faire</h2>
-        <hr class="hr-gold" style="margin:18px 0 22px">
-        <p style="color:var(--muted)">Djambar Team est la structure mère qui fédère nos activités. Chaque pôle possède sa propre identité, mais partage la même exigence&nbsp;: le détail, le service et l'élégance. La bijouterie en est aujourd'hui le cœur battant&nbsp;; le groupe est conçu pour grandir, pôle après pôle.</p>
-        <p style="color:var(--muted);margin-top:14px">Notre ambition&nbsp;: réunir le savoir-faire artisanal, la création de contenu et l'événementiel pour offrir, sous une seule marque, une expérience complète et mémorable.</p>
+        <h2>Une maison,<br>plusieurs savoir-faire</h2>
+        <hr class="hr-gold" style="margin:20px 0 22px">
+        <p style="color:var(--muted)">Djambar Team est la structure mère qui réunit nos activités. Chaque pôle garde son identité propre, mais partage la même exigence&nbsp;: le détail, le service et l'élégance. La bijouterie en est aujourd'hui le cœur battant&nbsp;; le groupe est conçu pour grandir, pôle après pôle.</p>
+        <p style="color:var(--muted);margin-top:14px">Demain, la communication et l'événementiel rejoindront cette signature — pour offrir, sous une seule marque, une expérience complète et mémorable.</p>
       </div>
-      <div class="reveal d1">
-        <div class="grid g-2" style="gap:16px">
-          <div class="card"><div class="ic">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 21l-4.9 2.6.9-5.5-4-3.9 5.5-.8z" transform="scale(.85) translate(2 1)"/></svg>
-          </div><h3>Exigence</h3><p>Le souci du détail, à chaque étape.</p></div>
-          <div class="card"><div class="ic">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12s3-7 9-7 9 7 9 7-3 7-9 7-9-7-9-7z"/><circle cx="12" cy="12" r="3"/></svg>
-          </div><h3>Vision</h3><p>Un groupe pensé pour s'étendre.</p></div>
-          <div class="card"><div class="ic">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          </div><h3>Proximité</h3><p>Un échange direct, sur WhatsApp.</p></div>
-          <div class="card"><div class="ic">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
-          </div><h3>Prestige</h3><p>Une signature haut de gamme.</p></div>
+      <div class="reveal reveal-right d1">
+        <div class="creed">
+          <div class="creed-row">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 21l-4.9 2.6.9-5.5-4-3.9 5.5-.8z" transform="scale(.85) translate(2 1)"/></svg></span>
+            <div><h3>Exigence</h3><p>Une finition soignée à chaque étape, de la première idée à la pièce livrée.</p></div>
+          </div>
+          <div class="creed-row">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12s3-7 9-7 9 7 9 7-3 7-9 7-9-7-9-7z"/><circle cx="12" cy="12" r="3"/></svg></span>
+            <div><h3>Vision</h3><p>Un groupe pensé pour grandir, pôle après pôle, sans jamais brader la qualité.</p></div>
+          </div>
+          <div class="creed-row">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+            <div><h3>Proximité</h3><p>Un échange direct et humain — sur WhatsApp comme en boutique, à Cotonou.</p></div>
+          </div>
+          <div class="creed-row">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg></span>
+            <div><h3>Prestige</h3><p>Une signature haut de gamme, pensée pour durer et se transmettre.</p></div>
+          </div>
         </div>
       </div>
     </div>
@@ -152,9 +156,8 @@
 <section class="section soft" id="poles">
   <div class="wrap">
     <div class="head center reveal">
-      <span class="kicker center">Nos pôles</span>
-      <h2 class="eyebrow-gap">Trois univers, une même maison</h2>
-      <p class="lead" style="margin:.6rem auto 0">La bijouterie est ouverte dès aujourd'hui. Les pôles communication et événementiel arrivent prochainement.</p>
+      <h2>Trois univers, une même maison</h2>
+      <p class="deck">La bijouterie est ouverte dès aujourd'hui&nbsp;; les pôles communication et événementiel arrivent prochainement.</p>
     </div>
     <div class="grid g-3">
 
@@ -299,6 +302,6 @@
   <span class="on-ic eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
 </button>
 
-<script src="assets/app.js?v=20260623b"></script>
+<script src="assets/app.js?v=20260623e"></script>
 </body>
 </html>

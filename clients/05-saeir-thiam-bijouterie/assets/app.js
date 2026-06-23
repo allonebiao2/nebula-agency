@@ -36,6 +36,100 @@
     document.addEventListener("mouseenter", function () { if (shown) halo.classList.add("on"); });
   }
 
+  /* ---------- Hero : faisceaux de lumière animés (canvas, couleurs marque) ----------
+     Adaptation vanilla de l'effet "beams" : faisceaux bleu nuit + or, en
+     mix-blend multiply -> teintent le hero clair comme une lumière de vitrail.
+     Perf : DPR plafonné, ne tourne que si le hero est visible, pause onglet caché.
+     reduced-motion : une seule frame statique (aurore figée), aucune boucle.
+  ------------------------------------------------------------------------------- */
+  var beamCanvas = document.querySelector(".hero-beams");
+  if (beamCanvas) {
+    var heroEl = beamCanvas.closest(".hero") || beamCanvas.parentElement;
+    var bctx = beamCanvas.getContext("2d");
+    var beams = [];
+    var braf = null;
+    var DPRb = Math.min(window.devicePixelRatio || 1, 2);
+
+    function mkBeam(w, h) {
+      var gold = Math.random() < 0.42;
+      return {
+        x: Math.random() * w,
+        y: Math.random() * h * 1.3,
+        w: 40 + Math.random() * 70,
+        len: h * 1.6,
+        angle: -32 + Math.random() * 8,
+        speed: 0.25 + Math.random() * 0.5,
+        op: 0.08 + Math.random() * 0.13,
+        hue: gold ? 40 + Math.random() * 8 : 212 + Math.random() * 14,
+        sat: gold ? 72 : 66,
+        light: gold ? 56 : 58,
+        pulse: Math.random() * Math.PI * 2,
+        pulseSpeed: 0.012 + Math.random() * 0.02
+      };
+    }
+    function sizeBeams() {
+      var r = heroEl.getBoundingClientRect();
+      var w = Math.max(1, r.width), h = Math.max(1, r.height);
+      beamCanvas.width = Math.round(w * DPRb);
+      beamCanvas.height = Math.round(h * DPRb);
+      beamCanvas.style.width = w + "px";
+      beamCanvas.style.height = h + "px";
+      bctx.setTransform(DPRb, 0, 0, DPRb, 0, 0);
+      var n = window.innerWidth < 760 ? 12 : 22;
+      beams = [];
+      for (var i = 0; i < n; i++) beams.push(mkBeam(w, h));
+    }
+    function drawBeam(b) {
+      bctx.save();
+      bctx.translate(b.x, b.y);
+      bctx.rotate(b.angle * Math.PI / 180);
+      var op = b.op * (0.7 + Math.sin(b.pulse) * 0.3);
+      var c = "hsla(" + b.hue + "," + b.sat + "%," + b.light + "%,";
+      var g = bctx.createLinearGradient(0, 0, 0, b.len);
+      g.addColorStop(0, c + "0)");
+      g.addColorStop(0.15, c + (op * 0.5) + ")");
+      g.addColorStop(0.5, c + op + ")");
+      g.addColorStop(0.85, c + (op * 0.5) + ")");
+      g.addColorStop(1, c + "0)");
+      bctx.fillStyle = g;
+      bctx.fillRect(-b.w / 2, 0, b.w, b.len);
+      bctx.restore();
+    }
+    function renderBeams() {
+      var w = beamCanvas.width / DPRb, h = beamCanvas.height / DPRb;
+      bctx.clearRect(0, 0, w, h);
+      bctx.filter = "blur(30px)";
+      for (var i = 0; i < beams.length; i++) {
+        var b = beams[i];
+        b.y -= b.speed; b.pulse += b.pulseSpeed;
+        if (b.y + b.len < -80) { beams[i] = mkBeam(w, h); beams[i].y = h + 80; }
+        drawBeam(beams[i]);
+      }
+      bctx.filter = "none";
+    }
+    sizeBeams();
+    if (reduce) {
+      renderBeams(); // aurore figée, pas de boucle
+    } else {
+      var bRunning = false, bInView = true, bHidden = false;
+      function bLoop() { renderBeams(); braf = requestAnimationFrame(bLoop); }
+      function bSync() {
+        if (bInView && !bHidden) { if (!bRunning) { bRunning = true; bLoop(); } }
+        else { bRunning = false; if (braf) cancelAnimationFrame(braf); braf = null; }
+      }
+      if ("IntersectionObserver" in window) {
+        new IntersectionObserver(function (es) {
+          es.forEach(function (e) { bInView = e.isIntersecting; });
+          bSync();
+        }, { threshold: 0 }).observe(heroEl);
+      }
+      document.addEventListener("visibilitychange", function () { bHidden = document.hidden; bSync(); });
+      var bRz;
+      window.addEventListener("resize", function () { clearTimeout(bRz); bRz = setTimeout(sizeBeams, 200); }, { passive: true });
+      bSync();
+    }
+  }
+
   /* ---------- Nav : état scrollé + burger ---------- */
   var nav = document.querySelector(".nav");
   var links = document.querySelector(".nav-links");
@@ -72,6 +166,16 @@
       });
     }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
     reveals.forEach(function (el) { io.observe(el); });
+    // Filet de sécurité : si l'IO ne se déclenche pas (rendu headless, onglet caché,
+    // crawler), révéler au load ce qui est déjà au-dessus/dans le viewport → jamais de
+    // section blanche. Le scroll-reveal des sections plus bas reste géré par l'IO.
+    window.addEventListener("load", function () {
+      setTimeout(function () {
+        document.querySelectorAll(".reveal:not(.in)").forEach(function (el) {
+          if (el.getBoundingClientRect().top < window.innerHeight * 1.15) el.classList.add("in");
+        });
+      }, 500);
+    });
   }
 
   /* ---------- Horaires : surligner le jour courant ---------- */
@@ -312,6 +416,59 @@
     audioBtn.addEventListener("click", function () { playing ? stop() : start(); });
     document.addEventListener("visibilitychange", function () {
       if (document.hidden && playing) stop();
+    });
+  }
+
+  /* ---------- Barre de progression de lecture ----------
+     Animée par CSS scroll-driven (animation-timeline). Si non supporté,
+     repli léger : on pilote --p en JS (rAF passif). Aucun effet sans scroll. */
+  (function () {
+    var bar = document.createElement("div");
+    bar.className = "scroll-progress";
+    bar.setAttribute("aria-hidden", "true");
+    document.body.appendChild(bar);
+    var supportsSDA = CSS && CSS.supports && CSS.supports("animation-timeline: scroll()");
+    if (supportsSDA || reduce) return; // CSS s'en occupe (ou rien si reduced-motion)
+    var ticking = false;
+    function upd() {
+      var h = document.documentElement;
+      var max = h.scrollHeight - h.clientHeight;
+      bar.style.transform = "scaleX(" + (max > 0 ? (h.scrollTop / max) : 0).toFixed(4) + ")";
+      ticking = false;
+    }
+    window.addEventListener("scroll", function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(upd); }
+    }, { passive: true });
+    upd();
+  })();
+
+  /* ---------- Boutons aimantés + tilt des cartes (desktop fin uniquement) ---------- */
+  var fine = window.matchMedia("(hover:hover) and (pointer:fine)").matches;
+  if (fine && !reduce) {
+    // CTA aimantés : le bouton suit légèrement le curseur
+    document.querySelectorAll(".btn-lg.btn-gold, .btn-lg.btn-wa").forEach(function (b) {
+      var r = null;
+      b.addEventListener("pointerenter", function () { r = b.getBoundingClientRect(); });
+      b.addEventListener("pointermove", function (e) {
+        if (!r) r = b.getBoundingClientRect();
+        var mx = e.clientX - (r.left + r.width / 2), my = e.clientY - (r.top + r.height / 2);
+        b.style.transform = "translate(" + (mx * 0.18).toFixed(1) + "px," + (my * 0.3 - 2).toFixed(1) + "px)";
+      });
+      b.addEventListener("pointerleave", function () { r = null; b.style.transform = ""; });
+    });
+    // Tilt 3D subtil sur les cartes pôles + collections
+    document.querySelectorAll(".pole, .coll").forEach(function (c) {
+      var r = null;
+      c.addEventListener("pointerenter", function () {
+        r = c.getBoundingClientRect();
+        c.style.transition = "transform .14s var(--ease-quart)";
+      });
+      c.addEventListener("pointermove", function (e) {
+        if (!r) r = c.getBoundingClientRect();
+        var px = (e.clientX - r.left) / r.width - 0.5, py = (e.clientY - r.top) / r.height - 0.5;
+        c.style.transform = "perspective(900px) rotateX(" + (-py * 4).toFixed(2) + "deg) rotateY(" + (px * 5).toFixed(2) + "deg) translateY(-6px)";
+      });
+      c.addEventListener("pointerleave", function () { r = null; c.style.transition = ""; c.style.transform = ""; });
     });
   }
 })();
