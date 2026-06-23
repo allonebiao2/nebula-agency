@@ -189,6 +189,7 @@ Edge : `C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`. Détails 
   `white-space:normal` ou raccourcir (sinon débordement réel sur petit écran).
 - **`/tmp` peu fiable** dans ce shell → écrire les fichiers temporaires dans le **scratchpad** de session.
 - **Édition `.py`/`.html`** : jamais via PowerShell `Set-Content` (mojibake) ; Edit/Write ou Python utf-8.
+- **Vidéos de fond** : (1) **codec** — toute vidéo client (souvent iPhone = **HEVC/`hvc1`**, illisible Chrome/FF) → **transcoder en H.264** (vérifier `grep -a -o 'avc1\|hvc1' f.mp4` ; ffmpeg via `pip install imageio-ffmpeg` ; `-c:v libx264 -pix_fmt yuv420p -an -vf "scale='min(960,iw)':-2,fps=30" -crf 30 -movflags +faststart`). (2) **autoplay** — `muted`+`playsinline` forcés EN JS (pas juste l'attribut) + `play()` relancé (canplay/IO) + repli au 1er geste ; `preload="auto"` si above-the-fold. (3) **cache** — `/assets/* immutable` ⇒ **cache-buster l'URL vidéo `...mp4?v=`** quand le contenu change + **vérifier le contenu SERVI** (télécharger + grep codec), pas juste le 200. (4) **lisibilité** — vidéo derrière du texte = l'assombrir (brightness ~.5 + voile) ; hero clair → vidéo quasi invisible, basculer en cinématique sombre (`hero-night`+`hero-cine`).
 
 ## 📓 Journal des décisions (À TENIR À JOUR — 1 ligne par évolution)
 Règle de Mongazi : « mets à chaque fois ce qu'on fait dans le skill ». Les leçons fines vont dans

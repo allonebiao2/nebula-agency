@@ -240,10 +240,17 @@ body.dark-hero .nav:not(.scrolled) .burger svg{stroke:#fff}
 .soon-hero video.soon-media{filter:blur(4px) brightness(.52) saturate(1.08)} /* « très léger flou » sur la vidéo */
 .soon-hero .soon-media-veil{position:absolute;inset:0;z-index:0;
   background:linear-gradient(180deg,rgba(5,14,33,.66),rgba(5,14,33,.55) 45%,rgba(5,14,33,.82))}
-/* Vidéo de fond du hero CLAIR (accueil) : flou léger, ghostée sous le voile blanc (texte sombre lisible) */
+/* Vidéo de fond du hero (base) */
 .hero .hero-media{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;
   filter:blur(6px) saturate(1.06);opacity:.6;transform:scale(1.06);pointer-events:none}
-@media (prefers-reduced-motion:reduce){.hero video.hero-media{opacity:.42}}
+/* Accueil : hero vidéo CINÉMATIQUE — la vidéo est bien visible (« ça tourne »), voile sombre
+   uniforme pour le texte blanc. Combiné à .hero-night (texte blanc + beams screen). */
+.hero.hero-cine .hero-media{opacity:1;filter:blur(4px) brightness(.5) saturate(1.12)}
+.hero.hero-cine::before{background:
+  radial-gradient(58% 60% at 78% 16%,rgba(46,107,230,.16),transparent 60%),
+  linear-gradient(180deg,rgba(6,17,44,.74) 0%,rgba(6,17,44,.68) 45%,rgba(6,17,44,.84) 100%)}
+.hero.hero-cine .hero-grid{background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px)}
+@media (prefers-reduced-motion:reduce){.hero video.hero-media{opacity:.5}}
 @media (prefers-reduced-motion:reduce){.soon-hero video.soon-media{display:none}}
 
 /* ---------- Cards / Grids ---------- */

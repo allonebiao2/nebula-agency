@@ -69,6 +69,14 @@ Hub multi-pages dans `clients/05-saeir-thiam-bijouterie/` :
 - [x] Google Maps (adresse + itinéraire intégrés)
 - [x] Section avis (⚠️ 3 exemples « à valider » — remplacer par de vrais avis)
 
+## Passe « Vidéos qui marchent partout (H.264) + hero accueil cinématique » (V16, 2026-06-23) ✅
+Mongazi : « les vidéos ne bougent pas / fais en sorte qu'elles marchent à l'accueil et dans la bijouterie ».
+- **🎯 CAUSE RACINE = codec HEVC** : les 2 vidéos (`Fond vidéo*.mp4`, filmées iPhone) étaient en **H.265/HEVC** (`hvc1`) → **illisibles dans Chrome/Firefox** (OK seulement Safari/iOS). D'où « ça ne marche pas ». **Transcodées en H.264** (`avc1`, universel) via **ffmpeg du paquet pip `imageio-ffmpeg`** (ffmpeg système absent) : `-c:v libx264 -pix_fmt yuv420p -an -vf scale=960,fps=30 -crf 30 -movflags +faststart` → 2,0/2,4 Mo (sans audio, bg muet). **À refaire pour toute vidéo client iPhone.**
+- **🐛 Piège cache immutable** : `_headers` met `/assets/*` en `immutable` → remplacer le **contenu** d'une vidéo au même nom = le CDN sert l'ANCIENNE (HEVC). Fix : **cache-buster les URLs vidéo** `...mp4?v=AAAAMMJJx` (comme app.css/js). Vérifié : l'URL bustée sert bien `avc1`.
+- **Hero accueil CINÉMATIQUE** : `index` hero passé en `hero hero-night hero-cine` (réutilise le traitement nuit : texte blanc, beams screen) + nouveau `.hero-cine` (vidéo **bien visible** `brightness(.5) blur 4px` + voile sombre uniforme). `body.dark-hero`, logo blanc, kicker gold-soft. La vidéo `fond-video-2.mp4` **tourne et se voit** à l'entrée. Contraste blanc ≥ 5,2 (calcul).
+- **Autoplay** déjà robuste (muted forcé JS + play() relancé + repli geste) → vérifié `paused=false` headless. Cache **`?v=20260623m`**. Déployé + prod vérifiée (4 pages 200, vidéos servies **avc1**).
+- ⚠️ Rendu visuel du hero cine non screenshoté (captures headless instables ici avec polices externes) → validé par calcul contraste + structure (hero-night éprouvé) + test autoplay + codec.
+
 ## Passe « Vidéos de marque (remplacement + accueil) » (V15, 2026-06-23) ✅
 Mongazi a fourni 2 vidéos. **`thiam.MP4` remplacé** par **`fond-video.mp4`** (← « Fond vidéo .mp4 », copie web-safe) sur **communication** (hero) + **volet commander** (bijouterie). **`fond-video-2.mp4`** (← « Fond vidéo 2.mp4 ») ajoutée en **fond du hero de l'accueil**, flou léger.
 - **Noms web-safe** : sources avec espaces+accent → copies `fond-video.mp4` / `fond-video-2.mp4` (URL propres ; copie via PowerShell `-LiteralPath` + match wildcard car Git Bash ne résout pas le `é`). `thiam.MP4` retiré du repo.
