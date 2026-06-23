@@ -67,6 +67,13 @@ Hub multi-pages dans `clients/05-saeir-thiam-bijouterie/` :
 - [x] Google Maps (adresse + itinéraire intégrés)
 - [x] Section avis (⚠️ 3 exemples « à valider » — remplacer par de vrais avis)
 
+## Passe « Vidéo de fond dans le volet commander » (V10, 2026-06-23) ✅
+Mongazi : « dans le volet commander, la vidéo `assets/videos/thiam.MP4` en fond, avec un flou gaussien très léger (on aperçoit quand même la scène) ».
+- **Cible** = le **volet de conversion** en bas de la page Bijouterie (la `.cta` « Offrez-vous une pièce unique / Demander un devis » = le panneau où l'on commande).
+- **Implémentation** : `<video class="cta-media" autoplay muted loop playsinline preload="metadata" poster=hero-bijou.jpg>` en fond de la `.cta` (classe `.cta-video`), **flou gaussien léger** `filter:blur(5px) brightness(.6)` + `transform:scale(1.12)` (couvre le bleed du flou), **voile navy** `.cta-veil` (≈0,5) pour garder le texte blanc lisible. **Scopé** à `.cta-video` (les autres `.cta` du site — accueil, pôles — ne sont **pas** touchées). `isolation:isolate` pour un stacking propre (vidéo+voile z0, contenu z1).
+- **Perf/UX** : vidéo **1,77 Mo** (légère, sous la limite 25 Mo Pages) ; `preload=metadata` (ne télécharge pas tant qu'on n'a pas scrollé) ; **pause hors-écran** + **pause `prefers-reduced-motion`** (poster figé) via JS (IntersectionObserver) ; `playsinline`+`muted` = autoplay mobile OK ; **poster** = repli image si autoplay bloqué / 4G lente.
+- **QA** : poster flou rendu (desktop+mobile) = scène perceptible + texte lisible ✓ ; JS `node --check` OK ; CSS scopé (0 fuite vers les autres CTA). Cache **`?v=20260623g`** (5 pages). **Déployé** (vidéo incluse au staging) ; prod vérifiée : `thiam.MP4` servi (`video/mp4`, immutable), CTA câblée, 4 pages 200.
+
 ## Passe « Hero NUIT à faisceaux lumineux — page Bijouterie » (V9, 2026-06-23) ✅
 Mongazi a fourni un **composant React « Beams Background »** (`motion/react` + canvas, style shadcn) et demandé « ceci, animé, sur la page d'accueil de l'onglet bijouterie ».
 - **Décision honnête** : le site est **HTML/CSS/JS vanilla statique** (Cloudflare Pages), **PAS** React/shadcn/Tailwind/TS. Installer ce toolchain casserait le modèle de déploiement → **refusé**. Livré **le même effet en natif** (le site avait déjà un port vanilla des « beams » sur le hero accueil → réutilisé/enrichi).

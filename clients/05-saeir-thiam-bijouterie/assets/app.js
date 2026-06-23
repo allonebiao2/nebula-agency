@@ -444,6 +444,22 @@
     upd();
   })();
 
+  /* ---------- Vidéo de fond du volet « commander » : pause hors-écran + reduced-motion ---------- */
+  var ctaVid = document.querySelector("video.cta-media");
+  if (ctaVid) {
+    if (reduce) {
+      ctaVid.removeAttribute("autoplay");
+      ctaVid.pause();
+    } else if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          if (e.isIntersecting) { var p = ctaVid.play(); if (p && p.catch) p.catch(function () {}); }
+          else ctaVid.pause();
+        });
+      }, { threshold: 0.12 }).observe(ctaVid);
+    }
+  }
+
   /* ---------- Boutons aimantés + tilt des cartes (desktop fin uniquement) ---------- */
   var fine = window.matchMedia("(hover:hover) and (pointer:fine)").matches;
   if (fine && !reduce) {
