@@ -462,4 +462,24 @@
 
 ---
 
+## 2026-06-23 — Skill `nebula-site` (formulaire client → site déployé)
+- **Contexte** : la procédure vitrine était documentée (branche `_memoire/procedure-vitrine/`) mais pas exécutable en 1 invocation.
+- **Décision** : construire le skill **`nebula-site`** (run-to-completion, PHASE 0→9), nom choisi par Mongazi (ex-`vitrine-express`).
+- **Conséquences** : installé `.claude/skills/nebula-site/` (gitignoré) ; source versionnée = la branche cerveau + `SKILL.md` mirroré. À tester sur un nouveau client. Voir [[project_procedure-vitrine]].
+
+## 2026-06-23 — Domaine `djambarteam.com` : DNS confié à Cloudflare
+- **Contexte** : domaine acheté chez Hostinger, site sur Cloudflare Pages ; HTTPS voulu sur apex + www.
+- **Décision** : déplacer les **nameservers** vers Cloudflare (nouvelle zone, distincte de nebula-agency.online), 2 CNAME proxied → `djambar-team.pages.dev`. PAS de DNS géré chez Hostinger.
+- **Conséquences** : HTTPS auto valide. Token `cloudflare.env` Pages-only ⇒ add-site/DNS à la main au dashboard. URLs du site migrées `pages.dev`→`djambarteam.com`. Voir [[reference_domaines]].
+
+## 2026-06-23 — Pas de scaffold framework pour un composant fourni
+- **Contexte** : composant React/shadcn fourni (« Beams Background ») ; installer React+Tailwind+TS casserait le modèle statique (perf 4G).
+- **Décision** : **porter l'effet en natif** (canvas/CSS/vanilla), expliquer pourquoi, livrer le même rendu. Idem futurs snippets 21st.dev/shadcn.
+- **Conséquences** : règle dans le skill `nebula-site` ; le site reste HTML/JS pur.
+
+## 2026-06-23 — Vidéo web = H.264 obligatoire (jamais HEVC)
+- **Contexte** : vidéos client (iPhone) en H.265/HEVC illisibles Chrome/Firefox (« la vidéo ne marche pas »).
+- **Décision** : **transcoder toute vidéo en H.264** avant le web (ffmpeg via `pip install imageio-ffmpeg`) ; vérifier le codec (`grep avc1/hvc1`) ; cache-buster l'URL vidéo si on remplace le contenu (cache immuable).
+- **Conséquences** : lecture universelle. Règle ajoutée au skill. Voir [[feedback_cache-bust-assets]].
+
 <!-- Ajouter les nouvelles décisions au-dessus -->

@@ -444,6 +444,13 @@ CSS :
 
 ---
 
+## Techniques Djambar Team (2026-06-23) — détaillées dans `_memoire/procedure-vitrine/EVOLUTION.md`
+> Pour ne pas dupliquer : le **code prêt à réutiliser** vit dans EVOLUTION (entrées V8→V17) + le socle `.claude/skills/nebula-site/templates/`. Index ici :
+- **Vidéo de fond fiable** : `<video autoplay muted loop playsinline preload=auto>` + `muted` forcé EN JS + `play()` relancé + repli au geste ; **codec H.264 obligatoire** (HEVC iPhone illisible Chrome/FF → transcoder via `imageio-ffmpeg`) ; voile semi-opaque pour lisibilité ; cache-buster `?v=` si on change le contenu (cache immuable).
+- **Motion premium sans lib** : View Transitions cross-document, parallax/progress en **scroll-driven CSS** (`animation-timeline:scroll()`), reveals **différenciés** (≠ fade-up uniforme = tell IA), easing expo.
+- **Ergonomie mobile** : inputs `font-size:16px` (anti-zoom iOS), cibles ≥44px, `html{overflow-x:hidden}` (0 wiggle), `touch-action:manipulation` + `-webkit-tap-highlight-color:transparent`, canvas lourds gated `!isMobile && !saveData`, FAB en `env(safe-area-inset-bottom)`.
+- **Art-direction sombre/clair** : hero peut basculer en thème opposé (`hero-night`/`hero-cine`) ; gérer nav (`body.dark-hero`) + `theme-color` + voile. ⚠️ tout `::before` de voile sur `.hero` doit être neutralisé sur la variante opposée.
+
 ## Autres techniques à documenter
 
 - Variables CSS pour palette client

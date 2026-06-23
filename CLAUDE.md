@@ -73,7 +73,7 @@
 | 02 | Cédène | Little Sun Pearls - bijoux | En attente photos | - |
 | 03 | Abakar | WECS - montage vidéo | En cours | - |
 | 04 | Gloria | Luxury Skin Clinic - cosmétique (hub 4 pages) | Structure créée | 0167975626 |
-| 05 | Saeir Thiam | **Djambar Team** (groupe) — pôle **Saeir Thiam Bijouterie** (or/argent/sur-mesure) + comm./événementiel à venir · Cotonou (Agla Gbodjètin) · hub multi-pages évolutif | Site en construction (assets réels intégrés 22/06) | 0197967671 |
+| 05 | Saeir Thiam | **Djambar Team** (groupe) — pôle **Saeir Thiam Bijouterie** (or/argent/sur-mesure) + comm./événementiel à venir · Cotonou (Agla Gbodjètin) · hub multi-pages évolutif | **LIVE https://djambarteam.com** (domaine final, Cloudflare Pages) · finition complète 23/06 (motion, hero nuit vidéo, formulaire devis→WhatsApp, conversion, ergonomie mobile) · reste : vrais avis + photos sans watermark | 0197967671 |
 
 ## Mémoire générale
 - Voir _memoire/cerveau.md pour contexte complet
