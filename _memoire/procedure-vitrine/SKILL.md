@@ -201,3 +201,9 @@ Règle de Mongazi : « mets à chaque fois ce qu'on fait dans le skill ». Les l
   thème clair, SEO/JSON-LD, clean URLs, motion/View-Transitions, hero nuit beams, vidéo de fond,
   formulaire devis→WhatsApp, descriptions+commander partout, domaine `djambarteam.com` live).
   Templates de socle bundlés (`templates/app.css`, `app.js`, `_build_assets.py`).
+- **2026-06-23 — 1er run réel : Miss cakes (#06).** Cas **mono-marque vitrine+catalogue commandable**
+  (page unique, pâtisserie en ligne) → LIVE https://miss-cakes.pages.dev. Le pipeline tient hors hub
+  multi-pages. **Template corrigé** : `.gitem` désormais gaté `.js` (galerie visible sans JS). Leçons
+  ajoutées à EVOLUTION : numéro Bénin 8→10 chiffres « à confirmer », reveal horizontal pleine largeur
+  = fuite overflow (préférer `.reveal-scale`), mesure overflow par iframe-diag, QA mi-page en
+  `--disable-javascript`, placeholders « pro » (badge cupcake + tuiles SVG).

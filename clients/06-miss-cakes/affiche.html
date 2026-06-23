@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Miss cakes — Affiche A4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;0,700;1,600&family=Jost:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#FFFBF8; --bg-2:#FBEEE9; --blush:#FCEEF0;
+    --cocoa:#3E2723; --ink:#3E2723; --text:#4A332E; --muted:#79564E;
+    --rose:#E59CA9; --rose-deep:#C76B7C; --rose-ink:#A23B53; --rose-soft:#F6D9DE;
+    --gold:#C9925B; --gold-ink:#875524; --gold-soft:#E7C9A3; --line:#EFE0D8;
+  }
+  *{box-sizing:border-box;margin:0}
+  @page{size:A4;margin:0}
+  html,body{width:210mm}
+  body{
+    font-family:"Jost",system-ui,sans-serif;color:var(--text);
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  }
+  .serif{font-family:"Cormorant","Cormorant Garamond",Georgia,serif}
+  .page{
+    position:relative;width:210mm;height:297mm;overflow:hidden;
+    padding:16mm 15mm 12mm;display:flex;flex-direction:column;
+    background:
+      radial-gradient(46% 30% at 88% 4%,rgba(229,156,169,.22),transparent 60%),
+      radial-gradient(42% 26% at 4% 99%,rgba(201,146,91,.18),transparent 60%),
+      linear-gradient(168deg,#FFFFFF 0%,var(--bg) 46%,var(--bg-2) 100%);
+  }
+  /* ---- En-tête ---- */
+  .head{display:flex;align-items:center;gap:6mm;padding-bottom:7mm;border-bottom:1px solid var(--line)}
+  .head .badge{width:24mm;height:24mm;flex:0 0 auto;border-radius:7mm;box-shadow:0 4mm 9mm -4mm rgba(199,107,124,.6)}
+  .head .ht b{display:block;font-family:"Cormorant",serif;font-weight:700;font-size:13mm;line-height:.95;color:var(--cocoa)}
+  .head .ht span{display:block;margin-top:1.5mm;font-size:3mm;letter-spacing:.42em;text-transform:uppercase;color:var(--rose-ink);font-weight:600}
+  /* ---- Slogan ---- */
+  .hero{padding:9mm 0 6mm;text-align:center}
+  .kick{display:inline-block;font-size:3mm;letter-spacing:.34em;text-transform:uppercase;color:var(--gold-ink);font-weight:600;margin-bottom:4mm}
+  .hero h1{font-family:"Cormorant",serif;font-weight:700;font-size:18mm;line-height:1.02;color:var(--cocoa)}
+  .hero h1 em{font-style:italic;color:var(--rose-ink)}
+  .hero p{max-width:150mm;margin:5mm auto 0;color:var(--muted);font-size:4.1mm;line-height:1.5}
+  /* ---- Trois visuels ---- */
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm;margin:7mm 0}
+  .tile{position:relative;aspect-ratio:1/1;border-radius:5mm;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3mm;
+    border:1px solid rgba(255,255,255,.6);box-shadow:0 5mm 11mm -6mm rgba(62,39,35,.3)}
+  .tile svg{width:34%;height:auto}
+  .tile span{font-family:"Cormorant",serif;font-weight:600;font-size:4.6mm}
+  .t1{background:linear-gradient(150deg,var(--blush),var(--rose-soft));color:var(--rose-ink)}
+  .t2{background:linear-gradient(150deg,#fff,#F4E6D2);color:var(--gold-ink)}
+  .t3{background:linear-gradient(150deg,#6b4a40,var(--cocoa));color:#F6D9DE}
+  /* ---- Bloc commande (QR) ---- */
+  .order{margin-top:auto;display:grid;grid-template-columns:auto 1fr;gap:8mm;align-items:center;
+    background:#fff;border:1px solid var(--line);border-radius:6mm;padding:7mm 8mm;box-shadow:0 6mm 16mm -10mm rgba(62,39,35,.4)}
+  .order .qr{width:42mm;height:42mm;flex:0 0 auto;border:1px solid var(--line);border-radius:3mm;padding:2mm;background:#fff}
+  .order .qr img{width:100%;height:100%;display:block}
+  .order .oc .lab{font-size:3mm;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-ink);font-weight:600}
+  .order .oc h2{font-family:"Cormorant",serif;font-weight:700;font-size:9mm;line-height:1.05;color:var(--cocoa);margin:2mm 0}
+  .order .oc .tel{font-size:5.2mm;font-weight:600;color:var(--rose-ink)}
+  .order .oc .tel small{display:block;font-size:3mm;font-weight:500;color:var(--muted);letter-spacing:0;text-transform:none;margin-top:1mm}
+  .chips{display:flex;flex-wrap:wrap;gap:2.5mm;margin-top:4mm}
+  .chip{display:inline-flex;align-items:center;gap:1.6mm;font-size:3.1mm;font-weight:500;color:var(--text);
+    background:var(--blush);border:1px solid var(--rose-soft);border-radius:999px;padding:1.8mm 4mm}
+  .chip svg{width:3.4mm;height:3.4mm;color:var(--rose-deep)}
+  /* ---- Pied ---- */
+  .foot{margin-top:6mm;display:flex;justify-content:space-between;align-items:center;font-size:3.2mm;color:var(--muted)}
+  .foot b{color:var(--cocoa)}
+  .foot .soc{display:flex;align-items:center;gap:2.5mm}
+  .foot .soc svg{width:4.2mm;height:4.2mm;color:var(--rose-deep)}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="head">
+    <img class="badge" src="assets/images/logos/mark.png" alt="Miss cakes">
+    <div class="ht">
+      <b>Miss cakes</b>
+      <span>Pâtisserie artisanale · Cotonou</span>
+    </div>
+  </div>
+
+  <div class="hero">
+    <span class="kick">Sur commande · livré à Cotonou</span>
+    <h1>Des gâteaux qui rendent chaque <em>occasion</em> inoubliable.</h1>
+    <p>Anniversaires, mariages, baptêmes, fêtes &amp; cadeaux gourmands. Faits maison, à votre image, livrés partout à Cotonou.</p>
+  </div>
+
+  <div class="tiles">
+    <div class="tile t1">
+      <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 54h36"/><path d="M18 54V36h28v18"/><path d="M20 36v-7a4 4 0 0 1 4-4h16a4 4 0 0 1 4 4v7"/><path d="M20 31c4 3 7 3 9 0s6-3 9 0 7 3 9 0"/><path d="M32 25v-8"/></svg>
+      <span>Anniversaires</span>
+    </div>
+    <div class="tile t2">
+      <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 56h40"/><path d="M22 56V44h20v12"/><path d="M26 44V34h12v10"/><path d="M30 34v-8h4v8"/><path d="M32 26v-6"/></svg>
+      <span>Mariages</span>
+    </div>
+    <div class="tile t3">
+      <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 28h24l-3 26H23z"/><path d="M20 28a12 12 0 0 1 24 0"/><path d="M26 22a6 6 0 0 1 12 0"/><path d="M32 16v-4"/></svg>
+      <span>Cupcakes</span>
+    </div>
+  </div>
+
+  <div class="order">
+    <div class="qr"><img src="assets/images/qr/qr-whatsapp.png" alt="QR WhatsApp Miss cakes"></div>
+    <div class="oc">
+      <div class="lab">Scannez pour commander</div>
+      <h2>Commandez sur WhatsApp</h2>
+      <div class="tel">+229 01 67 74 89 55
+        <small>Ou écrivez-nous directement sur WhatsApp · réponse rapide</small>
+      </div>
+      <div class="chips">
+        <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Sur mesure</span>
+        <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Fait maison</span>
+        <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Livraison Cotonou</span>
+        <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Devis gratuit</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span class="soc">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" stroke="none"/></svg>
+      Suivez-nous : Instagram &amp; Facebook (à venir)
+    </span>
+    <span>Vitrine signée <b>NEBULA Agency</b></span>
+  </div>
+
+</div>
+</body>
+</html>

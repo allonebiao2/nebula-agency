@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://miss-cakes.pages.dev/sitemap.xml

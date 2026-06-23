@@ -178,5 +178,40 @@ Six réglages à appliquer d'office sur toute vitrine (mobile-first, Afrique 4G/
 5. **Effets lourds gated mobile** : un canvas avec `filter:blur(30px+)` par frame, ou tout effet coûteux, doit être **désactivé sur mobile + data-saver** (`window.matchMedia("(max-width:760px)")` + `navigator.connection?.saveData`). Le hero reste beau (vidéo/photo + SVG sparkles + grille CSS) sans la boucle gourmande. (Cf. V8 : déjà pause hors-écran/onglet caché via IntersectionObserver.)
 6. **Safe-area iOS** : éléments fixés en bas (FAB) en `bottom:calc(Xpx + env(safe-area-inset-bottom))` pour ne pas passer sous la barre d'accueil iPhone.
 
+## 2026-06-23 — 1er run réel du skill `nebula-site` : Miss cakes (#06, pâtisserie en ligne)
+Premier client construit **entièrement via le skill** (≠ Djambar qui a servi à le forger). Confirme
+que le pipeline tient sur un cas **mono-marque vitrine+catalogue** (≠ hub multi-pages). Leçons :
+- **Page unique commandable** = bon défaut pour un commerçant mono-marque sans boutique physique
+  (pâtisserie « en ligne ») : hero clair gourmand + barre de confiance + signature/credo + **grille
+  de créations commandables** (chaque carte → `wa.me` pré-rempli avec le nom du produit) + galerie
+  filtrable + **formulaire commande→WhatsApp** + contact/carte zone. Pas besoin de demander
+  l'architecture (brief non ambigu) → tranché par défaut, gain de temps (run-to-completion).
+- **Numéro Bénin 8 chiffres → 10 chiffres** : un formulaire qui donne `229XXXXXXXX` (8 chiffres après
+  229) est en **ancien format**. Depuis la migration 2024, préfixer `01` → `22901XXXXXXXX`. Le câbler
+  ainsi MAIS le marquer **« à confirmer »** partout (site + surtout **affiche imprimée**). Ne jamais
+  imprimer un numéro non confirmé sans prévenir.
+- **🐛 PE galerie (corrigé à la source, template inclus)** : `.gitem{opacity:0}` n'était **pas gaté
+  par `.js`** → sans JS (crawler, no-JS, capture headless) la galerie est **invisible** (vs `.reveal`
+  qui est bien `.js .reveal{opacity:0}`). Règle : **tout état caché par défaut doit être gaté `.js`**
+  (défaut = visible). Corrigé en `.js .gitem{opacity:0}` dans le site ET le template bundlé.
+- **🐛 Reveal horizontal = fuite d'overflow** : `.reveal-right{transform:translateX(46px)}` sur un
+  élément **pleine largeur** (ici le panneau credo) pousse son bord droit hors viewport en état
+  **pré-révélé** (avant que l'IO pose `.in`) → +26px de débordement mesuré (clippé par
+  `html{overflow-x:hidden}` mais réel). Les **transforms comptent dans `scrollWidth`**. Règle :
+  réserver `.reveal-right`/translateX positif à des éléments **non pleine largeur** ; pour un bloc
+  large, utiliser `.reveal` (translateY) ou `.reveal-scale` (translateY + scale, pas de fuite latérale).
+- **Mesure overflow fiable = iframe-diag** : `--window-size` étant ignoré en `--dump-dom`, créer une
+  page diag same-origin qui charge `index.html` dans des **iframes de largeurs fixes** (360→1280) et
+  lit `scrollWidth` vs `clientWidth` par iframe → mesure exacte par largeur (puis exclure les
+  descendants `.marquee` clippés de la liste d'offenders, sinon ils masquent le vrai coupable).
+- **Capture headless mi-page = piège reveal** : un screenshot d'une section ancrée mid-page rend
+  **blanc** (IO non déclenché → `.reveal` à `opacity:0`). Pour QA visuelle du contenu/layout des
+  sections basses, capturer en **`--disable-javascript`** (PE = tout visible) — d'où l'importance que
+  TOUT le contenu soit visible sans JS (cf. bug `.gitem`).
+- **Placeholders « pro » sans photo** : tuiles galerie = `.gitem .ph` (dégradé de marque + glyphe SVG
+  catégorie + libellé), variantes `t-rose/t-cream/t-caramel/t-cocoa` ; marque provisoire = **badge
+  généré** (cupcake Pillow) servant logo+favicon+apple-touch+OG. Tout marqué « à remplacer », le
+  pipeline `_build_assets.py` reste ré-exécutable dès réception du vrai logo/photos.
+
 <!-- Prochaines entrées : ajouter ici au fil des vitrines suivantes. Toute leçon → ici ; toute évolution DU SKILL → aussi dans .claude/skills/nebula-site/SKILL.md (§ Journal). -->
 <!-- Après édition du SKILL.md : re-copier vers _memoire/procedure-vitrine/SKILL.md (mirroir versionné). -->
