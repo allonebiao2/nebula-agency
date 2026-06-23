@@ -286,7 +286,8 @@
   var lb = document.querySelector(".lb");
   if (lb && tiles.length) {
     var stage = lb.querySelector(".stage");
-    var cap = lb.querySelector("figcaption");
+    var cap = lb.querySelector(".lb-cap") || lb.querySelector("figcaption");
+    var order = lb.querySelector(".lb-order");
     var current = 0;
 
     function visible() {
@@ -307,7 +308,14 @@
       } else if (src.querySelector(".ph")) {
         stage.innerHTML = src.querySelector(".ph").outerHTML;
       }
-      cap.textContent = src.getAttribute("data-cap") || "";
+      var capText = src.getAttribute("data-cap") || "";
+      cap.textContent = capText;
+      if (order) {
+        var msg = "Bonjour Saeir Thiam Bijouterie, je suis intéressé(e) par ce modèle";
+        if (capText) msg += " : " + capText;
+        msg += ". Pouvez-vous me renseigner ?";
+        order.href = "https://wa.me/2290197967671?text=" + encodeURIComponent(msg);
+      }
     }
     function openTile(tile) {
       var vis = visible();

@@ -67,6 +67,15 @@ Hub multi-pages dans `clients/05-saeir-thiam-bijouterie/` :
 - [x] Google Maps (adresse + itinéraire intégrés)
 - [x] Section avis (⚠️ 3 exemples « à valider » — remplacer par de vrais avis)
 
+## Passe « Conversion : descriptions d'images + commander partout » (V12, 2026-06-23) ✅
+Mongazi : une description à chaque image (et plus sur certaines), pousser le visiteur à commander, sur toute la plateforme.
+- **24 légendes de galerie distinctes** (étaient 3 génériques répétées) — type + attribut d'artisanat (sur-mesure/gravé/maille/prénom…), **honnêtes** (pas de matière/karat inventé, « sertie » retiré).
+- **Lightbox = point de commande** : bouton **« Commander ce modèle »** qui pré-remplit WhatsApp avec la description de la pièce ouverte (`je suis intéressé(e) par ce modèle : [légende]`). Browsing → commande en 1 tap. Sous-ligne « Réalisable sur-mesure, à votre taille et à votre prénom ».
+- **3 cartes Collections** : sous-titre vendeur (Colliers/Bracelets/Bagues) + CTA « Voir & commander » (au lieu de « Découvrir »).
+- **Nudge galerie** : « Une pièce vous plaît ? Ouvrez-la, puis commandez-la — ou faites créer la vôtre. »
+- **Éthique** (rappel honnêteté) : persuasion par le désir + chemins de commande clairs, **PAS de dark pattern** (0 faux compte à rebours / faux stock / fausse urgence) — adapté à une joaillerie de luxe.
+- **QA** : génération du lien « Commander ce modèle » **testée** (URL wa.me décodée = bonne légende) ; 24/24 légendes distinctes ; JS/CSS OK. Cache **`?v=20260623i`**. Déployé + prod vérifiée (24 caps, lb-order, 3 sublines, builder JS, 4 pages 200).
+
 ## Passe « Formulaire de devis → WhatsApp pré-rempli » (V11, 2026-06-23) ✅
 Mongazi : un formulaire de commande côté THIAM (nom/prénom/numéro/indication, « 1ʳᵉ fois en bijouterie ? », zones à choix multiples) qui redirige vers WhatsApp.
 - **Architecture** : 100% **client-side**, fidèle au modèle du site (tout passe par WhatsApp, pas de backend). Le formulaire **assemble les réponses en un message** et ouvre `wa.me/2290197967671?text=…` pré-rempli (l'utilisateur n'a qu'à appuyer « envoyer »).
