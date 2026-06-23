@@ -2,8 +2,17 @@
 
 > Branche créée le **2026-06-22** pendant la construction du site **Djambar Team / Saeir Thiam Bijouterie** (client #05).
 > **But** : capturer **minutieusement** la procédure réelle qu'on utilise pour produire un
-> **site vitrine + QR code** ou un **catalogue digital + QR code**, afin d'en faire **un SKILL**
-> à la fin du projet Mr THIAM.
+> **site vitrine + QR code** ou un **catalogue digital + QR code**, afin d'en faire **un SKILL**.
+
+> ✅ **SKILL CONSTRUIT le 2026-06-23** : **`nebula-site`**, installé dans
+> `.claude/skills/nebula-site/` (SKILL.md + `templates/` = socle gold standard
+> app.css/app.js/_build_assets.py/_build_gallery_v2.py). ⚠️ `.claude/` est **gitignoré**
+> (config locale machine) → la **source versionnée = cette branche** ; le texte canonique du
+> skill est mirroré ici dans **`SKILL.md`**. **Réinstaller** après un clone/reset : copier
+> `_memoire/procedure-vitrine/SKILL.md` → `.claude/skills/nebula-site/SKILL.md` et recopier
+> les templates depuis `clients/05-saeir-thiam-bijouterie/` (`assets/app.css`, `assets/app.js`,
+> `_build_assets.py`, `_build_gallery_v2.py`). **Test restant** : lancer sur un NOUVEAU formulaire
+> (autre client) et comparer au gold standard Djambar Team.
 
 ## Objectif final (ce qu'on construit)
 Un **skill invocable** auquel je donne **juste le formulaire rempli d'un client** et qui
@@ -19,7 +28,8 @@ infos que SEUL le client possède).
 | `SKILLS-ET-OUTILS.md` | **TOUS les skills et outils invoqués** durant la création (versions, commandes). |
 | `CONVENTIONS.md` | Les standards techniques/visuels non négociables (règles NEBULA). |
 | `EVOLUTION.md` | **Journal vivant** : décisions, apprentissages, ajustements, au fur et à mesure. |
-| `SPEC-SKILL.md` | La **spécification du futur skill** (nom, déclencheur, entrées, comportement, sorties). |
+| `SPEC-SKILL.md` | La **spécification du skill** (nom, déclencheur, entrées, comportement, sorties). |
+| `SKILL.md` | ✅ **Le skill construit** (copie canonique versionnée de `.claude/skills/nebula-site/SKILL.md`). |
 
 ## Règle de tenue (au fur et à mesure)
 À chaque avancée sur une vitrine/catalogue **avant** que le skill existe :

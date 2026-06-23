@@ -143,4 +143,12 @@ Recette validée à mettre dans le skill (cas « domaine final »). Pré-requis 
 - **Migration des URLs après go-live** : remplacer **toutes** les occurrences `<projet>.pages.dev` → `https://<domaine>` dans canonical, og:url, JSON-LD, `sitemap.xml`, `robots.txt` (Sitemap:) → revalider le JSON-LD → redeploy. Sinon Google indexe l'ancienne adresse.
 - **Restant optionnel** : redirect **www→apex** (Cloudflare Redirect Rule / Bulk Redirect) ; régénérer l'**affiche/QR** vers le vrai domaine.
 
-<!-- Prochaines entrées : ajouter ici au fil des vitrines suivantes, avant la création du skill. -->
+## 2026-06-23 — SKILL `nebula-site` CONSTRUIT (depuis cette branche)
+- Skill **`nebula-site`** installé dans `.claude/skills/nebula-site/` : `SKILL.md` (runbook exécutable PHASE 0→9 + règle run-to-completion + checklist pré-livraison + garde-fous + pièges QA) + `templates/` (socle gold standard copié de Djambar : `app.css`, `app.js`, `_build_assets.py`, `_build_gallery_v2.py`, en-têtés « TEMPLATE — à adapter par client »).
+- **`.claude/` est gitignoré** (`.gitignore` l.15, « config locale machine, skills installés ») → comme `studio-quotidien`, le skill vit en local ; la **source versionnée = cette branche**. Copie canonique du SKILL.md mirrorée ici (`_memoire/procedure-vitrine/SKILL.md`). Procédure de réinstallation notée dans `README.md`.
+- **Nom** : d'abord `vitrine-express` (provisoire), renommé **`nebula-site`** par Mongazi. Le skill se déclenche par dossier (`.claude/skills/nebula-site/`) + frontmatter `name: nebula-site`.
+- ⚠️ Ne pas bundler de `__pycache__` dans les templates (bytecode, créé par `py_compile` — supprimé).
+- **Reste à faire** : tester `nebula-site` sur un **nouveau formulaire client** (run-to-completion réel) → comparer à Djambar Team, puis itérer (ici + dans le SKILL.md).
+
+<!-- Prochaines entrées : ajouter ici au fil des vitrines suivantes. Toute leçon → ici ; toute évolution DU SKILL → aussi dans .claude/skills/nebula-site/SKILL.md (§ Journal). -->
+<!-- Après édition du SKILL.md : re-copier vers _memoire/procedure-vitrine/SKILL.md (mirroir versionné). -->

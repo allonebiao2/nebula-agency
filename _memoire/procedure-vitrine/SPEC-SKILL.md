@@ -1,11 +1,11 @@
-# SPEC DU FUTUR SKILL — « vitrine-express » (nom provisoire)
+# SPEC DU SKILL — « nebula-site » ✅ CONSTRUIT 2026-06-23
 
-> À **construire à la fin** de la vitrine Mr THIAM (quand validée), à partir de cette branche cerveau.
+> Construit à partir de cette branche cerveau, après le gold standard Djambar Team.
 > Cible : **donner le formulaire rempli → recevoir le produit fini**, sans s'arrêter en cours de route.
 
 ## 1. Identité
-- **Nom** (provisoire) : `vitrine-express` (alt : `forme-to-vitrine`, `vitrine-nebula`). À ne pas confondre avec le **projet Vitrina** (générateur SaaS) ni `studio-quotidien`.
-- **Emplacement** : `.claude/skills/vitrine-express/SKILL.md` (+ assets bundlés : `_build_assets.py` template, snippets `app.css`/`app.js`).
+- **Nom = `nebula-site`** (choisi par Mongazi le 2026-06-23). À ne pas confondre avec le **projet Vitrina** (générateur SaaS), `studio-quotidien`, ni le projet « site NEBULA Agency » (vitrine de l'agence).
+- **Emplacement** : `.claude/skills/nebula-site/SKILL.md` (+ assets bundlés : `_build_assets.py` template, snippets `app.css`/`app.js`).
 - **Déclencheurs** (description SKILL.md) : « formulaire client », « nouvelle vitrine », « catalogue digital », « créer le site de <client> », collage d'une fiche `NOUVELLE COMMANDE — NEBULA AGENCY ».
 
 ## 2. Entrée
