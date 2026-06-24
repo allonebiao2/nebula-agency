@@ -221,3 +221,10 @@ Règle de Mongazi : « mets à chaque fois ce qu'on fait dans le skill ». Les l
   `.has-photo`/`.sec-bg` (voiles calculés AA, attention `.cta>*{z-index:1}` qui attrape l'img). QA
   pleine page à fonds floutés = lente en headless → capturer étroit (mobile) + harnais iframe pour la
   lecture vidéo. Détails EVOLUTION 2026-06-24.
+- **2026-06-24 — Miss cakes : motion signature PAR SECTION.** Donner à chaque section sa propre entrée
+  sans casser PE/overflow : UN seul IO ajoute `.in`, des **variantes** par-dessus (clip/unfold/slide/
+  stamp/perspective/scatter) + ambiances scroll-driven additives (parallax, Ken-Burns, lignes qui se
+  tracent) + particules JS bornées (confettis/poussière, IO once, reduced-motion off). ⚠️ piège
+  re-rencontré : tout `translateX`/`scale>1` sortant en pré-révélation déborde → scatter en translateY
+  seul, slides clippés au niveau **section** (`overflow-x:clip`), tampon en scale<1. Nettoyer le code
+  mort à chaque refonte (grep classe dans HTML = 0 ⇒ supprimer). Détails EVOLUTION 2026-06-24.

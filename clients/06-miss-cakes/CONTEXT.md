@@ -75,6 +75,23 @@ Samelia (via Mongazi) a envoyé 4 visuels générés (Nano Banana Pro) dans `_pa
   H.264, contrastes AA vérifiés (calcul + captures), prod 200.
 - Restent **provisoires** : la **galerie** (tuiles SVG d'aperçu), le **logo** (badge cupcake), les **avis**.
 
+## V4 — Une animation signature DIFFÉRENTE par section + nettoyage code (2026-06-24, `?v=20260624c`)
+Demande : « chaque section = une expérience différente, ultra-fluide, qui transporte dans l'univers
+Miss cakes » (page unique conservée). Identités de motion (toutes natif/GPU, reduced-motion complet,
+contenu visible sans JS) :
+- **Hero** : parallax scroll-driven (la vidéo s'enfonce/zoome, le contenu dérive) + entrée chorégraphiée.
+- **Engagements** : `trust-line` — ligne dorée qui se trace (scaleX) reliant les 4 piliers, piliers qui surgissent le long.
+- **La maison** : `reveal-clip` (essuyage clip-path du texte) + `reveal-unfold` (le credo s'ouvre en rotateX, livre de recettes).
+- **Créations** : `reveal-place` — cartes posées en perspective (rotateX bas + scale), cascade nth-child.
+- **Galerie** : `gitem` scatter (translateY + rotation + scale, **sans translateX** = anti-débordement) → se rangent.
+- **Éditorial** : Ken-Burns scroll-driven sur la photo sombre + **filet d'or** qui se trace.
+- **Avis** : slide alterné gauche/droite (`reveal-from-l/r`, `#avis{overflow-x:clip}`) + **étoiles qui se remplissent** une à une (JS).
+- **Commander** : `atelier` — blocs du formulaire en cascade + **poussière de sucre** qui dérive (`.flour`, clippée).
+- **Contact** : `reveal-stamp` — lignes d'info qui s'impriment (scale .9→1, pas de débordement).
+- **CTA** : `cta-celebrate` — **éclat de confettis** à l'entrée (JS, borné/GPU) + titre qui s'agrandit.
+- **Nettoyage** : retrait du code mort (hero SVG cake-art/mesh/sprinkles/hero-bg/hero-grid en CSS+JS) laissé par V2 après passage à la vidéo. `node --check` OK.
+- QA : overflow 0 (360→1280, 3 fuites horizontales corrigées : scatter/avis/stamp), prod 200 v=c, motion+confetti servis, dead code absent vérifié.
+
 ## À REMPLACER (placeholders pro « à valider »)
 - **Logo** → badge cupcake provisoire (remplacer par le vrai logo dès réception WhatsApp ; régénérer favicons/OG/affiche via `_build_assets.py`).
 - **Photos** → tuiles d'aperçu SVG (basculer les `.gitem .ph` en `<img>` quand les vraies photos arrivent ; pipeline prêt).

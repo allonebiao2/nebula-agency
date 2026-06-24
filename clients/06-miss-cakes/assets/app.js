@@ -445,25 +445,6 @@
     });
   }
 
-  /* ---------- Sucre / confettis qui flottent dans le hero (desktop, !reduce) ---------- */
-  (function () {
-    var field = document.querySelector(".sprinkle-field");
-    if (!field || reduce || isMobile) return;
-    var cols = ["#E59CA9", "#C76B7C", "#C9925B", "#F6D9DE", "#9C6B33", "#E7C9A3"];
-    for (var i = 0; i < 12; i++) {
-      var s = document.createElement("i");
-      s.className = "spr";
-      s.style.left = (6 + Math.random() * 88) + "%";
-      s.style.bottom = (-6 + Math.random() * 28) + "%";
-      s.style.background = cols[i % cols.length];
-      s.style.setProperty("--r", (Math.random() * 180 - 90).toFixed(0) + "deg");
-      s.style.setProperty("--d", (7 + Math.random() * 7).toFixed(1) + "s");
-      s.style.setProperty("--delay", (Math.random() * 8).toFixed(1) + "s");
-      if (Math.random() < 0.4) { s.style.width = "6px"; s.style.height = "6px"; s.style.borderRadius = "50%"; }
-      field.appendChild(s);
-    }
-  })();
-
   /* ---------- Ripple au clic (boutons & actions) ---------- */
   if (!reduce) {
     document.querySelectorAll(".btn, .order, .lb-order, .form-foot button, .gfilter button").forEach(function (el) {
@@ -481,6 +462,59 @@
       }, { passive: true });
     });
   }
+
+  /* ---------- AVIS : étoiles qui se remplissent en séquence à l'entrée ----------
+     PE : sans cette anim les étoiles sont pleines (CSS). On pose .stars-anim
+     (état creux) seulement si on va animer, puis on allume une à une. */
+  (function () {
+    var quotes = Array.prototype.slice.call(document.querySelectorAll(".quote"));
+    if (!quotes.length) return;
+    function fill(q) {
+      var stars = q.querySelector(".stars");
+      if (!stars || stars.dataset.done) return;
+      stars.dataset.done = "1";
+      var svgs = stars.querySelectorAll("svg");
+      if (reduce) { svgs.forEach(function (s) { s.classList.add("lit"); }); return; }
+      stars.classList.add("stars-anim");
+      svgs.forEach(function (s, i) { setTimeout(function () { s.classList.add("lit"); }, 120 + i * 110); });
+    }
+    if (reduce || !("IntersectionObserver" in window)) { quotes.forEach(fill); return; }
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { fill(e.target); io.unobserve(e.target); } });
+    }, { threshold: 0.4 });
+    quotes.forEach(function (q) { io.observe(q); });
+  })();
+
+  /* ---------- CTA : éclat de confettis à l'entrée (borné, GPU) ---------- */
+  (function () {
+    var cta = document.querySelector(".cta-celebrate");
+    if (!cta) return;
+    var box = cta.querySelector(".confetti");
+    function burst() {
+      if (cta.dataset.done || reduce || !box) return;
+      cta.dataset.done = "1";
+      var cols = ["#E59CA9", "#C76B7C", "#C9925B", "#E7D6A3", "#FFFBF8", "#B44E69"];
+      var n = isMobile ? 16 : 26;
+      for (var i = 0; i < n; i++) {
+        var c = document.createElement("i");
+        c.className = "cf";
+        c.style.left = (Math.random() * 100) + "%";
+        c.style.background = cols[i % cols.length];
+        c.style.setProperty("--d", (2.2 + Math.random() * 1.6).toFixed(2) + "s");
+        c.style.setProperty("--delay", (Math.random() * 0.5).toFixed(2) + "s");
+        c.style.setProperty("--spin", (360 + Math.random() * 540).toFixed(0) + "deg");
+        if (Math.random() < 0.5) c.style.borderRadius = "50%";
+        box.appendChild(c);
+      }
+      cta.classList.add("go");
+      setTimeout(function () { box.innerHTML = ""; }, 4600);
+    }
+    if (reduce || !("IntersectionObserver" in window)) return;
+    var cio = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { burst(); cio.unobserve(e.target); } });
+    }, { threshold: 0.45 });
+    cio.observe(cta);
+  })();
 
   /* ---------- Tilt des cartes + CTA aimantés (desktop fin uniquement) ---------- */
   var fine = window.matchMedia("(hover:hover) and (pointer:fine)").matches;

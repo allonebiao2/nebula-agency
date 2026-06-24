@@ -275,5 +275,35 @@ La cliente a fourni (via Nano Banana Pro) 1 hero animé + 3 fonds de section. Re
   **scroll d'iframe ne « prend » pas** de façon fiable en headless (revient en haut) → ne pas s'y fier.
   Vérifier la **lecture vidéo** par harnais iframe same-origin lisant `video.paused/currentTime/readyState`.
 
+## 2026-06-24 — Miss cakes : une identité de motion DIFFÉRENTE par section (anti-uniformité)
+Demande « chaque section = une expérience différente, ultra-fluide ». Recette réutilisable pour donner
+à chaque section sa propre entrée sans casser perf/PE/overflow :
+- **Système central, variantes par-dessus** : garder UN seul IntersectionObserver qui ajoute `.in` à
+  tout `.reveal`. Créer des **variantes** (`.reveal-clip` clip-path, `.reveal-unfold` rotateX,
+  `.reveal-from-l/r` slide, `.reveal-stamp` scale, `reveal-place` perspective) + des entrées par
+  enfants (`.trust.in .t`, `.creations .creation.in`, form-sec cascade). Le déclencheur reste l'IO →
+  PE robuste (contenu visible sans JS, rien gaté invisible).
+- **Ambiances scroll-driven = additif pur** : parallax hero, Ken-Burns éditorial, filet d'or, ligne
+  des engagements = `@supports (animation-timeline)` / scaleX au `.in`. Jamais gater le contenu dessus.
+- **⚠️ Débordement horizontal = LE piège des entrées « slide »** (re-rencontré) : tout `translateX`
+  sortant en état pré-révélé déborde la page sur les éléments de bord (galerie scatter `translate(+Xpx)`,
+  avis `from-r +54px`, contact `scale(1.25)` qui élargit). Règles : (1) scatter = **translateY + rotation
+  + scale<1**, jamais translateX ; (2) slide horizontal = clipper la **section** (`#avis{overflow-x:clip}`,
+  pas le `.grid` qui couperait les ombres) ; (3) « tampon » = **scale .9→1** (jamais >1). Toujours
+  re-mesurer `scrollWidth` après ; les `.bg`/`.hero-media`/`.sec-bg` listés comme offenders sont des
+  **faux positifs** (clippés par `overflow:hidden` du parent → n'augmentent pas `scrollWidth`).
+- **Confettis/particules bornés** : injectés en JS à l'entrée (IO once), N réduit sur mobile, conteneur
+  `overflow:hidden`, nettoyés après l'anim (`innerHTML=""`), `reduced-motion` = pas d'injection.
+- **Étoiles qui se remplissent = PE inversé** : par défaut pleines ; le JS ajoute une classe d'état
+  creux (`.stars-anim`) PUIS allume `.lit` en séquence. Sans JS / erreur → restent pleines.
+- **QA headless du motion = limité** : iframe `scrollTo` ne « prend » pas (sections mid-page non
+  capturables ainsi) ; les anims infinies (marquee/flour) + la **vidéo en lecture** empêchent
+  `--screenshot` de « settle » (timeout). Valider par : mesure overflow (iframe-diag multi-largeurs),
+  capture `--disable-javascript` pleine page étroite (PE = tout visible) pour le layout, `node --check`,
+  et inspection du reduced-motion. Ne pas s'acharner à filmer chaque frame.
+- **Nettoyer le code mort à chaque refonte** : après bascule hero SVG→vidéo, retirer
+  hero-art/mesh/sprinkles/hero-bg/hero-grid (CSS+JS) — sinon la dette s'accumule. `grep -c` du nom de
+  classe dans le HTML = 0 ⇒ mort, supprimable.
+
 <!-- Prochaines entrées : ajouter ici au fil des vitrines suivantes. Toute leçon → ici ; toute évolution DU SKILL → aussi dans .claude/skills/nebula-site/SKILL.md (§ Journal). -->
 <!-- Après édition du SKILL.md : re-copier vers _memoire/procedure-vitrine/SKILL.md (mirroir versionné). -->
