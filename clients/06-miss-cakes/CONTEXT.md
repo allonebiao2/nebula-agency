@@ -61,6 +61,20 @@ partout ; j'envoie le reste après ». Fait (tout natif/GPU, 0 lib, `prefers-red
   JS** (états cachés gatés `.js`). QA : overflow 0 (360→1280), cake visible no-JS, prod 200 v=c.
 - ⚠️ Analytics (Cloudflare Web Analytics) = reste un clic dashboard (token déploiement sans scope RUM).
 
+## V3 — Vraies images client intégrées (2026-06-24, cache `?v=20260624a`)
+Samelia (via Mongazi) a envoyé 4 visuels générés (Nano Banana Pro) dans `_partage/` → traités + câblés :
+- **HERO = vidéo de fond** (`Hero (à animer).mp4`, déjà animé en cinemagraph) : transcodée H.264
+  **8 Mo → 256 Ko** (1600px, crf 28, faststart, muette), poster JPEG. Le **SVG cake-art + mesh +
+  sprinkles retirés** ; vidéo plein écran, cake à droite, voile crème dense à gauche (titre sombre AA),
+  autoplay vérifié (paused=false, readyState 4). `prefers-reduced-motion` → poster figé.
+- **3 fonds photo** optimisés (PNG 5-6 Mo → JPEG ~100-200 Ko, 1920px) dans `assets/images/bg/` :
+  - `editorial.jpg` (cake sombre) → bande éditoriale (`.editorial .bg`, voile chocolat, texte blanc AA).
+  - `cta.jpg` (gâteau bougies festif) → bande CTA (`.cta-photo .cta-media`, voile sombre renforcé AA).
+  - `maison.jpg` (flat-lay marbre/ingrédients) → section « La maison » (`.has-photo .sec-bg`, voile crème, texte sombre AA).
+- Sources brutes conservées dans `_partage/` ; pipeline reproductible. QA : overflow 0, vidéo lit en
+  H.264, contrastes AA vérifiés (calcul + captures), prod 200.
+- Restent **provisoires** : la **galerie** (tuiles SVG d'aperçu), le **logo** (badge cupcake), les **avis**.
+
 ## À REMPLACER (placeholders pro « à valider »)
 - **Logo** → badge cupcake provisoire (remplacer par le vrai logo dès réception WhatsApp ; régénérer favicons/OG/affiche via `_build_assets.py`).
 - **Photos** → tuiles d'aperçu SVG (basculer les `.gitem .ph` en `<img>` quand les vraies photos arrivent ; pipeline prêt).

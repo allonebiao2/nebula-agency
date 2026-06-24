@@ -251,5 +251,29 @@ reste ». Leçons réutilisables :
   agence). Cormorant est sur la reflex-reject list MAIS déjà shippé = **identité préservée** (la liste
   ne vaut que pour le greenfield).
 
+## 2026-06-24 — Miss cakes : intégrer les VRAIES images/vidéo client (fonds + hero animé)
+La cliente a fourni (via Nano Banana Pro) 1 hero animé + 3 fonds de section. Recette réutilisable :
+- **Cinemagraph = poids minuscule** : une vidéo « presque figée » (particules qui dérivent) se
+  compresse extrêmement bien. Hero iPhone/IA de 8 Mo → **256 Ko** en H.264 `crf 28`, `scale=1600`,
+  `-an`, `+faststart`. Toujours transcoder (même si déjà avc1, le bitrate source est énorme : 10 Mb/s).
+  Poster JPEG extrait d'une frame. Vérifier le **codec réellement servi** en prod (download + grep avc1).
+- **Hero photo/vidéo clair** : si l'image a une zone claire pour le texte (ici crème à gauche, cake à
+  droite), garder le hero CLAIR (voile crème **dense côté texte**, dégradé vers transparent côté sujet)
+  → texte sombre AA, pas besoin de basculer en cinématique sombre. `object-position` ~70% pour garder
+  le sujet (droite) au recadrage ; voile **uniforme plus dense en mobile** (le sujet passe sous le texte).
+- **Fonds de section = 3 patrons réutilisables** : (1) `.editorial .bg` (image floutée + voile
+  dégradé, texte blanc) ; (2) `.cta-photo` + `<img class="cta-media">` (voile sombre, attention au
+  `.cta>*{z-index:1}` qui attrape l'`<img>` → forcer `.cta-photo .cta-media{z-index:0}`) ; (3)
+  `.has-photo` + `.sec-bg` pour une **section claire** (voile crème dégradé, texte sombre, le panneau
+  opaque type credo masque la zone chargée de la photo).
+- **Contraste sur média = calcul du pire cas** : texte blanc sur une bande sombre = sûr même avec voile
+  léger (le sujet est déjà sombre) ; le piège = un fond **festif clair** (bougies/bokeh de `cta.jpg`) →
+  baisser `brightness` (~.42) + voile .56→.76 pour que le blanc passe ≥4.5 même sur une flamme.
+- **🎥 QA headless d'une page à fonds média = lente** : les `filter:blur()` sur `.bg`/`.sec-bg`/vidéo en
+  software-render font **timeout** les captures pleine page hautes (1280×7200). Solutions : capturer
+  **plus étroit** (mobile 430px = bien moins de pixels → passe) pour juger la légibilité empilée ; le
+  **scroll d'iframe ne « prend » pas** de façon fiable en headless (revient en haut) → ne pas s'y fier.
+  Vérifier la **lecture vidéo** par harnais iframe same-origin lisant `video.paused/currentTime/readyState`.
+
 <!-- Prochaines entrées : ajouter ici au fil des vitrines suivantes. Toute leçon → ici ; toute évolution DU SKILL → aussi dans .claude/skills/nebula-site/SKILL.md (§ Journal). -->
 <!-- Après édition du SKILL.md : re-copier vers _memoire/procedure-vitrine/SKILL.md (mirroir versionné). -->

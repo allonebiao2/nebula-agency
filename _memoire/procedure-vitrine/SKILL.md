@@ -215,3 +215,9 @@ Règle de Mongazi : « mets à chaque fois ce qu'on fait dans le skill ». Les l
   PE renforcé** : tout état caché en attente d'anim (dashoffset/opacity/scaleY) gaté `.js` sinon contenu
   invisible sans JS. **Honnêteté > imagerie stock** : pour un vrai commerçant, scènes SVG/canvas +
   placeholders marqués, jamais du stock déguisé en son produit (cf. EVOLUTION 2026-06-24).
+- **2026-06-24 — Miss cakes : vraies images client intégrées.** La cliente fournit hero animé (mp4) +
+  3 fonds (Nano Banana Pro). Patrons : hero = vidéo de fond (transcode H.264, cinemagraph 8 Mo→256 Ko,
+  poster, voile crème côté texte) ; fonds de section = `.editorial .bg`, `.cta-photo`/`.cta-media`,
+  `.has-photo`/`.sec-bg` (voiles calculés AA, attention `.cta>*{z-index:1}` qui attrape l'img). QA
+  pleine page à fonds floutés = lente en headless → capturer étroit (mobile) + harnais iframe pour la
+  lecture vidéo. Détails EVOLUTION 2026-06-24.
