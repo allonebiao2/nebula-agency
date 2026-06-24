@@ -22,7 +22,7 @@ des surfaces), chocolat pour les bandes d'ancrage, caramel en filet rare.
 ## Typography
 - Display : **Cormorant** (serif couture) — titres, prix, légendes signatures. *Déjà shippé = identité
   préservée* (la liste reflex-reject ne s'applique pas à une marque déjà engagée).
-- Texte : **Jost** (sans géométrique chic). Paire sur axe de contraste serif + géométrique.
+- Texte : **Hanken Grotesk** (grotesque suisse raffiné, pro + distinctif ; ex-Jost jugé « trop basique » 2026-06-24). Paire sur axe serif + grotesque. Poids 400/500/600/700.
 - Échelle fluide `clamp()`, h1 ≤ ~4.7rem, `text-wrap:balance` sur titres, `pretty` sur prose, corps ≤ 66ch.
 
 ## Components (socle partagé `assets/app.css` + `assets/app.js`)

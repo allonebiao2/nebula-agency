@@ -328,5 +328,20 @@ Recette réutilisable (corps teinté + couche verre) :
 - Perf : backdrop-filter sur de **petites surfaces** (boutons/pastilles) = peu coûteux ; ne pas en mettre
   sur de grands panneaux. Overflow inchangé (bordures 1px + box-shadow n'affectent pas le layout).
 
+## 2026-06-24 — Police de corps : Jost peut être perçu « trop basique » → Hanken Grotesk
+- Retour client réel : **Jost** (notre body par défaut depuis Djambar, choisi car Montserrat « sur-utilisé »)
+  a été jugé **« trop basique »** par Mongazi. Donnée à retenir : Jost est propre mais discret/neutre ;
+  pour un rendu « ultra pro + distinctif », préférer un **grotesque à caractère**. Remplacé par
+  **Hanken Grotesk** (grotesque suisse raffiné, gratuit Google Fonts, hors reflex-reject Inter/DM/Outfit ;
+  pairing serif+grotesque avec Cormorant). Alternatives proposées : Schibsted Grotesk (plus éditorial),
+  Albert Sans (géométrique épuré).
+- **Procédure de swap de police de corps** (multi-fichiers) : remplacer dans (1) les **liens Google Fonts**
+  de CHAQUE page (`index`, `affiche`, `404` — `family=...&family=<New>:wght@400;500;600;700`), (2) le
+  `body{font-family}` du socle, (3) les commentaires de doc. Re-mesurer **l'overflow** (les métriques
+  diffèrent → un grotesque un peu plus large peut faire déborder un `.btn` `white-space:nowrap`). Vérifier
+  `grep -c Jost = 0` partout + que la nouvelle URL Google renvoie 200. Bumper `?v=`.
+- À envisager pour le skill : laisser la **police de corps en token facile à changer** (déjà le cas via
+  `body{font-family}` + liens), et proposer 2-3 grotesques distinctifs par défaut plutôt que Jost.
+
 <!-- Prochaines entrées : ajouter ici au fil des vitrines suivantes. Toute leçon → ici ; toute évolution DU SKILL → aussi dans .claude/skills/nebula-site/SKILL.md (§ Journal). -->
 <!-- Après édition du SKILL.md : re-copier vers _memoire/procedure-vitrine/SKILL.md (mirroir versionné). -->

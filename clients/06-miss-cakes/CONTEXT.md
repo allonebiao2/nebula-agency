@@ -106,6 +106,14 @@ discrète** (inset froid/chaud) + halo coloré + `backdrop-filter:blur saturate`
 - Repli `@supports not(backdrop-filter)` : corps plus opaques (AA préservé). QA : overflow 0, contrastes
   calculés, captures clair (hero/maison) OK, prod 200 v=d. Aucun JS modifié.
 
+## V6 — Police de texte : Jost → Hanken Grotesk (2026-06-24, `?v=20260624e`)
+Mongazi trouvait Jost « trop basique » (repéré via la deck du formulaire). Police de **corps**
+remplacée partout par **Hanken Grotesk** (grotesque suisse raffiné, pro + distinctif, ≠ reflex-defaults
+Inter/DM/Jost) ; **Cormorant** (display serif) conservé = pairing serif+grotesque. Remplacé dans
+`index.html` (liens Google Fonts ×2), `assets/app.css` (body font-family), `affiche.html`, `404.html`
+(weights 400/500/600/700). QA : 0 Jost restant, Hanken charge (200), overflow 0 (360→1280), rendu
+vérifié. DESIGN.md à mettre à jour si besoin. (Choix validé par Mongazi parmi Hanken/Schibsted/Albert.)
+
 ## À REMPLACER (placeholders pro « à valider »)
 - **Logo** → badge cupcake provisoire (remplacer par le vrai logo dès réception WhatsApp ; régénérer favicons/OG/affiche via `_build_assets.py`).
 - **Photos** → tuiles d'aperçu SVG (basculer les `.gitem .ph` en `<img>` quand les vraies photos arrivent ; pipeline prêt).
