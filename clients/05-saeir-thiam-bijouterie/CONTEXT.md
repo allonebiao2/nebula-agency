@@ -12,14 +12,15 @@
 - ▶️ **Reste optionnel** : (a) redirection **www → apex** (301, via Cloudflare Redirect Rule — actuellement www sert le site en direct, canonical pointe sur l'apex = OK SEO) ; (b) **régénérer l'affiche PDF** avec un QR « site » → `https://djambarteam.com` (le QR actuel pointe WhatsApp + Maps).
 
 ## ⭐ Architecture de marque (vision du client, à respecter absolument)
+- ⚠️ **JAMAIS le mot « groupe »** (demande Mr Thiam, 2026-06-24 : « groupe » = redondant avec « team »). Dire **« la maison »**, **« les pôles »**, ou simplement **Djambar Team**. Sous-label de marque = **« Cotonou »**. Retiré partout sur le site live le 24/06.
 - **Djambar Team = structure MÈRE** (marque ombrelle). Le site porte ce nom dès le départ.
-- La **bijouterie est la locomotive** actuelle (priorité opérationnelle), mais ne chapeaute pas le groupe.
+- La **bijouterie est la locomotive** actuelle (priorité opérationnelle), mais ne chapeaute pas la maison.
 - Pôles à venir : **Communication** (plus tard) + **Événementiel & Showbiz** (≥ 2 events en tête, guest stars).
 - Le site doit rester **modulaire / évolutif** : ajouter un pôle = ajouter une page, sans refonte lourde.
 - **Levier d'audience** : la visibilité des artistes (événementiel) doit ramener le trafic vers le site → découverte de toute l'offre. Communication différenciée par secteur.
 
 ## Identité
-- **Groupe** : **DJAMBAR TEAM** (marque mère)
+- **Maison / marque mère** : **DJAMBAR TEAM** (ne pas écrire « groupe »)
 - **Pôle bijouterie** : **SAEIR THIAM BIJOUTERIE** (nom de l'enseigne physique — à conserver) · tagline **« Le Bijoutier »**
 - **Contact** : Saeir THIAM
 - **Secteur** : Bijoux & accessoires (or, argent, sur-mesure) + (à venir : communication, événementiel)
@@ -55,7 +56,7 @@
 
 ## Architecture du site (construite)
 Hub multi-pages dans `clients/05-saeir-thiam-bijouterie/` :
-- **`index.html`** — accueil **groupe Djambar Team** (hero ombrelle, les 3 pôles, valeurs, CTA).
+- **`index.html`** — accueil **Djambar Team** (hero ombrelle, les 3 pôles, valeurs, CTA).
 - **`bijouterie.html`** — pôle **Saeir Thiam Bijouterie** complet : savoir-faire (Création/Réparation/Vente), matières (Or/Argent/Sur-mesure), **galerie filtrable + lightbox**, avis, **Google Maps + itinéraire**, devis WhatsApp.
 - **`communication.html`** + **`evenementiel.html`** — pages « Bientôt » élégantes (teasers, opt-in « me prévenir »).
 - **`assets/app.css` + `assets/app.js`** — design system + comportements **partagés** (cache-bust `?v=`). Ajouter un pôle = dupliquer 1 page légère.
@@ -233,7 +234,7 @@ Inspiration fournie par Mongazi (`_partage/inspiration.jpg`, « The Ancient Coin
 - [ ] Domaine final `djambarteam.com` (quand acheté)
 
 ## Décisions importantes
-- **Marque** : site = **Djambar Team** (groupe) ; pôle bijoux = **Saeir Thiam Bijouterie** (enseigne) ; tagline **« Le Bijoutier »**.
+- **Marque** : site = **Djambar Team** (la maison, jamais « groupe ») ; pôle bijoux = **Saeir Thiam Bijouterie** (enseigne) ; tagline **« Le Bijoutier »**.
 - **WhatsApp confirmé** `2290197967671` → câblé.
 - **Images en relatif** (pas base64) pour ce hub multi-pages (perf + évolutivité).
 - Watermarks des photos **conservés** (branding client).
