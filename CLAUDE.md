@@ -74,7 +74,7 @@
 | 03 | Abakar | WECS - montage vidéo | En cours | - |
 | 04 | Gloria | Luxury Skin Clinic - cosmétique (hub 4 pages) | Structure créée | 0167975626 |
 | 05 | Saeir Thiam | **Djambar Team** (groupe) — pôle **Saeir Thiam Bijouterie** (or/argent/sur-mesure) + comm./événementiel à venir · Cotonou (Agla Gbodjètin) · hub multi-pages évolutif | **LIVE https://djambarteam.com** (domaine final, Cloudflare Pages) · finition complète 23/06 (motion, hero nuit vidéo, formulaire devis→WhatsApp, conversion, ergonomie mobile) · reste : vrais avis + photos sans watermark | 0197967671 |
-| 06 | Samelia FAGBOHOUN | **Miss cakes** — pâtisserie artisanale en ligne (gâteaux sur commande) · Cotonou · page unique vitrine + catalogue commandable | **LIVE https://miss-cakes.pages.dev** (Cloudflare Pages, build skill `nebula-site` 23/06) · rose poudré + chocolat + crème · formulaire commande→WhatsApp · affiche A4+QR · reste : vrai logo + vraies photos + vrais avis + **confirmer n° WhatsApp** | 2290167748955 (à confirmer) |
+| 06 | Samelia FAGBOHOUN | **Miss cakes** — pâtisserie artisanale en ligne (gâteaux sur commande) · Cotonou · page unique vitrine + catalogue commandable | **LIVE https://miss-cakes.pages.dev** (Cloudflare Pages, skill `nebula-site` 23/06 + **passe spectaculaire motion `?v=20260623c`** : drips glaçage, cake animé, CTA AA raspberry) · rose poudré + chocolat + crème · formulaire commande→WhatsApp · affiche A4+QR · reste : vrai logo + vraies photos + vrais avis + **confirmer n° WhatsApp** | 2290167748955 (à confirmer) |
 
 ## Mémoire générale
 - Voir _memoire/cerveau.md pour contexte complet

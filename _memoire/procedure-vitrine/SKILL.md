@@ -207,3 +207,11 @@ Règle de Mongazi : « mets à chaque fois ce qu'on fait dans le skill ». Les l
   ajoutées à EVOLUTION : numéro Bénin 8→10 chiffres « à confirmer », reveal horizontal pleine largeur
   = fuite overflow (préférer `.reveal-scale`), mesure overflow par iframe-diag, QA mi-page en
   `--disable-javascript`, placeholders « pro » (badge cupcake + tuiles SVG).
+- **2026-06-24 — Miss cakes passe « spectaculaire ».** Après audit honnête (coquille soignée mais
+  contenu réel manquant), demande « rends-la spectaculaire, animations partout ». Ajouté un **langage
+  motion signature** (tout natif/GPU, reduced-motion complet) : coulures de glaçage (CSS mask), cake
+  qui se dessine (`pathLength="1"`), mesh dérivant, sucre flottant, sheen/tilt/ripple/CTA aimantés.
+  **Fix AA CTA** (rose poudré+blanc échoue → raspberry `#B44E69→#9A3450`, calcul luminance). **Garde-fou
+  PE renforcé** : tout état caché en attente d'anim (dashoffset/opacity/scaleY) gaté `.js` sinon contenu
+  invisible sans JS. **Honnêteté > imagerie stock** : pour un vrai commerçant, scènes SVG/canvas +
+  placeholders marqués, jamais du stock déguisé en son produit (cf. EVOLUTION 2026-06-24).

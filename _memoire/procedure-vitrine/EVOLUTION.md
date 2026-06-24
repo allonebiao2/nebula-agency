@@ -213,5 +213,43 @@ que le pipeline tient sur un cas **mono-marque vitrine+catalogue** (≠ hub mult
   généré** (cupcake Pillow) servant logo+favicon+apple-touch+OG. Tout marqué « à remplacer », le
   pipeline `_build_assets.py` reste ré-exécutable dès réception du vrai logo/photos.
 
+## 2026-06-24 — Miss cakes : passe « spectaculaire » (impeccable + animate) après audit honnête
+Mongazi a fait auditer le site contre les 2 check-lists (« 10k$ vs 200$ » + « IA vs pro »), exigé du
+cru. Verdict honnête donné : **coquille très soignée mais vide de contenu réel** (0 vraie photo = échec
+n°1 pour une pâtisserie ; faux avis marqués ; n° non confirmé ; pas d'analytics ; sous-domaine). Puis :
+« applique toutes les corrections faisables + rends-la spectaculaire, animations partout, j'envoie le
+reste ». Leçons réutilisables :
+- **Honnêteté > remplissage d'imagerie** : `brand.md` (impeccable) réclame de l'imagerie réelle (stock
+  Unsplash) plutôt que des blocs de couleur. MAIS les **règles d'honnêteté du projet priment** : on ne
+  fait PAS passer des photos stock pour les gâteaux de la cliente (mensonge). Résolution : le
+  « spectaculaire » vient du **motion + scènes SVG/canvas crédibles (imagerie légitime) + placeholders
+  honnêtes magnifiés**, pas de photos empruntées. (brand.md autorise explicitement « credible
+  canvas/SVG/WebGL scene » comme imagerie.) → règle skill : imagerie manquante d'un VRAI commerçant =
+  scènes générées + placeholders marqués, jamais du stock déguisé en son produit.
+- **Contraste CTA = à CALCULER avant de choisir la couleur** : un bouton « rose poudré » (clair) +
+  texte blanc échoue l'AA (2.2–3.6). Ni blanc ni chocolat ne passent sur tout un dégradé rose moyen.
+  Script luminance → choisir le rose le plus clair qui tient l'AA blanc : **raspberry `#B44E69→#9A3450`
+  (white 4.96→7.04)**. Garder le rose poudré clair pour le décor, dédier un token `--cta-*` aux boutons.
+- **Coulure de glaçage = séparateur signature pas cher** (POV pâtisserie, anti-template) : un `::after`
+  pleine largeur, `background:inherit` + **`mask` en radial-gradient répété** (2 couches tailles/offsets
+  différents) → drips irréguliers, scalables, sans SVG path à la main. Lisible seulement quand la
+  couleur du bandeau ≠ section dessous (chocolat→clair = top). Animer par `scaleY` (origin top) au reveal.
+- **Tracé SVG « qui se dessine » = `pathLength="1"`** : normalise tous les chemins (dasharray:1,
+  dashoffset 1→0) quelle que soit la longueur réelle → 1 seule keyframe, stagger via `--i`.
+- **PE des animations (récurrent, garde-fou dur)** : tout état caché en attente d'animation
+  (`stroke-dashoffset:1` du tracé, `opacity:0` de la flamme, `scaleY(0)` des drips, `.gitem`) DOIT être
+  **gaté `.js`** (défaut = visible). Sinon : sans JS / headless / crawler, le contenu (ici le **gâteau**
+  du hero) est invisible. Vérifier en capture **`--disable-javascript`** à la largeur où l'élément
+  s'affiche (le cake est `display:none` < 880px → tester ≥ 880px).
+- **Mesh/sprinkles/effets lourds gated** : mesh blur(48px) = desktop only (`@media max-width:760px →
+  display:none`) ; sprinkles JS gated `!isMobile && !reduce` ; **bloc `prefers-reduced-motion` maître**
+  qui fige tout (mesh/sprinkles/draw/flicker/drips/ripple). 0 lib CDN (robuste 4G).
+- **Stagger sans éditer le HTML** : `:nth-child(n){transition-delay}` sur les cartes plutôt que
+  `style="--i"` carte par carte (spécificité du nth-child > classes d1/d2 existantes).
+- **Docs impeccable en monorepo** : `context.mjs` cherche `PRODUCT.md` à la racine du repo → pour un
+  client d'un monorepo, écrire `PRODUCT.md`+`DESIGN.md` **scopés dans `clients/NN-/`** (pas à la racine
+  agence). Cormorant est sur la reflex-reject list MAIS déjà shippé = **identité préservée** (la liste
+  ne vaut que pour le greenfield).
+
 <!-- Prochaines entrées : ajouter ici au fil des vitrines suivantes. Toute leçon → ici ; toute évolution DU SKILL → aussi dans .claude/skills/nebula-site/SKILL.md (§ Journal). -->
 <!-- Après édition du SKILL.md : re-copier vers _memoire/procedure-vitrine/SKILL.md (mirroir versionné). -->

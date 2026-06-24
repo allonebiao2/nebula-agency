@@ -445,10 +445,47 @@
     });
   }
 
-  /* ---------- Tilt subtil des cartes (desktop fin uniquement) ---------- */
+  /* ---------- Sucre / confettis qui flottent dans le hero (desktop, !reduce) ---------- */
+  (function () {
+    var field = document.querySelector(".sprinkle-field");
+    if (!field || reduce || isMobile) return;
+    var cols = ["#E59CA9", "#C76B7C", "#C9925B", "#F6D9DE", "#9C6B33", "#E7C9A3"];
+    for (var i = 0; i < 12; i++) {
+      var s = document.createElement("i");
+      s.className = "spr";
+      s.style.left = (6 + Math.random() * 88) + "%";
+      s.style.bottom = (-6 + Math.random() * 28) + "%";
+      s.style.background = cols[i % cols.length];
+      s.style.setProperty("--r", (Math.random() * 180 - 90).toFixed(0) + "deg");
+      s.style.setProperty("--d", (7 + Math.random() * 7).toFixed(1) + "s");
+      s.style.setProperty("--delay", (Math.random() * 8).toFixed(1) + "s");
+      if (Math.random() < 0.4) { s.style.width = "6px"; s.style.height = "6px"; s.style.borderRadius = "50%"; }
+      field.appendChild(s);
+    }
+  })();
+
+  /* ---------- Ripple au clic (boutons & actions) ---------- */
+  if (!reduce) {
+    document.querySelectorAll(".btn, .order, .lb-order, .form-foot button, .gfilter button").forEach(function (el) {
+      el.classList.add("rippleable");
+      el.addEventListener("pointerdown", function (e) {
+        var r = el.getBoundingClientRect();
+        var rip = document.createElement("span");
+        rip.className = "ripple";
+        var d = Math.max(r.width, r.height) * 1.15;
+        rip.style.width = rip.style.height = d + "px";
+        rip.style.left = (e.clientX - r.left) + "px";
+        rip.style.top = (e.clientY - r.top) + "px";
+        el.appendChild(rip);
+        setTimeout(function () { rip.remove(); }, 650);
+      }, { passive: true });
+    });
+  }
+
+  /* ---------- Tilt des cartes + CTA aimantés (desktop fin uniquement) ---------- */
   var fine = window.matchMedia("(hover:hover) and (pointer:fine)").matches;
   if (fine && !reduce) {
-    document.querySelectorAll(".coll").forEach(function (c) {
+    document.querySelectorAll(".creation, .coll").forEach(function (c) {
       var r = null;
       c.addEventListener("pointerenter", function () {
         r = c.getBoundingClientRect();
@@ -457,9 +494,19 @@
       c.addEventListener("pointermove", function (e) {
         if (!r) r = c.getBoundingClientRect();
         var px = (e.clientX - r.left) / r.width - 0.5, py = (e.clientY - r.top) / r.height - 0.5;
-        c.style.transform = "perspective(900px) rotateX(" + (-py * 4).toFixed(2) + "deg) rotateY(" + (px * 5).toFixed(2) + "deg) translateY(-6px)";
+        c.style.transform = "perspective(900px) rotateX(" + (-py * 3.5).toFixed(2) + "deg) rotateY(" + (px * 4.5).toFixed(2) + "deg) translateY(-6px)";
       });
       c.addEventListener("pointerleave", function () { r = null; c.style.transition = ""; c.style.transform = ""; });
+    });
+    document.querySelectorAll(".btn-lg.btn-rose, .btn-lg.btn-wa, .btn-lg.btn-gold").forEach(function (b) {
+      var r = null;
+      b.addEventListener("pointerenter", function () { r = b.getBoundingClientRect(); });
+      b.addEventListener("pointermove", function (e) {
+        if (!r) r = b.getBoundingClientRect();
+        var mx = e.clientX - (r.left + r.width / 2), my = e.clientY - (r.top + r.height / 2);
+        b.style.transform = "translate(" + (mx * 0.16).toFixed(1) + "px," + (my * 0.28 - 2).toFixed(1) + "px)";
+      });
+      b.addEventListener("pointerleave", function () { r = null; b.style.transform = ""; });
     });
   }
 })();

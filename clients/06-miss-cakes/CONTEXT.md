@@ -43,6 +43,24 @@ Hero → Barre de confiance → La maison (signature + credo) → Nos créations
 ## Mise en ligne (PHASE 8)
 - Cloudflare Pages, projet **`miss-cakes`** → **https://miss-cakes.pages.dev** (à vérifier 200 en prod).
 
+## V2 — Passe « spectaculaire » + corrections (2026-06-23, cache `?v=20260623c`)
+Demande Mongazi : « applique toutes les corrections de l'audit + rends-la spectaculaire, animations
+partout ; j'envoie le reste après ». Fait (tout natif/GPU, 0 lib, `prefers-reduced-motion` complet) :
+- **Correction a11y** : bouton CTA rose recalculé en **raspberry `#B44E69→#9A3450` texte blanc** (WCAG AA
+  4.96→7.04 ; l'ancien rose poudré + blanc échouait à 2.2–3.6). Tokens `--cta-1/--cta-2`.
+- **Langage signature « atelier de pâtisserie »** : **coulures de glaçage** (icing drips, CSS mask
+  radial) encadrant la bande chocolat éditoriale (crème qui coule dedans, chocolat qui coule dessous).
+- **Hero** : mesh crème/rose/caramel qui dérive (desktop), **cake line-art qui se dessine**
+  (stroke-dashoffset) + flamme qui vacille + halo + vapeur, **sucre/confettis qui flottent** (JS),
+  titre « occasion » avec soulignement or qui se trace + reflet qui passe.
+- **Cartes créations** : entrée échelonnée, sheen sweep, tilt 3D desktop, tag qui réagit.
+- **Galerie** : glyphes qui bougent + shimmer au survol.
+- **Micro-interactions partout** : ripple au clic (boutons/filtres/actions), label qui se lève au
+  focus, pills qui « pop », icônes de confiance qui respirent, FAB qui invite, CTA aimantés (desktop).
+- **PE préservé** (leçon réappliquée) : tracé du cake, flamme, drips, tuiles galerie = **visibles sans
+  JS** (états cachés gatés `.js`). QA : overflow 0 (360→1280), cake visible no-JS, prod 200 v=c.
+- ⚠️ Analytics (Cloudflare Web Analytics) = reste un clic dashboard (token déploiement sans scope RUM).
+
 ## À REMPLACER (placeholders pro « à valider »)
 - **Logo** → badge cupcake provisoire (remplacer par le vrai logo dès réception WhatsApp ; régénérer favicons/OG/affiche via `_build_assets.py`).
 - **Photos** → tuiles d'aperçu SVG (basculer les `.gitem .ph` en `<img>` quand les vraies photos arrivent ; pipeline prêt).
