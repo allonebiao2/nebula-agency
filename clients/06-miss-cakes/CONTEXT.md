@@ -106,13 +106,15 @@ discrète** (inset froid/chaud) + halo coloré + `backdrop-filter:blur saturate`
 - Repli `@supports not(backdrop-filter)` : corps plus opaques (AA préservé). QA : overflow 0, contrastes
   calculés, captures clair (hero/maison) OK, prod 200 v=d. Aucun JS modifié.
 
-## V6 — Police de texte : Jost → Hanken Grotesk (2026-06-24, `?v=20260624e`)
-Mongazi trouvait Jost « trop basique » (repéré via la deck du formulaire). Police de **corps**
-remplacée partout par **Hanken Grotesk** (grotesque suisse raffiné, pro + distinctif, ≠ reflex-defaults
-Inter/DM/Jost) ; **Cormorant** (display serif) conservé = pairing serif+grotesque. Remplacé dans
-`index.html` (liens Google Fonts ×2), `assets/app.css` (body font-family), `affiche.html`, `404.html`
-(weights 400/500/600/700). QA : 0 Jost restant, Hanken charge (200), overflow 0 (360→1280), rendu
-vérifié. DESIGN.md à mettre à jour si besoin. (Choix validé par Mongazi parmi Hanken/Schibsted/Albert.)
+## V6 — Police de texte : Jost → Hanken → **Bricolage Grotesque** (2026-06-24, `?v=20260624f`)
+Jost jugé « trop basique ». 1er essai **Hanken Grotesk** : Mongazi « ça n'a pas changé » → **mesuré** :
+Hanken ≈ sans système (Δ largeur 3,7px sur une phrase) = trop neutre, invisible. Donc remplacé par
+**Bricolage Grotesque** (grotesque contemporain à fort caractère, variable `opsz,wght@12..96,400..700`,
+`font-optical-sizing:auto`) : Δ **15,9px** vs sans système = nettement distinctif. **Cormorant** (display)
+conservé. Remplacé dans `index.html` (liens GF ×2), `assets/app.css` (body), `affiche.html`, `404.html`.
+QA : 0 Hanken/0 Jost, Bricolage charge (200, loaded=true), overflow 0 (Bricolage ~8% + large mais nowrap
+OK), rendu vérifié. Leçon : tester la **distinctivité réelle** d'une police (mesure largeur vs sans), pas
+juste « charge-t-elle ». Choix validé Mongazi parmi Bricolage/Fraunces/Schibsted.
 
 ## À REMPLACER (placeholders pro « à valider »)
 - **Logo** → badge cupcake provisoire (remplacer par le vrai logo dès réception WhatsApp ; régénérer favicons/OG/affiche via `_build_assets.py`).

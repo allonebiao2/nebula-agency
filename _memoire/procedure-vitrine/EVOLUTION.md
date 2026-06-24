@@ -342,6 +342,14 @@ Recette réutilisable (corps teinté + couche verre) :
   `grep -c Jost = 0` partout + que la nouvelle URL Google renvoie 200. Bumper `?v=`.
 - À envisager pour le skill : laisser la **police de corps en token facile à changer** (déjà le cas via
   `body{font-family}` + liens), et proposer 2-3 grotesques distinctifs par défaut plutôt que Jost.
+- **Suite (même jour)** : Hanken Grotesk a été jugé « ça n'a pas changé » à son tour. **Mesure décisive** :
+  Hanken ≈ sans système (Δ largeur ~3,7px sur une phrase) → un grotesque « propre/neutre » (Jost, Hanken,
+  Inter…) est **indiscernable du sans système** pour un client. **Règle** : si le client veut « voir » la
+  police, choisir une police à **caractère mesurable** — tester en canvas `measureText(phrase)` vs
+  `sans-serif` ; viser Δ ≳ 10px. **Bricolage Grotesque** (Δ ~15,9px) = retenu (variable `opsz,wght`,
+  `font-optical-sizing:auto`, gratuit, hors reflex-reject). Diagnostic « charge-t-elle ? » :
+  `document.fonts.check('14px "X"')` + `getComputedStyle` ; mais « charge » ≠ « se voit » → toujours
+  mesurer la distinctivité. ⚠️ police plus large = re-mesurer overflow (boutons `nowrap`).
 
 <!-- Prochaines entrées : ajouter ici au fil des vitrines suivantes. Toute leçon → ici ; toute évolution DU SKILL → aussi dans .claude/skills/nebula-site/SKILL.md (§ Journal). -->
 <!-- Après édition du SKILL.md : re-copier vers _memoire/procedure-vitrine/SKILL.md (mirroir versionné). -->

@@ -22,7 +22,7 @@ des surfaces), chocolat pour les bandes d'ancrage, caramel en filet rare.
 ## Typography
 - Display : **Cormorant** (serif couture) — titres, prix, légendes signatures. *Déjà shippé = identité
   préservée* (la liste reflex-reject ne s'applique pas à une marque déjà engagée).
-- Texte : **Hanken Grotesk** (grotesque suisse raffiné, pro + distinctif ; ex-Jost jugé « trop basique » 2026-06-24). Paire sur axe serif + grotesque. Poids 400/500/600/700.
+- Texte : **Bricolage Grotesque** (grotesque contemporain à fort caractère, variable `opsz,wght@12..96,400..700`, `font-optical-sizing:auto`). Ex-Jost puis ex-Hanken jugés « trop basiques » (Hanken mesuré ≈ sans système) → Bricolage = nettement distinctif (Δ 15,9px vs sans). Paire serif + grotesque avec Cormorant.
 - Échelle fluide `clamp()`, h1 ≤ ~4.7rem, `text-wrap:balance` sur titres, `pretty` sur prose, corps ≤ 66ch.
 
 ## Components (socle partagé `assets/app.css` + `assets/app.js`)
