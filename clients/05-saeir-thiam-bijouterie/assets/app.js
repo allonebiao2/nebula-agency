@@ -580,4 +580,84 @@
       c.addEventListener("pointerleave", function () { r = null; c.style.transition = ""; c.style.transform = ""; });
     });
   }
+
+  /* ---------- V18 · AVIS : étoiles d'or qui se remplissent en séquence ----------
+     PE : sans anim les étoiles sont pleines. On pose .stars-anim (état creux)
+     puis on allume .lit une à une à l'entrée. */
+  (function () {
+    var quotes = Array.prototype.slice.call(document.querySelectorAll(".sec-voices .quote"));
+    if (!quotes.length) return;
+    function fill(q) {
+      var stars = q.querySelector(".stars");
+      if (!stars || stars.dataset.done) return;
+      stars.dataset.done = "1";
+      var svgs = stars.querySelectorAll("svg");
+      if (reduce) { svgs.forEach(function (s) { s.classList.add("lit"); }); return; }
+      stars.classList.add("stars-anim");
+      svgs.forEach(function (s, i) { setTimeout(function () { s.classList.add("lit"); }, 140 + i * 110); });
+    }
+    if (reduce || !("IntersectionObserver" in window)) { quotes.forEach(fill); return; }
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { fill(e.target); io.unobserve(e.target); } });
+    }, { threshold: 0.4 });
+    quotes.forEach(function (q) { io.observe(q); });
+  })();
+
+  /* ---------- V18 · CTA : poussière d'or à l'entrée (bornée, GPU) ---------- */
+  (function () {
+    var cta = document.querySelector(".sec-celebrate");
+    if (!cta || reduce) return;
+    var box = cta.querySelector(".goldfall");
+    if (!box) return;
+    function burst() {
+      if (cta.dataset.done) return;
+      cta.dataset.done = "1";
+      var n = window.innerWidth < 760 ? 14 : 22;
+      for (var i = 0; i < n; i++) {
+        var d = document.createElement("i");
+        d.className = "gd";
+        d.style.left = (Math.random() * 100) + "%";
+        var sz = (4 + Math.random() * 5).toFixed(1);
+        d.style.width = d.style.height = sz + "px";
+        d.style.setProperty("--d", (2.4 + Math.random() * 1.8).toFixed(2) + "s");
+        d.style.setProperty("--delay", (Math.random() * 0.7).toFixed(2) + "s");
+        box.appendChild(d);
+      }
+      cta.classList.add("go");
+      setTimeout(function () { box.innerHTML = ""; cta.classList.remove("go"); cta.dataset.done = ""; }, 5200);
+    }
+    if (!("IntersectionObserver" in window)) return;
+    var cio = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { burst(); } });
+    }, { threshold: 0.5 });
+    cio.observe(cta);
+  })();
+
+  /* ---------- V18 · PÔLE COMMUNICATION : barres d'égaliseur (studio) ---------- */
+  (function () {
+    if (!document.body.classList.contains("pole-comm")) return;
+    var wave = document.querySelector(".eqwave");
+    if (!wave) return;
+    var n = window.innerWidth < 760 ? 22 : 40;
+    for (var i = 0; i < n; i++) {
+      var b = document.createElement("i");
+      b.style.setProperty("--h", (35 + Math.random() * 60).toFixed(0) + "%");
+      b.style.animationDelay = (Math.random() * 1.8).toFixed(2) + "s";
+      b.style.animationDuration = (1.3 + Math.random() * 1.1).toFixed(2) + "s";
+      wave.appendChild(b);
+    }
+  })();
+
+  /* ---------- V18 · PÔLE ÉVÉNEMENTIEL : guirlande d'ampoules (showbiz) ---------- */
+  (function () {
+    if (!document.body.classList.contains("pole-event")) return;
+    var bulbs = document.querySelector(".bulbs");
+    if (!bulbs) return;
+    var n = window.innerWidth < 760 ? 12 : 22;
+    for (var i = 0; i < n; i++) {
+      var b = document.createElement("i");
+      b.style.animationDelay = (i * 0.12).toFixed(2) + "s";
+      bulbs.appendChild(b);
+    }
+  })();
 })();

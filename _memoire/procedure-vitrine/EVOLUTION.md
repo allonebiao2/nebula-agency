@@ -351,5 +351,22 @@ Recette réutilisable (corps teinté + couche verre) :
   `document.fonts.check('14px "X"')` + `getComputedStyle` ; mais « charge » ≠ « se voit » → toujours
   mesurer la distinctivité. ⚠️ police plus large = re-mesurer overflow (boutons `nowrap`).
 
+## 2026-06-24 — Djambar : différencier des pages-sœurs « clones » + animations par section (re-confirmations)
+- **Pages-pôles clones → univers distincts** : 2 pages bâties sur le même template (soon Communication +
+  Événementiel) se différencient proprement avec un **modificateur `body.pole-X`** + décor de hero propre
+  (sans toucher l'autre) : Comm = studio (égaliseur d'ondes JS + curseur de frappe + dégradé azur), Event =
+  showbiz (projecteurs `conic-gradient` qui balaient + guirlande d'ampoules JS + montée « sur scène »).
+  Reuse du template OK, l'identité vient du scope `body.pole-X` + 1-2 éléments décor + variantes d'entrée.
+- **Décor de hero injecté en JS** (barres d'égaliseur, ampoules) = léger, PE-safe (absent sans JS = hero
+  intact), gated par `body.classList.contains('pole-X')`. Conteneurs vides dans le HTML, remplis en JS.
+- **⚠️ Overflow (RE-confirmé, ne plus refaire)** : pour des entrées par section, **jamais** de `scale>1`
+  (tampon → scale .92) ni de `rotateY` (projette la largeur → déborde sur cartes de bord). Préférer
+  **rotateX** (projette la hauteur, pas la largeur) pour un effet « facette/tilt » sans fuite. `overflow-x:clip`
+  au niveau section en filet, mais mieux vaut une transform qui ne fuit pas par construction.
+- **QA headless d'une page lourde (vidéo + canvas beams + marquee)** : l'injection `*{animation:none}` ne
+  suffit PAS (le rAF du canvas beams continue → dump-dom reste vide/hang). Ce qui MARCHE pour mesurer
+  l'overflow : multi-iframes + `--virtual-time-budget` (force la sortie même si non-idle). Capturer les
+  pages SANS canvas (les soon-poles) = OK normalement.
+
 <!-- Prochaines entrées : ajouter ici au fil des vitrines suivantes. Toute leçon → ici ; toute évolution DU SKILL → aussi dans .claude/skills/nebula-site/SKILL.md (§ Journal). -->
 <!-- Après édition du SKILL.md : re-copier vers _memoire/procedure-vitrine/SKILL.md (mirroir versionné). -->

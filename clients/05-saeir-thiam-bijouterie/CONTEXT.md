@@ -11,6 +11,22 @@
 - Déploiement via `npx wrangler pages deploy` (build propre : HTML + `assets/app.*` + `assets/images/{logos,og,favicon,gallery}` + `assets/videos/thiam.MP4`, **sans** les photos sources lourdes).
 - ▶️ **Reste optionnel** : (a) redirection **www → apex** (301, via Cloudflare Redirect Rule — actuellement www sert le site en direct, canonical pointe sur l'apex = OK SEO) ; (b) **régénérer l'affiche PDF** avec un QR « site » → `https://djambarteam.com` (le QR actuel pointe WhatsApp + Maps).
 
+## V18 — Différenciation des pôles + animations par section (2026-06-24, `?v=20260624a`)
+Demande Mr Thiam : différencier chaque pôle (surtout les 2 « Bientôt » qui étaient des clones) + chaque
+section de la page bijouterie = une animation hors du commun, toutes différentes. Fait (natif/GPU, PE, reduced-motion) :
+- **Bijouterie — 11 signatures distinctes** : hero glint d'or sur le titre · confiance = filet d'or qui se
+  trace + piliers · savoir-faire = facettes (cartes en rotateX + sheen) · matières = balayage métallique +
+  halo des pastilles · éditorial = Ken-Burns + titre dévoilé (clip-path) · galerie = collections qui se
+  rangent · avis = slide alterné + **étoiles d'or séquentielles** · devis = champs en cascade + halo focus ·
+  localisation = infos « tamponnées » + carte en fondu-zoom · CTA = **poussière d'or** (confettis) + titre ·
+  Instagram = vignettes qui se retournent (rotateX).
+- **Pôle Communication** (`body.pole-comm`) = univers **studio/image** : dégradé azur, **égaliseur d'ondes**
+  (barres JS) en bas du hero, **curseur de frappe** sur le titre, cartes en flux latéral.
+- **Pôle Événementiel** (`body.pole-event`) = univers **scène/showbiz** : **projecteurs** qui balaient,
+  **guirlande d'ampoules** clignotantes, cartes qui « montent sur scène ». Les 2 pôles ne se ressemblent plus.
+- ⚠️ Pièges overflow corrigés (mêmes leçons que Miss cakes) : « tampon » en **scale<1** (jamais >1), facettes
+  en **rotateX** (pas rotateY qui projette la largeur) ; overflow 0 vérifié (360→1280) sur les 3 pages.
+
 ## ⭐ Architecture de marque (vision du client, à respecter absolument)
 - ⚠️ **JAMAIS le mot « groupe »** (demande Mr Thiam, 2026-06-24 : « groupe » = redondant avec « team »). Dire **« la maison »**, **« les pôles »**, ou simplement **Djambar Team**. Sous-label de marque = **« Cotonou »**. Retiré partout sur le site live le 24/06.
 - **Djambar Team = structure MÈRE** (marque ombrelle). Le site porte ce nom dès le départ.
