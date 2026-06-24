@@ -228,3 +228,7 @@ Règle de Mongazi : « mets à chaque fois ce qu'on fait dans le skill ». Les l
   re-rencontré : tout `translateX`/`scale>1` sortant en pré-révélation déborde → scatter en translateY
   seul, slides clippés au niveau **section** (`overflow-x:clip`), tampon en scale<1. Nettoyer le code
   mort à chaque refonte (grep classe dans HTML = 0 ⇒ supprimer). Détails EVOLUTION 2026-06-24.
+- **2026-06-24 — Boutons « Liquid Glass ».** Sur demande explicite (réf image), boutons en verre : corps
+  teinté (AA) + reflet spéculaire (gloss ≤42% pour ne pas toucher le texte) + profondeur + liseré +
+  dispersion chromatique (inset froid/chaud) + halo + `backdrop-filter`. WhatsApp vert approfondi pour
+  AA. Fonds sombres → verre clair + texte blanc. Repli `@supports not(backdrop-filter)`. Détails EVOLUTION.

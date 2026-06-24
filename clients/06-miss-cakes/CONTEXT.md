@@ -92,6 +92,20 @@ contenu visible sans JS) :
 - **Nettoyage** : retrait du code mort (hero SVG cake-art/mesh/sprinkles/hero-bg/hero-grid en CSS+JS) laissé par V2 après passage à la vidéo. `node --check` OK.
 - QA : overflow 0 (360→1280, 3 fuites horizontales corrigées : scatter/avis/stamp), prod 200 v=c, motion+confetti servis, dead code absent vérifié.
 
+## V5 — Boutons « Liquid Glass » (réf _partage/liquid glass.jpg, 2026-06-24, `?v=20260624d`)
+Demande explicite : boutons en verre liquide comme la réf, adaptés Miss cakes. (Le ban impeccable du
+glassmorphism = « par défaut/décoratif » ; ici choix explicite ciblé, appliqué avec lisibilité AA.)
+Recette (corps teinté pour l'AA + verre par-dessus) : reflet spéculaire haut (gloss ≤42% pour ne pas
+toucher le texte centré) + profondeur basse (inset shadow) + liseré clair + **dispersion chromatique
+discrète** (inset froid/chaud) + halo coloré + `backdrop-filter:blur saturate` + `text-shadow`.
+- **Primaire** = raspberry glass (`--cta-1/2`, blanc, corps 4.96–7.04 où est le texte).
+- **WhatsApp** = vert glass (vert approfondi `#34d977→#0e9a49`, blanc large-gras 3.66 ≥ AA grand).
+- **Caramel** = ambre glass (texte chocolat). **Ghost/Outline** = verre givré (texte chocolat sur clair ;
+  surcharge **fonds sombres** CTA/éditorial = verre clair + texte blanc 9.19). **`.order`** cartes = verre vert ;
+  **`.lb-order`** = verre vert ; **filtres galerie** = verre givré, actif = raspberry glass ; **FAB WhatsApp** = verre vert.
+- Repli `@supports not(backdrop-filter)` : corps plus opaques (AA préservé). QA : overflow 0, contrastes
+  calculés, captures clair (hero/maison) OK, prod 200 v=d. Aucun JS modifié.
+
 ## À REMPLACER (placeholders pro « à valider »)
 - **Logo** → badge cupcake provisoire (remplacer par le vrai logo dès réception WhatsApp ; régénérer favicons/OG/affiche via `_build_assets.py`).
 - **Photos** → tuiles d'aperçu SVG (basculer les `.gitem .ph` en `<img>` quand les vraies photos arrivent ; pipeline prêt).

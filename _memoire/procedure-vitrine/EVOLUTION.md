@@ -305,5 +305,28 @@ Demande « chaque section = une expérience différente, ultra-fluide ». Recett
   hero-art/mesh/sprinkles/hero-bg/hero-grid (CSS+JS) — sinon la dette s'accumule. `grep -c` du nom de
   classe dans le HTML = 0 ⇒ mort, supprimable.
 
+## 2026-06-24 — Boutons « Liquid Glass » (Apple-like) lisibles sur n'importe quel fond
+Client demande explicitement des boutons en verre liquide (réf image). Le ban impeccable du
+glassmorphism vise le **décoratif par défaut** ; une demande explicite ciblée est légitime si l'AA tient.
+Recette réutilisable (corps teinté + couche verre) :
+- **Corps assez teinté pour l'AA** (le verre ne doit pas rendre le texte illisible) : pour un bouton
+  coloré, garder le dégradé de marque opaque ; le « verre » = les couches PAR-DESSUS, pas la transparence.
+- **Reflet spéculaire** = couche `linear-gradient(180deg, white α, transparent STOP)` en haut. ⚠️ le STOP
+  doit finir **avant la zone du texte centré** (≤42%) sinon le blanc délave le texte → contraste chute
+  (calculé : white sur top glossy 3.1 vs corps 5–7 ; le texte est au centre → sur le corps, OK).
+- **Profondeur** = `inset 0 -10px 18px` teinte foncée bas ; **liseré** = `border:1px rgba(255,255,255,.5)`
+  + `inset 0 1.5px white` ; **dispersion chromatique** = 2 inset shadows latéraux froid/chaud
+  (`inset 2.5px 0 rgba(150,190,255,.3)` + `inset -2.5px 0 rgba(255,150,195,.3)`) = bord irisé subtil ;
+  **halo** = box-shadow de couleur ; **refraction** = `backdrop-filter:blur saturate`.
+- **`text-shadow`** léger sur les boutons colorés = filet de sécurité lisibilité sur le gloss.
+- **Vert WhatsApp** : le `#25D366` natif + blanc échoue (~1.4) ; un bouton « glass » assombri
+  `#34d977→#0e9a49` blanc = **3.66** (≥3 grand-gras) — bien meilleur, reste « WhatsApp ».
+- **Adapter au fond** : verre givré clair (texte sombre) sur sections claires ; sur bandes SOMBRES
+  surcharger en verre clair (`rgba(255,255,255,.05-.22)`) + **texte blanc** (≈9 de contraste).
+- **Repli** `@supports not ((backdrop-filter:blur(2px)) or (-webkit-backdrop-filter:blur(2px)))` →
+  remonter l'opacité des corps givrés (vieux WebView Android sans backdrop-filter = sinon illisible).
+- Perf : backdrop-filter sur de **petites surfaces** (boutons/pastilles) = peu coûteux ; ne pas en mettre
+  sur de grands panneaux. Overflow inchangé (bordures 1px + box-shadow n'affectent pas le layout).
+
 <!-- Prochaines entrées : ajouter ici au fil des vitrines suivantes. Toute leçon → ici ; toute évolution DU SKILL → aussi dans .claude/skills/nebula-site/SKILL.md (§ Journal). -->
 <!-- Après édition du SKILL.md : re-copier vers _memoire/procedure-vitrine/SKILL.md (mirroir versionné). -->

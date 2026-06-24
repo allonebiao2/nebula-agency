@@ -875,3 +875,105 @@ textarea.inp{min-height:108px;resize:vertical;line-height:1.5}
   .flour,.cta-celebrate .confetti{display:none}
   .js .cta-celebrate h2{opacity:1;transform:none;animation:none}
 }
+
+/* ============================================================
+   LIQUID GLASS — boutons (réf _partage/liquid glass.jpg), adapté Miss cakes (v=20260624d)
+   Demande explicite Mongazi. Corps teinté (lisibilité AA) + verre :
+   reflet spéculaire haut, profondeur basse, liseré qui capte la lumière,
+   dispersion chromatique discrète (bord froid/chaud), halo coloré + backdrop-filter.
+   ============================================================ */
+.btn{border:1px solid rgba(255,255,255,.5);-webkit-backdrop-filter:blur(7px) saturate(1.35);backdrop-filter:blur(7px) saturate(1.35)}
+
+/* Primaire — RASPBERRY liquid glass (texte blanc AA sur le corps saturé) */
+.btn-rose{
+  background:linear-gradient(180deg,rgba(255,255,255,.26),rgba(255,255,255,0) 42%),linear-gradient(135deg,var(--cta-1),var(--cta-2));
+  color:#fff;text-shadow:0 1px 2px rgba(74,12,33,.5);
+  box-shadow:inset 0 1.5px 1.5px rgba(255,255,255,.78),inset 0 -10px 18px -6px rgba(90,16,40,.55),
+    inset 2.5px 0 9px -4px rgba(150,190,255,.3),inset -2.5px 0 9px -4px rgba(255,150,195,.32),
+    0 18px 40px -16px rgba(154,52,80,.6),0 0 26px -6px rgba(199,107,124,.55)}
+.btn-rose:hover{transform:translateY(-2px);box-shadow:inset 0 1.5px 1.5px rgba(255,255,255,.9),inset 0 -10px 18px -6px rgba(90,16,40,.5),
+    inset 2.5px 0 9px -4px rgba(150,190,255,.34),inset -2.5px 0 9px -4px rgba(255,150,195,.36),
+    0 26px 56px -14px rgba(154,52,80,.72),0 0 36px -4px rgba(199,107,124,.7)}
+
+/* WhatsApp — green liquid glass */
+.btn-wa{
+  background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0) 42%),linear-gradient(135deg,#34d977,#0e9a49);
+  color:#fff;text-shadow:0 1px 2px rgba(4,52,26,.6);
+  box-shadow:inset 0 1.5px 1.5px rgba(255,255,255,.82),inset 0 -10px 18px -6px rgba(6,74,38,.5),
+    inset 2.5px 0 9px -4px rgba(150,220,255,.28),inset -2.5px 0 9px -4px rgba(190,255,210,.3),
+    0 16px 36px -14px rgba(21,173,85,.6),0 0 24px -6px rgba(63,224,126,.5)}
+.btn-wa:hover{transform:translateY(-2px);box-shadow:inset 0 1.5px 1.5px rgba(255,255,255,.92),0 24px 50px -14px rgba(21,173,85,.72),0 0 34px -4px rgba(63,224,126,.66)}
+
+/* Caramel — amber liquid glass (texte chocolat AA) */
+.btn-gold{
+  background:linear-gradient(180deg,rgba(255,255,255,.42),rgba(255,255,255,0) 46%),linear-gradient(135deg,var(--gold-soft),var(--gold) 55%,var(--gold-deep));
+  color:#3a2408;text-shadow:0 1px 1px rgba(255,242,214,.5);
+  box-shadow:inset 0 1.5px 1.5px rgba(255,255,255,.88),inset 0 -8px 16px -6px rgba(120,80,20,.4),
+    0 16px 36px -16px rgba(201,146,91,.55),0 0 22px -6px rgba(231,214,163,.5)}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:inset 0 1.5px 1.5px rgba(255,255,255,.96),0 24px 50px -14px rgba(201,146,91,.66)}
+
+/* Secondaire « clair » — verre givré, texte chocolat (fonds clairs) */
+.btn-ghost{
+  background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.16));color:var(--ink);border-color:rgba(255,255,255,.66);
+  text-shadow:0 1px 1px rgba(255,255,255,.5);
+  box-shadow:inset 0 1.5px 1.5px rgba(255,255,255,.85),inset 0 -7px 14px -6px rgba(120,90,80,.16),
+    inset 2.5px 0 9px -4px rgba(150,190,255,.24),inset -2.5px 0 9px -4px rgba(255,150,195,.24),
+    0 12px 28px -16px rgba(62,39,35,.34)}
+.btn-ghost:hover{transform:translateY(-2px);background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.28));border-color:#fff}
+
+/* Outline — verre givré clair, accent rose au survol */
+.btn-outline{
+  background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,.14));color:var(--ink);border-color:rgba(255,255,255,.62);
+  box-shadow:inset 0 1.5px 1.5px rgba(255,255,255,.8),0 10px 24px -16px rgba(62,39,35,.3)}
+.btn-outline:hover{transform:translateY(-2px);color:var(--rose-ink);border-color:var(--rose-soft);
+  box-shadow:inset 0 1.5px 1.5px rgba(255,255,255,.9),0 14px 30px -14px rgba(199,107,124,.42)}
+
+/* HERO (clair) : ghost en verre clair texte chocolat */
+.hero .btn-ghost{color:var(--ink);border-color:rgba(255,255,255,.66)}
+.hero .btn-ghost:hover{color:var(--rose-ink);border-color:#fff}
+
+/* Fonds SOMBRES (CTA festif, éditorial) : ghost en verre clair texte blanc */
+.cta-photo .btn-ghost,.editorial .btn-ghost{
+  color:#fff;background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.05));border-color:rgba(255,255,255,.5);
+  text-shadow:0 1px 3px rgba(0,0,0,.45);
+  box-shadow:inset 0 1.5px 1.5px rgba(255,255,255,.55),inset 0 -8px 16px -6px rgba(0,0,0,.3),0 14px 30px -16px rgba(0,0,0,.5)}
+.cta-photo .btn-ghost:hover,.editorial .btn-ghost:hover{background:linear-gradient(180deg,rgba(255,255,255,.32),rgba(255,255,255,.1));border-color:rgba(255,255,255,.75)}
+
+/* Cartes créations : bouton « Commander » en verre vert givré */
+.creation .order{
+  background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(63,224,126,.16));color:#0b6534;border:1px solid rgba(255,255,255,.6);
+  -webkit-backdrop-filter:blur(6px) saturate(1.3);backdrop-filter:blur(6px) saturate(1.3);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.8),0 8px 20px -14px rgba(21,173,85,.5)}
+.creation .order:hover{background:linear-gradient(135deg,#34d977,#0e9a49);color:#fff;text-shadow:0 1px 2px rgba(6,66,33,.5);
+  box-shadow:inset 0 1.5px 1.5px rgba(255,255,255,.8),0 16px 32px -12px rgba(21,173,85,.6),0 0 22px -6px rgba(63,224,126,.5)}
+
+/* Lightbox : « Commander ce modèle » en verre vert */
+.lb-order{
+  background:linear-gradient(180deg,rgba(255,255,255,.32),rgba(255,255,255,0) 46%),linear-gradient(135deg,#34d977,#0e9a49);
+  color:#fff;text-shadow:0 1px 2px rgba(6,66,33,.5);border:1px solid rgba(255,255,255,.5);
+  -webkit-backdrop-filter:blur(7px) saturate(1.3);backdrop-filter:blur(7px) saturate(1.3);
+  box-shadow:inset 0 1.5px 1.5px rgba(255,255,255,.8),0 12px 30px -12px rgba(21,173,85,.6),0 0 22px -6px rgba(63,224,126,.5)}
+.lb-order:hover{transform:translateY(-2px);box-shadow:inset 0 1.5px 1.5px rgba(255,255,255,.9),0 18px 40px -12px rgba(21,173,85,.72)}
+
+/* Filtres galerie : pastilles en verre givré ; active = raspberry glass */
+.gfilter button{
+  background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,.12));border:1px solid rgba(255,255,255,.6);
+  -webkit-backdrop-filter:blur(6px) saturate(1.2);backdrop-filter:blur(6px) saturate(1.2);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.72)}
+.gfilter button:hover{border-color:#fff;color:var(--text)}
+.gfilter button.active{
+  background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0) 50%),linear-gradient(135deg,var(--cta-1),var(--cta-2));
+  color:#fff;border-color:rgba(255,255,255,.5);text-shadow:0 1px 2px rgba(74,12,33,.45);
+  box-shadow:inset 0 1.5px 1.5px rgba(255,255,255,.75),0 10px 24px -14px rgba(154,52,80,.5)}
+
+/* FAB WhatsApp : pastille de verre vert avec reflet */
+.fab-wa{background:linear-gradient(180deg,#3bdd7b,#0e9a49);
+  box-shadow:inset 0 2px 2px rgba(255,255,255,.55),inset 0 -8px 14px -6px rgba(6,74,38,.5),0 14px 30px -10px rgba(21,173,85,.6),0 0 22px -6px rgba(63,224,126,.5)}
+
+/* Repli sans backdrop-filter (vieux WebView) : corps plus opaques pour garder l'AA */
+@supports not ((backdrop-filter:blur(2px)) or (-webkit-backdrop-filter:blur(2px))){
+  .btn-ghost{background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(255,251,248,.88))}
+  .btn-outline,.gfilter button{background:rgba(255,255,255,.92)}
+  .cta-photo .btn-ghost,.editorial .btn-ghost{background:rgba(60,40,36,.55)}
+  .creation .order{background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(225,250,235,.9))}
+}
