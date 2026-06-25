@@ -22,7 +22,7 @@ conversion ~35 (preuves/autorité/objections manquantes). Ajouté tout ce qui ne
 - **Barre CTA collante mobile** (injectée JS, toutes pages) : « Devis WhatsApp » + « Appeler » (**`tel:`**
   cliquable) ; FAB WhatsApp masqué sur mobile (doublon), FAB audio remonté.
 - Hero accueil/bijouterie laissés (déjà clairs ; l'accueil = ombrelle « maison » voulue par Mr Thiam).
-- **+ V19b** : **clic-pour-appeler** (`tel:+2290197967671`) dans localisation (+ barre mobile) ; **CTA « Partagez votre avis »** dans la section avis (mécanique honnête pour collecter de VRAIS avis). Plafond honnête atteint ≈ **75/100** sans contenu client ; le reste = vrais avis + photos sans watermark + portrait/atelier + fiche Google Business (refus d'inventer de faux avis/chiffres).
+- **+ V19b** : **clic-pour-appeler** (`tel:+2290197967671`) dans localisation (+ barre mobile) ; **CTA « Partagez votre avis »** dans la section avis (mécanique honnête pour collecter de VRAIS avis). **+ V19c (perf/PWA, 2026-06-25)** : vidéos hero/CTA **allégées** (fond-video 2,0→1,5 Mo, fond-video-2 2,4→1,8 Mo, crf 31, cache-bust `?v=20260625a`) · **preload du poster** hero (LCP, `fetchpriority=high`) · **`site.webmanifest`** (PWA installable, theme navy) sur toutes les pages. JSON-LD local déjà complet (horaires/geo/map/priceRange). Plafond honnête atteint ≈ **78/100** sans contenu client ; le reste = vrais avis + photos sans watermark + portrait/atelier + fiche Google Business (refus d'inventer de faux avis/chiffres).
 - QA overflow 0 (360→1280) ; reste 100% **contenu client** (vrais avis, photos sans watermark, photo
   atelier/bijoutier, fiche Google Business) = ~65% du gap restant, non constructible sans lui.
 

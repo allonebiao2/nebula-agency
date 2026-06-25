@@ -1,0 +1,16 @@
+{
+  "name": "Djambar Team — Bijouterie, Communication, Événementiel",
+  "short_name": "Djambar Team",
+  "description": "Maison multisectorielle à Cotonou. Bijouterie d'exception : création, réparation, vente (or, argent, sur-mesure).",
+  "lang": "fr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0B1E45",
+  "theme_color": "#0B1E45",
+  "icons": [
+    { "src": "assets/images/favicon-32.png", "sizes": "64x64", "type": "image/png" },
+    { "src": "assets/images/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "assets/images/logo-mark-white.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
