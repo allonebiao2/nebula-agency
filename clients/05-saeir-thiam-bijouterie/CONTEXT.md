@@ -11,6 +11,17 @@
 - Déploiement via `npx wrangler pages deploy` (build propre : HTML + `assets/app.*` + `assets/images/{logos,og,favicon,gallery}` + `assets/videos/thiam.MP4`, **sans** les photos sources lourdes).
 - ▶️ **Reste optionnel** : (a) redirection **www → apex** (301, via Cloudflare Redirect Rule — actuellement www sert le site en direct, canonical pointe sur l'apex = OK SEO) ; (b) **régénérer l'affiche PDF** avec un QR « site » → `https://djambarteam.com` (le QR actuel pointe WhatsApp + Maps).
 
+## V21 — Galerie « mosaïque éditoriale » + unicité (2026-06-25, `?v=20260625c`)
+Demande Mongazi : affichage des images **totalement différent**, tailles **non uniformes**.
+- **Galerie** → **mosaïque bento** (grid 6 col desktop / 4 / 2, `grid-auto-flow:dense`, `grid-auto-rows` fluide) :
+  tuiles **de tailles variées** (grande 3×3, large 3×2, haute 2×3, bandeau 4×2, base 2×2) via motif nth-child(7n).
+  Masonry JS **désactivé** quand `.gallery.mosaic` (le CSS gère les tailles). Filtre + lightbox + reveal conservés.
+- **Collections** → asymétriques (1 grande pièce à gauche sur 2 rangées + 2 plus petites à droite).
+- **RÈGLE skill ajoutée** (SKILL.md ×2 + EVOLUTION + CONVENTIONS) : chaque site doit être TOTALEMENT unique,
+  jamais se ressembler (galerie/tailles/sections/héros/motion variés ; socle = moteur, pas gabarit visuel).
+- QA : overflow 0 (360→1280) ; rendu validé par mesure (page rend, 0 débordement) — capture headless impossible
+  (marquee/beams/lazy-load font timeout/blanc en headless ; rendu réel OK sur device).
+
 ## V20 — Héros média générés (Kling/Nano, 2026-06-25, `?v=20260625b`)
 Mongazi a fourni dans `_partage/` : 1 PNG (chaîne d'or + faisceau, fond bleu nuit) + 1 vidéo joaillerie
 (les 2 .mp4 livrés étaient **identiques** = doublon ; mappés par CONTENU, pas par nom de fichier) :

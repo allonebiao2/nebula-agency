@@ -995,3 +995,47 @@ body.pole-event .soon-hero::before{background:none}
 /* BIJOUTERIE : vidéo joaillerie bien visible derrière le texte + faisceaux d'or */
 .hero-jewel .hero-media{opacity:1;filter:blur(2px) brightness(.6) saturate(1.1);transform:scale(1.05)}
 @media (max-width:760px){.hero-jewel .hero-media{object-position:62% center}}
+
+/* ============================================================
+   V21 — Galerie « mosaïque éditoriale » (tailles variées) + collections asymétriques
+   But : un affichage d'images unique, jamais une grille uniforme. (Règle : chaque site DIFFÉRENT.)
+   ============================================================ */
+/* ---- Collections : 1 grande pièce + 2 plus petites (asymétrie magazine) ---- */
+.collections{grid-template-columns:1.5fr 1fr;grid-auto-rows:1fr;gap:16px;margin-bottom:44px}
+.collections .coll{aspect-ratio:auto;height:100%}
+.collections .coll:nth-child(1){grid-row:1 / span 2;min-height:clamp(320px,42vw,520px)}
+.collections .coll:nth-child(2),.collections .coll:nth-child(3){min-height:clamp(150px,20vw,250px)}
+.collections .coll:nth-child(1) .lab h3{font-size:clamp(1.7rem,3vw,2.4rem)}
+@media (max-width:680px){
+  .collections{grid-template-columns:1fr;grid-auto-rows:auto}
+  .collections .coll:nth-child(1){grid-row:auto}
+  .collections .coll{min-height:0;aspect-ratio:16/10}
+}
+
+/* ---- Galerie mosaïque : bento à tailles variées (grande / haute / large / petite) ---- */
+.gallery.mosaic{grid-template-columns:repeat(6,1fr);grid-auto-rows:clamp(84px,8.4vw,124px);grid-auto-flow:dense;gap:14px}
+.gallery.mosaic .gitem{grid-row-end:auto;grid-column:span 2;grid-row:span 2;aspect-ratio:auto}
+.gallery.mosaic .gitem img{width:100%;height:100%;aspect-ratio:auto;object-fit:cover}
+/* motif varié sur 7 pour casser toute régularité */
+.gallery.mosaic .gitem:nth-child(7n+1){grid-column:span 3;grid-row:span 3}  /* grande */
+.gallery.mosaic .gitem:nth-child(7n+2){grid-column:span 3;grid-row:span 2}  /* large */
+.gallery.mosaic .gitem:nth-child(7n+4){grid-column:span 2;grid-row:span 3}  /* haute */
+.gallery.mosaic .gitem:nth-child(7n+6){grid-column:span 4;grid-row:span 2}  /* bandeau large */
+/* Tablette : 4 colonnes (les spans ≤4 restent valides, rythme différent) */
+@media (max-width:880px){
+  .gallery.mosaic{grid-template-columns:repeat(4,1fr);grid-auto-rows:clamp(82px,12vw,120px)}
+  .gallery.mosaic .gitem:nth-child(7n+6){grid-column:span 4;grid-row:span 2}
+}
+/* Mobile : 2 colonnes, spans plafonnés à 2 (sinon débordement) — variété conservée via tuiles vedettes */
+@media (max-width:560px){
+  .gallery.mosaic{grid-template-columns:repeat(2,1fr);grid-auto-rows:clamp(96px,30vw,150px);gap:10px}
+  .gallery.mosaic .gitem,
+  .gallery.mosaic .gitem:nth-child(7n+1),
+  .gallery.mosaic .gitem:nth-child(7n+2),
+  .gallery.mosaic .gitem:nth-child(7n+4),
+  .gallery.mosaic .gitem:nth-child(7n+6){grid-column:span 1;grid-row:span 1}
+  .gallery.mosaic .gitem:nth-child(5n+1){grid-column:span 2;grid-row:span 2}  /* vedette occasionnelle */
+  .gallery.mosaic .gitem:nth-child(8n+4){grid-row:span 2}                      /* quelques hautes */
+}
+/* caption mosaïque : toujours lisible (le cap apparaît au survol, visible au tap mobile via règle existante) */
+.gallery.mosaic .gitem .cap{padding:14px 14px 12px}

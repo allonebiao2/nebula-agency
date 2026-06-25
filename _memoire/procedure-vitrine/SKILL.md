@@ -234,3 +234,12 @@ Règle de Mongazi : « mets à chaque fois ce qu'on fait dans le skill ». Les l
   AA. Fonds sombres → verre clair + texte blanc. Repli `@supports not(backdrop-filter)`. Détails EVOLUTION.
 
 - **2026-06-24 — Passe CONVERSION (checklist).** Blocs réutilisables : FAQ `<details>` natif (0 JS, PE) + JSON-LD FAQPage · process 3 étapes (numéros légitimes) · bande garantie près du CTA · barre CTA collante mobile injectée JS (Devis WhatsApp + `tel:`), FAB WA masqué mobile + audio remonté + `body.has-mcta{padding-bottom}`. Contenu FAQ/garantie honnête. ~65% du gap « conversion » = contenu client (vrais avis, photos sans watermark, fiche Google Business). Détails EVOLUTION 2026-06-24.
+
+- **2026-06-25 — RÈGLE D'OR (Mongazi) : CHAQUE SITE TOTALEMENT UNIQUE.** Deux sites NEBULA ne doivent
+  **jamais se ressembler**, dans leur **entièreté** — pas seulement la couleur. Varier délibérément à chaque
+  nouveau client : **disposition de la galerie / des images** (jamais la même grille ; ici Djambar = mosaïque
+  bento à tailles variées, ailleurs masonry, colonnes, carrousel, plein-écran…), **tailles d'images non
+  uniformes**, structure et ORDRE des sections, type de héros, grilles (asymétrie), système de motion,
+  rythme typographique. Le socle partagé sert de moteur technique, **pas** de gabarit visuel : on le
+  ré-agence et on change la présentation. Avant de livrer, se demander : « si je mets ce site à côté du
+  précédent, se ressemblent-ils ? » Si oui → retravailler la composition jusqu'à ce que non.

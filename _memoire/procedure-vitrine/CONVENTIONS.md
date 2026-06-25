@@ -43,3 +43,12 @@
 
 ## Sécurité
 - Secrets uniquement dans `secrets/*.env` (gitignorés), **jamais** affichés ni commités. Clé secrète paiement **jamais** côté client.
+
+- **2026-06-25 — RÈGLE D'OR (Mongazi) : CHAQUE SITE TOTALEMENT UNIQUE.** Deux sites NEBULA ne doivent
+  **jamais se ressembler**, dans leur **entièreté** — pas seulement la couleur. Varier délibérément à chaque
+  nouveau client : **disposition de la galerie / des images** (jamais la même grille ; ici Djambar = mosaïque
+  bento à tailles variées, ailleurs masonry, colonnes, carrousel, plein-écran…), **tailles d'images non
+  uniformes**, structure et ORDRE des sections, type de héros, grilles (asymétrie), système de motion,
+  rythme typographique. Le socle partagé sert de moteur technique, **pas** de gabarit visuel : on le
+  ré-agence et on change la présentation. Avant de livrer, se demander : « si je mets ce site à côté du
+  précédent, se ressemblent-ils ? » Si oui → retravailler la composition jusqu'à ce que non.

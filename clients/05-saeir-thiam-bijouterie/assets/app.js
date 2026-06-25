@@ -198,8 +198,10 @@
   var gallery = document.querySelector(".gallery");
   var tiles = Array.prototype.slice.call(document.querySelectorAll(".gitem"));
   var ROW = 8, GAP = 16; // doivent matcher grid-auto-rows / gap du CSS
+  var mosaic = !!(gallery && gallery.classList.contains("mosaic")); // mosaïque éditoriale = tailles via CSS (pas de masonry JS)
 
   function spanTile(t) {
+    if (mosaic) return; // les spans sont gérés par le CSS bento
     if (t.classList.contains("hide")) return;
     var img = t.querySelector("img");
     if (!img) return;
