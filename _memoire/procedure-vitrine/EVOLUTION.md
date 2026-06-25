@@ -368,5 +368,26 @@ Recette réutilisable (corps teinté + couche verre) :
   l'overflow : multi-iframes + `--virtual-time-budget` (force la sortie même si non-idle). Capturer les
   pages SANS canvas (les soon-poles) = OK normalement.
 
+## 2026-06-24 — Passe CONVERSION (checklist) : patterns réutilisables pour le skill
+Auditer une vitrine contre une checklist de conversion → souvent **~55/100** : la coquille (design/perf/
+mobile/SEO技) est au plafond mais le **moteur de conversion** manque. À systématiser (le constructible
+sans le client) :
+- **FAQ anti-objections = `<details>`/`<summary>` natif** : accessible, **0 JS**, **visible sans JS** (PE
+  parfait), chevron qui pivote via `[open]`. Toujours doubler d'un **JSON-LD `FAQPage`** (rich snippets
+  Google = gros gain SEO local). Contenu **honnête** (pas de garantie/chiffre inventé : « devis gratuit »,
+  « matières véritables », « ajusté jusqu'à satisfaction », délais « annoncés au devis »).
+- **Process en 3 étapes** : un des SEULS cas où les **numéros (1·2·3) sont légitimes** (vraie séquence,
+  cf. ban impeccable des numéros décoratifs). Connecteur en `::after` (masqué dernier + mobile).
+- **Bande garantie** (réassurance) près du CTA, fond accent (navy/chocolat), 4 piliers VRAIS.
+- **Barre CTA collante mobile** = **injectée en JS** (1 fois, toutes pages du socle partagé), `display:none`
+  desktop, `display:flex` mobile. Inclure **`tel:`** cliquable (clic-pour-appeler = conversion locale).
+  ⚠️ coordination FABs : masquer le FAB WhatsApp sur mobile (doublon avec la barre) + remonter le FAB
+  audio au-dessus (`bottom:calc(80px + safe-area)`), et `body.has-mcta{padding-bottom:72px}` pour ne pas
+  cacher le footer. Gate par classe `body.has-mcta` ajoutée par le JS.
+- ⚠️ **Bouton à libellé long = `white-space:normal`** (le `.btn` du socle est `nowrap` → déborde à 360px).
+- **Vérité récurrente à dire au client** (Djambar ET Miss cakes) : ~65% de l'écart « site qui convertit »
+  = **contenu que SEUL le client possède** (vrais avis, photos sans watermark, photo équipe/atelier, fiche
+  Google Business). Aucun design ne le remplace. Le construire = poser les sections, pas inventer le fond.
+
 <!-- Prochaines entrées : ajouter ici au fil des vitrines suivantes. Toute leçon → ici ; toute évolution DU SKILL → aussi dans .claude/skills/nebula-site/SKILL.md (§ Journal). -->
 <!-- Après édition du SKILL.md : re-copier vers _memoire/procedure-vitrine/SKILL.md (mirroir versionné). -->

@@ -660,4 +660,22 @@
       bulbs.appendChild(b);
     }
   })();
+
+  /* ---------- V19 · Barre CTA collante (mobile) : Devis WhatsApp + Appeler ---------- */
+  (function () {
+    if (document.querySelector(".mcta")) return;
+    var WA = "https://wa.me/2290197967671?text=" + encodeURIComponent("Bonjour Djambar Team, je souhaite un devis pour un bijou.");
+    var bar = document.createElement("div");
+    bar.className = "mcta";
+    bar.setAttribute("aria-label", "Actions rapides");
+    bar.innerHTML =
+      '<a class="m-wa" href="' + WA + '" target="_blank" rel="noopener">' +
+        '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1 1 12 20zm4.4-6c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.6-1.2v-.4l-.7-1.7c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1 4.9 4.9 0 0 0 1 2.6 11 11 0 0 0 4.3 3.8c1.6.6 1.9.5 2.6.5a2.4 2.4 0 0 0 1.6-1.1 2 2 0 0 0 .1-1.1c-.1-.1-.3-.2-.5-.3z"/></svg>' +
+        'Devis WhatsApp</a>' +
+      '<a class="m-call" href="tel:+2290197967671">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.5 2.1L8 9.6a16 16 0 0 0 6 6l1.1-1.1a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2z"/></svg>' +
+        'Appeler</a>';
+    document.body.appendChild(bar);
+    document.body.classList.add("has-mcta");
+  })();
 })();

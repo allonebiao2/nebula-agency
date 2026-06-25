@@ -11,6 +11,20 @@
 - Déploiement via `npx wrangler pages deploy` (build propre : HTML + `assets/app.*` + `assets/images/{logos,og,favicon,gallery}` + `assets/videos/thiam.MP4`, **sans** les photos sources lourdes).
 - ▶️ **Reste optionnel** : (a) redirection **www → apex** (301, via Cloudflare Redirect Rule — actuellement www sert le site en direct, canonical pointe sur l'apex = OK SEO) ; (b) **régénérer l'affiche PDF** avec un QR « site » → `https://djambarteam.com` (le QR actuel pointe WhatsApp + Maps).
 
+## V19 — Passe CONVERSION (audit checklist, 2026-06-24, `?v=20260624b`)
+Audit honnête contre une checklist de conversion → site noté **56/100** : coquille ~90, moteur de
+conversion ~35 (preuves/autorité/objections manquantes). Ajouté tout ce qui ne dépend PAS du client :
+- **FAQ anti-objections** (8 Q/A honnêtes : or/argent véritables, prix sur devis, délais, sur-mesure,
+  réparation, gravure, localisation, garantie) en `<details>` natif (accessible, 0 JS, visible sans JS)
+  + **JSON-LD FAQPage** (SEO).
+- **Process en 3 étapes** (Vous décrivez → Devis & création → Remise) — numéros légitimes (vraie séquence).
+- **Bande garantie** navy (matières véritables, fait main, ajusté pour vous, devis gratuit) près du CTA.
+- **Barre CTA collante mobile** (injectée JS, toutes pages) : « Devis WhatsApp » + « Appeler » (**`tel:`**
+  cliquable) ; FAB WhatsApp masqué sur mobile (doublon), FAB audio remonté.
+- Hero accueil/bijouterie laissés (déjà clairs ; l'accueil = ombrelle « maison » voulue par Mr Thiam).
+- QA overflow 0 (360→1280) ; reste 100% **contenu client** (vrais avis, photos sans watermark, photo
+  atelier/bijoutier, fiche Google Business) = ~65% du gap restant, non constructible sans lui.
+
 ## V18 — Différenciation des pôles + animations par section (2026-06-24, `?v=20260624a`)
 Demande Mr Thiam : différencier chaque pôle (surtout les 2 « Bientôt » qui étaient des clones) + chaque
 section de la page bijouterie = une animation hors du commun, toutes différentes. Fait (natif/GPU, PE, reduced-motion) :

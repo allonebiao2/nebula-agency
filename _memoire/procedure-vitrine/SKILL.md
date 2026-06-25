@@ -232,3 +232,5 @@ Règle de Mongazi : « mets à chaque fois ce qu'on fait dans le skill ». Les l
   teinté (AA) + reflet spéculaire (gloss ≤42% pour ne pas toucher le texte) + profondeur + liseré +
   dispersion chromatique (inset froid/chaud) + halo + `backdrop-filter`. WhatsApp vert approfondi pour
   AA. Fonds sombres → verre clair + texte blanc. Repli `@supports not(backdrop-filter)`. Détails EVOLUTION.
+
+- **2026-06-24 — Passe CONVERSION (checklist).** Blocs réutilisables : FAQ `<details>` natif (0 JS, PE) + JSON-LD FAQPage · process 3 étapes (numéros légitimes) · bande garantie près du CTA · barre CTA collante mobile injectée JS (Devis WhatsApp + `tel:`), FAB WA masqué mobile + audio remonté + `body.has-mcta{padding-bottom}`. Contenu FAQ/garantie honnête. ~65% du gap « conversion » = contenu client (vrais avis, photos sans watermark, fiche Google Business). Détails EVOLUTION 2026-06-24.
