@@ -389,5 +389,22 @@ sans le client) :
   = **contenu que SEUL le client possède** (vrais avis, photos sans watermark, photo équipe/atelier, fiche
   Google Business). Aucun design ne le remplace. Le construire = poser les sections, pas inventer le fond.
 
+## 2026-06-25 — Intégrer des héros média générés (Kling/Nano) : leçons
+- **Vérifier que 2 fichiers « différents » ne sont pas un doublon** : `md5` les médias reçus avant de
+  câbler (ici les 2 .mp4 « accueil » et « bijouterie » avaient le MÊME md5 = un seul vidéo dupliqué).
+  **Mapper par CONTENU** (extraire une frame, regarder), pas par nom de fichier (souvent mal nommés).
+- **Still animé en CSS ≫ vidéo lourde** quand l'image a déjà la lumière/le sujet : un PNG hero (122 Ko)
+  + **Ken-Burns** lent + faisceaux/sparkles existants donne un hero « vivant » sans vidéo (léger 4G).
+  Réserver la vidéo aux scènes à vrai mouvement (joaillerie qui scintille).
+- **Vidéo « cinemagraph » de stock/IA = ultra-compressible** : 9,4 Mo → **376 Ko** (H.264 crf30, 1280,
+  fps25, faststart, `-an`) sans perte visible (peu de mouvement). Toujours transcoder + cache-buster l'URL.
+- **Voile biaisé** pour un hero média avec texte d'un côté : `linear-gradient(100deg, dark 0%, … , clair 100%)`
+  → texte AA du côté sombre, on **préserve l'élément lumineux** (faisceau) de l'autre côté (vs voile uniforme qui éteint tout).
+- ⚠️ **`.reveal-right`/translateX = débordement** (re-re-confirmé) : un bloc large pré-révélé translaté
+  déborde en mobile (ici −26px sur l'accueil Djambar) → `reveal-scale`. Grep `reveal-right` sur tout le site.
+- Headless : une page à **canvas beams + marquee + vidéo** fait timeouter `--screenshot`/`--dump-dom`
+  même en `--disable-javascript` (marquee) → valider par **mesure overflow multi-iframe + budget**, par la
+  **vérif des assets sources** (frame + md5) et la **prod** (codec servi), pas par capture du hero.
+
 <!-- Prochaines entrées : ajouter ici au fil des vitrines suivantes. Toute leçon → ici ; toute évolution DU SKILL → aussi dans .claude/skills/nebula-site/SKILL.md (§ Journal). -->
 <!-- Après édition du SKILL.md : re-copier vers _memoire/procedure-vitrine/SKILL.md (mirroir versionné). -->

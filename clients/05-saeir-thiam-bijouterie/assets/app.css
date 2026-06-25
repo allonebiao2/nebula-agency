@@ -973,3 +973,25 @@ body.pole-event .soon-hero::before{background:none}
   body.has-mcta .fab-audio{bottom:calc(80px + env(safe-area-inset-bottom,0px))}
 }
 @media (prefers-reduced-motion:reduce){.faq-item summary .chev{transition:none}}
+
+/* ============================================================
+   V20 — Héros média générés (Kling/Nano) — 2026-06-25
+   Accueil = still « chaîne d'or + faisceau » (CSS Ken-Burns) · Bijouterie = vidéo joaillerie
+   ============================================================ */
+/* ACCUEIL : image nette et bien visible (le voile gère la lisibilité du texte à gauche) */
+.hero-still .hero-bg{opacity:.96;filter:saturate(1.05) brightness(.94);transform:scale(1.04)}
+.js .hero-still .hero-bg{animation:heroKen 20s ease-in-out infinite alternate}
+@keyframes heroKen{from{transform:scale(1.04)}to{transform:scale(1.12) translate(-1.5%,1.5%)}}
+/* voile biaisé : sombre à gauche (texte AA), clair à droite (le faisceau de lumière reste visible) */
+.hero.hero-still::before{background:
+  radial-gradient(70% 60% at 84% 22%,rgba(46,107,230,.12),transparent 60%),
+  linear-gradient(100deg,rgba(6,17,44,.9) 0%,rgba(6,17,44,.68) 42%,rgba(6,17,44,.26) 72%,rgba(6,17,44,.5) 100%)}
+@media (max-width:760px){
+  .hero.hero-still::before{background:linear-gradient(180deg,rgba(6,17,44,.72),rgba(6,17,44,.55) 45%,rgba(6,17,44,.9))}
+  .hero-still .hero-bg{background-position:68% center}
+}
+@media (prefers-reduced-motion:reduce){.js .hero-still .hero-bg{animation:none}}
+
+/* BIJOUTERIE : vidéo joaillerie bien visible derrière le texte + faisceaux d'or */
+.hero-jewel .hero-media{opacity:1;filter:blur(2px) brightness(.6) saturate(1.1);transform:scale(1.05)}
+@media (max-width:760px){.hero-jewel .hero-media{object-position:62% center}}

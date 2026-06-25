@@ -16,12 +16,12 @@
 <link rel="icon" type="image/png" sizes="64x64" href="assets/images/favicon-32.png?v=20260622b">
 <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png?v=20260622b">
 <link rel="manifest" href="site.webmanifest">
-<link rel="preload" as="image" href="assets/images/gallery/colliers/g7.jpg" fetchpriority="high">
+<link rel="preload" as="image" href="assets/images/hero-accueil.jpg" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap"></noscript>
-<link rel="stylesheet" href="assets/app.css?v=20260624b">
+<link rel="stylesheet" href="assets/app.css?v=20260625b">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -77,10 +77,8 @@
 </header>
 
 <!-- ====================== HERO ====================== -->
-<section class="hero hero-night hero-cine" id="contenu">
-  <video class="hero-media" autoplay muted loop playsinline preload="auto" poster="assets/images/gallery/colliers/g7.jpg" aria-hidden="true">
-    <source src="assets/videos/fond-video-2.mp4?v=20260625a" type="video/mp4">
-  </video>
+<section class="hero hero-night hero-cine hero-still" id="contenu">
+  <div class="hero-bg" style="background-image:url('assets/images/hero-accueil.jpg')" aria-hidden="true"></div>
   <canvas class="hero-beams" aria-hidden="true"></canvas>
   <div class="hero-grid" aria-hidden="true"></div>
   <svg class="sparkles" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -133,7 +131,7 @@
         <p style="color:var(--muted)">Djambar Team est la structure mère qui réunit nos activités. Chaque pôle garde son identité propre, mais partage la même exigence&nbsp;: le détail, le service et l'élégance. La bijouterie en est aujourd'hui le cœur battant&nbsp;; Djambar Team est conçue pour grandir, pôle après pôle.</p>
         <p style="color:var(--muted);margin-top:14px">Demain, la communication et l'événementiel rejoindront cette signature — pour offrir, sous une seule marque, une expérience complète et mémorable.</p>
       </div>
-      <div class="reveal reveal-right d1">
+      <div class="reveal reveal-scale d1">
         <div class="creed">
           <div class="creed-row">
             <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 21l-4.9 2.6.9-5.5-4-3.9 5.5-.8z" transform="scale(.85) translate(2 1)"/></svg></span>
@@ -307,6 +305,6 @@
   <span class="on-ic eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
 </button>
 
-<script src="assets/app.js?v=20260624b"></script>
+<script src="assets/app.js?v=20260625b"></script>
 </body>
 </html>

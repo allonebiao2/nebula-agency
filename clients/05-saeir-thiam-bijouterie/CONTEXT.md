@@ -11,6 +11,19 @@
 - Déploiement via `npx wrangler pages deploy` (build propre : HTML + `assets/app.*` + `assets/images/{logos,og,favicon,gallery}` + `assets/videos/thiam.MP4`, **sans** les photos sources lourdes).
 - ▶️ **Reste optionnel** : (a) redirection **www → apex** (301, via Cloudflare Redirect Rule — actuellement www sert le site en direct, canonical pointe sur l'apex = OK SEO) ; (b) **régénérer l'affiche PDF** avec un QR « site » → `https://djambarteam.com` (le QR actuel pointe WhatsApp + Maps).
 
+## V20 — Héros média générés (Kling/Nano, 2026-06-25, `?v=20260625b`)
+Mongazi a fourni dans `_partage/` : 1 PNG (chaîne d'or + faisceau, fond bleu nuit) + 1 vidéo joaillerie
+(les 2 .mp4 livrés étaient **identiques** = doublon ; mappés par CONTENU, pas par nom de fichier) :
+- **Accueil** (`hero-still`) : le PNG « chaîne d'or + faisceau » en **`hero-bg` net** (opacité .96), animé en
+  **CSS Ken-Burns** lent + faisceaux/sparkles/aura existants (pas de vidéo = léger 122 Ko). Voile **biaisé
+  à gauche** (texte AA) qui préserve le faisceau de lumière à droite. Remplace l'ancien `fond-video-2.mp4`
+  (désormais inutilisé). Poster preload mis à jour.
+- **Bijouterie** (`hero-jewel`) : la **vidéo joaillerie** en `hero-media` (transcodée H.264 9,4 Mo → **376 Ko**,
+  1280/crf30/faststart/muette) + poster `hero-bijou-poster.jpg`, derrière les faisceaux d'or, voile navy AA.
+- **Bug corrigé** : `.reveal-right` sur le bloc « La maison » de l'accueil débordait de 26px en mobile
+  (translateX +46 pré-révélation) → passé en `reveal-scale`. Overflow 0 (360→1280) sur toutes les pages.
+- Vérifié prod : pages 200, images/vidéo servies (avc1), scopes hero-still/hero-jewel actifs.
+
 ## V19 — Passe CONVERSION (audit checklist, 2026-06-24, `?v=20260624b`)
 Audit honnête contre une checklist de conversion → site noté **56/100** : coquille ~90, moteur de
 conversion ~35 (preuves/autorité/objections manquantes). Ajouté tout ce qui ne dépend PAS du client :
