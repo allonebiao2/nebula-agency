@@ -243,3 +243,14 @@ Règle de Mongazi : « mets à chaque fois ce qu'on fait dans le skill ». Les l
   rythme typographique. Le socle partagé sert de moteur technique, **pas** de gabarit visuel : on le
   ré-agence et on change la présentation. Avant de livrer, se demander : « si je mets ce site à côté du
   précédent, se ressemblent-ils ? » Si oui → retravailler la composition jusqu'à ce que non.
+
+- **2026-06-26 — 2ᵉ run réel : Speed Shopping × Weinkeller by CK (#07) — cas MULTI-MARQUES.** Une maison
+  « BY CK », deux marques vécues comme « deux mondes carrément différents » → nouveau patron **hub à 2 mondes
+  opposés + seuil-éclair** : accueil `index.html` = **splash plein écran scindé** (clip-path) avec **éclair SVG**
+  central, un `<a>` plein-côté par monde, sceau-monogramme bridge, expansion au survol (`:has`) désactivée mobile ;
+  puis **une page par monde, thème + typo propres scopés `body.w-xxx`**, le **socle unique** pilotant les deux via
+  variables CSS. À réutiliser dès qu'un client a plusieurs marques vraiment distinctes (≠ pages « pôle » d'un même
+  univers, cf. Djambar). LIVE https://speed-weinkeller.pages.dev. Leçons fines (QA headless : `--headless` classique
+  vs `=new` qui bloque sur anim infinie ; `--disable-javascript` ignoré → `--force-prefers-reduced-motion` pour
+  révéler les `.reveal` ; hero `min-height:min(88vh,820px)` anti-gonflement capture ; iframe-diag sans dépendance
+  `onload` ; `--print-to-pdf` chemin Windows absolu ; catalogue placeholder SVG honnête « à valider ») → EVOLUTION.md.

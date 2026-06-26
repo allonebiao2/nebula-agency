@@ -417,3 +417,45 @@ sans le client) :
   rythme typographique. Le socle partagé sert de moteur technique, **pas** de gabarit visuel : on le
   ré-agence et on change la présentation. Avant de livrer, se demander : « si je mets ce site à côté du
   précédent, se ressemblent-ils ? » Si oui → retravailler la composition jusqu'à ce que non.
+
+- **2026-06-26 — Cas DUAL-BRAND : hub à 2 mondes opposés + seuil-éclair (Speed × Weinkeller by CK, #07).**
+  Une maison, deux marques que la cliente vit comme « deux mondes carrément différents » → architecture
+  **gateway** : `index.html` = **splash plein écran scindé en diagonale** (clip-path polygones
+  complémentaires), un **éclair SVG** sur la couture, **un `<a>` plein-côté** par monde, **sceau central**
+  bridge (monogramme maison). Survol desktop : `:has(.gate:hover)` change les clip-path → un monde s'agrandit
+  (composité, fluide) ; **désactivé en mobile** (stack vertical, couture horizontale). Chaque monde a sa page
+  (`speed.html`, `weinkeller.html`) avec **son propre thème + sa propre typo** scopés sur `body.w-xxx`
+  (Speed = Anton/bleu kinetic ; Weinkeller = Cinzel+Spectral/cave sombre). **Le socle (app.css/app.js)
+  pilote les deux** via variables `--font-display/--brand/--bg…` redéfinies par scope → un seul moteur, deux
+  identités radicalement opposées. **Bridge** = un commutateur de monde dans chaque nav + CTA croisés. C'est
+  LE patron à réutiliser quand un client a plusieurs marques/pôles vraiment distincts (≠ simples pages « pôle »).
+  Détail : `min-width:0` sur les enfants de grille (`.hero-grid>*` etc.) + stack mobile obligatoire, sinon une
+  carte média (flightcard, bottle-stage) déborde au narrow.
+
+- **2026-06-26 — Pièges QA headless Edge (ré-appris, à NE PAS re-découvrir).**
+  (1) `--headless=new` **se bloque** sur une page à **animation CSS infinie** (ici le flicker de l'éclair) +
+  `--virtual-time-budget` → le screenshot ne se termine jamais. **Solution : `--headless` classique** (respecte
+  virtual-time, se termine) + **chaque shot dans `timeout 30`** + `taskkill //IM msedge.exe //F` entre les shots.
+  Pour un rendu **PDF** d'une page **statique** (affiche), `--headless=new` va très bien.
+  (2) **`--disable-javascript` est IGNORÉ** par cette build Edge (preuve : la barre CTA injectée par JS
+  apparaissait quand même). Donc on ne peut pas l'utiliser pour voir le contenu sans le JS. Pour **révéler les
+  `.reveal`** que l'IntersectionObserver **ne déclenche pas en headless** (artefact connu : contenu « blanc »),
+  utiliser **`--force-prefers-reduced-motion`** → mon CSS contient `@media (prefers-reduced-motion){html.js
+  .reveal{opacity:1}}` qui révèle tout d'un coup, sans IO. C'est LA bonne façon de QA visuellement en headless.
+  (3) Un hero en **`min-height:Xvh`** **gonfle** dans une capture à fenêtre haute (vh = hauteur de la *fenêtre*
+  de capture, pas de l'écran réel) → il avale toute la page ⇒ impossible de voir les sections basses, et c'est
+  aussi un excès d'espace vide sur grand écran. **Cap : `min-height:min(88vh,820px)`**.
+  (4) **iframe-diag d'overflow** : la chaîne `iframe.onload → setTimeout` **stagne** sous virtual-time (les
+  fonts Google externes retardent `onload`) → résultat figé sur « running… ». **Fix : créer TOUS les iframes
+  d'emblée, puis mesurer après UN délai fixe** (pas de dépendance à onload) ; dump-dom + grep du `<pre>`.
+  Mesure utile : par élément `getBoundingClientRect().right > clientWidth` (filtrer le décor en bleed :
+  halo/seam/spotlight/golddust…) ; `html,body{overflow-x:hidden}` garantit déjà 0 scroll horizontal.
+  (5) **`--print-to-pdf` exige un chemin Windows ABSOLU** (`C:\…\fichier.pdf`) ; un chemin relatif/forward-slash
+  sort exit 0 mais **n'écrit rien**.
+
+- **2026-06-26 — Honnêteté catalogue sans visuels client (Weinkeller).** Client suggère « prends les photos
+  sur Google » → **refuser** (droits + règle anti-stock-déguisé). Patron : **silhouettes de bouteilles en SVG**
+  (corps `url(#gradient)`, étiquette or, reflet), variées par type (vin/champagne/whisky/liqueur), chaque carte
+  badgée **« à valider »**, prix « sur demande », **Commander WhatsApp pré-rempli au nom de la référence**,
+  **filtre par catégorie** + lightbox, et un **bandeau « catalogue en cours d'enrichissement »**. Prêt à recevoir
+  la vraie liste (noms+prix) + vraies photos sans rien faire passer pour réel.
