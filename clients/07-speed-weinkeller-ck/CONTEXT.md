@@ -64,11 +64,18 @@ cliente : page d'accueil façon « présentation de match de foot », séparatio
   spots, poussière d'or, silhouettes de bouteilles. Thème **sombre**.
 - Galeries/sélections en **dispositions différentes** des sites précédents (pas la mosaïque bento de Djambar).
 
-## À CONFIRMER / À REMPLACER
-- [ ] **WhatsApp Weinkeller** : ligne propre ? sinon on garde +229 0197 1584 84 (maison).
-- [ ] N° du formulaire **0167975626** ≠ n° des affiches → confirmer lequel pour les commandes.
+## FAIT le 2026-06-26 (2e passe — vraies images + 3D)
+- ✅ **WhatsApp Weinkeller CONFIRMÉ par Mongazi** = même n° que la maison (+229 0197 1584 84) ; caveat retiré du site.
+- ✅ **Champagnes RÉELS intégrés** : 8 bouteilles (Ruinart ×3, Moët ×2, Veuve Clicquot, Lanson, Nicolas Feuillatte),
+  photos client **détourées** fond blanc→transparent (`_build_bottles.py`) → `assets/images/cave/*.webp`, **noms + prix réels**.
+- ✅ **3D + animations** (demande Mongazi) : **coverflow 3D** des champagnes au hero (perspective, reflets, halo or,
+  auto-rotation, drag/flèches/points, fiche live nom+prix+Commander) + **cartes photo profondeur 3D** dans la sélection
+  (tilt parallax translateZ + reflet) + **poussière d'or** (canvas). PE : sans JS, coverflow = simple rangée scrollable.
+
+## À CONFIRMER / À REMPLACER (reste)
 - [ ] Email / domaine exact (contact@speedshopping.com ?).
-- [ ] **Liste boissons Weinkeller** (noms + prix) + **vraies photos** bouteilles.
+- [ ] **Autres caves Weinkeller** (rouges, blancs, whiskies/spiritueux, liqueurs, bières) : noms + prix + photos
+  (champagnes faits ; le reste en placeholder SVG « à valider »).
 - [ ] **Logo Weinkeller** définitif (on a créé un wordmark/emblème « à valider »).
 - [ ] **Adresses exactes** Cotonou (Speed) + Porto-Novo (Weinkeller) pour Google Maps précis.
 - [ ] Photos lifestyle Speed (optionnel — le monde Speed est volontairement graphique/illustré).

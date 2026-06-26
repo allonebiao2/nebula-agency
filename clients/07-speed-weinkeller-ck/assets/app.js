@@ -102,9 +102,9 @@ document.documentElement.classList.add("js");
     function render(i) {
       var v = vis(); if (!v.length) return;
       cur = (i + v.length) % v.length;
-      var src = v[cur], svg = src.querySelector(".visual svg"), name = src.querySelector("h3");
-      stage.innerHTML = svg ? svg.outerHTML : "";
-      capEl.textContent = name ? name.textContent : "";
+      var src = v[cur], vis2 = src.querySelector(".visual img, .visual svg"), name = src.querySelector("h3");
+      stage.innerHTML = vis2 ? vis2.outerHTML : "";
+      capEl.textContent = name ? (name.textContent || "").replace(/\s+à valider\s*$/i, "") : "";
     }
     function open(t) { var v = vis(); render(Math.max(0, v.indexOf(t))); lb.classList.add("open"); lb.setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden"; lb.querySelector(".lb-close").focus(); }
     function close() { lb.classList.remove("open"); lb.setAttribute("aria-hidden", "true"); document.body.style.overflow = ""; }
@@ -120,6 +120,110 @@ document.documentElement.classList.add("js");
       if (!lb.classList.contains("open")) return;
       if (e.key === "Escape") close(); if (e.key === "ArrowLeft") render(cur - 1); if (e.key === "ArrowRight") render(cur + 1);
     });
+  }
+
+  /* ---------- Coverflow 3D champagnes (Weinkeller) ---------- */
+  var cf = document.querySelector(".cf");
+  if (cf) {
+    var cfItems = Array.prototype.slice.call(cf.querySelectorAll(".cf-item"));
+    var cfMeta = document.querySelector(".cf-meta");
+    var cfDots = document.querySelector(".cf-dots");
+    var cave = document.querySelector(".cave-3d");
+    var act = Math.min(2, cfItems.length - 1), paused = false, sx = null;
+
+    if (cfDots) cfItems.forEach(function (it, i) {
+      var b = document.createElement("button");
+      b.setAttribute("aria-label", "Voir la bouteille " + (i + 1));
+      b.addEventListener("click", function () { go(i); });
+      cfDots.appendChild(b);
+    });
+    var dots = cfDots ? Array.prototype.slice.call(cfDots.children) : [];
+
+    function place() {
+      cfItems.forEach(function (it, i) {
+        var o = i - act, ao = Math.abs(o), tx, tz, ry, sc, op, br, zi;
+        if (ao === 0) { tx = 0; tz = 170; ry = 0; sc = 1.1; op = 1; br = 1; zi = 50; }
+        else if (ao === 1) { tx = o * 74; tz = 10; ry = -o * 40; sc = .9; op = .92; br = .66; zi = 40; }
+        else if (ao === 2) { tx = o * 64 + (o > 0 ? 60 : -60); tz = -130; ry = -o * 46; sc = .78; op = .5; br = .46; zi = 30; }
+        else { tx = o * 50; tz = -340; ry = -o * 48; sc = .66; op = 0; br = .4; zi = 5; }
+        it.style.transform = "translateX(" + tx + "%) translateZ(" + tz + "px) rotateY(" + ry + "deg) scale(" + sc + ")";
+        it.style.opacity = op; it.style.filter = "brightness(" + br + ")"; it.style.zIndex = zi;
+        it.setAttribute("aria-hidden", ao === 0 ? "false" : "true");
+        it.tabIndex = ao === 0 ? 0 : -1;
+      });
+      dots.forEach(function (d, i) { d.classList.toggle("on", i === act); });
+      if (cfMeta) {
+        var a = cfItems[act];
+        var set = function (sel, at) { var el = cfMeta.querySelector(sel); if (el) el.textContent = a.getAttribute(at) || ""; };
+        set(".b", "data-brand"); set("h3", "data-name"); set(".d", "data-detail"); set(".p", "data-price");
+        var ord = cfMeta.querySelector(".cf-order a") || document.querySelector(".cf-order a");
+        if (ord) ord.href = a.getAttribute("data-wa") || "#";
+      }
+    }
+    function go(i) { act = Math.max(0, Math.min(cfItems.length - 1, i)); place(); }
+    cfItems.forEach(function (it, i) {
+      it.addEventListener("click", function () {
+        if (i !== act) { go(i); }
+        else { var w = it.getAttribute("data-wa"); if (w) window.open(w, "_blank", "noopener"); }
+      });
+    });
+    var pv = document.querySelector(".cf-prev"), nx = document.querySelector(".cf-next");
+    if (pv) pv.addEventListener("click", function () { go(act - 1); });
+    if (nx) nx.addEventListener("click", function () { go(act + 1); });
+    cf.addEventListener("pointerdown", function (e) { sx = e.clientX; paused = true; });
+    window.addEventListener("pointerup", function (e) {
+      if (sx !== null) { var dx = e.clientX - sx; if (Math.abs(dx) > 42) go(act + (dx < 0 ? 1 : -1)); sx = null; }
+      setTimeout(function () { paused = false; }, 900);
+    });
+    if (cave) {
+      cave.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowLeft") { e.preventDefault(); go(act - 1); }
+        if (e.key === "ArrowRight") { e.preventDefault(); go(act + 1); }
+      });
+      cave.addEventListener("pointerenter", function () { paused = true; });
+      cave.addEventListener("pointerleave", function () { paused = false; });
+      cave.classList.add("ready");
+    }
+    if (!reduce) {
+      setInterval(function () { if (!paused && !document.hidden) { act = (act + 1) % cfItems.length; place(); } }, 4400);
+    }
+    place();
+  }
+
+  /* ---------- Poussière d'or (canvas, hero Weinkeller) ---------- */
+  var gd = document.querySelector("canvas.golddust");
+  if (gd && !reduce && !isMobile && !saveData) {
+    var gx = gd.getContext("2d"), host = gd.closest(".hero") || gd.parentElement, motes = [], graf = null, DPR = Math.min(devicePixelRatio || 1, 2);
+    function gsize() {
+      var r = host.getBoundingClientRect();
+      gd.width = Math.round(r.width * DPR); gd.height = Math.round(r.height * DPR);
+      gx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      motes = [];
+      var n = Math.min(46, Math.round(r.width / 26));
+      for (var i = 0; i < n; i++) motes.push(mk(r.width, r.height, true));
+    }
+    function mk(w, h, anywhere) {
+      return { x: Math.random() * w, y: anywhere ? Math.random() * h : h + 8, r: .6 + Math.random() * 1.8,
+        s: .15 + Math.random() * .5, d: (Math.random() - .5) * .25, o: .15 + Math.random() * .5, ph: Math.random() * 6.28 };
+    }
+    function gframe() {
+      var w = gd.width / DPR, h = gd.height / DPR;
+      gx.clearRect(0, 0, w, h);
+      for (var i = 0; i < motes.length; i++) {
+        var m = motes[i]; m.y -= m.s; m.x += m.d + Math.sin((m.y + m.ph) * .02) * .25; m.ph += .01;
+        if (m.y < -8) motes[i] = mk(w, h, false);
+        gx.beginPath(); gx.arc(m.x, m.y, m.r, 0, 6.2832);
+        gx.fillStyle = "rgba(206,168,92," + (m.o * (.6 + Math.sin(m.ph) * .4)) + ")"; gx.fill();
+      }
+      graf = requestAnimationFrame(gframe);
+    }
+    gsize();
+    var grun = false, gin = true;
+    function gsync() { if (gin && !document.hidden) { if (!grun) { grun = true; gframe(); } } else { grun = false; if (graf) cancelAnimationFrame(graf); graf = null; } }
+    if ("IntersectionObserver" in window) new IntersectionObserver(function (es) { es.forEach(function (e) { gin = e.isIntersecting; }); gsync(); }, { threshold: 0 }).observe(host);
+    document.addEventListener("visibilitychange", gsync);
+    var grz; addEventListener("resize", function () { clearTimeout(grz); grz = setTimeout(gsize, 200); }, { passive: true });
+    gsync();
   }
 
   /* ---------- Barre CTA mobile (injectée) ---------- */

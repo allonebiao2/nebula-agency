@@ -459,3 +459,22 @@ sans le client) :
   badgée **« à valider »**, prix « sur demande », **Commander WhatsApp pré-rempli au nom de la référence**,
   **filtre par catégorie** + lightbox, et un **bandeau « catalogue en cours d'enrichissement »**. Prêt à recevoir
   la vraie liste (noms+prix) + vraies photos sans rien faire passer pour réel.
+
+- **2026-06-26 — Détourage produit (fond blanc → transparent) robuste + showcase 3D coverflow (Weinkeller, 2e passe).**
+  Le client envoie 8 photos champagnes (fond blanc e-commerce) → on les **détoure** pour les faire flotter sur le thème
+  sombre (premium) plutôt que des cartes blanches. **Méthode** (`_build_bottles.py`, Pillow+numpy) : `ImageDraw.floodfill`
+  **depuis 8 points de bord** (coins + milieux) avec `thresh≈26` rempli d'une **sentinelle magenta** → ne touche QUE le
+  fond connexe (l'intérieur clair de l'étiquette reste) ; masque alpha = (pixel==sentinelle?0:255) ; **`MinFilter(3)`
+  (érode 1px) + GaussianBlur(.6)** tuent le liseré blanc ; crop bbox alpha, resize H≈820, **webp q84 alpha ≈ 25–30 Ko**.
+  Tient même pour une **bouteille blanche sur fond blanc** (Moët Ice) car le bord a une ombre grise > thresh. ⇒ patron
+  réutilisable pour tout catalogue avec photos « packshot » fond blanc (au lieu de scraper Google).
+  **Coverflow 3D** (CSS `perspective` + JS qui positionne chaque item par son offset à l'actif : translateX/Z + rotateY +
+  scale + brightness + z-index) : reflets `-webkit-box-reflect`, halo or derrière l'actif, **fiche live** (nom/détail/prix
+  + lien Commander mis à jour), **drag/flèches/points/clic**, auto-rotation. **PE** : sans JS `.cf` = **rangée flex
+  scrollable** (`overflow-x:auto`), `html.js .cf` bascule en `display:block` + items `position:absolute` (3D). Les
+  bouteilles latérales **débordent volontairement** hors viewport (look coverflow) → clippées par `overflow-x:hidden`,
+  **0 scroll** (le diag les liste comme `cf-item` hors viewport : c'est voulu, pas un bug). ⚠️ **`setInterval`
+  d'auto-rotation = boucle infinie** → bloque `--headless=new`/virtual-time comme une anim CSS infinie ; je le **coupe sous
+  `reduce`**, donc QA en **`--force-prefers-reduced-motion`** (révèle aussi les `.reveal` ET arrête l'auto) + `--headless`
+  classique + `timeout`. Cartes sélection « réelles » : `.bottle.real` avec `transform-style:preserve-3d` + img en
+  `translateZ(42px)` (flotte au tilt) + `-webkit-box-reflect`.
