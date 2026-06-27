@@ -517,6 +517,29 @@ html.js .cf-item{position:absolute;top:0;left:50%;width:clamp(140px,19vw,205px);
 /* poussière d'or (canvas hero) */
 canvas.golddust{position:absolute;inset:0;z-index:1;pointer-events:none;width:100%;height:100%}
 
+/* ===== Speed — coverflow 3D des catégories (cartes, pas photos) ===== */
+.w-speed .cave-3d{height:clamp(320px,42vh,440px)}
+.w-speed .cf-item{align-items:stretch;padding-bottom:0}
+.w-speed .cf-card{position:relative;width:100%;height:100%;border-radius:var(--r-lg);padding:26px 22px;overflow:hidden;
+  background:linear-gradient(165deg,#0A4FD6,#1E6BFF 72%,#36A7FF);color:#fff;
+  display:flex;flex-direction:column;align-items:center;text-align:center;justify-content:center;gap:11px;
+  box-shadow:0 30px 50px -24px rgba(10,79,214,.7);
+  -webkit-box-reflect:below 6px linear-gradient(transparent 64%,rgba(0,0,0,.2))}
+.w-speed .cf-card::before{content:"";position:absolute;inset:0;opacity:.4;pointer-events:none;
+  background:repeating-linear-gradient(118deg,rgba(255,255,255,.08) 0 1px,transparent 1px 22px)}
+.w-speed .cf-card>*{position:relative;z-index:1}
+.w-speed .cf-ico{width:66px;height:66px;border-radius:18px;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28)}
+.w-speed .cf-ico svg{width:32px;height:32px}
+.w-speed .cf-card h3{font-family:var(--f-ui);font-weight:800;font-size:1.16rem;text-transform:none;letter-spacing:0;line-height:1.2}
+.w-speed .cf-card p{font-size:.9rem;color:rgba(255,255,255,.92);margin:0;max-width:24ch}
+.w-speed .cf-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.w-speed .cf-chips span{font-size:.68rem;font-weight:700;letter-spacing:.02em;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.2)}
+.w-speed .cf-glow{background:radial-gradient(50% 56% at 50% 42%,rgba(54,168,255,.42),transparent 70%)}
+.w-speed .cf-arrow{background:var(--bg-2);border-color:var(--line);color:var(--brand)}
+.w-speed .cf-arrow:hover{border-color:var(--brand);background:var(--accent-soft)}
+.w-speed .cf-dots button.on{background:var(--brand)}
+
 /* ============================================================
    Communs : FAQ, contact, maps, avis, footer, FAB, mobile bar
    ============================================================ */

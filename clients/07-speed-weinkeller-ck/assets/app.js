@@ -152,13 +152,13 @@ document.documentElement.classList.add("js");
         it.tabIndex = ao === 0 ? 0 : -1;
       });
       dots.forEach(function (d, i) { d.classList.toggle("on", i === act); });
+      var a = cfItems[act];
       if (cfMeta) {
-        var a = cfItems[act];
         var set = function (sel, at) { var el = cfMeta.querySelector(sel); if (el) el.textContent = a.getAttribute(at) || ""; };
         set(".b", "data-brand"); set("h3", "data-name"); set(".d", "data-detail"); set(".p", "data-price");
-        var ord = cfMeta.querySelector(".cf-order a") || document.querySelector(".cf-order a");
-        if (ord) ord.href = a.getAttribute("data-wa") || "#";
       }
+      var ord = document.querySelector(".cf-order a");
+      if (ord && a.getAttribute("data-wa")) ord.href = a.getAttribute("data-wa");
     }
     function go(i) { act = Math.max(0, Math.min(cfItems.length - 1, i)); place(); }
     cfItems.forEach(function (it, i) {
