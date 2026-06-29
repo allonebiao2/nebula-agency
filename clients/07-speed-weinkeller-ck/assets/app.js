@@ -60,13 +60,19 @@ document.documentElement.classList.add("js");
       es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
     }, { threshold: .12, rootMargin: "0px 0px -7% 0px" });
     reveals.forEach(function (el) { io.observe(el); });
-    addEventListener("load", function () {
-      setTimeout(function () {
-        document.querySelectorAll(".reveal:not(.in)").forEach(function (el) {
-          if (el.getBoundingClientRect().top < innerHeight * 1.15) el.classList.add("in");
-        });
-      }, 500);
-    });
+    // Filet de sécurité anti-section-vide : révèle tout ce qui entre dans le viewport
+    // (l'IO peut « sauter » un élément lors d'un défilement rapide ou en rendu headless)
+    var rvTick = false;
+    function revealSafety() {
+      rvTick = false;
+      var vh = innerHeight;
+      document.querySelectorAll(".reveal:not(.in)").forEach(function (el) {
+        if (el.getBoundingClientRect().top < vh * 0.92) el.classList.add("in");
+      });
+    }
+    addEventListener("scroll", function () { if (!rvTick) { rvTick = true; requestAnimationFrame(revealSafety); } }, { passive: true });
+    addEventListener("load", function () { setTimeout(revealSafety, 400); });
+    revealSafety();
   }
 
   /* ---------- Vol France→Bénin (Speed) : déclenche l'animation quand visible ---------- */
@@ -80,17 +86,45 @@ document.documentElement.classList.add("js");
     }
   }
 
-  /* ---------- Sélection Weinkeller : filtre + lightbox ---------- */
+  /* ---------- Sélection Weinkeller : filtre fluide + lightbox ---------- */
   var wfilter = document.querySelector(".wein-filter");
   var bottles = Array.prototype.slice.call(document.querySelectorAll(".bottle"));
   if (wfilter && bottles.length) {
-    wfilter.addEventListener("click", function (e) {
-      var b = e.target.closest("button"); if (!b) return;
-      var cat = b.getAttribute("data-cat");
-      wfilter.querySelectorAll("button").forEach(function (x) { x.classList.toggle("active", x === b); });
+    function applyFilter(cat, btn) {
+      wfilter.querySelectorAll("button").forEach(function (x) {
+        x.classList.toggle("active", btn ? x === btn : x.getAttribute("data-cat") === cat);
+      });
+      var vi = 0;
       bottles.forEach(function (t) {
         var show = cat === "all" || t.getAttribute("data-cat") === cat;
-        t.style.display = show ? "" : "none";
+        if (show) {
+          t.style.display = "";
+          if (reduce) { t.classList.remove("b-out", "b-in"); }
+          else {
+            t.classList.remove("b-out");
+            t.style.animationDelay = (Math.min(vi, 10) * 0.035) + "s";
+            t.classList.remove("b-in"); void t.offsetWidth; t.classList.add("b-in");
+          }
+          vi++;
+        } else if (reduce) {
+          t.style.display = "none"; t.classList.remove("b-in");
+        } else {
+          t.classList.remove("b-in"); t.classList.add("b-out");
+          setTimeout(function () { if (t.classList.contains("b-out")) t.style.display = "none"; }, 300);
+        }
+      });
+    }
+    wfilter.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      applyFilter(b.getAttribute("data-cat"), b);
+    });
+    // Cartes « univers » -> scroll fluide + active le filtre correspondant
+    document.querySelectorAll("[data-jump]").forEach(function (el) {
+      el.addEventListener("click", function (ev) {
+        var cat = el.getAttribute("data-jump");
+        var sel = document.querySelector("#selection");
+        if (sel) { ev.preventDefault(); sel.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }); }
+        setTimeout(function () { applyFilter(cat); }, reduce ? 0 : 380);
       });
     });
   }
