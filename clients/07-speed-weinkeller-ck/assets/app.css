@@ -352,6 +352,14 @@ html.js .flight .plane{offset-distance:0%;opacity:0}
 @media (max-width:820px){.cats{grid-template-columns:repeat(2,1fr)}
   .cat,.cat:nth-child(1),.cat:nth-child(4){grid-column:span 1}}
 @media (max-width:460px){.cats{grid-template-columns:1fr}}
+/* 3 options Speed (Commander · Colis FR→BJ · Colis BJ→FR) */
+.cats-3{grid-template-columns:repeat(3,1fr)}
+.cats-3 .cat,.cats-3 .cat:nth-child(1),.cats-3 .cat:nth-child(4){grid-column:auto}
+.cat .cat-cta{position:relative;z-index:1;margin-top:16px;display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--f-ui);font-weight:700;font-size:.86rem;color:var(--brand)}
+.cat .cat-cta svg{width:16px;height:16px;transition:transform .3s var(--ease)}
+.cat:hover .cat-cta svg{transform:translateX(4px)}
+@media (max-width:820px){.cats-3{grid-template-columns:1fr}}
 
 /* ---- Étapes (timeline numérotée) ---- */
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;counter-reset:step}
