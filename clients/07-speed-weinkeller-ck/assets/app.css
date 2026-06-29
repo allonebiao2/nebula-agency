@@ -268,17 +268,25 @@ body.splash{height:100dvh;min-height:560px;overflow:hidden;background:#05070f;co
   .splash-hint{display:none}
   .splash-top{padding:12px 14px;gap:10px}
   .splash-top .house{font-size:.54rem;letter-spacing:.04em;white-space:nowrap}
-  .gate-speed{clip-path:polygon(0 0,100% 0,100% 56%,0 44%);justify-content:flex-start;padding-top:clamp(86px,16vw,120px)}
-  .gate-wein{clip-path:polygon(0 56%,100% 44%,100% 100%,0 100%);align-items:flex-start;text-align:left;justify-content:flex-end}
+  /* Mobile : chaque univers occupe SA demi-hauteur réelle (inset) et son
+     contenu est centré dedans -> le « Entrer » reste toujours visible dans sa
+     moitié, quelle que soit la hauteur d'écran (corrige le « Entrer » Speed
+     coupé sur les écrans courts). */
+  .gate-speed{inset:0 0 50% 0;clip-path:none;justify-content:center;padding:34px 0 8px}
+  .gate-wein{inset:50% 0 0 0;clip-path:none;align-items:flex-start;text-align:left;justify-content:center;padding:8px 0 24px}
   .gate-inner,.gate-wein .gate-inner{max-width:88vw;margin:0}
   .gate-wein .gate-emblem,.gate-wein .gate-tag,.gate-wein .gate-enter{margin-left:0}
   .gate-wein{text-align:left}
+  .gate-emblem{margin-bottom:12px}
+  .gate-name{font-size:clamp(1.9rem,8.5vw,2.7rem)}
+  .gate-wein .gate-name{font-size:clamp(1.7rem,7.5vw,2.4rem)}
+  .gate-tag{margin-top:9px;font-size:.92rem;max-width:34ch;line-height:1.45}
+  .gate-enter{margin-top:16px;padding:13px 26px}
   .seam{top:50%;left:0;right:0;bottom:auto;transform:translateY(-50%);width:100%;height:20vh;min-width:0}
   .seam svg{transform:rotate(90deg);transform-origin:center}
-  .crest{width:84px;height:84px}
+  .crest{width:76px;height:76px}
   .splash:has(.gate:hover) .gate{clip-path:none}
-  .gate-speed{clip-path:polygon(0 0,100% 0,100% 56%,0 44%)!important}
-  .gate-wein{clip-path:polygon(0 56%,100% 44%,100% 100%,0 100%)!important}
+  .gate-speed,.gate-wein{clip-path:none!important}
 }
 
 /* ============================================================
