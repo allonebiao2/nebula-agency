@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<script>document.documentElement.classList.add('js')</script>
+<script>(function(d){var c=d.documentElement.classList;c.add('js','preloading');setTimeout(function(){c.remove('preloading')},5000);})(document)</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="canonical" href="https://djambarteam.com/communication">
 <title>Communication · Djambar Team · Bientôt</title>
@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap"></noscript>
-<link rel="stylesheet" href="assets/app.css?v=20260625c">
+<link rel="stylesheet" href="assets/app.css?v=20260629a">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -39,8 +39,10 @@
 <header class="nav" id="nav">
   <div class="wrap">
     <a class="brand" href="/" aria-label="Accueil Djambar Team">
-      <img class="mark mark-white" src="assets/images/logo-mark-white.png" alt="Djambar Team" width="48" height="40">
-      <img class="mark mark-dark" src="assets/images/logo-mark-dark.png" alt="" aria-hidden="true" width="48" height="40">
+      <span class="lshine" style="--m:url('assets/images/logo-mark-white.png')">
+        <img class="mark mark-white" src="assets/images/logo-mark-white.png" alt="Djambar Team" width="48" height="40">
+        <img class="mark mark-dark" src="assets/images/logo-mark-dark.png" alt="" aria-hidden="true" width="48" height="40">
+      </span>
       <span class="bt"><b>Djambar Team</b><span>Communication</span></span>
     </a>
     <button class="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="navlinks">
@@ -126,7 +128,7 @@
     <div class="footer-grid">
       <div>
         <a class="brand" href="/" style="color:#fff">
-          <img class="mark mark-white" src="assets/images/logo-mark-white.png" alt="Djambar Team" width="48" height="40" style="display:block">
+          <span class="lshine" style="--m:url('assets/images/logo-mark-white.png')"><img class="mark mark-white" src="assets/images/logo-mark-white.png" alt="Djambar Team" width="48" height="40" style="display:block"></span>
           <span class="bt"><b>Djambar Team</b><span>Cotonou</span></span>
         </a>
         <p>L'excellence, sous toutes ses formes. La bijouterie d'abord, et bientôt bien plus encore.</p>
@@ -168,6 +170,6 @@
   <span class="on-ic eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
 </button>
 
-<script src="assets/app.js?v=20260625c"></script>
+<script src="assets/app.js?v=20260629a"></script>
 </body>
 </html>

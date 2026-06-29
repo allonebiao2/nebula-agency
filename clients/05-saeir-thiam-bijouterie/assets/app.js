@@ -9,6 +9,66 @@
   var isMobile = window.matchMedia("(max-width: 760px)").matches;
   var saveData = !!(navigator.connection && navigator.connection.saveData);
 
+  /* ---------- Préchargeur « écrin » : chargement + ouverture animée ----------
+     Couverture posée AVANT peinture par html.preloading (CSS). Ici on enrichit
+     d'un monogramme tracé + éclat + barre, puis on OUVRE l'écrin (2 panneaux qui
+     s'écartent) sur le hero. Tout est piloté par minuteries (robuste onglet caché /
+     rendu headless) ; un filet inline (5 s) retire la couverture même si ce JS tombe.
+     1re visite de session = intro complète ; navigation interne = ouverture rapide. */
+  (function () {
+    var root = document.documentElement;
+    if (!root.classList.contains("preloading")) return;
+    var firstVisit = true;
+    try { firstVisit = !sessionStorage.getItem("djbIntro"); sessionStorage.setItem("djbIntro", "1"); } catch (e) {}
+
+    var pl = document.createElement("div");
+    pl.className = "preloader";
+    pl.setAttribute("aria-hidden", "true");
+    pl.innerHTML =
+      '<div class="pl-panel pl-top"></div>' +
+      '<div class="pl-panel pl-bot"></div>' +
+      '<i class="pl-seam"></i>' +
+      '<div class="pl-brand">' +
+        '<svg class="pl-mark" viewBox="0 0 64 66" fill="none" aria-hidden="true">' +
+          '<path pathLength="1" d="M16 22 L24 8 H40 L48 22 L32 58 Z M16 22 H48 M24 8 L32 22 L40 8"/>' +
+        '</svg>' +
+        '<div class="pl-word">DJAMBAR TEAM</div>' +
+        '<div class="pl-sub">Saeir Thiam · Cotonou</div>' +
+        '<div class="pl-bar"><i class="pl-fill"></i></div>' +
+      '</div>';
+    document.body.appendChild(pl);
+    root.style.overflow = "hidden";
+
+    var fill = pl.querySelector(".pl-fill");
+    var done = false;
+    function setFill(v) { if (fill) fill.style.clipPath = "inset(0 " + v + " 0 0)"; }
+    function remove() { if (pl.parentNode) pl.parentNode.removeChild(pl); root.style.overflow = ""; }
+    function openCase() {
+      root.classList.remove("preloading");        // retire la couverture ::before
+      pl.classList.add("pl-reveal");               // l'écrin s'ouvre
+      setTimeout(remove, reduce ? 340 : (firstVisit ? 1080 : 720));
+    }
+    function reveal() {
+      if (done) return; done = true;
+      setFill("0%");                               // la barre se complète
+      setTimeout(openCase, reduce ? 60 : (firstVisit ? 360 : 90));
+    }
+
+    if (reduce) { pl.classList.add("pl-reduced"); setTimeout(reveal, 220); return; }
+    if (!firstVisit) { pl.classList.add("pl-quick"); setTimeout(reveal, 280); return; }
+
+    /* intro complète */
+    pl.classList.add("pl-in");
+    setTimeout(function () { if (!done) setFill("12%"); }, 90);   // 0 -> ~88 % pendant le chargement
+    var MIN = 1200, CAP = 2500, t0 = Date.now(), fired = false;
+    function go() { if (fired) return; fired = true; setTimeout(reveal, Math.max(0, MIN - (Date.now() - t0))); }
+    if (document.readyState === "complete") { go(); }
+    else {
+      window.addEventListener("load", go, { once: true });
+      setTimeout(go, CAP);                         // filet : on révèle même si « load » tarde
+    }
+  })();
+
   /* ---------- Année ---------- */
   document.querySelectorAll("[data-year]").forEach(function (el) {
     el.textContent = new Date().getFullYear();
@@ -51,7 +111,7 @@
     var bctx = beamCanvas.getContext("2d");
     var beams = [];
     var braf = null;
-    var DPRb = Math.min(window.devicePixelRatio || 1, 2);
+    var DPRb = 0.5; // faisceaux très flous (flou GPU en CSS) -> rendu 0.5x puis étiré : 4x moins de pixels à dessiner ET à flouter, invisible à l'œil
     // Hero NUIT (page Bijouterie) : faisceaux plus nombreux & lumineux (blend screen).
     var night = heroEl.classList.contains("hero-night");
 
@@ -80,7 +140,7 @@
       beamCanvas.style.width = w + "px";
       beamCanvas.style.height = h + "px";
       bctx.setTransform(DPRb, 0, 0, DPRb, 0, 0);
-      var n = window.innerWidth < 760 ? (night ? 16 : 12) : (night ? 30 : 22);
+      var n = window.innerWidth < 760 ? (night ? 12 : 9) : (night ? 20 : 15);
       beams = [];
       for (var i = 0; i < n; i++) beams.push(mkBeam(w, h));
     }
@@ -103,14 +163,14 @@
     function renderBeams() {
       var w = beamCanvas.width / DPRb, h = beamCanvas.height / DPRb;
       bctx.clearRect(0, 0, w, h);
-      bctx.filter = "blur(" + (night ? 34 : 30) + "px)";
+      // Flou déplacé en CSS (filter:blur sur le canvas) = GPU, 1x par composite,
+      // au lieu de bctx.filter=blur par frame (CPU, ruinait le FPS sur PC : ~9fps).
       for (var i = 0; i < beams.length; i++) {
         var b = beams[i];
         b.y -= b.speed; b.pulse += b.pulseSpeed;
         if (b.y + b.len < -80) { beams[i] = mkBeam(w, h); beams[i].y = h + 80; }
         drawBeam(beams[i]);
       }
-      bctx.filter = "none";
     }
     sizeBeams();
     if (reduce) {
