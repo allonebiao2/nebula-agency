@@ -172,6 +172,9 @@ document.documentElement.classList.add("js");
       cfDots.appendChild(b);
     });
     var dots = cfDots ? Array.prototype.slice.call(cfDots.children) : [];
+    // Lazy-load des visuels du coverflow (la centrale garde son src pour le LCP) : à la demande
+    var cfLazy = cfItems.map(function (it) { return it.querySelector("img[data-lazy]"); });
+    function cfLoad(i) { var im = cfLazy[i]; if (im && im.getAttribute("data-lazy")) { im.src = im.getAttribute("data-lazy"); im.removeAttribute("data-lazy"); } }
 
     function place() {
       cfItems.forEach(function (it, i) {
@@ -193,6 +196,7 @@ document.documentElement.classList.add("js");
       }
       var ord = document.querySelector(".cf-order a");
       if (ord && a.getAttribute("data-wa")) ord.href = a.getAttribute("data-wa");
+      cfLoad(act); cfLoad((act + 1) % cfItems.length); cfLoad((act - 1 + cfItems.length) % cfItems.length);
     }
     function go(i) { act = Math.max(0, Math.min(cfItems.length - 1, i)); place(); }
     cfItems.forEach(function (it, i) {
@@ -218,10 +222,26 @@ document.documentElement.classList.add("js");
       cave.addEventListener("pointerleave", function () { paused = false; });
       cave.classList.add("ready");
     }
-    if (!reduce) {
-      setInterval(function () { if (!paused && !document.hidden) { act = (act + 1) % cfItems.length; place(); } }, 4400);
-    }
     place();
+    if (!reduce) {
+      var cfTimer = null, cfInView = true;
+      function cfTick() { if (!paused && cfInView && !document.hidden) { act = (act + 1) % cfItems.length; place(); } }
+      function cfStart() { if (!cfTimer) cfTimer = setInterval(cfTick, 4800); }
+      function cfStop() { if (cfTimer) { clearInterval(cfTimer); cfTimer = null; } }
+      // Pause quand le hero est hors-écran (économise repeints) ; ne démarre qu'après
+      // stabilisation du LCP (sinon l'auto-rotation repeint de grandes images et gonfle le LCP)
+      if ("IntersectionObserver" in window) {
+        new IntersectionObserver(function (es) { cfInView = es[0].isIntersecting; cfInView ? cfStart() : cfStop(); }, { threshold: .25 }).observe(cave || cf);
+      }
+      var cfBoot = function () { setTimeout(cfStart, 2600); };
+      if (document.readyState === "complete") cfBoot(); else addEventListener("load", cfBoot);
+    }
+    // Diffère le chargement des autres visuels du coverflow au-delà du 1er rendu (ne starve pas le CSS/LCP)
+    var cfStream = function () {
+      var ord = cfItems.map(function (_, i) { return i; }).sort(function (x, y) { return Math.abs(x - act) - Math.abs(y - act); });
+      (function nxt(k) { if (k < ord.length) { cfLoad(ord[k]); requestAnimationFrame(function () { nxt(k + 1); }); } })(0);
+    };
+    if (document.readyState === "complete") setTimeout(cfStream, 300); else addEventListener("load", function () { setTimeout(cfStream, 300); });
   }
 
   /* ---------- Poussière d'or (canvas, hero Weinkeller) ---------- */
