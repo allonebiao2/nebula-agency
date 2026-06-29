@@ -86,47 +86,105 @@ document.documentElement.classList.add("js");
     }
   }
 
-  /* ---------- Sélection Weinkeller : filtre fluide + lightbox ---------- */
-  var wfilter = document.querySelector(".wein-filter");
+  /* ---------- Sélection Weinkeller : navigation par catégorie (panneau + accordéon) ---------- */
+  var caveNav = document.querySelector("#caveNav");
   var bottles = Array.prototype.slice.call(document.querySelectorAll(".bottle"));
-  if (wfilter && bottles.length) {
-    function applyFilter(cat, btn) {
-      wfilter.querySelectorAll("button").forEach(function (x) {
-        x.classList.toggle("active", btn ? x === btn : x.getAttribute("data-cat") === cat);
-      });
+  if (caveNav && bottles.length) {
+    var caveHead = document.querySelector("#caveHead");
+    var caveScrim = document.querySelector("#caveScrim");
+    var caveOpenBtn = document.querySelector("#caveOpen");
+    var TAX = [
+      { cat: "champagne", short: "Champagnes", label: "Champagnes & Effervescents", subs: [["prestige", "Prestige & Millésimés"], ["blancdeblancs", "Blanc de Blancs"], ["brut", "Bruts"], ["rose", "Rosés"]] },
+      { cat: "tequila", short: "Tequila", label: "Tequila", subs: [["cristalino", "Cristalino"], ["blanco", "Blanco / Silver"], ["reposado", "Reposado"], ["anejo", "Añejo"]] },
+      { cat: "vin", short: "Vins", label: "Vins", subs: [["rouge", "Rouges"], ["blanc", "Blancs & Rosés"]] },
+      { cat: "spiritueux", short: "Spiritueux", label: "Whiskies & Spiritueux", subs: [["whisky", "Whiskies"], ["cognac-rhum", "Cognacs & Rhums"]] },
+      { cat: "liqueur", short: "Liqueurs", label: "Liqueurs & Apéritifs", subs: [] },
+      { cat: "biere", short: "Bières", label: "Bières & Autres", subs: [] }
+    ];
+    var CHEV = '<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+    function cnt(c, s) { return bottles.filter(function (b) { return b.getAttribute("data-cat") === c && (!s || b.getAttribute("data-sub") === s); }).length; }
+    function isReal(c) { return bottles.some(function (b) { return b.getAttribute("data-cat") === c && !b.classList.contains("is-ph"); }); }
+    var labelOf = {}; TAX.forEach(function (f) { labelOf[f.cat] = { label: f.label, subs: f.subs }; });
+
+    // construit l'accordéon
+    var html = '<div class="cave-nh">La cave</div>' +
+      '<button class="cave-row cave-all active" data-cat="all"><span class="lbl">Toute la cave</span><span class="cave-count">' + bottles.length + '</span></button>';
+    TAX.forEach(function (f) {
+      html += '<div class="acc-fam' + (isReal(f.cat) ? '' : ' soon') + '" data-cat="' + f.cat + '">' +
+        '<button class="cave-row fam" data-cat="' + f.cat + '"><span class="lbl">' + f.short + '</span><span class="cave-count">' + cnt(f.cat) + '</span>' + (f.subs.length ? CHEV : '') + '</button>';
+      if (f.subs.length) {
+        html += '<div class="acc-sub"><div class="acc-sub-inner">';
+        f.subs.forEach(function (s) { html += '<button class="sub-row" data-cat="' + f.cat + '" data-sub="' + s[0] + '"><span class="lbl">' + s[1] + '</span><span class="cave-count">' + cnt(f.cat, s[0]) + '</span></button>'; });
+        html += '</div></div>';
+      }
+      html += '</div>';
+    });
+    caveNav.innerHTML = html;
+
+    function setHead(cat, sub) {
+      if (!caveHead) return;
+      if (cat === "all") { caveHead.innerHTML = 'Toute la cave <span class="ch-n">' + bottles.length + ' références</span>'; return; }
+      var meta = labelOf[cat] || { label: "", subs: [] }, lbl = meta.label;
+      if (sub) { var sm = meta.subs.filter(function (s) { return s[0] === sub; })[0]; if (sm) lbl += ' · ' + sm[1]; }
+      var n = cnt(cat, sub);
+      caveHead.innerHTML = lbl + ' <span class="ch-n">' + n + (n > 1 ? ' bouteilles' : ' bouteille') + '</span>' + (isReal(cat) ? '' : ' <span class="ch-soon">à venir</span>');
+    }
+    function filterCave(cat, sub) {
       var vi = 0;
       bottles.forEach(function (t) {
-        var show = cat === "all" || t.getAttribute("data-cat") === cat;
+        var show = cat === "all" || (t.getAttribute("data-cat") === cat && (!sub || t.getAttribute("data-sub") === sub));
         if (show) {
           t.style.display = "";
           if (reduce) { t.classList.remove("b-out", "b-in"); }
-          else {
-            t.classList.remove("b-out");
-            t.style.animationDelay = (Math.min(vi, 10) * 0.035) + "s";
-            t.classList.remove("b-in"); void t.offsetWidth; t.classList.add("b-in");
-          }
+          else { t.classList.remove("b-out"); t.style.animationDelay = (Math.min(vi, 10) * 0.035) + "s"; t.classList.remove("b-in"); void t.offsetWidth; t.classList.add("b-in"); }
           vi++;
-        } else if (reduce) {
-          t.style.display = "none"; t.classList.remove("b-in");
-        } else {
-          t.classList.remove("b-in"); t.classList.add("b-out");
-          setTimeout(function () { if (t.classList.contains("b-out")) t.style.display = "none"; }, 300);
-        }
+        } else if (reduce) { t.style.display = "none"; t.classList.remove("b-in"); }
+        else { t.classList.remove("b-in"); t.classList.add("b-out"); setTimeout(function () { if (t.classList.contains("b-out")) t.style.display = "none"; }, 300); }
       });
+      caveNav.querySelectorAll(".cave-row,.sub-row").forEach(function (r) {
+        var rc = r.getAttribute("data-cat"), on;
+        if (r.classList.contains("cave-all")) on = (cat === "all");
+        else if (r.classList.contains("fam")) on = (rc === cat);
+        else on = (rc === cat && r.getAttribute("data-sub") === sub);
+        r.classList.toggle("active", on);
+      });
+      setHead(cat, sub);
     }
-    wfilter.addEventListener("click", function (e) {
-      var b = e.target.closest("button"); if (!b) return;
-      applyFilter(b.getAttribute("data-cat"), b);
+
+    function openDrawer() { caveNav.classList.add("open"); if (caveScrim) { caveScrim.hidden = false; requestAnimationFrame(function () { caveScrim.classList.add("show"); }); } if (caveOpenBtn) caveOpenBtn.setAttribute("aria-expanded", "true"); }
+    function closeDrawer() { if (!caveNav.classList.contains("open")) return; caveNav.classList.remove("open"); if (caveScrim) { caveScrim.classList.remove("show"); setTimeout(function () { caveScrim.hidden = true; }, 350); } if (caveOpenBtn) caveOpenBtn.setAttribute("aria-expanded", "false"); }
+
+    caveNav.addEventListener("click", function (e) {
+      var sub = e.target.closest(".sub-row");
+      if (sub) { filterCave(sub.getAttribute("data-cat"), sub.getAttribute("data-sub")); closeDrawer(); return; }
+      if (e.target.closest(".cave-all")) { caveNav.querySelectorAll(".acc-fam.open").forEach(function (f) { f.classList.remove("open"); }); filterCave("all", null); closeDrawer(); return; }
+      var fam = e.target.closest(".cave-row.fam");
+      if (fam) {
+        var wrap = fam.parentNode, hasSub = !!wrap.querySelector(".acc-sub"), wasOpen = wrap.classList.contains("open");
+        caveNav.querySelectorAll(".acc-fam.open").forEach(function (f) { if (f !== wrap) f.classList.remove("open"); });
+        if (hasSub) wrap.classList.toggle("open", !wasOpen);
+        filterCave(fam.getAttribute("data-cat"), null);
+        if (!hasSub) closeDrawer();
+      }
     });
-    // Cartes « univers » -> scroll fluide + active le filtre correspondant
+    if (caveOpenBtn) caveOpenBtn.addEventListener("click", function () { caveNav.classList.contains("open") ? closeDrawer() : openDrawer(); });
+    if (caveScrim) caveScrim.addEventListener("click", closeDrawer);
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeDrawer(); });
+
+    // Cartes « univers » -> scroll fluide + ouvre la catégorie
     document.querySelectorAll("[data-jump]").forEach(function (el) {
       el.addEventListener("click", function (ev) {
-        var cat = el.getAttribute("data-jump");
-        var sel = document.querySelector("#selection");
+        var cat = el.getAttribute("data-jump"), sel = document.querySelector("#selection");
         if (sel) { ev.preventDefault(); sel.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }); }
-        setTimeout(function () { applyFilter(cat); }, reduce ? 0 : 380);
+        setTimeout(function () {
+          var fam = caveNav.querySelector('.acc-fam[data-cat="' + cat + '"]');
+          if (fam && fam.querySelector(".acc-sub")) { caveNav.querySelectorAll(".acc-fam.open").forEach(function (f) { f.classList.remove("open"); }); fam.classList.add("open"); }
+          filterCave(cat, null);
+        }, reduce ? 0 : 380);
       });
     });
+
+    setHead("all", null);
   }
   // lightbox (agrandit la silhouette + fiche)
   var lb = document.querySelector(".lb");
