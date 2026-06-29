@@ -489,8 +489,8 @@ html.js .flight .plane{offset-distance:0%;opacity:0}
   .cave-open svg{width:20px;height:20px}
   .cave-nav{position:fixed;top:0;left:0;bottom:0;width:300px;max-width:85vw;z-index:92;border-radius:0;height:100dvh;max-height:none;transform:translateX(-101%);transition:transform .4s var(--ease);box-shadow:30px 0 90px -22px rgba(0,0,0,.9);padding:22px 12px}
   .cave-nav.open{transform:none}
-  .cave-scrim{display:block;position:fixed;inset:0;background:rgba(6,4,3,.72);backdrop-filter:blur(2px);z-index:91;opacity:0;transition:opacity .35s}
-  .cave-scrim.show{opacity:1}
+  .cave-scrim{display:block;position:fixed;inset:0;background:rgba(6,4,3,.72);backdrop-filter:blur(2px);z-index:91;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .35s,visibility .35s}
+  .cave-scrim.show{opacity:1;visibility:visible;pointer-events:auto}
 }
 @media (prefers-reduced-motion:reduce){.acc-sub,.cave-nav,.cave-scrim,.acc-fam .chev{transition:none}}
 .tovalid{display:inline-block;margin-left:6px;font-size:.6rem;font-weight:700;letter-spacing:.1em;
