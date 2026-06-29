@@ -737,3 +737,105 @@ body.has-mcta .fabs{bottom:calc(70px + env(safe-area-inset-bottom))}
   html.js .reveal{opacity:1;transform:none}
   .gate-inner{opacity:1;animation:none}
 }
+
+/* ==========================================================================
+   ÉCRANS DE CHARGEMENT signature par univers + entrée d'accueil.
+   Robuste : auto-effacement CSS (sécurité sans JS) ; le JS l'efface plus vite.
+   z-index 300 (au-dessus de tout). GPU only (transform/opacity).
+   ========================================================================== */
+.world-loader{position:fixed;inset:0;z-index:300;display:grid;place-items:center;text-align:center;
+  animation:wlAuto 3.2s var(--ease) forwards}
+@keyframes wlAuto{0%,68%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden;pointer-events:none}}
+html.loaded .world-loader{animation:none;opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .6s var(--ease),visibility .6s}
+.wl-inner{position:relative;display:grid;justify-items:center;gap:18px;padding:24px}
+
+/* ---- SPEED — clair, électrique, kinetic ---- */
+.wl-speed{background:
+  radial-gradient(80% 60% at 50% 6%,rgba(47,168,255,.20),transparent 60%),
+  radial-gradient(120% 90% at 50% 120%,rgba(10,79,214,.14),transparent 60%),
+  linear-gradient(180deg,#EAF3FF,#F5FAFF)}
+.wl-stage{position:relative;width:min(360px,82vw);height:188px}
+.wl-streaks{position:absolute;inset:0;overflow:hidden;opacity:.5}
+.wl-streaks i{position:absolute;height:2px;border-radius:2px;left:-30%;
+  background:linear-gradient(90deg,transparent,var(--brand-2),transparent);
+  animation:wlStreak 1.1s var(--ease) infinite}
+.wl-streaks i:nth-child(1){top:30%;width:42%;animation-delay:0s}
+.wl-streaks i:nth-child(2){top:52%;width:30%;animation-delay:.18s;opacity:.7}
+.wl-streaks i:nth-child(3){top:68%;width:50%;animation-delay:.34s}
+.wl-streaks i:nth-child(4){top:42%;width:24%;animation-delay:.52s;opacity:.6}
+.wl-streaks i:nth-child(5){top:80%;width:36%;animation-delay:.7s;opacity:.55}
+@keyframes wlStreak{0%{transform:translateX(0)}100%{transform:translateX(260%)}}
+.wl-arc{position:absolute;inset:0;width:100%;height:100%}
+.wl-arc-track{stroke:rgba(10,79,214,.22);stroke-width:2;stroke-dasharray:3 9;stroke-linecap:round}
+.wl-arc-draw{stroke:var(--brand);stroke-width:2.5;stroke-linecap:round;fill:none;
+  stroke-dasharray:300;stroke-dashoffset:300;animation:wlDraw 2.2s var(--ease) infinite}
+@keyframes wlDraw{0%{stroke-dashoffset:300}55%,100%{stroke-dashoffset:0}}
+.wl-pin{fill:var(--brand)}
+.wl-pin circle{r:5}
+.wl-pin-fr{transform:translate(40px,150px)}
+.wl-pin-bj{transform:translate(320px,120px);fill:#E8112D;animation:wlLand 2.2s var(--ease) infinite}
+@keyframes wlLand{0%,72%{transform:translate(320px,120px) scale(1)}82%{transform:translate(320px,120px) scale(1.7)}100%{transform:translate(320px,120px) scale(1)}}
+.wl-plane{fill:var(--brand);animation:wlFly 2.2s var(--ease) infinite}
+@keyframes wlFly{
+  0%{transform:translate(40px,150px) rotate(-34deg);opacity:0}
+  9%{opacity:1}
+  25%{transform:translate(109px,88px) rotate(-20deg)}
+  50%{transform:translate(180px,64px) rotate(0deg)}
+  75%{transform:translate(251px,75px) rotate(18deg)}
+  90%{opacity:1}
+  100%{transform:translate(320px,120px) rotate(30deg);opacity:0}}
+.wl-route{display:inline-flex;align-items:center;gap:12px;font-family:var(--f-ui);font-weight:700;
+  font-size:.76rem;letter-spacing:.22em;text-transform:uppercase;color:var(--brand);margin-top:2px}
+.wl-route svg{width:22px;height:15px;border-radius:2px;overflow:hidden}
+.wl-word-speed{font-family:"Anton","Archivo Narrow",sans-serif;font-weight:400;line-height:.92;
+  font-size:clamp(2.4rem,11vw,4rem);letter-spacing:.01em;color:var(--text);text-transform:uppercase}
+.wl-word-speed span{display:block;color:var(--brand);
+  background:linear-gradient(90deg,var(--brand),var(--brand-2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.wl-tag{font-family:var(--f-ui);font-weight:700;font-size:.62rem;letter-spacing:.42em;color:var(--text-2);text-transform:uppercase}
+
+/* ---- WEINKELLER — sombre, cave, or ---- */
+.wl-wein{background:
+  radial-gradient(90% 70% at 50% 28%,rgba(40,22,12,.9),transparent 62%),
+  radial-gradient(120% 100% at 50% 120%,rgba(120,40,30,.16),transparent 60%),
+  radial-gradient(120% 120% at 50% 50%,#160d09,#0B0908 56%,#050302)}
+.wl-wein .wl-inner{gap:22px}
+.wl-crest{width:88px;height:110px;position:relative}
+.wl-crest svg{width:100%;height:100%;overflow:visible}
+.wl-shield{fill:none;stroke:var(--accent);stroke-width:2;stroke-dasharray:360;stroke-dashoffset:360;
+  animation:wlShield 2.6s var(--ease) forwards;filter:drop-shadow(0 0 10px rgba(203,161,76,.4))}
+@keyframes wlShield{0%{stroke-dashoffset:360}70%,100%{stroke-dashoffset:0}}
+.wl-key{fill:var(--accent);opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(.6);
+  animation:wlKey 1s var(--ease) .9s forwards}
+@keyframes wlKey{to{opacity:.95;transform:scale(1)}}
+.wl-dust{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.wl-dust i{position:absolute;bottom:-6px;width:3px;height:3px;border-radius:50%;background:var(--accent);opacity:0;
+  box-shadow:0 0 6px rgba(203,161,76,.7);animation:wlDust 3.4s linear infinite}
+.wl-dust i:nth-child(1){left:18%;animation-delay:0s}
+.wl-dust i:nth-child(2){left:32%;animation-delay:.6s;width:2px;height:2px}
+.wl-dust i:nth-child(3){left:46%;animation-delay:1.2s}
+.wl-dust i:nth-child(4){left:58%;animation-delay:.3s;width:2px;height:2px}
+.wl-dust i:nth-child(5){left:68%;animation-delay:1.6s}
+.wl-dust i:nth-child(6){left:80%;animation-delay:.9s;width:2px;height:2px}
+.wl-dust i:nth-child(7){left:26%;animation-delay:2.1s}
+.wl-dust i:nth-child(8){left:74%;animation-delay:2.6s;width:2px;height:2px}
+@keyframes wlDust{0%{opacity:0;transform:translateY(0)}12%{opacity:.8}100%{opacity:0;transform:translateY(-78vh)}}
+.wl-word-wein{font-family:"Cinzel",Georgia,serif;font-weight:700;font-size:clamp(1.7rem,7vw,2.9rem);
+  letter-spacing:.14em;color:var(--text);opacity:0;animation:wlRise .9s var(--ease-out) 1.1s both;position:relative;overflow:hidden}
+.wl-word-wein::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 36%,rgba(231,214,163,.85) 50%,transparent 64%);
+  transform:translateX(-130%);animation:wlSheen 2.6s var(--ease) 1.5s infinite}
+@keyframes wlSheen{0%{transform:translateX(-130%)}40%,100%{transform:translateX(130%)}}
+.wl-rule{width:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  animation:wlRule 1s var(--ease) 1.4s forwards}
+@keyframes wlRule{to{width:200px}}
+.wl-by-wein{font-family:var(--f-ui);font-weight:700;font-size:.6rem;letter-spacing:.4em;color:var(--accent);
+  text-transform:uppercase;opacity:0;animation:wlRise .8s var(--ease-out) 1.7s both}
+@keyframes wlRise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* ---- Entrée d'accueil (joue quand le loader se lève — additive, sûre) ---- */
+html.loaded .hero .wrap{animation:heroEnter 1s var(--ease-out) both}
+@keyframes heroEnter{from{opacity:.001;transform:translateY(22px)}to{opacity:1;transform:none}}
+html.loaded.w-wein-x .hero .wrap{animation-duration:1.3s}
+html.loaded .hero .cave-3d{animation:heroEnter 1.1s var(--ease-out) .12s both}
+html.loaded .w-speed .flightcard,html.loaded .hero .hero-media,html.loaded .hero .hero-bg{animation:heroEnter 1.1s var(--ease-out) .16s both}

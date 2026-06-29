@@ -11,6 +11,32 @@ document.documentElement.classList.add("js");
   var fine = window.matchMedia("(hover:hover) and (pointer:fine)").matches;
   var saveData = !!(navigator.connection && navigator.connection.saveData);
 
+  /* ---------- Écran de chargement signature (effacement) ----------
+     Le loader s'auto-efface en CSS (sécurité sans JS). Ici on l'efface plus vite
+     dès que la page est prête, après un temps mini pour apprécier l'animation. */
+  (function () {
+    var loader = document.querySelector(".world-loader");
+    if (!loader) return;
+    var docEl = document.documentElement;
+    docEl.style.overflow = "hidden"; // verrou de défilement (JS-only : jamais piégé sans JS)
+    var done = false;
+    var MIN = reduce ? 0 : 1900;
+    var t0 = (window.performance && performance.now) ? performance.now() : Date.now();
+    function dismiss() {
+      if (done) return; done = true;
+      docEl.classList.add("loaded");
+      docEl.style.overflow = "";
+      setTimeout(function () { if (loader && loader.parentNode) loader.parentNode.removeChild(loader); }, 700);
+    }
+    function whenReady() {
+      var now = (window.performance && performance.now) ? performance.now() : Date.now();
+      setTimeout(dismiss, Math.max(0, MIN - (now - t0)));
+    }
+    if (document.readyState === "complete") whenReady();
+    else window.addEventListener("load", whenReady);
+    setTimeout(dismiss, 4200); // garde-fou absolu
+  })();
+
   /* ---------- Année ---------- */
   document.querySelectorAll("[data-year]").forEach(function (el) {
     el.textContent = new Date().getFullYear();
