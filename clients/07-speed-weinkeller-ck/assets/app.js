@@ -95,11 +95,7 @@ document.documentElement.classList.add("js");
     var caveOpenBtn = document.querySelector("#caveOpen");
     var TAX = [
       { cat: "champagne", short: "Champagnes", label: "Champagnes & Effervescents", subs: [["prestige", "Prestige & Millésimés"], ["blancdeblancs", "Blanc de Blancs"], ["brut", "Bruts"], ["rose", "Rosés"]] },
-      { cat: "tequila", short: "Tequila", label: "Tequila", subs: [["cristalino", "Cristalino"], ["blanco", "Blanco / Silver"], ["reposado", "Reposado"], ["anejo", "Añejo"]] },
-      { cat: "vin", short: "Vins", label: "Vins", subs: [["rouge", "Rouges"], ["blanc", "Blancs & Rosés"]] },
-      { cat: "spiritueux", short: "Spiritueux", label: "Whiskies & Spiritueux", subs: [["whisky", "Whiskies"], ["cognac-rhum", "Cognacs & Rhums"]] },
-      { cat: "liqueur", short: "Liqueurs", label: "Liqueurs & Apéritifs", subs: [] },
-      { cat: "biere", short: "Bières", label: "Bières & Autres", subs: [] }
+      { cat: "tequila", short: "Tequila", label: "Tequila", subs: [["cristalino", "Cristalino"], ["blanco", "Blanco / Silver"], ["reposado", "Reposado"], ["anejo", "Añejo"]] }
     ];
     var CHEV = '<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
     function cnt(c, s) { return bottles.filter(function (b) { return b.getAttribute("data-cat") === c && (!s || b.getAttribute("data-sub") === s); }).length; }

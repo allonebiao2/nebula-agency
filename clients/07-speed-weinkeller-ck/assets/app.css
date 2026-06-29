@@ -506,6 +506,7 @@ html.js .flight .plane{offset-distance:0%;opacity:0}
 
 /* catégories cave (chips ornementales) */
 .cellars{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.cellars-2{grid-template-columns:repeat(2,1fr);max-width:760px;margin-inline:auto}
 .cellar{position:relative;border:1px solid var(--line);border-radius:var(--r);padding:28px 24px;
   background:radial-gradient(120% 100% at 50% 0,#1a1210,#0E0A09);overflow:hidden;transition:.32s}
 .cellar:hover{border-color:color-mix(in srgb,var(--accent) 50%,var(--line));transform:translateY(-5px)}
