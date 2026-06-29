@@ -37,6 +37,47 @@ document.documentElement.classList.add("js");
     setTimeout(dismiss, 4200); // garde-fou absolu
   })();
 
+  /* ---------- Fiches services Speed (lecture obligatoire avant action) ---------- */
+  (function () {
+    var sheets = document.querySelectorAll(".svc-sheet");
+    if (!sheets.length) return;
+    var openSheet = null, lastFocus = null;
+    function lockBody(on) { document.documentElement.style.overflow = on ? "hidden" : ""; }
+    function progress(sheet) {
+      var body = sheet.querySelector(".svc-body"), bar = sheet.querySelector(".svc-progress i");
+      var max = body.scrollHeight - body.clientHeight;
+      var pct = max <= 4 ? 1 : Math.min(1, body.scrollTop / max);
+      if (bar) bar.style.width = (pct * 100).toFixed(1) + "%";
+      if (pct >= 0.985 || max <= 4) sheet.classList.add("read"); // déverrouille le CTA
+    }
+    function open(id) {
+      var sheet = document.getElementById("svc-" + id); if (!sheet) return;
+      lastFocus = document.activeElement;
+      sheet.hidden = false; void sheet.offsetWidth;
+      sheet.classList.add("open"); sheet.classList.remove("read");
+      openSheet = sheet; lockBody(true);
+      var body = sheet.querySelector(".svc-body"), bar = sheet.querySelector(".svc-progress i");
+      body.scrollTop = 0; if (bar) bar.style.width = "0%";
+      if (!body._svcBound) { body.addEventListener("scroll", function () { progress(sheet); }, { passive: true }); body._svcBound = true; }
+      requestAnimationFrame(function () { progress(sheet); try { body.focus({ preventScroll: true }); } catch (e) {} });
+    }
+    function close() {
+      if (!openSheet) return;
+      var s = openSheet; openSheet = null;
+      s.classList.remove("open"); lockBody(false);
+      setTimeout(function () { if (!s.classList.contains("open")) s.hidden = true; }, 420);
+      if (lastFocus && lastFocus.focus) try { lastFocus.focus(); } catch (e) {}
+    }
+    document.querySelectorAll(".cat-svc[data-svc]").forEach(function (btn) {
+      btn.addEventListener("click", function () { open(btn.getAttribute("data-svc")); });
+    });
+    sheets.forEach(function (sheet) {
+      sheet.querySelectorAll("[data-close]").forEach(function (el) { el.addEventListener("click", close); });
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && openSheet) close(); });
+    window.addEventListener("resize", function () { if (openSheet) progress(openSheet); }, { passive: true });
+  })();
+
   /* ---------- Année ---------- */
   document.querySelectorAll("[data-year]").forEach(function (el) {
     el.textContent = new Date().getFullYear();

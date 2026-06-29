@@ -847,3 +847,70 @@ html.loaded .hero .wrap{animation:heroEnter 1s var(--ease-out) both}
 html.loaded.w-wein-x .hero .wrap{animation-duration:1.3s}
 html.loaded .hero .cave-3d{animation:heroEnter 1.1s var(--ease-out) .12s both}
 html.loaded .w-speed .flightcard,html.loaded .hero .hero-media,html.loaded .hero .hero-bg{animation:heroEnter 1.1s var(--ease-out) .16s both}
+
+/* ==========================================================================
+   FICHES SERVICES Speed — lecture obligatoire avant action.
+   Carte = bouton qui ouvre une fiche plein écran ; le CTA n'apparaît qu'une
+   fois la fiche lue jusqu'au bout (barre de progression + déverrouillage).
+   ========================================================================== */
+.cat-svc{text-align:left;width:100%;font:inherit;color:inherit;display:block;cursor:pointer}
+.cat-svc .cat-cta{cursor:pointer}
+
+.svc-sheet{position:fixed;inset:0;z-index:150;display:flex;justify-content:center;align-items:flex-end;
+  opacity:0;visibility:hidden;pointer-events:none;transition:opacity .4s var(--ease),visibility .4s}
+.svc-sheet.open{opacity:1;visibility:visible;pointer-events:auto}
+.svc-backdrop{position:absolute;inset:0;background:rgba(7,18,40,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.svc-panel{position:relative;display:flex;flex-direction:column;width:min(760px,100%);max-height:93dvh;
+  background:var(--bg-2);border-radius:22px 22px 0 0;box-shadow:0 -24px 70px -24px rgba(8,18,40,.5);
+  transform:translateY(26px);transition:transform .45s var(--ease);overflow:hidden}
+.svc-sheet.open .svc-panel{transform:none}
+@media (min-width:721px){.svc-sheet{align-items:center}.svc-panel{border-radius:22px;max-height:88dvh}}
+
+.svc-progress{height:3px;background:var(--accent-soft);flex:none}
+.svc-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));border-radius:0 3px 3px 0}
+.svc-head{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;padding:22px 24px 16px;flex:none;border-bottom:1px solid var(--line)}
+.svc-eyebrow{font-family:var(--f-ui);font-weight:800;font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:var(--brand)}
+.svc-head h3{font-family:var(--f-ui);font-weight:800;font-size:clamp(1.3rem,3.6vw,1.72rem);margin:7px 0 4px;letter-spacing:-.01em;line-height:1.1}
+.svc-sub{color:var(--text-2);font-size:.95rem;margin:0}
+.svc-close{flex:none;width:42px;height:42px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--text);transition:.2s}
+.svc-close:hover{background:var(--accent-soft);color:var(--brand)}
+.svc-close svg{width:20px;height:20px}
+
+.svc-body{overflow-y:auto;padding:22px 24px 24px;flex:1;-webkit-overflow-scrolling:touch}
+.svc-body:focus-visible{outline:none}
+.svc-intro{font-size:1.02rem;color:var(--text);margin:0 0 20px;line-height:1.6}
+.svc-step{display:flex;gap:15px;padding:18px 0;border-top:1px solid var(--line)}
+.svc-step:first-of-type{border-top:0;padding-top:2px}
+.svc-n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--brand);color:#fff;font-family:var(--f-ui);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.95rem}
+.svc-stepc{min-width:0;flex:1}
+.svc-stepc h4{font-family:var(--f-ui);font-weight:800;font-size:1.08rem;margin:5px 0 9px}
+.svc-stepc p{margin:0 0 10px;color:var(--text);font-size:.96rem;line-height:1.6}
+.svc-mut{color:var(--text-2);font-weight:700;font-size:.84rem;letter-spacing:.02em;margin:0 0 7px}
+.svc-list{margin:0 0 12px;display:grid;gap:7px}
+.svc-list li{position:relative;padding-left:23px;color:var(--text);font-size:.95rem;line-height:1.5}
+.svc-list li::before{content:"";position:absolute;left:3px;top:.55em;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.svc-formula{font-family:var(--f-ui);font-weight:800;font-size:.98rem;background:var(--accent-soft);color:var(--brand);
+  padding:12px 16px;border-radius:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 12px}
+.svc-formula span{opacity:.45}
+.svc-price{display:grid;gap:1px;background:var(--line);border-radius:12px;overflow:hidden;margin:0 0 12px}
+.svc-pr{display:flex;justify-content:space-between;gap:14px;align-items:center;background:var(--bg);padding:11px 15px;font-size:.94rem}
+.svc-pr b{color:var(--brand);white-space:nowrap}
+.svc-ex{margin-top:14px;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:16px}
+.svc-ex-t{display:inline-block;font-family:var(--f-ui);font-weight:800;font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:9px}
+.svc-callout{display:flex;gap:13px;align-items:flex-start;background:var(--accent-soft);border-radius:14px;padding:15px 17px;margin:14px 0 0}
+.svc-co-ic{flex:none;color:var(--brand)}.svc-co-ic svg{width:24px;height:24px}
+.svc-callout b{display:block;font-family:var(--f-ui);font-weight:800;margin-bottom:3px;color:var(--text);font-size:.98rem}
+.svc-callout p{margin:0;font-size:.92rem;color:var(--text-2);line-height:1.55}
+.svc-end{height:1px}
+
+.svc-foot{flex:none;padding:14px 24px;padding-bottom:max(14px,env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--bg-2);min-height:62px;display:flex;align-items:center}
+.svc-lock{display:flex;align-items:center;justify-content:center;gap:9px;margin:0;width:100%;color:var(--text-2);font-size:.88rem;font-weight:600}
+.svc-lock svg{width:20px;height:20px;color:var(--accent);flex:none;animation:svcNudge 1.6s var(--ease) infinite}
+@keyframes svcNudge{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+.svc-actions{display:none;gap:10px;width:100%}
+.svc-actions .btn{flex:1;min-height:50px;justify-content:center}
+.svc-sheet.read .svc-lock{display:none}
+.svc-sheet.read .svc-actions{display:flex;animation:svcRise .42s var(--ease) both}
+@keyframes svcRise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media (max-width:460px){.svc-actions{flex-direction:column}}
+@media (prefers-reduced-motion:reduce){.svc-lock svg{animation:none}.svc-panel{transition:none}}
