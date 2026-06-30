@@ -1008,16 +1008,24 @@ html.loaded .w-speed .flightcard,html.loaded .hero .hero-media,html.loaded .hero
   .btn-glass{background:rgba(255,255,255,.93)}.btn-glass-wa{background:var(--wa)}
 }
 
-/* 3 · Entrée distincte par section (gardée sûre : réinitialisée par .in) */
-html.js [data-reveal="pop"] .reveal:not(.in){transform:translateY(30px) scale(.96)}
-html.js [data-reveal="rise"] .reveal:not(.in){transform:translateY(46px)}
-html.js [data-reveal="left"] .reveal:not(.in){transform:translateX(-40px)}
-html.js [data-reveal="right"] .reveal:not(.in){transform:translateX(40px)}
-html.js [data-reveal="zoom"] .reveal:not(.in){transform:scale(.9)}
-[data-reveal="left"] .reveal,[data-reveal="right"] .reveal{transition-duration:.82s}
-[data-reveal="zoom"] .reveal{transition-duration:.85s;transition-timing-function:var(--ease-out)}
+/* 3 · Entrée DISTINCTE par section — un matériau & un rythme différents chacun.
+      Toujours sûr : réinitialisé par .in (jamais de contenu piégé). */
+html.js [data-reveal="pop"] .reveal:not(.in){transform:translateY(22px) scale(.95)}      /* services : apparition */
+html.js [data-reveal="rise"] .reveal:not(.in){transform:translateY(50px)}                 /* atouts : montée ample */
+html.js [data-reveal="left"] .reveal:not(.in){transform:translateX(-48px)}                /* avis : glisse de la gauche */
+html.js [data-reveal="right"] .reveal:not(.in){transform:translateX(48px)}                /* faq : glisse de la droite */
+html.js [data-reveal="blur"] .reveal:not(.in){filter:blur(13px)}                          /* contact : mise au point */
+html.js [data-reveal="blur"] .reveal.in{filter:none}
+html.js [data-reveal="zoom"] .reveal:not(.in){transform:scale(.86)}                       /* CTA : zoom punchy */
+/* rythmes & courbes distincts par section */
+[data-reveal="pop"] .reveal{transition-duration:.78s;transition-timing-function:var(--ease-out)}
+[data-reveal="rise"] .reveal{transition-duration:.7s}
+[data-reveal="left"] .reveal,[data-reveal="right"] .reveal{transition-duration:.88s;transition-timing-function:var(--ease-out)}
+[data-reveal="blur"] .reveal{transition:opacity .95s var(--ease-out),filter .95s var(--ease-out),transform .95s var(--ease-out)}
+[data-reveal="zoom"] .reveal{transition-duration:.6s;transition-timing-function:var(--ease-out)}
 
 @media (prefers-reduced-motion:reduce){
   .sa-glow{animation:none!important}.sa-fly{display:none}
   .w-speed .hero::before{animation:none!important}
+  html.js [data-reveal="blur"] .reveal{filter:none!important}
 }
