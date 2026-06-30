@@ -478,3 +478,32 @@ sans le client) :
   `reduce`**, donc QA en **`--force-prefers-reduced-motion`** (révèle aussi les `.reveal` ET arrête l'auto) + `--headless`
   classique + `timeout`. Cartes sélection « réelles » : `.bottle.real` avec `transform-style:preserve-3d` + img en
   `translateZ(42px)` (flotte au tilt) + `-webkit-box-reflect`.
+
+
+## 2026-06-30 — HH Design (#08, immobilier) + leçons nav/hook
+
+- **Nav sur HERO CLAIR : ne PAS reprendre le pattern `over-dark`** (texte blanc).
+  Le socle suppose souvent un hero sombre → sur un hero clair (blanc), `nav.over-dark`
+  met le texte en blanc = **invisible**, et force une barre grise translucide sur mobile.
+  Fix : retirer la classe `over-dark` + son IO ; nav = **texte sombre transparent** par
+  défaut + fond blanc-flou (`.scrolled`). Toujours se demander : « le hero est-il clair
+  ou sombre ? » avant de câbler la couleur de nav.
+- **Hook `impeccable` sur un site neuf — corrections types** : (a) `em-dash-overuse`
+  (> 2 « — » dans le corps = tell IA → virgules/deux-points, garder ≤ 2) ; (b)
+  `numbered-section-markers` (01/02/03 ou I/II/III sur CHAQUE section = scaffold IA →
+  garder **une seule** séquence réellement ordonnée, ex. un process ; remplacer les
+  autres par un marqueur décoratif type **losange** ou rien) ; (c) `layout-transition`
+  (animer `width`/`inset`/`height` → passer en `transform:scaleX/scale`) ; (d)
+  `dark-glow` (ombre colorée « cool » → ombre neutre).
+- **Vitrine mono-page = `index.html` CSS/JS inline** : viable, simple à déployer (1 HTML
+  + images), pas de cache-bust à gérer. Galerie immobilier sans vraies photos =
+  **scènes SVG architecturales** (façades line-art or/noir) marquées « à valider »
+  (honnêteté : jamais de stock déguisé en biens réels).
+- **Galerie distincte (rappel règle d'or)** : HH = **lignes éditoriales alternées**
+  (image pleine largeur ↔ texte, côtés alternés) + filtres + lightbox. Stock de patrons
+  galerie à ce jour : bento (Djambar), coverflow 3D (Speed/Weinkeller), scatter (Miss
+  cakes), lignes alternées (HH). Ne pas réutiliser → en inventer un nouveau au prochain.
+- **Speed (#07) refonte UX** : enlever les CTA WhatsApp génériques du hero/CTA-band réduit
+  la « fuite vers le chat » ; les **fiches lecture-avant-action** restent le vrai canal de
+  commande (message pré-rempli structuré). Compacter le hero (padding/boutons fins) pour
+  un aperçu immédiat. **N.B. ambre** (restrictions « pas de viande ») = motif réutilisable.
