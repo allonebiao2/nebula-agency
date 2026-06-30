@@ -922,3 +922,51 @@ html.loaded .w-speed .flightcard,html.loaded .hero .hero-media,html.loaded .hero
 @keyframes svcRise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 @media (max-width:460px){.svc-actions{flex-direction:column}}
 @media (prefers-reduced-motion:reduce){.svc-lock svg{animation:none}.svc-panel{transition:none}}
+
+/* ==========================================================================
+   Animations SIGNATURES par service (icônes des 3 options Speed).
+   Chacune raconte son intention. GPU only ; ne tournent qu'une fois la carte
+   à l'écran (.in) ; amplifiées au survol ; figées en reduced-motion.
+   ========================================================================== */
+.cat-svc .icon-badge{width:62px;height:62px;border-radius:18px;transition:transform .35s var(--ease),background .3s,box-shadow .3s}
+.cat-svc .icon-badge .ic{width:34px;height:34px}
+.cat-svc:hover .icon-badge{transform:translateY(-3px) scale(1.06);box-shadow:0 16px 30px -14px color-mix(in srgb,var(--brand) 60%,transparent)}
+.ic{overflow:visible}
+.ic-drop,.ic-bag,.ic-parcel,.ic-lines path,.ic-box{will-change:transform,opacity}
+.ic-bag{transform-box:fill-box;transform-origin:center bottom}
+.ic-box{transform-box:fill-box;transform-origin:center bottom}
+.ic-drop{opacity:0}
+.ic-lines path{opacity:.5}
+
+/* 1 · Commander un article — l'article tombe dans le sac (acquisition, rebond) */
+.cat-svc.in .ic-drop{animation:icDrop 1.9s var(--ease) infinite}
+.cat-svc.in .ic-bag{animation:icBag 1.9s var(--ease) infinite}
+@keyframes icDrop{0%{transform:translateY(-5px);opacity:0}16%{opacity:1}50%{transform:translateY(6px);opacity:1}60%{transform:translateY(6px);opacity:0}100%{opacity:0}}
+@keyframes icBag{0%,48%{transform:scaleY(1)}56%{transform:scaleY(.88)}68%{transform:scaleY(1.04)}80%,100%{transform:scaleY(1)}}
+
+/* 2 · Colis France → Bénin — le colis traverse + traits de vitesse (transit) */
+.cat-svc.in .ic-parcel{animation:icCross 2s var(--ease) infinite}
+.cat-svc.in .ic-lines path{animation:icSpeed 2s var(--ease) infinite}
+.cat-svc.in .ic-lines path:nth-child(2){animation-delay:.1s}
+.cat-svc.in .ic-lines path:nth-child(3){animation-delay:.2s}
+@keyframes icCross{0%{transform:translateX(-7px);opacity:0}14%{opacity:1}78%{opacity:1}100%{transform:translateX(8px);opacity:0}}
+@keyframes icSpeed{0%,100%{opacity:.12;transform:translateX(0)}50%{opacity:.95;transform:translateX(2px)}}
+
+/* 3 · Envoi par conteneur — les cartons s'empilent (volume, mouvement lourd) */
+.cat-svc.in .ic-b1{animation:icStack1 3.6s var(--ease-out) infinite}
+.cat-svc.in .ic-b2{animation:icStack2 3.6s var(--ease-out) infinite}
+.cat-svc.in .ic-b3{animation:icStack3 3.6s var(--ease-out) infinite}
+@keyframes icStack1{0%{transform:translateY(-14px);opacity:0}10%{transform:translateY(0);opacity:1}88%{transform:translateY(0);opacity:1}100%{transform:translateY(0);opacity:0}}
+@keyframes icStack2{0%,9%{transform:translateY(-14px);opacity:0}22%{transform:translateY(0);opacity:1}88%{transform:translateY(0);opacity:1}100%{transform:translateY(0);opacity:0}}
+@keyframes icStack3{0%,21%{transform:translateY(-16px);opacity:0}37%{transform:translateY(0);opacity:1}88%{transform:translateY(0);opacity:1}100%{transform:translateY(0);opacity:0}}
+
+/* Survol : on accélère la signature (l'icône « réagit ») */
+.cat-svc:hover .ic-drop,.cat-svc:hover .ic-bag{animation-duration:1.15s}
+.cat-svc:hover .ic-parcel,.cat-svc:hover .ic-lines path{animation-duration:1.25s}
+.cat-svc:hover .ic-b1,.cat-svc:hover .ic-b2,.cat-svc:hover .ic-b3{animation-duration:2.3s}
+
+@media (prefers-reduced-motion:reduce){
+  .ic-drop,.ic-bag,.ic-parcel,.ic-lines path,.ic-box{animation:none!important;transform:none!important}
+  .ic-drop{opacity:0}.ic-lines path{opacity:.5}.ic-box{opacity:1}
+  .cat-svc:hover .icon-badge{transform:none}
+}
