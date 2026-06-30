@@ -487,4 +487,19 @@ document.documentElement.classList.add("js");
       c.addEventListener("pointerleave", function () { r = null; c.style.transition = ""; c.style.transform = ""; });
     });
   }
+
+  /* ---------- Bulle coffrets cadeaux (Weinkeller) : après 10 s, fermable, 1x/session ---------- */
+  (function () {
+    var gb = document.getElementById("giftBubble");
+    if (!gb) return;
+    try { if (sessionStorage.getItem("gb-dismissed") === "1") return; } catch (e) {}
+    var closed = false;
+    function show() { if (closed || gb.hidden === false) return; gb.hidden = false; requestAnimationFrame(function () { gb.classList.add("open"); }); }
+    var timer = setTimeout(show, 10000);
+    function dismiss() { try { sessionStorage.setItem("gb-dismissed", "1"); } catch (e) {} }
+    function close() { closed = true; clearTimeout(timer); gb.classList.remove("open"); dismiss(); setTimeout(function () { gb.hidden = true; }, 550); }
+    var cb = document.getElementById("gbClose"); if (cb) cb.addEventListener("click", close);
+    var cta = gb.querySelector(".gb-cta"); if (cta) cta.addEventListener("click", dismiss);
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && gb.classList.contains("open")) close(); });
+  })();
 })();

@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=Cinzel:wght@400;600;700;800;900&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/app.css?v=20260630f">
+<link rel="stylesheet" href="assets/app.css?v=20260630g">
 </head>
 <body class="w-wein"
       data-wa="https://wa.me/2290197158484?text=Bonjour%20Weinkeller%20by%20CK%2C%20je%20souhaite%20commander%20une%20bouteille%20de%20votre%20cave."
@@ -386,6 +386,29 @@
     </div>
   </footer>
 
+  <!-- BULLE COFFRETS CADEAUX (apparaît après 10 s, discrète, fermable) -->
+  <aside class="giftbubble" id="giftBubble" role="dialog" aria-label="Coffrets cadeaux personnalisés" hidden>
+    <button class="gb-close" id="gbClose" type="button" aria-label="Fermer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+    <div class="gb-head">
+      <span class="gb-ic" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v9H4v-9M2 7h20v5H2zM12 22V7M12 7S10.5 3 8 3a2.2 2.2 0 0 0 0 4.4M12 7s1.5-4 4-4a2.2 2.2 0 0 1 0 4.4"/></svg>
+      </span>
+      <div>
+        <span class="gb-kicker">Sur-mesure</span>
+        <h3>Offrir un cadeau</h3>
+      </div>
+    </div>
+    <p class="gb-body">Nous réalisons aussi des <b>coffrets personnalisés</b> : anniversaire, mariage, cadeau d'entreprise, remerciements…</p>
+    <p class="gb-desc">Le principe : vous choisissez la ou les boissons, et nous vous contactons pour vous aider à <b>emballer joliment</b> le tout et à y joindre un <b>petit mot</b>.</p>
+    <p class="gb-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>L'emballage et le petit mot sont à vos frais.</p>
+    <a class="gb-cta" href="https://wa.me/2290197158484?text=Bonjour%20Weinkeller%20by%20CK%2C%20je%20souhaite%20un%20coffret%20cadeau%20personnalis%C3%A9.%20Voici%20l%27occasion%20et%20les%20boissons%20qui%20m%27int%C3%A9ressent%20%3A%20" target="_blank" rel="noopener">
+      Composer mon coffret
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </aside>
+
   <!-- FABs -->
   <div class="fabs">
     <a class="fab fab-wa" href="https://wa.me/2290197158484?text=Bonjour%20Weinkeller%20by%20CK%2C%20je%20souhaite%20commander%20une%20bouteille." target="_blank" rel="noopener" aria-label="Commander sur WhatsApp">
@@ -405,6 +428,6 @@
     <figure style="margin:0"><div class="stage"></div><figcaption class="lb-cap"></figcaption></figure>
   </div>
 
-  <script src="assets/app.js?v=20260630f"></script>
+  <script src="assets/app.js?v=20260630g"></script>
 </body>
 </html>

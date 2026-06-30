@@ -382,6 +382,48 @@ html.js .flight .plane{offset-distance:0%;opacity:0}
 .svc-nb p{margin:0;font-size:.93rem;line-height:1.55}
 .svc-nb b{color:#5A410B}
 
+/* ==========================================================================
+   Bulle COFFRETS CADEAUX (Weinkeller) — promo discrète, après 10 s, fermable.
+   Charte cave : sombre + or, Cinzel + Spectral. GPU only, AA, reduced-motion.
+   ========================================================================== */
+.giftbubble{position:fixed;z-index:58;right:max(16px,env(safe-area-inset-right));bottom:164px;
+  width:min(338px,calc(100vw - 32px));background:linear-gradient(180deg,#1C1512,#130C09);
+  border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));border-radius:18px;
+  padding:20px 20px 22px;color:var(--text);
+  box-shadow:0 30px 70px -24px rgba(0,0,0,.85),0 0 0 1px rgba(203,161,76,.07);
+  opacity:0;transform:translateY(16px) scale(.98);transform-origin:bottom right;pointer-events:none;
+  transition:opacity .55s var(--ease-out),transform .55s var(--ease-out)}
+.giftbubble.open{opacity:1;transform:none;pointer-events:auto}
+.giftbubble::after{content:"";position:absolute;right:30px;bottom:-9px;width:18px;height:18px;background:#130C09;
+  border-right:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));
+  border-bottom:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));transform:rotate(45deg)}
+.gb-close{position:absolute;top:11px;right:11px;width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;color:var(--text-2);background:rgba(255,255,255,.05);transition:.2s}
+.gb-close:hover{color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,transparent)}
+.gb-close svg{width:16px;height:16px}
+.gb-head{display:flex;align-items:center;gap:13px;margin-bottom:14px;padding-right:26px}
+.gb-ic{flex:none;width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+  color:var(--accent);background:color-mix(in srgb,var(--accent) 13%,transparent);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line))}
+.gb-ic svg{width:24px;height:24px}
+.gb-kicker{font-family:var(--f-ui);font-weight:800;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+.gb-head h3{font-family:var(--font-display);font-weight:700;font-size:1.34rem;letter-spacing:.02em;margin:3px 0 0;color:var(--text)}
+.gb-body{font-size:.92rem;line-height:1.55;color:var(--text);margin:0 0 9px}
+.gb-desc{font-size:.86rem;line-height:1.55;color:var(--text-2);margin:0 0 11px}
+.gb-body b,.gb-desc b{color:var(--accent);font-weight:600}
+.gb-note{display:flex;align-items:flex-start;gap:8px;font-size:.78rem;line-height:1.45;color:var(--text-2);
+  font-style:italic;font-family:"Spectral",Georgia,serif;margin:0 0 16px}
+.gb-note svg{flex:none;width:16px;height:16px;color:var(--accent);margin-top:1px}
+.gb-cta{display:inline-flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:46px;
+  background:linear-gradient(180deg,#E9C66C,#C49232);color:#241606;font-family:var(--f-ui);font-weight:800;
+  font-size:.9rem;letter-spacing:.02em;border-radius:11px;transition:filter .25s var(--ease)}
+.gb-cta svg{width:17px;height:17px;transition:transform .3s var(--ease)}
+.gb-cta:hover{filter:brightness(1.07)}.gb-cta:hover svg{transform:translateX(4px)}
+@media (max-width:680px){
+  .giftbubble{left:12px;right:12px;width:auto;bottom:calc(196px + env(safe-area-inset-bottom));transform-origin:bottom center}
+  .giftbubble::after{display:none}
+}
+@media (prefers-reduced-motion:reduce){.giftbubble{transition:none}}
+
 /* ---- Étapes (timeline numérotée) ---- */
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;counter-reset:step}
 .step{position:relative;background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r);padding:30px 26px}
