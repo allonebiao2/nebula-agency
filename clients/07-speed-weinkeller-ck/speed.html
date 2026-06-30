@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/app.css?v=20260630c">
+<link rel="stylesheet" href="assets/app.css?v=20260630d">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
 {"@type":"Question","name":"Combien de temps prend la livraison ?","acceptedAnswer":{"@type":"Answer","text":"Pour les articles disponibles en magasin, comptez environ 3 à 5 jours pour l'arrivée au Bénin, selon le type d'expédition (voie aérienne)."}},
@@ -80,6 +80,10 @@
 
   <!-- HERO -->
   <header class="hero">
+    <div class="speed-aura" aria-hidden="true">
+      <span class="sa-glow sa-g1"></span><span class="sa-glow sa-g2"></span><span class="sa-glow sa-g3"></span>
+      <span class="sa-fly sa-f1"></span><span class="sa-fly sa-f2"></span><span class="sa-fly sa-f3"></span><span class="sa-fly sa-f4"></span>
+    </div>
     <div class="wrap hero-grid">
       <div class="reveal">
         <span class="hero-eyebrow">
@@ -90,11 +94,11 @@
         <h1>La France<br><span class="pop">à portée de main</span></h1>
         <p class="hero-sub">Vos achats en France, livrés chez vous au Bénin. Achetez où vous voulez&nbsp;: nous nous occupons du reste.</p>
         <div class="btn-row">
-          <a class="btn btn-lg btn-wa" href="https://wa.me/2290197158484?text=Bonjour%20Speed%20Shopping%2C%20je%20souhaite%20passer%20une%20commande%20(achat%20en%20France%20%E2%86%92%20livraison%20B%C3%A9nin)." target="_blank" rel="noopener">
+          <a class="btn btn-lg btn-glass-wa" href="https://wa.me/2290197158484?text=Bonjour%20Speed%20Shopping%2C%20je%20souhaite%20passer%20une%20commande%20(achat%20en%20France%20%E2%86%92%20livraison%20B%C3%A9nin)." target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.2-.7-2.7-1.1-4.4-3.9-4.5-4.1-.1-.2-1-1.4-1-2.6s.6-1.8.9-2.1c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6c-.2.2-.3.4-.1.7.2.3.8 1.3 1.7 2.1 1.2 1 2 1.3 2.3 1.5.2.1.4.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.9.9c.3.2.5.3.6.4.1.2.1.6-.1 1.1Z"/></svg>
             Commander maintenant
           </a>
-          <a class="btn btn-lg btn-ghost" href="#concept">Voir nos services</a>
+          <a class="btn btn-lg btn-glass" href="#concept">Voir nos services</a>
         </div>
         <div class="hero-trust">
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Paiement Mobile Money</span>
@@ -129,7 +133,7 @@
   </header>
 
   <!-- CONCEPT -->
-  <section class="sec" id="concept">
+  <section class="sec" id="concept" data-reveal="pop">
     <div class="wrap">
       <div class="sec-head reveal">
         <span class="kicker">Nos services</span>
@@ -162,7 +166,7 @@
 
 
   <!-- ATOUTS -->
-  <section class="sec-tight">
+  <section class="sec-tight" data-reveal="rise">
     <div class="wrap">
       <div class="perks reveal">
         <div class="perk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5Z"/><path d="m9 12 2 2 4-4"/></svg><b>Paiement sécurisé</b><span>Mobile Money</span></div>
@@ -175,7 +179,7 @@
   </section>
 
   <!-- AVIS -->
-  <section class="sec" style="background:var(--bg-2);border-block:1px solid var(--line)">
+  <section class="sec" data-reveal="left" style="background:var(--bg-2);border-block:1px solid var(--line)">
     <div class="wrap">
       <div class="sec-head center reveal">
         <span class="kicker">Ils nous font confiance</span>
@@ -190,7 +194,7 @@
   </section>
 
   <!-- FAQ -->
-  <section class="sec" id="faq">
+  <section class="sec" id="faq" data-reveal="right">
     <div class="wrap">
       <div class="sec-head center reveal">
         <span class="kicker">FAQ</span>
@@ -208,7 +212,7 @@
   </section>
 
   <!-- CONTACT -->
-  <section class="sec" id="contact" style="background:var(--bg-2);border-top:1px solid var(--line)">
+  <section class="sec" id="contact" data-reveal="rise" style="background:var(--bg-2);border-top:1px solid var(--line)">
     <div class="wrap">
       <div class="sec-head reveal">
         <span class="kicker">Contact</span>
@@ -245,7 +249,7 @@
   </section>
 
   <!-- CTA BAND -->
-  <section class="sec">
+  <section class="sec" data-reveal="zoom">
     <div class="wrap">
       <div class="cta-band reveal">
         <span class="kicker" style="color:#fff">Votre prochain achat en France</span>
@@ -365,6 +369,6 @@
     </div>
   </div>
 
-  <script src="assets/app.js?v=20260630c"></script>
+  <script src="assets/app.js?v=20260630d"></script>
 </body>
 </html>

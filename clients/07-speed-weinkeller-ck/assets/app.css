@@ -970,3 +970,54 @@ html.loaded .w-speed .flightcard,html.loaded .hero .hero-media,html.loaded .hero
   .ic-drop{opacity:0}.ic-lines path{opacity:.5}.ic-box{opacity:1}
   .cat-svc:hover .icon-badge{transform:none}
 }
+
+/* ==========================================================================
+   Speed — arrière-plan animé du hero · boutons glass · entrée par section.
+   GPU only (transform/opacity) · reduced-motion safe.
+   ========================================================================== */
+/* 1 · Arrière-plan animé du hero (aura dérivante + colis volants) */
+.speed-aura{position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none}
+.sa-glow{position:absolute;border-radius:50%;opacity:.55;will-change:transform;mix-blend-mode:multiply}
+.sa-g1{width:42vw;max-width:460px;aspect-ratio:1;left:-6%;top:4%;background:radial-gradient(circle,rgba(47,168,255,.5),transparent 70%);animation:saDrift1 22s ease-in-out infinite}
+.sa-g2{width:50vw;max-width:560px;aspect-ratio:1;right:-10%;top:-14%;background:radial-gradient(circle,rgba(10,79,214,.3),transparent 70%);animation:saDrift2 28s ease-in-out infinite}
+.sa-g3{width:38vw;max-width:400px;aspect-ratio:1;left:32%;bottom:-20%;background:radial-gradient(circle,rgba(30,107,255,.26),transparent 70%);animation:saDrift3 25s ease-in-out infinite}
+@keyframes saDrift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(42px,30px) scale(1.12)}}
+@keyframes saDrift2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-46px,42px) scale(1.08)}}
+@keyframes saDrift3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-32px) scale(1.14)}}
+.sa-fly{position:absolute;left:0;width:10px;height:10px;border-radius:3px;background:rgba(10,79,214,.16);
+  box-shadow:0 4px 10px rgba(10,79,214,.12);will-change:transform,opacity}
+.sa-f1{top:23%;animation:saFly 9s linear infinite}
+.sa-f2{top:50%;width:7px;height:7px;animation:saFly 12s linear infinite 2.4s}
+.sa-f3{top:69%;animation:saFly 10.5s linear infinite 4.6s}
+.sa-f4{top:37%;width:6px;height:6px;animation:saFly 14s linear infinite 6.8s}
+@keyframes saFly{0%{transform:translateX(-40px);opacity:0}8%{opacity:.7}92%{opacity:.7}100%{transform:translateX(101vw);opacity:0}}
+.w-speed .hero::before{animation:saLines 44s linear infinite}
+@keyframes saLines{from{background-position:0 0}to{background-position:260px 0}}
+
+/* 2 · Boutons glass transparents (AA vérifié) */
+.btn-glass,.btn-glass-wa{position:relative;overflow:hidden}
+.btn-glass{background:rgba(255,255,255,.52);-webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%);
+  border:1px solid rgba(255,255,255,.78);color:var(--brand);
+  box-shadow:0 12px 32px -16px rgba(10,79,214,.5),inset 0 1px 0 rgba(255,255,255,.6)}
+.btn-glass:hover{background:rgba(255,255,255,.72);transform:translateY(-2px);box-shadow:0 18px 42px -18px rgba(10,79,214,.6),inset 0 1px 0 rgba(255,255,255,.75)}
+.btn-glass-wa{background:color-mix(in srgb,var(--wa) 90%,transparent);-webkit-backdrop-filter:blur(12px) saturate(160%);backdrop-filter:blur(12px) saturate(160%);
+  border:1px solid rgba(255,255,255,.45);color:#fff;
+  box-shadow:0 14px 36px -16px rgba(14,154,78,.6),inset 0 1px 0 rgba(255,255,255,.35)}
+.btn-glass-wa:hover{background:color-mix(in srgb,var(--wa) 97%,transparent);transform:translateY(-2px)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .btn-glass{background:rgba(255,255,255,.93)}.btn-glass-wa{background:var(--wa)}
+}
+
+/* 3 · Entrée distincte par section (gardée sûre : réinitialisée par .in) */
+html.js [data-reveal="pop"] .reveal:not(.in){transform:translateY(30px) scale(.96)}
+html.js [data-reveal="rise"] .reveal:not(.in){transform:translateY(46px)}
+html.js [data-reveal="left"] .reveal:not(.in){transform:translateX(-40px)}
+html.js [data-reveal="right"] .reveal:not(.in){transform:translateX(40px)}
+html.js [data-reveal="zoom"] .reveal:not(.in){transform:scale(.9)}
+[data-reveal="left"] .reveal,[data-reveal="right"] .reveal{transition-duration:.82s}
+[data-reveal="zoom"] .reveal{transition-duration:.85s;transition-timing-function:var(--ease-out)}
+
+@media (prefers-reduced-motion:reduce){
+  .sa-glow{animation:none!important}.sa-fly{display:none}
+  .w-speed .hero::before{animation:none!important}
+}
