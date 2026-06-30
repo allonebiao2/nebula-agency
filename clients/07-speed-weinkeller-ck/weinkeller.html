@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=Cinzel:wght@400;600;700;800;900&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/app.css?v=20260630h">
+<link rel="stylesheet" href="assets/app.css?v=20260630i">
 </head>
 <body class="w-wein"
       data-wa="https://wa.me/2290197158484?text=Bonjour%20Weinkeller%20by%20CK%2C%20je%20souhaite%20commander%20une%20bouteille%20de%20votre%20cave."
@@ -67,13 +67,14 @@
       </a>
       <div class="nav-links">
         <a href="#maison">Qui sommes-nous</a>
-        <a href="#selection">Notre sélection</a>
-        <a href="#contact">Contact</a>
+        <a href="#selection" data-svc="commande">Commande spéciale</a>
+        <a href="#selection" data-svc="event">Événementiel</a>
+        <a href="#selection" data-svc="bar">Bar à domicile</a>
         <a class="world-switch" href="speed.html" aria-label="Découvrir l'autre univers : Speed Shopping">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3 4 7l4 4M4 7h13M16 21l4-4-4-4M20 17H7"/></svg>
           Speed
         </a>
-        <a class="btn btn-gold nav-cta" href="https://wa.me/2290197158484?text=Bonjour%20Weinkeller%20by%20CK%2C%20je%20souhaite%20commander%20une%20bouteille." target="_blank" rel="noopener">Commander</a>
+        <a class="btn btn-gold nav-cta" href="#selection">Voir la sélection</a>
       </div>
       <button class="burger" aria-label="Menu" aria-expanded="false"><span class="bars"></span><span class="burger-txt">Menu</span></button>
     </div>
@@ -385,6 +386,138 @@
     </div>
   </footer>
 
+  <!-- ============ FICHES SERVICES WEINKELLER (3 univers, animations distinctes) ============ -->
+
+  <!-- 1 · COMMANDE SPÉCIALE — motif route France/Allemagne → Bénin -->
+  <div class="svc-sheet svc-now sheet-import" id="svc-commande" role="dialog" aria-modal="true" aria-labelledby="svc-commande-t" hidden>
+    <div class="svc-backdrop" data-close></div>
+    <div class="svc-panel">
+      <div class="svc-progress" aria-hidden="true"><i></i></div>
+      <div class="sh-hero sh-route" aria-hidden="true">
+        <div class="sh-route-flags">
+          <span class="sh-flag"><svg viewBox="0 0 24 16"><rect width="8" height="16" fill="#0055A4"/><rect x="8" width="8" height="16" fill="#fff"/><rect x="16" width="8" height="16" fill="#EF4135"/></svg></span>
+          <span class="sh-flag"><svg viewBox="0 0 24 16"><rect width="24" height="5.34" fill="#111"/><rect y="5.34" width="24" height="5.33" fill="#DD0000"/><rect y="10.67" width="24" height="5.33" fill="#FFCE00"/></svg></span>
+        </div>
+        <svg class="sh-arc" viewBox="0 0 360 96" fill="none" preserveAspectRatio="xMidYMid meet">
+          <path class="sh-arc-track" d="M44 70 C140 12 240 12 316 56"/>
+          <path class="sh-arc-draw" d="M44 70 C140 12 240 12 316 56"/>
+          <circle class="sh-dot-a" cx="44" cy="70" r="4"/><circle class="sh-dot-b" cx="316" cy="56" r="4"/>
+          <g class="sh-travel"><path d="M-6 0 L7 5 L-6 10 L-1 5 Z" fill="#CBA14C"/></g>
+        </svg>
+        <span class="sh-flag sh-flag-end"><svg viewBox="0 0 24 16"><rect width="9" height="16" fill="#008751"/><rect x="9" width="15" height="8" fill="#FCD116"/><rect x="9" y="8" width="15" height="8" fill="#E8112D"/></svg></span>
+      </div>
+      <div class="svc-head">
+        <div><span class="svc-eyebrow">Service · Weinkeller by CK</span><h3 id="svc-commande-t">Commande spéciale d'une bouteille</h3><p class="svc-sub">Non disponible chez nous ? Nous l'importons de France ou d'Allemagne.</p></div>
+        <button class="svc-close" data-close type="button" aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div class="svc-body" tabindex="0">
+        <p class="svc-intro">Vous recherchez une bouteille qui ne figure pas dans notre sélection disponible à Cotonou ? Avec Weinkeller by CK, nous commandons la boisson de votre choix en France ou en Allemagne et nous vous la livrons rapidement à Cotonou.</p>
+        <h4 class="svc-sec">Comment ça fonctionne&nbsp;?</h4>
+        <div class="svc-step"><span class="svc-n">1</span><div class="svc-stepc"><p>Envoyez-nous la <b>photo ou le lien</b> de la bouteille souhaitée.</p></div></div>
+        <div class="svc-step"><span class="svc-n">2</span><div class="svc-stepc"><p>Nous vérifions sa disponibilité et <b>calculons le montant</b> de votre commande.</p></div></div>
+        <div class="svc-step"><span class="svc-n">3</span><div class="svc-stepc"><p>Vous réglez&nbsp;:</p><ul class="svc-list"><li>le prix de la bouteille</li><li>la commission</li></ul></div></div>
+        <div class="svc-step"><span class="svc-n">4</span><div class="svc-stepc"><p>Nous achetons votre bouteille et l'<b>expédions vers le Bénin</b>.</p></div></div>
+        <div class="svc-step"><span class="svc-n">5</span><div class="svc-stepc"><p>À l'arrivée à Cotonou, vous réglez <b>uniquement les frais de livraison</b>.</p></div></div>
+        <h4 class="svc-sec">Nos commissions</h4>
+        <div class="svc-price"><div class="svc-pr"><span>De 0 € à 99 €</span><b>10 €</b></div><div class="svc-pr"><span>De 100 € à 4 999 €</span><b>10 % du prix</b></div></div>
+        <h4 class="svc-sec">Frais de livraison</h4>
+        <p class="svc-stepc-p"><b>15 € par kilogramme.</b> Payables uniquement lorsque votre commande est arrivée à Cotonou.</p>
+        <div class="svc-callout"><span class="svc-co-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span><div><b>Mode de paiement</b><p><b>Avant l'expédition :</b> prix de la bouteille + commission. <b>À l'arrivée à Cotonou :</b> frais de livraison (15 €/kg).</p></div></div>
+        <div class="svc-callout"><span class="svc-co-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><b>Délai de livraison : 3 à 5 jours</b><p>Le délai court à partir de l'expédition.</p></div></div>
+        <h4 class="svc-sec">Calcul du montant</h4>
+        <p class="svc-formula">Prix de la bouteille <span>+</span> Commission <span>=</span> avant expédition</p>
+        <p class="svc-formula">Frais de livraison (15 €/kg) <span>=</span> à l'arrivée à Cotonou</p>
+        <p class="svc-closing">Champagne, vin, whisky, cognac, tequila, rhum, liqueur ou toute autre boisson importée&nbsp;: nous nous occupons de tout, de l'achat jusqu'à la livraison.</p>
+        <div class="svc-end" aria-hidden="true"></div>
+      </div>
+      <div class="svc-foot">
+        <div class="svc-actions">
+          <a class="btn btn-wa" href="https://wa.me/2290197158484?text=Bonjour%20Weinkeller%20by%20CK%2C%20je%20souhaite%20une%20COMMANDE%20SP%C3%89CIALE%20(bouteille%20non%20disponible%20chez%20vous).%20Voici%20la%20photo%20ou%20le%20lien%20de%20la%20bouteille%20recherch%C3%A9e%20%3A%20" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Z"/></svg>Commander cette bouteille</a>
+          <a class="btn btn-ghost" href="https://wa.me/2290197158484?text=Bonjour%20Weinkeller%20by%20CK%2C%20j%27ai%20une%20question%20sur%20une%20commande%20sp%C3%A9ciale." target="_blank" rel="noopener">Poser une question</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2 · ACCOMPAGNEMENT ÉVÉNEMENTIEL — motif bulles de champagne -->
+  <div class="svc-sheet svc-now sheet-toast" id="svc-event" role="dialog" aria-modal="true" aria-labelledby="svc-event-t" hidden>
+    <div class="svc-backdrop" data-close></div>
+    <div class="svc-panel">
+      <div class="svc-progress" aria-hidden="true"><i></i></div>
+      <div class="sh-hero sh-toast" aria-hidden="true">
+        <span class="sh-bub"></span><span class="sh-bub"></span><span class="sh-bub"></span><span class="sh-bub"></span><span class="sh-bub"></span><span class="sh-bub"></span><span class="sh-bub"></span><span class="sh-bub"></span>
+        <svg class="sh-flutes" viewBox="0 0 120 80" fill="none" stroke="#CBA14C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <g class="sh-flute sh-flute-l"><path d="M48 20 L42 44 a8 8 0 0 1-8 8 a8 8 0 0 1-8-8 L20 20Z"/><path d="M34 52v18M24 70h20"/></g>
+          <g class="sh-flute sh-flute-r"><path d="M100 20 L94 44 a8 8 0 0 1-8 8 a8 8 0 0 1-8-8 L72 20Z"/><path d="M86 52v18M76 70h20"/></g>
+        </svg>
+      </div>
+      <div class="svc-head">
+        <div><span class="svc-eyebrow">Service · Weinkeller by CK</span><h3 id="svc-event-t">Accompagnement événementiel</h3><p class="svc-sub">La bonne sélection pour célébrer, au bon budget.</p></div>
+        <button class="svc-close" data-close type="button" aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div class="svc-body" tabindex="0">
+        <p class="svc-intro">Un anniversaire, un mariage, un chill, une soirée privée, un afterwork, une réception, un baptême… Weinkeller by CK vous accompagne dans le choix des boissons pour créer une sélection adaptée à votre événement et à votre budget.</p>
+        <h4 class="svc-sec">Notre accompagnement</h4>
+        <p class="svc-mut">Un assortiment sur mesure, selon vos besoins&nbsp;:</p>
+        <ul class="svc-list svc-cols"><li>Champagnes</li><li>Vins</li><li>Whiskies</li><li>Cognacs</li><li>Tequilas</li><li>Rhums</li><li>Liqueurs</li><li>Spiritueux premium</li></ul>
+        <p>Nous vous conseillons sur les <b>quantités</b> selon le nombre d'invités et votre budget, pour que vous ayez les boissons idéales le jour J.</p>
+        <h4 class="svc-sec">Nos avantages</h4>
+        <p class="svc-mut">Remises exclusives sur les commandes en volume&nbsp;:</p>
+        <div class="svc-price"><div class="svc-pr"><span>À partir de 10 bouteilles</span><b>−5 %</b></div><div class="svc-pr"><span>À partir de 25 bouteilles</span><b>−7 %</b></div></div>
+        <h4 class="svc-sec">Une offre 100 % personnalisée</h4>
+        <p class="svc-mut">Chaque événement est unique. Nous adaptons notre proposition à&nbsp;:</p>
+        <ul class="svc-list"><li>votre budget</li><li>le type d'événement</li><li>le nombre d'invités</li><li>vos préférences en matière de boissons</li></ul>
+        <div class="svc-callout"><span class="svc-co-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14M8 4h8l-1 6a4 4 0 0 1-6 0L8 4ZM12 16v6"/></svg></span><div><b>Notre objectif</b><p>Une sélection de qualité, au meilleur prix, tout en vous simplifiant l'organisation.</p></div></div>
+        <h4 class="svc-sec">Comment réserver&nbsp;?</h4>
+        <div class="svc-step"><span class="svc-n">1</span><div class="svc-stepc"><p>Contactez-nous.</p></div></div>
+        <div class="svc-step"><span class="svc-n">2</span><div class="svc-stepc"><p>Indiquez la <b>date</b> de votre événement.</p></div></div>
+        <div class="svc-step"><span class="svc-n">3</span><div class="svc-stepc"><p>Précisez le <b>nombre d'invités</b>.</p></div></div>
+        <div class="svc-step"><span class="svc-n">4</span><div class="svc-stepc"><p>Communiquez votre <b>budget</b>.</p></div></div>
+        <div class="svc-step"><span class="svc-n">5</span><div class="svc-stepc"><p>Nous vous proposons une <b>sélection adaptée</b> à vos besoins.</p></div></div>
+        <div class="svc-end" aria-hidden="true"></div>
+      </div>
+      <div class="svc-foot">
+        <div class="svc-actions">
+          <a class="btn btn-wa" href="https://wa.me/2290197158484?text=Bonjour%20Weinkeller%20by%20CK%2C%20je%20souhaite%20un%20ACCOMPAGNEMENT%20%C3%89V%C3%89NEMENTIEL.%20Date%20%3A%20%E2%80%A6%20%2F%20Nombre%20d%27invit%C3%A9s%20%3A%20%E2%80%A6%20%2F%20Budget%20%3A%20%E2%80%A6" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Z"/></svg>Demander un accompagnement</a>
+          <a class="btn btn-ghost" href="https://wa.me/2290197158484?text=Bonjour%20Weinkeller%20by%20CK%2C%20j%27ai%20une%20question%20sur%20l%27accompagnement%20%C3%A9v%C3%A9nementiel." target="_blank" rel="noopener">Poser une question</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 · CRÉEZ VOTRE BAR À DOMICILE — motif bouteilles sur étagère -->
+  <div class="svc-sheet svc-now sheet-bar" id="svc-bar" role="dialog" aria-modal="true" aria-labelledby="svc-bar-t" hidden>
+    <div class="svc-backdrop" data-close></div>
+    <div class="svc-panel">
+      <div class="svc-progress" aria-hidden="true"><i></i></div>
+      <div class="sh-hero sh-shelf" aria-hidden="true">
+        <span class="sh-bottle"></span><span class="sh-bottle"></span><span class="sh-bottle"></span><span class="sh-bottle"></span><span class="sh-bottle"></span><span class="sh-bottle"></span>
+        <span class="sh-shelf-line"></span>
+      </div>
+      <div class="svc-head">
+        <div><span class="svc-eyebrow">Service · Weinkeller by CK</span><h3 id="svc-bar-t">Créez votre bar à domicile</h3><p class="svc-sub">Votre cave personnelle, à votre goût et à votre budget.</p></div>
+        <button class="svc-close" data-close type="button" aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div class="svc-body" tabindex="0">
+        <p class="svc-intro">Vous rêvez d'une belle sélection de boissons chez vous, pour recevoir vos invités ou simplement vous faire plaisir ? Weinkeller by CK vous accompagne dans la création de votre bar à domicile, adapté à vos goûts, à votre budget et à votre espace.</p>
+        <h4 class="svc-sec">Nos services</h4>
+        <div class="svc-svc"><span class="svc-svc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14M8 4h8l-1 6a4 4 0 0 1-6 0L8 4ZM12 16v6"/></svg></span><div><h4>Création de votre bar personnalisé</h4><p>Un assortiment sur mesure&nbsp;:</p><ul class="svc-list svc-cols"><li>Champagnes</li><li>Vins</li><li>Whiskies</li><li>Cognacs</li><li>Tequilas</li><li>Rhums</li><li>Gins</li><li>Liqueurs</li><li>Spiritueux premium</li></ul><p class="svc-mut">Conseillé selon vos préférences et votre budget.</p></div></div>
+        <div class="svc-svc"><span class="svc-svc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></svg></span><div><h4>Réapprovisionnement</h4><p>Vous manquez d'une bouteille ? Envoyez-nous un message&nbsp;: nous réapprovisionnons votre bar, avec une livraison rapide à Cotonou.</p></div></div>
+        <div class="svc-svc"><span class="svc-svc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19l1-5.8-4.3-4.1 5.9-.9L12 3Z"/></svg></span><div><h4>Recherche de bouteilles rares</h4><p>Une bouteille précise ou une édition limitée ? Nous la recherchons en France et en Allemagne et l'importons pour vous.</p></div></div>
+        <h4 class="svc-sec">Pourquoi choisir Weinkeller by CK&nbsp;?</h4>
+        <ul class="svc-checks"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Sélection personnalisée</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Conseils de professionnels</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Produits importés</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Livraison rapide</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Accompagnement sur mesure</li></ul>
+        <p class="svc-closing">Transformez votre intérieur en un véritable espace de dégustation avec Weinkeller by CK.</p>
+        <div class="svc-end" aria-hidden="true"></div>
+      </div>
+      <div class="svc-foot">
+        <div class="svc-actions">
+          <a class="btn btn-gold" href="#selection" data-close>Faire ma sélection</a>
+          <a class="btn btn-ghost" href="https://wa.me/2290197158484?text=Bonjour%20Weinkeller%20by%20CK%2C%20je%20souhaite%20cr%C3%A9er%20mon%20BAR%20%C3%80%20DOMICILE.%20Voici%20mes%20pr%C3%A9f%C3%A9rences%20et%20mon%20budget%20%3A%20" target="_blank" rel="noopener">Demander conseil</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- BULLE COFFRETS CADEAUX (apparaît après 10 s, discrète, fermable) -->
   <aside class="giftbubble" id="giftBubble" role="dialog" aria-label="Coffrets cadeaux personnalisés" hidden>
     <button class="gb-close" id="gbClose" type="button" aria-label="Fermer">
@@ -427,6 +560,6 @@
     <figure style="margin:0"><div class="stage"></div><figcaption class="lb-cap"></figcaption></figure>
   </div>
 
-  <script src="assets/app.js?v=20260630h"></script>
+  <script src="assets/app.js?v=20260630i"></script>
 </body>
 </html>

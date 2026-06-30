@@ -68,8 +68,8 @@ document.documentElement.classList.add("js");
       setTimeout(function () { if (!s.classList.contains("open")) s.hidden = true; }, 420);
       if (lastFocus && lastFocus.focus) try { lastFocus.focus(); } catch (e) {}
     }
-    document.querySelectorAll(".cat-svc[data-svc]").forEach(function (btn) {
-      btn.addEventListener("click", function () { open(btn.getAttribute("data-svc")); });
+    document.querySelectorAll("[data-svc]").forEach(function (btn) {
+      btn.addEventListener("click", function (e) { e.preventDefault(); open(btn.getAttribute("data-svc")); });
     });
     sheets.forEach(function (sheet) {
       sheet.querySelectorAll("[data-close]").forEach(function (el) { el.addEventListener("click", close); });

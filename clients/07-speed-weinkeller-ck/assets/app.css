@@ -979,6 +979,105 @@ html.loaded .w-speed .flightcard,html.loaded .hero .hero-media,html.loaded .hero
 @media (max-width:460px){.svc-actions{flex-direction:column}}
 @media (prefers-reduced-motion:reduce){.svc-lock svg{animation:none}.svc-panel{transition:none}}
 
+/* ===================== Fiches services WEINKELLER (cave + or) ===================== */
+/* accents OR (le rouge --brand est illisible sur fond sombre) */
+.w-wein .svc-eyebrow,.w-wein .svc-formula,.w-wein .svc-pr b,.w-wein .svc-co-ic{color:var(--accent)}
+.w-wein .svc-formula span{color:var(--accent);opacity:.5}
+.w-wein .svc-formula{background:var(--accent-soft)}
+.w-wein .svc-progress i{background:linear-gradient(90deg,var(--accent),#E9C66C)}
+.w-wein .svc-n{background:var(--accent);color:#241606}
+.w-wein .svc-backdrop{background:rgba(8,5,4,.66)}
+.w-wein .svc-panel{border:1px solid var(--line);box-shadow:0 -24px 80px -20px rgba(0,0,0,.85)}
+.w-wein .svc-foot,.w-wein .svc-ex{background:var(--bg-3)}
+.w-wein .svc-close{background:var(--bg-3)}
+/* CTA visibles d'emblée (pas de lecture obligatoire ici) */
+.svc-now .svc-lock{display:none}
+.svc-now .svc-actions{display:flex}
+/* sous-titres + contenus */
+.svc-sec{font-family:var(--font-display);font-weight:700;font-size:1.14rem;letter-spacing:.01em;margin:24px 0 13px;
+  padding-top:16px;border-top:1px solid var(--line);display:flex;align-items:center;gap:11px;color:var(--text)}
+.svc-sec::before{content:"";width:18px;height:2px;background:var(--accent);flex:none}
+.svc-body>.svc-intro+.svc-sec{border-top:0;padding-top:0}
+.svc-body>p{margin:0 0 12px;color:var(--text);font-size:.96rem;line-height:1.6}
+.svc-closing{margin:18px 0 2px!important;font-family:"Spectral",Georgia,serif;font-style:italic;font-size:1.02rem;line-height:1.6;color:var(--text-2)!important}
+.svc-cols{grid-template-columns:1fr 1fr}
+.svc-checks{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:9px}
+.svc-checks li{display:flex;align-items:center;gap:11px;font-size:.97rem;color:var(--text);font-weight:600}
+.svc-checks svg{flex:none;width:19px;height:19px;color:var(--accent)}
+.svc-svc{display:flex;gap:14px;padding:17px 0;border-top:1px solid var(--line)}
+.svc-svc:first-of-type{border-top:0;padding-top:4px}
+.svc-svc-ic{flex:none;width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;color:var(--accent);background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line))}
+.svc-svc-ic svg{width:22px;height:22px}
+.svc-svc h4{font-family:var(--f-ui);font-weight:800;font-size:1.06rem;margin:4px 0 8px}
+.svc-svc p{margin:0 0 9px;color:var(--text);font-size:.95rem;line-height:1.55}
+
+/* ----- Bande-héros animée : 1 motif DISTINCT par fiche ----- */
+.sh-hero{position:relative;height:104px;flex:none;overflow:hidden;border-bottom:1px solid var(--line);
+  background:radial-gradient(120% 130% at 50% -25%,#241510,#0E0907)}
+/* 1) ROUTE FR/DE -> BJ : arc qui se dessine + chevron qui voyage */
+.sh-route{display:flex;align-items:center;justify-content:space-between;padding:0 28px}
+.sh-route-flags{display:flex;gap:7px;position:relative;z-index:2}
+.sh-flag{width:30px;height:20px;border-radius:3px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.5);display:block}
+.sh-flag svg{width:100%;height:100%;display:block}
+.sh-flag-end{position:relative;z-index:2}
+.sh-arc{position:absolute;inset:0;width:100%;height:100%}
+.sh-arc-track{stroke:rgba(203,161,76,.22);stroke-width:2;fill:none}
+.sh-arc-draw{stroke:var(--accent);stroke-width:2;fill:none;stroke-dasharray:340;stroke-dashoffset:340}
+.sh-dot-a,.sh-dot-b{fill:var(--accent)}
+.sh-travel{offset-path:path("M44 70 C140 12 240 12 316 56");offset-distance:0%;offset-rotate:auto;opacity:0}
+.svc-sheet.open .sh-route .sh-arc-draw{animation:shDraw 1.5s var(--ease-out) .25s forwards}
+.svc-sheet.open .sh-route .sh-travel{animation:shTravel 2.1s var(--ease-out) .35s forwards}
+@keyframes shDraw{to{stroke-dashoffset:0}}
+@keyframes shTravel{0%{offset-distance:0%;opacity:0}10%{opacity:1}90%{opacity:1}100%{offset-distance:100%;opacity:1}}
+/* 2) TOAST : flûtes qui trinquent + bulles qui montent */
+.sh-toast{display:flex;align-items:center;justify-content:center}
+.sh-flutes{width:160px;height:78px;position:relative;z-index:2}
+.sh-flute{transform-origin:50% 92%}
+.svc-sheet.open .sh-toast .sh-flute-l{animation:clinkL 1.5s var(--ease) .2s both}
+.svc-sheet.open .sh-toast .sh-flute-r{animation:clinkR 1.5s var(--ease) .2s both}
+@keyframes clinkL{0%{transform:translateX(9px) rotate(8deg)}38%{transform:translateX(0) rotate(0)}54%{transform:translateX(-2px) rotate(-3deg)}100%{transform:none}}
+@keyframes clinkR{0%{transform:translateX(-9px) rotate(-8deg)}38%{transform:translateX(0) rotate(0)}54%{transform:translateX(2px) rotate(3deg)}100%{transform:none}}
+.sh-bub{position:absolute;bottom:12px;width:6px;height:6px;border-radius:50%;background:rgba(233,198,108,.85);opacity:0}
+.sh-toast .sh-bub:nth-child(1){left:38%;animation:shBub 2.6s linear .3s infinite}
+.sh-toast .sh-bub:nth-child(2){left:46%;width:4px;height:4px;animation:shBub 3s linear .9s infinite}
+.sh-toast .sh-bub:nth-child(3){left:54%;animation:shBub 2.4s linear .5s infinite}
+.sh-toast .sh-bub:nth-child(4){left:60%;width:5px;height:5px;animation:shBub 2.8s linear 1.3s infinite}
+.sh-toast .sh-bub:nth-child(5){left:42%;width:3px;height:3px;animation:shBub 3.2s linear 1.7s infinite}
+.sh-toast .sh-bub:nth-child(6){left:58%;width:4px;height:4px;animation:shBub 2.5s linear .1s infinite}
+.sh-toast .sh-bub:nth-child(7){left:50%;animation:shBub 3s linear 2s infinite}
+.sh-toast .sh-bub:nth-child(8){left:63%;width:3px;height:3px;animation:shBub 2.7s linear 1.1s infinite}
+@keyframes shBub{0%{transform:translateY(0) scale(.6);opacity:0}15%{opacity:1}100%{transform:translateY(-84px) scale(1);opacity:0}}
+/* 3) ÉTAGÈRE : bouteilles qui se posent une à une */
+.sh-shelf{display:flex;align-items:flex-end;justify-content:center;gap:13px;padding-bottom:24px}
+.sh-bottle{position:relative;z-index:2;width:15px;height:46px;border-radius:7px 7px 3px 3px;
+  background:linear-gradient(180deg,#6e3322,#3a1a12);box-shadow:inset 0 0 0 1px rgba(203,161,76,.35);opacity:0;transform:translateY(26px)}
+.sh-bottle::before{content:"";position:absolute;top:-9px;left:50%;transform:translateX(-50%);width:5px;height:10px;background:#3a1a12;border-radius:2px}
+.sh-bottle::after{content:"";position:absolute;top:15px;left:0;right:0;height:8px;background:rgba(203,161,76,.5)}
+.sh-bottle:nth-child(2){height:54px}.sh-bottle:nth-child(3){height:40px}.sh-bottle:nth-child(4){height:58px}.sh-bottle:nth-child(5){height:44px}.sh-bottle:nth-child(6){height:50px}
+.sh-shelf-line{position:absolute;left:26px;right:26px;bottom:22px;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;z-index:1}
+.svc-sheet.open .sh-shelf .sh-bottle{animation:shPop .55s var(--ease-out) both}
+.svc-sheet.open .sh-shelf .sh-bottle:nth-child(1){animation-delay:.24s}
+.svc-sheet.open .sh-shelf .sh-bottle:nth-child(2){animation-delay:.35s}
+.svc-sheet.open .sh-shelf .sh-bottle:nth-child(3){animation-delay:.46s}
+.svc-sheet.open .sh-shelf .sh-bottle:nth-child(4){animation-delay:.57s}
+.svc-sheet.open .sh-shelf .sh-bottle:nth-child(5){animation-delay:.68s}
+.svc-sheet.open .sh-shelf .sh-bottle:nth-child(6){animation-delay:.79s}
+.svc-sheet.open .sh-shelf .sh-shelf-line{animation:shLine .5s var(--ease-out) .2s forwards}
+@keyframes shPop{to{opacity:1;transform:none}}
+@keyframes shLine{to{opacity:1}}
+/* entrées de panneau distinctes */
+.sheet-import .svc-panel{transform:translateY(30px)}
+.sheet-toast .svc-panel{transform:scale(.93);opacity:0;transition:transform .52s var(--ease-out),opacity .4s ease}
+.sheet-toast.open .svc-panel{transform:none;opacity:1}
+.sheet-bar .svc-panel{transform:translateY(42px) scale(.985)}
+@media (prefers-reduced-motion:reduce){
+  .sh-arc-draw{stroke-dashoffset:0!important}
+  .sh-travel,.sh-bub{display:none!important}
+  .sh-flute,.sh-bottle{animation:none!important;opacity:1!important;transform:none!important}
+  .sh-shelf-line{opacity:1!important}
+  .sheet-toast .svc-panel{opacity:1;transform:none}
+}
+
 /* ==========================================================================
    Animations SIGNATURES par service (icônes des 3 options Speed).
    Chacune raconte son intention. GPU only ; ne tournent qu'une fois la carte
