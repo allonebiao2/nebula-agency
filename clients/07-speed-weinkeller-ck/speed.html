@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/app.css?v=20260630e">
+<link rel="stylesheet" href="assets/app.css?v=20260630f">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
 {"@type":"Question","name":"Combien de temps prend la livraison ?","acceptedAnswer":{"@type":"Answer","text":"Pour les articles disponibles en magasin, comptez environ 3 à 5 jours pour l'arrivée au Bénin, selon le type d'expédition (voie aérienne)."}},
@@ -69,10 +69,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3 4 7l4 4M4 7h13M16 21l4-4-4-4M20 17H7"/></svg>
           Weinkeller
         </a>
-        <a class="btn btn-wa nav-cta" href="https://wa.me/2290197158484?text=Bonjour%20Speed%20Shopping%2C%20je%20souhaite%20passer%20une%20commande." target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.2-.7-2.7-1.1-4.4-3.9-4.5-4.1-.1-.2-1-1.4-1-2.6s.6-1.8.9-2.1c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6c-.2.2-.3.4-.1.7.2.3.8 1.3 1.7 2.1 1.2 1 2 1.3 2.3 1.5.2.1.4.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.9.9c.3.2.5.3.6.4.1.2.1.6-.1 1.1Z"/></svg>
-          Commander
-        </a>
+        <a class="btn nav-cta" href="#concept" style="background:var(--brand);color:#fff">Commander</a>
       </div>
       <button class="burger" aria-label="Menu" aria-expanded="false"><span></span></button>
     </div>
@@ -93,13 +90,6 @@
         </span>
         <h1>La France<br><span class="pop">à portée de main</span></h1>
         <p class="hero-sub">Vos achats en France, livrés chez vous au Bénin. Achetez où vous voulez&nbsp;: nous nous occupons du reste.</p>
-        <div class="btn-row">
-          <a class="btn btn-lg btn-glass-wa" href="https://wa.me/2290197158484?text=Bonjour%20Speed%20Shopping%2C%20je%20souhaite%20passer%20une%20commande%20(achat%20en%20France%20%E2%86%92%20livraison%20B%C3%A9nin)." target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.2-.7-2.7-1.1-4.4-3.9-4.5-4.1-.1-.2-1-1.4-1-2.6s.6-1.8.9-2.1c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6c-.2.2-.3.4-.1.7.2.3.8 1.3 1.7 2.1 1.2 1 2 1.3 2.3 1.5.2.1.4.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.9.9c.3.2.5.3.6.4.1.2.1.6-.1 1.1Z"/></svg>
-            Commander maintenant
-          </a>
-          <a class="btn btn-lg btn-glass" href="#concept">Voir nos services</a>
-        </div>
         <div class="hero-trust">
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Paiement Mobile Money</span>
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Colis assurés</span>
@@ -133,18 +123,22 @@
   </header>
 
   <!-- CONCEPT -->
-  <section class="sec" id="concept" data-reveal="pop">
+  <section class="sec sec-tight" id="concept" data-reveal="pop">
     <div class="wrap">
       <div class="sec-head reveal">
         <span class="kicker">Nos services</span>
         <h2 class="h-lg">Que souhaitez-vous faire&nbsp;?</h2>
-        <p class="deck lead">Choisissez l'une de nos 3 prestations. Touchez une carte pour voir tous les détails, puis commandez en un seul message.</p>
+        <p class="deck lead">Quatre services, dans les deux sens. Touchez une carte pour voir tous les détails, puis commandez en un seul message.</p>
       </div>
-      <div class="cats cats-3" style="margin-top:42px">
+      <div class="svc-nb reveal" role="note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.6 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg>
+        <p><b>N.B. — Articles interdits.</b> Pour des raisons réglementaires et de sécurité, nous <b>ne recevons pas de viande</b>, ni de produits périssables, d'argent liquide, de produits inflammables, de stupéfiants ou d'articles interdits à l'expédition.</p>
+      </div>
+      <div class="cats cats-4" style="margin-top:28px">
         <button class="cat cat-svc reveal" type="button" data-svc="cmd" aria-haspopup="dialog">
           <span class="icon-badge"><svg class="ic ic-cmd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle class="ic-drop" cx="12" cy="3" r="1.7" fill="currentColor" stroke="none"/><g class="ic-bag"><path d="M5 8h14l-1 12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 8Z"/><path d="M8.5 8V7a3.5 3.5 0 0 1 7 0v1"/></g></svg></span>
-          <h3>Commander un article</h3>
-          <p>En ligne ou en boutique. Nous achetons pour vous en France et organisons l'expédition jusqu'à Cotonou.</p>
+          <h3>Commander depuis la France</h3>
+          <p>Tout, en ligne ou en boutique. Nous achetons pour vous en France et organisons l'expédition jusqu'à Cotonou.</p>
           <span class="cat-cta">Voir le détail <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
         </button>
         <button class="cat cat-svc reveal" type="button" data-svc="colis" data-delay="1" aria-haspopup="dialog">
@@ -153,7 +147,13 @@
           <p>Un colis à faire parvenir au Bénin ? Nous l'acheminons en toute sécurité, du dépôt à la livraison.</p>
           <span class="cat-cta">Voir le détail <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
         </button>
-        <button class="cat cat-svc reveal" type="button" data-svc="conteneur" data-delay="2" aria-haspopup="dialog">
+        <button class="cat cat-svc reveal" type="button" data-svc="colis-bj" data-delay="2" aria-haspopup="dialog">
+          <span class="icon-badge"><svg class="ic ic-colis ic-rev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="ic-lines"><path d="M1 8h4"/><path d="M0 12h3"/><path d="M2 16h3"/></g><g class="ic-parcel"><rect x="7" y="8" width="9" height="8" rx="1"/><path d="M7 11h9M11.5 8v3"/></g></svg></span>
+          <h3>Envoyer un colis Bénin → France</h3>
+          <p>Le service fonctionne aussi dans l'autre sens : expédiez vos colis du Bénin vers la France, en toute sécurité.</p>
+          <span class="cat-cta">Voir le détail <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </button>
+        <button class="cat cat-svc reveal" type="button" data-svc="conteneur" data-delay="3" aria-haspopup="dialog">
           <span class="icon-badge"><svg class="ic ic-conteneur" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="ic-base" d="M3 18.5h18"/><rect class="ic-box ic-b1" x="5" y="13" width="6" height="4.4" rx="0.6"/><rect class="ic-box ic-b2" x="13" y="13" width="6" height="4.4" rx="0.6"/><rect class="ic-box ic-b3" x="9" y="8.4" width="6" height="4.4" rx="0.6"/></svg></span>
           <h3>Envoi par conteneur</h3>
           <p>Pour les gros volumes : TV, électroménager, meubles, cartons de nourriture… La solution grande quantité.</p>
@@ -256,8 +256,74 @@
         <h2 class="h-xl">Commence ici.</h2>
         <p class="deck lead" style="margin-inline:auto;max-width:46ch">Avec Speed Shopping, vous n'êtes plus loin de rien.</p>
         <div class="btn-row">
-          <a class="btn btn-lg" style="background:#fff;color:var(--brand)" href="https://wa.me/2290197158484?text=Bonjour%20Speed%20Shopping%2C%20je%20souhaite%20passer%20une%20commande." target="_blank" rel="noopener">Commander sur WhatsApp</a>
           <a class="btn btn-lg btn-ghost" href="weinkeller.html">Découvrir Weinkeller →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<!-- CATEGORIES -->
+  <section class="sec sec-tight" id="categories" style="background:var(--bg-2);border-block:1px solid var(--line)">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="kicker">Ce que l'on rapporte</span>
+        <h2 class="h-lg">Achetez en France, tout ce dont vous avez besoin.</h2>
+        <p class="deck lead">Les plus grandes marques, à prix avantageux, livrées directement chez vous au Bénin.</p>
+      </div>
+      <div class="cave-3d" aria-roledescription="carrousel" aria-label="Ce que l'on peut vous rapporter">
+        <div class="cf-glow" aria-hidden="true"></div>
+        <div class="cf">
+          <div class="cf-item" data-wa="https://wa.me/2290197158484?text=Bonjour%20Speed%20Shopping%2C%20je%20souhaite%20commander%20dans%20la%20cat%C3%A9gorie%20%C2%AB%20V%C3%AAtements%20%26%20chaussures%20%C2%BB.%20Voici%20ce%20que%20je%20cherche%20%3A%20">
+            <div class="cf-card">
+              <span class="cf-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a2 2 0 0 0-2 2c0 1 1 1.5 1 1.5L3 12v3h18v-3l-8-4.5S14 7 14 6a2 2 0 0 0-2-2Z"/></svg></span>
+              <h3>Vêtements &amp; chaussures</h3><p>Mode homme, femme et enfants : les meilleures marques.</p><div class="cf-chips"><span>Zara</span><span>Nike</span><span>Zalando</span></div>
+            </div>
+          </div>
+          <div class="cf-item" data-wa="https://wa.me/2290197158484?text=Bonjour%20Speed%20Shopping%2C%20je%20souhaite%20commander%20dans%20la%20cat%C3%A9gorie%20%C2%AB%20Cosm%C3%A9tiques%20%26%20parfums%20%C2%BB.%20Voici%20ce%20que%20je%20cherche%20%3A%20">
+            <div class="cf-card">
+              <span class="cf-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg></span>
+              <h3>Cosmétiques &amp; parfums</h3><p>Parfums, soins, maquillage à prix avantageux.</p><div class="cf-chips"><span>Sephora</span><span>Parfums</span></div>
+            </div>
+          </div>
+          <div class="cf-item" data-wa="https://wa.me/2290197158484?text=Bonjour%20Speed%20Shopping%2C%20je%20souhaite%20commander%20dans%20la%20cat%C3%A9gorie%20%C2%AB%20T%C3%A9l%C3%A9phones%20%26%20%C3%A9lectronique%20%C2%BB.%20Voici%20ce%20que%20je%20cherche%20%3A%20">
+            <div class="cf-card">
+              <span class="cf-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/></svg></span>
+              <h3>Téléphones &amp; électronique</h3><p>Smartphones, accessoires, ordinateurs et plus.</p><div class="cf-chips"><span>Amazon</span><span>Cdiscount</span></div>
+            </div>
+          </div>
+          <div class="cf-item" data-wa="https://wa.me/2290197158484?text=Bonjour%20Speed%20Shopping%2C%20je%20souhaite%20commander%20dans%20la%20cat%C3%A9gorie%20%C2%AB%20Articles%20pour%20enfants%20%C2%BB.%20Voici%20ce%20que%20je%20cherche%20%3A%20">
+            <div class="cf-card">
+              <span class="cf-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4c-2 3-5 4-5 8a5 5 0 0 0 10 0c0-4-3-5-5-8Z"/></svg></span>
+              <h3>Articles pour enfants</h3><p>Tout pour le confort et le bonheur des enfants.</p><div class="cf-chips"><span>Jouets</span><span>Puériculture</span></div>
+            </div>
+          </div>
+          <div class="cf-item" data-wa="https://wa.me/2290197158484?text=Bonjour%20Speed%20Shopping%2C%20je%20souhaite%20commander%20dans%20la%20cat%C3%A9gorie%20%C2%AB%20Articles%20de%20maison%20%C2%BB.%20Voici%20ce%20que%20je%20cherche%20%3A%20">
+            <div class="cf-card">
+              <span class="cf-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/></svg></span>
+              <h3>Articles de maison</h3><p>Ustensiles, décoration, électroménager.</p><div class="cf-chips"><span>Déco</span><span>Maison</span></div>
+            </div>
+          </div>
+          <div class="cf-item" data-wa="https://wa.me/2290197158484?text=Bonjour%20Speed%20Shopping%2C%20je%20souhaite%20commander%20dans%20la%20cat%C3%A9gorie%20%C2%AB%20Produits%20alimentaires%20%C2%BB.%20Voici%20ce%20que%20je%20cherche%20%3A%20">
+            <div class="cf-card">
+              <span class="cf-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.5 12.5a2 2 0 0 1-2 1.5H8.5a2 2 0 0 1-2-1.5L5 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></span>
+              <h3>Produits alimentaires</h3><p>Produits secs, gourmandises et spécialités.</p><div class="cf-chips"><span>Épicerie</span><span>Spécialités</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="wrap" style="position:relative;z-index:6;padding:0">
+        <div class="cf-order" style="margin-top:18px"><a class="btn btn-lg btn-wa" href="https://wa.me/2290197158484?text=Bonjour%20Speed%20Shopping%2C%20je%20souhaite%20passer%20une%20commande." target="_blank" rel="noopener">Commander cette catégorie</a></div>
+        <div class="cf-controls">
+          <button class="cf-arrow cf-prev" aria-label="Catégorie précédente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+          <div class="cf-dots" role="tablist" aria-label="Choisir une catégorie"></div>
+          <button class="cf-arrow cf-next" aria-label="Catégorie suivante"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
+        </div>
+      </div>
+
+      <div class="reveal" style="margin-top:42px">
+        <p class="muted center" style="margin:0 0 18px;font-size:.82rem;letter-spacing:.14em;text-transform:uppercase">On achète pour vous sur</p>
+        <div class="shops">
+          <span>ZARA</span><span>Amazon</span><span>Sephora</span><span>Nike</span><span>Cdiscount</span><span>Zalando</span><span>&amp; bien plus…</span>
         </div>
       </div>
     </div>
@@ -294,7 +360,7 @@
 
   <!-- FABs -->
   <div class="fabs">
-    <a class="fab fab-wa" href="https://wa.me/2290197158484?text=Bonjour%20Speed%20Shopping%2C%20je%20souhaite%20passer%20une%20commande." target="_blank" rel="noopener" aria-label="Commander sur WhatsApp">
+    <a class="fab fab-wa" href="https://wa.me/2290197158484?text=Bonjour%20Speed%20Shopping%2C%20je%20souhaite%20passer%20une%20commande." target="_blank" rel="noopener" aria-label="Nous écrire sur WhatsApp">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.2-.7-2.7-1.1-4.4-3.9-4.5-4.1-.1-.2-1-1.4-1-2.6s.6-1.8.9-2.1c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6c-.2.2-.3.4-.1.7.2.3.8 1.3 1.7 2.1 1.2 1 2 1.3 2.3 1.5.2.1.4.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.9.9c.3.2.5.3.6.4.1.2.1.6-.1 1.1Z"/></svg>
     </a>
     <button class="fab fab-audio" aria-label="Activer l'ambiance sonore" aria-pressed="false">
@@ -347,12 +413,33 @@
       </div>
     </div>
   </div>
+  <div class="svc-sheet" id="svc-colis-bj" role="dialog" aria-modal="true" aria-labelledby="svc-colis-bj-t" hidden>
+    <div class="svc-backdrop" data-close></div>
+    <div class="svc-panel">
+      <div class="svc-progress" aria-hidden="true"><i></i></div>
+      <div class="svc-head">
+        <div><span class="svc-eyebrow">Service 3 · Speed Shopping</span><h3 id="svc-colis-bj-t">Envoyer un colis B&#233;nin &#8594; France</h3><p class="svc-sub">Le service fonctionne dans les deux sens, en toute s&#233;curit&#233;.</p></div>
+        <button class="svc-close" data-close type="button" aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div class="svc-body" tabindex="0">
+        <p class="svc-intro">Vous souhaitez envoyer un colis du B&#233;nin vers la France ? Speed Shopping prend en charge l'acheminement de vos colis en toute s&#233;curit&#233;.</p><div class="svc-step"><span class="svc-n">1</span><div class="svc-stepc"><h4>Contactez-nous</h4><p>Prenez contact avec notre &#233;quipe afin d'organiser l'envoi de votre colis. Nous conviendrons ensemble d'un <b>rendez-vous</b> pour le d&#233;p&#244;t &#224; Cotonou.</p></div></div><div class="svc-step"><span class="svc-n">2</span><div class="svc-stepc"><h4>D&#233;p&#244;t du colis</h4><p>Le colis doit &#234;tre remis directement &#224; notre agent &#224; Cotonou lors du rendez-vous fix&#233;.</p><div class="svc-callout"><span class="svc-co-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span><div><b>Important</b><p>Le d&#233;p&#244;t du colis doit &#234;tre effectu&#233; <b>uniquement par l'exp&#233;diteur</b>.</p></div></div></div></div><div class="svc-step"><span class="svc-n">3</span><div class="svc-stepc"><h4>Tarification</h4><p>Le transport est calcul&#233; selon le <b>poids r&#233;el</b> du colis. Notre &#233;quipe vous communique le tarif exact &#224; la prise en charge.</p></div></div><div class="svc-step"><span class="svc-n">4</span><div class="svc-stepc"><h4>Exp&#233;dition</h4><p>Une fois votre colis r&#233;ceptionn&#233; et enregistr&#233;, nous nous chargeons de son acheminement jusqu'en France dans les meilleurs d&#233;lais. Notre &#233;quipe vous informe de l'arriv&#233;e du colis afin que le destinataire puisse le r&#233;cup&#233;rer.</p></div></div><div class="svc-callout"><span class="svc-co-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span><div><b>Modalit&#233;s de paiement</b><p>50 % du montant total avant l'exp&#233;dition, et les 50 % restants &#224; la r&#233;ception du colis en France. <b>L'exp&#233;dition est confirm&#233;e uniquement apr&#232;s le paiement de l'acompte.</b></p></div></div>
+        <div class="svc-end" aria-hidden="true"></div>
+      </div>
+      <div class="svc-foot">
+        <p class="svc-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 13l5 5 5-5M7 7l5 5 5-5"/></svg><span>Faites d&#233;filer la fiche jusqu'au bout pour passer &#224; l'action</span></p>
+        <div class="svc-actions">
+          <a class="btn btn-wa" href="https://wa.me/2290197158484?text=Bonjour%20Speed%20Shopping%2C%20j%27ai%20lu%20les%20informations%20et%20je%20souhaite%20ENVOYER%20UN%20COLIS%20du%20B%C3%A9nin%20vers%20la%20France." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Z"/></svg>Envoyer mon colis</a>
+          <a class="btn btn-ghost" href="https://wa.me/2290197158484?text=Bonjour%20Speed%20Shopping%2C%20j%27ai%20une%20question%20concernant%20vos%20services." target="_blank" rel="noopener">Poser une question</a>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="svc-sheet" id="svc-conteneur" role="dialog" aria-modal="true" aria-labelledby="svc-conteneur-t" hidden>
     <div class="svc-backdrop" data-close></div>
     <div class="svc-panel">
       <div class="svc-progress" aria-hidden="true"><i></i></div>
       <div class="svc-head">
-        <div><span class="svc-eyebrow">Service 3 · Speed Shopping</span><h3 id="svc-conteneur-t">Envoi par conteneur</h3><p class="svc-sub">La solution idéale pour les gros volumes.</p></div>
+        <div><span class="svc-eyebrow">Service 4 · Speed Shopping</span><h3 id="svc-conteneur-t">Envoi par conteneur</h3><p class="svc-sub">La solution idéale pour les gros volumes.</p></div>
         <button class="svc-close" data-close type="button" aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
       </div>
       <div class="svc-body" tabindex="0">
@@ -369,6 +456,6 @@
     </div>
   </div>
 
-  <script src="assets/app.js?v=20260630e"></script>
+  <script src="assets/app.js?v=20260630f"></script>
 </body>
 </html>
