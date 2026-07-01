@@ -179,6 +179,10 @@ document.documentElement.classList.add("js");
     // construit l'accordéon
     var html = '<div class="cave-dh"><span class="cave-dt">L\'architecture de la cave</span>' +
       '<button class="cave-dclose" type="button" aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>' +
+      '<div class="cave-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.4-3.4"/></svg>' +
+      '<input type="search" id="caveSearch" placeholder="Rechercher une boisson…" autocomplete="off" aria-label="Rechercher une boisson">' +
+      '<button class="cs-clear" type="button" aria-label="Effacer la recherche"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>' +
+      '<div class="cs-count" id="csCount" aria-live="polite"></div>' +
       '<div class="cave-nh">La cave</div>' +
       '<button class="cave-row cave-all active" data-cat="all"><span class="lbl">Toute la cave</span><span class="cave-count">' + bottles.length + '</span></button>';
     TAX.forEach(function (f) {
@@ -201,10 +205,11 @@ document.documentElement.classList.add("js");
       var n = cnt(cat, sub);
       caveHead.innerHTML = lbl + ' <span class="ch-n">' + n + (n > 1 ? ' bouteilles' : ' bouteille') + '</span>' + (isReal(cat) ? '' : ' <span class="ch-soon">à venir</span>');
     }
-    function filterCave(cat, sub) {
+    var curCat = "all", curSub = null;
+    function applyVisibility(pred) {
       var vi = 0;
       bottles.forEach(function (t) {
-        var show = cat === "all" || (t.getAttribute("data-cat") === cat && (!sub || t.getAttribute("data-sub") === sub));
+        var show = pred(t);
         if (show) {
           t.style.display = "";
           if (reduce) { t.classList.remove("b-out", "b-in"); }
@@ -213,6 +218,9 @@ document.documentElement.classList.add("js");
         } else if (reduce) { t.style.display = "none"; t.classList.remove("b-in"); }
         else { t.classList.remove("b-in"); t.classList.add("b-out"); setTimeout(function () { if (t.classList.contains("b-out")) t.style.display = "none"; }, 300); }
       });
+      return vi;
+    }
+    function setActive(cat, sub) {
       caveNav.querySelectorAll(".cave-row,.sub-row").forEach(function (r) {
         var rc = r.getAttribute("data-cat"), on;
         if (r.classList.contains("cave-all")) on = (cat === "all");
@@ -220,14 +228,25 @@ document.documentElement.classList.add("js");
         else on = (rc === cat && r.getAttribute("data-sub") === sub);
         r.classList.toggle("active", on);
       });
-      setHead(cat, sub);
+    }
+    function filterCave(cat, sub) {
+      curCat = cat; curSub = sub;
+      var vi = applyVisibility(function (t) { return cat === "all" || (t.getAttribute("data-cat") === cat && (!sub || t.getAttribute("data-sub") === sub)); });
+      setActive(cat, sub); setHead(cat, sub);
       var ce = document.getElementById("caveEmpty");
-      if (ce) {
-        var empty = (vi === 0 && cat !== "all");
-        ce.hidden = !empty;
-        var ln = document.getElementById("caveEmptyCat");
-        if (empty && ln) ln.textContent = (labelOf[cat] ? labelOf[cat].label : "Cette catégorie");
-      }
+      if (ce) { var empty = (vi === 0 && cat !== "all"); ce.hidden = !empty; var ln = document.getElementById("caveEmptyCat"); if (empty && ln) ln.textContent = (labelOf[cat] ? labelOf[cat].label : "Cette catégorie"); }
+    }
+    function searchBottles(q) {
+      q = (q || "").trim().toLowerCase();
+      var csc = document.getElementById("csCount");
+      if (!q) { if (csc) csc.textContent = ""; filterCave(curCat, curSub); return; }
+      var vi = applyVisibility(function (t) { return (t.textContent + " " + (t.getAttribute("data-cat") || "")).toLowerCase().indexOf(q) >= 0; });
+      var qs = q.replace(/[<>]/g, "");
+      setActive(null, null);
+      if (caveHead) caveHead.innerHTML = 'Recherche « ' + qs + ' » <span class="ch-n">' + vi + (vi > 1 ? ' résultats' : ' résultat') + '</span>';
+      if (csc) csc.textContent = vi === 0 ? 'Aucun résultat — pensez à la commande spéciale.' : vi + (vi > 1 ? ' boissons trouvées' : ' boisson trouvée');
+      var ce = document.getElementById("caveEmpty");
+      if (ce) { var empty = (vi === 0); ce.hidden = !empty; var ln = document.getElementById("caveEmptyCat"); if (empty && ln) ln.textContent = '« ' + qs + ' »'; }
     }
 
     function goSel() { var s = document.querySelector("#selection"); if (s) s.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }); }
@@ -256,6 +275,22 @@ document.documentElement.classList.add("js");
     });
     if (caveOpenBtn) caveOpenBtn.addEventListener("click", function () { caveNav.classList.contains("open") ? closeDrawer() : openDrawer(); });
     if (caveLauncher) caveLauncher.addEventListener("click", openDrawer);
+    // recherche de boissons dans le drawer
+    var caveSearch = caveNav.querySelector("#caveSearch");
+    if (caveSearch) {
+      var searchWrap = caveSearch.closest(".cave-search"), st;
+      caveSearch.addEventListener("input", function () {
+        searchWrap.classList.toggle("has-val", !!caveSearch.value);
+        clearTimeout(st); st = setTimeout(function () { searchBottles(caveSearch.value); }, 150);
+      });
+      caveSearch.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); if (caveSearch.value.trim()) { closeDrawer(); goSel(); } } });
+      var clr = searchWrap.querySelector(".cs-clear");
+      if (clr) clr.addEventListener("click", function () { caveSearch.value = ""; searchWrap.classList.remove("has-val"); searchBottles(""); caveSearch.focus(); });
+    }
+    // le bouton flottant disparaît quand « Parcourir les catégories » est visible (anti-surcharge)
+    if (caveLauncher && caveOpenBtn && "IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) { caveLauncher.classList.toggle("hide", es[0].isIntersecting); }, { threshold: 0 }).observe(caveOpenBtn);
+    }
     if (caveScrim) caveScrim.addEventListener("click", closeDrawer);
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeDrawer(); });
 

@@ -591,6 +591,18 @@ html.js .flight .plane{offset-distance:0%;opacity:0}
   color:var(--text-2);background:rgba(255,255,255,.05);border:0;cursor:pointer;transition:.2s}
 .cave-dclose:hover{color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,transparent)}
 .cave-dclose svg{width:18px;height:18px}
+.cave-search{position:relative;margin:0 2px 14px}
+.cave-search>svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--text-2);pointer-events:none}
+.cave-search input{width:100%;min-height:46px;padding:12px 40px 12px 38px;border-radius:12px;background:var(--bg);
+  border:1px solid var(--line);color:var(--text);font-family:var(--f-ui);font-size:16px;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none}
+.cave-search input::placeholder{color:var(--text-2)}
+.cave-search input:focus{outline:none;border-color:color-mix(in srgb,var(--accent) 55%,var(--line));box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent)}
+.cave-search .cs-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;
+  border:0;background:transparent;color:var(--text-2);cursor:pointer;display:none;align-items:center;justify-content:center}
+.cave-search .cs-clear svg{width:15px;height:15px}
+.cave-search.has-val .cs-clear{display:flex}
+.cs-count{font-family:var(--f-ui);font-size:.78rem;font-weight:600;color:var(--accent);padding:0 4px;margin:-8px 0 0;min-height:0}
+.cs-count:not(:empty){margin:-6px 0 10px}
 .cave-nh{font-family:var(--f-ui);font-size:.62rem;font-weight:800;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);padding:6px 13px 12px;opacity:.85}
 .cave-row{width:100%;display:flex;align-items:center;gap:9px;padding:11px 13px;border:0;background:transparent;cursor:pointer;
   font-family:var(--font-display);font-weight:600;font-size:1.02rem;letter-spacing:.03em;color:var(--text);text-align:left;border-radius:10px;transition:background .2s,color .2s}
@@ -635,14 +647,15 @@ html.js .flight .plane{offset-distance:0%;opacity:0}
   z-index:91;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .35s,visibility .35s}
 .cave-scrim.show{opacity:1;visibility:visible;pointer-events:auto}
 /* Bouton flottant BRILLANT : ouvre l'architecture de partout sur la page */
-.cave-launcher{position:fixed;top:calc(72px + max(8px,env(safe-area-inset-top)));right:max(14px,env(safe-area-inset-right));z-index:59;
+.cave-launcher{position:fixed;top:calc(72px + max(8px,env(safe-area-inset-top)));left:max(14px,env(safe-area-inset-left));z-index:59;
   display:inline-flex;align-items:center;gap:9px;padding:11px 17px 11px 14px;border:0;border-radius:999px;cursor:pointer;
   font-family:var(--f-ui);font-weight:800;font-size:.83rem;letter-spacing:.03em;color:#241606;
   background:linear-gradient(115deg,#B9862B,#E4BE60 42%,#FBEFC8 50%,#E4BE60 58%,#B9862B);background-size:230% 100%;
   box-shadow:0 12px 30px -10px rgba(203,161,76,.6),inset 0 1px 0 rgba(255,255,255,.45);
-  animation:caveShine 3.6s linear infinite;transition:transform .25s var(--ease),box-shadow .25s}
+  animation:caveShine 3.6s linear infinite;transition:transform .3s var(--ease),box-shadow .25s,opacity .3s}
 .cave-launcher:hover{transform:translateY(-2px);box-shadow:0 18px 42px -12px rgba(203,161,76,.78),inset 0 1px 0 rgba(255,255,255,.55)}
 .cave-launcher:active{transform:scale(.97)}
+.cave-launcher.hide{opacity:0;transform:translateY(-10px) scale(.92);pointer-events:none}
 .cave-launcher svg{width:18px;height:18px}
 @keyframes caveShine{to{background-position:-230% 0}}
 @media (prefers-reduced-motion:reduce){.cave-launcher{animation:none}.cave-nav{transition:none}}
