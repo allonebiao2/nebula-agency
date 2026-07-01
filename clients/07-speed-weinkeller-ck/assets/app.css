@@ -328,9 +328,36 @@ body.splash{height:100dvh;min-height:560px;overflow:hidden;background:#05070f;co
   padding:8px 16px;border-radius:999px;font-weight:700;font-size:.8rem;letter-spacing:.06em;color:var(--brand);
   box-shadow:0 10px 26px -16px rgba(10,79,214,.5)}
 .hero-eyebrow .flag{width:20px;height:14px;border-radius:2px;overflow:hidden;display:inline-block}
-.w-speed .hero h1{margin:14px 0 0;font-size:clamp(2.6rem,7vw,4.9rem)}
+.w-speed .hero h1{margin:14px 0 0;font-size:clamp(2rem,6vw,4.2rem)}
 .w-speed .hero h1 .pop{color:var(--brand);-webkit-text-stroke:0}
 .hero-sub{margin:14px 0 0;font-size:clamp(1.02rem,1.6vw,1.24rem);color:var(--text-2);max-width:42ch}
+/* Speed : titres/typo plus compacts = accès rapide aux offres, moins de scroll (surtout mobile) */
+.w-speed .h-lg{font-size:clamp(1.5rem,3.3vw,2.35rem)}
+.w-speed .h-xl{font-size:clamp(1.85rem,4.6vw,3.3rem)}
+.w-speed .sec{padding:clamp(46px,7vw,104px) 0}
+.w-speed .sec-tight{padding:clamp(34px,5vw,68px) 0}
+@media (max-width:640px){
+  .w-speed .hero{padding-top:76px;padding-bottom:26px}
+  .w-speed .hero h1{font-size:1.95rem;line-height:1.06}
+  .w-speed .hero-sub{font-size:.97rem;margin-top:10px}
+  .w-speed .h-lg{font-size:1.4rem}
+  .w-speed .h-xl{font-size:1.72rem}
+  .w-speed .deck,.w-speed .deck.lead{font-size:.95rem;margin-top:10px}
+  .w-speed .sec{padding:30px 0}
+  .w-speed .sec-tight{padding:24px 0}
+  .w-speed .sec-head .kicker{margin-bottom:8px}
+  /* carte vol compacte : les offres remontent, moins de scroll */
+  .w-speed .hero-grid{gap:20px}
+  .w-speed .hero-trust{gap:9px 16px;margin-top:14px}
+  .w-speed .flightcard{padding:16px 18px;border-radius:16px}
+  .w-speed .flight{height:86px;margin:2px 0}
+  .w-speed .flightcard .meta{margin-top:10px;padding-top:11px}
+  .w-speed .flightcard .meta b{font-size:1.2rem}
+  /* entête services resserré : les cartes-offres remontent */
+  .w-speed #concept .sec-head .deck{margin-top:8px}
+  .w-speed .svc-nb{padding:12px 15px;gap:10px}
+  .w-speed .cats.cats-4{margin-top:18px!important}
+}
 .hero-trust{display:flex;flex-wrap:wrap;gap:16px;margin-top:18px;font-size:.85rem;color:var(--text-2)}
 .hero-trust span{display:inline-flex;align-items:center;gap:7px;font-weight:600}
 .hero-trust svg{width:17px;height:17px;color:var(--wa)}
