@@ -160,6 +160,7 @@ document.documentElement.classList.add("js");
     var caveHead = document.querySelector("#caveHead");
     var caveScrim = document.querySelector("#caveScrim");
     var caveOpenBtn = document.querySelector("#caveOpen");
+    var caveLauncher = document.querySelector("#caveLauncher");
     var TAX = [
       { cat: "vin", short: "Vins", label: "Vins", subs: [] },
       { cat: "champagne", short: "Champagnes", label: "Champagnes & Effervescents", subs: [["prestige", "Prestige & Millésimés"], ["blancdeblancs", "Blanc de Blancs"], ["brut", "Bruts"], ["rose", "Rosés"]] },
@@ -176,7 +177,9 @@ document.documentElement.classList.add("js");
     var labelOf = {}; TAX.forEach(function (f) { labelOf[f.cat] = { label: f.label, subs: f.subs }; });
 
     // construit l'accordéon
-    var html = '<div class="cave-nh">La cave</div>' +
+    var html = '<div class="cave-dh"><span class="cave-dt">L\'architecture de la cave</span>' +
+      '<button class="cave-dclose" type="button" aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>' +
+      '<div class="cave-nh">La cave</div>' +
       '<button class="cave-row cave-all active" data-cat="all"><span class="lbl">Toute la cave</span><span class="cave-count">' + bottles.length + '</span></button>';
     TAX.forEach(function (f) {
       html += '<div class="acc-fam' + (isReal(f.cat) ? '' : ' soon') + '" data-cat="' + f.cat + '">' +
@@ -227,23 +230,32 @@ document.documentElement.classList.add("js");
       }
     }
 
-    function openDrawer() { caveNav.classList.add("open"); if (caveScrim) { caveScrim.hidden = false; requestAnimationFrame(function () { caveScrim.classList.add("show"); }); } if (caveOpenBtn) caveOpenBtn.setAttribute("aria-expanded", "true"); }
-    function closeDrawer() { if (!caveNav.classList.contains("open")) return; caveNav.classList.remove("open"); if (caveScrim) { caveScrim.classList.remove("show"); setTimeout(function () { caveScrim.hidden = true; }, 350); } if (caveOpenBtn) caveOpenBtn.setAttribute("aria-expanded", "false"); }
+    function goSel() { var s = document.querySelector("#selection"); if (s) s.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }); }
+    function openDrawer() {
+      caveNav.querySelectorAll(".acc-fam").forEach(function (f) { if (f.querySelector(".acc-sub")) f.classList.add("open"); }); // voir toute l'architecture
+      caveNav.classList.add("open"); document.documentElement.style.overflow = "hidden";
+      if (caveScrim) { caveScrim.hidden = false; requestAnimationFrame(function () { caveScrim.classList.add("show"); }); }
+      if (caveOpenBtn) caveOpenBtn.setAttribute("aria-expanded", "true");
+      if (caveLauncher) caveLauncher.setAttribute("aria-expanded", "true");
+    }
+    function closeDrawer() {
+      if (!caveNav.classList.contains("open")) return;
+      caveNav.classList.remove("open"); document.documentElement.style.overflow = "";
+      if (caveScrim) { caveScrim.classList.remove("show"); setTimeout(function () { caveScrim.hidden = true; }, 350); }
+      if (caveOpenBtn) caveOpenBtn.setAttribute("aria-expanded", "false");
+      if (caveLauncher) caveLauncher.setAttribute("aria-expanded", "false");
+    }
 
     caveNav.addEventListener("click", function (e) {
+      if (e.target.closest(".cave-dclose")) { closeDrawer(); return; }
       var sub = e.target.closest(".sub-row");
-      if (sub) { filterCave(sub.getAttribute("data-cat"), sub.getAttribute("data-sub")); closeDrawer(); return; }
-      if (e.target.closest(".cave-all")) { caveNav.querySelectorAll(".acc-fam.open").forEach(function (f) { f.classList.remove("open"); }); filterCave("all", null); closeDrawer(); return; }
+      if (sub) { filterCave(sub.getAttribute("data-cat"), sub.getAttribute("data-sub")); closeDrawer(); goSel(); return; }
+      if (e.target.closest(".cave-all")) { filterCave("all", null); closeDrawer(); goSel(); return; }
       var fam = e.target.closest(".cave-row.fam");
-      if (fam) {
-        var wrap = fam.parentNode, hasSub = !!wrap.querySelector(".acc-sub"), wasOpen = wrap.classList.contains("open");
-        caveNav.querySelectorAll(".acc-fam.open").forEach(function (f) { if (f !== wrap) f.classList.remove("open"); });
-        if (hasSub) wrap.classList.toggle("open", !wasOpen);
-        filterCave(fam.getAttribute("data-cat"), null);
-        if (!hasSub) closeDrawer();
-      }
+      if (fam) { filterCave(fam.getAttribute("data-cat"), null); closeDrawer(); goSel(); }
     });
     if (caveOpenBtn) caveOpenBtn.addEventListener("click", function () { caveNav.classList.contains("open") ? closeDrawer() : openDrawer(); });
+    if (caveLauncher) caveLauncher.addEventListener("click", openDrawer);
     if (caveScrim) caveScrim.addEventListener("click", closeDrawer);
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeDrawer(); });
 

@@ -575,10 +575,22 @@ html.js .flight .plane{offset-distance:0%;opacity:0}
 @media (prefers-reduced-motion:reduce){.bottle.b-in{animation:none}.bottle.b-out{transition:none}}
 
 /* ===== Cave — navigation par catégorie (panneau + accordéon) ===== */
-.cave-layout{display:grid;grid-template-columns:252px 1fr;gap:30px;align-items:start;margin-top:30px}
-.cave-nav{align-self:start;position:sticky;top:92px;background:var(--bg-2);border:1px solid var(--line);
-  border-radius:var(--r);padding:14px 11px;max-height:calc(100vh - 116px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.cave-layout{display:block;margin-top:30px}
+/* Architecture = drawer droit global, ouvert par le bouton brillant (tous écrans) */
+.cave-nav{position:fixed;top:0;right:0;bottom:0;width:min(410px,92vw);height:100dvh;z-index:92;
+  background:linear-gradient(180deg,#18110d,#0d0807);border-left:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));
+  padding:16px 14px 30px;overflow-y:auto;overscroll-behavior:contain;transform:translateX(101%);
+  transition:transform .45s var(--ease-out);box-shadow:-42px 0 100px -30px rgba(0,0,0,.92);
+  scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.cave-nav.open{transform:none}
 .cave-nav::-webkit-scrollbar{width:6px}.cave-nav::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px}
+.cave-dh{position:sticky;top:-16px;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin:-16px -14px 10px;padding:18px 16px 14px;background:linear-gradient(180deg,#1b130f,#18110d);border-bottom:1px solid var(--line)}
+.cave-dt{font-family:var(--font-display);font-weight:700;font-size:1.12rem;color:var(--text);letter-spacing:.01em}
+.cave-dclose{flex:none;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  color:var(--text-2);background:rgba(255,255,255,.05);border:0;cursor:pointer;transition:.2s}
+.cave-dclose:hover{color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,transparent)}
+.cave-dclose svg{width:18px;height:18px}
 .cave-nh{font-family:var(--f-ui);font-size:.62rem;font-weight:800;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);padding:6px 13px 12px;opacity:.85}
 .cave-row{width:100%;display:flex;align-items:center;gap:9px;padding:11px 13px;border:0;background:transparent;cursor:pointer;
   font-family:var(--font-display);font-weight:600;font-size:1.02rem;letter-spacing:.03em;color:var(--text);text-align:left;border-radius:10px;transition:background .2s,color .2s}
@@ -614,17 +626,27 @@ html.js .flight .plane{offset-distance:0%;opacity:0}
 .cave-head{font-family:var(--font-display);font-weight:700;font-size:clamp(1.15rem,2.6vw,1.6rem);color:var(--text);margin-bottom:20px;display:flex;align-items:baseline;gap:13px;flex-wrap:wrap;letter-spacing:.02em}
 .cave-head .ch-n{font-family:"Spectral",serif;font-style:italic;font-weight:400;font-size:.86rem;color:var(--text-2)}
 .cave-head .ch-soon{align-self:center;font-family:var(--f-ui);font-size:.58rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 38%,var(--line));border-radius:999px;padding:3px 11px}
-.cave-open{display:none}
-.cave-scrim{display:none}
-@media (max-width:860px){
-  .cave-layout{grid-template-columns:1fr;gap:0}
-  .cave-open{display:inline-flex;align-items:center;gap:10px;margin:0 0 18px;padding:13px 22px;border-radius:999px;background:var(--accent);color:#241606;border:0;font-family:var(--f-ui);font-weight:800;font-size:.92rem;letter-spacing:.02em;cursor:pointer;min-height:48px}
-  .cave-open svg{width:20px;height:20px}
-  .cave-nav{position:fixed;top:0;left:0;bottom:0;width:300px;max-width:85vw;z-index:92;border-radius:0;height:100dvh;max-height:none;transform:translateX(-101%);transition:transform .4s var(--ease);box-shadow:30px 0 90px -22px rgba(0,0,0,.9);padding:22px 12px}
-  .cave-nav.open{transform:none}
-  .cave-scrim{display:block;position:fixed;inset:0;background:rgba(6,4,3,.72);backdrop-filter:blur(2px);z-index:91;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .35s,visibility .35s}
-  .cave-scrim.show{opacity:1;visibility:visible;pointer-events:auto}
-}
+.cave-open{display:inline-flex;align-items:center;gap:10px;margin:0 0 22px;padding:13px 22px;border-radius:999px;
+  background:transparent;color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 42%,var(--line));
+  font-family:var(--f-ui);font-weight:800;font-size:.9rem;letter-spacing:.02em;cursor:pointer;min-height:48px;transition:.2s}
+.cave-open:hover{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.cave-open svg{width:20px;height:20px}
+.cave-scrim{display:block;position:fixed;inset:0;background:rgba(6,4,3,.74);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  z-index:91;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .35s,visibility .35s}
+.cave-scrim.show{opacity:1;visibility:visible;pointer-events:auto}
+/* Bouton flottant BRILLANT : ouvre l'architecture de partout sur la page */
+.cave-launcher{position:fixed;top:calc(72px + max(8px,env(safe-area-inset-top)));right:max(14px,env(safe-area-inset-right));z-index:59;
+  display:inline-flex;align-items:center;gap:9px;padding:11px 17px 11px 14px;border:0;border-radius:999px;cursor:pointer;
+  font-family:var(--f-ui);font-weight:800;font-size:.83rem;letter-spacing:.03em;color:#241606;
+  background:linear-gradient(115deg,#B9862B,#E4BE60 42%,#FBEFC8 50%,#E4BE60 58%,#B9862B);background-size:230% 100%;
+  box-shadow:0 12px 30px -10px rgba(203,161,76,.6),inset 0 1px 0 rgba(255,255,255,.45);
+  animation:caveShine 3.6s linear infinite;transition:transform .25s var(--ease),box-shadow .25s}
+.cave-launcher:hover{transform:translateY(-2px);box-shadow:0 18px 42px -12px rgba(203,161,76,.78),inset 0 1px 0 rgba(255,255,255,.55)}
+.cave-launcher:active{transform:scale(.97)}
+.cave-launcher svg{width:18px;height:18px}
+@keyframes caveShine{to{background-position:-230% 0}}
+@media (prefers-reduced-motion:reduce){.cave-launcher{animation:none}.cave-nav{transition:none}}
+@media (max-width:520px){.cave-launcher .cl-txt{display:none}.cave-launcher{padding:12px;gap:0}}
 @media (prefers-reduced-motion:reduce){.acc-sub,.cave-nav,.cave-scrim,.acc-fam .chev{transition:none}}
 .tovalid{display:inline-block;margin-left:6px;font-size:.6rem;font-weight:700;letter-spacing:.1em;
   text-transform:uppercase;color:#241606;background:var(--accent);padding:2px 7px;border-radius:5px;vertical-align:middle}
