@@ -29,6 +29,9 @@ _tmp_screenshots/
 # Cloudflare Wrangler — cache de build local
 .wrangler/
 
+# Archives locales (ex. vidage de _partage/) — gros médias, hors GitHub
+_archives/
+
 # Fichiers temporaires / diagnostics
 _tmp_build_pdf.py
 boutique-ia/_diag_osm.py
