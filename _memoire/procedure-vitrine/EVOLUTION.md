@@ -507,3 +507,39 @@ sans le client) :
   la « fuite vers le chat » ; les **fiches lecture-avant-action** restent le vrai canal de
   commande (message pré-rempli structuré). Compacter le hero (padding/boutons fins) pour
   un aperçu immédiat. **N.B. ambre** (restrictions « pas de viande ») = motif réutilisable.
+
+
+## 2026-07-01 — Speed × Weinkeller : patrons réutilisables (grande vague)
+
+- **Navigation/architecture accessible de partout = drawer global + bouton flottant brillant.**
+  Sortir la nav-catégories de sa section pour en faire un **drawer fixe** (droite ou gauche),
+  ouvert par un **bouton flottant lustré** (dégradé or animé `background-position` + halo). Le
+  bouton **s'auto-masque** (classe `.hide`, opacité 0) quand le bouton in-context équivalent
+  entre à l'écran (**IntersectionObserver** sur lui) → évite la surcharge de 2 déclencheurs.
+  À l'ouverture, **tout déplier** (accordéons ouverts) pour « voir toute l'architecture ».
+- **Barre de recherche dans le drawer** : factoriser le filtrage en `applyVisibility(predicate)`
+  partagé par le filtre-catégorie ET la recherche (match nom/marque/catégorie sur `textContent`),
+  compteur live, clear, Entrée→ferme+scroll vers les résultats. Input **16px** (anti-zoom iOS).
+- **Pop-up « qui s'affiche à chaque visite »** : retirer toute persistance (pas de sessionStorage),
+  timer court (~4,5 s), + **exit-intent** desktop (`mouseout` avec `clientY<=0 && !relatedTarget`),
+  + `visibilitychange` (retour d'onglet). Garde **anti-flicker** (ne pas ré-ouvrir < 6 s après une
+  fermeture). **Animation d'attention** : pop avec overshoot + halo `box-shadow` pulsé ×3 + icône
+  qui frétille (le tout `both`/reduced-motion). Exit-intent = **desktop only** (le mobile ne signale
+  pas la sortie de façon fiable → couvert par le timer + rechargement + retour d'onglet).
+- **Bruitage de touché (Web Audio)** : contexte dédié léger, **déblocage iOS** (silent buffer),
+  compresseur + gain mobile, **débounce**, timbre **accordé par univers** (feutré/grave vs clair/net).
+  ⚠️ bug : initialiser `last = -1` (pas 0) sinon le **1er touché** est mangé par le débounce
+  (`currentTime` démarre ~0).
+- **Bloc légal en pied (vitrine)** : bande visible (mention obligatoire selon le secteur — alcool
+  « majeurs/modération », colis « articles interdits ») + **modal Informations légales** injecté en
+  JS, contenu **adapté par marque** (Confidentialité commune : vitrine sans collecte serveur,
+  échanges WhatsApp, Mobile Money sans stockage bancaire, pas de traceur ; Conditions & usage
+  acceptable ; Mentions non-contractuelles + crédit NEBULA). Honnête, aucune promesse fausse.
+- **Déplacer des blocs** (ex. provenance ↔ carrousel) : quand on ajoute du contenu dans un héros
+  `justify-content:center` à `min-height`, le haut (titre) passe **sous la nav** → repasser le héros
+  en **`justify-content:flex-start`** + padding-top qui claire la nav.
+- **⚠️ MOJIBAKE (rappel fort)** : **jamais** `Get-Content -Raw`/`WriteAllText`/`Set-Content` PowerShell
+  sur du HTML/JS/CSS (double-encode les accents, « é » cassé). Faire les **bumps `?v=` + sync `_dist`
+  via Node `fs` (utf8)** ou Python `open(...,encoding="utf-8")`. Vérifier en prod l'absence d'accents doublés.
+- **Affiche A4 + QR = livrable obligatoire pour CHAQUE client** (rappelé par Mongazi), dans
+  `clients/NN/assets/docs/` ; QR (segno) vers **URLs live stables**. Donner le chemin du PDF au rapport.
