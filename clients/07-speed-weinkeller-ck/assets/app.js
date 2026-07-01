@@ -392,13 +392,17 @@ document.documentElement.classList.add("js");
       }
       graf = requestAnimationFrame(gframe);
     }
-    gsize();
     var grun = false, gin = true;
     function gsync() { if (gin && !document.hidden) { if (!grun) { grun = true; gframe(); } } else { grun = false; if (graf) cancelAnimationFrame(graf); graf = null; } }
-    if ("IntersectionObserver" in window) new IntersectionObserver(function (es) { es.forEach(function (e) { gin = e.isIntersecting; }); gsync(); }, { threshold: 0 }).observe(host);
-    document.addEventListener("visibilitychange", gsync);
-    var grz; addEventListener("resize", function () { clearTimeout(grz); grz = setTimeout(gsize, 200); }, { passive: true });
-    gsync();
+    function gstart() {
+      gsize();
+      if ("IntersectionObserver" in window) new IntersectionObserver(function (es) { es.forEach(function (e) { gin = e.isIntersecting; }); gsync(); }, { threshold: 0 }).observe(host);
+      document.addEventListener("visibilitychange", gsync);
+      var grz; addEventListener("resize", function () { clearTimeout(grz); grz = setTimeout(gsize, 200); }, { passive: true });
+      gsync();
+    }
+    // init différée hors du chemin critique de chargement (réduit la tâche longue au démarrage)
+    if ("requestIdleCallback" in window) requestIdleCallback(gstart, { timeout: 1400 }); else setTimeout(gstart, 700);
   }
 
   /* ---------- Barre CTA mobile (injectée) ---------- */

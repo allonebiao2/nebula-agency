@@ -1214,8 +1214,22 @@ html.js [data-reveal="zoom"] .reveal:not(.in){transform:scale(.86)}             
 [data-reveal="blur"] .reveal{transition:opacity .95s var(--ease-out),filter .95s var(--ease-out),transform .95s var(--ease-out)}
 [data-reveal="zoom"] .reveal{transition-duration:.6s;transition-timing-function:var(--ease-out)}
 
+/* variantes de révélation propres à Weinkeller (cave) */
+html.js [data-reveal="tilt"] .reveal:not(.in){transform:translateY(38px) rotate(-1.4deg) scale(.97);transform-origin:left bottom}   /* nos caves : bascule douce */
+[data-reveal="tilt"] .reveal{transition-duration:.85s;transition-timing-function:var(--ease-out)}
+html.js [data-reveal="unfurl"] .reveal:not(.in){clip-path:inset(0 0 100% 0);transform:translateY(8px)}                            /* commander : rideau de cave */
+html.js [data-reveal="unfurl"] .reveal.in{clip-path:inset(0 0 0 0)}
+[data-reveal="unfurl"] .reveal{transition:opacity .95s var(--ease-out),transform .95s var(--ease-out),clip-path .95s var(--ease-out)}
+html.js [data-reveal="pour"] .reveal:not(.in){transform:translateY(-22px) scaleY(.92);transform-origin:top;opacity:0}            /* sélection : versée */
+[data-reveal="pour"] .reveal{transition:opacity .8s var(--ease-out),transform .8s var(--ease-out)}
+/* révélation dédiée de la bannière provenance : les drapeaux se posent */
+.prov-flags{transition:opacity 1s var(--ease-out) .12s,transform 1.1s var(--ease-out) .12s}
+html.js .provenance.reveal:not(.in) .prov-flags{opacity:0;transform:scale(1.08)}
+
 @media (prefers-reduced-motion:reduce){
   .sa-glow{animation:none!important}.sa-fly{display:none}
   .w-speed .hero::before{animation:none!important}
   html.js [data-reveal="blur"] .reveal{filter:none!important}
+  html.js [data-reveal="unfurl"] .reveal{clip-path:none!important}
+  html.js [data-reveal="pour"] .reveal:not(.in),html.js .provenance.reveal:not(.in) .prov-flags{transform:none}
 }
