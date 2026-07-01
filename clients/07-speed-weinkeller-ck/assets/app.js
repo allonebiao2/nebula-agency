@@ -610,4 +610,35 @@ document.documentElement.classList.add("js");
     // retour sur l'onglet après l'avoir quitté -> ré-affiche
     document.addEventListener("visibilitychange", function () { if (!document.hidden) setTimeout(show, 700); });
   })();
+
+  /* ---------- Panneau légal : confidentialité, conditions & usage acceptable, mentions ---------- */
+  (function () {
+    var triggers = document.querySelectorAll(".legal-open");
+    if (!triggers.length) return;
+    var wein = document.body.classList.contains("w-wein");
+    var confid = "Ce site est une vitrine : il ne crée pas de compte et ne collecte aucune donnée personnelle sur un serveur. Les échanges (commandes, questions) se font par WhatsApp et par téléphone ; les informations que vous y communiquez (nom, adresse de livraison, détails de commande) servent uniquement à traiter votre demande et ne sont ni revendues ni cédées à des tiers. Le paiement s'effectue par Mobile Money ou à la livraison : aucune coordonnée bancaire n'est stockée par le site. Le site n'utilise ni cookie publicitaire ni traceur ; seules des préférences techniques peuvent être conservées localement sur votre appareil (par exemple le son d'ambiance). Pour consulter, corriger ou faire supprimer les informations que vous nous avez transmises, écrivez-nous sur WhatsApp.";
+    var cond = wein
+      ? "Weinkeller by CK propose des boissons alcoolisées. La vente est strictement réservée aux personnes majeures ; nous pouvons refuser ou annuler toute commande en cas de doute. L'abus d'alcool est dangereux pour la santé, à consommer avec modération. Les prix, millésimes et disponibilités sont donnés à titre indicatif et confirmés à la commande. Les commandes et la logistique sont organisées directement avec la maison (retrait à Porto-Novo ou livraison partout au Bénin). Pour l'importation (Commande spéciale), certains produits peuvent être soumis à des restrictions : nous vous en informons avant tout achat."
+      : "Speed Shopping achète pour vous en France et en Allemagne et achemine vos colis vers le Bénin (et inversement). Articles interdits : nous ne prenons pas en charge la viande, les produits périssables, l'argent liquide, les produits inflammables, les stupéfiants ni tout article interdit à l'expédition. Les tarifs, commissions et délais (3 à 5 jours) sont indicatifs et confirmés avant chaque commande. Le prix des articles et la commission se règlent avant l'expédition ; les frais de livraison à l'arrivée à Cotonou. Vous êtes responsable de l'exactitude des informations transmises (liens, références, adresse).";
+    var mentions = (wein ? "Weinkeller by CK — Porto-Novo, Bénin." : "Speed Shopping — Cotonou, Bénin (relais Paris, France).") + " Contact : WhatsApp +229 01 97 15 84 84" + (wein ? "" : " · +33 7 61 66 68 87") + ". Ce site est une vitrine de présentation réalisée par NEBULA Agency (Cotonou, Bénin) ; il ne constitue pas une offre contractuelle : toute commande est confirmée directement avec la maison.";
+    var m = document.createElement("div");
+    m.className = "legal-modal"; m.id = "legalModal"; m.setAttribute("role", "dialog"); m.setAttribute("aria-modal", "true"); m.setAttribute("aria-label", "Informations légales"); m.hidden = true;
+    m.innerHTML = '<div class="legal-scrim" data-lclose></div><div class="legal-panel">' +
+      '<div class="legal-head"><span class="legal-t">Informations légales</span><button class="legal-close" data-lclose type="button" aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>' +
+      '<div class="legal-body">' +
+      '<section id="legal-confid"><h3>Politique de confidentialité</h3><p>' + confid + '</p></section>' +
+      '<section id="legal-cond"><h3>Conditions &amp; usage acceptable</h3><p>' + cond + '</p></section>' +
+      '<section id="legal-mentions"><h3>Mentions légales</h3><p>' + mentions + '</p></section>' +
+      '</div></div>';
+    document.body.appendChild(m);
+    var lbody = m.querySelector(".legal-body");
+    function open(sec) {
+      m.hidden = false; document.documentElement.style.overflow = "hidden";
+      requestAnimationFrame(function () { m.classList.add("open"); var t = document.getElementById("legal-" + sec); if (t && lbody) lbody.scrollTop = Math.max(0, t.offsetTop - 14); });
+    }
+    function close() { m.classList.remove("open"); document.documentElement.style.overflow = ""; setTimeout(function () { m.hidden = true; }, 350); }
+    triggers.forEach(function (b) { b.addEventListener("click", function () { open(b.getAttribute("data-legal")); }); });
+    m.querySelectorAll("[data-lclose]").forEach(function (el) { el.addEventListener("click", close); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && m.classList.contains("open")) close(); });
+  })();
 })();
