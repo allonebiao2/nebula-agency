@@ -590,18 +590,24 @@ document.documentElement.classList.add("js");
     });
   }
 
-  /* ---------- Bulle coffrets cadeaux (Weinkeller) : après 10 s, fermable, 1x/session ---------- */
+  /* ---------- Bulle coffrets cadeaux (Weinkeller) : s'affiche à CHAQUE visite (entrée, rechargement, sortie) + attire l'attention ---------- */
   (function () {
     var gb = document.getElementById("giftBubble");
     if (!gb) return;
-    try { if (sessionStorage.getItem("gb-dismissed") === "1") return; } catch (e) {}
-    var closed = false;
-    function show() { if (closed || gb.hidden === false) return; gb.hidden = false; requestAnimationFrame(function () { gb.classList.add("open"); }); }
-    var timer = setTimeout(show, 10000);
-    function dismiss() { try { sessionStorage.setItem("gb-dismissed", "1"); } catch (e) {} }
-    function close() { closed = true; clearTimeout(timer); gb.classList.remove("open"); dismiss(); setTimeout(function () { gb.hidden = true; }, 550); }
+    var isOpen = false, lastClosed = 0;
+    function show() {
+      if (isOpen || Date.now() - lastClosed < 6000) return;
+      isOpen = true; gb.hidden = false; gb.classList.remove("gb-attn");
+      requestAnimationFrame(function () { void gb.offsetWidth; gb.classList.add("open"); gb.classList.add("gb-attn"); });
+    }
+    function close() { isOpen = false; lastClosed = Date.now(); gb.classList.remove("open"); gb.classList.remove("gb-attn"); setTimeout(function () { if (!isOpen) gb.hidden = true; }, 560); }
+    setTimeout(show, 4500); // quelques secondes après l'entrée (rejoué à chaque rechargement)
     var cb = document.getElementById("gbClose"); if (cb) cb.addEventListener("click", close);
-    var cta = gb.querySelector(".gb-cta"); if (cta) cta.addEventListener("click", dismiss);
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && gb.classList.contains("open")) close(); });
+    var cta = gb.querySelector(".gb-cta"); if (cta) cta.addEventListener("click", close);
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && isOpen) close(); });
+    // sortie (desktop) : la souris quitte l'écran par le haut -> ré-affiche
+    document.addEventListener("mouseout", function (e) { if (e.clientY <= 0 && !e.relatedTarget) show(); });
+    // retour sur l'onglet après l'avoir quitté -> ré-affiche
+    document.addEventListener("visibilitychange", function () { if (!document.hidden) setTimeout(show, 700); });
   })();
 })();
