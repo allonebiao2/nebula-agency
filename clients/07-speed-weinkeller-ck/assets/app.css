@@ -592,6 +592,14 @@ html.js .flight .plane{offset-distance:0%;opacity:0}
 .acc-fam.open>.cave-row .chev{transform:rotate(180deg)}
 .acc-fam.open>.cave-row{color:var(--accent)}
 .acc-fam.soon>.cave-row .lbl{opacity:.62}
+.cave-soon{font-family:var(--f-ui);font-weight:800;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);border-radius:999px;padding:3px 8px;flex:none}
+.cave-empty{text-align:center;padding:clamp(30px,6vw,56px) 22px;border:1px dashed color-mix(in srgb,var(--accent) 42%,var(--line));border-radius:16px;background:var(--bg-3)}
+.cave-empty .ce-ic{display:inline-flex;width:56px;height:56px;border-radius:50%;align-items:center;justify-content:center;color:var(--accent);background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));margin-bottom:14px}
+.cave-empty .ce-ic svg{width:27px;height:27px}
+.cave-empty h4{font-family:var(--font-display);font-weight:700;font-size:1.32rem;margin:0 0 9px;color:var(--text)}
+.cave-empty h4 span{color:var(--accent)}
+.cave-empty p{color:var(--text-2);font-size:.97rem;line-height:1.6;max-width:54ch;margin:0 auto 18px}
+.cave-empty .btn{min-height:48px}
 .acc-sub{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s var(--ease)}
 .acc-fam.open .acc-sub{grid-template-rows:1fr}
 .acc-sub-inner{overflow:hidden;min-height:0}

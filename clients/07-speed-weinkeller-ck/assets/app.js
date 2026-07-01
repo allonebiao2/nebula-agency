@@ -161,8 +161,14 @@ document.documentElement.classList.add("js");
     var caveScrim = document.querySelector("#caveScrim");
     var caveOpenBtn = document.querySelector("#caveOpen");
     var TAX = [
+      { cat: "vin", short: "Vins", label: "Vins", subs: [] },
       { cat: "champagne", short: "Champagnes", label: "Champagnes & Effervescents", subs: [["prestige", "Prestige & Millésimés"], ["blancdeblancs", "Blanc de Blancs"], ["brut", "Bruts"], ["rose", "Rosés"]] },
-      { cat: "tequila", short: "Tequila", label: "Tequila", subs: [["cristalino", "Cristalino"], ["blanco", "Blanco / Silver"], ["reposado", "Reposado"], ["anejo", "Añejo"]] }
+      { cat: "whisky", short: "Whiskys", label: "Whiskys", subs: [] },
+      { cat: "tequila", short: "Tequila", label: "Tequila", subs: [["cristalino", "Cristalino"], ["blanco", "Blanco / Silver"], ["reposado", "Reposado"], ["anejo", "Añejo"]] },
+      { cat: "rhum", short: "Rhum", label: "Rhum", subs: [] },
+      { cat: "gin", short: "Gin", label: "Gin", subs: [] },
+      { cat: "pastis", short: "Pastis", label: "Pastis", subs: [] },
+      { cat: "vodka", short: "Vodka", label: "Vodka", subs: [] }
     ];
     var CHEV = '<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
     function cnt(c, s) { return bottles.filter(function (b) { return b.getAttribute("data-cat") === c && (!s || b.getAttribute("data-sub") === s); }).length; }
@@ -174,7 +180,7 @@ document.documentElement.classList.add("js");
       '<button class="cave-row cave-all active" data-cat="all"><span class="lbl">Toute la cave</span><span class="cave-count">' + bottles.length + '</span></button>';
     TAX.forEach(function (f) {
       html += '<div class="acc-fam' + (isReal(f.cat) ? '' : ' soon') + '" data-cat="' + f.cat + '">' +
-        '<button class="cave-row fam" data-cat="' + f.cat + '"><span class="lbl">' + f.short + '</span><span class="cave-count">' + cnt(f.cat) + '</span>' + (f.subs.length ? CHEV : '') + '</button>';
+        '<button class="cave-row fam" data-cat="' + f.cat + '"><span class="lbl">' + f.short + '</span>' + (isReal(f.cat) ? '<span class="cave-count">' + cnt(f.cat) + '</span>' : '<span class="cave-soon">bientôt</span>') + (f.subs.length ? CHEV : '') + '</button>';
       if (f.subs.length) {
         html += '<div class="acc-sub"><div class="acc-sub-inner">';
         f.subs.forEach(function (s) { html += '<button class="sub-row" data-cat="' + f.cat + '" data-sub="' + s[0] + '"><span class="lbl">' + s[1] + '</span><span class="cave-count">' + cnt(f.cat, s[0]) + '</span></button>'; });
@@ -212,6 +218,13 @@ document.documentElement.classList.add("js");
         r.classList.toggle("active", on);
       });
       setHead(cat, sub);
+      var ce = document.getElementById("caveEmpty");
+      if (ce) {
+        var empty = (vi === 0 && cat !== "all");
+        ce.hidden = !empty;
+        var ln = document.getElementById("caveEmptyCat");
+        if (empty && ln) ln.textContent = (labelOf[cat] ? labelOf[cat].label : "Cette catégorie");
+      }
     }
 
     function openDrawer() { caveNav.classList.add("open"); if (caveScrim) { caveScrim.hidden = false; requestAnimationFrame(function () { caveScrim.classList.add("show"); }); } if (caveOpenBtn) caveOpenBtn.setAttribute("aria-expanded", "true"); }
