@@ -72,10 +72,27 @@ cliente : page d'accueil façon « présentation de match de foot », séparatio
   auto-rotation, drag/flèches/points, fiche live nom+prix+Commander) + **cartes photo profondeur 3D** dans la sélection
   (tilt parallax translateZ + reflet) + **poussière d'or** (canvas). PE : sans JS, coverflow = simple rangée scrollable.
 
+## FAIT le 2026-07-01 (catégorie Whiskys + Rhum — vraies bouteilles)
+- ✅ **Catégorie « Whiskys » ACTIVÉE** (`?v=20260701n`) : **10 bouteilles réelles** envoyées par Ck (dossier
+  `assets/images/gallery/Les whisky_`), détourées fond clair→transparent en **IA rembg** (`_build_whisky.py`,
+  isnet-general-use, 1100 px, webp) → `assets/images/cave/*.webp`. Sous-filtres : **Single Malt (4)** =
+  Lagavulin Distillers/16 ans, Aberlour 14, BenRiach 10 · **Cognacs (6)** = Hennessy VSOP/VS, Martell VS/VSOP,
+  Rémy Martin VSOP, Camus VS. Noms + prix réels, WhatsApp pré-rempli par bouteille.
+- ✅ **Catégorie « Rhum » ACTIVÉE** : **Eminente Reserva** (rhum ambré, Cuba, 70 CL, 65 000 F) — 1 bouteille.
+  (Eminente était rangé dans le dossier « whisky » du client ; classé en Rhum car c'est un rhum — à me dire si
+  Ck préfère le voir sous Whiskys.)
+- ✅ 3e carte « Nos caves » = **Whiskies & cognacs** ; notice « en stock » mise à jour (Champagnes, Whiskys,
+  Cognacs, Tequilas & Rhum). Injection idempotente via `_apply_whisky.py` (UTF-8).
+- ✅ QC navigateur (Playwright) : 32 bouteilles, 0 erreur console, 0 requête 404, filtres/sous-filtres OK,
+  détourage sans halo (fond clair ET sombre). Déployé + vérifié 200 en prod.
+- ⏳ **À valider par Ck** : Martell **VS 65 000 F > VSOP 60 000 F** (inhabituel — confirmer les prix) ·
+  volumes des 4 single malts (affichés « Islay/Speyside » sans contenance, standard 70 CL non inventé).
+
 ## À CONFIRMER / À REMPLACER (reste)
 - [ ] Email / domaine exact (contact@speedshopping.com ?).
-- [ ] **Autres caves Weinkeller** (rouges, blancs, whiskies/spiritueux, liqueurs, bières) : noms + prix + photos
-  (champagnes faits ; le reste en placeholder SVG « à valider »).
+- [ ] **Autres caves Weinkeller** : **vins rouges/blancs, gin, pastis, vodka** (noms + prix + photos).
+  ✅ Faits : champagnes (8→13), tequilas (8), **whiskies+cognacs (10), rhum (1) — 2026-07-01**.
+  Reste = catégories encore « bientôt ».
 - [ ] **Logo Weinkeller** définitif (on a créé un wordmark/emblème « à valider »).
 - [ ] **Adresses exactes** Cotonou (Speed) + Porto-Novo (Weinkeller) pour Google Maps précis.
 - [ ] Photos lifestyle Speed (optionnel — le monde Speed est volontairement graphique/illustré).

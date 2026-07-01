@@ -164,7 +164,7 @@ document.documentElement.classList.add("js");
     var TAX = [
       { cat: "vin", short: "Vins", label: "Vins", subs: [] },
       { cat: "champagne", short: "Champagnes", label: "Champagnes & Effervescents", subs: [["prestige", "Prestige & Millésimés"], ["blancdeblancs", "Blanc de Blancs"], ["brut", "Bruts"], ["rose", "Rosés"]] },
-      { cat: "whisky", short: "Whiskys", label: "Whiskys", subs: [] },
+      { cat: "whisky", short: "Whiskys", label: "Whiskys & Cognacs", subs: [["scotch", "Single Malt"], ["cognac", "Cognacs"]] },
       { cat: "tequila", short: "Tequila", label: "Tequila", subs: [["cristalino", "Cristalino"], ["blanco", "Blanco / Silver"], ["reposado", "Reposado"], ["anejo", "Añejo"]] },
       { cat: "rhum", short: "Rhum", label: "Rhum", subs: [] },
       { cat: "gin", short: "Gin", label: "Gin", subs: [] },
