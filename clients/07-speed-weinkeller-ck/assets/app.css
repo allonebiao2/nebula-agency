@@ -568,7 +568,7 @@ html.js .flight .plane{offset-distance:0%;opacity:0}
 .acc-sub{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s var(--ease)}
 .acc-fam.open .acc-sub{grid-template-rows:1fr}
 .acc-sub-inner{overflow:hidden;min-height:0}
-.sub-row{width:100%;display:flex;align-items:center;gap:8px;padding:8px 13px 8px 32px;border:0;background:transparent;cursor:pointer;position:relative;
+.sub-row{width:100%;min-height:44px;display:flex;align-items:center;gap:8px;padding:8px 13px 8px 32px;border:0;background:transparent;cursor:pointer;position:relative;
   font-family:var(--f-ui);font-weight:600;font-size:.82rem;color:var(--text-2);text-align:left;transition:color .2s,transform .2s var(--ease)}
 .sub-row::before{content:"";position:absolute;left:17px;top:50%;width:5px;height:1px;background:var(--accent);opacity:.45;transform-origin:left;transition:opacity .2s,transform .2s}
 .sub-row .lbl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -648,9 +648,10 @@ html.js .cf-item{position:absolute;top:0;left:50%;width:clamp(140px,19vw,205px);
   display:flex;align-items:center;justify-content:center;background:var(--bg-2);transition:.22s;min-height:44px}
 .cf-arrow:hover{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,transparent);transform:translateY(-2px)}
 .cf-arrow svg{width:20px;height:20px}
-.cf-dots{display:flex;gap:8px}
-.cf-dots button{width:9px;height:9px;border-radius:50%;background:var(--line);transition:.25s;padding:0;border:0;min-height:0}
-.cf-dots button.on{background:var(--accent);transform:scale(1.45)}
+.cf-dots{display:flex;gap:6px}
+.cf-dots button{width:20px;height:40px;background:transparent;padding:0;border:0;position:relative;cursor:pointer;transition:.25s}
+.cf-dots button::before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:9px;height:9px;border-radius:50%;background:var(--line);transition:.25s}
+.cf-dots button.on::before{background:var(--accent);transform:translate(-50%,-50%) scale(1.45)}
 .cf-order{margin-top:14px;text-align:center;position:relative;z-index:6}
 @media (prefers-reduced-motion:reduce){.cf-item{transition:opacity .3s}}
 @media (max-width:760px){.cave-3d{height:clamp(300px,42vh,400px);perspective:1100px}.cf-item{width:clamp(130px,40vw,180px);margin-left:min(-65px,-20vw)}}
@@ -690,7 +691,7 @@ canvas.golddust{position:absolute;inset:0;z-index:1;pointer-events:none;width:10
 .w-speed .cf-glow{background:radial-gradient(50% 56% at 50% 42%,rgba(54,168,255,.42),transparent 70%)}
 .w-speed .cf-arrow{background:var(--bg-2);border-color:var(--line);color:var(--brand)}
 .w-speed .cf-arrow:hover{border-color:var(--brand);background:var(--accent-soft)}
-.w-speed .cf-dots button.on{background:var(--brand)}
+.w-speed .cf-dots button.on::before{background:var(--brand)}
 
 /* ============================================================
    Communs : FAQ, contact, maps, avis, footer, FAB, mobile bar
@@ -971,7 +972,7 @@ html.loaded .w-speed .flightcard,html.loaded .hero .hero-media,html.loaded .hero
 .svc-eyebrow{font-family:var(--f-ui);font-weight:800;font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:var(--brand)}
 .svc-head h3{font-family:var(--f-ui);font-weight:800;font-size:clamp(1.3rem,3.6vw,1.72rem);margin:7px 0 4px;letter-spacing:-.01em;line-height:1.1}
 .svc-sub{color:var(--text-2);font-size:.95rem;margin:0}
-.svc-close{flex:none;width:42px;height:42px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--text);transition:.2s}
+.svc-close{flex:none;width:44px;height:44px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--text);transition:.2s}
 .svc-close:hover{background:var(--accent-soft);color:var(--brand)}
 .svc-close svg{width:20px;height:20px}
 

@@ -455,6 +455,49 @@ document.documentElement.classList.add("js");
     document.addEventListener("visibilitychange", function () { if (document.hidden && playing) stop(); });
   }
 
+  /* ---------- Bruitage de touché (Web Audio synthétisé, raffiné, déblocage iOS) ---------- */
+  (function () {
+    if (window.__noTap) return;
+    var tctx = null, tin = null, tmaster = null, last = -1;
+    var warm = document.body.classList.contains("w-wein");
+    var crisp = document.body.classList.contains("w-speed");
+    function ensure() {
+      if (tctx) return true;
+      var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return false;
+      try { tctx = new AC(); } catch (e) { return false; }
+      try { var b = tctx.createBuffer(1, 1, 22050), s = tctx.createBufferSource(); s.buffer = b; s.connect(tctx.destination); s.start(0); } catch (e) {} // déblocage iOS
+      var comp = tctx.createDynamicsCompressor();
+      comp.threshold.value = -18; comp.knee.value = 24; comp.ratio.value = 10; comp.attack.value = .002; comp.release.value = .12;
+      tmaster = tctx.createGain(); tmaster.gain.value = isMobile ? 0.95 : 0.72;
+      comp.connect(tmaster); tmaster.connect(tctx.destination); tin = comp;
+      return true;
+    }
+    function blip(f0, f1, lpf, peak, type, dur) {
+      var t = tctx.currentTime;
+      var o = tctx.createOscillator(), g = tctx.createGain(), lp = tctx.createBiquadFilter();
+      lp.type = "lowpass"; lp.frequency.value = lpf; lp.Q.value = .5;
+      o.type = type; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur * .6);
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + .006); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      o.connect(lp); lp.connect(g); g.connect(tin); o.start(t); o.stop(t + dur + .02);
+    }
+    function tap(rich) {
+      if (!ensure()) return;
+      if (tctx.state === "suspended") { try { tctx.resume(); } catch (e) {} }
+      var now = tctx.currentTime; if (now - last < .03) return; last = now;
+      var f0 = warm ? 300 : crisp ? 860 : 520, f1 = warm ? 175 : crisp ? 560 : 330, lpf = warm ? 1500 : crisp ? 3200 : 2200;
+      var peak = rich ? (isMobile ? .11 : .09) : .05;
+      blip(f0, f1, lpf, peak, "sine", .12);
+      blip(f0 * 2.02, f1 * 1.8, lpf * 1.4, peak * .32, "triangle", .06); // partiel supérieur = raffinement
+    }
+    function interactive(el) {
+      return !!(el && el.closest && el.closest("a,button,input,select,textarea,label,summary,[role=button],[data-svc],[data-jump],[data-close],.cat,.cellar,.cf-item,.cf-dots button,.burger,.fab,.chip,.sub-row,.cat-row,.world-switch"));
+    }
+    document.addEventListener("pointerdown", function (e) {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      tap(interactive(e.target));
+    }, { passive: true });
+  })();
+
   /* ---------- Vidéos de fond (si présentes) ---------- */
   document.querySelectorAll("video.hero-media,video.cta-media").forEach(function (vid) {
     vid.muted = true; vid.defaultMuted = true; vid.playsInline = true;
