@@ -79,14 +79,16 @@ cliente : page d'accueil façon « présentation de match de foot », séparatio
   Lagavulin Distillers/16 ans, Aberlour 14, BenRiach 10 · **Cognacs (6)** = Hennessy VSOP/VS, Martell VS/VSOP,
   Rémy Martin VSOP, Camus VS. Noms + prix réels, WhatsApp pré-rempli par bouteille.
 - ✅ **Catégorie « Rhum » ACTIVÉE** : **Eminente Reserva** (rhum ambré, Cuba, 70 CL, 65 000 F) — 1 bouteille.
-  (Eminente était rangé dans le dossier « whisky » du client ; classé en Rhum car c'est un rhum — à me dire si
-  Ck préfère le voir sous Whiskys.)
+  (Eminente était rangé dans le dossier « whisky » du client ; classé en Rhum car c'est un rhum.
+  Mongazi préfère aussi Rhum — ⏳ **en Rhum pour l'instant, en attente de la réponse de Ck** (2026-07-02).
+  Si Ck veut le voir sous Whiskys : changer `data-cat="rhum"` → `data-cat="whisky"` + `data-sub="rhum"` sur la carte Eminente.)
 - ✅ 3e carte « Nos caves » = **Whiskies & cognacs** ; notice « en stock » mise à jour (Champagnes, Whiskys,
   Cognacs, Tequilas & Rhum). Injection idempotente via `_apply_whisky.py` (UTF-8).
 - ✅ QC navigateur (Playwright) : 32 bouteilles, 0 erreur console, 0 requête 404, filtres/sous-filtres OK,
   détourage sans halo (fond clair ET sombre). Déployé + vérifié 200 en prod.
-- ⏳ **À valider par Ck** : Martell **VS 65 000 F > VSOP 60 000 F** (inhabituel — confirmer les prix) ·
-  volumes des 4 single malts (affichés « Islay/Speyside » sans contenance, standard 70 CL non inventé).
+- ✅ Martell **VS 65 000 F > VSOP 60 000 F** : **confirmé par Mongazi 2026-07-02, garder tel quel** (« laisse comme c'est »).
+- ⏳ **Eminente Reserva** : classé en Rhum, **en attente réponse de Ck** (cf. section 2026-07-01).
+- ⏳ Volumes des 4 single malts (affichés « Islay/Speyside » sans contenance ; 70 CL standard non inventé) — à confirmer si utile.
 
 ## À CONFIRMER / À REMPLACER (reste)
 - [ ] Email / domaine exact (contact@speedshopping.com ?).
