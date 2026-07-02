@@ -32,6 +32,9 @@ _tmp_screenshots/
 # Archives locales (ex. vidage de _partage/) — gros médias, hors GitHub
 _archives/
 
+# Dossiers de déploiement dérivés (générés depuis la source)
+clients/*/_deploy_netlify/
+
 # Fichiers temporaires / diagnostics
 _tmp_build_pdf.py
 boutique-ia/_diag_osm.py
