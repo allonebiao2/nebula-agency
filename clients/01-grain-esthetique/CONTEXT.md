@@ -60,6 +60,8 @@ Couche **additive** (images, couleurs, **numéro/liens WhatsApp inchangés** —
 - QC navigateur (Playwright) desktop+mobile : **0 erreur, 0 404, 11/11 images OK, 93 liens WhatsApp (0 mauvais numéro)**, focus clavier OK.
 
 ## Déploiement — MIGRÉ SUR CLOUDFLARE PAGES + DOMAINE (2026-07-02)
+- ✅ **LIVE CONFIRMÉ : https://graindesthetique.com** (+ `www`) — 200, **SSL actif**, redirect http→https (301). Site amélioré servi.
+  (Statut « custom domain » de l'API Pages restait « pending » alors que le site répondait déjà 200 — l'API retarde, le site marche.)
 - ✅ **Domaine acheté par Mongazi : `graindesthetique.com`** (registrar **Hostinger**).
 - ✅ **Site amélioré déployé sur Cloudflare Pages** — projet **`grain-esthetique`** → https://grain-esthetique.pages.dev (LIVE, vérifié 200).
   Déploiement = `wrangler pages deploy _dist` (`_dist` = `index.html` [= grain-esthetique-LIVE.html] + `assets/images/og-grain.jpg`).
