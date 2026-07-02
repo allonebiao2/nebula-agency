@@ -34,6 +34,9 @@ _archives/
 
 # Dossiers de déploiement dérivés (générés depuis la source)
 clients/*/_deploy_netlify/
+_dist/
+clients/*/_dist/
+00-nebula-agency/_dist/
 
 # Fichiers temporaires / diagnostics
 _tmp_build_pdf.py

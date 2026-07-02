@@ -31,12 +31,28 @@ modifications. *(Corrigé le 2026-06-20 : était affiché par erreur « /mois »
 
 ## État
 
-- **Version actuelle** : v8
-- **Fichier** : `nebula_agency_v8.html`
-- **Statut** : Livrée
-- **Source** : copiée depuis `nebula_agency_v5_FINAL (1).html`
+- **Version actuelle** : **v9** (`nebula_agency_v9.html` = `index.html` en prod)
+- **Statut** : **LIVE** https://www.nebula-agency.online (Cloudflare Pages, projet `nebula-agency`, déployé 2026-07-02)
+- **v8 conservé** (`nebula_agency_v8.html`) pour retour arrière.
 
 ### Historique des versions
+
+#### v9 — 2026-07-02 (REFONTE cosmique haut de gamme + shader hero)
+Refonte quasi totale, validée par Mongazi (direction « refonte cosmique haut de gamme »). Contenu réel préservé
+(prix, forfaits, `soumettreCommande` → WhatsApp + lead back-office affiliés, `setTier`, liens partenaires).
+- **Typo display Syne** (au lieu de Space Grotesk, jugé trop générique) ; Inter en corps ; JetBrains Mono en labels.
+- **Fond nébuleuse animé WebGL** dans le hero (shader @atzedent porté en vanilla JS, **recoloré NEBULA** bleu/violet/cyan) :
+  repli auto (dégradé + starfield) si pas de WebGL2, **pause hors-vue**, `prefers-reduced-motion`, demi-résolution mobile.
+- **Portfolio RÉEL** (remplace les 3 vieux liens) : **6 vrais sites livrés** en cadres navigateur + captures webp base64 —
+  Djambar Team (djambarteam.com), Speed×Weinkeller, Miss Cakes, HH Design, Grain d'Esthétique, INA Luxury.
+- **Icônes SVG** partout (fini les emojis), nav en verre flottant, logo orbital SVG, image OG `assets/og-nebula.jpg` (1200×630).
+- **Retraits demandés 2026-07-02** : forfait **Fiche Google Maps**, forfaits **Avatar IA Essentiel & Pro** (section entière),
+  onglet nav **Tarifs**, **aperçus flottants** du hero. Services restants : Vitrine (150k) · Catalogue (50k) · QR Review (30k).
+  (Case « Google Maps intégré » gardée = option d'intégration carte, ≠ forfait fiche.)
+- **Bouton nav « WhatsApp » → « Commander »** (redirige vers le formulaire #order). WhatsApp reste en Contact/pied/formulaire.
+- Scripts reproductibles : `_inject_v9.py`, `_add_shader.py`, `_trim_v9.py`, `_build_og.py`. Déploiement = `wrangler pages deploy _dist`.
+- QC Playwright : 0 erreur, 0 404, formulaire OK (`setTier`), 6 sites portfolio, responsive. ⚠️ le shader ne se capture pas en
+  WebGL logiciel (headless) mais valide/tourne sur GPU réel.
 
 #### v8 — 2026-05-30 (grille tarifaire + délai + portfolio INA)
 - **Vitrine Digitale** : 70 000 → **150 000 FCFA** setup
