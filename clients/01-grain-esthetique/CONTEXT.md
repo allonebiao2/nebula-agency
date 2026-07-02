@@ -32,6 +32,19 @@ Couche **additive** (images, couleurs et liens WhatsApp **inchangés**) :
 - **Onglets premium** : nav en verre dépoli + soulignement animé dégradé rose→or, centrés sur PC.
 - ❌ Écarté (jugé « moche » par Mongazi) : encadrer la colonne PC avec fond dégradé → revenu au blanc d'origine.
 
+## Animations signatures par section (2026-07-02, 2e passe)
+- **Une animation différente par section, adaptée à son thème** (au scroll, via `.rv`), + **micro-animation d'icône** :
+  - À Propos → **Éclosion** (bloom fondu+flou) · icône fleur qui s'ouvre
+  - Visage → **Radiance** (soins qui s'allument, brightness) · étoile qui scintille
+  - Corps → **Respiration** (montée lente/douce) · feuille qui se balance
+  - Épilation → **Glisse** (translation latérale, façon cire) · goutte qui tombe
+  - Mains & Pieds → **Vernis** (révélation gauche→droite, clip-path) · icône qui scintille
+  - Soins Avancés → **Élévation** premium (cartes + halo doré) · gemme qui brille
+  - Espace Hommes → **Assurance** (montée nette) · **nœud papillon doré** (remplace l'emoji 🎩 résiduel)
+- Correctifs : `.hommes-body` reçoit `id="hommessoins"` + ajouté au tableau `ids` du révélateur (ses soins s'animent enfin).
+- `prefers-reduced-motion` : tout apparaît sans animation. Script : `_edit_anim.py`.
+- QC Playwright : **7/7 animations de contenu distinctes** + **6 icônes distinctes**, nœud papillon OK, Hommes révélé, 0 emoji résiduel, JS OK (le révélateur exécute le nouveau hook).
+
 ## Améliorations livrées (2026-07-02) — passe « au max »
 Couche **additive** (images, couleurs, **numéro/liens WhatsApp inchangés** — 91 liens Réserver vérifiés) :
 - **Promo Fête des Pères expirée retirée** (pastille + pop-up + flyer base64 → −391 Ko ; fichier 787→417 Ko).
