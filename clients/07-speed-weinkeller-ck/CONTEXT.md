@@ -72,6 +72,16 @@ cliente : page d'accueil façon « présentation de match de foot », séparatio
   auto-rotation, drag/flèches/points, fiche live nom+prix+Commander) + **cartes photo profondeur 3D** dans la sélection
   (tilt parallax translateZ + reflet) + **poussière d'or** (canvas). PE : sans JS, coverflow = simple rangée scrollable.
 
+## FAIT le 2026-07-02 (héros photo cave + animation « boissons »)
+- ✅ **Nouveau héros Weinkeller** : vraie photo de cave (fournie par Mongazi via `_partage/weinkeller HERO.PNG`),
+  optimisée → `assets/images/hero/weinkeller-hero.webp` (113 Ko) + `weinkeller-hero-mobile.webp` (52 Ko) via `_build_hero.py`.
+  Câblée en fond du héros (`<picture>` desktop/mobile, fetchpriority high).
+- ✅ **Animation adaptée au vin/boissons** (GPU, `prefers-reduced-motion` OK) : Ken Burns cinématique (poussée lente
+  vers le verre), **effervescence dorée** (14 bulles qui montent, façon champagne), lueur ambrée qui « respire » sur
+  le verre, scrim + ombres de texte pour la lisibilité, lueur dorée pulsée sur « by CK ». `?v=20260702a`.
+- QC navigateur desktop + mobile : image chargée (mobile = webp 52 Ko via srcset), 0 erreur console, 0 requête 404,
+  texte parfaitement lisible. Déployé Cloudflare Pages + vérifié 200 en prod.
+
 ## FAIT le 2026-07-01 (catégorie Whiskys + Rhum — vraies bouteilles)
 - ✅ **Catégorie « Whiskys » ACTIVÉE** (`?v=20260701n`) : **10 bouteilles réelles** envoyées par Ck (dossier
   `assets/images/gallery/Les whisky_`), détourées fond clair→transparent en **IA rembg** (`_build_whisky.py`,
