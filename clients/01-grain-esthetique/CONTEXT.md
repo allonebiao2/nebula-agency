@@ -61,6 +61,8 @@ Couche **additive** (images, couleurs, **numéro/liens WhatsApp inchangés** —
 
 ## Déploiement — MIGRÉ SUR CLOUDFLARE PAGES + DOMAINE (2026-07-02)
 - ✅ **LIVE CONFIRMÉ : https://graindesthetique.com** (+ `www`) — 200, **SSL actif**, redirect http→https (301). Site amélioré servi.
+- ✅ **Affiche CARRÉE 1:1** (pour coller à l'institut) : `assets/docs/Affiche_Grain_Carre.png` (3240×3240) + `.pdf` —
+  QR vers `graindesthetique.com` **vérifié scannable** (pyzbar), design rose/or Cormorant. Scripts : `_build_affiche.py` + `_render_affiche.py`.
   (Statut « custom domain » de l'API Pages restait « pending » alors que le site répondait déjà 200 — l'API retarde, le site marche.)
 - ✅ **Domaine acheté par Mongazi : `graindesthetique.com`** (registrar **Hostinger**).
 - ✅ **Site amélioré déployé sur Cloudflare Pages** — projet **`grain-esthetique`** → https://grain-esthetique.pages.dev (LIVE, vérifié 200).
