@@ -31,11 +31,27 @@ modifications. *(Corrigé le 2026-06-20 : était affiché par erreur « /mois »
 
 ## État
 
-- **Version actuelle** : **v9** (`nebula_agency_v9.html` = `index.html` en prod)
+- **Version actuelle** : **v9.2** (`nebula_agency_v9.html` = `index.html` en prod ; portfolio nettoyé + section Tarifs)
 - **Statut** : **LIVE** https://www.nebula-agency.online (Cloudflare Pages, projet `nebula-agency`, déployé 2026-07-02)
 - **v8 conservé** (`nebula_agency_v8.html`) pour retour arrière.
 
 ### Historique des versions
+
+#### v9.2 — 2026-07-02 soir (nettoyage portfolio + section Tarifs)
+- **Portfolio & bandeau « Ils nous font confiance »** : retrait des **3 sites non terminés**
+  (Speed × Weinkeller, Miss Cakes, HH Design). Restent visibles = Djambar Team,
+  Grain d'Esthétique, INA Luxury. Fichiers clients intacts (juste dé-mis-en-avant).
+- **Nouvelle section `#pricing` « Tarifs »** insérée entre *Pourquoi NEBULA* et le
+  formulaire *Commander* (position de conversion). Réutilise 100% de l'ADN v9
+  (classes `.card/.pcard/.feats/.host-note/.pill-pop/.price`, reveals `.rv-scale`,
+  spotlight). 3 offres = **Catalogue 50 000 F · Vitrine 150 000 F (plan Recommandé,
+  anneau dégradé + halo doré) · QR Google Review 30 000 F**. Chaque carte : prix
+  paiement unique, liste d'inclusions, encadré hébergement *15 000 F / 6 mois*
+  (sauf QR = sans abo). Bandeau réassurance + appel au devis. Boutons `setTier`
+  pré-remplissent le formulaire (chaînes = options exactes, vérifié). Lien **Tarifs**
+  ajouté nav desktop + menu mobile. Prix **fidèles à la grille** (rien de réintroduit :
+  ni Avatar IA, ni Google Maps). QC : balises équilibrées, 3 cartes/18 items,
+  em-dash prose = 0, déployé + vérifié 200 sur www.nebula-agency.online.
 
 #### v9 — 2026-07-02 (REFONTE cosmique haut de gamme + shader hero)
 Refonte quasi totale, validée par Mongazi (direction « refonte cosmique haut de gamme »). Contenu réel préservé
