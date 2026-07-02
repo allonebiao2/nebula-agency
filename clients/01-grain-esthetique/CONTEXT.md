@@ -59,16 +59,19 @@ Couche **additive** (images, couleurs, **numéro/liens WhatsApp inchangés** —
 - Scripts reproductibles : `_edit_promo.py`, `_edit_icons.py`, `_edit_a11y.py`, `_edit_polish.py`, `_build_og.py`.
 - QC navigateur (Playwright) desktop+mobile : **0 erreur, 0 404, 11/11 images OK, 93 liens WhatsApp (0 mauvais numéro)**, focus clavier OK.
 
-## Déploiement (décision Mongazi 2026-07-02)
-- **On reste sur Netlify** pour l'instant (garder l'URL `grain-esthetique-cotonou.netlify.app`, peut-être déjà partagée).
-- ⚠️ Le site **LIVE Netlify montre encore l'ANCIENNE version** (promo expirée visible) — à mettre à jour.
-- **Dossier prêt à glisser-déposer** : `clients/01-grain-esthetique/_deploy_netlify/` (`index.html` + `assets/images/og-grain.jpg`).
-  → Mongazi : glisser ce dossier sur le site Netlify existant (drag-drop) pour publier. (Claude n'a pas accès au compte Netlify.)
-- **Plus tard** : Mongazi prend un **nom de domaine** → migration vers **Cloudflare Pages** (standard NEBULA).
+## Déploiement — MIGRÉ SUR CLOUDFLARE PAGES + DOMAINE (2026-07-02)
+- ✅ **Domaine acheté par Mongazi : `graindesthetique.com`** (registrar **Hostinger**).
+- ✅ **Site amélioré déployé sur Cloudflare Pages** — projet **`grain-esthetique`** → https://grain-esthetique.pages.dev (LIVE, vérifié 200).
+  Déploiement = `wrangler pages deploy _dist` (`_dist` = `index.html` [= grain-esthetique-LIVE.html] + `assets/images/og-grain.jpg`).
+- ✅ **Meta pointées vers le domaine** : canonical/og/twitter/JSON-LD = `https://graindesthetique.com` (6 remplacements).
+- **Domaine branché** : zone `graindesthetique.com` ajoutée à Cloudflare (NS `paul`+`rosemary.ns.cloudflare.com`, changés chez Hostinger).
+  Custom domains `graindesthetique.com` + `www` attachés au projet Pages (via API). DNS : **A `2.57.91.91` supprimé** →
+  **CNAME `@` → `grain-esthetique.pages.dev` (proxied)**, `www → graindesthetique.com`. ⏳ activation/SSL en cours au 2026-07-02.
+- ⚠️ Token `cloudflare.env` = **Pages-only** (ne gère pas le DNS) → les changements DNS/zone = **action Mongazi dans le dashboard**.
+- **Ancienne version Netlify** (`grain-esthetique-cotonou.netlify.app`) = OBSOLÈTE → à débrancher une fois le domaine live.
 
 ## À faire / décisions
-- [ ] **Mongazi** : déployer `_deploy_netlify/` sur Netlify (drag-drop) — retire la promo expirée du site public.
-- [ ] Plus tard : nom de domaine + passage Cloudflare Pages (mettre à jour canonical/og:url/og:image vers le domaine).
+- [ ] Confirmer `https://graindesthetique.com` en ligne + SSL actif (custom domain « active »), puis débrancher/supprimer l'ancien Netlify.
 - [ ] Optionnel : vraies photos supplémentaires, vrais avis Google, mini-vidéo institut.
 
 ## Liens
