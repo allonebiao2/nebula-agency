@@ -3,7 +3,7 @@
 """Cache-bust : ?v=20260701n -> ?v=20260702a sur les 3 pages. UTF-8."""
 import io, os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-OLD, NEW = "?v=20260701n", "?v=20260702a"
+OLD, NEW = "?v=20260702a", "?v=20260702b"
 for f in ("weinkeller.html", "index.html", "speed.html"):
     s = io.open(f, encoding="utf-8").read()
     n = s.count(OLD)

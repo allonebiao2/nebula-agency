@@ -72,6 +72,15 @@ cliente : page d'accueil façon « présentation de match de foot », séparatio
   auto-rotation, drag/flèches/points, fiche live nom+prix+Commander) + **cartes photo profondeur 3D** dans la sélection
   (tilt parallax translateZ + reflet) + **poussière d'or** (canvas). PE : sans JS, coverflow = simple rangée scrollable.
 
+## FAIT le 2026-07-02 (son de la pop-up coffret cadeau)
+- ✅ **Jingle « entraînant » quand la bulle coffret apparaît** : arpège majeur montant do–mi–sol–la–do +
+  étincelle finale, timbre de cloche chaude, synthétisé en Web Audio (aucun fichier). `?v=20260702b`.
+- Réutilise le **moteur SFX existant** (`window.__ckSfx` exposé par le bruitage de touché) → hérite du
+  déblocage iOS + compresseur + gain mobile. Respecte l'autoplay : si aucun geste utilisateur encore,
+  le son est **armé et joué au 1er geste** tant que la bulle est ouverte. Guards anti-spam (6 s après fermeture).
+- QC navigateur (hook sur le graphe audio) : signature du jingle détectée à l'apparition de la bulle,
+  contexte audio « running », 0 erreur console. Déployé + vérifié 200 en prod.
+
 ## FAIT le 2026-07-02 (héros photo cave + animation « boissons »)
 - ✅ **Nouveau héros Weinkeller** : vraie photo de cave (fournie par Mongazi via `_partage/weinkeller HERO.PNG`),
   optimisée → `assets/images/hero/weinkeller-hero.webp` (113 Ko) + `weinkeller-hero-mobile.webp` (52 Ko) via `_build_hero.py`.

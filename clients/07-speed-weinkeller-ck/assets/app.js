@@ -551,6 +551,9 @@ document.documentElement.classList.add("js");
       if (e.pointerType === "mouse" && e.button !== 0) return;
       tap(interactive(e.target));
     }, { passive: true });
+    // exposé aux autres modules (ex. jingle de la bulle coffret) : réutilise le MÊME contexte SFX
+    // (déblocage iOS + compresseur + gain mobile déjà en place). armed() = un geste utilisateur a déjà eu lieu.
+    window.__ckSfx = { ensure: ensure, ctx: function () { return tctx; }, bus: function () { return tin; }, armed: function () { return !!tctx; } };
   })();
 
   /* ---------- Vidéos de fond (si présentes) ---------- */
@@ -594,11 +597,49 @@ document.documentElement.classList.add("js");
   (function () {
     var gb = document.getElementById("giftBubble");
     if (!gb) return;
-    var isOpen = false, lastClosed = 0;
+    var isOpen = false, lastClosed = 0, pendingChime = false;
+
+    // --- son "entraînant" quand la bulle cadeau apparaît : montée majeure joyeuse + éclat, timbre de cloche chaude ---
+    function bell(ac, out, f, t, dur, peak) {
+      var o = ac.createOscillator(), o2 = ac.createOscillator(), g = ac.createGain(), g2 = ac.createGain(), lp = ac.createBiquadFilter();
+      lp.type = "lowpass"; lp.frequency.value = 5200; lp.Q.value = .4;
+      o.type = "triangle"; o.frequency.value = f;
+      o2.type = "sine"; o2.frequency.value = f * 2.005; g2.gain.value = .26;   // partiel = brillance de cloche
+      o.connect(g); o2.connect(g2); g2.connect(g);
+      g.gain.setValueAtTime(.0001, t);
+      g.gain.exponentialRampToValueAtTime(peak, t + .012);
+      g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      g.connect(lp); lp.connect(out);
+      o.start(t); o2.start(t); o.stop(t + dur + .03); o2.stop(t + dur + .03);
+    }
+    function playChime() {
+      var S = window.__ckSfx; if (!S || !S.ensure()) return;
+      var ac = S.ctx(), bus = S.bus(); if (!ac || !bus) return;
+      try { if (ac.state === "suspended") ac.resume(); } catch (e) {}
+      var t0 = ac.currentTime + .03, peak = isMobile ? .09 : .075;
+      // do–mi–sol–la–do (pentatonique montante = entraînant, festif)
+      [523.25, 659.25, 783.99, 880.00, 1046.50].forEach(function (f, i) { bell(ac, bus, f, t0 + i * .07, .42, peak); });
+      bell(ac, bus, 1567.98, t0 + .32, .5, isMobile ? .05 : .04);   // étincelle finale (sol aigu)
+    }
+    function giftChime() {
+      if (document.hidden) return;
+      var S = window.__ckSfx; if (!S) return;
+      if (!S.armed()) {   // aucun geste utilisateur encore -> respect autoplay : jouer au 1er geste si la bulle est toujours là
+        if (pendingChime) return; pendingChime = true;
+        document.addEventListener("pointerdown", function once() {
+          document.removeEventListener("pointerdown", once);
+          var p = pendingChime; pendingChime = false;
+          if (p && isOpen) setTimeout(playChime, 90);   // laisse le moteur SFX réactiver le contexte
+        }, { once: true, passive: true });
+        return;
+      }
+      playChime();
+    }
+
     function show() {
       if (isOpen || Date.now() - lastClosed < 6000) return;
       isOpen = true; gb.hidden = false; gb.classList.remove("gb-attn");
-      requestAnimationFrame(function () { void gb.offsetWidth; gb.classList.add("open"); gb.classList.add("gb-attn"); });
+      requestAnimationFrame(function () { void gb.offsetWidth; gb.classList.add("open"); gb.classList.add("gb-attn"); giftChime(); });
     }
     function close() { isOpen = false; lastClosed = Date.now(); gb.classList.remove("open"); gb.classList.remove("gb-attn"); setTimeout(function () { if (!isOpen) gb.hidden = true; }, 560); }
     setTimeout(show, 4500); // quelques secondes après l'entrée (rejoué à chaque rechargement)
