@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Digital HSE · Questions client</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  @page{ size:A4; margin:14mm 15mm; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--ink:#141B1D;--mid:#4b585b;--faint:#8A989B;--line:#D7DEDC;--teal:#0C6D7D;--teal-d:#084E5A;
+    --soc:#7A5AA6;--env:#2E7D5B;--sec:#C5342A;--paper:#F5F7F6}
+  body{font-family:'IBM Plex Sans','Segoe UI',sans-serif;color:var(--ink);font-size:10.5pt;line-height:1.45}
+  h1,h2,h3{font-family:'Archivo','Segoe UI',sans-serif;letter-spacing:-.01em}
+  .mono{font-family:'IBM Plex Mono',monospace}
+
+  .top{display:flex;align-items:flex-start;gap:14px;border-bottom:2px solid var(--ink);padding-bottom:12px;margin-bottom:14px}
+  .logo{width:38px;height:38px;flex:none}
+  .brand b{font-family:'Archivo';font-weight:800;font-size:19pt;letter-spacing:.01em;display:block;line-height:1}
+  .brand small{font-family:'IBM Plex Mono';font-size:7.5pt;letter-spacing:.2em;text-transform:uppercase;color:var(--teal)}
+  .top .rt{margin-left:auto;text-align:right;font-size:9pt;color:var(--mid)}
+  .top .rt b{font-family:'Archivo';font-size:12pt;color:var(--ink);display:block}
+
+  .fill{display:flex;gap:18px;margin-bottom:16px;font-size:9pt;color:var(--mid)}
+  .fill div{flex:1;border-bottom:1px solid var(--line);padding-bottom:5px}
+  .fill span{color:var(--faint)}
+
+  .intro{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 13px;font-size:9.5pt;color:var(--mid);margin-bottom:16px}
+  .intro b{color:var(--ink)}
+
+  .sec{margin-bottom:13px;break-inside:avoid}
+  .sec-h{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+  .sec-h .n{font-family:'Archivo';font-weight:800;font-size:11pt;color:#fff;background:var(--teal);width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center}
+  .sec-h h2{font-size:12.5pt}
+  .sec-h .cat{margin-left:auto;font-family:'IBM Plex Mono';font-size:7.5pt;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:5px;color:var(--mid);background:var(--paper);border:1px solid var(--line)}
+
+  .q{break-inside:avoid;padding:6px 0 7px;border-bottom:1px dotted var(--line)}
+  .q .qt{display:flex;gap:8px}
+  .q .no{font-family:'IBM Plex Mono';font-weight:600;font-size:9pt;color:var(--teal-d);min-width:16px}
+  .q .qx{font-size:10pt}
+  .q .qx em{color:var(--teal-d);font-style:normal;font-weight:600}
+  .q .notes{height:12px;border-bottom:1px solid #E7ECEA;margin:7px 0 0 24px}
+
+  .tagdot{display:inline-block;width:8px;height:8px;border-radius:50%;vertical-align:middle;margin-right:2px}
+  .footer{margin-top:14px;padding-top:9px;border-top:1px solid var(--line);display:flex;justify-content:space-between;font-size:8pt;color:var(--faint)}
+</style>
+</head>
+<body>
+
+  <div class="top">
+    <svg class="logo" viewBox="0 0 40 40" fill="none">
+      <rect width="40" height="40" rx="10" fill="#0C6D7D"/>
+      <path d="M20 9c-6 3-9 5-9 5s0 8 4 12 5 4 5 4 1 0 5-4 4-12 4-12-3-2-9-5Z" stroke="#EAF3F1" stroke-width="2"/>
+      <circle cx="20" cy="19.5" r="3.4" fill="#EAF3F1"/>
+    </svg>
+    <div class="brand"><b>Digital HSE</b><small>Reporting HSE automatisé</small></div>
+    <div class="rt"><b>Questions client</b>Rencontre de préparation · samedi<br>Entrées · Sorties · Méthode de calcul</div>
+  </div>
+
+  <div class="fill">
+    <div><span>Client / entreprise :</span></div>
+    <div><span>Interlocuteur HSE :</span></div>
+    <div><span>Date :</span></div>
+  </div>
+
+  <div class="intro">Objectif de la rencontre : cadrer précisément <b>les données d'entrée</b>, <b>le rapport de sortie</b> attendu et <b>la méthode de calcul</b> des indicateurs, pour livrer un outil réellement conforme à son besoin. Les réponses alimentent directement le schéma de données.</div>
+
+  <!-- 1 -->
+  <div class="sec">
+    <div class="sec-h"><h2>Les entrées · quelles données, comment</h2><span class="cat">Saisie / import</span></div>
+    <div class="q"><div class="qt"><span class="no">1.</span><span class="qx">Vous relevez les chiffres <em>par mois ou par trimestre</em> ? Combien de <em>sites / établissements</em> faut-il suivre ?</span></div><div class="notes"></div></div>
+    <div class="q"><div class="qt"><span class="no">2.</span><span class="qx">Pour les <em>déchets</em> : quelle <em>unité</em> par type (tonnes, m³, litres) ? La quantité vient d'où (pesée, bordereaux, prestataire d'enlèvement) ?</span></div><div class="notes"></div></div>
+    <div class="q"><div class="qt"><span class="no">3.</span><span class="qx">Pour les <em>effectifs</em> : à quelle <em>date de référence</em> (fin de mois ? moyenne ?) ? On garde national / expatrié seul, ou aussi genre / âge / ancienneté ?</span></div><div class="notes"></div></div>
+    <div class="q"><div class="qt"><span class="no">4.</span><span class="qx">Votre <em>définition d'un « accident avec arrêt »</em> (à partir de combien de jours ?) et d'un <em>« presqu'accident »</em> ?</span></div><div class="notes"></div></div>
+    <div class="q"><div class="qt"><span class="no">5.</span><span class="qx">Avez-vous déjà des <em>fichiers Excel</em> de reporting ? &nbsp;→ nous en fournir <em>un exemplaire réel anonymisé</em> pour caler l'import.</span></div><div class="notes"></div></div>
+    <div class="q"><div class="qt"><span class="no">6.</span><span class="qx">Pour tracer les courbes d'évolution : jusqu'où remonte <em>l'historique disponible</em> ?</span></div><div class="notes"></div></div>
+  </div>
+
+  <!-- 2 -->
+  <div class="sec">
+    <div class="sec-h"><h2>Les sorties · le rapport attendu</h2><span class="cat">Rapport / export</span></div>
+    <div class="q"><div class="qt"><span class="no">7.</span><span class="qx">Le rapport final part <em>à qui</em> (direction, maison-mère, auditeur, inspection du travail) et <em>à quelle fréquence</em> ?</span></div><div class="notes"></div></div>
+    <div class="q"><div class="qt"><span class="no">8.</span><span class="qx">Avez-vous un <em>modèle de rapport actuel</em> à respecter (plan type, charte) ? &nbsp;→ nous en fournir <em>un exemplaire</em>.</span></div><div class="notes"></div></div>
+    <div class="q"><div class="qt"><span class="no">9.</span><span class="qx">Quels <em>référentiels réellement exigés</em> de vous : ISO 45001, ISO 14001, GRI, ou exigences locales (administration béninoise) ?</span></div><div class="notes"></div></div>
+    <div class="q"><div class="qt"><span class="no">10.</span><span class="qx">Format préféré : <em>PDF</em> (envoi), <em>Word</em> (retouche), <em>Excel</em> (données) ? Besoin de logo / signature ?</span></div><div class="notes"></div></div>
+  </div>
+
+  <!-- 3 -->
+  <div class="sec">
+    <div class="sec-h"><h2>La méthode · comment calculer</h2><span class="cat">Indicateurs</span></div>
+    <div class="q"><div class="qt"><span class="no">11.</span><span class="qx">Convention <em>TF / TG</em> par million / millier d'heures : confirmée ? Avez-vous des <em>objectifs chiffrés</em> internes (seuils, cibles) ?</span></div><div class="notes"></div></div>
+    <div class="q"><div class="qt"><span class="no">12.</span><span class="qx"><em>Heures travaillées</em> : obtenues comment (paie, pointage) ? Heures supplémentaires incluses ?</span></div><div class="notes"></div></div>
+    <div class="q"><div class="qt"><span class="no">13.</span><span class="qx"><em>Taux de valorisation des déchets</em> : quelle définition, et qui décide ce qui est « valorisé » ?</span></div><div class="notes"></div></div>
+    <div class="q"><div class="qt"><span class="no">14.</span><span class="qx">Voulez-vous un <em>calcul d'émissions GES</em> (avec facteurs d'émission), ou seulement le suivi des consommations ?</span></div><div class="notes"></div></div>
+    <div class="q"><div class="qt"><span class="no">15.</span><span class="qx">Quels <em>seuils « normaux »</em> par indicateur, pour paramétrer les alertes de valeurs aberrantes ?</span></div><div class="notes"></div></div>
+  </div>
+
+  <!-- 4 -->
+  <div class="sec">
+    <div class="sec-h"><h2>Transverse · accès &amp; sécurité</h2><span class="cat">Comptes / RLS</span></div>
+    <div class="q"><div class="qt"><span class="no">16.</span><span class="qx">Combien d'<em>utilisateurs</em>, et quels <em>rôles</em> (qui saisit, qui valide, qui consulte le rapport) ?</span></div><div class="notes"></div></div>
+    <div class="q"><div class="qt"><span class="no">17.</span><span class="qx"><em>Confidentialité des données</em> : où héberger, qui peut y accéder (conformité APDP Bénin) ?</span></div><div class="notes"></div></div>
+  </div>
+
+  <div class="footer"><span>NEBULA Agency · Digital HSE</span><span>Préparation rencontre client</span></div>
+</body>
+</html>

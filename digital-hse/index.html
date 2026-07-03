@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Digital HSE · Cockpit Sécurité</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body data-page="cockpit">
+<div class="app">
+  <aside class="rail" id="rail"></aside>
+  <main class="page">
+
+    <header class="chead">
+      <div>
+        <div class="eye">Cockpit · Sécurité</div>
+        <h1>Vue de contrôle HSE</h1>
+        <div class="sub">Trimestre T2 2026 · référentiel ISO 45001 · convention OIT</div>
+      </div>
+      <div class="spacer"></div>
+      <button class="selector" onclick="VIGIE.toast('Sélecteur multi-sites (démo)')"><svg viewBox="0 0 24 24"><path d="M12 21c5-3 7-7 7-11a7 7 0 0 0-14 0c0 4 2 8 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>Usine de Cotonou</button>
+      <button class="selector" onclick="VIGIE.toast('Sélecteur de période (démo)')"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 9h16M8 3v4m8-4v4"/></svg>T2 2026</button>
+      <span class="chip-ok"><span class="d"></span>Données validées · 3 juil.</span>
+      <a class="btn btn-p" href="rapports.html"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>Générer le rapport</a>
+    </header>
+
+    <!-- SIGNATURE -->
+    <section class="board rv">
+      <div class="board-main">
+        <div class="board-lbl"><span class="lamp"></span>Jours sans accident avec arrêt</div>
+        <div class="flaps" id="flaps" aria-label="128 jours sans accident avec arrêt">
+          <div class="flap"><span>1</span></div><div class="flap"><span>2</span></div><div class="flap"><span>8</span></div>
+        </div>
+      </div>
+      <div class="board-side">
+        <div class="unit">La barre des 6 mois est proche. Objectif groupe tenu.</div>
+        <div class="board-meta">
+          <div class="rec">Record du site<b>214 j</b></div>
+          <div>Dernier arrêt<b>26 fév. 2026</b></div>
+          <div>Objectif année<b>≥ 180 j</b></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KPI LAMPS -->
+    <section class="lamps">
+      <article class="lamp-card rv">
+        <div class="lamp-top"><span class="lamp-name">Taux de fréquence (TF)</span><span class="lamp-led led-safe"></span></div>
+        <div class="lamp-val">2,1</div>
+        <div class="lamp-foot"><span class="delta d-good"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 7 17 17M17 17V9m0 8H9"/></svg>−18 %</span><span class="lamp-note">vs T1 · sous l'objectif 2,5</span></div>
+      </article>
+      <article class="lamp-card rv">
+        <div class="lamp-top"><span class="lamp-name">Taux de gravité (TG)</span><span class="lamp-led led-caution"></span></div>
+        <div class="lamp-val">0,08</div>
+        <div class="lamp-foot"><span class="delta d-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 17 17 7M17 7v8M17 7H9"/></svg>+5 %</span><span class="lamp-note">vs T1 · à surveiller</span></div>
+      </article>
+      <article class="lamp-card rv">
+        <div class="lamp-top"><span class="lamp-name">Presqu'accidents remontés</span><span class="lamp-led led-safe"></span></div>
+        <div class="lamp-val">34</div>
+        <div class="lamp-foot"><span class="delta d-good"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 17 17 7M17 7v8M17 7H9"/></svg>+21 %</span><span class="lamp-note">bonne culture de déclaration</span></div>
+      </article>
+      <article class="lamp-card rv">
+        <div class="lamp-top"><span class="lamp-name">Accidents avec arrêt</span><span class="lamp-led led-danger"></span></div>
+        <div class="lamp-val">1<small>/ trim.</small></div>
+        <div class="lamp-foot"><span class="delta d-bad">7 j perdus</span><span class="lamp-note">atelier conditionnement</span></div>
+      </article>
+    </section>
+
+    <!-- PANELS -->
+    <section class="panels">
+      <div class="col">
+        <div class="panel rv">
+          <div class="panel-h"><h3>Évolution TF &amp; TG</h3><div class="spacer"></div>
+            <div class="chipset">
+              <button class="fchip on" onclick="VIGIE.pick(this)">6 trim.</button>
+              <button class="fchip" onclick="VIGIE.pick(this)">12 mois</button>
+              <button class="fchip" onclick="VIGIE.pick(this)">Année</button>
+            </div>
+            <button class="icon-btn" title="Exporter PNG" onclick="VIGIE.toast('Export PNG (démo)')"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg></button>
+            <button class="icon-btn" title="Exporter SVG" onclick="VIGIE.toast('Export SVG (démo)')"><svg viewBox="0 0 24 24"><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3M8 8l4-4 4 4M12 4v12"/></svg></button>
+          </div>
+          <div class="panel-b">
+            <svg class="chart" viewBox="0 0 576 250" role="img" aria-label="Le taux de fréquence baisse de 4,2 à 2,1 sur six trimestres">
+              <g class="grid-l"><line x1="44" y1="16" x2="560" y2="16"/><line x1="44" y1="59" x2="560" y2="59"/><line x1="44" y1="102" x2="560" y2="102"/><line x1="44" y1="145" x2="560" y2="145"/><line x1="44" y1="188" x2="560" y2="188"/></g>
+              <g class="axis-t" text-anchor="end"><text x="38" y="20">4,5</text><text x="38" y="106">2,3</text><text x="38" y="192">0</text></g>
+              <g class="axis-t" text-anchor="middle"><text x="44" y="210">T1·25</text><text x="144" y="210">T2·25</text><text x="244" y="210">T3·25</text><text x="344" y="210">T4·25</text><text x="444" y="210">T1·26</text><text x="544" y="210">T2·26</text></g>
+              <polyline class="ser" style="stroke:#E0930F;opacity:.85;stroke-dasharray:4 4" points="44,40.9 144,53.3 244,78.1 344,84.4 444,95.5 544,90.6"/>
+              <polyline class="ser" style="stroke:#0C6D7D" points="44,27.6 144,50.8 244,70.1 344,77.9 444,89.5 544,108.8"/>
+              <g><circle class="dot" cx="44" cy="27.6" r="3.5" fill="#0C6D7D"/><circle class="dot" cx="144" cy="50.8" r="3.5" fill="#0C6D7D"/><circle class="dot" cx="244" cy="70.1" r="3.5" fill="#0C6D7D"/><circle class="dot" cx="344" cy="77.9" r="3.5" fill="#0C6D7D"/><circle class="dot" cx="444" cy="89.5" r="3.5" fill="#0C6D7D"/><circle class="dot" cx="544" cy="108.8" r="4.5" fill="#0C6D7D"/></g>
+              <line x1="44" y1="82.4" x2="560" y2="82.4" stroke="#C5342A" stroke-width="1.2" stroke-dasharray="5 5" opacity=".55"/>
+              <text x="556" y="78" class="axis-t" text-anchor="end" fill="#C5342A">objectif 2,5</text>
+            </svg>
+            <div class="legend"><span><i style="background:#0C6D7D"></i>Taux de fréquence (TF)</span><span><i style="background:#E0930F"></i>Taux de gravité (TG, ×10)</span><span><i style="background:#C5342A"></i>Objectif groupe</span></div>
+          </div>
+        </div>
+        <div class="panel rv">
+          <div class="panel-h"><h3>Presqu'accidents par type</h3><div class="spacer"></div><button class="fchip on" onclick="VIGIE.pick(this)">Type</button><button class="fchip" onclick="VIGIE.pick(this)">Zone</button></div>
+          <div class="panel-b"><div class="donut-wrap">
+            <svg class="donut" width="140" height="140" viewBox="0 0 140 140" role="img" aria-label="Répartition des 34 presqu'accidents par type">
+              <circle cx="70" cy="70" r="52" stroke="#0C6D7D" stroke-dasharray="115.3 211.4"/>
+              <circle cx="70" cy="70" r="52" stroke="#3E8C99" stroke-dasharray="76.9 249.8" stroke-dashoffset="-115.3"/>
+              <circle cx="70" cy="70" r="52" stroke="#89B4BB" stroke-dasharray="67.3 259.4" stroke-dashoffset="-192.2"/>
+              <circle cx="70" cy="70" r="52" stroke="#BCD6DA" stroke-dasharray="67.3 259.4" stroke-dashoffset="-259.5"/>
+            </svg>
+            <div class="dlegend">
+              <div><i style="background:#0C6D7D"></i>Chutes / glissades <b>12</b></div>
+              <div><i style="background:#3E8C99"></i>EPI non porté <b>8</b></div>
+              <div><i style="background:#89B4BB"></i>Manutention <b>7</b></div>
+              <div><i style="background:#BCD6DA"></i>Circulation engins <b>7</b></div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+
+      <aside class="panel ai rv">
+        <div class="panel-h"><span class="ai-badge"><span class="p"></span>Lecture des chiffres</span></div>
+        <div class="ai-body">
+          <p>Le <strong>taux de fréquence recule de 18 %</strong> (<span class="ai-key">2,6 → 2,1</span>) et repasse <strong>sous l'objectif groupe (2,5)</strong> pour la première fois en 12 mois. Sur un an, le TF a été divisé par deux (<span class="ai-key">4,2 → 2,1</span>).</p>
+          <p><strong>Point de vigilance :</strong> le taux de gravité remonte de 5 % (<span class="ai-key">0,076 → 0,080</span>). L'unique accident avec arrêt du trimestre — <strong>7 jours perdus</strong>, atelier de conditionnement — alourdit à lui seul la gravité malgré la baisse de fréquence : l'événement est plus <em>sévère</em>, pas plus <em>fréquent</em>.</p>
+          <p><strong>Signal positif :</strong> +21 % de presqu'accidents remontés (34). Une hausse des déclarations traduit une meilleure culture de sécurité, pas une dégradation.</p>
+          <div class="reco"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg><div><b>Recommandation :</b> cibler la sévérité plutôt que le volume. Arbre des causes sur l'accident du conditionnement, et plan « sols &amp; circulation » — les chutes/glissades sont le 1<sup>er</sup> type de presqu'accident (12 sur 34).</div></div>
+        </div>
+        <div class="ai-foot"><span class="tag-norm">✓ ISO 45001 · §9.1 Surveillance</span><span class="ai-src">Généré par Claude Sonnet · ancré sur les données du site</span></div>
+      </aside>
+    </section>
+
+    <div class="foot-note">Maquette de direction Digital HSE · écran « Cockpit Sécurité »<span class="d"></span>données fictives réalistes<span class="d"></span>socle unifié Social / Environnement / Sécurité</div>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+<script src="assets/app.js"></script>
+<script>VIGIE.rail('cockpit');VIGIE.init();</script>
+</body>
+</html>

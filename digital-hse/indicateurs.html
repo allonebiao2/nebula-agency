@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Digital HSE · Indicateurs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body data-page="ind">
+<div class="app">
+  <aside class="rail" id="rail"></aside>
+  <main class="page">
+
+    <header class="chead">
+      <div>
+        <div class="eye">Référentiel · socle unifié</div>
+        <h1>Tous les indicateurs, une seule base</h1>
+        <div class="sub">Social, environnement et sécurité dans un modèle commun : les croisements deviennent possibles, et les catégories restent extensibles.</div>
+      </div>
+    </header>
+
+    <!-- croisement teaser -->
+    <div class="panel ai rv" style="margin-bottom:16px">
+      <div class="panel-b" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <span class="ai-badge"><span class="p"></span>Croisement</span>
+        <span style="font-size:13.5px;color:#2c383a">Parce que les 3 mondes partagent la même base, Digital HSE relie <span class="tag t-sec">TF · sécurité</span> aux <span class="tag t-soc">heures de sensibilisation · social</span> sur un même site, et dans le temps.</span>
+        <div class="spacer"></div>
+        <button class="btn btn-g" onclick="VIGIE.toast('Analyse croisée sensibilisation × accidents (démo)')"><svg viewBox="0 0 24 24"><path d="M4 4v16h16M8 14l3-4 3 3 4-6"/></svg>Voir le croisement</button>
+      </div>
+    </div>
+
+    <div class="panel rv">
+      <div class="panel-h">
+        <div class="chipset" id="catchips">
+          <button class="fchip on" onclick="filterCat(this,'all')">Tous</button>
+          <button class="fchip" onclick="filterCat(this,'soc')">Social</button>
+          <button class="fchip" onclick="filterCat(this,'env')">Environnement</button>
+          <button class="fchip" onclick="filterCat(this,'sec')">Sécurité</button>
+        </div>
+        <div class="spacer"></div>
+        <div class="selector" style="padding:0 10px">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="q" placeholder="Rechercher un indicateur…" oninput="filterQ(this.value)"
+            style="border:none;outline:none;background:none;font-family:inherit;font-size:13px;padding:9px 4px;width:190px;color:var(--ink)">
+        </div>
+      </div>
+      <div class="tablewrap" style="border:none;border-radius:0">
+        <table class="dtable" id="cat">
+          <thead><tr><th>Code</th><th>Indicateur</th><th>Catégorie</th><th>Unité</th><th>Référentiel</th><th>Type</th><th>Périodicité</th></tr></thead>
+          <tbody>
+            <!-- SOCIAL -->
+            <tr data-cat="soc"><td class="mono">EFF_NAT</td><td>Effectif national</td><td><span class="tag t-soc">Social</span></td><td class="mono">nb</td><td><span class="tag-ref">GRI</span></td><td><span class="tag-type">base</span></td><td>Mensuel</td></tr>
+            <tr data-cat="soc"><td class="mono">EFF_EXP</td><td>Effectif expatrié</td><td><span class="tag t-soc">Social</span></td><td class="mono">nb</td><td><span class="tag-ref">GRI</span></td><td><span class="tag-type">base</span></td><td>Mensuel</td></tr>
+            <tr data-cat="soc"><td class="mono">CDI</td><td>Salariés en CDI</td><td><span class="tag t-soc">Social</span></td><td class="mono">nb</td><td><span class="tag-ref">GRI</span></td><td><span class="tag-type">base</span></td><td>Mensuel</td></tr>
+            <tr data-cat="soc"><td class="mono">CDD</td><td>Salariés en CDD</td><td><span class="tag t-soc">Social</span></td><td class="mono">nb</td><td><span class="tag-ref">GRI</span></td><td><span class="tag-type">base</span></td><td>Mensuel</td></tr>
+            <tr data-cat="soc"><td class="mono">STG</td><td>Stagiaires</td><td><span class="tag t-soc">Social</span></td><td class="mono">nb</td><td><span class="tag-ref">GRI</span></td><td><span class="tag-type">base</span></td><td>Mensuel</td></tr>
+            <tr data-cat="soc"><td class="mono">CNSS</td><td>Effectif déclaré CNSS</td><td><span class="tag t-soc">Social</span></td><td class="mono">%</td><td><span class="tag-ref">OIT</span></td><td><span class="tag-type calc">calculé</span></td><td>Mensuel</td></tr>
+            <tr data-cat="soc"><td class="mono">ASSUR</td><td>Effectif couvert (assurance)</td><td><span class="tag t-soc">Social</span></td><td class="mono">%</td><td><span class="tag-ref">GRI</span></td><td><span class="tag-type calc">calculé</span></td><td>Mensuel</td></tr>
+            <tr data-cat="soc"><td class="mono">VISITE_MED</td><td>Visites médicales réalisées</td><td><span class="tag t-soc">Social</span></td><td class="mono">nb</td><td><span class="tag-ref">ISO 45001</span></td><td><span class="tag-type">base</span></td><td>Mensuel</td></tr>
+            <!-- ENVIRONNEMENT -->
+            <tr data-cat="env"><td class="mono">DECH_MEN</td><td>Déchets ménagers</td><td><span class="tag t-env">Environ.</span></td><td class="mono">t</td><td><span class="tag-ref">ISO 14001</span></td><td><span class="tag-type">base</span></td><td>Mensuel</td></tr>
+            <tr data-cat="env"><td class="mono">EAU_USEE</td><td>Eaux usées</td><td><span class="tag t-env">Environ.</span></td><td class="mono">m³</td><td><span class="tag-ref">ISO 14001</span></td><td><span class="tag-type">base</span></td><td>Mensuel</td></tr>
+            <tr data-cat="env"><td class="mono">HUILE</td><td>Huiles usagées</td><td><span class="tag t-env">Environ.</span></td><td class="mono">L</td><td><span class="tag-ref">ISO 14001</span></td><td><span class="tag-type">base</span></td><td>Mensuel</td></tr>
+            <tr data-cat="env"><td class="mono">CARTON</td><td>Cartons</td><td><span class="tag t-env">Environ.</span></td><td class="mono">t</td><td><span class="tag-ref">ISO 14001</span></td><td><span class="tag-type">base</span></td><td>Mensuel</td></tr>
+            <tr data-cat="env"><td class="mono">PLASTIQUE</td><td>Plastiques</td><td><span class="tag t-env">Environ.</span></td><td class="mono">t</td><td><span class="tag-ref">ISO 14001</span></td><td><span class="tag-type">base</span></td><td>Mensuel</td></tr>
+            <tr data-cat="env"><td class="mono">DECH_TOT</td><td>Déchets produits (total)</td><td><span class="tag t-env">Environ.</span></td><td class="mono">t</td><td><span class="tag-ref">ISO 14001</span></td><td><span class="tag-type calc">calculé</span></td><td>Mensuel</td></tr>
+            <tr data-cat="env"><td class="mono">VALO</td><td>Taux de valorisation des déchets</td><td><span class="tag t-env">Environ.</span></td><td class="mono">%</td><td><span class="tag-ref">ISO 14001</span></td><td><span class="tag-type calc">calculé</span></td><td>Trimestriel</td></tr>
+            <!-- SÉCURITÉ -->
+            <tr data-cat="sec"><td class="mono">H_TRAV</td><td>Heures travaillées</td><td><span class="tag t-sec">Sécurité</span></td><td class="mono">h</td><td><span class="tag-ref">OIT</span></td><td><span class="tag-type">base</span></td><td>Mensuel</td></tr>
+            <tr data-cat="sec"><td class="mono">ACC_AA</td><td>Accidents avec arrêt</td><td><span class="tag t-sec">Sécurité</span></td><td class="mono">nb</td><td><span class="tag-ref">ISO 45001</span></td><td><span class="tag-type">base</span></td><td>Mensuel</td></tr>
+            <tr data-cat="sec"><td class="mono">ACC_SA</td><td>Accidents sans arrêt</td><td><span class="tag t-sec">Sécurité</span></td><td class="mono">nb</td><td><span class="tag-ref">ISO 45001</span></td><td><span class="tag-type">base</span></td><td>Mensuel</td></tr>
+            <tr data-cat="sec"><td class="mono">PRESQ</td><td>Presqu'accidents</td><td><span class="tag t-sec">Sécurité</span></td><td class="mono">nb</td><td><span class="tag-ref">ISO 45001</span></td><td><span class="tag-type">base</span></td><td>Mensuel</td></tr>
+            <tr data-cat="sec"><td class="mono">J_PERD</td><td>Journées perdues</td><td><span class="tag t-sec">Sécurité</span></td><td class="mono">j</td><td><span class="tag-ref">OIT</span></td><td><span class="tag-type">base</span></td><td>Mensuel</td></tr>
+            <tr data-cat="sec"><td class="mono">TF</td><td>Taux de fréquence</td><td><span class="tag t-sec">Sécurité</span></td><td class="mono">indice</td><td><span class="tag-ref">OIT</span></td><td><span class="tag-type calc">calculé</span></td><td>Mensuel</td></tr>
+            <tr data-cat="sec"><td class="mono">TG</td><td>Taux de gravité</td><td><span class="tag t-sec">Sécurité</span></td><td class="mono">indice</td><td><span class="tag-ref">OIT</span></td><td><span class="tag-type calc">calculé</span></td><td>Mensuel</td></tr>
+            <tr data-cat="sec"><td class="mono">SENSI_NB</td><td>Séances de sensibilisation</td><td><span class="tag t-sec">Sécurité</span></td><td class="mono">nb</td><td><span class="tag-ref">ISO 45001</span></td><td><span class="tag-type">base</span></td><td>Mensuel</td></tr>
+            <tr data-cat="sec"><td class="mono">SENSI_PART</td><td>Participants aux sensibilisations</td><td><span class="tag t-sec">Sécurité</span></td><td class="mono">nb</td><td><span class="tag-ref">ISO 45001</span></td><td><span class="tag-type">base</span></td><td>Mensuel</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="panel-b" style="border-top:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span class="hint" id="count" style="margin:0">24 indicateurs · 3 catégories</span>
+        <span class="tag-ref" title="Ajoutez un type de déchet, un contrat ou un indicateur sans refonte">✚ catégories extensibles</span>
+        <div class="spacer"></div>
+        <button class="btn btn-g" onclick="VIGIE.toast('Nouvel indicateur personnalisé (démo) — extensible sans refonte')"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Ajouter un indicateur</button>
+      </div>
+    </div>
+
+    <div class="foot-note">Écran « Indicateurs »<span class="d"></span>base commune = aucun silo<span class="d"></span>types de déchets / contrats / indicateurs extensibles<span class="d"></span>ISO 45001 · 14001 · GRI · OIT</div>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+<script src="assets/app.js"></script>
+<script>
+VIGIE.rail('ind');VIGIE.init();
+var rows=[].slice.call(document.querySelectorAll('#cat tbody tr')), curCat='all', curQ='';
+function apply(){var n=0;rows.forEach(function(r){
+  var okC=curCat==='all'||r.getAttribute('data-cat')===curCat;
+  var okQ=!curQ||r.textContent.toLowerCase().indexOf(curQ)>-1;
+  var show=okC&&okQ;r.style.display=show?'':'none';if(show)n++;});
+  document.getElementById('count').textContent=n+' indicateur'+(n>1?'s':'')+' affiché'+(n>1?'s':'');
+}
+function filterCat(b,c){var s=b.parentNode.children;for(var i=0;i<s.length;i++)s[i].classList.remove('on');b.classList.add('on');curCat=c;apply();}
+function filterQ(v){curQ=v.toLowerCase().trim();apply();}
+</script>
+</body>
+</html>

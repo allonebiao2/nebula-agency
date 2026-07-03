@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Digital HSE · Saisie &amp; Import</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body data-page="saisie">
+<div class="app">
+  <aside class="rail" id="rail"></aside>
+  <main class="page">
+
+    <header class="chead">
+      <div>
+        <div class="eye">Données · Saisie</div>
+        <h1>Alimenter Digital HSE, sans ressaisie</h1>
+        <div class="sub">Importez vos tableurs existants, ou saisissez au clavier. Chaque valeur est vérifiée et horodatée à l'enregistrement.</div>
+      </div>
+    </header>
+
+    <div class="tabs" role="tablist">
+      <button class="tab on" onclick="VIGIE.tab(this,'p-import')"><svg viewBox="0 0 24 24"><path d="M4 7V5h16v2M4 7l1 12h14l1-12M9 11v4m6-4v4"/></svg>Import Excel / CSV</button>
+      <button class="tab" onclick="VIGIE.tab(this,'p-form')"><svg viewBox="0 0 24 24"><path d="M4 6h10M4 12h16M4 18h7"/></svg>Saisie guidée</button>
+    </div>
+
+    <!-- IMPORT -->
+    <section id="p-import" class="tabpane on">
+      <div class="dropzone rv" style="margin-bottom:4px">
+        <div class="dz-ic"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0 4 4m-4-4-4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></div>
+        <h3>Glissez votre fichier ici</h3>
+        <p>Digital HSE reconnaît vos colonnes automatiquement et les rattache aux bons indicateurs.</p>
+        <div class="formats"><span class="fmt">.xlsx</span><span class="fmt">.xls</span><span class="fmt">.csv</span></div>
+      </div>
+
+      <div class="sumstrip rv">
+        <div class="sumbox"><div class="k">Lignes détectées</div><div class="v">142</div></div>
+        <div class="sumbox ok"><div class="k">Valides</div><div class="v">138</div></div>
+        <div class="sumbox warn"><div class="k">À vérifier</div><div class="v">3</div></div>
+        <div class="sumbox err"><div class="k">En erreur</div><div class="v">1</div></div>
+      </div>
+
+      <div class="panel rv">
+        <div class="panel-h">
+          <h3>Aperçu &amp; correspondance des colonnes</h3>
+          <div class="spacer"></div>
+          <span class="tag-ref">fichier : reporting_secu_T2.xlsx</span>
+          <button class="btn btn-g" onclick="VIGIE.toast('Correspondance des colonnes (démo)')"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Ajuster le mapping</button>
+        </div>
+        <div class="tablewrap" style="border:none;border-radius:0">
+          <table class="dtable">
+            <thead><tr><th>Site</th><th>Période</th><th>Heures travaillées</th><th>Acc. avec arrêt</th><th>Jours perdus</th><th>TF calculé</th><th>Contrôle</th></tr></thead>
+            <tbody>
+              <tr><td>Cotonou</td><td>T2 2026</td><td class="num">476 000</td><td class="num">1</td><td class="num">7</td><td class="num">2,1</td><td><span class="rowflag rf-ok"><span class="d"></span>OK</span></td></tr>
+              <tr><td>Porto-Novo</td><td>T2 2026</td><td class="num">218 400</td><td class="num">0</td><td class="num">0</td><td class="num">0,0</td><td><span class="rowflag rf-ok"><span class="d"></span>OK</span></td></tr>
+              <tr class="is-warn"><td>Parakou</td><td>T2 2026</td><td class="num">96 200</td><td class="num">2</td><td class="num">n/d</td><td class="num">20,8</td><td><span class="rowflag rf-warn"><span class="d"></span>Jours perdus manquants</span></td></tr>
+              <tr class="is-warn"><td>Bohicon</td><td>T2 2026</td><td class="num">54 000</td><td class="num">1</td><td class="num">410</td><td class="num">18,5</td><td><span class="rowflag rf-warn"><span class="d"></span>Valeur aberrante : 410 j</span></td></tr>
+              <tr class="is-err"><td>n/d</td><td>T2 2026</td><td class="num">0</td><td class="num">1</td><td class="num">3</td><td class="num">∞</td><td><span class="rowflag rf-err"><span class="d"></span>Heures = 0 · division impossible</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="panel-b" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line)">
+          <span class="hint" style="margin:0">Digital HSE calcule TF/TG à votre place et signale les incohérences <strong style="color:var(--caution)">avant</strong> l'enregistrement.</span>
+          <div class="spacer"></div>
+          <button class="btn btn-g" onclick="VIGIE.toast('Les 4 lignes à corriger sont isolées (démo)')">Corriger plus tard</button>
+          <button class="btn btn-p" onclick="VIGIE.toast('138 lignes importées, validées &amp; horodatées (démo)')"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Importer 138 lignes valides</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SAISIE GUIDÉE -->
+    <section id="p-form" class="tabpane">
+      <div class="grid2">
+        <div class="panel rv">
+          <div class="panel-h">
+            <h3>Saisie guidée</h3>
+            <div class="spacer"></div>
+            <div class="chipset">
+              <button class="fchip" onclick="catForm(this,'f-soc')">Social</button>
+              <button class="fchip" onclick="catForm(this,'f-env')">Environnement</button>
+              <button class="fchip on" onclick="catForm(this,'f-sec')">Sécurité</button>
+            </div>
+          </div>
+          <div class="panel-b">
+            <div class="fieldset-t" style="margin-top:0">Contexte</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div class="field"><label>Site</label><select class="select"><option>Usine de Cotonou</option><option>Porto-Novo</option><option>Parakou</option></select></div>
+              <div class="field"><label>Période</label><select class="select"><option>Juin 2026</option><option>Mai 2026</option><option>T2 2026</option></select></div>
+            </div>
+
+            <!-- SÉCURITÉ -->
+            <div id="f-sec" class="subpane on">
+              <div class="fieldset-t">Sécurité · base</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                <div class="field"><label>Heures travaillées <span class="u">(h)</span></label><input class="input" value="476 000" inputmode="numeric"></div>
+                <div class="field"><label>Effectif moyen</label><input class="input" value="312" inputmode="numeric"></div>
+              </div>
+              <div class="fieldset-t">Événements &amp; sensibilisation</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                <div class="field"><label>Accidents avec arrêt</label><input class="input" value="1" inputmode="numeric"></div>
+                <div class="field"><label>Accidents sans arrêt</label><input class="input" value="3" inputmode="numeric"></div>
+                <div class="field"><label>Journées perdues</label><input class="input" value="7" inputmode="numeric"></div>
+                <div class="field"><label>Presqu'accidents</label><input class="input" value="34" inputmode="numeric"></div>
+                <div class="field"><label>Séances de sensibilisation</label><input class="input" value="6" inputmode="numeric"></div>
+                <div class="field"><label>Participants</label><input class="input" value="248" inputmode="numeric"></div>
+              </div>
+            </div>
+
+            <!-- ENVIRONNEMENT -->
+            <div id="f-env" class="subpane">
+              <div class="fieldset-t">Déchets par type <span class="u" style="text-transform:none;letter-spacing:0;color:var(--faint)">· liste extensible</span></div>
+              <div id="wlist">
+                <div class="wrow"><div class="field"><label>Type</label><select class="select"><option>Déchets ménagers</option><option>Cartons</option><option>Plastiques</option><option>Huiles usagées</option><option>Eaux usées</option><option>Autre…</option></select></div><div class="field"><label>Quantité <span class="u">(t)</span></label><input class="input" value="8,5"></div><button class="wdel" title="Retirer" onclick="delWaste(this)"><svg viewBox="0 0 24 24"><path d="M5 7h14M9 7V5h6v2M7 7l1 12h8l1-12"/></svg></button></div>
+                <div class="wrow"><div class="field"><select class="select"><option>Cartons</option><option>Déchets ménagers</option><option>Plastiques</option><option>Huiles usagées</option><option>Eaux usées</option></select></div><div class="field"><input class="input" value="3,6"></div><button class="wdel" title="Retirer" onclick="delWaste(this)"><svg viewBox="0 0 24 24"><path d="M5 7h14M9 7V5h6v2M7 7l1 12h8l1-12"/></svg></button></div>
+                <div class="wrow"><div class="field"><select class="select"><option>Plastiques</option><option>Déchets ménagers</option><option>Cartons</option><option>Huiles usagées</option><option>Eaux usées</option></select></div><div class="field"><input class="input" value="2,5"></div><button class="wdel" title="Retirer" onclick="delWaste(this)"><svg viewBox="0 0 24 24"><path d="M5 7h14M9 7V5h6v2M7 7l1 12h8l1-12"/></svg></button></div>
+              </div>
+              <button class="addbtn" onclick="addWaste()"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Ajouter un type de déchet</button>
+              <div class="fieldset-t">Autres flux</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                <div class="field"><label>Eaux usées <span class="u">(m³)</span></label><input class="input" value="240"></div>
+                <div class="field"><label>Consommation d'énergie <span class="u">(kWh)</span></label><input class="input" value="58 400"></div>
+              </div>
+            </div>
+
+            <!-- SOCIAL -->
+            <div id="f-soc" class="subpane">
+              <div class="fieldset-t">Effectifs</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                <div class="field"><label>Effectif national</label><input class="input" value="312" inputmode="numeric"></div>
+                <div class="field"><label>Effectif expatrié</label><input class="input" value="28" inputmode="numeric"></div>
+              </div>
+              <div class="fieldset-t">Contrats <span class="u" style="text-transform:none;letter-spacing:0;color:var(--faint)">· types extensibles</span></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+                <div class="field"><label>CDI</label><input class="input" value="265" inputmode="numeric"></div>
+                <div class="field"><label>CDD</label><input class="input" value="52" inputmode="numeric"></div>
+                <div class="field"><label>Stagiaires</label><input class="input" value="23" inputmode="numeric"></div>
+              </div>
+              <button class="addbtn" onclick="VIGIE.toast('Ajouter un type de contrat (démo) — extensible sans refonte')"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Ajouter un type de contrat</button>
+              <div class="fieldset-t">Couverture &amp; santé</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                <div class="field"><label>Effectif déclaré CNSS</label><input class="input" value="340" inputmode="numeric"></div>
+                <div class="field"><label>Visites médicales réalisées</label><input class="input" value="326" inputmode="numeric"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="panel rv">
+            <div class="panel-h"><span class="ai-badge"><span class="p" style="animation:none"></span>Calcul automatique</span></div>
+            <div class="panel-b">
+              <div class="calc-preview" style="margin-top:0" id="calc">
+                <div>Taux de fréquence (TF)<b>2,1</b></div>
+                <div>Taux de gravité (TG)<b>0,015</b></div>
+              </div>
+              <p class="hint" style="margin-top:12px">Les indicateurs dérivés (TF, TG, totaux, taux) sont recalculés en direct à chaque saisie, jamais tapés à la main.</p>
+            </div>
+          </div>
+          <div class="panel rv">
+            <div class="panel-b" style="display:flex;flex-direction:column;gap:10px">
+              <div class="chip-ok" style="justify-content:center"><span class="d"></span>Sera horodaté : 3 juil. 2026</div>
+              <button class="btn btn-p" style="justify-content:center;padding:13px" onclick="VIGIE.toast('Saisie enregistrée, validée &amp; horodatée (démo)')"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Enregistrer la période</button>
+              <button class="btn btn-g" style="justify-content:center;padding:13px" onclick="VIGIE.toast('Brouillon sauvegardé (démo)')">Enregistrer en brouillon</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="foot-note">Écran « Saisie &amp; Import »<span class="d"></span>validation à la volée (bornes, cohérence, valeurs aberrantes)<span class="d"></span>zéro ressaisie · tout horodaté</div>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+<script src="assets/app.js"></script>
+<script>
+VIGIE.rail('imp');VIGIE.init();
+function catForm(btn,id){
+  var s=btn.parentNode.children;for(var i=0;i<s.length;i++)s[i].classList.remove('on');btn.classList.add('on');
+  var p=document.querySelectorAll('#p-form .subpane');for(var j=0;j<p.length;j++)p[j].classList.remove('on');
+  document.getElementById(id).classList.add('on');
+  var labels={'f-sec':'Calcul automatique · Sécurité (OIT)','f-env':'Calcul automatique · Environnement','f-soc':'Calcul automatique · Social'};
+  var calc={'f-sec':'<div>Taux de fréquence (TF)<b>2,1</b></div><div>Taux de gravité (TG)<b>0,015</b></div>',
+            'f-env':'<div>Total déchets (t)<b>14,6</b></div><div>Taux de valorisation<b>62 %</b></div>',
+            'f-soc':'<div>Effectif total<b>340</b></div><div>Part en CDI<b>78 %</b></div>'};
+  document.getElementById('calc').innerHTML=calc[id];
+}
+function addWaste(){
+  var list=document.getElementById('wlist');
+  var row=document.createElement('div');row.className='wrow';
+  row.innerHTML='<div class="field"><select class="select"><option>Choisir un type…</option><option>Déchets ménagers</option><option>Cartons</option><option>Plastiques</option><option>Huiles usagées</option><option>Eaux usées</option><option>Métaux</option><option>Autre…</option></select></div><div class="field"><input class="input" placeholder="0,0"></div><button class="wdel" title="Retirer" onclick="delWaste(this)"><svg viewBox="0 0 24 24"><path d="M5 7h14M9 7V5h6v2M7 7l1 12h8l1-12"/></svg></button>';
+  list.appendChild(row);VIGIE.toast('Nouveau type de déchet ajouté (extensible)');
+}
+function delWaste(b){var r=b.closest('.wrow');if(r)r.parentNode.removeChild(r);}
+</script>
+</body>
+</html>

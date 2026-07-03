@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Digital HSE · Rapport</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  .cfg{display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;font-size:13.5px;margin-bottom:8px;cursor:pointer;transition:.15s}
+  .cfg:hover{border-color:var(--line2);background:var(--paper)}
+  .cfg input{accent-color:var(--teal);width:16px;height:16px;flex:none}
+  .cfg .rt{margin-left:auto}
+  .rp-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:6px 0 4px}
+  .rp-kpi{border:1px solid var(--line);border-radius:11px;padding:11px 12px}
+  .rp-kpi .k{font-size:11px;color:var(--mid)} .rp-kpi .v{font-family:'Archivo';font-weight:700;font-size:22px;margin-top:2px}
+  @media(max-width:620px){.rp-kpis{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body data-page="rep">
+<div class="app">
+  <aside class="rail" id="rail"></aside>
+  <main class="page">
+
+    <header class="chead">
+      <div>
+        <div class="eye">Finalité · Rapport</div>
+        <h1>Rapport HSE, prêt à partager</h1>
+        <div class="sub">Structuré selon vos référentiels, interprété par l'IA, exporté en formats ouverts.</div>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn btn-p" onclick="VIGIE.toast('Export PDF (démo)')"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>PDF</button>
+      <button class="btn btn-g" onclick="VIGIE.toast('Export Word / DOCX (démo)')">DOCX</button>
+      <button class="btn btn-g" onclick="VIGIE.toast('Export Excel / XLSX (démo)')">XLSX</button>
+    </header>
+
+    <div class="grid2">
+      <!-- CONFIG -->
+      <div class="panel rv">
+        <div class="panel-h"><h3>Composer le rapport</h3></div>
+        <div class="panel-b">
+          <div class="fieldset-t" style="margin-top:0">Périmètre</div>
+          <label class="cfg"><input type="checkbox" checked> Usine de Cotonou</label>
+          <label class="cfg"><input type="checkbox" checked> Site de Porto-Novo</label>
+          <label class="cfg"><input type="checkbox"> Site de Parakou</label>
+
+          <div class="fieldset-t">Période</div>
+          <select class="select"><option>T2 2026 (avril · juin)</option><option>S1 2026</option><option>Année 2025</option></select>
+
+          <div class="fieldset-t">Référentiels</div>
+          <label class="cfg"><input type="checkbox" checked> ISO 45001 <span class="rt tag-ref">Sécurité</span></label>
+          <label class="cfg"><input type="checkbox" checked> Indicateurs OIT / BIT <span class="rt tag-ref">Sécurité</span></label>
+          <label class="cfg"><input type="checkbox"> GRI 403 <span class="rt tag-ref">Social</span></label>
+          <label class="cfg"><input type="checkbox"> ISO 14001 <span class="rt tag-ref">Environ.</span></label>
+
+          <div class="fieldset-t">Sections</div>
+          <label class="cfg"><input type="checkbox" checked> Résumé exécutif</label>
+          <label class="cfg"><input type="checkbox" checked> Indicateurs clés</label>
+          <label class="cfg"><input type="checkbox" checked> Interprétation IA</label>
+          <label class="cfg"><input type="checkbox" checked> Tableau de conformité</label>
+
+          <button class="btn btn-p" style="width:100%;justify-content:center;padding:13px;margin-top:16px" onclick="VIGIE.toast('Rapport régénéré (démo)')"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5m2-3v5h-5M20 12a8 8 0 0 1-14 5m-2 3v-5h5"/></svg>Régénérer l'aperçu</button>
+        </div>
+      </div>
+
+      <!-- PREVIEW -->
+      <div class="report-doc rv">
+        <div class="rp-cover">
+          <div class="k">Rapport de performance HSE</div>
+          <h2>Sécurité · T2 2026</h2>
+          <div style="font-size:14px;color:#CFE0DB">Usine de Cotonou &amp; site de Porto-Novo</div>
+          <div class="meta"><span>Édité le 3 juillet 2026</span><span>·</span><span>528 400 h travaillées</span><span>·</span><span>2 sites</span></div>
+          <div class="refs"><span>ISO 45001</span><span>OIT / BIT</span><span>Convention million d'heures</span></div>
+        </div>
+        <div class="rp-body">
+          <div class="rp-sec">
+            <div class="sh"><span class="no">1</span><h3>Résumé exécutif</h3></div>
+            <p>Le trimestre confirme une <strong>tendance de fond favorable en sécurité</strong> : le taux de fréquence baisse de 18 % et repasse sous l'objectif groupe. Un point de vigilance subsiste sur la gravité, tirée par un accident unique mais sévère. La culture de déclaration progresse nettement.</p>
+          </div>
+
+          <div class="rp-sec">
+            <div class="sh"><span class="no">2</span><h3>Indicateurs clés</h3></div>
+            <div class="rp-kpis">
+              <div class="rp-kpi"><div class="k">TF</div><div class="v" style="color:var(--safe)">2,1</div></div>
+              <div class="rp-kpi"><div class="k">TG</div><div class="v" style="color:var(--caution)">0,08</div></div>
+              <div class="rp-kpi"><div class="k">Acc. avec arrêt</div><div class="v">1</div></div>
+              <div class="rp-kpi"><div class="k">Presqu'acc.</div><div class="v">34</div></div>
+            </div>
+            <svg class="chart" viewBox="0 0 520 150" role="img" aria-label="Baisse du taux de fréquence sur six trimestres" style="margin-top:8px">
+              <g class="grid-l"><line x1="10" y1="20" x2="510" y2="20"/><line x1="10" y1="70" x2="510" y2="70"/><line x1="10" y1="120" x2="510" y2="120"/></g>
+              <polyline class="ser" style="stroke:#0C6D7D" points="10,28 110,52 210,74 310,84 410,100 510,118"/>
+              <g fill="#0C6D7D"><circle cx="10" cy="28" r="3"/><circle cx="110" cy="52" r="3"/><circle cx="210" cy="74" r="3"/><circle cx="310" cy="84" r="3"/><circle cx="410" cy="100" r="3"/><circle cx="510" cy="118" r="4"/></g>
+              <line x1="10" y1="88" x2="510" y2="88" stroke="#C5342A" stroke-width="1" stroke-dasharray="5 5" opacity=".5"/>
+            </svg>
+          </div>
+
+          <div class="rp-sec">
+            <div class="sh"><span class="no">3</span><h3>Analyse &amp; interprétation</h3></div>
+            <p>Sur T2 2026, le taux de fréquence recule de 18 % (2,6 → 2,1) et repasse sous l'objectif groupe (2,5) pour la première fois en douze mois. Sur un an, il a été divisé par deux (4,2 → 2,1).</p>
+            <p>Le taux de gravité progresse toutefois de 5 % (0,076 → 0,080), sous l'effet d'un accident avec arrêt de 7 jours perdus à l'atelier de conditionnement : un événement plus sévère, pas plus fréquent. La hausse des presqu'accidents remontés (+21 %) traduit une meilleure culture de déclaration.</p>
+            <div class="reco" style="margin-top:4px"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg><div><b>Recommandation :</b> prioriser la sévérité (arbre des causes sur l'accident du conditionnement) et un plan « sols &amp; circulation » sur les chutes/glissades, 1<sup>er</sup> type de presqu'accident.</div></div>
+          </div>
+
+          <div class="rp-sec">
+            <div class="sh"><span class="no">4</span><h3>Conformité aux référentiels</h3></div>
+            <table class="conf-table">
+              <thead><tr><th>Exigence</th><th>Indicateurs</th><th>Couverture</th></tr></thead>
+              <tbody>
+                <tr><td>ISO 45001 · §9.1 Surveillance</td><td>TF, TG, presqu'accidents</td><td><span class="rowflag rf-ok"><span class="d"></span>Couvert</span></td></tr>
+                <tr><td>ISO 45001 · §10.2 Incidents</td><td>Accidents avec arrêt, jours perdus</td><td><span class="rowflag rf-ok"><span class="d"></span>Couvert</span></td></tr>
+                <tr><td>OIT / BIT · Indicateurs de base</td><td>TF, TG (million / millier d'heures)</td><td><span class="rowflag rf-ok"><span class="d"></span>Couvert</span></td></tr>
+                <tr><td>ISO 14001 · Environnement</td><td>Eau, énergie, déchets, GES</td><td><span class="rowflag rf-warn"><span class="d"></span>Pilier à activer</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="foot-note">Écran « Rapport »<span class="d"></span>structuré selon les référentiels (aligné, non certifié)<span class="d"></span>export PDF · DOCX · XLSX</div>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+<script src="assets/app.js"></script>
+<script>VIGIE.rail('rep');VIGIE.init();</script>
+</body>
+</html>
