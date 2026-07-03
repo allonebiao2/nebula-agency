@@ -12,7 +12,8 @@
     soc:'<circle cx="9" cy="8" r="3"/><path d="M4 20c0-3 2-5 5-5s5 2 5 5"/><circle cx="17" cy="9" r="2.4"/>',
     env:'<path d="M12 21c5-3 7-7 7-11a7 7 0 0 0-14 0c0 4 2 8 7 11Z"/><path d="M12 12c2-1 3-3 3-5"/>',
     imp:'<path d="M4 7V5h16v2M4 7l1 12h14l1-12M9 11v4m6-4v4"/>',
-    site:'<path d="M4 6h16M4 12h16M4 18h10"/>'
+    site:'<path d="M4 6h16M4 12h16M4 18h10"/>',
+    guide:'<path d="M5 4a1 1 0 0 1 1-1h12v14H6a2 2 0 0 0-2 2V4Z"/><path d="M4 19a2 2 0 0 1 2-2h12v4H6a2 2 0 0 1-2-2Z"/><path d="M9 7h6M9 10h4"/>'
   };
 
   function railHTML(active){
@@ -51,7 +52,9 @@
     '<div class="navgroup"><span class="lbl">Données</span>'+
       link('imp','Import Excel/CSV','saisie.html')+
       stub('site','Sites &amp; effectifs')+'</div>'+
-    '<div class="rail-foot">Usine de Cotonou · 312 agents<br>Maquette de direction — données fictives</div>';
+    '<div class="navgroup"><span class="lbl">Aide</span>'+
+      '<a class="nav" href="docs/Guide-Digital-HSE.pdf" target="_blank" rel="noopener" download>'+ic(ICON.guide)+'Guide d\'utilisation<span style="margin-left:auto;color:var(--faint);font-family:\'IBM Plex Mono\';font-size:9px;letter-spacing:.08em">PDF</span></a>'+'</div>'+
+    '<div class="rail-foot">Espace de démonstration<br>Données fictives · à remplacer par les vôtres</div>';
   }
 
   var tEl,tTo;
