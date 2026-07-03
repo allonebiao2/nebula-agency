@@ -1042,6 +1042,7 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
             <div class="opt"><input type="checkbox" id="q_a5" data-price="45000" value="Envoi automatique"><label for="q_a5">Envoi automatique</label></div>
             <div class="opt"><input type="checkbox" id="q_a6" data-price="30000" value="Génération de documents"><label for="q_a6">Génération de documents</label></div>
             <div class="opt"><input type="checkbox" id="q_a7" data-price="20000" value="Recherche / filtrage"><label for="q_a7">Recherche / filtrage</label></div>
+            <div class="opt"><input type="checkbox" id="q_a8" data-price="120000" value="Facturation : devis + factures normalisées"><label for="q_a8">Factures normalisées &amp; devis</label></div>
           </div>
         </div>
         <div class="q"><p class="q-text">Niveau d'intelligence souhaité</p>
@@ -1110,7 +1111,7 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
         <div class="dm-range-big" id="dm-range">55 000 – 75 000 F</div>
         <div class="dm-break" id="dm-break"></div>
         <button class="btn-submit" type="button" onclick="devisEnvoi()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 20Z"/></svg>Recevoir mon devis sur WhatsApp</button>
-        <div class="dm-note">Fourchette indicative en francs CFA (min 55 000, max 300 000). Devis final confirmé après un court échange, sous 2h. Sans engagement.</div>
+        <div class="dm-note">Fourchette indicative en francs CFA (min 55 000, max 500 000). Projets à l'international / Europe : tarif export sur mesure. Devis final confirmé après un court échange, sous 2h. Sans engagement.</div>
       </aside>
     </div>
   </div>
@@ -1186,9 +1187,10 @@ var msg=['🚀 *NOUVELLE COMMANDE — NEBULA AGENCY*','════════�
 try{fetch('https://nebula-affilies-production.up.railway.app/api/site-lead',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({nom:nom,numero:tel,email:email,service:niveau,message:msg})}).catch(function(){});}catch(e){}
 window.open('https://wa.me/22996740732?text='+encodeURIComponent(msg),'_blank');}
 
-/* ===== Configurateur de devis — cadrage projet (fourchette 55 000 – 300 000 F) ===== */
+/* ===== Configurateur de devis — cadrage projet (fourchette 55 000 – 500 000 F) ===== */
 /* MONGAZI : les prix = les data-price des options dans la modale + la base ci-dessous. Ajuste librement. */
-var DEVIS={base:60000,factMin:0.9,factMax:1.25,plancher:55000,plafond:300000,pas:5000};
+/* plancher 55 000 F = SMIC Bénin (accessible localement) · plafond 500 000 F = haut de gamme + projets export. */
+var DEVIS={base:60000,factMin:0.9,factMax:1.25,plancher:55000,plafond:500000,pas:5000};
 (function(){
   var modal=document.getElementById('devisModal'); if(!modal) return;
   function val(id){var e=document.getElementById(id);return e?e.value.trim():'';}
@@ -1217,7 +1219,7 @@ var DEVIS={base:60000,factMin:0.9,factMax:1.25,plancher:55000,plafond:300000,pas
     document.getElementById('dm-range').textContent=(d.min===d.max?('≈ '+N(d.min)+' F'):(N(d.min)+' – '+N(d.max)+' F'));
     var lines=[['Base de conception',F(DEVIS.base)]];
     if(d.count)lines.push([d.count+' option'+(d.count>1?'s':'')+' choisie'+(d.count>1?'s':''),'+'+F(d.total-DEVIS.base)]);
-    lines.push(['Fourchette (min 55k · max 300k)','']);
+    lines.push(['Fourchette (min 55k · max 500k)','']);
     document.getElementById('dm-break').innerHTML=lines.map(function(x){return '<div><span>'+x[0]+'</span><span>'+x[1]+'</span></div>';}).join('');
   }
   modal.addEventListener('change',render);

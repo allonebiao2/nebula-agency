@@ -39,11 +39,30 @@ modifications. *(Corrigé le 2026-06-20 : était affiché par erreur « /mois »
 
 ## État
 
-- **Version actuelle** : **v9.9.2** (`nebula_agency_v9.html` = `index.html` en prod ; + option « Cockpit (tout-en-un) » dans le configurateur)
+- **Version actuelle** : **v9.9.3** (`nebula_agency_v9.html` = `index.html` en prod ; + facturation/factures normalisées + fourchette 55 000 – 500 000 F)
 - **Statut** : **LIVE** https://www.nebula-agency.online (Cloudflare Pages, projet `nebula-agency`, déployé 2026-07-02)
 - **v8 conservé** (`nebula_agency_v8.html`) pour retour arrière.
 
 ### Historique des versions
+
+#### v9.9.3 — 2026-07-03 (facturation + fourchette recalibrée 55 000 – 500 000 F)
+- **Facturation** : nouvelle option dans « 02 · Traitement » (question « Qu'attendez-vous de
+  l'outil ? »), `id="q_a8"` « Factures normalisées & devis », `data-price="120000"`.
+  ⚠️ « facture normalisée » au Bénin = facture conforme DGI (e-MECeF/MECeF) → la livraison réelle
+  suppose l'intégration au système fiscal certifié (ou un partenaire agréé) ; sur le site c'est
+  une capacité vendable, la conformité se traite au cas par cas côté projet.
+- **Fourchette recalibrée** selon la demande (contexte éco/politique/culturel + SMIC) :
+  - **Plancher 55 000 F conservé = SMIC Bénin** (reste accessible localement).
+  - **Plafond relevé 300 000 → 500 000 F** (`DEVIS.plafond`) pour rester haut de gamme et
+    absorber les projets plus lourds (cockpit 180k, app 300k, facturation 120k, IA… saturaient
+    vite l'ancien plafond 300k → granularité retrouvée).
+  - **Mention « tarif export sur mesure »** pour les projets international / Europe (le but est
+    aussi de conquérir l'extérieur ; les vrais prix € se traitent séparément — piste : double
+    marché FCFA/€ dans une évolution ultérieure).
+- **NOVA en phase** (`server.py agency_brain`) : 55 000 (SMIC) → 500 000 FCFA + facturation +
+  cockpit + tarif export Europe.
+- Déployé Cloudflare + vérifié 200 (plafond 500000 / q_a8 / tarif export / max 500k OK).
+  `py_compile server.py` OK (backend auto-déployé au push).
 
 #### v9.9.2 — 2026-07-03 (option « Cockpit / poste de pilotage (tout-en-un) »)
 - Mongazi demande le concept de **cockpit** (« qui regroupe absolument tout pour tout suivre,
