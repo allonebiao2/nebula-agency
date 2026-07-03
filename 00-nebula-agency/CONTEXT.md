@@ -39,11 +39,23 @@ modifications. *(Corrigé le 2026-06-20 : était affiché par erreur « /mois »
 
 ## État
 
-- **Version actuelle** : **v9.9.1** (`nebula_agency_v9.html` = `index.html` en prod ; + intitulé « Tableau de bord » clarifié dans le configurateur)
+- **Version actuelle** : **v9.9.2** (`nebula_agency_v9.html` = `index.html` en prod ; + option « Cockpit (tout-en-un) » dans le configurateur)
 - **Statut** : **LIVE** https://www.nebula-agency.online (Cloudflare Pages, projet `nebula-agency`, déployé 2026-07-02)
 - **v8 conservé** (`nebula_agency_v8.html`) pour retour arrière.
 
 ### Historique des versions
+
+#### v9.9.2 — 2026-07-03 (option « Cockpit / poste de pilotage (tout-en-un) »)
+- Mongazi demande le concept de **cockpit** (« qui regroupe absolument tout pour tout suivre,
+  comme Digital HSE »). Distinction posée : **tableau de bord** = écran de suivi (souvent 1 sujet) ;
+  **cockpit / poste de pilotage** = version **tout-en-un** qui centralise TOUT sur un écran
+  (tous les indicateurs + alertes + actions rapides, domaines croisés).
+- Ajout d'une **option distincte** dans le configurateur (question « Sortie ») :
+  « **Cockpit (tout-en-un)** », `data-price="180000"` (entre tableau de bord 100 k et app mobile
+  300 k) → **levier de prix** : la fourchette du devis monte automatiquement quand le client le choisit.
+- Phrase d'aide `.q-hint` réécrite pour distinguer clairement les deux mots (réf. Cockpit Digital HSE).
+- Déployé + vérifié 200 (COCKPIT LABEL/HINT + PRICE 180000 OK). Choisi par défaut (option premium)
+  faute de réponse à la question ; réversible en un mot.
 
 #### v9.9.1 — 2026-07-03 (intitulé « Tableau de bord » clarifié dans le configurateur)
 - Mongazi ne comprenait pas le mot « tableau de bord » dans la question « Sous quelle forme
