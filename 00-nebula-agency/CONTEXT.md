@@ -39,11 +39,24 @@ modifications. *(Corrigé le 2026-06-20 : était affiché par erreur « /mois »
 
 ## État
 
-- **Version actuelle** : **v9.6** (`nebula_agency_v9.html` = `index.html` en prod ; + configurateur de devis SaaS vertical + email auto)
+- **Version actuelle** : **v9.7** (`nebula_agency_v9.html` = `index.html` en prod ; + NOVA remis + cerveau à jour)
 - **Statut** : **LIVE** https://www.nebula-agency.online (Cloudflare Pages, projet `nebula-agency`, déployé 2026-07-02)
 - **v8 conservé** (`nebula_agency_v8.html`) pour retour arrière.
 
 ### Historique des versions
+
+#### v9.7 — 2026-07-03 (NOVA remis sur le site + cerveau mis à jour)
+- **Widget NOVA remis** (assistant IA) : bouton flottant « Discuter avec NOVA » + panneau
+  de chat cosmique (bas-droite ; le bouton audio décalé à `bottom:86px` pour ne pas se
+  chevaucher). Appelle `POST https://nebula-affilies-production.up.railway.app/api/agency-chat`
+  (`{messages}` → `{reply}`, rate-limité) — endpoint public déjà existant. Script isolé
+  (bloc `<script>` séparé), `node --check` OK. Greeting mentionne les logiciels métier.
+- **Cerveau NOVA mis à jour** (`nebula-affilies/server.py` → `agency_brain()`) : NOVA connaît
+  désormais l'offre **Digitalisation sectorielle / logiciel métier / SaaS vertical** (à partir
+  de 200 000 F + abonnement /6 mois, configurateur de devis en ligne), au lieu de dire « on ne
+  fait pas ça ». Avatar IA (retiré du site) enlevé du discours. ⚠️ **garder `agency_brain()` en
+  phase avec les offres du site** à chaque évolution. Backend auto-déployé (commit `d590cc6`
+  RUNNING), NOVA re-testé : répond correctement sur le SaaS vertical.
 
 #### v9.6 — 2026-07-03 (configurateur de devis SaaS vertical + email auto)
 - **Modale de devis** (`#devisModal`) ouverte par le bouton du service phare : le client
