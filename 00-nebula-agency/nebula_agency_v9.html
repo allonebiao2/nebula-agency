@@ -371,17 +371,17 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
   -webkit-mask:radial-gradient(circle,#000 0 68%,transparent 70%);mask:radial-gradient(circle,#000 0 68%,transparent 70%);
   animation:sig-spin 8s linear infinite}
 
-/* FOOTER · nébuleuse violette à la dérive */
+/* FOOTER · constellation scintillante */
 .sig-footer{position:relative;overflow:hidden}
-.sig-footer::before{content:"";position:absolute;left:-90px;bottom:-170px;width:440px;height:440px;pointer-events:none;z-index:0;border-radius:50%;
-  background:radial-gradient(circle,rgba(147,51,234,.18),transparent 70%);filter:blur(24px);animation:sig-drift 15s ease-in-out infinite}
+.sig-footer .constel{position:absolute;inset:0;z-index:0;pointer-events:none}
+.sig-footer .constel i{position:absolute;width:3px;height:3px;border-radius:50%;background:var(--blue2);opacity:.2;animation:sig-tw 4s ease-in-out infinite}
 .sig-footer .footer-grid,.sig-footer .footer-bottom{position:relative;z-index:1}
-@keyframes sig-drift{0%,100%{transform:translate(0,0)}50%{transform:translate(70px,-34px)}}
+@keyframes sig-tw{0%,100%{opacity:.1;transform:scale(.8)}50%{opacity:.85;transform:scale(1.15)}}
 
 /* réduction de mouvement */
 @media(prefers-reduced-motion:reduce){
   .sig-trust .comet,.sig-services .svc-icon::after,.sig-portfolio .warp,.why-line i,
-  .pcard-feat .psat,.sig-steps .step-n,.sig-contact .radar,.sig-footer::before{animation:none!important}
+  .pcard-feat .psat,.sig-steps .step-n,.sig-contact .radar,.sig-footer .constel i{animation:none!important}
   .sig-services .head-center h2::after{transition:none;transform:scaleX(1)}
   .why-line{transition:none;transform:scaleY(1)}
   .sig-portfolio .warp{opacity:0}
@@ -769,6 +769,16 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
 
 <!-- FOOTER -->
 <footer class="footer sig-footer">
+  <div class="constel" aria-hidden="true">
+    <i style="left:8%;top:26%"></i>
+    <i style="left:19%;top:64%;background:var(--cyan);animation-delay:.6s"></i>
+    <i style="left:33%;top:18%;animation-delay:1.2s"></i>
+    <i style="left:47%;top:72%;background:var(--violet2);width:4px;height:4px;box-shadow:0 0 8px var(--violet2);animation-delay:.3s"></i>
+    <i style="left:61%;top:30%;animation-delay:1.8s"></i>
+    <i style="left:74%;top:60%;background:var(--cyan);animation-delay:.9s"></i>
+    <i style="left:86%;top:22%;width:4px;height:4px;box-shadow:0 0 8px var(--blue2);animation-delay:1.5s"></i>
+    <i style="left:93%;top:70%;background:var(--violet2);animation-delay:.4s"></i>
+  </div>
   <div class="container">
     <div class="footer-grid">
       <div class="footer-brand">
@@ -861,10 +871,20 @@ if(matchMedia('(pointer:fine)').matches&&!reduce){
 
 /* audio ambiance */
 var jazz=document.getElementById('jazz'),at=document.getElementById('audioToggle');
-at.addEventListener('click',function(){
-  if(jazz.paused){jazz.volume=0;jazz.play().then(function(){at.classList.add('on');var v=0,t=setInterval(function(){v+=.04;jazz.volume=Math.min(v,.35);if(v>=.35)clearInterval(t);},60);}).catch(function(){});}
-  else{var v=jazz.volume,t=setInterval(function(){v-=.05;jazz.volume=Math.max(v,0);if(v<=0){jazz.pause();at.classList.remove('on');clearInterval(t);}},50);}
-});
+var audioOn=false,userStopped=false;
+function fadeIn(){jazz.volume=0;var v=0,t=setInterval(function(){v+=.04;jazz.volume=Math.min(v,.35);if(v>=.35)clearInterval(t);},60);}
+function startAudio(){
+  if(audioOn)return;jazz.volume=0;var pr=jazz.play();
+  if(pr&&pr.then){pr.then(function(){audioOn=true;at.classList.add('on');fadeIn();}).catch(function(){});}
+  else{audioOn=true;at.classList.add('on');fadeIn();}
+}
+function stopAudio(){var v=jazz.volume,t=setInterval(function(){v-=.05;jazz.volume=Math.max(v,0);if(v<=0){jazz.pause();audioOn=false;at.classList.remove('on');clearInterval(t);}},50);}
+at.addEventListener('click',function(){if(audioOn){userStopped=true;stopAudio();}else{userStopped=false;startAudio();}});
+/* démarrage automatique au 1er geste de l'utilisateur (clic / tap / défilement / touche) */
+var AUDIO_EVTS=['pointerdown','touchstart','keydown','scroll'];
+function autoStart(e){if(e&&at.contains(e.target))return;if(!audioOn&&!userStopped)startAudio();if(audioOn){AUDIO_EVTS.forEach(function(ev){window.removeEventListener(ev,autoStart);});}}
+AUDIO_EVTS.forEach(function(ev){window.addEventListener(ev,autoStart,{passive:true});});
+try{startAudio();}catch(e){}
 
 /* starfield */
 (function(){
