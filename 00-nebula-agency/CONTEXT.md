@@ -39,11 +39,20 @@ modifications. *(Corrigé le 2026-06-20 : était affiché par erreur « /mois »
 
 ## État
 
-- **Version actuelle** : **v9.9** (`nebula_agency_v9.html` = `index.html` en prod ; + vrai logo PNG + écran de chargement cosmique)
+- **Version actuelle** : **v9.9.1** (`nebula_agency_v9.html` = `index.html` en prod ; + intitulé « Tableau de bord » clarifié dans le configurateur)
 - **Statut** : **LIVE** https://www.nebula-agency.online (Cloudflare Pages, projet `nebula-agency`, déployé 2026-07-02)
 - **v8 conservé** (`nebula_agency_v8.html`) pour retour arrière.
 
 ### Historique des versions
+
+#### v9.9.1 — 2026-07-03 (intitulé « Tableau de bord » clarifié dans le configurateur)
+- Mongazi ne comprenait pas le mot « tableau de bord » dans la question « Sous quelle forme
+  voulez-vous le résultat ? » du configurateur de devis — donc ses clients non plus.
+- Intitulé rendu **explicite** : « Tableau de bord (graphiques & suivi) » + **phrase d'aide**
+  (`.q-hint` sous la question) : « écran en ligne vivant, graphiques (courbes, camemberts),
+  carrousels et animations pour suivre et analyser en direct » (référence = Cockpit Digital HSE).
+- Valeur envoyée au brief WhatsApp/email enrichie de même. **Aucun changement de prix**
+  (data-price inchangé à 100 000 F). Déployé + vérifié 200 (HINT/LABEL OK).
 
 #### v9.9 — 2026-07-03 (vrai logo PNG + écran de chargement cosmique)
 - **Logo réel** : le logo NEBULA (`_partage/logo nebula agency.JPG`, galaxie violet/bleu +
