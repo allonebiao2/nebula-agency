@@ -39,11 +39,26 @@ modifications. *(Corrigé le 2026-06-20 : était affiché par erreur « /mois »
 
 ## État
 
-- **Version actuelle** : **v9.7** (`nebula_agency_v9.html` = `index.html` en prod ; + NOVA remis + cerveau à jour)
+- **Version actuelle** : **v9.8** (`nebula_agency_v9.html` = `index.html` en prod ; + configurateur cadrage projet fourchette 55k–300k)
 - **Statut** : **LIVE** https://www.nebula-agency.online (Cloudflare Pages, projet `nebula-agency`, déployé 2026-07-02)
 - **v8 conservé** (`nebula_agency_v8.html`) pour retour arrière.
 
 ### Historique des versions
+
+#### v9.8 — 2026-07-03 (configurateur « cadrage projet » à fourchette 55k–300k)
+- Le configurateur de devis (modale `#devisModal`) est refondu sur le modèle du fichier
+  `_partage/nebula-cadrage-projet-devis.html` fourni par Mongazi : **questionnaire en 3 temps
+  Entrée → Traitement → Sortie** (+ identité + détails), en **pastilles d'options** (`.dm .opt`,
+  cochables), chaque option portant un `data-price`. Habillé dans le thème cosmique du site.
+- **Sortie = FOURCHETTE en direct** (`#dm-range`, ex. « 55 000 – 120 000 F »), **bornée par Mongazi :
+  min 55 000 F, max 300 000 F** (`DEVIS={base:60000,factMin:.9,factMax:1.25,plancher:55000,plafond:300000,pas:5000}`).
+  Base 60 000 + somme des `data-price`, min=clamp(round(total×.9)), max=clamp(round(total×1.25)).
+- Envoi = WhatsApp + email auto + lead (`POST /api/site-lead`, `devis_email:true`). L'ancienne logique
+  SaaS vertical (chiffre unique + abonnement /6 mois) est **remplacée**.
+- **NOVA aligné** (`server.py` `agency_brain()`) : l'estimation en ligne va désormais de **55 000 à
+  300 000 F** (fin du « à partir de 200 000 F »). ⚠️ règle : garder NOVA en phase avec le devis du site.
+- QC : `node --check` (2 scripts OK), `py_compile` OK, fourchette simulée (vide 55k–75k, gros projet
+  plafonné 300k). Déployé + vérifié 200. Backend auto-déployé (commit `8a068bd` RUNNING).
 
 #### v9.7 — 2026-07-03 (NOVA remis sur le site + cerveau mis à jour)
 - **Widget NOVA remis** (assistant IA) : bouton flottant « Discuter avec NOVA » + panneau
