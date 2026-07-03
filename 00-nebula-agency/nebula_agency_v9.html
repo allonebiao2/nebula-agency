@@ -378,7 +378,7 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
 .dm .opt label:hover{border-color:var(--blue2);color:var(--text);transform:translateY(-2px)}
 .dm .opt input:checked+label{background:linear-gradient(120deg,var(--blue),var(--violet));border-color:transparent;color:#fff;font-weight:600;box-shadow:0 6px 18px -8px rgba(124,92,255,.7)}
 .dm .opt input:focus-visible+label{outline:2px solid var(--cyan);outline-offset:2px}
-.dm-range-big{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;line-height:1.15;margin:6px 0 10px;
+.dm-range-big{font-family:'Syne',sans-serif;font-weight:700;font-size:1.15rem;letter-spacing:-.01em;line-height:1.15;white-space:nowrap;margin:6px 0 10px;
   background:linear-gradient(120deg,var(--blue2),var(--violet2) 55%,var(--cyan));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 
 /* ---------- NOVA · assistant IA (chat) ---------- */
@@ -1165,6 +1165,7 @@ var DEVIS={base:60000,factMin:0.9,factMax:1.25,plancher:55000,plafond:300000,pas
   function r(n){return Math.round(n/DEVIS.pas)*DEVIS.pas;}
   function clamp(n){return Math.max(DEVIS.plancher,Math.min(n,DEVIS.plafond));}
   function F(n){return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' F';}
+  function N(n){return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ');}
   function selections(){
     var res={groups:{},total:0,count:0};
     modal.querySelectorAll('.options').forEach(function(g){
@@ -1183,7 +1184,7 @@ var DEVIS={base:60000,factMin:0.9,factMax:1.25,plancher:55000,plafond:300000,pas
   }
   function render(){
     var d=calc();
-    document.getElementById('dm-range').textContent=(d.min===d.max?('≈ '+F(d.min)):(F(d.min)+' – '+F(d.max)));
+    document.getElementById('dm-range').textContent=(d.min===d.max?('≈ '+N(d.min)+' F'):(N(d.min)+' – '+N(d.max)+' F'));
     var lines=[['Base de conception',F(DEVIS.base)]];
     if(d.count)lines.push([d.count+' option'+(d.count>1?'s':'')+' choisie'+(d.count>1?'s':''),'+'+F(d.total-DEVIS.base)]);
     lines.push(['Fourchette (min 55k · max 300k)','']);
