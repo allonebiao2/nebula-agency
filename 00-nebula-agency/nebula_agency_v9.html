@@ -712,6 +712,7 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
           <div class="fg"><label>Prénom &amp; Nom <span class="req">*</span></label><input type="text" id="f_nom" placeholder="Ex : Jocelyne Aguiar"></div>
           <div class="fg"><label>WhatsApp <span class="req">*</span></label><input type="tel" id="f_tel" placeholder="+229 XX XX XX XX"></div>
         </div>
+        <div class="fg"><label>Email <span class="req">*</span></label><input type="email" id="f_email" placeholder="Ex : contact@votremarque.com"></div>
         <div class="fg"><label>Nom de votre entreprise / marque <span class="req">*</span></label><input type="text" id="f_marque" placeholder="Ex : Grain d'Esthétique"></div>
         <div class="fg-row">
           <div class="fg"><label>Secteur d'activité <span class="req">*</span></label><select id="f_secteur"><option value="">Choisir…</option><option>Institut de beauté / Spa</option><option>Bijoux &amp; accessoires</option><option>Mode &amp; vêtements</option><option>Restaurant / Alimentation</option><option>Santé &amp; bien-être</option><option>Commerce / Boutique</option><option>Services professionnels</option><option>Éducation / Formation</option><option>Immobilier</option><option>Autre</option></select></div>
@@ -725,7 +726,22 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
           <option>Création QR Code Google Review — 30 000 F</option>
           <option>Plusieurs services / besoin de conseils</option>
         </select></div>
+        <div class="fg-row">
+          <div class="fg"><label>Objectif principal du site <span class="req">*</span></label><select id="f_objectif"><option value="">Choisir…</option><option>Vendre mes produits / services</option><option>Être trouvé sur Google &amp; internet</option><option>Montrer mon travail (portfolio / galerie)</option><option>Recevoir des demandes / rendez-vous</option><option>Gagner en crédibilité &amp; image pro</option><option>Autre / plusieurs objectifs</option></select></div>
+          <div class="fg"><label>Ampleur du site</label><select id="f_pages"><option value="">Choisir…</option><option>Une seule page (vitrine simple)</option><option>Quelques sections</option><option>Plusieurs pages (catalogue / hub)</option><option>Je ne sais pas encore</option></select></div>
+        </div>
+        <div class="form-sec">Style &amp; contenu</div>
+        <div class="fg-row">
+          <div class="fg"><label>Style visuel souhaité</label><select id="f_style"><option value="">Choisir…</option><option>Épuré &amp; minimaliste</option><option>Luxe &amp; élégant</option><option>Coloré &amp; vivant</option><option>Moderne &amp; technologique</option><option>Chaleureux &amp; artisanal</option><option>Je fais confiance à NEBULA</option></select></div>
+          <div class="fg"><label>Langue du site</label><select id="f_langue"><option>Français</option><option>Français + Anglais</option><option>Anglais</option><option>Autre</option></select></div>
+        </div>
+        <div class="fg-row">
+          <div class="fg"><label>Présence en ligne actuelle ?</label><select id="f_existant"><option value="">Choisir…</option><option>Non, c'est mon premier site</option><option>Oui, un site à refaire</option><option>Page Facebook / Instagram seulement</option></select></div>
+          <div class="fg"><label>Vos contenus (photos, textes) ?</label><select id="f_contenu"><option value="">Choisir…</option><option>Oui, tout est prêt</option><option>En partie</option><option>Non, besoin d'aide</option></select></div>
+        </div>
         <div class="fg"><label>Couleurs de votre marque</label><input type="text" id="f_couleurs" placeholder="Ex : rose &amp; blanc, noir &amp; or…"></div>
+        <div class="fg"><label>Sites / pages que vous aimez (inspiration)</label><input type="text" id="f_inspiration" placeholder="Ex : un lien, un concurrent, un style que vous aimez…"></div>
+        <div class="fg"><label>Réseaux sociaux à afficher</label><input type="text" id="f_reseaux" placeholder="Ex : Instagram @…, Facebook, TikTok…"></div>
         <div class="form-sec">Options supplémentaires</div>
         <div class="checks">
           <label class="chk"><input type="checkbox" id="fc_wa"> <span>Boutons WhatsApp partout</span></label>
@@ -812,8 +828,9 @@ function setTier(t){var sel=document.getElementById('f_niveau');if(!sel)return;f
 
 /* soumettreCommande — construit le brief WhatsApp + enregistre le lead back-office (préservé de v8) */
 function soumettreCommande(){var get=function(id){return document.getElementById(id).value.trim();};
-var nom=get('f_nom'),tel=get('f_tel'),marque=get('f_marque'),secteur=get('f_secteur'),ville=get('f_ville'),niveau=get('f_niveau'),couleurs=get('f_couleurs'),desc=get('f_desc'),logo=get('f_logo'),delai=get('f_delai');
-if(!nom||!tel||!marque||!secteur||!ville||!niveau||!desc){alert('Veuillez remplir tous les champs obligatoires (*)');return;}
+var nom=get('f_nom'),tel=get('f_tel'),email=get('f_email'),marque=get('f_marque'),secteur=get('f_secteur'),ville=get('f_ville'),niveau=get('f_niveau'),objectif=get('f_objectif'),pages=get('f_pages'),style=get('f_style'),langue=get('f_langue'),existant=get('f_existant'),contenu=get('f_contenu'),couleurs=get('f_couleurs'),inspiration=get('f_inspiration'),reseaux=get('f_reseaux'),desc=get('f_desc'),logo=get('f_logo'),delai=get('f_delai');
+if(!nom||!tel||!email||!marque||!secteur||!ville||!niveau||!objectif||!desc){alert('Veuillez remplir tous les champs obligatoires (*)');return;}
+if(!/^\S+@\S+\.\S+$/.test(email)){alert('Veuillez entrer une adresse email valide.');return;}
 var f=[];
 if(document.getElementById('fc_wa').checked)f.push('Boutons WhatsApp');
 if(document.getElementById('fc_galerie').checked)f.push('Galerie photos');
@@ -821,8 +838,9 @@ if(document.getElementById('fc_musique').checked)f.push('Musique ambiance');
 if(document.getElementById('fc_qr').checked)f.push('Affiche PDF A4');
 if(document.getElementById('fc_maps').checked)f.push('Google Maps');
 if(document.getElementById('fc_avis').checked)f.push('Section avis');
-var msg=['🚀 *NOUVELLE COMMANDE — NEBULA AGENCY*','═══════════════════════════════','','👤 *CONTACT*','• Nom : '+nom,'• WhatsApp : '+tel,'• Marque : '+marque,'• Secteur : '+secteur,'• Ville : '+ville,'','🎯 *PROJET*','• Service : '+niveau,'• Couleurs : '+(couleurs||'À définir ensemble'),'• Logo : '+logo,'• Délai : '+delai,'','✅ *OPTIONS SUPPLÉMENTAIRES*',f.length?f.map(function(x){return '• '+x;}).join('\n'):'• Aucune option supplémentaire','','📝 *DESCRIPTION*',desc,'','═══════════════════════════════','📩 Envoyé via nebula-agency.online'].join('\n');
-try{fetch('https://nebula-affilies-production.up.railway.app/api/site-lead',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({nom:nom,numero:tel,service:niveau,message:msg})}).catch(function(){});}catch(e){}
+var na=function(v){return v||'Non précisé';};
+var msg=['🚀 *NOUVELLE COMMANDE — NEBULA AGENCY*','═══════════════════════════════','','👤 *CONTACT*','• Nom : '+nom,'• WhatsApp : '+tel,'• Email : '+email,'• Marque : '+marque,'• Secteur : '+secteur,'• Ville : '+ville,'','🎯 *PROJET*','• Service : '+niveau,'• Objectif : '+objectif,'• Ampleur : '+na(pages),'• Délai : '+delai,'','🎨 *STYLE & CONTENU*','• Style visuel : '+na(style),'• Langue : '+na(langue),'• Présence en ligne : '+na(existant),'• Contenus prêts : '+na(contenu),'• Couleurs : '+na(couleurs),'• Inspiration : '+na(inspiration),'• Réseaux : '+na(reseaux),'• Logo : '+logo,'','✅ *OPTIONS SUPPLÉMENTAIRES*',f.length?f.map(function(x){return '• '+x;}).join('\n'):'• Aucune option supplémentaire','','📝 *DESCRIPTION*',desc,'','═══════════════════════════════','📩 Envoyé via nebula-agency.online'].join('\n');
+try{fetch('https://nebula-affilies-production.up.railway.app/api/site-lead',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({nom:nom,numero:tel,email:email,service:niveau,message:msg})}).catch(function(){});}catch(e){}
 window.open('https://wa.me/22996740732?text='+encodeURIComponent(msg),'_blank');}
 
 /* nav mobile */

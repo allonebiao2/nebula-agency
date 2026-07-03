@@ -31,11 +31,27 @@ modifications. *(Corrigé le 2026-06-20 : était affiché par erreur « /mois »
 
 ## État
 
-- **Version actuelle** : **v9.3** (`nebula_agency_v9.html` = `index.html` en prod ; + une animation signature différente par section)
+- **Version actuelle** : **v9.4** (`nebula_agency_v9.html` = `index.html` en prod ; formulaire enrichi + email obligatoire)
 - **Statut** : **LIVE** https://www.nebula-agency.online (Cloudflare Pages, projet `nebula-agency`, déployé 2026-07-02)
 - **v8 conservé** (`nebula_agency_v8.html`) pour retour arrière.
 
 ### Historique des versions
+
+#### v9.4 — 2026-07-03 (formulaire enrichi + email obligatoire)
+Formulaire de commande étoffé pour capter un brief plus précis :
+- **Email ajouté** (`f_email`, type email) : **obligatoire + validé** (regex), transmis
+  dans le message WhatsApp ET dans le lead back-office (`email:email` dans le POST `/api/site-lead`).
+- **8 nouvelles questions** dont **6 menus déroulants** (10 `<select>` au total, contre 4) :
+  `f_objectif` (objectif principal du site, **obligatoire**), `f_pages` (ampleur),
+  `f_style` (style visuel), `f_langue`, `f_existant` (présence en ligne actuelle),
+  `f_contenu` (contenus prêts ?), + 2 champs texte `f_inspiration` (sites aimés) et
+  `f_reseaux` (réseaux sociaux à afficher). Nouvelle section « Style & contenu ».
+- `soumettreCommande()` : lit tous les champs, valide (nom/tel/email/marque/secteur/
+  ville/service/objectif/desc requis + format email), message WhatsApp restructuré
+  (blocs Contact / Projet / Style & contenu / Options / Description) avec `na()` =
+  « Non précisé » pour les optionnels vides.
+- ⚠️ n° WhatsApp **22996740732 inchangé** · options de service (setTier) **inchangées**.
+- Déployé + vérifié 200 sur www.nebula-agency.online. Source + copie `_dist`.
 
 #### v9.3 — 2026-07-03 (une animation signature DIFFÉRENTE par section)
 Chaque section (hors héros, qui garde son shader WebGL) reçoit **sa propre animation, toutes distinctes**, calées sur l'univers cosmique (bleu/violet/cyan) et GPU-friendly (transform/opacity), **coupées sous `prefers-reduced-motion`** :
