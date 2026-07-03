@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Digital HSE · Votre reporting HSE, automatisé</title>
+<meta name="description" content="Digital HSE automatise le reporting HSE des entreprises industrielles : saisie, graphiques, analyse IA et rapport conforme ISO 45001 / 14001 / GRI / OIT en PDF, Word et Excel.">
+<meta property="og:title" content="Digital HSE · Votre reporting HSE, automatisé">
+<meta property="og:description" content="Ce qui vous prend deux jours dans Excel, fait en dix minutes. Rapport crédible et conforme aux normes internationales.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F2F4F3; --paper2:#E9EDEC; --ink:#141B1D; --mid:#4b585b; --faint:#8A989B;
+  --line:#DBE2E0; --line2:#C7D1CF; --white:#FFFFFF;
+  --teal:#0C6D7D; --teal-d:#084E5A; --teal-t:rgba(12,109,125,.08);
+  --safe:#157A4E; --caution:#E0930F; --danger:#C5342A;
+  --soc:#7A5AA6; --env:#2E7D5B;
+  --board:#141B1D; --board2:#0C6D7D;
+  --r:16px; --ease:cubic-bezier(.16,1,.3,1);
+  --sh:0 4px 14px -6px rgba(20,27,29,.14),0 2px 6px -3px rgba(20,27,29,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Archivo',sans-serif;line-height:1.1;letter-spacing:-.02em;font-weight:700}
+a{color:inherit;text-decoration:none}
+.mono{font-family:'IBM Plex Mono',monospace}
+:focus-visible{outline:2px solid var(--teal);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+.eyebrow{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--teal);display:inline-flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:22px;height:1px;background:var(--teal)}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:40;background:rgba(242,244,243,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:14px;height:64px}
+.brand{display:flex;align-items:center;gap:11px}
+.brand svg{width:34px;height:34px;flex:none}
+.brand b{font-family:'Archivo';font-weight:800;font-size:19px;letter-spacing:.01em}
+.brand small{display:block;font-family:'IBM Plex Mono';font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-top:1px}
+.nav .sp{flex:1}
+.nav .lk{font-size:14px;color:var(--mid);padding:8px 12px;border-radius:9px;font-weight:500}
+.nav .lk:hover{color:var(--ink);background:var(--paper2)}
+@media(max-width:760px){.nav .lk{display:none}}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid transparent;border-radius:11px;padding:11px 18px;font-family:'Archivo';font-weight:600;font-size:14px;cursor:pointer;transition:transform .2s,box-shadow .2s,background .2s,border-color .2s}
+.btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.9}
+.btn-p{background:var(--teal);color:#fff;box-shadow:0 8px 20px -10px rgba(12,109,125,.85)}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 14px 28px -12px rgba(12,109,125,.95)}
+.btn-g{background:var(--white);color:var(--ink);border-color:var(--line2)}
+.btn-g:hover{border-color:var(--teal);color:var(--teal-d);background:var(--teal-t)}
+
+/* hero */
+.hero{padding:64px 0 40px;position:relative;overflow:hidden}
+.hero .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+@media(max-width:900px){.hero .grid{grid-template-columns:1fr;gap:28px}}
+.hero h1{font-size:clamp(30px,5vw,52px);letter-spacing:-.03em}
+.hero h1 .g{color:var(--teal-d)}
+.hero p.lead{font-size:clamp(16px,1.6vw,19px);color:var(--mid);margin:18px 0 26px;max-width:34ch}
+.hero .cta{display:flex;gap:12px;flex-wrap:wrap}
+.trust{margin-top:26px;display:flex;gap:8px;flex-wrap:wrap}
+.trust span{font-family:'IBM Plex Mono';font-size:11px;color:var(--mid);background:var(--white);border:1px solid var(--line);border-radius:8px;padding:6px 11px}
+
+/* hero board mock */
+.board{position:relative;background:linear-gradient(150deg,var(--board),#0b2a30);border-radius:20px;padding:22px;box-shadow:0 30px 60px -28px rgba(14,22,21,.6);color:#EAF3F1;overflow:hidden}
+.board::before{content:"";position:absolute;left:0;top:0;bottom:0;width:10px;background:repeating-linear-gradient(-45deg,var(--caution) 0 9px,transparent 9px 18px)}
+.board .lbl{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#8FB9B1;margin:0 0 12px 8px;display:flex;align-items:center;gap:8px}
+.board .lbl i{width:8px;height:8px;border-radius:50%;background:var(--safe);box-shadow:0 0 8px var(--safe)}
+.board .kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-left:8px}
+.kpi{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:12px 13px}
+.kpi .k{font-size:10.5px;color:#9db8b3}
+.kpi .v{font-family:'Archivo';font-weight:700;font-size:24px;margin-top:3px;display:flex;align-items:baseline;gap:6px}
+.kpi .d{font-family:'IBM Plex Mono';font-size:11px}
+.up{color:#5fd39b}.down{color:#f0b46a}
+.spark{margin:14px 8px 0;height:52px;width:calc(100% - 16px)}
+
+/* sections */
+section{padding:56px 0}
+.sec-h{max-width:60ch;margin-bottom:34px}
+.sec-h h2{font-size:clamp(24px,3.4vw,34px);margin:12px 0 10px}
+.sec-h p{color:var(--mid);font-size:16px}
+
+/* problem */
+.prob{background:var(--white);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.prob-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:820px){.prob-grid{grid-template-columns:1fr}}
+.prob-card{padding:22px;border:1px solid var(--line);border-radius:var(--r);background:var(--paper)}
+.prob-card .ic{width:42px;height:42px;border-radius:11px;background:rgba(197,52,42,.09);display:flex;align-items:center;justify-content:center;margin-bottom:13px}
+.prob-card .ic svg{width:21px;height:21px;stroke:var(--danger);fill:none;stroke-width:1.7}
+.prob-card h3{font-size:16px;margin-bottom:6px}
+.prob-card p{font-size:14px;color:var(--mid)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:820px){.steps{grid-template-columns:1fr}}
+.step{position:relative;padding:24px;border:1px solid var(--line);border-radius:var(--r);background:var(--white);box-shadow:var(--sh)}
+.step .no{font-family:'IBM Plex Mono';font-size:12px;color:var(--teal-d);background:var(--teal-t);border:1px solid rgba(12,109,125,.2);width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:600;margin-bottom:14px}
+.step .ic{width:26px;height:26px;stroke:var(--teal);fill:none;stroke-width:1.7;margin-bottom:10px}
+.step h3{font-size:17px;margin-bottom:7px}
+.step p{font-size:14px;color:var(--mid)}
+.step .tag{display:inline-block;margin-top:12px;font-family:'IBM Plex Mono';font-size:10.5px;color:var(--mid);background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:4px 9px}
+
+/* benefits */
+.bene{background:var(--white);border-top:1px solid var(--line)}
+.bene-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:820px){.bene-grid{grid-template-columns:1fr}}
+.bcard{padding:22px;border:1px solid var(--line);border-radius:var(--r);transition:transform .3s var(--ease),box-shadow .3s}
+.bcard:hover{transform:translateY(-3px);box-shadow:var(--sh)}
+.bcard .ic{width:44px;height:44px;border-radius:12px;background:var(--teal-t);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.bcard .ic svg{width:22px;height:22px;stroke:var(--teal);fill:none;stroke-width:1.7}
+.bcard h3{font-size:16px;margin-bottom:7px}
+.bcard p{font-size:14px;color:var(--mid)}
+
+/* demo band */
+.demo{background:linear-gradient(150deg,#0f2b31,var(--teal-d));color:#EAF3F1;border-radius:22px;padding:38px;display:flex;align-items:center;gap:28px;flex-wrap:wrap;box-shadow:0 30px 60px -30px rgba(14,22,21,.6)}
+.demo h2{color:#fff;font-size:clamp(22px,3vw,30px);max-width:16ch}
+.demo p{color:#BcD6DA;margin-top:10px;max-width:44ch;font-size:15px}
+.demo .sp{flex:1;min-width:20px}
+.demo .btn-w{background:#fff;color:var(--teal-d)}
+.demo .btn-w:hover{transform:translateY(-2px)}
+.demo .btn-o{background:transparent;color:#fff;border-color:rgba(255,255,255,.4)}
+.demo .btn-o:hover{background:rgba(255,255,255,.1)}
+
+/* offer */
+.offer-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:stretch}
+@media(max-width:820px){.offer-grid{grid-template-columns:1fr}}
+.ocard{padding:26px;border:1px solid var(--line);border-radius:var(--r);background:var(--white);display:flex;flex-direction:column}
+.ocard .t{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:10px}
+.ocard h3{font-size:20px;margin-bottom:6px}
+.ocard .price{font-family:'Archivo';font-weight:700;font-size:15px;color:var(--mid);margin-bottom:14px}
+.ocard ul{list-style:none;display:flex;flex-direction:column;gap:9px;margin-top:auto}
+.ocard li{position:relative;padding-left:26px;font-size:14px;color:var(--ink)}
+.ocard li::before{content:"";position:absolute;left:0;top:4px;width:16px;height:16px;border-radius:50%;background:var(--teal-t);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230C6D7D' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");background-size:10px;background-repeat:no-repeat;background-position:center}
+.note{margin-top:18px;font-size:13px;color:var(--faint);text-align:center}
+
+/* final cta */
+.final{text-align:center;padding:64px 0}
+.final h2{font-size:clamp(26px,4vw,40px);max-width:20ch;margin:14px auto 12px}
+.final p{color:var(--mid);max-width:46ch;margin:0 auto 24px;font-size:16px}
+.final .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* footer */
+footer{background:var(--board);color:#B9C7C4;padding:30px 0}
+footer .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:13px}
+footer .brand b{color:#fff}
+footer .brand small{color:#7fa39d}
+footer .sp{flex:1}
+
+.rv{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.rv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Digital HSE, accueil">
+      <svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#0C6D7D"/><path d="M20 9c-6 3-9 5-9 5s0 8 4 12 5 4 5 4 1 0 5-4 4-12 4-12-3-2-9-5Z" stroke="#EAF3F1" stroke-width="2"/><circle cx="20" cy="19.5" r="3.4" fill="#EAF3F1"/></svg>
+      <span><b>Digital HSE</b><small>Reporting automatisé</small></span>
+    </a>
+    <div class="sp"></div>
+    <a class="lk" href="#solution">La solution</a>
+    <a class="lk" href="#benefices">Bénéfices</a>
+    <a class="lk" href="#offre">Offre</a>
+    <a class="btn btn-p" href="#contact"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>Demander une démo</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="wrap grid">
+    <div>
+      <div class="eyebrow">Pour les responsables HSE</div>
+      <h1>Votre reporting HSE, fait en <span class="g">10 minutes</span> au lieu de 2 jours.</h1>
+      <p class="lead">Digital HSE transforme vos chiffres bruts en graphiques, analyse et rapport professionnel conforme aux normes internationales. Sans Excel, sans ressaisie, sans technicien.</p>
+      <div class="cta">
+        <a class="btn btn-p" href="#contact"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>Demander une démo gratuite</a>
+        <a class="btn btn-g" href="https://digital-hse.pages.dev/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>Voir la démo en ligne</a>
+      </div>
+      <div class="trust">
+        <span>ISO 45001</span><span>ISO 14001</span><span>GRI</span><span>OIT / BIT</span>
+      </div>
+    </div>
+
+    <div class="board rv">
+      <div class="lbl"><i></i>Cockpit sécurité · aperçu</div>
+      <div class="kpis">
+        <div class="kpi"><div class="k">Taux de fréquence</div><div class="v">2,1 <span class="d up">−18%</span></div></div>
+        <div class="kpi"><div class="k">Jours sans accident</div><div class="v">128</div></div>
+        <div class="kpi"><div class="k">Presqu'accidents</div><div class="v">34 <span class="d up">+21%</span></div></div>
+        <div class="kpi"><div class="k">Déchets valorisés</div><div class="v">62<span class="d">%</span></div></div>
+      </div>
+      <svg class="spark" viewBox="0 0 380 52" preserveAspectRatio="none" aria-hidden="true">
+        <defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5fd39b" stop-opacity=".35"/><stop offset="1" stop-color="#5fd39b" stop-opacity="0"/></linearGradient></defs>
+        <polygon fill="url(#sg)" points="0,14 54,20 108,27 163,31 217,29 271,38 325,42 380,46 380,52 0,52"/>
+        <polyline fill="none" stroke="#5fd39b" stroke-width="2.5" points="0,14 54,20 108,27 163,31 217,29 271,38 325,42 380,46"/>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<!-- PROBLEM -->
+<section class="prob">
+  <div class="wrap">
+    <div class="sec-h">
+      <div class="eyebrow">Le problème</div>
+      <h2>Le reporting HSE à la main coûte cher en temps.</h2>
+      <p>Chaque mois, il faut prouver que l'entreprise gère bien ses employés, sa pollution et sa sécurité. Aujourd'hui, tout se fait dans Excel.</p>
+    </div>
+    <div class="prob-grid">
+      <div class="prob-card rv"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><h3>Long et pénible</h3><p>Deux jours par mois à recopier des chiffres, refaire des tableaux et bricoler des graphiques.</p></div>
+      <div class="prob-card rv"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg></div><h3>Sources d'erreurs</h3><p>Une formule fausse, une donnée oubliée, un taux mal calculé, et le rapport perd sa crédibilité.</p></div>
+      <div class="prob-card rv"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 4h16v13H4z"/><path d="M4 21h16M9 9l2 2 4-4"/></svg></div><h3>Pas toujours conforme</h3><p>Le rendu final n'est pas toujours propre ni aligné sur les référentiels attendus par la direction ou l'auditeur.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section id="solution">
+  <div class="wrap">
+    <div class="sec-h">
+      <div class="eyebrow">La solution</div>
+      <h2>Vous fournissez la matière brute. L'outil rend un livrable fini.</h2>
+      <p>Digital HSE réunit vos données sociales, environnementales et de sécurité dans une base commune, puis fait le reste tout seul.</p>
+    </div>
+    <div class="steps">
+      <div class="step rv"><div class="no">1</div><svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M4 7V5h16v2M4 7l1 12h14l1-12M9 11v4m6-4v4"/></svg><h3>Vous saisissez</h3><p>Au clavier via un formulaire guidé, ou en important votre fichier Excel. Zéro ressaisie, contrôle automatique des valeurs aberrantes.</p><span class="tag">Social · Environnement · Sécurité</span></div>
+      <div class="step rv"><div class="no">2</div><svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg><h3>L'outil analyse</h3><p>Il calcule les indicateurs normés, trace les courbes d'évolution, et l'IA rédige une analyse ancrée dans vos vrais chiffres.</p><span class="tag">Graphiques + interprétation IA</span></div>
+      <div class="step rv"><div class="no">3</div><svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg><h3>Vous exportez</h3><p>Un rapport professionnel, structuré selon les normes, prêt à envoyer à la direction ou à l'auditeur.</p><span class="tag">PDF · Word · Excel</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section class="bene" id="benefices">
+  <div class="wrap">
+    <div class="sec-h">
+      <div class="eyebrow">Pourquoi Digital HSE</div>
+      <h2>Du temps gagné, un rapport crédible.</h2>
+    </div>
+    <div class="bene-grid">
+      <div class="bcard rv"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><h3>2 jours → 10 minutes</h3><p>L'essentiel de votre temps de reporting mensuel, rendu à votre vrai travail de terrain.</p></div>
+      <div class="bcard rv"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V6Z"/><path d="m9 12 2 2 4-4"/></svg></div><h3>Conforme aux normes</h3><p>Rapport structuré selon ISO 45001, ISO 14001, GRI et les indicateurs OIT / BIT.</p></div>
+      <div class="bcard rv"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 16l5-6 4 3 7-9"/><path d="M17 4h4v4"/></svg></div><h3>Évolutions dans le temps</h3><p>Chaque saisie est horodatée : vos courbes (déchets, accidents, effectifs) se tracent toutes seules.</p></div>
+      <div class="bcard rv"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div><h3>Sans silos</h3><p>Social, environnement et sécurité dans une base unique. On croise les données, on ne les cloisonne pas.</p></div>
+      <div class="bcard rv"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div><h3>Extensible</h3><p>Un nouveau type de déchet, de contrat ou d'indicateur s'ajoute sans refonte de l'outil.</p></div>
+      <div class="bcard rv"><div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div><h3>Données sécurisées</h3><p>Espace privé par entreprise, accès par compte, historique conservé et sauvegardé.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO BAND -->
+<section>
+  <div class="wrap">
+    <div class="demo rv">
+      <div>
+        <h2>Voyez-le fonctionner, avec de vraies données.</h2>
+        <p>Une démonstration interactive est en ligne : cockpit, courbes d'évolution, saisie et rapport. Regardez, cliquez, jugez.</p>
+      </div>
+      <div class="sp"></div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a class="btn btn-w" href="https://digital-hse.pages.dev/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>Ouvrir la démo</a>
+        <a class="btn btn-o" href="https://digital-hse.pages.dev/docs/Guide-Digital-HSE.pdf" target="_blank" rel="noopener">Le guide (PDF)</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OFFER -->
+<section id="offre">
+  <div class="wrap">
+    <div class="sec-h">
+      <div class="eyebrow">L'offre</div>
+      <h2>Simple : une mise en service, puis un abonnement.</h2>
+      <p>Nous configurons l'outil à vos indicateurs et vos sites, nous formons votre équipe, et vous en profitez chaque mois.</p>
+    </div>
+    <div class="offer-grid">
+      <div class="ocard rv">
+        <div class="t">Une fois</div>
+        <h3>Mise en service</h3>
+        <div class="price">Selon vos indicateurs et vos sites</div>
+        <ul>
+          <li>Configuration de vos indicateurs HSE</li>
+          <li>Import de votre historique existant</li>
+          <li>Formation de votre équipe</li>
+          <li>Mise en ligne de votre espace privé</li>
+        </ul>
+      </div>
+      <div class="ocard rv">
+        <div class="t">Chaque mois</div>
+        <h3>Abonnement</h3>
+        <div class="price">Selon le nombre de sites et d'utilisateurs</div>
+        <ul>
+          <li>Accès complet à la plateforme</li>
+          <li>Analyses IA et rapports illimités</li>
+          <li>Hébergement, sauvegarde et sécurité</li>
+          <li>Mises à jour et support</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">Tarif établi sur devis, adapté à votre entreprise. Demandez une démonstration : nous chiffrons ensemble.</p>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final" id="contact">
+  <div class="wrap">
+    <div class="eyebrow" style="justify-content:center">Parlons-en</div>
+    <h2>Reprenez le contrôle de votre reporting HSE.</h2>
+    <p>Une démonstration gratuite, sans engagement. Nous partons de vos propres chiffres pour vous montrer le résultat.</p>
+    <div class="cta">
+      <a class="btn btn-p" href="https://wa.me/22996740732?text=Bonjour%2C%20je%20souhaite%20une%20d%C3%A9monstration%20de%20Digital%20HSE" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 20Z"/></svg>Demander une démo sur WhatsApp</a>
+      <a class="btn btn-g" href="https://digital-hse.pages.dev/" target="_blank" rel="noopener">Voir la démo d'abord</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span class="brand" style="display:flex;align-items:center;gap:10px">
+      <svg viewBox="0 0 40 40" fill="none" style="width:30px;height:30px"><rect width="40" height="40" rx="10" fill="#0C6D7D"/><path d="M20 9c-6 3-9 5-9 5s0 8 4 12 5 4 5 4 1 0 5-4 4-12 4-12-3-2-9-5Z" stroke="#EAF3F1" stroke-width="2"/><circle cx="20" cy="19.5" r="3.4" fill="#EAF3F1"/></svg>
+      <span><b style="font-family:'Archivo';font-weight:800">Digital HSE</b><br><small class="mono" style="font-size:10px;letter-spacing:.15em">UN PRODUIT NEBULA AGENCY</small></span>
+    </span>
+    <div class="sp"></div>
+    <span>Reporting HSE automatisé · Afrique de l'Ouest &amp; international</span>
+  </div>
+</footer>
+
+<script>
+var io=('IntersectionObserver'in window)?new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.14,rootMargin:'0px 0px -6% 0px'}):null;
+document.querySelectorAll('.rv').forEach(function(el){io?io.observe(el):el.classList.add('in');});
+</script>
+</body>
+</html>
