@@ -368,6 +368,42 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
   .dm-side{border-left:none;border-top:1px solid var(--line);position:static;order:2}
 }
 
+/* ---------- NOVA · assistant IA (chat) ---------- */
+.nova-fab{position:fixed;right:20px;bottom:20px;z-index:95;display:inline-flex;align-items:center;gap:9px;
+  padding:11px 18px 11px 15px;border-radius:999px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:600;font-size:.9rem;color:#fff;
+  background:linear-gradient(120deg,var(--blue),var(--violet));box-shadow:0 14px 34px -12px rgba(124,92,255,.75),inset 0 1px 0 rgba(255,255,255,.25);
+  transition:transform .3s var(--ease),box-shadow .3s}
+.nova-fab:hover{transform:translateY(-2px);box-shadow:0 20px 44px -14px rgba(124,92,255,.9)}
+.nova-fab .ncd{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 0 0 rgba(34,211,238,.6);animation:pulse 2s infinite}
+.nova-fab svg{width:17px;height:17px;fill:none;stroke:#fff;stroke-width:1.9}
+@media(max-width:520px){.nova-fab .ntxt{display:none}.nova-fab{padding:13px;gap:0}}
+.nova-panel{position:fixed;right:20px;bottom:20px;z-index:96;width:min(370px,calc(100vw - 32px));height:min(560px,calc(100vh - 40px));
+  display:flex;flex-direction:column;background:var(--bg2);border:1px solid var(--line2);border-radius:20px;overflow:hidden;
+  box-shadow:0 40px 100px -30px rgba(0,0,0,.7);opacity:0;transform:translateY(20px) scale(.98);pointer-events:none;transition:.35s var(--easeExpo)}
+.nova-panel.on{opacity:1;transform:none;pointer-events:auto}
+.nova-head{display:flex;align-items:center;gap:11px;padding:15px 16px;border-bottom:1px solid var(--line);background:linear-gradient(120deg,rgba(79,111,255,.10),rgba(147,51,234,.08))}
+.nova-av{width:36px;height:36px;flex:none;border-radius:11px;background:linear-gradient(120deg,var(--blue),var(--violet));display:flex;align-items:center;justify-content:center;position:relative}
+.nova-av svg{width:19px;height:19px;fill:none;stroke:#fff;stroke-width:1.7}
+.nova-av .nco{position:absolute;right:-2px;bottom:-2px;width:11px;height:11px;border-radius:50%;background:var(--cyan);border:2px solid var(--bg2)}
+.nova-head b{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;display:block;line-height:1.1}
+.nova-head small{color:var(--text3);font-size:.72rem}
+.nova-head .ncx{margin-left:auto;width:32px;height:32px;border:none;background:none;color:var(--text3);cursor:pointer;font-size:20px;line-height:1;border-radius:8px;transition:.2s}
+.nova-head .ncx:hover{background:var(--panel);color:var(--text)}
+.nova-log{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.nova-msg{max-width:82%;padding:10px 13px;border-radius:14px;font-size:.88rem;line-height:1.5;white-space:pre-wrap;word-wrap:break-word}
+.nova-msg.a{align-self:flex-start;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-bottom-left-radius:5px}
+.nova-msg.u{align-self:flex-end;background:linear-gradient(120deg,var(--blue),var(--violet));color:#fff;border-bottom-right-radius:5px}
+.nova-typing{display:inline-flex;gap:4px}
+.nova-typing i{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:novabounce 1.2s infinite}
+.nova-typing i:nth-child(2){animation-delay:.15s}.nova-typing i:nth-child(3){animation-delay:.3s}
+@keyframes novabounce{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+.nova-foot{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);background:var(--bg)}
+.nova-foot input{flex:1;background:var(--panel);border:1px solid var(--line2);border-radius:11px;padding:11px 13px;color:var(--text);font-family:inherit;font-size:.9rem;outline:none}
+.nova-foot input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,111,255,.18)}
+.nova-foot button{width:42px;flex:none;border:none;border-radius:11px;cursor:pointer;color:#fff;font-size:16px;background:linear-gradient(120deg,var(--blue),var(--violet));transition:.2s}
+.nova-foot button:hover{transform:translateY(-1px)}
+@media(prefers-reduced-motion:reduce){.nova-fab .ncd,.nova-typing i{animation:none}}
+
 /* ---------- animations signatures par section (toutes différentes) ---------- */
 /* TRUST · comète filante */
 .sig-trust{position:relative;overflow:hidden}
@@ -448,7 +484,7 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
 }
 
 /* ---------- audio + fab ---------- */
-.audio-toggle{position:fixed;right:20px;bottom:20px;z-index:90;width:46px;height:46px;border-radius:50%;
+.audio-toggle{position:fixed;right:20px;bottom:86px;z-index:90;width:46px;height:46px;border-radius:50%;
   border:1px solid var(--line2);background:rgba(10,12,26,.8);backdrop-filter:blur(10px);color:var(--text2);
   display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.3s}
 .audio-toggle:hover{color:var(--blue2);border-color:var(--blue2);transform:scale(1.06)}
@@ -961,6 +997,45 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
     </div>
   </div>
 </div>
+
+<!-- NOVA · assistant IA de NEBULA Agency -->
+<button class="nova-fab" id="novaFab" type="button" aria-label="Discuter avec NOVA">
+  <span class="ncd" aria-hidden="true"></span>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-4 4V6a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2Z"/></svg>
+  <span class="ntxt">Discuter avec NOVA</span>
+</button>
+<div class="nova-panel" id="novaPanel" role="dialog" aria-label="NOVA, assistant NEBULA Agency">
+  <div class="nova-head">
+    <span class="nova-av"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.5 5 5.5.8-4 3.9 1 5.5L12 21l-5-2.8 1-5.5-4-3.9 5.5-.8Z"/></svg><span class="nco"></span></span>
+    <div><b>NOVA</b><small>L'assistant de NEBULA Agency</small></div>
+    <button class="ncx" id="novaClose" type="button" aria-label="Fermer">&times;</button>
+  </div>
+  <div class="nova-log" id="novaLog"></div>
+  <div class="nova-foot"><input id="novaInput" placeholder="Posez votre question…" autocomplete="off"><button id="novaSend" type="button" aria-label="Envoyer">&#10148;</button></div>
+</div>
+<script>
+(function(){
+  var API='https://nebula-affilies-production.up.railway.app/api/agency-chat';
+  var fab=document.getElementById('novaFab'),panel=document.getElementById('novaPanel'),
+      log=document.getElementById('novaLog'),input=document.getElementById('novaInput'),
+      sendBtn=document.getElementById('novaSend'),closeBtn=document.getElementById('novaClose');
+  var hist=[],greeted=false,isOpen=false,busy=false;
+  function add(who,text){var m=document.createElement('div');m.className='nova-msg '+(who==='u'?'u':'a');m.textContent=text;log.appendChild(m);log.scrollTop=log.scrollHeight;return m;}
+  function greet(){if(greeted)return;greeted=true;add('a',"Bonjour, je suis NOVA, l'assistant de NEBULA Agency. Posez-moi vos questions sur nos vitrines, catalogues, logiciels métier (SaaS vertical), délais et tarifs — je suis là pour vous aider.");}
+  function toggle(){isOpen=!isOpen;panel.classList.toggle('on',isOpen);if(isOpen){greet();setTimeout(function(){input.focus();},250);}}
+  function ask(){
+    if(busy)return;var msg=input.value.trim();if(!msg)return;input.value='';busy=true;
+    add('u',msg);hist.push({role:'user',content:msg});
+    var t=document.createElement('div');t.className='nova-msg a';t.innerHTML='<span class="nova-typing"><i></i><i></i><i></i></span>';log.appendChild(t);log.scrollTop=log.scrollHeight;
+    fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:hist.slice(-8)})})
+      .then(function(r){return r.json();})
+      .then(function(d){t.remove();var rep=(d&&d.reply)||"Désolé, réessayez dans un instant.";add('a',rep);hist.push({role:'assistant',content:rep});busy=false;})
+      .catch(function(){t.remove();add('a',"Petite coupure. Réessayez, ou écrivez-nous sur WhatsApp au +229 96 74 07 32.");busy=false;});
+  }
+  fab.onclick=toggle;closeBtn.onclick=toggle;sendBtn.onclick=ask;
+  input.addEventListener('keydown',function(e){if(e.key==='Enter')ask();});
+})();
+</script>
 
 <audio id="jazz" src="audio/jazz-loop.mp3" loop preload="none"></audio>
 <button class="audio-toggle" id="audioToggle" aria-label="Musique d'ambiance" type="button">
