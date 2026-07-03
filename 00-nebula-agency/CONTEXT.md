@@ -39,11 +39,27 @@ modifications. *(Corrigé le 2026-06-20 : était affiché par erreur « /mois »
 
 ## État
 
-- **Version actuelle** : **v9.5** (`nebula_agency_v9.html` = `index.html` en prod ; + service phare Digitalisation sectorielle / SaaS vertical)
+- **Version actuelle** : **v9.6** (`nebula_agency_v9.html` = `index.html` en prod ; + configurateur de devis SaaS vertical + email auto)
 - **Statut** : **LIVE** https://www.nebula-agency.online (Cloudflare Pages, projet `nebula-agency`, déployé 2026-07-02)
 - **v8 conservé** (`nebula_agency_v8.html`) pour retour arrière.
 
 ### Historique des versions
+
+#### v9.6 — 2026-07-03 (configurateur de devis SaaS vertical + email auto)
+- **Modale de devis** (`#devisModal`) ouverte par le bouton du service phare : le client
+  choisit secteur, point de départ, 9 fonctionnalités, ampleur (utilisateurs/sites/
+  contenus/délai), coordonnées → **estimation calculée EN DIRECT** (mise en service /
+  abonnement / acompte) puis **envoi du devis chiffré sur WhatsApp**.
+- **Grille de prix** isolée dans l'objet JS `DEVIS` (éditable par Mongazi). Décisions Mongazi :
+  **plancher 300 000 F** (`DEVIS.min`, jamais en dessous) · affichage **« à partir de »** ·
+  **abonnement /6 mois** (semestre, comme les vitrines) · le prix sort automatiquement selon
+  ce que veut le client (pas de négociation).
+- **Email automatique du devis au client** : `nebula-affilies/server.py` → nouvelle fonction
+  `send_devis_email()` (Resend) ; `/api/site-lead` envoie l'email si `devis_email:true` + email.
+  ✅ **ACTIF EN PROD** : Railway auto-déploie à chaque push (service `nebula-affilies`, projet
+  `impartial-achievement`) — commit `6603dde` déployé RUNNING. ⚠️ Railway = **auto-deploy on
+  push main** (pas besoin de `railway up`, juste pousser).
+- QC : JS vérifié `node --check`, `server.py` `py_compile` OK, déployé + vérifié 200.
 
 #### v9.5 — 2026-07-03 (service phare « Digitalisation sectorielle / SaaS vertical »)
 - **Nouveau bloc `.vsaas`** ajouté en bas de la section Services (sous les 3 cartes) :
