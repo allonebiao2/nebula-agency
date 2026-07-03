@@ -713,6 +713,36 @@ def send_access_email(to: str, name: str, code: str, pin: str, parrain_name: Opt
     except Exception as e:
         return {"ok": False, "error": str(e)}
 
+def send_devis_email(to: str, name: str, devis_text: str) -> Dict[str, Any]:
+    """Envoie automatiquement le devis/brief au client par email (Resend). Ne lève jamais."""
+    key = os.getenv("RESEND_API_KEY", "")
+    to = (to or "").strip()
+    if not key or "@" not in to or not devis_text:
+        return {"ok": False, "error": "email, clé Resend ou contenu indisponible"}
+    frm_addr = os.getenv("EMAIL_FROM_ADDRESS", "").strip() or "onboarding@resend.dev"
+    frm_name = os.getenv("EMAIL_FROM_NAME", "").strip() or "NEBULA Agency"
+    import html as _html
+    body = _html.escape(devis_text).replace("\n", "<br>")
+    html_body = (
+        "<div style=\"font-family:Arial,Helvetica,sans-serif;background:#0a0c1a;color:#e7ecf5;padding:28px;border-radius:14px;max-width:600px;margin:auto\">"
+        "<h2 style=\"margin:0 0 4px;color:#fff\">NEBULA Agency</h2>"
+        "<p style=\"color:#8aa0ff;font-size:13px;margin:0 0 18px\">Votre devis &mdash; Digitalisation sectorielle</p>"
+        f"<div style=\"background:#11142a;border:1px solid #24284a;border-radius:12px;padding:18px;font-size:14px;line-height:1.6\">{body}</div>"
+        "<p style=\"color:#9aa3c0;font-size:12px;margin-top:18px\">Estimation indicative, confirmée sous 2h. WhatsApp : +229 96 74 07 32 &middot; nebula-agency.online</p>"
+        "</div>")
+    payload = {"from": f"{frm_name} <{frm_addr}>", "to": [to],
+               "subject": "Votre devis NEBULA — Digitalisation sectorielle", "html": html_body}
+    reply = os.getenv("EMAIL_REPLY_TO", "").strip()
+    if reply:
+        payload["reply_to"] = reply
+    try:
+        r = httpx.post("https://api.resend.com/emails",
+                       headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+                       json=payload, timeout=20)
+        return {"ok": r.status_code in (200, 201)}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
 # ----------------------------------------------------------------------------
 # Seed : compte démo pour cliquer tout de suite
 # ----------------------------------------------------------------------------
@@ -1064,6 +1094,13 @@ async def create_site_lead(req: Request):
     notify("admin", 0, f"NOUVEAU CLIENT (site) : {nom} ({numero}) — {svc}", lead_id, kind="client")
     # Brief complet en second message Telegram (lisible, hors fil de notif in-app)
     tg_admin(f"📝 Brief de {nom} ({numero}) :\n\n{brief or '(pas de description)'}")
+    # Devis par email au client (site : bouton "Recevoir mon devis sur WhatsApp" du configurateur SaaS vertical)
+    email = clean(d.get("email"), 120)
+    if d.get("devis_email") and email and "@" in email:
+        try:
+            send_devis_email(email, nom, brief)
+        except Exception:
+            pass
     return {"ok": True}
 
 @app.post("/api/recruit")
