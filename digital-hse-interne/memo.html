@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Digital HSE · Le projet expliqué simplement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  @page{ size:A4; margin:14mm 15mm; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--ink:#141B1D;--mid:#43514f;--faint:#8A989B;--line:#DBE2E0;--teal:#0C6D7D;--teal-d:#084E5A;
+    --teal-t:#E7F0F1;--paper:#F5F7F6;--safe:#157A4E;--safe-t:#E6F1EC;--caution:#E0930F;--caution-t:#FDF3E0;--danger:#C5342A}
+  body{font-family:'IBM Plex Sans','Segoe UI',sans-serif;color:var(--ink);font-size:11pt;line-height:1.55}
+  h1,h2,h3{font-family:'Archivo','Segoe UI',sans-serif;letter-spacing:-.01em}
+  p{margin-bottom:9px}
+  strong{font-weight:600}
+  .mono{font-family:'IBM Plex Mono',monospace}
+
+  /* cover header */
+  .top{display:flex;align-items:center;gap:14px;border-bottom:2px solid var(--ink);padding-bottom:13px;margin-bottom:16px}
+  .logo{width:44px;height:44px;flex:none}
+  .brand b{font-family:'Archivo';font-weight:800;font-size:22pt;letter-spacing:.01em;display:block;line-height:1}
+  .brand small{font-family:'IBM Plex Mono';font-size:8pt;letter-spacing:.18em;text-transform:uppercase;color:var(--teal)}
+  .top .rt{margin-left:auto;text-align:right;font-size:9pt;color:var(--mid)}
+  .top .rt b{font-family:'Archivo';font-size:12pt;color:var(--ink);display:block}
+
+  .hello{background:var(--teal-t);border:1px solid #BcD6DA;border-radius:12px;padding:14px 16px;margin-bottom:18px;font-size:11.5pt}
+  .hello b{color:var(--teal-d)}
+
+  .sec{margin-bottom:16px;break-inside:avoid}
+  .sec-h{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .sec-h .n{font-family:'Archivo';font-weight:800;font-size:12pt;color:#fff;background:var(--teal);width:27px;height:27px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex:none}
+  .sec-h h2{font-size:15pt}
+
+  .beforeafter{display:flex;gap:12px}
+  .ba{flex:1;border:1px solid var(--line);border-radius:11px;padding:13px 15px}
+  .ba.a{background:#FBF0EE;border-color:#F0D3CE}
+  .ba.b{background:var(--safe-t);border-color:#C3E2D0}
+  .ba .lab{font-family:'IBM Plex Mono';font-size:8.5pt;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+  .ba.a .lab{color:var(--danger)} .ba.b .lab{color:var(--safe)}
+  .ba p{font-size:10pt;margin:0;color:var(--mid)}
+
+  ul{list-style:none;margin:6px 0}
+  ul li{position:relative;padding-left:24px;margin-bottom:6px;font-size:10.5pt}
+  .status li::before{position:absolute;left:0;top:0;font-family:'Archivo';font-weight:800;font-size:11pt}
+  .st-ok li::before{content:"✓";color:var(--safe)}
+  .st-soon li::before{content:"◷";color:var(--caution)}
+  .st-next li::before{content:"→";color:var(--teal)}
+
+  .links{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .lrow{display:flex;align-items:center;gap:12px;padding:11px 15px;border-bottom:1px solid var(--line)}
+  .lrow:last-child{border-bottom:none}
+  .lrow .ic{width:34px;height:34px;border-radius:9px;background:var(--teal-t);display:flex;align-items:center;justify-content:center;flex:none}
+  .lrow .ic svg{width:17px;height:17px;stroke:var(--teal);fill:none;stroke-width:1.8}
+  .lrow .tx{flex:1}
+  .lrow .tx b{font-size:11pt}
+  .lrow .tx div{font-size:9pt;color:var(--mid)}
+  .lrow .url{font-family:'IBM Plex Mono';font-size:8.5pt;color:var(--teal-d);word-break:break-all;max-width:6.5cm;text-align:right}
+
+  .money{display:flex;gap:12px;align-items:stretch}
+  .mbox{flex:1;border:1px solid var(--line);border-radius:11px;padding:13px 15px;background:var(--paper)}
+  .mbox .k{font-size:9pt;color:var(--mid)}
+  .mbox .v{font-family:'Archivo';font-weight:800;font-size:20pt;margin:3px 0}
+  .mbox.cost .v{color:var(--caution)} .mbox.gain .v{color:var(--safe)}
+  .mbox .s{font-size:9pt;color:var(--faint)}
+
+  .callout{break-inside:avoid;display:flex;gap:10px;background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:12px 14px;margin:8px 0;font-size:10.5pt}
+  .callout .em{font-family:'Archivo';font-weight:800;color:var(--teal-d)}
+
+  .gloss{border:1px solid var(--line);border-radius:11px;overflow:hidden}
+  .grow{display:flex;gap:12px;padding:9px 14px;border-bottom:1px solid var(--line);font-size:10pt}
+  .grow:last-child{border-bottom:none}
+  .grow b{flex:none;width:3.2cm;color:var(--teal-d)}
+  .grow span{color:var(--mid)}
+
+  .foot{margin-top:16px;padding-top:9px;border-top:1px solid var(--line);display:flex;justify-content:space-between;font-size:8pt;color:var(--faint)}
+</style>
+</head>
+<body>
+
+  <div class="top">
+    <svg class="logo" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="#0C6D7D"/><path d="M20 9c-6 3-9 5-9 5s0 8 4 12 5 4 5 4 1 0 5-4 4-12 4-12-3-2-9-5Z" stroke="#EAF3F1" stroke-width="2"/><circle cx="20" cy="19.5" r="3.4" fill="#EAF3F1"/></svg>
+    <div class="brand"><b>Digital HSE</b><small>Le projet expliqué simplement</small></div>
+    <div class="rt"><b>Mémo pour Mongazi</b>Version 1 · 3 juillet 2026<br>Mis à jour à chaque étape</div>
+  </div>
+
+  <div class="hello">
+    <b>Ce document est fait pour vous.</b> Pas de jargon. Il explique, en mots simples, ce qu'est Digital HSE, où on en est, combien ça peut rapporter, et ce qu'il reste à faire. Gardez-le sous la main : on le mettra à jour au fil du projet.
+  </div>
+
+  <!-- 1 -->
+  <div class="sec">
+    <div class="sec-h"><span class="n">1</span><h2>C'est quoi, en une phrase</h2></div>
+    <p>Digital HSE est un <strong>outil en ligne pour les responsables sécurité et environnement des usines</strong>. Ils lui donnent des chiffres simples, et l'outil leur rend un <strong>rapport professionnel, propre et aux normes</strong>, en quelques minutes.</p>
+    <div class="beforeafter">
+      <div class="ba a"><div class="lab">Aujourd'hui, sans nous</div><p>Le responsable passe <strong>2 jours</strong> chaque mois à recopier des chiffres dans Excel, refaire des tableaux, et son rapport n'est pas toujours propre.</p></div>
+      <div class="ba b"><div class="lab">Avec Digital HSE</div><p>Il tape ses chiffres (ou importe son fichier), et l'outil fait tout : calculs, graphiques, analyse écrite et rapport final. <strong>10 minutes.</strong></p></div>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="sec">
+    <div class="sec-h"><span class="n">2</span><h2>Où on en est aujourd'hui</h2></div>
+    <p><strong>Important :</strong> ce que vous voyez en ligne pour l'instant est une <strong>maquette</strong> — une vitrine qui montre exactement à quoi l'outil ressemblera et comment il marche. Le « moteur » qui enregistre vraiment les données pour de bon se construit <strong>après</strong>, une fois le client d'accord.</p>
+    <ul class="status st-ok">
+      <li><strong>La maquette est en ligne</strong> (5 écrans) : on peut la montrer à n'importe quel client.</li>
+      <li><strong>Le guide d'utilisation</strong> (PDF) est prêt et téléchargeable.</li>
+      <li><strong>La plaquette de vente</strong> est en ligne, prête à envoyer.</li>
+      <li><strong>Les vrais chiffres de juin de Geovanni</strong> sont déjà dans la démo (il verra ses propres données).</li>
+    </ul>
+    <ul class="status st-soon">
+      <li><strong>Le vrai moteur</strong> (enregistrer les données, brancher l'intelligence artificielle, sortir les vrais Word / Excel / PDF) : à construire après la rencontre.</li>
+    </ul>
+    <ul class="status st-next">
+      <li><strong>Prochaine étape : la rencontre avec Geovanni, samedi.</strong></li>
+    </ul>
+  </div>
+
+  <!-- 3 -->
+  <div class="sec">
+    <div class="sec-h"><span class="n">3</span><h2>Vos liens (à montrer ou à garder)</h2></div>
+    <div class="links">
+      <div class="lrow"><div class="ic"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></div><div class="tx"><b>La démo (l'outil en images)</b><div>À montrer au client pour qu'il voie le produit</div></div><div class="url">digital-hse.pages.dev</div></div>
+      <div class="lrow"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 21c-5-4-8-8-8-12a8 8 0 0 1 16 0c0 4-3 8-8 12Z"/></svg></div><div class="tx"><b>La plaquette de vente</b><div>La page qui explique et donne envie d'acheter</div></div><div class="url">digital-hse.pages.dev/presentation.html</div></div>
+      <div class="lrow"><div class="ic"><svg viewBox="0 0 24 24"><path d="M5 4a1 1 0 0 1 1-1h12v14H6a2 2 0 0 0-2 2V4Z"/><path d="M9 7h6"/></svg></div><div class="tx"><b>Le guide d'utilisation</b><div>Pour apprendre à se servir de l'outil</div></div><div class="url">…/docs/Guide-Digital-HSE.pdf</div></div>
+      <div class="lrow"><div class="ic"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="tx"><b>Les questions pour la rencontre</b><div>À poser à Geovanni samedi</div></div><div class="url">…/docs/Digital-HSE_Questions-client.pdf</div></div>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="sec">
+    <div class="sec-h"><span class="n">4</span><h2>À qui on vend, et pourquoi ils achètent</h2></div>
+    <p>On vend aux <strong>entreprises industrielles</strong> (usines, sociétés qui ont un responsable sécurité / environnement). Ce ne sont pas de petits commerçants : ce sont des sociétés avec un vrai budget.</p>
+    <p>Ils achètent pour <strong>deux raisons simples</strong> : gagner du temps (2 jours par mois), et avoir un rapport <strong>crédible et conforme</strong> à montrer à leur direction ou à un contrôleur. C'est ça qu'on vend : du temps et de la crédibilité.</p>
+  </div>
+
+  <!-- 5 -->
+  <div class="sec">
+    <div class="sec-h"><span class="n">5</span><h2>L'argent : ce que ça coûte, ce que ça rapporte</h2></div>
+    <p>On ne vend pas l'outil une seule fois. On le <strong>loue</strong> : le client paie une petite installation au départ, puis un <strong>abonnement chaque mois</strong>. Tant qu'il l'utilise, il paie.</p>
+    <div class="money">
+      <div class="mbox cost"><div class="k">Ce qu'un rapport vous coûte</div><div class="v">≈ 40 F</div><div class="s">l'intelligence artificielle qui rédige l'analyse</div></div>
+      <div class="mbox gain"><div class="k">Ce qu'un client paie / mois</div><div class="v">dès 40 000 F</div><div class="s">abonnement (chiffre à valider avec le client)</div></div>
+    </div>
+    <div class="callout"><span class="em">=</span><div>Autrement dit : sur <strong>100 F</strong> que paie un client, <strong>moins de 5 F</strong> partent en coûts. Le reste couvre votre travail et votre bénéfice. Vous n'avez pas besoin de beaucoup de clients : <strong>5 usines à 75 000 F/mois = 375 000 F par mois</strong> qui rentrent, presque tout pour vous.</div></div>
+    <p style="font-size:9.5pt;color:var(--faint)">Les prix ci-dessus sont des points de départ à confirmer avec les clients. La bonne méthode : demander à Geovanni ce que ça vaut pour lui, et partir de là.</p>
+  </div>
+
+  <!-- 6 -->
+  <div class="sec">
+    <div class="sec-h"><span class="n">6</span><h2>« Est-ce qu'on peut me copier l'outil ? »</h2></div>
+    <p><strong>Non.</strong> Et c'est le point fort. L'outil ne se donne pas sous forme de fichier : il <strong>reste sur notre serveur</strong>, et chaque client s'y connecte avec son compte, comme une application.</p>
+    <ul class="status st-ok">
+      <li>Le client ne reçoit aucun fichier : il n'y a <strong>rien à copier</strong>.</li>
+      <li>Chaque entreprise a son espace privé : personne ne voit les données d'un autre.</li>
+      <li>S'il arrête de payer, on coupe l'accès. Et plus il l'utilise, plus il a d'historique dedans, plus il a besoin de rester.</li>
+    </ul>
+  </div>
+
+  <!-- 7 -->
+  <div class="sec">
+    <div class="sec-h"><span class="n">7</span><h2>La prochaine étape : samedi</h2></div>
+    <p>Rencontre avec <strong>Geovanni</strong>. Le but : bien comprendre ce dont son entreprise a besoin, avec la <strong>fiche de questions</strong> déjà prête (17 questions). Les deux plus importantes :</p>
+    <ul class="status st-next">
+      <li>À quelle <strong>fréquence</strong> il fait son rapport (chaque mois ? chaque trimestre ?).</li>
+      <li>Quelles <strong>normes</strong> son entreprise doit suivre exactement.</li>
+    </ul>
+    <p>Et si possible, lui demander <strong>un exemple de son fichier Excel</strong> et <strong>un exemple de son rapport actuel</strong> : ça nous sert de modèle pour construire le vrai outil.</p>
+    <div class="callout"><span class="em">i</span><div><strong>Astuce pour la démo :</strong> ses chiffres de juin montrent 128 employés, mais 90 + 15 + 5 = 110 contrats. L'outil repère ce genre d'écart tout seul. Montrez-lui : ça fait sérieux.</div></div>
+  </div>
+
+  <!-- 8 -->
+  <div class="sec">
+    <div class="sec-h"><span class="n">8</span><h2>Petit dictionnaire</h2></div>
+    <div class="gloss">
+      <div class="grow"><b>HSE</b><span>Hygiène, Sécurité, Environnement. Le métier de ceux qui veillent sur les employés, les accidents et la pollution dans une entreprise.</span></div>
+      <div class="grow"><b>Les normes (ISO, GRI, OIT)</b><span>Des règles internationales qui disent à quoi doit ressembler un bon rapport HSE. Notre outil suit leur structure.</span></div>
+      <div class="grow"><b>Intelligence artificielle (IA)</b><span>Ici, c'est ce qui lit les chiffres et écrit l'analyse en français (« les accidents ont baissé de 18 % … »).</span></div>
+      <div class="grow"><b>SaaS / abonnement</b><span>Vendre l'accès à un outil en ligne contre un paiement chaque mois, au lieu de vendre un logiciel une seule fois.</span></div>
+      <div class="grow"><b>Maquette / démo</b><span>Une version qui montre à quoi ça ressemble, pour convaincre, avant de construire le vrai outil qui fonctionne.</span></div>
+      <div class="grow"><b>Tableau de bord</b><span>L'écran qui montre tous les chiffres importants d'un coup d'œil, avec des couleurs (vert = bien, rouge = attention).</span></div>
+    </div>
+  </div>
+
+  <div class="foot"><span>Digital HSE · Mémo simple pour Mongazi · Version 1</span><span>Document interne NEBULA · à ne pas diffuser aux clients</span></div>
+</body>
+</html>
