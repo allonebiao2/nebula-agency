@@ -9,7 +9,15 @@
 ## Positionnement
 
 Vitrines élégantes, modernes, rapides à livrer.
-Esthétique premium accessible — pas de templates génériques.
+Esthétique premium accessible, pas de templates génériques.
+
+**Positionnement 2026-07-03 (adopté par Mongazi)** : NEBULA se positionne en **studio de
+solutions verticales / éditeur de logiciels métier** (*vertical SaaS*). Au-delà des
+vitrines, l'agence propose désormais la **digitalisation sectorielle** : concevoir un
+outil digital pensé pour le secteur du client (ex. Digital HSE pour l'industrie,
+Vendora pour le commerce). Slogan : « Un outil pensé pour votre secteur, pas un site
+générique. » Ce service phare est mis en avant sur le site (bloc `.vsaas` en bas de la
+section Services). Voir mémoire `project_positionnement-vertical`.
 
 ## Grille tarifaire actuelle (2026-05-30)
 
@@ -31,11 +39,24 @@ modifications. *(Corrigé le 2026-06-20 : était affiché par erreur « /mois »
 
 ## État
 
-- **Version actuelle** : **v9.4** (`nebula_agency_v9.html` = `index.html` en prod ; formulaire enrichi + email obligatoire)
+- **Version actuelle** : **v9.5** (`nebula_agency_v9.html` = `index.html` en prod ; + service phare Digitalisation sectorielle / SaaS vertical)
 - **Statut** : **LIVE** https://www.nebula-agency.online (Cloudflare Pages, projet `nebula-agency`, déployé 2026-07-02)
 - **v8 conservé** (`nebula_agency_v8.html`) pour retour arrière.
 
 ### Historique des versions
+
+#### v9.5 — 2026-07-03 (service phare « Digitalisation sectorielle / SaaS vertical »)
+- **Nouveau bloc `.vsaas`** ajouté en bas de la section Services (sous les 3 cartes) :
+  offre phare **« Digitalisation sectorielle : votre logiciel métier »** (badge « Nouveau ·
+  SaaS vertical », 3 atouts = Pensé pour votre secteur / Automatise votre métier / Évolue
+  avec vous, chips secteurs HSE·Commerce·Immobilier·Santé·« Votre secteur ? », CTA « Parlons
+  de votre secteur » → #order avec `setTier('Plusieurs services / besoin de conseils')`,
+  mention « Sur devis »). Panneau cosmique (dégradé + bordure gradient masquée), responsive.
+- **Chapeau Services** reformulé : « Du **site vitrine** au **logiciel métier** conçu pour
+  votre secteur… » (introduit l'offre + retire un em-dash).
+- **Vision/directive mises à jour** : `CLAUDE.md` (Mission + Positionnement) et ce CONTEXT
+  (section Positionnement) → NEBULA = studio de solutions verticales / vertical SaaS.
+- Déployé + vérifié 200 sur www.nebula-agency.online. Source + copie `_dist`.
 
 #### v9.4 — 2026-07-03 (formulaire enrichi + email obligatoire)
 Formulaire de commande étoffé pour capter un brief plus précis :

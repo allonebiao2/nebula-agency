@@ -308,6 +308,34 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
 .footer-col a:hover{color:var(--blue2)}
 .footer-bottom{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;margin-top:44px;padding-top:22px;border-top:1px solid var(--line);color:var(--text3);font-size:.8rem}
 
+/* ---------- service phare : digitalisation sectorielle / SaaS vertical ---------- */
+.vsaas{position:relative;margin-top:22px;border-radius:20px;overflow:hidden;
+  background:linear-gradient(135deg,rgba(79,111,255,.10),rgba(147,51,234,.08) 55%,rgba(34,211,238,.06));
+  border:1px solid var(--line2);padding:30px clamp(22px,3vw,40px);
+  transition:transform .5s var(--ease),box-shadow .5s}
+.vsaas::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
+  background:linear-gradient(120deg,var(--blue2),var(--violet2) 55%,var(--cyan));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.5}
+.vsaas:hover{transform:translateY(-4px);box-shadow:0 40px 90px -40px rgba(124,92,255,.55)}
+.vsaas-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:34px;align-items:center;position:relative;z-index:1}
+.vsaas-badge{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--cyan);border:1px solid rgba(34,211,238,.3);background:rgba(34,211,238,.06);padding:6px 12px;border-radius:999px;margin-bottom:16px}
+.vsaas-badge b{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:pulse 2s infinite}
+.vsaas h3{font-family:'Syne',sans-serif;font-weight:700;font-size:clamp(1.5rem,3vw,2rem);line-height:1.12;letter-spacing:-.02em;margin-bottom:12px}
+.vsaas p.vsaas-lead{color:var(--text2);font-size:.96rem;line-height:1.65;max-width:54ch}
+.vsaas-feats{display:flex;flex-direction:column;gap:15px}
+.vsaas-feat{display:flex;gap:13px;align-items:flex-start}
+.vsaas-feat .vic{width:38px;height:38px;flex:none;border-radius:11px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.03)}
+.vsaas-feat .vic svg{width:19px;height:19px;fill:none;stroke:var(--blue2);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.vsaas-feat h4{font-family:'Syne',sans-serif;font-weight:600;font-size:.98rem;margin-bottom:2px}
+.vsaas-feat p{font-size:.82rem;color:var(--text3);line-height:1.5}
+.vsaas-foot{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:22px}
+.vsaas-note{font-size:.82rem;color:var(--text3)}
+.vsaas-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px;position:relative;z-index:1}
+.vsaas-chip{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text2);border:1px solid var(--line);background:var(--panel);padding:5px 10px;border-radius:8px}
+.vsaas-chip.q{color:var(--blue2);border-color:var(--line2)}
+@media(max-width:820px){.vsaas-grid{grid-template-columns:1fr;gap:24px}}
+
 /* ---------- animations signatures par section (toutes différentes) ---------- */
 /* TRUST · comète filante */
 .sig-trust{position:relative;overflow:hidden}
@@ -519,7 +547,7 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
     <div class="head-center rv">
       <div class="eyebrow">Nos services</div>
       <h2 class="h-section">Tout pour être <span class="grad">vu, trouvé et choisi</span>.</h2>
-      <p class="lead">Vitrine, catalogue, QR codes, avis clients : chaque service vous rend visible et transforme les curieux en acheteurs. Vous choisissez, <strong style="color:var(--text)">on s'occupe de tout</strong> — du design jusqu'à la mise en ligne.</p>
+      <p class="lead">Du <strong style="color:var(--text)">site vitrine</strong> au <strong style="color:var(--text)">logiciel métier</strong> conçu pour votre secteur : chaque service vous rend visible et transforme les curieux en clients. Vous choisissez, on s'occupe de tout, du design jusqu'à la mise en ligne.</p>
     </div>
     <div class="grid grid-3">
       <div class="card svc rv-scale rv-d1">
@@ -544,6 +572,33 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
         <p class="svc-desc">Boostez votre <strong style="color:var(--text)">réputation en ligne</strong>. Un QR code qui amène vos clients satisfaits droit sur votre page d'avis Google. Plus d'avis = plus de confiance = plus de ventes.</p>
         <ul class="feats"><li>QR code à votre marque</li><li>Lien direct vers vos avis</li><li>Sticker imprimable A6</li><li>Améliore votre référencement</li></ul>
         <div class="card-foot"><div><span class="price">30 000</span><span class="price-u">FCFA</span></div><a href="#order" class="svc-cta" onclick="setTier('Création QR Code Google Review — 30 000 F')">Choisir →</a></div>
+      </div>
+    </div>
+
+    <!-- SERVICE PHARE : digitalisation sectorielle / SaaS vertical -->
+    <div class="vsaas rv-scale">
+      <div class="vsaas-grid">
+        <div>
+          <span class="vsaas-badge"><b></b>Nouveau · SaaS vertical</span>
+          <h3>Digitalisation sectorielle : <span class="grad">votre logiciel métier</span></h3>
+          <p class="vsaas-lead">On ne fait pas que des sites. On conçoit un <strong style="color:var(--text)">outil digital pensé pour VOTRE secteur</strong>, pas un modèle générique : saisie, automatisation, tableaux de bord, rapports. Un logiciel qui parle le langage de votre métier, connecté à WhatsApp, et qui évolue avec vous.</p>
+          <div class="vsaas-foot">
+            <a href="#order" class="btn btn-primary" onclick="setTier('Plusieurs services / besoin de conseils')">Parlons de votre secteur <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            <span class="vsaas-note">Sur devis · adapté à votre métier</span>
+          </div>
+        </div>
+        <div class="vsaas-feats">
+          <div class="vsaas-feat"><div class="vic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></div><div><h4>Pensé pour votre secteur</h4><p>Vos indicateurs, votre vocabulaire, vos process, pas un gabarit générique.</p></div></div>
+          <div class="vsaas-feat"><div class="vic"><svg viewBox="0 0 24 24"><path d="M13 2 3 14h7l-1 8 10-12h-7Z"/></svg></div><div><h4>Automatise votre métier</h4><p>Calculs, rapports, relances : l'outil fait le travail répétitif à votre place.</p></div></div>
+          <div class="vsaas-feat"><div class="vic"><svg viewBox="0 0 24 24"><path d="M4 16l5-6 4 3 7-9"/><path d="M17 4h4v4"/></svg></div><div><h4>Évolue avec vous</h4><p>On ajoute des fonctions au fil de vos besoins, sans tout reconstruire.</p></div></div>
+        </div>
+      </div>
+      <div class="vsaas-chips">
+        <span class="vsaas-chip">HSE industriel</span>
+        <span class="vsaas-chip">Commerce &amp; ventes</span>
+        <span class="vsaas-chip">Immobilier</span>
+        <span class="vsaas-chip">Santé &amp; bien-être</span>
+        <span class="vsaas-chip q">Votre secteur ?</span>
       </div>
     </div>
   </div>

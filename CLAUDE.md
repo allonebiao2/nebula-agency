@@ -4,7 +4,8 @@
 - Agence : NEBULA Agency
 - Fondateur : Mongazi, Cotonou Bénin
 - Marché : Afrique de l'Ouest francophone
-- Mission : vitrines digitales + automatisation IA
+- Mission : **digitalisation sectorielle** — concevoir le **logiciel métier** de chaque secteur (SaaS vertical), en plus des vitrines digitales et de l'automatisation IA
+- Positionnement : **studio de solutions verticales / éditeur de logiciels métier** (*vertical SaaS*), pas une simple agence de sites. Slogan : « Un outil pensé pour VOTRE secteur, pas un site générique. » Preuves : Digital HSE (industrie/HSE), Vendora (commerce), vitrines par métier. Méthode = *product factory* (socle réutilisable décliné par secteur, cf. skill `nebula-site`). Détail en mémoire : `project_positionnement-vertical`.
 - Autres marques : AXIO IA (éducation IA), KARABA Finance
 
 ## Stack technique
