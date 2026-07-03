@@ -39,11 +39,27 @@ modifications. *(Corrigé le 2026-06-20 : était affiché par erreur « /mois »
 
 ## État
 
-- **Version actuelle** : **v9.8** (`nebula_agency_v9.html` = `index.html` en prod ; + configurateur cadrage projet fourchette 55k–300k)
+- **Version actuelle** : **v9.9** (`nebula_agency_v9.html` = `index.html` en prod ; + vrai logo PNG + écran de chargement cosmique)
 - **Statut** : **LIVE** https://www.nebula-agency.online (Cloudflare Pages, projet `nebula-agency`, déployé 2026-07-02)
 - **v8 conservé** (`nebula_agency_v8.html`) pour retour arrière.
 
 ### Historique des versions
+
+#### v9.9 — 2026-07-03 (vrai logo PNG + écran de chargement cosmique)
+- **Logo réel** : le logo NEBULA (`_partage/logo nebula agency.JPG`, galaxie violet/bleu +
+  wordmark, sur fond noir) **détouré en PNG transparent** (alpha = luminance via Pillow, garde
+  le halo). Enregistré dans `_partage/logo-nebula-transparent.png` (complet) et
+  `_partage/logo-nebula-icon.png` (icône seule = tourbillon). Embarqué en **WebP base64**
+  optimisé (full 83 Ko, icône 15 Ko) via classes CSS `.nb-logo` (complet) et `.nb-mark` (icône).
+- **Nav + footer** : les anciens logos SVG orbitaux (`<svg class="brand-mark">`) remplacés par
+  l'**icône PNG** (`.nb-mark`, 66×28), texte « NEBULA AGENCY » conservé à côté.
+- **Écran de chargement cosmique** (`#preloader`) à l'entrée : logo complet centré + halo violet
+  pulsant + **anneau orbital** (conic-gradient masqué qui tourne) + barre de chargement lumineuse,
+  sur fond radial sombre. Se masque à `window.load` (min 1,1 s, filet JS 4 s + fallback CSS 5,5 s),
+  `prefers-reduced-motion` respecté. Vérifié visuellement (capture headless) : rendu conforme.
+- Process image = Pillow (`logo_assets.py`) : luminance→alpha + trim bbox + WebP q86. ⚠️ un logo
+  glow sur fond noir se détoure mieux par **luminance-alpha** que par rembg (garde le halo).
+- QC : `node --check` (3 scripts inline OK), déployé + vérifié 200 + capture nav/loader.
 
 #### v9.8 — 2026-07-03 (configurateur « cadrage projet » à fourchette 55k–300k)
 - Le configurateur de devis (modale `#devisModal`) est refondu sur le modèle du fichier
