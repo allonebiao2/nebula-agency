@@ -179,7 +179,8 @@ button{font-family:inherit;cursor:pointer;color:inherit}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .subpane{display:none} .subpane.on{display:block;animation:fade .3s var(--ease)}
 .serie-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.wrow{display:grid;grid-template-columns:1.5fr 1fr auto;gap:10px;align-items:end;margin-bottom:6px}
+.wrow{display:grid;grid-template-columns:1.4fr .9fr .8fr auto;gap:10px;align-items:end;margin-bottom:6px}
+@media(max-width:520px){.wrow{grid-template-columns:1fr 1fr}.wrow .wdel{grid-column:2;justify-self:end}}
 .wrow .field{margin-bottom:0}
 .wdel{width:44px;height:44px;border:1px solid var(--line2);border-radius:10px;background:var(--white);display:flex;align-items:center;justify-content:center;transition:.15s}
 .wdel:hover{border-color:var(--danger);background:var(--danger-t)}

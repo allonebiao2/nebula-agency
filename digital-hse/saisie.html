@@ -87,62 +87,58 @@
           <div class="panel-b">
             <div class="fieldset-t" style="margin-top:0">Contexte</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-              <div class="field"><label>Site</label><select class="select"><option>Usine de Cotonou</option><option>Porto-Novo</option><option>Parakou</option></select></div>
-              <div class="field"><label>Période</label><select class="select"><option>Juin 2026</option><option>Mai 2026</option><option>T2 2026</option></select></div>
+              <div class="field"><label>Site</label><select class="select"><option>Site principal</option><option>Ajouter un site…</option></select></div>
+              <div class="field"><label>Période</label><select class="select"><option>Juin 2026</option><option>Mai 2026</option><option>Avril 2026</option></select></div>
             </div>
 
             <!-- SÉCURITÉ -->
             <div id="f-sec" class="subpane on">
               <div class="fieldset-t">Sécurité · base</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-                <div class="field"><label>Heures travaillées <span class="u">(h)</span></label><input class="input" value="476 000" inputmode="numeric"></div>
-                <div class="field"><label>Effectif moyen</label><input class="input" value="312" inputmode="numeric"></div>
+                <div class="field"><label>Heures travaillées <span class="u">(h)</span></label><input class="input" value="18 000" inputmode="numeric"></div>
+                <div class="field"><label>Effectif moyen</label><input class="input" value="128" inputmode="numeric"></div>
               </div>
               <div class="fieldset-t">Événements &amp; sensibilisation</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
                 <div class="field"><label>Accidents avec arrêt</label><input class="input" value="1" inputmode="numeric"></div>
-                <div class="field"><label>Accidents sans arrêt</label><input class="input" value="3" inputmode="numeric"></div>
-                <div class="field"><label>Journées perdues</label><input class="input" value="7" inputmode="numeric"></div>
-                <div class="field"><label>Presqu'accidents</label><input class="input" value="34" inputmode="numeric"></div>
-                <div class="field"><label>Séances de sensibilisation</label><input class="input" value="6" inputmode="numeric"></div>
-                <div class="field"><label>Participants</label><input class="input" value="248" inputmode="numeric"></div>
+                <div class="field"><label>Accidents sans arrêt</label><input class="input" value="0" inputmode="numeric"></div>
+                <div class="field"><label>Journées perdues</label><input class="input warn" placeholder="À saisir" value=""><div class="hint warn">Requis pour calculer le taux de gravité (TG).</div></div>
+                <div class="field"><label>Presqu'accidents</label><input class="input" value="2" inputmode="numeric"></div>
+                <div class="field"><label>Séances de sensibilisation</label><input class="input" value="3" inputmode="numeric"></div>
+                <div class="field"><label>Participants</label><input class="input" value="40" inputmode="numeric"></div>
               </div>
             </div>
 
             <!-- ENVIRONNEMENT -->
             <div id="f-env" class="subpane">
-              <div class="fieldset-t">Déchets par type <span class="u" style="text-transform:none;letter-spacing:0;color:var(--faint)">· liste extensible</span></div>
+              <div class="fieldset-t">Déchets par type <span class="u" style="text-transform:none;letter-spacing:0;color:var(--faint)">· chaque type garde sa propre unité · liste extensible</span></div>
               <div id="wlist">
-                <div class="wrow"><div class="field"><label>Type</label><select class="select"><option>Déchets ménagers</option><option>Cartons</option><option>Plastiques</option><option>Huiles usagées</option><option>Eaux usées</option><option>Autre…</option></select></div><div class="field"><label>Quantité <span class="u">(t)</span></label><input class="input" value="8,5"></div><button class="wdel" title="Retirer" onclick="delWaste(this)"><svg viewBox="0 0 24 24"><path d="M5 7h14M9 7V5h6v2M7 7l1 12h8l1-12"/></svg></button></div>
-                <div class="wrow"><div class="field"><select class="select"><option>Cartons</option><option>Déchets ménagers</option><option>Plastiques</option><option>Huiles usagées</option><option>Eaux usées</option></select></div><div class="field"><input class="input" value="3,6"></div><button class="wdel" title="Retirer" onclick="delWaste(this)"><svg viewBox="0 0 24 24"><path d="M5 7h14M9 7V5h6v2M7 7l1 12h8l1-12"/></svg></button></div>
-                <div class="wrow"><div class="field"><select class="select"><option>Plastiques</option><option>Déchets ménagers</option><option>Cartons</option><option>Huiles usagées</option><option>Eaux usées</option></select></div><div class="field"><input class="input" value="2,5"></div><button class="wdel" title="Retirer" onclick="delWaste(this)"><svg viewBox="0 0 24 24"><path d="M5 7h14M9 7V5h6v2M7 7l1 12h8l1-12"/></svg></button></div>
+                <div class="wrow"><div class="field"><label>Type</label><select class="select"><option>Déchets ménagers</option><option>Cartons</option><option>Plastiques</option><option>Huiles usagées</option><option>Eaux usées</option><option>Autre…</option></select></div><div class="field"><label>Quantité</label><input class="input" value="2"></div><div class="field"><label>Unité</label><select class="select"><option>t</option><option>kg</option><option>L</option><option>m³</option></select></div><button class="wdel" title="Retirer" onclick="delWaste(this)"><svg viewBox="0 0 24 24"><path d="M5 7h14M9 7V5h6v2M7 7l1 12h8l1-12"/></svg></button></div>
+                <div class="wrow"><div class="field"><select class="select"><option>Huiles usagées</option><option>Déchets ménagers</option><option>Cartons</option><option>Plastiques</option><option>Eaux usées</option></select></div><div class="field"><input class="input" value="300"></div><div class="field"><select class="select"><option>L</option><option>t</option><option>kg</option><option>m³</option></select></div><button class="wdel" title="Retirer" onclick="delWaste(this)"><svg viewBox="0 0 24 24"><path d="M5 7h14M9 7V5h6v2M7 7l1 12h8l1-12"/></svg></button></div>
+                <div class="wrow"><div class="field"><select class="select"><option>Plastiques</option><option>Déchets ménagers</option><option>Cartons</option><option>Huiles usagées</option><option>Eaux usées</option></select></div><div class="field"><input class="input" value="450"></div><div class="field"><select class="select"><option>kg</option><option>t</option><option>L</option><option>m³</option></select></div><button class="wdel" title="Retirer" onclick="delWaste(this)"><svg viewBox="0 0 24 24"><path d="M5 7h14M9 7V5h6v2M7 7l1 12h8l1-12"/></svg></button></div>
+                <div class="wrow"><div class="field"><select class="select"><option>Cartons</option><option>Déchets ménagers</option><option>Plastiques</option><option>Huiles usagées</option><option>Eaux usées</option></select></div><div class="field"><input class="input" value="200"></div><div class="field"><select class="select"><option>kg</option><option>t</option><option>L</option><option>m³</option></select></div><button class="wdel" title="Retirer" onclick="delWaste(this)"><svg viewBox="0 0 24 24"><path d="M5 7h14M9 7V5h6v2M7 7l1 12h8l1-12"/></svg></button></div>
               </div>
               <button class="addbtn" onclick="addWaste()"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Ajouter un type de déchet</button>
-              <div class="fieldset-t">Autres flux</div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-                <div class="field"><label>Eaux usées <span class="u">(m³)</span></label><input class="input" value="240"></div>
-                <div class="field"><label>Consommation d'énergie <span class="u">(kWh)</span></label><input class="input" value="58 400"></div>
-              </div>
             </div>
 
             <!-- SOCIAL -->
             <div id="f-soc" class="subpane">
               <div class="fieldset-t">Effectifs</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-                <div class="field"><label>Effectif national</label><input class="input" value="312" inputmode="numeric"></div>
-                <div class="field"><label>Effectif expatrié</label><input class="input" value="28" inputmode="numeric"></div>
+                <div class="field"><label>Effectif national</label><input class="input" value="120" inputmode="numeric"></div>
+                <div class="field"><label>Effectif expatrié</label><input class="input" value="8" inputmode="numeric"></div>
               </div>
               <div class="fieldset-t">Contrats <span class="u" style="text-transform:none;letter-spacing:0;color:var(--faint)">· types extensibles</span></div>
               <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
-                <div class="field"><label>CDI</label><input class="input" value="265" inputmode="numeric"></div>
-                <div class="field"><label>CDD</label><input class="input" value="52" inputmode="numeric"></div>
-                <div class="field"><label>Stagiaires</label><input class="input" value="23" inputmode="numeric"></div>
+                <div class="field"><label>CDI</label><input class="input" value="90" inputmode="numeric"></div>
+                <div class="field"><label>CDD</label><input class="input" value="15" inputmode="numeric"></div>
+                <div class="field"><label>Stagiaires</label><input class="input" value="5" inputmode="numeric"></div>
               </div>
-              <button class="addbtn" onclick="VIGIE.toast('Ajouter un type de contrat (démo) — extensible sans refonte')"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Ajouter un type de contrat</button>
+              <button class="addbtn" onclick="VIGIE.toast('Ajouter un type de contrat (démo), extensible sans refonte')"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Ajouter un type de contrat</button>
               <div class="fieldset-t">Couverture &amp; santé</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-                <div class="field"><label>Effectif déclaré CNSS</label><input class="input" value="340" inputmode="numeric"></div>
-                <div class="field"><label>Visites médicales réalisées</label><input class="input" value="326" inputmode="numeric"></div>
+                <div class="field"><label>Effectif déclaré CNSS</label><input class="input" value="118" inputmode="numeric"></div>
+                <div class="field"><label>Visites médicales réalisées</label><input class="input" value="45" inputmode="numeric"></div>
               </div>
             </div>
           </div>
@@ -153,8 +149,8 @@
             <div class="panel-h"><span class="ai-badge"><span class="p" style="animation:none"></span>Calcul automatique</span></div>
             <div class="panel-b">
               <div class="calc-preview" style="margin-top:0" id="calc">
-                <div>Taux de fréquence (TF)<b>2,1</b></div>
-                <div>Taux de gravité (TG)<b>0,015</b></div>
+                <div>Taux de fréquence (TF)<b>55,6</b></div>
+                <div>Taux de gravité (TG)<b style="color:var(--caution)">à saisir</b></div>
               </div>
               <p class="hint" style="margin-top:12px">Les indicateurs dérivés (TF, TG, totaux, taux) sont recalculés en direct à chaque saisie, jamais tapés à la main.</p>
             </div>
@@ -182,15 +178,15 @@ function catForm(btn,id){
   var p=document.querySelectorAll('#p-form .subpane');for(var j=0;j<p.length;j++)p[j].classList.remove('on');
   document.getElementById(id).classList.add('on');
   var labels={'f-sec':'Calcul automatique · Sécurité (OIT)','f-env':'Calcul automatique · Environnement','f-soc':'Calcul automatique · Social'};
-  var calc={'f-sec':'<div>Taux de fréquence (TF)<b>2,1</b></div><div>Taux de gravité (TG)<b>0,015</b></div>',
-            'f-env':'<div>Total déchets (t)<b>14,6</b></div><div>Taux de valorisation<b>62 %</b></div>',
-            'f-soc':'<div>Effectif total<b>340</b></div><div>Part en CDI<b>78 %</b></div>'};
+  var calc={'f-sec':'<div>Taux de fréquence (TF)<b>55,6</b></div><div>Taux de gravité (TG)<b style="color:var(--caution)">à saisir</b></div>',
+            'f-env':'<div>Déchets solides<b>2,65 t</b></div><div>Huiles usagées<b>300 L</b></div>',
+            'f-soc':'<div>Effectif total<b>128</b></div><div>Couverture CNSS<b>92 %</b></div>'};
   document.getElementById('calc').innerHTML=calc[id];
 }
 function addWaste(){
   var list=document.getElementById('wlist');
   var row=document.createElement('div');row.className='wrow';
-  row.innerHTML='<div class="field"><select class="select"><option>Choisir un type…</option><option>Déchets ménagers</option><option>Cartons</option><option>Plastiques</option><option>Huiles usagées</option><option>Eaux usées</option><option>Métaux</option><option>Autre…</option></select></div><div class="field"><input class="input" placeholder="0,0"></div><button class="wdel" title="Retirer" onclick="delWaste(this)"><svg viewBox="0 0 24 24"><path d="M5 7h14M9 7V5h6v2M7 7l1 12h8l1-12"/></svg></button>';
+  row.innerHTML='<div class="field"><select class="select"><option>Choisir un type…</option><option>Déchets ménagers</option><option>Cartons</option><option>Plastiques</option><option>Huiles usagées</option><option>Eaux usées</option><option>Métaux</option><option>Autre…</option></select></div><div class="field"><input class="input" placeholder="0"></div><div class="field"><select class="select"><option>t</option><option>kg</option><option>L</option><option>m³</option></select></div><button class="wdel" title="Retirer" onclick="delWaste(this)"><svg viewBox="0 0 24 24"><path d="M5 7h14M9 7V5h6v2M7 7l1 12h8l1-12"/></svg></button>';
   list.appendChild(row);VIGIE.toast('Nouveau type de déchet ajouté (extensible)');
 }
 function delWaste(b){var r=b.closest('.wrow');if(r)r.parentNode.removeChild(r);}
