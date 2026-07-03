@@ -308,6 +308,85 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
 .footer-col a:hover{color:var(--blue2)}
 .footer-bottom{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;margin-top:44px;padding-top:22px;border-top:1px solid var(--line);color:var(--text3);font-size:.8rem}
 
+/* ---------- animations signatures par section (toutes différentes) ---------- */
+/* TRUST · comète filante */
+.sig-trust{position:relative;overflow:hidden}
+.sig-trust .comet{position:absolute;top:6px;left:0;width:140px;height:2px;pointer-events:none;z-index:0;border-radius:2px;
+  background:linear-gradient(90deg,transparent,var(--cyan) 70%,#fff);filter:drop-shadow(0 0 6px var(--cyan));
+  opacity:0;transform:translate(-170px,0) rotate(9deg);animation:sig-comet 10s ease-in 3s infinite}
+.sig-trust .comet::after{content:"";position:absolute;right:-3px;top:-2px;width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 12px 2px var(--cyan)}
+@keyframes sig-comet{0%{opacity:0;transform:translate(-170px,0) rotate(9deg)}3%{opacity:1}22%{opacity:1}
+  30%{opacity:0;transform:translate(112vw,26px) rotate(9deg)}100%{opacity:0;transform:translate(112vw,26px) rotate(9deg)}}
+
+/* SERVICES · anneau cosmique autour des icônes + soulignement aurora du titre */
+.sig-services .head-center h2{position:relative;display:inline-block}
+.sig-services .head-center h2::after{content:"";position:absolute;left:10%;right:10%;bottom:-12px;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,var(--blue2),var(--violet2),var(--cyan),transparent);
+  transform:scaleX(0);transform-origin:center;transition:transform 1s var(--easeExpo) .25s}
+.sig-services .head-center.in h2::after{transform:scaleX(1)}
+.sig-services .svc-icon{position:relative}
+.sig-services .svc-icon::after{content:"";position:absolute;inset:-4px;border-radius:15px;padding:1px;pointer-events:none;
+  background:conic-gradient(from 0deg,transparent 55%,var(--blue2),var(--violet2),transparent);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .5s;animation:sig-spin 6s linear infinite}
+.sig-services .card.in .svc-icon::after,.sig-services .card:hover .svc-icon::after{opacity:.9}
+@keyframes sig-spin{to{transform:rotate(360deg)}}
+
+/* PORTFOLIO · éclat hypervitesse au défilement */
+.sig-portfolio{position:relative;overflow:hidden}
+.sig-portfolio>.container{position:relative;z-index:1}
+.sig-portfolio .warp{position:absolute;left:50%;top:40%;width:14px;height:14px;pointer-events:none;z-index:0;border-radius:50%;opacity:0;
+  transform:translate(-50%,-50%) scale(.1);background:repeating-conic-gradient(from 0deg,transparent 0 7deg,rgba(138,160,255,.45) 7deg 8deg)}
+.sig-portfolio.go .warp{animation:sig-warp 1.15s ease-out forwards}
+@keyframes sig-warp{0%{opacity:0;transform:translate(-50%,-50%) scale(.1)}18%{opacity:.75}100%{opacity:0;transform:translate(-50%,-50%) scale(10)}}
+
+/* WHY · ligne d'énergie qui se trace + point voyageur */
+.sig-why .why-grid{position:relative}
+.why-line{position:absolute;left:-16px;top:4px;bottom:4px;width:2px;border-radius:2px;
+  background:linear-gradient(var(--blue2),var(--violet2),var(--cyan));opacity:.55;
+  transform:scaleY(0);transform-origin:top;transition:transform 1.2s var(--easeExpo)}
+.sig-why.go .why-line{transform:scaleY(1)}
+.why-line i{position:absolute;left:50%;top:0;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:#fff;box-shadow:0 0 12px 2px var(--cyan);opacity:0}
+.sig-why.go .why-line i{animation:sig-travel 3s ease-in-out 1.1s infinite}
+@keyframes sig-travel{0%{top:0;opacity:0}12%{opacity:1}88%{opacity:1}100%{top:100%;opacity:0}}
+
+/* TARIFS · satellite en orbite de l'offre recommandée (compteurs = JS) */
+.pcard-feat .psat{position:absolute;top:18px;right:30px;width:7px;height:7px;border-radius:50%;background:var(--gold);
+  box-shadow:0 0 10px 1px var(--gold);pointer-events:none;z-index:2;animation:sig-orbit 5.5s linear infinite}
+@keyframes sig-orbit{from{transform:rotate(0) translateX(19px) rotate(0)}to{transform:rotate(360deg) translateX(19px) rotate(-360deg)}}
+
+/* ORDER · impulsion séquentielle dans les 3 étapes */
+.sig-steps .step:nth-child(1) .step-n{animation:sig-step 3.9s ease-in-out infinite}
+.sig-steps .step:nth-child(2) .step-n{animation:sig-step 3.9s ease-in-out infinite 1.3s}
+.sig-steps .step:nth-child(3) .step-n{animation:sig-step 3.9s ease-in-out infinite 2.6s}
+@keyframes sig-step{0%,100%{box-shadow:0 0 0 0 rgba(79,111,255,0);border-color:var(--line2);color:var(--blue2);background:rgba(79,111,255,.08)}
+  10%{box-shadow:0 0 0 6px rgba(79,111,255,.16),0 0 22px rgba(79,111,255,.55);border-color:var(--blue);color:#fff;background:var(--blue)}
+  26%{box-shadow:0 0 0 0 rgba(79,111,255,0);border-color:var(--line2);color:var(--blue2);background:rgba(79,111,255,.08)}}
+
+/* CONTACT · balayage radar derrière les cartes */
+.sig-contact{position:relative;overflow:hidden}
+.sig-contact>.container{position:relative;z-index:1}
+.sig-contact .radar{position:absolute;left:50%;top:46%;width:560px;height:560px;transform:translate(-50%,-50%);pointer-events:none;z-index:0;border-radius:50%;opacity:.55;
+  background:conic-gradient(from 0deg,rgba(34,211,238,.18),rgba(34,211,238,0) 32%);
+  -webkit-mask:radial-gradient(circle,#000 0 68%,transparent 70%);mask:radial-gradient(circle,#000 0 68%,transparent 70%);
+  animation:sig-spin 8s linear infinite}
+
+/* FOOTER · nébuleuse violette à la dérive */
+.sig-footer{position:relative;overflow:hidden}
+.sig-footer::before{content:"";position:absolute;left:-90px;bottom:-170px;width:440px;height:440px;pointer-events:none;z-index:0;border-radius:50%;
+  background:radial-gradient(circle,rgba(147,51,234,.18),transparent 70%);filter:blur(24px);animation:sig-drift 15s ease-in-out infinite}
+.sig-footer .footer-grid,.sig-footer .footer-bottom{position:relative;z-index:1}
+@keyframes sig-drift{0%,100%{transform:translate(0,0)}50%{transform:translate(70px,-34px)}}
+
+/* réduction de mouvement */
+@media(prefers-reduced-motion:reduce){
+  .sig-trust .comet,.sig-services .svc-icon::after,.sig-portfolio .warp,.why-line i,
+  .pcard-feat .psat,.sig-steps .step-n,.sig-contact .radar,.sig-footer::before{animation:none!important}
+  .sig-services .head-center h2::after{transition:none;transform:scaleX(1)}
+  .why-line{transition:none;transform:scaleY(1)}
+  .sig-portfolio .warp{opacity:0}
+}
+
 /* ---------- audio + fab ---------- */
 .audio-toggle{position:fixed;right:20px;bottom:20px;z-index:90;width:46px;height:46px;border-radius:50%;
   border:1px solid var(--line2);background:rgba(10,12,26,.8);backdrop-filter:blur(10px);color:var(--text2);
@@ -423,7 +502,8 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
 </header>
 
 <!-- TRUST -->
-<div class="trust">
+<div class="trust sig-trust">
+  <i class="comet" aria-hidden="true"></i>
   <div class="trust-inner">
     <span class="trust-label">Ils nous font confiance</span>
     <div class="trust-marq"><div class="trust-track">
@@ -434,7 +514,7 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
 </div>
 
 <!-- SERVICES -->
-<section id="services">
+<section id="services" class="sig-services">
   <div class="container">
     <div class="head-center rv">
       <div class="eyebrow">Nos services</div>
@@ -470,7 +550,8 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
 </section>
 
 <!-- PORTFOLIO -->
-<section id="portfolio">
+<section id="portfolio" class="sig-portfolio">
+  <div class="warp" aria-hidden="true"></div>
   <div class="container">
     <div class="head-center rv">
       <div class="eyebrow">Réalisations</div>
@@ -498,7 +579,7 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
 </section>
 
 <!-- WHY -->
-<section id="why">
+<section id="why" class="sig-why">
   <div class="container">
     <div class="head-center rv">
       <div class="eyebrow">Pourquoi NEBULA</div>
@@ -506,6 +587,7 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
       <p class="lead">Vos clients commandent pendant que vous dormez, directement via WhatsApp. Pas d'application, pas de friction. Juste des ventes.</p>
     </div>
     <div class="why-grid">
+      <div class="why-line" aria-hidden="true"><i></i></div>
       <div class="why-list">
         <div class="why-item rv-left rv-d1"><div class="why-ic"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.5 9 9 0 0 1-4-1L3 21l1.5-4.5A8.5 8.5 0 1 1 21 11.5Z"/></svg></div><div><h3>Commande directe sur WhatsApp</h3><p>Un clic, le panier est pré-rempli dans WhatsApp avec tous les détails. Zéro friction, zéro application à installer.</p></div></div>
         <div class="why-item rv-left rv-d2"><div class="why-ic"><svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg></div><div><h3>Actif pendant que vous dormez</h3><p>Une vitrine ouverte 24h/24, 7j/7. Vos clients commandent à 23h, le dimanche — vous vendez sans rien faire.</p></div></div>
@@ -554,7 +636,7 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
         <a href="#order" class="btn btn-ghost pbtn" onclick="setTier('Catalogue Digital + QR Code — 50 000 F setup + 15 000 F / 6 mois (hébergement)')">Choisir le catalogue <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
       </div>
 
-      <div class="card svc pcard pcard-feat rv-scale rv-d2">
+      <div class="card svc pcard pcard-feat rv-scale rv-d2"><span class="psat" aria-hidden="true"></span>
         <div class="card-head"><div class="svc-icon ic-violet"><svg viewBox="0 0 24 24"><path d="M4.5 16.5 3 21l4.5-1.5M14 4l6 6M6.5 13.5l4-4M13 6l5 5M16.5 3.5a2.1 2.1 0 0 1 3 3L9 17l-4 1 1-4Z"/><path d="M14 10c2 2 2 4 0 7"/></svg></div><span class="pill pill-pop">Recommandé</span></div>
         <h3 class="h-card">Vitrine Digitale + QR Code</h3>
         <p class="svc-desc">Votre site signature, actif 24h/24. Notre création la plus complète.</p>
@@ -618,7 +700,7 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
       <div class="order-info rv-left">
         <h3>Comment ça marche ?</h3>
         <p>Notre processus est <strong style="color:var(--text)">volontairement simple</strong>. Vous remplissez le formulaire, on reçoit votre brief sur WhatsApp, et on démarre immédiatement.</p>
-        <div class="steps">
+        <div class="steps sig-steps">
           <div class="step"><div class="step-n">1</div><div><h4>Remplissez le formulaire</h4><p>Décrivez votre activité, votre style, vos couleurs. Plus c'est précis, mieux on comprend votre vision.</p></div></div>
           <div class="step"><div class="step-n">2</div><div><h4>On reçoit votre brief sur WhatsApp</h4><p>Tout arrive directement sur notre WhatsApp. On vous contacte sous 2 heures pour confirmer et démarrer.</p></div></div>
           <div class="step"><div class="step-n">3</div><div><h4>En ligne en 5 à 7 jours</h4><p>On construit, teste et déploie. Vous recevez l'URL + le QR code prêt à imprimer. Mission accomplie.</p></div></div>
@@ -666,7 +748,8 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
 </section>
 
 <!-- CONTACT -->
-<section id="contact">
+<section id="contact" class="sig-contact">
+  <div class="radar" aria-hidden="true"></div>
   <div class="container">
     <div class="head-center rv">
       <div class="eyebrow">Contact</div>
@@ -685,7 +768,7 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
 </section>
 
 <!-- FOOTER -->
-<footer class="footer">
+<footer class="footer sig-footer">
   <div class="container">
     <div class="footer-grid">
       <div class="footer-brand">
@@ -747,6 +830,27 @@ if('IntersectionObserver' in window){
   var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12,rootMargin:'0px 0px -8% 0px'});
   document.querySelectorAll('.rv,.rv-scale,.rv-left,.rv-right').forEach(function(el){io.observe(el);});
 }else{document.querySelectorAll('.rv,.rv-scale,.rv-left,.rv-right').forEach(function(el){el.classList.add('in');});}
+
+/* animations signatures : compteurs de prix + révélations one-shot */
+(function(){
+  var rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  function whenIn(sel,cb){var el=document.querySelector(sel);if(!el)return;
+    if(!('IntersectionObserver' in window)){cb(el);return;}
+    var o=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){cb(e.target);o.unobserve(e.target);}});},{threshold:.25});o.observe(el);}
+  if(rm)return;
+  whenIn('#portfolio',function(el){el.classList.add('go');});
+  whenIn('#why',function(el){el.classList.add('go');});
+  whenIn('#pricing',function(sec){
+    sec.querySelectorAll('.price').forEach(function(el){
+      var target=parseInt((el.textContent||'').replace(/\D/g,''),10);if(!target)return;
+      var start=null,dur=1100;
+      function fmt(n){return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ');}
+      function tick(ts){if(!start)start=ts;var p=Math.min((ts-start)/dur,1),e=1-Math.pow(1-p,3);
+        el.textContent=fmt(Math.round(target*e));if(p<1)requestAnimationFrame(tick);}
+      el.textContent='0';requestAnimationFrame(tick);
+    });
+  });
+})();
 
 /* spotlight sur cartes (desktop) */
 if(matchMedia('(pointer:fine)').matches&&!reduce){

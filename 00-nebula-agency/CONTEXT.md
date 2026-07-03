@@ -31,11 +31,23 @@ modifications. *(Corrigé le 2026-06-20 : était affiché par erreur « /mois »
 
 ## État
 
-- **Version actuelle** : **v9.2** (`nebula_agency_v9.html` = `index.html` en prod ; portfolio nettoyé + section Tarifs)
+- **Version actuelle** : **v9.3** (`nebula_agency_v9.html` = `index.html` en prod ; + une animation signature différente par section)
 - **Statut** : **LIVE** https://www.nebula-agency.online (Cloudflare Pages, projet `nebula-agency`, déployé 2026-07-02)
 - **v8 conservé** (`nebula_agency_v8.html`) pour retour arrière.
 
 ### Historique des versions
+
+#### v9.3 — 2026-07-03 (une animation signature DIFFÉRENTE par section)
+Chaque section (hors héros, qui garde son shader WebGL) reçoit **sa propre animation, toutes distinctes**, calées sur l'univers cosmique (bleu/violet/cyan) et GPU-friendly (transform/opacity), **coupées sous `prefers-reduced-motion`** :
+- **Trust** « Ils nous font confiance » → **comète filante** qui traverse le bandeau (`.sig-trust .comet`).
+- **Services** → **anneau cosmique** (conic-gradient masqué) qui tourne autour de chaque icône + **soulignement aurora** qui se trace sous le titre (`.sig-services`).
+- **Portfolio** → **éclat hypervitesse** (repeating-conic streaks) au 1er passage au scroll (`.sig-portfolio.go .warp`, one-shot via IntersectionObserver).
+- **Tarifs** → **compteurs de prix qui montent** de 0 (JS `whenIn` + easing cubic) + **satellite doré en orbite** de l'offre recommandée (`.pcard-feat .psat`).
+- **Pourquoi NEBULA** → **ligne d'énergie verticale** qui se trace + **point lumineux voyageur** le long des why-items (`.sig-why.go .why-line`).
+- **Commander** → **impulsion séquentielle** qui parcourt les 3 étapes 1→2→3 en boucle (`.sig-steps .step-n`).
+- **Contact** → **balayage radar** (conic sweep masqué en anneau) derrière les cartes (`.sig-contact .radar`).
+- **Footer** → **nébuleuse violette à la dérive** (radial-gradient flou animé, `.sig-footer::before`).
+Impl : bloc CSS `/* animations signatures par section */` + JS `whenIn()` (compteurs prix + `.go` one-shot portfolio/why). Aucune image, aucune dépendance. Déployé + vérifié 200 sur www.nebula-agency.online. Source `nebula_agency_v9.html` + copie `_dist`.
 
 #### v9.2 — 2026-07-02 soir (nettoyage portfolio + section Tarifs)
 - **Portfolio & bandeau « Ils nous font confiance »** : retrait des **3 sites non terminés**
