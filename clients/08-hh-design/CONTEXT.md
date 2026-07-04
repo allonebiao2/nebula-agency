@@ -1,48 +1,67 @@
 # HH Design — CONTEXT
 
+## ⚠️ PIVOT MAJEUR (2026-07-04) — HH DESIGN = ÉBÉNISTERIE, PAS IMMOBILIER
+La première version (2026-06-30) était bâtie comme une **agence immobilière** (erreur de brief).
+Les planches de marque envoyées par Mongazi (`_partage/inspiration 1..8.JPG`) révèlent la vraie
+identité : **HH DESIGN est une maison d'ébénisterie / mobilier haut de gamme** — meubles en bois
+massif noble, faits main. Le site a été **entièrement reconstruit** autour de cette identité.
+
 ## Identité
-- **Marque** : HH DESIGN
-- **Secteur** : Immobilier (agence / biens d'exception, sensibilité design)
-- **Ville** : Cotonou, Bénin
-- **WhatsApp** : 0167975626 → `wa.me/2290167975626` ⚠️ **à confirmer** (même n° que client 04 Gloria)
-- **Couleurs imposées** : Blanc · Doré · Noir
-- **Logo** : fourni par le client sur WhatsApp → **placeholder wordmark Marcellus en attendant**
+- **Marque** : HH DESIGN — maison d'ébénisterie / mobilier sur-mesure
+- **Secteur** : Mobilier bois noble (étagères, bibliothèques, tables de chevet, tables basses, consoles)
+- **Ville** : Cotonou, Bénin (présence France aussi)
+- **Signatures** : « L'élégance du bois » · « Créé pour durer. Pensé pour vous. » · « Qualité · Durabilité · Élégance »
+- **Bois** : mindi massif, acajou (placages) · **Finitions** : roasted coffee, naturelle, pearl brushed
+- **WhatsApp** : **+229 01 62 68 67 68** → `wa.me/2290162686768` ⚠️ **À CONFIRMER** (issu de leurs
+  propres planches ; **remplace** l'ancien 0167975626 qui était douteux car = n° du client 04)
+- **Autre contact** : France +33 6 50 98 56 97 · Instagram « HH DESIGN » (handle exact à confirmer)
+- **Couleurs marque** : crème sable · bois (mindi/acajou/roasted) · or vieilli · espresso
 
-## Commande
-- Vitrine Digitale + QR Code (150 000 F setup + 15 000 F / 6 mois hébergement)
-- Options : **Galerie photos** + **Google Maps**
-- Délai : le plus vite possible
+## Produits réels (issus des planches, données exactes)
+| Modèle | Type | Bois | Finition | Dimensions |
+|---|---|---|---|---|
+| **AYULA** | Étagère / bibliothèque | Mindi massif / placage | Roasted coffee | 4 niveaux |
+| **LEON** | Bibliothèque (façade sculptée main) | Mindi massif / placage | Pearl brushed | L100 × P46 × H190 |
+| **CANCUN** | Table de chevet | Mindi massif | Roasted coffee light | L57 × P48 × H60 |
+| **TABASCO** | Table de chevet (2 niveaux) | Acajou massif | Roasted coffee light | L50 × P40 × H60 |
+| **NATURA** | Table basse (design organique) | Mindi massif | Naturelle | L120 × P60 × H35 |
+| **Console TV** | Meuble télé suspendu | Bois massif | Façade verre strié | câbles intégrés |
 
-## Parti-pris (TOTALEMENT distinct des vitrines précédentes)
-- **Direction** : éditorial architectural luxe — blanc cassé + noir d'encre + or champagne, vide
-  généreux, hairlines dorées, « exaggerated minimalism » (typo surdimensionnée).
-- **Typo** : Marcellus (display, roman architectural) + Manrope (corps). Jamais Anton/Cinzel/
-  Bricolage/Spectral (déjà utilisés ailleurs).
-- **Galerie** : lignes éditoriales alternées (image pleine largeur ↔ texte, alternées) + filtres +
-  lightbox. ≠ bento Djambar, ≠ coverflow Speed/Weinkeller, ≠ scatter Miss Cakes.
-- **Motion** : tracés de lignes dorées (pathLength), révélations en rideau (clip-path), parallaxe
-  lent. Calme/architectural, pas kinétique. reduced-motion complet.
-- **Structure** : hero asymétrique → bandeau manifeste NOIR → expertise → biens (galerie) →
-  approche → avis → localisation → CTA → footer.
+## Parti-pris design (v2 — TOTALEMENT distinct de la v1 immobilière ET des autres vitrines)
+- **Univers** : crème sable + bois noble + or vieilli + espresso (chaud, tactile, galerie). ≠ blanc/or/noir immobilier.
+- **Typo** : **Cormorant Garamond** (serif Didone : monogramme HH + noms de pièces) + **Archivo**
+  (grotesque : structure, corps). ≠ Marcellus/Manrope de la v1.
+- **Hero** : plein cadre en **bois brut dramatique** (photo lames de bois), Ken-Burns + parallaxe,
+  « Le bois, le détail, la différence. »
+- **Collection** : grille filtrable (Tout/Rangements/Tables/Salon), cartes « spécimen » (produit sur
+  fond crème + libellé + méta bois/finition/dimensions) → **fiche modale espresso** (image + specs +
+  CTA « Commander ce modèle » / « Version sur-mesure » WhatsApp pré-rempli). ≠ galeries des autres sites.
+- **Sections** : hero → bandeau valeurs → manifeste espresso (3 piliers) → collection → bande
+  ambiance (lifestyle) → matières & finitions (4 échantillons bois) → sur-mesure (4 étapes) →
+  contact (form → WhatsApp) → footer. FAB WhatsApp.
+- **Images** : **vraies photos** extraites des planches (produits détourés sur crème + bois + ambiance),
+  optimisées WebP (~250 Ko au total). Scripts `_partage` → `assets/images/{hero,collection,materials}`.
+- **Motion** : reveals (IntersectionObserver), tracés dorés (scaleX), Ken-Burns, hover cartes. reduced-motion complet.
+- **a11y/QC** : hook impeccable passé (transform au lieu de width, placeholder image, em-dashes retirés,
+  numéros de piliers retirés — steps sur-mesure gardés car vraie séquence). `node --check` JS OK.
+  Capture headless desktop + mobile vérifiée.
 
-## À REMPLACER (côté client)
-- [ ] **Logo** réel (reçu sur WhatsApp) → remplacer le wordmark placeholder
-- [ ] **Vraies photos de biens** (résidentiel/commercial/terrain) — actuellement scènes SVG
-      architecturales « à valider »
-- [ ] **Adresse exacte** + point Google Maps (actuellement « Cotonou » + recherche Maps)
-- [ ] **Vrais avis clients** (actuellement exemples marqués « à valider »)
-- [ ] **Confirmer le n° WhatsApp** 0167975626
-- [ ] Réseaux sociaux (liens réels)
-- [ ] Textes services/biens validés par le client
+## À REMPLACER / CONFIRMER (côté client)
+- [ ] **CONFIRMER le n° WhatsApp** +229 01 62 68 67 68 (⚠️ règle absolue avant diffusion large)
+- [ ] **Vrai logo** HH (monogramme officiel en PNG transparent) — actuellement rendu en typo Cormorant
+- [ ] **Handle Instagram exact** (affiché « HH DESIGN » sans lien réel)
+- [ ] **Adresse atelier exacte** + point Google Maps (actuellement « Cotonou »)
+- [ ] **Prix** des modèles (le site renvoie vers WhatsApp pour le devis)
+- [ ] Autres pièces / nouvelles collections à ajouter
+- [ ] Photos produit haute résolution (les visuels actuels viennent des planches marketing, def. limitée)
 
 ## Déploiement
-- ✅ **LIVE : https://hh-design.pages.dev** (Cloudflare Pages, projet `hh-design`, branche main)
-- Page unique (index.html, CSS/JS inline), galerie = scènes SVG inline, OG/favicon générés
-- Affiche A4 + 2 QR (WhatsApp + Maps) : `assets/docs/Affiche_HH_Design_A4.pdf`
-- Domaine custom : étape séparée (à voir avec Mongazi)
+- ✅ **LIVE : https://hh-design.pages.dev** (Cloudflare Pages, projet `hh-design`)
+- Déploiement depuis un dossier propre (index.html + assets), sans exposer CONTEXT/scripts.
+- Affiche A4 + 2 QR (site + WhatsApp) : `assets/docs/Affiche_HH_Design_A4.pdf` (crème/bois/or, HH mono).
+- QR : `assets/images/qr/qr-site.png` (site) + `qr-wa.png` (WhatsApp). Ancien `qr-maps.png` supprimé.
 
-## Livré le 2026-06-30
-Vitrine éditoriale architecturale luxe (blanc/or/noir, Marcellus+Manrope) : hero asymétrique,
-manifeste noir, expertise (losanges or), galerie de biens en lignes alternées + filtres + lightbox,
-approche 3 étapes, avis (exemples), localisation Maps, CTA, footer, FAB WhatsApp. QA : 0 débordement
-(mobile inclus), 0 erreur, assets 200, reduced-motion complet. Affiche PDF A4 + QR.
+## Historique
+- **2026-06-30** — v1 : vitrine « agence immobilière » (blanc/or/noir, Marcellus). **Obsolète** (mauvais brief).
+- **2026-07-04** — v2 : **refonte totale ébénisterie** (crème/bois/or/espresso, Cormorant+Archivo,
+  collection réelle + fiches, matières, sur-mesure). Vraies images des planches. LIVE + affiche + QR refaits.
