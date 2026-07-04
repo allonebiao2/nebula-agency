@@ -78,13 +78,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   transform-style:preserve-3d;
   display:grid;place-items:center;
   opacity:0;pointer-events:none;
-  transform:translateZ(-1600px) scale(.82);
-  filter:brightness(.35) blur(7px) saturate(.7);
+  transform:translateZ(-2200px) scale(.76);
+  filter:brightness(.3) blur(9px) saturate(.65);
   transition:transform var(--dur) var(--eio),opacity .82s var(--eio),filter .82s var(--eio);
   will-change:transform,opacity,filter;
 }
 .scene.active{opacity:1;pointer-events:auto;transform:translateZ(0) scale(1);filter:none}
-.scene.past{opacity:0;pointer-events:none;transform:translateZ(820px) scale(2.1);filter:brightness(1.6) blur(9px)}
+.scene.past{opacity:0;pointer-events:none;transform:translateZ(1250px) scale(2.7);filter:brightness(1.7) blur(12px)}
 
 /* léger balancement caméra piloté au pointeur (desktop) */
 .swayer{transform:translate3d(var(--sx,0px),var(--sy,0px),0) rotateX(var(--ry,0deg)) rotateY(var(--rx,0deg));
@@ -130,34 +130,67 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   animation:float linear infinite}
 @keyframes float{0%{opacity:0;transform:translateY(20px) scale(.6)}
   12%{opacity:.9}88%{opacity:.7}100%{opacity:0;transform:translateY(-120px) scale(1.1)}}
+/* plafond (referme la pièce) */
+.ceil{position:absolute;left:-30%;right:-30%;top:-8%;height:120%;
+  background:linear-gradient(0deg, rgba(20,12,6,.12), rgba(9,5,2,.97));
+  transform-origin:top center;transform:rotateX(-80deg) translateZ(-60px);
+  -webkit-mask-image:linear-gradient(0deg, transparent, #000 34%);mask-image:linear-gradient(0deg, transparent, #000 34%)}
+/* lampe suspendue qui se balance + cône de lumière volumétrique */
+.lamp{position:absolute;left:50%;top:-1%;width:2px;height:23%;transform-origin:top center;
+  transform:translateX(-50%) translateZ(160px) rotate(-2.4deg);
+  background:linear-gradient(#0000,rgba(224,196,137,.3));animation:swing 7s ease-in-out infinite}
+.lamp .shade{position:absolute;left:50%;bottom:-13px;width:62px;height:26px;transform:translateX(-50%);
+  border-radius:0 0 40px 40px/0 0 24px 24px;background:linear-gradient(180deg,#4a3016,#291a0e);
+  box-shadow:0 8px 22px rgba(0,0,0,.6),inset 0 -7px 13px rgba(243,200,122,.45)}
+.lamp .bulb{position:absolute;left:50%;bottom:-9px;width:13px;height:13px;transform:translateX(-50%);border-radius:50%;
+  background:radial-gradient(circle,#ffe9b0,#e0a94b);box-shadow:0 0 34px 11px rgba(243,200,122,.6)}
+.lamp .cone{position:absolute;left:50%;bottom:-8px;width:210px;height:440px;transform:translateX(-50%);pointer-events:none;
+  background:radial-gradient(50% 100% at 50% 0,rgba(243,200,122,.26),transparent 68%);mix-blend-mode:screen}
+@keyframes swing{0%,100%{transform:translateX(-50%) translateZ(160px) rotate(-2.4deg)}
+  50%{transform:translateX(-50%) translateZ(160px) rotate(2.4deg)}}
 
 /* ============================ PORTE (objet 3D réutilisable) ============================ */
-.door{position:relative;transform-style:preserve-3d;--dw:min(52vw,270px);--dh:min(54vh,420px);
+.door{position:relative;transform-style:preserve-3d;--dw:min(52vw,270px);--dh:min(54vh,420px);--depth:min(20vw,110px);
   width:var(--dw);height:var(--dh)}
-.door .glow{position:absolute;inset:-6% -4%;border-radius:6px;
-  background:radial-gradient(60% 70% at 50% 46%, rgba(243,200,122,.95), rgba(201,140,60,.5) 40%, transparent 72%);
-  opacity:0;transform:translateZ(-40px) scale(.9);transition:opacity .7s var(--eo),transform .7s var(--eo)}
-.door .frame{position:absolute;inset:-14px;border-radius:8px;
-  background:linear-gradient(180deg,#4a3016,#2b1a0d);
-  box-shadow:0 40px 80px -30px rgba(0,0,0,.9),inset 0 0 0 2px rgba(224,196,137,.3),inset 0 0 40px rgba(0,0,0,.55)}
-.door .leaf{position:absolute;inset:0;border-radius:5px;transform-origin:left center;
-  transform:rotateY(0deg);transition:transform 1s var(--eio),box-shadow .5s;
+/* halo derrière la porte (lumière de la pièce) */
+.door .glow{position:absolute;inset:-10% -8%;border-radius:8px;transform:translateZ(calc(-1 * var(--depth) - 6px));
+  background:radial-gradient(60% 70% at 50% 52%, rgba(243,200,122,.95), rgba(201,140,60,.42) 42%, transparent 74%);
+  opacity:0;transition:opacity .85s var(--eo)}
+/* embrasure : 4 jambages qui s'enfoncent en profondeur */
+.door .jamb{position:absolute;background:linear-gradient(var(--jg,180deg),#3d2a19,#160d06);backface-visibility:hidden}
+.door .jamb.t{top:0;left:0;width:100%;height:var(--depth);transform-origin:top center;transform:rotateX(90deg);--jg:0deg}
+.door .jamb.b{bottom:0;left:0;width:100%;height:var(--depth);transform-origin:bottom center;transform:rotateX(-90deg)}
+.door .jamb.l{top:0;left:0;width:var(--depth);height:100%;transform-origin:left center;transform:rotateY(-90deg);--jg:90deg}
+.door .jamb.r{top:0;right:0;width:var(--depth);height:100%;transform-origin:right center;transform:rotateY(90deg);--jg:270deg}
+/* la pièce entrevue au fond de l'embrasure */
+.door .beyond{position:absolute;inset:0;transform:translateZ(calc(-1 * var(--depth)));border-radius:3px;
   background:
-    linear-gradient(180deg,rgba(255,220,160,.12),rgba(0,0,0,.35)),
-    linear-gradient(100deg,rgba(0,0,0,.28),transparent 40%),
+    linear-gradient(180deg,transparent 52%, rgba(9,5,2,.9)),
+    radial-gradient(72% 82% at 50% 46%, rgba(243,200,122,.55), rgba(120,70,30,.32) 42%, rgba(18,11,5,.95) 82%);
+  box-shadow:inset 0 0 70px rgba(0,0,0,.75)}
+/* cadre-moulure : anneau creux (centre transparent => on voit le battant, puis l'embrasure) */
+.door .frame{position:absolute;inset:-15px;border-radius:9px;background:transparent;
+  border:14px solid #3a2510;
+  box-shadow:0 46px 92px -34px rgba(0,0,0,.95),inset 0 0 0 2px rgba(224,196,137,.3),
+    inset 0 2px 0 rgba(224,196,137,.14),0 0 0 1px rgba(224,196,137,.16)}
+/* battant en bois (charnière à gauche) */
+.door .leaf{position:absolute;inset:0;border-radius:5px;transform-origin:left center;transform:rotateY(0deg);
+  transition:transform 1.05s var(--eio),box-shadow .5s;z-index:3;
+  background:
+    linear-gradient(180deg,rgba(255,220,160,.12),rgba(0,0,0,.38)),
+    linear-gradient(100deg,rgba(0,0,0,.3),transparent 40%),
     url('assets/images/hero/wood.webp');
   background-size:cover;background-position:center;
   box-shadow:inset 0 0 0 8px rgba(20,12,6,.5),inset 0 0 60px rgba(0,0,0,.6),0 26px 50px -22px rgba(0,0,0,.9);
   backface-visibility:hidden}
-/* panneaux sculptés */
 .door .leaf::before{content:"";position:absolute;inset:16px;border-radius:3px;
   box-shadow:inset 0 0 0 2px rgba(20,12,6,.55),inset 0 0 0 3px rgba(224,196,137,.14);
-  background:linear-gradient(180deg,transparent 48%,rgba(0,0,0,.18) 50%,transparent 52%)}
+  background:linear-gradient(180deg,transparent 30%,rgba(0,0,0,.16) 32%,transparent 34%,transparent 66%,rgba(0,0,0,.16) 68%,transparent 70%)}
 .door .knob{position:absolute;right:14px;top:50%;width:14px;height:14px;border-radius:50%;
   background:radial-gradient(circle at 35% 35%,var(--gold2),var(--gold-deep));
   box-shadow:0 0 12px rgba(243,200,122,.7),inset 0 -1px 2px rgba(0,0,0,.5);transform:translateY(-50%) translateZ(6px)}
-.door.open .leaf{transform:rotateY(-112deg)}
-.door.open .glow{opacity:1;transform:translateZ(-40px) scale(1.05)}
+.door.open .leaf{transform:rotateY(-122deg)}
+.door.open .glow{opacity:1}
 .door .plate{position:absolute;left:0;right:0;bottom:-64px;text-align:center;transform:translateZ(40px)}
 .door .plate .pn{font-family:var(--serif);font-size:clamp(1.5rem,3vw,2.15rem);color:var(--cream);
   line-height:1;letter-spacing:.01em}
@@ -167,7 +200,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .doorbtn{position:relative;transform-style:preserve-3d;transition:transform .55s var(--eo);cursor:pointer;
   transform:translateZ(0)}
 .doorbtn:hover,.doorbtn:focus-visible{transform:translateZ(70px) scale(1.02);outline:none}
-.doorbtn:hover .glow,.doorbtn:focus-visible .glow{opacity:.5;transform:translateZ(-40px) scale(1)}
+.doorbtn:hover .glow,.doorbtn:focus-visible .glow{opacity:.55}
+.doorbtn:hover .leaf,.doorbtn:focus-visible .leaf{transform:rotateY(-24deg)}
 .doorbtn:focus-visible .frame{box-shadow:0 40px 80px -30px rgba(0,0,0,.9),inset 0 0 0 2px var(--gold2),0 0 0 3px rgba(224,196,137,.5)}
 
 /* ============================ BOUTONS ============================ */
@@ -213,7 +247,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .hall-head p{color:var(--cream2);margin-top:12px;font-size:.98rem}
 .doors3{display:flex;justify-content:center;align-items:flex-end;gap:clamp(18px,5vw,64px);
   transform-style:preserve-3d;flex-wrap:wrap}
-.doors3 .door{--dw:min(30vw,224px);--dh:min(52vh,380px)}
+.doors3 .door{--dw:min(30vw,224px);--dh:min(52vh,380px);--depth:min(10vw,80px)}
 .doors3 .doorbtn:nth-child(1){transform:translateZ(0) rotateY(6deg)}
 .doors3 .doorbtn:nth-child(3){transform:translateZ(0) rotateY(-6deg)}
 .doors3 .doorbtn:nth-child(1):hover,.doors3 .doorbtn:nth-child(1):focus-visible{transform:translateZ(70px) rotateY(0deg) scale(1.02)}
@@ -451,7 +485,9 @@ body[data-scene="collection"] .mini-doors,body[data-scene="surmesure"] .mini-doo
         </div>
         <div class="ext-door-wrap">
           <div class="door" id="ext-door" aria-hidden="true">
-            <div class="glow"></div><div class="frame"></div>
+            <div class="glow"></div><div class="beyond"></div>
+            <div class="jamb t"></div><div class="jamb b"></div><div class="jamb l"></div><div class="jamb r"></div>
+            <div class="frame"></div>
             <div class="leaf"><span class="knob"></span></div>
           </div>
         </div>
@@ -481,20 +517,23 @@ body[data-scene="collection"] .mini-doors,body[data-scene="surmesure"] .mini-doo
         </div>
         <div class="doors3">
           <button class="doorbtn" data-go="collection" aria-label="Ouvrir la porte Collection">
-            <div class="door"><div class="glow"></div><div class="frame"></div>
-              <div class="leaf"><span class="knob"></span></div>
+            <div class="door"><div class="glow"></div><div class="beyond"></div>
+              <div class="jamb t"></div><div class="jamb b"></div><div class="jamb l"></div><div class="jamb r"></div>
+              <div class="frame"></div><div class="leaf"><span class="knob"></span></div>
               <div class="plate"><div class="pn">Collection</div><div class="ps">Nos pièces</div></div>
             </div>
           </button>
           <button class="doorbtn" data-go="surmesure" aria-label="Ouvrir la porte Sur-mesure">
-            <div class="door"><div class="glow"></div><div class="frame"></div>
-              <div class="leaf"><span class="knob"></span></div>
+            <div class="door"><div class="glow"></div><div class="beyond"></div>
+              <div class="jamb t"></div><div class="jamb b"></div><div class="jamb l"></div><div class="jamb r"></div>
+              <div class="frame"></div><div class="leaf"><span class="knob"></span></div>
               <div class="plate"><div class="pn">Sur-mesure</div><div class="ps">Votre pièce</div></div>
             </div>
           </button>
           <button class="doorbtn" data-go="atelier" aria-label="Ouvrir la porte Atelier & Contact">
-            <div class="door"><div class="glow"></div><div class="frame"></div>
-              <div class="leaf"><span class="knob"></span></div>
+            <div class="door"><div class="glow"></div><div class="beyond"></div>
+              <div class="jamb t"></div><div class="jamb b"></div><div class="jamb l"></div><div class="jamb r"></div>
+              <div class="frame"></div><div class="leaf"><span class="knob"></span></div>
               <div class="plate"><div class="pn">Atelier</div><div class="ps">La maison · Contact</div></div>
             </div>
           </button>
@@ -759,6 +798,19 @@ function seedMotes(){
   });
 }
 
+/* ---------- décor 3D injecté : plafond + lampe suspendue ---------- */
+function seedDecor(){
+  ["hall","collection","surmesure","atelier"].forEach(function(k){
+    var el=document.getElementById('sc-'+k);if(!el)return;
+    var room=el.querySelector('.room');if(!room)return;
+    var ceil=document.createElement('div');ceil.className='ceil';room.appendChild(ceil);
+    var lamp=document.createElement('div');lamp.className='lamp';
+    lamp.innerHTML='<div class="cone"></div><div class="shade"></div><div class="bulb"></div>';
+    if(RM)lamp.style.animation='none';
+    room.appendChild(lamp);
+  });
+}
+
 /* ---------- moteur de scènes ---------- */
 var ORDER=["exterior","hall","collection","surmesure","atelier"];
 var scenes={};ORDER.forEach(function(k){scenes[k]=document.getElementById('sc-'+k);});
@@ -872,22 +924,29 @@ function revealIn(to){
   });
 }
 
-/* ---------- balancement caméra (pointeur, desktop) ---------- */
+/* ---------- caméra vivante : dérive lente + parallaxe pointeur (desktop) ---------- */
 if(!RM&&!TOUCH){
-  var sway={rx:0,ry:0,sx:0,sy:0},tgt={rx:0,ry:0,sx:0,sy:0},raf=null;
+  var sway={rx:0,ry:0,sx:0,sy:0},ptr={x:0,y:0},t0=performance.now();
   window.addEventListener('pointermove',function(e){
-    var nx=(e.clientX/innerWidth-.5),ny=(e.clientY/innerHeight-.5);
-    tgt.rx=nx*5;tgt.ry=-ny*3.2;tgt.sx=-nx*16;tgt.sy=-ny*10;
-    if(!raf)raf=requestAnimationFrame(tick);
+    ptr.x=(e.clientX/innerWidth-.5);ptr.y=(e.clientY/innerHeight-.5);
   },{passive:true});
-  function tick(){
-    sway.rx+=(tgt.rx-sway.rx)*.06;sway.ry+=(tgt.ry-sway.ry)*.06;
-    sway.sx+=(tgt.sx-sway.sx)*.06;sway.sy+=(tgt.sy-sway.sy)*.06;
-    var sw=scenes[cur]&&scenes[cur].querySelector('.swayer');
-    if(sw){sw.style.setProperty('--rx',sway.rx.toFixed(2)+'deg');sw.style.setProperty('--ry',sway.ry.toFixed(2)+'deg');
-      sw.style.setProperty('--sx',sway.sx.toFixed(1)+'px');sw.style.setProperty('--sy',sway.sy.toFixed(1)+'px');}
-    if(Math.abs(tgt.rx-sway.rx)>.02||Math.abs(tgt.sx-sway.sx)>.05){raf=requestAnimationFrame(tick);}else{raf=null;}
-  }
+  (function tick(now){
+    var t=(now-t0)/1000;
+    var ix=Math.sin(t*0.38), iy=Math.cos(t*0.29);          // respiration lente
+    var trx=(ptr.x+ix*0.28)*5.5, tryy=-(ptr.y+iy*0.28)*3.4;
+    var tsx=-(ptr.x+ix*0.42)*20, tsy=-(ptr.y+iy*0.42)*12;
+    sway.rx+=(trx-sway.rx)*.045;sway.ry+=(tryy-sway.ry)*.045;
+    sway.sx+=(tsx-sway.sx)*.045;sway.sy+=(tsy-sway.sy)*.045;
+    var sc=scenes[cur];
+    if(sc){
+      var sw=sc.querySelector('.swayer');
+      if(sw){sw.style.setProperty('--rx',sway.rx.toFixed(2)+'deg');sw.style.setProperty('--ry',sway.ry.toFixed(2)+'deg');
+        sw.style.setProperty('--sx',sway.sx.toFixed(1)+'px');sw.style.setProperty('--sy',sway.sy.toFixed(1)+'px');}
+      var rm=sc.querySelector('.room');   // le décor parallaxe même dans les salles
+      if(rm)rm.style.transform='rotateY('+(sway.rx*.5).toFixed(2)+'deg) rotateX('+(-sway.ry*.5).toFixed(2)+'deg) translate3d('+(sway.sx*.6).toFixed(1)+'px,'+(sway.sy*.6).toFixed(1)+'px,0)';
+    }
+    requestAnimationFrame(tick);
+  })(performance.now());
 }
 
 /* ---------- filtres collection ---------- */
@@ -948,7 +1007,7 @@ if(document.readyState==='complete')bootPre();else window.addEventListener('load
 setTimeout(function(){var p=document.getElementById('pre');if(p)p.classList.add('done');},4500);
 
 /* ---------- init ---------- */
-seedMotes();setBack();markMini();
+seedMotes();seedDecor();setBack();markMini();
 })();
 </script>
 </body>
