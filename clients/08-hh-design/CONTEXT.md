@@ -1,5 +1,20 @@
 # HH Design — CONTEXT
 
+## 🎬 REFONTE 3D IMMERSIVE (2026-07-04, même jour) — « ultra 3D »
+Après la refonte ébénisterie (voir plus bas), Mongazi a demandé une **expérience 100% 3D** :
+on **entre dans la maison** par une porte (bouton « Voir »), la **caméra traverse** jusqu'à
+l'intérieur, puis **3 portes** ouvrent 3 salles → **Collection · Sur-mesure · Atelier**.
+- **3D en CSS pur** (perspective + preserve-3d, GPU, self-contained ~68 Ko ; pas de Three.js).
+- Portes **volumétriques** (embrasure + pièce entrevue) ; pièces **closes** (plafond + lampe
+  suspendue + cône de lumière) ; **caméra vivante** (dérive lente + parallaxe pointeur).
+- **Tout le vrai contenu conservé** dans les salles (6 pièces + fiches, sur-mesure, finitions,
+  formulaire→WhatsApp). Fallback `prefers-reduced-motion` = page plate scrollable (a11y + SEO).
+- ⚠️ **Pas encore déployé** : `wrangler pages deploy` à lancer en local (env distant sans
+  credentials). Détail : `_memoire/conversations/2026-07-04-hh-design-3d.md`.
+- ⚠️ n° WhatsApp `2290162686768` **inchangé** et **toujours à confirmer**.
+
+---
+
 ## ⚠️ PIVOT MAJEUR (2026-07-04) — HH DESIGN = ÉBÉNISTERIE, PAS IMMOBILIER
 La première version (2026-06-30) était bâtie comme une **agence immobilière** (erreur de brief).
 Les planches de marque envoyées par Mongazi (`_partage/inspiration 1..8.JPG`) révèlent la vraie
