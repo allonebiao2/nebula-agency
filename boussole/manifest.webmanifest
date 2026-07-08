@@ -1,0 +1,17 @@
+{
+  "name": "Boussole — gestion financière",
+  "short_name": "Boussole",
+  "description": "Compare ce que tu dépenses à ce que tu gagnes. Vois ta rentabilité, gère tes recettes en 3 enveloppes.",
+  "lang": "fr",
+  "dir": "ltr",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#f6f5f2",
+  "theme_color": "#0e9f6e",
+  "categories": ["finance", "business", "productivity"],
+  "icons": [
+    { "src": "assets/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "assets/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

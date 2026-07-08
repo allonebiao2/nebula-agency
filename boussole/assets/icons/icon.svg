@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Boussole">
+  <rect width="512" height="512" fill="#0e9f6e"/>
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#eafaf2" stroke-width="16" opacity="0.9"/>
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#0b6b4a" stroke-width="16" stroke-dasharray="6 30" stroke-linecap="round"/>
+  <path d="M256 150 L296 296 L256 362 L216 296 Z" fill="#ffffff"/>
+  <path d="M256 150 L296 296 L256 274 Z" fill="#d7f3e6"/>
+  <circle cx="256" cy="256" r="16" fill="#0b6b4a"/>
+</svg>
