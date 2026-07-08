@@ -566,6 +566,41 @@ export function resumeJour() {
   };
 }
 
+// ---------- Historique des ventes : recherche (date / produit / texte) + regroupé par jour ----------
+export function historiqueVentes({ from = '', to = '', produitId = '', q = '' } = {}) {
+  const fromT = from ? new Date(from + 'T00:00:00').getTime() : -Infinity;
+  const toT = to ? new Date(to + 'T23:59:59.999').getTime() : Infinity;
+  const ql = (q || '').trim().toLowerCase();
+  const rows = state.ventes.filter((v) => {
+    const t = new Date(v.date).getTime();
+    if (t < fromT || t > toT) return false;
+    if (produitId && v.produit_id !== produitId) return false;
+    if (ql) { const p = getProduit(v.produit_id); if (!p || !p.nom.toLowerCase().includes(ql)) return false; }
+    return true;
+  }).map((v) => {
+    const p = getProduit(v.produit_id);
+    return {
+      id: v.id, produit_id: v.produit_id, nom: p ? p.nom : 'Produit supprimé', modele: p ? p.modele : '',
+      date: v.date, qte: v.qte, prix_unitaire: v.prix_unitaire,
+      total: (v.qte || 0) * (v.prix_unitaire || 0), marge: (v.qte || 0) * ((v.prix_unitaire || 0) - (v.cout_unitaire || 0)),
+    };
+  }).sort((a, b) => new Date(b.date) - new Date(a.date));
+  const jours = [], map = {};
+  for (const r of rows) {
+    const dd = new Date(r.date);   // regroupement par jour LOCAL (pas UTC)
+    const key = `${dd.getFullYear()}-${String(dd.getMonth() + 1).padStart(2, '0')}-${String(dd.getDate()).padStart(2, '0')}`;
+    if (!map[key]) { map[key] = { jour: key, total: 0, marge: 0, unites: 0, nb: 0, lignes: [] }; jours.push(map[key]); }
+    const g = map[key]; g.lignes.push(r); g.total += r.total; g.marge += r.marge; g.unites += r.qte; g.nb += 1;
+  }
+  return {
+    jours,
+    total: rows.reduce((s, r) => s + r.total, 0),
+    marge: rows.reduce((s, r) => s + r.marge, 0),
+    unites: rows.reduce((s, r) => s + r.qte, 0),
+    nb: rows.length,
+  };
+}
+
 // ---------- Formatage ----------
 export function formatF(n) {
   const v = Math.round(Number(n) || 0);

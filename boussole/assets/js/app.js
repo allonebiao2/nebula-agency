@@ -13,6 +13,7 @@ let period = loadPeriod();
 let animateNext = false;   // déclenche cascades + compteurs à l'entrée (pas sur maj live)
 let prevUser = null;
 let pendingLogin = false;  // vrai après un login volontaire -> 2e splash
+let venteFilter = Object.assign({ preset: 'jour', produitId: '', q: '' }, venteRange('jour'));
 
 const $ = (s, r = document) => r.querySelector(s);
 const cloudCtx = () => ({ configured: Cloud.isCloudConfigured(), user: Cloud.getUser() });
@@ -53,7 +54,7 @@ function render() {
   else if (screen === 'accueil') view.innerHTML = UI.viewAccueilHTML(period);
   else if (screen === 'bilan') view.innerHTML = UI.viewBilanHTML();
   else if (screen === 'reglages') view.innerHTML = UI.viewReglagesHTML(cloudCtx());
-  else view.innerHTML = UI.viewVentesHTML();
+  else view.innerHTML = UI.viewVentesHTML(venteFilter);
   $('#nav').innerHTML = navVisible() ? UI.navHTML(screen) : '';
   $('#nav').style.display = navVisible() ? '' : 'none';
   hydrateIcons(document);
@@ -71,6 +72,22 @@ function loadPeriod() {
   return { gran: 'mois', offset: 0 };
 }
 function savePeriod() { try { localStorage.setItem('boussole:period', JSON.stringify({ gran: period.gran })); } catch {} }
+
+// ---------- Filtre de l'historique des ventes ----------
+function ymd(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+function venteRange(preset) {
+  const now = new Date();
+  if (preset === 'semaine') { const s = new Date(now); s.setDate(now.getDate() - 6); return { from: ymd(s), to: ymd(now) }; }
+  if (preset === 'mois') { return { from: ymd(new Date(now.getFullYear(), now.getMonth(), 1)), to: ymd(now) }; }
+  if (preset === 'tout') { return { from: '', to: '' }; }
+  return { from: ymd(now), to: ymd(now) }; // jour
+}
+function refreshVentes() {
+  if (screen !== 'ventes') return;
+  const view = $('#view'); const top = view.scrollTop;
+  view.innerHTML = UI.viewVentesHTML(venteFilter);
+  hydrateIcons(view); view.scrollTop = top;
+}
 // Rafraîchit uniquement le tableau de bord en conservant la position de défilement.
 function refreshDash() {
   const view = $('#view');
@@ -439,6 +456,9 @@ document.addEventListener('click', (e) => {
     case 'del-depense': { S.deleteDepense(id); const row = el.closest('.deprow'); if (row) row.remove(); UI.toast('Dépense supprimée'); return; }
     case 'edit-caisse': return openCaisseModal();
     case 'save-caisse': { const v = Number($('#cs-amt').value) || 0; S.setSoldeInitial(v); UI.closeModal(); UI.toast('Fond de caisse enregistré'); return; }
+
+    // historique ventes — filtres
+    case 'vf-preset': { venteFilter = Object.assign(venteFilter, { preset: el.dataset.preset }, venteRange(el.dataset.preset)); return refreshVentes(); }
     case 'close-modal': return UI.closeModal();
     case 'confirm-ok': { const fn = $('#modal-root')._confirmOk; UI.closeModal(); if (fn) fn(); return; }
 
@@ -511,6 +531,23 @@ document.addEventListener('click', (e) => {
 document.addEventListener('change', (e) => {
   const el = e.target;
   if (el.matches('[data-action="save-nom"]')) S.setProfil({ nom_activite: el.value.trim() });
+  else if (el.matches('[data-action="vf-from"]')) { venteFilter.from = el.value; venteFilter.preset = 'custom'; refreshVentes(); }
+  else if (el.matches('[data-action="vf-to"]')) { venteFilter.to = el.value; venteFilter.preset = 'custom'; refreshVentes(); }
+  else if (el.matches('[data-action="vf-produit"]')) { venteFilter.produitId = el.value; refreshVentes(); }
+  else if (el.matches('[data-action="vf-search"]')) { venteFilter.q = el.value; refreshVentes(); }
+});
+// recherche « live » (chaque frappe) sans perdre le focus du champ
+document.addEventListener('input', (e) => {
+  const el = e.target;
+  if (el.matches('[data-action="vf-search"]')) {
+    venteFilter.q = el.value;
+    clearTimeout(window.__vfSearchT);
+    window.__vfSearchT = setTimeout(() => {
+      refreshVentes();
+      const s = document.querySelector('[data-action="vf-search"]');
+      if (s) { s.focus(); const v = s.value; s.setSelectionRange(v.length, v.length); }
+    }, 220);
+  }
 });
 
 function pulseBenef() {

@@ -5,7 +5,7 @@ import {
   coutRevient, margeUnitaire, chargesMensuellesTotal, seuilRentabilite,
   bilanMois, ventesDuMois, serieMensuelle, trimestreDe, currentMonthKey,
   statistiques, analyseBusiness,
-  serieDashboard, topProduitsPeriode, getObjectif, resumeJour,
+  serieDashboard, topProduitsPeriode, getObjectif, resumeJour, historiqueVentes,
   formatF, formatNombre, MOIS_LONGS,
 } from './store.js';
 import { chartBeneficeMensuel, chartEvolution, miniSpark, progressRing, chartHero, chartDonut, sparklineRaw } from './charts.js';
@@ -326,13 +326,27 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
 }
 
 // ============ ÉCRAN VENTES ============
-export function viewVentesHTML() {
+function jourLabel(key) {
+  const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const t = new Date(); const today = ymd(t);
+  const y = new Date(t); y.setDate(t.getDate() - 1);
+  if (key === today) return "Aujourd'hui";
+  if (key === ymd(y)) return 'Hier';
+  return new Date(key + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+function hvRow(l) {
+  const hm = new Date(l.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  return `<li class="hvrow">
+    <span class="hvrow__ic" data-icon="${l.modele === 'revente' ? 'truck' : 'factory'}"></span>
+    <div class="hvrow__id"><strong>${esc(l.nom)}</strong><small>${hm} · ${formatNombre(l.qte)} × ${formatF(l.prix_unitaire)}</small></div>
+    <span class="hvrow__tot">${formatF(l.total)}</span>
+    <button class="hvrow__del" data-action="del-vente" data-id="${l.id}" aria-label="Supprimer la vente"><span data-icon="trash"></span></button>
+  </li>`;
+}
+
+export function viewVentesHTML(filter = { preset: 'jour', from: '', to: '', produitId: '', q: '' }) {
   const produits = getProduits();
-  const b = bilanMois();
   const mk = currentMonthKey();
-  const ventesMois = ventesDuMois(mk).slice().reverse();
-  const auj = new Date().toISOString().slice(0, 10);
-  const ventesJour = ventesMois.filter((v) => v.date.slice(0, 10) === auj);
 
   if (produits.length === 0) {
     return `<section class="view">
@@ -342,6 +356,10 @@ export function viewVentesHTML() {
         'Configurer mon activité', 'go-config')}
     </section>`;
   }
+
+  const b = bilanMois();
+  const auj = new Date().toISOString().slice(0, 10);
+  const ventesJour = getVentes().filter((v) => v.date.slice(0, 10) === auj);
 
   const tiles = produits.map((p) => {
     const marge = margeUnitaire(p);
@@ -366,26 +384,41 @@ export function viewVentesHTML() {
     </article>`;
   }).join('');
 
-  const journal = ventesJour.length ? ventesJour.map((v) => {
-    const p = getProduit(v.produit_id);
-    return `<li class="jrow">
-      <span class="jrow__nom">${esc(p ? p.nom : '—')}</span>
-      <span class="jrow__q">${v.qte} × ${formatF(v.prix_unitaire)}</span>
-      <span class="jrow__tot">${formatF(v.qte * v.prix_unitaire)}</span>
-      <button class="jrow__del" data-action="del-vente" data-id="${v.id}" title="Annuler"><span data-icon="close"></span></button>
-    </li>`;
-  }).join('') : `<li class="jrow jrow--empty">Aucune vente aujourd'hui pour l'instant.</li>`;
-
-  const totalJour = ventesJour.reduce((s, v) => s + v.qte * v.prix_unitaire, 0);
+  // ---- Historique + recherche ----
+  const H = historiqueVentes({ from: filter.from, to: filter.to, produitId: filter.produitId, q: filter.q });
+  const chip = (id, label) => `<button class="vchip ${filter.preset === id ? 'is-on' : ''}" data-action="vf-preset" data-preset="${id}">${label}</button>`;
+  const prodOpts = ['<option value="">Tous les produits</option>']
+    .concat(getProduits({ withArchived: true }).map((p) => `<option value="${p.id}" ${filter.produitId === p.id ? 'selected' : ''}>${esc(p.nom)}</option>`)).join('');
+  const groups = H.jours.length
+    ? H.jours.map((g) => `<section class="daygrp">
+        <div class="daygrp__head"><span class="daygrp__date">${esc(jourLabel(g.jour))}</span>
+          <span class="daygrp__tot">${formatF(g.total)}<small>${formatNombre(g.unites)} u</small></span></div>
+        <ul class="hvlist">${g.lignes.map(hvRow).join('')}</ul>
+      </section>`).join('')
+    : `<div class="hvempty"><span class="hvempty__ic" data-icon="ventes"></span>
+        <p>Aucune vente sur cette sélection.</p>
+        <span class="hvempty__hint">Change de période, ou enregistre une vente ci-dessus.</span></div>`;
 
   return `<section class="view" data-live>
     ${sectionTitle('Ventes', moisLabel(mk))}
     ${enveloppesHTML(b, { compact: true })}
     <div class="tiles">${tiles}</div>
-    <div class="panel">
-      <div class="panel__head"><h2>Aujourd'hui</h2><span class="panel__badge">${formatF(totalJour)}</span></div>
-      <ul class="journal">${journal}</ul>
-    </div>
+    <article class="panel vhist">
+      <div class="panel__head"><h2>Historique</h2><span class="panel__badge">${formatNombre(H.nb)} vente${H.nb > 1 ? 's' : ''} · ${formatF(H.total)}</span></div>
+      <div class="vfilters">
+        <div class="vchips">${chip('jour', "Aujourd'hui")}${chip('semaine', '7 jours')}${chip('mois', 'Ce mois')}${chip('tout', 'Tout')}</div>
+        <div class="vfilters__dates">
+          <label class="vf-field"><span>Du</span><input type="date" class="input" data-action="vf-from" value="${esc(filter.from)}"></label>
+          <label class="vf-field"><span>Au</span><input type="date" class="input" data-action="vf-to" value="${esc(filter.to)}"></label>
+        </div>
+        <div class="vfilters__row">
+          <select class="input vf-select" data-action="vf-produit" aria-label="Filtrer par produit">${prodOpts}</select>
+          <div class="vf-search"><span class="vf-search__ic" data-icon="search"></span>
+            <input class="input" type="search" data-action="vf-search" placeholder="Rechercher un produit…" value="${esc(filter.q)}" aria-label="Rechercher un produit"></div>
+        </div>
+      </div>
+      <div class="hvgroups">${groups}</div>
+    </article>
   </section>`;
 }
 
