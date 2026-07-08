@@ -5,7 +5,7 @@ import {
   coutRevient, margeUnitaire, chargesMensuellesTotal, seuilRentabilite,
   bilanMois, ventesDuMois, serieMensuelle, trimestreDe, currentMonthKey,
   statistiques, analyseBusiness,
-  serieDashboard, topProduitsPeriode, getObjectif,
+  serieDashboard, topProduitsPeriode, getObjectif, resumeJour,
   formatF, formatNombre, MOIS_LONGS,
 } from './store.js';
 import { chartBeneficeMensuel, chartEvolution, miniSpark, progressRing, chartHero, chartDonut, sparklineRaw } from './charts.js';
@@ -134,6 +134,7 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
   const hNow = now.getHours();
   const greet = (hNow >= 18 || hNow < 5) ? 'Bonsoir' : (hNow < 12 ? 'Bonjour' : 'Bon après-midi');
   const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const dateStr = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
 
   if (produits.length === 0) {
     return `<section class="view">${sectionTitle('Accueil', greet)}
@@ -153,6 +154,27 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
 
   const tops = topProduitsPeriode(gran, offset, 6);
   const rTot = env.revenu || 1;
+
+  // ---- BLOC « AUJOURD'HUI » (trésorerie, toujours le jour courant) ----
+  const R = resumeJour();
+  const cashCard = `<article class="panel cashcard">
+    <div class="cashcard__head">
+      <div class="cashcard__id"><span class="cashcard__lbl">Aujourd'hui</span><span class="cashcard__date">${esc(dateStr)}</span></div>
+      <div class="cashcard__acts">
+        <button class="btn btn--ghost btn--sm" data-action="add-depense"><span data-icon="minus"></span> Dépense</button>
+        <button class="btn btn--sell btn--sm" data-action="go" data-screen="ventes"><span data-icon="plus"></span> Vente</button>
+      </div>
+    </div>
+    <div class="cashrow">
+      <div class="cashtile"><span class="cashtile__lbl">Encaissé</span><span class="cashtile__val pos" data-count="${R.ca}" data-fmt="f">${formatF(R.ca)}</span></div>
+      <div class="cashtile"><span class="cashtile__lbl">Dépensé</span><span class="cashtile__val ${R.depenses > 0 ? 'neg' : ''}" data-count="${R.depenses}" data-fmt="f">${formatF(R.depenses)}</span></div>
+      <div class="cashtile"><span class="cashtile__lbl">Bénéfice du jour</span><span class="cashtile__val ${R.benefice >= 0 ? 'pos' : 'neg'}" data-count="${R.benefice}" data-fmt="f">${formatF(R.benefice)}</span></div>
+      <button class="cashtile cashtile--caisse" data-action="edit-caisse" title="Régler le fond de caisse">
+        <span class="cashtile__lbl"><span data-icon="wallet"></span> Solde de caisse</span>
+        <span class="cashtile__val" data-count="${R.caisse}" data-fmt="f">${formatF(R.caisse)}</span>
+        <span class="cashtile__edit" data-icon="edit"></span></button>
+    </div>
+  </article>`;
   const legRow = (lbl, val, color, pct) => `<div class="leg__row"><span class="leg__dot" style="background:${color}"></span>
     <span class="leg__lbl">${lbl}</span><span class="leg__val">${formatF(val)}</span><span class="leg__pct">${pct}</span></div>`;
 
@@ -224,6 +246,7 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
   const envSegs = [
     { value: env.relance, color: 'var(--rel)' },
     { value: env.charges_couvertes, color: 'var(--chg)' },
+    { value: env.depenses, color: '#9b8cff' },
     { value: Math.max(0, env.benefice), color: 'var(--pos)' },
   ];
   const envDonut = `<article class="panel c4 donutcard">
@@ -234,6 +257,7 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
       <div class="leg">
         ${legRow('Relance', env.relance, 'var(--rel)', Math.round(env.relance / rTot * 100) + '%')}
         ${legRow('Charges', env.charges_couvertes, 'var(--chg)', Math.round(env.charges_couvertes / rTot * 100) + '%')}
+        ${env.depenses > 0 ? legRow('Dépenses', env.depenses, '#9b8cff', Math.round(env.depenses / rTot * 100) + '%') : ''}
         ${legRow(env.a_perte ? 'Perte' : 'Bénéfice', env.a_perte ? env.marge : env.benefice, env.a_perte ? 'var(--dng)' : 'var(--pos)', Math.round(Math.max(0, env.benefice) / rTot * 100) + '%')}
       </div>
     </div>
@@ -284,6 +308,7 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
       <div><p class="dashhead__greet">${greet},</p><h1 class="dashhead__nom">${esc(nom)}</h1></div>
       <span class="dashhead__time"><span data-icon="clock"></span>${timeStr}</span>
     </header>
+    ${cashCard}
     ${periodBarHTML(gran, offset, D.label)}
     <div class="dash">
       ${hero}

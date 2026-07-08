@@ -10,12 +10,18 @@ const nowISO = () => new Date().toISOString();
 // ---------- État ----------
 function emptyState() {
   return {
-    profil: { nom_activite: '', devise: DEVISE },
+    profil: { nom_activite: '', devise: DEVISE, solde_initial: 0 },
     produits: [],        // {id, nom, modele, prix_vente, couts:[{id,libelle,montant}], archive, created_at}
     charges_fixes: [],   // {id, libelle, montant, created_at}  (mensuel, niveau activité)
     ventes: [],          // {id, produit_id, date, qte, prix_unitaire, cout_unitaire, created_at}
+    depenses: [],        // {id, libelle, categorie, montant, date, created_at}  (sorties d'argent)
   };
 }
+
+// Catégories de dépenses. « Réassort / Stock » = achat de marchandise : sort de la caisse
+// mais N'EST PAS une charge (le coût passe déjà par la marge des produits) -> exclu du bénéfice.
+export const DEPENSE_CATS = ['Réassort / Stock', 'Transport', 'Loyer', 'Salaires', 'Factures', 'Divers'];
+export const RESTOCK_CAT = 'Réassort / Stock';
 
 let state = emptyState();
 let remote = null;          // adaptateur cloud (null = mode local)
@@ -46,13 +52,14 @@ export async function hydrateFromRemote() {
   const data = await remote.pullAll();
   if (!data) return;
   const cloudVide = !((data.produits && data.produits.length) || (data.ventes && data.ventes.length) ||
-    (data.charges_fixes && data.charges_fixes.length) || (data.profil && data.profil.nom_activite));
-  const localRempli = state.produits.length || state.ventes.length || state.charges_fixes.length || state.profil.nom_activite;
+    (data.charges_fixes && data.charges_fixes.length) || (data.depenses && data.depenses.length) || (data.profil && data.profil.nom_activite));
+  const localRempli = state.produits.length || state.ventes.length || state.charges_fixes.length || state.depenses.length || state.profil.nom_activite;
   if (cloudVide && localRempli) {
     // Premier appareil : le cloud est vide → on POUSSE le local vers le cloud (jamais d'écrasement).
     state.produits.forEach((p) => pushRemote('produits', p));
     state.charges_fixes.forEach((c) => pushRemote('charges_fixes', c));
     state.ventes.forEach((v) => pushRemote('ventes', v));
+    state.depenses.forEach((d) => pushRemote('depenses', d));
     pushRemote('profils', { id: 'me', ...state.profil });
     return;
   }
@@ -120,6 +127,31 @@ export function deleteChargeFixe(id) {
   state.charges_fixes = state.charges_fixes.filter((c) => c.id !== id);
   persistLocal(); delRemote('charges_fixes', id); emit();
 }
+
+// ---------- Mutations : dépenses (sorties d'argent) ----------
+export function getDepenses() { return state.depenses; }
+export function addDepense({ libelle, categorie, montant, date }) {
+  const d = {
+    id: uid(), libelle: (libelle || '').trim(), categorie: DEPENSE_CATS.includes(categorie) ? categorie : 'Divers',
+    montant: Number(montant) || 0, date: date || nowISO(), created_at: nowISO(),
+  };
+  state.depenses.push(d);
+  persistLocal(); pushRemote('depenses', d); emit();
+  return d;
+}
+export function updateDepense(id, patch) {
+  const d = state.depenses.find((x) => x.id === id); if (!d) return;
+  Object.assign(d, patch); if (patch.montant != null) d.montant = Number(patch.montant) || 0;
+  persistLocal(); pushRemote('depenses', d); emit();
+}
+export function deleteDepense(id) {
+  state.depenses = state.depenses.filter((d) => d.id !== id);
+  persistLocal(); delRemote('depenses', id); emit();
+}
+
+// ---------- Solde de caisse (fond de départ) ----------
+export function getSoldeInitial() { return Number(state.profil.solde_initial) || 0; }
+export function setSoldeInitial(v) { setProfil({ solde_initial: Math.round(Number(v) || 0) }); }
 
 // ---------- Mutations : ventes ----------
 export function addVente({ produit_id, qte = 1, prix_unitaire, date }) {
@@ -410,6 +442,13 @@ function ventesEntre(start, end) {
   const a = start.getTime(), b = end.getTime();
   return state.ventes.filter((v) => { const t = new Date(v.date).getTime(); return t >= a && t < b; });
 }
+function depensesEntre(start, end) {
+  const a = start.getTime(), b = end.getTime();
+  return state.depenses.filter((d) => { const t = new Date(d.date).getTime(); return t >= a && t < b; });
+}
+function sommeDepenses(list) { return list.reduce((s, d) => s + (Number(d.montant) || 0), 0); }
+// dépenses d'exploitation (hors réassort/stock) : celles qui rognent le bénéfice
+function depensesExploit(list) { return sommeDepenses(list.filter((d) => d.categorie !== RESTOCK_CAT)); }
 
 // Quote-part de charges fixes pour un intervalle (au prorata des jours, sans compter le futur).
 function chargesProrataEntre(start, end, nowT = Date.now()) {
@@ -430,9 +469,12 @@ function chargesProrataEntre(start, end, nowT = Date.now()) {
 function periodTotals(start, end, nowT) {
   const s = sommeVentes(ventesEntre(start, end));
   const charges = chargesProrataEntre(start, end, nowT);
+  const dep = depensesEntre(start, end);
+  const depExploit = depensesExploit(dep);
   return {
     revenu: s.revenu, cout: s.cout, marge: s.marge, unites: s.unites, nbTx: s.nbTx,
-    charges, benefice: s.marge - charges,
+    charges, depenses: sommeDepenses(dep), depensesExploit: depExploit,
+    benefice: s.marge - charges - depExploit,
     tauxMarge: s.revenu ? s.marge / s.revenu : 0,
     panierMoyen: s.nbTx ? s.revenu / s.nbTx : 0,
   };
@@ -452,7 +494,8 @@ export function serieDashboard(gran = 'mois', offset = 0) {
     const s = sommeVentes(ventesEntre(bk.start, bk.end));
     const future = bk.start.getTime() > nowT;
     const charges = future ? 0 : chargesProrataEntre(bk.start, bk.end, nowT);
-    return { label: bk.label, revenu: s.revenu, cout: s.cout, marge: s.marge, unites: s.unites, nbTx: s.nbTx, charges, benefice: s.marge - charges, future };
+    const depExploit = future ? 0 : depensesExploit(depensesEntre(bk.start, bk.end));
+    return { label: bk.label, revenu: s.revenu, cout: s.cout, marge: s.marge, unites: s.unites, nbTx: s.nbTx, charges, depenses: depExploit, benefice: s.marge - charges - depExploit, future };
   });
   const totals = periodTotals(P.start, P.end, nowT);
   // Comparaison équitable : si la période est EN COURS, on compare à la MÊME durée écoulée
@@ -462,10 +505,11 @@ export function serieDashboard(gran = 'mois', offset = 0) {
   const prev = periodTotals(P.prev.start, prevEnd, nowT);
   const target = totals.charges;
   const env2 = Math.max(0, Math.min(totals.marge, target));
+  const depExploit = totals.depensesExploit;
   const enveloppes = {
     revenu: totals.revenu, relance: totals.cout, marge: totals.marge,
     charges_cible: target, charges_couvertes: env2, charges_reste: Math.max(0, target - env2),
-    benefice: totals.marge - env2, a_perte: totals.marge < 0,
+    depenses: depExploit, benefice: totals.marge - env2 - depExploit, a_perte: totals.marge < 0,
   };
   return {
     gran: P.gran, offset: P.offset, unit: P.unit, label: P.label, prevLabel: P.prev.label,
@@ -499,6 +543,29 @@ export function topProduitsPeriode(gran = 'mois', offset = 0, n = 6) {
 export function getObjectif() { return Number(state.profil.objectif_benefice) || 0; }
 export function setObjectif(v) { setProfil({ objectif_benefice: Math.max(0, Math.round(Number(v) || 0)) }); }
 
+// ---------- Caisse + résumé du jour (vue trésorerie) ----------
+// Caisse = fond de départ + tout l'encaissement (ventes) − toutes les sorties (dépenses).
+export function soldeCaisse() {
+  const encaisse = state.ventes.reduce((s, v) => s + (v.qte || 0) * (v.prix_unitaire || 0), 0);
+  return getSoldeInitial() + encaisse - sommeDepenses(state.depenses);
+}
+// Résumé d'AUJOURD'HUI (toujours le jour courant, indépendant de la période choisie).
+export function resumeJour() {
+  const now = new Date();
+  const s0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const s1 = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const v = sommeVentes(ventesEntre(s0, s1));
+  const dep = depensesEntre(s0, s1);
+  const depExploit = depensesExploit(dep);
+  const charges = chargesProrataEntre(s0, s1, Date.now());
+  return {
+    ca: v.revenu, cout: v.cout, marge: v.marge, unites: v.unites, nbTx: v.nbTx,
+    depenses: sommeDepenses(dep), depensesExploit: depExploit, charges,
+    benefice: v.marge - depExploit - charges,   // vrai bénéfice du jour (marge − dépenses expl. − quote-part charges)
+    caisse: soldeCaisse(),
+  };
+}
+
 // ---------- Formatage ----------
 export function formatF(n) {
   const v = Math.round(Number(n) || 0);
@@ -520,6 +587,7 @@ export function importData(json) {
     state.produits.forEach((p) => pushRemote('produits', p));
     state.charges_fixes.forEach((c) => pushRemote('charges_fixes', c));
     state.ventes.forEach((v) => pushRemote('ventes', v));
+    state.depenses.forEach((d) => pushRemote('depenses', d));
     pushRemote('profils', { id: 'me', ...state.profil });
   }
   emit();

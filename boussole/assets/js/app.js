@@ -208,6 +208,48 @@ function openObjectifModal() {
   hydrateIcons($('#modal-root'));
 }
 
+// ---------- Dépense (modale) ----------
+function depensesRecentesHTML() {
+  const list = S.getDepenses().slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+  if (!list.length) return '';
+  const rows = list.map((d) => `<li class="deprow">
+      <span class="deprow__cat">${UI.esc(d.categorie)}</span>
+      <span class="deprow__lib">${UI.esc(d.libelle || '—')}</span>
+      <span class="deprow__amt">${S.formatF(d.montant)}</span>
+      <button class="deprow__del" data-action="del-depense" data-id="${d.id}" title="Supprimer"><span data-icon="close"></span></button>
+    </li>`).join('');
+  return `<div class="field"><label>Dépenses récentes</label><ul class="deplist">${rows}</ul></div>`;
+}
+function openDepenseModal() {
+  const cats = S.DEPENSE_CATS.map((c, i) => `<button type="button" class="catchip ${i === 0 ? 'is-on' : ''}" data-action="dep-cat" data-cat="${UI.esc(c)}">${UI.esc(c)}</button>`).join('');
+  const today = new Date().toISOString().slice(0, 10);
+  UI.openModal(UI.modalShell('Ajouter une dépense',
+    `<div class="field"><label for="dp-amt">Montant</label>
+       <div class="inwrap"><input id="dp-amt" class="input input--lg" type="number" inputmode="numeric" placeholder="0"><span class="inwrap__cur">F</span></div></div>
+     <div class="field"><label>Catégorie</label><div class="catchips" id="dp-cats">${cats}</div></div>
+     <div class="field"><label for="dp-lib">Libellé (optionnel)</label>
+       <input id="dp-lib" class="input" placeholder="Ex. Taxi marché, sacs, facture SBEE"></div>
+     <div class="field"><label for="dp-date">Date</label>
+       <input id="dp-date" class="input" type="date" value="${today}"></div>
+     ${depensesRecentesHTML()}`,
+    `<button class="btn btn--ghost" data-action="close-modal">Annuler</button>
+     <button class="btn btn--danger" data-action="save-depense"><span data-icon="minus"></span> Enregistrer la dépense</button>`));
+  hydrateIcons($('#modal-root'));
+}
+
+// ---------- Solde de caisse (modale) ----------
+function openCaisseModal() {
+  const cur = S.getSoldeInitial();
+  UI.openModal(UI.modalShell('Solde de caisse',
+    `<p class="modal__lead">Le <strong>fond de caisse</strong> = l'argent que tu avais avant de commencer à utiliser Boussole.</p>
+     <div class="field"><label for="cs-amt">Fond de départ</label>
+       <div class="inwrap"><input id="cs-amt" class="input input--lg" type="number" inputmode="numeric" value="${cur || ''}" placeholder="0"><span class="inwrap__cur">F</span></div></div>
+     <p class="modal__note">Ensuite chaque vente ajoute à la caisse et chaque dépense la diminue, automatiquement.</p>`,
+    `<button class="btn btn--ghost" data-action="close-modal">Annuler</button>
+     <button class="btn" data-action="save-caisse">Enregistrer</button>`));
+  hydrateIcons($('#modal-root'));
+}
+
 // ---------- Vente détaillée (modale) ----------
 function openSellCustom(id) {
   const p = S.getProduit(id); if (!p) return;
@@ -380,6 +422,23 @@ document.addEventListener('click', (e) => {
     case 'period-next': if (period.offset < 0) { period.offset += 1; refreshDash(); } return;
     case 'edit-objectif': return openObjectifModal();
     case 'save-objectif': { const v = Number($('#obj-amt').value) || 0; S.setObjectif(v); UI.closeModal(); UI.toast(v > 0 ? 'Objectif enregistré' : 'Objectif retiré'); return; }
+
+    // dépenses & caisse
+    case 'add-depense': return openDepenseModal();
+    case 'dep-cat': { const box = $('#dp-cats'); if (box) box.querySelectorAll('.catchip').forEach((c) => c.classList.toggle('is-on', c === el)); return; }
+    case 'save-depense': {
+      const amt = Number($('#dp-amt').value) || 0;
+      if (amt <= 0) return UI.toast('Entre un montant', 'err');
+      const on = $('#modal-root .catchip.is-on');
+      const cat = on ? on.dataset.cat : 'Divers';
+      const lib = ($('#dp-lib').value || '').trim();
+      const d = $('#dp-date').value;
+      S.addDepense({ libelle: lib, categorie: cat, montant: amt, date: d ? new Date(d).toISOString() : undefined });
+      UI.closeModal(); UI.toast('Dépense enregistrée'); return;
+    }
+    case 'del-depense': { S.deleteDepense(id); const row = el.closest('.deprow'); if (row) row.remove(); UI.toast('Dépense supprimée'); return; }
+    case 'edit-caisse': return openCaisseModal();
+    case 'save-caisse': { const v = Number($('#cs-amt').value) || 0; S.setSoldeInitial(v); UI.closeModal(); UI.toast('Fond de caisse enregistré'); return; }
     case 'close-modal': return UI.closeModal();
     case 'confirm-ok': { const fn = $('#modal-root')._confirmOk; UI.closeModal(); if (fn) fn(); return; }
 
