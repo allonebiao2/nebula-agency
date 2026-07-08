@@ -79,9 +79,13 @@ function deltaBadge(d, opts = {}) {
   if (!d || d.sens === 'stable') return `<span class="delta delta--flat">—</span>`;
   const up = d.sens === 'hausse';
   const good = opts.invert ? !up : up;
-  const txt = opts.pts
-    ? `${d.diff > 0 ? '+' : ''}${Math.round(d.diff * 100)} pts`
-    : `${d.diff > 0 ? '+' : ''}${Math.round(d.pct * 100)} %`;
+  let txt;
+  if (opts.pts) {
+    txt = `${d.diff > 0 ? '+' : ''}${Math.round(d.diff * 100)} pts`;
+  } else {
+    const p = Math.round(d.pct * 100);
+    txt = Math.abs(p) > 999 ? `${p > 0 ? '>+' : '<-'}999 %` : `${p > 0 ? '+' : ''}${p} %`;
+  }
   return `<span class="delta ${good ? 'pos' : 'neg'}"><span data-icon="${up ? 'arrowUp' : 'arrowDown'}"></span>${txt}</span>`;
 }
 

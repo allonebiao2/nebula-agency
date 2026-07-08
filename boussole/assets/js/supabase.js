@@ -76,7 +76,7 @@ function makeAdapter() {
         client.from('ventes').select('*'),
       ]);
       return {
-        profil: prof.data ? { nom_activite: prof.data.nom_activite || '', devise: prof.data.devise || 'F' } : { nom_activite: '', devise: 'F' },
+        profil: prof.data ? { nom_activite: prof.data.nom_activite || '', devise: prof.data.devise || 'F', objectif_benefice: Number(prof.data.objectif_benefice) || 0 } : { nom_activite: '', devise: 'F', objectif_benefice: 0 },
         produits: (prods.data || []).map((p) => ({ ...p, couts: p.couts || [] })),
         charges_fixes: charges.data || [],
         ventes: ventes.data || [],
@@ -85,7 +85,7 @@ function makeAdapter() {
     async upsert(table, row) {
       if (!uid()) return;
       if (table === 'profils') {
-        const payload = { user_id: uid(), nom_activite: row.nom_activite || '', devise: row.devise || 'F' };
+        const payload = { user_id: uid(), nom_activite: row.nom_activite || '', devise: row.devise || 'F', objectif_benefice: Number(row.objectif_benefice) || 0 };
         const { error } = await client.from('profils').upsert(payload, { onConflict: 'user_id' });
         if (error) throw error;
         return;

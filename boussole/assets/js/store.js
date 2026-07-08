@@ -44,11 +44,22 @@ export function setRemote(adapter) { remote = adapter; }
 export async function hydrateFromRemote() {
   if (!remote) return;
   const data = await remote.pullAll();
-  if (data) {
-    state = Object.assign(emptyState(), data);
-    persistLocal();
-    emit();
+  if (!data) return;
+  const cloudVide = !((data.produits && data.produits.length) || (data.ventes && data.ventes.length) ||
+    (data.charges_fixes && data.charges_fixes.length) || (data.profil && data.profil.nom_activite));
+  const localRempli = state.produits.length || state.ventes.length || state.charges_fixes.length || state.profil.nom_activite;
+  if (cloudVide && localRempli) {
+    // Premier appareil : le cloud est vide → on POUSSE le local vers le cloud (jamais d'écrasement).
+    state.produits.forEach((p) => pushRemote('produits', p));
+    state.charges_fixes.forEach((c) => pushRemote('charges_fixes', c));
+    state.ventes.forEach((v) => pushRemote('ventes', v));
+    pushRemote('profils', { id: 'me', ...state.profil });
+    return;
   }
+  // Sinon : le cloud fait foi (déjà des données en ligne, ou local vide).
+  state = Object.assign(emptyState(), data);
+  persistLocal();
+  emit();
 }
 function pushRemote(table, row) { if (remote) remote.upsert(table, row).catch((e) => console.warn('push', table, e)); }
 function delRemote(table, id) { if (remote) remote.remove(table, id).catch((e) => console.warn('del', table, e)); }
@@ -444,7 +455,11 @@ export function serieDashboard(gran = 'mois', offset = 0) {
     return { label: bk.label, revenu: s.revenu, cout: s.cout, marge: s.marge, unites: s.unites, nbTx: s.nbTx, charges, benefice: s.marge - charges, future };
   });
   const totals = periodTotals(P.start, P.end, nowT);
-  const prev = periodTotals(P.prev.start, P.prev.end, nowT);
+  // Comparaison équitable : si la période est EN COURS, on compare à la MÊME durée écoulée
+  // de la période précédente (mois-à-date vs mêmes jours du mois d'avant), pas au total complet.
+  const elapsed = Math.min(nowT, P.end.getTime()) - P.start.getTime();
+  const prevEnd = P.offset === 0 ? new Date(P.prev.start.getTime() + elapsed) : P.prev.end;
+  const prev = periodTotals(P.prev.start, prevEnd, nowT);
   const target = totals.charges;
   const env2 = Math.max(0, Math.min(totals.marge, target));
   const enveloppes = {

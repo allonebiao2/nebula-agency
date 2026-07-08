@@ -6,11 +6,14 @@
 
 -- ---------- Tables ----------
 create table if not exists public.profils (
-  user_id      uuid primary key references auth.users on delete cascade,
-  nom_activite text default '',
-  devise       text default 'F',
-  updated_at   timestamptz default now()
+  user_id           uuid primary key references auth.users on delete cascade,
+  nom_activite      text default '',
+  devise            text default 'F',
+  objectif_benefice numeric default 0,
+  updated_at        timestamptz default now()
 );
+-- au cas où la table existe déjà d'une version antérieure :
+alter table public.profils add column if not exists objectif_benefice numeric default 0;
 
 create table if not exists public.produits (
   id          uuid primary key,
@@ -67,7 +70,14 @@ begin
 end $$;
 
 -- ---------- Synchro temps réel (mobile <-> PC) ----------
-alter publication supabase_realtime add table public.profils;
-alter publication supabase_realtime add table public.produits;
-alter publication supabase_realtime add table public.charges_fixes;
-alter publication supabase_realtime add table public.ventes;
+-- idempotent : ignore l'erreur si la table est déjà publiée (ré-exécution sûre)
+do $$
+declare t text;
+begin
+  foreach t in array array['profils','produits','charges_fixes','ventes'] loop
+    begin
+      execute format('alter publication supabase_realtime add table public.%I;', t);
+    exception when duplicate_object then null;
+    end;
+  end loop;
+end $$;
