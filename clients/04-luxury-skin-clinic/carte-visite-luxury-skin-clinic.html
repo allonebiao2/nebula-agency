@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carte de visite — Luxury Skin Clinic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blanc:#fbfaf7;--blanc-3:#eae6d9;
+  --encre:#1f1e1a;--encre-2:#4a4842;--gris:#8d8a80;
+  --or:#c9a84c;--or-fonce:#a8862f;--or-clair:#e6d3a0;
+  --menthe:#7fae9d;--ligne:#e4e0d4;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Jost',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#cfcabb}
+body{font-family:var(--sans);color:var(--encre);-webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;align-items:center;gap:8mm;padding:8mm}
+/* card = 85x55 + 3mm bleed each side = 91x61 */
+.card{position:relative;width:91mm;height:61mm;overflow:hidden;
+  background:
+    radial-gradient(120% 90% at 100% 0%,rgba(127,174,157,.12),transparent 55%),
+    radial-gradient(100% 80% at 0% 100%,rgba(201,168,76,.12),transparent 55%),
+    linear-gradient(150deg,#fdfcf9 0%,var(--blanc) 50%,#f4efe4 100%);
+  box-shadow:0 3mm 9mm -4mm rgba(31,30,26,.5)}
+/* safe zone: 3mm bleed + 3mm safety = 6mm inset */
+.safe{position:absolute;inset:6mm;display:flex;flex-direction:column}
+.gframe{position:absolute;inset:4mm;border:.5px solid rgba(201,168,76,.5);pointer-events:none}
+.gframe::before{content:"";position:absolute;inset:1.2mm;border:.5px solid rgba(201,168,76,.22)}
+
+/* corner flourish */
+.cn{position:absolute;width:5mm;height:5mm;pointer-events:none}
+.cn svg{width:100%;height:100%;stroke:var(--or);fill:none;stroke-width:1.2}
+.cn.tl{top:3mm;left:3mm}.cn.tr{top:3mm;right:3mm;transform:scaleX(-1)}
+.cn.bl{bottom:3mm;left:3mm;transform:scaleY(-1)}.cn.br{bottom:3mm;right:3mm;transform:scale(-1,-1)}
+
+/* ---------- RECTO ---------- */
+.recto .safe{align-items:center;justify-content:center;text-align:center}
+.eyebrow{display:flex;align-items:center;gap:6px;color:var(--or-fonce);
+  font-size:5.4px;letter-spacing:.34em;text-transform:uppercase;font-weight:500;position:absolute;top:1mm}
+.eyebrow i{width:16px;height:1px;background:var(--or);opacity:.75}
+.mono{width:13mm;height:13mm;border-radius:50%;border:.6px solid var(--or);
+  display:grid;place-items:center;position:relative;margin-bottom:3mm}
+.mono::before{content:"";position:absolute;inset:1mm;border-radius:50%;border:.5px solid rgba(201,168,76,.4)}
+.mono span{font-family:var(--serif);font-size:15px;font-weight:500;letter-spacing:.05em;color:var(--or-fonce)}
+.name{font-family:var(--serif);font-weight:500;font-size:27px;line-height:1;letter-spacing:.01em}
+.name .em{font-style:italic;color:var(--or-fonce)}
+.rule{display:flex;align-items:center;gap:7px;margin-top:2.6mm;color:var(--gris)}
+.rule i{width:20px;height:1px;background:var(--ligne)}
+.rule s{width:3px;height:3px;background:var(--or);border-radius:50%;transform:rotate(45deg);text-decoration:none}
+.who{margin-top:2.6mm;font-size:7px;letter-spacing:.05em;color:var(--encre-2)}
+.who b{font-weight:500;color:var(--encre)}
+.club{position:absolute;bottom:1mm;font-size:5.2px;letter-spacing:.3em;text-transform:uppercase;color:var(--gris)}
+.club b{color:var(--or-fonce);font-weight:500}
+
+/* ---------- VERSO ---------- */
+.verso .safe{flex-direction:row;align-items:center;gap:5mm}
+.qr-card{position:relative;flex:0 0 auto;width:28mm;height:28mm;background:#fff;
+  border:.75px solid var(--or);display:grid;place-items:center}
+.qr-card::before{content:"";position:absolute;inset:1.4mm;border:.5px solid rgba(201,168,76,.30);pointer-events:none}
+.qr-card .qr{width:21mm;height:21mm}
+.qr-card .qr svg{width:100%;height:100%;display:block;shape-rendering:crispEdges}
+.vinfo{flex:1;min-width:0}
+.vinfo .vk{font-size:5.6px;letter-spacing:.3em;text-transform:uppercase;color:var(--or-fonce);margin-bottom:1.4mm}
+.vinfo h3{font-family:var(--serif);font-weight:500;font-size:15px;line-height:1.1;color:var(--encre)}
+.vinfo .dom{margin-top:1.6mm;font-size:6px;letter-spacing:.24em;text-transform:uppercase;color:var(--gris)}
+.rows{margin-top:3mm;display:flex;flex-direction:column;gap:1.7mm}
+.row{display:flex;align-items:center;gap:5px;font-size:7.4px;color:var(--encre-2);letter-spacing:.01em}
+.row svg{width:9px;height:9px;stroke:var(--or-fonce);fill:none;stroke-width:1.7;flex:0 0 auto}
+.row b{font-weight:500;color:var(--encre)}
+
+@media print{
+  html,body{background:#fff;padding:0;gap:0}
+  @page{size:91mm 61mm;margin:0}
+  .card{box-shadow:none;page-break-after:always}
+  .card:last-child{page-break-after:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ RECTO ============ -->
+<div class="card recto">
+  <div class="gframe"></div>
+  <span class="cn tl"><svg viewBox="0 0 40 40"><path d="M40 5 H11 Q5 5 5 11 V40"/></svg></span>
+  <span class="cn tr"><svg viewBox="0 0 40 40"><path d="M40 5 H11 Q5 5 5 11 V40"/></svg></span>
+  <span class="cn bl"><svg viewBox="0 0 40 40"><path d="M40 5 H11 Q5 5 5 11 V40"/></svg></span>
+  <span class="cn br"><svg viewBox="0 0 40 40"><path d="M40 5 H11 Q5 5 5 11 V40"/></svg></span>
+  <div class="safe">
+    <div class="eyebrow"><i></i>Clinique esthétique · Cotonou<i></i></div>
+    <div class="mono"><span>LSC</span></div>
+    <div class="name">Luxury <span class="em">Skin</span> Clinic</div>
+    <div class="rule"><i></i><s></s><i></i></div>
+    <div class="who">par <b>Mme Sabrina</b> · esthéticienne diplômée</div>
+    <div class="club">Une maison <b>Luxury Club 229</b></div>
+  </div>
+</div>
+
+<!-- ============ VERSO ============ -->
+<div class="card verso">
+  <div class="gframe"></div>
+  <span class="cn tl"><svg viewBox="0 0 40 40"><path d="M40 5 H11 Q5 5 5 11 V40"/></svg></span>
+  <span class="cn tr"><svg viewBox="0 0 40 40"><path d="M40 5 H11 Q5 5 5 11 V40"/></svg></span>
+  <span class="cn bl"><svg viewBox="0 0 40 40"><path d="M40 5 H11 Q5 5 5 11 V40"/></svg></span>
+  <span class="cn br"><svg viewBox="0 0 40 40"><path d="M40 5 H11 Q5 5 5 11 V40"/></svg></span>
+  <div class="safe">
+    <div class="qr-card">
+      <div class="qr"><svg viewBox="0 0 51 51" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" class="segno"><path fill="#fff" d="M0 0h51v51h-51z"/><path class="qrline" stroke="#1f1e1a" d="M3 3.5h7m4 0h1m1 0h1m1 0h2m1 0h6m2 0h1m3 0h4m2 0h1m1 0h7m-45 1h1m5 0h1m1 0h1m1 0h3m1 0h4m4 0h2m1 0h2m2 0h2m1 0h1m2 0h1m2 0h1m5 0h1m-45 1h1m1 0h3m1 0h1m1 0h2m2 0h1m2 0h1m1 0h3m1 0h1m3 0h9m1 0h1m2 0h1m1 0h3m1 0h1m-45 1h1m1 0h3m1 0h1m1 0h2m2 0h3m1 0h2m2 0h1m2 0h2m3 0h6m1 0h2m1 0h1m1 0h3m1 0h1m-45 1h1m1 0h3m1 0h1m1 0h1m1 0h5m2 0h2m1 0h5m1 0h6m2 0h3m1 0h1m1 0h3m1 0h1m-45 1h1m5 0h1m1 0h1m1 0h1m2 0h1m1 0h3m2 0h1m3 0h1m5 0h3m5 0h1m5 0h1m-45 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-36 1h1m2 0h1m2 0h1m1 0h1m2 0h1m3 0h2m1 0h1m1 0h2m1 0h4m-34 1h1m2 0h4m3 0h1m1 0h2m4 0h5m2 0h1m4 0h1m2 0h1m1 0h1m1 0h5m-44 1h6m2 0h1m1 0h2m2 0h1m2 0h1m1 0h2m1 0h3m1 0h1m1 0h2m1 0h1m3 0h1m3 0h2m1 0h3m-44 1h1m3 0h2m3 0h2m3 0h4m2 0h1m1 0h1m1 0h3m1 0h1m3 0h1m3 0h1m1 0h2m1 0h1m1 0h1m-45 1h2m2 0h2m4 0h1m1 0h2m1 0h2m2 0h2m1 0h2m1 0h3m4 0h3m4 0h3m1 0h1m-44 1h1m2 0h1m2 0h2m3 0h1m6 0h1m2 0h4m3 0h1m2 0h5m1 0h2m1 0h2m2 0h1m-45 1h3m4 0h4m3 0h1m1 0h2m5 0h1m1 0h1m1 0h1m1 0h1m3 0h1m3 0h1m2 0h1m1 0h1m1 0h1m-45 1h3m2 0h2m2 0h3m2 0h1m3 0h2m1 0h3m1 0h2m2 0h1m1 0h3m2 0h1m2 0h4m1 0h1m-44 1h3m1 0h1m2 0h1m2 0h5m2 0h3m2 0h1m3 0h2m3 0h3m1 0h1m1 0h1m1 0h2m2 0h1m-45 1h1m1 0h2m2 0h1m1 0h1m1 0h2m4 0h4m2 0h1m7 0h1m1 0h2m1 0h1m2 0h1m1 0h1m-41 1h2m5 0h1m1 0h1m2 0h1m1 0h4m3 0h4m1 0h2m3 0h1m1 0h1m1 0h1m1 0h1m4 0h3m-45 1h2m4 0h1m2 0h2m1 0h1m2 0h2m1 0h1m1 0h1m1 0h2m4 0h1m1 0h2m1 0h1m3 0h1m4 0h1m1 0h1m-45 1h1m1 0h2m1 0h1m6 0h1m1 0h2m1 0h1m2 0h1m4 0h1m3 0h4m1 0h1m3 0h1m1 0h2m2 0h1m-44 1h8m1 0h1m1 0h2m2 0h2m1 0h8m1 0h2m2 0h1m2 0h6m2 0h2m-44 1h1m1 0h2m3 0h1m3 0h1m1 0h4m2 0h1m3 0h1m2 0h5m1 0h1m1 0h2m3 0h2m2 0h1m-45 1h5m1 0h1m1 0h2m3 0h1m1 0h1m1 0h4m1 0h1m1 0h2m2 0h3m1 0h2m1 0h2m1 0h1m1 0h1m1 0h1m1 0h1m-45 1h1m2 0h2m3 0h1m1 0h4m3 0h1m2 0h1m3 0h6m3 0h2m1 0h1m3 0h2m-40 1h1m1 0h6m1 0h1m1 0h2m2 0h9m2 0h1m2 0h2m1 0h7m-40 1h3m3 0h1m1 0h1m3 0h1m2 0h1m1 0h1m2 0h3m3 0h1m1 0h2m2 0h1m1 0h1m1 0h1m1 0h1m2 0h1m1 0h1m-45 1h1m2 0h1m2 0h1m1 0h1m3 0h3m1 0h3m1 0h3m1 0h1m1 0h1m2 0h5m4 0h1m2 0h2m1 0h1m-42 1h1m3 0h1m3 0h2m1 0h2m2 0h1m3 0h1m5 0h2m2 0h5m1 0h1m1 0h2m-42 1h3m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m5 0h2m2 0h3m2 0h3m-36 1h3m2 0h1m1 0h1m1 0h2m3 0h4m2 0h4m3 0h1m2 0h2m3 0h1m1 0h1m1 0h4m-45 1h1m5 0h2m3 0h1m1 0h5m1 0h1m1 0h1m1 0h1m4 0h1m1 0h1m2 0h1m3 0h5m2 0h1m-44 1h3m6 0h1m1 0h1m5 0h2m1 0h2m2 0h2m3 0h3m1 0h3m1 0h2m1 0h1m-42 1h1m2 0h7m2 0h1m2 0h1m4 0h1m2 0h1m3 0h2m3 0h1m1 0h2m3 0h1m1 0h1m-42 1h2m1 0h1m1 0h1m1 0h1m1 0h1m1 0h3m1 0h4m3 0h2m1 0h3m1 0h1m3 0h1m2 0h1m1 0h2m1 0h1m2 0h1m-41 1h1m1 0h4m1 0h2m1 0h2m1 0h2m2 0h1m4 0h1m2 0h1m1 0h3m4 0h1m1 0h3m1 0h1m-44 1h4m2 0h1m2 0h1m1 0h2m1 0h7m1 0h2m2 0h2m1 0h1m1 0h1m2 0h2m1 0h1m1 0h2m2 0h1m-45 1h1m2 0h2m1 0h1m2 0h1m1 0h1m1 0h1m2 0h1m1 0h8m1 0h1m1 0h1m2 0h1m1 0h7m-33 1h1m1 0h1m1 0h3m2 0h1m1 0h2m3 0h2m4 0h1m1 0h2m2 0h1m3 0h1m2 0h2m-45 1h7m1 0h1m1 0h4m2 0h1m1 0h3m1 0h1m1 0h2m2 0h2m6 0h1m1 0h1m1 0h1m3 0h1m-45 1h1m5 0h1m1 0h1m2 0h1m1 0h1m1 0h4m1 0h1m3 0h1m1 0h2m3 0h2m1 0h3m3 0h2m1 0h1m-44 1h1m1 0h3m1 0h1m2 0h1m1 0h3m3 0h2m1 0h5m1 0h1m5 0h1m1 0h8m2 0h1m-45 1h1m1 0h3m1 0h1m2 0h5m1 0h2m1 0h1m4 0h1m1 0h1m2 0h1m4 0h1m2 0h1m2 0h3m1 0h2m-45 1h1m1 0h3m1 0h1m1 0h2m1 0h2m1 0h7m1 0h1m1 0h2m3 0h1m3 0h1m2 0h1m3 0h5m-45 1h1m5 0h1m4 0h1m1 0h1m1 0h3m2 0h2m1 0h1m1 0h1m1 0h1m1 0h2m2 0h2m1 0h1m2 0h1m1 0h1m-42 1h7m2 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h4m1 0h5m5 0h2m2 0h1"/></svg></div>
+    </div>
+    <div class="vinfo">
+      <div class="vk">Réservez en ligne</div>
+      <h3>Scannez, prenez<br>rendez-vous</h3>
+      <div class="dom">Visage · Corps · Cheveux</div>
+      <div class="rows">
+        <div class="row"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-11.9 6.9L4 20l1.2-4A8 8 0 1 1 20 12z"/></svg><span><b>+229 01 67 97 56 26</b></span></div>
+        <div class="row"><svg viewBox="0 0 24 24"><path d="M12 21s-7-5.7-7-11a7 7 0 0 1 14 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.4"/></svg><span>Cotonou, Bénin · sur rendez-vous</span></div>
+        <div class="row"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg><span>luxuryskinclinic.netlify.app</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

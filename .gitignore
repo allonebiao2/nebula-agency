@@ -41,3 +41,14 @@ clients/*/_dist/
 # Fichiers temporaires / diagnostics
 _tmp_build_pdf.py
 boutique-ia/_diag_osm.py
+
+# Mémoire Claude Code (jonction vers .claude/.../memory) — visible dans Obsidian en local,
+# JAMAIS sur GitHub : contient du privé (GENÈSE, relations-famille). Ne pas retirer.
+_memoire/claude-code/
+
+# Espace PERSONNEL de Mongazi (GENÈSE, etc.) — JAMAIS sur GitHub (données sensibles). Ne pas retirer.
+_perso/
+
+# Pages de démo / diagnostic locales des vitrines & outils (jamais en prod)
+boussole/_*.html
+clients/*/_diag.html

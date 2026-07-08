@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEBULA Agency · Cadrez votre projet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#0c0a17;
+    --void-2:#151129;
+    --nebula-violet:#6c4fd6;
+    --nebula-pink:#c14fb8;
+    --nebula-gold:#e8b34f;
+    --paper:#f5f3ef;
+    --card:#181432;
+    --card-line:#2c2551;
+    --ink:#f2f0f8;
+    --ink-dim:#a89fc9;
+    --ink-mute:#71678f;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--void);
+    color:var(--ink);
+    font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-size:16px;
+    letter-spacing:-0.01em;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  .utility{font-family:'Space Grotesk',ui-monospace,monospace;letter-spacing:0;}
+  .display{font-family:'Fraunces',Georgia,serif;}
+
+  @keyframes riseIn{
+    from{opacity:0;transform:translateY(22px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  @keyframes glowPulse{
+    0%,100%{opacity:.5;}
+    50%{opacity:.85;}
+  }
+  @keyframes shimmer{
+    0%{background-position:-200% center;}
+    100%{background-position:200% center;}
+  }
+  @keyframes floatUp{
+    from{opacity:0;transform:translateY(14px) scale(.98);}
+    to{opacity:1;transform:translateY(0) scale(1);}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;}
+    html{scroll-behavior:auto;}
+  }
+
+  /* scroll reveal */
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);}
+  .reveal.in{opacity:1;transform:translateY(0);}
+
+  /* ---------- HERO ---------- */
+  header.hero{
+    position:relative;
+    padding:60px 22px 200px;
+    overflow:hidden;
+    background:
+      radial-gradient(60% 50% at 15% 0%, rgba(108,79,214,0.35), transparent 60%),
+      radial-gradient(50% 40% at 90% 10%, rgba(193,79,184,0.28), transparent 60%),
+      var(--void);
+  }
+  .hero-glow{
+    position:absolute;
+    top:-20%;left:50%;
+    width:120%;height:80%;
+    transform:translateX(-50%);
+    background:radial-gradient(50% 60% at 30% 20%, rgba(108,79,214,0.25), transparent 65%);
+    animation:glowPulse 7s ease-in-out infinite;
+    pointer-events:none;
+  }
+  .eyebrow{
+    font-family:'Space Grotesk',monospace;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    font-size:11px;
+    font-weight:500;
+    color:var(--nebula-gold);
+    margin-bottom:20px;
+    position:relative;
+    animation:riseIn .7s cubic-bezier(.2,.7,.2,1) both;
+  }
+  h1{
+    font-size:clamp(32px,5.8vw,52px);
+    line-height:1.02;
+    letter-spacing:-0.02em;
+    margin:0 0 18px;
+    font-weight:500;
+    max-width:640px;
+    position:relative;
+    background:linear-gradient(100deg,#ffffff 20%,#f0d89a 55%,var(--nebula-gold) 90%);
+    background-size:200% auto;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    animation:riseIn .8s cubic-bezier(.2,.7,.2,1) .08s both, shimmer 8s linear infinite 1s;
+  }
+  h1 em{font-style:italic;font-weight:400;}
+  .hero-sub{
+    color:var(--ink-dim);
+    font-size:16.5px;
+    line-height:1.62;
+    max-width:530px;
+    position:relative;
+    animation:riseIn .8s cubic-bezier(.2,.7,.2,1) .16s both;
+  }
+  .hero-steps{
+    margin-top:34px;
+    display:flex;
+    gap:0;
+    flex-wrap:wrap;
+    align-items:center;
+    position:relative;
+    font-family:'Space Grotesk',monospace;
+    font-size:12px;
+    letter-spacing:.02em;
+    color:var(--ink-mute);
+    animation:riseIn .8s cubic-bezier(.2,.7,.2,1) .24s both;
+  }
+  .hero-steps span.step{
+    color:var(--nebula-gold);
+    padding:5px 0;
+  }
+  .hero-steps .sep{margin:0 12px;opacity:.5;transition:opacity .3s;}
+
+  /* ---------- LAYOUT ---------- */
+  main{
+    max-width:720px;
+    margin:0 auto;
+    padding:0 18px 140px;
+    position:relative;
+  }
+
+  .identity{
+    background:var(--card);
+    border:1px solid var(--card-line);
+    border-radius:16px;
+    margin-top:-160px;
+    padding:28px 26px;
+    position:relative;
+    z-index:3;
+    box-shadow:0 24px 60px rgba(0,0,0,0.45);
+    animation:floatUp .8s cubic-bezier(.2,.7,.2,1) .3s both;
+  }
+  .identity-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:560px){ .identity-grid{grid-template-columns:1fr;} }
+
+  .field{margin-bottom:16px;}
+  label.field-label{
+    display:block;
+    font-family:'Space Grotesk',monospace;
+    font-size:11px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--ink-mute);
+    margin-bottom:7px;
+  }
+  input[type=text], input[type=tel], input[type=email], textarea, select{
+    width:100%;
+    border:1px solid var(--card-line);
+    border-radius:10px;
+    padding:12px 14px;
+    font-family:inherit;
+    font-size:15px;
+    color:var(--ink);
+    background:#100c25;
+    transition:border-color .2s ease, box-shadow .25s ease, background .2s ease;
+  }
+  select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--ink-mute) 50%),linear-gradient(135deg,var(--ink-mute) 50%,transparent 50%);background-position:calc(100% - 18px) center,calc(100% - 13px) center;background-size:5px 5px,5px 5px;background-repeat:no-repeat;}
+  textarea{resize:vertical;min-height:60px;line-height:1.5;}
+  input:focus, textarea:focus, select:focus{
+    outline:none;
+    border-color:var(--nebula-violet);
+    box-shadow:0 0 0 3px rgba(108,79,214,0.28);
+  }
+  ::placeholder{color:var(--ink-mute);}
+
+  /* ---------- SECTIONS ---------- */
+  section.block{margin-top:42px;position:relative;z-index:1;}
+  .block-head{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    border-bottom:1px solid var(--card-line);
+    padding-bottom:12px;
+    margin-bottom:8px;
+  }
+  .block-tag{
+    font-family:'Space Grotesk',monospace;
+    font-size:11px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    padding:5px 12px;
+    border-radius:20px;
+    white-space:nowrap;
+  }
+  .tag-entree{background:rgba(108,79,214,0.18);color:#a894f5;border:1px solid rgba(108,79,214,0.4);}
+  .tag-traitement{background:rgba(193,79,184,0.18);color:#e39cdc;border:1px solid rgba(193,79,184,0.4);}
+  .tag-sortie{background:rgba(232,179,79,0.16);color:var(--nebula-gold);border:1px solid rgba(232,179,79,0.4);}
+  .tag-extra{background:rgba(255,255,255,0.06);color:var(--ink-dim);border:1px solid var(--card-line);}
+
+  .block-title{font-family:'Fraunces',Georgia,serif;font-size:24px;font-weight:500;letter-spacing:-0.02em;margin:0;color:#fff;}
+  .block-intro{font-size:14.5px;color:var(--ink-mute);line-height:1.6;margin:12px 0 22px;}
+
+  .q{margin-bottom:26px;}
+  .q-text{font-size:15.5px;line-height:1.5;margin:0 0 13px;color:var(--ink);font-weight:500;}
+
+  .options{display:flex;flex-wrap:wrap;gap:10px;}
+  .opt{position:relative;}
+  .opt input{position:absolute;opacity:0;width:0;height:0;}
+  .opt label{
+    display:inline-block;
+    padding:10px 16px;
+    border:1px solid var(--card-line);
+    border-radius:12px;
+    font-size:14px;
+    color:var(--ink-dim);
+    cursor:pointer;
+    transition:transform .18s cubic-bezier(.2,.7,.2,1), border-color .2s ease, background .2s ease, color .2s ease, box-shadow .25s ease;
+    background:rgba(255,255,255,0.02);
+    will-change:transform;
+  }
+  .opt label:hover{
+    border-color:var(--nebula-violet);
+    transform:translateY(-2px);
+    background:rgba(108,79,214,0.08);
+  }
+  .opt label:active{transform:translateY(0) scale(.97);}
+  .opt input:checked + label{
+    background:linear-gradient(100deg,var(--nebula-violet),var(--nebula-pink));
+    border-color:transparent;
+    color:#fff;
+    font-weight:600;
+    box-shadow:0 6px 20px rgba(108,79,214,0.35);
+    transform:translateY(-1px);
+  }
+  .opt input:focus-visible + label{outline:2px solid var(--nebula-gold);outline-offset:2px;}
+
+  .other-field{
+    margin-top:10px;
+    max-width:420px;
+  }
+  .other-field input{
+    padding:9px 12px;
+    font-size:13.5px;
+  }
+
+  /* ---------- DEVIS BAR ---------- */
+  .devis-bar{
+    position:sticky;
+    top:12px;
+    z-index:20;
+    background:linear-gradient(180deg,rgba(24,20,50,0.92),rgba(24,20,50,0.98));
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    border:1px solid var(--card-line);
+    border-radius:14px;
+    padding:16px 20px;
+    margin:26px 0 -6px;
+    box-shadow:0 14px 38px rgba(0,0,0,0.45);
+    transition:border-color .3s ease, box-shadow .3s ease;
+  }
+  .devis-bar.bump{border-color:rgba(232,179,79,0.55);box-shadow:0 14px 44px rgba(232,179,79,0.18);}
+  .devis-bar-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
+  .devis-label{font-family:'Space Grotesk',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-mute);}
+  .devis-value{
+    font-family:'Space Grotesk',monospace;
+    font-size:23px;
+    font-weight:500;
+    letter-spacing:-0.01em;
+    background:linear-gradient(100deg,#fff,var(--nebula-gold));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    transition:transform .3s cubic-bezier(.2,.9,.2,1);
+    display:inline-block;
+  }
+  .devis-value.pop{transform:scale(1.06);}
+  .devis-note{font-family:'Space Grotesk',monospace;font-size:10.5px;color:var(--ink-mute);margin-top:6px;}
+
+  /* ---------- FOOTER / SUBMIT ---------- */
+  footer.submit-zone{max-width:720px;margin:44px auto 0;padding:0 18px;position:relative;z-index:1;}
+  .status-msg{font-family:'Space Grotesk',monospace;font-size:12px;margin-top:10px;min-height:16px;color:var(--ink-mute);}
+  .status-msg.err{color:#e58a8a;}
+
+  button.primary{
+    width:100%;
+    background:linear-gradient(100deg,var(--nebula-violet),var(--nebula-pink));
+    background-size:160% auto;
+    color:#fff;
+    border:none;
+    border-radius:12px;
+    padding:17px 20px;
+    font-family:'Space Grotesk',monospace;
+    font-size:14px;
+    font-weight:500;
+    letter-spacing:.04em;
+    cursor:pointer;
+    box-shadow:0 10px 30px rgba(108,79,214,0.32);
+    transition:background-position .5s ease, transform .18s cubic-bezier(.2,.7,.2,1), box-shadow .3s ease;
+  }
+  button.primary:hover{background-position:right center;transform:translateY(-2px);box-shadow:0 16px 40px rgba(193,79,184,0.4);}
+  button.primary:active{transform:translateY(0) scale(.99);}
+  button.primary:disabled{background:#3a3560;cursor:default;box-shadow:none;transform:none;}
+
+  .success-panel{
+    display:none;
+    background:var(--card);
+    border:1px solid var(--card-line);
+    border-radius:10px;
+    padding:30px 24px;
+    text-align:center;
+    margin-top:16px;
+  }
+  .success-panel{animation:floatUp .6s cubic-bezier(.2,.7,.2,1) both;}
+  .success-panel h3{font-family:'Fraunces',Georgia,serif;margin:0 0 10px;font-size:24px;font-weight:500;letter-spacing:-0.02em;color:#fff;}
+  .success-panel p{margin:0 0 20px;color:var(--ink-dim);font-size:14px;line-height:1.55;}
+  .success-devis{
+    font-size:26px;
+    font-weight:600;
+    margin:14px 0 20px;
+    background:linear-gradient(100deg,#fff,var(--nebula-gold));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  a.wa-btn{
+    display:inline-block;
+    background:#25D366;
+    color:#04220f;
+    font-family:'Space Grotesk',monospace;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.03em;
+    text-decoration:none;
+    padding:13px 22px;
+    border-radius:8px;
+  }
+
+  .admin-link{
+    display:block;
+    text-align:center;
+    margin:36px auto 0;
+    font-family:'Space Grotesk',monospace;
+    font-size:11px;
+    color:var(--ink-mute);
+    text-decoration:none;
+    cursor:pointer;
+  }
+  .admin-link:hover{color:var(--nebula-gold);}
+
+  #adminView{display:none;}
+  .resp-card{background:var(--card);border:1px solid var(--card-line);border-radius:8px;padding:18px;margin-bottom:14px;}
+  .resp-card h4{margin:0 0 4px;font-size:15px;color:#fff;}
+  .resp-card .resp-date{font-family:'Space Grotesk',monospace;font-size:11px;color:var(--ink-mute);margin-bottom:10px;}
+  .resp-card .resp-devis{font-family:'Space Grotesk',monospace;font-size:13px;color:var(--nebula-gold);margin-bottom:12px;}
+  .resp-q{margin-bottom:9px;}
+  .resp-q .qq{font-size:11.5px;color:var(--ink-mute);margin-bottom:2px;}
+  .resp-q .aa{font-size:14px;white-space:pre-wrap;color:var(--ink);}
+  .empty-note{font-family:'Space Grotesk',monospace;font-size:13px;color:var(--ink-mute);text-align:center;padding:40px 0;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-glow"></div>
+  <div class="eyebrow utility">NEBULA AGENCY · CRÉATION D'OUTILS DIGITAUX</div>
+  <h1 class="display">Décrivez votre projet, voyez son prix se <em>construire</em></h1>
+  <p class="hero-sub">Quel que soit votre domaine, dites-nous ce que vous voulez soumettre, ce que l'outil doit en faire, et ce que vous voulez obtenir en retour. L'estimation se met à jour en direct pendant que vous répondez.</p>
+  <div class="hero-steps utility">
+    <span class="step">01 Entrée</span><span class="sep">→</span><span class="step">02 Traitement</span><span class="sep">→</span><span class="step">03 Sortie</span><span class="sep">→</span><span>Votre devis</span>
+  </div>
+</header>
+
+<main>
+  <div class="identity" id="formRoot">
+    <div class="identity-grid">
+      <div class="field">
+        <label class="field-label" for="entreprise">Votre entreprise / activité</label>
+        <input type="text" id="entreprise" placeholder="Nom">
+      </div>
+      <div class="field">
+        <label class="field-label" for="secteur">Secteur d'activité</label>
+        <select id="secteur">
+          <option value="">Choisir</option>
+          <option>Restauration / hôtellerie</option>
+          <option>Beauté / bien-être</option>
+          <option>Santé</option>
+          <option>Finance / banque / assurance</option>
+          <option>Immobilier / BTP</option>
+          <option>Éducation / formation</option>
+          <option>Commerce / vente / e-commerce</option>
+          <option>Industrie / production</option>
+          <option>ONG / association</option>
+          <option>Agriculture</option>
+          <option>Transport / logistique</option>
+          <option>Services aux entreprises</option>
+          <option value="autre">Autre</option>
+        </select>
+        <div class="other-field" id="secteurOtherWrap" style="display:none;">
+          <input type="text" id="secteurOther" placeholder="Précisez votre secteur">
+        </div>
+      </div>
+    </div>
+    <div class="identity-grid">
+      <div class="field">
+        <label class="field-label" for="contactWa">Contact WhatsApp</label>
+        <input type="tel" id="contactWa" placeholder="+229 ...">
+      </div>
+      <div class="field">
+        <label class="field-label" for="contactMail">Email (optionnel)</label>
+        <input type="email" id="contactMail" placeholder="vous@exemple.com">
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label" for="pitch">En une phrase, l'outil que vous imaginez</label>
+      <textarea id="pitch" placeholder="Ex : un outil qui suit mes ventes par boutique et me sort un rapport chaque fin de mois"></textarea>
+    </div>
+  </div>
+
+  <div class="devis-bar" id="devisBar">
+    <div class="devis-bar-row">
+      <div>
+        <div class="devis-label utility">Estimation en direct</div>
+        <div class="devis-value utility" id="devisValue">0 FCFA</div>
+      </div>
+      <div class="devis-note utility">Fourchette indicative · devis final après échange</div>
+    </div>
+  </div>
+
+  <!-- ENTREE -->
+  <section class="block reveal">
+    <div class="block-head">
+      <span class="block-tag tag-entree utility">01 · Entrée</span>
+      <h2 class="block-title display">Ce que vous allez soumettre</h2>
+    </div>
+    <p class="block-intro">Ce que l'outil va recevoir comme matière première, sous quelle forme, à quel rythme.</p>
+
+    <div class="q">
+      <p class="q-text">Quel type de contenu allez-vous fournir ? (plusieurs choix possibles)</p>
+      <div class="options" data-group="typeDonnee">
+        <div class="opt"><input type="checkbox" id="td1" value="Chiffres et statistiques" data-price="0"><label for="td1">Chiffres / statistiques</label></div>
+        <div class="opt"><input type="checkbox" id="td2" value="Textes et documents" data-price="0"><label for="td2">Textes / documents</label></div>
+        <div class="opt"><input type="checkbox" id="td3" value="Images ou photos" data-price="10000"><label for="td3">Images / photos</label></div>
+        <div class="opt"><input type="checkbox" id="td4" value="Fichiers Excel existants" data-price="15000"><label for="td4">Fichiers Excel existants</label></div>
+        <div class="opt"><input type="checkbox" id="td5" value="Informations sur des clients" data-price="10000"><label for="td5">Infos sur vos clients</label></div>
+        <div class="opt"><input type="checkbox" id="td6" value="Vidéos" data-price="30000"><label for="td6">Vidéos</label></div>
+        <div class="opt"><input type="checkbox" id="tdAutreCheck" value="Autre" data-price="15000"><label for="tdAutreCheck">Autre</label></div>
+      </div>
+      <div class="other-field" id="tdOtherWrap" style="display:none;">
+        <input type="text" id="tdOther" placeholder="Décrivez">
+      </div>
+    </div>
+
+    <div class="q">
+      <p class="q-text">Comment ces informations arriveront dans l'outil ?</p>
+      <div class="options" data-group="commentFourni">
+        <div class="opt"><input type="checkbox" id="cf1" value="Je tape moi-même dans un formulaire" data-price="0"><label for="cf1">Je tape moi-même</label></div>
+        <div class="opt"><input type="checkbox" id="cf2" value="J'importe un fichier existant" data-price="20000"><label for="cf2">J'importe un fichier</label></div>
+        <div class="opt"><input type="checkbox" id="cf3" value="Connexion à un outil que j'utilise déjà (Telegram, Email...)" data-price="45000"><label for="cf3">Connexion à un outil que j'utilise déjà</label></div>
+        <div class="opt"><input type="checkbox" id="cf4" value="Mes clients renseignent eux-mêmes" data-price="35000"><label for="cf4">Mes clients renseignent eux-mêmes</label></div>
+        <div class="opt"><input type="checkbox" id="cfAutreCheck" value="Autre" data-price="20000"><label for="cfAutreCheck">Autre</label></div>
+      </div>
+      <div class="other-field" id="cfOtherWrap" style="display:none;">
+        <input type="text" id="cfOther" placeholder="Décrivez">
+      </div>
+    </div>
+
+    <div class="q">
+      <p class="q-text">À quel rythme ces données arrivent ?</p>
+      <div class="options" data-group="frequenceEntree">
+        <div class="opt"><input type="radio" name="frequenceEntree" id="fe1" value="Une seule fois" data-price="0"><label for="fe1">Une seule fois</label></div>
+        <div class="opt"><input type="radio" name="frequenceEntree" id="fe2" value="Ponctuellement, au besoin" data-price="0"><label for="fe2">Ponctuellement</label></div>
+        <div class="opt"><input type="radio" name="frequenceEntree" id="fe3" value="Chaque semaine" data-price="15000"><label for="fe3">Chaque semaine</label></div>
+        <div class="opt"><input type="radio" name="frequenceEntree" id="fe4" value="Chaque jour" data-price="30000"><label for="fe4">Chaque jour</label></div>
+      </div>
+    </div>
+
+    <div class="q">
+      <p class="q-text">Quel volume, approximativement ?</p>
+      <div class="options" data-group="volume">
+        <div class="opt"><input type="radio" name="volume" id="v1" value="Petit volume (quelques dizaines)" data-price="0"><label for="v1">Petit (quelques dizaines)</label></div>
+        <div class="opt"><input type="radio" name="volume" id="v2" value="Volume moyen (centaines)" data-price="15000"><label for="v2">Moyen (centaines)</label></div>
+        <div class="opt"><input type="radio" name="volume" id="v3" value="Grand volume (milliers et plus)" data-price="35000"><label for="v3">Grand (milliers+)</label></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRAITEMENT -->
+  <section class="block reveal">
+    <div class="block-head">
+      <span class="block-tag tag-traitement utility">02 · Traitement</span>
+      <h2 class="block-title display">Ce que l'outil doit faire avec</h2>
+    </div>
+    <p class="block-intro">Ce qui se passe entre ce que vous donnez et ce que vous recevez.</p>
+
+    <div class="q">
+      <p class="q-text">Qu'attendez-vous de l'outil ? (plusieurs choix possibles)</p>
+      <div class="options" data-group="actions">
+        <div class="opt"><input type="checkbox" id="a1" value="Calculs automatiques" data-price="20000"><label for="a1">Calculs automatiques</label></div>
+        <div class="opt"><input type="checkbox" id="a2" value="Graphiques et visuels" data-price="25000"><label for="a2">Graphiques / visuels</label></div>
+        <div class="opt"><input type="checkbox" id="a3" value="Analyse écrite par IA" data-price="60000"><label for="a3">Analyse écrite par IA</label></div>
+        <div class="opt"><input type="checkbox" id="a4" value="Classement ou tri automatique" data-price="20000"><label for="a4">Classement / tri automatique</label></div>
+        <div class="opt"><input type="checkbox" id="a5" value="Envoi automatique (email, WhatsApp)" data-price="45000"><label for="a5">Envoi automatique</label></div>
+        <div class="opt"><input type="checkbox" id="a6" value="Génération de documents" data-price="30000"><label for="a6">Génération de documents</label></div>
+        <div class="opt"><input type="checkbox" id="a7" value="Recherche et filtrage" data-price="20000"><label for="a7">Recherche / filtrage</label></div>
+        <div class="opt"><input type="checkbox" id="aAutreCheck" value="Autre" data-price="20000"><label for="aAutreCheck">Autre</label></div>
+      </div>
+      <div class="other-field" id="aOtherWrap" style="display:none;">
+        <input type="text" id="aOther" placeholder="Décrivez">
+      </div>
+    </div>
+
+    <div class="q">
+      <p class="q-text">Niveau d'intelligence souhaité pour l'outil</p>
+      <div class="options" data-group="niveau">
+        <div class="opt"><input type="radio" name="niveau" id="n1" value="Simple : juste organiser et afficher" data-price="0"><label for="n1">Simple : organiser / afficher</label></div>
+        <div class="opt"><input type="radio" name="niveau" id="n2" value="Intermédiaire : calculs et graphiques" data-price="30000"><label for="n2">Intermédiaire : calculs + graphiques</label></div>
+        <div class="opt"><input type="radio" name="niveau" id="n3" value="Avancé : IA qui analyse et rédige" data-price="90000"><label for="n3">Avancé : IA qui analyse et rédige</label></div>
+      </div>
+    </div>
+
+    <div class="q">
+      <p class="q-text">Des connexions à d'autres outils sont-elles nécessaires ?</p>
+      <div class="options" data-group="integrations">
+        <div class="opt"><input type="checkbox" id="i1" value="Telegram" data-price="45000"><label for="i1">Telegram</label></div>
+        <div class="opt"><input type="checkbox" id="i2" value="Email" data-price="20000"><label for="i2">Email</label></div>
+        <div class="opt"><input type="checkbox" id="i5" value="Aucune" data-price="0"><label for="i5">Aucune</label></div>
+        <div class="opt"><input type="checkbox" id="iAutreCheck" value="Autre" data-price="20000"><label for="iAutreCheck">Autre</label></div>
+      </div>
+      <div class="other-field" id="iOtherWrap" style="display:none;">
+        <input type="text" id="iOther" placeholder="Décrivez">
+      </div>
+    </div>
+  </section>
+
+  <!-- SORTIE -->
+  <section class="block reveal">
+    <div class="block-head">
+      <span class="block-tag tag-sortie utility">03 · Sortie</span>
+      <h2 class="block-title display">Ce que vous voulez obtenir</h2>
+    </div>
+    <p class="block-intro">Le résultat final, sous quelle forme, pour qui, et à quelle fréquence vous le recevez.</p>
+
+    <div class="q">
+      <p class="q-text">Sous quelle forme voulez-vous le résultat ? (plusieurs choix possibles)</p>
+      <div class="options" data-group="resultat">
+        <div class="opt"><input type="checkbox" id="r1" value="Document téléchargeable (PDF / Word)" data-price="30000"><label for="r1">Document (PDF / Word)</label></div>
+        <div class="opt"><input type="checkbox" id="r2" value="Tableau de bord en ligne" data-price="100000"><label for="r2">Tableau de bord en ligne</label></div>
+        <div class="opt"><input type="checkbox" id="r3" value="Site web / vitrine" data-price="70000"><label for="r3">Site web / vitrine</label></div>
+        <div class="opt"><input type="checkbox" id="r4" value="Rapport automatique envoyé par email" data-price="50000"><label for="r4">Rapport automatique par email</label></div>
+        <div class="opt"><input type="checkbox" id="r5" value="Application mobile" data-price="300000"><label for="r5">Application mobile</label></div>
+        <div class="opt"><input type="checkbox" id="rAutreCheck" value="Autre" data-price="25000"><label for="rAutreCheck">Autre</label></div>
+      </div>
+      <div class="other-field" id="rOtherWrap" style="display:none;">
+        <input type="text" id="rOther" placeholder="Décrivez">
+      </div>
+    </div>
+
+    <div class="q">
+      <p class="q-text">Qui doit pouvoir consulter ce résultat ?</p>
+      <div class="options" data-group="consultants">
+        <div class="opt"><input type="checkbox" id="c1" value="Moi seul" data-price="0"><label for="c1">Moi seul</label></div>
+        <div class="opt"><input type="checkbox" id="c2" value="Mon équipe" data-price="20000"><label for="c2">Mon équipe</label></div>
+        <div class="opt"><input type="checkbox" id="c3" value="Mes clients" data-price="30000"><label for="c3">Mes clients</label></div>
+        <div class="opt"><input type="checkbox" id="c4" value="Des partenaires ou investisseurs" data-price="15000"><label for="c4">Partenaires / investisseurs</label></div>
+      </div>
+    </div>
+
+    <div class="q">
+      <p class="q-text">À quelle fréquence voulez-vous recevoir ce résultat ?</p>
+      <div class="options" data-group="frequenceSortie">
+        <div class="opt"><input type="radio" name="frequenceSortie" id="fs1" value="À la demande, quand j'en ai besoin" data-price="0"><label for="fs1">À la demande</label></div>
+        <div class="opt"><input type="radio" name="frequenceSortie" id="fs2" value="Automatiquement, de façon régulière" data-price="35000"><label for="fs2">Automatiquement, régulière</label></div>
+      </div>
+    </div>
+
+    <div class="q">
+      <p class="q-text">Quel niveau de finition visuelle ?</p>
+      <div class="options" data-group="finition">
+        <div class="opt"><input type="radio" name="finition" id="fn1" value="Simple et fonctionnel" data-price="0"><label for="fn1">Simple et fonctionnel</label></div>
+        <div class="opt"><input type="radio" name="finition" id="fn2" value="Professionnel et soigné" data-price="25000"><label for="fn2">Professionnel et soigné</label></div>
+        <div class="opt"><input type="radio" name="finition" id="fn3" value="Premium sur-mesure" data-price="70000"><label for="fn3">Premium sur-mesure</label></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXTRAS -->
+  <section class="block reveal">
+    <div class="block-head">
+      <span class="block-tag tag-extra utility">Détails pratiques</span>
+      <h2 class="block-title display">Pour finir</h2>
+    </div>
+
+    <div class="q">
+      <p class="q-text">Combien de personnes utiliseront l'outil ?</p>
+      <div class="options" data-group="utilisateurs">
+        <div class="opt"><input type="radio" name="utilisateurs" id="u1" value="1 seule personne" data-price="0"><label for="u1">1 seule personne</label></div>
+        <div class="opt"><input type="radio" name="utilisateurs" id="u2" value="2 à 5 personnes" data-price="20000"><label for="u2">2 à 5 personnes</label></div>
+        <div class="opt"><input type="radio" name="utilisateurs" id="u3" value="Plus de 5 personnes" data-price="45000"><label for="u3">Plus de 5 personnes</label></div>
+      </div>
+    </div>
+
+    <div class="q">
+      <p class="q-text">Délai souhaité pour la livraison</p>
+      <div class="options" data-group="delai">
+        <div class="opt"><input type="radio" name="delai" id="d1" value="Pas pressé" data-price="0"><label for="d1">Pas pressé</label></div>
+        <div class="opt"><input type="radio" name="delai" id="d2" value="Dans le mois" data-price="0"><label for="d2">Dans le mois</label></div>
+        <div class="opt"><input type="radio" name="delai" id="d3" value="Urgent, moins de 2 semaines" data-price="40000"><label for="d3">Urgent, moins de 2 semaines</label></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="budgetInfo">Un budget en tête ? (optionnel)</label>
+      <input type="text" id="budgetInfo" placeholder="Ex : autour de 150 000 FCFA">
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="noteLibre">Autre chose à préciser sur votre projet</label>
+      <textarea id="noteLibre" placeholder="Tout ce qui vous semble important et qu'on n'a pas couvert"></textarea>
+    </div>
+  </section>
+
+  <footer class="submit-zone">
+    <button class="primary utility" id="submitBtn" onclick="submitForm()">Envoyer ma demande à NEBULA Agency</button>
+    <div class="status-msg" id="statusMsg"></div>
+    <div class="success-panel" id="successPanel">
+      <h3>Demande envoyée</h3>
+      <p>NEBULA Agency a bien reçu votre projet. Voici votre estimation indicative :</p>
+      <div class="success-devis utility" id="successDevisValue">0 FCFA</div>
+      <a class="wa-btn utility" id="waLink" href="#" target="_blank" rel="noopener">Envoyer un récap sur WhatsApp</a>
+    </div>
+  </footer>
+
+  <a class="admin-link" id="adminToggle" onclick="toggleAdmin()">Voir les projets soumis (NEBULA Agency)</a>
+
+  <div id="adminView">
+    <section class="block reveal">
+      <div class="block-head">
+        <span class="block-tag tag-extra utility">Admin</span>
+        <h2 class="block-title display">Projets reçus</h2>
+      </div>
+      <div id="adminList"></div>
+    </section>
+  </div>
+</main>
+
+<script>
+const NEBULA_WHATSAPP = "22901965555065"; // format international sans le +, à ajuster si besoin
+
+function currentSelections(){
+  const state = { checkboxes:{}, radios:{}, others:{} };
+  document.querySelectorAll('.options').forEach(group=>{
+    const name = group.dataset.group;
+    const checked = Array.from(group.querySelectorAll('input:checked'));
+    if(checked.length === 0) return;
+    if(checked[0].type === 'radio'){
+      state.radios[name] = { value: checked[0].value, price: Number(checked[0].dataset.price)||0 };
+    } else {
+      state.checkboxes[name] = checked.map(c=>({ value:c.value, price:Number(c.dataset.price)||0 }));
+    }
+  });
+  return state;
+}
+
+function otherFieldsMap(){
+  return {
+    secteur: { checkSelector:'#secteur', triggerValue:'autre', wrap:'secteurOtherWrap', input:'secteurOther' },
+    typeDonnee: { checkSelector:'#tdAutreCheck', wrap:'tdOtherWrap', input:'tdOther' },
+    commentFourni: { checkSelector:'#cfAutreCheck', wrap:'cfOtherWrap', input:'cfOther' },
+    actions: { checkSelector:'#aAutreCheck', wrap:'aOtherWrap', input:'aOther' },
+    integrations: { checkSelector:'#iAutreCheck', wrap:'iOtherWrap', input:'iOther' },
+    resultat: { checkSelector:'#rAutreCheck', wrap:'rOtherWrap', input:'rOther' }
+  };
+}
+
+function wireOtherToggles(){
+  document.getElementById('secteur').addEventListener('change', e=>{
+    document.getElementById('secteurOtherWrap').style.display = e.target.value === 'autre' ? 'block' : 'none';
+  });
+  const pairs = [
+    ['tdAutreCheck','tdOtherWrap'],
+    ['cfAutreCheck','cfOtherWrap'],
+    ['aAutreCheck','aOtherWrap'],
+    ['iAutreCheck','iOtherWrap'],
+    ['rAutreCheck','rOtherWrap']
+  ];
+  pairs.forEach(([checkId,wrapId])=>{
+    const el = document.getElementById(checkId);
+    if(!el) return;
+    el.addEventListener('change', ()=>{
+      document.getElementById(wrapId).style.display = el.checked ? 'block' : 'none';
+    });
+  });
+}
+
+function computeDevis(){
+  const state = currentSelections();
+  let total = 60000; // base de conception, point de départ de tout projet
+  Object.values(state.checkboxes).forEach(arr=> arr.forEach(o=> total += o.price));
+  Object.values(state.radios).forEach(o=> total += o.price);
+  const min = Math.round(total*0.9/5000)*5000;
+  const max = Math.round(total*1.25/5000)*5000;
+  return { min, max, total };
+}
+
+function fmt(n){
+  return n.toLocaleString('fr-FR').replace(/,/g,' ') + ' FCFA';
+}
+
+let devisPopTimer;
+function updateDevisBar(){
+  const { min, max } = computeDevis();
+  const valEl = document.getElementById('devisValue');
+  const barEl = document.getElementById('devisBar');
+  const next = fmt(min) + ' – ' + fmt(max);
+  if(valEl.textContent !== next){
+    valEl.textContent = next;
+    valEl.classList.remove('pop'); barEl.classList.remove('bump');
+    void valEl.offsetWidth; // reflow pour rejouer l'animation
+    valEl.classList.add('pop'); barEl.classList.add('bump');
+    clearTimeout(devisPopTimer);
+    devisPopTimer = setTimeout(()=>{ valEl.classList.remove('pop'); barEl.classList.remove('bump'); }, 400);
+  }
+}
+
+function attachLiveUpdates(){
+  document.querySelectorAll('.options input').forEach(el=>{
+    el.addEventListener('change', updateDevisBar);
+  });
+}
+
+function buildAnswersPayload(){
+  const state = currentSelections();
+  const others = otherFieldsMap();
+  const answers = {};
+
+  const secteurVal = document.getElementById('secteur').value === 'autre'
+    ? (document.getElementById('secteurOther').value.trim() || 'Autre (non précisé)')
+    : document.getElementById('secteur').value;
+
+  answers.secteur = secteurVal;
+  answers.pitch = document.getElementById('pitch').value.trim();
+
+  Object.entries(state.checkboxes).forEach(([key, arr])=>{
+    let vals = arr.map(o=>o.value);
+    const otherConf = others[key];
+    if(otherConf && vals.includes('Autre')){
+      const otherVal = document.getElementById(otherConf.input)?.value.trim();
+      vals = vals.filter(v=>v!=='Autre');
+      if(otherVal) vals.push(otherVal);
+    }
+    answers[key] = vals.join(', ');
+  });
+
+  Object.entries(state.radios).forEach(([key, o])=>{
+    answers[key] = o.value;
+  });
+
+  answers.budget = document.getElementById('budgetInfo').value.trim();
+  answers.note = document.getElementById('noteLibre').value.trim();
+
+  return answers;
+}
+
+async function submitForm(){
+  const btn = document.getElementById('submitBtn');
+  const status = document.getElementById('statusMsg');
+  btn.disabled = true;
+  status.className = 'status-msg';
+  status.textContent = 'Enregistrement en cours…';
+
+  const entreprise = document.getElementById('entreprise').value.trim();
+  const contactWa = document.getElementById('contactWa').value.trim();
+  const contactMail = document.getElementById('contactMail').value.trim();
+  const answers = buildAnswersPayload();
+  const { min, max } = computeDevis();
+
+  const payload = {
+    entreprise, contactWa, contactMail,
+    answers,
+    devisMin: min, devisMax: max,
+    submittedAt: new Date().toISOString()
+  };
+
+  try{
+    const key = 'projet:' + Date.now();
+    const result = await window.storage.set(key, JSON.stringify(payload), true);
+    if(!result){ throw new Error('write failed'); }
+
+    document.getElementById('formRoot').style.display = 'none';
+    document.getElementById('devisBar').style.display = 'none';
+    document.querySelectorAll('main > section.block').forEach(s=>s.style.display='none');
+    btn.style.display = 'none';
+    status.textContent = '';
+
+    document.getElementById('successDevisValue').textContent = fmt(min) + ' – ' + fmt(max);
+
+    const waText = encodeURIComponent(
+      `Bonjour NEBULA Agency, je viens de remplir le formulaire de cadrage.\n\n` +
+      `Entreprise : ${entreprise || 'non précisé'}\n` +
+      `Secteur : ${answers.secteur || 'non précisé'}\n` +
+      `Projet : ${answers.pitch || 'non précisé'}\n` +
+      `Estimation reçue : ${fmt(min)} - ${fmt(max)}\n\n` +
+      `Je souhaite en discuter.`
+    );
+    document.getElementById('waLink').href = `https://wa.me/${NEBULA_WHATSAPP}?text=${waText}`;
+    document.getElementById('successPanel').style.display = 'block';
+  }catch(e){
+    status.className = 'status-msg err';
+    status.textContent = "Erreur d'enregistrement, réessayez dans un instant.";
+    btn.disabled = false;
+  }
+}
+
+let adminOpen = false;
+async function toggleAdmin(){
+  adminOpen = !adminOpen;
+  document.getElementById('adminView').style.display = adminOpen ? 'block' : 'none';
+  document.getElementById('adminToggle').textContent = adminOpen ? 'Masquer les projets' : 'Voir les projets soumis (NEBULA Agency)';
+  if(adminOpen) await loadResponses();
+}
+
+const LABELS = {
+  secteur:'Secteur', pitch:"Description du projet",
+  typeDonnee:'Type de contenu fourni', commentFourni:'Comment fourni',
+  frequenceEntree:"Fréquence d'entrée", volume:'Volume',
+  actions:'Actions attendues', niveau:"Niveau d'intelligence", integrations:'Intégrations',
+  resultat:'Forme du résultat', consultants:'Qui consulte', frequenceSortie:'Fréquence de sortie', finition:'Finition',
+  utilisateurs:'Nombre d\'utilisateurs', delai:'Délai souhaité',
+  budget:'Budget indicatif', note:'Note libre'
+};
+
+async function loadResponses(){
+  const list = document.getElementById('adminList');
+  list.innerHTML = '<div class="empty-note">Chargement…</div>';
+  try{
+    const keys = await window.storage.list('projet:', true);
+    if(!keys || !keys.keys || keys.keys.length === 0){
+      list.innerHTML = '<div class="empty-note">Aucun projet soumis pour l\'instant.</div>';
+      return;
+    }
+    const items = [];
+    for(const k of keys.keys){
+      try{
+        const r = await window.storage.get(k, true);
+        if(r && r.value) items.push(JSON.parse(r.value));
+      }catch(e){}
+    }
+    items.sort((a,b)=> new Date(b.submittedAt) - new Date(a.submittedAt));
+    list.innerHTML = '';
+    items.forEach(item=>{
+      const card = document.createElement('div');
+      card.className = 'resp-card';
+      const dateStr = new Date(item.submittedAt).toLocaleString('fr-FR');
+      let qHtml = '';
+      Object.entries(item.answers || {}).forEach(([k,v])=>{
+        if(v){
+          qHtml += `<div class="resp-q"><div class="qq utility">${LABELS[k]||k}</div><div class="aa">${String(v).replace(/</g,'&lt;')}</div></div>`;
+        }
+      });
+      card.innerHTML = `
+        <h4>${item.entreprise || 'Entreprise non renseignée'}</h4>
+        <div class="resp-date utility">Soumis le ${dateStr} · WhatsApp : ${item.contactWa || 'non fourni'}${item.contactMail ? ' · ' + item.contactMail : ''}</div>
+        <div class="resp-devis utility">Estimation : ${fmt(item.devisMin)} - ${fmt(item.devisMax)}</div>
+        ${qHtml || '<div class="empty-note">Aucune réponse détaillée.</div>'}
+      `;
+      list.appendChild(card);
+    });
+  }catch(e){
+    list.innerHTML = '<div class="empty-note">Erreur de chargement.</div>';
+  }
+}
+
+function initScrollReveal(){
+  const els = document.querySelectorAll('.reveal');
+  if(!('IntersectionObserver' in window)){
+    els.forEach(el=>el.classList.add('in'));
+    return;
+  }
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('in');
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold:0.12, rootMargin:'0px 0px -40px 0px' });
+  els.forEach(el=>obs.observe(el));
+}
+
+wireOtherToggles();
+attachLiveUpdates();
+updateDevisBar();
+initScrollReveal();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fitora — Guide d'entretien coach sportif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--or:#F97316;--ink:#15181E;--mut:#5B6472;--faint:#8A93A0;--line:#E4E7EC;--soft:#F6F7F9;--dark:#12151A}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',system-ui,sans-serif;color:var(--ink);background:#EAECEF;font-size:12.3px;line-height:1.5;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+h1,h2,h3,.dhead{font-family:'Barlow Condensed',sans-serif;line-height:1.06;letter-spacing:.2px}
+.page{max-width:820px;margin:18px auto;background:#fff;box-shadow:0 8px 30px rgba(0,0,0,.12)}
+.pad{padding:26px 40px 34px}
+
+/* header */
+.band{background:var(--dark);color:#fff;padding:24px 40px}
+.brow{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--or),#EA580C);display:grid;place-items:center}
+.logo svg{width:19px;height:19px;stroke:#fff;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.bname{font-family:'Barlow Condensed';font-size:22px;letter-spacing:1px}.bname b{color:var(--or);font-weight:700}
+.kick{font-family:'Barlow Condensed';color:var(--or);font-size:12px;letter-spacing:3px;text-transform:uppercase;margin-bottom:5px}
+.band h1{font-size:33px;font-weight:700;margin-bottom:8px}
+.band p{color:#B8C0CC;font-size:12.5px;max-width:620px}
+.ipo{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.ipo span{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:99px;padding:5px 12px;font-size:11.5px;color:#E7EAEE}
+.ipo b{color:var(--or)}
+
+/* meta */
+.meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-bottom:22px}
+.meta div{padding:9px 13px;border-right:1px solid var(--line)}
+.meta div:last-child{border-right:0}
+.meta .k{font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:var(--faint)}
+.meta .v{color:var(--mut);height:17px}
+
+/* intro */
+.intro{background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:14px 16px;margin-bottom:24px}
+.intro h3{font-size:16px;margin-bottom:6px;color:var(--or)}
+.intro p{color:var(--mut);font-size:12px}
+.intro b{color:var(--ink)}
+
+/* sections */
+.sec{margin-bottom:22px;page-break-inside:avoid}
+.sh{display:flex;align-items:center;gap:12px;margin-bottom:4px;padding-bottom:9px;border-bottom:2px solid var(--ink)}
+.st{flex:1}
+.st h2{font-size:24px;font-weight:700}
+.st .sd{color:var(--mut);font-size:11.5px}
+.sh .step{font-family:'Barlow Condensed';font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--faint)}
+
+.q{padding:11px 0 4px;border-bottom:1px solid var(--line);page-break-inside:avoid}
+.q:last-child{border-bottom:0}
+.qh{display:flex;gap:9px;align-items:baseline}
+.qn{font-family:'Barlow Condensed';font-weight:700;color:var(--or);font-size:14px;min-width:20px}
+.qt{font-weight:600;font-size:12.6px}
+.qp{color:var(--mut);font-size:11.3px;margin:2px 0 0 29px;font-style:italic}
+.write{margin:9px 0 4px 29px;height:38px;background-image:repeating-linear-gradient(transparent,transparent 18px,var(--line) 18px,var(--line) 19px)}
+.write.tall{height:56px}
+
+/* internal annex */
+.annex{background:#0F1217;color:#E7EAEE;border-radius:12px;padding:20px 22px;margin-top:26px;page-break-inside:avoid}
+.annex .kick{margin-bottom:8px}
+.annex h2{color:#fff;font-size:22px;margin-bottom:3px}
+.annex>p{color:#95A0AE;font-size:11.5px;margin-bottom:14px}
+.map{width:100%;border-collapse:collapse;font-size:11.3px}
+.map th{text-align:left;font-family:'Barlow Condensed';letter-spacing:1px;text-transform:uppercase;font-size:10.5px;color:var(--or);padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.16)}
+.map td{padding:8px;border-bottom:1px solid rgba(255,255,255,.08);vertical-align:top;color:#CBD2DA}
+.map td b{color:#fff}
+.map tr:last-child td{border-bottom:0}
+
+.foot{text-align:center;color:var(--faint);font-size:10.5px;padding:16px 40px 22px}
+.foot b{color:var(--mut)}
+
+@media print{
+  body{background:#fff;font-size:11.4px}
+  .page{box-shadow:none;margin:0;max-width:none}
+  @page{margin:12mm}
+  .band{padding:20px 4mm}.pad{padding:18px 4mm}
+  .annex{-webkit-print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="band">
+    <div class="brow"><span class="logo"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span><span class="bname">Fit<b>ora</b></span></div>
+    <div class="kick">Guide d'entretien · découverte terrain</div>
+    <h1>Comprendre le coach<br>pour concevoir son outil</h1>
+    <p>À poser lors d'un rendez-vous avec un coach sportif. On cartographie son métier réel selon trois temps : ce qui <b style="color:#fff">entre</b>, ce qu'il en <b style="color:#fff">fait</b>, ce qui en <b style="color:#fff">sort</b>. But : découvrir ce qu'il veut vraiment, pas lui vendre une idée.</p>
+    <div class="ipo">
+      <span><b>ENTRÉE</b> ce qui arrive chez lui</span>
+      <span><b>TRAITEMENT</b> ce qu'il en fait</span>
+      <span><b>SORTIE</b> ce que ça produit</span>
+    </div>
+  </div>
+
+  <div class="pad">
+    <div class="meta">
+      <div><div class="k">Coach</div><div class="v"></div></div>
+      <div><div class="k">Date · lieu</div><div class="v"></div></div>
+      <div><div class="k">Mené par</div><div class="v"></div></div>
+    </div>
+
+    <div class="intro">
+      <h3>Mode d'emploi (pour l'enquêteur)</h3>
+      <p>Questions <b>ouvertes</b> : laisse-le raconter, note ses <b>mots exacts</b> et ses chiffres. Cherche 3 choses : ce qu'il fait <b>déjà</b>, ce qui lui <b>fait perdre du temps ou de l'argent</b>, et ce qu'il <b>aimerait</b> sans oser le demander. Chaque réponse nourrit un module de Fitora (grille en fin de doc).</p>
+    </div>
+
+    <!-- SECTION 0 -->
+    <div class="sec">
+      <div class="sh"><div class="st"><h2>Le coach & son activité</h2><div class="sd">Cadrage : à qui a-t-on affaire ?</div></div></div>
+      <div class="q"><div class="qh"><span class="qn">1</span><span class="qt">Racontez-moi votre activité en quelques mots : depuis quand, quel type de coaching ?</span></div><div class="qp">Perte de poids, remise en forme, prépa physique, bien-être, à domicile, en salle, bootcamp… ?</div><div class="write"></div></div>
+      <div class="q"><div class="qh"><span class="qn">2</span><span class="qt">Combien de clients suivez-vous en ce moment ? Et sur une bonne période ?</span></div><div class="qp">Individuels vs groupes. Le chiffre « plein » vs aujourd'hui.</div><div class="write"></div></div>
+      <div class="q"><div class="qh"><span class="qn">3</span><span class="qt">Où entraînez-vous, et comment facturez-vous ?</span></div><div class="qp">Domicile / salle / plein air · à la séance, au pack, à l'abonnement · fourchette de prix en FCFA.</div><div class="write"></div></div>
+      <div class="q"><div class="qh"><span class="qn">4</span><span class="qt">Aujourd'hui, avec quoi gérez-vous tout ça ?</span></div><div class="qp">WhatsApp, cahier, tête, Excel, une appli ? Qu'est-ce qui marche, qu'est-ce qui vous agace ?</div><div class="write"></div></div>
+    </div>
+
+    <!-- SECTION 1 - ENTREE -->
+    <div class="sec">
+      <div class="sh"><div class="st"><h2>Entrée</h2><div class="sd">Tout ce qui arrive dans votre système : clients, infos, demandes, argent</div></div></div>
+      <div class="q"><div class="qh"><span class="qn">5</span><span class="qt">D'où viennent vos nouveaux clients ?</span></div><div class="qp">Bouche-à-oreille, réseaux, salle, pub… Lequel vous en amène le plus ?</div><div class="write"></div></div>
+      <div class="q"><div class="qh"><span class="qn">6</span><span class="qt">Quand un nouveau client arrive, quelles informations lui demandez-vous avant de commencer ?</span></div><div class="qp">Objectif, poids/mesures, santé et blessures, niveau, disponibilités, budget… Écrivez-vous tout ça quelque part ?</div><div class="write tall"></div></div>
+      <div class="q"><div class="qh"><span class="qn">7</span><span class="qt">Prenez-vous des mesures ou des photos de départ ?</span></div><div class="qp">Poids, tour de taille, photo « avant ». Systématique ou pas ?</div><div class="write"></div></div>
+      <div class="q"><div class="qh"><span class="qn">8</span><span class="qt">Au quotidien, qu'est-ce qui vous arrive de la part des clients, et par quel canal ?</span></div><div class="qp">Questions, demandes de RDV, excuses/annulations, photos, messages vocaux… Surtout WhatsApp ? Appels ?</div><div class="write tall"></div></div>
+      <div class="q"><div class="qh"><span class="qn">9</span><span class="qt">Comment l'argent vous parvient-il ?</span></div><div class="qp">Mobile Money (MoMo), espèces, virement ? Le client paie avant, après, en retard ?</div><div class="write"></div></div>
+    </div>
+
+    <!-- SECTION 2 - TRAITEMENT -->
+    <div class="sec">
+      <div class="sh"><div class="st"><h2>Traitement</h2><div class="sd">Ce que vous FAITES de tout ça au jour le jour</div></div></div>
+      <div class="q"><div class="qh"><span class="qn">10</span><span class="qt">Comment construisez-vous le programme d'un client ?</span></div><div class="qp">Sur mesure à chaque fois ? Des modèles que vous adaptez ? Par objectif / niveau ? Combien de temps ça vous prend ?</div><div class="write tall"></div></div>
+      <div class="q"><div class="qh"><span class="qn">11</span><span class="qt">Comment le client reçoit-il sa séance ?</span></div><div class="qp">De vive voix, papier, WhatsApp, vidéo des exercices ? Aimeriez-vous lui envoyer des démonstrations ?</div><div class="write"></div></div>
+      <div class="q"><div class="qh"><span class="qn">12</span><span class="qt">Comment suivez-vous les progrès de chacun ?</span></div><div class="qp">Quoi (poids, mesures, performances, assiduité), à quelle fréquence, où le notez-vous ?</div><div class="write tall"></div></div>
+      <div class="q"><div class="qh"><span class="qn">13</span><span class="qt">Comment gérez-vous votre planning et les rendez-vous ?</span></div><div class="qp">Qui vient quand ? Comment vous souvenez-vous ? Rappelez-vous les clients avant la séance ?</div><div class="write"></div></div>
+      <div class="q"><div class="qh"><span class="qn">14</span><span class="qt">Les lapins et annulations : ça arrive souvent ? Comment vous faites ?</span></div><div class="qp">Combien par semaine à peu près ? Ça vous coûte quoi ?</div><div class="write"></div></div>
+      <div class="q"><div class="qh"><span class="qn">15</span><span class="qt">Un client se démotive ou disparaît : qu'est-ce que vous faites ?</span></div><div class="qp">Vous le relancez ? Comment savez-vous qu'il est en train de lâcher ? À quel moment ils décrochent en général ?</div><div class="write tall"></div></div>
+      <div class="q"><div class="qh"><span class="qn">16</span><span class="qt">Comment suivez-vous qui vous a payé et qui vous doit de l'argent ?</span></div><div class="qp">Vous relancez comment ? Combien avez-vous d'impayés en ce moment, à peu près ?</div><div class="write"></div></div>
+      <div class="q"><div class="qh"><span class="qn">17</span><span class="qt">Proposez-vous des conseils nutrition ? Comment ?</span></div><div class="qp">Plans repas ? Adaptés aux aliments et budgets d'ici ? Ça vous intéresserait de le faire facilement ?</div><div class="write"></div></div>
+      <div class="q"><div class="qh"><span class="qn">18</span><span class="qt">Dans une journée type, qu'est-ce qui vous prend le plus de temps ou que vous oubliez le plus ?</span></div><div class="qp">La question qui révèle la vraie douleur. Laissez-le parler.</div><div class="write tall"></div></div>
+    </div>
+
+    <!-- SECTION 3 - SORTIE -->
+    <div class="sec">
+      <div class="sh"><div class="st"><h2>Sortie</h2><div class="sd">Ce que tout ce travail PRODUIT, pour le client et pour vous</div></div></div>
+      <div class="q"><div class="qh"><span class="qn">19</span><span class="qt">Concrètement, qu'est-ce que le client reçoit de vous entre deux séances ?</span></div><div class="qp">Programme, feedback, encouragements, rappels, rien ? À quelle fréquence ?</div><div class="write"></div></div>
+      <div class="q"><div class="qh"><span class="qn">20</span><span class="qt">Comment le client voit-il qu'il progresse ?</span></div><div class="qp">Lui montrez-vous une courbe, un avant/après, des chiffres ? Ou il « sent » juste ?</div><div class="write"></div></div>
+      <div class="q"><div class="qh"><span class="qn">21</span><span class="qt">Pour vous, qu'est-ce que cette activité doit produire ?</span></div><div class="qp">Revenu stable, réputation, plus de clients, moins de stress, du temps libre… Classez ce qui compte le plus.</div><div class="write tall"></div></div>
+      <div class="q"><div class="qh"><span class="qn">22</span><span class="qt">Quels chiffres aimeriez-vous voir sur votre activité, en un coup d'œil ?</span></div><div class="qp">Revenu du mois, clients actifs, qui doit payer, qui risque de partir, séances de la semaine… ?</div><div class="write"></div></div>
+      <div class="q"><div class="qh"><span class="qn">23</span><span class="qt">C'est quoi, pour vous, un client « réussi » ?</span></div><div class="qp">Sa définition du succès. Elle oriente tout l'outil.</div><div class="write"></div></div>
+    </div>
+
+    <!-- SECTION 4 - VISION -->
+    <div class="sec">
+      <div class="sh"><div class="st"><h2>Vision & priorités</h2><div class="sd">Ce qu'il veut vraiment, et sa réaction au concept</div></div></div>
+      <div class="q"><div class="qh"><span class="qn">24</span><span class="qt">Si une baguette magique effaçait UNE corvée de votre quotidien, ce serait laquelle ?</span></div><div class="write"></div></div>
+      <div class="q"><div class="qh"><span class="qn">25</span><span class="qt">Combien de clients perdez-vous par mois, à votre avis, et pourquoi ?</span></div><div class="qp">Chiffre + raisons ressenties. À comparer avec ce qu'on sait (décrochage semaines 8–16).</div><div class="write"></div></div>
+      <div class="q"><div class="qh"><span class="qn">26</span><span class="qt">Imaginez : vos clients reçoivent séance, progrès, rappels et paiement directement sur WhatsApp, <b>sans rien installer</b>. Qu'en pensez-vous ?</span></div><div class="qp">Teste le parti-pris « zéro app pour le client + web app par lien ». Écoutez ses objections.</div><div class="write tall"></div></div>
+      <div class="q"><div class="qh"><span class="qn">27</span><span class="qt">Et si l'outil ne touchait jamais à votre argent — vous seriez toujours payé par MoMo/espèces, il fait juste le suivi et les relances ?</span></div><div class="qp">Valide le modèle « sans passerelle de paiement ». Rassure ou inquiète ?</div><div class="write"></div></div>
+      <div class="q"><div class="qh"><span class="qn">28</span><span class="qt">Seriez-vous prêt à tester un tel outil ? Et quel prix mensuel vous semblerait juste ?</span></div><div class="qp">Note son chiffre spontané AVANT d'annoncer le nôtre. Pilote gratuit envisageable ?</div><div class="write"></div></div>
+      <div class="q"><div class="qh"><span class="qn">29</span><span class="qt">Qu'est-ce que je ne vous ai pas demandé et que je devrais savoir ?</span></div><div class="qp">La meilleure question de fin. Souvent la plus riche.</div><div class="write tall"></div></div>
+    </div>
+
+    <!-- INTERNAL ANNEX -->
+    <div class="annex">
+      <div class="kick" style="color:var(--or)">Usage interne · NEBULA</div>
+      <h2>Grille de lecture → modules Fitora</h2>
+      <p>Comment relier ses réponses au produit. À ne pas montrer au coach.</p>
+      <table class="map">
+        <tr><th style="width:120px">Temps</th><th>Ce qu'on écoute</th><th style="width:210px">Module Fitora</th></tr>
+        <tr><td><b>Entrée</b></td><td>Acquisition, fiche d'accueil, infos santé/objectif, mesures J1, canal des demandes, mode de paiement</td><td>Onboarding client · capture · fiche · lien WhatsApp</td></tr>
+        <tr><td><b>Traitement</b></td><td>Création de programmes, suivi, planning + rappels, gestion des lapins, relances de paiement, détection du décrochage, nutrition</td><td>Programmation · agenda anti-no-show · paiements (suivi/relance) · <b>moteur de rétention</b> · nutrition locale</td></tr>
+        <tr><td><b>Sortie</b></td><td>Ce que le client reçoit, preuve visible du progrès, chiffres du coach, définition du succès</td><td>Espace client · <b>courbe de progrès</b> · tableau de bord KPI</td></tr>
+        <tr><td><b>Vision</b></td><td>Corvée n°1, clients perdus, réaction « zéro app + tout WhatsApp », modèle sans passerelle, prix juste</td><td>Priorisation des vagues · pricing · argument de vente</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="foot">Fitora · un produit <b>NEBULA Agency</b> · guide d'entretien coach sportif · v1 · à adapter selon le terrain</div>
+</div>
+</body>
+</html>
