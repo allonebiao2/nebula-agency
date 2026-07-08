@@ -151,8 +151,9 @@ export function progressRing(pct, opts = {}) {
   return `<svg viewBox="0 0 ${size} ${size}" class="ring" aria-hidden="true">
     <defs><filter id="rg${id}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
     <circle cx="${cx}" cy="${cx}" r="${r}" fill="none" style="stroke:var(--line)" stroke-width="${sw}"/>
-    <circle cx="${cx}" cy="${cx}" r="${r}" fill="none" style="stroke:${col}" stroke-width="${sw}" stroke-linecap="round"
-      stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 ${cx} ${cx})" filter="url(#rg${id})"/>
+    <circle class="ring__fill" cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke-width="${sw}" stroke-linecap="round"
+      stroke-dasharray="${c.toFixed(1)}" transform="rotate(-90 ${cx} ${cx})" filter="url(#rg${id})"
+      style="stroke:${col}; --c:${c.toFixed(1)}; --o:${off.toFixed(1)}; stroke-dashoffset:var(--o)"/>
   </svg>`;
 }
 

@@ -10,6 +10,9 @@ let wizard = null;
 let authMode = 'signin';
 let tutoStep = 0;
 let period = loadPeriod();
+let animateNext = false;   // déclenche cascades + compteurs à l'entrée (pas sur maj live)
+let prevUser = null;
+let pendingLogin = false;  // vrai après un login volontaire -> 2e splash
 
 const $ = (s, r = document) => r.querySelector(s);
 const cloudCtx = () => ({ configured: Cloud.isCloudConfigured(), user: Cloud.getUser() });
@@ -41,9 +44,12 @@ const isConfigured = () => Boolean(S.getState().profil.nom_activite) || S.getPro
 
 // ---------- Rendu ----------
 function render() {
-  $('#topbar').innerHTML = UI.topbarHTML(cloudCtx(), effectiveTheme());
+  const tb = $('#topbar');
+  tb.style.display = (screen === 'welcome') ? 'none' : '';
+  tb.innerHTML = UI.topbarHTML(cloudCtx(), effectiveTheme());
   const view = $('#view');
   if (screen === 'config') view.innerHTML = UI.viewConfigHTML(wizard || (wizard = { step: 1, charges: UI.defaultCharges() }));
+  else if (screen === 'welcome') view.innerHTML = UI.viewWelcomeHTML();
   else if (screen === 'accueil') view.innerHTML = UI.viewAccueilHTML(period);
   else if (screen === 'bilan') view.innerHTML = UI.viewBilanHTML();
   else if (screen === 'reglages') view.innerHTML = UI.viewReglagesHTML(cloudCtx());
@@ -51,9 +57,14 @@ function render() {
   $('#nav').innerHTML = navVisible() ? UI.navHTML(screen) : '';
   $('#nav').style.display = navVisible() ? '' : 'none';
   hydrateIcons(document);
+  if (screen === 'accueil' && animateNext) {
+    const dash = view.querySelector('.view--dash'); if (dash) dash.classList.add('is-enter');
+    animateCounts(view);
+  }
+  animateNext = false;
   view.scrollTop = 0;
 }
-function navVisible() { return screen !== 'config'; }
+function navVisible() { return screen !== 'config' && screen !== 'welcome'; }
 
 function loadPeriod() {
   try { const p = JSON.parse(localStorage.getItem('boussole:period') || 'null'); if (p && p.gran) return { gran: p.gran, offset: 0 }; } catch {}
@@ -65,19 +76,60 @@ function refreshDash() {
   const view = $('#view');
   const top = view.scrollTop;
   view.innerHTML = UI.viewAccueilHTML(period);
+  const dash = view.querySelector('.view--dash'); if (dash) dash.classList.add('is-enter');
   hydrateIcons(view);
+  animateCounts(view);
   view.scrollTop = top;
 }
 
+// ---------- Splash (écran de chargement au logo) ----------
+function splashEl() { return document.getElementById('splash'); }
+function hideSplash() { const s = splashEl(); if (s) s.classList.add('splash--gone'); }
+function showSplash(tag) {
+  const s = splashEl(); if (!s) return;
+  const t = s.querySelector('.splash__tag'); if (t && tag) t.textContent = tag;
+  s.classList.remove('splash--gone');
+}
+
+// ---------- Compteurs animés (chiffres qui montent) ----------
+function animateCounts(root) {
+  try { if (matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch {}
+  root.querySelectorAll('[data-count]').forEach((el) => {
+    const to = Number(el.dataset.count); if (!isFinite(to)) return;
+    const fmt = el.dataset.fmt || 'num';
+    const fmtFn = fmt === 'f' ? S.formatF : (fmt === 'pct' ? (v) => Math.round(v) + ' %' : S.formatNombre);
+    const dur = 780, t0 = performance.now();
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = fmtFn(to * e);
+      if (p < 1) requestAnimationFrame(tick); else el.textContent = fmtFn(to);
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
 function setScreen(s) {
+  if (s === 'accueil') animateNext = true;
   screen = s; if (s !== 'config') wizard = null;
-  try { if (s !== 'config') location.hash = s; } catch {}
+  try { if (s !== 'config' && s !== 'welcome') location.hash = s; } catch {}
   render();
 }
 
 // Re-render « live » quand les données changent (hors saisie wizard).
 S.subscribe(() => { if (screen !== 'config') render(); });
-Cloud.onAuth(() => render());
+Cloud.onAuth((user) => {
+  const loggedInNow = !!user && !prevUser;
+  prevUser = user || null;
+  if (user && screen === 'welcome') { screen = isConfigured() ? 'accueil' : 'config'; if (screen === 'accueil') animateNext = true; }
+  if (loggedInNow && pendingLogin) {
+    pendingLogin = false;
+    showSplash('Chargement de ton tableau de bord…');
+    render();
+    setTimeout(hideSplash, 1150);
+  } else {
+    render();
+  }
+});
 
 // ---------- Helpers de saisie ----------
 function readProduct(scope) {
@@ -200,10 +252,10 @@ async function authSubmit() {
     if (authMode === 'signup') {
       const r = await Cloud.signUp(email, pass);
       if (r.user && !r.session) { UI.closeModal(); UI.toast('Compte créé — vérifie ta boîte e-mail pour confirmer'); }
-      else { UI.closeModal(); UI.toast('Compte créé et connecté'); }
+      else { pendingLogin = true; UI.closeModal(); UI.toast('Compte créé et connecté'); }
     } else {
       await Cloud.signIn(email, pass);
-      UI.closeModal(); UI.toast('Connecté — synchronisation activée');
+      pendingLogin = true; UI.closeModal(); UI.toast('Connecté — synchronisation activée');
     }
   } catch (e) {
     btn.disabled = false; btn.textContent = authMode === 'signup' ? 'Créer' : 'Connexion';
@@ -317,6 +369,9 @@ document.addEventListener('click', (e) => {
   switch (a) {
     case 'go': return setScreen(el.dataset.screen);
     case 'go-config': wizard = { step: 1, charges: UI.defaultCharges() }; return setScreen('config');
+    case 'welcome-signup': authMode = 'signup'; return openAuthModal();
+    case 'welcome-signin': authMode = 'signin'; return openAuthModal();
+    case 'welcome-skip': wizard = { step: 1, charges: UI.defaultCharges() }; return setScreen('config');
     case 'toggle-theme': return toggleTheme();
 
     // tableau de bord — période & objectif
@@ -408,11 +463,14 @@ function pulseBenef() {
 async function boot() {
   initTheme();
   S.initStore();
-  screen = isConfigured() ? 'accueil' : 'config';
+  if (isConfigured()) screen = 'accueil';
+  else screen = CLOUD_ENABLED ? 'welcome' : 'config';
   const h = (location.hash || '').replace('#', '');
   if (isConfigured() && ['accueil', 'ventes', 'bilan', 'reglages'].includes(h)) screen = h;
   if (screen === 'config') wizard = { step: 1, charges: UI.defaultCharges() };
+  if (screen === 'accueil') animateNext = true;
   render();
+  setTimeout(hideSplash, 1300);   // splash signature « boussole » : durée minimale
   maybeShowTuto();
   if (CLOUD_ENABLED) { try { await Cloud.initSupabase(); } catch (e) { console.warn('supabase init', e); } }
   // service worker (offline)

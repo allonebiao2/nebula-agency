@@ -23,12 +23,12 @@ const moisLabel = (mk) => {
 export function topbarHTML(cloud, theme = 'light') {
   const nom = getState().profil.nom_activite || 'Mon activité';
   const cloudBtn = cloud.configured
-    ? `<button class="chip ${cloud.user ? 'chip--on' : ''}" data-action="open-auth" title="${cloud.user ? 'Synchronisé' : 'Se connecter'}">
-        <span class="chip__ic" data-icon="${cloud.user ? 'cloud' : 'cloudOff'}"></span>
-        <span class="chip__t">${cloud.user ? esc(cloud.user.email.split('@')[0]) : 'Cloud'}</span></button>`
+    ? (cloud.user
+      ? `<button class="chip chip--on" data-action="open-auth" title="Synchronisé"><span class="chip__ic" data-icon="cloud"></span><span class="chip__t">${esc(cloud.user.email.split('@')[0])}</span></button>`
+      : `<button class="chip chip--cta" data-action="open-auth" title="Se connecter"><span class="chip__ic" data-icon="cloud"></span><span class="chip__t">Se connecter</span></button>`)
     : `<button class="chip" data-action="cloud-info" title="Mode local"><span class="chip__ic" data-icon="cloudOff"></span><span class="chip__t">Local</span></button>`;
   return `
-    <div class="topbar__brand"><span class="brand__mark" data-icon="compass"></span>
+    <div class="topbar__brand"><span class="brand__mark"><img src="assets/icons/logo-mark.png" alt="" width="26" height="25"></span>
       <div class="brand__txt"><span class="brand__name">${esc(APP_NAME)}</span><span class="brand__sub">${esc(nom)}</span></div>
     </div>
     <div class="topbar__actions">
@@ -44,6 +44,21 @@ export function navHTML(active) {
     `<button class="nav__item ${active === id ? 'is-active' : ''}" data-action="go" data-screen="${id}">
       <span class="nav__ic" data-icon="${ic}"></span><span class="nav__lbl">${label}</span></button>`;
   return item('accueil', 'Accueil', 'home') + item('ventes', 'Ventes', 'ventes') + item('bilan', 'Bilan', 'bilan') + item('reglages', 'Réglages', 'reglages');
+}
+
+// ============ ÉCRAN D'ACCUEIL — connexion / inscription ============
+export function viewWelcomeHTML() {
+  return `<section class="view view--welcome">
+    <img class="welcome__logo" src="assets/icons/logo-mark.png" alt="Boussole" width="104" height="100">
+    <h1>${esc(APP_NAME)}</h1>
+    <p class="welcome__sub">Gère ton commerce et vois ta rentabilité clairement — sur ton téléphone <strong>et</strong> ton PC, synchronisés.</p>
+    <div class="welcome__actions">
+      <button class="btn btn--lg" data-action="welcome-signup">Créer un compte</button>
+      <button class="btn btn--ghost btn--lg" data-action="welcome-signin">J'ai déjà un compte</button>
+    </div>
+    <button class="welcome__skip" data-action="welcome-skip">Continuer sans compte</button>
+    <span class="welcome__local"><span data-icon="cloudOff"></span>Sans compte, tes données restent sur cet appareil</span>
+  </section>`;
 }
 
 // ============ BANDEAU 3 ENVELOPPES ============
@@ -91,9 +106,10 @@ function deltaBadge(d, opts = {}) {
 
 function kpiHTML(lbl, val, delta, spark, opts = {}) {
   const sp = spark ? `<span class="kpi__spark">${sparklineRaw(spark, { color: opts.sparkColor || 'var(--acc)', w: 128, h: 30 })}</span>` : '';
+  const cnt = opts.count ? ` data-count="${opts.count.n}" data-fmt="${opts.count.fmt}"` : '';
   return `<div class="kpi">
     <span class="kpi__lbl">${lbl}</span>
-    <span class="kpi__val ${opts.valCls || ''}">${val}</span>
+    <span class="kpi__val ${opts.valCls || ''}"${cnt}>${val}</span>
     <span class="kpi__foot">${deltaBadge(delta, opts.delta || {})}${sp}</span>
   </div>`;
 }
@@ -145,7 +161,7 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
     <div class="dhero__head">
       <div class="dhero__id">
         <span class="dhero__lbl">Chiffre d'affaires + Bénéfice</span>
-        <h2 class="dhero__val">${formatF(t.revenu)}</h2>
+        <h2 class="dhero__val" data-count="${t.revenu}" data-fmt="f">${formatF(t.revenu)}</h2>
         <span class="dhero__sub">${deltaBadge(D.deltas.revenu)} <em>vs ${esc(D.prevLabel)}</em></span>
       </div>
       <div class="dhero__leg">
@@ -162,7 +178,7 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
       <button class="btn btn--ghost btn--sm btn--icon" data-action="edit-objectif" title="Modifier l'objectif"><span data-icon="edit"></span></button></div>
     ${objectif > 0 ? `
       <div class="objx__ring">${progressRing(pctObj, { color: 'var(--acc)', size: 140, stroke: 13 })}
-        <div class="objx__center"><span class="objx__lvl" data-icon="flame"></span><strong>${pctObj}<small>%</small></strong></div></div>
+        <div class="objx__center"><span class="objx__lvl" data-icon="flame"></span><strong><span data-count="${pctObj}" data-fmt="num">${pctObj}</span><small>%</small></strong></div></div>
       <div class="objx__meta"><b>${formatF(Math.max(0, benMois))}</b> / ${formatF(objectif)}</div>
       <p class="objx__hint">${benMois >= objectif ? 'Objectif atteint. Continue sur ta lancée.' : `Encore ${formatF(objectif - benMois)} pour l'atteindre ce mois-ci.`}</p>`
     : `<div class="objx__empty"><span class="objx__emptyic" data-icon="target"></span>
@@ -173,11 +189,11 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
   // ---- KPIs colorés + comparaison ----
   const kpis = `<article class="panel c12 kpicard">
     <div class="kpis">
-      ${kpiHTML("Chiffre d'affaires", formatF(t.revenu), D.deltas.revenu, D.buckets.map((x) => x.revenu), { sparkColor: 'var(--acc)' })}
-      ${kpiHTML('Bénéfice net', formatF(t.benefice), D.deltas.benefice, D.buckets.map((x) => x.benefice), { valCls: t.benefice >= 0 ? 'pos' : 'neg', sparkColor: 'var(--pos)' })}
-      ${kpiHTML('Taux de marge', pctMarge + ' %', D.deltas.tauxMarge, null, { delta: { pts: true } })}
-      ${kpiHTML('Panier moyen', formatF(t.panierMoyen), D.deltas.panierMoyen, null, {})}
-      ${kpiHTML('Ventes', formatNombre(t.unites), D.deltas.unites, D.buckets.map((x) => x.unites), { sparkColor: 'var(--rel)' })}
+      ${kpiHTML("Chiffre d'affaires", formatF(t.revenu), D.deltas.revenu, D.buckets.map((x) => x.revenu), { sparkColor: 'var(--acc)', count: { n: t.revenu, fmt: 'f' } })}
+      ${kpiHTML('Bénéfice net', formatF(t.benefice), D.deltas.benefice, D.buckets.map((x) => x.benefice), { valCls: t.benefice >= 0 ? 'pos' : 'neg', sparkColor: 'var(--pos)', count: { n: t.benefice, fmt: 'f' } })}
+      ${kpiHTML('Taux de marge', pctMarge + ' %', D.deltas.tauxMarge, null, { delta: { pts: true }, count: { n: pctMarge, fmt: 'pct' } })}
+      ${kpiHTML('Panier moyen', formatF(t.panierMoyen), D.deltas.panierMoyen, null, { count: { n: t.panierMoyen, fmt: 'f' } })}
+      ${kpiHTML('Ventes', formatNombre(t.unites), D.deltas.unites, D.buckets.map((x) => x.unites), { sparkColor: 'var(--rel)', count: { n: t.unites, fmt: 'num' } })}
     </div>
   </article>`;
 
@@ -214,7 +230,7 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
     <div class="panel__head"><h2>Où va ton argent</h2><span class="panel__sub">${esc(D.label)}</span></div>
     <div class="donutwrap">
       <div class="donut">${chartDonut(envSegs, { size: 168, stroke: 20 })}
-        <div class="donut__center"><strong>${formatF(env.revenu)}</strong><span>de ventes</span></div></div>
+        <div class="donut__center"><strong data-count="${env.revenu}" data-fmt="f">${formatF(env.revenu)}</strong><span>de ventes</span></div></div>
       <div class="leg">
         ${legRow('Relance', env.relance, 'var(--rel)', Math.round(env.relance / rTot * 100) + '%')}
         ${legRow('Charges', env.charges_couvertes, 'var(--chg)', Math.round(env.charges_couvertes / rTot * 100) + '%')}
@@ -229,7 +245,7 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
     <div class="panel__head"><h2>Ventes par produit</h2><span class="panel__sub">${esc(D.label)}</span></div>
     <div class="donutwrap">
       <div class="donut">${chartDonut(prodSegs.length ? prodSegs : [{ value: 0, color: 'var(--line)' }], { size: 168, stroke: 20 })}
-        <div class="donut__center"><strong>${formatNombre(tops.reduce((s, p) => s + p.unites, 0))}</strong><span>unités</span></div></div>
+        <div class="donut__center"><strong data-count="${tops.reduce((s, p) => s + p.unites, 0)}" data-fmt="num">${formatNombre(tops.reduce((s, p) => s + p.unites, 0))}</strong><span>unités</span></div></div>
       <div class="leg">
         ${tops.length ? tops.slice(0, 5).map((p, i) => legRow(esc(p.nom), p.revenu, PROD_COLORS[i % PROD_COLORS.length], Math.round(p.part * 100) + '%')).join('') : '<p class="leg__empty">Aucune vente sur la période.</p>'}
       </div>
