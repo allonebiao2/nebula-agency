@@ -1,5 +1,5 @@
 /* Boussole — service worker (offline shell). Bumper V à chaque déploiement. */
-const V = '20260709b';
+const V = '20260709c';
 const CACHE = 'boussole-' + V;
 const ASSETS = [
   './',

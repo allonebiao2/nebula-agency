@@ -6,6 +6,7 @@ import {
   bilanMois, ventesDuMois, serieMensuelle, trimestreDe, currentMonthKey,
   statistiques, analyseBusiness,
   serieDashboard, topProduitsPeriode, getObjectif, resumeJour, historiqueVentes,
+  historiqueDepenses, DEPENSE_CATS,
   formatF, formatNombre, MOIS_LONGS,
 } from './store.js';
 import { chartBeneficeMensuel, chartEvolution, miniSpark, progressRing, chartHero, chartDonut, sparklineRaw } from './charts.js';
@@ -43,7 +44,7 @@ export function navHTML(active) {
   const item = (id, label, ic) =>
     `<button class="nav__item ${active === id ? 'is-active' : ''}" data-action="go" data-screen="${id}">
       <span class="nav__ic" data-icon="${ic}"></span><span class="nav__lbl">${label}</span></button>`;
-  return item('accueil', 'Accueil', 'home') + item('ventes', 'Ventes', 'ventes') + item('bilan', 'Bilan', 'bilan') + item('reglages', 'Réglages', 'reglages');
+  return item('accueil', 'Accueil', 'home') + item('ventes', 'Ventes', 'ventes') + item('depenses', 'Dépenses', 'receipt') + item('bilan', 'Bilan', 'bilan') + item('reglages', 'Réglages', 'reglages');
 }
 
 // ============ ÉCRAN D'ACCUEIL — connexion / inscription ============
@@ -415,6 +416,70 @@ export function viewVentesHTML(filter = { preset: 'jour', from: '', to: '', prod
           <select class="input vf-select" data-action="vf-produit" aria-label="Filtrer par produit">${prodOpts}</select>
           <div class="vf-search"><span class="vf-search__ic" data-icon="search"></span>
             <input class="input" type="search" data-action="vf-search" placeholder="Rechercher un produit…" value="${esc(filter.q)}" aria-label="Rechercher un produit"></div>
+        </div>
+      </div>
+      <div class="hvgroups">${groups}</div>
+    </article>
+  </section>`;
+}
+
+// ============ ÉCRAN DÉPENSES ============
+const CAT_COLORS = { 'Réassort / Stock': 'var(--rel)', 'Transport': '#9b8cff', 'Loyer': 'var(--chg)', 'Salaires': 'var(--dng)', 'Factures': 'var(--acc)', 'Divers': 'var(--ink-faint)' };
+const catColor = (c) => CAT_COLORS[c] || 'var(--acc)';
+function rangeLabel(f) {
+  const m = { jour: "Aujourd'hui", semaine: '7 derniers jours', mois: 'Ce mois', tout: 'Tout' };
+  return m[f.preset] || (f.from && f.to ? `du ${f.from} au ${f.to}` : 'période');
+}
+function dhRow(l) {
+  const hm = new Date(l.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  return `<li class="hvrow">
+    <span class="hvrow__dot" style="background:${catColor(l.categorie)}"></span>
+    <div class="hvrow__id"><strong>${esc(l.libelle || l.categorie)}</strong><small>${esc(l.categorie)} · ${hm}</small></div>
+    <span class="hvrow__tot neg">-${formatF(l.montant)}</span>
+    <button class="hvrow__del" data-action="del-depense" data-id="${l.id}" aria-label="Supprimer la dépense"><span data-icon="trash"></span></button>
+  </li>`;
+}
+
+export function viewDepensesHTML(filter = { preset: 'mois', from: '', to: '', categorie: '', q: '' }) {
+  const H = historiqueDepenses({ from: filter.from, to: filter.to, categorie: filter.categorie, q: filter.q });
+  const chip = (id, label) => `<button class="vchip ${filter.preset === id ? 'is-on' : ''}" data-action="df-preset" data-preset="${id}">${label}</button>`;
+  const catOpts = ['<option value="">Toutes catégories</option>']
+    .concat(DEPENSE_CATS.map((c) => `<option value="${esc(c)}" ${filter.categorie === c ? 'selected' : ''}>${esc(c)}</option>`)).join('');
+  const breakdown = H.parCategorie.length ? `<div class="catbreak">${H.parCategorie.map((c) => `
+      <div class="catbar">
+        <div class="catbar__top"><span class="catbar__name"><span class="catbar__dot" style="background:${catColor(c.categorie)}"></span>${esc(c.categorie)}</span>
+          <span class="catbar__amt">${formatF(c.total)}<small>${Math.round(c.part * 100)}%</small></span></div>
+        <div class="catbar__track"><span style="width:${(c.part * 100).toFixed(1)}%;background:${catColor(c.categorie)}"></span></div>
+      </div>`).join('')}</div>` : '';
+  const groups = H.jours.length
+    ? H.jours.map((g) => `<section class="daygrp">
+        <div class="daygrp__head"><span class="daygrp__date">${esc(jourLabel(g.jour))}</span><span class="daygrp__tot neg">-${formatF(g.total)}</span></div>
+        <ul class="hvlist">${g.lignes.map(dhRow).join('')}</ul></section>`).join('')
+    : `<div class="hvempty"><span class="hvempty__ic" data-icon="receipt"></span>
+        <p>Aucune dépense sur cette sélection.</p>
+        <span class="hvempty__hint">Ajoute une dépense, ou change de période.</span></div>`;
+
+  return `<section class="view">
+    ${sectionTitle('Dépenses', "Où part ton argent")}
+    <div class="depsum">
+      <div class="depsum__id"><span class="depsum__lbl">Total dépensé — ${esc(rangeLabel(filter))}</span>
+        <span class="depsum__val neg">${formatF(H.total)}</span>
+        <span class="depsum__nb">${formatNombre(H.nb)} dépense${H.nb > 1 ? 's' : ''}</span></div>
+      <button class="btn btn--danger" data-action="add-depense"><span data-icon="minus"></span> Ajouter une dépense</button>
+    </div>
+    ${breakdown ? `<article class="panel"><div class="panel__head"><h2>Par catégorie</h2><span class="panel__sub">${esc(rangeLabel(filter))}</span></div>${breakdown}</article>` : ''}
+    <article class="panel vhist">
+      <div class="panel__head"><h2>Historique</h2></div>
+      <div class="vfilters">
+        <div class="vchips">${chip('jour', "Aujourd'hui")}${chip('semaine', '7 jours')}${chip('mois', 'Ce mois')}${chip('tout', 'Tout')}</div>
+        <div class="vfilters__dates">
+          <label class="vf-field"><span>Du</span><input type="date" class="input" data-action="df-from" value="${esc(filter.from)}"></label>
+          <label class="vf-field"><span>Au</span><input type="date" class="input" data-action="df-to" value="${esc(filter.to)}"></label>
+        </div>
+        <div class="vfilters__row">
+          <select class="input vf-select" data-action="df-cat" aria-label="Filtrer par catégorie">${catOpts}</select>
+          <div class="vf-search"><span class="vf-search__ic" data-icon="search"></span>
+            <input class="input" type="search" data-action="df-search" placeholder="Rechercher…" value="${esc(filter.q)}" aria-label="Rechercher une dépense"></div>
         </div>
       </div>
       <div class="hvgroups">${groups}</div>

@@ -601,6 +601,33 @@ export function historiqueVentes({ from = '', to = '', produitId = '', q = '' } 
   };
 }
 
+// ---------- Historique des dépenses : filtres + groupé/jour + répartition par catégorie ----------
+export function historiqueDepenses({ from = '', to = '', categorie = '', q = '' } = {}) {
+  const fromT = from ? new Date(from + 'T00:00:00').getTime() : -Infinity;
+  const toT = to ? new Date(to + 'T23:59:59.999').getTime() : Infinity;
+  const ql = (q || '').trim().toLowerCase();
+  const rows = state.depenses.filter((d) => {
+    const t = new Date(d.date).getTime();
+    if (t < fromT || t > toT) return false;
+    if (categorie && d.categorie !== categorie) return false;
+    if (ql && !((d.libelle || '').toLowerCase().includes(ql) || (d.categorie || '').toLowerCase().includes(ql))) return false;
+    return true;
+  }).sort((a, b) => new Date(b.date) - new Date(a.date));
+  const jours = [], map = {}, cats = {};
+  for (const r of rows) {
+    const dd = new Date(r.date);
+    const key = `${dd.getFullYear()}-${String(dd.getMonth() + 1).padStart(2, '0')}-${String(dd.getDate()).padStart(2, '0')}`;
+    if (!map[key]) { map[key] = { jour: key, total: 0, nb: 0, lignes: [] }; jours.push(map[key]); }
+    const g = map[key]; g.lignes.push(r); g.total += (Number(r.montant) || 0); g.nb += 1;
+    cats[r.categorie] = (cats[r.categorie] || 0) + (Number(r.montant) || 0);
+  }
+  const total = rows.reduce((s, r) => s + (Number(r.montant) || 0), 0);
+  const parCategorie = Object.keys(cats)
+    .map((c) => ({ categorie: c, total: cats[c], part: total ? cats[c] / total : 0 }))
+    .sort((a, b) => b.total - a.total);
+  return { jours, total, nb: rows.length, parCategorie };
+}
+
 // ---------- Formatage ----------
 export function formatF(n) {
   const v = Math.round(Number(n) || 0);

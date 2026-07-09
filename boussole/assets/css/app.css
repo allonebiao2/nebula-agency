@@ -905,3 +905,21 @@ input { font-family: inherit; }
 .hvempty__ic svg { width: 100%; height: 100%; }
 .hvempty p { font-size: 14px; margin: 0 0 4px; }
 .hvempty__hint { font-size: 12.5px; color: var(--ink-faint); }
+
+/* ---------- Écran Dépenses ---------- */
+.depsum { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+.depsum__id { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.depsum__lbl { font-size: 11.5px; font-weight: 600; color: var(--ink-faint); text-transform: uppercase; letter-spacing: .03em; }
+.depsum__val { font-family: var(--mono); font-size: clamp(24px, 7vw, 28px); font-weight: 700; letter-spacing: -.02em; }
+.depsum__val.neg { color: var(--dng); }
+.depsum__nb { font-size: 12px; color: var(--ink-faint); }
+.catbreak { display: flex; flex-direction: column; gap: 13px; }
+.catbar__top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.catbar__name { font-size: 13px; font-weight: 600; color: var(--ink-soft); display: inline-flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.catbar__dot { width: 9px; height: 9px; border-radius: 3px; flex: none; }
+.catbar__amt { font-family: var(--mono); font-weight: 700; font-size: 13.5px; display: inline-flex; align-items: baseline; gap: 6px; white-space: nowrap; }
+.catbar__amt small { font-size: 11px; color: var(--ink-faint); font-weight: 600; }
+.catbar__track { height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.catbar__track span { display: block; height: 100%; border-radius: 999px; }
+.hvrow__dot { width: 11px; height: 11px; border-radius: 3px; justify-self: center; }
+.hvrow__tot.neg, .daygrp__tot.neg { color: var(--dng); }
