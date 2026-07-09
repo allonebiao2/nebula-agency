@@ -3,7 +3,7 @@
 export const APP_NAME = 'Boussole';
 
 // Version de l'appli : sert au cache-busting (bumper à chaque modif).
-export const APP_VERSION = '20260709c';
+export const APP_VERSION = '20260709d';
 
 // --- Supabase (mode cloud) ---
 // Laisser vide = l'appli tourne en MODE LOCAL (localStorage, hors-ligne, privé à l'appareil).
@@ -15,6 +15,17 @@ export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 
 export const CLOUD_ENABLED = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 
-// Devise (fixe pour le marché : FCFA)
+// Devise par défaut (FCFA). La devise active est dans profil.devise (multi-devises).
 export const DEVISE = 'F';
 export const DEVISE_LONG = 'FCFA';
+
+// Devises supportées (Afrique + courantes). Clé = code stocké dans profil.devise.
+export const CURRENCIES = {
+  'F':   { symbol: 'F',   label: 'Franc CFA — FCFA', pos: 'after' },
+  'NGN': { symbol: '₦',   label: 'Naira — Nigeria', pos: 'before' },
+  'GHS': { symbol: '₵',   label: 'Cedi — Ghana', pos: 'before' },
+  'GNF': { symbol: 'FG',  label: 'Franc guinéen', pos: 'after' },
+  'KES': { symbol: 'Ksh', label: 'Shilling — Kenya', pos: 'before' },
+  'USD': { symbol: '$',   label: 'Dollar US', pos: 'before' },
+  'EUR': { symbol: '€',   label: 'Euro', pos: 'after' },
+};

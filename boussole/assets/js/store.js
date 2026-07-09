@@ -1,7 +1,7 @@
 // Boussole — data layer + logique des 3 enveloppes.
 // Offline-first : localStorage est toujours à jour. Si une session Supabase existe,
 // on reflète chaque écriture dans le cloud (optimiste) pour la synchro multi-appareils.
-import { DEVISE } from './config.js';
+import { DEVISE, CURRENCIES } from './config.js';
 
 const LS_KEY = 'boussole:v1';
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2));
@@ -384,6 +384,16 @@ export function analyseBusiness() {
   etat.push(cur.benefice >= 0 ? `Bénéfice net du mois : ${formatF(cur.benefice)}.` : `Tu es en perte de ${formatF(-cur.benefice)} ce mois.`);
   if (evolution && evolution.sens !== 'stable') etat.push(`Comparé à ${evolution.moisFrom}, ton bénéfice ${evolution.sens === 'hausse' ? 'progresse' : 'recule'} de ${formatF(Math.abs(evolution.diff))}.`);
 
+  // Alerte : dépense anormalement élevée
+  const alerts = alertesDepenses();
+  if (alerts.length) {
+    const a = alerts[0];
+    conseils.push({
+      priorite: 'moyenne', titre: 'Dépense inhabituelle repérée',
+      detail: `« ${a.libelle} » (${formatF(a.montant)}) dépasse largement ta moyenne « ${a.categorie} » (~${formatF(a.moyenne)}). Vérifie que c’est normal.`,
+    });
+  }
+
   conseils.sort((a, z) => PRIO_RANG[a.priorite] - PRIO_RANG[z.priorite]);
   return { sante, score, etat, evolution, conseils, forts };
 }
@@ -628,12 +638,61 @@ export function historiqueDepenses({ from = '', to = '', categorie = '', q = '' 
   return { jours, total, nb: rows.length, parCategorie };
 }
 
+// ---------- Prévisions de trésorerie (projection fin de mois, à partir du rythme récent) ----------
+export function previsions() {
+  const now = new Date();
+  const jour0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const fenetre = 14;
+  const debut = new Date(jour0); debut.setDate(jour0.getDate() - (fenetre - 1));
+  const fin = new Date(jour0); fin.setDate(jour0.getDate() + 1);
+  const v = sommeVentes(ventesEntre(debut, fin));
+  const depExploit = depensesExploit(depensesEntre(debut, fin));
+  const depTotal = sommeDepenses(depensesEntre(debut, fin));
+  const chargesF = chargesProrataEntre(debut, fin, Date.now());
+  const avgJourBenef = (v.marge - depExploit - chargesF) / fenetre;
+  const avgJourCash = (v.revenu - depTotal) / fenetre;
+  const joursRestants = Math.max(0, daysInMonthOf(now) - now.getDate());
+  const benefMois = serieDashboard('mois', 0).totals.benefice;
+  const caisse = soldeCaisse();
+  return {
+    avgJour: avgJourBenef, avgJourCash, joursRestants,
+    benefMoisActuel: benefMois, benefFinMois: benefMois + avgJourBenef * joursRestants,
+    caisse, caisseFinMois: caisse + avgJourCash * joursRestants,
+    actif: v.unites > 0 || depTotal > 0,
+    tendance: avgJourBenef > 0 ? 'hausse' : (avgJourBenef < 0 ? 'baisse' : 'stable'),
+  };
+}
+
+// ---------- Alertes : dépenses anormalement élevées vs la moyenne de leur catégorie ----------
+export function alertesDepenses({ jours = 30, facteur = 2.5 } = {}) {
+  const debutT = Date.now() - jours * DAY_MS;
+  const recent = state.depenses.filter((d) => new Date(d.date).getTime() >= debutT);
+  const parCat = {};
+  recent.forEach((d) => { const c = d.categorie || 'Divers'; (parCat[c] = parCat[c] || []).push(Number(d.montant) || 0); });
+  const moy = {};
+  Object.keys(parCat).forEach((c) => { const a = parCat[c]; moy[c] = a.reduce((s, x) => s + x, 0) / a.length; });
+  const alerts = [];
+  recent.forEach((d) => {
+    const c = d.categorie || 'Divers'; const m = Number(d.montant) || 0;
+    if (moy[c] && parCat[c].length >= 3 && m > moy[c] * facteur && m >= 2000) {
+      alerts.push({ id: d.id, libelle: d.libelle || c, categorie: c, montant: m, moyenne: Math.round(moy[c]), date: d.date });
+    }
+  });
+  return alerts.sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
+// ---------- Devise (multi-devises) ----------
+export function getDevise() { return state.profil.devise || 'F'; }
+export function setDevise(code) { setProfil({ devise: CURRENCIES[code] ? code : 'F' }); }
+
 // ---------- Formatage ----------
 export function formatF(n) {
+  const cur = CURRENCIES[getDevise()] || CURRENCIES.F;
   const v = Math.round(Number(n) || 0);
   const neg = v < 0;
   const s = Math.abs(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-  return (neg ? '-' : '') + s + ' ' + DEVISE;
+  const body = cur.pos === 'before' ? `${cur.symbol} ${s}` : `${s} ${cur.symbol}`;
+  return (neg ? '-' : '') + body;
 }
 export function formatNombre(n) {
   return (Math.round(Number(n) || 0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');

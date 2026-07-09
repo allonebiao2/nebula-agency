@@ -541,6 +541,7 @@ document.addEventListener('click', (e) => {
 document.addEventListener('change', (e) => {
   const el = e.target;
   if (el.matches('[data-action="save-nom"]')) S.setProfil({ nom_activite: el.value.trim() });
+  else if (el.matches('[data-action="save-devise"]')) { S.setDevise(el.value); UI.toast('Devise mise à jour'); }
   else if (el.matches('[data-action="vf-from"]')) { venteFilter.from = el.value; venteFilter.preset = 'custom'; refreshVentes(); }
   else if (el.matches('[data-action="vf-to"]')) { venteFilter.to = el.value; venteFilter.preset = 'custom'; refreshVentes(); }
   else if (el.matches('[data-action="vf-produit"]')) { venteFilter.produitId = el.value; refreshVentes(); }

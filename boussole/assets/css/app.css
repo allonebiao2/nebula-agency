@@ -923,3 +923,12 @@ input { font-family: inherit; }
 .catbar__track span { display: block; height: 100%; border-radius: 999px; }
 .hvrow__dot { width: 11px; height: 11px; border-radius: 3px; justify-self: center; }
 .hvrow__tot.neg, .daygrp__tot.neg { color: var(--dng); }
+
+/* ---------- Carte Prévisions ---------- */
+.prevrow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+.prevtile { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.prevtile__lbl { font-size: 11px; font-weight: 600; color: var(--ink-faint); text-transform: uppercase; letter-spacing: .03em; }
+.prevtile__val { font-family: var(--mono); font-size: 19px; font-weight: 700; letter-spacing: -.02em; overflow: hidden; text-overflow: ellipsis; }
+.prevtile__val.pos { color: var(--pos-d); } .prevtile__val.neg { color: var(--dng); }
+.prevhint { font-size: 12.5px; color: var(--ink-soft); margin: 0; line-height: 1.45; }
+.prevhint b { color: var(--ink); font-family: var(--mono); }

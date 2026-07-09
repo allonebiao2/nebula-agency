@@ -6,11 +6,11 @@ import {
   bilanMois, ventesDuMois, serieMensuelle, trimestreDe, currentMonthKey,
   statistiques, analyseBusiness,
   serieDashboard, topProduitsPeriode, getObjectif, resumeJour, historiqueVentes,
-  historiqueDepenses, DEPENSE_CATS,
+  historiqueDepenses, DEPENSE_CATS, previsions, getDevise,
   formatF, formatNombre, MOIS_LONGS,
 } from './store.js';
 import { chartBeneficeMensuel, chartEvolution, miniSpark, progressRing, chartHero, chartDonut, sparklineRaw } from './charts.js';
-import { APP_NAME } from './config.js';
+import { APP_NAME, CURRENCIES } from './config.js';
 
 export const esc = (s) => String(s == null ? '' : s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -295,6 +295,19 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
     <div class="chartwrap">${chartBeneficeMensuel(D.buckets, { showValues: D.buckets.length <= 12 })}</div>
   </article>`;
 
+  // ---- PRÉVISIONS (fin de mois, au rythme récent) ----
+  const P2 = previsions();
+  const prevCard = P2.actif ? `<article class="panel c6 prevcard">
+    <div class="panel__head"><h2>Prévisions</h2><span class="panel__sub">fin du mois, à ce rythme</span></div>
+    <div class="prevrow">
+      <div class="prevtile"><span class="prevtile__lbl">Bénéfice fin de mois</span><span class="prevtile__val ${P2.benefFinMois >= 0 ? 'pos' : 'neg'}">${formatF(P2.benefFinMois)}</span></div>
+      <div class="prevtile"><span class="prevtile__lbl">Caisse fin de mois</span><span class="prevtile__val">${formatF(P2.caisseFinMois)}</span></div>
+    </div>
+    <p class="prevhint">${P2.avgJour >= 0
+      ? `Tu gagnes ~<b>${formatF(P2.avgJour)}</b>/jour en moyenne. Reste ${P2.joursRestants} jour${P2.joursRestants > 1 ? 's' : ''} ce mois.`
+      : `Tu perds ~<b>${formatF(-P2.avgJour)}</b>/jour. Baisse une dépense ou pousse les ventes.`}</p>
+  </article>` : '';
+
   // ---- CONSEIL ----
   const topConseil = analyse.conseils.find((c) => c.priorite !== 'info');
   const prio = topConseil ? (PRIO[topConseil.priorite] || PRIO.basse) : null;
@@ -321,6 +334,7 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
       ${prodDonut}
       ${rankCard}
       ${barsCard}
+      ${prevCard}
       ${conseilCard}
     </div>
   </section>`;
@@ -663,6 +677,10 @@ export function viewReglagesHTML(cloud) {
       <div class="panel__head"><h2>Activité</h2></div>
       <div class="field"><label for="rg-nom">Nom de l'activité</label>
         <input id="rg-nom" class="input" value="${esc(st.profil.nom_activite)}" data-action="save-nom" placeholder="Ex. Yaourt Maman Adjo"></div>
+      <div class="field"><label for="rg-devise">Devise</label>
+        <select id="rg-devise" class="input" data-action="save-devise">
+          ${Object.keys(CURRENCIES).map((code) => `<option value="${code}" ${getDevise() === code ? 'selected' : ''}>${esc(CURRENCIES[code].label)}</option>`).join('')}
+        </select></div>
     </div>
     <div class="panel">
       <div class="panel__head"><h2>Produits</h2><button class="btn btn--sm" data-action="add-produit"><span data-icon="plus"></span> Ajouter</button></div>
