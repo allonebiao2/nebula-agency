@@ -69,30 +69,39 @@ function makeAdapter() {
   const uid = () => currentUser && currentUser.id;
   return {
     async pullAll() {
-      const [prof, prods, charges, ventes, depenses, credits] = await Promise.all([
+      const [prof, prods, charges, ventes, depenses, credits, documents] = await Promise.all([
         client.from('profils').select('*').maybeSingle(),
         client.from('produits').select('*'),
         client.from('charges_fixes').select('*'),
         client.from('ventes').select('*'),
         client.from('depenses').select('*'),
         client.from('credits').select('*'),
+        client.from('documents').select('*'),   // peut ne pas exister avant migration -> géré sans casse
       ]);
+      const p = prof.data || {};
       return {
         profil: prof.data
-          ? { nom_activite: prof.data.nom_activite || '', devise: prof.data.devise || 'F', objectif_benefice: Number(prof.data.objectif_benefice) || 0, solde_initial: Number(prof.data.solde_initial) || 0 }
-          : { nom_activite: '', devise: 'F', objectif_benefice: 0, solde_initial: 0 },
-        produits: (prods.data || []).map((p) => ({ ...p, couts: p.couts || [] })),
+          ? { nom_activite: p.nom_activite || '', devise: p.devise || 'F', objectif_benefice: Number(p.objectif_benefice) || 0, solde_initial: Number(p.solde_initial) || 0, ifu: p.ifu || '', rccm: p.rccm || '', adresse: p.adresse || '', tel_pro: p.tel_pro || '', email_pro: p.email_pro || '' }
+          : { nom_activite: '', devise: 'F', objectif_benefice: 0, solde_initial: 0, ifu: '', rccm: '', adresse: '', tel_pro: '', email_pro: '' },
+        produits: (prods.data || []).map((pr) => ({ ...pr, couts: pr.couts || [] })),
         charges_fixes: charges.data || [],
         ventes: ventes.data || [],
         depenses: depenses.data || [],
         credits: credits.data || [],
+        documents: documents.data || [],
+        _documentsUnavailable: Boolean(documents.error),   // table absente = migration non lancée
       };
     },
     async upsert(table, row) {
       if (!uid()) return;
       if (table === 'profils') {
-        const payload = { user_id: uid(), nom_activite: row.nom_activite || '', devise: row.devise || 'F', objectif_benefice: Number(row.objectif_benefice) || 0, solde_initial: Number(row.solde_initial) || 0 };
-        const { error } = await client.from('profils').upsert(payload, { onConflict: 'user_id' });
+        const base = { user_id: uid(), nom_activite: row.nom_activite || '', devise: row.devise || 'F', objectif_benefice: Number(row.objectif_benefice) || 0, solde_initial: Number(row.solde_initial) || 0 };
+        const full = { ...base, ifu: row.ifu || '', rccm: row.rccm || '', adresse: row.adresse || '', tel_pro: row.tel_pro || '', email_pro: row.email_pro || '' };
+        let { error } = await client.from('profils').upsert(full, { onConflict: 'user_id' });
+        if (error && /column|schema cache|does not exist/i.test(error.message || '')) {
+          // colonnes fiscales pas encore migrées -> on sauve au moins les champs de base
+          ({ error } = await client.from('profils').upsert(base, { onConflict: 'user_id' }));
+        }
         if (error) throw error;
         return;
       }
@@ -114,7 +123,7 @@ let repullTimer = null;
 function subscribeRealtime() {
   if (!client || channel) return;
   channel = client.channel('boussole-sync');
-  ['produits', 'charges_fixes', 'ventes', 'profils', 'depenses', 'credits'].forEach((table) => {
+  ['produits', 'charges_fixes', 'ventes', 'profils', 'depenses', 'credits', 'documents'].forEach((table) => {
     channel.on('postgres_changes', { event: '*', schema: 'public', table }, () => {
       clearTimeout(repullTimer);
       repullTimer = setTimeout(() => hydrateFromRemote().catch(() => {}), 400);

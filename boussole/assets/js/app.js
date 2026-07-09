@@ -16,6 +16,7 @@ let pendingLogin = false;  // vrai après un login volontaire -> 2e splash
 let venteFilter = Object.assign({ preset: 'jour', produitId: '', q: '' }, venteRange('jour'));
 let depFilter = Object.assign({ preset: 'mois', categorie: '', q: '' }, venteRange('mois'));
 let chat = []; // conversation assistant (en mémoire de session)
+let rapGran = 'jour'; // période du rapport (écran Bilan)
 
 const $ = (s, r = document) => r.querySelector(s);
 const cloudCtx = () => ({ configured: Cloud.isCloudConfigured(), user: Cloud.getUser() });
@@ -55,7 +56,7 @@ function render() {
   else if (screen === 'welcome') view.innerHTML = UI.viewWelcomeHTML();
   else if (screen === 'accueil') view.innerHTML = UI.viewAccueilHTML(period);
   else if (screen === 'depenses') view.innerHTML = UI.viewDepensesHTML(depFilter);
-  else if (screen === 'bilan') view.innerHTML = UI.viewBilanHTML();
+  else if (screen === 'bilan') view.innerHTML = UI.viewBilanHTML(rapGran);
   else if (screen === 'reglages') view.innerHTML = UI.viewReglagesHTML(cloudCtx());
   else view.innerHTML = UI.viewVentesHTML(venteFilter);
   $('#nav').innerHTML = navVisible() ? UI.navHTML(screen) : '';
@@ -96,6 +97,107 @@ function refreshDepenses() {
   const view = $('#view'); const top = view.scrollTop;
   view.innerHTML = UI.viewDepensesHTML(depFilter);
   hydrateIcons(view); view.scrollTop = top;
+}
+function refreshBilan() {
+  if (screen !== 'bilan') return;
+  const view = $('#view'); const top = view.scrollTop;
+  view.innerHTML = UI.viewBilanHTML(rapGran);
+  hydrateIcons(view); view.scrollTop = top;
+}
+
+// ---------- Exports (rapport PDF / Excel / WhatsApp) ----------
+function downloadFile(name, text, mime) {
+  const blob = new Blob(['﻿' + text], { type: mime + ';charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+function rapportCSV(r) {
+  const n = (x) => Math.round(Number(x) || 0);
+  const L = [`Rapport;${r.label}`, `Généré le;${new Date().toLocaleDateString('fr-FR')}`, '', 'Indicateur;Montant'];
+  L.push(`Chiffre d'affaires;${n(r.ca)}`, `Coût des produits vendus;${n(r.cout)}`, `Marge;${n(r.marge)}`,
+    `Charges fixes (quote-part);${n(r.charges)}`, `Dépenses;${n(r.depenses)}`, `Bénéfice net;${n(r.benefice)}`,
+    `Taux de marge (%);${Math.round((r.tauxMarge || 0) * 100)}`, `Nombre de ventes;${n(r.nbVentes)}`, `Unités vendues;${n(r.unites)}`, `Solde de caisse;${n(r.caisse)}`);
+  if (r.depensesCat && r.depensesCat.length) { L.push('', 'Dépenses par catégorie;Montant'); r.depensesCat.forEach((c) => L.push(`${c.categorie};${n(c.total)}`)); }
+  if (r.tops && r.tops.length) { L.push('', 'Meilleures ventes;CA;Part (%)'); r.tops.forEach((p) => L.push(`${p.nom};${n(p.revenu)};${Math.round(p.part * 100)}`)); }
+  return L.join('\r\n');
+}
+function printRapport(r) {
+  const nom = S.getState().profil.nom_activite || 'Mon activité';
+  const line = (k, v, cls) => `<tr><td>${k}</td><td class="num ${cls || ''}">${S.formatF(v)}</td></tr>`;
+  const cats = (r.depensesCat || []).map((c) => `<tr><td>${UI.esc(c.categorie)}</td><td class="num">${S.formatF(c.total)}</td></tr>`).join('');
+  const tops = (r.tops || []).map((p) => `<tr><td>${UI.esc(p.nom)}</td><td class="num">${S.formatF(p.revenu)}</td><td class="num">${Math.round(p.part * 100)}%</td></tr>`).join('');
+  document.getElementById('print-area').innerHTML = `
+    <h1>Rapport — ${UI.esc(r.label)}</h1>
+    <p class="p-sub">${UI.esc(nom)} · généré le ${new Date().toLocaleDateString('fr-FR')}</p>
+    <table><tbody>${line("Chiffre d'affaires", r.ca)}${line('Coût des produits', r.cout)}${line('Marge', r.marge)}${line('Charges fixes', r.charges)}${line('Dépenses', r.depenses)}${line('Bénéfice net', r.benefice, r.benefice >= 0 ? 'pos' : 'neg')}${line('Solde de caisse', r.caisse)}</tbody></table>
+    ${cats ? `<h2 style="font-size:15px;margin:18px 0 6px">Dépenses par catégorie</h2><table><tbody>${cats}</tbody></table>` : ''}
+    ${tops ? `<h2 style="font-size:15px;margin:18px 0 6px">Meilleures ventes</h2><table><tbody>${tops}</tbody></table>` : ''}
+    <p class="p-foot">Boussole — NEBULA Agency</p>`;
+  window.print();
+}
+function shareRapport(r) {
+  const nom = S.getState().profil.nom_activite || '';
+  const t = `BOUSSOLE — Rapport ${r.label}\n${nom}\n\nVentes : ${S.formatF(r.ca)}\nDépenses : ${S.formatF(r.depenses)}\nBénéfice net : ${S.formatF(r.benefice)}\nCaisse : ${S.formatF(r.caisse)}\nNb ventes : ${r.nbVentes}`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(t), '_blank');
+}
+
+// ---------- Documents : factures & devis ----------
+function frDate(ymd) { const m = String(ymd || '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? `${m[3]}/${m[2]}/${m[1]}` : (ymd || ''); }
+function docScope(target) {
+  const modal = (target && target.closest) ? target.closest('.modal') : null;
+  return (modal ? modal.querySelector('.modal__body') : $('#modal-root .modal__body')) || $('#modal-root');
+}
+function readDoc(scope) {
+  const df = scope.querySelector('.docform') || scope;
+  const val = (name) => { const el = df.querySelector(`[data-df="${name}"]`); return el ? el.value : ''; };
+  const lignes = [...df.querySelectorAll('.dline')].map((r) => ({
+    designation: (r.querySelector('[data-dl="designation"]').value || '').trim(),
+    qte: r.querySelector('[data-dl="qte"]').value,
+    pu: r.querySelector('[data-dl="pu"]').value,
+  })).filter((l) => l.designation || Number(l.qte) || Number(l.pu));
+  return {
+    id: df.dataset.id || '', type: df.dataset.type || 'facture', numero: df.dataset.numero || '',
+    date: val('date'), echeance: val('echeance'),
+    client: { nom: val('nom'), tel: val('tel'), adresse: val('adresse') },
+    lignes, remise: val('remise'), tva_taux: val('tva_taux'), acompte: val('acompte'), notes: val('notes'),
+  };
+}
+function refreshDocTotals(sc) {
+  const df = sc.querySelector('.docform') || sc;
+  df.querySelectorAll('.dline').forEach((row) => {
+    const q = Number(row.querySelector('[data-dl="qte"]').value) || 0;
+    const pu = Number(row.querySelector('[data-dl="pu"]').value) || 0;
+    const cell = row.querySelector('[data-dl-tot]'); if (cell) cell.textContent = S.formatF(q * pu);
+  });
+  const tot = df.querySelector('#dc-tot'); if (tot) tot.innerHTML = UI.docTotalsHTML(readDoc(sc));
+}
+function openDocEditor(id, type) {
+  const t = type === 'devis' ? 'devis' : 'facture';
+  const doc = id ? S.getDocument(id) : {
+    type: t, numero: S.nextDocNumero(t), date: new Date().toISOString().slice(0, 10),
+    client: {}, lignes: [], remise: '', tva_taux: '', acompte: '', notes: '',
+  };
+  if (!doc) return;
+  UI.openModal(UI.modalShell(id ? (doc.type === 'devis' ? 'Devis' : 'Facture') : (t === 'devis' ? 'Nouveau devis' : 'Nouvelle facture'),
+    UI.docFormFields(doc),
+    `<button class="btn btn--ghost" data-action="close-modal">Fermer</button>
+     <button class="btn" data-action="doc-save" data-id="${id || ''}">Enregistrer</button>`));
+  hydrateIcons($('#modal-root'));
+}
+function saveDocFromForm(el) {
+  const d = readDoc(docScope(el));
+  if (!d.lignes.length) { UI.toast('Ajoute au moins un article', 'err'); return null; }
+  return d.id ? S.updateDocument(d.id, d) : S.addDocument(d);
+}
+function printDoc(doc) { if (!doc) return; document.getElementById('print-area').innerHTML = UI.documentPrintHTML(doc); window.print(); }
+function shareDocWA(doc) {
+  if (!doc) return;
+  const p = S.getState().profil, t = S.documentTotals(doc), isFac = doc.type === 'facture';
+  const lignes = (doc.lignes || []).filter((l) => l.designation || l.qte || l.pu)
+    .map((l) => `• ${l.designation || 'Article'} : ${S.formatNombre(l.qte || 0)} × ${S.formatF(l.pu || 0)} = ${S.formatF((Number(l.qte) || 0) * (Number(l.pu) || 0))}`).join('\n');
+  const txt = `*${isFac ? 'FACTURE' : 'DEVIS'} ${doc.numero}*\n${p.nom_activite || ''}\n\n${isFac ? 'Facturé à' : 'Client'} : ${doc.client && doc.client.nom || '—'}\nDate : ${frDate(doc.date)}\n\n${lignes}\n${t.remise ? `\nRemise : − ${S.formatF(t.remise)}` : ''}${t.tva ? `\nTVA (${doc.tva_taux}%) : ${S.formatF(t.tva)}` : ''}\n*${isFac && t.acompte ? 'Net à payer' : 'Total'} : ${S.formatF(isFac ? t.net : t.total)}*${doc.notes ? `\n\n${doc.notes}` : ''}`;
+  const tel = (doc.client && doc.client.tel || '').replace(/[^0-9]/g, '');
+  window.open('https://wa.me/' + tel + '?text=' + encodeURIComponent(txt), '_blank');
 }
 // Rafraîchit uniquement le tableau de bord en conservant la position de défilement.
 function refreshDash() {
@@ -545,6 +647,32 @@ document.addEventListener('click', (e) => {
     case 'vf-preset': { venteFilter = Object.assign(venteFilter, { preset: el.dataset.preset }, venteRange(el.dataset.preset)); return refreshVentes(); }
     // historique dépenses — filtres
     case 'df-preset': { depFilter = Object.assign(depFilter, { preset: el.dataset.preset }, venteRange(el.dataset.preset)); return refreshDepenses(); }
+
+    // rapports — période + exports
+    case 'rap-gran': rapGran = el.dataset.gran; return refreshBilan();
+    case 'rap-pdf': return printRapport(S.rapportPeriode(rapGran, 0));
+    case 'rap-csv': { downloadFile(`rapport-${rapGran}-${new Date().toISOString().slice(0, 10)}.csv`, rapportCSV(S.rapportPeriode(rapGran, 0)), 'text/csv'); UI.toast('Rapport Excel téléchargé'); return; }
+    case 'rap-wa': return shareRapport(S.rapportPeriode(rapGran, 0));
+
+    // factures & devis
+    case 'doc-new': return openDocEditor(null, el.dataset.type);
+    case 'doc-open': return openDocEditor(id);
+    case 'doc-add-ligne': {
+      const sc = docScope(el); const d = readDoc(sc); d.lignes.push({ designation: '', qte: '', pu: '' });
+      const box = sc.querySelector('#dc-lignes'); box.innerHTML = UI.docLignesHTML(d.lignes); hydrateIcons(box); refreshDocTotals(sc); return;
+    }
+    case 'doc-del-ligne': {
+      const sc = docScope(el); const d = readDoc(sc); d.lignes.splice(Number(el.dataset.i), 1);
+      if (!d.lignes.length) d.lignes.push({ designation: '', qte: '', pu: '' });
+      const box = sc.querySelector('#dc-lignes'); box.innerHTML = UI.docLignesHTML(d.lignes); hydrateIcons(box); refreshDocTotals(sc); return;
+    }
+    case 'doc-set-statut': { const sc = docScope(el); const d = readDoc(sc); if (id) { S.updateDocument(id, Object.assign(d, { statut: el.dataset.statut })); openDocEditor(id); } return; }
+    case 'doc-save': { const s = saveDocFromForm(el); if (s) { UI.closeModal(); UI.toast(s.type === 'devis' ? 'Devis enregistré' : 'Facture enregistrée'); } return; }
+    case 'doc-save-pdf': { const s = saveDocFromForm(el); if (s) { UI.closeModal(); printDoc(s); } return; }
+    case 'doc-save-wa': { const s = saveDocFromForm(el); if (s) { UI.closeModal(); shareDocWA(s); } return; }
+    case 'doc-pdf': return printDoc(S.getDocument(id));
+    case 'doc-wa': return shareDocWA(S.getDocument(id));
+    case 'doc-del': return UI.confirmDialog({ title: 'Supprimer le document', message: 'Ce document sera définitivement supprimé. Continuer ?', danger: true, okLabel: 'Supprimer' }, () => { S.deleteDocument(id); UI.closeModal(); UI.toast('Document supprimé'); });
     case 'close-modal': return UI.closeModal();
     case 'confirm-ok': { const fn = $('#modal-root')._confirmOk; UI.closeModal(); if (fn) fn(); return; }
 
@@ -626,6 +754,7 @@ document.addEventListener('change', (e) => {
   else if (el.matches('[data-action="df-to"]')) { depFilter.to = el.value; depFilter.preset = 'custom'; refreshDepenses(); }
   else if (el.matches('[data-action="df-cat"]')) { depFilter.categorie = el.value; refreshDepenses(); }
   else if (el.matches('[data-action="df-search"]')) { depFilter.q = el.value; refreshDepenses(); }
+  else if (el.matches('[data-action="save-fisc"]')) { const f = el.dataset.field; if (f) S.setProfil({ [f]: (el.value || '').trim() }); }
 });
 // recherche « live » (chaque frappe) sans perdre le focus du champ
 document.addEventListener('input', (e) => {
@@ -646,11 +775,20 @@ document.addEventListener('input', (e) => {
       const s = document.querySelector('[data-action="df-search"]');
       if (s) { s.focus(); const v = s.value; s.setSelectionRange(v.length, v.length); }
     }, 220);
+  } else if (el.closest && el.closest('.docform')) {
+    // totaux facture/devis recalculés en direct à chaque frappe
+    refreshDocTotals(el.closest('.docform'));
   }
 });
 // Assistant : Entrée = envoyer
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && e.target && e.target.id === 'as-input') { e.preventDefault(); assistantAsk(e.target.value); }
+});
+// Sélection auto du contenu au focus des champs chiffrés d'une facture/devis
+// (pour que la frappe remplace la valeur par défaut au lieu de s'y ajouter).
+document.addEventListener('focusin', (e) => {
+  const el = e.target;
+  if (el && el.matches && el.matches('.docform input[type="number"]')) { try { el.select(); } catch (_) {} }
 });
 
 // ---------- Ripple sur TOUS les boutons (onde depuis le point touché) ----------

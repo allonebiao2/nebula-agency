@@ -16,6 +16,12 @@ create table if not exists public.profils (
 -- au cas où la table existe déjà d'une version antérieure :
 alter table public.profils add column if not exists objectif_benefice numeric default 0;
 alter table public.profils add column if not exists solde_initial numeric default 0;
+-- identité fiscale (imprimée sur les factures / devis) :
+alter table public.profils add column if not exists ifu       text default '';
+alter table public.profils add column if not exists rccm      text default '';
+alter table public.profils add column if not exists adresse   text default '';
+alter table public.profils add column if not exists tel_pro   text default '';
+alter table public.profils add column if not exists email_pro text default '';
 
 create table if not exists public.produits (
   id          uuid primary key,
@@ -74,6 +80,24 @@ create table if not exists public.credits (
 );
 create index if not exists credits_user_idx on public.credits (user_id);
 
+create table if not exists public.documents (
+  id          uuid primary key,
+  user_id     uuid not null references auth.users on delete cascade,
+  type        text not null default 'facture',            -- 'facture' | 'devis'
+  numero      text not null default '',
+  date        text not null default '',                   -- 'YYYY-MM-DD'
+  echeance    text default '',
+  client      jsonb not null default '{}'::jsonb,          -- {nom,tel,adresse}
+  lignes      jsonb not null default '[]'::jsonb,          -- [{designation,qte,pu}]
+  remise      numeric not null default 0,
+  tva_taux    numeric not null default 0,
+  acompte     numeric not null default 0,
+  notes       text default '',
+  statut      text not null default 'impayee',            -- facture: impayee|payee · devis: en_attente|accepte|refuse
+  created_at  timestamptz default now()
+);
+create index if not exists documents_user_idx on public.documents (user_id);
+
 -- ---------- Row-Level Security ----------
 alter table public.profils       enable row level security;
 alter table public.produits      enable row level security;
@@ -81,12 +105,13 @@ alter table public.charges_fixes enable row level security;
 alter table public.ventes        enable row level security;
 alter table public.depenses      enable row level security;
 alter table public.credits       enable row level security;
+alter table public.documents     enable row level security;
 
 -- Politiques : l'utilisateur ne touche que ses lignes.
 do $$
 declare t text;
 begin
-  foreach t in array array['profils','produits','charges_fixes','ventes','depenses','credits'] loop
+  foreach t in array array['profils','produits','charges_fixes','ventes','depenses','credits','documents'] loop
     execute format('drop policy if exists p_sel on public.%I;', t);
     execute format('drop policy if exists p_ins on public.%I;', t);
     execute format('drop policy if exists p_upd on public.%I;', t);
@@ -103,7 +128,7 @@ end $$;
 do $$
 declare t text;
 begin
-  foreach t in array array['profils','produits','charges_fixes','ventes','depenses','credits'] loop
+  foreach t in array array['profils','produits','charges_fixes','ventes','depenses','credits','documents'] loop
     begin
       execute format('alter publication supabase_realtime add table public.%I;', t);
     exception when duplicate_object then null;

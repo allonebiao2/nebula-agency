@@ -10,12 +10,13 @@ const nowISO = () => new Date().toISOString();
 // ---------- État ----------
 function emptyState() {
   return {
-    profil: { nom_activite: '', devise: DEVISE, solde_initial: 0 },
+    profil: { nom_activite: '', devise: DEVISE, solde_initial: 0, ifu: '', rccm: '', adresse: '', tel_pro: '', email_pro: '' },
     produits: [],        // {id, nom, modele, prix_vente, couts:[{id,libelle,montant}], archive, created_at}
     charges_fixes: [],   // {id, libelle, montant, created_at}  (mensuel, niveau activité)
     ventes: [],          // {id, produit_id, date, qte, prix_unitaire, cout_unitaire, created_at}
     depenses: [],        // {id, libelle, categorie, montant, date, created_at}  (sorties d'argent)
     credits: [],         // {id, client, tel, montant, paye, date, echeance, note}  (ventes à crédit)
+    documents: [],       // {id, type:'facture'|'devis', numero, date, echeance, client:{nom,tel,adresse}, lignes:[{designation,qte,pu}], remise, tva_taux, acompte, notes, statut, created_at}
   };
 }
 
@@ -62,11 +63,18 @@ export async function hydrateFromRemote() {
     state.ventes.forEach((v) => pushRemote('ventes', v));
     state.depenses.forEach((d) => pushRemote('depenses', d));
     state.credits.forEach((c) => pushRemote('credits', c));
+    state.documents.forEach((d) => pushRemote('documents', d));
     pushRemote('profils', { id: 'me', ...state.profil });
     return;
   }
   // Sinon : le cloud fait foi (déjà des données en ligne, ou local vide).
+  const localDocs = state.documents || [];
+  const docsUnavail = data._documentsUnavailable;
+  delete data._documentsUnavailable;
   state = Object.assign(emptyState(), data);
+  // filet : si la table documents n'existe pas encore côté cloud (migration non
+  // lancée), on NE perd PAS les factures/devis créés localement.
+  if (docsUnavail && localDocs.length) state.documents = localDocs;
   persistLocal();
   emit();
 }
@@ -702,6 +710,119 @@ export function creditsSummary() {
   return { impayes, total: impayes.reduce((s, c) => s + (Number(c.montant) || 0), 0), nb: impayes.length, nbTotal: state.credits.length };
 }
 
+// ---------- Documents (factures & devis pour les clients) ----------
+// Une facture/devis « propre » : identité vendeur (dont IFU/RCCM), client, numéro,
+// lignes détaillées, remise, TVA optionnelle, acompte, total + montant en lettres.
+export function getDocuments() {
+  return state.documents.slice().sort((a, b) =>
+    (b.date || '').localeCompare(a.date || '') || (new Date(b.created_at || 0) - new Date(a.created_at || 0)));
+}
+export function getDocument(id) { return state.documents.find((d) => d.id === id) || null; }
+
+export function nextDocNumero(type) {
+  const year = new Date().getFullYear();
+  const prefix = type === 'devis' ? 'DEV' : 'FAC';
+  const re = new RegExp('^' + prefix + '-' + year + '-(\\d+)$');
+  let max = 0;
+  state.documents.forEach((d) => { const m = (d.numero || '').match(re); if (m) max = Math.max(max, parseInt(m[1], 10)); });
+  return `${prefix}-${year}-${String(max + 1).padStart(4, '0')}`;
+}
+
+function normLignes(lignes) {
+  return (lignes || []).map((l) => ({
+    designation: (l.designation || '').trim(),
+    qte: Number(l.qte) || 0,
+    pu: Number(l.pu) || 0,
+  }));
+}
+function normClient(c) {
+  return { nom: (c && c.nom || '').trim(), tel: (c && c.tel || '').trim(), adresse: (c && c.adresse || '').trim() };
+}
+
+export function addDocument(doc = {}) {
+  const type = doc.type === 'devis' ? 'devis' : 'facture';
+  const d = {
+    id: uid(), type,
+    numero: doc.numero || nextDocNumero(type),
+    date: doc.date || _ymd2(new Date()),
+    echeance: doc.echeance || '',
+    client: normClient(doc.client),
+    lignes: normLignes(doc.lignes),
+    remise: Number(doc.remise) || 0,
+    tva_taux: Number(doc.tva_taux) || 0,
+    acompte: Number(doc.acompte) || 0,
+    notes: (doc.notes || '').trim(),
+    statut: doc.statut || (type === 'devis' ? 'en_attente' : 'impayee'),
+    created_at: nowISO(),
+  };
+  state.documents.push(d);
+  persistLocal(); pushRemote('documents', d); emit();
+  return d;
+}
+export function updateDocument(id, patch = {}) {
+  const d = state.documents.find((x) => x.id === id); if (!d) return null;
+  Object.assign(d, patch);
+  if (patch.lignes) d.lignes = normLignes(patch.lignes);
+  if (patch.client) d.client = normClient(Object.assign({}, d.client, patch.client));
+  ['remise', 'tva_taux', 'acompte'].forEach((k) => { if (patch[k] != null) d[k] = Number(patch[k]) || 0; });
+  persistLocal(); pushRemote('documents', d); emit();
+  return d;
+}
+export function deleteDocument(id) {
+  state.documents = state.documents.filter((d) => d.id !== id);
+  persistLocal(); delRemote('documents', id); emit();
+}
+
+export function documentTotals(doc) {
+  const sousTotal = (doc.lignes || []).reduce((s, l) => s + (Number(l.qte) || 0) * (Number(l.pu) || 0), 0);
+  const remise = Math.min(Number(doc.remise) || 0, sousTotal);
+  const baseHT = sousTotal - remise;
+  const tva = Math.round(baseHT * ((Number(doc.tva_taux) || 0) / 100));
+  const total = baseHT + tva;
+  const acompte = Math.min(Number(doc.acompte) || 0, total);
+  const net = total - acompte;
+  return { sousTotal, remise, baseHT, tva, total, acompte, net };
+}
+export function documentsSummary() {
+  const docs = state.documents;
+  const factures = docs.filter((d) => d.type === 'facture');
+  const impayees = factures.filter((d) => d.statut !== 'payee');
+  const totalImpaye = impayees.reduce((s, d) => s + documentTotals(d).net, 0);
+  const encaisse = factures.filter((d) => d.statut === 'payee').reduce((s, d) => s + documentTotals(d).total, 0);
+  return { total: docs.length, nbFactures: factures.length, nbDevis: docs.length - factures.length, nbImpayees: impayees.length, totalImpaye, encaisse };
+}
+
+// Montant en toutes lettres (français) — mention classique d'une facture normalisée.
+export function montantEnLettres(n) {
+  n = Math.round(Math.abs(Number(n) || 0));
+  if (n === 0) return 'zéro';
+  const U = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf', 'dix', 'onze', 'douze',
+    'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf'];
+  const DZ = ['', '', 'vingt', 'trente', 'quarante', 'cinquante', 'soixante', 'soixante', 'quatre-vingt', 'quatre-vingt'];
+  // inv = groupe suivi de « mille » (invariable) : « quatre-vingt mille », « cinq cent mille ».
+  function deux(x, inv) {
+    if (x < 20) return U[x];
+    const d = Math.floor(x / 10), u = x % 10;
+    if (d === 7 || d === 9) return DZ[d] + (d === 7 && u === 1 ? ' et ' : '-') + U[10 + u];
+    if (u === 1 && d !== 8) return DZ[d] + ' et un';
+    if (u > 0) return DZ[d] + '-' + U[u];
+    return DZ[d] + (d === 8 && !inv ? 's' : '');
+  }
+  function trois(x, inv) {
+    const c = Math.floor(x / 100), r = x % 100; let s = '';
+    if (c > 0) s = (c > 1 ? U[c] + ' ' : '') + 'cent' + (c > 1 && r === 0 && !inv ? 's' : '');
+    if (r > 0) s += (s ? ' ' : '') + deux(r, inv);
+    return s;
+  }
+  const g = Math.floor(n / 1e9), m = Math.floor((n % 1e9) / 1e6), k = Math.floor((n % 1e6) / 1000), r = n % 1000;
+  const parts = [];
+  if (g > 0) parts.push(trois(g, false) + ' milliard' + (g > 1 ? 's' : ''));
+  if (m > 0) parts.push(trois(m, false) + ' million' + (m > 1 ? 's' : ''));
+  if (k > 0) parts.push((k === 1 ? '' : trois(k, true) + ' ') + 'mille');
+  if (r > 0) parts.push(trois(r, false));
+  return parts.join(' ').replace(/\s+/g, ' ').trim();
+}
+
 // ---------- Meilleur jour de la semaine (8 dernières semaines) ----------
 export function meilleurJour({ semaines = 8 } = {}) {
   const debut = Date.now() - semaines * 7 * DAY_MS;
@@ -768,6 +889,23 @@ export function assistantRepondre(question) {
   if (has('vendu', 'chiffre', ' ca ', 'ventes', 'encaiss', 'recette')) return `${cap(perLbl)}, tu as vendu pour ${formatF(t.revenu)} (${formatNombre(t.unites)} unité${t.unites > 1 ? 's' : ''}).`;
   if (has('bonjour', 'salut', 'bonsoir', 'coucou', 'aide', 'help')) return "Bonjour ! Je suis ton assistant. Pose-moi une question sur ton commerce — tape-la ou touche une suggestion.";
   return "Je réponds sur tes chiffres. Essaie : « Combien j'ai gagné cette semaine ? », « Quel produit rapporte le plus ? », « Quel jour je vends le mieux ? », « Qui me doit de l'argent ? », « Mes prévisions ? ».";
+}
+
+// ---------- Rapport d'une période (résumé exportable PDF / Excel / WhatsApp) ----------
+export function rapportPeriode(gran = 'jour', offset = 0) {
+  const P = periodInfo(gran, offset);
+  const D = serieDashboard(gran, offset);
+  const hd = historiqueDepenses({ from: _ymd2(P.start), to: _ymd2(new Date(P.end.getTime() - 1)) });
+  const tops = topProduitsPeriode(gran, offset, 5);
+  const t = D.totals;
+  return {
+    gran, label: D.label, unit: D.unit,
+    ca: t.revenu, cout: t.cout, marge: t.marge, charges: t.charges,
+    depenses: hd.total, depensesCat: hd.parCategorie,
+    benefice: t.benefice, tauxMarge: t.tauxMarge,
+    unites: t.unites, nbVentes: t.nbTx,
+    caisse: soldeCaisse(), objectif: getObjectif(), tops,
+  };
 }
 
 // ---------- Devise (multi-devises) ----------

@@ -675,9 +675,10 @@ input { font-family: inherit; }
 /* ---------- Print (bilan) ---------- */
 .print-area { display: none; }
 @media print {
+  html, body { background: #fff !important; }
   #app, .modal-root, .toast-root { display: none !important; }
   body::before, body::after { display: none !important; }
-  .print-area { display: block; padding: 20px; color: #111; font-family: var(--font); }
+  .print-area { display: block; padding: 20px; color: #111; font-family: var(--font); background: #fff; }
   .print-area h1 { font-size: 20px; margin: 0 0 4px; }
   .print-area .p-sub { color: #666; font-size: 12px; margin: 0 0 16px; }
   .print-area table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -1006,3 +1007,121 @@ input { font-family: inherit; }
 /* aimanté (PC) : propriété translate (n'entre pas en conflit avec transform :active) */
 .btn, .qsell { transition: transform .16s var(--ease), box-shadow .25s var(--ease), filter .2s, border-color .2s, translate .3s var(--ease); }
 @media (prefers-reduced-motion: reduce) { .ripple { display: none !important; } }
+
+/* ---------- Rapport (écran Bilan) ---------- */
+.rapportcard .vchips { margin-bottom: 14px; }
+.rsum { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 138px), 1fr)); gap: 1px; background: var(--glass-brd); border-radius: var(--r); overflow: hidden; margin-bottom: 14px; box-shadow: inset 0 1px 0 var(--glass-hi); }
+.rstat { background: var(--glass-fill); padding: 12px 14px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.rstat__lbl { font-size: 11px; font-weight: 600; color: var(--ink-faint); text-transform: uppercase; letter-spacing: .03em; }
+.rstat__val { font-family: var(--mono); font-size: 18px; font-weight: 700; letter-spacing: -.02em; overflow: hidden; text-overflow: ellipsis; }
+.rstat__val.pos { color: var(--pos-d); } .rstat__val.neg { color: var(--dng); }
+.rexport { display: flex; gap: 8px; flex-wrap: wrap; }
+.rexport .btn { flex: 1; min-width: 96px; justify-content: center; }
+
+/* ---------- Factures & devis (écran Bilan + éditeur) ---------- */
+.doccta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.doccta .btn { flex: 1; min-width: 148px; justify-content: center; }
+.btn--doc { color: var(--acc-d); background: color-mix(in srgb, var(--acc) 26%, var(--glass-fill));
+  border-color: color-mix(in srgb, var(--acc) 66%, transparent);
+  box-shadow: inset 0 1px 0 var(--glass-hi), 0 10px 30px -8px var(--glow); }
+.btn--doc:hover { filter: brightness(1.06) saturate(1.05); }
+.doccard__due { color: var(--dng); display: inline-flex; align-items: center; gap: 5px; }
+.doccard__due [data-icon], .doccard__due svg { width: 14px; height: 14px; }
+
+.doclist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+.docrow { display: flex; align-items: stretch; gap: 6px; }
+.docrow--empty { display: block; color: var(--ink-faint); font-size: 13.5px; padding: 16px 6px; text-align: center; }
+.docrow__main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; text-align: left; cursor: pointer;
+  background: var(--glass-fill); border: 1px solid var(--glass-brd); border-radius: var(--r-sm); padding: 10px 12px; color: inherit;
+  box-shadow: inset 0 1px 0 var(--glass-hi); transition: border-color .18s, background .18s, transform .12s; }
+.docrow__main:hover { border-color: color-mix(in srgb, var(--acc) 30%, var(--glass-brd)); background: var(--surface-2); }
+.docrow__main:active { transform: scale(.99); }
+.docrow__badge { flex: none; font-size: 9.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; padding: 3px 7px; border-radius: 999px; }
+.docrow__badge.is-fac { background: var(--acc-soft); color: var(--acc-d); }
+.docrow__badge.is-dev { background: rgba(125,140,160,.14); color: var(--ink-soft); }
+.docrow__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.docrow__body strong { font-family: var(--mono); font-size: 13px; font-weight: 700; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.docrow__body small { color: var(--ink-faint); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.docrow__amt { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; font-family: var(--mono); font-weight: 700; font-size: 13.5px; white-space: nowrap; }
+.docstat { font-size: 9px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; font-style: normal; padding: 2px 6px; border-radius: 999px; }
+.docstat--due { background: var(--dng-soft); color: var(--dng); }
+.docstat--paid { background: var(--pos-soft); color: var(--pos-d); }
+.docstat--wait { background: var(--acc-soft); color: var(--acc-d); }
+.docstat--no { background: rgba(125,140,160,.14); color: var(--ink-faint); }
+.docrow__acts { flex: none; display: flex; flex-direction: column; gap: 6px; }
+.doc-btn { flex: 1; display: grid; place-items: center; width: 40px; min-height: 34px; border: 1px solid var(--glass-brd); border-radius: var(--r-sm);
+  background: var(--glass-fill); color: var(--ink-soft); cursor: pointer; transition: color .18s, border-color .18s; box-shadow: inset 0 1px 0 var(--glass-hi); }
+.doc-btn svg { width: 17px; height: 17px; }
+.doc-btn:hover { color: var(--acc-d); border-color: color-mix(in srgb, var(--acc) 34%, var(--glass-brd)); }
+.doc-btn--wa:hover { color: var(--pos-d); border-color: color-mix(in srgb, var(--pos) 40%, var(--glass-brd)); }
+
+/* éditeur (modale) */
+.docform__lead { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.docform__lead strong { font-family: var(--mono); font-size: 15px; }
+.docform__sec { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-faint); margin: 18px 0 9px; }
+.opt { color: var(--ink-faint); font-weight: 500; font-size: .82em; }
+.docstat-ctrl { display: flex; align-items: center; justify-content: space-between; gap: 10px 14px; margin-bottom: 14px; flex-wrap: wrap; }
+.docstat-ctrl__lbl { font-size: 12px; color: var(--ink-faint); font-weight: 600; }
+.seg--stat { display: flex; gap: 8px; flex: 1; min-width: 190px; }
+.seg--stat .seg__b { flex: 1; }
+
+.doclines { display: flex; flex-direction: column; gap: 8px; }
+.dline { background: var(--glass-fill); border: 1px solid var(--glass-brd); border-radius: var(--r-sm); padding: 8px; display: flex; flex-direction: column; gap: 7px; box-shadow: inset 0 1px 0 var(--glass-hi); }
+.dline__des { width: 100%; }
+.dline__nums { display: flex; align-items: center; gap: 6px; }
+.dline__q { width: 60px; flex: none; text-align: right; }
+.dline__pu { width: 90px; flex: none; text-align: right; }
+.dline__x { color: var(--ink-faint); font-size: 13px; }
+.dline__tot { flex: 1; text-align: right; font-family: var(--mono); font-weight: 700; font-size: 13.5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.dline__del { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border: none; background: transparent; color: var(--ink-faint); cursor: pointer; border-radius: 9px; transition: color .15s, background .15s; }
+.dline__del:hover { color: var(--dng); background: var(--dng-soft); }
+.dline__del svg { width: 16px; height: 16px; }
+.docadd { margin: 10px 0 2px; }
+
+.dtot { margin: 16px 0 2px; border-top: 1px dashed var(--glass-brd); padding-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+.dtot__row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 13.5px; color: var(--ink-soft); }
+.dtot__v { font-family: var(--mono); font-weight: 600; white-space: nowrap; }
+.dtot__row.is-neg .dtot__v { color: var(--dng); }
+.dtot__row--total { margin-top: 4px; padding-top: 10px; border-top: 1px solid var(--glass-brd); font-size: 15px; color: var(--ink); font-weight: 700; }
+.dtot__row--total .dtot__v { color: var(--acc-d); font-size: 17px; }
+.dtot__row--net { font-size: 15px; color: var(--ink); font-weight: 700; }
+.dtot__row--net .dtot__v { color: var(--pos-d); }
+
+.docactions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+.docactions .btn { flex: 1; min-width: 150px; justify-content: center; }
+.docdel { width: 100%; justify-content: center; margin-top: 10px; }
+
+/* ---------- Impression facture / devis (A4) ---------- */
+@media print {
+  .print-area .facdoc { color: #14110c; font-family: var(--font); font-size: 12px; line-height: 1.5; }
+  .print-area .facdoc .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .print-area .fd-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; border-bottom: 2px solid #14110c; padding-bottom: 14px; margin-bottom: 18px; }
+  .print-area .fd-vendor h2 { font-size: 18px; margin: 0 0 4px; }
+  .print-area .fd-vendor p { margin: 1px 0; color: #4a4034; font-size: 11px; }
+  .print-area .fd-fisc { margin-top: 6px; font-weight: 700; color: #14110c; }
+  .print-area .fd-meta { text-align: right; flex: none; }
+  .print-area .fd-meta h1 { font-size: 26px; letter-spacing: .06em; margin: 0 0 6px; color: #b46810; }
+  .print-area .fd-meta p { margin: 1px 0; font-size: 11px; color: #4a4034; }
+  .print-area .fd-meta .fd-num { font-family: var(--mono); font-weight: 700; color: #14110c; font-size: 13px; }
+  .print-area .fd-client { background: #f6f2ea; border: 1px solid #e6ddcd; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 1px; }
+  .print-area .fd-client__lbl { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: #8a7f6d; font-weight: 700; }
+  .print-area .fd-client strong { font-size: 14px; }
+  .print-area .fd-client span { font-size: 11px; color: #4a4034; }
+  .print-area .fd-tbl { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
+  .print-area .fd-tbl thead th { background: #14110c; color: #fff; font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; padding: 8px 10px; text-align: right; border: none; }
+  .print-area .fd-tbl thead th.fd-l { text-align: left; }
+  .print-area .fd-tbl td { padding: 8px 10px; border: none; border-bottom: 1px solid #e6ddcd; font-size: 11.5px; text-align: right; }
+  .print-area .fd-tbl td.fd-l { text-align: left; }
+  .print-area .fd-bottom { display: flex; justify-content: space-between; gap: 24px; align-items: flex-start; }
+  .print-area .fd-left { flex: 1; }
+  .print-area .fd-lettres { font-size: 11px; background: #faf7f1; border: 1px solid #e6ddcd; padding: 8px 12px; border-radius: 6px; }
+  .print-area .fd-note { font-size: 11px; color: #4a4034; margin-top: 10px; }
+  .print-area .fd-sign { margin-top: 28px; }
+  .print-area .fd-sign span { font-size: 11px; color: #8a7f6d; border-top: 1px solid #b9ad98; padding-top: 6px; display: inline-block; min-width: 170px; }
+  .print-area .fd-tot { flex: none; width: 244px; }
+  .print-area .fd-tot__row { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; font-size: 12px; border-bottom: 1px solid #eee7d8; }
+  .print-area .fd-tot__row span:last-child { font-variant-numeric: tabular-nums; font-weight: 600; }
+  .print-area .fd-tot__row--total { border-top: 2px solid #14110c; border-bottom: 2px solid #14110c; margin-top: 4px; font-size: 15px; font-weight: 800; padding: 8px 0; }
+  .print-area .fd-tot__row--net { font-size: 14px; font-weight: 800; color: #0a6a49; border-bottom: none; }
+  .print-area .fd-legal { margin-top: 26px; text-align: center; font-size: 9.5px; color: #a99c86; border-top: 1px solid #e6ddcd; padding-top: 10px; }
+}

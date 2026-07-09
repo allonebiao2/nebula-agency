@@ -7,7 +7,8 @@ import {
   statistiques, analyseBusiness,
   serieDashboard, topProduitsPeriode, getObjectif, resumeJour, historiqueVentes,
   historiqueDepenses, DEPENSE_CATS, previsions, getDevise, creditsSummary,
-  ASSISTANT_SUGGESTIONS,
+  ASSISTANT_SUGGESTIONS, rapportPeriode,
+  getDocuments, documentTotals, documentsSummary, montantEnLettres,
   formatF, formatNombre, MOIS_LONGS,
 } from './store.js';
 import { chartBeneficeMensuel, chartEvolution, miniSpark, progressRing, chartHero, chartDonut, sparklineRaw } from './charts.js';
@@ -584,7 +585,7 @@ export function rapportHTML(a) {
 }
 
 // ============ ÉCRAN BILAN ============
-export function viewBilanHTML() {
+export function viewBilanHTML(rapGran = 'jour') {
   const produits = getProduits();
   const b = bilanMois();
   const serie = serieMensuelle(6);
@@ -622,8 +623,32 @@ export function viewBilanHTML() {
     ? `<span class="trend ${tri.tendance > 0 ? 'pos' : 'neg'}"><span data-icon="${tri.tendance > 0 ? 'arrowUp' : 'arrowDown'}"></span> ${tri.tendance > 0 ? '+' : ''}${formatF(tri.tendance)} entre le début et la fin du trimestre</span>`
     : '';
 
+  // ---- Panneau RAPPORT (période + résumé + exports PDF/Excel/WhatsApp) ----
+  const RG = rapportPeriode(rapGran, 0);
+  const rchip = (g, l) => `<button class="vchip ${rapGran === g ? 'is-on' : ''}" data-action="rap-gran" data-gran="${g}">${l}</button>`;
+  const rstat = (lbl, val, cls = '') => `<div class="rstat"><span class="rstat__lbl">${lbl}</span><span class="rstat__val ${cls}">${val}</span></div>`;
+  const rapportPanel = `<article class="panel rapportcard">
+    <div class="panel__head"><h2>Rapport</h2><span class="panel__sub">${esc(RG.label)}</span></div>
+    <div class="vchips">${rchip('jour', 'Jour')}${rchip('semaine', 'Semaine')}${rchip('mois', 'Mois')}${rchip('annee', 'Année')}</div>
+    <div class="rsum">
+      ${rstat("Chiffre d'affaires", formatF(RG.ca))}
+      ${rstat('Dépenses', formatF(RG.depenses), RG.depenses > 0 ? 'neg' : '')}
+      ${rstat('Bénéfice net', formatF(RG.benefice), RG.benefice >= 0 ? 'pos' : 'neg')}
+      ${rstat('Solde de caisse', formatF(RG.caisse))}
+      ${rstat('Ventes', formatNombre(RG.nbVentes))}
+      ${rstat('Taux de marge', Math.round(RG.tauxMarge * 100) + ' %')}
+    </div>
+    <div class="rexport">
+      <button class="btn" data-action="rap-pdf"><span data-icon="print"></span> PDF</button>
+      <button class="btn btn--ghost" data-action="rap-csv"><span data-icon="download"></span> Excel</button>
+      <button class="btn btn--ghost" data-action="rap-wa"><span data-icon="whatsapp"></span> WhatsApp</button>
+    </div>
+  </article>`;
+
   return `<section class="view">
     ${sectionTitle('Bilan', moisLabel(mk))}
+    ${rapportPanel}
+    ${documentsPanelHTML()}
     ${enveloppesHTML(b)}
     ${statsHTML(stats)}
     ${rapportHTML(analyse)}
@@ -655,6 +680,197 @@ export function viewBilanHTML() {
       <ul class="perflist"><li class="perf perf--head"><span>Produit</span><span>Marge unité</span><span>Seuil/mois</span></li>${perf}</ul>
     </div>
   </section>`;
+}
+
+// ============ FACTURES & DEVIS ============
+function docCur() { return (CURRENCIES[getDevise()] || CURRENCIES.F).symbol; }
+function fmtDateFr(ymd) {
+  if (!ymd) return '';
+  const m = String(ymd).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return `${m[3]}/${m[2]}/${m[1]}`;
+  const d = new Date(ymd); if (isNaN(d)) return String(ymd);
+  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+}
+function capFirst(s) { s = String(s || ''); return s.charAt(0).toUpperCase() + s.slice(1); }
+function docStatut(d) {
+  if (d.type === 'facture') return d.statut === 'payee' ? { label: 'Payée', cls: 'paid' } : { label: 'Impayée', cls: 'due' };
+  if (d.statut === 'accepte') return { label: 'Accepté', cls: 'paid' };
+  if (d.statut === 'refuse') return { label: 'Refusé', cls: 'no' };
+  return { label: 'En attente', cls: 'wait' };
+}
+
+// Panneau « Factures & devis » (écran Bilan)
+export function documentsPanelHTML() {
+  const s = documentsSummary();
+  const docs = getDocuments().slice(0, 6);
+  const rows = docs.length
+    ? docs.map(docRowHTML).join('')
+    : `<li class="docrow docrow--empty">Aucun document pour l'instant. Crée une facture ou un devis pour un client.</li>`;
+  const sub = s.nbImpayees
+    ? `<span class="panel__sub doccard__due"><span data-icon="alert"></span> ${s.nbImpayees} impayée${s.nbImpayees > 1 ? 's' : ''} · ${formatF(s.totalImpaye)}</span>`
+    : `<span class="panel__sub">Documents propres pour tes clients</span>`;
+  return `<article class="panel doccard">
+    <div class="panel__head"><h2>Factures &amp; devis</h2>${sub}</div>
+    <div class="doccta">
+      <button class="btn btn--doc" data-action="doc-new" data-type="facture"><span data-icon="receipt"></span> Nouvelle facture</button>
+      <button class="btn btn--ghost" data-action="doc-new" data-type="devis"><span data-icon="doc"></span> Nouveau devis</button>
+    </div>
+    <ul class="doclist">${rows}</ul>
+  </article>`;
+}
+function docRowHTML(d) {
+  const t = documentTotals(d);
+  const isFac = d.type === 'facture';
+  const st = docStatut(d);
+  return `<li class="docrow">
+    <button class="docrow__main" data-action="doc-open" data-id="${d.id}">
+      <span class="docrow__badge ${isFac ? 'is-fac' : 'is-dev'}">${isFac ? 'Facture' : 'Devis'}</span>
+      <span class="docrow__body"><strong>${esc(d.numero)}</strong><small>${esc(d.client && d.client.nom || 'Client')} · ${fmtDateFr(d.date)}</small></span>
+      <span class="docrow__amt">${formatF(t.total)}<em class="docstat docstat--${st.cls}">${st.label}</em></span>
+    </button>
+    <div class="docrow__acts">
+      <button class="doc-btn" data-action="doc-pdf" data-id="${d.id}" title="Aperçu / PDF" aria-label="Aperçu ou PDF"><span data-icon="print"></span></button>
+      <button class="doc-btn doc-btn--wa" data-action="doc-wa" data-id="${d.id}" title="Envoyer par WhatsApp" aria-label="Envoyer par WhatsApp"><span data-icon="whatsapp"></span></button>
+    </div>
+  </li>`;
+}
+
+// Éditeur (corps de la modale)
+export function docFormFields(doc) {
+  const isFac = doc.type === 'facture';
+  const cur = docCur();
+  const hasId = Boolean(doc.id);
+  const lignes = (doc.lignes && doc.lignes.length) ? doc.lignes : [{ designation: '', qte: 1, pu: 0 }];
+  const statutCtrl = hasId ? `<div class="docstat-ctrl">
+      <span class="docstat-ctrl__lbl">Statut</span>
+      <div class="seg seg--stat">${(isFac
+        ? [['impayee', 'Impayée'], ['payee', 'Payée']]
+        : [['en_attente', 'En attente'], ['accepte', 'Accepté'], ['refuse', 'Refusé']]
+      ).map(([v, l]) => `<button class="seg__b ${doc.statut === v ? 'is-on' : ''}" data-action="doc-set-statut" data-id="${doc.id}" data-statut="${v}">${l}</button>`).join('')}</div>
+    </div>` : '';
+  return `<div class="docform" data-type="${doc.type}" data-id="${doc.id || ''}" data-numero="${esc(doc.numero || '')}">
+    <div class="docform__lead"><span class="docrow__badge ${isFac ? 'is-fac' : 'is-dev'}">${isFac ? 'Facture' : 'Devis'}</span><strong>${esc(doc.numero || '')}</strong></div>
+    ${statutCtrl}
+    <div class="field"><label for="dc-client">Client</label>
+      <input id="dc-client" class="input" data-df="nom" value="${esc(doc.client && doc.client.nom || '')}" placeholder="Nom du client" autocomplete="off"></div>
+    <div class="grid2">
+      <div class="field"><label for="dc-tel">Téléphone / WhatsApp</label>
+        <input id="dc-tel" class="input" type="tel" inputmode="tel" data-df="tel" value="${esc(doc.client && doc.client.tel || '')}" placeholder="Ex. 22997000000"></div>
+      <div class="field"><label for="dc-adr">Adresse <span class="opt">(option)</span></label>
+        <input id="dc-adr" class="input" data-df="adresse" value="${esc(doc.client && doc.client.adresse || '')}" placeholder="Ville / quartier"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label for="dc-date">Date</label>
+        <input id="dc-date" class="input" type="date" data-df="date" value="${esc(doc.date || '')}"></div>
+      <div class="field"><label for="dc-ech">${isFac ? 'Échéance' : 'Valable jusqu\'au'} <span class="opt">(option)</span></label>
+        <input id="dc-ech" class="input" type="date" data-df="echeance" value="${esc(doc.echeance || '')}"></div>
+    </div>
+    <div class="docform__sec">Articles</div>
+    <div id="dc-lignes" class="doclines">${docLignesHTML(lignes)}</div>
+    <button class="btn btn--ghost btn--sm docadd" data-action="doc-add-ligne"><span data-icon="plus"></span> Ajouter une ligne</button>
+    <div class="grid2">
+      <div class="field"><label for="dc-remise">Remise <span class="opt">(${cur})</span></label>
+        <input id="dc-remise" class="input" type="number" inputmode="numeric" data-df="remise" value="${doc.remise || ''}" placeholder="0"></div>
+      <div class="field"><label for="dc-tva">TVA <span class="opt">(%)</span></label>
+        <input id="dc-tva" class="input" type="number" inputmode="decimal" data-df="tva_taux" value="${doc.tva_taux || ''}" placeholder="0"></div>
+    </div>
+    ${isFac ? `<div class="field"><label for="dc-acompte">Acompte déjà versé <span class="opt">(${cur})</span></label>
+      <input id="dc-acompte" class="input" type="number" inputmode="numeric" data-df="acompte" value="${doc.acompte || ''}" placeholder="0"></div>` : ''}
+    <div class="field"><label for="dc-notes">Note <span class="opt">(conditions, mode de paiement…)</span></label>
+      <textarea id="dc-notes" class="input" rows="2" data-df="notes" placeholder="Ex. Paiement Mobile Money au 97 00 00 00. Merci de votre confiance.">${esc(doc.notes || '')}</textarea></div>
+    <div id="dc-tot">${docTotalsHTML(doc)}</div>
+    <div class="docactions">
+      <button class="btn btn--ghost" data-action="doc-save-pdf" data-id="${doc.id || ''}"><span data-icon="print"></span> Aperçu / PDF</button>
+      <button class="btn btn--doc" data-action="doc-save-wa" data-id="${doc.id || ''}"><span data-icon="whatsapp"></span> Enregistrer &amp; envoyer</button>
+    </div>
+    ${hasId ? `<button class="btn btn--danger-ghost btn--sm docdel" data-action="doc-del" data-id="${doc.id}"><span data-icon="trash"></span> Supprimer ce document</button>` : ''}
+  </div>`;
+}
+export function docLignesHTML(lignes) {
+  return lignes.map((l, i) => {
+    const montant = (Number(l.qte) || 0) * (Number(l.pu) || 0);
+    return `<div class="dline" data-i="${i}">
+      <input class="input dline__des" data-dl="designation" value="${esc(l.designation || '')}" placeholder="Désignation (ex. Robe pagne cousue main)" autocomplete="off">
+      <div class="dline__nums">
+        <input class="input dline__q" type="number" inputmode="numeric" data-dl="qte" value="${l.qte != null ? l.qte : ''}" placeholder="Qté" aria-label="Quantité">
+        <span class="dline__x">×</span>
+        <input class="input dline__pu" type="number" inputmode="numeric" data-dl="pu" value="${l.pu != null ? l.pu : ''}" placeholder="P.U." aria-label="Prix unitaire">
+        <span class="dline__tot" data-dl-tot>${formatF(montant)}</span>
+        <button class="dline__del" data-action="doc-del-ligne" data-i="${i}" title="Retirer la ligne" aria-label="Retirer la ligne"><span data-icon="close"></span></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+export function docTotalsHTML(doc) {
+  const t = documentTotals(doc);
+  const isFac = doc.type === 'facture';
+  const row = (l, v, cls = '') => `<div class="dtot__row ${cls}"><span>${l}</span><span class="dtot__v">${formatF(v)}</span></div>`;
+  return `<div class="dtot">
+    ${row('Sous-total', t.sousTotal)}
+    ${t.remise ? row('Remise', -t.remise, 'is-neg') : ''}
+    ${t.tva ? row(`TVA (${doc.tva_taux}%)`, t.tva) : ''}
+    ${row('Total', t.total, 'dtot__row--total')}
+    ${isFac && t.acompte ? row('Acompte versé', -t.acompte, 'is-neg') : ''}
+    ${isFac && t.acompte ? row('Net à payer', t.net, 'dtot__row--net') : ''}
+  </div>`;
+}
+
+// Mise en page imprimable (A4) — facture / devis « propre »
+export function documentPrintHTML(doc) {
+  const p = getState().profil;
+  const t = documentTotals(doc);
+  const isFac = doc.type === 'facture';
+  const titre = isFac ? 'FACTURE' : 'DEVIS';
+  const curLong = getDevise() === 'F' ? 'francs CFA' : docCur();
+  const lignes = (doc.lignes || []).filter((l) => l.designation || l.qte || l.pu).map((l) => {
+    const m = (Number(l.qte) || 0) * (Number(l.pu) || 0);
+    return `<tr><td class="fd-l">${esc(l.designation || '')}</td><td class="num">${formatNombre(l.qte || 0)}</td><td class="num">${formatF(l.pu || 0)}</td><td class="num">${formatF(m)}</td></tr>`;
+  }).join('');
+  const lettres = capFirst(montantEnLettres(t.total)) + ' ' + curLong;
+  const fisc = [p.ifu ? `IFU : ${esc(p.ifu)}` : '', p.rccm ? `RCCM : ${esc(p.rccm)}` : ''].filter(Boolean).join('&nbsp;·&nbsp;');
+  return `<div class="facdoc">
+    <header class="fd-head">
+      <div class="fd-vendor">
+        <h2>${esc(p.nom_activite || 'Mon activité')}</h2>
+        ${p.adresse ? `<p>${esc(p.adresse)}</p>` : ''}
+        ${p.tel_pro ? `<p>Tél : ${esc(p.tel_pro)}</p>` : ''}
+        ${p.email_pro ? `<p>${esc(p.email_pro)}</p>` : ''}
+        ${fisc ? `<p class="fd-fisc">${fisc}</p>` : ''}
+      </div>
+      <div class="fd-meta">
+        <h1>${titre}</h1>
+        <p class="fd-num">N° ${esc(doc.numero)}</p>
+        <p>Date : ${fmtDateFr(doc.date)}</p>
+        ${doc.echeance ? `<p>${isFac ? 'Échéance' : 'Valable jusqu\'au'} : ${fmtDateFr(doc.echeance)}</p>` : ''}
+      </div>
+    </header>
+    <section class="fd-client">
+      <span class="fd-client__lbl">${isFac ? 'Facturé à' : 'Client'}</span>
+      <strong>${esc(doc.client && doc.client.nom || '—')}</strong>
+      ${doc.client && doc.client.tel ? `<span>${esc(doc.client.tel)}</span>` : ''}
+      ${doc.client && doc.client.adresse ? `<span>${esc(doc.client.adresse)}</span>` : ''}
+    </section>
+    <table class="fd-tbl">
+      <thead><tr><th class="fd-l">Désignation</th><th class="num">Qté</th><th class="num">P.U.</th><th class="num">Montant</th></tr></thead>
+      <tbody>${lignes || '<tr><td colspan="4" class="fd-l">—</td></tr>'}</tbody>
+    </table>
+    <div class="fd-bottom">
+      <div class="fd-left">
+        <p class="fd-lettres"><strong>Arrêté${isFac ? ' la présente facture' : ' le présent devis'} à la somme de :</strong><br>${lettres}.</p>
+        ${doc.notes ? `<p class="fd-note">${esc(doc.notes)}</p>` : ''}
+        <div class="fd-sign"><span>Signature &amp; cachet</span></div>
+      </div>
+      <div class="fd-tot">
+        <div class="fd-tot__row"><span>Sous-total</span><span>${formatF(t.sousTotal)}</span></div>
+        ${t.remise ? `<div class="fd-tot__row"><span>Remise</span><span>− ${formatF(t.remise)}</span></div>` : ''}
+        ${t.tva ? `<div class="fd-tot__row"><span>TVA (${doc.tva_taux}%)</span><span>${formatF(t.tva)}</span></div>` : ''}
+        <div class="fd-tot__row fd-tot__row--total"><span>Total</span><span>${formatF(t.total)}</span></div>
+        ${isFac && t.acompte ? `<div class="fd-tot__row"><span>Acompte versé</span><span>− ${formatF(t.acompte)}</span></div>` : ''}
+        ${isFac && t.acompte ? `<div class="fd-tot__row fd-tot__row--net"><span>Net à payer</span><span>${formatF(t.net)}</span></div>` : ''}
+      </div>
+    </div>
+    <p class="fd-legal">${isFac ? 'Facture' : 'Devis'} n° ${esc(doc.numero)} — établi avec Boussole.</p>
+  </div>`;
 }
 
 // ============ ÉCRAN RÉGLAGES ============
@@ -694,6 +910,24 @@ export function viewReglagesHTML(cloud) {
         <select id="rg-devise" class="input" data-action="save-devise">
           ${Object.keys(CURRENCIES).map((code) => `<option value="${code}" ${getDevise() === code ? 'selected' : ''}>${esc(CURRENCIES[code].label)}</option>`).join('')}
         </select></div>
+    </div>
+    <div class="panel">
+      <div class="panel__head"><h2>Identité pour tes factures</h2><span class="panel__sub">imprimée sur chaque facture &amp; devis</span></div>
+      <div class="field"><label for="rg-adresse">Adresse</label>
+        <input id="rg-adresse" class="input" value="${esc(st.profil.adresse || '')}" data-action="save-fisc" data-field="adresse" placeholder="Ex. Cotonou, Haie-Vive"></div>
+      <div class="grid2">
+        <div class="field"><label for="rg-telpro">Téléphone</label>
+          <input id="rg-telpro" class="input" type="tel" inputmode="tel" value="${esc(st.profil.tel_pro || '')}" data-action="save-fisc" data-field="tel_pro" placeholder="Ex. 97 00 00 00"></div>
+        <div class="field"><label for="rg-mailpro">E-mail <span class="opt">(option)</span></label>
+          <input id="rg-mailpro" class="input" type="email" value="${esc(st.profil.email_pro || '')}" data-action="save-fisc" data-field="email_pro" placeholder="toi@exemple.com"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label for="rg-ifu">IFU <span class="opt">(option)</span></label>
+          <input id="rg-ifu" class="input" inputmode="numeric" value="${esc(st.profil.ifu || '')}" data-action="save-fisc" data-field="ifu" placeholder="N° IFU"></div>
+        <div class="field"><label for="rg-rccm">RCCM <span class="opt">(option)</span></label>
+          <input id="rg-rccm" class="input" value="${esc(st.profil.rccm || '')}" data-action="save-fisc" data-field="rccm" placeholder="N° RCCM"></div>
+      </div>
+      <div class="panel__note">Renseigne au moins ton adresse et ton téléphone. L'<strong>IFU</strong> apparaît sur la facture pour la rendre officielle.</div>
     </div>
     <div class="panel">
       <div class="panel__head"><h2>Produits</h2><button class="btn btn--sm" data-action="add-produit"><span data-icon="plus"></span> Ajouter</button></div>
