@@ -6,7 +6,8 @@ import {
   bilanMois, ventesDuMois, serieMensuelle, trimestreDe, currentMonthKey,
   statistiques, analyseBusiness,
   serieDashboard, topProduitsPeriode, getObjectif, resumeJour, historiqueVentes,
-  historiqueDepenses, DEPENSE_CATS, previsions, getDevise,
+  historiqueDepenses, DEPENSE_CATS, previsions, getDevise, creditsSummary,
+  ASSISTANT_SUGGESTIONS,
   formatF, formatNombre, MOIS_LONGS,
 } from './store.js';
 import { chartBeneficeMensuel, chartEvolution, miniSpark, progressRing, chartHero, chartDonut, sparklineRaw } from './charts.js';
@@ -33,6 +34,7 @@ export function topbarHTML(cloud, theme = 'light') {
       <div class="brand__txt"><span class="brand__name">${esc(APP_NAME)}</span><span class="brand__sub">${esc(nom)}</span></div>
     </div>
     <div class="topbar__actions">
+      <button class="chip chip--icon chip--assist" data-action="open-assistant" title="Assistant" aria-label="Assistant"><span class="chip__ic" data-icon="spark"></span></button>
       <button class="chip chip--icon" data-action="toggle-theme" title="Thème clair / sombre" aria-label="Changer de thème"><span class="chip__ic" data-icon="${theme === 'dark' ? 'sun' : 'moon'}"></span></button>
       <button class="chip chip--icon" data-action="open-tuto" title="Comment ça marche" aria-label="Aide"><span class="chip__ic" data-icon="help"></span></button>
       ${cloudBtn}
@@ -308,6 +310,16 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
       : `Tu perds ~<b>${formatF(-P2.avgJour)}</b>/jour. Baisse une dépense ou pousse les ventes.`}</p>
   </article>` : '';
 
+  // ---- CRÉDITS (clients qui doivent) ----
+  const cs = creditsSummary();
+  const creditsCard = `<article class="panel c6 creditcard">
+    <div class="panel__head"><h2>Crédits</h2><button class="btn btn--ghost btn--sm" data-action="open-credits"><span data-icon="coins"></span> Gérer</button></div>
+    ${cs.nb ? `
+      <div class="creditsum"><span class="creditsum__lbl">On te doit</span><span class="creditsum__val">${formatF(cs.total)}</span><span class="creditsum__nb">${cs.nb} client${cs.nb > 1 ? 's' : ''} en attente</span></div>
+      <ul class="creditmini">${cs.impayes.slice(0, 3).map((c) => `<li class="creditmini__row"><span class="creditmini__nom">${esc(c.client || 'Client')}</span><span class="creditmini__amt">${formatF(c.montant)}</span></li>`).join('')}</ul>`
+      : `<div class="credit-empty"><span class="credit-empty__ic" data-icon="coins"></span><p>Aucune vente à crédit en cours.</p><button class="btn btn--sm" data-action="add-credit"><span data-icon="plus"></span> Ajouter un crédit</button></div>`}
+  </article>`;
+
   // ---- CONSEIL ----
   const topConseil = analyse.conseils.find((c) => c.priorite !== 'info');
   const prio = topConseil ? (PRIO[topConseil.priorite] || PRIO.basse) : null;
@@ -335,6 +347,7 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
       ${rankCard}
       ${barsCard}
       ${prevCard}
+      ${creditsCard}
       ${conseilCard}
     </div>
   </section>`;
@@ -817,6 +830,22 @@ export function modalShell(title, bodyHTML, footerHTML) {
   return `<div class="modal__bar"><h2>${esc(title)}</h2><button class="modal__x" data-action="close-modal"><span data-icon="close"></span></button></div>
     <div class="modal__body">${bodyHTML}</div>
     ${footerHTML ? `<div class="modal__foot">${footerHTML}</div>` : ''}`;
+}
+
+// ============ ASSISTANT (chat) ============
+export function assistantMsgsHTML(chat) {
+  return chat.map((m) => `<div class="asmsg asmsg--${m.role === 'user' ? 'user' : 'bot'}">${esc(m.text)}</div>`).join('');
+}
+export function assistantHTML(chat) {
+  const sugg = ASSISTANT_SUGGESTIONS.map((s) => `<button class="aschip" data-action="assistant-ask" data-q="${esc(s)}">${esc(s)}</button>`).join('');
+  return `<div class="modal__bar"><h2 class="as-title"><span class="as-ic" data-icon="spark"></span> Assistant</h2>
+      <button class="modal__x" data-action="close-modal"><span data-icon="close"></span></button></div>
+    <div class="as-msgs" id="as-msgs">${assistantMsgsHTML(chat)}</div>
+    <div class="as-sugg">${sugg}</div>
+    <div class="as-inputrow">
+      <input id="as-input" class="input" type="text" placeholder="Pose ta question…" aria-label="Question à l'assistant" autocomplete="off">
+      <button class="btn btn--icon as-send" data-action="assistant-send" aria-label="Envoyer"><span data-icon="send"></span></button>
+    </div>`;
 }
 
 let toastTimer = null;

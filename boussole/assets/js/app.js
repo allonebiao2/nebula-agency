@@ -15,6 +15,7 @@ let prevUser = null;
 let pendingLogin = false;  // vrai après un login volontaire -> 2e splash
 let venteFilter = Object.assign({ preset: 'jour', produitId: '', q: '' }, venteRange('jour'));
 let depFilter = Object.assign({ preset: 'mois', categorie: '', q: '' }, venteRange('mois'));
+let chat = []; // conversation assistant (en mémoire de session)
 
 const $ = (s, r = document) => r.querySelector(s);
 const cloudCtx = () => ({ configured: Cloud.isCloudConfigured(), user: Cloud.getUser() });
@@ -275,6 +276,58 @@ function openCaisseModal() {
   hydrateIcons($('#modal-root'));
 }
 
+// ---------- Assistant (chat déterministe local) ----------
+function scrollChatBottom() { const b = $('#as-msgs'); if (b) b.scrollTop = b.scrollHeight; }
+function openAssistant() {
+  if (!chat.length) chat.push({ role: 'bot', text: 'Bonjour ! Pose-moi une question sur ton commerce, ou touche une suggestion ci-dessous.' });
+  UI.openModal(UI.assistantHTML(chat));
+  hydrateIcons($('#modal-root'));
+  scrollChatBottom();
+  const inp = $('#as-input'); if (inp) setTimeout(() => inp.focus(), 60);
+}
+function assistantAsk(question) {
+  const qq = (question || '').trim(); if (!qq) return;
+  chat.push({ role: 'user', text: qq });
+  chat.push({ role: 'bot', text: S.assistantRepondre(qq) });
+  const b = $('#as-msgs');
+  if (b) { b.innerHTML = UI.assistantMsgsHTML(chat); hydrateIcons(b); scrollChatBottom(); }
+  const inp = $('#as-input'); if (inp) { inp.value = ''; inp.focus(); }
+}
+
+// ---------- Crédits (clients à crédit) ----------
+function creditRow(c) {
+  return `<li class="crdrow ${c.paye ? 'is-paid' : ''}">
+    <div class="crdrow__id"><strong>${UI.esc(c.client || 'Client')}</strong><small>${S.formatF(c.montant)}${c.echeance ? ` · échéance ${UI.esc(c.echeance)}` : ''}${c.paye ? ' · payé' : ''}</small></div>
+    <div class="crdrow__acts">
+      ${!c.paye && c.tel ? `<button class="crd-btn crd-btn--wa" data-action="credit-remind" data-id="${c.id}" title="Rappel WhatsApp" aria-label="Rappel WhatsApp"><span data-icon="whatsapp"></span></button>` : ''}
+      <button class="crd-btn ${c.paye ? 'is-on' : ''}" data-action="credit-paid" data-id="${c.id}" title="${c.paye ? 'Marquer non payé' : 'Marquer payé'}" aria-label="Marquer payé"><span data-icon="check"></span></button>
+      <button class="crd-btn crd-btn--del" data-action="del-credit" data-id="${c.id}" title="Supprimer" aria-label="Supprimer"><span data-icon="trash"></span></button>
+    </div></li>`;
+}
+function openCreditsModal() {
+  const cs = S.creditsSummary();
+  const list = S.getCredits().slice().sort((a, b) => Number(a.paye) - Number(b.paye) || new Date(b.date) - new Date(a.date));
+  const rows = list.length ? list.map(creditRow).join('') : '<li class="crd-empty">Aucun crédit enregistré pour l’instant.</li>';
+  UI.openModal(UI.modalShell('Crédits — clients',
+    `<p class="modal__lead">On te doit <strong>${S.formatF(cs.total)}</strong>${cs.nb ? ` (${cs.nb} en attente)` : ''}.</p>
+     <ul class="crdlist">${rows}</ul>`,
+    `<button class="btn btn--ghost" data-action="close-modal">Fermer</button>
+     <button class="btn" data-action="add-credit"><span data-icon="plus"></span> Nouveau crédit</button>`));
+  hydrateIcons($('#modal-root'));
+}
+function openAddCreditModal() {
+  UI.openModal(UI.modalShell('Nouveau crédit',
+    `<div class="field"><label for="cr-client">Client</label><input id="cr-client" class="input" placeholder="Nom du client" autocomplete="off"></div>
+     <div class="grid2">
+       <div class="field"><label for="cr-montant">Montant dû</label><div class="inwrap"><input id="cr-montant" class="input" type="number" inputmode="numeric" placeholder="0"><span class="inwrap__cur">F</span></div></div>
+       <div class="field"><label for="cr-echeance">Échéance</label><input id="cr-echeance" class="input" type="date"></div>
+     </div>
+     <div class="field"><label for="cr-tel">WhatsApp (pour le rappel)</label><input id="cr-tel" class="input" type="tel" inputmode="tel" placeholder="Ex. 22997000000"></div>`,
+    `<button class="btn btn--ghost" data-action="close-modal">Annuler</button>
+     <button class="btn" data-action="save-credit">Enregistrer</button>`));
+  hydrateIcons($('#modal-root'));
+}
+
 // ---------- Vente détaillée (modale) ----------
 function openSellCustom(id) {
   const p = S.getProduit(id); if (!p) return;
@@ -465,6 +518,29 @@ document.addEventListener('click', (e) => {
     case 'edit-caisse': return openCaisseModal();
     case 'save-caisse': { const v = Number($('#cs-amt').value) || 0; S.setSoldeInitial(v); UI.closeModal(); UI.toast('Fond de caisse enregistré'); return; }
 
+    // assistant
+    case 'open-assistant': return openAssistant();
+    case 'assistant-ask': return assistantAsk(el.dataset.q);
+    case 'assistant-send': return assistantAsk($('#as-input') ? $('#as-input').value : '');
+
+    // crédits clients
+    case 'open-credits': return openCreditsModal();
+    case 'add-credit': return openAddCreditModal();
+    case 'save-credit': {
+      const client = ($('#cr-client').value || '').trim();
+      const montant = Number($('#cr-montant').value) || 0;
+      if (montant <= 0) return UI.toast('Entre un montant', 'err');
+      S.addCredit({ client, montant, echeance: $('#cr-echeance').value || '', tel: ($('#cr-tel').value || '').trim() });
+      UI.toast('Crédit enregistré'); return openCreditsModal();
+    }
+    case 'credit-paid': { const c = S.getCredits().find((x) => x.id === id); if (c) S.updateCredit(id, { paye: !c.paye }); return openCreditsModal(); }
+    case 'del-credit': return UI.confirmDialog({ title: 'Supprimer le crédit', message: 'Supprimer cette dette client ?', danger: true, okLabel: 'Supprimer' }, () => { S.deleteCredit(id); UI.toast('Crédit supprimé'); openCreditsModal(); });
+    case 'credit-remind': {
+      const c = S.getCredits().find((x) => x.id === id);
+      if (c && c.tel) { const nom = S.getState().profil.nom_activite || ''; const txt = `Bonjour ${c.client || ''}, petit rappel amical : il reste ${S.formatF(c.montant)} à régler${nom ? ` pour ${nom}` : ''}. Merci !`; window.open('https://wa.me/' + c.tel.replace(/[^0-9]/g, '') + '?text=' + encodeURIComponent(txt), '_blank'); }
+      return;
+    }
+
     // historique ventes — filtres
     case 'vf-preset': { venteFilter = Object.assign(venteFilter, { preset: el.dataset.preset }, venteRange(el.dataset.preset)); return refreshVentes(); }
     // historique dépenses — filtres
@@ -571,6 +647,10 @@ document.addEventListener('input', (e) => {
       if (s) { s.focus(); const v = s.value; s.setSelectionRange(v.length, v.length); }
     }, 220);
   }
+});
+// Assistant : Entrée = envoyer
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && e.target && e.target.id === 'as-input') { e.preventDefault(); assistantAsk(e.target.value); }
 });
 
 function pulseBenef() {

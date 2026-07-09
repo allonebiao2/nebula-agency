@@ -69,12 +69,13 @@ function makeAdapter() {
   const uid = () => currentUser && currentUser.id;
   return {
     async pullAll() {
-      const [prof, prods, charges, ventes, depenses] = await Promise.all([
+      const [prof, prods, charges, ventes, depenses, credits] = await Promise.all([
         client.from('profils').select('*').maybeSingle(),
         client.from('produits').select('*'),
         client.from('charges_fixes').select('*'),
         client.from('ventes').select('*'),
         client.from('depenses').select('*'),
+        client.from('credits').select('*'),
       ]);
       return {
         profil: prof.data
@@ -84,6 +85,7 @@ function makeAdapter() {
         charges_fixes: charges.data || [],
         ventes: ventes.data || [],
         depenses: depenses.data || [],
+        credits: credits.data || [],
       };
     },
     async upsert(table, row) {
@@ -112,7 +114,7 @@ let repullTimer = null;
 function subscribeRealtime() {
   if (!client || channel) return;
   channel = client.channel('boussole-sync');
-  ['produits', 'charges_fixes', 'ventes', 'profils', 'depenses'].forEach((table) => {
+  ['produits', 'charges_fixes', 'ventes', 'profils', 'depenses', 'credits'].forEach((table) => {
     channel.on('postgres_changes', { event: '*', schema: 'public', table }, () => {
       clearTimeout(repullTimer);
       repullTimer = setTimeout(() => hydrateFromRemote().catch(() => {}), 400);

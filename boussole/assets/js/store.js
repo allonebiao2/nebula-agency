@@ -15,6 +15,7 @@ function emptyState() {
     charges_fixes: [],   // {id, libelle, montant, created_at}  (mensuel, niveau activité)
     ventes: [],          // {id, produit_id, date, qte, prix_unitaire, cout_unitaire, created_at}
     depenses: [],        // {id, libelle, categorie, montant, date, created_at}  (sorties d'argent)
+    credits: [],         // {id, client, tel, montant, paye, date, echeance, note}  (ventes à crédit)
   };
 }
 
@@ -60,6 +61,7 @@ export async function hydrateFromRemote() {
     state.charges_fixes.forEach((c) => pushRemote('charges_fixes', c));
     state.ventes.forEach((v) => pushRemote('ventes', v));
     state.depenses.forEach((d) => pushRemote('depenses', d));
+    state.credits.forEach((c) => pushRemote('credits', c));
     pushRemote('profils', { id: 'me', ...state.profil });
     return;
   }
@@ -402,6 +404,7 @@ export function analyseBusiness() {
 //  MOTEUR MULTI-PÉRIODES (dashboard : heure / jour / semaine / mois / année)
 // =====================================================================
 export const JOURS_COURTS = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+export const JOURS_LONGS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
 const DAY_MS = 86400000;
 const startOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
 const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
@@ -681,6 +684,92 @@ export function alertesDepenses({ jours = 30, facteur = 2.5 } = {}) {
   return alerts.sort((a, b) => new Date(b.date) - new Date(a.date));
 }
 
+// ---------- Crédits (ventes à crédit : clients qui doivent) ----------
+export function getCredits() { return state.credits; }
+export function addCredit({ client, tel, montant, echeance, note }) {
+  const c = { id: uid(), client: (client || '').trim(), tel: (tel || '').trim(), montant: Number(montant) || 0, paye: false, date: nowISO(), echeance: echeance || '', note: (note || '').trim(), created_at: nowISO() };
+  state.credits.push(c); persistLocal(); pushRemote('credits', c); emit(); return c;
+}
+export function updateCredit(id, patch) {
+  const c = state.credits.find((x) => x.id === id); if (!c) return;
+  Object.assign(c, patch); if (patch.montant != null) c.montant = Number(patch.montant) || 0;
+  persistLocal(); pushRemote('credits', c); emit();
+}
+export function deleteCredit(id) { state.credits = state.credits.filter((c) => c.id !== id); persistLocal(); delRemote('credits', id); emit(); }
+export function creditsSummary() {
+  const impayes = state.credits.filter((c) => !c.paye)
+    .sort((a, b) => (a.echeance || 'z').localeCompare(b.echeance || 'z') || new Date(a.date) - new Date(b.date));
+  return { impayes, total: impayes.reduce((s, c) => s + (Number(c.montant) || 0), 0), nb: impayes.length, nbTotal: state.credits.length };
+}
+
+// ---------- Meilleur jour de la semaine (8 dernières semaines) ----------
+export function meilleurJour({ semaines = 8 } = {}) {
+  const debut = Date.now() - semaines * 7 * DAY_MS;
+  const tot = [0, 0, 0, 0, 0, 0, 0];
+  state.ventes.forEach((v) => { const d = new Date(v.date); if (d.getTime() >= debut) tot[d.getDay()] += (v.qte || 0) * (v.prix_unitaire || 0); });
+  let best = 0, bestv = -1;
+  for (let j = 0; j < 7; j++) if (tot[j] > bestv) { bestv = tot[j]; best = j; }
+  return { jour: best, total: bestv, nom: JOURS_LONGS[best] };
+}
+
+// ---------- Assistant (moteur déterministe local : répond aux questions sur les chiffres) ----------
+function _ymd2(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+function _periodeRange(per) { const P = periodInfo(per, 0); return { from: _ymd2(P.start), to: _ymd2(new Date(P.end.getTime() - 1)) }; }
+export const ASSISTANT_SUGGESTIONS = [
+  "Combien j'ai gagné cette semaine ?",
+  'Quel produit rapporte le plus ?',
+  'Quel jour je vends le mieux ?',
+  'Qui me doit de l\'argent ?',
+  'Quelles sont mes prévisions ?',
+  'Où part mon argent ?',
+];
+export function assistantRepondre(question) {
+  const q = ' ' + (question || '').toLowerCase() + ' ';
+  const has = (...ks) => ks.some((k) => q.includes(k));
+  const per = has('semaine') ? 'semaine' : (has('année', 'annee', "cette an") ? 'annee' : (has("aujourd", ' jour ', 'du jour') ? 'jour' : 'mois'));
+  const perLbl = { jour: "aujourd'hui", semaine: 'cette semaine', mois: 'ce mois-ci', annee: 'cette année' }[per];
+  const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+  const D = serieDashboard(per, 0), t = D.totals;
+
+  if (has('crédit', 'credit', 'me doit', 'doivent', 'dette', 'impay')) {
+    const cs = creditsSummary();
+    if (!cs.nb) return "Personne ne te doit d'argent pour l'instant. Enregistre une vente à crédit dans la carte « Crédits » du tableau de bord.";
+    return `${cs.nb} client${cs.nb > 1 ? 's te doivent' : ' te doit'} ${formatF(cs.total)} au total. Le plus urgent : ${cs.impayes[0].client || '—'} (${formatF(cs.impayes[0].montant)}). Tu peux lui envoyer un rappel WhatsApp depuis « Crédits ».`;
+  }
+  if (has('prévi', 'previ', 'futur', 'fin de mois', 'vais gagner', 'projection', 'combien je vais')) {
+    const P = previsions(); if (!P.actif) return "Pas encore assez de données pour prévoir. Enregistre quelques ventes et reviens me voir.";
+    return `À ce rythme (~${formatF(P.avgJour)}/jour), tu finirais le mois vers ${formatF(P.benefFinMois)} de bénéfice et ${formatF(P.caisseFinMois)} en caisse (${P.joursRestants} jour${P.joursRestants > 1 ? 's' : ''} restants).`;
+  }
+  if (has('anormal', 'alerte', 'bizarre', 'trop dépens', 'trop depens', 'inhabituel')) {
+    const al = alertesDepenses(); if (!al.length) return "Rien d'anormal dans tes dépenses récentes.";
+    const a = al[0]; return `À surveiller : « ${a.libelle} » (${formatF(a.montant)}) dépasse largement ta moyenne « ${a.categorie} » (~${formatF(a.moyenne)}).`;
+  }
+  if (has('caisse', 'solde', 'en main', 'liquide', 'combien j\'ai en')) return `Ta caisse est à ${formatF(soldeCaisse())} (fond de départ + ventes encaissées − dépenses).`;
+  if (has('quel jour', 'meilleur jour', 'jour je vend', 'jour vend')) {
+    const mj = meilleurJour(); if (mj.total <= 0) return "Pas encore assez de ventes pour dire quel jour marche le mieux.";
+    return `Ton meilleur jour, c'est le ${mj.nom} (~${formatF(mj.total)} sur 8 semaines). Prépare plus de stock ce jour-là.`;
+  }
+  if (has('produit', 'rapporte', 'rentable', 'vend le mieux', 'meilleure vente', 'best-seller', 'best seller')) {
+    const tops = topProduitsPeriode(per, 0, 3); if (!tops.length) return `Aucune vente ${perLbl}.`;
+    const p = tops[0]; return `${cap(perLbl)}, ton produit qui rapporte le plus est « ${p.nom} » : ${formatF(p.revenu)} (${Math.round(p.part * 100)}% de tes ventes).`;
+  }
+  if (has('dépens', 'depens', 'part mon argent', 'plus gros poste', 'coûte le plus', 'coute le plus')) {
+    const hd = historiqueDepenses(_periodeRange(per)); if (!hd.total) return `Aucune dépense ${perLbl}.`;
+    const c = hd.parCategorie[0]; return `${cap(perLbl)}, tu as dépensé ${formatF(hd.total)}. Ton plus gros poste : ${c.categorie} (${formatF(c.total)}, ${Math.round(c.part * 100)}%).`;
+  }
+  if (has('marge', 'taux')) return `${cap(perLbl)}, ta marge moyenne est de ${Math.round(t.tauxMarge * 100)}% (sur ${formatF(t.revenu)} de ventes).`;
+  if (has('objectif', 'but ')) { const o = getObjectif(); if (!o) return "Tu n'as pas encore fixé d'objectif. Touche « Objectif du mois » sur le tableau de bord."; const b = serieDashboard('mois', 0).totals.benefice; return `Objectif du mois : ${formatF(o)}. Tu es à ${formatF(Math.max(0, b))} (${Math.round(Math.min(100, Math.max(0, b) / o * 100))}%).`; }
+  if (has('réinvest', 'reinvest', 'stock', 'racheter', 'relance')) return `${cap(perLbl)}, mets de côté ${formatF(D.enveloppes.relance)} pour refaire/racheter ta marchandise (c'est le coût de ce que tu as vendu).`;
+  if (has('évolu', 'evolu', 'augmente', 'progress', 'recule', 'monte', 'ça va')) {
+    const a = analyseBusiness(); if (!a.evolution) return "Pas encore assez d'historique pour comparer d'un mois à l'autre."; const e = a.evolution;
+    return `Ton bénéfice ${e.sens === 'hausse' ? 'progresse' : (e.sens === 'baisse' ? 'recule' : 'est stable')} de ${formatF(Math.abs(e.diff))} entre ${e.moisFrom} et ${e.moisTo} (${e.pct >= 0 ? '+' : ''}${Math.round(e.pct * 100)}%).`;
+  }
+  if (has('bénéf', 'benef', 'gagn', 'gain', 'reste', 'profit')) return `${cap(perLbl)}, ton bénéfice net est de ${formatF(t.benefice)} (marge ${formatF(t.marge)} − charges − dépenses).`;
+  if (has('vendu', 'chiffre', ' ca ', 'ventes', 'encaiss', 'recette')) return `${cap(perLbl)}, tu as vendu pour ${formatF(t.revenu)} (${formatNombre(t.unites)} unité${t.unites > 1 ? 's' : ''}).`;
+  if (has('bonjour', 'salut', 'bonsoir', 'coucou', 'aide', 'help')) return "Bonjour ! Je suis ton assistant. Pose-moi une question sur ton commerce — tape-la ou touche une suggestion.";
+  return "Je réponds sur tes chiffres. Essaie : « Combien j'ai gagné cette semaine ? », « Quel produit rapporte le plus ? », « Quel jour je vends le mieux ? », « Qui me doit de l'argent ? », « Mes prévisions ? ».";
+}
+
 // ---------- Devise (multi-devises) ----------
 export function getDevise() { return state.profil.devise || 'F'; }
 export function setDevise(code) { setProfil({ devise: CURRENCIES[code] ? code : 'F' }); }
@@ -709,6 +798,7 @@ export function importData(json) {
     state.charges_fixes.forEach((c) => pushRemote('charges_fixes', c));
     state.ventes.forEach((v) => pushRemote('ventes', v));
     state.depenses.forEach((d) => pushRemote('depenses', d));
+    state.credits.forEach((c) => pushRemote('credits', c));
     pushRemote('profils', { id: 'me', ...state.profil });
   }
   emit();

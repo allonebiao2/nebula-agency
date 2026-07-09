@@ -932,3 +932,51 @@ input { font-family: inherit; }
 .prevtile__val.pos { color: var(--pos-d); } .prevtile__val.neg { color: var(--dng); }
 .prevhint { font-size: 12.5px; color: var(--ink-soft); margin: 0; line-height: 1.45; }
 .prevhint b { color: var(--ink); font-family: var(--mono); }
+
+/* ---------- Carte Crédits (dashboard) ---------- */
+.creditsum { display: flex; flex-direction: column; gap: 2px; margin-bottom: 10px; }
+.creditsum__lbl { font-size: 11px; font-weight: 600; color: var(--ink-faint); text-transform: uppercase; letter-spacing: .03em; }
+.creditsum__val { font-family: var(--mono); font-size: 22px; font-weight: 700; letter-spacing: -.02em; color: var(--acc-d); }
+.creditsum__nb { font-size: 12px; color: var(--ink-faint); }
+.creditmini { list-style: none; margin: 0; padding: 0; }
+.creditmini__row { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-top: 1px solid var(--line-soft); font-size: 13.5px; }
+.creditmini__nom { color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.creditmini__amt { font-family: var(--mono); font-weight: 600; }
+.credit-empty { text-align: center; padding: 10px 4px 4px; }
+.credit-empty__ic { width: 30px; height: 30px; color: var(--ink-faint); display: inline-flex; opacity: .7; margin-bottom: 6px; }
+.credit-empty__ic svg { width: 100%; height: 100%; }
+.credit-empty p { font-size: 13px; color: var(--ink-soft); margin: 0 0 10px; }
+
+/* ---------- Crédits (modale) ---------- */
+.crdlist { list-style: none; margin: 6px 0 0; padding: 0; }
+.crdrow { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 0; border-top: 1px solid var(--line-soft); }
+.crdrow:first-child { border-top: 0; }
+.crdrow__id { min-width: 0; display: flex; flex-direction: column; }
+.crdrow__id strong { font-size: 14.5px; font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.crdrow__id small { font-size: 12px; color: var(--ink-faint); font-family: var(--mono); }
+.crdrow.is-paid .crdrow__id strong { text-decoration: line-through; color: var(--ink-faint); }
+.crdrow__acts { display: flex; gap: 6px; flex: none; }
+.crd-btn { border: 1px solid var(--line); background: var(--surface-2); color: var(--ink-soft); width: 38px; height: 38px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: .18s var(--ease); }
+.crd-btn svg { width: 18px; height: 18px; }
+.crd-btn:hover { border-color: color-mix(in srgb, var(--acc) 34%, var(--line)); color: var(--ink); }
+.crd-btn--wa:hover { color: #25d366; border-color: #25d366; }
+.crd-btn.is-on { background: var(--pos-soft); border-color: var(--pos); color: var(--pos-d); }
+.crd-btn--del:hover { background: var(--dng-soft); border-color: var(--dng); color: var(--dng); }
+.crd-empty { color: var(--ink-faint); font-style: italic; font-size: 13.5px; padding: 12px 0; list-style: none; }
+
+/* ---------- Assistant (chat) ---------- */
+.chip--assist .chip__ic { color: var(--acc-d); }
+.as-title { display: inline-flex; align-items: center; gap: 8px; }
+.as-ic { width: 18px; height: 18px; color: var(--acc); display: inline-flex; }
+.as-ic svg { width: 100%; height: 100%; }
+.as-msgs { padding: 8px 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; max-height: 52dvh; min-height: 30dvh; }
+.asmsg { max-width: 85%; padding: 10px 13px; border-radius: 15px; font-size: 14px; line-height: 1.5; }
+.asmsg--bot { align-self: flex-start; background: var(--surface-2); border: 1px solid var(--line-soft); border-bottom-left-radius: 5px; color: var(--ink); }
+.asmsg--user { align-self: flex-end; background: color-mix(in srgb, var(--acc) 20%, var(--glass-fill)); border: 1px solid color-mix(in srgb, var(--acc) 34%, transparent); border-bottom-right-radius: 5px; color: var(--ink); }
+.as-sugg { display: flex; gap: 7px; overflow-x: auto; padding: 8px 18px 4px; scrollbar-width: none; }
+.as-sugg::-webkit-scrollbar { display: none; }
+.aschip { flex: none; border: 1px solid var(--glass-brd); background: var(--glass-fill); color: var(--ink-soft); border-radius: 999px; padding: 8px 13px; font-size: 12.5px; font-weight: 550; white-space: nowrap; cursor: pointer; transition: .18s var(--ease); }
+.aschip:hover { border-color: color-mix(in srgb, var(--acc) 34%, var(--glass-brd)); color: var(--ink); }
+.as-inputrow { display: flex; gap: 8px; padding: 10px 18px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line-soft); }
+.as-inputrow .input { flex: 1; }
+.as-send { flex: none; }

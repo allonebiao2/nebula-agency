@@ -45,6 +45,7 @@ export const ICONS = {
   flame: wrap('<path d="M12 3s5 4 5 9a5 5 0 0 1-10 0c0-2 1-3 1-3 .5 1.5 1.5 2 1.5 2S9 8 12 3z"/>'),
   search: wrap('<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/>'),
   receipt: wrap('<path d="M6 3h12v17l-2-1.3-2 1.3-2-1.3-2 1.3-2-1.3z"/><path d="M9.5 8h5"/><path d="M9.5 11.5h5"/>'),
+  send: wrap('<path d="M4 11.5 20 4l-7 16-2.5-6.5z"/><path d="M10.5 13.5 20 4"/>'),
   calendar: wrap('<rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 9h16"/><path d="M8 3v4"/><path d="M16 3v4"/>'),
 };
 

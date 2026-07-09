@@ -60,18 +60,33 @@ create table if not exists public.depenses (
 );
 create index if not exists depenses_user_date_idx on public.depenses (user_id, date);
 
+create table if not exists public.credits (
+  id          uuid primary key,
+  user_id     uuid not null references auth.users on delete cascade,
+  client      text default '',
+  tel         text default '',
+  montant     numeric not null default 0,
+  paye        boolean not null default false,
+  date        timestamptz not null default now(),
+  echeance    text default '',
+  note        text default '',
+  created_at  timestamptz default now()
+);
+create index if not exists credits_user_idx on public.credits (user_id);
+
 -- ---------- Row-Level Security ----------
 alter table public.profils       enable row level security;
 alter table public.produits      enable row level security;
 alter table public.charges_fixes enable row level security;
 alter table public.ventes        enable row level security;
 alter table public.depenses      enable row level security;
+alter table public.credits       enable row level security;
 
 -- Politiques : l'utilisateur ne touche que ses lignes.
 do $$
 declare t text;
 begin
-  foreach t in array array['profils','produits','charges_fixes','ventes','depenses'] loop
+  foreach t in array array['profils','produits','charges_fixes','ventes','depenses','credits'] loop
     execute format('drop policy if exists p_sel on public.%I;', t);
     execute format('drop policy if exists p_ins on public.%I;', t);
     execute format('drop policy if exists p_upd on public.%I;', t);
@@ -88,7 +103,7 @@ end $$;
 do $$
 declare t text;
 begin
-  foreach t in array array['profils','produits','charges_fixes','ventes','depenses'] loop
+  foreach t in array array['profils','produits','charges_fixes','ventes','depenses','credits'] loop
     begin
       execute format('alter publication supabase_realtime add table public.%I;', t);
     exception when duplicate_object then null;
