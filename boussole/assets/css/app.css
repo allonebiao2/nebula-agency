@@ -40,7 +40,9 @@
 
   --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-display: "Bricolage Grotesque", system-ui, sans-serif;
-  --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Roboto Mono", Consolas, monospace;
+  /* Police des CHIFFRES : grotesque pro (zéro SANS barre, figures tabulaires), pas de mono technique */
+  --num: "Bricolage Grotesque", "SF Pro Display", "Segoe UI", system-ui, sans-serif;
+  --mono: var(--num); /* alias historique : tous les chiffres utilisent var(--mono) */
 
   --r-sm: 12px; --r: 18px; --r-lg: 26px;
   --sh: 0 1px 2px rgba(40,30,15,.05), 0 12px 30px -14px rgba(40,30,15,.16);
@@ -132,6 +134,13 @@ h1,h2,h3 { margin: 0; letter-spacing: -.02em; font-family: var(--font-display); 
 .brand__name, .vhead h1, .wz__head h2 { font-family: var(--font-display); }
 input { font-family: inherit; }
 .num, .env__val, .ptile__price span, .panel__badge { font-variant-numeric: tabular-nums; }
+/* chiffres alignés (figures tabulaires) partout où la police chiffres est utilisée */
+.jrow__q, .jrow__tot, .perf__marge, .perf__seuil, .stat__val, .ring__t, .hero__time, .hero__kpi-val,
+.ringcard__c strong, .qsell__price, .dashhead__time, .dhero__val, .delta, .kpi__val, .objx__center strong,
+.objx__meta b, .ring3__t, .donut__center strong, .leg__val, .leg__pct, .rank__n, .rank__rev, .cashtile__val,
+.deprow__amt, .daygrp__tot, .hvrow__tot, .depsum__val, .catbar__amt, .prevtile__val, .prevhint b,
+.creditsum__val, .creditmini__amt, .rstat__val, .docrow__body strong, .docrow__amt, .docform__lead strong,
+.dline__tot, .dtot__v, .fd-num { font-variant-numeric: tabular-nums; }
 
 /* ---------- App shell ---------- */
 #app { min-height: 100dvh; display: flex; flex-direction: column; }
