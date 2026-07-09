@@ -1341,6 +1341,49 @@ input { font-family: inherit; }
 .objic:hover { color: var(--ink); border-color: color-mix(in srgb, var(--acc) 30%, var(--glass-brd)); }
 .objic svg { width: 20px; height: 20px; }
 .objic.is-on { color: var(--acc-d); border-color: var(--acc); background: var(--acc-soft); box-shadow: 0 0 0 1px var(--acc); }
+
+/* ===== Carrousel KPI (bloc « Aujourd'hui ») ===== */
+.kpicar { margin-top: 2px; }
+.kpicar__track { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 2px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.kpicar__track::-webkit-scrollbar { display: none; }
+.kpit { flex: 0 0 78%; scroll-snap-align: center; display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border-radius: var(--r); text-align: left; background: var(--glass-fill); border: 1px solid var(--glass-brd); box-shadow: inset 0 1px 0 var(--glass-hi); position: relative; min-width: 0; }
+.kpit__ic { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 8px; background: var(--acc-soft); color: var(--acc-d); }
+.kpit__ic svg { width: 15px; height: 15px; }
+.kpit__lbl { font-size: 11.5px; font-weight: 600; color: var(--ink-faint); text-transform: uppercase; letter-spacing: .03em; }
+.kpit__val { font-family: var(--num); font-size: 25px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kpit__val.pos { color: var(--pos-d); } .kpit__val.neg { color: var(--dng); }
+.kpit--tap { cursor: pointer; transition: border-color .18s, transform .12s; }
+.kpit--tap:hover { border-color: color-mix(in srgb, var(--acc) 30%, var(--glass-brd)); }
+.kpit--tap:active { transform: scale(.98); }
+.kpit__edit { position: absolute; top: 12px; right: 12px; width: 15px; height: 15px; color: var(--ink-faint); }
+.kpicar__dots { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+.kpicar__dot { width: 6px; height: 6px; border-radius: 999px; background: var(--glass-brd); transition: width .25s var(--ease), background .25s; }
+.kpicar__dot.is-on { width: 18px; background: var(--acc); }
+
+/* ===== Bloc d'alertes (dashboard) ===== */
+.alertcard { border-color: color-mix(in srgb, var(--dng) 22%, var(--glass-brd)); background: color-mix(in srgb, var(--dng) 5%, var(--glass-fill)); }
+.alertcard__head { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
+.alertcard__head h2 { font-size: 15px; margin: 0; flex: 1; }
+.alertcard__ic { width: 18px; height: 18px; color: var(--dng); }
+.alertcard__n { min-width: 22px; height: 22px; padding: 0 7px; border-radius: 999px; background: var(--dng); color: #fff; font-size: 12px; font-weight: 800; display: grid; place-items: center; font-family: var(--num); }
+.alertlist { display: flex; flex-direction: column; gap: 6px; }
+.alertrow { display: flex; align-items: center; gap: 11px; width: 100%; padding: 10px 12px; border: 1px solid var(--glass-brd); border-radius: var(--r-sm); background: var(--glass-fill); cursor: pointer; text-align: left; color: var(--ink); box-shadow: inset 0 1px 0 var(--glass-hi); transition: border-color .18s; }
+.alertrow:hover { border-color: color-mix(in srgb, var(--acc) 28%, var(--glass-brd)); }
+.alertrow__ic { width: 30px; height: 30px; flex: none; display: grid; place-items: center; border-radius: 9px; }
+.alertrow__ic svg { width: 16px; height: 16px; }
+.alertrow__ic--dng { background: var(--dng-soft); color: var(--dng); }
+.alertrow__ic--warn { background: var(--acc-soft); color: var(--acc-d); }
+.alertrow__t { flex: 1; font-size: 13.5px; font-weight: 550; }
+.alertrow__go { display: inline-flex; align-items: center; gap: 3px; font-size: 12.5px; font-weight: 650; color: var(--acc-d); flex: none; }
+.alertrow__go svg { width: 14px; height: 14px; }
+
+/* Desktop : carrousel -> rangée de 5 piliers, points masqués */
+@media (min-width: 640px) {
+  .kpicar__track { display: grid; grid-template-columns: repeat(5, 1fr); overflow: visible; gap: 12px; }
+  .kpit { flex: none; }
+  .kpit__val { font-size: 21px; }
+  .kpicar__dots { display: none; }
+}
 /* Desktop : ces overrides doivent gagner sur les défauts mobiles ci-dessus (ordre source) */
 @media (min-width: 900px) {
   .sidebar { display: flex; }

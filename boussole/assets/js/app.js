@@ -80,6 +80,7 @@ function render() {
     const dash = view.querySelector('.view--dash'); if (dash) dash.classList.add('is-enter');
     animateCounts(view);
   }
+  if (screen === 'accueil') wireCarousel();
   animateNext = false;
   view.scrollTop = resetScroll ? 0 : prevScroll;
   resetScroll = false;
@@ -306,7 +307,22 @@ function refreshDash() {
   const dash = view.querySelector('.view--dash'); if (dash) dash.classList.add('is-enter');
   hydrateIcons(view);
   animateCounts(view);
+  wireCarousel();
   view.scrollTop = top;
+}
+// Carrousel KPI : synchronise les points au défilement horizontal.
+function wireCarousel() {
+  const track = $('#kpicar-track'); if (!track) return;
+  const dots = [...document.querySelectorAll('.kpicar__dot')]; if (!dots.length) return;
+  let raf = 0;
+  const update = () => {
+    const first = track.firstElementChild;
+    const w = first ? first.getBoundingClientRect().width + 10 : track.clientWidth || 1;
+    const i = Math.max(0, Math.min(dots.length - 1, Math.round(track.scrollLeft / w)));
+    dots.forEach((d, k) => d.classList.toggle('is-on', k === i));
+  };
+  track.addEventListener('scroll', () => { if (raf) return; raf = requestAnimationFrame(() => { raf = 0; update(); }); }, { passive: true });
+  update();
 }
 
 // ---------- Splash (écran de chargement au logo) ----------
@@ -946,7 +962,7 @@ document.addEventListener('focusin', (e) => {
 });
 
 // ---------- Ripple sur TOUS les boutons (onde depuis le point touché) ----------
-const RIPPLE_SEL = '.btn, .qsell, .pchip, .vchip, .catchip, .aschip, .chip, .crd-btn, .pnav__btn, .nav__item, .cashtile--caisse, .seg__b, .authswitch__b, .fab__btn, .fab__act, .side__item, .side__sub, .drawer__item, .notif__row, .strow__pm, .objic, .objrow__add';
+const RIPPLE_SEL = '.btn, .qsell, .pchip, .vchip, .catchip, .aschip, .chip, .crd-btn, .pnav__btn, .nav__item, .cashtile--caisse, .seg__b, .authswitch__b, .fab__btn, .fab__act, .side__item, .side__sub, .drawer__item, .notif__row, .strow__pm, .objic, .objrow__add, .kpit--tap, .alertrow';
 document.addEventListener('pointerdown', (e) => {
   const el = e.target.closest ? e.target.closest(RIPPLE_SEL) : null;
   if (!el) return;

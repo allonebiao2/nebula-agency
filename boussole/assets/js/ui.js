@@ -276,25 +276,37 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
   const tops = topProduitsPeriode(gran, offset, 6);
   const rTot = env.revenu || 1;
 
-  // ---- BLOC « AUJOURD'HUI » (trésorerie, toujours le jour courant) ----
+  // ---- BLOC « AUJOURD'HUI » = carrousel KPI (swipe mobile / rangée PC) ----
   const R = resumeJour();
+  const csKpi = creditsSummary();
+  const kpit = (ic, lbl, num, cls, o = {}) => {
+    const tag = o.action ? 'button' : 'div';
+    const attrs = o.action ? ` data-action="${o.action}"${o.screen ? ` data-screen="${o.screen}"` : ''}` : '';
+    return `<${tag} class="kpit ${o.tap ? 'kpit--tap' : ''}"${attrs}${o.title ? ` title="${o.title}"` : ''}>
+      <span class="kpit__ic" data-icon="${ic}"></span>
+      <span class="kpit__lbl">${lbl}</span>
+      <span class="kpit__val ${cls || ''}" data-count="${num}" data-fmt="f">${formatF(num)}</span>
+      ${o.edit ? '<span class="kpit__edit" data-icon="edit"></span>' : ''}
+    </${tag}>`;
+  };
+  const kpiTiles = [
+    kpit('coins', 'CA du jour', R.ca, 'pos'),
+    kpit('receipt', 'Dépensé', R.depenses, R.depenses > 0 ? 'neg' : ''),
+    kpit('spark', 'Bénéfice du jour', R.benefice, R.benefice >= 0 ? 'pos' : 'neg'),
+    kpit('users', 'Dettes dehors', csKpi.total, csKpi.total > 0 ? 'neg' : '', { action: 'go', screen: 'carnet', tap: true, title: 'Voir le carnet' }),
+    kpit('wallet', 'Trésorerie', R.caisse, '', { action: 'edit-caisse', tap: true, edit: true, title: 'Régler le fond de caisse' }),
+  ];
+  const dots = kpiTiles.map((_, i) => `<span class="kpicar__dot ${i === 0 ? 'is-on' : ''}" aria-hidden="true"></span>`).join('');
   const cashCard = `<article class="panel cashcard">
     <div class="cashcard__head">
       <div class="cashcard__id"><span class="cashcard__lbl">Aujourd'hui</span><span class="cashcard__date">${esc(dateStr)}</span></div>
       <div class="cashcard__acts">
-        <button class="btn btn--ghost btn--sm" data-action="add-depense"><span data-icon="minus"></span> Dépense</button>
-        <button class="btn btn--sell btn--sm" data-action="go" data-screen="ventes"><span data-icon="plus"></span> Vente</button>
+        <button class="btn btn--ghost btn--sm" data-action="fab-depense"><span data-icon="minus"></span> Dépense</button>
+        <button class="btn btn--sell btn--sm" data-action="fab-vente"><span data-icon="plus"></span> Vente</button>
       </div>
     </div>
-    <div class="cashrow">
-      <div class="cashtile"><span class="cashtile__lbl">Encaissé</span><span class="cashtile__val pos" data-count="${R.ca}" data-fmt="f">${formatF(R.ca)}</span></div>
-      <div class="cashtile"><span class="cashtile__lbl">Dépensé</span><span class="cashtile__val ${R.depenses > 0 ? 'neg' : ''}" data-count="${R.depenses}" data-fmt="f">${formatF(R.depenses)}</span></div>
-      <div class="cashtile"><span class="cashtile__lbl">Bénéfice du jour</span><span class="cashtile__val ${R.benefice >= 0 ? 'pos' : 'neg'}" data-count="${R.benefice}" data-fmt="f">${formatF(R.benefice)}</span></div>
-      <button class="cashtile cashtile--caisse" data-action="edit-caisse" title="Régler le fond de caisse">
-        <span class="cashtile__lbl"><span data-icon="wallet"></span> Solde de caisse</span>
-        <span class="cashtile__val" data-count="${R.caisse}" data-fmt="f">${formatF(R.caisse)}</span>
-        <span class="cashtile__edit" data-icon="edit"></span></button>
-    </div>
+    <div class="kpicar"><div class="kpicar__track" id="kpicar-track">${kpiTiles.join('')}</div></div>
+    <div class="kpicar__dots">${dots}</div>
   </article>`;
   const legRow = (lbl, val, color, pct) => `<div class="leg__row"><span class="leg__dot" style="background:${color}"></span>
     <span class="leg__lbl">${lbl}</span><span class="leg__val">${formatF(val)}</span><span class="leg__pct">${pct}</span></div>`;
@@ -462,6 +474,7 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
       <span class="dashhead__time"><span data-icon="clock"></span>${timeStr}</span>
     </header>
     ${cashCard}
+    ${alertsBlockHTML()}
     ${periodBarHTML(gran, offset, D.label)}
     <div class="dash">
       ${hero}
@@ -1027,6 +1040,28 @@ export function objectifsCardHTML() {
   return `<article class="panel c6 objscard">
     <div class="panel__head"><h2>Mes objectifs</h2><button class="btn btn--sm" data-action="obj-new"><span data-icon="plus"></span> Objectif</button></div>
     <div class="objlist">${rows}</div>
+  </article>`;
+}
+
+// ============ BLOC D'ALERTES (tableau de bord) ============
+export function alertsBlockHTML() {
+  const n = notifications();
+  if (!n.count) return '';
+  const st = stockResume();
+  const dettes = n.list.filter((a) => a.type === 'dette').length;
+  const facs = n.list.filter((a) => a.type === 'facture').length;
+  const items = [];
+  if (st.ruptures) items.push({ ic: 'box', cls: 'dng', text: `${st.ruptures} produit${st.ruptures > 1 ? 's' : ''} en rupture`, screen: 'stock' });
+  if (st.bas) items.push({ ic: 'box', cls: 'warn', text: `${st.bas} produit${st.bas > 1 ? 's' : ''} bientôt épuisé${st.bas > 1 ? 's' : ''}`, screen: 'stock' });
+  if (dettes) items.push({ ic: 'alert', cls: 'dng', text: `${dettes} dette${dettes > 1 ? 's' : ''} client en retard`, screen: 'carnet' });
+  if (facs) items.push({ ic: 'receipt', cls: 'warn', text: `${facs} facture${facs > 1 ? 's' : ''} échue${facs > 1 ? 's' : ''}`, screen: 'bilan' });
+  const rows = items.map((a) => `<button class="alertrow" data-action="go" data-screen="${a.screen}">
+      <span class="alertrow__ic alertrow__ic--${a.cls}" data-icon="${a.ic}"></span>
+      <span class="alertrow__t">${esc(a.text)}</span>
+      <span class="alertrow__go">Voir <span data-icon="chevron"></span></span></button>`).join('');
+  return `<article class="panel alertcard">
+    <div class="alertcard__head"><span class="alertcard__ic" data-icon="bell"></span><h2>À traiter</h2><span class="alertcard__n">${n.count}</span></div>
+    <div class="alertlist">${rows}</div>
   </article>`;
 }
 
