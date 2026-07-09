@@ -10,6 +10,7 @@ import {
   ASSISTANT_SUGGESTIONS, rapportPeriode,
   getDocuments, documentTotals, documentsSummary, montantEnLettres, getCredits,
   getClients, getStockInfo, stockResume, recouvrement, journalCaisse, notifications,
+  getObjectifs, objectifInfo,
   formatF, formatNombre, MOIS_LONGS,
 } from './store.js';
 import { chartBeneficeMensuel, chartEvolution, miniSpark, progressRing, chartHero, chartDonut, sparklineRaw } from './charts.js';
@@ -465,6 +466,7 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
     <div class="dash">
       ${hero}
       ${objCard}
+      ${objectifsCardHTML()}
       ${kpis}
       ${sellCard}
       ${ringsCard}
@@ -997,6 +999,35 @@ export function documentPrintHTML(doc) {
     </div>
     <p class="fd-legal">${isFac ? 'Facture' : 'Devis'} n° ${esc(doc.numero)} — établi avec Boussole.</p>
   </div>`;
+}
+
+// ============ OBJECTIFS MULTIPLES (carte tableau de bord) ============
+export function objectifsCardHTML() {
+  const os = getObjectifs();
+  if (!os.length) {
+    return `<article class="panel c6 objscard">
+      <div class="panel__head"><h2>Mes objectifs</h2><button class="btn btn--sm" data-action="obj-new"><span data-icon="plus"></span> Objectif</button></div>
+      <div class="objs-empty"><span class="objs-empty__ic" data-icon="target"></span><p>Fixe-toi des projets — acheter un outil, une machine, une maison… — et regarde ta cagnotte grandir.</p></div>
+    </article>`;
+  }
+  const rows = os.slice(0, 5).map((o) => {
+    const i = objectifInfo(o); const pct = Math.round(i.taux * 100);
+    return `<div class="objrow ${i.atteint ? 'is-done' : ''}">
+      <button class="objrow__main" data-action="obj-open" data-id="${o.id}">
+        <span class="objrow__ic" data-icon="${o.icone || 'target'}"></span>
+        <span class="objrow__body">
+          <span class="objrow__top"><strong>${esc(o.titre || 'Objectif')}</strong><em>${i.atteint ? 'Atteint' : pct + ' %'}</em></span>
+          <span class="objrow__bar"><i style="width:${pct}%"></i></span>
+          <span class="objrow__sub">${formatF(i.actuel)} / ${formatF(i.cible)}${o.echeance ? ` · ${esc(o.echeance)}` : ''}</span>
+        </span>
+      </button>
+      <button class="objrow__add" data-action="obj-contrib" data-id="${o.id}" title="Ajouter de l'argent" aria-label="Ajouter de l'argent"><span data-icon="plus"></span></button>
+    </div>`;
+  }).join('');
+  return `<article class="panel c6 objscard">
+    <div class="panel__head"><h2>Mes objectifs</h2><button class="btn btn--sm" data-action="obj-new"><span data-icon="plus"></span> Objectif</button></div>
+    <div class="objlist">${rows}</div>
+  </article>`;
 }
 
 // ============ ÉCRAN STOCK ============

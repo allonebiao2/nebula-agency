@@ -69,7 +69,7 @@ function makeAdapter() {
   const uid = () => currentUser && currentUser.id;
   return {
     async pullAll() {
-      const [prof, prods, charges, ventes, depenses, credits, documents] = await Promise.all([
+      const [prof, prods, charges, ventes, depenses, credits, documents, objectifs] = await Promise.all([
         client.from('profils').select('*').maybeSingle(),
         client.from('produits').select('*'),
         client.from('charges_fixes').select('*'),
@@ -77,6 +77,7 @@ function makeAdapter() {
         client.from('depenses').select('*'),
         client.from('credits').select('*'),
         client.from('documents').select('*'),   // peut ne pas exister avant migration -> géré sans casse
+        client.from('objectifs').select('*'),
       ]);
       const p = prof.data || {};
       return {
@@ -89,6 +90,7 @@ function makeAdapter() {
         depenses: depenses.data || [],
         credits: credits.data || [],
         documents: documents.data || [],
+        objectifs: objectifs.data || [],
         _documentsUnavailable: Boolean(documents.error),   // table absente = migration non lancée
       };
     },
@@ -128,7 +130,7 @@ let repullTimer = null;
 function subscribeRealtime() {
   if (!client || channel) return;
   channel = client.channel('boussole-sync');
-  ['produits', 'charges_fixes', 'ventes', 'profils', 'depenses', 'credits', 'documents'].forEach((table) => {
+  ['produits', 'charges_fixes', 'ventes', 'profils', 'depenses', 'credits', 'documents', 'objectifs'].forEach((table) => {
     channel.on('postgres_changes', { event: '*', schema: 'public', table }, () => {
       clearTimeout(repullTimer);
       repullTimer = setTimeout(() => hydrateFromRemote().catch(() => {}), 400);

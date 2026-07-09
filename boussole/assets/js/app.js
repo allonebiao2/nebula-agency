@@ -265,6 +265,39 @@ function doGlobalSearch(q) {
   box.classList.add('is-open');
   hydrateIcons(box);
 }
+
+// ---------- Objectifs multiples ----------
+const OBJ_ICONS = [['target', 'Objectif'], ['home', 'Maison'], ['truck', 'Véhicule'], ['box', 'Matériel'], ['book', 'Études'], ['trophy', 'Projet'], ['wallet', 'Épargne'], ['flame', 'Rêve']];
+function openGoalModal(id) {
+  const o = id ? S.getObjectif2(id) : { icone: 'target', titre: '', montant_cible: '', echeance: '', note: '' };
+  if (!o) return;
+  const cur = S.getDevise();
+  const picker = OBJ_ICONS.map(([ic, lbl]) => `<button type="button" class="objic ${(o.icone || 'target') === ic ? 'is-on' : ''}" data-action="obj-icone" data-ic="${ic}" title="${lbl}" aria-label="${lbl}"><span data-icon="${ic}"></span></button>`).join('');
+  const body = `
+    <div class="field"><label for="ob-titre">Objectif</label><input id="ob-titre" class="input" value="${UI.esc(o.titre || '')}" placeholder="Ex. Acheter une machine à coudre" autocomplete="off"></div>
+    <div class="objics" role="group" aria-label="Icône de l'objectif">${picker}</div>
+    <div class="grid2">
+      <div class="field"><label for="ob-cible">Montant à atteindre</label><div class="inwrap"><input id="ob-cible" class="input" type="number" inputmode="numeric" value="${o.montant_cible || ''}" placeholder="0"><span class="inwrap__cur">${UI.esc(cur)}</span></div></div>
+      <div class="field"><label for="ob-ech">Échéance <span class="opt">(option)</span></label><input id="ob-ech" class="input" type="date" value="${UI.esc(o.echeance || '')}"></div>
+    </div>
+    ${id ? `<div class="field"><label for="ob-actuel">Déjà mis de côté</label><div class="inwrap"><input id="ob-actuel" class="input" type="number" inputmode="numeric" value="${o.montant_actuel || ''}" placeholder="0"><span class="inwrap__cur">${UI.esc(cur)}</span></div></div>` : ''}
+    <div class="field"><label for="ob-note">Note <span class="opt">(option)</span></label><textarea id="ob-note" class="input" rows="2" placeholder="Pourquoi ce projet, comment l'atteindre…">${UI.esc(o.note || '')}</textarea></div>
+    ${id ? `<button class="btn btn--danger-ghost btn--sm" data-action="del-objectif" data-id="${id}"><span data-icon="trash"></span> Supprimer cet objectif</button>` : ''}`;
+  UI.openModal(UI.modalShell(id ? "Modifier l'objectif" : 'Nouvel objectif', body,
+    `<button class="btn btn--ghost" data-action="close-modal">Annuler</button>
+     <button class="btn" data-action="save-objectif" data-id="${id || ''}">Enregistrer</button>`));
+  hydrateIcons($('#modal-root'));
+}
+function openContribModal(id) {
+  const o = S.getObjectif2(id); if (!o) return;
+  const i = S.objectifInfo(o); const cur = S.getDevise();
+  UI.openModal(UI.modalShell('Ajouter à « ' + (o.titre || 'objectif') + ' »',
+    `<p class="modal__lead">${S.formatF(i.actuel)} / ${S.formatF(i.cible)} · reste <strong>${S.formatF(i.reste)}</strong></p>
+     <div class="field"><label for="ob-add">Montant à ajouter</label><div class="inwrap"><input id="ob-add" class="input input--lg" type="number" inputmode="numeric" placeholder="0"><span class="inwrap__cur">${UI.esc(cur)}</span></div></div>`,
+    `<button class="btn btn--ghost" data-action="close-modal">Annuler</button>
+     <button class="btn" data-action="obj-add-montant" data-id="${id}">Ajouter</button>`));
+  hydrateIcons($('#modal-root'));
+}
 // Rafraîchit uniquement le tableau de bord en conservant la position de défilement.
 function refreshDash() {
   const view = $('#view');
@@ -766,6 +799,24 @@ document.addEventListener('click', (e) => {
       S.setSeuil(id, $('#st-seuil').value || 0);
       UI.closeModal(); UI.toast('Stock mis à jour'); return refreshStock();
     }
+
+    // objectifs multiples (cagnottes / projets)
+    case 'obj-new': return openGoalModal(null);
+    case 'obj-open': return openGoalModal(id);
+    case 'obj-contrib': return openContribModal(id);
+    case 'obj-icone': { const b = el.closest('.modal__body') || document; b.querySelectorAll('[data-action="obj-icone"]').forEach((x) => x.classList.remove('is-on')); el.classList.add('is-on'); return; }
+    case 'save-objectif': {
+      const titre = ($('#ob-titre').value || '').trim();
+      if (!titre) return UI.toast("Donne un nom à l'objectif", 'err');
+      const on = $('#modal-root .objic.is-on');
+      const icone = (on && on.dataset.ic) || 'target';
+      const payload = { titre, icone, montant_cible: $('#ob-cible').value, echeance: $('#ob-ech').value, note: $('#ob-note').value };
+      if (id) { if ($('#ob-actuel')) payload.montant_actuel = $('#ob-actuel').value; S.updateObjectif(id, payload); }
+      else S.addObjectif(payload);
+      UI.closeModal(); UI.toast('Objectif enregistré'); return;
+    }
+    case 'obj-add-montant': { const v = Number($('#ob-add').value) || 0; if (v <= 0) return UI.toast('Entre un montant', 'err'); S.contribuerObjectif(id, v); UI.closeModal(); UI.toast('Ajouté à ta cagnotte'); return; }
+    case 'del-objectif': return UI.confirmDialog({ title: "Supprimer l'objectif", message: 'Supprimer cet objectif et sa cagnotte ?', danger: true, okLabel: 'Supprimer' }, () => { S.deleteObjectif(id); UI.closeModal(); UI.toast('Objectif supprimé'); });
     case 'close-modal': return UI.closeModal();
     case 'confirm-ok': { const fn = $('#modal-root')._confirmOk; UI.closeModal(); if (fn) fn(); return; }
 
@@ -895,7 +946,7 @@ document.addEventListener('focusin', (e) => {
 });
 
 // ---------- Ripple sur TOUS les boutons (onde depuis le point touché) ----------
-const RIPPLE_SEL = '.btn, .qsell, .pchip, .vchip, .catchip, .aschip, .chip, .crd-btn, .pnav__btn, .nav__item, .cashtile--caisse, .seg__b, .authswitch__b, .fab__btn, .fab__act, .side__item, .side__sub, .drawer__item, .notif__row, .strow__pm';
+const RIPPLE_SEL = '.btn, .qsell, .pchip, .vchip, .catchip, .aschip, .chip, .crd-btn, .pnav__btn, .nav__item, .cashtile--caisse, .seg__b, .authswitch__b, .fab__btn, .fab__act, .side__item, .side__sub, .drawer__item, .notif__row, .strow__pm, .objic, .objrow__add';
 document.addEventListener('pointerdown', (e) => {
   const el = e.target.closest ? e.target.closest(RIPPLE_SEL) : null;
   if (!el) return;

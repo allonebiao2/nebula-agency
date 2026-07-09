@@ -1312,6 +1312,35 @@ input { font-family: inherit; }
 .vsearch__ic { position: absolute; left: 12px; width: 16px; height: 16px; color: var(--ink-faint); pointer-events: none; }
 .vsearch__ic svg { width: 100%; height: 100%; }
 .vsearch__in { width: 100%; padding-left: 36px; }
+
+/* ===== Objectifs multiples ===== */
+.objlist { display: flex; flex-direction: column; gap: 8px; }
+.objrow { display: flex; align-items: stretch; gap: 6px; }
+.objrow__main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 11px; text-align: left; cursor: pointer; background: var(--glass-fill); border: 1px solid var(--glass-brd); border-radius: var(--r-sm); padding: 10px 12px; color: inherit; box-shadow: inset 0 1px 0 var(--glass-hi); transition: border-color .18s, background .18s; }
+.objrow__main:hover { border-color: color-mix(in srgb, var(--acc) 30%, var(--glass-brd)); }
+.objrow__ic { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border-radius: 10px; background: var(--acc-soft); color: var(--acc-d); }
+.objrow__ic svg { width: 18px; height: 18px; }
+.objrow__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.objrow__top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.objrow__top strong { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.objrow__top em { font-style: normal; font-family: var(--num); font-weight: 700; font-size: 12.5px; color: var(--acc-d); flex: none; font-variant-numeric: tabular-nums; }
+.objrow__bar { display: block; height: 7px; border-radius: 999px; background: var(--glass-brd); overflow: hidden; }
+.objrow__bar i { display: block; height: 100%; border-radius: 999px; background: var(--grad); transition: width .5s var(--ease); }
+.objrow__sub { font-size: 11.5px; color: var(--ink-faint); font-family: var(--num); font-variant-numeric: tabular-nums; }
+.objrow.is-done .objrow__ic { background: var(--pos-soft); color: var(--pos-d); }
+.objrow.is-done .objrow__bar i { background: var(--grad-pos); }
+.objrow.is-done .objrow__top em { color: var(--pos-d); }
+.objrow__add { flex: none; width: 40px; display: grid; place-items: center; border: 1px solid var(--glass-brd); border-radius: var(--r-sm); background: var(--glass-fill); color: var(--acc-d); cursor: pointer; box-shadow: inset 0 1px 0 var(--glass-hi); }
+.objrow__add:hover { border-color: color-mix(in srgb, var(--acc) 40%, var(--glass-brd)); background: var(--acc-soft); }
+.objrow__add svg { width: 18px; height: 18px; }
+.objs-empty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 14px 10px 6px; color: var(--ink-faint); }
+.objs-empty__ic { width: 30px; height: 30px; color: var(--acc-d); opacity: .85; }
+.objs-empty p { font-size: 13px; margin: 0; max-width: 34ch; line-height: 1.5; }
+.objics { display: flex; flex-wrap: wrap; gap: 8px; margin: -2px 0 14px; }
+.objic { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--glass-brd); background: var(--glass-fill); border-radius: 12px; color: var(--ink-soft); cursor: pointer; transition: .18s var(--ease); }
+.objic:hover { color: var(--ink); border-color: color-mix(in srgb, var(--acc) 30%, var(--glass-brd)); }
+.objic svg { width: 20px; height: 20px; }
+.objic.is-on { color: var(--acc-d); border-color: var(--acc); background: var(--acc-soft); box-shadow: 0 0 0 1px var(--acc); }
 /* Desktop : ces overrides doivent gagner sur les défauts mobiles ci-dessus (ordre source) */
 @media (min-width: 900px) {
   .sidebar { display: flex; }

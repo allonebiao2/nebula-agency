@@ -17,6 +17,7 @@ function emptyState() {
     depenses: [],        // {id, libelle, categorie, montant, date, created_at}  (sorties d'argent)
     credits: [],         // {id, client, tel, montant, paye, date, echeance, note}  (ventes à crédit)
     documents: [],       // {id, type:'facture'|'devis', numero, date, echeance, client:{nom,tel,adresse}, lignes:[{designation,qte,pu}], remise, tva_taux, acompte, notes, statut, created_at}
+    objectifs: [],       // {id, titre, icone, montant_cible, montant_actuel, echeance, note, created_at}  (cagnottes/projets)
   };
 }
 
@@ -64,6 +65,7 @@ export async function hydrateFromRemote() {
     state.depenses.forEach((d) => pushRemote('depenses', d));
     state.credits.forEach((c) => pushRemote('credits', c));
     state.documents.forEach((d) => pushRemote('documents', d));
+    state.objectifs.forEach((o) => pushRemote('objectifs', o));
     pushRemote('profils', { id: 'me', ...state.profil });
     return;
   }
@@ -897,6 +899,46 @@ export function notifications() {
   state.credits.filter((c) => !c.paye && c.echeance && c.echeance < today).forEach((c) => list.push({ type: 'dette', icon: 'alert', text: `${c.client || 'Client'} — échéance dépassée (${formatF(c.montant)})`, screen: 'carnet' }));
   state.documents.filter((d) => d.type === 'facture' && d.statut !== 'payee' && d.echeance && d.echeance < today).forEach((d) => list.push({ type: 'facture', icon: 'receipt', text: `Facture ${d.numero} en retard`, screen: 'bilan' }));
   return { list, count: list.length };
+}
+
+// ---------- Objectifs multiples (cagnottes / projets : outil, maison…) ----------
+export function getObjectifs() {
+  return state.objectifs.slice().sort((a, b) => {
+    const aa = objectifInfo(a).atteint ? 1 : 0, bb = objectifInfo(b).atteint ? 1 : 0;
+    if (aa !== bb) return aa - bb;  // non atteints d'abord
+    return (a.echeance || 'z').localeCompare(b.echeance || 'z') || (new Date(a.created_at || 0) - new Date(b.created_at || 0));
+  });
+}
+export function getObjectif2(id) { return state.objectifs.find((o) => o.id === id) || null; }
+export function objectifInfo(o) {
+  const cible = Math.max(0, Number(o.montant_cible) || 0);
+  const actuel = Math.max(0, Number(o.montant_actuel) || 0);
+  const taux = cible > 0 ? Math.min(1, actuel / cible) : (actuel > 0 ? 1 : 0);
+  return { cible, actuel, reste: Math.max(0, cible - actuel), taux, atteint: cible > 0 && actuel >= cible };
+}
+export function addObjectif({ titre, icone, montant_cible, montant_actuel = 0, echeance, note } = {}) {
+  const o = { id: uid(), titre: (titre || '').trim(), icone: icone || 'target', montant_cible: Math.max(0, Number(montant_cible) || 0), montant_actuel: Math.max(0, Number(montant_actuel) || 0), echeance: echeance || '', note: (note || '').trim(), created_at: nowISO() };
+  state.objectifs.push(o); persistLocal(); pushRemote('objectifs', o); emit(); return o;
+}
+export function updateObjectif(id, patch = {}) {
+  const o = state.objectifs.find((x) => x.id === id); if (!o) return;
+  Object.assign(o, patch);
+  ['montant_cible', 'montant_actuel'].forEach((k) => { if (patch[k] != null) o[k] = Math.max(0, Number(patch[k]) || 0); });
+  if (patch.titre != null) o.titre = String(patch.titre).trim();
+  if (patch.note != null) o.note = String(patch.note).trim();
+  persistLocal(); pushRemote('objectifs', o); emit();
+}
+export function contribuerObjectif(id, montant) {
+  const o = state.objectifs.find((x) => x.id === id); if (!o) return;
+  o.montant_actuel = Math.max(0, (Number(o.montant_actuel) || 0) + (Number(montant) || 0));
+  persistLocal(); pushRemote('objectifs', o); emit();
+}
+export function deleteObjectif(id) { state.objectifs = state.objectifs.filter((o) => o.id !== id); persistLocal(); delRemote('objectifs', id); emit(); }
+export function objectifsSummary() {
+  const os = state.objectifs;
+  const cible = os.reduce((s, o) => s + (Number(o.montant_cible) || 0), 0);
+  const actuel = os.reduce((s, o) => s + (Number(o.montant_actuel) || 0), 0);
+  return { total: os.length, atteints: os.filter((o) => objectifInfo(o).atteint).length, cible, actuel, taux: cible > 0 ? Math.min(1, actuel / cible) : 0 };
 }
 
 // ---------- Meilleur jour de la semaine (8 dernières semaines) ----------

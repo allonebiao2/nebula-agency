@@ -103,6 +103,19 @@ create table if not exists public.documents (
 );
 create index if not exists documents_user_idx on public.documents (user_id);
 
+create table if not exists public.objectifs (
+  id             uuid primary key,
+  user_id        uuid not null references auth.users on delete cascade,
+  titre          text not null default '',
+  icone          text default 'target',                    -- clé d'icône (target/house/tool/car/school/ring/plane…)
+  montant_cible  numeric not null default 0,
+  montant_actuel numeric not null default 0,
+  echeance       text default '',                          -- 'YYYY-MM-DD'
+  note           text default '',
+  created_at     timestamptz default now()
+);
+create index if not exists objectifs_user_idx on public.objectifs (user_id);
+
 -- ---------- Row-Level Security ----------
 alter table public.profils       enable row level security;
 alter table public.produits      enable row level security;
@@ -111,12 +124,13 @@ alter table public.ventes        enable row level security;
 alter table public.depenses      enable row level security;
 alter table public.credits       enable row level security;
 alter table public.documents     enable row level security;
+alter table public.objectifs     enable row level security;
 
 -- Politiques : l'utilisateur ne touche que ses lignes.
 do $$
 declare t text;
 begin
-  foreach t in array array['profils','produits','charges_fixes','ventes','depenses','credits','documents'] loop
+  foreach t in array array['profils','produits','charges_fixes','ventes','depenses','credits','documents','objectifs'] loop
     execute format('drop policy if exists p_sel on public.%I;', t);
     execute format('drop policy if exists p_ins on public.%I;', t);
     execute format('drop policy if exists p_upd on public.%I;', t);
@@ -133,7 +147,7 @@ end $$;
 do $$
 declare t text;
 begin
-  foreach t in array array['profils','produits','charges_fixes','ventes','depenses','credits','documents'] loop
+  foreach t in array array['profils','produits','charges_fixes','ventes','depenses','credits','documents','objectifs'] loop
     begin
       execute format('alter publication supabase_realtime add table public.%I;', t);
     exception when duplicate_object then null;
