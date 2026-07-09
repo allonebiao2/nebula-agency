@@ -16,16 +16,18 @@
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Boussole">
+  <link rel="preload" href="assets/icons/logo-app.png" as="image">
   <link rel="preload" href="assets/icons/logo-mark.png" as="image">
   <link rel="preload" href="assets/fonts/BricolageGrotesque.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="assets/css/app.css?v=20260709e">
+  <link rel="stylesheet" href="assets/css/app.css?v=20260709f">
 </head>
 <body>
   <div id="splash" class="splash">
     <div class="splash__core">
       <span class="splash__glow"></span>
       <span class="splash__ring"></span>
-      <img class="splash__logo" src="assets/icons/logo-mark.png" alt="Boussole" width="132" height="127">
+      <span class="splash__up"></span>
+      <img class="splash__logo" src="assets/icons/logo-app.png" alt="Boussole" width="128" height="128">
     </div>
     <p class="splash__name">Boussole</p>
     <p class="splash__tag">Vois clair dans ton commerce</p>
@@ -43,6 +45,6 @@
   <noscript><p style="padding:24px;font-family:system-ui">Boussole a besoin de JavaScript pour fonctionner.</p></noscript>
 
   <script src="assets/js/vendor/supabase.js" defer></script>
-  <script type="module" src="assets/js/app.js?v=20260709e"></script>
+  <script type="module" src="assets/js/app.js?v=20260709f"></script>
 </body>
 </html>

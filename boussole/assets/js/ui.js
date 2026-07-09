@@ -52,7 +52,7 @@ export function navHTML(active) {
 // ============ ÉCRAN D'ACCUEIL — connexion / inscription ============
 export function viewWelcomeHTML() {
   return `<section class="view view--welcome">
-    <img class="welcome__logo" src="assets/icons/logo-mark.png" alt="Boussole" width="104" height="100">
+    <img class="welcome__logo" src="assets/icons/logo-app.png" alt="Boussole" width="108" height="108">
     <h1>${esc(APP_NAME)}</h1>
     <p class="welcome__sub">Gère ton commerce et vois ta rentabilité clairement — sur ton téléphone <strong>et</strong> ton PC, synchronisés.</p>
     <div class="welcome__actions">

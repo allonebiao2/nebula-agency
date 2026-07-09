@@ -653,6 +653,41 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && e.target && e.target.id === 'as-input') { e.preventDefault(); assistantAsk(e.target.value); }
 });
 
+// ---------- Ripple sur TOUS les boutons (onde depuis le point touché) ----------
+const RIPPLE_SEL = '.btn, .qsell, .pchip, .vchip, .catchip, .aschip, .chip, .crd-btn, .pnav__btn, .nav__item, .cashtile--caisse, .seg__b, .authswitch__b';
+document.addEventListener('pointerdown', (e) => {
+  const el = e.target.closest ? e.target.closest(RIPPLE_SEL) : null;
+  if (!el) return;
+  try { if (matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch {}
+  const r = el.getBoundingClientRect();
+  const size = Math.max(r.width, r.height);
+  const sp = document.createElement('span');
+  sp.className = 'ripple';
+  sp.style.width = sp.style.height = size + 'px';
+  sp.style.left = (e.clientX - r.left - size / 2) + 'px';
+  sp.style.top = (e.clientY - r.top - size / 2) + 'px';
+  el.appendChild(sp);
+  setTimeout(() => sp.remove(), 620);
+});
+
+// ---------- Boutons « aimantés » sur PC (suivent légèrement le curseur) ----------
+try {
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    let magEl = null;
+    document.addEventListener('pointermove', (e) => {
+      const el = e.target.closest ? e.target.closest('.btn, .qsell') : null;
+      if (magEl && magEl !== el) { magEl.style.translate = ''; magEl = null; }
+      if (el) {
+        const r = el.getBoundingClientRect();
+        const mx = (e.clientX - (r.left + r.width / 2)) * 0.18;
+        const my = (e.clientY - (r.top + r.height / 2)) * 0.28;
+        el.style.translate = `${mx.toFixed(1)}px ${my.toFixed(1)}px`;
+        magEl = el;
+      }
+    });
+  }
+} catch {}
+
 function pulseBenef() {
   const el = $('.env--benefice'); if (!el) return;
   el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse');

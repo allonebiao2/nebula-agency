@@ -1,5 +1,5 @@
 /* Boussole — service worker (offline shell). Bumper V à chaque déploiement. */
-const V = '20260709e';
+const V = '20260709f';
 const CACHE = 'boussole-' + V;
 const ASSETS = [
   './',
@@ -17,6 +17,7 @@ const ASSETS = [
   'assets/fonts/BricolageGrotesque.woff2',
   'assets/icons/icon.svg',
   'assets/icons/logo-mark.png',
+  'assets/icons/logo-app.png',
   'assets/icons/icon-192.png',
   'assets/icons/icon-512.png',
   'assets/icons/favicon-48.png',
