@@ -19,7 +19,7 @@
   <link rel="preload" href="assets/icons/logo-app.png" as="image">
   <link rel="preload" href="assets/icons/logo-mark.png" as="image">
   <link rel="preload" href="assets/fonts/BricolageGrotesque.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="assets/css/app.css?v=20260709h">
+  <link rel="stylesheet" href="assets/css/app.css?v=20260709i">
 </head>
 <body>
   <div id="splash" class="splash">
@@ -34,10 +34,13 @@
     <span class="splash__bar"><i></i></span>
   </div>
   <div id="app">
+    <aside id="sidebar" class="sidebar"></aside>
     <header id="topbar" class="topbar"></header>
     <main id="view" class="view-root"><div class="view"></div></main>
     <nav id="nav" class="nav"></nav>
+    <div id="fab" class="fab"></div>
   </div>
+  <div id="overlay-root" class="overlay-root"></div>
   <div id="modal-root" class="modal-root"></div>
   <div id="toast-root" class="toast-root"></div>
   <div id="print-area" class="print-area"></div>
@@ -45,6 +48,6 @@
   <noscript><p style="padding:24px;font-family:system-ui">Boussole a besoin de JavaScript pour fonctionner.</p></noscript>
 
   <script src="assets/js/vendor/supabase.js" defer></script>
-  <script type="module" src="assets/js/app.js?v=20260709h"></script>
+  <script type="module" src="assets/js/app.js?v=20260709i"></script>
 </body>
 </html>

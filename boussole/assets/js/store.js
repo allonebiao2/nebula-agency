@@ -97,10 +97,12 @@ export function setProfil(patch) {
 }
 
 // ---------- Mutations : produits ----------
-export function addProduit({ nom, modele, prix_vente = 0, couts = [] }) {
+export function addProduit({ nom, modele, prix_vente = 0, couts = [], stock = null, seuil = 0 }) {
   const p = {
     id: uid(), nom: nom.trim(), modele, prix_vente: Number(prix_vente) || 0,
     couts: couts.map((c) => ({ id: uid(), libelle: c.libelle, montant: Number(c.montant) || 0 })),
+    stock: (stock === null || stock === '') ? null : Math.max(0, Number(stock) || 0),  // null = non suivi
+    seuil: Number(seuil) || 0,                                                          // seuil d'alerte stock bas
     archive: false, created_at: nowISO(),
   };
   state.produits.push(p);
@@ -112,6 +114,8 @@ export function updateProduit(id, patch) {
   Object.assign(p, patch);
   if (patch.couts) p.couts = patch.couts.map((c) => ({ id: c.id || uid(), libelle: c.libelle, montant: Number(c.montant) || 0 }));
   if (patch.prix_vente != null) p.prix_vente = Number(patch.prix_vente) || 0;
+  if ('stock' in patch) p.stock = (patch.stock === null || patch.stock === '') ? null : Math.max(0, Number(patch.stock) || 0);
+  if (patch.seuil != null) p.seuil = Math.max(0, Number(patch.seuil) || 0);
   persistLocal(); pushRemote('produits', p); emit();
 }
 export function archiveProduit(id) { updateProduit(id, { archive: true }); }
@@ -173,11 +177,15 @@ export function addVente({ produit_id, qte = 1, prix_unitaire, date }) {
     date: date || nowISO(), created_at: nowISO(),
   };
   state.ventes.push(v);
+  // décrément automatique du stock si le produit est suivi
+  if (p.stock !== null && p.stock !== undefined) { p.stock = Math.max(0, (Number(p.stock) || 0) - (Number(v.qte) || 1)); pushRemote('produits', p); }
   persistLocal(); pushRemote('ventes', v); emit();
   return v;
 }
 export function deleteVente(id) {
-  state.ventes = state.ventes.filter((v) => v.id !== id);
+  const v = state.ventes.find((x) => x.id === id);
+  if (v) { const p = getProduit(v.produit_id); if (p && p.stock !== null && p.stock !== undefined) { p.stock = (Number(p.stock) || 0) + (Number(v.qte) || 0); pushRemote('produits', p); } }
+  state.ventes = state.ventes.filter((x) => x.id !== id);
   persistLocal(); delRemote('ventes', id); emit();
 }
 
@@ -821,6 +829,74 @@ export function montantEnLettres(n) {
   if (k > 0) parts.push((k === 1 ? '' : trois(k, true) + ' ') + 'mille');
   if (r > 0) parts.push(trois(r, false));
   return parts.join(' ').replace(/\s+/g, ' ').trim();
+}
+
+// ---------- Stock (inventaire) ----------
+// Un produit avec stock === null n'est PAS suivi (services, transformation à la demande…).
+export function getStockInfo(p) {
+  if (!p) return { suivi: false, qte: 0, seuil: 0, statut: 'non-suivi' };
+  const suivi = p.stock !== null && p.stock !== undefined;
+  const qte = Number(p.stock) || 0, seuil = Number(p.seuil) || 0;
+  let statut = 'non-suivi';
+  if (suivi) statut = qte <= 0 ? 'rupture' : (seuil > 0 && qte <= seuil ? 'bas' : 'ok');
+  return { suivi, qte, seuil, statut };
+}
+export function setStock(id, qte) { updateProduit(id, { stock: (qte === '' || qte === null) ? null : Math.max(0, Math.round(Number(qte) || 0)) }); }
+export function ajusterStock(id, delta) {
+  const p = getProduit(id); if (!p) return;
+  const base = (p.stock === null || p.stock === undefined) ? 0 : Number(p.stock) || 0;
+  updateProduit(id, { stock: Math.max(0, base + delta) });
+}
+export function setSeuil(id, seuil) { updateProduit(id, { seuil: Math.max(0, Math.round(Number(seuil) || 0)) }); }
+export function stockResume() {
+  const prods = getProduits();
+  let ruptures = 0, bas = 0, suivis = 0, valeur = 0;
+  prods.forEach((p) => { const s = getStockInfo(p); if (s.suivi) { suivis++; valeur += s.qte * (p.prix_vente || 0); if (s.statut === 'rupture') ruptures++; else if (s.statut === 'bas') bas++; } });
+  return { ruptures, bas, suivis, total: prods.length, valeur };
+}
+
+// ---------- Clients (annuaire dérivé des crédits + factures/devis) ----------
+export function getClients() {
+  const map = new Map();
+  const key = (nom, tel) => (tel && tel.replace(/[^0-9]/g, '')) || (nom || '').trim().toLowerCase();
+  const touch = (nom, tel) => {
+    const k = key(nom, tel); if (!k) return null;
+    if (!map.has(k)) map.set(k, { nom: (nom || 'Client').trim(), tel: (tel || '').trim(), dette: 0, nbCredits: 0, nbDocs: 0, dernier: '' });
+    const c = map.get(k);
+    if (nom && (c.nom === 'Client' || !c.nom)) c.nom = nom.trim();
+    if (!c.tel && tel) c.tel = tel.trim();
+    return c;
+  };
+  state.credits.forEach((cr) => { const c = touch(cr.client, cr.tel); if (!c) return; c.nbCredits++; if (!cr.paye) c.dette += Number(cr.montant) || 0; if ((cr.date || '') > c.dernier) c.dernier = cr.date || ''; });
+  state.documents.forEach((d) => { const c = touch(d.client && d.client.nom, d.client && d.client.tel); if (!c) return; c.nbDocs++; if ((d.date || '') > c.dernier) c.dernier = d.date || ''; });
+  return [...map.values()].sort((a, b) => b.dette - a.dette || (b.nbDocs + b.nbCredits) - (a.nbDocs + a.nbCredits) || a.nom.localeCompare(b.nom));
+}
+
+// ---------- Recouvrement (jauge : dettes réglées vs total) ----------
+export function recouvrement() {
+  const cr = state.credits;
+  const total = cr.reduce((s, c) => s + (Number(c.montant) || 0), 0);
+  const recouvre = cr.filter((c) => c.paye).reduce((s, c) => s + (Number(c.montant) || 0), 0);
+  return { total, recouvre, reste: total - recouvre, taux: total > 0 ? recouvre / total : 1, nbDebiteurs: cr.filter((c) => !c.paye).length };
+}
+
+// ---------- Journal de caisse (N dernières ventes, enrichies) ----------
+export function journalCaisse(n = 10) {
+  return state.ventes.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, n).map((v) => {
+    const p = getProduit(v.produit_id);
+    return { id: v.id, date: v.date, nom: p ? p.nom : 'Produit', qte: v.qte, montant: (Number(v.qte) || 0) * (Number(v.prix_unitaire) || 0) };
+  });
+}
+
+// ---------- Notifications (alertes agrégées pour la cloche) ----------
+export function notifications() {
+  const list = [];
+  getProduits().forEach((p) => { if (getStockInfo(p).statut === 'rupture') list.push({ type: 'rupture', icon: 'box', text: `${p.nom} — en rupture`, screen: 'stock' }); });
+  getProduits().forEach((p) => { const s = getStockInfo(p); if (s.statut === 'bas') list.push({ type: 'bas', icon: 'box', text: `${p.nom} — bientôt épuisé (${s.qte})`, screen: 'stock' }); });
+  const today = _ymd2(new Date());
+  state.credits.filter((c) => !c.paye && c.echeance && c.echeance < today).forEach((c) => list.push({ type: 'dette', icon: 'alert', text: `${c.client || 'Client'} — échéance dépassée (${formatF(c.montant)})`, screen: 'carnet' }));
+  state.documents.filter((d) => d.type === 'facture' && d.statut !== 'payee' && d.echeance && d.echeance < today).forEach((d) => list.push({ type: 'facture', icon: 'receipt', text: `Facture ${d.numero} en retard`, screen: 'bilan' }));
+  return { list, count: list.length };
 }
 
 // ---------- Meilleur jour de la semaine (8 dernières semaines) ----------

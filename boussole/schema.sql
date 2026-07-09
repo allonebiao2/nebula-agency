@@ -30,9 +30,14 @@ create table if not exists public.produits (
   modele      text not null default 'transformation',   -- 'transformation' | 'revente'
   prix_vente  numeric not null default 0,
   couts       jsonb   not null default '[]'::jsonb,      -- [{id,libelle,montant}]
+  stock       numeric,                                    -- null = non suivi
+  seuil       numeric not null default 0,                 -- seuil d'alerte stock bas
   archive     boolean not null default false,
   created_at  timestamptz default now()
 );
+-- stock : ajout si la table existe déjà d'une version antérieure
+alter table public.produits add column if not exists stock numeric;
+alter table public.produits add column if not exists seuil numeric not null default 0;
 
 create table if not exists public.charges_fixes (
   id          uuid primary key,

@@ -8,7 +8,8 @@ import {
   serieDashboard, topProduitsPeriode, getObjectif, resumeJour, historiqueVentes,
   historiqueDepenses, DEPENSE_CATS, previsions, getDevise, creditsSummary,
   ASSISTANT_SUGGESTIONS, rapportPeriode,
-  getDocuments, documentTotals, documentsSummary, montantEnLettres,
+  getDocuments, documentTotals, documentsSummary, montantEnLettres, getCredits,
+  getClients, getStockInfo, stockResume, recouvrement, journalCaisse, notifications,
   formatF, formatNombre, MOIS_LONGS,
 } from './store.js';
 import { chartBeneficeMensuel, chartEvolution, miniSpark, progressRing, chartHero, chartDonut, sparklineRaw } from './charts.js';
@@ -23,31 +24,146 @@ const moisLabel = (mk) => {
 };
 
 // ============ TOPBAR ============
-export function topbarHTML(cloud, theme = 'light') {
+export function topbarHTML(cloud, theme = 'light', notifCount = 0) {
   const nom = getState().profil.nom_activite || 'Mon activité';
-  const cloudBtn = cloud.configured
+  const badge = notifCount > 0 ? `<span class="bell__badge">${notifCount > 9 ? '9+' : notifCount}</span>` : '';
+  const cloudChip = cloud.configured
     ? (cloud.user
-      ? `<button class="chip chip--on" data-action="open-auth" title="Synchronisé"><span class="chip__ic" data-icon="cloud"></span><span class="chip__t">${esc(cloud.user.email.split('@')[0])}</span></button>`
-      : `<button class="chip chip--cta" data-action="open-auth" title="Se connecter"><span class="chip__ic" data-icon="cloud"></span><span class="chip__t">Se connecter</span></button>`)
-    : `<button class="chip" data-action="cloud-info" title="Mode local"><span class="chip__ic" data-icon="cloudOff"></span><span class="chip__t">Local</span></button>`;
+      ? `<button class="chip chip--on topbar__deskonly" data-action="open-auth" title="Synchronisé"><span class="chip__ic" data-icon="cloud"></span><span class="chip__t">${esc(cloud.user.email.split('@')[0])}</span></button>`
+      : `<button class="chip chip--cta topbar__deskonly" data-action="open-auth" title="Se connecter"><span class="chip__ic" data-icon="cloud"></span><span class="chip__t">Se connecter</span></button>`)
+    : `<button class="chip topbar__deskonly" data-action="cloud-info" title="Mode local"><span class="chip__ic" data-icon="cloudOff"></span><span class="chip__t">Local</span></button>`;
   return `
+    <button class="topbar__menu" data-action="open-drawer" aria-label="Ouvrir le menu"><span data-icon="menu"></span></button>
     <div class="topbar__brand"><span class="brand__mark"><img src="assets/icons/logo-mark.png" alt="" width="26" height="25"></span>
       <div class="brand__txt"><span class="brand__name">${esc(APP_NAME)}</span><span class="brand__sub">${esc(nom)}</span></div>
     </div>
+    <div class="topbar__search">
+      <span class="topbar__search-ic" data-icon="search"></span>
+      <input id="global-search" class="topbar__search-in" type="search" placeholder="Rechercher un produit, un client, une facture…" autocomplete="off" aria-label="Recherche globale" data-action="global-search">
+      <div id="gsearch-res" class="topbar__search-res"></div>
+    </div>
     <div class="topbar__actions">
+      <button class="btn btn--sm topbar__new" data-action="fab-vente"><span data-icon="plus"></span> Vente</button>
+      <button class="btn btn--ghost btn--sm topbar__new" data-action="fab-depense"><span data-icon="minus"></span> Dépense</button>
+      <button class="chip chip--icon chip--bell" data-action="open-notifs" title="Notifications" aria-label="Notifications">${badge}<span class="chip__ic" data-icon="bell"></span></button>
       <button class="chip chip--icon chip--assist" data-action="open-assistant" title="Assistant" aria-label="Assistant"><span class="chip__ic" data-icon="spark"></span></button>
-      <button class="chip chip--icon" data-action="toggle-theme" title="Thème clair / sombre" aria-label="Changer de thème"><span class="chip__ic" data-icon="${theme === 'dark' ? 'sun' : 'moon'}"></span></button>
-      <button class="chip chip--icon" data-action="open-tuto" title="Comment ça marche" aria-label="Aide"><span class="chip__ic" data-icon="help"></span></button>
-      ${cloudBtn}
+      <button class="chip chip--icon topbar__deskonly" data-action="toggle-theme" title="Thème clair / sombre" aria-label="Changer de thème"><span class="chip__ic" data-icon="${theme === 'dark' ? 'sun' : 'moon'}"></span></button>
+      ${cloudChip}
     </div>`;
 }
 
 // ============ NAV ============
+// Barre du bas (mobile) : 4 onglets + un creux central pour le FAB.
 export function navHTML(active) {
-  const item = (id, label, ic) =>
+  const item = (id, label, ic, badge) =>
     `<button class="nav__item ${active === id ? 'is-active' : ''}" data-action="go" data-screen="${id}">
-      <span class="nav__ic" data-icon="${ic}"></span><span class="nav__lbl">${label}</span></button>`;
-  return item('accueil', 'Accueil', 'home') + item('ventes', 'Ventes', 'ventes') + item('depenses', 'Dépenses', 'receipt') + item('bilan', 'Bilan', 'bilan') + item('reglages', 'Réglages', 'reglages');
+      <span class="nav__ic" data-icon="${ic}"></span><span class="nav__lbl">${label}</span>${badge ? `<span class="nav__badge">${badge}</span>` : ''}</button>`;
+  const nb = notifications().count;
+  return item('accueil', 'Accueil', 'home') + item('ventes', 'Ventes', 'ventes')
+    + `<span class="nav__notch" aria-hidden="true"></span>`
+    + item('carnet', 'Carnet', 'users', nb) + item('stock', 'Stock', 'box');
+}
+
+// Bouton flottant + speed-dial (Vente / Dépense)
+export function fabHTML(open) {
+  return `${open ? `<div class="fab__scrim" data-action="fab-close"></div>
+    <div class="fab__menu">
+      <button class="fab__act" data-action="fab-vente"><span class="fab__act-ic fab__act-ic--v" data-icon="ventes"></span> Vente</button>
+      <button class="fab__act" data-action="fab-depense"><span class="fab__act-ic fab__act-ic--d" data-icon="receipt"></span> Dépense</button>
+    </div>` : ''}
+    <button class="fab__btn ${open ? 'is-open' : ''}" data-action="fab-toggle" aria-label="Ajouter une vente ou une dépense" aria-expanded="${open ? 'true' : 'false'}"><span class="fab__plus" data-icon="plus"></span></button>`;
+}
+
+// Sidebar (desktop) : arborescence complète en accordéon
+const NAV_TREE = [
+  { id: 'accueil', label: 'Accueil', icon: 'home' },
+  { id: 'ventes', label: 'Ventes & recettes', icon: 'ventes', children: [
+    { label: 'Nouvelle vente', action: 'fab-vente' },
+    { label: 'Historique', screen: 'ventes' },
+    { label: 'Factures & devis', screen: 'bilan' },
+  ] },
+  { id: 'depenses', label: 'Dépenses & achats', icon: 'receipt', children: [
+    { label: 'Saisir une dépense', action: 'fab-depense' },
+    { label: 'Historique', screen: 'depenses' },
+    { label: 'Frais fixes', screen: 'reglages' },
+  ] },
+  { id: 'stock', label: 'Stock', icon: 'box' },
+  { id: 'carnet', label: 'Carnet — clients', icon: 'users' },
+  { id: 'bilan', label: 'Rapports & évolution', icon: 'bilan' },
+  { id: 'reglages', label: 'Réglages', icon: 'reglages' },
+];
+export function sidebarHTML(active, cloud, openGroup) {
+  const nb = notifications().count;
+  const rows = NAV_TREE.map((n) => {
+    if (n.children) {
+      const childActive = n.children.some((c) => c.screen === active);
+      const open = openGroup === n.id || (openGroup == null && childActive);
+      const kids = n.children.map((c) => c.screen
+        ? `<button class="side__sub ${active === c.screen ? 'is-active' : ''}" data-action="go" data-screen="${c.screen}">${c.label}</button>`
+        : `<button class="side__sub" data-action="${c.action}">${c.label}</button>`).join('');
+      return `<div class="side__grp ${open ? 'is-open' : ''}">
+        <button class="side__item side__item--grp ${childActive ? 'is-current' : ''}" data-action="side-acc" data-grp="${n.id}" aria-expanded="${open ? 'true' : 'false'}">
+          <span class="side__ic" data-icon="${n.icon}"></span><span class="side__lbl">${n.label}</span><span class="side__chev" data-icon="chevronDown"></span></button>
+        <div class="side__subs">${kids}</div></div>`;
+    }
+    const badge = n.id === 'carnet' && nb ? `<span class="side__badge">${nb}</span>` : '';
+    return `<button class="side__item ${active === n.id ? 'is-active' : ''}" data-action="go" data-screen="${n.id}">
+      <span class="side__ic" data-icon="${n.icon}"></span><span class="side__lbl">${n.label}</span>${badge}</button>`;
+  }).join('');
+  const acct = cloud.configured ? (cloud.user ? `<span class="side__acct-t"><strong>${esc(cloud.user.email.split('@')[0])}</strong><small>Synchronisé</small></span>` : `<span class="side__acct-t"><strong>Non connecté</strong><small>Mode local</small></span>`) : `<span class="side__acct-t"><strong>Mode local</strong><small>Cet appareil</small></span>`;
+  const acctAction = cloud.configured && cloud.user ? 'logout' : (cloud.configured ? 'open-auth' : 'cloud-info');
+  return `
+    <div class="side__brand"><span class="side__logo"><img src="assets/icons/logo-app.png" alt="" width="34" height="34"></span>
+      <span class="side__brandtxt"><strong>${esc(APP_NAME)}</strong><small>${esc(getState().profil.nom_activite || 'Mon activité')}</small></span></div>
+    <nav class="side__nav">${rows}</nav>
+    <div class="side__foot">
+      <button class="side__acct" data-action="${acctAction}"><span class="side__avatar" data-icon="user"></span>${acct}<span class="side__acct-ic" data-icon="${cloud.user ? 'logout' : 'cloud'}"></span></button>
+      <button class="side__foot-btn" data-action="toggle-theme" aria-label="Thème"><span data-icon="sun"></span></button>
+      <button class="side__foot-btn" data-action="open-tuto" aria-label="Aide"><span data-icon="help"></span></button>
+    </div>`;
+}
+
+// Drawer (mobile) : destinations secondaires + réglages rapides
+export function drawerHTML(cloud, theme) {
+  const nom = getState().profil.nom_activite || 'Mon activité';
+  const acct = cloud.configured ? (cloud.user ? `${esc(cloud.user.email)} · synchronisé` : 'Non connecté · mode local') : 'Mode local · cet appareil';
+  const item = (action, ic, label, screen) => `<button class="drawer__item" data-action="${action}"${screen ? ` data-screen="${screen}"` : ''}><span class="drawer__ic" data-icon="${ic}"></span>${label}</button>`;
+  return `<div class="drawer__scrim" data-action="close-overlay"></div>
+    <aside class="drawer" role="dialog" aria-label="Menu">
+      <div class="drawer__head">
+        <span class="drawer__avatar" data-icon="user"></span>
+        <div class="drawer__id"><strong>${esc(nom)}</strong><small>${esc(acct)}</small></div>
+        <button class="drawer__x" data-action="close-overlay" aria-label="Fermer"><span data-icon="close"></span></button>
+      </div>
+      <nav class="drawer__nav">
+        ${item('go', 'receipt', 'Dépenses & achats', 'depenses')}
+        ${item('go', 'bilan', 'Rapports & bilan', 'bilan')}
+        ${item('go', 'reglages', 'Réglages', 'reglages')}
+      </nav>
+      <div class="drawer__sep"></div>
+      <div class="drawer__nav">
+        ${item('toggle-theme', theme === 'dark' ? 'sun' : 'moon', `Thème ${theme === 'dark' ? 'clair' : 'sombre'}`)}
+        ${item('open-tuto', 'help', 'Aide & tutoriel')}
+        ${cloud.configured && cloud.user
+          ? item('logout', 'logout', 'Déconnexion')
+          : item(cloud.configured ? 'open-auth' : 'cloud-info', 'cloud', cloud.configured ? 'Se connecter' : 'Mode local')}
+      </div>
+    </aside>`;
+}
+
+// Panneau notifications (cloche)
+export function notifsHTML() {
+  const n = notifications();
+  const rows = n.list.length
+    ? n.list.map((a) => `<button class="notif__row" data-action="notif-go" data-screen="${a.screen}">
+        <span class="notif__ic notif__ic--${a.type}" data-icon="${a.icon}"></span>
+        <span class="notif__t">${esc(a.text)}</span><span class="notif__chev" data-icon="chevron"></span></button>`).join('')
+    : `<div class="notif__empty"><span class="notif__empty-ic" data-icon="check"></span>Tout est à jour, aucune alerte.</div>`;
+  return `<div class="notif__scrim" data-action="close-overlay"></div>
+    <div class="notif" role="dialog" aria-label="Notifications">
+      <div class="notif__head"><strong>Alertes</strong>${n.count ? `<span class="notif__count">${n.count}</span>` : ''}</div>
+      <div class="notif__list">${rows}</div>
+    </div>`;
 }
 
 // ============ ÉCRAN D'ACCUEIL — connexion / inscription ============
@@ -330,6 +446,15 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
     <button class="btn btn--ghost btn--sm hc__more" data-action="go" data-screen="bilan">Voir le bilan complet <span data-icon="chevron"></span></button>
   </article>` : '';
 
+  const journal = journalCaisse(10);
+  const journalCard = journal.length ? `<article class="panel c6 jrncard">
+    <div class="panel__head"><h2>Journal de caisse</h2><span class="panel__sub">dernières ventes</span></div>
+    <ul class="jrn">${journal.map((j) => {
+      const t = new Date(j.date); const hh = `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`;
+      return `<li class="jrn__row"><span class="jrn__time">${hh}</span><span class="jrn__nom">${esc(j.nom)}</span><span class="jrn__q">×${formatNombre(j.qte)}</span><span class="jrn__amt">${formatF(j.montant)}</span></li>`;
+    }).join('')}</ul>
+  </article>` : '';
+
   return `<section class="view view--dash">
     <header class="dashhead">
       <div><p class="dashhead__greet">${greet},</p><h1 class="dashhead__nom">${esc(nom)}</h1></div>
@@ -347,6 +472,7 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
       ${prodDonut}
       ${rankCard}
       ${barsCard}
+      ${journalCard}
       ${prevCard}
       ${creditsCard}
       ${conseilCard}
@@ -871,6 +997,106 @@ export function documentPrintHTML(doc) {
     </div>
     <p class="fd-legal">${isFac ? 'Facture' : 'Devis'} n° ${esc(doc.numero)} — établi avec Boussole.</p>
   </div>`;
+}
+
+// ============ ÉCRAN STOCK ============
+function _todayYmd() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+const STOCK_LABEL = { rupture: 'Rupture', bas: 'Stock bas', ok: 'En stock', 'non-suivi': 'Non suivi' };
+export function viewStockHTML(filter = {}) {
+  const prods = getProduits();
+  const r = stockResume();
+  if (!prods.length) {
+    return `<section class="view">${sectionTitle('Stock', 'Inventaire & alertes')}
+      ${emptyState('box', 'Aucun produit', "Ajoute tes produits pour suivre les quantités et être prévenu avant chaque rupture.", 'Ajouter un produit', 'add-produit')}</section>`;
+  }
+  const q = (filter.q || '').trim().toLowerCase();
+  const flt = filter.statut || 'tous';
+  let list = prods.filter((p) => !q || p.nom.toLowerCase().includes(q));
+  if (flt === 'reassort') list = list.filter((p) => ['rupture', 'bas'].includes(getStockInfo(p).statut));
+  else if (flt === 'nonsuivi') list = list.filter((p) => !getStockInfo(p).suivi);
+  const rows = list.map(stockRowHTML).join('') || `<li class="strow strow--empty">Aucun produit dans ce filtre.</li>`;
+  const chip = (id, lbl, n) => `<button class="vchip ${flt === id ? 'is-on' : ''}" data-action="stock-filter" data-f="${id}">${lbl}${n != null ? ` <b>${n}</b>` : ''}</button>`;
+  return `<section class="view">
+    ${sectionTitle('Stock', 'Inventaire & alertes')}
+    <div class="stockstat">
+      <div class="stockstat__c"><span class="stockstat__lbl">Valeur du stock</span><span class="stockstat__val">${formatF(r.valeur)}</span></div>
+      <div class="stockstat__c ${r.ruptures ? 'is-dng' : ''}"><span class="stockstat__lbl">Ruptures</span><span class="stockstat__val">${formatNombre(r.ruptures)}</span></div>
+      <div class="stockstat__c ${r.bas ? 'is-warn' : ''}"><span class="stockstat__lbl">Stock bas</span><span class="stockstat__val">${formatNombre(r.bas)}</span></div>
+      <div class="stockstat__c"><span class="stockstat__lbl">Suivis</span><span class="stockstat__val">${formatNombre(r.suivis)}/${formatNombre(r.total)}</span></div>
+    </div>
+    <div class="vfilters">
+      <div class="vchips">${chip('tous', 'Tous')}${chip('reassort', 'À réassort', r.ruptures + r.bas)}${chip('nonsuivi', 'Non suivi')}</div>
+      <div class="vsearch"><span class="vsearch__ic" data-icon="search"></span><input class="input vsearch__in" placeholder="Rechercher un produit" value="${esc(filter.q || '')}" data-action="stock-search" aria-label="Rechercher un produit"></div>
+    </div>
+    <ul class="stocklist">${rows}</ul>
+  </section>`;
+}
+function stockRowHTML(p) {
+  const s = getStockInfo(p);
+  const ctrl = s.suivi
+    ? `<div class="strow__step">
+        <button class="strow__pm" data-action="stock-minus" data-id="${p.id}" aria-label="Retirer une unité"><span data-icon="minus"></span></button>
+        <button class="strow__qte" data-action="stock-edit" data-id="${p.id}" title="Modifier la quantité et le seuil">${formatNombre(s.qte)}</button>
+        <button class="strow__pm" data-action="stock-plus" data-id="${p.id}" aria-label="Ajouter une unité"><span data-icon="plus"></span></button>
+      </div>`
+    : `<button class="btn btn--ghost btn--sm" data-action="stock-track" data-id="${p.id}">Suivre</button>`;
+  return `<li class="strow strow--${s.statut}">
+    <span class="strow__dot" aria-hidden="true"></span>
+    <div class="strow__id"><strong>${esc(p.nom)}</strong><small>${formatF(p.prix_vente)} · <span class="strow__st">${STOCK_LABEL[s.statut]}</span>${s.suivi && s.seuil ? ` · seuil ${formatNombre(s.seuil)}` : ''}</small></div>
+    ${ctrl}
+  </li>`;
+}
+
+// ============ ÉCRAN CARNET (clients & créances) ============
+export function viewCarnetHTML() {
+  const rec = recouvrement();
+  const clients = getClients();
+  const credits = getCredits().slice().sort((a, b) => Number(a.paye) - Number(b.paye) || new Date(b.date) - new Date(a.date));
+  const impayes = credits.filter((c) => !c.paye);
+  if (!clients.length && !credits.length) {
+    return `<section class="view">${sectionTitle('Carnet', 'Clients & créances')}
+      ${emptyState('users', 'Ton carnet est vide', "Note les clients qui te doivent de l'argent : tu vois qui doit quoi, et tu relances en un tap.", 'Ajouter un crédit', 'add-credit')}</section>`;
+  }
+  const pct = Math.round(rec.taux * 100);
+  const gauge = `<article class="panel reccard">
+    <div class="reccard__head"><span class="reccard__lbl">Recouvrement des dettes</span><span class="reccard__pct">${pct}<i>%</i></span></div>
+    <div class="recbar"><span class="recbar__fill" style="width:${pct}%"></span></div>
+    <div class="recmeta"><span class="recmeta__ok"><b>${formatF(rec.recouvre)}</b> recouvré</span><span class="recmeta__reste"><b>${formatF(rec.reste)}</b> à recouvrer${rec.nbDebiteurs ? ` · ${rec.nbDebiteurs} débiteur${rec.nbDebiteurs > 1 ? 's' : ''}` : ''}</span></div>
+  </article>`;
+  const dettesRows = impayes.length ? impayes.map(carnetCreditRow).join('') : `<li class="crdrow crdrow--empty">Aucune dette en cours. Bravo !</li>`;
+  const clientRows = clients.length ? clients.map(clientRowHTML).join('') : `<li class="clirow clirow--empty">Aucun client enregistré.</li>`;
+  return `<section class="view">
+    ${sectionTitle('Carnet', 'Clients & créances')}
+    ${gauge}
+    <article class="panel">
+      <div class="panel__head"><h2>Dettes en cours</h2><button class="btn btn--sm" data-action="add-credit"><span data-icon="plus"></span> Crédit</button></div>
+      <ul class="crdlist">${dettesRows}</ul>
+    </article>
+    <article class="panel">
+      <div class="panel__head"><h2>Clients</h2><span class="panel__sub">${clients.length} enregistré${clients.length > 1 ? 's' : ''}</span></div>
+      <ul class="clilist">${clientRows}</ul>
+    </article>
+  </section>`;
+}
+function carnetCreditRow(c) {
+  const late = !c.paye && c.echeance && c.echeance < _todayYmd();
+  return `<li class="crdrow ${c.paye ? 'is-paid' : ''} ${late ? 'is-late' : ''}">
+    <div class="crdrow__id"><strong>${esc(c.client || 'Client')}</strong><small>${formatF(c.montant)}${c.echeance ? ` · échéance ${esc(c.echeance)}${late ? ' — dépassée' : ''}` : ''}</small></div>
+    <div class="crdrow__acts">
+      ${!c.paye && c.tel ? `<button class="crd-btn crd-btn--wa" data-action="credit-remind" data-id="${c.id}" title="Rappel WhatsApp" aria-label="Rappel WhatsApp"><span data-icon="whatsapp"></span></button>` : ''}
+      <button class="crd-btn ${c.paye ? 'is-on' : ''}" data-action="credit-paid" data-id="${c.id}" title="${c.paye ? 'Marquer non payé' : 'Marquer payé'}" aria-label="Marquer payé"><span data-icon="check"></span></button>
+      <button class="crd-btn crd-btn--del" data-action="del-credit" data-id="${c.id}" title="Supprimer" aria-label="Supprimer"><span data-icon="trash"></span></button>
+    </div></li>`;
+}
+function clientRowHTML(c) {
+  const tel = (c.tel || '').replace(/[^0-9]/g, '');
+  const meta = [c.nbDocs ? `${c.nbDocs} doc${c.nbDocs > 1 ? 's' : ''}` : '', c.nbCredits ? `${c.nbCredits} crédit${c.nbCredits > 1 ? 's' : ''}` : ''].filter(Boolean).join(' · ') || 'client';
+  return `<li class="clirow">
+    <span class="clirow__av" data-icon="user"></span>
+    <div class="clirow__id"><strong>${esc(c.nom)}</strong><small>${esc(meta)}</small></div>
+    ${c.dette > 0 ? `<span class="clirow__dette" title="Dette en cours">${formatF(c.dette)}</span>` : ''}
+    ${tel ? `<a class="crd-btn crd-btn--wa" href="https://wa.me/${tel}" target="_blank" rel="noopener" title="WhatsApp" aria-label="Écrire sur WhatsApp"><span data-icon="whatsapp"></span></a>` : ''}
+  </li>`;
 }
 
 // ============ ÉCRAN RÉGLAGES ============

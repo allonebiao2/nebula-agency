@@ -106,7 +106,12 @@ function makeAdapter() {
         return;
       }
       const payload = { ...stripLocal(row), user_id: uid() };
-      const { error } = await client.from(table).upsert(payload, { onConflict: 'id' });
+      let { error } = await client.from(table).upsert(payload, { onConflict: 'id' });
+      if (error && table === 'produits' && /column|schema cache|does not exist/i.test(error.message || '')) {
+        // colonnes stock/seuil pas encore migrées -> on sauve au moins le reste du produit
+        const { stock, seuil, ...rest } = payload;
+        ({ error } = await client.from('produits').upsert(rest, { onConflict: 'id' }));
+      }
       if (error) throw error;
     },
     async remove(table, id) {

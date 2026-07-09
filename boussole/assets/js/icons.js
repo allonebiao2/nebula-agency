@@ -48,6 +48,9 @@ export const ICONS = {
   send: wrap('<path d="M4 11.5 20 4l-7 16-2.5-6.5z"/><path d="M10.5 13.5 20 4"/>'),
   calendar: wrap('<rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 9h16"/><path d="M8 3v4"/><path d="M16 3v4"/>'),
   doc: wrap('<path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v4h4"/><path d="M8.5 12h7"/><path d="M8.5 15.5h7"/><path d="M8.5 8.5h2.5"/>'),
+  bell: wrap('<path d="M6.5 9.5a5.5 5.5 0 0 1 11 0c0 4.6 2 6 2 6H4.5s2-1.4 2-6Z"/><path d="M9.7 19.5a2.4 2.4 0 0 0 4.6 0"/>'),
+  menu: wrap('<path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/>'),
+  users: wrap('<circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 5.2a3 3 0 0 1 0 5.6"/><path d="M17.5 19a5.5 5.5 0 0 0-3-4.9"/>'),
 };
 
 // injecte les icônes dans les [data-icon]

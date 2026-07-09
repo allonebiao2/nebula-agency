@@ -17,6 +17,11 @@ let venteFilter = Object.assign({ preset: 'jour', produitId: '', q: '' }, venteR
 let depFilter = Object.assign({ preset: 'mois', categorie: '', q: '' }, venteRange('mois'));
 let chat = []; // conversation assistant (en mémoire de session)
 let rapGran = 'jour'; // période du rapport (écran Bilan)
+let stockFilter = { statut: 'tous', q: '' };
+let fabOpen = false;         // speed-dial FAB (mobile)
+let overlay = null;          // null | 'drawer' | 'notifs'
+let sidebarAcc = null;       // groupe accordéon ouvert (sidebar desktop)
+let resetScroll = true;      // vrai = remet le scroll en haut (navigation), faux = conserve (maj live)
 
 const $ = (s, r = document) => r.querySelector(s);
 const cloudCtx = () => ({ configured: Cloud.isCloudConfigured(), user: Cloud.getUser() });
@@ -50,26 +55,50 @@ const isConfigured = () => Boolean(S.getState().profil.nom_activite) || S.getPro
 function render() {
   const tb = $('#topbar');
   tb.style.display = (screen === 'welcome') ? 'none' : '';
-  tb.innerHTML = UI.topbarHTML(cloudCtx(), effectiveTheme());
+  tb.innerHTML = UI.topbarHTML(cloudCtx(), effectiveTheme(), S.notifications().count);
   const view = $('#view');
+  const prevScroll = view.scrollTop;
   if (screen === 'config') view.innerHTML = UI.viewConfigHTML(wizard || (wizard = { step: 1, charges: UI.defaultCharges() }));
   else if (screen === 'welcome') view.innerHTML = UI.viewWelcomeHTML();
   else if (screen === 'accueil') view.innerHTML = UI.viewAccueilHTML(period);
   else if (screen === 'depenses') view.innerHTML = UI.viewDepensesHTML(depFilter);
   else if (screen === 'bilan') view.innerHTML = UI.viewBilanHTML(rapGran);
+  else if (screen === 'carnet') view.innerHTML = UI.viewCarnetHTML();
+  else if (screen === 'stock') view.innerHTML = UI.viewStockHTML(stockFilter);
   else if (screen === 'reglages') view.innerHTML = UI.viewReglagesHTML(cloudCtx());
   else view.innerHTML = UI.viewVentesHTML(venteFilter);
-  $('#nav').innerHTML = navVisible() ? UI.navHTML(screen) : '';
-  $('#nav').style.display = navVisible() ? '' : 'none';
+  const chrome = navVisible();
+  $('#nav').innerHTML = chrome ? UI.navHTML(screen) : '';
+  $('#nav').style.display = chrome ? '' : 'none';
+  $('#sidebar').innerHTML = chrome ? UI.sidebarHTML(screen, cloudCtx(), sidebarAcc) : '';
+  $('#sidebar').style.display = chrome ? '' : 'none';
+  $('#fab').innerHTML = chrome ? UI.fabHTML(fabOpen) : '';
+  $('#fab').style.display = chrome ? '' : 'none';
+  renderOverlay();
   hydrateIcons(document);
   if (screen === 'accueil' && animateNext) {
     const dash = view.querySelector('.view--dash'); if (dash) dash.classList.add('is-enter');
     animateCounts(view);
   }
   animateNext = false;
-  view.scrollTop = 0;
+  view.scrollTop = resetScroll ? 0 : prevScroll;
+  resetScroll = false;
 }
 function navVisible() { return screen !== 'config' && screen !== 'welcome'; }
+// Chrome léger (sans toucher #view -> conserve le scroll)
+function renderOverlay() {
+  const root = $('#overlay-root');
+  if (overlay === 'drawer') root.innerHTML = UI.drawerHTML(cloudCtx(), effectiveTheme());
+  else if (overlay === 'notifs') root.innerHTML = UI.notifsHTML();
+  else root.innerHTML = '';
+  root.classList.toggle('is-open', !!overlay);
+  hydrateIcons(root);
+}
+function renderFab() { $('#fab').innerHTML = navVisible() ? UI.fabHTML(fabOpen) : ''; hydrateIcons($('#fab')); }
+function renderSidebar() { $('#sidebar').innerHTML = navVisible() ? UI.sidebarHTML(screen, cloudCtx(), sidebarAcc) : ''; hydrateIcons($('#sidebar')); }
+function setOverlay(o) { overlay = o; if (o) { fabOpen = false; renderFab(); } renderOverlay(); }
+function refreshStock() { if (screen !== 'stock') return; const v = $('#view'); const t = v.scrollTop; v.innerHTML = UI.viewStockHTML(stockFilter); hydrateIcons(v); v.scrollTop = t; }
+function refreshCarnet() { if (screen !== 'carnet') return; const v = $('#view'); const t = v.scrollTop; v.innerHTML = UI.viewCarnetHTML(); hydrateIcons(v); v.scrollTop = t; }
 
 function loadPeriod() {
   try { const p = JSON.parse(localStorage.getItem('boussole:period') || 'null'); if (p && p.gran) return { gran: p.gran, offset: 0 }; } catch {}
@@ -199,6 +228,43 @@ function shareDocWA(doc) {
   const tel = (doc.client && doc.client.tel || '').replace(/[^0-9]/g, '');
   window.open('https://wa.me/' + tel + '?text=' + encodeURIComponent(txt), '_blank');
 }
+
+// ---------- Chrome : FAB, vente rapide, stock, recherche globale ----------
+function closeChrome() { if (fabOpen) { fabOpen = false; renderFab(); } if (overlay) { overlay = null; renderOverlay(); } }
+function openVenteModal() {
+  const prods = S.getProduits();
+  if (!prods.length) { UI.toast('Ajoute d\'abord un produit', 'err'); return setScreen('reglages'); }
+  const tiles = prods.map((p) => `<button class="qsell" data-action="sell-custom" data-id="${p.id}"><span class="qsell__nom">${UI.esc(p.nom)}</span><span class="qsell__price">${S.formatF(p.prix_vente)}</span></button>`).join('');
+  UI.openModal(UI.modalShell('Nouvelle vente', `<p class="modal__lead">Choisis un produit à vendre.</p><div class="qsell-grid">${tiles}</div>`,
+    `<button class="btn btn--ghost" data-action="close-modal">Fermer</button>`));
+  hydrateIcons($('#modal-root'));
+}
+function openStockModal(id) {
+  const p = S.getProduit(id); if (!p) return;
+  const s = S.getStockInfo(p);
+  UI.openModal(UI.modalShell('Stock — ' + p.nom,
+    `<div class="grid2">
+       <div class="field"><label for="st-qte">Quantité en stock</label><input id="st-qte" class="input" type="number" inputmode="numeric" value="${s.suivi ? s.qte : ''}" placeholder="ex. 24"></div>
+       <div class="field"><label for="st-seuil">Seuil d'alerte</label><input id="st-seuil" class="input" type="number" inputmode="numeric" value="${s.seuil || ''}" placeholder="ex. 5"></div>
+     </div>
+     <p class="modal__note">Tu es prévenu quand la quantité passe sous le seuil. Laisse la quantité vide pour ne plus suivre ce produit.</p>`,
+    `<button class="btn btn--ghost" data-action="close-modal">Annuler</button>
+     <button class="btn" data-action="save-stock" data-id="${id}">Enregistrer</button>`));
+  hydrateIcons($('#modal-root'));
+}
+function doGlobalSearch(q) {
+  const box = $('#gsearch-res'); if (!box) return;
+  q = (q || '').trim().toLowerCase();
+  if (!q) { box.innerHTML = ''; box.classList.remove('is-open'); return; }
+  const res = [];
+  S.getProduits().forEach((p) => { if (p.nom.toLowerCase().includes(q)) res.push({ ic: 'box', t: p.nom, s: 'Produit', screen: 'stock' }); });
+  S.getClients().forEach((c) => { if (c.nom.toLowerCase().includes(q) || (c.tel || '').includes(q)) res.push({ ic: 'user', t: c.nom, s: c.dette > 0 ? `doit ${S.formatF(c.dette)}` : 'Client', screen: 'carnet' }); });
+  S.getDocuments().forEach((d) => { if ((d.numero || '').toLowerCase().includes(q) || (d.client && d.client.nom || '').toLowerCase().includes(q)) res.push({ ic: 'receipt', t: d.numero, s: (d.client && d.client.nom) || d.type, screen: 'bilan' }); });
+  const rows = res.slice(0, 8).map((r) => `<button class="gsr" data-action="gsearch-go" data-screen="${r.screen}"><span class="gsr__ic" data-icon="${r.ic}"></span><span class="gsr__t">${UI.esc(r.t)}</span><span class="gsr__s">${UI.esc(r.s)}</span></button>`).join('');
+  box.innerHTML = rows || `<div class="gsr gsr--empty">Aucun résultat</div>`;
+  box.classList.add('is-open');
+  hydrateIcons(box);
+}
 // Rafraîchit uniquement le tableau de bord en conservant la position de défilement.
 function refreshDash() {
   const view = $('#view');
@@ -239,6 +305,7 @@ function animateCounts(root) {
 function setScreen(s) {
   if (s === 'accueil') animateNext = true;
   screen = s; if (s !== 'config') wizard = null;
+  overlay = null; fabOpen = false; sidebarAcc = null; resetScroll = true;
   try { if (s !== 'config' && s !== 'welcome') location.hash = s; } catch {}
   render();
 }
@@ -625,18 +692,18 @@ document.addEventListener('click', (e) => {
     case 'assistant-ask': return assistantAsk(el.dataset.q);
     case 'assistant-send': return assistantAsk($('#as-input') ? $('#as-input').value : '');
 
-    // crédits clients
-    case 'open-credits': return openCreditsModal();
+    // crédits clients (gérés sur l'écran Carnet — re-rendu réactif via subscribe)
+    case 'open-credits': return setScreen('carnet');
     case 'add-credit': return openAddCreditModal();
     case 'save-credit': {
       const client = ($('#cr-client').value || '').trim();
       const montant = Number($('#cr-montant').value) || 0;
       if (montant <= 0) return UI.toast('Entre un montant', 'err');
       S.addCredit({ client, montant, echeance: $('#cr-echeance').value || '', tel: ($('#cr-tel').value || '').trim() });
-      UI.toast('Crédit enregistré'); return openCreditsModal();
+      UI.closeModal(); UI.toast('Crédit enregistré'); return;
     }
-    case 'credit-paid': { const c = S.getCredits().find((x) => x.id === id); if (c) S.updateCredit(id, { paye: !c.paye }); return openCreditsModal(); }
-    case 'del-credit': return UI.confirmDialog({ title: 'Supprimer le crédit', message: 'Supprimer cette dette client ?', danger: true, okLabel: 'Supprimer' }, () => { S.deleteCredit(id); UI.toast('Crédit supprimé'); openCreditsModal(); });
+    case 'credit-paid': { const c = S.getCredits().find((x) => x.id === id); if (c) S.updateCredit(id, { paye: !c.paye }); return; }
+    case 'del-credit': return UI.confirmDialog({ title: 'Supprimer le crédit', message: 'Supprimer cette dette client ?', danger: true, okLabel: 'Supprimer' }, () => { S.deleteCredit(id); UI.toast('Crédit supprimé'); });
     case 'credit-remind': {
       const c = S.getCredits().find((x) => x.id === id);
       if (c && c.tel) { const nom = S.getState().profil.nom_activite || ''; const txt = `Bonjour ${c.client || ''}, petit rappel amical : il reste ${S.formatF(c.montant)} à régler${nom ? ` pour ${nom}` : ''}. Merci !`; window.open('https://wa.me/' + c.tel.replace(/[^0-9]/g, '') + '?text=' + encodeURIComponent(txt), '_blank'); }
@@ -673,6 +740,32 @@ document.addEventListener('click', (e) => {
     case 'doc-pdf': return printDoc(S.getDocument(id));
     case 'doc-wa': return shareDocWA(S.getDocument(id));
     case 'doc-del': return UI.confirmDialog({ title: 'Supprimer le document', message: 'Ce document sera définitivement supprimé. Continuer ?', danger: true, okLabel: 'Supprimer' }, () => { S.deleteDocument(id); UI.closeModal(); UI.toast('Document supprimé'); });
+
+    // navigation / chrome (drawer, cloche, sidebar accordéon, FAB)
+    case 'open-drawer': return setOverlay('drawer');
+    case 'open-notifs': return setOverlay('notifs');
+    case 'close-overlay': return setOverlay(null);
+    case 'notif-go': setOverlay(null); return setScreen(el.dataset.screen);
+    case 'side-acc': { const g = el.dataset.grp; sidebarAcc = (sidebarAcc === g) ? '__none__' : g; return renderSidebar(); }
+    case 'fab-toggle': fabOpen = !fabOpen; return renderFab();
+    case 'fab-close': fabOpen = false; return renderFab();
+    case 'fab-vente': closeChrome(); return openVenteModal();
+    case 'fab-depense': closeChrome(); return openDepenseModal();
+    case 'global-search': return; // saisie gérée par le listener input
+    case 'gsearch-go': { const b = $('#gsearch-res'); if (b) b.classList.remove('is-open'); return setScreen(el.dataset.screen); }
+
+    // stock
+    case 'stock-filter': stockFilter.statut = el.dataset.f; return refreshStock();
+    case 'stock-plus': S.ajusterStock(id, 1); return refreshStock();
+    case 'stock-minus': S.ajusterStock(id, -1); return refreshStock();
+    case 'stock-track': S.setStock(id, 0); UI.toast('Stock suivi'); return refreshStock();
+    case 'stock-edit': return openStockModal(id);
+    case 'save-stock': {
+      const q = $('#st-qte').value;
+      S.setStock(id, q === '' ? null : q);
+      S.setSeuil(id, $('#st-seuil').value || 0);
+      UI.closeModal(); UI.toast('Stock mis à jour'); return refreshStock();
+    }
     case 'close-modal': return UI.closeModal();
     case 'confirm-ok': { const fn = $('#modal-root')._confirmOk; UI.closeModal(); if (fn) fn(); return; }
 
@@ -775,6 +868,16 @@ document.addEventListener('input', (e) => {
       const s = document.querySelector('[data-action="df-search"]');
       if (s) { s.focus(); const v = s.value; s.setSelectionRange(v.length, v.length); }
     }, 220);
+  } else if (el.matches('[data-action="stock-search"]')) {
+    stockFilter.q = el.value;
+    clearTimeout(window.__stSearchT);
+    window.__stSearchT = setTimeout(() => {
+      refreshStock();
+      const s = document.querySelector('[data-action="stock-search"]');
+      if (s) { s.focus(); const v = s.value; s.setSelectionRange(v.length, v.length); }
+    }, 200);
+  } else if (el.matches('[data-action="global-search"]')) {
+    doGlobalSearch(el.value);
   } else if (el.closest && el.closest('.docform')) {
     // totaux facture/devis recalculés en direct à chaque frappe
     refreshDocTotals(el.closest('.docform'));
@@ -792,7 +895,7 @@ document.addEventListener('focusin', (e) => {
 });
 
 // ---------- Ripple sur TOUS les boutons (onde depuis le point touché) ----------
-const RIPPLE_SEL = '.btn, .qsell, .pchip, .vchip, .catchip, .aschip, .chip, .crd-btn, .pnav__btn, .nav__item, .cashtile--caisse, .seg__b, .authswitch__b';
+const RIPPLE_SEL = '.btn, .qsell, .pchip, .vchip, .catchip, .aschip, .chip, .crd-btn, .pnav__btn, .nav__item, .cashtile--caisse, .seg__b, .authswitch__b, .fab__btn, .fab__act, .side__item, .side__sub, .drawer__item, .notif__row, .strow__pm';
 document.addEventListener('pointerdown', (e) => {
   const el = e.target.closest ? e.target.closest(RIPPLE_SEL) : null;
   if (!el) return;
@@ -838,7 +941,7 @@ async function boot() {
   if (isConfigured()) screen = 'accueil';
   else screen = CLOUD_ENABLED ? 'welcome' : 'config';
   const h = (location.hash || '').replace('#', '');
-  if (isConfigured() && ['accueil', 'ventes', 'depenses', 'bilan', 'reglages'].includes(h)) screen = h;
+  if (isConfigured() && ['accueil', 'ventes', 'depenses', 'bilan', 'carnet', 'stock', 'reglages'].includes(h)) screen = h;
   if (screen === 'config') wizard = { step: 1, charges: UI.defaultCharges() };
   if (screen === 'accueil') animateNext = true;
   render();
