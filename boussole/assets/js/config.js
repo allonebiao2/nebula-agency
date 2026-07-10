@@ -3,7 +3,7 @@
 export const APP_NAME = 'Boussole';
 
 // Version de l'appli : sert au cache-busting (bumper à chaque modif).
-export const APP_VERSION = '20260710c';
+export const APP_VERSION = '20260710d';
 
 // --- Supabase (mode cloud) ---
 // Laisser vide = l'appli tourne en MODE LOCAL (localStorage, hors-ligne, privé à l'appareil).

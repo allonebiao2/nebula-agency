@@ -624,6 +624,69 @@ function openAddCreditModal() {
      <button class="btn" data-action="save-credit">Enregistrer</button>`));
   hydrateIcons($('#modal-root'));
 }
+function openVersementModal(id) {
+  const c = S.getCredit(id); if (!c) return;
+  const reste = S.creditReste(c); const cur = S.getDevise();
+  UI.openModal(UI.modalShell('Encaisser un versement',
+    `<p class="modal__lead">${UI.esc(c.client || 'Client')} · reste dû <strong>${S.formatF(reste)}</strong></p>
+     ${UI.zhelp('Note un paiement partiel reçu du client. Le reste dû se met à jour ; quand il tombe à zéro, la dette est soldée automatiquement.')}
+     <div class="field"><label for="vr-montant">Montant reçu</label><div class="inwrap"><input id="vr-montant" class="input input--lg" type="number" inputmode="numeric" placeholder="0"><span class="inwrap__cur">${UI.esc(cur)}</span></div></div>`,
+    `<button class="btn btn--ghost" data-action="close-modal">Annuler</button>
+     <button class="btn" data-action="save-versement" data-id="${id}">Encaisser</button>`));
+  hydrateIcons($('#modal-root'));
+}
+function openCreditDetail(id) {
+  const c = S.getCredit(id); if (!c) return;
+  const reste = S.creditReste(c);
+  const pays = (c.paiements || []).slice().reverse().map((p) => `<div class="pay-row"><span>${new Date(p.date).toLocaleDateString('fr-FR')}</span><span class="pay-row__m">+ ${S.formatF(p.montant)}</span></div>`).join('') || '<p class="modal__note">Aucun versement pour l\'instant.</p>';
+  UI.openModal(UI.modalShell('Dette — ' + (c.client || 'Client'),
+    `<div class="crd-recap"><div><span class="crd-recap__lbl">Montant</span><span>${S.formatF(c.montant)}</span></div><div><span class="crd-recap__lbl">Reste dû</span><span class="${reste > 0 ? 'neg' : 'pos'}">${S.formatF(reste)}</span></div></div>
+     ${c.echeance ? `<p class="modal__note">Échéance : ${UI.esc(c.echeance)}</p>` : ''}${c.note ? `<p class="modal__note">${UI.esc(c.note)}</p>` : ''}
+     <div class="docform__sec">Historique des paiements</div>
+     <div class="pay-list">${pays}</div>
+     <div class="crd-detail-acts">
+       ${reste > 0 ? `<button class="btn" data-action="credit-versement" data-id="${id}"><span data-icon="coins"></span> Versement</button>
+       <button class="btn btn--ghost" data-action="credit-solde" data-id="${id}">Solder (${S.formatF(reste)})</button>` : '<p class="crd-solde-ok"><span data-icon="check"></span> Dette soldée</p>'}
+     </div>
+     <button class="btn btn--danger-ghost btn--sm" data-action="del-credit" data-id="${id}"><span data-icon="trash"></span> Supprimer</button>`,
+    `<button class="btn btn--ghost" data-action="close-modal">Fermer</button>`));
+  hydrateIcons($('#modal-root'));
+}
+function openClientFiche(key) {
+  const c = S.clientByKey(key); if (!c) return;
+  const creds = S.clientCredits(key), docs = S.clientDocuments(key);
+  const tel = (c.tel || '').replace(/[^0-9]/g, '');
+  const credRows = creds.map((cr) => { const r = S.creditReste(cr); return `<div class="fiche-row"><span>${cr.date ? new Date(cr.date).toLocaleDateString('fr-FR') : ''} · crédit</span><span class="${r > 0 ? 'neg' : 'pos'}">${r > 0 ? S.formatF(r) + ' dû' : 'soldé'}</span></div>`; }).join('');
+  const docRows = docs.map((d) => `<div class="fiche-row"><span>${UI.esc(d.numero)} · ${d.type}</span><span>${S.formatF(d.total)}</span></div>`).join('');
+  UI.openModal(UI.modalShell(c.nom || 'Client',
+    `${(c.tel || c.adresse) ? `<p class="modal__lead">${[UI.esc(c.tel), UI.esc(c.adresse)].filter(Boolean).join(' · ')}</p>` : ''}
+     ${UI.zhelp('La fiche de ce client : ce qu’il te doit, ses crédits, et son historique d’achat (factures/devis). « Modifier » pour ses coordonnées et une note.')}
+     <div class="crd-recap"><div><span class="crd-recap__lbl">Reste dû</span><span class="${c.dette > 0 ? 'neg' : 'pos'}">${S.formatF(c.dette)}</span></div><div><span class="crd-recap__lbl">Achats</span><span>${S.formatNombre(docs.length)}</span></div></div>
+     ${c.note ? `<p class="modal__note">${UI.esc(c.note)}</p>` : ''}
+     ${creds.length ? `<div class="docform__sec">Crédits</div><div class="fiche-list">${credRows}</div>` : ''}
+     ${docs.length ? `<div class="docform__sec">Historique d'achat</div><div class="fiche-list">${docRows}</div>` : ''}
+     <div class="crd-detail-acts">
+       ${tel ? `<a class="btn btn--doc" href="https://wa.me/${tel}" target="_blank" rel="noopener"><span data-icon="whatsapp"></span> WhatsApp</a>` : ''}
+       <button class="btn btn--ghost" data-action="client-edit" data-key="${UI.esc(key)}" data-id="${c.id || ''}"><span data-icon="edit"></span> Modifier</button>
+     </div>`,
+    `<button class="btn btn--ghost" data-action="close-modal">Fermer</button>`));
+  hydrateIcons($('#modal-root'));
+}
+function openClientModal(id, prefill) {
+  const c = id ? S.getClientEntry(id) : (prefill || { nom: '', tel: '', adresse: '', note: '' });
+  if (id && !c) return;
+  UI.openModal(UI.modalShell(id ? 'Modifier le client' : 'Nouveau client',
+    `<div class="field"><label for="cl-nom">Nom</label><input id="cl-nom" class="input" value="${UI.esc(c.nom || '')}" placeholder="Nom du client" autocomplete="off"></div>
+     <div class="grid2">
+       <div class="field"><label for="cl-tel">Téléphone / WhatsApp</label><input id="cl-tel" class="input" type="tel" inputmode="tel" value="${UI.esc(c.tel || '')}" placeholder="Ex. 22997000000"></div>
+       <div class="field"><label for="cl-adr">Adresse <span class="opt">(option)</span></label><input id="cl-adr" class="input" value="${UI.esc(c.adresse || '')}" placeholder="Ville / quartier"></div>
+     </div>
+     <div class="field"><label for="cl-note">Note <span class="opt">(option)</span></label><textarea id="cl-note" class="input" rows="2" placeholder="Préférences, remarques…">${UI.esc(c.note || '')}</textarea></div>
+     ${id ? `<button class="btn btn--danger-ghost btn--sm" data-action="del-client" data-id="${id}"><span data-icon="trash"></span> Retirer de l'annuaire</button>` : ''}`,
+    `<button class="btn btn--ghost" data-action="close-modal">Annuler</button>
+     <button class="btn" data-action="save-client" data-id="${id || ''}">Enregistrer</button>`));
+  hydrateIcons($('#modal-root'));
+}
 
 // ---------- Vente détaillée (modale) ----------
 function openSellCustom(id) {
@@ -830,13 +893,29 @@ document.addEventListener('click', (e) => {
       S.addCredit({ client, montant, echeance: $('#cr-echeance').value || '', tel: ($('#cr-tel').value || '').trim() });
       UI.closeModal(); UI.toast('Crédit enregistré'); return;
     }
-    case 'credit-paid': { const c = S.getCredits().find((x) => x.id === id); if (c) S.updateCredit(id, { paye: !c.paye }); return; }
-    case 'del-credit': return UI.confirmDialog({ title: 'Supprimer le crédit', message: 'Supprimer cette dette client ?', danger: true, okLabel: 'Supprimer' }, () => { S.deleteCredit(id); UI.toast('Crédit supprimé'); });
+    case 'credit-paid': { S.soldeCredit(id); return; }
+    case 'credit-detail': return openCreditDetail(id);
+    case 'credit-versement': return openVersementModal(id);
+    case 'save-versement': { const v = Number($('#vr-montant').value) || 0; if (v <= 0) return UI.toast('Entre un montant', 'err'); S.addPaiement(id, v); UI.closeModal(); UI.toast('Versement encaissé'); return; }
+    case 'credit-solde': { S.soldeCredit(id); UI.closeModal(); UI.toast('Dette soldée'); return; }
+    case 'del-credit': return UI.confirmDialog({ title: 'Supprimer le crédit', message: 'Supprimer cette dette client ?', danger: true, okLabel: 'Supprimer' }, () => { S.deleteCredit(id); UI.closeModal(); UI.toast('Crédit supprimé'); });
     case 'credit-remind': {
       const c = S.getCredits().find((x) => x.id === id);
-      if (c && c.tel) { const nom = S.getState().profil.nom_activite || ''; const txt = `Bonjour ${c.client || ''}, petit rappel amical : il reste ${S.formatF(c.montant)} à régler${nom ? ` pour ${nom}` : ''}. Merci !`; window.open('https://wa.me/' + c.tel.replace(/[^0-9]/g, '') + '?text=' + encodeURIComponent(txt), '_blank'); }
+      if (c && c.tel) { const nom = S.getState().profil.nom_activite || ''; const txt = `Bonjour ${c.client || ''}, petit rappel amical : il reste ${S.formatF(S.creditReste(c))} à régler${nom ? ` pour ${nom}` : ''}. Merci !`; window.open('https://wa.me/' + c.tel.replace(/[^0-9]/g, '') + '?text=' + encodeURIComponent(txt), '_blank'); }
       return;
     }
+    // annuaire clients
+    case 'add-client': return openClientModal(null);
+    case 'client-open': return openClientFiche(el.dataset.key);
+    case 'client-edit': { if (el.dataset.id) return openClientModal(el.dataset.id); const c = S.clientByKey(el.dataset.key); return openClientModal(null, c ? { nom: c.nom, tel: c.tel, adresse: c.adresse, note: c.note } : null); }
+    case 'save-client': {
+      const nom = ($('#cl-nom').value || '').trim(), tel = ($('#cl-tel').value || '').trim();
+      if (!nom && !tel) return UI.toast('Nom ou téléphone requis', 'err');
+      const patch = { nom, tel, adresse: ($('#cl-adr').value || '').trim(), note: ($('#cl-note').value || '').trim() };
+      if (id) S.updateClientEntry(id, patch); else S.addClient(patch);
+      UI.closeModal(); UI.toast('Client enregistré'); return;
+    }
+    case 'del-client': return UI.confirmDialog({ title: 'Retirer le client', message: "Retirer ce client de l'annuaire ? (ses ventes et dettes restent enregistrées)", danger: true, okLabel: 'Retirer' }, () => { S.deleteClientEntry(id); UI.closeModal(); UI.toast('Client retiré'); });
 
     // historique ventes — filtres
     case 'vf-preset': { venteFilter = Object.assign(venteFilter, { preset: el.dataset.preset }, venteRange(el.dataset.preset)); return refreshVentes(); }
@@ -1077,7 +1156,7 @@ document.addEventListener('focusin', (e) => {
 });
 
 // ---------- Ripple sur TOUS les boutons (onde depuis le point touché) ----------
-const RIPPLE_SEL = '.btn, .qsell, .pchip, .vchip, .catchip, .aschip, .chip, .crd-btn, .pnav__btn, .nav__item, .cashtile--caisse, .seg__b, .authswitch__b, .fab__btn, .fab__act, .side__item, .side__sub, .drawer__item, .notif__row, .strow__pm, .objic, .objrow__add, .kpit--tap, .alertrow, .modechip, .cline__pm, .caisse__prod, .modechip';
+const RIPPLE_SEL = '.btn, .qsell, .pchip, .vchip, .catchip, .aschip, .chip, .crd-btn, .pnav__btn, .nav__item, .cashtile--caisse, .seg__b, .authswitch__b, .fab__btn, .fab__act, .side__item, .side__sub, .drawer__item, .notif__row, .strow__pm, .objic, .objrow__add, .kpit--tap, .alertrow, .modechip, .cline__pm, .caisse__prod, .modechip, .crdrow__tap, .clirow__main';
 document.addEventListener('pointerdown', (e) => {
   const el = e.target.closest ? e.target.closest(RIPPLE_SEL) : null;
   if (!el) return;

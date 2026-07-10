@@ -19,6 +19,7 @@ function emptyState() {
     documents: [],       // {id, type:'facture'|'devis', numero, date, echeance, client:{nom,tel,adresse}, lignes:[{designation,qte,pu}], remise, tva_taux, acompte, notes, statut, created_at}
     objectifs: [],       // {id, titre, icone, montant_cible, montant_actuel, echeance, note, created_at}  (cagnottes/projets)
     achats: [],          // {id, fournisseur, date, lignes:[{produit_id,qte,cout_unitaire}], statut, note, created_at}  (achats fournisseurs)
+    clients: [],         // {id, nom, tel, adresse, note, created_at}  (annuaire client explicite)
   };
 }
 
@@ -72,6 +73,7 @@ export async function hydrateFromRemote() {
     state.documents.forEach((d) => pushRemote('documents', d));
     state.objectifs.forEach((o) => pushRemote('objectifs', o));
     state.achats.forEach((a) => pushRemote('achats', a));
+    state.clients.forEach((cl) => pushRemote('clients', cl));
     pushRemote('profils', { id: 'me', ...state.profil });
     return;
   }
@@ -753,8 +755,9 @@ export function alertesDepenses({ jours = 30, facteur = 2.5 } = {}) {
 
 // ---------- Crédits (ventes à crédit : clients qui doivent) ----------
 export function getCredits() { return state.credits; }
+export function getCredit(id) { return state.credits.find((c) => c.id === id) || null; }
 export function addCredit({ client, tel, montant, echeance, note }) {
-  const c = { id: uid(), client: (client || '').trim(), tel: (tel || '').trim(), montant: Number(montant) || 0, paye: false, date: nowISO(), echeance: echeance || '', note: (note || '').trim(), created_at: nowISO() };
+  const c = { id: uid(), client: (client || '').trim(), tel: (tel || '').trim(), montant: Number(montant) || 0, paye: false, paiements: [], date: nowISO(), echeance: echeance || '', note: (note || '').trim(), created_at: nowISO() };
   state.credits.push(c); persistLocal(); pushRemote('credits', c); emit(); return c;
 }
 export function updateCredit(id, patch) {
@@ -763,10 +766,28 @@ export function updateCredit(id, patch) {
   persistLocal(); pushRemote('credits', c); emit();
 }
 export function deleteCredit(id) { state.credits = state.credits.filter((c) => c.id !== id); persistLocal(); delRemote('credits', id); emit(); }
+// Paiement partiel : un crédit garde une liste de versements ; « payé » = reste ≤ 0.
+function sommePaiements(c) { return (c.paiements || []).reduce((s, p) => s + (Number(p.montant) || 0), 0); }
+export function creditReste(c) { if (c.paye && !(c.paiements || []).length) return 0; return Math.max(0, (Number(c.montant) || 0) - sommePaiements(c)); }
+export function creditPaye(c) { return creditReste(c) <= 0; }
+export function addPaiement(id, montant) {
+  const c = state.credits.find((x) => x.id === id); if (!c) return;
+  montant = Math.max(0, Number(montant) || 0); if (!montant) return;
+  if (!Array.isArray(c.paiements)) c.paiements = [];
+  c.paiements.push({ montant, date: nowISO() });
+  c.paye = creditReste(c) <= 0;   // « soldé » synchronisé
+  persistLocal(); pushRemote('credits', c); emit();
+}
+export function soldeCredit(id) {   // encaisse tout le reste d'un coup
+  const c = state.credits.find((x) => x.id === id); if (!c) return;
+  const r = creditReste(c);
+  if (r > 0) addPaiement(id, r);
+  else { c.paye = true; persistLocal(); pushRemote('credits', c); emit(); }
+}
 export function creditsSummary() {
-  const impayes = state.credits.filter((c) => !c.paye)
+  const impayes = state.credits.filter((c) => creditReste(c) > 0)
     .sort((a, b) => (a.echeance || 'z').localeCompare(b.echeance || 'z') || new Date(a.date) - new Date(b.date));
-  return { impayes, total: impayes.reduce((s, c) => s + (Number(c.montant) || 0), 0), nb: impayes.length, nbTotal: state.credits.length };
+  return { impayes, total: impayes.reduce((s, c) => s + creditReste(c), 0), nb: impayes.length, nbTotal: state.credits.length };
 }
 
 // ---------- Documents (factures & devis pour les clients) ----------
@@ -907,28 +928,46 @@ export function stockResume() {
 }
 
 // ---------- Clients (annuaire dérivé des crédits + factures/devis) ----------
+export function normClientKey(nom, tel) { return (tel && String(tel).replace(/[^0-9]/g, '')) || (nom || '').trim().toLowerCase(); }
 export function getClients() {
   const map = new Map();
-  const key = (nom, tel) => (tel && tel.replace(/[^0-9]/g, '')) || (nom || '').trim().toLowerCase();
   const touch = (nom, tel) => {
-    const k = key(nom, tel); if (!k) return null;
-    if (!map.has(k)) map.set(k, { nom: (nom || 'Client').trim(), tel: (tel || '').trim(), dette: 0, nbCredits: 0, nbDocs: 0, dernier: '' });
+    const k = normClientKey(nom, tel); if (!k) return null;
+    if (!map.has(k)) map.set(k, { key: k, id: '', nom: (nom || 'Client').trim(), tel: (tel || '').trim(), adresse: '', note: '', dette: 0, nbCredits: 0, nbDocs: 0, dernier: '', explicit: false });
     const c = map.get(k);
     if (nom && (c.nom === 'Client' || !c.nom)) c.nom = nom.trim();
     if (!c.tel && tel) c.tel = tel.trim();
     return c;
   };
-  state.credits.forEach((cr) => { const c = touch(cr.client, cr.tel); if (!c) return; c.nbCredits++; if (!cr.paye) c.dette += Number(cr.montant) || 0; if ((cr.date || '') > c.dernier) c.dernier = cr.date || ''; });
+  state.clients.forEach((cl) => { const c = touch(cl.nom, cl.tel); if (!c) return; c.id = cl.id; c.explicit = true; if (cl.nom) c.nom = cl.nom.trim(); if (cl.adresse) c.adresse = cl.adresse; if (cl.note) c.note = cl.note; });
+  state.credits.forEach((cr) => { const c = touch(cr.client, cr.tel); if (!c) return; c.nbCredits++; c.dette += creditReste(cr); if ((cr.date || '') > c.dernier) c.dernier = cr.date || ''; });
   state.documents.forEach((d) => { const c = touch(d.client && d.client.nom, d.client && d.client.tel); if (!c) return; c.nbDocs++; if ((d.date || '') > c.dernier) c.dernier = d.date || ''; });
   return [...map.values()].sort((a, b) => b.dette - a.dette || (b.nbDocs + b.nbCredits) - (a.nbDocs + a.nbCredits) || a.nom.localeCompare(b.nom));
 }
+export function clientByKey(key) { return getClients().find((c) => c.key === key) || null; }
+export function clientCredits(key) { return state.credits.filter((c) => normClientKey(c.client, c.tel) === key).sort((a, b) => new Date(b.date) - new Date(a.date)); }
+export function clientDocuments(key) { return state.documents.filter((d) => normClientKey(d.client && d.client.nom, d.client && d.client.tel) === key).map((d) => ({ id: d.id, type: d.type, numero: d.numero, date: d.date, total: documentTotals(d).total })).sort((a, b) => (b.date || '').localeCompare(a.date || '')); }
+// Annuaire explicite (fiches clients ajoutées à la main)
+export function getClientEntry(id) { return state.clients.find((x) => x.id === id) || null; }
+export function addClient({ nom, tel, adresse, note } = {}) {
+  nom = (nom || '').trim(); const t = (tel || '').trim();
+  if (!nom && !t) return null;
+  const cl = { id: uid(), nom, tel: t, adresse: (adresse || '').trim(), note: (note || '').trim(), created_at: nowISO() };
+  state.clients.push(cl); persistLocal(); pushRemote('clients', cl); emit(); return cl;
+}
+export function updateClientEntry(id, patch = {}) {
+  const cl = state.clients.find((x) => x.id === id); if (!cl) return;
+  ['nom', 'tel', 'adresse', 'note'].forEach((k) => { if (patch[k] != null) cl[k] = String(patch[k]).trim(); });
+  persistLocal(); pushRemote('clients', cl); emit();
+}
+export function deleteClientEntry(id) { state.clients = state.clients.filter((x) => x.id !== id); persistLocal(); delRemote('clients', id); emit(); }
 
-// ---------- Recouvrement (jauge : dettes réglées vs total) ----------
+// ---------- Recouvrement (jauge : dettes réglées vs total, en tenant compte des versements) ----------
 export function recouvrement() {
   const cr = state.credits;
   const total = cr.reduce((s, c) => s + (Number(c.montant) || 0), 0);
-  const recouvre = cr.filter((c) => c.paye).reduce((s, c) => s + (Number(c.montant) || 0), 0);
-  return { total, recouvre, reste: total - recouvre, taux: total > 0 ? recouvre / total : 1, nbDebiteurs: cr.filter((c) => !c.paye).length };
+  const reste = cr.reduce((s, c) => s + creditReste(c), 0);
+  return { total, recouvre: total - reste, reste, taux: total > 0 ? (total - reste) / total : 1, nbDebiteurs: cr.filter((c) => creditReste(c) > 0).length };
 }
 
 // ---------- Journal de caisse (N dernières ventes, enrichies) ----------
@@ -945,7 +984,7 @@ export function notifications() {
   getProduits().forEach((p) => { if (getStockInfo(p).statut === 'rupture') list.push({ type: 'rupture', icon: 'box', text: `${p.nom} — en rupture`, screen: 'stock' }); });
   getProduits().forEach((p) => { const s = getStockInfo(p); if (s.statut === 'bas') list.push({ type: 'bas', icon: 'box', text: `${p.nom} — bientôt épuisé (${s.qte})`, screen: 'stock' }); });
   const today = _ymd2(new Date());
-  state.credits.filter((c) => !c.paye && c.echeance && c.echeance < today).forEach((c) => list.push({ type: 'dette', icon: 'alert', text: `${c.client || 'Client'} — échéance dépassée (${formatF(c.montant)})`, screen: 'carnet' }));
+  state.credits.filter((c) => creditReste(c) > 0 && c.echeance && c.echeance < today).forEach((c) => list.push({ type: 'dette', icon: 'alert', text: `${c.client || 'Client'} — échéance dépassée (${formatF(creditReste(c))})`, screen: 'carnet' }));
   state.documents.filter((d) => d.type === 'facture' && d.statut !== 'payee' && d.echeance && d.echeance < today).forEach((d) => list.push({ type: 'facture', icon: 'receipt', text: `Facture ${d.numero} en retard`, screen: 'bilan' }));
   return { list, count: list.length };
 }

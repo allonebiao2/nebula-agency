@@ -89,6 +89,8 @@ create table if not exists public.credits (
   created_at  timestamptz default now()
 );
 create index if not exists credits_user_idx on public.credits (user_id);
+-- paiement partiel : liste de versements [{montant, date}]
+alter table public.credits add column if not exists paiements jsonb default '[]'::jsonb;
 
 create table if not exists public.documents (
   id          uuid primary key,
@@ -133,6 +135,17 @@ create table if not exists public.achats (
 );
 create index if not exists achats_user_idx on public.achats (user_id);
 
+create table if not exists public.clients (
+  id          uuid primary key,
+  user_id     uuid not null references auth.users on delete cascade,
+  nom         text default '',
+  tel         text default '',
+  adresse     text default '',
+  note        text default '',
+  created_at  timestamptz default now()
+);
+create index if not exists clients_user_idx on public.clients (user_id);
+
 -- ---------- Row-Level Security ----------
 alter table public.profils       enable row level security;
 alter table public.produits      enable row level security;
@@ -143,12 +156,13 @@ alter table public.credits       enable row level security;
 alter table public.documents     enable row level security;
 alter table public.objectifs     enable row level security;
   alter table public.achats        enable row level security;
+  alter table public.clients       enable row level security;
 
 -- Politiques : l'utilisateur ne touche que ses lignes.
 do $$
 declare t text;
 begin
-  foreach t in array array['profils','produits','charges_fixes','ventes','depenses','credits','documents','objectifs','achats'] loop
+  foreach t in array array['profils','produits','charges_fixes','ventes','depenses','credits','documents','objectifs','achats','clients'] loop
     execute format('drop policy if exists p_sel on public.%I;', t);
     execute format('drop policy if exists p_ins on public.%I;', t);
     execute format('drop policy if exists p_upd on public.%I;', t);
@@ -165,7 +179,7 @@ end $$;
 do $$
 declare t text;
 begin
-  foreach t in array array['profils','produits','charges_fixes','ventes','depenses','credits','documents','objectifs','achats'] loop
+  foreach t in array array['profils','produits','charges_fixes','ventes','depenses','credits','documents','objectifs','achats','clients'] loop
     begin
       execute format('alter publication supabase_realtime add table public.%I;', t);
     exception when duplicate_object then null;

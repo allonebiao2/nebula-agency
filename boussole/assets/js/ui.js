@@ -8,7 +8,7 @@ import {
   serieDashboard, topProduitsPeriode, getObjectif, resumeJour, historiqueVentes,
   historiqueDepenses, DEPENSE_CATS, previsions, getDevise, creditsSummary,
   ASSISTANT_SUGGESTIONS, rapportPeriode,
-  getDocuments, documentTotals, documentsSummary, montantEnLettres, getCredits,
+  getDocuments, documentTotals, documentsSummary, montantEnLettres, getCredits, creditReste, creditPaye,
   getClients, getStockInfo, stockResume, recouvrement, journalCaisse, notifications,
   getObjectifs, objectifInfo,
   PAYMENT_MODES, PAYMENT_LABELS, getVendeurs,
@@ -1267,8 +1267,8 @@ function stockRowHTML(p) {
 export function viewCarnetHTML() {
   const rec = recouvrement();
   const clients = getClients();
-  const credits = getCredits().slice().sort((a, b) => Number(a.paye) - Number(b.paye) || new Date(b.date) - new Date(a.date));
-  const impayes = credits.filter((c) => !c.paye);
+  const credits = getCredits().slice().sort((a, b) => Number(creditPaye(a)) - Number(creditPaye(b)) || new Date(b.date) - new Date(a.date));
+  const impayes = credits.filter((c) => creditReste(c) > 0);
   if (!clients.length && !credits.length) {
     return `<section class="view">${sectionTitle('Carnet', 'Clients & créances')}
       ${emptyState('users', 'Ton carnet est vide', "Note les clients qui te doivent de l'argent : tu vois qui doit quoi, et tu relances en un tap.", 'Ajouter un crédit', 'add-credit')}</section>`;
@@ -1283,35 +1283,42 @@ export function viewCarnetHTML() {
   const clientRows = clients.length ? clients.map(clientRowHTML).join('') : `<li class="clirow clirow--empty">Aucun client enregistré.</li>`;
   return `<section class="view">
     ${sectionTitle('Carnet', 'Clients & créances')}
-    ${zhelp('Qui te doit de l’argent et tes clients. La jauge montre la part des dettes déjà remboursée. Touche le bouton WhatsApp pour relancer un client en un message.')}
+    ${zhelp('Qui te doit de l’argent (dettes) et ton annuaire clients. Tu peux encaisser des versements partiels, voir le reste dû, relancer par WhatsApp, et ouvrir la fiche d’un client pour son historique d’achat.')}
     ${gauge}
     <article class="panel">
       <div class="panel__head"><h2>Dettes en cours</h2><button class="btn btn--sm" data-action="add-credit"><span data-icon="plus"></span> Crédit</button></div>
       <ul class="crdlist">${dettesRows}</ul>
     </article>
     <article class="panel">
-      <div class="panel__head"><h2>Clients</h2><span class="panel__sub">${clients.length} enregistré${clients.length > 1 ? 's' : ''}</span></div>
+      <div class="panel__head"><h2>Clients</h2><button class="btn btn--sm" data-action="add-client"><span data-icon="plus"></span> Client</button></div>
       <ul class="clilist">${clientRows}</ul>
     </article>
   </section>`;
 }
 function carnetCreditRow(c) {
-  const late = !c.paye && c.echeance && c.echeance < _todayYmd();
-  return `<li class="crdrow ${c.paye ? 'is-paid' : ''} ${late ? 'is-late' : ''}">
-    <div class="crdrow__id"><strong>${esc(c.client || 'Client')}</strong><small>${formatF(c.montant)}${c.echeance ? ` · échéance ${esc(c.echeance)}${late ? ' — dépassée' : ''}` : ''}</small></div>
+  const reste = creditReste(c);
+  const late = reste > 0 && c.echeance && c.echeance < _todayYmd();
+  const partiel = (c.paiements || []).length > 0 && reste > 0;
+  return `<li class="crdrow ${reste <= 0 ? 'is-paid' : ''} ${late ? 'is-late' : ''}">
+    <button class="crdrow__tap" data-action="credit-detail" data-id="${c.id}">
+      <strong>${esc(c.client || 'Client')}</strong>
+      <small>${formatF(reste)}${partiel ? ` <span class="crd-part">sur ${formatF(c.montant)}</span>` : ''}${c.echeance ? ` · éch. ${esc(c.echeance)}${late ? ' — dépassée' : ''}` : ''}</small>
+    </button>
     <div class="crdrow__acts">
-      ${!c.paye && c.tel ? `<button class="crd-btn crd-btn--wa" data-action="credit-remind" data-id="${c.id}" title="Rappel WhatsApp" aria-label="Rappel WhatsApp"><span data-icon="whatsapp"></span></button>` : ''}
-      <button class="crd-btn ${c.paye ? 'is-on' : ''}" data-action="credit-paid" data-id="${c.id}" title="${c.paye ? 'Marquer non payé' : 'Marquer payé'}" aria-label="Marquer payé"><span data-icon="check"></span></button>
+      ${reste > 0 ? `<button class="crd-btn crd-btn--pay" data-action="credit-versement" data-id="${c.id}" title="Encaisser un versement" aria-label="Encaisser un versement"><span data-icon="coins"></span></button>` : ''}
+      ${reste > 0 && c.tel ? `<button class="crd-btn crd-btn--wa" data-action="credit-remind" data-id="${c.id}" title="Rappel WhatsApp" aria-label="Rappel WhatsApp"><span data-icon="whatsapp"></span></button>` : ''}
       <button class="crd-btn crd-btn--del" data-action="del-credit" data-id="${c.id}" title="Supprimer" aria-label="Supprimer"><span data-icon="trash"></span></button>
     </div></li>`;
 }
 function clientRowHTML(c) {
   const tel = (c.tel || '').replace(/[^0-9]/g, '');
-  const meta = [c.nbDocs ? `${c.nbDocs} doc${c.nbDocs > 1 ? 's' : ''}` : '', c.nbCredits ? `${c.nbCredits} crédit${c.nbCredits > 1 ? 's' : ''}` : ''].filter(Boolean).join(' · ') || 'client';
+  const meta = [c.nbDocs ? `${c.nbDocs} achat${c.nbDocs > 1 ? 's' : ''}` : '', c.nbCredits ? `${c.nbCredits} crédit${c.nbCredits > 1 ? 's' : ''}` : ''].filter(Boolean).join(' · ') || (c.tel || 'client');
   return `<li class="clirow">
-    <span class="clirow__av" data-icon="user"></span>
-    <div class="clirow__id"><strong>${esc(c.nom)}</strong><small>${esc(meta)}</small></div>
-    ${c.dette > 0 ? `<span class="clirow__dette" title="Dette en cours">${formatF(c.dette)}</span>` : ''}
+    <button class="clirow__main" data-action="client-open" data-key="${esc(c.key)}">
+      <span class="clirow__av" data-icon="user"></span>
+      <span class="clirow__id"><strong>${esc(c.nom)}</strong><small>${esc(meta)}</small></span>
+      ${c.dette > 0 ? `<span class="clirow__dette" title="Reste dû">${formatF(c.dette)}</span>` : ''}
+    </button>
     ${tel ? `<a class="crd-btn crd-btn--wa" href="https://wa.me/${tel}" target="_blank" rel="noopener" title="WhatsApp" aria-label="Écrire sur WhatsApp"><span data-icon="whatsapp"></span></a>` : ''}
   </li>`;
 }
