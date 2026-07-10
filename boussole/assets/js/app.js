@@ -791,8 +791,15 @@ function setScreen(s) {
 S.subscribe(() => { if (screen !== 'config') render(); });
 Cloud.onAuth((user) => {
   const loggedInNow = !!user && !prevUser;
+  const loggedOutNow = !user && prevUser;
   prevUser = user || null;
   if (user && screen === 'welcome') { screen = isConfigured() ? 'accueil' : 'config'; if (screen === 'accueil') animateNext = true; }
+  if (loggedOutNow) {
+    // Déconnexion -> retour à l'écran de connexion + fin de session employé
+    setActiveMember(null);
+    screen = 'welcome'; overlay = null; fabOpen = false; resetScroll = true;
+    try { location.hash = ''; } catch {}
+  }
   if (loggedInNow && pendingLogin) {
     pendingLogin = false;
     showSplash('Chargement de ton tableau de bord…');
@@ -801,6 +808,8 @@ Cloud.onAuth((user) => {
   } else {
     render();
   }
+  // Reverrouille si un code PIN est actif (protection de l'appareil)
+  if (loggedOutNow && Sec.hasPin() && Sec.lockOnOpen()) renderLock('open');
 });
 
 // ---------- Helpers de saisie ----------
