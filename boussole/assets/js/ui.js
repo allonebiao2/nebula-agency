@@ -198,15 +198,21 @@ export function notifsHTML() {
 // ============ ÉCRAN D'ACCUEIL — connexion / inscription ============
 export function viewWelcomeHTML() {
   return `<section class="view view--welcome">
-    <img class="welcome__logo" src="assets/icons/logo-app.png" alt="Boussole" width="108" height="108">
-    <h1>${esc(APP_NAME)}</h1>
-    <p class="welcome__sub">Gère ton commerce et vois ta rentabilité clairement — sur ton téléphone <strong>et</strong> ton PC, synchronisés.</p>
-    <div class="welcome__actions">
-      <button class="btn btn--lg" data-action="welcome-signup">Créer un compte</button>
-      <button class="btn btn--ghost btn--lg" data-action="welcome-signin">J'ai déjà un compte</button>
+    <img class="welcome__bg" src="assets/img/welcome.webp" alt="" aria-hidden="true">
+    <div class="welcome__scrim"></div>
+    <div class="welcome__top">
+      <img class="welcome__logo" src="assets/icons/logo-app.png" alt="Boussole" width="76" height="76">
+      <h1>${esc(APP_NAME)}</h1>
+      <p class="welcome__sub">Gère ton commerce et vois ta rentabilité clairement — sur ton téléphone <strong>et</strong> ton PC, synchronisés.</p>
     </div>
-    <button class="welcome__skip" data-action="welcome-skip">Continuer sans compte</button>
-    <span class="welcome__local"><span data-icon="cloudOff"></span>Sans compte, tes données restent sur cet appareil</span>
+    <div class="welcome__bottom">
+      <div class="welcome__actions">
+        <button class="btn btn--lg" data-action="welcome-signup">Créer un compte</button>
+        <button class="btn btn--ghost btn--lg" data-action="welcome-signin">J'ai déjà un compte</button>
+      </div>
+      <button class="welcome__skip" data-action="welcome-skip">Continuer sans compte</button>
+      <span class="welcome__local"><span data-icon="cloudOff"></span>Sans compte, tes données restent sur cet appareil</span>
+    </div>
   </section>`;
 }
 

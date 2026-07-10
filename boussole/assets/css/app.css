@@ -928,19 +928,32 @@ input { font-family: inherit; }
 /* ============================================================
    ÉCRAN D'ACCUEIL — connexion / inscription visibles
    ============================================================ */
-.view--welcome { max-width: 440px; margin: 0 auto; text-align: center; padding-top: 5vh; }
-.welcome__logo { width: 108px; height: auto; margin: 0 auto 10px; display: block; border-radius: 24px;
-  box-shadow: 0 0 0 1.5px rgba(246,166,60,.24), 0 12px 30px -10px rgba(0,0,0,.4), 0 0 42px -14px rgba(246,166,60,.42);
+/* Écran de connexion — hero photo plein écran (commerçante) + dégradé sombre */
+.view-root:has(.view--welcome) { padding-bottom: 0; }
+.view--welcome { position: relative; max-width: none; margin: 0; padding: 0; overflow: hidden;
+  min-height: 100dvh; display: flex; flex-direction: column; justify-content: space-between;
+  text-align: center; color: #f5efe6; }
+.welcome__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 58% center; z-index: 0; animation: welcomeZoom 16s ease-out both; }
+.welcome__scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(8,9,12,.9) 0%, rgba(8,9,12,.45) 26%, rgba(8,9,12,.12) 46%, rgba(8,9,12,.62) 74%, rgba(8,9,12,.95) 100%); }
+.welcome__top { position: relative; z-index: 2; padding: max(7vh, 40px) 22px 0; }
+.welcome__bottom { position: relative; z-index: 2; padding: 0 22px max(5vh, 26px); max-width: 460px; margin: 0 auto; width: 100%; }
+.welcome__logo { width: 76px; height: auto; margin: 0 auto 12px; display: block; border-radius: 18px;
+  box-shadow: 0 0 0 1.5px rgba(246,166,60,.3), 0 12px 30px -10px rgba(0,0,0,.5), 0 0 46px -12px rgba(246,166,60,.5);
   animation: iconRise .9s var(--ease) both; }
-.welcome h1 { font-family: var(--font-display); font-size: clamp(28px, 8vw, 34px); margin: 4px 0 8px; letter-spacing: -.02em; }
-.welcome__sub { color: var(--ink-soft); font-size: 15px; margin: 0 auto 28px; max-width: 32ch; line-height: 1.5; }
-.welcome__actions { display: flex; flex-direction: column; gap: 12px; animation: splashUp .6s var(--ease) .15s both; }
+.welcome h1 { font-family: var(--font-display); font-size: clamp(30px, 9vw, 38px); margin: 2px 0 10px; letter-spacing: -.02em; color: #fff; text-shadow: 0 2px 18px rgba(0,0,0,.5); }
+.welcome__sub { color: rgba(245,239,230,.9); font-size: 15px; margin: 0 auto; max-width: 30ch; line-height: 1.55; text-shadow: 0 1px 10px rgba(0,0,0,.55); }
+.welcome__actions { display: flex; flex-direction: column; gap: 11px; animation: splashUp .6s var(--ease) .15s both; }
 .welcome__actions .btn { width: 100%; justify-content: center; }
-.welcome__skip { margin: 14px auto 0; background: none; border: 0; color: var(--ink-faint); font-size: 13.5px;
+.welcome__actions .btn--ghost { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.32); color: #fff; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.welcome__actions .btn--ghost:hover { background: rgba(255,255,255,.18); }
+.welcome__skip { margin: 15px auto 0; background: none; border: 0; color: rgba(245,239,230,.75); font-size: 13.5px;
   text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-.welcome__skip:hover { color: var(--ink); }
-.welcome__local { margin-top: 20px; font-size: 12px; color: var(--ink-faint); display: inline-flex; align-items: center; gap: 6px; }
+.welcome__skip:hover { color: #fff; }
+.welcome__local { margin-top: 16px; font-size: 12px; color: rgba(245,239,230,.62); display: inline-flex; align-items: center; gap: 6px; }
 .welcome__local svg { width: 14px; height: 14px; }
+@keyframes welcomeZoom { from { transform: scale(1.06); } to { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .welcome__bg { animation: none; } }
 
 /* ---------- Topbar : logo + bouton « Se connecter » ---------- */
 .brand__mark img { width: 100%; height: 100%; object-fit: contain; display: block; }
