@@ -19,6 +19,7 @@ import {
   getAudit, getBoutiques, activeBoutiqueId, consolideBoutiques, relancesDues,
   isDigital, getBusinessType, TARIF_TYPES, TARIF_LABELS, TARIF_UNITS, depenseCats,
   getDepensesRecurrentes, coutsRecurrentsMensuels, getDepensesPerso, pochePersoResume,
+  chargesAVenir, chargesAVenirTotal,
   formatF, formatNombre, MOIS_LONGS,
 } from './store.js';
 import { chartBeneficeMensuel, chartEvolution, miniSpark, progressRing, chartHero, chartDonut, sparklineRaw } from './charts.js';
@@ -82,8 +83,9 @@ export function helpTopics() {
       intro: dig ? 'Ton catalogue de prestations et produits digitaux, avec leur prix. Pas de stock à gérer.' : 'Suis tes quantités et sois prévenu avant chaque rupture.',
       actions: dig ? [
         { t: 'Créer une prestation', d: 'Choisis un type de tarif : Prix fixe, Taux horaire (/h) ou Par projet.' },
-        { t: 'Saisir les coûts', d: 'Sous-traitance ou outils dédiés : déduits automatiquement de ton bénéfice.' },
-        { t: 'Modifier un prix', d: 'Touche une ligne pour ajuster le tarif à tout moment.' },
+        { t: 'Détailler chaque coût', d: 'Sous chaque coût : une note (« Forfait API OpenAI »), le statut « Déjà payé / À payer », et la périodicité (ponctuel, par mois, par an).' },
+        { t: 'Impulser un coût récurrent', d: 'Coche « Impulser dans mes dépenses fixes globales » : le coût devient une charge mensuelle de l’entreprise (compté une seule fois, jamais deux).' },
+        { t: 'Suivre les « À payer »', d: 'Un coût « À payer » n’entame pas encore ta marge : il apparaît dans « Charges à venir » sur le tableau de bord, avec son échéance.' },
       ] : [
         { t: 'Comprendre les alertes', d: 'Rupture (rouge) = plus rien en stock. Stock faible (orange) = sous ton seuil.' },
         { t: 'Ajouter un produit', d: 'Depuis Réglages ou ici ; démarre le suivi des quantités.' },
@@ -610,6 +612,7 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
     </header>
     ${cashCard}
     ${alertsBlockHTML()}
+    ${chargesAVenirCardHTML()}
     ${periodBarHTML(gran, offset, D.label)}
     <div class="dash">
       ${hero}
@@ -1395,6 +1398,26 @@ export function receiptHTML(data, fmt) {
   </div>`;
 }
 
+// Carte « Charges à venir » : coûts de prestations marqués « À payer » (échéances prévisibles).
+export function chargesAVenirCardHTML() {
+  const rows = chargesAVenir();
+  if (!rows.length) return '';
+  const items = rows.slice(0, 6).map((r) => {
+    const jr = r.joursRestants;
+    const ech = jr == null ? '' : (jr < 0 ? `<span class="cav-late">en retard ${-jr} j</span>` : (jr === 0 ? '<span class="cav-due">aujourd’hui</span>' : `<span class="cav-soft">dans ${jr} j</span>`));
+    return `<li class="cavrow">
+      <div class="cavrow__b"><strong>${esc(r.libelle)}</strong><small>${esc(r.produitNom)} ${ech}</small></div>
+      <span class="cavrow__amt">${formatF(r.montant)}</span>
+      <button class="btn btn--sm" data-action="payer-cout" data-pid="${r.produitId}" data-cid="${r.coutId}">Payé</button>
+    </li>`;
+  }).join('');
+  return `<article class="panel cavcard">
+    <div class="panel__head"><h2>Charges à venir</h2><span class="panel__badge">${formatF(chargesAVenirTotal())}</span></div>
+    ${zhelp('Les coûts de tes prestations marqués « À payer ». Ils n’entament pas encore ton bénéfice ; touche « Payé » quand tu règles, et le coût bascule dans ta marge.')}
+    <ul class="cavlist">${items}</ul>
+  </article>`;
+}
+
 // ============ BLOC D'ALERTES (tableau de bord) ============
 export function alertsBlockHTML() {
   const n = notifications();
@@ -2098,12 +2121,46 @@ export function productFormFields(p) {
     </div>`;
 }
 export function coutRowsHTML(rows) {
-  return rows.map((c, i) => `<div class="crow" data-i="${i}">
-    <input class="input crow__lbl" data-pf="libelle" value="${esc(c.libelle)}" placeholder="Libellé du coût">
-    <input class="input crow__amt" data-pf="montant" type="number" inputmode="numeric" value="${esc(c.montant)}" placeholder="0">
-    <span class="crow__cur">F</span>
-    <button type="button" class="crow__del" data-action="pf-del-cout" data-i="${i}"><span data-icon="close"></span></button>
-  </div>`).join('');
+  if (!isDigital()) {
+    return rows.map((c, i) => `<div class="crow" data-i="${i}">
+      <input class="input crow__lbl" data-pf="libelle" value="${esc(c.libelle)}" placeholder="Libellé du coût">
+      <input class="input crow__amt" data-pf="montant" type="number" inputmode="numeric" value="${esc(c.montant)}" placeholder="0">
+      <span class="crow__cur">F</span>
+      <button type="button" class="crow__del" data-action="pf-del-cout" data-i="${i}"><span data-icon="close"></span></button>
+    </div>`).join('');
+  }
+  // Digital : ligne de coût enrichie (note, statut, périodicité, échéance, impulsion globale).
+  return rows.map((c, i) => {
+    const per = ['ponctuel', 'mensuel', 'annuel'].includes(c.periode) ? c.periode : 'ponctuel';
+    const paid = c.is_paid !== false;
+    const showDue = per !== 'ponctuel' || !paid;
+    const showPush = per !== 'ponctuel';
+    const dueField = per === 'mensuel'
+      ? `<input class="input crow__dueday" type="number" min="1" max="31" data-pf="due_date" value="${esc(c.due_date || '')}" placeholder="10"><span class="crow__hint">du mois</span>`
+      : `<input class="input" type="date" data-pf="due_date" value="${esc((c.due_date || '').slice(0, 10))}">`;
+    return `<div class="crow crow--rich" data-i="${i}">
+      <div class="crow__top">
+        <input class="input crow__lbl" data-pf="libelle" value="${esc(c.libelle)}" placeholder="Coût (ex. Sous-traitance)">
+        <input class="input crow__amt" data-pf="montant" type="number" inputmode="numeric" value="${esc(c.montant)}" placeholder="0">
+        <span class="crow__cur">F</span>
+        <button type="button" class="crow__del" data-action="pf-del-cout" data-i="${i}" aria-label="Retirer"><span data-icon="close"></span></button>
+      </div>
+      <input class="input crow__note" data-pf="comment" value="${esc(c.comment || '')}" placeholder="Ajouter une note (ex. Forfait API OpenAI)" autocomplete="off">
+      <div class="crow__opts">
+        <div class="miniseg">
+          <button type="button" class="miniseg__b ${paid ? 'is-on' : ''}" data-action="cost-paid" data-i="${i}" data-v="paid">Déjà payé</button>
+          <button type="button" class="miniseg__b ${!paid ? 'is-on is-warn' : ''}" data-action="cost-paid" data-i="${i}" data-v="topay">À payer</button>
+        </div>
+        <select class="input crow__per" data-pf="periode" data-action="cost-periode" data-i="${i}">
+          <option value="ponctuel" ${per === 'ponctuel' ? 'selected' : ''}>Ponctuel</option>
+          <option value="mensuel" ${per === 'mensuel' ? 'selected' : ''}>Par mois</option>
+          <option value="annuel" ${per === 'annuel' ? 'selected' : ''}>Par an</option>
+        </select>
+      </div>
+      ${showDue ? `<div class="crow__due"><span class="crow__due-l">Échéance</span>${dueField}</div>` : ''}
+      ${showPush ? `<label class="crow__push"><input type="checkbox" data-pf="pousse" ${c.pousse ? 'checked' : ''}> Impulser dans mes dépenses fixes globales</label>` : ''}
+    </div>`;
+  }).join('');
 }
 
 // ============ Fragments ============

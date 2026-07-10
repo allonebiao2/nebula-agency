@@ -194,11 +194,42 @@ export function setProfil(patch) {
 }
 
 // ---------- Mutations : produits ----------
+// Une ligne de coût (digital) porte : note, statut de paiement, périodicité, échéance,
+// et l'option de « pousser » un coût récurrent vers les dépenses fixes globales.
+function normCout(c) {
+  const periode = ['ponctuel', 'mensuel', 'annuel'].includes(c.periode) ? c.periode : 'ponctuel';
+  return {
+    id: c.id || uid(),
+    libelle: (c.libelle || '').trim(),
+    montant: Number(c.montant) || 0,
+    comment: (c.comment || '').trim(),
+    is_paid: c.is_paid !== false,                 // défaut : payé (compat avec l'existant)
+    periode,
+    pousse: !!c.pousse && periode !== 'ponctuel', // pousser vers les charges fixes globales
+    due_date: c.due_date || '',                   // échéance (date, ou jour du mois si mensuel)
+  };
+}
+// Synchronise les coûts « poussés » (récurrents) d'une prestation vers les dépenses récurrentes globales.
+function syncCoutsRecurrents(produit) {
+  const prefix = 'cout:' + produit.id + ':';
+  const wanted = (produit.couts || []).filter((c) => c.pousse && c.periode !== 'ponctuel');
+  state.depenses.filter((d) => d.source && d.source.startsWith(prefix)).forEach((d) => {
+    if (!wanted.some((c) => d.source === prefix + c.id)) { state.depenses = state.depenses.filter((x) => x.id !== d.id); delRemote('depenses', d.id); }
+  });
+  wanted.forEach((c) => {
+    const src = prefix + c.id;
+    const libelle = ((c.comment || c.libelle || 'Coût') + ' · ' + produit.nom).trim();
+    const patch = { libelle, montant: Number(c.montant) || 0, frequence: c.periode, recurrent: true, perso: false, categorie: 'Abonnements & outils', source: src };
+    let d = state.depenses.find((x) => x.source === src);
+    if (d) { Object.assign(d, patch); pushRemote('depenses', d); }
+    else { d = { id: uid(), ...patch, date: nowISO(), created_at: nowISO() }; state.depenses.push(d); pushRemote('depenses', d); }
+  });
+}
 export function addProduit({ nom, modele, prix_vente = 0, couts = [], stock = null, seuil = 0, tarif_type = 'fixe' }) {
   const digital = isDigital();
   const p = {
     id: uid(), nom: nom.trim(), modele, prix_vente: Number(prix_vente) || 0,
-    couts: couts.map((c) => ({ id: uid(), libelle: c.libelle, montant: Number(c.montant) || 0 })),
+    couts: couts.map(normCout),
     // Digital = prestation/produit digital : jamais de stock physique.
     stock: digital ? null : ((stock === null || stock === '') ? null : Math.max(0, Number(stock) || 0)),
     seuil: digital ? 0 : (Number(seuil) || 0),
@@ -206,13 +237,14 @@ export function addProduit({ nom, modele, prix_vente = 0, couts = [], stock = nu
     archive: false, created_at: nowISO(),
   };
   state.produits.push(p);
+  syncCoutsRecurrents(p);
   persistLocal(); pushRemote('produits', p); emit();
   return p;
 }
 export function updateProduit(id, patch) {
   const p = getProduit(id); if (!p) return;
   Object.assign(p, patch);
-  if (patch.couts) p.couts = patch.couts.map((c) => ({ id: c.id || uid(), libelle: c.libelle, montant: Number(c.montant) || 0 }));
+  if (patch.couts) { p.couts = patch.couts.map(normCout); syncCoutsRecurrents(p); }
   if (patch.prix_vente != null) p.prix_vente = Number(patch.prix_vente) || 0;
   if ('stock' in patch) p.stock = (patch.stock === null || patch.stock === '') ? null : Math.max(0, Number(patch.stock) || 0);
   if (patch.seuil != null) p.seuil = Math.max(0, Number(patch.seuil) || 0);
@@ -222,6 +254,10 @@ export function archiveProduit(id) { updateProduit(id, { archive: true }); }
 export function deleteProduit(id) {
   state.produits = state.produits.filter((p) => p.id !== id);
   state.ventes = state.ventes.filter((v) => v.produit_id !== id);
+  // retire les dépenses récurrentes liées aux coûts poussés de ce produit
+  const prefix = 'cout:' + id + ':';
+  state.depenses.filter((d) => d.source && d.source.startsWith(prefix)).forEach((d) => delRemote('depenses', d.id));
+  state.depenses = state.depenses.filter((d) => !(d.source && d.source.startsWith(prefix)));
   persistLocal(); delRemote('produits', id); emit();
 }
 
@@ -528,9 +564,34 @@ export function resetLocal() { state = emptyState(); persistLocal(); emit(); }
 // =====================================================================
 export function coutRevient(produit) {
   if (!produit || !produit.couts) return 0;
-  return produit.couts.reduce((s, c) => s + (Number(c.montant) || 0), 0);
+  // On ne compte QUE les coûts déjà payés et NON poussés en charge globale
+  // (un coût « à payer » n'entame pas encore la marge ; un coût « poussé » est déjà
+  //  compté dans les charges fixes globales -> zéro double comptage).
+  return produit.couts.reduce((s, c) => s + ((c.is_paid !== false && !c.pousse) ? (Number(c.montant) || 0) : 0), 0);
 }
 export function margeUnitaire(produit) { return (produit.prix_vente || 0) - coutRevient(produit); }
+// Coûts « À payer » (en attente) de toutes les prestations = charges à venir prévisibles.
+export function chargesAVenir() {
+  const now = Date.now();
+  const rows = [];
+  getProduits({ withArchived: true }).forEach((p) => {
+    (p.couts || []).forEach((c) => {
+      if (c.is_paid === false) {
+        const due = c.due_date ? new Date(c.due_date).getTime() : null;
+        rows.push({ produitId: p.id, produitNom: p.nom, coutId: c.id, libelle: (c.comment || c.libelle || 'Coût'), montant: Number(c.montant) || 0, due_date: c.due_date || '', joursRestants: due ? Math.ceil((due - now) / DAY_MS) : null });
+      }
+    });
+  });
+  return rows.sort((a, b) => (a.joursRestants == null ? 9999 : a.joursRestants) - (b.joursRestants == null ? 9999 : b.joursRestants));
+}
+export function chargesAVenirTotal() { return chargesAVenir().reduce((s, r) => s + r.montant, 0); }
+// Marquer un coût « à payer » comme payé (depuis la carte du tableau de bord).
+export function payerCout(produitId, coutId) {
+  const p = getProduit(produitId); if (!p) return;
+  const c = (p.couts || []).find((x) => x.id === coutId); if (!c) return;
+  c.is_paid = true;
+  persistLocal(); pushRemote('produits', p); emit();
+}
 export function chargesMensuellesTotal() {
   // charges fixes déclarées + abonnements/outils récurrents (normalisés au mois)
   return state.charges_fixes.reduce((s, c) => s + (Number(c.montant) || 0), 0) + coutsRecurrentsMensuels();
@@ -1323,6 +1384,7 @@ export function notifications() {
   const today = _ymd2(new Date());
   state.credits.filter((c) => creditReste(c) > 0 && c.echeance && c.echeance < today).forEach((c) => list.push({ type: 'dette', icon: 'alert', text: `${c.client || 'Client'} — échéance dépassée (${formatF(creditReste(c))})`, screen: 'carnet' }));
   state.documents.filter((d) => d.type === 'facture' && d.statut !== 'payee' && d.echeance && d.echeance < today).forEach((d) => list.push({ type: 'facture', icon: 'receipt', text: `Facture ${d.numero} en retard`, screen: 'bilan' }));
+  chargesAVenir().filter((r) => r.joursRestants != null && r.joursRestants <= 2).forEach((r) => list.push({ type: 'charge', icon: 'receipt', text: `${r.libelle} — à payer${r.joursRestants < 0 ? ' (en retard)' : (r.joursRestants === 0 ? " (aujourd'hui)" : '')} · ${formatF(r.montant)}`, screen: 'accueil' }));
   return { list, count: list.length };
 }
 

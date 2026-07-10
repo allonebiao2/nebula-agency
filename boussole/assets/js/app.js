@@ -820,10 +820,19 @@ function readProduct(scope) {
     modele: scope.querySelector('.seg__b.is-on[data-modele]')?.dataset.modele || (S.isDigital() ? 'revente' : 'transformation'),
     tarif_type: scope.querySelector('.seg__b.is-on[data-tarif]')?.dataset.tarif || 'fixe',
     prix_vente: q('#pf-prix')?.value || 0,
-    couts: [...scope.querySelectorAll('#pf-couts .crow')].map((r) => ({
-      libelle: (r.querySelector('[data-pf="libelle"]').value || '').trim(),
-      montant: r.querySelector('[data-pf="montant"]').value,
-    })).filter((c) => c.libelle || c.montant),
+    couts: [...scope.querySelectorAll('#pf-couts .crow')].map((r) => {
+      const g = (sel) => r.querySelector(sel);
+      const paidBtn = r.querySelector('[data-action="cost-paid"].is-on');
+      return {
+        libelle: (g('[data-pf="libelle"]')?.value || '').trim(),
+        montant: g('[data-pf="montant"]')?.value || 0,
+        comment: (g('[data-pf="comment"]')?.value || '').trim(),
+        is_paid: paidBtn ? paidBtn.dataset.v === 'paid' : true,
+        periode: g('[data-pf="periode"]')?.value || 'ponctuel',
+        pousse: !!(g('[data-pf="pousse"]') && g('[data-pf="pousse"]').checked),
+        due_date: g('[data-pf="due_date"]')?.value || '',
+      };
+    }).filter((c) => c.libelle || c.montant || c.comment),
   };
 }
 function readCharges(scope) {
@@ -1309,6 +1318,7 @@ document.addEventListener('click', (e) => {
     // dépenses & caisse
     case 'add-depense': return openDepenseModal();
     case 'add-depense-perso': return openDepenseModal(true);
+    case 'payer-cout': S.payerCout(el.dataset.pid, el.dataset.cid); return UI.toast('Coût réglé');
     case 'dep-cat': { const box = $('#dp-cats'); if (box) box.querySelectorAll('.catchip').forEach((c) => c.classList.toggle('is-on', c === el)); return; }
     case 'dep-mode': return openDepenseModal(el.dataset.v === 'perso');
     case 'dep-rec': { const w = $('#dp-freq-wrap'); if (w) w.style.display = el.checked ? '' : 'none'; return; }
@@ -1515,6 +1525,7 @@ document.addEventListener('click', (e) => {
       const v = S.addVenteLibre({ montant: amt, libelle: (($('#vl-desc') || {}).value || '').trim(), mode: cartMode, vendeur: cartVendeur });
       UI.closeModal(); openReceiptModal(v.id); return;
     }
+    case 'cost-paid': { const sc = productScope(el); const p = readProduct(sc); const i = Number(el.dataset.i); if (p.couts[i]) p.couts[i].is_paid = el.dataset.v === 'paid'; return reRenderProduct(sc, p); }
     case 'pf-add-cout': { const sc = productScope(el); const p = readProduct(sc); p.couts.push({ libelle: '', montant: '' }); return reRenderProduct(sc, p); }
     case 'pf-del-cout': { const sc = productScope(el); const p = readProduct(sc); p.couts.splice(Number(el.dataset.i), 1); return reRenderProduct(sc, p); }
 
@@ -1574,6 +1585,7 @@ document.addEventListener('change', (e) => {
   else if (el.matches('[data-action="save-fisc"]')) { const f = el.dataset.field; if (f) S.setProfil({ [f]: (el.value || '').trim() }); }
   else if (el.matches('[data-action="save-prop"]')) { S.setProfil({ proprietaire: (el.value || '').trim() }); }
   else if (el.matches('[data-action="m-role"]')) { const h = document.getElementById('m-rolehint'); if (h) h.textContent = S.ROLE_DESCS[el.value] || ''; }
+  else if (el.matches('[data-action="cost-periode"]')) { const sc = productScope(el); reRenderProduct(sc, readProduct(sc)); }
   else if (el.matches('[data-action="watpl-save"]')) { S.setWaTemplate(el.dataset.key, el.value); }
   else if (el.matches('[data-action="lted-term"]')) { I18n.setCustomTerm(el.dataset.code, el.dataset.fr, el.value); }
   else if (el.matches('[data-action="lted-name"]')) { I18n.addCustomLang(el.dataset.code, (el.value || '').trim()); refreshReglages(); }

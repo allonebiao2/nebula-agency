@@ -32,6 +32,7 @@ alter table public.produits add column if not exists tarif_type text default 'fi
 alter table public.depenses add column if not exists recurrent boolean default false;       -- dépense récurrente (abonnement)
 alter table public.depenses add column if not exists frequence text default '';             -- 'mensuel' | 'annuel'
 alter table public.depenses add column if not exists perso boolean default false;           -- Poche Perso (vie courante, étanche du commerce)
+alter table public.depenses add column if not exists source text default '';               -- lien coût prestation -> dépense récurrente (cout:<produit>:<coutId>)
 
 -- ============================================================
 --  LICENCES — clés à USAGE UNIQUE (validation en ligne) + demandes de paiement

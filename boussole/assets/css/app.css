@@ -1824,3 +1824,30 @@ input { font-family: inherit; }
 .hact__b small { display: block; margin-top: 2px; color: var(--ink-faint); font-size: 12.5px; line-height: 1.5; }
 .hbody__tip { display: flex; gap: 9px; align-items: flex-start; margin: 16px 0 0; padding: 12px 14px; border-radius: var(--r-sm); background: var(--acc-soft); color: var(--acc-d); font-size: 13px; line-height: 1.5; font-weight: 550; }
 .hbody__tip svg { width: 16px; height: 16px; flex: none; margin-top: 1px; }
+
+/* ===== Ligne de coût enrichie (prestations digitales) + Charges à venir ===== */
+.crow--rich { border: 1px solid var(--line); border-radius: var(--r-sm); padding: 11px 12px; margin-bottom: 10px; background: var(--surface-2); }
+.crow__top { display: flex; align-items: center; gap: 8px; }
+.crow--rich .crow__lbl { flex: 1; min-width: 0; }
+.crow--rich .crow__amt { width: 92px; padding-right: 22px; }
+.crow--rich .crow__cur { position: static; transform: none; margin-left: -22px; color: var(--ink-faint); font-size: 13px; pointer-events: none; z-index: 1; }
+.crow--rich .crow__del { position: static; transform: none; }
+.crow__note { width: 100%; margin-top: 8px; font-size: 13px; padding: 8px 11px; }
+.crow__opts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
+.miniseg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+.miniseg__b { border: 0; background: var(--surface); color: var(--ink-soft); font-size: 12px; font-weight: 600; padding: 7px 12px; cursor: pointer; transition: .15s var(--ease); }
+.miniseg__b.is-on { background: var(--acc-soft); color: var(--acc-d); }
+.miniseg__b.is-on.is-warn { background: var(--dng-soft); color: var(--dng); }
+.crow__per { width: auto; flex: 0 0 auto; padding: 7px 10px; font-size: 12.5px; }
+.crow__due { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.crow__due-l { font-size: 12px; color: var(--ink-faint); flex: none; }
+.crow__dueday { width: 72px; flex: none; } .crow__hint { font-size: 12px; color: var(--ink-faint); }
+.crow__due input[type="date"] { flex: 0 0 auto; width: auto; }
+.crow__push { display: flex; align-items: center; gap: 8px; margin-top: 9px; font-size: 12.5px; color: var(--ink-soft); cursor: pointer; }
+.crow__push input { width: 16px; height: 16px; accent-color: var(--acc); flex: none; }
+.cavlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.cavrow { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line-soft); }
+.cavrow:last-child { border-bottom: 0; }
+.cavrow__b { flex: 1; min-width: 0; } .cavrow__b strong { display: block; font-size: 14px; } .cavrow__b small { color: var(--ink-faint); font-size: 12px; }
+.cavrow__amt { font-family: var(--num); font-weight: 700; font-size: 14px; white-space: nowrap; }
+.cav-late { color: var(--dng); font-weight: 700; } .cav-due { color: var(--acc-d); font-weight: 700; } .cav-soft { color: var(--ink-faint); }
