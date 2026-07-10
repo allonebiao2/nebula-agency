@@ -1395,3 +1395,67 @@ input { font-family: inherit; }
   .notif { top: 66px; right: 20px; }
   .nav__notch { display: none; }
 }
+
+/* ===== Légende d'explication (zhelp) — toujours visible sous chaque zone ===== */
+.zhelp { display: flex; align-items: flex-start; gap: 6px; margin: -4px 0 12px; font-size: 12px; line-height: 1.45; color: var(--ink-soft); }
+.zhelp__ic { width: 14px; height: 14px; flex: none; margin-top: 1px; color: var(--acc-d); }
+.zhelp__ic svg { width: 100%; height: 100%; }
+.modal__body .zhelp { margin: 2px 0 12px; }
+
+/* ===== Caisse (panier POS) ===== */
+.caisse { display: flex; flex-direction: column; }
+.caisse__prods { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
+.caisse__prod { text-align: left; }
+.caisse__cart { display: flex; flex-direction: column; gap: 6px; margin: 4px 0 12px; }
+.cart-empty { color: var(--ink-faint); font-size: 13px; text-align: center; padding: 14px 8px; border: 1px dashed var(--glass-brd); border-radius: var(--r-sm); }
+.cline { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--glass-brd); border-radius: var(--r-sm); background: var(--glass-fill); box-shadow: inset 0 1px 0 var(--glass-hi); }
+.cline__id { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.cline__id strong { font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cline__id small { font-size: 11.5px; color: var(--ink-faint); font-family: var(--num); }
+.cline__qty { display: inline-flex; align-items: center; gap: 5px; flex: none; }
+.cline__pm { width: 30px; height: 30px; display: grid; place-items: center; border: 1px solid var(--glass-brd); background: var(--surface-2); border-radius: 8px; color: var(--ink); cursor: pointer; }
+.cline__pm svg { width: 15px; height: 15px; }
+.cline__n { min-width: 22px; text-align: center; font-family: var(--num); font-weight: 700; font-variant-numeric: tabular-nums; }
+.cline__tot { font-family: var(--num); font-weight: 700; font-size: 13.5px; white-space: nowrap; flex: none; font-variant-numeric: tabular-nums; }
+.cline__x { width: 28px; height: 28px; display: grid; place-items: center; border: 0; background: transparent; color: var(--ink-faint); cursor: pointer; border-radius: 7px; flex: none; }
+.cline__x:hover { color: var(--dng); background: var(--dng-soft); }
+.cline__x svg { width: 15px; height: 15px; }
+.caisse__pay { margin-bottom: 12px; }
+.caisse__paylbl { display: block; font-size: 12px; font-weight: 600; color: var(--ink-faint); margin-bottom: 7px; }
+.modechips { display: flex; flex-wrap: wrap; gap: 6px; }
+.modechip { border: 1px solid var(--glass-brd); background: var(--glass-fill); color: var(--ink-soft); padding: 8px 13px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer; transition: color .18s, border-color .18s, background .18s; }
+.modechip:hover { color: var(--ink); }
+.modechip.is-on { color: var(--acc-d); border-color: var(--acc); background: var(--acc-soft); }
+.caisse__vend { margin-top: 12px; }
+.caisse__enc { width: 100%; justify-content: center; }
+.caisse__enc[disabled] { opacity: .5; pointer-events: none; }
+.rcpt-actions { display: flex; flex-direction: column; gap: 8px; }
+.rcpt-actions .btn { width: 100%; justify-content: center; }
+
+/* Vendeurs (réglages) + reçu / caisse (historique ventes) */
+.vaddrow { display: flex; gap: 8px; margin-top: 10px; }
+.vaddrow .input { flex: 1; min-width: 0; }
+.vaddrow .btn { flex: none; }
+.hvrow__recu { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border: 0; background: transparent; color: var(--ink-faint); cursor: pointer; border-radius: 8px; }
+.hvrow__recu:hover { color: var(--acc-d); background: var(--acc-soft); }
+.hvrow__recu svg { width: 16px; height: 16px; }
+.vcaisse-btn { width: 100%; justify-content: center; margin-bottom: 4px; }
+
+/* ===== Impression reçu de caisse (ticket 58 mm / A4) ===== */
+@media print {
+  .print-area .rcpt { color: #000; margin: 0 auto; background: #fff; }
+  .print-area .rcpt--thermal { width: 58mm; font-family: var(--mono); font-size: 11px; line-height: 1.35; }
+  .print-area .rcpt--a4 { max-width: 460px; font-family: var(--font); font-size: 13px; }
+  .print-area .rc-head { text-align: center; margin-bottom: 8px; }
+  .print-area .rc-head strong { display: block; font-size: 15px; }
+  .print-area .rc-head span { display: block; font-size: 10.5px; color: #333; }
+  .print-area .rc-meta { display: flex; justify-content: space-between; font-size: 10.5px; border-top: 1px dashed #999; border-bottom: 1px dashed #999; padding: 4px 0; margin-bottom: 6px; }
+  .print-area .rc-tbl { width: 100%; border-collapse: collapse; }
+  .print-area .rc-tbl td { padding: 3px 0; font-size: 11px; vertical-align: top; border: 0; }
+  .print-area .rc-l { width: 55%; }
+  .print-area .rc-q { text-align: center; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .print-area .rc-m { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .print-area .rc-total { display: flex; justify-content: space-between; border-top: 1px solid #000; margin-top: 6px; padding-top: 6px; font-weight: 800; font-size: 14px; }
+  .print-area .rc-pay { font-size: 10.5px; margin-top: 8px; text-align: center; }
+  .print-area .rc-foot { text-align: center; font-size: 10.5px; margin-top: 10px; }
+}

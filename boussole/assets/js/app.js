@@ -13,7 +13,7 @@ let period = loadPeriod();
 let animateNext = false;   // déclenche cascades + compteurs à l'entrée (pas sur maj live)
 let prevUser = null;
 let pendingLogin = false;  // vrai après un login volontaire -> 2e splash
-let venteFilter = Object.assign({ preset: 'jour', produitId: '', q: '' }, venteRange('jour'));
+let venteFilter = Object.assign({ preset: 'jour', produitId: '', q: '', mode: '', vendeur: '' }, venteRange('jour'));
 let depFilter = Object.assign({ preset: 'mois', categorie: '', q: '' }, venteRange('mois'));
 let chat = []; // conversation assistant (en mémoire de session)
 let rapGran = 'jour'; // période du rapport (écran Bilan)
@@ -232,13 +232,43 @@ function shareDocWA(doc) {
 
 // ---------- Chrome : FAB, vente rapide, stock, recherche globale ----------
 function closeChrome() { if (fabOpen) { fabOpen = false; renderFab(); } if (overlay) { overlay = null; renderOverlay(); } }
+// ---------- Caisse (panier POS) ----------
+let cart = [];
+let cartMode = 'especes';
+let cartVendeur = '';
 function openVenteModal() {
   const prods = S.getProduits();
   if (!prods.length) { UI.toast('Ajoute d\'abord un produit', 'err'); return setScreen('reglages'); }
-  const tiles = prods.map((p) => `<button class="qsell" data-action="sell-custom" data-id="${p.id}"><span class="qsell__nom">${UI.esc(p.nom)}</span><span class="qsell__price">${S.formatF(p.prix_vente)}</span></button>`).join('');
-  UI.openModal(UI.modalShell('Nouvelle vente', `<p class="modal__lead">Choisis un produit à vendre.</p><div class="qsell-grid">${tiles}</div>`,
+  cart = []; cartMode = 'especes'; cartVendeur = '';
+  UI.openModal(UI.modalShell('Caisse', UI.caisseHTML(cart, cartMode, cartVendeur),
     `<button class="btn btn--ghost" data-action="close-modal">Fermer</button>`));
   hydrateIcons($('#modal-root'));
+}
+function refreshCaisse() {
+  const body = $('#modal-root .modal__body'); if (!body) return;
+  const y = body.scrollTop;
+  body.innerHTML = UI.caisseHTML(cart, cartMode, cartVendeur);
+  hydrateIcons(body); body.scrollTop = y;
+}
+function openReceiptModal(ref) {
+  const d = S.receiptByTicket(ref) || S.receiptData(ref); if (!d) return;
+  UI.openModal(UI.modalShell('Reçu de caisse',
+    `<p class="modal__lead">Encaissé <strong>${S.formatF(d.total)}</strong> · ${UI.esc(S.PAYMENT_LABELS[d.mode] || d.mode)}</p>
+     ${UI.zhelp('Donne un reçu à ton client. Le ticket 58 mm est pour une imprimante de caisse ; le reçu A4 pour une imprimante normale ou un PDF ; WhatsApp envoie le détail par message.')}
+     <div class="rcpt-actions">
+       <button class="btn" data-action="rcpt-print" data-ref="${d.ref}" data-fmt="ticket"><span data-icon="print"></span> Ticket 58 mm</button>
+       <button class="btn btn--ghost" data-action="rcpt-print" data-ref="${d.ref}" data-fmt="a4"><span data-icon="doc"></span> Reçu A4</button>
+       <button class="btn btn--ghost" data-action="rcpt-wa" data-ref="${d.ref}"><span data-icon="whatsapp"></span> WhatsApp</button>
+     </div>`,
+    `<button class="btn btn--ghost" data-action="close-modal">Fermer</button>`));
+  hydrateIcons($('#modal-root'));
+}
+function printReceipt(d, fmt) { document.getElementById('print-area').innerHTML = UI.receiptHTML(d, fmt); window.print(); }
+function shareReceiptWA(d) {
+  const nom = S.getState().profil.nom_activite || '';
+  const lines = d.lignes.map((l) => `• ${l.nom} ${S.formatNombre(l.qte)}×${S.formatF(l.prix_unitaire)} = ${S.formatF((l.qte || 0) * (l.prix_unitaire || 0))}`).join('\n');
+  const txt = `*REÇU — ${nom}*\n${new Date(d.date).toLocaleString('fr-FR')}\n\n${lines}\n\n*TOTAL : ${S.formatF(d.total)}*\nPayé en ${S.PAYMENT_LABELS[d.mode] || d.mode}${d.vendeur ? `\nVendeur : ${d.vendeur}` : ''}\n\nMerci de votre visite !`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
 }
 function openStockModal(id) {
   const p = S.getProduit(id); if (!p) return;
@@ -833,6 +863,27 @@ document.addEventListener('click', (e) => {
     }
     case 'obj-add-montant': { const v = Number($('#ob-add').value) || 0; if (v <= 0) return UI.toast('Entre un montant', 'err'); S.contribuerObjectif(id, v); UI.closeModal(); UI.toast('Ajouté à ta cagnotte'); return; }
     case 'del-objectif': return UI.confirmDialog({ title: "Supprimer l'objectif", message: 'Supprimer cet objectif et sa cagnotte ?', danger: true, okLabel: 'Supprimer' }, () => { S.deleteObjectif(id); UI.closeModal(); UI.toast('Objectif supprimé'); });
+
+    // caisse (panier POS) + reçu
+    case 'cart-add': { const it = cart.find((x) => x.produit_id === id); if (it) it.qte++; else { const p = S.getProduit(id); cart.push({ produit_id: id, qte: 1, prix_unitaire: p ? p.prix_vente : 0 }); } return refreshCaisse(); }
+    case 'cart-inc': { const it = cart.find((x) => x.produit_id === id); if (it) it.qte++; return refreshCaisse(); }
+    case 'cart-dec': { const it = cart.find((x) => x.produit_id === id); if (it) { it.qte--; if (it.qte <= 0) cart = cart.filter((x) => x.produit_id !== id); } return refreshCaisse(); }
+    case 'cart-remove': cart = cart.filter((x) => x.produit_id !== id); return refreshCaisse();
+    case 'cart-mode': cartMode = el.dataset.mode; return refreshCaisse();
+    case 'cart-encaisser': {
+      if (!cart.length) return;
+      const ticket = S.encaisserPanier(cart, { mode: cartMode, vendeur: cartVendeur });
+      cart = []; UI.closeModal(); UI.toast('Vente encaissée'); pulseBenef();
+      if (ticket) openReceiptModal(ticket);
+      return;
+    }
+    case 'rcpt-print': { const d = S.receiptByTicket(el.dataset.ref) || S.receiptData(el.dataset.ref); if (d) printReceipt(d, el.dataset.fmt); return; }
+    case 'rcpt-wa': { const d = S.receiptByTicket(el.dataset.ref) || S.receiptData(el.dataset.ref); if (d) shareReceiptWA(d); return; }
+    case 'vf-recu': return openReceiptModal(id);
+
+    // vendeurs (liste légère)
+    case 'add-vendeur': { const nom = ($('#rg-vend').value || '').trim(); if (!nom) return UI.toast('Entre un nom', 'err'); S.addVendeur(nom); UI.toast('Vendeur ajouté'); return; }
+    case 'del-vendeur': { S.removeVendeur(el.dataset.nom); UI.toast('Vendeur retiré'); return; }
     case 'close-modal': return UI.closeModal();
     case 'confirm-ok': { const fn = $('#modal-root')._confirmOk; UI.closeModal(); if (fn) fn(); return; }
 
@@ -915,6 +966,9 @@ document.addEventListener('change', (e) => {
   else if (el.matches('[data-action="df-cat"]')) { depFilter.categorie = el.value; refreshDepenses(); }
   else if (el.matches('[data-action="df-search"]')) { depFilter.q = el.value; refreshDepenses(); }
   else if (el.matches('[data-action="save-fisc"]')) { const f = el.dataset.field; if (f) S.setProfil({ [f]: (el.value || '').trim() }); }
+  else if (el.matches('[data-action="cart-vendeur"]')) { cartVendeur = el.value; }
+  else if (el.matches('[data-action="vf-mode"]')) { venteFilter.mode = el.value; refreshVentes(); }
+  else if (el.matches('[data-action="vf-vendeur"]')) { venteFilter.vendeur = el.value; refreshVentes(); }
 });
 // recherche « live » (chaque frappe) sans perdre le focus du champ
 document.addEventListener('input', (e) => {
@@ -962,7 +1016,7 @@ document.addEventListener('focusin', (e) => {
 });
 
 // ---------- Ripple sur TOUS les boutons (onde depuis le point touché) ----------
-const RIPPLE_SEL = '.btn, .qsell, .pchip, .vchip, .catchip, .aschip, .chip, .crd-btn, .pnav__btn, .nav__item, .cashtile--caisse, .seg__b, .authswitch__b, .fab__btn, .fab__act, .side__item, .side__sub, .drawer__item, .notif__row, .strow__pm, .objic, .objrow__add, .kpit--tap, .alertrow';
+const RIPPLE_SEL = '.btn, .qsell, .pchip, .vchip, .catchip, .aschip, .chip, .crd-btn, .pnav__btn, .nav__item, .cashtile--caisse, .seg__b, .authswitch__b, .fab__btn, .fab__act, .side__item, .side__sub, .drawer__item, .notif__row, .strow__pm, .objic, .objrow__add, .kpit--tap, .alertrow, .modechip, .cline__pm, .caisse__prod, .modechip';
 document.addEventListener('pointerdown', (e) => {
   const el = e.target.closest ? e.target.closest(RIPPLE_SEL) : null;
   if (!el) return;

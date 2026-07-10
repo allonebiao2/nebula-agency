@@ -10,7 +10,7 @@ const nowISO = () => new Date().toISOString();
 // ---------- État ----------
 function emptyState() {
   return {
-    profil: { nom_activite: '', devise: DEVISE, solde_initial: 0, ifu: '', rccm: '', adresse: '', tel_pro: '', email_pro: '' },
+    profil: { nom_activite: '', devise: DEVISE, solde_initial: 0, ifu: '', rccm: '', adresse: '', tel_pro: '', email_pro: '', vendeurs: [] },
     produits: [],        // {id, nom, modele, prix_vente, couts:[{id,libelle,montant}], archive, created_at}
     charges_fixes: [],   // {id, libelle, montant, created_at}  (mensuel, niveau activité)
     ventes: [],          // {id, produit_id, date, qte, prix_unitaire, cout_unitaire, created_at}
@@ -25,6 +25,10 @@ function emptyState() {
 // mais N'EST PAS une charge (le coût passe déjà par la marge des produits) -> exclu du bénéfice.
 export const DEPENSE_CATS = ['Réassort / Stock', 'Transport', 'Loyer', 'Salaires', 'Factures', 'Divers'];
 export const RESTOCK_CAT = 'Réassort / Stock';
+
+// Modes de paiement d'une vente (caisse)
+export const PAYMENT_MODES = ['especes', 'momo', 'carte', 'credit', 'autre'];
+export const PAYMENT_LABELS = { especes: 'Espèces', momo: 'Mobile Money', carte: 'Carte', credit: 'Crédit', autre: 'Autre' };
 
 let state = emptyState();
 let remote = null;          // adaptateur cloud (null = mode local)
@@ -170,12 +174,15 @@ export function getSoldeInitial() { return Number(state.profil.solde_initial) ||
 export function setSoldeInitial(v) { setProfil({ solde_initial: Math.round(Number(v) || 0) }); }
 
 // ---------- Mutations : ventes ----------
-export function addVente({ produit_id, qte = 1, prix_unitaire, date }) {
+export function addVente({ produit_id, qte = 1, prix_unitaire, date, mode, vendeur, ticket }) {
   const p = getProduit(produit_id); if (!p) return null;
   const v = {
     id: uid(), produit_id, qte: Number(qte) || 1,
     prix_unitaire: prix_unitaire != null ? Number(prix_unitaire) : p.prix_vente,
     cout_unitaire: coutRevient(p),          // coût figé à l'instant de la vente
+    mode: PAYMENT_MODES.includes(mode) ? mode : 'especes',
+    vendeur: (vendeur || '').trim(),
+    ticket: ticket || '',
     date: date || nowISO(), created_at: nowISO(),
   };
   state.ventes.push(v);
@@ -190,6 +197,43 @@ export function deleteVente(id) {
   state.ventes = state.ventes.filter((x) => x.id !== id);
   persistLocal(); delRemote('ventes', id); emit();
 }
+
+// ---------- Caisse : encaissement panier (plusieurs articles en 1 ticket) ----------
+export function encaisserPanier(items, { mode = 'especes', vendeur = '', date } = {}) {
+  const list = (items || []).filter((it) => it.produit_id && (Number(it.qte) || 0) > 0);
+  if (!list.length) return null;
+  const ticket = uid();
+  const d = date || nowISO();
+  list.forEach((it) => addVente({ produit_id: it.produit_id, qte: it.qte, prix_unitaire: it.prix_unitaire, mode, vendeur, ticket, date: d }));
+  return ticket;
+}
+export function ticketVentes(ticket) {
+  return state.ventes.filter((v) => v.ticket && v.ticket === ticket)
+    .map((v) => { const p = getProduit(v.produit_id); return { ...v, nom: p ? p.nom : 'Produit' }; });
+}
+// Données d'un reçu de caisse à partir d'une vente (regroupe le ticket si présent)
+export function receiptData(venteId) {
+  const v = state.ventes.find((x) => x.id === venteId); if (!v) return null;
+  const lignes = v.ticket ? ticketVentes(v.ticket)
+    : [{ ...v, nom: (getProduit(v.produit_id) || {}).nom || 'Produit' }];
+  const total = lignes.reduce((s, l) => s + (Number(l.qte) || 0) * (Number(l.prix_unitaire) || 0), 0);
+  return { lignes, total, mode: v.mode || 'especes', vendeur: v.vendeur || '', date: v.date, ref: v.ticket || v.id };
+}
+export function receiptByTicket(ticket) {
+  const lignes = ticketVentes(ticket); if (!lignes.length) return null;
+  const total = lignes.reduce((s, l) => s + (Number(l.qte) || 0) * (Number(l.prix_unitaire) || 0), 0);
+  const f = lignes[0];
+  return { lignes, total, mode: f.mode || 'especes', vendeur: f.vendeur || '', date: f.date, ref: ticket };
+}
+
+// ---------- Vendeurs (liste légère, sans multi-compte) ----------
+export function getVendeurs() { return (state.profil.vendeurs || []).slice(); }
+export function addVendeur(nom) {
+  nom = (nom || '').trim(); if (!nom) return;
+  const list = getVendeurs();
+  if (!list.some((x) => x.toLowerCase() === nom.toLowerCase())) { list.push(nom); setProfil({ vendeurs: list }); }
+}
+export function removeVendeur(nom) { setProfil({ vendeurs: getVendeurs().filter((x) => x !== nom) }); }
 
 // ---------- Reset (déconnexion / effacer) ----------
 export function resetLocal() { state = emptyState(); persistLocal(); emit(); }
@@ -598,7 +642,7 @@ export function resumeJour() {
 }
 
 // ---------- Historique des ventes : recherche (date / produit / texte) + regroupé par jour ----------
-export function historiqueVentes({ from = '', to = '', produitId = '', q = '' } = {}) {
+export function historiqueVentes({ from = '', to = '', produitId = '', q = '', mode = '', vendeur = '' } = {}) {
   const fromT = from ? new Date(from + 'T00:00:00').getTime() : -Infinity;
   const toT = to ? new Date(to + 'T23:59:59.999').getTime() : Infinity;
   const ql = (q || '').trim().toLowerCase();
@@ -606,13 +650,15 @@ export function historiqueVentes({ from = '', to = '', produitId = '', q = '' } 
     const t = new Date(v.date).getTime();
     if (t < fromT || t > toT) return false;
     if (produitId && v.produit_id !== produitId) return false;
+    if (mode && (v.mode || 'especes') !== mode) return false;
+    if (vendeur && (v.vendeur || '') !== vendeur) return false;
     if (ql) { const p = getProduit(v.produit_id); if (!p || !p.nom.toLowerCase().includes(ql)) return false; }
     return true;
   }).map((v) => {
     const p = getProduit(v.produit_id);
     return {
       id: v.id, produit_id: v.produit_id, nom: p ? p.nom : 'Produit supprimé', modele: p ? p.modele : '',
-      date: v.date, qte: v.qte, prix_unitaire: v.prix_unitaire,
+      date: v.date, qte: v.qte, prix_unitaire: v.prix_unitaire, mode: v.mode || 'especes', vendeur: v.vendeur || '', ticket: v.ticket || '',
       total: (v.qte || 0) * (v.prix_unitaire || 0), marge: (v.qte || 0) * ((v.prix_unitaire || 0) - (v.cout_unitaire || 0)),
     };
   }).sort((a, b) => new Date(b.date) - new Date(a.date));

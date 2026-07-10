@@ -22,6 +22,7 @@ alter table public.profils add column if not exists rccm      text default '';
 alter table public.profils add column if not exists adresse   text default '';
 alter table public.profils add column if not exists tel_pro   text default '';
 alter table public.profils add column if not exists email_pro text default '';
+alter table public.profils add column if not exists vendeurs  jsonb default '[]'::jsonb;   -- liste de noms de vendeurs
 
 create table if not exists public.produits (
   id          uuid primary key,
@@ -59,6 +60,10 @@ create table if not exists public.ventes (
 );
 
 create index if not exists ventes_user_date_idx on public.ventes (user_id, date);
+-- mode de paiement / vendeur / ticket (caisse) :
+alter table public.ventes add column if not exists mode    text default 'especes';   -- especes|momo|carte|credit|autre
+alter table public.ventes add column if not exists vendeur text default '';
+alter table public.ventes add column if not exists ticket  text default '';           -- id partagé pour un encaissement panier
 
 create table if not exists public.depenses (
   id          uuid primary key,

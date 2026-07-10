@@ -11,6 +11,7 @@ import {
   getDocuments, documentTotals, documentsSummary, montantEnLettres, getCredits,
   getClients, getStockInfo, stockResume, recouvrement, journalCaisse, notifications,
   getObjectifs, objectifInfo,
+  PAYMENT_MODES, PAYMENT_LABELS, getVendeurs,
   formatF, formatNombre, MOIS_LONGS,
 } from './store.js';
 import { chartBeneficeMensuel, chartEvolution, miniSpark, progressRing, chartHero, chartDonut, sparklineRaw } from './charts.js';
@@ -25,6 +26,10 @@ const moisLabel = (mk) => {
 };
 
 // ============ TOPBAR ============
+// Légende d'explication (toujours visible sous un titre de zone) — pour que
+// chaque commerçant comprenne à quoi sert chaque zone, en langage simple.
+export function zhelp(text) { return `<p class="zhelp"><span class="zhelp__ic" data-icon="help"></span><span>${esc(text)}</span></p>`; }
+
 export function topbarHTML(cloud, theme = 'light', notifCount = 0) {
   const nom = getState().profil.nom_activite || 'Mon activité';
   const badge = notifCount > 0 ? `<span class="bell__badge">${notifCount > 9 ? '9+' : notifCount}</span>` : '';
@@ -506,15 +511,17 @@ function jourLabel(key) {
 }
 function hvRow(l) {
   const hm = new Date(l.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const modeLbl = PAYMENT_LABELS[l.mode] || '';
   return `<li class="hvrow">
     <span class="hvrow__ic" data-icon="${l.modele === 'revente' ? 'truck' : 'factory'}"></span>
-    <div class="hvrow__id"><strong>${esc(l.nom)}</strong><small>${hm} · ${formatNombre(l.qte)} × ${formatF(l.prix_unitaire)}</small></div>
+    <div class="hvrow__id"><strong>${esc(l.nom)}</strong><small>${hm} · ${formatNombre(l.qte)} × ${formatF(l.prix_unitaire)}${modeLbl ? ` · ${modeLbl}` : ''}${l.vendeur ? ` · ${esc(l.vendeur)}` : ''}</small></div>
     <span class="hvrow__tot">${formatF(l.total)}</span>
+    <button class="hvrow__recu" data-action="vf-recu" data-id="${l.id}" title="Reçu de caisse" aria-label="Reçu de caisse"><span data-icon="print"></span></button>
     <button class="hvrow__del" data-action="del-vente" data-id="${l.id}" aria-label="Supprimer la vente"><span data-icon="trash"></span></button>
   </li>`;
 }
 
-export function viewVentesHTML(filter = { preset: 'jour', from: '', to: '', produitId: '', q: '' }) {
+export function viewVentesHTML(filter = { preset: 'jour', from: '', to: '', produitId: '', q: '', mode: '', vendeur: '' }) {
   const produits = getProduits();
   const mk = currentMonthKey();
 
@@ -555,10 +562,15 @@ export function viewVentesHTML(filter = { preset: 'jour', from: '', to: '', prod
   }).join('');
 
   // ---- Historique + recherche ----
-  const H = historiqueVentes({ from: filter.from, to: filter.to, produitId: filter.produitId, q: filter.q });
+  const H = historiqueVentes({ from: filter.from, to: filter.to, produitId: filter.produitId, q: filter.q, mode: filter.mode, vendeur: filter.vendeur });
   const chip = (id, label) => `<button class="vchip ${filter.preset === id ? 'is-on' : ''}" data-action="vf-preset" data-preset="${id}">${label}</button>`;
   const prodOpts = ['<option value="">Tous les produits</option>']
     .concat(getProduits({ withArchived: true }).map((p) => `<option value="${p.id}" ${filter.produitId === p.id ? 'selected' : ''}>${esc(p.nom)}</option>`)).join('');
+  const modeOpts = ['<option value="">Tous les paiements</option>']
+    .concat(PAYMENT_MODES.map((m) => `<option value="${m}" ${filter.mode === m ? 'selected' : ''}>${PAYMENT_LABELS[m]}</option>`)).join('');
+  const vends = getVendeurs();
+  const vendOpts = vends.length ? ['<option value="">Tous les vendeurs</option>']
+    .concat(vends.map((v) => `<option value="${esc(v)}" ${filter.vendeur === v ? 'selected' : ''}>${esc(v)}</option>`)).join('') : '';
   const groups = H.jours.length
     ? H.jours.map((g) => `<section class="daygrp">
         <div class="daygrp__head"><span class="daygrp__date">${esc(jourLabel(g.jour))}</span>
@@ -572,9 +584,12 @@ export function viewVentesHTML(filter = { preset: 'jour', from: '', to: '', prod
   return `<section class="view" data-live>
     ${sectionTitle('Ventes', moisLabel(mk))}
     ${enveloppesHTML(b, { compact: true })}
+    <button class="btn btn--sell btn--lg vcaisse-btn" data-action="fab-vente"><span data-icon="ventes"></span> Ouvrir la caisse</button>
+    ${zhelp('Vente rapide : touche « 1 vente » sur un produit pour l’enregistrer d’un coup, ou « Ouvrir la caisse » pour un panier de plusieurs articles avec le mode de paiement.')}
     <div class="tiles">${tiles}</div>
     <article class="panel vhist">
       <div class="panel__head"><h2>Historique</h2><span class="panel__badge">${formatNombre(H.nb)} vente${H.nb > 1 ? 's' : ''} · ${formatF(H.total)}</span></div>
+      ${zhelp('Toutes tes ventes passées, regroupées par jour. Filtre par période, produit, mode de paiement ou vendeur. Touche le reçu pour l’imprimer.')}
       <div class="vfilters">
         <div class="vchips">${chip('jour', "Aujourd'hui")}${chip('semaine', '7 jours')}${chip('mois', 'Ce mois')}${chip('tout', 'Tout')}</div>
         <div class="vfilters__dates">
@@ -583,6 +598,10 @@ export function viewVentesHTML(filter = { preset: 'jour', from: '', to: '', prod
         </div>
         <div class="vfilters__row">
           <select class="input vf-select" data-action="vf-produit" aria-label="Filtrer par produit">${prodOpts}</select>
+          <select class="input vf-select" data-action="vf-mode" aria-label="Filtrer par paiement">${modeOpts}</select>
+        </div>
+        <div class="vfilters__row">
+          ${vendOpts ? `<select class="input vf-select" data-action="vf-vendeur" aria-label="Filtrer par vendeur">${vendOpts}</select>` : ''}
           <div class="vf-search"><span class="vf-search__ic" data-icon="search"></span>
             <input class="input" type="search" data-action="vf-search" placeholder="Rechercher un produit…" value="${esc(filter.q)}" aria-label="Rechercher un produit"></div>
         </div>
@@ -1043,6 +1062,57 @@ export function objectifsCardHTML() {
   </article>`;
 }
 
+// ============ CAISSE (panier POS) + REÇU ============
+export function caisseHTML(cart, mode, vendeur) {
+  const prods = getProduits();
+  const tiles = prods.length
+    ? prods.map((p) => `<button class="qsell caisse__prod" data-action="cart-add" data-id="${p.id}"><span class="qsell__nom">${esc(p.nom)}</span><span class="qsell__price">${formatF(p.prix_vente)}</span></button>`).join('')
+    : '<p class="modal__note">Aucun produit. Ajoute-en dans Réglages.</p>';
+  const prixOf = (it) => (it.prix_unitaire != null ? Number(it.prix_unitaire) : ((getProduit(it.produit_id) || {}).prix_vente || 0));
+  const lines = cart.map((it) => {
+    const p = getProduit(it.produit_id); if (!p) return '';
+    return `<div class="cline">
+      <div class="cline__id"><strong>${esc(p.nom)}</strong><small>${formatF(prixOf(it))}</small></div>
+      <div class="cline__qty">
+        <button class="cline__pm" data-action="cart-dec" data-id="${it.produit_id}" aria-label="Retirer une unité"><span data-icon="minus"></span></button>
+        <span class="cline__n">${formatNombre(it.qte)}</span>
+        <button class="cline__pm" data-action="cart-inc" data-id="${it.produit_id}" aria-label="Ajouter une unité"><span data-icon="plus"></span></button>
+      </div>
+      <span class="cline__tot">${formatF((it.qte || 0) * prixOf(it))}</span>
+      <button class="cline__x" data-action="cart-remove" data-id="${it.produit_id}" aria-label="Retirer du panier"><span data-icon="close"></span></button>
+    </div>`;
+  }).join('');
+  const total = cart.reduce((s, it) => s + (it.qte || 0) * prixOf(it), 0);
+  const modeChips = PAYMENT_MODES.map((m) => `<button class="modechip ${mode === m ? 'is-on' : ''}" data-action="cart-mode" data-mode="${m}">${PAYMENT_LABELS[m]}</button>`).join('');
+  const vends = getVendeurs();
+  const vendSel = vends.length ? `<div class="field caisse__vend"><label for="cs-vend">Vendeur</label>
+      <select id="cs-vend" class="input" data-action="cart-vendeur"><option value="">— Personne —</option>${vends.map((v) => `<option value="${esc(v)}" ${vendeur === v ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select></div>` : '';
+  return `<div class="caisse">
+    <div class="caisse__prods">${tiles}</div>
+    ${zhelp('Touche un produit pour l’ajouter au panier. Ajuste les quantités, choisis le mode de paiement, puis « Encaisser ».')}
+    <div class="caisse__cart">${cart.length ? lines : '<p class="cart-empty">Panier vide — touche un produit ci-dessus.</p>'}</div>
+    <div class="caisse__pay">
+      <span class="caisse__paylbl">Mode de paiement</span>
+      <div class="modechips">${modeChips}</div>
+      ${vendSel}
+    </div>
+    <button class="btn btn--sell btn--lg caisse__enc" data-action="cart-encaisser" ${cart.length ? '' : 'disabled'}>Encaisser ${formatF(total)}</button>
+  </div>`;
+}
+export function receiptHTML(data, fmt) {
+  const p = getState().profil;
+  const d = new Date(data.date);
+  const lignes = data.lignes.map((l) => `<tr><td class="rc-l">${esc(l.nom)}</td><td class="rc-q">${formatNombre(l.qte)}×${formatF(l.prix_unitaire)}</td><td class="rc-m">${formatF((l.qte || 0) * (l.prix_unitaire || 0))}</td></tr>`).join('');
+  return `<div class="rcpt rcpt--${fmt === 'a4' ? 'a4' : 'thermal'}">
+    <div class="rc-head"><strong>${esc(p.nom_activite || 'Mon activité')}</strong>${p.tel_pro ? `<span>Tél : ${esc(p.tel_pro)}</span>` : ''}${p.adresse ? `<span>${esc(p.adresse)}</span>` : ''}</div>
+    <div class="rc-meta"><span>REÇU</span><span>${d.toLocaleDateString('fr-FR')} ${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span></div>
+    <table class="rc-tbl"><tbody>${lignes}</tbody></table>
+    <div class="rc-total"><span>TOTAL</span><span>${formatF(data.total)}</span></div>
+    <div class="rc-pay">Payé en ${esc(PAYMENT_LABELS[data.mode] || data.mode)}${data.vendeur ? ` · Vendeur : ${esc(data.vendeur)}` : ''}</div>
+    <div class="rc-foot">Merci de votre visite !</div>
+  </div>`;
+}
+
 // ============ BLOC D'ALERTES (tableau de bord) ============
 export function alertsBlockHTML() {
   const n = notifications();
@@ -1220,6 +1290,12 @@ export function viewReglagesHTML(cloud) {
           <input id="rg-rccm" class="input" value="${esc(st.profil.rccm || '')}" data-action="save-fisc" data-field="rccm" placeholder="N° RCCM"></div>
       </div>
       <div class="panel__note">Renseigne au moins ton adresse et ton téléphone. L'<strong>IFU</strong> apparaît sur la facture pour la rendre officielle.</div>
+    </div>
+    <div class="panel">
+      <div class="panel__head"><h2>Vendeurs</h2></div>
+      ${zhelp('Ajoute les noms de tes vendeurs. Tu pourras dire qui a fait chaque vente à la caisse et filtrer l’historique par vendeur — sans compte ni mot de passe.')}
+      <ul class="list">${getVendeurs().length ? getVendeurs().map((v) => `<li class="lrow"><span class="lrow__ic" data-icon="user"></span><div class="lrow__body"><strong>${esc(v)}</strong></div><button class="lrow__btn lrow__btn--del" data-action="del-vendeur" data-nom="${esc(v)}" title="Retirer"><span data-icon="trash"></span></button></li>`).join('') : '<li class="lrow lrow--empty">Aucun vendeur. Toi seul(e) pour l’instant.</li>'}</ul>
+      <div class="vaddrow"><input id="rg-vend" class="input" placeholder="Nom du vendeur" autocomplete="off"><button class="btn btn--sm" data-action="add-vendeur"><span data-icon="plus"></span> Ajouter</button></div>
     </div>
     <div class="panel">
       <div class="panel__head"><h2>Produits</h2><button class="btn btn--sm" data-action="add-produit"><span data-icon="plus"></span> Ajouter</button></div>
