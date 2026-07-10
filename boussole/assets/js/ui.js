@@ -13,10 +13,24 @@ import {
   getObjectifs, objectifInfo,
   PAYMENT_MODES, PAYMENT_LABELS, getVendeurs,
   achatsSummary, getAchats, achatTotal, ACHAT_STATUTS, getFournisseurs,
+  WA_TEMPLATES_META, getWaTemplate,
   formatF, formatNombre, MOIS_LONGS,
 } from './store.js';
 import { chartBeneficeMensuel, chartEvolution, miniSpark, progressRing, chartHero, chartDonut, sparklineRaw } from './charts.js';
 import { APP_NAME, CURRENCIES } from './config.js';
+import * as I18n from './i18n.js';
+import * as BT from './btprint.js';
+
+// Préférences d'apparence (appareil) — accent, taille, densité, coins.
+const uiPref = (k, d) => { try { return localStorage.getItem('boussole:' + k) || d; } catch { return d; } };
+export const ACCENTS = [
+  { k: 'ambre', nom: 'Ambre', c: '#f6a63c' }, { k: 'emeraude', nom: 'Émeraude', c: '#34d399' },
+  { k: 'ocean', nom: 'Océan', c: '#38bdf8' }, { k: 'violet', nom: 'Violet', c: '#a78bfa' },
+  { k: 'rose', nom: 'Rose', c: '#fb7185' }, { k: 'or', nom: 'Or', c: '#eab308' },
+];
+function segControl(action, cur, opts) {
+  return `<div class="seg seg--${opts.length}">${opts.map(([v, l]) => `<button class="seg__b seg__b--c ${cur === v ? 'is-on' : ''}" data-action="${action}" data-v="${v}">${l}</button>`).join('')}</div>`;
+}
 
 export const esc = (s) => String(s == null ? '' : s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -1366,6 +1380,76 @@ function clientRowHTML(c) {
 }
 
 // ============ ÉCRAN RÉGLAGES ============
+// ---- Panneau PERSONNALISATION (apparence à son goût) ----
+function personnalisationPanelHTML() {
+  const accent = uiPref('accent', 'ambre'), textsize = uiPref('textsize', 'normal');
+  const density = uiPref('density', 'confort'), corners = uiPref('corners', 'doux');
+  const theme = (typeof document !== 'undefined' && document.documentElement.dataset.theme) || 'dark';
+  return `<div class="panel">
+    <div class="panel__head"><h2>Personnalisation</h2><span class="panel__sub">à ton goût</span></div>
+    ${zhelp('Choisis l’allure de l’appli : couleur, taille du texte, espacement et forme des coins. Ces réglages restent sur cet appareil.')}
+    <div class="field"><label>Couleur d’accent</label>
+      <div class="swatches">${ACCENTS.map((a) => `<button class="swatch ${accent === a.k ? 'is-on' : ''}" data-action="set-accent" data-v="${a.k}" style="--sw:${a.c}" title="${a.nom}" aria-label="Couleur ${a.nom}"><span></span></button>`).join('')}</div>
+    </div>
+    <div class="field"><label>Taille du texte</label>${segControl('set-textsize', textsize, [['normal', 'Normale'], ['grand', 'Grande'], ['xgrand', 'Très grande']])}</div>
+    <div class="field"><label>Densité</label>${segControl('set-density', density, [['confort', 'Confortable'], ['compact', 'Compact']])}</div>
+    <div class="field"><label>Coins</label>${segControl('set-corners', corners, [['doux', 'Doux'], ['net', 'Nets']])}</div>
+    <div class="field"><label>Thème</label>${segControl('set-theme', theme, [['light', 'Clair'], ['dark', 'Sombre']])}</div>
+  </div>`;
+}
+
+// ---- Panneau MESSAGES WHATSAPP (textes configurables) ----
+function messagesWaPanelHTML() {
+  return `<div class="panel">
+    <div class="panel__head"><h2>Messages WhatsApp</h2><span class="panel__sub">textes prêts à envoyer</span></div>
+    ${zhelp('Personnalise les messages envoyés à tes clients par WhatsApp. Les mots entre accolades comme {client} ou {total} sont remplacés automatiquement par les vraies valeurs.')}
+    ${Object.keys(WA_TEMPLATES_META).map((key) => {
+      const m = WA_TEMPLATES_META[key];
+      return `<div class="watpl">
+        <div class="watpl__head"><strong>${esc(m.label)}</strong><button class="btn btn--ghost btn--xs" data-action="watpl-reset" data-key="${key}">Réinitialiser</button></div>
+        <textarea class="input watpl__ta" id="watpl-${key}" data-action="watpl-save" data-key="${key}" rows="3" spellcheck="false">${esc(getWaTemplate(key))}</textarea>
+        <div class="watpl__vars">${m.vars.map((v) => `<button class="varchip" data-action="watpl-var" data-key="${key}" data-var="${v}">{${v}}</button>`).join('')}</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+// ---- Panneau IMPRIMANTE BLUETOOTH (thermique 58 mm) ----
+function imprimantePanelHTML() {
+  const ok = BT.supported(), name = BT.savedName();
+  return `<div class="panel">
+    <div class="panel__head"><h2>Imprimante Bluetooth</h2><span class="panel__sub">reçus 58 mm</span></div>
+    ${zhelp('Connecte une petite imprimante thermique Bluetooth pour imprimer tes reçus directement. Fonctionne sur Android (Chrome). Sur iPhone, Apple ne l’autorise pas : dans ce cas, utilise l’impression via le navigateur.')}
+    ${ok ? `
+    <div class="btstat"><span class="btstat__dot ${name ? 'is-on' : ''}"></span>
+      <div class="btstat__b"><strong>${name ? esc(name) : 'Aucune imprimante'}</strong><small>${name ? 'Appareil mémorisé sur ce téléphone' : 'Pas encore connectée'}</small></div>
+    </div>
+    <div class="btnrow">
+      <button class="btn" data-action="bt-connect"><span data-icon="bluetooth"></span> ${name ? 'Reconnecter' : 'Connecter une imprimante'}</button>
+      <button class="btn btn--ghost" data-action="bt-test"><span data-icon="print"></span> Imprimer un test</button>
+      ${name ? `<button class="btn btn--danger-ghost btn--sm" data-action="bt-forget">Oublier</button>` : ''}
+    </div>` : `
+    <div class="btstat btstat--off"><span class="btstat__ic" data-icon="info"></span>
+      <div class="btstat__b"><strong>Bluetooth direct indisponible ici</strong><small>C’est souvent le cas sur iPhone. Tu peux quand même imprimer tes reçus (ticket ou A4) avec le bouton d’impression du navigateur.</small></div>
+    </div>`}
+  </div>`;
+}
+
+// ---- Panneau LANGUE (interface multilingue) ----
+function languePanelHTML() {
+  const cur = I18n.getLang();
+  const rows = I18n.allLangs().map((l) => `<button class="langrow ${cur === l.code ? 'is-on' : ''}" data-action="set-lang" data-code="${l.code}">
+      <span class="langrow__n">${esc(l.natif)}${l.custom ? ' <span class="langrow__beta">à valider</span>' : ''}</span>
+      <span class="langrow__r">${l.custom ? `<span class="langrow__edit" data-action="lang-edit" data-code="${l.code}" title="Corriger les mots" aria-label="Corriger les mots"><span data-icon="edit"></span></span>` : ''}${cur === l.code ? '<span data-icon="check"></span>' : ''}</span>
+    </button>`).join('');
+  return `<div class="panel">
+    <div class="panel__head"><h2>Langue</h2><span class="panel__sub">interface de l’appli</span></div>
+    ${zhelp('Choisis la langue de l’interface. Français et Anglais sont complets. Pour une langue locale (fon, yoruba…), ajoute-la et saisis toi-même les bons mots — c’est toi qui connais ta langue.')}
+    <div class="langlist">${rows}</div>
+    <button class="btn btn--ghost btn--sm" data-action="lang-add"><span data-icon="plus"></span> Ajouter une langue locale</button>
+  </div>`;
+}
+
 export function viewReglagesHTML(cloud) {
   const st = getState();
   const produits = getProduits({ withArchived: false });
@@ -1404,6 +1488,8 @@ export function viewReglagesHTML(cloud) {
           ${Object.keys(CURRENCIES).map((code) => `<option value="${code}" ${getDevise() === code ? 'selected' : ''}>${esc(CURRENCIES[code].label)}</option>`).join('')}
         </select></div>
     </div>
+    ${personnalisationPanelHTML()}
+    ${languePanelHTML()}
     <div class="panel">
       <div class="panel__head"><h2>Identité pour tes factures</h2><span class="panel__sub">imprimée sur chaque facture &amp; devis</span></div>
       <div class="field"><label for="rg-adresse">Adresse</label>
@@ -1422,6 +1508,8 @@ export function viewReglagesHTML(cloud) {
       </div>
       <div class="panel__note">Renseigne au moins ton adresse et ton téléphone. L'<strong>IFU</strong> apparaît sur la facture pour la rendre officielle.</div>
     </div>
+    ${messagesWaPanelHTML()}
+    ${imprimantePanelHTML()}
     <div class="panel">
       <div class="panel__head"><h2>Vendeurs</h2></div>
       ${zhelp('Ajoute les noms de tes vendeurs. Tu pourras dire qui a fait chaque vente à la caisse et filtrer l’historique par vendeur — sans compte ni mot de passe.')}

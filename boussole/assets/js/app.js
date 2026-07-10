@@ -1,9 +1,11 @@
 // Boussole — bootstrap, routeur, événements.
-import { APP_VERSION, CLOUD_ENABLED } from './config.js';
+import { APP_VERSION, CLOUD_ENABLED, CURRENCIES } from './config.js';
 import { hydrateIcons } from './icons.js';
 import * as S from './store.js';
 import * as Cloud from './supabase.js';
 import * as UI from './ui.js';
+import * as I18n from './i18n.js';
+import * as BT from './btprint.js';
 
 let screen = 'ventes';
 let wizard = null;
@@ -48,6 +50,79 @@ function initTheme() {
   let stored = null; try { stored = localStorage.getItem('boussole:theme'); } catch {}
   document.documentElement.dataset.theme = (stored === 'light' || stored === 'dark') ? stored : 'dark';
   applyThemeMeta();
+}
+
+// ---------- Personnalisation (accent, taille du texte, densité, coins) ----------
+const PREF_DEFAULTS = { accent: 'ambre', textsize: 'normal', density: 'confort', corners: 'doux' };
+function applyPref(k, v) {
+  const el = document.documentElement;
+  if (v && v !== PREF_DEFAULTS[k]) el.dataset[k] = v; else delete el.dataset[k];
+}
+function initPrefs() {
+  Object.keys(PREF_DEFAULTS).forEach((k) => {
+    let v = null; try { v = localStorage.getItem('boussole:' + k); } catch {}
+    applyPref(k, v || PREF_DEFAULTS[k]);
+  });
+}
+function setPref(k, v) {
+  try { localStorage.setItem('boussole:' + k, v); } catch {}
+  applyPref(k, v);
+}
+function refreshReglages() {
+  if (screen !== 'reglages') return;
+  const view = $('#view'); const top = view.scrollTop;
+  view.innerHTML = UI.viewReglagesHTML(cloudCtx());
+  hydrateIcons(view); view.scrollTop = top;
+}
+const deviseSym = () => (CURRENCIES[S.getDevise()] || { symbol: 'F' }).symbol;
+
+// Insère un texte à l'endroit du curseur d'un champ + sauve le modèle.
+function insertAtCursor(ta, text) {
+  const s = ta.selectionStart == null ? ta.value.length : ta.selectionStart;
+  const e = ta.selectionEnd == null ? ta.value.length : ta.selectionEnd;
+  ta.value = ta.value.slice(0, s) + text + ta.value.slice(e);
+  const pos = s + text.length; ta.focus(); try { ta.setSelectionRange(pos, pos); } catch {}
+  if (ta.dataset.key) S.setWaTemplate(ta.dataset.key, ta.value);
+}
+
+// ---------- Impression Bluetooth ----------
+function btErr(e) {
+  const m = (e && e.message) || '';
+  if (/cancel|NotFoundError|chooser|User cancelled/i.test(m + (e && e.name || ''))) return 'Connexion annulée.';
+  return 'Impression impossible. Vérifie que l’imprimante est allumée et proche.';
+}
+function printReceiptBT(d) {
+  const p = S.getState().profil;
+  BT.printReceipt({
+    commerce: p.nom_activite || 'Boussole',
+    date: new Date(d.date).toLocaleString('fr-FR'),
+    lignes: d.lignes, total: d.total,
+    mode: S.PAYMENT_LABELS[d.mode] || d.mode, vendeur: d.vendeur, devise: deviseSym(),
+    footer: S.renderTemplate(S.getWaTemplate('recu'), { commerce: p.nom_activite || '', total: S.formatF(d.total) }),
+  }).then(() => UI.toast('Reçu envoyé à l’imprimante')).catch((e) => UI.toast(btErr(e), 'err'));
+}
+
+// ---------- Langue : ajout / éditeur de langue locale ----------
+function openLangAdd() {
+  const code = I18n.addCustomLang('locale-' + Date.now().toString(36), 'Ma langue');
+  refreshReglages();
+  openLangEditor(code);
+}
+function openLangEditor(code) {
+  const lg = I18n.getCustomLangs().find((l) => l.code === code);
+  if (!lg) return;
+  const rows = I18n.CORE_TERMS.map((fr) => `<div class="lted">
+      <span class="lted__fr">${UI.esc(fr)}</span>
+      <input class="input lted__in" data-action="lted-term" data-code="${code}" data-fr="${UI.esc(fr)}" value="${UI.esc(lg.terms[fr] || '')}" placeholder="…" autocomplete="off">
+    </div>`).join('');
+  UI.openModal(UI.modalShell('Traduire l’interface',
+    `<div class="field"><label for="lted-name">Nom de la langue</label>
+       <input id="lted-name" class="input" data-action="lted-name" data-code="${code}" value="${UI.esc(lg.natif)}" autocomplete="off"></div>
+     ${UI.zhelp('Saisis les mots dans ta langue. Ce que tu laisses vide restera en français. Tu peux revenir corriger à tout moment.')}
+     <div class="ltedlist">${rows}</div>`,
+    `<button class="btn btn--danger-ghost btn--sm" data-action="lang-del" data-code="${code}">Supprimer</button>
+     <button class="btn" data-action="close-modal">Terminé</button>`));
+  hydrateIcons($('#modal-root'));
 }
 const isConfigured = () => Boolean(S.getState().profil.nom_activite) || S.getProduits({ withArchived: true }).length > 0;
 
@@ -256,7 +331,8 @@ function openReceiptModal(ref) {
     `<p class="modal__lead">Encaissé <strong>${S.formatF(d.total)}</strong> · ${UI.esc(S.PAYMENT_LABELS[d.mode] || d.mode)}</p>
      ${UI.zhelp('Donne un reçu à ton client. Le ticket 58 mm est pour une imprimante de caisse ; le reçu A4 pour une imprimante normale ou un PDF ; WhatsApp envoie le détail par message.')}
      <div class="rcpt-actions">
-       <button class="btn" data-action="rcpt-print" data-ref="${d.ref}" data-fmt="ticket"><span data-icon="print"></span> Ticket 58 mm</button>
+       ${BT.supported() ? `<button class="btn" data-action="rcpt-bt" data-ref="${d.ref}"><span data-icon="bluetooth"></span> Imprimante Bluetooth</button>` : ''}
+       <button class="btn ${BT.supported() ? 'btn--ghost' : ''}" data-action="rcpt-print" data-ref="${d.ref}" data-fmt="ticket"><span data-icon="print"></span> Ticket 58 mm</button>
        <button class="btn btn--ghost" data-action="rcpt-print" data-ref="${d.ref}" data-fmt="a4"><span data-icon="doc"></span> Reçu A4</button>
        <button class="btn btn--ghost" data-action="rcpt-wa" data-ref="${d.ref}"><span data-icon="whatsapp"></span> WhatsApp</button>
      </div>`,
@@ -267,7 +343,8 @@ function printReceipt(d, fmt) { document.getElementById('print-area').innerHTML 
 function shareReceiptWA(d) {
   const nom = S.getState().profil.nom_activite || '';
   const lines = d.lignes.map((l) => `• ${l.nom} ${S.formatNombre(l.qte)}×${S.formatF(l.prix_unitaire)} = ${S.formatF((l.qte || 0) * (l.prix_unitaire || 0))}`).join('\n');
-  const txt = `*REÇU — ${nom}*\n${new Date(d.date).toLocaleString('fr-FR')}\n\n${lines}\n\n*TOTAL : ${S.formatF(d.total)}*\nPayé en ${S.PAYMENT_LABELS[d.mode] || d.mode}${d.vendeur ? `\nVendeur : ${d.vendeur}` : ''}\n\nMerci de votre visite !`;
+  const footer = S.renderTemplate(S.getWaTemplate('recu'), { commerce: nom, total: S.formatF(d.total), client: '' });
+  const txt = `*REÇU — ${nom}*\n${new Date(d.date).toLocaleString('fr-FR')}\n\n${lines}\n\n*TOTAL : ${S.formatF(d.total)}*\nPayé en ${S.PAYMENT_LABELS[d.mode] || d.mode}${d.vendeur ? `\nVendeur : ${d.vendeur}` : ''}\n\n${footer}`;
   window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
 }
 
@@ -666,7 +743,7 @@ function openClientFiche(key) {
      ${creds.length ? `<div class="docform__sec">Crédits</div><div class="fiche-list">${credRows}</div>` : ''}
      ${docs.length ? `<div class="docform__sec">Historique d'achat</div><div class="fiche-list">${docRows}</div>` : ''}
      <div class="crd-detail-acts">
-       ${tel ? `<a class="btn btn--doc" href="https://wa.me/${tel}" target="_blank" rel="noopener"><span data-icon="whatsapp"></span> WhatsApp</a>` : ''}
+       ${tel ? `<a class="btn btn--doc" href="https://wa.me/${tel}?text=${encodeURIComponent(S.renderTemplate(S.getWaTemplate('remerciement'), { client: c.nom || '', commerce: S.getState().profil.nom_activite || '' }))}" target="_blank" rel="noopener"><span data-icon="whatsapp"></span> WhatsApp</a>` : ''}
        <button class="btn btn--ghost" data-action="client-edit" data-key="${UI.esc(key)}" data-id="${c.id || ''}"><span data-icon="edit"></span> Modifier</button>
      </div>`,
     `<button class="btn btn--ghost" data-action="close-modal">Fermer</button>`));
@@ -854,6 +931,29 @@ document.addEventListener('click', (e) => {
     case 'welcome-skip': wizard = { step: 1, charges: UI.defaultCharges() }; return setScreen('config');
     case 'toggle-theme': return toggleTheme();
 
+    // Personnalisation (apparence)
+    case 'set-accent': setPref('accent', el.dataset.v); return refreshReglages();
+    case 'set-textsize': setPref('textsize', el.dataset.v); return refreshReglages();
+    case 'set-density': setPref('density', el.dataset.v); return refreshReglages();
+    case 'set-corners': setPref('corners', el.dataset.v); return refreshReglages();
+    case 'set-theme': { const t = el.dataset.v === 'light' ? 'light' : 'dark'; document.documentElement.dataset.theme = t; try { localStorage.setItem('boussole:theme', t); } catch {} applyThemeMeta(); return refreshReglages(); }
+
+    // Messages WhatsApp configurables
+    case 'watpl-reset': S.resetWaTemplate(el.dataset.key); refreshReglages(); return UI.toast('Message réinitialisé');
+    case 'watpl-var': { const ta = document.getElementById('watpl-' + el.dataset.key); if (ta) insertAtCursor(ta, '{' + el.dataset.var + '}'); return; }
+
+    // Imprimante Bluetooth
+    case 'bt-connect': BT.connect().then((n) => { UI.toast('Imprimante connectée : ' + n); refreshReglages(); }).catch((e) => UI.toast(btErr(e), 'err')); return;
+    case 'bt-test': BT.printTest(S.getState().profil.nom_activite, deviseSym()).then(() => UI.toast('Test envoyé à l’imprimante')).catch((e) => UI.toast(btErr(e), 'err')); return;
+    case 'bt-forget': BT.forget(); refreshReglages(); return UI.toast('Imprimante oubliée');
+    case 'rcpt-bt': { const d = S.receiptByTicket(el.dataset.ref) || S.receiptData(el.dataset.ref); if (d) printReceiptBT(d); return; }
+
+    // Langue
+    case 'set-lang': I18n.setLang(el.dataset.code); render(); I18n.applyLang(); return UI.toast('Langue : ' + I18n.langLabel(el.dataset.code));
+    case 'lang-add': return openLangAdd();
+    case 'lang-edit': return openLangEditor(el.dataset.code);
+    case 'lang-del': { const c = el.dataset.code; I18n.removeCustomLang(c); UI.closeModal(); render(); I18n.applyLang(); return UI.toast('Langue supprimée'); }
+
     // tableau de bord — période & objectif
     case 'set-gran': if (period.gran !== el.dataset.gran) { period.gran = el.dataset.gran; period.offset = 0; savePeriod(); refreshDash(); } return;
     case 'period-prev': period.offset -= 1; return refreshDash();
@@ -901,7 +1001,12 @@ document.addEventListener('click', (e) => {
     case 'del-credit': return UI.confirmDialog({ title: 'Supprimer le crédit', message: 'Supprimer cette dette client ?', danger: true, okLabel: 'Supprimer' }, () => { S.deleteCredit(id); UI.closeModal(); UI.toast('Crédit supprimé'); });
     case 'credit-remind': {
       const c = S.getCredits().find((x) => x.id === id);
-      if (c && c.tel) { const nom = S.getState().profil.nom_activite || ''; const txt = `Bonjour ${c.client || ''}, petit rappel amical : il reste ${S.formatF(S.creditReste(c))} à régler${nom ? ` pour ${nom}` : ''}. Merci !`; window.open('https://wa.me/' + c.tel.replace(/[^0-9]/g, '') + '?text=' + encodeURIComponent(txt), '_blank'); }
+      if (c && c.tel) {
+        const nom = S.getState().profil.nom_activite || '';
+        const ech = c.echeance ? ` (échéance ${frDate(c.echeance)})` : '';
+        const txt = S.renderTemplate(S.getWaTemplate('relance'), { client: c.client || '', commerce: nom, reste: S.formatF(S.creditReste(c)), echeance: ech });
+        window.open('https://wa.me/' + c.tel.replace(/[^0-9]/g, '') + '?text=' + encodeURIComponent(txt), '_blank');
+      }
       return;
     }
     // annuaire clients
@@ -1104,6 +1209,9 @@ document.addEventListener('change', (e) => {
   else if (el.matches('[data-action="df-cat"]')) { depFilter.categorie = el.value; refreshDepenses(); }
   else if (el.matches('[data-action="df-search"]')) { depFilter.q = el.value; refreshDepenses(); }
   else if (el.matches('[data-action="save-fisc"]')) { const f = el.dataset.field; if (f) S.setProfil({ [f]: (el.value || '').trim() }); }
+  else if (el.matches('[data-action="watpl-save"]')) { S.setWaTemplate(el.dataset.key, el.value); }
+  else if (el.matches('[data-action="lted-term"]')) { I18n.setCustomTerm(el.dataset.code, el.dataset.fr, el.value); }
+  else if (el.matches('[data-action="lted-name"]')) { I18n.addCustomLang(el.dataset.code, (el.value || '').trim()); refreshReglages(); }
   else if (el.matches('[data-action="cart-vendeur"]')) { cartVendeur = el.value; }
   else if (el.matches('[data-action="vf-mode"]')) { venteFilter.mode = el.value; refreshVentes(); }
   else if (el.matches('[data-action="vf-vendeur"]')) { venteFilter.vendeur = el.value; refreshVentes(); }
@@ -1198,6 +1306,7 @@ function pulseBenef() {
 // ---------- Démarrage ----------
 async function boot() {
   initTheme();
+  initPrefs();
   S.initStore();
   if (isConfigured()) screen = 'accueil';
   else screen = CLOUD_ENABLED ? 'welcome' : 'config';
@@ -1206,6 +1315,7 @@ async function boot() {
   if (screen === 'config') wizard = { step: 1, charges: UI.defaultCharges() };
   if (screen === 'accueil') animateNext = true;
   render();
+  I18n.startI18n();               // traduit l'interface si une autre langue est choisie
   setTimeout(hideSplash, 1300);   // splash signature « boussole » : durée minimale
   maybeShowTuto();
   if (CLOUD_ENABLED) { try { await Cloud.initSupabase(); } catch (e) { console.warn('supabase init', e); } }

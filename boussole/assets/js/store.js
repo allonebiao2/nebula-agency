@@ -239,6 +239,37 @@ export function addVendeur(nom) {
 }
 export function removeVendeur(nom) { setProfil({ vendeurs: getVendeurs().filter((x) => x !== nom) }); }
 
+// ---------- Messages WhatsApp configurables (textes prédéfinis) ----------
+// Le commerçant personnalise les textes envoyés par WhatsApp. Les {variables}
+// sont remplacées automatiquement au moment de l'envoi.
+export const WA_TEMPLATES_DEF = {
+  relance: 'Bonjour {client}, petit rappel amical : il reste {reste} à régler sur votre ardoise chez {commerce}. Merci d’avance !',
+  recu: 'Merci pour votre achat chez {commerce} ! Total réglé : {total}. À très bientôt.',
+  remerciement: 'Bonjour {client}, merci pour votre confiance et à très bientôt chez {commerce} !',
+};
+export const WA_TEMPLATES_META = {
+  relance: { label: 'Relance de dette', vars: ['client', 'commerce', 'reste', 'echeance'] },
+  recu: { label: 'Message du reçu', vars: ['commerce', 'total', 'client'] },
+  remerciement: { label: 'Message de remerciement', vars: ['client', 'commerce'] },
+};
+export function getWaTemplate(key) {
+  const t = state.profil.wa_templates || {};
+  return (t[key] != null && String(t[key]).trim()) ? t[key] : (WA_TEMPLATES_DEF[key] || '');
+}
+export function setWaTemplate(key, text) {
+  const t = { ...(state.profil.wa_templates || {}) };
+  t[key] = text; setProfil({ wa_templates: t });
+}
+export function resetWaTemplate(key) {
+  const t = { ...(state.profil.wa_templates || {}) };
+  delete t[key]; setProfil({ wa_templates: t });
+}
+// Remplace {cle} par vars.cle (chaîne vide si absent).
+export function renderTemplate(text, vars = {}) {
+  return String(text || '').replace(/\{(\w+)\}/g, (_, k) => (vars[k] != null ? String(vars[k]) : ''))
+    .replace(/[ \t]{2,}/g, ' ').replace(/ +([.,!?])/g, '$1').trim();
+}
+
 // ---------- Reset (déconnexion / effacer) ----------
 export function resetLocal() { state = emptyState(); persistLocal(); emit(); }
 

@@ -23,6 +23,7 @@ alter table public.profils add column if not exists adresse   text default '';
 alter table public.profils add column if not exists tel_pro   text default '';
 alter table public.profils add column if not exists email_pro text default '';
 alter table public.profils add column if not exists vendeurs  jsonb default '[]'::jsonb;   -- liste de noms de vendeurs
+alter table public.profils add column if not exists wa_templates jsonb default '{}'::jsonb; -- textes WhatsApp personnalisés
 
 create table if not exists public.produits (
   id          uuid primary key,

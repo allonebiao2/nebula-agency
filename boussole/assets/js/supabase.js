@@ -84,7 +84,7 @@ function makeAdapter() {
       const p = prof.data || {};
       return {
         profil: prof.data
-          ? { nom_activite: p.nom_activite || '', devise: p.devise || 'F', objectif_benefice: Number(p.objectif_benefice) || 0, solde_initial: Number(p.solde_initial) || 0, ifu: p.ifu || '', rccm: p.rccm || '', adresse: p.adresse || '', tel_pro: p.tel_pro || '', email_pro: p.email_pro || '', vendeurs: Array.isArray(p.vendeurs) ? p.vendeurs : [] }
+          ? { nom_activite: p.nom_activite || '', devise: p.devise || 'F', objectif_benefice: Number(p.objectif_benefice) || 0, solde_initial: Number(p.solde_initial) || 0, ifu: p.ifu || '', rccm: p.rccm || '', adresse: p.adresse || '', tel_pro: p.tel_pro || '', email_pro: p.email_pro || '', vendeurs: Array.isArray(p.vendeurs) ? p.vendeurs : [], wa_templates: p.wa_templates || {} }
           : { nom_activite: '', devise: 'F', objectif_benefice: 0, solde_initial: 0, ifu: '', rccm: '', adresse: '', tel_pro: '', email_pro: '', vendeurs: [] },
         produits: (prods.data || []).map((pr) => ({ ...pr, couts: pr.couts || [] })),
         charges_fixes: charges.data || [],
@@ -102,7 +102,7 @@ function makeAdapter() {
       if (!uid()) return;
       if (table === 'profils') {
         const base = { user_id: uid(), nom_activite: row.nom_activite || '', devise: row.devise || 'F', objectif_benefice: Number(row.objectif_benefice) || 0, solde_initial: Number(row.solde_initial) || 0 };
-        const full = { ...base, ifu: row.ifu || '', rccm: row.rccm || '', adresse: row.adresse || '', tel_pro: row.tel_pro || '', email_pro: row.email_pro || '', vendeurs: Array.isArray(row.vendeurs) ? row.vendeurs : [] };
+        const full = { ...base, ifu: row.ifu || '', rccm: row.rccm || '', adresse: row.adresse || '', tel_pro: row.tel_pro || '', email_pro: row.email_pro || '', vendeurs: Array.isArray(row.vendeurs) ? row.vendeurs : [], wa_templates: row.wa_templates || {} };
         let { error } = await client.from('profils').upsert(full, { onConflict: 'user_id' });
         if (error && /column|schema cache|does not exist/i.test(error.message || '')) {
           // colonnes fiscales pas encore migrées -> on sauve au moins les champs de base
