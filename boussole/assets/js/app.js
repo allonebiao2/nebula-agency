@@ -341,7 +341,11 @@ function openForgotPin() {
 // ---------- Rendu ----------
 function render() {
   // Back-office licences (réservé NEBULA — admin connecté uniquement)
-  if (screen === 'admin') { if (Cloud.isAdmin()) return renderAdmin(); screen = 'accueil'; }
+  if (screen === 'admin') {
+    if (Cloud.isAdmin()) return renderAdmin();
+    if (!Cloud.getUser()) return renderAdminGate();   // session pas encore chargée / déconnecté -> on garde l'intention
+    screen = 'accueil';                                // connecté mais pas un compte admin
+  }
   // Blocage licence : essai terminé / licence expirée -> paywall plein écran
   const le = S.licenceEtat();
   if (le.bloque && !Cloud.isAdmin()) return renderPaywall(le.mode);
@@ -398,6 +402,19 @@ function renderAdmin() {
   Promise.all([Cloud.adminListRequests(), Cloud.adminListKeys(), Cloud.adminGetConfig('tg_admin_chat')]).then(([reqs, keys, tgChat]) => {
     view.innerHTML = UI.adminLicencesHTML(reqs, keys, tgChat); hydrateIcons(view);
   });
+}
+// Écran d'accès au back-office (le temps que la session se charge, ou si déconnecté).
+function renderAdminGate() {
+  const tb = $('#topbar'); tb.style.display = 'none';
+  ['#nav', '#sidebar', '#fab'].forEach((s) => { $(s).innerHTML = ''; $(s).style.display = 'none'; });
+  const view = $('#view');
+  view.innerHTML = `<section class="view"><div class="empty">
+    <span class="empty__ic" data-icon="shield"></span>
+    <h2>Back-office NEBULA</h2>
+    <p>Connecte-toi avec ton compte administrateur pour gérer les licences et les notifications.</p>
+    <button class="btn btn--lg" data-action="open-auth"><span data-icon="user"></span> Se connecter</button>
+  </div></section>`;
+  hydrateIcons(view);
 }
 // Retire de la navigation les écrans interdits au vendeur en session.
 function pruneChromeForMember() {
