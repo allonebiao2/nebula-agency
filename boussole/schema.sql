@@ -101,6 +101,73 @@ begin
 end $$;
 grant execute on function public.admin_create_licence_key(text) to authenticated;
 
+-- ============================================================
+--  PRO — journal d'audit + notifications Telegram (pg_net, SANS n8n)
+-- ============================================================
+create table if not exists public.audit (
+  id      uuid primary key,
+  user_id uuid references auth.users on delete cascade,
+  action  text, cible text, detail text, auteur text,
+  date    timestamptz, created_at timestamptz default now()
+);
+alter table public.audit enable row level security;
+
+-- Config privée (token bot + chat_id admin) — jamais lisible côté client.
+create table if not exists public.app_config (key text primary key, value text);
+alter table public.app_config enable row level security;
+drop policy if exists cfg_admin on public.app_config;
+create policy cfg_admin on public.app_config for all to authenticated
+  using ((select email from auth.users where id = auth.uid()) in ('allonebiao@gmail.com', 'allonebiao2@gmail.com'))
+  with check ((select email from auth.users where id = auth.uid()) in ('allonebiao@gmail.com', 'allonebiao2@gmail.com'));
+
+create extension if not exists pg_net;
+
+-- À chaque nouvelle demande de paiement -> message Telegram à l'admin (via pg_net).
+create or replace function public.notify_licence_request()
+returns trigger language plpgsql security definer set search_path = public, net, extensions as $$
+declare v_token text; v_chat text; v_txt text;
+begin
+  select value into v_token from public.app_config where key = 'tg_token';
+  select value into v_chat  from public.app_config where key = 'tg_admin_chat';
+  if v_token is null or v_chat is null or v_chat = '' then return NEW; end if;
+  v_txt := '💰 Nouveau paiement Boussole' || chr(10) ||
+           'Plan : ' || coalesce(NEW.plan, '') || ' (' || coalesce(NEW.montant::text, '?') || ' F)' || chr(10) ||
+           'Nom : ' || coalesce(NEW.nom, '') || chr(10) ||
+           'Transaction : ' || coalesce(NEW.txn, '') || chr(10) ||
+           'Valide et envoie la clé depuis le back-office.';
+  perform net.http_post('https://api.telegram.org/bot' || v_token || '/sendMessage',
+    jsonb_build_object('chat_id', v_chat, 'text', v_txt), '{}'::jsonb,
+    jsonb_build_object('Content-Type', 'application/json'));
+  return NEW;
+end $$;
+drop trigger if exists trg_notify_licence on public.licence_requests;
+create trigger trg_notify_licence after insert on public.licence_requests
+  for each row execute function public.notify_licence_request();
+
+-- Admin : régler la config (chat_id) + tester la connexion Telegram.
+create or replace function public.admin_set_config(p_key text, p_value text)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if (select email from auth.users where id = auth.uid()) not in ('allonebiao@gmail.com', 'allonebiao2@gmail.com') then raise exception 'non autorise'; end if;
+  insert into public.app_config(key, value) values (p_key, p_value) on conflict (key) do update set value = excluded.value;
+end $$;
+grant execute on function public.admin_set_config(text, text) to authenticated;
+
+create or replace function public.admin_test_telegram()
+returns text language plpgsql security definer set search_path = public, net, extensions as $$
+declare v_token text; v_chat text;
+begin
+  if (select email from auth.users where id = auth.uid()) not in ('allonebiao@gmail.com', 'allonebiao2@gmail.com') then raise exception 'non autorise'; end if;
+  select value into v_token from public.app_config where key = 'tg_token';
+  select value into v_chat  from public.app_config where key = 'tg_admin_chat';
+  if v_token is null or v_chat is null or v_chat = '' then return 'config manquante'; end if;
+  perform net.http_post('https://api.telegram.org/bot' || v_token || '/sendMessage',
+    jsonb_build_object('chat_id', v_chat, 'text', '✅ Boussole : notifications Telegram connectées !'), '{}'::jsonb,
+    jsonb_build_object('Content-Type', 'application/json'));
+  return 'envoye';
+end $$;
+grant execute on function public.admin_test_telegram() to authenticated;
+
 create table if not exists public.produits (
   id          uuid primary key,
   user_id     uuid not null references auth.users on delete cascade,
@@ -239,7 +306,7 @@ alter table public.objectifs     enable row level security;
 do $$
 declare t text;
 begin
-  foreach t in array array['profils','produits','charges_fixes','ventes','depenses','credits','documents','objectifs','achats','clients'] loop
+  foreach t in array array['profils','produits','charges_fixes','ventes','depenses','credits','documents','objectifs','achats','clients','audit'] loop
     execute format('drop policy if exists p_sel on public.%I;', t);
     execute format('drop policy if exists p_ins on public.%I;', t);
     execute format('drop policy if exists p_upd on public.%I;', t);
@@ -256,7 +323,7 @@ end $$;
 do $$
 declare t text;
 begin
-  foreach t in array array['profils','produits','charges_fixes','ventes','depenses','credits','documents','objectifs','achats','clients'] loop
+  foreach t in array array['profils','produits','charges_fixes','ventes','depenses','credits','documents','objectifs','achats','clients','audit'] loop
     begin
       execute format('alter publication supabase_realtime add table public.%I;', t);
     exception when duplicate_object then null;

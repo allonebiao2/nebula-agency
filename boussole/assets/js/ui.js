@@ -14,8 +14,9 @@ import {
   PAYMENT_MODES, PAYMENT_LABELS, getVendeurs,
   achatsSummary, getAchats, achatTotal, ACHAT_STATUTS, getFournisseurs,
   WA_TEMPLATES_META, getWaTemplate,
-  PLANS, getLicence, licenceEtat, TRIAL_DAYS,
+  PLANS, getLicence, licenceEtat, TRIAL_DAYS, proAccess,
   getEquipe, ROLES, ROLE_LABELS, ROLE_DESCS, roleLabel,
+  getAudit, getBoutiques, activeBoutiqueId, consolideBoutiques, relancesDues,
   formatF, formatNombre, MOIS_LONGS,
 } from './store.js';
 import { chartBeneficeMensuel, chartEvolution, miniSpark, progressRing, chartHero, chartDonut, sparklineRaw } from './charts.js';
@@ -1344,6 +1345,7 @@ export function viewCarnetHTML() {
     ${sectionTitle('Carnet', 'Clients & créances')}
     ${zhelp('Qui te doit de l’argent (dettes) et ton annuaire clients. Tu peux encaisser des versements partiels, voir le reste dû, relancer par WhatsApp, et ouvrir la fiche d’un client pour son historique d’achat.')}
     ${gauge}
+    ${relancesCardHTML()}
     <article class="panel">
       <div class="panel__head"><h2>Dettes en cours</h2><button class="btn btn--sm" data-action="add-credit"><span data-icon="plus"></span> Crédit</button></div>
       <ul class="crdlist">${dettesRows}</ul>
@@ -1527,6 +1529,85 @@ function abonnementPanelHTML() {
   </div>`;
 }
 
+// --- Carte d'incitation Pro (quand une fonction Pro est verrouillée) ---
+function proUpsellHTML(titre, phrase) {
+  return `<div class="proup">
+    <span class="proup__ic" data-icon="crown"></span>
+    <div class="proup__b"><strong>${esc(titre)} — réservé au Pro</strong><small>${esc(phrase)}</small></div>
+    <button class="btn btn--sm plan__cta--pro" data-action="go-offres">Passer en Pro</button>
+  </div>`;
+}
+
+// --- Panneau HISTORIQUE D'AUDIT (Pro anti-fraude) ---
+function auditPanelHTML() {
+  const pro = proAccess();
+  const rows = getAudit(60);
+  const body = !pro
+    ? proUpsellHTML('Historique d’audit', 'Sache QUI a supprimé ou modifié une vente, et QUAND. Ta traçabilité anti-fraude.')
+    : (rows.length
+      ? `<ul class="auditlist">${rows.map((a) => `<li class="auditrow">
+          <span class="auditrow__ic" data-icon="${a.action === 'suppression' ? 'trash' : 'edit'}"></span>
+          <div class="auditrow__b"><strong>${esc(a.auteur)}</strong> a ${esc(a.action === 'suppression' ? 'supprimé' : 'modifié')} une ${esc(a.cible)}<small>${esc(a.detail)}</small></div>
+          <span class="auditrow__t">${fmtDateTimeCourt(a.date)}</span>
+        </li>`).join('')}</ul>`
+      : '<p class="lrow--empty">Aucune suppression ni modification enregistrée. Tout est propre.</p>');
+  return `<div class="panel">
+    <div class="panel__head"><h2>Historique d’audit</h2><span class="panel__badge"><span data-icon="crown"></span> Pro</span></div>
+    ${zhelp('Chaque suppression ou modification d’une vente, dépense, dette ou achat est tracée : qui l’a faite et quand. C’est ta protection contre les fraudes internes.')}
+    ${body}
+  </div>`;
+}
+function fmtDateTimeCourt(iso) {
+  try { const d = new Date(iso); return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }); } catch { return ''; }
+}
+
+// --- Panneau MULTI-BOUTIQUES (Pro) ---
+function boutiquesPanelHTML() {
+  const pro = proAccess();
+  if (!pro) return `<div class="panel"><div class="panel__head"><h2>Mes boutiques</h2><span class="panel__badge"><span data-icon="crown"></span> Pro</span></div>${proUpsellHTML('Multi-boutiques', 'Gère plusieurs points de vente et vois le total consolidé, depuis un seul téléphone.')}</div>`;
+  const active = activeBoutiqueId();
+  const list = getBoutiques();
+  const cons = consolideBoutiques();
+  const rows = list.map((b) => `<li class="boutrow ${b.id === active ? 'is-active' : ''}">
+      <button class="boutrow__pick" data-action="switch-boutique" data-id="${b.id}">
+        <span class="boutrow__ic" data-icon="${b.id === active ? 'check' : 'box'}"></span>
+        <div class="boutrow__b"><strong>${esc(b.nom)}</strong><small>${b.id === 'principale' ? 'Synchronisée au cloud' : 'Sur cet appareil'}</small></div>
+      </button>
+      ${b.id !== 'principale' ? `<button class="lrow__btn lrow__btn--del" data-action="del-boutique" data-id="${b.id}" title="Supprimer"><span data-icon="trash"></span></button>` : ''}
+    </li>`).join('');
+  const consRows = cons.rows.map((r) => `<tr><td>${esc(r.nom)}${r.active ? ' •' : ''}</td><td class="num">${formatF(r.ca)}</td><td class="num ${r.marge >= 0 ? 'pos' : 'neg'}">${formatF(r.marge)}</td><td class="num">${formatF(r.dettes)}</td></tr>`).join('');
+  return `<div class="panel">
+    <div class="panel__head"><h2>Mes boutiques</h2><span class="panel__badge"><span data-icon="crown"></span> Pro</span></div>
+    ${zhelp('Gère plusieurs boutiques depuis cette appli. Chaque boutique a ses propres ventes, stock et dettes. La « principale » est synchronisée au cloud ; les autres restent sur cet appareil.')}
+    <ul class="list boutlist">${rows}</ul>
+    <div class="vaddrow"><input id="rg-bout" class="input" placeholder="Nom d’une nouvelle boutique" autocomplete="off"><button class="btn btn--sm" data-action="add-boutique"><span data-icon="plus"></span> Ajouter</button></div>
+    <div class="panel__head" style="margin-top:16px"><h3 style="font-size:14px">Total consolidé (ce mois)</h3></div>
+    <div class="tablewrap"><table class="tbl"><thead><tr><th>Boutique</th><th class="num">CA</th><th class="num">Marge</th><th class="num">Dettes</th></tr></thead>
+      <tbody>${consRows}</tbody>
+      <tfoot><tr><td>Total</td><td class="num">${formatF(cons.tot.ca)}</td><td class="num ${cons.tot.marge >= 0 ? 'pos' : 'neg'}">${formatF(cons.tot.marge)}</td><td class="num">${formatF(cons.tot.dettes)}</td></tr></tfoot>
+    </table></div>
+  </div>`;
+}
+
+// --- Carte RELANCES DU JOUR (Pro : dettes dues -> WhatsApp adapté) ---
+export function relancesCardHTML() {
+  if (!proAccess()) return '';
+  const dues = relancesDues();
+  if (!dues.length) return '';
+  const rows = dues.slice(0, 8).map((c) => {
+    const retard = c.joursRetard != null && c.joursRetard > 0 ? `<span class="rel-late">Retard ${c.joursRetard} j</span>` : (c.joursRetard === 0 ? '<span class="rel-due">Aujourd’hui</span>' : '<span class="rel-soft">À relancer</span>');
+    return `<li class="relrow">
+      <div class="relrow__b"><strong>${esc(c.client || 'Client')}</strong><small>${formatF(c.reste)} dû ${retard}</small></div>
+      <button class="btn btn--sm btn--wa" data-action="relance-wa" data-id="${c.id}"><span data-icon="whatsapp"></span> Relancer</button>
+    </li>`;
+  }).join('');
+  return `<article class="panel relcard">
+    <div class="panel__head"><h2>Relances du jour</h2><span class="panel__badge"><span data-icon="crown"></span> Pro</span></div>
+    ${zhelp('Les dettes dont l’échéance est arrivée. Un clic ouvre le WhatsApp du client avec un message de relance déjà écrit et adapté (montant restant, retard).')}
+    <ul class="rellist">${rows}</ul>
+  </article>`;
+}
+
 // --- ÉCRAN VERROUILLAGE (clavier PIN) : identifie patron OU vendeur ---
 export function pinLockHTML(mode) {
   const titles = { open: 'Entre ton code', set: 'Choisis un code', confirm: 'Confirme le code', change: 'Nouveau code', owner: 'Code du patron' };
@@ -1557,7 +1638,7 @@ export function empBannerHTML(membre) {
 }
 
 // --- BACK-OFFICE licences (réservé NEBULA) ---
-export function adminLicencesHTML(requests, keys) {
+export function adminLicencesHTML(requests, keys, tgChat) {
   const reqRows = requests.length ? requests.map((r) => `<div class="areq ${r.statut !== 'en_attente' ? 'is-done' : ''}">
       <div class="areq__b"><strong>${esc(r.nom || 'Client')}</strong><small>${esc((PLANS[r.plan] || {}).nom || r.plan)} · ${formatNombre(r.montant || 0)} F · TXN ${esc(r.txn || '—')}</small></div>
       <div class="areq__acts">
@@ -1583,6 +1664,16 @@ export function adminLicencesHTML(requests, keys) {
       <div class="panel__head"><h2>Générer une clé</h2></div>
       <div class="btnrow">${Object.keys(PLANS).map((k) => `<button class="btn" data-action="admin-genkey" data-plan="${k}"><span data-icon="key"></span> ${PLANS[k].nom}</button>`).join('')}</div>
       <div class="akeylist">${keyRows}</div>
+    </div>
+    <div class="panel">
+      <div class="panel__head"><h2>Notifications Telegram</h2></div>
+      ${zhelp('Reçois une alerte Telegram à chaque paiement (sans n8n). Sur Telegram, écris à @userinfobot : il te donne ton « Id ». Colle-le ici puis teste.')}
+      <div class="field"><label for="tg-chat">Ton Telegram (chat id)</label>
+        <input id="tg-chat" class="input" inputmode="numeric" value="${esc(tgChat || '')}" placeholder="Ex. 123456789" autocomplete="off"></div>
+      <div class="btnrow">
+        <button class="btn" data-action="tg-save"><span data-icon="check"></span> Enregistrer</button>
+        <button class="btn btn--ghost" data-action="tg-test"><span data-icon="spark"></span> Envoyer un test</button>
+      </div>
     </div>
     <button class="btn btn--ghost" data-action="go" data-screen="reglages"><span data-icon="home"></span> Retour à l’appli</button>
   </section>`;
@@ -1724,6 +1815,8 @@ export function viewReglagesHTML(cloud) {
     ${monProfilPanelHTML(cloud)}
     ${pinPanelHTML()}
     ${equipePanelHTML()}
+    ${boutiquesPanelHTML()}
+    ${auditPanelHTML()}
     ${abonnementPanelHTML()}
     <div class="panel">
       <div class="panel__head"><h2>Sauvegarde</h2></div>

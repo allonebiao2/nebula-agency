@@ -111,6 +111,22 @@ export async function adminListKeys() {
 export async function adminSetRequestStatut(id, statut) {
   if (client) await client.from('licence_requests').update({ statut }).eq('id', id);
 }
+export async function adminGetConfig(key) {
+  if (!client) return '';
+  const { data } = await client.from('app_config').select('value').eq('key', key).maybeSingle();
+  return (data && data.value) || '';
+}
+export async function adminSetConfig(key, value) {
+  if (!client) throw new Error('Cloud non configuré');
+  const { error } = await client.rpc('admin_set_config', { p_key: key, p_value: value });
+  if (error) throw error;
+}
+export async function adminTestTelegram() {
+  if (!client) throw new Error('Cloud non configuré');
+  const { data, error } = await client.rpc('admin_test_telegram');
+  if (error) throw error;
+  return data;
+}
 
 // ---------- Adaptateur CRUD (branché sur le store) ----------
 function stripLocal(row) {
@@ -122,7 +138,7 @@ function makeAdapter() {
   const uid = () => currentUser && currentUser.id;
   return {
     async pullAll() {
-      const [prof, prods, charges, ventes, depenses, credits, documents, objectifs, achats, clients] = await Promise.all([
+      const [prof, prods, charges, ventes, depenses, credits, documents, objectifs, achats, clients, audit] = await Promise.all([
         client.from('profils').select('*').maybeSingle(),
         client.from('produits').select('*'),
         client.from('charges_fixes').select('*'),
@@ -133,6 +149,7 @@ function makeAdapter() {
         client.from('objectifs').select('*'),
         client.from('achats').select('*'),
         client.from('clients').select('*'),
+        client.from('audit').select('*'),
       ]);
       const p = prof.data || {};
       return {
@@ -148,6 +165,7 @@ function makeAdapter() {
         objectifs: objectifs.data || [],
         achats: achats.data || [],
         clients: clients.data || [],
+        audit: audit.data || [],
         _documentsUnavailable: Boolean(documents.error),   // table absente = migration non lancée
       };
     },
@@ -187,7 +205,7 @@ let repullTimer = null;
 function subscribeRealtime() {
   if (!client || channel) return;
   channel = client.channel('boussole-sync');
-  ['produits', 'charges_fixes', 'ventes', 'profils', 'depenses', 'credits', 'documents', 'objectifs', 'achats', 'clients'].forEach((table) => {
+  ['produits', 'charges_fixes', 'ventes', 'profils', 'depenses', 'credits', 'documents', 'objectifs', 'achats', 'clients', 'audit'].forEach((table) => {
     channel.on('postgres_changes', { event: '*', schema: 'public', table }, () => {
       clearTimeout(repullTimer);
       repullTimer = setTimeout(() => hydrateFromRemote().catch(() => {}), 400);

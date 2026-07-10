@@ -261,13 +261,27 @@ async function adminGenKey(plan, reqId) {
 }
 async function adminReject(id) { await Cloud.adminSetRequestStatut(id, 'rejete'); renderAdmin(); UI.toast('Demande rejetée'); }
 async function copyText(t, ok) { try { await navigator.clipboard.writeText(t); UI.toast(ok || 'Copié'); } catch { UI.toast(t); } }
+async function tgSave() {
+  const v = (($('#tg-chat') || {}).value || '').trim();
+  try { await Cloud.adminSetConfig('tg_admin_chat', v); UI.toast('Telegram enregistré'); }
+  catch (e) { UI.toast('Échec : ' + (e.message || ''), 'err'); }
+}
+async function tgTest() {
+  try { const r = await Cloud.adminTestTelegram(); UI.toast(r === 'envoye' ? 'Test envoyé sur Telegram' : 'Configure d’abord ton chat id', r === 'envoye' ? 'ok' : 'err'); }
+  catch (e) { UI.toast('Échec : ' + (e.message || ''), 'err'); }
+}
 
 const isConfigured = () => Boolean(S.getState().profil.nom_activite) || S.getProduits({ withArchived: true }).length > 0;
 
 // ---------- Sécurité : session employé + droits ----------
 let activeMember = null;   // null = patron ; sinon id du membre (session limitée)
 function loadActiveMember() { try { return localStorage.getItem('boussole:active-member') || null; } catch { return null; } }
-function setActiveMember(id) { activeMember = id || null; try { id ? localStorage.setItem('boussole:active-member', id) : localStorage.removeItem('boussole:active-member'); } catch {} }
+function setActiveMember(id) {
+  activeMember = id || null;
+  try { id ? localStorage.setItem('boussole:active-member', id) : localStorage.removeItem('boussole:active-member'); } catch {}
+  const m = activeMember ? S.getMembre(activeMember) : null;
+  S.setAuditAuthor(m ? m.nom : (S.getState().profil.proprietaire || 'Patron'));   // qui agit -> journal d'audit
+}
 function currentMembre() { return activeMember ? S.getMembre(activeMember) : null; }
 function currentRole() { const m = currentMembre(); return m ? m.role : 'patron'; }
 const SCREEN_PERM = { accueil: 'bilan', ventes: 'ventes', depenses: 'depenses', bilan: 'bilan', carnet: 'carnet', stock: 'stock', reglages: 'reglages' };
@@ -381,8 +395,8 @@ function renderAdmin() {
   tb.innerHTML = UI.topbarHTML(cloudCtx(), effectiveTheme(), 0);
   ['#nav', '#sidebar', '#fab'].forEach((s) => { $(s).innerHTML = ''; $(s).style.display = 'none'; });
   const view = $('#view'); view.innerHTML = '<section class="view"><p class="lrow--empty">Chargement…</p></section>';
-  Promise.all([Cloud.adminListRequests(), Cloud.adminListKeys()]).then(([reqs, keys]) => {
-    view.innerHTML = UI.adminLicencesHTML(reqs, keys); hydrateIcons(view);
+  Promise.all([Cloud.adminListRequests(), Cloud.adminListKeys(), Cloud.adminGetConfig('tg_admin_chat')]).then(([reqs, keys, tgChat]) => {
+    view.innerHTML = UI.adminLicencesHTML(reqs, keys, tgChat); hydrateIcons(view);
   });
 }
 // Retire de la navigation les écrans interdits au vendeur en session.
@@ -1218,10 +1232,18 @@ document.addEventListener('click', (e) => {
     case 'pick-member': setActiveMember(el.dataset.id); UI.closeModal(); render(); return UI.toast('Mode employé activé');
     case 'share-parrain': return window.open('https://wa.me/?text=' + el.dataset.msg, '_blank');
 
+    // Fonctions Pro : multi-boutiques + relances
+    case 'switch-boutique': { S.switchBoutique(el.dataset.id); screen = 'accueil'; resetScroll = true; render(); return UI.toast('Boutique : ' + ((S.getBoutiques().find((b) => b.id === el.dataset.id) || {}).nom || '')); }
+    case 'add-boutique': { const v = (($('#rg-bout') || {}).value || '').trim(); if (!v) return UI.toast('Donne un nom', 'err'); S.addBoutique(v); refreshReglages(); return UI.toast('Boutique ajoutée'); }
+    case 'del-boutique': return UI.confirmDialog({ title: 'Supprimer la boutique', message: 'Ses données sur cet appareil seront effacées. Continuer ?', danger: true, okLabel: 'Supprimer' }, () => { S.deleteBoutique(el.dataset.id); refreshReglages(); UI.toast('Boutique supprimée'); });
+    case 'relance-wa': { const c = S.getCredits().find((x) => x.id === el.dataset.id); if (c && c.tel) window.open('https://wa.me/' + c.tel.replace(/[^0-9]/g, '') + '?text=' + encodeURIComponent(S.messageRelance(c)), '_blank'); return; }
+
     // Back-office licences (admin)
     case 'admin-genkey': return adminGenKey(el.dataset.plan, el.dataset.id);
     case 'admin-reject': return adminReject(el.dataset.id);
     case 'admin-copykey': return copyText(el.dataset.cle, 'Clé copiée');
+    case 'tg-save': return tgSave();
+    case 'tg-test': return tgTest();
 
     // tableau de bord — période & objectif
     case 'set-gran': if (period.gran !== el.dataset.gran) { period.gran = el.dataset.gran; period.offset = 0; savePeriod(); refreshDash(); } return;
@@ -1580,7 +1602,7 @@ async function boot() {
   initPrefs();
   S.initStore();
   S.ensureTrial();                // démarre l'essai de 30 j à la 1re ouverture
-  activeMember = loadActiveMember();
+  setActiveMember(loadActiveMember());   // restaure la session + fixe l'auteur du journal d'audit
   if (isConfigured()) screen = 'accueil';
   else screen = CLOUD_ENABLED ? 'welcome' : 'config';
   const h = (location.hash || '').replace('#', '');

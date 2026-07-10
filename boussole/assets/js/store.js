@@ -3,7 +3,13 @@
 // on reflète chaque écriture dans le cloud (optimiste) pour la synchro multi-appareils.
 import { DEVISE, CURRENCIES } from './config.js';
 
-const LS_KEY = 'boussole:v1';
+const LS_BASE = 'boussole:v1';
+// Multi-boutiques : chaque boutique a son propre espace localStorage.
+// « principale » = boussole:v1 (données existantes, SEULE synchronisée au cloud) ;
+// les autres = boussole:v1:<id> (locales à l'appareil).
+let activeBoutique = (() => { try { return localStorage.getItem('boussole:active-boutique') || 'principale'; } catch { return 'principale'; } })();
+function lsKey() { return activeBoutique && activeBoutique !== 'principale' ? LS_BASE + ':' + activeBoutique : LS_BASE; }
+export function isMainBoutique() { return activeBoutique === 'principale'; }
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2));
 const nowISO = () => new Date().toISOString();
 
@@ -20,8 +26,21 @@ function emptyState() {
     objectifs: [],       // {id, titre, icone, montant_cible, montant_actuel, echeance, note, created_at}  (cagnottes/projets)
     achats: [],          // {id, fournisseur, date, lignes:[{produit_id,qte,cout_unitaire}], statut, note, created_at}  (achats fournisseurs)
     clients: [],         // {id, nom, tel, adresse, note, created_at}  (annuaire client explicite)
+    audit: [],           // {id, action, cible, detail, auteur, date}  (journal anti-fraude — Pro)
   };
 }
+
+// ---------- Journal d'audit (Pro : qui a modifié/supprimé quoi, quand) ----------
+let auditAuthor = 'Patron';
+export function setAuditAuthor(nom) { auditAuthor = (nom || 'Patron').trim() || 'Patron'; }
+export function logAudit(action, cible, detail) {
+  if (!state.audit) state.audit = [];
+  const row = { id: uid(), action, cible, detail: detail || '', auteur: auditAuthor, date: nowISO() };
+  state.audit.push(row);
+  if (state.audit.length > 800) state.audit = state.audit.slice(-800);
+  persistLocal(); pushRemote('audit', row);
+}
+export function getAudit(n = 150) { return [...(state.audit || [])].reverse().slice(0, n); }
 
 // Catégories de dépenses. « Réassort / Stock » = achat de marchandise : sort de la caisse
 // mais N'EST PAS une charge (le coût passe déjà par la marge des produits) -> exclu du bénéfice.
@@ -44,12 +63,13 @@ function emit() { listeners.forEach((fn) => fn(state)); }
 function hasLS() { try { return typeof localStorage !== 'undefined'; } catch { return false; } }
 function persistLocal() {
   if (!hasLS()) return;
-  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) { console.warn('persist local', e); }
+  try { localStorage.setItem(lsKey(), JSON.stringify(state)); } catch (e) { console.warn('persist local', e); }
 }
 function loadLocal() {
   if (!hasLS()) return;
+  state = emptyState();
   try {
-    const raw = localStorage.getItem(LS_KEY);
+    const raw = localStorage.getItem(lsKey());
     if (raw) state = Object.assign(emptyState(), JSON.parse(raw));
   } catch (e) { console.warn('load local', e); }
 }
@@ -57,7 +77,7 @@ function loadLocal() {
 // ---------- Cloud ----------
 export function setRemote(adapter) { remote = adapter; }
 export async function hydrateFromRemote() {
-  if (!remote) return;
+  if (!remote || !isMainBoutique()) return;   // le cloud ne concerne que la boutique principale
   const data = await remote.pullAll();
   if (!data) return;
   const cloudVide = !((data.produits && data.produits.length) || (data.ventes && data.ventes.length) ||
@@ -74,6 +94,7 @@ export async function hydrateFromRemote() {
     state.objectifs.forEach((o) => pushRemote('objectifs', o));
     state.achats.forEach((a) => pushRemote('achats', a));
     state.clients.forEach((cl) => pushRemote('clients', cl));
+    (state.audit || []).forEach((a) => pushRemote('audit', a));
     pushRemote('profils', { id: 'me', ...state.profil });
     return;
   }
@@ -88,8 +109,58 @@ export async function hydrateFromRemote() {
   persistLocal();
   emit();
 }
-function pushRemote(table, row) { if (remote) remote.upsert(table, row).catch((e) => console.warn('push', table, e)); }
-function delRemote(table, id) { if (remote) remote.remove(table, id).catch((e) => console.warn('del', table, e)); }
+// Le cloud ne synchronise QUE la boutique principale (les autres restent locales).
+function pushRemote(table, row) { if (remote && isMainBoutique()) remote.upsert(table, row).catch((e) => console.warn('push', table, e)); }
+function delRemote(table, id) { if (remote && isMainBoutique()) remote.remove(table, id).catch((e) => console.warn('del', table, e)); }
+
+// ---------- Multi-boutiques (Pro) ----------
+function loadBoutiques() { try { return JSON.parse(localStorage.getItem('boussole:boutiques')) || null; } catch { return null; } }
+function saveBoutiques(list) { try { localStorage.setItem('boussole:boutiques', JSON.stringify(list)); } catch {} }
+export function getBoutiques() {
+  let list = loadBoutiques();
+  if (!list || !list.length) { list = [{ id: 'principale', nom: state.profil.nom_activite || 'Ma boutique' }]; saveBoutiques(list); }
+  return list;
+}
+export function activeBoutiqueId() { return activeBoutique; }
+export function addBoutique(nom) {
+  nom = (nom || '').trim(); if (!nom) return null;
+  const list = getBoutiques();
+  const id = 'b' + Date.now().toString(36);
+  list.push({ id, nom }); saveBoutiques(list);
+  return id;
+}
+export function renameBoutique(id, nom) { const list = getBoutiques().map((b) => (b.id === id ? { ...b, nom: (nom || '').trim() || b.nom } : b)); saveBoutiques(list); }
+export function deleteBoutique(id) {
+  if (id === 'principale') return;
+  saveBoutiques(getBoutiques().filter((b) => b.id !== id));
+  try { localStorage.removeItem(LS_BASE + ':' + id); } catch {}
+  if (activeBoutique === id) switchBoutique('principale');
+}
+export function switchBoutique(id) {
+  if (!getBoutiques().some((b) => b.id === id)) return;
+  activeBoutique = id;
+  try { localStorage.setItem('boussole:active-boutique', id); } catch {}
+  loadLocal(); emit();
+}
+// Vue consolidée : lit l'espace de chaque boutique et agrège les indicateurs clés.
+export function consolideBoutiques() {
+  const now = new Date();
+  const mkStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  const rows = getBoutiques().map((b) => {
+    let data = state;
+    if (b.id !== activeBoutique) {
+      try { const raw = localStorage.getItem(b.id === 'principale' ? LS_BASE : LS_BASE + ':' + b.id); data = raw ? JSON.parse(raw) : emptyState(); } catch { data = emptyState(); }
+    }
+    const ventes = (data.ventes || []).filter((v) => new Date(v.date).getTime() >= mkStart);
+    const ca = ventes.reduce((s, v) => s + (v.qte || 0) * (v.prix_unitaire || 0), 0);
+    const marge = ventes.reduce((s, v) => s + (v.qte || 0) * ((v.prix_unitaire || 0) - (v.cout_unitaire || 0)), 0);
+    const dep = (data.depenses || []).filter((d) => new Date(d.date).getTime() >= mkStart).reduce((s, d) => s + (Number(d.montant) || 0), 0);
+    const dettes = (data.credits || []).reduce((s, c) => { const r = Math.max(0, (Number(c.montant) || 0) - (c.paiements || []).reduce((x, p) => x + (Number(p.montant) || 0), 0)); return s + (c.paye && !(c.paiements || []).length ? 0 : r); }, 0);
+    return { id: b.id, nom: b.nom, ca, marge, depenses: dep, dettes, active: b.id === activeBoutique };
+  });
+  const tot = rows.reduce((t, r) => ({ ca: t.ca + r.ca, marge: t.marge + r.marge, depenses: t.depenses + r.depenses, dettes: t.dettes + r.dettes }), { ca: 0, marge: 0, depenses: 0, dettes: 0 });
+  return { rows, tot };
+}
 
 // ---------- Sélecteurs de base ----------
 export function getState() { return state; }
@@ -169,7 +240,9 @@ export function updateDepense(id, patch) {
   persistLocal(); pushRemote('depenses', d); emit();
 }
 export function deleteDepense(id) {
-  state.depenses = state.depenses.filter((d) => d.id !== id);
+  const d = state.depenses.find((x) => x.id === id);
+  if (d) logAudit('suppression', 'dépense', `${d.categorie || ''} ${formatF(d.montant)}`.trim());
+  state.depenses = state.depenses.filter((x) => x.id !== id);
   persistLocal(); delRemote('depenses', id); emit();
 }
 
@@ -197,7 +270,11 @@ export function addVente({ produit_id, qte = 1, prix_unitaire, date, mode, vende
 }
 export function deleteVente(id) {
   const v = state.ventes.find((x) => x.id === id);
-  if (v) { const p = getProduit(v.produit_id); if (p && p.stock !== null && p.stock !== undefined) { p.stock = (Number(p.stock) || 0) + (Number(v.qte) || 0); pushRemote('produits', p); } }
+  if (v) {
+    const p = getProduit(v.produit_id);
+    logAudit('suppression', 'vente', `${p ? p.nom : 'Produit'} · ${v.qte}×${formatF(v.prix_unitaire)} = ${formatF((v.qte || 0) * (v.prix_unitaire || 0))}`);
+    if (p && p.stock !== null && p.stock !== undefined) { p.stock = (Number(p.stock) || 0) + (Number(v.qte) || 0); pushRemote('produits', p); }
+  }
   state.ventes = state.ventes.filter((x) => x.id !== id);
   persistLocal(); delRemote('ventes', id); emit();
 }
@@ -319,6 +396,39 @@ export function licenceEtat() {
   }
   return { mode: 'essai', bloque: false, plan: l.plan, joursRestants: TRIAL_DAYS };
 }
+// Accès aux fonctions Pro : ouvert pendant l'essai (tout), sinon licence Pro active.
+export function proAccess() { const e = licenceEtat(); return e.mode === 'essai' || (e.mode === 'actif' && e.plan === 'pro'); }
+
+// ---------- Relances de dettes « intelligentes » (Pro) ----------
+// Une relance devient DUE quand l'échéance est atteinte (ou dette ancienne sans échéance).
+// Un clic ouvre le WhatsApp du client avec un message ADAPTÉ (retard, montant restant).
+export function relancesDues() {
+  const now = Date.now();
+  return state.credits.map((c) => {
+    const reste = creditReste(c);
+    if (reste <= 0 || !c.tel) return null;
+    const ech = c.echeance ? new Date(c.echeance).getTime() : null;
+    const age = c.date ? Math.floor((now - new Date(c.date).getTime()) / DAY_MS) : 0;
+    const joursRetard = ech ? Math.floor((now - ech) / DAY_MS) : null;
+    const due = ech ? now >= ech - DAY_MS : age >= 14;   // échéance atteinte (ou J-1) / dette ancienne
+    return due ? { id: c.id, client: c.client, tel: c.tel, reste, echeance: c.echeance, joursRetard, age } : null;
+  }).filter(Boolean).sort((a, b) => (b.joursRetard ?? -999) - (a.joursRetard ?? -999));
+}
+// Message WhatsApp adapté à la situation de la dette (réutilise le modèle « relance »).
+export function messageRelance(c) {
+  const nom = state.profil.nom_activite || '';
+  let contexte = '';
+  const ech = c.echeance ? new Date(c.echeance).getTime() : null;
+  if (ech) {
+    const jr = Math.floor((Date.now() - ech) / DAY_MS);
+    if (jr > 0) contexte = ` (échéance dépassée de ${jr} jour${jr > 1 ? 's' : ''})`;
+    else if (jr === 0) contexte = ' (échéance aujourd’hui)';
+    else contexte = ` (échéance dans ${-jr} jour${-jr > 1 ? 's' : ''})`;
+  }
+  const reste = c.reste != null ? c.reste : creditReste(c);
+  return renderTemplate(getWaTemplate('relance'), { client: c.client || '', commerce: nom, reste: formatF(reste), echeance: contexte });
+}
+
 // Enregistre la clé envoyée par NEBULA (BSL-XXXX-XXXX) -> licence mensuelle active.
 export function activateLicence(code, plan) {
   code = (code || '').trim().toUpperCase();
@@ -939,7 +1049,7 @@ export function updateCredit(id, patch) {
   Object.assign(c, patch); if (patch.montant != null) c.montant = Number(patch.montant) || 0;
   persistLocal(); pushRemote('credits', c); emit();
 }
-export function deleteCredit(id) { state.credits = state.credits.filter((c) => c.id !== id); persistLocal(); delRemote('credits', id); emit(); }
+export function deleteCredit(id) { const c = getCredit(id); if (c) logAudit('suppression', 'dette', `${c.client || 'Client'} · ${formatF(c.montant)}`); state.credits = state.credits.filter((x) => x.id !== id); persistLocal(); delRemote('credits', id); emit(); }
 // Paiement partiel : un crédit garde une liste de versements ; « payé » = reste ≤ 0.
 function sommePaiements(c) { return (c.paiements || []).reduce((s, p) => s + (Number(p.montant) || 0), 0); }
 export function creditReste(c) { if (c.paye && !(c.paiements || []).length) return 0; return Math.max(0, (Number(c.montant) || 0) - sommePaiements(c)); }
@@ -1233,6 +1343,7 @@ export function setAchatStatut(id, statut) {
 }
 export function deleteAchat(id) {
   const a = getAchat(id); if (!a) return;
+  logAudit('suppression', 'achat', `${a.fournisseur || 'Fournisseur'} · ${formatF(achatTotal(a))}`);
   // retire du stock ce qui avait été ajouté par cet achat
   (a.lignes || []).forEach((l) => { const p = getProduit(l.produit_id); if (p && p.stock !== null && p.stock !== undefined) { p.stock = Math.max(0, (Number(p.stock) || 0) - (Number(l.qte) || 0)); pushRemote('produits', p); } });
   state.achats = state.achats.filter((x) => x.id !== id);

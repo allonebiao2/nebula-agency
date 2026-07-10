@@ -1744,3 +1744,26 @@ input { font-family: inherit; }
 .akey .lrow__btn { margin-left: auto; }
 
 @media (min-width: 720px) { .plans { grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; } }
+
+/* ===== Fonctions Pro : upsell, audit, boutiques, relances ===== */
+.proup { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: var(--r-sm); background: linear-gradient(135deg, var(--acc-soft), var(--surface-2)); border: 1px solid color-mix(in srgb, var(--acc) 35%, transparent); }
+.proup__ic { color: var(--acc-d); } .proup__ic svg { width: 22px; height: 22px; }
+.proup__b { flex: 1; min-width: 0; } .proup__b strong { display: block; font-size: 13.5px; } .proup__b small { color: var(--ink-soft); font-size: 12px; }
+.auditlist, .rellist { list-style: none; margin: 0; padding: 0; }
+.auditrow { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line-soft); }
+.auditrow:last-child { border-bottom: 0; }
+.auditrow__ic { width: 28px; height: 28px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: var(--dng); background: var(--dng-soft); } .auditrow__ic svg { width: 15px; height: 15px; }
+.auditrow__b { min-width: 0; font-size: 13px; line-height: 1.4; } .auditrow__b strong { font-weight: 650; } .auditrow__b small { display: block; color: var(--ink-faint); font-size: 11.5px; }
+.auditrow__t { font-family: var(--num); font-size: 11px; color: var(--ink-faint); white-space: nowrap; }
+.boutlist { display: flex; flex-direction: column; gap: 8px; }
+.boutrow { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface); }
+.boutrow.is-active { border-color: var(--acc); background: var(--acc-soft); }
+.boutrow__pick { flex: 1; display: flex; align-items: center; gap: 11px; padding: 11px; background: none; border: 0; cursor: pointer; text-align: left; color: var(--ink); }
+.boutrow__ic { color: var(--acc-d); } .boutrow.is-active .boutrow__ic svg { width: 18px; height: 18px; }
+.boutrow__b strong { display: block; font-size: 14px; } .boutrow__b small { color: var(--ink-faint); font-size: 11.5px; }
+.relcard .panel__badge, .auditrow, .boutrow { }
+.rellist { display: flex; flex-direction: column; gap: 8px; }
+.relrow { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface); }
+.relrow__b { min-width: 0; } .relrow__b strong { display: block; font-size: 14px; } .relrow__b small { color: var(--ink-faint); font-size: 12px; }
+.rel-late { color: var(--dng); font-weight: 700; } .rel-due { color: var(--acc-d); font-weight: 700; } .rel-soft { color: var(--ink-faint); }
+.btn--wa { background: #1faf54; color: #fff; border: 0; } .btn--wa:active { transform: scale(.96); }
