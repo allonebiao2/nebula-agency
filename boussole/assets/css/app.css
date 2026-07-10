@@ -1804,3 +1804,23 @@ input { font-family: inherit; }
 .abrow:last-child { border-bottom: 0; }
 .abrow__id { flex: 1; min-width: 0; } .abrow__id strong { display: block; font-size: 13.5px; } .abrow__id small { color: var(--ink-faint); font-size: 11.5px; }
 .abrow__amt { font-family: var(--num); font-weight: 700; font-size: 13.5px; } .abrow__amt small { color: var(--ink-faint); font-weight: 600; font-size: 11px; }
+
+/* ===== Guide d'utilisation (aide adaptative) ===== */
+.helpg { display: flex; flex-direction: column; gap: 14px; }
+.hchips { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 4px; margin: -2px -2px 0; scrollbar-width: none; }
+.hchips::-webkit-scrollbar { display: none; }
+.hchip { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink-soft); border-radius: 999px; padding: 7px 12px; font-size: 12.5px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: .16s var(--ease); }
+.hchip svg { width: 15px; height: 15px; }
+.hchip:hover { color: var(--ink); border-color: color-mix(in srgb, var(--acc) 30%, var(--line)); }
+.hchip.is-on { background: var(--acc-soft); border-color: var(--acc); color: var(--acc-d); }
+.hbody__t { display: flex; align-items: center; gap: 9px; font-family: var(--font-display); font-size: 19px; letter-spacing: -.01em; margin: 0 0 6px; }
+.hbody__t svg { width: 20px; height: 20px; color: var(--acc-d); }
+.hbody__intro { color: var(--ink-soft); font-size: 14px; line-height: 1.55; margin: 0 0 14px; }
+.hactlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.hact { display: flex; gap: 11px; align-items: flex-start; }
+.hact__ic { flex: none; width: 24px; height: 24px; border-radius: 7px; display: inline-flex; align-items: center; justify-content: center; color: var(--pos-d); background: var(--pos-soft); }
+.hact__ic svg { width: 14px; height: 14px; }
+.hact__b strong { display: block; font-size: 14px; font-weight: 650; }
+.hact__b small { display: block; margin-top: 2px; color: var(--ink-faint); font-size: 12.5px; line-height: 1.5; }
+.hbody__tip { display: flex; gap: 9px; align-items: flex-start; margin: 16px 0 0; padding: 12px 14px; border-radius: var(--r-sm); background: var(--acc-soft); color: var(--acc-d); font-size: 13px; line-height: 1.5; font-weight: 550; }
+.hbody__tip svg { width: 16px; height: 16px; flex: none; margin-top: 1px; }

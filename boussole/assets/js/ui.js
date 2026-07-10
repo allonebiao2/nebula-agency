@@ -18,7 +18,7 @@ import {
   getEquipe, ROLES, ROLE_LABELS, ROLE_DESCS, roleLabel,
   getAudit, getBoutiques, activeBoutiqueId, consolideBoutiques, relancesDues,
   isDigital, getBusinessType, TARIF_TYPES, TARIF_LABELS, TARIF_UNITS, depenseCats,
-  getDepensesRecurrentes, coutsRecurrentsMensuels,
+  getDepensesRecurrentes, coutsRecurrentsMensuels, getDepensesPerso, pochePersoResume,
   formatF, formatNombre, MOIS_LONGS,
 } from './store.js';
 import { chartBeneficeMensuel, chartEvolution, miniSpark, progressRing, chartHero, chartDonut, sparklineRaw } from './charts.js';
@@ -51,6 +51,104 @@ const moisLabel = (mk) => {
 // chaque commerçant comprenne à quoi sert chaque zone, en langage simple.
 export function zhelp(text) { return `<p class="zhelp"><span class="zhelp__ic" data-icon="help"></span><span>${esc(text)}</span></p>`; }
 
+// ============ GUIDE D'UTILISATION (aide adaptative, source unique) ============
+// ⚠️ SOURCE DE VÉRITÉ DU GUIDE IN-APP. À METTRE À JOUR à chaque nouvelle fonction.
+// Le contenu s'adapte au type d'activité (Boutique / Services & digital).
+export function helpTopics() {
+  const dig = isDigital();
+  return [
+    { id: 'accueil', screen: 'accueil', ic: 'home', titre: 'Tableau de bord',
+      intro: 'Ta vue d’ensemble en un coup d’œil : encaissé et dépensé aujourd’hui, bénéfice du jour, trésorerie et objectifs.',
+      actions: [
+        { t: 'Lire tes chiffres du jour', d: 'Glisse le carrousel en haut : encaissé, dépensé, bénéfice, ce qu’on te doit, trésorerie.' },
+        { t: 'Changer la période', d: 'Jour / Semaine / Mois / Année, avec les flèches pour revenir en arrière.' },
+        { t: 'Régler ton fond de caisse', d: 'Touche la trésorerie pour saisir l’argent que tu avais avant de commencer.' },
+        { t: 'Fixer un objectif', d: 'Le bénéfice à atteindre ce mois : l’anneau se remplit au fil de tes ventes.' },
+      ], tip: 'Tout se calcule tout seul à partir de tes ventes et dépenses — rien à additionner à la main.' },
+    { id: 'ventes', screen: 'ventes', ic: 'ventes', titre: dig ? 'Facturation' : 'Ventes / Caisse',
+      intro: dig ? 'Facture une prestation ou un acompte de projet, sans code-barres.' : 'Enregistre tes ventes en un geste. Pas de code-barres à scanner : touche simplement le produit.',
+      actions: dig ? [
+        { t: 'Ajouter une prestation', d: 'Ouvre la caisse et touche la prestation à facturer.' },
+        { t: 'Montant libre / acompte', d: 'Le bouton « Montant libre » facture un acompte de projet en 2 champs (montant + description).' },
+        { t: 'Choisir le paiement', d: 'Espèces, Mobile Money, carte, virement…' },
+        { t: 'Donner un reçu', d: 'Ticket, reçu A4 ou envoi WhatsApp après l’encaissement.' },
+      ] : [
+        { t: 'Vente rapide', d: 'Touche « 1 vente » sur un produit pour l’enregistrer d’un coup.' },
+        { t: 'Ouvrir la caisse (panier)', d: 'Plusieurs articles en un ticket : ajuste les quantités puis « Encaisser ».' },
+        { t: 'Mode de paiement + vendeur', d: 'Choisis Espèces / Mobile Money… et qui a fait la vente.' },
+        { t: 'Donner un reçu', d: 'Ticket 58 mm, reçu A4 ou WhatsApp. (Les remises se font sur les factures, dans Bilan.)' },
+      ], tip: 'Retrouve toutes tes ventes passées, regroupées par jour, dans l’historique juste en dessous.' },
+    { id: 'stock', screen: 'stock', ic: dig ? 'spark' : 'box', titre: dig ? 'Catalogue' : 'Stock',
+      intro: dig ? 'Ton catalogue de prestations et produits digitaux, avec leur prix. Pas de stock à gérer.' : 'Suis tes quantités et sois prévenu avant chaque rupture.',
+      actions: dig ? [
+        { t: 'Créer une prestation', d: 'Choisis un type de tarif : Prix fixe, Taux horaire (/h) ou Par projet.' },
+        { t: 'Saisir les coûts', d: 'Sous-traitance ou outils dédiés : déduits automatiquement de ton bénéfice.' },
+        { t: 'Modifier un prix', d: 'Touche une ligne pour ajuster le tarif à tout moment.' },
+      ] : [
+        { t: 'Comprendre les alertes', d: 'Rupture (rouge) = plus rien en stock. Stock faible (orange) = sous ton seuil.' },
+        { t: 'Ajouter un produit', d: 'Depuis Réglages ou ici ; démarre le suivi des quantités.' },
+        { t: 'Ajuster la quantité', d: 'Les boutons − et + ou la saisie directe mettent le stock à jour.' },
+        { t: 'Régler seuil & prix d’achat', d: 'Définis le seuil d’alerte et le coût d’achat pour un bénéfice juste.' },
+      ], tip: dig ? 'Les prestations alimentent directement ta caisse.' : 'Le stock baisse tout seul à chaque vente et remonte à chaque achat fournisseur.' },
+    { id: 'carnet', screen: 'carnet', ic: 'users', titre: 'Carnet de dettes',
+      intro: 'Qui te doit de l’argent, combien, et relance-les en un clic.',
+      actions: [
+        { t: 'Enregistrer une dette', d: 'Client, montant, échéance — et un annuaire clients centralisé.' },
+        { t: 'Encaisser un versement partiel', d: 'Ajoute un versement : tu vois le reste dû se mettre à jour.' },
+        { t: 'Relancer par WhatsApp', d: 'Un clic ouvre le WhatsApp du client avec un message de relance déjà écrit et adapté.' },
+        { t: 'Ouvrir la fiche client', d: 'Son reste dû, ses crédits et son historique d’achat.' },
+      ], tip: 'La jauge de recouvrement te montre le % de ce que tu as déjà récupéré.' },
+    { id: 'depenses', screen: 'depenses', ic: 'receipt', titre: dig ? 'Dépenses & abonnements' : 'Dépenses',
+      intro: 'Tout ce qui sort de ta caisse, pour savoir où part ton argent.',
+      actions: dig ? [
+        { t: 'Ajouter une dépense', d: 'Montant, catégorie (sous-traitance, marketing…), date.' },
+        { t: 'Dépense récurrente', d: 'Coche « récurrente » (mensuel/annuel) pour tes abonnements (Supabase, hébergement, Canva). Comptés d’office dans tes coûts fixes.' },
+        { t: 'Voir tes coûts d’outils', d: 'Le panneau « Abonnements & outils » calcule ton coût logiciel mensuel automatiquement.' },
+      ] : [
+        { t: 'Ajouter une dépense', d: 'Montant, catégorie (transport, loyer, factures…), date.' },
+        { t: 'Voir la répartition', d: 'Le graphe « Par catégorie » montre où va ton argent.' },
+        { t: 'Retrouver l’historique', d: 'Filtre par période, catégorie ou recherche.' },
+      ], tip: 'Le « Réassort / Stock » ne compte pas dans le bénéfice : ce coût est déjà dans la marge de tes produits.' },
+    { id: 'perso', screen: 'depenses', ic: 'wallet', titre: 'Poche Perso',
+      intro: 'Ta vie courante, totalement étanche du commerce — c’est ce qui protège ton capital.',
+      actions: [
+        { t: 'Basculer en « Ma poche perso »', d: 'Dans le formulaire de dépense, choisis « Ma poche perso » pour le loyer maison, la ration, l’école…' },
+        { t: 'Zéro impact sur le commerce', d: 'Ces dépenses n’entament NI ton bénéfice NI ta caisse : tes chiffres de boutique restent propres.' },
+        { t: 'Voir ton total perso', d: 'Le panneau « Poche Perso » affiche ce que tu dépenses pour toi, à part.' },
+      ], tip: 'Ne mélange jamais l’argent de la maison et celui du commerce : c’est la 1ʳᵉ cause de faillite des petits commerces.' },
+    { id: 'bilan', screen: 'bilan', ic: 'bilan', titre: 'Bilan & rapports',
+      intro: 'La santé de ton commerce, ton palmarès produits, et tes factures.',
+      actions: [
+        { t: 'Rapport par période', d: 'CA, bénéfice, marge… exportable en PDF, Excel ou WhatsApp.' },
+        { t: 'Palmarès Tops / Flops', d: 'Ce qui cartonne, et les produits à relancer (à perte, dormants, stock qui dort).' },
+        { t: 'Créer une facture / un devis', d: 'Facture pro imprimable avec ton identité (IFU, RCCM) et le montant en lettres.' },
+      ], tip: 'Le score de santé /100 te dit en un chiffre si ton commerce va bien.' },
+    { id: 'reglages', screen: 'reglages', ic: 'reglages', titre: 'Réglages, compte & sécurité',
+      intro: 'Ton activité, ta sécurité et ton abonnement.',
+      actions: [
+        { t: 'Type d’activité', d: 'Bascule entre « Produits physiques » et « Services & digital » : toute l’appli s’adapte.' },
+        { t: 'Sécurité anti-vol', d: 'Code PIN + équipe & droits : un vendeur ne voit QUE la caisse, pas tes bénéfices.' },
+        { t: 'Abonnement & licence', d: 'Ton essai, ton plan, et l’activation de ta clé.' },
+        { t: 'Personnalisation', d: 'Couleur, taille du texte, langue, messages WhatsApp, imprimante Bluetooth.' },
+      ], tip: 'Connecte un compte pour synchroniser tes données entre ton téléphone et ton PC.' },
+  ];
+}
+export function helpGuideHTML(activeId) {
+  const topics = helpTopics();
+  const active = topics.find((t) => t.id === activeId) || topics[0];
+  const chips = topics.map((t) => `<button class="hchip ${t.id === active.id ? 'is-on' : ''}" data-action="help-topic" data-id="${t.id}"><span data-icon="${t.ic}"></span> ${esc(t.titre)}</button>`).join('');
+  const acts = active.actions.map((a) => `<li class="hact"><span class="hact__ic" data-icon="check"></span><div class="hact__b"><strong>${esc(a.t)}</strong><small>${esc(a.d)}</small></div></li>`).join('');
+  return `<div class="helpg">
+    <div class="hchips">${chips}</div>
+    <div class="hbody">
+      <h3 class="hbody__t"><span data-icon="${active.ic}"></span> ${esc(active.titre)}</h3>
+      <p class="hbody__intro">${esc(active.intro)}</p>
+      <ul class="hactlist">${acts}</ul>
+      ${active.tip ? `<p class="hbody__tip"><span data-icon="spark"></span> ${esc(active.tip)}</p>` : ''}
+    </div>
+  </div>`;
+}
+
 export function topbarHTML(cloud, theme = 'light', notifCount = 0) {
   const nom = getState().profil.nom_activite || 'Mon activité';
   const badge = notifCount > 0 ? `<span class="bell__badge">${notifCount > 9 ? '9+' : notifCount}</span>` : '';
@@ -73,6 +171,7 @@ export function topbarHTML(cloud, theme = 'light', notifCount = 0) {
       <button class="btn btn--sm topbar__new" data-action="fab-vente"><span data-icon="plus"></span> Vente</button>
       <button class="btn btn--ghost btn--sm topbar__new" data-action="fab-depense"><span data-icon="minus"></span> Dépense</button>
       <button class="chip chip--icon chip--bell" data-action="open-notifs" title="Notifications" aria-label="Notifications">${badge}<span class="chip__ic" data-icon="bell"></span></button>
+      <button class="chip chip--icon chip--help" data-action="help-open" title="Guide d'utilisation" aria-label="Aide"><span class="chip__ic" data-icon="help"></span></button>
       <button class="chip chip--icon chip--assist" data-action="open-assistant" title="Assistant" aria-label="Assistant"><span class="chip__ic" data-icon="spark"></span></button>
       <button class="chip chip--icon topbar__deskonly" data-action="toggle-theme" title="Thème clair / sombre" aria-label="Changer de thème"><span class="chip__ic" data-icon="${theme === 'dark' ? 'sun' : 'moon'}"></span></button>
       ${cloudChip}
@@ -676,6 +775,19 @@ function abonnementsPanelHTML() {
   </article>`;
 }
 
+// Panneau « Poche Perso » : dépenses de la vie courante, étanches du commerce.
+function pochePersoPanelHTML() {
+  const r = pochePersoResume('mois', 0);
+  const perso = getDepensesPerso().slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 6);
+  return `<article class="panel">
+    <div class="panel__head"><h2>Poche Perso</h2><span class="panel__sub">étanche du commerce</span></div>
+    ${zhelp('Tes dépenses de la vie courante (maison, ration, école…), séparées du commerce : elles n’entament NI ton bénéfice NI ta caisse. Tu vois ce que tu dépenses pour toi sans polluer les chiffres de ta boutique — c’est ce qui protège ton capital.')}
+    <div class="abtot"><span>Dépensé pour toi — ce mois</span><strong>${formatF(r.total)}<small></small></strong></div>
+    ${perso.length ? `<ul class="ablist">${perso.map((d) => `<li class="abrow"><div class="abrow__id"><strong>${esc(d.libelle || d.categorie)}</strong><small>${esc(d.categorie)} · ${new Date(d.date).toLocaleDateString('fr-FR')}</small></div><span class="abrow__amt">${formatF(d.montant)}</span><button class="hvrow__del" data-action="del-depense" data-id="${d.id}" aria-label="Supprimer"><span data-icon="trash"></span></button></li>`).join('')}</ul>` : '<p class="lrow--empty">Aucune dépense perso. Sépare tes dépenses de la maison de celles du commerce.</p>'}
+    <button class="btn btn--ghost btn--sm" data-action="add-depense-perso"><span data-icon="plus"></span> Ajouter une dépense perso</button>
+  </article>`;
+}
+
 export function viewDepensesHTML(filter = { preset: 'mois', from: '', to: '', categorie: '', q: '' }) {
   const H = historiqueDepenses({ from: filter.from, to: filter.to, categorie: filter.categorie, q: filter.q });
   const chip = (id, label) => `<button class="vchip ${filter.preset === id ? 'is-on' : ''}" data-action="df-preset" data-preset="${id}">${label}</button>`;
@@ -705,6 +817,7 @@ export function viewDepensesHTML(filter = { preset: 'mois', from: '', to: '', ca
       <button class="btn btn--danger" data-action="add-depense"><span data-icon="minus"></span> Ajouter une dépense</button>
     </div>
     ${abonnementsPanelHTML()}
+    ${pochePersoPanelHTML()}
     ${breakdown ? `<article class="panel"><div class="panel__head"><h2>Par catégorie</h2><span class="panel__sub">${esc(rangeLabel(filter))}</span></div>${breakdown}</article>` : ''}
     <article class="panel vhist">
       <div class="panel__head"><h2>Historique</h2></div>

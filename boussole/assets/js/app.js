@@ -902,25 +902,31 @@ function depensesRecentesHTML() {
     </li>`).join('');
   return `<div class="field"><label>Dépenses récentes</label><ul class="deplist">${rows}</ul></div>`;
 }
-function openDepenseModal() {
-  const cats = S.depenseCats().map((c, i) => `<button type="button" class="catchip ${i === 0 ? 'is-on' : ''}" data-action="dep-cat" data-cat="${UI.esc(c)}">${UI.esc(c)}</button>`).join('');
+function openDepenseModal(perso = false) {
+  const catList = perso ? S.DEPENSE_CATS_PERSO : S.depenseCats();
+  const cats = catList.map((c, i) => `<button type="button" class="catchip ${i === 0 ? 'is-on' : ''}" data-action="dep-cat" data-cat="${UI.esc(c)}">${UI.esc(c)}</button>`).join('');
   const today = new Date().toISOString().slice(0, 10);
   const dig = S.isDigital();
-  UI.openModal(UI.modalShell('Ajouter une dépense',
-    `<div class="field"><label for="dp-amt">Montant</label>
+  UI.openModal(UI.modalShell(perso ? 'Dépense perso' : 'Ajouter une dépense',
+    `<div class="field"><label>Cette dépense concerne…</label>
+       <div class="seg seg--2">
+         <button class="seg__b seg__b--c ${!perso ? 'is-on' : ''}" data-action="dep-mode" data-v="business"><span data-icon="box"></span> Le commerce</button>
+         <button class="seg__b seg__b--c ${perso ? 'is-on' : ''}" data-action="dep-mode" data-v="perso"><span data-icon="wallet"></span> Ma poche perso</button>
+       </div>
+       <p class="fieldhint">${perso ? 'Vie courante (maison, ration, école…). Étanche du commerce : n’entame PAS ton bénéfice ni ta caisse.' : 'Sortie liée au commerce (marchandise, transport, factures…).'}</p></div>
+     <div class="field"><label for="dp-amt">Montant</label>
        <div class="inwrap"><input id="dp-amt" class="input input--lg" type="number" inputmode="numeric" placeholder="0"><span class="inwrap__cur">F</span></div></div>
      <div class="field"><label>Catégorie</label><div class="catchips" id="dp-cats">${cats}</div></div>
      <div class="field"><label for="dp-lib">Libellé (optionnel)</label>
-       <input id="dp-lib" class="input" placeholder="${dig ? 'Ex. Abonnement Supabase, GitHub, Canva' : 'Ex. Taxi marché, sacs, facture SBEE'}"></div>
-     <label class="switchrow"><input type="checkbox" id="dp-rec" data-action="dep-rec"> Dépense récurrente (abonnement / outil)</label>
+       <input id="dp-lib" class="input" placeholder="${perso ? 'Ex. Loyer maison, ration, école' : (dig ? 'Ex. Abonnement Supabase, GitHub, Canva' : 'Ex. Taxi marché, sacs, facture SBEE')}"></div>
+     ${perso ? '' : `<label class="switchrow"><input type="checkbox" id="dp-rec" data-action="dep-rec"> Dépense récurrente (abonnement / outil)</label>
      <div class="field" id="dp-freq-wrap" style="display:none"><label for="dp-freq">Fréquence</label>
        <select id="dp-freq" class="input"><option value="mensuel">Chaque mois</option><option value="annuel">Chaque année</option></select>
-       <p class="fieldhint">Compté automatiquement dans tes coûts fixes mensuels.</p></div>
+       <p class="fieldhint">Compté automatiquement dans tes coûts fixes mensuels.</p></div>`}
      <div class="field"><label for="dp-date">Date</label>
-       <input id="dp-date" class="input" type="date" value="${today}"></div>
-     ${depensesRecentesHTML()}`,
+       <input id="dp-date" class="input" type="date" value="${today}"></div>`,
     `<button class="btn btn--ghost" data-action="close-modal">Annuler</button>
-     <button class="btn btn--danger" data-action="save-depense"><span data-icon="minus"></span> Enregistrer la dépense</button>`));
+     <button class="btn btn--danger" data-action="save-depense" data-perso="${perso ? '1' : ''}"><span data-icon="minus"></span> Enregistrer</button>`));
   hydrateIcons($('#modal-root'));
 }
 
@@ -1194,6 +1200,13 @@ function wizardNext() {
 }
 
 // ---------- Didacticiel ----------
+// Guide d'utilisation adaptatif : s'ouvre sur l'écran courant, contenu selon le mode.
+function openHelpGuide(id) {
+  const def = id || (['accueil', 'ventes', 'stock', 'carnet', 'depenses', 'bilan', 'reglages'].includes(screen) ? screen : 'accueil');
+  UI.openModal(UI.modalShell('Guide d’utilisation', UI.helpGuideHTML(def),
+    `<button class="btn btn--ghost" data-action="close-modal">Fermer</button>`));
+  hydrateIcons($('#modal-root'));
+}
 function openTutoriel(i) {
   tutoStep = Math.max(0, Math.min(UI.TUTO_STEPS.length - 1, i));
   UI.openModal(UI.tutorielHTML(tutoStep));
@@ -1295,19 +1308,22 @@ document.addEventListener('click', (e) => {
 
     // dépenses & caisse
     case 'add-depense': return openDepenseModal();
+    case 'add-depense-perso': return openDepenseModal(true);
     case 'dep-cat': { const box = $('#dp-cats'); if (box) box.querySelectorAll('.catchip').forEach((c) => c.classList.toggle('is-on', c === el)); return; }
+    case 'dep-mode': return openDepenseModal(el.dataset.v === 'perso');
     case 'dep-rec': { const w = $('#dp-freq-wrap'); if (w) w.style.display = el.checked ? '' : 'none'; return; }
     case 'save-depense': {
       const amt = Number($('#dp-amt').value) || 0;
       if (amt <= 0) return UI.toast('Entre un montant', 'err');
+      const perso = el.dataset.perso === '1';
       const on = $('#modal-root .catchip.is-on');
       const cat = on ? on.dataset.cat : 'Divers';
       const lib = ($('#dp-lib').value || '').trim();
       const d = $('#dp-date').value;
-      const rec = $('#dp-rec') && $('#dp-rec').checked;
+      const rec = !perso && $('#dp-rec') && $('#dp-rec').checked;
       const freq = ($('#dp-freq') || {}).value || 'mensuel';
-      S.addDepense({ libelle: lib, categorie: cat, montant: amt, date: d ? new Date(d).toISOString() : undefined, recurrent: rec, frequence: freq });
-      UI.closeModal(); UI.toast(rec ? 'Abonnement enregistré' : 'Dépense enregistrée'); return;
+      S.addDepense({ libelle: lib, categorie: cat, montant: amt, date: d ? new Date(d).toISOString() : undefined, recurrent: rec, frequence: freq, perso });
+      UI.closeModal(); UI.toast(perso ? 'Dépense perso enregistrée' : (rec ? 'Abonnement enregistré' : 'Dépense enregistrée')); return;
     }
     case 'del-depense': { S.deleteDepense(id); const row = el.closest('.deprow'); if (row) row.remove(); UI.toast('Dépense supprimée'); return; }
     case 'edit-caisse': return openCaisseModal();
@@ -1521,6 +1537,8 @@ document.addEventListener('click', (e) => {
 
     // didacticiel
     case 'open-tuto': return openTutoriel(0);
+    case 'help-open': return openHelpGuide();
+    case 'help-topic': { const body = $('#modal-root .modal__body'); if (body) { body.innerHTML = UI.helpGuideHTML(el.dataset.id); hydrateIcons(body); } return; }
     case 'tuto-next': { const i = Number(el.dataset.i); if (i >= UI.TUTO_STEPS.length - 1) { markTutoSeen(); UI.closeModal(); } else openTutoriel(i + 1); return; }
     case 'tuto-prev': return openTutoriel(Number(el.dataset.i) - 1);
 

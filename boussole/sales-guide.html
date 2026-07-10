@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Playbook du vendeur — Boussole (interne NEBULA)</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0c0e13">
+<style>
+  @font-face { font-family:"Bricolage Grotesque"; font-weight:400 800; font-display:swap; src:url("assets/fonts/BricolageGrotesque.woff2") format("woff2"); }
+  :root{
+    --bg:#0c0e13; --surface:#151922; --surface2:#1b2029;
+    --ink:#eef1f6; --ink-soft:#a7b0bd; --ink-faint:#737b8a; --line:rgba(255,255,255,.09);
+    --acc:#f6a63c; --acc-d:#ffc06a; --acc-soft:rgba(246,166,60,.14);
+    --pos:#34d399; --pos-soft:rgba(52,211,153,.14); --dng:#fb7185;
+    --disp:"Bricolage Grotesque",system-ui,sans-serif; --font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --r:18px; --r-sm:12px;
+  }
+  *{box-sizing:border-box} html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:radial-gradient(130% 90% at 50% -10%,#171008 0%,var(--bg) 48%);color:var(--ink);font-family:var(--font);line-height:1.6;font-size:16px;padding:0 0 80px}
+  .wrap{max-width:820px;margin:0 auto;padding:0 20px}
+  a{color:var(--acc-d)}
+  .kicker{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--acc-d);background:var(--acc-soft);border:1px solid color-mix(in srgb,var(--acc) 30%,transparent);border-radius:999px;padding:6px 13px}
+  header{padding:64px 0 26px;text-align:center}
+  header h1{font-family:var(--disp);font-size:clamp(34px,9vw,58px);line-height:1.02;letter-spacing:-.03em;margin:22px 0 12px}
+  header h1 .hl{color:var(--acc-d)}
+  header p{color:var(--ink-soft);font-size:17px;max-width:46ch;margin:0 auto}
+  .conf{margin-top:20px;font-size:12.5px;color:var(--ink-faint)}
+  section{margin-top:14px;border-top:1px solid var(--line);padding-top:38px}
+  section:first-of-type{border-top:0}
+  .sec-h{margin-bottom:20px}
+  .sec-h h2{font-family:var(--disp);font-size:clamp(23px,5.6vw,31px);letter-spacing:-.02em;margin:0;line-height:1.1}
+  .sec-h p{margin:6px 0 0;color:var(--ink-faint);font-size:14px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;margin-bottom:14px}
+  .card h3{font-family:var(--disp);font-size:18px;margin:0 0 8px;letter-spacing:-.01em}
+  .card h3 .tag{font-family:var(--font);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:3px 9px;border-radius:999px;margin-left:8px;vertical-align:middle}
+  .tag--shop{color:var(--acc-d);background:var(--acc-soft)} .tag--dev{color:#7dd3fc;background:rgba(56,189,248,.14)}
+  .card p{margin:0;color:var(--ink-soft);font-size:15px}
+  .quote{color:var(--ink);font-size:16px;font-weight:550;line-height:1.55;background:var(--surface2);border-radius:12px;padding:13px 16px;margin:10px 0 0}
+  .fear{background:linear-gradient(160deg,rgba(251,113,133,.12),var(--surface) 60%);border-color:color-mix(in srgb,var(--dng) 34%,transparent)}
+  .fear .lead{color:var(--dng);font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;margin:0 0 10px}
+  .obj{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:16px 18px;margin-bottom:12px}
+  .obj .q{font-family:var(--disp);font-size:17px;color:var(--ink);margin:0 0 8px;line-height:1.3}
+  .obj .q::before{content:"« ";color:var(--ink-faint)} .obj .q::after{content:" »";color:var(--ink-faint)}
+  .obj .r{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--pos);margin:0 0 4px}
+  .obj .a{color:var(--ink-soft);font-size:15px;margin:0}
+  .obj .a b{color:var(--pos)}
+  .grid{display:grid;grid-template-columns:1fr;gap:14px}
+  @media(min-width:640px){.grid{grid-template-columns:1fr 1fr}}
+  .cheat{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);border-radius:var(--r);overflow:hidden;border:1px solid var(--line)}
+  @media(min-width:560px){.cheat{grid-template-columns:1fr 1fr}}
+  .cheat div{background:var(--surface);padding:14px 16px}
+  .cheat .k{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint)}
+  .cheat .v{font-family:var(--disp);font-size:17px;margin-top:3px}
+  .cheat .v small{font-family:var(--font);font-size:12px;color:var(--ink-soft)}
+  .steps{counter-reset:s;list-style:none;padding:0;margin:0}
+  .steps li{counter-increment:s;position:relative;padding:0 0 12px 40px;color:var(--ink-soft);font-size:15px}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:-2px;width:26px;height:26px;border-radius:8px;background:var(--acc-soft);color:var(--acc-d);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:13px}
+  .steps li b{color:var(--ink)}
+  footer{margin-top:52px;padding-top:22px;border-top:1px solid var(--line);text-align:center;color:var(--ink-faint);font-size:12.5px}
+  @media print{body{background:#fff;color:#111}.card,.cheat div,.obj{background:#fafafa}.kicker,.hl{color:#b46810}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="kicker">Confidentiel · Usage interne NEBULA</span>
+    <h1>Le <span class="hl">Playbook</span> du vendeur</h1>
+    <p>Ton arme sur le terrain (Treichville, Sandaga, Dantokpa) et en ligne pour les freelances. Boussole se vend en 30 secondes si tu suis ça.</p>
+    <p class="conf">À ne pas partager en dehors de l'équipe commerciale.</p>
+  </header>
+
+  <section>
+    <div class="sec-h"><h2>La proposition de valeur : le Pitch Flash</h2><p>Dix secondes pour accrocher. Adapte selon qui tu as en face.</p></div>
+    <div class="grid">
+      <div class="card">
+        <h3>Le commerçant <span class="tag tag--shop">Marché / Boutique</span></h3>
+        <p>« Boussole, ce n'est pas un logiciel de comptabilité ennuyeux. »</p>
+        <p class="quote">C'est un <b>garde du corps pour ta caisse</b>. Il t'évite d'oublier tes dettes clients, et il empêche tes employés de te voler quand tu as le dos tourné.</p>
+      </div>
+      <div class="card">
+        <h3>Le prestataire / dev <span class="tag tag--dev">Freelance / Agence</span></h3>
+        <p>« Tu mélanges ton argent perso avec les frais de tes projets ? »</p>
+        <p class="quote">Boussole t'évite de <b>manger ton capital</b> : il sépare ta poche perso, calcule ton bénéfice par projet et suit tes abonnements logiciels. Tu sauras enfin si tu gagnes vraiment ta vie.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-h"><h2>La reconversion : vendre le Pro en priorité</h2><p>Le levier de la peur. On ne vend pas des fonctions, on vend le contrôle.</p></div>
+    <div class="card fear">
+      <p class="lead">Le script anti-vol (à sortir dès qu'il a un employé)</p>
+      <p class="quote">« Si tu prends l'<b>Essentiel</b>, ton employé peut se connecter sur ton compte, voir tes marges et modifier une vente en douce. En <b>Pro</b>, il ne voit QUE l'écran de caisse. Toi seul vois les bénéfices, et chaque suppression est tracée. Tu gardes le contrôle total, même à distance. »</p>
+      <p style="margin-top:14px;color:var(--ink-soft);font-size:14px">Rappelle ses armes : multi-appareils, multi-boutiques, historique d'audit (qui a supprimé quoi, à quelle heure) et relances automatiques. Le Pro, c'est la tranquillité d'esprit du patron.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-h"><h2>Traiter les barrages &amp; objections</h2><p>Les trois murs que tu rencontreras. Réponses prêtes.</p></div>
+
+    <div class="obj">
+      <p class="q">C'est trop cher.</p>
+      <p class="r">Ta réponse</p>
+      <p class="a">L'abonnement coûte le <b>prix d'un café par jour</b>. Si l'appli te fait récupérer une seule dette oubliée de 5 000 F, ou éviter un vol de caisse de 10 000 F ce mois-ci, elle est déjà rentabilisée pour <b>toute l'année</b>.</p>
+    </div>
+    <div class="obj">
+      <p class="q">Je gère très bien avec mon cahier en papier.</p>
+      <p class="r">Ta réponse</p>
+      <p class="a">Si ton cahier prend l'eau, brûle ou se perd, tu perds <b>TOUTES tes dettes clients</b> et l'historique de ton business. Avec Boussole, tout est sauvegardé en sécurité dans le cloud. Même si ton téléphone tombe en panne, tu retrouves tout sur un autre appareil.</p>
+    </div>
+    <div class="obj">
+      <p class="q">Je ne vends pas de marchandises, je suis développeur / créateur.</p>
+      <p class="r">Ta réponse</p>
+      <p class="a">Boussole a un <b>mode digital sur-mesure</b>. Il calcule tes bénéfices par projet en déduisant ta sous-traitance et tes abonnements d'outils (Supabase, Canva, hébergement). Tu sauras enfin, à la fin du mois, si tu gagnes vraiment ta vie.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-h"><h2>L'arme du parrainage</h2><p>Chaque client devient un vendeur. Utilise-le systématiquement.</p></div>
+    <div class="card">
+      <p class="quote">« Fais abonner tes <b>deux voisins de box</b> avec ton code de parrainage, et l'application te revient <b>gratuite pendant 1 mois</b>. »</p>
+      <p style="margin-top:14px;color:var(--ink-soft);font-size:14px">Sur un marché, tout le monde se connaît. Un commerçant convaincu qui en parraine deux, c'est trois abonnements pour un seul rendez-vous. Termine toujours une vente en donnant son code de parrainage.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-h"><h2>Anti-sèche terrain</h2><p>Les chiffres et le flux à connaître par cœur.</p></div>
+    <div class="cheat">
+      <div><div class="k">Essai</div><div class="v">30 jours gratuits<small> (tout ouvert : Essentiel + Pro)</small></div></div>
+      <div><div class="k">Ensuite</div><div class="v">Blocage total<small> (licence obligatoire pour continuer)</small></div></div>
+      <div><div class="k">Essentiel</div><div class="v">5 000 F / mois<small> (solo, 1 appareil ; à valider)</small></div></div>
+      <div><div class="k">Pro / Équipe</div><div class="v">10 000 F / mois<small> (multi-appareils + anti-vol ; à valider)</small></div></div>
+      <div><div class="k">Paiement</div><div class="v">Mobile Money<small> (0196740732 · BIAO Mongazi YAN karl)</small></div></div>
+      <div><div class="k">Réception de la clé</div><div class="v">WhatsApp NEBULA<small> (+229 96 74 07 32 ; clé à usage unique)</small></div></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3>Le flux de souscription (à montrer au client)</h3>
+      <ol class="steps">
+        <li>Il choisit son offre dans l'appli, puis <b>« Acheter »</b> (le prix s'affiche).</li>
+        <li>Il paie par <b>Mobile Money</b> au numéro affiché.</li>
+        <li>Il saisit l'<b>ID de transaction et son nom</b> dans l'appli.</li>
+        <li>NEBULA reçoit l'alerte, valide, et lui envoie sa <b>clé sur WhatsApp</b>.</li>
+        <li>Il colle la clé, <b>l'appli se débloque</b>. Une clé ne marche qu'une seule fois.</li>
+      </ol>
+    </div>
+  </section>
+
+  <footer>
+    Playbook Boussole · NEBULA Agency. Document vivant, mis à jour à chaque évolution du produit.<br>Confidentiel, réservé à l'équipe commerciale.
+  </footer>
+</div>
+</body>
+</html>

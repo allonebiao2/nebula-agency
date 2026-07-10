@@ -47,6 +47,8 @@ export function getAudit(n = 150) { return [...(state.audit || [])].reverse().sl
 export const DEPENSE_CATS = ['Réassort / Stock', 'Transport', 'Loyer', 'Salaires', 'Factures', 'Divers'];
 // Catégories orientées « services & digital » (outils, abonnements…)
 export const DEPENSE_CATS_DIGITAL = ['Abonnements & outils', 'Sous-traitance', 'Marketing & pub', 'Matériel', 'Transport', 'Factures', 'Divers'];
+// Poche Perso : dépenses de la vie courante, ÉTANCHES du commerce (protègent le capital).
+export const DEPENSE_CATS_PERSO = ['Maison / Loyer', 'Nourriture / Ration', 'École / Enfants', 'Santé', 'Transport perso', 'Famille', 'Divers perso'];
 export const RESTOCK_CAT = 'Réassort / Stock';
 
 // ---------- Type d'activité (adaptatif) ----------
@@ -242,12 +244,13 @@ export function deleteChargeFixe(id) {
 
 // ---------- Mutations : dépenses (sorties d'argent) ----------
 export function getDepenses() { return state.depenses; }
-export function addDepense({ libelle, categorie, montant, date, recurrent = false, frequence = 'mensuel' }) {
-  const cats = depenseCats();
+export function addDepense({ libelle, categorie, montant, date, recurrent = false, frequence = 'mensuel', perso = false }) {
+  const cats = perso ? DEPENSE_CATS_PERSO : depenseCats();
   const d = {
     id: uid(), libelle: (libelle || '').trim(), categorie: cats.includes(categorie) ? categorie : cats[cats.length - 1],
     montant: Number(montant) || 0, date: date || nowISO(),
-    recurrent: !!recurrent, frequence: recurrent ? (frequence === 'annuel' ? 'annuel' : 'mensuel') : '',
+    perso: !!perso,
+    recurrent: !perso && !!recurrent, frequence: (!perso && recurrent) ? (frequence === 'annuel' ? 'annuel' : 'mensuel') : '',
     created_at: nowISO(),
   };
   state.depenses.push(d);
@@ -256,9 +259,20 @@ export function addDepense({ libelle, categorie, montant, date, recurrent = fals
 }
 // Dépenses récurrentes (abonnements & outils) = engagements mensuels, comptés dans les
 // coûts fixes (pas dans les dépenses ponctuelles ni la caisse -> zéro double comptage).
-export function getDepensesRecurrentes() { return state.depenses.filter((d) => d.recurrent); }
+export function getDepensesRecurrentes() { return state.depenses.filter((d) => d.recurrent && !d.perso); }
 export function coutsRecurrentsMensuels() {
-  return state.depenses.filter((d) => d.recurrent).reduce((s, d) => s + (d.frequence === 'annuel' ? (Number(d.montant) || 0) / 12 : (Number(d.montant) || 0)), 0);
+  return state.depenses.filter((d) => d.recurrent && !d.perso).reduce((s, d) => s + (d.frequence === 'annuel' ? (Number(d.montant) || 0) / 12 : (Number(d.montant) || 0)), 0);
+}
+// ---------- Poche Perso (vie courante, séparée du commerce) ----------
+export function getDepensesPerso() { return state.depenses.filter((d) => d.perso); }
+export function pochePersoResume(gran = 'mois', offset = 0) {
+  const P = periodInfo(gran, offset);
+  const a = P.start.getTime(), b = P.end.getTime();
+  const list = state.depenses.filter((d) => d.perso && (() => { const t = new Date(d.date).getTime(); return t >= a && t < b; })());
+  const total = list.reduce((s, d) => s + (Number(d.montant) || 0), 0);
+  const parCat = {};
+  list.forEach((d) => { parCat[d.categorie] = (parCat[d.categorie] || 0) + (Number(d.montant) || 0); });
+  return { total, nb: list.length, label: P.label, parCategorie: Object.keys(parCat).map((c) => ({ categorie: c, total: parCat[c] })).sort((x, y) => y.total - x.total) };
 }
 export function updateDepense(id, patch) {
   const d = state.depenses.find((x) => x.id === id); if (!d) return;
@@ -791,8 +805,8 @@ function ventesEntre(start, end) {
 }
 function depensesEntre(start, end) {
   const a = start.getTime(), b = end.getTime();
-  // exclut les récurrents (comptés comme charges mensuelles, pas comme dépenses ponctuelles)
-  return state.depenses.filter((d) => !d.recurrent && (() => { const t = new Date(d.date).getTime(); return t >= a && t < b; })());
+  // exclut récurrents (= charges mensuelles) ET perso (= Poche Perso, étanche du commerce)
+  return state.depenses.filter((d) => !d.recurrent && !d.perso && (() => { const t = new Date(d.date).getTime(); return t >= a && t < b; })());
 }
 function sommeDepenses(list) { return list.reduce((s, d) => s + (Number(d.montant) || 0), 0); }
 // dépenses d'exploitation (hors réassort/stock) : celles qui rognent le bénéfice
@@ -949,7 +963,7 @@ export function setObjectif(v) { setProfil({ objectif_benefice: Math.max(0, Math
 export function soldeCaisse() {
   const encaisse = state.ventes.reduce((s, v) => s + (v.qte || 0) * (v.prix_unitaire || 0), 0);
   const achats = state.achats.filter((a) => a.statut === 'paye').reduce((s, a) => s + achatTotal(a), 0);
-  return getSoldeInitial() + encaisse - sommeDepenses(state.depenses.filter((d) => !d.recurrent)) - achats;
+  return getSoldeInitial() + encaisse - sommeDepenses(state.depenses.filter((d) => !d.recurrent && !d.perso)) - achats;
 }
 // Résumé d'AUJOURD'HUI (toujours le jour courant, indépendant de la période choisie).
 export function resumeJour() {
@@ -1011,7 +1025,7 @@ export function historiqueDepenses({ from = '', to = '', categorie = '', q = '' 
   const toT = to ? new Date(to + 'T23:59:59.999').getTime() : Infinity;
   const ql = (q || '').trim().toLowerCase();
   const rows = state.depenses.filter((d) => {
-    if (d.recurrent) return false;   // les récurrents ont leur propre panneau (abonnements)
+    if (d.recurrent || d.perso) return false;   // récurrents (abonnements) + perso (Poche Perso) ont leurs propres vues
     const t = new Date(d.date).getTime();
     if (t < fromT || t > toT) return false;
     if (categorie && d.categorie !== categorie) return false;
