@@ -1,6 +1,6 @@
 // Boussole — adaptateur Supabase (auth e-mail + synchro cloud).
 // Le client UMD est chargé via <script> dans index.html -> window.supabase.
-import { SUPABASE_URL, SUPABASE_ANON_KEY, CLOUD_ENABLED } from './config.js';
+import { SUPABASE_URL, SUPABASE_ANON_KEY, CLOUD_ENABLED, ADMIN_EMAILS } from './config.js';
 import { setRemote, hydrateFromRemote } from './store.js';
 
 let client = null;
@@ -58,6 +58,59 @@ export async function signIn(email, password) {
   return data;
 }
 export async function signOut() { if (client) await client.auth.signOut(); }
+export async function updatePassword(newPassword) {
+  if (!client) throw new Error('Cloud non configuré');
+  const { error } = await client.auth.updateUser({ password: newPassword });
+  if (error) throw error;
+}
+// Vérifie le mot de passe du compte (ré-authentification) — pour les actions sensibles.
+export async function verifyPassword(password) {
+  if (!client || !currentUser || !currentUser.email) return false;
+  const { error } = await client.auth.signInWithPassword({ email: currentUser.email, password });
+  return !error;
+}
+
+// ---------- Licences : validation À USAGE UNIQUE (en ligne) ----------
+// Consomme une clé de façon ATOMIQUE côté serveur : une clé ne peut servir qu'UNE fois.
+export async function consumeLicenceKey(code, nom) {
+  if (!client) return { ok: false, offline: true };
+  const { data, error } = await client.rpc('consume_licence_key', { p_cle: code, p_nom: nom || null });
+  if (error) return { ok: false, msg: error.message };
+  const plan = Array.isArray(data) ? (data[0] && data[0].plan) : (data && data.plan);
+  if (!plan) return { ok: false, used: true };   // clé inexistante OU déjà utilisée
+  return { ok: true, plan };
+}
+// Enregistre une demande de licence (paiement à valider par NEBULA).
+export async function submitLicenceRequest(req) {
+  if (!client) return { ok: false, offline: true };
+  const { error } = await client.from('licence_requests').insert({
+    plan: req.plan, montant: req.montant, devise: req.devise || 'F',
+    txn: req.txn, nom: req.nom, contact: req.contact || '',
+    user_id: currentUser ? currentUser.id : null,
+  });
+  return { ok: !error, msg: error && error.message };
+}
+// ---------- Back-office licences (réservé NEBULA) ----------
+export function isAdmin() { return !!(currentUser && ADMIN_EMAILS.includes((currentUser.email || '').toLowerCase())); }
+export async function adminCreateKey(plan) {
+  if (!client) throw new Error('Cloud non configuré');
+  const { data, error } = await client.rpc('admin_create_licence_key', { p_plan: plan });
+  if (error) throw error;
+  return Array.isArray(data) ? (data[0] && data[0].cle) : (data && data.cle);
+}
+export async function adminListRequests() {
+  if (!client) return [];
+  const { data } = await client.from('licence_requests').select('*').order('created_at', { ascending: false }).limit(50);
+  return data || [];
+}
+export async function adminListKeys() {
+  if (!client) return [];
+  const { data } = await client.from('licence_keys').select('*').order('created_at', { ascending: false }).limit(80);
+  return data || [];
+}
+export async function adminSetRequestStatut(id, statut) {
+  if (client) await client.from('licence_requests').update({ statut }).eq('id', id);
+}
 
 // ---------- Adaptateur CRUD (branché sur le store) ----------
 function stripLocal(row) {
@@ -84,7 +137,7 @@ function makeAdapter() {
       const p = prof.data || {};
       return {
         profil: prof.data
-          ? { nom_activite: p.nom_activite || '', devise: p.devise || 'F', objectif_benefice: Number(p.objectif_benefice) || 0, solde_initial: Number(p.solde_initial) || 0, ifu: p.ifu || '', rccm: p.rccm || '', adresse: p.adresse || '', tel_pro: p.tel_pro || '', email_pro: p.email_pro || '', vendeurs: Array.isArray(p.vendeurs) ? p.vendeurs : [], wa_templates: p.wa_templates || {} }
+          ? { nom_activite: p.nom_activite || '', devise: p.devise || 'F', objectif_benefice: Number(p.objectif_benefice) || 0, solde_initial: Number(p.solde_initial) || 0, ifu: p.ifu || '', rccm: p.rccm || '', adresse: p.adresse || '', tel_pro: p.tel_pro || '', email_pro: p.email_pro || '', vendeurs: Array.isArray(p.vendeurs) ? p.vendeurs : [], wa_templates: p.wa_templates || {}, proprietaire: p.proprietaire || '', equipe: Array.isArray(p.equipe) ? p.equipe : [], licence: p.licence || {} }
           : { nom_activite: '', devise: 'F', objectif_benefice: 0, solde_initial: 0, ifu: '', rccm: '', adresse: '', tel_pro: '', email_pro: '', vendeurs: [] },
         produits: (prods.data || []).map((pr) => ({ ...pr, couts: pr.couts || [] })),
         charges_fixes: charges.data || [],
@@ -102,7 +155,7 @@ function makeAdapter() {
       if (!uid()) return;
       if (table === 'profils') {
         const base = { user_id: uid(), nom_activite: row.nom_activite || '', devise: row.devise || 'F', objectif_benefice: Number(row.objectif_benefice) || 0, solde_initial: Number(row.solde_initial) || 0 };
-        const full = { ...base, ifu: row.ifu || '', rccm: row.rccm || '', adresse: row.adresse || '', tel_pro: row.tel_pro || '', email_pro: row.email_pro || '', vendeurs: Array.isArray(row.vendeurs) ? row.vendeurs : [], wa_templates: row.wa_templates || {} };
+        const full = { ...base, ifu: row.ifu || '', rccm: row.rccm || '', adresse: row.adresse || '', tel_pro: row.tel_pro || '', email_pro: row.email_pro || '', vendeurs: Array.isArray(row.vendeurs) ? row.vendeurs : [], wa_templates: row.wa_templates || {}, proprietaire: row.proprietaire || '', equipe: Array.isArray(row.equipe) ? row.equipe : [], licence: row.licence || {} };
         let { error } = await client.from('profils').upsert(full, { onConflict: 'user_id' });
         if (error && /column|schema cache|does not exist/i.test(error.message || '')) {
           // colonnes fiscales pas encore migrées -> on sauve au moins les champs de base

@@ -6,6 +6,8 @@ import * as Cloud from './supabase.js';
 import * as UI from './ui.js';
 import * as I18n from './i18n.js';
 import * as BT from './btprint.js';
+import * as Sec from './security.js';
+import { NEBULA_MOMO, NEBULA_WHATSAPP, ADMIN_ROUTE } from './config.js';
 
 let screen = 'ventes';
 let wizard = null;
@@ -124,10 +126,213 @@ function openLangEditor(code) {
      <button class="btn" data-action="close-modal">Terminé</button>`));
   hydrateIcons($('#modal-root'));
 }
+// ---------- Compte : mot de passe, membres d'équipe ----------
+function openChangePwd() {
+  UI.openModal(UI.modalShell('Changer le mot de passe',
+    `<div class="field"><label for="np">Nouveau mot de passe</label>
+       <input id="np" class="input" type="password" autocomplete="new-password" placeholder="Au moins 6 caractères"></div>`,
+    `<button class="btn btn--ghost" data-action="close-modal">Annuler</button>
+     <button class="btn" data-action="save-pwd">Enregistrer</button>`));
+  hydrateIcons($('#modal-root'));
+}
+async function savePwd() {
+  const v = (($('#np') || {}).value || '').trim();
+  if (v.length < 6) return UI.toast('6 caractères minimum', 'err');
+  try { await Cloud.updatePassword(v); UI.closeModal(); UI.toast('Mot de passe changé'); }
+  catch (e) { UI.toast('Échec : ' + (e.message || ''), 'err'); }
+}
+function openMembreModal(mid) {
+  const m = mid ? S.getMembre(mid) : null;
+  const roleOpts = S.ROLES.map((r) => `<option value="${r}" ${m && m.role === r ? 'selected' : ''}>${S.ROLE_LABELS[r]}</option>`).join('');
+  UI.openModal(UI.modalShell(m ? 'Modifier le membre' : 'Nouveau membre',
+    `<div class="field"><label for="m-nom">Nom</label><input id="m-nom" class="input" value="${m ? UI.esc(m.nom) : ''}" placeholder="Ex. Koffi" autocomplete="off"></div>
+     <div class="field"><label for="m-role">Rôle</label>
+       <select id="m-role" class="input" data-action="m-role">${roleOpts}</select>
+       <p class="fieldhint" id="m-rolehint">${S.ROLE_DESCS[m ? m.role : 'vendeur']}</p></div>
+     <div class="field"><label for="m-pin">Code du vendeur (4 chiffres, optionnel)</label>
+       <input id="m-pin" class="input" inputmode="numeric" maxlength="4" placeholder="${m && m.pin ? '•••• (déjà défini)' : 'Pour ouvrir sa session'}" autocomplete="off"></div>
+     ${m ? `<label class="switchrow"><input type="checkbox" id="m-actif" ${m.actif ? 'checked' : ''}> Membre actif</label>` : ''}`,
+    `${m ? `<button class="btn btn--danger-ghost btn--sm" data-action="membre-del" data-id="${m.id}">Supprimer</button>` : ''}
+     <button class="btn" data-action="membre-save" data-id="${m ? m.id : ''}">Enregistrer</button>`));
+  hydrateIcons($('#modal-root'));
+}
+async function membreSave(mid) {
+  const nom = (($('#m-nom') || {}).value || '').trim();
+  const role = ($('#m-role') || {}).value || 'vendeur';
+  const pin = (($('#m-pin') || {}).value || '').trim();
+  const actif = $('#m-actif') ? $('#m-actif').checked : true;
+  if (!nom) return UI.toast('Donne un nom', 'err');
+  let pinRec = null;
+  if (pin) { if (!/^\d{4}$/.test(pin)) return UI.toast('Le code doit faire 4 chiffres', 'err'); pinRec = await Sec.makePinRecord(pin); }
+  if (mid) { const patch = { nom, role, actif }; if (pinRec) patch.pin = pinRec; S.updateMembre(mid, patch); }
+  else { S.addMembre(nom, role); const nm = S.getEquipe().find((x) => x.nom.toLowerCase() === nom.toLowerCase()); if (nm && pinRec) S.updateMembre(nm.id, { pin: pinRec }); }
+  UI.closeModal(); refreshReglages(); UI.toast('Équipe mise à jour');
+}
+function openHandOver() {
+  const eq = S.getEquipe().filter((m) => m.actif && m.role !== 'patron');
+  if (!eq.length) return UI.toast('Ajoute d’abord un vendeur', 'err');
+  const rows = eq.map((m) => `<button class="pickrow" data-action="pick-member" data-id="${m.id}">
+      <span class="mrow__av">${UI.esc((m.nom || '?').slice(0, 2).toUpperCase())}</span>
+      <div class="mrow__b"><strong>${UI.esc(m.nom)}</strong><small>${S.roleLabel(m.role)}</small></div>
+      <span data-icon="chevron"></span></button>`).join('');
+  UI.openModal(UI.modalShell('Passer la main',
+    `${UI.zhelp('Choisis qui prend le téléphone. Il ne verra que ce que son rôle permet. Pour reprendre la main, ton code PIN sera demandé.')}
+     <div class="picklist">${rows}</div>`,
+    `<button class="btn btn--ghost" data-action="close-modal">Annuler</button>`));
+  hydrateIcons($('#modal-root'));
+}
+
+// ---------- Abonnement & licences ----------
+function contactNebula(extra) {
+  const msg = extra || 'Bonjour NEBULA, j’utilise Boussole et j’aimerais des informations sur les licences.';
+  window.open('https://wa.me/' + NEBULA_WHATSAPP + '?text=' + encodeURIComponent(msg), '_blank');
+}
+function openOffresModal() {
+  UI.openModal(UI.modalShell('Choisis ton offre',
+    `<p class="modal__lead">Débloque tout Boussole. Récupère une seule dette oubliée et l’abonnement est déjà remboursé.</p>
+     ${UI.planCardsHTML(S.getLicence().plan)}
+     <button class="btn btn--ghost" data-action="have-key"><span data-icon="key"></span> J’ai déjà une clé</button>`,
+    `<button class="btn btn--ghost" data-action="close-modal">Fermer</button>`));
+  hydrateIcons($('#modal-root'));
+}
+function openBuyModal(planKey) {
+  const p = S.PLANS[planKey] || S.PLANS.essentiel;
+  UI.openModal(UI.modalShell(`Souscrire — ${p.nom}`,
+    `<p class="buybox__price"><strong>${S.formatNombre(p.prix)} F</strong> / mois</p>
+     ${UI.zhelp('Paie par Mobile Money, puis renseigne l’ID de la transaction et ton nom. NEBULA valide et t’envoie ta clé (à usage unique) à activer ici.')}
+     <p class="buystep">1. Envoie <strong>${S.formatNombre(p.prix)} F</strong> par Mobile Money au :</p>
+     <div class="momo"><div><span class="momo__lbl">Numéro MoMo</span><strong>${NEBULA_MOMO.numero}</strong></div><div><span class="momo__lbl">Nom</span><strong>${UI.esc(NEBULA_MOMO.nom)}</strong></div></div>
+     <p class="buystep">2. Renseigne ta transaction :</p>
+     <div class="field"><label for="pay-txn">ID de la transaction MoMo</label><input id="pay-txn" class="input" placeholder="Ex. MP230715.1234.A56789" autocomplete="off"></div>
+     <div class="field"><label for="pay-nom">Ton nom &amp; prénom</label><input id="pay-nom" class="input" placeholder="Ex. BIAO Mongazi" autocomplete="off"></div>`,
+    `<button class="btn btn--ghost" data-action="close-modal">Annuler</button>
+     <button class="btn plan__cta--pro" data-action="pay-submit" data-plan="${planKey}">J’ai payé — envoyer ma demande</button>`));
+  hydrateIcons($('#modal-root'));
+}
+async function submitPayment(el) {
+  const planKey = el.dataset.plan; const p = S.PLANS[planKey] || S.PLANS.essentiel;
+  const txn = (($('#pay-txn') || {}).value || '').trim();
+  const nom = (($('#pay-nom') || {}).value || '').trim();
+  if (!txn || !nom) return UI.toast('Renseigne l’ID de transaction et ton nom', 'err');
+  try { await Cloud.submitLicenceRequest({ plan: planKey, montant: p.prix, txn, nom, contact: S.getState().profil.tel_pro || '' }); } catch {}
+  const msg = `Bonjour NEBULA, je viens de souscrire à Boussole ${p.nom} (${S.formatNombre(p.prix)} F/mois). J'ai payé par Mobile Money.\nID transaction : ${txn}\nNom : ${nom}\nJ'aimerais recevoir ma clé de licence.`;
+  window.open('https://wa.me/' + NEBULA_WHATSAPP + '?text=' + encodeURIComponent(msg), '_blank');
+  openActivateModal(true);
+}
+function openActivateModal(after) {
+  UI.openModal(UI.modalShell('Activer ma licence',
+    `${after ? '<p class="modal__lead">Demande envoyée ! Dès que NEBULA t’envoie ta clé sur WhatsApp, entre-la ici.</p>' : ''}
+     ${UI.zhelp('Entre la clé (BSL-XXXX-XXXX) que NEBULA t’a envoyée. Elle ne fonctionne qu’une seule fois. Il faut internet pour l’activer.')}
+     <div class="field"><label for="lic-key">Ta clé de licence</label>
+       <input id="lic-key" class="input" placeholder="BSL-XXXX-XXXX" autocomplete="off" style="text-transform:uppercase"></div>`,
+    `<button class="btn btn--ghost" data-action="close-modal">Fermer</button>
+     <button class="btn" data-action="activate-key">Activer</button>`));
+  hydrateIcons($('#modal-root'));
+}
+async function submitActivation() {
+  const code = (($('#lic-key') || {}).value || '').trim().toUpperCase();
+  if (!code) return UI.toast('Entre ta clé', 'err');
+  const btn = $('[data-action="activate-key"]'); if (btn) { btn.disabled = true; btn.textContent = 'Vérification…'; }
+  const reset = () => { if (btn) { btn.disabled = false; btn.textContent = 'Activer'; } };
+  const res = await Cloud.consumeLicenceKey(code, S.getState().profil.proprietaire || '');
+  if (res.offline) { reset(); return UI.toast('Connecte-toi à internet pour activer ta clé.', 'err'); }
+  if (!res.ok) { reset(); return UI.toast(res.used ? 'Clé invalide ou déjà utilisée.' : 'Clé refusée.', 'err'); }
+  const out = S.activateLicence(code, res.plan);
+  if (!out.ok) { reset(); return UI.toast(out.msg, 'err'); }
+  UI.closeModal(); render(); UI.toast('Licence activée. Merci !');
+}
+function openParrainage() {
+  const msg = `Salut ! J'utilise Boussole pour gérer mon commerce (ventes, dépenses, dettes, bénéfices). Essaie gratuitement 30 jours. Si tu t'abonnes, on gagne chacun 1 mois offert.`;
+  UI.openModal(UI.modalShell('Parrainer un commerçant',
+    `${UI.zhelp('Invite un autre commerçant. S’il s’abonne, tu gagnes 1 mois offert (préviens NEBULA).')}
+     <div class="momo"><span>${UI.esc(msg)}</span></div>`,
+    `<button class="btn btn--ghost" data-action="close-modal">Fermer</button>
+     <button class="btn" data-action="share-parrain" data-msg="${encodeURIComponent(msg)}"><span data-icon="whatsapp"></span> Partager</button>`));
+  hydrateIcons($('#modal-root'));
+}
+// ---------- Back-office licences (admin) ----------
+async function adminGenKey(plan, reqId) {
+  try {
+    const cle = await Cloud.adminCreateKey(plan || 'essentiel');
+    if (reqId) await Cloud.adminSetRequestStatut(reqId, 'valide');
+    await copyText(cle, `Clé ${cle} générée et copiée`);
+    renderAdmin();
+  } catch (e) { UI.toast('Génération impossible : ' + (e.message || ''), 'err'); }
+}
+async function adminReject(id) { await Cloud.adminSetRequestStatut(id, 'rejete'); renderAdmin(); UI.toast('Demande rejetée'); }
+async function copyText(t, ok) { try { await navigator.clipboard.writeText(t); UI.toast(ok || 'Copié'); } catch { UI.toast(t); } }
+
 const isConfigured = () => Boolean(S.getState().profil.nom_activite) || S.getProduits({ withArchived: true }).length > 0;
+
+// ---------- Sécurité : session employé + droits ----------
+let activeMember = null;   // null = patron ; sinon id du membre (session limitée)
+function loadActiveMember() { try { return localStorage.getItem('boussole:active-member') || null; } catch { return null; } }
+function setActiveMember(id) { activeMember = id || null; try { id ? localStorage.setItem('boussole:active-member', id) : localStorage.removeItem('boussole:active-member'); } catch {} }
+function currentMembre() { return activeMember ? S.getMembre(activeMember) : null; }
+function currentRole() { const m = currentMembre(); return m ? m.role : 'patron'; }
+const SCREEN_PERM = { accueil: 'bilan', ventes: 'ventes', depenses: 'depenses', bilan: 'bilan', carnet: 'carnet', stock: 'stock', reglages: 'reglages' };
+function can(perm) { return S.rolePerms(currentRole()).includes(perm); }
+function screenAllowed(s) { return currentRole() === 'patron' || can(SCREEN_PERM[s] || 'ventes'); }
+function allowedScreens() { return ['accueil', 'ventes', 'depenses', 'bilan', 'carnet', 'stock', 'reglages'].filter(screenAllowed); }
+function defaultScreen() { const a = allowedScreens(); return a.includes('ventes') ? 'ventes' : (a[0] || 'ventes'); }
+
+// ---------- Écran de verrouillage (clavier PIN) ----------
+let pinMode = null, pinBuf = '', pinTmp = '';
+function renderLock(mode) {
+  pinMode = mode; pinBuf = ''; pinTmp = pinTmp || '';
+  const root = $('#lock-root'); root.innerHTML = UI.pinLockHTML(mode); root.classList.add('is-open');
+  hydrateIcons(root); updateLockDots();
+}
+function closeLock() { const r = $('#lock-root'); r.innerHTML = ''; r.classList.remove('is-open'); pinMode = null; pinBuf = ''; pinTmp = ''; }
+function updateLockDots() { document.querySelectorAll('#lock-dots span').forEach((d, i) => d.classList.toggle('on', i < pinBuf.length)); }
+function lockMsg(t, err) { const m = $('#lock-msg'); if (m) { m.textContent = t || ''; m.classList.toggle('is-err', !!err); } }
+function shakeLock() { const d = $('#lock-dots'); if (d) { d.classList.remove('shake'); void d.offsetWidth; d.classList.add('shake'); } }
+async function onLockKey(el) {
+  const k = el.dataset.lock;
+  if (k === 'del') { pinBuf = pinBuf.slice(0, -1); return updateLockDots(); }
+  if (k === 'forgot') return openForgotPin();
+  if (k === 'ok') return submitPin();
+  if (/^\d$/.test(k) && pinBuf.length < 4) { pinBuf += k; lockMsg(''); updateLockDots(); if (pinBuf.length === 4) setTimeout(submitPin, 120); }
+}
+async function submitPin() {
+  if (pinBuf.length < 4) return;
+  const code = pinBuf;
+  if (pinMode === 'set' || pinMode === 'change') { pinTmp = code; renderLock('confirm'); lockMsg('Retape le même code'); return; }
+  if (pinMode === 'confirm') {
+    if (code !== pinTmp) { pinBuf = ''; updateLockDots(); shakeLock(); return lockMsg('Les codes ne correspondent pas', true); }
+    await Sec.setPin(pinTmp); pinTmp = ''; closeLock(); refreshReglages(); return UI.toast('Code PIN activé');
+  }
+  if (pinMode === 'owner') {
+    if (await Sec.verifyOwner(code)) { setActiveMember(null); closeLock(); render(); return UI.toast('Tu as repris la main'); }
+    pinBuf = ''; updateLockDots(); shakeLock(); return lockMsg('Code incorrect', true);
+  }
+  // mode 'open' : le code identifie le patron OU un vendeur
+  const who = await resolveIdentity(code);
+  if (!who) { pinBuf = ''; updateLockDots(); shakeLock(); return lockMsg('Code incorrect', true); }
+  setActiveMember(who === 'owner' ? null : who);
+  closeLock(); render();
+}
+async function resolveIdentity(code) {
+  if (await Sec.verifyOwner(code)) return 'owner';
+  for (const m of S.getEquipe()) { if (m.pin && await Sec.matchesRecord(code, m.pin)) return m.id; }
+  return null;
+}
+function openForgotPin() {
+  UI.confirmDialog({
+    title: 'Code oublié ?', danger: true, okLabel: 'Effacer et repartir',
+    message: 'Pour ta sécurité, le code ne peut pas être récupéré. Si tu as un compte cloud, connecte-toi sur un autre appareil pour retrouver tes données. Sinon, tu peux effacer l’appli et repartir à zéro (les données locales seront perdues).',
+  }, () => { Sec.clearPin(); S.resetLocal(); setActiveMember(null); closeLock(); location.reload(); });
+}
 
 // ---------- Rendu ----------
 function render() {
+  // Back-office licences (réservé NEBULA — admin connecté uniquement)
+  if (screen === 'admin') { if (Cloud.isAdmin()) return renderAdmin(); screen = 'accueil'; }
+  // Blocage licence : essai terminé / licence expirée -> paywall plein écran
+  const le = S.licenceEtat();
+  if (le.bloque && !Cloud.isAdmin()) return renderPaywall(le.mode);
+  // Session employé : forcer un écran autorisé par le rôle
+  if (activeMember && !screenAllowed(screen)) screen = defaultScreen();
   const tb = $('#topbar');
   tb.style.display = (screen === 'welcome') ? 'none' : '';
   tb.innerHTML = UI.topbarHTML(cloudCtx(), effectiveTheme(), S.notifications().count);
@@ -156,9 +361,35 @@ function render() {
     animateCounts(view);
   }
   if (screen === 'accueil') wireCarousel();
+  // Bandeaux : mode employé + fin d'essai
+  const strip = (activeMember ? UI.empBannerHTML(currentMembre()) : UI.trialBannerHTML());
+  if (strip && navVisible()) { view.insertAdjacentHTML('afterbegin', strip); hydrateIcons(view.firstElementChild); }
+  if (activeMember) pruneChromeForMember();
   animateNext = false;
   view.scrollTop = resetScroll ? 0 : prevScroll;
   resetScroll = false;
+}
+function renderPaywall(mode) {
+  $('#lock-root').innerHTML = ''; $('#lock-root').classList.remove('is-open');
+  const tb = $('#topbar'); tb.style.display = 'none';
+  const view = $('#view'); view.innerHTML = UI.paywallHTML(mode === 'expire' ? 'expire' : 'essai');
+  ['#nav', '#sidebar', '#fab'].forEach((s) => { const el = $(s); el.innerHTML = ''; el.style.display = 'none'; });
+  hydrateIcons(view); view.scrollTop = 0;
+}
+function renderAdmin() {
+  const tb = $('#topbar'); tb.style.display = '';
+  tb.innerHTML = UI.topbarHTML(cloudCtx(), effectiveTheme(), 0);
+  ['#nav', '#sidebar', '#fab'].forEach((s) => { $(s).innerHTML = ''; $(s).style.display = 'none'; });
+  const view = $('#view'); view.innerHTML = '<section class="view"><p class="lrow--empty">Chargement…</p></section>';
+  Promise.all([Cloud.adminListRequests(), Cloud.adminListKeys()]).then(([reqs, keys]) => {
+    view.innerHTML = UI.adminLicencesHTML(reqs, keys); hydrateIcons(view);
+  });
+}
+// Retire de la navigation les écrans interdits au vendeur en session.
+function pruneChromeForMember() {
+  const allowed = new Set(allowedScreens());
+  document.querySelectorAll('#nav [data-screen], #sidebar [data-screen], #overlay-root [data-screen]').forEach((b) => { if (b.dataset.screen && !allowed.has(b.dataset.screen)) b.remove(); });
+  if (!can('depenses')) document.querySelectorAll('[data-action="fab-depense"]').forEach((b) => b.remove());
 }
 function navVisible() { return screen !== 'config' && screen !== 'welcome'; }
 // Chrome léger (sans toucher #view -> conserve le scroll)
@@ -508,6 +739,7 @@ function animateCounts(root) {
 }
 
 function setScreen(s) {
+  if (activeMember && !screenAllowed(s)) { UI.toast('Accès réservé au patron', 'err'); return; }
   if (s === 'accueil') animateNext = true;
   screen = s; if (s !== 'config') wizard = null;
   overlay = null; fabOpen = false; sidebarAcc = null; resetScroll = true;
@@ -917,6 +1149,12 @@ function markTutoSeen() { try { localStorage.setItem('boussole:tuto-vu', '1'); }
 function maybeShowTuto() { if (!tutoSeen() && isConfigured()) { markTutoSeen(); setTimeout(() => openTutoriel(0), 350); } }
 
 // ---------- Délégation d'événements ----------
+// Clavier de l'écran de verrouillage (PIN)
+document.addEventListener('click', (e) => {
+  const k = e.target.closest('[data-lock]');
+  if (k) { e.preventDefault(); onLockKey(k); }
+});
+
 document.addEventListener('click', (e) => {
   const el = e.target.closest('[data-action]');
   if (!el) return;
@@ -953,6 +1191,37 @@ document.addEventListener('click', (e) => {
     case 'lang-add': return openLangAdd();
     case 'lang-edit': return openLangEditor(el.dataset.code);
     case 'lang-del': { const c = el.dataset.code; I18n.removeCustomLang(c); UI.closeModal(); render(); I18n.applyLang(); return UI.toast('Langue supprimée'); }
+
+    // Compte & sécurité
+    case 'change-pwd': return openChangePwd();
+    case 'pin-set': return renderLock('set');
+    case 'pin-change': return renderLock('change');
+    case 'pin-off': return UI.confirmDialog({ title: 'Désactiver le code', message: 'L’appli s’ouvrira sans code. Continuer ?', okLabel: 'Désactiver', danger: true }, () => { Sec.clearPin(); refreshReglages(); UI.toast('Code PIN désactivé'); });
+    case 'lock-now': return renderLock('open');
+    case 'membre-add': return openMembreModal(null);
+    case 'membre-edit': return openMembreModal(el.dataset.id);
+    case 'hand-over': return openHandOver();
+    case 'reprendre': return Sec.hasPin() ? renderLock('owner') : (setActiveMember(null), render(), UI.toast('Tu as repris la main'));
+
+    // Abonnement & licences
+    case 'go-offres': return openOffresModal();
+    case 'buy-plan': return openBuyModal(el.dataset.plan);
+    case 'have-key': return openActivateModal();
+    case 'contact-nebula': return contactNebula();
+    case 'parrainage': return openParrainage();
+    case 'pay-submit': return submitPayment(el);
+    case 'activate-key': return submitActivation();
+
+    case 'save-pwd': return savePwd();
+    case 'membre-save': return membreSave(el.dataset.id);
+    case 'membre-del': return UI.confirmDialog({ title: 'Supprimer le membre', message: 'Retirer ce membre de l’équipe ?', danger: true, okLabel: 'Supprimer' }, () => { S.removeMembre(el.dataset.id); UI.closeModal(); refreshReglages(); UI.toast('Membre retiré'); });
+    case 'pick-member': setActiveMember(el.dataset.id); UI.closeModal(); render(); return UI.toast('Mode employé activé');
+    case 'share-parrain': return window.open('https://wa.me/?text=' + el.dataset.msg, '_blank');
+
+    // Back-office licences (admin)
+    case 'admin-genkey': return adminGenKey(el.dataset.plan, el.dataset.id);
+    case 'admin-reject': return adminReject(el.dataset.id);
+    case 'admin-copykey': return copyText(el.dataset.cle, 'Clé copiée');
 
     // tableau de bord — période & objectif
     case 'set-gran': if (period.gran !== el.dataset.gran) { period.gran = el.dataset.gran; period.offset = 0; savePeriod(); refreshDash(); } return;
@@ -1209,6 +1478,8 @@ document.addEventListener('change', (e) => {
   else if (el.matches('[data-action="df-cat"]')) { depFilter.categorie = el.value; refreshDepenses(); }
   else if (el.matches('[data-action="df-search"]')) { depFilter.q = el.value; refreshDepenses(); }
   else if (el.matches('[data-action="save-fisc"]')) { const f = el.dataset.field; if (f) S.setProfil({ [f]: (el.value || '').trim() }); }
+  else if (el.matches('[data-action="save-prop"]')) { S.setProfil({ proprietaire: (el.value || '').trim() }); }
+  else if (el.matches('[data-action="m-role"]')) { const h = document.getElementById('m-rolehint'); if (h) h.textContent = S.ROLE_DESCS[el.value] || ''; }
   else if (el.matches('[data-action="watpl-save"]')) { S.setWaTemplate(el.dataset.key, el.value); }
   else if (el.matches('[data-action="lted-term"]')) { I18n.setCustomTerm(el.dataset.code, el.dataset.fr, el.value); }
   else if (el.matches('[data-action="lted-name"]')) { I18n.addCustomLang(el.dataset.code, (el.value || '').trim()); refreshReglages(); }
@@ -1308,13 +1579,17 @@ async function boot() {
   initTheme();
   initPrefs();
   S.initStore();
+  S.ensureTrial();                // démarre l'essai de 30 j à la 1re ouverture
+  activeMember = loadActiveMember();
   if (isConfigured()) screen = 'accueil';
   else screen = CLOUD_ENABLED ? 'welcome' : 'config';
   const h = (location.hash || '').replace('#', '');
-  if (isConfigured() && ['accueil', 'ventes', 'depenses', 'bilan', 'carnet', 'stock', 'reglages'].includes(h)) screen = h;
+  if (h === ADMIN_ROUTE) screen = 'admin';   // back-office (n'affiche que si admin connecté)
+  else if (isConfigured() && ['accueil', 'ventes', 'depenses', 'bilan', 'carnet', 'stock', 'reglages'].includes(h)) screen = h;
   if (screen === 'config') wizard = { step: 1, charges: UI.defaultCharges() };
   if (screen === 'accueil') animateNext = true;
   render();
+  if (Sec.hasPin() && Sec.lockOnOpen()) renderLock('open');   // verrouillage à l'ouverture
   I18n.startI18n();               // traduit l'interface si une autre langue est choisie
   setTimeout(hideSplash, 1300);   // splash signature « boussole » : durée minimale
   maybeShowTuto();

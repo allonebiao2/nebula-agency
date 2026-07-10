@@ -14,12 +14,15 @@ import {
   PAYMENT_MODES, PAYMENT_LABELS, getVendeurs,
   achatsSummary, getAchats, achatTotal, ACHAT_STATUTS, getFournisseurs,
   WA_TEMPLATES_META, getWaTemplate,
+  PLANS, getLicence, licenceEtat, TRIAL_DAYS,
+  getEquipe, ROLES, ROLE_LABELS, ROLE_DESCS, roleLabel,
   formatF, formatNombre, MOIS_LONGS,
 } from './store.js';
 import { chartBeneficeMensuel, chartEvolution, miniSpark, progressRing, chartHero, chartDonut, sparklineRaw } from './charts.js';
-import { APP_NAME, CURRENCIES } from './config.js';
+import { APP_NAME, CURRENCIES, NEBULA_MOMO, NEBULA_WHATSAPP } from './config.js';
 import * as I18n from './i18n.js';
 import * as BT from './btprint.js';
+import * as Sec from './security.js';
 
 // Préférences d'apparence (appareil) — accent, taille, densité, coins.
 const uiPref = (k, d) => { try { return localStorage.getItem('boussole:' + k) || d; } catch { return d; } };
@@ -1380,6 +1383,211 @@ function clientRowHTML(c) {
 }
 
 // ============ ÉCRAN RÉGLAGES ============
+// ============ COMPTE & SÉCURITÉ · ABONNEMENT & LICENCES ============
+const initiales = (nom) => (nom || '?').trim().split(/\s+/).map((w) => w[0] || '').slice(0, 2).join('').toUpperCase() || '?';
+
+// --- Cartes de plans (paywall + panneau abonnement). Copywriting de vente fort. ---
+export function planCardsHTML(currentPlan) {
+  const actif = licenceEtat().mode === 'actif';   // « Renouveler » seulement si une licence est active
+  return `<div class="plans">${Object.keys(PLANS).map((k) => {
+    const p = PLANS[k], isPro = k === 'pro', cur = actif && currentPlan === k;
+    return `<article class="plan ${isPro ? 'plan--pro' : ''} ${cur ? 'is-current' : ''}">
+      ${p.badge ? `<span class="plan__badge ${isPro ? 'plan__badge--pro' : ''}">${p.badge}</span>` : ''}
+      <div class="plan__top">
+        <h3 class="plan__nom">${esc(p.nom)}</h3>
+        <p class="plan__cible">${esc(p.tag)} · ${esc(p.cible)}</p>
+        <p class="plan__price"><strong>${formatNombre(p.prix)}</strong> <span>F / mois</span></p>
+      </div>
+      <ul class="plan__feats">${p.inclus.map((f) => `<li><span data-icon="check"></span> ${esc(f)}</li>`).join('')}</ul>
+      <div class="plan__pitch">
+        <p class="plan__peur"><span data-icon="alert"></span> ${esc(p.peur)}</p>
+        <p class="plan__ridicule">${esc(p.ridicule)}</p>
+      </div>
+      <button class="btn btn--lg plan__cta ${isPro ? 'plan__cta--pro' : ''}" data-action="buy-plan" data-plan="${k}">
+        ${cur ? 'Renouveler' : 'Choisir'} — ${formatNombre(p.prix)} F/mois</button>
+    </article>`;
+  }).join('')}</div>`;
+}
+
+// --- PAYWALL plein écran (essai terminé / licence expirée) : blocage total ---
+export function paywallHTML(reason) {
+  const titre = reason === 'expire' ? 'Ta licence a expiré' : 'Ton essai gratuit est terminé';
+  return `<div class="paywall">
+    <div class="paywall__inner">
+      <div class="paywall__hero">
+        <img class="paywall__logo" src="assets/icons/logo-app.png" alt="" width="56" height="56">
+        <h1>${titre}</h1>
+        <p class="paywall__lead">Pendant 30 jours, Boussole a tenu ta caisse, ton stock et tes dettes à ta place. Ne repars pas à l’aveugle : chaque jour sans Boussole, ce sont des ventes à perte, des dettes oubliées et du stock qui dort — de l’argent qui sort sans que tu le voies.</p>
+        <p class="paywall__roi"><span data-icon="spark"></span> Récupère une seule dette oubliée, corrige un seul produit vendu à perte, et ton abonnement est déjà remboursé. Le reste, c’est du bénéfice en plus.</p>
+      </div>
+      ${planCardsHTML(getLicence().plan)}
+      <div class="paywall__foot">
+        <button class="btn btn--ghost" data-action="have-key"><span data-icon="key"></span> J’ai déjà reçu ma clé</button>
+        <button class="btn btn--ghost" data-action="contact-nebula"><span data-icon="whatsapp"></span> Parler à NEBULA</button>
+      </div>
+      <p class="paywall__note">Sans engagement : tu paies au mois, tu arrêtes quand tu veux. Paiement Mobile Money, simple et local.</p>
+    </div>
+  </div>`;
+}
+
+// --- Bandeau de fin d'essai (booster de conversion, J-7 → J-1) ---
+export function trialBannerHTML() {
+  const e = licenceEtat();
+  if (e.mode !== 'essai' || e.joursRestants > 7) return '';
+  const j = e.joursRestants;
+  const txt = j <= 0 ? 'Dernier jour d’essai !' : (j === 1 ? 'Il te reste 1 jour d’essai' : `Il te reste ${j} jours d’essai`);
+  return `<button class="trialbar" data-action="go-offres">
+    <span class="trialbar__l"><span data-icon="spark"></span> ${txt}</span>
+    <span class="trialbar__cta">Voir les offres</span>
+  </button>`;
+}
+
+// --- Panneau MON PROFIL ---
+function monProfilPanelHTML(cloud) {
+  const st = getState(); const nom = st.profil.proprietaire || '';
+  return `<div class="panel">
+    <div class="panel__head"><h2>Mon profil</h2></div>
+    ${zhelp('Ton nom (le patron) et ton compte. Ton nom peut apparaître sur les reçus et le tableau de bord. Le compte sert à synchroniser et sécuriser tes données.')}
+    <div class="profilcard">
+      <span class="profilcard__av">${esc(initiales(nom || st.profil.nom_activite))}</span>
+      <div class="profilcard__b">
+        <strong>${esc(nom || 'Ton nom')}</strong>
+        <small>${cloud.user ? esc(cloud.user.email) : 'Mode local (pas de compte)'}</small>
+      </div>
+    </div>
+    <div class="field"><label for="rg-prop">Ton nom (propriétaire)</label>
+      <input id="rg-prop" class="input" value="${esc(nom)}" data-action="save-prop" placeholder="Ex. Ada K."></div>
+    ${cloud.user
+      ? `<div class="btnrow">
+           <button class="btn btn--ghost" data-action="change-pwd"><span data-icon="lock"></span> Changer le mot de passe</button>
+           <button class="btn btn--danger-ghost" data-action="logout"><span data-icon="logout"></span> Déconnexion</button>
+         </div>`
+      : (cloud.configured
+        ? `<button class="btn" data-action="open-auth"><span data-icon="user"></span> Créer un compte / se connecter</button>`
+        : `<p class="panel__note">Mode local : tes données restent sur cet appareil. Pense à faire une sauvegarde.</p>`)}
+  </div>`;
+}
+
+// --- Panneau CODE PIN ---
+function pinPanelHTML() {
+  const has = Sec.hasPin();
+  return `<div class="panel">
+    <div class="panel__head"><h2>Code PIN</h2><span class="panel__sub">verrouille l’appli</span></div>
+    ${zhelp('Un code à 4 chiffres pour protéger l’ouverture de l’appli sur ce téléphone. Utile si on te l’emprunte. Sers-t’en aussi pour reprendre la main après un vendeur.')}
+    <div class="secrow">
+      <div class="secrow__b"><span class="secrow__ic" data-icon="shield"></span><div><strong>${has ? 'Code PIN activé' : 'Aucun code PIN'}</strong><small>${has ? 'L’appli demande le code à l’ouverture' : 'L’appli s’ouvre sans code'}</small></div></div>
+    </div>
+    <div class="btnrow">
+      ${has
+        ? `<button class="btn btn--ghost" data-action="pin-change"><span data-icon="edit"></span> Changer le code</button>
+           <button class="btn btn--danger-ghost" data-action="pin-off">Désactiver</button>`
+        : `<button class="btn" data-action="pin-set"><span data-icon="lock"></span> Créer un code PIN</button>`}
+    </div>
+    ${has ? `<button class="btn btn--ghost btn--sm" data-action="lock-now"><span data-icon="lock"></span> Verrouiller maintenant</button>` : ''}
+  </div>`;
+}
+
+// --- Panneau GESTION DE L'ÉQUIPE (rôles + droits + PIN par vendeur) ---
+function equipePanelHTML() {
+  const eq = getEquipe();
+  const rows = eq.length ? eq.map((m) => `<li class="mrow ${m.actif ? '' : 'is-off'}">
+      <span class="mrow__av">${esc(initiales(m.nom))}</span>
+      <div class="mrow__b"><strong>${esc(m.nom)}</strong><small>${roleLabel(m.role)}${m.pin ? ' · code défini' : ''}</small></div>
+      <span class="mrow__role role--${m.role}">${roleLabel(m.role)}</span>
+      <button class="lrow__btn" data-action="membre-edit" data-id="${m.id}" title="Modifier"><span data-icon="edit"></span></button>
+    </li>`).join('') : '<li class="lrow lrow--empty">Aucun membre. Toi seul(e) pour l’instant.</li>';
+  return `<div class="panel">
+    <div class="panel__head"><h2>Gestion de l’équipe</h2><span class="panel__badge"><span data-icon="crown"></span> Pro</span></div>
+    ${zhelp('Ajoute tes vendeurs et donne à chacun un rôle. Un Vendeur ne voit QUE la caisse (il ne voit ni tes bénéfices ni tes réglages) : c’est ta protection anti-vol. Chaque membre peut avoir son propre code.')}
+    <ul class="list mlist">${rows}</ul>
+    <div class="btnrow">
+      <button class="btn btn--sm" data-action="membre-add"><span data-icon="plus"></span> Ajouter un membre</button>
+      ${eq.length ? `<button class="btn btn--ghost btn--sm" data-action="hand-over"><span data-icon="users"></span> Passer la main à un vendeur</button>` : ''}
+    </div>
+    <div class="roleleg">${ROLES.map((r) => `<div class="roleleg__i"><span class="role--${r}">${ROLE_LABELS[r]}</span><small>${ROLE_DESCS[r]}</small></div>`).join('')}</div>
+  </div>`;
+}
+
+// --- Panneau ABONNEMENT & LICENCES ---
+function abonnementPanelHTML() {
+  const e = licenceEtat(), lic = getLicence(), p = PLANS[lic.plan] || PLANS.essentiel;
+  let statut;
+  if (e.mode === 'actif') statut = `<span class="lic-tag lic-tag--ok">Actif · ${p.nom}</span><small>Jusqu’au ${fmtDateFr(lic.echeance)} (${e.joursRestants} j)</small>`;
+  else if (e.mode === 'essai') statut = `<span class="lic-tag lic-tag--essai">Essai gratuit</span><small>${e.joursRestants} jour${e.joursRestants > 1 ? 's' : ''} restant${e.joursRestants > 1 ? 's' : ''} — accès complet</small>`;
+  else statut = `<span class="lic-tag lic-tag--off">${e.mode === 'expire' ? 'Licence expirée' : 'Essai terminé'}</span><small>Active une licence pour continuer</small>`;
+  return `<div class="panel">
+    <div class="panel__head"><h2>Abonnement &amp; licences</h2></div>
+    ${zhelp('Ton abonnement Boussole. Pendant l’essai, tout est ouvert. Ensuite, une licence mensuelle (envoyée par NEBULA après paiement Mobile Money) débloque l’appli. Une clé ne sert qu’une seule fois.')}
+    <div class="liccard"><div class="liccard__b">${statut}</div></div>
+    <div class="btnrow">
+      <button class="btn" data-action="go-offres"><span data-icon="crown"></span> Voir les offres</button>
+      <button class="btn btn--ghost" data-action="have-key"><span data-icon="key"></span> Activer une clé</button>
+    </div>
+    <button class="btn btn--ghost btn--sm" data-action="parrainage"><span data-icon="spark"></span> Parrainer un commerçant (1 mois offert)</button>
+  </div>`;
+}
+
+// --- ÉCRAN VERROUILLAGE (clavier PIN) : identifie patron OU vendeur ---
+export function pinLockHTML(mode) {
+  const titles = { open: 'Entre ton code', set: 'Choisis un code', confirm: 'Confirme le code', change: 'Nouveau code', owner: 'Code du patron' };
+  const keys = [1, 2, 3, 4, 5, 6, 7, 8, 9, 'x', 0, 'ok'];
+  return `<div class="lock">
+    <div class="lock__inner">
+      <img class="lock__logo" src="assets/icons/logo-app.png" alt="" width="52" height="52">
+      <p class="lock__title">${titles[mode] || titles.open}</p>
+      <div class="lock__dots" id="lock-dots">${[0, 1, 2, 3].map(() => '<span></span>').join('')}</div>
+      <p class="lock__msg" id="lock-msg"></p>
+      <div class="lock__pad">${keys.map((k) => k === 'x'
+        ? `<button class="lock__key lock__key--fn" data-lock="del" aria-label="Effacer"><span data-icon="close"></span></button>`
+        : k === 'ok'
+          ? `<button class="lock__key lock__key--ok" data-lock="ok" aria-label="Valider"><span data-icon="check"></span></button>`
+          : `<button class="lock__key" data-lock="${k}">${k}</button>`).join('')}</div>
+      ${mode === 'open' ? `<button class="lock__forgot" data-lock="forgot">Code oublié ?</button>` : ''}
+    </div>
+  </div>`;
+}
+
+// --- Bandeau MODE EMPLOYÉ (quand un vendeur a la main) ---
+export function empBannerHTML(membre) {
+  if (!membre) return '';
+  return `<div class="empbar">
+    <span class="empbar__l"><span data-icon="user"></span> Mode employé : <strong>${esc(membre.nom)}</strong> (${roleLabel(membre.role)})</span>
+    <button class="empbar__btn" data-action="reprendre"><span data-icon="lock"></span> Reprendre la main</button>
+  </div>`;
+}
+
+// --- BACK-OFFICE licences (réservé NEBULA) ---
+export function adminLicencesHTML(requests, keys) {
+  const reqRows = requests.length ? requests.map((r) => `<div class="areq ${r.statut !== 'en_attente' ? 'is-done' : ''}">
+      <div class="areq__b"><strong>${esc(r.nom || 'Client')}</strong><small>${esc((PLANS[r.plan] || {}).nom || r.plan)} · ${formatNombre(r.montant || 0)} F · TXN ${esc(r.txn || '—')}</small></div>
+      <div class="areq__acts">
+        ${r.statut === 'en_attente'
+          ? `<button class="btn btn--sm" data-action="admin-genkey" data-plan="${esc(r.plan)}" data-id="${r.id}"><span data-icon="key"></span> Générer la clé</button>
+             <button class="btn btn--ghost btn--sm" data-action="admin-reject" data-id="${r.id}">Rejeter</button>`
+          : `<span class="lic-tag lic-tag--${r.statut === 'valide' ? 'ok' : 'off'}">${r.statut}</span>`}
+      </div>
+    </div>`).join('') : '<p class="lrow--empty">Aucune demande de paiement.</p>';
+  const keyRows = keys.slice(0, 20).map((k) => `<div class="akey ${k.statut === 'used' ? 'is-used' : ''}">
+      <code>${esc(k.cle)}</code><span>${esc((PLANS[k.plan] || {}).nom || k.plan)}</span>
+      <span class="lic-tag lic-tag--${k.statut === 'used' ? 'off' : 'ok'}">${k.statut === 'used' ? 'utilisée' : 'dispo'}</span>
+      ${k.statut === 'dispo' ? `<button class="lrow__btn" data-action="admin-copykey" data-cle="${esc(k.cle)}" title="Copier"><span data-icon="download"></span></button>` : ''}
+    </div>`).join('');
+  return `<section class="view">
+    ${sectionTitle('Back-office licences', 'NEBULA — clés & paiements')}
+    ${zhelp('Écran réservé à toi. Quand un client paie, tu vois sa demande ici : génère une clé (à usage unique), copie-la et envoie-la lui sur WhatsApp. Il l’active dans son appli.')}
+    <div class="panel">
+      <div class="panel__head"><h2>Demandes de paiement</h2><span class="panel__sub">à valider</span></div>
+      <div class="areqlist">${reqRows}</div>
+    </div>
+    <div class="panel">
+      <div class="panel__head"><h2>Générer une clé</h2></div>
+      <div class="btnrow">${Object.keys(PLANS).map((k) => `<button class="btn" data-action="admin-genkey" data-plan="${k}"><span data-icon="key"></span> ${PLANS[k].nom}</button>`).join('')}</div>
+      <div class="akeylist">${keyRows}</div>
+    </div>
+    <button class="btn btn--ghost" data-action="go" data-screen="reglages"><span data-icon="home"></span> Retour à l’appli</button>
+  </section>`;
+}
+
 // ---- Panneau PERSONNALISATION (apparence à son goût) ----
 function personnalisationPanelHTML() {
   const accent = uiPref('accent', 'ambre'), textsize = uiPref('textsize', 'normal');
@@ -1468,14 +1676,6 @@ export function viewReglagesHTML(cloud) {
       <button class="lrow__btn lrow__btn--del" data-action="del-charge" data-id="${c.id}" title="Supprimer"><span data-icon="trash"></span></button>
     </li>`).join('') : `<li class="lrow lrow--empty">Aucune charge fixe.</li>`;
 
-  const cloudBlock = cloud.configured
-    ? (cloud.user
-      ? `<div class="cloudcard cloudcard--on"><div><strong>Synchronisé</strong><small>${esc(cloud.user.email)} · mobile et PC à jour</small></div>
-          <button class="btn btn--ghost btn--sm" data-action="logout"><span data-icon="logout"></span> Déconnexion</button></div>`
-      : `<div class="cloudcard"><div><strong>Cloud disponible</strong><small>Connecte-toi pour synchroniser mobile et PC</small></div>
-          <button class="btn btn--sm" data-action="open-auth">Se connecter</button></div>`)
-    : `<div class="cloudcard"><div><strong>Mode local</strong><small>Données sur cet appareil uniquement. Pense à faire une sauvegarde.</small></div></div>`;
-
   return `<section class="view">
     ${sectionTitle('Réglages', 'Activité, coûts, sauvegarde')}
     <div class="panel">
@@ -1511,12 +1711,6 @@ export function viewReglagesHTML(cloud) {
     ${messagesWaPanelHTML()}
     ${imprimantePanelHTML()}
     <div class="panel">
-      <div class="panel__head"><h2>Vendeurs</h2></div>
-      ${zhelp('Ajoute les noms de tes vendeurs. Tu pourras dire qui a fait chaque vente à la caisse et filtrer l’historique par vendeur — sans compte ni mot de passe.')}
-      <ul class="list">${getVendeurs().length ? getVendeurs().map((v) => `<li class="lrow"><span class="lrow__ic" data-icon="user"></span><div class="lrow__body"><strong>${esc(v)}</strong></div><button class="lrow__btn lrow__btn--del" data-action="del-vendeur" data-nom="${esc(v)}" title="Retirer"><span data-icon="trash"></span></button></li>`).join('') : '<li class="lrow lrow--empty">Aucun vendeur. Toi seul(e) pour l’instant.</li>'}</ul>
-      <div class="vaddrow"><input id="rg-vend" class="input" placeholder="Nom du vendeur" autocomplete="off"><button class="btn btn--sm" data-action="add-vendeur"><span data-icon="plus"></span> Ajouter</button></div>
-    </div>
-    <div class="panel">
       <div class="panel__head"><h2>Produits</h2><button class="btn btn--sm" data-action="add-produit"><span data-icon="plus"></span> Ajouter</button></div>
       <ul class="list">${prodItems}</ul>
     </div>
@@ -1526,11 +1720,11 @@ export function viewReglagesHTML(cloud) {
       <ul class="list">${chargeItems}</ul>
       <div class="panel__note">Total : <strong>${formatF(chargesMensuellesTotal())}</strong> / mois — c'est le « pot » à couvrir chaque mois avant de dégager du bénéfice.</div>
     </div>
-    <div class="panel">
-      <div class="panel__head"><h2>Compte & synchronisation</h2></div>
-      ${zhelp('Connecte-toi pour retrouver tes données sur ton téléphone ET ton ordinateur, à jour partout. Sans compte, tout reste sur cet appareil uniquement.')}
-      ${cloudBlock}
-    </div>
+    <h3 class="rgsec"><span data-icon="shield"></span> Compte & sécurité</h3>
+    ${monProfilPanelHTML(cloud)}
+    ${pinPanelHTML()}
+    ${equipePanelHTML()}
+    ${abonnementPanelHTML()}
     <div class="panel">
       <div class="panel__head"><h2>Sauvegarde</h2></div>
       ${zhelp('Exporte une copie de toutes tes données dans un fichier (à garder au cas où), ou réimporte-la. « Effacer » remet tout à zéro — à utiliser avec prudence.')}

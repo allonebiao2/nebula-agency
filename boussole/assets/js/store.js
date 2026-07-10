@@ -230,14 +230,104 @@ export function receiptByTicket(ticket) {
   return { lignes, total, mode: f.mode || 'especes', vendeur: f.vendeur || '', date: f.date, ref: ticket };
 }
 
-// ---------- Vendeurs (liste légère, sans multi-compte) ----------
-export function getVendeurs() { return (state.profil.vendeurs || []).slice(); }
-export function addVendeur(nom) {
-  nom = (nom || '').trim(); if (!nom) return;
-  const list = getVendeurs();
-  if (!list.some((x) => x.toLowerCase() === nom.toLowerCase())) { list.push(nom); setProfil({ vendeurs: list }); }
+// ---------- Équipe & droits (rôles des vendeurs) ----------
+// Rôles et ce que chacun a le droit de faire (permissions par écran/capacité).
+export const ROLES = ['patron', 'gerant', 'vendeur'];
+export const ROLE_LABELS = { patron: 'Patron', gerant: 'Gérant', vendeur: 'Vendeur' };
+export const ROLE_DESCS = {
+  patron: 'Accès total : ventes, finances, stock, réglages, équipe et sécurité.',
+  gerant: 'Ventes, dépenses, stock, carnet et bilan. Pas les réglages ni la sécurité.',
+  vendeur: 'Enregistre les ventes et consulte le carnet. Ni finances, ni réglages.',
+};
+export const ROLE_PERMS = {
+  patron: ['ventes', 'depenses', 'stock', 'carnet', 'bilan', 'reglages'],
+  gerant: ['ventes', 'depenses', 'stock', 'carnet', 'bilan'],
+  vendeur: ['ventes', 'carnet'],
+};
+export function roleLabel(r) { return ROLE_LABELS[r] || r; }
+export function rolePerms(r) { return ROLE_PERMS[r] || ROLE_PERMS.vendeur; }
+
+function membreSlug(s) { return String(s || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || ('m' + Date.now().toString(36)); }
+// Renvoie l'équipe en objets {id,nom,role,actif}. Migre l'ancienne liste de noms.
+export function getEquipe() {
+  const raw = state.profil.equipe;
+  if (Array.isArray(raw) && raw.length && typeof raw[0] === 'object') {
+    return raw.map((m) => ({ id: m.id || membreSlug(m.nom), nom: m.nom || '', role: ROLES.includes(m.role) ? m.role : 'vendeur', actif: m.actif !== false }));
+  }
+  const noms = Array.isArray(state.profil.vendeurs) ? state.profil.vendeurs : [];
+  return noms.map((n) => ({ id: membreSlug(n), nom: n, role: 'vendeur', actif: true }));
 }
-export function removeVendeur(nom) { setProfil({ vendeurs: getVendeurs().filter((x) => x !== nom) }); }
+export function getMembre(id) { return getEquipe().find((m) => m.id === id) || null; }
+function saveEquipe(list) { setProfil({ equipe: list }); }
+export function addMembre(nom, role = 'vendeur') {
+  nom = (nom || '').trim(); if (!nom) return;
+  const list = getEquipe();
+  if (list.some((m) => m.nom.toLowerCase() === nom.toLowerCase())) return;
+  list.push({ id: membreSlug(nom), nom, role: ROLES.includes(role) ? role : 'vendeur', actif: true });
+  saveEquipe(list);
+}
+export function updateMembre(id, patch) { saveEquipe(getEquipe().map((m) => (m.id === id ? { ...m, ...patch } : m))); }
+export function removeMembre(id) { saveEquipe(getEquipe().filter((m) => m.id !== id)); }
+
+// Compat : le reste de l'appli (caisse, historique) utilise les NOMS des vendeurs actifs.
+export function getVendeurs() { return getEquipe().filter((m) => m.actif).map((m) => m.nom); }
+export function addVendeur(nom) { addMembre(nom, 'vendeur'); }
+export function removeVendeur(nom) { const m = getEquipe().find((x) => x.nom === nom); if (m) removeMembre(m.id); }
+
+// ---------- Abonnement & licence (produit NEBULA) ----------
+// Modèle : 30 jours d'essai gratuit -> ensuite BLOCAGE tant qu'une licence
+// mensuelle n'est pas activée. 3 paliers. Paiement Mobile Money, validation par
+// NEBULA (Telegram/WhatsApp) qui envoie la clé ; le client l'active ici.
+export const TRIAL_DAYS = 30;
+// 2 paliers payants (l'essai de 30 j ouvre TOUT ; ensuite blocage total = paywall).
+// ⚠️ prix mensuels À VALIDER par Mongazi. Copywriting de vente fourni par Mongazi.
+export const PLANS = {
+  essentiel: {
+    nom: 'Essentiel', tag: 'Commerçant solo', prix: 5000, badge: 'Le plus populaire',
+    cible: '1 personne · 1 appareil',
+    inclus: ['Ventes & dépenses (pro/perso)', 'Gestion de stock & alertes', 'Carnet de dettes & relances', 'Factures, reçus & rapports'],
+    peur: 'Tu perds des milliers de FCFA chaque mois en oubliant des dettes ou en gérant mal ton stock sur papier. Ce plan rembourse son prix dès ton premier jour d’utilisation.',
+    ridicule: 'Ne pas investir le prix d’un simple café par jour pour sécuriser ton gagne-pain et doubler tes bénéfices, c’est saboter ton propre business.',
+  },
+  pro: {
+    nom: 'Pro / Équipe', tag: 'Gérant avec employés', prix: 10000, badge: 'Meilleure valeur',
+    cible: 'Multi-appareils · équipe & droits',
+    inclus: ['Tout l’Essentiel', 'Anti-vol : rôles (l’employé ne voit que la caisse)', 'Historique d’audit (qui a modifié/supprimé)', 'Multi-appareils & multi-boutiques', 'Relances de dettes automatiques'],
+    peur: 'Quand tu as le dos tourné, tes employés gèrent TA caisse. Sans le mode Pro, tu acceptes de fermer les yeux sur le vol, les suppressions de ventes en douce et les erreurs suspectes.',
+    ridicule: 'Continuer à te déplacer chaque soir pour vérifier tes boutiques ou risquer de te faire voler ta caisse pour un prix aussi dérisoire, c’est un suicide financier. Prends le contrôle à distance maintenant.',
+  },
+};
+export function getLicence() {
+  const l = state.profil.licence || {};
+  return { plan: PLANS[l.plan] ? l.plan : 'essentiel', statut: l.statut || '', echeance: l.echeance || '', cle: l.cle || '', essai_debut: l.essai_debut || '' };
+}
+export function setLicence(patch) { setProfil({ licence: { ...getLicence(), ...patch } }); }
+// Démarre l'essai à la 1re ouverture (idempotent).
+export function ensureTrial() { const l = getLicence(); if (!l.essai_debut) setLicence({ essai_debut: nowISO() }); }
+// État courant de la licence : essai en cours / active / expirée (+ blocage).
+export function licenceEtat() {
+  const l = getLicence(); const now = Date.now();
+  if (l.cle && l.echeance) {
+    const fin = new Date(l.echeance).getTime();
+    if (now <= fin) return { mode: 'actif', bloque: false, plan: l.plan, echeance: l.echeance, joursRestants: Math.ceil((fin - now) / DAY_MS) };
+    return { mode: 'expire', bloque: true, plan: l.plan, echeance: l.echeance };
+  }
+  if (l.essai_debut) {
+    const fin = new Date(l.essai_debut).getTime() + TRIAL_DAYS * DAY_MS;
+    if (now <= fin) return { mode: 'essai', bloque: false, plan: l.plan, joursRestants: Math.max(0, Math.ceil((fin - now) / DAY_MS)) };
+    return { mode: 'expire_essai', bloque: true, plan: l.plan };
+  }
+  return { mode: 'essai', bloque: false, plan: l.plan, joursRestants: TRIAL_DAYS };
+}
+// Enregistre la clé envoyée par NEBULA (BSL-XXXX-XXXX) -> licence mensuelle active.
+export function activateLicence(code, plan) {
+  code = (code || '').trim().toUpperCase();
+  if (!code) return { ok: false, msg: 'Entre le code envoyé par NEBULA.' };
+  if (!/^BSL-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(code)) return { ok: false, msg: 'Code invalide. Format attendu : BSL-XXXX-XXXX.' };
+  const echeance = new Date(Date.now() + 30 * DAY_MS).toISOString();
+  setLicence({ cle: code, plan: PLANS[plan] ? plan : getLicence().plan, statut: 'actif', echeance });
+  return { ok: true };
+}
 
 // ---------- Messages WhatsApp configurables (textes prédéfinis) ----------
 // Le commerçant personnalise les textes envoyés par WhatsApp. Les {variables}

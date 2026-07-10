@@ -3,7 +3,7 @@
 export const APP_NAME = 'Boussole';
 
 // Version de l'appli : sert au cache-busting (bumper à chaque modif).
-export const APP_VERSION = '20260710f';
+export const APP_VERSION = '20260710g';
 
 // --- Supabase (mode cloud) ---
 // Laisser vide = l'appli tourne en MODE LOCAL (localStorage, hors-ligne, privé à l'appareil).
@@ -14,6 +14,13 @@ export const SUPABASE_URL = 'https://xukduhqqfzogisoimhyo.supabase.co';
 export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1a2R1aHFxZnpvZ2lzb2ltaHlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM1Mjc4MDMsImV4cCI6MjA5OTEwMzgwM30.nTmpJarpRzteBTSoirlGZub5RgTkYUE_P15vLqluDG0';
 
 export const CLOUD_ENABLED = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
+
+// --- Abonnement / licences (produit NEBULA) ---
+// Coordonnées de paiement & de contact pour l'achat de licence.
+export const NEBULA_MOMO = { numero: '0196740732', nom: 'BIAO Mongazi YAN karl' };
+export const NEBULA_WHATSAPP = '22996740732';        // WhatsApp NEBULA (réception des demandes de licence)
+export const ADMIN_EMAILS = ['allonebiao@gmail.com', 'allonebiao2@gmail.com']; // accès back-office licences
+export const ADMIN_ROUTE = 'cockpit-licences';       // hash secret du back-office (#cockpit-licences)
 
 // Devise par défaut (FCFA). La devise active est dans profil.devise (multi-devises).
 export const DEVISE = 'F';

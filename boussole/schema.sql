@@ -24,6 +24,82 @@ alter table public.profils add column if not exists tel_pro   text default '';
 alter table public.profils add column if not exists email_pro text default '';
 alter table public.profils add column if not exists vendeurs  jsonb default '[]'::jsonb;   -- liste de noms de vendeurs
 alter table public.profils add column if not exists wa_templates jsonb default '{}'::jsonb; -- textes WhatsApp personnalisés
+alter table public.profils add column if not exists proprietaire text default '';          -- nom du propriétaire
+alter table public.profils add column if not exists equipe    jsonb default '[]'::jsonb;   -- équipe {nom,role,actif,pin} (droits vendeurs)
+alter table public.profils add column if not exists licence   jsonb default '{}'::jsonb;   -- abonnement {plan,statut,echeance,cle,essai_debut}
+
+-- ============================================================
+--  LICENCES — clés à USAGE UNIQUE (validation en ligne) + demandes de paiement
+-- ============================================================
+create table if not exists public.licence_keys (
+  cle        text primary key,
+  plan       text not null default 'essentiel',
+  statut     text not null default 'dispo',   -- 'dispo' | 'used'
+  used_by    uuid,
+  used_nom   text,
+  used_at    timestamptz,
+  created_at timestamptz default now()
+);
+alter table public.licence_keys enable row level security;
+
+create table if not exists public.licence_requests (
+  id         uuid primary key default gen_random_uuid(),
+  plan       text,
+  montant    integer,
+  devise     text default 'F',
+  txn        text,          -- id de transaction Mobile Money
+  nom        text,          -- nom + prénom du client
+  contact    text,
+  user_id    uuid,
+  statut     text default 'en_attente',   -- en_attente | valide | rejete
+  created_at timestamptz default now()
+);
+alter table public.licence_requests enable row level security;
+
+-- N'importe qui (anon/authenticated) peut DÉPOSER une demande de paiement.
+drop policy if exists lr_insert on public.licence_requests;
+create policy lr_insert on public.licence_requests for insert to anon, authenticated with check (true);
+
+-- Lecture/gestion réservée aux e-mails admin NEBULA.
+drop policy if exists lr_admin on public.licence_requests;
+create policy lr_admin on public.licence_requests for all to authenticated
+  using ((select email from auth.users where id = auth.uid()) in ('allonebiao@gmail.com', 'allonebiao2@gmail.com'))
+  with check ((select email from auth.users where id = auth.uid()) in ('allonebiao@gmail.com', 'allonebiao2@gmail.com'));
+drop policy if exists lk_admin on public.licence_keys;
+create policy lk_admin on public.licence_keys for all to authenticated
+  using ((select email from auth.users where id = auth.uid()) in ('allonebiao@gmail.com', 'allonebiao2@gmail.com'))
+  with check ((select email from auth.users where id = auth.uid()) in ('allonebiao@gmail.com', 'allonebiao2@gmail.com'));
+
+-- CONSOMMATION ATOMIQUE d'une clé : une clé ne peut être activée qu'UNE SEULE FOIS.
+create or replace function public.consume_licence_key(p_cle text, p_nom text default null)
+returns table(plan text)
+language plpgsql security definer set search_path = public as $$
+declare v_plan text;
+begin
+  update public.licence_keys
+     set statut = 'used', used_by = auth.uid(), used_nom = coalesce(p_nom, used_nom), used_at = now()
+   where cle = upper(trim(p_cle)) and statut = 'dispo'
+   returning licence_keys.plan into v_plan;
+  if v_plan is null then return; end if;   -- clé inexistante OU déjà utilisée
+  return query select v_plan;
+end $$;
+grant execute on function public.consume_licence_key(text, text) to anon, authenticated;
+
+-- GÉNÉRATION d'une clé (réservée aux e-mails admin) -> back-office NEBULA.
+create or replace function public.admin_create_licence_key(p_plan text)
+returns table(cle text)
+language plpgsql security definer set search_path = public as $$
+declare v_email text; v_cle text;
+begin
+  select email into v_email from auth.users where id = auth.uid();
+  if v_email is null or v_email not in ('allonebiao@gmail.com', 'allonebiao2@gmail.com') then
+    raise exception 'non autorise';
+  end if;
+  v_cle := 'BSL-' || upper(substr(md5(random()::text), 1, 4)) || '-' || upper(substr(md5(random()::text), 1, 4));
+  insert into public.licence_keys(cle, plan) values (v_cle, coalesce(p_plan, 'essentiel'));
+  return query select v_cle;
+end $$;
+grant execute on function public.admin_create_licence_key(text) to authenticated;
 
 create table if not exists public.produits (
   id          uuid primary key,
