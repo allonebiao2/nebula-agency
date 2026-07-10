@@ -12,6 +12,7 @@ import {
   getClients, getStockInfo, stockResume, recouvrement, journalCaisse, notifications,
   getObjectifs, objectifInfo,
   PAYMENT_MODES, PAYMENT_LABELS, getVendeurs,
+  achatsSummary, getAchats, achatTotal, ACHAT_STATUTS, getFournisseurs,
   formatF, formatNombre, MOIS_LONGS,
 } from './store.js';
 import { chartBeneficeMensuel, chartEvolution, miniSpark, progressRing, chartHero, chartDonut, sparklineRaw } from './charts.js';
@@ -675,7 +676,78 @@ export function viewDepensesHTML(filter = { preset: 'mois', from: '', to: '', ca
       </div>
       <div class="hvgroups">${groups}</div>
     </article>
+    ${achatsPanelHTML()}
   </section>`;
+}
+
+// ============ ACHATS FOURNISSEURS ============
+export function achatsPanelHTML() {
+  const s = achatsSummary();
+  const list = getAchats().slice(0, 6);
+  const rows = list.length ? list.map(achatRowHTML).join('') : `<li class="docrow docrow--empty">Aucun achat. Enregistre un réassort : le stock des produits augmentera tout seul.</li>`;
+  const sub = s.credit ? `<span class="panel__sub doccard__due"><span data-icon="alert"></span> ${formatF(s.credit)} à payer</span>` : `<span class="panel__sub">Réassorts & marchandise</span>`;
+  return `<article class="panel doccard">
+    <div class="panel__head"><h2>Achats fournisseurs</h2>${sub}</div>
+    ${zhelp('Enregistre ce que tu achètes à tes fournisseurs. Le stock des produits augmente tout seul, ta caisse baisse (si payé), et ton bénéfice n’est pas touché — le coût est déjà dans ta marge.')}
+    <div class="acsum">
+      <div class="acsum__c"><span class="acsum__lbl">Ce mois</span><span class="acsum__val">${formatF(s.mois)}</span></div>
+      <div class="acsum__c"><span class="acsum__lbl">Total</span><span class="acsum__val">${formatF(s.total)}</span></div>
+      <div class="acsum__c ${s.credit ? 'is-dng' : ''}"><span class="acsum__lbl">À payer</span><span class="acsum__val">${formatF(s.credit)}</span></div>
+    </div>
+    <button class="btn btn--doc acnew" data-action="ac-new"><span data-icon="plus"></span> Nouvel achat</button>
+    <ul class="doclist">${rows}</ul>
+  </article>`;
+}
+function achatRowHTML(a) {
+  const nbArt = (a.lignes || []).reduce((s, l) => s + (Number(l.qte) || 0), 0);
+  const paye = a.statut === 'paye';
+  return `<li class="docrow">
+    <button class="docrow__main" data-action="ac-open" data-id="${a.id}">
+      <span class="docrow__badge is-ach">Achat</span>
+      <span class="docrow__body"><strong>${esc(a.fournisseur || 'Fournisseur')}</strong><small>${fmtDateFr(a.date)} · ${formatNombre(nbArt)} article${nbArt > 1 ? 's' : ''}</small></span>
+      <span class="docrow__amt">${formatF(achatTotal(a))}<em class="docstat docstat--${paye ? 'paid' : 'due'}">${paye ? 'Payé' : 'À crédit'}</em></span>
+    </button>
+  </li>`;
+}
+export function achatFormFields(a) {
+  const fourns = getFournisseurs();
+  const datalist = fourns.length ? `<datalist id="ac-fourns">${fourns.map((f) => `<option value="${esc(f)}"></option>`).join('')}</datalist>` : '';
+  const prods = getProduits();
+  const lignes = (a.lignes && a.lignes.length) ? a.lignes : [{ produit_id: prods[0] ? prods[0].id : '', qte: 1, cout_unitaire: '' }];
+  const statutChips = ACHAT_STATUTS.map((st) => `<button type="button" class="modechip ${((a.statut || 'paye') === st) ? 'is-on' : ''}" data-action="ac-statut" data-st="${st}">${st === 'paye' ? 'Payé' : 'À crédit'}</button>`).join('');
+  return `<div class="achatform" data-id="${a.id || ''}" data-statut="${a.statut || 'paye'}">
+    <div class="grid2">
+      <div class="field"><label for="ac-four">Fournisseur</label><input id="ac-four" class="input" list="ac-fourns" value="${esc(a.fournisseur || '')}" placeholder="Ex. Grossiste Dantokpa" autocomplete="off">${datalist}</div>
+      <div class="field"><label for="ac-date">Date</label><input id="ac-date" class="input" type="date" value="${esc(a.date || '')}"></div>
+    </div>
+    <div class="docform__sec">Marchandise achetée</div>
+    <div id="ac-lignes" class="doclines">${achatLignesHTML(lignes)}</div>
+    <button class="btn btn--ghost btn--sm docadd" data-action="ac-add-ligne"><span data-icon="plus"></span> Ajouter une ligne</button>
+    <div class="field"><label>Paiement</label><div class="modechips">${statutChips}</div></div>
+    <div class="field"><label for="ac-note">Note <span class="opt">(option)</span></label><textarea id="ac-note" class="input" rows="2" placeholder="Ex. Bon n°… , à régler vendredi">${esc(a.note || '')}</textarea></div>
+    <div id="ac-tot" class="dtot">${achatTotalsHTML(lignes)}</div>
+    ${zhelp('En enregistrant, le stock de ces produits augmente automatiquement. « Payé » = l’argent sort de ta caisse maintenant ; « À crédit » = tu dois encore ce montant au fournisseur.')}
+  </div>`;
+}
+export function achatLignesHTML(lignes) {
+  const prods = getProduits();
+  const opts = (sel) => prods.map((p) => `<option value="${p.id}" ${sel === p.id ? 'selected' : ''}>${esc(p.nom)}</option>`).join('');
+  return lignes.map((l, i) => {
+    const montant = (Number(l.qte) || 0) * (Number(l.cout_unitaire) || 0);
+    return `<div class="aline" data-i="${i}">
+      <select class="input aline__prod" data-al="produit_id" aria-label="Produit">${opts(l.produit_id)}</select>
+      <div class="aline__nums">
+        <input class="input aline__q" type="number" inputmode="numeric" data-al="qte" value="${l.qte != null ? l.qte : ''}" placeholder="Qté" aria-label="Quantité">
+        <span class="dline__x">×</span>
+        <input class="input aline__pu" type="number" inputmode="numeric" data-al="cout_unitaire" value="${l.cout_unitaire != null ? l.cout_unitaire : ''}" placeholder="Coût" aria-label="Coût unitaire d'achat">
+        <span class="aline__tot" data-al-tot>${formatF(montant)}</span>
+        <button class="dline__del" data-action="ac-del-ligne" data-i="${i}" aria-label="Retirer la ligne"><span data-icon="close"></span></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+export function achatTotalsHTML(lignes) {
+  return `<div class="dtot__row dtot__row--total"><span>Total achat</span><span class="dtot__v">${formatF(achatTotal({ lignes }))}</span></div>`;
 }
 
 // ---- Statistiques (KPIs) ----

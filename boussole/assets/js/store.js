@@ -18,6 +18,7 @@ function emptyState() {
     credits: [],         // {id, client, tel, montant, paye, date, echeance, note}  (ventes à crédit)
     documents: [],       // {id, type:'facture'|'devis', numero, date, echeance, client:{nom,tel,adresse}, lignes:[{designation,qte,pu}], remise, tva_taux, acompte, notes, statut, created_at}
     objectifs: [],       // {id, titre, icone, montant_cible, montant_actuel, echeance, note, created_at}  (cagnottes/projets)
+    achats: [],          // {id, fournisseur, date, lignes:[{produit_id,qte,cout_unitaire}], statut, note, created_at}  (achats fournisseurs)
   };
 }
 
@@ -70,6 +71,7 @@ export async function hydrateFromRemote() {
     state.credits.forEach((c) => pushRemote('credits', c));
     state.documents.forEach((d) => pushRemote('documents', d));
     state.objectifs.forEach((o) => pushRemote('objectifs', o));
+    state.achats.forEach((a) => pushRemote('achats', a));
     pushRemote('profils', { id: 'me', ...state.profil });
     return;
   }
@@ -622,7 +624,8 @@ export function setObjectif(v) { setProfil({ objectif_benefice: Math.max(0, Math
 // Caisse = fond de départ + tout l'encaissement (ventes) − toutes les sorties (dépenses).
 export function soldeCaisse() {
   const encaisse = state.ventes.reduce((s, v) => s + (v.qte || 0) * (v.prix_unitaire || 0), 0);
-  return getSoldeInitial() + encaisse - sommeDepenses(state.depenses);
+  const achats = state.achats.filter((a) => a.statut === 'paye').reduce((s, a) => s + achatTotal(a), 0);
+  return getSoldeInitial() + encaisse - sommeDepenses(state.depenses) - achats;
 }
 // Résumé d'AUJOURD'HUI (toujours le jour courant, indépendant de la période choisie).
 export function resumeJour() {
@@ -985,6 +988,53 @@ export function objectifsSummary() {
   const cible = os.reduce((s, o) => s + (Number(o.montant_cible) || 0), 0);
   const actuel = os.reduce((s, o) => s + (Number(o.montant_actuel) || 0), 0);
   return { total: os.length, atteints: os.filter((o) => objectifInfo(o).atteint).length, cible, actuel, taux: cible > 0 ? Math.min(1, actuel / cible) : 0 };
+}
+
+// ---------- Achats fournisseurs (marchandise → augmente le stock, sort de la caisse) ----------
+export const ACHAT_STATUTS = ['paye', 'credit'];
+export function achatTotal(a) { return (a.lignes || []).reduce((s, l) => s + (Number(l.qte) || 0) * (Number(l.cout_unitaire) || 0), 0); }
+export function getAchats() {
+  return state.achats.slice().sort((a, b) => (b.date || '').localeCompare(a.date || '') || (new Date(b.created_at || 0) - new Date(a.created_at || 0)));
+}
+export function getAchat(id) { return state.achats.find((a) => a.id === id) || null; }
+function normAchatLignes(lignes) {
+  return (lignes || []).map((l) => ({ produit_id: l.produit_id, qte: Math.max(0, Number(l.qte) || 0), cout_unitaire: Math.max(0, Number(l.cout_unitaire) || 0) }))
+    .filter((l) => l.produit_id && l.qte > 0);
+}
+export function addAchat({ fournisseur, date, lignes, statut, note } = {}) {
+  const a = {
+    id: uid(), fournisseur: (fournisseur || '').trim(), date: date || _ymd2(new Date()),
+    lignes: normAchatLignes(lignes), statut: ACHAT_STATUTS.includes(statut) ? statut : 'paye',
+    note: (note || '').trim(), created_at: nowISO(),
+  };
+  state.achats.push(a);
+  // augmente le stock des produits achetés (démarre le suivi si le produit ne l'était pas)
+  a.lignes.forEach((l) => { const p = getProduit(l.produit_id); if (p) { const base = (p.stock === null || p.stock === undefined) ? 0 : Number(p.stock) || 0; p.stock = base + l.qte; pushRemote('produits', p); } });
+  persistLocal(); pushRemote('achats', a); emit();
+  return a;
+}
+export function setAchatStatut(id, statut) {
+  const a = getAchat(id); if (!a) return;
+  a.statut = ACHAT_STATUTS.includes(statut) ? statut : a.statut;
+  persistLocal(); pushRemote('achats', a); emit();
+}
+export function deleteAchat(id) {
+  const a = getAchat(id); if (!a) return;
+  // retire du stock ce qui avait été ajouté par cet achat
+  (a.lignes || []).forEach((l) => { const p = getProduit(l.produit_id); if (p && p.stock !== null && p.stock !== undefined) { p.stock = Math.max(0, (Number(p.stock) || 0) - (Number(l.qte) || 0)); pushRemote('produits', p); } });
+  state.achats = state.achats.filter((x) => x.id !== id);
+  persistLocal(); delRemote('achats', id); emit();
+}
+export function achatsSummary() {
+  const now = new Date();
+  const moisKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const total = state.achats.reduce((s, a) => s + achatTotal(a), 0);
+  const mois = state.achats.filter((a) => (a.date || '').startsWith(moisKey)).reduce((s, a) => s + achatTotal(a), 0);
+  const credit = state.achats.filter((a) => a.statut === 'credit').reduce((s, a) => s + achatTotal(a), 0);
+  return { total, mois, nb: state.achats.length, credit };
+}
+export function getFournisseurs() {
+  return [...new Set(state.achats.map((a) => (a.fournisseur || '').trim()).filter(Boolean))].sort();
 }
 
 // ---------- Meilleur jour de la semaine (8 dernières semaines) ----------

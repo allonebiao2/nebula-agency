@@ -270,6 +270,55 @@ function shareReceiptWA(d) {
   const txt = `*REÇU — ${nom}*\n${new Date(d.date).toLocaleString('fr-FR')}\n\n${lines}\n\n*TOTAL : ${S.formatF(d.total)}*\nPayé en ${S.PAYMENT_LABELS[d.mode] || d.mode}${d.vendeur ? `\nVendeur : ${d.vendeur}` : ''}\n\nMerci de votre visite !`;
   window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
 }
+
+// ---------- Achats fournisseurs ----------
+function achatScope() { return $('#modal-root .modal__body'); }
+function newAchatLine() { return { produit_id: (S.getProduits()[0] || {}).id || '', qte: 1, cout_unitaire: '' }; }
+function readAchat(scope) {
+  const f = scope.querySelector('.achatform') || scope;
+  const lignes = [...f.querySelectorAll('.aline')].map((r) => ({
+    produit_id: r.querySelector('[data-al="produit_id"]').value,
+    qte: r.querySelector('[data-al="qte"]').value,
+    cout_unitaire: r.querySelector('[data-al="cout_unitaire"]').value,
+  })).filter((l) => l.produit_id && Number(l.qte) > 0);
+  return {
+    fournisseur: (f.querySelector('#ac-four') ? f.querySelector('#ac-four').value : '').trim(),
+    date: f.querySelector('#ac-date') ? f.querySelector('#ac-date').value : '',
+    statut: f.dataset.statut || 'paye',
+    note: f.querySelector('#ac-note') ? f.querySelector('#ac-note').value : '',
+    lignes,
+  };
+}
+function refreshAchatTotals(sc) {
+  const f = sc.querySelector('.achatform') || sc;
+  f.querySelectorAll('.aline').forEach((r) => {
+    const q = Number(r.querySelector('[data-al="qte"]').value) || 0;
+    const c = Number(r.querySelector('[data-al="cout_unitaire"]').value) || 0;
+    const cell = r.querySelector('[data-al-tot]'); if (cell) cell.textContent = S.formatF(q * c);
+  });
+  const tot = f.querySelector('#ac-tot'); if (tot) tot.innerHTML = UI.achatTotalsHTML(readAchat(sc).lignes);
+}
+function openAchatModal() {
+  if (!S.getProduits().length) { UI.toast('Ajoute d\'abord un produit', 'err'); return setScreen('reglages'); }
+  const a = { statut: 'paye', date: new Date().toISOString().slice(0, 10), lignes: [] };
+  UI.openModal(UI.modalShell('Nouvel achat', UI.achatFormFields(a),
+    `<button class="btn btn--ghost" data-action="close-modal">Annuler</button>
+     <button class="btn" data-action="save-achat">Enregistrer</button>`));
+  hydrateIcons($('#modal-root'));
+}
+function openAchatView(id) {
+  const a = S.getAchat(id); if (!a) return;
+  const lignes = (a.lignes || []).map((l) => { const p = S.getProduit(l.produit_id); return `<div class="aview__row"><span class="aview__nom">${UI.esc(p ? p.nom : 'Produit')}</span><span class="aview__q">${S.formatNombre(l.qte)} × ${S.formatF(l.cout_unitaire)}</span><span class="aview__m">${S.formatF((Number(l.qte) || 0) * (Number(l.cout_unitaire) || 0))}</span></div>`; }).join('');
+  const statutChips = S.ACHAT_STATUTS.map((st) => `<button class="modechip ${a.statut === st ? 'is-on' : ''}" data-action="ac-set-statut" data-id="${id}" data-st="${st}">${st === 'paye' ? 'Payé' : 'À crédit'}</button>`).join('');
+  UI.openModal(UI.modalShell(a.fournisseur || 'Achat',
+    `<p class="modal__lead">${UI.esc(a.date)} · Total <strong>${S.formatF(S.achatTotal(a))}</strong></p>
+     <div class="aview">${lignes}</div>
+     <div class="field"><label>Paiement</label><div class="modechips">${statutChips}</div></div>
+     ${a.note ? `<p class="modal__note">${UI.esc(a.note)}</p>` : ''}
+     <button class="btn btn--danger-ghost btn--sm" data-action="del-achat" data-id="${id}"><span data-icon="trash"></span> Supprimer cet achat</button>`,
+    `<button class="btn btn--ghost" data-action="close-modal">Fermer</button>`));
+  hydrateIcons($('#modal-root'));
+}
 function openStockModal(id) {
   const p = S.getProduit(id); if (!p) return;
   const s = S.getStockInfo(p);
@@ -884,6 +933,16 @@ document.addEventListener('click', (e) => {
     // vendeurs (liste légère)
     case 'add-vendeur': { const nom = ($('#rg-vend').value || '').trim(); if (!nom) return UI.toast('Entre un nom', 'err'); S.addVendeur(nom); UI.toast('Vendeur ajouté'); return; }
     case 'del-vendeur': { S.removeVendeur(el.dataset.nom); UI.toast('Vendeur retiré'); return; }
+
+    // achats fournisseurs
+    case 'ac-new': return openAchatModal();
+    case 'ac-open': return openAchatView(id);
+    case 'ac-add-ligne': { const sc = achatScope(); const d = readAchat(sc); d.lignes.push(newAchatLine()); const box = sc.querySelector('#ac-lignes'); box.innerHTML = UI.achatLignesHTML(d.lignes); hydrateIcons(box); refreshAchatTotals(sc); return; }
+    case 'ac-del-ligne': { const sc = achatScope(); const d = readAchat(sc); d.lignes.splice(Number(el.dataset.i), 1); if (!d.lignes.length) d.lignes.push(newAchatLine()); const box = sc.querySelector('#ac-lignes'); box.innerHTML = UI.achatLignesHTML(d.lignes); hydrateIcons(box); refreshAchatTotals(sc); return; }
+    case 'ac-statut': { const f = $('#modal-root .achatform'); if (f) { f.dataset.statut = el.dataset.st; f.querySelectorAll('[data-action="ac-statut"]').forEach((x) => x.classList.remove('is-on')); el.classList.add('is-on'); } return; }
+    case 'save-achat': { const d = readAchat(achatScope()); if (!d.lignes.length) return UI.toast('Ajoute au moins un produit', 'err'); S.addAchat(d); UI.closeModal(); UI.toast('Achat enregistré · stock mis à jour'); return; }
+    case 'ac-set-statut': S.setAchatStatut(id, el.dataset.st); return openAchatView(id);
+    case 'del-achat': return UI.confirmDialog({ title: "Supprimer l'achat", message: "L'achat sera supprimé et le stock ajusté en conséquence. Continuer ?", danger: true, okLabel: 'Supprimer' }, () => { S.deleteAchat(id); UI.closeModal(); UI.toast('Achat supprimé'); });
     case 'close-modal': return UI.closeModal();
     case 'confirm-ok': { const fn = $('#modal-root')._confirmOk; UI.closeModal(); if (fn) fn(); return; }
 
@@ -1002,6 +1061,8 @@ document.addEventListener('input', (e) => {
   } else if (el.closest && el.closest('.docform')) {
     // totaux facture/devis recalculés en direct à chaque frappe
     refreshDocTotals(el.closest('.docform'));
+  } else if (el.closest && el.closest('.achatform')) {
+    refreshAchatTotals(el.closest('.achatform'));
   }
 });
 // Assistant : Entrée = envoyer
@@ -1012,7 +1073,7 @@ document.addEventListener('keydown', (e) => {
 // (pour que la frappe remplace la valeur par défaut au lieu de s'y ajouter).
 document.addEventListener('focusin', (e) => {
   const el = e.target;
-  if (el && el.matches && el.matches('.docform input[type="number"]')) { try { el.select(); } catch (_) {} }
+  if (el && el.matches && el.matches('.docform input[type="number"], .achatform input[type="number"]')) { try { el.select(); } catch (_) {} }
 });
 
 // ---------- Ripple sur TOUS les boutons (onde depuis le point touché) ----------
