@@ -17,6 +17,8 @@ import {
   PLANS, getLicence, licenceEtat, TRIAL_DAYS, proAccess,
   getEquipe, ROLES, ROLE_LABELS, ROLE_DESCS, roleLabel,
   getAudit, getBoutiques, activeBoutiqueId, consolideBoutiques, relancesDues,
+  isDigital, getBusinessType, TARIF_TYPES, TARIF_LABELS, TARIF_UNITS, depenseCats,
+  getDepensesRecurrentes, coutsRecurrentsMensuels,
   formatF, formatNombre, MOIS_LONGS,
 } from './store.js';
 import { chartBeneficeMensuel, chartEvolution, miniSpark, progressRing, chartHero, chartDonut, sparklineRaw } from './charts.js';
@@ -86,7 +88,7 @@ export function navHTML(active) {
   const nb = notifications().count;
   return item('accueil', 'Accueil', 'home') + item('ventes', 'Ventes', 'ventes')
     + `<span class="nav__notch" aria-hidden="true"></span>`
-    + item('carnet', 'Carnet', 'users', nb) + item('stock', 'Stock', 'box');
+    + item('carnet', 'Carnet', 'users', nb) + item('stock', isDigital() ? 'Catalogue' : 'Stock', isDigital() ? 'spark' : 'box');
 }
 
 // Bouton flottant + speed-dial (Vente / Dépense)
@@ -132,8 +134,10 @@ export function sidebarHTML(active, cloud, openGroup) {
         <div class="side__subs">${kids}</div></div>`;
     }
     const badge = n.id === 'carnet' && nb ? `<span class="side__badge">${nb}</span>` : '';
+    const lbl = (n.id === 'stock' && isDigital()) ? 'Catalogue' : n.label;
+    const ic = (n.id === 'stock' && isDigital()) ? 'spark' : n.icon;
     return `<button class="side__item ${active === n.id ? 'is-active' : ''}" data-action="go" data-screen="${n.id}">
-      <span class="side__ic" data-icon="${n.icon}"></span><span class="side__lbl">${n.label}</span>${badge}</button>`;
+      <span class="side__ic" data-icon="${ic}"></span><span class="side__lbl">${esc(lbl)}</span>${badge}</button>`;
   }).join('');
   const acct = cloud.configured ? (cloud.user ? `<span class="side__acct-t"><strong>${esc(cloud.user.email.split('@')[0])}</strong><small>Synchronisé</small></span>` : `<span class="side__acct-t"><strong>Non connecté</strong><small>Mode local</small></span>`) : `<span class="side__acct-t"><strong>Mode local</strong><small>Cet appareil</small></span>`;
   const acctAction = cloud.configured && cloud.user ? 'logout' : (cloud.configured ? 'open-auth' : 'cloud-info');
@@ -649,11 +653,28 @@ function dhRow(l) {
   </li>`;
 }
 
+// Panneau « Abonnements & outils » (dépenses récurrentes → coûts fixes mensuels).
+function abonnementsPanelHTML() {
+  const rec = getDepensesRecurrentes();
+  if (!rec.length) return '';
+  const rows = rec.map((d) => `<li class="abrow">
+    <div class="abrow__id"><strong>${esc(d.libelle || d.categorie)}</strong><small>${esc(d.categorie)} · ${d.frequence === 'annuel' ? 'chaque année' : 'chaque mois'}</small></div>
+    <span class="abrow__amt">${formatF(d.montant)}<small>${d.frequence === 'annuel' ? '/an' : '/mois'}</small></span>
+    <button class="hvrow__del" data-action="del-depense" data-id="${d.id}" aria-label="Supprimer"><span data-icon="trash"></span></button>
+  </li>`).join('');
+  return `<article class="panel">
+    <div class="panel__head"><h2>Abonnements &amp; outils</h2><span class="panel__sub">coûts récurrents</span></div>
+    ${zhelp('Tes abonnements et outils qui reviennent (Supabase, hébergement, Canva…). Boussole les compte automatiquement dans tes coûts fixes chaque mois.')}
+    <div class="abtot"><span>Coût mensuel de tes outils</span><strong>${formatF(coutsRecurrentsMensuels())}<small> /mois</small></strong></div>
+    <ul class="ablist">${rows}</ul>
+  </article>`;
+}
+
 export function viewDepensesHTML(filter = { preset: 'mois', from: '', to: '', categorie: '', q: '' }) {
   const H = historiqueDepenses({ from: filter.from, to: filter.to, categorie: filter.categorie, q: filter.q });
   const chip = (id, label) => `<button class="vchip ${filter.preset === id ? 'is-on' : ''}" data-action="df-preset" data-preset="${id}">${label}</button>`;
   const catOpts = ['<option value="">Toutes catégories</option>']
-    .concat(DEPENSE_CATS.map((c) => `<option value="${esc(c)}" ${filter.categorie === c ? 'selected' : ''}>${esc(c)}</option>`)).join('');
+    .concat(depenseCats().map((c) => `<option value="${esc(c)}" ${filter.categorie === c ? 'selected' : ''}>${esc(c)}</option>`)).join('');
   const breakdown = H.parCategorie.length ? `<div class="catbreak">${H.parCategorie.map((c) => `
       <div class="catbar">
         <div class="catbar__top"><span class="catbar__name"><span class="catbar__dot" style="background:${catColor(c.categorie)}"></span>${esc(c.categorie)}</span>
@@ -677,6 +698,7 @@ export function viewDepensesHTML(filter = { preset: 'mois', from: '', to: '', ca
         <span class="depsum__nb">${formatNombre(H.nb)} dépense${H.nb > 1 ? 's' : ''}</span></div>
       <button class="btn btn--danger" data-action="add-depense"><span data-icon="minus"></span> Ajouter une dépense</button>
     </div>
+    ${abonnementsPanelHTML()}
     ${breakdown ? `<article class="panel"><div class="panel__head"><h2>Par catégorie</h2><span class="panel__sub">${esc(rangeLabel(filter))}</span></div>${breakdown}</article>` : ''}
     <article class="panel vhist">
       <div class="panel__head"><h2>Historique</h2></div>
@@ -1204,9 +1226,10 @@ export function objectifsCardHTML() {
 // ============ CAISSE (panier POS) + REÇU ============
 export function caisseHTML(cart, mode, vendeur) {
   const prods = getProduits();
+  const dig = isDigital();
   const tiles = prods.length
-    ? prods.map((p) => `<button class="qsell caisse__prod" data-action="cart-add" data-id="${p.id}"><span class="qsell__nom">${esc(p.nom)}</span><span class="qsell__price">${formatF(p.prix_vente)}</span></button>`).join('')
-    : '<p class="modal__note">Aucun produit. Ajoute-en dans Réglages.</p>';
+    ? prods.map((p) => `<button class="qsell caisse__prod" data-action="cart-add" data-id="${p.id}"><span class="qsell__nom">${esc(p.nom)}</span><span class="qsell__price">${formatF(p.prix_vente)}${dig ? esc(TARIF_UNITS[p.tarif_type] || '') : ''}</span></button>`).join('')
+    : `<p class="modal__note">${dig ? 'Aucune prestation. Ajoute-en dans le catalogue.' : 'Aucun produit. Ajoute-en dans Réglages.'}</p>`;
   const prixOf = (it) => (it.prix_unitaire != null ? Number(it.prix_unitaire) : ((getProduit(it.produit_id) || {}).prix_vente || 0));
   const lines = cart.map((it) => {
     const p = getProduit(it.produit_id); if (!p) return '';
@@ -1228,7 +1251,8 @@ export function caisseHTML(cart, mode, vendeur) {
       <select id="cs-vend" class="input" data-action="cart-vendeur"><option value="">— Personne —</option>${vends.map((v) => `<option value="${esc(v)}" ${vendeur === v ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select></div>` : '';
   return `<div class="caisse">
     <div class="caisse__prods">${tiles}</div>
-    ${zhelp('Touche un produit pour l’ajouter au panier. Ajuste les quantités, choisis le mode de paiement, puis « Encaisser ».')}
+    ${dig ? '<button class="btn btn--ghost caisse__libre" data-action="vente-libre"><span data-icon="plus"></span> Montant libre / acompte de projet</button>' : ''}
+    ${zhelp(dig ? 'Touche une prestation pour l’ajouter, ou « Montant libre » pour facturer un acompte de projet. Choisis le paiement, puis « Encaisser ».' : 'Touche un produit pour l’ajouter au panier. Ajuste les quantités, choisis le mode de paiement, puis « Encaisser ».')}
     <div class="caisse__cart">${cart.length ? lines : '<p class="cart-empty">Panier vide — touche un produit ci-dessus.</p>'}</div>
     <div class="caisse__pay">
       <span class="caisse__paylbl">Mode de paiement</span>
@@ -1279,6 +1303,7 @@ function _todayYmd() { const d = new Date(); return `${d.getFullYear()}-${String
 const STOCK_LABEL = { rupture: 'Rupture', bas: 'Stock bas', ok: 'En stock', 'non-suivi': 'Non suivi' };
 export function viewStockHTML(filter = {}) {
   const prods = getProduits();
+  if (isDigital()) return catalogueHTML(prods, filter);
   const r = stockResume();
   if (!prods.length) {
     return `<section class="view">${sectionTitle('Stock', 'Inventaire & alertes')}
@@ -1305,6 +1330,27 @@ export function viewStockHTML(filter = {}) {
       <div class="vsearch"><span class="vsearch__ic" data-icon="search"></span><input class="input vsearch__in" placeholder="Rechercher un produit" value="${esc(filter.q || '')}" data-action="stock-search" aria-label="Rechercher un produit"></div>
     </div>
     <ul class="stocklist">${rows}</ul>
+  </section>`;
+}
+// Catalogue (mode Services & digital) : prestations/produits, prix + type de tarif, pas de stock.
+function catalogueHTML(prods, filter) {
+  const q = (filter.q || '').trim().toLowerCase();
+  const list = prods.filter((p) => !q || p.nom.toLowerCase().includes(q));
+  const rows = list.length ? list.map((p) => {
+    const tt = TARIF_TYPES.includes(p.tarif_type) ? p.tarif_type : 'fixe';
+    return `<li class="catrow" data-action="edit-produit" data-id="${p.id}">
+      <span class="catrow__ic" data-icon="spark"></span>
+      <div class="catrow__id"><strong>${esc(p.nom)}</strong><small>${TARIF_LABELS[tt]}</small></div>
+      <span class="catrow__price">${formatF(p.prix_vente)}${esc(TARIF_UNITS[tt] || '')}</span>
+      <span class="catrow__chev" data-icon="chevron"></span>
+    </li>`;
+  }).join('') : `<li class="strow strow--empty">Aucune prestation. Ajoute la première ci-dessous.</li>`;
+  return `<section class="view">
+    ${sectionTitle('Catalogue', 'Prestations & produits digitaux')}
+    ${zhelp('Ton catalogue de prestations et produits digitaux, avec leur prix (fixe, taux horaire ou par projet). Touche une ligne pour la modifier. Pas de stock à gérer.')}
+    <div class="vfilters"><div class="vsearch"><span class="vsearch__ic" data-icon="search"></span><input class="input vsearch__in" placeholder="Rechercher une prestation" value="${esc(filter.q || '')}" data-action="stock-search" aria-label="Rechercher"></div></div>
+    <button class="btn" data-action="add-produit"><span data-icon="plus"></span> Ajouter une prestation / produit</button>
+    <ul class="catlist">${rows}</ul>
   </section>`;
 }
 function stockRowHTML(p) {
@@ -1771,7 +1817,12 @@ export function viewReglagesHTML(cloud) {
     ${sectionTitle('Réglages', 'Activité, coûts, sauvegarde')}
     <div class="panel">
       <div class="panel__head"><h2>Activité</h2></div>
-      ${zhelp('Le nom de ton commerce et ta monnaie. Le nom apparaît en haut de l’appli et sur tes factures et reçus.')}
+      ${zhelp('Ton type d’activité adapte toute l’appli (stock ou catalogue de prestations). Ton nom et ta monnaie apparaissent en haut, sur tes factures et reçus.')}
+      <div class="field"><label>Type d'activité</label>
+        <div class="seg seg--2">
+          <button class="seg__b seg__b--c ${getBusinessType() === 'physique' ? 'is-on' : ''}" data-action="set-biz" data-v="physique"><span data-icon="box"></span> Produits physiques<small>boutique, commerce</small></button>
+          <button class="seg__b seg__b--c ${getBusinessType() === 'digital' ? 'is-on' : ''}" data-action="set-biz" data-v="digital"><span data-icon="spark"></span> Services &amp; digital<small>dev, design, agence</small></button>
+        </div></div>
       <div class="field"><label for="rg-nom">Nom de l'activité</label>
         <input id="rg-nom" class="input" value="${esc(st.profil.nom_activite)}" data-action="save-nom" placeholder="Ex. Yaourt Maman Adjo"></div>
       <div class="field"><label for="rg-devise">Devise</label>
@@ -1841,19 +1892,28 @@ export function viewConfigHTML(w) {
   const dots = [1, 2, 3].map((n) => `<span class="dot ${n === step ? 'is-active' : ''} ${n < step ? 'is-done' : ''}"></span>`).join('');
   let body = '';
   if (step === 1) {
+    const bt = getBusinessType();
     body = `<div class="wz__head"><span class="wz__mark" data-icon="compass"></span>
-      <h2>Bienvenue</h2><p>Configure ton activité une fois. Ensuite, vendre et voir tes bénéfices se fait en un clic.</p></div>
+      <h2>Bienvenue</h2><p>Configure ton activité une fois. Boussole s'adapte à TON métier.</p></div>
+      <div class="field"><label>Quel est ton type d'activité&nbsp;?</label>
+        <div class="bizpick">
+          <button class="bizcard ${bt === 'physique' ? 'is-on' : ''}" data-action="wz-biz" data-v="physique">
+            <span class="bizcard__ic" data-icon="box"></span><strong>Produits physiques</strong><small>Boutique, commerce, alimentation…</small></button>
+          <button class="bizcard ${bt === 'digital' ? 'is-on' : ''}" data-action="wz-biz" data-v="digital">
+            <span class="bizcard__ic" data-icon="spark"></span><strong>Services &amp; digital</strong><small>Développeur, designer, agence, infopreneur…</small></button>
+        </div></div>
       <div class="field"><label for="wz-nom">Nom de ton activité</label>
-        <input id="wz-nom" class="input input--lg" value="${esc(w.nom || '')}" placeholder="Ex. Yaourt Maman Adjo" autocomplete="off"></div>
-      <div class="wz__hint">Tu vends quoi&nbsp;? Peu importe : nourriture, produits importés, biens immobiliers… Boussole s'adapte.</div>`;
+        <input id="wz-nom" class="input input--lg" value="${esc(w.nom || '')}" placeholder="${bt === 'digital' ? 'Ex. Studio Koffi' : 'Ex. Yaourt Maman Adjo'}" autocomplete="off"></div>`;
   } else if (step === 2) {
-    body = `<div class="wz__head"><span class="wz__mark" data-icon="box"></span>
-      <h2>Ton premier produit</h2><p>Renseigne TOUS ses coûts. C'est ce qui rend le calcul du bénéfice juste.</p></div>
-      ${productFormFields(w.produit || { modele: 'transformation', couts: [] })}
-      <div class="wz__hint">Tu pourras ajouter d'autres produits plus tard, dans Réglages.</div>`;
+    const dig = isDigital();
+    body = `<div class="wz__head"><span class="wz__mark" data-icon="${dig ? 'spark' : 'box'}"></span>
+      <h2>${dig ? 'Ta première prestation' : 'Ton premier produit'}</h2><p>${dig ? 'Une prestation ou un produit digital, avec son prix. Ajoute ses coûts si tu en as.' : 'Renseigne TOUS ses coûts. C\'est ce qui rend le calcul du bénéfice juste.'}</p></div>
+      ${productFormFields(w.produit || { modele: dig ? 'revente' : 'transformation', couts: [], tarif_type: 'fixe' })}
+      <div class="wz__hint">Tu pourras en ajouter d'autres plus tard, dans Réglages.</div>`;
   } else {
+    const dig = isDigital();
     body = `<div class="wz__head"><span class="wz__mark" data-icon="bolt"></span>
-      <h2>Charges fixes mensuelles</h2><p>Les dépenses qui tombent chaque mois quel que soit le nombre de ventes (électricité, internet, loyer…).</p></div>
+      <h2>${dig ? 'Tes coûts fixes & outils' : 'Charges fixes mensuelles'}</h2><p>${dig ? 'Tes abonnements et charges qui reviennent chaque mois (Supabase, hébergement, loyer…).' : 'Les dépenses qui tombent chaque mois quel que soit le nombre de ventes (électricité, internet, loyer…).'}</p></div>
       <div id="wz-charges">${chargeRowsHTML(w.charges || defaultCharges())}</div>
       <button class="btn btn--ghost btn--sm" data-action="wz-add-charge"><span data-icon="plus"></span> Ajouter une charge</button>`;
   }
@@ -1881,6 +1941,22 @@ export function chargeRowsHTML(rows) {
 
 // Champs d'un produit (utilisé dans wizard + modale) — modèle + coûts dynamiques.
 export function productFormFields(p) {
+  if (isDigital()) {
+    const tt = TARIF_TYPES.includes(p.tarif_type) ? p.tarif_type : 'fixe';
+    const couts = (p.couts && p.couts.length) ? p.couts : [{ libelle: '', montant: '' }];
+    const prixLbl = tt === 'horaire' ? 'Taux horaire' : (tt === 'projet' ? 'Prix par projet' : 'Prix de la prestation');
+    return `
+      <div class="field"><label for="pf-nom">Nom de la prestation / produit</label>
+        <input id="pf-nom" class="input" value="${esc(p.nom || '')}" placeholder="Ex. Développement mobile, Template Notion…" autocomplete="off"></div>
+      <div class="field"><label>Type de tarif</label>
+        <div class="seg seg--3">${TARIF_TYPES.map((t) => `<button type="button" class="seg__b seg__b--c ${tt === t ? 'is-on' : ''}" data-action="pf-tarif" data-tarif="${t}">${TARIF_LABELS[t]}</button>`).join('')}</div></div>
+      <div class="field"><label for="pf-prix">${prixLbl}</label>
+        <div class="inwrap"><input id="pf-prix" class="input" type="number" inputmode="numeric" value="${esc(p.prix_vente ?? '')}" placeholder="0"><span class="inwrap__cur">F${TARIF_UNITS[tt] || ''}</span></div></div>
+      <div class="field"><label>Coûts éventuels <small class="lbl-help">sous-traitance, outils dédiés…</small></label>
+        <div id="pf-couts">${coutRowsHTML(couts)}</div>
+        <button type="button" class="btn btn--ghost btn--sm" data-action="pf-add-cout"><span data-icon="plus"></span> Ajouter un coût</button>
+      </div>`;
+  }
   const suggestions = p.modele === 'revente'
     ? ['Prix d\'achat', 'Transport', 'Stockage']
     : ['Matières premières', 'Emballage'];

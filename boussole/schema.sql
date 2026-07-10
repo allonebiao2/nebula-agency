@@ -27,6 +27,10 @@ alter table public.profils add column if not exists wa_templates jsonb default '
 alter table public.profils add column if not exists proprietaire text default '';          -- nom du propriétaire
 alter table public.profils add column if not exists equipe    jsonb default '[]'::jsonb;   -- équipe {nom,role,actif,pin} (droits vendeurs)
 alter table public.profils add column if not exists licence   jsonb default '{}'::jsonb;   -- abonnement {plan,statut,echeance,cle,essai_debut}
+alter table public.profils add column if not exists business_type text default 'physique'; -- 'physique' | 'digital' (adaptatif)
+alter table public.produits add column if not exists tarif_type text default 'fixe';        -- prestation : fixe | horaire | projet
+alter table public.depenses add column if not exists recurrent boolean default false;       -- dépense récurrente (abonnement)
+alter table public.depenses add column if not exists frequence text default '';             -- 'mensuel' | 'annuel'
 
 -- ============================================================
 --  LICENCES — clés à USAGE UNIQUE (validation en ligne) + demandes de paiement

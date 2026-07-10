@@ -584,6 +584,15 @@ function openReceiptModal(ref) {
     `<button class="btn btn--ghost" data-action="close-modal">Fermer</button>`));
   hydrateIcons($('#modal-root'));
 }
+function openVenteLibreModal() {
+  UI.openModal(UI.modalShell('Montant libre / acompte',
+    `${UI.zhelp('Facture un service ou un acompte de projet : entre le montant et une description. Pratique quand ce n’est pas dans ton catalogue.')}
+     <div class="field"><label for="vl-amt">Montant</label><div class="inwrap"><input id="vl-amt" class="input input--lg" type="number" inputmode="numeric" placeholder="0"><span class="inwrap__cur">F</span></div></div>
+     <div class="field"><label for="vl-desc">Description</label><input id="vl-desc" class="input" placeholder="Ex. Acompte site web, consultation…" autocomplete="off"></div>`,
+    `<button class="btn btn--ghost" data-action="close-modal">Annuler</button>
+     <button class="btn" data-action="vl-save"><span data-icon="check"></span> Encaisser</button>`));
+  hydrateIcons($('#modal-root'));
+}
 function printReceipt(d, fmt) { document.getElementById('print-area').innerHTML = UI.receiptHTML(d, fmt); window.print(); }
 function shareReceiptWA(d) {
   const nom = S.getState().profil.nom_activite || '';
@@ -782,7 +791,8 @@ function readProduct(scope) {
   const q = (sel) => scope.querySelector(sel);
   return {
     nom: (q('#pf-nom')?.value || '').trim(),
-    modele: scope.querySelector('.seg__b.is-on')?.dataset.modele || 'transformation',
+    modele: scope.querySelector('.seg__b.is-on[data-modele]')?.dataset.modele || (S.isDigital() ? 'revente' : 'transformation'),
+    tarif_type: scope.querySelector('.seg__b.is-on[data-tarif]')?.dataset.tarif || 'fixe',
     prix_vente: q('#pf-prix')?.value || 0,
     couts: [...scope.querySelectorAll('#pf-couts .crow')].map((r) => ({
       libelle: (r.querySelector('[data-pf="libelle"]').value || '').trim(),
@@ -867,14 +877,19 @@ function depensesRecentesHTML() {
   return `<div class="field"><label>Dépenses récentes</label><ul class="deplist">${rows}</ul></div>`;
 }
 function openDepenseModal() {
-  const cats = S.DEPENSE_CATS.map((c, i) => `<button type="button" class="catchip ${i === 0 ? 'is-on' : ''}" data-action="dep-cat" data-cat="${UI.esc(c)}">${UI.esc(c)}</button>`).join('');
+  const cats = S.depenseCats().map((c, i) => `<button type="button" class="catchip ${i === 0 ? 'is-on' : ''}" data-action="dep-cat" data-cat="${UI.esc(c)}">${UI.esc(c)}</button>`).join('');
   const today = new Date().toISOString().slice(0, 10);
+  const dig = S.isDigital();
   UI.openModal(UI.modalShell('Ajouter une dépense',
     `<div class="field"><label for="dp-amt">Montant</label>
        <div class="inwrap"><input id="dp-amt" class="input input--lg" type="number" inputmode="numeric" placeholder="0"><span class="inwrap__cur">F</span></div></div>
      <div class="field"><label>Catégorie</label><div class="catchips" id="dp-cats">${cats}</div></div>
      <div class="field"><label for="dp-lib">Libellé (optionnel)</label>
-       <input id="dp-lib" class="input" placeholder="Ex. Taxi marché, sacs, facture SBEE"></div>
+       <input id="dp-lib" class="input" placeholder="${dig ? 'Ex. Abonnement Supabase, GitHub, Canva' : 'Ex. Taxi marché, sacs, facture SBEE'}"></div>
+     <label class="switchrow"><input type="checkbox" id="dp-rec" data-action="dep-rec"> Dépense récurrente (abonnement / outil)</label>
+     <div class="field" id="dp-freq-wrap" style="display:none"><label for="dp-freq">Fréquence</label>
+       <select id="dp-freq" class="input"><option value="mensuel">Chaque mois</option><option value="annuel">Chaque année</option></select>
+       <p class="fieldhint">Compté automatiquement dans tes coûts fixes mensuels.</p></div>
      <div class="field"><label for="dp-date">Date</label>
        <input id="dp-date" class="input" type="date" value="${today}"></div>
      ${depensesRecentesHTML()}`,
@@ -1255,6 +1270,7 @@ document.addEventListener('click', (e) => {
     // dépenses & caisse
     case 'add-depense': return openDepenseModal();
     case 'dep-cat': { const box = $('#dp-cats'); if (box) box.querySelectorAll('.catchip').forEach((c) => c.classList.toggle('is-on', c === el)); return; }
+    case 'dep-rec': { const w = $('#dp-freq-wrap'); if (w) w.style.display = el.checked ? '' : 'none'; return; }
     case 'save-depense': {
       const amt = Number($('#dp-amt').value) || 0;
       if (amt <= 0) return UI.toast('Entre un montant', 'err');
@@ -1262,8 +1278,10 @@ document.addEventListener('click', (e) => {
       const cat = on ? on.dataset.cat : 'Divers';
       const lib = ($('#dp-lib').value || '').trim();
       const d = $('#dp-date').value;
-      S.addDepense({ libelle: lib, categorie: cat, montant: amt, date: d ? new Date(d).toISOString() : undefined });
-      UI.closeModal(); UI.toast('Dépense enregistrée'); return;
+      const rec = $('#dp-rec') && $('#dp-rec').checked;
+      const freq = ($('#dp-freq') || {}).value || 'mensuel';
+      S.addDepense({ libelle: lib, categorie: cat, montant: amt, date: d ? new Date(d).toISOString() : undefined, recurrent: rec, frequence: freq });
+      UI.closeModal(); UI.toast(rec ? 'Abonnement enregistré' : 'Dépense enregistrée'); return;
     }
     case 'del-depense': { S.deleteDepense(id); const row = el.closest('.deprow'); if (row) row.remove(); UI.toast('Dépense supprimée'); return; }
     case 'edit-caisse': return openCaisseModal();
@@ -1445,6 +1463,16 @@ document.addEventListener('click', (e) => {
 
     // product form (partagé wizard/modale)
     case 'pf-modele': { const sc = productScope(el); const p = readProduct(sc); p.modele = el.dataset.modele; return reRenderProduct(sc, p); }
+    case 'pf-tarif': { const sc = productScope(el); const p = readProduct(sc); p.tarif_type = el.dataset.tarif; return reRenderProduct(sc, p); }
+    case 'wz-biz': S.setBusinessType(el.dataset.v); if (wizard) wizard.produit = null; return render();
+    case 'set-biz': S.setBusinessType(el.dataset.v); refreshReglages(); return UI.toast(el.dataset.v === 'digital' ? 'Mode Services & digital' : 'Mode Produits physiques');
+    case 'vente-libre': return openVenteLibreModal();
+    case 'vl-save': {
+      const amt = Number((($('#vl-amt') || {}).value)) || 0;
+      if (amt <= 0) return UI.toast('Entre un montant', 'err');
+      const v = S.addVenteLibre({ montant: amt, libelle: (($('#vl-desc') || {}).value || '').trim(), mode: cartMode, vendeur: cartVendeur });
+      UI.closeModal(); openReceiptModal(v.id); return;
+    }
     case 'pf-add-cout': { const sc = productScope(el); const p = readProduct(sc); p.couts.push({ libelle: '', montant: '' }); return reRenderProduct(sc, p); }
     case 'pf-del-cout': { const sc = productScope(el); const p = readProduct(sc); p.couts.splice(Number(el.dataset.i), 1); return reRenderProduct(sc, p); }
 

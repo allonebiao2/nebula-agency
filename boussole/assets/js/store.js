@@ -45,7 +45,21 @@ export function getAudit(n = 150) { return [...(state.audit || [])].reverse().sl
 // Catégories de dépenses. « Réassort / Stock » = achat de marchandise : sort de la caisse
 // mais N'EST PAS une charge (le coût passe déjà par la marge des produits) -> exclu du bénéfice.
 export const DEPENSE_CATS = ['Réassort / Stock', 'Transport', 'Loyer', 'Salaires', 'Factures', 'Divers'];
+// Catégories orientées « services & digital » (outils, abonnements…)
+export const DEPENSE_CATS_DIGITAL = ['Abonnements & outils', 'Sous-traitance', 'Marketing & pub', 'Matériel', 'Transport', 'Factures', 'Divers'];
 export const RESTOCK_CAT = 'Réassort / Stock';
+
+// ---------- Type d'activité (adaptatif) ----------
+// 'physique' = boutique/commerce (stock, quantités) · 'digital' = services & produits digitaux (catalogue, prestations).
+export const BUSINESS_TYPES = ['physique', 'digital'];
+export function getBusinessType() { return state.profil.business_type === 'digital' ? 'digital' : 'physique'; }
+export function isDigital() { return getBusinessType() === 'digital'; }
+export function setBusinessType(t) { setProfil({ business_type: BUSINESS_TYPES.includes(t) ? t : 'physique' }); }
+export function depenseCats() { return isDigital() ? DEPENSE_CATS_DIGITAL : DEPENSE_CATS; }
+// Type de tarif d'une prestation / produit digital.
+export const TARIF_TYPES = ['fixe', 'horaire', 'projet'];
+export const TARIF_LABELS = { fixe: 'Prix fixe', horaire: 'Taux horaire', projet: 'Par projet' };
+export const TARIF_UNITS = { fixe: '', horaire: '/h', projet: '/projet' };
 
 // Modes de paiement d'une vente (caisse)
 export const PAYMENT_MODES = ['especes', 'momo', 'carte', 'credit', 'autre'];
@@ -178,12 +192,15 @@ export function setProfil(patch) {
 }
 
 // ---------- Mutations : produits ----------
-export function addProduit({ nom, modele, prix_vente = 0, couts = [], stock = null, seuil = 0 }) {
+export function addProduit({ nom, modele, prix_vente = 0, couts = [], stock = null, seuil = 0, tarif_type = 'fixe' }) {
+  const digital = isDigital();
   const p = {
     id: uid(), nom: nom.trim(), modele, prix_vente: Number(prix_vente) || 0,
     couts: couts.map((c) => ({ id: uid(), libelle: c.libelle, montant: Number(c.montant) || 0 })),
-    stock: (stock === null || stock === '') ? null : Math.max(0, Number(stock) || 0),  // null = non suivi
-    seuil: Number(seuil) || 0,                                                          // seuil d'alerte stock bas
+    // Digital = prestation/produit digital : jamais de stock physique.
+    stock: digital ? null : ((stock === null || stock === '') ? null : Math.max(0, Number(stock) || 0)),
+    seuil: digital ? 0 : (Number(seuil) || 0),
+    tarif_type: TARIF_TYPES.includes(tarif_type) ? tarif_type : 'fixe',
     archive: false, created_at: nowISO(),
   };
   state.produits.push(p);
@@ -225,14 +242,23 @@ export function deleteChargeFixe(id) {
 
 // ---------- Mutations : dépenses (sorties d'argent) ----------
 export function getDepenses() { return state.depenses; }
-export function addDepense({ libelle, categorie, montant, date }) {
+export function addDepense({ libelle, categorie, montant, date, recurrent = false, frequence = 'mensuel' }) {
+  const cats = depenseCats();
   const d = {
-    id: uid(), libelle: (libelle || '').trim(), categorie: DEPENSE_CATS.includes(categorie) ? categorie : 'Divers',
-    montant: Number(montant) || 0, date: date || nowISO(), created_at: nowISO(),
+    id: uid(), libelle: (libelle || '').trim(), categorie: cats.includes(categorie) ? categorie : cats[cats.length - 1],
+    montant: Number(montant) || 0, date: date || nowISO(),
+    recurrent: !!recurrent, frequence: recurrent ? (frequence === 'annuel' ? 'annuel' : 'mensuel') : '',
+    created_at: nowISO(),
   };
   state.depenses.push(d);
   persistLocal(); pushRemote('depenses', d); emit();
   return d;
+}
+// Dépenses récurrentes (abonnements & outils) = engagements mensuels, comptés dans les
+// coûts fixes (pas dans les dépenses ponctuelles ni la caisse -> zéro double comptage).
+export function getDepensesRecurrentes() { return state.depenses.filter((d) => d.recurrent); }
+export function coutsRecurrentsMensuels() {
+  return state.depenses.filter((d) => d.recurrent).reduce((s, d) => s + (d.frequence === 'annuel' ? (Number(d.montant) || 0) / 12 : (Number(d.montant) || 0)), 0);
 }
 export function updateDepense(id, patch) {
   const d = state.depenses.find((x) => x.id === id); if (!d) return;
@@ -272,7 +298,7 @@ export function deleteVente(id) {
   const v = state.ventes.find((x) => x.id === id);
   if (v) {
     const p = getProduit(v.produit_id);
-    logAudit('suppression', 'vente', `${p ? p.nom : 'Produit'} · ${v.qte}×${formatF(v.prix_unitaire)} = ${formatF((v.qte || 0) * (v.prix_unitaire || 0))}`);
+    logAudit('suppression', 'vente', `${p ? p.nom : (v.libelle || 'Prestation')} · ${v.qte}×${formatF(v.prix_unitaire)} = ${formatF((v.qte || 0) * (v.prix_unitaire || 0))}`);
     if (p && p.stock !== null && p.stock !== undefined) { p.stock = (Number(p.stock) || 0) + (Number(v.qte) || 0); pushRemote('produits', p); }
   }
   state.ventes = state.ventes.filter((x) => x.id !== id);
@@ -288,15 +314,25 @@ export function encaisserPanier(items, { mode = 'especes', vendeur = '', date } 
   list.forEach((it) => addVente({ produit_id: it.produit_id, qte: it.qte, prix_unitaire: it.prix_unitaire, mode, vendeur, ticket, date: d }));
   return ticket;
 }
+// Facturation d'un montant libre / acompte (services & digital) — sans produit du catalogue.
+export function addVenteLibre({ montant, libelle, mode = 'especes', vendeur = '' }) {
+  const v = {
+    id: uid(), produit_id: '', libelle: (libelle || 'Prestation').trim(),
+    qte: 1, prix_unitaire: Number(montant) || 0, cout_unitaire: 0,
+    mode: PAYMENT_MODES.includes(mode) ? mode : 'especes', vendeur: (vendeur || '').trim(), ticket: '',
+    date: nowISO(), created_at: nowISO(),
+  };
+  state.ventes.push(v); persistLocal(); pushRemote('ventes', v); emit(); return v;
+}
 export function ticketVentes(ticket) {
   return state.ventes.filter((v) => v.ticket && v.ticket === ticket)
-    .map((v) => { const p = getProduit(v.produit_id); return { ...v, nom: p ? p.nom : 'Produit' }; });
+    .map((v) => { const p = getProduit(v.produit_id); return { ...v, nom: p ? p.nom : (v.libelle || 'Prestation') }; });
 }
 // Données d'un reçu de caisse à partir d'une vente (regroupe le ticket si présent)
 export function receiptData(venteId) {
   const v = state.ventes.find((x) => x.id === venteId); if (!v) return null;
   const lignes = v.ticket ? ticketVentes(v.ticket)
-    : [{ ...v, nom: (getProduit(v.produit_id) || {}).nom || 'Produit' }];
+    : [{ ...v, nom: (getProduit(v.produit_id) || {}).nom || v.libelle || 'Prestation' }];
   const total = lignes.reduce((s, l) => s + (Number(l.qte) || 0) * (Number(l.prix_unitaire) || 0), 0);
   return { lignes, total, mode: v.mode || 'especes', vendeur: v.vendeur || '', date: v.date, ref: v.ticket || v.id };
 }
@@ -482,7 +518,8 @@ export function coutRevient(produit) {
 }
 export function margeUnitaire(produit) { return (produit.prix_vente || 0) - coutRevient(produit); }
 export function chargesMensuellesTotal() {
-  return state.charges_fixes.reduce((s, c) => s + (Number(c.montant) || 0), 0);
+  // charges fixes déclarées + abonnements/outils récurrents (normalisés au mois)
+  return state.charges_fixes.reduce((s, c) => s + (Number(c.montant) || 0), 0) + coutsRecurrentsMensuels();
 }
 
 export function monthKey(dateISO) { return String(dateISO).slice(0, 7); } // 'YYYY-MM'
@@ -754,7 +791,8 @@ function ventesEntre(start, end) {
 }
 function depensesEntre(start, end) {
   const a = start.getTime(), b = end.getTime();
-  return state.depenses.filter((d) => { const t = new Date(d.date).getTime(); return t >= a && t < b; });
+  // exclut les récurrents (comptés comme charges mensuelles, pas comme dépenses ponctuelles)
+  return state.depenses.filter((d) => !d.recurrent && (() => { const t = new Date(d.date).getTime(); return t >= a && t < b; })());
 }
 function sommeDepenses(list) { return list.reduce((s, d) => s + (Number(d.montant) || 0), 0); }
 // dépenses d'exploitation (hors réassort/stock) : celles qui rognent le bénéfice
@@ -911,7 +949,7 @@ export function setObjectif(v) { setProfil({ objectif_benefice: Math.max(0, Math
 export function soldeCaisse() {
   const encaisse = state.ventes.reduce((s, v) => s + (v.qte || 0) * (v.prix_unitaire || 0), 0);
   const achats = state.achats.filter((a) => a.statut === 'paye').reduce((s, a) => s + achatTotal(a), 0);
-  return getSoldeInitial() + encaisse - sommeDepenses(state.depenses) - achats;
+  return getSoldeInitial() + encaisse - sommeDepenses(state.depenses.filter((d) => !d.recurrent)) - achats;
 }
 // Résumé d'AUJOURD'HUI (toujours le jour courant, indépendant de la période choisie).
 export function resumeJour() {
@@ -946,7 +984,7 @@ export function historiqueVentes({ from = '', to = '', produitId = '', q = '', m
   }).map((v) => {
     const p = getProduit(v.produit_id);
     return {
-      id: v.id, produit_id: v.produit_id, nom: p ? p.nom : 'Produit supprimé', modele: p ? p.modele : '',
+      id: v.id, produit_id: v.produit_id, nom: p ? p.nom : (v.libelle || 'Produit supprimé'), modele: p ? p.modele : '',
       date: v.date, qte: v.qte, prix_unitaire: v.prix_unitaire, mode: v.mode || 'especes', vendeur: v.vendeur || '', ticket: v.ticket || '',
       total: (v.qte || 0) * (v.prix_unitaire || 0), marge: (v.qte || 0) * ((v.prix_unitaire || 0) - (v.cout_unitaire || 0)),
     };
@@ -973,6 +1011,7 @@ export function historiqueDepenses({ from = '', to = '', categorie = '', q = '' 
   const toT = to ? new Date(to + 'T23:59:59.999').getTime() : Infinity;
   const ql = (q || '').trim().toLowerCase();
   const rows = state.depenses.filter((d) => {
+    if (d.recurrent) return false;   // les récurrents ont leur propre panneau (abonnements)
     const t = new Date(d.date).getTime();
     if (t < fromT || t > toT) return false;
     if (categorie && d.categorie !== categorie) return false;
@@ -1258,7 +1297,7 @@ export function recouvrement() {
 export function journalCaisse(n = 10) {
   return state.ventes.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, n).map((v) => {
     const p = getProduit(v.produit_id);
-    return { id: v.id, date: v.date, nom: p ? p.nom : 'Produit', qte: v.qte, montant: (Number(v.qte) || 0) * (Number(v.prix_unitaire) || 0) };
+    return { id: v.id, date: v.date, nom: p ? p.nom : (v.libelle || 'Prestation'), qte: v.qte, montant: (Number(v.qte) || 0) * (Number(v.prix_unitaire) || 0) };
   });
 }
 
