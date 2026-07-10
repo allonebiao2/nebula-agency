@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEBULA — Vitrine vs Sans Vitrine</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+
+  #video-container {
+    width: 390px;
+    height: 844px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0 0 60px rgba(160, 80, 255, 0.4);
+  }
+
+  /* ─── SCÈNE DE BASE ─── */
+  .scene {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 30px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
+  }
+  .scene.active { opacity: 1; pointer-events: auto; }
+
+  /* ─── FOND ÉTOILÉ ─── */
+  .stars-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 20%, #2d0a5e 0%, #0d0020 60%, #000 100%);
+    z-index: 0;
+  }
+  .stars-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 45%, #fff 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 40% 10%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 35%, #c8a2ff 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 55%, #fff 0%, transparent 100%),
+      radial-gradient(2px 2px at 80% 20%, #ffd700 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 70%, #fff 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 15% 75%, #c8a2ff 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 85%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 5% 90%, #ffd700 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 65%, #fff 0%, transparent 100%),
+      radial-gradient(2px 2px at 85% 45%, #c8a2ff 0%, transparent 100%),
+      radial-gradient(1px 1px at 45% 80%, #fff 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 95% 30%, #ffd700 0%, transparent 100%),
+      radial-gradient(1px 1px at 20% 55%, #fff 0%, transparent 100%);
+  }
+  @keyframes twinkle {
+    0%,100% { opacity:0.6; } 50% { opacity:1; }
+  }
+  .stars-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 12% 22%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 67% 18%, #ffd700 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 48% 60%, #c8a2ff 0%, transparent 100%),
+      radial-gradient(1px 1px at 78% 80%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 32% 92%, #ffd700 0%, transparent 100%);
+    animation: twinkle 3s infinite;
+  }
+
+  /* ─── FOND GRIS (sans vitrine) ─── */
+  .grey-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, #1a1a1a 0%, #2a2a2a 50%, #111 100%);
+    z-index: 0;
+  }
+  .grey-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 20px,
+      rgba(255,255,255,0.015) 20px,
+      rgba(255,255,255,0.015) 21px
+    );
+  }
+
+  /* ─── FOND VIBRANT (avec vitrine) ─── */
+  .vibrant-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 30%, #3d0080 0%, #1a0040 50%, #0a0020 100%);
+    z-index: 0;
+  }
+  .vibrant-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 80%, rgba(255,215,0,0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(160,80,255,0.2) 0%, transparent 50%);
+    animation: pulse-bg 4s ease-in-out infinite;
+  }
+  @keyframes pulse-bg { 0%,100%{opacity:0.7} 50%{opacity:1} }
+
+  /* ─── TEXTES ─── */
+  .scene > * { position: relative; z-index: 1; }
+
+  .overline {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #ffd700;
+    opacity: 0.9;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .headline {
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1.15;
+    text-align: center;
+    color: #fff;
+    text-shadow: 0 0 30px rgba(160,80,255,0.6);
+  }
+  .headline .gold { color: #ffd700; }
+  .headline .purple { color: #c084fc; }
+
+  .subtitle {
+    font-size: 14px;
+    color: rgba(255,255,255,0.65);
+    text-align: center;
+    margin-top: 14px;
+    line-height: 1.5;
+  }
+
+  /* ─── BULLET ITEMS ─── */
+  .bullets { width: 100%; margin-top: 24px; }
+  .bullet {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: all 0.4s ease;
+  }
+  .bullet.show { opacity: 1; transform: translateX(0); }
+  .bullet-bad { background: rgba(255,60,60,0.12); border-left: 3px solid #ff4444; }
+  .bullet-good { background: rgba(255,215,0,0.1); border-left: 3px solid #ffd700; }
+  .bullet-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .bullet-text { font-size: 14px; color: #fff; line-height: 1.4; font-weight: 500; }
+  .bullet-bad .bullet-text { color: #ffaaaa; }
+
+  /* ─── STAT BOX ─── */
+  .stat-box {
+    background: rgba(255,68,68,0.15);
+    border: 1px solid rgba(255,68,68,0.4);
+    border-radius: 14px;
+    padding: 14px 20px;
+    text-align: center;
+    margin-top: 16px;
+    opacity: 0;
+    transform: scale(0.85);
+    transition: all 0.5s ease;
+  }
+  .stat-box.show { opacity: 1; transform: scale(1); }
+  .stat-box.gold-box {
+    background: rgba(255,215,0,0.12);
+    border-color: rgba(255,215,0,0.5);
+  }
+  .stat-number { font-size: 36px; font-weight: 900; color: #ff5555; }
+  .stat-box.gold-box .stat-number { color: #ffd700; }
+  .stat-label { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 4px; }
+
+  /* ─── TITRE DE SECTION ─── */
+  .section-badge {
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .badge-bad { background: rgba(255,68,68,0.2); color: #ff6b6b; border: 1.5px solid #ff6b6b; }
+  .badge-good { background: rgba(255,215,0,0.18); color: #ffd700; border: 1.5px solid #ffd700; }
+
+  /* ─── SPLIT SCREEN ─── */
+  .split-container {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+    margin-top: 10px;
+  }
+  .split-side {
+    flex: 1;
+    border-radius: 14px;
+    padding: 16px 10px;
+    text-align: center;
+  }
+  .split-bad {
+    background: rgba(255,60,60,0.1);
+    border: 1px solid rgba(255,80,80,0.3);
+  }
+  .split-good {
+    background: rgba(255,215,0,0.1);
+    border: 1px solid rgba(255,215,0,0.4);
+  }
+  .split-emoji { font-size: 32px; display: block; margin-bottom: 8px; }
+  .split-title { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .split-bad .split-title { color: #ff6b6b; }
+  .split-good .split-title { color: #ffd700; }
+  .split-points { margin-top: 10px; }
+  .split-point { font-size: 11px; color: rgba(255,255,255,0.75); margin-bottom: 5px; padding: 4px 6px; }
+  .split-point.red { color: #ff9999; }
+  .split-point.gold { color: #ffd77f; font-weight: 600; }
+
+  /* ─── BIG QUESTION ─── */
+  .big-q {
+    font-size: 24px;
+    font-weight: 900;
+    text-align: center;
+    color: #fff;
+    line-height: 1.25;
+    text-shadow: 0 0 20px rgba(255,215,0,0.4);
+  }
+  .big-q .accent { color: #ffd700; }
+
+  /* ─── CTA ─── */
+  .cta-badge {
+    background: linear-gradient(135deg, #6200ea, #9c27b0);
+    border-radius: 16px;
+    padding: 20px 24px;
+    text-align: center;
+    width: 100%;
+    margin-top: 20px;
+    box-shadow: 0 0 30px rgba(160,80,255,0.4);
+  }
+  .cta-top { font-size: 12px; color: rgba(255,255,255,0.7); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .cta-main { font-size: 18px; font-weight: 900; color: #fff; line-height: 1.3; }
+  .cta-main .gold { color: #ffd700; }
+  .cta-sub { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 8px; }
+
+  .whatsapp-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #25D366;
+    border-radius: 50px;
+    padding: 14px 24px;
+    margin-top: 16px;
+    width: 100%;
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+  }
+  .wa-icon { font-size: 20px; }
+
+  /* ─── LOGO OUTRO ─── */
+  .logo-container { text-align: center; }
+  .nebula-logo {
+    font-size: 42px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    text-shadow: 0 0 40px rgba(160,80,255,0.8), 0 0 80px rgba(160,80,255,0.4);
+    animation: glow-logo 2s ease-in-out infinite;
+  }
+  @keyframes glow-logo {
+    0%,100% { text-shadow: 0 0 40px rgba(160,80,255,0.8); }
+    50% { text-shadow: 0 0 60px rgba(160,80,255,1), 0 0 100px rgba(160,80,255,0.5); }
+  }
+  .nebula-sub { font-size: 11px; color: #ffd700; letter-spacing: 3px; text-transform: uppercase; margin-top: 8px; opacity: 0.9; }
+  .nebula-tagline { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 16px; text-align: center; line-height: 1.5; }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #6200ea, #ffd700);
+    border-radius: 2px;
+    margin: 16px auto;
+  }
+
+  /* ─── PROGRESS BAR ─── */
+  #progress-bar {
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #6200ea, #ffd700);
+    z-index: 100;
+    transition: width 0.1s linear;
+    border-radius: 0 2px 2px 0;
+  }
+
+  /* ─── PARTICULES ─── */
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── CONTROLS ─── */
+  #controls {
+    position: fixed;
+    bottom: 30px;
+    display: flex;
+    gap: 12px;
+    z-index: 200;
+  }
+  #controls button {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 30px;
+    font-size: 14px;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s;
+  }
+  #controls button:hover { background: rgba(255,255,255,0.2); }
+  #timer {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div id="video-container">
+  <div id="progress-bar" style="width:0%"></div>
+
+  <!-- ══════════════════════════════
+       SCÈNE 1 — HOOK (0–5s)
+  ══════════════════════════════ -->
+  <div class="scene active" id="scene1">
+    <div class="stars-bg"></div>
+    <div class="overline">NEBULA Agency · Cotonou, Bénin</div>
+    <div class="headline">
+      Savez-vous pourquoi votre concurrent<br>
+      <span class="gold">vous dépasse</span> chaque jour ?
+    </div>
+    <div class="divider"></div>
+    <div class="subtitle">La réponse vous surprendra<br>— et changera tout.</div>
+  </div>
+
+  <!-- ══════════════════════════════
+       SCÈNE 2 — SANS VITRINE (5–22s)
+  ══════════════════════════════ -->
+  <div class="scene" id="scene2">
+    <div class="grey-bg"></div>
+    <div class="section-badge badge-bad">❌ SANS vitrine digitale</div>
+    <div class="headline" style="font-size:20px; color:#ffaaaa;">Voici votre réalité aujourd'hui :</div>
+    <div class="bullets">
+      <div class="bullet bullet-bad" id="b1">
+        <span class="bullet-icon">👻</span>
+        <span class="bullet-text">Invisible sur Google et les réseaux sociaux</span>
+      </div>
+      <div class="bullet bullet-bad" id="b2">
+        <span class="bullet-icon">💸</span>
+        <span class="bullet-text">Vos clients partent chez la concurrence… qui a une vitrine</span>
+      </div>
+      <div class="bullet bullet-bad" id="b3">
+        <span class="bullet-icon">📵</span>
+        <span class="bullet-text">Zéro crédibilité en ligne — les gens ne vous font pas confiance</span>
+      </div>
+      <div class="bullet bullet-bad" id="b4">
+        <span class="bullet-icon">😴</span>
+        <span class="bullet-text">Pendant votre sommeil, vous perdez des ventes — chaque nuit</span>
+      </div>
+    </div>
+    <div class="stat-box" id="stat1">
+      <div class="stat-number">90%</div>
+      <div class="stat-label">des clients cherchent d'abord en ligne avant d'acheter</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       SCÈNE 3 — AVEC VITRINE (22–42s)
+  ══════════════════════════════ -->
+  <div class="scene" id="scene3">
+    <div class="vibrant-bg"></div>
+    <div class="section-badge badge-good">✅ AVEC une vitrine NEBULA</div>
+    <div class="headline" style="font-size:20px;">Voici ce qui change <span class="gold">pour vous</span> :</div>
+    <div class="bullets">
+      <div class="bullet bullet-good" id="g1">
+        <span class="bullet-icon">🌍</span>
+        <span class="bullet-text">Visible 24h/24, 7j/7 — même quand vous dormez</span>
+      </div>
+      <div class="bullet bullet-good" id="g2">
+        <span class="bullet-icon">📲</span>
+        <span class="bullet-text">Clients qui vous trouvent et vous contactent directement</span>
+      </div>
+      <div class="bullet bullet-good" id="g3">
+        <span class="bullet-icon">🏆</span>
+        <span class="bullet-text">Crédibilité et confiance instantanée — vous paraissez sérieux</span>
+      </div>
+      <div class="bullet bullet-good" id="g4">
+        <span class="bullet-icon">💰</span>
+        <span class="bullet-text">Commandes et ventes qui arrivent automatiquement</span>
+      </div>
+    </div>
+    <div class="stat-box gold-box" id="stat2">
+      <div class="stat-number">+300%</div>
+      <div class="stat-label">de prospects qualifiés pour les entrepreneurs avec une vitrine</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       SCÈNE 4 — CONFRONTATION (42–52s)
+  ══════════════════════════════ -->
+  <div class="scene" id="scene4">
+    <div class="stars-bg"></div>
+    <div class="big-q">Et vous…<br>de quel côté<br>êtes-vous <span class="accent">?</span></div>
+    <div class="split-container" style="margin-top:24px">
+      <div class="split-side split-bad">
+        <span class="split-emoji">😰</span>
+        <div class="split-title">Sans vitrine</div>
+        <div class="split-points">
+          <div class="split-point red">Invisible</div>
+          <div class="split-point red">Ventes perdues</div>
+          <div class="split-point red">Oublié</div>
+        </div>
+      </div>
+      <div class="split-side split-good">
+        <span class="split-emoji">🚀</span>
+        <div class="split-title">Avec vitrine</div>
+        <div class="split-points">
+          <div class="split-point gold">Visible partout</div>
+          <div class="split-point gold">Ventes 24/7</div>
+          <div class="split-point gold">Leader</div>
+        </div>
+      </div>
+    </div>
+    <div class="divider" style="margin-top:20px"></div>
+    <div style="font-size:14px; color:rgba(255,255,255,0.7); text-align:center; margin-top:4px; line-height:1.5; position:relative; z-index:1;">
+      Chaque jour sans vitrine,<br>c'est un client de plus pour votre concurrent.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       SCÈNE 5 — CTA (52–57s)
+  ══════════════════════════════ -->
+  <div class="scene" id="scene5">
+    <div class="vibrant-bg"></div>
+    <div class="cta-badge">
+      <div class="cta-top">Passez à l'action maintenant</div>
+      <div class="cta-main">Votre vitrine <span class="gold">NEBULA</span><br>prête en <span class="gold">48 heures</span></div>
+      <div class="cta-sub">Design professionnel · Mobile first · WhatsApp intégré</div>
+    </div>
+    <div class="whatsapp-btn">
+      <span class="wa-icon">💬</span>
+      Contactez-nous sur WhatsApp
+    </div>
+    <div style="font-size:11px; color:rgba(255,255,255,0.45); text-align:center; margin-top:12px; position:relative; z-index:1;">
+      Réponse garantie sous 2h · Devis gratuit
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       SCÈNE 6 — OUTRO (57–60s)
+  ══════════════════════════════ -->
+  <div class="scene" id="scene6">
+    <div class="stars-bg"></div>
+    <div class="logo-container">
+      <div class="nebula-logo">NEBULA</div>
+      <div class="nebula-sub">Agency</div>
+      <div class="divider"></div>
+      <div class="nebula-tagline">
+        Votre présence digitale<br>en Afrique de l'Ouest
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="togglePlay()">⏸ Pause</button>
+</div>
+<div id="timer" style="position:fixed;bottom:14px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(255,255,255,0.4)">0s / 60s</div>
+
+<script>
+  // ─── TIMING DES SCÈNES (secondes) ───
+  const scenes = [
+    { id: 'scene1', start:  0, end:  5 },
+    { id: 'scene2', start:  5, end: 22 },
+    { id: 'scene3', start: 22, end: 42 },
+    { id: 'scene4', start: 42, end: 52 },
+    { id: 'scene5', start: 52, end: 57 },
+    { id: 'scene6', start: 57, end: 60 },
+  ];
+
+  // ─── ANIMATIONS DANS LES SCÈNES ───
+  const bulletTimings = [
+    { id:'b1', time: 5.5 }, { id:'b2', time: 8 },
+    { id:'b3', time:11 },   { id:'b4', time:14 },
+    { id:'stat1', time:17.5 },
+    { id:'g1', time:22.8 }, { id:'g2', time:25.5 },
+    { id:'g3', time:28.5 }, { id:'g4', time:31.5 },
+    { id:'stat2', time:35 },
+  ];
+
+  let elapsed = 0;
+  let running = true;
+  let lastTs = null;
+  const TOTAL = 60;
+
+  function setScene(t) {
+    scenes.forEach(s => {
+      const el = document.getElementById(s.id);
+      if (t >= s.start && t < s.end) {
+        el.classList.add('active');
+      } else {
+        el.classList.remove('active');
+      }
+    });
+    bulletTimings.forEach(b => {
+      const el = document.getElementById(b.id);
+      if (!el) return;
+      if (t >= b.time) el.classList.add('show');
+      else el.classList.remove('show');
+    });
+    const pct = Math.min(100, (t / TOTAL) * 100);
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('timer').textContent = Math.floor(t) + 's / 60s';
+  }
+
+  function frame(ts) {
+    if (!running) { lastTs = null; return; }
+    if (lastTs !== null) {
+      elapsed += (ts - lastTs) / 1000;
+      if (elapsed >= TOTAL) elapsed = 0;
+    }
+    lastTs = ts;
+    setScene(elapsed);
+    requestAnimationFrame(frame);
+  }
+
+  function restart() {
+    elapsed = 0;
+    // reset bullets
+    document.querySelectorAll('.bullet,.stat-box').forEach(el => el.classList.remove('show'));
+    if (!running) { running = true; requestAnimationFrame(frame); }
+  }
+
+  function togglePlay() {
+    running = !running;
+    document.querySelector('#controls button:nth-child(2)').textContent = running ? '⏸ Pause' : '▶ Play';
+    if (running) requestAnimationFrame(frame);
+  }
+
+  setScene(0);
+  requestAnimationFrame(frame);
+</script>
+</body>
+</html>
