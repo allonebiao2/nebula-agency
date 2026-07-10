@@ -310,6 +310,7 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
         <button class="btn btn--sell btn--sm" data-action="fab-vente"><span data-icon="plus"></span> Vente</button>
       </div>
     </div>
+    ${zhelp('Tes chiffres du jour. Glisse pour voir : encaissé, dépensé, bénéfice du jour, ce qu’on te doit, et ta trésorerie (touche-la pour régler ton fond de caisse).')}
     <div class="kpicar"><div class="kpicar__track" id="kpicar-track">${kpiTiles.join('')}</div></div>
     <div class="kpicar__dots">${dots}</div>
   </article>`;
@@ -336,6 +337,7 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
   const objCard = `<article class="panel c4 objx">
     <div class="panel__head"><h2>Objectif du mois</h2>
       <button class="btn btn--ghost btn--sm btn--icon" data-action="edit-objectif" title="Modifier l'objectif"><span data-icon="edit"></span></button></div>
+    ${zhelp('Le bénéfice que tu veux atteindre ce mois-ci. L’anneau se remplit au fil de tes ventes. Touche le crayon pour changer le montant.')}
     ${objectif > 0 ? `
       <div class="objx__ring">${progressRing(pctObj, { color: 'var(--acc)', size: 140, stroke: 13 })}
         <div class="objx__center"><span class="objx__lvl" data-icon="flame"></span><strong><span data-count="${pctObj}" data-fmt="num">${pctObj}</span><small>%</small></strong></div></div>
@@ -649,6 +651,7 @@ export function viewDepensesHTML(filter = { preset: 'mois', from: '', to: '', ca
 
   return `<section class="view">
     ${sectionTitle('Dépenses', "Où part ton argent")}
+    ${zhelp('Tout ce qui sort de ta caisse : achats de marchandise, transport, loyer… Ajoute une dépense, vois la répartition par catégorie et retrouve l’historique. (Le « Réassort / Stock » ne compte pas dans le bénéfice : c’est déjà dans le coût de tes produits.)')}
     <div class="depsum">
       <div class="depsum__id"><span class="depsum__lbl">Total dépensé — ${esc(rangeLabel(filter))}</span>
         <span class="depsum__val neg">${formatF(H.total)}</span>
@@ -789,6 +792,7 @@ export function viewBilanHTML(rapGran = 'jour') {
   const rstat = (lbl, val, cls = '') => `<div class="rstat"><span class="rstat__lbl">${lbl}</span><span class="rstat__val ${cls}">${val}</span></div>`;
   const rapportPanel = `<article class="panel rapportcard">
     <div class="panel__head"><h2>Rapport</h2><span class="panel__sub">${esc(RG.label)}</span></div>
+    ${zhelp('Le résumé chiffré de ton activité sur la période choisie (jour, semaine, mois, année). Exporte-le en PDF ou Excel, ou envoie-le par WhatsApp.')}
     <div class="vchips">${rchip('jour', 'Jour')}${rchip('semaine', 'Semaine')}${rchip('mois', 'Mois')}${rchip('annee', 'Année')}</div>
     <div class="rsum">
       ${rstat("Chiffre d'affaires", formatF(RG.ca))}
@@ -807,6 +811,7 @@ export function viewBilanHTML(rapGran = 'jour') {
 
   return `<section class="view">
     ${sectionTitle('Bilan', moisLabel(mk))}
+    ${zhelp('Ton analyse complète : rapport exportable, factures & devis, santé de ton commerce, courbes d’évolution et conseils. Tout part de tes ventes et dépenses.')}
     ${rapportPanel}
     ${documentsPanelHTML()}
     ${enveloppesHTML(b)}
@@ -871,6 +876,7 @@ export function documentsPanelHTML() {
     : `<span class="panel__sub">Documents propres pour tes clients</span>`;
   return `<article class="panel doccard">
     <div class="panel__head"><h2>Factures &amp; devis</h2>${sub}</div>
+    ${zhelp('Crée des factures et des devis propres pour tes clients (numéro auto, montant en toutes lettres, ton IFU). Imprime-les en PDF ou envoie-les par WhatsApp.')}
     <div class="doccta">
       <button class="btn btn--doc" data-action="doc-new" data-type="facture"><span data-icon="receipt"></span> Nouvelle facture</button>
       <button class="btn btn--ghost" data-action="doc-new" data-type="devis"><span data-icon="doc"></span> Nouveau devis</button>
@@ -1058,6 +1064,7 @@ export function objectifsCardHTML() {
   }).join('');
   return `<article class="panel c6 objscard">
     <div class="panel__head"><h2>Mes objectifs</h2><button class="btn btn--sm" data-action="obj-new"><span data-icon="plus"></span> Objectif</button></div>
+    ${zhelp('Tes cagnottes pour tes projets (outil, machine, maison…). Le bouton + ajoute de l’argent à un objectif ; touche un objectif pour le modifier.')}
     <div class="objlist">${rows}</div>
   </article>`;
 }
@@ -1154,6 +1161,7 @@ export function viewStockHTML(filter = {}) {
   const chip = (id, lbl, n) => `<button class="vchip ${flt === id ? 'is-on' : ''}" data-action="stock-filter" data-f="${id}">${lbl}${n != null ? ` <b>${n}</b>` : ''}</button>`;
   return `<section class="view">
     ${sectionTitle('Stock', 'Inventaire & alertes')}
+    ${zhelp('Suis les quantités de tes produits. Quand un stock passe sous son seuil, tu es prévenu ici et par la cloche. Les boutons − et + ajustent la quantité ; « Suivre » commence à compter un produit.')}
     <div class="stockstat">
       <div class="stockstat__c"><span class="stockstat__lbl">Valeur du stock</span><span class="stockstat__val">${formatF(r.valeur)}</span></div>
       <div class="stockstat__c ${r.ruptures ? 'is-dng' : ''}"><span class="stockstat__lbl">Ruptures</span><span class="stockstat__val">${formatNombre(r.ruptures)}</span></div>
@@ -1203,6 +1211,7 @@ export function viewCarnetHTML() {
   const clientRows = clients.length ? clients.map(clientRowHTML).join('') : `<li class="clirow clirow--empty">Aucun client enregistré.</li>`;
   return `<section class="view">
     ${sectionTitle('Carnet', 'Clients & créances')}
+    ${zhelp('Qui te doit de l’argent et tes clients. La jauge montre la part des dettes déjà remboursée. Touche le bouton WhatsApp pour relancer un client en un message.')}
     ${gauge}
     <article class="panel">
       <div class="panel__head"><h2>Dettes en cours</h2><button class="btn btn--sm" data-action="add-credit"><span data-icon="plus"></span> Crédit</button></div>
@@ -1266,6 +1275,7 @@ export function viewReglagesHTML(cloud) {
     ${sectionTitle('Réglages', 'Activité, coûts, sauvegarde')}
     <div class="panel">
       <div class="panel__head"><h2>Activité</h2></div>
+      ${zhelp('Le nom de ton commerce et ta monnaie. Le nom apparaît en haut de l’appli et sur tes factures et reçus.')}
       <div class="field"><label for="rg-nom">Nom de l'activité</label>
         <input id="rg-nom" class="input" value="${esc(st.profil.nom_activite)}" data-action="save-nom" placeholder="Ex. Yaourt Maman Adjo"></div>
       <div class="field"><label for="rg-devise">Devise</label>
@@ -1303,15 +1313,18 @@ export function viewReglagesHTML(cloud) {
     </div>
     <div class="panel">
       <div class="panel__head"><h2>Charges fixes mensuelles</h2><button class="btn btn--sm" data-action="add-charge"><span data-icon="plus"></span> Ajouter</button></div>
+      ${zhelp('Les dépenses qui reviennent chaque mois, peu importe tes ventes (loyer, électricité, salaires…). L’appli les couvre d’abord, avant de compter ton bénéfice.')}
       <ul class="list">${chargeItems}</ul>
       <div class="panel__note">Total : <strong>${formatF(chargesMensuellesTotal())}</strong> / mois — c'est le « pot » à couvrir chaque mois avant de dégager du bénéfice.</div>
     </div>
     <div class="panel">
       <div class="panel__head"><h2>Compte & synchronisation</h2></div>
+      ${zhelp('Connecte-toi pour retrouver tes données sur ton téléphone ET ton ordinateur, à jour partout. Sans compte, tout reste sur cet appareil uniquement.')}
       ${cloudBlock}
     </div>
     <div class="panel">
       <div class="panel__head"><h2>Sauvegarde</h2></div>
+      ${zhelp('Exporte une copie de toutes tes données dans un fichier (à garder au cas où), ou réimporte-la. « Effacer » remet tout à zéro — à utiliser avec prudence.')}
       <div class="btnrow">
         <button class="btn btn--ghost" data-action="export"><span data-icon="download"></span> Exporter</button>
         <button class="btn btn--ghost" data-action="import"><span data-icon="upload"></span> Importer</button>
