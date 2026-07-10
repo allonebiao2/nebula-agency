@@ -5,7 +5,7 @@ import {
   coutRevient, margeUnitaire, chargesMensuellesTotal, seuilRentabilite,
   bilanMois, ventesDuMois, serieMensuelle, trimestreDe, currentMonthKey,
   statistiques, analyseBusiness,
-  serieDashboard, topProduitsPeriode, getObjectif, resumeJour, historiqueVentes,
+  serieDashboard, topProduitsPeriode, palmaresProduits, getObjectif, resumeJour, historiqueVentes,
   historiqueDepenses, DEPENSE_CATS, previsions, getDevise, creditsSummary,
   ASSISTANT_SUGGESTIONS, rapportPeriode,
   getDocuments, documentTotals, documentsSummary, montantEnLettres, getCredits, creditReste, creditPaye,
@@ -820,6 +820,47 @@ export function rapportHTML(a) {
 }
 
 // ============ ÉCRAN BILAN ============
+// Palmarès de la période : « Ça cartonne » (tops) + « À relancer » (flops). Suit la période du Rapport.
+function palmaresPanelHTML(gran) {
+  const P = palmaresProduits(gran, 0, 5);
+  const flopIc = { perte: 'alert', dormant: 'moon', stockdort: 'box', faible: 'arrowDown' };
+  const maxRev = Math.max(1, ...P.tops.map((t) => t.revenu));
+
+  const topRows = P.tops.length ? P.tops.map((t, i) => `<li class="plm plm--top">
+      <span class="plm__rk">${i + 1}</span>
+      <div class="plm__id">
+        <div class="plm__line"><strong>${esc(t.nom)}</strong><span class="plm__val pos">${formatF(t.revenu)}</span></div>
+        <div class="plm__bar" aria-hidden="true"><i style="width:${Math.max(4, Math.round(t.revenu / maxRev * 100))}%"></i></div>
+        <small>${formatNombre(t.unites)} vendu${t.unites > 1 ? 's' : ''} · ${Math.round(t.part * 100)}% du CA</small>
+      </div>
+    </li>`).join('')
+    : `<li class="plm__empty">Aucune vente enregistrée sur cette période.</li>`;
+
+  const flopRows = P.flops.length ? P.flops.map((f) => `<li class="plm plm--flop plm--${f.statut}">
+      <span class="plm__ic" data-icon="${flopIc[f.statut] || 'alert'}"></span>
+      <div class="plm__id">
+        <div class="plm__line"><strong>${esc(f.nom)}</strong><span class="plm__tag">${f.raison}</span></div>
+        <small>${esc(f.conseil)}</small>
+      </div>
+    </li>`).join('')
+    : `<li class="plm__good"><span data-icon="check"></span> Rien à signaler : tous tes produits tournent bien sur la période.</li>`;
+
+  return `<article class="panel palmcard">
+    <div class="panel__head"><h2>Palmarès produits</h2><span class="panel__sub">${esc(P.label)}</span></div>
+    ${zhelp('Ce qui marche et ce qui coince sur la période. À gauche, tes locomotives (classées par chiffre d’affaires). À droite, les produits à relancer : vendus à perte, jamais vendus, stock qui dort, ou qui se vendent peu — avec le geste à faire.')}
+    <div class="palm">
+      <div class="palm__col">
+        <h3 class="palm__h palm__h--top"><span data-icon="trophy"></span> Ça cartonne</h3>
+        <ul class="plmlist">${topRows}</ul>
+      </div>
+      <div class="palm__col">
+        <h3 class="palm__h palm__h--flop"><span data-icon="alert"></span> À relancer</h3>
+        <ul class="plmlist">${flopRows}</ul>
+      </div>
+    </div>
+  </article>`;
+}
+
 export function viewBilanHTML(rapGran = 'jour') {
   const produits = getProduits();
   const b = bilanMois();
@@ -885,6 +926,7 @@ export function viewBilanHTML(rapGran = 'jour') {
     ${sectionTitle('Bilan', moisLabel(mk))}
     ${zhelp('Ton analyse complète : rapport exportable, factures & devis, santé de ton commerce, courbes d’évolution et conseils. Tout part de tes ventes et dépenses.')}
     ${rapportPanel}
+    ${palmaresPanelHTML(rapGran)}
     ${documentsPanelHTML()}
     ${enveloppesHTML(b)}
     ${statsHTML(stats)}

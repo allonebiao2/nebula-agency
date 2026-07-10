@@ -618,6 +618,59 @@ export function topProduitsPeriode(gran = 'mois', offset = 0, n = 6) {
   }).filter((x) => x.unites > 0).sort((a, b) => b.revenu - a.revenu).slice(0, n);
 }
 
+// Gravité des flops : du plus urgent (on perd de l'argent) au moins urgent (se vend peu).
+const FLOP_RANG = { perte: 0, dormant: 1, stockdort: 2, faible: 3 };
+
+// Palmarès de la période : les produits qui CARTONNENT (tops) ET ceux qui S'ÉCOULENT MAL (flops).
+// Un flop = vendu à perte · jamais vendu (dormant) · stock qui dort · nettement sous la moyenne.
+// Chaque flop porte une raison courte + un conseil d'action, pour que la patronne sache quoi faire.
+export function palmaresProduits(gran = 'mois', offset = 0, n = 5) {
+  const P = periodInfo(gran, offset);
+  const startT = P.start.getTime();
+  const ventes = ventesEntre(P.start, P.end);
+  const prods = getProduits();
+  const totRev = ventes.reduce((a, v) => a + (v.qte || 0) * (v.prix_unitaire || 0), 0) || 1;
+
+  const rows = prods.map((p) => {
+    const s = sommeVentes(ventes.filter((v) => v.produit_id === p.id));
+    const info = getStockInfo(p);
+    return {
+      id: p.id, nom: p.nom, modele: p.modele,
+      unites: s.unites, revenu: s.revenu, marge: s.marge,
+      margeU: margeUnitaire(p), suivi: info.suivi, stock: info.suivi ? info.qte : null,
+      part: s.revenu / totRev, nouveau: new Date(p.created_at || 0).getTime() >= startT,
+    };
+  });
+
+  const vendus = rows.filter((r) => r.unites > 0);
+  const revMoyen = vendus.length ? vendus.reduce((a, r) => a + r.revenu, 0) / vendus.length : 0;
+  const tops = vendus.slice().sort((a, b) => b.revenu - a.revenu || b.unites - a.unites).slice(0, n);
+
+  const flops = rows.map((r) => {
+    let statut = null, raison = '', conseil = '';
+    if (r.unites > 0 && r.margeU < 0) {
+      statut = 'perte'; raison = 'Vendu à perte';
+      conseil = `Chaque vente te fait perdre ${formatF(Math.abs(r.margeU))}. Monte le prix ou baisse le coût.`;
+    } else if (r.unites === 0 && !r.nouveau) {
+      statut = 'dormant'; raison = 'Aucune vente';
+      conseil = (r.suivi && r.stock > 0)
+        ? `${formatNombre(r.stock)} en stock qui ne bougent pas. Mets-le en avant ou fais une promo.`
+        : 'Rien vendu sur la période. Propose-le à tes clients ou revois son prix.';
+    } else if (r.suivi && r.stock > 0 && r.unites <= Math.max(1, Math.round(r.stock * 0.15))) {
+      statut = 'stockdort'; raison = 'Stock qui dort';
+      conseil = `${formatNombre(r.stock)} en stock pour seulement ${formatNombre(r.unites)} vendu${r.unites > 1 ? 's' : ''} : ton argent est immobilisé.`;
+    } else if (r.unites > 0 && revMoyen > 0 && r.revenu < revMoyen * 0.5) {
+      statut = 'faible'; raison = 'Se vend peu';
+      conseil = 'Bien en dessous de tes autres produits. Une promo ou une meilleure mise en avant peut aider.';
+    }
+    return { ...r, statut, raison, conseil };
+  }).filter((r) => r.statut)
+    .sort((a, b) => (FLOP_RANG[a.statut] - FLOP_RANG[b.statut]) || (a.revenu - b.revenu) || (a.unites - b.unites))
+    .slice(0, n);
+
+  return { label: P.label, tops, flops, nbProduits: prods.length, nbVendus: vendus.length };
+}
+
 // ---------- Objectif de bénéfice mensuel ----------
 export function getObjectif() { return Number(state.profil.objectif_benefice) || 0; }
 export function setObjectif(v) { setProfil({ objectif_benefice: Math.max(0, Math.round(Number(v) || 0)) }); }

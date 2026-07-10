@@ -140,7 +140,7 @@ input { font-family: inherit; }
 .objx__meta b, .ring3__t, .donut__center strong, .leg__val, .leg__pct, .rank__n, .rank__rev, .cashtile__val,
 .deprow__amt, .daygrp__tot, .hvrow__tot, .depsum__val, .catbar__amt, .prevtile__val, .prevhint b,
 .creditsum__val, .creditmini__amt, .rstat__val, .docrow__body strong, .docrow__amt, .docform__lead strong,
-.dline__tot, .dtot__v, .fd-num { font-variant-numeric: tabular-nums; }
+.dline__tot, .dtot__v, .fd-num, .plm__val, .plm__rk { font-variant-numeric: tabular-nums; }
 
 /* ---------- App shell ---------- */
 #app { min-height: 100dvh; display: flex; flex-direction: column; }
@@ -629,6 +629,42 @@ input { font-family: inherit; }
 .rank__spark .chart-svg { height: 30px; }
 .rank__rev { font-family: var(--mono); font-weight: 700; font-size: 13.5px; }
 .rank__empty { font-size: 13px; color: var(--ink-faint); font-style: italic; padding: 8px 0; }
+
+/* ---------- Palmarès produits (Bilan) : Tops + Flops ---------- */
+.palm { display: grid; grid-template-columns: 1fr; gap: 20px; }
+.palm__col { min-width: 0; }
+.palm__h { display: flex; align-items: center; gap: 8px; margin: 0 0 4px; padding-bottom: 9px; border-bottom: 1px solid var(--line); font-size: 13px; font-weight: 700; letter-spacing: -.01em; color: var(--ink); }
+.palm__h svg { width: 16px; height: 16px; }
+.palm__h--top svg { color: var(--acc-d); }
+.palm__h--flop svg { color: var(--dng); }
+.plmlist { list-style: none; margin: 0; padding: 0; }
+.plm { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 11px; align-items: start; padding: 12px 0; border-bottom: 1px solid var(--line-soft); }
+.plm:last-child { border-bottom: 0; }
+.plm__rk { width: 24px; height: 24px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-family: var(--mono); font-weight: 700; font-size: 12.5px; color: var(--acc-d); background: var(--acc-soft); }
+.plm--top:first-child .plm__rk { color: #1b1205; background: linear-gradient(135deg, var(--acc), var(--acc-d)); box-shadow: 0 2px 10px -3px var(--acc); }
+.plm__ic { width: 26px; height: 26px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; }
+.plm__ic svg { width: 15px; height: 15px; }
+.plm__id { min-width: 0; }
+.plm__line { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.plm__line strong { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.plm__val { flex: none; font-family: var(--mono); font-weight: 700; font-size: 13.5px; }
+.plm__val.pos { color: var(--pos-d); }
+.plm__id small { display: block; margin-top: 3px; color: var(--ink-faint); font-size: 11.5px; line-height: 1.45; }
+.plm__bar { height: 6px; border-radius: 99px; background: var(--line-soft); overflow: hidden; margin: 7px 0 2px; }
+.plm__bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--pos), var(--pos-d)); transform-origin: left; animation: plmGrow .6s var(--ease) both; }
+.plm__tag { flex: none; font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 99px; white-space: nowrap; }
+.plm--perte .plm__ic { color: var(--dng); background: color-mix(in srgb, var(--dng) 16%, transparent); }
+.plm--perte .plm__tag { color: var(--dng); background: color-mix(in srgb, var(--dng) 14%, transparent); }
+.plm--dormant .plm__ic { color: var(--ink-faint); background: color-mix(in srgb, var(--ink-faint) 15%, transparent); }
+.plm--dormant .plm__tag { color: var(--ink-soft); background: color-mix(in srgb, var(--ink-faint) 14%, transparent); }
+.plm--stockdort .plm__ic, .plm--faible .plm__ic { color: var(--acc-d); background: var(--acc-soft); }
+.plm--stockdort .plm__tag, .plm--faible .plm__tag { color: var(--acc-d); background: var(--acc-soft); }
+.plm__empty { list-style: none; color: var(--ink-faint); font-style: italic; font-size: 12.5px; padding: 10px 0; }
+.plm__good { list-style: none; display: flex; gap: 8px; align-items: center; color: var(--pos-d); font-size: 12.5px; font-weight: 550; padding: 10px 0; }
+.plm__good svg { width: 17px; height: 17px; flex: none; }
+@keyframes plmGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@media (min-width: 720px) { .palm { grid-template-columns: 1fr 1fr; gap: 26px; } }
+@media (prefers-reduced-motion: reduce) { .plm__bar i { animation: none; } }
 
 /* Grille bento responsive */
 @media (min-width: 640px) {
