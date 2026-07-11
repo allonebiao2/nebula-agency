@@ -669,8 +669,9 @@ export function viewVentesHTML(filter = { preset: 'jour', from: '', to: '', prod
   }
 
   const b = bilanMois();
-  const auj = new Date().toISOString().slice(0, 10);
-  const ventesJour = getVentes().filter((v) => v.date.slice(0, 10) === auj);
+  const ymdL = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const auj = ymdL(new Date());   // jour LOCAL (une vente à 23h reste comptée le bon jour, pas décalée en UTC)
+  const ventesJour = getVentes().filter((v) => ymdL(new Date(v.date)) === auj);
 
   const tiles = produits.map((p) => {
     const marge = margeUnitaire(p);

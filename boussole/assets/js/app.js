@@ -9,6 +9,12 @@ import * as BT from './btprint.js';
 import * as Sec from './security.js';
 import { NEBULA_MOMO, NEBULA_WHATSAPP, ADMIN_ROUTE } from './config.js';
 
+// Date du jour au fuseau LOCAL (jamais UTC : évite le décalage près de minuit, Bénin = UTC+1).
+function localToday() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 let screen = 'ventes';
 let wizard = null;
 let authMode = 'signin';
@@ -138,8 +144,9 @@ function openChangePwd() {
 async function savePwd() {
   const v = (($('#np') || {}).value || '').trim();
   if (v.length < 6) return UI.toast('6 caractères minimum', 'err');
+  const btn = $('#modal-root [data-action="save-pwd"]'); if (btn) { btn.disabled = true; btn.textContent = '…'; }
   try { await Cloud.updatePassword(v); UI.closeModal(); UI.toast('Mot de passe changé'); }
-  catch (e) { UI.toast('Échec : ' + (e.message || ''), 'err'); }
+  catch (e) { if (btn) { btn.disabled = false; btn.textContent = 'Enregistrer'; } UI.toast('Échec : ' + (e.message || ''), 'err'); }
 }
 function openMembreModal(mid) {
   const m = mid ? S.getMembre(mid) : null;
@@ -541,7 +548,7 @@ function refreshDocTotals(sc) {
 function openDocEditor(id, type) {
   const t = type === 'devis' ? 'devis' : 'facture';
   const doc = id ? S.getDocument(id) : {
-    type: t, numero: S.nextDocNumero(t), date: new Date().toISOString().slice(0, 10),
+    type: t, numero: S.nextDocNumero(t), date: localToday(),
     client: {}, lignes: [], remise: '', tva_taux: '', acompte: '', notes: '',
   };
   if (!doc) return;
@@ -648,7 +655,7 @@ function refreshAchatTotals(sc) {
 }
 function openAchatModal() {
   if (!S.getProduits().length) { UI.toast('Ajoute d\'abord un produit', 'err'); return setScreen('reglages'); }
-  const a = { statut: 'paye', date: new Date().toISOString().slice(0, 10), lignes: [] };
+  const a = { statut: 'paye', date: localToday(), lignes: [] };
   UI.openModal(UI.modalShell('Nouvel achat', UI.achatFormFields(a),
     `<button class="btn btn--ghost" data-action="close-modal">Annuler</button>
      <button class="btn" data-action="save-achat">Enregistrer</button>`));
@@ -914,7 +921,7 @@ function depensesRecentesHTML() {
 function openDepenseModal(perso = false) {
   const catList = perso ? S.DEPENSE_CATS_PERSO : S.depenseCats();
   const cats = catList.map((c, i) => `<button type="button" class="catchip ${i === 0 ? 'is-on' : ''}" data-action="dep-cat" data-cat="${UI.esc(c)}">${UI.esc(c)}</button>`).join('');
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localToday();
   const dig = S.isDigital();
   UI.openModal(UI.modalShell(perso ? 'Dépense perso' : 'Ajouter une dépense',
     `<div class="field"><label>Cette dépense concerne…</label>
@@ -1079,7 +1086,7 @@ function openSellCustom(id) {
          <div class="inwrap"><input id="sv-p" class="input" type="number" inputmode="numeric" value="${p.prix_vente}"><span class="inwrap__cur">F</span></div></div>
      </div>
      <div class="field"><label for="sv-d">Date</label>
-       <input id="sv-d" class="input" type="date" value="${new Date().toISOString().slice(0, 10)}"></div>`,
+       <input id="sv-d" class="input" type="date" value="${localToday()}"></div>`,
     `<button class="btn btn--ghost" data-action="close-modal">Annuler</button>
      <button class="btn btn--sell" data-action="save-vente" data-id="${id}">Enregistrer la vente</button>`));
   hydrateIcons($('#modal-root'));
@@ -1332,7 +1339,7 @@ document.addEventListener('click', (e) => {
       const d = $('#dp-date').value;
       const rec = !perso && $('#dp-rec') && $('#dp-rec').checked;
       const freq = ($('#dp-freq') || {}).value || 'mensuel';
-      S.addDepense({ libelle: lib, categorie: cat, montant: amt, date: d ? new Date(d).toISOString() : undefined, recurrent: rec, frequence: freq, perso });
+      S.addDepense({ libelle: lib, categorie: cat, montant: amt, date: d ? new Date(d + 'T12:00:00').toISOString() : undefined, recurrent: rec, frequence: freq, perso });
       UI.closeModal(); UI.toast(perso ? 'Dépense perso enregistrée' : (rec ? 'Abonnement enregistré' : 'Dépense enregistrée')); return;
     }
     case 'del-depense': { S.deleteDepense(id); const row = el.closest('.deprow'); if (row) row.remove(); UI.toast('Dépense supprimée'); return; }
@@ -1496,7 +1503,7 @@ document.addEventListener('click', (e) => {
     case 'sell-custom': return openSellCustom(id);
     case 'save-vente': {
       const q = Number($('#sv-q').value) || 1, prix = Number($('#sv-p').value) || 0, d = $('#sv-d').value;
-      S.addVente({ produit_id: id, qte: q, prix_unitaire: prix, date: d ? new Date(d).toISOString() : undefined });
+      S.addVente({ produit_id: id, qte: q, prix_unitaire: prix, date: d ? new Date(d + 'T12:00:00').toISOString() : undefined });
       UI.closeModal(); UI.toast('Vente enregistrée'); return;
     }
     case 'del-vente': return S.deleteVente(id);
