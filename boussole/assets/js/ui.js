@@ -345,6 +345,11 @@ export function enveloppesHTML(b, { compact = false } = {}) {
 // ============ ÉCRAN ACCUEIL, tableau de bord bento ============
 const PROD_COLORS = ['var(--acc)', 'var(--rel)', 'var(--pos)', 'var(--chg)', 'var(--dng)', '#9b8cff'];
 
+// Code couleur financier UNIVERSEL : vert si valeur > 0, rouge si < 0, neutre si = 0.
+// À n'appliquer QU'AUX métriques nettes (bénéfice, marge, taux de marge, cashflow/solde) —
+// jamais au CA ni au volume brut (qui gardent l'accent ambre de la charte).
+const signCls = (v) => (Number(v) > 0 ? 'pos' : (Number(v) < 0 ? 'neg' : ''));
+
 // Badge de variation coloré (▲ +18 %  /  ▼ -5 %). opts.pts = points, opts.invert = baisse est bonne.
 function deltaBadge(d, opts = {}) {
   if (!d || d.sens === 'stable') return `<span class="delta delta--flat">—</span>`;
@@ -361,7 +366,7 @@ function deltaBadge(d, opts = {}) {
 }
 
 function kpiHTML(lbl, val, delta, spark, opts = {}) {
-  const sp = spark ? `<span class="kpi__spark">${sparklineRaw(spark, { color: opts.sparkColor || 'var(--acc)', w: 128, h: 30 })}</span>` : '';
+  const sp = spark ? `<span class="kpi__spark">${sparklineRaw(spark, { color: opts.sparkColor || 'var(--acc)', sign: opts.sparkSign, w: 128, h: 30 })}</span>` : '';
   const cnt = opts.count ? ` data-count="${opts.count.n}" data-fmt="${opts.count.fmt}"` : '';
   return `<div class="kpi">
     <span class="kpi__lbl">${lbl}</span>
@@ -425,11 +430,11 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
     </${tag}>`;
   };
   const kpiTiles = [
-    kpit('coins', 'CA du jour', R.ca, 'pos'),
+    kpit('coins', 'CA du jour', R.ca, 'acc'),
     kpit('receipt', 'Dépensé', R.depenses, R.depenses > 0 ? 'neg' : ''),
-    kpit('spark', 'Bénéfice du jour', R.benefice, R.benefice >= 0 ? 'pos' : 'neg'),
+    kpit('spark', 'Bénéfice du jour', R.benefice, signCls(R.benefice)),
     kpit('users', 'Dettes dehors', csKpi.total, csKpi.total > 0 ? 'neg' : '', { action: 'go', screen: 'carnet', tap: true, title: 'Voir le carnet' }),
-    kpit('wallet', 'Trésorerie', R.caisse, '', { action: 'edit-caisse', tap: true, edit: true, title: 'Régler le fond de caisse' }),
+    kpit('wallet', 'Trésorerie', R.caisse, signCls(R.caisse), { action: 'edit-caisse', tap: true, edit: true, title: 'Régler le fond de caisse' }),
   ];
   const dots = kpiTiles.map((_, i) => `<span class="kpicar__dot ${i === 0 ? 'is-on' : ''}" aria-hidden="true"></span>`).join('');
   const cashCard = `<article class="panel cashcard">
@@ -482,8 +487,8 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
   const kpis = `<article class="panel c12 kpicard">
     <div class="kpis">
       ${kpiHTML("Chiffre d'affaires", formatF(t.revenu), D.deltas.revenu, D.buckets.map((x) => x.revenu), { sparkColor: 'var(--acc)', count: { n: t.revenu, fmt: 'f' } })}
-      ${kpiHTML('Bénéfice net', formatF(t.benefice), D.deltas.benefice, D.buckets.map((x) => x.benefice), { valCls: t.benefice >= 0 ? 'pos' : 'neg', sparkColor: 'var(--pos)', count: { n: t.benefice, fmt: 'f' } })}
-      ${kpiHTML('Taux de marge', pctMarge + ' %', D.deltas.tauxMarge, null, { delta: { pts: true }, count: { n: pctMarge, fmt: 'pct' } })}
+      ${kpiHTML('Bénéfice net', formatF(t.benefice), D.deltas.benefice, D.buckets.map((x) => x.benefice), { valCls: signCls(t.benefice), sparkColor: 'var(--pos)', sparkSign: true, count: { n: t.benefice, fmt: 'f' } })}
+      ${kpiHTML('Taux de marge', pctMarge + ' %', D.deltas.tauxMarge, null, { valCls: signCls(pctMarge), delta: { pts: true }, count: { n: pctMarge, fmt: 'pct' } })}
       ${kpiHTML('Panier moyen', formatF(t.panierMoyen), D.deltas.panierMoyen, null, { count: { n: t.panierMoyen, fmt: 'f' } })}
       ${kpiHTML('Ventes', formatNombre(t.unites), D.deltas.unites, D.buckets.map((x) => x.unites), { sparkColor: 'var(--rel)', count: { n: t.unites, fmt: 'num' } })}
     </div>
@@ -569,8 +574,8 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
   const prevCard = P2.actif ? `<article class="panel c6 prevcard">
     <div class="panel__head"><h2>Prévisions</h2><span class="panel__sub">fin du mois, à ce rythme</span></div>
     <div class="prevrow">
-      <div class="prevtile"><span class="prevtile__lbl">Bénéfice fin de mois</span><span class="prevtile__val ${P2.benefFinMois >= 0 ? 'pos' : 'neg'}">${formatF(P2.benefFinMois)}</span></div>
-      <div class="prevtile"><span class="prevtile__lbl">Caisse fin de mois</span><span class="prevtile__val">${formatF(P2.caisseFinMois)}</span></div>
+      <div class="prevtile"><span class="prevtile__lbl">Bénéfice fin de mois</span><span class="prevtile__val ${signCls(P2.benefFinMois)}">${formatF(P2.benefFinMois)}</span></div>
+      <div class="prevtile"><span class="prevtile__lbl">Caisse fin de mois</span><span class="prevtile__val ${signCls(P2.caisseFinMois)}">${formatF(P2.caisseFinMois)}</span></div>
     </div>
     <p class="prevhint">${P2.avgJour >= 0
       ? `Tu gagnes ~<b>${formatF(P2.avgJour)}</b>/jour en moyenne. Reste ${P2.joursRestants} jour${P2.joursRestants > 1 ? 's' : ''} ce mois.`
@@ -1074,10 +1079,10 @@ export function viewBilanHTML(rapGran = 'jour') {
     <div class="rsum">
       ${rstat("Chiffre d'affaires", formatF(RG.ca))}
       ${rstat('Dépenses', formatF(RG.depenses), RG.depenses > 0 ? 'neg' : '')}
-      ${rstat('Bénéfice net', formatF(RG.benefice), RG.benefice >= 0 ? 'pos' : 'neg')}
-      ${rstat('Solde de caisse', formatF(RG.caisse))}
+      ${rstat('Bénéfice net', formatF(RG.benefice), signCls(RG.benefice))}
+      ${rstat('Solde de caisse', formatF(RG.caisse), signCls(RG.caisse))}
       ${rstat('Ventes', formatNombre(RG.nbVentes))}
-      ${rstat('Taux de marge', Math.round(RG.tauxMarge * 100) + ' %')}
+      ${rstat('Taux de marge', Math.round(RG.tauxMarge * 100) + ' %', signCls(RG.tauxMarge))}
     </div>
     <div class="rexport">
       <button class="btn" data-action="rap-pdf"><span data-icon="print"></span> PDF</button>

@@ -1478,7 +1478,7 @@ input { font-family: inherit; }
 .kpit__ic svg { width: 15px; height: 15px; }
 .kpit__lbl { font-size: 11.5px; font-weight: 600; color: var(--ink-faint); text-transform: uppercase; letter-spacing: .03em; }
 .kpit__val { font-family: var(--num); font-size: 25px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.kpit__val.pos { color: var(--pos-d); } .kpit__val.neg { color: var(--dng); }
+.kpit__val.pos { color: var(--pos-d); } .kpit__val.neg { color: var(--dng); } .kpit__val.acc { color: var(--acc-d); }
 .kpit--tap { cursor: pointer; transition: border-color .18s, transform .12s; }
 .kpit--tap:hover { border-color: color-mix(in srgb, var(--acc) 30%, var(--glass-brd)); }
 .kpit--tap:active { transform: scale(.98); }
