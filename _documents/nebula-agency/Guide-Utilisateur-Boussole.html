@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide d'utilisation · Boussole</title>
+<style>
+  @font-face { font-family:"Bricolage Grotesque"; font-weight:400 800; font-display:swap; src:url("https://boussole-19d.pages.dev/assets/fonts/BricolageGrotesque.woff2") format("woff2"); }
+  :root{
+    --bg:#f6f2ea; --paper:#fff; --ink:#1c1712; --soft:#574e44; --faint:#8a7f6d; --line:#e6ddcd;
+    --acc:#b46810; --acc-soft:#fbecd6; --pos:#0a6a49; --pos-soft:#e3f4ec; --dng:#c02a48;
+    --disp:"Bricolage Grotesque",Georgia,serif; --font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.6;font-size:15px}
+  .wrap{max-width:780px;margin:0 auto;padding:0 26px}
+  h1,h2,h3{font-family:var(--disp);letter-spacing:-.02em;line-height:1.15}
+  /* Couverture */
+  .cover{min-height:96vh;display:flex;flex-direction:column;justify-content:center;text-align:center;page-break-after:always}
+  .cover .logo{width:96px;height:96px;margin:0 auto 20px;border-radius:22px;background:linear-gradient(135deg,#f4a63a,#df7d16);display:flex;align-items:center;justify-content:center}
+  .cover .logo svg{width:52px;height:52px;color:#fff}
+  .cover h1{font-size:52px;margin:0 0 10px}
+  .cover .tag{color:var(--soft);font-size:19px;max-width:38ch;margin:0 auto}
+  .cover .foot{margin-top:34px;color:var(--faint);font-size:13px}
+  /* Sections */
+  section{padding:30px 0;border-top:1px solid var(--line);page-break-inside:avoid}
+  .num{display:inline-block;font-family:var(--disp);font-weight:800;font-size:13px;color:var(--acc);background:var(--acc-soft);border-radius:8px;padding:4px 10px;margin-bottom:10px}
+  h2{font-size:27px;margin:0 0 6px}
+  .lede{color:var(--soft);font-size:15.5px;margin:0 0 16px}
+  .mode{margin:14px 0}
+  .mode h3{font-size:15px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+  .mode h3 .b{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:3px 9px;border-radius:999px}
+  .b--shop{color:var(--acc);background:var(--acc-soft)} .b--dev{color:#0b6fa8;background:#e2f1fb}
+  ul.acts{list-style:none;margin:0;padding:0}
+  ul.acts li{position:relative;padding:5px 0 5px 26px;color:var(--soft)}
+  ul.acts li::before{content:"";position:absolute;left:4px;top:12px;width:8px;height:8px;border-radius:50%;background:var(--acc)}
+  ul.acts li b{color:var(--ink)}
+  .tip{margin-top:14px;padding:11px 14px;background:var(--pos-soft);border-radius:10px;color:var(--pos);font-size:13.5px}
+  .callout{padding:16px 18px;background:var(--paper);border:1px solid var(--line);border-radius:12px;margin:14px 0}
+  .callout strong{color:var(--acc)}
+  footer{padding:26px 0;text-align:center;color:var(--faint);font-size:12.5px;border-top:1px solid var(--line)}
+  @page{margin:14mm}
+  @media print{body{background:#fff}.callout{background:#fafafa}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="cover">
+    <span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 3l2 7 7 2-7 2-2 7-2-7-7-2 7-2z" fill="currentColor" stroke="none"/></svg></span>
+    <h1>Guide d'utilisation</h1>
+    <p class="tag">Boussole, pour gérer ton commerce et voir ta rentabilité clairement, sur ton téléphone et ton PC.</p>
+    <p class="foot">NEBULA Agency · Cotonou</p>
+  </div>
+
+  <section>
+    <span class="num">1</span>
+    <h2>Bien démarrer</h2>
+    <p class="lede">Boussole s'adapte à TON métier. À l'inscription (ou dans Réglages, « Type d'activité »), tu choisis ton mode.</p>
+    <div class="mode"><h3><span class="b b--shop">Produits physiques</span> boutique, commerce, alimentation</h3>
+      <ul class="acts"><li>Tu suis un <b>stock</b> (quantités, alertes de rupture).</li></ul></div>
+    <div class="mode"><h3><span class="b b--dev">Services & digital</span> développeur, designer, agence, infopreneur</h3>
+      <ul class="acts"><li>Tu gères un <b>catalogue de prestations</b> (pas de stock) et tes coûts par projet.</li></ul></div>
+    <p class="tip">Configure une seule fois : ton nom d'activité, ta monnaie, et un premier produit ou prestation. Ensuite, tout se calcule automatiquement.</p>
+  </section>
+
+  <section>
+    <span class="num">2</span>
+    <h2>Le tableau de bord</h2>
+    <p class="lede">Ta vue d'ensemble en un coup d'œil : encaissé et dépensé aujourd'hui, bénéfice du jour, trésorerie et objectifs.</p>
+    <ul class="acts">
+      <li><b>Lire tes chiffres du jour</b> : glisse le carrousel du haut : encaissé, dépensé, bénéfice, ce qu'on te doit, trésorerie.</li>
+      <li><b>Changer la période</b> : Jour, Semaine, Mois, Année, avec les flèches pour revenir en arrière.</li>
+      <li><b>Régler ton fond de caisse</b> : touche la trésorerie pour saisir l'argent que tu avais avant de commencer.</li>
+      <li><b>Fixer un objectif</b> : le bénéfice à atteindre ce mois : l'anneau se remplit au fil des ventes.</li>
+    </ul>
+    <p class="tip">Tout se calcule tout seul à partir de tes ventes et dépenses. Rien à additionner à la main.</p>
+  </section>
+
+  <section>
+    <span class="num">3</span>
+    <h2>Vendre</h2>
+    <div class="mode"><h3><span class="b b--shop">Boutique</span> Ventes / Caisse</h3>
+      <ul class="acts">
+        <li><b>Vente rapide</b> : touche « 1 vente » sur un produit pour l'enregistrer d'un coup. Pas de code-barres à scanner.</li>
+        <li><b>Ouvrir la caisse (panier)</b> : plusieurs articles en un ticket, puis « Encaisser ».</li>
+        <li><b>Mode de paiement + vendeur</b> : Espèces, Mobile Money… et qui a fait la vente.</li>
+        <li><b>Donner un reçu</b> : ticket 58 mm, reçu A4 ou WhatsApp.</li>
+      </ul></div>
+    <div class="mode"><h3><span class="b b--dev">Digital</span> Facturation</h3>
+      <ul class="acts">
+        <li><b>Facturer une prestation</b> : touche la prestation dans la caisse.</li>
+        <li><b>Montant libre / acompte</b> : facture un acompte de projet en 2 champs (montant + description).</li>
+      </ul></div>
+    <p class="tip">Toutes tes ventes passées sont regroupées par jour dans l'historique, filtrables par période, produit, paiement ou vendeur.</p>
+  </section>
+
+  <section>
+    <span class="num">4</span>
+    <h2>Stock <span style="color:var(--faint);font-size:16px">(Boutique)</span> · Catalogue <span style="color:var(--faint);font-size:16px">(Digital)</span></h2>
+    <div class="mode"><h3><span class="b b--shop">Boutique</span> Stock & alertes</h3>
+      <ul class="acts">
+        <li><b>Alertes</b> : Rupture (rouge) = plus rien. Stock faible (orange) = sous ton seuil.</li>
+        <li><b>Ajuster la quantité</b> : les boutons − et + ou la saisie directe. Le stock baisse à chaque vente, remonte à chaque achat fournisseur.</li>
+        <li><b>Seuil & prix d'achat</b> : définis le seuil d'alerte et le coût d'achat pour un bénéfice juste.</li>
+      </ul></div>
+    <div class="mode"><h3><span class="b b--dev">Digital</span> Catalogue de prestations</h3>
+      <ul class="acts">
+        <li><b>Créer une prestation</b> : tarif Prix fixe, Taux horaire (/h) ou Par projet.</li>
+        <li><b>Détailler chaque coût</b> : une note (« Forfait API OpenAI »), le statut « Déjà payé / À payer », et la périodicité (ponctuel, mois, an).</li>
+        <li><b>Impulser un coût récurrent</b> : coche « Impulser dans mes dépenses fixes globales » : le coût devient une charge mensuelle de l'entreprise, comptée une seule fois.</li>
+        <li><b>Suivre les « À payer »</b> : ils n'entament pas encore ta marge ; ils apparaissent dans « Charges à venir » sur le tableau de bord, avec l'échéance.</li>
+      </ul></div>
+  </section>
+
+  <section>
+    <span class="num">5</span>
+    <h2>Carnet de dettes</h2>
+    <p class="lede">Qui te doit de l'argent, combien, et relance-les en un clic.</p>
+    <ul class="acts">
+      <li><b>Enregistrer une dette</b> : client, montant, échéance (avec un annuaire clients centralisé).</li>
+      <li><b>Encaisser un versement partiel</b> : ajoute un versement, tu vois le reste dû se mettre à jour.</li>
+      <li><b>Relancer par WhatsApp</b> : un clic ouvre le WhatsApp du client avec un message déjà écrit et adapté (retard, reste).</li>
+      <li><b>Ouvrir la fiche client</b> : son reste dû, ses crédits et son historique d'achat.</li>
+    </ul>
+    <p class="tip">La jauge de recouvrement te montre le pourcentage de ce que tu as déjà récupéré.</p>
+  </section>
+
+  <section>
+    <span class="num">6</span>
+    <h2>Dépenses & Poche Perso</h2>
+    <p class="lede">Tout ce qui sort de ta caisse, pour savoir où part ton argent.</p>
+    <ul class="acts">
+      <li><b>Ajouter une dépense</b> : montant, catégorie, date.</li>
+      <li><b>Abonnements & outils</b> (digital) : coche « récurrente » (mois/an) pour Supabase, hébergement, Canva… Boussole calcule ton coût logiciel mensuel automatiquement.</li>
+    </ul>
+    <div class="callout">
+      <p style="margin:0 0 6px"><strong>La Poche Perso</strong> : ta vie courante, étanche du commerce.</p>
+      <p style="margin:0;color:var(--soft)">Dans le formulaire de dépense, choisis « Ma poche perso » pour le loyer maison, la ration, l'école… Ces dépenses n'entament <b>NI ton bénéfice NI ta caisse</b> : tes chiffres de boutique restent propres. Ne jamais mélanger l'argent de la maison et celui du commerce, c'est la première cause de faillite des petits commerces.</p>
+    </div>
+  </section>
+
+  <section>
+    <span class="num">7</span>
+    <h2>Bilan & rapports</h2>
+    <p class="lede">La santé de ton commerce, ton palmarès produits, et tes factures.</p>
+    <ul class="acts">
+      <li><b>Rapport par période</b> : chiffre d'affaires, bénéfice, marge… exportable en PDF, Excel ou WhatsApp.</li>
+      <li><b>Palmarès Tops / Flops</b> : ce qui cartonne, et les produits à relancer (à perte, dormants, stock qui dort).</li>
+      <li><b>Factures & devis</b> : facture pro imprimable avec ton identité (IFU, RCCM) et le montant en toutes lettres.</li>
+    </ul>
+    <p class="tip">Le score de santé sur 100 te dit en un chiffre si ton commerce va bien.</p>
+  </section>
+
+  <section>
+    <span class="num">8</span>
+    <h2>Sécurité & équipe</h2>
+    <p class="lede">Protège ton argent et donne des droits à tes vendeurs.</p>
+    <ul class="acts">
+      <li><b>Code PIN</b> : protège l'ouverture de l'appli sur ton téléphone.</li>
+      <li><b>Équipe & droits (anti-vol)</b> : un Vendeur ne voit QUE la caisse : ni tes bénéfices, ni tes réglages. Chaque suppression de vente est tracée.</li>
+      <li><b>Passer la main</b> : confie le téléphone à un vendeur en session limitée ; reprends la main avec ton code.</li>
+    </ul>
+  </section>
+
+  <section>
+    <span class="num">9</span>
+    <h2>Abonnement & compte</h2>
+    <ul class="acts">
+      <li><b>Essai</b> : 30 jours gratuits, tout ouvert.</li>
+      <li><b>Licence</b> : ensuite, une licence mensuelle (payée par Mobile Money) débloque l'appli. NEBULA t'envoie une clé à activer.</li>
+      <li><b>Compte</b> : connecte-toi pour synchroniser tes données entre ton téléphone et ton ordinateur, à jour partout.</li>
+    </ul>
+    <p class="tip">Besoin d'aide dans l'appli ? Touche le bouton « ? » en haut : un guide s'ouvre sur l'écran où tu es.</p>
+  </section>
+
+  <footer>Boussole · NEBULA Agency. Guide susceptible d'évoluer avec l'application.</footer>
+</div>
+</body>
+</html>

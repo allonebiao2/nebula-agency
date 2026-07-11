@@ -613,6 +613,7 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
     ${cashCard}
     ${alertsBlockHTML()}
     ${chargesAVenirCardHTML()}
+    ${guideBannerHTML()}
     ${periodBarHTML(gran, offset, D.label)}
     <div class="dash">
       ${hero}
@@ -1396,6 +1397,15 @@ export function receiptHTML(data, fmt) {
     <div class="rc-pay">Payé en ${esc(PAYMENT_LABELS[data.mode] || data.mode)}${data.vendeur ? ` · Vendeur : ${esc(data.vendeur)}` : ''}</div>
     <div class="rc-foot">Merci de votre visite !</div>
   </div>`;
+}
+
+// Bannière de téléchargement du guide utilisateur (PDF), visible sur le tableau de bord.
+export function guideBannerHTML() {
+  return `<a class="guidebanner" href="assets/docs/Guide-Utilisateur-Boussole.pdf" download="Guide-Boussole.pdf">
+    <span class="guidebanner__ic" data-icon="book"></span>
+    <span class="guidebanner__b"><strong>Guide d'utilisation</strong><small>Télécharge le PDF pour tout maîtriser</small></span>
+    <span class="guidebanner__cta"><span data-icon="download"></span></span>
+  </a>`;
 }
 
 // Carte « Charges à venir » : coûts de prestations marqués « À payer » (échéances prévisibles).
