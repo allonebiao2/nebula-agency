@@ -89,7 +89,7 @@ INA Luxury (**600×800, 3:4, fond blanc, JPEG q78**).
 ## Contraintes
 
 - **Budget** : 100 000 FCFA setup + 10 000 FCFA/mois.
-- **Hébergement** : Netlify (`index.html` = page d'accueil) — `https://luxuryskinclinic.netlify.app/`.
+- **Hébergement** : **Cloudflare Pages** (projet `luxury-club-229` → `luxury-club-229.pages.dev`) · **domaine LIVE `https://luxuryclub229.com`** (racine + `www`, SSL auto). Migré depuis Netlify le 2026-07-12 (ancien `luxuryskinclinic.netlify.app` à débrancher). Domaine acheté chez Hostinger → **nameservers basculés sur Cloudflare** (`paul`/`rosemary.ns.cloudflare.com`) → DNS = 2 CNAME proxifiés `@`+`www` → `luxury-club-229.pages.dev`. Déploiement : `wrangler pages deploy . --project-name luxury-club-229`.
 - **Technique** : HTML pur, CSS inline, JS vanilla, zéro framework, zéro CDN externe.
 - **Images** : fichiers JPG/PNG externes dans `assets/images/` (lazy-loadés
   sur les templates produits) — **plus de base64 dans les pages** depuis le
@@ -459,7 +459,7 @@ de la zone catalogue INA Luxury.
 
 - Pages : `index.html`, `ina-luxury.html`, `luxury-skin-clinic.html`, `cozy.html`
 - Assets : `assets/` · Infos client : `assets/docs/gloria-infos.md`
-- **URL en ligne** : https://luxuryskinclinic.netlify.app/
+- **URL en ligne** : https://luxuryclub229.com/ (Cloudflare Pages ; ancien Netlify obsolète)
 
 ## Performance (mesurée 2026-05-25)
 
