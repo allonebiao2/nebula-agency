@@ -336,3 +336,176 @@ begin
     end;
   end loop;
 end $$;
+
+
+-- ============================================================
+--  COCKPIT ADMIN NEBULA — pilotage /admin (#cockpit-licences)
+--  Tout l'accès admin passe par des RPC SECURITY DEFINER gated par
+--  is_admin() : la RLS des commerçants n'est JAMAIS ouverte.
+-- ============================================================
+
+-- Helper : l'appelant est-il un e-mail admin NEBULA ?
+create or replace function public.is_admin()
+returns boolean language sql stable security definer set search_path = public as $$
+  select coalesce((select email from auth.users where id = auth.uid()) in
+    ('allonebiao@gmail.com','allonebiao2@gmail.com'), false);
+$$;
+grant execute on function public.is_admin() to authenticated;
+
+-- Champs admin par utilisateur (suspension, notes CRM privées, jours d'essai offerts).
+-- L'utilisateur LIT sa propre ligne (pour savoir s'il est suspendu / son bonus d'essai)
+-- mais ne peut PAS l'écrire : seul l'admin écrit, via les RPC definer plus bas.
+create table if not exists public.user_admin (
+  user_id     uuid primary key references auth.users on delete cascade,
+  suspended   boolean default false,
+  notes       text default '',
+  trial_bonus int default 0,
+  updated_at  timestamptz default now()
+);
+alter table public.user_admin enable row level security;
+drop policy if exists ua_owner_sel on public.user_admin;
+create policy ua_owner_sel on public.user_admin for select to authenticated
+  using (auth.uid() = user_id or public.is_admin());
+
+-- Statistiques AGRÉGÉES poussées par CHAQUE client (aucun détail brut ne remonte).
+-- L'utilisateur écrit/lit SA ligne ; l'admin lit tout via admin_users() (definer).
+create table if not exists public.user_stats (
+  user_id        uuid primary key references auth.users on delete cascade,
+  nom            text default '',
+  plan           text default 'essai',
+  last_open      date,
+  gmv            numeric default 0,
+  ventes_n       int default 0,
+  dettes_recu    numeric default 0,
+  relance_manuel int default 0,
+  relance_pro    int default 0,
+  updated_at     timestamptz default now()
+);
+alter table public.user_stats enable row level security;
+drop policy if exists us_owner on public.user_stats;
+create policy us_owner on public.user_stats for all to authenticated
+  using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- ---- RPC : roster complet + tout ce qu'il faut pour les 4 sections ----
+create or replace function public.admin_users()
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare v jsonb;
+begin
+  if not public.is_admin() then raise exception 'non autorise'; end if;
+  select coalesce(jsonb_agg(r order by (r->>'created_at') desc), '[]'::jsonb) into v from (
+    select jsonb_build_object(
+      'user_id', u.id,
+      'email', u.email,
+      'nom', coalesce(nullif(p.nom_activite,''), s.nom, '(sans nom)'),
+      'proprietaire', coalesce(p.proprietaire,''),
+      'tel', coalesce(p.tel_pro,''),
+      'business_type', coalesce(p.business_type,'physique'),
+      'licence', coalesce(p.licence,'{}'::jsonb),
+      'created_at', to_char(u.created_at,'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
+      'configured', (p.user_id is not null),
+      'suspended', coalesce(a.suspended,false),
+      'notes', coalesce(a.notes,''),
+      'trial_bonus', coalesce(a.trial_bonus,0),
+      'gmv', coalesce(s.gmv,0),
+      'ventes_n', coalesce(s.ventes_n,0),
+      'dettes_recu', coalesce(s.dettes_recu,0),
+      'relance_manuel', coalesce(s.relance_manuel,0),
+      'relance_pro', coalesce(s.relance_pro,0),
+      'last_open', s.last_open
+    ) as r
+    from auth.users u
+    left join public.profils p on p.user_id = u.id
+    left join public.user_admin a on a.user_id = u.id
+    left join public.user_stats s on s.user_id = u.id
+  ) t;
+  return v;
+end $$;
+grant execute on function public.admin_users() to authenticated;
+
+-- ---- RPC : prolonger l'essai (+N jours cumulés) ----
+create or replace function public.admin_extend_trial(p_uid uuid, p_days int)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_admin() then raise exception 'non autorise'; end if;
+  insert into public.user_admin(user_id, trial_bonus, updated_at)
+    values (p_uid, greatest(0, p_days), now())
+  on conflict (user_id) do update
+    set trial_bonus = coalesce(user_admin.trial_bonus,0) + p_days, updated_at = now();
+end $$;
+grant execute on function public.admin_extend_trial(uuid, int) to authenticated;
+
+-- ---- RPC : activer l'abonnement manuellement (cash / OM / Momo direct) ----
+create or replace function public.admin_activate_sub(p_uid uuid, p_plan text, p_days int default 30)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_admin() then raise exception 'non autorise'; end if;
+  update public.profils
+     set licence = coalesce(licence,'{}'::jsonb) || jsonb_build_object(
+           'plan', coalesce(p_plan,'essentiel'),
+           'statut', 'actif',
+           'cle', 'ADMIN',
+           'echeance', to_char((now() + (p_days || ' days')::interval),'YYYY-MM-DD"T"HH24:MI:SS"Z"')
+         ),
+         updated_at = now()
+   where user_id = p_uid;
+end $$;
+grant execute on function public.admin_activate_sub(uuid, text, int) to authenticated;
+
+-- ---- RPC : notes CRM privées ----
+create or replace function public.admin_set_notes(p_uid uuid, p_notes text)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_admin() then raise exception 'non autorise'; end if;
+  insert into public.user_admin(user_id, notes, updated_at) values (p_uid, coalesce(p_notes,''), now())
+  on conflict (user_id) do update set notes = coalesce(p_notes,''), updated_at = now();
+end $$;
+grant execute on function public.admin_set_notes(uuid, text) to authenticated;
+
+-- ---- RPC : suspendre / réactiver ----
+create or replace function public.admin_set_suspended(p_uid uuid, p_val boolean)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_admin() then raise exception 'non autorise'; end if;
+  insert into public.user_admin(user_id, suspended, updated_at) values (p_uid, coalesce(p_val,false), now())
+  on conflict (user_id) do update set suspended = coalesce(p_val,false), updated_at = now();
+end $$;
+grant execute on function public.admin_set_suspended(uuid, boolean) to authenticated;
+
+-- ---- RPC : reset des données d'essai (garde le catalogue produits) + backup JSON ----
+create or replace function public.admin_reset_user_data(p_uid uuid)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare v_backup jsonb;
+begin
+  if not public.is_admin() then raise exception 'non autorise'; end if;
+  v_backup := jsonb_build_object(
+    'user_id', p_uid, 'at', now(),
+    'ventes',   (select coalesce(jsonb_agg(x),'[]'::jsonb) from public.ventes x   where x.user_id = p_uid),
+    'depenses', (select coalesce(jsonb_agg(x),'[]'::jsonb) from public.depenses x where x.user_id = p_uid),
+    'credits',  (select coalesce(jsonb_agg(x),'[]'::jsonb) from public.credits x  where x.user_id = p_uid)
+  );
+  delete from public.ventes   where user_id = p_uid;
+  delete from public.depenses where user_id = p_uid;
+  delete from public.credits  where user_id = p_uid;
+  return v_backup;   -- le catalogue produits / paramètres sont conservés
+end $$;
+grant execute on function public.admin_reset_user_data(uuid) to authenticated;
+
+-- ---- RPC : snapshot complet d'un user pour l'inspection LECTURE SEULE ----
+create or replace function public.admin_user_snapshot(p_uid uuid)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare v jsonb;
+begin
+  if not public.is_admin() then raise exception 'non autorise'; end if;
+  select jsonb_build_object(
+    'profil',        (select to_jsonb(x) from public.profils x       where x.user_id = p_uid),
+    'produits',      (select coalesce(jsonb_agg(x),'[]'::jsonb) from public.produits x      where x.user_id = p_uid),
+    'ventes',        (select coalesce(jsonb_agg(x),'[]'::jsonb) from public.ventes x        where x.user_id = p_uid),
+    'depenses',      (select coalesce(jsonb_agg(x),'[]'::jsonb) from public.depenses x      where x.user_id = p_uid),
+    'credits',       (select coalesce(jsonb_agg(x),'[]'::jsonb) from public.credits x       where x.user_id = p_uid),
+    'charges_fixes', (select coalesce(jsonb_agg(x),'[]'::jsonb) from public.charges_fixes x where x.user_id = p_uid),
+    'objectifs',     (select coalesce(jsonb_agg(x),'[]'::jsonb) from public.objectifs x     where x.user_id = p_uid),
+    'documents',     (select coalesce(jsonb_agg(x),'[]'::jsonb) from public.documents x     where x.user_id = p_uid)
+  ) into v;
+  return v;
+end $$;
+grant execute on function public.admin_user_snapshot(uuid) to authenticated;

@@ -27,6 +27,8 @@ function emptyState() {
     achats: [],          // {id, fournisseur, date, lignes:[{produit_id,qte,cout_unitaire}], statut, note, created_at}  (achats fournisseurs)
     clients: [],         // {id, nom, tel, adresse, note, created_at}  (annuaire client explicite)
     audit: [],           // {id, action, cible, detail, auteur, date}  (journal anti-fraude, Pro)
+    suspended: false,    // compte suspendu par l'admin NEBULA (valeur serveur, lecture seule côté client)
+    trial_bonus: 0,      // jours d'essai offerts par l'admin (cumulés)
   };
 }
 
@@ -69,6 +71,7 @@ export const PAYMENT_LABELS = { especes: 'Espèces', momo: 'Mobile Money', carte
 
 let state = emptyState();
 let remote = null;          // adaptateur cloud (null = mode local)
+let _inspecting = false, _inspectBackup = null, _inspectNom = '';   // inspection admin LECTURE SEULE
 const listeners = new Set();
 
 // ---------- Événements ----------
@@ -78,7 +81,7 @@ function emit() { listeners.forEach((fn) => fn(state)); }
 // ---------- Persistance locale ----------
 function hasLS() { try { return typeof localStorage !== 'undefined'; } catch { return false; } }
 function persistLocal() {
-  if (!hasLS()) return;
+  if (_inspecting || !hasLS()) return;   // en inspection : ne jamais écraser le local de l'admin
   try { localStorage.setItem(lsKey(), JSON.stringify(state)); } catch (e) { console.warn('persist local', e); }
 }
 function loadLocal() {
@@ -93,6 +96,7 @@ function loadLocal() {
 // ---------- Cloud ----------
 export function setRemote(adapter) { remote = adapter; }
 export async function hydrateFromRemote() {
+  if (_inspecting) return;                     // ne pas clobber l'état inspecté
   if (!remote || !isMainBoutique()) return;   // le cloud ne concerne que la boutique principale
   const data = await remote.pullAll();
   if (!data) return;
@@ -126,8 +130,8 @@ export async function hydrateFromRemote() {
   emit();
 }
 // Le cloud ne synchronise QUE la boutique principale (les autres restent locales).
-function pushRemote(table, row) { if (remote && isMainBoutique()) remote.upsert(table, row).catch((e) => console.warn('push', table, e)); }
-function delRemote(table, id) { if (remote && isMainBoutique()) remote.remove(table, id).catch((e) => console.warn('del', table, e)); }
+function pushRemote(table, row) { if (!_inspecting && remote && isMainBoutique()) remote.upsert(table, row).catch((e) => console.warn('push', table, e)); }
+function delRemote(table, id) { if (!_inspecting && remote && isMainBoutique()) remote.remove(table, id).catch((e) => console.warn('del', table, e)); }
 
 // ---------- Multi-boutiques (Pro) ----------
 function loadBoutiques() { try { return JSON.parse(localStorage.getItem('boussole:boutiques')) || null; } catch { return null; } }
@@ -475,15 +479,55 @@ export function licenceEtat() {
     if (now <= fin) return { mode: 'actif', bloque: false, plan: l.plan, echeance: l.echeance, joursRestants: Math.ceil((fin - now) / DAY_MS) };
     return { mode: 'expire', bloque: true, plan: l.plan, echeance: l.echeance };
   }
+  const bonus = (Number(state.trial_bonus) || 0);   // jours offerts par l'admin
   if (l.essai_debut) {
-    const fin = new Date(l.essai_debut).getTime() + TRIAL_DAYS * DAY_MS;
+    const fin = new Date(l.essai_debut).getTime() + (TRIAL_DAYS + bonus) * DAY_MS;
     if (now <= fin) return { mode: 'essai', bloque: false, plan: l.plan, joursRestants: Math.max(0, Math.ceil((fin - now) / DAY_MS)) };
     return { mode: 'expire_essai', bloque: true, plan: l.plan };
   }
-  return { mode: 'essai', bloque: false, plan: l.plan, joursRestants: TRIAL_DAYS };
+  return { mode: 'essai', bloque: false, plan: l.plan, joursRestants: TRIAL_DAYS + bonus };
 }
 // Accès aux fonctions Pro : ouvert pendant l'essai (tout), sinon licence Pro active.
 export function proAccess() { const e = licenceEtat(); return e.mode === 'essai' || (e.mode === 'actif' && e.plan === 'pro'); }
+
+// ---------- Pilotage admin (cockpit NEBULA) ----------
+// Compte suspendu par l'admin (valeur serveur lue au pull). Bloque l'accès à l'appli.
+export function isSuspended() { return !!state.suspended; }
+// Compteurs de relances WhatsApp, hors `state` (le pull ne doit pas les remettre à zéro).
+const REL_KEY = 'boussole:relstats';
+function loadRel() { try { return JSON.parse(localStorage.getItem(REL_KEY)) || { manuel: 0, pro: 0 }; } catch { return { manuel: 0, pro: 0 }; } }
+export function getRelanceStats() { return loadRel(); }
+export function incrRelance(isPro) { const r = loadRel(); if (isPro) r.pro = (r.pro || 0) + 1; else r.manuel = (r.manuel || 0) + 1; try { localStorage.setItem(REL_KEY, JSON.stringify(r)); } catch {} return r; }
+// Agrégat ANONYME poussé vers le cloud (user_stats) : aucune donnée brute ne remonte.
+export function statsPayload() {
+  const rel = loadRel();
+  const gmv = state.ventes.reduce((s, v) => s + (Number(v.qte) || 0) * (Number(v.prix_unitaire) || 0), 0);
+  const dettesRecu = state.credits.reduce((s, c) => s + ((Number(c.montant) || 0) - creditReste(c)), 0);
+  const e = licenceEtat();
+  const plan = e.mode === 'actif' ? (e.plan || 'essentiel') : (e.mode === 'essai' ? 'essai' : e.mode);
+  return { nom: state.profil.nom_activite || '', plan, last_open: _ymd2(new Date()), gmv, ventes_n: state.ventes.length, dettes_recu: dettesRecu, relance_manuel: rel.manuel || 0, relance_pro: rel.pro || 0 };
+}
+
+// ---------- Inspection LECTURE SEULE d'un commerçant (admin) ----------
+export function isInspecting() { return _inspecting; }
+export function inspectNom() { return _inspectNom; }
+export function enterInspect(snap, nom) {
+  _inspectBackup = state; _inspectNom = nom || '';
+  const p = (snap && snap.profil) || {};
+  state = Object.assign(emptyState(), {
+    profil: { nom_activite: p.nom_activite || '', devise: p.devise || 'F', solde_initial: Number(p.solde_initial) || 0, objectif_benefice: Number(p.objectif_benefice) || 0, ifu: p.ifu || '', rccm: p.rccm || '', adresse: p.adresse || '', tel_pro: p.tel_pro || '', email_pro: p.email_pro || '', vendeurs: Array.isArray(p.vendeurs) ? p.vendeurs : [], proprietaire: p.proprietaire || '', equipe: Array.isArray(p.equipe) ? p.equipe : [], licence: p.licence || {}, business_type: p.business_type || 'physique', wa_templates: p.wa_templates || {} },
+    produits: ((snap && snap.produits) || []).map((x) => ({ ...x, couts: x.couts || [] })),
+    ventes: (snap && snap.ventes) || [], depenses: (snap && snap.depenses) || [], credits: (snap && snap.credits) || [],
+    charges_fixes: (snap && snap.charges_fixes) || [], objectifs: (snap && snap.objectifs) || [], documents: (snap && snap.documents) || [],
+  });
+  _inspecting = true; emit();
+}
+export function exitInspect() {
+  if (!_inspecting) return;
+  _inspecting = false; _inspectNom = '';
+  state = _inspectBackup || emptyState(); _inspectBackup = null;
+  emit();
+}
 
 // ---------- Relances de dettes « intelligentes » (Pro) ----------
 // Une relance devient DUE quand l'échéance est atteinte (ou dette ancienne sans échéance).

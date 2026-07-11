@@ -1841,6 +1841,163 @@ export function empBannerHTML(membre) {
   </div>`;
 }
 
+// ============ COCKPIT ADMIN NEBULA (#cockpit-licences) ============
+const PLAN_PRIX = { essentiel: (PLANS.essentiel || {}).prix || 5000, pro: (PLANS.pro || {}).prix || 10000 };
+const _admYmd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+function _admPaid(u) { const l = u.licence || {}; return l.statut === 'actif' && l.echeance && new Date(l.echeance).getTime() > Date.now(); }
+function _admPlanLabel(u) {
+  const l = u.licence || {};
+  if (_admPaid(u)) return `Abonné ${(PLANS[l.plan] || {}).nom || l.plan || 'Essentiel'}`;
+  if (l.echeance && new Date(l.echeance).getTime() <= Date.now()) return 'Expiré';
+  return 'Essai';
+}
+function adminMetrics(users) {
+  const today = _admYmd(new Date()), d30 = _admYmd(new Date(Date.now() - 29 * 86400000));
+  let ess = 0, pro = 0, paid = 0, dau = 0, mau = 0, gmv = 0, dettes = 0, relM = 0, relP = 0;
+  users.forEach((u) => {
+    if (_admPaid(u)) { paid++; if ((u.licence.plan) === 'pro') pro++; else ess++; }
+    if (u.last_open) { if (u.last_open === today) dau++; if (u.last_open >= d30) mau++; }
+    gmv += Number(u.gmv) || 0; dettes += Number(u.dettes_recu) || 0;
+    relM += Number(u.relance_manuel) || 0; relP += Number(u.relance_pro) || 0;
+  });
+  const total = users.length;
+  return {
+    ess, pro, paid, total, mrr: ess * PLAN_PRIX.essentiel + pro * PLAN_PRIX.pro,
+    conv: total ? Math.round(paid / total * 100) : 0, dau, mau, stick: mau ? Math.round(dau / mau * 100) : 0,
+    gmv, dettes, relM, relP, relTotal: relM + relP,
+    champions: users.filter((u) => Number(u.gmv) > 0).sort((a, b) => (b.gmv || 0) - (a.gmv || 0)).slice(0, 5),
+  };
+}
+function _admStat(lbl, val, cls = '') { return `<div class="acard"><span class="acard__lbl">${lbl}</span><span class="acard__val ${cls}">${val}</span></div>`; }
+function _admUserRow(u) {
+  return `<button class="urow ${u.suspended ? 'is-susp' : ''}" data-action="adm-open" data-uid="${esc(u.user_id)}">
+    <div class="urow__id"><strong>${esc(u.nom || '(sans nom)')}</strong><small>${esc(_admPlanLabel(u))}${u.proprietaire ? ' · ' + esc(u.proprietaire) : (u.email ? ' · ' + esc(u.email) : '')}</small></div>
+    <div class="urow__meta"><span class="urow__gmv">${formatF(u.gmv || 0)}</span>${u.suspended ? '<span class="lic-tag lic-tag--off">suspendu</span>' : ''}</div>
+  </button>`;
+}
+function _licencePanels(requests, keys, tgChat) {
+  const reqRows = requests.length ? requests.map((r) => `<div class="areq ${r.statut !== 'en_attente' ? 'is-done' : ''}">
+      <div class="areq__b"><strong>${esc(r.nom || 'Client')}</strong><small>${esc((PLANS[r.plan] || {}).nom || r.plan)} · ${formatNombre(r.montant || 0)} F · TXN ${esc(r.txn || '—')}</small></div>
+      <div class="areq__acts">${r.statut === 'en_attente'
+        ? `<button class="btn btn--sm" data-action="admin-genkey" data-plan="${esc(r.plan)}" data-id="${r.id}"><span data-icon="key"></span> Générer la clé</button>
+           <button class="btn btn--ghost btn--sm" data-action="admin-reject" data-id="${r.id}">Rejeter</button>`
+        : `<span class="lic-tag lic-tag--${r.statut === 'valide' ? 'ok' : 'off'}">${r.statut}</span>`}</div>
+    </div>`).join('') : '<p class="lrow--empty">Aucune demande de paiement.</p>';
+  const keyRows = keys.slice(0, 20).map((k) => `<div class="akey ${k.statut === 'used' ? 'is-used' : ''}">
+      <code>${esc(k.cle)}</code><span>${esc((PLANS[k.plan] || {}).nom || k.plan)}</span>
+      <span class="lic-tag lic-tag--${k.statut === 'used' ? 'off' : 'ok'}">${k.statut === 'used' ? 'utilisée' : 'dispo'}</span>
+      ${k.statut === 'dispo' ? `<button class="lrow__btn" data-action="admin-copykey" data-cle="${esc(k.cle)}" title="Copier"><span data-icon="download"></span></button>` : ''}
+    </div>`).join('');
+  return `<div class="panel">
+      <div class="panel__head"><h2>Demandes de paiement</h2><span class="panel__sub">à valider</span></div>
+      <div class="areqlist">${reqRows}</div>
+    </div>
+    <div class="panel">
+      <div class="panel__head"><h2>Générer une clé</h2></div>
+      <div class="btnrow">${Object.keys(PLANS).map((k) => `<button class="btn" data-action="admin-genkey" data-plan="${k}"><span data-icon="key"></span> ${PLANS[k].nom}</button>`).join('')}</div>
+      <div class="akeylist">${keyRows}</div>
+    </div>
+    <div class="panel">
+      <div class="panel__head"><h2>Notifications Telegram</h2></div>
+      ${zhelp('Reçois une alerte Telegram à chaque paiement (sans n8n). Sur Telegram, écris à @userinfobot : il te donne ton « Id ». Colle-le ici puis teste.')}
+      <div class="field"><label for="tg-chat">Ton Telegram (chat id)</label>
+        <input id="tg-chat" class="input" inputmode="numeric" value="${esc(tgChat || '')}" placeholder="Ex. 123456789" autocomplete="off"></div>
+      <div class="btnrow">
+        <button class="btn" data-action="tg-save"><span data-icon="check"></span> Enregistrer</button>
+        <button class="btn btn--ghost" data-action="tg-test"><span data-icon="spark"></span> Envoyer un test</button>
+      </div>
+    </div>`;
+}
+export function adminCockpitHTML(users, requests, keys, tgChat) {
+  const m = adminMetrics(users);
+  return `<section class="view view--admin">
+    ${sectionTitle('Cockpit NEBULA', 'pilotage Boussole')}
+    <div class="panel">
+      <div class="panel__head"><h2>1 · L'argent (ma caisse)</h2><span class="panel__sub">revenus récurrents</span></div>
+      <div class="acards">
+        ${_admStat('MRR (par mois)', formatF(m.mrr), 'pos')}
+        ${_admStat('Abonnés payants', String(m.paid))}
+        ${_admStat('Essentiel', String(m.ess))}
+        ${_admStat('Pro', String(m.pro))}
+        ${_admStat('Conversion', m.conv + ' %')}
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel__head"><h2>2 · La traction (terrain)</h2><span class="panel__sub">usage réel</span></div>
+      <div class="acards">
+        ${_admStat('Actifs / jour', String(m.dau))}
+        ${_admStat('Actifs / mois', String(m.mau))}
+        ${_admStat('Stickiness', m.stick + ' %')}
+        ${_admStat('GMV globale', formatF(m.gmv), 'acc')}
+      </div>
+      <h3 class="acard__h3">Top 5 champions</h3>
+      <ul class="achamps">${m.champions.length ? m.champions.map((u, i) => `<li><span class="achamps__r">${i + 1}</span><strong>${esc(u.nom || '')}</strong><span class="achamps__v">${formatF(u.gmv || 0)}</span></li>`).join('') : '<li class="lrow--empty">Pas encore de ventes remontées.</li>'}</ul>
+    </div>
+    <div class="panel">
+      <div class="panel__head"><h2>3 · Relances & impact (ROI)</h2><span class="panel__sub">la valeur de Boussole</span></div>
+      <div class="acards">
+        ${_admStat('Dettes récupérées', formatF(m.dettes), 'pos')}
+        ${_admStat('Relances envoyées', String(m.relTotal))}
+        ${_admStat('Manuelles', String(m.relM))}
+        ${_admStat('Pré-remplies (Pro)', String(m.relP))}
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel__head"><h2>4 · Utilisateurs (${m.total})</h2><span class="panel__sub">télécommande</span></div>
+      ${zhelp('Touche un utilisateur pour ouvrir sa fiche : prolonger l’essai, activer un abonnement, l’inspecter en lecture seule, le relancer sur WhatsApp, ou le suspendre.')}
+      <div class="uroster">${users.length ? users.map(_admUserRow).join('') : '<p class="lrow--empty">Aucun utilisateur pour l’instant.</p>'}</div>
+    </div>
+    ${_licencePanels(requests, keys, tgChat)}
+    <button class="btn btn--ghost" data-action="go" data-screen="reglages"><span data-icon="home"></span> Retour à l’appli</button>
+  </section>`;
+}
+// Fiche « télécommande » d'un commerçant (modale).
+export function telecommandeHTML(u) {
+  const paid = _admPaid(u), l = u.licence || {}, tel = (u.tel || '').replace(/[^0-9]/g, '');
+  return `<div class="tcmd">
+    <div class="tcmd__stat">
+      <span>${esc(_admPlanLabel(u))}</span><span>GMV ${formatF(u.gmv || 0)}</span>
+      <span>${Number(u.ventes_n) || 0} ventes</span><span>Récup. ${formatF(u.dettes_recu || 0)}</span>
+    </div>
+    ${u.tel ? `<p class="tcmd__tel"><span data-icon="user"></span> ${esc(u.proprietaire || '')} · ${esc(u.tel)}</p>` : ''}
+    <div class="tcmd__grid">
+      <button class="btn btn--sm" data-action="adm-extend" data-uid="${esc(u.user_id)}" data-days="15"><span data-icon="clock"></span> +15 jours d'essai</button>
+      <button class="btn btn--sm" data-action="adm-activate" data-uid="${esc(u.user_id)}" data-plan="essentiel"><span data-icon="key"></span> Activer Essentiel</button>
+      <button class="btn btn--sm" data-action="adm-activate" data-uid="${esc(u.user_id)}" data-plan="pro"><span data-icon="crown"></span> Activer Pro</button>
+      ${tel ? `<button class="btn btn--sm btn--ghost" data-action="adm-relance-sub" data-uid="${esc(u.user_id)}"><span data-icon="whatsapp"></span> Relancer (abo)</button>` : ''}
+      <button class="btn btn--sm btn--ghost" data-action="adm-inspect" data-uid="${esc(u.user_id)}"><span data-icon="search"></span> Inspecter</button>
+      <button class="btn btn--sm btn--ghost" data-action="adm-reset" data-uid="${esc(u.user_id)}"><span data-icon="trash"></span> Reset données test</button>
+    </div>
+    <div class="field"><label for="adm-notes">Notes internes (privé)</label>
+      <textarea class="input" id="adm-notes" rows="3" placeholder="Ex. Grossiste à Dantokpa, appeler lundi">${esc(u.notes || '')}</textarea>
+      <button class="btn btn--sm" data-action="adm-notes-save" data-uid="${esc(u.user_id)}"><span data-icon="check"></span> Enregistrer la note</button>
+    </div>
+    <button class="btn btn--sm ${u.suspended ? '' : 'btn--danger'}" data-action="adm-suspend" data-uid="${esc(u.user_id)}" data-val="${u.suspended ? '0' : '1'}" style="width:100%">
+      <span data-icon="${u.suspended ? 'check' : 'lock'}"></span> ${u.suspended ? 'Réactiver le compte' : 'Suspendre / bloquer le compte'}</button>
+  </div>`;
+}
+// Écran de blocage d'un compte suspendu (réversible côté admin).
+export function blockSuspendedHTML(waNumber) {
+  return `<div class="paywall">
+    <div class="paywall__inner">
+      <div class="paywall__hero">
+        <img class="paywall__logo" src="assets/icons/logo-app.png" alt="" width="56" height="56">
+        <h1>Compte suspendu</h1>
+        <p class="paywall__lead">L’accès à ton espace Boussole est momentanément bloqué. Contacte NEBULA pour régulariser ta situation : ton compte sera réactivé aussitôt.</p>
+      </div>
+      <div class="paywall__foot">
+        <a class="btn" href="https://wa.me/${esc(waNumber || '')}" target="_blank" rel="noopener"><span data-icon="whatsapp"></span> Contacter NEBULA</a>
+        <button class="btn btn--ghost" data-action="logout"><span data-icon="logout"></span> Se déconnecter</button>
+      </div>
+    </div>
+  </div>`;
+}
+// Bandeau d'inspection lecture seule (mode admin).
+export function inspectBannerHTML(nom) {
+  return `<div class="inspbar"><span class="inspbar__l"><span data-icon="search"></span> Inspection (lecture seule) : <strong>${esc(nom || '')}</strong></span>
+    <button class="inspbar__btn" data-action="adm-inspect-exit"><span data-icon="close"></span> Quitter</button></div>`;
+}
+
 // --- BACK-OFFICE licences (réservé NEBULA) ---
 export function adminLicencesHTML(requests, keys, tgChat) {
   const reqRows = requests.length ? requests.map((r) => `<div class="areq ${r.statut !== 'en_attente' ? 'is-done' : ''}">

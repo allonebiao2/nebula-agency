@@ -269,6 +269,64 @@ async function adminGenKey(plan, reqId) {
   } catch (e) { UI.toast('Génération impossible : ' + (e.message || ''), 'err'); }
 }
 async function adminReject(id) { await Cloud.adminSetRequestStatut(id, 'rejete'); renderAdmin(); UI.toast('Demande rejetée'); }
+
+// ---------- Cockpit admin : télécommande par utilisateur ----------
+function admUser(uid) { return adminUsersCache.find((u) => u.user_id === uid); }
+function openTelecommande(uid) {
+  const u = admUser(uid); if (!u) return;
+  UI.openModal(UI.modalShell(u.nom || 'Utilisateur', UI.telecommandeHTML(u),
+    `<button class="btn btn--ghost" data-action="close-modal">Fermer</button>`));
+  hydrateIcons($('#modal-root'));
+}
+async function admExtend(uid, days) {
+  try { await Cloud.adminExtendTrial(uid, days); UI.closeModal(); UI.toast(`+${days} jours d'essai accordés`); renderAdmin(); }
+  catch (e) { UI.toast('Échec : ' + (e.message || ''), 'err'); }
+}
+async function admActivate(uid, plan) {
+  try { await Cloud.adminActivateSub(uid, plan || 'essentiel'); UI.closeModal(); UI.toast('Abonnement ' + (plan || 'essentiel') + ' activé'); renderAdmin(); }
+  catch (e) { UI.toast('Échec : ' + (e.message || ''), 'err'); }
+}
+function admRelanceSub(uid) {
+  const u = admUser(uid); if (!u || !u.tel) return;
+  const tel = u.tel.replace(/[^0-9]/g, '');
+  const msg = `Bonjour ${u.proprietaire || ''}, ici NEBULA (Boussole). Ton essai gratuit se termine bientôt. Pour ne pas perdre tes données et continuer à piloter ta caisse, active ton abonnement (Essentiel 5 000 F ou Pro 10 000 F par mois, Mobile Money). Réponds ici et je t'envoie ta clé.`;
+  window.open('https://wa.me/' + tel + '?text=' + encodeURIComponent(msg), '_blank');
+}
+async function admInspect(uid) {
+  const u = admUser(uid); if (!u) return;
+  try { UI.toast('Chargement des données…'); const snap = await Cloud.adminUserSnapshot(uid); UI.closeModal(); S.enterInspect(snap, u.nom || ''); screen = 'accueil'; resetScroll = true; render(); }
+  catch (e) { UI.toast('Inspection impossible : ' + (e.message || ''), 'err'); }
+}
+function admInspectExit() { S.exitInspect(); screen = 'admin'; resetScroll = true; render(); }
+function admReset(uid) {
+  const u = admUser(uid); if (!u) return;
+  UI.openModal(UI.modalShell('Reset des données test',
+    `${UI.zhelp('Efface les ventes, dépenses et dettes de ce compte. Le catalogue produits et les paramètres sont conservés. Une sauvegarde JSON est téléchargée avant l’effacement.')}
+     <div class="field"><label>Tape « ${UI.esc(u.nom || '')} » pour confirmer</label>
+       <input id="adm-reset-c" class="input" autocomplete="off" placeholder="${UI.esc(u.nom || '')}"></div>`,
+    `<button class="btn btn--ghost" data-action="close-modal">Annuler</button>
+     <button class="btn btn--danger" data-action="adm-reset-go" data-uid="${uid}">Effacer</button>`));
+  hydrateIcons($('#modal-root'));
+}
+async function admResetGo(uid) {
+  const u = admUser(uid); if (!u) return;
+  const v = (($('#adm-reset-c') || {}).value || '').trim();
+  if (v !== (u.nom || '').trim()) return UI.toast('Le nom ne correspond pas', 'err');
+  try {
+    const backup = await Cloud.adminResetUser(uid);
+    downloadFile(`boussole-backup-${uid}.json`, JSON.stringify(backup, null, 2), 'application/json');
+    UI.closeModal(); UI.toast('Données effacées (sauvegarde téléchargée)'); renderAdmin();
+  } catch (e) { UI.toast('Échec : ' + (e.message || ''), 'err'); }
+}
+async function admNotesSave(uid) {
+  const v = (($('#adm-notes') || {}).value || '');
+  try { await Cloud.adminSetNotes(uid, v); const u = admUser(uid); if (u) u.notes = v; UI.toast('Note enregistrée'); }
+  catch (e) { UI.toast('Échec : ' + (e.message || ''), 'err'); }
+}
+async function admSuspend(uid, val) {
+  try { await Cloud.adminSetSuspended(uid, val); UI.closeModal(); UI.toast(val ? 'Compte suspendu' : 'Compte réactivé'); renderAdmin(); }
+  catch (e) { UI.toast('Échec : ' + (e.message || ''), 'err'); }
+}
 async function copyText(t, ok) { try { await navigator.clipboard.writeText(t); UI.toast(ok || 'Copié'); } catch { UI.toast(t); } }
 async function tgSave() {
   const v = (($('#tg-chat') || {}).value || '').trim();
@@ -355,9 +413,11 @@ function render() {
     if (!Cloud.getUser()) return renderAdminGate();   // session pas encore chargée / déconnecté -> on garde l'intention
     screen = 'accueil';                                // connecté mais pas un compte admin
   }
+  // Compte suspendu par l'admin -> écran de blocage (l'inspection admin passe outre)
+  if (S.isSuspended() && !Cloud.isAdmin() && !S.isInspecting()) return renderBlockSuspended();
   // Blocage licence : essai terminé / licence expirée -> paywall plein écran
   const le = S.licenceEtat();
-  if (le.bloque && !Cloud.isAdmin()) return renderPaywall(le.mode);
+  if (le.bloque && !Cloud.isAdmin() && !S.isInspecting()) return renderPaywall(le.mode);
   // Session employé : forcer un écran autorisé par le rôle
   if (activeMember && !screenAllowed(screen)) screen = defaultScreen();
   const tb = $('#topbar');
@@ -388,8 +448,9 @@ function render() {
     animateCounts(view);
   }
   if (screen === 'accueil') wireCarousel();
-  // Bandeaux : mode employé + fin d'essai
-  const strip = (activeMember ? UI.empBannerHTML(currentMembre()) : UI.trialBannerHTML());
+  // Bandeaux : inspection admin > mode employé > fin d'essai
+  const strip = S.isInspecting() ? UI.inspectBannerHTML(S.inspectNom())
+    : (activeMember ? UI.empBannerHTML(currentMembre()) : UI.trialBannerHTML());
   if (strip && navVisible()) { view.insertAdjacentHTML('afterbegin', strip); hydrateIcons(view.firstElementChild); }
   if (activeMember) pruneChromeForMember();
   animateNext = false;
@@ -403,14 +464,21 @@ function renderPaywall(mode) {
   ['#nav', '#sidebar', '#fab'].forEach((s) => { const el = $(s); el.innerHTML = ''; el.style.display = 'none'; });
   hydrateIcons(view); view.scrollTop = 0;
 }
+let adminUsersCache = [];
 function renderAdmin() {
   const tb = $('#topbar'); tb.style.display = '';
   tb.innerHTML = UI.topbarHTML(cloudCtx(), effectiveTheme(), 0);
   ['#nav', '#sidebar', '#fab'].forEach((s) => { $(s).innerHTML = ''; $(s).style.display = 'none'; });
-  const view = $('#view'); view.innerHTML = '<section class="view"><p class="lrow--empty">Chargement…</p></section>';
-  Promise.all([Cloud.adminListRequests(), Cloud.adminListKeys(), Cloud.adminGetConfig('tg_admin_chat')]).then(([reqs, keys, tgChat]) => {
-    view.innerHTML = UI.adminLicencesHTML(reqs, keys, tgChat); hydrateIcons(view);
+  const view = $('#view'); view.innerHTML = '<section class="view"><p class="lrow--empty">Chargement du cockpit…</p></section>';
+  Promise.all([Cloud.adminUsers(), Cloud.adminListRequests(), Cloud.adminListKeys(), Cloud.adminGetConfig('tg_admin_chat')]).then(([users, reqs, keys, tgChat]) => {
+    adminUsersCache = users || [];
+    view.innerHTML = UI.adminCockpitHTML(adminUsersCache, reqs, keys, tgChat); hydrateIcons(view);
   });
+}
+function renderBlockSuspended() {
+  const tb = $('#topbar'); tb.style.display = 'none';
+  ['#nav', '#sidebar', '#fab'].forEach((s) => { const el = $(s); el.innerHTML = ''; el.style.display = 'none'; });
+  const view = $('#view'); view.innerHTML = UI.blockSuspendedHTML(NEBULA_WHATSAPP); hydrateIcons(view); view.scrollTop = 0;
 }
 // Écran d'accès au back-office (le temps que la session se charge, ou si déconnecté).
 function renderAdminGate() {
@@ -819,6 +887,8 @@ Cloud.onAuth((user) => {
   } else {
     render();
   }
+  // Pousse l'agrégat anonyme (DAU + GMV + relances) à chaque ouverture connectée.
+  if (user && !S.isInspecting()) Cloud.pushStats(S.statsPayload());
   // Reverrouille si un code PIN est actif (protection de l'appareil)
   if (loggedOutNow && Sec.hasPin() && Sec.lockOnOpen()) renderLock('open');
 });
@@ -1310,12 +1380,23 @@ document.addEventListener('click', (e) => {
     case 'switch-boutique': { S.switchBoutique(el.dataset.id); screen = 'accueil'; resetScroll = true; render(); return UI.toast('Boutique : ' + ((S.getBoutiques().find((b) => b.id === el.dataset.id) || {}).nom || '')); }
     case 'add-boutique': { const v = (($('#rg-bout') || {}).value || '').trim(); if (!v) return UI.toast('Donne un nom', 'err'); S.addBoutique(v); refreshReglages(); return UI.toast('Boutique ajoutée'); }
     case 'del-boutique': return UI.confirmDialog({ title: 'Supprimer la boutique', message: 'Ses données sur cet appareil seront effacées. Continuer ?', danger: true, okLabel: 'Supprimer' }, () => { S.deleteBoutique(el.dataset.id); refreshReglages(); UI.toast('Boutique supprimée'); });
-    case 'relance-wa': { const c = S.getCredits().find((x) => x.id === el.dataset.id); if (c && c.tel) window.open('https://wa.me/' + c.tel.replace(/[^0-9]/g, '') + '?text=' + encodeURIComponent(S.messageRelance(c)), '_blank'); return; }
+    case 'relance-wa': { const c = S.getCredits().find((x) => x.id === el.dataset.id); if (c && c.tel) { window.open('https://wa.me/' + c.tel.replace(/[^0-9]/g, '') + '?text=' + encodeURIComponent(S.messageRelance(c)), '_blank'); if (!S.isInspecting()) { const le = S.licenceEtat(); S.incrRelance(le.mode === 'actif' && le.plan === 'pro'); Cloud.pushStats(S.statsPayload()); } } return; }
 
     // Back-office licences (admin)
     case 'admin-genkey': return adminGenKey(el.dataset.plan, el.dataset.id);
     case 'admin-reject': return adminReject(el.dataset.id);
     case 'admin-copykey': return copyText(el.dataset.cle, 'Clé copiée');
+    // Cockpit admin : télécommande par utilisateur
+    case 'adm-open': return openTelecommande(el.dataset.uid);
+    case 'adm-extend': return admExtend(el.dataset.uid, Number(el.dataset.days) || 15);
+    case 'adm-activate': return admActivate(el.dataset.uid, el.dataset.plan);
+    case 'adm-relance-sub': return admRelanceSub(el.dataset.uid);
+    case 'adm-inspect': return admInspect(el.dataset.uid);
+    case 'adm-inspect-exit': return admInspectExit();
+    case 'adm-reset': return admReset(el.dataset.uid);
+    case 'adm-reset-go': return admResetGo(el.dataset.uid);
+    case 'adm-notes-save': return admNotesSave(el.dataset.uid);
+    case 'adm-suspend': return admSuspend(el.dataset.uid, el.dataset.val === '1');
     case 'tg-save': return tgSave();
     case 'tg-test': return tgTest();
 

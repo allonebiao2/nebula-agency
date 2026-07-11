@@ -127,6 +127,51 @@ export async function adminTestTelegram() {
   if (error) throw error;
   return data;
 }
+// ---------- Cockpit admin : pilotage des commerçants (RPC SECURITY DEFINER) ----------
+export async function adminUsers() {
+  if (!client) return [];
+  const { data, error } = await client.rpc('admin_users');
+  if (error) { console.warn('admin_users', error.message); return []; }
+  return Array.isArray(data) ? data : [];
+}
+export async function adminExtendTrial(uid, days) {
+  if (!client) throw new Error('Cloud non configuré');
+  const { error } = await client.rpc('admin_extend_trial', { p_uid: uid, p_days: days });
+  if (error) throw error;
+}
+export async function adminActivateSub(uid, plan, days = 30) {
+  if (!client) throw new Error('Cloud non configuré');
+  const { error } = await client.rpc('admin_activate_sub', { p_uid: uid, p_plan: plan, p_days: days });
+  if (error) throw error;
+}
+export async function adminSetNotes(uid, notes) {
+  if (!client) throw new Error('Cloud non configuré');
+  const { error } = await client.rpc('admin_set_notes', { p_uid: uid, p_notes: notes || '' });
+  if (error) throw error;
+}
+export async function adminSetSuspended(uid, val) {
+  if (!client) throw new Error('Cloud non configuré');
+  const { error } = await client.rpc('admin_set_suspended', { p_uid: uid, p_val: !!val });
+  if (error) throw error;
+}
+export async function adminResetUser(uid) {
+  if (!client) throw new Error('Cloud non configuré');
+  const { data, error } = await client.rpc('admin_reset_user_data', { p_uid: uid });
+  if (error) throw error;
+  return data;   // backup JSON
+}
+export async function adminUserSnapshot(uid) {
+  if (!client) throw new Error('Cloud non configuré');
+  const { data, error } = await client.rpc('admin_user_snapshot', { p_uid: uid });
+  if (error) throw error;
+  return data;
+}
+// Pousse l'agrégat anonyme du commerçant courant (DAU + GMV + relances…).
+export async function pushStats(payload) {
+  if (!client || !currentUser) return;
+  try { await client.from('user_stats').upsert({ user_id: currentUser.id, ...payload, updated_at: new Date().toISOString() }, { onConflict: 'user_id' }); }
+  catch (e) { console.warn('pushStats', e); }
+}
 
 // ---------- Adaptateur CRUD (branché sur le store) ----------
 function stripLocal(row) {
@@ -138,7 +183,7 @@ function makeAdapter() {
   const uid = () => currentUser && currentUser.id;
   return {
     async pullAll() {
-      const [prof, prods, charges, ventes, depenses, credits, documents, objectifs, achats, clients, audit] = await Promise.all([
+      const [prof, prods, charges, ventes, depenses, credits, documents, objectifs, achats, clients, audit, uadmin] = await Promise.all([
         client.from('profils').select('*').maybeSingle(),
         client.from('produits').select('*'),
         client.from('charges_fixes').select('*'),
@@ -150,8 +195,10 @@ function makeAdapter() {
         client.from('achats').select('*'),
         client.from('clients').select('*'),
         client.from('audit').select('*'),
+        client.from('user_admin').select('suspended,trial_bonus').maybeSingle(),   // suspension + bonus d'essai admin
       ]);
       const p = prof.data || {};
+      const ua = uadmin.data || {};
       return {
         profil: prof.data
           ? { nom_activite: p.nom_activite || '', devise: p.devise || 'F', objectif_benefice: Number(p.objectif_benefice) || 0, solde_initial: Number(p.solde_initial) || 0, ifu: p.ifu || '', rccm: p.rccm || '', adresse: p.adresse || '', tel_pro: p.tel_pro || '', email_pro: p.email_pro || '', vendeurs: Array.isArray(p.vendeurs) ? p.vendeurs : [], wa_templates: p.wa_templates || {}, proprietaire: p.proprietaire || '', equipe: Array.isArray(p.equipe) ? p.equipe : [], licence: p.licence || {}, business_type: p.business_type || 'physique' }
@@ -166,6 +213,8 @@ function makeAdapter() {
         achats: achats.data || [],
         clients: clients.data || [],
         audit: audit.data || [],
+        suspended: !!ua.suspended,
+        trial_bonus: Number(ua.trial_bonus) || 0,
         _documentsUnavailable: Boolean(documents.error),   // table absente = migration non lancée
       };
     },
