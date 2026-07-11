@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
-  <title>Boussole — gestion financière du commerçant</title>
+  <title>Boussole · gestion financière du commerçant</title>
   <meta name="description" content="Compare ce que tu dépenses à ce que tu gagnes. Vois ta rentabilité clairement, gère tes recettes en 3 enveloppes.">
   <meta name="theme-color" content="#0c0e13">
   <meta name="color-scheme" content="dark light">
   <script>
-    /* applique thème + personnalisation avant le 1er rendu (anti-flash) — défaut sombre */
+    /* applique thème + personnalisation avant le 1er rendu (anti-flash), défaut sombre */
     try {
       var d = document.documentElement, t = localStorage.getItem('boussole:theme');
       d.dataset.theme = (t === 'light' || t === 'dark') ? t : 'dark';
@@ -25,7 +25,7 @@
   <link rel="preload" href="assets/icons/logo-app.png" as="image">
   <link rel="preload" href="assets/icons/logo-mark.png" as="image">
   <link rel="preload" href="assets/fonts/BricolageGrotesque.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="assets/css/app.css?v=20260710o">
+  <link rel="stylesheet" href="assets/css/app.css?v=20260710p">
 </head>
 <body>
   <div id="splash" class="splash">
@@ -55,6 +55,6 @@
   <noscript><p style="padding:24px;font-family:system-ui">Boussole a besoin de JavaScript pour fonctionner.</p></noscript>
 
   <script src="assets/js/vendor/supabase.js" defer></script>
-  <script type="module" src="assets/js/app.js?v=20260710o"></script>
+  <script type="module" src="assets/js/app.js?v=20260710p"></script>
 </body>
 </html>

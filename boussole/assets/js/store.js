@@ -1,4 +1,4 @@
-// Boussole — data layer + logique des 3 enveloppes.
+// Boussole, data layer + logique des 3 enveloppes.
 // Offline-first : localStorage est toujours à jour. Si une session Supabase existe,
 // on reflète chaque écriture dans le cloud (optimiste) pour la synchro multi-appareils.
 import { DEVISE, CURRENCIES } from './config.js';
@@ -26,7 +26,7 @@ function emptyState() {
     objectifs: [],       // {id, titre, icone, montant_cible, montant_actuel, echeance, note, created_at}  (cagnottes/projets)
     achats: [],          // {id, fournisseur, date, lignes:[{produit_id,qte,cout_unitaire}], statut, note, created_at}  (achats fournisseurs)
     clients: [],         // {id, nom, tel, adresse, note, created_at}  (annuaire client explicite)
-    audit: [],           // {id, action, cible, detail, auteur, date}  (journal anti-fraude — Pro)
+    audit: [],           // {id, action, cible, detail, auteur, date}  (journal anti-fraude, Pro)
   };
 }
 
@@ -364,7 +364,7 @@ export function encaisserPanier(items, { mode = 'especes', vendeur = '', date } 
   list.forEach((it) => addVente({ produit_id: it.produit_id, qte: it.qte, prix_unitaire: it.prix_unitaire, mode, vendeur, ticket, date: d }));
   return ticket;
 }
-// Facturation d'un montant libre / acompte (services & digital) — sans produit du catalogue.
+// Facturation d'un montant libre / acompte (services & digital), sans produit du catalogue.
 export function addVenteLibre({ montant, libelle, mode = 'especes', vendeur = '' }) {
   const v = {
     id: uid(), produit_id: '', libelle: (libelle || 'Prestation').trim(),
@@ -560,7 +560,7 @@ export function renderTemplate(text, vars = {}) {
 export function resetLocal() { state = emptyState(); persistLocal(); emit(); }
 
 // =====================================================================
-//  LOGIQUE MÉTIER — coûts, marges, 3 enveloppes, bilans
+//  LOGIQUE MÉTIER, coûts, marges, 3 enveloppes, bilans
 // =====================================================================
 export function coutRevient(produit) {
   if (!produit || !produit.couts) return 0;
@@ -1270,7 +1270,7 @@ export function documentsSummary() {
   return { total: docs.length, nbFactures: factures.length, nbDevis: docs.length - factures.length, nbImpayees: impayees.length, totalImpaye, encaisse };
 }
 
-// Montant en toutes lettres (français) — mention classique d'une facture normalisée.
+// Montant en toutes lettres (français), mention classique d'une facture normalisée.
 export function montantEnLettres(n) {
   n = Math.round(Math.abs(Number(n) || 0));
   if (n === 0) return 'zéro';
@@ -1379,12 +1379,12 @@ export function journalCaisse(n = 10) {
 // ---------- Notifications (alertes agrégées pour la cloche) ----------
 export function notifications() {
   const list = [];
-  getProduits().forEach((p) => { if (getStockInfo(p).statut === 'rupture') list.push({ type: 'rupture', icon: 'box', text: `${p.nom} — en rupture`, screen: 'stock' }); });
-  getProduits().forEach((p) => { const s = getStockInfo(p); if (s.statut === 'bas') list.push({ type: 'bas', icon: 'box', text: `${p.nom} — bientôt épuisé (${s.qte})`, screen: 'stock' }); });
+  getProduits().forEach((p) => { if (getStockInfo(p).statut === 'rupture') list.push({ type: 'rupture', icon: 'box', text: `${p.nom}, en rupture`, screen: 'stock' }); });
+  getProduits().forEach((p) => { const s = getStockInfo(p); if (s.statut === 'bas') list.push({ type: 'bas', icon: 'box', text: `${p.nom}, bientôt épuisé (${s.qte})`, screen: 'stock' }); });
   const today = _ymd2(new Date());
-  state.credits.filter((c) => creditReste(c) > 0 && c.echeance && c.echeance < today).forEach((c) => list.push({ type: 'dette', icon: 'alert', text: `${c.client || 'Client'} — échéance dépassée (${formatF(creditReste(c))})`, screen: 'carnet' }));
+  state.credits.filter((c) => creditReste(c) > 0 && c.echeance && c.echeance < today).forEach((c) => list.push({ type: 'dette', icon: 'alert', text: `${c.client || 'Client'}, échéance dépassée (${formatF(creditReste(c))})`, screen: 'carnet' }));
   state.documents.filter((d) => d.type === 'facture' && d.statut !== 'payee' && d.echeance && d.echeance < today).forEach((d) => list.push({ type: 'facture', icon: 'receipt', text: `Facture ${d.numero} en retard`, screen: 'bilan' }));
-  chargesAVenir().filter((r) => r.joursRestants != null && r.joursRestants <= 2).forEach((r) => list.push({ type: 'charge', icon: 'receipt', text: `${r.libelle} — à payer${r.joursRestants < 0 ? ' (en retard)' : (r.joursRestants === 0 ? " (aujourd'hui)" : '')} · ${formatF(r.montant)}`, screen: 'accueil' }));
+  chargesAVenir().filter((r) => r.joursRestants != null && r.joursRestants <= 2).forEach((r) => list.push({ type: 'charge', icon: 'receipt', text: `${r.libelle}, à payer${r.joursRestants < 0 ? ' (en retard)' : (r.joursRestants === 0 ? " (aujourd'hui)" : '')} · ${formatF(r.montant)}`, screen: 'accueil' }));
   return { list, count: list.length };
 }
 
@@ -1540,7 +1540,7 @@ export function assistantRepondre(question) {
   }
   if (has('bénéf', 'benef', 'gagn', 'gain', 'reste', 'profit')) return `${cap(perLbl)}, ton bénéfice net est de ${formatF(t.benefice)} (marge ${formatF(t.marge)} − charges − dépenses).`;
   if (has('vendu', 'chiffre', ' ca ', 'ventes', 'encaiss', 'recette')) return `${cap(perLbl)}, tu as vendu pour ${formatF(t.revenu)} (${formatNombre(t.unites)} unité${t.unites > 1 ? 's' : ''}).`;
-  if (has('bonjour', 'salut', 'bonsoir', 'coucou', 'aide', 'help')) return "Bonjour ! Je suis ton assistant. Pose-moi une question sur ton commerce — tape-la ou touche une suggestion.";
+  if (has('bonjour', 'salut', 'bonsoir', 'coucou', 'aide', 'help')) return "Bonjour ! Je suis ton assistant. Pose-moi une question sur ton commerce, tape-la ou touche une suggestion.";
   return "Je réponds sur tes chiffres. Essaie : « Combien j'ai gagné cette semaine ? », « Quel produit rapporte le plus ? », « Quel jour je vends le mieux ? », « Qui me doit de l'argent ? », « Mes prévisions ? ».";
 }
 

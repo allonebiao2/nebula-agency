@@ -1,4 +1,4 @@
-// Boussole — rendu des écrans, modales, toasts.
+// Boussole, rendu des écrans, modales, toasts.
 import { icon } from './icons.js';
 import {
   getState, getProduits, getProduit, getChargesFixes, getVentes,
@@ -28,7 +28,7 @@ import * as I18n from './i18n.js';
 import * as BT from './btprint.js';
 import * as Sec from './security.js';
 
-// Préférences d'apparence (appareil) — accent, taille, densité, coins.
+// Préférences d'apparence (appareil), accent, taille, densité, coins.
 const uiPref = (k, d) => { try { return localStorage.getItem('boussole:' + k) || d; } catch { return d; } };
 export const ACCENTS = [
   { k: 'ambre', nom: 'Ambre', c: '#f6a63c' }, { k: 'emeraude', nom: 'Émeraude', c: '#34d399' },
@@ -48,7 +48,7 @@ const moisLabel = (mk) => {
 };
 
 // ============ TOPBAR ============
-// Légende d'explication (toujours visible sous un titre de zone) — pour que
+// Légende d'explication (toujours visible sous un titre de zone), pour que
 // chaque commerçant comprenne à quoi sert chaque zone, en langage simple.
 export function zhelp(text) { return `<p class="zhelp"><span class="zhelp__ic" data-icon="help"></span><span>${esc(text)}</span></p>`; }
 
@@ -65,7 +65,7 @@ export function helpTopics() {
         { t: 'Changer la période', d: 'Jour / Semaine / Mois / Année, avec les flèches pour revenir en arrière.' },
         { t: 'Régler ton fond de caisse', d: 'Touche la trésorerie pour saisir l’argent que tu avais avant de commencer.' },
         { t: 'Fixer un objectif', d: 'Le bénéfice à atteindre ce mois : l’anneau se remplit au fil de tes ventes.' },
-      ], tip: 'Tout se calcule tout seul à partir de tes ventes et dépenses — rien à additionner à la main.' },
+      ], tip: 'Tout se calcule tout seul à partir de tes ventes et dépenses. Rien à additionner à la main.' },
     { id: 'ventes', screen: 'ventes', ic: 'ventes', titre: dig ? 'Facturation' : 'Ventes / Caisse',
       intro: dig ? 'Facture une prestation ou un acompte de projet, sans code-barres.' : 'Enregistre tes ventes en un geste. Pas de code-barres à scanner : touche simplement le produit.',
       actions: dig ? [
@@ -95,7 +95,7 @@ export function helpTopics() {
     { id: 'carnet', screen: 'carnet', ic: 'users', titre: 'Carnet de dettes',
       intro: 'Qui te doit de l’argent, combien, et relance-les en un clic.',
       actions: [
-        { t: 'Enregistrer une dette', d: 'Client, montant, échéance — et un annuaire clients centralisé.' },
+        { t: 'Enregistrer une dette', d: 'Client, montant, échéance, et un annuaire clients centralisé.' },
         { t: 'Encaisser un versement partiel', d: 'Ajoute un versement : tu vois le reste dû se mettre à jour.' },
         { t: 'Relancer par WhatsApp', d: 'Un clic ouvre le WhatsApp du client avec un message de relance déjà écrit et adapté.' },
         { t: 'Ouvrir la fiche client', d: 'Son reste dû, ses crédits et son historique d’achat.' },
@@ -112,7 +112,7 @@ export function helpTopics() {
         { t: 'Retrouver l’historique', d: 'Filtre par période, catégorie ou recherche.' },
       ], tip: 'Le « Réassort / Stock » ne compte pas dans le bénéfice : ce coût est déjà dans la marge de tes produits.' },
     { id: 'perso', screen: 'depenses', ic: 'wallet', titre: 'Poche Perso',
-      intro: 'Ta vie courante, totalement étanche du commerce — c’est ce qui protège ton capital.',
+      intro: 'Ta vie courante, totalement étanche du commerce, c’est ce qui protège ton capital.',
       actions: [
         { t: 'Basculer en « Ma poche perso »', d: 'Dans le formulaire de dépense, choisis « Ma poche perso » pour le loyer maison, la ration, l’école…' },
         { t: 'Zéro impact sur le commerce', d: 'Ces dépenses n’entament NI ton bénéfice NI ta caisse : tes chiffres de boutique restent propres.' },
@@ -216,7 +216,7 @@ const NAV_TREE = [
     { label: 'Frais fixes', screen: 'reglages' },
   ] },
   { id: 'stock', label: 'Stock', icon: 'box' },
-  { id: 'carnet', label: 'Carnet — clients', icon: 'users' },
+  { id: 'carnet', label: 'Carnet · clients', icon: 'users' },
   { id: 'bilan', label: 'Rapports & évolution', icon: 'bilan' },
   { id: 'reglages', label: 'Réglages', icon: 'reglages' },
 ];
@@ -296,7 +296,7 @@ export function notifsHTML() {
     </div>`;
 }
 
-// ============ ÉCRAN D'ACCUEIL — connexion / inscription ============
+// ============ ÉCRAN D'ACCUEIL, connexion / inscription ============
 export function viewWelcomeHTML() {
   return `<section class="view view--welcome">
     <img class="welcome__bg" src="assets/img/welcome.webp" alt="" aria-hidden="true">
@@ -304,7 +304,7 @@ export function viewWelcomeHTML() {
     <div class="welcome__top">
       <img class="welcome__logo" src="assets/icons/logo-app.png" alt="Boussole" width="76" height="76">
       <h1>${esc(APP_NAME)}</h1>
-      <p class="welcome__sub">Gère ton commerce et vois ta rentabilité clairement — sur ton téléphone <strong>et</strong> ton PC, synchronisés.</p>
+      <p class="welcome__sub">Gère ton commerce et vois ta rentabilité clairement, sur ton téléphone <strong>et</strong> ton PC, synchronisés.</p>
     </div>
     <div class="welcome__bottom">
       <div class="welcome__actions">
@@ -342,7 +342,7 @@ export function enveloppesHTML(b, { compact = false } = {}) {
   </div>`;
 }
 
-// ============ ÉCRAN ACCUEIL — tableau de bord bento ============
+// ============ ÉCRAN ACCUEIL, tableau de bord bento ============
 const PROD_COLORS = ['var(--acc)', 'var(--rel)', 'var(--pos)', 'var(--chg)', 'var(--dng)', '#9b8cff'];
 
 // Badge de variation coloré (▲ +18 %  /  ▼ -5 %). opts.pts = points, opts.invert = baisse est bonne.
@@ -785,8 +785,8 @@ function pochePersoPanelHTML() {
   const perso = getDepensesPerso().slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 6);
   return `<article class="panel">
     <div class="panel__head"><h2>Poche Perso</h2><span class="panel__sub">étanche du commerce</span></div>
-    ${zhelp('Tes dépenses de la vie courante (maison, ration, école…), séparées du commerce : elles n’entament NI ton bénéfice NI ta caisse. Tu vois ce que tu dépenses pour toi sans polluer les chiffres de ta boutique — c’est ce qui protège ton capital.')}
-    <div class="abtot"><span>Dépensé pour toi — ce mois</span><strong>${formatF(r.total)}<small></small></strong></div>
+    ${zhelp('Tes dépenses de la vie courante (maison, ration, école…), séparées du commerce : elles n’entament NI ton bénéfice NI ta caisse. Tu vois ce que tu dépenses pour toi sans polluer les chiffres de ta boutique, c’est ce qui protège ton capital.')}
+    <div class="abtot"><span>Dépensé pour toi, ce mois</span><strong>${formatF(r.total)}<small></small></strong></div>
     ${perso.length ? `<ul class="ablist">${perso.map((d) => `<li class="abrow"><div class="abrow__id"><strong>${esc(d.libelle || d.categorie)}</strong><small>${esc(d.categorie)} · ${new Date(d.date).toLocaleDateString('fr-FR')}</small></div><span class="abrow__amt">${formatF(d.montant)}</span><button class="hvrow__del" data-action="del-depense" data-id="${d.id}" aria-label="Supprimer"><span data-icon="trash"></span></button></li>`).join('')}</ul>` : '<p class="lrow--empty">Aucune dépense perso. Sépare tes dépenses de la maison de celles du commerce.</p>'}
     <button class="btn btn--ghost btn--sm" data-action="add-depense-perso"><span data-icon="plus"></span> Ajouter une dépense perso</button>
   </article>`;
@@ -815,7 +815,7 @@ export function viewDepensesHTML(filter = { preset: 'mois', from: '', to: '', ca
     ${sectionTitle('Dépenses', "Où part ton argent")}
     ${zhelp('Tout ce qui sort de ta caisse : achats de marchandise, transport, loyer… Ajoute une dépense, vois la répartition par catégorie et retrouve l’historique. (Le « Réassort / Stock » ne compte pas dans le bénéfice : c’est déjà dans le coût de tes produits.)')}
     <div class="depsum">
-      <div class="depsum__id"><span class="depsum__lbl">Total dépensé — ${esc(rangeLabel(filter))}</span>
+      <div class="depsum__id"><span class="depsum__lbl">Total dépensé · ${esc(rangeLabel(filter))}</span>
         <span class="depsum__val neg">${formatF(H.total)}</span>
         <span class="depsum__nb">${formatNombre(H.nb)} dépense${H.nb > 1 ? 's' : ''}</span></div>
       <button class="btn btn--danger" data-action="add-depense"><span data-icon="minus"></span> Ajouter une dépense</button>
@@ -851,7 +851,7 @@ export function achatsPanelHTML() {
   const sub = s.credit ? `<span class="panel__sub doccard__due"><span data-icon="alert"></span> ${formatF(s.credit)} à payer</span>` : `<span class="panel__sub">Réassorts & marchandise</span>`;
   return `<article class="panel doccard">
     <div class="panel__head"><h2>Achats fournisseurs</h2>${sub}</div>
-    ${zhelp('Enregistre ce que tu achètes à tes fournisseurs. Le stock des produits augmente tout seul, ta caisse baisse (si payé), et ton bénéfice n’est pas touché — le coût est déjà dans ta marge.')}
+    ${zhelp('Enregistre ce que tu achètes à tes fournisseurs. Le stock des produits augmente tout seul, ta caisse baisse (si payé), et ton bénéfice n’est pas touché : le coût est déjà dans ta marge.')}
     <div class="acsum">
       <div class="acsum__c"><span class="acsum__lbl">Ce mois</span><span class="acsum__val">${formatF(s.mois)}</span></div>
       <div class="acsum__c"><span class="acsum__lbl">Total</span><span class="acsum__val">${formatF(s.total)}</span></div>
@@ -1010,7 +1010,7 @@ function palmaresPanelHTML(gran) {
 
   return `<article class="panel palmcard">
     <div class="panel__head"><h2>Palmarès produits</h2><span class="panel__sub">${esc(P.label)}</span></div>
-    ${zhelp('Ce qui marche et ce qui coince sur la période. À gauche, tes locomotives (classées par chiffre d’affaires). À droite, les produits à relancer : vendus à perte, jamais vendus, stock qui dort, ou qui se vendent peu — avec le geste à faire.')}
+    ${zhelp('Ce qui marche et ce qui coince sur la période. À gauche, tes locomotives (classées par chiffre d’affaires). À droite, les produits à relancer : vendus à perte, jamais vendus, stock qui dort, ou qui se vendent peu, avec le geste à faire.')}
     <div class="palm">
       <div class="palm__col">
         <h3 class="palm__h palm__h--top"><span data-icon="trophy"></span> Ça cartonne</h3>
@@ -1104,7 +1104,7 @@ export function viewBilanHTML(rapGran = 'jour') {
     </div>
     <div class="panel">
       <div class="panel__head">
-        <h2>Bilan trimestriel — T${tri.numero} ${tri.annee}</h2>
+        <h2>Bilan trimestriel T${tri.numero} ${tri.annee}</h2>
         <div class="panel__tools">
           <button class="btn btn--ghost btn--sm" data-action="share-bilan"><span data-icon="whatsapp"></span> Partager</button>
           <button class="btn btn--ghost btn--sm" data-action="print-bilan"><span data-icon="print"></span> Imprimer</button>
@@ -1258,7 +1258,7 @@ export function docTotalsHTML(doc) {
   </div>`;
 }
 
-// Mise en page imprimable (A4) — facture / devis « propre »
+// Mise en page imprimable (A4), facture / devis « propre »
 export function documentPrintHTML(doc) {
   const p = getState().profil;
   const t = documentTotals(doc);
@@ -1312,7 +1312,7 @@ export function documentPrintHTML(doc) {
         ${isFac && t.acompte ? `<div class="fd-tot__row fd-tot__row--net"><span>Net à payer</span><span>${formatF(t.net)}</span></div>` : ''}
       </div>
     </div>
-    <p class="fd-legal">${isFac ? 'Facture' : 'Devis'} n° ${esc(doc.numero)} — établi avec Boussole.</p>
+    <p class="fd-legal">${isFac ? 'Facture' : 'Devis'} n° ${esc(doc.numero)}, établi avec Boussole.</p>
   </div>`;
 }
 
@@ -1322,7 +1322,7 @@ export function objectifsCardHTML() {
   if (!os.length) {
     return `<article class="panel c6 objscard">
       <div class="panel__head"><h2>Mes objectifs</h2><button class="btn btn--sm" data-action="obj-new"><span data-icon="plus"></span> Objectif</button></div>
-      <div class="objs-empty"><span class="objs-empty__ic" data-icon="target"></span><p>Fixe-toi des projets — acheter un outil, une machine, une maison… — et regarde ta cagnotte grandir.</p></div>
+      <div class="objs-empty"><span class="objs-empty__ic" data-icon="target"></span><p>Fixe-toi des projets : acheter un outil, une machine, une maison… et regarde ta cagnotte grandir.</p></div>
     </article>`;
   }
   const rows = os.slice(0, 5).map((o) => {
@@ -1376,7 +1376,7 @@ export function caisseHTML(cart, mode, vendeur) {
     <div class="caisse__prods">${tiles}</div>
     ${dig ? '<button class="btn btn--ghost caisse__libre" data-action="vente-libre"><span data-icon="plus"></span> Montant libre / acompte de projet</button>' : ''}
     ${zhelp(dig ? 'Touche une prestation pour l’ajouter, ou « Montant libre » pour facturer un acompte de projet. Choisis le paiement, puis « Encaisser ».' : 'Touche un produit pour l’ajouter au panier. Ajuste les quantités, choisis le mode de paiement, puis « Encaisser ».')}
-    <div class="caisse__cart">${cart.length ? lines : '<p class="cart-empty">Panier vide — touche un produit ci-dessus.</p>'}</div>
+    <div class="caisse__cart">${cart.length ? lines : '<p class="cart-empty">Panier vide, touche un produit ci-dessus.</p>'}</div>
     <div class="caisse__pay">
       <span class="caisse__paylbl">Mode de paiement</span>
       <div class="modechips">${modeChips}</div>
@@ -1561,7 +1561,7 @@ function carnetCreditRow(c) {
   return `<li class="crdrow ${reste <= 0 ? 'is-paid' : ''} ${late ? 'is-late' : ''}">
     <button class="crdrow__tap" data-action="credit-detail" data-id="${c.id}">
       <strong>${esc(c.client || 'Client')}</strong>
-      <small>${formatF(reste)}${partiel ? ` <span class="crd-part">sur ${formatF(c.montant)}</span>` : ''}${c.echeance ? ` · éch. ${esc(c.echeance)}${late ? ' — dépassée' : ''}` : ''}</small>
+      <small>${formatF(reste)}${partiel ? ` <span class="crd-part">sur ${formatF(c.montant)}</span>` : ''}${c.echeance ? ` · éch. ${esc(c.echeance)}${late ? ', dépassée' : ''}` : ''}</small>
     </button>
     <div class="crdrow__acts">
       ${reste > 0 ? `<button class="crd-btn crd-btn--pay" data-action="credit-versement" data-id="${c.id}" title="Encaisser un versement" aria-label="Encaisser un versement"><span data-icon="coins"></span></button>` : ''}
@@ -1604,7 +1604,7 @@ export function planCardsHTML(currentPlan) {
         <p class="plan__ridicule">${esc(p.ridicule)}</p>
       </div>
       <button class="btn btn--lg plan__cta ${isPro ? 'plan__cta--pro' : ''}" data-action="buy-plan" data-plan="${k}">
-        ${cur ? 'Renouveler' : 'Choisir'} — ${formatNombre(p.prix)} F/mois</button>
+        ${cur ? 'Renouveler' : 'Choisir'} · ${formatNombre(p.prix)} F/mois</button>
     </article>`;
   }).join('')}</div>`;
 }
@@ -1617,7 +1617,7 @@ export function paywallHTML(reason) {
       <div class="paywall__hero">
         <img class="paywall__logo" src="assets/icons/logo-app.png" alt="" width="56" height="56">
         <h1>${titre}</h1>
-        <p class="paywall__lead">Pendant 30 jours, Boussole a tenu ta caisse, ton stock et tes dettes à ta place. Ne repars pas à l’aveugle : chaque jour sans Boussole, ce sont des ventes à perte, des dettes oubliées et du stock qui dort — de l’argent qui sort sans que tu le voies.</p>
+        <p class="paywall__lead">Pendant 30 jours, Boussole a tenu ta caisse, ton stock et tes dettes à ta place. Ne repars pas à l’aveugle : chaque jour sans Boussole, ce sont des ventes à perte, des dettes oubliées et du stock qui dort, de l’argent qui sort sans que tu le voies.</p>
         <p class="paywall__roi"><span data-icon="spark"></span> Récupère une seule dette oubliée, corrige un seul produit vendu à perte, et ton abonnement est déjà remboursé. Le reste, c’est du bénéfice en plus.</p>
       </div>
       ${planCardsHTML(getLicence().plan)}
@@ -1713,7 +1713,7 @@ function abonnementPanelHTML() {
   const e = licenceEtat(), lic = getLicence(), p = PLANS[lic.plan] || PLANS.essentiel;
   let statut;
   if (e.mode === 'actif') statut = `<span class="lic-tag lic-tag--ok">Actif · ${p.nom}</span><small>Jusqu’au ${fmtDateFr(lic.echeance)} (${e.joursRestants} j)</small>`;
-  else if (e.mode === 'essai') statut = `<span class="lic-tag lic-tag--essai">Essai gratuit</span><small>${e.joursRestants} jour${e.joursRestants > 1 ? 's' : ''} restant${e.joursRestants > 1 ? 's' : ''} — accès complet</small>`;
+  else if (e.mode === 'essai') statut = `<span class="lic-tag lic-tag--essai">Essai gratuit</span><small>${e.joursRestants} jour${e.joursRestants > 1 ? 's' : ''} restant${e.joursRestants > 1 ? 's' : ''}, accès complet</small>`;
   else statut = `<span class="lic-tag lic-tag--off">${e.mode === 'expire' ? 'Licence expirée' : 'Essai terminé'}</span><small>Active une licence pour continuer</small>`;
   return `<div class="panel">
     <div class="panel__head"><h2>Abonnement &amp; licences</h2></div>
@@ -1731,7 +1731,7 @@ function abonnementPanelHTML() {
 function proUpsellHTML(titre, phrase) {
   return `<div class="proup">
     <span class="proup__ic" data-icon="crown"></span>
-    <div class="proup__b"><strong>${esc(titre)} — réservé au Pro</strong><small>${esc(phrase)}</small></div>
+    <div class="proup__b"><strong>${esc(titre)}, réservé au Pro</strong><small>${esc(phrase)}</small></div>
     <button class="btn btn--sm plan__cta--pro" data-action="go-offres">Passer en Pro</button>
   </div>`;
 }
@@ -1852,7 +1852,7 @@ export function adminLicencesHTML(requests, keys, tgChat) {
       ${k.statut === 'dispo' ? `<button class="lrow__btn" data-action="admin-copykey" data-cle="${esc(k.cle)}" title="Copier"><span data-icon="download"></span></button>` : ''}
     </div>`).join('');
   return `<section class="view">
-    ${sectionTitle('Back-office licences', 'NEBULA — clés & paiements')}
+    ${sectionTitle('Back-office licences', 'NEBULA · clés & paiements')}
     ${zhelp('Écran réservé à toi. Quand un client paie, tu vois sa demande ici : génère une clé (à usage unique), copie-la et envoie-la lui sur WhatsApp. Il l’active dans son appli.')}
     <div class="panel">
       <div class="panel__head"><h2>Demandes de paiement</h2><span class="panel__sub">à valider</span></div>
@@ -1941,7 +1941,7 @@ function languePanelHTML() {
     </button>`).join('');
   return `<div class="panel">
     <div class="panel__head"><h2>Langue</h2><span class="panel__sub">interface de l’appli</span></div>
-    ${zhelp('Choisis la langue de l’interface. Français et Anglais sont complets. Pour une langue locale (fon, yoruba…), ajoute-la et saisis toi-même les bons mots — c’est toi qui connais ta langue.')}
+    ${zhelp('Choisis la langue de l’interface. Français et Anglais sont complets. Pour une langue locale (fon, yoruba…), ajoute-la et saisis toi-même les bons mots : c’est toi qui connais ta langue.')}
     <div class="langlist">${rows}</div>
     <button class="btn btn--ghost btn--sm" data-action="lang-add"><span data-icon="plus"></span> Ajouter une langue locale</button>
   </div>`;
@@ -2012,7 +2012,7 @@ export function viewReglagesHTML(cloud) {
       <div class="panel__head"><h2>Charges fixes mensuelles</h2><button class="btn btn--sm" data-action="add-charge"><span data-icon="plus"></span> Ajouter</button></div>
       ${zhelp('Les dépenses qui reviennent chaque mois, peu importe tes ventes (loyer, électricité, salaires…). L’appli les couvre d’abord, avant de compter ton bénéfice.')}
       <ul class="list">${chargeItems}</ul>
-      <div class="panel__note">Total : <strong>${formatF(chargesMensuellesTotal())}</strong> / mois — c'est le « pot » à couvrir chaque mois avant de dégager du bénéfice.</div>
+      <div class="panel__note">Total : <strong>${formatF(chargesMensuellesTotal())}</strong> / mois, c'est le « pot » à couvrir chaque mois avant de dégager du bénéfice.</div>
     </div>
     <h3 class="rgsec"><span data-icon="shield"></span> Compte & sécurité</h3>
     ${monProfilPanelHTML(cloud)}
@@ -2023,7 +2023,7 @@ export function viewReglagesHTML(cloud) {
     ${abonnementPanelHTML()}
     <div class="panel">
       <div class="panel__head"><h2>Sauvegarde</h2></div>
-      ${zhelp('Exporte une copie de toutes tes données dans un fichier (à garder au cas où), ou réimporte-la. « Effacer » remet tout à zéro — à utiliser avec prudence.')}
+      ${zhelp('Exporte une copie de toutes tes données dans un fichier (à garder au cas où), ou réimporte-la. « Effacer » remet tout à zéro, à utiliser avec prudence.')}
       <div class="btnrow">
         <button class="btn btn--ghost" data-action="export"><span data-icon="download"></span> Exporter</button>
         <button class="btn btn--ghost" data-action="import"><span data-icon="upload"></span> Importer</button>
@@ -2034,7 +2034,7 @@ export function viewReglagesHTML(cloud) {
       <div class="panel__head"><h2>Aide</h2></div>
       <button class="btn btn--ghost" data-action="open-tuto"><span data-icon="book"></span> Revoir le tutoriel</button>
     </div>
-    <p class="ver">${esc(APP_NAME)} — outil NEBULA Agency</p>
+    <p class="ver">${esc(APP_NAME)} · outil NEBULA Agency</p>
   </section>`;
 }
 
@@ -2091,7 +2091,7 @@ export function chargeRowsHTML(rows) {
   </div>`).join('');
 }
 
-// Champs d'un produit (utilisé dans wizard + modale) — modèle + coûts dynamiques.
+// Champs d'un produit (utilisé dans wizard + modale), modèle + coûts dynamiques.
 export function productFormFields(p) {
   if (isDigital()) {
     const tt = TARIF_TYPES.includes(p.tarif_type) ? p.tarif_type : 'fixe';
@@ -2246,9 +2246,9 @@ export const TUTO_STEPS = [
     ic: 'coins', titre: '2 · Les 3 enveloppes',
     corps: `<p>À chaque vente, ${esc(APP_NAME)} range ton argent dans 3 poches :</p>
       <div class="tuto-env">
-        <div class="tuto-env__row"><span class="tuto-env__d" style="background:var(--rel)"></span><b>Relance production</b> — de quoi refaire / racheter</div>
-        <div class="tuto-env__row"><span class="tuto-env__d" style="background:var(--chg)"></span><b>Charges fixes</b> — pour payer électricité, internet…</div>
-        <div class="tuto-env__row"><span class="tuto-env__d" style="background:var(--acc)"></span><b>Bénéfice net</b> — ce qui te reste vraiment</div>
+        <div class="tuto-env__row"><span class="tuto-env__d" style="background:var(--rel)"></span><b>Relance production</b> : de quoi refaire / racheter</div>
+        <div class="tuto-env__row"><span class="tuto-env__d" style="background:var(--chg)"></span><b>Charges fixes</b> : pour payer électricité, internet…</div>
+        <div class="tuto-env__row"><span class="tuto-env__d" style="background:var(--acc)"></span><b>Bénéfice net</b> : ce qui te reste vraiment</div>
       </div>
       <p class="tuto-ex">Ex. un yaourt vendu 250 F qui coûte 150 F : 150 F pour en refaire un, le reste couvre tes charges puis devient ton bénéfice.</p>`,
   },
@@ -2262,7 +2262,7 @@ export const TUTO_STEPS = [
   },
   {
     ic: 'cloud', titre: '5 · Sauvegarde et appareils',
-    corps: `<p>Sans compte, tes données restent sur cet appareil — pense à faire une <strong>sauvegarde</strong> (Réglages → Exporter). Avec un compte, elles se <strong>synchronisent</strong> entre ton téléphone et ton PC.</p>`,
+    corps: `<p>Sans compte, tes données restent sur cet appareil, pense à faire une <strong>sauvegarde</strong> (Réglages → Exporter). Avec un compte, elles se <strong>synchronisent</strong> entre ton téléphone et ton PC.</p>`,
   },
 ];
 

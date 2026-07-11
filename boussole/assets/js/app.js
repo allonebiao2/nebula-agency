@@ -1,4 +1,4 @@
-// Boussole — bootstrap, routeur, événements.
+// Boussole, bootstrap, routeur, événements.
 import { APP_VERSION, CLOUD_ENABLED, CURRENCIES } from './config.js';
 import { hydrateIcons } from './icons.js';
 import * as S from './store.js';
@@ -197,7 +197,7 @@ function openOffresModal() {
 }
 function openBuyModal(planKey) {
   const p = S.PLANS[planKey] || S.PLANS.essentiel;
-  UI.openModal(UI.modalShell(`Souscrire — ${p.nom}`,
+  UI.openModal(UI.modalShell(`Souscrire · ${p.nom}`,
     `<p class="buybox__price"><strong>${S.formatNombre(p.prix)} F</strong> / mois</p>
      ${UI.zhelp('Paie par Mobile Money, puis renseigne l’ID de la transaction et ton nom. NEBULA valide et t’envoie ta clé (à usage unique) à activer ici.')}
      <p class="buystep">1. Envoie <strong>${S.formatNombre(p.prix)} F</strong> par Mobile Money au :</p>
@@ -206,7 +206,7 @@ function openBuyModal(planKey) {
      <div class="field"><label for="pay-txn">ID de la transaction MoMo</label><input id="pay-txn" class="input" placeholder="Ex. MP230715.1234.A56789" autocomplete="off"></div>
      <div class="field"><label for="pay-nom">Ton nom &amp; prénom</label><input id="pay-nom" class="input" placeholder="Ex. BIAO Mongazi" autocomplete="off"></div>`,
     `<button class="btn btn--ghost" data-action="close-modal">Annuler</button>
-     <button class="btn plan__cta--pro" data-action="pay-submit" data-plan="${planKey}">J’ai payé — envoyer ma demande</button>`));
+     <button class="btn plan__cta--pro" data-action="pay-submit" data-plan="${planKey}">J’ai payé, envoyer ma demande</button>`));
   hydrateIcons($('#modal-root'));
 }
 async function submitPayment(el) {
@@ -340,7 +340,7 @@ function openForgotPin() {
 
 // ---------- Rendu ----------
 function render() {
-  // Back-office licences (réservé NEBULA — admin connecté uniquement)
+  // Back-office licences (réservé NEBULA, admin connecté uniquement)
   if (screen === 'admin') {
     if (Cloud.isAdmin()) return renderAdmin();
     if (!Cloud.getUser()) return renderAdminGate();   // session pas encore chargée / déconnecté -> on garde l'intention
@@ -494,17 +494,17 @@ function printRapport(r) {
   const cats = (r.depensesCat || []).map((c) => `<tr><td>${UI.esc(c.categorie)}</td><td class="num">${S.formatF(c.total)}</td></tr>`).join('');
   const tops = (r.tops || []).map((p) => `<tr><td>${UI.esc(p.nom)}</td><td class="num">${S.formatF(p.revenu)}</td><td class="num">${Math.round(p.part * 100)}%</td></tr>`).join('');
   document.getElementById('print-area').innerHTML = `
-    <h1>Rapport — ${UI.esc(r.label)}</h1>
+    <h1>Rapport · ${UI.esc(r.label)}</h1>
     <p class="p-sub">${UI.esc(nom)} · généré le ${new Date().toLocaleDateString('fr-FR')}</p>
     <table><tbody>${line("Chiffre d'affaires", r.ca)}${line('Coût des produits', r.cout)}${line('Marge', r.marge)}${line('Charges fixes', r.charges)}${line('Dépenses', r.depenses)}${line('Bénéfice net', r.benefice, r.benefice >= 0 ? 'pos' : 'neg')}${line('Solde de caisse', r.caisse)}</tbody></table>
     ${cats ? `<h2 style="font-size:15px;margin:18px 0 6px">Dépenses par catégorie</h2><table><tbody>${cats}</tbody></table>` : ''}
     ${tops ? `<h2 style="font-size:15px;margin:18px 0 6px">Meilleures ventes</h2><table><tbody>${tops}</tbody></table>` : ''}
-    <p class="p-foot">Boussole — NEBULA Agency</p>`;
+    <p class="p-foot">Boussole · NEBULA Agency</p>`;
   window.print();
 }
 function shareRapport(r) {
   const nom = S.getState().profil.nom_activite || '';
-  const t = `BOUSSOLE — Rapport ${r.label}\n${nom}\n\nVentes : ${S.formatF(r.ca)}\nDépenses : ${S.formatF(r.depenses)}\nBénéfice net : ${S.formatF(r.benefice)}\nCaisse : ${S.formatF(r.caisse)}\nNb ventes : ${r.nbVentes}`;
+  const t = `BOUSSOLE · Rapport ${r.label}\n${nom}\n\nVentes : ${S.formatF(r.ca)}\nDépenses : ${S.formatF(r.depenses)}\nBénéfice net : ${S.formatF(r.benefice)}\nCaisse : ${S.formatF(r.caisse)}\nNb ventes : ${r.nbVentes}`;
   window.open('https://wa.me/?text=' + encodeURIComponent(t), '_blank');
 }
 
@@ -615,7 +615,7 @@ function shareReceiptWA(d) {
   const nom = S.getState().profil.nom_activite || '';
   const lines = d.lignes.map((l) => `• ${l.nom} ${S.formatNombre(l.qte)}×${S.formatF(l.prix_unitaire)} = ${S.formatF((l.qte || 0) * (l.prix_unitaire || 0))}`).join('\n');
   const footer = S.renderTemplate(S.getWaTemplate('recu'), { commerce: nom, total: S.formatF(d.total), client: '' });
-  const txt = `*REÇU — ${nom}*\n${new Date(d.date).toLocaleString('fr-FR')}\n\n${lines}\n\n*TOTAL : ${S.formatF(d.total)}*\nPayé en ${S.PAYMENT_LABELS[d.mode] || d.mode}${d.vendeur ? `\nVendeur : ${d.vendeur}` : ''}\n\n${footer}`;
+  const txt = `*REÇU · ${nom}*\n${new Date(d.date).toLocaleString('fr-FR')}\n\n${lines}\n\n*TOTAL : ${S.formatF(d.total)}*\nPayé en ${S.PAYMENT_LABELS[d.mode] || d.mode}${d.vendeur ? `\nVendeur : ${d.vendeur}` : ''}\n\n${footer}`;
   window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
 }
 
@@ -670,7 +670,7 @@ function openAchatView(id) {
 function openStockModal(id) {
   const p = S.getProduit(id); if (!p) return;
   const s = S.getStockInfo(p);
-  UI.openModal(UI.modalShell('Stock — ' + p.nom,
+  UI.openModal(UI.modalShell('Stock · ' + p.nom,
     `<div class="grid2">
        <div class="field"><label for="st-qte">Quantité en stock</label><input id="st-qte" class="input" type="number" inputmode="numeric" value="${s.suivi ? s.qte : ''}" placeholder="ex. 24"></div>
        <div class="field"><label for="st-seuil">Seuil d'alerte</label><input id="st-seuil" class="input" type="number" inputmode="numeric" value="${s.seuil || ''}" placeholder="ex. 5"></div>
@@ -984,7 +984,7 @@ function openCreditsModal() {
   const cs = S.creditsSummary();
   const list = S.getCredits().slice().sort((a, b) => Number(a.paye) - Number(b.paye) || new Date(b.date) - new Date(a.date));
   const rows = list.length ? list.map(creditRow).join('') : '<li class="crd-empty">Aucun crédit enregistré pour l’instant.</li>';
-  UI.openModal(UI.modalShell('Crédits — clients',
+  UI.openModal(UI.modalShell('Crédits · clients',
     `<p class="modal__lead">On te doit <strong>${S.formatF(cs.total)}</strong>${cs.nb ? ` (${cs.nb} en attente)` : ''}.</p>
      <ul class="crdlist">${rows}</ul>`,
     `<button class="btn btn--ghost" data-action="close-modal">Fermer</button>
@@ -1018,7 +1018,7 @@ function openCreditDetail(id) {
   const c = S.getCredit(id); if (!c) return;
   const reste = S.creditReste(c);
   const pays = (c.paiements || []).slice().reverse().map((p) => `<div class="pay-row"><span>${new Date(p.date).toLocaleDateString('fr-FR')}</span><span class="pay-row__m">+ ${S.formatF(p.montant)}</span></div>`).join('') || '<p class="modal__note">Aucun versement pour l\'instant.</p>';
-  UI.openModal(UI.modalShell('Dette — ' + (c.client || 'Client'),
+  UI.openModal(UI.modalShell('Dette · ' + (c.client || 'Client'),
     `<div class="crd-recap"><div><span class="crd-recap__lbl">Montant</span><span>${S.formatF(c.montant)}</span></div><div><span class="crd-recap__lbl">Reste dû</span><span class="${reste > 0 ? 'neg' : 'pos'}">${S.formatF(reste)}</span></div></div>
      ${c.echeance ? `<p class="modal__note">Échéance : ${UI.esc(c.echeance)}</p>` : ''}${c.note ? `<p class="modal__note">${UI.esc(c.note)}</p>` : ''}
      <div class="docform__sec">Historique des paiements</div>
@@ -1110,11 +1110,11 @@ async function authSubmit() {
   try {
     if (authMode === 'signup') {
       const r = await Cloud.signUp(email, pass);
-      if (r.user && !r.session) { UI.closeModal(); UI.toast('Compte créé — vérifie ta boîte e-mail pour confirmer'); }
+      if (r.user && !r.session) { UI.closeModal(); UI.toast('Compte créé, vérifie ta boîte e-mail pour confirmer'); }
       else { pendingLogin = true; UI.closeModal(); UI.toast('Compte créé et connecté'); }
     } else {
       await Cloud.signIn(email, pass);
-      pendingLogin = true; UI.closeModal(); UI.toast('Connecté — synchronisation activée');
+      pendingLogin = true; UI.closeModal(); UI.toast('Connecté, synchronisation activée');
     }
   } catch (e) {
     btn.disabled = false; btn.textContent = authMode === 'signup' ? 'Créer' : 'Connexion';
@@ -1133,7 +1133,7 @@ function traduireErreur(e) {
 function shareBilan() {
   const t = S.trimestreDe();
   const nom = S.getState().profil.nom_activite || 'Mon activité';
-  let txt = `BOUSSOLE — Bilan trimestriel\n${nom}\nT${t.numero} ${t.annee}\n\n`;
+  let txt = `BOUSSOLE · Bilan trimestriel\n${nom}\nT${t.numero} ${t.annee}\n\n`;
   t.mois.forEach((m) => { txt += `${m.label} : bénéfice ${S.formatF(m.benefice)}\n`; });
   txt += `\nRevenu total : ${S.formatF(t.totaux.revenu)}\nBénéfice net total : ${S.formatF(t.totaux.benefice)}\n`;
   txt += t.viable ? `Activité rentable ce trimestre.\n` : `Pas encore rentable ce trimestre.\n`;
@@ -1148,17 +1148,17 @@ function printBilan() {
   const nom = S.getState().profil.nom_activite || 'Mon activité';
   const rows = t.mois.map((m) => `<tr><td>${m.label}</td><td>${S.formatF(m.revenu)}</td><td>${S.formatF(m.relance)}</td><td>${S.formatF(m.charges_couvertes)}</td><td>${S.formatF(m.benefice)}</td></tr>`).join('');
   $('#print-area').innerHTML = `
-    <h1>Bilan trimestriel — T${t.numero} ${t.annee}</h1>
+    <h1>Bilan trimestriel T${t.numero} ${t.annee}</h1>
     <p class="p-sub">${UI.esc(nom)} · généré le ${new Date().toLocaleDateString('fr-FR')}</p>
     <table><thead><tr><th>Mois</th><th>Revenu</th><th>Relance production</th><th>Charges fixes</th><th>Bénéfice net</th></tr></thead>
       <tbody>${rows}</tbody>
       <tfoot><tr><td>Total</td><td>${S.formatF(t.totaux.revenu)}</td><td>${S.formatF(t.totaux.relance)}</td><td>${S.formatF(t.totaux.charges_couvertes)}</td><td>${S.formatF(t.totaux.benefice)}</td></tr></tfoot>
     </table>
     <p class="p-verdict">${t.viable ? 'Activité rentable ce trimestre.' : 'Activité pas encore rentable ce trimestre.'}</p>
-    <h2 style="font-size:15px;margin:18px 0 6px">Diagnostic — santé ${a.score}/100</h2>
+    <h2 style="font-size:15px;margin:18px 0 6px">Diagnostic · santé ${a.score}/100</h2>
     <ul>${a.etat.map((e) => `<li>${UI.esc(e)}</li>`).join('')}</ul>
-    ${a.conseils.filter((c) => c.priorite !== 'info').length ? `<h2 style="font-size:15px;margin:14px 0 6px">À améliorer</h2><ul>${a.conseils.filter((c) => c.priorite !== 'info').map((c) => `<li><strong>${UI.esc(c.titre)}</strong> — ${UI.esc(c.detail)}</li>`).join('')}</ul>` : ''}
-    <p class="p-foot">Boussole — NEBULA Agency</p>`;
+    ${a.conseils.filter((c) => c.priorite !== 'info').length ? `<h2 style="font-size:15px;margin:14px 0 6px">À améliorer</h2><ul>${a.conseils.filter((c) => c.priorite !== 'info').map((c) => `<li><strong>${UI.esc(c.titre)}</strong> : ${UI.esc(c.detail)}</li>`).join('')}</ul>` : ''}
+    <p class="p-foot">Boussole · NEBULA Agency</p>`;
   window.print();
 }
 
@@ -1198,13 +1198,13 @@ function wizardNext() {
     wizard.step = 3; wizard.charges = wizard.charges || UI.defaultCharges();
     return render();
   }
-  // step 3 — terminer
+  // step 3, terminer
   wizard.charges = readCharges(view);
   S.setProfil({ nom_activite: wizard.nom });
   S.addProduit(wizard.produit);
   wizard.charges.forEach((c) => S.addChargeFixe(c));
   const w = wizard; wizard = null; screen = 'ventes'; render();
-  UI.toast(`Bienvenue ${w.nom} — prêt à vendre`);
+  UI.toast(`Bienvenue ${w.nom}, prêt à vendre`);
   maybeShowTuto();
 }
 
@@ -1308,7 +1308,7 @@ document.addEventListener('click', (e) => {
     case 'tg-save': return tgSave();
     case 'tg-test': return tgTest();
 
-    // tableau de bord — période & objectif
+    // tableau de bord, période & objectif
     case 'set-gran': if (period.gran !== el.dataset.gran) { period.gran = el.dataset.gran; period.offset = 0; savePeriod(); refreshDash(); } return;
     case 'period-prev': period.offset -= 1; return refreshDash();
     case 'period-next': if (period.offset < 0) { period.offset += 1; refreshDash(); } return;
@@ -1344,7 +1344,7 @@ document.addEventListener('click', (e) => {
     case 'assistant-ask': return assistantAsk(el.dataset.q);
     case 'assistant-send': return assistantAsk($('#as-input') ? $('#as-input').value : '');
 
-    // crédits clients (gérés sur l'écran Carnet — re-rendu réactif via subscribe)
+    // crédits clients (gérés sur l'écran Carnet, re-rendu réactif via subscribe)
     case 'open-credits': return setScreen('carnet');
     case 'add-credit': return openAddCreditModal();
     case 'save-credit': {
@@ -1383,12 +1383,12 @@ document.addEventListener('click', (e) => {
     }
     case 'del-client': return UI.confirmDialog({ title: 'Retirer le client', message: "Retirer ce client de l'annuaire ? (ses ventes et dettes restent enregistrées)", danger: true, okLabel: 'Retirer' }, () => { S.deleteClientEntry(id); UI.closeModal(); UI.toast('Client retiré'); });
 
-    // historique ventes — filtres
+    // historique ventes, filtres
     case 'vf-preset': { venteFilter = Object.assign(venteFilter, { preset: el.dataset.preset }, venteRange(el.dataset.preset)); return refreshVentes(); }
-    // historique dépenses — filtres
+    // historique dépenses, filtres
     case 'df-preset': { depFilter = Object.assign(depFilter, { preset: el.dataset.preset }, venteRange(el.dataset.preset)); return refreshDepenses(); }
 
-    // rapports — période + exports
+    // rapports, période + exports
     case 'rap-gran': rapGran = el.dataset.gran; return refreshBilan();
     case 'rap-pdf': return printRapport(S.rapportPeriode(rapGran, 0));
     case 'rap-csv': { downloadFile(`rapport-${rapGran}-${new Date().toISOString().slice(0, 10)}.csv`, rapportCSV(S.rapportPeriode(rapGran, 0)), 'text/csv'); UI.toast('Rapport Excel téléchargé'); return; }
@@ -1569,7 +1569,7 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// nom d'activité (réglages) — sur blur
+// nom d'activité (réglages), sur blur
 document.addEventListener('change', (e) => {
   const el = e.target;
   if (el.matches('[data-action="save-nom"]')) S.setProfil({ nom_activite: el.value.trim() });

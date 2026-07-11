@@ -1,9 +1,9 @@
-// Boussole — configuration
+// Boussole, configuration
 // Nom de l'appli (centralisé : changer ici + index.html + manifest.webmanifest).
 export const APP_NAME = 'Boussole';
 
 // Version de l'appli : sert au cache-busting (bumper à chaque modif).
-export const APP_VERSION = '20260710o';
+export const APP_VERSION = '20260710p';
 
 // --- Supabase (mode cloud) ---
 // Laisser vide = l'appli tourne en MODE LOCAL (localStorage, hors-ligne, privé à l'appareil).
@@ -28,11 +28,11 @@ export const DEVISE_LONG = 'FCFA';
 
 // Devises supportées (Afrique + courantes). Clé = code stocké dans profil.devise.
 export const CURRENCIES = {
-  'F':   { symbol: 'F',   label: 'Franc CFA — FCFA', pos: 'after' },
-  'NGN': { symbol: '₦',   label: 'Naira — Nigeria', pos: 'before' },
-  'GHS': { symbol: '₵',   label: 'Cedi — Ghana', pos: 'before' },
+  'F':   { symbol: 'F',   label: 'Franc CFA (FCFA)', pos: 'after' },
+  'NGN': { symbol: '₦',   label: 'Naira (Nigeria)', pos: 'before' },
+  'GHS': { symbol: '₵',   label: 'Cedi (Ghana)', pos: 'before' },
   'GNF': { symbol: 'FG',  label: 'Franc guinéen', pos: 'after' },
-  'KES': { symbol: 'Ksh', label: 'Shilling — Kenya', pos: 'before' },
+  'KES': { symbol: 'Ksh', label: 'Shilling (Kenya)', pos: 'before' },
   'USD': { symbol: '$',   label: 'Dollar US', pos: 'before' },
   'EUR': { symbol: '€',   label: 'Euro', pos: 'after' },
 };
