@@ -38,6 +38,27 @@ function signDefs(id, COL, zeroY, H) {
       <stop offset="${o}" stop-color="${COL.neg}" stop-opacity="0"/><stop offset="1" stop-color="${COL.neg}" stop-opacity=".30"/></linearGradient>`;
 }
 
+// Prépare un tracé CUMULÉ (somme progressive) à DOUBLE ÉCHELLE : le CA et le Bénéfice
+// partagent la MÊME ligne des 0 mais ont chacun leur propre amplitude, pour qu'une perte
+// reste bien visible même quand le CA est très supérieur. Le dernier point cumulé = le total
+// de la période (== le KPI). Une ligne de 0 est réservée en bas si tout est positif.
+function cumulLayout(buckets, geo) {
+  const { padT, ih, iw, padL, n } = geo;
+  const bottom = padT + ih;
+  const rev = [], ben = []; let cr = 0, cb = 0;
+  buckets.forEach((s) => { cr += Number(s.revenu) || 0; cb += Number(s.benefice) || 0; rev.push(cr); ben.push(cb); });
+  const caMax = Math.max(1, ...rev);
+  const benMax = Math.max(0, ...ben), benMin = Math.min(0, ...ben);
+  const hasNeg = benMin < 0;
+  const zeroY = padT + ih * (hasNeg ? 0.6 : 1);   // 0 tout en bas s'il n'y a jamais de perte, sinon 60% haut / 40% bas
+  const yRev = (v) => zeroY - (zeroY - padT) * (v / caMax);                                   // CA : 0 -> ligne des 0, max -> haut
+  const yBen = (v) => v >= 0
+    ? zeroY - (zeroY - padT) * (benMax ? v / benMax : 0)                                       // bénéfice positif : au-dessus du 0
+    : zeroY + (bottom - zeroY) * (benMin ? v / benMin : 0);                                     // perte : sous le 0, jusqu'en bas
+  const x = (i) => padL + (n === 1 ? iw / 2 : iw * (i / (n - 1)));
+  return { rev, ben, caMax, benMax, benMin, hasNeg, zeroY, yRev, yBen, x };
+}
+
 function glowDefs(id, COL) {
   return `<defs>
     <filter id="glow${id}" x="-60%" y="-60%" width="220%" height="220%">
@@ -103,37 +124,39 @@ export function chartBeneficeMensuel(serie, opts = {}) {
   </svg>`;
 }
 
-// Courbe d'évolution : revenu + bénéfice net, lignes lumineuses + aire.
+// Courbe d'évolution CUMULÉE : revenu cumulé + position nette (bénéfice cumulé), double échelle.
+// Complète les barres « Bénéfice net par mois » (qui montrent chaque mois séparément).
 export function chartEvolution(serie) {
   const COL = palette(), id = nextId();
   const W = 580, H = 250, padL = 14, padR = 52, padT = 30, padB = 32;
   const iw = W - padL - padR, ih = H - padT - padB;
   const n = Math.max(1, serie.length);
-  const revs = serie.map((s) => s.revenu), bens = serie.map((s) => s.benefice);
-  const max = Math.max(1, ...revs, ...bens), min = Math.min(0, ...bens), span = (max - min) || 1;
-  const x = (i) => padL + (n === 1 ? iw / 2 : iw * (i / (n - 1)));
-  const y = (v) => padT + ih * (1 - (v - min) / span);
-  const zeroY = y(0);
-  const line = (vals) => vals.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
-  const benPath = line(bens);
-  const area = `${benPath} L${x(n - 1).toFixed(1)},${zeroY.toFixed(1)} L${x(0).toFixed(1)},${zeroY.toFixed(1)} Z`;
-  const dots = (vals, col, signed) => vals.map((v, i) => serie[i].unites > 0
-    ? `<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="3.4" fill="${signed ? signCol(v, COL) : col}" filter="url(#glow${id})"/><circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="1.6" fill="#fff"/>` : '').join('');
-  const labels = serie.map((s, i) => `<text x="${x(i).toFixed(1)}" y="${H - 10}" text-anchor="middle" font-size="12" fill="${COL.text}">${s.label}</text>`).join('');
-  const last = n - 1;
-  const endLbl = (v, col, dy) => `<text x="${(x(last) + 6).toFixed(1)}" y="${(y(v) + dy).toFixed(1)}" font-size="11" font-family="ui-monospace,monospace" font-weight="700" fill="${col}">${formatNombre(v)}</text>`;
+  const L = cumulLayout(serie, { padT, ih, iw, padL, n });
+  const zeroY = L.zeroY, last = n - 1;
+  const revLine = L.rev.map((v, i) => `${i ? 'L' : 'M'}${L.x(i).toFixed(1)},${L.yRev(v).toFixed(1)}`).join(' ');
+  const benLine = L.ben.map((v, i) => `${i ? 'L' : 'M'}${L.x(i).toFixed(1)},${L.yBen(v).toFixed(1)}`).join(' ');
+  const benArea = `${benLine} L${L.x(last).toFixed(1)},${zeroY.toFixed(1)} L${L.x(0).toFixed(1)},${zeroY.toFixed(1)} Z`;
+  const dotsRev = L.rev.map((v, i) => `<circle cx="${L.x(i).toFixed(1)}" cy="${L.yRev(v).toFixed(1)}" r="3" fill="${COL.rev}"/>`).join('');
+  const dotsBen = L.ben.map((v, i) => `<circle cx="${L.x(i).toFixed(1)}" cy="${L.yBen(v).toFixed(1)}" r="3" fill="${signCol(v, COL)}"/>`).join('');
+  const labels = serie.map((s, i) => `<text x="${L.x(i).toFixed(1)}" y="${H - 10}" text-anchor="middle" font-size="12" fill="${COL.text}">${s.label}</text>`).join('');
+  const benCol = signCol(L.ben[last], COL);
+  const yRevEnd = L.yRev(L.rev[last]), yBenEnd = L.yBen(L.ben[last]);
+  const endLbl = (v, yv, col, dy) => `<text x="${(L.x(last) + 6).toFixed(1)}" y="${(yv + dy).toFixed(1)}" font-size="11" font-family="ui-monospace,monospace" font-weight="700" fill="${col}">${formatNombre(v)}</text>`;
   const legend = `<g font-size="11.5" font-weight="600">
-    <circle cx="${padL + 4}" cy="14" r="4" fill="${COL.rev}"/><text x="${padL + 13}" y="17.5" fill="${COL.text}">Revenu</text>
-    <circle cx="${padL + 84}" cy="14" r="4" fill="${COL.pos}"/><text x="${padL + 93}" y="17.5" fill="${COL.text}">Bénéfice</text></g>`;
+    <circle cx="${padL + 4}" cy="14" r="4" fill="${COL.rev}"/><text x="${padL + 13}" y="17.5" fill="${COL.text}">Revenu cumulé</text>
+    <circle cx="${padL + 128}" cy="14" r="4" fill="${COL.pos}"/><text x="${padL + 137}" y="17.5" fill="${COL.text}">Bénéfice cumulé</text></g>`;
+  const negBand = L.hasNeg ? `<rect x="${padL}" y="${zeroY.toFixed(1)}" width="${(W - padR - padL).toFixed(1)}" height="${((padT + ih) - zeroY).toFixed(1)}" fill="${COL.neg}" opacity=".05"/>` : '';
 
-  return `<svg viewBox="0 0 ${W} ${H}" class="chart-svg" role="img" aria-label="Évolution du revenu et du bénéfice">
+  return `<svg viewBox="0 0 ${W} ${H}" class="chart-svg" role="img" aria-label="Évolution cumulée du revenu et du bénéfice">
     ${glowDefs(id, COL)}${signDefs(id, COL, zeroY, H)}
+    ${negBand}
     <line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${W - padR}" y2="${zeroY.toFixed(1)}" stroke="${COL.grid}" stroke-width="1"/>
-    <path d="${area}" fill="url(#sgA${id})"/>
-    <path d="${line(revs)}" fill="none" stroke="${COL.rev}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow${id})"/>
-    <path d="${benPath}" fill="none" stroke="url(#sgL${id})" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow${id})"/>
-    ${dots(revs, COL.rev)}${dots(bens, COL.pos, true)}
-    ${endLbl(revs[last], COL.rev, -6)}${endLbl(bens[last], signCol(bens[last], COL), 12)}
+    <text x="${(W - padR + 4).toFixed(1)}" y="${(zeroY + 3).toFixed(1)}" font-size="9.5" fill="${COL.text}" opacity=".85">0</text>
+    <path d="${benArea}" fill="url(#sgA${id})"/>
+    <path d="${revLine}" fill="none" stroke="${COL.rev}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow${id})"/>
+    <path d="${benLine}" fill="none" stroke="url(#sgL${id})" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow${id})"/>
+    ${dotsRev}${dotsBen}
+    ${endLbl(L.rev[last], yRevEnd, COL.rev, -6)}${endLbl(L.ben[last], yBenEnd, benCol, 12)}
     ${labels}${legend}
   </svg>`;
 }
@@ -181,31 +204,31 @@ export function chartHero(D) {
   const W = 620, H = 236, padL = 12, padR = 56, padT = 30, padB = 30;
   const iw = W - padL - padR, ih = H - padT - padB;
   const n = Math.max(1, src.length);
-  const revs = src.map((s) => s.revenu), bens = src.map((s) => s.benefice);
-  const max = Math.max(1, ...revs, ...bens), min = Math.min(0, ...bens), span = (max - min) || 1;
-  const x = (i) => padL + (n === 1 ? iw / 2 : iw * (i / (n - 1)));
-  const y = (v) => padT + ih * (1 - (v - min) / span);
-  const zeroY = y(0);
-  const path = (vals) => vals.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
-  const revPath = path(revs), benPath = path(bens);
-  const revArea = `${revPath} L${x(n - 1).toFixed(1)},${zeroY.toFixed(1)} L${x(0).toFixed(1)},${zeroY.toFixed(1)} Z`;
-  const grid = [0.5, 1].map((f) => { const yy = padT + ih * (1 - f); return `<line x1="${padL}" y1="${yy.toFixed(1)}" x2="${W - padR}" y2="${yy.toFixed(1)}" stroke="${COL.grid}" stroke-width="1" opacity=".55"/>`; }).join('');
-  const labels = src.map((s, i) => s.label ? `<text x="${x(i).toFixed(1)}" y="${H - 9}" text-anchor="middle" font-size="11" fill="${COL.text}">${s.label}</text>` : '').join('');
-  const dot = (vals, col) => { const i = n - 1; return `<circle cx="${x(i).toFixed(1)}" cy="${y(vals[i]).toFixed(1)}" r="4" fill="${col}" filter="url(#glow${id})"/><circle cx="${x(i).toFixed(1)}" cy="${y(vals[i]).toFixed(1)}" r="1.8" fill="#fff"/>`; };
-  const endLbl = (v, col, dy) => `<text x="${(x(n - 1) + 8).toFixed(1)}" y="${(y(v) + dy).toFixed(1)}" font-size="10.5" font-family="ui-monospace,monospace" font-weight="700" fill="${col}">${formatNombre(v)}</text>`;
-  return `<svg viewBox="0 0 ${W} ${H}" class="chart-svg" role="img" aria-label="Évolution du chiffre d'affaires et du bénéfice">
+  const L = cumulLayout(src, { padT, ih, iw, padL, n });   // CUMULÉ + double échelle
+  const zeroY = L.zeroY, last = n - 1;
+  const revLine = L.rev.map((v, i) => `${i ? 'L' : 'M'}${L.x(i).toFixed(1)},${L.yRev(v).toFixed(1)}`).join(' ');
+  const benLine = L.ben.map((v, i) => `${i ? 'L' : 'M'}${L.x(i).toFixed(1)},${L.yBen(v).toFixed(1)}`).join(' ');
+  const revArea = `${revLine} L${L.x(last).toFixed(1)},${zeroY.toFixed(1)} L${L.x(0).toFixed(1)},${zeroY.toFixed(1)} Z`;
+  const labels = src.map((s, i) => s.label ? `<text x="${L.x(i).toFixed(1)}" y="${H - 9}" text-anchor="middle" font-size="11" fill="${COL.text}">${s.label}</text>` : '').join('');
+  const benCol = signCol(L.ben[last], COL);
+  const dotEnd = (yv, col) => `<circle cx="${L.x(last).toFixed(1)}" cy="${yv.toFixed(1)}" r="4" fill="${col}" filter="url(#glow${id})"/><circle cx="${L.x(last).toFixed(1)}" cy="${yv.toFixed(1)}" r="1.8" fill="#fff"/>`;
+  const endLbl = (v, yv, col, dy) => `<text x="${(L.x(last) + 8).toFixed(1)}" y="${(yv + dy).toFixed(1)}" font-size="10.5" font-family="ui-monospace,monospace" font-weight="700" fill="${col}">${formatNombre(v)}</text>`;
+  const yRevEnd = L.yRev(L.rev[last]), yBenEnd = L.yBen(L.ben[last]);
+  const negBand = L.hasNeg ? `<rect x="${padL}" y="${zeroY.toFixed(1)}" width="${(W - padR - padL).toFixed(1)}" height="${((padT + ih) - zeroY).toFixed(1)}" fill="${COL.neg}" opacity=".05"/>` : '';
+  return `<svg viewBox="0 0 ${W} ${H}" class="chart-svg" role="img" aria-label="Chiffre d'affaires et bénéfice cumulés">
     <defs>
       <filter id="glow${id}" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
       <linearGradient id="heroA${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${COL.rev}" stop-opacity="0.42"/><stop offset="1" stop-color="${COL.rev}" stop-opacity="0"/></linearGradient>
       ${signDefs(id, COL, zeroY, H)}
     </defs>
-    ${grid}
+    ${negBand}
     <line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${W - padR}" y2="${zeroY.toFixed(1)}" stroke="${COL.grid}" stroke-width="1"/>
+    <text x="${(W - padR + 4).toFixed(1)}" y="${(zeroY + 3).toFixed(1)}" font-size="9.5" fill="${COL.text}" opacity=".85">0</text>
     <path d="${revArea}" fill="url(#heroA${id})"/>
-    <path d="${revPath}" fill="none" stroke="${COL.rev}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow${id})"/>
-    <path d="${benPath}" fill="none" stroke="url(#sgL${id})" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow${id})"/>
-    ${dot(revs, COL.rev)}${dot(bens, signCol(bens[n - 1], COL))}
-    ${endLbl(revs[n - 1], COL.rev, -6)}${endLbl(bens[n - 1], signCol(bens[n - 1], COL), 12)}
+    <path d="${revLine}" fill="none" stroke="${COL.rev}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow${id})"/>
+    <path d="${benLine}" fill="none" stroke="url(#sgL${id})" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow${id})"/>
+    ${dotEnd(yRevEnd, COL.rev)}${dotEnd(yBenEnd, benCol)}
+    ${endLbl(L.rev[last], yRevEnd, COL.rev, -6)}${endLbl(L.ben[last], yBenEnd, benCol, 12)}
     ${labels}
   </svg>`;
 }
