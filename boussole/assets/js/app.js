@@ -14,6 +14,8 @@ function localToday() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
+// Classe couleur financière (impression/PDF, identique à l'écran) : vert > 0, rouge < 0, neutre = 0.
+const sgnCls = (v) => (Number(v) > 0 ? 'pos' : (Number(v) < 0 ? 'neg' : ''));
 
 let screen = 'ventes';
 let wizard = null;
@@ -503,7 +505,7 @@ function printRapport(r) {
   document.getElementById('print-area').innerHTML = `
     <h1>Rapport · ${UI.esc(r.label)}</h1>
     <p class="p-sub">${UI.esc(nom)} · généré le ${new Date().toLocaleDateString('fr-FR')}</p>
-    <table><tbody>${line("Chiffre d'affaires", r.ca)}${line('Coût des produits', r.cout)}${line('Marge', r.marge)}${line('Charges fixes', r.charges)}${line('Dépenses', r.depenses)}${line('Bénéfice net', r.benefice, r.benefice >= 0 ? 'pos' : 'neg')}${line('Solde de caisse', r.caisse)}</tbody></table>
+    <table><tbody>${line("Chiffre d'affaires", r.ca)}${line('Coût des produits', r.cout)}${line('Marge', r.marge, sgnCls(r.marge))}${line('Charges fixes', r.charges)}${line('Dépenses', r.depenses)}${line('Bénéfice net', r.benefice, sgnCls(r.benefice))}${line('Solde de caisse', r.caisse, sgnCls(r.caisse))}</tbody></table>
     ${cats ? `<h2 style="font-size:15px;margin:18px 0 6px">Dépenses par catégorie</h2><table><tbody>${cats}</tbody></table>` : ''}
     ${tops ? `<h2 style="font-size:15px;margin:18px 0 6px">Meilleures ventes</h2><table><tbody>${tops}</tbody></table>` : ''}
     <p class="p-foot">Boussole · NEBULA Agency</p>`;
@@ -511,7 +513,9 @@ function printRapport(r) {
 }
 function shareRapport(r) {
   const nom = S.getState().profil.nom_activite || '';
-  const t = `BOUSSOLE · Rapport ${r.label}\n${nom}\n\nVentes : ${S.formatF(r.ca)}\nDépenses : ${S.formatF(r.depenses)}\nBénéfice net : ${S.formatF(r.benefice)}\nCaisse : ${S.formatF(r.caisse)}\nNb ventes : ${r.nbVentes}`;
+  const verdict = r.benefice < 0 ? '\n\nAttention : tu es en PERTE sur cette période.'
+    : (r.benefice > 0 ? '\n\nPériode rentable.' : '');
+  const t = `BOUSSOLE · Rapport ${r.label}\n${nom}\n\nVentes : ${S.formatF(r.ca)}\nDépenses : ${S.formatF(r.depenses)}\nBénéfice net : ${S.formatF(r.benefice)}\nCaisse : ${S.formatF(r.caisse)}\nNb ventes : ${r.nbVentes}${verdict}`;
   window.open('https://wa.me/?text=' + encodeURIComponent(t), '_blank');
 }
 
@@ -1153,13 +1157,13 @@ function printBilan() {
   const t = S.trimestreDe();
   const a = S.analyseBusiness();
   const nom = S.getState().profil.nom_activite || 'Mon activité';
-  const rows = t.mois.map((m) => `<tr><td>${m.label}</td><td>${S.formatF(m.revenu)}</td><td>${S.formatF(m.relance)}</td><td>${S.formatF(m.charges_couvertes)}</td><td>${S.formatF(m.benefice)}</td></tr>`).join('');
+  const rows = t.mois.map((m) => `<tr><td>${m.label}</td><td>${S.formatF(m.revenu)}</td><td>${S.formatF(m.relance)}</td><td>${S.formatF(m.charges_couvertes)}</td><td class="${sgnCls(m.benefice)}">${S.formatF(m.benefice)}</td></tr>`).join('');
   $('#print-area').innerHTML = `
     <h1>Bilan trimestriel T${t.numero} ${t.annee}</h1>
     <p class="p-sub">${UI.esc(nom)} · généré le ${new Date().toLocaleDateString('fr-FR')}</p>
     <table><thead><tr><th>Mois</th><th>Revenu</th><th>Relance production</th><th>Charges fixes</th><th>Bénéfice net</th></tr></thead>
       <tbody>${rows}</tbody>
-      <tfoot><tr><td>Total</td><td>${S.formatF(t.totaux.revenu)}</td><td>${S.formatF(t.totaux.relance)}</td><td>${S.formatF(t.totaux.charges_couvertes)}</td><td>${S.formatF(t.totaux.benefice)}</td></tr></tfoot>
+      <tfoot><tr><td>Total</td><td>${S.formatF(t.totaux.revenu)}</td><td>${S.formatF(t.totaux.relance)}</td><td>${S.formatF(t.totaux.charges_couvertes)}</td><td class="${sgnCls(t.totaux.benefice)}">${S.formatF(t.totaux.benefice)}</td></tr></tfoot>
     </table>
     <p class="p-verdict">${t.viable ? 'Activité rentable ce trimestre.' : 'Activité pas encore rentable ce trimestre.'}</p>
     <h2 style="font-size:15px;margin:18px 0 6px">Diagnostic · santé ${a.score}/100</h2>

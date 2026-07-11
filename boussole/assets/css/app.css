@@ -810,6 +810,9 @@ input { font-family: inherit; }
   .print-area tfoot td { font-weight: 700; }
   .print-area .p-verdict { margin-top: 16px; font-weight: 600; }
   .print-area .p-foot { margin-top: 28px; color: #999; font-size: 11px; }
+  /* Code couleur financier sur papier/PDF (tons foncés lisibles sur blanc) : vert > 0, rouge < 0. */
+  .print-area .pos { color: #0a7d4f !important; }
+  .print-area .neg { color: #c81e46 !important; }
 }
 
 /* ============================================================

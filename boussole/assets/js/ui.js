@@ -431,9 +431,9 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
   };
   const kpiTiles = [
     kpit('coins', 'CA du jour', R.ca, 'acc'),
-    kpit('receipt', 'Dépensé', R.depenses, R.depenses > 0 ? 'neg' : ''),
+    kpit('receipt', 'Dépensé', R.depenses, ''),
     kpit('spark', 'Bénéfice du jour', R.benefice, signCls(R.benefice)),
-    kpit('users', 'Dettes dehors', csKpi.total, csKpi.total > 0 ? 'neg' : '', { action: 'go', screen: 'carnet', tap: true, title: 'Voir le carnet' }),
+    kpit('users', 'Dettes dehors', csKpi.total, '', { action: 'go', screen: 'carnet', tap: true, title: 'Voir le carnet' }),
     kpit('wallet', 'Trésorerie', R.caisse, signCls(R.caisse), { action: 'edit-caisse', tap: true, edit: true, title: 'Régler le fond de caisse' }),
   ];
   const dots = kpiTiles.map((_, i) => `<span class="kpicar__dot ${i === 0 ? 'is-on' : ''}" aria-hidden="true"></span>`).join('');
@@ -1078,7 +1078,7 @@ export function viewBilanHTML(rapGran = 'jour') {
     <div class="vchips">${rchip('jour', 'Jour')}${rchip('semaine', 'Semaine')}${rchip('mois', 'Mois')}${rchip('annee', 'Année')}</div>
     <div class="rsum">
       ${rstat("Chiffre d'affaires", formatF(RG.ca))}
-      ${rstat('Dépenses', formatF(RG.depenses), RG.depenses > 0 ? 'neg' : '')}
+      ${rstat('Dépenses', formatF(RG.depenses))}
       ${rstat('Bénéfice net', formatF(RG.benefice), signCls(RG.benefice))}
       ${rstat('Solde de caisse', formatF(RG.caisse), signCls(RG.caisse))}
       ${rstat('Ventes', formatNombre(RG.nbVentes))}
