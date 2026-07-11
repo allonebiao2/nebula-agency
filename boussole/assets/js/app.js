@@ -470,9 +470,13 @@ function renderAdmin() {
   tb.innerHTML = UI.topbarHTML(cloudCtx(), effectiveTheme(), 0);
   ['#nav', '#sidebar', '#fab'].forEach((s) => { $(s).innerHTML = ''; $(s).style.display = 'none'; });
   const view = $('#view'); view.innerHTML = '<section class="view"><p class="lrow--empty">Chargement du cockpit…</p></section>';
-  Promise.all([Cloud.adminUsers(), Cloud.adminListRequests(), Cloud.adminListKeys(), Cloud.adminGetConfig('tg_admin_chat')]).then(([users, reqs, keys, tgChat]) => {
+  Promise.all([Cloud.adminUsers(), Cloud.adminListRequests(), Cloud.adminListKeys(), Cloud.adminGetConfig('tg_admin_chat'), Cloud.adminDailySeries(14)]).then(([users, reqs, keys, tgChat, history]) => {
     adminUsersCache = users || [];
-    view.innerHTML = UI.adminCockpitHTML(adminUsersCache, reqs, keys, tgChat); hydrateIcons(view);
+    const m = UI.adminMetrics(adminUsersCache);
+    // snapshot du jour (débloque les tendances ↑↓ + mini-courbes dans les jours qui suivent)
+    Cloud.adminRecordDaily({ mrr: m.mrr, paid: m.paid, ess: m.ess, pro: m.pro, dau: m.dau, mau: m.mau, gmv: m.gmv, dettes: m.dettes, rel: m.relTotal, conv: m.conv, stick: m.stick });
+    view.innerHTML = UI.adminCockpitHTML(adminUsersCache, reqs, keys, tgChat, history || []);
+    hydrateIcons(view); animateCounts(view);
   });
 }
 function renderBlockSuspended() {

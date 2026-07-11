@@ -509,3 +509,55 @@ begin
   return v;
 end $$;
 grant execute on function public.admin_user_snapshot(uuid) to authenticated;
+
+
+-- ============================================================
+--  COCKPIT ADMIN — snapshot quotidien (tendances ↑↓ + mini-courbes)
+--  Alimenté par le client admin à chaque ouverture du cockpit
+--  (via RPC definer gated is_admin) ; aucune policy client.
+-- ============================================================
+create table if not exists public.admin_daily (
+  day        date primary key,
+  mrr        numeric default 0,
+  paid       int default 0,
+  ess        int default 0,
+  pro        int default 0,
+  dau        int default 0,
+  mau        int default 0,
+  gmv        numeric default 0,
+  dettes     numeric default 0,
+  rel        int default 0,
+  conv       int default 0,
+  stick      int default 0,
+  updated_at timestamptz default now()
+);
+alter table public.admin_daily enable row level security;   -- accès UNIQUEMENT via RPC definer
+
+create or replace function public.admin_record_daily(p jsonb)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_admin() then raise exception 'non autorise'; end if;
+  insert into public.admin_daily(day, mrr, paid, ess, pro, dau, mau, gmv, dettes, rel, conv, stick, updated_at)
+  values (current_date,
+    coalesce((p->>'mrr')::numeric,0), coalesce((p->>'paid')::int,0), coalesce((p->>'ess')::int,0), coalesce((p->>'pro')::int,0),
+    coalesce((p->>'dau')::int,0), coalesce((p->>'mau')::int,0), coalesce((p->>'gmv')::numeric,0),
+    coalesce((p->>'dettes')::numeric,0), coalesce((p->>'rel')::int,0), coalesce((p->>'conv')::int,0), coalesce((p->>'stick')::int,0), now())
+  on conflict (day) do update set
+    mrr=excluded.mrr, paid=excluded.paid, ess=excluded.ess, pro=excluded.pro,
+    dau=greatest(admin_daily.dau, excluded.dau),   -- le DAU ne fait que grandir dans la journée
+    mau=excluded.mau, gmv=excluded.gmv, dettes=excluded.dettes, rel=excluded.rel,
+    conv=excluded.conv, stick=excluded.stick, updated_at=now();
+end $$;
+grant execute on function public.admin_record_daily(jsonb) to authenticated;
+
+create or replace function public.admin_daily_series(p_days int default 14)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare v jsonb;
+begin
+  if not public.is_admin() then raise exception 'non autorise'; end if;
+  select coalesce(jsonb_agg(to_jsonb(t) order by t.day), '[]'::jsonb) into v
+  from (select day::text, mrr, paid, ess, pro, dau, mau, gmv, dettes, rel, conv, stick
+        from public.admin_daily where day > current_date - greatest(1, p_days) order by day) t;
+  return v;
+end $$;
+grant execute on function public.admin_daily_series(int) to authenticated;

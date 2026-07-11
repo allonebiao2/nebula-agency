@@ -172,6 +172,17 @@ export async function pushStats(payload) {
   try { await client.from('user_stats').upsert({ user_id: currentUser.id, ...payload, updated_at: new Date().toISOString() }, { onConflict: 'user_id' }); }
   catch (e) { console.warn('pushStats', e); }
 }
+// Enregistre le snapshot du jour (tendances) + lit la série (mini-courbes ↑↓).
+export async function adminRecordDaily(metrics) {
+  if (!client) return;
+  try { await client.rpc('admin_record_daily', { p: metrics }); } catch (e) { console.warn('record daily', e); }
+}
+export async function adminDailySeries(days = 14) {
+  if (!client) return [];
+  const { data, error } = await client.rpc('admin_daily_series', { p_days: days });
+  if (error) { console.warn('daily series', error.message); return []; }
+  return Array.isArray(data) ? data : [];
+}
 
 // ---------- Adaptateur CRUD (branché sur le store) ----------
 function stripLocal(row) {

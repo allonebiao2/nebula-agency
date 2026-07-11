@@ -1851,7 +1851,7 @@ function _admPlanLabel(u) {
   if (l.echeance && new Date(l.echeance).getTime() <= Date.now()) return 'Expiré';
   return 'Essai';
 }
-function adminMetrics(users) {
+export function adminMetrics(users) {
   const today = _admYmd(new Date()), d30 = _admYmd(new Date(Date.now() - 29 * 86400000));
   let ess = 0, pro = 0, paid = 0, dau = 0, mau = 0, gmv = 0, dettes = 0, relM = 0, relP = 0;
   users.forEach((u) => {
@@ -1864,15 +1864,38 @@ function adminMetrics(users) {
   return {
     ess, pro, paid, total, mrr: ess * PLAN_PRIX.essentiel + pro * PLAN_PRIX.pro,
     conv: total ? Math.round(paid / total * 100) : 0, dau, mau, stick: mau ? Math.round(dau / mau * 100) : 0,
-    gmv, dettes, relM, relP, relTotal: relM + relP,
+    gmv, dettes, relM, relP, relTotal: relM + relP, rel: relM + relP,
     champions: users.filter((u) => Number(u.gmv) > 0).sort((a, b) => (b.gmv || 0) - (a.gmv || 0)).slice(0, 5),
   };
 }
-function _admStat(lbl, val, cls = '') { return `<div class="acard"><span class="acard__lbl">${lbl}</span><span class="acard__val ${cls}">${val}</span></div>`; }
+// Carte KPI premium : icône (haut-droite), gros chiffre lumineux, delta ↑↓, mini-courbe.
+function _admKpi(o) {
+  const cls = ['kx', o.hero ? 'kx--hero' : '', o.live ? 'kx--live' : ''].filter(Boolean).join(' ');
+  const cnt = o.cnt ? ` data-count="${o.cnt.n}" data-fmt="${o.cnt.fmt}"` : '';
+  const delta = o.delta ? `<span class="kx__delta ${o.delta.dir}"><span data-icon="${o.delta.dir === 'up' ? 'arrowUp' : 'arrowDown'}"></span>${o.delta.txt}</span>` : '';
+  const spark = o.spark ? `<span class="kx__spark">${o.spark}</span>` : '';
+  return `<div class="${cls}">
+    <div class="kx__top"><span class="kx__lbl">${o.lbl}</span><span class="kx__ic" data-icon="${o.icon}"></span></div>
+    <span class="kx__val ${o.sign || ''}"${cnt}>${o.val}</span>
+    <div class="kx__foot">${delta}${spark}</div>
+    ${o.live ? '<span class="kx__pulse" aria-hidden="true"></span>' : ''}
+  </div>`;
+}
+// En-tête de section : pastille d'icône + titre + badge coloré (accent par section).
+function _admHead(n, icon, title, badge, accent) {
+  return `<div class="ahead ahead--${accent}">
+    <span class="ahead__ic" data-icon="${icon}"></span>
+    <h2 class="ahead__t">${n} · ${title}</h2>
+    <span class="ahead__badge">${badge}</span>
+  </div>`;
+}
 function _admUserRow(u) {
+  const initial = esc((u.nom || '?').trim().charAt(0).toUpperCase() || '?');
+  const paid = _admPaid(u);
   return `<button class="urow ${u.suspended ? 'is-susp' : ''}" data-action="adm-open" data-uid="${esc(u.user_id)}">
+    <span class="urow__av ${paid ? 'is-paid' : ''}">${initial}</span>
     <div class="urow__id"><strong>${esc(u.nom || '(sans nom)')}</strong><small>${esc(_admPlanLabel(u))}${u.proprietaire ? ' · ' + esc(u.proprietaire) : (u.email ? ' · ' + esc(u.email) : '')}</small></div>
-    <div class="urow__meta"><span class="urow__gmv">${formatF(u.gmv || 0)}</span>${u.suspended ? '<span class="lic-tag lic-tag--off">suspendu</span>' : ''}</div>
+    <div class="urow__meta"><span class="urow__gmv">${formatF(u.gmv || 0)}</span>${u.suspended ? '<span class="lic-tag lic-tag--off">suspendu</span>' : '<span class="urow__go" data-icon="chevron"></span>'}</div>
   </button>`;
 }
 function _licencePanels(requests, keys, tgChat) {
@@ -1908,47 +1931,72 @@ function _licencePanels(requests, keys, tgChat) {
       </div>
     </div>`;
 }
-export function adminCockpitHTML(users, requests, keys, tgChat) {
+export function adminCockpitHTML(users, requests, keys, tgChat, history = []) {
   const m = adminMetrics(users);
+  // Tendances : compare la valeur du jour (m) au dernier jour PASSÉ enregistré.
+  const todayStr = _admYmd(new Date());
+  const past = (history || []).filter((h) => h.day < todayStr);
+  const prev = past.length ? past[past.length - 1] : null;
+  const dMoney = (key) => { if (!prev) return null; const d = (m[key] || 0) - (Number(prev[key]) || 0); return d ? { dir: d > 0 ? 'up' : 'down', txt: (d > 0 ? '+' : '') + formatF(d) } : null; };
+  const dNum = (key, suf = '') => { if (!prev) return null; const d = (m[key] || 0) - (Number(prev[key]) || 0); return d ? { dir: d > 0 ? 'up' : 'down', txt: (d > 0 ? '+' : '') + d + suf } : null; };
+  const spk = (key, color) => { const vals = (history || []).map((h) => Number(h[key]) || 0); if (vals[vals.length - 1] !== (m[key] || 0)) vals.push(m[key] || 0); return vals.length >= 3 ? sparklineRaw(vals, { color, w: 118, h: 26 }) : ''; };
+  const cA = 'var(--adm-money)', cT = 'var(--adm-traction)', cR = 'var(--acc)';
+
   return `<section class="view view--admin">
-    ${sectionTitle('Cockpit NEBULA', 'pilotage Boussole')}
-    <div class="panel">
-      <div class="panel__head"><h2>1 · L'argent (ma caisse)</h2><span class="panel__sub">revenus récurrents</span></div>
-      <div class="acards">
-        ${_admStat('MRR (par mois)', formatF(m.mrr), 'pos')}
-        ${_admStat('Abonnés payants', String(m.paid))}
-        ${_admStat('Essentiel', String(m.ess))}
-        ${_admStat('Pro', String(m.pro))}
-        ${_admStat('Conversion', m.conv + ' %')}
-      </div>
+    <div class="admtop">
+      <div class="admtop__brand"><span class="admtop__ic" data-icon="compass"></span>
+        <div><h1>Cockpit NEBULA</h1><p>pilotage Boussole <span class="admtop__live">● live</span></p></div></div>
+      <button class="btn btn--ghost btn--sm" data-action="go" data-screen="reglages"><span data-icon="home"></span> Appli</button>
     </div>
-    <div class="panel">
-      <div class="panel__head"><h2>2 · La traction (terrain)</h2><span class="panel__sub">usage réel</span></div>
+
+    <section class="asec asec--money">
+      ${_admHead('1', 'coins', "L'argent", 'revenus récurrents', 'money')}
       <div class="acards">
-        ${_admStat('Actifs / jour', String(m.dau))}
-        ${_admStat('Actifs / mois', String(m.mau))}
-        ${_admStat('Stickiness', m.stick + ' %')}
-        ${_admStat('GMV globale', formatF(m.gmv), 'acc')}
+        ${_admKpi({ icon: 'wallet', lbl: 'MRR / mois', val: formatF(m.mrr), cnt: { n: m.mrr, fmt: 'f' }, sign: 'pos', hero: true, delta: dMoney('mrr'), spark: spk('mrr', cA) })}
+        ${_admKpi({ icon: 'users', lbl: 'Abonnés payants', val: String(m.paid), cnt: { n: m.paid, fmt: 'num' }, delta: dNum('paid') })}
+        ${_admKpi({ icon: 'user', lbl: 'Essentiel', val: String(m.ess), cnt: { n: m.ess, fmt: 'num' } })}
+        ${_admKpi({ icon: 'crown', lbl: 'Pro', val: String(m.pro), cnt: { n: m.pro, fmt: 'num' } })}
+        ${_admKpi({ icon: 'percent', lbl: 'Conversion', val: m.conv + ' %', cnt: { n: m.conv, fmt: 'pct' }, delta: dNum('conv', ' pts') })}
       </div>
-      <h3 class="acard__h3">Top 5 champions</h3>
-      <ul class="achamps">${m.champions.length ? m.champions.map((u, i) => `<li><span class="achamps__r">${i + 1}</span><strong>${esc(u.nom || '')}</strong><span class="achamps__v">${formatF(u.gmv || 0)}</span></li>`).join('') : '<li class="lrow--empty">Pas encore de ventes remontées.</li>'}</ul>
-    </div>
-    <div class="panel">
-      <div class="panel__head"><h2>3 · Relances & impact (ROI)</h2><span class="panel__sub">la valeur de Boussole</span></div>
+    </section>
+
+    <section class="asec asec--traction">
+      ${_admHead('2', 'activity', 'La traction', 'usage réel', 'traction')}
       <div class="acards">
-        ${_admStat('Dettes récupérées', formatF(m.dettes), 'pos')}
-        ${_admStat('Relances envoyées', String(m.relTotal))}
-        ${_admStat('Manuelles', String(m.relM))}
-        ${_admStat('Pré-remplies (Pro)', String(m.relP))}
+        ${_admKpi({ icon: 'activity', lbl: 'Actifs / jour', val: String(m.dau), cnt: { n: m.dau, fmt: 'num' }, live: true, delta: dNum('dau'), spark: spk('dau', cT) })}
+        ${_admKpi({ icon: 'users', lbl: 'Actifs / mois', val: String(m.mau), cnt: { n: m.mau, fmt: 'num' } })}
+        ${_admKpi({ icon: 'percent', lbl: 'Stickiness', val: m.stick + ' %', cnt: { n: m.stick, fmt: 'pct' } })}
+        ${_admKpi({ icon: 'coins', lbl: 'GMV globale', val: formatF(m.gmv), cnt: { n: m.gmv, fmt: 'f' }, sign: 'acc', hero: true, delta: dMoney('gmv'), spark: spk('gmv', cT) })}
       </div>
-    </div>
-    <div class="panel">
-      <div class="panel__head"><h2>4 · Utilisateurs (${m.total})</h2><span class="panel__sub">télécommande</span></div>
+      <div class="achamps-wrap">
+        <h3 class="asub"><span data-icon="trophy"></span> Top 5 champions</h3>
+        ${m.champions.length
+          ? `<ul class="achamps">${m.champions.map((u, i) => `<li><span class="achamps__r r${i + 1}">${i + 1}</span><strong>${esc(u.nom || '')}</strong><span class="achamps__v">${formatF(u.gmv || 0)}</span></li>`).join('')}</ul>`
+          : `<div class="aempty"><span class="aempty__ic" data-icon="star"></span><p>En attente de données du terrain…</p><small>Le Top 5 apparaîtra dès que tes commerçants enregistreront des ventes.</small></div>`}
+      </div>
+    </section>
+
+    <section class="asec asec--roi">
+      ${_admHead('3', 'whatsapp', 'Relances & impact', 'la valeur de Boussole', 'roi')}
+      <div class="acards">
+        ${_admKpi({ icon: 'coins', lbl: 'Dettes récupérées', val: formatF(m.dettes), cnt: { n: m.dettes, fmt: 'f' }, sign: 'pos', hero: true, delta: dMoney('dettes'), spark: spk('dettes', cR) })}
+        ${_admKpi({ icon: 'send', lbl: 'Relances envoyées', val: String(m.relTotal), cnt: { n: m.relTotal, fmt: 'num' }, delta: dNum('rel') })}
+        ${_admKpi({ icon: 'user', lbl: 'Manuelles', val: String(m.relM), cnt: { n: m.relM, fmt: 'num' } })}
+        ${_admKpi({ icon: 'crown', lbl: 'Pré-remplies (Pro)', val: String(m.relP), cnt: { n: m.relP, fmt: 'num' } })}
+      </div>
+    </section>
+
+    <section class="asec asec--pilot">
+      ${_admHead('4', 'users', `Utilisateurs (${m.total})`, 'télécommande', 'pilot')}
       ${zhelp('Touche un utilisateur pour ouvrir sa fiche : prolonger l’essai, activer un abonnement, l’inspecter en lecture seule, le relancer sur WhatsApp, ou le suspendre.')}
-      <div class="uroster">${users.length ? users.map(_admUserRow).join('') : '<p class="lrow--empty">Aucun utilisateur pour l’instant.</p>'}</div>
-    </div>
-    ${_licencePanels(requests, keys, tgChat)}
-    <button class="btn btn--ghost" data-action="go" data-screen="reglages"><span data-icon="home"></span> Retour à l’appli</button>
+      <div class="uroster">${users.length ? users.map(_admUserRow).join('') : `<div class="aempty"><span class="aempty__ic" data-icon="users"></span><p>Aucun utilisateur pour l’instant.</p><small>Les comptes apparaîtront ici dès les premières inscriptions.</small></div>`}</div>
+    </section>
+
+    <section class="asec asec--lic">
+      ${_admHead('5', 'key', 'Licences & alertes', 'clés & paiements', 'pilot')}
+      ${_licencePanels(requests, keys, tgChat)}
+    </section>
+    <button class="btn btn--ghost" data-action="go" data-screen="reglages" style="margin-top:8px"><span data-icon="home"></span> Retour à l’appli</button>
   </section>`;
 }
 // Fiche « télécommande » d'un commerçant (modale).
