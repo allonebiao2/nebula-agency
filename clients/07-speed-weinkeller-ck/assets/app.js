@@ -164,12 +164,13 @@ document.documentElement.classList.add("js");
     var TAX = [
       { cat: "vin", short: "Vins", label: "Vins", subs: [] },
       { cat: "champagne", short: "Champagnes", label: "Champagnes & Effervescents", subs: [["prestige", "Prestige & Millésimés"], ["blancdeblancs", "Blanc de Blancs"], ["brut", "Bruts"], ["rose", "Rosés"]] },
-      { cat: "whisky", short: "Whiskys", label: "Whiskys & Cognacs", subs: [["scotch", "Single Malt"], ["cognac", "Cognacs"]] },
+      { cat: "whisky", short: "Whiskys", label: "Whiskys", subs: [] },
+      { cat: "cognac", short: "Cognacs", label: "Cognacs", subs: [] },
       { cat: "tequila", short: "Tequila", label: "Tequila", subs: [["cristalino", "Cristalino"], ["blanco", "Blanco / Silver"], ["reposado", "Reposado"], ["anejo", "Añejo"]] },
       { cat: "rhum", short: "Rhum", label: "Rhum", subs: [] },
       { cat: "gin", short: "Gin", label: "Gin", subs: [] },
-      { cat: "pastis", short: "Pastis", label: "Pastis", subs: [] },
-      { cat: "vodka", short: "Vodka", label: "Vodka", subs: [] }
+      { cat: "vodka", short: "Vodka", label: "Vodka", subs: [] },
+      { cat: "aperitif", short: "Apéritifs & liqueurs", label: "Apéritifs & liqueurs", subs: [] }
     ];
     var CHEV = '<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
     function cnt(c, s) { return bottles.filter(function (b) { return b.getAttribute("data-cat") === c && (!s || b.getAttribute("data-sub") === s); }).length; }
