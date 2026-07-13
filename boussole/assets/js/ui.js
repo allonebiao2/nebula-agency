@@ -257,18 +257,28 @@ export function sidebarHTML(active, cloud, openGroup) {
 export function drawerHTML(cloud, theme) {
   const nom = getState().profil.nom_activite || 'Mon activité';
   const acct = cloud.configured ? (cloud.user ? `${esc(cloud.user.email)} · synchronisé` : 'Non connecté · mode local') : 'Mode local · cet appareil';
+  const nb = notifications().count;
   const item = (action, ic, label, screen) => `<button class="drawer__item" data-action="${action}"${screen ? ` data-screen="${screen}"` : ''}><span class="drawer__ic" data-icon="${ic}"></span>${label}</button>`;
+  const main = (screen, ic, label, sub) => `<button class="drawer__item drawer__item--main" data-action="go" data-screen="${screen}"><span class="drawer__ic" data-icon="${ic}"></span><span class="drawer__mtxt"><strong>${label}</strong><small>${sub}</small></span><span class="drawer__go" data-icon="chevron"></span></button>`;
   return `<div class="drawer__scrim" data-action="close-overlay"></div>
     <aside class="drawer" role="dialog" aria-label="Menu">
       <div class="drawer__head">
-        <span class="drawer__avatar" data-icon="user"></span>
+        <span class="drawer__avatar">${getState().profil.photo ? `<img src="${getState().profil.photo}" alt="">` : '<span data-icon="user"></span>'}</span>
         <div class="drawer__id"><strong>${esc(nom)}</strong><small>${esc(acct)}</small></div>
         <button class="drawer__x" data-action="close-overlay" aria-label="Fermer"><span data-icon="close"></span></button>
       </div>
+      <nav class="drawer__nav drawer__nav--main">
+        ${main('ventes', 'ventes', 'Mes Ventes', 'Ventes &amp; historique')}
+        ${main('depenses', 'coins', 'La Caisse', 'Coûts &amp; flux')}
+        ${main('bilan', 'bilan', 'Bilan &amp; Évolution', 'Analyse &amp; comparaison')}
+        ${main('reglages', 'reglages', 'Réglages', 'Compte &amp; activité')}
+      </nav>
+      <div class="drawer__sep"></div>
+      <p class="drawer__grouplbl">Naviguer</p>
       <nav class="drawer__nav">
-        ${item('go', 'receipt', 'Dépenses & achats', 'depenses')}
-        ${item('go', 'bilan', 'Rapports & bilan', 'bilan')}
-        ${item('go', 'reglages', 'Réglages', 'reglages')}
+        ${item('go', 'home', 'Accueil', 'accueil')}
+        ${item('go', 'users', `Carnet · clients${nb ? ` <span class="drawer__badge">${nb}</span>` : ''}`, 'carnet')}
+        ${item('go', isDigital() ? 'spark' : 'box', isDigital() ? 'Catalogue' : 'Stock', 'stock')}
       </nav>
       <div class="drawer__sep"></div>
       <div class="drawer__nav">
@@ -610,11 +620,18 @@ export function viewAccueilHTML(period = { gran: 'mois', offset: 0 }) {
     }).join('')}</ul>
   </article>` : '';
 
+  const sellHero = `<button class="sellhero" data-action="fab-vente">
+    <span class="sellhero__ic" data-icon="ventes"></span>
+    <span class="sellhero__t"><strong>Vendre</strong><small>Enregistre une vente en un geste</small></span>
+    <span class="sellhero__plus" data-icon="plus"></span>
+  </button>`;
+
   return `<section class="view view--dash">
     <header class="dashhead">
       <div><p class="dashhead__greet">${greet},</p><h1 class="dashhead__nom">${esc(nom)}</h1></div>
       <span class="dashhead__time"><span data-icon="clock"></span>${timeStr}</span>
     </header>
+    ${sellHero}
     ${cashCard}
     ${alertsBlockHTML()}
     ${chargesAVenirCardHTML()}
@@ -818,7 +835,7 @@ export function viewDepensesHTML(filter = { preset: 'mois', from: '', to: '', ca
         <span class="hvempty__hint">Ajoute une dépense, ou change de période.</span></div>`;
 
   return `<section class="view">
-    ${sectionTitle('Dépenses', "Où part ton argent")}
+    ${sectionTitle('La Caisse', "Coûts &amp; flux, où part ton argent")}
     ${zhelp('Tout ce qui sort de ta caisse : achats de marchandise, transport, loyer… Ajoute une dépense, vois la répartition par catégorie et retrouve l’historique. (Le « Réassort / Stock » ne compte pas dans le bénéfice : c’est déjà dans le coût de tes produits.)')}
     <div class="depsum">
       <div class="depsum__id"><span class="depsum__lbl">Total dépensé · ${esc(rangeLabel(filter))}</span>
@@ -1655,11 +1672,19 @@ function monProfilPanelHTML(cloud) {
     <div class="panel__head"><h2>Mon profil</h2></div>
     ${zhelp('Ton nom (le patron) et ton compte. Ton nom peut apparaître sur les reçus et le tableau de bord. Le compte sert à synchroniser et sécuriser tes données.')}
     <div class="profilcard">
-      <span class="profilcard__av">${esc(initiales(nom || st.profil.nom_activite))}</span>
+      <span class="profilcard__av">${st.profil.photo ? `<img src="${st.profil.photo}" alt="">` : esc(initiales(nom || st.profil.nom_activite))}</span>
       <div class="profilcard__b">
         <strong>${esc(nom || 'Ton nom')}</strong>
         <small>${cloud.user ? esc(cloud.user.email) : 'Mode local (pas de compte)'}</small>
       </div>
+    </div>
+    <div class="field"><label>Photo de profil</label>
+      <div class="photorow">
+        <button class="btn btn--ghost btn--sm" data-action="photo-pick"><span data-icon="upload"></span> ${st.profil.photo ? 'Changer la photo' : 'Ajouter une photo'}</button>
+        ${st.profil.photo ? `<button class="btn btn--danger-ghost btn--sm" data-action="photo-clear"><span data-icon="trash"></span> Retirer</button>` : ''}
+      </div>
+      <input type="file" id="photo-input" accept="image/*" hidden>
+      <p class="panel__note">Une photo carrée rend mieux. Elle reste sur ton appareil${cloud.user ? ' et se synchronise' : ''}.</p>
     </div>
     <div class="field"><label for="rg-prop">Ton nom (propriétaire)</label>
       <input id="rg-prop" class="input" value="${esc(nom)}" data-action="save-prop" placeholder="Ex. Ada K."></div>

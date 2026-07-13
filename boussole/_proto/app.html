@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <title>Boussole · App (aperçu Étape 2)</title>
+  <link rel="icon" href="../assets/icons/favicon-48.png" type="image/png">
+  <style>
+    @font-face {
+      font-family: 'Bricolage Grotesque';
+      src: url('../assets/fonts/BricolageGrotesque.woff2') format('woff2');
+      font-weight: 200 800; font-display: swap;
+    }
+    :root {
+      --ease: cubic-bezier(.16, 1, .3, 1);
+      --ease-back: cubic-bezier(.2, 1.28, .32, 1);   /* ease-out-back : rebond « comics » */
+      --hdr-h: 58px;
+      --cyan: #38f0ff;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+      color: #fff;
+      background: radial-gradient(125% 92% at 50% -10%, #12203f 0%, #070a14 66%) fixed;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ============ HEADER FIXE (Liquid Glass) ============ */
+    .hdr {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      height: calc(var(--hdr-h) + env(safe-area-inset-top));
+      padding: env(safe-area-inset-top) 14px 0;
+      display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+      background: rgba(255, 255, 255, .05);
+      -webkit-backdrop-filter: blur(20px) saturate(140%);
+              backdrop-filter: blur(20px) saturate(140%);
+      border-bottom: 1px solid rgba(255, 255, 255, .1);
+      box-shadow: 0 1px 0 rgba(56, 240, 255, .14), 0 10px 30px -18px rgba(0, 0, 0, .7);
+    }
+    /* Hamburger (encrage BD, traits épais) */
+    .hdr__burger {
+      justify-self: start;
+      width: 44px; height: 44px; display: grid; place-items: center;
+      border: 0; background: none; color: #fff; cursor: pointer; border-radius: 12px;
+      transition: color .18s var(--ease), background .18s var(--ease);
+    }
+    .hdr__burger svg { width: 25px; height: 25px; transition: filter .18s var(--ease); }
+    .hdr__burger:hover { color: var(--cyan); background: rgba(56, 240, 255, .08); }
+    .hdr__burger:hover svg { filter: drop-shadow(0 0 6px rgba(56, 240, 255, .8)); }
+    .hdr__burger:active { transform: scale(.92); }
+    /* Logo central qui pulse très discrètement */
+    .hdr__logo { justify-self: center; width: 30px; height: 30px; display: block; animation: logoPulse 3.4s ease-in-out infinite; }
+    .hdr__logo svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 0 5px rgba(56, 240, 255, .55)); }
+    .hdr__logo .ring { stroke: #8ff6ff; } .hdr__logo .ring--in { stroke: rgba(143, 246, 255, .5); }
+    .hdr__logo .ticks line { stroke: #8ff6ff; }
+    .hdr__logo .rose-n { fill: #eafdff; } .hdr__logo .rose-s { fill: rgba(56, 240, 255, .4); }
+    .hdr__logo .rose-ew { fill: rgba(234, 253, 255, .4); } .hdr__logo .hub { fill: #fff; }
+    /* Avatar vide (futur profil) */
+    .hdr__avatar {
+      justify-self: end; width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, .22);
+      background: radial-gradient(120% 120% at 30% 25%, rgba(255, 255, 255, .16), rgba(255, 255, 255, .03));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .2);
+      transition: border-color .18s var(--ease), box-shadow .18s var(--ease);
+    }
+    .hdr__avatar:hover { border-color: rgba(56, 240, 255, .5); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .2), 0 0 14px rgba(56, 240, 255, .35); }
+
+    /* ============ CONTENU (placeholder) ============ */
+    .content {
+      min-height: 100dvh;
+      padding: calc(var(--hdr-h) + env(safe-area-inset-top) + 24px) 20px 24px;
+    }
+    .content__hint {
+      max-width: 460px; margin: 12vh auto 0; text-align: center; color: rgba(255, 255, 255, .4);
+      font-size: 14.5px; line-height: 1.5;
+    }
+    .content__hint strong { color: rgba(255, 255, 255, .7); font-weight: 700; }
+
+    /* ============ OVERLAY + DRAWER ============ */
+    .scrim {
+      position: fixed; inset: 0; z-index: 60;
+      background: rgba(4, 8, 16, .5);
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s var(--ease);
+    }
+    .app.menu-open .scrim {
+      opacity: 1; pointer-events: auto;
+      -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+    }
+    .drawer {
+      position: fixed; top: 0; left: 0; bottom: 0; z-index: 70;
+      width: min(84vw, 320px);                 /* PC : largeur fixe (max-w-xs), le tableau de bord reste visible à droite */
+      padding: calc(env(safe-area-inset-top) + 11px) 14px calc(env(safe-area-inset-bottom) + 11px);
+      display: flex; flex-direction: column;
+      background: linear-gradient(180deg, rgba(20, 30, 54, .92), rgba(9, 12, 22, .94));
+      -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px);
+      border-right: 1px solid rgba(255, 255, 255, .1);
+      box-shadow: 24px 0 60px -20px rgba(0, 0, 0, .7), inset -1px 0 0 rgba(56, 240, 255, .1);
+      transform: translateX(-102%);
+      transition: transform .3s var(--ease-back);   /* glissement rapide + rebond */
+      will-change: transform;
+    }
+    .app.menu-open .drawer { transform: translateX(0); }
+    .drawer__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .drawer__brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -.01em; font-size: 17px; }
+    .drawer__brand span { width: 26px; height: 26px; }
+    .drawer__brand svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 0 5px rgba(56, 240, 255, .5)); }
+    .drawer__x {
+      width: 38px; height: 38px; flex: none; display: grid; place-items: center;
+      border: 1px solid rgba(255, 255, 255, .14); background: rgba(255, 255, 255, .05);
+      border-radius: 11px; color: rgba(255, 255, 255, .8); cursor: pointer;
+      transition: color .16s var(--ease), border-color .16s var(--ease), background .16s var(--ease);
+    }
+    .drawer__x svg { width: 19px; height: 19px; }
+    .drawer__x:hover { color: var(--cyan); border-color: rgba(56, 240, 255, .5); background: rgba(56, 240, 255, .08); }
+    .drawer { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+    /* NIVEAU 1 : profil */
+    .profil { display: flex; align-items: center; gap: 11px; width: 100%; padding: 2px 4px 8px; border: 0; background: none; cursor: pointer; text-align: left; }
+    .profil__badge { width: 38px; height: 38px; flex: none; border-radius: 50%; display: grid; place-items: center; }
+    .profil__badge svg { width: 21px; height: 21px; }
+    .drawer[data-role="admin"] .profil__badge { color: #04140e; background: radial-gradient(125% 125% at 30% 22%, #86ffd0, #10b981); box-shadow: 0 0 18px rgba(16, 185, 129, .55), inset 0 1px 0 rgba(255, 255, 255, .5); }
+    .drawer[data-role="collab"] .profil__badge { color: #1a0733; background: radial-gradient(125% 125% at 30% 22%, #dcbcff, #a855f7); box-shadow: 0 0 18px rgba(168, 85, 247, .55), inset 0 1px 0 rgba(255, 255, 255, .5); }
+    .profil__hi { font-size: 14px; font-weight: 800; letter-spacing: -.01em; text-transform: uppercase; color: rgba(255, 255, 255, .68); }
+    .profil__name { color: #fff; }
+
+    /* NIVEAU 2 : navigation flash (boutons néon épais) */
+    .nav2 { display: flex; flex-direction: column; flex: 1 1 auto; justify-content: center; gap: clamp(5px, .9vh, 8px); min-height: 0; }
+    .navbtn {
+      --glow: #38f0ff;
+      display: flex; align-items: center; gap: 11px; width: 100%;
+      padding: clamp(7px, 1.05vh, 11px) 14px; border-radius: 12px; cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, .1); background: rgba(255, 255, 255, .045);
+      color: rgba(255, 255, 255, .9); font: inherit; font-size: 14px; font-weight: 800; letter-spacing: -.01em; text-align: left;
+      box-shadow: 0 0 0 0 rgba(56, 240, 255, 0), 0 0 0 0 rgba(56, 240, 255, 0);
+      transition: border-color .22s var(--ease), box-shadow .26s var(--ease), background .2s var(--ease), color .2s var(--ease), transform .1s var(--ease);
+    }
+    .navbtn__ic { width: 21px; height: 21px; flex: none; display: grid; place-items: center; color: rgba(255, 255, 255, .58); transition: color .2s var(--ease), filter .2s var(--ease); }
+    .navbtn__ic svg { width: 20px; height: 20px; }
+    .navbtn:hover, .navbtn.is-active {
+      border-color: var(--glow); background: rgba(255, 255, 255, .075); color: #fff;
+      box-shadow: 0 0 0 1px var(--glow), 0 0 22px -2px var(--glow);
+    }
+    .navbtn:hover .navbtn__ic, .navbtn.is-active .navbtn__ic { color: var(--glow); filter: drop-shadow(0 0 5px var(--glow)); }
+    .navbtn:hover { transform: translateY(-1.5px); }        /* légère élévation au survol */
+    .navbtn:active { transform: scale(.95); }               /* enfoncement net à l'appui */
+    .navbtn.is-flash { animation: navFlash .3s ease-out; }
+    @keyframes navFlash {
+      0%   { box-shadow: 0 0 0 2px var(--glow), 0 0 42px 4px var(--glow); background: color-mix(in srgb, var(--glow) 32%, rgba(255, 255, 255, .06)); }
+      100% { box-shadow: 0 0 0 1px var(--glow), 0 0 22px -2px var(--glow); background: rgba(255, 255, 255, .075); }
+    }
+    .navbtn--cyan { --glow: #38f0ff; }
+    .navbtn--yellow { --glow: #ffd23f; }
+    .navbtn--green { --glow: #35e07a; }
+    .navbtn--violet { --glow: #b98cff; }
+    .navbtn--red { --glow: #ff2e43; }          /* accueil : rouge écarlate néon (Miles) */
+    .navbtn--crimson { --glow: #e11d48; }      /* mes dépenses : crimson / rouge sombre néon */
+    .navbtn--orange { --glow: #ff8a3d; }       /* carnet clients */
+    .navbtn--electric { --glow: #3a86ff; }     /* mon équipe : bleu électrique */
+
+    /* NIVEAU 4 : bas de page (poussé en bas par nav flex:1) */
+    .drawer__foot { padding-top: 8px; display: flex; flex-direction: column; gap: 1px; border-top: 1px solid rgba(255, 255, 255, .08); }
+    .footbtn {
+      display: flex; align-items: center; gap: 11px; width: 100%;
+      padding: clamp(7px, 1vh, 10px) 12px; border-radius: 11px; cursor: pointer; border: 0; background: none;
+      color: rgba(255, 255, 255, .55); font: inherit; font-size: 13.5px; font-weight: 650; text-align: left;
+      transition: background .16s var(--ease), color .16s var(--ease);
+    }
+    .footbtn__ic { width: 20px; height: 20px; flex: none; display: grid; place-items: center; color: inherit; }
+    .footbtn__ic svg { width: 20px; height: 20px; }
+    .footbtn:hover { background: rgba(255, 255, 255, .06); color: rgba(255, 255, 255, .86); }
+    .footbtn--logout { color: #a35c54; }                                   /* rouge brique éteint */
+    .footbtn--logout:hover { background: rgba(255, 59, 59, .14); color: #ff4436; }   /* rouge vif intense */
+    .footbtn--logout:hover .footbtn__ic { filter: drop-shadow(0 0 6px rgba(255, 59, 59, .7)); }
+
+    .proto-tag {
+      position: fixed; z-index: 80; left: 50%; bottom: max(14px, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      font-size: 11px; letter-spacing: .04em; color: rgba(255, 255, 255, .55);
+      background: rgba(0, 0, 0, .4); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+      padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .12);
+      pointer-events: none;
+    }
+
+    @keyframes logoPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.045); } }
+    @media (prefers-reduced-motion: reduce) {
+      .hdr__logo { animation: none; }
+      .drawer { transition: transform .2s ease; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- HEADER FIXE -->
+    <header class="hdr">
+      <button class="hdr__burger" data-open aria-label="Ouvrir le menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>
+      </button>
+      <span class="hdr__logo" aria-hidden="true">
+        <svg viewBox="0 0 100 100" fill="none">
+          <circle class="ring" cx="50" cy="50" r="43" stroke-width="2.6"/>
+          <circle class="ring ring--in" cx="50" cy="50" r="35" stroke-width="1.2"/>
+          <g class="ticks" stroke-width="2.6" stroke-linecap="round">
+            <line x1="50" y1="4" x2="50" y2="13"/><line x1="96" y1="50" x2="87" y2="50"/>
+            <line x1="50" y1="96" x2="50" y2="87"/><line x1="4" y1="50" x2="13" y2="50"/>
+          </g>
+          <path class="rose-ew" d="M20 50 L50 46 L80 50 L50 54 Z"/>
+          <path class="rose-s" d="M50 84 L43 50 L57 50 Z"/>
+          <path class="rose-n" d="M50 16 L43 50 L57 50 Z"/>
+          <circle class="hub" cx="50" cy="50" r="3.6"/>
+        </svg>
+      </span>
+      <button class="hdr__avatar" aria-label="Profil (bientôt)"></button>
+    </header>
+
+    <!-- CONTENU (placeholder pour l'instant) -->
+    <main class="content">
+      <p class="content__hint">Zone du <strong>tableau de bord</strong>.<br>À construire aux prochains points. Ouvre le menu avec le hamburger en haut à gauche.</p>
+    </main>
+
+    <!-- OVERLAY + DRAWER -->
+    <div class="scrim" data-close></div>
+    <aside class="drawer" role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="true">
+      <div class="drawer__head">
+        <span class="drawer__brand">
+          <span aria-hidden="true"><svg viewBox="0 0 100 100" fill="none">
+            <circle class="ring" cx="50" cy="50" r="43" stroke-width="2.6"/>
+            <circle class="ring ring--in" cx="50" cy="50" r="35" stroke-width="1.2"/>
+            <g class="ticks" stroke-width="2.6" stroke-linecap="round"><line x1="50" y1="4" x2="50" y2="13"/><line x1="96" y1="50" x2="87" y2="50"/><line x1="50" y1="96" x2="50" y2="87"/><line x1="4" y1="50" x2="13" y2="50"/></g>
+            <path class="rose-ew" d="M20 50 L50 46 L80 50 L50 54 Z"/><path class="rose-s" d="M50 84 L43 50 L57 50 Z"/><path class="rose-n" d="M50 16 L43 50 L57 50 Z"/><circle class="hub" cx="50" cy="50" r="3.6"/>
+          </svg></span>
+          Boussole
+        </span>
+        <button class="drawer__x" data-close aria-label="Fermer le menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <!-- NIVEAU 1 : profil dynamique (couleur du badge selon le rôle) -->
+      <button class="profil" data-role-toggle title="Aperçu : changer de rôle">
+        <span class="profil__badge" aria-hidden="true"></span>
+        <span class="profil__hi">Salut, <b class="profil__name">Patron</b> !</span>
+      </button>
+
+      <!-- SECTIONS (boutons maîtres néon) -->
+      <nav class="nav2">
+        <button class="navbtn navbtn--red" data-nav="accueil" data-sfx-hover>
+          <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/><path d="M10 20v-6h4v6"/></svg></span>
+          Accueil
+        </button>
+        <button class="navbtn navbtn--yellow is-active" data-nav="catalogue" data-sfx-hover>
+          <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v10l-8 4-8-4V7z"/><path d="M4 7l8 4 8-4"/><path d="M12 11v10"/></svg></span>
+          Catalogue
+        </button>
+        <button class="navbtn navbtn--green" data-nav="ventes" data-sfx-hover>
+          <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 10.6a1.5 1.5 0 0 1-1.5 1.4H8.5A1.5 1.5 0 0 1 7 18.6z"/><path d="M9 8V7a3 3 0 0 1 6 0v1"/></svg></span>
+          Mes ventes
+        </button>
+        <button class="navbtn navbtn--crimson" data-nav="depenses" data-sfx-hover>
+          <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v10"/><path d="M8.5 9.5 12 13l3.5-3.5"/><path d="M4.5 20h15"/></svg></span>
+          Mes dépenses
+        </button>
+        <button class="navbtn navbtn--cyan" data-nav="caisse" data-sfx-hover>
+          <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2.2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.7v4.6M18 9.7v4.6"/></svg></span>
+          La caisse
+        </button>
+        <button class="navbtn navbtn--violet" data-nav="bilan" data-sfx-hover>
+          <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4"/><path d="M4 20h16"/><rect x="7.5" y="12" width="2.6" height="5" rx=".4"/><rect x="12" y="8.5" width="2.6" height="8.5" rx=".4"/><rect x="16.5" y="10.5" width="2.6" height="6.5" rx=".4"/></svg></span>
+          Le bilan
+        </button>
+        <button class="navbtn navbtn--orange" data-nav="carnet" data-sfx-hover>
+          <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M4.5 8H5M4.5 12H5M4.5 16H5"/><circle cx="13" cy="10" r="2.2"/><path d="M10 16.2a3 3 0 0 1 6 0"/></svg></span>
+          Carnet clients
+        </button>
+        <button class="navbtn navbtn--electric" data-nav="equipe" data-sfx-hover>
+          <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 5.2a3 3 0 0 1 0 5.6"/><path d="M17.5 19a5.5 5.5 0 0 0-3-4.9"/></svg></span>
+          Mon équipe
+        </button>
+      </nav>
+
+      <!-- NIVEAU 4 : bas de page (utilitaires) -->
+      <div class="drawer__foot">
+        <button class="footbtn" data-go="reglages" data-sfx-hover>
+          <span class="footbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M5.4 5.4l1.9 1.9M16.7 16.7l1.9 1.9M2.8 12h2.6M18.6 12h2.6M5.4 18.6l1.9-1.9M16.7 7.3l1.9-1.9"/></svg></span>
+          Paramètres
+        </button>
+        <button class="footbtn footbtn--logout" data-logout data-sfx-hover>
+          <span class="footbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3"/><path d="M15 12H9"/><path d="M13 8l4 4-4 4"/></svg></span>
+          Déconnexion
+        </button>
+      </div>
+    </aside>
+  </div>
+
+  <span class="proto-tag">Aperçu · Étape 2 · Header + menu</span>
+
+  <script src="../assets/js/vendor/supabase.js"></script>
+  <script type="module">
+    import { SUPABASE_URL, SUPABASE_ANON_KEY, ADMIN_EMAILS } from '../assets/js/config.js';
+    const app = document.querySelector('.app');
+    const drawer = document.querySelector('.drawer');
+    const burger = document.querySelector('.hdr__burger');
+
+    /* ===== SFX du menu (Web Audio synthétisé, aucun fichier) =====
+       UN SEUL AudioContext réutilisé (le code d'origine en créait un par clic -> plante
+       après ~6 bascules : "number of hardware contexts reached the maximum").
+       + baseline mobile : déverrouillage iOS au 1er geste, compresseur, gain boosté sur mobile. */
+    let _actx = null, _master = null, _ready = false;
+    const _mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || matchMedia('(pointer: coarse)').matches;
+    function audioCtx() {
+      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
+      if (!_actx) {
+        _actx = new AC();
+        _master = _actx.createGain();
+        _master.gain.value = _mobile ? 1.8 : 1;   // mobile boosté (25% seul = inaudible sur iPhone/Android)
+        const comp = _actx.createDynamicsCompressor();
+        comp.threshold.value = -16; comp.knee.value = 18; comp.ratio.value = 10; comp.attack.value = 0.003; comp.release.value = 0.2;
+        _master.connect(comp); comp.connect(_actx.destination);
+      }
+      if (_actx.state === 'suspended') { const r = _actx.resume(); if (r && r.catch) r.catch(() => {}); }
+      return _actx;
+    }
+    function unlockAudio() {   // iOS/Android : buffer silencieux au 1er geste
+      if (_ready) return; const ctx = audioCtx(); if (!ctx) return;
+      const s = ctx.createBufferSource(); s.buffer = ctx.createBuffer(1, 1, 22050); s.connect(ctx.destination); s.start(0); _ready = true;
+    }
+    ['pointerdown', 'touchstart', 'keydown'].forEach((ev) => document.addEventListener(ev, unlockAudio, { passive: true }));
+
+    const playMenuSound = (isOpen) => {
+      try {
+        const ctx = audioCtx(); if (!ctx) return;
+        const t = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+        osc.type = 'sine';
+        filter.type = 'lowpass';
+        if (isOpen) {
+          // WHOOSH D'OUVERTURE : fluide, ascendant puis descendant
+          osc.frequency.setValueAtTime(120, t);
+          osc.frequency.exponentialRampToValueAtTime(350, t + 0.08);
+          osc.frequency.exponentialRampToValueAtTime(80, t + 0.25);
+          filter.frequency.setValueAtTime(250, t);
+          filter.frequency.exponentialRampToValueAtTime(1000, t + 0.08);
+          filter.frequency.exponentialRampToValueAtTime(150, t + 0.25);
+          gain.gain.setValueAtTime(0, t);
+          gain.gain.linearRampToValueAtTime(0.25, t + 0.05);   // max 25% (desktop)
+          gain.gain.linearRampToValueAtTime(0, t + 0.25);
+        } else {
+          // WHOOSH DE FERMETURE : plus rapide, sec, descendant
+          osc.frequency.setValueAtTime(280, t);
+          osc.frequency.exponentialRampToValueAtTime(50, t + 0.12);
+          filter.frequency.setValueAtTime(700, t);
+          filter.frequency.exponentialRampToValueAtTime(100, t + 0.12);
+          gain.gain.setValueAtTime(0.2, t);
+          gain.gain.linearRampToValueAtTime(0, t + 0.12);
+        }
+        osc.connect(filter); filter.connect(gain); gain.connect(_master);
+        osc.start(t); osc.stop(t + (isOpen ? 0.25 : 0.12));
+      } catch (e) { console.error('Audio error:', e); }
+    };
+
+    const openMenu = () => {
+      if (app.classList.contains('menu-open')) return;
+      app.classList.add('menu-open');
+      drawer.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      playMenuSound(true);
+      const x = drawer.querySelector('.drawer__x'); if (x) x.focus();
+    };
+    const closeMenu = () => {
+      if (!app.classList.contains('menu-open')) return;
+      app.classList.remove('menu-open');
+      drawer.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      playMenuSound(false);
+      burger.focus();
+    };
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('[data-open]')) return openMenu();
+      if (e.target.closest('[data-close]')) return closeMenu();
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && app.classList.contains('menu-open')) closeMenu(); });
+
+    // ===== SFX boutons : hover (micro-click aigu 0.03s, 15%) + click (double bip ascendant) =====
+    const _hoverCapable = matchMedia('(hover: hover) and (pointer: fine)').matches;
+    let _lastHover = 0;
+    function playHover() {
+      if (!_hoverCapable) return;
+      const now = performance.now(); if (now - _lastHover < 45) return; _lastHover = now;   // anti-mitraillette
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime;
+      const osc = ctx.createOscillator(); osc.type = 'square'; osc.frequency.setValueAtTime(2400, t);
+      const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1200;
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.15, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);   // 0.03s, 15%
+      osc.connect(hp); hp.connect(g); g.connect(_master);
+      osc.start(t); osc.stop(t + 0.035);
+    }
+    function playClick() {
+      const ctx = audioCtx(); if (!ctx) return;
+      const t0 = ctx.currentTime;
+      const beep = (dt, f) => {
+        const osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.setValueAtTime(f, t0 + dt);
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t0 + dt);
+        g.gain.exponentialRampToValueAtTime(0.22, t0 + dt + 0.008);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + dt + 0.07);
+        osc.connect(g); g.connect(_master); osc.start(t0 + dt); osc.stop(t0 + dt + 0.08);
+      };
+      beep(0, 680); beep(0.07, 1020);   // double bip ascendant (validation)
+    }
+    drawer.querySelectorAll('[data-sfx-hover]').forEach((b) => b.addEventListener('mouseenter', playHover));
+
+    // ===== Profil dynamique (Supabase si session, sinon démo) =====
+    const CROWN = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 8.5l3.8 3L12 5l4.7 6.5 3.8-3L18.5 19h-13z"/></svg>';
+    const USER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.4"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>';
+    const badgeEl = drawer.querySelector('.profil__badge');
+    const nameEl = drawer.querySelector('.profil__name');
+    function setProfile(prenom, role) {
+      drawer.dataset.role = role;
+      nameEl.textContent = prenom || 'Patron';
+      badgeEl.innerHTML = role === 'admin' ? CROWN : USER;
+    }
+    let _sb = null;
+    function supa() { if (!_sb && window.supabase) _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true, autoRefreshToken: true } }); return _sb; }
+    (async () => {
+      let prenom = '', email = '';
+      try {
+        const c = supa();
+        if (c) {
+          const { data } = await c.auth.getSession();
+          const u = data && data.session && data.session.user;
+          if (u) { const m = u.user_metadata || {}; prenom = m.prenom || (m.full_name || m.name || '').trim().split(' ')[0] || ''; email = (u.email || '').toLowerCase(); }
+        }
+      } catch (e) {}
+      const role = email ? (ADMIN_EMAILS.map((x) => x.toLowerCase()).includes(email) ? 'admin' : 'collab') : 'admin';
+      setProfile(prenom || 'Mongazi', role);
+    })();
+    // aperçu : clic sur le profil bascule le rôle (voir les 2 couleurs de badge)
+    drawer.querySelector('.profil').addEventListener('click', () => { playClick(); setProfile(nameEl.textContent, drawer.dataset.role === 'admin' ? 'collab' : 'admin'); });
+
+    // ===== Navigation active + clic de validation =====
+    function setActiveNav(nav) { drawer.querySelectorAll('.navbtn').forEach((n) => n.classList.toggle('is-active', n.dataset.nav === nav)); }
+    async function doLogout() { try { const c = supa(); if (c) await c.auth.signOut(); } catch (e) {} location.href = 'connexion.html'; }
+    drawer.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-sfx-hover]'); if (!b) return;
+      playClick();                                     // son de validation net
+      if (b.classList.contains('navbtn')) { b.classList.add('is-flash'); setTimeout(() => b.classList.remove('is-flash'), 300); }  // flash couleur au clic
+      if (b.dataset.logout !== undefined) { setTimeout(doLogout, 130); return; }
+      if (b.dataset.nav) setActiveNav(b.dataset.nav);
+      setTimeout(closeMenu, 130);                       // ferme le menu juste après le bip + flash
+    });
+  </script>
+</body>
+</html>

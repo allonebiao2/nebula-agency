@@ -435,12 +435,11 @@ function render() {
   else if (screen === 'reglages') view.innerHTML = UI.viewReglagesHTML(cloudCtx());
   else view.innerHTML = UI.viewVentesHTML(venteFilter);
   const chrome = navVisible();
-  $('#nav').innerHTML = chrome ? UI.navHTML(screen) : '';
-  $('#nav').style.display = chrome ? '' : 'none';
+  // hamburger pur : plus de barre du bas ni de FAB (nav = tiroir mobile + sidebar desktop)
+  $('#nav').innerHTML = ''; $('#nav').style.display = 'none';
   $('#sidebar').innerHTML = chrome ? UI.sidebarHTML(screen, cloudCtx(), sidebarAcc) : '';
   $('#sidebar').style.display = chrome ? '' : 'none';
-  $('#fab').innerHTML = chrome ? UI.fabHTML(fabOpen) : '';
-  $('#fab').style.display = chrome ? '' : 'none';
+  $('#fab').innerHTML = ''; $('#fab').style.display = 'none';
   renderOverlay();
   hydrateIcons(document);
   if (screen === 'accueil' && animateNext) {
@@ -513,7 +512,7 @@ function renderOverlay() {
   root.classList.toggle('is-open', !!overlay);
   hydrateIcons(root);
 }
-function renderFab() { $('#fab').innerHTML = navVisible() ? UI.fabHTML(fabOpen) : ''; hydrateIcons($('#fab')); }
+function renderFab() { $('#fab').innerHTML = ''; $('#fab').style.display = 'none'; }
 function renderSidebar() { $('#sidebar').innerHTML = navVisible() ? UI.sidebarHTML(screen, cloudCtx(), sidebarAcc) : ''; hydrateIcons($('#sidebar')); }
 function setOverlay(o) { overlay = o; if (o) { fabOpen = false; renderFab(); } renderOverlay(); }
 function refreshStock() { if (screen !== 'stock') return; const v = $('#view'); const t = v.scrollTop; v.innerHTML = UI.viewStockHTML(stockFilter); hydrateIcons(v); v.scrollTop = t; }
@@ -1512,6 +1511,8 @@ document.addEventListener('click', (e) => {
 
     // navigation / chrome (drawer, cloche, sidebar accordéon, FAB)
     case 'open-drawer': return setOverlay('drawer');
+    case 'photo-pick': { const inp = document.getElementById('photo-input'); if (inp) inp.click(); return; }
+    case 'photo-clear': S.setProfil({ photo: '' }); UI.toast('Photo retirée'); return refreshReglages();
     case 'open-notifs': return setOverlay('notifs');
     case 'close-overlay': return setOverlay(null);
     case 'notif-go': setOverlay(null); return setScreen(el.dataset.screen);
@@ -1666,8 +1667,29 @@ document.addEventListener('click', (e) => {
 });
 
 // nom d'activité (réglages), sur blur
+// Photo de profil : lit le fichier, le redimensionne (~256px, canvas) et le stocke en base64 dans le profil.
+function importPhoto(file) {
+  if (!file || !/^image\//.test(file.type)) return UI.toast('Choisis une image', 'err');
+  const rd = new FileReader();
+  rd.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const max = 256, scale = Math.min(1, max / Math.max(img.width, img.height));
+      const w = Math.max(1, Math.round(img.width * scale)), h = Math.max(1, Math.round(img.height * scale));
+      const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      cv.getContext('2d').drawImage(img, 0, 0, w, h);
+      S.setProfil({ photo: cv.toDataURL('image/jpeg', 0.82) });
+      UI.toast('Photo mise à jour'); refreshReglages();
+    };
+    img.onerror = () => UI.toast('Image illisible', 'err');
+    img.src = rd.result;
+  };
+  rd.onerror = () => UI.toast('Lecture impossible', 'err');
+  rd.readAsDataURL(file);
+}
 document.addEventListener('change', (e) => {
   const el = e.target;
+  if (el.matches('#photo-input')) { const f = el.files && el.files[0]; if (f) importPhoto(f); el.value = ''; return; }
   if (el.matches('[data-action="save-nom"]')) S.setProfil({ nom_activite: el.value.trim() });
   else if (el.matches('[data-action="save-devise"]')) { S.setDevise(el.value); UI.toast('Devise mise à jour'); }
   else if (el.matches('[data-action="vf-from"]')) { venteFilter.from = el.value; venteFilter.preset = 'custom'; refreshVentes(); }

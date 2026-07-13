@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <title>Boussole · Connexion (aperçu point 1)</title>
+  <link rel="icon" href="../assets/icons/favicon-48.png" type="image/png">
+  <style>
+    /* ===== Police de marque Boussole ===== */
+    @font-face {
+      font-family: 'Bricolage Grotesque';
+      src: url('../assets/fonts/BricolageGrotesque.woff2') format('woff2');
+      font-weight: 200 800; font-display: swap;
+    }
+
+    :root {
+      --overlay: .70;              /* opacité de l'overlay noir (réglable) */
+      --glass-radius: 30px;
+      --ease: cubic-bezier(.16, 1, .3, 1);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: 'Bricolage Grotesque', system-ui, -apple-system, sans-serif;
+      background: #08070f;         /* repli sombre derrière l'image */
+      color: #fff;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== 1. CANEVAS : arrière-plan responsive (9:16 mobile / 16:9 PC) ===== */
+    .auth {
+      position: relative;
+      min-height: 100dvh;          /* stable sur iOS Safari, pas de saut */
+      display: grid;
+      justify-items: center;
+      align-items: safe center;    /* centré si ça rentre, sinon aligné haut : le logo n'est JAMAIS coupé */
+      padding: clamp(12px, 2.4vh, 26px) clamp(16px, 5vw, 40px);
+    }
+    .auth__bg,
+    .auth__bg img {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+    .auth__bg img {
+      object-fit: cover;
+      object-position: center;
+      /* léger zoom lent pour donner vie au ciel néon, coupé si mouvement réduit */
+      animation: skyDrift 26s var(--ease) both;
+    }
+    /* overlay noir opaque à 70% : profondeur + contraste pour le futur formulaire */
+    .auth__overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      background: rgba(0, 0, 0, var(--overlay));
+    }
+
+    /* ===== 2. CONTENEUR CENTRAL « LIQUID GLASS » ===== */
+    .glass {
+      position: relative;
+      z-index: 2;
+      width: min(92vw, 430px);
+      min-height: auto;                                        /* la carte épouse son contenu, pas de hauteur rigide */
+      padding: clamp(20px, 2.8vh, 30px) clamp(20px, 5vw, 30px);
+      border-radius: var(--glass-radius);
+
+      /* fond blanc ultra-léger + flou d'arrière-plan puissant */
+      background: rgba(255, 255, 255, .10);
+      -webkit-backdrop-filter: blur(24px) saturate(150%);
+      backdrop-filter: blur(24px) saturate(150%);
+
+      /* bordure fine semi-transparente = reflet du verre */
+      border: 1px solid rgba(255, 255, 255, .20);
+
+      /* ombre interne (épaisseur 3D) + ombre portée douce et profonde (détache de la ville) */
+      box-shadow:
+        0 44px 100px -30px rgba(0, 0, 0, .78),
+        0 14px 44px -16px rgba(0, 0, 0, .55),
+        inset 0 1px 0 0 rgba(255, 255, 255, .38),
+        inset 0 0 0 1px rgba(255, 255, 255, .05),
+        inset 0 -30px 70px -40px rgba(150, 90, 220, .28);
+
+      animation: glassIn .8s var(--ease) both;
+    }
+    /* reflet liquide : lumière qui frappe le haut-gauche de la plaque de verre */
+    .glass::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background:
+        radial-gradient(130% 85% at 12% -5%, rgba(255, 255, 255, .22), rgba(255, 255, 255, 0) 52%),
+        linear-gradient(180deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, 0) 28%);
+    }
+
+    /* ===== POINT 2 : identité (logo + titre) ===== */
+    .identity {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: clamp(9px, 1.7vh, 15px);
+      padding-top: clamp(2px, 1.3vh, 10px);
+    }
+
+    /* --- Logo boussole néon --- */
+    .logo {
+      width: clamp(58px, 9vh, 80px);
+      will-change: transform;
+      animation: logoPulse 3.6s ease-in-out infinite;
+      /* halo lumineux derrière le compas : supprime l'effet « disque noir » du verre */
+      background: radial-gradient(circle at 50% 46%,
+        rgba(56, 240, 255, .20), rgba(56, 240, 255, .06) 44%, transparent 70%);
+    }
+    .logo svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      overflow: visible;              /* la lueur néon n'est pas rognée */
+      animation: logoGlow 4.2s ease-in-out infinite;
+    }
+    .logo .ring { stroke: #8ff6ff; }
+    .logo .ring--in { stroke: rgba(143, 246, 255, .45); }
+    .logo .ticks line { stroke: #8ff6ff; }
+    .logo .ticks--min line { stroke: #8ff6ff; opacity: .55; }
+    .logo .rose-ew { fill: rgba(234, 253, 255, .32); stroke: rgba(143, 246, 255, .5); stroke-width: .5; }
+    .logo .rose-s  { fill: rgba(56, 240, 255, .30); }
+    .logo .rose-n  { fill: #eafdff; }
+    .logo .hub     { fill: #ffffff; }
+
+    /* --- Titre principal --- */
+    .title {
+      margin: 0;
+      font-weight: 800;               /* le plus épais de Bricolage Grotesque */
+      text-transform: uppercase;
+      letter-spacing: .012em;
+      line-height: 1.02;
+      font-size: clamp(23px, 6.1vw, 30px);
+      color: #fff;
+      text-wrap: balance;
+      text-shadow:
+        0 0 1px rgba(255, 255, 255, .5),
+        0 0 15px rgba(56, 240, 255, .32),
+        0 2px 22px rgba(0, 0, 0, .45);
+    }
+
+    @keyframes logoPulse {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.055); }
+    }
+    /* lueur qui alterne discrètement blanc <-> cyan */
+    @keyframes logoGlow {
+      0%, 100% { filter: drop-shadow(0 0 5px rgba(255, 255, 255, .9)) drop-shadow(0 0 15px rgba(56, 240, 255, .5)); }
+      50%      { filter: drop-shadow(0 0 9px rgba(56, 240, 255, .95)) drop-shadow(0 0 26px rgba(56, 240, 255, .6)); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .logo, .logo svg { animation: none; }
+      .logo svg { filter: drop-shadow(0 0 8px rgba(56, 240, 255, .7)); }
+    }
+
+    /* ===== POINT 3 : champs de saisie (baby-proof) ===== */
+    .authform {
+      margin-top: clamp(8px, 1.5vh, 15px);
+      display: flex;
+      flex-direction: column;
+      gap: clamp(10px, 1.5vh, 14px);
+      animation: formIn .7s .15s var(--ease) both;
+    }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field > label {
+      font-size: 12.5px; font-weight: 600; letter-spacing: .02em;
+      color: rgba(255, 255, 255, .72); padding-left: 4px;
+    }
+    .input {
+      display: flex; align-items: center; gap: 11px;
+      min-height: 50px; padding: 0 15px;
+      border-radius: 16px;                              /* coins très arrondis */
+      background: rgba(255, 255, 255, .05);             /* verre ultra-transparent */
+      border: 1px solid rgba(255, 255, 255, .14);
+      transition: border-color .12s ease, box-shadow .12s ease, background .12s ease;
+    }
+    .input__ic { display: grid; place-items: center; flex: none; color: rgba(255, 255, 255, .55); transition: color .12s ease; }
+    .input__ic svg { width: 21px; height: 21px; }
+    .input input {
+      flex: 1; min-width: 0;
+      background: none; border: 0; outline: none;
+      color: #fff; font: inherit; font-size: 16px;      /* 16px = pas de zoom iOS */
+      padding: 12px 0;
+    }
+    .input input::placeholder { color: rgba(255, 255, 255, .5); }   /* aide grise / mate */
+    /* EFFET NÉON AU CLIC (focus) : bordure + lueur cyan diffuse */
+    .input:focus-within {
+      border-color: #38f0ff;
+      background: rgba(56, 240, 255, .06);
+      box-shadow: 0 0 0 1px #38f0ff, 0 0 20px rgba(56, 240, 255, .45), inset 0 0 12px rgba(56, 240, 255, .10);
+    }
+    .input:focus-within .input__ic { color: #7ff4ff; }
+
+    /* Case à cocher « Rester connecté » (grande cible tactile, cochée par défaut) */
+    .remember {
+      display: flex; align-items: center; gap: 12px;
+      padding: 7px 2px; margin-top: 0;         /* label pleine largeur = grande cible tactile */
+      cursor: pointer; user-select: none;
+    }
+    .remember input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .remember__box {
+      width: 26px; height: 26px; flex: none;
+      border-radius: 8px;
+      border: 1.5px solid rgba(255, 255, 255, .38);
+      background: rgba(255, 255, 255, .05);
+      display: grid; place-items: center;
+      transition: background .12s ease, border-color .12s ease, box-shadow .12s ease;
+    }
+    .remember__box svg { width: 16px; height: 16px; color: #04141c; opacity: 0; transform: scale(.5); transition: opacity .12s ease, transform .16s var(--ease); }
+    .remember input:checked + .remember__box { background: #38f0ff; border-color: #38f0ff; box-shadow: 0 0 14px rgba(56, 240, 255, .5); }
+    .remember input:checked + .remember__box svg { opacity: 1; transform: none; }
+    .remember input:focus-visible + .remember__box { outline: 2px solid #7ff4ff; outline-offset: 3px; }
+    .remember__lbl { color: rgba(255, 255, 255, .78); font-size: 15px; }
+
+    @keyframes formIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .authform { animation: none; } }
+
+    /* ===== ÉTATS connexion / inscription ===== */
+    .glass[data-mode="login"] .only-register { display: none; }
+    .glass[data-mode="register"] .only-login { display: none; }
+
+    /* lien « mot de passe oublié » */
+    .forgot {
+      align-self: flex-end; margin-top: 2px;
+      background: none; border: 0; cursor: pointer; padding: 3px 2px;
+      font: inherit; font-size: 13px; color: rgba(255, 255, 255, .6);
+      transition: color .15s ease;
+    }
+    .forgot:hover, .forgot:focus-visible { color: #7ff4ff; outline: none; }
+
+    /* bouton d'action principal */
+    .btn-main {
+      position: relative; margin-top: 2px;
+      width: 100%; min-height: 52px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      border: 0; border-radius: 16px; cursor: pointer;
+      font: inherit; font-size: 16px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+      color: #04141c;
+      background: linear-gradient(180deg, #8ff6ff, #22d3ee);
+      /* mêmes 4 couches au repos et au survol => l'illumination s'interpole en douceur (pas de saut) */
+      box-shadow:
+        0 0 0 1px rgba(143, 246, 255, 0),
+        0 10px 26px -10px rgba(56, 240, 255, .5),
+        0 0 0 rgba(56, 240, 255, 0),
+        inset 0 1px 0 rgba(255, 255, 255, .55);
+      transition: box-shadow .34s cubic-bezier(.16, 1, .3, 1), transform .12s ease, background .35s ease, color .35s ease;
+    }
+    .btn-main:hover {
+      box-shadow:
+        0 0 0 1px rgba(143, 246, 255, .9),
+        0 12px 34px -8px rgba(56, 240, 255, .85),
+        0 0 46px rgba(56, 240, 255, .55),
+        inset 0 1px 0 rgba(255, 255, 255, .55);
+    }
+    .btn-main:active { transform: translateY(1px) scale(.99); }
+    .btn-main:disabled { cursor: progress; }
+    .btn-main.is-loading { color: transparent; }
+    .btn-main.is-loading::after {
+      content: ""; position: absolute; width: 21px; height: 21px;
+      border: 2.5px solid rgba(4, 20, 28, .3); border-top-color: #04141c; border-radius: 50%;
+      animation: spin .6s linear infinite;
+    }
+    /* flash vert émeraude au succès */
+    .btn-main.is-success { background: linear-gradient(180deg, #5ef0a0, #10b981); color: #04231a; box-shadow: 0 0 0 1px #7bf3b5, 0 0 40px rgba(16, 185, 129, .75); }
+
+    /* séparateur OU */
+    .divider { display: flex; align-items: center; gap: 14px; margin: 1px 0; color: rgba(255, 255, 255, .5); font-size: 12px; font-weight: 600; letter-spacing: .1em; }
+    .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: rgba(255, 255, 255, .16); }
+
+    /* bouton Google (verre) */
+    .btn-google {
+      width: 100%; min-height: 50px;
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      border-radius: 16px; cursor: pointer;
+      background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .16);
+      color: #fff; font: inherit; font-size: 15px; font-weight: 600;
+      transition: background .16s ease, border-color .16s ease, box-shadow .16s ease, transform .12s ease;
+    }
+    .btn-google:hover { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .32); box-shadow: 0 8px 22px -10px rgba(0, 0, 0, .55); }
+    .btn-google:active { transform: translateY(1px) scale(.99); }
+    .btn-google:disabled { opacity: .6; cursor: progress; }
+    .gicon { width: 22px; height: 22px; flex: none; display: grid; place-items: center; background: #fff; border-radius: 5px; }
+    .gicon svg { width: 15px; height: 15px; }
+
+    /* message inline */
+    .authmsg { margin: 0; font-size: 13.5px; line-height: 1.45; text-align: center; }
+    .authmsg:empty { display: none; }
+    .authmsg.err { color: #ff9db0; }
+    .authmsg.ok { color: #6ff0b4; }
+
+    /* bascule bas de carte */
+    .switch { margin: 10px 0 0; text-align: center; font-size: 14px; color: rgba(255, 255, 255, .7); }
+    .switch button { background: none; border: 0; cursor: pointer; font: inherit; font-size: 14px; font-weight: 700; color: #7ff4ff; padding: 2px 4px; }
+    .switch button:hover { text-decoration: underline; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { .btn-main, .btn-google, .btn-main.is-loading::after { transition: none; animation: none; } }
+
+    /* ===== TRANSITION DE SUCCÈS : accueil révélé + balayage comic-book + glitch ===== */
+    .auth.gone { display: none; }
+
+    .home[hidden] { display: none; }   /* sinon .home{display:grid} écrase l'attribut hidden et couvre le login */
+    .home {
+      position: fixed; inset: 0; z-index: 40;
+      display: grid; place-items: center; padding: 24px; text-align: center;
+      background: radial-gradient(125% 90% at 50% -10%, #12203f 0%, #070a14 68%);
+      animation: homeIn .5s ease both;
+    }
+    .home__inner { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .home__logo { width: clamp(72px, 18vw, 92px); }
+    .home__logo img { width: 100%; height: auto; display: block; }
+    .home__hi { margin: 0; font-weight: 800; letter-spacing: -.01em; color: #fff; font-size: clamp(26px, 7vw, 40px); text-shadow: 0 0 18px rgba(56, 240, 255, .25); }
+    .home__sub { margin: 0; color: rgba(255, 255, 255, .6); font-size: 15px; }
+    .home__spin { width: 26px; height: 26px; margin-top: 4px; border: 2.5px solid rgba(255, 255, 255, .14); border-top-color: #22d3ee; border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes homeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* Panneau BD Spider-Verse (magenta -> violet -> cyan) à BORD D'ENCRE EN ZIG-ZAG (papier déchiré) + trame de points */
+    #wipe {
+      position: fixed; top: 0; left: -20%; width: 140%; height: 100%;
+      z-index: 70; pointer-events: none;
+      transform: translateX(-150%);
+      background: linear-gradient(110deg, #ff2d6e 0%, #b026ff 48%, #22d3ee 100%);
+      clip-path: polygon(
+        0% 0%, 100% 0%,
+        94% 7%, 100% 14%, 94% 21%, 100% 29%, 94% 36%, 100% 43%, 94% 50%, 100% 57%, 94% 64%, 100% 71%, 94% 79%, 100% 86%, 94% 93%, 100% 100%,
+        0% 100%,
+        6% 93%, 0% 86%, 6% 79%, 0% 71%, 6% 64%, 0% 57%, 6% 50%, 0% 43%, 6% 36%, 0% 29%, 6% 21%, 0% 14%, 6% 7%);
+    }
+    #wipe::after {
+      content: ""; position: absolute; inset: 0;
+      background-image: radial-gradient(rgba(0, 0, 0, .28) 1.4px, transparent 1.5px);
+      background-size: 11px 11px; mix-blend-mode: multiply; opacity: .5;
+    }
+    #wipe.cover  { animation: wipeCover  .2s cubic-bezier(.6, 0, .3, 1) forwards; }
+    #wipe.reveal { animation: wipeReveal .22s cubic-bezier(.6, 0, .3, 1) forwards; }
+    @keyframes wipeCover  { from { transform: translateX(-150%); } to { transform: translateX(-5%); } }
+    @keyframes wipeReveal { from { transform: translateX(-5%); } to { transform: translateX(150%); } }
+
+    /* DISSOLUTION : la carte se désintègre en points de demi-teinte (mask qui rétrécit) + voile CMJ */
+    .glass.dissolve {
+      animation: cardDissolve .32s ease-in forwards;
+      /* masque de points STATIQUE (pas d'animation de mask = léger sur mobile) : la carte devient une trame de points, puis se fond */
+      -webkit-mask-image: radial-gradient(circle, #000 44%, transparent 50%);
+              mask-image: radial-gradient(circle, #000 44%, transparent 50%);
+      -webkit-mask-size: 7px 7px; mask-size: 7px 7px;
+    }
+    @keyframes cardDissolve {
+      0%   { opacity: 1; transform: scale(1); }
+      70%  { opacity: .85; transform: scale(1.012); }
+      100% { opacity: 0; transform: scale(1.03); }
+    }
+    /* voile de points cyan / magenta / jaune qui flashe pendant la dissolution */
+    .glass::after {
+      content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0;
+      background-image:
+        radial-gradient(circle, rgba(0, 224, 255, .95) 0 30%, transparent 34%),
+        radial-gradient(circle, rgba(255, 0, 190, .95) 0 30%, transparent 34%),
+        radial-gradient(circle, rgba(255, 214, 0, .95) 0 30%, transparent 34%);
+      background-size: 7px 7px;
+      background-position: 0 0, 2px 3px, 4px 1px;
+      mix-blend-mode: screen;
+    }
+    .glass.dissolve::after { animation: halftoneFlash .3s ease-out forwards; }
+    @keyframes halftoneFlash { 0% { opacity: 0; } 45% { opacity: .9; } 100% { opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) {
+      .home, .home__spin { animation: none; }
+    }
+
+    /* ===== Repère d'aperçu (retiré à l'intégration) ===== */
+    .proto-tag {
+      position: fixed;
+      z-index: 80; cursor: pointer;
+      left: 50%;
+      bottom: max(14px, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      font-size: 11px;
+      letter-spacing: .04em;
+      color: rgba(255, 255, 255, .55);
+      background: rgba(0, 0, 0, .35);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, .12);
+    }
+
+    @keyframes glassIn {
+      from { opacity: 0; transform: translateY(16px) scale(.985); }
+      to   { opacity: 1; transform: none; }
+    }
+    @keyframes skyDrift {
+      from { transform: scale(1.08); }
+      to   { transform: scale(1); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .glass, .auth__bg img { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="auth">
+    <!-- CANEVAS : image verticale 9:16 sur mobile, panoramique 16:9 sur PC (une seule téléchargée) -->
+    <picture class="auth__bg">
+      <source media="(min-width: 768px)" srcset="../assets/img/skyline-pc.webp">
+      <img src="../assets/img/skyline-mobile.webp" alt="" aria-hidden="true">
+    </picture>
+    <div class="auth__overlay"></div>
+
+    <!-- CONTENEUR LIQUID GLASS -->
+    <section class="glass" data-mode="login" aria-label="Connexion Boussole">
+      <!-- POINT 2 : identité (logo + titre), centrée, moitié haute -->
+      <div class="identity">
+        <span class="logo" aria-hidden="true">
+          <svg viewBox="0 0 100 100" fill="none">
+            <circle class="ring" cx="50" cy="50" r="43" stroke-width="2.4"/>
+            <circle class="ring ring--in" cx="50" cy="50" r="35" stroke-width="1"/>
+            <g class="ticks" stroke-width="2.4" stroke-linecap="round">
+              <line x1="50" y1="4" x2="50" y2="13"/><line x1="96" y1="50" x2="87" y2="50"/>
+              <line x1="50" y1="96" x2="50" y2="87"/><line x1="4" y1="50" x2="13" y2="50"/>
+            </g>
+            <g class="ticks ticks--min" stroke-width="1.4" stroke-linecap="round">
+              <line x1="82" y1="18" x2="78" y2="22"/><line x1="82" y1="82" x2="78" y2="78"/>
+              <line x1="18" y1="82" x2="22" y2="78"/><line x1="18" y1="18" x2="22" y2="22"/>
+            </g>
+            <path class="rose-ew" d="M20 50 L50 46 L80 50 L50 54 Z"/>
+            <path class="rose-s" d="M50 84 L43 50 L57 50 Z"/>
+            <path class="rose-n" d="M50 16 L43 50 L57 50 Z"/>
+            <circle class="hub" cx="50" cy="50" r="3.4"/>
+          </svg>
+        </span>
+        <h1 class="title">Prends le contrôle.</h1>
+      </div>
+
+      <!-- FORMULAIRE D'AUTHENTIFICATION (connexion / inscription) -->
+      <form class="authform" novalidate>
+        <!-- Prénom : mode inscription uniquement -->
+        <div class="field only-register">
+          <label for="f-prenom">Prénom</label>
+          <div class="input">
+            <span class="input__ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></span>
+            <input id="f-prenom" type="text" autocomplete="given-name" placeholder="Ton prénom">
+          </div>
+        </div>
+        <div class="field">
+          <label for="f-email">E-mail</label>
+          <div class="input">
+            <span class="input__ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7.5 8 5.5 8-5.5"/></svg></span>
+            <input id="f-email" type="email" inputmode="email" autocomplete="email" spellcheck="false" placeholder="ton@email.com">
+          </div>
+        </div>
+        <div class="field">
+          <label for="f-pass">Mot de passe</label>
+          <div class="input">
+            <span class="input__ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
+            <input id="f-pass" type="password" autocomplete="current-password" placeholder="Ton mot de passe">
+          </div>
+          <button type="button" class="forgot only-login" data-action="forgot">Mot de passe oublié ?</button>
+        </div>
+        <label class="remember">
+          <input type="checkbox" id="f-remember" checked>
+          <span class="remember__box" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span>
+          <span class="remember__lbl">Rester connecté</span>
+        </label>
+
+        <p class="authmsg" role="status" aria-live="polite"></p>
+
+        <button type="submit" class="btn-main" data-action="submit">
+          <span class="btn-main__txt only-login">Se connecter</span>
+          <span class="btn-main__txt only-register">Créer mon compte</span>
+        </button>
+
+        <div class="divider"><span>OU</span></div>
+
+        <button type="button" class="btn-google" data-action="google">
+          <span class="gicon" aria-hidden="true"><svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.28-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24s.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg></span>
+          <span>Continuer avec Google</span>
+        </button>
+      </form>
+
+      <p class="switch">
+        <span class="only-login">Pas encore de compte ? <button type="button" data-action="to-register">S'inscrire</button></span>
+        <span class="only-register">Déjà un compte ? <button type="button" data-action="to-login">Se connecter</button></span>
+      </p>
+    </section>
+  </main>
+
+  <!-- Écran d'accueil révélé après connexion (placeholder de démo, remplacé par le vrai tableau de bord à l'intégration) -->
+  <div id="home" class="home" hidden>
+    <div class="home__inner">
+      <span class="home__logo"><img src="../assets/icons/logo-boussole-neon.png" alt="Boussole"></span>
+      <h1 class="home__hi">Bienvenue<span class="hi-name"></span></h1>
+      <p class="home__sub">Ton tableau de bord se charge…</p>
+      <span class="home__spin" aria-hidden="true"></span>
+    </div>
+  </div>
+  <!-- Balayage comic-book Spider-Verse -->
+  <div id="wipe" aria-hidden="true"></div>
+
+  <span class="proto-tag" title="Cliquer pour rejouer la transition de connexion">Aperçu · Authentification complète</span>
+
+  <!-- Client Supabase (UMD) : expose window.supabase, comme dans l'app -->
+  <script src="../assets/js/vendor/supabase.js"></script>
+  <script type="module">
+    import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../assets/js/config.js';
+
+    const card = document.querySelector('.glass');
+    const form = card.querySelector('.authform');
+    const msg  = card.querySelector('.authmsg');
+    const btn  = card.querySelector('.btn-main');
+    const gbtn = card.querySelector('.btn-google');
+    const remember = card.querySelector('#f-remember');
+    const $ = (s) => card.querySelector(s);
+    const authRoot = document.querySelector('.auth');
+    const home = document.getElementById('home');
+    const wipe = document.getElementById('wipe');
+
+    // ===== SFX de succès : Web Audio synthétisé (whoosh futuriste + snap), aucun fichier externe =====
+    let _actx = null, _audioReady = false;
+    function audioCtx() {
+      if (!_actx) { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; _actx = new AC(); }
+      if (_actx.state === 'suspended') { const r = _actx.resume(); if (r && r.catch) r.catch(() => {}); }
+      return _actx;
+    }
+    // Déverrouillage iOS/Android : buffer silencieux au 1er geste (obligatoire pour jouer du son ensuite hors geste direct)
+    function unlockAudio() {
+      if (_audioReady) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const s = ctx.createBufferSource(); s.buffer = ctx.createBuffer(1, 1, 22050); s.connect(ctx.destination); s.start(0);
+      _audioReady = true;
+    }
+    ['pointerdown', 'touchstart', 'keydown'].forEach((ev) => document.addEventListener(ev, unlockAudio, { passive: true }));
+    const _mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || matchMedia('(pointer: coarse)').matches;
+
+    function playSuccessSfx() {
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime, DUR = 0.42;
+      // Chaîne maître : gain (boosté sur mobile) -> compresseur (anti-saturation) -> sortie
+      const master = ctx.createGain();
+      master.gain.value = _mobile ? 0.9 : 0.5;
+      const comp = ctx.createDynamicsCompressor();
+      comp.threshold.value = -18; comp.knee.value = 20; comp.ratio.value = 12; comp.attack.value = 0.003; comp.release.value = 0.25;
+      master.connect(comp); comp.connect(ctx.destination);
+
+      // 1) WHOOSH : bruit blanc filtré par un bandpass qui balaie (montée rapide puis descente)
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * DUR), ctx.sampleRate);
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const noise = ctx.createBufferSource(); noise.buffer = nb;
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 0.9;
+      bp.frequency.setValueAtTime(320, t);
+      bp.frequency.exponentialRampToValueAtTime(2600, t + 0.18);
+      bp.frequency.exponentialRampToValueAtTime(520, t + DUR);
+      const ng = ctx.createGain();
+      ng.gain.setValueAtTime(0.0001, t);
+      ng.gain.exponentialRampToValueAtTime(0.6, t + 0.06);
+      ng.gain.exponentialRampToValueAtTime(0.0001, t + DUR);
+      noise.connect(bp); bp.connect(ng); ng.connect(master);
+      noise.start(t); noise.stop(t + DUR);
+
+      // 2) SWEEP tonal : oscillateur qui monte puis retombe (couleur futuriste)
+      const osc = ctx.createOscillator(); osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(180, t);
+      osc.frequency.exponentialRampToValueAtTime(1200, t + 0.16);
+      osc.frequency.exponentialRampToValueAtTime(260, t + DUR);
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass';
+      lp.frequency.setValueAtTime(1900, t); lp.frequency.exponentialRampToValueAtTime(700, t + DUR);
+      const og = ctx.createGain();
+      og.gain.setValueAtTime(0.0001, t);
+      og.gain.exponentialRampToValueAtTime(0.26, t + 0.05);
+      og.gain.exponentialRampToValueAtTime(0.0001, t + DUR);
+      osc.connect(lp); lp.connect(og); og.connect(master);
+      osc.start(t); osc.stop(t + DUR);
+
+      // 3) SNAP / click net au tout début (impact de la découpe BD)
+      const snap = ctx.createOscillator(); snap.type = 'square';
+      snap.frequency.setValueAtTime(2200, t);
+      snap.frequency.exponentialRampToValueAtTime(600, t + 0.05);
+      const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 800;
+      const sg = ctx.createGain();
+      sg.gain.setValueAtTime(0.0001, t);
+      sg.gain.exponentialRampToValueAtTime(0.5, t + 0.004);
+      sg.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+      snap.connect(hp); hp.connect(sg); sg.connect(master);
+      snap.start(t); snap.stop(t + 0.1);
+    }
+
+    // --- Client Supabase : le stockage suit « Rester connecté »
+    //     (localStorage = persistant, sessionStorage = oublié à la fermeture) ---
+    let _sb = null, _rem = null;
+    function sbClient() {
+      if (!window.supabase) return null;
+      const rem = remember.checked;
+      if (!_sb || _rem !== rem) {
+        _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          auth: { persistSession: true, autoRefreshToken: true, storage: rem ? window.localStorage : window.sessionStorage },
+        });
+        _rem = rem;
+      }
+      return _sb;
+    }
+
+    // --- Helpers UI ---
+    function setMode(m) { card.dataset.mode = m; showMsg(''); btn.classList.remove('is-success'); const f = $(m === 'register' ? '#f-prenom' : '#f-email'); if (f) f.focus(); }
+    function showMsg(text, kind) { msg.textContent = text || ''; msg.className = 'authmsg' + (kind ? ' ' + kind : ''); }
+    function setLoading(on) { btn.disabled = on; gbtn.disabled = on; btn.classList.toggle('is-loading', on); }
+    // Succès : flash émeraude, puis transition Spider-Verse (glitch + balayage comic-book) qui révèle l'accueil
+    function runSuccess(prenom) {
+      btn.classList.remove('is-loading');
+      btn.classList.add('is-success');                    // 1. flash vert émeraude instantané
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) playSuccessSfx();  // 2. SFX synchro
+      setTimeout(() => screenTransition(prenom), 200);     // 3. transition ~0.5s
+    }
+    function screenTransition(prenom) {
+      const showHome = () => {
+        authRoot.classList.add('gone');
+        home.hidden = false;
+        home.querySelector('.hi-name').textContent = prenom ? (', ' + prenom) : '';
+      };
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) { setTimeout(showHome, 140); return; }  // a11y : simple fondu
+      card.classList.add('dissolve');                       // la carte se désintègre en points CMJ
+      setTimeout(() => wipe.classList.add('cover'), 60);    // le panneau BD (bord d'encre zig-zag) balaie l'écran
+      setTimeout(() => { showHome(); wipe.classList.replace('cover', 'reveal'); }, 260);  // pic de couverture : bascule
+      setTimeout(() => { wipe.classList.remove('reveal'); card.classList.remove('dissolve'); }, 490);
+    }
+    const emailOK = (s) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s);
+    function frError(e) {
+      const m = ((e && e.message) || '').toLowerCase();
+      if (m.includes('invalid login')) return 'E-mail ou mot de passe incorrect.';
+      if (m.includes('already registered') || m.includes('already been')) return 'Un compte existe déjà avec cet e-mail.';
+      if (m.includes('at least 6')) return 'Le mot de passe doit faire au moins 6 caractères.';
+      if (m.includes('email not confirmed')) return "Confirme d'abord ton e-mail (regarde ta boîte mail).";
+      if (m.includes('provider is not enabled') || m.includes('oauth')) return "Google n'est pas encore activé côté serveur.";
+      if (m.includes('rate') || m.includes('too many')) return "Trop d'essais. Réessaie dans un instant.";
+      if (m.includes('network') || m.includes('failed to fetch')) return 'Connexion impossible. Vérifie ta connexion.';
+      return (e && e.message) || 'Une erreur est survenue.';
+    }
+
+    // --- Clics (délégation) ---
+    card.addEventListener('click', (e) => {
+      const t = e.target.closest('[data-action]'); if (!t) return;
+      const a = t.dataset.action;
+      if (a === 'to-register') { e.preventDefault(); setMode('register'); }
+      else if (a === 'to-login') { e.preventDefault(); setMode('login'); }
+      else if (a === 'forgot')  { e.preventDefault(); onForgot(); }
+      else if (a === 'google')  { e.preventDefault(); onGoogle(); }
+    });
+
+    // --- Soumission : connexion ou inscription ---
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const sb = sbClient();
+      if (!sb) return showMsg("Service d'authentification indisponible.", 'err');
+      const mode = card.dataset.mode;
+      const email = $('#f-email').value.trim();
+      const pass = $('#f-pass').value;
+      const prenom = $('#f-prenom').value.trim();
+      if (mode === 'register' && !prenom) return showMsg('Dis-nous ton prénom.', 'err');
+      if (!emailOK(email)) return showMsg('Entre un e-mail valide.', 'err');
+      if (pass.length < 6) return showMsg('Mot de passe : au moins 6 caractères.', 'err');
+      setLoading(true); showMsg('');
+      try {
+        if (mode === 'register') {
+          const { data, error } = await sb.auth.signUp({ email, password: pass, options: { data: { prenom }, emailRedirectTo: location.href } });
+          if (error) throw error;
+          if (data && data.session) runSuccess(prenom);
+          else showMsg('Compte créé. Ouvre ta boîte mail pour confirmer ton adresse.', 'ok');
+        } else {
+          const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+          if (error) throw error;
+          runSuccess((data && data.user && data.user.user_metadata && data.user.user_metadata.prenom) || '');
+        }
+      } catch (err) {
+        showMsg(frError(err), 'err');
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    // --- Mot de passe oublié ---
+    async function onForgot() {
+      const sb = sbClient(); if (!sb) return;
+      const email = $('#f-email').value.trim();
+      if (!emailOK(email)) return showMsg('Entre d’abord ton e-mail, puis clique « Mot de passe oublié ? ».', 'err');
+      showMsg('Envoi du lien…');
+      try {
+        const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+        if (error) throw error;
+        showMsg('Lien de réinitialisation envoyé à ' + email + '. Regarde ta boîte mail.', 'ok');
+      } catch (err) { showMsg(frError(err), 'err'); }
+    }
+
+    // --- Google OAuth ---
+    async function onGoogle() {
+      const sb = sbClient(); if (!sb) return showMsg('Service indisponible.', 'err');
+      showMsg('Redirection vers Google…');
+      try {
+        const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } });
+        if (error) throw error;
+      } catch (err) { showMsg(frError(err), 'err'); }
+    }
+
+    // Démo : cliquer le badge « Aperçu » rejoue la transition de succès (retiré à l'intégration)
+    const tag = document.querySelector('.proto-tag');
+    if (tag) tag.addEventListener('click', () => { showMsg(''); runSuccess(($('#f-prenom').value || '').trim() || 'Ada'); });
+
+    // Retour de connexion Google (OAuth) : l'URL contient un code/jeton -> flash + transition
+    if (/[#?&](access_token|code)=/.test(location.href) && window.supabase) {
+      const sbo = sbClient();
+      const { data: sub } = sbo.auth.onAuthStateChange((_event, session) => {
+        if (!session) return;
+        if (sub && sub.subscription) sub.subscription.unsubscribe();
+        history.replaceState(null, '', location.pathname);           // nettoie le jeton de l'URL
+        const md = (session.user && session.user.user_metadata) || {};
+        const prenom = md.prenom || (md.full_name || md.name || '').trim().split(' ')[0] || '';
+        runSuccess(prenom);
+      });
+    }
+  </script>
+</body>
+</html>
