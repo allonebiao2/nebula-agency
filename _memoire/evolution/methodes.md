@@ -50,6 +50,12 @@
 - Sous-comptes clients via "+ Ajouter un compte" dans le dashboard FedaPay
 - Notifications paiement triple : WhatsApp (bouton confirmation) + MyFeda (app) + Email natif
 
+### Propagation d'impact : info de site → supports dérivés (depuis 2026-07-13)
+- Toute **mise à jour d'info sur un site** (lien/URL, domaine, téléphone, prix, nom de marque, adresse) doit être **répercutée partout où l'info est présente**, y compris les **supports dérivés** : affiches, cartes de visite, QR (PDF/PNG), kits imprimés, images OG.
+- Un **changement de lien/domaine** (ex. migration Netlify vers domaine final) déclenche d'office la **revue de tous les QR/liens** imprimés et en ligne.
+- Si la propagation n'est pas appliquée d'office : **lister les endroits concernés et DEMANDER à Mongazi « je mets aussi à jour ici et là ? »**, puis attendre sa confirmation (oui/non). Ne jamais laisser un support avec une info périmée en silence.
+- Déclencheur : la bascule Luxury Skin Clinic vers `luxuryclub229.com` (12/07) a laissé le QR de la carte + de l'affiche pointer vers l'ancien Netlify jusqu'à ce que Mongazi le signale (2026-07-13).
+
 ---
 
 ## Choses qu'on essaie / qu'on teste
