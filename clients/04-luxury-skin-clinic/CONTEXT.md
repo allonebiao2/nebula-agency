@@ -455,6 +455,15 @@ de la zone catalogue INA Luxury.
 - Valider les aperçus de partage social via
   https://developers.facebook.com/tools/debug/ (Scrape Again obligatoire).
 
+## FAIT le 2026-07-13 (supports imprimés : carte de visite + affiche carrée)
+
+- **Carte de visite** (`carte-visite-luxury-skin-clinic.html` → `assets/docs/Carte_Visite_Luxury_Skin_Clinic.pdf`, 91×61 mm recto/verso, 3 mm de fond perdu) : **QR régénéré vers `https://luxuryclub229.com`**. L'ancien QR pointait vers le site mort `luxuryskinclinic.netlify.app` (généré le 05/07, avant la bascule domaine du 12/07). Vérifié **par décodage du rendu PDF** (segno + cv2), pas seulement le texte affiché.
+- **Affiche « à coller » passée en FORMAT CARRÉ** (demande cliente) : nouvelle `affiche-luxury-skin-clinic-carre.html` → `assets/docs/Affiche_Luxury_Skin_Clinic_Carre.pdf` (**210×210 mm**, 1 page), recomposée depuis l'A4 en gardant la même identité (cadre or, monogramme LSC, wordmark, tagline, QR central, bandeau contacts). Même QR `https://luxuryclub229.com`, vérifié.
+- **Ancien `Affiche_Luxury_Skin_Clinic_A4.pdf` supprimé** (QR Netlify mort, remplacé par le carré). Source A4 (`affiche-luxury-skin-clinic.html`) conservée en archive **avec QR corrigé** (plus aucun lien mort).
+- `assets/docs/qr-code-luxury-skin-clinic.png` (QR standalone) rafraîchi vers le bon lien.
+- Rendu print via **msedge headless `--print-to-pdf`** (91×61 et 210×210) ; polices Cormorant Garamond + Jost.
+- Commits poussés : carte `f10b91e`, affiche `9f362cb`.
+
 ## Liens
 
 - Pages : `index.html`, `ina-luxury.html`, `luxury-skin-clinic.html`, `cozy.html`
