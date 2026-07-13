@@ -109,11 +109,37 @@ cliente : page d'accueil façon « présentation de match de foot », séparatio
 - ⏳ **Eminente Reserva** : classé en Rhum, **en attente réponse de Ck** (cf. section 2026-07-01).
 - ⏳ Volumes des 4 single malts (affichés « Islay/Speyside » sans contenance ; 70 CL standard non inventé) — à confirmer si utile.
 
+## FAIT le 2026-07-13 (catalogue enrichi — +28 bouteilles, onglets Cognacs & Apéritifs)
+- ✅ **28 nouvelles bouteilles** envoyées par Ck (dossiers `assets/images/gallery/catégorie *`),
+  détourées fond→transparent en **IA rembg** (`_build_newcave.py`, isnet-general-use 1100 px, webp)
+  → `assets/images/cave/*.webp`. Injectées **idempotentes** dans `<div class="bottles">` via
+  `_apply_cave.py` (remplace le seul contenu de `.bottles`, préserve le drawer `#caveNav` + les
+  sous-filtres champagne/tequila). Cache-bust `?v=20260713a` (index/speed/weinkeller).
+- ✅ **Catalogue = 60 fiches** : Champagnes 13 · Whiskys 15 · **Cognacs 6** · Tequila 8 · Rhum 6 ·
+  Gin 4 · Vodka 1 · **Apéritifs & liqueurs 7**. Seul **Vins** reste « bientôt » (aucun produit encore).
+- ✅ **Refonte des onglets (TAX `app.js`)** : **Cognacs** sortis des Whiskys → **onglet dédié**
+  (Whiskys remis à plat, sans sous-filtre) ; **Ricard** reclassé en **Apéritifs & liqueurs** →
+  l'onglet **Pastis disparaît**. Onglets finaux : Vins · Champagnes · Whiskys · Cognacs · Tequila ·
+  Rhum · Gin · Vodka · Apéritifs & liqueurs.
+- ✅ **Détail des 28** : Whiskys +11 (Chivas Regal 18, Glenfiddich VAT 01, The San-In, Akashi Sherry
+  Cask, Haig Club, Jack Daniel's, Aberlour 10, The Deveron 10, Glen Turner 12, Knockando 18, Hwayo) ·
+  Rhum +5 (Bologne Réserve Spéciale, Ti'Ced Ananas Victoria, Kraken, Hédone, Rivière du Mât) ·
+  Apéritifs +7 (Baileys Original & Salted Caramel, Ricard, Martini Rosso, Jägermeister 1 L/70 cl/35 cl) ·
+  Gin +4 (Dry Gin XII, Hendrick's, June by G'Vine, Whitley Neill) · Vodka +1 (Cîroc).
+- ⏳ **Sans prix (affichés « Prix sur demande »)** : Whitley Neill, Hédone, Rivière du Mât,
+  Glen Turner 12, Knockando 18, Hwayo — prix à fournir par Ck.
+- ✅ **Clase Azul Reposado** : image remplacée par la « corrigé » (bouteille entière re-détourée,
+  damier de fond retiré) via `_detour_clase.py` → `assets/images/cave/clase-azul-reposado.webp`.
+- ✅ QC : 60 fiches, **0 image cassée**, 0 doublon de carte, badges Cognac OK, `app.js` syntaxe OK.
+  Déploiement **allégé 5,9 Mo** (sources `gallery/` 66 Mo + `Wenkeller/` 29 Mo **exclues** de `_dist`).
+  Déployé Cloudflare Pages + **vérifié 200** en prod (`/weinkeller` = 6 cognacs + 7 apéritifs live).
+
 ## À CONFIRMER / À REMPLACER (reste)
 - [ ] Email / domaine exact (contact@speedshopping.com ?).
-- [ ] **Autres caves Weinkeller** : **vins rouges/blancs, gin, pastis, vodka** (noms + prix + photos).
-  ✅ Faits : champagnes (8→13), tequilas (8), **whiskies+cognacs (10), rhum (1) — 2026-07-01**.
-  Reste = catégories encore « bientôt ».
+- [ ] **Autres caves Weinkeller** : reste **uniquement les Vins** (rouges/blancs — noms + prix + photos).
+  ✅ Faits : champagnes (13), whiskys (15), cognacs (6), tequilas (8), rhum (6), gin (4), vodka (1),
+  apéritifs & liqueurs (7) — **2026-07-13**. Seul l'onglet **Vins** reste « bientôt ».
+- [ ] **Prix manquants** (6 bouteilles ci-dessus en « Prix sur demande ») à récupérer auprès de Ck.
 - [ ] **Logo Weinkeller** définitif (on a créé un wordmark/emblème « à valider »).
 - [ ] **Adresses exactes** Cotonou (Speed) + Porto-Novo (Weinkeller) pour Google Maps précis.
 - [ ] Photos lifestyle Speed (optionnel — le monde Speed est volontairement graphique/illustré).
