@@ -584,29 +584,30 @@ html.js .flight .plane{offset-distance:0%;opacity:0}
   min-height:44px;transition:.22s}
 .wein-filter button:hover{border-color:var(--accent);color:var(--accent)}
 .wein-filter button.active{background:var(--accent);border-color:var(--accent);color:#241606;font-weight:800}
-.bottles{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:20px}
+.bottles{display:grid;grid-template-columns:repeat(auto-fill,minmax(172px,1fr));gap:14px}
+@media (max-width:560px){.bottles{grid-template-columns:repeat(2,1fr);gap:10px}}   /* 2 boissons par ligne sur mobile */
 .bottle{position:relative;background:linear-gradient(180deg,#16100E,#0E0A09);border:1px solid var(--line);
-  border-radius:var(--r);padding:24px 20px 22px;overflow:hidden;text-align:center;
+  border-radius:var(--r);padding:14px 12px 14px;overflow:hidden;text-align:center;
   transition:transform .35s var(--ease),border-color .35s,box-shadow .35s}
 .bottle::before{content:"";position:absolute;top:-40%;left:-60%;width:60%;height:180%;
   background:linear-gradient(90deg,transparent,rgba(203,161,76,.16),transparent);transform:skewX(-18deg);transition:left .7s var(--ease)}
-.bottle:hover{transform:translateY(-8px);border-color:color-mix(in srgb,var(--accent) 55%,var(--line));
-  box-shadow:0 30px 60px -28px rgba(0,0,0,.8)}
+.bottle:hover{transform:translateY(-5px);border-color:color-mix(in srgb,var(--accent) 55%,var(--line));
+  box-shadow:0 22px 46px -26px rgba(0,0,0,.8)}
 .bottle:hover::before{left:130%}
-.bottle .visual{height:184px;display:flex;align-items:flex-end;justify-content:center;margin-bottom:14px;position:relative}
+.bottle .visual{height:118px;display:flex;align-items:flex-end;justify-content:center;margin-bottom:8px;position:relative}
 .bottle .visual svg{height:100%;width:auto}
-.bottle .badge-cat{position:absolute;top:0;left:0;font-size:.64rem;font-family:var(--f-ui);font-weight:700;
-  letter-spacing:.12em;text-transform:uppercase;color:var(--accent);opacity:.8}
-.bottle h3{font-family:var(--font-display);font-weight:700;font-size:1.22rem;letter-spacing:.04em;
-  text-transform:uppercase;margin-bottom:5px;line-height:1.18}
-.bottle .vintage{font-family:"Spectral",serif;font-style:italic;color:var(--text-2);font-size:.84rem;margin-bottom:12px}
-.bottle .price{font-family:var(--f-ui);font-weight:800;color:var(--accent);font-size:.86rem;
-  letter-spacing:.1em;text-transform:uppercase}
-.bottle .order{margin-top:14px;display:inline-flex;align-items:center;justify-content:center;gap:7px;width:100%;
-  padding:11px 14px;border-radius:999px;background:transparent;border:1.5px solid color-mix(in srgb,var(--accent) 40%,var(--line));
-  color:var(--accent);font-family:var(--f-ui);font-weight:700;font-size:.82rem;letter-spacing:.04em;
-  min-height:44px;transition:.22s}
-.bottle .order svg{width:15px;height:15px}
+.bottle .badge-cat{position:absolute;top:0;left:0;font-size:.56rem;font-family:var(--f-ui);font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--accent);opacity:.8}
+.bottle h3{font-family:var(--font-display);font-weight:700;font-size:.98rem;letter-spacing:.03em;
+  text-transform:uppercase;margin-bottom:3px;line-height:1.14}
+.bottle .vintage{font-family:"Spectral",serif;font-style:italic;color:var(--text-2);font-size:.72rem;margin-bottom:6px}
+.bottle .price{font-family:var(--f-ui);font-weight:800;color:var(--accent);font-size:.8rem;
+  letter-spacing:.08em;text-transform:uppercase}
+.bottle .order{margin-top:9px;display:inline-flex;align-items:center;justify-content:center;gap:6px;width:100%;
+  padding:8px 10px;border-radius:999px;background:transparent;border:1.5px solid color-mix(in srgb,var(--accent) 40%,var(--line));
+  color:var(--accent);font-family:var(--f-ui);font-weight:700;font-size:.72rem;letter-spacing:.03em;
+  min-height:40px;transition:.22s}
+.bottle .order svg{width:13px;height:13px}
 .bottle .order:hover{background:var(--accent);color:#241606;border-color:var(--accent)}
 .bottle.is-ph .price{color:var(--text-2);font-weight:600}
 /* Tequila — accent agave (différencie le monde sans casser l'or) */
@@ -704,6 +705,124 @@ html.js .flight .plane{offset-distance:0%;opacity:0}
 @keyframes caveShine{to{background-position:-230% 0}}
 @media (prefers-reduced-motion:reduce){.cave-launcher{animation:none}.cave-nav{transition:none}}
 @media (max-width:520px){.cave-launcher .cl-txt{display:none}.cave-launcher{padding:12px;gap:0}}
+/* Hint éphémère du bouton brillant : "cliquez ici pour voir toutes nos boissons" (apparaît puis disparaît) */
+.cl-hint{position:absolute;left:calc(100% + 12px);top:50%;transform:translateY(-50%) translateX(-8px);
+  white-space:normal;width:max-content;max-width:min(62vw,240px);text-align:left;line-height:1.3;
+  font-family:var(--f-ui);font-weight:600;font-size:.78rem;letter-spacing:.005em;color:#f7ecd2;
+  background:linear-gradient(160deg,rgba(38,20,12,.97),rgba(20,10,7,.97));border:1px solid rgba(203,161,76,.55);
+  padding:9px 13px;border-radius:12px;
+  box-shadow:0 16px 34px -14px rgba(0,0,0,.8),0 0 0 1px rgba(0,0,0,.3),0 0 22px -8px rgba(203,161,76,.5);
+  pointer-events:none;z-index:2;animation:clHintIn .5s var(--ease) .4s both}   /* apparaît une fois au chargement puis RESTE en permanence */
+.cl-hint::before{content:"";position:absolute;right:100%;top:50%;transform:translateY(-50%);border:7px solid transparent;border-right-color:rgba(203,161,76,.55)}
+@keyframes clHintIn{from{opacity:0;transform:translateY(-50%) translateX(-8px)}to{opacity:1;transform:translateY(-50%) translateX(0)}}
+@media (prefers-reduced-motion:reduce){.cl-hint{animation:none;opacity:1;transform:translateY(-50%)}}
+
+/* ============ COFFRET / PANIER ============ */
+.b-add{margin-top:9px;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;
+  padding:8px 10px;border-radius:999px;border:1.5px solid color-mix(in srgb,var(--accent) 40%,var(--line));background:transparent;color:var(--accent);
+  font-family:var(--f-ui);font-weight:700;font-size:.72rem;letter-spacing:.03em;min-height:40px;transition:background .2s,color .2s,border-color .2s,transform .12s var(--ease)}
+.b-add svg{width:14px;height:14px;flex:none}
+.b-add:hover{background:var(--accent);color:#241606;border-color:var(--accent)}
+.b-add:active{transform:scale(.96)}
+.bottle.in-coffret{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.bottle.in-coffret .b-add{background:color-mix(in srgb,var(--accent) 16%,transparent);border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
+.b-add.bump{animation:bAddBump .3s var(--ease)}
+@keyframes bAddBump{0%{transform:scale(1)}45%{transform:scale(1.05)}100%{transform:scale(1)}}
+
+.coffret-bar{position:fixed;left:max(16px,env(safe-area-inset-left));bottom:max(18px,env(safe-area-inset-bottom));z-index:56;
+  display:flex;align-items:center;gap:11px;max-width:calc(100vw - 88px);cursor:pointer;text-align:left;
+  padding:9px 14px 9px 12px;border-radius:999px;background:linear-gradient(180deg,rgba(28,17,11,.97),rgba(14,8,6,.98));
+  border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));backdrop-filter:blur(12px);box-shadow:0 20px 42px -16px rgba(0,0,0,.85);animation:cbUp .35s var(--ease);transition:transform .15s var(--ease)}
+.coffret-bar[hidden]{display:none}
+.coffret-bar:active{transform:scale(.98)}
+body.has-mcta .coffret-bar{bottom:calc(70px + env(safe-area-inset-bottom))}
+@keyframes cbUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.cb-ic{position:relative;flex:none;width:28px;height:28px;color:var(--accent)}
+.cb-ic svg{width:28px;height:28px}
+.cb-ic .cb-count{position:absolute;top:-7px;right:-8px;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:var(--accent);color:#241606;font:800 10.5px/17px var(--f-ui);text-align:center}
+.cb-txt{display:flex;flex-direction:column;line-height:1.12;min-width:0}
+.cb-txt small{color:var(--text-2);font-family:var(--f-ui);font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.cb-txt .cb-total{color:var(--accent);font-family:var(--f-ui);font-weight:800;font-size:.94rem;letter-spacing:.01em;white-space:nowrap}
+.cb-go{flex:none;width:18px;height:18px;color:var(--accent)}
+.cb-go svg{width:18px;height:18px}
+
+.coffret-modal{position:fixed;inset:0;z-index:95;display:flex;align-items:flex-end;justify-content:center}
+.coffret-modal[hidden]{display:none}
+.cm-backdrop{position:absolute;inset:0;background:rgba(4,2,1,.74);backdrop-filter:blur(3px);animation:cmFade .3s ease}
+@keyframes cmFade{from{opacity:0}to{opacity:1}}
+.cm-panel{position:relative;width:min(560px,100%);max-height:88dvh;display:flex;flex-direction:column;background:linear-gradient(180deg,#1a110d,#0e0807);
+  border:1px solid var(--line);border-bottom:0;border-radius:20px 20px 0 0;box-shadow:0 -30px 70px -20px rgba(0,0,0,.85);animation:cmIn .34s var(--ease)}
+@keyframes cmIn{from{transform:translateY(100%)}to{transform:none}}
+.cm-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 13px;border-bottom:1px solid var(--line)}
+.cm-head h3{font-family:var(--font-display);font-size:1.32rem;letter-spacing:.03em}
+.cm-x{width:38px;height:38px;flex:none;display:grid;place-items:center;border:1px solid var(--line);background:transparent;color:var(--text-2);border-radius:11px;cursor:pointer}
+.cm-x svg{width:18px;height:18px}
+.cm-scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;flex:1;min-height:0}
+.cm-list{padding:4px 20px 0}
+/* formulaire coordonnées + livraison (modèle Luxury) */
+.cm-form{padding:6px 20px 16px}
+.cm-sec{padding:14px 0;border-top:1px solid var(--line)}
+.cm-sec-last{padding-bottom:2px}
+.cm-lbl{font-family:var(--f-ui);font-weight:700;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.cm-g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.cm-in{display:block;width:100%;padding:11px 13px;margin-bottom:8px;border-radius:11px;border:1px solid var(--line);
+  background:rgba(0,0,0,.28);color:#f4e7cf;font-family:var(--f-ui);font-size:.9rem;transition:border-color .2s,background .2s}
+.cm-g2 .cm-in{margin-bottom:0}
+.cm-in:last-child{margin-bottom:0}
+.cm-in::placeholder{color:var(--text-2);opacity:.75}
+.cm-in:focus{outline:none;border-color:var(--accent);background:rgba(0,0,0,.42)}
+.cm-in.error{border-color:#d9776b;background:rgba(217,119,107,.12)}
+.cm-ta{resize:vertical;min-height:52px;line-height:1.4}
+.cm-sel{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:34px;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='%23CBA14C' stroke-width='1.6'><path d='M1 1l5 5 5-5'/></svg>");background-repeat:no-repeat;background-position:right 13px center;background-size:11px}
+.cm-sel option{background:#141210;color:#f4e7cf}
+.cm-modes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.cm-mode{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:11px;border:1px solid var(--line);cursor:pointer;
+  font-family:var(--f-ui);font-size:.8rem;font-weight:600;color:var(--text-2);transition:.2s}
+.cm-mode input{accent-color:var(--accent);width:15px;height:15px;flex:none}
+.cm-mode:has(input:checked){border-color:color-mix(in srgb,var(--accent) 55%,var(--line));color:#f4e7cf;background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.cm-deliv[hidden]{display:none}
+@media (max-width:400px){.cm-modes{grid-template-columns:1fr}}
+/* mode "coffret cadeau" */
+.cm-gift{display:flex;align-items:center;gap:11px;margin:8px 0 4px;padding:12px 13px;border-radius:13px;cursor:pointer;
+  border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));background:color-mix(in srgb,var(--accent) 7%,transparent);transition:.2s}
+.cm-gift:has(#wkGift:checked){border-color:color-mix(in srgb,var(--accent) 60%,var(--line));background:color-mix(in srgb,var(--accent) 13%,transparent)}
+.cm-gift-ic{flex:none;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:var(--accent);background:rgba(0,0,0,.3)}
+.cm-gift-ic svg{width:19px;height:19px}
+.cm-gift-txt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2}
+.cm-gift-txt b{font-family:var(--f-ui);font-weight:700;font-size:.86rem;color:#f4e7cf}
+.cm-gift-txt small{color:var(--text-2);font-size:.72rem;margin-top:2px}
+.cm-gift input{position:absolute;opacity:0;width:0;height:0}
+.cm-gift-sw{flex:none;width:44px;height:25px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid var(--line);position:relative;transition:.22s}
+.cm-gift-sw::after{content:"";position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:#e9dcc0;transition:.22s var(--ease)}
+.cm-gift:has(#wkGift:checked) .cm-gift-sw{background:var(--accent);border-color:var(--accent)}
+.cm-gift:has(#wkGift:checked) .cm-gift-sw::after{left:21px;background:#241606}
+.cm-gift-fields{padding:2px 0 6px}
+.cm-gift-fields[hidden]{display:none}
+.cm-empty{color:var(--text-2);text-align:center;padding:44px 10px;font-style:italic;font-family:"Spectral",serif;line-height:1.6}
+.cm-item{display:grid;grid-template-columns:1fr auto;grid-template-areas:"name line" "qty del";gap:8px 12px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+.cm-name{grid-area:name;min-width:0;font-family:var(--f-ui);font-weight:700;font-size:.9rem;line-height:1.25}
+.cm-unit{display:block;color:var(--text-2);font-weight:500;font-size:.73rem;margin-top:2px}
+.cm-line{grid-area:line;justify-self:end;font-family:var(--f-ui);font-weight:800;color:var(--accent);font-size:.85rem;white-space:nowrap}
+.cm-qty{grid-area:qty;display:flex;align-items:center;gap:4px}
+.cm-qty button{width:32px;height:32px;flex:none;border:1px solid var(--line);background:transparent;color:var(--accent);border-radius:9px;cursor:pointer;font-size:1.15rem;line-height:1;display:grid;place-items:center}
+.cm-qty span{min-width:28px;text-align:center;font-family:var(--f-ui);font-weight:800;font-size:.92rem}
+.cm-del{grid-area:del;justify-self:end;width:30px;height:30px;border:0;background:transparent;color:var(--text-2);cursor:pointer;font-size:1.35rem;line-height:1;display:grid;place-items:center}
+.cm-del:hover{color:#e08a8a}
+.cm-foot{padding:16px 20px calc(18px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:rgba(0,0,0,.28)}
+.cm-total{display:flex;align-items:baseline;justify-content:space-between;font-family:var(--f-ui);color:#f4e7cf;font-weight:700}
+.cm-total b{font-size:1.4rem;color:var(--accent)}
+.cm-note{color:var(--text-2);font-size:.74rem;margin:8px 0 0;line-height:1.4}
+.cm-send{margin-top:14px;width:100%;min-height:52px;display:inline-flex;align-items:center;justify-content:center;gap:9px;border:0;border-radius:14px;cursor:pointer;background:var(--wa);color:#fff;font-family:var(--f-ui);font-weight:800;font-size:.98rem}
+.cm-send svg{width:20px;height:20px}
+.cm-send:disabled{opacity:.45;cursor:not-allowed}
+.cm-send:active{transform:scale(.99)}
+
+.coffret-toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(10px);z-index:96;max-width:calc(100vw - 40px);
+  background:rgba(28,17,11,.97);border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));color:#f4e7cf;padding:11px 18px;border-radius:14px;
+  font-family:var(--f-ui);font-size:.82rem;font-weight:600;text-align:center;box-shadow:0 16px 34px -14px rgba(0,0,0,.8);opacity:0;pointer-events:none;transition:.3s var(--ease)}
+.coffret-toast.show{opacity:1;transform:translateX(-50%)}
+@media (prefers-reduced-motion:reduce){.coffret-bar,.cm-panel,.cm-backdrop,.b-add.bump{animation:none}}
 @media (prefers-reduced-motion:reduce){.acc-sub,.cave-nav,.cave-scrim,.acc-fam .chev{transition:none}}
 .tovalid{display:inline-block;margin-left:6px;font-size:.6rem;font-weight:700;letter-spacing:.1em;
   text-transform:uppercase;color:#241606;background:var(--accent);padding:2px 7px;border-radius:5px;vertical-align:middle}
@@ -772,11 +891,11 @@ html.js .cf-item{position:absolute;top:0;left:50%;width:clamp(140px,19vw,205px);
 
 /* cartes bouteilles RÉELLES (sélection) — profondeur 3D + reflet */
 .bottle.real{transform-style:preserve-3d}
-.bottle.real .visual{height:240px}
-.bottle.real .visual img{height:100%;width:auto;margin-inline:auto;transform:translateZ(42px);
-  filter:drop-shadow(0 22px 26px rgba(0,0,0,.6));
+.bottle.real .visual{height:140px}
+.bottle.real .visual img{height:100%;width:auto;margin-inline:auto;transform:translateZ(24px);
+  filter:drop-shadow(0 14px 18px rgba(0,0,0,.6));
   -webkit-box-reflect:below 2px linear-gradient(transparent 64%,rgba(0,0,0,.16))}
-.bottle.real::after{content:"";position:absolute;top:46px;left:50%;width:62%;height:140px;transform:translateX(-50%);
+.bottle.real::after{content:"";position:absolute;top:26px;left:50%;width:60%;height:84px;transform:translateX(-50%);
   background:radial-gradient(circle,rgba(203,161,76,.16),transparent 70%);filter:blur(8px);pointer-events:none;z-index:0}
 .bottle.real>*{position:relative;z-index:1}
 .bottle.real .visual{z-index:1}

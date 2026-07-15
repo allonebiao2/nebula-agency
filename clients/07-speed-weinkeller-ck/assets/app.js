@@ -288,10 +288,146 @@ document.documentElement.classList.add("js");
       var clr = searchWrap.querySelector(".cs-clear");
       if (clr) clr.addEventListener("click", function () { caveSearch.value = ""; searchWrap.classList.remove("has-val"); searchBottles(""); caveSearch.focus(); });
     }
-    // le bouton flottant disparaît quand « Parcourir les catégories » est visible (anti-surcharge)
-    if (caveLauncher && caveOpenBtn && "IntersectionObserver" in window) {
-      new IntersectionObserver(function (es) { caveLauncher.classList.toggle("hide", es[0].isIntersecting); }, { threshold: 0 }).observe(caveOpenBtn);
+    // bouton flottant + hint : masqués TANT QU'ON EST DANS LA CAVE (toute la section #selection visible),
+    // puis RÉAPPARAISSENT — le hint se rejoue — dès qu'on a entièrement quitté les boissons.
+    var selSection = document.querySelector("#selection");
+    if (caveLauncher && selSection && "IntersectionObserver" in window) {
+      var wasHidden = false, hintEl = caveLauncher.querySelector(".cl-hint");
+      new IntersectionObserver(function (es) {
+        var atDrinks = es[0].isIntersecting;                 // au moins une partie de la cave est à l'écran
+        caveLauncher.classList.toggle("hide", atDrinks);
+        if (wasHidden && !atDrinks && hintEl) { hintEl.style.animation = "none"; void hintEl.offsetWidth; hintEl.style.animation = ""; }  // réapparaît en rejouant l'entrée
+        wasHidden = atDrinks;
+      }, { threshold: 0 }).observe(selSection);
     }
+
+    /* ============ COFFRET / PANIER : composer un coffret multi-bouteilles ============ */
+    (function panier() {
+      var WA = "2290197158484", CART = {};
+      try { CART = JSON.parse(localStorage.getItem("wk_coffret") || "{}") || {}; } catch (e) { CART = {}; }
+      var bar = document.getElementById("coffretBar"), modal = document.getElementById("coffretModal"),
+          listEl = document.getElementById("coffretList"), totalEl = document.getElementById("coffretTotal"),
+          noteEl = document.getElementById("coffretNote"), sendEl = document.getElementById("coffretSend"),
+          delivBox = document.getElementById("wkDeliv");
+      var $ = function (id) { return document.getElementById(id); };
+      function fmt(n) { return (n || 0).toLocaleString("fr-FR").replace(/\s/g, " ") + " FCFA"; }
+      function nameOf(el) { var h = el.querySelector("h3"); return h ? h.textContent.replace(/\s+/g, " ").trim() : "Bouteille"; }
+      function priceOf(el) { var p = el.querySelector(".price"); if (!p) return 0; var m = p.textContent.replace(/ /g, " ").match(/\d[\d ]*/); return m ? (parseInt(m[0].replace(/ /g, ""), 10) || 0) : 0; }
+      function save() { try { localStorage.setItem("wk_coffret", JSON.stringify(CART)); } catch (e) {} }
+      function count() { var n = 0; for (var k in CART) n += CART[k].qty; return n; }
+      function totals() { var t = 0, firm = true; for (var k in CART) { if (CART[k].price > 0) t += CART[k].price * CART[k].qty; else firm = false; } return { t: t, firm: firm }; }
+      bottles.forEach(function (b, i) {
+        b.setAttribute("data-bid", i);
+        if (b.classList.contains("is-ph")) return;
+        var add = document.createElement("button");
+        add.type = "button"; add.className = "b-add"; add.setAttribute("data-add", i); add.setAttribute("aria-label", "Ajouter au panier");
+        add.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span class="ba-t">Ajouter</span>';
+        b.appendChild(add);
+      });
+      function render() {
+        var c = count(), tt = totals();
+        if (bar) { bar.hidden = c === 0; if (c) { bar.querySelector(".cb-count").textContent = c; bar.querySelector(".cb-total").textContent = (tt.firm ? "" : "≈ ") + fmt(tt.t); } }
+        bottles.forEach(function (b, i) { var a = b.querySelector(".b-add"); if (a) { var q = CART[i] ? CART[i].qty : 0; var t = a.querySelector(".ba-t"); if (t) t.textContent = q > 0 ? "Ajouté · " + q : "Ajouter"; b.classList.toggle("in-coffret", q > 0); } });
+        if (modal && !modal.hidden) renderList();
+      }
+      function renderList() {
+        var keys = Object.keys(CART);
+        if (!keys.length) { listEl.innerHTML = '<p class="cm-empty">Votre panier est vide.<br>Ajoutez des bouteilles avec « Ajouter au panier ».</p>'; }
+        else listEl.innerHTML = keys.map(function (id) {
+          var it = CART[id];
+          return '<div class="cm-item">' +
+            '<div class="cm-name">' + it.name + '<span class="cm-unit">' + (it.price > 0 ? fmt(it.price) + " / unité" : "prix sur demande") + '</span></div>' +
+            '<div class="cm-line">' + (it.price > 0 ? fmt(it.price * it.qty) : "—") + '</div>' +
+            '<div class="cm-qty"><button type="button" data-dec="' + id + '" aria-label="Retirer un">−</button><span>' + it.qty + '</span><button type="button" data-inc="' + id + '" aria-label="Ajouter un">+</button></div>' +
+            '<button type="button" class="cm-del" data-del="' + id + '" aria-label="Supprimer">×</button>' +
+          '</div>';
+        }).join("");
+        var tt = totals();
+        totalEl.textContent = (tt.firm ? "" : "≈ ") + fmt(tt.t);
+        noteEl.textContent = keys.length ? (tt.firm ? "Votre commande sera confirmée par notre équipe sur WhatsApp." : "Estimation : certains articles sont « sur demande » ou en fourchette — le prix final est confirmé sur WhatsApp.") : "Ajoutez des bouteilles pour commander.";
+        sendEl.disabled = keys.length === 0;
+      }
+      function add(i) { var el = bottles[i]; if (!el) return; if (!CART[i]) CART[i] = { name: nameOf(el), price: priceOf(el), qty: 0 }; CART[i].qty++; save(); render(); var a = el.querySelector(".b-add"); if (a) { a.classList.remove("bump"); void a.offsetWidth; a.classList.add("bump"); } toast("Ajouté au panier"); }
+      function setQ(id, q) { if (!CART[id]) return; if (q <= 0) delete CART[id]; else CART[id].qty = q; save(); render(); }
+      var FIELDS = ["wkPrenom", "wkNom", "wkWa", "wkWaAlt", "wkVille", "wkQuartier", "wkReperes", "wkCreneau", "wkNote", "wkOccasion", "wkDedicace"];
+      function isDeliv() { var r = document.querySelector('input[name="wkMode"]:checked'); return !r || r.value.indexOf("Livraison") === 0; }
+      function syncMode() { if (delivBox) delivBox.hidden = !isDeliv(); }
+      function isGift() { var g = $("wkGift"); return !!(g && g.checked); }
+      function syncGift() { var f = $("wkGiftFields"); if (f) f.hidden = !isGift(); }
+      function loadCustomer() {
+        var c = {}; try { c = JSON.parse(localStorage.getItem("wk_customer") || "{}") || {}; } catch (e) {}
+        FIELDS.forEach(function (id) { var el = $(id); if (el && c[id] != null) el.value = c[id]; });
+        if (c.mode) { var r = document.querySelector('input[name="wkMode"][value="' + c.mode + '"]'); if (r) r.checked = true; }
+        var g = $("wkGift"); if (g) g.checked = !!c.gift;
+        syncMode(); syncGift();
+      }
+      function saveCustomer() {
+        var c = {}; FIELDS.forEach(function (id) { var el = $(id); if (el) c[id] = el.value.trim(); });
+        var r = document.querySelector('input[name="wkMode"]:checked'); c.mode = r ? r.value : "Livraison à domicile";
+        c.gift = isGift();
+        try { localStorage.setItem("wk_customer", JSON.stringify(c)); } catch (e) {}
+      }
+      function need(id, label) { var el = $(id); if (!el || !el.value.trim()) { if (el) { el.classList.add("error"); el.focus(); el.addEventListener("input", function () { el.classList.remove("error"); }, { once: true }); } toast("Champ obligatoire : " + label); return false; } return true; }
+      function ref() { return "WK-" + Date.now().toString(36).slice(-5).toUpperCase(); }
+      function openM() { if (!modal) return; loadCustomer(); renderList(); modal.hidden = false; document.documentElement.style.overflow = "hidden"; }
+      function closeM() { if (!modal) return; modal.hidden = true; document.documentElement.style.overflow = ""; }
+      function sendWA() {
+        var keys = Object.keys(CART); if (!keys.length) return;
+        if (!need("wkPrenom", "Prénom")) return;
+        if (!need("wkNom", "Nom")) return;
+        if (!need("wkWa", "Numéro WhatsApp")) return;
+        var deliv = isDeliv();
+        if (deliv) { if (!need("wkVille", "Ville")) return; if (!need("wkQuartier", "Quartier")) return; if (!need("wkReperes", "Repères")) return; if (!need("wkCreneau", "Créneau de livraison")) return; }
+        saveCustomer();
+        var gift = isGift(), tt = totals();
+        var lines = keys.map(function (id) { var it = CART[id]; return "• " + it.qty + "× " + it.name + (it.price > 0 ? " — " + fmt(it.price * it.qty) : " — prix sur demande"); });
+        var v = function (id) { var el = $(id); return el ? el.value.trim() : ""; };
+        var header = gift ? "Bonjour Weinkeller by CK, je souhaite offrir un COFFRET CADEAU 🎁 :" : "Bonjour Weinkeller by CK, je souhaite commander :";
+        var client = "CLIENT\n" + v("wkPrenom") + " " + v("wkNom") + "\nWhatsApp : " + v("wkWa") + (v("wkWaAlt") ? "\nTél. alt : " + v("wkWaAlt") : "");
+        var recep = deliv
+          ? "RÉCEPTION : Livraison à domicile\nVille : " + v("wkVille") + "\nQuartier : " + v("wkQuartier") + "\nRepères : " + v("wkReperes") + "\nCréneau : " + v("wkCreneau")
+          : "RÉCEPTION : Retrait en cave (Porto-Novo)";
+        var noteTxt = v("wkNote") ? "\n\nNOTE\n" + v("wkNote") : "";
+        var giftTxt = "", closing;
+        if (gift) {
+          giftTxt = "\n\nCOFFRET CADEAU" + (v("wkOccasion") ? "\nOccasion : " + v("wkOccasion") : "") + (v("wkDedicace") ? "\nPetit mot : " + v("wkDedicace") : "");
+          closing = "\n\nMerci de m'aider à emballer joliment le coffret et à y joindre le petit mot (emballage et petit mot à mes frais).\nMerci de me confirmer la disponibilité et le prix final.\nRéf : " + ref();
+        } else {
+          closing = "\n\nMerci de me confirmer la disponibilité et le prix final.\nRéf : " + ref();
+        }
+        var msg = header + "\n\n" + lines.join("\n") +
+          "\n\n━━━━━━━━━━━━━━━\nTOTAL estimé : " + (tt.firm ? "" : "≈ ") + fmt(tt.t) + "\n━━━━━━━━━━━━━━━\n\n" +
+          client + "\n\n" + recep + noteTxt + giftTxt + closing;
+        window.open("https://wa.me/" + WA + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
+      }
+      function toast(txt) {
+        var t = document.createElement("div"); t.className = "coffret-toast"; t.textContent = txt; document.body.appendChild(t);
+        requestAnimationFrame(function () { t.classList.add("show"); });
+        setTimeout(function () { t.classList.remove("show"); setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 350); }, 2600);
+      }
+      document.addEventListener("change", function (e) { if (e.target.name === "wkMode") syncMode(); else if (e.target.id === "wkGift") syncGift(); });
+      document.addEventListener("click", function (e) {
+        var el;
+        if ((el = e.target.closest("[data-add]"))) { add(parseInt(el.getAttribute("data-add"), 10)); return; }
+        if (e.target.closest("#coffretBar")) { openM(); return; }
+        if (e.target.closest("[data-cm-close]")) { closeM(); return; }
+        if ((el = e.target.closest("[data-inc]"))) { var i1 = el.getAttribute("data-inc"); if (CART[i1]) setQ(i1, CART[i1].qty + 1); return; }
+        if ((el = e.target.closest("[data-dec]"))) { var i2 = el.getAttribute("data-dec"); if (CART[i2]) setQ(i2, CART[i2].qty - 1); return; }
+        if ((el = e.target.closest("[data-del]"))) { setQ(el.getAttribute("data-del"), 0); return; }
+        if (e.target.closest("#coffretSend")) { sendWA(); return; }
+        if (e.target.closest("#gbCompose")) {
+          var gc = document.getElementById("gbClose"); if (gc) gc.click();
+          try { var cg = JSON.parse(localStorage.getItem("wk_customer") || "{}") || {}; cg.gift = true; localStorage.setItem("wk_customer", JSON.stringify(cg)); } catch (e2) {}
+          var gchk = $("wkGift"); if (gchk) { gchk.checked = true; syncGift(); }
+          var sel = document.querySelector("#selection");
+          if (sel) sel.scrollIntoView({ behavior: "smooth", block: "start" });
+          setTimeout(function () { toast("Composez votre coffret cadeau : ajoutez vos bouteilles au panier"); }, 500);
+          return;
+        }
+      });
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape" && modal && !modal.hidden) closeM(); });
+      render();
+    })();
     if (caveScrim) caveScrim.addEventListener("click", closeDrawer);
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeDrawer(); });
 
@@ -376,15 +512,13 @@ document.documentElement.classList.add("js");
         var set = function (sel, at) { var el = cfMeta.querySelector(sel); if (el) el.textContent = a.getAttribute(at) || ""; };
         set(".b", "data-brand"); set("h3", "data-name"); set(".d", "data-detail"); set(".p", "data-price");
       }
-      var ord = document.querySelector(".cf-order a");
-      if (ord && a.getAttribute("data-wa")) ord.href = a.getAttribute("data-wa");
       cfLoad(act); cfLoad((act + 1) % cfItems.length); cfLoad((act - 1 + cfItems.length) % cfItems.length);
     }
     function go(i) { act = Math.max(0, Math.min(cfItems.length - 1, i)); place(); }
     cfItems.forEach(function (it, i) {
       it.addEventListener("click", function () {
         if (i !== act) { go(i); }
-        else { var w = it.getAttribute("data-wa"); if (w) window.open(w, "_blank", "noopener"); }
+        else { var s = document.querySelector("#selection"); if (s) s.scrollIntoView({ behavior: "smooth", block: "start" }); }  // tap = aller à la cave (commande via panier)
       });
     });
     var pv = document.querySelector(".cf-prev"), nx = document.querySelector(".cf-next");
