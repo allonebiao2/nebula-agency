@@ -358,6 +358,24 @@ code (objet `SVC_ART`). Voie B (vraies photos via `_inbox/`) reste possible plus
   - Les nouvelles réponses remontent automatiquement dans le message
     WhatsApp envoyé à Mme Sabrina (la boucle d'envoi parcourt déjà toutes
     les `sections.fields`).
+- 2026-07-15 — **INA Luxury : « Beurre Clarté » renommé « Sérum Clarté »** (demande Gloria via Mongazi).
+  - Produit `corps/creme-corps` : `n:'Beurre Clarté'` → `n:'Sérum Clarté'` (prix 18 000 F / 150 ml
+    et sous-catégorie Crème corps inchangés).
+  - Description (`det`) adaptée au format sérum : « SÉRUM CLARTÉ », « sérum concentré »,
+    « texture fluide et fondante » (au lieu de « beurre-crème / texture riche »). Actifs,
+    résultats par phase et INCI inchangés.
+  - Répercuté partout : clé `IMG`, exemple `REVIEWS_INA`, routine **Body Pack Luxury**
+    (`items:['Sérum Clarté',…]`). Les messages WhatsApp prédéfinis (prix / retour en stock /
+    commande) reprennent le nom via `${p.n}`, donc à jour automatiquement.
+  - **Nouvelle photo** : `assets/images/ina-luxury/corps/creme-corps/serum-clarte.jpg`
+    (bouteille « LE SÉRUM CLARTÉ », PIL → 900×1200 JPEG q84, 3:4 fond blanc, 32 Ko).
+    Ancienne `beurre-clarte.jpg` supprimée.
+  - Déployé Cloudflare Pages (`wrangler pages deploy`), vérifié live sur
+    https://luxuryclub229.com/ina-luxury (0× ancienne mention, image en 200).
+  - ⏳ à valider par Gloria : formulation « texture fluide » (selon consistance réelle)
+    et maintien en sous-catégorie Crème corps.
+  - N.B. : les entrées datées 2026-05-19 et 2026-05-24 ci-dessus gardent l'ancien nom
+    (historique, non réécrit).
 
 ## Paiement en ligne — FedaPay (en préparation)
 
