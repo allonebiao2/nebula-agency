@@ -157,3 +157,5 @@ Weinkeller (détail : `_memoire/conversations/2026-07-15-speed-weinkeller-panier
 - **Mode coffret cadeau** suivi depuis « Composer mon coffret » (case + Occasion + Petit mot) → **message WhatsApp spécial cadeau**.
 - **Retrait de TOUS les WhatsApp directs** : 60 boutons « Commander » par bouteille + lien carrousel (→ « Voir dans la cave ») + **FAB WhatsApp flottant** (FAB audio conservé). Toute commande passe **uniquement par le panier**.
 - QC puppeteer réel (0 erreur, Speed non impacté), déployé + vérifié 200. ⚠️ bumper `?v=` après tout changement de contenu.
+
+- **Correctif 2026-07-15 (`?v=20260715e`)** : Veuve Clicquot La Grande Dame 2012 = **2 fiches** (sans étui 180 000 / avec étui 190 000) au lieu du prix combiné qui faussait le panier. Règle : une variante de prix = une fiche par prix (jamais de fourchette).

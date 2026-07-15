@@ -30,3 +30,10 @@ QC en **vrai Chrome piloté (puppeteer-core)** : panier 620 000 F, +1→840 000 
 - 6 fiches sans prix ⏳ + autres caves Weinkeller (rouges/spiritueux) déjà en cours ailleurs.
 
 Déployé Cloudflare + vérifié 200 en prod. Commit `5ea3f83`.
+
+
+## Correctif produit 2026-07-15 (`?v=20260715e`, commit `e7fa1a9`)
+**Veuve Clicquot La Grande Dame 2012** séparé en **2 fiches distinctes** (au lieu d'une seule à prix combiné « 180 000 - 190 000 » qui faussait le calcul du panier — estimation « ≈ » — et embrouillait la cliente) :
+- **La Grande Dame 2012 (sans étui)** = 180 000 FCFA
+- **La Grande Dame 2012 (avec étui)** = 190 000 FCFA
+Carrousel nettoyé (« dès 180 000 FCFA » au lieu de la fourchette). Compteur cave **dynamique → 61 références**. QC puppeteer réel : 2 lignes distinctes, **total exact 370 000 F sans « ≈ »**, 0 erreur. Déployé + vérifié en prod. ⚠️ variantes de prix (avec/sans option) = **toujours une fiche par prix**, jamais une fourchette (sinon panier faux + confusion client).
