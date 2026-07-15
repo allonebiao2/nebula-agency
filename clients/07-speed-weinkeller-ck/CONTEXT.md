@@ -147,3 +147,13 @@ cliente : page d'accueil façon « présentation de match de foot », séparatio
 
 ## Tarif
 Vitrine + QR : 150 000 F (setup) + 15 000 F / 6 mois (hébergement). Option : Google Maps.
+
+
+## VAGUE 2026-07-15 — Panier façon Luxury + coffret cadeau + retrait des WhatsApp directs (`?v=20260715d`)
+Weinkeller (détail : `_memoire/conversations/2026-07-15-speed-weinkeller-panier-luxury.md`) :
+- **Menu « Nos boissons »** (→ `#caves`) ; **message permanent** sur le bouton doré (bulle « Cliquez ici pour voir toutes nos boissons » qui reste hors-cave et réapparaît).
+- **Catalogue compact** : 2 colonnes mobile (`repeat(2,1fr)`) / 6 desktop, visuels et polices réduits → ~4 bouteilles par écran.
+- **Panier façon Luxury Club 229** : « Ajouter au panier » sur chaque bouteille → modale (quantités, total live, **coordonnées + livraison/retrait**) → **message WhatsApp structuré**. Persistance localStorage.
+- **Mode coffret cadeau** suivi depuis « Composer mon coffret » (case + Occasion + Petit mot) → **message WhatsApp spécial cadeau**.
+- **Retrait de TOUS les WhatsApp directs** : 60 boutons « Commander » par bouteille + lien carrousel (→ « Voir dans la cave ») + **FAB WhatsApp flottant** (FAB audio conservé). Toute commande passe **uniquement par le panier**.
+- QC puppeteer réel (0 erreur, Speed non impacté), déployé + vérifié 200. ⚠️ bumper `?v=` après tout changement de contenu.

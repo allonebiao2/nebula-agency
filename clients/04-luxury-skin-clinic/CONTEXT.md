@@ -481,3 +481,9 @@ de la zone catalogue INA Luxury.
 
 Images en lazy-loading : l'utilisateur ne télécharge que ce qu'il voit. Le
 cache HTTP Netlify rend les re-visites quasi-instantanées.
+
+
+## 2026-07-15 — 2 nouveaux QR distincts (détail : `_memoire/conversations/2026-07-15-luxury-qr-etiquette-et-affiche-soins.md`)
+- **QR étiquette produits → INA Luxury** (`https://luxuryclub229.com/ina-luxury`) : à coller sur ses produits. Livrables `assets/docs/` : `qr-ina-luxury.svg`/`.png` (ECC H) + `Etiquette_QR_INA_Luxury.pdf`/`.png` (étiquette carrée ~60 mm, charte crème/or).
+- **QR « menu des soins » → Luxury Skin Clinic** (`https://luxuryclub229.com/luxury-skin-clinic#soins`) : pour les **tables de la clinique**. **Affiche carrée modifiée** (`affiche-luxury-skin-clinic-carre.html`, QR remplacé + « Le menu de nos soins »), régénérée `Affiche_Luxury_Skin_Clinic_Carre.pdf`/`.png` ; QR nu `qr-luxury-skin-clinic-soins.png`/`.svg` (ECC M).
+- **3 QR bien distincts** : carte de visite → hub (univers) · étiquette → produits INA · tables → menu des soins. Tous **vérifiés par décodage jsqr**. Rien à déployer.
