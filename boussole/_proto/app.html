@@ -24,9 +24,34 @@
       margin: 0;
       font-family: 'Bricolage Grotesque', system-ui, sans-serif;
       color: #fff;
-      background: radial-gradient(125% 92% at 50% -10%, #12203f 0%, #070a14 66%) fixed;
+      background: #0B0F19;                 /* noir de jais profond et mat (Cyber-Noir) — plus aucun dégradé bleu */
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== PROFONDEUR DU FOND : grille géométrique en fuite + poussières flottantes (débris Spider-Verse) ===== */
+    .depth { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+    .depth__grid {
+      position: absolute; left: -50%; right: -50%; bottom: -8%; height: 115%;
+      background-image:
+        linear-gradient(rgba(56, 240, 255, .10) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 240, 255, .10) 1px, transparent 1px);
+      background-size: 46px 46px;
+      transform: perspective(520px) rotateX(62deg);   /* sol qui fuit vers l'horizon */
+      transform-origin: bottom center;
+      -webkit-mask-image: linear-gradient(to top, #000 4%, transparent 72%);
+              mask-image: linear-gradient(to top, #000 4%, transparent 72%);
+    }
+    .depth__dust span {
+      position: absolute; border-radius: 50%;
+      background: rgba(230, 250, 255, .6); box-shadow: 0 0 6px rgba(56, 240, 255, .6);
+      opacity: 0; animation: dustFloat linear infinite;   /* position/taille/vitesse injectées en JS -> 2 couches = parallaxe */
+    }
+    @keyframes dustFloat {
+      0%   { transform: translateY(26px) translateX(0);    opacity: 0; }
+      15%  { opacity: var(--op, .5); }
+      82%  { opacity: var(--op, .5); }
+      100% { transform: translateY(-72px) translateX(14px); opacity: 0; }
     }
 
     /* ============ HEADER FIXE (Liquid Glass) ============ */
@@ -35,11 +60,11 @@
       height: calc(var(--hdr-h) + env(safe-area-inset-top));
       padding: env(safe-area-inset-top) 14px 0;
       display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
-      background: rgba(255, 255, 255, .05);
-      -webkit-backdrop-filter: blur(20px) saturate(140%);
-              backdrop-filter: blur(20px) saturate(140%);
-      border-bottom: 1px solid rgba(255, 255, 255, .1);
-      box-shadow: 0 1px 0 rgba(56, 240, 255, .14), 0 10px 30px -18px rgba(0, 0, 0, .7);
+      background: rgba(0, 0, 0, .2);                       /* glass noir (bg-black/20) — s'intègre au fond de jais au lieu de la barre givrée blanche */
+      -webkit-backdrop-filter: blur(12px) saturate(125%);
+              backdrop-filter: blur(12px) saturate(125%);
+      border-bottom: 1px solid rgba(255, 255, 255, .05);  /* border-white/5 : liseré discret */
+      box-shadow: 0 1px 0 rgba(56, 240, 255, .10), 0 10px 30px -18px rgba(0, 0, 0, .8);
     }
     /* Hamburger (encrage BD, traits épais) */
     .hdr__burger {
@@ -80,10 +105,94 @@
     }
     .content__hint strong { color: rgba(255, 255, 255, .7); font-weight: 700; }
 
+    /* ============ ÉCRANS (scaffold) + MOUVEMENT DE CAMÉRA ============ */
+    .screen { max-width: 560px; margin: 8vh auto 0; text-align: center; }
+    .screen.cine { animation: cineEnter .55s cubic-bezier(.4, 0, .2, 1) both; }    /* arrivée : fondu lent + léger zoom (cinématique) */
+    .screen.hud  { animation: hudPunch .18s cubic-bezier(.2, .9, .1, 1) both; }     /* navigation : spring sèche, AUCUN rebond (pas d'overshoot) */
+    @keyframes cineEnter { from { opacity: 0; transform: scale(.985); }                     to { opacity: 1; transform: none; } }
+    @keyframes hudPunch  { 0% { opacity: .35; transform: translateX(10px) scale(1.015); }   100% { opacity: 1; transform: none; } }
+    .screen__tag {
+      display: inline-block; margin-bottom: 16px; padding: 5px 12px; border-radius: 999px;
+      font-size: 11.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--sc, var(--cyan));
+      border: 1px solid color-mix(in srgb, var(--sc, var(--cyan)) 40%, transparent);
+      background: color-mix(in srgb, var(--sc, var(--cyan)) 12%, transparent);
+    }
+    .screen__title { margin: 0; font-size: clamp(30px, 8vw, 46px); font-weight: 800; letter-spacing: -.02em; color: #fff;
+      text-shadow: 0 0 22px color-mix(in srgb, var(--sc, var(--cyan)) 45%, transparent); }
+    .screen__sub  { margin: 12px 0 0; color: rgba(255, 255, 255, .62); font-size: 15.5px; line-height: 1.5; }
+    .screen__soon { margin: 22px 0 0; color: rgba(255, 255, 255, .34); font-size: 13px; }
+
+    /* ===== HUD DE BIENVENUE (Accueil) — salutation dynamique, style Spider-Verse ===== */
+    .home { max-width: 560px; }
+    .hud { text-align: center; margin-top: 2vh; perspective: 800px; }   /* perspective posée : prêt pour un rotateX 3D ultérieur */
+    .hud__sys { display: inline-flex; align-items: center; gap: 7px; font-size: 10.5px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: rgba(0, 240, 255, .72); }
+    .hud__sys i { width: 6px; height: 6px; border-radius: 50%; background: #00f0ff; box-shadow: 0 0 8px #00f0ff; animation: hudDot 1.6s ease-in-out infinite; }
+    @keyframes hudDot { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+    /* Smart Greeting Engine : conteneur prêt 3D — le typing n'écrit QUE du texte (textContent),
+       donc un rotateX/perspective ajouté plus tard sur .hud__hi ne cassera pas la frappe. */
+    .hud__hi {
+      position: relative; display: inline-block; text-align: left; margin: 10px 0 0; line-height: 1.25;
+      font-family: 'Bricolage Grotesque', 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif;
+      font-weight: 800; font-size: clamp(19px, 5vw, 30px); letter-spacing: .05em; text-transform: uppercase;
+      color: #fff; text-shadow: 0 0 10px rgba(0, 240, 255, .55), 0 0 26px rgba(0, 240, 255, .3), 0 0 46px rgba(0, 240, 255, .16);   /* bloom pour s'intégrer à la scène */
+      transform-style: preserve-3d;   /* prêt pour perspective/rotateX plus tard */
+    }
+    .hud__ghost { visibility: hidden; }              /* réserve la largeur/hauteur finale -> aucun saut ni re-centrage pendant la frappe */
+    .hud__type  { position: absolute; inset: 0; }    /* le texte tapé se superpose au fantôme, aligné à gauche (effet terminal) */
+    .hud__caret { display: inline-block; width: .1em; height: 1em; margin-left: .1em; vertical-align: -.12em; background: #00f0ff; box-shadow: 0 0 8px #00f0ff; animation: caretBlink 1.05s steps(1) infinite; }
+    @keyframes caretBlink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+    /* scanlines très fines par-dessus le texte (n'entravent pas la lecture) */
+    .hud__hi::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background: repeating-linear-gradient(0deg, rgba(3, 6, 12, 0) 0 2px, rgba(3, 6, 12, .22) 2px 3px);
+    }
+    /* ===== Mastodontes VENDRE / DÉPENSER ===== */
+    .masto { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 32px auto 0; perspective: 1000px; }   /* conteneur 3D (scopé ici pour ne pas casser le header fixe) */
+    .masto__btn {
+      --c: #38f0ff;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+      min-height: 132px; padding: 18px; border-radius: 20px; cursor: pointer;
+      font: inherit; font-weight: 800; font-size: 16px; letter-spacing: .06em; text-transform: uppercase; color: #fff;
+      border: 1px solid transparent;
+      /* padding-box = teinte néon ; border-box = BISEAU VITRÉ (blanc/cyan haut-gauche -> néon bas-droite) */
+      background:
+        linear-gradient(160deg, color-mix(in srgb, var(--c) 15%, rgba(255,255,255,.03)), color-mix(in srgb, var(--c) 5%, rgba(0,0,0,.22))) padding-box,
+        linear-gradient(150deg, rgba(255,255,255,.6), rgba(255,255,255,.07) 34%, transparent 56%, color-mix(in srgb, var(--c) 55%, transparent)) border-box;
+      transform: rotateX(5deg);                         /* volume au repos ; la bascule "vers le doigt" est pilotée en JS */
+      transform-style: preserve-3d;
+      /* FLOAT : a) ombre sol sombre diffuse (ancrage)  b) glow coloré ÉMIS  + biseau vitré 1px interne */
+      box-shadow:
+        0 20px 30px -10px rgba(0,0,0,.6),
+        0 0 15px -2px color-mix(in srgb, var(--c) 50%, transparent),
+        inset 0 0 0 1px rgba(255,255,255,.14),
+        inset 0 1px 0 rgba(255,255,255,.2);
+      transition: transform .1s ease-out, box-shadow .2s ease-out, background .2s ease-out;   /* kinetic : nerveux, immédiat */
+      will-change: transform;
+    }
+    .masto__btn svg { width: 40px; height: 40px; color: var(--c); filter: drop-shadow(0 0 7px color-mix(in srgb, var(--c) 70%, transparent)); }
+    /* survol/pression : le glow coloré s'intensifie (la bascule vers le curseur est en JS) */
+    .masto__btn:hover {
+      box-shadow:
+        0 26px 40px -10px rgba(0,0,0,.72),
+        0 0 26px 0 color-mix(in srgb, var(--c) 65%, transparent),
+        inset 0 0 0 1px rgba(255,255,255,.22),
+        inset 0 1px 0 rgba(255,255,255,.3);
+    }
+    .masto__btn:active {
+      box-shadow:
+        0 10px 18px -8px rgba(0,0,0,.6),
+        0 0 18px -2px color-mix(in srgb, var(--c) 55%, transparent),
+        inset 0 0 0 1px rgba(255,255,255,.16);
+    }
+    .masto__btn--sell  { --c: #35e07a; }
+    .masto__btn--spend { --c: #e11d48; }
+    @media (max-width: 380px) { .masto { grid-template-columns: 1fr; } }
+
     /* ============ OVERLAY + DRAWER ============ */
     .scrim {
       position: fixed; inset: 0; z-index: 60;
-      background: rgba(4, 8, 16, .5);
+      background: rgba(0, 0, 0, .55);   /* voile neutre (plus de teinte bleutée) */
       opacity: 0; pointer-events: none;
       transition: opacity .3s var(--ease);
     }
@@ -96,10 +205,10 @@
       width: min(84vw, 320px);                 /* PC : largeur fixe (max-w-xs), le tableau de bord reste visible à droite */
       padding: calc(env(safe-area-inset-top) + 11px) 14px calc(env(safe-area-inset-bottom) + 11px);
       display: flex; flex-direction: column;
-      background: linear-gradient(180deg, rgba(20, 30, 54, .92), rgba(9, 12, 22, .94));
-      -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px);
-      border-right: 1px solid rgba(255, 255, 255, .1);
-      box-shadow: 24px 0 60px -20px rgba(0, 0, 0, .7), inset -1px 0 0 rgba(56, 240, 255, .1);
+      background: linear-gradient(180deg, rgba(18, 20, 28, .82), rgba(10, 11, 16, .9));   /* charbon translucide (plus de navy) — se détache du fond de jais par le flou + le liseré cyan */
+      -webkit-backdrop-filter: blur(22px) saturate(120%); backdrop-filter: blur(22px) saturate(120%);
+      border-right: 1px solid rgba(255, 255, 255, .07);
+      box-shadow: 24px 0 60px -20px rgba(0, 0, 0, .8), inset -1px 0 0 rgba(56, 240, 255, .12);
       transform: translateX(-102%);
       transition: transform .3s var(--ease-back);   /* glissement rapide + rebond */
       will-change: transform;
@@ -153,6 +262,21 @@
       0%   { box-shadow: 0 0 0 2px var(--glow), 0 0 42px 4px var(--glow); background: color-mix(in srgb, var(--glow) 32%, rgba(255, 255, 255, .06)); }
       100% { box-shadow: 0 0 0 1px var(--glow), 0 0 22px -2px var(--glow); background: rgba(255, 255, 255, .075); }
     }
+
+    /* ===== "MILES CLIC" — feedback Spider-Verse immédiat (glitch RGB + snap scale + flash néon), <= 200 ms ===== */
+    .navbtn.miles { animation: milesSnap .2s cubic-bezier(.175, .885, .32, 1.275) both; }
+    .navbtn.miles .navbtn__ic { animation: milesIcon .12s 1; }
+    @keyframes milesSnap {
+      0%   { transform: scale(1);    box-shadow: 0 0 0 2px var(--glow), 0 0 34px 5px var(--glow); text-shadow: 1px 0 #ff0044, -1px 0 #00e5ff; }   /* glitch RGB + flash néon, brutal dès 0 ms */
+      25%  { transform: scale(.95);  box-shadow: 0 0 0 2px var(--glow), 0 0 44px 7px var(--glow); text-shadow: -1px 0 #ff0044, 1px 0 #00e5ff; }   /* snap in */
+      45%  { transform: scale(1.03); text-shadow: none; }                                                                                          /* glitch coupé net, snap back */
+      70%  { transform: scale(.99); }
+      100% { transform: scale(1);    box-shadow: 0 0 0 1px var(--glow), 0 0 22px -2px var(--glow); text-shadow: none; }                             /* revient au glow d'actif (aucun saut) */
+    }
+    @keyframes milesIcon {
+      0%   { filter: drop-shadow(1px 0 #ff0044) drop-shadow(-1px 0 #00e5ff); }   /* décalage RGB de l'icône */
+      100% { filter: none; }
+    }
     .navbtn--cyan { --glow: #38f0ff; }
     .navbtn--yellow { --glow: #ffd23f; }
     .navbtn--green { --glow: #35e07a; }
@@ -161,6 +285,30 @@
     .navbtn--crimson { --glow: #e11d48; }      /* mes dépenses : crimson / rouge sombre néon */
     .navbtn--orange { --glow: #ff8a3d; }       /* carnet clients */
     .navbtn--electric { --glow: #3a86ff; }     /* mon équipe : bleu électrique */
+
+    /* ===== Micro-animations d'icônes (couche ADDITIVE — hover souris uniquement) =====
+       Ne cible QUE le <svg> enfant : n'interfère NI avec le bouton (.navbtn :active scale .95,
+       :hover translateY), NI avec la couleur/glow de .navbtn__ic, NI avec les sons (JS intact).
+       Chaque keyframe part ET revient au neutre (0%/100%) -> au mouseleave l'animation est
+       retirée et l'icône revient AU REPOS instantanément (jamais figée). */
+    @media (hover: hover) and (pointer: fine) {
+      .navbtn[data-nav="accueil"]:hover   .navbtn__ic svg { animation: icoBreathe 1.6s ease-in-out infinite; }   /* Respiration */
+      .navbtn[data-nav="catalogue"]:hover .navbtn__ic svg { animation: icoHop     .8s  ease-out    infinite; }   /* Sautillage */
+      .navbtn[data-nav="ventes"]:hover    .navbtn__ic svg { animation: icoSwing   .9s  ease-out    infinite; }   /* Rotation 15° */
+      .navbtn[data-nav="depenses"]:hover  .navbtn__ic svg { animation: icoSlide   .8s  ease-out    infinite; }   /* Translation */
+      .navbtn[data-nav="caisse"]:hover    .navbtn__ic svg { animation: icoGlow    1.5s ease-in-out infinite; }   /* Pulsation / lueur */
+      .navbtn[data-nav="bilan"]:hover     .navbtn__ic svg { transform-origin: 50% 100%; animation: icoStretch .8s ease-out infinite; }  /* Étirement */
+      .navbtn[data-nav="carnet"]:hover    .navbtn__ic svg { animation: icoShake   .5s  ease-out    infinite; }   /* Vibration */
+      .navbtn[data-nav="equipe"]:hover    .navbtn__ic svg { animation: icoConverge 1s  ease-in-out infinite; }   /* Convergence */
+    }
+    @keyframes icoBreathe  { 0%, 100% { transform: scale(1); }          50% { transform: scale(1.05); } }
+    @keyframes icoHop      { 0%, 38%, 100% { transform: translateY(0); } 18% { transform: translateY(-4px); } }
+    @keyframes icoSwing    { 0%, 60%, 100% { transform: rotate(0); }     28% { transform: rotate(15deg); } }
+    @keyframes icoSlide    { 0%, 55%, 100% { transform: translateX(0); } 26% { transform: translateX(6px); } }
+    @keyframes icoGlow     { 0%, 100% { filter: drop-shadow(0 0 2px var(--glow)); } 50% { filter: drop-shadow(0 0 9px var(--glow)); } }
+    @keyframes icoStretch  { 0%, 60%, 100% { transform: scaleY(1); }     30% { transform: scaleY(1.1); } }
+    @keyframes icoShake    { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-5deg); } 60% { transform: rotate(5deg); } }
+    @keyframes icoConverge { 0%, 100% { transform: scaleX(1); }          50% { transform: scaleX(.84); } }
 
     /* NIVEAU 4 : bas de page (poussé en bas par nav flex:1) */
     .drawer__foot { padding-top: 8px; display: flex; flex-direction: column; gap: 1px; border-top: 1px solid rgba(255, 255, 255, .08); }
@@ -190,10 +338,21 @@
     @media (prefers-reduced-motion: reduce) {
       .hdr__logo { animation: none; }
       .drawer { transition: transform .2s ease; }
+      .navbtn__ic svg { animation: none !important; }   /* micro-anims d'icônes coupées si mouvement réduit */
+      .screen.cine, .screen.hud { animation: none !important; }   /* pas de caméra si mouvement réduit */
+      .navbtn.miles, .navbtn.miles .navbtn__ic { animation: none !important; }   /* pas de glitch "Miles" si mouvement réduit */
+      .hud__hi, .hud__sys i, .hud__caret { animation: none !important; }   /* pas de curseur clignotant / glitch si mouvement réduit */
+      .depth__dust span { animation: none !important; opacity: .28 !important; }   /* poussières figées */
+      .masto__btn, .masto__btn:hover, .masto__btn:active { transform: none !important; }   /* pas de bascule 3D */
     }
   </style>
 </head>
 <body>
+  <!-- Calque de profondeur : grille en fuite + poussières flottantes (derrière tout le contenu) -->
+  <div class="depth" aria-hidden="true">
+    <div class="depth__grid"></div>
+    <div class="depth__dust"></div>
+  </div>
   <div class="app">
     <!-- HEADER FIXE -->
     <header class="hdr">
@@ -217,10 +376,8 @@
       <button class="hdr__avatar" aria-label="Profil (bientôt)"></button>
     </header>
 
-    <!-- CONTENU (placeholder pour l'instant) -->
-    <main class="content">
-      <p class="content__hint">Zone du <strong>tableau de bord</strong>.<br>À construire aux prochains points. Ouvre le menu avec le hamburger en haut à gauche.</p>
-    </main>
+    <!-- CONTENU : écran courant (rempli par showSection) -->
+    <main class="content" id="view"></main>
 
     <!-- OVERLAY + DRAWER -->
     <div class="scrim" data-close></div>
@@ -247,11 +404,11 @@
 
       <!-- SECTIONS (boutons maîtres néon) -->
       <nav class="nav2">
-        <button class="navbtn navbtn--red" data-nav="accueil" data-sfx-hover>
+        <button class="navbtn navbtn--red is-active" data-nav="accueil" data-sfx-hover>
           <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/><path d="M10 20v-6h4v6"/></svg></span>
           Accueil
         </button>
-        <button class="navbtn navbtn--yellow is-active" data-nav="catalogue" data-sfx-hover>
+        <button class="navbtn navbtn--yellow" data-nav="catalogue" data-sfx-hover>
           <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v10l-8 4-8-4V7z"/><path d="M4 7l8 4 8-4"/><path d="M12 11v10"/></svg></span>
           Catalogue
         </button>
@@ -283,6 +440,10 @@
 
       <!-- NIVEAU 4 : bas de page (utilitaires) -->
       <div class="drawer__foot">
+        <button class="footbtn" data-mute data-sfx-hover>
+          <span class="footbtn__ic"></span>
+          <span data-mute-label>Son activé</span>
+        </button>
         <button class="footbtn" data-go="reglages" data-sfx-hover>
           <span class="footbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M5.4 5.4l1.9 1.9M16.7 16.7l1.9 1.9M2.8 12h2.6M18.6 12h2.6M5.4 18.6l1.9-1.9M16.7 7.3l1.9-1.9"/></svg></span>
           Paramètres
@@ -303,12 +464,131 @@
     const app = document.querySelector('.app');
     const drawer = document.querySelector('.drawer');
     const burger = document.querySelector('.hdr__burger');
+    const view = document.getElementById('view');
+
+    /* ===== Écrans (scaffold) + caméra : arrivée CINÉMATIQUE (1er rendu) / navigation HUD SÈCHE (clic) ===== */
+    let userName = 'Miles';   // nom de l'utilisateur (défaut "Miles"), mis à jour depuis la session Supabase
+    /* ===== Smart Greeting Engine : phrase variée (3 catégories) + effet machine à écrire ===== */
+    const GREETINGS = {
+      tactique:    ['Prêt à encaisser ?', 'Ouvre la caisse, on y va.', 'Chaque vente compte.', "Aujourd'hui, on vend plus qu'hier."],
+      inspiration: ['Ton empire commence ici.', 'Les grands ont commencé petit.', 'Construis, un franc à la fois.', 'Belle journée pour grandir.'],
+      analytique:  ["Ta caisse t'attend.", 'Garde un œil sur tes marges.', 'Les chiffres ne mentent pas.', 'Vérifie ton bénéfice du jour.'],
+    };
+    const GREET_CATS = ['tactique', 'inspiration', 'analytique'];
+    const pickGreeting = () => { const c = GREET_CATS[Math.floor(Math.random() * GREET_CATS.length)]; const a = GREETINGS[c]; return a[Math.floor(Math.random() * a.length)]; };
+    const greetingFull = () => (new Date().getHours() < 18 ? 'Bonjour' : 'Bonsoir') + ', ' + userName + ' · ' + pickGreeting();
+    let _typeTimer = null;
+    function typeInto(el, full, speed) {
+      clearTimeout(_typeTimer);
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = full; return; }   // a11y : pas de frappe
+      let i = 0; el.textContent = '';
+      const step = () => { i++; el.textContent = full.slice(0, i); playType(); if (i < full.length) _typeTimer = setTimeout(step, speed); };   // son synchro à la lettre
+      _typeTimer = setTimeout(step, speed);   // machine à écrire, 50 ms/caractère
+    }
+    function renderGreeting() {
+      const hi = view.querySelector('.hud__hi'); if (!hi) return;
+      const full = greetingFull();
+      hi.innerHTML = '<span class="hud__ghost" aria-hidden="true">' + full + '</span>' +
+                     '<span class="hud__type"><span class="hud__txt"></span><span class="hud__caret" aria-hidden="true"></span></span>';
+      typeInto(hi.querySelector('.hud__txt'), full, 50);
+    }
+    const ICON_SELL  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 10.6a1.5 1.5 0 0 1-1.5 1.4H8.5A1.5 1.5 0 0 1 7 18.6z"/><path d="M9 8V7a3 3 0 0 1 6 0v1"/></svg>';
+    const ICON_SPEND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v10"/><path d="M8.5 9.5 12 13l3.5-3.5"/><path d="M4.5 20h15"/></svg>';
+    const SECTIONS = {
+      accueil:   { label: 'Accueil',        color: '#ff2e43', desc: 'Vue d’ensemble de ton activité.' },
+      catalogue: { label: 'Catalogue',      color: '#ffd23f', desc: 'Tes produits et prestations.' },
+      ventes:    { label: 'Mes ventes',     color: '#35e07a', desc: 'Historique et suivi de tes ventes.' },
+      depenses:  { label: 'Mes dépenses',   color: '#e11d48', desc: 'Ce qui sort de ta caisse.' },
+      caisse:    { label: 'La caisse',      color: '#38f0ff', desc: 'Encaisse une vente en un geste.' },
+      bilan:     { label: 'Le bilan',       color: '#b98cff', desc: 'Tes chiffres et ton rapport de santé.' },
+      carnet:    { label: 'Carnet clients', color: '#ff8a3d', desc: 'Clients, crédits et relances.' },
+      equipe:    { label: 'Mon équipe',     color: '#3a86ff', desc: 'Vendeurs, rôles et sécurité.' },
+    };
+    // Accueil : HUD de bienvenue (salutation dynamique) + 2 mastodontes Vendre / Dépenser
+    function accueilHTML(cls) {
+      return '<div class="screen ' + cls + ' home" style="--sc:#ff2e43">' +
+          '<div class="hud">' +
+            '<span class="hud__sys"><i></i>Système en ligne</span>' +
+            '<h1 class="hud__hi"></h1>' +   // rempli par le Smart Greeting Engine (typing)
+          '</div>' +
+          '<div class="masto">' +
+            '<button class="masto__btn masto__btn--sell" type="button" data-goto="caisse">' + ICON_SELL + '<span>Vendre</span></button>' +
+            '<button class="masto__btn masto__btn--spend" type="button" data-goto="depenses">' + ICON_SPEND + '<span>Dépenser</span></button>' +
+          '</div>' +
+        '</div>';
+    }
+    function showSection(nav, cinematic) {
+      if (!cinematic) playWhoosh();   // routing : whoosh à T0 de la transition de page
+      const cls = cinematic ? 'cine' : 'hud';
+      if (nav === 'accueil') { view.innerHTML = accueilHTML(cls); renderGreeting(); bindMastoTilt(); return; }
+      const s = SECTIONS[nav] || SECTIONS.accueil;
+      view.innerHTML =
+        '<div class="screen ' + cls + '" style="--sc:' + s.color + '">' +
+          '<span class="screen__tag">Section</span>' +
+          '<h1 class="screen__title">' + s.label + '</h1>' +
+          '<p class="screen__sub">' + s.desc + '</p>' +
+          '<p class="screen__soon">Écran à construire au prochain point.</p>' +
+        '</div>';
+    }
+    function refreshGreeting() { renderGreeting(); }   // re-tape la phrase avec le vrai prénom (reconnaissance)
+    // les mastodontes mènent à la caisse (Vendre) / aux dépenses (Dépenser)
+    view.addEventListener('click', (e) => {
+      const g = e.target.closest('[data-goto]'); if (!g) return;
+      const nav = g.dataset.goto; setActiveNav(nav); showSection(nav, false);
+    });
+    // Bascule "kinetic" : les mastodontes s'inclinent VERS le curseur/doigt (-5..5°), comme une plaque métallique
+    function bindMastoTilt() {
+      const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      view.querySelectorAll('.masto__btn').forEach((btn) => {
+        let raf = 0, down = false;
+        const apply = (e) => {
+          const r = btn.getBoundingClientRect();
+          const rx = (0.5 - (e.clientY - r.top) / r.height) * 10;   // -5..5°
+          const ry = ((e.clientX - r.left) / r.width - 0.5) * 10;   // -5..5°
+          if (raf) cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(() => { btn.style.transform = 'rotateX(' + rx.toFixed(1) + 'deg) rotateY(' + ry.toFixed(1) + 'deg) translateY(-4px)' + (down ? ' scale(.97)' : ''); });
+        };
+        const reset = () => { if (raf) cancelAnimationFrame(raf); raf = 0; down = false; btn.style.transform = ''; };
+        // ---- Audio-haptique (actif même en mouvement réduit) ----
+        btn.addEventListener('pointerenter', startCharge);                                 // "sous tension" dès l'effleurement
+        btn.addEventListener('pointerdown', (e) => {
+          (btn.classList.contains('masto__btn--sell') ? playSell : playSpend)();           // System Snap à T0 (VENDRE=chime / DÉPENSER=impact)
+          if (!rm) { down = true; apply(e); }                                              // pression mobile : incline + enfonce
+        });
+        btn.addEventListener('pointerleave', () => { if (!rm) reset(); stopCharge(); });    // coupe le "bzz" instantanément
+        btn.addEventListener('pointercancel', () => { if (!rm) reset(); stopCharge(); });
+        // ---- Bascule 3D : uniquement si le mouvement est autorisé ----
+        if (!rm) { btn.addEventListener('pointermove', apply); btn.addEventListener('pointerup', reset); }
+      });
+    }
+    // Poussières de fond : 2 couches (parallaxe -> la couche proche est plus grosse ET plus rapide)
+    (function buildDust() {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const wrap = document.querySelector('.depth__dust'); if (!wrap) return;
+      let html = '';
+      for (let i = 0; i < 16; i++) {
+        const near = i % 2 === 0;
+        const size = (near ? 3 + Math.random() * 2 : 1.5 + Math.random()).toFixed(1);
+        const dur = (near ? 14 + Math.random() * 10 : 26 + Math.random() * 16).toFixed(1);
+        const left = (Math.random() * 100).toFixed(1);
+        const top = (54 + Math.random() * 44).toFixed(1);
+        const delay = (-Math.random() * dur).toFixed(1);
+        html += '<span style="left:' + left + '%;top:' + top + '%;width:' + size + 'px;height:' + size + 'px;animation-duration:' + dur + 's;animation-delay:' + delay + 's;--op:' + (near ? 0.6 : 0.35) + '"></span>';
+      }
+      wrap.innerHTML = html;
+    })();
+
+    // arrivée : on atterrit sur l'Accueil (HUD de bienvenue) en cinématique
+    const _activeNav = drawer.querySelector('.navbtn.is-active');
+    showSection((_activeNav && _activeNav.dataset.nav) || 'accueil', true);
 
     /* ===== SFX du menu (Web Audio synthétisé, aucun fichier) =====
        UN SEUL AudioContext réutilisé (le code d'origine en créait un par clic -> plante
        après ~6 bascules : "number of hardware contexts reached the maximum").
        + baseline mobile : déverrouillage iOS au 1er geste, compresseur, gain boosté sur mobile. */
     let _actx = null, _master = null, _ready = false;
+    let _muted = (() => { try { return localStorage.getItem('boussole:muted') === '1'; } catch (e) { return false; } })();   // état "Mute" persisté
+    let _charge = null;   // "Electric Charge" de survol en cours (un seul à la fois = polyphonie maîtrisée)
     const _mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || matchMedia('(pointer: coarse)').matches;
     function audioCtx() {
       const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
@@ -330,6 +610,7 @@
     ['pointerdown', 'touchstart', 'keydown'].forEach((ev) => document.addEventListener(ev, unlockAudio, { passive: true }));
 
     const playMenuSound = (isOpen) => {
+      if (_muted) return;
       try {
         const ctx = audioCtx(); if (!ctx) return;
         const t = ctx.currentTime;
@@ -389,7 +670,7 @@
     const _hoverCapable = matchMedia('(hover: hover) and (pointer: fine)').matches;
     let _lastHover = 0;
     function playHover() {
-      if (!_hoverCapable) return;
+      if (_muted || !_hoverCapable) return;
       const now = performance.now(); if (now - _lastHover < 45) return; _lastHover = now;   // anti-mitraillette
       const ctx = audioCtx(); if (!ctx) return;
       const t = ctx.currentTime;
@@ -400,6 +681,7 @@
       osc.start(t); osc.stop(t + 0.035);
     }
     function playClick() {
+      if (_muted) return;
       const ctx = audioCtx(); if (!ctx) return;
       const t0 = ctx.currentTime;
       const beep = (dt, f) => {
@@ -413,6 +695,144 @@
       beep(0, 680); beep(0.07, 1020);   // double bip ascendant (validation)
     }
     drawer.querySelectorAll('[data-sfx-hover]').forEach((b) => b.addEventListener('mouseenter', playHover));
+
+    // ===== Sound design "audio-haptique" : synthèse Web Audio (aucun fichier, < 500 ms, très discret) =====
+    function playType() {   // HUD typing : micro-click à chaque lettre
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime;
+      const osc = ctx.createOscillator(); osc.type = 'square'; osc.frequency.setValueAtTime(1700 + Math.random() * 500, t);
+      const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 900;
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.035, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.018);   // ~18 ms, quasi-subliminal
+      osc.connect(hp); hp.connect(g); g.connect(_master); osc.start(t); osc.stop(t + 0.02);
+    }
+    function playGlitch() {   // Bouton : glitch (0 ms) -> snap (~250 ms), calé sur le tremblement puis le snap
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime, DUR = 0.25;
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * DUR), ctx.sampleRate);
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const noise = ctx.createBufferSource(); noise.buffer = nb;
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.2;
+      bp.frequency.setValueAtTime(1400, t); bp.frequency.exponentialRampToValueAtTime(600, t + 0.12);
+      const ng = ctx.createGain(); ng.gain.setValueAtTime(0.09, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.13);
+      noise.connect(bp); bp.connect(ng); ng.connect(_master); noise.start(t); noise.stop(t + 0.14);
+      const snap = ctx.createOscillator(); snap.type = 'triangle';
+      snap.frequency.setValueAtTime(520, t + 0.2); snap.frequency.exponentialRampToValueAtTime(180, t + 0.25);
+      const sg = ctx.createGain(); sg.gain.setValueAtTime(0.0001, t + 0.2); sg.gain.exponentialRampToValueAtTime(0.11, t + 0.208); sg.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
+      snap.connect(sg); sg.connect(_master); snap.start(t + 0.2); snap.stop(t + 0.26);
+    }
+    function playWhoosh() {   // Routing : whoosh au début de la transition de page
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime, DUR = 0.24;
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * DUR), ctx.sampleRate);
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const noise = ctx.createBufferSource(); noise.buffer = nb;
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 0.8;
+      bp.frequency.setValueAtTime(500, t); bp.frequency.exponentialRampToValueAtTime(2200, t + 0.12); bp.frequency.exponentialRampToValueAtTime(700, t + DUR);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.08, t + 0.05); g.gain.exponentialRampToValueAtTime(0.0001, t + DUR);
+      noise.connect(bp); bp.connect(g); g.connect(_master); noise.start(t); noise.stop(t + DUR);
+    }
+
+    // ===== Étape 8 : audio-haptique des mastodontes (Cyber-Organic = synthé pur + bruit électrique granuleux) =====
+    function startCharge() {   // SURVOL "Electric Charge" : bzz cristallin sous tension, coupable au mouseleave
+      if (_muted) return;
+      stopCharge();            // un seul charge à la fois
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime, DUR = 0.14;
+      const out = ctx.createGain();
+      out.gain.setValueAtTime(0.0001, t);
+      out.gain.exponentialRampToValueAtTime(0.032, t + 0.02);   // "bzz" (~50 ms d'attaque)
+      out.gain.exponentialRampToValueAtTime(0.0001, t + DUR);
+      out.connect(_master);
+      const osc = ctx.createOscillator(); osc.type = 'triangle'; osc.frequency.setValueAtTime(3200, t);
+      const lfo = ctx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 70;                 // FM = shimmer électrique
+      const lfoG = ctx.createGain(); lfoG.gain.value = 140; lfo.connect(lfoG); lfoG.connect(osc.frequency);
+      osc.connect(out);
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * DUR), ctx.sampleRate);
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const noise = ctx.createBufferSource(); noise.buffer = nb;                                        // grain organique
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 4300; bp.Q.value = 7;
+      const ng = ctx.createGain(); ng.gain.value = 0.4;
+      noise.connect(bp); bp.connect(ng); ng.connect(out);
+      osc.start(t); lfo.start(t); noise.start(t);
+      osc.stop(t + DUR + 0.02); lfo.stop(t + DUR + 0.02); noise.stop(t + DUR + 0.02);
+      _charge = { out, nodes: [osc, lfo, noise], ctx };
+    }
+    function stopCharge() {   // coupe le "bzz" INSTANTANÉMENT (mouseleave)
+      if (!_charge) return;
+      const c = _charge; _charge = null;
+      try {
+        const t = c.ctx.currentTime;
+        c.out.gain.cancelScheduledValues(t);
+        c.out.gain.setTargetAtTime(0.0001, t, 0.008);   // ~25 ms
+        c.nodes.forEach((n) => { try { n.stop(t + 0.06); } catch (e) {} });
+      } catch (e) {}
+    }
+    function playSell() {   // CLIC VENDRE "Success/Chime" : métallique, aigu, clair, gratifiant
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime;
+      const bus = ctx.createGain(); bus.connect(_master);
+      [[1245, 0], [1870, 0.02], [2760, 0.05]].forEach((p) => {                 // 3 partiels ascendants = cloche
+        const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.setValueAtTime(p[0], t + p[1]);
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t + p[1]);
+        g.gain.exponentialRampToValueAtTime(0.06, t + p[1] + 0.006);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + p[1] + 0.26);
+        o.connect(g); g.connect(bus); o.start(t + p[1]); o.stop(t + p[1] + 0.3);
+      });
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * 0.08), ctx.sampleRate);
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const noise = ctx.createBufferSource(); noise.buffer = nb;
+      const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 5200;              // étincelle cristalline
+      const ng = ctx.createGain(); ng.gain.setValueAtTime(0.05, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+      noise.connect(hp); hp.connect(ng); ng.connect(bus); noise.start(t); noise.stop(t + 0.1);
+    }
+    function playSpend() {   // CLIC DÉPENSER "Impact/Discharge" : basse électrique lourde
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime;
+      const bus = ctx.createGain(); bus.connect(_master);
+      const o = ctx.createOscillator(); o.type = 'sawtooth';
+      o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(58, t + 0.18);        // chute de fréquence = impact
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(900, t); lp.frequency.exponentialRampToValueAtTime(200, t + 0.2);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.11, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
+      o.connect(lp); lp.connect(g); g.connect(bus); o.start(t); o.stop(t + 0.3);
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * 0.2), ctx.sampleRate);
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const noise = ctx.createBufferSource(); noise.buffer = nb;
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.4;                        // décharge granuleuse
+      bp.frequency.setValueAtTime(1200, t); bp.frequency.exponentialRampToValueAtTime(300, t + 0.18);
+      const ng = ctx.createGain(); ng.gain.setValueAtTime(0.07, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+      noise.connect(bp); bp.connect(ng); ng.connect(bus); noise.start(t); noise.stop(t + 0.22);
+    }
+    // ===== Option "Mute" (coupe-son), persistée dans les réglages =====
+    const ICON_SOUND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a4 4 0 0 1 0 7"/></svg>';
+    const ICON_MUTE  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>';
+    function updateMuteUI() {
+      const btn = drawer.querySelector('[data-mute]'); if (!btn) return;
+      const lbl = btn.querySelector('[data-mute-label]'); if (lbl) lbl.textContent = _muted ? 'Son coupé' : 'Son activé';
+      const ic = btn.querySelector('.footbtn__ic'); if (ic) ic.innerHTML = _muted ? ICON_MUTE : ICON_SOUND;
+    }
+    function toggleMute() {
+      _muted = !_muted;
+      try { localStorage.setItem('boussole:muted', _muted ? '1' : '0'); } catch (e) {}
+      updateMuteUI();
+      if (!_muted) playType();   // petit tick de confirmation quand on réactive le son
+    }
+    updateMuteUI();
+
+    // ===== "Miles clic" : feedback Spider-Verse IMMÉDIAT dès l'appui (pointerdown), sur chaque item de section =====
+    drawer.querySelectorAll('.navbtn').forEach((b) => {
+      b.addEventListener('pointerdown', () => {
+        playGlitch();                                      // son glitch/snap à T0 (synchro avec le tremblement -> snap visuel)
+        b.classList.remove('miles'); void b.offsetWidth;   // reflow : relance l'anim même en re-clic rapide
+        b.classList.add('miles');
+        setTimeout(() => b.classList.remove('miles'), 230);
+      });
+    });
 
     // ===== Profil dynamique (Supabase si session, sinon démo) =====
     const CROWN = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 8.5l3.8 3L12 5l4.7 6.5 3.8-3L18.5 19h-13z"/></svg>';
@@ -438,6 +858,7 @@
       } catch (e) {}
       const role = email ? (ADMIN_EMAILS.map((x) => x.toLowerCase()).includes(email) ? 'admin' : 'collab') : 'admin';
       setProfile(prenom || 'Mongazi', role);
+      if (prenom && prenom !== userName) { userName = prenom; refreshGreeting(); }   // le HUD "reconnaît" l'utilisateur connecté
     })();
     // aperçu : clic sur le profil bascule le rôle (voir les 2 couleurs de badge)
     drawer.querySelector('.profil').addEventListener('click', () => { playClick(); setProfile(nameEl.textContent, drawer.dataset.role === 'admin' ? 'collab' : 'admin'); });
@@ -447,11 +868,12 @@
     async function doLogout() { try { const c = supa(); if (c) await c.auth.signOut(); } catch (e) {} location.href = 'connexion.html'; }
     drawer.addEventListener('click', (e) => {
       const b = e.target.closest('[data-sfx-hover]'); if (!b) return;
-      playClick();                                     // son de validation net
-      if (b.classList.contains('navbtn')) { b.classList.add('is-flash'); setTimeout(() => b.classList.remove('is-flash'), 300); }  // flash couleur au clic
-      if (b.dataset.logout !== undefined) { setTimeout(doLogout, 130); return; }
-      if (b.dataset.nav) setActiveNav(b.dataset.nav);
-      setTimeout(closeMenu, 130);                       // ferme le menu juste après le bip + flash
+      if (b.dataset.mute !== undefined) { toggleMute(); return; }   // toggle son : ne ferme pas le menu
+      if (!b.classList.contains('navbtn')) playClick();            // footer ; les navbtn ont leur glitch/snap au pointerdown
+      // le flash "Miles" (glitch + snap + néon) est déclenché au pointerdown, voir plus bas
+      if (b.dataset.logout !== undefined) { setTimeout(doLogout, 220); return; }
+      if (b.dataset.nav) { setActiveNav(b.dataset.nav); showSection(b.dataset.nav, false); }   // HUD : l'écran change instantanément (caméra sèche)
+      setTimeout(closeMenu, 220);                       // laisse le temps de VOIR le clic "Miles" (~200 ms) avant de fermer
     });
   </script>
 </body>

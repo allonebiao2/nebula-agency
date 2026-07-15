@@ -18,6 +18,7 @@
       --overlay: .70;              /* opacité de l'overlay noir (réglable) */
       --glass-radius: 30px;
       --ease: cubic-bezier(.16, 1, .3, 1);
+      --ease-cine: cubic-bezier(.4, 0, .2, 1);   /* MODE LOGIN : fluidité cinématique */
     }
 
     * { box-sizing: border-box; }
@@ -87,7 +88,7 @@
         inset 0 0 0 1px rgba(255, 255, 255, .05),
         inset 0 -30px 70px -40px rgba(150, 90, 220, .28);
 
-      animation: glassIn .8s var(--ease) both;
+      animation: cineGlass 1s var(--ease-cine) both;   /* MODE LOGIN : fondu lent + zoom 98 -> 100 */
     }
     /* reflet liquide : lumière qui frappe le haut-gauche de la plaque de verre */
     .glass::before {
@@ -115,7 +116,7 @@
     .logo {
       width: clamp(58px, 9vh, 80px);
       will-change: transform;
-      animation: logoPulse 3.6s ease-in-out infinite;
+      animation: logoPulse 3.6s ease-in-out infinite, cineFade .7s .22s var(--ease-cine) both;   /* pulse continu + entrée en cascade */
       /* halo lumineux derrière le compas : supprime l'effet « disque noir » du verre */
       background: radial-gradient(circle at 50% 46%,
         rgba(56, 240, 255, .20), rgba(56, 240, 255, .06) 44%, transparent 70%);
@@ -150,6 +151,7 @@
         0 0 1px rgba(255, 255, 255, .5),
         0 0 15px rgba(56, 240, 255, .32),
         0 2px 22px rgba(0, 0, 0, .45);
+      animation: cineUp .7s .42s var(--ease-cine) both;   /* le texte de bienvenue entre après le logo */
     }
 
     @keyframes logoPulse {
@@ -172,7 +174,7 @@
       display: flex;
       flex-direction: column;
       gap: clamp(10px, 1.5vh, 14px);
-      animation: formIn .7s .15s var(--ease) both;
+      animation: cineUp .7s .6s var(--ease-cine) both;   /* le "menu" (formulaire) entre en dernier */
     }
     .field { display: flex; flex-direction: column; gap: 6px; }
     .field > label {
@@ -320,11 +322,11 @@
       animation: homeIn .5s ease both;
     }
     .home__inner { display: flex; flex-direction: column; align-items: center; gap: 14px; }
-    .home__logo { width: clamp(72px, 18vw, 92px); }
+    .home__logo { width: clamp(72px, 18vw, 92px); animation: cineUp .6s .12s var(--ease-cine) both; }
     .home__logo img { width: 100%; height: auto; display: block; }
-    .home__hi { margin: 0; font-weight: 800; letter-spacing: -.01em; color: #fff; font-size: clamp(26px, 7vw, 40px); text-shadow: 0 0 18px rgba(56, 240, 255, .25); }
-    .home__sub { margin: 0; color: rgba(255, 255, 255, .6); font-size: 15px; }
-    .home__spin { width: 26px; height: 26px; margin-top: 4px; border: 2.5px solid rgba(255, 255, 255, .14); border-top-color: #22d3ee; border-radius: 50%; animation: spin .7s linear infinite; }
+    .home__hi { margin: 0; font-weight: 800; letter-spacing: -.01em; color: #fff; font-size: clamp(26px, 7vw, 40px); text-shadow: 0 0 18px rgba(56, 240, 255, .25); animation: cineUp .6s .3s var(--ease-cine) both, homeGlitch .6s .95s 1; }
+    .home__sub { margin: 0; color: rgba(255, 255, 255, .6); font-size: 15px; animation: cineUp .6s .52s var(--ease-cine) both; }
+    .home__spin { width: 26px; height: 26px; margin-top: 4px; border: 2.5px solid rgba(255, 255, 255, .14); border-top-color: #22d3ee; border-radius: 50%; animation: spin .7s linear infinite, cineFade .5s .7s var(--ease-cine) both; }
     @keyframes homeIn { from { opacity: 0; } to { opacity: 1; } }
 
     /* Panneau BD Spider-Verse (magenta -> violet -> cyan) à BORD D'ENCRE EN ZIG-ZAG (papier déchiré) + trame de points */
@@ -397,6 +399,31 @@
       border: 1px solid rgba(255, 255, 255, .12);
     }
 
+    /* ===== MODE LOGIN — ouverture cinématique (cascade + glitch subtil) ===== */
+    .title__glitch { display: inline-block; will-change: transform; animation: titleGlitch .5s .95s 1; }
+    @keyframes cineGlass { from { opacity: 0; transform: scale(.98); }        to { opacity: 1; transform: none; } }
+    @keyframes cineUp    { from { opacity: 0; transform: translateY(12px); }   to { opacity: 1; transform: none; } }
+    @keyframes cineFade  { from { opacity: 0; }                                to { opacity: 1; } }
+    /* glitch RGB très subtil (1 à 1,5 px) qui se stabilise : ne joue que sur le span du titre + text-shadow */
+    @keyframes titleGlitch {
+      0%, 100% { transform: translate(0, 0); }
+      20% { transform: translate(-1.5px, 0); text-shadow: 1.5px 0 rgba(255, 0, 110, .75), -1.5px 0 rgba(56, 240, 255, .75); }
+      40% { transform: translate(1.5px, 0);  text-shadow: -1.5px 0 rgba(255, 0, 110, .65), 1.5px 0 rgba(56, 240, 255, .65); }
+      60% { transform: translate(-1px, 0);   text-shadow: 1px 0 rgba(255, 0, 110, .5), -1px 0 rgba(56, 240, 255, .5); }
+      80% { transform: translate(1px, 0); }
+    }
+    /* glitch du message d'arrivée « Bonjour {prénom} » : uniquement text-shadow (jamais la lisibilité) */
+    @keyframes homeGlitch {
+      0%, 100% { text-shadow: 0 0 18px rgba(56, 240, 255, .25); }
+      25% { text-shadow: -2px 0 rgba(255, 0, 110, .8), 2px 0 rgba(56, 240, 255, .8); }
+      50% { text-shadow: 2px 0 rgba(255, 0, 110, .7), -2px 0 rgba(56, 240, 255, .7); }
+      75% { text-shadow: -1px 0 rgba(255, 0, 110, .55), 1px 0 rgba(56, 240, 255, .55); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .glass, .logo, .title, .title__glitch, .authform,
+      .home__logo, .home__hi, .home__sub { animation: none !important; opacity: 1 !important; transform: none !important; }
+    }
+
     @keyframes glassIn {
       from { opacity: 0; transform: translateY(16px) scale(.985); }
       to   { opacity: 1; transform: none; }
@@ -441,7 +468,7 @@
             <circle class="hub" cx="50" cy="50" r="3.4"/>
           </svg>
         </span>
-        <h1 class="title">Prends le contrôle.</h1>
+        <h1 class="title"><span class="title__glitch">Prends le contrôle.</span></h1>
       </div>
 
       <!-- FORMULAIRE D'AUTHENTIFICATION (connexion / inscription) -->
@@ -627,6 +654,8 @@
         authRoot.classList.add('gone');
         home.hidden = false;
         home.querySelector('.hi-name').textContent = prenom ? (', ' + prenom) : '';
+        // le "chargement" se termine : le vrai tableau de bord (app shell) prend le relais
+        setTimeout(() => { location.href = 'app.html'; }, 1500);
       };
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) { setTimeout(showHome, 140); return; }  // a11y : simple fondu
       card.classList.add('dissolve');                       // la carte se désintègre en points CMJ
