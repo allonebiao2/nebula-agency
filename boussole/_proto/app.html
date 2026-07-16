@@ -254,6 +254,87 @@
     .catcard__name { display: block; font-size: 13.5px; font-weight: 700; color: #fff; }
     .catcard__price { display: block; margin-top: 3px; font-size: 15px; font-weight: 800; color: #ffd23f; font-variant-numeric: tabular-nums; }
 
+    /* ===== SPIDER-MANAGER — écran STOCK (inventaire) : liste, boutons massifs néon, alertes rupture ===== */
+    .stock-alert {
+      max-width: 430px; margin: 16px auto 0; padding: 10px 14px; border-radius: 12px; text-align: left;
+      font-size: 13px; font-weight: 700; color: #ff5a6a;
+      background: rgba(255, 46, 67, .1); border: 1px solid rgba(255, 46, 67, .35); box-shadow: 0 0 18px -6px rgba(255, 46, 67, .5);
+    }
+    .stock-alert.is-ok { color: #35e07a; background: rgba(53, 224, 122, .08); border-color: rgba(53, 224, 122, .3); box-shadow: none; }
+    .stock-alert b { font-size: 15px; }
+    .stocklist { max-width: 430px; margin: 12px auto 0; display: flex; flex-direction: column; gap: 9px; perspective: 800px; }
+    .stockrow {
+      position: relative; display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 14px;
+      background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .1); border-left: 3px solid #ffd23f;
+      box-shadow: 0 8px 20px -14px rgba(0, 0, 0, .7); touch-action: pan-y; will-change: transform;
+      animation: cardOut .4s calc(120ms + var(--i) * 45ms) cubic-bezier(0.19, 1, 0.22, 1) both;
+    }
+    .stockrow.is-critical { border-left-color: #ff2e43; box-shadow: 0 0 18px -6px rgba(255, 46, 67, .5), 0 8px 20px -14px rgba(0, 0, 0, .7); }
+    .stockrow__main { flex: 1 1 auto; min-width: 0; text-align: left; }
+    .stockrow__name { display: block; font-size: 14.5px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .stockrow__meta { display: block; margin-top: 2px; font-size: 12px; color: rgba(255, 255, 255, .5); }
+    .stockrow__meta b { color: #ffd23f; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .stockrow__qtylbl { margin-left: 8px; }
+    .stockrow.is-critical .stockrow__qtylbl { color: #ff5a6a; font-weight: 700; }
+    .stockrow__ctrl { flex: none; display: flex; align-items: center; gap: 8px; }
+    .qtybtn {
+      width: 38px; height: 38px; flex: none; border: 0; border-radius: 11px; cursor: pointer;
+      font: inherit; font-size: 22px; font-weight: 800; line-height: 1; display: grid; place-items: center;
+      transition: transform .08s ease, box-shadow .2s ease;
+    }
+    .qtybtn--plus  { color: #04121a; background: radial-gradient(120% 120% at 30% 25%, #7fe0ff, #38f0ff); box-shadow: 0 0 16px -3px rgba(56, 240, 255, .6); }    /* néon bleu */
+    .qtybtn--minus { color: #1a0406; background: radial-gradient(120% 120% at 30% 25%, #ff8a97, #ff2e43); box-shadow: 0 0 16px -3px rgba(255, 46, 67, .55); }   /* néon rouge */
+    .qtybtn:active { transform: scale(.9); }
+    .qtybtn__val { min-width: 30px; text-align: center; font-size: 17px; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
+    .qtybtn__val.pop { animation: qtyPop .32s cubic-bezier(.2, 1.4, .3, 1); }
+    @keyframes qtyPop { 0% { transform: scale(1); } 40% { transform: scale(1.4); color: #38f0ff; } 100% { transform: scale(1); color: #fff; } }
+
+    /* ===== SPIDER-MANAGER — écran DÉPENSES : liste catégorisée + FAB « Ajout rapide » + sheet ===== */
+    .exp-total { max-width: 430px; margin: 16px auto 0; text-align: left; font-size: 14px; color: rgba(255, 255, 255, .6); }
+    .exp-total b { display: inline-block; margin-left: 8px; font-size: 22px; font-weight: 800; color: #ff5a6a; font-variant-numeric: tabular-nums; }
+    .explist { max-width: 430px; margin: 14px auto 0; display: flex; flex-direction: column; gap: 8px; }
+    .exprow {
+      position: relative; display: flex; align-items: center; gap: 11px; padding: 11px 12px; border-radius: 13px;
+      background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .09); box-shadow: 0 8px 20px -14px rgba(0, 0, 0, .7);
+      touch-action: pan-y; will-change: transform; animation: expIn .4s calc(var(--i) * 45ms) cubic-bezier(.16, 1, .3, 1) both;
+    }
+    @keyframes expIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .exp-dot { width: 10px; height: 10px; flex: none; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; }
+    .exprow__main { flex: 1 1 auto; min-width: 0; text-align: left; }
+    .exprow__lib { display: block; font-size: 14px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .exprow__meta { display: block; margin-top: 2px; font-size: 11.5px; color: rgba(255, 255, 255, .45); }
+    .exprow__amt { flex: none; font-size: 15px; font-weight: 800; color: #ff8a97; font-variant-numeric: tabular-nums; }
+    /* FAB flottant */
+    .fab {
+      position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 45;
+      width: 60px; height: 60px; border: 0; border-radius: 20px; cursor: pointer; font-size: 32px; font-weight: 700; line-height: 1; color: #1a0406;
+      display: grid; place-items: center; background: radial-gradient(120% 120% at 30% 25%, #ff8a97, #e11d48);
+      box-shadow: 0 12px 26px -8px rgba(225, 29, 72, .7), 0 0 24px -4px rgba(225, 29, 72, .6);
+      transition: transform .12s var(--ease-back); animation: fabIn .4s .2s var(--ease-back) both;
+    }
+    .fab:active { transform: scale(.9); }
+    .fab__lbl { position: fixed; right: 86px; bottom: calc(33px + env(safe-area-inset-bottom)); z-index: 45; font-size: 12px; font-weight: 700; color: rgba(255, 255, 255, .55); pointer-events: none; }
+    @keyframes fabIn { from { transform: scale(0) rotate(-90deg); opacity: 0; } to { transform: none; opacity: 1; } }
+    /* Bottom sheet « Ajout rapide » */
+    .sheet-scrim { position: fixed; inset: 0; z-index: 46; background: rgba(0, 0, 0, .55); opacity: 0; pointer-events: none; transition: opacity .25s ease; -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+    .sheet-scrim.is-open { opacity: 1; pointer-events: auto; }
+    .sheet {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 47; padding: 16px 18px calc(20px + env(safe-area-inset-bottom));
+      background: linear-gradient(180deg, rgba(24, 26, 34, .98), rgba(14, 15, 20, 1)); border-top: 1px solid rgba(255, 255, 255, .1); border-radius: 22px 22px 0 0;
+      box-shadow: 0 -20px 50px -20px rgba(0, 0, 0, .9), inset 0 1px 0 rgba(255, 255, 255, .08);
+      transform: translateY(102%); transition: transform .3s var(--ease-back);
+    }
+    .sheet.is-open { transform: translateY(0); }
+    .sheet__grip { width: 40px; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, .2); margin: 0 auto 14px; }
+    .sheet__title { margin: 0 0 12px; font-size: 15px; font-weight: 800; color: #fff; }
+    .sheet__amt { width: 100%; padding: 14px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, .14); background: rgba(255, 255, 255, .05); color: #fff; font: inherit; font-size: 26px; font-weight: 800; text-align: center; font-variant-numeric: tabular-nums; }
+    .sheet__amt::placeholder { color: rgba(255, 255, 255, .3); }
+    .sheet__cats { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+    .catchip { padding: 8px 13px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .14); background: rgba(255, 255, 255, .05); color: rgba(255, 255, 255, .75); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: color .15s, border-color .15s, background .15s, box-shadow .15s; }
+    .catchip.is-sel { color: #fff; border-color: var(--cc); background: color-mix(in srgb, var(--cc) 18%, transparent); box-shadow: 0 0 14px -4px var(--cc); }
+    .sheet__add { width: 100%; margin-top: 4px; padding: 15px; border: 0; border-radius: 16px; cursor: pointer; font: inherit; font-size: 16px; font-weight: 800; color: #1a0406; background: radial-gradient(140% 140% at 30% 20%, #ff8a97, #e11d48); box-shadow: 0 0 22px -4px rgba(225, 29, 72, .6); transition: transform .1s ease; }
+    .sheet__add:active { transform: scale(.97); }
+
     /* ============ OVERLAY + DRAWER ============ */
     .scrim {
       position: fixed; inset: 0; z-index: 60;
@@ -291,7 +372,7 @@
     }
     .drawer__x svg { width: 19px; height: 19px; }
     .drawer__x:hover { color: var(--cyan); border-color: rgba(56, 240, 255, .5); background: rgba(56, 240, 255, .08); }
-    .drawer { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .drawer { overflow: hidden; }   /* seul .nav2 défile : profil (haut) et pied de menu (bas) restent fixes */
 
     /* NIVEAU 1 : profil */
     .profil { display: flex; align-items: center; gap: 11px; width: 100%; padding: 2px 4px 8px; border: 0; background: none; cursor: pointer; text-align: left; }
@@ -303,7 +384,9 @@
     .profil__name { color: #fff; }
 
     /* NIVEAU 2 : navigation flash (boutons néon épais) */
-    .nav2 { display: flex; flex-direction: column; flex: 1 1 auto; justify-content: center; gap: clamp(5px, .9vh, 8px); min-height: 0; }
+    .nav2 { display: flex; flex-direction: column; flex: 1 1 auto; justify-content: flex-start; gap: clamp(5px, .9vh, 8px); min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: rgba(56, 240, 255, .3) transparent; padding: 3px 7px; }
+    .nav2::-webkit-scrollbar { width: 4px; }
+    .nav2::-webkit-scrollbar-thumb { background: rgba(56, 240, 255, .3); border-radius: 4px; }
     .navbtn {
       --glow: #38f0ff;
       display: flex; align-items: center; gap: 11px; width: 100%;
@@ -456,7 +539,7 @@
     .footbtn--logout:hover .footbtn__ic { filter: drop-shadow(0 0 6px rgba(255, 59, 59, .7)); }
 
     .proto-tag {
-      position: fixed; z-index: 80; left: 50%; bottom: max(14px, env(safe-area-inset-bottom));
+      position: fixed; z-index: 43; left: 50%; bottom: max(14px, env(safe-area-inset-bottom));
       transform: translateX(-50%);
       font-size: 11px; letter-spacing: .04em; color: rgba(255, 255, 255, .55);
       background: rgba(0, 0, 0, .4); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
@@ -475,12 +558,340 @@
       .screen.cine, .screen.hud { animation: none !important; }   /* pas de caméra si mouvement réduit */
       .home.portal { animation: none !important; clip-path: none !important; }   /* pas de portail si mouvement réduit */
       .home.portal::after { animation: none !important; opacity: 0 !important; }
-      .screen.drawer3d, .catcard { animation: none !important; }   /* pas de tiroir/gigogne si mouvement réduit */
+      .screen.drawer3d, .catcard, .stockrow, .qtybtn__val.pop, .exprow, .fab { animation: none !important; }   /* pas de tiroir/gigogne/pop/FAB si mouvement réduit */
       .navbtn[data-nav="catalogue"]:hover .chest__lid, .navbtn[data-nav="catalogue"]:hover .chest__base { transform: none !important; }
       .navbtn.miles, .navbtn.miles .navbtn__ic { animation: none !important; }   /* pas de glitch "Miles" si mouvement réduit */
       .hud__hi, .hud__sys i, .hud__caret { animation: none !important; }   /* pas de curseur clignotant / glitch si mouvement réduit */
       .depth__dust span { animation: none !important; opacity: .28 !important; }   /* poussières figées */
       .masto__btn, .masto__btn:hover, .masto__btn:active { transform: none !important; }   /* pas de bascule 3D */
+    }
+    /* ============================================================================
+       VAGUE 1 : CAISSE (POS) · VENTES · STATISTIQUES · BILAN + composants data/IA
+       ========================================================================== */
+    .screen.wide { max-width: 500px; }
+
+    /* KPI (cartes chiffres) */
+    .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px auto 0; }
+    .kpi { --kc: #38f0ff; position: relative; overflow: hidden; padding: 13px 14px; border-radius: 16px; text-align: left;
+      background: linear-gradient(160deg, rgba(255,255,255,.11), rgba(255,255,255,.03));
+      -webkit-backdrop-filter: blur(12px) saturate(130%); backdrop-filter: blur(12px) saturate(130%);
+      border: 1px solid color-mix(in srgb, var(--kc) 26%, rgba(255,255,255,.16));
+      box-shadow: 0 12px 28px -16px rgba(0,0,0,.6), 0 0 18px -6px color-mix(in srgb, var(--kc) 52%, transparent), inset 0 1px 0 rgba(255,255,255,.2);
+      animation: vitalIn .5s calc(var(--i,0) * .08s) var(--ease) both; }
+    .kpi::before { content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+      background: radial-gradient(120% 80% at 16% 0%, color-mix(in srgb, var(--kc) 22%, transparent), transparent 60%); }
+    .kpi__lbl { position:relative; font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color: color-mix(in srgb, var(--kc) 72%, #d7eef2); }
+    .kpi__num { position:relative; display:block; margin-top:6px; font-size: clamp(19px,5.4vw,25px); font-weight:800; line-height:1; color:#fff; font-variant-numeric: tabular-nums; text-shadow: 0 0 10px color-mix(in srgb, var(--kc) 38%, transparent); }
+    .kpi__sub { position:relative; display:block; margin-top:5px; font-size:11px; color: rgba(255,255,255,.45); }
+    .kpi--ca { --kc:#35e07a; } .kpi--dep { --kc:#e11d48; } .kpi--ben { --kc:#38f0ff; } .kpi--marge { --kc:#ffd23f; }
+
+    /* Panneau glass réutilisable */
+    .panel { position: relative; max-width: 500px; margin: 14px auto 0; padding: 15px 16px; border-radius: 18px; text-align:left;
+      background: linear-gradient(160deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,.1); box-shadow: 0 14px 34px -22px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.1); }
+    .panel__ttl { margin:0 0 13px; font-size:13px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; }
+    .panel__ttl i { width:7px; height:7px; border-radius:50%; background: var(--sc,#38f0ff); box-shadow:0 0 8px var(--sc,#38f0ff); }
+
+    /* Donut (camembert dépenses) */
+    .donut { display:flex; align-items:center; gap:15px; }
+    .donut__wrap { position:relative; width:132px; height:132px; flex:none; }
+    .donut__svg { width:132px; height:132px; transform: rotate(-90deg); animation: donutIn .8s var(--ease) both; }
+    .donut__svg circle { fill:none; stroke-width:13; }
+    .donut__track { stroke: rgba(255,255,255,.06); }
+    @keyframes donutIn { from { opacity:0; transform: rotate(-150deg) scale(.82); } to { opacity:1; transform: rotate(-90deg) scale(1); } }
+    .donut__center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+    .donut__c-lbl { font-size:9.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color: rgba(255,255,255,.45); }
+    .donut__c-val { font-size:15px; font-weight:800; color:#fff; font-variant-numeric: tabular-nums; margin-top:2px; }
+    .legend { flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:8px; }
+    .legend__row { display:flex; align-items:center; gap:8px; font-size:12.5px; }
+    .legend__dot { width:10px; height:10px; border-radius:3px; flex:none; box-shadow:0 0 8px currentColor; }
+    .legend__name { flex:1 1 auto; color: rgba(255,255,255,.8); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .legend__val { font-weight:800; color:#fff; font-variant-numeric: tabular-nums; }
+    .legend__pct { color: rgba(255,255,255,.42); font-size:11px; margin-left:4px; font-weight:600; }
+
+    /* Bar chart (évolution 7 j) */
+    .bars { display:flex; align-items:flex-end; gap:8px; height:132px; margin-top:4px; }
+    .barcol { flex:1 1 0; display:flex; flex-direction:column; align-items:center; gap:7px; height:100%; justify-content:flex-end; }
+    .barcol__pair { display:flex; align-items:flex-end; justify-content:center; gap:3px; width:100%; height:100%; }
+    .bar { width:10px; border-radius:4px 4px 2px 2px; transform-origin:bottom; animation: barGrow .7s calc(var(--i,0)*.05s) var(--ease) both; }
+    .bar--ca { background: linear-gradient(180deg,#6bf0a0,#35e07a); box-shadow:0 0 10px -2px rgba(53,224,122,.55); }
+    .bar--dep { background: linear-gradient(180deg,#ff8a97,#e11d48); box-shadow:0 0 10px -2px rgba(225,29,72,.5); }
+    @keyframes barGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+    .barcol__lbl { font-size:10px; color: rgba(255,255,255,.4); }
+    .chartkey { display:flex; gap:16px; margin-top:12px; font-size:11px; color: rgba(255,255,255,.55); }
+    .chartkey b { display:inline-block; width:9px; height:9px; border-radius:3px; margin-right:5px; vertical-align:middle; }
+
+    /* Barres horizontales (bilan) */
+    .hbar { margin-top:12px; } .hbar:first-child { margin-top:0; }
+    .hbar__top { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:5px; }
+    .hbar__name { font-size:12.5px; font-weight:700; color: rgba(255,255,255,.82); }
+    .hbar__val { font-size:12px; font-weight:800; color:#fff; font-variant-numeric: tabular-nums; }
+    .hbar__val i { color: rgba(255,255,255,.4); font-style:normal; font-weight:600; margin-left:4px; }
+    .hbar__track { height:9px; border-radius:999px; background: rgba(255,255,255,.06); overflow:hidden; }
+    .hbar__fill { display:block; height:100%; border-radius:999px; transform-origin:left; animation: hbarGrow .8s var(--ease) both; }
+    @keyframes hbarGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+    /* Bandeau IA (interprétation) */
+    .ia { position:relative; overflow:hidden; max-width:500px; margin:16px auto 0; padding:14px 15px 14px 46px; border-radius:16px; text-align:left;
+      background: linear-gradient(150deg, rgba(56,240,255,.1), rgba(185,140,255,.05));
+      border:1px solid rgba(56,240,255,.28); box-shadow: 0 0 22px -8px rgba(56,240,255,.45), inset 0 1px 0 rgba(255,255,255,.12); }
+    .ia--good { background: linear-gradient(150deg, rgba(53,224,122,.12), rgba(56,240,255,.04)); border-color: rgba(53,224,122,.32); box-shadow:0 0 22px -8px rgba(53,224,122,.42); }
+    .ia--warn { background: linear-gradient(150deg, rgba(255,90,106,.12), rgba(255,140,61,.05)); border-color: rgba(255,90,106,.34); box-shadow:0 0 22px -8px rgba(255,90,106,.4); }
+    .ia__orb { position:absolute; left:14px; top:15px; width:22px; height:22px; border-radius:50%;
+      background: radial-gradient(circle at 32% 28%, #eafdff, #38f0ff 58%, #8a5cff); box-shadow:0 0 12px rgba(56,240,255,.8); animation: iaPulse 2.2s ease-in-out infinite; }
+    .ia--good .ia__orb { background: radial-gradient(circle at 32% 28%, #eafff2, #35e07a 58%, #38f0ff); box-shadow:0 0 12px rgba(53,224,122,.8); }
+    .ia--warn .ia__orb { background: radial-gradient(circle at 32% 28%, #fff0f0, #ff5a6a 58%, #ff8a3d); box-shadow:0 0 12px rgba(255,90,106,.8); }
+    @keyframes iaPulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.16); } }
+    .ia__chip { display:block; font-size:9.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#8ff6ff; margin-bottom:3px; }
+    .ia--good .ia__chip { color:#7bf0a8; } .ia--warn .ia__chip { color:#ffb0a0; }
+    .ia__title { margin:0 0 4px; font-size:14.5px; font-weight:800; color:#fff; }
+    .ia__txt { margin:0; font-size:12.5px; line-height:1.55; color: rgba(255,255,255,.72); }
+    .ia__txt b { color:#fff; font-weight:800; }
+
+    /* Bénéfice héro (bilan) */
+    .benhero { position:relative; overflow:hidden; max-width:500px; margin:16px auto 0; padding:22px; border-radius:20px; text-align:center;
+      background: linear-gradient(160deg, rgba(255,255,255,.09), rgba(255,255,255,.02)); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+      border:1px solid rgba(255,255,255,.14); animation: vitalIn .5s var(--ease) both; }
+    .ben--ok { border-color: rgba(53,224,122,.4); box-shadow:0 0 30px -8px rgba(53,224,122,.5), inset 0 1px 0 rgba(255,255,255,.2); }
+    .ben--bad { border-color: rgba(255,90,106,.4); box-shadow:0 0 30px -8px rgba(255,90,106,.5), inset 0 1px 0 rgba(255,255,255,.2); }
+    .benhero__lbl { display:block; font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color: rgba(255,255,255,.55); }
+    .benhero__num { display:block; margin:8px 0 6px; font-size: clamp(34px,10vw,50px); font-weight:800; line-height:1; font-variant-numeric: tabular-nums; }
+    .ben--ok .benhero__num { color:#6bf0a0; text-shadow:0 0 22px rgba(53,224,122,.5); }
+    .ben--bad .benhero__num { color:#ff8a97; text-shadow:0 0 22px rgba(255,90,106,.5); }
+    .benhero__sub { font-size:13px; color: rgba(255,255,255,.6); }
+
+    /* CAISSE (POS) */
+    .pos { max-width:500px; margin:0 auto; }
+    .pos__grid { display:grid; grid-template-columns: repeat(3,1fr); gap:9px; margin:14px 0 0; }
+    @media (max-width:380px){ .pos__grid { grid-template-columns: repeat(2,1fr); } }
+    .pos-tile { position:relative; overflow:hidden; aspect-ratio:1/1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:8px; border-radius:15px; cursor:pointer; font:inherit; color:#fff;
+      background: linear-gradient(160deg, rgba(255,255,255,.1), rgba(255,255,255,.03)); border:1px solid rgba(255,255,255,.12);
+      box-shadow:0 8px 20px -12px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.16);
+      transition: transform .1s ease, box-shadow .2s ease, border-color .2s ease; animation: expIn .4s calc(var(--i)*35ms) var(--ease) both; }
+    .pos-tile:active { transform: scale(.93); }
+    @media (hover:hover){ .pos-tile:hover { border-color: rgba(53,224,122,.5); box-shadow:0 10px 24px -12px rgba(0,0,0,.7), 0 0 18px -4px rgba(53,224,122,.5); } }
+    .pos-tile__disc { width:34px; height:34px; border-radius:50%; display:grid; place-items:center; font-size:15px; font-weight:800; box-shadow: inset 0 1px 0 rgba(255,255,255,.4); }
+    .pos-tile__name { font-size:11.5px; font-weight:700; text-align:center; line-height:1.15; max-width:100%; }
+    .pos-tile__price { font-size:12px; font-weight:800; color:#6bf0a0; font-variant-numeric: tabular-nums; }
+    .pos-tile__rupt { font-size:9.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#ff5a6a; }
+    .pos-tile__badge { position:absolute; top:6px; right:6px; min-width:20px; height:20px; padding:0 5px; border-radius:999px; display:grid; place-items:center; font-size:11px; font-weight:800; color:#04140e; background: radial-gradient(120% 120% at 30% 25%, #86ffd0, #35e07a); box-shadow:0 0 10px rgba(53,224,122,.6); transform: scale(0); transition: transform .22s var(--ease-back); }
+    .pos-tile.has .pos-tile__badge { transform: scale(1); }
+    .pos-tile.has { border-color: rgba(53,224,122,.55); box-shadow:0 8px 20px -12px rgba(0,0,0,.6), 0 0 16px -4px rgba(53,224,122,.5), inset 0 1px 0 rgba(255,255,255,.16); }
+    .pos-tile.rupt { opacity:.38; pointer-events:none; }
+    .pos__pad { height:220px; }
+    .ticket { position:fixed; left:0; right:0; bottom:0; z-index:44; padding:13px 16px calc(14px + env(safe-area-inset-bottom));
+      background: linear-gradient(180deg, rgba(20,22,30,.97), rgba(11,12,18,1)); border-top:1px solid rgba(53,224,122,.28); border-radius:20px 20px 0 0;
+      box-shadow:0 -18px 44px -20px rgba(0,0,0,.92), inset 0 1px 0 rgba(255,255,255,.07); transform: translateY(125%); transition: transform .32s var(--ease-back); }
+    .ticket.is-on { transform: translateY(0); }
+    .ticket__top { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:11px; }
+    .ticket__cnt { font-size:12.5px; font-weight:700; color: rgba(255,255,255,.55); }
+    .ticket__total { font-size:27px; font-weight:800; color:#6bf0a0; font-variant-numeric: tabular-nums; text-shadow:0 0 14px rgba(53,224,122,.5); }
+    .ticket__modes { display:flex; gap:7px; margin-bottom:11px; }
+    .paymode { --pc:#38f0ff; flex:1; padding:9px 6px; border-radius:12px; border:1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.05); color: rgba(255,255,255,.72); font:inherit; font-size:11.5px; font-weight:700; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; transition: color .18s, border-color .18s, background .18s, box-shadow .18s; }
+    .paymode svg { width:18px; height:18px; }
+    .paymode.is-on { color:#fff; border-color: var(--pc); background: color-mix(in srgb, var(--pc) 16%, transparent); box-shadow:0 0 14px -4px var(--pc); }
+    .paymode--esp { --pc:#35e07a; } .paymode--momo { --pc:#38f0ff; } .paymode--credit { --pc:#ff8a3d; }
+    .ticket__go { width:100%; padding:15px; border:0; border-radius:15px; cursor:pointer; font:inherit; font-size:16px; font-weight:800; color:#04140e; background: radial-gradient(140% 140% at 30% 20%, #86ffd0, #35e07a); box-shadow:0 0 24px -4px rgba(53,224,122,.6); transition: transform .1s ease; display:flex; align-items:center; justify-content:center; gap:8px; }
+    .ticket__go:active { transform: scale(.97); }
+    .ticket__go span { font-variant-numeric: tabular-nums; opacity:.85; }
+    .pos__empty { text-align:center; color: rgba(255,255,255,.42); font-size:14px; line-height:1.5; margin:8vh auto 0; max-width:300px; }
+    .pos__empty b { color:#8ff6ff; }
+    .cashburst { position:fixed; inset:0; z-index:48; display:grid; place-items:center; pointer-events:none; }
+    .cashburst b { font-size: clamp(40px,13vw,68px); font-weight:800; color:#6bf0a0; font-variant-numeric: tabular-nums; text-shadow:0 0 30px rgba(53,224,122,.7); animation: cashPop .9s cubic-bezier(.2,1.3,.3,1) both; }
+    @keyframes cashPop { 0% { opacity:0; transform: scale(.4) translateY(20px); } 30% { opacity:1; transform: scale(1.05) translateY(0); } 70% { opacity:1; transform: scale(1) translateY(0); } 100% { opacity:0; transform: scale(1) translateY(-40px); } }
+
+    /* VENTES (historique) */
+    .saleslist { max-width:480px; margin:14px auto 0; display:flex; flex-direction:column; gap:9px; }
+    .salerow { position:relative; padding:12px 13px; border-radius:14px; text-align:left; background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.09); border-left:3px solid #35e07a; box-shadow:0 8px 20px -14px rgba(0,0,0,.7); animation: expIn .4s calc(var(--i)*40ms) var(--ease) both; }
+    .salerow__top { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .salerow__cnt { font-size:12.5px; font-weight:700; color: rgba(255,255,255,.6); }
+    .salerow__amt { font-size:16px; font-weight:800; color:#6bf0a0; font-variant-numeric: tabular-nums; }
+    .salerow__items { margin-top:4px; font-size:12px; color: rgba(255,255,255,.5); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .salerow__meta { display:flex; align-items:center; gap:8px; margin-top:7px; font-size:11px; color: rgba(255,255,255,.4); }
+    .paybadge { padding:2px 8px; border-radius:999px; font-size:10px; font-weight:800; }
+    .paybadge--esp { color:#7bf0a8; background: rgba(53,224,122,.14); }
+    .paybadge--momo { color:#8ff6ff; background: rgba(56,240,255,.14); }
+    .paybadge--credit { color:#ffb27a; background: rgba(255,138,61,.16); }
+    .sales-total { max-width:480px; margin:14px auto 0; text-align:center; font-size:14px; color: rgba(255,255,255,.6); }
+    .sales-total b { display:block; margin-top:4px; font-size:26px; font-weight:800; color:#6bf0a0; font-variant-numeric: tabular-nums; text-shadow:0 0 14px rgba(53,224,122,.4); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .kpi, .benhero, .donut__svg, .bar, .hbar__fill, .pos-tile, .salerow, .cashburst b { animation: none !important; }
+      .donut__svg { transform: rotate(-90deg) !important; }
+      .bar, .hbar__fill { transform: none !important; }
+    }
+    /* ============================================================================
+       VAGUE 2 : OBJECTIFS (revenus + achats) · CARNET CLIENTS (dettes + relances)
+       ========================================================================== */
+    /* Segmented control (Jour / Semaine / Mois) */
+    .seg { display:flex; gap:4px; max-width:500px; margin:16px auto 0; padding:4px; border-radius:999px; background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); }
+    .seg-btn { flex:1; border:0; background:none; color: rgba(255,255,255,.55); font:inherit; font-size:12.5px; font-weight:700; padding:9px 8px; border-radius:999px; cursor:pointer; transition: color .2s, background .2s, box-shadow .2s; }
+    .seg-btn.is-on { color:#1a1406; background: radial-gradient(120% 120% at 30% 25%, #ffe38a, #ffd23f); box-shadow:0 0 14px -3px rgba(255,210,63,.6); }
+
+    /* Anneau de progression (revenu) */
+    .objgoal { display:flex; align-items:center; gap:18px; }
+    .ring { position:relative; width:120px; height:120px; flex:none; }
+    .ring__svg { width:120px; height:120px; transform: rotate(-90deg); }
+    .ring__svg circle { fill:none; stroke-width:11; }
+    .ring__track { stroke: rgba(255,255,255,.07); }
+    .ring__val { stroke-linecap:round; transition: stroke-dashoffset 1s var(--ease); }
+    .ring__center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    .ring__pct { font-size:26px; font-weight:800; line-height:1; font-variant-numeric: tabular-nums; }
+    .ring__sub { margin-top:3px; font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color: rgba(255,255,255,.45); }
+    .objgoal__info { flex:1 1 auto; min-width:0; }
+    .objgoal__cur { display:block; font-size:24px; font-weight:800; color:#fff; font-variant-numeric: tabular-nums; }
+    .objgoal__tgt { display:block; margin-top:2px; font-size:13px; color: rgba(255,255,255,.5); }
+    .objgoal__edit { margin-top:10px; padding:8px 12px; border-radius:10px; border:1px solid rgba(255,210,63,.4); background: rgba(255,210,63,.1); color:#ffe38a; font:inherit; font-size:12px; font-weight:700; cursor:pointer; transition: background .18s, box-shadow .18s; }
+    .objgoal__edit:hover { background: rgba(255,210,63,.18); box-shadow:0 0 14px -4px rgba(255,210,63,.6); }
+    .objsec { max-width:500px; margin:22px auto 0; font-size:13px; font-weight:800; letter-spacing:.02em; color: rgba(255,255,255,.85); text-align:left; }
+    .cibles { max-width:500px; margin:12px auto 0; display:flex; flex-direction:column; gap:10px; }
+    .cible { text-align:left; padding:14px; border-radius:16px; background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); box-shadow:0 8px 20px -14px rgba(0,0,0,.7); animation: expIn .4s calc(var(--i)*45ms) var(--ease) both; }
+    .cible__top { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:9px; }
+    .cible__name { font-size:14.5px; font-weight:800; color:#fff; }
+    .cible__amt { font-size:14px; font-weight:800; color:#ffd23f; font-variant-numeric: tabular-nums; }
+    .cible__foot { display:flex; justify-content:space-between; gap:10px; margin-top:8px; font-size:11.5px; color: rgba(255,255,255,.5); }
+    .cible__add { margin-top:11px; width:100%; padding:9px; border-radius:11px; border:1px dashed rgba(255,210,63,.4); background:none; color:#ffe38a; font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; transition: background .18s; }
+    .cible__add:active { background: rgba(255,210,63,.12); }
+
+    /* Carnet clients */
+    .clients { max-width:500px; margin:14px auto 0; display:flex; flex-direction:column; gap:10px; }
+    .client { text-align:left; padding:13px 14px; border-radius:16px; background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); box-shadow:0 8px 20px -14px rgba(0,0,0,.7); animation: expIn .4s calc(var(--i)*45ms) var(--ease) both; }
+    .client__head { display:flex; align-items:center; gap:11px; }
+    .client__av { width:40px; height:40px; flex:none; border-radius:50%; display:grid; place-items:center; font-size:16px; font-weight:800; color:#1a0f04; background: radial-gradient(120% 120% at 30% 25%, #ffcf99, #ff8a3d); box-shadow:0 0 14px -3px rgba(255,138,61,.6), inset 0 1px 0 rgba(255,255,255,.4); }
+    .client__id { flex:1 1 auto; min-width:0; }
+    .client__name { display:block; font-size:14.5px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .client__meta { display:block; margin-top:2px; font-size:11px; color: rgba(255,255,255,.45); }
+    .client__debt { flex:none; font-size:11.5px; font-weight:800; padding:4px 9px; border-radius:999px; }
+    .client__debt.is-due { color:#ffb27a; background: rgba(255,138,61,.15); }
+    .client__debt.is-ok { color:#7bf0a8; background: rgba(53,224,122,.14); }
+    .client__act { display:flex; gap:7px; margin-top:12px; flex-wrap:wrap; }
+    .cbtn { display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:11px; border:1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.05); color: rgba(255,255,255,.8); font:inherit; font-size:12px; font-weight:700; cursor:pointer; transition: color .18s, border-color .18s, background .18s, box-shadow .18s; }
+    .cbtn svg { width:15px; height:15px; }
+    .cbtn:active { transform: scale(.95); }
+    .cbtn--relance { color:#7bf0a8; border-color: rgba(53,224,122,.35); }
+    .cbtn--relance:hover { background: rgba(53,224,122,.12); box-shadow:0 0 14px -4px rgba(53,224,122,.6); }
+    .cbtn--paid:hover { border-color: rgba(56,240,255,.5); color:#8ff6ff; }
+    .cbtn--auto.is-on { color:#ffe38a; border-color: rgba(255,210,63,.5); background: rgba(255,210,63,.12); box-shadow:0 0 12px -4px rgba(255,210,63,.6); }
+
+    /* Sheet : champs texte + boutons message */
+    .sheet__txt { width:100%; margin-bottom:10px; padding:13px 14px; border-radius:14px; border:1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.05); color:#fff; font:inherit; font-size:15px; font-weight:600; }
+    .sheet__txt::placeholder { color: rgba(255,255,255,.3); }
+    .msgbtn { display:block; width:100%; text-align:left; margin-bottom:9px; padding:12px 14px; border-radius:13px; border:1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.04); color:#fff; font:inherit; cursor:pointer; transition: border-color .18s, background .18s, box-shadow .18s; }
+    .msgbtn:hover { border-color: rgba(53,224,122,.45); background: rgba(53,224,122,.08); box-shadow:0 0 16px -6px rgba(53,224,122,.5); }
+    .msgbtn b { display:block; font-size:13px; font-weight:800; color:#7bf0a8; margin-bottom:3px; }
+    .msgbtn span { display:block; font-size:12px; line-height:1.4; color: rgba(255,255,255,.62); }
+
+    /* Variantes FAB */
+    .fab--gold { color:#1a1406; background: radial-gradient(120% 120% at 30% 25%, #ffe38a, #ffb400); box-shadow:0 12px 26px -8px rgba(255,180,0,.6), 0 0 24px -4px rgba(255,180,0,.55); }
+    .fab--orange { color:#1a0f04; background: radial-gradient(120% 120% at 30% 25%, #ffcf99, #ff7a1a); box-shadow:0 12px 26px -8px rgba(255,122,26,.6), 0 0 24px -4px rgba(255,122,26,.55); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ring__val { transition:none !important; }
+      .cible, .client { animation:none !important; }
+    }
+    /* ============================================================================
+       VAGUE 3 : CATALOGUE (CRUD produits/services) · FACTURES & DEVIS
+       ========================================================================== */
+    .navbtn--sky { --glow: #4cc9ff; }
+    .fab--sky { color:#04121a; background: radial-gradient(120% 120% at 30% 25%, #a9e6ff, #2bb6f5); box-shadow:0 12px 26px -8px rgba(43,182,245,.6), 0 0 24px -4px rgba(43,182,245,.55); }
+
+    /* Catalogue : cartes produit / service */
+    .seg--cat { max-width:500px; overflow-x:auto; }
+    .prodlist { max-width:500px; margin:14px auto 0; display:flex; flex-direction:column; gap:9px; perspective:800px; }
+    .prod { display:flex; align-items:center; gap:8px; padding:10px 11px; border-radius:14px; background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); box-shadow:0 8px 20px -14px rgba(0,0,0,.7); animation: cardOut .4s calc(120ms + var(--i)*40ms) cubic-bezier(0.19,1,0.22,1) both; }
+    .prod__main { flex:1 1 auto; min-width:0; display:flex; align-items:center; gap:10px; border:0; background:none; text-align:left; cursor:pointer; font:inherit; color:#fff; padding:0; }
+    .prod__disc { width:36px; height:36px; flex:none; border-radius:11px; display:grid; place-items:center; font-size:15px; font-weight:800; box-shadow: inset 0 1px 0 rgba(255,255,255,.4); }
+    .prod__info { flex:1 1 auto; min-width:0; }
+    .prod__name { display:block; font-size:14px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .prod__badges { display:flex; gap:5px; margin:3px 0; }
+    .ptype { font-size:9.5px; font-weight:800; letter-spacing:.04em; padding:2px 7px; border-radius:999px; text-transform:uppercase; }
+    .ptype--physique { color:#8ff6ff; background: rgba(56,240,255,.14); }
+    .ptype--digital { color:#c9a7ff; background: rgba(185,140,255,.16); }
+    .ptype--service { color:#7bf0a8; background: rgba(53,224,122,.14); }
+    .ptype--rec { color:#ffe38a; background: rgba(255,210,63,.16); text-transform:none; }
+    .prod__nums { display:block; font-size:11.5px; color: rgba(255,255,255,.5); }
+    .prod__nums b { color:#6bf0a0; font-weight:800; }
+    .prod__nums i { font-style:normal; font-weight:700; }
+    .prod__nums .m-hi { color:#6bf0a0; } .prod__nums .m-mid { color:#ffd23f; } .prod__nums .m-lo { color:#ff8a97; }
+    .prod__qty { flex:none; display:flex; align-items:center; gap:6px; }
+    .prod__qty .qtybtn { width:32px; height:32px; font-size:19px; }
+    .prod__qty.is-rupt .qtybtn__val { color:#ff5a6a; }
+    .prod__illim { flex:none; font-size:10.5px; font-weight:700; color: rgba(255,255,255,.4); padding-right:4px; }
+
+    /* Feuille catalogue (formulaire produit) */
+    .sheet--tall { max-height:86vh; overflow-y:auto; }
+    .seg--type { margin:0 0 10px; }
+    .field2 { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+    .fld { display:flex; flex-direction:column; gap:5px; }
+    .fld > span { font-size:11px; font-weight:700; color: rgba(255,255,255,.5); padding-left:3px; }
+    .fld .sheet__txt { margin-bottom:6px; }
+    .margeview { margin:2px 0 10px; padding:9px 12px; border-radius:11px; background: rgba(53,224,122,.08); border:1px solid rgba(53,224,122,.2); font-size:12.5px; color: rgba(255,255,255,.7); }
+    .margeview b { color:#6bf0a0; }
+    .toggle { display:flex; align-items:center; gap:9px; width:100%; margin-bottom:10px; padding:11px 12px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.04); color: rgba(255,255,255,.75); font:inherit; font-size:13px; font-weight:700; cursor:pointer; text-align:left; }
+    .toggle__dot { width:38px; height:22px; flex:none; border-radius:999px; background: rgba(255,255,255,.14); position:relative; transition: background .2s; }
+    .toggle__dot::after { content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; transition: transform .2s var(--ease-back); }
+    .toggle.is-on { color:#fff; border-color: rgba(255,210,63,.4); }
+    .toggle.is-on .toggle__dot { background: linear-gradient(90deg,#ffe38a,#ffd23f); }
+    .toggle.is-on .toggle__dot::after { transform: translateX(16px); }
+    .sheet__del { width:100%; margin-top:8px; padding:13px; border:1px solid rgba(255,59,59,.35); border-radius:14px; background: rgba(255,59,59,.08); color:#ff6b6b; font:inherit; font-size:14px; font-weight:800; cursor:pointer; }
+    .sheet__del:active { transform: scale(.98); }
+
+    /* Factures & devis : liste */
+    .doclist { max-width:500px; margin:14px auto 0; display:flex; flex-direction:column; gap:10px; }
+    .docrow { display:flex; align-items:center; gap:11px; padding:13px 14px; border-radius:15px; text-align:left; width:100%; border:1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.05); box-shadow:0 8px 20px -14px rgba(0,0,0,.7); cursor:pointer; font:inherit; color:#fff; animation: expIn .4s calc(var(--i)*40ms) var(--ease) both; }
+    .docrow__ic { width:40px; height:40px; flex:none; border-radius:12px; display:grid; place-items:center; color:#04121a; background: radial-gradient(120% 120% at 30% 25%, #a9e6ff, #4cc9ff); box-shadow:0 0 12px -3px rgba(76,201,255,.6); }
+    .docrow__ic svg { width:20px; height:20px; }
+    .docrow__id { flex:1 1 auto; min-width:0; }
+    .docrow__num { display:block; font-size:13.5px; font-weight:800; color:#fff; }
+    .docrow__cli { display:block; margin-top:2px; font-size:11.5px; color: rgba(255,255,255,.5); }
+    .docrow__right { flex:none; text-align:right; }
+    .docrow__amt { display:block; font-size:15px; font-weight:800; color:#fff; font-variant-numeric: tabular-nums; }
+    .docstatut { font-size:9.5px; font-weight:800; text-transform:uppercase; padding:2px 7px; border-radius:999px; }
+    .docstatut--brouillon { color:#c9c9c9; background: rgba(255,255,255,.1); }
+    .docstatut--envoyé { color:#8ff6ff; background: rgba(56,240,255,.14); }
+    .docstatut--payé { color:#7bf0a8; background: rgba(53,224,122,.14); }
+
+    /* Constructeur de document */
+    .builder { max-width:500px; margin:14px auto 0; text-align:left; }
+    .builder__lines { display:flex; flex-direction:column; gap:7px; margin:12px 0; }
+    .bline { display:flex; align-items:center; gap:9px; padding:9px 11px; border-radius:12px; background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); }
+    .bline__name { flex:1 1 auto; min-width:0; font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .bline__pu { font-weight:600; color: rgba(255,255,255,.45); }
+    .bline__amt { font-size:13px; font-weight:800; color:#6bf0a0; font-variant-numeric: tabular-nums; min-width:64px; text-align:right; }
+    .bline__x { width:26px; height:26px; flex:none; border:0; border-radius:8px; background: rgba(255,59,59,.12); color:#ff6b6b; font-size:16px; cursor:pointer; line-height:1; }
+    .builder__totals { margin-top:12px; padding:14px; border-radius:15px; background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); }
+    .btot { display:flex; justify-content:space-between; font-size:13px; color: rgba(255,255,255,.65); margin-bottom:7px; }
+    .btot--ttc { margin:10px 0 0; padding-top:10px; border-top:1px solid rgba(255,255,255,.1); font-size:17px; font-weight:800; color:#fff; }
+    .btot--ttc b { color:#6bf0a0; }
+    .builder__actions { display:flex; gap:9px; margin-top:14px; }
+    .bbtn { flex:1; padding:14px; border:0; border-radius:14px; font:inherit; font-size:14px; font-weight:800; cursor:pointer; transition: transform .1s ease; }
+    .bbtn:active { transform: scale(.97); }
+    .bbtn--ghost { background: rgba(255,255,255,.06); color: rgba(255,255,255,.7); border:1px solid rgba(255,255,255,.14); }
+    .bbtn--go { color:#04121a; background: radial-gradient(140% 140% at 30% 20%, #a9e6ff, #4cc9ff); box-shadow:0 0 22px -4px rgba(76,201,255,.6); }
+
+    /* Document normalisé (aperçu papier) */
+    .doc { max-width:500px; margin:14px auto 0; padding:22px; border-radius:16px; text-align:left; background:#fbfbf7; color:#14161c; box-shadow:0 20px 50px -20px rgba(0,0,0,.8); }
+    .doc__head { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #14161c; padding-bottom:14px; margin-bottom:16px; }
+    .doc__brand { font-size:18px; font-weight:800; }
+    .doc__brand small { display:block; font-size:11px; font-weight:600; color:#666; margin-top:2px; }
+    .doc__type { text-align:right; }
+    .doc__type b { display:block; font-size:20px; font-weight:800; letter-spacing:.04em; }
+    .doc__type span { font-size:11px; color:#666; }
+    .doc__meta { display:flex; justify-content:space-between; font-size:12px; color:#444; margin-bottom:14px; }
+    .doc__meta b { color:#14161c; }
+    .doctable { width:100%; border-collapse:collapse; font-size:12.5px; }
+    .doctable th { text-align:left; border-bottom:1px solid #ccc; padding:6px 4px; font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:#666; }
+    .doctable td { padding:8px 4px; border-bottom:1px solid #eee; }
+    .doctable .r { text-align:right; font-variant-numeric: tabular-nums; }
+    .doc__tot { margin:14px 0 0 auto; width:62%; }
+    .doc__tot div { display:flex; justify-content:space-between; font-size:12.5px; padding:3px 0; }
+    .doc__tot .ttc { font-size:16px; font-weight:800; border-top:2px solid #14161c; margin-top:6px; padding-top:8px; }
+    .doc__foot { margin-top:18px; font-size:11px; color:#666; text-align:center; }
+    .doc__actions { display:flex; gap:9px; max-width:500px; margin:12px auto 0; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .prod, .docrow { animation:none !important; }
     }
   </style>
 </head>
@@ -569,9 +980,17 @@
           <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
           Statistiques
         </button>
+        <button class="navbtn navbtn--yellow" data-nav="objectifs" data-sfx-hover>
+          <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.2"/><circle cx="12" cy="12" r="4.2"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg></span>
+          Objectifs
+        </button>
         <button class="navbtn navbtn--orange" data-nav="carnet" data-sfx-hover>
           <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M4.5 8H5M4.5 12H5M4.5 16H5"/><circle cx="13" cy="10" r="2.2"/><path d="M10 16.2a3 3 0 0 1 6 0"/></svg></span>
           Carnet clients
+        </button>
+        <button class="navbtn navbtn--sky" data-nav="factures" data-sfx-hover>
+          <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg></span>
+          Factures &amp; devis
         </button>
         <button class="navbtn navbtn--electric" data-nav="equipe" data-sfx-hover>
           <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 5.2a3 3 0 0 1 0 5.6"/><path d="M17.5 19a5.5 5.5 0 0 0-3-4.9"/></svg></span>
@@ -597,7 +1016,7 @@
     </aside>
   </div>
 
-  <span class="proto-tag">Aperçu · Étape 2 · Header + menu</span>
+  <span class="proto-tag">Aperçu · maquette néon v2</span>
 
   <script src="../assets/js/vendor/supabase.js"></script>
   <script type="module">
@@ -643,11 +1062,14 @@
       caisse:    { label: 'La caisse',      color: '#38f0ff', desc: 'Encaisse une vente en un geste.' },
       bilan:     { label: 'Le bilan',       color: '#b98cff', desc: 'Tes chiffres et ton rapport de santé.' },
       statistiques: { label: 'Statistiques', color: '#e8fbff', desc: 'Tendances, analyses et projections de ton activité.' },
+      objectifs: { label: 'Objectifs', color: '#ffd23f', desc: 'Tes buts de revenu et tes projets d\'achat.' },
       carnet:    { label: 'Carnet clients', color: '#ff8a3d', desc: 'Clients, crédits et relances.' },
+      factures:  { label: 'Factures & devis', color: '#4cc9ff', desc: 'Factures normalisées et devis pour tes clients.' },
       equipe:    { label: 'Mon équipe',     color: '#3a86ff', desc: 'Vendeurs, rôles et sécurité.' },
     };
     // Accueil : HUD de bienvenue (salutation dynamique) + 2 mastodontes Vendre / Dépenser
     function accueilHTML(cls) {
+      const ca = salesTotal(), stoday = salesToday(), objPct = Math.min(100, Math.round(stoday / objJour() * 100));   // vrais chiffres
       return '<div class="screen home portal" style="--sc:#ff2e43">' +   // portail « retour au nexus » (clip-path circulaire) au lieu de la caméra cine/hud
           '<div class="hud">' +
             '<span class="hud__sys"><i></i>Système en ligne</span>' +
@@ -656,15 +1078,15 @@
           '<div class="vitals">' +
             '<div class="vital vital--caisse" style="--i:0" role="button" tabindex="0" data-goto="statistiques" aria-label="Caisse : voir les statistiques">' +
               '<span class="vital__label">Caisse</span>' +
-              '<span class="vital__num" data-count="247500" data-suffix=" F">0 F</span>' +
+              '<span class="vital__num" data-count="' + ca + '" data-suffix=" F">0 F</span>' +
             '</div>' +
             '<div class="vital vital--jour" style="--i:1" role="button" tabindex="0" data-goto="statistiques" aria-label="Ventes du jour : voir les statistiques">' +
               '<span class="vital__label">Aujourd\'hui</span>' +
-              '<span class="vital__num" data-count="42500" data-suffix=" F">0 F</span>' +
+              '<span class="vital__num" data-count="' + stoday + '" data-suffix=" F">0 F</span>' +
             '</div>' +
-            '<div class="vital vital--objectif" style="--i:2" role="button" tabindex="0" data-goto="statistiques" aria-label="Objectif : voir les statistiques">' +
+            '<div class="vital vital--objectif" style="--i:2" role="button" tabindex="0" data-goto="objectifs" aria-label="Objectif : voir tes objectifs">' +
               '<span class="vital__label">Objectif</span>' +
-              '<span class="vital__num" data-count="68" data-suffix=" %">0 %</span>' +
+              '<span class="vital__num" data-count="' + objPct + '" data-suffix=" %">0 %</span>' +
             '</div>' +
           '</div>' +
           '<div class="masto">' +
@@ -674,22 +1096,705 @@
         '</div>';
     }
     // Écran Catalogue : « tiroir 3D » (drawerPull) + compartiments qui sortent en gigogne (cartes produits de démo)
+    // ===== SPIDER-MANAGER — état local + « sauvegarde automatique » (localStorage), esprit Zustand-lite =====
+    const CRIT = 3;   // seuil de stock critique
+    const SM = (() => {
+      const seed = { stock: [
+        { id: 'p1', nom: 'Yaourt maison', prix: 500, cout: 200, type: 'physique', qty: 12, recurrent: false },
+        { id: 'p2', nom: 'Jus de bissap', prix: 300, cout: 120, type: 'physique', qty: 2, recurrent: false },
+        { id: 'p3', nom: 'Pain doré', prix: 250, cout: 110, type: 'physique', qty: 0, recurrent: false },
+        { id: 'p4', nom: 'Part de gâteau', prix: 1000, cout: 450, type: 'physique', qty: 7, recurrent: false },
+        { id: 'p5', nom: 'Eau 1,5 L', prix: 200, cout: 120, type: 'physique', qty: 3, recurrent: false },
+        { id: 'p6', nom: 'Café au lait', prix: 400, cout: 150, type: 'physique', qty: 24, recurrent: false },
+        { id: 'p7', nom: 'Livraison à domicile', prix: 1000, cout: 300, type: 'service', qty: 0, recurrent: false },
+        { id: 'p8', nom: 'Abonnement pâtisserie', prix: 15000, cout: 6000, type: 'service', qty: 0, recurrent: true },
+      ] };
+      try { const s = localStorage.getItem('sm:state'); if (s) { const p = JSON.parse(s); if (p && p.stock) return p; } } catch (e) {}
+      return seed;
+    })();
+    function smSave() { try { localStorage.setItem('sm:state', JSON.stringify(SM)); } catch (e) {} }   // aucune action manuelle : auto-save
+    const qtyLabel = (q) => q === 0 ? 'Rupture' : q <= CRIT ? 'Stock bas' : q + ' en stock';
+    const stockAlertText = (c) => c ? '<b>' + c + '</b> produit' + (c > 1 ? 's' : '') + ' en stock critique' : 'Tout est bien approvisionné';
+
+    // Écran CATALOGUE : produits + services, prix + coût + marge, quantités (physique), CRUD complet
     function catalogueHTML() {
-      const items = [['Yaourt maison', '500 F'], ['Jus de bissap', '300 F'], ['Pain doré', '250 F'], ['Part de gâteau', '1 000 F'], ['Eau 1,5 L', '200 F'], ['Café au lait', '400 F']];
-      let cards = '';
-      items.forEach((it, i) => { cards += '<div class="catcard" style="--i:' + i + '"><span class="catcard__name">' + it[0] + '</span><span class="catcard__price">' + it[1] + '</span></div>'; });
-      return '<div class="screen drawer3d catalogue" style="--sc:#ffd23f">' +
+      const f = _catFilter || 'tous';
+      const list = SM.stock.filter((p) => f === 'tous' || p.type === f);
+      const cards = list.map((p) => {
+        const idx = SM.stock.indexOf(p), col = TILE_COLORS[idx % TILE_COLORS.length], mp = margePct(p);
+        const rec = p.recurrent ? '<span class="ptype ptype--rec">🔁 récurrent</span>' : '';
+        const mcls = mp >= 50 ? 'm-hi' : mp >= 25 ? 'm-mid' : 'm-lo';
+        const ctrl = p.type === 'physique'
+          ? '<div class="prod__qty' + (p.qty <= 0 ? ' is-rupt' : '') + '"><button class="qtybtn qtybtn--minus" data-qty="dec" data-id="' + p.id + '" aria-label="Retirer">−</button><span class="qtybtn__val" data-qtyval>' + p.qty + '</span><button class="qtybtn qtybtn--plus" data-qty="inc" data-id="' + p.id + '" aria-label="Ajouter">+</button></div>'
+          : '<span class="prod__illim">illimité</span>';
+        return '<div class="prod" style="--i:' + idx + '" data-id="' + p.id + '">' +
+          '<button class="prod__main" data-edit="' + p.id + '">' +
+            '<span class="prod__disc" style="background:radial-gradient(120% 120% at 30% 25%,' + col + ',' + col + '99);color:#04121a">' + p.nom.charAt(0).toUpperCase() + '</span>' +
+            '<span class="prod__info"><span class="prod__name">' + p.nom + '</span>' +
+              '<span class="prod__badges"><span class="ptype ptype--' + p.type + '">' + PTYPE_LBL[p.type] + '</span>' + rec + '</span>' +
+              '<span class="prod__nums"><b>' + fF(p.prix) + '</b> · coût ' + fF(p.cout || 0) + ' · <i class="' + mcls + '">marge ' + mp + '%</i></span>' +
+            '</span></button>' + ctrl + '</div>';
+      }).join('');
+      const seg = ['tous', 'physique', 'digital', 'service'].map((k) => '<button class="seg-btn' + (k === f ? ' is-on' : '') + '" data-catf="' + k + '">' + ({ tous: 'Tout', physique: 'Physique', digital: 'Digital', service: 'Service' }[k]) + '</button>').join('');
+      return '<div class="screen drawer3d wide" style="--sc:#ffd23f">' +
           '<span class="screen__tag">Catalogue</span>' +
-          '<h1 class="screen__title">Tes produits</h1>' +
-          '<p class="screen__sub">Tes produits et prestations, prêts à vendre.</p>' +
-          '<div class="catgrid">' + cards + '</div>' +
+          '<h1 class="screen__title">Ton catalogue</h1>' +
+          '<p class="screen__sub">Tes produits et services : prix, coût, et la marge que ça te rapporte.</p>' +
+          '<div class="seg seg--cat">' + seg + '</div>' +
+          '<div class="prodlist">' + (cards || '<p class="ia__txt" style="text-align:center">Rien dans cette catégorie.</p>') + '</div>' +
+          '<span class="fab__lbl">Nouvel article</span><button class="fab fab--gold" data-prodnew aria-label="Ajouter un produit ou service">+</button>' +
+          catSheet() +
         '</div>';
     }
+    // Interactions Catalogue : filtres, steppers -/+ (physique), ajout/modif/suppression via feuille
+    function bindStock() {
+      const scr = view.querySelector('.screen'); if (!scr) return;
+      const render = () => { view.innerHTML = catalogueHTML(); bindStock(); };
+      scr.querySelectorAll('[data-catf]').forEach((b) => b.addEventListener('click', () => { _catFilter = b.dataset.catf; playPop(true); render(); }));
+      scr.querySelectorAll('[data-qty]').forEach((b) => b.addEventListener('click', () => {
+        const p = SM.stock.find((x) => x.id === b.dataset.id); if (!p) return;
+        p.qty = Math.max(0, (p.qty || 0) + (b.dataset.qty === 'inc' ? 1 : -1)); smSave();
+        const card = scr.querySelector('.prod[data-id="' + p.id + '"]'), val = card.querySelector('[data-qtyval]');
+        val.textContent = p.qty; val.classList.remove('pop'); void val.offsetWidth; val.classList.add('pop');
+        card.querySelector('.prod__qty').classList.toggle('is-rupt', p.qty <= 0);
+        playPop(b.dataset.qty === 'inc');
+      }));
+      const sheet = scr.querySelector('[data-psheet]'), scrim = scr.querySelector('[data-psclose]'), g = (s) => scr.querySelector(s);
+      const title = g('[data-pstitle]'), nom = g('[data-pnom]'), prix = g('[data-pprix]'), cout = g('[data-pcout]'), qty = g('[data-pqty]'), qtyWrap = g('[data-pqtywrap]'), margeView = g('[data-pmarge]'), delBtn = g('[data-psdel]'), recBtn = g('[data-prec]'), typeBtns = scr.querySelectorAll('[data-pt]');
+      let editId = null, curType = 'physique', curRec = false;
+      const setType = (t) => { curType = t; typeBtns.forEach((x) => x.classList.toggle('is-on', x.dataset.pt === t)); qtyWrap.style.display = t === 'physique' ? 'flex' : 'none'; };
+      const setRec = (v) => { curRec = v; recBtn.classList.toggle('is-on', v); };
+      const updMarge = () => { const pv = +prix.value || 0, cv = +cout.value || 0, m = pv > 0 ? Math.round((pv - cv) / pv * 100) : 0; margeView.innerHTML = pv > 0 ? 'Marge : <b>' + fF(pv - cv) + '</b> (' + m + '%)' : 'Marge : —'; };
+      const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
+      const openAdd = () => { editId = null; title.textContent = 'Nouvel article'; nom.value = ''; prix.value = ''; cout.value = ''; qty.value = ''; setType('physique'); setRec(false); updMarge(); delBtn.style.display = 'none'; sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick(); setTimeout(() => { try { nom.focus(); } catch (_) {} }, 220); };
+      const openEdit = (p) => { editId = p.id; title.textContent = 'Modifier'; nom.value = p.nom; prix.value = p.prix; cout.value = p.cout || 0; qty.value = p.qty || 0; setType(p.type); setRec(!!p.recurrent); updMarge(); delBtn.style.display = 'block'; sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick(); };
+      scrim.addEventListener('click', close);
+      g('[data-prodnew]').addEventListener('click', openAdd);
+      scr.querySelectorAll('[data-edit]').forEach((b) => b.addEventListener('click', () => { const p = SM.stock.find((x) => x.id === b.dataset.edit); if (p) openEdit(p); }));
+      typeBtns.forEach((b) => b.addEventListener('click', () => { setType(b.dataset.pt); playPop(true); }));
+      recBtn.addEventListener('click', () => { setRec(!curRec); playPop(curRec); });
+      prix.addEventListener('input', updMarge); cout.addEventListener('input', updMarge);
+      g('[data-psok]').addEventListener('click', () => {
+        const n = (nom.value || '').trim(), pv = Math.round(+prix.value || 0), cv = Math.round(+cout.value || 0), qv = Math.round(+qty.value || 0);
+        if (!n || pv <= 0) { try { (n ? prix : nom).focus(); } catch (_) {} return; }
+        if (editId) { const p = SM.stock.find((x) => x.id === editId); if (p) { p.nom = n; p.prix = pv; p.cout = cv; p.type = curType; p.recurrent = curRec; if (curType === 'physique') p.qty = qv; } }
+        else SM.stock.push({ id: 'p' + Date.now(), nom: n, prix: pv, cout: cv, type: curType, recurrent: curRec, qty: curType === 'physique' ? qv : 0 });
+        smSave(); playSuccess(); close(); render();
+      });
+      delBtn.addEventListener('click', () => { if (!editId) return; const i = SM.stock.findIndex((x) => x.id === editId); if (i >= 0) { SM.stock.splice(i, 1); smSave(); playSwoosh(); close(); render(); } });
+    }
+    function playPop(up) {   // -/+ : petit pop néon (aigu si +, grave si -)
+      if (_muted) return; const ctx = audioCtx(); if (!ctx) return; const t = ctx.currentTime;
+      const o = ctx.createOscillator(); o.type = 'triangle';
+      o.frequency.setValueAtTime(up ? 520 : 300, t); o.frequency.exponentialRampToValueAtTime(up ? 880 : 200, t + 0.09);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.09, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.13);
+      o.connect(g); g.connect(_master); o.start(t); o.stop(t + 0.14);
+    }
+    function playSwoosh() {   // retrait par swipe : souffle court
+      if (_muted) return; const ctx = audioCtx(); if (!ctx) return; const t = ctx.currentTime, D = 0.18;
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * D), ctx.sampleRate);
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const s = ctx.createBufferSource(); s.buffer = nb;
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 0.8;
+      bp.frequency.setValueAtTime(1400, t); bp.frequency.exponentialRampToValueAtTime(300, t + D);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.08, t); g.gain.exponentialRampToValueAtTime(0.0001, t + D);
+      s.connect(bp); bp.connect(g); g.connect(_master); s.start(t); s.stop(t + D + 0.02);
+    }
+
+    // ===== SPIDER-MANAGER — écran DÉPENSES : liste catégorisée + FAB « Ajout rapide » =====
+    const CATS = { 'Fournitures': '#38f0ff', 'Transport': '#ffd23f', 'Loyer': '#b98cff', 'Marketing': '#ff6ec7', 'Divers': '#35e07a' };
+    const expTotal = () => (SM.depenses || []).reduce((s, d) => s + (+d.montant || 0), 0);
+    function expRow(d, i) {
+      return '<div class="exprow" style="--i:' + i + '" data-id="' + d.id + '">' +
+          '<span class="exp-dot" style="color:' + (CATS[d.cat] || '#888') + '"></span>' +
+          '<div class="exprow__main"><span class="exprow__lib">' + d.lib + '</span>' +
+            '<span class="exprow__meta">' + d.cat + ' · ' + d.when + '</span></div>' +
+          '<span class="exprow__amt">' + vitalFmt(d.montant) + ' F</span></div>';
+    }
+    function updateExpTotal() { const el = view.querySelector('[data-exptotal]'); if (el) el.textContent = vitalFmt(expTotal()) + ' F'; }
+    function depensesHTML() {
+      SM.depenses = SM.depenses || [];   // seed déplacé au chargement (bloc VAGUE 1)
+      let rows = ''; SM.depenses.forEach((d, i) => { rows += expRow(d, i); });
+      const chips = Object.keys(CATS).map((c) => '<button class="catchip" data-cat="' + c + '" style="--cc:' + CATS[c] + '">' + c + '</button>').join('');
+      return '<div class="screen expenses" style="--sc:#e11d48">' +
+          '<span class="screen__tag">Dépenses</span>' +
+          '<h1 class="screen__title">Ce qui sort</h1>' +
+          '<div class="exp-total">Dépensé<b data-exptotal>' + vitalFmt(expTotal()) + ' F</b></div>' +
+          '<div class="explist">' + rows + '</div>' +
+          '<span class="fab__lbl">Ajout rapide</span>' +
+          '<button class="fab" data-fab aria-label="Ajouter une dépense">+</button>' +
+          '<div class="sheet-scrim" data-sheetclose></div>' +
+          '<div class="sheet" data-sheet>' +
+            '<div class="sheet__grip"></div>' +
+            '<h3 class="sheet__title">Nouvelle dépense</h3>' +
+            '<input class="sheet__amt" data-amt type="number" inputmode="numeric" placeholder="0 F">' +
+            '<div class="sheet__cats">' + chips + '</div>' +
+            '<button class="sheet__add" data-addexp>Ajouter la dépense</button>' +
+          '</div>' +
+        '</div>';
+    }
+    function removeExp(row) { const id = row.dataset.id; const i = (SM.depenses || []).findIndex((x) => x.id === id); if (i >= 0) SM.depenses.splice(i, 1); smSave(); updateExpTotal(); }
+    // swipe-to-remove générique (glisser vers la gauche)
+    function attachSwipe(row, onRemove) {
+      let x0 = 0, dx = 0, drag = false;
+      row.addEventListener('pointerdown', (e) => {
+        if (e.target.closest('button,input')) return;
+        x0 = e.clientX; dx = 0; drag = true; row.style.animation = 'none'; row.style.transition = 'none';
+        try { row.setPointerCapture(e.pointerId); } catch (_) {}
+      });
+      row.addEventListener('pointermove', (e) => { if (!drag) return; dx = Math.min(0, e.clientX - x0); row.style.transform = 'translateX(' + dx + 'px)'; row.style.opacity = String(Math.max(0, 1 + dx / 320)); });
+      const end = () => {
+        if (!drag) return; drag = false; row.style.transition = 'transform .25s ease, opacity .25s ease';
+        if (dx < -110) { row.style.transform = 'translateX(-120%)'; row.style.opacity = '0'; playSwoosh(); setTimeout(() => { onRemove(row); row.remove(); }, 240); }
+        else { row.style.transform = ''; row.style.opacity = ''; }
+      };
+      row.addEventListener('pointerup', end); row.addEventListener('pointercancel', end);
+    }
+    function bindDepenses() {
+      const scr = view.querySelector('.expenses'); if (!scr) return;
+      const sheet = scr.querySelector('[data-sheet]'), scrim = scr.querySelector('[data-sheetclose]'), amt = scr.querySelector('[data-amt]');
+      let selCat = 'Fournitures';
+      const open = () => { sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick(); setTimeout(() => { try { amt.focus(); } catch (_) {} }, 220); };
+      const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
+      scr.querySelector('[data-fab]').addEventListener('click', open);
+      scrim.addEventListener('click', close);
+      const chips = scr.querySelectorAll('.catchip');
+      chips.forEach((c) => c.addEventListener('click', () => { chips.forEach((x) => x.classList.remove('is-sel')); c.classList.add('is-sel'); selCat = c.dataset.cat; playPop(true); }));
+      if (chips[0]) chips[0].classList.add('is-sel');
+      scr.querySelector('[data-addexp]').addEventListener('click', () => {
+        const v = Math.round(+amt.value || 0); if (v <= 0) { try { amt.focus(); } catch (_) {} return; }
+        const d = { id: 'd' + Date.now(), lib: selCat, cat: selCat, montant: v, when: "À l'instant" };
+        SM.depenses.unshift(d); smSave();
+        const list = scr.querySelector('.explist'); list.insertAdjacentHTML('afterbegin', expRow(d, 0));
+        attachSwipe(list.firstElementChild, removeExp); updateExpTotal(); playSuccess();
+        amt.value = ''; close();
+      });
+      scr.querySelectorAll('.exprow').forEach((row) => attachSwipe(row, removeExp));
+    }
+    function playSuccess() {   // dépense ajoutée : petit arpège ascendant (validation)
+      if (_muted) return; const ctx = audioCtx(); if (!ctx) return; const t = ctx.currentTime;
+      const bus = ctx.createGain(); bus.connect(_master);
+      [[660, 0], [880, 0.05], [1320, 0.1]].forEach((p) => {
+        const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.setValueAtTime(p[0], t + p[1]);
+        const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t + p[1]); g.gain.exponentialRampToValueAtTime(0.08, t + p[1] + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + p[1] + 0.25);
+        o.connect(g); g.connect(bus); o.start(t + p[1]); o.stop(t + p[1] + 0.3);
+      });
+    }
+    /* ============================================================================
+       VAGUE 1 : données ventes (POS) + agrégats + graphes SVG + moteur IA local
+       ========================================================================== */
+    const DAY = 86400000;
+    const objJour = () => (SM.objectifs && SM.objectifs.jour) || 50000;   // objectif de vente / jour (lu en direct)
+    const priceNum = (p) => typeof p === 'number' ? p : (+String(p).replace(/[^\d]/g, '') || 0);   // "1 000 F" -> 1000
+    const fF = (n) => vitalFmt(Math.round(n)) + ' F';                                                // format francs
+
+    const ICO_CASH  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2.2"/><circle cx="12" cy="12" r="2.6"/></svg>';
+    const ICO_PHONE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.4"/><path d="M11 18h2"/></svg>';
+    const ICO_CLOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>';
+
+    // Historique de ventes de démo (7 jours) si vide -> les graphes ont de la matière
+    if (!SM.ventes) {
+      const st = SM.stock;
+      const mk = (dayAgo, hh, picks, mode) => {
+        const items = picks.map(([i, q]) => { const p = st[i % st.length]; return { nom: p.nom, prix: priceNum(p.prix), qty: q }; });
+        const d = new Date(Date.now() - dayAgo * DAY); d.setHours(hh, 15, 0, 0);
+        return { id: 'v' + d.getTime(), items, total: items.reduce((s, it) => s + it.prix * it.qty, 0), mode, ts: d.getTime() };
+      };
+      SM.ventes = [
+        mk(0, 8, [[3, 10], [5, 8]], 'espèces'), mk(0, 11, [[0, 20]], 'momo'), mk(0, 13, [[3, 6], [1, 4]], 'espèces'),
+        mk(1, 9, [[3, 5]], 'espèces'), mk(1, 16, [[5, 10]], 'credit'),
+        mk(2, 10, [[0, 8]], 'momo'), mk(2, 18, [[3, 3]], 'espèces'),
+        mk(3, 12, [[3, 4], [4, 10]], 'espèces'), mk(4, 9, [[1, 10]], 'momo'), mk(4, 15, [[3, 2]], 'espèces'),
+        mk(5, 11, [[3, 3]], 'credit'), mk(6, 14, [[0, 6], [5, 5]], 'espèces'),
+      ];
+      smSave();
+    }
+    if (!SM.depenses) {   // seed dépenses dès le chargement -> Stats/Bilan ont de la matière sans passer par l'écran Dépenses
+      SM.depenses = [
+        { id: 'd1', lib: 'Sac de riz 25 kg', cat: 'Fournitures', montant: 12000, when: 'Auj. 09:12', ts: Date.now() - 3 * 3600000 },
+        { id: 'd2', lib: 'Transport livraison', cat: 'Transport', montant: 2500, when: 'Auj. 08:40', ts: Date.now() - 4 * 3600000 },
+        { id: 'd3', lib: 'Loyer boutique', cat: 'Loyer', montant: 30000, when: 'Hier', ts: Date.now() - 1 * DAY },
+        { id: 'd4', lib: 'Emballages', cat: 'Fournitures', montant: 3500, when: 'Hier', ts: Date.now() - 1 * DAY - 3600000 },
+        { id: 'd5', lib: 'Recharge crédit', cat: 'Divers', montant: 1000, when: 'Lun.', ts: Date.now() - 3 * DAY },
+      ];
+      smSave();
+    }
+    (SM.depenses || []).forEach((d, i) => { if (!d.ts) d.ts = Date.now() - (i % 4) * DAY - i * 3600000; });   // ts rétroactif (anciennes données)
+
+    const salesTotal = () => (SM.ventes || []).reduce((s, v) => s + (+v.total || 0), 0);
+    const salesToday = () => { const t0 = new Date(); t0.setHours(0, 0, 0, 0); return (SM.ventes || []).filter((v) => v.ts >= t0.getTime()).reduce((s, v) => s + v.total, 0); };
+    function depByCat() { const m = {}; (SM.depenses || []).forEach((d) => { m[d.cat] = (m[d.cat] || 0) + (+d.montant || 0); }); return Object.keys(m).map((k) => ({ name: k, val: m[k], color: CATS[k] || '#88aab0' })).sort((a, b) => b.val - a.val); }
+    function salesByMode() { const m = {}; (SM.ventes || []).forEach((v) => { m[v.mode] = (m[v.mode] || 0) + (+v.total || 0); }); return m; }
+    function evo7() {
+      const days = []; const now = new Date(); now.setHours(0, 0, 0, 0);
+      const J = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+      for (let k = 6; k >= 0; k--) { const d = new Date(now.getTime() - k * DAY); days.push({ t0: d.getTime(), t1: d.getTime() + DAY, lbl: J[d.getDay()], ca: 0, dep: 0 }); }
+      (SM.ventes || []).forEach((v) => { const b = days.find((x) => v.ts >= x.t0 && v.ts < x.t1); if (b) b.ca += (+v.total || 0); });
+      (SM.depenses || []).forEach((dp) => { const ts = dp.ts || Date.now(); const b = days.find((x) => ts >= x.t0 && ts < x.t1); if (b) b.dep += (+dp.montant || 0); });
+      return days;
+    }
+    const relTime = (ts) => {
+      const h = (Date.now() - ts) / 3600000;
+      if (h < 1) return "À l'instant"; if (h < 24) return 'Il y a ' + Math.round(h) + ' h';
+      const d = new Date(ts), n = new Date(); n.setHours(0, 0, 0, 0);
+      const days = Math.round((n.getTime() - new Date(ts).setHours(0, 0, 0, 0)) / DAY);
+      if (days === 1) return 'Hier'; if (days < 7) return ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'][d.getDay()];
+      return d.getDate() + '/' + (d.getMonth() + 1);
+    };
+
+    // ---- Graphes SVG ----
+    function donutSVG(data, centerLbl) {
+      const R = 54, C = 2 * Math.PI * R, total = data.reduce((s, d) => s + d.val, 0) || 1; let off = 0;
+      const segs = data.map((d) => { const len = C * (d.val / total); const seg = '<circle r="' + R + '" cx="66" cy="66" stroke="' + d.color + '" stroke-dasharray="' + len.toFixed(1) + ' ' + (C - len).toFixed(1) + '" stroke-dashoffset="' + (-off).toFixed(1) + '" style="filter:drop-shadow(0 0 3px ' + d.color + ')"/>'; off += len; return seg; }).join('');
+      const leg = data.map((d) => '<div class="legend__row"><span class="legend__dot" style="color:' + d.color + ';background:' + d.color + '"></span><span class="legend__name">' + d.name + '</span><span class="legend__val">' + fF(d.val) + '<span class="legend__pct">' + Math.round(d.val / total * 100) + '%</span></span></div>').join('');
+      return '<div class="donut"><div class="donut__wrap"><svg class="donut__svg" viewBox="0 0 132 132"><circle class="donut__track" r="' + R + '" cx="66" cy="66"/>' + segs + '</svg><div class="donut__center"><span class="donut__c-lbl">' + (centerLbl || 'Total') + '</span><b class="donut__c-val">' + fF(total) + '</b></div></div><div class="legend">' + leg + '</div></div>';
+    }
+    function barsSVG(days) {
+      const max = Math.max(1, ...days.map((d) => Math.max(d.ca, d.dep)));
+      const cols = days.map((d, i) => '<div class="barcol"><div class="barcol__pair" style="--i:' + i + '"><span class="bar bar--ca" style="height:' + Math.max(3, d.ca / max * 100).toFixed(1) + '%"></span><span class="bar bar--dep" style="height:' + Math.max(3, d.dep / max * 100).toFixed(1) + '%"></span></div><span class="barcol__lbl">' + d.lbl + '</span></div>').join('');
+      return '<div class="bars">' + cols + '</div><div class="chartkey"><span><b style="background:#35e07a"></b>Ventes</span><span><b style="background:#e11d48"></b>Dépenses</span></div>';
+    }
+    const hbar = (name, val, total, color) => { const pct = total > 0 ? Math.round(val / total * 100) : 0; return '<div class="hbar"><div class="hbar__top"><span class="hbar__name">' + name + '</span><span class="hbar__val">' + fF(val) + '<i>' + pct + '%</i></span></div><div class="hbar__track"><span class="hbar__fill" style="width:' + pct + '%;background:' + color + ';box-shadow:0 0 10px -2px ' + color + '"></span></div></div>'; };
+
+    // ---- Moteur IA local (interprétation + conseil, sans réseau) ----
+    function iaVerdict() {
+      const ca = salesTotal(), dep = expTotal(), ben = ca - dep, marge = ca > 0 ? Math.round(ben / ca * 100) : 0;
+      const cats = depByCat(), top = cats[0]; const lines = []; let tone = '', title = '';
+      if (ca === 0 && dep === 0) { title = 'Commence à enregistrer'; lines.push("Aucune vente ni dépense pour l'instant. Ouvre <b>La caisse</b> pour ta première vente : tout s'affiche ici automatiquement."); return { tone, title, lines }; }
+      if (ben > 0) { tone = 'good'; title = 'Tu es rentable, bravo !'; lines.push('Tu as encaissé <b>' + fF(ca) + '</b> et dépensé <b>' + fF(dep) + '</b>. Il te reste <b>' + fF(ben) + '</b> de bénéfice, soit une marge de <b>' + marge + '%</b>.'); }
+      else if (ben === 0) { title = "Tu es à l'équilibre"; lines.push('Tu rentres tout juste dans tes frais : <b>' + fF(ca) + '</b> encaissé pour <b>' + fF(dep) + '</b> dépensé. Une vente de plus et tu gagnes.'); }
+      else { tone = 'warn'; title = "Attention, tu perds de l'argent"; lines.push('Tu as dépensé <b>' + fF(dep) + '</b> pour seulement <b>' + fF(ca) + '</b> encaissé. Il manque <b>' + fF(Math.abs(ben)) + '</b> pour être à l\'équilibre.'); }
+      if (top && dep > 0) { const share = Math.round(top.val / dep * 100); lines.push('Ta plus grosse sortie, c\'est <b>' + top.name + '</b> (' + share + '% de tes dépenses). ' + (share > 45 ? 'Ça pèse lourd : regarde si tu peux la baisser.' : 'Ça reste sous contrôle.')); }
+      const stoday = salesToday(); if (stoday > 0) { const pc = Math.round(stoday / objJour() * 100); lines.push(pc >= 100 ? 'Objectif du jour atteint (<b>' + fF(stoday) + '</b>) : continue sur ta lancée !' : 'Aujourd\'hui tu es à <b>' + pc + '%</b> de ton objectif (' + fF(stoday) + ' sur ' + fF(objJour()) + ').'); }
+      return { tone, title, lines };
+    }
+    function iaBanner() { const v = iaVerdict(); return '<div class="ia' + (v.tone ? ' ia--' + v.tone : '') + '"><span class="ia__orb"></span><span class="ia__chip">&#10022; L\'IA Boussole</span><h3 class="ia__title">' + v.title + '</h3><p class="ia__txt">' + v.lines.join(' ') + '</p></div>'; }
+    const kpi = (mod, lbl, num, sub, i) => '<div class="kpi kpi--' + mod + '" style="--i:' + i + '"><span class="kpi__lbl">' + lbl + '</span><span class="kpi__num">' + num + '</span><span class="kpi__sub">' + sub + '</span></div>';
+
+    /* ===== CAISSE (POS) : touche les produits, choisis le paiement, encaisse ===== */
+    const TILE_COLORS = ['#38f0ff', '#35e07a', '#ffd23f', '#b98cff', '#ff8a3d', '#ff6ec7'];
+    let _ticket = [];               // panier courant [{id,nom,prix,qty}]
+    let _payMode = 'espèces';
+    const tkTotal = () => _ticket.reduce((s, l) => s + l.prix * l.qty, 0);
+    const tkCount = () => _ticket.reduce((s, l) => s + l.qty, 0);
+    function caisseHTML() {
+      const tiles = SM.stock.map((p, i) => {
+        const col = TILE_COLORS[i % TILE_COLORS.length], rupt = p.type === 'physique' && p.qty <= 0;
+        return '<button class="pos-tile' + (rupt ? ' rupt' : '') + '" data-pos="' + p.id + '" style="--i:' + i + '">' +
+          '<span class="pos-tile__badge" data-badge="' + p.id + '">0</span>' +
+          '<span class="pos-tile__disc" style="background:radial-gradient(120% 120% at 30% 25%,' + col + ',' + col + '99);color:#04121a">' + p.nom.charAt(0).toUpperCase() + '</span>' +
+          '<span class="pos-tile__name">' + p.nom + '</span>' +
+          (rupt ? '<span class="pos-tile__rupt">Rupture</span>' : '<span class="pos-tile__price">' + fF(priceNum(p.prix)) + '</span>') +
+          '</button>';
+      }).join('');
+      const pay = (m, cls, lbl, ic) => '<button class="paymode paymode--' + cls + (m === _payMode ? ' is-on' : '') + '" data-pay="' + m + '">' + ic + lbl + '</button>';
+      return '<div class="screen" style="--sc:#35e07a">' +
+        '<span class="screen__tag">Caisse</span>' +
+        '<h1 class="screen__title">Encaisser</h1>' +
+        '<p class="screen__sub">Touche les produits vendus, choisis le paiement, encaisse.</p>' +
+        '<div class="pos"><div class="pos__grid">' + tiles + '</div><div class="pos__pad"></div></div>' +
+        '<div class="ticket" data-ticket>' +
+          '<div class="ticket__top"><span class="ticket__cnt" data-tkcnt>0 article</span><span class="ticket__total" data-tktotal>0 F</span></div>' +
+          '<div class="ticket__modes">' + pay('espèces', 'esp', 'Espèces', ICO_CASH) + pay('momo', 'momo', 'Mobile Money', ICO_PHONE) + pay('credit', 'credit', 'Crédit', ICO_CLOCK) + '</div>' +
+          '<button class="ticket__go" data-encaisser>Encaisser <span data-tkgo>0 F</span></button>' +
+        '</div>' +
+      '</div>';
+    }
+    function refreshTicket() {
+      const bar = view.querySelector('[data-ticket]'); if (!bar) return;
+      const n = tkCount(), tot = tkTotal();
+      bar.classList.toggle('is-on', n > 0);
+      const c = bar.querySelector('[data-tkcnt]'); if (c) c.textContent = n + ' article' + (n > 1 ? 's' : '');
+      const t = bar.querySelector('[data-tktotal]'); if (t) t.textContent = fF(tot);
+      const g = bar.querySelector('[data-tkgo]'); if (g) g.textContent = fF(tot);
+    }
+    function cashBurst(amount) {
+      const el = document.createElement('div'); el.className = 'cashburst'; el.innerHTML = '<b>+' + fF(amount) + '</b>';
+      view.appendChild(el); setTimeout(() => el.remove(), 950);
+    }
+    function bindCaisse() {
+      _ticket = []; _payMode = 'espèces';
+      const scr = view.querySelector('.screen'); if (!scr) return;
+      const grid = scr.querySelector('.pos__grid');
+      grid.addEventListener('click', (e) => {
+        const b = e.target.closest('[data-pos]'); if (!b) return;
+        const p = SM.stock.find((x) => x.id === b.dataset.pos); if (!p) return;
+        let line = _ticket.find((l) => l.id === p.id);
+        if (p.type === 'physique' && (line ? line.qty : 0) >= p.qty) { playSwoosh(); return; }   // physique : pas plus que le stock
+        if (line) line.qty++; else { line = { id: p.id, nom: p.nom, prix: priceNum(p.prix), qty: 1 }; _ticket.push(line); }
+        const badge = grid.querySelector('[data-badge="' + p.id + '"]'); if (badge) badge.textContent = line.qty;
+        b.classList.add('has'); playPop(true); refreshTicket();
+      });
+      scr.querySelectorAll('[data-pay]').forEach((btn) => btn.addEventListener('click', () => {
+        scr.querySelectorAll('[data-pay]').forEach((x) => x.classList.remove('is-on')); btn.classList.add('is-on'); _payMode = btn.dataset.pay; playClick();
+      }));
+      scr.querySelector('[data-encaisser]').addEventListener('click', () => {
+        if (!_ticket.length) { playSwoosh(); return; }
+        const total = tkTotal();
+        const sale = { id: 'v' + Date.now(), items: _ticket.map((l) => ({ nom: l.nom, prix: l.prix, qty: l.qty })), total, mode: _payMode, ts: Date.now() };
+        _ticket.forEach((l) => { const p = SM.stock.find((x) => x.id === l.id); if (p && p.type === 'physique') p.qty = Math.max(0, p.qty - l.qty); });
+        (SM.ventes = SM.ventes || []).unshift(sale); smSave();
+        playSell(); cashBurst(total);
+        _ticket = []; _payMode = 'espèces';
+        setTimeout(() => { setActiveNav('ventes'); showSection('ventes', false); }, 780);   // enchaîne vers l'historique
+      });
+    }
+
+    /* ===== VENTES (historique) ===== */
+    function ventesHTML() {
+      const list = (SM.ventes || []).slice().sort((a, b) => b.ts - a.ts);
+      const rows = list.map((v, i) => {
+        const n = v.items.reduce((s, x) => s + x.qty, 0);
+        const items = v.items.map((it) => it.qty + '× ' + it.nom).join(', ');
+        const badge = v.mode === 'momo' ? '<span class="paybadge paybadge--momo">Mobile Money</span>' : v.mode === 'credit' ? '<span class="paybadge paybadge--credit">Crédit</span>' : '<span class="paybadge paybadge--esp">Espèces</span>';
+        return '<div class="salerow" style="--i:' + i + '"><div class="salerow__top"><span class="salerow__cnt">' + n + ' article' + (n > 1 ? 's' : '') + '</span><span class="salerow__amt">' + fF(v.total) + '</span></div><div class="salerow__items">' + items + '</div><div class="salerow__meta">' + badge + '<span>' + relTime(v.ts) + '</span></div></div>';
+      }).join('');
+      return '<div class="screen" style="--sc:#35e07a"><span class="screen__tag">Mes ventes</span><h1 class="screen__title">Tes ventes</h1>' +
+        '<div class="sales-total">Encaissé aujourd\'hui<b>' + fF(salesToday()) + '</b></div>' +
+        (list.length ? '<div class="saleslist">' + rows + '</div>' : '<p class="pos__empty">Aucune vente pour l\'instant. Va à <b>La caisse</b> pour encaisser ta première vente.</p>') +
+        iaBanner() + '</div>';
+    }
+    function bindVentes() {}
+
+    /* ===== STATISTIQUES ===== */
+    function statsHTML() {
+      const ca = salesTotal(), dep = expTotal(), ben = ca - dep, marge = ca > 0 ? Math.round(ben / ca * 100) : 0;
+      const cats = depByCat();
+      return '<div class="screen wide" style="--sc:#e8fbff"><span class="screen__tag">Statistiques</span><h1 class="screen__title">Tes chiffres</h1>' +
+        '<p class="screen__sub">Ce que tu gagnes, ce que tu dépenses, et ce que ça donne.</p>' +
+        iaBanner() +
+        '<div class="kpis">' +
+          kpi('ca', 'Encaissé', fF(ca), 'toutes tes ventes', 0) +
+          kpi('dep', 'Dépensé', fF(dep), 'sorties de caisse', 1) +
+          kpi('ben', 'Bénéfice', (ben >= 0 ? '+' : '') + fF(ben), ben >= 0 ? 'ce qui te reste' : 'tu es en perte', 2) +
+          kpi('marge', 'Marge', marge + ' %', 'sur 100 F vendus', 3) +
+        '</div>' +
+        '<div class="panel"><h3 class="panel__ttl" style="--sc:#e11d48"><i></i>Où part ton argent</h3>' + (dep > 0 ? donutSVG(cats, 'Dépensé') : '<p class="ia__txt">Pas encore de dépense enregistrée.</p>') + '</div>' +
+        '<div class="panel"><h3 class="panel__ttl" style="--sc:#35e07a"><i></i>Évolution 7 jours</h3>' + barsSVG(evo7()) + '</div>' +
+      '</div>';
+    }
+    function bindStats() {}
+
+    /* ===== BILAN ===== */
+    function bilanHTML() {
+      const ca = salesTotal(), dep = expTotal(), ben = ca - dep;
+      const mo = salesByMode(), esp = mo['espèces'] || 0, momo = mo['momo'] || 0, cred = mo['credit'] || 0;
+      const cats = depByCat();
+      const src = ca > 0 ? hbar('Espèces', esp, ca, '#35e07a') + hbar('Mobile Money', momo, ca, '#38f0ff') + hbar('Crédit (à récupérer)', cred, ca, '#ff8a3d') : '<p class="ia__txt">Aucune vente enregistrée.</p>';
+      const out = dep > 0 ? cats.map((c) => hbar(c.name, c.val, dep, c.color)).join('') : '<p class="ia__txt">Aucune dépense enregistrée.</p>';
+      return '<div class="screen wide" style="--sc:#b98cff"><span class="screen__tag">Le bilan</span><h1 class="screen__title">Ta santé</h1>' +
+        '<div class="benhero ben--' + (ben >= 0 ? 'ok' : 'bad') + '"><span class="benhero__lbl">Bénéfice net</span><b class="benhero__num">' + (ben >= 0 ? '+' : '') + fF(ben) + '</b><span class="benhero__sub">' + (ben >= 0 ? "Ton commerce gagne de l'argent" : "Ton commerce perd de l'argent") + '</span></div>' +
+        iaBanner() +
+        '<div class="panel"><h3 class="panel__ttl" style="--sc:#35e07a"><i></i>D\'où vient ton argent</h3>' + src + '</div>' +
+        '<div class="panel"><h3 class="panel__ttl" style="--sc:#e11d48"><i></i>Ce qui pèse le plus</h3>' + out + '</div>' +
+      '</div>';
+    }
+    function bindBilan() {}
+
+    /* ============================================================================
+       VAGUE 2 : OBJECTIFS + CARNET CLIENTS
+       ========================================================================== */
+    const ICO_WA = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm5.6 14.2c-.2.6-1.2 1.2-1.7 1.2-.4 0-1 .1-3.2-.9-2.7-1.2-4.4-4-4.5-4.2-.1-.2-1-1.4-1-2.6s.6-1.8.9-2.1c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.4.6c-.2.2-.3.4-.1.7.2.3.8 1.3 1.7 2.1 1.2 1 2 1.3 2.3 1.5.2.1.4.1.6-.1l.7-.9c.2-.3.4-.2.7-.1l1.8.9c.3.1.5.2.6.3.1.3.1.7-.1 1.3z"/></svg>';
+
+    if (!SM.objectifs) { SM.objectifs = { jour: 50000, semaine: 300000, mois: 1200000 }; smSave(); }
+    if (!SM.cibles) { SM.cibles = [ { id: 't1', nom: 'iPhone 15', montant: 500000, epargne: 145000 }, { id: 't2', nom: 'Congélateur boutique', montant: 250000, epargne: 90000 } ]; smSave(); }
+    if (!SM.clients) {
+      SM.clients = [
+        { id: 'c1', nom: 'Awa Koné', tel: '22997000001', dette: 8000, lastBuy: Date.now() - 2 * DAY, autoRelance: true },
+        { id: 'c2', nom: 'Ibrahim Sow', tel: '22997000002', dette: 15000, lastBuy: Date.now() - 9 * DAY, autoRelance: false },
+        { id: 'c3', nom: 'Fatou Bah', tel: '22997000003', dette: 0, lastBuy: Date.now() - 1 * DAY, autoRelance: false },
+        { id: 'c4', nom: 'Marie Adjo', tel: '22997000004', dette: 3500, lastBuy: Date.now() - 5 * DAY, autoRelance: true },
+      ];
+      smSave();
+    }
+
+    const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); };
+    const startOfMonth = () => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(1); return d.getTime(); };
+    const salesRange = (fromTs) => (SM.ventes || []).reduce((s, v) => v.ts >= fromTs ? s + v.total : s, 0);
+    const dailyBen = () => { const d = evo7(); return d.reduce((s, x) => s + (x.ca - x.dep), 0) / 7; };   // bénéfice moyen / jour (7 j)
+
+    function ringSVG(pct, color, sub) {
+      const R = 52, C = 2 * Math.PI * R, p = Math.max(0, Math.min(100, pct)), off = C * (1 - p / 100);
+      return '<div class="ring"><svg class="ring__svg" viewBox="0 0 120 120"><circle class="ring__track" cx="60" cy="60" r="' + R + '"/><circle class="ring__val" cx="60" cy="60" r="' + R + '" stroke="' + color + '" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + C.toFixed(1) + '" data-off="' + off.toFixed(1) + '" style="filter:drop-shadow(0 0 5px ' + color + ')"/></svg><div class="ring__center"><b class="ring__pct" style="color:' + color + '">' + Math.round(p) + '%</b><span class="ring__sub">' + sub + '</span></div></div>';
+    }
+    function iaBannerObj(per, cur, tgt, rate) {
+      const pct = tgt > 0 ? Math.round(cur / tgt * 100) : 0; const lines = []; let tone = '', title = '';
+      const perLbl = { jour: "aujourd'hui", semaine: 'cette semaine', mois: 'ce mois' }[per];
+      if (pct >= 100) { tone = 'good'; title = 'Objectif ' + ({ jour: 'du jour', semaine: 'de la semaine', mois: 'du mois' }[per]) + ' atteint !'; lines.push('Tu as fait <b>' + fF(cur) + '</b> pour un objectif de <b>' + fF(tgt) + '</b>. Chaque vente en plus, c\'est du bénéfice pur.'); }
+      else { tone = pct >= 60 ? '' : 'warn'; title = 'Encore ' + fF(Math.max(0, tgt - cur)) + ' à faire'; lines.push('Tu es à <b>' + pct + '%</b> de ton objectif ' + perLbl + ' (' + fF(cur) + ' sur ' + fF(tgt) + ').'); }
+      const cibles = (SM.cibles || []).filter((t) => t.epargne < t.montant);
+      if (cibles.length && rate > 0) { const t = cibles[0], j = Math.ceil((t.montant - t.epargne) / rate); lines.push('À ton rythme actuel (~<b>' + fF(rate) + '</b> de bénéfice par jour), tu atteins <b>' + t.nom + '</b> dans <b>' + j + ' jours</b>. Mets un peu de côté à chaque grosse vente pour aller plus vite.'); }
+      else if (cibles.length) { lines.push('Pour financer <b>' + cibles[0].nom + '</b>, il faut d\'abord que ton bénéfice repasse au vert : vends un peu plus ou baisse une dépense.'); }
+      return '<div class="ia' + (tone ? ' ia--' + tone : '') + '"><span class="ia__orb"></span><span class="ia__chip">&#10022; Coach Boussole</span><h3 class="ia__title">' + title + '</h3><p class="ia__txt">' + lines.join(' ') + '</p></div>';
+    }
+    let _objPer = 'jour';
+    function objTargets() { const o = SM.objectifs || {}; return { jour: o.jour || 50000, semaine: o.semaine || 300000, mois: o.mois || 1200000 }; }
+    function objectifsHTML() {
+      const t = objTargets();
+      const M = { jour: ["Aujourd'hui", salesRange(startOfToday()), t.jour], semaine: ['7 derniers jours', salesRange(Date.now() - 7 * DAY), t.semaine], mois: ['Ce mois', salesRange(startOfMonth()), t.mois] };
+      const cur = M[_objPer][1], tgt = M[_objPer][2], pct = tgt > 0 ? cur / tgt * 100 : 0, rate = dailyBen();
+      const seg = ['jour', 'semaine', 'mois'].map((k) => '<button class="seg-btn' + (k === _objPer ? ' is-on' : '') + '" data-per="' + k + '">' + ({ jour: 'Jour', semaine: 'Semaine', mois: 'Mois' }[k]) + '</button>').join('');
+      const cibles = (SM.cibles || []).map((c, i) => {
+        const p = c.montant > 0 ? Math.min(100, c.epargne / c.montant * 100) : 0, reste = Math.max(0, c.montant - c.epargne), j = rate > 0 ? Math.ceil(reste / rate) : null;
+        return '<div class="cible" style="--i:' + i + '"><div class="cible__top"><span class="cible__name">' + c.nom + '</span><span class="cible__amt">' + fF(c.montant) + '</span></div>' +
+          '<div class="hbar__track"><span class="hbar__fill" style="width:' + p.toFixed(0) + '%;background:#ffd23f;box-shadow:0 0 10px -2px #ffd23f"></span></div>' +
+          '<div class="cible__foot"><span>' + fF(c.epargne) + ' épargnés</span><span>' + (reste > 0 ? (j !== null ? 'reste ' + fF(reste) + ' · ≈ ' + j + ' j' : 'reste ' + fF(reste)) : 'Atteint !') + '</span></div>' +
+          '<button class="cible__add" data-cibleadd="' + c.id + '">+ ajouter à l\'épargne</button></div>';
+      }).join('');
+      return '<div class="screen wide" style="--sc:#ffd23f"><span class="screen__tag">Objectifs</span><h1 class="screen__title">Tes objectifs</h1>' +
+        '<div class="seg">' + seg + '</div>' +
+        '<div class="panel objgoal"><div class="objgoal__ring">' + ringSVG(pct, '#ffd23f', M[_objPer][0]) + '</div>' +
+          '<div class="objgoal__info"><span class="objgoal__cur">' + fF(cur) + '</span><span class="objgoal__tgt">sur ' + fF(tgt) + ' visés</span><button class="objgoal__edit" data-edittgt>Modifier l\'objectif</button></div></div>' +
+        iaBannerObj(_objPer, cur, tgt, rate) +
+        '<h3 class="objsec">Objectifs d\'achat</h3>' +
+        '<div class="cibles">' + (cibles || '<p class="ia__txt">Aucun projet. Ajoute ton premier objectif d\'achat.</p>') + '</div>' +
+        '<span class="fab__lbl">Nouveau projet</span><button class="fab fab--gold" data-ciblenew aria-label="Ajouter un objectif d\'achat">+</button>' +
+        '<div class="sheet-scrim" data-osclose></div>' +
+        '<div class="sheet" data-osheet><div class="sheet__grip"></div><h3 class="sheet__title" data-ostitle>Objectif</h3>' +
+          '<input class="sheet__txt" data-osname type="text" placeholder="Nom du projet" style="display:none">' +
+          '<input class="sheet__amt" data-osamt type="number" inputmode="numeric" placeholder="0 F">' +
+          '<button class="sheet__add" data-osok>Enregistrer</button></div>' +
+      '</div>';
+    }
+    function bindObjectifs() {
+      const scr = view.querySelector('.screen'); if (!scr) return;
+      const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      scr.querySelectorAll('.ring__val').forEach((c) => { const off = c.dataset.off; if (rm) c.style.strokeDashoffset = off; else requestAnimationFrame(() => { c.style.strokeDashoffset = off; }); });
+      const render = () => { view.innerHTML = objectifsHTML(); bindObjectifs(); };
+      scr.querySelectorAll('[data-per]').forEach((b) => b.addEventListener('click', () => { _objPer = b.dataset.per; playPop(true); render(); }));
+      const sheet = scr.querySelector('[data-osheet]'), scrim = scr.querySelector('[data-osclose]'), name = scr.querySelector('[data-osname]'), amt = scr.querySelector('[data-osamt]'), title = scr.querySelector('[data-ostitle]');
+      const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
+      let mode = null, cibleId = null;
+      const open = (m, opts) => { mode = m; cibleId = opts.cibleId || null; title.textContent = opts.title; name.style.display = opts.withName ? 'block' : 'none'; name.value = ''; amt.value = ''; amt.placeholder = opts.ph || '0 F'; sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick(); setTimeout(() => { try { (opts.withName ? name : amt).focus(); } catch (_) {} }, 220); };
+      scrim.addEventListener('click', close);
+      scr.querySelector('[data-edittgt]').addEventListener('click', () => open('target', { title: 'Objectif ' + ({ jour: 'du jour', semaine: 'de la semaine', mois: 'du mois' }[_objPer]), ph: 'Montant en F' }));
+      scr.querySelectorAll('[data-cibleadd]').forEach((b) => b.addEventListener('click', () => open('epargne', { title: "Ajouter à l'épargne", cibleId: b.dataset.cibleadd, ph: 'Montant épargné' })));
+      const nb = scr.querySelector('[data-ciblenew]'); if (nb) nb.addEventListener('click', () => open('newcible', { title: "Nouveau projet d'achat", withName: true, ph: 'Prix du projet' }));
+      scr.querySelector('[data-osok]').addEventListener('click', () => {
+        const v = Math.round(+amt.value || 0);
+        if (mode === 'target') { if (v > 0) { SM.objectifs = SM.objectifs || {}; SM.objectifs[_objPer] = v; smSave(); } }
+        else if (mode === 'epargne') { const t = (SM.cibles || []).find((x) => x.id === cibleId); if (t && v > 0) { t.epargne = Math.min(t.montant, t.epargne + v); smSave(); } }
+        else if (mode === 'newcible') { const nom = (name.value || '').trim(); if (nom && v > 0) { (SM.cibles = SM.cibles || []).push({ id: 't' + Date.now(), nom, montant: v, epargne: 0 }); smSave(); } else { return; } }
+        playSuccess(); close(); render();
+      });
+    }
+
+    /* ===== CARNET CLIENTS ===== */
+    const relanceMsgs = (c) => [
+      { k: 'doux', lbl: 'Rappel amical', txt: 'Bonjour ' + c.nom + ' 👋 Petit rappel amical : il reste ' + fF(c.dette) + ' sur votre compte. Merci de régulariser dès que possible 🙏' },
+      { k: 'ferme', lbl: 'Relance', txt: 'Bonjour ' + c.nom + ', votre solde de ' + fF(c.dette) + ' est toujours en attente. Pouvez-vous passer régler cette semaine ? Merci de votre compréhension.' },
+      { k: 'merci', lbl: 'Remerciement', txt: 'Bonjour ' + c.nom + ', merci pour votre confiance et votre fidélité ! Au plaisir de vous revoir très vite.' },
+    ];
+    function iaBannerCarnet() {
+      const due = (SM.clients || []).filter((c) => c.dette > 0);
+      if (!due.length) return '<div class="ia ia--good"><span class="ia__orb"></span><span class="ia__chip">&#10022; L\'IA Boussole</span><h3 class="ia__title">Tout le monde est à jour</h3><p class="ia__txt">Aucune dette en cours. Les clients qui paient vite sont tes meilleurs clients : soigne-les.</p></div>';
+      const prio = due.slice().sort((a, b) => (a.lastBuy - b.lastBuy) || (b.dette - a.dette))[0];
+      const total = due.reduce((s, c) => s + c.dette, 0);
+      return '<div class="ia ia--warn"><span class="ia__orb"></span><span class="ia__chip">&#10022; L\'IA Boussole</span><h3 class="ia__title">Relance ' + prio.nom + ' en priorité</h3><p class="ia__txt"><b>' + fF(total) + '</b> à récupérer chez ' + due.length + ' client' + (due.length > 1 ? 's' : '') + '. Commence par <b>' + prio.nom + '</b> (doit ' + fF(prio.dette) + ', vu ' + relTime(prio.lastBuy) + ') : plus une dette traîne, plus elle est dure à récupérer.</p></div>';
+    }
+    function carnetHTML() {
+      const cls = (SM.clients || []).slice().sort((a, b) => b.dette - a.dette);
+      const total = cls.reduce((s, c) => s + (c.dette || 0), 0);
+      const rows = cls.map((c, i) => {
+        const due = c.dette > 0;
+        return '<div class="client" style="--i:' + i + '"><div class="client__head"><span class="client__av">' + c.nom.charAt(0).toUpperCase() + '</span>' +
+          '<div class="client__id"><span class="client__name">' + c.nom + '</span><span class="client__meta">' + (c.tel ? '+' + c.tel : 'sans numéro') + ' · vu ' + relTime(c.lastBuy) + '</span></div>' +
+          '<span class="client__debt ' + (due ? 'is-due' : 'is-ok') + '">' + (due ? 'doit ' + fF(c.dette) : 'à jour') + '</span></div>' +
+          '<div class="client__act"><button class="cbtn cbtn--relance" data-relance="' + c.id + '">' + ICO_WA + 'Relancer</button>' +
+          (due ? '<button class="cbtn cbtn--paid" data-paid="' + c.id + '">Marquer payé</button>' : '') +
+          '<button class="cbtn cbtn--auto' + (c.autoRelance ? ' is-on' : '') + '" data-auto="' + c.id + '">Relance auto</button></div></div>';
+      }).join('');
+      return '<div class="screen wide" style="--sc:#ff8a3d"><span class="screen__tag">Carnet clients</span><h1 class="screen__title">Tes clients</h1>' +
+        '<div class="sales-total">À récupérer<b style="color:#ffb27a;text-shadow:0 0 14px rgba(255,138,61,.4)">' + fF(total) + '</b></div>' +
+        iaBannerCarnet() +
+        '<div class="clients">' + (rows || '<p class="pos__empty">Aucun client. Ajoute ton premier client.</p>') + '</div>' +
+        '<span class="fab__lbl">Nouveau client</span><button class="fab fab--orange" data-clientnew aria-label="Ajouter un client">+</button>' +
+        '<div class="sheet-scrim" data-csclose></div>' +
+        '<div class="sheet" data-csheet><div class="sheet__grip"></div><h3 class="sheet__title" data-cstitle>Relancer</h3><div data-csbody></div></div>' +
+      '</div>';
+    }
+    function bindCarnet() {
+      const scr = view.querySelector('.screen'); if (!scr) return;
+      const sheet = scr.querySelector('[data-csheet]'), scrim = scr.querySelector('[data-csclose]'), body = scr.querySelector('[data-csbody]'), title = scr.querySelector('[data-cstitle]');
+      const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
+      const render = () => { view.innerHTML = carnetHTML(); bindCarnet(); };
+      scrim.addEventListener('click', close);
+      scr.querySelectorAll('[data-relance]').forEach((b) => b.addEventListener('click', () => {
+        const c = (SM.clients || []).find((x) => x.id === b.dataset.relance); if (!c) return;
+        title.textContent = 'Relancer ' + c.nom;
+        body.innerHTML = relanceMsgs(c).map((m) => '<button class="msgbtn" data-msg="' + m.k + '"><b>' + m.lbl + '</b><span>' + m.txt + '</span></button>').join('');
+        body.querySelectorAll('[data-msg]').forEach((mb) => mb.addEventListener('click', () => {
+          const m = relanceMsgs(c).find((x) => x.k === mb.dataset.msg);
+          window.open('https://wa.me/' + (c.tel || '') + '?text=' + encodeURIComponent(m.txt), '_blank'); playSell(); close();
+        }));
+        sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick();
+      }));
+      scr.querySelectorAll('[data-paid]').forEach((b) => b.addEventListener('click', () => { const c = (SM.clients || []).find((x) => x.id === b.dataset.paid); if (c) { c.dette = 0; smSave(); playSuccess(); render(); } }));
+      scr.querySelectorAll('[data-auto]').forEach((b) => b.addEventListener('click', () => { const c = (SM.clients || []).find((x) => x.id === b.dataset.auto); if (c) { c.autoRelance = !c.autoRelance; smSave(); b.classList.toggle('is-on', c.autoRelance); playPop(c.autoRelance); } }));
+      const nb = scr.querySelector('[data-clientnew]'); if (nb) nb.addEventListener('click', () => {
+        title.textContent = 'Nouveau client';
+        body.innerHTML = '<input class="sheet__txt" data-cnom type="text" placeholder="Nom du client"><input class="sheet__txt" data-ctel type="tel" inputmode="numeric" placeholder="Numéro WhatsApp (ex 229...)"><button class="sheet__add" data-csave>Enregistrer</button>';
+        body.querySelector('[data-csave]').addEventListener('click', () => {
+          const nom = (body.querySelector('[data-cnom]').value || '').trim(), tel = (body.querySelector('[data-ctel]').value || '').replace(/[^\d]/g, '');
+          if (!nom) return;
+          (SM.clients = SM.clients || []).push({ id: 'c' + Date.now(), nom, tel, dette: 0, lastBuy: Date.now(), autoRelance: false }); smSave();
+          playSuccess(); close(); render();
+        });
+        sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick();
+        setTimeout(() => { try { body.querySelector('[data-cnom]').focus(); } catch (_) {} }, 220);
+      });
+    }
+
+    /* ============================================================================
+       VAGUE 3 : CATALOGUE (helpers) + FACTURES & DEVIS
+       ========================================================================== */
+    // Migration du stock vers la forme catalogue (prix num, coût, type, récurrent)
+    SM.stock.forEach((p) => {
+      if (typeof p.prix === 'string') p.prix = priceNum(p.prix);
+      if (p.cout === undefined) p.cout = Math.round(p.prix * 0.55);
+      if (p.type === undefined) p.type = 'physique';
+      if (p.recurrent === undefined) p.recurrent = false;
+    });
+    smSave();
+    const margePct = (p) => p.prix > 0 ? Math.round((p.prix - (p.cout || 0)) / p.prix * 100) : 0;
+    const PTYPE_LBL = { physique: 'Physique', digital: 'Digital', service: 'Service' };
+    let _catFilter = 'tous';
+    function catSheet() {
+      return '<div class="sheet-scrim" data-psclose></div>' +
+        '<div class="sheet sheet--tall" data-psheet><div class="sheet__grip"></div>' +
+          '<h3 class="sheet__title" data-pstitle>Nouvel article</h3>' +
+          '<input class="sheet__txt" data-pnom type="text" placeholder="Nom (ex : Jus de bissap)">' +
+          '<div class="seg seg--type" data-ptype>' + ['physique', 'digital', 'service'].map((k) => '<button class="seg-btn" data-pt="' + k + '">' + PTYPE_LBL[k] + '</button>').join('') + '</div>' +
+          '<div class="field2"><label class="fld"><span>Prix de vente</span><input class="sheet__txt" data-pprix type="number" inputmode="numeric" placeholder="0 F"></label>' +
+            '<label class="fld"><span>Coût / achat</span><input class="sheet__txt" data-pcout type="number" inputmode="numeric" placeholder="0 F"></label></div>' +
+          '<div class="margeview" data-pmarge>Marge : —</div>' +
+          '<label class="fld" data-pqtywrap><span>Quantité en stock</span><input class="sheet__txt" data-pqty type="number" inputmode="numeric" placeholder="0"></label>' +
+          '<button class="toggle" data-prec><span class="toggle__dot"></span>Article récurrent (abonnement)</button>' +
+          '<button class="sheet__add" data-psok>Enregistrer</button>' +
+          '<button class="sheet__del" data-psdel style="display:none">Supprimer cet article</button></div>';
+    }
+
+    /* ===== FACTURES & DEVIS ===== */
+    const ICO_DOC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>';
+    if (!SM.factures) {
+      SM.factures = [
+        { id: 'f1', type: 'facture', num: 'FAC-2026-001', clientNom: 'Awa Koné', date: Date.now() - 4 * DAY, items: [{ nom: 'Part de gâteau', prix: 1000, qty: 6 }, { nom: 'Café au lait', prix: 400, qty: 6 }], tva: false, statut: 'payé' },
+        { id: 'f2', type: 'devis', num: 'DEV-2026-001', clientNom: 'Ibrahim Sow', date: Date.now() - 1 * DAY, items: [{ nom: 'Abonnement pâtisserie', prix: 15000, qty: 1 }], tva: true, statut: 'envoyé' },
+      ];
+      smSave();
+    }
+    const TVA_RATE = 0.18;
+    const docHT = (d) => d.items.reduce((s, it) => s + it.prix * it.qty, 0);
+    const docTVA = (d) => d.tva ? Math.round(docHT(d) * TVA_RATE) : 0;
+    const docTTC = (d) => docHT(d) + docTVA(d);
+    function nextNum(type) {
+      const y = new Date().getFullYear(), pre = type === 'facture' ? 'FAC' : 'DEV';
+      const n = (SM.factures || []).filter((d) => d.type === type && d.num.indexOf(pre + '-' + y) === 0).length + 1;
+      return pre + '-' + y + '-' + String(n).padStart(3, '0');
+    }
+    const fDate = (ts) => { const d = new Date(ts); return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear(); };
+    let _facMode = 'list', _facFilter = 'facture', _facDraft = null, _facView = null;
+
+    function facListHTML() {
+      const list = (SM.factures || []).filter((d) => d.type === _facFilter).sort((a, b) => b.date - a.date);
+      const seg = ['facture', 'devis'].map((k) => '<button class="seg-btn' + (k === _facFilter ? ' is-on' : '') + '" data-facf="' + k + '">' + (k === 'facture' ? 'Factures' : 'Devis') + '</button>').join('');
+      const rows = list.map((d, i) => '<button class="docrow" style="--i:' + i + '" data-doc="' + d.id + '"><span class="docrow__ic">' + ICO_DOC + '</span>' +
+        '<span class="docrow__id"><span class="docrow__num">' + d.num + '</span><span class="docrow__cli">' + d.clientNom + ' · ' + fDate(d.date) + '</span></span>' +
+        '<span class="docrow__right"><span class="docrow__amt">' + fF(docTTC(d)) + '</span><span class="docstatut docstatut--' + d.statut + '">' + d.statut + '</span></span></button>').join('');
+      return '<div class="screen wide" style="--sc:#4cc9ff"><span class="screen__tag">Factures &amp; devis</span><h1 class="screen__title">Tes documents</h1>' +
+        '<div class="seg">' + seg + '</div>' +
+        '<div class="doclist">' + (rows || '<p class="pos__empty">Aucun document ici. Touche le <b>+</b> pour créer une facture ou un devis.</p>') + '</div>' +
+        '<span class="fab__lbl">Nouveau document</span><button class="fab fab--sky" data-facnew aria-label="Créer une facture ou un devis">+</button></div>';
+    }
+    function facBuilderHTML() {
+      const d = _facDraft;
+      const tiles = SM.stock.map((p, i) => { const q = (d.items.find((x) => x.id === p.id) || {}).qty || 0; return '<button class="pos-tile' + (q > 0 ? ' has' : '') + '" data-add="' + p.id + '" style="--i:' + i + '"><span class="pos-tile__badge">' + q + '</span><span class="pos-tile__disc" style="background:radial-gradient(120% 120% at 30% 25%,' + TILE_COLORS[i % TILE_COLORS.length] + ',' + TILE_COLORS[i % TILE_COLORS.length] + '99);color:#04121a">' + p.nom.charAt(0).toUpperCase() + '</span><span class="pos-tile__name">' + p.nom + '</span><span class="pos-tile__price">' + fF(p.prix) + '</span></button>'; }).join('');
+      const lines = d.items.map((it, i) => '<div class="bline"><span class="bline__name">' + it.nom + ' <span class="bline__pu">×' + it.qty + '</span></span><span class="bline__amt">' + fF(it.prix * it.qty) + '</span><button class="bline__x" data-rmline="' + i + '" aria-label="Retirer">×</button></div>').join('');
+      const ht = docHT(d), tva = d.tva ? Math.round(ht * TVA_RATE) : 0;
+      const typeSeg = ['facture', 'devis'].map((k) => '<button class="seg-btn' + (k === d.type ? ' is-on' : '') + '" data-btype="' + k + '">' + (k === 'facture' ? 'Facture' : 'Devis') + '</button>').join('');
+      return '<div class="screen wide" style="--sc:#4cc9ff"><span class="screen__tag">Nouveau</span><h1 class="screen__title">Créer</h1><div class="builder">' +
+        '<div class="seg">' + typeSeg + '</div>' +
+        '<input class="sheet__txt" data-bclient type="text" placeholder="Nom du client" value="' + (d.clientNom || '') + '" style="margin-top:12px">' +
+        '<p class="objsec" style="margin:14px auto 6px">Touche un article pour l\'ajouter</p>' +
+        '<div class="pos__grid">' + tiles + '</div>' +
+        (d.items.length ? '<div class="builder__lines">' + lines + '</div>' : '<p class="ia__txt" style="margin-top:12px">Aucune ligne pour l\'instant.</p>') +
+        '<button class="toggle' + (d.tva ? ' is-on' : '') + '" data-btva><span class="toggle__dot"></span>Ajouter la TVA (18%)</button>' +
+        '<div class="builder__totals"><div class="btot"><span>Sous-total HT</span><span>' + fF(ht) + '</span></div>' + (d.tva ? '<div class="btot"><span>TVA 18%</span><span>' + fF(tva) + '</span></div>' : '') + '<div class="btot btot--ttc"><span>Total' + (d.tva ? ' TTC' : '') + '</span><b>' + fF(ht + tva) + '</b></div></div>' +
+        '<div class="builder__actions"><button class="bbtn bbtn--ghost" data-bcancel>Annuler</button><button class="bbtn bbtn--go" data-bcreate>Créer le ' + d.type + '</button></div>' +
+      '</div></div>';
+    }
+    function facDetailHTML() {
+      const d = _facView, ht = docHT(d), tva = docTVA(d);
+      const rows = d.items.map((it) => '<tr><td>' + it.nom + '</td><td class="r">' + it.qty + '</td><td class="r">' + fF(it.prix) + '</td><td class="r">' + fF(it.prix * it.qty) + '</td></tr>').join('');
+      return '<div class="screen wide" style="--sc:#4cc9ff"><span class="screen__tag">' + (d.type === 'facture' ? 'Facture' : 'Devis') + '</span><h1 class="screen__title">' + d.num + '</h1>' +
+        '<div class="doc"><div class="doc__head"><div class="doc__brand">Ton commerce<small>Boussole · Cotonou</small></div><div class="doc__type"><b>' + (d.type === 'facture' ? 'FACTURE' : 'DEVIS') + '</b><span>' + d.num + '</span></div></div>' +
+          '<div class="doc__meta"><span>Facturé à<br><b>' + d.clientNom + '</b></span><span>Date<br><b>' + fDate(d.date) + '</b></span></div>' +
+          '<table class="doctable"><thead><tr><th>Article</th><th class="r">Qté</th><th class="r">P.U.</th><th class="r">Total</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+          '<div class="doc__tot"><div><span>Sous-total HT</span><span>' + fF(ht) + '</span></div>' + (d.tva ? '<div><span>TVA 18%</span><span>' + fF(tva) + '</span></div>' : '') + '<div class="ttc"><span>Total' + (d.tva ? ' TTC' : '') + '</span><span>' + fF(ht + tva) + '</span></div></div>' +
+          '<div class="doc__foot">' + (d.type === 'devis' ? 'Devis valable 30 jours. ' : 'Merci de votre confiance. ') + 'Paiement : espèces / Mobile Money.</div></div>' +
+        '<div class="doc__actions"><button class="bbtn bbtn--ghost" data-docback>Retour</button><button class="bbtn bbtn--ghost" data-docwa>Partager</button><button class="bbtn bbtn--go" data-docprint>Imprimer / PDF</button></div></div>';
+    }
+    function facturesHTML() { return _facMode === 'builder' ? facBuilderHTML() : _facMode === 'detail' ? facDetailHTML() : facListHTML(); }
+    function printDoc(d) {
+      const ht = docHT(d), tva = docTVA(d);
+      const rows = d.items.map((it) => '<tr><td>' + it.nom + '</td><td class="r">' + it.qty + '</td><td class="r">' + fF(it.prix) + '</td><td class="r">' + fF(it.prix * it.qty) + '</td></tr>').join('');
+      const css = 'body{font-family:Arial,Helvetica,sans-serif;color:#14161c;max-width:640px;margin:24px auto;padding:0 20px}.h{display:flex;justify-content:space-between;border-bottom:2px solid #14161c;padding-bottom:14px}.h b{font-size:20px}.t{text-align:right}.t .big{font-size:22px;font-weight:800;letter-spacing:.04em}.meta{display:flex;justify-content:space-between;margin:16px 0;font-size:13px;color:#444}.meta b{color:#14161c}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}th{text-align:left;border-bottom:1px solid #ccc;padding:7px 4px;font-size:11px;text-transform:uppercase;color:#666}td{padding:8px 4px;border-bottom:1px solid #eee}.r{text-align:right}.tot{margin:14px 0 0 auto;width:55%}.tot div{display:flex;justify-content:space-between;padding:3px 0;font-size:13px}.tot .ttc{font-size:17px;font-weight:800;border-top:2px solid #14161c;margin-top:6px;padding-top:8px}.foot{margin-top:22px;font-size:12px;color:#666;text-align:center}';
+      const html = '<!doctype html><html><head><meta charset="utf-8"><title>' + d.num + '</title><style>' + css + '</style></head><body>' +
+        '<div class="h"><div><b>Ton commerce</b><div style="font-size:12px;color:#666">Boussole · Cotonou</div></div><div class="t"><div class="big">' + (d.type === 'facture' ? 'FACTURE' : 'DEVIS') + '</div><div style="font-size:12px;color:#666">' + d.num + '</div></div></div>' +
+        '<div class="meta"><div>Facturé à<br><b>' + d.clientNom + '</b></div><div>Date<br><b>' + fDate(d.date) + '</b></div></div>' +
+        '<table><thead><tr><th>Article</th><th class="r">Qté</th><th class="r">P.U.</th><th class="r">Total</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+        '<div class="tot"><div><span>Sous-total HT</span><span>' + fF(ht) + '</span></div>' + (d.tva ? '<div><span>TVA 18%</span><span>' + fF(tva) + '</span></div>' : '') + '<div class="ttc"><span>Total' + (d.tva ? ' TTC' : '') + '</span><span>' + fF(ht + tva) + '</span></div></div>' +
+        '<div class="foot">' + (d.type === 'devis' ? 'Devis valable 30 jours.' : 'Merci de votre confiance.') + ' Paiement : espèces / Mobile Money.</div>' +
+        '<scr' + 'ipt>window.onload=function(){window.print()}</scr' + 'ipt></body></html>';
+      const w = window.open('', '_blank'); if (w) { w.document.write(html); w.document.close(); }
+    }
+    function bindFactures() {
+      const scr = view.querySelector('.screen'); if (!scr) return;
+      const render = () => { view.innerHTML = facturesHTML(); bindFactures(); };
+      if (_facMode === 'list') {
+        scr.querySelectorAll('[data-facf]').forEach((b) => b.addEventListener('click', () => { _facFilter = b.dataset.facf; playPop(true); render(); }));
+        scr.querySelectorAll('[data-doc]').forEach((b) => b.addEventListener('click', () => { _facView = (SM.factures || []).find((x) => x.id === b.dataset.doc); if (_facView) { _facMode = 'detail'; playClick(); render(); } }));
+        const nb = scr.querySelector('[data-facnew]'); if (nb) nb.addEventListener('click', () => { _facDraft = { type: _facFilter, clientNom: '', items: [], tva: false }; _facMode = 'builder'; playClick(); render(); });
+        return;
+      }
+      if (_facMode === 'builder') {
+        const d = _facDraft, client = scr.querySelector('[data-bclient]');
+        if (client) client.addEventListener('input', () => { d.clientNom = client.value; });
+        scr.querySelectorAll('[data-btype]').forEach((b) => b.addEventListener('click', () => { d.type = b.dataset.btype; playPop(true); render(); }));
+        scr.querySelectorAll('[data-add]').forEach((b) => b.addEventListener('click', () => { const p = SM.stock.find((x) => x.id === b.dataset.add); if (!p) return; const l = d.items.find((x) => x.id === p.id); if (l) l.qty++; else d.items.push({ id: p.id, nom: p.nom, prix: p.prix, qty: 1 }); playPop(true); render(); }));
+        scr.querySelectorAll('[data-rmline]').forEach((b) => b.addEventListener('click', () => { d.items.splice(+b.dataset.rmline, 1); playSwoosh(); render(); }));
+        const tva = scr.querySelector('[data-btva]'); if (tva) tva.addEventListener('click', () => { d.tva = !d.tva; playPop(d.tva); render(); });
+        const cancel = scr.querySelector('[data-bcancel]'); if (cancel) cancel.addEventListener('click', () => { _facMode = 'list'; _facDraft = null; playClick(); render(); });
+        const create = scr.querySelector('[data-bcreate]'); if (create) create.addEventListener('click', () => {
+          if (!d.items.length) { playSwoosh(); return; }
+          const doc = { id: 'f' + Date.now(), type: d.type, num: nextNum(d.type), clientNom: (d.clientNom || '').trim() || 'Client', date: Date.now(), items: d.items.map((it) => ({ nom: it.nom, prix: it.prix, qty: it.qty })), tva: d.tva, statut: d.type === 'facture' ? 'envoyé' : 'brouillon' };
+          (SM.factures = SM.factures || []).unshift(doc); smSave(); playSell(); _facView = doc; _facMode = 'detail'; _facDraft = null; render();
+        });
+        return;
+      }
+      const d = _facView;
+      const back = scr.querySelector('[data-docback]'); if (back) back.addEventListener('click', () => { _facMode = 'list'; _facView = null; playClick(); render(); });
+      const wa = scr.querySelector('[data-docwa]'); if (wa) wa.addEventListener('click', () => {
+        const lines = d.items.map((it) => '- ' + it.nom + ' x' + it.qty + ' : ' + fF(it.prix * it.qty)).join('\n');
+        const msg = (d.type === 'facture' ? 'FACTURE ' : 'DEVIS ') + d.num + '\nClient : ' + d.clientNom + '\n' + lines + '\nTotal : ' + fF(docTTC(d));
+        window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank'); playClick();
+      });
+      const pr = scr.querySelector('[data-docprint]'); if (pr) pr.addEventListener('click', () => { printDoc(d); playClick(); });
+    }
+
     function showSection(nav, cinematic) {
       if (!cinematic && nav !== 'accueil' && nav !== 'catalogue') playWhoosh();   // routing : whoosh (sauf Accueil=portail et Catalogue=tiroir, qui ont leur propre son)
       const cls = cinematic ? 'cine' : 'hud';
       if (nav === 'accueil') { view.innerHTML = accueilHTML(cls); renderGreeting(); bindMastoTilt(); bindVitals(); return; }
-      if (nav === 'catalogue') { view.innerHTML = catalogueHTML(); return; }
+      if (nav === 'catalogue') { view.innerHTML = catalogueHTML(); bindStock(); return; }
+      if (nav === 'depenses') { view.innerHTML = depensesHTML(); bindDepenses(); return; }
+      if (nav === 'caisse') { view.innerHTML = caisseHTML(); bindCaisse(); return; }
+      if (nav === 'ventes') { view.innerHTML = ventesHTML(); bindVentes(); return; }
+      if (nav === 'statistiques') { view.innerHTML = statsHTML(); bindStats(); return; }
+      if (nav === 'bilan') { view.innerHTML = bilanHTML(); bindBilan(); return; }
+      if (nav === 'objectifs') { view.innerHTML = objectifsHTML(); bindObjectifs(); return; }
+      if (nav === 'carnet') { view.innerHTML = carnetHTML(); bindCarnet(); return; }
+      if (nav === 'factures') { _facMode = 'list'; view.innerHTML = facturesHTML(); bindFactures(); return; }
       const s = SECTIONS[nav] || SECTIONS.accueil;
       view.innerHTML =
         '<div class="screen ' + cls + '" style="--sc:' + s.color + '">' +
