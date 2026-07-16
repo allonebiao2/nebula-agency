@@ -893,6 +893,44 @@
     @media (prefers-reduced-motion: reduce) {
       .prod, .docrow { animation:none !important; }
     }
+    /* ============================================================================
+       VAGUE 4 : DÉPENSES (achat/récurrent/perso) · MON ÉQUIPE
+       ========================================================================== */
+    .exprow__badges { display:flex; flex-wrap:wrap; gap:5px; margin-top:5px; }
+    .ebadge { font-size:9px; font-weight:800; letter-spacing:.03em; padding:2px 6px; border-radius:999px; text-transform:uppercase; }
+    .ebadge--achat { color:#8ff6ff; background: rgba(56,240,255,.14); }
+    .ebadge--rec { color:#ffe38a; background: rgba(255,210,63,.16); text-transform:none; }
+    .ebadge--perso { color:#c9a7ff; background: rgba(185,140,255,.18); }
+    .exprow.is-perso { border-color: rgba(185,140,255,.28); }
+    .exp-perso { max-width:430px; margin:6px auto 0; text-align:left; font-size:12.5px; color:#c9a7ff; }
+    .exp-perso b { font-weight:800; }
+    .seg--kind { margin:0 0 6px; }
+    .seg--kind .seg-btn.is-on { color:#1a0406; background: radial-gradient(120% 120% at 30% 25%, #ff8a97, #e11d48); box-shadow:0 0 12px -3px rgba(225,29,72,.5); }
+    .freqrow { display:flex; flex-wrap:wrap; gap:7px; margin:0 0 10px; }
+    .freqchip { padding:7px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.05); color: rgba(255,255,255,.7); font:inherit; font-size:12px; font-weight:700; cursor:pointer; transition: color .15s, background .15s, box-shadow .15s; }
+    .freqchip.is-sel { color:#1a1406; background: radial-gradient(120% 120% at 30% 25%, #ffe38a, #ffd23f); box-shadow:0 0 12px -3px rgba(255,210,63,.6); }
+
+    /* Mon équipe */
+    .fab--blue { color:#04121a; background: radial-gradient(120% 120% at 30% 25%, #a9c9ff, #3a86ff); box-shadow:0 12px 26px -8px rgba(58,134,255,.6), 0 0 24px -4px rgba(58,134,255,.55); }
+    .seg--role .seg-btn.is-on { color:#04121a; background: radial-gradient(120% 120% at 30% 25%, #a9c9ff, #3a86ff); box-shadow:0 0 12px -3px rgba(58,134,255,.5); }
+    .members { max-width:500px; margin:14px auto 0; display:flex; flex-direction:column; gap:10px; }
+    .member { text-align:left; padding:13px 14px; border-radius:16px; background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); box-shadow:0 8px 20px -14px rgba(0,0,0,.7); animation: expIn .4s calc(var(--i)*45ms) var(--ease) both; }
+    .member.is-off { opacity:.5; }
+    .member__head { display:flex; align-items:center; gap:11px; }
+    .member__av { width:40px; height:40px; flex:none; border-radius:12px; display:grid; place-items:center; font-size:16px; font-weight:800; color:#04121a; box-shadow: inset 0 1px 0 rgba(255,255,255,.4); }
+    .member__av--patron { background: radial-gradient(120% 120% at 30% 25%, #86ffd0, #10b981); }
+    .member__av--gerant { background: radial-gradient(120% 120% at 30% 25%, #dcbcff, #a855f7); }
+    .member__av--vendeur { background: radial-gradient(120% 120% at 30% 25%, #a9e6ff, #3a86ff); }
+    .member__id { flex:1 1 auto; min-width:0; }
+    .member__name { display:flex; align-items:center; gap:7px; font-size:14.5px; font-weight:700; color:#fff; }
+    .rolebadge { flex:none; font-size:9.5px; font-weight:800; text-transform:uppercase; padding:2px 7px; border-radius:999px; letter-spacing:.04em; }
+    .rolebadge--patron { color:#7bf0a8; background: rgba(16,185,129,.16); }
+    .rolebadge--gerant { color:#c9a7ff; background: rgba(168,85,247,.18); }
+    .rolebadge--vendeur { color:#9ecbff; background: rgba(58,134,255,.18); }
+    .member__meta { display:block; margin-top:2px; font-size:11.5px; color: rgba(255,255,255,.45); }
+    .member__perms { display:flex; flex-wrap:wrap; gap:5px; margin-top:10px; }
+    .permchip { font-size:10px; font-weight:700; padding:3px 8px; border-radius:999px; background: rgba(255,255,255,.06); color: rgba(255,255,255,.6); border:1px solid rgba(255,255,255,.08); }
+    .member__act { display:flex; gap:7px; margin-top:11px; flex-wrap:wrap; }
   </style>
 </head>
 <body>
@@ -1202,34 +1240,51 @@
     }
 
     // ===== SPIDER-MANAGER — écran DÉPENSES : liste catégorisée + FAB « Ajout rapide » =====
-    const CATS = { 'Fournitures': '#38f0ff', 'Transport': '#ffd23f', 'Loyer': '#b98cff', 'Marketing': '#ff6ec7', 'Divers': '#35e07a' };
-    const expTotal = () => (SM.depenses || []).reduce((s, d) => s + (+d.montant || 0), 0);
+    const CATS = { 'Fournitures': '#38f0ff', 'Stock': '#5ad1c8', 'Transport': '#ffd23f', 'Loyer': '#b98cff', 'Marketing': '#ff6ec7', 'Divers': '#35e07a' };
+    const FREQ_LBL = { mois: 'mensuel', '2mois': 'tous les 2 mois', semaine: 'hebdo' };
+    const expTotal = () => (SM.depenses || []).filter((d) => !d.perso).reduce((s, d) => s + (+d.montant || 0), 0);   // business (hors poche perso)
+    const persoTotal = () => (SM.depenses || []).filter((d) => d.perso).reduce((s, d) => s + (+d.montant || 0), 0);
     function expRow(d, i) {
-      return '<div class="exprow" style="--i:' + i + '" data-id="' + d.id + '">' +
+      const badges = (d.kind === 'achat' ? '<span class="ebadge ebadge--achat">Achat</span>' : '') +
+        (d.recurrent ? '<span class="ebadge ebadge--rec">🔁 ' + (FREQ_LBL[d.freq] || 'récurrent') + '</span>' : '') +
+        (d.perso ? '<span class="ebadge ebadge--perso">Perso</span>' : '');
+      return '<div class="exprow' + (d.perso ? ' is-perso' : '') + '" style="--i:' + i + '" data-id="' + d.id + '">' +
           '<span class="exp-dot" style="color:' + (CATS[d.cat] || '#888') + '"></span>' +
           '<div class="exprow__main"><span class="exprow__lib">' + d.lib + '</span>' +
-            '<span class="exprow__meta">' + d.cat + ' · ' + d.when + '</span></div>' +
+            '<span class="exprow__meta">' + d.cat + ' · ' + d.when + '</span>' +
+            (badges ? '<span class="exprow__badges">' + badges + '</span>' : '') + '</div>' +
           '<span class="exprow__amt">' + vitalFmt(d.montant) + ' F</span></div>';
     }
-    function updateExpTotal() { const el = view.querySelector('[data-exptotal]'); if (el) el.textContent = vitalFmt(expTotal()) + ' F'; }
+    function updateExpTotal() {
+      const el = view.querySelector('[data-exptotal]'); if (el) el.textContent = vitalFmt(expTotal()) + ' F';
+      const pe = view.querySelector('[data-expperso]'); if (pe) { const pt = persoTotal(); pe.style.display = pt > 0 ? 'block' : 'none'; pe.innerHTML = 'Poche perso (tes retraits) : <b>' + vitalFmt(pt) + ' F</b>'; }
+    }
     function depensesHTML() {
       SM.depenses = SM.depenses || [];   // seed déplacé au chargement (bloc VAGUE 1)
       let rows = ''; SM.depenses.forEach((d, i) => { rows += expRow(d, i); });
       const chips = Object.keys(CATS).map((c) => '<button class="catchip" data-cat="' + c + '" style="--cc:' + CATS[c] + '">' + c + '</button>').join('');
+      const freqs = [['mois', 'Mensuel'], ['2mois', 'Tous les 2 mois'], ['semaine', 'Hebdo']].map((f) => '<button class="freqchip" data-freq="' + f[0] + '">' + f[1] + '</button>').join('');
+      const pt = persoTotal();
       return '<div class="screen expenses" style="--sc:#e11d48">' +
           '<span class="screen__tag">Dépenses</span>' +
           '<h1 class="screen__title">Ce qui sort</h1>' +
-          '<div class="exp-total">Dépensé<b data-exptotal>' + vitalFmt(expTotal()) + ' F</b></div>' +
+          '<div class="exp-total">Sorties du business<b data-exptotal>' + vitalFmt(expTotal()) + ' F</b></div>' +
+          '<div class="exp-perso" data-expperso style="display:' + (pt > 0 ? 'block' : 'none') + '">Poche perso (tes retraits) : <b>' + vitalFmt(pt) + ' F</b></div>' +
           '<div class="explist">' + rows + '</div>' +
           '<span class="fab__lbl">Ajout rapide</span>' +
-          '<button class="fab" data-fab aria-label="Ajouter une dépense">+</button>' +
+          '<button class="fab" data-fab aria-label="Ajouter une sortie">+</button>' +
           '<div class="sheet-scrim" data-sheetclose></div>' +
-          '<div class="sheet" data-sheet>' +
+          '<div class="sheet sheet--tall" data-sheet>' +
             '<div class="sheet__grip"></div>' +
-            '<h3 class="sheet__title">Nouvelle dépense</h3>' +
+            '<h3 class="sheet__title">Nouvelle sortie</h3>' +
+            '<div class="seg seg--kind" data-kindseg><button class="seg-btn is-on" data-k="depense">Dépense</button><button class="seg-btn" data-k="achat">Achat</button></div>' +
             '<input class="sheet__amt" data-amt type="number" inputmode="numeric" placeholder="0 F">' +
+            '<input class="sheet__txt" data-explib type="text" placeholder="Libellé (optionnel, ex : Sac de riz)" style="margin-top:10px">' +
             '<div class="sheet__cats">' + chips + '</div>' +
-            '<button class="sheet__add" data-addexp>Ajouter la dépense</button>' +
+            '<button class="toggle" data-exprec><span class="toggle__dot"></span>Sortie récurrente</button>' +
+            '<div class="freqrow" data-freqrow style="display:none">' + freqs + '</div>' +
+            '<button class="toggle" data-expperso-t><span class="toggle__dot"></span>Poche perso (dépense personnelle)</button>' +
+            '<button class="sheet__add" data-addexp>Ajouter</button>' +
           '</div>' +
         '</div>';
     }
@@ -1252,8 +1307,9 @@
     }
     function bindDepenses() {
       const scr = view.querySelector('.expenses'); if (!scr) return;
-      const sheet = scr.querySelector('[data-sheet]'), scrim = scr.querySelector('[data-sheetclose]'), amt = scr.querySelector('[data-amt]');
-      let selCat = 'Fournitures';
+      const sheet = scr.querySelector('[data-sheet]'), scrim = scr.querySelector('[data-sheetclose]'), amt = scr.querySelector('[data-amt]'), lib = scr.querySelector('[data-explib]');
+      const freqRow = scr.querySelector('[data-freqrow]'), recBtn = scr.querySelector('[data-exprec]'), persoBtn = scr.querySelector('[data-expperso-t]');
+      let selCat = 'Fournitures', selKind = 'depense', selRec = false, selFreq = 'mois', selPerso = false;
       const open = () => { sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick(); setTimeout(() => { try { amt.focus(); } catch (_) {} }, 220); };
       const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
       scr.querySelector('[data-fab]').addEventListener('click', open);
@@ -1261,13 +1317,18 @@
       const chips = scr.querySelectorAll('.catchip');
       chips.forEach((c) => c.addEventListener('click', () => { chips.forEach((x) => x.classList.remove('is-sel')); c.classList.add('is-sel'); selCat = c.dataset.cat; playPop(true); }));
       if (chips[0]) chips[0].classList.add('is-sel');
+      scr.querySelectorAll('[data-k]').forEach((b) => b.addEventListener('click', () => { scr.querySelectorAll('[data-k]').forEach((x) => x.classList.remove('is-on')); b.classList.add('is-on'); selKind = b.dataset.k; playPop(true); }));
+      const freqChips = scr.querySelectorAll('[data-freq]');
+      recBtn.addEventListener('click', () => { selRec = !selRec; recBtn.classList.toggle('is-on', selRec); freqRow.style.display = selRec ? 'flex' : 'none'; if (selRec) { freqChips.forEach((x) => x.classList.remove('is-sel')); const f0 = scr.querySelector('[data-freq="' + selFreq + '"]'); if (f0) f0.classList.add('is-sel'); } playPop(selRec); });
+      freqChips.forEach((c) => c.addEventListener('click', () => { freqChips.forEach((x) => x.classList.remove('is-sel')); c.classList.add('is-sel'); selFreq = c.dataset.freq; playPop(true); }));
+      persoBtn.addEventListener('click', () => { selPerso = !selPerso; persoBtn.classList.toggle('is-on', selPerso); playPop(selPerso); });
       scr.querySelector('[data-addexp]').addEventListener('click', () => {
         const v = Math.round(+amt.value || 0); if (v <= 0) { try { amt.focus(); } catch (_) {} return; }
-        const d = { id: 'd' + Date.now(), lib: selCat, cat: selCat, montant: v, when: "À l'instant" };
+        const d = { id: 'd' + Date.now(), lib: (lib.value || '').trim() || selCat, cat: selCat, montant: v, when: "À l'instant", ts: Date.now(), kind: selKind, recurrent: selRec, freq: selFreq, perso: selPerso };
         SM.depenses.unshift(d); smSave();
         const list = scr.querySelector('.explist'); list.insertAdjacentHTML('afterbegin', expRow(d, 0));
         attachSwipe(list.firstElementChild, removeExp); updateExpTotal(); playSuccess();
-        amt.value = ''; close();
+        amt.value = ''; lib.value = ''; close();
       });
       scr.querySelectorAll('.exprow').forEach((row) => attachSwipe(row, removeExp));
     }
@@ -1311,11 +1372,11 @@
     }
     if (!SM.depenses) {   // seed dépenses dès le chargement -> Stats/Bilan ont de la matière sans passer par l'écran Dépenses
       SM.depenses = [
-        { id: 'd1', lib: 'Sac de riz 25 kg', cat: 'Fournitures', montant: 12000, when: 'Auj. 09:12', ts: Date.now() - 3 * 3600000 },
-        { id: 'd2', lib: 'Transport livraison', cat: 'Transport', montant: 2500, when: 'Auj. 08:40', ts: Date.now() - 4 * 3600000 },
-        { id: 'd3', lib: 'Loyer boutique', cat: 'Loyer', montant: 30000, when: 'Hier', ts: Date.now() - 1 * DAY },
-        { id: 'd4', lib: 'Emballages', cat: 'Fournitures', montant: 3500, when: 'Hier', ts: Date.now() - 1 * DAY - 3600000 },
-        { id: 'd5', lib: 'Recharge crédit', cat: 'Divers', montant: 1000, when: 'Lun.', ts: Date.now() - 3 * DAY },
+        { id: 'd1', lib: 'Sac de riz 25 kg', cat: 'Stock', montant: 12000, when: 'Auj. 09:12', ts: Date.now() - 3 * 3600000, kind: 'achat' },
+        { id: 'd2', lib: 'Transport livraison', cat: 'Transport', montant: 2500, when: 'Auj. 08:40', ts: Date.now() - 4 * 3600000, kind: 'depense' },
+        { id: 'd3', lib: 'Loyer boutique', cat: 'Loyer', montant: 30000, when: 'Hier', ts: Date.now() - 1 * DAY, kind: 'depense', recurrent: true, freq: 'mois' },
+        { id: 'd4', lib: 'Emballages', cat: 'Stock', montant: 3500, when: 'Hier', ts: Date.now() - 1 * DAY - 3600000, kind: 'achat' },
+        { id: 'd5', lib: 'Ma part perso', cat: 'Divers', montant: 5000, when: 'Lun.', ts: Date.now() - 3 * DAY, kind: 'depense', perso: true },
       ];
       smSave();
     }
@@ -1323,14 +1384,14 @@
 
     const salesTotal = () => (SM.ventes || []).reduce((s, v) => s + (+v.total || 0), 0);
     const salesToday = () => { const t0 = new Date(); t0.setHours(0, 0, 0, 0); return (SM.ventes || []).filter((v) => v.ts >= t0.getTime()).reduce((s, v) => s + v.total, 0); };
-    function depByCat() { const m = {}; (SM.depenses || []).forEach((d) => { m[d.cat] = (m[d.cat] || 0) + (+d.montant || 0); }); return Object.keys(m).map((k) => ({ name: k, val: m[k], color: CATS[k] || '#88aab0' })).sort((a, b) => b.val - a.val); }
+    function depByCat() { const m = {}; (SM.depenses || []).filter((d) => !d.perso).forEach((d) => { m[d.cat] = (m[d.cat] || 0) + (+d.montant || 0); }); return Object.keys(m).map((k) => ({ name: k, val: m[k], color: CATS[k] || '#88aab0' })).sort((a, b) => b.val - a.val); }
     function salesByMode() { const m = {}; (SM.ventes || []).forEach((v) => { m[v.mode] = (m[v.mode] || 0) + (+v.total || 0); }); return m; }
     function evo7() {
       const days = []; const now = new Date(); now.setHours(0, 0, 0, 0);
       const J = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
       for (let k = 6; k >= 0; k--) { const d = new Date(now.getTime() - k * DAY); days.push({ t0: d.getTime(), t1: d.getTime() + DAY, lbl: J[d.getDay()], ca: 0, dep: 0 }); }
       (SM.ventes || []).forEach((v) => { const b = days.find((x) => v.ts >= x.t0 && v.ts < x.t1); if (b) b.ca += (+v.total || 0); });
-      (SM.depenses || []).forEach((dp) => { const ts = dp.ts || Date.now(); const b = days.find((x) => ts >= x.t0 && ts < x.t1); if (b) b.dep += (+dp.montant || 0); });
+      (SM.depenses || []).filter((dp) => !dp.perso).forEach((dp) => { const ts = dp.ts || Date.now(); const b = days.find((x) => ts >= x.t0 && ts < x.t1); if (b) b.dep += (+dp.montant || 0); });
       return days;
     }
     const relTime = (ts) => {
@@ -1487,6 +1548,7 @@
         iaBanner() +
         '<div class="panel"><h3 class="panel__ttl" style="--sc:#35e07a"><i></i>D\'où vient ton argent</h3>' + src + '</div>' +
         '<div class="panel"><h3 class="panel__ttl" style="--sc:#e11d48"><i></i>Ce qui pèse le plus</h3>' + out + '</div>' +
+        (persoTotal() > 0 ? '<div class="panel"><h3 class="panel__ttl" style="--sc:#b98cff"><i></i>Poche perso</h3><p class="ia__txt">Tu as sorti <b style="color:#c9a7ff">' + fF(persoTotal()) + '</b> pour tes dépenses personnelles. C\'est ton argent, mais ce n\'est pas compté dans le bénéfice du business.</p></div>' : '') +
       '</div>';
     }
     function bindBilan() {}
@@ -1782,6 +1844,69 @@
       const pr = scr.querySelector('[data-docprint]'); if (pr) pr.addEventListener('click', () => { printDoc(d); playClick(); });
     }
 
+    /* ============================================================================
+       VAGUE 4 : MON ÉQUIPE (rôles, codes, anti-vol)
+       ========================================================================== */
+    if (!SM.equipe) {
+      SM.equipe = [
+        { id: 'e1', nom: 'Toi (patron)', role: 'patron', pin: '', actif: true, ventes: 0 },
+        { id: 'e2', nom: 'Awa', role: 'vendeur', pin: '2468', actif: true, ventes: 14 },
+        { id: 'e3', nom: 'Koffi', role: 'gerant', pin: '1357', actif: false, ventes: 8 },
+      ];
+      smSave();
+    }
+    const ROLE_LBL = { patron: 'Patron', gerant: 'Gérant', vendeur: 'Vendeur' };
+    const ROLE_PERMS = { patron: ['Vendre', 'Stock', 'Bilan', 'Réglages'], gerant: ['Vendre', 'Stock', 'Bilan'], vendeur: ['Vendre'] };
+    const genPin = () => String(Math.floor(1000 + Math.random() * 9000));
+    function equipeHTML() {
+      const rows = (SM.equipe || []).map((m, i) => {
+        const perms = ROLE_PERMS[m.role].map((p) => '<span class="permchip">' + p + '</span>').join('');
+        const meta = m.role === 'patron' ? 'Compte principal · accès total' : 'Code ' + (m.pin ? '••••' : 'non défini') + ' · ' + m.ventes + ' ventes ce mois';
+        const acts = m.role === 'patron' ? '' :
+          '<button class="cbtn cbtn--auto' + (m.actif ? ' is-on' : '') + '" data-active="' + m.id + '">' + (m.actif ? 'Actif' : 'En pause') + '</button>' +
+          '<button class="cbtn" data-pin="' + m.id + '">Changer le code</button>' +
+          '<button class="cbtn" data-rmmem="' + m.id + '">Retirer</button>';
+        return '<div class="member' + (m.actif ? '' : ' is-off') + '" style="--i:' + i + '"><div class="member__head">' +
+          '<span class="member__av member__av--' + m.role + '">' + m.nom.charAt(0).toUpperCase() + '</span>' +
+          '<div class="member__id"><span class="member__name">' + m.nom + ' <span class="rolebadge rolebadge--' + m.role + '">' + ROLE_LBL[m.role] + '</span></span><span class="member__meta">' + meta + '</span></div></div>' +
+          '<div class="member__perms">' + perms + '</div>' +
+          (acts ? '<div class="member__act">' + acts + '</div>' : '') + '</div>';
+      }).join('');
+      return '<div class="screen wide" style="--sc:#3a86ff"><span class="screen__tag">Mon équipe</span><h1 class="screen__title">Ton équipe</h1>' +
+        '<div class="ia"><span class="ia__orb"></span><span class="ia__chip">&#10022; Sécurité anti-vol</span><h3 class="ia__title">Chacun son code</h3><p class="ia__txt">Chaque vendeur a son propre code : tu vois <b>qui a vendu quoi</b>, et un vendeur ne voit ni ton <b>bénéfice</b> ni tes <b>réglages</b>. C\'est ta protection contre les pertes.</p></div>' +
+        '<div class="members">' + rows + '</div>' +
+        '<span class="fab__lbl">Ajouter</span><button class="fab fab--blue" data-memnew aria-label="Ajouter un membre">+</button>' +
+        '<div class="sheet-scrim" data-msclose></div><div class="sheet" data-msheet><div class="sheet__grip"></div><h3 class="sheet__title" data-mstitle>Nouveau membre</h3><div data-msbody></div></div></div>';
+    }
+    function bindEquipe() {
+      const scr = view.querySelector('.screen'); if (!scr) return;
+      const sheet = scr.querySelector('[data-msheet]'), scrim = scr.querySelector('[data-msclose]'), body = scr.querySelector('[data-msbody]'), title = scr.querySelector('[data-mstitle]');
+      const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
+      const render = () => { view.innerHTML = equipeHTML(); bindEquipe(); };
+      scrim.addEventListener('click', close);
+      scr.querySelectorAll('[data-active]').forEach((b) => b.addEventListener('click', () => { const m = (SM.equipe || []).find((x) => x.id === b.dataset.active); if (m) { m.actif = !m.actif; smSave(); playPop(m.actif); render(); } }));
+      scr.querySelectorAll('[data-rmmem]').forEach((b) => b.addEventListener('click', () => { const i = (SM.equipe || []).findIndex((x) => x.id === b.dataset.rmmem); if (i >= 0) { SM.equipe.splice(i, 1); smSave(); playSwoosh(); render(); } }));
+      scr.querySelectorAll('[data-pin]').forEach((b) => b.addEventListener('click', () => {
+        const m = (SM.equipe || []).find((x) => x.id === b.dataset.pin); if (!m) return;
+        title.textContent = 'Code de ' + m.nom;
+        body.innerHTML = '<input class="sheet__amt" data-pinv type="number" inputmode="numeric" placeholder="1234" value="' + (m.pin || '') + '"><button class="sheet__add" data-pinsave>Enregistrer le code</button>';
+        body.querySelector('[data-pinsave]').addEventListener('click', () => { const v = (body.querySelector('[data-pinv]').value || '').replace(/[^\d]/g, '').slice(0, 4); if (v.length < 4) return; m.pin = v; smSave(); playSuccess(); close(); render(); });
+        sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick();
+      }));
+      const nb = scr.querySelector('[data-memnew]'); if (nb) nb.addEventListener('click', () => {
+        title.textContent = 'Nouveau membre';
+        body.innerHTML = '<input class="sheet__txt" data-mnom type="text" placeholder="Nom du membre">' +
+          '<div class="seg seg--role"><button class="seg-btn is-on" data-r="vendeur">Vendeur</button><button class="seg-btn" data-r="gerant">Gérant</button></div>' +
+          '<p class="ia__txt" style="margin:10px 0">Un code à 4 chiffres sera généré pour ce membre.</p>' +
+          '<button class="sheet__add" data-msave>Ajouter le membre</button>';
+        let role = 'vendeur';
+        body.querySelectorAll('[data-r]').forEach((rb) => rb.addEventListener('click', () => { body.querySelectorAll('[data-r]').forEach((x) => x.classList.remove('is-on')); rb.classList.add('is-on'); role = rb.dataset.r; playPop(true); }));
+        body.querySelector('[data-msave]').addEventListener('click', () => { const nom = (body.querySelector('[data-mnom]').value || '').trim(); if (!nom) return; (SM.equipe = SM.equipe || []).push({ id: 'e' + Date.now(), nom, role, pin: genPin(), actif: true, ventes: 0 }); smSave(); playSuccess(); close(); render(); });
+        sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick();
+        setTimeout(() => { try { body.querySelector('[data-mnom]').focus(); } catch (_) {} }, 220);
+      });
+    }
+
     function showSection(nav, cinematic) {
       if (!cinematic && nav !== 'accueil' && nav !== 'catalogue') playWhoosh();   // routing : whoosh (sauf Accueil=portail et Catalogue=tiroir, qui ont leur propre son)
       const cls = cinematic ? 'cine' : 'hud';
@@ -1795,6 +1920,7 @@
       if (nav === 'objectifs') { view.innerHTML = objectifsHTML(); bindObjectifs(); return; }
       if (nav === 'carnet') { view.innerHTML = carnetHTML(); bindCarnet(); return; }
       if (nav === 'factures') { _facMode = 'list'; view.innerHTML = facturesHTML(); bindFactures(); return; }
+      if (nav === 'equipe') { view.innerHTML = equipeHTML(); bindEquipe(); return; }
       const s = SECTIONS[nav] || SECTIONS.accueil;
       view.innerHTML =
         '<div class="screen ' + cls + '" style="--sc:' + s.color + '">' +
