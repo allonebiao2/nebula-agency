@@ -189,6 +189,71 @@
     .masto__btn--spend { --c: #e11d48; }
     @media (max-width: 380px) { .masto { grid-template-columns: 1fr; } }
 
+    /* ============ CHIFFRES CLÉS (Accueil) — 3 cadres glassmorphism, chacun sa lumière ============ */
+    .vitals { display: flex; justify-content: center; gap: 11px; margin: 24px auto 6px; flex-wrap: wrap; }
+    .vital {
+      --vc: #38f0ff;
+      position: relative; overflow: hidden; flex: 1 1 0; min-width: 98px; max-width: 172px;
+      padding: 13px 14px; border-radius: 16px; text-align: left; cursor: pointer;
+      background: linear-gradient(160deg, rgba(255, 255, 255, .12), rgba(255, 255, 255, .03));   /* verre */
+      -webkit-backdrop-filter: blur(13px) saturate(135%); backdrop-filter: blur(13px) saturate(135%);   /* glassmorphism */
+      border: 1px solid color-mix(in srgb, var(--vc) 30%, rgba(255, 255, 255, .18));
+      box-shadow:
+        0 12px 30px -14px rgba(0, 0, 0, .6),
+        0 0 20px -4px color-mix(in srgb, var(--vc) 62%, transparent),    /* halo coloré propre à chaque carte */
+        inset 0 1px 0 rgba(255, 255, 255, .22);
+      transition: box-shadow .2s ease-out, border-color .2s ease-out, scale .09s ease-out;
+      animation: vitalIn .5s calc(var(--i, 0) * .1s) cubic-bezier(.16, 1, .3, 1) both;
+    }
+    .vital:active { scale: .97; }   /* enfoncement au toucher */
+    .vital:focus-visible { outline: 2px solid color-mix(in srgb, var(--vc) 80%, #fff); outline-offset: 2px; }
+    @media (hover: hover) and (pointer: fine) {
+      .vital:hover { border-color: color-mix(in srgb, var(--vc) 55%, rgba(255, 255, 255, .2)); box-shadow: 0 14px 34px -14px rgba(0, 0, 0, .6), 0 0 28px -2px color-mix(in srgb, var(--vc) 78%, transparent), inset 0 1px 0 rgba(255, 255, 255, .28); }
+    }
+    /* bloom lumineux interne (haut-gauche) teinté à la couleur de la carte */
+    .vital::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+      background: radial-gradient(120% 82% at 16% 0%, color-mix(in srgb, var(--vc) 26%, transparent), transparent 62%);
+    }
+    .vital--caisse   { --vc: #38f0ff; }   /* cyan */
+    .vital--jour     { --vc: #35e07a; }   /* vert */
+    .vital--objectif { --vc: #ffd23f; }   /* ambre */
+    .vital__label { position: relative; display: block; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: color-mix(in srgb, var(--vc) 72%, #d7eef2); }
+    .vital__num {
+      position: relative; display: block; margin-top: 5px;
+      font-size: clamp(18px, 4.8vw, 26px); font-weight: 800; line-height: 1; letter-spacing: -.01em;
+      color: #fff; font-variant-numeric: tabular-nums; text-shadow: 0 0 10px color-mix(in srgb, var(--vc) 45%, transparent);
+    }
+    @keyframes vitalIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    /* ===== PORTAIL « retour au nexus » : ouverture de la page Accueil (expansion circulaire cyan) ===== */
+    .home.portal { position: relative; animation: portalOpen .5s cubic-bezier(.34, 1.56, .64, 1) both; }
+    @keyframes portalOpen { from { clip-path: circle(0% at 50% 50%); } to { clip-path: circle(150% at 50% 50%); } }
+    .home.portal::after {
+      content: ""; position: absolute; inset: 0; z-index: 5; pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, transparent 42%, rgba(0, 240, 255, .22) 55%, transparent 70%);
+      animation: portalRing .5s ease-out both;   /* anneau cyan électrique qui jaillit du centre */
+    }
+    @keyframes portalRing { 0% { opacity: 0; transform: scale(.15); } 35% { opacity: 1; } 100% { opacity: 0; transform: scale(1.2); } }
+
+    /* ===== TIROIR 3D « Catalogue » : la page se tire vers l'avant + les compartiments sortent en gigogne ===== */
+    .screen.drawer3d { animation: drawerPull .45s cubic-bezier(0.19, 1, 0.22, 1) both; }
+    @keyframes drawerPull {
+      0%   { transform: perspective(1000px) rotateX(-20deg) translateZ(-150px) translateY(-50px); opacity: 0; }
+      66%  { opacity: 1; }
+      100% { transform: perspective(1000px) rotateX(0deg) translateZ(0) translateY(0); opacity: 1; }
+    }
+    .catgrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 22px auto 0; max-width: 430px; perspective: 800px; }
+    .catcard {
+      position: relative; text-align: left; padding: 12px 13px; border-radius: 13px;
+      background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .1); border-left: 2px solid #ffd23f;
+      box-shadow: 0 8px 20px -14px rgba(0, 0, 0, .7);
+      animation: cardOut .4s calc(150ms + var(--i) * 40ms) cubic-bezier(0.19, 1, 0.22, 1) both;   /* stagger 40 ms / produit */
+    }
+    @keyframes cardOut { from { transform: translateZ(-50px) translateY(-20px); opacity: 0; } to { transform: translateZ(0) translateY(0); opacity: 1; } }
+    .catcard__name { display: block; font-size: 13.5px; font-weight: 700; color: #fff; }
+    .catcard__price { display: block; margin-top: 3px; font-size: 15px; font-weight: 800; color: #ffd23f; font-variant-numeric: tabular-nums; }
+
     /* ============ OVERLAY + DRAWER ============ */
     .scrim {
       position: fixed; inset: 0; z-index: 60;
@@ -286,6 +351,71 @@
     .navbtn--orange { --glow: #ff8a3d; }       /* carnet clients */
     .navbtn--electric { --glow: #3a86ff; }     /* mon équipe : bleu électrique */
 
+    /* Item « Accueil » = NEXUS : glow cyan électrique stable pendant l'attraction magnétique (survol) */
+    .navbtn[data-nav="accueil"].nexus-hot {
+      border-color: #00F0FF; color: #fff; background: rgba(0, 240, 255, .08);
+      box-shadow: 0 0 20px rgba(0, 240, 255, .6), 0 0 0 1px rgba(0, 240, 255, .55);
+      z-index: 3;
+    }
+    .navbtn[data-nav="accueil"].nexus-hot .navbtn__ic { color: #00F0FF; filter: drop-shadow(0 0 6px #00F0FF); }
+
+    /* Item « Catalogue » = COFFRE 3D : au survol le couvercle s'entrouvre, la base avance (tiroir d'armement) */
+    .navbtn[data-nav="catalogue"] .navbtn__ic { perspective: 120px; }
+    .chest { position: relative; display: block; width: 20px; height: 20px; transform-style: preserve-3d; }
+    .chest__base {
+      position: absolute; left: 2.5px; right: 2.5px; bottom: 1.5px; height: 11px;
+      border: 2px solid currentColor; border-radius: 2px 2px 3px 3px;
+      transition: transform .2s cubic-bezier(.25, 1, .5, 1);
+    }
+    .chest__lid {
+      position: absolute; left: 1.5px; right: 1.5px; top: 3.5px; height: 6px;
+      border: 2px solid currentColor; border-bottom: 0; border-radius: 3px 3px 0 0;
+      transform-origin: bottom center;
+      transition: transform .2s cubic-bezier(.25, 1, .5, 1);
+    }
+    .navbtn[data-nav="catalogue"]:hover .chest__lid  { transform: rotateX(-35deg) translateY(-3px); }   /* le couvercle pivote vers le haut */
+    .navbtn[data-nav="catalogue"]:hover .chest__base { transform: translateZ(10px); }                   /* la base avance vers l'utilisateur */
+
+    /* ===== ITEM "STATISTIQUES" — identité RARE « Blanc Holographique » (données pures) =====
+       Blanc pur + ABERRATION CHROMATIQUE cyan/magenta (prisme/hologramme), verre lumineux,
+       RESPIRATION continue (glow spectral + échelle 1->1.02) et icône qui "scanne" en continu. */
+    .navbtn--holo {
+      --glow: #ffffff;                          /* l'anneau d'état (hover/actif) devient blanc pur */
+      position: relative; isolation: isolate;   /* stacking-context stable pour poser le halo spectral derrière le contenu */
+      color: #fff;
+      border-color: rgba(255, 255, 255, .24);
+      background: rgba(255, 255, 255, .07);      /* verre plus clair = "donnée pure" */
+      animation: holoScale 3.4s ease-in-out infinite;   /* échelle via la propriété `scale` : n'entrave PAS transform (hover/active/miles) */
+    }
+    /* Halo spectral : CYAN dédoublé à gauche + MAGENTA dédoublé à droite = effet prisme/hologramme.
+       ::before transparent -> seul le box-shadow rayonne ; totalement découplé du transform du bouton. */
+    .navbtn--holo::before {
+      content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit;
+      pointer-events: none; background: transparent;
+      box-shadow:
+        -2px 0 12px rgba(34, 238, 255, .55),     /* halo CYAN décalé */
+         2px 0 12px rgba(255, 42, 232, .55),     /* halo MAGENTA décalé */
+         0   0 7px  rgba(255, 255, 255, .40);    /* cœur blanc */
+      animation: holoGlow 3.4s ease-in-out infinite;   /* l'INTENSITÉ du glow respire (synchro avec l'échelle) */
+    }
+    .navbtn--holo .navbtn__ic { color: rgba(255, 255, 255, .95); }
+    /* ICÔNE : flottement / scan vertical CONTINU (-3px -> 3px, ease-in-out) = traitement de données temps réel */
+    .navbtn--holo .navbtn__ic svg { animation: holoScan 2.6s ease-in-out infinite; }
+    /* survol / actif : le prisme s'ouvre, le blanc reste net */
+    .navbtn--holo:hover, .navbtn--holo.is-active { background: rgba(255, 255, 255, .12); color: #fff; }
+    .navbtn--holo:hover::before, .navbtn--holo.is-active::before {
+      box-shadow:
+        -3px 0 18px rgba(34, 238, 255, .85),
+         3px 0 18px rgba(255, 42, 232, .85),
+         0   0 12px rgba(255, 255, 255, .6);
+    }
+    .navbtn--holo:hover .navbtn__ic svg { filter: drop-shadow(0 0 6px rgba(255, 255, 255, .9)); }
+    /* garde le "Miles clic" (snap/glitch) ET la respiration d'échelle EN MÊME TEMPS (transform vs scale = 2 propriétés distinctes) */
+    .navbtn--holo.miles { animation: milesSnap .2s cubic-bezier(.175, .885, .32, 1.275) both, holoScale 3.4s ease-in-out infinite; }
+    @keyframes holoScale { 0%, 100% { scale: 1; }   50% { scale: 1.02; } }
+    @keyframes holoGlow  { 0%, 100% { opacity: .5; } 50% { opacity: 1; } }
+    @keyframes holoScan  { 0%, 100% { transform: translateY(-3px); } 50% { transform: translateY(3px); } }
+
     /* ===== Micro-animations d'icônes (couche ADDITIVE — hover souris uniquement) =====
        Ne cible QUE le <svg> enfant : n'interfère NI avec le bouton (.navbtn :active scale .95,
        :hover translateY), NI avec la couleur/glow de .navbtn__ic, NI avec les sons (JS intact).
@@ -338,8 +468,15 @@
     @media (prefers-reduced-motion: reduce) {
       .hdr__logo { animation: none; }
       .drawer { transition: transform .2s ease; }
-      .navbtn__ic svg { animation: none !important; }   /* micro-anims d'icônes coupées si mouvement réduit */
+      .navbtn__ic svg { animation: none !important; }   /* micro-anims d'icônes coupées si mouvement réduit (dont le scan Statistiques) */
+      .navbtn--holo { animation: none !important; scale: none !important; }          /* Statistiques : pas de respiration d'échelle */
+      .navbtn--holo::before { animation: none !important; opacity: 1 !important; }   /* halo spectral figé mais bien visible */
+      .vital { animation: none !important; }   /* chiffres clés : pas de fondu */
       .screen.cine, .screen.hud { animation: none !important; }   /* pas de caméra si mouvement réduit */
+      .home.portal { animation: none !important; clip-path: none !important; }   /* pas de portail si mouvement réduit */
+      .home.portal::after { animation: none !important; opacity: 0 !important; }
+      .screen.drawer3d, .catcard { animation: none !important; }   /* pas de tiroir/gigogne si mouvement réduit */
+      .navbtn[data-nav="catalogue"]:hover .chest__lid, .navbtn[data-nav="catalogue"]:hover .chest__base { transform: none !important; }
       .navbtn.miles, .navbtn.miles .navbtn__ic { animation: none !important; }   /* pas de glitch "Miles" si mouvement réduit */
       .hud__hi, .hud__sys i, .hud__caret { animation: none !important; }   /* pas de curseur clignotant / glitch si mouvement réduit */
       .depth__dust span { animation: none !important; opacity: .28 !important; }   /* poussières figées */
@@ -404,12 +541,12 @@
 
       <!-- SECTIONS (boutons maîtres néon) -->
       <nav class="nav2">
-        <button class="navbtn navbtn--red is-active" data-nav="accueil" data-sfx-hover>
+        <button class="navbtn navbtn--red is-active" data-nav="accueil" data-sfx-hover data-sfx-profile="nexus">
           <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/><path d="M10 20v-6h4v6"/></svg></span>
           Accueil
         </button>
-        <button class="navbtn navbtn--yellow" data-nav="catalogue" data-sfx-hover>
-          <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v10l-8 4-8-4V7z"/><path d="M4 7l8 4 8-4"/><path d="M12 11v10"/></svg></span>
+        <button class="navbtn navbtn--yellow" data-nav="catalogue" data-sfx-hover data-sfx-profile="drawer">
+          <span class="navbtn__ic"><span class="chest" aria-hidden="true"><span class="chest__base"></span><span class="chest__lid"></span></span></span>
           Catalogue
         </button>
         <button class="navbtn navbtn--green" data-nav="ventes" data-sfx-hover>
@@ -427,6 +564,10 @@
         <button class="navbtn navbtn--violet" data-nav="bilan" data-sfx-hover>
           <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4"/><path d="M4 20h16"/><rect x="7.5" y="12" width="2.6" height="5" rx=".4"/><rect x="12" y="8.5" width="2.6" height="8.5" rx=".4"/><rect x="16.5" y="10.5" width="2.6" height="6.5" rx=".4"/></svg></span>
           Le bilan
+        </button>
+        <button class="navbtn navbtn--holo" data-nav="statistiques" data-sfx-hover data-sfx-profile="data">
+          <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
+          Statistiques
         </button>
         <button class="navbtn navbtn--orange" data-nav="carnet" data-sfx-hover>
           <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M4.5 8H5M4.5 12H5M4.5 16H5"/><circle cx="13" cy="10" r="2.2"/><path d="M10 16.2a3 3 0 0 1 6 0"/></svg></span>
@@ -501,15 +642,30 @@
       depenses:  { label: 'Mes dépenses',   color: '#e11d48', desc: 'Ce qui sort de ta caisse.' },
       caisse:    { label: 'La caisse',      color: '#38f0ff', desc: 'Encaisse une vente en un geste.' },
       bilan:     { label: 'Le bilan',       color: '#b98cff', desc: 'Tes chiffres et ton rapport de santé.' },
+      statistiques: { label: 'Statistiques', color: '#e8fbff', desc: 'Tendances, analyses et projections de ton activité.' },
       carnet:    { label: 'Carnet clients', color: '#ff8a3d', desc: 'Clients, crédits et relances.' },
       equipe:    { label: 'Mon équipe',     color: '#3a86ff', desc: 'Vendeurs, rôles et sécurité.' },
     };
     // Accueil : HUD de bienvenue (salutation dynamique) + 2 mastodontes Vendre / Dépenser
     function accueilHTML(cls) {
-      return '<div class="screen ' + cls + ' home" style="--sc:#ff2e43">' +
+      return '<div class="screen home portal" style="--sc:#ff2e43">' +   // portail « retour au nexus » (clip-path circulaire) au lieu de la caméra cine/hud
           '<div class="hud">' +
             '<span class="hud__sys"><i></i>Système en ligne</span>' +
             '<h1 class="hud__hi"></h1>' +   // rempli par le Smart Greeting Engine (typing)
+          '</div>' +
+          '<div class="vitals">' +
+            '<div class="vital vital--caisse" style="--i:0" role="button" tabindex="0" data-goto="statistiques" aria-label="Caisse : voir les statistiques">' +
+              '<span class="vital__label">Caisse</span>' +
+              '<span class="vital__num" data-count="247500" data-suffix=" F">0 F</span>' +
+            '</div>' +
+            '<div class="vital vital--jour" style="--i:1" role="button" tabindex="0" data-goto="statistiques" aria-label="Ventes du jour : voir les statistiques">' +
+              '<span class="vital__label">Aujourd\'hui</span>' +
+              '<span class="vital__num" data-count="42500" data-suffix=" F">0 F</span>' +
+            '</div>' +
+            '<div class="vital vital--objectif" style="--i:2" role="button" tabindex="0" data-goto="statistiques" aria-label="Objectif : voir les statistiques">' +
+              '<span class="vital__label">Objectif</span>' +
+              '<span class="vital__num" data-count="68" data-suffix=" %">0 %</span>' +
+            '</div>' +
           '</div>' +
           '<div class="masto">' +
             '<button class="masto__btn masto__btn--sell" type="button" data-goto="caisse">' + ICON_SELL + '<span>Vendre</span></button>' +
@@ -517,10 +673,23 @@
           '</div>' +
         '</div>';
     }
+    // Écran Catalogue : « tiroir 3D » (drawerPull) + compartiments qui sortent en gigogne (cartes produits de démo)
+    function catalogueHTML() {
+      const items = [['Yaourt maison', '500 F'], ['Jus de bissap', '300 F'], ['Pain doré', '250 F'], ['Part de gâteau', '1 000 F'], ['Eau 1,5 L', '200 F'], ['Café au lait', '400 F']];
+      let cards = '';
+      items.forEach((it, i) => { cards += '<div class="catcard" style="--i:' + i + '"><span class="catcard__name">' + it[0] + '</span><span class="catcard__price">' + it[1] + '</span></div>'; });
+      return '<div class="screen drawer3d catalogue" style="--sc:#ffd23f">' +
+          '<span class="screen__tag">Catalogue</span>' +
+          '<h1 class="screen__title">Tes produits</h1>' +
+          '<p class="screen__sub">Tes produits et prestations, prêts à vendre.</p>' +
+          '<div class="catgrid">' + cards + '</div>' +
+        '</div>';
+    }
     function showSection(nav, cinematic) {
-      if (!cinematic) playWhoosh();   // routing : whoosh à T0 de la transition de page
+      if (!cinematic && nav !== 'accueil' && nav !== 'catalogue') playWhoosh();   // routing : whoosh (sauf Accueil=portail et Catalogue=tiroir, qui ont leur propre son)
       const cls = cinematic ? 'cine' : 'hud';
-      if (nav === 'accueil') { view.innerHTML = accueilHTML(cls); renderGreeting(); bindMastoTilt(); return; }
+      if (nav === 'accueil') { view.innerHTML = accueilHTML(cls); renderGreeting(); bindMastoTilt(); bindVitals(); return; }
+      if (nav === 'catalogue') { view.innerHTML = catalogueHTML(); return; }
       const s = SECTIONS[nav] || SECTIONS.accueil;
       view.innerHTML =
         '<div class="screen ' + cls + '" style="--sc:' + s.color + '">' +
@@ -559,6 +728,32 @@
         btn.addEventListener('pointercancel', () => { if (!rm) reset(); stopCharge(); });
         // ---- Bascule 3D : uniquement si le mouvement est autorisé ----
         if (!rm) { btn.addEventListener('pointermove', apply); btn.addEventListener('pointerup', reset); }
+      });
+    }
+
+    // ===== Chiffres clés : comptage de 0 jusqu'à la valeur (léger, sans à-coups) =====
+    function vitalFmt(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }   // séparateur de milliers
+    function bindVitals() {
+      const scene = view.querySelector('.vitals'); if (!scene) return;
+      const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      scene.querySelectorAll('.vital').forEach((card, i) => {
+        card.addEventListener('mouseenter', playHover);   // survol = MÊME micro-click que les items du menu
+        card.addEventListener('pointerdown', () => playClick());   // bruit de click au toucher (comme dans le menu)
+        card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); } });   // clavier -> ouvre Statistiques
+        const el = card.querySelector('[data-count]'); if (!el) return;
+        const target = +el.dataset.count || 0, suf = el.dataset.suffix || '';
+        if (rm) { el.textContent = vitalFmt(target) + suf; return; }   // a11y : pas d'animation
+        const DUR = 1100, start = performance.now() + i * 120;   // léger décalage entre les cartes
+        el.textContent = vitalFmt(0) + suf;
+        setTimeout(() => playCountTicks(DUR), i * 120);   // bruit de comptage synchronisé au chiffre qui monte
+        const tick = (now) => {
+          if (now < start) return requestAnimationFrame(tick);
+          const p = Math.min(1, (now - start) / DUR);
+          const e = 1 - Math.pow(1 - p, 3);   // ease-out : rapide puis ralentit à l'approche
+          el.textContent = vitalFmt(Math.round(target * e)) + suf;
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
       });
     }
     // Poussières de fond : 2 couches (parallaxe -> la couche proche est plus grosse ET plus rapide)
@@ -694,7 +889,8 @@
       };
       beep(0, 680); beep(0.07, 1020);   // double bip ascendant (validation)
     }
-    drawer.querySelectorAll('[data-sfx-hover]').forEach((b) => b.addEventListener('mouseenter', playHover));
+    drawer.querySelectorAll('[data-sfx-hover]').forEach((b) =>
+      b.addEventListener('mouseenter', () => (b.dataset.sfxProfile === 'data' ? playDataScan : b.dataset.sfxProfile === 'nexus' ? playDigitalWhoosh : b.dataset.sfxProfile === 'drawer' ? playGearLock : playHover)()));   // Data · nexus=whoosh · drawer=loquet · sinon micro-click du menu
 
     // ===== Sound design "audio-haptique" : synthèse Web Audio (aucun fichier, < 500 ms, très discret) =====
     function playType() {   // HUD typing : micro-click à chaque lettre
@@ -808,6 +1004,146 @@
       const ng = ctx.createGain(); ng.gain.setValueAtTime(0.07, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
       noise.connect(bp); bp.connect(ng); ng.connect(bus); noise.start(t); noise.stop(t + 0.22);
     }
+
+    // ===== Profil sonore PROPRE à "Statistiques" (données pures) =====
+    function playDataScan() {   // SURVOL "Data Processing" : crépitement numérique léger et fluide (calcul de données)
+      if (_muted || !_hoverCapable) return;
+      const now = performance.now(); if (now - _lastHover < 45) return; _lastHover = now;   // partage l'anti-mitraillette du survol
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime, DUR = 0.11;
+      // grains épars (bits de données) filtrés + balayage montant = "traitement en cours"
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * DUR), ctx.sampleRate);
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = (Math.random() < 0.5 ? Math.random() * 2 - 1 : 0);
+      const noise = ctx.createBufferSource(); noise.buffer = nb;
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 6;
+      bp.frequency.setValueAtTime(2600, t); bp.frequency.exponentialRampToValueAtTime(5200, t + DUR);   // balayage montant
+      const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1500;              // léger / aérien
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.05, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + DUR);
+      noise.connect(bp); bp.connect(hp); hp.connect(g); g.connect(_master); noise.start(t); noise.stop(t + DUR + 0.02);
+      const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.setValueAtTime(5200, t); o.frequency.linearRampToValueAtTime(6400, t + DUR);   // scintillement cristallin par-dessus
+      const og = ctx.createGain(); og.gain.setValueAtTime(0.02, t); og.gain.exponentialRampToValueAtTime(0.0001, t + DUR * 0.85);
+      o.connect(og); og.connect(_master); o.start(t); o.stop(t + DUR);
+    }
+    function playAnalyticValidate() {   // CLIC "Validation Analytique" : bip résonnant, clair, technologique, apaisant — sinus purs = SANS distorsion
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime;
+      const bus = ctx.createGain(); bus.gain.value = 0.9; bus.connect(_master);
+      const delay = ctx.createDelay(); delay.delayTime.value = 0.055;   // légère résonance "tech" (queue maîtrisée, pas de boucle folle)
+      const fb = ctx.createGain(); fb.gain.value = 0.25; const wet = ctx.createGain(); wet.gain.value = 0.4;
+      delay.connect(fb); fb.connect(delay); delay.connect(wet); wet.connect(bus);
+      const tone = (freq, dt, dur, peak) => {                          // sinus pur = zéro distorsion, attaque/chute douces = zéro clic
+        const osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.setValueAtTime(freq, t + dt);
+        const gg = ctx.createGain();
+        gg.gain.setValueAtTime(0.0001, t + dt);
+        gg.gain.exponentialRampToValueAtTime(peak, t + dt + 0.02);
+        gg.gain.exponentialRampToValueAtTime(0.0001, t + dt + dur);
+        osc.connect(gg); gg.connect(bus); gg.connect(delay); osc.start(t + dt); osc.stop(t + dt + dur + 0.02);
+      };
+      tone(784, 0,    0.5,  0.09);    // Sol (fondamentale)
+      tone(1176, 0.03, 0.5,  0.055);  // quinte juste (784 x 1.5) = accord consonant
+      tone(1568, 0.06, 0.42, 0.03);   // octave (scintillement discret)
+    }
+
+    // ===== Son de comptage des chiffres (Accueil) =====
+    function playCountTicks(duration) {   // "comptage de chiffres" : ticks numériques rapides pendant la montée + petit ding de fin
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t0 = ctx.currentTime, dsec = (duration || 1100) / 1000;
+      const N = Math.min(26, Math.max(10, Math.round(dsec / 0.045)));
+      for (let k = 0; k < N; k++) {
+        const tt = t0 + (k / N) * dsec;
+        const o = ctx.createOscillator(); o.type = 'square'; o.frequency.setValueAtTime(2000 + Math.random() * 900, tt);
+        const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1500;
+        const g = ctx.createGain(); g.gain.setValueAtTime(0.02, tt); g.gain.exponentialRampToValueAtTime(0.0001, tt + 0.016);
+        o.connect(hp); hp.connect(g); g.connect(_master); o.start(tt); o.stop(tt + 0.018);
+      }
+      const tc = t0 + dsec;   // petit "ding" doux quand le compteur se pose
+      const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.setValueAtTime(1320, tc); o.frequency.exponentialRampToValueAtTime(1760, tc + 0.05);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, tc); g.gain.exponentialRampToValueAtTime(0.06, tc + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, tc + 0.18);
+      o.connect(g); g.connect(_master); o.start(tc); o.stop(tc + 0.2);
+    }
+
+    // ===== Sons du NEXUS (Accueil) : whoosh au survol + vacuum pop au clic (synthèse Web Audio) =====
+    function playDigitalWhoosh() {   // "whoosh_digital" : souffle d'air synthétique court et PROPRE (survol de l'item Accueil)
+      if (_muted || !_hoverCapable) return;
+      const now = performance.now(); if (now - _lastHover < 45) return; _lastHover = now;   // anti-mitraillette (partagé avec le survol)
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime, DUR = 0.16;
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * DUR), ctx.sampleRate);
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const src = ctx.createBufferSource(); src.buffer = nb;
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.1;   // filtre serré = souffle propre (pas granuleux)
+      bp.frequency.setValueAtTime(700, t); bp.frequency.exponentialRampToValueAtTime(3600, t + DUR * 0.5); bp.frequency.exponentialRampToValueAtTime(1200, t + DUR);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.06, t + 0.03); g.gain.exponentialRampToValueAtTime(0.0001, t + DUR);
+      src.connect(bp); bp.connect(g); g.connect(_master); src.start(t); src.stop(t + DUR + 0.02);
+    }
+    function playVacuumPop() {   // "vacuum_pop" : pop sous vide, ÉTOUFFÉ (passe-bas) et NET (clic sur l'item Accueil = portail)
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime;
+      const bus = ctx.createGain(); bus.connect(_master);
+      const o = ctx.createOscillator(); o.type = 'sine';
+      o.frequency.setValueAtTime(420, t); o.frequency.exponentialRampToValueAtTime(90, t + 0.09);   // chute rapide = "pop"
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(1400, t); lp.frequency.exponentialRampToValueAtTime(500, t + 0.1);   // étouffé
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.14, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+      o.connect(lp); lp.connect(g); g.connect(bus); o.start(t); o.stop(t + 0.13);
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * 0.06), ctx.sampleRate);   // souffle d'aspiration très court (sous vide)
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const nz = ctx.createBufferSource(); nz.buffer = nb;
+      const lp2 = ctx.createBiquadFilter(); lp2.type = 'lowpass'; lp2.frequency.value = 800;
+      const ng = ctx.createGain(); ng.gain.setValueAtTime(0.05, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.06);
+      nz.connect(lp2); lp2.connect(ng); ng.connect(bus); nz.start(t); nz.stop(t + 0.07);
+    }
+
+    // ===== Sons du COFFRE/TIROIR (Catalogue) : loquet au survol + tiroir lourd + double clac au clic =====
+    function playGearLock() {   // "gear_lock_short" : loquet mécanique léger (deux petits clics métalliques)
+      if (_muted || !_hoverCapable) return;
+      const now = performance.now(); if (now - _lastHover < 45) return; _lastHover = now;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime;
+      const clack = (dt, f, amp) => {
+        const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * 0.02), ctx.sampleRate);
+        const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+        const nz = ctx.createBufferSource(); nz.buffer = nb;
+        const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 3000;   // sec, métallique
+        const ng = ctx.createGain(); ng.gain.setValueAtTime(amp, t + dt); ng.gain.exponentialRampToValueAtTime(0.0001, t + dt + 0.02);
+        nz.connect(hp); hp.connect(ng); ng.connect(_master); nz.start(t + dt); nz.stop(t + dt + 0.025);
+        const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.setValueAtTime(f, t + dt);
+        const og = ctx.createGain(); og.gain.setValueAtTime(amp * 0.5, t + dt); og.gain.exponentialRampToValueAtTime(0.0001, t + dt + 0.03);
+        o.connect(og); og.connect(_master); o.start(t + dt); o.stop(t + dt + 0.035);
+      };
+      clack(0, 2600, 0.045); clack(0.05, 3200, 0.03);   // loquet à deux temps
+    }
+    function playDrawerPull() {   // "heavy_drawer_pull" (glissement lourd sur rail) + "metal_latch_snap" (double clac sec à l'arrivée)
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime, SLIDE = 0.34;
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * SLIDE), ctx.sampleRate);   // rail lourd : bruit passe-bande grave qui roule
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const nz = ctx.createBufferSource(); nz.buffer = nb;
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 0.7;
+      bp.frequency.setValueAtTime(320, t); bp.frequency.linearRampToValueAtTime(180, t + SLIDE);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.07, t + 0.06); g.gain.setValueAtTime(0.07, t + SLIDE - 0.08); g.gain.exponentialRampToValueAtTime(0.0001, t + SLIDE);
+      nz.connect(bp); bp.connect(g); g.connect(_master); nz.start(t); nz.stop(t + SLIDE + 0.02);
+      const o = ctx.createOscillator(); o.type = 'sine';   // sous-grave = le poids du tiroir
+      o.frequency.setValueAtTime(70, t); o.frequency.linearRampToValueAtTime(48, t + SLIDE);
+      const og = ctx.createGain(); og.gain.setValueAtTime(0.0001, t); og.gain.exponentialRampToValueAtTime(0.05, t + 0.08); og.gain.exponentialRampToValueAtTime(0.0001, t + SLIDE);
+      o.connect(og); og.connect(_master); o.start(t); o.stop(t + SLIDE + 0.02);
+      const snap = (dt, f) => {   // clac métallique sec (enclenchement)
+        const nb2 = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * 0.03), ctx.sampleRate);
+        const d2 = nb2.getChannelData(0); for (let i = 0; i < d2.length; i++) d2[i] = Math.random() * 2 - 1;
+        const s = ctx.createBufferSource(); s.buffer = nb2;
+        const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 2200;
+        const sg = ctx.createGain(); sg.gain.setValueAtTime(0.11, t + dt); sg.gain.exponentialRampToValueAtTime(0.0001, t + dt + 0.03);
+        s.connect(hp); hp.connect(sg); sg.connect(_master); s.start(t + dt); s.stop(t + dt + 0.035);
+        const o2 = ctx.createOscillator(); o2.type = 'triangle'; o2.frequency.setValueAtTime(f, t + dt); o2.frequency.exponentialRampToValueAtTime(f * 0.5, t + dt + 0.04);
+        const og2 = ctx.createGain(); og2.gain.setValueAtTime(0.08, t + dt); og2.gain.exponentialRampToValueAtTime(0.0001, t + dt + 0.05);
+        o2.connect(og2); og2.connect(_master); o2.start(t + dt); o2.stop(t + dt + 0.06);
+      };
+      snap(SLIDE, 900); snap(SLIDE + 0.07, 700);   // double clac « clac-clac »
+    }
+
     // ===== Option "Mute" (coupe-son), persistée dans les réglages =====
     const ICON_SOUND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a4 4 0 0 1 0 7"/></svg>';
     const ICON_MUTE  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>';
@@ -827,12 +1163,39 @@
     // ===== "Miles clic" : feedback Spider-Verse IMMÉDIAT dès l'appui (pointerdown), sur chaque item de section =====
     drawer.querySelectorAll('.navbtn').forEach((b) => {
       b.addEventListener('pointerdown', () => {
-        playGlitch();                                      // son glitch/snap à T0 (synchro avec le tremblement -> snap visuel)
+        (b.dataset.sfxProfile === 'data' ? playAnalyticValidate : b.dataset.sfxProfile === 'nexus' ? playVacuumPop : b.dataset.sfxProfile === 'drawer' ? playDrawerPull : playGlitch)();   // Validation · nexus=Vacuum Pop · drawer=tiroir lourd+clac · sinon glitch/snap (T0)
         b.classList.remove('miles'); void b.offsetWidth;   // reflow : relance l'anim même en re-clic rapide
         b.classList.add('miles');
         setTimeout(() => b.classList.remove('miles'), 230);
       });
     });
+
+    // ===== NEXUS : attraction magnétique 3D de l'item « Accueil » (retour au centre de commande) =====
+    function bindNexusMagnet() {
+      const item = drawer.querySelector('.navbtn[data-nav="accueil"]'); if (!item) return;
+      if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;   // souris uniquement
+      const rmot = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let raf = 0;
+      const move = (e) => {
+        const r = item.getBoundingClientRect();
+        const ry = ((e.clientX - r.left) / r.width - 0.5) * 16;    // rotateY : penche vers le curseur (gauche/droite)
+        const rx = (0.5 - (e.clientY - r.top) / r.height) * 12;    // rotateX : penche vers le curseur (haut/bas)
+        if (raf) cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => {
+          item.style.transition = 'none';
+          item.style.transform = 'perspective(500px) rotateX(' + rx.toFixed(1) + 'deg) rotateY(' + ry.toFixed(1) + 'deg) scale(1.05)';
+        });
+      };
+      item.addEventListener('pointerenter', () => item.classList.add('nexus-hot'));   // glow cyan stable
+      item.addEventListener('pointerleave', () => {
+        item.classList.remove('nexus-hot');
+        if (raf) cancelAnimationFrame(raf); raf = 0;
+        item.style.transition = 'transform 300ms cubic-bezier(0.25, 1, 0.5, 1)';   // retour fluide à l'état initial
+        item.style.transform = '';
+      });
+      if (!rmot) item.addEventListener('pointermove', move);
+    }
+    bindNexusMagnet();
 
     // ===== Profil dynamique (Supabase si session, sinon démo) =====
     const CROWN = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 8.5l3.8 3L12 5l4.7 6.5 3.8-3L18.5 19h-13z"/></svg>';
