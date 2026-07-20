@@ -1,0 +1,4 @@
+# Sources lourdes des générations IA (PNG 1k/2k + mp4 brut Kling) — gardées en local
+# Les livrables web (assets/images/*.webp, assets/videos/*.mp4) sont, eux, versionnés.
+assets/raw/
+.impeccable/
