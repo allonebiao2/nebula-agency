@@ -419,7 +419,7 @@
   /* ---------- Ambiance audio : boucle jazz (mp3), demarre au 1er contact (comme NEBULA Agency) ---------- */
   var audioBtn = document.querySelector(".fab-audio");
   if (audioBtn) {
-    var jazz = new Audio("assets/audio/jazz-loop.mp3");
+    var jazz = new Audio("assets/audio/jazz-loop.mp3?v=20260720a");
     jazz.loop = true; jazz.preload = "none"; jazz.setAttribute("playsinline", "");
     var AUD_TGT = isMobile ? 0.30 : 0.24, audStarted = false, audRaf = 0;
     var audMuted = (function () { try { return localStorage.getItem("djt:audio") === "muted"; } catch (e) { return false; } })();
