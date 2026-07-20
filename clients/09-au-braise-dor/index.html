@@ -837,25 +837,29 @@
     document.addEventListener('visibilitychange',function(){ if(document.hidden){cancelAnimationFrame(raf);} else {raf=requestAnimationFrame(tick);} });
   })();
 
-  /* ============ Ambiance sonore : boucle « feu de bois » (mp3), démarre au 1er contact ============ */
+  /* ============ Ambiance sonore : BBQ (mp3). Préchargé en sourdine, activé au 1er contact (tap/scroll/clic) ============ */
   var fireAudio=document.createElement('audio');
-  fireAudio.src='assets/audio/fire-loop.mp3'; fireAudio.loop=true; fireAudio.preload='none'; fireAudio.setAttribute('playsinline','');
+  fireAudio.src='assets/audio/fire-loop.mp3?v=20260720c'; fireAudio.loop=true; fireAudio.preload='auto'; fireAudio.muted=true; fireAudio.setAttribute('playsinline','');
   document.body.appendChild(fireAudio);
   var sbtn=document.getElementById('sound');
-  var SND_KEY='abo:snd', SND_TGT=0.45, sndStarted=false, sndRaf=0;
-  var sndMuted=(function(){ try{return localStorage.getItem(SND_KEY)==='0';}catch(e){return false;} })();
+  var SND_KEY='abo:snd', SND_TGT=0.5, sndUnlocked=false, sndMuted=false, sndRaf=0;
+  try{ sndMuted=localStorage.getItem(SND_KEY)==='0'; }catch(e){}
   function sndFade(v,ms){ cancelAnimationFrame(sndRaf); var s=fireAudio.volume||0, t0=performance.now();
-    (function st(t){ var p=Math.min((t-t0)/ms,1), e=1-Math.pow(1-p,3); try{fireAudio.volume=s+(v-s)*e;}catch(x){} if(p<1){ sndRaf=requestAnimationFrame(st); } else if(v===0){ try{fireAudio.pause();}catch(x){} } })(t0);
+    (function st(t){ var p=Math.min((t-t0)/ms,1), e=1-Math.pow(1-p,3); try{fireAudio.volume=s+(v-s)*e;}catch(x){} if(p<1){ sndRaf=requestAnimationFrame(st); } })(t0);
   }
-  function sndPlay(){ try{fireAudio.volume=0;}catch(x){} var p=fireAudio.play(); if(p&&p.then){ p.then(function(){ sndStarted=true; sbtn.classList.add('is-on'); sndFade(SND_TGT,900); }).catch(function(){}); } }
-  function sndStop(){ sndFade(0,600); sbtn.classList.remove('is-on'); }
-  function sndTry(){ if(sndStarted||sndMuted) return; sndPlay(); }
-  ['pointerdown','touchstart','keydown'].forEach(function(ev){ window.addEventListener(ev,sndTry,{passive:true}); });
+  fireAudio.volume=0; fireAudio.play().catch(function(){});   // démarre en sourdine dès le chargement (bufferise, révélé sans délai)
+  var SND_EVTS=['pointerdown','touchstart','keydown','click'];
+  function sndRemove(){ SND_EVTS.forEach(function(ev){ window.removeEventListener(ev,sndUnlock,true); }); }
+  function sndUnlock(){ if(sndUnlocked||sndMuted) return; fireAudio.muted=false; var p=fireAudio.play();
+    if(p&&p.then){ p.then(function(){ sndUnlocked=true; sbtn.classList.add('is-on'); sndFade(SND_TGT,800); sndRemove(); }).catch(function(){ fireAudio.muted=true; fireAudio.play().catch(function(){}); }); }
+    else { sndUnlocked=true; sbtn.classList.add('is-on'); sndFade(SND_TGT,800); sndRemove(); }
+  }
+  SND_EVTS.forEach(function(ev){ window.addEventListener(ev,sndUnlock,{passive:true,capture:true}); });
   sbtn.addEventListener('click',function(e){ e.stopPropagation();
-    if(fireAudio.paused||fireAudio.volume<0.01){ sndMuted=false; sndStarted=true; try{localStorage.setItem(SND_KEY,'1');}catch(x){} sndPlay(); }
-    else { sndMuted=true; try{localStorage.setItem(SND_KEY,'0');}catch(x){} sndStop(); }
+    if(fireAudio.muted||fireAudio.paused||fireAudio.volume<0.01){ sndMuted=false; sndUnlocked=true; try{localStorage.setItem(SND_KEY,'1');}catch(x){} fireAudio.muted=false; fireAudio.play().catch(function(){}); sbtn.classList.add('is-on'); sndFade(SND_TGT,700); }
+    else { sndMuted=true; try{localStorage.setItem(SND_KEY,'0');}catch(x){} sndFade(0,500); sbtn.classList.remove('is-on'); setTimeout(function(){ if(sndMuted) fireAudio.muted=true; },520); }
   });
-  sbtn.setAttribute('aria-label','Ambiance sonore feu de bois');
+  sbtn.setAttribute('aria-label','Ambiance sonore BBQ');
 
   /* ============================================================================
      MOTEUR DE COMMANDE : panier + options + mode (place/emporter/livraison) + WhatsApp
