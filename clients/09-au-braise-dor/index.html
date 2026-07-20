@@ -786,7 +786,6 @@
     filter.querySelectorAll('.chip').forEach(function(x){x.classList.remove('is-on')}); b.classList.add('is-on');
     var f=b.dataset.f;
     grid.querySelectorAll('.catblock').forEach(function(bl){ bl.style.display=(f==='all'||bl.dataset.cat===f)?'':'none'; });
-    playTick();
     if(f!=='all'){ var t=document.getElementById('cat-'+f); if(t){ var y=t.getBoundingClientRect().top+scrollY-90; scrollTo({top:y,behavior:RM?'auto':'smooth'}); } }
   });
 
@@ -810,7 +809,7 @@
   addEventListener('scroll',function(){ hdr.classList.toggle('solid',scrollY>40); },{passive:true});
 
   /* ============ Loader ============ */
-  addEventListener('load',function(){ setTimeout(function(){ document.getElementById('loader').classList.add('gone'); if(sndOn) playWhoosh(); },RM?200:1050); });
+  addEventListener('load',function(){ setTimeout(function(){ document.getElementById('loader').classList.add('gone'); },RM?200:1050); });
 
   /* ============ Canvas braises ============ */
   (function(){
@@ -838,77 +837,25 @@
     document.addEventListener('visibilitychange',function(){ if(document.hidden){cancelAnimationFrame(raf);} else {raf=requestAnimationFrame(tick);} });
   })();
 
-  /* ============ Ambiance sonore (braise + grésillement) — Web Audio, OFF par défaut ============ */
-  var actx=null,master=null,crackleTimer=null;
-  var hoverCap=matchMedia('(hover:hover) and (pointer:fine)').matches;
-  var sndOn=(function(){ try{return localStorage.getItem('abo:snd')!=='0';}catch(e){return true;} })();   // son ON par défaut (démarre au 1er geste)
-  function ac(){
-    var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return null;
-    if(!actx){ actx=new AC(); master=actx.createGain(); master.gain.value=isMobile?1.5:1;
-      var comp=actx.createDynamicsCompressor(); comp.threshold.value=-18; comp.ratio.value=9; comp.attack.value=.003; comp.release.value=.25;
-      master.connect(comp); comp.connect(actx.destination); }
-    if(actx.state==='suspended'){ var r=actx.resume(); if(r&&r.catch) r.catch(function(){}); }
-    return actx;
-  }
-  var _started=false;
-  function firstGesture(){ if(_started) return; _started=true; var c=ac(); if(!c) return; try{ var s=c.createBufferSource(); s.buffer=c.createBuffer(1,1,22050); s.connect(c.destination); s.start(0); }catch(e){} if(sndOn){ startAmbient(); playBoot(); } }
-  ['pointerdown','touchstart','keydown'].forEach(function(ev){ document.addEventListener(ev,firstGesture,{passive:true}); });
-
-  function noiseBuf(dur){ var c=ac(); var b=c.createBuffer(1,Math.ceil(c.sampleRate*dur),c.sampleRate); var d=b.getChannelData(0); for(var i=0;i<d.length;i++) d[i]=Math.random()*2-1; return b; }
-  function pop(t,amp){ var c=ac(); var s=c.createBufferSource(); s.buffer=noiseBuf(.05); var bp=c.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=800+Math.random()*2200; bp.Q.value=1.2; var g=c.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(amp,t+.004); g.gain.exponentialRampToValueAtTime(.0001,t+.05); s.connect(bp);bp.connect(g);g.connect(master); s.start(t); s.stop(t+.06); }
-  function scheduleCrackle(){ if(!sndOn){ crackleTimer=null; return; } var c=ac(); if(!c){ return; } var t=c.currentTime; var n=2+Math.floor(Math.random()*4); for(var i=0;i<n;i++){ pop(t+Math.random()*.9, .02+Math.random()*.05); } // basse ronflante douce
-    crackleTimer=setTimeout(scheduleCrackle, 700+Math.random()*700);
-  }
-  var rumble=null;
-  function startRumble(){ var c=ac(); if(!c||rumble) return; var o=c.createOscillator(); o.type='sine'; o.frequency.value=52; var g=c.createGain(); g.gain.value=.05; var lfo=c.createOscillator(); lfo.type='sine'; lfo.frequency.value=.4; var lg=c.createGain(); lg.gain.value=14; lfo.connect(lg); lg.connect(o.frequency); o.connect(g); g.connect(master); o.start(); lfo.start(); rumble={o:o,lfo:lfo,g:g}; }
-  function stopRumble(){ if(!rumble) return; try{ var c=ac(); rumble.g.gain.setTargetAtTime(.0001,c.currentTime,.2); rumble.o.stop(c.currentTime+.6); rumble.lfo.stop(c.currentTime+.6);}catch(e){} rumble=null; }
-  var _lastHover=0;
-  function playSizzle(){ if(!sndOn) return; var now=performance.now(); if(now-_lastHover<110) return; _lastHover=now; var c=ac(); if(!c) return; var t=c.currentTime; var s=c.createBufferSource(); s.buffer=noiseBuf(.35); var hp=c.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=3400; var g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.linearRampToValueAtTime(.04,t+.04); g.gain.exponentialRampToValueAtTime(.0001,t+.35); s.connect(hp);hp.connect(g);g.connect(master); s.start(t); s.stop(t+.37); }
-  function playHover(){ if(!sndOn) return; var now=performance.now(); if(now-_lastHover<50) return; _lastHover=now; var c=ac(); if(!c) return; var t=c.currentTime; var s=c.createBufferSource(); s.buffer=noiseBuf(.03); var bp=c.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=1500+Math.random()*600; bp.Q.value=1.4; var g=c.createGain(); g.gain.setValueAtTime(.03,t); g.gain.exponentialRampToValueAtTime(.0001,t+.03); s.connect(bp);bp.connect(g);g.connect(master); s.start(t); s.stop(t+.04); }
-  function playPock(){ if(!sndOn) return; var c=ac(); if(!c) return; var t=c.currentTime; var o=c.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(220,t); o.frequency.exponentialRampToValueAtTime(90,t+.08); var g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.09,t+.006); g.gain.exponentialRampToValueAtTime(.0001,t+.12); o.connect(g); g.connect(master); o.start(t); o.stop(t+.13); var s=c.createBufferSource(); s.buffer=noiseBuf(.04); var bp=c.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=1800; bp.Q.value=1; var ng=c.createGain(); ng.gain.setValueAtTime(.05,t); ng.gain.exponentialRampToValueAtTime(.0001,t+.05); s.connect(bp);bp.connect(ng);ng.connect(master); s.start(t); s.stop(t+.06); }
-  function playCommander(){ if(!sndOn) return; var c=ac(); if(!c) return; var t=c.currentTime;
-    var s=c.createBufferSource(); s.buffer=noiseBuf(.42); var bp=c.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=.9;
-    bp.frequency.setValueAtTime(380,t); bp.frequency.exponentialRampToValueAtTime(2600,t+.22); bp.frequency.exponentialRampToValueAtTime(700,t+.4);
-    var sg=c.createGain(); sg.gain.setValueAtTime(.0001,t); sg.gain.linearRampToValueAtTime(.08,t+.06); sg.gain.exponentialRampToValueAtTime(.0001,t+.4);
-    s.connect(bp);bp.connect(sg);sg.connect(master); s.start(t); s.stop(t+.42);
-    var bus=c.createGain(); bus.connect(master);
-    [[784,0,.09],[1046,.06,.07],[1568,.12,.05]].forEach(function(p){ var o=c.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(p[0],t+p[1]); var g=c.createGain(); g.gain.setValueAtTime(.0001,t+p[1]); g.gain.exponentialRampToValueAtTime(p[2],t+p[1]+.02); g.gain.exponentialRampToValueAtTime(.0001,t+p[1]+.5); o.connect(g); g.connect(bus); o.start(t+p[1]); o.stop(t+p[1]+.55); });
-    var ns=c.createBufferSource(); ns.buffer=noiseBuf(.08); var hp=c.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=5200; var ng=c.createGain(); ng.gain.setValueAtTime(.04,t+.12); ng.gain.exponentialRampToValueAtTime(.0001,t+.24); ns.connect(hp);hp.connect(ng);ng.connect(master); ns.start(t+.12); ns.stop(t+.26); }
-  function playBoot(){ if(!sndOn) return; var c=ac(); if(!c) return; var t=c.currentTime+.05;
-    var bus=c.createGain(); bus.gain.value=.9; bus.connect(master);
-    var dl=c.createDelay(); dl.delayTime.value=.12; var fb=c.createGain(); fb.gain.value=.28; var wet=c.createGain(); wet.gain.value=.35;
-    dl.connect(fb); fb.connect(dl); dl.connect(wet); wet.connect(bus);
-    var s=c.createBufferSource(); s.buffer=noiseBuf(.3); var bp=c.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=.8; bp.frequency.setValueAtTime(500,t); bp.frequency.exponentialRampToValueAtTime(3200,t+.28);
-    var sg=c.createGain(); sg.gain.setValueAtTime(.0001,t); sg.gain.linearRampToValueAtTime(.05,t+.06); sg.gain.exponentialRampToValueAtTime(.0001,t+.3);
-    s.connect(bp);bp.connect(sg);sg.connect(bus); s.start(t); s.stop(t+.32);
-    var notes=[523,659,784,1046,1318,1568];
-    notes.forEach(function(f,i){ var dt=.16+i*.085; var o=c.createOscillator(); o.type=i>3?'sine':'triangle'; o.frequency.setValueAtTime(f,t+dt);
-      var g=c.createGain(); g.gain.setValueAtTime(.0001,t+dt); g.gain.exponentialRampToValueAtTime(.07,t+dt+.012); g.gain.exponentialRampToValueAtTime(.0001,t+dt+.4);
-      o.connect(g); g.connect(bus); g.connect(dl); o.start(t+dt); o.stop(t+dt+.45); });
-    var tf=t+.16+notes.length*.085+.02;
-    [[1046,.055],[1318,.045],[1568,.038],[2093,.028]].forEach(function(p){ var o=c.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(p[0],tf);
-      var g=c.createGain(); g.gain.setValueAtTime(.0001,tf); g.gain.exponentialRampToValueAtTime(p[1],tf+.03); g.gain.exponentialRampToValueAtTime(.0001,tf+.9);
-      o.connect(g); g.connect(bus); o.start(tf); o.stop(tf+.95); }); }
-  function startAmbient(){ /* bruitage de fond (crépitement + ronflement) retiré à la demande du client — on garde seulement les retours au survol/clic */ }
-  function stopAmbient(){ stopRumble(); if(crackleTimer){ clearTimeout(crackleTimer); crackleTimer=null; } }
-  function playTick(){ if(!sndOn) return; var c=ac(); if(!c) return; var t=c.currentTime; var o=c.createOscillator(); o.type='square'; o.frequency.value=1400; var hp=c.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=900; var g=c.createGain(); g.gain.setValueAtTime(.06,t); g.gain.exponentialRampToValueAtTime(.0001,t+.04); o.connect(hp);hp.connect(g);g.connect(master); o.start(t); o.stop(t+.05); }
-  function playWhoosh(){ if(!sndOn) return; var c=ac(); if(!c) return; var t=c.currentTime; var s=c.createBufferSource(); s.buffer=noiseBuf(.5); var bp=c.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=.8; bp.frequency.setValueAtTime(300,t); bp.frequency.exponentialRampToValueAtTime(2400,t+.25); bp.frequency.exponentialRampToValueAtTime(500,t+.5); var g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.linearRampToValueAtTime(.12,t+.08); g.gain.exponentialRampToValueAtTime(.0001,t+.5); s.connect(bp);bp.connect(g);g.connect(master); s.start(t); s.stop(t+.52); }
-
-  /* Bruitages : survol (souris) + clic/tap partout */
-  var HOVER_SEL='.btn,.addbtn,.chip,.iconbtn,.foot-soc a,.pillar,.svc,.opt,.seg__b,.qty__b,.opt-add,.send,.cartbar', CLICK_SEL='.btn,.addbtn,.iconbtn,.dish,.qty__b,.opt,.seg__b,.cartbar';
-  document.addEventListener('pointerover',function(e){ if(!sndOn||!hoverCap) return; if(e.target.closest('.dish')) playSizzle(); else if(e.target.closest(HOVER_SEL)) playHover(); });
-  document.addEventListener('pointerdown',function(e){ if(!sndOn) return; if(e.target.closest('.send,.btn--wa')) playCommander(); else if(e.target.closest(CLICK_SEL)) playPock(); },{passive:true});
-
+  /* ============ Ambiance sonore : boucle « feu de bois » (mp3), démarre au 1er contact ============ */
+  var fireAudio=document.createElement('audio');
+  fireAudio.src='assets/audio/fire-loop.mp3'; fireAudio.loop=true; fireAudio.preload='none'; fireAudio.setAttribute('playsinline','');
+  document.body.appendChild(fireAudio);
   var sbtn=document.getElementById('sound');
-  function applySound(){
-    sbtn.classList.toggle('is-on',sndOn);
-    sbtn.setAttribute('aria-label',sndOn?'Couper l\'ambiance sonore':'Activer l\'ambiance sonore');
-    try{localStorage.setItem('abo:snd',sndOn?'1':'0');}catch(e){}
-    if(sndOn){ ac(); startAmbient(); playWhoosh(); } else { stopAmbient(); }
+  var SND_KEY='abo:snd', SND_TGT=0.45, sndStarted=false, sndRaf=0;
+  var sndMuted=(function(){ try{return localStorage.getItem(SND_KEY)==='0';}catch(e){return false;} })();
+  function sndFade(v,ms){ cancelAnimationFrame(sndRaf); var s=fireAudio.volume||0, t0=performance.now();
+    (function st(t){ var p=Math.min((t-t0)/ms,1), e=1-Math.pow(1-p,3); try{fireAudio.volume=s+(v-s)*e;}catch(x){} if(p<1){ sndRaf=requestAnimationFrame(st); } else if(v===0){ try{fireAudio.pause();}catch(x){} } })(t0);
   }
-  sbtn.addEventListener('click',function(){ sndOn=!sndOn; applySound(); });
-  sbtn.classList.toggle('is-on',sndOn);
-  sbtn.setAttribute('aria-label',sndOn?'Couper l\'ambiance sonore':'Activer l\'ambiance sonore');
+  function sndPlay(){ try{fireAudio.volume=0;}catch(x){} var p=fireAudio.play(); if(p&&p.then){ p.then(function(){ sndStarted=true; sbtn.classList.add('is-on'); sndFade(SND_TGT,900); }).catch(function(){}); } }
+  function sndStop(){ sndFade(0,600); sbtn.classList.remove('is-on'); }
+  function sndTry(){ if(sndStarted||sndMuted) return; sndPlay(); }
+  ['pointerdown','touchstart','keydown'].forEach(function(ev){ window.addEventListener(ev,sndTry,{passive:true}); });
+  sbtn.addEventListener('click',function(e){ e.stopPropagation();
+    if(fireAudio.paused||fireAudio.volume<0.01){ sndMuted=false; sndStarted=true; try{localStorage.setItem(SND_KEY,'1');}catch(x){} sndPlay(); }
+    else { sndMuted=true; try{localStorage.setItem(SND_KEY,'0');}catch(x){} sndStop(); }
+  });
+  sbtn.setAttribute('aria-label','Ambiance sonore feu de bois');
 
   /* ============================================================================
      MOTEUR DE COMMANDE : panier + options + mode (place/emporter/livraison) + WhatsApp

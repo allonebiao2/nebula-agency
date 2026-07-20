@@ -416,83 +416,42 @@
     });
   }
 
-  /* ---------- Ambiance audio (placeholder procédural) ----------
-     Baseline mobile NEBULA : déblocage iOS (silent buffer) +
-     DynamicsCompressor + gain modéré boosté mobile, fondu sans clic.
-     -> Remplaçable par la piste libre de droits du client :
-        poser <audio data-ambiance src="..."> et ce bloc l'utilisera.
-  ------------------------------------------------------------------ */
+  /* ---------- Ambiance audio : boucle jazz (mp3), demarre au 1er contact (comme NEBULA Agency) ---------- */
   var audioBtn = document.querySelector(".fab-audio");
   if (audioBtn) {
-    var ctx = null, master = null, nodes = [], playing = false;
-    var fileEl = document.querySelector("[data-ambiance]");
-    var TARGET = isMobile ? 0.17 : 0.13;
-
-    function unlock() {
-      var b = ctx.createBuffer(1, 1, 22050);
-      var s = ctx.createBufferSource(); s.buffer = b;
-      s.connect(ctx.destination); s.start(0);
+    var jazz = new Audio("assets/audio/jazz-loop.mp3");
+    jazz.loop = true; jazz.preload = "none"; jazz.setAttribute("playsinline", "");
+    var AUD_TGT = isMobile ? 0.30 : 0.24, audStarted = false, audRaf = 0;
+    var audMuted = (function () { try { return localStorage.getItem("djt:audio") === "muted"; } catch (e) { return false; } })();
+    function audFade(v, ms) {
+      cancelAnimationFrame(audRaf);
+      var s = jazz.volume || 0, t0 = performance.now();
+      (function st(t) {
+        var p = Math.min((t - t0) / ms, 1), e = 1 - Math.pow(1 - p, 3);
+        try { jazz.volume = s + (v - s) * e; } catch (x) {}
+        if (p < 1) audRaf = requestAnimationFrame(st);
+        else if (v === 0) { try { jazz.pause(); } catch (x) {} }
+      })(t0);
     }
-    function buildPad() {
-      var comp = ctx.createDynamicsCompressor();
-      comp.threshold.value = -24; comp.knee.value = 28; comp.ratio.value = 12;
-      comp.attack.value = 0.01; comp.release.value = 0.28;
-      var lp = ctx.createBiquadFilter(); lp.type = "lowpass";
-      lp.frequency.value = 1350; lp.Q.value = 0.6;
-      lp.connect(comp); comp.connect(master);
-      var freqs = [146.83, 220.0, 277.18, 329.63, 415.30];
-      freqs.forEach(function (f, i) {
-        var o = ctx.createOscillator();
-        o.type = i % 2 ? "sine" : "triangle";
-        o.frequency.value = f; o.detune.value = (i - 2) * 4;
-        var g = ctx.createGain(); g.gain.value = i === 0 ? 0.5 : 0.26;
-        var lfo = ctx.createOscillator(); lfo.frequency.value = 0.05 + i * 0.013;
-        var lfoG = ctx.createGain(); lfoG.gain.value = 0.10;
-        lfo.connect(lfoG); lfoG.connect(g.gain);
-        o.connect(g); g.connect(lp);
-        o.start(); lfo.start();
-        nodes.push(o, lfo);
-      });
+    function audPlay() {
+      try { jazz.volume = 0; } catch (x) {}
+      var p = jazz.play();
+      if (p && p.then) p.then(function () { audStarted = true; audioBtn.classList.add("playing"); audioBtn.setAttribute("aria-pressed", "true"); audFade(AUD_TGT, 900); }).catch(function () {});
     }
-    function fade(to, t) {
-      if (!master) return;
-      var now = ctx.currentTime;
-      master.gain.cancelScheduledValues(now);
-      master.gain.setValueAtTime(master.gain.value, now);
-      master.gain.linearRampToValueAtTime(to, now + t);
-    }
-    function start() {
-      if (!ctx) {
-        ctx = new (window.AudioContext || window.webkitAudioContext)();
-        unlock();
-        master = ctx.createGain(); master.gain.value = 0.0001;
-        master.connect(ctx.destination);
-        if (fileEl) {
-          fileEl.loop = true;
-          var src = ctx.createMediaElementSource(fileEl);
-          var comp = ctx.createDynamicsCompressor();
-          src.connect(comp); comp.connect(master);
-          fileEl.play().catch(function () {});
-        } else { buildPad(); }
-      }
-      if (ctx.state === "suspended") ctx.resume();
-      fade(TARGET, 1.2);
-      playing = true;
-      audioBtn.classList.add("playing");
-      audioBtn.setAttribute("aria-pressed", "true");
-    }
-    function stop() {
-      fade(0.0001, 0.6);
-      playing = false;
-      audioBtn.classList.remove("playing");
-      audioBtn.setAttribute("aria-pressed", "false");
-      setTimeout(function () { if (!playing && ctx && ctx.state === "running") ctx.suspend(); }, 700);
-    }
-    audioBtn.addEventListener("click", function () { playing ? stop() : start(); });
+    function audStop() { audFade(0, 600); audioBtn.classList.remove("playing"); audioBtn.setAttribute("aria-pressed", "false"); }
+    function audTry() { if (audStarted || audMuted) return; audPlay(); }
+    ["pointerdown", "touchstart", "keydown"].forEach(function (ev) { window.addEventListener(ev, audTry, { passive: true }); });
+    audioBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (jazz.paused || jazz.volume < 0.01) { audMuted = false; audStarted = true; try { localStorage.setItem("djt:audio", "playing"); } catch (x) {} audPlay(); }
+      else { audMuted = true; try { localStorage.setItem("djt:audio", "muted"); } catch (x) {} audStop(); }
+    });
     document.addEventListener("visibilitychange", function () {
-      if (document.hidden && playing) stop();
+      if (document.hidden) { if (!jazz.paused) jazz.pause(); }
+      else if (audStarted && !audMuted) jazz.play().catch(function () {});
     });
   }
+
 
   /* ---------- Barre de progression de lecture ----------
      Animée par CSS scroll-driven (animation-timeline). Si non supporté,
