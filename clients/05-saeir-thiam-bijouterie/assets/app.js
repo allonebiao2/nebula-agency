@@ -416,13 +416,14 @@
     });
   }
 
-  /* ---------- Ambiance audio : boucle jazz (mp3), demarre au 1er contact (comme NEBULA Agency) ---------- */
+  /* ---------- Ambiance audio : boucle jazz (mp3). Preload en sourdine + activation du son au 1er contact ---------- */
   var audioBtn = document.querySelector(".fab-audio");
   if (audioBtn) {
-    var jazz = new Audio("assets/audio/jazz-loop.mp3?v=20260720a");
-    jazz.loop = true; jazz.preload = "none"; jazz.setAttribute("playsinline", "");
-    var AUD_TGT = isMobile ? 0.30 : 0.24, audStarted = false, audRaf = 0;
-    var audMuted = (function () { try { return localStorage.getItem("djt:audio") === "muted"; } catch (e) { return false; } })();
+    var jazz = new Audio("assets/audio/jazz-loop.mp3?v=20260720b");
+    jazz.loop = true; jazz.preload = "auto"; jazz.setAttribute("playsinline", "");
+    var AUD_TGT = isMobile ? 0.34 : 0.26, audUnlocked = false, audMuted = false, audRaf = 0;
+    try { audMuted = localStorage.getItem("djt:audio") === "muted"; } catch (e) {}
+
     function audFade(v, ms) {
       cancelAnimationFrame(audRaf);
       var s = jazz.volume || 0, t0 = performance.now();
@@ -430,25 +431,46 @@
         var p = Math.min((t - t0) / ms, 1), e = 1 - Math.pow(1 - p, 3);
         try { jazz.volume = s + (v - s) * e; } catch (x) {}
         if (p < 1) audRaf = requestAnimationFrame(st);
-        else if (v === 0) { try { jazz.pause(); } catch (x) {} }
       })(t0);
     }
-    function audPlay() {
-      try { jazz.volume = 0; } catch (x) {}
+    function paintOn() { audioBtn.classList.add("playing"); audioBtn.setAttribute("aria-pressed", "true"); }
+    function paintOff() { audioBtn.classList.remove("playing"); audioBtn.setAttribute("aria-pressed", "false"); }
+
+    // 1) demarre TOUT DE SUITE en sourdine (autorise partout) => la piste tourne, bufferisee, prete a etre revelee sans delai
+    jazz.muted = true; jazz.volume = 0;
+    jazz.play().catch(function () {});
+
+    // 2) au 1er contact reel (tap / clic / touche / scroll tactile), on ACTIVE le son instantanement
+    var EVTS = ["pointerdown", "touchstart", "keydown", "click"];
+    function removeUnlock() { EVTS.forEach(function (ev) { window.removeEventListener(ev, unlock, true); }); }
+    function unlock() {
+      if (audUnlocked || audMuted) return;
+      jazz.muted = false;
       var p = jazz.play();
-      if (p && p.then) p.then(function () { audStarted = true; audioBtn.classList.add("playing"); audioBtn.setAttribute("aria-pressed", "true"); audFade(AUD_TGT, 900); }).catch(function () {});
+      if (p && p.then) {
+        p.then(function () { audUnlocked = true; paintOn(); audFade(AUD_TGT, 800); removeUnlock(); })
+         .catch(function () { jazz.muted = true; jazz.play().catch(function () {}); });
+      } else { audUnlocked = true; paintOn(); audFade(AUD_TGT, 800); removeUnlock(); }
     }
-    function audStop() { audFade(0, 600); audioBtn.classList.remove("playing"); audioBtn.setAttribute("aria-pressed", "false"); }
-    function audTry() { if (audStarted || audMuted) return; audPlay(); }
-    ["pointerdown", "touchstart", "keydown"].forEach(function (ev) { window.addEventListener(ev, audTry, { passive: true }); });
+    EVTS.forEach(function (ev) { window.addEventListener(ev, unlock, { passive: true, capture: true }); });
+
+    // 3) bouton : couper / remettre
     audioBtn.addEventListener("click", function (e) {
       e.stopPropagation();
-      if (jazz.paused || jazz.volume < 0.01) { audMuted = false; audStarted = true; try { localStorage.setItem("djt:audio", "playing"); } catch (x) {} audPlay(); }
-      else { audMuted = true; try { localStorage.setItem("djt:audio", "muted"); } catch (x) {} audStop(); }
+      if (jazz.muted || jazz.paused || jazz.volume < 0.01) {
+        audMuted = false; audUnlocked = true;
+        try { localStorage.setItem("djt:audio", "playing"); } catch (x) {}
+        jazz.muted = false; jazz.play().catch(function () {}); paintOn(); audFade(AUD_TGT, 700);
+      } else {
+        audMuted = true;
+        try { localStorage.setItem("djt:audio", "muted"); } catch (x) {}
+        audFade(0, 500); paintOff();
+        setTimeout(function () { if (audMuted) jazz.muted = true; }, 520);
+      }
     });
     document.addEventListener("visibilitychange", function () {
       if (document.hidden) { if (!jazz.paused) jazz.pause(); }
-      else if (audStarted && !audMuted) jazz.play().catch(function () {});
+      else if (audUnlocked && !audMuted) jazz.play().catch(function () {});
     });
   }
 
