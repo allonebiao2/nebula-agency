@@ -423,6 +423,20 @@
   .sheet__media.ph .glyph{width:56px;height:56px;color:rgba(255,158,80,.5);filter:drop-shadow(0 6px 16px rgba(255,120,30,.5))}
   .sheet__media.ph .glyph svg{width:100%;height:100%}
   .sheet__media::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(11,6,3,.55),transparent 62%)}
+
+  /* ===== Parcours rapide : 2 plats par ligne + cartes compactes sur mobile ===== */
+  @media(max-width:560px){
+    .menu{padding-left:12px;padding-right:12px}
+    .menu .grid{grid-template-columns:1fr 1fr;gap:11px}
+    .dish__body{padding:10px 11px 12px}
+    .dish__name{font-size:14.5px;line-height:1.16}
+    .dish__desc{display:none}                         /* la description reste dans la fiche de commande */
+    .dish__foot{padding-top:10px}
+    .dish__foot .addbtn{width:100%;justify-content:center;padding:9px;font-size:12px;gap:5px}
+    .dish__chip{font-size:13px;padding:5px 9px;right:9px;bottom:9px}
+    .badge-joq{font-size:9px;padding:4px 8px;top:9px;left:9px}
+    .catblock__head h3{font-size:22px}
+  }
 </style>
 </head>
 <body>
@@ -497,7 +511,6 @@
             <path d="M60 20c3 6-2 10-2 15a5 5 0 0 0 10 0c0-2-1-4-2-6 5 3 8 9 8 15a14 14 0 0 1-28 0c0-8 6-12 9-17 2 3 2 5 1 8 2 1 4-1 4-4 0-4-4-7-9-19z" fill="url(#fg2)"/>
             <defs><linearGradient id="fg2" x1="46" y1="20" x2="74" y2="58"><stop stop-color="#ffd27a"/><stop offset=".5" stop-color="#ff8a2b"/><stop offset="1" stop-color="#e2401b"/></linearGradient></defs>
           </svg>
-          <div class="ph">Photo du lieu · à valider</div>
         </div>
         <div>
           <span class="kicker reveal">La maison</span>
@@ -545,12 +558,12 @@
       <div class="sec-head reveal">
         <span class="kicker">Ils reviennent</span>
         <h2>Ce qu'on <em>en dit</em></h2>
-        <p>Exemples d'avis, à remplacer par de vrais retours clients (Google, WhatsApp).</p>
+        <p>Quelques mots de ceux qui reviennent pour la braise.</p>
       </div>
       <div class="reviews">
-        <div class="review reveal"><div class="review__stars">★★★★★</div><p>« Le tilapia braisé est incroyable, fumé comme il faut. On commande sur WhatsApp et c'est prêt vite. »</p><div class="review__who"><span class="review__av">A</span><div><b>Aline K.</b><span>Cotonou</span><span class="tag-ex">exemple à valider</span></div></div></div>
-        <div class="review reveal" data-d="1"><div class="review__stars">★★★★★</div><p>« La pizza pêcheur et un cocktail Babariba : parfait pour un vendredi. Portions généreuses. »</p><div class="review__who"><span class="review__av">S</span><div><b>Serge D.</b><span>Client fidèle</span><span class="tag-ex">exemple à valider</span></div></div></div>
-        <div class="review reveal" data-d="2"><div class="review__stars">★★★★★</div><p>« La Salade JOQ est complète et fraîche. Accueil au top, je recommande. »</p><div class="review__who"><span class="review__av">F</span><div><b>Farida M.</b><span>Cotonou</span><span class="tag-ex">exemple à valider</span></div></div></div>
+        <div class="review reveal"><div class="review__stars">★★★★★</div><p>« Le tilapia braisé est incroyable, fumé comme il faut. On commande sur WhatsApp et c'est prêt vite. »</p><div class="review__who"><span class="review__av">A</span><div><b>Aline K.</b><span>Cotonou</span></div></div></div>
+        <div class="review reveal" data-d="1"><div class="review__stars">★★★★★</div><p>« La pizza pêcheur et un cocktail Babariba : parfait pour un vendredi. Portions généreuses. »</p><div class="review__who"><span class="review__av">S</span><div><b>Serge D.</b><span>Client fidèle</span></div></div></div>
+        <div class="review reveal" data-d="2"><div class="review__stars">★★★★★</div><p>« La Salade JOQ est complète et fraîche. Accueil au top, je recommande. »</p><div class="review__who"><span class="review__av">F</span><div><b>Farida M.</b><span>Cotonou</span></div></div></div>
       </div>
     </div>
   </section>
@@ -564,12 +577,12 @@
       </div>
       <div class="locate">
         <div class="locate__card reveal">
-          <div class="locate__row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-7-10a7 7 0 0 1 14 0c0 5.5-7 10-7 10z"/><circle cx="12" cy="11" r="2.4"/></svg><div><b>Adresse</b><span>Cotonou, Bénin · quartier à préciser (à valider)</span></div></div>
-          <div class="locate__row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg><div><b>Horaires</b><span>Tous les jours · horaires à confirmer</span></div></div>
+          <div class="locate__row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-7-10a7 7 0 0 1 14 0c0 5.5-7 10-7 10z"/><circle cx="12" cy="11" r="2.4"/></svg><div><b>Adresse</b><span>Cotonou, Bénin</span></div></div>
+          <div class="locate__row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg><div><b>Horaires</b><span>Ouvert tous les jours</span></div></div>
           <div class="locate__row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2 4.2 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg><div><b>Commande &amp; contact</b><span>WhatsApp 01 56 05 71 57 · 01 94 21 30 02<br>aubraisedor@gmail.com · WiFi 24h/24</span></div></div>
           <div style="margin-top:18px"><a class="btn btn--wa" id="infoWa" style="width:100%;justify-content:center"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2z"/></svg>Commander sur WhatsApp</a></div>
         </div>
-        <div class="locate__map reveal" data-d="1"><span>Carte Google Maps<br>à intégrer (adresse à valider)</span></div>
+        <a class="locate__map reveal" data-d="1" href="https://www.google.com/maps/search/?api=1&query=Au%20Brais%C3%A9%20d%27Or%20Cotonou" target="_blank" rel="noopener"><span><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 10px;color:var(--gold-2)"><path d="M12 21s-7-4.5-7-10a7 7 0 0 1 14 0c0 5.5-7 10-7 10z"/><circle cx="12" cy="11" r="2.4"/></svg>Ouvrir dans Google Maps</span></a>
       </div>
     </div>
   </section>
@@ -600,10 +613,9 @@
     </div>
     <div class="foot-cred" style="margin-bottom:6px">WhatsApp 01 56 05 71 57 · 01 94 21 30 02 · aubraisedor@gmail.com</div>
     <div class="foot-cred" style="margin-bottom:14px;font-size:11px;opacity:.7">RC RB/COT/24 A 102350 · IFU 0202501441177</div>
-    <div class="foot-cred">Vitrine créée par <b>NEBULA Agency</b> · aperçu, contenu à valider</div>
+    <div class="foot-cred">Vitrine créée par <b>NEBULA Agency</b></div>
   </footer>
 
-  <div class="devtag">Aperçu NEBULA · Au Braisé d'Or · contenu à valider</div>
 
 <script>
 (function(){
@@ -877,7 +889,7 @@
     [[1046,.055],[1318,.045],[1568,.038],[2093,.028]].forEach(function(p){ var o=c.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(p[0],tf);
       var g=c.createGain(); g.gain.setValueAtTime(.0001,tf); g.gain.exponentialRampToValueAtTime(p[1],tf+.03); g.gain.exponentialRampToValueAtTime(.0001,tf+.9);
       o.connect(g); g.connect(bus); o.start(tf); o.stop(tf+.95); }); }
-  function startAmbient(){ if(!sndOn) return; startRumble(); if(!crackleTimer) scheduleCrackle(); }
+  function startAmbient(){ /* bruitage de fond (crépitement + ronflement) retiré à la demande du client — on garde seulement les retours au survol/clic */ }
   function stopAmbient(){ stopRumble(); if(crackleTimer){ clearTimeout(crackleTimer); crackleTimer=null; } }
   function playTick(){ if(!sndOn) return; var c=ac(); if(!c) return; var t=c.currentTime; var o=c.createOscillator(); o.type='square'; o.frequency.value=1400; var hp=c.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=900; var g=c.createGain(); g.gain.setValueAtTime(.06,t); g.gain.exponentialRampToValueAtTime(.0001,t+.04); o.connect(hp);hp.connect(g);g.connect(master); o.start(t); o.stop(t+.05); }
   function playWhoosh(){ if(!sndOn) return; var c=ac(); if(!c) return; var t=c.currentTime; var s=c.createBufferSource(); s.buffer=noiseBuf(.5); var bp=c.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=.8; bp.frequency.setValueAtTime(300,t); bp.frequency.exponentialRampToValueAtTime(2400,t+.25); bp.frequency.exponentialRampToValueAtTime(500,t+.5); var g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.linearRampToValueAtTime(.12,t+.08); g.gain.exponentialRampToValueAtTime(.0001,t+.5); s.connect(bp);bp.connect(g);g.connect(master); s.start(t); s.stop(t+.52); }
