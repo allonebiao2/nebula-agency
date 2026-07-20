@@ -64,7 +64,7 @@ Retours Mongazi après la session Higgsfield → refonte (skill `ui-ux-pro-max` 
 ## À REMPLACER / RESTE (placeholders posés pendant le build)
 - Photos plats = **48 visuels IA générés** (à remplacer un jour par les vraies photos de la maison si souhaité, mais déjà propres et vendeurs).
 - Photo **du lieu** (bloc « La maison » a encore un placeholder) · adresse exacte + carte Google Maps · horaires (badge ouvert/fermé) · logo officiel · réseaux IG/FB · 2ᵉ prix pizzas/grillades · vrais avis · **confirmer n° WhatsApp** (01 56 05 71 57 câblé, vs 43 99 29 29 enseigne).
-- **Affiche A4 + QR** (PHASE 7) : PAS encore produite → à générer maintenant que l'URL est live.
+- ✅ **Affiche A4 + 2 QR** produite (2026-07-20) : `assets/docs/Affiche_Au_Braise_dOr_A4.pdf` (print) + `.jpg` (partage WhatsApp). Design braise (héro flammes + trio tilapia/pizza/mojito), **QR site + QR WhatsApp décodés/vérifiés** (pyzbar). Générateur = `_outils/_build_affiche.py` (Python PIL + qrcode, sans navigateur).
 - Reconfirmer direction couleur (braise sombre vs enseigne bleu/blanc/or).
 
 ## Infos enseigne (reçues 2026-07-17)
