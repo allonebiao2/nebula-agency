@@ -20,3 +20,12 @@ Demande Mongazi : effet **GSAP ScrollTrigger « pin & scrub »** façon Spider-V
 
 ## Leçon
 GSAP pin&scrub 100% possible en **vanilla sur un site statique** (pas besoin de React malgré le brief). Toujours prévoir : intro non-scrubbée pour que le héro **ne soit pas vide à l'arrivée** (sinon au scroll=0 tout est en état « from » caché), + repli sans GSAP, + `matchMedia` pour le cleanup.
+
+## VAGUE 3 (2026-07-21) — Profondeur : vidéos scroll-scrub « on entre dedans »
+Mongazi : la **vidéo doit avancer au scroll** (pas que les boutons) + ajouter des vidéos défilantes dans 2 autres sections + « de la profondeur, comme si on rentrait dans la vidéo ». Répond aux 4 questions (toutes recommandées).
+- **Technique** : helper GSAP `driveVideo(tl,vid,total)` = un proxy `{t:0}` tweené par le scrub, `onUpdate` fait `vid.currentTime = t*duration`. La vidéo est **pausée** et son temps piloté par le scroll. + zoom `.vscrub-bg scale 1→1.2` = profondeur. Appliqué au **héro** (mesuré OK : currentTime 2,49 s à mi-pin) + 2 sections `.vscrub` pinnées.
+- **Sections vidéo `.vscrub`** (structure réutilisable : `.vscrub-bg`>poster+video+scrim, `.vscrub-in`, items `data-rise` qui montent) : (1) **Sur-mesure** refondue = vidéo **mains d'artisan** making-of + 4 étapes qui montent ; (2) **NOUVELLE section « Et si c'était chez vous ? »** (avant le contact) = vidéo **intérieur** (on entre dans la pièce) + CTA WhatsApp braise = **projection émotionnelle = déclencheur d'achat**.
+- **Image** du bloc « Une pièce qui change tout un espace » (`collection/natura_life.webp`) remplacée par un **salon ciné** (table+console HH, lampe braise).
+- **Vidéos** : 3 (héro drone + process mains + interior) ré-encodées **keyframes denses `-g 1`** (imageio-ffmpeg, ~1,4 Mo pièce) pour un scrub fluide ; posters `hero/process.webp`+`hero/interior.webp`. Repli autoplay si GSAP absent, poster si reduced-motion.
+- Crédits Higgsfield ~16 de plus (3 z_image + 2 Kling turbo). Déployé, commit `0bd31cf`.
+- ⚠️ **QC du scrub vidéo en headless = peu fiable** (seek + lerp scrub:1 + readiness vidéo → lectures à 0 trompeuses). Le héro a mesuré 2,49 s = preuve que le mécanisme marche ; les 2 sections utilisent le MÊME `driveVideo`. **À faire confirmer par Mongazi sur un vrai navigateur** (feeling du scroll). Cf [[reference_audio-video-autoplay]] pour les limites navigateur.
