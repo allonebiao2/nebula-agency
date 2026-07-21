@@ -329,7 +329,7 @@
     .home__spin { width: 26px; height: 26px; margin-top: 4px; border: 2.5px solid rgba(255, 255, 255, .14); border-top-color: #22d3ee; border-radius: 50%; animation: spin .7s linear infinite, cineFade .5s .7s var(--ease-cine) both; }
     @keyframes homeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    /* Panneau BD Spider-Verse (magenta -> violet -> cyan) à BORD D'ENCRE EN ZIG-ZAG (papier déchiré) + trame de points */
+    /* Panneau BD (magenta -> violet -> cyan) à BORD D'ENCRE EN ZIG-ZAG (papier déchiré) + trame de points */
     #wipe {
       position: fixed; top: 0; left: -20%; width: 140%; height: 100%;
       z-index: 70; pointer-events: none;
@@ -533,7 +533,7 @@
       <span class="home__spin" aria-hidden="true"></span>
     </div>
   </div>
-  <!-- Balayage comic-book Spider-Verse -->
+  <!-- Balayage comic-book -->
   <div id="wipe" aria-hidden="true"></div>
 
   <span class="proto-tag" title="Cliquer pour rejouer la transition de connexion">Aperçu · Authentification complète</span>
@@ -642,7 +642,7 @@
     function setMode(m) { card.dataset.mode = m; showMsg(''); btn.classList.remove('is-success'); const f = $(m === 'register' ? '#f-prenom' : '#f-email'); if (f) f.focus(); }
     function showMsg(text, kind) { msg.textContent = text || ''; msg.className = 'authmsg' + (kind ? ' ' + kind : ''); }
     function setLoading(on) { btn.disabled = on; gbtn.disabled = on; btn.classList.toggle('is-loading', on); }
-    // Succès : flash émeraude, puis transition Spider-Verse (glitch + balayage comic-book) qui révèle l'accueil
+    // Succès : flash émeraude, puis transition BD (glitch + balayage comic-book) qui révèle l'accueil
     function runSuccess(prenom) {
       btn.classList.remove('is-loading');
       btn.classList.add('is-success');                    // 1. flash vert émeraude instantané
