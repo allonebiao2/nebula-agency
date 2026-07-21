@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="dark">
-  <title>Boussole · App (aperçu Étape 2)</title>
+  <title>Boussole · App (verre de nuit)</title>
   <link rel="icon" href="../assets/icons/favicon-48.png" type="image/png">
   <style>
     @font-face {
@@ -16,7 +16,7 @@
       --ease: cubic-bezier(.16, 1, .3, 1);
       --ease-back: cubic-bezier(.2, 1.28, .32, 1);   /* ease-out-back : rebond « comics » */
       --hdr-h: 58px;
-      --cyan: #38f0ff;
+      --cyan: #f6a63c;
     }
     * { box-sizing: border-box; }
     html, body { height: 100%; }
@@ -24,27 +24,27 @@
       margin: 0;
       font-family: 'Bricolage Grotesque', system-ui, sans-serif;
       color: #fff;
-      background: #0B0F19;                 /* noir de jais profond et mat (Cyber-Noir) — plus aucun dégradé bleu */
+      background: #0C0B10;                 /* noir de jais profond et mat (Cyber-Noir) — plus aucun dégradé bleu */
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ===== PROFONDEUR DU FOND : grille géométrique en fuite + poussières lumineuses flottantes ===== */
+    /* ===== PROFONDEUR DU FOND : halos aurore lents (ambre / émeraude / teal) + poussières lumineuses ===== */
     .depth { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
-    .depth__grid {
-      position: absolute; left: -50%; right: -50%; bottom: -8%; height: 115%;
-      background-image:
-        linear-gradient(rgba(56, 240, 255, .10) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(56, 240, 255, .10) 1px, transparent 1px);
-      background-size: 46px 46px;
-      transform: perspective(520px) rotateX(62deg);   /* sol qui fuit vers l'horizon */
-      transform-origin: bottom center;
-      -webkit-mask-image: linear-gradient(to top, #000 4%, transparent 72%);
-              mask-image: linear-gradient(to top, #000 4%, transparent 72%);
-    }
+    .depth__halo { position: absolute; border-radius: 50%; will-change: transform; }
+    .depth__halo--a { width: 58vmax; height: 58vmax; left: -20vmax; top: -18vmax;
+      background: radial-gradient(circle, rgba(246, 166, 60, .16), transparent 62%);
+      animation: haloDrift 26s ease-in-out infinite alternate; }
+    .depth__halo--b { width: 50vmax; height: 50vmax; right: -18vmax; bottom: -16vmax;
+      background: radial-gradient(circle, rgba(52, 211, 153, .12), transparent 62%);
+      animation: haloDrift 34s ease-in-out infinite alternate-reverse; }
+    .depth__halo--c { width: 36vmax; height: 36vmax; right: 4vmax; top: -12vmax;
+      background: radial-gradient(circle, rgba(75, 183, 207, .10), transparent 62%);
+      animation: haloDrift 40s ease-in-out infinite alternate; }
+    @keyframes haloDrift { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(3.5vmax, 2.5vmax, 0) scale(1.07); } }
     .depth__dust span {
       position: absolute; border-radius: 50%;
-      background: rgba(230, 250, 255, .6); box-shadow: 0 0 6px rgba(56, 240, 255, .6);
+      background: rgba(255, 242, 220, .65); box-shadow: 0 0 6px rgba(246, 166, 60, .6);
       opacity: 0; animation: dustFloat linear infinite;   /* position/taille/vitesse injectées en JS -> 2 couches = parallaxe */
     }
     @keyframes dustFloat {
@@ -64,7 +64,7 @@
       -webkit-backdrop-filter: blur(12px) saturate(125%);
               backdrop-filter: blur(12px) saturate(125%);
       border-bottom: 1px solid rgba(255, 255, 255, .05);  /* border-white/5 : liseré discret */
-      box-shadow: 0 1px 0 rgba(56, 240, 255, .10), 0 10px 30px -18px rgba(0, 0, 0, .8);
+      box-shadow: 0 1px 0 rgba(246, 166, 60, .10), 0 10px 30px -18px rgba(0, 0, 0, .8);
     }
     /* Hamburger (encrage BD, traits épais) */
     .hdr__burger {
@@ -74,16 +74,16 @@
       transition: color .18s var(--ease), background .18s var(--ease);
     }
     .hdr__burger svg { width: 25px; height: 25px; transition: filter .18s var(--ease); }
-    .hdr__burger:hover { color: var(--cyan); background: rgba(56, 240, 255, .08); }
-    .hdr__burger:hover svg { filter: drop-shadow(0 0 6px rgba(56, 240, 255, .8)); }
+    .hdr__burger:hover { color: var(--cyan); background: rgba(246, 166, 60, .08); }
+    .hdr__burger:hover svg { filter: drop-shadow(0 0 6px rgba(246, 166, 60, .8)); }
     .hdr__burger:active { transform: scale(.92); }
     /* Logo central qui pulse très discrètement */
     .hdr__logo { justify-self: center; width: 30px; height: 30px; display: block; animation: logoPulse 3.4s ease-in-out infinite; }
-    .hdr__logo svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 0 5px rgba(56, 240, 255, .55)); }
-    .hdr__logo .ring { stroke: #8ff6ff; } .hdr__logo .ring--in { stroke: rgba(143, 246, 255, .5); }
-    .hdr__logo .ticks line { stroke: #8ff6ff; }
-    .hdr__logo .rose-n { fill: #eafdff; } .hdr__logo .rose-s { fill: rgba(56, 240, 255, .4); }
-    .hdr__logo .rose-ew { fill: rgba(234, 253, 255, .4); } .hdr__logo .hub { fill: #fff; }
+    .hdr__logo svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 0 5px rgba(246, 166, 60, .55)); }
+    .hdr__logo .ring { stroke: #ffd9a0; } .hdr__logo .ring--in { stroke: rgba(255, 217, 160, .5); }
+    .hdr__logo .ticks line { stroke: #ffd9a0; }
+    .hdr__logo .rose-n { fill: #fff6e6; } .hdr__logo .rose-s { fill: rgba(246, 166, 60, .4); }
+    .hdr__logo .rose-ew { fill: rgba(255, 246, 230, .4); } .hdr__logo .hub { fill: #fff; }
     /* Avatar vide (futur profil) */
     .hdr__avatar {
       justify-self: end; width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
@@ -92,7 +92,7 @@
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, .2);
       transition: border-color .18s var(--ease), box-shadow .18s var(--ease);
     }
-    .hdr__avatar:hover { border-color: rgba(56, 240, 255, .5); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .2), 0 0 14px rgba(56, 240, 255, .35); }
+    .hdr__avatar:hover { border-color: rgba(246, 166, 60, .5); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .2), 0 0 14px rgba(246, 166, 60, .35); }
 
     /* ============ CONTENU (placeholder) ============ */
     .content {
@@ -126,8 +126,8 @@
     /* ===== HUD DE BIENVENUE (Accueil) — salutation dynamique ===== */
     .home { max-width: 560px; }
     .hud { text-align: center; margin-top: 2vh; perspective: 800px; }   /* perspective posée : prêt pour un rotateX 3D ultérieur */
-    .hud__sys { display: inline-flex; align-items: center; gap: 7px; font-size: 10.5px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: rgba(0, 240, 255, .72); }
-    .hud__sys i { width: 6px; height: 6px; border-radius: 50%; background: #00f0ff; box-shadow: 0 0 8px #00f0ff; animation: hudDot 1.6s ease-in-out infinite; }
+    .hud__sys { display: inline-flex; align-items: center; gap: 7px; font-size: 10.5px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: rgba(255, 196, 106, .72); }
+    .hud__sys i { width: 6px; height: 6px; border-radius: 50%; background: #ffc46a; box-shadow: 0 0 8px #ffc46a; animation: hudDot 1.6s ease-in-out infinite; }
     @keyframes hudDot { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
     /* Smart Greeting Engine : conteneur prêt 3D — le typing n'écrit QUE du texte (textContent),
        donc un rotateX/perspective ajouté plus tard sur .hud__hi ne cassera pas la frappe. */
@@ -135,12 +135,12 @@
       position: relative; display: inline-block; text-align: left; margin: 10px 0 0; line-height: 1.25;
       font-family: 'Bricolage Grotesque', 'Arial Narrow', 'Roboto Condensed', system-ui, sans-serif;
       font-weight: 800; font-size: clamp(19px, 5vw, 30px); letter-spacing: .05em; text-transform: uppercase;
-      color: #fff; text-shadow: 0 0 10px rgba(0, 240, 255, .55), 0 0 26px rgba(0, 240, 255, .3), 0 0 46px rgba(0, 240, 255, .16);   /* bloom pour s'intégrer à la scène */
+      color: #fff; text-shadow: 0 0 10px rgba(255, 196, 106, .55), 0 0 26px rgba(255, 196, 106, .3), 0 0 46px rgba(255, 196, 106, .16);   /* bloom pour s'intégrer à la scène */
       transform-style: preserve-3d;   /* prêt pour perspective/rotateX plus tard */
     }
     .hud__ghost { visibility: hidden; }              /* réserve la largeur/hauteur finale -> aucun saut ni re-centrage pendant la frappe */
     .hud__type  { position: absolute; inset: 0; }    /* le texte tapé se superpose au fantôme, aligné à gauche (effet terminal) */
-    .hud__caret { display: inline-block; width: .1em; height: 1em; margin-left: .1em; vertical-align: -.12em; background: #00f0ff; box-shadow: 0 0 8px #00f0ff; animation: caretBlink 1.05s steps(1) infinite; }
+    .hud__caret { display: inline-block; width: .1em; height: 1em; margin-left: .1em; vertical-align: -.12em; background: #ffc46a; box-shadow: 0 0 8px #ffc46a; animation: caretBlink 1.05s steps(1) infinite; }
     @keyframes caretBlink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
     /* scanlines très fines par-dessus le texte (n'entravent pas la lecture) */
     .hud__hi::after {
@@ -150,7 +150,7 @@
     /* ===== Mastodontes VENDRE / DÉPENSER ===== */
     .masto { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 32px auto 0; perspective: 1000px; }   /* conteneur 3D (scopé ici pour ne pas casser le header fixe) */
     .masto__btn {
-      --c: #38f0ff;
+      --c: #f6a63c;
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
       min-height: 132px; padding: 18px; border-radius: 20px; cursor: pointer;
       font: inherit; font-weight: 800; font-size: 16px; letter-spacing: .06em; text-transform: uppercase; color: #fff;
@@ -185,14 +185,14 @@
         0 0 18px -2px color-mix(in srgb, var(--c) 55%, transparent),
         inset 0 0 0 1px rgba(255,255,255,.16);
     }
-    .masto__btn--sell  { --c: #35e07a; }
+    .masto__btn--sell  { --c: #34d399; }
     .masto__btn--spend { --c: #e11d48; }
     @media (max-width: 380px) { .masto { grid-template-columns: 1fr; } }
 
     /* ============ CHIFFRES CLÉS (Accueil) — 3 cadres glassmorphism, chacun sa lumière ============ */
     .vitals { display: flex; justify-content: center; gap: 11px; margin: 24px auto 6px; flex-wrap: wrap; }
     .vital {
-      --vc: #38f0ff;
+      --vc: #f6a63c;
       position: relative; overflow: hidden; flex: 1 1 0; min-width: 98px; max-width: 172px;
       padding: 13px 14px; border-radius: 16px; text-align: left; cursor: pointer;
       background: linear-gradient(160deg, rgba(255, 255, 255, .12), rgba(255, 255, 255, .03));   /* verre */
@@ -215,8 +215,8 @@
       content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
       background: radial-gradient(120% 82% at 16% 0%, color-mix(in srgb, var(--vc) 26%, transparent), transparent 62%);
     }
-    .vital--caisse   { --vc: #38f0ff; }   /* cyan */
-    .vital--jour     { --vc: #35e07a; }   /* vert */
+    .vital--caisse   { --vc: #f6a63c; }   /* cyan */
+    .vital--jour     { --vc: #34d399; }   /* vert */
     .vital--objectif { --vc: #ffd23f; }   /* ambre */
     .vital__label { position: relative; display: block; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: color-mix(in srgb, var(--vc) 72%, #d7eef2); }
     .vital__num {
@@ -231,7 +231,7 @@
     @keyframes portalOpen { from { clip-path: circle(0% at 50% 50%); } to { clip-path: circle(150% at 50% 50%); } }
     .home.portal::after {
       content: ""; position: absolute; inset: 0; z-index: 5; pointer-events: none;
-      background: radial-gradient(circle at 50% 50%, transparent 42%, rgba(0, 240, 255, .22) 55%, transparent 70%);
+      background: radial-gradient(circle at 50% 50%, transparent 42%, rgba(255, 196, 106, .22) 55%, transparent 70%);
       animation: portalRing .5s ease-out both;   /* anneau cyan électrique qui jaillit du centre */
     }
     @keyframes portalRing { 0% { opacity: 0; transform: scale(.15); } 35% { opacity: 1; } 100% { opacity: 0; transform: scale(1.2); } }
@@ -260,7 +260,7 @@
       font-size: 13px; font-weight: 700; color: #ff5a6a;
       background: rgba(255, 46, 67, .1); border: 1px solid rgba(255, 46, 67, .35); box-shadow: 0 0 18px -6px rgba(255, 46, 67, .5);
     }
-    .stock-alert.is-ok { color: #35e07a; background: rgba(53, 224, 122, .08); border-color: rgba(53, 224, 122, .3); box-shadow: none; }
+    .stock-alert.is-ok { color: #34d399; background: rgba(52, 211, 153, .08); border-color: rgba(52, 211, 153, .3); box-shadow: none; }
     .stock-alert b { font-size: 15px; }
     .stocklist { max-width: 430px; margin: 12px auto 0; display: flex; flex-direction: column; gap: 9px; perspective: 800px; }
     .stockrow {
@@ -282,12 +282,12 @@
       font: inherit; font-size: 22px; font-weight: 800; line-height: 1; display: grid; place-items: center;
       transition: transform .08s ease, box-shadow .2s ease;
     }
-    .qtybtn--plus  { color: #04121a; background: radial-gradient(120% 120% at 30% 25%, #7fe0ff, #38f0ff); box-shadow: 0 0 16px -3px rgba(56, 240, 255, .6); }    /* néon bleu */
+    .qtybtn--plus  { color: #04121a; background: radial-gradient(120% 120% at 30% 25%, #7fe0ff, #f6a63c); box-shadow: 0 0 16px -3px rgba(246, 166, 60, .6); }    /* néon bleu */
     .qtybtn--minus { color: #1a0406; background: radial-gradient(120% 120% at 30% 25%, #ff8a97, #ff2e43); box-shadow: 0 0 16px -3px rgba(255, 46, 67, .55); }   /* néon rouge */
     .qtybtn:active { transform: scale(.9); }
     .qtybtn__val { min-width: 30px; text-align: center; font-size: 17px; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
     .qtybtn__val.pop { animation: qtyPop .32s cubic-bezier(.2, 1.4, .3, 1); }
-    @keyframes qtyPop { 0% { transform: scale(1); } 40% { transform: scale(1.4); color: #38f0ff; } 100% { transform: scale(1); color: #fff; } }
+    @keyframes qtyPop { 0% { transform: scale(1); } 40% { transform: scale(1.4); color: #f6a63c; } 100% { transform: scale(1); color: #fff; } }
 
     /* ===== BOUSSOLE — écran DÉPENSES : liste catégorisée + FAB « Ajout rapide » + sheet ===== */
     .exp-total { max-width: 430px; margin: 16px auto 0; text-align: left; font-size: 14px; color: rgba(255, 255, 255, .6); }
@@ -354,7 +354,7 @@
       background: linear-gradient(180deg, rgba(18, 20, 28, .82), rgba(10, 11, 16, .9));   /* charbon translucide (plus de navy) — se détache du fond de jais par le flou + le liseré cyan */
       -webkit-backdrop-filter: blur(22px) saturate(120%); backdrop-filter: blur(22px) saturate(120%);
       border-right: 1px solid rgba(255, 255, 255, .07);
-      box-shadow: 24px 0 60px -20px rgba(0, 0, 0, .8), inset -1px 0 0 rgba(56, 240, 255, .12);
+      box-shadow: 24px 0 60px -20px rgba(0, 0, 0, .8), inset -1px 0 0 rgba(246, 166, 60, .12);
       transform: translateX(-102%);
       transition: transform .3s var(--ease-back);   /* glissement rapide + rebond */
       will-change: transform;
@@ -363,7 +363,7 @@
     .drawer__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
     .drawer__brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -.01em; font-size: 17px; }
     .drawer__brand span { width: 26px; height: 26px; }
-    .drawer__brand svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 0 5px rgba(56, 240, 255, .5)); }
+    .drawer__brand svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 0 5px rgba(246, 166, 60, .5)); }
     .drawer__x {
       width: 38px; height: 38px; flex: none; display: grid; place-items: center;
       border: 1px solid rgba(255, 255, 255, .14); background: rgba(255, 255, 255, .05);
@@ -371,7 +371,7 @@
       transition: color .16s var(--ease), border-color .16s var(--ease), background .16s var(--ease);
     }
     .drawer__x svg { width: 19px; height: 19px; }
-    .drawer__x:hover { color: var(--cyan); border-color: rgba(56, 240, 255, .5); background: rgba(56, 240, 255, .08); }
+    .drawer__x:hover { color: var(--cyan); border-color: rgba(246, 166, 60, .5); background: rgba(246, 166, 60, .08); }
     .drawer { overflow: hidden; }   /* seul .nav2 défile : profil (haut) et pied de menu (bas) restent fixes */
 
     /* NIVEAU 1 : profil */
@@ -384,16 +384,16 @@
     .profil__name { color: #fff; }
 
     /* NIVEAU 2 : navigation flash (boutons néon épais) */
-    .nav2 { display: flex; flex-direction: column; flex: 1 1 auto; justify-content: flex-start; gap: clamp(5px, .9vh, 8px); min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: rgba(56, 240, 255, .3) transparent; padding: 3px 7px; }
+    .nav2 { display: flex; flex-direction: column; flex: 1 1 auto; justify-content: flex-start; gap: clamp(5px, .9vh, 8px); min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: rgba(246, 166, 60, .3) transparent; padding: 3px 7px; }
     .nav2::-webkit-scrollbar { width: 4px; }
-    .nav2::-webkit-scrollbar-thumb { background: rgba(56, 240, 255, .3); border-radius: 4px; }
+    .nav2::-webkit-scrollbar-thumb { background: rgba(246, 166, 60, .3); border-radius: 4px; }
     .navbtn {
-      --glow: #38f0ff;
+      --glow: #f6a63c;
       display: flex; align-items: center; gap: 11px; width: 100%;
       padding: clamp(7px, 1.05vh, 11px) 14px; border-radius: 12px; cursor: pointer;
       border: 1px solid rgba(255, 255, 255, .1); background: rgba(255, 255, 255, .045);
       color: rgba(255, 255, 255, .9); font: inherit; font-size: 14px; font-weight: 800; letter-spacing: -.01em; text-align: left;
-      box-shadow: 0 0 0 0 rgba(56, 240, 255, 0), 0 0 0 0 rgba(56, 240, 255, 0);
+      box-shadow: 0 0 0 0 rgba(246, 166, 60, 0), 0 0 0 0 rgba(246, 166, 60, 0);
       transition: border-color .22s var(--ease), box-shadow .26s var(--ease), background .2s var(--ease), color .2s var(--ease), transform .1s var(--ease);
     }
     .navbtn__ic { width: 21px; height: 21px; flex: none; display: grid; place-items: center; color: rgba(255, 255, 255, .58); transition: color .2s var(--ease), filter .2s var(--ease); }
@@ -425,19 +425,19 @@
       0%   { filter: drop-shadow(1px 0 #ff0044) drop-shadow(-1px 0 #00e5ff); }   /* décalage RGB de l'icône */
       100% { filter: none; }
     }
-    .navbtn--cyan { --glow: #38f0ff; }
+    .navbtn--cyan { --glow: #2fd4c2; }
     .navbtn--yellow { --glow: #ffd23f; }
-    .navbtn--green { --glow: #35e07a; }
+    .navbtn--green { --glow: #34d399; }
     .navbtn--violet { --glow: #b98cff; }
-    .navbtn--red { --glow: #ff2e43; }          /* accueil : rouge écarlate néon (Miles) */
+    .navbtn--red { --glow: #f6a63c; }          /* accueil : ambre signature Boussole */
     .navbtn--crimson { --glow: #e11d48; }      /* mes dépenses : crimson / rouge sombre néon */
     .navbtn--orange { --glow: #ff8a3d; }       /* carnet clients */
     .navbtn--electric { --glow: #3a86ff; }     /* mon équipe : bleu électrique */
 
     /* Item « Accueil » = NEXUS : glow cyan électrique stable pendant l'attraction magnétique (survol) */
     .navbtn[data-nav="accueil"].nexus-hot {
-      border-color: #00F0FF; color: #fff; background: rgba(0, 240, 255, .08);
-      box-shadow: 0 0 20px rgba(0, 240, 255, .6), 0 0 0 1px rgba(0, 240, 255, .55);
+      border-color: #00F0FF; color: #fff; background: rgba(255, 196, 106, .08);
+      box-shadow: 0 0 20px rgba(255, 196, 106, .6), 0 0 0 1px rgba(255, 196, 106, .55);
       z-index: 3;
     }
     .navbtn[data-nav="accueil"].nexus-hot .navbtn__ic { color: #00F0FF; filter: drop-shadow(0 0 6px #00F0FF); }
@@ -493,7 +493,7 @@
          0   0 12px rgba(255, 255, 255, .6);
     }
     .navbtn--holo:hover .navbtn__ic svg { filter: drop-shadow(0 0 6px rgba(255, 255, 255, .9)); }
-    /* garde le "Miles clic" (snap/glitch) ET la respiration d'échelle EN MÊME TEMPS (transform vs scale = 2 propriétés distinctes) */
+    /* garde le "clic néon" (snap/glitch) ET la respiration d'échelle EN MÊME TEMPS (transform vs scale = 2 propriétés distinctes) */
     .navbtn--holo.miles { animation: milesSnap .2s cubic-bezier(.175, .885, .32, 1.275) both, holoScale 3.4s ease-in-out infinite; }
     @keyframes holoScale { 0%, 100% { scale: 1; }   50% { scale: 1.02; } }
     @keyframes holoGlow  { 0%, 100% { opacity: .5; } 50% { opacity: 1; } }
@@ -560,7 +560,7 @@
       .home.portal::after { animation: none !important; opacity: 0 !important; }
       .screen.drawer3d, .catcard, .stockrow, .qtybtn__val.pop, .exprow, .fab { animation: none !important; }   /* pas de tiroir/gigogne/pop/FAB si mouvement réduit */
       .navbtn[data-nav="catalogue"]:hover .chest__lid, .navbtn[data-nav="catalogue"]:hover .chest__base { transform: none !important; }
-      .navbtn.miles, .navbtn.miles .navbtn__ic { animation: none !important; }   /* pas de glitch "Miles" si mouvement réduit */
+      .navbtn.miles, .navbtn.miles .navbtn__ic { animation: none !important; }   /* pas de glitch au clic si mouvement réduit */
       .hud__hi, .hud__sys i, .hud__caret { animation: none !important; }   /* pas de curseur clignotant / glitch si mouvement réduit */
       .depth__dust span { animation: none !important; opacity: .28 !important; }   /* poussières figées */
       .masto__btn, .masto__btn:hover, .masto__btn:active { transform: none !important; }   /* pas de bascule 3D */
@@ -572,7 +572,7 @@
 
     /* KPI (cartes chiffres) */
     .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px auto 0; }
-    .kpi { --kc: #38f0ff; position: relative; overflow: hidden; padding: 13px 14px; border-radius: 16px; text-align: left;
+    .kpi { --kc: #f6a63c; position: relative; overflow: hidden; padding: 13px 14px; border-radius: 16px; text-align: left;
       background: linear-gradient(160deg, rgba(255,255,255,.11), rgba(255,255,255,.03));
       -webkit-backdrop-filter: blur(12px) saturate(130%); backdrop-filter: blur(12px) saturate(130%);
       border: 1px solid color-mix(in srgb, var(--kc) 26%, rgba(255,255,255,.16));
@@ -583,7 +583,7 @@
     .kpi__lbl { position:relative; font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color: color-mix(in srgb, var(--kc) 72%, #d7eef2); }
     .kpi__num { position:relative; display:block; margin-top:6px; font-size: clamp(19px,5.4vw,25px); font-weight:800; line-height:1; color:#fff; font-variant-numeric: tabular-nums; text-shadow: 0 0 10px color-mix(in srgb, var(--kc) 38%, transparent); }
     .kpi__sub { position:relative; display:block; margin-top:5px; font-size:11px; color: rgba(255,255,255,.45); }
-    .kpi--ca { --kc:#35e07a; } .kpi--dep { --kc:#e11d48; } .kpi--ben { --kc:#38f0ff; } .kpi--marge { --kc:#ffd23f; }
+    .kpi--ca { --kc:#34d399; } .kpi--dep { --kc:#e11d48; } .kpi--ben { --kc:#f6a63c; } .kpi--marge { --kc:#ffd23f; }
 
     /* Panneau glass réutilisable */
     .panel { position: relative; max-width: 500px; margin: 14px auto 0; padding: 15px 16px; border-radius: 18px; text-align:left;
@@ -591,7 +591,7 @@
       -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
       border: 1px solid rgba(255,255,255,.1); box-shadow: 0 14px 34px -22px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.1); }
     .panel__ttl { margin:0 0 13px; font-size:13px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px; }
-    .panel__ttl i { width:7px; height:7px; border-radius:50%; background: var(--sc,#38f0ff); box-shadow:0 0 8px var(--sc,#38f0ff); }
+    .panel__ttl i { width:7px; height:7px; border-radius:50%; background: var(--sc,#f6a63c); box-shadow:0 0 8px var(--sc,#f6a63c); }
 
     /* Donut (camembert dépenses) */
     .donut { display:flex; align-items:center; gap:15px; }
@@ -615,7 +615,7 @@
     .barcol { flex:1 1 0; display:flex; flex-direction:column; align-items:center; gap:7px; height:100%; justify-content:flex-end; }
     .barcol__pair { display:flex; align-items:flex-end; justify-content:center; gap:3px; width:100%; height:100%; }
     .bar { width:10px; border-radius:4px 4px 2px 2px; transform-origin:bottom; animation: barGrow .7s calc(var(--i,0)*.05s) var(--ease) both; }
-    .bar--ca { background: linear-gradient(180deg,#6bf0a0,#35e07a); box-shadow:0 0 10px -2px rgba(53,224,122,.55); }
+    .bar--ca { background: linear-gradient(180deg,#6bf0a0,#34d399); box-shadow:0 0 10px -2px rgba(53,224,122,.55); }
     .bar--dep { background: linear-gradient(180deg,#ff8a97,#e11d48); box-shadow:0 0 10px -2px rgba(225,29,72,.5); }
     @keyframes barGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
     .barcol__lbl { font-size:10px; color: rgba(255,255,255,.4); }
@@ -639,11 +639,11 @@
     .ia--good { background: linear-gradient(150deg, rgba(53,224,122,.12), rgba(56,240,255,.04)); border-color: rgba(53,224,122,.32); box-shadow:0 0 22px -8px rgba(53,224,122,.42); }
     .ia--warn { background: linear-gradient(150deg, rgba(255,90,106,.12), rgba(255,140,61,.05)); border-color: rgba(255,90,106,.34); box-shadow:0 0 22px -8px rgba(255,90,106,.4); }
     .ia__orb { position:absolute; left:14px; top:15px; width:22px; height:22px; border-radius:50%;
-      background: radial-gradient(circle at 32% 28%, #eafdff, #38f0ff 58%, #8a5cff); box-shadow:0 0 12px rgba(56,240,255,.8); animation: iaPulse 2.2s ease-in-out infinite; }
-    .ia--good .ia__orb { background: radial-gradient(circle at 32% 28%, #eafff2, #35e07a 58%, #38f0ff); box-shadow:0 0 12px rgba(53,224,122,.8); }
+      background: radial-gradient(circle at 32% 28%, #fff6e6, #f6a63c 58%, #8a5cff); box-shadow:0 0 12px rgba(56,240,255,.8); animation: iaPulse 2.2s ease-in-out infinite; }
+    .ia--good .ia__orb { background: radial-gradient(circle at 32% 28%, #eafff2, #34d399 58%, #f6a63c); box-shadow:0 0 12px rgba(53,224,122,.8); }
     .ia--warn .ia__orb { background: radial-gradient(circle at 32% 28%, #fff0f0, #ff5a6a 58%, #ff8a3d); box-shadow:0 0 12px rgba(255,90,106,.8); }
     @keyframes iaPulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.16); } }
-    .ia__chip { display:block; font-size:9.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#8ff6ff; margin-bottom:3px; }
+    .ia__chip { display:block; font-size:9.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#ffd9a0; margin-bottom:3px; }
     .ia--good .ia__chip { color:#7bf0a8; } .ia--warn .ia__chip { color:#ffb0a0; }
     .ia__title { margin:0 0 4px; font-size:14.5px; font-weight:800; color:#fff; }
     .ia__txt { margin:0; font-size:12.5px; line-height:1.55; color: rgba(255,255,255,.72); }
@@ -675,7 +675,7 @@
     .pos-tile__name { font-size:11.5px; font-weight:700; text-align:center; line-height:1.15; max-width:100%; }
     .pos-tile__price { font-size:12px; font-weight:800; color:#6bf0a0; font-variant-numeric: tabular-nums; }
     .pos-tile__rupt { font-size:9.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#ff5a6a; }
-    .pos-tile__badge { position:absolute; top:6px; right:6px; min-width:20px; height:20px; padding:0 5px; border-radius:999px; display:grid; place-items:center; font-size:11px; font-weight:800; color:#04140e; background: radial-gradient(120% 120% at 30% 25%, #86ffd0, #35e07a); box-shadow:0 0 10px rgba(53,224,122,.6); transform: scale(0); transition: transform .22s var(--ease-back); }
+    .pos-tile__badge { position:absolute; top:6px; right:6px; min-width:20px; height:20px; padding:0 5px; border-radius:999px; display:grid; place-items:center; font-size:11px; font-weight:800; color:#04140e; background: radial-gradient(120% 120% at 30% 25%, #86ffd0, #34d399); box-shadow:0 0 10px rgba(53,224,122,.6); transform: scale(0); transition: transform .22s var(--ease-back); }
     .pos-tile.has .pos-tile__badge { transform: scale(1); }
     .pos-tile.has { border-color: rgba(53,224,122,.55); box-shadow:0 8px 20px -12px rgba(0,0,0,.6), 0 0 16px -4px rgba(53,224,122,.5), inset 0 1px 0 rgba(255,255,255,.16); }
     .pos-tile.rupt { opacity:.38; pointer-events:none; }
@@ -688,22 +688,22 @@
     .ticket__cnt { font-size:12.5px; font-weight:700; color: rgba(255,255,255,.55); }
     .ticket__total { font-size:27px; font-weight:800; color:#6bf0a0; font-variant-numeric: tabular-nums; text-shadow:0 0 14px rgba(53,224,122,.5); }
     .ticket__modes { display:flex; gap:7px; margin-bottom:11px; }
-    .paymode { --pc:#38f0ff; flex:1; padding:9px 6px; border-radius:12px; border:1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.05); color: rgba(255,255,255,.72); font:inherit; font-size:11.5px; font-weight:700; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; transition: color .18s, border-color .18s, background .18s, box-shadow .18s; }
+    .paymode { --pc:#f6a63c; flex:1; padding:9px 6px; border-radius:12px; border:1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.05); color: rgba(255,255,255,.72); font:inherit; font-size:11.5px; font-weight:700; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; transition: color .18s, border-color .18s, background .18s, box-shadow .18s; }
     .paymode svg { width:18px; height:18px; }
     .paymode.is-on { color:#fff; border-color: var(--pc); background: color-mix(in srgb, var(--pc) 16%, transparent); box-shadow:0 0 14px -4px var(--pc); }
-    .paymode--esp { --pc:#35e07a; } .paymode--momo { --pc:#38f0ff; } .paymode--credit { --pc:#ff8a3d; }
-    .ticket__go { width:100%; padding:15px; border:0; border-radius:15px; cursor:pointer; font:inherit; font-size:16px; font-weight:800; color:#04140e; background: radial-gradient(140% 140% at 30% 20%, #86ffd0, #35e07a); box-shadow:0 0 24px -4px rgba(53,224,122,.6); transition: transform .1s ease; display:flex; align-items:center; justify-content:center; gap:8px; }
+    .paymode--esp { --pc:#34d399; } .paymode--momo { --pc:#f6a63c; } .paymode--credit { --pc:#ff8a3d; }
+    .ticket__go { width:100%; padding:15px; border:0; border-radius:15px; cursor:pointer; font:inherit; font-size:16px; font-weight:800; color:#04140e; background: radial-gradient(140% 140% at 30% 20%, #86ffd0, #34d399); box-shadow:0 0 24px -4px rgba(53,224,122,.6); transition: transform .1s ease; display:flex; align-items:center; justify-content:center; gap:8px; }
     .ticket__go:active { transform: scale(.97); }
     .ticket__go span { font-variant-numeric: tabular-nums; opacity:.85; }
     .pos__empty { text-align:center; color: rgba(255,255,255,.42); font-size:14px; line-height:1.5; margin:8vh auto 0; max-width:300px; }
-    .pos__empty b { color:#8ff6ff; }
+    .pos__empty b { color:#ffd9a0; }
     .cashburst { position:fixed; inset:0; z-index:48; display:grid; place-items:center; pointer-events:none; }
     .cashburst b { font-size: clamp(40px,13vw,68px); font-weight:800; color:#6bf0a0; font-variant-numeric: tabular-nums; text-shadow:0 0 30px rgba(53,224,122,.7); animation: cashPop .9s cubic-bezier(.2,1.3,.3,1) both; }
     @keyframes cashPop { 0% { opacity:0; transform: scale(.4) translateY(20px); } 30% { opacity:1; transform: scale(1.05) translateY(0); } 70% { opacity:1; transform: scale(1) translateY(0); } 100% { opacity:0; transform: scale(1) translateY(-40px); } }
 
     /* VENTES (historique) */
     .saleslist { max-width:480px; margin:14px auto 0; display:flex; flex-direction:column; gap:9px; }
-    .salerow { position:relative; padding:12px 13px; border-radius:14px; text-align:left; background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.09); border-left:3px solid #35e07a; box-shadow:0 8px 20px -14px rgba(0,0,0,.7); animation: expIn .4s calc(var(--i)*40ms) var(--ease) both; }
+    .salerow { position:relative; padding:12px 13px; border-radius:14px; text-align:left; background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.09); border-left:3px solid #34d399; box-shadow:0 8px 20px -14px rgba(0,0,0,.7); animation: expIn .4s calc(var(--i)*40ms) var(--ease) both; }
     .salerow__top { display:flex; align-items:center; justify-content:space-between; gap:10px; }
     .salerow__cnt { font-size:12.5px; font-weight:700; color: rgba(255,255,255,.6); }
     .salerow__amt { font-size:16px; font-weight:800; color:#6bf0a0; font-variant-numeric: tabular-nums; }
@@ -711,7 +711,7 @@
     .salerow__meta { display:flex; align-items:center; gap:8px; margin-top:7px; font-size:11px; color: rgba(255,255,255,.4); }
     .paybadge { padding:2px 8px; border-radius:999px; font-size:10px; font-weight:800; }
     .paybadge--esp { color:#7bf0a8; background: rgba(53,224,122,.14); }
-    .paybadge--momo { color:#8ff6ff; background: rgba(56,240,255,.14); }
+    .paybadge--momo { color:#ffd9a0; background: rgba(56,240,255,.14); }
     .paybadge--credit { color:#ffb27a; background: rgba(255,138,61,.16); }
     .sales-total { max-width:480px; margin:14px auto 0; text-align:center; font-size:14px; color: rgba(255,255,255,.6); }
     .sales-total b { display:block; margin-top:4px; font-size:26px; font-weight:800; color:#6bf0a0; font-variant-numeric: tabular-nums; text-shadow:0 0 14px rgba(53,224,122,.4); }
@@ -771,7 +771,7 @@
     .cbtn:active { transform: scale(.95); }
     .cbtn--relance { color:#7bf0a8; border-color: rgba(53,224,122,.35); }
     .cbtn--relance:hover { background: rgba(53,224,122,.12); box-shadow:0 0 14px -4px rgba(53,224,122,.6); }
-    .cbtn--paid:hover { border-color: rgba(56,240,255,.5); color:#8ff6ff; }
+    .cbtn--paid:hover { border-color: rgba(56,240,255,.5); color:#ffd9a0; }
     .cbtn--auto.is-on { color:#ffe38a; border-color: rgba(255,210,63,.5); background: rgba(255,210,63,.12); box-shadow:0 0 12px -4px rgba(255,210,63,.6); }
 
     /* Sheet : champs texte + boutons message */
@@ -806,7 +806,7 @@
     .prod__name { display:block; font-size:14px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .prod__badges { display:flex; gap:5px; margin:3px 0; }
     .ptype { font-size:9.5px; font-weight:800; letter-spacing:.04em; padding:2px 7px; border-radius:999px; text-transform:uppercase; }
-    .ptype--physique { color:#8ff6ff; background: rgba(56,240,255,.14); }
+    .ptype--physique { color:#ffd9a0; background: rgba(56,240,255,.14); }
     .ptype--digital { color:#c9a7ff; background: rgba(185,140,255,.16); }
     .ptype--service { color:#7bf0a8; background: rgba(53,224,122,.14); }
     .ptype--rec { color:#ffe38a; background: rgba(255,210,63,.16); text-transform:none; }
@@ -849,7 +849,7 @@
     .docrow__amt { display:block; font-size:15px; font-weight:800; color:#fff; font-variant-numeric: tabular-nums; }
     .docstatut { font-size:9.5px; font-weight:800; text-transform:uppercase; padding:2px 7px; border-radius:999px; }
     .docstatut--brouillon { color:#c9c9c9; background: rgba(255,255,255,.1); }
-    .docstatut--envoyé { color:#8ff6ff; background: rgba(56,240,255,.14); }
+    .docstatut--envoyé { color:#ffd9a0; background: rgba(56,240,255,.14); }
     .docstatut--payé { color:#7bf0a8; background: rgba(53,224,122,.14); }
 
     /* Constructeur de document */
@@ -898,7 +898,7 @@
        ========================================================================== */
     .exprow__badges { display:flex; flex-wrap:wrap; gap:5px; margin-top:5px; }
     .ebadge { font-size:9px; font-weight:800; letter-spacing:.03em; padding:2px 6px; border-radius:999px; text-transform:uppercase; }
-    .ebadge--achat { color:#8ff6ff; background: rgba(56,240,255,.14); }
+    .ebadge--achat { color:#ffd9a0; background: rgba(56,240,255,.14); }
     .ebadge--rec { color:#ffe38a; background: rgba(255,210,63,.16); text-transform:none; }
     .ebadge--perso { color:#c9a7ff; background: rgba(185,140,255,.18); }
     .exprow.is-perso { border-color: rgba(185,140,255,.28); }
@@ -931,12 +931,44 @@
     .member__perms { display:flex; flex-wrap:wrap; gap:5px; margin-top:10px; }
     .permchip { font-size:10px; font-weight:700; padding:3px 8px; border-radius:999px; background: rgba(255,255,255,.06); color: rgba(255,255,255,.6); border:1px solid rgba(255,255,255,.08); }
     .member__act { display:flex; gap:7px; margin-top:11px; flex-wrap:wrap; }
+    /* ===== BARRE PRINCIPALE (5 onglets) : verre de nuit, mobile en bas / PC en rail gauche ===== */
+    .tabbar { position: fixed; left: 10px; right: 10px; bottom: calc(8px + env(safe-area-inset-bottom)); z-index: 44;
+      display: flex; gap: 2px; padding: 6px; border-radius: 22px;
+      background: rgba(18, 15, 12, .62);
+      -webkit-backdrop-filter: blur(16px) saturate(140%); backdrop-filter: blur(16px) saturate(140%);
+      border: 1px solid rgba(255, 255, 255, .08);
+      box-shadow: 0 18px 40px -18px rgba(0, 0, 0, .85), inset 0 1px 0 rgba(255, 255, 255, .07); }
+    .tab { flex: 1; min-width: 0; border: 0; background: none; cursor: pointer; border-radius: 16px; padding: 7px 2px 6px;
+      display: flex; flex-direction: column; align-items: center; gap: 3px; color: rgba(255, 255, 255, .55); font: inherit;
+      transition: color .18s var(--ease), background .18s var(--ease), transform .1s ease; -webkit-tap-highlight-color: transparent; }
+    .tab svg { width: 22px; height: 22px; }
+    .tab span { font-size: 10.5px; font-weight: 700; }
+    .tab:active { transform: scale(.94); }
+    .tab.is-active { color: #ffc46a; background: rgba(246, 166, 60, .13);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 0 18px -6px rgba(246, 166, 60, .5); }
+    .tab.is-active svg { filter: drop-shadow(0 0 7px rgba(246, 166, 60, .65)); }
+    /* le contenu et les boutons flottants respirent au-dessus de la barre */
+    .content { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+    .fab { bottom: calc(94px + env(safe-area-inset-bottom)); }
+    .fab__lbl { bottom: calc(109px + env(safe-area-inset-bottom)); }
+    /* PC : rail latéral gauche, centré verticalement */
+    @media (min-width: 1024px) {
+      .tabbar { left: 14px; right: auto; top: 50%; bottom: auto; transform: translateY(-50%);
+        flex-direction: column; width: 88px; padding: 10px 8px; gap: 6px; border-radius: 26px; }
+      .tab { flex: none; width: 100%; padding: 10px 2px 9px; }
+      .content { padding-left: 128px; padding-bottom: 24px; }
+      .fab { bottom: calc(18px + env(safe-area-inset-bottom)); }
+      .fab__lbl { bottom: calc(33px + env(safe-area-inset-bottom)); }
+    }
+    @media (prefers-reduced-motion: reduce) { .depth__halo { animation: none !important; } }
   </style>
 </head>
 <body>
-  <!-- Calque de profondeur : grille en fuite + poussières flottantes (derrière tout le contenu) -->
+  <!-- Calque de profondeur : halos aurore + poussières lumineuses (derrière tout le contenu) -->
   <div class="depth" aria-hidden="true">
-    <div class="depth__grid"></div>
+    <div class="depth__halo depth__halo--a"></div>
+    <div class="depth__halo depth__halo--b"></div>
+    <div class="depth__halo depth__halo--c"></div>
     <div class="depth__dust"></div>
   </div>
   <div class="app">
@@ -961,6 +993,30 @@
       </span>
       <button class="hdr__avatar" aria-label="Profil (bientôt)"></button>
     </header>
+
+    <!-- BARRE PRINCIPALE : 5 onglets toujours visibles -->
+    <nav class="tabbar" aria-label="Navigation principale">
+      <button class="tab is-active" data-tab="accueil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/><path d="M10 20v-6h4v6"/></svg>
+        <span>Accueil</span>
+      </button>
+      <button class="tab" data-tab="caisse">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2.2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.7v4.6M18 9.7v4.6"/></svg>
+        <span>Caisse</span>
+      </button>
+      <button class="tab" data-tab="bilan">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4"/><path d="M4 20h16"/><rect x="7.5" y="12" width="2.6" height="5" rx=".4"/><rect x="12" y="8.5" width="2.6" height="8.5" rx=".4"/><rect x="16.5" y="10.5" width="2.6" height="6.5" rx=".4"/></svg>
+        <span>Bilan</span>
+      </button>
+      <button class="tab" data-tab="boussole">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M15.4 8.6l-2 5-4.8 1.8 2-5z" fill="currentColor" stroke="none"/></svg>
+        <span>Boussole</span>
+      </button>
+      <button class="tab tab--menu" data-open>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        <span>Menu</span>
+      </button>
+    </nav>
 
     <!-- CONTENU : écran courant (rempli par showSection) -->
     <main class="content" id="view"></main>
@@ -1054,7 +1110,7 @@
     </aside>
   </div>
 
-  <span class="proto-tag">Aperçu · maquette néon v2</span>
+  <span class="proto-tag">Aperçu · verre de nuit v3</span>
 
   <script src="../assets/js/vendor/supabase.js"></script>
   <script type="module">
@@ -1095,11 +1151,11 @@
     const SECTIONS = {
       accueil:   { label: 'Accueil',        color: '#ff2e43', desc: 'Vue d’ensemble de ton activité.' },
       catalogue: { label: 'Catalogue',      color: '#ffd23f', desc: 'Tes produits et prestations.' },
-      ventes:    { label: 'Mes ventes',     color: '#35e07a', desc: 'Historique et suivi de tes ventes.' },
+      ventes:    { label: 'Mes ventes',     color: '#34d399', desc: 'Historique et suivi de tes ventes.' },
       depenses:  { label: 'Mes dépenses',   color: '#e11d48', desc: 'Ce qui sort de ta caisse.' },
-      caisse:    { label: 'La caisse',      color: '#38f0ff', desc: 'Encaisse une vente en un geste.' },
+      caisse:    { label: 'La caisse',      color: '#f6a63c', desc: 'Encaisse une vente en un geste.' },
       bilan:     { label: 'Le bilan',       color: '#b98cff', desc: 'Tes chiffres et ton rapport de santé.' },
-      statistiques: { label: 'Statistiques', color: '#e8fbff', desc: 'Tendances, analyses et projections de ton activité.' },
+      statistiques: { label: 'Statistiques', color: '#ffe9c9', desc: 'Tendances, analyses et projections de ton activité.' },
       objectifs: { label: 'Objectifs', color: '#ffd23f', desc: 'Tes buts de revenu et tes projets d\'achat.' },
       carnet:    { label: 'Carnet clients', color: '#ff8a3d', desc: 'Clients, crédits et relances.' },
       factures:  { label: 'Factures & devis', color: '#4cc9ff', desc: 'Factures normalisées et devis pour tes clients.' },
@@ -1108,7 +1164,7 @@
     // Accueil : HUD de bienvenue (salutation dynamique) + 2 mastodontes Vendre / Dépenser
     function accueilHTML(cls) {
       const ca = salesTotal(), stoday = salesToday(), objPct = Math.min(100, Math.round(stoday / objJour() * 100));   // vrais chiffres
-      return '<div class="screen home portal" style="--sc:#ff2e43">' +   // portail « retour au nexus » (clip-path circulaire) au lieu de la caméra cine/hud
+      return '<div class="screen home portal" style="--sc:#f6a63c">' +   // portail « retour au nexus » (clip-path circulaire) au lieu de la caméra cine/hud
           '<div class="hud">' +
             '<span class="hud__sys"><i></i>Système en ligne</span>' +
             '<h1 class="hud__hi"></h1>' +   // rempli par le Smart Greeting Engine (typing)
@@ -1240,7 +1296,7 @@
     }
 
     // ===== BOUSSOLE — écran DÉPENSES : liste catégorisée + FAB « Ajout rapide » =====
-    const CATS = { 'Fournitures': '#38f0ff', 'Stock': '#5ad1c8', 'Transport': '#ffd23f', 'Loyer': '#b98cff', 'Marketing': '#ff6ec7', 'Divers': '#35e07a' };
+    const CATS = { 'Fournitures': '#f6a63c', 'Stock': '#5ad1c8', 'Transport': '#ffd23f', 'Loyer': '#b98cff', 'Marketing': '#ff6ec7', 'Divers': '#34d399' };
     const FREQ_LBL = { mois: 'mensuel', '2mois': 'tous les 2 mois', semaine: 'hebdo' };
     const expTotal = () => (SM.depenses || []).filter((d) => !d.perso).reduce((s, d) => s + (+d.montant || 0), 0);   // business (hors poche perso)
     const persoTotal = () => (SM.depenses || []).filter((d) => d.perso).reduce((s, d) => s + (+d.montant || 0), 0);
@@ -1413,7 +1469,7 @@
     function barsSVG(days) {
       const max = Math.max(1, ...days.map((d) => Math.max(d.ca, d.dep)));
       const cols = days.map((d, i) => '<div class="barcol"><div class="barcol__pair" style="--i:' + i + '"><span class="bar bar--ca" style="height:' + Math.max(3, d.ca / max * 100).toFixed(1) + '%"></span><span class="bar bar--dep" style="height:' + Math.max(3, d.dep / max * 100).toFixed(1) + '%"></span></div><span class="barcol__lbl">' + d.lbl + '</span></div>').join('');
-      return '<div class="bars">' + cols + '</div><div class="chartkey"><span><b style="background:#35e07a"></b>Ventes</span><span><b style="background:#e11d48"></b>Dépenses</span></div>';
+      return '<div class="bars">' + cols + '</div><div class="chartkey"><span><b style="background:#34d399"></b>Ventes</span><span><b style="background:#e11d48"></b>Dépenses</span></div>';
     }
     const hbar = (name, val, total, color) => { const pct = total > 0 ? Math.round(val / total * 100) : 0; return '<div class="hbar"><div class="hbar__top"><span class="hbar__name">' + name + '</span><span class="hbar__val">' + fF(val) + '<i>' + pct + '%</i></span></div><div class="hbar__track"><span class="hbar__fill" style="width:' + pct + '%;background:' + color + ';box-shadow:0 0 10px -2px ' + color + '"></span></div></div>'; };
 
@@ -1433,7 +1489,7 @@
     const kpi = (mod, lbl, num, sub, i) => '<div class="kpi kpi--' + mod + '" style="--i:' + i + '"><span class="kpi__lbl">' + lbl + '</span><span class="kpi__num">' + num + '</span><span class="kpi__sub">' + sub + '</span></div>';
 
     /* ===== CAISSE (POS) : touche les produits, choisis le paiement, encaisse ===== */
-    const TILE_COLORS = ['#38f0ff', '#35e07a', '#ffd23f', '#b98cff', '#ff8a3d', '#ff6ec7'];
+    const TILE_COLORS = ['#f6a63c', '#34d399', '#ffd23f', '#b98cff', '#ff8a3d', '#ff6ec7'];
     let _ticket = [];               // panier courant [{id,nom,prix,qty}]
     let _payMode = 'espèces';
     const tkTotal = () => _ticket.reduce((s, l) => s + l.prix * l.qty, 0);
@@ -1449,7 +1505,7 @@
           '</button>';
       }).join('');
       const pay = (m, cls, lbl, ic) => '<button class="paymode paymode--' + cls + (m === _payMode ? ' is-on' : '') + '" data-pay="' + m + '">' + ic + lbl + '</button>';
-      return '<div class="screen" style="--sc:#35e07a">' +
+      return '<div class="screen" style="--sc:#34d399">' +
         '<span class="screen__tag">Caisse</span>' +
         '<h1 class="screen__title">Encaisser</h1>' +
         '<p class="screen__sub">Touche les produits vendus, choisis le paiement, encaisse.</p>' +
@@ -1510,7 +1566,7 @@
         const badge = v.mode === 'momo' ? '<span class="paybadge paybadge--momo">Mobile Money</span>' : v.mode === 'credit' ? '<span class="paybadge paybadge--credit">Crédit</span>' : '<span class="paybadge paybadge--esp">Espèces</span>';
         return '<div class="salerow" style="--i:' + i + '"><div class="salerow__top"><span class="salerow__cnt">' + n + ' article' + (n > 1 ? 's' : '') + '</span><span class="salerow__amt">' + fF(v.total) + '</span></div><div class="salerow__items">' + items + '</div><div class="salerow__meta">' + badge + '<span>' + relTime(v.ts) + '</span></div></div>';
       }).join('');
-      return '<div class="screen" style="--sc:#35e07a"><span class="screen__tag">Mes ventes</span><h1 class="screen__title">Tes ventes</h1>' +
+      return '<div class="screen" style="--sc:#34d399"><span class="screen__tag">Mes ventes</span><h1 class="screen__title">Tes ventes</h1>' +
         '<div class="sales-total">Encaissé aujourd\'hui<b>' + fF(salesToday()) + '</b></div>' +
         (list.length ? '<div class="saleslist">' + rows + '</div>' : '<p class="pos__empty">Aucune vente pour l\'instant. Va à <b>La caisse</b> pour encaisser ta première vente.</p>') +
         iaBanner() + '</div>';
@@ -1521,7 +1577,7 @@
     function statsHTML() {
       const ca = salesTotal(), dep = expTotal(), ben = ca - dep, marge = ca > 0 ? Math.round(ben / ca * 100) : 0;
       const cats = depByCat();
-      return '<div class="screen wide" style="--sc:#e8fbff"><span class="screen__tag">Statistiques</span><h1 class="screen__title">Tes chiffres</h1>' +
+      return '<div class="screen wide" style="--sc:#ffe9c9"><span class="screen__tag">Statistiques</span><h1 class="screen__title">Tes chiffres</h1>' +
         '<p class="screen__sub">Ce que tu gagnes, ce que tu dépenses, et ce que ça donne.</p>' +
         iaBanner() +
         '<div class="kpis">' +
@@ -1531,7 +1587,7 @@
           kpi('marge', 'Marge', marge + ' %', 'sur 100 F vendus', 3) +
         '</div>' +
         '<div class="panel"><h3 class="panel__ttl" style="--sc:#e11d48"><i></i>Où part ton argent</h3>' + (dep > 0 ? donutSVG(cats, 'Dépensé') : '<p class="ia__txt">Pas encore de dépense enregistrée.</p>') + '</div>' +
-        '<div class="panel"><h3 class="panel__ttl" style="--sc:#35e07a"><i></i>Évolution 7 jours</h3>' + barsSVG(evo7()) + '</div>' +
+        '<div class="panel"><h3 class="panel__ttl" style="--sc:#34d399"><i></i>Évolution 7 jours</h3>' + barsSVG(evo7()) + '</div>' +
       '</div>';
     }
     function bindStats() {}
@@ -1541,12 +1597,12 @@
       const ca = salesTotal(), dep = expTotal(), ben = ca - dep;
       const mo = salesByMode(), esp = mo['espèces'] || 0, momo = mo['momo'] || 0, cred = mo['credit'] || 0;
       const cats = depByCat();
-      const src = ca > 0 ? hbar('Espèces', esp, ca, '#35e07a') + hbar('Mobile Money', momo, ca, '#38f0ff') + hbar('Crédit (à récupérer)', cred, ca, '#ff8a3d') : '<p class="ia__txt">Aucune vente enregistrée.</p>';
+      const src = ca > 0 ? hbar('Espèces', esp, ca, '#34d399') + hbar('Mobile Money', momo, ca, '#f6a63c') + hbar('Crédit (à récupérer)', cred, ca, '#ff8a3d') : '<p class="ia__txt">Aucune vente enregistrée.</p>';
       const out = dep > 0 ? cats.map((c) => hbar(c.name, c.val, dep, c.color)).join('') : '<p class="ia__txt">Aucune dépense enregistrée.</p>';
       return '<div class="screen wide" style="--sc:#b98cff"><span class="screen__tag">Le bilan</span><h1 class="screen__title">Ta santé</h1>' +
         '<div class="benhero ben--' + (ben >= 0 ? 'ok' : 'bad') + '"><span class="benhero__lbl">Bénéfice net</span><b class="benhero__num">' + (ben >= 0 ? '+' : '') + fF(ben) + '</b><span class="benhero__sub">' + (ben >= 0 ? "Ton commerce gagne de l'argent" : "Ton commerce perd de l'argent") + '</span></div>' +
         iaBanner() +
-        '<div class="panel"><h3 class="panel__ttl" style="--sc:#35e07a"><i></i>D\'où vient ton argent</h3>' + src + '</div>' +
+        '<div class="panel"><h3 class="panel__ttl" style="--sc:#34d399"><i></i>D\'où vient ton argent</h3>' + src + '</div>' +
         '<div class="panel"><h3 class="panel__ttl" style="--sc:#e11d48"><i></i>Ce qui pèse le plus</h3>' + out + '</div>' +
         (persoTotal() > 0 ? '<div class="panel"><h3 class="panel__ttl" style="--sc:#b98cff"><i></i>Poche perso</h3><p class="ia__txt">Tu as sorti <b style="color:#c9a7ff">' + fF(persoTotal()) + '</b> pour tes dépenses personnelles. C\'est ton argent, mais ce n\'est pas compté dans le bénéfice du business.</p></div>' : '') +
       '</div>';
@@ -1907,7 +1963,31 @@
       });
     }
 
+    /* ===== ÉCRAN BOUSSOLE : l'intelligence maison (v1, s'étoffe aux prochaines vagues) ===== */
+    function boussoleHTML() {
+      const ca = salesTotal(), dep = expTotal(), ben = ca - dep;
+      const tease = (ca === 0 && dep === 0) ? 'On démarre quand tu veux, Boss.' : (ben > 0 ? "Continue comme ça et c'est toi qui régales." : 'On serre les dents et on ajuste : je te montre où.');
+      return '<div class="screen wide" style="--sc:#ffc46a">' +
+        '<span class="screen__tag">Boussole</span>' +
+        '<h1 class="screen__title">Ton copilote</h1>' +
+        '<p class="screen__sub">Je lis tes chiffres et je te parle cash : ce qui va, ce qui coince, quoi faire. ' + tease + '</p>' +
+        iaBanner() +
+        '<div class="kpis">' + kpi('ca', 'Encaissé', fF(ca), 'total enregistré', 0) + kpi('dep', 'Dépensé', fF(dep), 'total enregistré', 1) + '</div>' +
+      '</div>';
+    }
+    /* ===== Barre principale : navigation + état actif ===== */
+    function setActiveTab(nav) { document.querySelectorAll('.tabbar .tab[data-tab]').forEach((t) => t.classList.toggle('is-active', t.dataset.tab === nav)); }
+    (function bindTabbar() {
+      const bar = document.querySelector('.tabbar'); if (!bar) return;
+      if (matchMedia('(hover: hover)').matches) bar.querySelectorAll('.tab').forEach((t) => t.addEventListener('mouseenter', () => playHover()));
+      bar.addEventListener('click', (e) => {
+        const t = e.target.closest('.tab[data-tab]'); if (!t) return;
+        playClick(); setActiveNav(t.dataset.tab); setActiveTab(t.dataset.tab); showSection(t.dataset.tab, false);
+      });
+    })();
+
     function showSection(nav, cinematic) {
+      setActiveTab(nav);
       if (!cinematic && nav !== 'accueil' && nav !== 'catalogue') playWhoosh();   // routing : whoosh (sauf Accueil=portail et Catalogue=tiroir, qui ont leur propre son)
       const cls = cinematic ? 'cine' : 'hud';
       if (nav === 'accueil') { view.innerHTML = accueilHTML(cls); renderGreeting(); bindMastoTilt(); bindVitals(); return; }
@@ -1921,6 +2001,7 @@
       if (nav === 'carnet') { view.innerHTML = carnetHTML(); bindCarnet(); return; }
       if (nav === 'factures') { _facMode = 'list'; view.innerHTML = facturesHTML(); bindFactures(); return; }
       if (nav === 'equipe') { view.innerHTML = equipeHTML(); bindEquipe(); return; }
+      if (nav === 'boussole') { view.innerHTML = boussoleHTML(); return; }
       const s = SECTIONS[nav] || SECTIONS.accueil;
       view.innerHTML =
         '<div class="screen ' + cls + '" style="--sc:' + s.color + '">' +
@@ -2391,7 +2472,7 @@
     }
     updateMuteUI();
 
-    // ===== "Miles clic" : feedback IMMÉDIAT dès l'appui (pointerdown), sur chaque item de section =====
+    // ===== "Clic néon" : feedback IMMÉDIAT dès l'appui (pointerdown), sur chaque item de section =====
     drawer.querySelectorAll('.navbtn').forEach((b) => {
       b.addEventListener('pointerdown', () => {
         (b.dataset.sfxProfile === 'data' ? playAnalyticValidate : b.dataset.sfxProfile === 'nexus' ? playVacuumPop : b.dataset.sfxProfile === 'drawer' ? playDrawerPull : playGlitch)();   // Validation · nexus=Vacuum Pop · drawer=tiroir lourd+clac · sinon glitch/snap (T0)
@@ -2464,7 +2545,7 @@
       const b = e.target.closest('[data-sfx-hover]'); if (!b) return;
       if (b.dataset.mute !== undefined) { toggleMute(); return; }   // toggle son : ne ferme pas le menu
       if (!b.classList.contains('navbtn')) playClick();            // footer ; les navbtn ont leur glitch/snap au pointerdown
-      // le flash "Miles" (glitch + snap + néon) est déclenché au pointerdown, voir plus bas
+      // le flash néon (glitch + snap) est déclenché au pointerdown, voir plus bas
       if (b.dataset.logout !== undefined) { setTimeout(doLogout, 220); return; }
       if (b.dataset.nav) { setActiveNav(b.dataset.nav); showSection(b.dataset.nav, false); }   // HUD : l'écran change instantanément (caméra sèche)
       setTimeout(closeMenu, 220);                       // laisse le temps de VOIR le clic "Miles" (~200 ms) avant de fermer

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="dark">
-  <title>Boussole · Connexion (aperçu point 1)</title>
+  <title>Boussole · Connexion (verre de nuit)</title>
   <link rel="icon" href="../assets/icons/favicon-48.png" type="image/png">
   <style>
     /* ===== Police de marque Boussole ===== */
@@ -86,7 +86,7 @@
         0 14px 44px -16px rgba(0, 0, 0, .55),
         inset 0 1px 0 0 rgba(255, 255, 255, .38),
         inset 0 0 0 1px rgba(255, 255, 255, .05),
-        inset 0 -30px 70px -40px rgba(150, 90, 220, .28);
+        inset 0 -30px 70px -40px rgba(246, 166, 60, .18);
 
       animation: cineGlass 1s var(--ease-cine) both;   /* MODE LOGIN : fondu lent + zoom 98 -> 100 */
     }
@@ -119,7 +119,7 @@
       animation: logoPulse 3.6s ease-in-out infinite, cineFade .7s .22s var(--ease-cine) both;   /* pulse continu + entrée en cascade */
       /* halo lumineux derrière le compas : supprime l'effet « disque noir » du verre */
       background: radial-gradient(circle at 50% 46%,
-        rgba(56, 240, 255, .20), rgba(56, 240, 255, .06) 44%, transparent 70%);
+        rgba(246, 166, 60, .20), rgba(246, 166, 60, .06) 44%, transparent 70%);
     }
     .logo svg {
       display: block;
@@ -128,13 +128,13 @@
       overflow: visible;              /* la lueur néon n'est pas rognée */
       animation: logoGlow 4.2s ease-in-out infinite;
     }
-    .logo .ring { stroke: #8ff6ff; }
-    .logo .ring--in { stroke: rgba(143, 246, 255, .45); }
-    .logo .ticks line { stroke: #8ff6ff; }
-    .logo .ticks--min line { stroke: #8ff6ff; opacity: .55; }
-    .logo .rose-ew { fill: rgba(234, 253, 255, .32); stroke: rgba(143, 246, 255, .5); stroke-width: .5; }
-    .logo .rose-s  { fill: rgba(56, 240, 255, .30); }
-    .logo .rose-n  { fill: #eafdff; }
+    .logo .ring { stroke: #ffd9a0; }
+    .logo .ring--in { stroke: rgba(255, 217, 160, .45); }
+    .logo .ticks line { stroke: #ffd9a0; }
+    .logo .ticks--min line { stroke: #ffd9a0; opacity: .55; }
+    .logo .rose-ew { fill: rgba(255, 246, 230, .32); stroke: rgba(255, 217, 160, .5); stroke-width: .5; }
+    .logo .rose-s  { fill: rgba(246, 166, 60, .30); }
+    .logo .rose-n  { fill: #fff6e6; }
     .logo .hub     { fill: #ffffff; }
 
     /* --- Titre principal --- */
@@ -149,7 +149,7 @@
       text-wrap: balance;
       text-shadow:
         0 0 1px rgba(255, 255, 255, .5),
-        0 0 15px rgba(56, 240, 255, .32),
+        0 0 15px rgba(246, 166, 60, .32),
         0 2px 22px rgba(0, 0, 0, .45);
       animation: cineUp .7s .42s var(--ease-cine) both;   /* le texte de bienvenue entre après le logo */
     }
@@ -160,12 +160,12 @@
     }
     /* lueur qui alterne discrètement blanc <-> cyan */
     @keyframes logoGlow {
-      0%, 100% { filter: drop-shadow(0 0 5px rgba(255, 255, 255, .9)) drop-shadow(0 0 15px rgba(56, 240, 255, .5)); }
-      50%      { filter: drop-shadow(0 0 9px rgba(56, 240, 255, .95)) drop-shadow(0 0 26px rgba(56, 240, 255, .6)); }
+      0%, 100% { filter: drop-shadow(0 0 5px rgba(255, 255, 255, .9)) drop-shadow(0 0 15px rgba(246, 166, 60, .5)); }
+      50%      { filter: drop-shadow(0 0 9px rgba(246, 166, 60, .95)) drop-shadow(0 0 26px rgba(246, 166, 60, .6)); }
     }
     @media (prefers-reduced-motion: reduce) {
       .logo, .logo svg { animation: none; }
-      .logo svg { filter: drop-shadow(0 0 8px rgba(56, 240, 255, .7)); }
+      .logo svg { filter: drop-shadow(0 0 8px rgba(246, 166, 60, .7)); }
     }
 
     /* ===== POINT 3 : champs de saisie (baby-proof) ===== */
@@ -200,11 +200,11 @@
     .input input::placeholder { color: rgba(255, 255, 255, .5); }   /* aide grise / mate */
     /* EFFET NÉON AU CLIC (focus) : bordure + lueur cyan diffuse */
     .input:focus-within {
-      border-color: #38f0ff;
-      background: rgba(56, 240, 255, .06);
-      box-shadow: 0 0 0 1px #38f0ff, 0 0 20px rgba(56, 240, 255, .45), inset 0 0 12px rgba(56, 240, 255, .10);
+      border-color: #f6a63c;
+      background: rgba(246, 166, 60, .06);
+      box-shadow: 0 0 0 1px #f6a63c, 0 0 20px rgba(246, 166, 60, .45), inset 0 0 12px rgba(246, 166, 60, .10);
     }
-    .input:focus-within .input__ic { color: #7ff4ff; }
+    .input:focus-within .input__ic { color: #ffd482; }
 
     /* Case à cocher « Rester connecté » (grande cible tactile, cochée par défaut) */
     .remember {
@@ -221,10 +221,10 @@
       display: grid; place-items: center;
       transition: background .12s ease, border-color .12s ease, box-shadow .12s ease;
     }
-    .remember__box svg { width: 16px; height: 16px; color: #04141c; opacity: 0; transform: scale(.5); transition: opacity .12s ease, transform .16s var(--ease); }
-    .remember input:checked + .remember__box { background: #38f0ff; border-color: #38f0ff; box-shadow: 0 0 14px rgba(56, 240, 255, .5); }
+    .remember__box svg { width: 16px; height: 16px; color: #231204; opacity: 0; transform: scale(.5); transition: opacity .12s ease, transform .16s var(--ease); }
+    .remember input:checked + .remember__box { background: #f6a63c; border-color: #f6a63c; box-shadow: 0 0 14px rgba(246, 166, 60, .5); }
     .remember input:checked + .remember__box svg { opacity: 1; transform: none; }
-    .remember input:focus-visible + .remember__box { outline: 2px solid #7ff4ff; outline-offset: 3px; }
+    .remember input:focus-visible + .remember__box { outline: 2px solid #ffd482; outline-offset: 3px; }
     .remember__lbl { color: rgba(255, 255, 255, .78); font-size: 15px; }
 
     @keyframes formIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
@@ -241,7 +241,7 @@
       font: inherit; font-size: 13px; color: rgba(255, 255, 255, .6);
       transition: color .15s ease;
     }
-    .forgot:hover, .forgot:focus-visible { color: #7ff4ff; outline: none; }
+    .forgot:hover, .forgot:focus-visible { color: #ffd482; outline: none; }
 
     /* bouton d'action principal */
     .btn-main {
@@ -250,21 +250,21 @@
       display: flex; align-items: center; justify-content: center; gap: 8px;
       border: 0; border-radius: 16px; cursor: pointer;
       font: inherit; font-size: 16px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
-      color: #04141c;
-      background: linear-gradient(180deg, #8ff6ff, #22d3ee);
+      color: #231204;
+      background: linear-gradient(180deg, #ffd9a0, #ef8f2a);
       /* mêmes 4 couches au repos et au survol => l'illumination s'interpole en douceur (pas de saut) */
       box-shadow:
-        0 0 0 1px rgba(143, 246, 255, 0),
-        0 10px 26px -10px rgba(56, 240, 255, .5),
-        0 0 0 rgba(56, 240, 255, 0),
+        0 0 0 1px rgba(255, 217, 160, 0),
+        0 10px 26px -10px rgba(246, 166, 60, .5),
+        0 0 0 rgba(246, 166, 60, 0),
         inset 0 1px 0 rgba(255, 255, 255, .55);
       transition: box-shadow .34s cubic-bezier(.16, 1, .3, 1), transform .12s ease, background .35s ease, color .35s ease;
     }
     .btn-main:hover {
       box-shadow:
-        0 0 0 1px rgba(143, 246, 255, .9),
-        0 12px 34px -8px rgba(56, 240, 255, .85),
-        0 0 46px rgba(56, 240, 255, .55),
+        0 0 0 1px rgba(255, 217, 160, .9),
+        0 12px 34px -8px rgba(246, 166, 60, .85),
+        0 0 46px rgba(246, 166, 60, .55),
         inset 0 1px 0 rgba(255, 255, 255, .55);
     }
     .btn-main:active { transform: translateY(1px) scale(.99); }
@@ -272,7 +272,7 @@
     .btn-main.is-loading { color: transparent; }
     .btn-main.is-loading::after {
       content: ""; position: absolute; width: 21px; height: 21px;
-      border: 2.5px solid rgba(4, 20, 28, .3); border-top-color: #04141c; border-radius: 50%;
+      border: 2.5px solid rgba(35, 18, 4, .3); border-top-color: #231204; border-radius: 50%;
       animation: spin .6s linear infinite;
     }
     /* flash vert émeraude au succès */
@@ -305,7 +305,7 @@
 
     /* bascule bas de carte */
     .switch { margin: 10px 0 0; text-align: center; font-size: 14px; color: rgba(255, 255, 255, .7); }
-    .switch button { background: none; border: 0; cursor: pointer; font: inherit; font-size: 14px; font-weight: 700; color: #7ff4ff; padding: 2px 4px; }
+    .switch button { background: none; border: 0; cursor: pointer; font: inherit; font-size: 14px; font-weight: 700; color: #ffd482; padding: 2px 4px; }
     .switch button:hover { text-decoration: underline; }
 
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -318,15 +318,15 @@
     .home {
       position: fixed; inset: 0; z-index: 40;
       display: grid; place-items: center; padding: 24px; text-align: center;
-      background: radial-gradient(125% 90% at 50% -10%, #12203f 0%, #070a14 68%);
+      background: radial-gradient(125% 90% at 50% -10%, #241a0e 0%, #070a14 68%);
       animation: homeIn .5s ease both;
     }
     .home__inner { display: flex; flex-direction: column; align-items: center; gap: 14px; }
     .home__logo { width: clamp(72px, 18vw, 92px); animation: cineUp .6s .12s var(--ease-cine) both; }
     .home__logo img { width: 100%; height: auto; display: block; }
-    .home__hi { margin: 0; font-weight: 800; letter-spacing: -.01em; color: #fff; font-size: clamp(26px, 7vw, 40px); text-shadow: 0 0 18px rgba(56, 240, 255, .25); animation: cineUp .6s .3s var(--ease-cine) both, homeGlitch .6s .95s 1; }
+    .home__hi { margin: 0; font-weight: 800; letter-spacing: -.01em; color: #fff; font-size: clamp(26px, 7vw, 40px); text-shadow: 0 0 18px rgba(246, 166, 60, .25); animation: cineUp .6s .3s var(--ease-cine) both, homeGlitch .6s .95s 1; }
     .home__sub { margin: 0; color: rgba(255, 255, 255, .6); font-size: 15px; animation: cineUp .6s .52s var(--ease-cine) both; }
-    .home__spin { width: 26px; height: 26px; margin-top: 4px; border: 2.5px solid rgba(255, 255, 255, .14); border-top-color: #22d3ee; border-radius: 50%; animation: spin .7s linear infinite, cineFade .5s .7s var(--ease-cine) both; }
+    .home__spin { width: 26px; height: 26px; margin-top: 4px; border: 2.5px solid rgba(255, 255, 255, .14); border-top-color: #ef8f2a; border-radius: 50%; animation: spin .7s linear infinite, cineFade .5s .7s var(--ease-cine) both; }
     @keyframes homeIn { from { opacity: 0; } to { opacity: 1; } }
 
     /* Panneau BD (magenta -> violet -> cyan) à BORD D'ENCRE EN ZIG-ZAG (papier déchiré) + trame de points */
@@ -334,7 +334,7 @@
       position: fixed; top: 0; left: -20%; width: 140%; height: 100%;
       z-index: 70; pointer-events: none;
       transform: translateX(-150%);
-      background: linear-gradient(110deg, #ff2d6e 0%, #b026ff 48%, #22d3ee 100%);
+      background: linear-gradient(110deg, #ffd9a0 0%, #f6a63c 48%, #ef8f2a 100%);
       clip-path: polygon(
         0% 0%, 100% 0%,
         94% 7%, 100% 14%, 94% 21%, 100% 29%, 94% 36%, 100% 43%, 94% 50%, 100% 57%, 94% 64%, 100% 71%, 94% 79%, 100% 86%, 94% 93%, 100% 100%,
@@ -407,17 +407,17 @@
     /* glitch RGB très subtil (1 à 1,5 px) qui se stabilise : ne joue que sur le span du titre + text-shadow */
     @keyframes titleGlitch {
       0%, 100% { transform: translate(0, 0); }
-      20% { transform: translate(-1.5px, 0); text-shadow: 1.5px 0 rgba(255, 0, 110, .75), -1.5px 0 rgba(56, 240, 255, .75); }
-      40% { transform: translate(1.5px, 0);  text-shadow: -1.5px 0 rgba(255, 0, 110, .65), 1.5px 0 rgba(56, 240, 255, .65); }
-      60% { transform: translate(-1px, 0);   text-shadow: 1px 0 rgba(255, 0, 110, .5), -1px 0 rgba(56, 240, 255, .5); }
+      20% { transform: translate(-1.5px, 0); text-shadow: 1.5px 0 rgba(255, 0, 110, .75), -1.5px 0 rgba(246, 166, 60, .75); }
+      40% { transform: translate(1.5px, 0);  text-shadow: -1.5px 0 rgba(255, 0, 110, .65), 1.5px 0 rgba(246, 166, 60, .65); }
+      60% { transform: translate(-1px, 0);   text-shadow: 1px 0 rgba(255, 0, 110, .5), -1px 0 rgba(246, 166, 60, .5); }
       80% { transform: translate(1px, 0); }
     }
     /* glitch du message d'arrivée « Bonjour {prénom} » : uniquement text-shadow (jamais la lisibilité) */
     @keyframes homeGlitch {
-      0%, 100% { text-shadow: 0 0 18px rgba(56, 240, 255, .25); }
-      25% { text-shadow: -2px 0 rgba(255, 0, 110, .8), 2px 0 rgba(56, 240, 255, .8); }
-      50% { text-shadow: 2px 0 rgba(255, 0, 110, .7), -2px 0 rgba(56, 240, 255, .7); }
-      75% { text-shadow: -1px 0 rgba(255, 0, 110, .55), 1px 0 rgba(56, 240, 255, .55); }
+      0%, 100% { text-shadow: 0 0 18px rgba(246, 166, 60, .25); }
+      25% { text-shadow: -2px 0 rgba(255, 0, 110, .8), 2px 0 rgba(246, 166, 60, .8); }
+      50% { text-shadow: 2px 0 rgba(255, 0, 110, .7), -2px 0 rgba(246, 166, 60, .7); }
+      75% { text-shadow: -1px 0 rgba(255, 0, 110, .55), 1px 0 rgba(246, 166, 60, .55); }
     }
     @media (prefers-reduced-motion: reduce) {
       .glass, .logo, .title, .title__glitch, .authform,
