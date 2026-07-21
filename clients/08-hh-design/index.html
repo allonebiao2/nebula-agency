@@ -210,6 +210,38 @@ h1,h2,h3{margin:0;font-weight:400;line-height:1.04}
 .piece-view{position:absolute;bottom:13px;right:13px;z-index:1;font-family:var(--sans);font-weight:600;font-size:.66rem;letter-spacing:.14em;
   text-transform:uppercase;color:var(--espresso);background:var(--braise2);padding:9px 14px;opacity:0;transform:translateY(8px);transition:.35s var(--ease)}
 .piece:hover .piece-view{opacity:1;transform:none}
+
+/* ---------- sections vidéo « profondeur » (scroll-scrub currentTime + zoom, on entre dans la vidéo) ---------- */
+.vscrub{position:relative;height:100svh;overflow:hidden;background:var(--espresso);isolation:isolate;color:var(--cream);padding:0}
+.vscrub-bg{position:absolute;inset:0;z-index:0;overflow:hidden;will-change:transform;transform-origin:50% 46%}
+.vscrub-poster,.vscrub-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.vscrub-vid{opacity:0;transition:opacity 1s var(--ease)}
+.vscrub.vid-on .vscrub-vid{opacity:1}
+.vscrub.vid-on .vscrub-poster{opacity:0;transition:opacity 1s var(--ease)}
+.vscrub-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;background:
+  linear-gradient(180deg,rgba(18,12,7,.8) 0%,rgba(18,12,7,.46) 42%,rgba(18,12,7,.74) 100%),
+  radial-gradient(120% 90% at 80% 14%,rgba(240,105,42,.15),transparent 55%)}
+.vscrub-in{position:relative;z-index:2;height:100%;display:flex;align-items:center;width:min(100% - 44px,var(--maxw));margin-inline:auto}
+.vscrub .eye{color:var(--gold2)}.vscrub .eye::before{background:var(--gold2)}
+.vscrub h2{color:var(--cream)}
+/* process : titre + 4 étapes qui montent en profondeur */
+.proc2 .p2-head{max-width:60ch;margin-bottom:clamp(30px,5vh,52px)}
+.proc2 .p2-head h2{margin:14px 0 0}.proc2 .p2-head p{margin:18px 0 0}
+.proc2 .p2-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:26px}
+.proc2 .p2-step{border-top:1px solid rgba(240,105,42,.4);padding-top:20px}
+.proc2 .p2-step .num{font-family:var(--serif);font-weight:500;font-size:2.3rem;color:var(--braise2);line-height:1}
+.proc2 .p2-step h3{font-family:var(--serif);font-weight:500;font-size:1.5rem;color:var(--cream);margin:10px 0 8px}
+.proc2 .p2-step p{color:rgba(239,230,214,.72);font-size:.92rem;line-height:1.6;margin:0}
+@media(max-width:860px){.proc2 .p2-steps{grid-template-columns:repeat(2,1fr);gap:22px}}
+@media(max-width:520px){.proc2 .p2-steps{grid-template-columns:1fr}}
+/* « Et si c'était chez vous ? » : projection + CTA magnétique */
+.chez .vscrub-in{justify-content:center;text-align:center}
+.chez .eye{justify-content:center}
+.chez h2{max-width:16ch;margin:16px auto 0}
+.chez p{color:rgba(239,230,214,.85);max-width:52ch;margin:22px auto 0;font-size:clamp(1.04rem,1.7vw,1.24rem);line-height:1.7}
+.chez .hero-cta{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:34px}
+.btn-braise{background:var(--braise2);color:#1c1108;border-color:var(--braise2)}
+.btn-braise:hover{background:var(--gold2);color:#1c1108;border-color:var(--gold2);transform:translateY(-2px);box-shadow:0 16px 34px -16px rgba(240,105,42,.75)}
 .piece-body{padding:22px 22px 26px;border-top:1px solid var(--line)}
 .piece-name{font-family:var(--serif);font-weight:500;font-size:1.9rem;color:var(--ink);line-height:1}
 .piece-type{font-family:var(--sans);font-weight:600;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-top:9px}
@@ -583,19 +615,49 @@ h1,h2,h3{margin:0;font-weight:400;line-height:1.04}
   </div>
 </section>
 
-<!-- SUR-MESURE -->
-<section class="sec proc" id="surmesure">
-  <div class="wrap">
-    <div class="shead reveal">
-      <span class="eye">Sur-mesure</span>
-      <h2 class="h-xl">Votre meuble, <span class="it gold">pensé pour vous.</span></h2>
-      <p class="lead">Une envie précise, une dimension particulière, un bois de cœur&nbsp;? Nous concevons et fabriquons la pièce qui s'intègre parfaitement chez vous.</p>
+<!-- SUR-MESURE — vidéo making-of défilante (on entre dans l'atelier) -->
+<section class="sec vscrub proc2" id="surmesure">
+  <div class="vscrub-bg" aria-hidden="true">
+    <img class="vscrub-poster" src="assets/images/hero/process.webp" alt="">
+    <video class="vscrub-vid" muted loop playsinline preload="auto" poster="assets/images/hero/process.webp"><source src="assets/videos/process.mp4" type="video/mp4"></video>
+    <div class="vscrub-scrim"></div>
+  </div>
+  <div class="vscrub-in">
+    <div style="width:100%">
+      <div class="p2-head">
+        <span class="eye" data-rise>Sur-mesure</span>
+        <h2 class="h-xl" data-rise>Votre meuble, <span class="it" style="color:var(--braise2)">pensé pour vous.</span></h2>
+        <p class="lead" data-rise style="color:rgba(239,230,214,.8)">Une envie précise, une dimension particulière, un bois de cœur&nbsp;? Nous concevons et fabriquons la pièce qui s'intègre parfaitement chez vous.</p>
+      </div>
+      <div class="p2-steps">
+        <div class="p2-step" data-rise><div class="num">01</div><h3>Échange</h3><p>On parle de votre espace, de vos usages et de vos goûts, sur WhatsApp ou en atelier.</p></div>
+        <div class="p2-step" data-rise><div class="num">02</div><h3>Conception</h3><p>Choix du bois, de la finition et des dimensions. On vous propose le dessin de la pièce.</p></div>
+        <div class="p2-step" data-rise><div class="num">03</div><h3>Fabrication</h3><p>Nos artisans façonnent votre meuble à la main, avec un soin porté à chaque détail.</p></div>
+        <div class="p2-step" data-rise><div class="num">04</div><h3>Livraison</h3><p>Votre pièce unique est livrée, prête à sublimer votre intérieur pour longtemps.</p></div>
+      </div>
     </div>
-    <div class="steps reveal d1">
-      <div class="step"><div class="num">01</div><h3>Échange</h3><p>On parle de votre espace, de vos usages et de vos goûts, sur WhatsApp ou en atelier.</p></div>
-      <div class="step"><div class="num">02</div><h3>Conception</h3><p>Choix du bois, de la finition et des dimensions. On vous propose le dessin de la pièce.</p></div>
-      <div class="step"><div class="num">03</div><h3>Fabrication</h3><p>Nos artisans façonnent votre meuble à la main, avec un soin porté à chaque détail.</p></div>
-      <div class="step"><div class="num">04</div><h3>Livraison</h3><p>Votre pièce unique est livrée, prête à sublimer votre intérieur pour longtemps.</p></div>
+  </div>
+</section>
+
+<!-- ET SI C'ÉTAIT CHEZ VOUS — projection immersive (on entre dans l'intérieur) + CTA -->
+<section class="sec vscrub chez" id="chezvous">
+  <div class="vscrub-bg" aria-hidden="true">
+    <img class="vscrub-poster" src="assets/images/hero/interior.webp" alt="">
+    <video class="vscrub-vid" muted loop playsinline preload="auto" poster="assets/images/hero/interior.webp"><source src="assets/videos/interior.mp4" type="video/mp4"></video>
+    <div class="vscrub-scrim"></div>
+  </div>
+  <div class="vscrub-in">
+    <div style="width:100%">
+      <span class="eye" data-rise>La projection</span>
+      <h2 class="disp" data-rise>Et si c'était <span style="color:var(--braise2)">chez vous</span>&nbsp;?</h2>
+      <p data-rise>Imaginez la pièce qui manque à votre salon, votre chambre ou votre bureau. On la dessine, on la façonne à la main, on vous la livre. Unique, et rien qu'à vous.</p>
+      <div class="hero-cta" data-rise>
+        <a class="btn btn-braise" href="https://wa.me/2290162686768?text=Bonjour%20HH%20DESIGN%2C%20je%20veux%20un%20meuble%20qui%20change%20mon%20int%C3%A9rieur.%20Pouvez-vous%20m%27aider%20%3F" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2Zm5.5 14.2c-.2.6-1.2 1.2-1.7 1.2-.4.1-1 .1-1.6-.1-.4-.1-.9-.3-1.5-.5-2.6-1.1-4.3-3.8-4.4-4-.1-.2-1-1.4-1-2.6 0-1.2.6-1.8.9-2 .2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .5l-.4.6c-.1.2-.3.3-.1.6.1.3.7 1.1 1.4 1.7.9.8 1.6 1 1.9 1.2.2 0 .4 0 .5-.2l.6-.7c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.2.5.3.1.2.1.7-.1 1.2Z"/></svg>
+          Demander mon meuble
+        </a>
+        <a class="btn btn-ghost" href="#collection">Voir la collection</a>
+      </div>
     </div>
   </div>
 </section>
@@ -797,15 +859,14 @@ document.getElementById('cform').addEventListener('submit',function(e){
 /* ===== année ===== */
 document.getElementById('yr').textContent=new Date().getFullYear();
 
-/* ===== hero : vidéo drone atelier (autoplay muet, démarre au chargement) ===== */
-(function(){
-  var v=document.querySelector('.hero-vid'),hero=document.getElementById('hero');
-  if(!v||!hero||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
-  function go(){var p=v.play&&v.play();if(p&&p.catch)p.catch(function(){});}
-  v.addEventListener('loadeddata',function(){hero.classList.add('vid-on');go();},{once:true});
-  v.addEventListener('canplay',function(){hero.classList.add('vid-on');go();},{once:true});
-  go();
-})();
+/* ===== Repli : si GSAP absent (CDN bloqué), les vidéos jouent en boucle ; sinon GSAP les pilote au scroll ===== */
+addEventListener('load',function(){ setTimeout(function(){
+  if((window.gsap&&window.ScrollTrigger)||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  document.querySelectorAll('.hero-vid,.vscrub-vid').forEach(function(v){
+    var s=v.closest('.hero,.vscrub'); v.loop=true;v.muted=true;
+    var p=v.play&&v.play(); if(p&&p.then)p.then(function(){if(s)s.classList.add('vid-on');}).catch(function(){});
+  });
+},450); });
 </script>
 
 <!-- GSAP ScrollTrigger — pin & scrub héro + révélation produits -->
@@ -816,28 +877,57 @@ document.getElementById('yr').textContent=new Date().getFullYear();
   if(!window.gsap||!window.ScrollTrigger)return;                 /* repli : révélations CSS/IO déjà actives */
   if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
   gsap.registerPlugin(ScrollTrigger);
+
+  /* révèle chaque vidéo (poster -> vidéo) dès qu'une frame est prête */
+  document.querySelectorAll('.hero-vid,.vscrub-vid').forEach(function(v){
+    var sec=v.closest('.hero,.vscrub'); if(!sec)return;
+    var on=function(){sec.classList.add('vid-on');};
+    v.addEventListener('loadeddata',on,{once:true}); v.addEventListener('canplay',on,{once:true});
+    try{v.load();}catch(e){}
+  });
+  /* pilote le temps de la vidéo par le scroll (scrub currentTime) = on « avance » dans la vidéo en défilant */
+  function driveVideo(tl,vid,total){
+    if(!vid)return; try{vid.pause();}catch(e){}
+    var prox={t:0};
+    tl.to(prox,{t:1,ease:"none",duration:total,onUpdate:function(){
+      var d=vid.duration; if(d&&isFinite(d)){ try{vid.currentTime=Math.min(prox.t*(d-0.06),d-0.06);}catch(e){} }
+    }},0);
+  }
+
   var mm=gsap.matchMedia();
   mm.add("(min-width:1px)",function(){
-    /* INTRO à l'arrivée : le héro n'est jamais vide (accroche + titre montent tout de suite) */
+    /* HÉRO : intro (titre monte tout de suite) puis pin&scrub — le reste monte + la VIDÉO avance + zoom (profondeur) */
     var intro=gsap.timeline({delay:.25});
     intro.from(".hero .eye",{y:40,autoAlpha:0,duration:.7,ease:"power3.out"})
          .from(".hero h1 .ln>span",{yPercent:120,duration:1,stagger:.14,ease:"power4.out"},"-=.3");
-    /* HÉRO — pin & scrub : le scroll fait monter le reste, coordonné, puis libère */
-    var tl=gsap.timeline({scrollTrigger:{trigger:".hero",start:"top top",end:"+=140%",pin:true,scrub:1,anticipatePin:1}});
-    tl.from(".hero-spark",{scaleX:0,autoAlpha:0,duration:.7})
-      .from(".hero-sub",{y:60,autoAlpha:0,duration:.7},"-=.3")
-      .from(".hero-pills .hero-pill",{y:70,autoAlpha:0,duration:.7,stagger:.14},"-=.35")
-      .from(".hero-cta",{y:60,autoAlpha:0,duration:.7},"-=.35")
-      .to(".hero-vid-wrap",{scale:1.08,ease:"none",duration:3},0)
-      .to(".hero-scroll",{autoAlpha:0,duration:.4},0);
-    /* PRODUITS — montent du bas à l'entrée (GSAP prend le relais de l'IntersectionObserver) */
+    var hero=gsap.timeline({scrollTrigger:{trigger:".hero",start:"top top",end:"+=180%",pin:true,scrub:1,anticipatePin:1}});
+    hero.from(".hero-spark",{scaleX:0,autoAlpha:0,duration:.7})
+        .from(".hero-sub",{y:60,autoAlpha:0,duration:.7},"-=.3")
+        .from(".hero-pills .hero-pill",{y:70,autoAlpha:0,duration:.7,stagger:.14},"-=.35")
+        .from(".hero-cta",{y:60,autoAlpha:0,duration:.7},"-=.35")
+        .to(".hero-scroll",{autoAlpha:0,duration:.4},0);
+    var ht=hero.duration()||1;
+    hero.to(".hero-vid-wrap",{scale:1.16,ease:"none",duration:ht},0);
+    driveVideo(hero,document.querySelector('.hero-vid'),ht);
+
+    /* SECTIONS PROFONDEUR (process + « chez vous ») : la vidéo AVANCE au scroll, on zoome dedans, les infos montent */
+    gsap.utils.toArray(".vscrub").forEach(function(sec){
+      var items=sec.querySelectorAll('[data-rise]');
+      var t=gsap.timeline({scrollTrigger:{trigger:sec,start:"top top",end:"+=170%",pin:true,scrub:1,anticipatePin:1}});
+      if(items.length) t.from(items,{y:80,autoAlpha:0,duration:1,stagger:.55,ease:"power3.out"},.12);
+      var td=t.duration()||1;
+      t.to(sec.querySelector('.vscrub-bg'),{scale:1.2,ease:"none",duration:td},0);
+      driveVideo(t,sec.querySelector('.vscrub-vid'),td);
+    });
+
+    /* PRODUITS : montent du bas à l'entrée */
     var pieces=gsap.utils.toArray(".piece");
     pieces.forEach(function(el){el.classList.remove("reveal","in");});
     gsap.set(pieces,{autoAlpha:0,y:90});
     ScrollTrigger.batch(pieces,{start:"top 90%",onEnter:function(b){gsap.to(b,{y:0,autoAlpha:1,duration:.9,ease:"power3.out",stagger:.1,overwrite:true});}});
     return function(){ gsap.set(pieces,{clearProps:"opacity,visibility,transform"}); };
   });
-  addEventListener("load",function(){ setTimeout(function(){ScrollTrigger.refresh();},200); });
+  addEventListener("load",function(){ setTimeout(function(){ScrollTrigger.refresh();},250); });
 })();
 </script>
 </body>
