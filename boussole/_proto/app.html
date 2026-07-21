@@ -954,6 +954,24 @@
       .fab__lbl { bottom: calc(33px + env(safe-area-inset-bottom)); }
     }
     @media (prefers-reduced-motion: reduce) { .depth__halo { animation: none !important; } }
+    /* ===== VAGUE 2 : gérer ses ventes et sorties (détail, modification, suppression) ===== */
+    .salerow { cursor: pointer; }
+    .salerow:active { transform: scale(.985); }
+    .salerow__right { display: flex; align-items: center; gap: 8px; }
+    .salerow__more { color: rgba(255, 255, 255, .4); font-size: 17px; line-height: 1; }
+    .exprow { cursor: pointer; }
+    .is-going { opacity: 0 !important; transform: translateX(-16px) !important; transition: opacity .22s ease, transform .22s ease !important; }
+    .vdetail { display: flex; flex-direction: column; gap: 8px; margin: 2px 0 8px; }
+    .vdetail__row { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; color: rgba(255, 255, 255, .8); }
+    .vdetail__row b { font-variant-numeric: tabular-nums; }
+    .vdetail__tot { display: flex; justify-content: space-between; padding-top: 10px; margin-top: 2px; border-top: 1px solid rgba(255, 255, 255, .12); font-weight: 800; font-size: 16px; color: #fff; }
+    .sheet__del { width: 100%; margin-top: 10px; min-height: 50px; border: 0; border-radius: 14px; cursor: pointer; font: inherit; font-weight: 800; font-size: 15px; color: #fff;
+      background: linear-gradient(180deg, #ff5a76, #e11d48); box-shadow: 0 10px 24px -10px rgba(225, 29, 72, .55); transition: transform .1s ease, filter .2s ease; }
+    .sheet__del:active { transform: scale(.98); }
+    .sheet__del.is-armed { filter: brightness(1.18); animation: armPulse 1s ease-in-out infinite; }
+    @keyframes armPulse { 0%, 100% { box-shadow: 0 10px 24px -10px rgba(225, 29, 72, .55); } 50% { box-shadow: 0 10px 30px -4px rgba(225, 29, 72, .9); } }
+    .sheet__keep { width: 100%; margin-top: 8px; min-height: 46px; border: 1px solid rgba(255, 255, 255, .16); background: rgba(255, 255, 255, .05); color: rgba(255, 255, 255, .85); border-radius: 14px; cursor: pointer; font: inherit; font-weight: 700; }
+    .fab--green { color: #04170e; background: radial-gradient(120% 120% at 30% 25%, #7bf3b5, #10b981); box-shadow: 0 12px 26px -8px rgba(16, 185, 129, .6), 0 0 24px -4px rgba(16, 185, 129, .55); }
   </style>
 </head>
 <body>
@@ -1317,6 +1335,7 @@
       return '<div class="screen expenses" style="--sc:#e11d48">' +
           '<span class="screen__tag">Dépenses</span>' +
           '<h1 class="screen__title">Ce qui sort</h1>' +
+          '<p class="screen__sub" style="margin-top:4px">Touche une sortie pour la modifier ou la supprimer.</p>' +
           '<div class="exp-total">Sorties du business<b data-exptotal>' + vitalFmt(expTotal()) + ' F</b></div>' +
           '<div class="exp-perso" data-expperso style="display:' + (pt > 0 ? 'block' : 'none') + '">Poche perso (tes retraits) : <b>' + vitalFmt(pt) + ' F</b></div>' +
           '<div class="explist">' + rows + '</div>' +
@@ -1325,7 +1344,7 @@
           '<div class="sheet-scrim" data-sheetclose></div>' +
           '<div class="sheet sheet--tall" data-sheet>' +
             '<div class="sheet__grip"></div>' +
-            '<h3 class="sheet__title">Nouvelle sortie</h3>' +
+            '<h3 class="sheet__title" data-sheettitle>Nouvelle sortie</h3>' +
             '<div class="seg seg--kind" data-kindseg><button class="seg-btn is-on" data-k="depense">Dépense</button><button class="seg-btn" data-k="achat">Achat</button></div>' +
             '<input class="sheet__amt" data-amt type="number" inputmode="numeric" placeholder="0 F">' +
             '<input class="sheet__txt" data-explib type="text" placeholder="Libellé (optionnel, ex : Sac de riz)" style="margin-top:10px">' +
@@ -1334,6 +1353,7 @@
             '<div class="freqrow" data-freqrow style="display:none">' + freqs + '</div>' +
             '<button class="toggle" data-expperso-t><span class="toggle__dot"></span>Poche perso (dépense personnelle)</button>' +
             '<button class="sheet__add" data-addexp>Ajouter</button>' +
+            '<button class="sheet__del" data-delexp style="display:none">Supprimer cette sortie</button>' +
           '</div>' +
         '</div>';
     }
@@ -1359,9 +1379,11 @@
       const sheet = scr.querySelector('[data-sheet]'), scrim = scr.querySelector('[data-sheetclose]'), amt = scr.querySelector('[data-amt]'), lib = scr.querySelector('[data-explib]');
       const freqRow = scr.querySelector('[data-freqrow]'), recBtn = scr.querySelector('[data-exprec]'), persoBtn = scr.querySelector('[data-expperso-t]');
       let selCat = 'Fournitures', selKind = 'depense', selRec = false, selFreq = 'mois', selPerso = false;
+      const shTitle = scr.querySelector('[data-sheettitle]'), addBtn = scr.querySelector('[data-addexp]'), delBtn = scr.querySelector('[data-delexp]');
+      let editId = null, delArmT = 0;
       const open = () => { sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick(); setTimeout(() => { try { amt.focus(); } catch (_) {} }, 220); };
       const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
-      scr.querySelector('[data-fab]').addEventListener('click', open);
+      scr.querySelector('[data-fab]').addEventListener('click', () => { resetSheet(); open(); });
       scrim.addEventListener('click', close);
       const chips = scr.querySelectorAll('.catchip');
       chips.forEach((c) => c.addEventListener('click', () => { chips.forEach((x) => x.classList.remove('is-sel')); c.classList.add('is-sel'); selCat = c.dataset.cat; playPop(true); }));
@@ -1371,8 +1393,41 @@
       recBtn.addEventListener('click', () => { selRec = !selRec; recBtn.classList.toggle('is-on', selRec); freqRow.style.display = selRec ? 'flex' : 'none'; if (selRec) { freqChips.forEach((x) => x.classList.remove('is-sel')); const f0 = scr.querySelector('[data-freq="' + selFreq + '"]'); if (f0) f0.classList.add('is-sel'); } playPop(selRec); });
       freqChips.forEach((c) => c.addEventListener('click', () => { freqChips.forEach((x) => x.classList.remove('is-sel')); c.classList.add('is-sel'); selFreq = c.dataset.freq; playPop(true); }));
       persoBtn.addEventListener('click', () => { selPerso = !selPerso; persoBtn.classList.toggle('is-on', selPerso); playPop(selPerso); });
-      scr.querySelector('[data-addexp]').addEventListener('click', () => {
+      function setCat(c) { chips.forEach((x) => x.classList.toggle('is-sel', x.dataset.cat === c)); selCat = c; }
+      function setKind(k) { scr.querySelectorAll('[data-k]').forEach((x) => x.classList.toggle('is-on', x.dataset.k === k)); selKind = k; }
+      function setRec(r, f) { selRec = r; selFreq = f || 'mois'; recBtn.classList.toggle('is-on', r); freqRow.style.display = r ? 'flex' : 'none'; freqChips.forEach((x) => x.classList.toggle('is-sel', x.dataset.freq === selFreq)); }
+      function setPerso(p) { selPerso = p; persoBtn.classList.toggle('is-on', p); }
+      function disarmDel() { if (delBtn) { delBtn.classList.remove('is-armed'); delBtn.textContent = 'Supprimer cette sortie'; } clearTimeout(delArmT); }
+      function resetSheet() { editId = null; shTitle.textContent = 'Nouvelle sortie'; addBtn.textContent = 'Ajouter'; if (delBtn) delBtn.style.display = 'none'; disarmDel(); amt.value = ''; lib.value = ''; setCat('Fournitures'); setKind('depense'); setRec(false, 'mois'); setPerso(false); }
+      function openEdit(d) {
+        editId = d.id; shTitle.textContent = 'Modifier la sortie'; addBtn.textContent = 'Enregistrer';
+        if (delBtn) delBtn.style.display = 'block'; disarmDel();
+        amt.value = d.montant; lib.value = (d.lib === d.cat ? '' : (d.lib || ''));
+        setCat(CATS[d.cat] ? d.cat : 'Fournitures'); setKind(d.kind || 'depense'); setRec(!!d.recurrent, d.freq); setPerso(!!d.perso); open();
+      }
+      scr.querySelector('.explist').addEventListener('click', (e) => {
+        const row = e.target.closest('.exprow'); if (!row) return;
+        const d = (SM.depenses || []).find((x) => x.id === row.dataset.id); if (d) openEdit(d);
+      });
+      if (delBtn) delBtn.addEventListener('click', () => {
+        if (!delBtn.classList.contains('is-armed')) {   // confirmation douce : deux touches
+          delBtn.classList.add('is-armed'); delBtn.textContent = 'Confirmer la suppression ?'; playPop(false);
+          clearTimeout(delArmT); delArmT = setTimeout(disarmDel, 3000); return;
+        }
+        const id = editId; close(); resetSheet();
+        const row = scr.querySelector('.exprow[data-id="' + id + '"]');
+        if (row) { removeExp(row); row.classList.add('is-going'); playSwoosh(); }
+        setTimeout(() => { if (scr.isConnected) { view.innerHTML = depensesHTML(); bindDepenses(); } }, 240);
+      });
+      addBtn.addEventListener('click', () => {
         const v = Math.round(+amt.value || 0); if (v <= 0) { try { amt.focus(); } catch (_) {} return; }
+        if (editId) {   // modification d'une sortie existante
+          const d = (SM.depenses || []).find((x) => x.id === editId); if (!d) { close(); resetSheet(); return; }
+          d.montant = v; d.lib = (lib.value || '').trim() || selCat; d.cat = selCat; d.kind = selKind;
+          d.recurrent = selRec; if (selRec) d.freq = selFreq; d.perso = selPerso;
+          smSave(); playSuccess(); close(); resetSheet();
+          view.innerHTML = depensesHTML(); bindDepenses(); return;
+        }
         const d = { id: 'd' + Date.now(), lib: (lib.value || '').trim() || selCat, cat: selCat, montant: v, when: "À l'instant", ts: Date.now(), kind: selKind, recurrent: selRec, freq: selFreq, perso: selPerso };
         SM.depenses.unshift(d); smSave();
         const list = scr.querySelector('.explist'); list.insertAdjacentHTML('afterbegin', expRow(d, 0));
@@ -1557,14 +1612,64 @@
         const n = v.items.reduce((s, x) => s + x.qty, 0);
         const items = v.items.map((it) => it.qty + '× ' + it.nom).join(', ');
         const badge = v.mode === 'momo' ? '<span class="paybadge paybadge--momo">Mobile Money</span>' : v.mode === 'credit' ? '<span class="paybadge paybadge--credit">Crédit</span>' : '<span class="paybadge paybadge--esp">Espèces</span>';
-        return '<div class="salerow" style="--i:' + i + '"><div class="salerow__top"><span class="salerow__cnt">' + n + ' article' + (n > 1 ? 's' : '') + '</span><span class="salerow__amt">' + fF(v.total) + '</span></div><div class="salerow__items">' + items + '</div><div class="salerow__meta">' + badge + '<span>' + relTime(v.ts) + '</span></div></div>';
+        return '<div class="salerow" style="--i:' + i + '" data-vid="' + v.id + '"><div class="salerow__top"><span class="salerow__cnt">' + n + ' article' + (n > 1 ? 's' : '') + '</span><span class="salerow__right"><span class="salerow__amt">' + fF(v.total) + '</span><span class="salerow__more" aria-hidden="true">&#8942;</span></span></div><div class="salerow__items">' + items + '</div><div class="salerow__meta">' + badge + '<span>' + relTime(v.ts) + '</span></div></div>';
       }).join('');
       return '<div class="screen" style="--sc:#34d399"><span class="screen__tag">Mes ventes</span><h1 class="screen__title">Tes ventes</h1>' +
         '<div class="sales-total">Encaissé aujourd\'hui<b>' + fF(salesToday()) + '</b></div>' +
-        (list.length ? '<div class="saleslist">' + rows + '</div>' : '<p class="pos__empty">Aucune vente pour l\'instant. Va à <b>La caisse</b> pour encaisser ta première vente.</p>') +
-        iaBanner() + '</div>';
+        (list.length ? '<p class="screen__sub" style="margin-top:4px">Touche une vente pour la voir en détail ou la supprimer.</p><div class="saleslist">' + rows + '</div>' : '<p class="pos__empty">Aucune vente pour l\'instant. Va à <b>La caisse</b> pour encaisser ta première vente.</p>') +
+        iaBanner() +
+        '<span class="fab__lbl">Encaisser</span><button class="fab fab--green" data-goto="caisse" aria-label="Aller à la caisse">+</button>' +
+        '<div class="sheet-scrim" data-vscrim></div>' +
+        '<div class="sheet" data-vsheet>' +
+          '<div class="sheet__grip"></div>' +
+          '<h3 class="sheet__title">Détail de la vente</h3>' +
+          '<div class="vdetail" data-vbody></div>' +
+          '<button class="sheet__del" data-vdel>Supprimer cette vente</button>' +
+          '<button class="sheet__keep" data-vkeep>Garder</button>' +
+        '</div>' +
+      '</div>';
     }
-    function bindVentes() {}
+    function removeSale(id) {
+      const i = (SM.ventes || []).findIndex((v) => v.id === id); if (i < 0) return;
+      const sale = SM.ventes[i];
+      (sale.items || []).forEach((it) => {   // restitue le stock des produits physiques (repérés par nom)
+        const p = SM.stock.find((x) => x.nom === it.nom && x.type === 'physique'); if (p) p.qty += it.qty;
+      });
+      SM.ventes.splice(i, 1); smSave();
+    }
+    function bindVentes() {
+      const scr = view.querySelector('.screen'); if (!scr) return;
+      const sheet = scr.querySelector('[data-vsheet]'), scrim = scr.querySelector('[data-vscrim]'); if (!sheet) return;
+      const body = sheet.querySelector('[data-vbody]'), del = sheet.querySelector('[data-vdel]');
+      let curId = null, armT = 0;
+      const disarm = () => { del.classList.remove('is-armed'); del.textContent = 'Supprimer cette vente'; clearTimeout(armT); };
+      const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); disarm(); curId = null; };
+      const list = scr.querySelector('.saleslist');
+      if (list) list.addEventListener('click', (e) => {
+        const row = e.target.closest('.salerow[data-vid]'); if (!row) return;
+        const v = (SM.ventes || []).find((x) => x.id === row.dataset.vid); if (!v) return;
+        curId = v.id;
+        const lines = (v.items || []).map((it) => '<div class="vdetail__row"><span>' + it.qty + '&times; ' + it.nom + '</span><b>' + fF(it.prix * it.qty) + '</b></div>').join('');
+        const mode = v.mode === 'momo' ? 'Mobile Money' : v.mode === 'credit' ? 'Crédit' : 'Espèces';
+        body.innerHTML = lines +
+          '<div class="vdetail__row"><span>' + mode + '</span><span>' + relTime(v.ts) + '</span></div>' +
+          '<div class="vdetail__tot"><span>Total</span><b>' + fF(v.total) + '</b></div>';
+        sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick();
+      });
+      scrim.addEventListener('click', close);
+      sheet.querySelector('[data-vkeep]').addEventListener('click', () => { playClick(); close(); });
+      del.addEventListener('click', () => {
+        if (!del.classList.contains('is-armed')) {   // confirmation douce : deux touches sur le même bouton
+          del.classList.add('is-armed'); del.textContent = 'Confirmer la suppression ?'; playPop(false);
+          clearTimeout(armT); armT = setTimeout(disarm, 3000); return;
+        }
+        const id = curId; close();
+        const row = scr.querySelector('.salerow[data-vid="' + id + '"]');
+        removeSale(id); playSwoosh();
+        if (row) row.classList.add('is-going');
+        setTimeout(() => { if (scr.isConnected) { view.innerHTML = ventesHTML(); bindVentes(); } }, 240);
+      });
+    }
 
     /* ===== STATISTIQUES ===== */
     function statsHTML() {
