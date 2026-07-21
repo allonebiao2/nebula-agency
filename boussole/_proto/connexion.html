@@ -1,9 +1,17 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-skin="sv">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="dark">
+  <script>
+    try {
+      var sp = new URLSearchParams(location.search).get('skin');
+      if (sp) { var on = !(sp === 'off' || sp === 'classic' || sp === '0' || sp === 'none'); localStorage.setItem('boussole:skin', on ? 'sv' : 'classic'); }
+      var sk = localStorage.getItem('boussole:skin');
+      document.documentElement.dataset.skin = (sk === 'classic' || sk === 'off') ? '' : 'sv';
+    } catch (e) { document.documentElement.dataset.skin = 'sv'; }
+  </script>
   <title>Boussole · Connexion (aperçu point 1)</title>
   <link rel="icon" href="../assets/icons/favicon-48.png" type="image/png">
   <style>
@@ -435,6 +443,50 @@
     @media (prefers-reduced-motion: reduce) {
       .glass, .auth__bg img { animation: none; }
     }
+
+    /* =====================================================================
+       V.10 — SKIN « SPIDER-VERSE » (comic imprimé) · connexion · html[data-skin="sv"]
+       ===================================================================== */
+    @font-face{ font-family:'Anton'; src:url('../assets/fonts/Anton.woff2') format('woff2'); font-weight:400; font-display:swap; }
+    html[data-skin="sv"]{
+      --sv-ink:#0b0a14; --sv-ink2:#05050c; --sv-paper:#fdf6e9; --sv-cream:#f4ecd8; --sv-card:#161a24;
+      --sv-amber:#f6a63c; --sv-pink:#ff2d7e; --sv-cyan:#23e0ff; --sv-green:#34d399; --sv-sand:#cdbfa5;
+      --sv-numsh:-2.5px 0 #ff2d7e, 2.5px 0 #23e0ff; --sv-anton:'Anton','Oswald','Arial Narrow',sans-serif;
+    }
+    html[data-skin="sv"] body{ background:var(--sv-ink); color:var(--sv-paper); }
+    /* fond : image conservée mais assombrie + halftone Ben-Day */
+    html[data-skin="sv"] .auth__overlay{ background:rgba(11,10,20,.82)!important; }
+    html[data-skin="sv"] .auth::after{
+      content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.5;
+      background-image:radial-gradient(circle, rgba(255,255,255,.09) 1px, transparent 1.4px); background-size:15px 15px;
+    }
+    html[data-skin="sv"] .auth > *{ position:relative; z-index:1; }
+    /* carte login = cadre encre + liseré chromatique (façon planche BD) */
+    html[data-skin="sv"] .glass{
+      background:var(--sv-card)!important; -webkit-backdrop-filter:none!important; backdrop-filter:none!important;
+      border:3px solid var(--sv-paper)!important; border-radius:28px;
+      box-shadow:10px 12px 0 var(--sv-ink2), -4px 0 0 var(--sv-pink), 4px 0 0 var(--sv-cyan)!important;
+    }
+    html[data-skin="sv"] .title{ font-family:var(--sv-anton); font-weight:400; letter-spacing:.03em; color:var(--sv-paper); text-shadow:var(--sv-numsh); }
+    html[data-skin="sv"] .logo svg{ filter:drop-shadow(-2px 0 var(--sv-pink)) drop-shadow(2px 0 var(--sv-cyan)); }
+    html[data-skin="sv"] .logo .ring{ stroke:var(--sv-amber); } html[data-skin="sv"] .logo .ticks line{ stroke:var(--sv-amber); }
+    html[data-skin="sv"] .input{ border:2px solid var(--sv-cream)!important; background:var(--sv-ink)!important; color:var(--sv-paper); border-radius:12px; }
+    html[data-skin="sv"] .input:focus-within{ border-color:var(--sv-cyan)!important; }
+    html[data-skin="sv"] .input input{ color:var(--sv-paper); }
+    html[data-skin="sv"] .btn-main{
+      background:var(--sv-amber)!important; color:var(--sv-ink2)!important; font-family:var(--sv-anton); letter-spacing:.05em;
+      border:2.5px solid var(--sv-ink2)!important; border-radius:14px; box-shadow:5px 5px 0 var(--sv-ink2)!important;
+    }
+    html[data-skin="sv"] .btn-main:active{ transform:translate(4px,4px); box-shadow:1px 1px 0 var(--sv-ink2)!important; }
+    html[data-skin="sv"] .btn-google{
+      background:var(--sv-paper)!important; color:var(--sv-ink2)!important;
+      border:2.5px solid var(--sv-ink2)!important; border-radius:14px; box-shadow:5px 5px 0 var(--sv-ink2)!important;
+    }
+    html[data-skin="sv"] .btn-google:active{ transform:translate(3px,3px); box-shadow:1px 1px 0 var(--sv-ink2)!important; }
+    html[data-skin="sv"] .divider{ color:var(--sv-sand); }
+    html[data-skin="sv"] .remember__box{ border:2px solid var(--sv-cream)!important; }
+    html[data-skin="sv"] .forgot,
+    html[data-skin="sv"] .switch a{ color:var(--sv-cyan); }
   </style>
 </head>
 <body>
