@@ -972,6 +972,32 @@
     @keyframes armPulse { 0%, 100% { box-shadow: 0 10px 24px -10px rgba(225, 29, 72, .55); } 50% { box-shadow: 0 10px 30px -4px rgba(225, 29, 72, .9); } }
     .sheet__keep { width: 100%; margin-top: 8px; min-height: 46px; border: 1px solid rgba(255, 255, 255, .16); background: rgba(255, 255, 255, .05); color: rgba(255, 255, 255, .85); border-radius: 14px; cursor: pointer; font: inherit; font-weight: 700; }
     .fab--green { color: #04170e; background: radial-gradient(120% 120% at 30% 25%, #7bf3b5, #10b981); box-shadow: 0 12px 26px -8px rgba(16, 185, 129, .6), 0 0 24px -4px rgba(16, 185, 129, .55); }
+    /* ===== VAGUE 3 : modifier une vente + objectifs éditables + stats par période ===== */
+    .sheet__edit { width: 100%; margin-top: 10px; min-height: 46px; border: 1px solid rgba(246, 166, 60, .4); border-radius: 14px; background: rgba(246, 166, 60, .1); color: #ffc46a; font: inherit; font-size: 14.5px; font-weight: 800; cursor: pointer; transition: transform .1s ease, background .18s ease; }
+    .sheet__edit:active { transform: scale(.98); background: rgba(246, 166, 60, .18); }
+    .vedit { display: flex; align-items: center; gap: 10px; padding: 3px 0; transition: opacity .2s ease; }
+    .vedit.is-zero { opacity: .38; }
+    .vedit__name { flex: 1; font-size: 14px; font-weight: 600; color: rgba(255, 255, 255, .85); text-align: left; }
+    .vedit__step { display: flex; align-items: center; gap: 5px; }
+    .vedit .qtybtn { width: 30px; height: 30px; font-size: 17px; }
+    .vedit .qtybtn__val { min-width: 24px; font-size: 15px; }
+    .vedit__amt { min-width: 74px; text-align: right; font-size: 13.5px; font-variant-numeric: tabular-nums; color: #fff; }
+    .seg--pay { margin: 10px 0 2px; max-width: none; }
+    .seg--pay .seg-btn.is-on { color: #04170e; background: radial-gradient(120% 120% at 30% 25%, #8af0c8, #34d399); box-shadow: 0 0 12px -3px rgba(52, 211, 153, .5); }
+    /* objectifs : actions des projets d'achat */
+    .cible__act { display: flex; gap: 8px; margin-top: 11px; }
+    .cible__act .cible__add { margin-top: 0; flex: 1.4; }
+    .cible__mod { flex: 1; padding: 9px; border-radius: 11px; border: 1px dashed rgba(255, 255, 255, .3); background: none; color: rgba(255, 255, 255, .75); font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; transition: background .18s; }
+    .cible__mod:active { background: rgba(255, 255, 255, .1); }
+    .fld--sheet { display: block; text-align: left; margin-bottom: 10px; }
+    .fld--sheet span { display: block; font-size: 11.5px; font-weight: 700; color: rgba(255, 255, 255, .55); margin: 0 2px 5px; }
+    /* stats : période libre (jour, mois, année, plage) */
+    .statchips { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 520px; margin: 14px auto 0; }
+    .statper { max-width: 520px; margin: 12px auto 0; font-size: 13px; color: rgba(255, 255, 255, .6); }
+    .statper b { color: #ffc46a; }
+    .sheet input[type="date"], .sheet input[type="month"] { color-scheme: dark; }
+    .prange { display: flex; gap: 8px; }
+    .prange .fld--sheet { flex: 1; }
   </style>
 </head>
 <body>
@@ -1616,7 +1642,7 @@
       }).join('');
       return '<div class="screen" style="--sc:#34d399"><span class="screen__tag">Mes ventes</span><h1 class="screen__title">Tes ventes</h1>' +
         '<div class="sales-total">Encaissé aujourd\'hui<b>' + fF(salesToday()) + '</b></div>' +
-        (list.length ? '<p class="screen__sub" style="margin-top:4px">Touche une vente pour la voir en détail ou la supprimer.</p><div class="saleslist">' + rows + '</div>' : '<p class="pos__empty">Aucune vente pour l\'instant. Va à <b>La caisse</b> pour encaisser ta première vente.</p>') +
+        (list.length ? '<p class="screen__sub" style="margin-top:4px">Touche une vente pour la voir en détail, la modifier ou la supprimer.</p><div class="saleslist">' + rows + '</div>' : '<p class="pos__empty">Aucune vente pour l\'instant. Va à <b>La caisse</b> pour encaisser ta première vente.</p>') +
         iaBanner() +
         '<span class="fab__lbl">Encaisser</span><button class="fab fab--green" data-goto="caisse" aria-label="Aller à la caisse">+</button>' +
         '<div class="sheet-scrim" data-vscrim></div>' +
@@ -1624,6 +1650,7 @@
           '<div class="sheet__grip"></div>' +
           '<h3 class="sheet__title">Détail de la vente</h3>' +
           '<div class="vdetail" data-vbody></div>' +
+          '<button class="sheet__edit" data-vedit>Modifier cette vente</button>' +
           '<button class="sheet__del" data-vdel>Supprimer cette vente</button>' +
           '<button class="sheet__keep" data-vkeep>Garder</button>' +
         '</div>' +
@@ -1640,24 +1667,73 @@
     function bindVentes() {
       const scr = view.querySelector('.screen'); if (!scr) return;
       const sheet = scr.querySelector('[data-vsheet]'), scrim = scr.querySelector('[data-vscrim]'); if (!sheet) return;
-      const body = sheet.querySelector('[data-vbody]'), del = sheet.querySelector('[data-vdel]');
-      let curId = null, armT = 0;
+      const body = sheet.querySelector('[data-vbody]'), del = sheet.querySelector('[data-vdel]'), edit = sheet.querySelector('[data-vedit]'), keep = sheet.querySelector('[data-vkeep]');
+      let curId = null, armT = 0, editing = false, draft = null;
       const disarm = () => { del.classList.remove('is-armed'); del.textContent = 'Supprimer cette vente'; clearTimeout(armT); };
-      const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); disarm(); curId = null; };
-      const list = scr.querySelector('.saleslist');
-      if (list) list.addEventListener('click', (e) => {
-        const row = e.target.closest('.salerow[data-vid]'); if (!row) return;
-        const v = (SM.ventes || []).find((x) => x.id === row.dataset.vid); if (!v) return;
-        curId = v.id;
+      const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); disarm(); curId = null; editing = false; draft = null; };
+      const MODES = [['espèces', 'Espèces'], ['momo', 'Mobile Money'], ['credit', 'Crédit']];
+      const renderView = (v) => {   // mode lecture : le détail classique
+        editing = false; draft = null; disarm();
         const lines = (v.items || []).map((it) => '<div class="vdetail__row"><span>' + it.qty + '&times; ' + it.nom + '</span><b>' + fF(it.prix * it.qty) + '</b></div>').join('');
         const mode = v.mode === 'momo' ? 'Mobile Money' : v.mode === 'credit' ? 'Crédit' : 'Espèces';
         body.innerHTML = lines +
           '<div class="vdetail__row"><span>' + mode + '</span><span>' + relTime(v.ts) + '</span></div>' +
           '<div class="vdetail__tot"><span>Total</span><b>' + fF(v.total) + '</b></div>';
+        edit.textContent = 'Modifier cette vente'; del.style.display = ''; keep.textContent = 'Garder';
+      };
+      const draftTotal = () => draft.items.reduce((s, it) => s + it.prix * it.qty, 0);
+      const renderEdit = (v) => {   // mode édition : quantités par article + paiement
+        editing = true; disarm(); del.style.display = 'none';
+        draft = draft || { items: (v.items || []).map((it) => ({ nom: it.nom, prix: it.prix, qty: it.qty, qty0: it.qty })), mode: v.mode };
+        const rows = draft.items.map((it, i) => '<div class="vedit' + (it.qty === 0 ? ' is-zero' : '') + '"><span class="vedit__name">' + it.nom + '</span>' +
+          '<span class="vedit__step"><button class="qtybtn qtybtn--minus" data-vq="dec" data-i="' + i + '" aria-label="Retirer">−</button><span class="qtybtn__val">' + it.qty + '</span><button class="qtybtn qtybtn--plus" data-vq="inc" data-i="' + i + '" aria-label="Ajouter">+</button></span>' +
+          '<b class="vedit__amt">' + fF(it.prix * it.qty) + '</b></div>').join('');
+        const seg = MODES.map((m) => '<button class="seg-btn' + (m[0] === draft.mode ? ' is-on' : '') + '" data-vmode="' + m[0] + '">' + m[1] + '</button>').join('');
+        body.innerHTML = rows + '<div class="seg seg--pay">' + seg + '</div>' +
+          '<div class="vdetail__tot"><span>Nouveau total</span><b>' + fF(draftTotal()) + '</b></div>';
+        edit.textContent = 'Enregistrer les modifications'; keep.textContent = 'Annuler';
+        body.querySelectorAll('[data-vq]').forEach((b) => b.addEventListener('click', () => {
+          const it = draft.items[+b.dataset.i]; if (!it) return;
+          if (b.dataset.vq === 'dec') { if (it.qty === 0) { playSwoosh(); return; } it.qty--; playPop(false); }
+          else {
+            const p = SM.stock.find((x) => x.nom === it.nom && x.type === 'physique');
+            if (p && it.qty - it.qty0 >= p.qty) { playSwoosh(); return; }   // physique : pas plus que le stock restant
+            it.qty++; playPop(true);
+          }
+          renderEdit(v);
+        }));
+        body.querySelectorAll('[data-vmode]').forEach((b) => b.addEventListener('click', () => { draft.mode = b.dataset.vmode; playPop(true); renderEdit(v); }));
+      };
+      const saveEdit = (v) => {
+        const kept = draft.items.filter((it) => it.qty > 0);
+        if (!kept.length) { playSwoosh(); return; }   // vente vidée : passer par « Supprimer »
+        draft.items.forEach((it) => {   // ajuste le stock physique selon l'écart (repéré par nom, comme removeSale)
+          const p = SM.stock.find((x) => x.nom === it.nom && x.type === 'physique');
+          if (p) p.qty = Math.max(0, p.qty - (it.qty - it.qty0));
+        });
+        v.items = kept.map((it) => ({ nom: it.nom, prix: it.prix, qty: it.qty }));
+        v.total = kept.reduce((s, it) => s + it.prix * it.qty, 0); v.mode = draft.mode;
+        smSave(); playSuccess(); close();
+        view.innerHTML = ventesHTML(); bindVentes();
+      };
+      const list = scr.querySelector('.saleslist');
+      if (list) list.addEventListener('click', (e) => {
+        const row = e.target.closest('.salerow[data-vid]'); if (!row) return;
+        const v = (SM.ventes || []).find((x) => x.id === row.dataset.vid); if (!v) return;
+        curId = v.id; renderView(v);
         sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick();
       });
       scrim.addEventListener('click', close);
-      sheet.querySelector('[data-vkeep]').addEventListener('click', () => { playClick(); close(); });
+      keep.addEventListener('click', () => {
+        playClick();
+        if (editing) { const v = (SM.ventes || []).find((x) => x.id === curId); draft = null; if (v) return renderView(v); }
+        close();
+      });
+      edit.addEventListener('click', () => {
+        const v = (SM.ventes || []).find((x) => x.id === curId); if (!v) return;
+        if (editing) return saveEdit(v);
+        playClick(); renderEdit(v);
+      });
       del.addEventListener('click', () => {
         if (!del.classList.contains('is-armed')) {   // confirmation douce : deux touches sur le même bouton
           del.classList.add('is-armed'); del.textContent = 'Confirmer la suppression ?'; playPop(false);
@@ -1671,24 +1747,129 @@
       });
     }
 
-    /* ===== STATISTIQUES ===== */
+    /* ===== STATISTIQUES : période libre (jour, mois, année, plage) + analyse IA ===== */
+    let _statSel = { kind: 'all' };
+    const MOIS_LBL = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+    const dayStart = (ts) => { const d = new Date(ts); d.setHours(0, 0, 0, 0); return d.getTime(); };
+    const parseDay = (s) => { const p = (s || '').split('-'); return p.length === 3 ? new Date(+p[0], +p[1] - 1, +p[2]).getTime() : NaN; };
+    function statRange() {
+      const t0d = dayStart(Date.now()), now = new Date(), y = now.getFullYear(), k = _statSel.kind;
+      if (k === 'today') return { t0: t0d, t1: t0d + DAY, lbl: "aujourd'hui" };
+      if (k === 'yesterday') return { t0: t0d - DAY, t1: t0d, lbl: 'hier' };
+      if (k === '7j') return { t0: t0d - 6 * DAY, t1: t0d + DAY, lbl: 'les 7 derniers jours' };
+      if (k === 'month') return { t0: new Date(y, now.getMonth(), 1).getTime(), t1: new Date(y, now.getMonth() + 1, 1).getTime(), lbl: 'ce mois-ci' };
+      if (k === 'year') return { t0: new Date(y, 0, 1).getTime(), t1: new Date(y + 1, 0, 1).getTime(), lbl: 'cette année' };
+      if (k === 'day') return { t0: _statSel.t0, t1: _statSel.t0 + DAY, lbl: 'le ' + fDate(_statSel.t0) };
+      if (k === 'monthpick') { const d = new Date(_statSel.t0); return { t0: _statSel.t0, t1: new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime(), lbl: MOIS_LBL[d.getMonth()] + ' ' + d.getFullYear() }; }
+      if (k === 'yearpick') { const d = new Date(_statSel.t0); return { t0: _statSel.t0, t1: new Date(d.getFullYear() + 1, 0, 1).getTime(), lbl: "l'année " + d.getFullYear() }; }
+      if (k === 'range') return { t0: _statSel.t0, t1: _statSel.t1, lbl: 'du ' + fDate(_statSel.t0) + ' au ' + fDate(_statSel.t1 - DAY) };
+      return { t0: 0, t1: Infinity, lbl: 'depuis le début' };
+    }
+    const caIn = (t0, t1) => (SM.ventes || []).reduce((s, v) => (v.ts >= t0 && v.ts < t1) ? s + (+v.total || 0) : s, 0);
+    const depTotIn = (t0, t1) => (SM.depenses || []).reduce((s, d) => (!d.perso && d.ts >= t0 && d.ts < t1) ? s + (+d.montant || 0) : s, 0);
+    function depByCatIn(t0, t1) { const m = {}; (SM.depenses || []).forEach((d) => { if (!d.perso && d.ts >= t0 && d.ts < t1) m[d.cat] = (m[d.cat] || 0) + (+d.montant || 0); }); return Object.keys(m).map((k) => ({ name: k, val: m[k], color: CATS[k] || '#88aab0' })).sort((a, b) => b.val - a.val); }
+    function statBuckets(r) {   // barres adaptées à la période : jours (≤ 2 mois) sinon mois
+      let t0 = r.t0, t1 = Math.min(r.t1, Date.now() + DAY);
+      if (t0 === 0) {   // « depuis le début » : borne basse = 1er enregistrement
+        const ts = (SM.ventes || []).map((v) => v.ts).concat((SM.depenses || []).map((d) => d.ts || Date.now()));
+        if (!ts.length) return null; t0 = dayStart(Math.min.apply(null, ts));
+      }
+      const nDays = Math.max(1, Math.round((dayStart(t1 - 1) + DAY - dayStart(t0)) / DAY));
+      const bks = [];
+      if (nDays <= 1) {   // un seul jour : contexte = les 7 jours qui y mènent
+        for (let k = 6; k >= 0; k--) { const a = dayStart(t0) - k * DAY; bks.push({ t0: a, t1: a + DAY, lbl: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'][new Date(a).getDay()], ca: 0, dep: 0 }); }
+      } else if (nDays <= 62) {   // jour par jour, étiquettes espacées si long
+        const a0 = dayStart(t0), lblEvery = nDays > 14 ? 5 : 1;
+        for (let k = 0; k < nDays; k++) { const a = a0 + k * DAY; bks.push({ t0: a, t1: a + DAY, lbl: (k % lblEvery === 0 ? String(new Date(a).getDate()) : ''), ca: 0, dep: 0 }); }
+      } else {   // mois par mois
+        let d = new Date(t0); d = new Date(d.getFullYear(), d.getMonth(), 1);
+        while (d.getTime() < t1) { const e = new Date(d.getFullYear(), d.getMonth() + 1, 1); bks.push({ t0: d.getTime(), t1: e.getTime(), lbl: MOIS_LBL[d.getMonth()].slice(0, 3), ca: 0, dep: 0 }); d = e; }
+      }
+      (SM.ventes || []).forEach((v) => { const b = bks.find((x) => v.ts >= x.t0 && v.ts < x.t1); if (b) b.ca += (+v.total || 0); });
+      (SM.depenses || []).forEach((dp) => { if (dp.perso) return; const ts = dp.ts || Date.now(); const b = bks.find((x) => ts >= x.t0 && ts < x.t1); if (b) b.dep += (+dp.montant || 0); });
+      return bks;
+    }
+    function iaVerdictPeriod(r) {   // l'IA Boussole analyse la période sélectionnée
+      if (r.t0 === 0) return iaVerdict();   // « depuis le début » : verdict global existant
+      const ca = caIn(r.t0, r.t1), dep = depTotIn(r.t0, r.t1), ben = ca - dep, marge = ca > 0 ? Math.round(ben / ca * 100) : 0;
+      const lines = []; let tone = '', title = '';
+      if (ca === 0 && dep === 0) { title = 'Rien sur cette période'; lines.push('Aucune vente ni dépense enregistrée ' + r.lbl + '. Choisis une autre période, ou va encaisser : je note tout.'); return { tone, title, lines }; }
+      if (ben > 0) { tone = 'good'; title = 'Période gagnante'; lines.push('Sur cette période (' + r.lbl + '), tu as encaissé <b>' + fF(ca) + '</b> et dépensé <b>' + fF(dep) + '</b> : <b>+' + fF(ben) + '</b> de bénéfice, marge de <b>' + marge + '%</b>.'); }
+      else if (ben === 0) { title = "À l'équilibre"; lines.push('Sur cette période (' + r.lbl + '), tu rentres pile dans tes frais : ' + fF(ca) + ' encaissé pour ' + fF(dep) + ' dépensé.'); }
+      else { tone = 'warn'; title = 'Période dans le rouge'; lines.push('Sur cette période (' + r.lbl + '), tu as dépensé <b>' + fF(dep) + '</b> pour <b>' + fF(ca) + '</b> encaissé : il manque <b>' + fF(Math.abs(ben)) + '</b>.'); }
+      const span = r.t1 - r.t0;   // comparaison avec la période précédente de même durée
+      if (isFinite(span)) {
+        const pca = caIn(r.t0 - span, r.t0);
+        if (pca > 0) { const pc = Math.round((ca - pca) / pca * 100); lines.push(pc >= 0 ? 'Tes ventes font <b>+' + pc + '%</b> par rapport à la période juste avant (' + fF(pca) + ') : ça monte, continue.' : 'Tes ventes font <b>' + pc + '%</b> par rapport à la période juste avant (' + fF(pca) + ') : petit coup de mou, on se reprend.'); }
+        else if (ca > 0) { lines.push('La période juste avant était à zéro : là, tu avances.'); }
+      }
+      const cats = depByCatIn(r.t0, r.t1), top = cats[0];
+      if (top && dep > 0) { const share = Math.round(top.val / dep * 100); lines.push('Ta plus grosse sortie : <b>' + top.name + '</b> (' + share + '% des dépenses de la période).'); }
+      if (isFinite(r.t1) && span > DAY) {   // meilleur jour de la période
+        const byDay = {}; let bd = 0, bv = 0;
+        (SM.ventes || []).forEach((v) => { if (v.ts >= r.t0 && v.ts < r.t1) { const d0 = dayStart(v.ts); byDay[d0] = (byDay[d0] || 0) + (+v.total || 0); } });
+        Object.keys(byDay).forEach((k2) => { if (byDay[k2] > bv) { bv = byDay[k2]; bd = +k2; } });
+        if (bd) lines.push('Ton meilleur jour : <b>' + fDate(bd) + '</b> avec <b>' + fF(bv) + '</b> encaissés.');
+      }
+      return { tone, title, lines };
+    }
+    function iaBannerPeriod(r) { const v = iaVerdictPeriod(r); return '<div class="ia' + (v.tone ? ' ia--' + v.tone : '') + '"><span class="ia__orb"></span><span class="ia__chip">&#10022; L\'IA Boussole &middot; analyse de la période</span><h3 class="ia__title">' + v.title + '</h3><p class="ia__txt">' + v.lines.join(' ') + '</p></div>'; }
     function statsHTML() {
-      const ca = salesTotal(), dep = expTotal(), ben = ca - dep, marge = ca > 0 ? Math.round(ben / ca * 100) : 0;
-      const cats = depByCat();
+      const r = statRange();
+      const ca = caIn(r.t0, r.t1), dep = depTotIn(r.t0, r.t1), ben = ca - dep, marge = ca > 0 ? Math.round(ben / ca * 100) : 0;
+      const cats = depByCatIn(r.t0, r.t1), bks = statBuckets(r);
+      const isPick = ['day', 'monthpick', 'yearpick', 'range'].indexOf(_statSel.kind) >= 0;
+      const chips = [['today', "Aujourd'hui"], ['yesterday', 'Hier'], ['7j', '7 jours'], ['month', 'Ce mois'], ['year', 'Cette année'], ['all', 'Tout']]
+        .map((c) => '<button class="freqchip' + (c[0] === _statSel.kind ? ' is-sel' : '') + '" data-sper="' + c[0] + '">' + c[1] + '</button>').join('') +
+        '<button class="freqchip' + (isPick ? ' is-sel' : '') + '" data-spick>&#128197; Choisir&hellip;</button>';
+      const today = new Date(), pad = (n) => String(n).padStart(2, '0');
+      const dv = today.getFullYear() + '-' + pad(today.getMonth() + 1) + '-' + pad(today.getDate()), mv = today.getFullYear() + '-' + pad(today.getMonth() + 1);
+      const singleDay = (_statSel.kind === 'today' || _statSel.kind === 'yesterday' || _statSel.kind === 'day');
       return '<div class="screen wide" style="--sc:#ffe9c9"><span class="screen__tag">Statistiques</span><h1 class="screen__title">Tes chiffres</h1>' +
-        '<p class="screen__sub">Ce que tu gagnes, ce que tu dépenses, et ce que ça donne.</p>' +
-        iaBanner() +
+        '<p class="screen__sub">Choisis un jour, un mois, une année ou une période : je sors les chiffres et mon analyse.</p>' +
+        '<div class="statchips">' + chips + '</div>' +
+        '<div class="statper">Période affichée : <b>' + r.lbl + '</b></div>' +
+        iaBannerPeriod(r) +
         '<div class="kpis">' +
-          kpi('ca', 'Encaissé', fF(ca), 'toutes tes ventes', 0) +
-          kpi('dep', 'Dépensé', fF(dep), 'sorties de caisse', 1) +
+          kpi('ca', 'Encaissé', fF(ca), 'ventes de la période', 0) +
+          kpi('dep', 'Dépensé', fF(dep), 'sorties de la période', 1) +
           kpi('ben', 'Bénéfice', (ben >= 0 ? '+' : '') + fF(ben), ben >= 0 ? 'ce qui te reste' : 'tu es en perte', 2) +
           kpi('marge', 'Marge', marge + ' %', 'sur 100 F vendus', 3) +
         '</div>' +
-        '<div class="panel"><h3 class="panel__ttl" style="--sc:#e11d48"><i></i>Où part ton argent</h3>' + (dep > 0 ? donutSVG(cats, 'Dépensé') : '<p class="ia__txt">Pas encore de dépense enregistrée.</p>') + '</div>' +
-        '<div class="panel"><h3 class="panel__ttl" style="--sc:#34d399"><i></i>Évolution 7 jours</h3>' + barsSVG(evo7()) + '</div>' +
+        '<div class="panel"><h3 class="panel__ttl" style="--sc:#e11d48"><i></i>Où part ton argent</h3>' + (dep > 0 ? donutSVG(cats, 'Dépensé') : '<p class="ia__txt">Pas de dépense sur cette période.</p>') + '</div>' +
+        '<div class="panel"><h3 class="panel__ttl" style="--sc:#34d399"><i></i>' + (singleDay ? 'Les 7 jours qui y mènent' : 'Évolution') + '</h3>' + (bks ? barsSVG(bks) : '<p class="ia__txt">Rien à tracer pour l\'instant.</p>') + '</div>' +
+        '<div class="sheet-scrim" data-stclose></div>' +
+        '<div class="sheet" data-stsheet><div class="sheet__grip"></div><h3 class="sheet__title">Choisir une période</h3>' +
+          '<div class="seg" data-stkind>' + [['day', 'Jour'], ['monthpick', 'Mois'], ['yearpick', 'Année'], ['range', 'Période']].map((k, i) => '<button class="seg-btn' + (i === 0 ? ' is-on' : '') + '" data-stk="' + k[0] + '">' + k[1] + '</button>').join('') + '</div>' +
+          '<label class="fld--sheet" data-stwrap="day" style="margin-top:12px"><span>Quel jour ?</span><input class="sheet__txt" data-stday type="date" value="' + dv + '" max="' + dv + '"></label>' +
+          '<label class="fld--sheet" data-stwrap="monthpick" style="display:none;margin-top:12px"><span>Quel mois ?</span><input class="sheet__txt" data-stmonth type="month" value="' + mv + '" max="' + mv + '"></label>' +
+          '<label class="fld--sheet" data-stwrap="yearpick" style="display:none;margin-top:12px"><span>Quelle année ?</span><input class="sheet__txt" data-styear type="number" inputmode="numeric" value="' + today.getFullYear() + '" min="2020" max="' + today.getFullYear() + '"></label>' +
+          '<div class="prange" data-stwrap="range" style="display:none;margin-top:12px"><label class="fld--sheet"><span>Du</span><input class="sheet__txt" data-stfrom type="date" value="' + dv + '"></label><label class="fld--sheet"><span>Au</span><input class="sheet__txt" data-stto type="date" value="' + dv + '"></label></div>' +
+          '<button class="sheet__add" data-stgo>Voir cette période</button></div>' +
       '</div>';
     }
-    function bindStats() {}
+    function bindStats() {
+      const scr = view.querySelector('.screen'); if (!scr) return;
+      const render = () => { view.innerHTML = statsHTML(); bindStats(); };
+      scr.querySelectorAll('[data-sper]').forEach((b) => b.addEventListener('click', () => { _statSel = { kind: b.dataset.sper }; playPop(true); render(); }));
+      const sheet = scr.querySelector('[data-stsheet]'), scrim = scr.querySelector('[data-stclose]');
+      const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
+      scrim.addEventListener('click', close);
+      let pk = 'day';
+      const pb = scr.querySelector('[data-spick]'); if (pb) pb.addEventListener('click', () => { sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick(); });
+      scr.querySelectorAll('[data-stk]').forEach((b) => b.addEventListener('click', () => {
+        pk = b.dataset.stk; playPop(true);
+        scr.querySelectorAll('[data-stk]').forEach((x) => x.classList.toggle('is-on', x === b));
+        scr.querySelectorAll('[data-stwrap]').forEach((w) => { w.style.display = w.dataset.stwrap === pk ? '' : 'none'; });
+      }));
+      scr.querySelector('[data-stgo]').addEventListener('click', () => {
+        if (pk === 'day') { const t = parseDay(scr.querySelector('[data-stday]').value); if (isNaN(t)) return; _statSel = { kind: 'day', t0: t }; }
+        else if (pk === 'monthpick') { const p = (scr.querySelector('[data-stmonth]').value || '').split('-'); if (p.length < 2) return; _statSel = { kind: 'monthpick', t0: new Date(+p[0], +p[1] - 1, 1).getTime() }; }
+        else if (pk === 'yearpick') { const yv = Math.round(+scr.querySelector('[data-styear]').value || 0); if (yv < 2000 || yv > 2100) return; _statSel = { kind: 'yearpick', t0: new Date(yv, 0, 1).getTime() }; }
+        else { let a = parseDay(scr.querySelector('[data-stfrom]').value), b = parseDay(scr.querySelector('[data-stto]').value); if (isNaN(a) || isNaN(b)) return; if (b < a) { const c = a; a = b; b = c; } _statSel = { kind: 'range', t0: a, t1: b + DAY }; }
+        playSuccess(); render();
+      });
+    }
 
     /* ===== BILAN ===== */
     function bilanHTML() {
@@ -1755,7 +1936,7 @@
         return '<div class="cible" style="--i:' + i + '"><div class="cible__top"><span class="cible__name">' + c.nom + '</span><span class="cible__amt">' + fF(c.montant) + '</span></div>' +
           '<div class="hbar__track"><span class="hbar__fill" style="width:' + p.toFixed(0) + '%;background:#ffd23f;box-shadow:0 0 10px -2px #ffd23f"></span></div>' +
           '<div class="cible__foot"><span>' + fF(c.epargne) + ' épargnés</span><span>' + (reste > 0 ? (j !== null ? 'reste ' + fF(reste) + ' · ≈ ' + j + ' j' : 'reste ' + fF(reste)) : 'Atteint !') + '</span></div>' +
-          '<button class="cible__add" data-cibleadd="' + c.id + '">+ ajouter à l\'épargne</button></div>';
+          '<div class="cible__act"><button class="cible__add" data-cibleadd="' + c.id + '">+ ajouter à l\'épargne</button><button class="cible__mod" data-cibleedit="' + c.id + '">Modifier</button></div></div>';
       }).join('');
       return '<div class="screen wide" style="--sc:#ffd23f"><span class="screen__tag">Objectifs</span><h1 class="screen__title">Tes objectifs</h1>' +
         '<div class="seg">' + seg + '</div>' +
@@ -1769,7 +1950,9 @@
         '<div class="sheet" data-osheet><div class="sheet__grip"></div><h3 class="sheet__title" data-ostitle>Objectif</h3>' +
           '<input class="sheet__txt" data-osname type="text" placeholder="Nom du projet" style="display:none">' +
           '<input class="sheet__amt" data-osamt type="number" inputmode="numeric" placeholder="0 F">' +
-          '<button class="sheet__add" data-osok>Enregistrer</button></div>' +
+          '<label class="fld--sheet" data-osepwrap style="display:none;margin-top:10px"><span>Déjà épargné</span><input class="sheet__amt" data-osep type="number" inputmode="numeric" placeholder="0 F"></label>' +
+          '<button class="sheet__add" data-osok>Enregistrer</button>' +
+          '<button class="sheet__del" data-osdel style="display:none">Supprimer cet objectif</button></div>' +
       '</div>';
     }
     function bindObjectifs() {
@@ -1779,18 +1962,46 @@
       const render = () => { view.innerHTML = objectifsHTML(); bindObjectifs(); };
       scr.querySelectorAll('[data-per]').forEach((b) => b.addEventListener('click', () => { _objPer = b.dataset.per; playPop(true); render(); }));
       const sheet = scr.querySelector('[data-osheet]'), scrim = scr.querySelector('[data-osclose]'), name = scr.querySelector('[data-osname]'), amt = scr.querySelector('[data-osamt]'), title = scr.querySelector('[data-ostitle]');
-      const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
-      let mode = null, cibleId = null;
-      const open = (m, opts) => { mode = m; cibleId = opts.cibleId || null; title.textContent = opts.title; name.style.display = opts.withName ? 'block' : 'none'; name.value = ''; amt.value = ''; amt.placeholder = opts.ph || '0 F'; sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick(); setTimeout(() => { try { (opts.withName ? name : amt).focus(); } catch (_) {} }, 220); };
+      const epWrap = scr.querySelector('[data-osepwrap]'), ep = scr.querySelector('[data-osep]'), delBtn = scr.querySelector('[data-osdel]');
+      let mode = null, cibleId = null, delArmT = 0;
+      const disarmDel = () => { delBtn.classList.remove('is-armed'); delBtn.textContent = 'Supprimer cet objectif'; clearTimeout(delArmT); };
+      const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); disarmDel(); };
+      const open = (m, opts) => {
+        mode = m; cibleId = opts.cibleId || null; title.textContent = opts.title; disarmDel();
+        name.style.display = opts.withName ? 'block' : 'none'; name.value = opts.name || '';
+        amt.value = opts.amt || ''; amt.placeholder = opts.ph || '0 F';
+        epWrap.style.display = opts.withEp ? 'block' : 'none'; ep.value = opts.ep !== undefined ? opts.ep : '';
+        delBtn.style.display = opts.withDel ? 'block' : 'none';
+        sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick();
+        setTimeout(() => { try { (opts.withName ? name : amt).focus(); } catch (_) {} }, 220);
+      };
       scrim.addEventListener('click', close);
       scr.querySelector('[data-edittgt]').addEventListener('click', () => open('target', { title: 'Objectif ' + ({ jour: 'du jour', semaine: 'de la semaine', mois: 'du mois' }[_objPer]), ph: 'Montant en F' }));
       scr.querySelectorAll('[data-cibleadd]').forEach((b) => b.addEventListener('click', () => open('epargne', { title: "Ajouter à l'épargne", cibleId: b.dataset.cibleadd, ph: 'Montant épargné' })));
+      scr.querySelectorAll('[data-cibleedit]').forEach((b) => b.addEventListener('click', () => {   // modifier / supprimer un projet
+        const t = (SM.cibles || []).find((x) => x.id === b.dataset.cibleedit); if (!t) return;
+        open('editcible', { title: 'Modifier « ' + t.nom + ' »', cibleId: t.id, withName: true, name: t.nom, amt: t.montant, ph: 'Prix du projet', withEp: true, ep: t.epargne, withDel: true });
+      }));
       const nb = scr.querySelector('[data-ciblenew]'); if (nb) nb.addEventListener('click', () => open('newcible', { title: "Nouveau projet d'achat", withName: true, ph: 'Prix du projet' }));
+      delBtn.addEventListener('click', () => {
+        if (!delBtn.classList.contains('is-armed')) {   // confirmation douce : deux touches sur le même bouton
+          delBtn.classList.add('is-armed'); delBtn.textContent = 'Confirmer la suppression ?'; playPop(false);
+          clearTimeout(delArmT); delArmT = setTimeout(disarmDel, 3000); return;
+        }
+        const i = (SM.cibles || []).findIndex((x) => x.id === cibleId);
+        if (i >= 0) { SM.cibles.splice(i, 1); smSave(); }
+        playSwoosh(); close(); render();
+      });
       scr.querySelector('[data-osok]').addEventListener('click', () => {
         const v = Math.round(+amt.value || 0);
         if (mode === 'target') { if (v > 0) { SM.objectifs = SM.objectifs || {}; SM.objectifs[_objPer] = v; smSave(); } }
         else if (mode === 'epargne') { const t = (SM.cibles || []).find((x) => x.id === cibleId); if (t && v > 0) { t.epargne = Math.min(t.montant, t.epargne + v); smSave(); } }
         else if (mode === 'newcible') { const nom = (name.value || '').trim(); if (nom && v > 0) { (SM.cibles = SM.cibles || []).push({ id: 't' + Date.now(), nom, montant: v, epargne: 0 }); smSave(); } else { return; } }
+        else if (mode === 'editcible') {   // renommer, changer le prix, corriger l'épargne
+          const t = (SM.cibles || []).find((x) => x.id === cibleId); const nom = (name.value || '').trim();
+          if (!t || !nom || v <= 0) { return; }
+          t.nom = nom; t.montant = v; t.epargne = Math.max(0, Math.min(v, Math.round(+ep.value || 0))); smSave();
+        }
         playSuccess(); close(); render();
       });
     }
