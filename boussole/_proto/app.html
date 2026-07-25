@@ -659,15 +659,27 @@
     .pos { max-width:500px; margin:0 auto; }
     .pos__grid { display:grid; grid-template-columns: repeat(3,1fr); gap:9px; margin:14px 0 0; }
     @media (max-width:380px){ .pos__grid { grid-template-columns: repeat(2,1fr); } }
-    .pos-tile { position:relative; overflow:hidden; aspect-ratio:1/1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:8px; border-radius:15px; cursor:pointer; font:inherit; color:#fff;
-      background: linear-gradient(160deg, rgba(255,255,255,.1), rgba(255,255,255,.03)); border:1px solid rgba(255,255,255,.12);
-      box-shadow:0 8px 20px -12px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.16);
-      transition: transform .1s ease, box-shadow .2s ease, border-color .2s ease; animation: expIn .4s calc(var(--i)*35ms) var(--ease) both; }
-    .pos-tile:active { transform: scale(.93); }
-    @media (hover:hover){ .pos-tile:hover { border-color: rgba(53,224,122,.5); box-shadow:0 10px 24px -12px rgba(0,0,0,.7), 0 0 18px -4px rgba(53,224,122,.5); } }
-    .pos-tile__disc { width:34px; height:34px; border-radius:50%; display:grid; place-items:center; font-size:15px; font-weight:800; box-shadow: inset 0 1px 0 rgba(255,255,255,.4); }
+    /* ---- Tuiles caisse 3D : vitrines miniatures (relief, reflet, tilt, pop) ---- */
+    .pos-tile { --tc:#f6a63c; position:relative; aspect-ratio:1/1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:8px; border-radius:17px; cursor:pointer; font:inherit; color:#fff;
+      background: linear-gradient(160deg, rgba(255,255,255,.11), rgba(255,255,255,.02) 55%), linear-gradient(180deg, #141722, #0c0e15);
+      border:1px solid color-mix(in srgb, var(--tc) 32%, rgba(255,255,255,.12));
+      box-shadow:0 16px 26px -16px rgba(0,0,0,.85), 0 0 22px -14px var(--tc), inset 0 1px 0 rgba(255,255,255,.16), inset 0 -10px 18px -14px var(--tc);
+      transform-style: preserve-3d;
+      transition: transform .18s var(--ease), box-shadow .25s ease, border-color .25s ease; animation: tilePop3d .55s calc(var(--i)*45ms) var(--ease-back) both; }
+    @keyframes tilePop3d { from { opacity:0; transform: perspective(700px) rotateX(32deg) translateY(22px) scale(.8); } to { opacity:1; transform: perspective(700px) rotateX(0) translateY(0) scale(1); } }
+    .pos-tile::before { content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+      background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.14) 44%, rgba(255,255,255,.03) 56%, transparent 70%); }   /* reflet vitrine */
+    .pos-tile:active { transform: perspective(700px) rotateX(7deg) scale(.92); }
+    @media (hover:hover){
+      .pos-tile:hover { transform: perspective(700px) rotateX(7deg) rotateY(-5deg) translateY(-4px); border-color: color-mix(in srgb, var(--tc) 65%, rgba(255,255,255,.2)); box-shadow:0 24px 34px -18px rgba(0,0,0,.9), 0 0 26px -8px var(--tc), inset 0 1px 0 rgba(255,255,255,.2); }
+      .pos-tile:hover .pos-tile__disc { transform: translateZ(22px) scale(1.1); }
+      .pos-tile:hover .pos-tile__price { transform: translateZ(12px); }
+    }
+    .pos-tile__disc { width:38px; height:38px; border-radius:50%; display:grid; place-items:center; font-size:16px; font-weight:800; transform: translateZ(0); transition: transform .22s var(--ease-back);
+      box-shadow: inset 0 3px 6px rgba(255,255,255,.55), inset 0 -7px 10px rgba(0,0,0,.38), 0 9px 14px -6px color-mix(in srgb, var(--tc) 55%, rgba(0,0,0,.6)); }   /* sphère : reflet haut + ombre interne + portée */
     .pos-tile__name { font-size:11.5px; font-weight:700; text-align:center; line-height:1.15; max-width:100%; }
-    .pos-tile__price { font-size:12px; font-weight:800; color:#6bf0a0; font-variant-numeric: tabular-nums; }
+    .pos-tile__price { font-size:11.5px; font-weight:800; color:#6bf0a0; font-variant-numeric: tabular-nums; padding:2.5px 9px; border-radius:999px;
+      background: rgba(53,224,122,.1); border:1px solid rgba(53,224,122,.28); box-shadow: inset 0 1px 0 rgba(255,255,255,.12); transition: transform .22s var(--ease-back); }   /* prix en pastille verre */
     .pos-tile__rupt { font-size:9.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#ff5a6a; }
     .pos-tile__badge { position:absolute; top:6px; right:6px; min-width:20px; height:20px; padding:0 5px; border-radius:999px; display:grid; place-items:center; font-size:11px; font-weight:800; color:#04140e; background: radial-gradient(120% 120% at 30% 25%, #86ffd0, #34d399); box-shadow:0 0 10px rgba(53,224,122,.6); transform: scale(0); transition: transform .22s var(--ease-back); }
     .pos-tile.has .pos-tile__badge { transform: scale(1); }
@@ -1161,10 +1173,50 @@
     ::-webkit-scrollbar-thumb { border-radius: 99px; background: linear-gradient(180deg, rgba(246, 166, 60, .35), rgba(246, 166, 60, .12)); border: 2px solid #0B0F19; }
     .kpi__spark { position: absolute; right: 10px; bottom: 8px; width: 74px; height: 26px; opacity: .8; pointer-events: none; }
     .kpi__spark path { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 4px currentColor); }
+    /* ---- LA CAISSE = UN COFFRE : les portes s'ouvrent sur tes produits ---- */
+    .vaultwrap { position: relative; }
+    .vault { position: absolute; inset: -6px; z-index: 5; display: flex; border-radius: 20px; overflow: hidden; pointer-events: none; perspective: 900px; }
+    .vault__door { position: relative; flex: 1; background:
+        radial-gradient(140% 120% at 50% 45%, #232635 0%, #171a26 55%, #10121b 100%);
+      border: 1px solid rgba(246, 166, 60, .25); box-shadow: inset 0 0 40px -18px rgba(246, 166, 60, .35), inset 0 1px 0 rgba(255, 255, 255, .1);
+      transition: transform .65s cubic-bezier(.6, .05, .25, 1); }
+    .vault__door--l { border-radius: 20px 0 0 20px; transform-origin: left center; }
+    .vault__door--r { border-radius: 0 20px 20px 0; transform-origin: right center; }
+    .vault__door::before { content: ""; position: absolute; inset: 10px; border-radius: 12px; border: 1px dashed rgba(246, 166, 60, .28); }   /* liseré rivets */
+    .vault__wheel { position: absolute; top: 50%; width: 62px; height: 62px; color: #ffc46a; filter: drop-shadow(0 0 14px rgba(246, 166, 60, .55)); }
+    .vault__door--l .vault__wheel { right: -31px; transform: translateY(-50%); }
+    .vault__door--r .vault__wheel { left: -31px; transform: translateY(-50%); }
+    .vault.is-turning .vault__wheel { animation: vaultTurn .55s cubic-bezier(.5, .1, .4, 1) both; }
+    @keyframes vaultTurn { from { rotate: 0deg; } to { rotate: 260deg; } }
+    .vault.is-open .vault__door--l { transform: rotateY(-96deg); }
+    .vault.is-open .vault__door--r { transform: rotateY(96deg); }
+    .vault.is-open { transition: opacity .2s .6s; opacity: 0; }
+    .vault.is-gone { display: none; }
+    .vault ~ .pos .pos-tile, .vaultwrap.is-sealed .pos-tile { animation-play-state: paused; }   /* les tuiles attendent l'ouverture */
+    .vaultwrap.is-revealed .pos-tile { animation-play-state: running; }
+    /* ---- Coût détaillé d'un produit : qui prend quoi, % auto ---- */
+    .csplit { margin: 2px 0 10px; padding: 11px 12px; border-radius: 14px; background: rgba(255, 255, 255, .035); border: 1px dashed rgba(255, 255, 255, .18); text-align: left; }
+    .csplit__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+    .csplit__head span { font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: rgba(255, 255, 255, .55); }
+    .csplit__addbtn { border: 1px solid rgba(246, 166, 60, .4); background: rgba(246, 166, 60, .1); color: #ffc46a; font: inherit; font-size: 12px; font-weight: 800; padding: 6px 11px; border-radius: 999px; cursor: pointer; }
+    .csplit__addbtn:active { transform: scale(.95); }
+    .cline { display: flex; align-items: center; gap: 7px; margin-bottom: 7px; animation: expIn .3s var(--ease) both; }
+    .cline .sheet__txt { margin: 0; padding: 10px 11px; font-size: 13.5px; }
+    .cline__nom { flex: 1.5; } .cline__amt { flex: 1; text-align: right; font-variant-numeric: tabular-nums; }
+    .cline__pct { flex: none; min-width: 44px; text-align: right; font-size: 11.5px; font-weight: 800; color: #ffc46a; font-variant-numeric: tabular-nums; }
+    .cline__x { flex: none; width: 30px; height: 30px; border-radius: 9px; border: 1px solid rgba(255, 90, 106, .35); background: rgba(255, 90, 106, .08); color: #ff8a97; font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; }
+    .csplit__foot { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: rgba(255, 255, 255, .6); border-top: 1px solid rgba(255, 255, 255, .1); padding-top: 8px; margin-top: 2px; }
+    .csplit__foot b { color: #fff; font-variant-numeric: tabular-nums; }
+    .vresa { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(246, 166, 60, .07); border: 1px dashed rgba(246, 166, 60, .35); text-align: left; }
+    .vresa__ttl { display: block; font-size: 11px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: #ffc46a; margin-bottom: 6px; }
+    .vresa__row { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; color: rgba(255, 255, 255, .8); padding: 2px 0; }
+    .vresa__row b { font-variant-numeric: tabular-nums; color: #ffd9a0; }
     @media (prefers-reduced-motion: reduce) {
       .fx-receipt, .fx-cashout, .fx-shelf, .fx-squash, .fx-wave, .fx-coin, .fx-fold, .fx-tiltz, .fx-glowp, .fx-elastic, .fx-radar, .fx-wobble, .fx-press, .fx-launch, .fx-plane,
-      .onb__logo, .onb__step, .toast, .bub, .lock, .lock__shield, .screen__title, .env, .alertrow, .setgrp { animation: none !important; }
+      .onb__logo, .onb__step, .toast, .bub, .lock, .lock__shield, .screen__title, .env, .alertrow, .setgrp, .pos-tile, .vault__wheel { animation: none !important; }
       .env__fill { transition: none; }
+      .vault { display: none !important; }
+      .vaultwrap.is-sealed .pos-tile { animation-play-state: running; }
     }
   </style>
 </head>
@@ -1472,7 +1524,7 @@
             '<span class="prod__disc" style="background:radial-gradient(120% 120% at 30% 25%,' + col + ',' + col + '99);color:#04121a">' + p.nom.charAt(0).toUpperCase() + '</span>' +
             '<span class="prod__info"><span class="prod__name">' + p.nom + '</span>' +
               '<span class="prod__badges"><span class="ptype ptype--' + p.type + '">' + PTYPE_LBL[p.type] + '</span>' + rec + '</span>' +
-              '<span class="prod__nums"><b>' + fF(p.prix) + '</b> · coût ' + fF(p.cout || 0) + ' · <i class="' + mcls + '">marge ' + mp + '%</i></span>' +
+              '<span class="prod__nums"><b>' + fF(p.prix) + '</b> · coût ' + fF(p.cout || 0) + (p.couts && p.couts.length ? ' (' + p.couts.length + ' postes)' : '') + ' · <i class="' + mcls + '">marge ' + mp + '%</i></span>' +
             '</span></button>' + ctrl + '</div>';
       }).join('');
       const seg = ['tous', 'physique', 'digital', 'service'].map((k) => '<button class="seg-btn' + (k === f ? ' is-on' : '') + '" data-catf="' + k + '">' + ({ tous: 'Tout', physique: 'Physique', digital: 'Digital', service: 'Service' }[k]) + '</button>').join('');
@@ -1501,24 +1553,47 @@
       }));
       const sheet = scr.querySelector('[data-psheet]'), scrim = scr.querySelector('[data-psclose]'), g = (s) => scr.querySelector(s);
       const title = g('[data-pstitle]'), nom = g('[data-pnom]'), prix = g('[data-pprix]'), cout = g('[data-pcout]'), qty = g('[data-pqty]'), qtyWrap = g('[data-pqtywrap]'), margeView = g('[data-pmarge]'), delBtn = g('[data-psdel]'), recBtn = g('[data-prec]'), typeBtns = scr.querySelectorAll('[data-pt]');
-      let editId = null, curType = 'physique', curRec = false;
+      let editId = null, curType = 'physique', curRec = false, curCouts = [];
+      const clinesBox = g('[data-clines]'), cfoot = g('[data-cfoot]'), ctot = g('[data-ctot]'), chint = g('[data-chint]');
       const setType = (t) => { curType = t; typeBtns.forEach((x) => x.classList.toggle('is-on', x.dataset.pt === t)); qtyWrap.style.display = t === 'physique' ? 'flex' : 'none'; };
       const setRec = (v) => { curRec = v; recBtn.classList.toggle('is-on', v); };
       const updMarge = () => { const pv = +prix.value || 0, cv = +cout.value || 0, m = pv > 0 ? Math.round((pv - cv) / pv * 100) : 0; margeView.innerHTML = pv > 0 ? 'Marge : <b>' + fF(pv - cv) + '</b> (' + m + '%)' : 'Marge : —'; };
+      // ---- Coût détaillé : postes nommés (partenaire, hébergement…), total et % automatiques
+      const coutsTotal = () => curCouts.reduce((s, c) => s + (+c.montant || 0), 0);
+      const updPcts = () => { const pv = +prix.value || 0; clinesBox.querySelectorAll('.cline').forEach((row, i) => { const c = curCouts[i], el = row.querySelector('.cline__pct'); if (el && c) el.textContent = (pv > 0 ? Math.round((+c.montant || 0) / pv * 100) : 0) + '%'; }); };
+      const syncCout = () => {
+        const has = curCouts.length > 0;
+        if (has) { cout.value = coutsTotal(); cout.readOnly = true; cout.style.opacity = '.55'; } else { cout.readOnly = false; cout.style.opacity = ''; }
+        cfoot.style.display = has ? 'flex' : 'none'; ctot.textContent = fF(coutsTotal()); chint.style.display = has ? 'none' : '';
+        updMarge(); updPcts();
+      };
+      const renderClines = () => {
+        clinesBox.innerHTML = curCouts.map((c, i) =>
+          '<div class="cline"><input class="sheet__txt cline__nom" data-clnom="' + i + '" type="text" placeholder="Qui / quoi (ex : Partenaire)" value="' + String(c.nom || '').replace(/"/g, '&quot;') + '">' +
+          '<input class="sheet__txt cline__amt" data-clamt="' + i + '" type="number" inputmode="numeric" placeholder="0 F" value="' + (c.montant || '') + '">' +
+          '<span class="cline__pct">0%</span><button type="button" class="cline__x" data-clrm="' + i + '" aria-label="Retirer cet élément">×</button></div>').join('');
+        clinesBox.querySelectorAll('[data-clnom]').forEach((el) => el.addEventListener('input', () => { curCouts[+el.dataset.clnom].nom = el.value; }));
+        clinesBox.querySelectorAll('[data-clamt]').forEach((el) => el.addEventListener('input', () => { curCouts[+el.dataset.clamt].montant = Math.round(+el.value || 0); syncCout(); }));
+        clinesBox.querySelectorAll('[data-clrm]').forEach((el) => el.addEventListener('click', () => { curCouts.splice(+el.dataset.clrm, 1); playSwoosh(); renderClines(); }));
+        syncCout();
+      };
+      g('[data-caddline]').addEventListener('click', () => { curCouts.push({ nom: '', montant: 0 }); playPop(true); renderClines(); const last = clinesBox.querySelector('.cline:last-child .cline__nom'); if (last) setTimeout(() => { try { last.focus(); } catch (_) {} }, 60); });
       const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
-      const openAdd = () => { editId = null; title.textContent = 'Nouvel article'; nom.value = ''; prix.value = ''; cout.value = ''; qty.value = ''; setType('physique'); setRec(false); updMarge(); delBtn.style.display = 'none'; sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick(); setTimeout(() => { try { nom.focus(); } catch (_) {} }, 220); };
-      const openEdit = (p) => { editId = p.id; title.textContent = 'Modifier'; nom.value = p.nom; prix.value = p.prix; cout.value = p.cout || 0; qty.value = p.qty || 0; setType(p.type); setRec(!!p.recurrent); updMarge(); delBtn.style.display = 'block'; sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick(); };
+      const openAdd = () => { editId = null; title.textContent = 'Nouvel article'; nom.value = ''; prix.value = ''; cout.value = ''; qty.value = ''; setType('physique'); setRec(false); curCouts = []; renderClines(); delBtn.style.display = 'none'; sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick(); setTimeout(() => { try { nom.focus(); } catch (_) {} }, 220); };
+      const openEdit = (p) => { editId = p.id; title.textContent = 'Modifier'; nom.value = p.nom; prix.value = p.prix; cout.value = p.cout || 0; qty.value = p.qty || 0; setType(p.type); setRec(!!p.recurrent); curCouts = (p.couts || []).map((c) => ({ nom: c.nom, montant: c.montant })); renderClines(); delBtn.style.display = 'block'; sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick(); };
       scrim.addEventListener('click', close);
       g('[data-prodnew]').addEventListener('click', openAdd);
       scr.querySelectorAll('[data-edit]').forEach((b) => b.addEventListener('click', () => { const p = SM.stock.find((x) => x.id === b.dataset.edit); if (p) openEdit(p); }));
       typeBtns.forEach((b) => b.addEventListener('click', () => { setType(b.dataset.pt); playPop(true); }));
       recBtn.addEventListener('click', () => { setRec(!curRec); playPop(curRec); });
-      prix.addEventListener('input', updMarge); cout.addEventListener('input', updMarge);
+      prix.addEventListener('input', () => { updMarge(); updPcts(); }); cout.addEventListener('input', updMarge);
       g('[data-psok]').addEventListener('click', () => {
-        const n = (nom.value || '').trim(), pv = Math.round(+prix.value || 0), cv = Math.round(+cout.value || 0), qv = Math.round(+qty.value || 0);
+        const n = (nom.value || '').trim(), pv = Math.round(+prix.value || 0), qv = Math.round(+qty.value || 0);
+        const couts = curCouts.map((c) => ({ nom: (c.nom || '').trim() || 'Élément', montant: Math.round(+c.montant || 0) })).filter((c) => c.montant > 0);
+        const cv = couts.length ? couts.reduce((s, c) => s + c.montant, 0) : Math.round(+cout.value || 0);   // coût = somme des postes s'il y en a
         if (!n || pv <= 0) { try { (n ? prix : nom).focus(); } catch (_) {} return; }
-        if (editId) { const p = SM.stock.find((x) => x.id === editId); if (p) { p.nom = n; p.prix = pv; p.cout = cv; p.type = curType; p.recurrent = curRec; if (curType === 'physique') p.qty = qv; } }
-        else SM.stock.push({ id: 'p' + Date.now(), nom: n, prix: pv, cout: cv, type: curType, recurrent: curRec, qty: curType === 'physique' ? qv : 0 });
+        if (editId) { const p = SM.stock.find((x) => x.id === editId); if (p) { p.nom = n; p.prix = pv; p.cout = cv; if (couts.length) p.couts = couts; else delete p.couts; p.type = curType; p.recurrent = curRec; if (curType === 'physique') p.qty = qv; } }
+        else { const np = { id: 'p' + Date.now(), nom: n, prix: pv, cout: cv, type: curType, recurrent: curRec, qty: curType === 'physique' ? qv : 0 }; if (couts.length) np.couts = couts; SM.stock.push(np); }
         smSave(); playSuccess(); close(); render();
       });
       delBtn.addEventListener('click', () => { if (!editId) return; const i = SM.stock.findIndex((x) => x.id === editId); if (i >= 0) { SM.stock.splice(i, 1); smSave(); playSwoosh(); close(); render(); } });
@@ -1807,7 +1882,7 @@
     function caisseHTML() {
       const tiles = SM.stock.map((p, i) => {
         const col = TILE_COLORS[i % TILE_COLORS.length], rupt = p.type === 'physique' && p.qty <= 0;
-        return '<button class="pos-tile' + (rupt ? ' rupt' : '') + '" data-pos="' + p.id + '" style="--i:' + i + '">' +
+        return '<button class="pos-tile' + (rupt ? ' rupt' : '') + '" data-pos="' + p.id + '" style="--i:' + i + ';--tc:' + col + '">' +
           '<span class="pos-tile__badge" data-badge="' + p.id + '">0</span>' +
           '<span class="pos-tile__disc" style="background:radial-gradient(120% 120% at 30% 25%,' + col + ',' + col + '99);color:#04121a">' + p.nom.charAt(0).toUpperCase() + '</span>' +
           '<span class="pos-tile__name">' + p.nom + '</span>' +
@@ -1820,7 +1895,14 @@
         '<span class="screen__tag">Caisse</span>' +
         '<h1 class="screen__title">Encaisser</h1>' +
         '<p class="screen__sub">Touche les produits vendus, choisis le paiement, encaisse.</p>' +
-        (empty || '<div class="pos"><div class="pos__grid">' + tiles + '</div><div class="pos__pad"></div></div>') +
+        (empty ||
+          '<div class="vaultwrap is-sealed" data-vaultwrap>' +
+            '<div class="vault" data-vault aria-hidden="true">' +
+              '<div class="vault__door vault__door--l"><svg class="vault__wheel" viewBox="0 0 62 62" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="31" cy="31" r="26"/><circle cx="31" cy="31" r="8"/><path d="M31 5v18M31 39v18M5 31h18M39 31h18M13 13l12.5 12.5M36.5 36.5 49 49M49 13 36.5 25.5M25.5 36.5 13 49"/></svg></div>' +
+              '<div class="vault__door vault__door--r"><svg class="vault__wheel" viewBox="0 0 62 62" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="31" cy="31" r="26"/><circle cx="31" cy="31" r="8"/><path d="M31 5v18M31 39v18M5 31h18M39 31h18M13 13l12.5 12.5M36.5 36.5 49 49M49 13 36.5 25.5M25.5 36.5 13 49"/></svg></div>' +
+            '</div>' +
+            '<div class="pos"><div class="pos__grid">' + tiles + '</div></div>' +
+          '</div><div class="pos__pad"></div>') +
         '<div class="ticket" data-ticket>' +
           '<div class="ticket__top"><span class="ticket__cnt" data-tkcnt>0 article</span><span class="ticket__total" data-tktotal>0 F</span></div>' +
           '<div class="ticket__modes">' + pay('espèces', 'esp', 'Espèces', ICO_CASH) + pay('momo', 'momo', 'Mobile Money', ICO_PHONE) + pay('credit', 'credit', 'Crédit', ICO_CLOCK) + '</div>' +
@@ -1849,6 +1931,13 @@
     function bindCaisse() {
       _ticket = []; _payMode = 'espèces';
       const scr = view.querySelector('.screen'); if (!scr) return;
+      // ---- Entrée théâtrale : la roue tourne, les portes du coffre s'ouvrent, les produits jaillissent
+      const vwrap = scr.querySelector('[data-vaultwrap]'), vault = scr.querySelector('[data-vault]');
+      if (vault && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        setTimeout(() => { vault.classList.add('is-turning'); try { playDrawerPull(); } catch (e) {} }, 140);
+        setTimeout(() => { vault.classList.add('is-open'); vwrap.classList.remove('is-sealed'); vwrap.classList.add('is-revealed'); }, 660);
+        setTimeout(() => { vault.classList.add('is-gone'); }, 1500);
+      } else if (vwrap) { vwrap.classList.remove('is-sealed'); vwrap.classList.add('is-revealed'); if (vault) vault.classList.add('is-gone'); }
       const grid = scr.querySelector('.pos__grid');
       if (grid) grid.addEventListener('click', (e) => {
         const b = e.target.closest('[data-pos]'); if (!b) return;
@@ -1965,9 +2054,18 @@
         editing = false; draft = null; disarm();
         const lines = (v.items || []).map((it) => '<div class="vdetail__row"><span>' + it.qty + '&times; ' + it.nom + '</span><b>' + fF(it.prix * it.qty) + '</b></div>').join('');
         const mode = v.mode === 'momo' ? 'Mobile Money' : v.mode === 'credit' ? 'Crédit' : 'Espèces';
+        const resa = {};   // « qui prend quoi » : agrège les postes de coût des articles vendus
+        (v.items || []).forEach((it) => { const p = SM.stock.find((x) => x.nom === it.nom); if (p && p.couts) p.couts.forEach((c) => { resa[c.nom] = (resa[c.nom] || 0) + c.montant * it.qty; }); });
+        const rk = Object.keys(resa);
+        const resaHTML = rk.length
+          ? '<div class="vresa"><span class="vresa__ttl">À réserver sur cette vente</span>' +
+            rk.map((k) => '<div class="vresa__row"><span>' + k + '</span><b>' + fF(resa[k]) + '</b></div>').join('') +
+            '<div class="vresa__row" style="border-top:1px solid rgba(255,255,255,.14);margin-top:5px;padding-top:7px"><span><b style="color:#fff">Total à réserver</b></span><b>' + fF(rk.reduce((s, k2) => s + resa[k2], 0)) + '</b></div>' +
+            '<div class="vresa__row" style="padding-top:3px"><span>Ce qui te reste vraiment</span><b style="color:#6bf0a0">' + fF(v.total - rk.reduce((s, k2) => s + resa[k2], 0)) + '</b></div></div>'
+          : '';
         body.innerHTML = lines +
           '<div class="vdetail__row"><span>' + mode + '</span><span>' + relTime(v.ts) + '</span></div>' +
-          '<div class="vdetail__tot"><span>Total</span><b>' + fF(v.total) + '</b></div>';
+          '<div class="vdetail__tot"><span>Total</span><b>' + fF(v.total) + '</b></div>' + resaHTML;
         edit.textContent = 'Modifier cette vente'; del.style.display = ''; keep.textContent = 'Garder';
       };
       const draftTotal = () => draft.items.reduce((s, it) => s + it.prix * it.qty, 0);
@@ -2444,6 +2542,10 @@
           '<div class="field2"><label class="fld"><span>Prix de vente</span><input class="sheet__txt" data-pprix type="number" inputmode="numeric" placeholder="0 F"></label>' +
             '<label class="fld"><span>Coût / achat</span><input class="sheet__txt" data-pcout type="number" inputmode="numeric" placeholder="0 F"></label></div>' +
           '<div class="margeview" data-pmarge>Marge : —</div>' +
+          '<div class="csplit"><div class="csplit__head"><span>Détail du coût — qui prend quoi</span><button type="button" class="csplit__addbtn" data-caddline>+ élément</button></div>' +
+            '<div data-clines></div>' +
+            '<p class="setnote" data-chint style="margin:0">Ex. vitrine + QR code : Partenaire 10 000 F, Hébergement 5 000 F… Le coût total et les % se calculent tout seuls.</p>' +
+            '<div class="csplit__foot" data-cfoot style="display:none"><span>Total des éléments</span><b data-ctot>0 F</b></div></div>' +
           '<label class="fld" data-pqtywrap><span>Quantité en stock</span><input class="sheet__txt" data-pqty type="number" inputmode="numeric" placeholder="0"></label>' +
           '<button class="toggle" data-prec><span class="toggle__dot"></span>Article récurrent (abonnement)</button>' +
           '<button class="sheet__add" data-psok>Enregistrer</button>' +
