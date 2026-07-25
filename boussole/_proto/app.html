@@ -1079,8 +1079,11 @@
     .onb__seg { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
     .onb__seg .seg-btn { border: 1px solid rgba(255, 255, 255, .12); background: rgba(255, 255, 255, .04); border-radius: 13px; padding: 11px 6px; }
     /* ---- Toasts (confirmations visuelles + Annuler) ---- */
-    .toasts { position: fixed; left: 12px; right: 12px; bottom: calc(104px + env(safe-area-inset-bottom)); z-index: 70; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
+    /* z-index 59 : au-dessus des feuilles (47) mais SOUS le voile (60) et le tiroir (70).
+       Sinon un toast recouvre le bas du menu et bloque les clics sur les derniers items. */
+    .toasts { position: fixed; left: 12px; right: 12px; bottom: calc(104px + env(safe-area-inset-bottom)); z-index: 59; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
     @media (min-width: 1024px) { .toasts { bottom: 24px; } }
+    .app.menu-open ~ .toasts { pointer-events: none; opacity: .25; }
     .toast { display: flex; align-items: center; gap: 12px; max-width: 440px; padding: 11px 14px; border-radius: 14px; pointer-events: auto;
       background: linear-gradient(180deg, rgba(30, 32, 42, .98), rgba(18, 19, 26, .98)); border: 1px solid rgba(255, 255, 255, .13);
       box-shadow: 0 16px 36px -14px rgba(0, 0, 0, .85), inset 0 1px 0 rgba(255, 255, 255, .07);
@@ -1246,6 +1249,85 @@
     .vault.is-gone { display: none; }
     .vault ~ .pos .pos-tile, .vaultwrap.is-sealed .pos-tile { animation-play-state: paused; }   /* les tuiles attendent l'ouverture */
     .vaultwrap.is-revealed .pos-tile { animation-play-state: running; }
+    /* ============================================================================
+       PILOTAGE : score de santé, point mort, trésorerie, rythme, produits, rapport
+       ========================================================================== */
+    .score { position: relative; max-width: 500px; margin: 18px auto 0; padding: 18px 16px 16px; border-radius: 20px; text-align: center;
+      background: radial-gradient(120% 130% at 50% 0%, rgba(255, 255, 255, .07), rgba(255, 255, 255, .02)); border: 1px solid rgba(255, 255, 255, .12); }
+    .score__wrap { position: relative; width: 132px; height: 132px; margin: 0 auto; }
+    .score__svg { width: 132px; height: 132px; transform: rotate(-90deg); }
+    .score__svg circle { fill: none; stroke-width: 11; stroke-linecap: round; }
+    .score__track { stroke: rgba(255, 255, 255, .08); }
+    .score__val { transition: stroke-dashoffset 1.1s var(--ease); }
+    .score__mid { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; }
+    .score__num { font-size: 38px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+    .score__cent { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255, 255, 255, .45); margin-top: 3px; }
+    .score__lbl { display: block; margin-top: 12px; font-size: 15px; font-weight: 800; color: #fff; }
+    .score__why { display: block; margin-top: 5px; font-size: 12.5px; line-height: 1.5; color: rgba(255, 255, 255, .6); }
+    .score__parts { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 13px; }
+    .spart { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 700;
+      background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .1); color: rgba(255, 255, 255, .72); }
+    .spart i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    .spart--ok { color: #6bf0a0; } .spart--mid { color: #ffd23f; } .spart--bad { color: #ff8a97; }
+    /* jauge du point mort */
+    .bem { max-width: 500px; margin: 14px auto 0; padding: 15px 16px; border-radius: 18px; text-align: left; position: relative;
+      background: rgba(255, 255, 255, .045); border: 1px solid rgba(255, 255, 255, .1); }
+    .bem__top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+    .bem__ttl { font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #ffc46a; }
+    .bem__amt { font-size: 15px; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
+    .bem__track { position: relative; height: 26px; margin: 10px 0 8px; border-radius: 9px; overflow: hidden; background: rgba(255, 255, 255, .07); }
+    .bem__fill { display: block; height: 100%; width: 0; border-radius: 9px 0 0 9px; transition: width 1.1s var(--ease);
+      background: linear-gradient(90deg, #e11d48, #f6a63c 62%, #34d399); }
+    .bem__mark { position: absolute; top: -3px; bottom: -3px; width: 2px; background: #fff; box-shadow: 0 0 8px rgba(255, 255, 255, .9); }
+    .bem__mark::after { content: "point mort"; position: absolute; top: -14px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: rgba(255, 255, 255, .75); white-space: nowrap; }
+    .bem__txt { font-size: 12.5px; line-height: 1.55; color: rgba(255, 255, 255, .68); }
+    .bem__txt b { color: #fff; }
+    /* trésorerie : cash vs bénéfice */
+    .tres { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; max-width: 500px; margin: 12px auto 0; }
+    .tcard { padding: 12px 13px; border-radius: 15px; text-align: left; background: rgba(255, 255, 255, .045); border: 1px solid rgba(255, 255, 255, .1); }
+    .tcard span { display: block; font-size: 10.5px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; color: rgba(255, 255, 255, .45); }
+    .tcard b { display: block; margin-top: 5px; font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums; color: #fff; }
+    .tcard small { display: block; margin-top: 3px; font-size: 11.5px; color: rgba(255, 255, 255, .5); }
+    .tcard--cash b { color: #6bf0a0; } .tcard--out b { color: #ffb27a; }
+    /* rythme : jours de la semaine / heures */
+    .rythm { display: flex; align-items: flex-end; gap: 5px; height: 108px; max-width: 500px; margin: 12px auto 4px; }
+    .rbar { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 5px; height: 100%; }
+    .rbar__b { width: 100%; min-height: 3px; border-radius: 6px 6px 3px 3px; background: linear-gradient(180deg, #ffd98a, #f6a63c);
+      box-shadow: 0 0 12px -4px rgba(246, 166, 60, .8); transform-origin: bottom; animation: rGrow .6s calc(var(--i) * 55ms) var(--ease-back) both; }
+    @keyframes rGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+    .rbar--best .rbar__b { background: linear-gradient(180deg, #8af0c8, #34d399); box-shadow: 0 0 14px -3px rgba(52, 211, 153, .9); }
+    .rbar__l { font-size: 10.5px; font-weight: 700; color: rgba(255, 255, 255, .5); }
+    .rbar--best .rbar__l { color: #6bf0a0; }
+    /* écran produits : classement, pareto, dormants */
+    .prank { max-width: 520px; margin: 12px auto 0; display: flex; flex-direction: column; gap: 8px; }
+    .prow { display: flex; align-items: center; gap: 11px; padding: 11px 13px; border-radius: 14px; text-align: left;
+      background: rgba(255, 255, 255, .045); border: 1px solid rgba(255, 255, 255, .1); animation: expIn .4s calc(var(--i) * 50ms) var(--ease) both; }
+    .prow--vital { border-color: rgba(52, 211, 153, .35); background: rgba(52, 211, 153, .06); }
+    .prow--dead { border-color: rgba(255, 90, 106, .28); }
+    .prow__n { flex: none; width: 24px; height: 24px; border-radius: 8px; display: grid; place-items: center; font-size: 11.5px; font-weight: 800; color: #04121a; background: rgba(255, 255, 255, .6); }
+    .prow--vital .prow__n { background: radial-gradient(120% 120% at 30% 25%, #8af0c8, #34d399); }
+    .prow__id { flex: 1; min-width: 0; }
+    .prow__nm { display: block; font-size: 14px; font-weight: 700; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .prow__sub { display: block; margin-top: 2px; font-size: 11.5px; color: rgba(255, 255, 255, .5); }
+    .prow__amt { flex: none; text-align: right; }
+    .prow__amt b { display: block; font-size: 14px; font-weight: 800; color: #6bf0a0; font-variant-numeric: tabular-nums; }
+    .prow__amt small { display: block; font-size: 11px; color: rgba(255, 255, 255, .45); }
+    .pbar { height: 5px; margin-top: 7px; border-radius: 99px; background: rgba(255, 255, 255, .08); overflow: hidden; }
+    .pbar span { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, rgba(246, 166, 60, .5), #f6a63c); }
+    /* comparateur */
+    .cmp { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; max-width: 500px; margin: 12px auto 0; }
+    .cmpc { padding: 12px; border-radius: 15px; text-align: center; background: rgba(255, 255, 255, .045); border: 1px solid rgba(255, 255, 255, .1); }
+    .cmpc span { display: block; font-size: 10.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: rgba(255, 255, 255, .45); }
+    .cmpc b { display: block; margin-top: 5px; font-size: 17px; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
+    .cmparrow { font-size: 13px; font-weight: 800; padding: 6px 9px; border-radius: 999px; white-space: nowrap; }
+    .cmparrow--up { color: #6bf0a0; background: rgba(52, 211, 153, .12); border: 1px solid rgba(52, 211, 153, .35); }
+    .cmparrow--dn { color: #ff8a97; background: rgba(225, 29, 72, .12); border: 1px solid rgba(225, 29, 72, .35); }
+    .cmparrow--eq { color: rgba(255, 255, 255, .6); background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .14); }
+    /* fiabilité de saisie */
+    .fiab { display: flex; align-items: center; gap: 10px; max-width: 500px; margin: 12px auto 0; padding: 11px 14px; border-radius: 14px;
+      background: rgba(255, 255, 255, .04); border: 1px dashed rgba(255, 255, 255, .18); text-align: left; font-size: 12.5px; color: rgba(255, 255, 255, .62); }
+    .fiab b { color: #fff; }
+    .fiab__ring { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 10.5px; font-weight: 800; color: #fff; }
     /* ---- Coût détaillé d'un produit : qui prend quoi, % auto ---- */
     .csplit { margin: 2px 0 10px; padding: 11px 12px; border-radius: 14px; background: rgba(255, 255, 255, .035); border: 1px dashed rgba(255, 255, 255, .18); text-align: left; }
     .csplit__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
@@ -1450,6 +1532,10 @@
           <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
           Statistiques
         </button>
+        <button class="navbtn navbtn--green" data-nav="produits" data-sfx-hover>
+          <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h3.5V10H3zM10.2 20h3.6V4h-3.6zM17.5 20H21v-7h-3.5z"/></svg></span>
+          Mes produits
+        </button>
         <button class="navbtn navbtn--yellow" data-nav="objectifs" data-sfx-hover>
           <span class="navbtn__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.2"/><circle cx="12" cy="12" r="4.2"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg></span>
           Objectifs
@@ -1581,6 +1667,23 @@
         if (perso > 0 && e.env3 > 0 && perso > e.env3) add('d-perso', 'ta poche perso (' + fF(perso) + ') dépasse ton bénéfice net du mois. Se payer : oui. Se vider : non.');
         const caSem = caBetween(t0d - 6 * DAY, Date.now() + 1);
         if (caSem > 0) add('d-sem', 'ta semaine : ' + fF(caSem) + ' encaissés, ~' + fF(Math.round(caSem / 7)) + ' par jour. Tu veux monter la moyenne ? Vise les heures creuses.', 2);
+        // --- pilotage : les chiffres que peu de commerçants connaissent
+        const pm = pointMort(), tr2 = treso(), sc2 = scoreSante(), pj2 = projectionMois();
+        add('d-score', 'ton commerce est à <b>' + sc2.total + '/100</b> — ' + sc2.lbl.toLowerCase() + '. ' + sc2.why, 3.5);
+        if (pm.caNecessaire > 0 && !pm.atteintLe) add('d-pm', 'ton <b>point mort</b> du mois est de ' + fF(pm.caNecessaire) + ' : il te reste <b>' + fF(pm.reste) + '</b> à vendre avant de commencer à gagner. Soit ' + fF(pm.vital) + ' par jour ouvré.');
+        if (pm.atteintLe) add('d-pmok', 'tu as passé ton point mort le <b>' + fDate(pm.atteintLe) + '</b> : depuis, chaque vente va directement dans ta poche.');
+        if (tr2.aCredit > 0) add('d-cash', 'attention : <b>' + fF(tr2.aCredit) + '</b> de tes ventes du mois sont à crédit. C\'est dans ton bénéfice, mais pas encore dans ta caisse.');
+        if (tr2.autonomie !== null && tr2.autonomie < 10 && tr2.sorties > 0) add('d-auto', 'avec ta caisse actuelle, tu tiens <b>' + tr2.autonomie + ' jours</b> de charges. En dessous de 15, on ne dort pas tranquille.');
+        if (pj2.caMois > 0 && pj2.restant > 0) add('d-proj', 'à ce rythme, tu finiras le mois autour de <b>' + fF(pj2.fin) + '</b>' + (pj2.manque > 0 ? ', soit ' + fF(pj2.manque) + ' sous ton objectif. Il faudrait ' + fF(pj2.parJourRequis) + ' par jour.' : '. Tu tiens ton objectif.'));
+        const ps2 = produitsStats(30);
+        if (ps2.list.length) { const c = ps2.list[0]; add('d-champ', '<b>' + c.nom + '</b> t\'a rapporté ' + fF(c.marge) + ' de bénéfice en 30 jours. C\'est ton champion — ne tombe jamais en rupture dessus.'); }
+        if (ps2.dormants.length >= 2) add('d-dorm', '<b>' + fF(ps2.dormants.reduce((a, d) => a + d.immo, 0)) + '</b> dorment dans ' + ps2.dormants.length + ' produits que personne n\'achète. Cet argent-là pourrait travailler.');
+        const vsm = ventesIn(t0m, Date.now() + 1);
+        if (vsm.length >= 3) add('d-panier', 'ton panier moyen ce mois : <b>' + fF(Math.round(vsm.reduce((a, v) => a + v.total, 0) / vsm.length)) + '</b>. Le faire monter de 10%, c\'est souvent plus facile que de trouver 10% de clients en plus.', 2);
+        const sv2 = stockValeur();
+        if (!isService() && sv2.cout > 0 && sv2.rotation < 0.8) add('d-rota', 'ton stock ne tourne que <b>' + sv2.rotation.toFixed(1) + ' fois par mois</b> : ' + fF(sv2.cout) + ' immobilisés qui dorment. Achète moins, mais plus souvent.');
+        const f2 = fiabilite();
+        if (f2.jours >= 7 && f2.pct < 60) add('d-fiab', 'tu n\'as noté que <b>' + f2.saisis + ' jours sur ' + f2.jours + '</b> ce mois-ci. Mes calculs valent ce que valent tes saisies — note chaque jour, même vite fait.');
       } catch (er) {}
       LECONS.forEach((l, i) => P.push({ id: 'l' + i, txt: 'retiens ça : ' + l, w: 1 }));
       ETINCELLES.forEach((q, i) => P.push({ id: 'q' + i, txt: 'question pour toi : ' + q, w: 1.6 }));
@@ -1626,6 +1729,7 @@
       carnet:    { label: 'Carnet clients', color: '#ff8a3d', desc: 'Clients, crédits et relances.' },
       factures:  { label: 'Factures & devis', color: '#4cc9ff', desc: 'Factures normalisées et devis pour tes clients.' },
       equipe:    { label: 'Mon équipe',     color: '#3a86ff', desc: 'Vendeurs, rôles et sécurité.' },
+      produits:  { label: 'Mes produits',   color: '#6bf0a0', desc: 'Ce qui te rapporte vraiment, ce qui dort.' },
       reglages:  { label: 'Réglages',       color: '#8a93a6', desc: 'Identité, sécurité, données et cloud.' },
     };
     // Accueil : HUD de bienvenue (salutation dynamique) + 2 mastodontes Vendre / Dépenser
@@ -2460,6 +2564,74 @@
       return { tone, title, lines };
     }
     function iaBannerPeriod(r) { const v = iaVerdictPeriod(r); return '<div class="ia' + (v.tone ? ' ia--' + v.tone : '') + '"><span class="ia__orb"></span><span class="ia__chip">&#10022; L\'IA Boussole &middot; analyse de la période</span><h3 class="ia__title">' + v.title + '</h3><p class="ia__txt">' + v.lines.join(' ') + '</p></div>'; }
+    /* ---- Le rythme du commerce : panier moyen, tickets, jours forts, heures de pointe ---- */
+    function panierHTML(r) {
+      const vs = ventesIn(r.t0, Math.min(r.t1, Date.now() + 1));
+      if (!vs.length) return '';
+      const ca = vs.reduce((s, v) => s + (+v.total || 0), 0);
+      const panier = Math.round(ca / vs.length);
+      const arts = vs.reduce((s, v) => s + (v.items || []).reduce((s2, it) => s2 + it.qty, 0), 0);
+      const parVente = (arts / vs.length);
+      // comparaison du panier avec la période précédente de même durée
+      let evo = '';
+      const span = r.t1 - r.t0;
+      if (isFinite(span)) {
+        const pv = ventesIn(r.t0 - span, r.t0);
+        if (pv.length) {
+          const pp = pv.reduce((s, v) => s + v.total, 0) / pv.length;
+          const d = Math.round((panier - pp) / pp * 100);
+          evo = d === 0 ? 'stable' : (d > 0 ? '+' + d + '% vs avant' : d + '% vs avant');
+        }
+      }
+      return '<div class="panel"><h3 class="panel__ttl" style="--sc:#ffc46a"><i></i>Le rythme de tes ventes</h3>' +
+        '<div class="tres" style="margin-top:2px">' +
+          '<div class="tcard"><span>Panier moyen</span><b>' + fF(panier) + '</b><small>' + (evo || 'par vente') + '</small></div>' +
+          '<div class="tcard"><span>Nombre de ventes</span><b>' + vs.length + '</b><small>' + parVente.toFixed(1) + ' article' + (parVente >= 2 ? 's' : '') + ' par vente</small></div>' +
+        '</div>' +
+        '<p class="ia__txt" style="margin-top:10px">Pour gagner plus, deux leviers : <b>servir plus de clients</b> ou <b>faire monter le panier</b> (proposer l\'article qui va avec).</p></div>';
+    }
+    function rythmeHTML(r) {
+      const vs = ventesIn(r.t0, Math.min(r.t1, Date.now() + 1));
+      if (vs.length < 4) return '';
+      const J = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'], parJ = [0, 0, 0, 0, 0, 0, 0], parH = {};
+      vs.forEach((v) => { const d = new Date(v.ts); parJ[d.getDay()] += (+v.total || 0); const h = d.getHours(); parH[h] = (parH[h] || 0) + (+v.total || 0); });
+      const ordre = [1, 2, 3, 4, 5, 6, 0];   // semaine qui commence lundi
+      const mxJ = Math.max.apply(null, parJ) || 1;
+      const bestJ = ordre.reduce((a, b) => parJ[b] > parJ[a] ? b : a, ordre[0]);
+      const barsJ = ordre.map((k, i) => '<div class="rbar' + (k === bestJ && parJ[k] > 0 ? ' rbar--best' : '') + '" style="--i:' + i + '"><span class="rbar__b" style="height:' + Math.max(3, parJ[k] / mxJ * 100).toFixed(0) + '%"></span><span class="rbar__l">' + J[k] + '</span></div>').join('');
+      const hs = Object.keys(parH).map(Number).sort((a, b) => a - b);
+      let heureHTML = '';
+      if (hs.length >= 3) {
+        const h0 = Math.max(5, hs[0] - 1), h1 = Math.min(23, hs[hs.length - 1] + 1);
+        const mxH = Math.max.apply(null, hs.map((h) => parH[h])) || 1;
+        const bestH = hs.reduce((a, b) => (parH[b] > parH[a] ? b : a), hs[0]);
+        let bars = '';
+        for (let h = h0; h <= h1; h++) bars += '<div class="rbar' + (h === bestH ? ' rbar--best' : '') + '" style="--i:' + (h - h0) + '"><span class="rbar__b" style="height:' + Math.max(3, (parH[h] || 0) / mxH * 100).toFixed(0) + '%"></span><span class="rbar__l">' + h + 'h</span></div>';
+        heureHTML = '<div class="panel"><h3 class="panel__ttl" style="--sc:#b98cff"><i></i>Tes heures de pointe</h3><div class="rythm">' + bars + '</div>' +
+          '<p class="ia__txt">Ton pic est vers <b>' + bestH + 'h</b> (' + fF(parH[bestH]) + '). Sois prêt avant : stock sorti, monnaie prête, personnel présent.</p></div>';
+      }
+      return '<div class="panel"><h3 class="panel__ttl" style="--sc:#ffd23f"><i></i>Tes jours forts</h3><div class="rythm">' + barsJ + '</div>' +
+        '<p class="ia__txt">Ton meilleur jour : <b>' + ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'][bestJ] + '</b> (' + fF(parJ[bestJ]) + '). ' +
+        'Ton jour le plus faible mérite une promo — ou du repos.</p></div>' + heureHTML;
+    }
+    function comparaisonHTML(r) {   // la période choisie vs la précédente de même durée
+      const span = r.t1 - r.t0;
+      if (!isFinite(span) || r.t0 === 0) return '';
+      const caA = caIn(r.t0, r.t1), caB = caIn(r.t0 - span, r.t0);
+      const benA = caA - depTotIn(r.t0, r.t1), benB = caB - depTotIn(r.t0 - span, r.t0);
+      if (caA === 0 && caB === 0) return '';
+      const pct = caB > 0 ? Math.round((caA - caB) / caB * 100) : (caA > 0 ? 100 : 0);
+      const cls = pct > 2 ? 'up' : pct < -2 ? 'dn' : 'eq';
+      const fleche = pct > 2 ? '&#9650; +' + pct + '%' : pct < -2 ? '&#9660; ' + pct + '%' : '= stable';
+      return '<div class="panel"><h3 class="panel__ttl" style="--sc:#4cc9ff"><i></i>Comparé à la période d\'avant</h3>' +
+        '<div class="cmp"><div class="cmpc"><span>Avant</span><b>' + fF(caB) + '</b></div>' +
+        '<span class="cmparrow cmparrow--' + cls + '">' + fleche + '</span>' +
+        '<div class="cmpc"><span>Maintenant</span><b>' + fF(caA) + '</b></div></div>' +
+        '<p class="ia__txt" style="margin-top:10px">' +
+          (pct > 2 ? 'Tu progresses. ' : pct < -2 ? 'Tu recules sur cette période. ' : 'Tu es stable. ') +
+          'Côté bénéfice : <b>' + (benA >= 0 ? '+' : '') + fF(benA) + '</b> contre ' + (benB >= 0 ? '+' : '') + fF(benB) + ' avant.' +
+        '</p></div>';
+    }
     function statsHTML() {
       const r = statRange();
       const ca = caIn(r.t0, r.t1), dep = depTotIn(r.t0, r.t1), ben = ca - dep, marge = ca > 0 ? Math.round(ben / ca * 100) : 0;
@@ -2482,8 +2654,11 @@
           kpi('ben', 'Bénéfice', (ben >= 0 ? '+' : '') + fF(ben), ben >= 0 ? 'ce qui te reste' : 'tu es en perte', 2) +
           kpi('marge', 'Marge', marge + ' %', 'sur 100 F vendus', 3) +
         '</div>' +
+        panierHTML(r) +
+        comparaisonHTML(r) +
         '<div class="panel"><h3 class="panel__ttl" style="--sc:#e11d48"><i></i>Où part ton argent</h3>' + (dep > 0 ? donutSVG(cats, 'Dépensé') : '<p class="ia__txt">Pas de dépense sur cette période.</p>') + '</div>' +
         '<div class="panel"><h3 class="panel__ttl" style="--sc:#34d399"><i></i>' + (singleDay ? 'Les 7 jours qui y mènent' : 'Évolution') + '</h3>' + (bks ? barsSVG(bks) : '<p class="ia__txt">Rien à tracer pour l\'instant.</p>') + '</div>' +
+        rythmeHTML(r) +
         '<div class="sheet-scrim" data-stclose></div>' +
         '<div class="sheet" data-stsheet><div class="sheet__grip"></div><h3 class="sheet__title">Choisir une période</h3>' +
           '<div class="seg" data-stkind>' + [['day', 'Jour'], ['monthpick', 'Mois'], ['yearpick', 'Année'], ['range', 'Période']].map((k, i) => '<button class="seg-btn' + (i === 0 ? ' is-on' : '') + '" data-stk="' + k[0] + '">' + k[1] + '</button>').join('') + '</div>' +
@@ -2518,6 +2693,59 @@
       });
     }
 
+    /* ===== ÉCRAN « MES PRODUITS » : lequel te rapporte VRAIMENT (marge × volume) ===== */
+    let _prodPer = 30;
+    function produitsHTML() {
+      const ps = produitsStats(_prodPer), sv = stockValeur();
+      const seg = [[7, '7 jours'], [30, '30 jours'], [90, '3 mois']].map((k) => '<button class="seg-btn' + (k[0] === _prodPer ? ' is-on' : '') + '" data-pper="' + k[0] + '">' + k[1] + '</button>').join('');
+      if (!ps.list.length) {
+        return '<div class="screen wide" style="--sc:#6bf0a0"><span class="screen__tag">Mes produits</span><h1 class="screen__title">Ce qui rapporte</h1>' +
+          '<div class="seg">' + seg + '</div>' +
+          '<p class="pos__empty">Aucune vente sur cette période. Dès que tu encaisses, je te dis <b>quel produit te rapporte le plus</b> — et ce n\'est presque jamais celui qu\'on croit.</p></div>';
+      }
+      const mxMarge = Math.max.apply(null, ps.list.map((p) => p.marge)) || 1;
+      const rows = ps.list.slice(0, 12).map((p, i) => {
+        const pct = ps.caTot > 0 ? Math.round(p.ca / ps.caTot * 100) : 0;
+        const mu = p.qty > 0 ? Math.round(p.marge / p.qty) : 0;
+        return '<div class="prow' + (p.vital ? ' prow--vital' : '') + '" style="--i:' + i + '">' +
+          '<span class="prow__n">' + (i + 1) + '</span>' +
+          '<span class="prow__id"><span class="prow__nm">' + p.nom + '</span>' +
+            '<span class="prow__sub">' + p.qty + ' vendu' + (p.qty > 1 ? 's' : '') + ' · ' + fF(p.ca) + ' de chiffre (' + pct + '%) · ' + fF(mu) + ' de marge l\'unité</span>' +
+            '<span class="pbar"><span style="width:' + Math.max(4, p.marge / mxMarge * 100).toFixed(0) + '%"></span></span></span>' +
+          '<span class="prow__amt"><b>' + fF(p.marge) + '</b><small>rapporté</small></span></div>';
+      }).join('');
+      const vitals = ps.list.filter((p) => p.vital);
+      const champion = ps.list[0], champCA = ps.list.slice().sort((a, b) => b.ca - a.ca)[0];
+      const alerte = champion && champCA && champion.nom !== champCA.nom
+        ? '<div class="ia ia--warn"><span class="ia__orb"></span><span class="ia__chip">&#10022; À savoir</span><h3 class="ia__title">Ton best-seller n\'est pas ton meilleur produit</h3>' +
+          '<p class="ia__txt"><b>' + champCA.nom + '</b> fait le plus de chiffre (' + fF(champCA.ca) + '), mais c\'est <b>' + champion.nom + '</b> qui te rapporte le plus (' + fF(champion.marge) + ' de bénéfice). Mets <b>' + champion.nom + '</b> en avant : même effort, plus d\'argent dans ta poche.</p></div>'
+        : '<div class="ia ia--good"><span class="ia__orb"></span><span class="ia__chip">&#10022; Ton champion</span><h3 class="ia__title">' + champion.nom + '</h3>' +
+          '<p class="ia__txt">Il t\'a rapporté <b>' + fF(champion.marge) + '</b> de bénéfice en ' + ps.jours + ' jours (' + champion.qty + ' vendus). Ne tombe jamais en rupture dessus.</p></div>';
+      const pareto = vitals.length ? '<div class="panel"><h3 class="panel__ttl" style="--sc:#ffd23f"><i></i>La règle des 20/80</h3>' +
+        '<p class="ia__txt"><b>' + vitals.length + ' produit' + (vitals.length > 1 ? 's' : '') + '</b> sur ' + ps.list.length + ' font <b>80% de ton chiffre</b> : ' +
+        vitals.slice(0, 4).map((p) => '<b style="color:#6bf0a0">' + p.nom + '</b>').join(', ') + (vitals.length > 4 ? '…' : '') +
+        '. Ce sont eux qui méritent ton stock, ta place en vitrine et ton énergie.</p></div>' : '';
+      const dorm = ps.dormants.length ? '<div class="panel"><h3 class="panel__ttl" style="--sc:#e11d48"><i></i>Ce qui dort sur l\'étagère</h3>' +
+        '<div class="prank" style="margin-top:0">' + ps.dormants.slice(0, 6).map((d, i) => '<div class="prow prow--dead" style="--i:' + i + '">' +
+          '<span class="prow__n" style="background:rgba(255,138,151,.85)">!</span>' +
+          '<span class="prow__id"><span class="prow__nm">' + d.nom + '</span><span class="prow__sub">' + d.qty + ' en stock · aucune vente depuis ' + ps.jours + ' jours</span></span>' +
+          '<span class="prow__amt"><b style="color:#ff8a97">' + fF(d.immo) + '</b><small>immobilisés</small></span></div>').join('') + '</div>' +
+        '<p class="ia__txt" style="margin-top:10px">Total qui dort : <b style="color:#ff8a97">' + fF(ps.dormants.reduce((s, d) => s + d.immo, 0)) + '</b>. Promotion, lot, ou on arrête d\'en racheter.</p></div>' : '';
+      const stock = (!isService() && sv.cout > 0) ? '<div class="panel"><h3 class="panel__ttl" style="--sc:#4cc9ff"><i></i>Ton stock en chiffres</h3>' +
+        '<div class="tres" style="margin-top:2px"><div class="tcard"><span>Immobilisé</span><b>' + fF(sv.cout) + '</b><small>ce que ça t\'a coûté</small></div>' +
+        '<div class="tcard"><span>Rotation</span><b>' + sv.rotation.toFixed(1) + '×</b><small>par mois</small></div></div>' +
+        '<p class="ia__txt" style="margin-top:10px">' + (sv.rotation < 0.8 ? 'Ton stock tourne lentement : trop d\'argent immobilisé. Achète moins, mais plus souvent.' : sv.rotation > 3 ? 'Rotation rapide : ton argent travaille bien. Surveille juste les ruptures.' : 'Rotation correcte.') + '</p></div>' : '';
+      return '<div class="screen wide" style="--sc:#6bf0a0"><span class="screen__tag">Mes produits</span><h1 class="screen__title">Ce qui rapporte</h1>' +
+        '<p class="screen__sub">Classés par <b>bénéfice réellement apporté</b> — pas par chiffre d\'affaires.</p>' +
+        '<div class="seg">' + seg + '</div>' +
+        alerte + '<div class="prank">' + rows + '</div>' + pareto + dorm + stock +
+      '</div>';
+    }
+    function bindProduits() {
+      const scr = view.querySelector('.screen'); if (!scr) return;
+      scr.querySelectorAll('[data-pper]').forEach((b) => b.addEventListener('click', () => { _prodPer = +b.dataset.pper; playPop(true); view.innerHTML = produitsHTML(); bindProduits(); }));
+    }
+
     /* ===== BILAN + LES 3 ENVELOPPES (le cœur Boussole : où va chaque franc du mois) ===== */
     function enveloppes() {
       const t0 = startOfMonth();
@@ -2529,6 +2757,131 @@
       const env2 = Math.min(marge, charges);                             // enveloppe 2 : la marge couvre les charges du mois
       const env3 = Math.max(0, marge - charges);                         // enveloppe 3 : le bénéfice net à mettre de côté
       return { ca, cout, marge, charges, env2, env3, manque: Math.max(0, charges - marge) };
+    }
+    /* ============================================================================
+       MOTEUR DE PILOTAGE — les chiffres qui font vivre ou mourir un commerce
+       (tout est calculé sur les données déjà saisies, aucune saisie en plus)
+       ========================================================================== */
+    const ventesIn = (t0, t1) => (SM.ventes || []).filter((v) => v.ts >= t0 && v.ts < t1);
+    const isService = () => (SM.biz && SM.biz.activite) === 'services';
+    // charges FIXES du mois = sorties business hors achat de marchandise (le stock, lui, est un coût variable)
+    const chargesMois = () => (SM.depenses || []).filter((d) => !d.perso && d.kind !== 'achat' && d.ts >= startOfMonth()).reduce((s, d) => s + (+d.montant || 0), 0);
+    function tauxMarge() {   // marge moyenne réelle sur 60 j (repli : marge théorique du catalogue, puis 40 %)
+      const vs = ventesIn(Date.now() - 60 * DAY, Date.now() + 1);
+      const ca = vs.reduce((s, v) => s + (+v.total || 0), 0), co = vs.reduce((s, v) => s + (+v.cout || 0), 0);
+      if (ca > 0 && co > 0) return Math.max(0.05, Math.min(0.95, (ca - co) / ca));
+      const st = SM.stock.filter((p) => p.prix > 0);
+      if (st.length) { const m = st.reduce((s, p) => s + (p.prix - (p.cout || 0)) / p.prix, 0) / st.length; if (m > 0) return Math.max(0.05, Math.min(0.95, m)); }
+      return 0.4;
+    }
+    function joursOuverture() {   // jours réellement travaillés (30 j glissants), défaut 26
+      const set = {}; ventesIn(Date.now() - 30 * DAY, Date.now() + 1).forEach((v) => { set[dayStart(v.ts)] = 1; });
+      const n = Object.keys(set).length;
+      return n >= 5 ? Math.min(31, Math.round(n)) : 26;
+    }
+    function pointMort() {   // LE chiffre : combien il faut vendre pour ne rien perdre
+      const charges = chargesMois(), tm = tauxMarge();
+      const caNecessaire = tm > 0 ? Math.round(charges / tm) : 0;
+      const jo = joursOuverture(), vital = Math.round(caNecessaire / Math.max(1, jo));
+      const t0 = startOfMonth(), caMois = caIn(t0, Date.now() + 1);
+      let atteintLe = 0, cum = 0;   // le jour du mois où le point mort a été franchi
+      const vs = ventesIn(t0, Date.now() + 1).slice().sort((a, b) => a.ts - b.ts);
+      for (let i = 0; i < vs.length; i++) { cum += (+vs[i].total || 0); if (caNecessaire > 0 && cum >= caNecessaire) { atteintLe = vs[i].ts; break; } }
+      return { charges, tm, caNecessaire, jours: jo, vital, caMois, atteintLe, pct: caNecessaire > 0 ? caMois / caNecessaire * 100 : (caMois > 0 ? 100 : 0), reste: Math.max(0, caNecessaire - caMois) };
+    }
+    function treso() {   // bénéfice ≠ argent en poche : ce qui est VRAIMENT rentré
+      const t0 = startOfMonth();
+      const vs = ventesIn(t0, Date.now() + 1);
+      const encaisse = vs.filter((v) => v.mode !== 'credit').reduce((s, v) => s + (+v.total || 0), 0);
+      const aCredit = vs.filter((v) => v.mode === 'credit').reduce((s, v) => s + (+v.total || 0), 0);
+      const dehors = (SM.clients || []).reduce((s, c) => s + (+c.dette || 0), 0);
+      const sorties = (SM.depenses || []).filter((d) => d.ts >= t0).reduce((s, d) => s + (+d.montant || 0), 0);   // perso compris : ça sort vraiment
+      const cash = encaisse - sorties;
+      const chargesJour = chargesMois() / Math.max(1, new Date().getDate());
+      const autonomie = chargesJour > 0 ? Math.max(0, Math.floor(cash / chargesJour)) : null;
+      return { encaisse, aCredit, dehors, sorties, cash, autonomie };
+    }
+    function fiabilite() {   // sans saisie régulière, les statistiques mentent : on le dit
+      const t0 = startOfMonth(), jours = new Date().getDate(), set = {};
+      (SM.ventes || []).forEach((v) => { if (v.ts >= t0) set[dayStart(v.ts)] = 1; });
+      (SM.depenses || []).forEach((d) => { if (d.ts >= t0) set[dayStart(d.ts)] = 1; });
+      const saisis = Object.keys(set).length;
+      return { saisis, jours, pct: jours > 0 ? Math.round(saisis / jours * 100) : 0 };
+    }
+    function stockValeur() {   // l'argent qui dort sur l'étagère + vitesse de rotation
+      const phys = SM.stock.filter((p) => p.type === 'physique');
+      const cout = phys.reduce((s, p) => s + (p.cout || 0) * (p.qty || 0), 0);
+      const vente = phys.reduce((s, p) => s + (p.prix || 0) * (p.qty || 0), 0);
+      const coutVendu30 = ventesIn(Date.now() - 30 * DAY, Date.now() + 1).reduce((s, v) => s + (+v.cout || 0), 0);
+      const rotation = cout > 0 ? coutVendu30 / cout : 0;
+      return { cout, vente, rotation, dort: vente - cout };
+    }
+    function produitsStats(jours) {   // par produit : combien il rapporte VRAIMENT (marge × volume)
+      const t0 = Date.now() - (jours || 30) * DAY, m = {};
+      ventesIn(t0, Date.now() + 1).forEach((v) => {
+        (v.items || []).forEach((it) => {
+          const p = SM.stock.find((x) => x.nom === it.nom);
+          const cu = p ? (p.cout || 0) : Math.round(it.prix * 0.55);
+          const e = m[it.nom] || (m[it.nom] = { nom: it.nom, qty: 0, ca: 0, marge: 0, last: 0, ref: p || null });
+          e.qty += it.qty; e.ca += it.prix * it.qty; e.marge += (it.prix - cu) * it.qty; e.last = Math.max(e.last, v.ts);
+        });
+      });
+      const list = Object.keys(m).map((k) => m[k]);
+      const caTot = list.reduce((s, e) => s + e.ca, 0);
+      list.sort((a, b) => b.marge - a.marge);
+      let cum = 0;   // règle 20/80 : les produits qui font 80 % du chiffre
+      list.slice().sort((a, b) => b.ca - a.ca).forEach((e) => { cum += e.ca; e.vital = caTot > 0 && (cum - e.ca) < caTot * 0.8; });
+      const dormants = SM.stock.filter((p) => p.type === 'physique' && (p.qty || 0) > 0 && !m[p.nom])
+        .map((p) => ({ nom: p.nom, qty: p.qty, immo: (p.cout || 0) * p.qty }));
+      return { list, caTot, dormants, jours: jours || 30 };
+    }
+    function recurrentMois() {   // revenu récurrent (abonnements) : le chiffre qui rassure
+      const noms = SM.stock.filter((p) => p.recurrent).map((p) => p.nom);
+      if (!noms.length) return 0;
+      return ventesIn(startOfMonth(), Date.now() + 1).reduce((s, v) => s + (v.items || []).reduce((s2, it) => noms.indexOf(it.nom) >= 0 ? s2 + it.prix * it.qty : s2, 0), 0);
+    }
+    function projectionMois() {   // « à ce rythme, tu finiras à… »
+      const now = new Date(), jourDuMois = now.getDate();
+      const dansLeMois = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      const caMois = caIn(startOfMonth(), Date.now() + 1);
+      const parJour = caMois / Math.max(1, jourDuMois);
+      const fin = Math.round(parJour * dansLeMois);
+      const obj = (SM.objectifs && SM.objectifs.mois) || 0;
+      return { caMois, parJour: Math.round(parJour), fin, restant: dansLeMois - jourDuMois, obj, manque: obj > 0 ? Math.max(0, obj - fin) : 0, parJourRequis: obj > 0 && dansLeMois > jourDuMois ? Math.round(Math.max(0, obj - caMois) / (dansLeMois - jourDuMois)) : 0 };
+    }
+    function scoreSante() {   // 5 notes -> un seul chiffre compréhensible en 2 secondes
+      const e = enveloppes(), t = treso(), pm = pointMort(), f = fiabilite(), parts = [];
+      // 1. Rentabilité : la marge du mois couvre-t-elle les charges ?
+      let r = 0;
+      if (e.ca > 0) r = e.manque > 0 ? Math.max(0, 20 * (1 - e.manque / Math.max(1, e.charges))) : (e.env3 > 0 ? 20 : 14);
+      parts.push({ k: 'Rentabilité', v: r, max: 20, bad: 'ta marge ne couvre pas encore tes charges' });
+      // 2. Trésorerie : combien de jours de charges tiens-tu ?
+      const aut = t.autonomie === null ? 30 : t.autonomie;
+      const tr = Math.max(0, Math.min(20, aut / 30 * 20));
+      parts.push({ k: 'Trésorerie', v: tr, max: 20, bad: 'ta caisse ne tient que ' + aut + ' jour' + (aut > 1 ? 's' : '') + ' de charges' });
+      // 3. Argent dehors : part des créances dans le CA du mois
+      const ratio = e.ca > 0 ? t.dehors / e.ca : 0;
+      const cr = Math.max(0, Math.min(20, 20 * (1 - ratio / 0.4)));
+      parts.push({ k: 'Crédits clients', v: e.ca > 0 ? cr : 20, max: 20, bad: fF(t.dehors) + ' dorment chez tes clients' });
+      // 4. Stock (ou régularité des ventes pour les services)
+      let sk = 20, badSk = '';
+      if (!isService()) {
+        const phys = SM.stock.filter((p) => p.type === 'physique');
+        if (phys.length) {
+          const rupt = phys.filter((p) => (p.qty || 0) <= 0).length;
+          const dor = produitsStats(30).dormants.length;
+          sk = Math.max(0, 20 - rupt * 4 - dor * 2);
+          badSk = rupt ? rupt + ' produit' + (rupt > 1 ? 's' : '') + ' en rupture' : dor ? dor + ' produit' + (dor > 1 ? 's' : '') + ' qui ne se vend' + (dor > 1 ? 'ent' : '') + ' plus' : '';
+        }
+      }
+      parts.push({ k: isService() ? 'Activité' : 'Stock', v: sk, max: 20, bad: badSk || 'ton stock demande de l\'attention' });
+      // 5. Régularité de saisie : sans elle, tous les chiffres mentent
+      parts.push({ k: 'Suivi', v: Math.max(0, Math.min(20, f.pct / 100 * 20)), max: 20, bad: 'tu n\'as noté que ' + f.saisis + ' jour' + (f.saisis > 1 ? 's' : '') + ' sur ' + f.jours });
+      const total = Math.round(parts.reduce((s, p) => s + p.v, 0));
+      const faible = parts.slice().sort((a, b) => (a.v / a.max) - (b.v / b.max))[0];
+      const lbl = total >= 80 ? 'Commerce solide' : total >= 60 ? 'Ça tient la route' : total >= 40 ? 'Fragile, mais rattrapable' : 'Danger : il faut agir';
+      const col = total >= 75 ? '#34d399' : total >= 50 ? '#ffd23f' : '#e11d48';
+      return { total, parts, faible, lbl, col, why: total >= 85 ? 'Continue exactement comme ça.' : 'Ce qui te pénalise le plus : ' + faible.bad + '.' };
     }
     const ICO_LOOP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>';
     const ICO_HOME = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/></svg>';
@@ -2552,13 +2905,54 @@
       const cats = depByCat();
       const src = ca > 0 ? hbar('Espèces', esp, ca, '#34d399') + hbar('Mobile Money', momo, ca, '#f6a63c') + hbar('Crédit (à récupérer)', cred, ca, '#ff8a3d') : '<p class="ia__txt">Aucune vente enregistrée.</p>';
       const out = dep > 0 ? cats.map((c) => hbar(c.name, c.val, dep, c.color)).join('') : '<p class="ia__txt">Aucune dépense enregistrée.</p>';
+      const sc = scoreSante(), pm = pointMort(), tr = treso(), fi = fiabilite(), pj = projectionMois(), sv = stockValeur(), rec = recurrentMois();
+      const R = 58, C = 2 * Math.PI * R;
+      const scoreHTML = '<div class="score"><div class="score__wrap">' +
+          '<svg class="score__svg" viewBox="0 0 132 132"><circle class="score__track" cx="66" cy="66" r="' + R + '"/>' +
+          '<circle class="score__val" cx="66" cy="66" r="' + R + '" stroke="' + sc.col + '" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + C.toFixed(1) + '" data-scoff="' + (C * (1 - sc.total / 100)).toFixed(1) + '" style="filter:drop-shadow(0 0 7px ' + sc.col + ')"/></svg>' +
+          '<div class="score__mid"><b class="score__num" style="color:' + sc.col + '">' + sc.total + '</b><span class="score__cent">sur 100</span></div>' +
+        '</div><b class="score__lbl">' + sc.lbl + '</b><span class="score__why">' + sc.why + '</span>' +
+        '<div class="score__parts">' + sc.parts.map((p) => { const r = p.v / p.max; return '<span class="spart spart--' + (r >= 0.75 ? 'ok' : r >= 0.45 ? 'mid' : 'bad') + '"><i></i>' + p.k + ' ' + Math.round(p.v) + '/' + p.max + '</span>'; }).join('') + '</div></div>';
+      // jauge du point mort : le seuil de survie du mois
+      const pmPct = Math.min(100, pm.pct), markAt = pm.caNecessaire > 0 ? Math.min(97, 100 * pm.caNecessaire / Math.max(pm.caNecessaire, pm.caMois) ) : 0;
+      const pmHTML = pm.caNecessaire > 0 ? '<div class="bem"><div class="bem__top"><span class="bem__ttl">Ton point mort du mois</span><b class="bem__amt">' + fF(pm.caNecessaire) + '</b></div>' +
+          '<div class="bem__track"><span class="bem__fill" data-bemfill="' + pmPct.toFixed(0) + '"></span>' + (pm.caMois > pm.caNecessaire ? '<span class="bem__mark" style="left:' + markAt.toFixed(0) + '%"></span>' : '') + '</div>' +
+          '<p class="bem__txt">' + (pm.atteintLe
+            ? 'Tu as passé le point mort <b>le ' + fDate(pm.atteintLe) + '</b> : depuis, chaque vente est du <b>bénéfice</b>.'
+            : 'Il te reste <b>' + fF(pm.reste) + '</b> à vendre ce mois-ci pour ne rien perdre.') +
+          ' Avec ' + fF(pm.charges) + ' de charges et une marge de <b>' + Math.round(pm.tm * 100) + '%</b>, il te faut <b>' + fF(pm.vital) + ' par jour ouvré</b>.</p></div>'
+        : '';
+      // trésorerie : ce qui est vraiment rentré, ce qui est encore dehors
+      const tresHTML = '<div class="tres">' +
+          '<div class="tcard tcard--cash"><span>Argent en caisse</span><b>' + fF(tr.cash) + '</b><small>' + (tr.autonomie !== null ? 'tient ' + tr.autonomie + ' jour' + (tr.autonomie > 1 ? 's' : '') + ' de charges' : 'encaissé moins sorties') + '</small></div>' +
+          '<div class="tcard tcard--out"><span>Argent dehors</span><b>' + fF(tr.dehors) + '</b><small>' + (tr.dehors > 0 ? 'chez tes clients à crédit' : 'personne ne te doit rien') + '</small></div>' +
+        '</div>' +
+        (tr.aCredit > 0 ? '<p class="bem__txt" style="max-width:500px;margin:9px auto 0;text-align:left">⚠️ Attention : <b>' + fF(tr.aCredit) + '</b> de tes ventes du mois sont <b>à crédit</b> — c\'est compté dans ton bénéfice mais ce n\'est <b>pas encore dans ta caisse</b>.</p>' : '');
+      // projection de fin de mois
+      const pjHTML = pj.caMois > 0 && pj.restant > 0 ? '<div class="bem"><div class="bem__top"><span class="bem__ttl">Fin de mois projetée</span><b class="bem__amt">' + fF(pj.fin) + '</b></div>' +
+          '<p class="bem__txt">À ton rythme actuel (<b>' + fF(pj.parJour) + '/jour</b>), tu finiras le mois autour de <b>' + fF(pj.fin) + '</b>' +
+          (pj.obj > 0 ? (pj.manque > 0 ? ' — soit <b>' + fF(pj.manque) + ' sous ton objectif</b>. Pour le tenir : <b>' + fF(pj.parJourRequis) + ' par jour</b> sur les ' + pj.restant + ' jours restants.' : ' — <b>objectif du mois dépassé</b>. Beau travail.') : '.') + '</p></div>' : '';
+      const stockHTML = (!isService() && sv.cout > 0) ? '<div class="panel"><h3 class="panel__ttl" style="--sc:#ffd23f"><i></i>Ton argent qui dort</h3>' +
+          '<p class="ia__txt">Tu as <b style="color:#ffd9a0">' + fF(sv.cout) + '</b> immobilisés en stock (valeur de revente : ' + fF(sv.vente) + '). Ton stock tourne <b>' + sv.rotation.toFixed(1) + ' fois par mois</b>' +
+          (sv.rotation < 0.8 ? ' — c\'est lent : trop d\'argent dort sur l\'étagère.' : sv.rotation > 3 ? ' — excellent, ton argent travaille vite.' : ' — rythme correct.') + '</p>' +
+          '<button class="setbtn" data-goto="produits" style="margin-top:10px">Voir le détail par produit &rsaquo;</button></div>' : '';
+      const recHTML = rec > 0 ? '<div class="panel"><h3 class="panel__ttl" style="--sc:#34d399"><i></i>Revenu récurrent</h3><p class="ia__txt"><b style="color:#6bf0a0">' + fF(rec) + '</b> viennent d\'abonnements ce mois-ci. C\'est la partie de ton chiffre sur laquelle tu peux compter chaque mois — la plus précieuse.</p></div>' : '';
+      const fiabHTML = fi.jours >= 3 ? '<div class="fiab"><span class="fiab__ring" style="background:conic-gradient(' + (fi.pct >= 70 ? '#34d399' : '#ffd23f') + ' ' + (fi.pct * 3.6) + 'deg, rgba(255,255,255,.1) 0)">' + fi.pct + '</span>' +
+          '<span>Tu as noté quelque chose <b>' + fi.saisis + ' jour' + (fi.saisis > 1 ? 's' : '') + ' sur ' + fi.jours + '</b> ce mois-ci. ' + (fi.pct >= 70 ? 'Tes chiffres sont fiables.' : 'Plus tu notes, plus ces chiffres disent la vérité.') + '</span></div>' : '';
       return '<div class="screen wide" style="--sc:#b98cff"><span class="screen__tag">Le bilan</span><h1 class="screen__title">Ta santé</h1>' +
+        scoreHTML +
         '<div class="benhero ben--' + (ben >= 0 ? 'ok' : 'bad') + '"><span class="benhero__lbl">Bénéfice net</span><b class="benhero__num">' + (ben >= 0 ? '+' : '') + fF(ben) + '</b><span class="benhero__sub">' + (ben >= 0 ? "Ton commerce gagne de l'argent" : "Ton commerce perd de l'argent") + '</span></div>' +
+        tresHTML + pmHTML + pjHTML +
         envsHTML() +
+        stockHTML + recHTML + fiabHTML +
         iaBanner() +
         '<div class="panel"><h3 class="panel__ttl" style="--sc:#34d399"><i></i>D\'où vient ton argent</h3>' + src + '</div>' +
         '<div class="panel"><h3 class="panel__ttl" style="--sc:#e11d48"><i></i>Ce qui pèse le plus</h3>' + out + '</div>' +
         (persoTotal() > 0 ? '<div class="panel"><h3 class="panel__ttl" style="--sc:#b98cff"><i></i>Poche perso</h3><p class="ia__txt">Tu as sorti <b style="color:#c9a7ff">' + fF(persoTotal()) + '</b> pour tes dépenses personnelles. C\'est ton argent, mais ce n\'est pas compté dans le bénéfice du business.</p></div>' : '') +
+        '<div class="setbtns" style="max-width:500px;margin:16px auto 0">' +
+          '<button class="setbtn" data-rapport>&#128196; Rapport du mois (PDF)</button>' +
+          '<button class="setbtn" data-rapportwa>&#128241; Envoyer par WhatsApp</button>' +
+        '</div>' +
       '</div>';
     }
     function bindBilan() {
@@ -2568,6 +2962,67 @@
         const w = f.dataset.envfill + '%';
         if (rm) f.style.width = w; else requestAnimationFrame(() => requestAnimationFrame(() => { f.style.width = w; }));
       });
+      const bf = view.querySelector('[data-bemfill]');   // la jauge du point mort se remplit
+      if (bf) { const w = bf.dataset.bemfill + '%'; if (rm) bf.style.width = w; else requestAnimationFrame(() => requestAnimationFrame(() => { bf.style.width = w; })); }
+      const sc = view.querySelector('[data-scoff]');     // l'anneau du score se dessine
+      if (sc) { const o = sc.dataset.scoff; if (rm) sc.style.strokeDashoffset = o; else requestAnimationFrame(() => requestAnimationFrame(() => { sc.style.strokeDashoffset = o; })); }
+      const rap = view.querySelector('[data-rapport]');
+      if (rap) rap.addEventListener('click', () => { playClick(); rapportMois(); });
+      const wa = view.querySelector('[data-rapportwa]');
+      if (wa) wa.addEventListener('click', () => { playClick(); partagerBilanWA(); });
+    }
+    /* ---- Rapport mensuel : la preuve à sortir de l'app (banque, associé, microcrédit) ---- */
+    function rapportMois() {
+      const e = enveloppes(), pm = pointMort(), tr = treso(), sc = scoreSante(), fi = fiabilite(), sv = stockValeur(), ps = produitsStats(30);
+      const mois = MOIS_LBL[new Date().getMonth()] + ' ' + new Date().getFullYear();
+      const cats = depByCatIn(startOfMonth(), Date.now() + 1);
+      const ligne = (a, b, fort) => '<tr><td>' + a + '</td><td class="r"' + (fort ? ' style="font-weight:800"' : '') + '>' + b + '</td></tr>';
+      const css = 'body{font-family:Arial,Helvetica,sans-serif;color:#14161c;max-width:660px;margin:24px auto;padding:0 20px}h1{font-size:22px;margin:0}h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#666;margin:22px 0 6px;border-bottom:1px solid #ddd;padding-bottom:5px}.h{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #14161c;padding-bottom:12px}.sc{text-align:center;border:2px solid #14161c;border-radius:12px;padding:8px 14px}.sc b{display:block;font-size:26px}.sc span{font-size:10px;text-transform:uppercase;color:#666}table{width:100%;border-collapse:collapse;font-size:13px}td{padding:6px 4px;border-bottom:1px solid #eee}.r{text-align:right;font-variant-numeric:tabular-nums}.note{font-size:12px;color:#555;line-height:1.5;margin-top:8px}.foot{margin-top:26px;font-size:11px;color:#888;text-align:center;border-top:1px solid #ddd;padding-top:10px}';
+      const html = '<!doctype html><html><head><meta charset="utf-8"><title>Bilan ' + mois + '</title><style>' + css + '</style></head><body>' +
+        '<div class="h"><div><h1>' + bizNom() + '</h1><div style="font-size:12px;color:#666">' + bizLine() + '</div><div style="font-size:13px;margin-top:8px"><b>Bilan de ' + mois + '</b></div></div>' +
+        '<div class="sc"><b>' + sc.total + '</b><span>santé /100</span></div></div>' +
+        '<h2>L\'essentiel</h2><table>' +
+        ligne('Ventes encaissées (chiffre d\'affaires)', fF(e.ca), 1) +
+        ligne('Coût de revient des ventes', fF(e.cout)) +
+        ligne('Marge dégagée', fF(e.marge)) +
+        ligne('Charges du mois', fF(e.charges)) +
+        ligne('<b>Bénéfice net</b>', '<b>' + fF(e.env3 - (e.manque > 0 ? e.manque : 0)) + '</b>', 1) +
+        '</table>' +
+        '<h2>Trésorerie</h2><table>' +
+        ligne('Réellement encaissé (espèces + Mobile Money)', fF(tr.encaisse)) +
+        ligne('Vendu à crédit (pas encore encaissé)', fF(tr.aCredit)) +
+        ligne('Total dû par les clients', fF(tr.dehors)) +
+        ligne('Sorties du mois', fF(tr.sorties)) +
+        ligne('<b>Argent en caisse</b>', '<b>' + fF(tr.cash) + '</b>', 1) +
+        '</table>' +
+        '<h2>Seuil de rentabilité</h2><table>' +
+        ligne('Point mort du mois (ventes minimum)', fF(pm.caNecessaire)) +
+        ligne('Objectif par jour ouvré', fF(pm.vital)) +
+        ligne('Taux de marge moyen', Math.round(pm.tm * 100) + ' %') +
+        ligne('Statut', pm.atteintLe ? 'Point mort franchi le ' + fDate(pm.atteintLe) : 'Reste ' + fF(pm.reste) + ' à vendre', 1) +
+        '</table>' +
+        (cats.length ? '<h2>Où part l\'argent</h2><table>' + cats.map((c) => ligne(c.name, fF(c.val) + ' (' + Math.round(c.val / Math.max(1, e.charges + e.cout) * 100) + ' %)')).join('') + '</table>' : '') +
+        (ps.list.length ? '<h2>Meilleurs produits (30 jours, par bénéfice apporté)</h2><table>' + ps.list.slice(0, 6).map((p, i) => ligne((i + 1) + '. ' + p.nom + ' <span style="color:#888">(' + p.qty + ' vendus)</span>', fF(p.marge))).join('') + '</table>' : '') +
+        (!isService() && sv.cout > 0 ? '<h2>Stock</h2><table>' + ligne('Valeur immobilisée (au coût)', fF(sv.cout)) + ligne('Valeur de revente', fF(sv.vente)) + ligne('Rotation mensuelle', sv.rotation.toFixed(1) + ' fois') + '</table>' : '') +
+        '<p class="note"><b>Fiabilité des données :</b> saisies effectuées ' + fi.saisis + ' jour(s) sur ' + fi.jours + ' (' + fi.pct + ' %). ' + sc.why + '</p>' +
+        '<div class="foot">Document généré par Boussole — NEBULA Agency' + (bizLegal() ? ' · ' + bizLegal() : '') + '</div>' +
+        '<scr' + 'ipt>window.onload=function(){window.print()}</scr' + 'ipt></body></html>';
+      const w = window.open('', '_blank'); if (w) { w.document.write(html); w.document.close(); }
+      toast('Rapport de ' + mois + ' prêt à imprimer ou enregistrer en PDF', { tone: 'good' });
+    }
+    function partagerBilanWA() {
+      const e = enveloppes(), pm = pointMort(), tr = treso(), sc = scoreSante();
+      const mois = MOIS_LBL[new Date().getMonth()] + ' ' + new Date().getFullYear();
+      const msg = '*' + bizNom() + '* — bilan de ' + mois + '\n' +
+        '\nSanté du commerce : *' + sc.total + '/100* (' + sc.lbl + ')' +
+        '\nVentes : *' + fF(e.ca) + '*' +
+        '\nCharges : ' + fF(e.charges) +
+        '\nBénéfice net : *' + fF(e.env3) + '*' +
+        '\nArgent en caisse : ' + fF(tr.cash) +
+        (tr.dehors > 0 ? '\nÀ récupérer chez les clients : ' + fF(tr.dehors) : '') +
+        '\nPoint mort : ' + fF(pm.caNecessaire) + (pm.atteintLe ? ' (franchi le ' + fDate(pm.atteintLe) + ')' : ' — reste ' + fF(pm.reste)) +
+        '\n\n_Généré par Boussole_';
+      window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
     }
 
     /* ============================================================================
@@ -3027,6 +3482,13 @@
       if (new Date().getDate() >= 10 && e.manque > 0 && e.ca > 0) A.push({ tone: 'warn', ac: '#e11d48', ic: ICO_HOME, nav: 'bilan', tx: 'Ta marge du mois ne couvre pas encore tes charges : il manque <b>' + fF(e.manque) + '</b>.' });
       const streak = calcStreak();
       if (streak >= 3) A.push({ tone: 'good', ac: '#34d399', ic: ICO_STAR, nav: 'statistiques', tx: '<b>' + streak + ' jours de suite</b> à objectif atteint. Sérieusement stylé.' });
+      // --- pilotage : point mort, trésorerie, argent qui dort
+      const pm = pointMort(), tr = treso(), jm = new Date().getDate();
+      if (pm.caNecessaire > 0 && !pm.atteintLe && jm >= 15) A.push({ tone: 'warn', ac: '#e11d48', ic: ICO_FLAG, nav: 'bilan', tx: 'On est le ' + jm + ' et ton <b>point mort</b> n\'est pas atteint : encore <b>' + fF(pm.reste) + '</b> à vendre pour ne rien perdre.' });
+      if (pm.atteintLe) A.push({ tone: 'good', ac: '#34d399', ic: ICO_STAR, nav: 'bilan', tx: 'Point mort franchi <b>le ' + fDate(pm.atteintLe) + '</b> : tout ce que tu vends maintenant est du <b>bénéfice</b>.' });
+      if (tr.autonomie !== null && tr.autonomie < 7 && tr.sorties > 0) A.push({ tone: 'warn', ac: '#e11d48', ic: ICO_HOME, nav: 'bilan', tx: 'Trésorerie tendue : ta caisse ne couvre plus que <b>' + tr.autonomie + ' jour' + (tr.autonomie > 1 ? 's' : '') + '</b> de charges.' });
+      const dorm = produitsStats(30).dormants;
+      if (dorm.length >= 2) { const imm = dorm.reduce((s2, d) => s2 + d.immo, 0); A.push({ tone: '', ac: '#ffd23f', ic: ICO_BOX, nav: 'produits', tx: '<b>' + fF(imm) + '</b> dorment dans ' + dorm.length + ' produits invendus depuis 30 jours. Promo ou on arrête d\'en racheter ?' }); }
       return A;
     }
     function calcStreak() {   // jours consécutifs à objectif atteint (aujourd'hui compte dès qu'il est atteint)
@@ -3077,6 +3539,14 @@
       if (/b[ée]n[ée]fice|marge|gagn|rentab/.test(s)) { const e = enveloppes(); const ca = salesTotal(), dep = expTotal(); return 'Depuis le début : <b>' + fF(ca - dep) + '</b> de bénéfice brut. Ce mois-ci, après coût de revient et charges, il te reste <b>' + fF(e.env3) + '</b> net. C\'est ça, ton vrai chiffre.'; }
       if (/d[ée]pens|sortie|charge/.test(s)) { const e = enveloppes(); const cats = depByCat(); return 'Ce mois-ci : <b>' + fF(e.charges) + '</b> de charges.' + (cats[0] ? ' Ta plus grosse sortie globale : <b>' + cats[0].name + '</b> (' + fF(cats[0].val) + ').' : ''); }
       if (/enveloppe/.test(s)) { const e = enveloppes(); return 'Tes 3 enveloppes du mois : <b>' + fF(e.cout) + '</b> pour relancer la production, <b>' + fF(e.env2) + '</b> vers les charges' + (e.manque > 0 ? ' (il manque ' + fF(e.manque) + ')' : '') + ', et <b>' + fF(e.env3) + '</b> de bénéfice net.'; }
+      if (/point mort|seuil|rentab.*seuil|combien.*pour ne rien perdre/.test(s)) { const pm = pointMort(); return pm.caNecessaire > 0 ? 'Ton point mort du mois est de <b>' + fF(pm.caNecessaire) + '</b> (charges ' + fF(pm.charges) + ' ÷ marge ' + Math.round(pm.tm * 100) + '%), soit <b>' + fF(pm.vital) + ' par jour ouvré</b>. ' + (pm.atteintLe ? 'Tu l\'as franchi le ' + fDate(pm.atteintLe) + ' : le reste est du bénéfice.' : 'Il te reste ' + fF(pm.reste) + ' à faire.') : 'Note d\'abord tes charges du mois et je te calcule ton point mort.'; }
+      if (/tr[ée]sorerie|caisse.*r[ée]elle|combien.*en caisse|cash/.test(s)) { const t = treso(); return 'En caisse : <b>' + fF(t.cash) + '</b> (encaissé ' + fF(t.encaisse) + ' − sorties ' + fF(t.sorties) + ').' + (t.dehors > 0 ? ' En plus, <b>' + fF(t.dehors) + '</b> sont encore chez tes clients.' : '') + (t.autonomie !== null ? ' Ça te fait <b>' + t.autonomie + ' jours</b> de charges devant toi.' : ''); }
+      if (/panier|ticket moyen|moyenne.*vente/.test(s)) { const vs = ventesIn(startOfMonth(), Date.now() + 1); if (!vs.length) return 'Aucune vente ce mois-ci pour calculer ton panier moyen.'; const pan = Math.round(vs.reduce((a, v) => a + v.total, 0) / vs.length); return 'Ton panier moyen ce mois : <b>' + fF(pan) + '</b> sur ' + vs.length + ' ventes. Fais-le monter en proposant systématiquement l\'article qui va avec.'; }
+      if (/quel jour|meilleur jour de la semaine|jour fort/.test(s)) { const J = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'], p = [0, 0, 0, 0, 0, 0, 0]; ventesIn(Date.now() - 60 * DAY, Date.now() + 1).forEach((v) => { p[new Date(v.ts).getDay()] += v.total; }); let b = 0; for (let i = 1; i < 7; i++) if (p[i] > p[b]) b = i; return p[b] > 0 ? 'Sur 60 jours, ton meilleur jour est le <b>' + J[b] + '</b> (' + fF(p[b]) + '). Prépare-le : stock, monnaie, personnel.' : 'Pas encore assez de ventes pour dégager un jour fort.'; }
+      if (/dort|dormant|invendu|immobilis/.test(s)) { const d = produitsStats(30).dormants; return d.length ? '<b>' + fF(d.reduce((a, x) => a + x.immo, 0)) + '</b> dorment dans ' + d.length + ' produit(s) invendus depuis 30 jours : ' + d.slice(0, 3).map((x) => '<b>' + x.nom + '</b>').join(', ') + '. Promo, lot, ou on arrête d\'en racheter.' : 'Rien ne dort : tous tes produits en stock se vendent.'; }
+      if (/rapporte|rentable.*produit|meilleure marge/.test(s)) { const ps = produitsStats(30); if (!ps.list.length) return 'Pas encore de vente sur 30 jours.'; const c = ps.list[0]; return 'Sur 30 jours, c\'est <b>' + c.nom + '</b> qui te rapporte le plus : <b>' + fF(c.marge) + '</b> de bénéfice (' + c.qty + ' vendus). Attention, ce n\'est pas forcément celui qui fait le plus de chiffre.'; }
+      if (/fin de mois|projection|je vais finir|combien.*ce mois/.test(s)) { const p = projectionMois(); return p.caMois > 0 ? 'À ton rythme (<b>' + fF(p.parJour) + '/jour</b>), tu finiras le mois autour de <b>' + fF(p.fin) + '</b>.' + (p.manque > 0 ? ' Pour ton objectif il faudrait ' + fF(p.parJourRequis) + ' par jour sur les ' + p.restant + ' jours restants.' : '') : 'Encore aucune vente ce mois-ci.'; }
+      if (/score|sant[ée]|comment (je )?vais|[çc]a va mon commerce/.test(s)) { const sc = scoreSante(); return 'Ton commerce est à <b>' + sc.total + '/100</b> — ' + sc.lbl + '. ' + sc.why; }
       if (/vendeur|[ée]quipe|qui a vendu/.test(s)) { const m = {}; (SM.ventes || []).forEach((v) => { if (v.ts >= t0m && v.par) m[v.par] = (m[v.par] || 0) + v.total; }); const ks = Object.keys(m); return ks.length ? 'Ce mois-ci : ' + ks.map((k) => '<b>' + k + '</b> ' + fF(m[k])).join(' · ') : 'Aucune vente attribuée ce mois-ci.'; }
       return null;   // pas de règle locale -> webhook IA si configuré, sinon conseil général
     }
@@ -3105,7 +3575,7 @@
       const alerts = computeAlerts();
       const arows = alerts.map((al, i) => '<button class="alertrow' + (al.tone ? ' alertrow--' + al.tone : '') + '" style="--i:' + i + ';--ac:' + al.ac + '" data-algo="' + al.nav + '"><span class="alertrow__ic">' + al.ic + '</span><span class="alertrow__tx">' + al.tx + '</span><span class="alertrow__go">&#8250;</span></button>').join('');
       const chat = (SM.chat || []).slice(-6).map((c) => '<div class="bub bub--q">' + c.q + '</div><div class="bub bub--a">' + c.a + '</div>').join('');
-      const qs = ['CA du jour ?', 'Qui me doit ?', 'Stock bas ?', 'Mes enveloppes ?', 'Meilleur produit ?'].map((t) => '<button class="freqchip" data-quickq>' + t + '</button>').join('');
+      const qs = ['CA du jour ?', 'Mon point mort ?', 'Ma trésorerie ?', 'Qui me doit ?', 'Quel produit rapporte ?', 'Fin de mois ?', 'Mon score ?', 'Quel jour fort ?'].map((t) => '<button class="freqchip" data-quickq>' + t + '</button>').join('');
       return '<div class="screen wide" style="--sc:#ffc46a">' +
         '<span class="screen__tag">Boussole</span>' +
         '<div class="calib" data-calib aria-hidden="true"><svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="2"/><circle cx="50" cy="50" r="36" stroke="currentColor" stroke-width="1" opacity=".4"/><g class="calib__needle"><path d="M50 14 L43 50 L57 50 Z" fill="currentColor"/><path d="M50 86 L43 50 L57 50 Z" fill="currentColor" opacity=".35"/></g><circle cx="50" cy="50" r="3.5" fill="currentColor"/></svg></div>' +
@@ -3150,7 +3620,7 @@
       scr.querySelectorAll('[data-quickq]').forEach((b) => b.addEventListener('click', () => send(b.textContent)));
     }
     /* ---- Verrous par rôle : chacun voit SA partie (le vrai anti-vol) ---- */
-    const LOCKED = { patron: [], gerant: ['equipe', 'reglages'], vendeur: ['bilan', 'statistiques', 'objectifs', 'carnet', 'factures', 'equipe', 'depenses', 'boussole', 'reglages'] };
+    const LOCKED = { patron: [], gerant: ['equipe', 'reglages'], vendeur: ['bilan', 'statistiques', 'objectifs', 'carnet', 'factures', 'equipe', 'depenses', 'boussole', 'reglages', 'produits'] };
     const canSee = (nav) => (LOCKED[activeRole()] || []).indexOf(nav) < 0;
     function lockHTML(nav) {
       const patron = (SM.equipe || []).find((m) => m.role === 'patron') || {};
@@ -3414,7 +3884,7 @@
     function countUpNums(scope) {
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       (scope || view).querySelectorAll('.kpi__num, .benhero__num').forEach((el, i) => {
-        const m = el.textContent.match(/^([^\d]*)([\d\s\u00A0\u202F]+)(.*)$/);   // préfixe / chiffres (espaces milliers) / suffixe — découpage robuste
+        const m = el.textContent.match(/^([^\d]*)([\d\s\u00A0\u202F]*\d)(.*)$/);   // le groupe chiffres FINIT sur un chiffre -> l'espace avant « F » reste dans le suffixe   // préfixe / chiffres (espaces milliers) / suffixe — découpage robuste
         if (!m) return;
         const target = Math.abs(+m[2].replace(/[^\d]/g, '')); if (!target) return; const prefix = m[1], suffix = m[3];
         const DUR = 850, start = performance.now() + i * 90;
@@ -3468,6 +3938,7 @@
       if (nav === 'factures') { _facMode = 'list'; view.innerHTML = facturesHTML(); bindFactures(); return; }
       if (nav === 'equipe') { view.innerHTML = equipeHTML(); bindEquipe(); return; }
       if (nav === 'boussole') { view.innerHTML = boussoleHTML(); bindBoussole(); return; }
+      if (nav === 'produits') { view.innerHTML = produitsHTML(); bindProduits(); return; }
       if (nav === 'reglages') { view.innerHTML = reglagesHTML(); bindReglages(); return; }
       const s = SECTIONS[nav] || SECTIONS.accueil;
       view.innerHTML =
