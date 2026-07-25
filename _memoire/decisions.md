@@ -482,4 +482,34 @@
 - **Décision** : **transcoder toute vidéo en H.264** avant le web (ffmpeg via `pip install imageio-ffmpeg`) ; vérifier le codec (`grep avc1/hvc1`) ; cache-buster l'URL vidéo si on remplace le contenu (cache immuable).
 - **Conséquences** : lecture universelle. Règle ajoutée au skill. Voir [[feedback_cache-bust-assets]].
 
+## 2026-07-25 — Boussole : jamais de données de démo imposées
+- **Contexte** : le proto chargeait d'office un faux commerce (ventes, clients, factures). Un vrai commerçant démarrait avec des chiffres qui n'étaient pas les siens et devait les supprimer un par un.
+- **Décision** : l'**onboarding** propose explicitement « **mes vraies données** » (démarrage à zéro) ou « **explorer la démo** ». Le mode démo est marqué (`SM.meta.demo`, chip visible) et se quitte depuis Réglages. Tous les jeux d'exemple sont conditionnés à ce drapeau.
+- **Conséquences** : règle valable pour **tout futur SaaS vertical** NEBULA — un logiciel qu'on confie à un commerce ne doit jamais mélanger vraies et fausses données. Voir [[project_boussole]].
+
+## 2026-07-25 — Charte des couleurs d'action (Boussole, puis tous les outils)
+- **Contexte** : le bouton « Enregistrer » et le bouton « Supprimer » partageaient le même rouge dans les feuilles → risque réel de suppression accidentelle.
+- **Décision** : **or ambre = action primaire** (valider, enregistrer) · **rouge = destructif uniquement** · **vert = encaissement**. Aucune action de validation ne peut être rouge.
+- **Conséquences** : appliqué à `.sheet__add` ; à reprendre dans les vitrines clients (formulaires de commande) et dans le skill `nebula-site`.
+
+## 2026-07-25 — Animations : plein format 1× par session, puis vitesse
+- **Contexte** : les transitions de lieux (coffre, ticket, portefeuille, flèche, calibration) rendent l'outil attachant, mais rejouées 30 fois par jour elles deviennent une taxe sur la vitesse d'usage.
+- **Décision** : chaque écran joue sa mise en scène **en entier à la 1re visite de la session**, puis s'affiche instantanément ; la caisse conserve son rituel en **mode éclair** (durées ÷ 2). Les re-rendus internes (filtre, suppression) ne rejouent **jamais** la transition.
+- **Conséquences** : plaisir conservé, fluidité préservée. Modèle à réutiliser pour toute animation « signature » d'un outil qu'on utilise tous les jours.
+
+## 2026-07-25 — Boussole : synchronisation cloud par état complet (jsonb)
+- **Contexte** : les données ne vivaient que dans le navigateur (téléphone perdu = commerce perdu). Il fallait le mobile ↔ PC sans réécrire l'app en base relationnelle.
+- **Décision** : **une seule table** `boussole_proto_etat` (`user_id` PK, `etat` **jsonb**, `updated_at`) + **RLS** stricte ; l'appareil dont l'`updatedAt` est le plus récent gagne ; push debounce à 1,8 s. Script fourni : `boussole/_proto/etat.sql`.
+- **Conséquences** : synchro en quelques lignes, sans schéma à maintenir. Limite acceptée : pas de fusion fine entre deux appareils modifiés hors-ligne simultanément. ⚠️ **`etat.sql` doit être exécuté une fois dans Supabase** pour activer la synchro (sinon mode local).
+
+## 2026-07-25 — Le code PIN de l'équipe est dissuasif, pas cryptographique (assumé en proto)
+- **Contexte** : les codes vendeurs étaient stockés **en clair** dans le navigateur ; l'app affiche pourtant un discours « anti-vol ».
+- **Décision** : hachage **v2** (FNV-1a double passe salée, préfixe `v2`) + `pinOk()` rétro-compatible avec l'ancien hachage. **Assumé comme dissuasif** (un code n'est plus lisible dans le stockage) — à remplacer par **WebCrypto/PBKDF2** avant la mise en production réelle.
+- **Conséquences** : à traiter dans la vague « migration proto → app live ». Ne jamais promettre au client une sécurité forte sur cette base.
+
+## 2026-07-25 — Aucune vague Boussole ne part sans sweep automatisé mobile + PC
+- **Contexte** : deux bugs sérieux (bouton flottant hors écran, débordement horizontal) étaient invisibles en relecture de code et sur les captures d'un seul écran.
+- **Décision** : avant tout déploiement, exécuter le **sweep Playwright** (tous les écrans × 390 px et 1280 px : débordement, boutons flottants dans le viewport, feuilles cadrées et boutons atteignables) **plus toutes les suites QC précédentes** (non-régression).
+- **Conséquences** : méthode inscrite dans `_memoire/evolution/methodes.md` ; à généraliser aux vitrines clients (le CTA sticky est exactement le même cas de figure).
+
 <!-- Ajouter les nouvelles décisions au-dessus -->

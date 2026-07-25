@@ -51,6 +51,19 @@
   - Pour normaliser visuellement la grille : pipeline canvas blanc + redimensionnement (script PowerShell GDI+ ou Python Pillow), aucun détourage. Le CSS card-photo passe en fond blanc + aspect ratio 3:4.
   - Si Gloria veut vraiment du PNG transparent, exiger une livraison de fichiers déjà détourés par elle (ou un pro) — pas d'auto-détourage.
 
+## Un outil se teste sur DEUX écrans, sinon on livre des boutons inatteignables (2026-07-25)
+
+- **Ce qui s'est passé** : après 89 vérifications vertes et plusieurs relectures, un **sweep
+  automatisé mobile + PC** a révélé que le bouton « Nouvel article » du Catalogue était
+  **hors de l'écran** (donc impossible d'ajouter un produit) et que l'Accueil débordait de 15 px.
+- **Pourquoi on ne l'avait pas vu** : les captures d'écran étaient prises sur un seul format, et
+  le bouton *existait* dans le DOM — les tests fonctionnels passaient donc parfaitement.
+- **Leçon** : tester qu'un élément **existe** ne dit rien sur le fait qu'il soit **atteignable**.
+  Mesurer les **positions réelles** (`getBoundingClientRect`) sur **chaque** écran et **chaque**
+  format avant de crier victoire.
+- **Application immédiate** : vaut aussi pour les **vitrines clients** (CTA WhatsApp sticky,
+  bandeaux, pop-ups) — même cause, même effet.
+
 ---
 
 <!-- Ajouter les nouvelles leçons au-dessus -->

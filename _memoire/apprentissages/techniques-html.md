@@ -451,6 +451,23 @@ CSS :
 - **Ergonomie mobile** : inputs `font-size:16px` (anti-zoom iOS), cibles ≥44px, `html{overflow-x:hidden}` (0 wiggle), `touch-action:manipulation` + `-webkit-tap-highlight-color:transparent`, canvas lourds gated `!isMobile && !saveData`, FAB en `env(safe-area-inset-bottom)`.
 - **Art-direction sombre/clair** : hero peut basculer en thème opposé (`hero-night`/`hero-cine`) ; gérer nav (`body.dark-hero`) + `theme-color` + voile. ⚠️ tout `::before` de voile sur `.hero` doit être neutralisé sur la variante opposée.
 
+## ⚠️ `transform` sur un conteneur = les `position: fixed` DEDANS sortent de l'écran (2026-07-25)
+
+Découvert sur Boussole : un bouton flottant se retrouvait **hors du viewport** (top 939 px pour
+844 px de haut), donc **inatteignable**, sur mobile comme sur PC.
+
+**Règle** : un élément avec `transform`, `filter`, `perspective` ou `backdrop-filter` devient le
+repère de ses descendants `position: fixed`. Même une **matrice identité** suffit — et
+`animation-fill-mode: both` en laisse une **après** la fin de l'animation.
+
+**À appliquer sur toute vitrine** qui a un **CTA WhatsApp sticky / FAB** :
+1. `animation-fill-mode: backwards` (jamais `both`) sur les animations d'entrée de section ;
+2. ne **jamais** animer la section qui contient l'élément fixe → animer un **conteneur interne** ;
+3. contrôle : `getBoundingClientRect()` du bouton doit rester dans `innerWidth/innerHeight`.
+
+Voir le détail + le patron de test automatisé dans
+`_memoire/apprentissages/2026-07-25-boussole-app-metier-perf-animations.md`.
+
 ## Autres techniques à documenter
 
 - Variables CSS pour palette client

@@ -45,3 +45,57 @@ et **Achat-revente** (prix d'achat + transport + stockage). Devise : **FCFA**.
 ## Sauvegarde
 Réglages → **Exporter** produit un fichier JSON ; **Importer** le restaure.
 Recommandé en Mode local (les données vivent sur l'appareil).
+
+
+---
+
+# Proto v4 « verre de nuit » — l'app en cours de construction
+
+> Le développement actif se fait dans **`_proto/app.html`** (+ `_proto/connexion.html`).
+> L'app de la racine (ci-dessus) est la version en production, **pas encore migrée**.
+> Preview : https://proto.boussole-19d.pages.dev/_proto/connexion
+
+## Ce que le proto sait faire en plus
+
+### Démarrage
+- **Onboarding 4 pas** : prénom → nom du commerce + activité → objectif du jour → **« mes vraies données » (zéro) ou « explorer la démo »**.
+- Plus **aucune donnée d'exemple imposée** : le mode démo est explicite (chip « Mode démo ») et se quitte depuis Réglages.
+
+### Écran Réglages
+Identité du commerce (nom, tél., adresse, **IFU / RCCM** → repris sur les factures), **code patron**, webhook IA, **export / import JSON**, effacement, état du cloud.
+
+### Métier
+| Fonction | Détail |
+|---|---|
+| **Caisse** | tuiles produits 3D, entrée « coffre qui s'ouvre », panier, 3 modes de paiement |
+| **Vente à crédit** | oblige à choisir un client → **la dette s'inscrit automatiquement** sur sa fiche (et se solde / s'ajuste si la vente est modifiée ou supprimée) |
+| **Coût de revient** | capturé à chaque vente ; **décomposable en postes nommés** (ex. vitrine + QR : Partenaire 10 000 F, Hébergement 5 000 F) avec **% du prix calculés tout seuls** |
+| **« À réserver »** | le détail d'une vente affiche qui prend quoi, le total à réserver et **ce qui te reste vraiment** |
+| **Les 3 enveloppes** | affichées dans le Bilan, calculées sur le mois (relance production / charges / bénéfice net) |
+| **Ventes & dépenses** | modification complète, suppression **annulable**, recherche live, pagination |
+| **Objectifs** | objectifs jour/semaine/mois + projets d'achat modifiables et supprimables |
+| **Équipe** | « qui tient la caisse » (avatar du header), **chaque vente est signée du vendeur**, codes **hachés**, **verrous par rôle** (un vendeur ne voit ni bilan ni bénéfice) |
+| **Factures / devis** | à l'identité du commerce (IFU/RC), statut cliquable brouillon → envoyé → payé |
+
+### L'IA Boussole
+- **Alertes proactives** (pastille rouge sur l'onglet) : ruptures, objectif en retard, dettes qui traînent, charges non couvertes, séries réussies.
+- **Chat** : questions libres avec réponses chiffrées **calculées en local** (marche hors-ligne) ; webhook n8n/Claude **optionnel** (Réglages) pour les questions ouvertes.
+- **Salutation d'accueil** : 3 voix (avis honnêtes sur les vrais chiffres / leçons d'argent / questions qui font réfléchir), **sans jamais se répéter** (historique `SM.greetHist`).
+
+### Sensations
+- **Une transition par lieu** : coffre (caisse), ticket qui s'imprime (ventes), portefeuille (dépenses), flèche dans la cible (objectifs), aiguille qui se calibre (Boussole).
+- **15 animations de touché** différentes selon le type d'élément + signatures des boutons Vendre (pièces d'or + vrai prix) et Dépenser (billets + vraie sortie).
+- **Confettis** au franchissement de l'objectif du jour (1×/jour) et **flamme de série** sur l'accueil.
+- **Son 100 % synthétisé** (aucun fichier) : carillon doré à l'encaissement, tintement de pièce, arpège de validation, bus d'écho commun.
+- ⚡ Les transitions jouent **en plein format une fois par session**, puis l'app va droit au but (le coffre passe en mode éclair).
+
+## Synchronisation cloud du proto
+L'état complet suit le compte (mobile ↔ PC) via la table **`boussole_proto_etat`** (jsonb + RLS).
+**À faire une fois** : exécuter `_proto/etat.sql` dans Supabase → SQL Editor. Sans ça, l'app reste en mode local (statut affiché dans Réglages).
+
+## Règles de développement du proto
+1. Éditer via **script Python/Node en UTF-8** (jamais PowerShell : mojibake).
+2. `node --check` du module inline après chaque vague.
+3. Lancer **toutes** les suites QC Playwright (`qc_v4` → `qc_v9`) : elles doivent être vertes.
+4. Ne jamais poser de `transform` sur un écran qui contient un `position: fixed` (le bouton flottant sortirait de l'écran) — animer un conteneur interne.
+5. Pas d'animation infinie sous un `backdrop-filter` (latence).

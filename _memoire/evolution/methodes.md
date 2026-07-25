@@ -58,6 +58,25 @@
 
 ---
 
+### QC par suites cumulatives + sweep multi-viewport (depuis 2026-07-25, produits logiciels)
+
+Pour un **outil** (pas une vitrine), la relecture de code et les captures ne suffisent plus.
+Méthode appliquée sur Boussole, à reprendre pour les prochains SaaS verticaux :
+
+1. **Une suite QC Playwright par vague** (`qc_v4` = données/métier, `qc_v5` = caisse/coûts,
+   `qc_v6` = transitions, `qc_v7` = accueil, `qc_v8` = textes/sons, `qc_v9` = sweep UI).
+2. **On ne remplace jamais une suite : on l'ajoute.** À chaque nouvelle vague, **toutes** les
+   suites précédentes sont rejouées → la non-régression est prouvée, pas supposée.
+3. **Sweep d'interface obligatoire** : chaque écran × **mobile 390 px** ET **PC 1280 px** →
+   débordement horizontal nul, boutons flottants dans le viewport, feuilles cadrées avec
+   leur bouton d'action visible.
+4. **Zéro erreur console** est un critère de sortie, au même titre que les assertions.
+5. `node --check` du module inline après chaque édition (le fichier est un mono-HTML).
+6. Rien n'est déployé tant qu'une seule suite est rouge.
+
+Bilan de la journée du 2026-07-25 : **113 vérifications** cumulées, 2 bugs bloquants trouvés
+par le sweep que personne n'avait vus à l'œil.
+
 ## Choses qu'on essaie / qu'on teste
 
 > _vide pour le moment._

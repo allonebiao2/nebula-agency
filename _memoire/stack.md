@@ -104,3 +104,15 @@ Les clés sont dans `.env` local (voir `.env.example` pour la structure) :
 - [ ] Système de build minimal (concat CSS/JS) si projets plus gros
 - [ ] Bibliothèque d'animations légère (GSAP ? Motion One ?)
 - [ ] Solution CMS pour clients voulant éditer eux-mêmes
+
+
+## Supabase — table de synchronisation Boussole (2026-07-25)
+
+| Élément | Valeur |
+|---|---|
+| Table | `boussole_proto_etat` |
+| Colonnes | `user_id` (uuid, PK → `auth.users`), `etat` (**jsonb** = état complet de l'app), `updated_at` |
+| Sécurité | **RLS** : chaque utilisateur ne lit/écrit que sa propre ligne |
+| Script | `boussole/_proto/etat.sql` — **à exécuter une fois** dans Supabase → SQL Editor |
+| Usage | synchro mobile ↔ PC du proto ; l'appareil au `updatedAt` le plus récent gagne ; push debounce 1,8 s |
+| Sans la table | l'app fonctionne en **mode local** (localStorage `sm:state`), statut affiché dans Réglages |

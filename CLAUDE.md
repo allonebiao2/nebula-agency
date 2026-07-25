@@ -80,6 +80,27 @@
 | 08 | HH Design | **HH DESIGN** — **maison d'ébénisterie / mobilier bois noble** à Cotonou (⚠️ PAS immobilier : erreur de 1er brief corrigée le 2026-07-04 via les planches de marque `_partage/inspiration 1..8.JPG`) · meubles bois massif faits main (étagères, bibliothèques, tables de chevet, tables basses, consoles) · bois mindi/acajou, finitions roasted coffee/naturelle/pearl brushed · « L'élégance du bois » / « Créé pour durer, pensé pour vous » | **LIVE https://hh-design.pages.dev** — **REFONTE TOTALE v2 2026-07-04** (crème sable + bois + or vieilli + espresso, **Cormorant Garamond + Archivo**) : hero bois brut Ken-Burns · manifeste espresso 3 piliers · **collection filtrable des VRAIES pièces** (Ayula/Leon/Cancun/Tabasco/Natura/Console) en cartes « spécimen » → **fiche modale** (specs + WhatsApp pré-rempli « commander/sur-mesure ») · bande ambiance · **matières & finitions** (4 échantillons bois) · sur-mesure 4 étapes · contact form→WhatsApp · **vraies photos extraites des planches** (WebP ~250 Ko) · affiche A4 + 2 QR (site+WhatsApp) refaites · QC impeccable+node+captures OK · ⚠️ v1 immobilière (blanc/or/noir Marcellus) OBSOLÈTE · reste : **confirmer n° WhatsApp** + vrai logo + handle IG + adresse Maps + prix | **+229 01 62 68 67 68** (⚠️ à confirmer · issu des planches HH · remplace l'ancien 0167975626) |
 | 09 | Au Braisé d'Or | **Au Braisé d'Or** — restaurant **braisé / grillades au feu de bois** à Cotonou (« De Paris à Cotonou » · cuisine africaine/européenne/américaine) · **catalogue digital** = menu commandable (1er catalogue-resto NEBULA) · + traiteur & place des fêtes | **LIVE https://au-braise-dor.pages.dev** (Cloudflare Pages `au-braise-dor`, déployé 2026-07-20) · direction **braise premium sombre** (charbon + ember + or + **verre fumé/glassmorphism**) · **48 plats = 48 photos IA DANS les cartes** (générées **z_image 0,15 cr** après A/B vs nano/Recraft — regardées et jugées meilleures ; WebP 900px ~72 Ko ; photo + prix en pastille verre + **clic carte → fiche commande avec photo**) · galerie séparée supprimée · **moteur de commande** (panier + taille/accompagnement/qté + sur place/emporter/livraison → WhatsApp structuré, déjà en place) · **vidéo héro = intro douce autoplay** `hero.mp4` (scroll-scrub « décomposition » tenté puis **abandonné** car ne défilait pas) · FAB WhatsApp brillant retiré · ambiance sonore braise · légal RC RB/COT/24 A 102350 · IFU 0202501441177 · ⚠️ CSS/JS **inline** (pas de `?v=`) · reste : **affiche A4+QR (PHASE 7, pas encore faite)**, confirmer n° WhatsApp, photo du lieu, adresse/Maps, horaires, logo, réseaux, vrais avis · détail complet `clients/09-au-braise-dor/CONTEXT.md` | 0156057157 (à confirmer, vs 43 99 29 29 enseigne) |
 
+## Produits internes NEBULA (édités par l'agence, pas des vitrines client)
+
+### Boussole — gestion financière du commerçant  *(SaaS vertical n°1)*
+- **Ce que c'est** : l'outil qui dit au commerçant ce qu'il **gagne vraiment**. Il encaisse, Boussole calcule (coût de revient, marge, **3 enveloppes** : relance production / charges / bénéfice net) et **lui parle** (avis honnêtes, leçons d'argent, alertes).
+- **Cible** : tout commerçant d'Afrique de l'Ouest (nourriture, produits importés, services…). Devise FCFA. Doit rester utilisable **« par un enfant de 5 ans »**.
+- **Où c'est** :
+  - **prod** `boussole/` → https://boussole-19d.pages.dev (Cloudflare Pages, projet `boussole`)
+  - **proto en cours** `boussole/_proto/app.html` + `connexion.html` → preview branche `proto` : https://proto.boussole-19d.pages.dev/_proto/connexion
+  - ⚠️ **Tout le développement se fait sur le PROTO** ; l'app prod n'est PAS encore migrée (intégration finale = vague à venir).
+- **Direction artistique** : « **verre de nuit** » — or ambre `#f6a63c` + émeraude `#34d399` sur fond `#0B0F19`. Police Bricolage Grotesque. *(Le skin Spider-Verse a été essayé puis RETIRÉ le 2026-07-21.)*
+- **Charte de couleur des actions** : **or = action primaire** (Enregistrer, valider) · **rouge = destructif uniquement** (Supprimer) · vert = encaisser. Ne jamais mettre un bouton de validation en rouge.
+- **Stack** : HTML/CSS/JS pur (aucun build), **Web Audio** synthétisé (aucun fichier son), **Supabase** (auth + table `boussole_proto_etat` en jsonb + RLS — voir `boussole/_proto/etat.sql`), stockage local `sm:state`, PWA offline-first côté prod.
+- **Règles Boussole** :
+  - **Jamais de données de démo imposées** : l'onboarding propose « mes vraies données » (zéro) ou « explorer la démo » (`SM.meta.demo`).
+  - **Toute suppression doit être annulable** (toast « Annuler »).
+  - **Aucune animation infinie sous un `backdrop-filter`** (leçon latence 2026-07-21) et **jamais de `transform` sur un écran contenant un `position:fixed`** (leçon FAB 2026-07-25).
+  - Édits du fichier via **scripts Python/Node UTF-8**, `node --check` du module inline, puis **suite QC Playwright** avant tout déploiement.
+- **QC** : suites cumulatives `qc_v4` → `qc_v9` (données/métier, coffre+coûts, transitions, accueil, salutations+sons, sweep UI mobile+PC). **Toutes doivent être vertes** avant déploiement.
+- **Reste à faire** : Agenda · comparateur de 2 périodes · vague 2 des transitions (Bilan-ECG, Stats-constellation, Carnet, Factures, Équipe, Réglages) · exécuter `etat.sql` dans Supabase pour activer la synchro · migration proto → app live.
+- Détail complet : `boussole/README.md` + `_memoire/conversations/2026-07-25-boussole-*.md`
+
 ## Mémoire générale
 - Voir _memoire/cerveau.md pour contexte complet
 - Voir _memoire/lecons.md avant de commencer un nouveau projet
