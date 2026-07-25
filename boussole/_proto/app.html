@@ -186,6 +186,34 @@
     .masto__btn--sell  { --c: #34d399; }
     .masto__btn--spend { --c: #e11d48; }
     @media (max-width: 380px) { .masto { grid-template-columns: 1fr; } }
+    /* ---- SIGNATURES des mastodontes : l'argent VIT sur les boutons ---- */
+    .masto__btn { overflow: hidden; }                       /* les particules restent dans le verre */
+    .masto__fx { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+    .masto__fx .coin { position: absolute; top: -18px; width: 16px; height: 16px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 9px; font-weight: 900; color: #5c3d08;
+      background: radial-gradient(120% 120% at 30% 25%, #ffe9ad, #f0b23e 60%, #c98a1b);
+      box-shadow: inset 0 -2px 3px rgba(0, 0, 0, .32), inset 0 1.5px 2px rgba(255, 255, 255, .7), 0 0 9px -2px rgba(246, 166, 60, .85);
+      animation: coinDrop .7s cubic-bezier(.35, 0, .6, 1.35) both; }
+    @keyframes coinDrop { 0% { transform: translateY(0) rotate(0); opacity: 0; } 12% { opacity: 1; } 78% { transform: translateY(96px) rotate(160deg); opacity: 1; } 100% { transform: translateY(105px) rotate(190deg) scale(.55); opacity: 0; } }
+    .masto__fx .bill { position: absolute; top: 24%; width: 27px; height: 13px; border-radius: 3px;
+      background: linear-gradient(140deg, #ff98a6, #e11d48); border: 1px solid rgba(255, 255, 255, .4); box-shadow: 0 0 9px -3px rgba(225, 29, 72, .85);
+      animation: billDrop .78s cubic-bezier(.4, 0, .7, .6) both; }
+    .masto__fx .bill::after { content: ""; position: absolute; inset: 2px 7px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .45); }   /* médaillon du billet */
+    @keyframes billDrop { 0% { transform: translateY(0) rotate(0); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(86px) translateX(16px) rotate(48deg); opacity: 0; } }
+    .mfloat { position: absolute; top: 50%; font-size: 12.5px; font-weight: 900; font-variant-numeric: tabular-nums; letter-spacing: 0; text-transform: none; pointer-events: none; }
+    .mfloat--up { color: #7dffbe; text-shadow: 0 0 12px rgba(52, 211, 153, .85); animation: mUp .95s ease-out both; }
+    .mfloat--dn { color: #ff8a97; text-shadow: 0 0 12px rgba(225, 29, 72, .75); animation: mDn .95s ease-in both; }
+    @keyframes mUp { 0% { transform: translateY(8px) scale(.75); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-48px) scale(1.08); opacity: 0; } }
+    @keyframes mDn { 0% { transform: translateY(-8px) scale(.75); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(46px) scale(1.08); opacity: 0; } }
+    .masto__ring { position: absolute; inset: 0; margin: auto; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--c); opacity: 0; pointer-events: none; z-index: 2; }
+    .masto__btn.is-fired .masto__ring { animation: mRing .45s ease-out both; }
+    @keyframes mRing { 0% { opacity: .95; transform: scale(.4); } 100% { opacity: 0; transform: scale(9); } }
+    .masto__btn.is-fired { filter: brightness(1.15); }
+    /* micro-vie des icônes : le panier « pèse », la flèche « plonge » (toutes les ~4 s) */
+    .masto__btn--sell svg { animation: sellWeigh 4.2s ease-in-out 2s infinite; }
+    @keyframes sellWeigh { 0%, 86%, 100% { transform: rotate(0); } 90% { transform: rotate(-4deg) translateY(1.5px); } 95% { transform: rotate(3deg); } }
+    .masto__btn--spend svg { animation: spendDip 4.6s ease-in-out 3.1s infinite; }
+    @keyframes spendDip { 0%, 84%, 100% { transform: translateY(0); } 90% { transform: translateY(4px); } 94% { transform: translateY(-1.5px); } }
+    @media (prefers-reduced-motion: reduce) { .masto__fx { display: none !important; } .masto__btn--sell svg, .masto__btn--spend svg, .masto__btn.is-fired .masto__ring { animation: none !important; } }
 
     /* ============ CHIFFRES CLÉS (Accueil) — 3 cadres glassmorphism, chacun sa lumière ============ */
     .vitals { display: flex; justify-content: center; gap: 11px; margin: 24px auto 6px; flex-wrap: wrap; }
@@ -1527,8 +1555,8 @@
           (SM.meta.demo ? '<span class="demochip">Mode démo · données d\'exemple — Réglages pour repartir à zéro</span>' : '') +
           (calcStreak() >= 2 ? '<div class="streak" role="status"><i>&#128293;</i><b>' + calcStreak() + ' jours</b> de suite à objectif atteint — ne casse pas la série !</div>' : '') +
           '<div class="masto">' +
-            '<button class="masto__btn masto__btn--sell" type="button" data-goto="caisse">' + ICON_SELL + '<span>Vendre</span></button>' +
-            '<button class="masto__btn masto__btn--spend" type="button" data-goto="depenses">' + ICON_SPEND + '<span>Dépenser</span></button>' +
+            '<button class="masto__btn masto__btn--sell" type="button" data-goto="caisse"><span class="masto__fx" aria-hidden="true"></span>' + ICON_SELL + '<span>Vendre</span><span class="masto__ring" aria-hidden="true"></span></button>' +
+            '<button class="masto__btn masto__btn--spend" type="button" data-goto="depenses"><span class="masto__fx" aria-hidden="true"></span>' + ICON_SPEND + '<span>Dépenser</span><span class="masto__ring" aria-hidden="true"></span></button>' +
           '</div>' +
         '</div>';
     }
@@ -3324,8 +3352,42 @@
     // les mastodontes mènent à la caisse (Vendre) / aux dépenses (Dépenser)
     view.addEventListener('click', (e) => {
       const g = e.target.closest('[data-goto]'); if (!g) return;
-      const nav = g.dataset.goto; setActiveNav(nav); showSection(nav, false);
+      const nav = g.dataset.goto;
+      if (g.classList.contains('masto__btn')) {   // mastodonte : on laisse la signature (onde + particules) se voir avant de partir
+        if (g.dataset.firing) return; g.dataset.firing = '1';
+        g.classList.add('is-fired');
+        setTimeout(() => { delete g.dataset.firing; setActiveNav(nav); showSection(nav, false); }, 300);
+        return;
+      }
+      setActiveNav(nav); showSection(nav, false);
     });
+    /* ---- Signatures Vendre/Dépenser : l'argent du COMMERCE vit sur les boutons ---- */
+    function mastoData(sell) {   // étiquettes = de VRAIS chiffres (prix du catalogue / dernières sorties)
+      if (sell) {
+        const prices = SM.stock.map((p) => p.prix).filter((v) => v > 0);
+        const v = prices.length ? prices[Math.floor(Math.random() * prices.length)] : Math.max(500, Math.round((objJour() || 5000) / 10));
+        return '+' + vitalFmt(Math.round(v)) + ' F';
+      }
+      const deps = (SM.depenses || []).slice(0, 8).map((d) => +d.montant).filter((v) => v > 0);
+      const v = deps.length ? deps[Math.floor(Math.random() * deps.length)] : 1000;
+      return '&minus;' + vitalFmt(Math.round(v)) + ' F';
+    }
+    function mastoBurst(btn, big) {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const fx = btn.querySelector('.masto__fx'); if (!fx) return;
+      const sell = btn.classList.contains('masto__btn--sell');
+      let h = ''; const n = big ? 5 : 3;
+      for (let i = 0; i < n; i++) {
+        const left = (10 + Math.random() * 74).toFixed(0), delay = (Math.random() * 0.2).toFixed(2), dur = (0.55 + Math.random() * 0.35).toFixed(2);
+        h += sell
+          ? '<i class="coin" style="left:' + left + '%;animation-duration:' + dur + 's;animation-delay:' + delay + 's">F</i>'
+          : '<i class="bill" style="left:' + left + '%;animation-duration:' + dur + 's;animation-delay:' + delay + 's"></i>';
+      }
+      h += '<b class="mfloat ' + (sell ? 'mfloat--up' : 'mfloat--dn') + '" style="left:' + (22 + Math.random() * 36).toFixed(0) + '%">' + mastoData(sell) + '</b>';
+      if (big) h += '<b class="mfloat ' + (sell ? 'mfloat--up' : 'mfloat--dn') + '" style="left:' + (48 + Math.random() * 26).toFixed(0) + '%;animation-delay:.14s">' + mastoData(sell) + '</b>';
+      fx.innerHTML = h;
+      clearTimeout(btn._fxT); btn._fxT = setTimeout(() => { fx.innerHTML = ''; }, 1300);
+    }
     // Bascule "kinetic" : les mastodontes s'inclinent VERS le curseur/doigt (-5..5°), comme une plaque métallique
     function bindMastoTilt() {
       const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -3340,9 +3402,15 @@
         };
         const reset = () => { if (raf) cancelAnimationFrame(raf); raf = 0; down = false; btn.style.transform = ''; };
         // ---- Audio-haptique (actif même en mouvement réduit) ----
-        btn.addEventListener('pointerenter', startCharge);                                 // "sous tension" dès l'effleurement
+        btn.addEventListener('pointerenter', () => {   // "sous tension" + première pluie de pièces/billets (throttle 900 ms)
+          startCharge();
+          const now = performance.now();
+          if (!btn._lastFx || now - btn._lastFx > 900) { btn._lastFx = now; mastoBurst(btn, false); }
+        });
         btn.addEventListener('pointerdown', (e) => {
           (btn.classList.contains('masto__btn--sell') ? playSell : playSpend)();           // System Snap à T0 (VENDRE=chime / DÉPENSER=impact)
+          mastoBurst(btn, true);                                                           // grosse salve + étiquettes de vraies données
+          try { if (navigator.vibrate) navigator.vibrate(15); } catch (_) {}
           if (!rm) { down = true; apply(e); }                                              // pression mobile : incline + enfonce
         });
         btn.addEventListener('pointerleave', () => { if (!rm) reset(); stopCharge(); });    // coupe le "bzz" instantanément
