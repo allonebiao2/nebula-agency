@@ -1485,15 +1485,94 @@
 
     /* ===== Écrans (scaffold) + caméra : arrivée CINÉMATIQUE (1er rendu) / navigation HUD SÈCHE (clic) ===== */
     let userName = 'Boss';   // nom affiché par défaut, remplacé par le prénom de la session Supabase
-    /* ===== Smart Greeting Engine : phrase variée (3 catégories) + effet machine à écrire ===== */
-    const GREETINGS = {
-      tactique:    ['Prêt à encaisser ?', 'Ouvre la caisse, on y va.', 'Chaque vente compte.', "Aujourd'hui, on vend plus qu'hier."],
-      inspiration: ['Ton empire commence ici.', 'Les grands ont commencé petit.', 'Construis, un franc à la fois.', 'Belle journée pour grandir.'],
-      analytique:  ["Ta caisse t'attend.", 'Garde un œil sur tes marges.', 'Les chiffres ne mentent pas.', 'Vérifie ton bénéfice du jour.'],
-    };
-    const GREET_CATS = ['tactique', 'inspiration', 'analytique'];
-    const pickGreeting = () => { const c = GREET_CATS[Math.floor(Math.random() * GREET_CATS.length)]; const a = GREETINGS[c]; return a[Math.floor(Math.random() * a.length)]; };
-    const greetingFull = () => (new Date().getHours() < 18 ? 'Bonjour' : 'Bonsoir') + ', ' + userName + ' · ' + pickGreeting();
+    /* ===== Smart Greeting Engine v2 : Boussole te parle de TON argent ===================
+       3 voix : (1) le MIROIR — résumés et avis honnêtes calculés sur tes vrais chiffres,
+       (2) l'ÉCOLE — leçons d'argent courtes, (3) l'ÉTINCELLE — questions qui font réfléchir.
+       Anti-répétition : historique persisté (SM.greetHist) — jamais deux fois la même
+       phrase tant que tout le stock n'a pas été entendu. ======================================= */
+    const LECONS = [
+      "le chiffre d'affaires nourrit l'ego, le bénéfice nourrit ta famille.",
+      "un franc économisé se gagne plus vite qu'un franc vendu.",
+      "trois enveloppes, toujours : relancer, payer, garder. Dans cet ordre.",
+      "un crédit sans date de retour, c'est un cadeau déguisé.",
+      "ton stock, c'est de l'argent qui dort sur l'étagère. Réveille-le.",
+      "note chaque sortie le jour même : la mémoire est le pire des comptables.",
+      "le client qui paie vite vaut deux fois celui qui achète gros.",
+      "augmenter tes prix fait fuir moins de clients que tu ne le crois.",
+      "ce que tu ne mesures pas, tu ne peux pas l'améliorer.",
+      "la régularité bat le talent : 5 000 F chaque jour valent mieux qu'un coup d'éclat.",
+      "paie-toi un salaire fixe. Le reste appartient au commerce.",
+      "un produit invendu depuis 30 jours te coûte de l'argent chaque nuit.",
+      "le bon moment pour épargner, c'était hier. Le deuxième, c'est aujourd'hui.",
+      "connais ton coût de revient par cœur : c'est lui qui fixe ton prix, pas le voisin.",
+      "une dette relancée poliment est à moitié récupérée.",
+      "les charges fixes sont des petites dents : elles mordent chaque mois.",
+      "vendre à perte pour « faire tourner », c'est courir vers le mur en souriant.",
+      "l'argent aime les comptes clairs. Le désordre le fait fuir.",
+      "celui qui connaît ses chiffres négocie. Celui qui devine, subit.",
+      "mieux vaut dix clients fidèles que cent curieux.",
+      "chaque grosse vente cache un coût : réserve-le avant de célébrer.",
+      "ta caisse du soir raconte ta journée. Écoute-la ici même.",
+      "compte d'abord, dépense ensuite. Jamais l'inverse.",
+      "ton meilleur produit mérite la meilleure place de la boutique.",
+      "la poche du commerce et ta poche sont deux pays différents. Garde la frontière.",
+      "on ne devient pas riche en un jour, mais on le devient chaque jour.",
+    ];
+    const ETINCELLES = [
+      "sais-tu quel jour de la semaine tu vends le plus ? La réponse t'attend dans Statistiques.",
+      "si tu devais doubler UN seul prix demain, lequel choisirais-tu ?",
+      "combien te coûte une journée de boutique fermée ? Fais le calcul, ça réveille.",
+      "quel bon client n'est pas revenu depuis longtemps ? Un petit message change tout.",
+      "ton objectif du jour pique-t-il assez ? Un objectif trop facile n'apprend rien.",
+      "que ferais-tu avec 30 jours de bénéfice mis de côté ? Commence aujourd'hui.",
+      "ta plus grosse dépense du mois est-elle vraiment indispensable ?",
+      "ton prix couvre-t-il TOUT — matière, transport, ton temps ? Vérifie au Catalogue.",
+      "si je ne te montrais qu'un chiffre chaque matin, lequel voudrais-tu ? Viens me le dire.",
+      "quelle vente d'aujourd'hui pourrait devenir une habitude de client ?",
+    ];
+    function greetPool() {   // le MIROIR : phrases construites sur TES chiffres du moment
+      const P = [];
+      const add = (id, txt, w) => P.push({ id, txt, w: w || 3 });
+      try {
+        const t0d = startOfToday(), st = salesToday(), obj = objJour();
+        const caHier = caBetween(t0d - DAY, t0d), caAvHier = caBetween(t0d - 2 * DAY, t0d - DAY);
+        const e = enveloppes(), streak = calcStreak();
+        const dettes = (SM.clients || []).reduce((s, c) => s + (c.dette || 0), 0);
+        const rupt = SM.stock.filter((p) => p.type === 'physique' && p.qty <= 0);
+        const top = topProduit(t0d - 30 * DAY);
+        if (!(SM.ventes || []).length) add('d-first', "ta première vente t'attend à la caisse. Après la première, tout s'enchaîne.");
+        if (caHier > 0) add('d-hier', 'hier tu as encaissé ' + fF(caHier) + (caAvHier > 0 ? (caHier >= caAvHier ? ', mieux qu\'avant-hier. La pente est bonne.' : ', un peu moins qu\'avant-hier. On la retourne aujourd\'hui ?') : '. Aujourd\'hui, on fait mieux ?'));
+        if (caHier === 0 && caAvHier > 0) add('d-hier0', 'hier, caisse à zéro. Ça arrive aux meilleurs — l\'important, c\'est aujourd\'hui.');
+        if (st > 0 && obj > 0 && st < obj) add('d-obj', 'tu es à ' + Math.round(st / obj * 100) + '% de ton objectif. Reste ' + fF(obj - st) + ' : c\'est une ou deux bonnes ventes.');
+        if (obj > 0 && st >= obj) add('d-objdone', 'objectif du jour déjà atteint. Franchement ? Chapeau. Le reste, c\'est du bonus.');
+        if (streak >= 2) add('d-streak', streak + ' jours de suite à objectif atteint. Les habitudes font les fortunes — ne casse pas la série.');
+        if (dettes > 0) add('d-dettes', 'on te doit ' + fF(dettes) + '. L\'argent dehors ne travaille pas pour toi : un tour au Carnet ?');
+        if (rupt.length) add('d-rupt', rupt.length + ' produit' + (rupt.length > 1 ? 's' : '') + ' en rupture, dont ' + rupt[0].nom + '. Chaque heure sans stock, c\'est une vente offerte au voisin.');
+        if (e.ca > 0 && e.manque > 0 && new Date().getDate() >= 8) add('d-manque', 'avis honnête : ta marge du mois ne couvre pas encore tes charges (il manque ' + fF(e.manque) + '). On serre, on vend, on y arrive.');
+        if (e.env3 > 0) add('d-env3', 'bénéfice net du mois : ' + fF(e.env3) + '. C\'est ça ton vrai salaire — pas le chiffre de la caisse.');
+        if (top) add('d-top', 'ton champion : ' + top.nom + ' (' + fF(top.tot) + ' en 30 jours). Mets-le devant, il te le rendra.');
+        if (e.ca > 0 && e.cout > 0 && (e.ca - e.cout) / e.ca < 0.25) add('d-marge', 'avis franc : ta marge moyenne est fine (' + Math.round((e.ca - e.cout) / e.ca * 100) + '%). Acheter moins cher ou vendre plus cher — il faudra choisir.');
+        if ((SM.ventes || []).length > 3 && !(SM.depenses || []).length) add('d-nodep', 'tu encaisses, mais aucune sortie notée… Sans les sorties, ton bénéfice est une illusion. Sois honnête avec toi-même.');
+        const perso = persoTotal();
+        if (perso > 0 && e.env3 > 0 && perso > e.env3) add('d-perso', 'ta poche perso (' + fF(perso) + ') dépasse ton bénéfice net du mois. Se payer : oui. Se vider : non.');
+        const caSem = caBetween(t0d - 6 * DAY, Date.now() + 1);
+        if (caSem > 0) add('d-sem', 'ta semaine : ' + fF(caSem) + ' encaissés, ~' + fF(Math.round(caSem / 7)) + ' par jour. Tu veux monter la moyenne ? Vise les heures creuses.', 2);
+      } catch (er) {}
+      LECONS.forEach((l, i) => P.push({ id: 'l' + i, txt: 'retiens ça : ' + l, w: 1 }));
+      ETINCELLES.forEach((q, i) => P.push({ id: 'q' + i, txt: 'question pour toi : ' + q, w: 1.6 }));
+      return P;
+    }
+    function pickGreeting() {   // jamais deux fois la même tant que le stock n'est pas épuisé
+      SM.greetHist = SM.greetHist || [];
+      let pool = greetPool().filter((g) => SM.greetHist.indexOf(g.id) < 0);
+      if (!pool.length) { SM.greetHist = SM.greetHist.slice(-4); pool = greetPool().filter((g) => SM.greetHist.indexOf(g.id) < 0); }
+      const tot = pool.reduce((s, g) => s + g.w, 0); let r = Math.random() * tot; let sel = pool[0];
+      for (let i = 0; i < pool.length; i++) { r -= pool[i].w; if (r <= 0) { sel = pool[i]; break; } }
+      SM.greetHist.push(sel.id); if (SM.greetHist.length > 90) SM.greetHist.shift();
+      try { smSave(); } catch (er) {}
+      return sel.txt;
+    }
+    const greetingFull = () => { const h = new Date().getHours(); return (h < 12 ? 'Bonjour' : h < 18 ? 'Bel après-midi' : 'Bonsoir') + ' ' + userName + ' — ' + pickGreeting(); };
     let _typeTimer = null;
     function typeInto(el, full, speed) {
       clearTimeout(_typeTimer);
@@ -1507,7 +1586,7 @@
       const full = greetingFull();
       hi.innerHTML = '<span class="hud__ghost" aria-hidden="true">' + full + '</span>' +
                      '<span class="hud__type"><span class="hud__txt"></span><span class="hud__caret" aria-hidden="true"></span></span>';
-      typeInto(hi.querySelector('.hud__txt'), full, 50);
+      typeInto(hi.querySelector('.hud__txt'), full, Math.max(16, Math.min(45, Math.round(2400 / full.length))));   // vitesse adaptée : les longues phrases se tapent plus vite
     }
     const ICON_SELL  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 10.6a1.5 1.5 0 0 1-1.5 1.4H8.5A1.5 1.5 0 0 1 7 18.6z"/><path d="M9 8V7a3 3 0 0 1 6 0v1"/></svg>';
     const ICON_SPEND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v10"/><path d="M8.5 9.5 12 13l3.5-3.5"/><path d="M4.5 20h15"/></svg>';
@@ -1875,13 +1954,18 @@
       const dmore = scr.querySelector('[data-dmore]');
       if (dmore) dmore.addEventListener('click', () => { playPop(true); scr.querySelectorAll('.exprow.row-hid').forEach((r) => { r.classList.remove('row-hid'); r.dataset.shown = '1'; }); dmore.remove(); });
     }
-    function playSuccess() {   // dépense ajoutée : petit arpège ascendant (validation)
+    function playSuccess() {   // validation : arpège do-mi-sol-do ROND (sinus + soupçon d'octave), queues longues
       if (_muted) return; const ctx = audioCtx(); if (!ctx) return; const t = ctx.currentTime;
       const bus = ctx.createGain(); bus.connect(_master);
-      [[660, 0], [880, 0.05], [1320, 0.1]].forEach((p) => {
-        const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.setValueAtTime(p[0], t + p[1]);
-        const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t + p[1]); g.gain.exponentialRampToValueAtTime(0.08, t + p[1] + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + p[1] + 0.25);
-        o.connect(g); g.connect(bus); o.start(t + p[1]); o.stop(t + p[1] + 0.3);
+      [[523.25, 0, 0.075], [659.25, 0.055, 0.07], [783.99, 0.11, 0.065], [1046.5, 0.165, 0.05]].forEach((p) => {
+        const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(p[0], t + p[1]);
+        const o2 = ctx.createOscillator(); o2.type = 'triangle'; o2.frequency.setValueAtTime(p[0] * 2, t + p[1]);
+        const g2 = ctx.createGain(); g2.gain.value = 0.22;
+        const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t + p[1]);
+        g.gain.exponentialRampToValueAtTime(p[2], t + p[1] + 0.012);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + p[1] + 0.34);
+        o.connect(g); o2.connect(g2); g2.connect(g); g.connect(bus);
+        o.start(t + p[1]); o.stop(t + p[1] + 0.38); o2.start(t + p[1]); o2.stop(t + p[1] + 0.38);
       });
     }
     /* ============================================================================
@@ -2922,6 +3006,7 @@
       }
       box.innerHTML = h; document.body.appendChild(box);
       setTimeout(() => { try { playSuccess(); } catch (e) {} }, 250);
+      [500, 720, 990].forEach((dt) => setTimeout(() => { try { playCoin(); } catch (e) {} }, dt));   // les confettis d'or tintent en tombant
       setTimeout(() => box.remove(), 2700);
     }
     function refreshBadge() {
@@ -3386,6 +3471,7 @@
       h += '<b class="mfloat ' + (sell ? 'mfloat--up' : 'mfloat--dn') + '" style="left:' + (22 + Math.random() * 36).toFixed(0) + '%">' + mastoData(sell) + '</b>';
       if (big) h += '<b class="mfloat ' + (sell ? 'mfloat--up' : 'mfloat--dn') + '" style="left:' + (48 + Math.random() * 26).toFixed(0) + '%;animation-delay:.14s">' + mastoData(sell) + '</b>';
       fx.innerHTML = h;
+      if (sell) { try { playCoin(); if (big) setTimeout(playCoin, 130); } catch (e) {} }   // les pièces tintent en tombant
       clearTimeout(btn._fxT); btn._fxT = setTimeout(() => { fx.innerHTML = ''; }, 1300);
     }
     // Bascule "kinetic" : les mastodontes s'inclinent VERS le curseur/doigt (-5..5°), comme une plaque métallique
@@ -3493,6 +3579,12 @@
         const comp = _actx.createDynamicsCompressor();
         comp.threshold.value = -16; comp.knee.value = 18; comp.ratio.value = 10; comp.attack.value = 0.003; comp.release.value = 0.2;
         _master.connect(comp); comp.connect(_actx.destination);
+        // ---- « la pièce » : écho court discret partagé par TOUS les sons -> cohérence premium
+        const dly = _actx.createDelay(0.4); dly.delayTime.value = 0.125;
+        const fb = _actx.createGain(); fb.gain.value = 0.22;
+        const damp = _actx.createBiquadFilter(); damp.type = 'lowpass'; damp.frequency.value = 2600;
+        const wet = _actx.createGain(); wet.gain.value = _mobile ? 0.09 : 0.13;
+        _master.connect(dly); dly.connect(damp); damp.connect(fb); fb.connect(dly); damp.connect(wet); wet.connect(comp);
       }
       if (_actx.state === 'suspended') { const r = _actx.resume(); if (r && r.catch) r.catch(() => {}); }
       return _actx;
@@ -3568,9 +3660,9 @@
       const now = performance.now(); if (now - _lastHover < 45) return; _lastHover = now;   // anti-mitraillette
       const ctx = audioCtx(); if (!ctx) return;
       const t = ctx.currentTime;
-      const osc = ctx.createOscillator(); osc.type = 'square'; osc.frequency.setValueAtTime(2400, t);
+      const osc = ctx.createOscillator(); osc.type = 'triangle'; osc.frequency.setValueAtTime(2300, t);   // triangle = micro-click plus soyeux que le square
       const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1200;
-      const g = ctx.createGain(); g.gain.setValueAtTime(0.15, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);   // 0.03s, 15%
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.12, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
       osc.connect(hp); hp.connect(g); g.connect(_master);
       osc.start(t); osc.stop(t + 0.035);
     }
@@ -3578,15 +3670,18 @@
       if (_muted) return;
       const ctx = audioCtx(); if (!ctx) return;
       const t0 = ctx.currentTime;
-      const beep = (dt, f) => {
-        const osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.setValueAtTime(f, t0 + dt);
+      const beep = (dt, f, vol, dur) => {   // fondamentale sinus + octave triangle détunée = bip CHAUD, plus « bois » que « bip »
+        const o1 = ctx.createOscillator(); o1.type = 'sine'; o1.frequency.setValueAtTime(f, t0 + dt);
+        const o2 = ctx.createOscillator(); o2.type = 'triangle'; o2.frequency.setValueAtTime(f * 2.005, t0 + dt);
+        const g2 = ctx.createGain(); g2.gain.value = 0.3;
         const g = ctx.createGain();
         g.gain.setValueAtTime(0.0001, t0 + dt);
-        g.gain.exponentialRampToValueAtTime(0.22, t0 + dt + 0.008);
-        g.gain.exponentialRampToValueAtTime(0.0001, t0 + dt + 0.07);
-        osc.connect(g); g.connect(_master); osc.start(t0 + dt); osc.stop(t0 + dt + 0.08);
+        g.gain.exponentialRampToValueAtTime(vol, t0 + dt + 0.008);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + dt + dur);
+        o1.connect(g); o2.connect(g2); g2.connect(g); g.connect(_master);
+        o1.start(t0 + dt); o1.stop(t0 + dt + dur + 0.02); o2.start(t0 + dt); o2.stop(t0 + dt + dur + 0.02);
       };
-      beep(0, 680); beep(0.07, 1020);   // double bip ascendant (validation)
+      beep(0, 620, 0.19, 0.09); beep(0.065, 930, 0.16, 0.11);   // double bip ascendant, arrondi
     }
     drawer.querySelectorAll('[data-sfx-hover]').forEach((b) =>
       b.addEventListener('mouseenter', () => (b.dataset.sfxProfile === 'data' ? playDataScan : b.dataset.sfxProfile === 'nexus' ? playDigitalWhoosh : b.dataset.sfxProfile === 'drawer' ? playGearLock : playHover)()));   // Data · nexus=whoosh · drawer=loquet · sinon micro-click du menu
@@ -3598,7 +3693,7 @@
       const t = ctx.currentTime;
       const osc = ctx.createOscillator(); osc.type = 'square'; osc.frequency.setValueAtTime(1700 + Math.random() * 500, t);
       const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 900;
-      const g = ctx.createGain(); g.gain.setValueAtTime(0.035, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.018);   // ~18 ms, quasi-subliminal
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.026, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.018);   // ~18 ms, quasi-subliminal (adouci)
       osc.connect(hp); hp.connect(g); g.connect(_master); osc.start(t); osc.stop(t + 0.02);
     }
     function playGlitch() {   // Bouton : glitch (0 ms) -> snap (~250 ms), calé sur le tremblement puis le snap
@@ -3665,25 +3760,39 @@
         c.nodes.forEach((n) => { try { n.stop(t + 0.06); } catch (e) {} });
       } catch (e) {}
     }
-    function playSell() {   // CLIC VENDRE "Success/Chime" : métallique, aigu, clair, gratifiant
+    function playSell() {   // CLIC VENDRE : CARILLON DORÉ — cloche accordée (4 partiels détunés) + poussière d'or qui s'éteint
       if (_muted) return;
       const ctx = audioCtx(); if (!ctx) return;
       const t = ctx.currentTime;
       const bus = ctx.createGain(); bus.connect(_master);
-      [[1245, 0], [1870, 0.02], [2760, 0.05]].forEach((p) => {                 // 3 partiels ascendants = cloche
-        const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.setValueAtTime(p[0], t + p[1]);
+      // partiels d'une vraie cloche (fondamentale + tierce + octave + brillance), micro-détune = vie
+      [[880, 0, 0.14, 0.55], [1318.5, 0.012, 0.1, 0.45], [1760, 0.03, 0.065, 0.34], [2637, 0.05, 0.032, 0.24]].forEach((p) => {
+        const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(p[0] * (1 + (Math.random() - 0.5) * 0.004), t + p[1]);
         const g = ctx.createGain();
         g.gain.setValueAtTime(0.0001, t + p[1]);
-        g.gain.exponentialRampToValueAtTime(0.06, t + p[1] + 0.006);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + p[1] + 0.26);
-        o.connect(g); g.connect(bus); o.start(t + p[1]); o.stop(t + p[1] + 0.3);
+        g.gain.exponentialRampToValueAtTime(p[2], t + p[1] + 0.012);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + p[1] + p[3]);
+        o.connect(g); g.connect(bus); o.start(t + p[1]); o.stop(t + p[1] + p[3] + 0.05);
       });
-      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * 0.08), ctx.sampleRate);
-      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      // poussière d'or : souffle cristallin dont l'énergie meurt naturellement (bruit façonné)
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * 0.18), ctx.sampleRate);
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 2);
       const noise = ctx.createBufferSource(); noise.buffer = nb;
-      const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 5200;              // étincelle cristalline
-      const ng = ctx.createGain(); ng.gain.setValueAtTime(0.05, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
-      noise.connect(hp); hp.connect(ng); ng.connect(bus); noise.start(t); noise.stop(t + 0.1);
+      const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 5800;
+      const ng = ctx.createGain(); ng.gain.setValueAtTime(0.05, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+      noise.connect(hp); hp.connect(ng); ng.connect(bus); noise.start(t); noise.stop(t + 0.2);
+    }
+    function playCoin() {   // tintement de pièce : deux micro-partiels très hauts, détunés (pour les pluies de pièces)
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime;
+      [[3520, 0, 0.045], [4698, 0.018, 0.03]].forEach((p) => {
+        const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(p[0] * (1 + (Math.random() - 0.5) * 0.01), t + p[1]);
+        const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t + p[1]);
+        g.gain.exponentialRampToValueAtTime(p[2], t + p[1] + 0.006);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + p[1] + 0.11);
+        o.connect(g); g.connect(_master); o.start(t + p[1]); o.stop(t + p[1] + 0.14);
+      });
     }
     function playSpend() {   // CLIC DÉPENSER "Impact/Discharge" : basse électrique lourde
       if (_muted) return;
