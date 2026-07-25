@@ -1211,12 +1211,78 @@
     .vresa__ttl { display: block; font-size: 11px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: #ffc46a; margin-bottom: 6px; }
     .vresa__row { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; color: rgba(255, 255, 255, .8); padding: 2px 0; }
     .vresa__row b { font-variant-numeric: tabular-nums; color: #ffd9a0; }
+    /* ============================================================================
+       VAGUE 1 TRANSITIONS : chaque écran est un LIEU, on y entre par un geste
+       ========================================================================== */
+    /* ---- VENTES : le ticket s'imprime (rouleau + papier qui sort + total tamponné) ---- */
+    .printwrap { position: relative; }
+    .print__roll { position: absolute; top: -7px; left: 6%; right: 6%; height: 15px; z-index: 3; border-radius: 999px; opacity: 0; pointer-events: none;
+      background: linear-gradient(180deg, #3a4152, #14161f 60%, #0c0e15); border: 1px solid rgba(255, 255, 255, .16); box-shadow: 0 6px 14px -6px rgba(0, 0, 0, .8), inset 0 1px 0 rgba(255, 255, 255, .2); }
+    .print__roll::after { content: ""; position: absolute; left: 10px; right: 10px; top: 50%; border-top: 2px dotted rgba(255, 255, 255, .22); }   /* perforations */
+    .printwrap.is-live { overflow: hidden; border-radius: 16px; }
+    .printwrap.is-live .print__roll { opacity: 1; animation: rollFade .4s 1s ease both; }
+    .printwrap.is-live .saleslist { animation: paperOut .75s cubic-bezier(.25, .8, .3, 1) both; }
+    @keyframes paperOut { from { transform: translateY(-101%); } to { transform: translateY(0); } }
+    @keyframes rollFade { to { opacity: 0; } }
+    .sales-total .stamp { display: inline-block; }
+    .is-stamp .stamp { animation: stampIn .5s .55s var(--ease-back) both; }
+    @keyframes stampIn { 0% { opacity: 0; transform: scale(1.9) rotate(-7deg); } 60% { opacity: 1; transform: scale(.94) rotate(1.5deg); } 100% { transform: scale(1) rotate(0); } }
+    /* ---- DÉPENSES : le portefeuille s'ouvre (2 volets cuir + billets qui s'envolent) ---- */
+    .walletwrap { position: relative; }
+    .wallet { position: absolute; inset: -6px; z-index: 5; display: none; flex-direction: column; border-radius: 18px; overflow: hidden; pointer-events: none; perspective: 800px; }
+    .walletwrap.is-live .wallet { display: flex; }
+    .wallet__flap { position: relative; flex: 1;
+      background: radial-gradient(130% 130% at 50% 40%, #3a2a20 0%, #241812 55%, #17100c 100%);
+      border: 1px solid rgba(225, 29, 72, .3); box-shadow: inset 0 0 34px -14px rgba(225, 29, 72, .35), inset 0 1px 0 rgba(255, 255, 255, .08); }
+    .wallet__flap::before { content: ""; position: absolute; inset: 9px; border-radius: 12px; border: 2px dashed rgba(255, 210, 160, .25); }   /* couture cuir */
+    .wallet__flap--t { border-radius: 18px 18px 0 0; transform-origin: top center; animation: flapT .6s .3s cubic-bezier(.6, .05, .3, 1) both; }
+    .wallet__flap--b { border-radius: 0 0 18px 18px; transform-origin: bottom center; animation: flapB .6s .3s cubic-bezier(.6, .05, .3, 1) both; }
+    @keyframes flapT { to { transform: rotateX(94deg); } }
+    @keyframes flapB { to { transform: rotateX(-94deg); } }
+    .wallet__snap { position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; margin: -13px; z-index: 2; border-radius: 50%;
+      background: radial-gradient(120% 120% at 30% 25%, #ffe0a8, #b8742a); box-shadow: 0 0 14px -3px rgba(246, 166, 60, .8), inset 0 -3px 5px rgba(0, 0, 0, .4); animation: snapPop .3s .18s ease both; }
+    @keyframes snapPop { 40% { transform: scale(1.25); } to { transform: scale(0); opacity: 0; } }
+    .wallet__bill { position: absolute; left: 30%; top: 42%; width: 44px; height: 22px; border-radius: 4px; opacity: 0;
+      background: linear-gradient(140deg, #4ade8e, #1f9d61); border: 1px solid rgba(255, 255, 255, .35); animation: billFly .8s .45s ease-out both; }
+    .wallet__bill + .wallet__bill { left: 56%; top: 46%; background: linear-gradient(140deg, #ffd97a, #d99a2b); animation-delay: .55s; }
+    @keyframes billFly { 0% { opacity: 0; transform: translateY(0) rotate(0); } 25% { opacity: 1; } 100% { opacity: 0; transform: translateY(-90px) translateX(24px) rotate(38deg); } }
+    .wallet.is-done { display: none !important; }
+    /* ---- OBJECTIFS : la flèche se plante dans la cible ---- */
+    .objgoal { position: relative; }
+    .arrowfly { display: none; position: absolute; left: 50%; top: 50%; width: 74px; height: 74px; margin: -64px 0 0 -64px; z-index: 3; pointer-events: none;
+      color: #ffd23f; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, .5)) drop-shadow(0 0 10px rgba(255, 210, 63, .45)); }
+    .objgoal.is-live .arrowfly { display: block; animation: arrowFly .5s .25s cubic-bezier(.45, 0, .85, .5) both, arrowGone .35s 2.2s ease both; }
+    @keyframes arrowFly { 0% { opacity: 0; transform: translate(-300px, -300px); } 12% { opacity: 1; } 100% { opacity: 1; transform: translate(0, 0); } }
+    @keyframes arrowGone { to { opacity: 0; } }
+    .objgoal.is-hit { animation: ringHit .4s ease both; }
+    @keyframes ringHit { 0% { transform: translate(0); } 25% { transform: translate(-4px, 3px) rotate(-.5deg); } 55% { transform: translate(3px, -2px) rotate(.4deg); } 100% { transform: none; } }
+    /* ---- BOUSSOLE : l'aiguille se calibre puis se fixe sur toi ---- */
+    .calib { display: none; place-items: center; margin: 14px auto 2px; width: 92px; height: 92px; position: relative; }
+    .screen.is-calib .calib { display: grid; }
+    .calib svg { width: 92px; height: 92px; color: #ffc46a; filter: drop-shadow(0 0 14px rgba(246, 166, 60, .4)); }
+    .calib__needle { transform-origin: 50px 50px; animation: needleSpin 1.15s cubic-bezier(.3, .6, .3, 1) both; }
+    @keyframes needleSpin { 0% { rotate: 0deg; } 55% { rotate: 760deg; } 70% { rotate: 700deg; } 82% { rotate: 732deg; } 92% { rotate: 714deg; } 100% { rotate: 720deg; } }
+    .calib::after { content: ""; position: absolute; inset: -8px; border-radius: 50%; border: 2px solid rgba(246, 166, 60, .55); opacity: 0; }
+    .calib.is-locked::after { animation: calibHalo .55s ease both; }
+    @keyframes calibHalo { 0% { opacity: .9; transform: scale(.75); } 100% { opacity: 0; transform: scale(1.5); } }
+    .calib.is-gone { animation: calibShrink .4s ease both; }
+    @keyframes calibShrink { to { transform: scale(.4); opacity: 0; height: 0; margin: 0; } }
+    /* ---- Confettis d'objectif (1 fois par jour) + flamme de série ---- */
+    .confetti { position: fixed; inset: 0; z-index: 80; pointer-events: none; overflow: hidden; }
+    .confetti span { position: absolute; top: -7vh; border-radius: 2.5px; animation: confFall linear both; box-shadow: 0 0 6px -2px currentColor; }
+    @keyframes confFall { to { transform: translateY(116vh) rotate(680deg); } }
+    .streak { display: inline-flex; align-items: center; gap: 8px; margin: 12px auto 0; padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 800; color: #ffd9a0;
+      background: linear-gradient(140deg, rgba(255, 106, 61, .16), rgba(246, 166, 60, .08)); border: 1px solid rgba(255, 138, 61, .45); box-shadow: 0 0 18px -8px rgba(255, 138, 61, .7); animation: expIn .5s .5s var(--ease) both; }
+    .streak i { font-style: normal; font-size: 16px; animation: flameFlick 1.1s ease-in-out infinite alternate; }
+    @keyframes flameFlick { from { transform: scale(1) rotate(-4deg); } to { transform: scale(1.18) rotate(5deg); } }
+    .streak b { color: #fff; }
     @media (prefers-reduced-motion: reduce) {
       .fx-receipt, .fx-cashout, .fx-shelf, .fx-squash, .fx-wave, .fx-coin, .fx-fold, .fx-tiltz, .fx-glowp, .fx-elastic, .fx-radar, .fx-wobble, .fx-press, .fx-launch, .fx-plane,
-      .onb__logo, .onb__step, .toast, .bub, .lock, .lock__shield, .screen__title, .env, .alertrow, .setgrp, .pos-tile, .vault__wheel { animation: none !important; }
+      .onb__logo, .onb__step, .toast, .bub, .lock, .lock__shield, .screen__title, .env, .alertrow, .setgrp, .pos-tile, .vault__wheel, .streak i, .confetti span { animation: none !important; }
       .env__fill { transition: none; }
-      .vault { display: none !important; }
+      .vault, .wallet, .arrowfly, .confetti { display: none !important; }
       .vaultwrap.is-sealed .pos-tile { animation-play-state: running; }
+      .printwrap.is-live .saleslist, .printwrap.is-live .print__roll, .is-stamp .stamp, .calib__needle, .objgoal.is-hit { animation: none !important; }
     }
   </style>
 </head>
@@ -1459,6 +1525,7 @@
               '</div>') +
           '</div>' +
           (SM.meta.demo ? '<span class="demochip">Mode démo · données d\'exemple — Réglages pour repartir à zéro</span>' : '') +
+          (calcStreak() >= 2 ? '<div class="streak" role="status"><i>&#128293;</i><b>' + calcStreak() + ' jours</b> de suite à objectif atteint — ne casse pas la série !</div>' : '') +
           '<div class="masto">' +
             '<button class="masto__btn masto__btn--sell" type="button" data-goto="caisse">' + ICON_SELL + '<span>Vendre</span></button>' +
             '<button class="masto__btn masto__btn--spend" type="button" data-goto="depenses">' + ICON_SPEND + '<span>Dépenser</span></button>' +
@@ -1649,7 +1716,10 @@
           '<div class="exp-total">Sorties du business<b data-exptotal>' + vitalFmt(expTotal()) + ' F</b></div>' +
           '<div class="exp-perso" data-expperso style="display:' + (pt > 0 ? 'block' : 'none') + '">Poche perso (tes retraits) : <b>' + vitalFmt(pt) + ' F</b></div>' +
           (SM.depenses.length > 6 ? '<div class="searchbar">' + ICO_SEARCH + '<input class="sheet__txt" data-dsearch type="search" placeholder="Chercher une sortie (libellé, catégorie, montant…)"></div>' : '') +
-          '<div class="explist">' + (rows || '<p class="pos__empty">Aucune sortie notée. Touche le <b>+</b> dès que tu dépenses : c\'est comme ça qu\'on voit le vrai bénéfice.</p>') + '</div>' +
+          '<div class="walletwrap" data-wallet>' +
+            '<div class="wallet" aria-hidden="true"><div class="wallet__flap wallet__flap--t"></div><div class="wallet__flap wallet__flap--b"></div><span class="wallet__snap"></span><span class="wallet__bill"></span><span class="wallet__bill"></span></div>' +
+            '<div class="explist">' + (rows || '<p class="pos__empty">Aucune sortie notée. Touche le <b>+</b> dès que tu dépenses : c\'est comme ça qu\'on voit le vrai bénéfice.</p>') + '</div>' +
+          '</div>' +
           (SM.depenses.length > 40 ? '<button class="morebtn" data-dmore>Voir plus (' + (SM.depenses.length - 40) + ' autres sorties)</button>' : '') +
           '<span class="fab__lbl">Ajout rapide</span>' +
           '<button class="fab" data-fab aria-label="Ajouter une sortie">+</button>' +
@@ -1696,6 +1766,15 @@
     }
     function bindDepenses() {
       const scr = view.querySelector('.expenses'); if (!scr) return;
+      // ---- Entrée « portefeuille » : les volets cuir s'ouvrent, deux billets s'envolent
+      const fxIn = _entryFx && !matchMedia('(prefers-reduced-motion: reduce)').matches; _entryFx = false;
+      const ww = scr.querySelector('[data-wallet]');
+      if (fxIn && ww) {
+        ww.classList.add('is-live');
+        try { playWhoosh(); } catch (e) {}
+        setTimeout(() => { try { playPop(true); } catch (e) {} }, 380);
+        setTimeout(() => { const w = ww.querySelector('.wallet'); if (w) w.classList.add('is-done'); }, 1500);
+      }
       const sheet = scr.querySelector('[data-sheet]'), scrim = scr.querySelector('[data-sheetclose]'), amt = scr.querySelector('[data-amt]'), lib = scr.querySelector('[data-explib]');
       const freqRow = scr.querySelector('[data-freqrow]'), recBtn = scr.querySelector('[data-exprec]'), persoBtn = scr.querySelector('[data-expperso-t]');
       let selCat = 'Fournitures', selKind = 'depense', selRec = false, selFreq = 'mois', selPerso = false;
@@ -1956,6 +2035,7 @@
       if (ccScrim) ccScrim.addEventListener('click', ccClose);
       const finalize = (client) => {   // client = {id, nom} ou null (crédit sans fiche, déconseillé)
         const total = tkTotal();
+        const preObj = salesToday();   // pour détecter le franchissement de l'objectif du jour
         const who = activeMember();
         const cout = _ticket.reduce((s, l) => { const p = SM.stock.find((x) => x.id === l.id); return s + (((p && p.cout) || 0) * l.qty); }, 0);
         const sale = { id: 'v' + Date.now(), items: _ticket.map((l) => ({ nom: l.nom, prix: l.prix, qty: l.qty })), total, cout, mode: _payMode, ts: Date.now(), par: who.nom, parId: who.id };
@@ -1963,6 +2043,12 @@
         _ticket.forEach((l) => { const p = SM.stock.find((x) => x.id === l.id); if (p && p.type === 'physique') p.qty = Math.max(0, p.qty - l.qty); });
         (SM.ventes = SM.ventes || []).unshift(sale); smSave();
         playSell(); cashBurst(total);
+        const postObj = salesToday(), dayKey = new Date().toISOString().slice(0, 10);
+        if (objJour() > 0 && preObj < objJour() && postObj >= objJour() && SM.meta.confettiDay !== dayKey) {   // LE moment : pluie d'or, 1 fois par jour
+          SM.meta.confettiDay = dayKey; smSave(); confettiBurst();
+          toast('&#127881; Objectif du jour atteint : <b>' + fF(postObj) + '</b> ! Le reste, c\'est du bonus.', { tone: 'good', ms: 6500 });
+          try { if (navigator.vibrate) navigator.vibrate([40, 60, 40]); } catch (e) {}
+        }
         if (client) toast('Crédit noté sur la fiche de <b>' + client.nom + '</b>', { tone: 'good' });
         _ticket = []; _payMode = 'espèces';
         setTimeout(() => { setActiveNav('ventes'); showSection('ventes', false); }, 780);   // enchaîne vers l'historique
@@ -2008,8 +2094,8 @@
       const search = list.length > 6 ? '<div class="searchbar">' + ICO_SEARCH + '<input class="sheet__txt" data-vsearch type="search" placeholder="Chercher une vente (produit, client, montant…)"></div>' : '';
       const more = list.length > PAGE_SIZE ? '<button class="morebtn" data-vmore>Voir plus (' + (list.length - PAGE_SIZE) + ' autres ventes)</button>' : '';
       return '<div class="screen" style="--sc:#34d399"><span class="screen__tag">Mes ventes</span><h1 class="screen__title">Tes ventes</h1>' +
-        '<div class="sales-total">Encaissé aujourd\'hui<b>' + fF(salesToday()) + '</b></div>' + search +
-        (list.length ? '<p class="screen__sub" style="margin-top:4px">Touche une vente pour la voir en détail, la modifier ou la supprimer.</p><div class="saleslist">' + rows + '</div>' + more : '<p class="pos__empty">Aucune vente pour l\'instant. Va à <b>La caisse</b> pour encaisser ta première vente.</p>') +
+        '<div class="sales-total">Encaissé aujourd\'hui<b class="stamp">' + fF(salesToday()) + '</b></div>' + search +
+        (list.length ? '<p class="screen__sub" style="margin-top:4px">Touche une vente pour la voir en détail, la modifier ou la supprimer.</p><div class="printwrap" data-print><span class="print__roll" aria-hidden="true"></span><div class="saleslist">' + rows + '</div></div>' + more : '<p class="pos__empty">Aucune vente pour l\'instant. Va à <b>La caisse</b> pour encaisser ta première vente.</p>') +
         iaBanner() +
         '<span class="fab__lbl">Encaisser</span><button class="fab fab--green" data-goto="caisse" aria-label="Aller à la caisse">+</button>' +
         '<div class="sheet-scrim" data-vscrim></div>' +
@@ -2044,6 +2130,10 @@
     }
     function bindVentes() {
       const scr = view.querySelector('.screen'); if (!scr) return;
+      // ---- Entrée « ticket » : le papier sort du rouleau, le total du jour se tamponne
+      const fxIn = _entryFx && !matchMedia('(prefers-reduced-motion: reduce)').matches; _entryFx = false;
+      const pw = scr.querySelector('[data-print]');
+      if (fxIn && pw) { pw.classList.add('is-live'); scr.classList.add('is-stamp'); try { playCountTicks(700); } catch (e) {} }
       const sheet = scr.querySelector('[data-vsheet]'), scrim = scr.querySelector('[data-vscrim]'); if (!sheet) return;
       const body = sheet.querySelector('[data-vbody]'), del = sheet.querySelector('[data-vdel]'), edit = sheet.querySelector('[data-vedit]'), keep = sheet.querySelector('[data-vkeep]');
       let curId = null, armT = 0, editing = false, draft = null;
@@ -2387,7 +2477,9 @@
       }).join('');
       return '<div class="screen wide" style="--sc:#ffd23f"><span class="screen__tag">Objectifs</span><h1 class="screen__title">Tes objectifs</h1>' +
         '<div class="seg">' + seg + '</div>' +
-        '<div class="panel objgoal"><div class="objgoal__ring">' + ringSVG(pct, '#ffd23f', M[_objPer][0]) + '</div>' +
+        '<div class="panel objgoal" data-objgoal>' +
+          '<span class="arrowfly" aria-hidden="true"><svg viewBox="0 0 74 74" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><path d="M6 68 L58 16"/><path d="M58 16 l-16 3 M58 16 l-3 16"/><path d="M10 56 l8 8 M16 50 l8 8" stroke-width="3" opacity=".7"/></svg></span>' +
+          '<div class="objgoal__ring">' + ringSVG(pct, '#ffd23f', M[_objPer][0]) + '</div>' +
           '<div class="objgoal__info"><span class="objgoal__cur">' + fF(cur) + '</span><span class="objgoal__tgt">sur ' + fF(tgt) + ' visés</span><button class="objgoal__edit" data-edittgt>Modifier l\'objectif</button></div></div>' +
         iaBannerObj(_objPer, cur, tgt, rate) +
         '<h3 class="objsec">Objectifs d\'achat</h3>' +
@@ -2405,6 +2497,14 @@
     function bindObjectifs() {
       const scr = view.querySelector('.screen'); if (!scr) return;
       const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      // ---- Entrée « flèche » : elle file, se plante dans la cible, l'anneau tremble puis se remplit
+      const fxIn = _entryFx && !rm; _entryFx = false;
+      const og = scr.querySelector('[data-objgoal]');
+      if (fxIn && og) {
+        og.classList.add('is-live');
+        setTimeout(() => { try { playSwoosh(); } catch (e) {} }, 260);
+        setTimeout(() => { og.classList.add('is-hit'); try { playPop(false); playClick(); if (navigator.vibrate) navigator.vibrate(25); } catch (e) {} }, 800);
+      }
       scr.querySelectorAll('.ring__val').forEach((c) => { const off = c.dataset.off; if (rm) c.style.strokeDashoffset = off; else requestAnimationFrame(() => { c.style.strokeDashoffset = off; }); });
       const render = () => { view.innerHTML = objectifsHTML(); bindObjectifs(); };
       scr.querySelectorAll('[data-per]').forEach((b) => b.addEventListener('click', () => { _objPer = b.dataset.per; playPop(true); render(); }));
@@ -2772,10 +2872,29 @@
       if (orphans.length) A.push({ tone: '', ac: '#b98cff', ic: ICO_HAND, nav: 'ventes', tx: '<b>' + orphans.length + ' vente' + (orphans.length > 1 ? 's' : '') + ' à crédit sans fiche client</b> : tu risques d\'oublier qui te doit.' });
       const e = enveloppes();
       if (new Date().getDate() >= 10 && e.manque > 0 && e.ca > 0) A.push({ tone: 'warn', ac: '#e11d48', ic: ICO_HOME, nav: 'bilan', tx: 'Ta marge du mois ne couvre pas encore tes charges : il manque <b>' + fF(e.manque) + '</b>.' });
-      let streak = 0;   // série de jours à objectif atteint (positif !)
-      for (let k = 0; k < 7; k++) { const a = startOfToday() - k * DAY; const caj = (SM.ventes || []).reduce((s, v) => (v.ts >= a && v.ts < a + DAY) ? s + v.total : s, 0); if (caj >= obj && obj > 0) streak++; else break; }
+      const streak = calcStreak();
       if (streak >= 3) A.push({ tone: 'good', ac: '#34d399', ic: ICO_STAR, nav: 'statistiques', tx: '<b>' + streak + ' jours de suite</b> à objectif atteint. Sérieusement stylé.' });
       return A;
+    }
+    function calcStreak() {   // jours consécutifs à objectif atteint (aujourd'hui compte dès qu'il est atteint)
+      const obj = objJour(); if (obj <= 0) return 0;
+      const caDay = (a) => (SM.ventes || []).reduce((s, v) => (v.ts >= a && v.ts < a + DAY) ? s + (+v.total || 0) : s, 0);
+      let s = caDay(startOfToday()) >= obj ? 1 : 0;
+      for (let k = 1; k <= 60; k++) { if (caDay(startOfToday() - k * DAY) >= obj) s++; else break; }
+      return s;
+    }
+    function confettiBurst() {   // pluie d'or : objectif du jour atteint (1 fois par jour)
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const cols = ['#f6a63c', '#ffd23f', '#34d399', '#ff6ec7', '#b98cff', '#ffffff'];
+      const box = document.createElement('div'); box.className = 'confetti'; let h = '';
+      for (let i = 0; i < 44; i++) {
+        h += '<span style="left:' + (Math.random() * 100).toFixed(1) + '%;background:' + cols[i % cols.length] + ';color:' + cols[i % cols.length] +
+          ';animation-duration:' + (1.1 + Math.random() * 0.9).toFixed(2) + 's;animation-delay:' + (Math.random() * 0.35).toFixed(2) +
+          's;width:' + (5 + Math.random() * 5).toFixed(0) + 'px;height:' + (9 + Math.random() * 6).toFixed(0) + 'px"></span>';
+      }
+      box.innerHTML = h; document.body.appendChild(box);
+      setTimeout(() => { try { playSuccess(); } catch (e) {} }, 250);
+      setTimeout(() => box.remove(), 2700);
     }
     function refreshBadge() {
       const dot = document.querySelector('[data-aldot]'); if (!dot) return;
@@ -2835,6 +2954,7 @@
       const qs = ['CA du jour ?', 'Qui me doit ?', 'Stock bas ?', 'Mes enveloppes ?', 'Meilleur produit ?'].map((t) => '<button class="freqchip" data-quickq>' + t + '</button>').join('');
       return '<div class="screen wide" style="--sc:#ffc46a">' +
         '<span class="screen__tag">Boussole</span>' +
+        '<div class="calib" data-calib aria-hidden="true"><svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="2"/><circle cx="50" cy="50" r="36" stroke="currentColor" stroke-width="1" opacity=".4"/><g class="calib__needle"><path d="M50 14 L43 50 L57 50 Z" fill="currentColor"/><path d="M50 86 L43 50 L57 50 Z" fill="currentColor" opacity=".35"/></g><circle cx="50" cy="50" r="3.5" fill="currentColor"/></svg></div>' +
         '<h1 class="screen__title">Ton copilote</h1>' +
         '<p class="screen__sub">Je lis tes chiffres, je te préviens, et je réponds à tes questions. ' + tease + '</p>' +
         (arows ? '<h3 class="objsec">Ce que j\'ai repéré</h3><div class="alerts">' + arows + '</div>' : '') +
@@ -2849,6 +2969,16 @@
     }
     function bindBoussole() {
       const scr = view.querySelector('.screen'); if (!scr) return;
+      // ---- Entrée « calibration » : l'aiguille tourne, hésite, se fixe sur toi
+      const fxIn = _entryFx && !matchMedia('(prefers-reduced-motion: reduce)').matches; _entryFx = false;
+      const cal = scr.querySelector('[data-calib]');
+      if (fxIn && cal) {
+        scr.classList.add('is-calib');
+        try { playCountTicks(900); } catch (e) {}
+        setTimeout(() => { cal.classList.add('is-locked'); try { playSuccess(); } catch (e) {} }, 1150);
+        setTimeout(() => { cal.classList.add('is-gone'); }, 1750);
+        setTimeout(() => { scr.classList.remove('is-calib'); }, 2250);
+      }
       scr.querySelectorAll('[data-algo]').forEach((b) => b.addEventListener('click', () => { playClick(); setActiveNav(b.dataset.algo); showSection(b.dataset.algo, false); }));
       const log = scr.querySelector('[data-chatlog]'), input = scr.querySelector('[data-chatin]'), go = scr.querySelector('[data-chatgo]');
       const send = async (q) => {
@@ -3161,8 +3291,9 @@
     })();
 
     let _curNav = 'accueil';   // écran courant (re-vérifié quand on change de membre)
+    let _entryFx = false;      // transition de lieu : jouée à l'ARRIVÉE sur l'écran, pas aux re-rendus internes
     function showSection(nav, cinematic) {
-      _curNav = nav;
+      _curNav = nav; _entryFx = true;
       setActiveTab(nav);
       if (!canSee(nav)) { view.innerHTML = lockHTML(nav); bindLock(nav); return; }   // verrou par rôle (anti-vol réel)
       if (!cinematic && nav !== 'accueil' && nav !== 'catalogue') playWhoosh();   // routing : whoosh (sauf Accueil=portail et Catalogue=tiroir, qui ont leur propre son)
