@@ -20,6 +20,7 @@
     }
     * { box-sizing: border-box; }
     html, body { height: 100%; }
+    html { overflow-x: hidden; }   /* le débordement du body remontait au viewport -> jamais de scroll latéral */
     body {
       margin: 0;
       font-family: 'Bricolage Grotesque', system-ui, sans-serif;
@@ -105,8 +106,11 @@
 
     /* ============ ÉCRANS (scaffold) + MOUVEMENT DE CAMÉRA ============ */
     .screen { max-width: 560px; margin: 8vh auto 0; text-align: center; }
-    .screen.cine { animation: cineEnter .55s cubic-bezier(.4, 0, .2, 1) both; }    /* arrivée : fondu lent + léger zoom (cinématique) */
-    .screen.hud  { animation: hudPunch .18s cubic-bezier(.2, .9, .1, 1) both; }     /* navigation : spring sèche, AUCUN rebond (pas d'overshoot) */
+    /* fill-mode BACKWARDS (et non both) : à la fin, l'écran ne garde AUCUN transform résiduel.
+       Avec `both`, Chromium laissait une matrice identité -> l'écran devenait le repère des
+       éléments position:fixed, et le FAB sortait du viewport. Rendu identique, bug en moins. */
+    .screen.cine { animation: cineEnter .55s cubic-bezier(.4, 0, .2, 1) backwards; }    /* arrivée : fondu lent + léger zoom (cinématique) */
+    .screen.hud  { animation: hudPunch .18s cubic-bezier(.2, .9, .1, 1) backwards; }     /* navigation : spring sèche, AUCUN rebond (pas d'overshoot) */
     @keyframes cineEnter { from { opacity: 0; transform: scale(.985); }                     to { opacity: 1; transform: none; } }
     @keyframes hudPunch  { 0% { opacity: .35; transform: translateX(10px) scale(1.015); }   100% { opacity: 1; transform: none; } }
     .screen__tag {
@@ -262,11 +266,15 @@
     @keyframes portalRing { 0% { opacity: 0; transform: scale(.15); } 35% { opacity: 1; } 100% { opacity: 0; transform: scale(1.2); } }
 
     /* ===== TIROIR 3D « Catalogue » : la page se tire vers l'avant + les compartiments sortent en gigogne ===== */
-    .screen.drawer3d { animation: drawerPull .45s cubic-bezier(0.19, 1, 0.22, 1) both; }
+    /* le tiroir 3D anime le CONTENU, jamais l'écran entier : un transform sur `.screen`
+       reprogrammerait les éléments position:fixed (le FAB sortait de l'écran pendant .45 s). */
+    .drawer3d { animation: drawerPull .45s cubic-bezier(0.19, 1, 0.22, 1) backwards; }
     @keyframes drawerPull {
       0%   { transform: perspective(1000px) rotateX(-20deg) translateZ(-150px) translateY(-50px); opacity: 0; }
       66%  { opacity: 1; }
-      100% { transform: perspective(1000px) rotateX(0deg) translateZ(0) translateY(0); opacity: 1; }
+      /* transform:none à l'arrivée = l'écran cesse d'être un « containing block » :
+         sans ça, le FAB (position:fixed) était piégé DANS l'écran et sortait du viewport. */
+      100% { transform: none; opacity: 1; }
     }
     .catgrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 22px auto 0; max-width: 430px; perspective: 800px; }
     .catcard {
@@ -357,7 +365,9 @@
     .sheet__cats { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
     .catchip { padding: 8px 13px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .14); background: rgba(255, 255, 255, .05); color: rgba(255, 255, 255, .75); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: color .15s, border-color .15s, background .15s, box-shadow .15s; }
     .catchip.is-sel { color: #fff; border-color: var(--cc); background: color-mix(in srgb, var(--cc) 18%, transparent); box-shadow: 0 0 14px -4px var(--cc); }
-    .sheet__add { width: 100%; margin-top: 4px; padding: 15px; border: 0; border-radius: 16px; cursor: pointer; font: inherit; font-size: 16px; font-weight: 800; color: #1a0406; background: radial-gradient(140% 140% at 30% 20%, #ff8a97, #e11d48); box-shadow: 0 0 22px -4px rgba(225, 29, 72, .6); transition: transform .1s ease; }
+    /* action PRIMAIRE = or (l'identité Boussole). Le rouge reste réservé au destructif :
+       avant, « Enregistrer » et « Supprimer » avaient le même rouge -> confusion dangereuse. */
+    .sheet__add { width: 100%; margin-top: 4px; padding: 15px; border: 0; border-radius: 16px; cursor: pointer; font: inherit; font-size: 16px; font-weight: 800; color: #1a1406; background: radial-gradient(140% 140% at 30% 20%, #ffe0a8, #f6a63c 60%, #d9871a); box-shadow: 0 0 22px -6px rgba(246, 166, 60, .7), inset 0 1px 0 rgba(255, 255, 255, .45); transition: transform .1s ease; }
     .sheet__add:active { transform: scale(.97); }
 
     /* ============ OVERLAY + DRAWER ============ */
@@ -582,7 +592,7 @@
       .screen.cine, .screen.hud { animation: none !important; }   /* pas de caméra si mouvement réduit */
       .home.portal { animation: none !important; clip-path: none !important; }   /* pas de portail si mouvement réduit */
       .home.portal::after { animation: none !important; opacity: 0 !important; }
-      .screen.drawer3d, .catcard, .stockrow, .qtybtn__val.pop, .exprow, .fab { animation: none !important; }   /* pas de tiroir/gigogne/pop/FAB si mouvement réduit */
+      .drawer3d, .catcard, .stockrow, .qtybtn__val.pop, .exprow, .fab { animation: none !important; }   /* pas de tiroir/gigogne/pop/FAB si mouvement réduit */
       .navbtn[data-nav="catalogue"]:hover .chest__lid, .navbtn[data-nav="catalogue"]:hover .chest__base { transform: none !important; }
       .navbtn.miles, .navbtn.miles .navbtn__ic { animation: none !important; }   /* pas de glitch au clic si mouvement réduit */
       .hud__hi, .hud__sys i, .hud__caret { animation: none !important; }   /* pas de curseur clignotant / glitch si mouvement réduit */
@@ -1195,8 +1205,22 @@
       background: linear-gradient(140deg, rgba(246, 166, 60, .5), rgba(255, 255, 255, .05) 32%, rgba(52, 211, 153, .3) 68%, rgba(246, 166, 60, .22));
       -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude; opacity: .55; }
     .panel, .ia, .env, .setgrp { position: relative; }
-    .screen__title { background: linear-gradient(100deg, #fff 30%, #ffe0a8 46%, #fff 62%); background-size: 220% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: titleShine 1.6s ease .3s 1 both; }
+    .screen__title { background: linear-gradient(100deg, #fff 30%, #ffe0a8 46%, #fff 62%); background-size: 220% 100%; background-position: -60% 0; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    #view.vw-enter .screen__title { animation: titleShine 1.6s ease .3s 1 both; }   /* le shimmer ne joue qu'à l'ARRIVÉE sur l'écran (perf + pas de rejeu interne) */
     @keyframes titleShine { from { background-position: 120% 0; } to { background-position: -60% 0; } }
+    /* perf : le tiroir fermé ne calcule plus les respirations holo (elles tournaient en permanence hors écran) */
+    .app:not(.menu-open) .drawer .navbtn--holo,
+    .app:not(.menu-open) .drawer .navbtn--holo::before,
+    .app:not(.menu-open) .drawer .navbtn--holo .navbtn__ic svg { animation-play-state: paused; }
+    /* PC : les feuilles ne barrent plus tout l'écran — carte centrée, cadrée, arrondie */
+    @media (min-width: 1024px) {
+      .sheet { left: 50%; right: auto; width: min(560px, calc(100vw - 48px)); bottom: 22px; border-radius: 22px; border: 1px solid rgba(255, 255, 255, .12); transform: translate(-50%, calc(100% + 48px)); }
+      .sheet.is-open { transform: translate(-50%, 0); }
+    }
+    /* le coffre en mode éclair (dès la 2e visite de la session) : même rituel, deux fois plus vite */
+    .vault.is-fast .vault__door { transition-duration: .32s; }
+    .vault.is-fast.is-turning .vault__wheel { animation-duration: .28s; }
+    .vault.is-fast.is-open { transition: opacity .15s .28s; }
     ::-webkit-scrollbar { width: 9px; height: 9px; } ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { border-radius: 99px; background: linear-gradient(180deg, rgba(246, 166, 60, .35), rgba(246, 166, 60, .12)); border: 2px solid #0B0F19; }
     .kpi__spark { position: absolute; right: 10px; bottom: 8px; width: 74px; height: 26px; opacity: .8; pointer-events: none; }
@@ -1702,12 +1726,14 @@
             '</span></button>' + ctrl + '</div>';
       }).join('');
       const seg = ['tous', 'physique', 'digital', 'service'].map((k) => '<button class="seg-btn' + (k === f ? ' is-on' : '') + '" data-catf="' + k + '">' + ({ tous: 'Tout', physique: 'Physique', digital: 'Digital', service: 'Service' }[k]) + '</button>').join('');
-      return '<div class="screen drawer3d wide" style="--sc:#ffd23f">' +
-          '<span class="screen__tag">Catalogue</span>' +
-          '<h1 class="screen__title">Ton catalogue</h1>' +
-          '<p class="screen__sub">Tes produits et services : prix, coût, et la marge que ça te rapporte.</p>' +
-          '<div class="seg seg--cat">' + seg + '</div>' +
-          '<div class="prodlist">' + (cards || '<p class="ia__txt" style="text-align:center">Rien dans cette catégorie.</p>') + '</div>' +
+      return '<div class="screen wide" style="--sc:#ffd23f">' +
+          '<div class="drawer3d">' +   // le tiroir qui sort = le CONTENU (le FAB reste ancré au viewport)
+            '<span class="screen__tag">Catalogue</span>' +
+            '<h1 class="screen__title">Ton catalogue</h1>' +
+            '<p class="screen__sub">Tes produits et services : prix, coût, et la marge que ça te rapporte.</p>' +
+            '<div class="seg seg--cat">' + seg + '</div>' +
+            '<div class="prodlist">' + (cards || '<p class="ia__txt" style="text-align:center">Rien dans cette catégorie.</p>') + '</div>' +
+          '</div>' +
           '<span class="fab__lbl">Nouvel article</span><button class="fab fab--gold" data-prodnew aria-label="Ajouter un produit ou service">+</button>' +
           catSheet() +
         '</div>';
@@ -1873,10 +1899,11 @@
     }
     function bindDepenses() {
       const scr = view.querySelector('.expenses'); if (!scr) return;
-      // ---- Entrée « portefeuille » : les volets cuir s'ouvrent, deux billets s'envolent
-      const fxIn = _entryFx && !matchMedia('(prefers-reduced-motion: reduce)').matches; _entryFx = false;
+      // ---- Entrée « portefeuille » : plein format 1 fois par session
+      const fxIn = _entryFx && !_fxSeen.depenses && !matchMedia('(prefers-reduced-motion: reduce)').matches; _entryFx = false;
       const ww = scr.querySelector('[data-wallet]');
       if (fxIn && ww) {
+        _fxSeen.depenses = 1;
         ww.classList.add('is-live');
         try { playWhoosh(); } catch (e) {}
         setTimeout(() => { try { playPop(true); } catch (e) {} }, 380);
@@ -2122,12 +2149,15 @@
     function bindCaisse() {
       _ticket = []; _payMode = 'espèces';
       const scr = view.querySelector('.screen'); if (!scr) return;
-      // ---- Entrée théâtrale : la roue tourne, les portes du coffre s'ouvrent, les produits jaillissent
+      // ---- Entrée théâtrale : plein format à la 1re visite, MODE ÉCLAIR ensuite (2× plus vite = vitesse d'usage)
       const vwrap = scr.querySelector('[data-vaultwrap]'), vault = scr.querySelector('[data-vault]');
       if (vault && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        setTimeout(() => { vault.classList.add('is-turning'); try { playDrawerPull(); } catch (e) {} }, 140);
-        setTimeout(() => { vault.classList.add('is-open'); vwrap.classList.remove('is-sealed'); vwrap.classList.add('is-revealed'); }, 660);
-        setTimeout(() => { vault.classList.add('is-gone'); }, 1500);
+        const fast = !!_fxSeen.caisse; _fxSeen.caisse = 1;
+        if (fast) vault.classList.add('is-fast');
+        const T = fast ? [60, 320, 760] : [140, 660, 1500];
+        setTimeout(() => { vault.classList.add('is-turning'); try { playDrawerPull(); } catch (e) {} }, T[0]);
+        setTimeout(() => { vault.classList.add('is-open'); vwrap.classList.remove('is-sealed'); vwrap.classList.add('is-revealed'); }, T[1]);
+        setTimeout(() => { vault.classList.add('is-gone'); }, T[2]);
       } else if (vwrap) { vwrap.classList.remove('is-sealed'); vwrap.classList.add('is-revealed'); if (vault) vault.classList.add('is-gone'); }
       const grid = scr.querySelector('.pos__grid');
       if (grid) grid.addEventListener('click', (e) => {
@@ -2242,10 +2272,14 @@
     }
     function bindVentes() {
       const scr = view.querySelector('.screen'); if (!scr) return;
-      // ---- Entrée « ticket » : le papier sort du rouleau, le total du jour se tamponne
-      const fxIn = _entryFx && !matchMedia('(prefers-reduced-motion: reduce)').matches; _entryFx = false;
+      // ---- Entrée « ticket » : plein format 1 fois par session, ensuite affichage instantané (vitesse)
+      const fxIn = _entryFx && !_fxSeen.ventes && !matchMedia('(prefers-reduced-motion: reduce)').matches; _entryFx = false;
       const pw = scr.querySelector('[data-print]');
-      if (fxIn && pw) { pw.classList.add('is-live'); scr.classList.add('is-stamp'); try { playCountTicks(700); } catch (e) {} }
+      if (fxIn && pw) {
+        _fxSeen.ventes = 1;
+        pw.classList.add('is-live'); scr.classList.add('is-stamp'); try { playCountTicks(700); } catch (e) {}
+        setTimeout(() => { if (pw.isConnected) pw.classList.remove('is-live'); }, 1250);   // libère l'overflow (ombres des lignes)
+      }
       const sheet = scr.querySelector('[data-vsheet]'), scrim = scr.querySelector('[data-vscrim]'); if (!sheet) return;
       const body = sheet.querySelector('[data-vbody]'), del = sheet.querySelector('[data-vdel]'), edit = sheet.querySelector('[data-vedit]'), keep = sheet.querySelector('[data-vkeep]');
       let curId = null, armT = 0, editing = false, draft = null;
@@ -2609,10 +2643,11 @@
     function bindObjectifs() {
       const scr = view.querySelector('.screen'); if (!scr) return;
       const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      // ---- Entrée « flèche » : elle file, se plante dans la cible, l'anneau tremble puis se remplit
-      const fxIn = _entryFx && !rm; _entryFx = false;
+      // ---- Entrée « flèche » : plein format 1 fois par session
+      const fxIn = _entryFx && !rm && !_fxSeen.objectifs; _entryFx = false;
       const og = scr.querySelector('[data-objgoal]');
       if (fxIn && og) {
+        _fxSeen.objectifs = 1;
         og.classList.add('is-live');
         setTimeout(() => { try { playSwoosh(); } catch (e) {} }, 260);
         setTimeout(() => { og.classList.add('is-hit'); try { playPop(false); playClick(); if (navigator.vibrate) navigator.vibrate(25); } catch (e) {} }, 800);
@@ -2896,8 +2931,14 @@
       ] : [ { id: 'e1', nom: patronNom, role: 'patron', pin: '', actif: true, ventes: 0 } ];
       smSave();
     }
-    // ---- PIN : jamais en clair -> empreinte (hash salé). Migration des anciens codes clairs.
-    function pinHash(p) { let h = 5381; const s = 'bsl:' + p; for (let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0; return h.toString(36); }
+    // ---- PIN : jamais en clair -> empreinte v2 (FNV-1a double passe salée). Les anciennes empreintes restent valides.
+    function pinHashOld(p) { let h = 5381; const s = 'bsl:' + p; for (let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0; return h.toString(36); }
+    function pinHash(p) {
+      let h = 0x811c9dc5; const s = 'boussole/v2:' + p + ':' + String(p).length;
+      for (let r = 0; r < 2; r++) for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+      return 'v2' + h.toString(36);
+    }
+    const pinOk = (p, h) => !!h && (pinHash(p) === h || pinHashOld(p) === h);   // vérifie v2 ET les codes posés avant la migration
     (SM.equipe || []).forEach((m) => { if (m.pin) { m.pinH = pinHash(m.pin); delete m.pin; } });
     const activeMember = () => (SM.equipe || []).find((m) => m.id === SM.meta.activeId) || SM.equipe[0] || { id: 'e1', nom: 'Patron', role: 'patron' };
     const activeRole = () => activeMember().role || 'patron';
@@ -3082,10 +3123,11 @@
     }
     function bindBoussole() {
       const scr = view.querySelector('.screen'); if (!scr) return;
-      // ---- Entrée « calibration » : l'aiguille tourne, hésite, se fixe sur toi
-      const fxIn = _entryFx && !matchMedia('(prefers-reduced-motion: reduce)').matches; _entryFx = false;
+      // ---- Entrée « calibration » : plein format 1 fois par session
+      const fxIn = _entryFx && !_fxSeen.boussole && !matchMedia('(prefers-reduced-motion: reduce)').matches; _entryFx = false;
       const cal = scr.querySelector('[data-calib]');
       if (fxIn && cal) {
+        _fxSeen.boussole = 1;
         scr.classList.add('is-calib');
         try { playCountTicks(900); } catch (e) {}
         setTimeout(() => { cal.classList.add('is-locked'); try { playSuccess(); } catch (e) {} }, 1150);
@@ -3129,7 +3171,7 @@
       const free = view.querySelector('[data-lockfree]'); if (free) free.addEventListener('click', unlock);
       const goBtn = view.querySelector('[data-lockgo]'), pin = view.querySelector('[data-lockpin]');
       const tryPin = () => {
-        if (pinHash(pin.value || '') === patron.pinH) { unlock(); return; }
+        if (pinOk(pin.value || '', patron.pinH)) { unlock(); return; }
         lock.classList.remove('is-no'); void lock.offsetWidth; lock.classList.add('is-no'); playSwoosh(); pin.value = '';
       };
       if (goBtn) { goBtn.addEventListener('click', tryPin); pin.addEventListener('keydown', (e) => { if (e.key === 'Enter') tryPin(); }); setTimeout(() => { try { pin.focus(); } catch (_) {} }, 220); }
@@ -3160,7 +3202,7 @@
             body.innerHTML = '<p class="ia__txt" style="margin:0 0 10px">Code de <b>' + m.nom + '</b> :</p><input class="sheet__amt" data-swpin type="password" inputmode="numeric" maxlength="4" placeholder="&#8226;&#8226;&#8226;&#8226;"><button class="sheet__add" data-swok>Prendre la caisse</button><button class="sheet__keep" data-swback>Retour</button>';
             const pin = body.querySelector('[data-swpin]');
             body.querySelector('[data-swback]').addEventListener('click', renderList);
-            const ok = () => { if (pinHash(pin.value || '') === m.pinH) { doSwitch(m); close(); } else { playSwoosh(); pin.value = ''; pin.placeholder = 'Mauvais code'; } };
+            const ok = () => { if (pinOk(pin.value || '', m.pinH)) { doSwitch(m); close(); } else { playSwoosh(); pin.value = ''; pin.placeholder = 'Mauvais code'; } };
             body.querySelector('[data-swok]').addEventListener('click', ok);
             pin.addEventListener('keydown', (e) => { if (e.key === 'Enter') ok(); });
             setTimeout(() => { try { pin.focus(); } catch (_) {} }, 120);
@@ -3372,14 +3414,14 @@
     function countUpNums(scope) {
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       (scope || view).querySelectorAll('.kpi__num, .benhero__num').forEach((el, i) => {
-        const txt = el.textContent, m = txt.replace(/[\s ]/g, '').match(/-?\d+/); if (!m) return;
-        const target = Math.abs(+m[0]); if (!target) return;
-        const prefix = txt.slice(0, txt.search(/\d/)).trim(); const suffix = txt.slice(txt.search(/\d[^\d\s]*$/)).replace(/^[\d\s ]+/, '');
+        const m = el.textContent.match(/^([^\d]*)([\d\s\u00A0\u202F]+)(.*)$/);   // préfixe / chiffres (espaces milliers) / suffixe — découpage robuste
+        if (!m) return;
+        const target = Math.abs(+m[2].replace(/[^\d]/g, '')); if (!target) return; const prefix = m[1], suffix = m[3];
         const DUR = 850, start = performance.now() + i * 90;
         const tick = (now) => {
           if (now < start) return requestAnimationFrame(tick);
           const p = Math.min(1, (now - start) / DUR), e = 1 - Math.pow(1 - p, 3);
-          el.textContent = prefix + vitalFmt(Math.round(target * e)) + (suffix ? ' ' + suffix : '');
+          el.textContent = prefix + vitalFmt(Math.round(target * e)) + suffix;
           if (p < 1) requestAnimationFrame(tick);
         };
         requestAnimationFrame(tick);
@@ -3405,8 +3447,11 @@
 
     let _curNav = 'accueil';   // écran courant (re-vérifié quand on change de membre)
     let _entryFx = false;      // transition de lieu : jouée à l'ARRIVÉE sur l'écran, pas aux re-rendus internes
+    const _fxSeen = {};        // 1 transition PLEIN format par écran et par session ; ensuite : instantané (vitesse d'usage)
+    let _shineT = 0;
     function showSection(nav, cinematic) {
       _curNav = nav; _entryFx = true;
+      view.classList.add('vw-enter'); clearTimeout(_shineT); _shineT = setTimeout(() => view.classList.remove('vw-enter'), 2100);   // shimmer du titre : à l'entrée seulement
       setActiveTab(nav);
       if (!canSee(nav)) { view.innerHTML = lockHTML(nav); bindLock(nav); return; }   // verrou par rôle (anti-vol réel)
       if (!cinematic && nav !== 'accueil' && nav !== 'catalogue') playWhoosh();   // routing : whoosh (sauf Accueil=portail et Catalogue=tiroir, qui ont leur propre son)
