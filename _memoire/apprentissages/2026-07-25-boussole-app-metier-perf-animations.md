@@ -141,3 +141,25 @@ chiffres réels** (hier vs avant-hier, dettes, ruptures, marge) — pas une list
 - **Hachage de code PIN** : versionner l'algo (`v2` en préfixe) et garder une fonction
   `pinOk(code, hash)` qui accepte **l'ancien et le nouveau** → les codes déjà posés continuent
   de fonctionner après migration.
+
+## 9. Visite guidée « projecteur » sur l'interface réelle (pattern réutilisable)
+
+Bien plus convaincant qu'une vidéo : on **éclaire l'app elle-même**.
+```css
+/* le voile se troue autour de la cible : polygone qui contourne le rectangle */
+.veil { clip-path: polygon(0 0,100% 0,100% 100%,0 100%,0 Ypx, X+Wpx Ypx, X+Wpx Y+Hpx, Xpx Y+Hpx, Xpx Ypx, 0 Ypx); }
+```
+- Position de la cible via `getBoundingClientRect()` + un anneau et une main animée par-dessus.
+- **Piège** : positionner la bulle AVANT d'écrire son texte → elle sort de l'écran. Il faut écrire le
+  contenu, lire `offsetHeight`, PUIS choisir dessous / dessus / centré, et **clamper** dans le viewport.
+  (Attrapé uniquement par un test qui vérifie `rect.top >= 0 && rect.bottom <= innerHeight` à chaque étape.)
+- Prévoir un **interrupteur** (`?tour=off`) : sans lui, le voile bloque toutes les suites de tests
+  existantes — et il sert aussi pour les démos commerciales.
+- Toujours **rejouable** (bouton d'aide permanent), jamais un one-shot qu'on ne peut plus revoir.
+
+## 10. « Une seule action à faire » plutôt qu'un tableau de bord muet
+
+Un écran d'accueil qui affiche des chiffres ne dit pas quoi faire. Une carte unique, calculée par
+priorité métier (catalogue vide → première vente → rupture → client à relancer → objectif du jour),
+transforme l'outil en **guide**. Règle : **une seule** action visible à la fois, cliquable, qui
+emmène directement à l'écran concerné.

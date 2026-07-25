@@ -89,6 +89,13 @@ Identité du commerce (nom, tél., adresse, **IFU / RCCM** → repris sur les fa
 - **Son 100 % synthétisé** (aucun fichier) : carillon doré à l'encaissement, tintement de pièce, arpège de validation, bus d'écho commun.
 - ⚡ Les transitions jouent **en plein format une fois par session**, puis l'app va droit au but (le coffre passe en mode éclair).
 
+### Comprendre l'outil (pensé pour un débutant total)
+- **Visite guidée animée** au premier lancement : un projecteur éclaire tour à tour les vrais éléments de l'interface (les 2 gros boutons, les chiffres du haut, la barre du bas, la caisse, le bilan, le chat), avec une main qui pointe et un texte en mots simples. Elle **navigue vraiment** d'un écran à l'autre.
+- **Rejouable à vie** : bouton **« ? »** dans le header, ou Réglages → « Revoir la visite guidée ».
+- **Aide de chaque écran** : le « ? » explique toujours **l'écran où l'on se trouve** (14 écrans documentés en 3-4 points).
+- **« À faire maintenant »** sur l'accueil : une seule action prioritaire, calculée (catalogue vide, rupture, client à relancer, objectif du jour…), cliquable.
+- `?tour=off` dans l'URL : démarre sans la visite (démos, tests).
+
 ## Synchronisation cloud du proto
 L'état complet suit le compte (mobile ↔ PC) via la table **`boussole_proto_etat`** (jsonb + RLS).
 **À faire une fois** : exécuter `_proto/etat.sql` dans Supabase → SQL Editor. Sans ça, l'app reste en mode local (statut affiché dans Réglages).

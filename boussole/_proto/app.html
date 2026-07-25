@@ -1328,6 +1328,75 @@
       background: rgba(255, 255, 255, .04); border: 1px dashed rgba(255, 255, 255, .18); text-align: left; font-size: 12.5px; color: rgba(255, 255, 255, .62); }
     .fiab b { color: #fff; }
     .fiab__ring { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 10.5px; font-weight: 800; color: #fff; }
+    /* ============================================================================
+       COMPRENDRE : visite guidée animée (rejouable), aide de chaque écran,
+       et « ce que tu dois faire maintenant »
+       ========================================================================== */
+    .hdr__right { justify-self: end; display: flex; align-items: center; gap: 9px; }
+    .hdr__help { width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: grid; place-items: center;
+      font: inherit; font-size: 17px; font-weight: 800; color: #ffc46a;
+      background: rgba(246, 166, 60, .12); border: 1px solid rgba(246, 166, 60, .38); transition: transform .15s var(--ease-back), background .2s; }
+    .hdr__help:active { transform: scale(.9); background: rgba(246, 166, 60, .25); }
+    .hdr__help.pulse { animation: helpPulse 2.6s ease-in-out 3; }
+    @keyframes helpPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(246, 166, 60, .55); } 50% { box-shadow: 0 0 0 9px rgba(246, 166, 60, 0); } }
+    /* ---- Visite guidée : projecteur + bulle ---- */
+    .tour { position: fixed; inset: 0; z-index: 90; pointer-events: auto; }
+    .tour__veil { position: absolute; inset: 0; background: rgba(4, 6, 12, .82); transition: clip-path .5s var(--ease); }
+    .tour__ring { position: absolute; border-radius: 18px; border: 2px solid #ffc46a; box-shadow: 0 0 0 3px rgba(246, 166, 60, .25), 0 0 26px -4px rgba(246, 166, 60, .8);
+      transition: all .5s var(--ease); pointer-events: none; }
+    .tour__ring::after { content: ""; position: absolute; inset: -6px; border-radius: 22px; border: 2px solid rgba(246, 166, 60, .5); animation: tourPing 1.8s ease-out infinite; }
+    @keyframes tourPing { 0% { opacity: .9; transform: scale(.97); } 100% { opacity: 0; transform: scale(1.09); } }
+    .tour__bub { position: absolute; left: 50%; transform: translateX(-50%); width: min(340px, calc(100vw - 32px)); padding: 17px 18px 16px; border-radius: 20px; text-align: left;
+      background: linear-gradient(180deg, rgba(32, 34, 44, .99), rgba(18, 19, 26, .99)); border: 1px solid rgba(246, 166, 60, .35);
+      box-shadow: 0 24px 50px -18px rgba(0, 0, 0, .95), inset 0 1px 0 rgba(255, 255, 255, .1); animation: bubPop .42s var(--ease-back) both; }
+    @keyframes bubPop { from { opacity: 0; transform: translateX(-50%) translateY(14px) scale(.94); } to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
+    .tour__bub::before { content: ""; position: absolute; left: 50%; margin-left: -9px; width: 18px; height: 18px; rotate: 45deg;
+      background: linear-gradient(135deg, rgba(32, 34, 44, .99), rgba(18, 19, 26, .99)); border: 1px solid rgba(246, 166, 60, .35); }
+    .tour__bub[data-arrow="up"]::before { top: -10px; border-right: 0; border-bottom: 0; }
+    .tour__bub[data-arrow="down"]::before { bottom: -10px; border-left: 0; border-top: 0; }
+    .tour__bub[data-arrow="none"]::before { display: none; }
+    .tour__ico { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 13px; font-size: 21px; margin-bottom: 9px;
+      background: radial-gradient(120% 120% at 30% 25%, rgba(255, 224, 168, .95), #f6a63c); box-shadow: 0 8px 18px -8px rgba(246, 166, 60, .8); }
+    .tour__ttl { margin: 0 0 6px; font-size: 18px; font-weight: 800; color: #fff; }
+    .tour__txt { margin: 0; font-size: 14px; line-height: 1.55; color: rgba(255, 255, 255, .78); }
+    .tour__txt b { color: #ffd9a0; }
+    .tour__foot { display: flex; align-items: center; gap: 10px; margin-top: 15px; }
+    .tour__dots { display: flex; gap: 5px; flex: 1; }
+    .tour__dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, .2); transition: all .3s; }
+    .tour__dots i.on { background: #f6a63c; width: 16px; border-radius: 3px; }
+    .tour__skip { border: 0; background: none; color: rgba(255, 255, 255, .45); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: underline dotted; }
+    .tour__next { border: 0; border-radius: 13px; padding: 11px 20px; cursor: pointer; font: inherit; font-size: 15px; font-weight: 800; color: #1a1406;
+      background: radial-gradient(130% 140% at 30% 20%, #ffe0a8, #f6a63c 62%, #d9871a); box-shadow: 0 10px 22px -8px rgba(246, 166, 60, .7); transition: transform .12s; }
+    .tour__next:active { transform: scale(.95); }
+    .tour__hand { position: absolute; width: 44px; height: 44px; pointer-events: none; font-size: 32px; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, .7));
+      animation: tapHand 1.5s ease-in-out infinite; }
+    @keyframes tapHand { 0%, 100% { transform: translate(0, 0) scale(1); opacity: .95; } 50% { transform: translate(0, -9px) scale(.9); opacity: 1; } }
+    /* ---- Aide de l'écran courant ---- */
+    .aidelist { display: flex; flex-direction: column; gap: 10px; margin: 4px 0 2px; }
+    .aideitem { display: flex; gap: 11px; align-items: flex-start; text-align: left; animation: expIn .35s calc(var(--i) * 60ms) var(--ease) both; }
+    .aideitem__ic { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 11px; font-size: 16px;
+      background: rgba(246, 166, 60, .12); border: 1px solid rgba(246, 166, 60, .3); }
+    .aideitem__tx { flex: 1; font-size: 13.5px; line-height: 1.5; color: rgba(255, 255, 255, .8); }
+    .aideitem__tx b { color: #fff; display: block; margin-bottom: 2px; }
+    /* ---- « À faire maintenant » (l'accueil dit quoi faire) ---- */
+    .todo { position: relative; overflow: hidden; max-width: 500px; margin: 16px auto 0; padding: 15px 16px; border-radius: 18px; text-align: left; cursor: pointer; width: 100%;
+      background: linear-gradient(140deg, rgba(246, 166, 60, .14), rgba(255, 255, 255, .03)); border: 1px solid rgba(246, 166, 60, .38);
+      box-shadow: 0 14px 30px -18px rgba(0, 0, 0, .9); font: inherit; animation: expIn .5s .2s var(--ease) both; }
+    .todo::after { content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 45%;
+      background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .13), transparent); animation: todoSheen 3.4s ease-in-out 1.2s infinite; }
+    @keyframes todoSheen { 0% { left: -60%; } 55%, 100% { left: 130%; } }
+    .todo__k { display: block; font-size: 10.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #ffc46a; margin-bottom: 6px; }
+    .todo__row { display: flex; align-items: center; gap: 12px; }
+    .todo__ic { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 14px; font-size: 21px;
+      background: radial-gradient(120% 120% at 30% 25%, rgba(255, 224, 168, .95), #f6a63c); box-shadow: 0 8px 16px -7px rgba(246, 166, 60, .8); }
+    .todo__tx { flex: 1; }
+    .todo__tx b { display: block; font-size: 15px; font-weight: 800; color: #fff; }
+    .todo__tx span { display: block; margin-top: 2px; font-size: 12.5px; line-height: 1.45; color: rgba(255, 255, 255, .62); }
+    .todo__go { flex: none; font-size: 20px; color: #ffc46a; }
+    @media (prefers-reduced-motion: reduce) {
+      .tour__ring::after, .tour__hand, .todo::after, .hdr__help.pulse, .tour__bub, .aideitem, .todo { animation: none !important; }
+      .tour__veil, .tour__ring { transition: none !important; }
+    }
     /* ---- Coût détaillé d'un produit : qui prend quoi, % auto ---- */
     .csplit { margin: 2px 0 10px; padding: 11px 12px; border-radius: 14px; background: rgba(255, 255, 255, .035); border: 1px dashed rgba(255, 255, 255, .18); text-align: left; }
     .csplit__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
@@ -1448,7 +1517,10 @@
           <circle class="hub" cx="50" cy="50" r="3.6"/>
         </svg>
       </span>
-      <button class="hdr__avatar" aria-label="Profil (bientôt)"></button>
+      <span class="hdr__right">
+        <button class="hdr__help" data-help aria-label="Aide : à quoi sert cet écran ?">?</button>
+        <button class="hdr__avatar" aria-label="Profil (bientôt)"></button>
+      </span>
     </header>
 
     <!-- BARRE PRINCIPALE : 5 onglets toujours visibles -->
@@ -1576,6 +1648,14 @@
 
   <!-- Toasts globaux (confirmations + Annuler) -->
   <div class="toasts" data-toasts aria-live="polite"></div>
+
+  <!-- Feuille globale : aide de l'écran courant -->
+  <div class="sheet-scrim" data-aideclose></div>
+  <div class="sheet sheet--tall" data-aidesheet>
+    <div class="sheet__grip"></div>
+    <h3 class="sheet__title" data-aidettl>Aide</h3>
+    <div data-aidebody></div>
+  </div>
 
   <!-- Feuille globale : « Qui tient la caisse ? » (changement de membre actif) -->
   <div class="sheet-scrim" data-swclose></div>
@@ -1760,6 +1840,8 @@
               '</div>') +
           '</div>' +
           (SM.meta.demo ? '<span class="demochip">Mode démo · données d\'exemple — Réglages pour repartir à zéro</span>' : '') +
+          (masked ? '' : (function () { const a = prochaineAction(); return '<button class="todo" data-goto="' + a.nav + '"><span class="todo__k">&#9889; À faire maintenant</span>' +
+            '<span class="todo__row"><span class="todo__ic">' + a.ic + '</span><span class="todo__tx"><b>' + a.t + '</b><span>' + a.s + '</span></span><span class="todo__go">&rsaquo;</span></span></button>'; })()) +
           (calcStreak() >= 2 ? '<div class="streak" role="status"><i>&#128293;</i><b>' + calcStreak() + ' jours</b> de suite à objectif atteint — ne casse pas la série !</div>' : '') +
           '<div class="masto">' +
             '<button class="masto__btn masto__btn--sell" type="button" data-goto="caisse"><span class="masto__fx" aria-hidden="true"></span>' + ICON_SELL + '<span>Vendre</span><span class="masto__ring" aria-hidden="true"></span></button>' +
@@ -3707,6 +3789,9 @@
           '<div class="setrow2">' + inp('bifu', 'N° IFU (factures)', b.ifu) + inp('brc', 'N° RCCM (factures)', b.rc) + '</div>' +
           '<p class="setnote">Ces infos apparaissent sur tes factures et devis — c\'est ce qui les rend officielles.</p>' +
           '<button class="sheet__add" data-bizsave>Enregistrer l\'identité</button></div>' +
+        '<div class="setgrp" style="--i:0;--gc:#6bf0a0"><h3 class="setgrp__ttl">&#127909; Apprendre à utiliser Boussole</h3>' +
+          '<p class="setnote" style="margin-top:0">La visite guidée te remontre l\'essentiel en une minute. Le bouton <b>?</b> en haut de l\'écran explique toujours la page où tu te trouves.</p>' +
+          '<div class="setbtns"><button class="setbtn" data-tourreplay>&#9654; Revoir la visite guidée</button><button class="setbtn" data-aideopen>&#10068; Aide de cet écran</button></div></div>' +
         '<div class="setgrp" style="--i:1;--gc:#34d399"><h3 class="setgrp__ttl">' + ICO_KEY + 'Sécurité</h3>' +
           '<p class="setnote" style="margin-top:0">' + (patron.pinH ? 'Code patron défini : les écrans sensibles (bilan, stats, réglages…) sont protégés quand un vendeur tient la caisse.' : 'Aucun code patron. Définis-en un : sans lui, n\'importe qui peut voir ton bénéfice.') + '</p>' +
           '<div class="setrow2"><input class="sheet__txt" data-pinnew type="password" inputmode="numeric" maxlength="4" placeholder="Nouveau code (4 chiffres)"><button class="setbtn" data-pinset>' + (patron.pinH ? 'Changer le code' : 'Définir le code') + '</button></div></div>' +
@@ -3769,6 +3854,8 @@
       armWipe(g('[data-wipe]'), () => { localStorage.removeItem('sm:state'); location.reload(); });
       const sn = g('[data-syncnow]'); if (sn) sn.addEventListener('click', () => { cloudPush(true); playSuccess(); toast('Synchronisation lancée', { ms: 2000 }); });
       const gl = g('[data-gologin]'); if (gl) gl.addEventListener('click', () => { location.href = 'connexion.html'; });
+      const tr2 = g('[data-tourreplay]'); if (tr2) tr2.addEventListener('click', () => { playClick(); startTour(0); });
+      const ao = g('[data-aideopen]'); if (ao) ao.addEventListener('click', ouvrirAide);
     }
     /* ---- Cloud : l'état complet suit ton compte (mobile <-> PC). Table : _proto/etat.sql ---- */
     var _cloud = { status: 'off' }; var _pushT = 0;
@@ -3844,9 +3931,136 @@
         if (demo) { SM.stock = JSON.parse(JSON.stringify(DEMO_STOCK)); delete SM.ventes; delete SM.depenses; delete SM.cibles; delete SM.clients; delete SM.factures; delete SM.equipe; SM.meta.activeId = 'e1'; smSave(); location.reload(); return; }
         smSave(); playSell();
         ov.remove(); bootApp();
-        toast('Bienvenue ' + (dat.prenom || 'Boss') + ' ! Commence par ajouter tes produits au <b>Catalogue</b>.', { tone: 'good', ms: 6500 });
+        if (!_noTour) setTimeout(() => startTour(0), 700);   // la visite guidée enchaîne juste après l'inscription
+        else toast('Bienvenue ' + (dat.prenom || 'Boss') + ' ! Commence par ajouter tes produits au <b>Catalogue</b>.', { tone: 'good', ms: 6000 });
       };
       paint();
+    }
+    /* ============================================================================
+       COMPRENDRE — 1) visite guidée animée  2) aide de chaque écran
+       3) « à faire maintenant ». Objectif : qu'un enfant de 5 ans s'y retrouve.
+       ========================================================================== */
+    const TOUR = [
+      { ico: '&#128075;', ttl: 'Bienvenue dans Boussole', txt: 'En moins d\'une minute, je te montre <b>où toucher</b> et <b>à quoi ça sert</b>. Tu pourras revoir cette visite quand tu veux avec le bouton <b>?</b> en haut.', nav: 'accueil', cible: null },
+      { ico: '&#128176;', ttl: 'Les deux gros boutons', txt: 'Tout part d\'ici. <b>VENDRE</b> quand un client achète. <b>DÉPENSER</b> quand de l\'argent sort. C\'est tout ce que tu dois faire au quotidien.', nav: 'accueil', cible: '.masto' },
+      { ico: '&#128200;', ttl: 'Tes chiffres du jour', txt: 'En haut : ce qu\'il y a dans ta <b>caisse</b>, ce que tu as fait <b>aujourd\'hui</b>, et où tu en es de ton <b>objectif</b>. Touche-les pour voir le détail.', nav: 'accueil', cible: '.vitals' },
+      { ico: '&#128271;', ttl: 'La barre du bas', txt: 'Elle ne bouge jamais. <b>Accueil</b>, <b>Caisse</b>, <b>Bilan</b>, <b>Boussole</b> (moi), et <b>Menu</b> pour tout le reste.', nav: 'accueil', cible: '.tabbar' },
+      { ico: '&#128722;', ttl: 'Encaisser une vente', txt: 'Touche les produits vendus, choisis <b>Espèces</b>, <b>Mobile Money</b> ou <b>Crédit</b>, puis <b>Encaisser</b>. Je note tout : le stock baisse tout seul.', nav: 'caisse', cible: '.pos__grid' },
+      { ico: '&#129534;', ttl: 'Ta note sur 100', txt: 'Le <b>Bilan</b> te donne une note de santé. Si elle baisse, je te dis <b>exactement pourquoi</b> et quoi corriger.', nav: 'bilan', cible: '.score' },
+      { ico: '&#10022;', ttl: 'Pose-moi tes questions', txt: 'Écris-moi comme à un ami : « <b>combien j\'ai vendu ?</b> », « <b>qui me doit ?</b> ». Je réponds avec <b>tes vrais chiffres</b>.', nav: 'boussole', cible: '.chatask' },
+      { ico: '&#9776;', ttl: 'Le menu, pour tout le reste', txt: 'Tes <b>produits</b>, tes <b>clients</b>, tes <b>factures</b>, ton <b>équipe</b>, tes <b>réglages</b>. Touche ici quand tu cherches quelque chose.', nav: 'accueil', cible: '.hdr__burger' },
+      { ico: '&#127881;', ttl: 'C\'est tout !', txt: 'Commence par une chose : <b>ajoute tes produits</b>, puis encaisse ta première vente. Le reste se remplit tout seul. Le bouton <b>?</b> est toujours là si tu doutes.', nav: 'accueil', cible: null },
+    ];
+    let _tourStep = 0, _tourEl = null;
+    function startTour(from) {
+      if (_tourEl) return;
+      _tourStep = typeof from === 'number' ? from : 0;
+      const ov = document.createElement('div'); ov.className = 'tour'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', 'Visite guidée');
+      ov.innerHTML = '<div class="tour__veil" data-veil></div><div class="tour__ring" data-ring hidden></div><span class="tour__hand" data-hand hidden>&#128072;</span><div class="tour__bub" data-bub></div>';
+      document.body.appendChild(ov); _tourEl = ov;
+      ov.addEventListener('click', (e) => { if (e.target.dataset.veil !== undefined) return; });
+      paintTour();
+    }
+    function endTour(fini) {
+      if (!_tourEl) return;
+      _tourEl.remove(); _tourEl = null;
+      SM.meta.tourDone = true; smSave();
+      const hb = document.querySelector('[data-help]');
+      if (fini && hb) { hb.classList.add('pulse'); setTimeout(() => hb.classList.remove('pulse'), 8000); }
+      if (fini) toast('Visite terminée. Le bouton <b>?</b> en haut t\'explique chaque écran.', { tone: 'good', ms: 6000 });
+    }
+    function paintTour() {
+      const st = TOUR[_tourStep]; if (!st) return endTour(true);
+      const go = () => {
+        const ring = _tourEl.querySelector('[data-ring]'), bub = _tourEl.querySelector('[data-bub]'),
+              veil = _tourEl.querySelector('[data-veil]'), hand = _tourEl.querySelector('[data-hand]');
+        const cible = st.cible ? document.querySelector(st.cible) : null;
+        const vh = window.innerHeight, vw = window.innerWidth;
+        let arrow = 'none', bubTop, box = null;
+        if (cible) {
+          const b = cible.getBoundingClientRect();
+          const pad = 8;
+          const x = Math.max(4, b.left - pad), y = Math.max(4, b.top - pad);
+          const w = Math.min(vw - 8, b.width + pad * 2), h = Math.min(vh - 8, b.height + pad * 2);
+          ring.hidden = false; ring.style.left = x + 'px'; ring.style.top = y + 'px'; ring.style.width = w + 'px'; ring.style.height = h + 'px';
+          // le projecteur : le voile se troue autour de la cible
+          veil.style.clipPath = 'polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 ' + y + 'px, ' + (x + w) + 'px ' + y + 'px, ' + (x + w) + 'px ' + (y + h) + 'px, ' + x + 'px ' + (y + h) + 'px, ' + x + 'px ' + y + 'px, 0 ' + y + 'px)';
+          hand.hidden = false; hand.style.left = (x + w / 2 - 22) + 'px'; hand.style.top = (y + h + 6) + 'px';
+          box = { x: x, y: y, w: w, h: h };
+        } else {
+          ring.hidden = true; hand.hidden = true; veil.style.clipPath = '';
+        }
+        const dernier = _tourStep === TOUR.length - 1;
+        bub.innerHTML = '<span class="tour__ico">' + st.ico + '</span>' +
+          '<h3 class="tour__ttl">' + st.ttl + '</h3><p class="tour__txt">' + st.txt + '</p>' +
+          '<div class="tour__foot"><span class="tour__dots">' + TOUR.map((_, i) => '<i class="' + (i === _tourStep ? 'on' : '') + '"></i>').join('') + '</span>' +
+          (dernier ? '' : '<button class="tour__skip" data-tskip>Passer</button>') +
+          '<button class="tour__next" data-tnext>' + (dernier ? 'C\'est parti !' : 'Suivant') + '</button></div>';
+        // placement APRÈS écriture du texte : on connaît enfin la hauteur réelle de la bulle
+        const bh = bub.offsetHeight || 220, MARGE = 12, HAUT = 64;
+        if (box) {
+          if (box.y + box.h + 14 + bh <= vh - MARGE) { arrow = 'up'; bubTop = box.y + box.h + 14; }          // sous la cible
+          else if (box.y - 14 - bh >= HAUT) { arrow = 'down'; bubTop = box.y - 14 - bh; }                    // au-dessus
+          else { arrow = 'none'; bubTop = Math.max(HAUT, Math.min(vh - bh - MARGE, vh / 2 - bh / 2)); }      // pas la place : au centre
+        } else { arrow = 'none'; bubTop = Math.max(HAUT, vh / 2 - bh / 2); }
+        bubTop = Math.max(MARGE, Math.min(bubTop, vh - bh - MARGE));   // garantie : toujours entièrement visible
+        bub.dataset.arrow = arrow;
+        bub.style.top = bubTop + 'px';
+        bub.querySelector('[data-tnext]').addEventListener('click', () => { playClick(); _tourStep++; paintTour(); });
+        const sk = bub.querySelector('[data-tskip]');
+        if (sk) sk.addEventListener('click', () => { playSwoosh(); endTour(false); });
+      };
+      if (st.nav && st.nav !== _curNav) { setActiveNav(st.nav); showSection(st.nav, false); setTimeout(go, st.nav === 'caisse' ? 900 : 420); }
+      else setTimeout(go, 60);
+    }
+    /* ---- Aide contextuelle : « à quoi sert cet écran ? » ---- */
+    const AIDE = {
+      accueil: { t: 'L\'accueil', p: [['&#128176;', 'Vendre', 'Un client achète ? Touche ce bouton, il t\'emmène à la caisse.'], ['&#128184;', 'Dépenser', 'De l\'argent sort (transport, stock, loyer) ? Note-le ici, sinon ton bénéfice est faux.'], ['&#128202;', 'Tes 3 chiffres', 'Caisse, ventes du jour, objectif. Touche-les pour le détail.'], ['&#128293;', 'La série', 'Chaque jour où tu atteins ton objectif allume une flamme. Ne la casse pas !']] },
+      caisse: { t: 'La caisse', p: [['&#128290;', '1. Touche les produits', 'Chaque touche ajoute 1. Le total monte en bas.'], ['&#128179;', '2. Choisis le paiement', 'Espèces, Mobile Money, ou Crédit (le client paiera plus tard).'], ['&#9989;', '3. Encaisse', 'C\'est enregistré : le stock baisse et le chiffre monte tout seul.'], ['&#128100;', 'Crédit', 'Je te demande QUI c\'est, pour ne jamais oublier qui te doit de l\'argent.']] },
+      ventes: { t: 'Tes ventes', p: [['&#128220;', 'La liste', 'Toutes tes ventes, la plus récente en haut.'], ['&#128072;', 'Touche une vente', 'Tu vois le détail, tu peux la <b>modifier</b> ou la <b>supprimer</b>.'], ['&#128269;', 'Chercher', 'Tape un produit, un client ou un montant pour retrouver une vente.']] },
+      depenses: { t: 'Tes dépenses', p: [['&#10133;', 'Ajouter', 'Le bouton + en bas à droite. Montant, catégorie, et c\'est noté.'], ['&#128717;', 'Achat ou dépense', '« Achat » = marchandise à revendre. « Dépense » = charge (loyer, transport…).'], ['&#128274;', 'Poche perso', 'Si c\'est pour toi et pas pour le commerce, coche-le : ce ne sera pas compté dans le bénéfice.']] },
+      catalogue: { t: 'Ton catalogue', p: [['&#128230;', 'Tes produits', 'Nom, prix de vente, et ce que ça te coûte. La marge se calcule seule.'], ['&#128177;', 'Détail du coût', 'Tu peux dire QUI prend quoi (partenaire, hébergement…) : je te dirai quoi réserver sur chaque vente.'], ['&#128202;', 'Quantité', 'Pour les produits physiques : je préviens quand le stock est bas.']] },
+      bilan: { t: 'Le bilan', p: [['&#129534;', 'Ta note sur 100', 'Un seul chiffre pour savoir si ça va. Je te dis toujours ce qui te pénalise.'], ['&#127919;', 'Le point mort', 'Le montant à vendre pour ne rien perdre. En dessous, tu perds de l\'argent.'], ['&#128181;', 'Argent en caisse', 'Ce que tu as VRAIMENT. Différent du bénéfice si des clients te doivent.'], ['&#128230;', 'Les 3 enveloppes', 'Ce qui doit racheter le stock, ce qui paie les charges, et ce qui te reste.']] },
+      statistiques: { t: 'Les statistiques', p: [['&#128197;', 'Choisis une période', 'Un jour, un mois, une année, ou entre deux dates.'], ['&#128722;', 'Panier moyen', 'Combien un client dépense en moyenne. Le faire monter est plus simple que trouver des clients.'], ['&#128198;', 'Jours forts', 'Le jour où tu vends le plus. Prépare-le, et anime le jour faible.']] },
+      produits: { t: 'Mes produits', p: [['&#127942;', 'Classement', 'Par argent RÉELLEMENT gagné, pas par chiffre d\'affaires.'], ['&#9888;', 'Attention', 'Ton produit le plus vendu n\'est pas toujours celui qui rapporte le plus.'], ['&#128564;', 'Ce qui dort', 'Les produits que personne n\'achète : de l\'argent bloqué sur l\'étagère.']] },
+      objectifs: { t: 'Tes objectifs', p: [['&#127919;', 'Objectif du jour', 'Ce que tu veux encaisser. Touche « Modifier l\'objectif » pour l\'ajuster.'], ['&#128176;', 'Projets d\'achat', 'Une moto, un congélateur ? Note le prix, mets de côté, je te dis quand tu y seras.']] },
+      carnet: { t: 'Le carnet clients', p: [['&#128100;', 'Tes clients', 'Ceux qui te doivent de l\'argent apparaissent en premier.'], ['&#128241;', 'Relancer', 'Un message poli est déjà écrit : touche, ça part sur WhatsApp.'], ['&#9989;', 'Marquer payé', 'Quand le client règle, touche ce bouton : la dette disparaît.']] },
+      factures: { t: 'Factures & devis', p: [['&#128196;', 'Créer', 'Le + en bas. Touche les articles, mets le nom du client, c\'est prêt.'], ['&#128438;', 'Envoyer', 'Partage par WhatsApp ou imprime en PDF.'], ['&#128257;', 'Statut', 'Touche le statut pour passer de brouillon à envoyé, puis payé.']] },
+      equipe: { t: 'Ton équipe', p: [['&#128273;', 'Un code par personne', 'Chacun a son code : tu vois qui a vendu quoi.'], ['&#128274;', 'Protection', 'Un vendeur ne voit ni ton bénéfice ni tes réglages.'], ['&#128100;', 'Qui tient la caisse', 'Touche le rond en haut à droite pour changer de personne.']] },
+      boussole: { t: 'Boussole, ton copilote', p: [['&#128276;', 'Ce que j\'ai repéré', 'Mes alertes : ruptures, dettes qui traînent, objectif en retard.'], ['&#128172;', 'Pose une question', 'Écris comme à un ami. Je réponds avec tes vrais chiffres.'], ['&#10022;', 'Mon avis', 'Je te dis franchement ce qui va et ce qui ne va pas.']] },
+      reglages: { t: 'Les réglages', p: [['&#127978;', 'Ton commerce', 'Nom, téléphone, IFU : ça apparaît sur tes factures.'], ['&#128273;', 'Code patron', 'Protège tes chiffres quand quelqu\'un d\'autre tient la caisse.'], ['&#128190;', 'Sauvegarde', 'Exporte de temps en temps : tes données restent dans ce téléphone.']] },
+    };
+    function ouvrirAide() {
+      const a = AIDE[_curNav] || AIDE.accueil;
+      const sheet = document.querySelector('[data-aidesheet]'), scrim = document.querySelector('[data-aideclose]'),
+            body = document.querySelector('[data-aidebody]'), ttl = document.querySelector('[data-aidettl]');
+      ttl.textContent = a.t + ' — à quoi ça sert ?';
+      body.innerHTML = '<div class="aidelist">' + a.p.map((x, i) => '<div class="aideitem" style="--i:' + i + '"><span class="aideitem__ic">' + x[0] + '</span><span class="aideitem__tx"><b>' + x[1] + '</b>' + x[2] + '</span></div>').join('') + '</div>' +
+        '<button class="sheet__add" data-aidetour>&#127909; Revoir la visite guidée</button>' +
+        '<button class="sheet__keep" data-aideok>J\'ai compris</button>';
+      const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
+      scrim.onclick = close;
+      body.querySelector('[data-aideok]').addEventListener('click', () => { playClick(); close(); });
+      body.querySelector('[data-aidetour]').addEventListener('click', () => { close(); setTimeout(() => startTour(0), 320); });
+      sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick();
+    }
+    /* ---- « À faire maintenant » : l'accueil dit toujours quoi faire ---- */
+    function prochaineAction() {
+      const nbP = SM.stock.length, nbV = (SM.ventes || []).length, nbD = (SM.depenses || []).length;
+      if (!nbP) return { ic: '&#128230;', t: 'Ajoute tes premiers produits', s: 'Sans catalogue, la caisse est vide. Mets 2 ou 3 produits avec leur prix : ça prend 1 minute.', nav: 'catalogue' };
+      if (!nbV) return { ic: '&#128176;', t: 'Encaisse ta première vente', s: 'Va à la caisse, touche un produit, encaisse. Tout le reste se calcule tout seul.', nav: 'caisse' };
+      if (!nbD) return { ic: '&#128184;', t: 'Note ta première dépense', s: 'Transport, stock, loyer… Sans les sorties, ton bénéfice est une illusion.', nav: 'depenses' };
+      const rupt = SM.stock.filter((p) => p.type === 'physique' && (p.qty || 0) <= 0);
+      if (rupt.length) return { ic: '&#128721;', t: 'Réapprovisionne ' + rupt[0].nom, s: rupt.length + ' produit' + (rupt.length > 1 ? 's sont' : ' est') + ' en rupture : chaque heure sans stock est une vente perdue.', nav: 'catalogue' };
+      const due = (SM.clients || []).filter((c) => c.dette > 0 && Date.now() - c.lastBuy > 7 * DAY);
+      if (due.length) return { ic: '&#128241;', t: 'Relance ' + due[0].nom, s: 'Il te doit ' + fF(due[0].dette) + ' depuis plus d\'une semaine. Un message poli est déjà prêt.', nav: 'carnet' };
+      const st = salesToday(), obj = objJour();
+      if (obj > 0 && st < obj) return { ic: '&#127919;', t: 'Encore ' + fF(obj - st) + ' pour ton objectif', s: 'Une ou deux bonnes ventes et c\'est fait. Ouvre la caisse.', nav: 'caisse' };
+      const f = fiabilite();
+      if (f.jours >= 5 && f.pct < 60) return { ic: '&#128221;', t: 'Note ce que tu as vendu aujourd\'hui', s: 'Tu n\'as saisi que ' + f.saisis + ' jours sur ' + f.jours + ' : mes calculs valent ce que valent tes saisies.', nav: 'caisse' };
+      const pm = pointMort();
+      if (pm.caNecessaire > 0 && !pm.atteintLe) return { ic: '&#128200;', t: 'Encore ' + fF(pm.reste) + ' avant de gagner', s: 'C\'est ton point mort du mois. En dessous, le commerce perd de l\'argent.', nav: 'bilan' };
+      return { ic: '&#129534;', t: 'Regarde ta note de santé', s: 'Tout roule aujourd\'hui. Va voir ton bilan : je te dis ce qui peut encore progresser.', nav: 'bilan' };
     }
     /* ---- Animations de touché : une signature par famille d'items ---- */
     (function bindTapFX() {
@@ -4073,10 +4287,15 @@
       refreshBadge();
       cloudPull();   // si connecté : rapatrie / pousse l'état (mobile <-> PC)
     }
-    if (!SM.meta.onboarded) renderOnboarding(); else bootApp();
+    const _noTour = /[?&]tour=off/.test(location.search);   // ?tour=off : démos et tests automatisés
+    if (!SM.meta.onboarded) renderOnboarding();
+    else { bootApp(); if (!SM.meta.tourDone && !_noTour) setTimeout(() => startTour(0), 900); }   // visite guidée tant qu'elle n'a pas été faite
     // avatar du header = qui tient la caisse (touche pour changer)
     const _avatarBtn = document.querySelector('.hdr__avatar');
     if (_avatarBtn) _avatarBtn.addEventListener('click', openSwitch);
+    // bouton « ? » : explique l'écran où l'on se trouve, et permet de revoir la visite
+    const _helpBtn = document.querySelector('[data-help]');
+    if (_helpBtn) _helpBtn.addEventListener('click', ouvrirAide);
 
     /* ===== SFX du menu (Web Audio synthétisé, aucun fichier) =====
        UN SEUL AudioContext réutilisé (le code d'origine en créait un par clic -> plante

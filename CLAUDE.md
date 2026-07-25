@@ -96,6 +96,8 @@
   - **Jamais de données de démo imposées** : l'onboarding propose « mes vraies données » (zéro) ou « explorer la démo » (`SM.meta.demo`).
   - **Toute suppression doit être annulable** (toast « Annuler »).
   - **Aucune animation infinie sous un `backdrop-filter`** (leçon latence 2026-07-21) et **jamais de `transform` sur un écran contenant un `position:fixed`** (leçon FAB 2026-07-25).
+  - **Tout doit être compréhensible sans explication** : chaque écran a son aide (bouton « ? »), la **visite guidée** est rejouable, et l'accueil affiche toujours **une seule action à faire**.
+  - `?tour=off` désactive la visite guidée (démos, tests automatisés).
   - Édits du fichier via **scripts Python/Node UTF-8**, `node --check` du module inline, puis **suite QC Playwright** avant tout déploiement.
 - **QC** : suites cumulatives `qc_v4` → `qc_v9` (données/métier, coffre+coûts, transitions, accueil, salutations+sons, sweep UI mobile+PC). **Toutes doivent être vertes** avant déploiement.
 - **Reste à faire** : Agenda · comparateur de 2 périodes · vague 2 des transitions (Bilan-ECG, Stats-constellation, Carnet, Factures, Équipe, Réglages) · exécuter `etat.sql` dans Supabase pour activer la synchro · migration proto → app live.
