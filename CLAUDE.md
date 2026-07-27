@@ -100,7 +100,7 @@
   - `?tour=off` désactive la visite guidée (démos, tests automatisés).
   - Édits du fichier via **scripts Python/Node UTF-8**, `node --check` du module inline, puis **suite QC Playwright** avant tout déploiement.
 - **QC** : suites cumulatives `qc_v4` → `qc_v9` (données/métier, coffre+coûts, transitions, accueil, salutations+sons, sweep UI mobile+PC). **Toutes doivent être vertes** avant déploiement.
-- **Reste à faire** : Agenda · comparateur de 2 périodes · vague 2 des transitions (Bilan-ECG, Stats-constellation, Carnet, Factures, Équipe, Réglages) · exécuter `etat.sql` dans Supabase pour activer la synchro · migration proto → app live.
+- **Reste à faire** : Agenda · exécuter `etat.sql` dans Supabase pour activer la synchro · migration proto → app live. *(Vague 2 des transitions FAITE le 2026-07-25 : une mise en scène par item du menu + l'icône du menu qui s'envole vers son écran.)*
 - Détail complet : `boussole/README.md` + `_memoire/conversations/2026-07-25-boussole-*.md`
 
 ## Mémoire générale
