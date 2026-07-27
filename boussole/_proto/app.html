@@ -1450,6 +1450,100 @@
       .tour__ring::after, .tour__hand, .todo::after, .hdr__help.pulse, .tour__bub, .aideitem, .todo { animation: none !important; }
       .tour__veil, .tour__ring { transition: none !important; }
     }
+    /* ============================================================================
+       VAGUE 2 — une mise en scène par item du menu, adaptée à son rôle.
+       Règles : transform/opacity seulement, overlay non bloquant, 1×/session,
+       tout est coupé si le mouvement réduit est demandé.
+       ========================================================================== */
+    .fx-layer { position: fixed; inset: 0; z-index: 43; pointer-events: none; overflow: hidden; }
+    /* --- FIL ROUGE : l'icône du menu s'envole vers son écran --- */
+    .flyico { position: fixed; z-index: 75; pointer-events: none; display: grid; place-items: center;
+      width: 42px; height: 42px; border-radius: 14px; color: var(--acc);
+      background: color-mix(in srgb, var(--acc) 16%, transparent); border: 1px solid color-mix(in srgb, var(--acc) 45%, transparent);
+      animation: flyIco .58s cubic-bezier(.5, 0, .2, 1) forwards; }
+    .flyico svg { width: 22px; height: 22px; }
+    @keyframes flyIco {
+      0%   { opacity: 0; transform: translate(0, 0) scale(.8); }
+      18%  { opacity: 1; }
+      70%  { opacity: .9; transform: translate(var(--dx), var(--dy)) scale(2.6); }
+      100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(4.2); }
+    }
+    /* --- BILAN : l'électrocardiogramme (le tracé raconte déjà l'état de santé) --- */
+    .ecg { position: absolute; left: 0; right: 0; top: 38%; height: 120px; }
+    .ecg path { fill: none; stroke: var(--acc); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+      filter: drop-shadow(0 0 8px color-mix(in srgb, var(--acc) 70%, transparent));
+      stroke-dasharray: 1200; stroke-dashoffset: 1200; animation: ecgDraw 1.15s cubic-bezier(.4, 0, .3, 1) forwards, ecgFade .35s .95s forwards; }
+    @keyframes ecgDraw { to { stroke-dashoffset: 0; } }
+    @keyframes ecgFade { to { opacity: 0; } }
+    .ecg__blip { position: absolute; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: var(--acc);
+      box-shadow: 0 0 16px 3px color-mix(in srgb, var(--acc) 80%, transparent); opacity: 0; animation: blipPop .5s .52s ease-out forwards; }
+    @keyframes blipPop { 0% { opacity: 1; transform: scale(.4); } 100% { opacity: 0; transform: scale(3.4); } }
+    /* --- STATISTIQUES : la constellation (les points s'allument, puis se relient) --- */
+    .cst__star { position: absolute; width: 7px; height: 7px; margin: -3.5px; border-radius: 50%; background: var(--acc2);
+      box-shadow: 0 0 12px 2px color-mix(in srgb, var(--acc2) 75%, transparent); opacity: 0;
+      animation: starOn .42s calc(var(--i) * 90ms) var(--ease-back) forwards, starOff .4s 1.5s forwards; }
+    @keyframes starOn { from { opacity: 0; transform: scale(0); } to { opacity: 1; transform: scale(1); } }
+    @keyframes starOff { to { opacity: 0; } }
+    .cst__line { position: absolute; inset: 0; }
+    .cst__line polyline { fill: none; stroke: color-mix(in srgb, var(--acc2) 65%, transparent); stroke-width: 1.6; stroke-linecap: round;
+      stroke-dasharray: 900; stroke-dashoffset: 900; animation: cstDraw .7s .55s ease-out forwards, starOff .4s 1.5s forwards; }
+    @keyframes cstDraw { to { stroke-dashoffset: 0; } }
+    /* --- MES PRODUITS : le podium (le classement se met en place) --- */
+    .podium .prow:nth-child(1) { animation: podium1 .62s .05s var(--ease-back) both; }
+    .podium .prow:nth-child(2) { animation: podium2 .58s .16s var(--ease-back) both; }
+    .podium .prow:nth-child(3) { animation: podium2 .58s .27s var(--ease-back) both; }
+    @keyframes podium1 { from { opacity: 0; transform: translateY(58px) scale(.94); } to { opacity: 1; transform: none; } }
+    @keyframes podium2 { from { opacity: 0; transform: translateY(34px) scale(.97); } to { opacity: 1; transform: none; } }
+    .podium .prow:nth-child(1)::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+      background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--acc) 30%, transparent) 50%, transparent 70%);
+      animation: podiumShine .8s .5s ease-out both; }
+    @keyframes podiumShine { from { transform: translateX(-100%); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+    /* --- CARNET : le répertoire qui se feuillette --- */
+    .flip { position: absolute; left: 0; top: 0; width: 62%; height: 100%; transform-origin: left center;
+      background: linear-gradient(100deg, var(--ink2), var(--ink)); border-right: 1px solid color-mix(in srgb, var(--acc) 30%, transparent);
+      box-shadow: 22px 0 40px -22px rgba(var(--sh), .8); animation: pageTurn .62s var(--ease) forwards; }
+    .flip:nth-child(2) { animation-delay: .13s; } .flip:nth-child(3) { animation-delay: .26s; width: 58%; }
+    @keyframes pageTurn { from { transform: perspective(1100px) rotateY(0); opacity: .95; } to { transform: perspective(1100px) rotateY(-125deg); opacity: 0; } }
+    /* --- FACTURES : le tampon qui frappe --- */
+    .stamp2 { position: absolute; left: 50%; top: 34%; width: 132px; height: 132px; margin: -66px 0 0 -66px; border-radius: 50%;
+      display: grid; place-items: center; font-size: 15px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--acc); border: 5px solid var(--acc); opacity: 0; rotate: -14deg;
+      animation: stampHit .55s cubic-bezier(.4, 0, .2, 1) forwards; }
+    @keyframes stampHit {
+      0% { opacity: 0; transform: scale(2.6); } 55% { opacity: 1; transform: scale(1); }
+      70% { transform: scale(1.06); } 100% { opacity: 0; transform: scale(1); }
+    }
+    .fx-shake { animation: fxShake .18s .28s ease 2; }
+    @keyframes fxShake { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(0, 2.5px); } }
+    /* --- ÉQUIPE : les badges passés au lecteur --- */
+    .scanned .member { animation: badgeIn .5s calc(var(--i) * 130ms) var(--ease) both; }
+    @keyframes badgeIn { from { opacity: 0; transform: translateX(-40px); } to { opacity: 1; transform: none; } }
+    .scanned .member::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+      background: linear-gradient(100deg, transparent, color-mix(in srgb, var(--good) 45%, transparent), transparent);
+      animation: scanSweep .55s calc(var(--i) * 130ms + .2s) ease-out both; }
+    @keyframes scanSweep { from { transform: translateX(-100%); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+    /* --- RÉGLAGES : les engrenages qui s'engrènent --- */
+    .gear { position: absolute; top: 34%; color: var(--acc); opacity: .95; filter: drop-shadow(0 0 12px color-mix(in srgb, var(--acc) 60%, transparent)); }
+    .gear svg { display: block; }
+    .gear--l { left: 50%; margin-left: -74px; animation: gearL .95s var(--ease) forwards; }
+    .gear--r { left: 50%; margin-left: 8px; animation: gearR .95s var(--ease) forwards; }
+    @keyframes gearL { 0% { transform: translateX(-120px) rotate(-90deg); opacity: 0; } 35% { transform: translateX(0) rotate(0); opacity: 1; }
+      70% { transform: translateX(0) rotate(90deg); opacity: 1; } 100% { transform: translateX(-90px) rotate(120deg); opacity: 0; } }
+    @keyframes gearR { 0% { transform: translateX(120px) rotate(90deg); opacity: 0; } 35% { transform: translateX(0) rotate(0); opacity: 1; }
+      70% { transform: translateX(0) rotate(-90deg); opacity: 1; } 100% { transform: translateX(90px) rotate(-120deg); opacity: 0; } }
+    /* --- CATALOGUE : l'étagère qui se remplit (remplace le tiroir 3D) --- */
+    .shelf .prod { animation: shelfDrop .55s calc(var(--i) * 70ms) var(--ease-back) both; }
+    @keyframes shelfDrop { 0% { opacity: 0; transform: translateY(-46px) rotate(-2deg); } 70% { opacity: 1; transform: translateY(4px) rotate(.4deg); } 100% { opacity: 1; transform: none; } }
+    .shelf .prod::after { content: ""; position: absolute; left: 6%; right: 6%; bottom: -5px; height: 2px; border-radius: 2px;
+      background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--acc) 55%, transparent), transparent);
+      animation: shelfLine .5s calc(var(--i) * 70ms + .25s) ease-out both; }
+    @keyframes shelfLine { from { opacity: 0; transform: scaleX(.2); } 60% { opacity: 1; transform: scaleX(1); } to { opacity: 0; transform: scaleX(1); } }
+    .prod { position: relative; }
+    @media (prefers-reduced-motion: reduce) {
+      .flyico, .ecg path, .ecg__blip, .cst__star, .cst__line polyline, .podium .prow, .podium .prow::after,
+      .flip, .stamp2, .fx-shake, .scanned .member, .scanned .member::after, .gear, .shelf .prod, .shelf .prod::after { animation: none !important; }
+      .fx-layer, .flyico { display: none !important; }
+    }
     /* ---- Coût détaillé d'un produit : qui prend quoi, % auto ---- */
     .csplit { margin: 2px 0 10px; padding: 11px 12px; border-radius: 16px; background: rgba(var(--fg), .035); border: 1px dashed rgba(var(--fg), .18); text-align: left; }
     .csplit__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
@@ -1970,7 +2064,7 @@
       }).join('');
       const seg = ['tous', 'physique', 'digital', 'service'].map((k) => '<button class="seg-btn' + (k === f ? ' is-on' : '') + '" data-catf="' + k + '">' + ({ tous: 'Tout', physique: 'Physique', digital: 'Digital', service: 'Service' }[k]) + '</button>').join('');
       return '<div class="screen wide" style="--sc:var(--acc2)">' +
-          '<div class="drawer3d">' +   // le tiroir qui sort = le CONTENU (le FAB reste ancré au viewport)
+          '<div>' +   // (l'ancien tiroir 3D est remplacé par l'étagère qui se remplit, cf. bindStock)
             '<span class="screen__tag">Catalogue</span>' +
             '<h1 class="screen__title">Ton catalogue</h1>' +
             '<p class="screen__sub">Tes produits et services : prix, coût, et la marge que ça te rapporte.</p>' +
@@ -1984,6 +2078,13 @@
     // Interactions Catalogue : filtres, steppers -/+ (physique), ajout/modif/suppression via feuille
     function bindStock() {
       const scr = view.querySelector('.screen'); if (!scr) return;
+      const pl = scr.querySelector('.prodlist');
+      if (pl && _entryFx && !_fxSeen.catalogue && !rmMotion()) {   // les produits se posent sur les étagères
+        _fxSeen.catalogue = 1; pl.classList.add('shelf');
+        pl.querySelectorAll('.prod').forEach((el, i) => el.style.setProperty('--i', Math.min(i, 12)));
+        try { playDrawerPull(); } catch (e) {}
+      }
+      _entryFx = false;
       const render = () => { view.innerHTML = catalogueHTML(); bindStock(); };
       scr.querySelectorAll('[data-catf]').forEach((b) => b.addEventListener('click', () => { _catFilter = b.dataset.catf; playPop(true); render(); }));
       scr.querySelectorAll('[data-qty]').forEach((b) => b.addEventListener('click', () => {
@@ -2810,6 +2911,8 @@
     }
     function bindStats() {
       const scr = view.querySelector('.screen'); if (!scr) return;
+      if (_entryFx && !_fxSeen.statistiques && !rmMotion()) { _fxSeen.statistiques = 1; fxConstellation(); }
+      _entryFx = false;
       countUpNums(scr);   // les chiffres montent de 0 (effet compteur)
       const render = () => { view.innerHTML = statsHTML(); bindStats(); };
       scr.querySelectorAll('[data-sper]').forEach((b) => b.addEventListener('click', () => { _statSel = { kind: b.dataset.sper }; playPop(true); render(); }));
@@ -2882,6 +2985,9 @@
     }
     function bindProduits() {
       const scr = view.querySelector('.screen'); if (!scr) return;
+      const rk = scr.querySelector('.prank');
+      if (rk && _entryFx && !_fxSeen.produits && !rmMotion()) { _fxSeen.produits = 1; rk.classList.add('podium'); try { playSell(); } catch (e) {} }
+      _entryFx = false;
       scr.querySelectorAll('[data-pper]').forEach((b) => b.addEventListener('click', () => { _prodPer = +b.dataset.pper; playPop(true); view.innerHTML = produitsHTML(); bindProduits(); }));
     }
 
@@ -3095,6 +3201,8 @@
       '</div>';
     }
     function bindBilan() {
+      if (_entryFx && !_fxSeen.bilan && !rmMotion()) { _fxSeen.bilan = 1; fxECG(scoreSante().total); }   // l'ECG raconte la santé
+      _entryFx = false;
       countUpNums(view);   // le bénéfice net monte de 0
       const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
       view.querySelectorAll('[data-envfill]').forEach((f) => {   // les enveloppes se remplissent à l'arrivée
@@ -3330,6 +3438,8 @@
     }
     function bindCarnet() {
       const scr = view.querySelector('.screen'); if (!scr) return;
+      if (_entryFx && !_fxSeen.carnet && !rmMotion()) { _fxSeen.carnet = 1; fxPages(); }
+      _entryFx = false;
       const sheet = scr.querySelector('[data-csheet]'), scrim = scr.querySelector('[data-csclose]'), body = scr.querySelector('[data-csbody]'), title = scr.querySelector('[data-cstitle]');
       const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
       const render = () => { view.innerHTML = carnetHTML(); bindCarnet(); };
@@ -3475,6 +3585,8 @@
     }
     function bindFactures() {
       const scr = view.querySelector('.screen'); if (!scr) return;
+      if (_entryFx && _facMode === 'list' && !_fxSeen.factures && !rmMotion()) { _fxSeen.factures = 1; fxStamp(scr); }
+      _entryFx = false;
       const render = () => { view.innerHTML = facturesHTML(); bindFactures(); };
       if (_facMode === 'list') {
         scr.querySelectorAll('[data-facf]').forEach((b) => b.addEventListener('click', () => { _facFilter = b.dataset.facf; playPop(true); render(); }));
@@ -3563,6 +3675,9 @@
     }
     function bindEquipe() {
       const scr = view.querySelector('.screen'); if (!scr) return;
+      const mem = scr.querySelector('.members');
+      if (mem && _entryFx && !_fxSeen.equipe && !rmMotion()) { _fxSeen.equipe = 1; mem.classList.add('scanned'); scr.querySelectorAll('.member').forEach((m, i) => m.style.setProperty('--i', i)); try { playAnalyticValidate(); } catch (e) {} }
+      _entryFx = false;
       const sheet = scr.querySelector('[data-msheet]'), scrim = scr.querySelector('[data-msclose]'), body = scr.querySelector('[data-msbody]'), title = scr.querySelector('[data-mstitle]');
       const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
       const render = () => { view.innerHTML = equipeHTML(); bindEquipe(); };
@@ -3869,6 +3984,8 @@
     }
     function bindReglages() {
       const scr = view.querySelector('.screen'); if (!scr) return;
+      if (_entryFx && !_fxSeen.reglages && !rmMotion()) { _fxSeen.reglages = 1; fxGears(); }
+      _entryFx = false;
       const g = (s) => scr.querySelector(s);
       g('[data-bizsave]').addEventListener('click', () => {
         SM.biz = { nom: g('[data-bnom]').value.trim(), prenom: g('[data-bprenom]').value.trim(), tel: g('[data-btel]').value.trim(), adresse: g('[data-badresse]').value.trim(), ifu: g('[data-bifu]').value.trim(), rc: g('[data-brc]').value.trim(), activite: (SM.biz || {}).activite || '' };
@@ -4118,6 +4235,70 @@
       const pm = pointMort();
       if (pm.caNecessaire > 0 && !pm.atteintLe) return { ic: '&#128200;', t: 'Encore ' + fF(pm.reste) + ' avant de gagner', s: 'C\'est ton point mort du mois. En dessous, le commerce perd de l\'argent.', nav: 'bilan' };
       return { ic: '&#129534;', t: 'Regarde ta note de santé', s: 'Tout roule aujourd\'hui. Va voir ton bilan : je te dis ce qui peut encore progresser.', nav: 'bilan' };
+    }
+    /* ============================================================================
+       VAGUE 2 — moteur des mises en scène par écran (+ l'icône qui s'envole)
+       ========================================================================== */
+    const rmMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function fxLayer(ms) {   // calque temporaire, non bloquant, auto-nettoyé
+      const l = document.createElement('div'); l.className = 'fx-layer'; l.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(l); setTimeout(() => l.remove(), ms || 1800); return l;
+    }
+    function flyIcon(btn) {   // FIL ROUGE : l'icône du menu file vers le centre de l'écran
+      if (rmMotion() || !btn) return;
+      const ic = btn.querySelector('.navbtn__ic'); if (!ic) return;
+      const b = ic.getBoundingClientRect();
+      const el = document.createElement('div'); el.className = 'flyico'; el.setAttribute('aria-hidden', 'true');
+      el.innerHTML = ic.innerHTML;
+      el.style.left = b.left + 'px'; el.style.top = b.top + 'px';
+      el.style.setProperty('--dx', Math.round(innerWidth / 2 - b.left - 21) + 'px');
+      el.style.setProperty('--dy', Math.round(innerHeight * 0.42 - b.top - 21) + 'px');
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 620);
+    }
+    // --- BILAN : électrocardiogramme (irrégulier quand la santé est mauvaise)
+    function fxECG(score) {
+      const l = fxLayer(1500), w = innerWidth;
+      const mid = 60, bon = score >= 60;
+      let d = 'M0 ' + mid, x = 0;
+      while (x < w) {
+        const pas = bon ? 74 : 52 + Math.random() * 34;
+        const h = bon ? 40 : 24 + Math.random() * 34;
+        d += ' L' + (x + pas * .28) + ' ' + mid + ' L' + (x + pas * .38) + ' ' + (mid - h) + ' L' + (x + pas * .48) + ' ' + (mid + h * .55) + ' L' + (x + pas * .58) + ' ' + mid;
+        x += pas;
+      }
+      l.innerHTML = '<svg class="ecg" viewBox="0 0 ' + w + ' 120" preserveAspectRatio="none"><path d="' + d + '"/></svg>' +
+        '<span class="ecg__blip" style="left:' + Math.round(w * .5) + 'px;top:' + Math.round(innerHeight * .38 + 60) + 'px"></span>';
+      try { playCountTicks(700); setTimeout(() => playPop(false), 480); } catch (e) {}
+    }
+    // --- STATISTIQUES : constellation (points qui s'allument puis se relient)
+    function fxConstellation() {
+      const l = fxLayer(2000), w = innerWidth, h = innerHeight;
+      const n = 7, pts = [];
+      for (let i = 0; i < n; i++) pts.push([Math.round(w * (0.12 + 0.76 * i / (n - 1))), Math.round(h * (0.30 + Math.random() * 0.26))]);
+      l.innerHTML = pts.map((pp, i) => '<span class="cst__star" style="left:' + pp[0] + 'px;top:' + pp[1] + 'px;--i:' + i + '"></span>').join('') +
+        '<svg class="cst__line" viewBox="0 0 ' + w + ' ' + h + '"><polyline points="' + pts.map((pp) => pp.join(',')).join(' ') + '"/></svg>';
+      try { playDataScan(); setTimeout(() => playAnalyticValidate(), 620); } catch (e) {}
+    }
+    // --- CARNET : le répertoire qui se feuillette
+    function fxPages() {
+      const l = fxLayer(1200);
+      l.innerHTML = '<span class="flip"></span><span class="flip"></span><span class="flip"></span>';
+      try { playSwoosh(); setTimeout(playSwoosh, 150); setTimeout(playSwoosh, 300); } catch (e) {}
+    }
+    // --- FACTURES : le tampon qui frappe
+    function fxStamp(scr) {
+      const l = fxLayer(1000);
+      l.innerHTML = '<span class="stamp2">Boussole</span>';
+      if (scr) { scr.classList.add('fx-shake'); setTimeout(() => scr.classList.remove('fx-shake'), 900); }
+      try { setTimeout(() => { playGearLock(); if (navigator.vibrate) navigator.vibrate(22); }, 300); } catch (e) {}
+    }
+    // --- RÉGLAGES : les engrenages qui s'engrènent
+    function fxGears() {
+      const l = fxLayer(1200);
+      const roue = '<svg viewBox="0 0 100 100" width="66" height="66" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round"><circle cx="50" cy="50" r="20"/><path d="M50 6v14M50 80v14M6 50h14M80 50h14M19 19l10 10M71 71l10 10M81 19L71 29M29 71l-10 10"/></svg>';
+      l.innerHTML = '<span class="gear gear--l">' + roue + '</span><span class="gear gear--r">' + roue + '</span>';
+      try { playGearLock(); setTimeout(playGearLock, 330); } catch (e) {}
     }
     /* ---- Animations de touché : une signature par famille d'items ---- */
     (function bindTapFX() {
@@ -4863,7 +5044,7 @@
       // le flash néon (glitch + snap) est déclenché au pointerdown, voir plus bas
       if (b.dataset.logout !== undefined) { setTimeout(doLogout, 220); return; }
       if (b.dataset.go) { setActiveNav(b.dataset.go); showSection(b.dataset.go, false); setTimeout(closeMenu, 220); return; }   // Paramètres (pied du tiroir)
-      if (b.dataset.nav) { setActiveNav(b.dataset.nav); showSection(b.dataset.nav, false); }   // HUD : l'écran change instantanément (caméra sèche)
+      if (b.dataset.nav) { flyIcon(b); setActiveNav(b.dataset.nav); showSection(b.dataset.nav, false); }   // l'icône s'envole vers l'écran qu'elle ouvre
       setTimeout(closeMenu, 220);                       // laisse le temps de VOIR le clic "Miles" (~200 ms) avant de fermer
     });
   </script>
