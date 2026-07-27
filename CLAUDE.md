@@ -89,7 +89,7 @@
   - **prod** `boussole/` → https://boussole-19d.pages.dev (Cloudflare Pages, projet `boussole`)
   - **proto en cours** `boussole/_proto/app.html` + `connexion.html` → preview branche `proto` : https://proto.boussole-19d.pages.dev/_proto/connexion
   - ⚠️ **Tout le développement se fait sur le PROTO** ; l'app prod n'est PAS encore migrée (intégration finale = vague à venir).
-- **Direction artistique** : « **verre de nuit** » — or ambre `#f6a63c` + émeraude `#34d399` sur fond `#0B0F19`. Police Bricolage Grotesque. *(Le skin Spider-Verse a été essayé puis RETIRÉ le 2026-07-21.)*
+- **Direction artistique** : « **ORANGE & NUIT** » (depuis 2026-07-25) — **orange `#ff8a1e`** sur **noir chaud `#0a0a0c`** en sombre, **orange `#f97316`** sur **blanc crème `#fffdfb`** en clair. Police Bricolage Grotesque. Aplats pleins, arrondis 22 px, **une seule famille de couleur** (l'orange décliné) ; vert/rouge réservés au sens (bon/danger). ⚠️ **Tout passe par des tokens CSS** (`--acc --bg --ink --tx`, `--fg`/`--sh` en composantes RVB) : **ne jamais recoder une couleur en dur**, sinon le thème clair casse. Bascule de thème dans le tiroir (suit le système, choix mémorisé). *(Étapes abandonnées : « verre de nuit » or/émeraude, skin Spider-Verse.)*
 - **Charte de couleur des actions** : **or = action primaire** (Enregistrer, valider) · **rouge = destructif uniquement** (Supprimer) · vert = encaisser. Ne jamais mettre un bouton de validation en rouge.
 - **Stack** : HTML/CSS/JS pur (aucun build), **Web Audio** synthétisé (aucun fichier son), **Supabase** (auth + table `boussole_proto_etat` en jsonb + RLS — voir `boussole/_proto/etat.sql`), stockage local `sm:state`, PWA offline-first côté prod.
 - **Règles Boussole** :
