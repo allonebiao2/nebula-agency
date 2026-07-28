@@ -24,3 +24,13 @@
 - Il restait au proto (avant ce déploiement) : Agenda, comparateur de périodes, carnet enrichi/relances, intégration réelle à l'app live. Le déploiement les fige tels quels côté public.
 - Sources de l'ancien app toujours dans le repo (`boussole/index.html`, `_demo.html`, `sw.js`, `manifest.webmanifest`, `schema.sql`, et les JS/CSS de l'ancien app dans `assets/`) — **non supprimées** (le proto réutilise `assets/`, et supprimer du code source est destructif). À nettoyer plus tard si voulu.
 - ⚠️ Rappel sécurité déjà connu : régénérer les clés API Supabase + reset mdp DB + poser la Site URL de prod (le `config.js` déployé porte l'URL + clé anon, comme l'ancienne app).
+
+## Purge des PWA déjà installées (service worker « kill-switch »)
+L'ancienne app était une PWA installable : `boussole/assets/js/app.js:1822` enregistrait `sw.js?v=<APP_VERSION>` au **scope `/`**. Sans traitement, les appareils qui l'avaient **installée** auraient continué à voir l'ancienne interface servie par l'ancien service worker (le nouveau proto n'enregistre aucun SW). En plus, `/sw.js` renvoyait la page de repli HTML (200 `text/html`) car le dist n'avait pas de `sw.js`, donc la revérif du SW installé recevait du HTML → échec de mise à jour → ancien SW conservé.
+
+Correctif inclus dans le dist et redéployé :
+- **`sw.js` = kill-switch** : `install`→`skipWaiting()` ; `activate`→ vide tous les `caches`, `registration.unregister()`, puis `clients.navigate(url)` sur les fenêtres ouvertes (recharge vers le nouveau site). Aucune mise en cache.
+- **`_headers`** : `/sw.js` → `Cache-Control: no-store`.
+- Vérifié en prod : `/sw.js` = 200 `application/javascript` `no-store`, contenu = kill-switch ; `/sw.js?v=20260710n` (URL exacte revérifiée par le SW installé) = 200 JS valide.
+
+⚠️ **À GARDER dans le dist à chaque redéploiement du proto** (`sw.js` + `_headers`) tant que des installations de l'ancienne app peuvent traîner ; sinon `/sw.js` retombe sur le repli HTML.
