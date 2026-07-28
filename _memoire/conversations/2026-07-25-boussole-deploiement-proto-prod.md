@@ -22,7 +22,7 @@
 ## Points ouverts / à retenir
 - **La prod `boussole-19d.pages.dev` n'est PLUS l'ancienne app** : elle sert le proto « verre de nuit ». `proto.boussole-19d.pages.dev` reste la preview branche.
 - Il restait au proto (avant ce déploiement) : Agenda, comparateur de périodes, carnet enrichi/relances, intégration réelle à l'app live. Le déploiement les fige tels quels côté public.
-- Sources de l'ancien app toujours dans le repo (`boussole/index.html`, `_demo.html`, `sw.js`, `manifest.webmanifest`, `schema.sql`, et les JS/CSS de l'ancien app dans `assets/`) — **non supprimées** (le proto réutilise `assets/`, et supprimer du code source est destructif). À nettoyer plus tard si voulu.
+- Sources de l'ancien app **SUPPRIMÉES le 2026-07-28** (Mongazi : « OUI OUI ») : `git rm` de **20 fichiers suivis** (`index.html`, `sw.js`, `manifest.webmanifest` + les JS/CSS/icônes/`welcome.webp` de l'ancien app dans `assets/`) + `rm` du `_demo.html` local (gitignoré `boussole/_*.html`). **Conservés** : `_proto/`, les 7 assets utilisés par le proto (`vendor/supabase.js`, `config.js`, `skyline-{pc,mobile}.webp`, `logo-boussole-neon.png`, `favicon-48.png`, `BricolageGrotesque.woff2`), `schema.sql` (schéma Supabase), `README.md`, `assets/docs/Guide-Utilisateur-Boussole.pdf`. ⚠️ le guide PDF décrit l'**ANCIENNE UI** (obsolète, à refaire un jour). Le site en prod n'est PAS affecté (déploiement Cloudflare séparé).
 - ⚠️ Rappel sécurité déjà connu : régénérer les clés API Supabase + reset mdp DB + poser la Site URL de prod (le `config.js` déployé porte l'URL + clé anon, comme l'ancienne app).
 
 ## Purge des PWA déjà installées (service worker « kill-switch »)
