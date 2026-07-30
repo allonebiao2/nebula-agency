@@ -77,6 +77,28 @@ Consigne de travail : avancer **étape par étape**.
 5. Construire le **rappel automatique de renouvellement** (n8n + WhatsApp)
 6. Convertir en PDF et publier dans l'espace partenaire
 
+
+## Vague 3 — Application des 6 actions restantes (même journée)
+
+| # | Action | État |
+|---|---|---|
+| 1 | Numéro IFU dans le contrat | ⏳ **en attente de Mongazi** (RCCM écrit « en cours ») |
+| 2 | Abonnement 15 000 → **20 000 F** sur le site public | ✅ fait dans `00-nebula-agency/nebula_agency_v9.html` (11 occurrences ; cohérence `setTier` ↔ `<option>` vérifiée ; scripts inline revalidés). **Pas déployé sur Cloudflare** |
+| 3 | Cerveau de NOVA | ✅ fait. `agency_brain()` dérivait son catalogue de `SERVICES`, qui contient **encore Fiche Google Maps et Avatar IA, retirés du site en v9** : NOVA citait donc des offres inexistantes. Catalogue désormais **explicite et figé** dans la fonction. `py_compile` OK. **Pas déployé sur Railway** |
+| 4 | Les 5 guides seedés du back-office | ✅ réécrits dans `seed_content()` : escalier catalogue-first, 20 produits, domaine offert, récurrent à vie, 24-72h, « tu ne touches jamais l'argent ». Les 2 scripts de publication aussi. ⚠️ **`seed_content()` ne s'exécute que si la table `documents` est vide** : en production les anciens textes sont déjà en base et doivent être remplacés à la main dans `/admin` |
+| 5 | Rappel automatique de renouvellement | ✅ spécifié dans `10-RELANCE-RENOUVELLEMENT.md`. ⚠️ **Découverte : aucune table d'abonnement n'existe dans l'app** — on ne peut pas automatiser une relance sur une donnée absente. Le doc contient le modèle de données à créer, le calendrier J-15/J-3/J+3/J+10, les 5 messages, le workflow n8n et les garde-fous |
+| 6 | Conversion PDF | ✅ **9 PDF** générés à la charte cosmique dans `vente/pdf/` (2,7 Mo au total, 9 à 22 pages). Script reproductible `_build_pdf.py` : Markdown → HTML stylé → Chrome headless. Reste à **téléverser** dans l'espace partenaire |
+
+### Leçons techniques de cette vague
+- **`node --check` sur les blocs `<script>` d'un HTML** remonte une fausse erreur sur les blocs
+  `application/ld+json` (JSON-LD). Vérifier contre la version d'avant avant de conclure à une régression.
+- **`markdown` + extension `nl2br` casse les phrases** quand le Markdown source est écrit avec des
+  retours à la ligne de confort. Ne pas l'activer pour les documents rédigés.
+- **Une couverture sombre a besoin d'un `!important`** sur la couleur du `h1`, sinon la règle
+  générale des titres (texte foncé) la rend illisible. Vérifier par capture avant de générer la série.
+- Chromium est disponible à `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`
+  (`--headless --print-to-pdf`), aucun outil PDF système n'est installé.
+
 ## Analyse stratégique retenue
 
 1. **Les 3 offres forment un escalier, pas 3 produits.** Catalogue 50 000 F = porte d'entrée

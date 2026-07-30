@@ -131,11 +131,11 @@ Les 11 points en attente ont été tranchés le 2026-07-30, et 21 autres avec eu
 | # | Action | Où |
 |---|---|---|
 | 1 | **Compléter le numéro IFU** de NEBULA dans le contrat | `09-CONTRAT-PARTENAIRE.md` |
-| 2 | **Passer l'abonnement de 15 000 à 20 000 F** sur le site public | `00-nebula-agency/nebula_agency_v9.html` (section Tarifs et cartes d'offres) |
-| 3 | **Aligner le cerveau de NOVA** sur les nouveaux prix et l'abonnement unique | `nebula-affilies/server.py`, fonction `agency_brain()` |
-| 4 | **Retirer ou réécrire les 5 anciens guides** du back-office, qui poussent la Vitrine en premier | `nebula-affilies/server.py`, fonction `seed_docs()` |
-| 5 | **Construire le rappel automatique de renouvellement** (n8n + WhatsApp) | infrastructure |
-| 6 | Convertir les documents en PDF et les publier | §3 et §4 |
+| 2 | ~~Passer l'abonnement à 20 000 F sur le site public~~ **FAIT** (11 occurrences, cohérence `setTier`/`<option>` vérifiée). ⚠️ **pas encore déployé sur Cloudflare** | `00-nebula-agency/nebula_agency_v9.html` |
+| 3 | ~~Aligner le cerveau de NOVA~~ **FAIT** : catalogue explicite (il dérivait de `SERVICES`, qui contient encore Fiche Google Maps et Avatar IA, retirés du site). ⚠️ **pas encore déployé sur Railway** | `nebula-affilies/server.py`, `agency_brain()` |
+| 4 | ~~Réécrire les 5 guides seedés~~ **FAIT dans le code** (escalier, 20 produits, domaine offert, récurrent, 24-72h). ⚠️ **`seed_content()` ne s'exécute que si la table est vide : en production les anciens textes sont déjà en base et doivent être remplacés à la main dans `/admin`** | `nebula-affilies/server.py`, `seed_content()` |
+| 5 | **Rappel automatique de renouvellement** : spécification écrite. ⚠️ Bloqué en amont : **aucune table d'abonnement n'existe** | `10-RELANCE-RENOUVELLEMENT.md` |
+| 6 | ~~Convertir les documents en PDF~~ **FAIT** : 9 PDF à la charte cosmique dans `vente/pdf/`, régénérables via `_build_pdf.py`. Reste à les **téléverser** dans l'espace partenaire | `vente/pdf/` |
 
 **Le point 5 n'est pas optionnel.** Comme les commissions sur abonnement sont acquises à vie,
 les clients d'un partenaire parti n'ont plus personne pour les relancer : c'est
