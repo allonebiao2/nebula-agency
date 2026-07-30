@@ -1336,9 +1336,49 @@
       .vaultwrap.is-sealed .pos-tile { animation-play-state: running; }
       .printwrap.is-live .saleslist, .printwrap.is-live .print__roll, .is-stamp .stamp, .calib__needle, .objgoal.is-hit { animation: none !important; }
     }
+    /* ===================== MODE PERFORMANCE ADAPTATIF =====================
+       Sur appareil modeste (ou FPS mesure trop bas), on CALME les animations
+       d'ambiance en boucle (halos, poussieres, pulses deco) sans toucher aux
+       interactions ni aux transitions. Pilote par le script initPerfMode via
+       la classe .perf-lite sur <html>. .perf-pause = onglet en arriere-plan. */
+    html.perf-lite .depth__halo { animation: none !important; }
+    html.perf-lite .depth__dust span { animation: none !important; opacity: .2 !important; }
+    html.perf-lite .hdr__logo,
+    html.perf-lite .hud__sys i,
+    html.perf-lite .masto__btn--sell svg,
+    html.perf-lite .masto__btn--spend svg,
+    html.perf-lite .streak i,
+    html.perf-lite .cloudchip.is-on i,
+    html.perf-lite .navbtn--holo .navbtn__ic svg { animation: none !important; }
+    /* le flou 22px du tiroir = l'op GPU la plus chere : on l'enleve en mode calme
+       (le fond degrade du tiroir est deja quasi opaque, reste lisible) */
+    html.perf-lite .drawer,
+    html.perf-lite .app.menu-open .scrim { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+    html.perf-pause .depth__halo,
+    html.perf-pause .depth__dust span,
+    html.perf-pause .hdr__logo,
+    html.perf-pause .hud__sys i,
+    html.perf-pause .masto__btn--sell svg,
+    html.perf-pause .masto__btn--spend svg { animation-play-state: paused !important; }
   </style>
 </head>
 <body>
+  <script>
+    /* Mode performance : on decide TOT (avant peinture) s'il faut calmer les
+       animations d'ambiance, pour ne pas ramer sur les telephones modestes. */
+    (function () {
+      try {
+        var d = document.documentElement, n = navigator;
+        var pref = null; try { pref = localStorage.getItem('boussole:perf'); } catch (e) {}
+        var low = (n.hardwareConcurrency || 8) <= 4 || (n.deviceMemory || 8) <= 4
+                  || (n.connection && n.connection.saveData);
+        if (pref === 'lite' || (pref !== 'full' && low)) d.classList.add('perf-lite');
+        document.addEventListener('visibilitychange', function () {
+          d.classList.toggle('perf-pause', document.hidden);
+        });
+      } catch (e) {}
+    })();
+  </script>
   <!-- Calque de profondeur : halos aurore + poussières lumineuses (derrière tout le contenu) -->
   <div class="depth" aria-hidden="true">
     <div class="depth__halo depth__halo--a"></div>
@@ -3591,6 +3631,26 @@
         html += '<span style="left:' + left + '%;top:' + top + '%;width:' + size + 'px;height:' + size + 'px;animation-duration:' + dur + 's;animation-delay:' + delay + 's;--op:' + (near ? 0.6 : 0.35) + '"></span>';
       }
       wrap.innerHTML = html;
+    })();
+
+    /* Sonde FPS reelle : si l'appareil ne tient pas ~50 fps avec l'ambiance en
+       marche, on bascule en mode calme (verite terrain, pas une supposition). */
+    (function perfProbe() {
+      try {
+        var d = document.documentElement;
+        if (d.classList.contains('perf-lite')) return;
+        if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        try { if (localStorage.getItem('boussole:perf') === 'full') return; } catch (e) {}
+        setTimeout(function () {   // on laisse le demarrage se calmer avant de mesurer
+          if (d.classList.contains('perf-lite') || document.hidden) return;
+          var frames = 0, t0 = performance.now();
+          (function tick(now) {
+            frames++;
+            if (now - t0 < 1000) { requestAnimationFrame(tick); return; }
+            if (frames * 1000 / (now - t0) < 55) d.classList.add('perf-lite');
+          })(t0);
+        }, 900);
+      } catch (e) {}
     })();
 
     // arrivée : onboarding la première fois, sinon Accueil (HUD de bienvenue) en cinématique
