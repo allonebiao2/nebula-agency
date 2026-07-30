@@ -1,0 +1,2621 @@
+    import { SUPABASE_URL, SUPABASE_ANON_KEY, ADMIN_EMAILS } from './config.js';
+    const app = document.querySelector('.app');
+    const drawer = document.querySelector('.drawer');
+    const burger = document.querySelector('.hdr__burger');
+    const view = document.getElementById('view');
+
+    /* ===== Écrans (scaffold) + caméra : arrivée CINÉMATIQUE (1er rendu) / navigation HUD SÈCHE (clic) ===== */
+    let userName = 'Boss';   // nom affiché par défaut, remplacé par le prénom de la session Supabase
+    /* ===== Smart Greeting Engine v2 : Boussole te parle de TON argent ===================
+       3 voix : (1) le MIROIR — résumés et avis honnêtes calculés sur tes vrais chiffres,
+       (2) l'ÉCOLE — leçons d'argent courtes, (3) l'ÉTINCELLE — questions qui font réfléchir.
+       Anti-répétition : historique persisté (SM.greetHist) — jamais deux fois la même
+       phrase tant que tout le stock n'a pas été entendu. ======================================= */
+    const LECONS = [
+      "le chiffre d'affaires nourrit l'ego, le bénéfice nourrit ta famille.",
+      "un franc économisé se gagne plus vite qu'un franc vendu.",
+      "trois enveloppes, toujours : relancer, payer, garder. Dans cet ordre.",
+      "un crédit sans date de retour, c'est un cadeau déguisé.",
+      "ton stock, c'est de l'argent qui dort sur l'étagère. Réveille-le.",
+      "note chaque sortie le jour même : la mémoire est le pire des comptables.",
+      "le client qui paie vite vaut deux fois celui qui achète gros.",
+      "augmenter tes prix fait fuir moins de clients que tu ne le crois.",
+      "ce que tu ne mesures pas, tu ne peux pas l'améliorer.",
+      "la régularité bat le talent : 5 000 F chaque jour valent mieux qu'un coup d'éclat.",
+      "paie-toi un salaire fixe. Le reste appartient au commerce.",
+      "un produit invendu depuis 30 jours te coûte de l'argent chaque nuit.",
+      "le bon moment pour épargner, c'était hier. Le deuxième, c'est aujourd'hui.",
+      "connais ton coût de revient par cœur : c'est lui qui fixe ton prix, pas le voisin.",
+      "une dette relancée poliment est à moitié récupérée.",
+      "les charges fixes sont des petites dents : elles mordent chaque mois.",
+      "vendre à perte pour « faire tourner », c'est courir vers le mur en souriant.",
+      "l'argent aime les comptes clairs. Le désordre le fait fuir.",
+      "celui qui connaît ses chiffres négocie. Celui qui devine, subit.",
+      "mieux vaut dix clients fidèles que cent curieux.",
+      "chaque grosse vente cache un coût : réserve-le avant de célébrer.",
+      "ta caisse du soir raconte ta journée. Écoute-la ici même.",
+      "compte d'abord, dépense ensuite. Jamais l'inverse.",
+      "ton meilleur produit mérite la meilleure place de la boutique.",
+      "la poche du commerce et ta poche sont deux pays différents. Garde la frontière.",
+      "on ne devient pas riche en un jour, mais on le devient chaque jour.",
+    ];
+    const ETINCELLES = [
+      "sais-tu quel jour de la semaine tu vends le plus ? La réponse t'attend dans Statistiques.",
+      "si tu devais doubler UN seul prix demain, lequel choisirais-tu ?",
+      "combien te coûte une journée de boutique fermée ? Fais le calcul, ça réveille.",
+      "quel bon client n'est pas revenu depuis longtemps ? Un petit message change tout.",
+      "ton objectif du jour pique-t-il assez ? Un objectif trop facile n'apprend rien.",
+      "que ferais-tu avec 30 jours de bénéfice mis de côté ? Commence aujourd'hui.",
+      "ta plus grosse dépense du mois est-elle vraiment indispensable ?",
+      "ton prix couvre-t-il TOUT — matière, transport, ton temps ? Vérifie au Catalogue.",
+      "si je ne te montrais qu'un chiffre chaque matin, lequel voudrais-tu ? Viens me le dire.",
+      "quelle vente d'aujourd'hui pourrait devenir une habitude de client ?",
+    ];
+    function greetPool() {   // le MIROIR : phrases construites sur TES chiffres du moment
+      const P = [];
+      const add = (id, txt, w) => P.push({ id, txt, w: w || 3 });
+      try {
+        const t0d = startOfToday(), st = salesToday(), obj = objJour();
+        const caHier = caBetween(t0d - DAY, t0d), caAvHier = caBetween(t0d - 2 * DAY, t0d - DAY);
+        const e = enveloppes(), streak = calcStreak();
+        const dettes = (SM.clients || []).reduce((s, c) => s + (c.dette || 0), 0);
+        const rupt = SM.stock.filter((p) => p.type === 'physique' && p.qty <= 0);
+        const top = topProduit(t0d - 30 * DAY);
+        if (!(SM.ventes || []).length) add('d-first', "ta première vente t'attend à la caisse. Après la première, tout s'enchaîne.");
+        if (caHier > 0) add('d-hier', 'hier tu as encaissé ' + fF(caHier) + (caAvHier > 0 ? (caHier >= caAvHier ? ', mieux qu\'avant-hier. La pente est bonne.' : ', un peu moins qu\'avant-hier. On la retourne aujourd\'hui ?') : '. Aujourd\'hui, on fait mieux ?'));
+        if (caHier === 0 && caAvHier > 0) add('d-hier0', 'hier, caisse à zéro. Ça arrive aux meilleurs — l\'important, c\'est aujourd\'hui.');
+        if (st > 0 && obj > 0 && st < obj) add('d-obj', 'tu es à ' + Math.round(st / obj * 100) + '% de ton objectif. Reste ' + fF(obj - st) + ' : c\'est une ou deux bonnes ventes.');
+        if (obj > 0 && st >= obj) add('d-objdone', 'objectif du jour déjà atteint. Franchement ? Chapeau. Le reste, c\'est du bonus.');
+        if (streak >= 2) add('d-streak', streak + ' jours de suite à objectif atteint. Les habitudes font les fortunes — ne casse pas la série.');
+        if (dettes > 0) add('d-dettes', 'on te doit ' + fF(dettes) + '. L\'argent dehors ne travaille pas pour toi : un tour au Carnet ?');
+        if (rupt.length) add('d-rupt', rupt.length + ' produit' + (rupt.length > 1 ? 's' : '') + ' en rupture, dont ' + rupt[0].nom + '. Chaque heure sans stock, c\'est une vente offerte au voisin.');
+        if (e.ca > 0 && e.manque > 0 && new Date().getDate() >= 8) add('d-manque', 'avis honnête : ta marge du mois ne couvre pas encore tes charges (il manque ' + fF(e.manque) + '). On serre, on vend, on y arrive.');
+        if (e.env3 > 0) add('d-env3', 'bénéfice net du mois : ' + fF(e.env3) + '. C\'est ça ton vrai salaire — pas le chiffre de la caisse.');
+        if (top) add('d-top', 'ton champion : ' + top.nom + ' (' + fF(top.tot) + ' en 30 jours). Mets-le devant, il te le rendra.');
+        if (e.ca > 0 && e.cout > 0 && (e.ca - e.cout) / e.ca < 0.25) add('d-marge', 'avis franc : ta marge moyenne est fine (' + Math.round((e.ca - e.cout) / e.ca * 100) + '%). Acheter moins cher ou vendre plus cher — il faudra choisir.');
+        if ((SM.ventes || []).length > 3 && !(SM.depenses || []).length) add('d-nodep', 'tu encaisses, mais aucune sortie notée… Sans les sorties, ton bénéfice est une illusion. Sois honnête avec toi-même.');
+        const perso = persoTotal();
+        if (perso > 0 && e.env3 > 0 && perso > e.env3) add('d-perso', 'ta poche perso (' + fF(perso) + ') dépasse ton bénéfice net du mois. Se payer : oui. Se vider : non.');
+        const caSem = caBetween(t0d - 6 * DAY, Date.now() + 1);
+        if (caSem > 0) add('d-sem', 'ta semaine : ' + fF(caSem) + ' encaissés, ~' + fF(Math.round(caSem / 7)) + ' par jour. Tu veux monter la moyenne ? Vise les heures creuses.', 2);
+      } catch (er) {}
+      LECONS.forEach((l, i) => P.push({ id: 'l' + i, txt: 'retiens ça : ' + l, w: 1 }));
+      ETINCELLES.forEach((q, i) => P.push({ id: 'q' + i, txt: 'question pour toi : ' + q, w: 1.6 }));
+      return P;
+    }
+    function pickGreeting() {   // jamais deux fois la même tant que le stock n'est pas épuisé
+      SM.greetHist = SM.greetHist || [];
+      let pool = greetPool().filter((g) => SM.greetHist.indexOf(g.id) < 0);
+      if (!pool.length) { SM.greetHist = SM.greetHist.slice(-4); pool = greetPool().filter((g) => SM.greetHist.indexOf(g.id) < 0); }
+      const tot = pool.reduce((s, g) => s + g.w, 0); let r = Math.random() * tot; let sel = pool[0];
+      for (let i = 0; i < pool.length; i++) { r -= pool[i].w; if (r <= 0) { sel = pool[i]; break; } }
+      SM.greetHist.push(sel.id); if (SM.greetHist.length > 90) SM.greetHist.shift();
+      try { smSave(); } catch (er) {}
+      return sel.txt;
+    }
+    const greetingFull = () => { const h = new Date().getHours(); return (h < 12 ? 'Bonjour' : h < 18 ? 'Bel après-midi' : 'Bonsoir') + ' ' + userName + ' — ' + pickGreeting(); };
+    let _typeTimer = null;
+    function typeInto(el, full, speed) {
+      clearTimeout(_typeTimer);
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = full; return; }   // a11y : pas de frappe
+      let i = 0; el.textContent = '';
+      const step = () => { i++; el.textContent = full.slice(0, i); playType(); if (i < full.length) _typeTimer = setTimeout(step, speed); };   // son synchro à la lettre
+      _typeTimer = setTimeout(step, speed);   // machine à écrire, 50 ms/caractère
+    }
+    function renderGreeting() {
+      const hi = view.querySelector('.hud__hi'); if (!hi) return;
+      const full = greetingFull();
+      hi.innerHTML = '<span class="hud__ghost" aria-hidden="true">' + full + '</span>' +
+                     '<span class="hud__type"><span class="hud__txt"></span><span class="hud__caret" aria-hidden="true"></span></span>';
+      typeInto(hi.querySelector('.hud__txt'), full, Math.max(16, Math.min(45, Math.round(2400 / full.length))));   // vitesse adaptée : les longues phrases se tapent plus vite
+    }
+    const ICON_SELL  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 10.6a1.5 1.5 0 0 1-1.5 1.4H8.5A1.5 1.5 0 0 1 7 18.6z"/><path d="M9 8V7a3 3 0 0 1 6 0v1"/></svg>';
+    const ICON_SPEND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v10"/><path d="M8.5 9.5 12 13l3.5-3.5"/><path d="M4.5 20h15"/></svg>';
+    const SECTIONS = {
+      accueil:   { label: 'Accueil',        color: '#ff2e43', desc: 'Vue d’ensemble de ton activité.' },
+      catalogue: { label: 'Catalogue',      color: '#ffd23f', desc: 'Tes produits et prestations.' },
+      ventes:    { label: 'Mes ventes',     color: '#34d399', desc: 'Historique et suivi de tes ventes.' },
+      depenses:  { label: 'Mes dépenses',   color: '#e11d48', desc: 'Ce qui sort de ta caisse.' },
+      caisse:    { label: 'La caisse',      color: '#f6a63c', desc: 'Encaisse une vente en un geste.' },
+      bilan:     { label: 'Le bilan',       color: '#b98cff', desc: 'Tes chiffres et ton rapport de santé.' },
+      statistiques: { label: 'Statistiques', color: '#ffe9c9', desc: 'Tendances, analyses et projections de ton activité.' },
+      objectifs: { label: 'Objectifs', color: '#ffd23f', desc: 'Tes buts de revenu et tes projets d\'achat.' },
+      carnet:    { label: 'Carnet clients', color: '#ff8a3d', desc: 'Clients, crédits et relances.' },
+      factures:  { label: 'Factures & devis', color: '#4cc9ff', desc: 'Factures normalisées et devis pour tes clients.' },
+      equipe:    { label: 'Mon équipe',     color: '#3a86ff', desc: 'Vendeurs, rôles et sécurité.' },
+      reglages:  { label: 'Réglages',       color: '#8a93a6', desc: 'Identité, sécurité, données et cloud.' },
+    };
+    // Accueil : HUD de bienvenue (salutation dynamique) + 2 mastodontes Vendre / Dépenser
+    function accueilHTML(cls) {
+      const ca = salesTotal(), stoday = salesToday(), objPct = Math.min(100, Math.round(stoday / objJour() * 100));   // vrais chiffres
+      const masked = activeRole() === 'vendeur';   // un vendeur ne voit pas la caisse totale ni l'objectif : anti-vol
+      return '<div class="screen home portal" style="--sc:#f6a63c">' +   // portail « retour au nexus » (clip-path circulaire) au lieu de la caméra cine/hud
+          '<div class="hud">' +
+            '<span class="hud__sys"><i></i>Système en ligne</span>' +
+            '<h1 class="hud__hi"></h1>' +   // rempli par le Smart Greeting Engine (typing)
+          '</div>' +
+          '<div class="vitals">' +
+            (masked
+              ? '<div class="vital vital--caisse" style="--i:0" aria-label="Réservé au patron"><span class="vital__label">Caisse</span><span class="vital__num">&#128274;</span></div>'
+              : '<div class="vital vital--caisse" style="--i:0" role="button" tabindex="0" data-goto="statistiques" aria-label="Caisse : voir les statistiques">' +
+                '<span class="vital__label">Caisse</span>' +
+                '<span class="vital__num" data-count="' + ca + '" data-suffix=" F">0 F</span>' +
+              '</div>') +
+            '<div class="vital vital--jour" style="--i:1" role="button" tabindex="0" ' + (masked ? '' : 'data-goto="statistiques"') + ' aria-label="Ventes du jour">' +
+              '<span class="vital__label">Aujourd\'hui</span>' +
+              '<span class="vital__num" data-count="' + stoday + '" data-suffix=" F">0 F</span>' +
+            '</div>' +
+            (masked
+              ? '<div class="vital vital--objectif" style="--i:2" aria-label="Réservé au patron"><span class="vital__label">Objectif</span><span class="vital__num">&#128274;</span></div>'
+              : '<div class="vital vital--objectif" style="--i:2" role="button" tabindex="0" data-goto="objectifs" aria-label="Objectif : voir tes objectifs">' +
+                '<span class="vital__label">Objectif</span>' +
+                '<span class="vital__num" data-count="' + objPct + '" data-suffix=" %">0 %</span>' +
+              '</div>') +
+          '</div>' +
+          (SM.meta.demo ? '<span class="demochip">Mode démo · données d\'exemple — Réglages pour repartir à zéro</span>' : '') +
+          (calcStreak() >= 2 ? '<div class="streak" role="status"><i>&#128293;</i><b>' + calcStreak() + ' jours</b> de suite à objectif atteint — ne casse pas la série !</div>' : '') +
+          '<div class="masto">' +
+            '<button class="masto__btn masto__btn--sell" type="button" data-goto="caisse"><span class="masto__fx" aria-hidden="true"></span>' + ICON_SELL + '<span>Vendre</span><span class="masto__ring" aria-hidden="true"></span></button>' +
+            '<button class="masto__btn masto__btn--spend" type="button" data-goto="depenses"><span class="masto__fx" aria-hidden="true"></span>' + ICON_SPEND + '<span>Dépenser</span><span class="masto__ring" aria-hidden="true"></span></button>' +
+          '</div>' +
+        '</div>';
+    }
+    // Écran Catalogue : « tiroir 3D » (drawerPull) + compartiments qui sortent en gigogne (cartes produits de démo)
+    // ===== BOUSSOLE — état local + « sauvegarde automatique » (localStorage), esprit Zustand-lite =====
+    const CRIT = 3;   // seuil de stock critique
+    // Stock de DÉMO : chargé UNIQUEMENT en mode démo (plus jamais imposé au vrai commerçant)
+    const DEMO_STOCK = [
+      { id: 'p1', nom: 'Yaourt maison', prix: 500, cout: 200, type: 'physique', qty: 12, recurrent: false },
+      { id: 'p2', nom: 'Jus de bissap', prix: 300, cout: 120, type: 'physique', qty: 2, recurrent: false },
+      { id: 'p3', nom: 'Pain doré', prix: 250, cout: 110, type: 'physique', qty: 0, recurrent: false },
+      { id: 'p4', nom: 'Part de gâteau', prix: 1000, cout: 450, type: 'physique', qty: 7, recurrent: false },
+      { id: 'p5', nom: 'Eau 1,5 L', prix: 200, cout: 120, type: 'physique', qty: 3, recurrent: false },
+      { id: 'p6', nom: 'Café au lait', prix: 400, cout: 150, type: 'physique', qty: 24, recurrent: false },
+      { id: 'p7', nom: 'Livraison à domicile', prix: 1000, cout: 300, type: 'service', qty: 0, recurrent: false },
+      { id: 'p8', nom: 'Abonnement pâtisserie', prix: 15000, cout: 6000, type: 'service', qty: 0, recurrent: true },
+    ];
+    const SM = (() => {
+      try { const s = localStorage.getItem('sm:state'); if (s) { const p = JSON.parse(s); if (p && p.stock) return p; } } catch (e) {}
+      return { stock: [] };   // vierge : l'onboarding décide (zéro ou démo)
+    })();
+    // meta : onboarding fait ?, mode démo ?, membre actif, identité commerce
+    if (!SM.meta) SM.meta = { onboarded: !!(SM.ventes && SM.ventes.length), demo: !!(SM.ventes && SM.ventes.length), activeId: 'e1', updatedAt: Date.now() };
+    if (!SM.biz) SM.biz = { nom: '', prenom: '', activite: '', tel: '', adresse: '', ifu: '', rc: '' };
+    function smSave() {
+      SM.meta.updatedAt = Date.now();
+      try { localStorage.setItem('sm:state', JSON.stringify(SM)); } catch (e) {}
+      try { cloudPush(); refreshBadge(); } catch (e) {}   // sync cloud (debounce) + pastille d'alertes (hoisted)
+    }
+    /* ===== Toasts : confirmation visuelle + « Annuler » (filet de sécurité) ===== */
+    function toast(msg, opts) {
+      opts = opts || {};
+      const root = document.querySelector('[data-toasts]'); if (!root) return;
+      const el = document.createElement('div');
+      el.className = 'toast' + (opts.tone ? ' toast--' + opts.tone : '');
+      el.innerHTML = '<span>' + msg + '</span>' + (opts.label ? '<button class="toast__act">' + opts.label + '</button>' : '');
+      root.appendChild(el);
+      let gone = false;
+      const go = () => { if (gone) return; gone = true; el.classList.add('is-going'); setTimeout(() => el.remove(), 320); };
+      if (opts.label) el.querySelector('.toast__act').addEventListener('click', () => { go(); playSuccess(); opts.action && opts.action(); });
+      setTimeout(go, opts.ms || 5000);
+      while (root.children.length > 3) root.firstElementChild.remove();   // max 3 toasts empilés
+    }
+    const qtyLabel = (q) => q === 0 ? 'Rupture' : q <= CRIT ? 'Stock bas' : q + ' en stock';
+    const stockAlertText = (c) => c ? '<b>' + c + '</b> produit' + (c > 1 ? 's' : '') + ' en stock critique' : 'Tout est bien approvisionné';
+
+    // Écran CATALOGUE : produits + services, prix + coût + marge, quantités (physique), CRUD complet
+    function catalogueHTML() {
+      const f = _catFilter || 'tous';
+      const list = SM.stock.filter((p) => f === 'tous' || p.type === f);
+      const cards = list.map((p) => {
+        const idx = SM.stock.indexOf(p), col = TILE_COLORS[idx % TILE_COLORS.length], mp = margePct(p);
+        const rec = p.recurrent ? '<span class="ptype ptype--rec">🔁 récurrent</span>' : '';
+        const mcls = mp >= 50 ? 'm-hi' : mp >= 25 ? 'm-mid' : 'm-lo';
+        const ctrl = p.type === 'physique'
+          ? '<div class="prod__qty' + (p.qty <= 0 ? ' is-rupt' : '') + '"><button class="qtybtn qtybtn--minus" data-qty="dec" data-id="' + p.id + '" aria-label="Retirer">−</button><span class="qtybtn__val" data-qtyval>' + p.qty + '</span><button class="qtybtn qtybtn--plus" data-qty="inc" data-id="' + p.id + '" aria-label="Ajouter">+</button></div>'
+          : '<span class="prod__illim">illimité</span>';
+        return '<div class="prod" style="--i:' + idx + '" data-id="' + p.id + '">' +
+          '<button class="prod__main" data-edit="' + p.id + '">' +
+            '<span class="prod__disc" style="background:radial-gradient(120% 120% at 30% 25%,' + col + ',' + col + '99);color:#04121a">' + p.nom.charAt(0).toUpperCase() + '</span>' +
+            '<span class="prod__info"><span class="prod__name">' + p.nom + '</span>' +
+              '<span class="prod__badges"><span class="ptype ptype--' + p.type + '">' + PTYPE_LBL[p.type] + '</span>' + rec + '</span>' +
+              '<span class="prod__nums"><b>' + fF(p.prix) + '</b> · coût ' + fF(p.cout || 0) + (p.couts && p.couts.length ? ' (' + p.couts.length + ' postes)' : '') + ' · <i class="' + mcls + '">marge ' + mp + '%</i></span>' +
+            '</span></button>' + ctrl + '</div>';
+      }).join('');
+      const seg = ['tous', 'physique', 'digital', 'service'].map((k) => '<button class="seg-btn' + (k === f ? ' is-on' : '') + '" data-catf="' + k + '">' + ({ tous: 'Tout', physique: 'Physique', digital: 'Digital', service: 'Service' }[k]) + '</button>').join('');
+      return '<div class="screen wide" style="--sc:#ffd23f">' +
+          '<div class="drawer3d">' +   // le tiroir qui sort = le CONTENU (le FAB reste ancré au viewport)
+            '<span class="screen__tag">Catalogue</span>' +
+            '<h1 class="screen__title">Ton catalogue</h1>' +
+            '<p class="screen__sub">Tes produits et services : prix, coût, et la marge que ça te rapporte.</p>' +
+            '<div class="seg seg--cat">' + seg + '</div>' +
+            '<div class="prodlist">' + (cards || '<p class="ia__txt" style="text-align:center">Rien dans cette catégorie.</p>') + '</div>' +
+          '</div>' +
+          '<span class="fab__lbl">Nouvel article</span><button class="fab fab--gold" data-prodnew aria-label="Ajouter un produit ou service">+</button>' +
+          catSheet() +
+        '</div>';
+    }
+    // Interactions Catalogue : filtres, steppers -/+ (physique), ajout/modif/suppression via feuille
+    function bindStock() {
+      const scr = view.querySelector('.screen'); if (!scr) return;
+      const render = () => { view.innerHTML = catalogueHTML(); bindStock(); };
+      scr.querySelectorAll('[data-catf]').forEach((b) => b.addEventListener('click', () => { _catFilter = b.dataset.catf; playPop(true); render(); }));
+      scr.querySelectorAll('[data-qty]').forEach((b) => b.addEventListener('click', () => {
+        const p = SM.stock.find((x) => x.id === b.dataset.id); if (!p) return;
+        p.qty = Math.max(0, (p.qty || 0) + (b.dataset.qty === 'inc' ? 1 : -1)); smSave();
+        const card = scr.querySelector('.prod[data-id="' + p.id + '"]'), val = card.querySelector('[data-qtyval]');
+        val.textContent = p.qty; val.classList.remove('pop'); void val.offsetWidth; val.classList.add('pop');
+        card.querySelector('.prod__qty').classList.toggle('is-rupt', p.qty <= 0);
+        playPop(b.dataset.qty === 'inc');
+      }));
+      const sheet = scr.querySelector('[data-psheet]'), scrim = scr.querySelector('[data-psclose]'), g = (s) => scr.querySelector(s);
+      const title = g('[data-pstitle]'), nom = g('[data-pnom]'), prix = g('[data-pprix]'), cout = g('[data-pcout]'), qty = g('[data-pqty]'), qtyWrap = g('[data-pqtywrap]'), margeView = g('[data-pmarge]'), delBtn = g('[data-psdel]'), recBtn = g('[data-prec]'), typeBtns = scr.querySelectorAll('[data-pt]');
+      let editId = null, curType = 'physique', curRec = false, curCouts = [];
+      const clinesBox = g('[data-clines]'), cfoot = g('[data-cfoot]'), ctot = g('[data-ctot]'), chint = g('[data-chint]');
+      const setType = (t) => { curType = t; typeBtns.forEach((x) => x.classList.toggle('is-on', x.dataset.pt === t)); qtyWrap.style.display = t === 'physique' ? 'flex' : 'none'; };
+      const setRec = (v) => { curRec = v; recBtn.classList.toggle('is-on', v); };
+      const updMarge = () => { const pv = +prix.value || 0, cv = +cout.value || 0, m = pv > 0 ? Math.round((pv - cv) / pv * 100) : 0; margeView.innerHTML = pv > 0 ? 'Marge : <b>' + fF(pv - cv) + '</b> (' + m + '%)' : 'Marge : —'; };
+      // ---- Coût détaillé : postes nommés (partenaire, hébergement…), total et % automatiques
+      const coutsTotal = () => curCouts.reduce((s, c) => s + (+c.montant || 0), 0);
+      const updPcts = () => { const pv = +prix.value || 0; clinesBox.querySelectorAll('.cline').forEach((row, i) => { const c = curCouts[i], el = row.querySelector('.cline__pct'); if (el && c) el.textContent = (pv > 0 ? Math.round((+c.montant || 0) / pv * 100) : 0) + '%'; }); };
+      const syncCout = () => {
+        const has = curCouts.length > 0;
+        if (has) { cout.value = coutsTotal(); cout.readOnly = true; cout.style.opacity = '.55'; } else { cout.readOnly = false; cout.style.opacity = ''; }
+        cfoot.style.display = has ? 'flex' : 'none'; ctot.textContent = fF(coutsTotal()); chint.style.display = has ? 'none' : '';
+        updMarge(); updPcts();
+      };
+      const renderClines = () => {
+        clinesBox.innerHTML = curCouts.map((c, i) =>
+          '<div class="cline"><input class="sheet__txt cline__nom" data-clnom="' + i + '" type="text" placeholder="Qui / quoi (ex : Partenaire)" value="' + String(c.nom || '').replace(/"/g, '&quot;') + '">' +
+          '<input class="sheet__txt cline__amt" data-clamt="' + i + '" type="number" inputmode="numeric" placeholder="0 F" value="' + (c.montant || '') + '">' +
+          '<span class="cline__pct">0%</span><button type="button" class="cline__x" data-clrm="' + i + '" aria-label="Retirer cet élément">×</button></div>').join('');
+        clinesBox.querySelectorAll('[data-clnom]').forEach((el) => el.addEventListener('input', () => { curCouts[+el.dataset.clnom].nom = el.value; }));
+        clinesBox.querySelectorAll('[data-clamt]').forEach((el) => el.addEventListener('input', () => { curCouts[+el.dataset.clamt].montant = Math.round(+el.value || 0); syncCout(); }));
+        clinesBox.querySelectorAll('[data-clrm]').forEach((el) => el.addEventListener('click', () => { curCouts.splice(+el.dataset.clrm, 1); playSwoosh(); renderClines(); }));
+        syncCout();
+      };
+      g('[data-caddline]').addEventListener('click', () => { curCouts.push({ nom: '', montant: 0 }); playPop(true); renderClines(); const last = clinesBox.querySelector('.cline:last-child .cline__nom'); if (last) setTimeout(() => { try { last.focus(); } catch (_) {} }, 60); });
+      const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
+      const openAdd = () => { editId = null; title.textContent = 'Nouvel article'; nom.value = ''; prix.value = ''; cout.value = ''; qty.value = ''; setType('physique'); setRec(false); curCouts = []; renderClines(); delBtn.style.display = 'none'; sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick(); setTimeout(() => { try { nom.focus(); } catch (_) {} }, 220); };
+      const openEdit = (p) => { editId = p.id; title.textContent = 'Modifier'; nom.value = p.nom; prix.value = p.prix; cout.value = p.cout || 0; qty.value = p.qty || 0; setType(p.type); setRec(!!p.recurrent); curCouts = (p.couts || []).map((c) => ({ nom: c.nom, montant: c.montant })); renderClines(); delBtn.style.display = 'block'; sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick(); };
+      scrim.addEventListener('click', close);
+      g('[data-prodnew]').addEventListener('click', openAdd);
+      scr.querySelectorAll('[data-edit]').forEach((b) => b.addEventListener('click', () => { const p = SM.stock.find((x) => x.id === b.dataset.edit); if (p) openEdit(p); }));
+      typeBtns.forEach((b) => b.addEventListener('click', () => { setType(b.dataset.pt); playPop(true); }));
+      recBtn.addEventListener('click', () => { setRec(!curRec); playPop(curRec); });
+      prix.addEventListener('input', () => { updMarge(); updPcts(); }); cout.addEventListener('input', updMarge);
+      g('[data-psok]').addEventListener('click', () => {
+        const n = (nom.value || '').trim(), pv = Math.round(+prix.value || 0), qv = Math.round(+qty.value || 0);
+        const couts = curCouts.map((c) => ({ nom: (c.nom || '').trim() || 'Élément', montant: Math.round(+c.montant || 0) })).filter((c) => c.montant > 0);
+        const cv = couts.length ? couts.reduce((s, c) => s + c.montant, 0) : Math.round(+cout.value || 0);   // coût = somme des postes s'il y en a
+        if (!n || pv <= 0) { try { (n ? prix : nom).focus(); } catch (_) {} return; }
+        if (editId) { const p = SM.stock.find((x) => x.id === editId); if (p) { p.nom = n; p.prix = pv; p.cout = cv; if (couts.length) p.couts = couts; else delete p.couts; p.type = curType; p.recurrent = curRec; if (curType === 'physique') p.qty = qv; } }
+        else { const np = { id: 'p' + Date.now(), nom: n, prix: pv, cout: cv, type: curType, recurrent: curRec, qty: curType === 'physique' ? qv : 0 }; if (couts.length) np.couts = couts; SM.stock.push(np); }
+        smSave(); playSuccess(); close(); render();
+      });
+      delBtn.addEventListener('click', () => { if (!editId) return; const i = SM.stock.findIndex((x) => x.id === editId); if (i >= 0) { SM.stock.splice(i, 1); smSave(); playSwoosh(); close(); render(); } });
+    }
+    function playPop(up) {   // -/+ : petit pop néon (aigu si +, grave si -)
+      if (_muted) return; const ctx = audioCtx(); if (!ctx) return; const t = ctx.currentTime;
+      const o = ctx.createOscillator(); o.type = 'triangle';
+      o.frequency.setValueAtTime(up ? 520 : 300, t); o.frequency.exponentialRampToValueAtTime(up ? 880 : 200, t + 0.09);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.09, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.13);
+      o.connect(g); g.connect(_master); o.start(t); o.stop(t + 0.14);
+    }
+    function playSwoosh() {   // retrait par swipe : souffle court
+      if (_muted) return; const ctx = audioCtx(); if (!ctx) return; const t = ctx.currentTime, D = 0.18;
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * D), ctx.sampleRate);
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const s = ctx.createBufferSource(); s.buffer = nb;
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 0.8;
+      bp.frequency.setValueAtTime(1400, t); bp.frequency.exponentialRampToValueAtTime(300, t + D);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.08, t); g.gain.exponentialRampToValueAtTime(0.0001, t + D);
+      s.connect(bp); bp.connect(g); g.connect(_master); s.start(t); s.stop(t + D + 0.02);
+    }
+
+    // ===== BOUSSOLE — écran DÉPENSES : liste catégorisée + FAB « Ajout rapide » =====
+    const CATS = { 'Fournitures': '#f6a63c', 'Stock': '#5ad1c8', 'Transport': '#ffd23f', 'Loyer': '#b98cff', 'Marketing': '#ff6ec7', 'Divers': '#34d399' };
+    const FREQ_LBL = { mois: 'mensuel', '2mois': 'tous les 2 mois', semaine: 'hebdo' };
+    const expTotal = () => (SM.depenses || []).filter((d) => !d.perso).reduce((s, d) => s + (+d.montant || 0), 0);   // business (hors poche perso)
+    const persoTotal = () => (SM.depenses || []).filter((d) => d.perso).reduce((s, d) => s + (+d.montant || 0), 0);
+    function expRow(d, i) {
+      const badges = (d.kind === 'achat' ? '<span class="ebadge ebadge--achat">Achat</span>' : '') +
+        (d.recurrent ? '<span class="ebadge ebadge--rec">🔁 ' + (FREQ_LBL[d.freq] || 'récurrent') + '</span>' : '') +
+        (d.perso ? '<span class="ebadge ebadge--perso">Perso</span>' : '');
+      return '<div class="exprow' + (d.perso ? ' is-perso' : '') + (i >= 40 ? ' row-hid" data-page="1' : '') + '" style="--i:' + Math.min(i, 14) + '" data-id="' + d.id + '">' +
+          '<span class="exp-dot" style="color:' + (CATS[d.cat] || '#888') + '"></span>' +
+          '<div class="exprow__main"><span class="exprow__lib">' + d.lib + '</span>' +
+            '<span class="exprow__meta">' + d.cat + ' · ' + d.when + '</span>' +
+            (badges ? '<span class="exprow__badges">' + badges + '</span>' : '') + '</div>' +
+          '<span class="exprow__amt">' + vitalFmt(d.montant) + ' F</span></div>';
+    }
+    function updateExpTotal() {
+      const el = view.querySelector('[data-exptotal]'); if (el) el.textContent = vitalFmt(expTotal()) + ' F';
+      const pe = view.querySelector('[data-expperso]'); if (pe) { const pt = persoTotal(); pe.style.display = pt > 0 ? 'block' : 'none'; pe.innerHTML = 'Poche perso (tes retraits) : <b>' + vitalFmt(pt) + ' F</b>'; }
+    }
+    function depensesHTML() {
+      SM.depenses = SM.depenses || [];   // seed déplacé au chargement (bloc VAGUE 1)
+      let rows = ''; SM.depenses.forEach((d, i) => { rows += expRow(d, i); });
+      const chips = Object.keys(CATS).map((c) => '<button class="catchip" data-cat="' + c + '" style="--cc:' + CATS[c] + '">' + c + '</button>').join('');
+      const freqs = [['mois', 'Mensuel'], ['2mois', 'Tous les 2 mois'], ['semaine', 'Hebdo']].map((f) => '<button class="freqchip" data-freq="' + f[0] + '">' + f[1] + '</button>').join('');
+      const pt = persoTotal();
+      return '<div class="screen expenses" style="--sc:#e11d48">' +
+          '<span class="screen__tag">Dépenses</span>' +
+          '<h1 class="screen__title">Ce qui sort</h1>' +
+          '<p class="screen__sub" style="margin-top:4px">Touche une sortie pour la modifier ou la supprimer.</p>' +
+          '<div class="exp-total">Sorties du business<b data-exptotal>' + vitalFmt(expTotal()) + ' F</b></div>' +
+          '<div class="exp-perso" data-expperso style="display:' + (pt > 0 ? 'block' : 'none') + '">Poche perso (tes retraits) : <b>' + vitalFmt(pt) + ' F</b></div>' +
+          (SM.depenses.length > 6 ? '<div class="searchbar">' + ICO_SEARCH + '<input class="sheet__txt" data-dsearch type="search" placeholder="Chercher une sortie (libellé, catégorie, montant…)"></div>' : '') +
+          '<div class="walletwrap" data-wallet>' +
+            '<div class="wallet" aria-hidden="true"><div class="wallet__flap wallet__flap--t"></div><div class="wallet__flap wallet__flap--b"></div><span class="wallet__snap"></span><span class="wallet__bill"></span><span class="wallet__bill"></span></div>' +
+            '<div class="explist">' + (rows || '<p class="pos__empty">Aucune sortie notée. Touche le <b>+</b> dès que tu dépenses : c\'est comme ça qu\'on voit le vrai bénéfice.</p>') + '</div>' +
+          '</div>' +
+          (SM.depenses.length > 40 ? '<button class="morebtn" data-dmore>Voir plus (' + (SM.depenses.length - 40) + ' autres sorties)</button>' : '') +
+          '<span class="fab__lbl">Ajout rapide</span>' +
+          '<button class="fab" data-fab aria-label="Ajouter une sortie">+</button>' +
+          '<div class="sheet-scrim" data-sheetclose></div>' +
+          '<div class="sheet sheet--tall" data-sheet>' +
+            '<div class="sheet__grip"></div>' +
+            '<h3 class="sheet__title" data-sheettitle>Nouvelle sortie</h3>' +
+            '<div class="seg seg--kind" data-kindseg><button class="seg-btn is-on" data-k="depense">Dépense</button><button class="seg-btn" data-k="achat">Achat</button></div>' +
+            '<input class="sheet__amt" data-amt type="number" inputmode="numeric" placeholder="0 F">' +
+            '<input class="sheet__txt" data-explib type="text" placeholder="Libellé (optionnel, ex : Sac de riz)" style="margin-top:10px">' +
+            '<div class="sheet__cats">' + chips + '</div>' +
+            '<button class="toggle" data-exprec><span class="toggle__dot"></span>Sortie récurrente</button>' +
+            '<div class="freqrow" data-freqrow style="display:none">' + freqs + '</div>' +
+            '<button class="toggle" data-expperso-t><span class="toggle__dot"></span>Poche perso (dépense personnelle)</button>' +
+            '<button class="sheet__add" data-addexp>Ajouter</button>' +
+            '<button class="sheet__del" data-delexp style="display:none">Supprimer cette sortie</button>' +
+          '</div>' +
+        '</div>';
+    }
+    function removeExp(row) {
+      const id = row.dataset.id; const i = (SM.depenses || []).findIndex((x) => x.id === id); if (i < 0) return;
+      const buf = { d: SM.depenses[i], i };
+      SM.depenses.splice(i, 1); smSave(); updateExpTotal();
+      toast('Sortie de ' + vitalFmt(buf.d.montant) + ' F supprimée', { label: 'Annuler', action: () => {
+        SM.depenses.splice(Math.min(buf.i, SM.depenses.length), 0, buf.d); smSave();
+        if (view.querySelector('.explist')) { view.innerHTML = depensesHTML(); bindDepenses(); }
+      } });
+    }
+    // swipe-to-remove générique (glisser vers la gauche)
+    function attachSwipe(row, onRemove) {
+      let x0 = 0, dx = 0, drag = false;
+      row.addEventListener('pointerdown', (e) => {
+        if (e.target.closest('button,input')) return;
+        x0 = e.clientX; dx = 0; drag = true; row.style.animation = 'none'; row.style.transition = 'none';
+        try { row.setPointerCapture(e.pointerId); } catch (_) {}
+      });
+      row.addEventListener('pointermove', (e) => { if (!drag) return; dx = Math.min(0, e.clientX - x0); row.style.transform = 'translateX(' + dx + 'px)'; row.style.opacity = String(Math.max(0, 1 + dx / 320)); });
+      const end = () => {
+        if (!drag) return; drag = false; row.style.transition = 'transform .25s ease, opacity .25s ease';
+        if (dx < -110) { row.style.transform = 'translateX(-120%)'; row.style.opacity = '0'; playSwoosh(); setTimeout(() => { onRemove(row); row.remove(); }, 240); }
+        else { row.style.transform = ''; row.style.opacity = ''; }
+      };
+      row.addEventListener('pointerup', end); row.addEventListener('pointercancel', end);
+    }
+    function bindDepenses() {
+      const scr = view.querySelector('.expenses'); if (!scr) return;
+      // ---- Entrée « portefeuille » : plein format 1 fois par session
+      const fxIn = _entryFx && !_fxSeen.depenses && !matchMedia('(prefers-reduced-motion: reduce)').matches; _entryFx = false;
+      const ww = scr.querySelector('[data-wallet]');
+      if (fxIn && ww) {
+        _fxSeen.depenses = 1;
+        ww.classList.add('is-live');
+        try { playWhoosh(); } catch (e) {}
+        setTimeout(() => { try { playPop(true); } catch (e) {} }, 380);
+        setTimeout(() => { const w = ww.querySelector('.wallet'); if (w) w.classList.add('is-done'); }, 1500);
+      }
+      const sheet = scr.querySelector('[data-sheet]'), scrim = scr.querySelector('[data-sheetclose]'), amt = scr.querySelector('[data-amt]'), lib = scr.querySelector('[data-explib]');
+      const freqRow = scr.querySelector('[data-freqrow]'), recBtn = scr.querySelector('[data-exprec]'), persoBtn = scr.querySelector('[data-expperso-t]');
+      let selCat = 'Fournitures', selKind = 'depense', selRec = false, selFreq = 'mois', selPerso = false;
+      const shTitle = scr.querySelector('[data-sheettitle]'), addBtn = scr.querySelector('[data-addexp]'), delBtn = scr.querySelector('[data-delexp]');
+      let editId = null, delArmT = 0;
+      const open = () => { sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick(); setTimeout(() => { try { amt.focus(); } catch (_) {} }, 220); };
+      const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
+      scr.querySelector('[data-fab]').addEventListener('click', () => { resetSheet(); open(); });
+      scrim.addEventListener('click', close);
+      const chips = scr.querySelectorAll('.catchip');
+      chips.forEach((c) => c.addEventListener('click', () => { chips.forEach((x) => x.classList.remove('is-sel')); c.classList.add('is-sel'); selCat = c.dataset.cat; playPop(true); }));
+      if (chips[0]) chips[0].classList.add('is-sel');
+      scr.querySelectorAll('[data-k]').forEach((b) => b.addEventListener('click', () => { scr.querySelectorAll('[data-k]').forEach((x) => x.classList.remove('is-on')); b.classList.add('is-on'); selKind = b.dataset.k; playPop(true); }));
+      const freqChips = scr.querySelectorAll('[data-freq]');
+      recBtn.addEventListener('click', () => { selRec = !selRec; recBtn.classList.toggle('is-on', selRec); freqRow.style.display = selRec ? 'flex' : 'none'; if (selRec) { freqChips.forEach((x) => x.classList.remove('is-sel')); const f0 = scr.querySelector('[data-freq="' + selFreq + '"]'); if (f0) f0.classList.add('is-sel'); } playPop(selRec); });
+      freqChips.forEach((c) => c.addEventListener('click', () => { freqChips.forEach((x) => x.classList.remove('is-sel')); c.classList.add('is-sel'); selFreq = c.dataset.freq; playPop(true); }));
+      persoBtn.addEventListener('click', () => { selPerso = !selPerso; persoBtn.classList.toggle('is-on', selPerso); playPop(selPerso); });
+      function setCat(c) { chips.forEach((x) => x.classList.toggle('is-sel', x.dataset.cat === c)); selCat = c; }
+      function setKind(k) { scr.querySelectorAll('[data-k]').forEach((x) => x.classList.toggle('is-on', x.dataset.k === k)); selKind = k; }
+      function setRec(r, f) { selRec = r; selFreq = f || 'mois'; recBtn.classList.toggle('is-on', r); freqRow.style.display = r ? 'flex' : 'none'; freqChips.forEach((x) => x.classList.toggle('is-sel', x.dataset.freq === selFreq)); }
+      function setPerso(p) { selPerso = p; persoBtn.classList.toggle('is-on', p); }
+      function disarmDel() { if (delBtn) { delBtn.classList.remove('is-armed'); delBtn.textContent = 'Supprimer cette sortie'; } clearTimeout(delArmT); }
+      function resetSheet() { editId = null; shTitle.textContent = 'Nouvelle sortie'; addBtn.textContent = 'Ajouter'; if (delBtn) delBtn.style.display = 'none'; disarmDel(); amt.value = ''; lib.value = ''; setCat('Fournitures'); setKind('depense'); setRec(false, 'mois'); setPerso(false); }
+      function openEdit(d) {
+        editId = d.id; shTitle.textContent = 'Modifier la sortie'; addBtn.textContent = 'Enregistrer';
+        if (delBtn) delBtn.style.display = 'block'; disarmDel();
+        amt.value = d.montant; lib.value = (d.lib === d.cat ? '' : (d.lib || ''));
+        setCat(CATS[d.cat] ? d.cat : 'Fournitures'); setKind(d.kind || 'depense'); setRec(!!d.recurrent, d.freq); setPerso(!!d.perso); open();
+      }
+      scr.querySelector('.explist').addEventListener('click', (e) => {
+        const row = e.target.closest('.exprow'); if (!row) return;
+        const d = (SM.depenses || []).find((x) => x.id === row.dataset.id); if (d) openEdit(d);
+      });
+      if (delBtn) delBtn.addEventListener('click', () => {
+        if (!delBtn.classList.contains('is-armed')) {   // confirmation douce : deux touches
+          delBtn.classList.add('is-armed'); delBtn.textContent = 'Confirmer la suppression ?'; playPop(false);
+          clearTimeout(delArmT); delArmT = setTimeout(disarmDel, 3000); return;
+        }
+        const id = editId; close(); resetSheet();
+        const row = scr.querySelector('.exprow[data-id="' + id + '"]');
+        if (row) { removeExp(row); row.classList.add('is-going'); playSwoosh(); }
+        setTimeout(() => { if (scr.isConnected) { view.innerHTML = depensesHTML(); bindDepenses(); } }, 240);
+      });
+      addBtn.addEventListener('click', () => {
+        const v = Math.round(+amt.value || 0); if (v <= 0) { try { amt.focus(); } catch (_) {} return; }
+        if (editId) {   // modification d'une sortie existante
+          const d = (SM.depenses || []).find((x) => x.id === editId); if (!d) { close(); resetSheet(); return; }
+          d.montant = v; d.lib = (lib.value || '').trim() || selCat; d.cat = selCat; d.kind = selKind;
+          d.recurrent = selRec; if (selRec) d.freq = selFreq; d.perso = selPerso;
+          smSave(); playSuccess(); close(); resetSheet();
+          view.innerHTML = depensesHTML(); bindDepenses(); return;
+        }
+        const d = { id: 'd' + Date.now(), lib: (lib.value || '').trim() || selCat, cat: selCat, montant: v, when: "À l'instant", ts: Date.now(), kind: selKind, recurrent: selRec, freq: selFreq, perso: selPerso };
+        SM.depenses.unshift(d); smSave();
+        const list = scr.querySelector('.explist'); list.insertAdjacentHTML('afterbegin', expRow(d, 0));
+        attachSwipe(list.firstElementChild, removeExp); updateExpTotal(); playSuccess();
+        amt.value = ''; lib.value = ''; close();
+      });
+      scr.querySelectorAll('.exprow').forEach((row) => attachSwipe(row, removeExp));
+      // ---- recherche live + pagination (comme les ventes) ----
+      const q = scr.querySelector('[data-dsearch]');
+      if (q) q.addEventListener('input', () => {
+        const needle = q.value.trim().toLowerCase();
+        scr.querySelectorAll('.exprow').forEach((r) => {
+          const hit = !needle || r.textContent.toLowerCase().indexOf(needle) >= 0;
+          r.classList.toggle('row-hid', !hit || (!needle && r.dataset.page === '1' && !r.dataset.shown));
+        });
+        const mb2 = scr.querySelector('[data-dmore]'); if (mb2) mb2.style.display = needle ? 'none' : '';
+      });
+      const dmore = scr.querySelector('[data-dmore]');
+      if (dmore) dmore.addEventListener('click', () => { playPop(true); scr.querySelectorAll('.exprow.row-hid').forEach((r) => { r.classList.remove('row-hid'); r.dataset.shown = '1'; }); dmore.remove(); });
+    }
+    function playSuccess() {   // validation : arpège do-mi-sol-do ROND (sinus + soupçon d'octave), queues longues
+      if (_muted) return; const ctx = audioCtx(); if (!ctx) return; const t = ctx.currentTime;
+      const bus = ctx.createGain(); bus.connect(_master);
+      [[523.25, 0, 0.075], [659.25, 0.055, 0.07], [783.99, 0.11, 0.065], [1046.5, 0.165, 0.05]].forEach((p) => {
+        const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(p[0], t + p[1]);
+        const o2 = ctx.createOscillator(); o2.type = 'triangle'; o2.frequency.setValueAtTime(p[0] * 2, t + p[1]);
+        const g2 = ctx.createGain(); g2.gain.value = 0.22;
+        const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t + p[1]);
+        g.gain.exponentialRampToValueAtTime(p[2], t + p[1] + 0.012);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + p[1] + 0.34);
+        o.connect(g); o2.connect(g2); g2.connect(g); g.connect(bus);
+        o.start(t + p[1]); o.stop(t + p[1] + 0.38); o2.start(t + p[1]); o2.stop(t + p[1] + 0.38);
+      });
+    }
+    /* ============================================================================
+       VAGUE 1 : données ventes (POS) + agrégats + graphes SVG + moteur IA local
+       ========================================================================== */
+    const DAY = 86400000;
+    const objJour = () => (SM.objectifs && SM.objectifs.jour) || 50000;   // objectif de vente / jour (lu en direct)
+    const priceNum = (p) => typeof p === 'number' ? p : (+String(p).replace(/[^\d]/g, '') || 0);   // "1 000 F" -> 1000
+    const fF = (n) => vitalFmt(Math.round(n)) + ' F';                                                // format francs
+
+    const ICO_CASH  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2.2"/><circle cx="12" cy="12" r="2.6"/></svg>';
+    const ICO_PHONE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.4"/><path d="M11 18h2"/></svg>';
+    const ICO_CLOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>';
+
+    // Historique de ventes de démo (7 jours) : UNIQUEMENT en mode démo
+    if (SM.meta.demo && !SM.ventes && SM.stock.length) {
+      const st = SM.stock;
+      const mk = (dayAgo, hh, picks, mode) => {
+        const items = picks.map(([i, q]) => { const p = st[i % st.length]; return { nom: p.nom, prix: priceNum(p.prix), qty: q }; });
+        const d = new Date(Date.now() - dayAgo * DAY); d.setHours(hh, 15, 0, 0);
+        return { id: 'v' + d.getTime(), items, total: items.reduce((s, it) => s + it.prix * it.qty, 0), mode, ts: d.getTime() };
+      };
+      SM.ventes = [
+        mk(0, 8, [[3, 10], [5, 8]], 'espèces'), mk(0, 11, [[0, 20]], 'momo'), mk(0, 13, [[3, 6], [1, 4]], 'espèces'),
+        mk(1, 9, [[3, 5]], 'espèces'), mk(1, 16, [[5, 10]], 'credit'),
+        mk(2, 10, [[0, 8]], 'momo'), mk(2, 18, [[3, 3]], 'espèces'),
+        mk(3, 12, [[3, 4], [4, 10]], 'espèces'), mk(4, 9, [[1, 10]], 'momo'), mk(4, 15, [[3, 2]], 'espèces'),
+        mk(5, 11, [[3, 3]], 'credit'), mk(6, 14, [[0, 6], [5, 5]], 'espèces'),
+      ];
+      smSave();
+    }
+    if (SM.meta.demo && !SM.depenses) {   // seed dépenses : mode démo uniquement
+      SM.depenses = [
+        { id: 'd1', lib: 'Sac de riz 25 kg', cat: 'Stock', montant: 12000, when: 'Auj. 09:12', ts: Date.now() - 3 * 3600000, kind: 'achat' },
+        { id: 'd2', lib: 'Transport livraison', cat: 'Transport', montant: 2500, when: 'Auj. 08:40', ts: Date.now() - 4 * 3600000, kind: 'depense' },
+        { id: 'd3', lib: 'Loyer boutique', cat: 'Loyer', montant: 30000, when: 'Hier', ts: Date.now() - 1 * DAY, kind: 'depense', recurrent: true, freq: 'mois' },
+        { id: 'd4', lib: 'Emballages', cat: 'Stock', montant: 3500, when: 'Hier', ts: Date.now() - 1 * DAY - 3600000, kind: 'achat' },
+        { id: 'd5', lib: 'Ma part perso', cat: 'Divers', montant: 5000, when: 'Lun.', ts: Date.now() - 3 * DAY, kind: 'depense', perso: true },
+      ];
+      smSave();
+    }
+    SM.ventes = SM.ventes || []; SM.depenses = SM.depenses || [];   // démarrage à zéro : listes vides, pas de fausses données
+    (SM.depenses || []).forEach((d, i) => { if (!d.ts) d.ts = Date.now() - (i % 4) * DAY - i * 3600000; });   // ts rétroactif (anciennes données)
+    // Migration : coût de revient des ventes existantes (estimé via le catalogue si absent)
+    (SM.ventes || []).forEach((v) => {
+      if (v.cout === undefined) v.cout = (v.items || []).reduce((s, it) => { const p = SM.stock.find((x) => x.nom === it.nom); return s + (((p && p.cout) !== undefined && p) ? p.cout : Math.round(it.prix * 0.55)) * it.qty; }, 0);
+    });
+
+    const salesTotal = () => (SM.ventes || []).reduce((s, v) => s + (+v.total || 0), 0);
+    const salesToday = () => { const t0 = new Date(); t0.setHours(0, 0, 0, 0); return (SM.ventes || []).filter((v) => v.ts >= t0.getTime()).reduce((s, v) => s + v.total, 0); };
+    function depByCat() { const m = {}; (SM.depenses || []).filter((d) => !d.perso).forEach((d) => { m[d.cat] = (m[d.cat] || 0) + (+d.montant || 0); }); return Object.keys(m).map((k) => ({ name: k, val: m[k], color: CATS[k] || '#88aab0' })).sort((a, b) => b.val - a.val); }
+    function salesByMode() { const m = {}; (SM.ventes || []).forEach((v) => { m[v.mode] = (m[v.mode] || 0) + (+v.total || 0); }); return m; }
+    function evo7() {
+      const days = []; const now = new Date(); now.setHours(0, 0, 0, 0);
+      const J = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+      for (let k = 6; k >= 0; k--) { const d = new Date(now.getTime() - k * DAY); days.push({ t0: d.getTime(), t1: d.getTime() + DAY, lbl: J[d.getDay()], ca: 0, dep: 0 }); }
+      (SM.ventes || []).forEach((v) => { const b = days.find((x) => v.ts >= x.t0 && v.ts < x.t1); if (b) b.ca += (+v.total || 0); });
+      (SM.depenses || []).filter((dp) => !dp.perso).forEach((dp) => { const ts = dp.ts || Date.now(); const b = days.find((x) => ts >= x.t0 && ts < x.t1); if (b) b.dep += (+dp.montant || 0); });
+      return days;
+    }
+    const relTime = (ts) => {
+      const h = (Date.now() - ts) / 3600000;
+      if (h < 1) return "À l'instant"; if (h < 24) return 'Il y a ' + Math.round(h) + ' h';
+      const d = new Date(ts), n = new Date(); n.setHours(0, 0, 0, 0);
+      const days = Math.round((n.getTime() - new Date(ts).setHours(0, 0, 0, 0)) / DAY);
+      if (days === 1) return 'Hier'; if (days < 7) return ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'][d.getDay()];
+      return d.getDate() + '/' + (d.getMonth() + 1);
+    };
+
+    // ---- Graphes SVG ----
+    function donutSVG(data, centerLbl) {
+      const R = 54, C = 2 * Math.PI * R, total = data.reduce((s, d) => s + d.val, 0) || 1; let off = 0;
+      const segs = data.map((d) => { const len = C * (d.val / total); const seg = '<circle r="' + R + '" cx="66" cy="66" stroke="' + d.color + '" stroke-dasharray="' + len.toFixed(1) + ' ' + (C - len).toFixed(1) + '" stroke-dashoffset="' + (-off).toFixed(1) + '" style="filter:drop-shadow(0 0 3px ' + d.color + ')"/>'; off += len; return seg; }).join('');
+      const leg = data.map((d) => '<div class="legend__row"><span class="legend__dot" style="color:' + d.color + ';background:' + d.color + '"></span><span class="legend__name">' + d.name + '</span><span class="legend__val">' + fF(d.val) + '<span class="legend__pct">' + Math.round(d.val / total * 100) + '%</span></span></div>').join('');
+      return '<div class="donut"><div class="donut__wrap"><svg class="donut__svg" viewBox="0 0 132 132"><circle class="donut__track" r="' + R + '" cx="66" cy="66"/>' + segs + '</svg><div class="donut__center"><span class="donut__c-lbl">' + (centerLbl || 'Total') + '</span><b class="donut__c-val">' + fF(total) + '</b></div></div><div class="legend">' + leg + '</div></div>';
+    }
+    function barsSVG(days) {
+      const max = Math.max(1, ...days.map((d) => Math.max(d.ca, d.dep)));
+      const cols = days.map((d, i) => '<div class="barcol"><div class="barcol__pair" style="--i:' + i + '"><span class="bar bar--ca" style="height:' + Math.max(3, d.ca / max * 100).toFixed(1) + '%"></span><span class="bar bar--dep" style="height:' + Math.max(3, d.dep / max * 100).toFixed(1) + '%"></span></div><span class="barcol__lbl">' + d.lbl + '</span></div>').join('');
+      return '<div class="bars">' + cols + '</div><div class="chartkey"><span><b style="background:#34d399"></b>Ventes</span><span><b style="background:#e11d48"></b>Dépenses</span></div>';
+    }
+    const hbar = (name, val, total, color) => { const pct = total > 0 ? Math.round(val / total * 100) : 0; return '<div class="hbar"><div class="hbar__top"><span class="hbar__name">' + name + '</span><span class="hbar__val">' + fF(val) + '<i>' + pct + '%</i></span></div><div class="hbar__track"><span class="hbar__fill" style="width:' + pct + '%;background:' + color + ';box-shadow:0 0 10px -2px ' + color + '"></span></div></div>'; };
+
+    // ---- Moteur IA local (interprétation + conseil, sans réseau) ----
+    function iaVerdict() {
+      const ca = salesTotal(), dep = expTotal(), ben = ca - dep, marge = ca > 0 ? Math.round(ben / ca * 100) : 0;
+      const cats = depByCat(), top = cats[0]; const lines = []; let tone = '', title = '';
+      if (ca === 0 && dep === 0) { title = 'Commence à enregistrer'; lines.push("Aucune vente ni dépense pour l'instant. Ouvre <b>La caisse</b> pour ta première vente : tout s'affiche ici automatiquement."); return { tone, title, lines }; }
+      if (ben > 0) { tone = 'good'; title = 'Tu es rentable, bravo !'; lines.push('Tu as encaissé <b>' + fF(ca) + '</b> et dépensé <b>' + fF(dep) + '</b>. Il te reste <b>' + fF(ben) + '</b> de bénéfice, soit une marge de <b>' + marge + '%</b>.'); }
+      else if (ben === 0) { title = "Tu es à l'équilibre"; lines.push('Tu rentres tout juste dans tes frais : <b>' + fF(ca) + '</b> encaissé pour <b>' + fF(dep) + '</b> dépensé. Une vente de plus et tu gagnes.'); }
+      else { tone = 'warn'; title = "Attention, tu perds de l'argent"; lines.push('Tu as dépensé <b>' + fF(dep) + '</b> pour seulement <b>' + fF(ca) + '</b> encaissé. Il manque <b>' + fF(Math.abs(ben)) + '</b> pour être à l\'équilibre.'); }
+      if (top && dep > 0) { const share = Math.round(top.val / dep * 100); lines.push('Ta plus grosse sortie, c\'est <b>' + top.name + '</b> (' + share + '% de tes dépenses). ' + (share > 45 ? 'Ça pèse lourd : regarde si tu peux la baisser.' : 'Ça reste sous contrôle.')); }
+      const stoday = salesToday(); if (stoday > 0) { const pc = Math.round(stoday / objJour() * 100); lines.push(pc >= 100 ? 'Objectif du jour atteint (<b>' + fF(stoday) + '</b>) : continue sur ta lancée !' : 'Aujourd\'hui tu es à <b>' + pc + '%</b> de ton objectif (' + fF(stoday) + ' sur ' + fF(objJour()) + ').'); }
+      return { tone, title, lines };
+    }
+    function iaBanner() { const v = iaVerdict(); return '<div class="ia' + (v.tone ? ' ia--' + v.tone : '') + '"><span class="ia__orb"></span><span class="ia__chip">&#10022; L\'IA Boussole</span><h3 class="ia__title">' + v.title + '</h3><p class="ia__txt">' + v.lines.join(' ') + '</p></div>'; }
+    const kpi = (mod, lbl, num, sub, i) => '<div class="kpi kpi--' + mod + '" style="--i:' + i + '"><span class="kpi__lbl">' + lbl + '</span><span class="kpi__num">' + num + '</span><span class="kpi__sub">' + sub + '</span></div>';
+
+    /* ===== CAISSE (POS) : touche les produits, choisis le paiement, encaisse ===== */
+    const TILE_COLORS = ['#f6a63c', '#34d399', '#ffd23f', '#b98cff', '#ff8a3d', '#ff6ec7'];
+    let _ticket = [];               // panier courant [{id,nom,prix,qty}]
+    let _payMode = 'espèces';
+    const tkTotal = () => _ticket.reduce((s, l) => s + l.prix * l.qty, 0);
+    const tkCount = () => _ticket.reduce((s, l) => s + l.qty, 0);
+    function caisseHTML() {
+      const tiles = SM.stock.map((p, i) => {
+        const col = TILE_COLORS[i % TILE_COLORS.length], rupt = p.type === 'physique' && p.qty <= 0;
+        return '<button class="pos-tile' + (rupt ? ' rupt' : '') + '" data-pos="' + p.id + '" style="--i:' + i + ';--tc:' + col + '">' +
+          '<span class="pos-tile__badge" data-badge="' + p.id + '">0</span>' +
+          '<span class="pos-tile__disc" style="background:radial-gradient(120% 120% at 30% 25%,' + col + ',' + col + '99);color:#04121a">' + p.nom.charAt(0).toUpperCase() + '</span>' +
+          '<span class="pos-tile__name">' + p.nom + '</span>' +
+          (rupt ? '<span class="pos-tile__rupt">Rupture</span>' : '<span class="pos-tile__price">' + fF(priceNum(p.prix)) + '</span>') +
+          '</button>';
+      }).join('');
+      const pay = (m, cls, lbl, ic) => '<button class="paymode paymode--' + cls + (m === _payMode ? ' is-on' : '') + '" data-pay="' + m + '">' + ic + lbl + '</button>';
+      const empty = !SM.stock.length ? '<p class="pos__empty">Ton catalogue est vide. Ajoute d\'abord tes produits : la caisse se remplit toute seule.</p><button class="sheet__add" data-goto="catalogue" style="max-width:280px;margin:14px auto 0;display:block">Ouvrir le catalogue</button>' : '';
+      return '<div class="screen" style="--sc:#34d399">' +
+        '<span class="screen__tag">Caisse</span>' +
+        '<h1 class="screen__title">Encaisser</h1>' +
+        '<p class="screen__sub">Touche les produits vendus, choisis le paiement, encaisse.</p>' +
+        (empty ||
+          '<div class="vaultwrap is-sealed" data-vaultwrap>' +
+            '<div class="vault" data-vault aria-hidden="true">' +
+              '<div class="vault__door vault__door--l"><svg class="vault__wheel" viewBox="0 0 62 62" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="31" cy="31" r="26"/><circle cx="31" cy="31" r="8"/><path d="M31 5v18M31 39v18M5 31h18M39 31h18M13 13l12.5 12.5M36.5 36.5 49 49M49 13 36.5 25.5M25.5 36.5 13 49"/></svg></div>' +
+              '<div class="vault__door vault__door--r"><svg class="vault__wheel" viewBox="0 0 62 62" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="31" cy="31" r="26"/><circle cx="31" cy="31" r="8"/><path d="M31 5v18M31 39v18M5 31h18M39 31h18M13 13l12.5 12.5M36.5 36.5 49 49M49 13 36.5 25.5M25.5 36.5 13 49"/></svg></div>' +
+            '</div>' +
+            '<div class="pos"><div class="pos__grid">' + tiles + '</div></div>' +
+          '</div><div class="pos__pad"></div>') +
+        '<div class="ticket" data-ticket>' +
+          '<div class="ticket__top"><span class="ticket__cnt" data-tkcnt>0 article</span><span class="ticket__total" data-tktotal>0 F</span></div>' +
+          '<div class="ticket__modes">' + pay('espèces', 'esp', 'Espèces', ICO_CASH) + pay('momo', 'momo', 'Mobile Money', ICO_PHONE) + pay('credit', 'credit', 'Crédit', ICO_CLOCK) + '</div>' +
+          '<button class="ticket__go" data-encaisser>Encaisser <span data-tkgo>0 F</span></button>' +
+        '</div>' +
+        '<div class="sheet-scrim" data-ccclose></div>' +
+        '<div class="sheet" data-ccsheet><div class="sheet__grip"></div>' +
+          '<h3 class="sheet__title">Vente à crédit — pour qui ?</h3>' +
+          '<p class="ia__txt" style="margin:0 0 12px">Je note la dette sur la fiche du client : tu sauras toujours qui te doit quoi.</p>' +
+          '<div data-ccbody></div>' +
+        '</div>' +
+      '</div>';
+    }
+    function refreshTicket() {
+      const bar = view.querySelector('[data-ticket]'); if (!bar) return;
+      const n = tkCount(), tot = tkTotal();
+      bar.classList.toggle('is-on', n > 0);
+      const c = bar.querySelector('[data-tkcnt]'); if (c) c.textContent = n + ' article' + (n > 1 ? 's' : '');
+      const t = bar.querySelector('[data-tktotal]'); if (t) t.textContent = fF(tot);
+      const g = bar.querySelector('[data-tkgo]'); if (g) g.textContent = fF(tot);
+    }
+    function cashBurst(amount) {
+      const el = document.createElement('div'); el.className = 'cashburst'; el.innerHTML = '<b>+' + fF(amount) + '</b>';
+      view.appendChild(el); setTimeout(() => el.remove(), 950);
+    }
+    function bindCaisse() {
+      _ticket = []; _payMode = 'espèces';
+      const scr = view.querySelector('.screen'); if (!scr) return;
+      // ---- Entrée théâtrale : plein format à la 1re visite, MODE ÉCLAIR ensuite (2× plus vite = vitesse d'usage)
+      const vwrap = scr.querySelector('[data-vaultwrap]'), vault = scr.querySelector('[data-vault]');
+      if (vault && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const fast = !!_fxSeen.caisse; _fxSeen.caisse = 1;
+        if (fast) vault.classList.add('is-fast');
+        const T = fast ? [60, 320, 760] : [140, 660, 1500];
+        setTimeout(() => { vault.classList.add('is-turning'); try { playDrawerPull(); } catch (e) {} }, T[0]);
+        setTimeout(() => { vault.classList.add('is-open'); vwrap.classList.remove('is-sealed'); vwrap.classList.add('is-revealed'); }, T[1]);
+        setTimeout(() => { vault.classList.add('is-gone'); }, T[2]);
+      } else if (vwrap) { vwrap.classList.remove('is-sealed'); vwrap.classList.add('is-revealed'); if (vault) vault.classList.add('is-gone'); }
+      const grid = scr.querySelector('.pos__grid');
+      if (grid) grid.addEventListener('click', (e) => {
+        const b = e.target.closest('[data-pos]'); if (!b) return;
+        const p = SM.stock.find((x) => x.id === b.dataset.pos); if (!p) return;
+        let line = _ticket.find((l) => l.id === p.id);
+        if (p.type === 'physique' && (line ? line.qty : 0) >= p.qty) { playSwoosh(); return; }   // physique : pas plus que le stock
+        if (line) line.qty++; else { line = { id: p.id, nom: p.nom, prix: priceNum(p.prix), qty: 1 }; _ticket.push(line); }
+        const badge = grid.querySelector('[data-badge="' + p.id + '"]'); if (badge) badge.textContent = line.qty;
+        b.classList.add('has'); playPop(true); refreshTicket();
+      });
+      scr.querySelectorAll('[data-pay]').forEach((btn) => btn.addEventListener('click', () => {
+        scr.querySelectorAll('[data-pay]').forEach((x) => x.classList.remove('is-on')); btn.classList.add('is-on'); _payMode = btn.dataset.pay; playClick();
+      }));
+      const ccSheet = scr.querySelector('[data-ccsheet]'), ccScrim = scr.querySelector('[data-ccclose]'), ccBody = scr.querySelector('[data-ccbody]');
+      const ccClose = () => { ccSheet.classList.remove('is-open'); ccScrim.classList.remove('is-open'); };
+      if (ccScrim) ccScrim.addEventListener('click', ccClose);
+      const finalize = (client) => {   // client = {id, nom} ou null (crédit sans fiche, déconseillé)
+        const total = tkTotal();
+        const preObj = salesToday();   // pour détecter le franchissement de l'objectif du jour
+        const who = activeMember();
+        const cout = _ticket.reduce((s, l) => { const p = SM.stock.find((x) => x.id === l.id); return s + (((p && p.cout) || 0) * l.qty); }, 0);
+        const sale = { id: 'v' + Date.now(), items: _ticket.map((l) => ({ nom: l.nom, prix: l.prix, qty: l.qty })), total, cout, mode: _payMode, ts: Date.now(), par: who.nom, parId: who.id };
+        if (client) { sale.clientId = client.id; sale.clientNom = client.nom; client.dette = (client.dette || 0) + total; client.lastBuy = Date.now(); }
+        _ticket.forEach((l) => { const p = SM.stock.find((x) => x.id === l.id); if (p && p.type === 'physique') p.qty = Math.max(0, p.qty - l.qty); });
+        (SM.ventes = SM.ventes || []).unshift(sale); smSave();
+        playSell(); cashBurst(total);
+        const postObj = salesToday(), dayKey = new Date().toISOString().slice(0, 10);
+        if (objJour() > 0 && preObj < objJour() && postObj >= objJour() && SM.meta.confettiDay !== dayKey) {   // LE moment : pluie d'or, 1 fois par jour
+          SM.meta.confettiDay = dayKey; smSave(); confettiBurst();
+          toast('&#127881; Objectif du jour atteint : <b>' + fF(postObj) + '</b> ! Le reste, c\'est du bonus.', { tone: 'good', ms: 6500 });
+          try { if (navigator.vibrate) navigator.vibrate([40, 60, 40]); } catch (e) {}
+        }
+        if (client) toast('Crédit noté sur la fiche de <b>' + client.nom + '</b>', { tone: 'good' });
+        _ticket = []; _payMode = 'espèces';
+        setTimeout(() => { setActiveNav('ventes'); showSection('ventes', false); }, 780);   // enchaîne vers l'historique
+      };
+      const openClientPick = () => {
+        const rows = (SM.clients || []).slice().sort((a, b) => b.lastBuy - a.lastBuy).map((c) =>
+          '<button class="swrow" data-ccpick="' + c.id + '"><span class="swrow__av" style="background:radial-gradient(120% 120% at 30% 25%,#ffc46a,#ff8a3d)">' + c.nom.charAt(0).toUpperCase() + '</span>' +
+          '<span class="swrow__nm">' + c.nom + '<small>' + (c.dette > 0 ? 'doit déjà ' + fF(c.dette) : 'à jour') + '</small></span></button>').join('');
+        ccBody.innerHTML = rows +
+          '<input class="sheet__txt" data-ccnom type="text" placeholder="Ou nouveau client : son nom" style="margin-top:6px">' +
+          '<input class="sheet__txt" data-cctel type="tel" inputmode="numeric" placeholder="Numéro WhatsApp (optionnel)">' +
+          '<button class="sheet__add" data-ccnew>Créer le client et noter le crédit</button>' +
+          '<button class="sheet__keep" data-ccskip>Encaisser sans fiche client</button>';
+        ccBody.querySelectorAll('[data-ccpick]').forEach((b) => b.addEventListener('click', () => { const c = (SM.clients || []).find((x) => x.id === b.dataset.ccpick); if (c) { ccClose(); finalize(c); } }));
+        ccBody.querySelector('[data-ccnew]').addEventListener('click', () => {
+          const nom = (ccBody.querySelector('[data-ccnom]').value || '').trim(); if (!nom) { try { ccBody.querySelector('[data-ccnom]').focus(); } catch (_) {} return; }
+          const tel = (ccBody.querySelector('[data-cctel]').value || '').replace(/[^\d]/g, '');
+          const c = { id: 'c' + Date.now(), nom, tel, dette: 0, lastBuy: Date.now(), autoRelance: false };
+          (SM.clients = SM.clients || []).push(c); ccClose(); finalize(c);
+        });
+        ccBody.querySelector('[data-ccskip]').addEventListener('click', () => { const t = tkTotal(); ccClose(); finalize(null); toast('Crédit sans fiche : pense à noter qui te doit ' + fF(t), { tone: 'warn' }); });
+        ccSheet.classList.add('is-open'); ccScrim.classList.add('is-open'); playClick();
+      };
+      scr.querySelector('[data-encaisser]').addEventListener('click', () => {
+        if (!_ticket.length) { playSwoosh(); return; }
+        if (_payMode === 'credit') { openClientPick(); return; }   // crédit = toujours rattaché à un client
+        finalize(null);
+      });
+    }
+
+    /* ===== VENTES (historique) ===== */
+    const ICO_SEARCH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.2-3.2"/></svg>';
+    const PAGE_SIZE = 40;   // listes longues : 40 lignes puis « Voir plus »
+    function ventesHTML() {
+      const list = (SM.ventes || []).slice().sort((a, b) => b.ts - a.ts);
+      const rows = list.map((v, i) => {
+        const n = v.items.reduce((s, x) => s + x.qty, 0);
+        const items = v.items.map((it) => it.qty + '× ' + it.nom).join(', ');
+        const badge = v.mode === 'momo' ? '<span class="paybadge paybadge--momo">Mobile Money</span>' : v.mode === 'credit' ? '<span class="paybadge paybadge--credit">Crédit' + (v.clientNom ? ' · ' + v.clientNom : '') + '</span>' : '<span class="paybadge paybadge--esp">Espèces</span>';
+        const par = v.par && (SM.equipe || []).length > 1 ? '<span class="salerow__par">par ' + v.par + '</span>' : '';
+        return '<div class="salerow' + (i >= PAGE_SIZE ? ' row-hid" data-page="1' : '') + '" style="--i:' + Math.min(i, 14) + '" data-vid="' + v.id + '"><div class="salerow__top"><span class="salerow__cnt">' + n + ' article' + (n > 1 ? 's' : '') + '</span><span class="salerow__right"><span class="salerow__amt">' + fF(v.total) + '</span><span class="salerow__more" aria-hidden="true">&#8942;</span></span></div><div class="salerow__items">' + items + '</div><div class="salerow__meta">' + badge + par + '<span>' + relTime(v.ts) + '</span></div></div>';
+      }).join('');
+      const search = list.length > 6 ? '<div class="searchbar">' + ICO_SEARCH + '<input class="sheet__txt" data-vsearch type="search" placeholder="Chercher une vente (produit, client, montant…)"></div>' : '';
+      const more = list.length > PAGE_SIZE ? '<button class="morebtn" data-vmore>Voir plus (' + (list.length - PAGE_SIZE) + ' autres ventes)</button>' : '';
+      return '<div class="screen" style="--sc:#34d399"><span class="screen__tag">Mes ventes</span><h1 class="screen__title">Tes ventes</h1>' +
+        '<div class="sales-total">Encaissé aujourd\'hui<b class="stamp">' + fF(salesToday()) + '</b></div>' + search +
+        (list.length ? '<p class="screen__sub" style="margin-top:4px">Touche une vente pour la voir en détail, la modifier ou la supprimer.</p><div class="printwrap" data-print><span class="print__roll" aria-hidden="true"></span><div class="saleslist">' + rows + '</div></div>' + more : '<p class="pos__empty">Aucune vente pour l\'instant. Va à <b>La caisse</b> pour encaisser ta première vente.</p>') +
+        iaBanner() +
+        '<span class="fab__lbl">Encaisser</span><button class="fab fab--green" data-goto="caisse" aria-label="Aller à la caisse">+</button>' +
+        '<div class="sheet-scrim" data-vscrim></div>' +
+        '<div class="sheet" data-vsheet>' +
+          '<div class="sheet__grip"></div>' +
+          '<h3 class="sheet__title">Détail de la vente</h3>' +
+          '<div class="vdetail" data-vbody></div>' +
+          '<button class="sheet__edit" data-vedit>Modifier cette vente</button>' +
+          '<button class="sheet__del" data-vdel>Supprimer cette vente</button>' +
+          '<button class="sheet__keep" data-vkeep>Garder</button>' +
+        '</div>' +
+      '</div>';
+    }
+    function removeSale(id) {
+      const i = (SM.ventes || []).findIndex((v) => v.id === id); if (i < 0) return null;
+      const sale = SM.ventes[i];
+      (sale.items || []).forEach((it) => {   // restitue le stock des produits physiques (repérés par nom)
+        const p = SM.stock.find((x) => x.nom === it.nom && x.type === 'physique'); if (p) p.qty += it.qty;
+      });
+      if (sale.mode === 'credit' && sale.clientId) {   // efface aussi la dette liée
+        const c = (SM.clients || []).find((x) => x.id === sale.clientId); if (c) c.dette = Math.max(0, (c.dette || 0) - sale.total);
+      }
+      SM.ventes.splice(i, 1); smSave();
+      return { sale, i };
+    }
+    function restoreSale(buf) {   // « Annuler » : remet la vente, redéduit le stock, remet la dette
+      if (!buf) return;
+      (buf.sale.items || []).forEach((it) => { const p = SM.stock.find((x) => x.nom === it.nom && x.type === 'physique'); if (p) p.qty = Math.max(0, p.qty - it.qty); });
+      if (buf.sale.mode === 'credit' && buf.sale.clientId) { const c = (SM.clients || []).find((x) => x.id === buf.sale.clientId); if (c) c.dette = (c.dette || 0) + buf.sale.total; }
+      SM.ventes.splice(Math.min(buf.i, SM.ventes.length), 0, buf.sale); smSave();
+      if (view.querySelector('.saleslist') || view.querySelector('.pos__empty')) { view.innerHTML = ventesHTML(); bindVentes(); }
+    }
+    function bindVentes() {
+      const scr = view.querySelector('.screen'); if (!scr) return;
+      // ---- Entrée « ticket » : plein format 1 fois par session, ensuite affichage instantané (vitesse)
+      const fxIn = _entryFx && !_fxSeen.ventes && !matchMedia('(prefers-reduced-motion: reduce)').matches; _entryFx = false;
+      const pw = scr.querySelector('[data-print]');
+      if (fxIn && pw) {
+        _fxSeen.ventes = 1;
+        pw.classList.add('is-live'); scr.classList.add('is-stamp'); try { playCountTicks(700); } catch (e) {}
+        setTimeout(() => { if (pw.isConnected) pw.classList.remove('is-live'); }, 1250);   // libère l'overflow (ombres des lignes)
+      }
+      const sheet = scr.querySelector('[data-vsheet]'), scrim = scr.querySelector('[data-vscrim]'); if (!sheet) return;
+      const body = sheet.querySelector('[data-vbody]'), del = sheet.querySelector('[data-vdel]'), edit = sheet.querySelector('[data-vedit]'), keep = sheet.querySelector('[data-vkeep]');
+      let curId = null, armT = 0, editing = false, draft = null;
+      const disarm = () => { del.classList.remove('is-armed'); del.textContent = 'Supprimer cette vente'; clearTimeout(armT); };
+      const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); disarm(); curId = null; editing = false; draft = null; };
+      const MODES = [['espèces', 'Espèces'], ['momo', 'Mobile Money'], ['credit', 'Crédit']];
+      const renderView = (v) => {   // mode lecture : le détail classique
+        editing = false; draft = null; disarm();
+        const lines = (v.items || []).map((it) => '<div class="vdetail__row"><span>' + it.qty + '&times; ' + it.nom + '</span><b>' + fF(it.prix * it.qty) + '</b></div>').join('');
+        const mode = v.mode === 'momo' ? 'Mobile Money' : v.mode === 'credit' ? 'Crédit' : 'Espèces';
+        const resa = {};   // « qui prend quoi » : agrège les postes de coût des articles vendus
+        (v.items || []).forEach((it) => { const p = SM.stock.find((x) => x.nom === it.nom); if (p && p.couts) p.couts.forEach((c) => { resa[c.nom] = (resa[c.nom] || 0) + c.montant * it.qty; }); });
+        const rk = Object.keys(resa);
+        const resaHTML = rk.length
+          ? '<div class="vresa"><span class="vresa__ttl">À réserver sur cette vente</span>' +
+            rk.map((k) => '<div class="vresa__row"><span>' + k + '</span><b>' + fF(resa[k]) + '</b></div>').join('') +
+            '<div class="vresa__row" style="border-top:1px solid rgba(255,255,255,.14);margin-top:5px;padding-top:7px"><span><b style="color:#fff">Total à réserver</b></span><b>' + fF(rk.reduce((s, k2) => s + resa[k2], 0)) + '</b></div>' +
+            '<div class="vresa__row" style="padding-top:3px"><span>Ce qui te reste vraiment</span><b style="color:#6bf0a0">' + fF(v.total - rk.reduce((s, k2) => s + resa[k2], 0)) + '</b></div></div>'
+          : '';
+        body.innerHTML = lines +
+          '<div class="vdetail__row"><span>' + mode + '</span><span>' + relTime(v.ts) + '</span></div>' +
+          '<div class="vdetail__tot"><span>Total</span><b>' + fF(v.total) + '</b></div>' + resaHTML;
+        edit.textContent = 'Modifier cette vente'; del.style.display = ''; keep.textContent = 'Garder';
+      };
+      const draftTotal = () => draft.items.reduce((s, it) => s + it.prix * it.qty, 0);
+      const renderEdit = (v) => {   // mode édition : quantités par article + paiement
+        editing = true; disarm(); del.style.display = 'none';
+        draft = draft || { items: (v.items || []).map((it) => ({ nom: it.nom, prix: it.prix, qty: it.qty, qty0: it.qty })), mode: v.mode };
+        const rows = draft.items.map((it, i) => '<div class="vedit' + (it.qty === 0 ? ' is-zero' : '') + '"><span class="vedit__name">' + it.nom + '</span>' +
+          '<span class="vedit__step"><button class="qtybtn qtybtn--minus" data-vq="dec" data-i="' + i + '" aria-label="Retirer">−</button><span class="qtybtn__val">' + it.qty + '</span><button class="qtybtn qtybtn--plus" data-vq="inc" data-i="' + i + '" aria-label="Ajouter">+</button></span>' +
+          '<b class="vedit__amt">' + fF(it.prix * it.qty) + '</b></div>').join('');
+        const seg = MODES.map((m) => '<button class="seg-btn' + (m[0] === draft.mode ? ' is-on' : '') + '" data-vmode="' + m[0] + '">' + m[1] + '</button>').join('');
+        body.innerHTML = rows + '<div class="seg seg--pay">' + seg + '</div>' +
+          '<div class="vdetail__tot"><span>Nouveau total</span><b>' + fF(draftTotal()) + '</b></div>';
+        edit.textContent = 'Enregistrer les modifications'; keep.textContent = 'Annuler';
+        body.querySelectorAll('[data-vq]').forEach((b) => b.addEventListener('click', () => {
+          const it = draft.items[+b.dataset.i]; if (!it) return;
+          if (b.dataset.vq === 'dec') { if (it.qty === 0) { playSwoosh(); return; } it.qty--; playPop(false); }
+          else {
+            const p = SM.stock.find((x) => x.nom === it.nom && x.type === 'physique');
+            if (p && it.qty - it.qty0 >= p.qty) { playSwoosh(); return; }   // physique : pas plus que le stock restant
+            it.qty++; playPop(true);
+          }
+          renderEdit(v);
+        }));
+        body.querySelectorAll('[data-vmode]').forEach((b) => b.addEventListener('click', () => { draft.mode = b.dataset.vmode; playPop(true); renderEdit(v); }));
+      };
+      const saveEdit = (v) => {
+        const kept = draft.items.filter((it) => it.qty > 0);
+        if (!kept.length) { playSwoosh(); return; }   // vente vidée : passer par « Supprimer »
+        draft.items.forEach((it) => {   // ajuste le stock physique selon l'écart (repéré par nom, comme removeSale)
+          const p = SM.stock.find((x) => x.nom === it.nom && x.type === 'physique');
+          if (p) p.qty = Math.max(0, p.qty - (it.qty - it.qty0));
+        });
+        const oldTotal = v.total, oldMode = v.mode;
+        v.items = kept.map((it) => ({ nom: it.nom, prix: it.prix, qty: it.qty }));
+        v.total = kept.reduce((s, it) => s + it.prix * it.qty, 0); v.mode = draft.mode;
+        v.cout = kept.reduce((s, it) => { const p = SM.stock.find((x) => x.nom === it.nom); return s + ((p && p.cout) || Math.round(it.prix * 0.55)) * it.qty; }, 0);
+        if (v.clientId) {   // vente liée à un client : la dette suit les changements
+          const c = (SM.clients || []).find((x) => x.id === v.clientId);
+          if (c) {
+            if (oldMode === 'credit' && v.mode !== 'credit') { c.dette = Math.max(0, (c.dette || 0) - oldTotal); toast('Dette de ' + c.nom + ' soldée (payée en ' + (v.mode === 'momo' ? 'Mobile Money' : 'espèces') + ')', { tone: 'good' }); }
+            else if (oldMode === 'credit' && v.mode === 'credit' && v.total !== oldTotal) { c.dette = Math.max(0, (c.dette || 0) + (v.total - oldTotal)); }
+            else if (oldMode !== 'credit' && v.mode === 'credit') { c.dette = (c.dette || 0) + v.total; }
+          }
+        } else if (oldMode !== 'credit' && v.mode === 'credit') { toast('Crédit sans fiche client : note qui te doit ' + fF(v.total), { tone: 'warn' }); }
+        smSave(); playSuccess(); close();
+        view.innerHTML = ventesHTML(); bindVentes();
+      };
+      const list = scr.querySelector('.saleslist');
+      if (list) list.addEventListener('click', (e) => {
+        const row = e.target.closest('.salerow[data-vid]'); if (!row) return;
+        const v = (SM.ventes || []).find((x) => x.id === row.dataset.vid); if (!v) return;
+        curId = v.id; renderView(v);
+        sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick();
+      });
+      scrim.addEventListener('click', close);
+      keep.addEventListener('click', () => {
+        playClick();
+        if (editing) { const v = (SM.ventes || []).find((x) => x.id === curId); draft = null; if (v) return renderView(v); }
+        close();
+      });
+      edit.addEventListener('click', () => {
+        const v = (SM.ventes || []).find((x) => x.id === curId); if (!v) return;
+        if (editing) return saveEdit(v);
+        playClick(); renderEdit(v);
+      });
+      del.addEventListener('click', () => {
+        if (!del.classList.contains('is-armed')) {   // confirmation douce : deux touches sur le même bouton
+          del.classList.add('is-armed'); del.textContent = 'Confirmer la suppression ?'; playPop(false);
+          clearTimeout(armT); armT = setTimeout(disarm, 3000); return;
+        }
+        const id = curId; close();
+        const row = scr.querySelector('.salerow[data-vid="' + id + '"]');
+        const buf = removeSale(id); playSwoosh();
+        if (row) row.classList.add('is-going');
+        if (buf) toast('Vente de ' + fF(buf.sale.total) + ' supprimée', { label: 'Annuler', action: () => restoreSale(buf) });
+        setTimeout(() => { if (scr.isConnected) { view.innerHTML = ventesHTML(); bindVentes(); } }, 240);
+      });
+      // ---- recherche live (filtre sans re-rendu : le clavier reste ouvert) + pagination ----
+      const q = scr.querySelector('[data-vsearch]');
+      if (q) q.addEventListener('input', () => {
+        const needle = q.value.trim().toLowerCase();
+        scr.querySelectorAll('.salerow').forEach((r) => {
+          const hit = !needle || r.textContent.toLowerCase().indexOf(needle) >= 0;
+          r.classList.toggle('row-hid', !hit || (!needle && r.dataset.page === '1' && !r.dataset.shown));
+        });
+        const mb = scr.querySelector('[data-vmore]'); if (mb) mb.style.display = needle ? 'none' : '';
+      });
+      const mb = scr.querySelector('[data-vmore]');
+      if (mb) mb.addEventListener('click', () => { playPop(true); scr.querySelectorAll('.salerow.row-hid').forEach((r) => { r.classList.remove('row-hid'); r.dataset.shown = '1'; }); mb.remove(); });
+    }
+
+    /* ===== STATISTIQUES : période libre (jour, mois, année, plage) + analyse IA ===== */
+    let _statSel = { kind: 'all' };
+    const MOIS_LBL = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+    const dayStart = (ts) => { const d = new Date(ts); d.setHours(0, 0, 0, 0); return d.getTime(); };
+    const parseDay = (s) => { const p = (s || '').split('-'); return p.length === 3 ? new Date(+p[0], +p[1] - 1, +p[2]).getTime() : NaN; };
+    function statRange() {
+      const t0d = dayStart(Date.now()), now = new Date(), y = now.getFullYear(), k = _statSel.kind;
+      if (k === 'today') return { t0: t0d, t1: t0d + DAY, lbl: "aujourd'hui" };
+      if (k === 'yesterday') return { t0: t0d - DAY, t1: t0d, lbl: 'hier' };
+      if (k === '7j') return { t0: t0d - 6 * DAY, t1: t0d + DAY, lbl: 'les 7 derniers jours' };
+      if (k === 'month') return { t0: new Date(y, now.getMonth(), 1).getTime(), t1: new Date(y, now.getMonth() + 1, 1).getTime(), lbl: 'ce mois-ci' };
+      if (k === 'year') return { t0: new Date(y, 0, 1).getTime(), t1: new Date(y + 1, 0, 1).getTime(), lbl: 'cette année' };
+      if (k === 'day') return { t0: _statSel.t0, t1: _statSel.t0 + DAY, lbl: 'le ' + fDate(_statSel.t0) };
+      if (k === 'monthpick') { const d = new Date(_statSel.t0); return { t0: _statSel.t0, t1: new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime(), lbl: MOIS_LBL[d.getMonth()] + ' ' + d.getFullYear() }; }
+      if (k === 'yearpick') { const d = new Date(_statSel.t0); return { t0: _statSel.t0, t1: new Date(d.getFullYear() + 1, 0, 1).getTime(), lbl: "l'année " + d.getFullYear() }; }
+      if (k === 'range') return { t0: _statSel.t0, t1: _statSel.t1, lbl: 'du ' + fDate(_statSel.t0) + ' au ' + fDate(_statSel.t1 - DAY) };
+      return { t0: 0, t1: Infinity, lbl: 'depuis le début' };
+    }
+    const caIn = (t0, t1) => (SM.ventes || []).reduce((s, v) => (v.ts >= t0 && v.ts < t1) ? s + (+v.total || 0) : s, 0);
+    const depTotIn = (t0, t1) => (SM.depenses || []).reduce((s, d) => (!d.perso && d.ts >= t0 && d.ts < t1) ? s + (+d.montant || 0) : s, 0);
+    function depByCatIn(t0, t1) { const m = {}; (SM.depenses || []).forEach((d) => { if (!d.perso && d.ts >= t0 && d.ts < t1) m[d.cat] = (m[d.cat] || 0) + (+d.montant || 0); }); return Object.keys(m).map((k) => ({ name: k, val: m[k], color: CATS[k] || '#88aab0' })).sort((a, b) => b.val - a.val); }
+    function statBuckets(r) {   // barres adaptées à la période : jours (≤ 2 mois) sinon mois
+      let t0 = r.t0, t1 = Math.min(r.t1, Date.now() + DAY);
+      if (t0 === 0) {   // « depuis le début » : borne basse = 1er enregistrement
+        const ts = (SM.ventes || []).map((v) => v.ts).concat((SM.depenses || []).map((d) => d.ts || Date.now()));
+        if (!ts.length) return null; t0 = dayStart(Math.min.apply(null, ts));
+      }
+      const nDays = Math.max(1, Math.round((dayStart(t1 - 1) + DAY - dayStart(t0)) / DAY));
+      const bks = [];
+      if (nDays <= 1) {   // un seul jour : contexte = les 7 jours qui y mènent
+        for (let k = 6; k >= 0; k--) { const a = dayStart(t0) - k * DAY; bks.push({ t0: a, t1: a + DAY, lbl: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'][new Date(a).getDay()], ca: 0, dep: 0 }); }
+      } else if (nDays <= 62) {   // jour par jour, étiquettes espacées si long
+        const a0 = dayStart(t0), lblEvery = nDays > 14 ? 5 : 1;
+        for (let k = 0; k < nDays; k++) { const a = a0 + k * DAY; bks.push({ t0: a, t1: a + DAY, lbl: (k % lblEvery === 0 ? String(new Date(a).getDate()) : ''), ca: 0, dep: 0 }); }
+      } else {   // mois par mois
+        let d = new Date(t0); d = new Date(d.getFullYear(), d.getMonth(), 1);
+        while (d.getTime() < t1) { const e = new Date(d.getFullYear(), d.getMonth() + 1, 1); bks.push({ t0: d.getTime(), t1: e.getTime(), lbl: MOIS_LBL[d.getMonth()].slice(0, 3), ca: 0, dep: 0 }); d = e; }
+      }
+      (SM.ventes || []).forEach((v) => { const b = bks.find((x) => v.ts >= x.t0 && v.ts < x.t1); if (b) b.ca += (+v.total || 0); });
+      (SM.depenses || []).forEach((dp) => { if (dp.perso) return; const ts = dp.ts || Date.now(); const b = bks.find((x) => ts >= x.t0 && ts < x.t1); if (b) b.dep += (+dp.montant || 0); });
+      return bks;
+    }
+    function iaVerdictPeriod(r) {   // l'IA Boussole analyse la période sélectionnée
+      if (r.t0 === 0) return iaVerdict();   // « depuis le début » : verdict global existant
+      const ca = caIn(r.t0, r.t1), dep = depTotIn(r.t0, r.t1), ben = ca - dep, marge = ca > 0 ? Math.round(ben / ca * 100) : 0;
+      const lines = []; let tone = '', title = '';
+      if (ca === 0 && dep === 0) { title = 'Rien sur cette période'; lines.push('Aucune vente ni dépense enregistrée ' + r.lbl + '. Choisis une autre période, ou va encaisser : je note tout.'); return { tone, title, lines }; }
+      if (ben > 0) { tone = 'good'; title = 'Période gagnante'; lines.push('Sur cette période (' + r.lbl + '), tu as encaissé <b>' + fF(ca) + '</b> et dépensé <b>' + fF(dep) + '</b> : <b>+' + fF(ben) + '</b> de bénéfice, marge de <b>' + marge + '%</b>.'); }
+      else if (ben === 0) { title = "À l'équilibre"; lines.push('Sur cette période (' + r.lbl + '), tu rentres pile dans tes frais : ' + fF(ca) + ' encaissé pour ' + fF(dep) + ' dépensé.'); }
+      else { tone = 'warn'; title = 'Période dans le rouge'; lines.push('Sur cette période (' + r.lbl + '), tu as dépensé <b>' + fF(dep) + '</b> pour <b>' + fF(ca) + '</b> encaissé : il manque <b>' + fF(Math.abs(ben)) + '</b>.'); }
+      const span = r.t1 - r.t0;   // comparaison avec la période précédente de même durée
+      if (isFinite(span)) {
+        const pca = caIn(r.t0 - span, r.t0);
+        if (pca > 0) { const pc = Math.round((ca - pca) / pca * 100); lines.push(pc >= 0 ? 'Tes ventes font <b>+' + pc + '%</b> par rapport à la période juste avant (' + fF(pca) + ') : ça monte, continue.' : 'Tes ventes font <b>' + pc + '%</b> par rapport à la période juste avant (' + fF(pca) + ') : petit coup de mou, on se reprend.'); }
+        else if (ca > 0) { lines.push('La période juste avant était à zéro : là, tu avances.'); }
+      }
+      const cats = depByCatIn(r.t0, r.t1), top = cats[0];
+      if (top && dep > 0) { const share = Math.round(top.val / dep * 100); lines.push('Ta plus grosse sortie : <b>' + top.name + '</b> (' + share + '% des dépenses de la période).'); }
+      if (isFinite(r.t1) && span > DAY) {   // meilleur jour de la période
+        const byDay = {}; let bd = 0, bv = 0;
+        (SM.ventes || []).forEach((v) => { if (v.ts >= r.t0 && v.ts < r.t1) { const d0 = dayStart(v.ts); byDay[d0] = (byDay[d0] || 0) + (+v.total || 0); } });
+        Object.keys(byDay).forEach((k2) => { if (byDay[k2] > bv) { bv = byDay[k2]; bd = +k2; } });
+        if (bd) lines.push('Ton meilleur jour : <b>' + fDate(bd) + '</b> avec <b>' + fF(bv) + '</b> encaissés.');
+      }
+      return { tone, title, lines };
+    }
+    function iaBannerPeriod(r) { const v = iaVerdictPeriod(r); return '<div class="ia' + (v.tone ? ' ia--' + v.tone : '') + '"><span class="ia__orb"></span><span class="ia__chip">&#10022; L\'IA Boussole &middot; analyse de la période</span><h3 class="ia__title">' + v.title + '</h3><p class="ia__txt">' + v.lines.join(' ') + '</p></div>'; }
+    function statsHTML() {
+      const r = statRange();
+      const ca = caIn(r.t0, r.t1), dep = depTotIn(r.t0, r.t1), ben = ca - dep, marge = ca > 0 ? Math.round(ben / ca * 100) : 0;
+      const cats = depByCatIn(r.t0, r.t1), bks = statBuckets(r);
+      const isPick = ['day', 'monthpick', 'yearpick', 'range'].indexOf(_statSel.kind) >= 0;
+      const chips = [['today', "Aujourd'hui"], ['yesterday', 'Hier'], ['7j', '7 jours'], ['month', 'Ce mois'], ['year', 'Cette année'], ['all', 'Tout']]
+        .map((c) => '<button class="freqchip' + (c[0] === _statSel.kind ? ' is-sel' : '') + '" data-sper="' + c[0] + '">' + c[1] + '</button>').join('') +
+        '<button class="freqchip' + (isPick ? ' is-sel' : '') + '" data-spick>&#128197; Choisir&hellip;</button>';
+      const today = new Date(), pad = (n) => String(n).padStart(2, '0');
+      const dv = today.getFullYear() + '-' + pad(today.getMonth() + 1) + '-' + pad(today.getDate()), mv = today.getFullYear() + '-' + pad(today.getMonth() + 1);
+      const singleDay = (_statSel.kind === 'today' || _statSel.kind === 'yesterday' || _statSel.kind === 'day');
+      return '<div class="screen wide" style="--sc:#ffe9c9"><span class="screen__tag">Statistiques</span><h1 class="screen__title">Tes chiffres</h1>' +
+        '<p class="screen__sub">Choisis un jour, un mois, une année ou une période : je sors les chiffres et mon analyse.</p>' +
+        '<div class="statchips">' + chips + '</div>' +
+        '<div class="statper">Période affichée : <b>' + r.lbl + '</b></div>' +
+        iaBannerPeriod(r) +
+        '<div class="kpis">' +
+          kpi('ca', 'Encaissé', fF(ca), 'ventes de la période', 0).replace('</div>', sparkSVG(bks, '#34d399') + '</div>') +
+          kpi('dep', 'Dépensé', fF(dep), 'sorties de la période', 1) +
+          kpi('ben', 'Bénéfice', (ben >= 0 ? '+' : '') + fF(ben), ben >= 0 ? 'ce qui te reste' : 'tu es en perte', 2) +
+          kpi('marge', 'Marge', marge + ' %', 'sur 100 F vendus', 3) +
+        '</div>' +
+        '<div class="panel"><h3 class="panel__ttl" style="--sc:#e11d48"><i></i>Où part ton argent</h3>' + (dep > 0 ? donutSVG(cats, 'Dépensé') : '<p class="ia__txt">Pas de dépense sur cette période.</p>') + '</div>' +
+        '<div class="panel"><h3 class="panel__ttl" style="--sc:#34d399"><i></i>' + (singleDay ? 'Les 7 jours qui y mènent' : 'Évolution') + '</h3>' + (bks ? barsSVG(bks) : '<p class="ia__txt">Rien à tracer pour l\'instant.</p>') + '</div>' +
+        '<div class="sheet-scrim" data-stclose></div>' +
+        '<div class="sheet" data-stsheet><div class="sheet__grip"></div><h3 class="sheet__title">Choisir une période</h3>' +
+          '<div class="seg" data-stkind>' + [['day', 'Jour'], ['monthpick', 'Mois'], ['yearpick', 'Année'], ['range', 'Période']].map((k, i) => '<button class="seg-btn' + (i === 0 ? ' is-on' : '') + '" data-stk="' + k[0] + '">' + k[1] + '</button>').join('') + '</div>' +
+          '<label class="fld--sheet" data-stwrap="day" style="margin-top:12px"><span>Quel jour ?</span><input class="sheet__txt" data-stday type="date" value="' + dv + '" max="' + dv + '"></label>' +
+          '<label class="fld--sheet" data-stwrap="monthpick" style="display:none;margin-top:12px"><span>Quel mois ?</span><input class="sheet__txt" data-stmonth type="month" value="' + mv + '" max="' + mv + '"></label>' +
+          '<label class="fld--sheet" data-stwrap="yearpick" style="display:none;margin-top:12px"><span>Quelle année ?</span><input class="sheet__txt" data-styear type="number" inputmode="numeric" value="' + today.getFullYear() + '" min="2020" max="' + today.getFullYear() + '"></label>' +
+          '<div class="prange" data-stwrap="range" style="display:none;margin-top:12px"><label class="fld--sheet"><span>Du</span><input class="sheet__txt" data-stfrom type="date" value="' + dv + '"></label><label class="fld--sheet"><span>Au</span><input class="sheet__txt" data-stto type="date" value="' + dv + '"></label></div>' +
+          '<button class="sheet__add" data-stgo>Voir cette période</button></div>' +
+      '</div>';
+    }
+    function bindStats() {
+      const scr = view.querySelector('.screen'); if (!scr) return;
+      countUpNums(scr);   // les chiffres montent de 0 (effet compteur)
+      const render = () => { view.innerHTML = statsHTML(); bindStats(); };
+      scr.querySelectorAll('[data-sper]').forEach((b) => b.addEventListener('click', () => { _statSel = { kind: b.dataset.sper }; playPop(true); render(); }));
+      const sheet = scr.querySelector('[data-stsheet]'), scrim = scr.querySelector('[data-stclose]');
+      const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
+      scrim.addEventListener('click', close);
+      let pk = 'day';
+      const pb = scr.querySelector('[data-spick]'); if (pb) pb.addEventListener('click', () => { sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick(); });
+      scr.querySelectorAll('[data-stk]').forEach((b) => b.addEventListener('click', () => {
+        pk = b.dataset.stk; playPop(true);
+        scr.querySelectorAll('[data-stk]').forEach((x) => x.classList.toggle('is-on', x === b));
+        scr.querySelectorAll('[data-stwrap]').forEach((w) => { w.style.display = w.dataset.stwrap === pk ? '' : 'none'; });
+      }));
+      scr.querySelector('[data-stgo]').addEventListener('click', () => {
+        if (pk === 'day') { const t = parseDay(scr.querySelector('[data-stday]').value); if (isNaN(t)) return; _statSel = { kind: 'day', t0: t }; }
+        else if (pk === 'monthpick') { const p = (scr.querySelector('[data-stmonth]').value || '').split('-'); if (p.length < 2) return; _statSel = { kind: 'monthpick', t0: new Date(+p[0], +p[1] - 1, 1).getTime() }; }
+        else if (pk === 'yearpick') { const yv = Math.round(+scr.querySelector('[data-styear]').value || 0); if (yv < 2000 || yv > 2100) return; _statSel = { kind: 'yearpick', t0: new Date(yv, 0, 1).getTime() }; }
+        else { let a = parseDay(scr.querySelector('[data-stfrom]').value), b = parseDay(scr.querySelector('[data-stto]').value); if (isNaN(a) || isNaN(b)) return; if (b < a) { const c = a; a = b; b = c; } _statSel = { kind: 'range', t0: a, t1: b + DAY }; }
+        playSuccess(); render();
+      });
+    }
+
+    /* ===== BILAN + LES 3 ENVELOPPES (le cœur Boussole : où va chaque franc du mois) ===== */
+    function enveloppes() {
+      const t0 = startOfMonth();
+      const vs = (SM.ventes || []).filter((v) => v.ts >= t0);
+      const ca = vs.reduce((s, v) => s + (+v.total || 0), 0);
+      const cout = vs.reduce((s, v) => s + (+v.cout || 0), 0);           // enveloppe 1 : relance production (racheter la matière)
+      const marge = Math.max(0, ca - cout);
+      const charges = (SM.depenses || []).filter((d) => !d.perso && d.kind !== 'achat' && d.ts >= t0).reduce((s, d) => s + (+d.montant || 0), 0);
+      const env2 = Math.min(marge, charges);                             // enveloppe 2 : la marge couvre les charges du mois
+      const env3 = Math.max(0, marge - charges);                         // enveloppe 3 : le bénéfice net à mettre de côté
+      return { ca, cout, marge, charges, env2, env3, manque: Math.max(0, charges - marge) };
+    }
+    const ICO_LOOP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>';
+    const ICO_HOME = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/></svg>';
+    const ICO_SAFE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="12" cy="12" r="3.4"/><path d="M12 8.6v-1M12 16.4v-1M15.4 12h1M7.6 12h-1"/></svg>';
+    function envsHTML() {
+      const e = enveloppes();
+      if (e.ca === 0 && e.charges === 0) return '';
+      const mx = Math.max(1, e.cout, e.charges, e.env3);
+      const env = (i, ec, ic, name, amt, pct, sub) =>
+        '<div class="env" style="--i:' + i + ';--ec:' + ec + '"><div class="env__head"><span class="env__ic">' + ic + '</span><span class="env__name">' + name + '</span><b class="env__amt">' + fF(amt) + '</b></div>' +
+        '<div class="env__bar"><span class="env__fill" data-envfill="' + pct.toFixed(0) + '"></span></div><span class="env__sub">' + sub + '</span></div>';
+      return '<h3 class="objsec" style="margin-top:18px">Les 3 enveloppes du mois</h3><div class="envs">' +
+        env(0, '#f6a63c', ICO_LOOP, 'Relance production', e.cout, e.cout / mx * 100, 'Le coût de revient de tes ventes : garde-le pour racheter la matière / le stock.') +
+        env(1, '#b98cff', ICO_HOME, 'Charges du mois', e.env2, e.env2 / mx * 100, (e.manque > 0 ? 'Ta marge couvre ' + fF(e.env2) + ' sur ' + fF(e.charges) + ' de charges : il manque encore ' + fF(e.manque) + '.' : 'Tes charges (' + fF(e.charges) + ') sont couvertes par la marge. Solide.')) +
+        env(2, '#34d399', ICO_SAFE, 'Bénéfice net', e.env3, e.env3 / mx * 100, e.env3 > 0 ? 'Ce qui est vraiment à toi ce mois-ci : mets-en une partie de côté.' : 'Rien à mettre de côté pour l\'instant : vends un peu plus ou allège une charge.') +
+      '</div>';
+    }
+    function bilanHTML() {
+      const ca = salesTotal(), dep = expTotal(), ben = ca - dep;
+      const mo = salesByMode(), esp = mo['espèces'] || 0, momo = mo['momo'] || 0, cred = mo['credit'] || 0;
+      const cats = depByCat();
+      const src = ca > 0 ? hbar('Espèces', esp, ca, '#34d399') + hbar('Mobile Money', momo, ca, '#f6a63c') + hbar('Crédit (à récupérer)', cred, ca, '#ff8a3d') : '<p class="ia__txt">Aucune vente enregistrée.</p>';
+      const out = dep > 0 ? cats.map((c) => hbar(c.name, c.val, dep, c.color)).join('') : '<p class="ia__txt">Aucune dépense enregistrée.</p>';
+      return '<div class="screen wide" style="--sc:#b98cff"><span class="screen__tag">Le bilan</span><h1 class="screen__title">Ta santé</h1>' +
+        '<div class="benhero ben--' + (ben >= 0 ? 'ok' : 'bad') + '"><span class="benhero__lbl">Bénéfice net</span><b class="benhero__num">' + (ben >= 0 ? '+' : '') + fF(ben) + '</b><span class="benhero__sub">' + (ben >= 0 ? "Ton commerce gagne de l'argent" : "Ton commerce perd de l'argent") + '</span></div>' +
+        envsHTML() +
+        iaBanner() +
+        '<div class="panel"><h3 class="panel__ttl" style="--sc:#34d399"><i></i>D\'où vient ton argent</h3>' + src + '</div>' +
+        '<div class="panel"><h3 class="panel__ttl" style="--sc:#e11d48"><i></i>Ce qui pèse le plus</h3>' + out + '</div>' +
+        (persoTotal() > 0 ? '<div class="panel"><h3 class="panel__ttl" style="--sc:#b98cff"><i></i>Poche perso</h3><p class="ia__txt">Tu as sorti <b style="color:#c9a7ff">' + fF(persoTotal()) + '</b> pour tes dépenses personnelles. C\'est ton argent, mais ce n\'est pas compté dans le bénéfice du business.</p></div>' : '') +
+      '</div>';
+    }
+    function bindBilan() {
+      countUpNums(view);   // le bénéfice net monte de 0
+      const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      view.querySelectorAll('[data-envfill]').forEach((f) => {   // les enveloppes se remplissent à l'arrivée
+        const w = f.dataset.envfill + '%';
+        if (rm) f.style.width = w; else requestAnimationFrame(() => requestAnimationFrame(() => { f.style.width = w; }));
+      });
+    }
+
+    /* ============================================================================
+       VAGUE 2 : OBJECTIFS + CARNET CLIENTS
+       ========================================================================== */
+    const ICO_WA = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm5.6 14.2c-.2.6-1.2 1.2-1.7 1.2-.4 0-1 .1-3.2-.9-2.7-1.2-4.4-4-4.5-4.2-.1-.2-1-1.4-1-2.6s.6-1.8.9-2.1c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.4.6c-.2.2-.3.4-.1.7.2.3.8 1.3 1.7 2.1 1.2 1 2 1.3 2.3 1.5.2.1.4.1.6-.1l.7-.9c.2-.3.4-.2.7-.1l1.8.9c.3.1.5.2.6.3.1.3.1.7-.1 1.3z"/></svg>';
+
+    if (!SM.objectifs) { SM.objectifs = { jour: 50000, semaine: 300000, mois: 1200000 }; smSave(); }
+    if (SM.meta.demo && !SM.cibles) { SM.cibles = [ { id: 't1', nom: 'iPhone 15', montant: 500000, epargne: 145000 }, { id: 't2', nom: 'Congélateur boutique', montant: 250000, epargne: 90000 } ]; smSave(); }
+    if (SM.meta.demo && !SM.clients) {
+      SM.clients = [
+        { id: 'c1', nom: 'Awa Koné', tel: '22997000001', dette: 8000, lastBuy: Date.now() - 2 * DAY, autoRelance: true },
+        { id: 'c2', nom: 'Ibrahim Sow', tel: '22997000002', dette: 15000, lastBuy: Date.now() - 9 * DAY, autoRelance: false },
+        { id: 'c3', nom: 'Fatou Bah', tel: '22997000003', dette: 0, lastBuy: Date.now() - 1 * DAY, autoRelance: false },
+        { id: 'c4', nom: 'Marie Adjo', tel: '22997000004', dette: 3500, lastBuy: Date.now() - 5 * DAY, autoRelance: true },
+      ];
+      smSave();
+    }
+    SM.cibles = SM.cibles || []; SM.clients = SM.clients || [];
+
+    const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); };
+    const startOfMonth = () => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(1); return d.getTime(); };
+    const salesRange = (fromTs) => (SM.ventes || []).reduce((s, v) => v.ts >= fromTs ? s + v.total : s, 0);
+    const dailyBen = () => { const d = evo7(); return d.reduce((s, x) => s + (x.ca - x.dep), 0) / 7; };   // bénéfice moyen / jour (7 j)
+
+    function ringSVG(pct, color, sub) {
+      const R = 52, C = 2 * Math.PI * R, p = Math.max(0, Math.min(100, pct)), off = C * (1 - p / 100);
+      return '<div class="ring"><svg class="ring__svg" viewBox="0 0 120 120"><circle class="ring__track" cx="60" cy="60" r="' + R + '"/><circle class="ring__val" cx="60" cy="60" r="' + R + '" stroke="' + color + '" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + C.toFixed(1) + '" data-off="' + off.toFixed(1) + '" style="filter:drop-shadow(0 0 5px ' + color + ')"/></svg><div class="ring__center"><b class="ring__pct" style="color:' + color + '">' + Math.round(p) + '%</b><span class="ring__sub">' + sub + '</span></div></div>';
+    }
+    function iaBannerObj(per, cur, tgt, rate) {
+      const pct = tgt > 0 ? Math.round(cur / tgt * 100) : 0; const lines = []; let tone = '', title = '';
+      const perLbl = { jour: "aujourd'hui", semaine: 'cette semaine', mois: 'ce mois' }[per];
+      if (pct >= 100) { tone = 'good'; title = 'Objectif ' + ({ jour: 'du jour', semaine: 'de la semaine', mois: 'du mois' }[per]) + ' atteint !'; lines.push('Tu as fait <b>' + fF(cur) + '</b> pour un objectif de <b>' + fF(tgt) + '</b>. Chaque vente en plus, c\'est du bénéfice pur.'); }
+      else { tone = pct >= 60 ? '' : 'warn'; title = 'Encore ' + fF(Math.max(0, tgt - cur)) + ' à faire'; lines.push('Tu es à <b>' + pct + '%</b> de ton objectif ' + perLbl + ' (' + fF(cur) + ' sur ' + fF(tgt) + ').'); }
+      const cibles = (SM.cibles || []).filter((t) => t.epargne < t.montant);
+      if (cibles.length && rate > 0) { const t = cibles[0], j = Math.ceil((t.montant - t.epargne) / rate); lines.push('À ton rythme actuel (~<b>' + fF(rate) + '</b> de bénéfice par jour), tu atteins <b>' + t.nom + '</b> dans <b>' + j + ' jours</b>. Mets un peu de côté à chaque grosse vente pour aller plus vite.'); }
+      else if (cibles.length) { lines.push('Pour financer <b>' + cibles[0].nom + '</b>, il faut d\'abord que ton bénéfice repasse au vert : vends un peu plus ou baisse une dépense.'); }
+      return '<div class="ia' + (tone ? ' ia--' + tone : '') + '"><span class="ia__orb"></span><span class="ia__chip">&#10022; Coach Boussole</span><h3 class="ia__title">' + title + '</h3><p class="ia__txt">' + lines.join(' ') + '</p></div>';
+    }
+    let _objPer = 'jour';
+    function objTargets() { const o = SM.objectifs || {}; return { jour: o.jour || 50000, semaine: o.semaine || 300000, mois: o.mois || 1200000 }; }
+    function objectifsHTML() {
+      const t = objTargets();
+      const M = { jour: ["Aujourd'hui", salesRange(startOfToday()), t.jour], semaine: ['7 derniers jours', salesRange(Date.now() - 7 * DAY), t.semaine], mois: ['Ce mois', salesRange(startOfMonth()), t.mois] };
+      const cur = M[_objPer][1], tgt = M[_objPer][2], pct = tgt > 0 ? cur / tgt * 100 : 0, rate = dailyBen();
+      const seg = ['jour', 'semaine', 'mois'].map((k) => '<button class="seg-btn' + (k === _objPer ? ' is-on' : '') + '" data-per="' + k + '">' + ({ jour: 'Jour', semaine: 'Semaine', mois: 'Mois' }[k]) + '</button>').join('');
+      const cibles = (SM.cibles || []).map((c, i) => {
+        const p = c.montant > 0 ? Math.min(100, c.epargne / c.montant * 100) : 0, reste = Math.max(0, c.montant - c.epargne), j = rate > 0 ? Math.ceil(reste / rate) : null;
+        return '<div class="cible" style="--i:' + i + '"><div class="cible__top"><span class="cible__name">' + c.nom + '</span><span class="cible__amt">' + fF(c.montant) + '</span></div>' +
+          '<div class="hbar__track"><span class="hbar__fill" style="width:' + p.toFixed(0) + '%;background:#ffd23f;box-shadow:0 0 10px -2px #ffd23f"></span></div>' +
+          '<div class="cible__foot"><span>' + fF(c.epargne) + ' épargnés</span><span>' + (reste > 0 ? (j !== null ? 'reste ' + fF(reste) + ' · ≈ ' + j + ' j' : 'reste ' + fF(reste)) : 'Atteint !') + '</span></div>' +
+          '<div class="cible__act"><button class="cible__add" data-cibleadd="' + c.id + '">+ ajouter à l\'épargne</button><button class="cible__mod" data-cibleedit="' + c.id + '">Modifier</button></div></div>';
+      }).join('');
+      return '<div class="screen wide" style="--sc:#ffd23f"><span class="screen__tag">Objectifs</span><h1 class="screen__title">Tes objectifs</h1>' +
+        '<div class="seg">' + seg + '</div>' +
+        '<div class="panel objgoal" data-objgoal>' +
+          '<span class="arrowfly" aria-hidden="true"><svg viewBox="0 0 74 74" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><path d="M6 68 L58 16"/><path d="M58 16 l-16 3 M58 16 l-3 16"/><path d="M10 56 l8 8 M16 50 l8 8" stroke-width="3" opacity=".7"/></svg></span>' +
+          '<div class="objgoal__ring">' + ringSVG(pct, '#ffd23f', M[_objPer][0]) + '</div>' +
+          '<div class="objgoal__info"><span class="objgoal__cur">' + fF(cur) + '</span><span class="objgoal__tgt">sur ' + fF(tgt) + ' visés</span><button class="objgoal__edit" data-edittgt>Modifier l\'objectif</button></div></div>' +
+        iaBannerObj(_objPer, cur, tgt, rate) +
+        '<h3 class="objsec">Objectifs d\'achat</h3>' +
+        '<div class="cibles">' + (cibles || '<p class="ia__txt">Aucun projet. Ajoute ton premier objectif d\'achat.</p>') + '</div>' +
+        '<span class="fab__lbl">Nouveau projet</span><button class="fab fab--gold" data-ciblenew aria-label="Ajouter un objectif d\'achat">+</button>' +
+        '<div class="sheet-scrim" data-osclose></div>' +
+        '<div class="sheet" data-osheet><div class="sheet__grip"></div><h3 class="sheet__title" data-ostitle>Objectif</h3>' +
+          '<input class="sheet__txt" data-osname type="text" placeholder="Nom du projet" style="display:none">' +
+          '<input class="sheet__amt" data-osamt type="number" inputmode="numeric" placeholder="0 F">' +
+          '<label class="fld--sheet" data-osepwrap style="display:none;margin-top:10px"><span>Déjà épargné</span><input class="sheet__amt" data-osep type="number" inputmode="numeric" placeholder="0 F"></label>' +
+          '<button class="sheet__add" data-osok>Enregistrer</button>' +
+          '<button class="sheet__del" data-osdel style="display:none">Supprimer cet objectif</button></div>' +
+      '</div>';
+    }
+    function bindObjectifs() {
+      const scr = view.querySelector('.screen'); if (!scr) return;
+      const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      // ---- Entrée « flèche » : plein format 1 fois par session
+      const fxIn = _entryFx && !rm && !_fxSeen.objectifs; _entryFx = false;
+      const og = scr.querySelector('[data-objgoal]');
+      if (fxIn && og) {
+        _fxSeen.objectifs = 1;
+        og.classList.add('is-live');
+        setTimeout(() => { try { playSwoosh(); } catch (e) {} }, 260);
+        setTimeout(() => { og.classList.add('is-hit'); try { playPop(false); playClick(); if (navigator.vibrate) navigator.vibrate(25); } catch (e) {} }, 800);
+      }
+      scr.querySelectorAll('.ring__val').forEach((c) => { const off = c.dataset.off; if (rm) c.style.strokeDashoffset = off; else requestAnimationFrame(() => { c.style.strokeDashoffset = off; }); });
+      const render = () => { view.innerHTML = objectifsHTML(); bindObjectifs(); };
+      scr.querySelectorAll('[data-per]').forEach((b) => b.addEventListener('click', () => { _objPer = b.dataset.per; playPop(true); render(); }));
+      const sheet = scr.querySelector('[data-osheet]'), scrim = scr.querySelector('[data-osclose]'), name = scr.querySelector('[data-osname]'), amt = scr.querySelector('[data-osamt]'), title = scr.querySelector('[data-ostitle]');
+      const epWrap = scr.querySelector('[data-osepwrap]'), ep = scr.querySelector('[data-osep]'), delBtn = scr.querySelector('[data-osdel]');
+      let mode = null, cibleId = null, delArmT = 0;
+      const disarmDel = () => { delBtn.classList.remove('is-armed'); delBtn.textContent = 'Supprimer cet objectif'; clearTimeout(delArmT); };
+      const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); disarmDel(); };
+      const open = (m, opts) => {
+        mode = m; cibleId = opts.cibleId || null; title.textContent = opts.title; disarmDel();
+        name.style.display = opts.withName ? 'block' : 'none'; name.value = opts.name || '';
+        amt.value = opts.amt || ''; amt.placeholder = opts.ph || '0 F';
+        epWrap.style.display = opts.withEp ? 'block' : 'none'; ep.value = opts.ep !== undefined ? opts.ep : '';
+        delBtn.style.display = opts.withDel ? 'block' : 'none';
+        sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick();
+        setTimeout(() => { try { (opts.withName ? name : amt).focus(); } catch (_) {} }, 220);
+      };
+      scrim.addEventListener('click', close);
+      scr.querySelector('[data-edittgt]').addEventListener('click', () => open('target', { title: 'Objectif ' + ({ jour: 'du jour', semaine: 'de la semaine', mois: 'du mois' }[_objPer]), ph: 'Montant en F' }));
+      scr.querySelectorAll('[data-cibleadd]').forEach((b) => b.addEventListener('click', () => open('epargne', { title: "Ajouter à l'épargne", cibleId: b.dataset.cibleadd, ph: 'Montant épargné' })));
+      scr.querySelectorAll('[data-cibleedit]').forEach((b) => b.addEventListener('click', () => {   // modifier / supprimer un projet
+        const t = (SM.cibles || []).find((x) => x.id === b.dataset.cibleedit); if (!t) return;
+        open('editcible', { title: 'Modifier « ' + t.nom + ' »', cibleId: t.id, withName: true, name: t.nom, amt: t.montant, ph: 'Prix du projet', withEp: true, ep: t.epargne, withDel: true });
+      }));
+      const nb = scr.querySelector('[data-ciblenew]'); if (nb) nb.addEventListener('click', () => open('newcible', { title: "Nouveau projet d'achat", withName: true, ph: 'Prix du projet' }));
+      delBtn.addEventListener('click', () => {
+        if (!delBtn.classList.contains('is-armed')) {   // confirmation douce : deux touches sur le même bouton
+          delBtn.classList.add('is-armed'); delBtn.textContent = 'Confirmer la suppression ?'; playPop(false);
+          clearTimeout(delArmT); delArmT = setTimeout(disarmDel, 3000); return;
+        }
+        const i = (SM.cibles || []).findIndex((x) => x.id === cibleId);
+        if (i >= 0) { SM.cibles.splice(i, 1); smSave(); }
+        playSwoosh(); close(); render();
+      });
+      scr.querySelector('[data-osok]').addEventListener('click', () => {
+        const v = Math.round(+amt.value || 0);
+        if (mode === 'target') { if (v > 0) { SM.objectifs = SM.objectifs || {}; SM.objectifs[_objPer] = v; smSave(); } }
+        else if (mode === 'epargne') { const t = (SM.cibles || []).find((x) => x.id === cibleId); if (t && v > 0) { t.epargne = Math.min(t.montant, t.epargne + v); smSave(); } }
+        else if (mode === 'newcible') { const nom = (name.value || '').trim(); if (nom && v > 0) { (SM.cibles = SM.cibles || []).push({ id: 't' + Date.now(), nom, montant: v, epargne: 0 }); smSave(); } else { return; } }
+        else if (mode === 'editcible') {   // renommer, changer le prix, corriger l'épargne
+          const t = (SM.cibles || []).find((x) => x.id === cibleId); const nom = (name.value || '').trim();
+          if (!t || !nom || v <= 0) { return; }
+          t.nom = nom; t.montant = v; t.epargne = Math.max(0, Math.min(v, Math.round(+ep.value || 0))); smSave();
+        }
+        playSuccess(); close(); render();
+      });
+    }
+
+    /* ===== CARNET CLIENTS ===== */
+    const relanceMsgs = (c) => [
+      { k: 'doux', lbl: 'Rappel amical', txt: 'Bonjour ' + c.nom + ' 👋 Petit rappel amical : il reste ' + fF(c.dette) + ' sur votre compte. Merci de régulariser dès que possible 🙏' },
+      { k: 'ferme', lbl: 'Relance', txt: 'Bonjour ' + c.nom + ', votre solde de ' + fF(c.dette) + ' est toujours en attente. Pouvez-vous passer régler cette semaine ? Merci de votre compréhension.' },
+      { k: 'merci', lbl: 'Remerciement', txt: 'Bonjour ' + c.nom + ', merci pour votre confiance et votre fidélité ! Au plaisir de vous revoir très vite.' },
+    ];
+    function iaBannerCarnet() {
+      const due = (SM.clients || []).filter((c) => c.dette > 0);
+      if (!due.length) return '<div class="ia ia--good"><span class="ia__orb"></span><span class="ia__chip">&#10022; L\'IA Boussole</span><h3 class="ia__title">Tout le monde est à jour</h3><p class="ia__txt">Aucune dette en cours. Les clients qui paient vite sont tes meilleurs clients : soigne-les.</p></div>';
+      const prio = due.slice().sort((a, b) => (a.lastBuy - b.lastBuy) || (b.dette - a.dette))[0];
+      const total = due.reduce((s, c) => s + c.dette, 0);
+      return '<div class="ia ia--warn"><span class="ia__orb"></span><span class="ia__chip">&#10022; L\'IA Boussole</span><h3 class="ia__title">Relance ' + prio.nom + ' en priorité</h3><p class="ia__txt"><b>' + fF(total) + '</b> à récupérer chez ' + due.length + ' client' + (due.length > 1 ? 's' : '') + '. Commence par <b>' + prio.nom + '</b> (doit ' + fF(prio.dette) + ', vu ' + relTime(prio.lastBuy) + ') : plus une dette traîne, plus elle est dure à récupérer.</p></div>';
+    }
+    function carnetHTML() {
+      const cls = (SM.clients || []).slice().sort((a, b) => b.dette - a.dette);
+      const total = cls.reduce((s, c) => s + (c.dette || 0), 0);
+      const rows = cls.map((c, i) => {
+        const due = c.dette > 0;
+        return '<div class="client" style="--i:' + i + '"><div class="client__head"><span class="client__av">' + c.nom.charAt(0).toUpperCase() + '</span>' +
+          '<div class="client__id"><span class="client__name">' + c.nom + '</span><span class="client__meta">' + (c.tel ? '+' + c.tel : 'sans numéro') + ' · vu ' + relTime(c.lastBuy) + '</span></div>' +
+          '<span class="client__debt ' + (due ? 'is-due' : 'is-ok') + '">' + (due ? 'doit ' + fF(c.dette) : 'à jour') + '</span></div>' +
+          '<div class="client__act"><button class="cbtn cbtn--relance" data-relance="' + c.id + '">' + ICO_WA + 'Relancer</button>' +
+          (due ? '<button class="cbtn cbtn--paid" data-paid="' + c.id + '">Marquer payé</button>' : '') +
+          '<button class="cbtn cbtn--auto' + (c.autoRelance ? ' is-on' : '') + '" data-auto="' + c.id + '">Relance auto</button></div></div>';
+      }).join('');
+      return '<div class="screen wide" style="--sc:#ff8a3d"><span class="screen__tag">Carnet clients</span><h1 class="screen__title">Tes clients</h1>' +
+        '<div class="sales-total">À récupérer<b style="color:#ffb27a;text-shadow:0 0 14px rgba(255,138,61,.4)">' + fF(total) + '</b></div>' +
+        iaBannerCarnet() +
+        '<div class="clients">' + (rows || '<p class="pos__empty">Aucun client. Ajoute ton premier client.</p>') + '</div>' +
+        '<span class="fab__lbl">Nouveau client</span><button class="fab fab--orange" data-clientnew aria-label="Ajouter un client">+</button>' +
+        '<div class="sheet-scrim" data-csclose></div>' +
+        '<div class="sheet" data-csheet><div class="sheet__grip"></div><h3 class="sheet__title" data-cstitle>Relancer</h3><div data-csbody></div></div>' +
+      '</div>';
+    }
+    function bindCarnet() {
+      const scr = view.querySelector('.screen'); if (!scr) return;
+      const sheet = scr.querySelector('[data-csheet]'), scrim = scr.querySelector('[data-csclose]'), body = scr.querySelector('[data-csbody]'), title = scr.querySelector('[data-cstitle]');
+      const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
+      const render = () => { view.innerHTML = carnetHTML(); bindCarnet(); };
+      scrim.addEventListener('click', close);
+      scr.querySelectorAll('[data-relance]').forEach((b) => b.addEventListener('click', () => {
+        const c = (SM.clients || []).find((x) => x.id === b.dataset.relance); if (!c) return;
+        title.textContent = 'Relancer ' + c.nom;
+        body.innerHTML = relanceMsgs(c).map((m) => '<button class="msgbtn" data-msg="' + m.k + '"><b>' + m.lbl + '</b><span>' + m.txt + '</span></button>').join('');
+        body.querySelectorAll('[data-msg]').forEach((mb) => mb.addEventListener('click', () => {
+          const m = relanceMsgs(c).find((x) => x.k === mb.dataset.msg);
+          window.open('https://wa.me/' + (c.tel || '') + '?text=' + encodeURIComponent(m.txt), '_blank'); playSell(); close();
+        }));
+        sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick();
+      }));
+      scr.querySelectorAll('[data-paid]').forEach((b) => b.addEventListener('click', () => { const c = (SM.clients || []).find((x) => x.id === b.dataset.paid); if (c) { c.dette = 0; smSave(); playSuccess(); render(); } }));
+      scr.querySelectorAll('[data-auto]').forEach((b) => b.addEventListener('click', () => { const c = (SM.clients || []).find((x) => x.id === b.dataset.auto); if (c) { c.autoRelance = !c.autoRelance; smSave(); b.classList.toggle('is-on', c.autoRelance); playPop(c.autoRelance); } }));
+      const nb = scr.querySelector('[data-clientnew]'); if (nb) nb.addEventListener('click', () => {
+        title.textContent = 'Nouveau client';
+        body.innerHTML = '<input class="sheet__txt" data-cnom type="text" placeholder="Nom du client"><input class="sheet__txt" data-ctel type="tel" inputmode="numeric" placeholder="Numéro WhatsApp (ex 229...)"><button class="sheet__add" data-csave>Enregistrer</button>';
+        body.querySelector('[data-csave]').addEventListener('click', () => {
+          const nom = (body.querySelector('[data-cnom]').value || '').trim(), tel = (body.querySelector('[data-ctel]').value || '').replace(/[^\d]/g, '');
+          if (!nom) return;
+          (SM.clients = SM.clients || []).push({ id: 'c' + Date.now(), nom, tel, dette: 0, lastBuy: Date.now(), autoRelance: false }); smSave();
+          playSuccess(); close(); render();
+        });
+        sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick();
+        setTimeout(() => { try { body.querySelector('[data-cnom]').focus(); } catch (_) {} }, 220);
+      });
+    }
+
+    /* ============================================================================
+       VAGUE 3 : CATALOGUE (helpers) + FACTURES & DEVIS
+       ========================================================================== */
+    // Migration du stock vers la forme catalogue (prix num, coût, type, récurrent)
+    SM.stock.forEach((p) => {
+      if (typeof p.prix === 'string') p.prix = priceNum(p.prix);
+      if (p.cout === undefined) p.cout = Math.round(p.prix * 0.55);
+      if (p.type === undefined) p.type = 'physique';
+      if (p.recurrent === undefined) p.recurrent = false;
+    });
+    smSave();
+    const margePct = (p) => p.prix > 0 ? Math.round((p.prix - (p.cout || 0)) / p.prix * 100) : 0;
+    const PTYPE_LBL = { physique: 'Physique', digital: 'Digital', service: 'Service' };
+    let _catFilter = 'tous';
+    function catSheet() {
+      return '<div class="sheet-scrim" data-psclose></div>' +
+        '<div class="sheet sheet--tall" data-psheet><div class="sheet__grip"></div>' +
+          '<h3 class="sheet__title" data-pstitle>Nouvel article</h3>' +
+          '<input class="sheet__txt" data-pnom type="text" placeholder="Nom (ex : Jus de bissap)">' +
+          '<div class="seg seg--type" data-ptype>' + ['physique', 'digital', 'service'].map((k) => '<button class="seg-btn" data-pt="' + k + '">' + PTYPE_LBL[k] + '</button>').join('') + '</div>' +
+          '<div class="field2"><label class="fld"><span>Prix de vente</span><input class="sheet__txt" data-pprix type="number" inputmode="numeric" placeholder="0 F"></label>' +
+            '<label class="fld"><span>Coût / achat</span><input class="sheet__txt" data-pcout type="number" inputmode="numeric" placeholder="0 F"></label></div>' +
+          '<div class="margeview" data-pmarge>Marge : —</div>' +
+          '<div class="csplit"><div class="csplit__head"><span>Détail du coût — qui prend quoi</span><button type="button" class="csplit__addbtn" data-caddline>+ élément</button></div>' +
+            '<div data-clines></div>' +
+            '<p class="setnote" data-chint style="margin:0">Ex. vitrine + QR code : Partenaire 10 000 F, Hébergement 5 000 F… Le coût total et les % se calculent tout seuls.</p>' +
+            '<div class="csplit__foot" data-cfoot style="display:none"><span>Total des éléments</span><b data-ctot>0 F</b></div></div>' +
+          '<label class="fld" data-pqtywrap><span>Quantité en stock</span><input class="sheet__txt" data-pqty type="number" inputmode="numeric" placeholder="0"></label>' +
+          '<button class="toggle" data-prec><span class="toggle__dot"></span>Article récurrent (abonnement)</button>' +
+          '<button class="sheet__add" data-psok>Enregistrer</button>' +
+          '<button class="sheet__del" data-psdel style="display:none">Supprimer cet article</button></div>';
+    }
+
+    /* ===== FACTURES & DEVIS ===== */
+    const ICO_DOC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>';
+    if (SM.meta.demo && !SM.factures) {
+      SM.factures = [
+        { id: 'f1', type: 'facture', num: 'FAC-2026-001', clientNom: 'Awa Koné', date: Date.now() - 4 * DAY, items: [{ nom: 'Part de gâteau', prix: 1000, qty: 6 }, { nom: 'Café au lait', prix: 400, qty: 6 }], tva: false, statut: 'payé' },
+        { id: 'f2', type: 'devis', num: 'DEV-2026-001', clientNom: 'Ibrahim Sow', date: Date.now() - 1 * DAY, items: [{ nom: 'Abonnement pâtisserie', prix: 15000, qty: 1 }], tva: true, statut: 'envoyé' },
+      ];
+      smSave();
+    }
+    SM.factures = SM.factures || [];
+    const TVA_RATE = 0.18;
+    const docHT = (d) => d.items.reduce((s, it) => s + it.prix * it.qty, 0);
+    const docTVA = (d) => d.tva ? Math.round(docHT(d) * TVA_RATE) : 0;
+    const docTTC = (d) => docHT(d) + docTVA(d);
+    function nextNum(type) {
+      const y = new Date().getFullYear(), pre = type === 'facture' ? 'FAC' : 'DEV';
+      const n = (SM.factures || []).filter((d) => d.type === type && d.num.indexOf(pre + '-' + y) === 0).length + 1;
+      return pre + '-' + y + '-' + String(n).padStart(3, '0');
+    }
+    const fDate = (ts) => { const d = new Date(ts); return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear(); };
+    let _facMode = 'list', _facFilter = 'facture', _facDraft = null, _facView = null;
+
+    function facListHTML() {
+      const list = (SM.factures || []).filter((d) => d.type === _facFilter).sort((a, b) => b.date - a.date);
+      const seg = ['facture', 'devis'].map((k) => '<button class="seg-btn' + (k === _facFilter ? ' is-on' : '') + '" data-facf="' + k + '">' + (k === 'facture' ? 'Factures' : 'Devis') + '</button>').join('');
+      const rows = list.map((d, i) => '<button class="docrow" style="--i:' + i + '" data-doc="' + d.id + '"><span class="docrow__ic">' + ICO_DOC + '</span>' +
+        '<span class="docrow__id"><span class="docrow__num">' + d.num + '</span><span class="docrow__cli">' + d.clientNom + ' · ' + fDate(d.date) + '</span></span>' +
+        '<span class="docrow__right"><span class="docrow__amt">' + fF(docTTC(d)) + '</span><span class="docstatut docstatut--' + d.statut + '">' + d.statut + '</span></span></button>').join('');
+      return '<div class="screen wide" style="--sc:#4cc9ff"><span class="screen__tag">Factures &amp; devis</span><h1 class="screen__title">Tes documents</h1>' +
+        '<div class="seg">' + seg + '</div>' +
+        '<div class="doclist">' + (rows || '<p class="pos__empty">Aucun document ici. Touche le <b>+</b> pour créer une facture ou un devis.</p>') + '</div>' +
+        '<span class="fab__lbl">Nouveau document</span><button class="fab fab--sky" data-facnew aria-label="Créer une facture ou un devis">+</button></div>';
+    }
+    function facBuilderHTML() {
+      const d = _facDraft;
+      const tiles = SM.stock.map((p, i) => { const q = (d.items.find((x) => x.id === p.id) || {}).qty || 0; return '<button class="pos-tile' + (q > 0 ? ' has' : '') + '" data-add="' + p.id + '" style="--i:' + i + '"><span class="pos-tile__badge">' + q + '</span><span class="pos-tile__disc" style="background:radial-gradient(120% 120% at 30% 25%,' + TILE_COLORS[i % TILE_COLORS.length] + ',' + TILE_COLORS[i % TILE_COLORS.length] + '99);color:#04121a">' + p.nom.charAt(0).toUpperCase() + '</span><span class="pos-tile__name">' + p.nom + '</span><span class="pos-tile__price">' + fF(p.prix) + '</span></button>'; }).join('');
+      const lines = d.items.map((it, i) => '<div class="bline"><span class="bline__name">' + it.nom + ' <span class="bline__pu">×' + it.qty + '</span></span><span class="bline__amt">' + fF(it.prix * it.qty) + '</span><button class="bline__x" data-rmline="' + i + '" aria-label="Retirer">×</button></div>').join('');
+      const ht = docHT(d), tva = d.tva ? Math.round(ht * TVA_RATE) : 0;
+      const typeSeg = ['facture', 'devis'].map((k) => '<button class="seg-btn' + (k === d.type ? ' is-on' : '') + '" data-btype="' + k + '">' + (k === 'facture' ? 'Facture' : 'Devis') + '</button>').join('');
+      return '<div class="screen wide" style="--sc:#4cc9ff"><span class="screen__tag">Nouveau</span><h1 class="screen__title">Créer</h1><div class="builder">' +
+        '<div class="seg">' + typeSeg + '</div>' +
+        '<input class="sheet__txt" data-bclient type="text" placeholder="Nom du client" value="' + (d.clientNom || '') + '" style="margin-top:12px">' +
+        '<p class="objsec" style="margin:14px auto 6px">Touche un article pour l\'ajouter</p>' +
+        '<div class="pos__grid">' + tiles + '</div>' +
+        (d.items.length ? '<div class="builder__lines">' + lines + '</div>' : '<p class="ia__txt" style="margin-top:12px">Aucune ligne pour l\'instant.</p>') +
+        '<button class="toggle' + (d.tva ? ' is-on' : '') + '" data-btva><span class="toggle__dot"></span>Ajouter la TVA (18%)</button>' +
+        '<div class="builder__totals"><div class="btot"><span>Sous-total HT</span><span>' + fF(ht) + '</span></div>' + (d.tva ? '<div class="btot"><span>TVA 18%</span><span>' + fF(tva) + '</span></div>' : '') + '<div class="btot btot--ttc"><span>Total' + (d.tva ? ' TTC' : '') + '</span><b>' + fF(ht + tva) + '</b></div></div>' +
+        '<div class="builder__actions"><button class="bbtn bbtn--ghost" data-bcancel>Annuler</button><button class="bbtn bbtn--go" data-bcreate>Créer le ' + d.type + '</button></div>' +
+      '</div></div>';
+    }
+    const bizNom = () => (SM.biz && SM.biz.nom) || 'Ton commerce';
+    const bizLine = () => { const b = SM.biz || {}; return [b.adresse, b.tel ? 'Tél. ' + b.tel : ''].filter(Boolean).join(' · ') || 'Boussole · Cotonou'; };
+    const bizLegal = () => { const b = SM.biz || {}; return [b.ifu ? 'IFU ' + b.ifu : '', b.rc ? 'RC ' + b.rc : ''].filter(Boolean).join(' · '); };
+    const STATUTS = ['brouillon', 'envoyé', 'payé'];
+    function facDetailHTML() {
+      const d = _facView, ht = docHT(d), tva = docTVA(d);
+      const rows = d.items.map((it) => '<tr><td>' + it.nom + '</td><td class="r">' + it.qty + '</td><td class="r">' + fF(it.prix) + '</td><td class="r">' + fF(it.prix * it.qty) + '</td></tr>').join('');
+      return '<div class="screen wide" style="--sc:#4cc9ff"><span class="screen__tag">' + (d.type === 'facture' ? 'Facture' : 'Devis') + '</span><h1 class="screen__title">' + d.num + '</h1>' +
+        '<p class="screen__sub" style="margin-top:6px">Statut : <button class="docstatut docstatut--' + d.statut + '" data-cyclestat style="cursor:pointer;border:0;font:inherit">' + d.statut + ' &#8635;</button> <span style="opacity:.55;font-size:12px">(touche pour changer)</span></p>' +
+        '<div class="doc"><div class="doc__head"><div class="doc__brand">' + bizNom() + '<small>' + bizLine() + '</small></div><div class="doc__type"><b>' + (d.type === 'facture' ? 'FACTURE' : 'DEVIS') + '</b><span>' + d.num + '</span></div></div>' +
+          '<div class="doc__meta"><span>Facturé à<br><b>' + d.clientNom + '</b></span><span>Date<br><b>' + fDate(d.date) + '</b></span></div>' +
+          '<table class="doctable"><thead><tr><th>Article</th><th class="r">Qté</th><th class="r">P.U.</th><th class="r">Total</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+          '<div class="doc__tot"><div><span>Sous-total HT</span><span>' + fF(ht) + '</span></div>' + (d.tva ? '<div><span>TVA 18%</span><span>' + fF(tva) + '</span></div>' : '') + '<div class="ttc"><span>Total' + (d.tva ? ' TTC' : '') + '</span><span>' + fF(ht + tva) + '</span></div></div>' +
+          '<div class="doc__foot">' + (d.type === 'devis' ? 'Devis valable 30 jours. ' : 'Merci de votre confiance. ') + 'Paiement : espèces / Mobile Money.' + (bizLegal() ? '<br>' + bizLegal() : '') + '</div></div>' +
+        '<div class="doc__actions"><button class="bbtn bbtn--ghost" data-docback>Retour</button><button class="bbtn bbtn--ghost" data-docwa>Partager</button><button class="bbtn bbtn--go" data-docprint>Imprimer / PDF</button></div></div>';
+    }
+    function facturesHTML() { return _facMode === 'builder' ? facBuilderHTML() : _facMode === 'detail' ? facDetailHTML() : facListHTML(); }
+    function printDoc(d) {
+      const ht = docHT(d), tva = docTVA(d);
+      const rows = d.items.map((it) => '<tr><td>' + it.nom + '</td><td class="r">' + it.qty + '</td><td class="r">' + fF(it.prix) + '</td><td class="r">' + fF(it.prix * it.qty) + '</td></tr>').join('');
+      const css = 'body{font-family:Arial,Helvetica,sans-serif;color:#14161c;max-width:640px;margin:24px auto;padding:0 20px}.h{display:flex;justify-content:space-between;border-bottom:2px solid #14161c;padding-bottom:14px}.h b{font-size:20px}.t{text-align:right}.t .big{font-size:22px;font-weight:800;letter-spacing:.04em}.meta{display:flex;justify-content:space-between;margin:16px 0;font-size:13px;color:#444}.meta b{color:#14161c}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}th{text-align:left;border-bottom:1px solid #ccc;padding:7px 4px;font-size:11px;text-transform:uppercase;color:#666}td{padding:8px 4px;border-bottom:1px solid #eee}.r{text-align:right}.tot{margin:14px 0 0 auto;width:55%}.tot div{display:flex;justify-content:space-between;padding:3px 0;font-size:13px}.tot .ttc{font-size:17px;font-weight:800;border-top:2px solid #14161c;margin-top:6px;padding-top:8px}.foot{margin-top:22px;font-size:12px;color:#666;text-align:center}';
+      const html = '<!doctype html><html><head><meta charset="utf-8"><title>' + d.num + '</title><style>' + css + '</style></head><body>' +
+        '<div class="h"><div><b>' + bizNom() + '</b><div style="font-size:12px;color:#666">' + bizLine() + '</div></div><div class="t"><div class="big">' + (d.type === 'facture' ? 'FACTURE' : 'DEVIS') + '</div><div style="font-size:12px;color:#666">' + d.num + '</div></div></div>' +
+        '<div class="meta"><div>Facturé à<br><b>' + d.clientNom + '</b></div><div>Date<br><b>' + fDate(d.date) + '</b></div></div>' +
+        '<table><thead><tr><th>Article</th><th class="r">Qté</th><th class="r">P.U.</th><th class="r">Total</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+        '<div class="tot"><div><span>Sous-total HT</span><span>' + fF(ht) + '</span></div>' + (d.tva ? '<div><span>TVA 18%</span><span>' + fF(tva) + '</span></div>' : '') + '<div class="ttc"><span>Total' + (d.tva ? ' TTC' : '') + '</span><span>' + fF(ht + tva) + '</span></div></div>' +
+        '<div class="foot">' + (d.type === 'devis' ? 'Devis valable 30 jours.' : 'Merci de votre confiance.') + ' Paiement : espèces / Mobile Money.' + (bizLegal() ? '<br>' + bizLegal() : '') + '</div>' +
+        '<scr' + 'ipt>window.onload=function(){window.print()}</scr' + 'ipt></body></html>';
+      const w = window.open('', '_blank'); if (w) { w.document.write(html); w.document.close(); }
+    }
+    function bindFactures() {
+      const scr = view.querySelector('.screen'); if (!scr) return;
+      const render = () => { view.innerHTML = facturesHTML(); bindFactures(); };
+      if (_facMode === 'list') {
+        scr.querySelectorAll('[data-facf]').forEach((b) => b.addEventListener('click', () => { _facFilter = b.dataset.facf; playPop(true); render(); }));
+        scr.querySelectorAll('[data-doc]').forEach((b) => b.addEventListener('click', () => { _facView = (SM.factures || []).find((x) => x.id === b.dataset.doc); if (_facView) { _facMode = 'detail'; playClick(); render(); } }));
+        const nb = scr.querySelector('[data-facnew]'); if (nb) nb.addEventListener('click', () => { _facDraft = { type: _facFilter, clientNom: '', items: [], tva: false }; _facMode = 'builder'; playClick(); render(); });
+        return;
+      }
+      if (_facMode === 'builder') {
+        const d = _facDraft, client = scr.querySelector('[data-bclient]');
+        if (client) client.addEventListener('input', () => { d.clientNom = client.value; });
+        scr.querySelectorAll('[data-btype]').forEach((b) => b.addEventListener('click', () => { d.type = b.dataset.btype; playPop(true); render(); }));
+        scr.querySelectorAll('[data-add]').forEach((b) => b.addEventListener('click', () => { const p = SM.stock.find((x) => x.id === b.dataset.add); if (!p) return; const l = d.items.find((x) => x.id === p.id); if (l) l.qty++; else d.items.push({ id: p.id, nom: p.nom, prix: p.prix, qty: 1 }); playPop(true); render(); }));
+        scr.querySelectorAll('[data-rmline]').forEach((b) => b.addEventListener('click', () => { d.items.splice(+b.dataset.rmline, 1); playSwoosh(); render(); }));
+        const tva = scr.querySelector('[data-btva]'); if (tva) tva.addEventListener('click', () => { d.tva = !d.tva; playPop(d.tva); render(); });
+        const cancel = scr.querySelector('[data-bcancel]'); if (cancel) cancel.addEventListener('click', () => { _facMode = 'list'; _facDraft = null; playClick(); render(); });
+        const create = scr.querySelector('[data-bcreate]'); if (create) create.addEventListener('click', () => {
+          if (!d.items.length) { playSwoosh(); return; }
+          const doc = { id: 'f' + Date.now(), type: d.type, num: nextNum(d.type), clientNom: (d.clientNom || '').trim() || 'Client', date: Date.now(), items: d.items.map((it) => ({ nom: it.nom, prix: it.prix, qty: it.qty })), tva: d.tva, statut: d.type === 'facture' ? 'envoyé' : 'brouillon' };
+          (SM.factures = SM.factures || []).unshift(doc); smSave(); playSell(); _facView = doc; _facMode = 'detail'; _facDraft = null; render();
+        });
+        return;
+      }
+      const d = _facView;
+      const cyc = scr.querySelector('[data-cyclestat]');
+      if (cyc) cyc.addEventListener('click', () => {   // brouillon -> envoyé -> payé -> brouillon
+        d.statut = STATUTS[(STATUTS.indexOf(d.statut) + 1) % STATUTS.length]; smSave(); playPop(true);
+        toast(d.num + ' marqué « ' + d.statut + ' »', { tone: d.statut === 'payé' ? 'good' : undefined, ms: 2500 });
+        render();
+      });
+      const back = scr.querySelector('[data-docback]'); if (back) back.addEventListener('click', () => { _facMode = 'list'; _facView = null; playClick(); render(); });
+      const wa = scr.querySelector('[data-docwa]'); if (wa) wa.addEventListener('click', () => {
+        const lines = d.items.map((it) => '- ' + it.nom + ' x' + it.qty + ' : ' + fF(it.prix * it.qty)).join('\n');
+        const msg = (d.type === 'facture' ? 'FACTURE ' : 'DEVIS ') + d.num + '\nClient : ' + d.clientNom + '\n' + lines + '\nTotal : ' + fF(docTTC(d));
+        window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank'); playClick();
+      });
+      const pr = scr.querySelector('[data-docprint]'); if (pr) pr.addEventListener('click', () => { printDoc(d); playClick(); });
+    }
+
+    /* ============================================================================
+       VAGUE 4 : MON ÉQUIPE (rôles, codes, anti-vol)
+       ========================================================================== */
+    if (!SM.equipe) {
+      const patronNom = (SM.biz && SM.biz.prenom) ? SM.biz.prenom + ' (patron)' : 'Toi (patron)';
+      SM.equipe = SM.meta.demo ? [
+        { id: 'e1', nom: patronNom, role: 'patron', pin: '', actif: true, ventes: 0 },
+        { id: 'e2', nom: 'Awa', role: 'vendeur', pin: '2468', actif: true, ventes: 14 },
+        { id: 'e3', nom: 'Koffi', role: 'gerant', pin: '1357', actif: false, ventes: 8 },
+      ] : [ { id: 'e1', nom: patronNom, role: 'patron', pin: '', actif: true, ventes: 0 } ];
+      smSave();
+    }
+    // ---- PIN : jamais en clair -> empreinte v2 (FNV-1a double passe salée). Les anciennes empreintes restent valides.
+    function pinHashOld(p) { let h = 5381; const s = 'bsl:' + p; for (let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0; return h.toString(36); }
+    function pinHash(p) {
+      let h = 0x811c9dc5; const s = 'boussole/v2:' + p + ':' + String(p).length;
+      for (let r = 0; r < 2; r++) for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+      return 'v2' + h.toString(36);
+    }
+    const pinOk = (p, h) => !!h && (pinHash(p) === h || pinHashOld(p) === h);   // vérifie v2 ET les codes posés avant la migration
+    (SM.equipe || []).forEach((m) => { if (m.pin) { m.pinH = pinHash(m.pin); delete m.pin; } });
+    const activeMember = () => (SM.equipe || []).find((m) => m.id === SM.meta.activeId) || SM.equipe[0] || { id: 'e1', nom: 'Patron', role: 'patron' };
+    const activeRole = () => activeMember().role || 'patron';
+    const ROLE_LBL = { patron: 'Patron', gerant: 'Gérant', vendeur: 'Vendeur' };
+    const ROLE_PERMS = { patron: ['Vendre', 'Stock', 'Bilan', 'Réglages'], gerant: ['Vendre', 'Stock', 'Bilan'], vendeur: ['Vendre'] };
+    const genPin = () => String(Math.floor(1000 + Math.random() * 9000));
+    function equipeHTML() {
+      const rows = (SM.equipe || []).map((m, i) => {
+        const perms = ROLE_PERMS[m.role].map((p) => '<span class="permchip">' + p + '</span>').join('');
+        const mv = (SM.ventes || []).filter((v) => v.parId === m.id && v.ts >= startOfMonth());   // VRAIES ventes du mois
+        const mvTot = mv.reduce((s, v) => s + (+v.total || 0), 0);
+        const meta = m.role === 'patron' ? 'Compte principal · accès total · ' + mv.length + ' vente' + (mv.length > 1 ? 's' : '') + ' ce mois' : 'Code ' + (m.pinH ? '••••' : 'non défini') + ' · ' + mv.length + ' vente' + (mv.length > 1 ? 's' : '') + ' ce mois (' + fF(mvTot) + ')';
+        const acts = m.role === 'patron' ? '' :
+          '<button class="cbtn cbtn--auto' + (m.actif ? ' is-on' : '') + '" data-active="' + m.id + '">' + (m.actif ? 'Actif' : 'En pause') + '</button>' +
+          '<button class="cbtn" data-pin="' + m.id + '">Changer le code</button>' +
+          '<button class="cbtn" data-rmmem="' + m.id + '">Retirer</button>';
+        return '<div class="member' + (m.actif ? '' : ' is-off') + '" style="--i:' + i + '"><div class="member__head">' +
+          '<span class="member__av member__av--' + m.role + '">' + m.nom.charAt(0).toUpperCase() + '</span>' +
+          '<div class="member__id"><span class="member__name">' + m.nom + ' <span class="rolebadge rolebadge--' + m.role + '">' + ROLE_LBL[m.role] + '</span></span><span class="member__meta">' + meta + '</span></div></div>' +
+          '<div class="member__perms">' + perms + '</div>' +
+          (acts ? '<div class="member__act">' + acts + '</div>' : '') + '</div>';
+      }).join('');
+      return '<div class="screen wide" style="--sc:#3a86ff"><span class="screen__tag">Mon équipe</span><h1 class="screen__title">Ton équipe</h1>' +
+        '<div class="ia"><span class="ia__orb"></span><span class="ia__chip">&#10022; Sécurité anti-vol</span><h3 class="ia__title">Chacun son code</h3><p class="ia__txt">Chaque vendeur a son propre code : tu vois <b>qui a vendu quoi</b>, et un vendeur ne voit ni ton <b>bénéfice</b> ni tes <b>réglages</b>. C\'est ta protection contre les pertes.</p></div>' +
+        '<div class="members">' + rows + '</div>' +
+        '<span class="fab__lbl">Ajouter</span><button class="fab fab--blue" data-memnew aria-label="Ajouter un membre">+</button>' +
+        '<div class="sheet-scrim" data-msclose></div><div class="sheet" data-msheet><div class="sheet__grip"></div><h3 class="sheet__title" data-mstitle>Nouveau membre</h3><div data-msbody></div></div></div>';
+    }
+    function bindEquipe() {
+      const scr = view.querySelector('.screen'); if (!scr) return;
+      const sheet = scr.querySelector('[data-msheet]'), scrim = scr.querySelector('[data-msclose]'), body = scr.querySelector('[data-msbody]'), title = scr.querySelector('[data-mstitle]');
+      const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
+      const render = () => { view.innerHTML = equipeHTML(); bindEquipe(); };
+      scrim.addEventListener('click', close);
+      scr.querySelectorAll('[data-active]').forEach((b) => b.addEventListener('click', () => { const m = (SM.equipe || []).find((x) => x.id === b.dataset.active); if (m) { m.actif = !m.actif; smSave(); playPop(m.actif); render(); } }));
+      scr.querySelectorAll('[data-rmmem]').forEach((b) => b.addEventListener('click', () => {
+        const i = (SM.equipe || []).findIndex((x) => x.id === b.dataset.rmmem); if (i < 0) return;
+        const buf = { m: SM.equipe[i], i }; SM.equipe.splice(i, 1);
+        if (SM.meta.activeId === buf.m.id) SM.meta.activeId = 'e1';   // le membre actif retiré -> retour patron
+        smSave(); playSwoosh(); render();
+        toast(buf.m.nom + ' retiré de l\'équipe', { label: 'Annuler', action: () => { SM.equipe.splice(Math.min(buf.i, SM.equipe.length), 0, buf.m); smSave(); if (view.querySelector('.members')) { view.innerHTML = equipeHTML(); bindEquipe(); } } });
+      }));
+      scr.querySelectorAll('[data-pin]').forEach((b) => b.addEventListener('click', () => {
+        const m = (SM.equipe || []).find((x) => x.id === b.dataset.pin); if (!m) return;
+        title.textContent = 'Code de ' + m.nom;
+        body.innerHTML = '<input class="sheet__amt" data-pinv type="number" inputmode="numeric" placeholder="1234"><p class="setnote" style="text-align:center">Le code n\'est jamais stocké en clair : note-le, il ne sera plus affiché.</p><button class="sheet__add" data-pinsave>Enregistrer le code</button>';
+        body.querySelector('[data-pinsave]').addEventListener('click', () => { const v = (body.querySelector('[data-pinv]').value || '').replace(/[^\d]/g, '').slice(0, 4); if (v.length < 4) return; m.pinH = pinHash(v); smSave(); playSuccess(); close(); render(); toast('Code de ' + m.nom + ' : <b>' + v + '</b> — note-le maintenant', { ms: 7000 }); });
+        sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick();
+      }));
+      const nb = scr.querySelector('[data-memnew]'); if (nb) nb.addEventListener('click', () => {
+        title.textContent = 'Nouveau membre';
+        body.innerHTML = '<input class="sheet__txt" data-mnom type="text" placeholder="Nom du membre">' +
+          '<div class="seg seg--role"><button class="seg-btn is-on" data-r="vendeur">Vendeur</button><button class="seg-btn" data-r="gerant">Gérant</button></div>' +
+          '<p class="ia__txt" style="margin:10px 0">Un code à 4 chiffres sera généré pour ce membre.</p>' +
+          '<button class="sheet__add" data-msave>Ajouter le membre</button>';
+        let role = 'vendeur';
+        body.querySelectorAll('[data-r]').forEach((rb) => rb.addEventListener('click', () => { body.querySelectorAll('[data-r]').forEach((x) => x.classList.remove('is-on')); rb.classList.add('is-on'); role = rb.dataset.r; playPop(true); }));
+        body.querySelector('[data-msave]').addEventListener('click', () => { const nom = (body.querySelector('[data-mnom]').value || '').trim(); if (!nom) return; const code = genPin(); (SM.equipe = SM.equipe || []).push({ id: 'e' + Date.now(), nom, role, pinH: pinHash(code), actif: true, ventes: 0 }); smSave(); playSuccess(); close(); render(); toast('Code de ' + nom + ' : <b>' + code + '</b> — donne-le lui, il ne sera plus affiché', { ms: 8000 }); });
+        sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick();
+        setTimeout(() => { try { body.querySelector('[data-mnom]').focus(); } catch (_) {} }, 220);
+      });
+    }
+
+    /* ============================================================================
+       VAGUE « LOGICIEL » : alertes proactives, Boussole qui répond, réglages,
+       verrous par rôle, onboarding, cloud, changement de vendeur, export
+       ========================================================================== */
+    /* ---- Moteur d'alertes : Boussole vient te chercher, pas l'inverse ---- */
+    const ICO_BOX = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8.5v9L12 22l-9-4.5v-9L12 4z"/><path d="M3 8.5 12 13l9-4.5M12 13v9"/></svg>';
+    const ICO_FLAG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 5h13l-2.5 3.5L18 12H5"/></svg>';
+    const ICO_HAND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7.5" r="3"/><path d="M6 20a6 6 0 0 1 12 0"/></svg>';
+    const ICO_STAR = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.4 6.8 19.2l1-5.9L3.5 9.2l5.9-.8z"/></svg>';
+    function computeAlerts() {
+      const A = [];
+      const rupt = SM.stock.filter((p) => p.type === 'physique' && p.qty <= 0);
+      const bas = SM.stock.filter((p) => p.type === 'physique' && p.qty > 0 && p.qty <= CRIT);
+      if (rupt.length) A.push({ tone: 'warn', ac: '#e11d48', ic: ICO_BOX, nav: 'catalogue', tx: '<b>' + rupt.length + ' produit' + (rupt.length > 1 ? 's' : '') + ' en rupture</b> (' + rupt.slice(0, 2).map((p) => p.nom).join(', ') + (rupt.length > 2 ? '…' : '') + ') : tu perds des ventes.' });
+      if (bas.length) A.push({ tone: '', ac: '#ffd23f', ic: ICO_BOX, nav: 'catalogue', tx: 'Stock bas sur <b>' + bas.map((p) => p.nom).slice(0, 3).join(', ') + '</b> : pense au réassort.' });
+      const h = new Date().getHours(), st = salesToday(), obj = objJour();
+      if (h >= 14 && obj > 0 && st < obj * 0.4) A.push({ tone: 'warn', ac: '#ff8a3d', ic: ICO_FLAG, nav: 'caisse', tx: 'Il est ' + h + ' h et tu es à <b>' + Math.round(st / obj * 100) + '%</b> de ton objectif du jour. On pousse ?' });
+      const due = (SM.clients || []).filter((c) => c.dette > 0 && Date.now() - c.lastBuy > 7 * DAY);
+      if (due.length) { const tot = due.reduce((s, c) => s + c.dette, 0); A.push({ tone: 'warn', ac: '#ff8a3d', ic: ICO_HAND, nav: 'carnet', tx: '<b>' + fF(tot) + '</b> de dettes qui traînent depuis plus de 7 jours (' + due[0].nom + (due.length > 1 ? ' +' + (due.length - 1) : '') + '). Relance maintenant.' }); }
+      const orphans = (SM.ventes || []).filter((v) => v.mode === 'credit' && !v.clientId);
+      if (orphans.length) A.push({ tone: '', ac: '#b98cff', ic: ICO_HAND, nav: 'ventes', tx: '<b>' + orphans.length + ' vente' + (orphans.length > 1 ? 's' : '') + ' à crédit sans fiche client</b> : tu risques d\'oublier qui te doit.' });
+      const e = enveloppes();
+      if (new Date().getDate() >= 10 && e.manque > 0 && e.ca > 0) A.push({ tone: 'warn', ac: '#e11d48', ic: ICO_HOME, nav: 'bilan', tx: 'Ta marge du mois ne couvre pas encore tes charges : il manque <b>' + fF(e.manque) + '</b>.' });
+      const streak = calcStreak();
+      if (streak >= 3) A.push({ tone: 'good', ac: '#34d399', ic: ICO_STAR, nav: 'statistiques', tx: '<b>' + streak + ' jours de suite</b> à objectif atteint. Sérieusement stylé.' });
+      return A;
+    }
+    function calcStreak() {   // jours consécutifs à objectif atteint (aujourd'hui compte dès qu'il est atteint)
+      const obj = objJour(); if (obj <= 0) return 0;
+      const caDay = (a) => (SM.ventes || []).reduce((s, v) => (v.ts >= a && v.ts < a + DAY) ? s + (+v.total || 0) : s, 0);
+      let s = caDay(startOfToday()) >= obj ? 1 : 0;
+      for (let k = 1; k <= 60; k++) { if (caDay(startOfToday() - k * DAY) >= obj) s++; else break; }
+      return s;
+    }
+    function confettiBurst() {   // pluie d'or : objectif du jour atteint (1 fois par jour)
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const cols = ['#f6a63c', '#ffd23f', '#34d399', '#ff6ec7', '#b98cff', '#ffffff'];
+      const box = document.createElement('div'); box.className = 'confetti'; let h = '';
+      for (let i = 0; i < 44; i++) {
+        h += '<span style="left:' + (Math.random() * 100).toFixed(1) + '%;background:' + cols[i % cols.length] + ';color:' + cols[i % cols.length] +
+          ';animation-duration:' + (1.1 + Math.random() * 0.9).toFixed(2) + 's;animation-delay:' + (Math.random() * 0.35).toFixed(2) +
+          's;width:' + (5 + Math.random() * 5).toFixed(0) + 'px;height:' + (9 + Math.random() * 6).toFixed(0) + 'px"></span>';
+      }
+      box.innerHTML = h; document.body.appendChild(box);
+      setTimeout(() => { try { playSuccess(); } catch (e) {} }, 250);
+      [500, 720, 990].forEach((dt) => setTimeout(() => { try { playCoin(); } catch (e) {} }, dt));   // les confettis d'or tintent en tombant
+      setTimeout(() => box.remove(), 2700);
+    }
+    function refreshBadge() {
+      const dot = document.querySelector('[data-aldot]'); if (!dot) return;
+      const n = computeAlerts().filter((a) => a.tone === 'warn').length;
+      dot.hidden = n === 0; dot.textContent = n;
+    }
+    /* ---- Boussole qui RÉPOND : questions libres, réponses chiffrées locales (+ webhook optionnel) ---- */
+    const caBetween = (t0, t1) => (SM.ventes || []).reduce((s, v) => (v.ts >= t0 && v.ts < t1) ? s + (+v.total || 0) : s, 0);
+    function topProduit(t0) {
+      const m = {}; (SM.ventes || []).forEach((v) => { if (v.ts >= (t0 || 0)) (v.items || []).forEach((it) => { m[it.nom] = (m[it.nom] || 0) + it.prix * it.qty; }); });
+      let best = null; Object.keys(m).forEach((k) => { if (!best || m[k] > m[best]) best = k; });
+      return best ? { nom: best, tot: m[best] } : null;
+    }
+    function answerLocal(q) {
+      const s = q.toLowerCase();
+      const t0d = startOfToday(), t0m = startOfMonth();
+      if (/aujourd|jour ?\?|today/.test(s)) { const v = caBetween(t0d, Date.now() + 1), n = (SM.ventes || []).filter((x) => x.ts >= t0d).length; return 'Aujourd\'hui : <b>' + fF(v) + '</b> encaissés en ' + n + ' vente' + (n > 1 ? 's' : '') + ', soit <b>' + Math.round(v / objJour() * 100) + '%</b> de ton objectif.' + (v >= objJour() ? ' Objectif atteint, chapeau.' : ''); }
+      if (/hier/.test(s)) { const v = caBetween(t0d - DAY, t0d); return 'Hier : <b>' + fF(v) + '</b> encaissés. ' + (v > 0 ? 'Aujourd\'hui, on fait mieux ?' : 'Journée blanche — ça arrive, on repart.'); }
+      if (/semaine/.test(s)) { const v = caBetween(t0d - 6 * DAY, Date.now() + 1); return 'Sur les 7 derniers jours : <b>' + fF(v) + '</b> encaissés, soit ' + fF(Math.round(v / 7)) + ' par jour en moyenne.'; }
+      if (/mois/.test(s)) { const e = enveloppes(); return 'Ce mois-ci : <b>' + fF(e.ca) + '</b> encaissés, ' + fF(e.cout) + ' de coût de revient, ' + fF(e.charges) + ' de charges → bénéfice net <b>' + fF(e.env3) + '</b>.'; }
+      if (/meilleur.*produit|produit.*march|top produit/.test(s)) { const t = topProduit(0); return t ? 'Ton produit le plus fort : <b>' + t.nom + '</b> (' + fF(t.tot) + ' encaissés au total). Mets-le en avant.' : 'Pas encore assez de ventes pour te dire ça.'; }
+      if (/meilleur/.test(s)) { const byDay = {}; (SM.ventes || []).forEach((v) => { const d0 = new Date(v.ts); d0.setHours(0, 0, 0, 0); byDay[d0.getTime()] = (byDay[d0.getTime()] || 0) + v.total; }); let bd = 0, bv = 0; Object.keys(byDay).forEach((k) => { if (byDay[k] > bv) { bv = byDay[k]; bd = +k; } }); return bd ? 'Ton meilleur jour : <b>' + fDate(bd) + '</b> avec <b>' + fF(bv) + '</b>. Qu\'est-ce qui avait marché ce jour-là ?' : 'Encore aucune vente enregistrée.'; }
+      if (/dette|doi[st]|cr[ée]dit|rembour|r[ée]cup/.test(s)) { const due = (SM.clients || []).filter((c) => c.dette > 0).sort((a, b) => b.dette - a.dette); if (!due.length) return 'Personne ne te doit rien. Tous tes clients sont à jour 👌'; const tot = due.reduce((sm2, c) => sm2 + c.dette, 0); return '<b>' + fF(tot) + '</b> dehors chez ' + due.length + ' client' + (due.length > 1 ? 's' : '') + '. Le plus gros : <b>' + due[0].nom + '</b> (' + fF(due[0].dette) + '). Va au Carnet pour relancer en 1 touche.'; }
+      if (/stock|rupture|r[ée]assort/.test(s)) { const r = SM.stock.filter((p) => p.type === 'physique' && p.qty <= CRIT); return r.length ? 'À surveiller : ' + r.map((p) => '<b>' + p.nom + '</b> (' + (p.qty || 'rupture') + ')').join(', ') + '. Le réassort, c\'est des ventes sauvées.' : 'Ton stock est propre, rien en zone rouge.'; }
+      if (/objectif/.test(s)) { const v = caBetween(t0d, Date.now() + 1); return 'Objectif du jour : <b>' + fF(objJour()) + '</b>. Tu es à <b>' + fF(v) + '</b> (' + Math.round(v / objJour() * 100) + '%).' + (v < objJour() ? ' Reste ' + fF(objJour() - v) + ' : une ou deux bonnes ventes.' : ' C\'est plié, le reste c\'est du bonus.'); }
+      if (/b[ée]n[ée]fice|marge|gagn|rentab/.test(s)) { const e = enveloppes(); const ca = salesTotal(), dep = expTotal(); return 'Depuis le début : <b>' + fF(ca - dep) + '</b> de bénéfice brut. Ce mois-ci, après coût de revient et charges, il te reste <b>' + fF(e.env3) + '</b> net. C\'est ça, ton vrai chiffre.'; }
+      if (/d[ée]pens|sortie|charge/.test(s)) { const e = enveloppes(); const cats = depByCat(); return 'Ce mois-ci : <b>' + fF(e.charges) + '</b> de charges.' + (cats[0] ? ' Ta plus grosse sortie globale : <b>' + cats[0].name + '</b> (' + fF(cats[0].val) + ').' : ''); }
+      if (/enveloppe/.test(s)) { const e = enveloppes(); return 'Tes 3 enveloppes du mois : <b>' + fF(e.cout) + '</b> pour relancer la production, <b>' + fF(e.env2) + '</b> vers les charges' + (e.manque > 0 ? ' (il manque ' + fF(e.manque) + ')' : '') + ', et <b>' + fF(e.env3) + '</b> de bénéfice net.'; }
+      if (/vendeur|[ée]quipe|qui a vendu/.test(s)) { const m = {}; (SM.ventes || []).forEach((v) => { if (v.ts >= t0m && v.par) m[v.par] = (m[v.par] || 0) + v.total; }); const ks = Object.keys(m); return ks.length ? 'Ce mois-ci : ' + ks.map((k) => '<b>' + k + '</b> ' + fF(m[k])).join(' · ') : 'Aucune vente attribuée ce mois-ci.'; }
+      return null;   // pas de règle locale -> webhook IA si configuré, sinon conseil général
+    }
+    async function askBoussole(q) {
+      let a = answerLocal(q);
+      if (!a && SM.meta.iaHook) {
+        try {
+          const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 6000);
+          const e = enveloppes();
+          const r = await fetch(SM.meta.iaHook, { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctl.signal,
+            body: JSON.stringify({ question: q, contexte: { caJour: salesToday(), caMois: e.ca, benefMoisNet: e.env3, charges: e.charges, dettes: (SM.clients || []).reduce((s2, c) => s2 + (c.dette || 0), 0), stockCritique: SM.stock.filter((p) => p.type === 'physique' && p.qty <= CRIT).map((p) => p.nom) } }) });
+          clearTimeout(tm);
+          if (r.ok) { const j = await r.json(); a = j.reponse || j.answer || null; }
+        } catch (e2) {}
+      }
+      if (!a) { const v = iaVerdict(); a = v.lines.join(' ') + ' <br><span style="opacity:.6;font-size:12px">Astuce : demande-moi « CA du jour », « qui me doit », « stock bas », « mes enveloppes »…</span>'; }
+      (SM.chat = SM.chat || []).push({ q, a, ts: Date.now() });
+      while (SM.chat.length > 12) SM.chat.shift();
+      smSave();
+      return a;
+    }
+    /* ---- Écran Boussole v2 : alertes + copilote qui répond ---- */
+    function boussoleHTML() {
+      const ca = salesTotal(), dep = expTotal(), ben = ca - dep;
+      const tease = (ca === 0 && dep === 0) ? 'On démarre quand tu veux, Boss.' : (ben > 0 ? "Continue comme ça et c'est toi qui régales." : 'On serre les dents et on ajuste : je te montre où.');
+      const alerts = computeAlerts();
+      const arows = alerts.map((al, i) => '<button class="alertrow' + (al.tone ? ' alertrow--' + al.tone : '') + '" style="--i:' + i + ';--ac:' + al.ac + '" data-algo="' + al.nav + '"><span class="alertrow__ic">' + al.ic + '</span><span class="alertrow__tx">' + al.tx + '</span><span class="alertrow__go">&#8250;</span></button>').join('');
+      const chat = (SM.chat || []).slice(-6).map((c) => '<div class="bub bub--q">' + c.q + '</div><div class="bub bub--a">' + c.a + '</div>').join('');
+      const qs = ['CA du jour ?', 'Qui me doit ?', 'Stock bas ?', 'Mes enveloppes ?', 'Meilleur produit ?'].map((t) => '<button class="freqchip" data-quickq>' + t + '</button>').join('');
+      return '<div class="screen wide" style="--sc:#ffc46a">' +
+        '<span class="screen__tag">Boussole</span>' +
+        '<div class="calib" data-calib aria-hidden="true"><svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="2"/><circle cx="50" cy="50" r="36" stroke="currentColor" stroke-width="1" opacity=".4"/><g class="calib__needle"><path d="M50 14 L43 50 L57 50 Z" fill="currentColor"/><path d="M50 86 L43 50 L57 50 Z" fill="currentColor" opacity=".35"/></g><circle cx="50" cy="50" r="3.5" fill="currentColor"/></svg></div>' +
+        '<h1 class="screen__title">Ton copilote</h1>' +
+        '<p class="screen__sub">Je lis tes chiffres, je te préviens, et je réponds à tes questions. ' + tease + '</p>' +
+        (arows ? '<h3 class="objsec">Ce que j\'ai repéré</h3><div class="alerts">' + arows + '</div>' : '') +
+        iaBanner() +
+        '<h3 class="objsec">Pose-moi ta question</h3>' +
+        '<div class="chat" data-chatlog>' + chat + '</div>' +
+        '<div class="quickqs">' + qs + '</div>' +
+        '<div class="chatask"><input class="sheet__txt" data-chatin type="text" placeholder="Ex : combien j\'ai vendu cette semaine ?" enterkeyhint="send">' +
+          '<button class="chatask__go" data-chatgo aria-label="Envoyer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 10 14"/><path d="M21 3l-7 18-4-7-7-4z"/></svg></button></div>' +
+        '<div class="kpis">' + kpi('ca', 'Encaissé', fF(ca), 'total enregistré', 0) + kpi('dep', 'Dépensé', fF(dep), 'total enregistré', 1) + '</div>' +
+      '</div>';
+    }
+    function bindBoussole() {
+      const scr = view.querySelector('.screen'); if (!scr) return;
+      // ---- Entrée « calibration » : plein format 1 fois par session
+      const fxIn = _entryFx && !_fxSeen.boussole && !matchMedia('(prefers-reduced-motion: reduce)').matches; _entryFx = false;
+      const cal = scr.querySelector('[data-calib]');
+      if (fxIn && cal) {
+        _fxSeen.boussole = 1;
+        scr.classList.add('is-calib');
+        try { playCountTicks(900); } catch (e) {}
+        setTimeout(() => { cal.classList.add('is-locked'); try { playSuccess(); } catch (e) {} }, 1150);
+        setTimeout(() => { cal.classList.add('is-gone'); }, 1750);
+        setTimeout(() => { scr.classList.remove('is-calib'); }, 2250);
+      }
+      scr.querySelectorAll('[data-algo]').forEach((b) => b.addEventListener('click', () => { playClick(); setActiveNav(b.dataset.algo); showSection(b.dataset.algo, false); }));
+      const log = scr.querySelector('[data-chatlog]'), input = scr.querySelector('[data-chatin]'), go = scr.querySelector('[data-chatgo]');
+      const send = async (q) => {
+        q = (q || '').trim(); if (!q) return;
+        playClick(); input.value = '';
+        log.insertAdjacentHTML('beforeend', '<div class="bub bub--q">' + q.replace(/</g, '&lt;') + '</div><div class="bub bub--a" data-pending>…</div>');
+        const pend = log.querySelector('[data-pending]'); pend.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        const a = await askBoussole(q.replace(/</g, '&lt;'));
+        pend.removeAttribute('data-pending'); pend.innerHTML = a; playSuccess();
+        pend.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      };
+      if (go) go.addEventListener('click', () => send(input.value));
+      if (input) input.addEventListener('keydown', (e) => { if (e.key === 'Enter') send(input.value); });
+      scr.querySelectorAll('[data-quickq]').forEach((b) => b.addEventListener('click', () => send(b.textContent)));
+    }
+    /* ---- Verrous par rôle : chacun voit SA partie (le vrai anti-vol) ---- */
+    const LOCKED = { patron: [], gerant: ['equipe', 'reglages'], vendeur: ['bilan', 'statistiques', 'objectifs', 'carnet', 'factures', 'equipe', 'depenses', 'boussole', 'reglages'] };
+    const canSee = (nav) => (LOCKED[activeRole()] || []).indexOf(nav) < 0;
+    function lockHTML(nav) {
+      const patron = (SM.equipe || []).find((m) => m.role === 'patron') || {};
+      const s = SECTIONS[nav] || { label: nav };
+      return '<div class="screen" style="--sc:#ffc46a"><div class="lock" data-lock>' +
+        '<svg class="lock__shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 4.5 5.5v6c0 5 3.2 8.4 7.5 10 4.3-1.6 7.5-5 7.5-10v-6z"/><rect x="9" y="10.5" width="6" height="5" rx="1.2"/><path d="M10.5 10.5V9a1.5 1.5 0 0 1 3 0v1.5"/></svg>' +
+        '<h1 class="screen__title" style="font-size:26px">' + s.label + ' est verrouillé</h1>' +
+        '<p class="screen__sub">Cet écran est réservé au patron. ' + (activeMember().nom ? 'Connecté : <b>' + activeMember().nom + '</b> (' + ROLE_LBL[activeRole()] + ').' : '') + '</p>' +
+        (patron.pinH
+          ? '<div class="lock__pin"><input class="sheet__amt" data-lockpin type="password" inputmode="numeric" maxlength="4" placeholder="&#8226;&#8226;&#8226;&#8226;"><button class="sheet__add" data-lockgo style="width:auto;margin:0;padding:0 18px">OK</button></div><p class="setnote" style="text-align:center">Code patron pour déverrouiller.</p>'
+          : '<button class="sheet__add" data-lockfree style="max-width:280px;margin:16px auto 0;display:block">Repasser patron</button><p class="setnote" style="text-align:center">Aucun code patron défini : va dans Réglages &rarr; Sécurité pour vraiment verrouiller.</p>') +
+      '</div></div>';
+    }
+    function bindLock(nav) {
+      const lock = view.querySelector('[data-lock]'); if (!lock) return;
+      const patron = (SM.equipe || []).find((m) => m.role === 'patron') || {};
+      const unlock = () => { SM.meta.activeId = patron.id || 'e1'; smSave(); setAvatar(); playSuccess(); toast('Re-bonjour patron 👑', { ms: 2500 }); showSection(nav, false); };
+      const free = view.querySelector('[data-lockfree]'); if (free) free.addEventListener('click', unlock);
+      const goBtn = view.querySelector('[data-lockgo]'), pin = view.querySelector('[data-lockpin]');
+      const tryPin = () => {
+        if (pinOk(pin.value || '', patron.pinH)) { unlock(); return; }
+        lock.classList.remove('is-no'); void lock.offsetWidth; lock.classList.add('is-no'); playSwoosh(); pin.value = '';
+      };
+      if (goBtn) { goBtn.addEventListener('click', tryPin); pin.addEventListener('keydown', (e) => { if (e.key === 'Enter') tryPin(); }); setTimeout(() => { try { pin.focus(); } catch (_) {} }, 220); }
+    }
+    /* ---- « Qui tient la caisse ? » : membre actif (chaque vente porte son nom) ---- */
+    const ROLE_COLORS = { patron: '#f6a63c', gerant: '#3a86ff', vendeur: '#34d399' };
+    function setAvatar() {
+      const av = document.querySelector('.hdr__avatar'); if (!av) return;
+      const m = activeMember();
+      av.textContent = (m.nom || 'P').charAt(0).toUpperCase();
+      av.setAttribute('aria-label', 'Caisse tenue par ' + m.nom + ' — changer');
+      av.style.background = 'radial-gradient(120% 120% at 30% 25%, color-mix(in srgb, ' + (ROLE_COLORS[m.role] || '#f6a63c') + ' 45%, #fff), ' + (ROLE_COLORS[m.role] || '#f6a63c') + ')';
+    }
+    function openSwitch() {
+      const sheet = document.querySelector('[data-swsheet]'), scrim = document.querySelector('[data-swclose]'), body = document.querySelector('[data-swbody]');
+      const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
+      scrim.onclick = close;
+      const renderList = () => {
+        body.innerHTML = (SM.equipe || []).filter((m) => m.actif || m.role === 'patron').map((m) =>
+          '<button class="swrow' + (m.id === SM.meta.activeId ? ' is-cur' : '') + '" data-swpick="' + m.id + '">' +
+          '<span class="swrow__av" style="background:radial-gradient(120% 120% at 30% 25%, color-mix(in srgb, ' + (ROLE_COLORS[m.role] || '#f6a63c') + ' 45%, #fff), ' + (ROLE_COLORS[m.role] || '#f6a63c') + ')">' + m.nom.charAt(0).toUpperCase() + '</span>' +
+          '<span class="swrow__nm">' + m.nom + '<small>' + ROLE_LBL[m.role] + (m.id === SM.meta.activeId ? ' · aux commandes' : '') + '</small></span></button>').join('') +
+          '<p class="setnote">Chaque vente est signée du nom de celui qui tient la caisse : tu sais toujours qui a vendu quoi.</p>';
+        body.querySelectorAll('[data-swpick]').forEach((b) => b.addEventListener('click', () => {
+          const m = (SM.equipe || []).find((x) => x.id === b.dataset.swpick); if (!m) return;
+          if (m.id === SM.meta.activeId) { close(); return; }
+          if (m.pinH) {   // membre protégé par code
+            body.innerHTML = '<p class="ia__txt" style="margin:0 0 10px">Code de <b>' + m.nom + '</b> :</p><input class="sheet__amt" data-swpin type="password" inputmode="numeric" maxlength="4" placeholder="&#8226;&#8226;&#8226;&#8226;"><button class="sheet__add" data-swok>Prendre la caisse</button><button class="sheet__keep" data-swback>Retour</button>';
+            const pin = body.querySelector('[data-swpin]');
+            body.querySelector('[data-swback]').addEventListener('click', renderList);
+            const ok = () => { if (pinOk(pin.value || '', m.pinH)) { doSwitch(m); close(); } else { playSwoosh(); pin.value = ''; pin.placeholder = 'Mauvais code'; } };
+            body.querySelector('[data-swok]').addEventListener('click', ok);
+            pin.addEventListener('keydown', (e) => { if (e.key === 'Enter') ok(); });
+            setTimeout(() => { try { pin.focus(); } catch (_) {} }, 120);
+          } else { doSwitch(m); close(); }
+        }));
+      };
+      const doSwitch = (m) => {
+        SM.meta.activeId = m.id; smSave(); setAvatar(); playSuccess();
+        toast('Caisse tenue par <b>' + m.nom + '</b> (' + ROLE_LBL[m.role] + ')', { tone: 'good', ms: 3000 });
+        if (m.role !== 'patron') { userName = m.nom.split(' ')[0]; } else { userName = (SM.biz && SM.biz.prenom) || userName; }
+        showSection(_curNav, false);   // re-évalue les verrous sur l'écran courant
+      };
+      renderList();
+      sheet.classList.add('is-open'); scrim.classList.add('is-open'); playClick();
+    }
+    /* ---- Réglages : identité, sécurité, IA, données, cloud ---- */
+    const ICO_ID = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="11" r="2.2"/><path d="M6 16.5a3.2 3.2 0 0 1 6 0M14.5 9.5H18M14.5 13H18"/></svg>';
+    const ICO_KEY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="14" r="4.2"/><path d="M11 11 20 2M16.5 5.5 19 8M13.8 8.2l2.2 2.2"/></svg>';
+    const ICO_BOT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="7" width="15" height="11" rx="3"/><circle cx="9.5" cy="12.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="14.5" cy="12.5" r="1.2" fill="currentColor" stroke="none"/><path d="M12 7V4M9 4h6"/></svg>';
+    const ICO_DATA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.8"/><path d="M4.5 5.5v13c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8v-13"/><path d="M4.5 12c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8"/></svg>';
+    const ICO_CLOUD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18.5a4.5 4.5 0 0 1-.9-8.9 5.5 5.5 0 0 1 10.7-1.2A4.3 4.3 0 0 1 16.5 18.5z"/></svg>';
+    function reglagesHTML() {
+      const b = SM.biz || {}; const patron = (SM.equipe || []).find((m) => m.role === 'patron') || {};
+      const cloudLbl = _cloud && _cloud.status === 'on' ? 'Synchronisé · ' + (_cloud.email || 'compte connecté') : _cloud && _cloud.status === 'anon' ? 'Non connecté — mode local' : _cloud && _cloud.status === 'notable' ? 'Compte OK · table cloud à créer (etat.sql)' : 'Mode local (hors-ligne)';
+      const inp = (d, ph, v, type) => '<input class="sheet__txt" data-' + d + ' type="' + (type || 'text') + '" placeholder="' + ph + '" value="' + String(v || '').replace(/"/g, '&quot;') + '">';
+      return '<div class="screen wide" style="--sc:#8a93a6"><span class="screen__tag">Réglages</span><h1 class="screen__title">Ton commerce</h1>' +
+        '<p class="screen__sub">Identité, sécurité, données : tout ce qui fait de Boussole TON outil.</p>' +
+        (SM.meta.demo ? '<span class="demochip">&#9888; Mode démo — données d\'exemple</span>' : '') +
+        '<div class="setgrp" style="--i:0;--gc:#ffc46a"><h3 class="setgrp__ttl">' + ICO_ID + 'Identité du commerce</h3>' +
+          '<div class="setrow2">' + inp('bnom', 'Nom du commerce', b.nom) + inp('bprenom', 'Ton prénom', b.prenom) + '</div>' +
+          '<div class="setrow2">' + inp('btel', 'Téléphone', b.tel, 'tel') + inp('badresse', 'Adresse / quartier', b.adresse) + '</div>' +
+          '<div class="setrow2">' + inp('bifu', 'N° IFU (factures)', b.ifu) + inp('brc', 'N° RCCM (factures)', b.rc) + '</div>' +
+          '<p class="setnote">Ces infos apparaissent sur tes factures et devis — c\'est ce qui les rend officielles.</p>' +
+          '<button class="sheet__add" data-bizsave>Enregistrer l\'identité</button></div>' +
+        '<div class="setgrp" style="--i:1;--gc:#34d399"><h3 class="setgrp__ttl">' + ICO_KEY + 'Sécurité</h3>' +
+          '<p class="setnote" style="margin-top:0">' + (patron.pinH ? 'Code patron défini : les écrans sensibles (bilan, stats, réglages…) sont protégés quand un vendeur tient la caisse.' : 'Aucun code patron. Définis-en un : sans lui, n\'importe qui peut voir ton bénéfice.') + '</p>' +
+          '<div class="setrow2"><input class="sheet__txt" data-pinnew type="password" inputmode="numeric" maxlength="4" placeholder="Nouveau code (4 chiffres)"><button class="setbtn" data-pinset>' + (patron.pinH ? 'Changer le code' : 'Définir le code') + '</button></div></div>' +
+        '<div class="setgrp" style="--i:2;--gc:#b98cff"><h3 class="setgrp__ttl">' + ICO_BOT + 'IA Boussole</h3>' +
+          inp('iahook', 'Webhook IA (optionnel, ex : https://n8n…/boussole)', SM.meta.iaHook, 'url') +
+          '<p class="setnote">Sans webhook, je réponds avec mes règles locales (ça marche hors-ligne). Avec, tes questions libres passent par ton IA n8n/Claude.</p>' +
+          '<button class="sheet__add" data-iasave>Enregistrer</button></div>' +
+        '<div class="setgrp" style="--i:3;--gc:#4cc9ff"><h3 class="setgrp__ttl">' + ICO_DATA + 'Tes données</h3>' +
+          '<div class="setbtns"><button class="setbtn" data-export>&#11015; Exporter (sauvegarde)</button><button class="setbtn" data-importbtn>&#11014; Importer</button>' +
+          (SM.meta.demo ? '<button class="setbtn setbtn--warn" data-wipedemo>Quitter la démo (repartir à zéro)</button>' : '<button class="setbtn" data-loaddemo>Charger la démo (essai)</button>') +
+          '<button class="setbtn setbtn--warn" data-wipe>Tout effacer</button></div>' +
+          '<input type="file" accept="application/json" data-importfile style="display:none">' +
+          '<p class="setnote">Exporte régulièrement : en mode local, tes données vivent dans CE téléphone.</p></div>' +
+        '<div class="setgrp" style="--i:4;--gc:#8ecae6"><h3 class="setgrp__ttl">' + ICO_CLOUD + 'Cloud &amp; compte</h3>' +
+          '<span class="cloudchip' + (_cloud && _cloud.status === 'on' ? ' is-on' : '') + '"><i></i>' + cloudLbl + '</span>' +
+          '<div class="setbtns" style="margin-top:10px">' + (_cloud && _cloud.status === 'on' ? '<button class="setbtn" data-syncnow>Synchroniser maintenant</button>' : '<button class="setbtn" data-gologin>Se connecter (synchro mobile &harr; PC)</button>') + '</div></div>' +
+      '</div>';
+    }
+    function bindReglages() {
+      const scr = view.querySelector('.screen'); if (!scr) return;
+      const g = (s) => scr.querySelector(s);
+      g('[data-bizsave]').addEventListener('click', () => {
+        SM.biz = { nom: g('[data-bnom]').value.trim(), prenom: g('[data-bprenom]').value.trim(), tel: g('[data-btel]').value.trim(), adresse: g('[data-badresse]').value.trim(), ifu: g('[data-bifu]').value.trim(), rc: g('[data-brc]').value.trim(), activite: (SM.biz || {}).activite || '' };
+        if (SM.biz.prenom) { userName = SM.biz.prenom; const p = (SM.equipe || []).find((m) => m.role === 'patron'); if (p && (p.nom === 'Toi (patron)' || !p.nom)) p.nom = SM.biz.prenom + ' (patron)'; }
+        smSave(); playSuccess(); setAvatar(); toast('Identité enregistrée — tes factures sont maintenant à ton nom', { tone: 'good' });
+      });
+      g('[data-pinset]').addEventListener('click', () => {
+        const v = (g('[data-pinnew]').value || '').replace(/[^\d]/g, '').slice(0, 4);
+        if (v.length < 4) { toast('Il faut 4 chiffres', { tone: 'warn', ms: 2500 }); return; }
+        const p = (SM.equipe || []).find((m) => m.role === 'patron'); if (!p) return;
+        p.pinH = pinHash(v); smSave(); playSuccess(); g('[data-pinnew]').value = '';
+        toast('Code patron actif. Les écrans sensibles sont protégés.', { tone: 'good' });
+      });
+      g('[data-iasave]').addEventListener('click', () => { SM.meta.iaHook = g('[data-iahook]').value.trim(); smSave(); playSuccess(); toast(SM.meta.iaHook ? 'Webhook IA branché' : 'Webhook retiré : réponses locales', { ms: 2500 }); });
+      g('[data-export]').addEventListener('click', () => {
+        const blob = new Blob([JSON.stringify(SM, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = 'boussole-sauvegarde-' + new Date().toISOString().slice(0, 10) + '.json'; a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000); playSuccess(); toast('Sauvegarde téléchargée. Garde-la précieusement.', { tone: 'good' });
+      });
+      const fi = g('[data-importfile]');
+      g('[data-importbtn]').addEventListener('click', () => fi.click());
+      fi.addEventListener('change', () => {
+        const f = fi.files && fi.files[0]; if (!f) return;
+        const rd = new FileReader();
+        rd.onload = () => { try { const p = JSON.parse(rd.result); if (!p || !p.stock) throw 0; localStorage.setItem('sm:state', JSON.stringify(p)); location.reload(); } catch (e) { toast('Fichier invalide : ce n\'est pas une sauvegarde Boussole', { tone: 'warn' }); } };
+        rd.readAsText(f);
+      });
+      let wipeArm = 0;
+      const armWipe = (btn, doIt) => btn.addEventListener('click', () => {
+        if (!btn.classList.contains('is-armed')) { btn.classList.add('is-armed'); btn.dataset.old = btn.textContent; btn.textContent = 'Sûr ? Touche encore'; playPop(false); clearTimeout(wipeArm); wipeArm = setTimeout(() => { btn.classList.remove('is-armed'); btn.textContent = btn.dataset.old; }, 3000); return; }
+        doIt();
+      });
+      const wd = g('[data-wipedemo]'); if (wd) armWipe(wd, () => { localStorage.removeItem('sm:state'); location.reload(); });
+      const ld = g('[data-loaddemo]'); if (ld) ld.addEventListener('click', () => {
+        SM.meta.demo = true; SM.stock = JSON.parse(JSON.stringify(DEMO_STOCK));
+        delete SM.ventes; delete SM.depenses; delete SM.cibles; delete SM.clients; delete SM.factures; delete SM.equipe;
+        smSave(); location.reload();
+      });
+      armWipe(g('[data-wipe]'), () => { localStorage.removeItem('sm:state'); location.reload(); });
+      const sn = g('[data-syncnow]'); if (sn) sn.addEventListener('click', () => { cloudPush(true); playSuccess(); toast('Synchronisation lancée', { ms: 2000 }); });
+      const gl = g('[data-gologin]'); if (gl) gl.addEventListener('click', () => { location.href = 'connexion.html'; });
+    }
+    /* ---- Cloud : l'état complet suit ton compte (mobile <-> PC). Table : _proto/etat.sql ---- */
+    var _cloud = { status: 'off' }; var _pushT = 0;
+    function cloudPush(now) {
+      if (!_cloud || _cloud.status !== 'on' || !_cloud.user) return;
+      clearTimeout(_pushT);
+      _pushT = setTimeout(async () => {
+        try { await supa().from('boussole_proto_etat').upsert({ user_id: _cloud.user.id, etat: SM, updated_at: new Date().toISOString() }); _cloud.last = Date.now(); } catch (e) {}
+      }, now ? 10 : 1800);
+    }
+    async function cloudPull() {
+      try {
+        const c = supa(); if (!c) { _cloud.status = 'off'; return; }
+        const { data } = await c.auth.getSession();
+        const session = data && data.session;
+        if (!session) { _cloud.status = 'anon'; return; }
+        _cloud.user = session.user; _cloud.email = session.user.email;
+        const res = await c.from('boussole_proto_etat').select('etat,updated_at').eq('user_id', session.user.id).maybeSingle();
+        if (res.error) { _cloud.status = 'notable'; return; }   // table absente : voir _proto/etat.sql
+        _cloud.status = 'on';
+        if (res.data && res.data.etat && res.data.etat.meta && (res.data.etat.meta.updatedAt || 0) > (SM.meta.updatedAt || 0) + 5000) {
+          localStorage.setItem('sm:state', JSON.stringify(res.data.etat)); location.reload(); return;   // l'autre appareil est plus récent
+        }
+        cloudPush();   // sinon : notre version monte
+      } catch (e) { _cloud.status = 'err'; }
+    }
+    /* ---- Onboarding : 4 pas, compréhensible par un enfant de 5 ans ---- */
+    function renderOnboarding() {
+      const LOGO = '<svg class="onb__logo" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="43" stroke="currentColor" stroke-width="2.6"/><circle cx="50" cy="50" r="35" stroke="currentColor" stroke-width="1.2" opacity=".5"/><path d="M50 84 L43 50 L57 50 Z" fill="currentColor" opacity=".85"/><path d="M50 16 L43 50 L57 50 Z" fill="currentColor"/><circle cx="50" cy="50" r="3.6" fill="currentColor"/></svg>';
+      const ov = document.createElement('div'); ov.className = 'onb'; document.body.appendChild(ov);
+      let step = 0; const dat = { prenom: '', nom: '', activite: 'achat-revente', tel: '', obj: 50000 };
+      const dots = () => '<div class="onb__dots">' + [0, 1, 2, 3].map((i) => '<i class="' + (i === step ? 'on' : '') + '"></i>').join('') + '</div>';
+      const paint = () => {
+        const steps = [
+          '<div class="onb__step">' + LOGO + '<span class="onb__kicker">Bienvenue sur Boussole</span><h1 class="onb__title">Ton commerce,<br>enfin clair.</h1><p class="onb__sub">Tu encaisses, je calcule. Tu me demandes, je réponds. Dis-moi d\'abord comment tu t\'appelles.</p>' +
+            '<input class="sheet__txt" data-oprenom type="text" placeholder="Ton prénom" value="' + dat.prenom + '"><button class="onb__go" data-onext>C\'est parti</button>' + dots() + '</div>',
+          '<div class="onb__step"><span class="onb__kicker">Étape 2</span><h1 class="onb__title">Ton commerce</h1><p class="onb__sub">Son nom apparaîtra sur tes factures. Choisis aussi ce qui te ressemble le plus.</p>' +
+            '<input class="sheet__txt" data-onom type="text" placeholder="Nom du commerce (ex : Chez ' + (dat.prenom || 'Maman') + ')" value="' + dat.nom + '">' +
+            '<div class="onb__seg">' + [['achat-revente', 'Achat-revente'], ['transformation', 'Je fabrique'], ['services', 'Services']].map((k) => '<button class="seg-btn' + (k[0] === dat.activite ? ' is-on' : '') + '" data-oact="' + k[0] + '">' + k[1] + '</button>').join('') + '</div>' +
+            '<input class="sheet__txt" data-otel type="tel" inputmode="numeric" placeholder="Téléphone (optionnel)" value="' + dat.tel + '"><button class="onb__go" data-onext>Continuer</button><button class="onb__skip" data-oskip>Passer</button>' + dots() + '</div>',
+          '<div class="onb__step"><span class="onb__kicker">Étape 3</span><h1 class="onb__title">Ton objectif du jour</h1><p class="onb__sub">Combien tu veux encaisser chaque jour ? Je te dirai chaque soir où tu en es. Tu pourras le changer quand tu veux.</p>' +
+            '<input class="sheet__amt" data-oobj type="number" inputmode="numeric" value="' + dat.obj + '"><button class="onb__go" data-onext>Continuer</button><button class="onb__skip" data-oskip>Passer</button>' + dots() + '</div>',
+          '<div class="onb__step"><span class="onb__kicker">Dernière étape</span><h1 class="onb__title">On démarre comment ?</h1><p class="onb__sub">Deux façons de commencer — et tu peux changer d\'avis dans Réglages.</p>' +
+            '<div class="onb__choice">' +
+              '<button class="onb__card onb__card--zero" data-ozero><b>&#128188; Mes vraies données</b><span>Je pars de zéro : j\'ajoute mes produits et j\'encaisse mes vraies ventes. (Recommandé)</span></button>' +
+              '<button class="onb__card onb__card--demo" data-odemo><b>&#127918; Explorer avec la démo</b><span>Je découvre d\'abord avec des données d\'exemple (boutique fictive), sans rien casser.</span></button>' +
+            '</div>' + dots() + '</div>',
+        ];
+        ov.innerHTML = steps[step];
+        const nx = ov.querySelector('[data-onext]');
+        if (nx) nx.addEventListener('click', () => { collect(); step++; playClick(); paint(); });
+        const sk = ov.querySelector('[data-oskip]');
+        if (sk) sk.addEventListener('click', () => { step++; playClick(); paint(); });
+        ov.querySelectorAll('[data-oact]').forEach((b) => b.addEventListener('click', () => { dat.activite = b.dataset.oact; playPop(true); ov.querySelectorAll('[data-oact]').forEach((x) => x.classList.toggle('is-on', x === b)); }));
+        const zero = ov.querySelector('[data-ozero]');
+        if (zero) zero.addEventListener('click', () => finish(false));
+        const demo = ov.querySelector('[data-odemo]');
+        if (demo) demo.addEventListener('click', () => finish(true));
+        const first = ov.querySelector('input'); if (first && step < 3) setTimeout(() => { try { first.focus(); } catch (_) {} }, 250);
+      };
+      const collect = () => {
+        const gp = (s) => { const el = ov.querySelector(s); return el ? el.value.trim() : ''; };
+        if (step === 0) dat.prenom = gp('[data-oprenom]');
+        if (step === 1) { dat.nom = gp('[data-onom]'); dat.tel = gp('[data-otel]'); }
+        if (step === 2) dat.obj = Math.round(+gp('[data-oobj]')) || 50000;
+      };
+      const finish = (demo) => {
+        collect();
+        SM.biz = { nom: dat.nom, prenom: dat.prenom, activite: dat.activite, tel: dat.tel, adresse: '', ifu: '', rc: '' };
+        SM.objectifs = SM.objectifs || {}; SM.objectifs.jour = dat.obj;
+        SM.meta.onboarded = true; SM.meta.demo = demo;
+        if (dat.prenom) { const p = (SM.equipe || []).find((m) => m.role === 'patron'); if (p) p.nom = dat.prenom + ' (patron)'; userName = dat.prenom; }
+        if (demo) { SM.stock = JSON.parse(JSON.stringify(DEMO_STOCK)); delete SM.ventes; delete SM.depenses; delete SM.cibles; delete SM.clients; delete SM.factures; delete SM.equipe; SM.meta.activeId = 'e1'; smSave(); location.reload(); return; }
+        smSave(); playSell();
+        ov.remove(); bootApp();
+        toast('Bienvenue ' + (dat.prenom || 'Boss') + ' ! Commence par ajouter tes produits au <b>Catalogue</b>.', { tone: 'good', ms: 6500 });
+      };
+      paint();
+    }
+    /* ---- Animations de touché : une signature par famille d'items ---- */
+    (function bindTapFX() {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const MAP = [
+        ['.catchip, .freqchip, .seg-btn, .paymode, .toggle, .cbtn', 'fx-elastic'],
+        ['.sheet__add, .ticket__go, .onb__go, .objgoal__edit', 'fx-launch'],
+        ['.msgbtn', 'fx-plane'],
+        ['.alertrow', 'fx-radar'],
+        ['.pos-tile', 'fx-squash'],
+        ['.salerow', 'fx-receipt'],
+        ['.exprow', 'fx-cashout'],
+        ['.prod', 'fx-shelf'],
+        ['.client', 'fx-wave'],
+        ['.cible', 'fx-coin'],
+        ['.docrow', 'fx-fold'],
+        ['.member', 'fx-tiltz'],
+        ['.kpi', 'fx-glowp'],
+        ['.vital', 'fx-press'],
+        ['.env', 'fx-wobble'],
+      ];
+      document.addEventListener('pointerdown', (e) => {
+        for (let i = 0; i < MAP.length; i++) {
+          const t = e.target.closest(MAP[i][0]);
+          if (t) {
+            const cls = MAP[i][1];
+            t.classList.remove(cls); void t.offsetWidth; t.classList.add(cls);
+            t.addEventListener('animationend', () => t.classList.remove(cls), { once: true });
+            break;
+          }
+        }
+      }, { passive: true });
+    })();
+    /* ---- Compteurs animés : les gros chiffres montent de 0 (stats, bilan) ---- */
+    function countUpNums(scope) {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      (scope || view).querySelectorAll('.kpi__num, .benhero__num').forEach((el, i) => {
+        const m = el.textContent.match(/^([^\d]*)([\d\s\u00A0\u202F]+)(.*)$/);   // préfixe / chiffres (espaces milliers) / suffixe — découpage robuste
+        if (!m) return;
+        const target = Math.abs(+m[2].replace(/[^\d]/g, '')); if (!target) return; const prefix = m[1], suffix = m[3];
+        const DUR = 850, start = performance.now() + i * 90;
+        const tick = (now) => {
+          if (now < start) return requestAnimationFrame(tick);
+          const p = Math.min(1, (now - start) / DUR), e = 1 - Math.pow(1 - p, 3);
+          el.textContent = prefix + vitalFmt(Math.round(target * e)) + suffix;
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      });
+    }
+    /* ---- Sparkline : la petite courbe de CA dans le KPI « Encaissé » ---- */
+    function sparkSVG(bks, color) {
+      if (!bks || bks.length < 2) return '';
+      const vals = bks.map((b) => b.ca), mx = Math.max(1, ...vals);
+      const pts = vals.map((v, i) => (i / (vals.length - 1) * 72 + 1).toFixed(1) + ',' + (24 - v / mx * 21 + 1).toFixed(1));
+      return '<svg class="kpi__spark" viewBox="0 0 74 26" style="color:' + color + '" aria-hidden="true"><path stroke="currentColor" d="M' + pts.join(' L') + '"/></svg>';
+    }
+    /* ===== Barre principale : navigation + état actif ===== */
+    function setActiveTab(nav) { document.querySelectorAll('.tabbar .tab[data-tab]').forEach((t) => t.classList.toggle('is-active', t.dataset.tab === nav)); }
+    (function bindTabbar() {
+      const bar = document.querySelector('.tabbar'); if (!bar) return;
+      if (matchMedia('(hover: hover)').matches) bar.querySelectorAll('.tab').forEach((t) => t.addEventListener('mouseenter', () => playHover()));
+      bar.addEventListener('click', (e) => {
+        const t = e.target.closest('.tab[data-tab]'); if (!t) return;
+        playClick(); setActiveNav(t.dataset.tab); setActiveTab(t.dataset.tab); showSection(t.dataset.tab, false);
+      });
+    })();
+
+    let _curNav = 'accueil';   // écran courant (re-vérifié quand on change de membre)
+    let _entryFx = false;      // transition de lieu : jouée à l'ARRIVÉE sur l'écran, pas aux re-rendus internes
+    const _fxSeen = {};        // 1 transition PLEIN format par écran et par session ; ensuite : instantané (vitesse d'usage)
+    let _shineT = 0;
+    function showSection(nav, cinematic) {
+      _curNav = nav; _entryFx = true;
+      view.classList.add('vw-enter'); clearTimeout(_shineT); _shineT = setTimeout(() => view.classList.remove('vw-enter'), 2100);   // shimmer du titre : à l'entrée seulement
+      setActiveTab(nav);
+      if (!canSee(nav)) { view.innerHTML = lockHTML(nav); bindLock(nav); return; }   // verrou par rôle (anti-vol réel)
+      if (!cinematic && nav !== 'accueil' && nav !== 'catalogue') playWhoosh();   // routing : whoosh (sauf Accueil=portail et Catalogue=tiroir, qui ont leur propre son)
+      const cls = cinematic ? 'cine' : 'hud';
+      if (nav === 'accueil') { view.innerHTML = accueilHTML(cls); renderGreeting(); bindMastoTilt(); bindVitals(); return; }
+      if (nav === 'catalogue') { view.innerHTML = catalogueHTML(); bindStock(); return; }
+      if (nav === 'depenses') { view.innerHTML = depensesHTML(); bindDepenses(); return; }
+      if (nav === 'caisse') { view.innerHTML = caisseHTML(); bindCaisse(); return; }
+      if (nav === 'ventes') { view.innerHTML = ventesHTML(); bindVentes(); return; }
+      if (nav === 'statistiques' || nav === 'bilan') {   // ecrans lourds (graphes SVG) : on acquitte le tap TOUT DE SUITE (squelette) et on rend le contenu a la frame suivante -> pas de gel percu
+        const isBil = nav === 'bilan';
+        view.innerHTML = '<div class="screen wide" style="--sc:' + (isBil ? '#b98cff' : '#ffe9c9') + '"><span class="screen__tag">' + (isBil ? 'Le bilan' : 'Statistiques') + '</span><h1 class="screen__title">' + (isBil ? 'Ta santé' : 'Tes chiffres') + '</h1><p class="screen__sub">Un instant&hellip;</p></div>';
+        const build = isBil ? function () { view.innerHTML = bilanHTML(); bindBilan(); } : function () { view.innerHTML = statsHTML(); bindStats(); };
+        requestAnimationFrame(function () { requestAnimationFrame(build); });
+        return;
+      }
+      if (nav === 'objectifs') { view.innerHTML = objectifsHTML(); bindObjectifs(); return; }
+      if (nav === 'carnet') { view.innerHTML = carnetHTML(); bindCarnet(); return; }
+      if (nav === 'factures') { _facMode = 'list'; view.innerHTML = facturesHTML(); bindFactures(); return; }
+      if (nav === 'equipe') { view.innerHTML = equipeHTML(); bindEquipe(); return; }
+      if (nav === 'boussole') { view.innerHTML = boussoleHTML(); bindBoussole(); return; }
+      if (nav === 'reglages') { view.innerHTML = reglagesHTML(); bindReglages(); return; }
+      const s = SECTIONS[nav] || SECTIONS.accueil;
+      view.innerHTML =
+        '<div class="screen ' + cls + '" style="--sc:' + s.color + '">' +
+          '<span class="screen__tag">Section</span>' +
+          '<h1 class="screen__title">' + s.label + '</h1>' +
+          '<p class="screen__sub">' + s.desc + '</p>' +
+          '<p class="screen__soon">Écran à construire au prochain point.</p>' +
+        '</div>';
+    }
+    function refreshGreeting() { renderGreeting(); }   // re-tape la phrase avec le vrai prénom (reconnaissance)
+    // les mastodontes mènent à la caisse (Vendre) / aux dépenses (Dépenser)
+    view.addEventListener('click', (e) => {
+      const g = e.target.closest('[data-goto]'); if (!g) return;
+      const nav = g.dataset.goto;
+      if (g.classList.contains('masto__btn')) {   // mastodonte : on laisse la signature (onde + particules) se voir avant de partir
+        if (g.dataset.firing) return; g.dataset.firing = '1';
+        g.classList.add('is-fired');
+        setTimeout(() => { delete g.dataset.firing; setActiveNav(nav); showSection(nav, false); }, 300);
+        return;
+      }
+      setActiveNav(nav); showSection(nav, false);
+    });
+    /* ---- Signatures Vendre/Dépenser : l'argent du COMMERCE vit sur les boutons ---- */
+    function mastoData(sell) {   // étiquettes = de VRAIS chiffres (prix du catalogue / dernières sorties)
+      if (sell) {
+        const prices = SM.stock.map((p) => p.prix).filter((v) => v > 0);
+        const v = prices.length ? prices[Math.floor(Math.random() * prices.length)] : Math.max(500, Math.round((objJour() || 5000) / 10));
+        return '+' + vitalFmt(Math.round(v)) + ' F';
+      }
+      const deps = (SM.depenses || []).slice(0, 8).map((d) => +d.montant).filter((v) => v > 0);
+      const v = deps.length ? deps[Math.floor(Math.random() * deps.length)] : 1000;
+      return '&minus;' + vitalFmt(Math.round(v)) + ' F';
+    }
+    function mastoBurst(btn, big) {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const fx = btn.querySelector('.masto__fx'); if (!fx) return;
+      const sell = btn.classList.contains('masto__btn--sell');
+      let h = ''; const n = big ? 5 : 3;
+      for (let i = 0; i < n; i++) {
+        const left = (10 + Math.random() * 74).toFixed(0), delay = (Math.random() * 0.2).toFixed(2), dur = (0.55 + Math.random() * 0.35).toFixed(2);
+        h += sell
+          ? '<i class="coin" style="left:' + left + '%;animation-duration:' + dur + 's;animation-delay:' + delay + 's">F</i>'
+          : '<i class="bill" style="left:' + left + '%;animation-duration:' + dur + 's;animation-delay:' + delay + 's"></i>';
+      }
+      h += '<b class="mfloat ' + (sell ? 'mfloat--up' : 'mfloat--dn') + '" style="left:' + (22 + Math.random() * 36).toFixed(0) + '%">' + mastoData(sell) + '</b>';
+      if (big) h += '<b class="mfloat ' + (sell ? 'mfloat--up' : 'mfloat--dn') + '" style="left:' + (48 + Math.random() * 26).toFixed(0) + '%;animation-delay:.14s">' + mastoData(sell) + '</b>';
+      fx.innerHTML = h;
+      if (sell) { try { playCoin(); if (big) setTimeout(playCoin, 130); } catch (e) {} }   // les pièces tintent en tombant
+      clearTimeout(btn._fxT); btn._fxT = setTimeout(() => { fx.innerHTML = ''; }, 1300);
+    }
+    // Bascule "kinetic" : les mastodontes s'inclinent VERS le curseur/doigt (-5..5°), comme une plaque métallique
+    function bindMastoTilt() {
+      const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      view.querySelectorAll('.masto__btn').forEach((btn) => {
+        let raf = 0, down = false;
+        const apply = (e) => {
+          const r = btn.getBoundingClientRect();
+          const rx = (0.5 - (e.clientY - r.top) / r.height) * 10;   // -5..5°
+          const ry = ((e.clientX - r.left) / r.width - 0.5) * 10;   // -5..5°
+          if (raf) cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(() => { btn.style.transform = 'rotateX(' + rx.toFixed(1) + 'deg) rotateY(' + ry.toFixed(1) + 'deg) translateY(-4px)' + (down ? ' scale(.97)' : ''); });
+        };
+        const reset = () => { if (raf) cancelAnimationFrame(raf); raf = 0; down = false; btn.style.transform = ''; };
+        // ---- Audio-haptique (actif même en mouvement réduit) ----
+        btn.addEventListener('pointerenter', () => {   // "sous tension" + première pluie de pièces/billets (throttle 900 ms)
+          startCharge();
+          const now = performance.now();
+          if (!btn._lastFx || now - btn._lastFx > 900) { btn._lastFx = now; mastoBurst(btn, false); }
+        });
+        btn.addEventListener('pointerdown', (e) => {
+          (btn.classList.contains('masto__btn--sell') ? playSell : playSpend)();           // System Snap à T0 (VENDRE=chime / DÉPENSER=impact)
+          mastoBurst(btn, true);                                                           // grosse salve + étiquettes de vraies données
+          try { if (navigator.vibrate) navigator.vibrate(15); } catch (_) {}
+          if (!rm) { down = true; apply(e); }                                              // pression mobile : incline + enfonce
+        });
+        btn.addEventListener('pointerleave', () => { if (!rm) reset(); stopCharge(); });    // coupe le "bzz" instantanément
+        btn.addEventListener('pointercancel', () => { if (!rm) reset(); stopCharge(); });
+        // ---- Bascule 3D : uniquement si le mouvement est autorisé ----
+        if (!rm) { btn.addEventListener('pointermove', apply); btn.addEventListener('pointerup', reset); }
+      });
+    }
+
+    // ===== Chiffres clés : comptage de 0 jusqu'à la valeur (léger, sans à-coups) =====
+    function vitalFmt(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }   // séparateur de milliers
+    function bindVitals() {
+      const scene = view.querySelector('.vitals'); if (!scene) return;
+      const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      scene.querySelectorAll('.vital').forEach((card, i) => {
+        card.addEventListener('mouseenter', playHover);   // survol = MÊME micro-click que les items du menu
+        card.addEventListener('pointerdown', () => playClick());   // bruit de click au toucher (comme dans le menu)
+        card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); } });   // clavier -> ouvre Statistiques
+        const el = card.querySelector('[data-count]'); if (!el) return;
+        const target = +el.dataset.count || 0, suf = el.dataset.suffix || '';
+        if (rm) { el.textContent = vitalFmt(target) + suf; return; }   // a11y : pas d'animation
+        const DUR = 1100, start = performance.now() + i * 120;   // léger décalage entre les cartes
+        el.textContent = vitalFmt(0) + suf;
+        setTimeout(() => playCountTicks(DUR), i * 120);   // bruit de comptage synchronisé au chiffre qui monte
+        const tick = (now) => {
+          if (now < start) return requestAnimationFrame(tick);
+          const p = Math.min(1, (now - start) / DUR);
+          const e = 1 - Math.pow(1 - p, 3);   // ease-out : rapide puis ralentit à l'approche
+          el.textContent = vitalFmt(Math.round(target * e)) + suf;
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      });
+    }
+    // Poussières de fond : 2 couches (parallaxe -> la couche proche est plus grosse ET plus rapide)
+    (function buildDust() {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (document.documentElement.classList.contains('perf-lite')) return;   // appareil modeste : pas de poussieres (DOM + couches GPU en moins)
+      const build = function () {
+        const wrap = document.querySelector('.depth__dust'); if (!wrap) return;
+        let html = '';
+        for (let i = 0; i < 16; i++) {
+          const near = i % 2 === 0;
+          const size = (near ? 3 + Math.random() * 2 : 1.5 + Math.random()).toFixed(1);
+          const dur = (near ? 14 + Math.random() * 10 : 26 + Math.random() * 16).toFixed(1);
+          const left = (Math.random() * 100).toFixed(1);
+          const top = (54 + Math.random() * 44).toFixed(1);
+          const delay = (-Math.random() * dur).toFixed(1);
+          html += '<span style="left:' + left + '%;top:' + top + '%;width:' + size + 'px;height:' + size + 'px;animation-duration:' + dur + 's;animation-delay:' + delay + 's;--op:' + (near ? 0.6 : 0.35) + '"></span>';
+        }
+        wrap.innerHTML = html;
+      };
+      (window.requestIdleCallback ? requestIdleCallback(build, { timeout: 1500 }) : setTimeout(build, 120));   // hors du chemin critique de boot
+    })();
+
+    /* Sonde FPS reelle : si l'appareil ne tient pas ~50 fps avec l'ambiance en
+       marche, on bascule en mode calme (verite terrain, pas une supposition). */
+    (function perfProbe() {
+      try {
+        var d = document.documentElement;
+        if (d.classList.contains('perf-lite')) return;
+        if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        try { if (localStorage.getItem('boussole:perf') === 'full') return; } catch (e) {}
+        setTimeout(function () {   // on laisse le demarrage se calmer avant de mesurer
+          if (d.classList.contains('perf-lite') || document.hidden) return;
+          var frames = 0, t0 = performance.now();
+          (function tick(now) {
+            frames++;
+            if (now - t0 < 1000) { requestAnimationFrame(tick); return; }
+            if (frames * 1000 / (now - t0) < 55) d.classList.add('perf-lite');
+          })(t0);
+        }, 900);
+      } catch (e) {}
+    })();
+
+    // arrivée : onboarding la première fois, sinon Accueil (HUD de bienvenue) en cinématique
+    function bootApp() {
+      if (SM.biz && SM.biz.prenom) userName = SM.biz.prenom;   // le HUD t'appelle par ton prénom
+      setAvatar();
+      const _activeNav = drawer.querySelector('.navbtn.is-active');
+      showSection((_activeNav && _activeNav.dataset.nav) || 'accueil', true);
+      refreshBadge();
+      (window.requestIdleCallback ? requestIdleCallback(function () { cloudPull(); }, { timeout: 2500 }) : setTimeout(cloudPull, 80));   // hors du chemin critique de boot (perf) : rapatrie / pousse l'etat (mobile <-> PC)
+    }
+    if (!SM.meta.onboarded) renderOnboarding(); else bootApp();
+    // avatar du header = qui tient la caisse (touche pour changer)
+    const _avatarBtn = document.querySelector('.hdr__avatar');
+    if (_avatarBtn) _avatarBtn.addEventListener('click', openSwitch);
+
+    /* ===== SFX du menu (Web Audio synthétisé, aucun fichier) =====
+       UN SEUL AudioContext réutilisé (le code d'origine en créait un par clic -> plante
+       après ~6 bascules : "number of hardware contexts reached the maximum").
+       + baseline mobile : déverrouillage iOS au 1er geste, compresseur, gain boosté sur mobile. */
+    let _actx = null, _master = null, _ready = false;
+    let _muted = (() => { try { return localStorage.getItem('boussole:muted') === '1'; } catch (e) { return false; } })();   // état "Mute" persisté
+    let _charge = null;   // "Electric Charge" de survol en cours (un seul à la fois = polyphonie maîtrisée)
+    const _mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || matchMedia('(pointer: coarse)').matches;
+    function audioCtx() {
+      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
+      if (!_actx) {
+        _actx = new AC();
+        _master = _actx.createGain();
+        _master.gain.value = _mobile ? 1.8 : 1;   // mobile boosté (25% seul = inaudible sur iPhone/Android)
+        const comp = _actx.createDynamicsCompressor();
+        comp.threshold.value = -16; comp.knee.value = 18; comp.ratio.value = 10; comp.attack.value = 0.003; comp.release.value = 0.2;
+        _master.connect(comp); comp.connect(_actx.destination);
+        // ---- « la pièce » : écho court discret partagé par TOUS les sons -> cohérence premium
+        const dly = _actx.createDelay(0.4); dly.delayTime.value = 0.125;
+        const fb = _actx.createGain(); fb.gain.value = 0.22;
+        const damp = _actx.createBiquadFilter(); damp.type = 'lowpass'; damp.frequency.value = 2600;
+        const wet = _actx.createGain(); wet.gain.value = _mobile ? 0.09 : 0.13;
+        _master.connect(dly); dly.connect(damp); damp.connect(fb); fb.connect(dly); damp.connect(wet); wet.connect(comp);
+      }
+      if (_actx.state === 'suspended') { const r = _actx.resume(); if (r && r.catch) r.catch(() => {}); }
+      return _actx;
+    }
+    function unlockAudio() {   // iOS/Android : buffer silencieux au 1er geste
+      if (_ready) return; const ctx = audioCtx(); if (!ctx) return;
+      const s = ctx.createBufferSource(); s.buffer = ctx.createBuffer(1, 1, 22050); s.connect(ctx.destination); s.start(0); _ready = true;
+    }
+    ['pointerdown', 'touchstart', 'keydown'].forEach((ev) => document.addEventListener(ev, unlockAudio, { passive: true }));
+
+    const playMenuSound = (isOpen) => {
+      if (_muted) return;
+      try {
+        const ctx = audioCtx(); if (!ctx) return;
+        const t = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+        osc.type = 'sine';
+        filter.type = 'lowpass';
+        if (isOpen) {
+          // WHOOSH D'OUVERTURE : fluide, ascendant puis descendant
+          osc.frequency.setValueAtTime(120, t);
+          osc.frequency.exponentialRampToValueAtTime(350, t + 0.08);
+          osc.frequency.exponentialRampToValueAtTime(80, t + 0.25);
+          filter.frequency.setValueAtTime(250, t);
+          filter.frequency.exponentialRampToValueAtTime(1000, t + 0.08);
+          filter.frequency.exponentialRampToValueAtTime(150, t + 0.25);
+          gain.gain.setValueAtTime(0, t);
+          gain.gain.linearRampToValueAtTime(0.25, t + 0.05);   // max 25% (desktop)
+          gain.gain.linearRampToValueAtTime(0, t + 0.25);
+        } else {
+          // WHOOSH DE FERMETURE : plus rapide, sec, descendant
+          osc.frequency.setValueAtTime(280, t);
+          osc.frequency.exponentialRampToValueAtTime(50, t + 0.12);
+          filter.frequency.setValueAtTime(700, t);
+          filter.frequency.exponentialRampToValueAtTime(100, t + 0.12);
+          gain.gain.setValueAtTime(0.2, t);
+          gain.gain.linearRampToValueAtTime(0, t + 0.12);
+        }
+        osc.connect(filter); filter.connect(gain); gain.connect(_master);
+        osc.start(t); osc.stop(t + (isOpen ? 0.25 : 0.12));
+      } catch (e) { console.error('Audio error:', e); }
+    };
+
+    const openMenu = () => {
+      if (app.classList.contains('menu-open')) return;
+      app.classList.add('menu-open');
+      drawer.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      playMenuSound(true);
+      const x = drawer.querySelector('.drawer__x'); if (x) x.focus();
+    };
+    const closeMenu = () => {
+      if (!app.classList.contains('menu-open')) return;
+      app.classList.remove('menu-open');
+      drawer.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      playMenuSound(false);
+      burger.focus();
+    };
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('[data-open]')) return openMenu();
+      if (e.target.closest('[data-close]')) return closeMenu();
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && app.classList.contains('menu-open')) closeMenu(); });
+
+    // ===== SFX boutons : hover (micro-click aigu 0.03s, 15%) + click (double bip ascendant) =====
+    const _hoverCapable = matchMedia('(hover: hover) and (pointer: fine)').matches;
+    let _lastHover = 0;
+    function playHover() {
+      if (_muted || !_hoverCapable) return;
+      const now = performance.now(); if (now - _lastHover < 45) return; _lastHover = now;   // anti-mitraillette
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime;
+      const osc = ctx.createOscillator(); osc.type = 'triangle'; osc.frequency.setValueAtTime(2300, t);   // triangle = micro-click plus soyeux que le square
+      const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1200;
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.12, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
+      osc.connect(hp); hp.connect(g); g.connect(_master);
+      osc.start(t); osc.stop(t + 0.035);
+    }
+    function playClick() {
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t0 = ctx.currentTime;
+      const beep = (dt, f, vol, dur) => {   // fondamentale sinus + octave triangle détunée = bip CHAUD, plus « bois » que « bip »
+        const o1 = ctx.createOscillator(); o1.type = 'sine'; o1.frequency.setValueAtTime(f, t0 + dt);
+        const o2 = ctx.createOscillator(); o2.type = 'triangle'; o2.frequency.setValueAtTime(f * 2.005, t0 + dt);
+        const g2 = ctx.createGain(); g2.gain.value = 0.3;
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t0 + dt);
+        g.gain.exponentialRampToValueAtTime(vol, t0 + dt + 0.008);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + dt + dur);
+        o1.connect(g); o2.connect(g2); g2.connect(g); g.connect(_master);
+        o1.start(t0 + dt); o1.stop(t0 + dt + dur + 0.02); o2.start(t0 + dt); o2.stop(t0 + dt + dur + 0.02);
+      };
+      beep(0, 620, 0.19, 0.09); beep(0.065, 930, 0.16, 0.11);   // double bip ascendant, arrondi
+    }
+    drawer.querySelectorAll('[data-sfx-hover]').forEach((b) =>
+      b.addEventListener('mouseenter', () => (b.dataset.sfxProfile === 'data' ? playDataScan : b.dataset.sfxProfile === 'nexus' ? playDigitalWhoosh : b.dataset.sfxProfile === 'drawer' ? playGearLock : playHover)()));   // Data · nexus=whoosh · drawer=loquet · sinon micro-click du menu
+
+    // ===== Sound design "audio-haptique" : synthèse Web Audio (aucun fichier, < 500 ms, très discret) =====
+    function playType() {   // HUD typing : micro-click à chaque lettre
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime;
+      const osc = ctx.createOscillator(); osc.type = 'square'; osc.frequency.setValueAtTime(1700 + Math.random() * 500, t);
+      const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 900;
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.026, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.018);   // ~18 ms, quasi-subliminal (adouci)
+      osc.connect(hp); hp.connect(g); g.connect(_master); osc.start(t); osc.stop(t + 0.02);
+    }
+    function playGlitch() {   // Bouton : glitch (0 ms) -> snap (~250 ms), calé sur le tremblement puis le snap
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime, DUR = 0.25;
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * DUR), ctx.sampleRate);
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const noise = ctx.createBufferSource(); noise.buffer = nb;
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.2;
+      bp.frequency.setValueAtTime(1400, t); bp.frequency.exponentialRampToValueAtTime(600, t + 0.12);
+      const ng = ctx.createGain(); ng.gain.setValueAtTime(0.09, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.13);
+      noise.connect(bp); bp.connect(ng); ng.connect(_master); noise.start(t); noise.stop(t + 0.14);
+      const snap = ctx.createOscillator(); snap.type = 'triangle';
+      snap.frequency.setValueAtTime(520, t + 0.2); snap.frequency.exponentialRampToValueAtTime(180, t + 0.25);
+      const sg = ctx.createGain(); sg.gain.setValueAtTime(0.0001, t + 0.2); sg.gain.exponentialRampToValueAtTime(0.11, t + 0.208); sg.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
+      snap.connect(sg); sg.connect(_master); snap.start(t + 0.2); snap.stop(t + 0.26);
+    }
+    function playWhoosh() {   // Routing : whoosh au début de la transition de page
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime, DUR = 0.24;
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * DUR), ctx.sampleRate);
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const noise = ctx.createBufferSource(); noise.buffer = nb;
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 0.8;
+      bp.frequency.setValueAtTime(500, t); bp.frequency.exponentialRampToValueAtTime(2200, t + 0.12); bp.frequency.exponentialRampToValueAtTime(700, t + DUR);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.08, t + 0.05); g.gain.exponentialRampToValueAtTime(0.0001, t + DUR);
+      noise.connect(bp); bp.connect(g); g.connect(_master); noise.start(t); noise.stop(t + DUR);
+    }
+
+    // ===== Étape 8 : audio-haptique des mastodontes (Cyber-Organic = synthé pur + bruit électrique granuleux) =====
+    function startCharge() {   // SURVOL "Electric Charge" : bzz cristallin sous tension, coupable au mouseleave
+      if (_muted) return;
+      stopCharge();            // un seul charge à la fois
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime, DUR = 0.14;
+      const out = ctx.createGain();
+      out.gain.setValueAtTime(0.0001, t);
+      out.gain.exponentialRampToValueAtTime(0.032, t + 0.02);   // "bzz" (~50 ms d'attaque)
+      out.gain.exponentialRampToValueAtTime(0.0001, t + DUR);
+      out.connect(_master);
+      const osc = ctx.createOscillator(); osc.type = 'triangle'; osc.frequency.setValueAtTime(3200, t);
+      const lfo = ctx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 70;                 // FM = shimmer électrique
+      const lfoG = ctx.createGain(); lfoG.gain.value = 140; lfo.connect(lfoG); lfoG.connect(osc.frequency);
+      osc.connect(out);
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * DUR), ctx.sampleRate);
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const noise = ctx.createBufferSource(); noise.buffer = nb;                                        // grain organique
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 4300; bp.Q.value = 7;
+      const ng = ctx.createGain(); ng.gain.value = 0.4;
+      noise.connect(bp); bp.connect(ng); ng.connect(out);
+      osc.start(t); lfo.start(t); noise.start(t);
+      osc.stop(t + DUR + 0.02); lfo.stop(t + DUR + 0.02); noise.stop(t + DUR + 0.02);
+      _charge = { out, nodes: [osc, lfo, noise], ctx };
+    }
+    function stopCharge() {   // coupe le "bzz" INSTANTANÉMENT (mouseleave)
+      if (!_charge) return;
+      const c = _charge; _charge = null;
+      try {
+        const t = c.ctx.currentTime;
+        c.out.gain.cancelScheduledValues(t);
+        c.out.gain.setTargetAtTime(0.0001, t, 0.008);   // ~25 ms
+        c.nodes.forEach((n) => { try { n.stop(t + 0.06); } catch (e) {} });
+      } catch (e) {}
+    }
+    function playSell() {   // CLIC VENDRE : CARILLON DORÉ — cloche accordée (4 partiels détunés) + poussière d'or qui s'éteint
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime;
+      const bus = ctx.createGain(); bus.connect(_master);
+      // partiels d'une vraie cloche (fondamentale + tierce + octave + brillance), micro-détune = vie
+      [[880, 0, 0.14, 0.55], [1318.5, 0.012, 0.1, 0.45], [1760, 0.03, 0.065, 0.34], [2637, 0.05, 0.032, 0.24]].forEach((p) => {
+        const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(p[0] * (1 + (Math.random() - 0.5) * 0.004), t + p[1]);
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t + p[1]);
+        g.gain.exponentialRampToValueAtTime(p[2], t + p[1] + 0.012);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + p[1] + p[3]);
+        o.connect(g); g.connect(bus); o.start(t + p[1]); o.stop(t + p[1] + p[3] + 0.05);
+      });
+      // poussière d'or : souffle cristallin dont l'énergie meurt naturellement (bruit façonné)
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * 0.18), ctx.sampleRate);
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 2);
+      const noise = ctx.createBufferSource(); noise.buffer = nb;
+      const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 5800;
+      const ng = ctx.createGain(); ng.gain.setValueAtTime(0.05, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+      noise.connect(hp); hp.connect(ng); ng.connect(bus); noise.start(t); noise.stop(t + 0.2);
+    }
+    function playCoin() {   // tintement de pièce : deux micro-partiels très hauts, détunés (pour les pluies de pièces)
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime;
+      [[3520, 0, 0.045], [4698, 0.018, 0.03]].forEach((p) => {
+        const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(p[0] * (1 + (Math.random() - 0.5) * 0.01), t + p[1]);
+        const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t + p[1]);
+        g.gain.exponentialRampToValueAtTime(p[2], t + p[1] + 0.006);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + p[1] + 0.11);
+        o.connect(g); g.connect(_master); o.start(t + p[1]); o.stop(t + p[1] + 0.14);
+      });
+    }
+    function playSpend() {   // CLIC DÉPENSER "Impact/Discharge" : basse électrique lourde
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime;
+      const bus = ctx.createGain(); bus.connect(_master);
+      const o = ctx.createOscillator(); o.type = 'sawtooth';
+      o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(58, t + 0.18);        // chute de fréquence = impact
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(900, t); lp.frequency.exponentialRampToValueAtTime(200, t + 0.2);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.11, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
+      o.connect(lp); lp.connect(g); g.connect(bus); o.start(t); o.stop(t + 0.3);
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * 0.2), ctx.sampleRate);
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const noise = ctx.createBufferSource(); noise.buffer = nb;
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.4;                        // décharge granuleuse
+      bp.frequency.setValueAtTime(1200, t); bp.frequency.exponentialRampToValueAtTime(300, t + 0.18);
+      const ng = ctx.createGain(); ng.gain.setValueAtTime(0.07, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+      noise.connect(bp); bp.connect(ng); ng.connect(bus); noise.start(t); noise.stop(t + 0.22);
+    }
+
+    // ===== Profil sonore PROPRE à "Statistiques" (données pures) =====
+    function playDataScan() {   // SURVOL "Data Processing" : crépitement numérique léger et fluide (calcul de données)
+      if (_muted || !_hoverCapable) return;
+      const now = performance.now(); if (now - _lastHover < 45) return; _lastHover = now;   // partage l'anti-mitraillette du survol
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime, DUR = 0.11;
+      // grains épars (bits de données) filtrés + balayage montant = "traitement en cours"
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * DUR), ctx.sampleRate);
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = (Math.random() < 0.5 ? Math.random() * 2 - 1 : 0);
+      const noise = ctx.createBufferSource(); noise.buffer = nb;
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 6;
+      bp.frequency.setValueAtTime(2600, t); bp.frequency.exponentialRampToValueAtTime(5200, t + DUR);   // balayage montant
+      const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1500;              // léger / aérien
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.05, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + DUR);
+      noise.connect(bp); bp.connect(hp); hp.connect(g); g.connect(_master); noise.start(t); noise.stop(t + DUR + 0.02);
+      const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.setValueAtTime(5200, t); o.frequency.linearRampToValueAtTime(6400, t + DUR);   // scintillement cristallin par-dessus
+      const og = ctx.createGain(); og.gain.setValueAtTime(0.02, t); og.gain.exponentialRampToValueAtTime(0.0001, t + DUR * 0.85);
+      o.connect(og); og.connect(_master); o.start(t); o.stop(t + DUR);
+    }
+    function playAnalyticValidate() {   // CLIC "Validation Analytique" : bip résonnant, clair, technologique, apaisant — sinus purs = SANS distorsion
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime;
+      const bus = ctx.createGain(); bus.gain.value = 0.9; bus.connect(_master);
+      const delay = ctx.createDelay(); delay.delayTime.value = 0.055;   // légère résonance "tech" (queue maîtrisée, pas de boucle folle)
+      const fb = ctx.createGain(); fb.gain.value = 0.25; const wet = ctx.createGain(); wet.gain.value = 0.4;
+      delay.connect(fb); fb.connect(delay); delay.connect(wet); wet.connect(bus);
+      const tone = (freq, dt, dur, peak) => {                          // sinus pur = zéro distorsion, attaque/chute douces = zéro clic
+        const osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.setValueAtTime(freq, t + dt);
+        const gg = ctx.createGain();
+        gg.gain.setValueAtTime(0.0001, t + dt);
+        gg.gain.exponentialRampToValueAtTime(peak, t + dt + 0.02);
+        gg.gain.exponentialRampToValueAtTime(0.0001, t + dt + dur);
+        osc.connect(gg); gg.connect(bus); gg.connect(delay); osc.start(t + dt); osc.stop(t + dt + dur + 0.02);
+      };
+      tone(784, 0,    0.5,  0.09);    // Sol (fondamentale)
+      tone(1176, 0.03, 0.5,  0.055);  // quinte juste (784 x 1.5) = accord consonant
+      tone(1568, 0.06, 0.42, 0.03);   // octave (scintillement discret)
+    }
+
+    // ===== Son de comptage des chiffres (Accueil) =====
+    function playCountTicks(duration) {   // "comptage de chiffres" : ticks numériques rapides pendant la montée + petit ding de fin
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t0 = ctx.currentTime, dsec = (duration || 1100) / 1000;
+      const N = Math.min(26, Math.max(10, Math.round(dsec / 0.045)));
+      for (let k = 0; k < N; k++) {
+        const tt = t0 + (k / N) * dsec;
+        const o = ctx.createOscillator(); o.type = 'square'; o.frequency.setValueAtTime(2000 + Math.random() * 900, tt);
+        const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1500;
+        const g = ctx.createGain(); g.gain.setValueAtTime(0.02, tt); g.gain.exponentialRampToValueAtTime(0.0001, tt + 0.016);
+        o.connect(hp); hp.connect(g); g.connect(_master); o.start(tt); o.stop(tt + 0.018);
+      }
+      const tc = t0 + dsec;   // petit "ding" doux quand le compteur se pose
+      const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.setValueAtTime(1320, tc); o.frequency.exponentialRampToValueAtTime(1760, tc + 0.05);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, tc); g.gain.exponentialRampToValueAtTime(0.06, tc + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, tc + 0.18);
+      o.connect(g); g.connect(_master); o.start(tc); o.stop(tc + 0.2);
+    }
+
+    // ===== Sons du NEXUS (Accueil) : whoosh au survol + vacuum pop au clic (synthèse Web Audio) =====
+    function playDigitalWhoosh() {   // "whoosh_digital" : souffle d'air synthétique court et PROPRE (survol de l'item Accueil)
+      if (_muted || !_hoverCapable) return;
+      const now = performance.now(); if (now - _lastHover < 45) return; _lastHover = now;   // anti-mitraillette (partagé avec le survol)
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime, DUR = 0.16;
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * DUR), ctx.sampleRate);
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const src = ctx.createBufferSource(); src.buffer = nb;
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.1;   // filtre serré = souffle propre (pas granuleux)
+      bp.frequency.setValueAtTime(700, t); bp.frequency.exponentialRampToValueAtTime(3600, t + DUR * 0.5); bp.frequency.exponentialRampToValueAtTime(1200, t + DUR);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.06, t + 0.03); g.gain.exponentialRampToValueAtTime(0.0001, t + DUR);
+      src.connect(bp); bp.connect(g); g.connect(_master); src.start(t); src.stop(t + DUR + 0.02);
+    }
+    function playVacuumPop() {   // "vacuum_pop" : pop sous vide, ÉTOUFFÉ (passe-bas) et NET (clic sur l'item Accueil = portail)
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime;
+      const bus = ctx.createGain(); bus.connect(_master);
+      const o = ctx.createOscillator(); o.type = 'sine';
+      o.frequency.setValueAtTime(420, t); o.frequency.exponentialRampToValueAtTime(90, t + 0.09);   // chute rapide = "pop"
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(1400, t); lp.frequency.exponentialRampToValueAtTime(500, t + 0.1);   // étouffé
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.14, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+      o.connect(lp); lp.connect(g); g.connect(bus); o.start(t); o.stop(t + 0.13);
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * 0.06), ctx.sampleRate);   // souffle d'aspiration très court (sous vide)
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const nz = ctx.createBufferSource(); nz.buffer = nb;
+      const lp2 = ctx.createBiquadFilter(); lp2.type = 'lowpass'; lp2.frequency.value = 800;
+      const ng = ctx.createGain(); ng.gain.setValueAtTime(0.05, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.06);
+      nz.connect(lp2); lp2.connect(ng); ng.connect(bus); nz.start(t); nz.stop(t + 0.07);
+    }
+
+    // ===== Sons du COFFRE/TIROIR (Catalogue) : loquet au survol + tiroir lourd + double clac au clic =====
+    function playGearLock() {   // "gear_lock_short" : loquet mécanique léger (deux petits clics métalliques)
+      if (_muted || !_hoverCapable) return;
+      const now = performance.now(); if (now - _lastHover < 45) return; _lastHover = now;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime;
+      const clack = (dt, f, amp) => {
+        const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * 0.02), ctx.sampleRate);
+        const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+        const nz = ctx.createBufferSource(); nz.buffer = nb;
+        const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 3000;   // sec, métallique
+        const ng = ctx.createGain(); ng.gain.setValueAtTime(amp, t + dt); ng.gain.exponentialRampToValueAtTime(0.0001, t + dt + 0.02);
+        nz.connect(hp); hp.connect(ng); ng.connect(_master); nz.start(t + dt); nz.stop(t + dt + 0.025);
+        const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.setValueAtTime(f, t + dt);
+        const og = ctx.createGain(); og.gain.setValueAtTime(amp * 0.5, t + dt); og.gain.exponentialRampToValueAtTime(0.0001, t + dt + 0.03);
+        o.connect(og); og.connect(_master); o.start(t + dt); o.stop(t + dt + 0.035);
+      };
+      clack(0, 2600, 0.045); clack(0.05, 3200, 0.03);   // loquet à deux temps
+    }
+    function playDrawerPull() {   // "heavy_drawer_pull" (glissement lourd sur rail) + "metal_latch_snap" (double clac sec à l'arrivée)
+      if (_muted) return;
+      const ctx = audioCtx(); if (!ctx) return;
+      const t = ctx.currentTime, SLIDE = 0.34;
+      const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * SLIDE), ctx.sampleRate);   // rail lourd : bruit passe-bande grave qui roule
+      const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const nz = ctx.createBufferSource(); nz.buffer = nb;
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 0.7;
+      bp.frequency.setValueAtTime(320, t); bp.frequency.linearRampToValueAtTime(180, t + SLIDE);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.07, t + 0.06); g.gain.setValueAtTime(0.07, t + SLIDE - 0.08); g.gain.exponentialRampToValueAtTime(0.0001, t + SLIDE);
+      nz.connect(bp); bp.connect(g); g.connect(_master); nz.start(t); nz.stop(t + SLIDE + 0.02);
+      const o = ctx.createOscillator(); o.type = 'sine';   // sous-grave = le poids du tiroir
+      o.frequency.setValueAtTime(70, t); o.frequency.linearRampToValueAtTime(48, t + SLIDE);
+      const og = ctx.createGain(); og.gain.setValueAtTime(0.0001, t); og.gain.exponentialRampToValueAtTime(0.05, t + 0.08); og.gain.exponentialRampToValueAtTime(0.0001, t + SLIDE);
+      o.connect(og); og.connect(_master); o.start(t); o.stop(t + SLIDE + 0.02);
+      const snap = (dt, f) => {   // clac métallique sec (enclenchement)
+        const nb2 = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * 0.03), ctx.sampleRate);
+        const d2 = nb2.getChannelData(0); for (let i = 0; i < d2.length; i++) d2[i] = Math.random() * 2 - 1;
+        const s = ctx.createBufferSource(); s.buffer = nb2;
+        const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 2200;
+        const sg = ctx.createGain(); sg.gain.setValueAtTime(0.11, t + dt); sg.gain.exponentialRampToValueAtTime(0.0001, t + dt + 0.03);
+        s.connect(hp); hp.connect(sg); sg.connect(_master); s.start(t + dt); s.stop(t + dt + 0.035);
+        const o2 = ctx.createOscillator(); o2.type = 'triangle'; o2.frequency.setValueAtTime(f, t + dt); o2.frequency.exponentialRampToValueAtTime(f * 0.5, t + dt + 0.04);
+        const og2 = ctx.createGain(); og2.gain.setValueAtTime(0.08, t + dt); og2.gain.exponentialRampToValueAtTime(0.0001, t + dt + 0.05);
+        o2.connect(og2); og2.connect(_master); o2.start(t + dt); o2.stop(t + dt + 0.06);
+      };
+      snap(SLIDE, 900); snap(SLIDE + 0.07, 700);   // double clac « clac-clac »
+    }
+
+    // ===== Option "Mute" (coupe-son), persistée dans les réglages =====
+    const ICON_SOUND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a4 4 0 0 1 0 7"/></svg>';
+    const ICON_MUTE  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>';
+    function updateMuteUI() {
+      const btn = drawer.querySelector('[data-mute]'); if (!btn) return;
+      const lbl = btn.querySelector('[data-mute-label]'); if (lbl) lbl.textContent = _muted ? 'Son coupé' : 'Son activé';
+      const ic = btn.querySelector('.footbtn__ic'); if (ic) ic.innerHTML = _muted ? ICON_MUTE : ICON_SOUND;
+    }
+    function toggleMute() {
+      _muted = !_muted;
+      try { localStorage.setItem('boussole:muted', _muted ? '1' : '0'); } catch (e) {}
+      updateMuteUI();
+      if (!_muted) playType();   // petit tick de confirmation quand on réactive le son
+    }
+    updateMuteUI();
+
+    // ===== "Clic néon" : feedback IMMÉDIAT dès l'appui (pointerdown), sur chaque item de section =====
+    drawer.querySelectorAll('.navbtn').forEach((b) => {
+      b.addEventListener('pointerdown', () => {
+        (b.dataset.sfxProfile === 'data' ? playAnalyticValidate : b.dataset.sfxProfile === 'nexus' ? playVacuumPop : b.dataset.sfxProfile === 'drawer' ? playDrawerPull : playGlitch)();   // Validation · nexus=Vacuum Pop · drawer=tiroir lourd+clac · sinon glitch/snap (T0)
+        b.classList.remove('miles'); void b.offsetWidth;   // reflow : relance l'anim même en re-clic rapide
+        b.classList.add('miles');
+        setTimeout(() => b.classList.remove('miles'), 230);
+      });
+    });
+
+    // ===== NEXUS : attraction magnétique 3D de l'item « Accueil » (retour au centre de commande) =====
+    function bindNexusMagnet() {
+      const item = drawer.querySelector('.navbtn[data-nav="accueil"]'); if (!item) return;
+      if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;   // souris uniquement
+      const rmot = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let raf = 0;
+      const move = (e) => {
+        const r = item.getBoundingClientRect();
+        const ry = ((e.clientX - r.left) / r.width - 0.5) * 16;    // rotateY : penche vers le curseur (gauche/droite)
+        const rx = (0.5 - (e.clientY - r.top) / r.height) * 12;    // rotateX : penche vers le curseur (haut/bas)
+        if (raf) cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => {
+          item.style.transition = 'none';
+          item.style.transform = 'perspective(500px) rotateX(' + rx.toFixed(1) + 'deg) rotateY(' + ry.toFixed(1) + 'deg) scale(1.05)';
+        });
+      };
+      item.addEventListener('pointerenter', () => item.classList.add('nexus-hot'));   // glow cyan stable
+      item.addEventListener('pointerleave', () => {
+        item.classList.remove('nexus-hot');
+        if (raf) cancelAnimationFrame(raf); raf = 0;
+        item.style.transition = 'transform 300ms cubic-bezier(0.25, 1, 0.5, 1)';   // retour fluide à l'état initial
+        item.style.transform = '';
+      });
+      if (!rmot) item.addEventListener('pointermove', move);
+    }
+    bindNexusMagnet();
+
+    // ===== Profil dynamique (Supabase si session, sinon démo) =====
+    const CROWN = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 8.5l3.8 3L12 5l4.7 6.5 3.8-3L18.5 19h-13z"/></svg>';
+    const USER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.4"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>';
+    const badgeEl = drawer.querySelector('.profil__badge');
+    const nameEl = drawer.querySelector('.profil__name');
+    function setProfile(prenom, role) {
+      drawer.dataset.role = role;
+      nameEl.textContent = prenom || 'Patron';
+      badgeEl.innerHTML = role === 'admin' ? CROWN : USER;
+    }
+    let _sb = null;
+    function supa() { if (!_sb && window.supabase) _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true, autoRefreshToken: true } }); return _sb; }
+    (async () => {
+      let prenom = '', email = '';
+      try {
+        const c = supa();
+        if (c) {
+          const { data } = await c.auth.getSession();
+          const u = data && data.session && data.session.user;
+          if (u) { const m = u.user_metadata || {}; prenom = m.prenom || (m.full_name || m.name || '').trim().split(' ')[0] || ''; email = (u.email || '').toLowerCase(); }
+        }
+      } catch (e) {}
+      const role = email ? (ADMIN_EMAILS.map((x) => x.toLowerCase()).includes(email) ? 'admin' : 'collab') : 'admin';
+      setProfile(prenom || 'Mongazi', role);
+      if (prenom && prenom !== userName) { userName = prenom; refreshGreeting(); }   // le HUD "reconnaît" l'utilisateur connecté
+    })();
+    // aperçu : clic sur le profil bascule le rôle (voir les 2 couleurs de badge)
+    drawer.querySelector('.profil').addEventListener('click', () => { playClick(); setProfile(nameEl.textContent, drawer.dataset.role === 'admin' ? 'collab' : 'admin'); });
+
+    // ===== Navigation active + clic de validation =====
+    function setActiveNav(nav) { drawer.querySelectorAll('.navbtn').forEach((n) => n.classList.toggle('is-active', n.dataset.nav === nav)); }
+    async function doLogout() { try { const c = supa(); if (c) await c.auth.signOut(); } catch (e) {} location.href = 'connexion.html'; }
+    drawer.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-sfx-hover]'); if (!b) return;
+      if (b.dataset.mute !== undefined) { toggleMute(); return; }   // toggle son : ne ferme pas le menu
+      if (!b.classList.contains('navbtn')) playClick();            // footer ; les navbtn ont leur glitch/snap au pointerdown
+      // le flash néon (glitch + snap) est déclenché au pointerdown, voir plus bas
+      if (b.dataset.logout !== undefined) { setTimeout(doLogout, 220); return; }
+      if (b.dataset.go) { setActiveNav(b.dataset.go); showSection(b.dataset.go, false); setTimeout(closeMenu, 220); return; }   // Paramètres (pied du tiroir)
+      if (b.dataset.nav) { setActiveNav(b.dataset.nav); showSection(b.dataset.nav, false); }   // HUD : l'écran change instantanément (caméra sèche)
+      setTimeout(closeMenu, 220);                       // laisse le temps de VOIR le clic "Miles" (~200 ms) avant de fermer
+    });
+  
