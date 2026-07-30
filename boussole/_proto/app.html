@@ -3619,18 +3619,22 @@
     // Poussières de fond : 2 couches (parallaxe -> la couche proche est plus grosse ET plus rapide)
     (function buildDust() {
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      const wrap = document.querySelector('.depth__dust'); if (!wrap) return;
-      let html = '';
-      for (let i = 0; i < 16; i++) {
-        const near = i % 2 === 0;
-        const size = (near ? 3 + Math.random() * 2 : 1.5 + Math.random()).toFixed(1);
-        const dur = (near ? 14 + Math.random() * 10 : 26 + Math.random() * 16).toFixed(1);
-        const left = (Math.random() * 100).toFixed(1);
-        const top = (54 + Math.random() * 44).toFixed(1);
-        const delay = (-Math.random() * dur).toFixed(1);
-        html += '<span style="left:' + left + '%;top:' + top + '%;width:' + size + 'px;height:' + size + 'px;animation-duration:' + dur + 's;animation-delay:' + delay + 's;--op:' + (near ? 0.6 : 0.35) + '"></span>';
-      }
-      wrap.innerHTML = html;
+      if (document.documentElement.classList.contains('perf-lite')) return;   // appareil modeste : pas de poussieres (DOM + couches GPU en moins)
+      const build = function () {
+        const wrap = document.querySelector('.depth__dust'); if (!wrap) return;
+        let html = '';
+        for (let i = 0; i < 16; i++) {
+          const near = i % 2 === 0;
+          const size = (near ? 3 + Math.random() * 2 : 1.5 + Math.random()).toFixed(1);
+          const dur = (near ? 14 + Math.random() * 10 : 26 + Math.random() * 16).toFixed(1);
+          const left = (Math.random() * 100).toFixed(1);
+          const top = (54 + Math.random() * 44).toFixed(1);
+          const delay = (-Math.random() * dur).toFixed(1);
+          html += '<span style="left:' + left + '%;top:' + top + '%;width:' + size + 'px;height:' + size + 'px;animation-duration:' + dur + 's;animation-delay:' + delay + 's;--op:' + (near ? 0.6 : 0.35) + '"></span>';
+        }
+        wrap.innerHTML = html;
+      };
+      (window.requestIdleCallback ? requestIdleCallback(build, { timeout: 1500 }) : setTimeout(build, 120));   // hors du chemin critique de boot
     })();
 
     /* Sonde FPS reelle : si l'appareil ne tient pas ~50 fps avec l'ambiance en
@@ -3660,7 +3664,7 @@
       const _activeNav = drawer.querySelector('.navbtn.is-active');
       showSection((_activeNav && _activeNav.dataset.nav) || 'accueil', true);
       refreshBadge();
-      cloudPull();   // si connecté : rapatrie / pousse l'état (mobile <-> PC)
+      (window.requestIdleCallback ? requestIdleCallback(function () { cloudPull(); }, { timeout: 2500 }) : setTimeout(cloudPull, 80));   // hors du chemin critique de boot (perf) : rapatrie / pousse l'etat (mobile <-> PC)
     }
     if (!SM.meta.onboarded) renderOnboarding(); else bootApp();
     // avatar du header = qui tient la caisse (touche pour changer)
