@@ -975,6 +975,10 @@ def served_page(name: str, request: Request) -> HTMLResponse:
     """Sert une page HTML en injectant l'URL absolue ({{BASE}}) + le chemin admin privé ({{ADMIN_PATH}}) + version d'asset auto."""
     return _render_html(name, request)
 
+@app.get("/api/health")
+def health():
+    return {"ok": True, "service": "nebula-affilies"}
+
 @app.get("/", response_class=HTMLResponse)
 def home():
     return page("index.html")
