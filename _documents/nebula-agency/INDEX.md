@@ -10,7 +10,8 @@
 ## Vente & recrutement (dossier `vente/`)
 - **00-SOCLE-COMMERCIAL.md** — Source de vérité de la vente : les 3 services phares, prix, commissions, règles absolues, ce qu'un partenaire ne promet jamais. *Tout le reste en découle.*
 - **01-AVIS-DE-RECRUTEMENT.md** — Recrutement vague 1 (Cotonou, 8 places) : annonce complète, versions WhatsApp/affiche/réseaux, grille de sélection, script d'entretien, message de bienvenue, plan de diffusion.
-- *À venir : 02-MANUEL-DU-PARTENAIRE · 03-GUIDE-CATALOGUE · 04-GUIDE-VITRINE · 05-GUIDE-OUTIL-METIER.*
+- **02-MANUEL-DU-PARTENAIRE.md** — Le socle du métier, à lire avant les 3 guides : marché et barrières à l'achat, l'escalier des offres, prospection (les 20 noms, les 3 terrains), **la méthode de vente en 7 temps**, la relance, le brief à ramener, les gains, les 10 interdits, les 7 premiers jours, quiz de certification.
+- *À venir : 03-GUIDE-CATALOGUE · 04-GUIDE-VITRINE · 05-GUIDE-OUTIL-METIER.*
 
 ## Pitch & business
 - **Pitch-Vendora-NEBULA.pdf** — Pitch commercial de Vendora (le vendeur WhatsApp IA de NEBULA).

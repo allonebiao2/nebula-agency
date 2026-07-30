@@ -32,12 +32,13 @@ Consigne de travail : avancer **étape par étape**.
    mais **binôme obligatoire avec Mongazi sur les 3 premiers dossiers** Outil métier, le
    partenaire gardant 100 % de sa commission. Protège la qualité de livraison sans amputer le gain.
 
-## Livré dans cette session (Étapes 0 et 1)
+## Livré dans cette session (Étapes 0, 1 et 2)
 
 | Fichier | Contenu |
 |---|---|
 | `_documents/nebula-agency/vente/00-SOCLE-COMMERCIAL.md` | Source de vérité : 3 offres + prix réels, escalier, périmètre partenaire, grille de commissions avec exemples en francs, certification par palier, portfolio de preuves (9 clients), **10 règles « ce qu'on ne promet jamais »**, données de marché, périmètre vague 1, points à verrouiller |
 | `_documents/nebula-agency/vente/01-AVIS-DE-RECRUTEMENT.md` | Annonce complète + version WhatsApp/statut + affiche A4 avec QR + version réseaux sociaux + **grille de sélection notée /20** + **script d'entretien 10 questions** avec bons et mauvais signaux + message de bienvenue + plan de diffusion sur 14 jours |
+| `_documents/nebula-agency/vente/02-MANUEL-DU-PARTENAIRE.md` | **Étape 2.** Le socle du métier de vendeur : marché et 4 barrières à l'achat, escalier des offres avec exemple à 100 000 F sur un seul client, prospection (liste des 20 noms, 3 terrains de chasse, rythme cible), **méthode de vente en 7 temps** (Viser, Ouvrir, Diagnostiquer, Montrer, Proposer, Lever, Conclure), les 5 phrases qui tuent une vente, le silence après le prix, séquence de relance J+2/J+7/J+21/J+45, checklist du brief et ses 3 pièges, circuit de l'argent et logique du palier, 10 interdits, mots de jargon à traduire, plan des 7 premiers jours, mémo à savoir par cœur, quiz de certification |
 | `_documents/nebula-agency/INDEX.md` | Nouvelle section « Vente & recrutement » |
 
 Tout est ancré sur des données **réelles du dépôt** : grille tarifaire de
@@ -46,8 +47,7 @@ chiffres de marché de `_memoire/analyse-marche.md`, réalisations de `clients/`
 
 ## Reste à faire (étapes suivantes)
 
-- **Étape 2** : `02-MANUEL-DU-PARTENAIRE.md` (socle commun : méthode de vente en 7 temps,
-  prospection, gestion du refus, règles d'or)
+- ~~**Étape 2** : `02-MANUEL-DU-PARTENAIRE.md`~~ **FAIT** (livré ci-dessus)
 - **Étape 3** : `03-GUIDE-CATALOGUE.md`
 - **Étape 4** : `04-GUIDE-VITRINE.md`
 - **Étape 5** : `05-GUIDE-OUTIL-METIER.md`
