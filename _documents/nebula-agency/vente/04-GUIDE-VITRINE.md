@@ -347,8 +347,11 @@ perdriez le client sur-le-champ.
 
 | Élément | Montant |
 |---|---|
-| **Vitrine Digitale + QR Code** | **150 000 F**, paiement unique |
-| Hébergement et sécurité | 15 000 F **tous les 6 mois** |
+| **Vitrine Digitale + QR Code** | **150 000 F**, une page complète |
+| Page supplémentaire | 30 000 F par page |
+| Nom de domaine à son nom | **offert la 1ère année**, puis 16 000 F/an |
+| Paiement | **70 % au démarrage, 30 % à la mise en ligne** (intégral encouragé) |
+| Hébergement et sécurité | 20 000 F **tous les 6 mois**, modifications comprises |
 | Délai | 5 à 7 jours après le brief complet |
 
 ## 8.2 L'annonce
@@ -479,11 +482,13 @@ Si vous sentez que 150 000 F va bloquer, posez cette question **avant** d'annonc
 
 **9. « Et après, qui s'en occupe ? Si je veux changer quelque chose ? »**
 
-> « Le site reste hébergé et protégé, c'est ce que couvrent les 15 000 francs tous les six
-> mois. Pour les modifications, vous passez par moi, je suis votre contact. »
+> « Vos 20 000 francs tous les six mois couvrent trois choses : votre site reste en ligne,
+> il reste protégé, et **vos modifications sont comprises**. Vous voulez changer un texte,
+> une photo, un prix, ajouter une prestation : vous me le dites, c'est fait, vous ne payez
+> rien de plus. Je suis votre contact. »
 >
-> ⚠️ **Conditions et tarif des modifications à confirmer par NEBULA.** Ne vous engagez pas
-> sur un chiffre : « Je vous confirme les conditions exactes aujourd'hui. »
+> **C'est un argument, pas une contrainte.** La plupart des agences facturent chaque
+> modification. Dites-le.
 
 ---
 
@@ -538,6 +543,11 @@ l'exception. Votre objectif à la première visite n'est pas la signature, c'est
 - « Vos photos de chantier, vous les avez sur votre téléphone ? »
 - « On démarre cette semaine, ou vous préférez après les fêtes ? »
 - « Le numéro qui reçoit les demandes, c'est celui-ci ? »
+
+**Et le cadeau de closing, à garder pour la fin :**
+> « Et votre adresse à vous sur internet, [sonnom].com, je vous l'offre la première année. »
+
+Sortez-le au moment où il hésite, jamais avant. Un cadeau annoncé trop tôt n'est plus un cadeau.
 
 ## 10.3 Le suivi, là où se gagne la Vitrine
 
@@ -651,7 +661,9 @@ C'est la différence entre une vitrine livrée en 7 jours et un dossier qui pour
 # FICHE TERRAIN · À GARDER SUR SOI
 
 **LE PRODUIT**
-Vitrine Digitale + QR · **150 000 F** · 15 000 F/6 mois · **5 à 7 jours**
+Vitrine Digitale + QR · **150 000 F** une page complète · +30 000 F par page
+**Nom de domaine offert la 1ère année** · Abonnement **20 000 F/6 mois, modifs comprises**
+**70 % au démarrage, 30 % à la mise en ligne** · **5 à 7 jours**
 « Aujourd'hui, quelqu'un qui cherche votre nom ne trouve rien. Demain, il trouve votre maison. »
 
 **MA COMMISSION** · 37 500 F à 25 % · 45 000 F à 30 % · 52 500 F à 35 %
@@ -707,16 +719,10 @@ Le numéro WhatsApp testé devant lui · **UNE DATE DE RAPPEL**
 
 ---
 
-## ⚠️ Points à confirmer par NEBULA avant diffusion
+## Tout est tranché
 
-- [ ] **Nombre de pages inclus** dans les 150 000 F (page unique, ou hub multi-pages comme
-      Djambar et Luxury Skin ?)
-- [ ] **Ce qui est inclus exactement** : galerie, formulaire de devis, prise de rendez-vous,
-      carte, avis, FAQ. Un vendeur doit pouvoir lister sans hésiter
-- [ ] **Nom de domaine personnalisé** (type `graindesthetique.com`) : inclus ou en supplément,
-      et à quel prix ? *Question posée par tout client sérieux*
-- [ ] **Tarif et conditions des modifications** après livraison
-- [ ] **Procédure d'encaissement** et acompte éventuel sur 150 000 F
+Les décisions de prix, de commission et de règles sont **fermées** et consignées dans
+`00-SOCLE-COMMERCIAL.md`, qui fait foi en cas de différence.
 
 ---
 

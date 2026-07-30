@@ -338,13 +338,14 @@ pendant dix minutes. **Il fait rechuter le client.** Quand le poisson mord, on t
 
 | Élément | Montant |
 |---|---|
-| **Catalogue Digital + QR Code** | **50 000 F**, paiement unique |
-| Hébergement et sécurité | 15 000 F **tous les 6 mois** |
+| **Catalogue Digital + QR Code** | **50 000 F**, jusqu'à 20 produits, paiement intégral |
+| Lot de 10 produits supplémentaires | 15 000 F |
+| Hébergement et sécurité | 20 000 F **tous les 6 mois**, modifications comprises |
 | Délai | 5 à 7 jours après le brief complet |
 
-**L'abonnement est par semestre, jamais par mois.** Un partenaire qui dit « 15 000 F par mois »
-fait perdre la vente sur-le-champ. Dites : « 15 000 francs tous les six mois, ça fait
-2 500 francs par mois, c'est ce qui garde votre catalogue en ligne et protégé ».
+**L'abonnement est par semestre, jamais par mois.** Un partenaire qui dit « 20 000 F par mois »
+fait perdre la vente sur-le-champ. Dites : « 20 000 francs tous les six mois, ça fait
+3 300 francs par mois, c'est ce qui garde votre catalogue en ligne et protégé ».
 
 ## 8.2 Comment l'annoncer
 
@@ -455,11 +456,13 @@ dégaine jamais du tac au tac. On marque un temps, puis on répond, et on termin
 
 **6. « Et si je veux ajouter des produits après ? »**
 
-> « C'est prévu, on ajoute. »
+> « C'est compris dans votre abonnement. 20 000 francs tous les six mois, et vous me demandez
+> vos modifications quand vous voulez : ajouter un produit, changer un prix, remplacer une
+> photo. Vous ne payez rien de plus. »
 >
-> ⚠️ **Conditions et tarif des modifications à confirmer par NEBULA avant de vous engager
-> sur un chiffre.** En attendant : « Je vous confirme les conditions exactes aujourd'hui. »
-> Un vendeur qui vérifie gagne la confiance. Un vendeur qui invente perd le client.
+> **C'est une de vos meilleures réponses.** La plupart des agences facturent chaque
+> modification. Dites-le : « chez d'autres, vous payez à chaque changement. Chez nous
+> c'est compris. »
 
 ---
 
@@ -511,10 +514,10 @@ dégaine jamais du tac au tac. On marque un temps, puis on répond, et on termin
 
 ---
 
-**12. « C'est quoi encore les 15 000 F ? »**
+**12. « C'est quoi encore les 20 000 F ? »**
 
 > « C'est ce qui garde votre catalogue en ligne, rapide et protégé, et c'est tous les six mois,
-> pas tous les mois. Ça revient à 2 500 francs par mois. C'est le seul truc qui continue,
+> pas tous les mois. Ça revient à 3 300 francs par mois. C'est le seul truc qui continue,
 > et sans ça votre catalogue ne reste pas en ligne. »
 >
 > **Annoncez toujours l'abonnement vous-même, dans la foulée du prix.** Un client qui le
@@ -540,7 +543,7 @@ répondant il a accepté sans s'en rendre compte.
 ## 10.2 Les 5 gestes de la mise en route, dans l'ordre
 
 1. **Confirmez à voix haute :** « Donc : catalogue, 50 000 francs, livré sous 5 à 7 jours,
-   plus 15 000 francs tous les six mois pour l'hébergement. C'est bien ça ? »
+   plus 20 000 francs tous les six mois pour l'hébergement. C'est bien ça ? »
 2. **Expliquez le paiement.** *(Procédure officielle NEBULA à confirmer par Mongazi.)*
 3. **Enregistrez-le dans votre espace partenaire, devant lui.** Ça le rassure énormément,
    et ça sécurise votre commission.
@@ -672,7 +675,9 @@ Vingt minutes de plus dans la boutique valent mieux qu'un dossier qui traîne un
 *Prenez cette page en capture d'écran. C'est tout ce dont vous avez besoin dans la rue.*
 
 **LE PRODUIT**
-Catalogue Digital + QR · **50 000 F** · 15 000 F/6 mois · **5 à 7 jours**
+Catalogue Digital + QR · **50 000 F** jusqu'à 20 produits · +15 000 F par lot de 10
+Abonnement **20 000 F/6 mois, modifications comprises** · **5 à 7 jours**
+Paiement **intégral**, jamais échelonné · Le client paie **NEBULA**, jamais moi
 « Un seul lien avec tout ce que vous vendez, les prix, et un bouton qui vous envoie la
 commande sur WhatsApp. »
 
@@ -722,15 +727,10 @@ Photos · Liste des produits avec les prix · Numéro WhatsApp **testé devant l
 
 ---
 
-## ⚠️ Points à confirmer par NEBULA avant diffusion
+## Tout est tranché
 
-- [ ] **Nombre de produits inclus** dans les 50 000 F (un vendeur doit pouvoir répondre à
-      « on peut en mettre combien ? » sans hésiter)
-- [ ] **Tarif et conditions des modifications** après livraison (ajout de produits,
-      changement de prix)
-- [ ] **Procédure d'encaissement** : numéro Mobile Money officiel, acompte ou paiement
-      intégral, justificatif remis au client
-- [ ] **Délai de paiement des commissions** après réclamation
+Les décisions de prix, de commission et de règles sont **fermées** et consignées dans
+`00-SOCLE-COMMERCIAL.md`, qui fait foi en cas de différence.
 
 ---
 

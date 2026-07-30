@@ -9,7 +9,7 @@ pour qu'ils sachent absolument tout (arguments, besoins clients, méthodologie).
 
 Consigne de travail : avancer **étape par étape**.
 
-## Décisions prises par Mongazi (verrouillées)
+## Décisions prises par Mongazi (32 décisions, toutes verrouillées le 2026-07-30)
 
 | Sujet | Décision |
 |---|---|
@@ -17,6 +17,65 @@ Consigne de travail : avancer **étape par étape**.
 | **Commission sur l'Outil métier** | **Taux plein 25 / 30 / 35 %**, exactement comme Catalogue et Vitrine (pas de taux réduit) |
 | **Zone et volume vague 1** | **Cotonou uniquement, 5 à 10 places** (annonce calée sur 8) |
 | **Rôle du partenaire** | **Vente + brief uniquement.** Toute la production reste chez NEBULA |
+
+
+### Vague 2 de décisions (session du 2026-07-30, après livraison des étapes 0 à 6)
+
+**Argent**
+- Encaissement **sur le Mobile Money de Mongazi**, toujours. Virement bancaire accepté selon le client (réputé payé une fois constaté). Le partenaire ne touche jamais d'argent ni ne communique de coordonnées bancaires
+- **Catalogue : paiement intégral, jamais échelonné.** Vitrine et Outil : **70 % / 30 %**, solde dû à la mise en ligne. **Solde impayé = site non mis en ligne**
+- **Commissions payées en 24 à 72h**, en deux fois sur les projets à tranches, palier compté dès le 1er versement
+- **Récurrent : 25 % de chaque abonnement encaissé, renouvellements compris, ACQUIS À VIE** même après départ. Ne compte pas dans le palier. Le réseau ne s'applique pas au récurrent (défaut posé). Pas de commission sur le renouvellement de domaine
+- Relance de renouvellement : **rappel automatique + relance du partenaire** → le rappel automatique (n8n + WhatsApp) devient une infrastructure obligatoire puisque le récurrent est à vie
+
+**Offres**
+- Catalogue : **20 produits inclus**, +15 000 F par lot de 10
+- Vitrine : **une page complète**, +30 000 F par page supplémentaire
+- **Domaine offert la 1ère année**, puis 16 000 F/an (coût réel ~16 000 F)
+- **Abonnement unique 20 000 F / 6 mois, modifications de contenu comprises** (remplace les 15 000 F)
+- QR Google Review vendable par les partenaires, même commission
+- **Boussole reste hors du programme partenaires**
+
+**Règles**
+- Prospect au **premier qui l'enregistre, 60 jours**
+- Un client existant qui rachète → **commission au partenaire d'origine**
+- Filleuls : invitation libre, **commission réseau seulement après sa 1ère vente**
+- Litige : **on corrige jusqu'à satisfaction**, commission acquise
+- Inactif : relance à 2 mois, désactivation à 4 mois (récurrent maintenu)
+- Vente libre partout, recrutement limité à Cotonou
+- SAV : **partenaire en premier interlocuteur + NEBULA joignable**, mais le partenaire ne promet jamais correction ni délai
+- **Pas d'email @nebula-agency.online**, classement **entièrement transparent** (ventes et gains)
+
+**Diagnostic Digital**
+- **Gratuit, valeur affichée 25 000 F.** Le partenaire collecte, **Mongazi restitue**
+
+**Recrutement et pilotage**
+- Candidatures ouvertes **21 jours**, formation **en visio Google Meet**
+- **Point collectif hebdomadaire de 30 min** (seul mécanisme de rétention retenu)
+- Objectif **30 ventes sur 90 jours**. Aucune prime, aucune offre de lancement
+
+**Contrat**
+- **Contrat d'apporteur d'affaires indépendant**, signé par Mongazi BIAO sous l'enseigne NEBULA Agency, **IFU à compléter, RCCM en cours**
+- Exclusivité **de métier** (pas totale) · **non-sollicitation 24 mois** après départ
+- CGU en ligne + **charte signée à la main, photo renvoyée sur WhatsApp avant création des accès**
+
+### Livré en complément (vague 2)
+
+| Fichier | Contenu |
+|---|---|
+| `vente/00-SOCLE-COMMERCIAL.md` **v2** | Réécrit intégralement avec les 32 décisions |
+| `vente/08-DIAGNOSTIC-DIGITAL.md` | **La consultation professionnelle** : proposition, préparation, cartographie en 3 temps calée sur le configurateur, **40 questions dans l'ordre**, test du cahier, observations muettes, **grille de détection des automatisations** (14 symptômes → 14 automatisations du stack réel), chiffrage de la douleur, rapport, restitution, 8 erreurs qui tuent un diagnostic, fiche terrain |
+| `vente/fiche-diagnostic.html` | Fiche remplie sur le téléphone chez le client : sauvegarde automatique en localStorage, cases à cocher des automatisations, bouton qui envoie le **rapport structuré complet** sur le WhatsApp NEBULA. QC : balises équilibrées, `node --check` OK |
+| `vente/09-CONTRAT-PARTENAIRE.md` | **Contrat d'apporteur d'affaires indépendant** en 16 articles + annexe résumée. Non relu par un juriste (suffisant pour la vague 1, à faire relire au-delà de ~30 partenaires) |
+| Guides 01 à 07 | Mis à jour : abonnement 20 000 F, lots de produits, pages supplémentaires, domaine offert, 70/30, récurrent, 24-72h, date limite 21 jours, formation visio, blocs « à confirmer » supprimés |
+
+### Reste (ce n'est plus de la décision)
+1. Compléter l'**IFU** dans le contrat
+2. Passer le site public de 15 000 à **20 000 F** (`00-nebula-agency/nebula_agency_v9.html`)
+3. Aligner **NOVA** (`nebula-affilies/server.py`, `agency_brain()`)
+4. Retirer les **5 anciens guides seedés** qui poussent la Vitrine en premier (`seed_docs()`)
+5. Construire le **rappel automatique de renouvellement** (n8n + WhatsApp)
+6. Convertir en PDF et publier dans l'espace partenaire
 
 ## Analyse stratégique retenue
 

@@ -223,7 +223,7 @@ Merci [Nom] 🙏
 C'est confirmé :
 · [Catalogue / Vitrine] pour [nom du commerce]
 · Livraison prévue le [date précise]
-· Ensuite 15 000 F tous les 6 mois pour l'hébergement
+· Ensuite 20 000 F tous les 6 mois, modifications comprises pour l'hébergement
 
 Je reste votre contact du début à la fin. La moindre question, vous m'écrivez.
 ```
@@ -300,7 +300,7 @@ Vous avez 2 minutes cette semaine ?
 
 **« Il faut payer tous les mois ? »**
 ```
-Non. Vous payez une fois, et ensuite c'est 15 000 F tous les 6 mois pour l'hébergement
+Non. Vous payez une fois, et ensuite c'est 20 000 F tous les 6 mois, modifications comprises pour l'hébergement
 et la sécurité. Ça revient à 2 500 F par mois.
 ```
 

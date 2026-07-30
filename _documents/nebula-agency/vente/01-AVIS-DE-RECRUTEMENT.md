@@ -73,7 +73,7 @@ Trois offres, du plus simple au plus ambitieux.
 | **Vitrine Digitale** | Un vrai site professionnel, visible sur Google, qui inspire confiance | **150 000 F** |
 | **Outil Digital sur mesure** | Un logiciel pensé pour son métier : suivi, stock, commandes, équipe, factures | **55 000 à 500 000 F** |
 
-Un abonnement d'hébergement et de sécurité de 15 000 F tous les 6 mois accompagne les deux
+Un abonnement d'hébergement et de sécurité de 20 000 F tous les 6 mois, modifications comprises accompagne les deux
 premières offres.
 
 ---
@@ -100,8 +100,14 @@ Votre pourcentage monte avec votre nombre de ventes dans le mois.
 Vous recrutez quelqu'un ? Vous touchez **10 %** de ses ventes. Il recrute à son tour ?
 Vous touchez encore **5 %**. À vie, tant qu'ils vendent.
 
-Paiement par **Mobile Money**, sur réclamation depuis votre espace personnel, chaque commission
-tracée du premier jour au versement.
+**Vous êtes payé sous 24 à 72 heures**, par Mobile Money, sur simple réclamation depuis votre
+espace personnel. Chaque commission est tracée du premier jour au versement.
+
+**Et vos gains ne s'arrêtent jamais.** Chaque client que vous apportez paie un abonnement de
+20 000 F tous les 6 mois : **vous en touchez 25 %, soit 5 000 F par client et par semestre,
+et vous les gardez à vie**, même si un jour vous arrêtez. Avec 30 clients, cela fait
+150 000 F par semestre sans vendre quoi que ce soit de nouveau.
+Ce que vous construisez reste à vous.
 
 ---
 
@@ -163,7 +169,7 @@ Nous préférons être clairs tout de suite, ça vous évitera de perdre votre t
 1. **Vous déposez votre candidature en ligne** (5 minutes).
 2. **Nous appelons les candidats retenus** dans les 72 heures.
 3. **Entretien de 20 minutes**, en personne à Cotonou ou en appel WhatsApp.
-4. **Formation de démarrage**, remise de vos accès, de votre lien et de vos guides.
+4. **Formation de démarrage en visio (Google Meet)**, remise de vos accès, de votre lien et de vos guides. Vous signez la charte d'engagement et vos accès sont créés.
    Vous pouvez vendre le jour même.
 
 **8 places pour cette première vague.** Nous préférons 8 partenaires sérieux et bien accompagnés
@@ -176,7 +182,7 @@ Nous préférons être clairs tout de suite, ça vous évitera de perdre votre t
 **En ligne :** https://partenaires.nebula-agency.online/devenir
 **Par WhatsApp :** +229 96 74 07 32 — écrivez simplement **« PARTENAIRE »** et votre prénom.
 
-*Candidatures ouvertes jusqu'au [DATE À FIXER]. NEBULA Agency · Cotonou, Bénin ·
+*Candidatures ouvertes jusqu'au 21 jours après la publication de cette annonce. NEBULA Agency · Cotonou, Bénin ·
 www.nebula-agency.online*
 
 ---

@@ -504,7 +504,22 @@ recrues (N2). À vie, tant qu'ils vendent.
 2. NEBULA marque le paiement dans le back-office
 3. **Vos commissions se créent automatiquement** et vous êtes alerté
 4. Vous cliquez sur **« Réclamer »** dans votre espace
-5. NEBULA vous paie en Mobile Money et marque « payé ». Tout est tracé, du premier jour au versement
+5. **NEBULA vous paie sous 24 à 72 heures** en Mobile Money. Tout est tracé, du premier jour au versement
+
+## 5.2bis Votre portefeuille : le récurrent
+
+Chaque client abonné vous rapporte **5 000 F tous les 6 mois** (25 % de son abonnement de
+20 000 F), **renouvellements compris et à vie**, même si vous quittez le programme.
+
+| Votre portefeuille | Sans rien vendre |
+|---|---|
+| 10 clients | 50 000 F par semestre |
+| 30 clients | 150 000 F par semestre |
+| 60 clients | 300 000 F par semestre |
+
+Le récurrent **ne compte pas dans votre palier** : seules vos ventes nouvelles vous font
+passer de 25 à 30 puis 35 %. Et l'échéance de renouvellement est **le meilleur prétexte de
+reprise de contact qui existe** pour vendre la marche suivante de l'escalier.
 
 ## 5.3 Le calcul qui doit vous obséder
 
@@ -621,7 +636,11 @@ semaine. La vente vient d'elle-même quand la conversation est bonne.
 | Le prix du Catalogue ? | 50 000 F |
 | Le prix de la Vitrine ? | 150 000 F |
 | L'Outil sur mesure ? | De 55 000 à 500 000 F, sur devis |
-| L'abonnement ? | 15 000 F **tous les 6 mois**, hébergement et sécurité |
+| L'abonnement ? | 20 000 F **tous les 6 mois**, modifications comprises |
+| Quand suis-je payé ? | **24 à 72h** après réclamation |
+| Ce que je touche sur l'abonnement ? | 25 %, soit 5 000 F par client par semestre, **à vie** |
+| Un client à 35 produits ? | 50 000 + 15 000 par lot de 10 = 80 000 F |
+| Une vitrine à 3 pages ? | 150 000 + 2 × 30 000 = 210 000 F |
 | Le délai ? | 5 à 7 jours après le brief complet |
 | Ma commission sur une vitrine ? | 37 500 F à 25 %, 45 000 F à 30 %, 52 500 F à 35 % |
 | Combien de clients NEBULA a livrés ? | 9, tous consultables en ligne |

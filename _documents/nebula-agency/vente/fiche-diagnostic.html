@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Fiche de diagnostic · NEBULA Agency</title>
+<meta name="description" content="Fiche de diagnostic digital à remplir chez le client.">
+<meta name="theme-color" content="#070A14">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#070A14; --card:rgba(255,255,255,.045); --line:rgba(255,255,255,.11);
+  --txt:#EAEEF9; --dim:#9AA6C4; --blue:#4A7DFF; --violet:#9B5CFF; --cyan:#3FD8E6;
+  --gold:#F6A63C; --green:#34D399; --ease:cubic-bezier(.16,1,.3,1);
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--txt); min-height:100vh; padding:18px 14px 120px;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  line-height:1.5;
+  background-image:
+    radial-gradient(90vw 55vh at 15% -10%,rgba(155,92,255,.15),transparent 60%),
+    radial-gradient(80vw 45vh at 100% 5%,rgba(63,216,230,.09),transparent 60%);
+  background-attachment:fixed;
+}
+.wrap{max-width:600px;margin:0 auto}
+
+header{text-align:center;margin-bottom:20px}
+.mark{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--dim);margin-bottom:10px}
+.dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--violet));
+  box-shadow:0 0 10px rgba(155,92,255,.8)}
+h1{font-size:clamp(21px,5.6vw,27px);line-height:1.2;font-weight:800;letter-spacing:-.02em}
+h1 span{background:linear-gradient(100deg,var(--blue),var(--violet) 50%,var(--cyan));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--dim);font-size:13.5px;margin-top:7px}
+
+.tip{border:1px solid rgba(246,166,60,.34);background:rgba(246,166,60,.09);border-radius:14px;
+  padding:13px 15px;font-size:13.5px;margin-bottom:16px;color:#F2D9B4}
+.tip b{color:var(--gold)}
+
+fieldset{border:1px solid var(--line);background:var(--card);border-radius:17px;
+  padding:16px 14px;margin-bottom:13px}
+legend{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);
+  font-weight:700;padding:0 8px}
+label{display:block;font-size:13.5px;font-weight:600;margin:13px 0 6px;color:#D6DDF0}
+label:first-of-type{margin-top:4px}
+.hint{display:block;font-weight:400;font-size:12px;color:var(--dim);margin-top:2px}
+
+input[type=text],input[type=tel],input[type=date],input[type=number],textarea,select{
+  width:100%;padding:12px 13px;border-radius:12px;border:1px solid var(--line);
+  background:rgba(255,255,255,.05);color:var(--txt);font-size:16px;font-family:inherit;
+  transition:border-color .2s var(--ease),background .2s
+}
+input:focus,textarea:focus,select:focus{outline:none;border-color:rgba(155,92,255,.65);
+  background:rgba(155,92,255,.09)}
+textarea{min-height:78px;resize:vertical;line-height:1.45}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--dim) 50%),
+  linear-gradient(135deg,var(--dim) 50%,transparent 50%);
+  background-position:calc(100% - 19px) 21px,calc(100% - 14px) 21px;
+  background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+
+.chk{display:flex;align-items:flex-start;gap:11px;padding:11px 12px;border-radius:12px;
+  border:1px solid var(--line);background:rgba(255,255,255,.03);margin-bottom:7px;
+  cursor:pointer;transition:all .18s var(--ease);-webkit-tap-highlight-color:transparent}
+.chk:active{transform:scale(.99)}
+.chk input{width:21px;height:21px;flex-shrink:0;margin-top:1px;accent-color:#9B5CFF}
+.chk span{font-size:13.5px;font-weight:500;line-height:1.4}
+.chk.on{border-color:rgba(155,92,255,.55);background:rgba(155,92,255,.13)}
+
+.reine{border-left:3px solid var(--gold);padding-left:11px;margin:16px 0 0}
+.reine label{color:var(--gold);margin-top:0}
+
+.bar{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top,#070A14 70%,rgba(7,10,20,.85));border-top:1px solid var(--line);
+  display:flex;gap:9px;max-width:600px;margin:0 auto}
+.bar button{flex:1;padding:15px;border-radius:14px;border:0;font-size:15px;font-weight:750;
+  cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;
+  transition:transform .16s var(--ease)}
+.bar button:active{transform:scale(.97)}
+#send{background:linear-gradient(135deg,#3FD8E6,#34D399);color:#06210F}
+#clear{flex:0 0 auto;padding:15px 17px;background:rgba(255,255,255,.06);color:var(--dim);
+  border:1px solid var(--line)}
+
+.saved{position:fixed;top:12px;left:50%;transform:translateX(-50%);padding:8px 16px;
+  border-radius:999px;background:rgba(52,211,153,.16);border:1px solid rgba(52,211,153,.45);
+  color:var(--green);font-size:12px;font-weight:650;opacity:0;pointer-events:none;
+  transition:opacity .3s;z-index:20}
+.saved.on{opacity:1}
+
+footer{text-align:center;color:var(--dim);font-size:11.5px;margin-top:20px;line-height:1.7}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="saved" id="saved">Enregistré</div>
+<div class="wrap">
+
+<header>
+  <div class="mark"><span class="dot"></span> NEBULA Agency · Diagnostic Digital</div>
+  <h1>Fiche de <span>diagnostic</span></h1>
+  <p class="sub">À remplir chez le client. Tout est sauvegardé au fur et à mesure.</p>
+</header>
+
+<div class="tip">
+  <b>Rappel.</b> Aujourd'hui vous écoutez et vous notez. <b>Aucun prix, aucun délai,
+  aucune promesse.</b> Notez ses mots à lui, pas les vôtres.
+</div>
+
+<form id="f">
+
+<fieldset>
+  <legend>Le commerce</legend>
+  <label>Nom du commerce <input type="text" name="commerce" autocomplete="off"></label>
+  <label>Responsable rencontré <input type="text" name="responsable" autocomplete="off"></label>
+  <label>Activité exacte <span class="hint">Ce qu'il fait, dans ses mots</span>
+    <input type="text" name="activite" autocomplete="off"></label>
+  <label>Quartier / ville <input type="text" name="lieu" autocomplete="off"></label>
+  <label>WhatsApp <input type="tel" name="whatsapp" autocomplete="off"></label>
+  <label>Depuis combien de temps il exerce <input type="text" name="anciennete" autocomplete="off"></label>
+</fieldset>
+
+<fieldset>
+  <legend>La taille</legend>
+  <label>Nombre de personnes qui travaillent <input type="number" name="personnes" min="0"></label>
+  <label>Nombre de points (boutique, atelier, dépôt, chantiers)
+    <input type="number" name="points" min="0"></label>
+  <label>Ses clients
+    <select name="clients">
+      <option value="">Choisir</option>
+      <option>Particuliers surtout</option>
+      <option>Entreprises surtout</option>
+      <option>Les deux</option>
+    </select></label>
+  <label>Quand il n'est pas là, qu'est-ce qui ne se fait pas
+    <textarea name="absence"></textarea></label>
+</fieldset>
+
+<fieldset>
+  <legend>Comment il gère aujourd'hui</legend>
+  <label>Son support principal
+    <select name="support">
+      <option value="">Choisir</option>
+      <option>Un cahier papier</option>
+      <option>Plusieurs cahiers</option>
+      <option>Cahier + WhatsApp</option>
+      <option>Excel ou téléphone</option>
+      <option>Un logiciel existant</option>
+      <option>Rien de structuré</option>
+    </select></label>
+
+  <div class="reine">
+    <label>Q19 · « Vous notez tout ça où ? Je peux voir ? »
+      <span class="hint">Ce que vous avez vu dans le cahier</span>
+      <textarea name="q19"></textarea></label>
+  </div>
+
+  <label>Ce qu'il refait plusieurs fois par jour, toujours pareil
+    <textarea name="repetitif"></textarea></label>
+  <label>La tâche qu'il déteste le plus <input type="text" name="deteste" autocomplete="off"></label>
+</fieldset>
+
+<fieldset>
+  <legend>Ses 3 douleurs principales · dans SES mots</legend>
+  <label>Douleur 1 <input type="text" name="d1" autocomplete="off"></label>
+  <label>Douleur 2 <input type="text" name="d2" autocomplete="off"></label>
+  <label>Douleur 3 <input type="text" name="d3" autocomplete="off"></label>
+
+  <div class="reine">
+    <label>Q28 · « Si vous pouviez voir une seule chose sur votre téléphone chaque matin,
+      ce serait quoi ? » <span class="hint">Mot pour mot. C'est le cahier des charges</span>
+      <textarea name="q28"></textarea></label>
+  </div>
+</fieldset>
+
+<fieldset>
+  <legend>Automatisations repérées</legend>
+  <div id="autos"></div>
+</fieldset>
+
+<fieldset>
+  <legend>Les chiffres qu'IL a donnés</legend>
+  <label>Commandes perdues par mois, et leur valeur
+    <input type="text" name="c_perdues" autocomplete="off"></label>
+
+  <div class="reine">
+    <label>Q34 · Total des dettes clients en ce moment
+      <input type="text" name="c_dettes" autocomplete="off"></label>
+  </div>
+
+  <label>Heures par semaine passées à noter et à chercher
+    <input type="text" name="c_temps" autocomplete="off"></label>
+  <label>Ce qu'il estime perdre par an (erreurs, oublis, stock)
+    <input type="text" name="c_pertes" autocomplete="off"></label>
+  <label>Sait-il ce qu'il a gagné le mois dernier ?
+    <select name="c_sait">
+      <option value="">Choisir</option>
+      <option>Non, pas du tout</option>
+      <option>À peu près seulement</option>
+      <option>Oui, précisément</option>
+    </select></label>
+</fieldset>
+
+<fieldset>
+  <legend>Décision et contexte</legend>
+  <label>Qui décide
+    <select name="decideur">
+      <option value="">Choisir</option>
+      <option>Lui seul</option>
+      <option>Avec un associé</option>
+      <option>Avec sa famille</option>
+      <option>Il faut voir le patron</option>
+    </select></label>
+  <label>Niveau d'urgence
+    <select name="urgence">
+      <option value="">Choisir</option>
+      <option>C'est pour maintenant</option>
+      <option>Dans les prochains mois</option>
+      <option>C'est juste une idée</option>
+    </select></label>
+  <label>Ce qu'il a déjà essayé, et pourquoi ça n'a pas marché
+    <textarea name="essaye"></textarea></label>
+  <label>Budget évoqué spontanément <span class="hint">Ne jamais le demander</span>
+    <input type="text" name="budget" autocomplete="off"></label>
+  <label>Où il veut être dans 2 ans <textarea name="futur"></textarea></label>
+</fieldset>
+
+<fieldset>
+  <legend>Ce que j'ai observé sans le demander</legend>
+  <label>Observations <span class="hint">Désordre, cahier soigné, employés qui interrompent,
+    stock visible, téléphone qui sonne, file d'attente…</span>
+    <textarea name="observations"></textarea></label>
+  <label>Photos prises avec sa permission
+    <select name="photos">
+      <option value="">Choisir</option>
+      <option>Oui, du cahier</option>
+      <option>Oui, du lieu et du stock</option>
+      <option>Oui, des deux</option>
+      <option>Non</option>
+    </select></label>
+</fieldset>
+
+<fieldset>
+  <legend>La suite</legend>
+  <label>Date de restitution fixée <span class="hint">Ne partez jamais sans elle</span>
+    <input type="date" name="restitution"></label>
+  <label>Client enregistré dans mon espace partenaire ?
+    <select name="enregistre">
+      <option value="">Choisir</option>
+      <option>Oui, fait</option>
+      <option>Pas encore</option>
+    </select></label>
+  <label>Mon nom (partenaire) <input type="text" name="partenaire" autocomplete="off"></label>
+</fieldset>
+
+</form>
+
+<footer>
+  Fiche interne <b>NEBULA Agency</b> · Les informations recueillies restent confidentielles
+  et ne sortent pas de l'agence.
+</footer>
+
+</div>
+
+<div class="bar">
+  <button type="button" id="clear">Vider</button>
+  <button type="button" id="send">Envoyer le rapport sur WhatsApp</button>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var AUTOS = [
+    "Répond aux mêmes questions toute la journée → répondeur WhatsApp intelligent",
+    "Messages sans réponse la nuit et le dimanche → réponse automatique 24h/24",
+    "Oublie de relancer les dettes → relance automatique aux échéances",
+    "Ne sait pas ce qui reste en stock → alerte de seuil et inventaire",
+    "Passe ses soirées sur les devis → devis généré automatiquement",
+    "Ne sait pas comment s'est passée la journée → rapport quotidien automatique",
+    "Clients qui oublient leur rendez-vous → rappel automatique la veille",
+    "Ne connaît pas sa marge réelle → suivi du coût de revient",
+    "Employés qui voient les bénéfices → droits d'accès séparés",
+    "Ne sait pas qui a modifié quoi → historique tracé",
+    "Besoin de factures en règle → devis et factures (conformité DGI à étudier)",
+    "Veut encaisser à distance → paiement Mobile Money en ligne",
+    "Obligé d'être sur place pour savoir → tableau de bord ou cockpit",
+    "Chaque point a son cahier → multi-sites centralisé"
+  ];
+
+  var form = document.getElementById("f");
+  var box  = document.getElementById("autos");
+  var KEY  = "nebula:diag";
+
+  AUTOS.forEach(function(txt, i){
+    var l = document.createElement("label");
+    l.className = "chk";
+    l.innerHTML = '<input type="checkbox" name="auto' + i + '" value="' + txt.replace(/"/g,"&quot;") + '">'
+                + '<span>' + txt + '</span>';
+    box.appendChild(l);
+  });
+
+  function fields(){
+    return Array.prototype.slice.call(form.querySelectorAll("input,textarea,select"))
+      .concat(Array.prototype.slice.call(box.querySelectorAll("input")));
+  }
+
+  var flash;
+  function save(){
+    var data = {};
+    fields().forEach(function(el){
+      data[el.name] = (el.type === "checkbox") ? el.checked : el.value;
+    });
+    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch(e){}
+    var s = document.getElementById("saved");
+    s.classList.add("on");
+    clearTimeout(flash);
+    flash = setTimeout(function(){ s.classList.remove("on"); }, 900);
+  }
+
+  function load(){
+    var raw;
+    try { raw = localStorage.getItem(KEY); } catch(e){ return; }
+    if (!raw) return;
+    var data;
+    try { data = JSON.parse(raw); } catch(e){ return; }
+    fields().forEach(function(el){
+      if (!(el.name in data)) return;
+      if (el.type === "checkbox") {
+        el.checked = !!data[el.name];
+        el.closest(".chk").classList.toggle("on", el.checked);
+      } else {
+        el.value = data[el.name];
+      }
+    });
+  }
+
+  document.addEventListener("input",  save);
+  document.addEventListener("change", function(e){
+    if (e.target.type === "checkbox") e.target.closest(".chk").classList.toggle("on", e.target.checked);
+    save();
+  });
+
+  function val(n){
+    var el = form.querySelector('[name="' + n + '"]');
+    return el && el.value.trim() ? el.value.trim() : "—";
+  }
+
+  document.getElementById("send").addEventListener("click", function(){
+    var autos = [];
+    Array.prototype.forEach.call(box.querySelectorAll("input:checked"), function(c){
+      autos.push("  - " + c.value);
+    });
+
+    var t = "DIAGNOSTIC DIGITAL NEBULA\n"
+      + "Partenaire : " + val("partenaire") + "\n"
+      + "================================\n\n"
+      + "LE COMMERCE\n"
+      + "Nom : " + val("commerce") + "\n"
+      + "Responsable : " + val("responsable") + "\n"
+      + "Activite : " + val("activite") + "\n"
+      + "Lieu : " + val("lieu") + "\n"
+      + "WhatsApp : " + val("whatsapp") + "\n"
+      + "Anciennete : " + val("anciennete") + "\n\n"
+      + "TAILLE\n"
+      + "Personnes : " + val("personnes") + "  |  Points : " + val("points") + "\n"
+      + "Clients : " + val("clients") + "\n"
+      + "Sans lui, ne se fait pas : " + val("absence") + "\n\n"
+      + "GESTION ACTUELLE\n"
+      + "Support : " + val("support") + "\n"
+      + "Q19 (le cahier) : " + val("q19") + "\n"
+      + "Repetitif : " + val("repetitif") + "\n"
+      + "Tache detestee : " + val("deteste") + "\n\n"
+      + "SES 3 DOULEURS\n"
+      + "1. " + val("d1") + "\n"
+      + "2. " + val("d2") + "\n"
+      + "3. " + val("d3") + "\n\n"
+      + "Q28 - CE QU'IL VEUT VOIR CHAQUE MATIN\n"
+      + val("q28") + "\n\n"
+      + "AUTOMATISATIONS REPEREES\n"
+      + (autos.length ? autos.join("\n") : "  aucune cochee") + "\n\n"
+      + "SES CHIFFRES\n"
+      + "Commandes perdues : " + val("c_perdues") + "\n"
+      + "Q34 dettes clients : " + val("c_dettes") + "\n"
+      + "Temps perdu : " + val("c_temps") + "\n"
+      + "Pertes annuelles : " + val("c_pertes") + "\n"
+      + "Sait ce qu'il gagne : " + val("c_sait") + "\n\n"
+      + "DECISION\n"
+      + "Decideur : " + val("decideur") + "\n"
+      + "Urgence : " + val("urgence") + "\n"
+      + "Deja essaye : " + val("essaye") + "\n"
+      + "Budget evoque : " + val("budget") + "\n"
+      + "Dans 2 ans : " + val("futur") + "\n\n"
+      + "OBSERVATIONS\n"
+      + val("observations") + "\n"
+      + "Photos : " + val("photos") + "\n\n"
+      + "SUITE\n"
+      + "Restitution le : " + val("restitution") + "\n"
+      + "Client enregistre : " + val("enregistre");
+
+    window.open("https://wa.me/22996740732?text=" + encodeURIComponent(t), "_blank", "noopener");
+  });
+
+  document.getElementById("clear").addEventListener("click", function(){
+    if (!confirm("Vider toute la fiche ? Cette action ne peut pas etre annulee.")) return;
+    try { localStorage.removeItem(KEY); } catch(e){}
+    fields().forEach(function(el){
+      if (el.type === "checkbox") { el.checked = false; el.closest(".chk").classList.remove("on"); }
+      else el.value = "";
+    });
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>

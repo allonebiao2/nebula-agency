@@ -560,6 +560,16 @@ C'est tout. C'est votre travail, il s'arrête là, et il vaut jusqu'à 105 000 F
 **Cette dernière question est importante :** vous ne demandez pas s'il veut le rendez-vous,
 vous demandez quand.
 
+## 10.2bis Le paiement, quand le dossier se conclut
+
+**70 % au démarrage, 30 % à la livraison.** Le paiement intégral est encouragé.
+Le client règle **NEBULA** : Mobile Money sur le numéro officiel, ou virement bancaire s'il
+lui faut une trace comptable. **Vous ne communiquez jamais de coordonnées bancaires
+vous-même** : NEBULA les envoie directement au client.
+
+Votre commission suit les encaissements : elle vous est versée **en deux fois**, et la vente
+compte dans votre palier du mois **dès le premier versement**.
+
 ## 10.3 Ce que vous rapportez à Mongazi le jour même
 
 **Le dossier de qualification.** C'est votre livrable sur cette offre, et c'est ce qui fait
@@ -615,6 +625,22 @@ Après vos 3 dossiers en binôme, vous serez autonome sur cette offre. **Regarde
 Mongazi pendant le cadrage : les questions qu'il pose, ce qu'il refuse de promettre, la
 façon dont il fait dire au client ce qu'il veut vraiment.** C'est la meilleure formation
 commerciale que vous aurez jamais, et elle vous est offerte.
+
+---
+
+# CHAPITRE 11bis · LE DIAGNOSTIC DIGITAL, VOTRE PORTE D'ENTRÉE
+
+Vous n'êtes pas obligé d'attendre qu'un patron vous parle de ses problèmes.
+**Vous pouvez provoquer la conversation** avec le Diagnostic Digital :
+
+> « Un diagnostic digital de votre affaire. Une heure. Normalement 25 000 F, je vous l'offre.
+> Vous êtes plutôt disponible en matinée ou en fin de journée ? »
+
+C'est gratuit, ça n'engage à rien, et **ça vous fait entrer là où « je viens vous vendre un
+logiciel » se fait éconduire**. Vous collectez avec la fiche, Mongazi restitue avec vous.
+
+**Méthode complète, 40 questions et grille des automatisations : `08-DIAGNOSTIC-DIGITAL.md`.**
+**Fiche à remplir sur le téléphone : `fiche-diagnostic.html`.**
 
 ---
 
@@ -699,17 +725,10 @@ Vous êtes plutôt disponible en matinée ou en fin de journée ? »
 
 ---
 
-## ⚠️ Points à confirmer par NEBULA avant diffusion
+## Tout est tranché
 
-- [ ] **Acompte** sur les projets Outil métier : existe-t-il, quel montant, à quel moment ?
-- [ ] **Base de calcul de la commission** sur un projet à tranches : sur le montant total,
-      ou sur les sommes réellement encaissées au fur et à mesure ?
-- [ ] **Boussole** : un partenaire peut-il la vendre telle quelle à un commerçant dont le
-      besoin correspond, plutôt que de lancer un développement sur mesure ? Si oui, à quelle
-      commission ? *C'est une question importante : beaucoup de dossiers détectés sur le
-      terrain seront des cas Boussole, pas des cas sur mesure.*
-- [ ] **Délai indicatif** que le partenaire a le droit d'énoncer, s'il y en a un
-- [ ] **Durée de validité d'un lead** Outil métier (un dossier peut signer 4 mois plus tard)
+Les décisions de prix, de commission et de règles sont **fermées** et consignées dans
+`00-SOCLE-COMMERCIAL.md`, qui fait foi en cas de différence.
 
 ---
 

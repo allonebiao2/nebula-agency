@@ -23,6 +23,9 @@ la mise à jour instantanément, et ils peuvent lire ou télécharger depuis leu
 | Guide Outil métier | **Produits** | **Partenaires certifiés uniquement** |
 | Arsenal des scripts | **Vente** | Tous |
 | Simulateur de commissions | **Vente** (en lien) | Tous |
+| Diagnostic Digital (méthode) | **Formation** | **Partenaires certifiés uniquement** |
+| Fiche de diagnostic | **Vente** (en lien) | **Partenaires certifiés uniquement** |
+| Contrat partenaire | remis à la formation, **pas publié** | signé avant création des accès |
 
 ⚠️ **Le socle commercial (`00`) et l'avis de recrutement (`01`) ne se publient pas dans
 l'espace partenaire.** Ce sont des documents internes à l'agence.
@@ -67,6 +70,7 @@ document du tout.
 | Guide Vitrine | 150 000 F. Après ta première vente livrée. |
 | Guide Outil métier | Réservé : 3 ventes et binôme obligatoire sur tes 3 premiers dossiers. |
 | Arsenal des scripts | Tous les messages prêts à copier, du premier contact à la recommandation. |
+| Diagnostic Digital | La consultation qui ouvre les portes. 40 questions et la grille des automatisations. |
 
 ---
 
@@ -117,52 +121,41 @@ titre d'estimation. À ajuster quand vous aurez les vrais chiffres de la vague 1
 
 ---
 
-## 6. Avant d'ouvrir le recrutement : les 11 points à trancher
+## 6. Toutes les décisions sont prises
 
-Ces questions sont marquées « à confirmer » dans les guides. Tant qu'elles ne sont pas
-tranchées, **les partenaires improviseront**, ce qui est exactement ce que ces documents
-sont censés empêcher.
+Les 11 points en attente ont été tranchés le 2026-07-30, et 21 autres avec eux.
+**Tout est consigné dans `00-SOCLE-COMMERCIAL.md`, qui fait foi.**
 
-**Bloquant pour n'importe quelle vente**
-1. **Procédure d'encaissement** : numéro Mobile Money officiel, acompte ou paiement intégral,
-   justificatif remis au client.
-2. **Délai de paiement des commissions** après réclamation. C'est la première question de
-   tout bon vendeur en entretien.
+### Ce qui reste à faire, et ce n'est plus de la décision
 
-**Bloquant sur le Catalogue (l'offre la plus vendue)**
-3. **Nombre de produits inclus** dans les 50 000 F.
-4. **Tarif des modifications** après livraison.
+| # | Action | Où |
+|---|---|---|
+| 1 | **Compléter le numéro IFU** de NEBULA dans le contrat | `09-CONTRAT-PARTENAIRE.md` |
+| 2 | **Passer l'abonnement de 15 000 à 20 000 F** sur le site public | `00-nebula-agency/nebula_agency_v9.html` (section Tarifs et cartes d'offres) |
+| 3 | **Aligner le cerveau de NOVA** sur les nouveaux prix et l'abonnement unique | `nebula-affilies/server.py`, fonction `agency_brain()` |
+| 4 | **Retirer ou réécrire les 5 anciens guides** du back-office, qui poussent la Vitrine en premier | `nebula-affilies/server.py`, fonction `seed_docs()` |
+| 5 | **Construire le rappel automatique de renouvellement** (n8n + WhatsApp) | infrastructure |
+| 6 | Convertir les documents en PDF et les publier | §3 et §4 |
 
-**Bloquant sur la Vitrine**
-5. **Nombre de pages incluses** dans les 150 000 F (page unique, ou hub multi-pages ?).
-6. **Ce qui est inclus exactement** : galerie, devis, prise de rendez-vous, carte, avis, FAQ.
-7. **Nom de domaine personnalisé** (type `graindesthetique.com`) : inclus ou en supplément,
-   et à quel prix ?
+**Le point 5 n'est pas optionnel.** Comme les commissions sur abonnement sont acquises à vie,
+les clients d'un partenaire parti n'ont plus personne pour les relancer : c'est
+l'automatisation qui portera cette collecte.
 
-**Bloquant sur l'Outil métier**
-8. **Acompte** : existe-t-il, quel montant, à quel moment ?
-9. **Base de calcul de la commission** sur un projet à tranches : montant total, ou sommes
-   réellement encaissées ?
-10. **Boussole vendable par un partenaire ?** Beaucoup de dossiers détectés sur le terrain
-    seront des cas Boussole, pas du sur-mesure. Si oui, à quelle commission ?
-
-**Bloquant pour le recrutement**
-11. **Durée de validité d'un lead** déposé par un partenaire, et **date limite de candidature**
-    à insérer dans l'annonce.
-
----
+**Le point 4 est urgent.** Publier les nouveaux guides sans retirer les anciens laisse deux
+documents officiels qui se contredisent sur la question la plus importante du métier :
+par quelle marche on entre chez un client.
 
 ## 7. Ordre de lancement recommandé
 
 | # | Action | Qui | Quand |
 |---|---|---|---|
-| 1 | Trancher les 11 points du §6 | Mongazi | Avant tout |
-| 2 | Répercuter les réponses dans les guides | | 1 heure de travail |
+| 1 | Compléter l'IFU et publier les 6 actions du §6 | Mongazi | Avant tout |
+| 2 | ~~Répercuter les décisions dans les guides~~ **FAIT** | | |
 | 3 | Convertir en PDF et publier dans l'espace partenaire | | §3 et §4 |
 | 4 | Nettoyer les anciens guides contradictoires | | §2 |
-| 5 | Fixer la date limite et publier l'avis de recrutement | Mongazi | Plan de diffusion sur 14 jours |
+| 5 | Publier l'avis de recrutement (candidatures ouvertes 21 jours) | Mongazi | Plan de diffusion sur 14 jours |
 | 6 | Entretiens avec la grille notée | Mongazi | J+8 à J+11 |
-| 7 | Formation de démarrage collective (2h) | Mongazi | J+14 |
+| 7 | Formation de démarrage en visio Google Meet + signature de la charte et du contrat | Mongazi | J+14 |
 | 8 | Ajuster les guides avec ce que le terrain aura appris | | Après 30 jours |
 
 **Le point 8 n'est pas optionnel.** Ces guides sont bons sur le papier. Ce sont les objections
