@@ -32,13 +32,14 @@ Consigne de travail : avancer **étape par étape**.
    mais **binôme obligatoire avec Mongazi sur les 3 premiers dossiers** Outil métier, le
    partenaire gardant 100 % de sa commission. Protège la qualité de livraison sans amputer le gain.
 
-## Livré dans cette session (Étapes 0, 1 et 2)
+## Livré dans cette session (Étapes 0 à 3)
 
 | Fichier | Contenu |
 |---|---|
 | `_documents/nebula-agency/vente/00-SOCLE-COMMERCIAL.md` | Source de vérité : 3 offres + prix réels, escalier, périmètre partenaire, grille de commissions avec exemples en francs, certification par palier, portfolio de preuves (9 clients), **10 règles « ce qu'on ne promet jamais »**, données de marché, périmètre vague 1, points à verrouiller |
 | `_documents/nebula-agency/vente/01-AVIS-DE-RECRUTEMENT.md` | Annonce complète + version WhatsApp/statut + affiche A4 avec QR + version réseaux sociaux + **grille de sélection notée /20** + **script d'entretien 10 questions** avec bons et mauvais signaux + message de bienvenue + plan de diffusion sur 14 jours |
 | `_documents/nebula-agency/vente/02-MANUEL-DU-PARTENAIRE.md` | **Étape 2.** Le socle du métier de vendeur : marché et 4 barrières à l'achat, escalier des offres avec exemple à 100 000 F sur un seul client, prospection (liste des 20 noms, 3 terrains de chasse, rythme cible), **méthode de vente en 7 temps** (Viser, Ouvrir, Diagnostiquer, Montrer, Proposer, Lever, Conclure), les 5 phrases qui tuent une vente, le silence après le prix, séquence de relance J+2/J+7/J+21/J+45, checklist du brief et ses 3 pièges, circuit de l'argent et logique du palier, 10 interdits, mots de jargon à traduire, plan des 7 premiers jours, mémo à savoir par cœur, quiz de certification |
+| `_documents/nebula-agency/vente/03-GUIDE-CATALOGUE.md` | **Étape 3.** Guide de vente du Catalogue Digital (50 000 F) sur l'anatomie en 12 chapitres : produit en une phrase, journée réelle du commerçant et ses 3 fuites d'argent, 4 moteurs d'achat avec leurs signaux de repérage, portrait-robot + 6 signaux de maturité + à qui ne PAS vendre, 8 questions de diagnostic, pitch flash en 3 variantes (marché / restaurant / vendeuse en ligne), démonstration (quel site pour quel métier, déroulé en 6 gestes, signaux d'achat), prix et calcul de rentabilité avec SES chiffres, **12 objections mot pour mot**, conclusion en 5 gestes, montée en gamme (visite J+21, demande de recommandation, chemin à 107 500 F sur un client), brief et ses 3 pièges, **fiche terrain** à garder en capture d'écran, quiz en 10 questions |
 | `_documents/nebula-agency/INDEX.md` | Nouvelle section « Vente & recrutement » |
 
 Tout est ancré sur des données **réelles du dépôt** : grille tarifaire de
@@ -48,8 +49,8 @@ chiffres de marché de `_memoire/analyse-marche.md`, réalisations de `clients/`
 ## Reste à faire (étapes suivantes)
 
 - ~~**Étape 2** : `02-MANUEL-DU-PARTENAIRE.md`~~ **FAIT** (livré ci-dessus)
-- **Étape 3** : `03-GUIDE-CATALOGUE.md`
-- **Étape 4** : `04-GUIDE-VITRINE.md`
+- ~~**Étape 3** : `03-GUIDE-CATALOGUE.md`~~ **FAIT** (livré ci-dessus)
+- **Étape 4** : `04-GUIDE-VITRINE.md` (prochaine)
 - **Étape 5** : `05-GUIDE-OUTIL-METIER.md`
 - **Étape 6** : scripts WhatsApp, simulateur de commissions, quiz de certification, puis
   publication des guides dans la **Documentation de l'espace partenaire** (le module existe déjà)
@@ -62,3 +63,5 @@ chiffres de marché de `_memoire/analyse-marche.md`, réalisations de `clients/`
 - **Délai de paiement des commissions** après réclamation (première question de tout bon vendeur)
 - Durée de validité d'un lead déposé par un partenaire
 - Date limite de candidature à insérer dans l'annonce
+- **Nombre de produits inclus dans les 50 000 F du Catalogue** (question terrain n°1 des vendeurs)
+- **Tarif et conditions des modifications après livraison** (ajout de produits, changement de prix)
