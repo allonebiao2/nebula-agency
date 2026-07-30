@@ -7,6 +7,11 @@
 - **NEBULA_Programme_Partenaires_PREMIUM.pptx** — Présentation du programme partenaires / affiliés (14 slides, design cosmique, paliers & commissions).
 - **NEBULA_Masterclass_Closing.pptx** — Masterclass de closing (formation à la vente : psychologie de l'achat, objections, scripts WhatsApp — 13 slides).
 
+## Vente & recrutement (dossier `vente/`)
+- **00-SOCLE-COMMERCIAL.md** — Source de vérité de la vente : les 3 services phares, prix, commissions, règles absolues, ce qu'un partenaire ne promet jamais. *Tout le reste en découle.*
+- **01-AVIS-DE-RECRUTEMENT.md** — Recrutement vague 1 (Cotonou, 8 places) : annonce complète, versions WhatsApp/affiche/réseaux, grille de sélection, script d'entretien, message de bienvenue, plan de diffusion.
+- *À venir : 02-MANUEL-DU-PARTENAIRE · 03-GUIDE-CATALOGUE · 04-GUIDE-VITRINE · 05-GUIDE-OUTIL-METIER.*
+
 ## Pitch & business
 - **Pitch-Vendora-NEBULA.pdf** — Pitch commercial de Vendora (le vendeur WhatsApp IA de NEBULA).
 - **Plan-du-Million-NEBULA.pdf** — « Plan du Million » (plan d'objectifs / business plan NEBULA).
