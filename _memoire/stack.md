@@ -116,3 +116,15 @@ Les clés sont dans `.env` local (voir `.env.example` pour la structure) :
 | Script | `boussole/_proto/etat.sql` — **à exécuter une fois** dans Supabase → SQL Editor |
 | Usage | synchro mobile ↔ PC du proto ; l'appareil au `updatedAt` le plus récent gagne ; push debounce 1,8 s |
 | Sans la table | l'app fonctionne en **mode local** (localStorage `sm:state`), statut affiché dans Réglages |
+
+## Abonnements clients (2026-07-31)
+
+Table `subscriptions` dans `nebula-affilies` (SQLite, volume Railway). Une ligne par client
+abonné : 20 000 F / 6 mois, échéance, statut, compteur de relances. La commission de 25 %
+du partenaire est créée dans la table `commissions` existante avec `level='abonnement'`.
+
+**Variable à poser sur Railway : `NAFF_CRON_KEY`** — permet à n8n de lire
+`GET /api/admin/subscriptions/due?key=…` sans session admin.
+
+Workflow n8n à construire : `nebula-affilies-renouvellements`, cron quotidien 08h00,
+Twilio WhatsApp. Spécification : `_documents/nebula-agency/vente/10-RELANCE-RENOUVELLEMENT.md`.

@@ -67,3 +67,33 @@
 ---
 
 <!-- Ajouter les nouvelles leçons au-dessus -->
+
+## 2026-07-31 — Cinq leçons du chantier force de vente
+
+**`main` bouge pendant qu'on travaille sur une branche.**
+Avant de fusionner vers `main`, toujours `git merge origin/main` dans sa branche, puis
+vérifier avec `git diff --stat origin/main..HEAD` que rien d'étranger au chantier
+n'apparaît. Un merge naïf a failli annuler 2 621 lignes du module Boussole externalisé
+entre-temps. Ce genre de dégât ne se voit qu'une semaine plus tard.
+
+**Un seed n'est pas une migration.**
+`seed_content()` ne s'exécute que sur une base vide. Modifier le code ne corrige jamais
+la production. Il faut une fonction de migration idempotente, avec **un marqueur par
+document**, sinon un élément reste en arrière et contredit les autres.
+
+**Un catalogue commercial ne se dérive jamais d'une structure technique.**
+`agency_brain()` construisait la liste des offres de NOVA à partir du dictionnaire
+`SERVICES`, qui contenait encore la Fiche Google Maps et les Avatar IA, retirés du site
+depuis la v9. NOVA récitait donc au public des offres qui n'existaient plus. Les offres
+commerciales se figent explicitement là où on les annonce.
+
+**Vérifier les chaînes couplées avant de toucher un prix.**
+Sur `nebula_agency_v9.html`, les valeurs de `setTier('...')` doivent correspondre **au
+caractère près** aux `<option>` du formulaire de commande. Un script qui compare les deux
+ensembles évite une régression silencieuse du tunnel de commande.
+
+**Tester avant de déployer attrape ce que la relecture ne voit pas.**
+Trois bugs seraient partis en production : une colonne `a.numero` qui n'existe pas dans
+`affiliates` (c'est `momo_number`) et qui aurait fait planter le cron à sa première
+exécution six mois plus tard · `void_commissions()` qui annulait le récurrent acquis à
+vie · un marqueur de migration manquant. Aucun n'était visible à la lecture du code.

@@ -513,3 +513,49 @@
 - **Conséquences** : méthode inscrite dans `_memoire/evolution/methodes.md` ; à généraliser aux vitrines clients (le CTA sticky est exactement le même cas de figure).
 
 <!-- Ajouter les nouvelles décisions au-dessus -->
+
+## 2026-07-30 — Force de vente : programme de partenaires commissionnés
+
+- **Contexte** : Mongazi se juge « piètre vendeur ». Les 3 services phares (Catalogue,
+  Vitrine, Outil métier) ne se vendent pas à leur potentiel faute de méthode et de bras.
+- **Décision** : recruter des **partenaires commissionnés** sur le programme existant
+  (`nebula-affilies`), et les outiller complètement. **32 décisions structurantes** prises
+  en une session, toutes consignées dans `_documents/nebula-agency/vente/00-SOCLE-COMMERCIAL.md`,
+  qui devient **la source de vérité** en cas de contradiction avec un autre fichier.
+- **Les quatre décisions les plus structurantes :**
+  1. **L'escalier** : on entre par le Catalogue à 50 000 F, jamais par la Vitrine. Un
+     commerçant méfiant dit oui à 50 k, pas à 150 k, et le partenaire d'origine garde son
+     client sur les ventes suivantes.
+  2. **Abonnement unique 20 000 F / 6 mois, modifications comprises** (remplace 15 000 F).
+  3. **Récurrent 25 % ACQUIS À VIE**, même après le départ du partenaire, et ne comptant
+     pas dans le palier mensuel.
+  4. **Commissions versées en 24 à 72h.** C'est le meilleur argument de recrutement :
+     la plainte n°1 des commerciaux commissionnés partout est d'attendre leur argent.
+- **Raison** : un vendeur ne vend bien que ce qu'il comprend, et ne reste que s'il est payé
+  vite et s'il construit quelque chose qui lui appartient.
+- **Alternatives écartées** : salariat avec fixe (coût fixe, requalification) · taux réduit
+  sur l'Outil métier (Mongazi a tranché pour le taux plein) · Boussole vendable par les
+  partenaires (gardée hors programme).
+- **Conséquences** :
+  - Le récurrent à vie **oblige** à construire la relance automatique : les clients d'un
+    partenaire parti n'ont plus personne pour les relancer.
+  - La garantie « on corrige jusqu'à satisfaction » ne tient que si les partenaires ne
+    survendent pas : d'où les **12 interdits** du socle.
+  - Sans prime de première vente ni offre de lancement, **le point hebdomadaire de 30 min
+    est le seul mécanisme de rétention**. Il ne se saute jamais.
+
+## 2026-07-31 — Le récurrent passe par la table `commissions` existante
+
+- **Contexte** : la promesse de récurrent à vie n'était traçable nulle part. Aucune table
+  de l'app partenaires ne portait de date d'échéance d'abonnement.
+- **Décision** : créer la table `subscriptions`, et faire passer la commission d'abonnement
+  par la **table `commissions` existante** avec `level='abonnement'`, plutôt que par un
+  circuit dédié.
+- **Raison** : trois propriétés obtenues gratuitement. Le partenaire réclame et se fait payer
+  par le circuit qu'il connaît déjà, sans une ligne d'interface à changer. Le palier se
+  calculant sur les **leads** payés et non sur les commissions, la règle « le récurrent ne
+  compte pas dans le palier » est respectée sans code supplémentaire. Et tout reste visible
+  dans le registre tracé existant.
+- **Conséquences** : `void_commissions()` a dû être corrigée pour ne jamais annuler une
+  commission d'abonnement. Reste à poser `NAFF_CRON_KEY` sur Railway et à construire le
+  workflow n8n `nebula-affilies-renouvellements`.

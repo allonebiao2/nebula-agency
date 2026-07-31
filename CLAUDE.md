@@ -101,6 +101,23 @@
 - **Reste à faire** : Agenda · comparateur de 2 périodes · vague 2 des transitions (Bilan-ECG, Stats-constellation, Carnet, Factures, Équipe, Réglages) · exécuter `etat.sql` dans Supabase pour activer la synchro · migration proto → app live.
 - Détail complet : `boussole/README.md` + `_memoire/conversations/2026-07-25-boussole-*.md`
 
+## 🔴 REPRENDRE UNE SESSION
+**Lire `_memoire/REPRENDRE-ICI.md` en premier.** Il dit où on en est, ce qui bloque,
+et par quoi commencer. Mis à jour à chaque fin de session importante.
+
+## Force de vente & partenaires (chantier 2026-07-30/31)
+- **Source de vérité des prix et des règles : `_documents/nebula-agency/vente/00-SOCLE-COMMERCIAL.md`.**
+  En cas de différence avec un autre fichier, c'est lui qui a raison.
+- 13 documents + 2 outils HTML + 9 PDF dans `_documents/nebula-agency/vente/`
+- **L'escalier** : on entre TOUJOURS par le Catalogue à 50 000 F, jamais par la Vitrine.
+  Un commerçant méfiant dit oui à 50 k, pas à 150 k. Puis Vitrine, puis Outil métier.
+- **Abonnement : 20 000 F / 6 mois, modifications comprises** (remplace les 15 000 F partout)
+- **Commissions** 25 / 30 / 35 % selon les ventes du mois · N1 10 % · N2 5 %
+- **Récurrent : 25 % de chaque abonnement, ACQUIS À VIE**, ne compte pas dans le palier
+- **Versement des commissions : 24 à 72h** après réclamation
+- Vague 1 : **Cotonou, 8 places**, objectif 30 ventes / 90 jours
+- Rubrique marketing **« LE SAVIEZ-VOUS ? »** : `_documents/nebula-agency/marketing/`
+
 ## Mémoire générale
 - Voir _memoire/cerveau.md pour contexte complet
 - Voir _memoire/lecons.md avant de commencer un nouveau projet

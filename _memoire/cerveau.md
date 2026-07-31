@@ -18,6 +18,19 @@
 - Cible : artisans, PME, indépendants francophones d'Afrique de l'Ouest
 - Différenciation : qualité agence à prix accessible + IA appliquée (SOFIA, chatbots WhatsApp, automatisations n8n)
 
+## La force de vente (depuis le 2026-07-30)
+
+NEBULA ne vend plus seule : un **programme de partenaires commissionnés** est outillé de
+bout en bout. Le partenaire **vend et rapporte le brief**, NEBULA produit tout.
+
+- **L'escalier** : Catalogue 50 000 F (porte d'entrée) → Vitrine 150 000 F (crédibilité)
+  → Outil métier 55 000 à 500 000 F (contrôle). On ne saute jamais une marche.
+- **Le Diagnostic Digital**, offert avec sa valeur affichée (25 000 F), est la porte
+  d'entrée de l'Outil métier. Le partenaire collecte avec une fiche, Mongazi restitue.
+- **Le récurrent** (25 % de chaque abonnement, à vie) est ce qui retient un bon vendeur.
+  Il est tracé par la table `subscriptions` de l'app partenaires.
+- Tout est consigné dans `_documents/nebula-agency/vente/00-SOCLE-COMMERCIAL.md`.
+
 ## Workflow standard
 
 1. Brief client (souvent via WhatsApp)
@@ -47,7 +60,11 @@
 
 | Besoin | Fichier |
 |---|---|
+| **Reprendre une session** | **`_memoire/REPRENDRE-ICI.md`** |
 | Règles & vue d'ensemble | `CLAUDE.md` |
+| **Prix, commissions, règles de vente** | **`_documents/nebula-agency/vente/00-SOCLE-COMMERCIAL.md`** |
+| Guides de vente des partenaires | `_documents/nebula-agency/vente/` |
+| Prompts des posts informatifs | `_documents/nebula-agency/marketing/` |
 | Décisions structurantes | `_memoire/decisions.md` |
 | Leçons apprises | `_memoire/lecons.md` |
 | Stack technique | `_memoire/stack.md` |

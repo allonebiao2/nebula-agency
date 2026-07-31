@@ -2,7 +2,7 @@
 
 > Bureau virtuel du programme partenaires/affiliés de NEBULA Agency. Back-office 2 faces, base SQLite, design cosmique « Ethereal Glass », cerveau IA NOVA. Tout est interconnecté et en temps réel.
 
-Dernière grosse mise à jour : **2026-06-17**.
+Dernière grosse mise à jour : **2026-07-31** (module Abonnements + alignement commercial).
 
 ---
 
@@ -40,6 +40,50 @@ Dernière grosse mise à jour : **2026-06-17**.
 - ⚠️ **`db()` = context manager qui FERME la connexion** (`@contextlib.contextmanager`). Avant c'était `return c` → fuite de connexions → `database is locked` sous la charge chat/polling. **NE PAS revenir en arrière.**
 
 ---
+
+## 2bis. MODULE ABONNEMENTS (2026-07-31) — le récurrent à vie, tracé
+
+Le programme promet au partenaire **25 % de chaque abonnement client, acquis à vie**, même
+après son départ. Cette promesse n'était traçable nulle part : aucune table ne portait de
+date d'échéance. Elle l'est désormais.
+
+- **Table `subscriptions`** : `lead_id`, `affiliate_id` (celui qui touche à vie), `offre`,
+  `montant` (20 000), `debut`, `echeance`, `statut`, `dernier_rappel`, `relances`.
+- **`ensure_subscription(lead)`** — idempotente, appelée quand l'admin marque une vente
+  payée. Catalogue et Vitrine uniquement (le QR Review n'a pas d'abonnement).
+- **`record_subscription_payment(sid)`** — décale l'échéance de 6 mois **et** crée la
+  commission de 25 % dans la table `commissions` avec **`level='abonnement'`**.
+- **`subscriptions_due()`** — paliers J-15 / J-3 / J+3 / J+10, **un seul message par
+  abonnement et par jour**, plafond de **3 relances** par échéance.
+- **`_plus_mois()`** — mois calendaires, gère les fins de mois.
+
+**Endpoints :** `GET /api/admin/subscriptions` · `GET /api/admin/subscriptions/due`
+(accepte `?key=NAFF_CRON_KEY` pour n8n) · `POST …/{id}/paid` · `POST …/{id}/rappel`
+(accepte aussi la clé cron) · `POST …/{id}/resilier` · `GET /api/partenaire/portefeuille`.
+
+⚠️ **`void_commissions()` ne doit JAMAIS annuler une commission d'abonnement.** Elle a été
+corrigée pour ne toucher que `level IN ('direct','n1','n2')`. Dé-marquer le paiement d'une
+vente aurait sinon supprimé le récurrent acquis à vie.
+
+⚠️ **Le palier n'est pas affecté** : il se calcule sur les *leads* payés (`_paid_value`,
+`_month_paid_count`), pas sur les commissions. Ne pas changer ça.
+
+**À poser sur Railway : `NAFF_CRON_KEY`.** Sans elle, n8n ne peut pas lire les échéances.
+Spécification du workflow : `_documents/nebula-agency/vente/10-RELANCE-RENOUVELLEMENT.md`.
+
+## 2ter. Documents de démarrage : migration automatique
+
+`seed_content()` ne s'exécute que si la table `documents` est **vide** : modifier le code ne
+corrige jamais la production. Les 5 guides seedés poussaient la Vitrine en premier, contre
+la stratégie de l'escalier.
+
+**`refresh_seeded_docs()`** (appelée au démarrage, après `seed_content()`) supprime les deux
+fiches produit renommées, réécrit les trois autres **si et seulement si** leur corps porte
+encore un marqueur de l'ancienne version, et **ne touche jamais un document ajouté à la
+main**. Idempotente. La liste vit dans la constante module `_SEED_DOCS`.
+
+⚠️ **Il faut un marqueur par document conservé**, sinon un guide reste en arrière et
+contredit les autres. C'est arrivé avec « Répondre aux objections ».
 
 ## 3. Système de gains (3 couches) — à valider par Mongazi
 
