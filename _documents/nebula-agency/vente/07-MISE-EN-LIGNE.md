@@ -133,17 +133,12 @@ Les 11 points en attente ont été tranchés le 2026-07-30, et 21 autres avec eu
 | 1 | **Compléter le numéro IFU** de NEBULA dans le contrat | `09-CONTRAT-PARTENAIRE.md` |
 | 2 | ~~Passer l'abonnement à 20 000 F sur le site public~~ **FAIT** (11 occurrences, cohérence `setTier`/`<option>` vérifiée). ⚠️ **pas encore déployé sur Cloudflare** | `00-nebula-agency/nebula_agency_v9.html` |
 | 3 | ~~Aligner le cerveau de NOVA~~ **FAIT** : catalogue explicite (il dérivait de `SERVICES`, qui contient encore Fiche Google Maps et Avatar IA, retirés du site). ⚠️ **pas encore déployé sur Railway** | `nebula-affilies/server.py`, `agency_brain()` |
-| 4 | ~~Réécrire les 5 guides seedés~~ **FAIT dans le code** (escalier, 20 produits, domaine offert, récurrent, 24-72h). ⚠️ **`seed_content()` ne s'exécute que si la table est vide : en production les anciens textes sont déjà en base et doivent être remplacés à la main dans `/admin`** | `nebula-affilies/server.py`, `seed_content()` |
-| 5 | **Rappel automatique de renouvellement** : spécification écrite. ⚠️ Bloqué en amont : **aucune table d'abonnement n'existe** | `10-RELANCE-RENOUVELLEMENT.md` |
+| 4 | ~~Réécrire les 5 guides seedés~~ **FAIT ET MIGRÉ.** `refresh_seeded_docs()` corrige automatiquement les documents déjà en base : idempotente, elle ne touche que ce qui porte encore l'ancien discours et laisse intact tout document ajouté à la main. Testée sur une base simulant la production | `nebula-affilies/server.py`, `refresh_seeded_docs()` |
+| 5 | **Rappel de renouvellement** : ~~bloqué~~ **le modèle de données est implémenté et testé** (table `subscriptions`, commission 25 % à l'encaissement, 6 endpoints). Reste le workflow n8n et la variable `NAFF_CRON_KEY` sur Railway | `server.py` + `10-RELANCE-RENOUVELLEMENT.md` |
 | 6 | ~~Convertir les documents en PDF~~ **FAIT** : 9 PDF à la charte cosmique dans `vente/pdf/`, régénérables via `_build_pdf.py`. Reste à les **téléverser** dans l'espace partenaire | `vente/pdf/` |
 
-**Le point 5 n'est pas optionnel.** Comme les commissions sur abonnement sont acquises à vie,
-les clients d'un partenaire parti n'ont plus personne pour les relancer : c'est
-l'automatisation qui portera cette collecte.
-
-**Le point 4 est urgent.** Publier les nouveaux guides sans retirer les anciens laisse deux
-documents officiels qui se contredisent sur la question la plus importante du métier :
-par quelle marche on entre chez un client.
+**Il ne reste que trois choses, et deux dépendent de vous :** le déploiement Cloudflare
+(identifiants), le numéro IFU, et le téléversement des PDF dans l'espace partenaire.
 
 ## 7. Ordre de lancement recommandé
 

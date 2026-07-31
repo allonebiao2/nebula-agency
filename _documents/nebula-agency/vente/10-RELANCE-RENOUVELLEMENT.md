@@ -10,13 +10,17 @@
 > Conséquence : les clients d'un partenaire parti n'ont plus personne pour les relancer.
 > C'est l'automatisation qui portera cette collecte, ou personne ne la portera.
 >
-> Version 1.0 · 2026-07-30
+> **Version 2.0 · 2026-07-31 — le modèle de données est IMPLÉMENTÉ.**
+> Table `subscriptions`, ouverture automatique à l'encaissement, génération de la
+> commission de 25 % au renouvellement, endpoints pour n8n et portefeuille partenaire :
+> tout est en place dans `nebula-affilies/server.py` et testé. Il ne reste que le
+> workflow n8n lui-même à construire.
 
 ---
 
-## 1. Le constat, avant toute chose
+## 1. Le constat de départ (résolu le 2026-07-31)
 
-**Il n'existe aujourd'hui aucun suivi des abonnements dans le système.**
+**Il n'existait aucun suivi des abonnements dans le système.**
 
 Vérification faite dans `nebula-affilies/server.py` : la base contient `affiliates`, `leads`,
 `commissions`, `history`, `notifs`, `recruits`, `candidatures`, `documents`, `publications`,
@@ -27,13 +31,13 @@ Autrement dit : aujourd'hui, personne ne sait quand un client doit renouveler.
 Ce n'est pas un problème d'automatisation, c'est un problème de **données manquantes**.
 
 **On ne peut pas automatiser une relance sur une information qui n'existe nulle part.**
-Il faut donc construire dans cet ordre : d'abord la donnée, ensuite la relance.
+La donnée a donc été construite en premier. ✅ Fait.
 
 ---
 
-## 2. Étape 1 · La donnée (à créer dans l'app partenaires)
+## 2. Étape 1 · La donnée ✅ IMPLÉMENTÉE
 
-Une table `subscriptions`, une ligne par client abonné.
+Table `subscriptions` créée dans `nebula-affilies/server.py`, une ligne par client abonné.
 
 | Colonne | Contenu |
 |---|---|
@@ -48,12 +52,38 @@ Une table `subscriptions`, une ligne par client abonné.
 | `dernier_rappel` | date du dernier message envoyé (évite les doublons) |
 | `relances` | compteur de rappels envoyés pour l'échéance en cours |
 
-**Règle métier :** quand un abonnement est encaissé, on fait deux choses d'un coup :
-on décale `echeance` de 6 mois, et **on crée automatiquement la commission de 25 %**
-pour `affiliate_id`, exactement comme une vente payée génère aujourd'hui sa commission.
+**Règle métier, implémentée dans `record_subscription_payment()` :** quand un abonnement
+est encaissé, on décale `echeance` de 6 mois **et on crée la commission de 25 %** pour
+`affiliate_id`, dans la table `commissions` existante avec `level='abonnement'`.
 
 C'est ce lien-là qui rend la promesse « récurrent à vie » réellement tenable : elle est
 portée par la donnée, pas par la mémoire de quelqu'un.
+
+**Trois propriétés obtenues gratuitement** en réutilisant la table `commissions` :
+- le partenaire réclame et se fait payer par le circuit qu'il connaît déjà, sans aucune
+  modification de l'interface ;
+- le palier se calculant sur les *leads* payés et non sur les commissions, la règle
+  « le récurrent ne compte pas dans le palier » est respectée sans code supplémentaire ;
+- `void_commissions()` a été corrigée pour ne jamais annuler une commission d'abonnement :
+  elles correspondent à des encaissements distincts et sont acquises à vie.
+
+**Fonctions livrées :** `ensure_subscription()` (idempotente, ouverture à l'encaissement,
+catalogue et vitrine uniquement) · `record_subscription_payment()` · `subscriptions_due()`
+· `_plus_mois()` (mois calendaires, gère les fins de mois).
+
+**Endpoints livrés :**
+
+| Route | Usage |
+|---|---|
+| `GET /api/admin/subscriptions` | Liste, jours restants, récurrent semestriel total |
+| `GET /api/admin/subscriptions/due` | **Consommé par n8n**, accepte `?key=NAFF_CRON_KEY` |
+| `POST /api/admin/subscriptions/{id}/paid` | Encaissement : échéance +6 mois et commission 25 % |
+| `POST /api/admin/subscriptions/{id}/rappel` | Marque le rappel envoyé (anti-doublon) |
+| `POST /api/admin/subscriptions/{id}/resilier` | Résiliation |
+| `GET /api/partenaire/portefeuille` | Le partenaire voit ses abonnements et ses échéances |
+
+**Variable d'environnement à poser sur Railway :** `NAFF_CRON_KEY`, une chaîne secrète
+que n8n passera en `?key=` pour lire les échéances sans session admin.
 
 ---
 

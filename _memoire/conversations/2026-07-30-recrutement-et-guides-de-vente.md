@@ -131,6 +131,69 @@ qu'il fournit, avec son logo.
 ⚠️ **L'image de référence n'a jamais été reçue** malgré deux mentions. Le bloc
 `STYLE INHERITANCE` est donc générique et devra être ajusté quand elle arrivera.
 
+
+## Vague 5 — Implémentation du module Abonnements + migration des guides (2026-07-31)
+
+Instruction de Mongazi : « fait tout ». Sur les 5 points restants, 2 étaient du code.
+
+### A · Migration des guides déjà en base — `refresh_seeded_docs()`
+
+`seed_content()` ne s'exécute que sur une base vide : en production les 5 anciens guides
+étaient déjà en base et aucun déploiement ne les aurait corrigés. Or l'ancien présentait la
+Vitrine comme « ton produit le plus rémunérateur » et invitait à la pousser en premier,
+ce qui contredit frontalement l'escalier.
+
+- La liste des documents a été **sortie au niveau module** (`_SEED_DOCS`) pour servir à la
+  fois au seed et à la migration.
+- `refresh_seeded_docs()` supprime les deux fiches produit renommées, réécrit les trois
+  autres **si et seulement si** leur corps porte encore un marqueur de l'ancienne version,
+  et **ne touche jamais un document ajouté à la main**.
+- Appelée au démarrage, après `seed_content()`. **Idempotente** : 2e passage = 0 modification.
+- ⚠️ **Leçon** : un premier jeu de marqueurs laissait « Répondre aux objections » en arrière.
+  Le test sur une base simulant la production l'a attrapé. **Il faut un marqueur par
+  document conservé**, sinon un document reste en arrière et contredit les autres.
+
+### B · Le module Abonnements — le récurrent devient traçable
+
+**Décision d'architecture qui simplifie tout :** la commission d'abonnement passe par la
+table `commissions` existante, avec `level='abonnement'`. Trois propriétés obtenues
+gratuitement :
+1. le partenaire réclame et se fait payer **par le circuit qu'il connaît déjà**, zéro
+   modification d'interface ;
+2. le palier se calculant sur les **leads** payés et non sur les commissions, la règle
+   « le récurrent ne compte pas dans le palier » est respectée **sans code supplémentaire** ;
+3. `void_commissions()` corrigée pour **ne jamais annuler une commission d'abonnement**
+   (bug réel : dé-marquer le paiement d'une vente aurait annulé le récurrent acquis à vie).
+
+**Livré :** table `subscriptions` · `ensure_subscription()` (idempotente, catalogue et
+vitrine seulement) · `record_subscription_payment()` (échéance +6 mois + commission 25 %) ·
+`subscriptions_due()` (paliers J-15/J-3/J+3/J+10, anti-doublon quotidien, plafond de
+3 relances) · `_plus_mois()` (mois calendaires, gère les fins de mois) · **6 endpoints**
+dont `/api/admin/subscriptions/due` accessible à n8n via `?key=NAFF_CRON_KEY` et
+`/api/partenaire/portefeuille`.
+
+### Bugs attrapés par les tests, qui seraient partis en production
+
+1. **`a.numero` n'existe pas dans `affiliates`** (les colonnes sont `momo_number` /
+   `momo_reseau`). La requête de relance aurait planté à la première exécution du cron.
+2. **`void_commissions()` annulait le récurrent.**
+3. **Un marqueur de migration manquant** laissait un guide contradictoire en base.
+
+### Vérifications passées
+- `py_compile` OK · 91 routes chargées · les 6 routes critiques existantes intactes
+- Les 3 nouvelles routes admin renvoient **401 sans session**, clé cron invalide **401**
+- Suite abonnements : idempotence, montant 5 000 F, palier inchangé, récurrent survivant au
+  dé-marquage, 4 paliers de relance détectés, anti-doublon et plafond fonctionnels,
+  QR Review correctement exclu des abonnements
+- Suite migration : 9 contrôles verts sur une base reproduisant les vrais anciens textes
+
+### Reste (ne dépend plus que de Mongazi)
+1. **Déploiement Cloudflare** du site (identifiants absents de l'environnement distant)
+2. **Numéro IFU** dans le contrat
+3. **Téléverser les 9 PDF** dans la Documentation de l'espace partenaire
+4. Poser **`NAFF_CRON_KEY`** sur Railway et construire le workflow n8n
+5. Envoyer **l'image de référence** pour caler le prompt-maître des posts
+
 ## Analyse stratégique retenue
 
 1. **Les 3 offres forment un escalier, pas 3 produits.** Catalogue 50 000 F = porte d'entrée

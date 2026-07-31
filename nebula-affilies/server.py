@@ -247,6 +247,18 @@ def init_db():
             amount REAL,
             status TEXT DEFAULT 'due',           -- 'due' | 'claimed' | 'paid' | 'void'
             created REAL, claimed_at REAL, paid_at REAL)""")
+        c.execute("""CREATE TABLE IF NOT EXISTS subscriptions(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            lead_id INTEGER NOT NULL,            -- le client
+            affiliate_id INTEGER NOT NULL,       -- le partenaire qui l'a apporté (récurrent À VIE)
+            offre TEXT,                          -- 'catalogue' | 'vitrine'
+            montant REAL DEFAULT 20000,
+            debut REAL,                          -- date de mise en service
+            echeance REAL,                       -- prochain renouvellement (début + 6 mois)
+            statut TEXT DEFAULT 'actif',         -- 'actif' | 'retard' | 'resilie'
+            dernier_rappel REAL DEFAULT 0,       -- anti-doublon des relances
+            relances INTEGER DEFAULT 0,          -- rappels envoyés pour l'échéance en cours
+            created REAL, updated REAL)""")
         c.execute("""CREATE TABLE IF NOT EXISTS candidatures(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nom TEXT, prenom TEXT, email TEXT, numero TEXT, ville TEXT,
@@ -800,8 +812,116 @@ def generate_commissions(lead: sqlite3.Row) -> Dict[str, Any]:
     return {"client": client, "price": int(price or 0), "service": svc, "lines": lines, "total": total, "already": False}
 
 def void_commissions(lead_id: int):
+    """Annule les commissions de VENTE d'un lead dé-marqué payé.
+    ⚠️ N'annule JAMAIS les commissions d'abonnement (level='abonnement') : elles
+    correspondent à des encaissements distincts et sont acquises à vie."""
     with db() as c:
-        c.execute("UPDATE commissions SET status='void' WHERE lead_id=? AND status!='paid'", (lead_id,))
+        c.execute("UPDATE commissions SET status='void' WHERE lead_id=? AND status!='paid' "
+                  "AND level IN ('direct','n1','n2')", (lead_id,))
+
+
+# ============================================================================
+#  ABONNEMENTS — 20 000 F / 6 mois, commission de 25 % ACQUISE À VIE
+#  Voir _documents/nebula-agency/vente/10-RELANCE-RENOUVELLEMENT.md
+# ============================================================================
+
+SUB_MONTANT = 20000          # F CFA par semestre
+SUB_RATE = 0.25              # part du partenaire, quel que soit son palier
+SUB_MOIS = 6                 # durée d'un abonnement
+SUB_OFFRES = ("catalogue", "vitrine")   # seules offres qui portent un abonnement
+
+def _plus_mois(ts: float, mois: int) -> float:
+    """Ajoute N mois calendaires à un timestamp, en gérant les fins de mois."""
+    d = datetime.datetime.fromtimestamp(ts)
+    m = d.month - 1 + mois
+    y = d.year + m // 12
+    m = m % 12 + 1
+    dernier = [31, 29 if (y % 4 == 0 and (y % 100 != 0 or y % 400 == 0)) else 28,
+               31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m - 1]
+    return d.replace(year=y, month=m, day=min(d.day, dernier)).timestamp()
+
+def ensure_subscription(lead: sqlite3.Row) -> Optional[int]:
+    """Crée l'abonnement d'un client dès que sa vente est encaissée.
+    Idempotent : un lead ne porte jamais deux abonnements."""
+    if (lead["service"] or "") not in SUB_OFFRES:
+        return None
+    now = time.time()
+    with db() as c:
+        ex = c.execute("SELECT id FROM subscriptions WHERE lead_id=?", (lead["id"],)).fetchone()
+        if ex:
+            return ex["id"]
+        cur = c.execute(
+            "INSERT INTO subscriptions(lead_id,affiliate_id,offre,montant,debut,echeance,"
+            "statut,dernier_rappel,relances,created,updated) "
+            "VALUES(?,?,?,?,?,?,'actif',0,0,?,?)",
+            (lead["id"], lead["affiliate_id"], lead["service"], SUB_MONTANT,
+             now, _plus_mois(now, SUB_MOIS), now, now))
+        sid = cur.lastrowid
+    notify("admin", 0,
+           f"Abonnement ouvert pour {lead['prenom']} {lead['nom']} · {fmoney(SUB_MONTANT)} F, "
+           f"échéance dans {SUB_MOIS} mois.", lead["id"], kind="info")
+    return sid
+
+def record_subscription_payment(sub_id: int) -> Dict[str, Any]:
+    """Encaissement d'un abonnement : décale l'échéance de 6 mois ET crée la
+    commission de 25 % du partenaire. C'est ce lien qui rend le récurrent à vie
+    réellement traçable — la commission n'existe pas ailleurs."""
+    now = time.time()
+    with db() as c:
+        s = c.execute("SELECT * FROM subscriptions WHERE id=?", (sub_id,)).fetchone()
+        if not s:
+            return {"ok": False, "error": "introuvable"}
+        lead = c.execute("SELECT * FROM leads WHERE id=?", (s["lead_id"],)).fetchone()
+        amount = int(round((s["montant"] or SUB_MONTANT) * SUB_RATE))
+        # Le partenaire touche même s'il a quitté le programme : acquis à vie.
+        c.execute("INSERT INTO commissions(lead_id,beneficiary_id,level,amount,status,created) "
+                  "VALUES(?,?,'abonnement',?,'due',?)",
+                  (s["lead_id"], s["affiliate_id"], amount, now))
+        c.execute("UPDATE subscriptions SET echeance=?, statut='actif', relances=0, "
+                  "dernier_rappel=0, updated=? WHERE id=?",
+                  (_plus_mois(max(s["echeance"] or now, now), SUB_MOIS), now, sub_id))
+        nouvelle = c.execute("SELECT echeance FROM subscriptions WHERE id=?", (sub_id,)).fetchone()["echeance"]
+    client = f"{lead['prenom']} {lead['nom']}".strip() if lead else "client"
+    notify("affiliate", s["affiliate_id"],
+           f"Commission d'abonnement à réclamer : {fmoney(amount)} F (25 % sur le "
+           f"renouvellement de {client}).", s["lead_id"], kind="commission", ref_aff=s["affiliate_id"])
+    return {"ok": True, "amount": amount, "echeance": nouvelle}
+
+def subscriptions_due() -> Dict[str, list]:
+    """Abonnements à relancer, classés par palier. Consommé par le workflow n8n
+    `nebula-affilies-renouvellements` (une exécution par jour)."""
+    now = time.time()
+    JOUR = 86400
+    paliers = {"j_moins_15": (14 * JOUR, 16 * JOUR), "j_moins_3": (2 * JOUR, 4 * JOUR),
+               "j_plus_3": (-4 * JOUR, -2 * JOUR), "j_plus_10": (-11 * JOUR, -9 * JOUR)}
+    out = {k: [] for k in paliers}
+    with db() as c:
+        rows = c.execute(
+            "SELECT s.*, l.nom, l.prenom, l.numero, a.prenom AS p_prenom, a.nom AS p_nom, "
+            "a.momo_number AS p_momo FROM subscriptions s "
+            "JOIN leads l ON l.id=s.lead_id JOIN affiliates a ON a.id=s.affiliate_id "
+            "WHERE s.statut!='resilie'").fetchall()
+    for r in rows:
+        reste = (r["echeance"] or 0) - now
+        # Un seul message par abonnement et par jour, quoi qu'il arrive.
+        if (r["dernier_rappel"] or 0) > now - JOUR:
+            continue
+        if (r["relances"] or 0) >= 3:
+            continue
+        for k, (lo, hi) in paliers.items():
+            if lo <= reste < hi:
+                out[k].append({
+                    "id": r["id"], "client": f"{r['prenom']} {r['nom']}".strip(),
+                    "numero": r["numero"], "offre": r["offre"],
+                    "montant": int(r["montant"] or SUB_MONTANT),
+                    "echeance": r["echeance"],
+                    "echeance_lisible": datetime.datetime.fromtimestamp(r["echeance"]).strftime("%d/%m/%Y"),
+                    "partenaire": f"{r['p_prenom']} {r['p_nom']}".strip(),
+                    "partenaire_momo": r["p_momo"], "affiliate_id": r["affiliate_id"],
+                    "relances": r["relances"] or 0,
+                })
+                break
+    return out
 
 def earnings_of(aid: int) -> Dict[str, int]:
     """Bilan complet (à vie) des commissions d'un affilié, depuis le registre tracé."""
@@ -823,52 +943,56 @@ async def store_upload(up: UploadFile, prefix: str) -> Tuple[str, int]:
     (UP_DIR / name).write_bytes(data)
     return name, len(data)
 
+# Documents de démarrage du back-office partenaires.
+# ⚠️ Stratégie de l'escalier : on entre par le CATALOGUE, jamais par la Vitrine.
+_SEED_DOCS = [
+            ("Guide de démarrage du partenaire", "Formation",
+             "Tes 3 premières ventes, pas à pas.",
+             "<h4>Bienvenue dans l'équipe NEBULA</h4><p>Ton métier : présenter nos offres à des commerçants et encaisser des commissions. Pas de stock, pas de capital, aucune compétence technique. <b>Tu vends, NEBULA livre.</b></p>"
+             "<h4>1. Récupère ton lien</h4><p>Onglet <b>Mon lien</b> → copie-le. Tout client qui le remplit devient le tien automatiquement. Enregistre chaque prospect le jour même : il est à toi pendant <b>60 jours</b>.</p>"
+             "<h4>2. L'escalier : commence TOUJOURS par le catalogue</h4><p>Nos 3 offres ne sont pas 3 produits, c'est un escalier : <b>Catalogue 50 000 F</b> → <b>Vitrine 150 000 F</b> → <b>Outil métier</b>. Un commerçant méfiant dit oui à 50 000 F, il ne dit pas oui à 150 000 F le premier jour. Vends le catalogue, laisse NEBULA l'émerveiller, reviens 3 semaines après : la vitrine se vend presque toute seule. <b>Celui qui attaque au prix fort brûle son prospect.</b></p>"
+             "<h4>3. Vise les bons commerçants</h4><ul><li>Restaurants, pâtisseries, boutiques de mode, cosmétiques, bijoux, caves, quincailleries</li><li>Le signal en or : une enseigne avec un numéro WhatsApp dessus</li><li>Toute personne qui vend déjà sur WhatsApp sans site derrière</li></ul>"
+             "<h4>4. Le bon message</h4><p>« Bonjour, j'ai vu vos produits, c'est du beau travail. Une question : vos clients vous demandent vos prix et vos photos combien de fois par jour ? »<br>Pas de prix dans le premier message. Jamais.</p>"
+             "<h4>5. Ta première liste</h4><p>Avant de sortir dans la rue, écris <b>20 noms</b> de commerçants que tu connais déjà. Ta première vente sortira presque toujours de cette liste.</p>"),
+            ("Catalogue Digital + QR — ton arme d'entrée", "Produits",
+             "50 000 F. Vendable dès aujourd'hui.",
+             "<h4>C'est quoi</h4><p>Une page avec tous ses produits (photo, description, prix), un bouton qui envoie la commande sur son WhatsApp, et un QR code à coller sur son comptoir. <b>Jusqu'à 20 produits inclus</b> ; au-delà, 15 000 F par lot de 10.</p>"
+             "<h4>Prix</h4><p><b>50 000 FCFA</b>, paiement intégral (jamais échelonné) + abonnement 20 000 F tous les 6 mois, <b>modifications comprises</b>. Livré en 5 à 7 jours.</p>"
+             "<h4>Ce qu'il achète vraiment</h4><p>Il arrête de renvoyer les mêmes photos vingt fois par jour, et il arrête de perdre les commandes de la nuit.</p>"
+             "<h4>Les 3 questions qui vendent</h4><ul><li>« Combien de fois par jour on vous demande vos prix et vos photos ? »</li><li>« Il se passe quoi quand un client écrit à 22h ? »</li><li>« Combien de commandes vous perdez par mois faute de réponse ? »</li></ul><p>Laisse-le donner le chiffre. Il dépassera presque toujours 50 000 F, et c'est lui qui l'aura dit.</p>"
+             "<h4>Après le prix</h4><p>Tu annonces <b>50 000 francs</b>… et tu te tais. Celui qui parle en premier après le prix a perdu.</p>"),
+            ("Vitrine Digitale + QR — après ta 1re vente livrée", "Produits",
+             "150 000 F. Tu vends la crédibilité, pas le temps.",
+             "<h4>C'est quoi</h4><p><b>Une page complète</b> : accueil, présentation, services ou produits, galerie, avis clients, contact, carte, bouton WhatsApp. Page supplémentaire 30 000 F. <b>Nom de domaine offert la 1re année</b>, puis 16 000 F/an.</p>"
+             "<h4>Prix</h4><p><b>150 000 FCFA</b> — 70 % au démarrage, 30 % à la mise en ligne (intégral encouragé) + abonnement 20 000 F / 6 mois, modifications comprises.</p>"
+             "<h4>Ce qu'il achète vraiment</h4><p>Le droit d'être pris au sérieux par des gens qui ne le connaissent pas encore. <b>Ne la vends jamais comme « un catalogue en mieux ».</b></p>"
+             "<h4>Ton arme : le test Google</h4><p>« On cherche votre nom sur Google, ensemble, comme le ferait quelqu'un qui a entendu parler de vous. » Tu tapes, tu lui tends le téléphone, <b>tu te tais</b>. Puis : « Voilà ce que voit quelqu'un qui a entendu parler de vous. »<br><b>Tu ne ris jamais. Tu ne dis jamais « vous n'existez pas ».</b></p>"
+             "<h4>Le prix se compare à son plus gros client</h4><p>« Votre plus gros client de l'année vous a rapporté combien ? Un seul comme lui et le site est remboursé. » <b>Ne le compare jamais au prix du catalogue.</b></p>"
+             "<h4>S'il dit « je préfère commencer par le catalogue »</h4><p><b>Dis oui.</b> Ce n'est pas une objection, c'est une vente. Tu encaisses 50 000 F aujourd'hui et tu reviens pour 150 000 F.</p>"),
+            ("Répondre aux objections", "Vente",
+             "Les phrases qui débloquent une vente.",
+             "<h4>La méthode : accueillir, questionner, répondre</h4><p>Une objection n'est pas un refus, c'est une demande d'information. Ne dégaine jamais du tac au tac : marque un temps, puis réponds, et termine par une question.</p>"
+             "<h4>« C'est trop cher »</h4><p>« Cher par rapport à quoi ? » — puis reprends SES chiffres : « vous m'avez dit que vous gagniez X sur une commande ; il vous faut Y commandes récupérées sur l'année pour rembourser. »</p>"
+             "<h4>« Je vais réfléchir »</h4><p>« Bien sûr. Juste pour que je vous aide : c'est le montant, le moment, ou vous voulez en parler à quelqu'un ? » <b>Ne pars jamais sans savoir laquelle des trois.</b></p>"
+             "<h4>« J'ai déjà Facebook »</h4><p>« Gardez-le. Vos photos y descendent dans le fil au bout d'une semaine. Le catalogue, lui, ne descend jamais. Et il est à vous. »</p>"
+             "<h4>« Et si je veux ajouter des produits ? »</h4><p>« C'est compris dans votre abonnement. 20 000 F tous les six mois et vous demandez vos modifications quand vous voulez. Chez d'autres, vous payez à chaque changement. »</p>"
+             "<h4>« On m'a déjà pris de l'argent »</h4><p>Ne défends jamais NEBULA avec des mots, défends-la avec des liens : djambarteam.com, graindesthetique.com, au-braise-dor.pages.dev. Livraison 5 à 7 jours, pas six mois.</p>"
+             "<h4>« Je n'ai pas le temps »</h4><p>« Justement, vous n'avez rien à faire : vos photos et vos prix, et NEBULA s'occupe de tout. »</p>"),
+            ("Tes commissions expliquées", "Formation",
+             "Paliers, portefeuille à vie, réseau, paiement.",
+             "<h4>Ta commission directe (palier du mois)</h4><ul><li><b>STARTER</b> (1 à 4 ventes/mois) : 25%</li><li><b>SILVER</b> (5 à 9 ventes/mois) : 30%</li><li><b>GOLD</b> (10+ ventes/mois) : 35%</li></ul><p>Remis à zéro chaque mois. <b>Ne finis jamais un mois à 4 ou à 9 ventes</b> : la suivante fait monter TOUT ton mois, rétroactivement.</p>"
+             "<h4>Ton portefeuille : le récurrent</h4><p>Chaque client abonné te rapporte <b>5 000 F tous les 6 mois</b> (25 % de son abonnement), renouvellements compris, <b>et tu le gardes à vie</b>, même si tu arrêtes un jour. 30 clients = 150 000 F par semestre sans rien vendre. Le récurrent ne compte pas dans ton palier.</p>"
+             "<h4>Ton réseau</h4><p><b>10%</b> sur les ventes des partenaires que tu recrutes (N1) et <b>5%</b> sur celles de leurs recrues (N2). Ces commissions démarrent à partir de ta propre première vente.</p>"
+             "<h4>Quand es-tu payé ?</h4><p>Dès que ton client a payé NEBULA, ta commission apparaît dans <b>Mes gains</b>. Tu cliques <b>Réclamer</b>, et <b>NEBULA te verse sous 24 à 72 heures</b> sur ton Mobile Money.</p>"
+             "<h4>Règle d'or</h4><p><b>Tu ne touches jamais l'argent d'un client</b>, sous aucune forme. Le client paie NEBULA, toujours.</p>"),
+]
+
 def seed_content():
     """Documents & publications de départ (modèles NEBULA pro, immédiatement utiles)."""
     now = time.time()
     with db() as c:
         if not c.execute("SELECT COUNT(*) n FROM documents").fetchone()["n"]:
-            docs = [
-                ("Guide de démarrage du partenaire", "Formation",
-                 "Tes 3 premières ventes, pas à pas.",
-                 "<h4>Bienvenue dans l'équipe NEBULA</h4><p>Ton métier : présenter nos offres à des commerçants et encaisser des commissions. Pas de stock, pas de capital, aucune compétence technique. <b>Tu vends, NEBULA livre.</b></p>"
-                 "<h4>1. Récupère ton lien</h4><p>Onglet <b>Mon lien</b> → copie-le. Tout client qui le remplit devient le tien automatiquement. Enregistre chaque prospect le jour même : il est à toi pendant <b>60 jours</b>.</p>"
-                 "<h4>2. L'escalier : commence TOUJOURS par le catalogue</h4><p>Nos 3 offres ne sont pas 3 produits, c'est un escalier : <b>Catalogue 50 000 F</b> → <b>Vitrine 150 000 F</b> → <b>Outil métier</b>. Un commerçant méfiant dit oui à 50 000 F, il ne dit pas oui à 150 000 F le premier jour. Vends le catalogue, laisse NEBULA l'émerveiller, reviens 3 semaines après : la vitrine se vend presque toute seule. <b>Celui qui attaque au prix fort brûle son prospect.</b></p>"
-                 "<h4>3. Vise les bons commerçants</h4><ul><li>Restaurants, pâtisseries, boutiques de mode, cosmétiques, bijoux, caves, quincailleries</li><li>Le signal en or : une enseigne avec un numéro WhatsApp dessus</li><li>Toute personne qui vend déjà sur WhatsApp sans site derrière</li></ul>"
-                 "<h4>4. Le bon message</h4><p>« Bonjour, j'ai vu vos produits, c'est du beau travail. Une question : vos clients vous demandent vos prix et vos photos combien de fois par jour ? »<br>Pas de prix dans le premier message. Jamais.</p>"
-                 "<h4>5. Ta première liste</h4><p>Avant de sortir dans la rue, écris <b>20 noms</b> de commerçants que tu connais déjà. Ta première vente sortira presque toujours de cette liste.</p>"),
-                ("Catalogue Digital + QR — ton arme d'entrée", "Produits",
-                 "50 000 F. Vendable dès aujourd'hui.",
-                 "<h4>C'est quoi</h4><p>Une page avec tous ses produits (photo, description, prix), un bouton qui envoie la commande sur son WhatsApp, et un QR code à coller sur son comptoir. <b>Jusqu'à 20 produits inclus</b> ; au-delà, 15 000 F par lot de 10.</p>"
-                 "<h4>Prix</h4><p><b>50 000 FCFA</b>, paiement intégral (jamais échelonné) + abonnement 20 000 F tous les 6 mois, <b>modifications comprises</b>. Livré en 5 à 7 jours.</p>"
-                 "<h4>Ce qu'il achète vraiment</h4><p>Il arrête de renvoyer les mêmes photos vingt fois par jour, et il arrête de perdre les commandes de la nuit.</p>"
-                 "<h4>Les 3 questions qui vendent</h4><ul><li>« Combien de fois par jour on vous demande vos prix et vos photos ? »</li><li>« Il se passe quoi quand un client écrit à 22h ? »</li><li>« Combien de commandes vous perdez par mois faute de réponse ? »</li></ul><p>Laisse-le donner le chiffre. Il dépassera presque toujours 50 000 F, et c'est lui qui l'aura dit.</p>"
-                 "<h4>Après le prix</h4><p>Tu annonces <b>50 000 francs</b>… et tu te tais. Celui qui parle en premier après le prix a perdu.</p>"),
-                ("Vitrine Digitale + QR — après ta 1re vente livrée", "Produits",
-                 "150 000 F. Tu vends la crédibilité, pas le temps.",
-                 "<h4>C'est quoi</h4><p><b>Une page complète</b> : accueil, présentation, services ou produits, galerie, avis clients, contact, carte, bouton WhatsApp. Page supplémentaire 30 000 F. <b>Nom de domaine offert la 1re année</b>, puis 16 000 F/an.</p>"
-                 "<h4>Prix</h4><p><b>150 000 FCFA</b> — 70 % au démarrage, 30 % à la mise en ligne (intégral encouragé) + abonnement 20 000 F / 6 mois, modifications comprises.</p>"
-                 "<h4>Ce qu'il achète vraiment</h4><p>Le droit d'être pris au sérieux par des gens qui ne le connaissent pas encore. <b>Ne la vends jamais comme « un catalogue en mieux ».</b></p>"
-                 "<h4>Ton arme : le test Google</h4><p>« On cherche votre nom sur Google, ensemble, comme le ferait quelqu'un qui a entendu parler de vous. » Tu tapes, tu lui tends le téléphone, <b>tu te tais</b>. Puis : « Voilà ce que voit quelqu'un qui a entendu parler de vous. »<br><b>Tu ne ris jamais. Tu ne dis jamais « vous n'existez pas ».</b></p>"
-                 "<h4>Le prix se compare à son plus gros client</h4><p>« Votre plus gros client de l'année vous a rapporté combien ? Un seul comme lui et le site est remboursé. » <b>Ne le compare jamais au prix du catalogue.</b></p>"
-                 "<h4>S'il dit « je préfère commencer par le catalogue »</h4><p><b>Dis oui.</b> Ce n'est pas une objection, c'est une vente. Tu encaisses 50 000 F aujourd'hui et tu reviens pour 150 000 F.</p>"),
-                ("Répondre aux objections", "Vente",
-                 "Les phrases qui débloquent une vente.",
-                 "<h4>La méthode : accueillir, questionner, répondre</h4><p>Une objection n'est pas un refus, c'est une demande d'information. Ne dégaine jamais du tac au tac : marque un temps, puis réponds, et termine par une question.</p>"
-                 "<h4>« C'est trop cher »</h4><p>« Cher par rapport à quoi ? » — puis reprends SES chiffres : « vous m'avez dit que vous gagniez X sur une commande ; il vous faut Y commandes récupérées sur l'année pour rembourser. »</p>"
-                 "<h4>« Je vais réfléchir »</h4><p>« Bien sûr. Juste pour que je vous aide : c'est le montant, le moment, ou vous voulez en parler à quelqu'un ? » <b>Ne pars jamais sans savoir laquelle des trois.</b></p>"
-                 "<h4>« J'ai déjà Facebook »</h4><p>« Gardez-le. Vos photos y descendent dans le fil au bout d'une semaine. Le catalogue, lui, ne descend jamais. Et il est à vous. »</p>"
-                 "<h4>« Et si je veux ajouter des produits ? »</h4><p>« C'est compris dans votre abonnement. 20 000 F tous les six mois et vous demandez vos modifications quand vous voulez. Chez d'autres, vous payez à chaque changement. »</p>"
-                 "<h4>« On m'a déjà pris de l'argent »</h4><p>Ne défends jamais NEBULA avec des mots, défends-la avec des liens : djambarteam.com, graindesthetique.com, au-braise-dor.pages.dev. Livraison 5 à 7 jours, pas six mois.</p>"
-                 "<h4>« Je n'ai pas le temps »</h4><p>« Justement, vous n'avez rien à faire : vos photos et vos prix, et NEBULA s'occupe de tout. »</p>"),
-                ("Tes commissions expliquées", "Formation",
-                 "Paliers, portefeuille à vie, réseau, paiement.",
-                 "<h4>Ta commission directe (palier du mois)</h4><ul><li><b>STARTER</b> (1 à 4 ventes/mois) : 25%</li><li><b>SILVER</b> (5 à 9 ventes/mois) : 30%</li><li><b>GOLD</b> (10+ ventes/mois) : 35%</li></ul><p>Remis à zéro chaque mois. <b>Ne finis jamais un mois à 4 ou à 9 ventes</b> : la suivante fait monter TOUT ton mois, rétroactivement.</p>"
-                 "<h4>Ton portefeuille : le récurrent</h4><p>Chaque client abonné te rapporte <b>5 000 F tous les 6 mois</b> (25 % de son abonnement), renouvellements compris, <b>et tu le gardes à vie</b>, même si tu arrêtes un jour. 30 clients = 150 000 F par semestre sans rien vendre. Le récurrent ne compte pas dans ton palier.</p>"
-                 "<h4>Ton réseau</h4><p><b>10%</b> sur les ventes des partenaires que tu recrutes (N1) et <b>5%</b> sur celles de leurs recrues (N2). Ces commissions démarrent à partir de ta propre première vente.</p>"
-                 "<h4>Quand es-tu payé ?</h4><p>Dès que ton client a payé NEBULA, ta commission apparaît dans <b>Mes gains</b>. Tu cliques <b>Réclamer</b>, et <b>NEBULA te verse sous 24 à 72 heures</b> sur ton Mobile Money.</p>"
-                 "<h4>Règle d'or</h4><p><b>Tu ne touches jamais l'argent d'un client</b>, sous aucune forme. Le client paie NEBULA, toujours.</p>"),
-            ]
+            docs = _SEED_DOCS
             for t, cat, desc, body in docs:
                 c.execute("INSERT INTO documents(title,category,description,kind,body,updated,created) VALUES(?,?,?,'note',?,?,?)",
                           (t, cat, desc, body, now, now))
@@ -890,6 +1014,59 @@ def seed_content():
             for t, pt, plat, body, script in pubs:
                 c.execute("INSERT INTO publications(title,ptype,body,script,platforms,media_kind,updated,created) VALUES(?,?,?,?,?,'none',?,?)",
                           (t, pt, body, script, plat, now, now))
+
+def refresh_seeded_docs():
+    """Remplace les documents de démarrage qui portent encore l'ancien discours.
+
+    `seed_content()` ne s'exécute que sur une base vide : en production les anciens
+    textes sont déjà en base et un simple déploiement ne les corrigerait pas. Or
+    l'ancien guide présentait la Vitrine comme « ton produit le plus rémunérateur »
+    et invitait à la pousser en premier, ce qui contredit frontalement la stratégie
+    de l'escalier (on entre par le Catalogue à 50 000 F).
+
+    Idempotent : ne touche que ce qui porte encore une marque de l'ancienne version,
+    ne crée jamais de doublon, et laisse intact tout document ajouté à la main.
+    """
+    OBSOLETES = ("Vitrine Digitale + QR — fiche produit & argumentaire",
+                 "Catalogue Digital + QR — fiche produit & argumentaire")
+    # Un marqueur par document conservé : une phrase qui n'existe QUE dans l'ancienne
+    # version. Sans cela un document reste en arrière et contredit les autres.
+    MARQUEURS = ("ton produit le plus rémunérateur",              # fiche Vitrine
+                 "vitrine digitale pro + QR code</b> pour vendre mieux",  # guide de démarrage
+                 "Vise 3 contacts par jour",                      # guide de démarrage
+                 "La vitrine se rembourse en quelques ventes",    # objections
+                 "qu'est-ce qui vous retient",                    # objections
+                 "NEBULA te verse sur ton Mobile Money.</p>")     # commissions
+    now = time.time()
+    remplaces = 0
+    try:
+        with db() as c:
+            if not c.execute("SELECT COUNT(*) n FROM documents").fetchone()["n"]:
+                return 0                      # base vide : seed_content() s'en charge
+            # 1. Les fiches produit renommées : on retire les anciennes.
+            for t in OBSOLETES:
+                r = c.execute("SELECT id FROM documents WHERE title=?", (t,)).fetchone()
+                if r:
+                    c.execute("DELETE FROM documents WHERE id=?", (r["id"],))
+                    remplaces += 1
+            # 2. Les titres conservés : on réécrit si le corps est encore l'ancien.
+            for title, cat, desc, body in _SEED_DOCS:
+                r = c.execute("SELECT id, body FROM documents WHERE title=?", (title,)).fetchone()
+                if r is None:
+                    c.execute("INSERT INTO documents(title,category,description,kind,body,updated,created) "
+                              "VALUES(?,?,?,'note',?,?,?)", (title, cat, desc, body, now, now))
+                    remplaces += 1
+                elif any(m in (r["body"] or "") for m in MARQUEURS):
+                    c.execute("UPDATE documents SET category=?,description=?,body=?,updated=? WHERE id=?",
+                              (cat, desc, body, now, r["id"]))
+                    remplaces += 1
+    except Exception as e:
+        print("refresh_seeded_docs:", e)
+        return 0
+    if remplaces:
+        print(f"refresh_seeded_docs: {remplaces} document(s) mis à jour")
+    return remplaces
+
 
 def seed_docs():
     """Publie automatiquement les PDF livrés dans le repo (assets/) dans la Documentation,
@@ -936,6 +1113,7 @@ def seed():
     return
 seed()
 seed_content()
+refresh_seeded_docs()   # corrige les documents de démarrage déjà en base (idempotent)
 seed_docs()
 
 # ----------------------------------------------------------------------------
@@ -1534,11 +1712,82 @@ async def admin_set_payment(lid: int, req: Request, naff_session: Optional[str] 
         c.execute("UPDATE leads SET paye=?, montant=?, updated=? WHERE id=?", (paye, m, time.time(), lid))
         r = c.execute("SELECT * FROM leads WHERE id=?", (lid,)).fetchone()
     breakdown = None
+    sub_id = None
     if paye:
         breakdown = generate_commissions(r)      # crée + alerte direct / N1 / N2 + RENVOIE le détail
+        sub_id = ensure_subscription(r)          # ouvre l'abonnement (catalogue / vitrine)
     else:
         void_commissions(lid)
-    return {"ok": True, "breakdown": breakdown}
+    return {"ok": True, "breakdown": breakdown, "subscription_id": sub_id}
+
+
+# ---- Abonnements : suivi, encaissement, relances -----------------------------
+
+@app.get("/api/admin/subscriptions")
+def admin_subscriptions(naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    now = time.time()
+    with db() as c:
+        rows = c.execute(
+            "SELECT s.*, l.nom, l.prenom, l.numero, a.prenom AS p_prenom, a.nom AS p_nom "
+            "FROM subscriptions s JOIN leads l ON l.id=s.lead_id "
+            "JOIN affiliates a ON a.id=s.affiliate_id ORDER BY s.echeance ASC").fetchall()
+    out = []
+    for r in rows:
+        d = dict(r)
+        d["client"] = f"{r['prenom']} {r['nom']}".strip()
+        d["partenaire"] = f"{r['p_prenom']} {r['p_nom']}".strip()
+        d["jours_restants"] = int(((r["echeance"] or now) - now) // 86400)
+        d["echeance_lisible"] = datetime.datetime.fromtimestamp(r["echeance"]).strftime("%d/%m/%Y") if r["echeance"] else ""
+        out.append(d)
+    total = sum(int(r["montant"] or SUB_MONTANT) for r in rows if r["statut"] != "resilie")
+    return {"subscriptions": out, "actifs": len([r for r in rows if r["statut"] != "resilie"]),
+            "recurrent_semestriel": total}
+
+@app.get("/api/admin/subscriptions/due")
+def admin_subscriptions_due(naff_session: Optional[str] = Cookie(default=None),
+                            key: Optional[str] = None):
+    """Consommé par le workflow n8n. Accepte la session admin OU la clé de service
+    NAFF_CRON_KEY, pour que l'automatisation n'ait pas besoin de se connecter."""
+    cron_key = os.getenv("NAFF_CRON_KEY", "")
+    if not (need_admin(naff_session) or (cron_key and key == cron_key)):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    return subscriptions_due()
+
+@app.post("/api/admin/subscriptions/{sid}/paid")
+async def admin_subscription_paid(sid: int, naff_session: Optional[str] = Cookie(default=None)):
+    """L'abonnement a été encaissé : échéance décalée de 6 mois + commission 25 %."""
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    return record_subscription_payment(sid)
+
+@app.post("/api/admin/subscriptions/{sid}/rappel")
+async def admin_subscription_rappel(sid: int, req: Request,
+                                    naff_session: Optional[str] = Cookie(default=None),
+                                    key: Optional[str] = None):
+    """Marque qu'un rappel vient d'être envoyé (anti-doublon du workflow n8n)."""
+    cron_key = os.getenv("NAFF_CRON_KEY", "")
+    if not (need_admin(naff_session) or (cron_key and key == cron_key)):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    now = time.time()
+    with db() as c:
+        s = c.execute("SELECT * FROM subscriptions WHERE id=?", (sid,)).fetchone()
+        if not s:
+            return JSONResponse({"ok": False}, status_code=404)
+        retard = (s["echeance"] or now) < now
+        c.execute("UPDATE subscriptions SET dernier_rappel=?, relances=relances+1, statut=?, "
+                  "updated=? WHERE id=?",
+                  (now, "retard" if retard else s["statut"], now, sid))
+    return {"ok": True, "relances": (s["relances"] or 0) + 1}
+
+@app.post("/api/admin/subscriptions/{sid}/resilier")
+async def admin_subscription_resilier(sid: int, naff_session: Optional[str] = Cookie(default=None)):
+    if not need_admin(naff_session):
+        return JSONResponse({"error": "auth"}, status_code=401)
+    with db() as c:
+        c.execute("UPDATE subscriptions SET statut='resilie', updated=? WHERE id=?", (time.time(), sid))
+    return {"ok": True}
 
 @app.get("/api/admin/notifs")
 def admin_notifs(naff_session: Optional[str] = Cookie(default=None)):
@@ -2048,6 +2297,45 @@ def doc_public(r: sqlite3.Row) -> Dict[str, Any]:
             "kind": r["kind"], "body": r["body"] if r["kind"] == "note" else "",
             "url": r["url"], "size": r["size"], "has_file": bool(r["filename"]),
             "updated": r["updated"], "created": r["created"]}
+
+@app.get("/api/partenaire/portefeuille")
+def partner_portefeuille(naff_session: Optional[str] = Cookie(default=None)):
+    """Les abonnements que le partenaire a apportés : ce qu'ils lui rapportent tous
+    les 6 mois, et quand relancer. C'est ce qui transforme le récurrent en habitude
+    de travail plutôt qu'en rente passive."""
+    aff = need_affiliate(naff_session)
+    if aff is None:
+        return JSONResponse({"error": "auth"}, status_code=401)
+    now = time.time()
+    with db() as c:
+        rows = c.execute(
+            "SELECT s.*, l.nom, l.prenom FROM subscriptions s JOIN leads l ON l.id=s.lead_id "
+            "WHERE s.affiliate_id=? AND s.statut!='resilie' ORDER BY s.echeance ASC",
+            (aff["id"],)).fetchall()
+        encaisse = c.execute(
+            "SELECT COALESCE(SUM(amount),0) t FROM commissions "
+            "WHERE beneficiary_id=? AND level='abonnement' AND status!='void'",
+            (aff["id"],)).fetchone()["t"]
+    clients = []
+    for r in rows:
+        clients.append({
+            "client": f"{r['prenom']} {r['nom']}".strip(),
+            "offre": r["offre"],
+            "ma_part": int(round((r["montant"] or SUB_MONTANT) * SUB_RATE)),
+            "echeance": datetime.datetime.fromtimestamp(r["echeance"]).strftime("%d/%m/%Y") if r["echeance"] else "",
+            "jours_restants": int(((r["echeance"] or now) - now) // 86400),
+            "statut": r["statut"],
+        })
+    par_semestre = sum(x["ma_part"] for x in clients)
+    return {
+        "clients": clients,
+        "nb": len(clients),
+        "par_semestre": par_semestre,
+        "deja_genere": int(encaisse),
+        "note": "25 % de chaque abonnement encaissé, renouvellements compris. "
+                "Acquis à vie, même si vous quittez le programme. "
+                "Ne compte pas dans votre palier du mois.",
+    }
 
 @app.get("/api/partenaire/documents")
 def partner_documents(naff_session: Optional[str] = Cookie(default=None)):
