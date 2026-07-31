@@ -88,6 +88,18 @@ prompt-maître reste générique.
 
 ---
 
+## 3bis. Client 10 · HILLARY M. STYL (livré 2026-07-31)
+
+Vitrine couture avec **moteur de commande** : catalogue prêt-à-porter (tailles) et
+sur-mesure (8 mesures femme/homme), frais d'expédition par pays, délai normal ou express,
+récapitulatif chiffré, envoi WhatsApp structuré.
+`clients/10-hillary-m-styl/vitrine.html` · détail et QC dans son `CONTEXT.md`.
+
+⚠️ **Ne pas mettre en ligne avant d'avoir les 7 informations du §3 de son CONTEXT.md.**
+Le numéro WhatsApp est un fixe de test (`22900000000`) : en l'état, **aucune commande
+n'arriverait**. Les frais d'expédition sont des exemples : un tarif faux coûte de l'argent
+à la cliente à chaque commande.
+
 ## 4. Ce qui tourne déjà en production
 
 **Déployé automatiquement au push sur `main` (Railway) :**
