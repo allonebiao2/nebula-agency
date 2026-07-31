@@ -99,6 +99,38 @@ Consigne de travail : avancer **étape par étape**.
 - Chromium est disponible à `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`
   (`--headless --print-to-pdf`), aucun outil PDF système n'est installé.
 
+
+## Vague 4 — Rubrique marketing « LE SAVIEZ-VOUS ? »
+
+Mongazi veut des posts qui **apportent de la valeur et enseignent** quelque chose que les
+commerçants ignorent, plutôt que de la publicité. Style à caler sur une image de référence
+qu'il fournit, avec son logo.
+
+**Livré :** `_documents/nebula-agency/marketing/PROMPTS-POSTS-LE-SAVIEZ-VOUS.md`
+
+- **Prompt-maître pour Nano Banana Pro** avec **deux images d'entrée déclarées par leur rôle** :
+  IMAGE 1 = le logo (asset à placer, pixel-fidèle), IMAGE 2 = la référence de style
+  (on hérite de la **forme** : grille, hiérarchie typographique, rythme, matière, lumière ;
+  jamais du **fond** : sujet, texte, marque).
+- **Interrupteur MODE A / MODE B** sur la palette. Réglé sur **B par défaut** : on n'hérite
+  jamais de la couleur d'un autre, une palette empruntée met la marque de quelqu'un d'autre
+  sur notre logo. MODE A réservé au cas où la référence est déjà un visuel NEBULA.
+- **Le label « LE SAVIEZ-VOUS ? » est figé** (texte, position, casse, taille) : c'est
+  l'ancre de reconnaissance de la série.
+- **8 posts prêts** avec leurs légendes : durée de vie d'un contenu · vérification
+  silencieuse · ce qu'il y a dans un QR code · locataire ou propriétaire · le prix qu'on
+  n'ose pas demander · le coût de revient · la lumière de midi · la diaspora.
+- **Règle éditoriale : aucune statistique inventée.** Tous les visuels reposent sur des
+  vérités observables.
+- **Rythme** 2 posts/semaine, alterner « ça vous concerne » et « cadeau pur ». Jamais deux
+  « ça vous concerne » d'affilée : c'est le post gratuit qui achète le droit de publier
+  celui qui remue le couteau.
+- **Cohérence avec la vente** : les posts 1, 2, 5 et 6 sont exactement les insights centraux
+  des guides. Les partenaires diront en boutique ce que les posts racontent en ligne.
+
+⚠️ **L'image de référence n'a jamais été reçue** malgré deux mentions. Le bloc
+`STYLE INHERITANCE` est donc générique et devra être ajusté quand elle arrivera.
+
 ## Analyse stratégique retenue
 
 1. **Les 3 offres forment un escalier, pas 3 produits.** Catalogue 50 000 F = porte d'entrée

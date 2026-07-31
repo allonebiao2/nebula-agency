@@ -24,6 +24,9 @@
 - **pdf/** — Les 9 documents en **PDF à la charte cosmique NEBULA**, prêts à téléverser dans l'espace partenaire. Régénérables avec `_build_pdf.py` (Markdown → HTML stylé → Chrome headless).
 - **07-MISE-EN-LIGNE.md** — Procédure : publication dans la Documentation de l'espace partenaire, conversion PDF, ⚠️ nettoyage des anciens guides contradictoires, les 6 actions restantes (IFU, prix du site, cerveau NOVA, rappel automatique de renouvellement), ordre de lancement.
 
+## Marketing & contenu (dossier `marketing/`)
+- **PROMPTS-POSTS-LE-SAVIEZ-VOUS.md** — La rubrique **« LE SAVIEZ-VOUS ? »** : le **prompt-maître** pour Nano Banana Pro (2 images d'entrée — logo + référence de style, héritage de la forme sans le fond, verrouillage de la palette NEBULA), **8 posts prêts à générer** avec leurs légendes, le rythme de publication, le dépannage, et la correspondance entre chaque post et le guide de vente qu'il renforce.
+
 ## Pitch & business
 - **Pitch-Vendora-NEBULA.pdf** — Pitch commercial de Vendora (le vendeur WhatsApp IA de NEBULA).
 - **Plan-du-Million-NEBULA.pdf** — « Plan du Million » (plan d'objectifs / business plan NEBULA).
