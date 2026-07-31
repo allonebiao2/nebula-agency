@@ -56,7 +56,8 @@ dans `_documents/nebula-agency/vente/`.
 
 ## 3. CE QUI BLOQUE — à faire par Mongazi
 
-**Aucun de ces cinq points ne peut être fait depuis une session distante.**
+**Aucun de ces points ne peut être fait depuis une session distante.**
+*3.1 est fait. Restent 3.2 à 3.5, plus les 7 informations du client 10 (§3bis).*
 
 ### 3.1 Déployer le site sur Cloudflare ✅ FAIT le 2026-07-31 (session terminal Claude Code)
 Déployé : **www.nebula-agency.online affiche maintenant 20 000 F / 6 mois**. Les 4 « 15 000 » restants = poids du configurateur (`data-price="15000"`), légitimes. Vérifié live (domaine + `nebula-agency.pages.dev` = 4× « 15 000 » / 19× « 20 000 », `cf-cache-status: DYNAMIC`). Procédure ci-dessous conservée pour référence.
@@ -152,7 +153,8 @@ ou personne ne la portera.
 ## 7. Comment continuer en une phrase
 
 > « Lis `_memoire/REPRENDRE-ICI.md`, puis `_documents/nebula-agency/vente/00-SOCLE-COMMERCIAL.md`.
-> On en est au §3 : les cinq points bloquants. Commence par le déploiement Cloudflare. »
+> Le site est déployé. Il reste §3.2 (`NAFF_CRON_KEY` sur Railway, une minute) et les
+> 7 informations du client HILLARY M. STYL au §3bis avant de pouvoir le mettre en ligne. »
 
 **Détail complet de tout le chantier :**
 `_memoire/conversations/2026-07-30-recrutement-et-guides-de-vente.md` (5 vagues)
