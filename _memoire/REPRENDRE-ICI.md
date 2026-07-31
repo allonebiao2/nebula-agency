@@ -58,8 +58,8 @@ dans `_documents/nebula-agency/vente/`.
 
 **Aucun de ces cinq points ne peut être fait depuis une session distante.**
 
-### 3.1 Déployer le site sur Cloudflare ⚠️ le plus visible
-Le code est à jour sur `main`, mais **le site public affiche encore 15 000 F**.
+### 3.1 Déployer le site sur Cloudflare ✅ FAIT le 2026-07-31 (session terminal Claude Code)
+Déployé : **www.nebula-agency.online affiche maintenant 20 000 F / 6 mois**. Les 4 « 15 000 » restants = poids du configurateur (`data-price="15000"`), légitimes. Vérifié live (domaine + `nebula-agency.pages.dev` = 4× « 15 000 » / 19× « 20 000 », `cf-cache-status: DYNAMIC`). Procédure ci-dessous conservée pour référence.
 
 ```bash
 git pull origin main
