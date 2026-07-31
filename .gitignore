@@ -52,3 +52,5 @@ _perso/
 # Pages de démo / diagnostic locales des vitrines & outils (jamais en prod)
 boussole/_*.html
 clients/*/_diag.html
+
+__pycache__/

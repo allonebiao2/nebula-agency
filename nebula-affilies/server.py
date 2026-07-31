@@ -831,35 +831,43 @@ def seed_content():
             docs = [
                 ("Guide de démarrage du partenaire", "Formation",
                  "Tes 3 premières ventes, pas à pas.",
-                 "<h4>Bienvenue dans l'équipe NEBULA</h4><p>Ton métier : présenter nos offres à des commerçants et encaisser des commissions. Pas de stock, pas de capital.</p>"
-                 "<h4>1. Récupère ton lien</h4><p>Onglet <b>Mon lien</b> → copie-le. Tout client qui le remplit devient le tien automatiquement.</p>"
-                 "<h4>2. Vise les bons commerçants</h4><ul><li>Boutiques de mode, cosmétiques, pâtisseries, bijoux</li><li>Prestataires (coiffure, déco, événementiel)</li><li>Toute personne qui vend déjà sur WhatsApp</li></ul>"
-                 "<h4>3. Le bon message</h4><p>« Bonjour, j'aide les commerçants à avoir une <b>vitrine digitale pro + QR code</b> pour vendre mieux sur WhatsApp. Je peux vous montrer un exemple ? »</p>"
-                 "<h4>4. Envoie ton lien</h4><p>Le commerçant remplit, NEBULA s'occupe de la réalisation, tu touches ta commission quand il paie. Vise 3 contacts par jour.</p>"),
-                ("Vitrine Digitale + QR — fiche produit & argumentaire", "Produits",
-                 "Le produit phare à 150 000 F.",
-                 "<h4>C'est quoi</h4><p>Un site vitrine moderne (mobile, rapide, élégant) avec galerie, services, témoignages, bouton WhatsApp, + un <b>QR code</b> à coller en boutique et sur les emballages.</p>"
-                 "<h4>Prix</h4><p><b>150 000 FCFA</b>. C'est ton produit le plus rémunérateur.</p>"
-                 "<h4>Pourquoi le commerçant en a besoin</h4><ul><li>Il paraît 10× plus professionnel qu'un concurrent sans site</li><li>Il partage <b>un seul lien</b> au lieu de répéter prix et photos</li><li>Le QR transforme chaque client en visiteur de sa vitrine</li></ul>"
-                 "<h4>Phrase qui marche</h4><p>« Aujourd'hui, un client qui hésite va voir si vous avez une présence sérieuse en ligne. Cette vitrine, c'est votre boutique ouverte 24h/24. »</p>"),
-                ("Catalogue Digital + QR — fiche produit & argumentaire", "Produits",
-                 "Le produit d'appel facile à vendre à 50 000 F.",
-                 "<h4>C'est quoi</h4><p>Un catalogue digital de produits (photos, prix, descriptions) avec QR code. Plus léger que la vitrine, idéal pour démarrer.</p>"
-                 "<h4>Prix</h4><p><b>50 000 FCFA</b> — la porte d'entrée parfaite : petit budget, grand effet.</p>"
-                 "<h4>Argument clé</h4><p>« Au lieu d'envoyer 20 photos une par une sur WhatsApp, vous envoyez <b>un seul lien</b> où tout est rangé, avec les prix. Vos clients commandent plus vite. »</p>"
-                 "<h4>Astuce</h4><p>Beaucoup de commerçants commencent par le catalogue, puis prennent la vitrine. Commence petit, monte ensuite.</p>"),
+                 "<h4>Bienvenue dans l'équipe NEBULA</h4><p>Ton métier : présenter nos offres à des commerçants et encaisser des commissions. Pas de stock, pas de capital, aucune compétence technique. <b>Tu vends, NEBULA livre.</b></p>"
+                 "<h4>1. Récupère ton lien</h4><p>Onglet <b>Mon lien</b> → copie-le. Tout client qui le remplit devient le tien automatiquement. Enregistre chaque prospect le jour même : il est à toi pendant <b>60 jours</b>.</p>"
+                 "<h4>2. L'escalier : commence TOUJOURS par le catalogue</h4><p>Nos 3 offres ne sont pas 3 produits, c'est un escalier : <b>Catalogue 50 000 F</b> → <b>Vitrine 150 000 F</b> → <b>Outil métier</b>. Un commerçant méfiant dit oui à 50 000 F, il ne dit pas oui à 150 000 F le premier jour. Vends le catalogue, laisse NEBULA l'émerveiller, reviens 3 semaines après : la vitrine se vend presque toute seule. <b>Celui qui attaque au prix fort brûle son prospect.</b></p>"
+                 "<h4>3. Vise les bons commerçants</h4><ul><li>Restaurants, pâtisseries, boutiques de mode, cosmétiques, bijoux, caves, quincailleries</li><li>Le signal en or : une enseigne avec un numéro WhatsApp dessus</li><li>Toute personne qui vend déjà sur WhatsApp sans site derrière</li></ul>"
+                 "<h4>4. Le bon message</h4><p>« Bonjour, j'ai vu vos produits, c'est du beau travail. Une question : vos clients vous demandent vos prix et vos photos combien de fois par jour ? »<br>Pas de prix dans le premier message. Jamais.</p>"
+                 "<h4>5. Ta première liste</h4><p>Avant de sortir dans la rue, écris <b>20 noms</b> de commerçants que tu connais déjà. Ta première vente sortira presque toujours de cette liste.</p>"),
+                ("Catalogue Digital + QR — ton arme d'entrée", "Produits",
+                 "50 000 F. Vendable dès aujourd'hui.",
+                 "<h4>C'est quoi</h4><p>Une page avec tous ses produits (photo, description, prix), un bouton qui envoie la commande sur son WhatsApp, et un QR code à coller sur son comptoir. <b>Jusqu'à 20 produits inclus</b> ; au-delà, 15 000 F par lot de 10.</p>"
+                 "<h4>Prix</h4><p><b>50 000 FCFA</b>, paiement intégral (jamais échelonné) + abonnement 20 000 F tous les 6 mois, <b>modifications comprises</b>. Livré en 5 à 7 jours.</p>"
+                 "<h4>Ce qu'il achète vraiment</h4><p>Il arrête de renvoyer les mêmes photos vingt fois par jour, et il arrête de perdre les commandes de la nuit.</p>"
+                 "<h4>Les 3 questions qui vendent</h4><ul><li>« Combien de fois par jour on vous demande vos prix et vos photos ? »</li><li>« Il se passe quoi quand un client écrit à 22h ? »</li><li>« Combien de commandes vous perdez par mois faute de réponse ? »</li></ul><p>Laisse-le donner le chiffre. Il dépassera presque toujours 50 000 F, et c'est lui qui l'aura dit.</p>"
+                 "<h4>Après le prix</h4><p>Tu annonces <b>50 000 francs</b>… et tu te tais. Celui qui parle en premier après le prix a perdu.</p>"),
+                ("Vitrine Digitale + QR — après ta 1re vente livrée", "Produits",
+                 "150 000 F. Tu vends la crédibilité, pas le temps.",
+                 "<h4>C'est quoi</h4><p><b>Une page complète</b> : accueil, présentation, services ou produits, galerie, avis clients, contact, carte, bouton WhatsApp. Page supplémentaire 30 000 F. <b>Nom de domaine offert la 1re année</b>, puis 16 000 F/an.</p>"
+                 "<h4>Prix</h4><p><b>150 000 FCFA</b> — 70 % au démarrage, 30 % à la mise en ligne (intégral encouragé) + abonnement 20 000 F / 6 mois, modifications comprises.</p>"
+                 "<h4>Ce qu'il achète vraiment</h4><p>Le droit d'être pris au sérieux par des gens qui ne le connaissent pas encore. <b>Ne la vends jamais comme « un catalogue en mieux ».</b></p>"
+                 "<h4>Ton arme : le test Google</h4><p>« On cherche votre nom sur Google, ensemble, comme le ferait quelqu'un qui a entendu parler de vous. » Tu tapes, tu lui tends le téléphone, <b>tu te tais</b>. Puis : « Voilà ce que voit quelqu'un qui a entendu parler de vous. »<br><b>Tu ne ris jamais. Tu ne dis jamais « vous n'existez pas ».</b></p>"
+                 "<h4>Le prix se compare à son plus gros client</h4><p>« Votre plus gros client de l'année vous a rapporté combien ? Un seul comme lui et le site est remboursé. » <b>Ne le compare jamais au prix du catalogue.</b></p>"
+                 "<h4>S'il dit « je préfère commencer par le catalogue »</h4><p><b>Dis oui.</b> Ce n'est pas une objection, c'est une vente. Tu encaisses 50 000 F aujourd'hui et tu reviens pour 150 000 F.</p>"),
                 ("Répondre aux objections", "Vente",
-                 "Les 5 phrases qui débloquent une vente.",
-                 "<h4>« C'est trop cher »</h4><p>« Je comprends. Combien vous rapporte <b>un seul</b> nouveau client par semaine ? La vitrine se rembourse en quelques ventes, et elle travaille pour vous tous les jours. »</p>"
-                 "<h4>« Je vais réfléchir »</h4><p>« Bien sûr. Pour vous aider à décider : qu'est-ce qui vous retient — le budget, le moment, ou vous voulez voir un exemple ? »</p>"
-                 "<h4>« J'ai déjà Facebook »</h4><p>« Parfait, on ne le remplace pas, on le renforce : votre vitrine, c'est l'endroit sérieux où vous envoyez les gens depuis Facebook et WhatsApp. »</p>"
-                 "<h4>« Ça marche vraiment ? »</h4><p>Montre un exemple réalisé par NEBULA. Une preuve vaut mille arguments.</p>"
-                 "<h4>« Je n'ai pas le temps »</h4><p>« Justement, vous n'avez rien à faire : vous m'envoyez vos photos et infos, NEBULA s'occupe de tout. »</p>"),
+                 "Les phrases qui débloquent une vente.",
+                 "<h4>La méthode : accueillir, questionner, répondre</h4><p>Une objection n'est pas un refus, c'est une demande d'information. Ne dégaine jamais du tac au tac : marque un temps, puis réponds, et termine par une question.</p>"
+                 "<h4>« C'est trop cher »</h4><p>« Cher par rapport à quoi ? » — puis reprends SES chiffres : « vous m'avez dit que vous gagniez X sur une commande ; il vous faut Y commandes récupérées sur l'année pour rembourser. »</p>"
+                 "<h4>« Je vais réfléchir »</h4><p>« Bien sûr. Juste pour que je vous aide : c'est le montant, le moment, ou vous voulez en parler à quelqu'un ? » <b>Ne pars jamais sans savoir laquelle des trois.</b></p>"
+                 "<h4>« J'ai déjà Facebook »</h4><p>« Gardez-le. Vos photos y descendent dans le fil au bout d'une semaine. Le catalogue, lui, ne descend jamais. Et il est à vous. »</p>"
+                 "<h4>« Et si je veux ajouter des produits ? »</h4><p>« C'est compris dans votre abonnement. 20 000 F tous les six mois et vous demandez vos modifications quand vous voulez. Chez d'autres, vous payez à chaque changement. »</p>"
+                 "<h4>« On m'a déjà pris de l'argent »</h4><p>Ne défends jamais NEBULA avec des mots, défends-la avec des liens : djambarteam.com, graindesthetique.com, au-braise-dor.pages.dev. Livraison 5 à 7 jours, pas six mois.</p>"
+                 "<h4>« Je n'ai pas le temps »</h4><p>« Justement, vous n'avez rien à faire : vos photos et vos prix, et NEBULA s'occupe de tout. »</p>"),
                 ("Tes commissions expliquées", "Formation",
-                 "Paliers, profondeurs, paiement.",
-                 "<h4>Ta commission directe (palier du mois)</h4><ul><li><b>STARTER</b> (1 à 4 ventes/mois) : 25%</li><li><b>SILVER</b> (5 à 9 ventes/mois) : 30%</li><li><b>GOLD</b> (10+ ventes/mois) : 35%</li></ul><p>Remis à zéro chaque mois : plus tu vends dans le mois, plus ton % monte.</p>"
-                 "<h4>Ton réseau (profondeurs)</h4><p>Tu gagnes aussi <b>10%</b> sur les ventes des partenaires que tu recrutes (N1) et <b>5%</b> sur celles de leurs recrues (N2).</p>"
-                 "<h4>Quand es-tu payé ?</h4><p>Dès que ton client a payé NEBULA, ta commission apparaît dans <b>Mes gains</b>. Tu cliques <b>Réclamer</b>, et NEBULA te verse sur ton Mobile Money.</p>"),
+                 "Paliers, portefeuille à vie, réseau, paiement.",
+                 "<h4>Ta commission directe (palier du mois)</h4><ul><li><b>STARTER</b> (1 à 4 ventes/mois) : 25%</li><li><b>SILVER</b> (5 à 9 ventes/mois) : 30%</li><li><b>GOLD</b> (10+ ventes/mois) : 35%</li></ul><p>Remis à zéro chaque mois. <b>Ne finis jamais un mois à 4 ou à 9 ventes</b> : la suivante fait monter TOUT ton mois, rétroactivement.</p>"
+                 "<h4>Ton portefeuille : le récurrent</h4><p>Chaque client abonné te rapporte <b>5 000 F tous les 6 mois</b> (25 % de son abonnement), renouvellements compris, <b>et tu le gardes à vie</b>, même si tu arrêtes un jour. 30 clients = 150 000 F par semestre sans rien vendre. Le récurrent ne compte pas dans ton palier.</p>"
+                 "<h4>Ton réseau</h4><p><b>10%</b> sur les ventes des partenaires que tu recrutes (N1) et <b>5%</b> sur celles de leurs recrues (N2). Ces commissions démarrent à partir de ta propre première vente.</p>"
+                 "<h4>Quand es-tu payé ?</h4><p>Dès que ton client a payé NEBULA, ta commission apparaît dans <b>Mes gains</b>. Tu cliques <b>Réclamer</b>, et <b>NEBULA te verse sous 24 à 72 heures</b> sur ton Mobile Money.</p>"
+                 "<h4>Règle d'or</h4><p><b>Tu ne touches jamais l'argent d'un client</b>, sous aucune forme. Le client paie NEBULA, toujours.</p>"),
             ]
             for t, cat, desc, body in docs:
                 c.execute("INSERT INTO documents(title,category,description,kind,body,updated,created) VALUES(?,?,?,'note',?,?,?)",
@@ -867,10 +875,10 @@ def seed_content():
         if not c.execute("SELECT COUNT(*) n FROM publications").fetchone()["n"]:
             pubs = [
                 ("Script d'approche WhatsApp", "script", "WhatsApp",
-                 "Bonjour 👋 Je travaille avec NEBULA Agency. J'aide les commerçants comme vous à avoir une vitrine digitale professionnelle (+ QR code) pour vendre plus facilement sur WhatsApp. Je peux vous montrer un exemple, sans engagement ?",
-                 "Étape 1 : saluer + qui tu es.\nÉtape 2 : la valeur en 1 phrase (vendre plus facilement).\nÉtape 3 : proposer un exemple (petite demande, facile à accepter).\nÉtape 4 : s'il dit oui → envoie ton lien et un exemple de vitrine."),
+                 "Bonjour 👋 J'ai vu vos produits, c'est du beau travail.\n\nJe travaille avec NEBULA Agency, à Cotonou. On fait les catalogues et les sites des commerçants d'ici.\n\nUne question rapide : vos clients, ils vous demandent vos prix et vos photos combien de fois par jour ?",
+                 "Étape 1 : un compliment VRAI et précis, jamais une flatterie creuse.\nÉtape 2 : qui tu es, en une ligne.\nÉtape 3 : une QUESTION qui parle de sa galère, pas de ton offre.\nÉtape 4 : s'il répond → propose de lui montrer un exemple sur ton téléphone, 2 minutes.\n\nRÈGLE ABSOLUE : jamais de prix dans le premier message. Le prix se dit après la démonstration."),
                 ("Post de présentation — Facebook", "post", "Facebook",
-                 "Commerçant(e) à Cotonou ? 📲 Offrez à votre business une VITRINE DIGITALE professionnelle + QR code : vos produits, vos prix, votre WhatsApp — tout au même endroit, accessible 24h/24.\n\nÀ partir de 50 000 FCFA (catalogue) — vitrine complète 150 000 FCFA.\nÉcrivez-moi en privé 👇",
+                 "Commerçant(e) à Cotonou ? 📲 Vos produits méritent mieux qu'une galerie de téléphone.\n\nUn CATALOGUE DIGITAL : vos produits, vos photos, vos prix, un QR code, et un bouton qui envoie la commande directement sur votre WhatsApp. Livré en 5 à 7 jours.\n\n50 000 FCFA (jusqu'à 20 produits). Vitrine complète : 150 000 FCFA.\nÉcrivez-moi en privé 👇",
                  ""),
                 ("Légende Instagram", "post", "Instagram",
                  "Votre boutique mérite mieux qu'un feed. ✨\nUne vitrine digitale pro + QR code pour transformer vos visiteurs en clients.\n\n#Cotonou #Bénin #commerce #digital #QRcode #NEBULA",
@@ -2572,8 +2580,24 @@ async def nova_reply(system: str, hist: List[sqlite3.Row]) -> str:
 # Persona = NEBULA Agency (on ne met pas en avant que c'est une IA). Branché sur
 # le hub public ET dans chaque back-office affilié.
 def agency_brain() -> str:
-    cat = "\n".join(f"- {v['label']} : {fmoney(v['price'])} FCFA"
-                    for k, v in SERVICES.items() if k != "autre" and v.get("price"))
+    # Catalogue commercial EXPLICITE (ne pas dériver de SERVICES : il contient encore
+    # des offres retirées du site — Fiche Google Maps, Avatar IA). Source de vérité :
+    # _documents/nebula-agency/vente/00-SOCLE-COMMERCIAL.md
+    cat = (
+        "- Catalogue Digital + QR Code : 50 000 FCFA (jusqu'à 20 produits ; "
+        "au-delà, 15 000 FCFA par lot de 10 produits supplémentaires)\n"
+        "- Vitrine Digitale + QR Code : 150 000 FCFA (une page complète : accueil, "
+        "services/produits, galerie, avis, contact, carte, bouton WhatsApp ; "
+        "page supplémentaire 30 000 FCFA ; nom de domaine personnalisé OFFERT la 1re année, "
+        "puis 16 000 FCFA/an)\n"
+        "- QR Code Google Review : 30 000 FCFA (sans abonnement)\n"
+        "- ABONNEMENT (Catalogue et Vitrine) : 20 000 FCFA TOUS LES 6 MOIS, jamais par mois. "
+        "Il couvre l'hébergement, la sécurité ET les modifications de contenu (textes, prix, "
+        "photos, ajout ou retrait de produits). Une refonte du design, de nouvelles "
+        "fonctionnalités ou de nouvelles pages font l'objet d'un devis à part.\n"
+        "- PAIEMENT : Catalogue payé intégralement ; Vitrine et logiciel métier 70 % au "
+        "démarrage et 30 % à la mise en ligne (paiement intégral possible et encouragé)."
+    )
     return (
         "Tu es l'assistant officiel de NEBULA Agency. Tu réponds AU NOM de NEBULA Agency "
         "(dis « nous », « chez NEBULA »). Style : français, chaleureux, professionnel, clair, CONCIS, sans emoji. "
@@ -2594,7 +2618,8 @@ def agency_brain() -> str:
         "factures normalisées), des rapports automatiques et de l'IA. Le devis final est confirmé après un court "
         "échange. Pour les projets à l'international / Europe, le tarif est établi sur mesure (tarif export). "
         "Exemples de secteurs : industrie/HSE, commerce, immobilier, santé.\n\n"
-        "DÉLAI : une vitrine est livrée en 5 à 7 jours en moyenne ; un logiciel métier est chiffré sur devis.\n"
+        "DÉLAI : une vitrine ou un catalogue est livré en 5 à 7 jours après réception des "
+        "informations et du paiement ; un logiciel métier est chiffré et planifié sur devis.\n"
         f"CONTACT / COMMANDER : par WhatsApp au {WHATSAPP}. Invite le visiteur à nous écrire sur WhatsApp pour "
         "démarrer un projet ou obtenir un devis précis.\n\n"
         "RÈGLES STRICTES :\n"
