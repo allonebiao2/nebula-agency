@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HILLARY M. STYL — Maison de couture · prêt-à-porter &amp; sur-mesure</title>
+<meta name="description" content="HILLARY M. STYL, maison de couture. Prêt-à-porter par tailles et sur-mesure aux mesures exactes. Commande en ligne, retrait à l'atelier ou expédition, délai normal ou express en 1 à 3 jours.">
+<meta name="theme-color" content="#0A0A0A">
+<meta property="og:type" content="website">
+<meta property="og:title" content="HILLARY M. STYL — Maison de couture">
+<meta property="og:description" content="Prêt-à-porter et sur-mesure. Commandez en ligne, donnez vos mesures, recevez votre tenue.">
+<link rel="icon" href="data:image/png;base64,__FAVICON_B64__">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rose:#E6007E; --rose-d:#B80065; --rose-p:#FFE8F4;
+  --noir:#0A0A0A; --encre:#1A1A1E; --gris:#6B6B76; --ligne:#E9E9EF;
+  --creme:#FBFBFC; --blanc:#FFFFFF;
+  --ok:#0F8A4A; --ok-bg:#E8F7EE;
+  --r:16px; --r-s:10px;
+  --logo:url("data:image/webp;base64,__LOGO_B64__");
+  --max:1140px;
+  --sh:0 1px 2px rgba(10,10,10,.04),0 8px 28px rgba(10,10,10,.07);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--creme);color:var(--encre);
+  font-family:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:16px;line-height:1.6;overflow-x:hidden;
+}
+h1,h2,h3,h4,.ff{font-family:Archivo,system-ui,sans-serif;font-weight:700;letter-spacing:-.02em;line-height:1.15;margin:0}
+p{margin:0}
+img{max-width:100%;display:block}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:inherit}
+.wrap{width:100%;max-width:var(--max);margin:0 auto;padding:0 20px}
+.mark{background:var(--logo) center/contain no-repeat}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- NAV ---------- */
+.nav{position:sticky;top:0;z-index:60;background:rgba(251,251,252,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--ligne)}
+.nav .in{display:flex;align-items:center;gap:14px;height:64px}
+.nav .logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex:0 0 auto;min-height:44px}
+.nav .logo .mark{width:38px;height:38px}
+.nav .logo b{font-family:Archivo;font-size:15px;letter-spacing:.14em;font-weight:700}
+.nav .logo span{display:block;font-size:9.5px;letter-spacing:.22em;color:var(--gris);font-weight:600;text-transform:uppercase}
+.nav .links{display:none;margin-left:auto;gap:26px}
+.nav .links a{display:inline-flex;align-items:center;min-height:44px;text-decoration:none;font-size:14.5px;font-weight:600;color:var(--gris)}
+.nav .links a:hover{color:var(--rose)}
+.nav .cta{margin-left:auto;min-height:44px;display:inline-flex;align-items:center;padding:0 16px;border-radius:999px;background:var(--noir);color:#fff;text-decoration:none;font-size:13.5px;font-weight:700;white-space:nowrap}
+@media(min-width:900px){.nav .links{display:flex}.nav .cta{margin-left:26px}}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;background:var(--noir);color:#fff;overflow:hidden;padding:56px 0 64px}
+.hero:before{content:"";position:absolute;inset:0;background:
+  radial-gradient(720px 420px at 82% 8%,rgba(230,0,126,.30),transparent 62%),
+  radial-gradient(560px 380px at 6% 96%,rgba(230,0,126,.16),transparent 66%)}
+.hero .in{position:relative}
+.hello{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);
+  padding:8px 15px;border-radius:999px;font-size:13px;font-weight:600;margin-bottom:22px}
+.hello i{width:7px;height:7px;border-radius:50%;background:var(--rose);display:block;flex:0 0 auto}
+.hero .mark{width:104px;height:104px;margin-bottom:22px;border-radius:22px;background:#fff var(--logo) center/72% no-repeat;box-shadow:0 10px 34px rgba(230,0,126,.34)}
+.hero h1{font-size:clamp(32px,8.4vw,60px);font-weight:800}
+.hero h1 em{font-style:normal;color:var(--rose)}
+.hero .lead{margin-top:16px;font-size:clamp(15.5px,4vw,19px);color:rgba(255,255,255,.80);max-width:560px}
+.doors{display:grid;gap:12px;margin-top:30px;max-width:620px}
+@media(min-width:620px){.doors{grid-template-columns:1fr 1fr}}
+.door{display:block;text-align:left;border:0;cursor:pointer;padding:18px;border-radius:var(--r);text-decoration:none;min-height:44px}
+.door b{display:block;font-family:Archivo;font-size:17px;font-weight:700}
+.door span{display:block;font-size:13.5px;margin-top:5px;line-height:1.45}
+.door.a{background:var(--rose);color:#fff}
+.door.a span{color:rgba(255,255,255,.86)}
+.door.b{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#fff}
+.door.b span{color:rgba(255,255,255,.66)}
+.hero .note{margin-top:22px;font-size:12.5px;color:rgba(255,255,255,.5)}
+
+/* ---------- SECTIONS ---------- */
+section{padding:60px 0}
+.eyebrow{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--rose);margin-bottom:12px}
+.h2{font-size:clamp(25px,6vw,38px)}
+.sub{margin-top:12px;color:var(--gris);font-size:16px;max-width:620px}
+
+.piliers{display:grid;gap:14px;margin-top:34px}
+@media(min-width:640px){.piliers{grid-template-columns:1fr 1fr}}
+@media(min-width:980px){.piliers{grid-template-columns:repeat(4,1fr)}}
+.pil{background:#fff;border:1px solid var(--ligne);border-radius:var(--r);padding:22px}
+.pil .ic{width:40px;height:40px;border-radius:11px;background:var(--rose-p);display:grid;place-items:center;margin-bottom:14px}
+.pil .ic svg{width:20px;height:20px;stroke:var(--rose);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.pil h3{font-size:16.5px}
+.pil p{margin-top:7px;font-size:14px;color:var(--gris)}
+
+/* ---------- CATALOGUE ---------- */
+.tabs{display:inline-flex;background:#fff;border:1px solid var(--ligne);border-radius:999px;padding:5px;margin-top:26px;gap:4px;max-width:100%;overflow:auto}
+.tab{border:0;background:transparent;padding:0 18px;min-height:44px;border-radius:999px;font-size:14.5px;font-weight:700;color:var(--gris);cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{background:var(--noir);color:#fff}
+.grid{display:grid;gap:12px;margin-top:26px;grid-template-columns:repeat(auto-fill,minmax(155px,1fr))}
+@media(min-width:560px){.grid{gap:16px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}}
+.piece{background:#fff;border:1px solid var(--ligne);border-radius:var(--r);overflow:hidden;text-align:left;cursor:pointer;padding:0;
+  display:flex;flex-direction:column;transition:transform .18s ease,box-shadow .18s ease}
+.piece:hover{transform:translateY(-3px);box-shadow:var(--sh)}
+.piece .ph{aspect-ratio:3/4;background:linear-gradient(150deg,var(--rose-p),#fff 58%,#F6F6FA);position:relative;display:grid;place-items:center}
+.piece .ph .mark{width:56%;height:56%;opacity:.20}
+.piece .ph em{position:absolute;bottom:8px;left:8px;font-style:normal;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--gris);background:rgba(255,255,255,.86);padding:5px 9px;border-radius:999px;font-weight:700}
+.piece .tag{position:absolute;top:10px;left:10px;background:var(--noir);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border-radius:999px}
+.piece .bd{padding:12px 12px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+@media(min-width:560px){.piece .bd{padding:15px 15px 17px;gap:7px}}
+.piece h3{font-size:15px}
+@media(min-width:560px){.piece h3{font-size:16.5px}}
+.piece .ds{font-size:12.5px;color:var(--gris);flex:1;line-height:1.45}
+@media(min-width:560px){.piece .ds{font-size:13.5px}}
+.piece .pr{font-family:Archivo;font-weight:700;font-size:17px;color:var(--rose)}
+.piece .del{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--gris);font-weight:600;line-height:1.3}
+@media(min-width:560px){.piece .del{font-size:12.5px;gap:6px}}
+.piece .del svg{width:14px;height:14px;stroke:var(--gris);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.piece .go{margin-top:4px;display:inline-flex;align-items:center;justify-content:center;min-height:44px;border-radius:var(--r-s);background:var(--noir);color:#fff;font-size:14px;font-weight:700}
+
+/* ---------- ETAPES ---------- */
+.steps{display:grid;gap:14px;margin-top:34px}
+@media(min-width:760px){.steps{grid-template-columns:repeat(4,1fr)}}
+.step{background:#fff;border:1px solid var(--ligne);border-radius:var(--r);padding:22px}
+.step b{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--noir);color:#fff;font-family:Archivo;font-size:14px;margin-bottom:13px}
+.step h3{font-size:16px}
+.step p{margin-top:7px;font-size:14px;color:var(--gris)}
+
+/* ---------- ATELIER / APROPOS ---------- */
+.dark{background:var(--noir);color:#fff}
+.dark .sub{color:rgba(255,255,255,.66)}
+.dark .eyebrow{color:var(--rose)}
+.cols{display:grid;gap:16px;margin-top:32px}
+@media(min-width:840px){.cols{grid-template-columns:1.15fr .85fr}}
+.card-d{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.13);border-radius:var(--r);padding:24px}
+.info{display:flex;gap:13px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.info:last-child{border-bottom:0}
+.info svg{width:19px;height:19px;stroke:var(--rose);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto;margin-top:2px}
+.info b{display:block;font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:rgba(255,255,255,.5);font-weight:700}
+.info span{font-size:15px}
+.wa{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:50px;padding:0 22px;border-radius:999px;
+  background:var(--rose);color:#fff;text-decoration:none;font-weight:700;font-size:15px;margin-top:20px}
+.wa svg{width:19px;height:19px;fill:#fff}
+.apropos p{color:var(--gris);font-size:15.5px;margin-top:14px;max-width:680px}
+.apropos .mark{width:76px;height:76px;margin-bottom:6px}
+
+/* ---------- FOOTER ---------- */
+footer{background:#050505;color:rgba(255,255,255,.5);padding:34px 0;font-size:13px}
+footer .in{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+footer a{display:inline-flex;align-items:center;min-height:44px;color:rgba(255,255,255,.72);text-decoration:none;font-weight:600}
+
+/* ---------- MODALE ---------- */
+.ov{position:fixed;inset:0;z-index:100;background:rgba(8,8,10,.6);backdrop-filter:blur(4px);display:none;overflow-y:auto;padding:0}
+.ov.on{display:block}
+.sheet{background:var(--creme);width:100%;max-width:720px;margin:0 auto;min-height:100%}
+@media(min-width:760px){.ov{padding:28px 20px}.sheet{border-radius:20px;min-height:0;overflow:hidden}}
+.sh-top{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--ligne);padding:13px 18px;display:flex;align-items:center;gap:12px}
+.sh-top .mark{width:32px;height:32px;flex:0 0 auto}
+.sh-top .t{flex:1;min-width:0}
+.sh-top .t b{display:block;font-family:Archivo;font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sh-top .t span{font-size:12px;color:var(--gris)}
+.x{width:44px;height:44px;border-radius:50%;border:1px solid var(--ligne);background:#fff;cursor:pointer;display:grid;place-items:center;flex:0 0 auto}
+.x svg{width:17px;height:17px;stroke:var(--encre);stroke-width:2.2;fill:none;stroke-linecap:round}
+.prog{display:flex;gap:5px;padding:12px 18px 0}
+.prog i{height:4px;flex:1;border-radius:99px;background:var(--ligne)}
+.prog i.on{background:var(--rose)}
+.sh-bd{padding:18px}
+.stitle{font-family:Archivo;font-size:19px;font-weight:700;margin-bottom:5px}
+.sdesc{font-size:14px;color:var(--gris);margin-bottom:16px}
+
+.aide{display:flex;gap:11px;background:var(--rose-p);border-radius:var(--r-s);padding:13px 14px;margin-bottom:16px}
+.aide svg{width:19px;height:19px;stroke:var(--rose-d);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto;margin-top:1px}
+.aide p{font-size:13.5px;color:#7A0044;line-height:1.5}
+.warn{background:#FFF4E0;border-radius:var(--r-s);padding:13px 14px;margin-bottom:16px;font-size:13.5px;color:#7A4A00;line-height:1.5}
+
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:13px;background:#fff;border:1.6px solid var(--ligne);border-radius:var(--r-s);padding:14px;cursor:pointer;min-height:44px;text-align:left;width:100%}
+.opt.sel{border-color:var(--rose);background:#fff}
+.opt .rd{width:21px;height:21px;border-radius:50%;border:2px solid var(--ligne);flex:0 0 auto;display:grid;place-items:center}
+.opt.sel .rd{border-color:var(--rose)}
+.opt.sel .rd:after{content:"";width:11px;height:11px;border-radius:50%;background:var(--rose)}
+.opt .tx{flex:1;min-width:0}
+.opt .tx b{display:block;font-size:15px;font-family:Archivo;font-weight:600}
+.opt .tx span{display:block;font-size:13px;color:var(--gris);margin-top:2px}
+.opt .pz{font-family:Archivo;font-weight:700;font-size:14.5px;white-space:nowrap}
+
+.tailles{display:flex;flex-wrap:wrap;gap:9px}
+.taille{min-width:56px;min-height:48px;padding:0 15px;border-radius:var(--r-s);border:1.6px solid var(--ligne);background:#fff;font-family:Archivo;font-weight:700;font-size:15px;cursor:pointer}
+.taille.sel{border-color:var(--rose);background:var(--rose);color:#fff}
+
+.mes{display:grid;gap:11px;grid-template-columns:1fr}
+@media(min-width:520px){.mes{grid-template-columns:1fr 1fr}}
+.fd label{display:block;font-size:12.5px;font-weight:700;color:var(--gris);margin-bottom:5px}
+.fd .ipw{position:relative}
+.fd input,.fd select,.fd textarea{width:100%;min-height:48px;border:1.6px solid var(--ligne);border-radius:var(--r-s);background:#fff;padding:0 14px}
+.fd textarea{padding:13px 14px;min-height:88px;resize:vertical;line-height:1.5}
+.fd input:focus,.fd select:focus,.fd textarea:focus{outline:0;border-color:var(--rose)}
+.fd .unit{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-size:12.5px;color:var(--gris);font-weight:700;pointer-events:none}
+.fd .cm input{padding-right:38px}
+.full{grid-column:1/-1}
+.mes-hd{grid-column:1/-1;font-family:Archivo;font-weight:700;font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--gris);margin-top:6px}
+
+.dispo{display:flex;gap:11px;background:var(--ok-bg);border-radius:var(--r-s);padding:14px;margin-top:16px}
+.dispo svg{width:20px;height:20px;stroke:var(--ok);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto;margin-top:1px}
+.dispo b{display:block;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ok);font-weight:700}
+.dispo p{font-family:Archivo;font-weight:700;font-size:16px;color:#0B5F34;margin-top:3px;line-height:1.3}
+.dispo small{display:block;font-size:12.5px;color:#3C7A58;margin-top:4px;font-family:Manrope;font-weight:500}
+
+.momo{display:flex;gap:10px;background:#fff;border:1px dashed var(--ligne);border-radius:var(--r-s);padding:13px;margin-top:14px;font-size:13px;color:var(--gris);line-height:1.5}
+.momo svg{width:18px;height:18px;stroke:var(--rose);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto;margin-top:1px}
+
+.recap{background:#fff;border:1px solid var(--ligne);border-radius:var(--r-s);padding:15px;margin-top:18px}
+.recap .li{display:flex;justify-content:space-between;gap:14px;font-size:14px;padding:6px 0;color:var(--gris)}
+.recap .li span:last-child{color:var(--encre);font-weight:600;white-space:nowrap}
+.recap .tt{display:flex;justify-content:space-between;gap:14px;border-top:1px solid var(--ligne);margin-top:9px;padding-top:11px;font-family:Archivo;font-weight:700;font-size:18px}
+.recap .tt span:last-child{color:var(--rose)}
+
+.sh-ft{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--ligne);padding:13px 18px;display:flex;gap:10px;padding-bottom:calc(13px + env(safe-area-inset-bottom))}
+.bt{flex:1;min-height:50px;border-radius:var(--r-s);border:0;font-family:Archivo;font-weight:700;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+.bt.g{background:#fff;border:1.6px solid var(--ligne);color:var(--encre);flex:0 0 auto;padding:0 20px}
+.bt.p{background:var(--rose);color:#fff}
+.bt.p[disabled]{background:#D9D9E1;color:#8A8A96;cursor:not-allowed}
+.bt.w{background:#0F8A4A;color:#fff}
+.bt svg{width:18px;height:18px}
+.err{font-size:13.5px;color:#C1123C;margin-top:10px;font-weight:600;display:none}
+.err.on{display:block}
+
+.fin{text-align:center;padding:14px 4px 4px}
+.fin .ck{width:66px;height:66px;border-radius:50%;background:var(--ok-bg);display:grid;place-items:center;margin:0 auto 16px}
+.fin .ck svg{width:32px;height:32px;stroke:var(--ok);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.fin h3{font-size:21px}
+.fin p{font-size:14.5px;color:var(--gris);margin-top:9px}
+.fin .alt{display:inline-flex;padding:0 14px;align-items:center;justify-content:center;min-height:44px;margin-top:14px;font-size:14px;font-weight:700;color:var(--gris);text-decoration:underline}
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header class="nav">
+  <div class="wrap in">
+    <a class="logo" href="#top">
+      <div class="mark" role="img" aria-label="Logo HILLARY M. STYL"></div>
+      <div><b>HILLARY M. STYL</b><span>Maison de couture</span></div>
+    </a>
+    <nav class="links">
+      <a href="#catalogue">Catalogue</a>
+      <a href="#process">Comment ça marche</a>
+      <a href="#apropos">À propos</a>
+      <a href="#atelier">L'atelier</a>
+    </nav>
+    <a class="cta" href="#catalogue">Commander</a>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<div id="top" class="hero">
+  <div class="wrap in">
+    <div class="hello" id="hello"><i></i><span id="helloTxt">Bienvenue chez HILLARY M. STYL</span></div>
+    <div class="mark" role="img" aria-label="Monogramme H.M.S"></div>
+    <h1>La tenue qui vous va,<br><em>parce qu'elle est faite pour vous.</em></h1>
+    <p class="lead">Prêt-à-porter par tailles, ou sur-mesure à vos mesures exactes.
+      Vous commandez ici, vous donnez vos mesures depuis votre téléphone, et vous savez
+      dès la commande <strong>le jour où votre tenue sera prête</strong>.</p>
+    <div class="doors">
+      <button class="door a" type="button" data-onglet="pap"><b>Voir le prêt-à-porter</b><span>Des pièces déjà créées, à votre taille</span></button>
+      <button class="door b" type="button" data-onglet="sm"><b>Commander du sur-mesure</b><span>Vos mesures, votre tissu, votre modèle</span></button>
+    </div>
+    <p class="note">Retrait à l'atelier ou expédition · Délai express possible en 1 à 3 jours</p>
+  </div>
+</div>
+
+<!-- ============ LA MAISON ============ -->
+<section>
+  <div class="wrap">
+    <span class="eyebrow">La maison</span>
+    <h2 class="h2">Une couture qui vous suit<br>jusque chez vous.</h2>
+    <p class="sub">Quatre choses simples, et elles changent tout dans la façon dont on commande une tenue.</p>
+    <div class="piliers">
+      <div class="pil">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/><circle cx="18" cy="17" r="2.4"/></svg></div>
+        <h3>Vos mesures en ligne</h3>
+        <p>Le formulaire s'adapte au vêtement choisi. Une robe droite ne demande pas les mêmes mesures qu'un pantalon.</p>
+      </div>
+      <div class="pil">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 9l9-5 9 5v9l-9 5-9-5z"/><path d="M3 9l9 5 9-5M12 14v9"/></svg></div>
+        <h3>Retrait ou expédition</h3>
+        <p>Vous passez à l'atelier, ou nous expédions. Les frais s'affichent selon votre pays, avant de commander.</p>
+      </div>
+      <div class="pil">
+        <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3.1 1.9"/></svg></div>
+        <h3>Normal ou express</h3>
+        <p>Une cérémonie dans trois jours ? Le délai express existe. Vous voyez le supplément avant de choisir.</p>
+      </div>
+      <div class="pil">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M4.5 6.5h15v11h-15z"/><path d="M4.5 7l7.5 6 7.5-6"/></svg></div>
+        <h3>Prévenu deux fois</h3>
+        <p>Un message à la confirmation de la commande, un second quand la tenue est prête. Vous ne relancez pas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CATALOGUE ============ -->
+<section id="catalogue" style="background:#fff;border-top:1px solid var(--ligne);border-bottom:1px solid var(--ligne)">
+  <div class="wrap">
+    <span class="eyebrow">Le catalogue</span>
+    <h2 class="h2">Choisissez votre pièce.</h2>
+    <p class="sub">Le prix et le délai de confection sont indiqués sur chaque pièce.
+      Cliquez dessus pour la commander en quatre étapes.</p>
+    <div class="tabs" role="tablist" aria-label="Type de commande">
+      <button class="tab" role="tab" id="tab-pap" aria-selected="true" data-onglet="pap">Prêt-à-porter</button>
+      <button class="tab" role="tab" id="tab-sm" aria-selected="false" data-onglet="sm">Sur-mesure</button>
+    </div>
+    <div class="grid" id="grille"></div>
+  </div>
+</section>
+
+<!-- ============ PROCESS ============ -->
+<section id="process">
+  <div class="wrap">
+    <span class="eyebrow">Comment ça se passe</span>
+    <h2 class="h2">De la commande à l'essayage.</h2>
+    <div class="steps">
+      <div class="step"><b>1</b><h3>Vous commandez</h3><p>Vous choisissez la pièce, la taille ou vos mesures, la livraison et le délai. Le total s'affiche, sans surprise.</p></div>
+      <div class="step"><b>2</b><h3>Nous confirmons</h3><p>Un message vous confirme la commande, le montant et la date de disponibilité. Le règlement se fait par Mobile Money.</p></div>
+      <div class="step"><b>3</b><h3>L'atelier travaille</h3><p>Coupe, montage, finitions. Si une mesure manque ou nous semble étrange, nous vous appelons avant de couper.</p></div>
+      <div class="step"><b>4</b><h3>Vous êtes prévenu</h3><p>Un second message vous annonce que la tenue est prête. Retrait à l'atelier avec essayage, ou expédition.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ À PROPOS ============ -->
+<section class="apropos" id="apropos" style="background:#fff;border-top:1px solid var(--ligne)">
+  <div class="wrap">
+    <div class="mark" role="img" aria-label="Monogramme H.M.S"></div>
+    <span class="eyebrow">À propos</span>
+    <h2 class="h2">HILLARY M. STYL</h2>
+    <p>HILLARY M. STYL est une maison de couture. Nous habillons des femmes et des hommes,
+      pour les cérémonies comme pour tous les jours, en prêt-à-porter et en sur-mesure.</p>
+    <p>Notre conviction est simple : un vêtement bien coupé change la façon dont on se tient.
+      C'est pour cela que nous prenons le temps des mesures, que nous appelons quand un chiffre
+      nous semble étrange, et que nous préférons dire un délai honnête plutôt qu'un délai flatteur.</p>
+    <p>Chaque pièce est montée à l'atelier, à la main, par des couturiers que nous connaissons.
+      Le sur-mesure n'est pas une option de luxe chez nous : c'est notre métier de base.</p>
+  </div>
+</section>
+
+<!-- ============ ATELIER ============ -->
+<section class="dark" id="atelier">
+  <div class="wrap">
+    <span class="eyebrow">L'atelier</span>
+    <h2 class="h2">Venez, ou écrivez-nous.</h2>
+    <p class="sub">Pour un essayage, un conseil de tissu, ou simplement pour voir les pièces en vrai.</p>
+    <div class="cols">
+      <div class="card-d">
+        <div class="info"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
+          <div><b>Adresse</b><span id="adr">—</span></div></div>
+        <div class="info"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3.1 1.9"/></svg>
+          <div><b>Horaires</b><span id="hor">—</span></div></div>
+        <div class="info"><svg viewBox="0 0 24 24"><path d="M4.5 6.5h15v11h-15z"/><path d="M4.5 7l7.5 6 7.5-6"/></svg>
+          <div><b>Email</b><span id="mail">—</span></div></div>
+        <div class="info"><svg viewBox="0 0 24 24"><path d="M3 9l9-5 9 5v9l-9 5-9-5z"/></svg>
+          <div><b>Retrait à l'atelier</b><span>Gratuit, avec essayage et retouche immédiate</span></div></div>
+        <a class="wa" id="waBas" href="#"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2zm5.6 14.2c-.2.7-1.2 1.3-1.9 1.4-.5.1-1.1.2-3.2-.7-2.7-1.1-4.4-3.8-4.5-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9 1-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1.9 2 1.2 2.3 1.4.3.1.4.1.6-.1l.9-1c.2-.2.3-.2.6-.1l2 .9c.3.1.4.2.5.3.1.2.1.9-.1 1.6z"/></svg>Écrire sur WhatsApp</a>
+      </div>
+      <div class="card-d">
+        <h3 style="font-size:17px">Le règlement</h3>
+        <p style="font-size:14.5px;color:rgba(255,255,255,.68);margin-top:10px">
+          Les commandes se règlent par <strong style="color:#fff">Mobile Money</strong> uniquement.
+          Le numéro vous est communiqué à la confirmation de votre commande.</p>
+        <h3 style="font-size:17px;margin-top:24px">Une question avant de commander ?</h3>
+        <p style="font-size:14.5px;color:rgba(255,255,255,.68);margin-top:10px">
+          Écrivez-nous. Nous répondons aux questions de tissu, de taille et de délai
+          avant que vous ne commandiez, pas après.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap in">
+    <span>© <span id="an"></span> HILLARY M. STYL — Maison de couture · Cotonou</span>
+    <span>Vitrine conçue par <a href="https://www.nebula-agency.online" target="_blank" rel="noopener">NEBULA Agency</a></span>
+  </div>
+</footer>
+
+<!-- ============ MODALE COMMANDE ============ -->
+<div class="ov" id="ov" role="dialog" aria-modal="true" aria-labelledby="shTitre">
+  <div class="sheet">
+    <div class="sh-top">
+      <div class="mark" role="img" aria-label=""></div>
+      <div class="t"><b id="shTitre">—</b><span id="shSub">—</span></div>
+      <button class="x" id="btX" type="button" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="prog" id="prog"><i></i><i></i><i></i><i></i></div>
+    <div class="sh-bd" id="shBd"></div>
+    <div class="sh-ft" id="shFt"></div>
+  </div>
+</div>
+
+<script>
+/* ==================================================================
+   HILLARY M. STYL — moteur de commande
+   NEBULA Agency · 2026
+   ==================================================================
+
+   ┌────────────────────────────────────────────────────────────────┐
+   │  ZONE À COMPLÉTER — à renseigner avant la mise en ligne         │
+   │                                                                │
+   │  1. WHATSAPP  : numéro de réception des commandes (BLOQUANT)   │
+   │  2. EMAIL     : adresse de repli si le client n'a pas WhatsApp │
+   │  3. PAYS      : frais d'expédition et jours d'acheminement     │
+   │  4. DELAIS    : délais de confection et supplément express     │
+   │  5. PIECES    : le vrai catalogue, vrais prix, vraies photos   │
+   │  6. ATELIER   : adresse, horaires, email                       │
+   │  7. MESURES.robe_ovale : liste à valider par l'atelier         │
+   │                                                                │
+   │  Tant que le point 1 n'est pas fait, AUCUNE commande n'arrive. │
+   └────────────────────────────────────────────────────────────────┘ */
+
+/* ---------- 1 & 2 · CONTACT ------------------------------------- */
+var WHATSAPP = "22900000000";            /* ⚠ À REMPLACER */
+var EMAIL    = "contact@hillarymstyl.com"; /* ⚠ À REMPLACER */
+
+/* ---------- 6 · ATELIER ----------------------------------------- */
+var ATELIER = {
+  pays: "bj",
+  adresse: "Cotonou, Bénin — adresse exacte à confirmer",
+  horaires: "Lundi au samedi, 9h – 19h (à confirmer)"
+};
+
+/* ---------- 3 · PAYS, FRAIS ET ACHEMINEMENT --------------------- */
+/* frais = coût d'expédition en FCFA · achem = jours de transport   */
+var PAYS = [
+  {id:"bj", nom:"Bénin",           frais:2000,  achem:1},
+  {id:"tg", nom:"Togo",            frais:8000,  achem:2},
+  {id:"ci", nom:"Côte d'Ivoire",   frais:12000, achem:4},
+  {id:"ng", nom:"Nigeria",         frais:12000, achem:4},
+  {id:"sn", nom:"Sénégal",         frais:15000, achem:5},
+  {id:"bf", nom:"Burkina Faso",    frais:12000, achem:4},
+  {id:"ml", nom:"Mali",            frais:15000, achem:5},
+  {id:"ne", nom:"Niger",           frais:15000, achem:5},
+  {id:"ga", nom:"Gabon",           frais:25000, achem:7},
+  {id:"cm", nom:"Cameroun",        frais:22000, achem:6},
+  {id:"fr", nom:"France",          frais:35000, achem:8},
+  {id:"other", nom:"Autre pays",   frais:null,  achem:10}
+];
+
+/* ---------- 4 · DELAIS DE CONFECTION ---------------------------- */
+var DELAIS = {
+  normal:  {id:"normal",  nom:"Délai normal",  jmin:7, jmax:14, sup:0,
+            desc:"Confection sereine, dans l'ordre des commandes"},
+  express: {id:"express", nom:"Délai express", jmin:1, jmax:3,  sup:10000,
+            desc:"Commande précipitée, passée devant les autres"}
+};
+
+/* ---------- 7 · LES JEUX DE MESURES PAR TYPE DE VÊTEMENT --------
+   C'est le cœur de l'outil : les mesures dépendent du VÊTEMENT,
+   pas du genre du client.                                          */
+var MESURES = {
+  robe_taille: {
+    nom: "Robe coupée à la taille",
+    champs: [
+      {id:"epaules",   g:"Le haut",   l:"Épaules"},
+      {id:"carr_dev",  g:"Le haut",   l:"Carrure devant"},
+      {id:"poitrine",  g:"Le haut",   l:"Poitrine"},
+      {id:"t_taille",  g:"Le haut",   l:"Tour de taille"},
+      {id:"l_taille",  g:"Les longueurs", l:"Longueur taille"},
+      {id:"l_courte",  g:"Les longueurs", l:"Longueur robe courte"},
+      {id:"l_longue",  g:"Les longueurs", l:"Longueur robe longue"},
+      {id:"t_manche",  g:"Les manches",   l:"Tour de manche"},
+      {id:"l_manche",  g:"Les manches",   l:"Longueur manche"}
+    ]
+  },
+  robe_droite: {
+    nom: "Robe droite",
+    champs: [
+      {id:"epaules",     g:"Le haut", l:"Épaules"},
+      {id:"carr_dev",    g:"Le haut", l:"Carrure devant"},
+      {id:"poitrine",    g:"Le haut", l:"Poitrine"},
+      {id:"t_sous_sein", g:"Le haut", l:"Tour du sous-sein"},
+      {id:"t_taille",    g:"Le haut", l:"Tour de taille"},
+      {id:"t_ceinture",  g:"Le haut", l:"Tour de ceinture"},
+      {id:"t_hanche",    g:"Le haut", l:"Tour de hanche"},
+      {id:"l_sous_sein", g:"Les longueurs", l:"Longueur sous-sein"},
+      {id:"l_taille",    g:"Les longueurs", l:"Longueur taille"},
+      {id:"l_ceinture",  g:"Les longueurs", l:"Longueur ceinture"},
+      {id:"l_genou",     g:"Les longueurs", l:"Longueur genou"},
+      {id:"l_courte",    g:"Les longueurs", l:"Longueur robe courte"},
+      {id:"l_longue",    g:"Les longueurs", l:"Longueur robe longue"},
+      {id:"t_manche",    g:"Les manches",   l:"Tour de manche"},
+      {id:"l_manche",    g:"Les manches",   l:"Longueur manche"}
+    ]
+  },
+  robe_ovale: {
+    nom: "Robe ovale",
+    aValider: true,
+    champs: [
+      {id:"epaules",     g:"Le haut", l:"Épaules"},
+      {id:"carr_dev",    g:"Le haut", l:"Carrure devant"},
+      {id:"poitrine",    g:"Le haut", l:"Poitrine"},
+      {id:"t_sous_sein", g:"Le haut", l:"Tour du sous-sein"},
+      {id:"t_taille",    g:"Le haut", l:"Tour de taille"},
+      {id:"t_hanche",    g:"Le haut", l:"Tour de hanche"},
+      {id:"l_taille",    g:"Les longueurs", l:"Longueur taille"},
+      {id:"l_courte",    g:"Les longueurs", l:"Longueur robe courte"},
+      {id:"l_longue",    g:"Les longueurs", l:"Longueur robe longue"},
+      {id:"t_manche",    g:"Les manches",   l:"Tour de manche"},
+      {id:"l_manche",    g:"Les manches",   l:"Longueur manche"}
+    ]
+  },
+  pantalon: {
+    nom: "Pantalon",
+    champs: [
+      {id:"t_taille",   g:"Les tours",     l:"Tour de taille"},
+      {id:"t_bassins",  g:"Les tours",     l:"Tour de bassins"},
+      {id:"t_cuisse",   g:"Les tours",     l:"Tour de cuisse"},
+      {id:"t_genoux",   g:"Les tours",     l:"Tour de genoux"},
+      {id:"l_genou",    g:"Les longueurs", l:"Longueur genou"},
+      {id:"l_pantalon", g:"Les longueurs", l:"Longueur pantalon"}
+    ]
+  },
+  haut: {
+    nom: "Chemise ou haut",
+    champs: [
+      {id:"epaules",   g:"Le haut", l:"Épaules"},
+      {id:"carr_dev",  g:"Le haut", l:"Carrure devant"},
+      {id:"carr_dos",  g:"Le haut", l:"Carrure dos"},
+      {id:"poitrine",  g:"Le haut", l:"Tour de poitrine"},
+      {id:"t_taille",  g:"Le haut", l:"Tour de taille"},
+      {id:"l_habit",   g:"Les longueurs", l:"Longueur habit"},
+      {id:"t_manche",  g:"Les manches",   l:"Tour de manche"},
+      {id:"l_manche",  g:"Les manches",   l:"Longueur manche"}
+    ]
+  }
+};
+
+var AIDE = "Vous pouvez prendre les mesures vous-même ou inviter quelqu'un à le faire pour vous ou vous aider.";
+
+/* ---------- 5 · LE CATALOGUE ------------------------------------
+   cat  : "pap" (prêt-à-porter) ou "sm" (sur-mesure)
+   prix : nombre en FCFA, ou null pour « sur devis »
+   type : clé de MESURES (sur-mesure) · typeLibre : le client choisit
+   jmin/jmax : délai de confection propre à la pièce               */
+var TAILLES = ["XS","S","M","L","XL","XXL"];
+
+var PIECES = [
+  {id:"p1", cat:"pap", nom:"Robe Amazone",        prix:35000, jmin:7,  jmax:10, tag:"Nouveauté",
+   ds:"Robe droite en wax, col rond, manches trois-quarts."},
+  {id:"p2", cat:"pap", nom:"Chemise Lagune",      prix:22000, jmin:5,  jmax:8,  tag:"",
+   ds:"Chemise en coton léger, coupe droite, poche poitrine."},
+  {id:"p3", cat:"pap", nom:"Ensemble Kora",       prix:48000, jmin:8,  jmax:12, tag:"",
+   ds:"Haut et pantalon assortis, tissu imprimé, ceinture nouée."},
+  {id:"p4", cat:"pap", nom:"Pantalon Sablé",      prix:25000, jmin:5,  jmax:8,  tag:"",
+   ds:"Pantalon fluide taille haute, deux poches latérales."},
+  {id:"p5", cat:"pap", nom:"Robe Vespérale",      prix:52000, jmin:8,  jmax:12, tag:"Cérémonie",
+   ds:"Robe longue de cérémonie, dos travaillé, doublure."},
+  {id:"p6", cat:"pap", nom:"Boubou Sahel",        prix:40000, jmin:7,  jmax:10, tag:"",
+   ds:"Boubou brodé au col et aux poignets, coupe ample."},
+
+  {id:"s1", cat:"sm", nom:"Robe coupée à la taille", prix:45000, jmin:7, jmax:14, type:"robe_taille", tag:"",
+   ds:"Buste ajusté, jupe montée à la taille. Courte ou longue, à votre choix."},
+  {id:"s2", cat:"sm", nom:"Robe droite",             prix:55000, jmin:8, jmax:14, type:"robe_droite", tag:"Signature",
+   ds:"La coupe la plus exigeante de la maison : quinze mesures pour une tombée parfaite."},
+  {id:"s3", cat:"sm", nom:"Robe ovale",              prix:58000, jmin:8, jmax:14, type:"robe_ovale", tag:"",
+   ds:"Volume arrondi, taille suggérée. Une pièce de caractère."},
+  {id:"s4", cat:"sm", nom:"Pantalon sur-mesure",     prix:30000, jmin:5, jmax:10, type:"pantalon", tag:"",
+   ds:"Droit, fuselé ou large. Six mesures suffisent."},
+  {id:"s5", cat:"sm", nom:"Chemise ou haut",         prix:28000, jmin:5, jmax:10, type:"haut", tag:"",
+   ds:"Chemise, chemisier, haut de cérémonie. Femme ou homme."},
+  {id:"s6", cat:"sm", nom:"Création libre",          prix:null,  jmin:10,jmax:21, typeLibre:true, tag:"Sur devis",
+   ds:"Vous avez un modèle en tête ou une photo. On en discute, on chiffre, on coud."}
+];
+
+/* ================================================================
+   MOTEUR — rien à modifier en dessous
+   ================================================================ */
+var $  = function(s,c){return (c||document).querySelector(s);};
+var $$ = function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s));};
+var esc = function(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});};
+var fcfa = function(n){return Number(n).toLocaleString("fr-FR").replace(/ | /g," ")+" F";};
+
+var JOURS = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
+var MOIS  = ["janvier","février","mars","avril","mai","juin","juillet","août",
+             "septembre","octobre","novembre","décembre"];
+
+/* Date de disponibilité — annoncée sur la BORNE HAUTE du délai.
+   Promettre le jour 8 d'un « 8 à 14 jours » fabrique un client déçu. */
+function dateDispo(jours){
+  var d = new Date();
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() + Number(jours||0));
+  return d;
+}
+function dateFr(d){
+  return JOURS[d.getDay()]+" "+d.getDate()+" "+MOIS[d.getMonth()]+
+         (d.getFullYear()!==new Date().getFullYear()? " "+d.getFullYear() : "");
+}
+
+/* ---------- accueil personnalisé -------------------------------- */
+var LS = "hms:client";
+function memoire(){
+  try{ return JSON.parse(localStorage.getItem(LS)||"{}"); }catch(e){ return {}; }
+}
+function memorise(o){
+  try{
+    var m = memoire();
+    for(var k in o){ if(o[k]) m[k]=o[k]; }
+    localStorage.setItem(LS, JSON.stringify(m));
+  }catch(e){}
+}
+(function accueil(){
+  var h = new Date().getHours();
+  var salut = h<12 ? "Bonjour" : (h<18 ? "Bon après-midi" : "Bonsoir");
+  var m = memoire();
+  var t = m.prenom
+    ? salut+" "+m.prenom+", contente de vous revoir."
+    : salut+" — bienvenue chez HILLARY M. STYL.";
+  var el = document.getElementById("helloTxt");
+  if(el) el.textContent = t;
+})();
+
+/* ---------- catalogue ------------------------------------------- */
+var HORLOGE = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3.1 1.9"/></svg>';
+
+function carte(p){
+  var prix = p.prix==null ? "Sur devis" : fcfa(p.prix);
+  return '<button class="piece" type="button" data-id="'+p.id+'">'+
+    '<div class="ph">'+(p.tag?'<span class="tag">'+esc(p.tag)+'</span>':'')+
+      '<div class="mark"></div><em>Photo à venir</em></div>'+
+    '<div class="bd">'+
+      '<h3>'+esc(p.nom)+'</h3>'+
+      '<p class="ds">'+esc(p.ds)+'</p>'+
+      '<div class="pr">'+prix+'</div>'+
+      '<div class="del">'+HORLOGE+'<span>Confection : '+p.jmin+' à '+p.jmax+' jours</span></div>'+
+      '<span class="go">Commander</span>'+
+    '</div></button>';
+}
+function rendreGrille(cat){
+  var g = document.getElementById("grille");
+  g.innerHTML = PIECES.filter(function(p){return p.cat===cat;}).map(carte).join("");
+}
+function onglet(cat){
+  $$(".tab").forEach(function(t){ t.setAttribute("aria-selected", t.dataset.onglet===cat ? "true":"false"); });
+  rendreGrille(cat);
+}
+$$("[data-onglet]").forEach(function(b){
+  b.addEventListener("click", function(){
+    onglet(b.dataset.onglet);
+    if(!b.classList.contains("tab")){
+      document.getElementById("catalogue").scrollIntoView({behavior:"smooth", block:"start"});
+    }
+  });
+});
+onglet("pap");
+
+/* ---------- état de la commande --------------------------------- */
+var etat = null;
+
+function ouvrir(id){
+  var p = PIECES.filter(function(x){return x.id===id;})[0];
+  if(!p) return;
+  var m = memoire();
+  etat = {
+    piece: p,
+    etape: 1,
+    taille: null,
+    typeMesure: p.type || (p.typeLibre ? null : null),
+    mesures: {},
+    tissu: "",
+    details: "",
+    mode: null,          /* "retrait" | "expedition" */
+    pays: null,
+    delai: null,
+    prenom: m.prenom||"", nom: m.nom||"", tel: m.tel||"", mail: m.mail||"",
+    ville: m.ville||"", note: ""
+  };
+  document.getElementById("shTitre").textContent = p.nom;
+  document.getElementById("shSub").textContent = (p.cat==="sm" ? "Sur-mesure" : "Prêt-à-porter")+
+    " · "+(p.prix==null ? "sur devis" : fcfa(p.prix));
+  document.getElementById("ov").classList.add("on");
+  document.body.style.overflow = "hidden";
+  dessiner();
+}
+function fermer(){
+  document.getElementById("ov").classList.remove("on");
+  document.body.style.overflow = "";
+  etat = null;
+}
+document.getElementById("grille").addEventListener("click", function(e){
+  var b = e.target.closest ? e.target.closest(".piece") : null;
+  if(b) ouvrir(b.dataset.id);
+});
+document.getElementById("btX").addEventListener("click", fermer);
+document.getElementById("ov").addEventListener("click", function(e){ if(e.target===this) fermer(); });
+document.addEventListener("keydown", function(e){ if(e.key==="Escape" && etat) fermer(); });
+
+/* ---------- calculs --------------------------------------------- */
+function fraisLivraison(){
+  if(!etat || etat.mode!=="expedition" || !etat.pays) return 0;
+  return etat.pays.frais==null ? null : etat.pays.frais;
+}
+function joursAcheminement(){
+  if(!etat || etat.mode!=="expedition" || !etat.pays) return 0;
+  return etat.pays.achem||0;
+}
+function totalCommande(){
+  if(!etat) return null;
+  if(etat.piece.prix==null) return null;                 /* sur devis */
+  var f = fraisLivraison();
+  if(f===null) return null;                              /* pays « autre » */
+  var sup = etat.delai ? etat.delai.sup : 0;
+  return etat.piece.prix + f + sup;
+}
+function joursTotal(){
+  if(!etat || !etat.delai) return null;
+  /* borne haute du délai de confection propre à la pièce, ajustée
+     par le mode de délai choisi, plus l'acheminement */
+  var conf = etat.delai.id==="express"
+    ? etat.delai.jmax
+    : Math.max(etat.piece.jmax, etat.delai.jmin);
+  return conf + joursAcheminement();
+}
+
+/* ---------- rendu ----------------------------------------------- */
+function dessiner(){
+  if(!etat) return;
+  $$("#prog i").forEach(function(i,k){ i.classList.toggle("on", k < etat.etape); });
+  var bd = document.getElementById("shBd");
+  var ft = document.getElementById("shFt");
+  var e  = etat.etape;
+
+  if(e===1)      bd.innerHTML = vue1();
+  else if(e===2) bd.innerHTML = vue2();
+  else if(e===3) bd.innerHTML = vue3();
+  else if(e===4) bd.innerHTML = vue4();
+  else           bd.innerHTML = vue5();
+
+  ft.innerHTML = pied();
+  brancher();
+  document.querySelector(".sheet").scrollTop = 0;
+  document.getElementById("ov").scrollTop = 0;
+}
+
+/* --- étape 1 : taille ou mesures --- */
+function vue1(){
+  var p = etat.piece;
+  if(p.cat==="pap"){
+    return '<div class="stitle">Votre taille</div>'+
+      '<div class="sdesc">Choisissez la taille qui vous correspond. En cas de doute, prenez la plus grande : une retouche à la baisse est gratuite à l\'atelier.</div>'+
+      '<div class="tailles">'+TAILLES.map(function(t){
+        return '<button class="taille'+(etat.taille===t?" sel":"")+'" type="button" data-taille="'+t+'">'+t+'</button>';
+      }).join("")+'</div>'+
+      '<div class="mes" style="margin-top:20px"><div class="fd full"><label for="f_det">Une précision sur votre commande ?</label>'+
+      '<textarea id="f_det" placeholder="Couleur souhaitée, longueur de manche, occasion…">'+esc(etat.details)+'</textarea></div></div>';
+  }
+  /* sur-mesure */
+  var h = '';
+  if(p.typeLibre){
+    h += '<div class="stitle">Quel vêtement ?</div>'+
+      '<div class="sdesc">Les mesures demandées dépendent du vêtement. Choisissez d\'abord le type.</div>'+
+      '<div class="fd" style="margin-bottom:18px"><label for="f_type">Type de vêtement</label><select id="f_type">'+
+        '<option value="">— Choisir —</option>'+
+        Object.keys(MESURES).map(function(k){
+          return '<option value="'+k+'"'+(etat.typeMesure===k?" selected":"")+'>'+esc(MESURES[k].nom)+'</option>';
+        }).join("")+
+      '</select></div>';
+    if(!etat.typeMesure) return h;
+  }
+  var jeu = MESURES[etat.typeMesure];
+  if(!jeu) return h || '<div class="sdesc">Type de vêtement introuvable.</div>';
+
+  h += '<div class="stitle">Vos mesures — '+esc(jeu.nom)+'</div>'+
+       '<div class="sdesc">'+jeu.champs.length+' mesures, en centimètres. Un ruban de couturière suffit.</div>'+
+       '<div class="aide"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>'+
+       '<p>'+esc(AIDE)+'</p></div>';
+  if(jeu.aValider){
+    h += '<div class="warn"><strong>Liste de mesures en cours de validation par l\'atelier.</strong> '+
+         'Nous vous rappellerons pour confirmer ou compléter ces mesures avant de couper.</div>';
+  }
+  h += '<div class="mes">';
+  var groupe = null;
+  jeu.champs.forEach(function(c){
+    if(c.g!==groupe){ groupe=c.g; h += '<div class="mes-hd">'+esc(groupe)+'</div>'; }
+    h += '<div class="fd cm"><label for="m_'+c.id+'">'+esc(c.l)+'</label><div class="ipw">'+
+         '<input id="m_'+c.id+'" type="number" inputmode="decimal" min="1" max="300" step="0.5" '+
+         'data-mes="'+c.id+'" placeholder="—" value="'+esc(etat.mesures[c.id]||"")+'"><span class="unit">cm</span></div></div>';
+  });
+  h += '<div class="fd full"><label for="f_tissu">Tissu souhaité</label>'+
+       '<input id="f_tissu" type="text" placeholder="Wax, bazin, satin… ou « à conseiller »" value="'+esc(etat.tissu)+'"></div>'+
+       '<div class="fd full"><label for="f_det">Le modèle et les détails</label>'+
+       '<textarea id="f_det" placeholder="Longueur, col, manches, doublure, occasion… Vous pouvez aussi nous envoyer une photo sur WhatsApp après la commande.">'+esc(etat.details)+'</textarea></div>'+
+       '</div>'+
+       '<div class="momo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 10h6M9 14h6M12 7v10"/></svg>'+
+       '<span>Une mesure que vous ne savez pas prendre ? Laissez-la vide : elle partira en « à prendre ensemble » et nous vous appellerons.</span></div>';
+  return h;
+}
+
+/* --- étape 2 : retrait ou expédition --- */
+function vue2(){
+  var h = '<div class="stitle">Retrait ou expédition ?</div>'+
+    '<div class="sdesc">Le retrait à l\'atelier est gratuit et permet l\'essayage. L\'expédition est facturée selon votre pays.</div>'+
+    '<div class="opts">'+
+      '<button class="opt'+(etat.mode==="retrait"?" sel":"")+'" type="button" data-mode="retrait">'+
+        '<span class="rd"></span><span class="tx"><b>Retrait à l\'atelier</b>'+
+        '<span>'+esc(ATELIER.adresse)+' · essayage et retouche sur place</span></span>'+
+        '<span class="pz">Gratuit</span></button>'+
+      '<button class="opt'+(etat.mode==="expedition"?" sel":"")+'" type="button" data-mode="expedition">'+
+        '<span class="rd"></span><span class="tx"><b>Expédition</b>'+
+        '<span>Nous envoyons la tenue chez vous</span></span>'+
+        '<span class="pz" id="pzExp">Selon pays</span></button>'+
+    '</div>';
+
+  if(etat.mode==="expedition"){
+    h += '<div class="fd" style="margin-top:16px"><label for="f_pays">Votre pays</label><select id="f_pays">'+
+      '<option value="">— Choisir votre pays —</option>'+
+      PAYS.map(function(p){
+        return '<option value="'+p.id+'"'+(etat.pays&&etat.pays.id===p.id?" selected":"")+'>'+esc(p.nom)+
+          (p.frais==null? " (frais à confirmer)" : " — "+fcfa(p.frais))+'</option>';
+      }).join("")+'</select></div>';
+    if(etat.pays && etat.pays.frais===null){
+      h += '<div class="warn" style="margin-top:14px">Nous n\'expédions pas encore automatiquement vers ce pays. '+
+           'Envoyez-nous quand même la commande : nous vous donnerons le tarif exact avant tout règlement.</div>';
+    }
+    h += '<div class="fd" style="margin-top:12px"><label for="f_ville">Ville de livraison</label>'+
+         '<input id="f_ville" type="text" placeholder="Cotonou, Abidjan, Dakar…" value="'+esc(etat.ville)+'"></div>';
+  }
+  if(etat.mode==="retrait"){
+    h += '<div class="momo" style="margin-top:16px"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>'+
+         '<span><strong>'+esc(ATELIER.adresse)+'</strong><br>'+esc(ATELIER.horaires)+'</span></div>';
+  }
+  return h;
+}
+
+/* --- étape 3 : délai + date de disponibilité --- */
+function vue3(){
+  var p = etat.piece;
+  var h = '<div class="stitle">Quand la voulez-vous ?</div>'+
+    '<div class="sdesc">Cette pièce demande normalement '+p.jmin+' à '+p.jmax+' jours de confection.</div>'+
+    '<div class="opts">'+
+      opt3(DELAIS.normal, "Confection en "+p.jmin+" à "+p.jmax+" jours")+
+      opt3(DELAIS.express, "Votre tenue en "+DELAIS.express.jmin+" à "+DELAIS.express.jmax+" jours maximum")+
+    '</div>';
+
+  if(etat.delai){
+    var j = joursTotal();
+    var d = dateDispo(j);
+    var motLivr = etat.mode==="expedition" ? "Chez vous au plus tard le" : "Prête à retirer au plus tard le";
+    var det = etat.mode==="expedition" && joursAcheminement()
+      ? "Confection incluse, plus "+joursAcheminement()+" jour"+(joursAcheminement()>1?"s":"")+" d'acheminement vers "+esc(etat.pays?etat.pays.nom:"")+"."
+      : "Vous pouvez venir l'essayer à l'atelier ce jour-là.";
+    h += '<div class="dispo"><svg viewBox="0 0 24 24"><path d="M4.5 5.5h15v14h-15z"/><path d="M4.5 10h15M8.5 3v4M15.5 3v4"/><path d="M9 15l2 2 4-4"/></svg>'+
+      '<div><b>'+motLivr+'</b><p>'+dateFr(d)+'</p><small>'+det+'</small></div></div>';
+    if(etat.delai.id==="express"){
+      h += '<div class="warn" style="margin-top:14px">Le délai express fait passer votre commande devant les autres. '+
+           'Il est confirmé par l\'atelier à la validation : si la charge du moment ne le permet pas, nous vous prévenons '+
+           'immédiatement et le supplément n\'est pas dû.</div>';
+    }
+  }
+  return h;
+}
+function opt3(d, sous){
+  return '<button class="opt'+(etat.delai&&etat.delai.id===d.id?" sel":"")+'" type="button" data-delai="'+d.id+'">'+
+    '<span class="rd"></span><span class="tx"><b>'+esc(d.nom)+'</b><span>'+esc(sous)+'</span></span>'+
+    '<span class="pz">'+(d.sup? "+ "+fcfa(d.sup) : "Inclus")+'</span></button>';
+}
+
+/* --- étape 4 : coordonnées + récapitulatif --- */
+function vue4(){
+  var h = '<div class="stitle">Vos coordonnées</div>'+
+    '<div class="sdesc">Pour vous confirmer la commande et vous prévenir dès que la tenue est prête.</div>'+
+    '<div class="mes">'+
+      '<div class="fd"><label for="f_prenom">Prénom</label><input id="f_prenom" type="text" value="'+esc(etat.prenom)+'" placeholder="Votre prénom"></div>'+
+      '<div class="fd"><label for="f_nom">Nom</label><input id="f_nom" type="text" value="'+esc(etat.nom)+'" placeholder="Votre nom"></div>'+
+      '<div class="fd"><label for="f_tel">Numéro WhatsApp</label><input id="f_tel" type="tel" inputmode="tel" value="'+esc(etat.tel)+'" placeholder="+229 01 …"></div>'+
+      '<div class="fd"><label for="f_mail">Email <span style="font-weight:500;text-transform:none">(si vous n\'avez pas WhatsApp)</span></label><input id="f_mail" type="email" inputmode="email" value="'+esc(etat.mail)+'" placeholder="vous@gmail.com"></div>'+
+      '<div class="fd full"><label for="f_note">Un mot pour l\'atelier ?</label><textarea id="f_note" placeholder="Optionnel">'+esc(etat.note)+'</textarea></div>'+
+    '</div>'+
+    '<div class="momo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 10h6M9 14h6M12 7v10"/></svg>'+
+    '<span><strong>Règlement par Mobile Money uniquement.</strong> Le numéro vous sera communiqué au message de confirmation. Aucun paiement ne se fait sur ce site.</span></div>'+
+    recap()+
+    '<div class="err" id="err"></div>';
+  return h;
+}
+
+function recap(){
+  var p = etat.piece;
+  var lignes = [];
+  lignes.push(["Pièce", p.nom]);
+  if(p.cat==="pap" && etat.taille) lignes.push(["Taille", etat.taille]);
+  if(p.cat==="sm" && etat.typeMesure){
+    var jeu = MESURES[etat.typeMesure];
+    var remplies = jeu.champs.filter(function(c){return etat.mesures[c.id];}).length;
+    lignes.push(["Mesures", remplies+" / "+jeu.champs.length+" renseignées"]);
+  }
+  lignes.push(["Prix de la pièce", p.prix==null ? "Sur devis" : fcfa(p.prix)]);
+  if(etat.mode==="retrait") lignes.push(["Retrait atelier","Gratuit"]);
+  if(etat.mode==="expedition"){
+    var f = fraisLivraison();
+    lignes.push(["Expédition "+(etat.pays?etat.pays.nom:""), f===null ? "À confirmer" : fcfa(f)]);
+  }
+  if(etat.delai) lignes.push([etat.delai.nom, etat.delai.sup ? fcfa(etat.delai.sup) : "Inclus"]);
+  var j = joursTotal();
+  if(j!=null) lignes.push(["Disponible le", dateFr(dateDispo(j))]);
+
+  var t = totalCommande();
+  return '<div class="recap">'+
+    lignes.map(function(l){return '<div class="li"><span>'+esc(l[0])+'</span><span>'+esc(l[1])+'</span></div>';}).join("")+
+    '<div class="tt"><span>Total</span><span>'+(t==null ? "Sur devis" : fcfa(t))+'</span></div></div>';
+}
+
+/* --- étape 5 : envoi --- */
+function vue5(){
+  return '<div class="fin">'+
+    '<div class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></svg></div>'+
+    '<h3>Votre commande est prête à partir</h3>'+
+    '<p>Le bouton ci-dessous ouvre WhatsApp avec votre commande déjà écrite : la pièce, vos mesures, '+
+    'la livraison, le délai et le total. Vous n\'avez qu\'à appuyer sur envoyer.</p>'+
+    recap()+
+    '<a class="alt" id="altMail" href="#">Je n\'ai pas WhatsApp — envoyer par email</a>'+
+    '</div>';
+}
+
+/* --- pied de modale --- */
+function pied(){
+  var e = etat.etape;
+  if(e===5){
+    return '<button class="bt g" type="button" data-nav="prec">Retour</button>'+
+      '<a class="bt w" id="btWa" href="#" target="_blank" rel="noopener">'+
+      '<svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2zm5.6 14.2c-.2.7-1.2 1.3-1.9 1.4-.5.1-1.1.2-3.2-.7-2.7-1.1-4.4-3.8-4.5-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9 1-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1.9 2 1.2 2.3 1.4.3.1.4.1.6-.1l.9-1c.2-.2.3-.2.6-.1l2 .9c.3.1.4.2.5.3.1.2.1.9-.1 1.6z"/></svg>'+
+      'Envoyer sur WhatsApp</a>';
+  }
+  var libelle = e===4 ? "Vérifier ma commande" : "Continuer";
+  return (e>1 ? '<button class="bt g" type="button" data-nav="prec">Retour</button>' : '')+
+    '<button class="bt p" type="button" data-nav="suiv"'+(peutAvancer()?"":" disabled")+'>'+libelle+'</button>';
+}
+
+function peutAvancer(){
+  var e = etat.etape, p = etat.piece;
+  if(e===1){
+    if(p.cat==="pap") return !!etat.taille;
+    if(!etat.typeMesure) return false;
+    var jeu = MESURES[etat.typeMesure];
+    /* au moins la moitié des mesures : le reste se prend ensemble */
+    var n = jeu.champs.filter(function(c){return etat.mesures[c.id];}).length;
+    return n >= Math.ceil(jeu.champs.length/2);
+  }
+  if(e===2){
+    if(etat.mode==="retrait") return true;
+    if(etat.mode==="expedition") return !!etat.pays;
+    return false;
+  }
+  if(e===3) return !!etat.delai;
+  if(e===4) return !!(etat.prenom.trim() && (etat.tel.trim() || etat.mail.trim()));
+  return true;
+}
+
+/* ---------- branchements ---------------------------------------- */
+function brancher(){
+  var bd = document.getElementById("shBd");
+
+  $$(".taille", bd).forEach(function(b){
+    b.addEventListener("click", function(){ etat.taille = b.dataset.taille; dessiner(); });
+  });
+  $$("[data-mode]", bd).forEach(function(b){
+    b.addEventListener("click", function(){
+      etat.mode = b.dataset.mode;
+      if(etat.mode==="retrait"){ etat.pays = null; }
+      dessiner();
+    });
+  });
+  $$("[data-delai]", bd).forEach(function(b){
+    b.addEventListener("click", function(){ etat.delai = DELAIS[b.dataset.delai]; dessiner(); });
+  });
+  $$("[data-mes]", bd).forEach(function(i){
+    i.addEventListener("input", function(){
+      var v = i.value.trim();
+      if(v) etat.mesures[i.dataset.mes] = v; else delete etat.mesures[i.dataset.mes];
+      majSuiv();
+    });
+  });
+
+  var ty = document.getElementById("f_type");
+  if(ty) ty.addEventListener("change", function(){ etat.typeMesure = ty.value||null; etat.mesures = {}; dessiner(); });
+
+  var pa = document.getElementById("f_pays");
+  if(pa) pa.addEventListener("change", function(){
+    etat.pays = PAYS.filter(function(p){return p.id===pa.value;})[0] || null;
+    dessiner();
+  });
+
+  lie("f_tissu","tissu"); lie("f_det","details"); lie("f_ville","ville");
+  lie("f_prenom","prenom"); lie("f_nom","nom"); lie("f_tel","tel");
+  lie("f_mail","mail"); lie("f_note","note");
+
+  $$("[data-nav]", document.getElementById("shFt")).forEach(function(b){
+    b.addEventListener("click", function(){
+      if(b.dataset.nav==="prec"){
+        etat.etape = Math.max(1, etat.etape-1);
+      }else{
+        if(!peutAvancer()) return;
+        if(etat.etape===4){
+          memorise({prenom:etat.prenom.trim(), nom:etat.nom.trim(), tel:etat.tel.trim(),
+                    mail:etat.mail.trim(), ville:etat.ville.trim()});
+        }
+        etat.etape = Math.min(5, etat.etape+1);
+      }
+      dessiner();
+    });
+  });
+
+  var wa = document.getElementById("btWa");
+  if(wa) wa.href = "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(message());
+  var al = document.getElementById("altMail");
+  if(al) al.href = "mailto:"+EMAIL+"?subject="+encodeURIComponent("Commande — "+etat.piece.nom)+
+                   "&body="+encodeURIComponent(message());
+}
+function lie(id, cle){
+  var el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener("input", function(){ etat[cle] = el.value; majSuiv(); });
+}
+function majSuiv(){
+  var b = document.querySelector('[data-nav="suiv"]');
+  if(b) b.disabled = !peutAvancer();
+}
+
+/* ---------- le message de commande ------------------------------ */
+function message(){
+  var p = etat.piece, L = [];
+  L.push("*NOUVELLE COMMANDE — HILLARY M. STYL*");
+  L.push("");
+  L.push("*Pièce :* "+p.nom+" ("+(p.cat==="sm"?"sur-mesure":"prêt-à-porter")+")");
+  L.push("*Prix :* "+(p.prix==null ? "sur devis" : fcfa(p.prix)));
+
+  if(p.cat==="pap" && etat.taille) L.push("*Taille :* "+etat.taille);
+
+  if(p.cat==="sm" && etat.typeMesure){
+    var jeu = MESURES[etat.typeMesure];
+    L.push("");
+    L.push("*MESURES — "+jeu.nom+"*");
+    if(jeu.aValider) L.push("_(liste de mesures à valider par l'atelier)_");
+    var manquantes = [];
+    jeu.champs.forEach(function(c){
+      if(etat.mesures[c.id]) L.push("• "+c.l+" : "+etat.mesures[c.id]+" cm");
+      else manquantes.push(c.l);
+    });
+    if(manquantes.length){
+      L.push("");
+      L.push("_À prendre ensemble ("+manquantes.length+") :_ "+manquantes.join(", "));
+    }
+    if(etat.tissu.trim())   L.push(""), L.push("*Tissu :* "+etat.tissu.trim());
+  }
+  if(etat.details.trim()){ L.push(""); L.push("*Modèle et détails :* "+etat.details.trim()); }
+
+  L.push("");
+  L.push("*LIVRAISON*");
+  if(etat.mode==="retrait"){
+    L.push("Retrait à l'atelier — gratuit");
+  }else{
+    var f = fraisLivraison();
+    L.push("Expédition — "+(etat.pays?etat.pays.nom:"")+(etat.ville.trim()? ", "+etat.ville.trim() : ""));
+    L.push("Frais : "+(f===null ? "à confirmer" : fcfa(f)));
+  }
+  if(etat.delai){
+    L.push("");
+    L.push("*DÉLAI*");
+    L.push(etat.delai.nom+(etat.delai.sup? " (+ "+fcfa(etat.delai.sup)+")" : ""));
+    var j = joursTotal();
+    if(j!=null) L.push("Disponible au plus tard le "+dateFr(dateDispo(j)));
+  }
+
+  var t = totalCommande();
+  L.push("");
+  L.push("*TOTAL : "+(t==null ? "sur devis" : fcfa(t))+"*");
+  L.push("_Règlement par Mobile Money._");
+
+  L.push("");
+  L.push("*CLIENT*");
+  L.push((etat.prenom.trim()+" "+etat.nom.trim()).trim());
+  if(etat.tel.trim())  L.push("WhatsApp : "+etat.tel.trim());
+  if(etat.mail.trim()) L.push("Email : "+etat.mail.trim());
+  if(etat.ville.trim())L.push("Ville : "+etat.ville.trim());
+  if(etat.note.trim()){ L.push(""); L.push("*Note :* "+etat.note.trim()); }
+
+  return L.join("\n");
+}
+
+/* ---------- remplissages simples -------------------------------- */
+document.getElementById("an").textContent = new Date().getFullYear();
+document.getElementById("adr").textContent  = ATELIER.adresse;
+document.getElementById("hor").textContent  = ATELIER.horaires;
+document.getElementById("mail").textContent = EMAIL;
+document.getElementById("waBas").href =
+  "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent("Bonjour HILLARY M. STYL, j'ai une question avant de commander.");
+</script>
+</body>
+</html>

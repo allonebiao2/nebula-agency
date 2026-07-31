@@ -89,17 +89,38 @@ prompt-maître reste générique.
 
 ---
 
-## 3bis. Client 10 · HILLARY M. STYL (livré 2026-07-31)
+## 3bis. Client 10 · HILLARY M. STYL (livré 2026-07-31, **v2 le même jour**)
 
-Vitrine couture avec **moteur de commande** : catalogue prêt-à-porter (tailles) et
-sur-mesure (8 mesures femme/homme), frais d'expédition par pays, délai normal ou express,
-récapitulatif chiffré, envoi WhatsApp structuré.
-`clients/10-hillary-m-styl/vitrine.html` · détail et QC dans son `CONTEXT.md`.
+Vitrine couture avec **moteur de commande**. La v2 a refait le cœur de l'outil :
+**les mesures dépendent du type de vêtement, pas du genre du client.**
 
-⚠️ **Ne pas mettre en ligne avant d'avoir les 7 informations du §3 de son CONTEXT.md.**
-Le numéro WhatsApp est un fixe de test (`22900000000`) : en l'état, **aucune commande
-n'arriverait**. Les frais d'expédition sont des exemples : un tarif faux coûte de l'argent
-à la cliente à chaque commande.
+| Type de vêtement | Mesures |
+|---|---|
+| Robe coupée à la taille | 9 |
+| Robe droite | 15 |
+| Robe ovale | 11 ⚠️ **à faire valider par l'atelier** |
+| Pantalon | 6 |
+| Chemise ou haut | 8 |
+
+Le reste : prix **et** délai sur chaque carte · délai express **1 à 3 jours** · **la date
+précise de disponibilité s'affiche** dès les options validées, calculée sur la borne haute
+du délai + l'acheminement du pays · WhatsApp **ou** email · Mobile Money annoncé comme seul
+moyen de règlement · section À propos · double notification expliquée.
+
+**⚠️ On édite `_vitrine_src.html`, jamais `vitrine.html`** (généré, 143 Ko dont 75 de logo) :
+
+```bash
+cd clients/10-hillary-m-styl
+python3 _build.py     # source -> vitrine.html
+python3 _qc.py        # 53 contrôles, doit être « TOUT EST VERT »
+```
+
+⚠️ **Ne pas mettre en ligne avant d'avoir les 8 informations du §6 de son CONTEXT.md.**
+Les trois plus graves : le numéro WhatsApp est un fixe de test (`22900000000`, **aucune
+commande n'arriverait**) · les frais d'expédition et les jours d'acheminement sont des
+exemples (un tarif faux coûte de l'argent à chaque commande, un acheminement faux fausse
+la date promise) · **les mesures de la robe ovale n'ont jamais été fournies** et sont une
+proposition, signalée comme telle dans l'interface.
 
 ## 4. Ce qui tourne déjà en production
 

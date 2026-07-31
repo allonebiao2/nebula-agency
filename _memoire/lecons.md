@@ -68,6 +68,34 @@
 
 <!-- Ajouter les nouvelles leçons au-dessus -->
 
+## 2026-07-31 — Quatre leçons du moteur de commande couture (HILLARY M. STYL)
+
+**Modéliser le métier du client, pas la catégorie qui nous vient à l'esprit.**
+La v1 demandait « 8 mesures femme » ou « 8 mesures homme ». C'est un raisonnement de
+développeur. Un couturier ne raisonne pas comme ça : **le genre du client ne détermine
+rien, le vêtement détermine tout.** Une robe droite demande 15 mesures, un pantalon 6.
+Avant de coder un formulaire métier, demander au client la liste exacte, par cas.
+Et quand elle manque — la robe ovale — **ne pas l'inventer en silence** : proposer,
+marquer « à valider » dans le code ET dans l'interface que le client final verra.
+
+**Une promesse de délai s'annonce sur la borne haute, jamais sur la basse.**
+Afficher le jour 8 d'un « 8 à 14 jours » fabrique un client déçu le jour 9. On promet 14,
+on livre 10, le client est content. Même logique pour l'express : la vitrine dit que
+l'atelier confirme, et que si la charge ne le permet pas, le supplément n'est pas dû.
+Une vitrine qui ment sur un délai coûte plus cher qu'une vitrine sans délai.
+
+**Un lien de texte est une cible ratée au pouce.**
+Le QC a rejeté six éléments à 15, 23 et 41 px de haut : le logo de la barre, les liens de
+navigation, le lien du pied. Tous parfaitement cliquables à la souris. `display:inline-flex`
++ `min-height:44px` règle le cas sans changer l'apparence. À vérifier sur **tous** les
+`a`, pas seulement sur les boutons.
+
+**Séparer la source du livrable dès qu'une image en base64 entre dans un fichier.**
+75 Ko de logo en base64 rendent un HTML illisible et invitent à dupliquer l'image
+(une première version pesait 681 Ko pour cette raison). Méthode : `_vitrine_src.html`
+avec des marqueurs → `_build.py` qui injecte → `vitrine.html` généré, **jamais édité à la
+main**. Plus `_qc.py` à côté, pour que le contrôle soit rejouable par n'importe qui.
+
 ## 2026-07-31 — Cinq leçons du chantier force de vente
 
 **`main` bouge pendant qu'on travaille sur une branche.**

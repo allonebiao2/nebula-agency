@@ -42,25 +42,118 @@ vraie émulation mobile a montré `scrollWidth === clientWidth` sur les trois fo
 **Leçon : ne jamais conclure à un bug de mise en page depuis une capture headless non
 émulée.** Mesurer `scrollWidth` vs `clientWidth` avec Playwright.
 
-## QC passé
+---
 
-- 0 débordement horizontal sur 390 / 768 / 1440, page et modale ouverte
-- 0 erreur JS, 0 requête en échec, 0 image externe
-- Toutes les cibles tactiles ≥ 44 px
-- Tunnel vérifié : 35 000 + 12 000 + 10 000 = **57 000 F** · retrait atelier gratuit ·
-  bascule femme/homme des mesures · bascule automatique en « sur devis »
+# VAGUE 2 — le moteur de mesures refait (même jour)
 
-## ⚠️ Bloquant avant mise en ligne
+Mongazi envoie un **second cahier des charges, bien plus précis**, en se plaçant du point
+de vue du métier de couturier. Un point change tout :
 
-Sept informations manquent, toutes regroupées dans un bloc **« ZONE À COMPLÉTER »** en tête
-du script, et détaillées au §3 du `CONTEXT.md` du client. Les deux plus graves :
+> « Lorsqu'un client choisit le sur-mesure, il doit remplir un formulaire de mesures
+> **spécifique au type de vêtement** sélectionné. »
+
+## Ce que ça casse dans la v1
+
+La v1 demandait **8 mesures « femme » ou « homme »**. C'est un raisonnement de développeur,
+pas de couturier. **Le genre du client ne détermine rien.** Le vêtement, si :
+
+| Type de vêtement | Mesures |
+|---|---|
+| Robe coupée à la taille | **9** |
+| Robe droite | **15** |
+| Robe ovale | **11** ⚠️ à valider |
+| Pantalon | **6** |
+| Chemise ou haut | **8** |
+
+Le moteur a donc été reconstruit autour d'un dictionnaire `MESURES`, chaque pièce
+sur-mesure portant la clé du jeu qui la concerne. La pièce « Création libre » laisse le
+client choisir le vêtement lui-même et bascule sur le bon formulaire.
+
+Les champs sont **regroupés** (Le haut · Les longueurs · Les manches). Quinze cases
+identiques à la suite, personne ne les remplit.
+
+## Les autres apports de la vague 2
+
+1. **Prix ET délai de confection sur chaque carte** du catalogue — plus besoin d'ouvrir
+   la fiche pour savoir si c'est dans le budget et dans les temps.
+2. **Délai express corrigé à 1 à 3 jours** (la v1 disait 4 à 6). Normal : 7 à 14.
+3. **La date précise de disponibilité s'affiche dès que les options sont validées** :
+   « Chez vous au plus tard le vendredi 7 août », ou « Prête à retirer… » selon le mode.
+4. **Message d'aide au-dessus des mesures**, mot pour mot celui demandé :
+   « Vous pouvez prendre les mesures vous-même ou inviter quelqu'un à le faire pour vous
+   ou vous aider. »
+5. **WhatsApp ou email** : le client sans WhatsApp n'est plus bloqué, un des deux suffit.
+6. **Mobile Money affiché comme seul moyen de règlement**, avec la mention explicite
+   qu'aucun paiement ne transite par le site.
+7. **Section À propos** ajoutée.
+8. **Double notification expliquée dans les 4 étapes** : un message à la confirmation,
+   un second quand la tenue est prête.
+
+## La décision de conception qui compte le plus
+
+**La date est annoncée sur la BORNE HAUTE du délai, acheminement compris.**
+
+Promettre le jour 8 d'un « 8 à 14 jours » fabrique un client déçu le jour 9. On promet 14,
+on livre 10, la cliente est contente. Une vitrine qui ment sur un délai coûte plus cher
+qu'une vitrine sans délai du tout.
+
+Corollaire assumé sur l'express : la vitrine dit que l'atelier confirme le délai à la
+validation et que **si la charge du moment ne le permet pas, le supplément n'est pas dû**.
+
+## Réorganisation des fichiers — source / construction / livrable
+
+Le livrable pèse 143 Ko dont 75 Ko de logo en base64 : illisible à éditer.
+
+| Fichier | Rôle |
+|---|---|
+| `_vitrine_src.html` | **la source, c'est elle qu'on édite** (marqueurs `__LOGO_B64__`, `__FAVICON_B64__`) |
+| `_build.py` | injecte les images → écrit `vitrine.html` |
+| `_qc.py` | **53 contrôles**, doit être vert avant tout déploiement |
+| `vitrine.html` | le livrable, **généré, jamais édité à la main** |
+
+C'est la même méthode que Speed/Weinkeller (`_build_bottles.py`, `_apply_cave.py`) :
+scripts Python UTF-8, idempotents, jamais d'édition manuelle du fichier lourd.
+
+## QC v2 — 53 contrôles, tous verts
+
+- 0 débordement horizontal sur 390 / 768 / 1440, page **et modale ouverte**
+- 0 erreur JS, 0 ressource locale manquante, 0 image externe
+- **Cibles tactiles ≥ 44 px** — 6 échecs au premier passage : le logo de la barre (41 px),
+  les liens de navigation (23 px) et le lien du pied (15 px). Corrigés en
+  `display:inline-flex; min-height:44px`. **Un lien de texte reste un lien de texte à la
+  souris, mais c'est une cible ratée au pouce.**
+- Mesures par type : **9 / 15 / 11 / 6 / 8**, aucun identifiant en double
+- Tunnel prêt-à-porter : 35 000 + 12 000 + 10 000 = **57 000 F**, date à **J+7**
+  (3 jours express + 4 d'acheminement Côte d'Ivoire)
+- Tunnel sur-mesure : pantalon, retrait, normal → **30 000 F**, J+10, libellé « prête à
+  retirer », **4 mesures sur 6 suffisent**, les 2 manquantes signalées dans le message
+- Email seul accepté · « sur devis » de bout en bout · avertissement robe ovale affiché
+
+Autre correction visuelle : **le logo disparaissait dans le héros**, ses lettres étant
+noires sur fond noir. Posé sur une plaque blanche arrondie plutôt qu'inversé en blanc,
+ce qui aurait tué le magenta de la marque.
+
+## ⚠️ Bloquant avant mise en ligne — huit points
+
+Tous regroupés dans un bloc **« ZONE À COMPLÉTER »** en tête du script, détaillés au §6 du
+`CONTEXT.md` du client. Les trois plus graves :
 
 1. **Le numéro WhatsApp est un fixe de test.** En l'état, aucune commande n'arrive.
-2. **Les frais d'expédition sont des exemples.** Un tarif faux coûte de l'argent à la
-   cliente à chaque commande.
+2. **Les frais d'expédition et les jours d'acheminement sont des exemples.** Un tarif faux
+   coûte de l'argent à la cliente à chaque commande ; un acheminement faux fausse la date
+   annoncée, donc la promesse.
+3. **Les mesures de la robe ovale n'ont jamais été fournies.** Onze mesures proposées par
+   déduction, signalées en jaune dans l'interface même : « Liste de mesures en cours de
+   validation par l'atelier ». Elles ne seront pas inventées en silence.
 
-Rien n'a été inventé en silence : tout ce qui est provisoire est marqué comme tel dans le
-code et dans le CONTEXT.
+## Ce qu'un fichier statique ne peut pas faire, et qu'on n'a pas fait semblant de faire
+
+| Demandé | Réalité |
+|---|---|
+| **Paiement Mobile Money** | La vitrine annonce le mode de règlement, aucun paiement n'y transite. Un vrai encaissement passe par **FedaPay** — clé publique côté client, clé secrète côté n8n, jamais dans le HTML |
+| **Notification automatique** | Les deux messages sont aujourd'hui envoyés à la main. L'automatisation, c'est **n8n + Twilio**, avec la commande enregistrée en base |
+
+C'est l'escalier NEBULA appliqué à la lettre : la vitrine d'abord, l'outil ensuite.
 
 ## Positionnement commercial
 
