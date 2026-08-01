@@ -135,7 +135,7 @@ marqués dans `_vitrine_src.html`, en haut du `<script>`, dans un bloc « ZONE �
 
 | # | Information | Pourquoi c'est bloquant |
 |---|---|---|
-| 1 | **Numéro WhatsApp** (`WHATSAPP`) | Actuellement `22900000000`. **Aucune commande n'arrivera** tant qu'il n'est pas remplacé |
+| 1 | ~~Numéro WhatsApp~~ ✅ **FOURNI le 2026-08-01 : +229 51 37 47 93** → `WHATSAPP = "22951374793"`. ⚠️ **Reste à tester en envoyant un vrai message sur le lien** avant diffusion (voir §6bis) | — |
 | 2 | **Email de repli** (`EMAIL`) | Le client sans WhatsApp passe par là. Adresse d'exemple pour l'instant |
 | 3 | **Frais d'expédition et jours d'acheminement par pays** (`PAYS`) | Valeurs provisoires. Un tarif faux coûte de l'argent à la cliente **à chaque commande**, et un acheminement faux fausse la date annoncée |
 | 4 | **Délais de confection** (`DELAIS` et `jmin`/`jmax` de chaque pièce) | Normal 7-14 jours, express 1-3 : à valider avec l'atelier |
@@ -143,6 +143,23 @@ marqués dans `_vitrine_src.html`, en haut du `<script>`, dans un bloc « ZONE �
 | 6 | **Adresse, horaires de l'atelier** (`ATELIER`) | Affichent « à confirmer » |
 | 7 | **Les mesures de la robe ovale** (`MESURES.robe_ovale`) | **Jamais fournies.** 11 mesures proposées par déduction, signalées en jaune dans l'interface : « Liste de mesures en cours de validation par l'atelier » |
 | 8 | **Prix du supplément express** | 10 000 F par défaut |
+
+### 6bis. ⚠️ Le format du numéro, à vérifier une fois
+
+Mongazi a donné **+229 51 37 47 93**, soit 8 chiffres — le même format que son propre
+numéro (`+229 96 74 07 32` → `wa.me/22996740732`, en production et fonctionnel).
+Le lien posé est donc **`wa.me/22951374793`**, transcription littérale.
+
+**Mais le dépôt contient les deux conventions** : les autres clients sont enregistrés en
+10 chiffres avec le préfixe `01` (`wa.me/2290197085576`, `wa.me/2290167748955`), suite au
+renumérotage béninois. **Rien n'a été deviné : le numéro est repris tel qu'il a été donné.**
+
+**Le test, une fois, avant toute diffusion :** ouvrir `wa.me/22951374793` et envoyer un
+vrai message. Si la conversation ne s'ouvre pas sur le bon contact, la variante à essayer
+est **`2290151374793`** (préfixe `01`), et il suffit alors de changer `WHATSAPP` puis de
+relancer `python3 _build.py`.
+
+---
 
 **Conseil photo à transmettre à la cliente :** dehors le matin ou en fin d'après-midi, à
 l'ombre, sur un fond uni, la pièce portée ou sur mannequin. Format portrait (les cartes
@@ -231,7 +248,7 @@ et le héros est **construit pour recevoir une vraie photo** le jour où elle ex
 - [ ] Générer le **QR code** et l'affiche A4
 - [ ] Déployer sur Cloudflare Pages (projet `hillary-m-styl`)
 - [ ] Fiche Google Business et avis clients
-- [ ] Vérifier le numéro WhatsApp **en envoyant un vrai message dessus** avant diffusion
+- [ ] **Tester `wa.me/22951374793`** en envoyant un vrai message (voir §6bis — deux formats possibles)
 
 ---
 

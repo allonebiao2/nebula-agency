@@ -129,9 +129,14 @@ python3 _build.py     # source -> vitrine.html
 python3 _qc.py        # 64 contrôles, doit être « TOUT EST VERT »
 ```
 
-⚠️ **Ne pas mettre en ligne avant d'avoir les 8 informations du §6 de son CONTEXT.md.**
-Les trois plus graves : le numéro WhatsApp est un fixe de test (`22900000000`, **aucune
-commande n'arriverait**) · les frais d'expédition et les jours d'acheminement sont des
+✅ **Le numéro WhatsApp est arrivé le 2026-08-01 : +229 51 37 47 93** → `wa.me/22951374793`,
+câblé et vérifié dans la page. ⚠️ **Reste à l'essayer une fois avec un vrai message** : le
+dépôt utilise deux formats (8 chiffres comme celui de Mongazi, ou 10 avec le préfixe `01`
+comme les autres clients). Si ça n'ouvre pas le bon contact, essayer `2290151374793`.
+Détail au §6bis du CONTEXT.md.
+
+⚠️ **Ne pas mettre en ligne avant d'avoir les 7 informations restantes du §6.**
+Les deux plus graves : les frais d'expédition et les jours d'acheminement sont des
 exemples (un tarif faux coûte de l'argent à chaque commande, un acheminement faux fausse
 la date promise) · **les mesures de la robe ovale n'ont jamais été fournies** et sont une
 proposition, signalée comme telle dans l'interface.
