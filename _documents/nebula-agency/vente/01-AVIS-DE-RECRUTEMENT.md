@@ -176,8 +176,9 @@ Nous préférons être clairs tout de suite, ça vous évitera de perdre votre t
 4. **Formation de démarrage en visio (Google Meet)**, remise de vos accès, de votre lien et de vos guides. Vous signez la charte d'engagement et vos accès sont créés.
    Vous pouvez vendre le jour même.
 
-**Aucun quota de places.** Nous préférons des partenaires sérieux et bien accompagnés
-à 50 inscrits qui ne feront jamais une vente.
+**Aucun quota de places.** Nous prenons tous ceux qui passent l'entretien. Mais nous ne
+prenons personne sans entretien : un partenaire mal accompagné ne fait jamais une vente,
+et il perd son temps autant que le nôtre.
 
 ---
 

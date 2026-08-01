@@ -24,9 +24,16 @@ CHROME = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
 # annoncer une version plus ancienne que le texte qu'il contient.
 VERSION = ""
 
+# Documents PUBLICS : diffusables librement. La couverture ne doit surtout pas
+# porter la mention « confidentiel » — un candidat qui la lit n'ose plus la partager.
+PUBLICS = {"01b-ANNONCE-PUBLIQUE.md"}
+CONF_PUBLIC = ("Annonce publique &middot; NEBULA Agency vous autorise à la partager "
+               "librement, en entier, sans modification.")
+
 DOCS = [
     ("00-SOCLE-COMMERCIAL.md",      "Socle commercial NEBULA"),
     ("01-AVIS-DE-RECRUTEMENT.md",   "Avis de recrutement"),
+    ("01b-ANNONCE-PUBLIQUE.md",     "Annonce de recrutement"),
     ("02-MANUEL-DU-PARTENAIRE.md",  "Manuel du Partenaire"),
     ("03-GUIDE-CATALOGUE.md",       "Guide de vente · Catalogue Digital"),
     ("04-GUIDE-VITRINE.md",         "Guide de vente · Vitrine Digitale"),
@@ -113,6 +120,10 @@ def build(md_name, title):
         output_format="html5",
     )
 
+    conf = (CONF_PUBLIC if md_name in PUBLICS else
+            "Document confidentiel &middot; réservé aux partenaires actifs de NEBULA "
+            "Agency. Ne pas diffuser hors de l'équipe.")
+
     page = (
         "<!DOCTYPE html><html lang='fr'><head><meta charset='utf-8'>"
         f"<title>{title}</title><style>{CSS}</style></head><body>"
@@ -121,8 +132,7 @@ def build(md_name, title):
         "<div class='rule'></div>"
         f"<h1>{title}</h1>"
         f"<div class='meta'>Programme Partenaires<br>Version {VERSION}</div>"
-        "<div class='conf'>Document confidentiel &middot; réservé aux partenaires actifs de "
-        "NEBULA Agency. Ne pas diffuser hors de l'équipe.</div>"
+        f"<div class='conf'>{conf}</div>"
         "</div>"
         f"{html_body}"
         "<div class='foot'>NEBULA Agency &middot; Cotonou, Bénin &middot; "
