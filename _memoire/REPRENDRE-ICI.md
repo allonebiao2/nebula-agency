@@ -130,8 +130,24 @@ prompt-maître reste générique.
 
 **https://hillary-m-styl.pages.dev est en ligne depuis le 2026-08-01 19h27** (autre session,
 projet Cloudflare `hillary-m-styl`), **avec la V2 — sans la direction artistique « LE FIL ».**
-La V3 de ce dépôt doit la remplacer : `python3 _build.py && python3 _qc.py`, puis
-`wrangler pages deploy _dist --project-name hillary-m-styl`.
+
+## 🚀 POUR DÉPLOYER LA V3 : lire `clients/10-hillary-m-styl/DEPLOIEMENT.md`
+
+**⚠️ LE PIÈGE : la V3 n'est PAS sur `main`.** Elle est sur la branche
+`claude/github-repo-context-nisd2r`. Déployer depuis `main` republie l'ancienne version —
+le site ne bouge pas, et on croit à un échec alors que tout a marché.
+
+Le test en une commande : `grep -c "Bodoni Moda" clients/10-hillary-m-styl/vitrine.html`
+→ **0 = mauvaise version, ne pas déployer.**
+
+```bash
+git fetch origin && git checkout claude/github-repo-context-nisd2r && git pull
+cd clients/10-hillary-m-styl && python3 _predeploy.py
+npx -y wrangler@3 pages deploy _dist --project-name hillary-m-styl --branch main
+```
+
+**`_predeploy.py` s'arrête au premier problème** : mauvaise version, construction ratée,
+QC rouge, placeholder resté dans la page. Le site est vivant — on ne déploie pas « pour voir ».
 
 Les apports de l'autre session sont **conservés** dans la source V3 : vrai numéro WhatsApp,
 « retrait sur rendez-vous · le point de retrait vous est donné sur WhatsApp », carte

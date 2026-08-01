@@ -1,0 +1,138 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+HILLARY M. STYL — le garde-fou avant mise en ligne.
+
+    cd clients/10-hillary-m-styl
+    python3 _predeploy.py
+
+Il enchaîne, et il S'ARRÊTE au premier problème :
+
+  1. la V3 est-elle bien là ?      (sinon on déploierait l'ancienne version)
+  2. `_build.py`                    source -> vitrine.html
+  3. `_qc.py`                       71 contrôles, tous verts obligatoires
+  4. aucun reliquat public          numéro de test, « à confirmer », placeholders
+  5. `_dist/index.html` préparé     et la commande de déploiement affichée
+
+Pourquoi ce fichier existe : le site est DÉJÀ EN LIGNE avec la V2.
+Un déploiement rate ne casse pas un brouillon — il casse un site que des
+clientes utilisent. On ne déploie pas « pour voir ».
+"""
+
+import pathlib
+import re
+import shutil
+import subprocess
+import sys
+
+ICI = pathlib.Path(__file__).resolve().parent
+SRC = ICI / "_vitrine_src.html"
+OUT = ICI / "vitrine.html"
+DIST = ICI / "_dist"
+PROJET = "hillary-m-styl"
+
+# Les seuls « à confirmer » légitimes, tous les trois pour le MÊME cas :
+# le pays « Autre », dont les frais d'expédition sont réellement à confirmer
+# au cas par cas. Ce n'est pas un placeholder oublié, c'est une réponse honnête.
+#   1. dans la liste déroulante des pays
+#   2. dans le message WhatsApp envoyé à l'atelier
+#   3. dans le récapitulatif chiffré (avec une capitale)
+TOLERES = [
+    '(frais à confirmer)',
+    '"à confirmer" : fcfa(f)',
+    '"À confirmer" : fcfa(f)',
+]
+
+
+def echec(msg, aide=""):
+    print("\n  ❌", msg)
+    if aide:
+        print("     " + aide)
+    sys.exit(1)
+
+
+def etape(n, titre):
+    print(f"\n  [{n}/5] {titre}")
+
+
+def main():
+    print("\n  HILLARY M. STYL — vérification avant mise en ligne")
+    print("  " + "─" * 52)
+
+    # ---------- 1. est-ce bien la V3 ? ----------
+    etape(1, "la bonne version est-elle là ?")
+    if not SRC.exists():
+        echec("`_vitrine_src.html` est absent.",
+              "Vous êtes sur une branche qui n'a pas la V3. Faites :\n"
+              "     git fetch origin && git checkout claude/github-repo-context-nisd2r")
+    s = SRC.read_text(encoding="utf-8")
+    for marqueur, quoi in [("Bodoni Moda", "la typographie de la V3"),
+                           ("croquis", "le croquis du héros"),
+                           ("data-tap", "les réactions au toucher")]:
+        if marqueur not in s:
+            echec(f"la source ne contient pas {quoi} (`{marqueur}`).",
+                  "Ce n'est pas la V3 « LE FIL ». Ne déployez pas.")
+    print("       ✅ source V3 « LE FIL » confirmée")
+
+    # ---------- 2. construire ----------
+    etape(2, "construction du livrable")
+    r = subprocess.run([sys.executable, "_build.py"], cwd=ICI,
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        echec("`_build.py` a échoué.", r.stdout + r.stderr)
+    print("       ✅ " + OUT.name + f" — {OUT.stat().st_size // 1024} Ko")
+
+    # ---------- 3. contrôle qualité ----------
+    etape(3, "contrôle qualité (71 contrôles)")
+    r = subprocess.run([sys.executable, "_qc.py"], cwd=ICI,
+                       capture_output=True, text=True)
+    sortie = r.stdout + r.stderr
+    if r.returncode != 0 or "TOUT EST VERT" not in sortie:
+        for l in sortie.splitlines():
+            if l.startswith("FAIL") or "INTERROMPU" in l:
+                print("       " + l)
+        echec("le QC n'est pas vert.", "On ne déploie pas par-dessus un site vivant "
+              "avec un contrôle rouge.")
+    print("       ✅ " + [l for l in sortie.splitlines() if "TOUT EST VERT" in l][0].strip())
+
+    # ---------- 4. aucun reliquat visible par une cliente ----------
+    etape(4, "aucun placeholder sur la page publique")
+    h = OUT.read_text(encoding="utf-8")
+    if "22900000000" in h:
+        echec("le numéro WhatsApp de test est encore là.",
+              "Aucune commande n'arriverait.")
+    reste = h
+    for t in TOLERES:
+        reste = reste.replace(t, "")
+    for motif, quoi in [(r"à confirmer", "« à confirmer »"),
+                        (r"À COMPLÉTER", "« À COMPLÉTER »"),
+                        (r"lorem", "du faux texte")]:
+        trouve = re.findall(motif, reste, re.I)
+        if trouve:
+            echec(f"il reste {len(trouve)} fois {quoi} dans la page.",
+                  "Ces mots seront lus par une cliente. Corrigez la source.")
+    wa = re.search(r'var WHATSAPP\s*=\s*"(\d+)"', h)
+    print(f"       ✅ aucun placeholder · WhatsApp = {wa.group(1) if wa else '?'}")
+
+    # ---------- 5. le dossier à publier ----------
+    etape(5, "préparation du dossier à publier")
+    if DIST.exists():
+        shutil.rmtree(DIST)
+    DIST.mkdir()
+    shutil.copy(OUT, DIST / "index.html")
+    poids = (DIST / "index.html").stat().st_size
+    print(f"       ✅ _dist/index.html — {poids // 1024} Ko, un seul fichier")
+    print("          (la vitrine est autonome : logo et favicon en base64)")
+
+    print("\n  " + "─" * 52)
+    print("  TOUT EST PRÊT. La commande à lancer :\n")
+    print(f"    npx -y wrangler@3 pages deploy _dist --project-name {PROJET} --branch main\n")
+    print("  Identifiants : secrets/cloudflare.env")
+    print("  Après coup, ouvrez https://hillary-m-styl.pages.dev et vérifiez")
+    print("  que le rideau s'ouvre et que les titres sont en Bodoni (serif fin).")
+    print("  ⚠️ Le catalogue est encore composé de PIÈCES D'EXEMPLE.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
