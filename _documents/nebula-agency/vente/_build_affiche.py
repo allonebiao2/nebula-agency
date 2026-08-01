@@ -47,22 +47,30 @@ def etoiles(n=210, graine=7):
             + "".join(c) + "</svg>")
 
 
-def places(n=8):
-    """Les huit portails : identiques, ouverts, aucun marqué comme pris."""
+def places(n=13):
+    """Un champ de portails ouverts, qui déborde du cadre : il y a de la place.
+    Aucun n'est marqué comme pris, et les extrêmes s'estompent — la rangée ne
+    s'arrête pas, elle continue hors de l'affiche."""
     larg, haut, pas = 150.0, 17.0, 150.0 / n
     hx = []
     for i in range(n):
         cx = pas * (i + 0.5)
         cy = haut / 2
-        w, h = 7.0, 8.6
+        w, h = 5.4, 6.6
+        # les portails du bord s'estompent : la rangee ne se compte pas
+        d0 = abs(i - (n - 1) / 2) / ((n - 1) / 2)
+        op = round(max(0.14, 1.0 - d0 ** 2 * 0.92), 2)
         pts = [(cx, cy - h / 2), (cx + w / 2, cy - h / 4), (cx + w / 2, cy + h / 4),
                (cx, cy + h / 2), (cx - w / 2, cy + h / 4), (cx - w / 2, cy - h / 4)]
         d = " ".join(f"{x:.2f},{y:.2f}" for x, y in pts)
-        hx.append(f'<polygon points="{d}" fill="rgba(34,211,238,.07)" '
-                  f'stroke="#22D3EE" stroke-width=".38" stroke-linejoin="round"/>')
-        hx.append(f'<circle cx="{cx:.2f}" cy="{cy:.2f}" r=".9" fill="#22D3EE" opacity=".55"/>')
+        hx.append(f'<polygon points="{d}" fill="rgba(34,211,238,.06)" opacity="{op}" '
+                  f'stroke="#22D3EE" stroke-width=".34" stroke-linejoin="round"/>')
+        hx.append(f'<circle cx="{cx:.2f}" cy="{cy:.2f}" r=".7" fill="#22D3EE" opacity="{op*.6:.2f}"/>')
     return ('<div class="places"><svg viewBox="0 0 150 17">'
-            f'<line x1="2" y1="8.5" x2="148" y2="8.5" stroke="rgba(34,211,238,.22)" stroke-width=".25"/>'
+            f'<defs><linearGradient id="fl" x1="0" x2="1"><stop offset="0" stop-color="#22D3EE" stop-opacity="0"/>'
+            f'<stop offset=".5" stop-color="#22D3EE" stop-opacity=".30"/>'
+            f'<stop offset="1" stop-color="#22D3EE" stop-opacity="0"/></linearGradient></defs>'
+            f'<line x1="0" y1="8.5" x2="150" y2="8.5" stroke="url(#fl)" stroke-width=".25"/>'
             + "".join(hx) + "</svg></div>")
 
 

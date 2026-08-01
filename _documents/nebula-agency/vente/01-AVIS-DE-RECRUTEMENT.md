@@ -1,5 +1,5 @@
 # AVIS DE RECRUTEMENT — Conseillers en Digitalisation NEBULA
-## Vague 1 · Cotonou · 8 places
+## Vague 1 · Cotonou · **recrutement ouvert**
 
 > **Contenu de ce document**
 > 1. L'annonce officielle (à publier et à envoyer)
@@ -19,9 +19,12 @@
 
 Trois principes tiennent cette annonce, et il ne faut pas les diluer :
 
-1. **On annonce des places limitées et une sélection.** « On prend tout le monde » attire des gens
-   qui ne vendront jamais et qui encombrent le back-office. « 8 places, entretien obligatoire »
-   attire les vendeurs qui se croient bons et veulent le prouver.
+1. **Le recrutement est ouvert, la sélection ne l'est pas.** *(Décision du 2026-08-01 : on
+   retire le quota de 8 places. Objectif = un maximum de partenaires.)* Le nombre de places
+   ne filtre plus rien — **c'est l'entretien qui filtre, et il reste obligatoire**. On dit
+   donc franchement : tout le monde peut postuler, tout le monde ne sera pas retenu.
+   ⚠️ **Le vrai plafond n'est plus le nombre de vendeurs, c'est la capacité à livrer.**
+   Surveiller le délai de 5 à 7 jours : le jour où il glisse, on ralentit le recrutement.
 2. **On donne les chiffres réels.** La plupart des annonces de commission au Bénin disent
    « gains attractifs ». Ça ne veut rien dire et ça sent l'arnaque. Nous, on écrit
    **37 500 F sur une vitrine, 150 000 F sur un mois à 6 ventes.** Les vrais vendeurs calculent.
@@ -34,14 +37,15 @@ Trois principes tiennent cette annonce, et il ne faut pas les diluer :
 
 ---
 
-### NEBULA AGENCY RECRUTE 8 CONSEILLERS EN DIGITALISATION
+### NEBULA AGENCY RECRUTE DES CONSEILLERS EN DIGITALISATION
 #### Cotonou · Statut partenaire commissionné · Candidatures ouvertes
 
 **À Cotonou, 9 commerçants sur 10 vendent sur WhatsApp sans rien derrière.**
 Pas de site. Pas de catalogue. Invisibles sur Google. Ils perdent des clients tous les jours et
 ils ne le savent même pas.
 
-Nous, on répare ça en 5 à 7 jours. Nous cherchons **8 personnes** pour aller le leur dire.
+Nous, on répare ça en 5 à 7 jours. Nous cherchons **le maximum de personnes** pour aller le
+leur dire. **Aucun quota** : si vous savez parler aux commerçants, il y a une place pour vous.
 
 ---
 
@@ -172,7 +176,7 @@ Nous préférons être clairs tout de suite, ça vous évitera de perdre votre t
 4. **Formation de démarrage en visio (Google Meet)**, remise de vos accès, de votre lien et de vos guides. Vous signez la charte d'engagement et vos accès sont créés.
    Vous pouvez vendre le jour même.
 
-**8 places pour cette première vague.** Nous préférons 8 partenaires sérieux et bien accompagnés
+**Aucun quota de places.** Nous préférons des partenaires sérieux et bien accompagnés
 à 50 inscrits qui ne feront jamais une vente.
 
 ---
@@ -193,10 +197,10 @@ www.nebula-agency.online*
 > **Version courte, 6 lignes.** Objectif : faire cliquer, pas tout expliquer.
 
 ```
-NEBULA AGENCY RECRUTE · 8 places · Cotonou
+NEBULA AGENCY RECRUTE · Cotonou · Sans quota
 
 Nous créons les sites et catalogues des commerçants de Cotonou (9 clients déjà en ligne).
-Nous cherchons 8 personnes pour aller les présenter.
+Nous cherchons le maximum de personnes pour aller les présenter.
 
 Vous gagnez 25 % à 35 % sur chaque vente.
 Une vitrine vendue = 37 500 F pour vous. Un bon mois = 150 000 F.
@@ -209,7 +213,7 @@ Ou écrivez PARTENAIRE au +229 96 74 07 32
 > **Version statut WhatsApp, 3 lignes.** À poster sur fond visuel NEBULA.
 
 ```
-8 places · Cotonou · NEBULA Agency
+Recrutement ouvert · Cotonou · NEBULA Agency
 Vous savez parler aux gens ? On vous paie 25 à 35 % sur chaque vente.
 Écrivez PARTENAIRE au 96 74 07 32
 ```
@@ -226,8 +230,9 @@ Vous savez parler aux gens ? On vous paie 25 à 35 % sur chaque vente.
 ```
         [ LOGO NEBULA AGENCY ]
 
-     NOUS RECRUTONS 8 PERSONNES
-              À COTONOU
+        NOUS RECRUTONS DES
+     CONSEILLERS EN DIGITALISATION
+     Cotonou · recrutement ouvert
 
    Vous savez parler aux commerçants ?
       Nous, on sait les digitaliser.
@@ -248,7 +253,7 @@ Vous savez parler aux gens ? On vous paie 25 à 35 % sur chaque vente.
 
         [ QR CODE ]
      Scannez pour postuler
-        5 minutes suffisent
+   5 minutes suffisent · aucun quota
 
    WhatsApp : +229 96 74 07 32
    www.nebula-agency.online
@@ -272,7 +277,7 @@ Chez NEBULA Agency, un catalogue digital coûte 50 000 F et se livre en 5 à 7 j
 Nous en avons déjà livré à des bijoutiers, des instituts de beauté, des restaurants,
 des caves à vins, des pâtissières, des ébénistes. Tout est en ligne, visible, vérifiable.
 
-Nous ouvrons 8 places de Conseiller en Digitalisation à Cotonou.
+Nous ouvrons le recrutement de Conseillers en Digitalisation à Cotonou, sans quota de places.
 Vous présentez nos offres, nous produisons tout, vous touchez 25 % à 35 % par vente.
 Pas de diplôme exigé, rien à payer pour entrer.
 
@@ -375,7 +380,7 @@ n'est pas satisfait, s'il peut vendre hors de Cotonou.
 ---
 
 **Clôture de l'entretien (à dire mot pour mot) :**
-> « Merci. Nous recevons plusieurs candidats cette semaine et nous ne prenons que 8 personnes.
+> « Merci. Nous recevons beaucoup de candidatures et toutes ne sont pas retenues.
 > Vous aurez ma réponse d'ici [délai]. Si vous êtes retenu, vous recevez vos accès, votre lien
 > personnel et vos guides, et vous pouvez commencer à vendre le jour même. »
 
@@ -387,7 +392,7 @@ n'est pas satisfait, s'il peut vendre hors de Cotonou.
 > un bouton d'envoi WhatsApp. Ce message se colle au-dessus.
 
 ```
-Félicitations [Prénom], vous faites partie des 8 partenaires retenus pour la vague 1 de Cotonou.
+Félicitations [Prénom], votre candidature est retenue pour la vague 1 de Cotonou.
 
 Voici vos accès à votre espace personnel :
 [ KIT D'ACCÈS GÉNÉRÉ : espace · code · PIN · lien /p/VOTRECODE ]
@@ -433,7 +438,8 @@ Mongazi · NEBULA Agency
 | J13 | Envoi des kits d'accès aux retenus | Back-office + WhatsApp |
 | J14 | **Formation de démarrage collective** (2h) | Présentiel ou visio |
 
-**Indicateur à surveiller :** on vise **40 à 60 candidatures** pour retenir 8 personnes.
+**Indicateur à surveiller :** le taux de retenue et surtout **le délai de livraison**.
+Le recrutement est ouvert, mais le jour où les 5 à 7 jours glissent, on ralentit.
 En dessous de 25 candidatures, le problème vient de la diffusion, pas de l'annonce : il faut
 élargir les canaux avant de baisser les critères. **On ne baisse jamais les critères pour
 remplir des places.**
@@ -443,7 +449,8 @@ remplir des places.**
 ## 9. À compléter avant publication
 
 - [ ] **Fixer la date limite de candidature** (à insérer dans l'annonce)
-- [ ] **Confirmer le nombre de places** : 8 est un bon chiffre (crédible et rare). À valider.
+- [x] ~~Confirmer le nombre de places~~ **TRANCHÉ le 2026-08-01 : aucun quota, recrutement
+      ouvert.** Le filtre est l'entretien, pas le nombre. Surveiller la capacité de livraison.
 - [x] ~~Produire l'affiche A4~~ **prompt écrit** (`PROMPT-AFFICHE-RECRUTEMENT.md`) et **QR réel généré
       et vérifié** (`assets/QR-devenir-partenaire.png`). Reste : générer l'image, y coller le QR,
       **le scanner avec un vrai téléphone**, exporter en PDF 300 dpi

@@ -174,24 +174,19 @@ n'ouvre rien.
 
 ---
 
-## 4. ⚠️ Le point à trancher avant d'envoyer l'affiche
+## 4. L'affiche : recrutement ouvert
 
-**L'affiche annonce « 8 conseillers ». Vous avez déjà 3 partenaires actifs.**
+**Décision du 2026-08-01 : plus de quota de 8 places.** L'affiche dit « NOUS RECRUTONS DES
+CONSEILLERS EN DIGITALISATION · recrutement ouvert · aucun quota ». Vos 3 partenaires
+actifs ne posent donc plus aucun problème de cohérence.
 
-Deux lectures possibles, et elles ne donnent pas le même chiffre :
+Le message 3 reste valable tel quel, à un mot près — remplacez « il y a un entretien, et
+toutes les candidatures ne passent pas » par la même chose : **c'est toujours vrai, et
+c'est même le seul filtre qui reste.**
 
-| Si… | L'affiche doit dire |
-|---|---|
-| Les 3 actifs sont **hors vague 1** (partenaires historiques) | **8** — rien à changer |
-| Les 3 actifs **comptent dans les 8 places** | **5** — il faut regénérer |
-
-Un chiffre faux sur une affiche imprimée ne se rattrape pas, et un candidat qui découvre
-qu'il restait en fait 5 places sur 8 perd confiance avant même l'entretien.
-
-**Pour changer le chiffre :** une ligne dans `_affiche_recrutement_src.html`, puis
-`python3 _build_affiche.py`. Deux minutes, PDF et PNG regénérés.
-
----
+⚠️ **Ce qu'il faut surveiller à la place du quota :** le délai de livraison de 5 à 7 jours.
+C'est lui, maintenant, votre vrai plafond. Le jour où il glisse, on ralentit le recrutement
+— sans attendre que les clients réclament.
 
 ## 5. Ce qui manque encore, et qui bloque
 

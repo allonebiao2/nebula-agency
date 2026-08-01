@@ -7,7 +7,7 @@
 > leur obtention ; un avenant d'une ligne suffira à les porter au dossier.
 >
 > **Note.** Ce contrat est rédigé en français clair et couvre l'essentiel de la relation.
-> Pour la vague 1 (8 partenaires) il fait le travail. Au-delà d'une trentaine de partenaires,
+> Pour les premiers partenaires il fait le travail. Au-delà d'une trentaine de partenaires,
 > faites-le relire par un juriste béninois.
 >
 > Version 1.1 · 2026-08-01

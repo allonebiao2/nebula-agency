@@ -408,7 +408,8 @@ Preuves de capacité sur l'Outil métier : **Boussole**, **Digital HSE**, **Vend
 | Point | Décision |
 |---|---|
 | **Statut** | Partenaire commissionné, sur le programme existant |
-| **Recrutement** | **Cotonou uniquement, 8 places**, sélection sur entretien |
+| **Recrutement** | **Cotonou uniquement, AUCUN QUOTA DE PLACES** *(décision du 2026-08-01, remplace les 8 places)*, sélection sur entretien — **l'entretien reste obligatoire, c'est le seul filtre** |
+| **Le vrai plafond** | Ce n'est plus le nombre de partenaires, c'est la **capacité à livrer en 5 à 7 jours**. Le jour où ce délai glisse, on ralentit le recrutement |
 | **Candidatures** | Ouvertes **21 jours** après publication de l'annonce |
 | **Formation** | **Visio Google Meet**, guides remis, charte signée avant les accès |
 | **Animation** | **Point collectif hebdomadaire de 30 minutes** |

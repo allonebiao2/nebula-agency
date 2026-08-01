@@ -53,7 +53,8 @@ dans `_documents/nebula-agency/vente/`.
 | **Récurrent** | **25 % de chaque abonnement, ACQUIS À VIE**, ne compte pas dans le palier |
 | Réseau | N1 10 %, N2 5 %, à partir de la 1re vente du partenaire |
 | Versement | **24 à 72h** après réclamation |
-| Vague 1 | Cotonou, 8 places, candidatures 21 jours, objectif 30 ventes / 90 jours |
+| Vague 1 | Cotonou, **AUCUN QUOTA DE PLACES** *(décision 2026-08-01, remplace les 8 places)*, candidatures 21 jours, objectif 30 ventes / 90 jours |
+| **Le filtre** | L'**entretien**, obligatoire — c'est le seul qui reste. **Le vrai plafond n'est plus le nombre de partenaires mais la capacité à livrer en 5 à 7 jours** : le jour où ce délai glisse, on ralentit le recrutement |
 | **Guides** | **Les 5 guides sont remis dès l'entrée** (2026-08-01). Ce qui reste échelonné, c'est le **droit de conclure seul** : Vitrine après la 1ʳᵉ vente livrée, Outil métier après 3 ventes + binôme. Avant, le partenaire passe la main et **garde 100 % de sa commission** |
 
 ---

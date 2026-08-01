@@ -1,5 +1,5 @@
 # AFFICHE DE RECRUTEMENT — le prompt
-## Vague 1 · Cotonou · 8 conseillers en digitalisation
+## Vague 1 · Cotonou · **recrutement ouvert, sans quota**
 
 > Complète le §3 de `01-AVIS-DE-RECRUTEMENT.md`, qui contenait le **texte** de l'affiche.
 > Ici : le prompt pour la **fabriquer en image**, et le QR code réel.
@@ -10,21 +10,27 @@
 
 ## Avant de générer — deux choses à savoir
 
-### 1. « Un max de partenaires » et « 8 places » ne se contredisent pas
+### 1. Recrutement ouvert — ce qui filtre désormais
 
-L'objectif est de **maximiser les candidatures**, pas les places. C'est même l'inverse :
-c'est **parce qu'il n'y a que 8 places** que les bons postulent.
+**Décision de Mongazi, 2026-08-01 : plus de quota de 8 places. On veut un maximum de
+partenaires.** L'affiche, l'annonce et le socle sont alignés dessus.
 
-> « On prend tout le monde » attire des gens qui ne vendront jamais et qui encombrent le
-> back-office. « 8 places, entretien obligatoire » attire les vendeurs qui se croient bons
-> et veulent le prouver.
-> — `01-AVIS-DE-RECRUTEMENT.md`, note de méthode
+Deux conséquences à garder en tête :
 
-L'affiche garde donc **8 places**. Ce qui donne envie, ce n'est pas la porte grande ouverte :
-ce sont **les chiffres réels** (12 500 à 75 000 F par vente, 150 000 F sur un bon mois) et
-**les trois barrières qu'on enlève** (aucun diplôme, rien à payer, aucune compétence
-technique). Au Bénin, la plupart des annonces disent « gains attractifs » — ça ne veut rien
-dire et ça sent l'arnaque. Nous, on écrit les montants.
+1. **L'entretien devient le seul filtre**, et il reste obligatoire. L'annonce le dit
+   franchement : tout le monde peut postuler, tout le monde n'est pas retenu.
+2. **Le vrai plafond n'est plus le nombre de vendeurs, c'est la capacité à livrer.**
+   NEBULA promet 5 à 7 jours. Le jour où ce délai glisse, c'est le signal qu'il faut
+   ralentir le recrutement — pas attendre les réclamations.
+
+Ce qui donne envie n'a jamais été la rareté : ce sont **les chiffres réels** (12 500 à
+75 000 F par vente, 150 000 F sur un bon mois) et **les trois barrières qu'on enlève**
+(aucun diplôme, rien à payer, aucune compétence technique). Au Bénin, la plupart des
+annonces disent « gains attractifs » — ça ne veut rien dire et ça sent l'arnaque. Nous,
+on écrit les montants.
+
+**Le motif de l'affiche suit :** la rangée de portails déborde du cadre et s'estompe aux
+deux extrémités. Elle ne se compte pas — elle continue.
 
 ### 2. ⚠️ Le QR code ne se génère PAS par IA
 
@@ -86,12 +92,14 @@ over the whole poster. Premium, cinematic, calm — a serious company, not
 a flyer. No clip art, no stock-photo people, no money emoji, no banknote
 imagery, no cartoon, no confetti.
 
-CENTRAL MOTIF — "the eight places":
-A horizontal row of EIGHT identical hexagonal portals, thin luminous
-outlines in cyan, evenly spaced across the middle of the poster, each
-empty and open. They read as eight seats waiting to be taken. All eight
-are identical and equally lit — none is marked as taken. One soft beam
-of light rises from the row toward the headline above.
+CENTRAL MOTIF — "the open row":
+A horizontal row of MANY hexagonal portals, thin luminous outlines in
+cyan, evenly spaced across the middle of the poster, each empty and open.
+The row runs the full width and FADES OUT at both ends — it must read as
+uncountable and continuing beyond the frame, never as a fixed number of
+seats. All portals are identical and none is marked as taken. A thin
+luminous line runs through them, itself fading at both ends. One soft
+beam of light rises from the row toward the headline above.
 
 ------------------------------------------------------------------
 TYPOGRAPHY — render ONLY these strings, nothing else
@@ -100,12 +108,14 @@ Font family throughout: a confident geometric sans-serif, tight tracking
 on the large sizes, wide letter-spacing on the small uppercase labels.
 
 1. EYEBROW, small, uppercase, wide letter-spacing, cyan:
-      "COTONOU · CANDIDATURES OUVERTES"
+      "COTONOU · RECRUTEMENT OUVERT"
 
-2. HEADLINE, very large, uppercase, pure white #EEF0FB, two lines:
+2. HEADLINE, uppercase, three lines. The first two in pure white
+   #EEF0FB, the third smaller and in gold #E8C88A with wide tracking:
       "NOUS RECRUTONS"
-      "8 CONSEILLERS"
-   The figure "8" is the single largest glyph on the poster.
+      "DES CONSEILLERS"          <- the largest line of the poster
+      "EN DIGITALISATION"        <- smaller, gold, letterspaced
+   No number appears in the headline. There is no quota.
 
 3. SUBHEAD, one line, light grey-white, sentence case:
       "Vous savez parler aux commerçants ?"
@@ -134,7 +144,7 @@ on the large sizes, wide letter-spacing on the small uppercase labels.
 
    To its right, two short lines, white, small:
       "Scannez pour postuler"
-      "5 minutes suffisent"
+      "5 minutes suffisent · aucun quota"
 
    Bottom line of the poster, very small, letterspaced, grey:
       "WhatsApp +229 96 74 07 32 · www.nebula-agency.online"
@@ -151,8 +161,10 @@ RULES
 - Currency written exactly as given, with the space: "12 500 F".
 - The percentage sign is separated by a space: "25 %".
 - No stock photography, no human faces, no handshake, no briefcase, no
-  arrow-going-up chart, no dollar sign. The nebula and the eight portals
+  arrow-going-up chart, no dollar sign. The nebula and the row of portals
   are the only imagery.
+- NEVER render a number of places, a countdown, a "plus que X places" or
+  any scarcity claim. Recruitment is open and the poster must say so.
 - Text must never sit on the brightest part of the nebula. Keep the areas
   under the headline and under the numbers block dark enough for contrast.
 - The headline and the figure "150 000 F" must remain legible when the
@@ -173,7 +185,8 @@ FORMAT
 ------------------------------------------------------------------
 Vertical, 9:16. The headline sits in the UPPER-MIDDLE third — never in
 the top 12% nor the bottom 18%, which interface elements cover on a
-phone. The eight portals form a tighter row. The numbers block sits
+phone. The row of portals is tighter but still fades at both ends. The
+numbers block sits
 directly beneath the headline. Drop the reserved white square entirely
 and replace the foot zone by a single line, white, centred:
       "Écrivez « PARTENAIRE » au +229 96 74 07 32"
@@ -189,7 +202,7 @@ Remplacer le bloc `FORMAT` par :
 ------------------------------------------------------------------
 FORMAT
 ------------------------------------------------------------------
-Square, 1:1. Two zones: the headline and the eight portals in the upper
+Square, 1:1. Two zones: the headline and the fading row of portals in the upper
 half, the numbers block in the lower half. Drop the three barriers line
 and the reserved white square. Foot line only:
       "Candidatures : www.nebula-agency.online"
@@ -212,7 +225,7 @@ and the reserved white square. Foot line only:
 | # | Ce qu'on vérifie | Pourquoi |
 |---|---|---|
 | 1 | **Le QR scanne, testé sur un vrai téléphone** | Un QR mort, c'est l'impression entière perdue |
-| 2 | Réduire l'affiche à 20 % — « 8 CONSEILLERS » et « 150 000 F » se lisent-ils ? | Elle sera vue de loin, ou en vignette |
+| 2 | Réduire l'affiche à 20 % — « DES CONSEILLERS » et « 150 000 F » se lisent-ils ? | Elle sera vue de loin, ou en vignette |
 | 3 | Les accents : `commerçants`, `DIPLÔME`, `À PAYER`, `COMPÉTENCE` | Une faute sur une affiche imprimée est définitive |
 | 4 | Les montants sont-ils **exacts** : 25-35 %, 12 500 à 75 000, 150 000 | Un chiffre faux sur une affiche = une promesse qu'on devra tenir |
 | 5 | Le numéro WhatsApp est-il le bon, et **répond-il** ? | Envoyer un vrai message dessus avant d'imprimer |
