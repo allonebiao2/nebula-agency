@@ -28,6 +28,7 @@ dans `_documents/nebula-agency/vente/`.
 | `08-DIAGNOSTIC-DIGITAL.md` | La consultation pro : 40 questions + grille des automatisations |
 | `09-CONTRAT-PARTENAIRE.md` | Contrat d'apporteur d'affaires en 16 articles |
 | `10-RELANCE-RENOUVELLEMENT.md` | Spécification de la relance des abonnements |
+| `11-MESSAGES-GROUPE-PARTENAIRES.md` | **Quoi envoyer aux partenaires actifs** : 3 PDF sur 9, 5 messages prêts à copier, et ce qu'on ne diffuse pas |
 | `simulateur-commissions.html` | Le partenaire calcule ses gains du mois |
 | `fiche-diagnostic.html` | Fiche remplie chez le client → rapport WhatsApp |
 | `pdf/` | Les 9 documents en PDF, régénérables via `_build_pdf.py` |
