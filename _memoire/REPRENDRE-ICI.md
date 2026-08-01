@@ -20,6 +20,7 @@ dans `_documents/nebula-agency/vente/`.
 |---|---|
 | `00-SOCLE-COMMERCIAL.md` | **La source de vérité.** 32 décisions, prix, commissions, règles, 12 interdits. En cas de doute sur un chiffre, c'est lui qui fait foi |
 | `01-AVIS-DE-RECRUTEMENT.md` | Annonce, affiche, grille de sélection /20, script d'entretien |
+| `PROMPT-AFFICHE-RECRUTEMENT.md` | Prompt de l'affiche A4 + variantes 9:16 et 1:1. ⚠️ **le QR ne se génère pas par IA** : le vrai est dans `vente/assets/` |
 | `02-MANUEL-DU-PARTENAIRE.md` | Le métier : prospection, **méthode de vente en 7 temps**, relance, brief |
 | `03/04/05-GUIDE-*.md` | Un guide par service, anatomie en 12 chapitres |
 | `06-ARSENAL-SCRIPTS.md` | Tous les messages prêts à copier |

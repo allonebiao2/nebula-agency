@@ -219,7 +219,9 @@ Vous savez parler aux gens ? On vous paie 25 à 35 % sur chaque vente.
 ## 3. VERSION AFFICHE A4 (impression + QR code)
 
 > Format à produire selon la charte cosmique NEBULA, comme les affiches clients déjà réalisées.
-> QR code pointant vers `https://partenaires.nebula-agency.online/devenir`
+> **Le prompt de génération est dans `PROMPT-AFFICHE-RECRUTEMENT.md`** (+ variantes 9:16 et 1:1).
+> ⚠️ **Le QR ne se génère pas par IA** — il ne scannerait pas. Le vrai fichier, testé, est dans
+> `assets/QR-devenir-partenaire.png` et pointe vers `https://partenaires.nebula-agency.online/devenir`.
 
 ```
         [ LOGO NEBULA AGENCY ]
@@ -442,7 +444,9 @@ remplir des places.**
 
 - [ ] **Fixer la date limite de candidature** (à insérer dans l'annonce)
 - [ ] **Confirmer le nombre de places** : 8 est un bon chiffre (crédible et rare). À valider.
-- [ ] **Produire l'affiche A4** avec le QR code, selon la charte cosmique NEBULA
+- [x] ~~Produire l'affiche A4~~ **prompt écrit** (`PROMPT-AFFICHE-RECRUTEMENT.md`) et **QR réel généré
+      et vérifié** (`assets/QR-devenir-partenaire.png`). Reste : générer l'image, y coller le QR,
+      **le scanner avec un vrai téléphone**, exporter en PDF 300 dpi
 - [ ] **Vérifier que `/devenir` est accessible** et que le formulaire notifie bien l'admin
 - [ ] **Préparer la réponse à « quand serai-je payé ? »** (question n°10 systématique en entretien)
 
