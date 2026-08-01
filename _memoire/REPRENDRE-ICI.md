@@ -1,9 +1,38 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-07-31
+## Point de reprise pour une session terminal · dernière mise à jour 2026-08-01
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
+
+---
+
+## 0. 🚨 URGENT — le bureau des partenaires est HORS LIGNE (constaté le 2026-08-01)
+
+`https://partenaires.nebula-agency.online` renvoie **`404 Application not found`**, et ce 404
+vient de **Railway**, pas du relais Cloudflare : l'origine
+`nebula-affilies-production.up.railway.app` répond la même chose en direct.
+Même panne pour **Vitrina** (`vitrina-production-686b.up.railway.app`).
+Les deux relais `_worker.js` sont sains, ils pointent vers des applications qui n'existent plus.
+
+**Le token de `secrets/railway.env` est refusé (« Unauthorized »)** → rien ne peut être relancé
+en ligne de commande. Il faut un token neuf, ou passer par le dashboard Railway.
+
+Pourquoi c'est prioritaire : c'est l'outil de la vague de recrutement des 8 partenaires de
+Cotonou. Tant qu'il est éteint, aucun partenaire ne peut se connecter ni réclamer sa commission.
+
+**Les liens de back-office**, pour mémoire :
+
+| Back-office | Lien | État |
+|---|---|---|
+| Partenaires — admin Mongazi | `https://partenaires.nebula-agency.online/cockpit-d59fa50d` | ⛔ hors ligne |
+| Partenaires — espace partenaire | `https://partenaires.nebula-agency.online/partenaire` | ⛔ hors ligne |
+| Luxury Club 229 | `https://luxuryclub229.com/admin` | ✅ en ligne |
+| Boussole — cockpit licences | `https://boussole-19d.pages.dev` → `#cockpit-licences` | ✅ en ligne |
+
+**Le reste du parc va bien.** Audit complet du 2026-08-01 : les 12 sites Cloudflare Pages
+répondent 200 et servent exactement la source locale. Détail et méthode dans
+`_memoire/conversations/2026-08-01-deploiement-general-audit-du-parc.md`.
 
 ---
 

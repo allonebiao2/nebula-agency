@@ -32,6 +32,15 @@ _tmp_screenshots/
 # Archives locales (ex. vidage de _partage/) — gros médias, hors GitHub
 _archives/
 
+# _partage/ — médias bruts déjà versionnés ailleurs sous leur forme finale.
+# On garde le fichier en local, on ne le pousse pas deux fois sur GitHub.
+_partage/NEBULA_pub_30s.mp4
+_partage/Lighting BBQ  No Copyright Video and Sound 4K (1).mp3
+_partage/Relaxing Jazz Music  Piano  Classic  Lounge (Short Jazz).mp3
+# Bundle Claude Design de la piste Spider-Verse, ABANDONNÉE le 2026-07-21.
+# Son README dit aux agents « implémente ce design » : ne pas le laisser traîner dans le dépôt.
+_partage/actuellement-je-travails-sur-mon-outil-boussole-regarde-dans/
+
 # Dossiers de déploiement dérivés (générés depuis la source)
 clients/*/_deploy_netlify/
 _dist/
