@@ -8,6 +8,8 @@
 <meta name="theme-color" content="#0B0A0C">
 <meta property="og:type" content="website">
 <meta property="og:title" content="HILLARY M. STYL — Maison de couture">
+<link rel="canonical" href="https://hillary-m-styl.pages.dev/">
+<meta property="og:url" content="https://hillary-m-styl.pages.dev/">
 <meta property="og:description" content="Prêt-à-porter et sur-mesure. Donnez vos mesures, connaissez le jour exact où votre tenue sera prête.">
 <link rel="icon" href="data:image/png;base64,__FAVICON_B64__">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -410,7 +412,7 @@ footer a:hover{color:var(--rose-cl)}
 .prog i:after{content:"";position:absolute;inset:0;background:var(--rose);transform:scaleX(0);
   transform-origin:0 50%;transition:transform .6s var(--e)}
 .prog i.on:after{transform:scaleX(1)}
-.sh-bd{padding:26px 22px 30px}
+.sh-bd{position:relative;z-index:1;padding:26px 22px 30px}
 .sh-bd>*{animation:entre .55s var(--e) both}
 @keyframes entre{from{opacity:0;transform:translateY(16px)}}
 .stitle{font-family:var(--ff-d);font-size:29px;font-weight:400;margin-bottom:8px;line-height:1.08}
@@ -492,7 +494,7 @@ footer a:hover{color:var(--rose-cl)}
   padding-top:15px;font-family:var(--ff-d);font-size:26px;align-items:baseline}
 .recap .tt span:last-child{color:var(--rose)}
 
-.sh-ft{position:sticky;bottom:0;background:var(--craie);border-top:1px solid var(--ligne);padding:15px 22px;
+.sh-ft{position:sticky;bottom:0;z-index:6;background:var(--craie);border-top:1px solid var(--ligne);padding:15px 22px;
   display:flex;gap:11px;padding-bottom:calc(15px + env(safe-area-inset-bottom))}
 .bt{position:relative;overflow:hidden;flex:1;min-height:56px;border:0;cursor:pointer;
   font-family:var(--ff-u);font-weight:700;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
@@ -521,6 +523,73 @@ footer a:hover{color:var(--rose-cl)}
   margin-top:16px;font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.14em;
   text-transform:uppercase;color:var(--gris);text-decoration:none;border-bottom:1px solid var(--ligne)}
 .fin .alt:hover{color:var(--rose);border-color:var(--rose)}
+
+
+/* ==================================================================
+   LE TOUCHER — enfoncement, lueur, et vibration (Android)
+   Une seule règle pour tout ce qui se touche. Les règles d'appui
+   sont EN FIN DE FEUILLE : à spécificité égale, la dernière gagne.
+   ================================================================== */
+[data-tap]{position:relative;overflow:hidden;
+  -webkit-touch-callout:none;user-select:none;
+  transition:transform .22s var(--e-s),box-shadow .3s var(--e),border-color .3s}
+.onde{position:absolute;border-radius:50%;pointer-events:none;z-index:3;
+  background:radial-gradient(circle,rgba(230,0,126,.42),rgba(230,0,126,0) 68%);
+  transform:translate(-50%,-50%) scale(0);animation:onde .62s var(--e) forwards}
+.onde.clair{background:radial-gradient(circle,rgba(255,255,255,.40),rgba(255,255,255,0) 68%)}
+@keyframes onde{to{transform:translate(-50%,-50%) scale(1);opacity:0}}
+
+/* ---------- 02 · LE CATALOGUE · les échantillons qu'on pose ------
+   Les cartes ne « montent » plus : elles se posent sur la table,
+   légèrement de travers, comme des coupons de tissu qu'on aligne.  */
+.piece{transform:translateY(38px) rotate(var(--rot,0deg)) scale(.965);
+  transition:opacity .8s var(--e),transform .8s var(--e);
+  transition-delay:calc(var(--d,0)*.085s)}
+.piece.vu{opacity:1;transform:translateY(0) rotate(0deg) scale(1)}
+/* la lumière qui balaie le tissu — au doigt et au survol seulement,
+   jamais en boucle : une animation infinie sur 12 cartes coûte cher */
+.piece .ph:after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.62) 50%,transparent 62%);
+  transform:translateX(-120%);opacity:0}
+.piece.brille .ph:after{animation:brille .85s var(--e) forwards}
+@keyframes brille{0%{opacity:1;transform:translateX(-120%)}100%{opacity:1;transform:translateX(120%)}}
+/* la craie se retrace quand on touche la carte */
+.piece.brille .patron rect{animation:retrace .9s var(--e)}
+@keyframes retrace{from{stroke-dashoffset:460}to{stroke-dashoffset:0}}
+/* le changement d'onglet : la table se vide avant qu'on repose */
+.grid{transition:opacity .18s ease,transform .18s ease}
+.grid.sort{opacity:0;transform:translateY(-10px)}
+
+/* ---------- LE TUNNEL · une animation par étape ------------------ */
+/* 1 · le carnet de mesures qui s'ouvre */
+#shBd[data-e="1"] .mes .fd{transform-origin:50% 0;
+  animation:carnet .55s var(--e) both}
+@keyframes carnet{from{opacity:0;transform:perspective(700px) rotateX(-42deg)}}
+#shBd[data-e="1"] .taille{animation:etiquette .5s var(--e-s) both;
+  animation-delay:calc(var(--t,0)*.045s)}
+@keyframes etiquette{from{opacity:0;transform:translateY(-16px) rotate(-6deg)}}
+/* 2 · la carte de livraison qui se déplie */
+#shBd[data-e="2"] .opt{transform-origin:0 50%;animation:deplie .6s var(--e) both}
+#shBd[data-e="2"] .opt:nth-child(2){animation-delay:.09s}
+@keyframes deplie{from{opacity:0;transform:perspective(900px) rotateY(-34deg)}}
+/* 3 · le sablier : le choix se remplit de haut en bas */
+#shBd[data-e="3"] .opt{animation:sablier .55s var(--e) both}
+#shBd[data-e="3"] .opt:nth-child(2){animation-delay:.1s}
+@keyframes sablier{from{opacity:0;clip-path:inset(0 0 100% 0)}}
+/* 4 · l'étiquette qu'on coud : les champs entrent en piquant */
+#shBd[data-e="4"] .fd{animation:couds .55s var(--e) both}
+@keyframes couds{from{opacity:0;transform:translateX(-18px)}}
+#shBd[data-e="4"] .recap{animation:couds .6s var(--e) .18s both}
+
+/* ---------- L'APPUI — en dernier, volontairement ---------------- */
+[data-tap]:active{transform:scale(.972)}
+.piece:active{transform:translateY(0) rotate(0deg) scale(.972)}
+.opt:active{transform:translateX(3px) scale(.985)}
+.taille:active{transform:scale(.94)}
+@media (prefers-reduced-motion:reduce){
+  [data-tap]:active,.piece:active,.opt:active,.taille:active{transform:none}
+  .onde{display:none}
+}
 
 /* ---------- ÉCONOMIE SUR TÉLÉPHONE -----------------------------
    Le grain animé et la troisième nappe de lumière coûtent des images
@@ -571,7 +640,7 @@ footer a:hover{color:var(--rose-cl)}
       <a href="#apropos" data-mag>La maison</a>
       <a href="#atelier" data-mag>L'atelier</a>
     </nav>
-    <a class="cta" href="#catalogue" data-mag><span>Commander</span></a>
+    <a class="cta" href="#catalogue" data-mag data-tap><span>Commander</span></a>
   </div>
 </header>
 
@@ -610,12 +679,12 @@ footer a:hover{color:var(--rose-cl)}
       Vous commandez ici, vous donnez vos mesures depuis votre téléphone, et vous connaissez
       <strong style="color:#fff;font-weight:600">le jour exact où votre tenue sera prête</strong>.</p>
     <div class="portes">
-      <button class="porte a" type="button" data-onglet="pap" data-mag>
+      <button class="porte a" type="button" data-onglet="pap" data-mag data-tap>
         <span class="bg"></span>
         <span class="fle"><svg viewBox="0 0 22 10"><path d="M0 5h20M16 1l4 4-4 4"/></svg></span>
         <b>Le prêt-à-porter</b><span>Des pièces déjà créées, à votre taille</span>
       </button>
-      <button class="porte b" type="button" data-onglet="sm" data-mag>
+      <button class="porte b" type="button" data-onglet="sm" data-mag data-tap>
         <span class="bg"></span>
         <span class="fle"><svg viewBox="0 0 22 10"><path d="M0 5h20M16 1l4 4-4 4"/></svg></span>
         <b>Le sur-mesure</b><span>Vos mesures, votre tissu, votre modèle</span>
@@ -683,8 +752,8 @@ footer a:hover{color:var(--rose-cl)}
         Cliquez dessus pour la commander en quatre étapes.</p>
     </div>
     <div class="tabs" role="tablist" aria-label="Type de commande" data-rv style="--d:3">
-      <button class="tab" role="tab" id="tab-pap" aria-selected="true" data-onglet="pap" data-mag>Prêt-à-porter</button>
-      <button class="tab" role="tab" id="tab-sm" aria-selected="false" data-onglet="sm" data-mag>Sur-mesure</button>
+      <button class="tab" role="tab" id="tab-pap" aria-selected="true" data-onglet="pap" data-mag data-tap>Prêt-à-porter</button>
+      <button class="tab" role="tab" id="tab-sm" aria-selected="false" data-onglet="sm" data-mag data-tap>Sur-mesure</button>
     </div>
     <div class="grid" id="grille"></div>
   </div>
@@ -756,7 +825,7 @@ footer a:hover{color:var(--rose-cl)}
           <div><b>Email</b><span id="mail">contact@hillarymstyl.com</span></div></div>
         <div class="info"><svg viewBox="0 0 24 24"><path d="M3 8.6l9-4.6 9 4.6v8.4l-9 4.6-9-4.6z"/></svg>
           <div><b>Retrait à l'atelier</b><span>Gratuit, avec essayage et retouche immédiate</span></div></div>
-        <a class="wa" id="waBas" href="#" data-mag><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2zm5.6 14.2c-.2.7-1.2 1.3-1.9 1.4-.5.1-1.1.2-3.2-.7-2.7-1.1-4.4-3.8-4.5-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9 1-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1.9 2 1.2 2.3 1.4.3.1.4.1.6-.1l.9-1c.2-.2.3-.2.6-.1l2 .9c.3.1.4.2.5.3.1.2.1.9-.1 1.6z"/></svg><span>Écrire sur WhatsApp</span></a>
+        <a class="wa" id="waBas" href="#" data-mag data-tap><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2zm5.6 14.2c-.2.7-1.2 1.3-1.9 1.4-.5.1-1.1.2-3.2-.7-2.7-1.1-4.4-3.8-4.5-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9 1-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1.9 2 1.2 2.3 1.4.3.1.4.1.6-.1l.9-1c.2-.2.3-.2.6-.1l2 .9c.3.1.4.2.5.3.1.2.1.9-.1 1.6z"/></svg><span>Écrire sur WhatsApp</span></a>
       </div>
       <div class="carte-d" data-rv style="--d:1">
         <h3>Le règlement</h3>
@@ -783,7 +852,7 @@ footer a:hover{color:var(--rose-cl)}
     <div class="sh-top">
       <div class="mark" role="img" aria-label=""></div>
       <div class="t"><b id="shTitre">—</b><span id="shSub">—</span></div>
-      <button class="x" id="btX" type="button" aria-label="Fermer"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      <button class="x" id="btX" type="button" aria-label="Fermer" data-tap><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>
     <div class="prog" id="prog"><i></i><i></i><i></i><i></i></div>
     <div class="sh-bd" id="shBd"></div>
@@ -1164,8 +1233,11 @@ function vue1(){
   var jeu = MESURES[etat.typeMesure];
   if(!jeu) return h || '<div class="sdesc">Type de vêtement introuvable.</div>';
 
-  h += '<div class="stitle">Vos mesures — '+esc(jeu.nom)+'</div>'+
-       '<div class="sdesc">'+jeu.champs.length+' mesures, en centimètres. Un ruban de couturière suffit.</div>'+
+  /* le nom du vêtement descend dans la ligne de description : en didone,
+     le tiret cadratin est un cheveu, et « Vos mesures — Robe droite » cassait mal */
+  h += '<div class="stitle">Vos mesures</div>'+
+       '<div class="sdesc"><b style="color:var(--encre)">'+esc(jeu.nom)+'</b> · '+
+       jeu.champs.length+' mesures, en centimètres. Un ruban de couturière suffit.</div>'+
        '<div class="aide"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>'+
        '<p>'+esc(AIDE)+'</p></div>';
   if(jeu.aValider){
@@ -1650,6 +1722,87 @@ document.getElementById("waBas").href =
     rendreGrille = function(cat){ _rg(cat); habilleCartes(); };
   }
   habilleCartes();
+
+
+  /* ================================================================
+     LE TOUCHER — l'onde, l'enfoncement, la vibration
+     Une seule écoute déléguée : les cartes et les options sont
+     recréées à chaque rendu, un écouteur par élément fuirait.
+     ================================================================ */
+  var SEL_TAP = "[data-tap],.piece,.bt,.opt,.taille,.tab,.porte,.x,.wa,.cta,.alt";
+  var ROT = [-1.6, 1.2, -0.9, 1.7, -1.3, 0.8];
+
+  function vibre(ms){
+    /* Android uniquement : iOS ne l'expose pas dans Safari.
+       On ne vibre que sur un CHOIX, jamais au simple défilement. */
+    if(doux) return;
+    try{ if(navigator.vibrate) navigator.vibrate(ms); }catch(e){}
+  }
+
+  function onde(el, x, y){
+    if(doux || !el) return;
+    var r = el.getBoundingClientRect();
+    var d = Math.max(r.width, r.height) * 2.1;
+    var o = document.createElement("span");
+    o.className = "onde" + (el.matches(".bt.p,.bt.w,.porte.a,.wa,.cta,.taille.sel") ? " clair" : "");
+    o.style.width = o.style.height = d + "px";
+    o.style.left = (x - r.left) + "px";
+    o.style.top  = (y - r.top) + "px";
+    el.appendChild(o);
+    setTimeout(function(){ if(o.parentNode) o.parentNode.removeChild(o); }, 700);
+  }
+
+  document.addEventListener("pointerdown", function(e){
+    var el = e.target.closest && e.target.closest(SEL_TAP);
+    if(!el || el.disabled) return;
+    var st = getComputedStyle(el);
+    if(st.position === "static") el.style.position = "relative";
+    if(st.overflow === "visible") el.style.overflow = "hidden";
+    onde(el, e.clientX, e.clientY);
+    /* la carte du catalogue : le tissu brille, la craie se retrace */
+    if(el.classList.contains("piece")){
+      el.classList.remove("brille");
+      void el.offsetWidth;
+      el.classList.add("brille");
+    }
+    if(el.matches(".opt,.taille,.bt.p,.bt.w,.piece,.porte,.tab")) vibre(9);
+  }, {passive:true});
+
+  /* ---- 02 · le catalogue : des échantillons qu'on pose ---- */
+  function poserCartes(){
+    Array.prototype.forEach.call(document.querySelectorAll("#grille .piece"), function(el,i){
+      el.style.setProperty("--rot", ROT[i % ROT.length] + "deg");
+      el.setAttribute("data-tap","");
+    });
+  }
+  /* la table se vide avant qu'on repose : sans ça, changer d'onglet est
+     un remplacement brutal — c'est ce qui faisait « sage » */
+  if(typeof onglet === "function"){
+    var _on = onglet;
+    onglet = function(cat){
+      var g = document.getElementById("grille");
+      if(!g || doux){ _on(cat); poserCartes(); return; }
+      g.classList.add("sort");
+      setTimeout(function(){
+        _on(cat); poserCartes(); g.classList.remove("sort");
+      }, 175);
+    };
+  }
+  poserCartes();
+
+  /* ---- le tunnel : l'étape en cours pilote son animation ---- */
+  if(typeof dessiner === "function"){
+    var _de2 = dessiner;
+    dessiner = function(){
+      _de2();
+      var bd = document.getElementById("shBd");
+      if(!bd || !etat) return;
+      bd.setAttribute("data-e", String(etat.etape));
+      Array.prototype.forEach.call(bd.querySelectorAll(".taille"), function(t,i){
+        t.style.setProperty("--t", i);
+      });
+    };
+  }
 
   /* ---- la modale : le carnet qui s'ouvre, les champs qui se posent ---- */
   if(typeof dessiner === "function"){

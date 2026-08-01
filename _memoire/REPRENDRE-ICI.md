@@ -168,7 +168,7 @@ l'aiguille en guise de curseur. Détail complet au §8 du CONTEXT.md du client.
 ```bash
 cd clients/10-hillary-m-styl
 python3 _build.py     # source -> vitrine.html
-python3 _qc.py        # 64 contrôles, doit être « TOUT EST VERT »
+python3 _qc.py        # 71 contrôles, doit être « TOUT EST VERT »
 ```
 
 ✅ **Le numéro WhatsApp est arrivé le 2026-08-01 : +229 51 37 47 93** → `wa.me/22951374793`,

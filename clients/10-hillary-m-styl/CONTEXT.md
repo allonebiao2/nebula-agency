@@ -25,13 +25,13 @@
 |---|---|
 | **`_vitrine_src.html`** | **La source. C'est celui-ci qu'on édite.** ≈70 Ko, lisible, avec des marqueurs `__LOGO_B64__` et `__FAVICON_B64__` à la place des images |
 | `_build.py` | Injecte les images en base64 et écrit `vitrine.html` |
-| `_qc.py` | La suite de contrôle qualité, **64 contrôles**, à passer avant tout déploiement |
+| `_qc.py` | La suite de contrôle qualité, **71 contrôles**, à passer avant tout déploiement |
 | `vitrine.html` | **Le livrable, généré. Ne jamais l'éditer à la main** : la prochaine construction écraserait la modification |
 
 ```bash
 cd clients/10-hillary-m-styl
 python3 _build.py     # source -> vitrine.html (174 Ko)
-python3 _qc.py        # 64 contrôles, doit afficher « TOUT EST VERT »
+python3 _qc.py        # 71 contrôles, doit afficher « TOUT EST VERT »
 ```
 
 Pourquoi ce détour : le logo pèse 75 Ko une fois en base64. Éditer directement le
@@ -261,7 +261,54 @@ et le héros est **construit pour recevoir une vraie photo** le jour où elle ex
 - **aucune animation infinie sous un `backdrop-filter`** (leçon Boussole) : un contrôle
   automatique le vérifie à chaque passage de QC
 
-## 9. Vérifications passées — `python3 _qc.py`, 64 contrôles verts
+## 8bis. Le toucher et la vie du catalogue (V3.1 — 2026-08-01)
+
+Demandé par Mongazi : de meilleures réactions au toucher, une animation par section
+**et par étape**, le catalogue « manque de vie », tout le reste conservé.
+
+### Le toucher — partout, en une seule écoute déléguée
+| | |
+|---|---|
+| **L'enfoncement** | tout ce qui se touche s'enfonce (`scale(.972)`), avec un ressort |
+| **L'onde** | une lueur magenta naît **au point exact touché** et se dilate. Claire sur les fonds magenta, magenta sur les fonds clairs |
+| **La vibration** | `navigator.vibrate(9)` — **Android uniquement**, iOS ne l'expose pas dans Safari. Seulement sur un **choix** (option, taille, carte, valider), **jamais au défilement** : une vibration à chaque geste fait désinstaller une application |
+
+⚠️ **Une seule écoute `pointerdown` déléguée sur `document`.** Les cartes et les options
+sont recréées à chaque rendu : un écouteur par élément fuirait à chaque changement d'onglet.
+
+### 02 · Le catalogue — les échantillons qu'on pose
+C'était la section la plus importante commercialement et la plus sage. Elle a maintenant :
+- **les cartes se posent de travers** (±1,6°) et se redressent, comme des coupons de tissu
+  qu'on aligne sur la table — 6 inclinaisons différentes en rotation
+- **au doigt : la lumière balaie le tissu** et **la craie se retrace** autour de la pièce
+- **au changement d'onglet, la table se vide** avant qu'on repose. Avant, c'était un
+  remplacement instantané — c'est précisément ce qui faisait « sage »
+
+⚠️ Le balayage lumineux **ne tourne pas en boucle** : il se déclenche au toucher. Une
+animation infinie sur douze cartes coûte cher sur un téléphone d'entrée de gamme.
+
+### Le tunnel — une animation par étape
+| Étape | La signature |
+|---|---|
+| 1 · mesures | **le carnet qui s'ouvre** — les champs pivotent depuis leur bord haut |
+| 1 · tailles | **les étiquettes qu'on pose**, en cascade |
+| 2 · livraison | **la carte qui se déplie**, depuis le bord gauche |
+| 3 · délai | **le sablier** — le choix se remplit de haut en bas |
+| 4 · coordonnées | **l'étiquette qu'on coud** — les champs entrent en piquant |
+
+### Trois pièges rencontrés, et leur correction
+1. **Le pivot 3D des champs passait au-dessus du pied de la modale** et bloquait le bouton
+   « Continuer ». Un `transform` 3D crée son propre plan d'empilement : `.sh-ft` a reçu
+   `z-index:6`, `.sh-bd` `z-index:1`.
+2. **Le QC mesurait pendant les animations** : un champ en cours de pivot fait 39 px de haut
+   au lieu de 52. On attend 900 ms avant de mesurer les cibles tactiles.
+3. **`wait_until="networkidle"` ne se stabilise jamais** quand la feuille Google Fonts pend —
+   et une feuille externe qui pend bloque `DOMContentLoaded`. Le QC **coupe les polices
+   externes** (`ctx.route('**fonts.g*/**', abort)`) : il teste la page, pas le CDN.
+
+---
+
+## 9. Vérifications passées — `python3 _qc.py`, 71 contrôles verts
 
 - **Aucun débordement horizontal** sur 390 px, 768 px et 1440 px, page et modale ouverte
 - **Toutes les cibles tactiles ≥ 44 px** (y compris le logo de la barre et les liens du pied)

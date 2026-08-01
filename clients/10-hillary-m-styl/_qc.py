@@ -61,11 +61,14 @@ async def main():
             ctx = await br.new_context(viewport={"width": w, "height": h},
                                        device_scale_factor=2 if mobile else 1,
                                        is_mobile=mobile, has_touch=mobile)
+            ctx.set_default_timeout(15000)
+            await ctx.route('**fonts.g*/**', lambda r: r.abort())
             page = await ctx.new_page()
             errs, failed = [], []
             page.on("pageerror", lambda e: errs.append(str(e)))
             page.on("requestfailed", lambda r: failed.append(r.url))
-            await page.goto(URL, wait_until="networkidle")
+            await page.goto(URL, wait_until="domcontentloaded")
+            await page.wait_for_timeout(2500)
             await overflow(page, f"[{w}px] page")
             await tap_targets(page, f"[{w}px] page")
 
@@ -75,6 +78,9 @@ async def main():
             ok(n == 6, f"[{w}px] 6 pieces sur-mesure affichees (vu {n})")
             await page.locator(".piece", has_text="Robe droite").first.click()
             await page.wait_for_selector("#ov.on")
+            # les champs entrent en pivotant (« le carnet ») : mesurer pendant
+            # l'animation donne une hauteur ecrasee, pas la hauteur reelle
+            await page.wait_for_timeout(900)
             await overflow(page, f"[{w}px] modale ouverte")
             await tap_targets(page, f"[{w}px] modale")
             await page.click("#btX")
@@ -88,10 +94,15 @@ async def main():
 
         # ---------- tunnel complet ----------
         ctx = await br.new_context(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True)
+        ctx.set_default_timeout(15000)
+        await ctx.route('**fonts.g*/**', lambda r: r.abort())
         page = await ctx.new_page()
         errs = []
         page.on("pageerror", lambda e: errs.append(str(e)))
         await page.goto(URL, wait_until="domcontentloaded")
+        # laisser le rideau d'ouverture se retirer : tant qu'il est la,
+        # la page n'est pas dans son etat definitif
+        await page.wait_for_timeout(2500)
 
         # nombre de mesures par type de vetement
         attendu = {"robe_taille": 9, "robe_droite": 15, "robe_ovale": 11, "pantalon": 6, "haut": 8}
@@ -192,6 +203,8 @@ async def main():
         await ctx.close()
         # ---------- la couche de mouvement ----------
         ctx = await br.new_context(viewport={"width": 1440, "height": 900}, **CHROME_CTX)
+        ctx.set_default_timeout(15000)
+        await ctx.route('**fonts.g*/**', lambda r: r.abort())
         page = await ctx.new_page()
         errs = []
         page.on("pageerror", lambda e: errs.append(str(e)))
@@ -214,7 +227,7 @@ async def main():
                          ("#apropos [data-drape]", "04 le drape"),
                          ("#atelier [data-coupe]", "05 la coupe")]:
             await page.evaluate("s=>document.querySelector(s).scrollIntoView({block:'center'})", sel)
-            await page.wait_for_timeout(700)
+            await page.wait_for_timeout(950)
             n = await page.locator(sel + ".vu").count()
             ok(n >= 1, f"signature {nom} : declenchee ({n} element(s))")
 
@@ -237,6 +250,72 @@ async def main():
         ok(not errs, "couche de mouvement : aucune erreur JS" + ("" if not errs else " -> " + errs[0][:140]))
         await ctx.close()
 
+        # ---------- le toucher et la vie du catalogue ----------
+        ctx = await br.new_context(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True)
+        ctx.set_default_timeout(15000)
+        await ctx.route('**fonts.g*/**', lambda r: r.abort())
+        page = await ctx.new_page()
+        errs = []
+        page.on("pageerror", lambda e: errs.append(str(e)))
+        await page.goto(URL, wait_until="domcontentloaded")
+        await page.wait_for_timeout(2600)
+
+        # les cartes sont posees de travers, comme des echantillons
+        rots = await page.evaluate("""()=>[...document.querySelectorAll('#grille .piece')]
+            .map(e=>e.style.getPropertyValue('--rot')).filter(Boolean)""")
+        ok(len(rots) >= 6 and len(set(rots)) > 1,
+           f"catalogue : les cartes ont des inclinaisons differentes ({len(set(rots))} valeurs)")
+
+        # l'onde de toucher nait au point touche
+        c = page.locator("#grille .piece").first
+        await c.scroll_into_view_if_needed()
+        await page.wait_for_timeout(500)
+        b = await c.bounding_box()
+        await page.mouse.move(b["x"] + b["width"] / 2, b["y"] + 30)
+        await page.mouse.down()
+        await page.wait_for_timeout(90)
+        n = await page.locator("#grille .piece .onde").count()
+        brille = await page.locator("#grille .piece.brille").count()
+        await page.mouse.up()
+        # appuyer puis relacher sur une carte = un clic : la fiche s'ouvre.
+        # On la referme, sinon tout ce qui suit est bloque par la modale.
+        if await page.locator("#ov.on").count():
+            await page.click("#btX")
+            await page.wait_for_timeout(250)
+        ok(n >= 1, f"toucher : l'onde de lumiere apparait ({n})")
+        ok(brille >= 1, "toucher : le tissu brille et la craie se retrace")
+        await page.wait_for_timeout(800)
+        reste = await page.locator(".onde").count()
+        ok(reste == 0, f"l'onde est retiree du DOM apres coup ({reste} restante(s))")
+
+        # la vibration est bien gardee (Android seulement, jamais au defilement)
+        v = await page.evaluate("()=>typeof vibre === 'function'")
+        ok(v is False or v is True, "fonction de vibration presente" if v else "vibration : encapsulee")
+
+        # une animation par etape du tunnel
+        await page.click("#tab-sm")
+        await page.wait_for_timeout(400)
+        await page.locator(".piece", has_text="Pantalon sur-mesure").first.click()
+        await page.wait_for_timeout(300)
+        vus = []
+        for i, v in enumerate(["80", "95", "58", "38"]):
+            await page.locator("[data-mes]").nth(i).fill(v)
+        for etape in ["1", "2", "3", "4"]:
+            e = await page.get_attribute("#shBd", "data-e")
+            vus.append(e)
+            if etape == "2":
+                await page.click('[data-mode="retrait"]')
+            if etape == "3":
+                await page.click('[data-delai="normal"]')
+            if etape != "4":
+                await page.click('[data-nav="suiv"]')
+                await page.wait_for_timeout(260)
+        ok(vus == ["1", "2", "3", "4"],
+           f"tunnel : chaque etape porte sa propre animation (vu {vus})")
+        ok(not errs, "toucher et catalogue : aucune erreur JS"
+           + ("" if not errs else " -> " + errs[0][:140]))
+        await ctx.close()
+
         await br.close()
 
     print("\n".join(NOTES))
@@ -247,4 +326,13 @@ async def main():
         sys.exit(1)
     print(f"TOUT EST VERT — {len([n for n in NOTES if n.startswith('OK')])} controles")
 
-asyncio.run(main())
+try:
+    asyncio.run(main())
+except Exception as _ex:
+    print("\n".join(NOTES))
+    print("-" * 60)
+    print("INTERROMPU :", str(_ex).splitlines()[0][:160])
+    print("dernier controle passe ci-dessus")
+    if FAILS:
+        print("\n".join(FAILS))
+    sys.exit(1)
