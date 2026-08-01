@@ -58,6 +58,14 @@ massif noble, faits main. Le site a été **entièrement reconstruit** autour de
 ## Déploiement
 - ✅ **LIVE : https://hh-design.pages.dev** (Cloudflare Pages, projet `hh-design`)
 - Déploiement depuis un dossier propre (index.html + assets), sans exposer CONTEXT/scripts.
+- **Procédure exacte (appliquée le 2026-08-01)** — un `pages deploy .` poussait tout le dossier,
+  `CONTEXT.md` compris (nos notes internes se retrouvaient sur le web). Toujours passer par `_dist` :
+  ```bash
+  rm -rf _dist && mkdir _dist
+  cp index.html affiche.html _dist/ && cp -r assets _dist/assets      # = 26 fichiers, rien d'autre
+  npx wrangler@3 pages deploy _dist --project-name hh-design --branch main
+  ```
+  Contrôle après coup : `/CONTEXT.md` ne doit plus renvoyer le markdown.
 - Affiche A4 + 2 QR (site + WhatsApp) : `assets/docs/Affiche_HH_Design_A4.pdf` (crème/bois/or, HH mono).
 - QR : `assets/images/qr/qr-site.png` (site) + `qr-wa.png` (WhatsApp). Ancien `qr-maps.png` supprimé.
 

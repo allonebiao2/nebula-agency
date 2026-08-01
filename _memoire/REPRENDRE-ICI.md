@@ -7,6 +7,35 @@
 
 ---
 
+## 0. 🚨 URGENT — le bureau des partenaires est HORS LIGNE (constaté le 2026-08-01)
+
+`https://partenaires.nebula-agency.online` renvoie **`404 Application not found`**, et ce 404
+vient de **Railway**, pas du relais Cloudflare : l'origine
+`nebula-affilies-production.up.railway.app` répond la même chose en direct.
+Même panne pour **Vitrina** (`vitrina-production-686b.up.railway.app`).
+Les deux relais `_worker.js` sont sains, ils pointent vers des applications qui n'existent plus.
+
+**Le token de `secrets/railway.env` est refusé (« Unauthorized »)** → rien ne peut être relancé
+en ligne de commande. Il faut un token neuf, ou passer par le dashboard Railway.
+
+Pourquoi c'est prioritaire : c'est l'outil de la vague de recrutement des 8 partenaires de
+Cotonou. Tant qu'il est éteint, aucun partenaire ne peut se connecter ni réclamer sa commission.
+
+**Les liens de back-office**, pour mémoire :
+
+| Back-office | Lien | État |
+|---|---|---|
+| Partenaires — admin Mongazi | `https://partenaires.nebula-agency.online/cockpit-d59fa50d` | ⛔ hors ligne |
+| Partenaires — espace partenaire | `https://partenaires.nebula-agency.online/partenaire` | ⛔ hors ligne |
+| Luxury Club 229 | `https://luxuryclub229.com/admin` | ✅ en ligne |
+| Boussole — cockpit licences | `https://boussole-19d.pages.dev` → `#cockpit-licences` | ✅ en ligne |
+
+**Le reste du parc va bien.** Audit complet du 2026-08-01 : les 12 sites Cloudflare Pages
+répondent 200 et servent exactement la source locale. Détail et méthode dans
+`_memoire/conversations/2026-08-01-deploiement-general-audit-du-parc.md`.
+
+---
+
 ## 1. Le chantier en cours : la force de vente NEBULA
 
 **Objectif de Mongazi :** il se juge « piètre vendeur » et veut recruter des partenaires
@@ -97,6 +126,19 @@ prompt-maître reste générique.
 
 ---
 
+## 3bis. Client 10 · HILLARY M. STYL — ⚠️ EN LIGNE, MAIS EN ANCIENNE VERSION
+
+**https://hillary-m-styl.pages.dev est en ligne depuis le 2026-08-01 19h27** (autre session,
+projet Cloudflare `hillary-m-styl`), **avec la V2 — sans la direction artistique « LE FIL ».**
+La V3 de ce dépôt doit la remplacer : `python3 _build.py && python3 _qc.py`, puis
+`wrangler pages deploy _dist --project-name hillary-m-styl`.
+
+Les apports de l'autre session sont **conservés** dans la source V3 : vrai numéro WhatsApp,
+« retrait sur rendez-vous · le point de retrait vous est donné sur WhatsApp », carte
+« Confection » au lieu d'« Horaires », valeurs en dur dans le HTML. ⚠️ **`_outils/_apply_infos.py`
+est OBSOLÈTE** (il patchait le livrable, ce qui écraserait la V3) et **`og:url`/`canonical`
+restent à reposer dans `_vitrine_src.html`**. Détail au §6ter de son CONTEXT.md.
+
 ## 3bis. Client 10 · HILLARY M. STYL (v2 le 2026-07-31, **v3 « LE FIL » le 2026-08-01**)
 
 Vitrine couture avec **moteur de commande**. La v2 a refait le cœur de l'outil :
@@ -156,6 +198,17 @@ contrôles verts).
 
 Branché dans `SKILL.md` (nebula-site), `PROCEDURE.md` (PHASE 1 et 6), `CONVENTIONS.md`,
 `CLAUDE.md`. Gabarits `_build.py` / `_qc.py` dans `_memoire/procedure-vitrine/templates/`.
+✅ **EN LIGNE depuis le 2026-08-01 : https://hillary-m-styl.pages.dev**
+Mongazi a donné le vrai numéro (**+229 51 37 47 93**) : il est posé, les commandes arrivent.
+Plus aucun « à confirmer » sur la page publique. Affiche A4 + 2 QR (site et WhatsApp
+pré-rempli) dans `assets/docs/`, les deux QR relus et validés par décodage.
+
+⚠️ **Ce qui reste à obtenir d'Hillary — et pourquoi ça coûte de l'argent :**
+les **frais d'expédition** par pays sont encore des exemples (un tarif faux se paie à
+chaque commande), ainsi que les **délais**, les **pièces et leurs prix**, et **l'adresse
+de l'atelier**. **Aucune photo n'a été fournie** : les cartes affichent un visuel de
+substitution. Conseil photo à transmettre : dehors le matin ou en fin d'après-midi, à
+l'ombre, fond uni, format portrait.
 
 ## 4. Ce qui tourne déjà en production
 

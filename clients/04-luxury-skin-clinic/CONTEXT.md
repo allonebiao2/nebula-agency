@@ -90,6 +90,10 @@ INA Luxury (**600×800, 3:4, fond blanc, JPEG q78**).
 
 - **Budget** : 100 000 FCFA setup + 10 000 FCFA/mois.
 - **Hébergement** : **Cloudflare Pages** (projet `luxury-club-229` → `luxury-club-229.pages.dev`) · **domaine LIVE `https://luxuryclub229.com`** (racine + `www`, SSL auto). Migré depuis Netlify le 2026-07-12 (ancien `luxuryskinclinic.netlify.app` à débrancher). Domaine acheté chez Hostinger → **nameservers basculés sur Cloudflare** (`paul`/`rosemary.ns.cloudflare.com`) → DNS = 2 CNAME proxifiés `@`+`www` → `luxury-club-229.pages.dev`. Déploiement : `wrangler pages deploy . --project-name luxury-club-229`.
+  ⚠️ **Ce projet se déploie avec `.` (tout le dossier) : un déploiement Pages est un instantané
+  complet, donc tout fichier manquant sur le disque disparaît aussi du site.** Vérifier
+  `git status` avant. Le 2026-08-01, 7 fichiers effacés du disque (affiche A4, carte de visite,
+  QR du hub) ont dû être récupérés par `git checkout -- assets/docs/` juste avant le déploiement.
 - **Technique** : HTML pur, CSS inline, JS vanilla, zéro framework, zéro CDN externe.
 - **Images** : fichiers JPG/PNG externes dans `assets/images/` (lazy-loadés
   sur les templates produits) — **plus de base64 dans les pages** depuis le

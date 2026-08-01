@@ -133,7 +133,7 @@ validation, et **si la charge du moment ne le permet pas, le supplément n'est p
 **Rien de tout cela n'a été inventé : les valeurs en place sont des exemples clairement
 marqués dans `_vitrine_src.html`, en haut du `<script>`, dans un bloc « ZONE À COMPLÉTER ».**
 
-| # | Information | Pourquoi c'est bloquant |
+| # | Information | Pourquoi ça compte |
 |---|---|---|
 | 1 | ~~Numéro WhatsApp~~ ✅ **FOURNI le 2026-08-01 : +229 51 37 47 93** → `WHATSAPP = "22951374793"`. ⚠️ **Reste à tester en envoyant un vrai message sur le lien** avant diffusion (voir §6bis) | — |
 | 2 | **Email de repli** (`EMAIL`) | Le client sans WhatsApp passe par là. Adresse d'exemple pour l'instant |
@@ -164,6 +164,48 @@ relancer `python3 _build.py`.
 **Conseil photo à transmettre à la cliente :** dehors le matin ou en fin d'après-midi, à
 l'ombre, sur un fond uni, la pièce portée ou sur mannequin. Format portrait (les cartes
 sont en 3:4). C'est ce qui fera la différence entre un catalogue correct et un beau catalogue.
+
+---
+
+## 6ter. 🚨 EN LIGNE — et c'est l'ANCIENNE version
+
+**✅ https://hillary-m-styl.pages.dev** — Cloudflare Pages, projet `hillary-m-styl`,
+déployé le **2026-08-01 à 19h27 depuis une autre session**, dès que le numéro WhatsApp
+a été fourni.
+
+⚠️ **Ce qui est en ligne, c'est la V2 : le moteur de commande, sans la direction
+artistique « LE FIL ».** Pas de Bodoni Moda, pas de rideau, pas de croquis, aucune des
+animations signatures. **La V3 de ce dépôt doit la remplacer.**
+
+### Ce que l'autre session a apporté, et qui est conservé ici
+
+| Apport | Où il vit maintenant |
+|---|---|
+| Le vrai numéro WhatsApp `22951374793` | dans `_vitrine_src.html` |
+| « Retrait sur rendez-vous · le point de retrait vous est donné sur WhatsApp » | idem — **remplace « adresse à confirmer »** |
+| La carte « Horaires » devenue **« Confection »** avec les délais | idem |
+| Ces valeurs **écrites en dur dans le HTML**, pas seulement injectées par le JS | idem — sinon le visiteur voit « — » le temps du script |
+| Affiche A4 + 2 QR (site et WhatsApp pré-rempli) | `assets/docs/` — **toujours valables**, la V3 ne change pas l'adresse |
+| `og:url` + `canonical` | ⚠️ **à reposer dans la V3** (voir ci-dessous) |
+
+### ⚠️ Deux pièges pour la prochaine session
+
+1. **`_outils/_apply_infos.py` est OBSOLÈTE.** Il patchait `vitrine.html` directement, ce qui
+   est incompatible avec la chaîne `_vitrine_src.html → _build.py → vitrine.html`. Les vraies
+   valeurs sont désormais **dans la source**. Ne pas le relancer : il écraserait la V3.
+2. **`og:url` et `<link rel="canonical">` ne sont pas encore dans la V3.** À ajouter dans
+   `_vitrine_src.html` avant de déployer — le site se partage surtout sur WhatsApp.
+
+### Le redéploiement, quand la V3 sera validée
+
+```bash
+cd clients/10-hillary-m-styl
+python3 _build.py && python3 _qc.py          # doit être « TOUT EST VERT »
+mkdir -p _dist && cp vitrine.html _dist/index.html
+npx -y wrangler@3 pages deploy _dist --project-name hillary-m-styl --branch main
+```
+Identifiants dans `secrets/cloudflare.env`. Contrôle : la page doit afficher Bodoni Moda
+et le rideau d'ouverture.
 
 ---
 
