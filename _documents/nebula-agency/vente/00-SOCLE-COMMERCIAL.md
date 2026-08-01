@@ -289,11 +289,20 @@ Seul le **recrutement** de la vague 1 est limité à Cotonou.
 
 ### 5.7 Certification : ce qu'un partenaire a le droit de vendre
 
-| Service | Condition |
-|---|---|
-| **Catalogue** et **QR Google Review** | Dès le jour 1, guide lu et quiz validé |
-| **Vitrine** | Après sa **1ère vente livrée** |
-| **Outil métier** | Après **3 ventes**, et **en binôme avec Mongazi sur ses 3 premiers dossiers** |
+> **Modifié le 2026-08-01 — les guides et l'autorisation de vendre sont deux choses.**
+> **Les cinq guides sont remis dès l'entrée**, à tout le monde. Un partenaire qui
+> comprend l'escalier en entier vend mieux le premier barreau : il sait où il emmène
+> son client. Ce qui reste échelonné, c'est le **droit de conclure seul**.
+
+| Service | Guide remis | Droit de conclure seul |
+|---|---|---|
+| **Catalogue** et **QR Google Review** | dès l'entrée | Dès le jour 1, guide lu et quiz validé |
+| **Vitrine** | dès l'entrée | Après sa **1ère vente livrée** |
+| **Outil métier** | dès l'entrée | Après **3 ventes**, et **en binôme avec Mongazi sur ses 3 premiers dossiers** |
+
+**Avant d'y avoir droit, un partenaire n'est pas bloqué : il passe la main.** Il détecte
+le besoin, il obtient le rendez-vous, et Mongazi conclut avec lui. **Le partenaire garde
+100 % de sa commission au taux plein** — l'apport vaut la vente.
 
 Le binôme ne coûte rien : **le partenaire garde 100 % de sa commission au taux plein.**
 

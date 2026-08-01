@@ -11,15 +11,21 @@
 **On n'envoie pas les neuf PDF dans le groupe.** Trois raisons : deux documents sont
 internes, trois se méritent, et un partenaire noyé sous 9 fichiers n'en lit aucun.
 
-### ✅ À envoyer maintenant, dans le groupe
+### ✅ À envoyer maintenant, dans le groupe — **les 5 guides**
 
-| Document | Pourquoi maintenant |
+| Document | Pourquoi |
 |---|---|
 | **`02-MANUEL-DU-PARTENAIRE.pdf`** | Le socle du métier. À lire avant tout le reste |
-| **`03-GUIDE-CATALOGUE.pdf`** | La seule offre qu'ils ont le droit de vendre dès le jour 1 |
-| **`06-ARSENAL-SCRIPTS.pdf`** | Les messages prêts à copier, du premier contact à la recommandation |
+| **`03-GUIDE-CATALOGUE.pdf`** | 50 000 F — le barreau d'entrée, vendable dès le jour 1 |
+| **`04-GUIDE-VITRINE.pdf`** | 150 000 F — le deuxième barreau |
+| **`05-GUIDE-OUTIL-METIER.pdf`** | 55 000 à 500 000 F — le troisième, celui qui change une vie de vendeur |
+| **`06-ARSENAL-SCRIPTS.pdf`** | Tous les messages prêts à copier |
 
-Trois fichiers. Pas quatre.
+> **Décision du 2026-08-01 : les guides et l'autorisation de vendre sont deux choses.**
+> Un partenaire qui comprend l'escalier en entier vend mieux le premier barreau, parce
+> qu'il sait où il emmène son client. Ce qui reste échelonné, c'est le **droit de conclure
+> seul** — et avant d'y avoir droit, le partenaire n'est pas bloqué : **il passe la main
+> et garde 100 % de sa commission**.
 
 ### ⛔ À ne PAS envoyer dans le groupe
 
@@ -27,43 +33,56 @@ Trois fichiers. Pas quatre.
 |---|---|
 | **`00-SOCLE-COMMERCIAL.pdf`** | **Interne.** Vos marges, vos règles de gestion, vos 32 décisions. Un partenaire qui lit ça connaît votre plancher de négociation |
 | **`01-AVIS-DE-RECRUTEMENT.pdf`** | **Interne.** Il contient la **grille de notation /20** et le **script d'entretien**. Un candidat qui le lit connaît les réponses attendues |
-| **`04-GUIDE-VITRINE.pdf`** | Se débloque **après la 1ʳᵉ vente livrée** (socle §5.7) |
-| **`05-GUIDE-OUTIL-METIER.pdf`** | Après **3 ventes** et **binôme sur les 3 premiers dossiers** |
-| **`08-DIAGNOSTIC-DIGITAL.pdf`** | Partenaires certifiés uniquement |
-| **`09-CONTRAT-PARTENAIRE.pdf`** | **Jamais dans un groupe.** Un contrat se remet en tête-à-tête. ⚠️ **Et pas encore : le numéro IFU est toujours `[à compléter]`** |
-
-> **La rétention n'est pas de la méfiance, c'est de la méthode.** Donner le Guide Vitrine à
-> quelqu'un qui n'a pas encore vendu un catalogue, c'est l'envoyer à 150 000 F sur un
-> commerçant méfiant. Il perd le client, et les trois ventes qui auraient suivi.
-
----
+| **`08-DIAGNOSTIC-DIGITAL.pdf`** | La méthode de consultation. Elle s'apprend **en binôme**, pas en PDF : 40 questions posées de travers chez un prospect font plus de mal que pas de questions du tout. À remettre au moment du premier dossier en binôme |
+| **`09-CONTRAT-PARTENAIRE.pdf`** | **Jamais dans un groupe.** Un contrat se remet en tête-à-tête, un par un |
 
 ## 2. Les messages, prêts à copier
 
-### Message 1 · l'annonce (à envoyer avec les 3 PDF)
+### Message 1 · l'annonce (à envoyer avec les 5 PDF)
 
 ```
 Bonsoir à tous 👋
 
 J'ai passé la semaine à écrire ce qui vous manquait : la méthode complète
-pour vendre nos services, écrite noir sur blanc. Plus besoin de deviner.
+pour vendre nos trois services, écrite noir sur blanc. Plus besoin de deviner.
 
-Trois documents, à lire dans cet ordre :
+Cinq documents. Lisez-les dans cet ordre 👇
 
 1️⃣ MANUEL DU PARTENAIRE
-Le métier. Comment trouver des prospects, la méthode de vente en 7 temps,
-comment relancer sans harceler, les 5 phrases qui tuent une vente.
-👉 À lire en premier, même si vous avez déjà vendu.
+Le métier. Trouver des prospects, la méthode de vente en 7 temps,
+relancer sans harceler, les 5 phrases qui tuent une vente.
+👉 Celui-là d'abord, même si vous avez déjà vendu.
 
-2️⃣ GUIDE CATALOGUE
-Notre offre d'entrée à 50 000 F. Tout est dedans : à qui la vendre,
-quoi dire, les objections et quoi répondre. Vous pouvez la vendre dès demain.
+2️⃣ GUIDE CATALOGUE — 50 000 F
+Notre porte d'entrée. À qui la vendre, quoi dire, les objections
+et quoi répondre. Vous pouvez la vendre dès demain.
 
-3️⃣ ARSENAL DES SCRIPTS
-Tous les messages prêts à copier-coller. Premier contact, relance,
-recommandation. Vous n'avez plus à chercher vos mots.
+3️⃣ GUIDE VITRINE — 150 000 F
+Le deuxième barreau. Vous le lisez maintenant pour savoir où vous
+emmenez votre client.
 
-Lisez le manuel ce week-end. Lundi on en parle.
+4️⃣ GUIDE OUTIL MÉTIER — 55 000 à 500 000 F
+Le troisième. C'est celui qui fait les gros mois.
+
+5️⃣ ARSENAL DES SCRIPTS
+Tous les messages prêts à copier-coller.
+
+⚠️ Un point important, lisez-le bien.
+Vous recevez les TROIS guides tout de suite, exprès : on vend mieux
+le premier service quand on sait où on emmène le client.
+
+Mais on ne saute pas les marches. On entre TOUJOURS par le catalogue
+à 50 000 F. Un commerçant méfiant dit oui à 50 000, pas à 150 000.
+Attaquez à 150 000 et vous perdez le client — et les trois ventes
+qui allaient suivre.
+
+Pour la Vitrine et l'Outil métier, tant que vous n'y avez pas droit,
+vous ne perdez rien : vous détectez le besoin, vous m'obtenez le
+rendez-vous, je conclus avec vous, et VOUS TOUCHEZ 100 % DE VOTRE
+COMMISSION au taux plein. L'apport vaut la vente.
+
+Lisez le manuel et le guide catalogue ce week-end.
+Lundi on en parle.
 ```
 
 ### Message 2 · le changement de prix (à envoyer SÉPARÉMENT)
@@ -126,7 +145,7 @@ Dites-moi si [jour] [heure] vous convient.
 > ni offre de lancement, **le point hebdomadaire est le seul mécanisme qui retient un
 > débutant** pendant les semaines où il n'a encore rien vendu.
 
-### Message 5 · individuel, quand l'IFU sera complété
+### Message 5 · individuel (le contrat est signable dès maintenant)
 
 ```
 Salut [prénom],
@@ -144,11 +163,11 @@ Rien à payer, jamais.
 
 | Quand | Quoi |
 |---|---|
-| **Ce soir** | Message 1 + les 3 PDF |
+| **Ce soir** | Message 1 + les 5 PDF |
 | **Ce soir, 10 min après** | Message 2 (le prix) — séparé, pour qu'il soit lu |
 | **Demain** | Message 3 + l'affiche de recrutement |
 | **Demain** | Message 4 (le point hebdo), avec un jour et une heure précis |
-| **Quand l'IFU est là** | Message 5, en privé, un par un |
+| **Dès que vous voulez** | Message 5 + le contrat, en privé, un par un |
 
 **Ne pas tout envoyer d'un coup.** Cinq messages et trois PDF dans la même minute, personne
 n'ouvre rien.
@@ -178,7 +197,7 @@ qu'il restait en fait 5 places sur 8 perd confiance avant même l'entretien.
 
 | # | Point | Conséquence tant que ce n'est pas fait |
 |---|---|---|
-| 1 | **Le numéro IFU** dans `09-CONTRAT-PARTENAIRE.md` | Aucun contrat ni charte ne peut partir |
+| 1 | ~~Le numéro IFU~~ **RÉGLÉ** : le contrat porte « IFU et RCCM en cours d'immatriculation ». Il est **signable en l'état**, les numéros suivront par avenant | — |
 | 2 | **Téléverser les PDF dans l'espace partenaire** | Le groupe WhatsApp perd les fichiers au bout de quelques jours ; l'espace, non |
 | 3 | **Vérifier que `/devenir` notifie l'admin** | Les candidatures de l'affiche tombent dans le vide |
 | 4 | **Le jour et l'heure du point hebdo** | Le message 4 ne peut pas partir sans |

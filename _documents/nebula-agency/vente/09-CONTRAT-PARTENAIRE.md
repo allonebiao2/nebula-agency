@@ -1,14 +1,16 @@
 # CONTRAT D'APPORTEUR D'AFFAIRES INDÉPENDANT
 ### NEBULA Agency · Programme Partenaires
 
-> **À compléter avant diffusion :** le numéro IFU de NEBULA Agency, et la date.
-> Les champs entre crochets se remplissent à la main ou avant impression.
+> **À compléter avant signature :** la date, et les champs du Partenaire entre crochets.
+> L'IFU et le RCCM sont mentionnés **en cours d'immatriculation** : c'est exact, et le
+> contrat est **signable en l'état**. Les numéros seront communiqués au Partenaire dès
+> leur obtention ; un avenant d'une ligne suffira à les porter au dossier.
 >
 > **Note.** Ce contrat est rédigé en français clair et couvre l'essentiel de la relation.
 > Pour la vague 1 (8 partenaires) il fait le travail. Au-delà d'une trentaine de partenaires,
 > faites-le relire par un juriste béninois.
 >
-> Version 1.0 · 2026-07-30
+> Version 1.1 · 2026-08-01
 
 ---
 
@@ -18,7 +20,8 @@
 
 **Monsieur Mongazi BIAO**, exerçant sous l'enseigne **NEBULA Agency**,
 domicilié à Cotonou, République du Bénin,
-IFU n° **[à compléter]** · RCCM **en cours d'immatriculation**,
+**IFU et RCCM en cours d'immatriculation** — les numéros seront communiqués au Partenaire
+dès leur obtention,
 téléphone **+229 96 74 07 32**, site **www.nebula-agency.online**,
 
 ci-après dénommé **« NEBULA »**,

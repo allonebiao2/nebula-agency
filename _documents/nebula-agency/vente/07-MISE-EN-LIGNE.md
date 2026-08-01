@@ -19,8 +19,8 @@ la mise à jour instantanément, et ils peuvent lire ou télécharger depuis leu
 |---|---|---|
 | Manuel du Partenaire | **Formation** | Tous |
 | Guide Catalogue | **Produits** | Tous |
-| Guide Vitrine | **Produits** | Tous (après 1ère vente livrée) |
-| Guide Outil métier | **Produits** | **Partenaires certifiés uniquement** |
+| Guide Vitrine | **Produits** | **Tous, dès l'entrée** (conclure seul : après 1ʳᵉ vente livrée) |
+| Guide Outil métier | **Produits** | **Tous, dès l'entrée** (conclure seul : 3 ventes + binôme) |
 | Arsenal des scripts | **Vente** | Tous |
 | Simulateur de commissions | **Vente** (en lien) | Tous |
 | Diagnostic Digital (méthode) | **Formation** | **Partenaires certifiés uniquement** |
@@ -67,8 +67,8 @@ document du tout.
 |---|---|
 | Manuel du Partenaire | Le socle du métier. À lire avant tout le reste. |
 | Guide Catalogue | Ton arme d'entrée à 50 000 F. Tu peux la vendre dès aujourd'hui. |
-| Guide Vitrine | 150 000 F. Après ta première vente livrée. |
-| Guide Outil métier | Réservé : 3 ventes et binôme obligatoire sur tes 3 premiers dossiers. |
+| Guide Vitrine | 150 000 F. Lis-le maintenant. Tu la vends seul après ta première vente livrée. |
+| Guide Outil métier | 55 000 à 500 000 F. Lis-le maintenant. Tu conclus seul après 3 ventes, en binôme avant. |
 | Arsenal des scripts | Tous les messages prêts à copier, du premier contact à la recommandation. |
 | Diagnostic Digital | La consultation qui ouvre les portes. 40 questions et la grille des automatisations. |
 

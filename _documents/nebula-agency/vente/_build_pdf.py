@@ -20,6 +20,10 @@ CHROME = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
 
 # Documents destinés aux partenaires (le socle 00 et l'avis 01 restent internes,
 # mais on les génère aussi : ils servent à Mongazi).
+# La date de couverture suit le fichier source : un PDF ne doit jamais
+# annoncer une version plus ancienne que le texte qu'il contient.
+VERSION = ""
+
 DOCS = [
     ("00-SOCLE-COMMERCIAL.md",      "Socle commercial NEBULA"),
     ("01-AVIS-DE-RECRUTEMENT.md",   "Avis de recrutement"),
@@ -90,10 +94,13 @@ pre code{background:none;color:inherit;padding:0;font-size:9.3pt}
 
 
 def build(md_name, title):
+    global VERSION
     src = os.path.join(ROOT, md_name)
     if not os.path.exists(src):
         print("  absent :", md_name)
         return None
+    import datetime
+    VERSION = datetime.date.fromtimestamp(os.path.getmtime(src)).isoformat()
     with open(src, encoding="utf-8") as fh:
         text = fh.read()
 
@@ -113,7 +120,7 @@ def build(md_name, title):
         "<div class='kicker'>NEBULA Agency &middot; Cotonou</div>"
         "<div class='rule'></div>"
         f"<h1>{title}</h1>"
-        "<div class='meta'>Programme Partenaires<br>Version 2026-07-30</div>"
+        f"<div class='meta'>Programme Partenaires<br>Version {VERSION}</div>"
         "<div class='conf'>Document confidentiel &middot; réservé aux partenaires actifs de "
         "NEBULA Agency. Ne pas diffuser hors de l'équipe.</div>"
         "</div>"

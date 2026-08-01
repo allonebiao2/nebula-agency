@@ -54,13 +54,14 @@ dans `_documents/nebula-agency/vente/`.
 | Réseau | N1 10 %, N2 5 %, à partir de la 1re vente du partenaire |
 | Versement | **24 à 72h** après réclamation |
 | Vague 1 | Cotonou, 8 places, candidatures 21 jours, objectif 30 ventes / 90 jours |
+| **Guides** | **Les 5 guides sont remis dès l'entrée** (2026-08-01). Ce qui reste échelonné, c'est le **droit de conclure seul** : Vitrine après la 1ʳᵉ vente livrée, Outil métier après 3 ventes + binôme. Avant, le partenaire passe la main et **garde 100 % de sa commission** |
 
 ---
 
 ## 3. CE QUI BLOQUE — à faire par Mongazi
 
 **Aucun de ces points ne peut être fait depuis une session distante.**
-*3.1 est fait. Restent 3.2 à 3.5, plus les 8 informations du client 10 (§3bis).*
+*3.1 et 3.3 sont faits. Restent 3.2, 3.4, 3.5, plus les 8 informations du client 10 (§3bis).*
 
 ### 3.1 Déployer le site sur Cloudflare ✅ FAIT le 2026-07-31 (session terminal Claude Code)
 Déployé : **www.nebula-agency.online affiche maintenant 20 000 F / 6 mois**. Les 4 « 15 000 » restants = poids du configurateur (`data-price="15000"`), légitimes. Vérifié live (domaine + `nebula-agency.pages.dev` = 4× « 15 000 » / 19× « 20 000 », `cf-cache-status: DYNAMIC`). Procédure ci-dessous conservée pour référence.
@@ -78,9 +79,11 @@ Identifiants dans `secrets/cloudflare.env`.
 Une chaîne secrète au choix. Sans elle, n8n ne pourra pas lire les échéances
 d'abonnement. Une minute de travail, et ça débloque toute la relance automatique.
 
-### 3.3 Compléter le numéro IFU
-Dans `09-CONTRAT-PARTENAIRE.md`, en-tête, champ `[à compléter]`.
-Le RCCM est écrit « en cours d'immatriculation », à remplacer le jour venu.
+### 3.3 ~~Compléter le numéro IFU~~ ✅ RÉGLÉ le 2026-08-01
+Décision de Mongazi : l'IFU viendra plus tard. Le contrat porte désormais
+**« IFU et RCCM en cours d'immatriculation — les numéros seront communiqués au Partenaire
+dès leur obtention »**. C'est exact, et le contrat est **signable en l'état**.
+Le jour où les numéros arrivent : un avenant d'une ligne suffit.
 
 ### 3.4 Téléverser les 9 PDF dans l'espace partenaire
 `/admin` → Documentation → Ajouter. Catégories et descriptions : `07-MISE-EN-LIGNE.md` §1 et §3.
