@@ -30,6 +30,7 @@ FAILS, NOTES = [], []
 # le trouve tout seul.
 _C = [g for g in glob.glob("/opt/pw-browsers/chromium-*/chrome-linux/chrome") if "headless" not in g]
 CHROME = {"executable_path": _C[0]} if _C else {}
+CHROME_CTX = {}
 
 def ok(c, m):
     (NOTES if c else FAILS).append(("OK  " if c else "FAIL") + "  " + m)
@@ -189,6 +190,53 @@ async def main():
 
         ok(not errs, "tunnel complet : aucune erreur JS" + ("" if not errs else " -> " + errs[0][:150]))
         await ctx.close()
+        # ---------- la couche de mouvement ----------
+        ctx = await br.new_context(viewport={"width": 1440, "height": 900}, **CHROME_CTX)
+        page = await ctx.new_page()
+        errs = []
+        page.on("pageerror", lambda e: errs.append(str(e)))
+        await page.goto(URL, wait_until="domcontentloaded")
+
+        ok(await page.locator("#rideau").count() == 1, "le rideau d'ouverture est present au chargement")
+        await page.wait_for_timeout(3000)
+        ok(await page.locator("#rideau").count() == 0,
+           "le rideau se retire du DOM apres l'ouverture (il ne bloque rien)")
+
+        await page.evaluate("()=>window.scrollTo(0, document.body.scrollHeight*0.55)")
+        await page.wait_for_timeout(500)
+        t = await page.evaluate("()=>getComputedStyle(document.getElementById('fil')).transform")
+        ok(t not in ("none", "matrix(0, 0, 0, 1, 0, 0)"), f"le fil de progression suit le defilement ({t})")
+
+        # chaque signature de section se declenche
+        for sel, nom in [("#maison [data-pil]", "01 le point de couture"),
+                         ("#catalogue .piece", "02 le patron a la craie"),
+                         ("#process [data-et]", "03 le fil qui relie"),
+                         ("#apropos [data-drape]", "04 le drape"),
+                         ("#atelier [data-coupe]", "05 la coupe")]:
+            await page.evaluate("s=>document.querySelector(s).scrollIntoView({block:'center'})", sel)
+            await page.wait_for_timeout(700)
+            n = await page.locator(sel + ".vu").count()
+            ok(n >= 1, f"signature {nom} : declenchee ({n} element(s))")
+
+        # regle du depot : jamais d'animation infinie sous un backdrop-filter
+        mauvais = await page.evaluate("""()=>{
+          const out=[];
+          document.querySelectorAll('*').forEach(e=>{
+            const s=getComputedStyle(e);
+            if(s.animationIterationCount==='infinite'){
+              let p=e.parentElement;
+              while(p){ const ps=getComputedStyle(p);
+                if(ps.backdropFilter && ps.backdropFilter!=='none'){ out.push(e.className||e.tagName); break; }
+                p=p.parentElement; }
+            }
+          });
+          return out;}""")
+        ok(not mauvais, "aucune animation infinie sous un backdrop-filter" + ("" if not mauvais else " -> " + str(mauvais[:3])))
+
+        await overflow(page, "[1440px] apres ouverture du rideau")
+        ok(not errs, "couche de mouvement : aucune erreur JS" + ("" if not errs else " -> " + errs[0][:140]))
+        await ctx.close()
+
         await br.close()
 
     print("\n".join(NOTES))

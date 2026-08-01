@@ -2,7 +2,7 @@
 
 > **Maison de couture · prêt-à-porter & sur-mesure**
 > Vitrine avec catalogue commandable et prise de mesures en ligne.
-> Créé le 2026-07-31 · **refonte du moteur de mesures le 2026-07-31 (v2)**.
+> Créé le 2026-07-31 · moteur de mesures refait (v2) · **direction artistique « LE FIL » (v3, 2026-08-01)**.
 
 ---
 
@@ -14,8 +14,8 @@
 | **Métier** | Couture : prêt-à-porter (par tailles) et sur-mesure (aux mesures du client) |
 | **Cible** | Femmes et hommes, cérémonies et quotidien |
 | **Logo** | Buste de mannequin ceint d'un ruban magenta + monogramme H.M.S |
-| **Palette** | Magenta `#E6007E` · noir `#0A0A0A` · crème `#FBFBFC` · rose pâle `#FFE8F4` |
-| **Typographie** | Archivo (titres, géométrique comme le logo) + Manrope (texte) |
+| **Palette** | Magenta `#E6007E` · encre `#0B0A0C` · papier de patron `#F4F1EC` · rose pâle `#FFE9F5` |
+| **Typographie** | **Bodoni Moda** (titres — le didone des magazines de mode) + Archivo (libellés) + Manrope (texte) |
 
 ---
 
@@ -25,13 +25,13 @@
 |---|---|
 | **`_vitrine_src.html`** | **La source. C'est celui-ci qu'on édite.** ≈70 Ko, lisible, avec des marqueurs `__LOGO_B64__` et `__FAVICON_B64__` à la place des images |
 | `_build.py` | Injecte les images en base64 et écrit `vitrine.html` |
-| `_qc.py` | La suite de contrôle qualité, **53 contrôles**, à passer avant tout déploiement |
+| `_qc.py` | La suite de contrôle qualité, **64 contrôles**, à passer avant tout déploiement |
 | `vitrine.html` | **Le livrable, généré. Ne jamais l'éditer à la main** : la prochaine construction écraserait la modification |
 
 ```bash
 cd clients/10-hillary-m-styl
-python3 _build.py     # source -> vitrine.html (143 Ko)
-python3 _qc.py        # doit afficher « TOUT EST VERT »
+python3 _build.py     # source -> vitrine.html (174 Ko)
+python3 _qc.py        # 64 contrôles, doit afficher « TOUT EST VERT »
 ```
 
 Pourquoi ce détour : le logo pèse 75 Ko une fois en base64. Éditer directement le
@@ -42,7 +42,7 @@ de dupliquer le logo, ce qui avait fait grimper une première version à 681 Ko.
 
 ## 3. Ce qui a été livré
 
-**Un seul fichier de 143 Ko**, aucune dépendance externe hormis les polices Google.
+**Un seul fichier de 174 Ko**, aucune dépendance externe hormis les polices Google.
 Logo et favicon en base64, le logo déclaré **une seule fois** en variable CSS `--logo`.
 
 ### Les sections
@@ -164,7 +164,45 @@ C'est exactement l'escalier NEBULA : la vitrine d'abord, l'outil ensuite.
 
 ---
 
-## 8. Vérifications passées — `python3 _qc.py`, 53 contrôles verts
+---
+
+## 8. La direction artistique — « LE FIL »
+
+**Le problème de la v2 :** elle était correcte, pas mémorable. Une vitrine à 100 000 €
+n'a pas *plus d'animations* — elle a **une idée**, et tout en découle.
+
+**L'idée :** une maison de couture, c'est un fil qui va du mètre-ruban au vêtement fini.
+Le site est ce fil qu'on tire. Chaque section a **sa propre animation signature**, et
+toutes sont tirées du métier — jamais un effet décoratif posé par-dessus.
+
+| | Section | La signature | Ce qu'elle raconte |
+|---|---|---|---|
+| — | **Ouverture** | Le fil descend, le monogramme apparaît, deux pans de tissu s'écartent | On entre dans l'atelier |
+| — | **Héros** | Titre à la craie ligne par ligne · **le croquis de la robe se dessine** (grand écran) · mètre-ruban gradué en bas · nappes de lumière qui respirent | Le dessin avant le vêtement |
+| 01 | **La maison** | **La piqûre** : un point de couture se coud d'un pilier à l'autre au défilement, l'aiguille suit | La couture qui avance |
+| 02 | **Catalogue** | **Le patron à la craie** : un contour pointillé se trace autour de chaque pièce, en cascade | La coupe avant la couture |
+| 03 | **La méthode** | **Le fil qui relie** les quatre étapes, la perle progresse avec le défilement | De la commande à l'essayage |
+| 04 | **À propos** | **Le drapé** : le texte se dévoile par plis successifs · les chiffres se comptent | Le tissu qui tombe |
+| 05 | **L'atelier** | **La coupe** : une ligne de coupe pointillée traverse, **les ciseaux la suivent**, le titre se révèle derrière | Les ciseaux entrent en jeu |
+| — | **Modale** | Le carnet se lève, les champs de mesure se posent un à un, **la date se tamponne** | Le carnet de l'atelier |
+
+**Le détail permanent :** grain de toile sur toute la page · fil de progression magenta en
+haut · **l'aiguille** en guise de curseur sur ordinateur, aimantée par les boutons ·
+ruban défilant · barre transparente sur le héros qui se pose sur fond papier ensuite.
+
+**Ce qui a été refusé :** des photos générées pour le catalogue. Un client qui commande
+« Robe Amazone » sur une photo d'IA d'une robe que l'atelier ne fait pas, c'est une
+promesse fausse. Les cartes portent un visuel de substitution marqué « photo à venir »,
+et le héros est **construit pour recevoir une vraie photo** le jour où elle existe.
+
+**Trois garde-fous techniques :**
+- `prefers-reduced-motion` respecté : tout s'arrête pour qui en a besoin
+- sur téléphone, le grain ne s'anime plus et la troisième nappe de lumière est retirée —
+  la texture reste, le coût en images par seconde disparaît
+- **aucune animation infinie sous un `backdrop-filter`** (leçon Boussole) : un contrôle
+  automatique le vérifie à chaque passage de QC
+
+## 9. Vérifications passées — `python3 _qc.py`, 64 contrôles verts
 
 - **Aucun débordement horizontal** sur 390 px, 768 px et 1440 px, page et modale ouverte
 - **Toutes les cibles tactiles ≥ 44 px** (y compris le logo de la barre et les liens du pied)
@@ -179,10 +217,13 @@ C'est exactement l'escalier NEBULA : la vitrine d'abord, l'outil ensuite.
 - **Email seul** (sans WhatsApp) accepté à l'étape 4 ✅
 - Pièce sans prix : total « sur devis » de bout en bout ✅
 - Robe ovale : l'avertissement de validation s'affiche ✅
+- **Le rideau d'ouverture se retire du DOM** : il ne bloque aucun clic ✅
+- Les **5 signatures de section** se déclenchent bien au défilement ✅
+- **Aucune animation infinie sous un `backdrop-filter`** ✅
 
 ---
 
-## 9. Reste à faire
+## 10. Reste à faire
 
 - [ ] Récupérer les 8 informations du §6 — **le numéro WhatsApp d'abord**
 - [ ] Faire valider les mesures de la **robe ovale** par l'atelier
@@ -194,7 +235,7 @@ C'est exactement l'escalier NEBULA : la vitrine d'abord, l'outil ensuite.
 
 ---
 
-## 10. Offre NEBULA correspondante
+## 11. Offre NEBULA correspondante
 
 Ce projet dépasse le **Catalogue Digital** simple : il embarque un moteur de commande avec
 prise de mesures par type de vêtement, calcul de frais par pays et date de disponibilité.

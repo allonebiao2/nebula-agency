@@ -68,6 +68,31 @@
 
 <!-- Ajouter les nouvelles leçons au-dessus -->
 
+## 2026-08-01 — Trois leçons de la direction artistique (HILLARY M. STYL v3)
+
+**« Ça fait site à 100 $ » ne se répare pas en ajoutant des animations.**
+Ça se répare en trouvant **une idée** dont tout découle. Ici : une maison de couture,
+c'est un fil qui va du mètre-ruban au vêtement. À partir de là, chaque animation raconte
+le métier — la piqûre, le patron à la craie, la coupe aux ciseaux — au lieu de décorer.
+Et avant le mouvement viennent trois choses moins spectaculaires qui font 80 % de l'écart :
+**la typographie** (un didone de mode à gros corps), **le rythme des fonds** (sombre,
+clair, sombre — sans alternance tout se vaut), et **le vide** qu'on ose laisser.
+
+**Un effet qui suppose une seule ligne de titre cassera sur mobile.**
+La « coupe » découpait le titre à 50 % de sa hauteur et écartait les deux moitiés :
+impeccable sur une ligne, bouillie sur deux. Refait en balayage horizontal, robuste
+quel que soit le nombre de lignes. Règle générale : **tout procédé qui dépend d'une
+hauteur de bloc connue est un bug qui attend un écran plus étroit.**
+
+**Le `:hover` reste collé après un appui sur téléphone.**
+Tout état de survol qui recouvre un contenu doit vivre dans
+`@media (hover:hover) and (pointer:fine)`. Sinon la dernière carte touchée garde son
+voile noir, et le client croit l'interface cassée.
+
+**Corollaire de méthode :** ces trois défauts, plus trois autres, étaient invisibles à la
+lecture du code. Ils se voient **en regardant les captures, écran par écran**. Le QC
+automatique protège la logique ; il ne protège pas le goût.
+
 ## 2026-07-31 — Quatre leçons du moteur de commande couture (HILLARY M. STYL)
 
 **Modéliser le métier du client, pas la catégorie qui nous vient à l'esprit.**

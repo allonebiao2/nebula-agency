@@ -160,3 +160,93 @@ C'est l'escalier NEBULA appliqué à la lettre : la vitrine d'abord, l'outil ens
 Ce projet dépasse le Catalogue Digital à 50 000 F : il embarque un moteur de commande avec
 prise de mesures et calcul de frais par pays. À chiffrer avec le **configurateur** du site,
 pas au forfait catalogue.
+
+
+---
+
+# VAGUE 3 — la direction artistique « LE FIL » (2026-08-01)
+
+## Le verdict de Mongazi
+
+> « Là quand je regarde, malgré ton expertise, je vois un site à 100 $. Je veux que ce soit
+> comme un site à 100 000 €, le client doit juste être abasourdi. »
+
+Il avait raison. La v2 était **correcte**, pas **mémorable**. Et la bonne réponse n'était
+pas « ajouter des animations » : c'était **trouver l'idée**.
+
+## L'idée
+
+Une maison de couture, c'est **un fil** qui va du mètre-ruban au vêtement fini.
+Le site est ce fil qu'on tire. À partir de là, tout se déduit — et **chaque animation
+raconte le métier au lieu de décorer la page**.
+
+| | Section | Signature |
+|---|---|---|
+| — | Ouverture | le fil descend, le monogramme apparaît, deux pans de tissu s'écartent |
+| — | Héros | titre à la craie ligne par ligne · **le croquis de la robe se dessine** · mètre-ruban gradué · nappes de lumière |
+| 01 | La maison | **la piqûre** : un point de couture se coud d'un pilier à l'autre, l'aiguille suit |
+| 02 | Catalogue | **le patron à la craie** : contour pointillé tracé autour de chaque pièce, en cascade |
+| 03 | La méthode | **le fil qui relie** les 4 étapes, la perle progresse au défilement |
+| 04 | À propos | **le drapé** : le texte se dévoile par plis · les chiffres se comptent |
+| 05 | L'atelier | **la coupe** : ligne pointillée traversante, **les ciseaux la suivent**, le titre se révèle |
+| — | Modale | le carnet se lève, les champs se posent un à un, **la date se tamponne** |
+
+Permanent : grain de toile · fil de progression · **l'aiguille en guise de curseur** sur
+ordinateur, aimantée par les boutons · ruban défilant · barre transparente sur le héros
+qui se pose sur fond papier ensuite.
+
+## Ce qui fait vraiment la différence, et ce n'est pas le mouvement
+
+**La typographie.** Passage à **Bodoni Moda**, le didone des magazines de mode, pour tous
+les titres. Archivo reste pour les micro-libellés, Manrope pour le texte. Un didone à
+gros corps sur fond d'encre, c'est ce qui sépare une page correcte d'une page de maison.
+
+**Le rythme des fonds.** Encre → ruban magenta → papier → papier profond → encre →
+papier → encre. Sans alternance, tout se vaut et rien ne ressort.
+
+**Le vide.** Le héros ne remplit pas l'écran ; il respire, et le croquis occupe la moitié
+droite en grand écran.
+
+## Ce qui a été refusé
+
+**Des photos générées par IA pour le catalogue.** Une cliente qui commande « Robe Amazone »
+sur la photo d'une robe que l'atelier ne fabrique pas, c'est une promesse fausse — et
+c'est la maison qui la paiera. Les cartes gardent un visuel de substitution marqué
+« photo à venir », et **le héros est construit pour recevoir une vraie photo** le jour où
+elle existera. C'est là que le site gagnera son dernier palier.
+
+## Les défauts trouvés en regardant vraiment les captures
+
+1. **La « coupe » du titre cassait à deux lignes.** Le procédé (deux copies du titre
+   découpées à 50 % puis écartées) suppose une seule ligne. Sur mobile, le titre passait
+   à deux lignes et affichait une bouillie. Refait autrement : ligne de coupe pointillée
+   + ciseaux qui traversent, puis révélation du titre par balayage — **robuste quel que
+   soit le nombre de lignes**, et le balisage n'a plus de titre en double.
+2. **Le survol restait collé après un appui** sur téléphone : le voile noir « Commander »
+   restait sur la dernière carte touchée. Enfermé dans `@media (hover:hover) and (pointer:fine)`.
+3. **« 45 000 F » se coupait en deux** sur les cartes à 158 px. Le bloc prix + délai
+   s'empile désormais sous 620 px, et les cartes ont la même hauteur (`margin-top:auto`).
+4. **L'anneau du curseur traînait en haut à gauche** sur ordinateur tant que la souris
+   n'avait pas bougé. Il ne s'allume qu'au premier mouvement.
+5. **L'icône du mètre-ruban était illisible** à 30 px.
+6. Le croquis débordait de l'écran et se dessinait en 5,5 s. Réduit et accéléré.
+
+**Aucun de ces six défauts ne se voit dans le code.** Ils se voient en regardant les
+captures, écran par écran.
+
+## Performance — on n'achète pas le luxe avec des images par seconde
+
+- `prefers-reduced-motion` respecté : tout s'arrête pour qui en a besoin
+- **sur téléphone**, le grain ne s'anime plus (la texture reste, le repaint disparaît) et
+  la troisième nappe de lumière floutée est retirée
+- **aucune animation infinie sous un `backdrop-filter`** — la leçon Boussole est
+  désormais un **contrôle automatique** de la suite QC
+- le fichier passe de 143 à **174 Ko**, tout compris, sans une seule bibliothèque
+
+## QC — 64 contrôles, tous verts
+
+Les 53 contrôles du moteur de commande **passent sans modification** : l'enveloppe a été
+refaite, le moteur n'a pas bougé. 11 contrôles ajoutés sur la couche de mouvement :
+le rideau se retire bien du DOM, le fil de progression suit le défilement, les 5
+signatures se déclenchent, aucune animation infinie sous un `backdrop-filter`, pas de
+débordement après l'ouverture.

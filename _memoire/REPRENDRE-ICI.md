@@ -1,5 +1,5 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-07-31
+## Point de reprise pour une session terminal · dernière mise à jour 2026-08-01
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
@@ -57,7 +57,7 @@ dans `_documents/nebula-agency/vente/`.
 ## 3. CE QUI BLOQUE — à faire par Mongazi
 
 **Aucun de ces points ne peut être fait depuis une session distante.**
-*3.1 est fait. Restent 3.2 à 3.5, plus les 7 informations du client 10 (§3bis).*
+*3.1 est fait. Restent 3.2 à 3.5, plus les 8 informations du client 10 (§3bis).*
 
 ### 3.1 Déployer le site sur Cloudflare ✅ FAIT le 2026-07-31 (session terminal Claude Code)
 Déployé : **www.nebula-agency.online affiche maintenant 20 000 F / 6 mois**. Les 4 « 15 000 » restants = poids du configurateur (`data-price="15000"`), légitimes. Vérifié live (domaine + `nebula-agency.pages.dev` = 4× « 15 000 » / 19× « 20 000 », `cf-cache-status: DYNAMIC`). Procédure ci-dessous conservée pour référence.
@@ -89,7 +89,7 @@ prompt-maître reste générique.
 
 ---
 
-## 3bis. Client 10 · HILLARY M. STYL (livré 2026-07-31, **v2 le même jour**)
+## 3bis. Client 10 · HILLARY M. STYL (v2 le 2026-07-31, **v3 « LE FIL » le 2026-08-01**)
 
 Vitrine couture avec **moteur de commande**. La v2 a refait le cœur de l'outil :
 **les mesures dépendent du type de vêtement, pas du genre du client.**
@@ -107,12 +107,18 @@ précise de disponibilité s'affiche** dès les options validées, calculée sur
 du délai + l'acheminement du pays · WhatsApp **ou** email · Mobile Money annoncé comme seul
 moyen de règlement · section À propos · double notification expliquée.
 
-**⚠️ On édite `_vitrine_src.html`, jamais `vitrine.html`** (généré, 143 Ko dont 75 de logo) :
+**La v3 a refait toute l'enveloppe** sur une direction artistique — « LE FIL », le fil qui
+va du mètre-ruban au vêtement — **sans toucher au moteur de commande**. Bodoni Moda pour
+les titres, une animation signature par section (la piqûre, le patron à la craie, le fil
+qui relie, le drapé, la coupe aux ciseaux), le croquis de la robe qui se dessine au héros,
+l'aiguille en guise de curseur. Détail complet au §8 du CONTEXT.md du client.
+
+**⚠️ On édite `_vitrine_src.html`, jamais `vitrine.html`** (généré, 174 Ko dont 75 de logo) :
 
 ```bash
 cd clients/10-hillary-m-styl
 python3 _build.py     # source -> vitrine.html
-python3 _qc.py        # 53 contrôles, doit être « TOUT EST VERT »
+python3 _qc.py        # 64 contrôles, doit être « TOUT EST VERT »
 ```
 
 ⚠️ **Ne pas mettre en ligne avant d'avoir les 8 informations du §6 de son CONTEXT.md.**
