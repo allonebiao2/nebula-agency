@@ -37,22 +37,49 @@ envoie ses vraies pièces photographiées.
 ## IMAGE 1 · LE HÉROS — plein écran, sombre
 
 **Où :** derrière le titre d'accueil, plein cadre.
-**Format : 3:2 paysage, 2400 × 1600 px.**
-**Contrainte de composition :** le titre occupe la moitié gauche et le croquis de robe la
-droite. **Les deux tiers supérieurs doivent rester très sombres et presque vides** — sinon
-le titre devient illisible. Tout l'intérêt se joue dans le tiers bas.
+**Format : 3:2 paysage, 2400 × 1600 px.** (Pas carré : ça ne couvre pas un écran d'accueil.)
+
+**⚠️ La contrainte de composition, vérifiée dans le code :**
+`.hero{align-items:flex-end}` et `.in{padding-bottom:84px}` — **le titre est calé EN BAS**,
+sur toute la largeur. Et `.croquis{right:8%}` place le croquis de robe animé **à droite**,
+au-dessus de 1020 px. Donc :
+
+| Zone | Ce qu'il faut |
+|---|---|
+| **Tiers bas** | **vide et très sombre** — le titre s'y pose |
+| **Droite** | **libre** — le croquis animé y vit, deux robes s'y battraient |
+| **Moitié gauche / haut** | c'est là que va le sujet |
+
+> **Leçon du 1er essai.** Le premier brief demandait de garder le *haut* vide : l'image a
+> donc concentré tout son intérêt dans le tiers bas, exactement là où le titre le recouvre.
+> Il ne serait resté que du noir. **Toujours lire l'alignement réel du héros avant d'écrire
+> une contrainte de cadrage.**
+
+**Et le sujet doit dire « couture » en un quart de seconde.** Du tissu sombre et un
+mètre-ruban disent « du textile », pas « on fabrique un vêtement ici ». D'où la **toile** :
+le prototype en calicot écru, couvert d'épingles et de traits de craie, monté sur buste.
+Impossible à confondre avec autre chose que de la couture, **inachevé par définition** donc
+sans risque de photo-catalogue, et **clair sur fond sombre** — ce qui règle la luminosité
+au lieu de la contourner.
 
 ```
-Extreme close-up of dark charcoal-black fabric draped across a surface, shot from a low
-raking angle. A single warm directional light grazes the weave from the right, revealing
-the texture of the threads and the soft folds; the upper two thirds of the frame fall off
-into near-black shadow with almost no detail. In the lower third, a tailor's soft measuring
-tape lies coiled across the fabric, and a single fine magenta thread traces a loose curve
-over it. Deep ink-black palette (#0B0A0C), warm off-white highlights, one small accent of
-magenta (#E6007E) on the thread only. Editorial fashion-house photography, medium format,
-shallow depth of field, fine film grain, no people, no faces, no garment, no text, no logo,
-no watermark. Moody, quiet, expensive.
+A tailor's dress form standing in a dark studio, draped with an unfinished cream calico
+toile — a work-in-progress garment mock-up, raw unhemmed edges, visible basting stitches,
+dressmaker's pins pushed into the fabric, and blue chalk marking lines drawn across it.
+The dress form is placed in the LEFT half of the frame, lit by a single warm directional
+light from the left that makes the pale calico glow clearly against the darkness. The right
+side of the frame is open, dark and empty. The BOTTOM THIRD of the image falls into deep
+ink-black shadow with no detail. A soft measuring tape hangs over the shoulder of the form,
+and a single fine magenta thread catches the light. Palette of ink black (#0B0A0C), warm
+cream (#F4F1EC) and one small magenta accent (#E6007E). Editorial fashion-atelier
+photography, medium format, shallow depth of field, fine film grain. No people, no faces,
+no hands, no finished garment, no text, no logo, no watermark. Dark and cinematic, but the
+calico must be clearly visible and well lit.
 ```
+
+**À vérifier sur le résultat :** le bas est-il vide et sombre ? le buste est-il à gauche ?
+la toile est-elle **visiblement inachevée** (épingles, bords bruts) ? Si le modèle rend une
+belle robe finie, régénérer — on retombe dans la photo-catalogue interdite.
 
 ---
 
