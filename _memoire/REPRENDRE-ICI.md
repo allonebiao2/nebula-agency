@@ -31,6 +31,7 @@ dans `_documents/nebula-agency/vente/`.
 | `fiche-diagnostic.html` | Fiche remplie chez le client → rapport WhatsApp |
 | `pdf/` | Les 9 documents en PDF, régénérables via `_build_pdf.py` |
 | `marketing/PROMPTS-POSTS-LE-SAVIEZ-VOUS.md` | Prompt-maître Nano Banana Pro + **15 posts** : 8 en rythme de croisière (mardi/vendredi, un mois) + **7 en campagne intensive, un par jour pendant une semaine** (§3bis) |
+| `marketing/PROMPTS-POSTS-OCCASIONS.md` | Posts de fête (1er août, nouvel an…). ⚠️ **ordre des images inversé** : 1 = référence, 2 = logo |
 
 ---
 
