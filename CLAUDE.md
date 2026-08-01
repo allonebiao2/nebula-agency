@@ -119,6 +119,34 @@ et par quoi commencer. Mis à jour à chaque fin de session importante.
 - Vague 1 : **Cotonou, 8 places**, objectif 30 ventes / 90 jours
 - Rubrique marketing **« LE SAVIEZ-VOUS ? »** : `_documents/nebula-agency/marketing/`
 
+## 🎨 STANDARD OBLIGATOIRE — toute vitrine, tout client, à partir du 2026-08-01
+**Avant d'écrire une ligne de CSS : lire `_memoire/procedure-vitrine/DIRECTION-ARTISTIQUE.md`.**
+
+- **Une vitrine n'est pas finie quand elle marche. Elle est finie quand elle impressionne.**
+  Le QC vert et la beauté sont **deux** critères de sortie, pas un.
+- **La phrase d'abord** : ce qu'est ce métier vu de l'intérieur, en une ligne, avec un
+  **objet concret** dedans (« une maison de couture, c'est un *fil* qui va du mètre-ruban
+  au vêtement »). Toutes les animations sortent de cet objet. Sans phrase, on décore.
+- **Une animation signature DIFFÉRENTE par section, tirée du métier.** Si elle pourrait
+  être copiée-collée chez un autre client, elle est à refaire.
+- **Les 3 choses qui font 80 % de l'écart, et aucune n'est une animation** : la typo
+  display à caractère et à gros corps (choisie **par registre de métier**), le **rythme
+  alterné sombre/clair** des fonds, et le **vide** qu'on ose laisser. Jamais `#000`/`#fff`
+  en fond : une encre, un papier.
+- ⛔ **INTERDIT ABSOLU : une photo produit générée par IA présentée comme le catalogue du
+  client.** Aucune exception. Ambiance/texture : autorisées. Sans photos → dessin au trait
+  animé en SVG + cartes « photo à venir », et le héros prêt à recevoir la vraie photo.
+- **Regarder les captures, section par section, en 390 ET 1440**, avant de dire « fini ».
+  Six défauts sont passés au travers de 53 contrôles verts sur la vitrine Hillary.
+- **Source / construction / livrable** : on édite `_vitrine_src.html`, `_build.py` génère
+  `vitrine.html` (**jamais édité à la main**), `_qc.py` doit être vert avant déploiement.
+  Gabarits : `_memoire/procedure-vitrine/templates/`.
+- **Perf** : `prefers-reduced-motion` · grain figé et une nappe en moins sur téléphone ·
+  **aucune animation infinie sous un `backdrop-filter`** · **jamais de `transform` sur un
+  écran contenant un `position:fixed`** · **aucune bibliothèque**.
+
+Référence d'exécution : `clients/10-hillary-m-styl/` (direction « LE FIL »).
+
 ## Mémoire générale
 - Voir _memoire/cerveau.md pour contexte complet
 - Voir _memoire/lecons.md avant de commencer un nouveau projet

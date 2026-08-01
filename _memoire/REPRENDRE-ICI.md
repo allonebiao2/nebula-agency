@@ -30,7 +30,7 @@ dans `_documents/nebula-agency/vente/`.
 | `simulateur-commissions.html` | Le partenaire calcule ses gains du mois |
 | `fiche-diagnostic.html` | Fiche remplie chez le client → rapport WhatsApp |
 | `pdf/` | Les 9 documents en PDF, régénérables via `_build_pdf.py` |
-| `marketing/PROMPTS-POSTS-LE-SAVIEZ-VOUS.md` | Prompt-maître Nano Banana Pro + 8 posts |
+| `marketing/PROMPTS-POSTS-LE-SAVIEZ-VOUS.md` | Prompt-maître Nano Banana Pro + **15 posts** : 8 en rythme de croisière (mardi/vendredi, un mois) + **7 en campagne intensive, un par jour pendant une semaine** (§3bis) |
 
 ---
 
@@ -127,6 +127,22 @@ commande n'arriverait**) · les frais d'expédition et les jours d'acheminement 
 exemples (un tarif faux coûte de l'argent à chaque commande, un acheminement faux fausse
 la date promise) · **les mesures de la robe ovale n'ont jamais été fournies** et sont une
 proposition, signalée comme telle dans l'interface.
+
+## 3ter. 🎨 NOUVEAU STANDARD — toute vitrine, à partir du 2026-08-01
+
+**`_memoire/procedure-vitrine/DIRECTION-ARTISTIQUE.md` — à lire avant d'écrire une ligne
+de CSS, sur chaque client.**
+
+Né d'une phrase de Mongazi devant une vitrine pourtant irréprochable : « je vois un site
+à 100 $ ». En résumé : **une vitrine n'est pas finie quand elle marche, elle est finie
+quand elle impressionne** · on écrit **la phrase du métier** avant le CSS, et toutes les
+animations en sortent · **une signature différente par section** · la typo, le rythme
+sombre/clair et le vide font 80 % de l'écart · **jamais de photo produit générée par IA** ·
+**regarder les captures section par section** (six défauts sont passés au travers de 53
+contrôles verts).
+
+Branché dans `SKILL.md` (nebula-site), `PROCEDURE.md` (PHASE 1 et 6), `CONVENTIONS.md`,
+`CLAUDE.md`. Gabarits `_build.py` / `_qc.py` dans `_memoire/procedure-vitrine/templates/`.
 
 ## 4. Ce qui tourne déjà en production
 

@@ -83,7 +83,7 @@ Une robe droite en demande 15, un pantalon 6.
 |---|---|---|
 | **Robe coupée à la taille** | **9** | Épaules · Carrure devant · Poitrine · Tour de taille · Longueur taille · Longueur robe courte · Longueur robe longue · Tour de manche · Longueur manche |
 | **Robe droite** | **15** | les 9 ci-dessus **+** Tour du sous-sein · Tour de ceinture · Tour de hanche · Longueur sous-sein · Longueur ceinture · Longueur genou |
-| **Robe ovale** | **11** ⚠️ | **Liste proposée, à valider par l'atelier** (voir §5, point 7) |
+| **Robe ovale** | **11** ⚠️ | **Liste proposée, à valider par l'atelier** (voir §6, point 7) |
 | **Pantalon** | **6** | Tour de taille · Tour de bassins · Tour de cuisse · Tour de genoux · Longueur genou · Longueur pantalon |
 | **Chemise ou haut** | **8** | Épaules · Carrure devant · Carrure dos · Tour de poitrine · Tour de taille · Longueur habit · Tour de manche · Longueur manche |
 

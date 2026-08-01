@@ -77,6 +77,28 @@ Méthode appliquée sur Boussole, à reprendre pour les prochains SaaS verticaux
 Bilan de la journée du 2026-07-25 : **113 vérifications** cumulées, 2 bugs bloquants trouvés
 par le sweep que personne n'avait vus à l'œil.
 
+## 2026-08-01 — La beauté devient un critère de sortie, au même titre que le QC
+
+Jusqu'ici, « fini » voulait dire : toutes les vérifications passent. Depuis le 2026-08-01,
+**« fini » veut dire deux choses à la fois** — les vérifications passent **et** le résultat
+impressionne. Une vitrine techniquement irréprochable peut être jugée « à 100 $ », et
+c'est arrivé.
+
+Ce qui change concrètement dans la façon de travailler :
+
+1. **On écrit la phrase avant le CSS.** Une ligne qui dit ce qu'est le métier vu de
+   l'intérieur, avec un objet concret dedans. Elle décide de la typo, du rythme des fonds
+   et de toutes les animations. C'est la nouvelle PHASE 1.0 de la procédure vitrine.
+2. **On regarde les captures, section par section.** Le QC automatique ne remplace pas
+   l'œil : six défauts réels sont passés au travers de 53 contrôles verts. La QA visuelle
+   n'est plus un bonus, c'est une étape obligatoire avant de dire « fini ».
+3. **On sépare la source du livrable** dès qu'une image en base64 entre dans un fichier :
+   `_vitrine_src.html` → `_build.py` → `vitrine.html` généré. Gabarits partagés.
+4. **Le QC hérite des leçons de perf.** La règle « aucune animation infinie sous un
+   `backdrop-filter` » n'est plus une consigne qu'on peut oublier : c'est un test.
+
+Manuel : `_memoire/procedure-vitrine/DIRECTION-ARTISTIQUE.md`.
+
 ## Choses qu'on essaie / qu'on teste
 
 > _vide pour le moment._

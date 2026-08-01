@@ -23,7 +23,14 @@ Actions :
 ## PHASE 1 — Design system grounded
 **Entrée** : secteur + mots-clés + contraintes client (couleurs imposées, etc.).
 
+⚠️ **Lire d'abord `DIRECTION-ARTISTIQUE.md`** — le standard « 100 000 € ». Il prime sur
+tout ce qui suit dans cette phase.
+
 Actions :
+0. **Écrire LA PHRASE** : ce qu'est ce métier vu de l'intérieur, en une ligne, avec un
+   objet concret dedans (le fil, la braise, la descente). Elle décide de la typo, du
+   rythme des fonds et de **toutes** les animations signatures. Sans elle, on décore.
+
 1. Invoquer **`/ui-ux-pro-max`** → `python .claude/skills/ui-ux-pro-max/scripts/search.py "<secteur mots-clés>" --design-system -p "<Marque>" -f markdown`.
 2. **Écraser** les recos de l'outil par : (a) la **palette imposée** par le client, (b) la **réalité terrain** (perf mobile/4G en Afrique de l'Ouest → tempérer les effets lourds type liquid glass).
 3. **Garder** ce qui est bon (souvent la typo). *Ex.* : on a gardé **Cormorant** (titres) ; on a remplacé le body par **Jost** (Montserrat jugé « sur-utilisé » par le hook impeccable).
@@ -83,9 +90,16 @@ Script **ré-exécutable** (quand le client envoie d'autres photos). Voir `SKILL
 
 ## PHASE 6 — QA réelle (navigateur)
 1. **Serveur local** : `python -m http.server <PORT> --directory <dossier client>`.
-2. **Captures Edge headless** (desktop + mobile) → relire les PNG (QA visuelle).
-   `msedge --headless --disable-gpu --no-sandbox --hide-scrollbars --user-data-dir=... --force-device-scale-factor=1 --virtual-time-budget=6000 --window-size=W,H --screenshot=out.png URL`
-3. **Mesure du débordement horizontal** : page diag (iframe même origine) + `--dump-dom` → `scrollWidth` vs `clientWidth` → **doit être `over=0`** (mobile inclus).
+2. **Suite `_qc.py`** (gabarit dans `templates/`) : débordement, cibles ≥ 44 px, erreurs JS,
+   ressources manquantes, règles de perf. **Doit afficher « TOUT EST VERT ».**
+   ⚠️ **Playwright avec émulation réelle** (`is_mobile=True`), jamais une capture headless
+   nue : sans émulation le navigateur ignore le `meta viewport`, rend à 800 px et fait
+   croire à des débordements qui n'existent pas *(piège vécu le 2026-07-31)*.
+3. **REGARDER les captures, section par section, en 390 ET 1440** — non négociable.
+   Sur la vitrine Hillary, **six défauts** sont passés au travers de 53 contrôles verts :
+   un titre qui cassait à deux lignes, un survol collé après appui, un prix coupé en deux,
+   un curseur resté en 0,0, une icône illisible, un dessin qui débordait. Aucun n'était
+   visible dans le code. **Le QC protège la logique, pas le goût.**
 4. **Hook `impeccable`** (auto à chaque écriture) : corriger les vrais défauts (em-dashes en trop → `·`/ponctuation), **classer les faux positifs** (`single-font` = dû au CSS partagé : la paire Cormorant+sans est sur la page mais le hook scanne 1 fichier), gérer `overused-font` (changer la police si pertinent).
 5. **Tous les assets répondent 200** (curl pages + images + css/js).
 

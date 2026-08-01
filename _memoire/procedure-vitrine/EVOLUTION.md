@@ -543,3 +543,60 @@ sans le client) :
   via Node `fs` (utf8)** ou Python `open(...,encoding="utf-8")`. Vérifier en prod l'absence d'accents doublés.
 - **Affiche A4 + QR = livrable obligatoire pour CHAQUE client** (rappelé par Mongazi), dans
   `clients/NN/assets/docs/` ; QR (segno) vers **URLs live stables**. Donner le chemin du PDF au rapport.
+
+
+---
+
+## 2026-08-01 — Le standard « 100 000 € » : de la grille premium à la DIRECTION ARTISTIQUE
+
+**Déclencheur.** Vitrine HILLARY M. STYL v2 : 53 contrôles verts, moteur de commande métier
+complet, mobile impeccable. Mongazi regarde et dit : **« je vois un site à 100 $ »**.
+Il avait raison. Rien n'était cassé ; rien n'était mémorable.
+
+**Ce qu'on a appris, et qui remplace la grille « 10 000 $ » du 2026-06-23 :**
+
+1. **La bonne réponse à « ça fait cheap » n'est JAMAIS « ajouter des animations ».**
+   C'est **trouver l'idée**. Une phrase, une seule, qui dit ce qu'est le métier vu de
+   l'intérieur, avec un **objet concret** dedans : « une maison de couture, c'est un **fil**
+   qui va du mètre-ruban au vêtement ». Toutes les animations sortent de cet objet — le
+   rideau au fil, la piqûre, le patron à la craie, la coupe aux ciseaux, l'aiguille-curseur.
+   **Test :** si la phrase marche pour un autre client, elle est trop vague.
+
+2. **Trois choses font 80 % de l'écart, et aucune n'est une animation** :
+   la **typo display** (didone à gros corps pour la mode — Bodoni Moda ; on abandonne l'idée
+   d'une typo unique NEBULA, elle se choisit **par registre de métier**), le **rythme alterné
+   sombre/clair** des fonds section par section, et le **vide** qu'on ose laisser.
+   Et jamais `#000`/`#fff` en fond : une encre `#0B0A0C`, un papier `#F4F1EC`.
+
+3. **Le vide du héros en grand écran n'est pas un défaut, c'est une place.**
+   Sans photos client : un **dessin au trait animé** de l'objet du métier, en SVG qui se
+   trace (`stroke-dasharray`). 2 Ko, effet maximal, et zéro promesse mensongère.
+
+4. **Photos IA de produits : interdit absolu.** Une cliente qui commande sur la photo d'une
+   robe que l'atelier ne fabrique pas, c'est la maison qui paie à la livraison. Ambiance et
+   texture restent autorisées (Miss cakes, Au Braisé d'Or). Le catalogue, jamais.
+
+5. **Le QC protège la logique, pas le goût.** Six défauts sont passés au travers de 53
+   contrôles verts et de plusieurs relectures : la « coupe » du titre cassait à deux lignes
+   (tout procédé qui dépend d'une hauteur de bloc connue est un bug qui attend un écran plus
+   étroit), le `:hover` restait collé après un appui (→ `@media (hover:hover) and
+   (pointer:fine)` obligatoire sur tout survol qui recouvre), le prix se coupait en deux,
+   l'anneau du curseur traînait en 0,0, une icône était illisible à 30 px, le croquis
+   débordait. **Tous trouvés en REGARDANT les captures, section par section.**
+
+6. **Le luxe ne s'achète pas en images par seconde.** `prefers-reduced-motion` ; sur
+   téléphone on fige le grain et on retire une nappe floutée ; **aucune animation infinie
+   sous un `backdrop-filter`** — c'est désormais un **contrôle automatique** de la suite QC.
+   Aucune bibliothèque : tout tient en CSS + ~150 lignes de JS.
+
+7. **Source / construction / livrable.** `_vitrine_src.html` → `_build.py` → `vitrine.html`
+   généré, jamais édité à la main. Gabarits réutilisables ajoutés dans
+   `_memoire/procedure-vitrine/templates/`.
+
+**Intégré au skill :** nouveau document `DIRECTION-ARTISTIQUE.md` (le manuel), référencé en
+tête de `SKILL.md`, en PHASE 1 et PHASE 6 de `PROCEDURE.md`, et en tête des `CONVENTIONS.md`.
+**PHASE 6 corrigée** : les captures Edge headless nues sont remplacées par Playwright avec
+émulation réelle — sans émulation, le navigateur ignore le `meta viewport`, rend à 800 px et
+fait croire à des débordements qui n'existent pas.
+
+**Exécution de référence :** `clients/10-hillary-m-styl/` (direction « LE FIL »), 64 contrôles.

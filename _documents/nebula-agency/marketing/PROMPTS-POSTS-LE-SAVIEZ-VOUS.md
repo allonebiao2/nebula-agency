@@ -372,9 +372,263 @@ atteindre. Il a l'argent, il a l'envie, il n'a que la preuve qui manque.
 
 ---
 
+---
+
+## 3bis. La semaine complète · 7 posts, du lundi au dimanche
+
+**Même prompt-maître, même rubrique.** On ne change que le bloc `CONTENT`.
+Cette série se publie **un post par jour pendant sept jours** — un rythme de campagne,
+à utiliser au lancement de la vague 1 ou avant une tournée de prospection.
+
+⚠️ L'alternance est calculée : **jamais deux « ça vous concerne » d'affilée.**
+Quatre posts ne vendent rien du tout. Ce sont eux qui achètent le droit aux trois autres.
+
+| Jour | Post | Famille | Ce que ça sert |
+|---|---|---|---|
+| Lundi | 9 · La zone du pouce | **Cadeau pur** | — |
+| Mardi | 10 · Le nom mal écrit | Ça vous concerne | Vitrine |
+| Mercredi | 11 · 4 Mo contre 200 Ko | **Cadeau pur** | — |
+| Jeudi | 12 · Le catalogue qui vit enfermé | **Cadeau pur** | Catalogue (en creux) |
+| Vendredi | 13 · Les douze allers-retours | Ça vous concerne | Catalogue |
+| Samedi | 14 · L'heure où l'on vous écrit | **Cadeau pur** | — |
+| Dimanche | 15 · Le client que vous avez déjà | Ça vous concerne | Outil métier |
+
+---
+
+### Post 9 · Lundi — La zone du pouce
+
+```
+TOPIC ....... On tient son téléphone d'une main. Le pouce n'atteint
+              confortablement que le bas de l'écran. Un bouton placé en
+              haut demande un effort, et l'effort fait renoncer.
+LABEL ....... "LE SAVIEZ-VOUS ?"
+HEADLINE .... "Votre bouton est"
+              "trop haut."
+              Emphasis word: "haut"
+TEACHING VISUAL:
+              Clean instructional diagram. A stylised smartphone seen from the
+              front, held in one hand, the hand rendered as a simple silhouette
+              gripping the lower left edge. Overlaid on the screen: a translucent
+              arc sweeping from the thumb's base across the LOWER THIRD of the
+              screen, glowing warm and clearly reachable. Above that arc, the
+              upper two thirds are rendered cold, dim and slightly desaturated.
+              A single call-to-action button sits INSIDE the warm arc, luminous.
+              A second, ghosted button sits in the cold zone, faded, with a
+              small thin arrow showing the thumb straining upward and not
+              quite reaching it.
+              Inline captions: "Zone du pouce" (on the warm arc) /
+              "Zone morte" (on the cold area)
+BODY ........ "Le pouce ne monte pas."
+              "Ce qui compte se met en bas."
+```
+**Légende :** Regardez comment vous tenez votre téléphone en ce moment. Une main, un pouce,
+et un arc de cercle qui s'arrête au tiers de l'écran. Tout ce qui est au-dessus demande de
+se replacer. Sur un site, ce petit effort suffit à faire renoncer. Le numéro, le bouton
+« commander », le WhatsApp : en bas, toujours.
+
+---
+
+### Post 10 · Mardi — Le nom mal écrit
+
+```
+TOPIC ....... Vos clients n'écrivent pas votre nom comme vous l'écrivez.
+              Accents oubliés, espaces en trop, orthographe approximative.
+              Sans page à vous, ces recherches ne mènent nulle part —
+              ou pire, chez un autre.
+LABEL ....... "LE SAVIEZ-VOUS ?"
+HEADLINE .... "Personne n'écrit"
+              "votre nom comme vous."
+              Emphasis word: "personne"
+TEACHING VISUAL:
+              Composition on two levels. TOP: four small paper slips at slight
+              random angles, each showing the SAME business name written
+              differently — with and without accents, with a space, with a
+              spelling slip. Render them as handwriting-like type, imperfect,
+              human. Each slip has a thin arrow leaving it. BOTTOM: all four
+              arrows converge into ONE upright luminous card bearing a small QR
+              code, perfectly stable and sharp. The contrast is between four
+              uncertain attempts and one certain destination.
+              Inline captions: "Quatre façons de l'écrire" (top) /
+              "Une seule adresse" (bottom)
+BODY ........ "Il tape votre nom de mémoire."
+              "S'il se trompe, il ne vous trouve pas."
+```
+**Légende :** Votre nom, vous l'écrivez parfaitement. Vos clients, non. Ils oublient un
+accent, ajoutent un espace, se trompent d'une lettre — et ils ne recommencent pas. Une
+adresse à vous, un QR code, un lien : ça marche même quand la mémoire ne marche pas.
+
+---
+
+### Post 11 · Mercredi — 4 Mo contre 200 Ko
+
+```
+TOPIC ....... Une photo sortie d'un téléphone pèse plusieurs mégaoctets.
+              Réduite correctement, elle pèse vingt fois moins et reste
+              identique à l'œil. Sur une connexion mobile, c'est la
+              différence entre huit secondes d'attente et une.
+LABEL ....... "LE SAVIEZ-VOUS ?"
+HEADLINE .... "Votre photo pèse"
+              "vingt fois trop."
+              Emphasis word: "vingt"
+TEACHING VISUAL:
+              A balance scale, seen straight on, elegant and minimal.
+              LEFT PAN, sunk low under the weight: a photo card, and beside it
+              a bold weight label "4 Mo" and a small circular loading indicator
+              with "8 s". RIGHT PAN, risen high: THE EXACT SAME photo card,
+              visually identical in sharpness and colour, with the label
+              "200 Ko" and a small check mark with "1 s". The two photo cards
+              must be indistinguishable — that is the entire point of the image.
+              Inline caption running under both pans:
+              "Même photo. Même netteté."
+BODY ........ "L'œil ne voit pas la différence."
+              "La connexion, si."
+```
+**Légende :** Une photo prise au téléphone sort à 4 Mo. Sur une 4G qui tousse, c'est huit
+secondes d'écran blanc — et huit secondes, personne ne les attend. Réduite à 200 Ko, c'est
+exactement la même photo à l'œil, et elle s'affiche tout de suite. On ne perd pas en
+qualité, on perd du poids.
+
+---
+
+### Post 12 · Jeudi — Le catalogue qui vit enfermé
+
+```
+TOPIC ....... Le catalogue de WhatsApp Business est un bon outil, mais il
+              n'existe que dans WhatsApp : on ne peut pas le trouver sur
+              internet, ni l'ouvrir sans l'application, ni le mettre sur
+              une affiche autrement qu'en passant par un numéro.
+LABEL ....... "LE SAVIEZ-VOUS ?"
+HEADLINE .... "Votre catalogue vit"
+              "enfermé."
+              Emphasis word: "enfermé"
+TEACHING VISUAL:
+              A glass dome, drawn in thin luminous lines, sealed on a dark
+              surface. INSIDE the dome: a small warm-lit grid of product cards,
+              cosy and complete, clearly alive. OUTSIDE the dome, in cold grey:
+              a browser window, a search field, and a printed poster — all
+              rendered dim and unreachable. One thin arrow leaves the outside
+              world toward the dome and BOUNCES OFF its surface, drawn with a
+              small deflection mark. No brand names, no app logos of any kind.
+              Inline captions: "Il vit ici" (inside) /
+              "Il n'existe pas ici" (outside)
+BODY ........ "Il est très bien là où il est."
+              "Le problème, c'est qu'il n'en sort pas."
+```
+**Légende :** Le catalogue de WhatsApp Business est utile, et gratuit — on ne va pas dire
+le contraire. Mais il ne vit que dans l'application. On ne le trouve pas sur internet, on
+ne l'ouvre pas sans avoir le numéro, on ne le met pas sur une affiche. Ce n'est pas un
+mauvais outil : c'est un outil qui n'a pas de porte vers l'extérieur.
+
+---
+
+### Post 13 · Vendredi — Les douze allers-retours
+
+```
+TOPIC ....... Une vente sans prix affiché coûte une dizaine de messages :
+              c'est combien, tu l'as en rouge, tu livres, c'est disponible.
+              Une page qui répond d'avance remplace toute la conversation.
+LABEL ....... "LE SAVIEZ-VOUS ?"
+HEADLINE .... "Douze messages"
+              "pour une vente."
+              Emphasis word: "Douze"
+TEACHING VISUAL:
+              Split composition, vertical divider. LEFT: a tall stacked column
+              of twelve chat bubbles, cramped and repetitive, the same short
+              questions recurring — render three of them legibly:
+              "C'est combien ?", "Tu l'as en rouge ?", "Tu livres ?" — and let
+              the rest fade into a compressed grey stack. A large numeral "12"
+              floats faintly behind them. RIGHT: ONE single luminous product
+              card, showing a price line, three small colour dots, and a small
+              delivery icon — everything answered at once. A large numeral "1"
+              behind it, clean and confident.
+              Inline captions: "Douze messages" / "Un lien"
+BODY ........ "Chaque question posée est une vente ralentie."
+              "Répondez avant qu'elle arrive."
+```
+**Légende :** Comptez vos conversations d'hier. Combien de fois avez-vous écrit le même
+prix, la même couleur, le même « oui je livre » ? Ce ne sont pas des clients difficiles :
+ce sont des informations qui manquaient. Une page qui répond d'avance vous rend vos
+journées.
+
+---
+
+### Post 14 · Samedi — L'heure où l'on vous écrit
+
+```
+TOPIC ....... Les gens regardent les commerces le soir, entre 21 h et 23 h,
+              une fois la journée finie. C'est l'heure où le commerçant
+              dort — donc l'heure où personne ne répond.
+LABEL ....... "LE SAVIEZ-VOUS ?"
+HEADLINE .... "On vous écrit"
+              "quand vous dormez."
+              Emphasis word: "dormez"
+TEACHING VISUAL:
+              A circular 24-hour dial, drawn in thin elegant lines on a dark
+              field, hours marked discreetly. A luminous arc glows along the
+              segment between 21 and 23, clearly the brightest zone of the
+              whole ring. Small message icons cluster densely along that arc
+              and thin out everywhere else. At the centre of the dial, a small
+              simple house shape with one warmly lit window. The rest of the
+              ring stays cold and quiet.
+              Inline caption on the glowing arc: "21 h — 23 h"
+BODY ........ "Le client décide le soir."
+              "Il achète chez celui qui a déjà répondu."
+```
+**Légende :** Le soir, la journée est finie, le téléphone sort. C'est là qu'on regarde les
+boutiques, qu'on compare, qu'on décide. Et c'est là que personne ne répond. Le lendemain
+matin, la décision est déjà prise — ailleurs. Une page qui affiche tout travaille pendant
+que vous dormez.
+
+---
+
+### Post 15 · Dimanche — Le client que vous avez déjà
+
+```
+TOPIC ....... Faire revenir un client coûte bien moins cher que d'en
+              trouver un nouveau. Mais sans son nom ni son numéro quelque
+              part, on recommence à zéro à chaque fois : on rachète les
+              mêmes clients toute l'année.
+LABEL ....... "LE SAVIEZ-VOUS ?"
+HEADLINE .... "Vous rachetez les mêmes"
+              "clients chaque mois."
+              Emphasis word: "rachetez"
+TEACHING VISUAL:
+              Two parallel paths, seen side by side, separated by a thin divider.
+              LEFT PATH: faint human silhouettes enter through a door, pass a
+              counter, and exit through a back opening into darkness — the path
+              is one-way and the figures dissolve as they leave. Nothing remains
+              behind them. RIGHT PATH: the same silhouettes follow the same
+              route, but each one leaves behind a small luminous contact card
+              at the counter; the cards accumulate into a neat, orderly, glowing
+              stack, and a thin curved arrow loops from the stack back to the
+              entrance door.
+              Inline captions: "Il achète, il repart" (left) /
+              "Il achète, il revient" (right)
+BODY ........ "Le client le moins cher est celui"
+              "qui vous connaît déjà."
+```
+**Légende :** Trouver un nouveau client coûte cher : de l'affichage, du temps, de la
+persuasion. Le faire revenir ne coûte presque rien — à condition de savoir qui il est.
+Sans un endroit où son nom reste, chaque mois recommence à zéro. Ce n'est pas un problème
+de clients : c'est un problème de mémoire.
+
+---
+
+### Comment enchaîner les deux séries
+
+Les 8 posts du §3 tiennent **un mois à deux publications par semaine**.
+Les 7 posts ci-dessus tiennent **une semaine à un post par jour**.
+
+**L'ordre recommandé :** la semaine intensive d'abord, pour exister d'un coup, puis le
+rythme de croisière mardi/vendredi avec la série de huit. Après quinze posts, on ne
+recommence pas au début : on reprend les deux ou trois qui ont le mieux marché, on refait
+l'image, on change la légende. Un bon post se republie ; un fil neuf ne se fabrique pas
+chaque semaine.
+
 ## 4. Le rythme de publication
 
 **Deux publications par semaine, mardi et vendredi.** Huit posts tiennent un mois complet.
+*Pour une campagne intensive d'un post par jour pendant sept jours, voir le §3bis.*
 
 | Famille | Posts | Ce qu'elle fait |
 |---|---|---|

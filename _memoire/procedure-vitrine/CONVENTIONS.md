@@ -10,8 +10,34 @@
   - **Jamais** d'images en CDN Google Drive.
 - Dossiers client : `clients/NN-slug/` avec `assets/{images,videos,docs}` + `CONTEXT.md`.
 
+## Direction artistique — le standard « 100 000 € » *(2026-08-01, non négociable)*
+> Manuel complet : **`_memoire/procedure-vitrine/DIRECTION-ARTISTIQUE.md`**, à lire
+> AVANT d'écrire une ligne de CSS, sur chaque vitrine.
+
+- **Une vitrine n'est pas finie quand elle marche, elle est finie quand elle impressionne.**
+  QC vert et beauté sont **deux** critères de sortie, pas un.
+- **La phrase d'abord** : ce qu'est le métier vu de l'intérieur, en une ligne, avec un objet
+  concret (le fil, la braise). Toutes les animations en sortent. Sans phrase, on décore.
+- **Une animation signature DIFFÉRENTE par section, tirée du métier.** Une animation
+  transposable telle quelle chez un autre client est à refaire.
+- **Les trois choses qui font 80 % de l'écart, et aucune n'est une animation** : la typo
+  display à caractère et à gros corps (didone/garamond/grotesque selon le registre, jamais
+  Montserrat/Inter/Roboto/Poppins), le **rythme alterné sombre/clair** des fonds, et le
+  **vide** qu'on ose laisser. Jamais de `#000` ni de `#fff` en fond : une encre, un papier.
+- **INTERDIT ABSOLU : une photo produit générée par IA présentée comme le catalogue du
+  client.** Aucune exception, même « pour la démo ». Ambiance et texture : autorisées.
+  Sans photos → dessin au trait animé (SVG qui se trace) + cartes « photo à venir ».
+- **Perf** : `prefers-reduced-motion` ; sur téléphone on fige le grain et on retire une
+  nappe floutée ; **aucune animation infinie sous un `backdrop-filter`** ; **jamais de
+  `transform` sur un écran contenant un `position:fixed`**. Aucune bibliothèque.
+- **Source / construction / livrable** : on édite `_vitrine_src.html`, `_build.py` génère
+  `vitrine.html` — **jamais édité à la main**. Gabarits : `procedure-vitrine/templates/`.
+- **Regarder les captures section par section** en 390 et 1440 avant de dire « fini ».
+
 ## Visuel / UX
-- **Typo** : display **Cormorant** (serif) + body **sans distinctive** (Jost ; éviter Montserrat/Inter/Roboto « sur-utilisés »).
+- **Typo** : display **selon le registre du métier** (didone Bodoni pour la mode, Cormorant
+  pour la matière/l'artisanat, grotesque à caractère pour le commerce) + body sans
+  distinctive. Éviter Montserrat/Inter/Roboto/Poppins « sur-utilisés ». Voir DIRECTION-ARTISTIQUE §2.1.
 - **Palette** : respecter la **couleur imposée** par le client ; accents métier (or/argent pour bijoux).
 - **0 emoji en icône** → **SVG** (cohérents, viewBox 24, stroke uniforme).
 - **Accessibilité** : contraste ≥ 4.5:1, focus visibles, `aria-label` sur icônes/boutons, labels de formulaire, alt descriptifs.
