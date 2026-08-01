@@ -6,6 +6,8 @@
 <title>HILLARY M. STYL — Prêt-à-porter & sur-mesure</title>
 <meta name="description" content="HILLARY M. STYL — maison de couture. Prêt-à-porter et sur-mesure, mesures prises en ligne, retrait à l'atelier ou expédition. Commandez sur WhatsApp.">
 <meta name="theme-color" content="#0A0A0A">
+<meta property="og:url" content="https://hillary-m-styl.pages.dev">
+<link rel="canonical" href="https://hillary-m-styl.pages.dev">
 <meta property="og:type" content="website">
 <meta property="og:title" content="HILLARY M. STYL — Prêt-à-porter & sur-mesure">
 <meta property="og:description" content="Vos tenues, à votre taille ou à vos mesures. Commande en ligne, retrait à l'atelier ou expédition.">
@@ -349,9 +351,9 @@ footer .sig{margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,2
         du pays de destination et s'affichent avant que vous ne validiez.</p>
     </div>
     <div class="infos">
-      <div class="info rv"><div class="lab">Adresse</div><p id="i-adresse">À compléter</p></div>
-      <div class="info rv"><div class="lab">Horaires</div><p id="i-horaires">À compléter</p></div>
-      <div class="info rv"><div class="lab">WhatsApp</div><p id="i-wa">À compléter</p></div>
+      <div class="info rv"><div class="lab">Adresse</div><p id="i-adresse">Retrait sur rendez-vous · le point de retrait vous est donné sur WhatsApp</p></div>
+      <div class="info rv"><div class="lab">Confection</div><p id="i-horaires">10 à 14 jours · 4 à 6 jours en express</p></div>
+      <div class="info rv"><div class="lab">WhatsApp</div><p id="i-wa">+229 51 37 47 93</p></div>
       <div class="info rv"><div class="lab">Retrait atelier</div><p>Gratuit, dès que votre tenue est prête</p></div>
     </div>
   </div>
@@ -389,20 +391,19 @@ footer .sig{margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,2
 "use strict";
 
 /* ═══════════════════════════════════════════════════════════════════
-   ⚠️  ZONE À COMPLÉTER PAR NEBULA AVANT MISE EN LIGNE
-   Tout ce qui suit est en attente des informations de la cliente.
-   Ne rien inventer : ces valeurs partent chez de vrais clients.
+   RÉGLAGES DE LA BOUTIQUE
+   Numéro WhatsApp posé le 2026-08-01 (fourni par Mongazi).
+   Restent des valeurs d'exemple : frais d'expédition, délais, catalogue, photos.
    ═══════════════════════════════════════════════════════════════════ */
 
-// ⚠️ NUMÉRO WHATSAPP — à confirmer avec Hillary avant toute diffusion.
-//    Format international sans + ni espaces. Ex. Bénin : 229XXXXXXXX
-var WHATSAPP = "22900000000";
+// Numéro WhatsApp d'Hillary (format international, sans + ni espaces).
+var WHATSAPP = "22951374793";
 
-// ⚠️ COORDONNÉES DE L'ATELIER
+// Coordonnées de l'atelier
 var ATELIER = {
-  adresse : "Adresse de l'atelier à confirmer",
-  horaires: "Horaires à confirmer",
-  wa_lisible: "Numéro à confirmer"
+  adresse : "Retrait sur rendez-vous · le point de retrait vous est donné sur WhatsApp",
+  horaires: "10 à 14 jours · 4 à 6 jours en express",
+  wa_lisible: "+229 51 37 47 93"
 };
 
 // ⚠️ FRAIS D'EXPÉDITION — valeurs provisoires, à remplacer par les tarifs réels.
@@ -417,7 +418,7 @@ var LIVRAISON = [
   { id:"autre",   pays:"Autre pays",          frais:null,  delai:"sur devis" }
 ];
 
-// ⚠️ DÉLAIS DE CONFECTION — à confirmer avec l'atelier.
+// DÉLAIS DE CONFECTION — valeurs d'exemple : Hillary n'a pas encore donné les siennes.
 var DELAIS = [
   { id:"normal",  nom:"Délai normal",  duree:"10 à 14 jours", sup:0 },
   { id:"express", nom:"Express",       duree:"4 à 6 jours",   sup:10000 }
@@ -462,7 +463,7 @@ var PIECES = [
     desc:"Vous avez une photo ou une idée ? Envoyez-la, on la réalise.", genre:"femme" }
 ];
 
-/* ═══════════════ FIN DE LA ZONE À COMPLÉTER ═══════════════ */
+/* ═══════════════ FIN DES RÉGLAGES DE LA BOUTIQUE ═══════════════ */
 
 var MESURES = {
   femme:[["poitrine","Tour de poitrine"],["taille","Tour de taille"],["hanches","Tour de hanches"],

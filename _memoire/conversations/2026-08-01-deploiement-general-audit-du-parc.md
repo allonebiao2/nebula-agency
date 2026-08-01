@@ -1,4 +1,4 @@
-# 2026-08-01 — Déploiement général : audit du parc, 2 sites redéployés, 2 apps Railway hors ligne
+# 2026-08-01 — Déploiement général : audit du parc, 3 sites déployés (dont la mise en ligne d'Hillary), 2 apps Railway hors ligne
 
 ## Demande
 Mongazi : « déploie absolument tout, commit, push et dispatch en mémoire / Obsidian »,
@@ -28,7 +28,8 @@ se fait après `sed 's#\.\./assets#/assets#g'`. Résultat : **0 ligne de diff**,
 | djambar-team + domaine | à jour (index, bijouterie, communication, événementiel, 404) |
 | miss-cakes | à jour |
 | speed-weinkeller | à jour (index, speed, weinkeller) |
-| **hh-design** | **redéployé proprement (demande « site d'Hillary »)** |
+| **hh-design** | **redéployé proprement** (le CONTEXT interne partait en ligne) |
+| **hillary-m-styl** | **CRÉÉ ET MIS EN LIGNE** (client 10, voir §3) |
 | au-braise-dor | à jour |
 | digital-hse | à jour (5 écrans) |
 | fitora | à jour |
@@ -50,7 +51,7 @@ Récupérés avec `git checkout -- clients/04-luxury-skin-clinic/assets/docs/`.
 Déploiement : `wrangler pages deploy . --project-name luxury-club-229` (14 fichiers).
 Vérifié : `luxuryclub229.com/ina-luxury` = md5 identique au local, affiche A4 PDF = 200.
 
-### 2. HH Design — « le site d'Hillary »
+### 2. HH Design — d'abord pris à tort pour « le site d'Hillary »
 Aucune dérive du HTML, mais le déploiement précédent poussait **tout le dossier**, y compris
 `CONTEXT.md` (nos notes internes : numéro « à confirmer », historique du pivot immobilier).
 Le CONTEXT du client demandait pourtant « un dossier propre, sans exposer CONTEXT/scripts ».
@@ -59,6 +60,39 @@ Reconstruit `_dist` = `index.html` + `affiche.html` + `assets/` = **26 fichiers*
 puis `wrangler pages deploy _dist --project-name hh-design`.
 Vérifié : index md5 identique, affiche 200, vidéo héro 200, affiche PDF 200,
 `/CONTEXT.md` ne renvoie plus le markdown mais le repli du site.
+
+### 3. HILLARY M. STYL (client 10) — MIS EN LIGNE
+« Le site d'Hillary » ne désignait pas HH Design mais le **client 10**, créé le 2026-07-31 par
+une autre session et poussé sur `main` pendant celle-ci. Il a fallu `git merge origin/main`
+pour le récupérer (le piège n°1 de ce dépôt, encore).
+
+Son `CONTEXT.md` interdisait la mise en ligne : **numéro WhatsApp de test `22900000000`**,
+donc aucune commande n'arrivait, et un atelier « à confirmer ». Question posée à Mongazi,
+qui a donné le vrai numéro : **+229 51 37 47 93**.
+
+Fait ensuite :
+- `_outils/_apply_infos.py` — script UTF-8 **idempotent** qui pose le numéro et refuse
+  d'écrire s'il reste `22900000000`, « à confirmer » ou « ZONE À COMPLÉTER » dans la page.
+- Les placeholders publics retirés **sans rien inventer** : l'adresse devient « Retrait sur
+  rendez-vous · le point de retrait vous est donné sur WhatsApp » (vrai), la carte « Horaires »
+  devient « Confection » et reprend les délais déjà affichés dans le tunnel de commande.
+  Écrit **en dur dans le HTML** en plus du JS : sinon le visiteur lit « À compléter » pendant
+  le temps de chargement du script, et un moteur de recherche aussi.
+- `og:url` + `canonical` posés (ce site se partagera surtout par WhatsApp).
+- **Affiche A4 300 DPI + 2 QR** (`_outils/_build_affiche.py`, PIL + qrcode + reportlab, sans
+  navigateur) : QR catalogue et QR WhatsApp **pré-rempli**. Les deux ont été **relus par
+  décodage depuis l'affiche finale** (OpenCV `detectAndDecodeMulti`), pas depuis les fichiers
+  QR isolés — c'est l'affiche qu'on imprime, c'est donc elle qu'il faut valider.
+  Premier tirage refait : le numéro de téléphone tombait à cheval sur le bandeau noir.
+- Déploiement : projet Pages **créé** (`wrangler pages project create hillary-m-styl`) puis
+  `pages deploy _dist` d'**un seul fichier** — la vitrine est autonome (logo et favicon en
+  base64), aucun asset externe à publier.
+- Vérifié : **https://hillary-m-styl.pages.dev** répond 200, md5 identique au local,
+  le numéro est dans la page, aucun placeholder public restant.
+
+**Restent des valeurs d'exemple** : frais d'expédition par pays, délais, pièces et prix,
+et **aucune photo** n'a été fournie. Le tarif d'expédition est celui qui coûte de l'argent
+à chaque commande s'il est faux : c'est la première chose à obtenir d'Hillary.
 
 ## ⚠️ Découverte importante : deux apps Railway sont HORS LIGNE
 | App | URL | État |
@@ -105,3 +139,9 @@ Commités : les 8 captures/photos de `_partage/` et les 2 captures QC de Speed �
 - **Déployer `.` expose les notes internes.** Toujours passer par un `_dist` explicite.
 - **11 octets d'écart suffisent à faire une dérive de prod.** Seule la comparaison md5
   page par page la voit ; l'œil, non.
+
+- **« Le site d'Hillary » n'était pas HH Design.** Aucun « Hillary » dans le dépôt local :
+  le client 10 venait d'être poussé depuis une autre session. Avant de deviner à qui
+  correspond un nom, faire `git fetch` : le dépôt distant savait, pas le local.
+- **Un QR se valide sur l'affiche imprimée, pas sur le fichier QR.** C'est la composition
+  finale (échelle, marges, contraste) qui décide si un téléphone lit le code.

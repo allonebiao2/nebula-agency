@@ -56,14 +56,14 @@ puis la commande part sur WhatsApp en message structuré, avec toutes les mesure
 
 ---
 
-## 3. ⚠️ À CONFIRMER AVANT MISE EN LIGNE
+## 3. CE QUI RESTE À OBTENIR D'HILLARY
 
-**Rien de tout cela n'a été inventé : les valeurs en place sont des exemples clairement
-marqués dans le code, en haut du `<script>`, dans un bloc « ZONE À COMPLÉTER ».**
+**Rien n'a été inventé : les valeurs en place sont des exemples clairement marqués dans le
+code, en haut du `<script>`, dans le bloc « RÉGLAGES DE LA BOUTIQUE ».**
 
-| # | Information | Pourquoi c'est bloquant |
+| # | Information | Pourquoi ça compte |
 |---|---|---|
-| 1 | **Numéro WhatsApp** (`WHATSAPP`) | Actuellement `22900000000`. **Aucune commande n'arrivera** tant qu'il n'est pas remplacé |
+| 1 | ~~Numéro WhatsApp~~ | ✅ **POSÉ le 2026-08-01** : `22951374793` (+229 51 37 47 93), donné par Mongazi. Les commandes arrivent |
 | 2 | **Frais d'expédition par pays** (`LIVRAISON`) | Valeurs provisoires. Un tarif faux coûte de l'argent à la cliente **à chaque commande** |
 | 3 | **Délais de confection** (`DELAIS`) | 10-14 jours en normal, 4-6 en express : à valider avec l'atelier |
 | 4 | **Le catalogue** (`PIECES`) | 12 modèles d'exemple avec des prix d'exemple. À remplacer par les vraies pièces |
@@ -89,14 +89,36 @@ sont en 3:4). C'est ce qui fera la différence entre un catalogue correct et un 
 
 ---
 
-## 5. Reste à faire
+## 5. Mise en ligne — 2026-08-01
 
-- [ ] Récupérer les 7 informations du §3
-- [ ] Intégrer les vraies pièces, prix et photos
-- [ ] Générer le **QR code** et l'affiche A4
-- [ ] Déployer sur Cloudflare Pages (projet `hillary-m-styl`)
+**✅ LIVE : https://hillary-m-styl.pages.dev** (Cloudflare Pages, projet `hillary-m-styl`).
+
+Ce qui a été fait ce jour-là :
+- **Vrai numéro WhatsApp posé** (`22951374793`) via `_outils/_apply_infos.py` — script UTF-8
+  idempotent, avec garde-fous qui refusent d'écrire s'il reste `22900000000`, « à confirmer »
+  ou « ZONE À COMPLÉTER » dans la page.
+- **Plus aucun placeholder sur la page publique** : l'adresse devient « Retrait sur rendez-vous ·
+  le point de retrait vous est donné sur WhatsApp » (vrai, et rien d'inventé), et la carte
+  « Horaires » devient « Confection » avec les délais déjà affichés dans le tunnel. Les trois
+  valeurs sont aussi écrites **en dur dans le HTML**, pas seulement injectées par le JS : sans ça
+  un visiteur voyait « À compléter » le temps que le script s'exécute.
+- **`og:url` + `<link rel="canonical">`** ajoutés (le site se partage sur WhatsApp).
+- **Affiche A4 300 DPI + 2 QR** (`_outils/_build_affiche.py`) : QR site et QR WhatsApp
+  **pré-rempli** (« Bonjour HILLARY M. STYL, je viens de votre affiche… »), fond crème, accents
+  magenta, logo réel. **Les deux QR ont été relus par décodage depuis l'affiche elle-même**,
+  pas seulement depuis les fichiers QR isolés.
+- Déploiement d'un `_dist` d'**un seul fichier** : la vitrine est entièrement autonome
+  (logo et favicon en base64), aucun asset externe n'a besoin d'être publié.
+
+### Reste à faire
+- [ ] **Frais d'expédition réels** (`LIVRAISON`) — les valeurs actuelles sont des exemples,
+      et un tarif faux se paie à chaque commande
+- [ ] Délais de confection réels (`DELAIS`) et prix du supplément express
+- [ ] Vraies pièces et vrais prix (`PIECES`) — 12 modèles d'exemple aujourd'hui
+- [ ] **Photos des pièces** — aucune fournie, les cartes affichent un visuel de substitution
+- [ ] Adresse et horaires de l'atelier, si Hillary veut les afficher
 - [ ] Fiche Google Business et avis clients
-- [ ] Vérifier le numéro WhatsApp **en envoyant un vrai message dessus** avant diffusion
+- [ ] **Envoyer un vrai message de test** sur le +229 51 37 47 93 avant de diffuser l'affiche
 
 ---
 

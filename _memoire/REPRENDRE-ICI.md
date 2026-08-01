@@ -125,10 +125,17 @@ sur-mesure (8 mesures femme/homme), frais d'expédition par pays, délai normal 
 récapitulatif chiffré, envoi WhatsApp structuré.
 `clients/10-hillary-m-styl/vitrine.html` · détail et QC dans son `CONTEXT.md`.
 
-⚠️ **Ne pas mettre en ligne avant d'avoir les 7 informations du §3 de son CONTEXT.md.**
-Le numéro WhatsApp est un fixe de test (`22900000000`) : en l'état, **aucune commande
-n'arriverait**. Les frais d'expédition sont des exemples : un tarif faux coûte de l'argent
-à la cliente à chaque commande.
+✅ **EN LIGNE depuis le 2026-08-01 : https://hillary-m-styl.pages.dev**
+Mongazi a donné le vrai numéro (**+229 51 37 47 93**) : il est posé, les commandes arrivent.
+Plus aucun « à confirmer » sur la page publique. Affiche A4 + 2 QR (site et WhatsApp
+pré-rempli) dans `assets/docs/`, les deux QR relus et validés par décodage.
+
+⚠️ **Ce qui reste à obtenir d'Hillary — et pourquoi ça coûte de l'argent :**
+les **frais d'expédition** par pays sont encore des exemples (un tarif faux se paie à
+chaque commande), ainsi que les **délais**, les **pièces et leurs prix**, et **l'adresse
+de l'atelier**. **Aucune photo n'a été fournie** : les cartes affichent un visuel de
+substitution. Conseil photo à transmettre : dehors le matin ou en fin d'après-midi, à
+l'ombre, fond uni, format portrait.
 
 ## 4. Ce qui tourne déjà en production
 
