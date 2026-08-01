@@ -5,6 +5,19 @@
 
 ---
 
+
+## 2026-08-01 — INA LUXURY : « Huile Éclat Suprême » devient « Huile Clarté »
+
+- **Décidé par** : Gloria (cliente), transmis par Mongazi
+- **Portée** : nom du produit et photo du flacon, catégorie Corps / Huile corps
+- **Appliqué** : `ina-luxury.html` (carte, description, Body Pack Luxury, image),
+  `CONTEXT.md` du client, `gloria-infos.md`
+- **Non appliqué, volontairement** : les journaux de mai et la ligne « Conséquences »
+  du 2026-05-xx ci-dessous. Ce sont des enregistrements datés — à cette date, le produit
+  portait bien l'ancien nom.
+- **En attente** : la contenance. La fiche dit 100 ml / 10 500 F, la nouvelle photo montre
+  un petit flacon à pompe. À confirmer avec Gloria avant redéploiement.
+
 ## Format
 
 ```

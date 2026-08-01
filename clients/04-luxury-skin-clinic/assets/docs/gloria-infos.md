@@ -126,7 +126,7 @@ Design rose poudré + or + blanc. 6 produits. Panier multi-produits.
 | Gel Nettoyant Intime | Fraise Sucrée | 8 000 F | 100ml |
 | Huile Intime | Fruit Enchanté | 3 500 F | 10ml |
 | Crème Corps Parfumée | Night Kiss | 7 000 F | 100ml |
-| Huile Éclat Suprême | — | 10 500 F | 100ml |
+| Huile Clarté | — | 10 500 F | 100ml |
 | Maca Cream | Crème Raffermissante ⚠️ | 28 500 F | 150ml |
 | Crème Mains Luxury Skin | — | 20 000 F | 100ml |
 

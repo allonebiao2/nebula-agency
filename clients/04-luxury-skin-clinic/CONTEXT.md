@@ -39,7 +39,7 @@ toutes structurées en tiers **Luxury (médicale) en haut + Skin (semi-médicale
   « à venir »). Inclut **INA Luxury Body Butter Baiser Nocturne** (7 000 F / 100ml)
   migré depuis Cozy le 2026-05-24 (l'étiquette officielle est INA LUXURY BODY BUTTER).
 - **Corps** entièrement peuplé : Beauty Bar 3 · Crème corps 2 · Gommage 1 · Huile corps 2.
-- **Photos produits réelles** en base64 : 34 produits illustrés (Huile Éclat Suprême
+- **Photos produits réelles** en base64 : 34 produits illustrés (Huile Clarté
   ré-ajoutée le 2026-05-24) ; 2 Beauty Bars (Kojic, Milk) sans photo encore (placeholder
   dégradé en attendant). Toutes les images normalisées en **600×800 (3:4), fond blanc,
   JPEG q78** — même canvas, produits centrés, échelle visuelle homogène dans la grille.
@@ -186,7 +186,7 @@ code (objet `SVC_ART`). Voie B (vraies photos via `_inbox/`) reste possible plus
   Beauty Bar (Corps/Beauty Bar) ; Crème au Lait de Chèvre et Beurre Clarté déplacées
   vers Corps/Crème corps ; Huile à la Rose confirmée en Corps/Huile corps. INA Luxury
   passe à 35 produits, toutes les sous-catégories Corps sont peuplées. Prix de
-  « Rose Hydra Crème » fixé à 7 000 FCFA. Cozy : Huile Éclat Suprême déjà en Corps
+  « Rose Hydra Crème » fixé à 7 000 FCFA. Cozy : Huile Clarté déjà en Corps
   (pas de rayon « huile » distinct dans Cozy) — inchangé.
 - 2026-05-19 — Corrections critiques : splash screen sur les 4 pages (logo Luxury
   Group + bouton « Entrer dans l'univers » → déblocage audio mobile garanti par un
@@ -239,7 +239,7 @@ code (objet `SVC_ART`). Voie B (vraies photos via `_inbox/`) reste possible plus
     Total : 2547 KB → 548 KB sur les 4 pages (−78 %), chargement 3G estimé
     27 s → 6 s. Aucune perte de qualité (les disk JPGs en `assets/images/`
     étaient déjà les versions canoniques, on les utilise enfin).
-  - **Cleanup** : `huile-eclat-supreme.jpg` déplacé de `cozy/corps/` vers
+  - **Cleanup** : `huile-clarte.jpg` déplacé de `cozy/corps/` vers
     `ina-luxury/corps/huile-corps/` (cross-référence à l'origine d'une
     migration produit). Body Butter Baiser Nocturne extrait du base64 vers
     `ina-luxury/corps/creme-corps/body-butter-baiser-nocturne.jpg`.
@@ -330,7 +330,7 @@ code (objet `SVC_ART`). Voie B (vraies photos via `_inbox/`) reste possible plus
     `_inbox/` traitée via `scripts/og-defringe.ps1` → 600×800 JPEG q78
     (17 KB) dans `assets/images/ina-luxury/corps/gommage/`. PNG source
     archivé dans `_inbox/_processed/`. Le produit reste dans la routine
-    Body Pack Luxury (`items:['Beurre Clarté','Huile Éclat Suprême','Concentré Fruité']`).
+    Body Pack Luxury (`items:['Beurre Clarté','Huile Clarté','Concentré Fruité']`).
 
 - 2026-05-27 — **INA Luxury : nouvelle sous-catégorie Corps / Savon Noir + 2 produits**.
   - `SUBCATS.corps` étendu : 5e entrée `{key:'savon-noir',label:'Savon Noir'}`
