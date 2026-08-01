@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>NEBULA AGENCY — Avis de recrutement</title>
+<style>
+@font-face{font-family:Archivo;src:url("data:font/woff2;base64,__ARCHIVO__") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:Manrope;src:url("data:font/woff2;base64,__MANROPE__") format("woff2");font-weight:100 900;font-display:block}
+
+@page{size:A4 portrait;margin:0}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060713; --bg2:#0B0D1E;
+  --cyan:#22D3EE; --blue:#4F6FFF; --violet:#9333EA;
+  --gold:#E8C88A; --txt:#EEF0FB; --mut:#A6ABCE;
+}
+html,body{width:210mm;height:297mm}
+body{
+  background:var(--bg); color:var(--txt);
+  font-family:Manrope,sans-serif;
+  -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  overflow:hidden;
+}
+.page{position:relative;width:210mm;height:297mm;overflow:hidden}
+
+/* ---------- la nébuleuse ---------- */
+.neb{position:absolute;inset:0}
+.neb i{position:absolute;display:block;border-radius:50%;filter:blur(26mm)}
+.n1{width:170mm;height:170mm;right:-46mm;top:-52mm;
+    background:radial-gradient(circle,rgba(34,211,238,.50),rgba(34,211,238,0) 66%)}
+.n2{width:150mm;height:150mm;left:-44mm;top:96mm;
+    background:radial-gradient(circle,rgba(79,111,255,.46),rgba(79,111,255,0) 68%)}
+.n3{width:132mm;height:132mm;right:-30mm;bottom:-38mm;
+    background:radial-gradient(circle,rgba(147,51,234,.44),rgba(147,51,234,0) 68%)}
+.n4{width:96mm;height:96mm;left:52mm;top:118mm;
+    background:radial-gradient(circle,rgba(232,200,138,.20),rgba(232,200,138,0) 70%)}
+.stars{position:absolute;inset:0}
+.grain{position:absolute;inset:0;opacity:.055;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E")}
+/* voile qui assombrit sous les textes pour garantir le contraste */
+.voile{position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(6,7,19,.60) 0%,rgba(6,7,19,.30) 26%,
+    rgba(6,7,19,.62) 52%,rgba(6,7,19,.86) 78%,rgba(6,7,19,.94) 100%)}
+
+/* ---------- contenu ---------- */
+.in{position:relative;height:100%;display:flex;flex-direction:column;align-items:center;
+    padding:15mm 16mm 13mm;text-align:center}
+.logo{width:38mm;height:auto;display:block;margin-bottom:7mm}
+
+.eyebrow{font-family:Archivo;font-weight:700;font-size:3.1mm;letter-spacing:.42em;
+  text-transform:uppercase;color:var(--cyan);margin-bottom:5mm}
+
+h1{font-family:Archivo;font-weight:800;text-transform:uppercase;line-height:.96;
+   letter-spacing:-.018em;color:#fff}
+h1 .l1{display:block;font-size:12.4mm}
+h1 .l2{display:block;font-size:18mm;margin-top:1.5mm;white-space:nowrap}
+h1 .l2 b{color:var(--gold);font-weight:800}
+
+.sub{margin-top:6mm;font-size:4.3mm;line-height:1.5;color:#D6DAF2;max-width:132mm}
+.sub b{color:#fff;font-weight:700}
+
+/* les huit places */
+.places{margin-top:7mm;width:148mm}
+.places svg{width:100%;height:auto;display:block}
+
+/* le bloc des chiffres */
+.gain{margin-top:7mm;width:158mm;border:.35mm solid rgba(34,211,238,.42);
+  border-radius:3mm;background:rgba(11,13,30,.62);padding:6mm 8mm 5.5mm}
+.gain .k{font-family:Archivo;font-weight:700;font-size:2.9mm;letter-spacing:.36em;
+  text-transform:uppercase;color:var(--cyan)}
+.gain .r{margin-top:3.5mm;font-family:Archivo;font-weight:700;font-size:7.6mm;color:var(--gold);
+  letter-spacing:-.01em}
+.gain .r span{font-size:4.2mm;color:var(--mut);font-weight:600;letter-spacing:.02em}
+.gain .hr{height:.3mm;background:rgba(166,171,206,.26);margin:4.5mm 0}
+.gain .big{font-family:Archivo;font-weight:800;font-size:16mm;line-height:1;color:#fff;
+  letter-spacing:-.03em}
+.gain .big em{font-style:normal;color:var(--gold)}
+.gain .bl{margin-top:2mm;font-size:4.1mm;color:#D6DAF2}
+.gain .vie{margin-top:4mm;font-size:3.6mm;color:var(--mut)}
+.gain .vie b{color:var(--cyan);font-weight:700}
+
+/* les trois barrières */
+.bar{margin-top:7mm;display:flex;align-items:center;gap:5.5mm}
+.bar span{font-family:Archivo;font-weight:700;font-size:3.4mm;letter-spacing:.15em;
+  text-transform:uppercase;color:#fff}
+.bar i{display:block;width:.3mm;height:5mm;background:rgba(166,171,206,.4)}
+
+/* le pied : QR + contact */
+.foot{margin-top:auto;width:100%;display:flex;align-items:center;justify-content:center;gap:7mm}
+.qrbox{width:36mm;height:36mm;background:#fff;border-radius:2mm;padding:2mm;flex:0 0 auto}
+.qrbox img{width:100%;height:100%;display:block}
+.fcta{text-align:left}
+.fcta b{display:block;font-family:Archivo;font-weight:700;font-size:5mm;color:#fff;line-height:1.2}
+.fcta span{display:block;margin-top:1.6mm;font-size:3.6mm;color:var(--mut)}
+.fcta u{display:block;margin-top:3mm;font-family:Archivo;font-weight:700;font-size:3.9mm;
+  color:var(--cyan);text-decoration:none;letter-spacing:.02em}
+
+.ligne{margin-top:5mm;font-family:Archivo;font-weight:600;font-size:3.2mm;letter-spacing:.13em;
+  color:var(--mut);text-transform:uppercase}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="neb"><i class="n1"></i><i class="n2"></i><i class="n3"></i><i class="n4"></i></div>
+  __STARS__
+  <div class="voile"></div>
+  <div class="grain"></div>
+
+  <div class="in">
+    <img class="logo" src="data:image/png;base64,__LOGO__" alt="NEBULA Agency">
+
+    <div class="eyebrow">Cotonou · Candidatures ouvertes</div>
+
+    <h1><span class="l1">Nous recrutons</span><span class="l2"><b>8</b> conseillers</span></h1>
+
+    <p class="sub">Vous savez parler aux commerçants ?<br><b>Nous, on sait les digitaliser.</b></p>
+
+    __PLACES__
+
+    <div class="gain">
+      <div class="k">Ce que ça rapporte</div>
+      <div class="r">12 500 F à 75 000 F <span>par vente</span></div>
+      <div class="hr"></div>
+      <div class="big"><em>150 000 F</em></div>
+      <div class="bl">sur un bon mois — 25 % à 35 % de commission</div>
+      <div class="vie">Et <b>25 % de chaque abonnement, à vie.</b></div>
+    </div>
+
+    <div class="bar">
+      <span>Aucun diplôme</span><i></i>
+      <span>Rien à payer</span><i></i>
+      <span>Aucune compétence technique</span>
+    </div>
+
+    <div class="foot">
+      <div class="qrbox"><img src="data:image/png;base64,__QR__" alt="QR de candidature"></div>
+      <div class="fcta">
+        <b>Scannez pour postuler</b>
+        <span>5 minutes suffisent</span>
+        <u>WhatsApp +229 96 74 07 32</u>
+      </div>
+    </div>
+
+    <div class="ligne">www.nebula-agency.online</div>
+  </div>
+</div>
+</body>
+</html>
