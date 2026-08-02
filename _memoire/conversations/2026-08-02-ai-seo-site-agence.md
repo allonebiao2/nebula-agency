@@ -102,3 +102,55 @@ déblocage tient en quelques clics.
 Le hook `impeccable` a signalé une barre bleue à gauche du chapeau : retirée, c'était un
 tic visuel inventé pour l'occasion. Inter, Syne et le dégradé du logotype ont été gardés :
 ce sont ceux du site de l'agence, en changer aurait donné une page étrangère au reste.
+
+
+---
+
+## RÉSOLU le 2026-08-02 — où était vraiment l'interrupteur
+
+Le blocage ne se voyait **ni dans les règles WAF ni dans les réglages de zone** : comparés
+un à un entre un domaine bloqué et un domaine ouvert, les rulesets étaient identiques et
+les 56 réglages de zone identiques aussi. C'est ce qui a fait perdre du temps dans le
+dashboard : il n'y a rien à voir à ces deux endroits.
+
+**L'interrupteur vit dans l'API Bot Management**, et il s'appelle `ai_bots_protection` :
+
+```
+GET  /zones/{zone}/bot_management     → ai_bots_protection = block
+PUT  /zones/{zone}/bot_management     {"ai_bots_protection":"disabled"}
+```
+
+Valeurs possibles : `block`, `only_on_ad_pages`, `disabled`. C'est le même objet qui porte
+`is_robots_txt_managed`, celui que Mongazi avait déjà désactivé dans le dashboard.
+
+État trouvé sur le parc : `nebula-agency.online` et `djambarteam.com` étaient à **`block`**,
+`luxuryclub229.com` à `only_on_ad_pages`, `graindesthetique.com` déjà à `disabled`.
+Les deux premiers ont été passés à `disabled` par l'API.
+
+⚠️ **Le jeton doit porter le droit `Zone · Bot Management`.** Avec seulement *Zone Settings*
+et *Zone WAF*, l'endpoint répond « Authentication error » : on ne peut même pas **lire** le
+réglage, donc on cherche à l'aveugle.
+
+**Vérification finale, les quatre domaines, cinq robots :**
+
+| Domaine | GPTBot | ClaudeBot | Perplexity | OAI-Search | Google-Ext |
+|---|:--:|:--:|:--:|:--:|:--:|
+| www.nebula-agency.online | 200 | 200 | 200 | 200 | 200 |
+| djambarteam.com | 200 | 200 | 200 | 200 | 200 |
+| luxuryclub229.com | 200 | 200 | 200 | 200 | 200 |
+| graindesthetique.com | 200 | 200 | 200 | 200 | 200 |
+
+Le premier contrôle après l'écriture donnait encore un 403 sur GPTBot : c'était de la
+**propagation**, résolu en une poignée de secondes. Ne pas conclure sur une seule mesure.
+
+## Découvert au passage : l'apex du site agence est cassé en HTTPS
+
+`https://nebula-agency.online` (sans `www`) renvoie **525**, pour tout le monde, robots
+comme navigateurs. `https://www.nebula-agency.online` répond 200, et `http://` sans `www`
+répond 200 aussi. Les trois autres apex du parc (`djambarteam.com`, `luxuryclub229.com`,
+`graindesthetique.com`) répondent 200.
+
+525 = Cloudflare n'arrive pas à établir TLS avec l'origine, et le mode SSL de la zone est
+`full`. L'enregistrement DNS de l'apex pointe donc vers autre chose que Cloudflare Pages,
+probablement un reste de l'ancien hébergement. **Non corrigé** : le jeton n'a pas le droit
+`Zone · DNS`, donc impossible de lire ni de corriger l'enregistrement.

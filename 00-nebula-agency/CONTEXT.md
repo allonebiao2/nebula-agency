@@ -298,14 +298,25 @@ Refonte quasi totale, validée par Mongazi (direction « refonte cosmique haut d
 
 ## AI SEO — être cité par ChatGPT, Claude, Perplexity (2026-08-02)
 
-⚠️ **Point bloquant côté Mongazi, non résolu à ce jour.** Cloudflare bloque les robots des
-IA **par défaut** depuis le 1er juillet 2025. Mesuré sur ce domaine : GPTBot, ClaudeBot et
-PerplexityBot reçoivent un **403**, et le `robots.txt` public est celui de Cloudflare
-(« Cloudflare Managed content »), qui interdit aussi Google-Extended.
-→ **Dashboard Cloudflare → Sécurité → Bots → désactiver « AI Scrapers and Crawlers » et
-« Manage robots.txt ».** À faire aussi sur `djambarteam.com`, `luxuryclub229.com` et
-`graindesthetique.com`. Le jeton API du dépôt (droits Pages seulement) ne peut pas le faire.
-**Tant que ce n'est pas fait, le `robots.txt` que nous déployons n'est pas servi.**
+✅ **RÉSOLU le 2026-08-02.** Cloudflare bloquait les robots des IA **par défaut** depuis le
+1er juillet 2025 : GPTBot, ClaudeBot et PerplexityBot recevaient un **403**, et le
+`robots.txt` public était celui de Cloudflare. Deux verrous, levés l'un après l'autre :
+1. `is_robots_txt_managed` → désactivé par Mongazi dans le dashboard. Notre `robots.txt`
+   est désormais celui qui est servi.
+2. **`ai_bots_protection = block`** → passé à `disabled` par l'API sur `nebula-agency.online`
+   et `djambarteam.com`. ⚠️ **Ce réglage n'est ni dans les règles WAF ni dans les réglages de
+   zone** (comparés un à un : identiques entre un domaine bloqué et un domaine ouvert). Il
+   vit dans `PUT /zones/{zone}/bot_management {"ai_bots_protection":"disabled"}`, et le jeton
+   doit porter le droit **`Zone · Bot Management`** pour seulement le lire.
+
+Vérifié : les 4 domaines répondent **200** à GPTBot, ClaudeBot, PerplexityBot, OAI-SearchBot
+et Google-Extended.
+
+⚠️ **Problème distinct, NON corrigé** : `https://nebula-agency.online` (sans `www`) renvoie
+**525** pour tout le monde. Le `www` et le `http://` fonctionnent, les 3 autres apex du parc
+aussi. Cloudflare n'arrive pas à faire TLS avec l'origine de l'apex (mode SSL `full`) :
+l'enregistrement DNS pointe probablement encore vers l'ancien hébergement. Corriger demande
+le droit `Zone · DNS` sur le jeton.
 
 Livré et en ligne le 2026-08-02 :
 - `public/robots.txt` · `llms.txt` · `pricing.md` · `sitemap.xml` (avant : ces adresses
