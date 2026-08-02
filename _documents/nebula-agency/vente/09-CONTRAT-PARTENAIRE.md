@@ -169,6 +169,26 @@ du présent contrat.
 **6.6 Réclamation.** Toute contestation sur le calcul d'une commission doit être formulée
 dans les 30 jours suivant son versement.
 
+**6.7 Reprise de commission.** Une commission n'est définitivement acquise que sur une somme
+**définitivement encaissée et conservée** par NEBULA.
+
+Si un montant déjà encaissé est **remboursé au client**, ou si un encaissement est
+**annulé, rejeté ou repris** par l'établissement de paiement, la commission correspondante
+est reprise :
+
+- si elle n'a **pas encore été versée**, elle est purement et simplement annulée ;
+- si elle a **déjà été versée**, son montant est **déduit des versements suivants**, jusqu'à
+  apurement. À défaut de commissions suffisantes dans les six mois, la somme reste due par
+  le Partenaire à NEBULA.
+
+La reprise porte **uniquement sur la part effectivement remboursée**. Elle s'applique de la
+même façon à la prime de parrainage de l'article 6.3. Elle est **tracée dans l'espace
+partenaire** et notifiée au Partenaire.
+
+**Aucune reprise n'est possible lorsque le remboursement résulte d'une faute de NEBULA**
+— travail non livré, non conforme à la commande, ou abandonné de son fait. Dans ce cas la
+commission reste acquise au Partenaire, qui a fait son travail.
+
 ---
 
 ## ARTICLE 7 · ATTRIBUTION DES CLIENTS
@@ -269,8 +289,17 @@ conformément à l'article 12.3.
 ## ARTICLE 13 · RÉCLAMATIONS CLIENTS
 
 En cas d'insatisfaction d'un client, **NEBULA reprend le travail jusqu'à satisfaction**.
-Le remboursement demeure exceptionnel. **La commission du Partenaire reste acquise
-dans tous les cas.**
+La reprise du travail est la règle ; **le remboursement demeure exceptionnel**.
+
+**Tant que le travail est repris et le client servi, la commission du Partenaire reste
+acquise** : il a fait son travail, il est payé.
+
+**Si un remboursement intervient malgré tout**, la commission correspondante est reprise
+dans les conditions de l'**article 6.7** — sauf lorsque le remboursement résulte d'une faute
+de NEBULA, auquel cas elle reste acquise au Partenaire.
+
+> Cette règle n'est pas dirigée contre le Partenaire : une commission se paie sur de l'argent
+> gagné. Si NEBULA rend l'argent, il n'y a plus rien à partager.
 
 ---
 
@@ -339,6 +368,10 @@ qu'après réception de cette signature.**
 **Je ne peux pas**
 - Vendre des sites ou logiciels pour une autre agence pendant que je suis partenaire
 - Démarcher les clients NEBULA pendant 24 mois après mon départ
+
+**Si un client est remboursé** (rare : NEBULA reprend le travail jusqu'à satisfaction),
+la commission correspondante m'est reprise — sauf si le remboursement vient d'une faute de
+NEBULA, auquel cas je la garde.
 
 **Si je pars**, mes commissions sur abonnement continuent. C'est ce que j'ai construit,
 ça reste à moi.

@@ -236,6 +236,18 @@ une pyramide, ça se défend mal, et ça coûte cher sans rien produire.
 
 > **Une vente = un lead payé.** Un contact intéressé qui ne paie pas ne génère aucune commission.
 
+**Et une commission n'est acquise que sur de l'argent gardé.** Si un montant encaissé est
+remboursé au client, la commission correspondante est reprise : annulée si elle n'est pas
+encore versée, déduite des versements suivants si elle l'est déjà (contrat, article 6.7).
+
+**L'exception qui rend la règle juste : si le remboursement vient d'une faute de NEBULA**
+— travail non livré, non conforme, abandonné — **la commission reste acquise au partenaire.**
+Il a fait son travail, il n'a pas à payer notre erreur.
+
+> Le remboursement doit rester exceptionnel : la règle est qu'**on reprend le travail jusqu'à
+> satisfaction**. Un partenaire à qui on reprend une commission tous les mois est un partenaire
+> qui part — si le cas se répète, le problème est chez nous, pas chez lui.
+
 ### 4.7 Transparence dans l'espace partenaire
 
 **Le classement est entièrement visible : ventes et gains de chacun.**

@@ -118,6 +118,8 @@ et par quoi commencer. Mis à jour à chaque fin de session importante.
   NEBULA**, jamais prélevés sur la commission du filleul
 - **Récurrent : 25 % de chaque abonnement, ACQUIS À VIE**, ne compte pas dans le palier
 - **Versement des commissions : 24 à 72h** après réclamation
+- **Reprise de commission** si un encaissement est remboursé (contrat art. 6.7) —
+  sauf si le remboursement vient d'une faute de NEBULA : le partenaire garde alors sa commission
 - Vague 1 : **Cotonou, 8 places**, objectif 30 ventes / 90 jours
 - Rubrique marketing **« LE SAVIEZ-VOUS ? »** : `_documents/nebula-agency/marketing/`
 

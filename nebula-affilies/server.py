@@ -250,6 +250,7 @@ def init_db():
             level TEXT,                          -- 'direct' | 'n1' | 'n2'
             amount REAL,
             status TEXT DEFAULT 'due',           -- 'due' | 'claimed' | 'paid' | 'void'
+                                                 -- level 'reprise' = montant NÉGATIF (art. 6.7)
             created REAL, claimed_at REAL, paid_at REAL)""")
         c.execute("""CREATE TABLE IF NOT EXISTS subscriptions(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -787,7 +788,9 @@ def generate_commissions(lead: sqlite3.Row) -> Dict[str, Any]:
     empty = {"client": client, "price": int(price or 0), "service": svc, "lines": [], "total": 0, "already": False}
     entries = []  # (beneficiary_row, level, pct, amount)
     with db() as c:
-        if c.execute("SELECT COUNT(*) n FROM commissions WHERE lead_id=? AND status!='void'", (lead["id"],)).fetchone()["n"]:
+        # une REPRISE n'est pas une commission : elle ne doit pas bloquer une regeneration
+        if c.execute("SELECT COUNT(*) n FROM commissions WHERE lead_id=? AND status!='void' "
+                     "AND level!='reprise'", (lead["id"],)).fetchone()["n"]:
             return {**empty, "already": True}  # idempotent : déjà généré
         aff = c.execute("SELECT * FROM affiliates WHERE id=?", (lead["affiliate_id"],)).fetchone()
         if not aff:
@@ -820,12 +823,30 @@ def generate_commissions(lead: sqlite3.Row) -> Dict[str, Any]:
     return {"client": client, "price": int(price or 0), "service": svc, "lines": lines, "total": total, "already": False}
 
 def void_commissions(lead_id: int):
-    """Annule les commissions de VENTE d'un lead dé-marqué payé.
+    """Vente dé-marquée payée (remboursement, impayé, erreur de saisie).
+
+    Deux cas, et le second est celui qui manquait :
+      - commission PAS ENCORE VERSÉE  -> 'void', elle disparaît, personne n'est lésé ;
+      - commission DÉJÀ VERSÉE        -> on ne peut plus l'annuler, l'argent est parti.
+        On écrit alors une REPRISE : une ligne de montant NÉGATIF, statut 'due', qui
+        vient en déduction automatique du prochain versement (le solde dû est calculé
+        par somme). C'est l'article 6.7 du contrat partenaire.
+
     ⚠️ N'annule JAMAIS les commissions d'abonnement (level='abonnement') : elles
     correspondent à des encaissements distincts et sont acquises à vie."""
     with db() as c:
+        deja = c.execute("SELECT beneficiary_id, amount FROM commissions "
+                         "WHERE lead_id=? AND status='paid' AND level IN ('direct','n1','n2')",
+                         (lead_id,)).fetchall()
         c.execute("UPDATE commissions SET status='void' WHERE lead_id=? AND status!='paid' "
                   "AND level IN ('direct','n1','n2')", (lead_id,))
+        now = time.time()
+        for r in deja:
+            montant = int(r["amount"] or 0)
+            if montant > 0:
+                c.execute("INSERT INTO commissions(lead_id,beneficiary_id,level,amount,status,created) "
+                          "VALUES(?,?,'reprise',?,'due',?)",
+                          (lead_id, r["beneficiary_id"], -montant, now))
 
 
 # ============================================================================
