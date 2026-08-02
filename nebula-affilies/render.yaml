@@ -1,0 +1,48 @@
+# Render — bureau des partenaires NEBULA
+# Plan gratuit, sans carte bancaire. Le disque de Render est éphémère :
+# c'est pour ça que la base vit sur Supabase et non dans un fichier ici.
+#
+# À poser À LA MAIN dans le tableau de bord Render (onglet Environment),
+# jamais dans ce fichier, qui est public sur GitHub :
+#   DATABASE_URL        chaîne de connexion Supabase (pooler, port 6543)
+#   NAFF_ADMIN_PATH     chemin secret du cockpit
+#   NAFF_ADMIN_PASS     mot de passe admin
+#   NAFF_PUBLIC_BASE    https://partenaires.nebula-agency.online
+#   ANTHROPIC_API_KEY   pour NOVA
+#   RESEND_API_KEY      pour les emails d'accès
+#   TELEGRAM_BOT_TOKEN  pour les alertes
+#   NAFF_CRON_KEY       pour la relance des abonnements
+
+services:
+  - type: web
+    name: nebula-affilies
+    runtime: python
+    plan: free
+    region: frankfurt          # le plus proche de Cotonou parmi les régions gratuites
+    rootDir: nebula-affilies
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12"
+      - key: NAFF_PG_SCHEMA
+        value: naff
+      # les secrets se posent dans le tableau de bord, pas ici
+      - key: DATABASE_URL
+        sync: false
+      - key: NAFF_ADMIN_PATH
+        sync: false
+      - key: NAFF_ADMIN_PASS
+        sync: false
+      - key: NAFF_PUBLIC_BASE
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: NAFF_CRON_KEY
+        sync: false

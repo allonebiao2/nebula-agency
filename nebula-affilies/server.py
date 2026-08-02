@@ -177,20 +177,23 @@ TERMS_HTML = """
 <p>Les présentes sont régies par le <b>droit béninois</b>. En cas de différend, les parties privilégient un règlement amiable avant toute action.</p>
 """
 
+import dbx
+
 # ----------------------------------------------------------------------------
 # Base de données (SQLite — mémoire persistante, tout interconnecté)
 # ----------------------------------------------------------------------------
 @contextlib.contextmanager
 def db():
-    c = sqlite3.connect(DBF, timeout=30)
-    c.row_factory = sqlite3.Row
-    try:
+    """SQLite en local, PostgreSQL (Supabase) si DATABASE_URL est posée.
+    La traduction vit dans dbx.py : les requêtes du serveur ne changent pas."""
+    with dbx.ouvrir(DBF) as c:
         yield c
-        c.commit()
-    finally:
-        c.close()
 
 def init_db():
+    # Sur PostgreSQL, le schéma est posé UNE FOIS par schema_pg.sql (Supabase).
+    # On ne crée donc rien au démarrage : pas de DDL SQLite à traduire à chaud.
+    if dbx.IS_PG:
+        return
     with db() as c:
         c.execute("PRAGMA journal_mode=WAL")     # lecteurs + 1 écrivain concurrents
         c.execute("""CREATE TABLE IF NOT EXISTS affiliates(
@@ -301,6 +304,11 @@ def init_db():
 init_db()
 
 def migrate():
+    # Idem : sur PostgreSQL les colonnes sont déjà toutes dans schema_pg.sql.
+    # Et surtout, le try/except de ce bloc est un piège en Postgres : un ALTER
+    # qui échoue empoisonne toute la transaction, les suivants échouent aussi.
+    if dbx.IS_PG:
+        return
     with db() as c:
         for col, ddl in [("pseudo", "TEXT DEFAULT ''"), ("parrain_id", "INTEGER DEFAULT 0"), ("photo", "TEXT DEFAULT ''"),
                          ("direct_rate_override", "REAL DEFAULT 0"), ("email", "TEXT DEFAULT ''"),
