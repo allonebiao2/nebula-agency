@@ -175,14 +175,20 @@ et par quoi commencer. Mis à jour à chaque fin de session importante.
   ses ventes **+ celles de ses filleuls directs** atteignent **3** dans le mois. Rien au-dessus.
   Le taux s'applique à TOUT le mois et **repart à zéro le 1er** : les 40 % se regagnent
   chaque mois
-- ⛔ **UN PARTENAIRE N'EST PAYÉ QUE SUR SES PROPRES VENTES.** Plus aucun récurrent, plus
-  aucun pourcentage sur les abonnements, plus aucune commission de réseau. L'abonnement
-  (20 000 F/6 mois) est un revenu de NEBULA seule
+- **Récurrent : 20 % de chaque abonnement**, soit 4 000 F par client et par semestre,
+  **À VIE**, même après le départ du partenaire. Ne compte pas dans le palier. C'est la
+  contrepartie de la non-sollicitation de 24 mois (contrat art. 11.2)
+- **Sans paiement, le site du client est COUPÉ au 8e jour** (7 jours de courtoisie, puis
+  hébergement + sécurité interrompus, données gardées 6 mois · contrat art. 6.2 bis).
+  Frais de réactivation 5 000 F, sans commission. Le partenaire relance une semaine avant
+  l'échéance : c'est un fait technique qu'on annonce, jamais une menace qu'on brandit
+- **Contrat partenaire en version 1.2** (2026-08-02). Un partenaire encore en 1.1 doit
+  recevoir un préavis écrit de 30 jours avant toute baisse de barème (art. 6.7)
 - ⛔ **AUCUNE COMMISSION DE RÉSEAU, à aucune profondeur.** Un parrain ne touche **rien** sur
   ses filleuls : leurs ventes comptent seulement dans son **seuil de 3**. « Personne ne gagne
   d'argent sur le dos de personne » est littéralement vrai
-- ⚠️ **La relance des renouvellements devient critique** : aucun partenaire n'a plus intérêt
-  à faire renouveler un client. C'est NEBULA seule qui porte cette collecte, via n8n
+- ⚠️ **La relance des renouvellements reste critique** : les clients d'un partenaire parti
+  n'ont plus personne pour les relancer. C'est l'automatisation n8n qui porte cette collecte
 - Le rôle **superviseur** ne commande plus de barème : la grille unique l'a remplacé, il ne
   reste qu'un insigne
 - **Rangs renommés le 2026-08-02** (titres de vraie société, insignes inchangés) :

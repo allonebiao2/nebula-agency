@@ -130,7 +130,7 @@ on the large sizes, wide letter-spacing on the small uppercase labels.
       "150 000 F sur un bon mois"
 
    Small caption beneath, grey, smaller:
-      "Payé sous 24 à 72 heures, en Mobile Money."
+      "Et 20 % de chaque abonnement, à vie."
 
 5. THE THREE BARRIERS, one line, three items separated by thin vertical
    rules, uppercase, letterspaced, white:

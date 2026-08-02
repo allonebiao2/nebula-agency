@@ -851,15 +851,16 @@ def void_commissions(lead_id: int):
 
 
 # ============================================================================
-#  ABONNEMENTS : 20 000 F / 6 mois, revenu de NEBULA. AUCUNE commission partenaire.
+#  ABONNEMENTS : 20 000 F / 6 mois. Le partenaire en touche 20 %, À VIE.
 #  Voir _documents/nebula-agency/vente/10-RELANCE-RENOUVELLEMENT.md
 # ============================================================================
 
 SUB_MONTANT = 20000          # F CFA par semestre
-# ⚠️ LE PARTENAIRE NE TOUCHE PLUS RIEN SUR LES ABONNEMENTS (décision Mongazi, 2026-08-02).
-# L'abonnement reste un revenu de NEBULA et continue d'être suivi et relancé ici, mais il
-# ne génère plus aucune commission. Un partenaire n'est payé que sur SES ventes.
-SUB_RATE = 0.0
+# Le partenaire touche 20 % de CHAQUE abonnement encaissé, tous les 6 mois, À VIE
+# (décision Mongazi, 2026-08-02), soit 4 000 F par client et par semestre.
+# C'est sa seule source de revenu en dehors de ses ventes : il n'y a AUCUNE commission
+# de réseau. C'est aussi la contrepartie de la non-sollicitation de 24 mois (contrat 11.2).
+SUB_RATE = 0.20
 SUB_MOIS = 6                 # durée d'un abonnement
 SUB_OFFRES = ("catalogue", "vitrine")   # seules offres qui portent un abonnement
 
@@ -896,22 +897,33 @@ def ensure_subscription(lead: sqlite3.Row) -> Optional[int]:
     return sid
 
 def record_subscription_payment(sub_id: int) -> Dict[str, Any]:
-    """Encaissement d'un abonnement : on décale simplement l'échéance de 6 mois.
+    """Encaissement d'un abonnement : on décale l'échéance de 6 mois ET on crée la
+    commission de 20 % du partenaire.
 
-    ⚠️ AUCUNE COMMISSION N'EST CRÉÉE. Depuis le 2026-08-02 le partenaire ne perçoit plus
-    rien sur les abonnements : il n'est payé que sur ses propres ventes. L'abonnement
-    reste suivi ici parce que c'est un revenu de NEBULA et qu'il faut le relancer."""
+    Elle est due À VIE, tant que le client reste abonné, même si le partenaire a quitté
+    le programme. C'est ce lien qui rend le récurrent réellement traçable : la commission
+    n'existe nulle part ailleurs que dans cette table."""
     now = time.time()
     with db() as c:
-        s_row = c.execute("SELECT * FROM subscriptions WHERE id=?", (sub_id,)).fetchone()
-        if not s_row:
+        sub = c.execute("SELECT * FROM subscriptions WHERE id=?", (sub_id,)).fetchone()
+        if not sub:
             return {"ok": False, "error": "introuvable"}
+        lead = c.execute("SELECT * FROM leads WHERE id=?", (sub["lead_id"],)).fetchone()
+        amount = int(round((sub["montant"] or SUB_MONTANT) * SUB_RATE))
+        c.execute("INSERT INTO commissions(lead_id,beneficiary_id,level,amount,status,created) "
+                  "VALUES(?,?,'abonnement',?,'due',?)",
+                  (sub["lead_id"], sub["affiliate_id"], amount, now))
         c.execute("UPDATE subscriptions SET echeance=?, statut='actif', relances=0, "
                   "dernier_rappel=0, updated=? WHERE id=?",
-                  (_plus_mois(max(s_row["echeance"] or now, now), SUB_MOIS), now, sub_id))
+                  (_plus_mois(max(sub["echeance"] or now, now), SUB_MOIS), now, sub_id))
         nouvelle = c.execute("SELECT echeance FROM subscriptions WHERE id=?",
                              (sub_id,)).fetchone()["echeance"]
-    return {"ok": True, "amount": 0, "echeance": nouvelle}
+    client = f"{lead['prenom']} {lead['nom']}".strip() if lead else "client"
+    notify("affiliate", sub["affiliate_id"],
+           f"Commission d'abonnement à réclamer : {fmoney(amount)} F "
+           f"({int(round(SUB_RATE * 100))} % sur le renouvellement de {client}).",
+           sub["lead_id"], kind="commission", ref_aff=sub["affiliate_id"])
+    return {"ok": True, "amount": amount, "echeance": nouvelle}
 
 def subscriptions_due() -> Dict[str, list]:
     """Abonnements à relancer, classés par palier. Consommé par le workflow n8n
@@ -1005,10 +1017,11 @@ _SEED_DOCS = [
              "<h4>« On m'a déjà pris de l'argent »</h4><p>Ne défends jamais NEBULA avec des mots, défends-la avec des liens : djambarteam.com, graindesthetique.com, au-braise-dor.pages.dev. Livraison 5 à 7 jours, pas six mois.</p>"
              "<h4>« Je n'ai pas le temps »</h4><p>« Justement, vous n'avez rien à faire : vos photos et vos prix, et NEBULA s'occupe de tout. »</p>"),
             ("Tes commissions expliquées", "Formation",
-             "La grille 30 / 40 %, ce que l'équipe y change, et comment tu es payé.",
+             "La grille 30 / 40 %, tes 20 % sur les abonnements, et comment tu es payé.",
              "<h4>Ta commission (palier du mois)</h4><ul><li><b>BRONZE</b> : <b>30%</b>, par défaut</li><li><b>ARGENT</b> : <b>40%</b>, dès que TES ventes + celles de TES FILLEULS atteignent <b>3</b> dans le mois</li><li><b>OR</b> : <b>50%</b>, dès que TU fais <b>4 ventes</b> ou plus à toi seul</li></ul><p>Remis à zéro le 1er du mois, et appliqué à TOUT ton mois, rétroactivement. <b>Ne finis jamais un mois à 3 ventes</b> : la 4e fait passer tout le mois de 40 à 50%.</p><p><b>Tu ne touches aucune commission sur les ventes de tes filleuls.</b> Elles servent uniquement à faire monter ton palier.</p>"
-             "<h4>Tu es payé sur TES ventes, et sur rien d'autre</h4><p>Pas de pourcentage sur les abonnements, pas de commission sur les ventes de tes filleuls. <b>Une seule source de gain : ce que tu vends toi-même.</b></p>"
-             "<h4>Ce que ton équipe change</h4><p>Les ventes de tes filleuls directs s'ajoutent aux tiennes pour atteindre les <b>3 ventes du mois</b> qui débloquent les <b>40%</b>. Elles ne te versent rien : elles te font travailler à un taux plus élevé.</p>"
+             "<h4>Ton portefeuille : 20 % de chaque abonnement, à vie</h4><p>Chaque client abonné te rapporte <b>4 000 F tous les 6 mois</b> (20 % de son abonnement de 20 000 F), <b>renouvellements compris et à vie</b>, même si tu quittes le programme. 30 clients = <b>120 000 F par semestre</b> sans rien vendre de nouveau. Le récurrent ne compte pas dans ton palier du mois.</p>"
+             "<h4>⚠️ Relance tes clients à l'échéance, c'est ton argent</h4><p>Si le client ne paie pas son abonnement, <b>son site est coupé</b> : l'hébergement et la sécurité s'arrêtent, le QR ne mène plus à rien. Dis-le lui simplement, sans menacer : c'est un fait technique, pas une punition. Un client relancé à temps renouvelle presque toujours, et <b>c'est ta commission autant que la nôtre</b>.</p>"
+             "<h4>Ce que ton équipe change</h4><p>Les ventes de tes filleuls directs s'ajoutent aux tiennes pour atteindre les <b>3 ventes du mois</b> qui débloquent les <b>40%</b>. Elles ne te versent aucune commission : elles te font travailler à un taux plus élevé.</p>"
              "<h4>Quand es-tu payé ?</h4><p>Dès que ton client a payé NEBULA, ta commission apparaît dans <b>Mes gains</b>. Tu cliques <b>Réclamer</b>, et <b>NEBULA te verse sous 24 à 72 heures</b> sur ton Mobile Money.</p>"
              "<h4>Règle d'or</h4><p><b>Tu ne touches jamais l'argent d'un client</b>, sous aucune forme. Le client paie NEBULA, toujours.</p>"),
 ]
@@ -1802,7 +1815,7 @@ def admin_subscriptions_due(naff_session: Optional[str] = Cookie(default=None),
 
 @app.post("/api/admin/subscriptions/{sid}/paid")
 async def admin_subscription_paid(sid: int, naff_session: Optional[str] = Cookie(default=None)):
-    """L'abonnement a été encaissé : échéance décalée de 6 mois. Aucune commission."""
+    """L'abonnement a été encaissé : échéance +6 mois et commission de 20 % au partenaire."""
     if not need_admin(naff_session):
         return JSONResponse({"error": "auth"}, status_code=401)
     return record_subscription_payment(sid)
@@ -2347,10 +2360,8 @@ def doc_public(r: sqlite3.Row) -> Dict[str, Any]:
 def partner_portefeuille(naff_session: Optional[str] = Cookie(default=None)):
     """Les abonnements que le partenaire a apportés, et quand ils arrivent à échéance.
 
-    ⚠️ Ils ne lui rapportent RIEN : depuis le 2026-08-02 il n'existe plus aucune commission
-    d'abonnement. On les lui montre quand même, parce qu'un renouvellement est le meilleur
-    prétexte de reprise de contact qui existe, et que c'est là qu'il vend la marche
-    suivante de l'escalier."""
+    Ils lui rapportent 20 % à chaque encaissement, à vie. C'est aussi là qu'il relance :
+    un abonnement impayé coupe le site du client ET lui coûte sa commission."""
     aff = need_affiliate(naff_session)
     if aff is None:
         return JSONResponse({"error": "auth"}, status_code=401)
@@ -2369,7 +2380,7 @@ def partner_portefeuille(naff_session: Optional[str] = Cookie(default=None)):
         clients.append({
             "client": f"{r['prenom']} {r['nom']}".strip(),
             "offre": r["offre"],
-            "ma_part": 0,   # plus aucune commission d'abonnement
+            "ma_part": int(round((r["montant"] or SUB_MONTANT) * SUB_RATE)),
             "echeance": datetime.datetime.fromtimestamp(r["echeance"]).strftime("%d/%m/%Y") if r["echeance"] else "",
             "jours_restants": int(((r["echeance"] or now) - now) // 86400),
             "statut": r["statut"],
@@ -2380,9 +2391,9 @@ def partner_portefeuille(naff_session: Optional[str] = Cookie(default=None)):
         "nb": len(clients),
         "par_semestre": par_semestre,
         "deja_genere": int(encaisse),
-        "note": "Ces abonnements ne vous versent aucune commission : vous n'êtes payé que "
-                "sur vos propres ventes. Ils sont ici parce qu'une échéance de renouvellement "
-                "est le meilleur moment pour reprendre contact et vendre la marche suivante.",
+        "note": "20 % de chaque abonnement encaissé, tous les 6 mois, À VIE, même si vous "
+                "quittez le programme. Relancez vos clients à l'échéance : sans paiement, "
+                "leur site est coupé (hébergement et sécurité), et vous perdez la commission.",
     }
 
 @app.get("/api/partenaire/documents")

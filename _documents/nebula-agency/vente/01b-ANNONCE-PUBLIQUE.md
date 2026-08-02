@@ -83,10 +83,14 @@ gagne d'argent sur le dos de personne ici.
 **Vous êtes payé sous 24 à 72 heures**, par Mobile Money, sur simple réclamation depuis votre
 espace personnel. Chaque commission est tracée du premier jour au versement.
 
-**Une seule règle, et elle est claire : vous êtes payé sur ce que VOUS vendez.**
-Pas de pourcentage sur les abonnements, pas de commission sur les ventes des autres. Pas de
-rente, pas de promesse de revenu passif. En échange, le taux est haut et il tombe tout de
-suite : **30 % dès la première vente, 40 % dès la troisième du mois.**
+**Et vos gains ne s'arrêtent jamais.** Chaque client que vous apportez paie un abonnement de
+20 000 F tous les 6 mois : **vous en touchez 20 %, soit 4 000 F par client et par semestre,
+à vie**, même si un jour vous arrêtez. Avec 30 clients, cela fait **120 000 F par semestre**
+sans vendre quoi que ce soit de nouveau. Ce que vous construisez reste à vous.
+
+**En revanche, aucune commission sur les ventes des autres.** Vos filleuls ne vous versent
+rien : leurs ventes comptent avec les vôtres pour faire monter votre palier, c'est tout.
+Personne ne gagne d'argent sur le dos de personne ici.
 
 ---
 

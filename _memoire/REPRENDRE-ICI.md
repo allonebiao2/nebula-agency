@@ -97,7 +97,7 @@ dans `_documents/nebula-agency/vente/`.
 | **Abonnement** | **20 000 F tous les 6 mois, modifications comprises** (ex-15 000 F) |
 | Paiement | Catalogue intégral · Vitrine et Outil **70 % / 30 %** |
 | Commission | **30 %** par vente · **40 %** dès que ses ventes + celles de ses filleuls atteignent **3** dans le mois. Repart à zéro le 1er |
-| **Récurrent** | ⛔ **SUPPRIMÉ (2026-08-02).** Le partenaire n'est payé que sur SES ventes |
+| **Récurrent** | **20 % de chaque abonnement, tous les 6 mois, À VIE** (4 000 F/client/semestre), même après son départ. Ne compte pas dans le palier |
 | Parrainage | **Aucune commission, à aucune profondeur** (2026-08-02). Les ventes des filleuls directs comptent avec les siennes pour le palier des 40 %, à partir de sa 1re vente |
 | Versement | **24 à 72h** après réclamation |
 | Vague 1 | Cotonou, **AUCUN QUOTA DE PLACES** *(décision 2026-08-01, remplace les 8 places)*, candidatures 21 jours, objectif 30 ventes / 90 jours |
@@ -251,7 +251,7 @@ l'ombre, fond uni, format portrait.
 - **`refresh_seeded_docs()`** corrige au démarrage les 5 guides déjà en base qui poussaient
   la Vitrine en premier. Idempotente, ne touche pas les documents ajoutés à la main.
 - **Module Abonnements** : table `subscriptions`, ouverture automatique à l'encaissement,
-  aucune commission au renouvellement, 6 endpoints, suivi partenaire.
+  commission de 20 % au renouvellement, 6 endpoints, portefeuille partenaire.
 
 ---
 

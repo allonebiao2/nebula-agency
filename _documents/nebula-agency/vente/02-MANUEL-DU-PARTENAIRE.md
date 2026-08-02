@@ -509,20 +509,59 @@ total, tout votre mois passe à 40 %.
 4. Vous cliquez sur **« Réclamer »** dans votre espace
 5. **NEBULA vous paie sous 24 à 72 heures** en Mobile Money. Tout est tracé, du premier jour au versement
 
-## 5.2bis Ce que vous ne touchez pas, et pourquoi
+## 5.2bis Votre portefeuille : le récurrent
 
-**Vous êtes payé sur vos ventes. Sur rien d'autre.**
+Chaque client abonné vous rapporte **4 000 F tous les 6 mois** (20 % de son abonnement de
+20 000 F), **renouvellements compris et à vie**, même si vous quittez le programme.
 
-Pas de pourcentage sur les abonnements de vos clients, pas de commission sur les ventes de
-vos filleuls. Il n'y a pas de rente chez NEBULA, et c'est volontaire : l'argent va à celui
-qui vend, pas à celui qui a vendu il y a deux ans.
+| Votre portefeuille | Sans rien vendre |
+|---|---|
+| 10 clients | 40 000 F par semestre |
+| 30 clients | 120 000 F par semestre |
+| 60 clients | 240 000 F par semestre |
 
-**Ce que vous y gagnez :** un taux plus élevé, tout de suite. 30 % dès la première vente au
-lieu de 25, et 40 % dès la troisième du mois.
+Le récurrent **ne compte pas dans votre palier** : seules vos ventes nouvelles vous font
+passer de 30 à 40 %.
 
-**L'échéance d'abonnement reste votre meilleur outil**, même si elle ne vous verse rien :
-c'est le moment parfait pour rappeler un client content et lui vendre la marche suivante
-de l'escalier. Vos clients abonnés sont affichés dans votre espace pour cette raison.
+**En revanche, vous ne touchez rien sur les ventes de vos filleuls.** Leurs ventes comptent
+avec les vôtres pour atteindre les 3 du mois, elles ne vous versent aucune commission.
+
+## 5.2ter Relancez vos clients avant l'échéance : c'est votre argent
+
+**Un abonnement non payé, c'est 4 000 F que vous perdez, tous les six mois, pour toujours.**
+
+Et pour le client, ce n'est pas anodin non plus : **sans paiement, son site est coupé au
+8e jour de retard.** L'hébergement s'arrête, la sécurité aussi, son QR code ne mène plus à
+rien et ses clients tombent sur une page d'erreur. Ses données sont gardées 6 mois, mais la
+remise en ligne peut coûter des frais de réactivation.
+
+**Il a 7 jours de courtoisie après l'échéance, pas davantage.** Dites-le lui à l'avance :
+c'est précisément ce qui vous évite d'avoir à l'annoncer trop tard.
+
+**Ce qu'on dit, mot pour mot, une semaine avant l'échéance :**
+
+```
+Bonjour [Prénom], [votre prénom] de NEBULA.
+Votre abonnement arrive à échéance le [date].
+
+Je vous préviens à l'avance pour que ça ne vous surprenne pas : s'il n'est pas
+réglé, le site est coupé : l'hébergement et la sécurité s'arrêtent, et votre QR
+ne mènera plus à rien.
+
+C'est 20 000 F pour six mois, vos modifications comprises.
+Je vous envoie le numéro Mobile Money ?
+```
+
+**Les trois règles de cette relance :**
+
+1. **On annonce, on ne réclame pas.** « Je vous préviens à l'avance », jamais « il faut payer ».
+2. **On rappelle le service rendu** : héberger, sécuriser, modifier autant qu'il veut. Il
+   paie quelque chose qui tourne, pas une taxe.
+3. **On propose la marche suivante au même moment.** Un client content à l'échéance est le
+   plus facile à faire monter d'un barreau.
+
+⚠️ **Ne menacez jamais.** La coupure est un fait technique, pas une punition. Un client qui
+se sent menacé ne renouvelle pas : il part et il en parle.
 
 ## 5.3 Le calcul qui doit vous obséder
 
@@ -641,7 +680,7 @@ semaine. La vente vient d'elle-même quand la conversation est bonne.
 | L'Outil sur mesure ? | De 55 000 à 500 000 F, sur devis |
 | L'abonnement ? | 20 000 F **tous les 6 mois**, modifications comprises |
 | Quand suis-je payé ? | **24 à 72h** après réclamation |
-| Ce que je touche sur l'abonnement ? | **Rien.** L'abonnement est un revenu de NEBULA, qui héberge, sécurise et modifie le site |
+| Ce que je touche sur l'abonnement ? | **20 %, soit 4 000 F par client et par semestre, à vie**, même si j'arrête |
 | Un client à 35 produits ? | 50 000 + 15 000 par lot de 10 = 80 000 F |
 | Une vitrine à 3 pages ? | 150 000 + 2 × 30 000 = 210 000 F |
 | Le délai ? | 5 à 7 jours après le brief complet |

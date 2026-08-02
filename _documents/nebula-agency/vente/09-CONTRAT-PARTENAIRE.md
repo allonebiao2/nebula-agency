@@ -10,7 +10,15 @@
 > Pour les premiers partenaires il fait le travail. Au-delà d'une trentaine de partenaires,
 > faites-le relire par un juriste béninois.
 >
-> Version 1.1 · 2026-08-01
+> **Version 1.2 · 2026-08-02.** Ce qui change depuis la 1.1 : la grille de commission
+> devient **30 % / 40 %** (art. 6.1), **toute commission de réseau est supprimée** (art. 6.3),
+> la commission d'abonnement passe à **20 % à vie** (art. 6.2), et quatre articles
+> apparaissent : évolution du barème (6.7), reprise de commission (6.8), propriété du client
+> (7.4 et 7.5) et indemnités forfaitaires (8.13).
+>
+> ⚠️ **Pour un partenaire déjà sous contrat en version 1.1**, l'article 6.7 impose un
+> **préavis écrit de 30 jours** avant toute baisse de barème. Faites-lui signer la 1.2 ou
+> notifiez-lui le changement par écrit, daté.
 
 ---
 
@@ -142,13 +150,27 @@ Le taux atteint s'applique à **l'intégralité de ses ventes du mois civil**. L
 **recalculé chaque mois et repart à zéro le 1er de chaque mois** : le taux de 40 % n'est
 jamais acquis et doit être atteint de nouveau chaque mois.
 
-**6.2 Absence de toute autre rémunération.** Le Partenaire est rémunéré **exclusivement**
-au titre de l'article 6.1, sur les ventes qu'il a lui-même apportées.
+**6.2 Commission sur abonnement.** Le Partenaire perçoit **20 % de chaque abonnement
+encaissé** auprès d'un client qu'il a apporté, souscription initiale et renouvellements
+compris, soit **4 000 F par client et par semestre**.
 
-Il ne perçoit **aucune commission, prime ou pourcentage** sur les abonnements souscrits par
-les clients qu'il a apportés, ni sur le renouvellement des noms de domaine, ni sur aucune
-autre recette de NEBULA. L'abonnement est un revenu propre de NEBULA, en contrepartie de
-l'hébergement, de la sécurité et des modifications qu'elle assure.
+Cette commission est **acquise à vie**, tant que le client concerné reste abonné, **y compris
+après la fin du présent contrat**. Elle ne compte pas dans le décompte des ventes de
+l'article 6.1. Le renouvellement du nom de domaine ne donne lieu à aucune commission.
+
+**6.2 bis Suspension du service en cas de non-paiement.** À défaut de règlement de
+l'abonnement à son échéance, le client dispose d'un **délai de courtoisie de 7 jours**
+pendant lequel la prestation est maintenue.
+
+**Au 8e jour, NEBULA suspend la prestation** : l'hébergement et la maintenance de sécurité
+sont interrompus et la réalisation cesse d'être accessible en ligne. Les données du client
+sont **conservées 6 mois**, puis supprimées après un dernier avertissement.
+
+Le service est rétabli dès régularisation, moyennant le règlement du semestre dû et, le cas
+échéant, des frais de réactivation en vigueur. Ces frais ne donnent lieu à aucune commission.
+
+Le Partenaire informe son client de cette règle **avant** l'échéance. Aucune commission n'est
+due sur un abonnement non encaissé.
 
 **6.3 Absence de commission de réseau.** **Le Partenaire ne perçoit aucune commission sur
 les ventes réalisées par les partenaires qu'il a fait entrer dans le programme**, ni à aucun
@@ -287,12 +309,11 @@ restent la **propriété de NEBULA** et doivent être restitués ou détruits à
 directement ou indirectement, les clients de NEBULA qu'il a lui-même apportés ou dont il a
 eu connaissance, pour leur proposer des prestations concurrentes.
 
-**11.2** Cette obligation trouve sa contrepartie dans ce que NEBULA apporte au Partenaire
-sans aucune charge pour lui : l'accès gratuit au programme, sans droit d'entrée ni achat
-de stock ; la formation, les guides de vente et les scripts ; les outils, l'espace personnel
-et les supports commerciaux ; et la production intégrale des prestations vendues. Elle porte
-sur la seule clientèle de NEBULA, constituée à ses frais, et ne fait pas obstacle à ce que
-le Partenaire exerce librement toute autre activité auprès de toute autre personne.
+**11.2** Cette obligation a pour contrepartie directe le **maintien à vie des commissions
+sur abonnement** prévu à l'article 6.2, dont le Partenaire continue de bénéficier après son
+départ. Elle porte sur la seule clientèle de NEBULA, constituée à ses frais, et ne fait pas
+obstacle à ce que le Partenaire exerce librement toute autre activité auprès de toute autre
+personne.
 
 ---
 
@@ -308,14 +329,15 @@ signature.
 **12.3 Sort des commissions.** À la fin du contrat, quelle qu'en soit la cause :
 - les commissions dues sur des ventes déjà encaissées **restent dues** et sont réglées
   dans les délais de l'article 6.5 ;
-- aucune commission d'abonnement n'est due, ni pendant le contrat ni après, conformément
-  à l'article 6.2 ;
+- les **commissions sur abonnement de l'article 6.2 sont maintenues à vie**, tant que les
+  clients concernés restent abonnés ;
 - le bénéfice des ventes de ses filleuls dans son palier (article 6.3) cesse ;
 - les prospects encore attribués sont libérés.
 
 **12.4 Inactivité.** Sans aucune vente pendant **2 mois**, NEBULA prend contact avec le
 Partenaire. Sans aucune vente pendant **4 mois**, les accès à l'espace partenaire sont
-désactivés et les prospects libérés.
+désactivés et les prospects libérés. Les commissions sur abonnement restent maintenues
+conformément à l'article 12.3.
 
 ---
 
@@ -389,8 +411,9 @@ qu'après réception de cette signature.**
 **Je gagne**
 - **30 %** sur chaque vente · **40 %** dès que mes ventes et celles de mes filleuls
   atteignent 3 dans le mois. Le taux s'applique à TOUT mon mois, et **repart à zéro le 1er**
-- **rien sur les abonnements de mes clients** : ils appartiennent à NEBULA, qui héberge,
-  sécurise et modifie les sites
+- **20 % de chaque abonnement de mes clients**, soit 4 000 F tous les 6 mois, **à vie**,
+  même si j'arrête un jour. Je dois les relancer avant l'échéance : sans paiement, leur
+  site est coupé et je perds ma commission
 - **rien du tout sur les ventes de mes filleuls** : aucune commission de réseau n'existe.
   Leurs ventes comptent seulement avec les miennes pour faire monter mon palier
 - Je suis payé **sous 24 à 72 heures** après réclamation
@@ -408,8 +431,8 @@ qu'après réception de cette signature.**
 la commission correspondante m'est reprise, sauf si le remboursement vient d'une faute de
 NEBULA, auquel cas je la garde.
 
-**Si je pars**, les commissions déjà acquises sur des ventes encaissées me restent dues.
-Il n'y a rien d'autre : pas de rente, pas de revenu qui continue. En revanche je m'interdis
+**Si je pars**, mes commissions sur abonnement continuent, à vie, tant que mes clients
+restent abonnés. C'est ce que j'ai construit, ça reste à moi. En contrepartie je m'interdis
 de démarcher les clients de NEBULA pendant 24 mois.
 
 ---

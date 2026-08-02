@@ -43,7 +43,7 @@ Dernière grosse mise à jour : **2026-07-31** (module Abonnements + alignement 
 
 ## 2bis. MODULE ABONNEMENTS (2026-07-31) — le récurrent à vie, tracé
 
-⚠️ OBSOLÈTE depuis le 2026-08-02 : le programme ne verse **plus rien** sur les abonnements. Historiquement il promettait un pourcentage, même
+Le programme promet au partenaire **20 % de chaque abonnement client, acquis à vie**, même
 après son départ. Cette promesse n'était traçable nulle part : aucune table ne portait de
 date d'échéance. Elle l'est désormais.
 
@@ -52,7 +52,7 @@ date d'échéance. Elle l'est désormais.
 - **`ensure_subscription(lead)`** — idempotente, appelée quand l'admin marque une vente
   payée. Catalogue et Vitrine uniquement (le QR Review n'a pas d'abonnement).
 - **`record_subscription_payment(sid)`** — décale l'échéance de 6 mois **et** crée la
-  plus aucune commission ; les lignes `level='abonnement'` en base sont de l'historique.
+  commission de 20 % dans la table `commissions` avec **`level='abonnement'`**.
 - **`subscriptions_due()`** — paliers J-15 / J-3 / J+3 / J+10, **un seul message par
   abonnement et par jour**, plafond de **3 relances** par échéance.
 - **`_plus_mois()`** — mois calendaires, gère les fins de mois.
