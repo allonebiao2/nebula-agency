@@ -28,9 +28,17 @@
 > Allowed**, ce qu'un répartiteur lit comme une panne. D'où **`/healthz`**, qui répond en
 > GET comme en HEAD et ne touche ni la base ni le disque. Depuis, 15 essais sur 15.
 >
-> **Reste à faire :** poser `ANTHROPIC_API_KEY` (NOVA répond aujourd'hui un repli poli vers
-> WhatsApp), `RESEND_API_KEY` (emails d'accès), `NAFF_CRON_KEY` (relance des abonnements),
-> et **ressaisir les partenaires** (la base est vide, cf. la section sur les données perdues).
+> **✅ Toutes les clés sont posées** (2026-08-02) : `ANTHROPIC_API_KEY` (NOVA répond avec les
+> bons prix, vérifié), `RESEND_API_KEY` + `EMAIL_*`, `TELEGRAM_BOT_TOKEN`, `NAFF_CRON_KEY`
+> (générée). **Miroir complet dans `secrets/nebula-affilies.env`**, pour tout reposer si le
+> service Render est un jour recréé.
+>
+> **Chaîne « devenir partenaire » vérifiée de bout en bout** : formulaire public →
+> `POST /api/candidature` → candidature enregistrée dans Supabase en `pending` →
+> notification « recrue » générée pour l'admin. Ligne de test supprimée.
+>
+> **Reste :** **ressaisir les partenaires** (la base est vide, cf. la section sur les données
+> perdues) et **changer le mot de passe Supabase**, qui a transité par une conversation.
 >
 > À suivre dans l'ordre. Chaque étape se vérifie avant de passer à la suivante.
 
