@@ -295,3 +295,33 @@ Refonte quasi totale, validée par Mongazi (direction « refonte cosmique haut d
 - [ ] Confirmer les couleurs/typographies de la charte
 - [ ] Ajouter une section études de cas une fois 2-3 clients livrés
 - [ ] Mettre en ligne (hébergement à choisir)
+
+## AI SEO — être cité par ChatGPT, Claude, Perplexity (2026-08-02)
+
+⚠️ **Point bloquant côté Mongazi, non résolu à ce jour.** Cloudflare bloque les robots des
+IA **par défaut** depuis le 1er juillet 2025. Mesuré sur ce domaine : GPTBot, ClaudeBot et
+PerplexityBot reçoivent un **403**, et le `robots.txt` public est celui de Cloudflare
+(« Cloudflare Managed content »), qui interdit aussi Google-Extended.
+→ **Dashboard Cloudflare → Sécurité → Bots → désactiver « AI Scrapers and Crawlers » et
+« Manage robots.txt ».** À faire aussi sur `djambarteam.com`, `luxuryclub229.com` et
+`graindesthetique.com`. Le jeton API du dépôt (droits Pages seulement) ne peut pas le faire.
+**Tant que ce n'est pas fait, le `robots.txt` que nous déployons n'est pas servi.**
+
+Livré et en ligne le 2026-08-02 :
+- `public/robots.txt` · `llms.txt` · `pricing.md` · `sitemap.xml` (avant : ces adresses
+  renvoyaient 200 avec la page d'accueil, ce qui est pire qu'une absence)
+- page d'accueil : `<meta keywords>` retirée (le bourrage fait **perdre 10 %** de
+  visibilité IA), descriptions corrigées (elles vendaient encore les « avatars IA »
+  retirés en v9), **JSON-LD refait en `@graph`** (Organization + OfferCatalog des 5 offres
+  avec leurs prix + WebSite + FAQPage), **section FAQ de 10 questions** (il n'y en avait
+  aucune), date de mise à jour visible. 411 → 423 Ko.
+- **`/prix-site-web-benin`** — page pensée pour être citée : réponse dès la première
+  phrase, tableau des prix, coût après livraison, 5 questions à poser avant de comparer
+  deux devis. Ancrage vérifié : SMIG béninois **52 000 FCFA** depuis le 1er janvier 2023.
+
+Régénération : `python 00-nebula-agency/_outils/_ai_seo.py` (idempotent, UTF-8).
+Déploiement : `_tmp_pages` = `nebula_agency_v9.html` → `index.html` + `affiliation/` +
+`audio/` + `assets/` + **tout `public/`**, puis
+`wrangler pages deploy _tmp_pages --project-name nebula-agency --branch main`.
+
+Méthode complète : `_memoire/apprentissages/2026-08-02-ai-seo-etre-cite-par-les-ia.md`.

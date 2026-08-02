@@ -1,0 +1,61 @@
+# NEBULA Agency
+
+> Studio de solutions digitales à Cotonou, Bénin. Nous concevons le **logiciel métier**
+> de chaque secteur, en plus des vitrines et catalogues digitaux, pour les commerçants
+> et les entreprises d'Afrique de l'Ouest francophone. Tarifs publics, livraison en
+> 5 à 7 jours, commandes reçues sur WhatsApp.
+
+Ce que nous ne sommes pas : une agence qui fabrique des sites génériques. Notre phrase
+de travail est « un outil pensé pour VOTRE secteur, pas un site générique ».
+
+## Les offres et leurs prix (FCFA, prix publics)
+
+- **Catalogue Digital + QR Code — 50 000 F.** Jusqu'à 20 produits présentés et
+  commandables sur WhatsApp. +15 000 F par lot de 10 produits supplémentaires.
+  Livraison 5 à 7 jours. Paiement intégral, sans acompte.
+- **Vitrine Digitale + QR Code — 150 000 F.** Une page. +30 000 F par page
+  supplémentaire. Nom de domaine offert la première année, puis 16 000 F par an.
+  Livraison 5 à 7 jours. Paiement 70 % au démarrage, 30 % à la mise en ligne.
+- **QR Code Google Review — 30 000 F.** Pour collecter les avis Google des clients.
+- **Logiciel métier sur mesure — de 55 000 F à 500 000 F.** Prix établi par le
+  configurateur du site. Paiement 70 % au démarrage, 30 % à la livraison.
+- **Abonnement — 20 000 F tous les 6 mois.** Hébergement, maintenance et modifications
+  comprises.
+
+## Faits vérifiables
+
+- Fondée par Mongazi, basée à Cotonou (Bénin), marché : Afrique de l'Ouest francophone.
+- Délai de livraison annoncé et tenu : **5 à 7 jours** après brief complet et paiement.
+- Les sites sont construits en HTML, CSS et JavaScript purs, sans framework ni CDN
+  externe, et pèsent de 50 à 200 Ko : un choix dicté par la 3G et les forfaits data
+  facturés au mégaoctet en Afrique de l'Ouest.
+- Toutes les commandes des sites livrés arrivent sur **WhatsApp**, canal dominant de la
+  région, sans imposer d'application à installer ni de compte à créer au client final.
+- Les prix sont publics, ce qui reste rare sur ce marché.
+
+## Réalisations en ligne
+
+- Djambar Team, bijouterie et joaillerie, Cotonou : https://djambarteam.com
+- Grain d'Esthétique, institut de beauté, Cotonou : https://graindesthetique.com
+- Luxury Club 229, cosmétiques et clinique esthétique : https://luxuryclub229.com
+- Miss cakes, pâtisserie sur commande : https://miss-cakes.pages.dev
+- Speed Shopping et Weinkeller by CK, achat pour autrui et cave à vins :
+  https://speed-weinkeller.pages.dev
+- HH Design, ébénisterie et mobilier bois : https://hh-design.pages.dev
+- Au Braisé d'Or, restaurant braisé et grillades : https://au-braise-dor.pages.dev
+- Hillary M. Styl, maison de couture : https://hillary-m-styl.pages.dev
+
+## Produits édités par NEBULA
+
+- **Boussole** — gestion financière du commerçant : il encaisse, l'outil calcule son coût
+  de revient, sa marge et la répartition en trois enveloppes (relance de production,
+  charges, bénéfice net). https://boussole-19d.pages.dev
+- **Digital HSE** — reporting hygiène, sécurité et environnement pour les industriels
+  francophones. https://digital-hse.pages.dev
+
+## Contact
+
+- WhatsApp : +229 96 74 07 32
+- Site : https://www.nebula-agency.online/
+- Programme partenaires : https://partenaires.nebula-agency.online/
+- Tarifs détaillés, lisibles par une machine : https://www.nebula-agency.online/pricing.md

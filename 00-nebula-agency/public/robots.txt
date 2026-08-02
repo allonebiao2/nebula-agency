@@ -1,0 +1,49 @@
+# NEBULA Agency — www.nebula-agency.online
+# Les robots des IA sont les bienvenus : nous voulons être cités dans les réponses
+# de ChatGPT, Claude, Perplexity, Gemini et Copilot.
+
+User-agent: *
+Allow: /
+
+# Moteurs de recherche IA (lecture en direct pour répondre et citer)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+# Aspirateurs d'entraînement pur, sans retour pour nous : refusés.
+User-agent: CCBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+Sitemap: https://www.nebula-agency.online/sitemap.xml
