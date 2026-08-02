@@ -1,21 +1,22 @@
 # LA RELANCE AUTOMATIQUE DES RENOUVELLEMENTS
 ## Spécification à construire
 
-> **Pourquoi ce document existe, et pourquoi il est devenu URGENT.**
+> **Pourquoi ce document existe.** Deux décisions, combinées, rendent cette automatisation
+> **obligatoire** :
 >
-> Depuis le 2026-08-02, **le partenaire ne touche plus rien sur les abonnements**. Il n'a
-> donc plus aucun intérêt financier à faire renouveler ses clients : la collecte du
-> récurrent repose désormais **entièrement sur NEBULA**.
+> 1. Le partenaire touche **20 % de chaque abonnement, à vie**, même après son départ.
+> 2. La relance se fait par **rappel automatique + relance personnelle du partenaire**.
 >
-> Avant, un partenaire motivé rattrapait les oublis de relance. Ce filet n'existe plus.
-> **L'automatisation n'est plus un confort, c'est la seule chose qui fera rentrer cet
-> argent.** Un abonnement non relancé est un abonnement perdu, et 20 000 F tous les six
-> mois par client, c'est le revenu qui paie l'hébergement de tout le parc.
+> Conséquence : les clients d'un partenaire parti n'ont plus personne pour les relancer.
+> C'est l'automatisation qui portera cette collecte, ou personne ne la portera.
+>
+> **Le levier qui fait payer**, à mettre dans tous les gabarits : sans règlement,
+> **le site est coupé** (hébergement et sécurité interrompus, QR code mort). Ce n'est pas
+> une menace, c'est un fait technique, et il faut l'annoncer à l'avance, jamais le brandir.
 >
 > **Version 3.0 · 2026-08-02.** Table `subscriptions`, ouverture automatique à
-> l'encaissement, endpoints n8n et suivi partenaire : en place et testés dans
-> `nebula-affilies/server.py`. **La génération de commission a été retirée.**
-> Il reste le workflow n8n lui-même.
+> l'encaissement, génération de la commission de **20 %**, endpoints n8n et portefeuille :
+> en place et testés dans `nebula-affilies/server.py`. Il reste le workflow n8n lui-même.
 
 ---
 
@@ -44,7 +45,7 @@ Table `subscriptions` créée dans `nebula-affilies/server.py`, une ligne par cl
 |---|---|
 | `id` | identifiant |
 | `lead_id` | le client (lien vers `leads`) |
-| `affiliate_id` | **le partenaire qui l'a apporté** (pour le suivi et la relance, aucune commission) |
+| `affiliate_id` | **le partenaire qui l'a apporté** (c'est lui qui touchera les 20 % à vie) |
 | `offre` | catalogue · vitrine |
 | `montant` | 20 000 |
 | `debut` | date de mise en ligne |
@@ -54,11 +55,11 @@ Table `subscriptions` créée dans `nebula-affilies/server.py`, une ligne par cl
 | `relances` | compteur de rappels envoyés pour l'échéance en cours |
 
 **Règle métier, implémentée dans `record_subscription_payment()` :** quand un abonnement
-est encaissé, on décale simplement `echeance` de 6 mois. **Aucune commission n'est créée** :
-depuis le 2026-08-02 l'abonnement est un revenu propre de NEBULA.
+est encaissé, on décale `echeance` de 6 mois **et on crée la commission de 20 %** pour
+`affiliate_id`, dans la table `commissions` avec `level='abonnement'`.
 
-Les lignes `level='abonnement'` déjà présentes en base sont de l'historique d'avant cette
-date. Elles restent dues et visibles, mais il ne s'en crée plus.
+C'est ce lien qui rend la promesse du récurrent à vie réellement tenable : elle est portée
+par la donnée, pas par la mémoire de quelqu'un.
 
 **Trois propriétés obtenues gratuitement** en réutilisant la table `commissions` :
 - le partenaire réclame et se fait payer par le circuit qu'il connaît déjà, sans aucune
@@ -196,10 +197,12 @@ en tête, identifiants dans les Credentials n8n et jamais en dur.
 
 ## 7. Ce qu'il reste à décider
 
-- [ ] **Que se passe-t-il si un client ne renouvelle jamais ?** Le site est-il coupé, et
-      après combien de temps ? *Ma recommandation : prévenir à J+30, suspendre à J+45,
-      conserver les données 6 mois. Couper sans prévenir crée des histoires qui circulent
-      vite à Cotonou.*
+- [x] **Que se passe-t-il si un client ne renouvelle jamais ?** **Le site est coupé** :
+      hébergement et sécurité interrompus (contrat client, et article 6.2 bis du contrat
+      partenaire). *Reste à fixer le délai. Recommandation inchangée : prévenir à J+30,
+      suspendre à J+45, conserver les données 6 mois. **Couper sans prévenir crée des
+      histoires qui circulent vite à Cotonou** : le préavis n'est pas une politesse, c'est
+      une protection.*
 - [ ] **Un client peut-il payer 12 mois d'avance** (40 000 F) ? *Recommandation : oui, avec
       un mois offert. Vous encaissez d'avance et vous supprimez une relance sur deux.*
 - [ ] **Le partenaire voit-il les échéances de ses clients** dans son espace ?
@@ -213,10 +216,10 @@ en tête, identifiants dans les Credentials n8n et jamais en dur.
 | # | Quoi | Effort |
 |---|---|---|
 | 1 | Table `subscriptions` + création automatique à la mise en ligne d'un client | 1 séance |
-| 2 | ~~Génération de commission~~ **supprimée** : l'abonnement ne rémunère plus personne | fait |
+| 2 | Génération automatique de la commission de 20 % à chaque encaissement | fait |
 | 3 | Endpoints `/due` et `/rappel` | courte |
 | 4 | Workflow n8n avec les 4 gabarits | 1 séance |
-| 5 | Onglet « Mes clients abonnés » côté partenaire : pas un revenu, un prétexte de reprise de contact | 1 séance |
+| 5 | Onglet « Mon portefeuille » côté partenaire : ses 20 %, et quand relancer | 1 séance |
 
 **Rien de tout cela n'est urgent avant la première échéance**, soit six mois après la
 première vente de la vague 1. Mais **le point 1 est urgent dès la première vente** : sans

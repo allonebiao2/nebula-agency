@@ -311,7 +311,59 @@ résultat.** Trop tôt, elle grille le lien et vous n'aurez pas de deuxième occ
 
 ---
 
-# LES SEPT RÈGLES, EN RÉSUMÉ
+# PARTIE 7 · L'APPEL DE RENOUVELLEMENT
+
+**C'est l'appel le mieux payé du métier, et celui qu'on oublie.** Chaque abonnement
+renouvelé vous verse **4 000 F**, tous les six mois, à vie. Un client qu'on laisse filer,
+c'est cet argent-là qui s'arrête, pour toujours.
+
+## 7.1 Quand appeler
+
+**Une semaine avant l'échéance. Jamais après.** Un appel après la coupure est un appel de
+recouvrement : on y est en position de faible, et le client est déjà fâché.
+
+## 7.2 Ce qu'on dit
+
+```
+Bonjour [Prénom], [votre prénom] de NEBULA.
+Votre abonnement arrive à échéance le [date], je vous préviens à l'avance
+pour que ça ne vous surprenne pas.
+
+S'il n'est pas réglé, le site est coupé : l'hébergement et la sécurité
+s'arrêtent, et votre QR ne mènera plus à rien.
+
+C'est 20 000 F pour six mois, avec vos modifications comprises.
+Je vous envoie le numéro Mobile Money ?
+```
+
+## 7.3 Les trois règles de cet appel
+
+1. **On annonce, on ne réclame pas.** « Je vous préviens à l'avance » et jamais « il faut
+   payer ». La coupure est un **fait technique**, pas une punition.
+2. **On rappelle ce qu'il achète** : on héberge, on sécurise, on modifie son contenu autant
+   qu'il veut. Il paie un service qui tourne.
+3. **On propose la marche suivante dans le même appel.** Un client content au moment de
+   renouveler est le plus facile à faire monter d'un barreau de l'escalier.
+
+⚠️ **Ne menacez jamais.** À Cotonou, un commerçant qui se sent menacé ne renouvelle pas :
+il part, et il raconte l'histoire au marché entier. Le préavis n'est pas une politesse,
+c'est ce qui vous protège.
+
+## 7.4 S'il dit « je paierai plus tard »
+
+```
+Pas de souci. Je note. Juste pour que vous soyez tranquille :
+la coupure est automatique à la date, je n'ai pas la main dessus.
+Vous préférez que je vous rappelle [jour] pour qu'on règle ça avant ?
+```
+
+**« Je n'ai pas la main dessus » est la phrase qui débloque le plus de paiements.** Elle
+sort le partenaire du rôle de créancier : ce n'est plus lui contre le client, c'est eux
+deux contre une date.
+
+---
+
+# LES HUIT RÈGLES, EN RÉSUMÉ
 
 1. **On ne vend pas au téléphone. On décroche le rendez-vous.**
 2. **Note vocale d'abord, appel ensuite.** Jamais l'inverse.
@@ -320,6 +372,8 @@ résultat.** Trop tôt, elle grille le lien et vous n'aurez pas de deuxième occ
 5. **On ne vend jamais à la personne qui décroche** : on demande à quelle heure rappeler.
 6. **Toujours repartir avec une date**, même en cas de refus mou.
 7. **On raccroche vite quand il est occupé.** C'est ce qui permet de rappeler.
+8. **On appelle une semaine avant chaque échéance d'abonnement.** C'est l'appel le mieux
+   payé du métier, et le seul qu'on ne peut pas rattraper une fois la date passée.
 
 ---
 

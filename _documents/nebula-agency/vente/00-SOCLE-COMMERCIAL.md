@@ -167,28 +167,49 @@ retrouver le taux haut. Un bon mois ne paie pas le mois suivant.
 > C'est la phrase à dire en recrutement : **« personne ne gagne d'argent sur le dos de
 > personne ici. »** Ce n'est plus un argument marketing, c'est devenu vrai.
 
-### 4.2 Le partenaire n'est payé que sur SES ventes
+### 4.2 Commission sur le récurrent (le portefeuille)
 
-**Il n'existe aucune autre source de rémunération. Aucune.**
+**20 % de chaque abonnement encaissé, tous les 6 mois, À VIE.**
+Soit **4 000 F par client et par semestre**, à taux fixe, quel que soit son palier du mois,
+renouvellements compris, **même s'il quitte le programme**.
 
-| | |
+| Son portefeuille | Ce que ça lui rapporte, sans rien vendre |
 |---|---|
-| Ses propres ventes | ✅ **30 % ou 40 %**, c'est tout |
-| Les ventes de ses filleuls | ⛔ **rien.** Elles comptent seulement pour son seuil de 3 |
-| Les abonnements de ses clients | ⛔ **rien.** L'abonnement est un revenu de NEBULA |
-| Le renouvellement du nom de domaine | ⛔ rien : c'est un coût refacturé au prix coûtant |
+| 10 clients abonnés | 40 000 F par semestre |
+| 30 clients abonnés | 120 000 F par semestre |
+| 60 clients abonnés | 240 000 F par semestre |
 
-> **Pourquoi il n'y a plus de récurrent.** Une commission récurrente est une rente : elle
-> paie quelqu'un qui ne travaille plus, sur un client qu'il ne suit plus, et elle grossit
-> chaque mois sans que personne ne vende rien. Elle rend aussi l'entreprise impossible à
-> piloter, parce que la dette augmente tout le temps.
->
-> Ce qu'on met à la place est plus simple et plus honnête : **on paie mieux ce qui est
-> vendu**, tout de suite. 30 % au lieu de 25, et 40 % dès trois ventes dans le mois.
+**Deux règles qui encadrent le récurrent :**
 
-**Ce qui remplace l'argument « rente » au recrutement :** on ne promet plus un revenu passif.
-On promet **un taux élevé, immédiat, sur un produit qui se vend en une visite**. C'est un
-argument de vendeur, pas d'investisseur, et c'est le bon public.
+1. **Il ne compte pas dans le palier.** Seules les ventes nouvelles font passer de 30 à
+   40 %. Sans cette règle, un ancien partenaire serait au taux haut chaque mois sans
+   prospecter personne, et le système récompenserait l'ancienneté au lieu de l'effort.
+2. **Il est acquis à vie.** Ce qu'il construit lui appartient, même après son départ. C'est
+   un argument de recrutement majeur, et c'est aussi la contrepartie de son engagement de
+   non-démarchage de 24 mois (contrat, article 11.2).
+
+**Le renouvellement du nom de domaine (16 000 F/an) ne donne lieu à aucune commission :**
+c'est un coût refacturé au prix coûtant, pas une vente.
+
+### 4.2 bis L'argument qui fait payer un renouvellement
+
+**Le partenaire rappelle son client avant l'échéance, et lui dit la vérité technique :**
+
+> « Votre abonnement arrive à échéance le [date]. S'il n'est pas réglé, **le site est
+> coupé** : l'hébergement s'arrête, la sécurité aussi. Votre QR code ne mènera plus à rien
+> et vos clients tomberont sur une page d'erreur. »
+
+**Trois façons de le dire sans menacer**, parce que ce n'est pas une punition, c'est un fait :
+
+1. **On annonce, on ne réclame pas.** « Je vous préviens à l'avance pour que ça ne vous
+   surprenne pas », jamais « il faut payer ».
+2. **On rappelle ce qu'on continue de faire pour lui** : héberger, sécuriser, et modifier
+   son contenu autant qu'il veut. Il paie un service qui tourne, pas une taxe.
+3. **On propose la marche suivante au même moment.** Un client content à l'échéance est le
+   plus facile à faire monter d'un barreau de l'escalier.
+
+⚠️ **Le partenaire y a un intérêt direct, et il faut le lui répéter :** un abonnement non
+payé, c'est **4 000 F qu'il perd**, tous les six mois, pour toujours.
 
 ### 4.3 Les relances de renouvellement
 
@@ -196,12 +217,12 @@ argument de vendeur, pas d'investisseur, et c'est le bon public.
 relance personnellement** si le client ne réagit pas.
 
 > ⚠️ **Le rappel automatique est une infrastructure obligatoire, pas un confort.**
-> Aucun partenaire n'a plus d'intérêt financier à faire renouveler un abonnement : c'est
-> désormais **NEBULA seule** qui porte cette collecte, et elle ne tient que par
-> l'automatisation. À construire avec n8n + WhatsApp (stack existant).
+> Comme le récurrent est acquis à vie, les clients d'un partenaire parti n'ont plus personne
+> pour les relancer : c'est l'automatisation qui portera cette collecte.
+> À construire avec n8n + WhatsApp (stack existant).
 >
-> Le partenaire actif, lui, garde une bonne raison de rappeler son client à l'échéance :
-> c'est le meilleur moment pour lui vendre la marche suivante de l'escalier.
+> Pour le partenaire actif, l'échéance est **son propre argent** et le meilleur prétexte de
+> reprise de contact qui existe.
 
 Pour le partenaire actif, l'échéance de renouvellement est **le meilleur prétexte de reprise
 de contact qui existe**, et le moment idéal pour vendre la marche supérieure de l'escalier.
@@ -242,8 +263,8 @@ comptent nulle part.
 | Outil · 300 000 F | 90 000 F | 120 000 F |
 
 **Mois type :** 4 Catalogues + 2 Vitrines = 6 ventes → 500 000 F de chiffre → **palier
-ARGENT à 40 %** (le seuil de 3 est dépassé) → **200 000 F de commission**. Et le mois
-suivant, le compteur repart de zéro.
+ARGENT à 40 %** (le seuil de 3 est dépassé) → **200 000 F de commission**, plus 4 000 F par
+client déjà au portefeuille. Le mois suivant, le compteur du palier repart de zéro.
 
 ### 4.6 Comment l'argent arrive
 

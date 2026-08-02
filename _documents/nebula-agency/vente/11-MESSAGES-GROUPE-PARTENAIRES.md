@@ -100,8 +100,9 @@ Si vous avez annoncé 15 000 F à un prospect ces derniers jours,
 dites-le moi, je gère.
 
 Et rappelez-vous ce que ça vous rapporte :
-Vous n'êtes payé que sur vos ventes, mais le taux monte :
-30 % dès la première, 40 % dès la troisième du mois.
+20 % de chaque abonnement, tous les 6 mois, à vie.
+Un client que vous vendez aujourd'hui vous paie encore dans cinq ans.
+Pensez à le relancer avant l'échéance : sans paiement son site est coupé.
 ```
 
 ### Message 3 · l'affiche de recrutement (parrainage)
