@@ -312,11 +312,21 @@ Refonte quasi totale, validée par Mongazi (direction « refonte cosmique haut d
 Vérifié : les 4 domaines répondent **200** à GPTBot, ClaudeBot, PerplexityBot, OAI-SearchBot
 et Google-Extended.
 
-⚠️ **Problème distinct, NON corrigé** : `https://nebula-agency.online` (sans `www`) renvoie
-**525** pour tout le monde. Le `www` et le `http://` fonctionnent, les 3 autres apex du parc
-aussi. Cloudflare n'arrive pas à faire TLS avec l'origine de l'apex (mode SSL `full`) :
-l'enregistrement DNS pointe probablement encore vers l'ancien hébergement. Corriger demande
-le droit `Zone · DNS` sur le jeton.
+✅ **Apex réparé le 2026-08-02.** `https://nebula-agency.online` (sans `www`) renvoyait **525**
+pour tout le monde : l'apex était resté en `A 2.57.91.91`, c'est-à-dire **la page de parking
+Hostinger**, qui ne répond pas en HTTPS. Correction en **deux temps, le premier seul ne
+suffit pas** :
+1. DNS : `A` → `CNAME nebula-agency.online → nebula-agency.pages.dev`, proxifié → le 525
+   devient **522**.
+2. Pages : l'apex n'était pas déclaré comme domaine du projet (seul `www` l'était) →
+   `POST /accounts/{acc}/pages/projects/nebula-agency/domains {"name":"nebula-agency.online"}`
+   → **200**.
+
+**Retenir : 525 puis 522 après correction du DNS = le nom d'hôte manque côté Pages.**
+Vérifié : apex et `www` servent la même page, tous les fichiers (`/prix-site-web-benin`,
+`llms.txt`, `pricing.md`, `sitemap.xml`, `robots.txt`) répondent 200 sur les deux.
+⚠️ Deux md5 différents sur la même URL = script de mesure injecté par Cloudflare, pas une
+divergence : comparer la taille et le titre, pas le md5.
 
 Livré et en ligne le 2026-08-02 :
 - `public/robots.txt` · `llms.txt` · `pricing.md` · `sitemap.xml` (avant : ces adresses

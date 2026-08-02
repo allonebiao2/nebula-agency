@@ -150,7 +150,44 @@ comme navigateurs. `https://www.nebula-agency.online` répond 200, et `http://` 
 répond 200 aussi. Les trois autres apex du parc (`djambarteam.com`, `luxuryclub229.com`,
 `graindesthetique.com`) répondent 200.
 
-525 = Cloudflare n'arrive pas à établir TLS avec l'origine, et le mode SSL de la zone est
-`full`. L'enregistrement DNS de l'apex pointe donc vers autre chose que Cloudflare Pages,
-probablement un reste de l'ancien hébergement. **Non corrigé** : le jeton n'a pas le droit
-`Zone · DNS`, donc impossible de lire ni de corriger l'enregistrement.
+### ✅ CORRIGÉ le 2026-08-02
+
+**La cause, une fois le DNS lisible :**
+
+```
+nebula-agency.online   A  2.57.91.91   proxifié
+```
+
+Ce n'était pas l'ancien site : `2.57.91.91` servait **la page de parking de Hostinger**
+(« Parked Domain name on Hostinger DNS system », 33 Ko), reste de l'hébergement d'avant la
+migration. Et cet hôte **ne répond pas du tout en HTTPS** (handshake impossible), d'où le 525
+puisque le mode SSL de la zone est `full`. Autrement dit : qui tapait l'adresse sans `www`
+voyait une erreur en HTTPS, et une page Hostinger en HTTP. Sur le domaine principal de
+l'agence.
+
+Pour comparaison, `djambarteam.com` avait déjà le bon montage : apex **et** `www` en CNAME
+vers le projet Pages.
+
+**La correction, en deux temps — le premier seul ne suffit pas :**
+
+1. **DNS** : le `A` remplacé par `CNAME nebula-agency.online → nebula-agency.pages.dev`,
+   proxifié (aplatissement d'apex assuré par Cloudflare).
+   → le 525 devient **522**. Progrès, mais toujours cassé.
+2. **Pages** : l'apex n'était **pas déclaré comme domaine du projet** (`/pages/projects/
+   nebula-agency/domains` ne contenait que `www.nebula-agency.online`). Un CNAME proxifié
+   vers `*.pages.dev` ne suffit pas : Pages doit connaître le nom d'hôte, sinon il ne sait
+   pas quel projet servir.
+   `POST /accounts/{acc}/pages/projects/nebula-agency/domains {"name":"nebula-agency.online"}`
+   → **200 immédiat**.
+
+**Leçon à garder : 525 puis 522 après correction du DNS = le nom d'hôte manque côté Pages.**
+Deux réglages, deux endroits, deux jetons différents (Zone·DNS pour l'un, Pages pour l'autre).
+
+Vérifié sur l'apex : page servie identique au `www` (434 Ko, bon titre),
+`/prix-site-web-benin`, `/llms.txt`, `/pricing.md`, `/sitemap.xml`, `/robots.txt` tous à 200,
+et GPTBot, ClaudeBot, PerplexityBot à 200.
+
+⚠️ **Piège de mesure rencontré** : deux requêtes sur la même URL donnent deux md5 différents.
+Ce n'est pas une divergence apex/www, c'est le **script de mesure injecté par Cloudflare**,
+avec un jeton unique par requête. Comparer des md5 de pages proxifiées ne prouve rien :
+comparer la taille et le titre.
