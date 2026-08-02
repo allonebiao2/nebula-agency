@@ -13,7 +13,7 @@
 
 ---
 
-# PARTIE 1 — CE QUE VOUS DEVEZ SAVOIR AVANT DE SORTIR
+# PARTIE 1 · CE QUE VOUS DEVEZ SAVOIR AVANT DE SORTIR
 
 ## 1.1 Qui vous représentez
 
@@ -82,10 +82,10 @@ revenez le voir trois semaines plus tard : la Vitrine se vend presque toute seul
 
 Un exemple concret de ce que ça donne sur un an, avec un seul client :
 
-| Moment | Vente | Votre commission (palier 25 %) |
+| Moment | Vente | Votre commission (palier 30 %) |
 |---|---|---|
-| Janvier | Catalogue 50 000 F | 12 500 F |
-| Mars | Vitrine 150 000 F | 37 500 F |
+| Janvier | Catalogue 50 000 F | 15 000 F |
+| Mars | Vitrine 150 000 F | 45 000 F |
 | Juillet | Outil de suivi 200 000 F | 50 000 F |
 | | **Total sur un client** | **100 000 F** |
 
@@ -114,7 +114,7 @@ client. Un vendeur qui vérifie gagne sa confiance.
 
 ---
 
-# PARTIE 2 — TROUVER DES PROSPECTS
+# PARTIE 2 · TROUVER DES PROSPECTS
 
 ## 2.1 Votre première liste : les 20 noms
 
@@ -184,7 +184,7 @@ au dos de votre carte de visite générée depuis votre espace.
 | Commerçants abordés | 5 à 10 | 30 à 50 |
 | Vraies conversations (plus de 5 minutes) | 2 à 4 | 12 à 20 |
 | Démonstrations faites | 1 à 2 | 6 à 10 |
-| Ventes conclues | — | **1 à 3** |
+| Ventes conclues | | **1 à 3** |
 
 *Repères de départ, à ajuster après la première vague. Notez vos vrais chiffres : le jour où
 vous connaissez votre ratio, vous savez exactement combien de portes ouvrir pour gagner
@@ -196,7 +196,7 @@ semaine puis disparaît.
 
 ---
 
-# PARTIE 3 — LA MÉTHODE DE VENTE NEBULA EN 7 TEMPS
+# PARTIE 3 · LA MÉTHODE DE VENTE NEBULA EN 7 TEMPS
 
 C'est la colonne vertébrale. Les 3 guides de service déclinent ces 7 temps avec leurs
 arguments propres. Ne sautez jamais une étape, surtout pas la troisième.
@@ -233,7 +233,7 @@ c'est 40 minutes volées à quelqu'un qui aurait acheté.
 
 ---
 
-## Temps 2 · OUVRIR — les 30 premières secondes
+## Temps 2 · OUVRIR · les 30 premières secondes
 
 **Ne commencez jamais par « bonjour, je vends des sites internet ».** Vous venez de vous
 transformer en démarcheur, et le rideau tombe.
@@ -266,7 +266,7 @@ que vous vous intéressiez à lui. Et vous avez demandé un engagement minuscule
 
 ---
 
-## Temps 3 · DIAGNOSTIQUER — le temps le plus important
+## Temps 3 · DIAGNOSTIQUER · le temps le plus important
 
 **C'est ici que les ventes se gagnent, et c'est l'étape que 90 % des vendeurs sautent.**
 
@@ -294,7 +294,7 @@ sa propre phrase. Il ne la discute jamais.
 
 ---
 
-## Temps 4 · MONTRER — téléphone en main
+## Temps 4 · MONTRER · téléphone en main
 
 **Ne décrivez jamais ce que vous pouvez montrer.** Un site livré vaut dix minutes d'explication.
 
@@ -317,7 +317,7 @@ une démonstration a perdu la vente. Prévoyez.
 
 ---
 
-## Temps 5 · PROPOSER — annoncer le prix, puis se taire
+## Temps 5 · PROPOSER · annoncer le prix, puis se taire
 
 **Le prix ne s'annonce jamais en premier, et il ne s'excuse jamais.**
 
@@ -345,7 +345,7 @@ Comptez dans votre tête. Attendez. **Laissez-le répondre.**
 
 ---
 
-## Temps 6 · LEVER — traiter l'objection
+## Temps 6 · LEVER · traiter l'objection
 
 **Une objection n'est pas un refus. C'est une demande d'information déguisée.**
 Le client qui objecte est intéressé, sinon il serait déjà parti.
@@ -440,7 +440,7 @@ celui qui a 300 rencontres oubliées.
 
 ---
 
-# PARTIE 4 — LE BRIEF : CE QU'IL FAUT RAMENER
+# PARTIE 4 · LE BRIEF : CE QU'IL FAUT RAMENER
 
 Vous ne livrez rien, mais **rien ne se livre sans vous**. Le délai de 5 à 7 jours démarre
 quand NEBULA reçoit un brief complet. Un brief incomplet, c'est un client qui attend,
@@ -480,21 +480,24 @@ qui s'énerve, et qui doute de vous.
 
 ---
 
-# PARTIE 5 — VOTRE ARGENT
+# PARTIE 5 · VOTRE ARGENT
 
 ## 5.1 Comment vous êtes payé
 
 | Palier du mois | Ventes payées dans le mois | Commission |
 |---|---|---|
-| **STARTER** | 1 à 4 | **25 %** |
-| **SILVER** | 5 à 9 | **30 %** |
-| **GOLD** | 10 et plus | **35 %** |
+| **BRONZE** | par défaut | **30 %** |
+| **ARGENT** | vos ventes + celles de vos filleuls atteignent **3** | **40 %** |
 
 Le palier **se remet à zéro chaque mois**. Il s'applique à **tous les services**,
 Outil métier compris.
 
-**Réseau :** 10 % sur les ventes de ceux que vous recrutez (N1), 5 % sur les ventes de leurs
-recrues (N2). À vie, tant qu'ils vendent.
+**Vos filleuls :** vous ne touchez **aucune commission** sur leurs ventes. Ce qu'ils font,
+c'est faire monter **votre palier** : leurs ventes du mois s'ajoutent aux vôtres, et dès 3 au
+total, tout votre mois passe à 40 %.
+
+> **Personne ne gagne d'argent sur le dos de personne ici.** Dites-le tel quel quand vous
+> recrutez : c'est ce qui vous distingue d'une pyramide, et c'est vrai.
 
 **Une vente = un lead payé.** Un client intéressé qui ne paie pas ne génère aucune commission.
 
@@ -506,30 +509,30 @@ recrues (N2). À vie, tant qu'ils vendent.
 4. Vous cliquez sur **« Réclamer »** dans votre espace
 5. **NEBULA vous paie sous 24 à 72 heures** en Mobile Money. Tout est tracé, du premier jour au versement
 
-## 5.2bis Votre portefeuille : le récurrent
+## 5.2bis Ce que vous ne touchez pas, et pourquoi
 
-Chaque client abonné vous rapporte **5 000 F tous les 6 mois** (25 % de son abonnement de
-20 000 F), **renouvellements compris et à vie**, même si vous quittez le programme.
+**Vous êtes payé sur vos ventes. Sur rien d'autre.**
 
-| Votre portefeuille | Sans rien vendre |
-|---|---|
-| 10 clients | 50 000 F par semestre |
-| 30 clients | 150 000 F par semestre |
-| 60 clients | 300 000 F par semestre |
+Pas de pourcentage sur les abonnements de vos clients, pas de commission sur les ventes de
+vos filleuls. Il n'y a pas de rente chez NEBULA, et c'est volontaire : l'argent va à celui
+qui vend, pas à celui qui a vendu il y a deux ans.
 
-Le récurrent **ne compte pas dans votre palier** : seules vos ventes nouvelles vous font
-passer de 25 à 30 puis 35 %. Et l'échéance de renouvellement est **le meilleur prétexte de
-reprise de contact qui existe** pour vendre la marche suivante de l'escalier.
+**Ce que vous y gagnez :** un taux plus élevé, tout de suite. 30 % dès la première vente au
+lieu de 25, et 40 % dès la troisième du mois.
+
+**L'échéance d'abonnement reste votre meilleur outil**, même si elle ne vous verse rien :
+c'est le moment parfait pour rappeler un client content et lui vendre la marche suivante
+de l'escalier. Vos clients abonnés sont affichés dans votre espace pour cette raison.
 
 ## 5.3 Le calcul qui doit vous obséder
 
 **Il vous manque toujours une vente pour changer de palier.**
 
-Vous êtes à 4 ventes le 25 du mois ? La 5ème ne vous rapporte pas seulement sa commission :
-elle fait passer **tout votre mois** de 25 % à 30 %. Sur 4 ventes déjà faites, c'est de l'argent
-qui tombe rétroactivement.
+Vous êtes à 2 ventes le 25 du mois ? La 3ème ne vous rapporte pas seulement sa commission :
+elle fait passer **tout votre mois** de 30 % à 40 %. Sur 2 ventes déjà faites, c'est de l'argent
+qui tombe rétroactivement. Et les ventes de vos filleuls comptent dans ce total.
 
-**Ne finissez jamais un mois à 4 ou à 9 ventes.** Regardez votre compteur le 20 du mois,
+**Ne finissez jamais un mois à 2 ventes.** Regardez votre compteur le 20 du mois,
 et allez chercher celle qui manque.
 
 ## 5.4 Votre montée en gamme
@@ -545,7 +548,7 @@ C'est une sécurité pour le client et pour vous, pas une retenue.
 
 ---
 
-# PARTIE 6 — LES RÈGLES
+# PARTIE 6 · LES RÈGLES
 
 ## 6.1 Les 10 interdits absolus
 
@@ -589,7 +592,7 @@ Le jargon fait fuir. Traduisez, toujours.
 
 ---
 
-# PARTIE 7 — VOTRE ESPACE PARTENAIRE
+# PARTIE 7 · VOTRE ESPACE PARTENAIRE
 
 Tout se passe sur **https://partenaires.nebula-agency.online** avec votre code et votre PIN.
 
@@ -610,7 +613,7 @@ classement. C'est deux minutes et ça se voit.
 
 ---
 
-# PARTIE 8 — VOS 7 PREMIERS JOURS
+# PARTIE 8 · VOS 7 PREMIERS JOURS
 
 | Jour | Ce que vous faites |
 |---|---|
@@ -627,7 +630,7 @@ semaine. La vente vient d'elle-même quand la conversation est bonne.
 
 ---
 
-# PARTIE 9 — CE QU'IL FAUT SAVOIR PAR CŒUR
+# PARTIE 9 · CE QU'IL FAUT SAVOIR PAR CŒUR
 
 *Vous devez pouvoir répondre à ça sans réfléchir, en pleine rue, sans notes.*
 
@@ -638,11 +641,11 @@ semaine. La vente vient d'elle-même quand la conversation est bonne.
 | L'Outil sur mesure ? | De 55 000 à 500 000 F, sur devis |
 | L'abonnement ? | 20 000 F **tous les 6 mois**, modifications comprises |
 | Quand suis-je payé ? | **24 à 72h** après réclamation |
-| Ce que je touche sur l'abonnement ? | 25 %, soit 5 000 F par client par semestre, **à vie** |
+| Ce que je touche sur l'abonnement ? | **Rien.** L'abonnement est un revenu de NEBULA, qui héberge, sécurise et modifie le site |
 | Un client à 35 produits ? | 50 000 + 15 000 par lot de 10 = 80 000 F |
 | Une vitrine à 3 pages ? | 150 000 + 2 × 30 000 = 210 000 F |
 | Le délai ? | 5 à 7 jours après le brief complet |
-| Ma commission sur une vitrine ? | 37 500 F à 25 %, 45 000 F à 30 %, 52 500 F à 35 % |
+| Ma commission sur une vitrine ? | 45 000 F à 30 %, 60 000 F à 40 % |
 | Combien de clients NEBULA a livrés ? | 9, tous consultables en ligne |
 | Un site à montrer pour un restaurant ? | Au Braisé d'Or |
 | Un site à montrer pour une bijouterie ? | Djambar Team |

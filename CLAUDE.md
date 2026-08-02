@@ -132,9 +132,31 @@ et par quoi commencer. Mis à jour à chaque fin de session importante.
 - **L'escalier** : on entre TOUJOURS par le Catalogue à 50 000 F, jamais par la Vitrine.
   Un commerçant méfiant dit oui à 50 k, pas à 150 k. Puis Vitrine, puis Outil métier.
 - **Abonnement : 20 000 F / 6 mois, modifications comprises** (remplace les 15 000 F partout)
-- **Commissions** 25 / 30 / 35 % selon les ventes du mois · N1 10 % · N2 5 %
-- **Récurrent : 25 % de chaque abonnement, ACQUIS À VIE**, ne compte pas dans le palier
+- **GRILLE UNIQUE ET DÉFINITIVE (2026-08-02)** : **30 %** sur chaque vente · **40 %** dès que
+  ses ventes **+ celles de ses filleuls directs** atteignent **3** dans le mois. Rien au-dessus.
+  Le taux s'applique à TOUT le mois et **repart à zéro le 1er** : les 40 % se regagnent
+  chaque mois
+- ⛔ **UN PARTENAIRE N'EST PAYÉ QUE SUR SES PROPRES VENTES.** Plus aucun récurrent, plus
+  aucun pourcentage sur les abonnements, plus aucune commission de réseau. L'abonnement
+  (20 000 F/6 mois) est un revenu de NEBULA seule
+- ⛔ **AUCUNE COMMISSION DE RÉSEAU, à aucune profondeur.** Un parrain ne touche **rien** sur
+  ses filleuls : leurs ventes comptent seulement dans son **seuil de 3**. « Personne ne gagne
+  d'argent sur le dos de personne » est littéralement vrai
+- ⚠️ **La relance des renouvellements devient critique** : aucun partenaire n'a plus intérêt
+  à faire renouveler un client. C'est NEBULA seule qui porte cette collecte, via n8n
+- Le rôle **superviseur** ne commande plus de barème : la grille unique l'a remplacé, il ne
+  reste qu'un insigne
+- **Rangs renommés le 2026-08-02** (titres de vraie société, insignes inchangés) :
+  Partenaire Junior · Conseiller · Conseiller Confirmé · Conseiller Senior · Chef de
+  Secteur · Chef Régional · Directeur Commercial · Directeur Associé · Président Fondateur
 - **Versement des commissions : 24 à 72h** après réclamation
+- **Barème révisable** avec préavis de 30 jours, sur les ventes futures (art. 6.7) ·
+  **le client appartient à NEBULA** (art. 7.4) · **indemnités forfaitaires** en cas
+  d'encaissement direct ou de démarchage (art. 8.13)
+- ⛔ **Aucun tiret cadratin dans les documents** : ça fait IA et ce n'est pas professionnel.
+  Deux-points, virgule, point médian `·` dans les titres
+- **Reprise de commission** si un encaissement est remboursé (contrat art. 6.7) —
+  sauf si le remboursement vient d'une faute de NEBULA : le partenaire garde alors sa commission
 - Vague 1 : **Cotonou, 8 places**, objectif 30 ventes / 90 jours
 - Rubrique marketing **« LE SAVIEZ-VOUS ? »** : `_documents/nebula-agency/marketing/`
 

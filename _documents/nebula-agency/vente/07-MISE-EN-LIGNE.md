@@ -134,7 +134,7 @@ Les 11 points en attente ont été tranchés le 2026-07-30, et 21 autres avec eu
 | 2 | ~~Passer l'abonnement à 20 000 F sur le site public~~ **FAIT** (11 occurrences, cohérence `setTier`/`<option>` vérifiée). ⚠️ **pas encore déployé sur Cloudflare** | `00-nebula-agency/nebula_agency_v9.html` |
 | 3 | ~~Aligner le cerveau de NOVA~~ **FAIT** : catalogue explicite (il dérivait de `SERVICES`, qui contient encore Fiche Google Maps et Avatar IA, retirés du site). ⚠️ **pas encore déployé sur Railway** | `nebula-affilies/server.py`, `agency_brain()` |
 | 4 | ~~Réécrire les 5 guides seedés~~ **FAIT ET MIGRÉ.** `refresh_seeded_docs()` corrige automatiquement les documents déjà en base : idempotente, elle ne touche que ce qui porte encore l'ancien discours et laisse intact tout document ajouté à la main. Testée sur une base simulant la production | `nebula-affilies/server.py`, `refresh_seeded_docs()` |
-| 5 | **Rappel de renouvellement** : ~~bloqué~~ **le modèle de données est implémenté et testé** (table `subscriptions`, commission 25 % à l'encaissement, 6 endpoints). Reste le workflow n8n et la variable `NAFF_CRON_KEY` sur Railway | `server.py` + `10-RELANCE-RENOUVELLEMENT.md` |
+| 5 | **Rappel de renouvellement** : ~~bloqué~~ **le modèle de données est implémenté et testé** (table `subscriptions`, aucune commission, 6 endpoints). Reste le workflow n8n et la variable `NAFF_CRON_KEY` sur Railway | `server.py` + `10-RELANCE-RENOUVELLEMENT.md` |
 | 6 | ~~Convertir les documents en PDF~~ **FAIT** : 9 PDF à la charte cosmique dans `vente/pdf/`, régénérables via `_build_pdf.py`. Reste à les **téléverser** dans l'espace partenaire | `vente/pdf/` |
 
 **Il ne reste que trois choses, et deux dépendent de vous :** le déploiement Cloudflare

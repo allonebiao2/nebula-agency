@@ -604,11 +604,11 @@ cette question.
 
 ## 11.3 Le chemin complet, sur un an
 
-| Moment | Ce que vous vendez | Votre commission (25 %) |
+| Moment | Ce que vous vendez | Votre commission (palier 30 %) |
 |---|---|---|
-| Jour 1 | Catalogue 50 000 F | 12 500 F |
+| Jour 1 | Catalogue 50 000 F | 15 000 F |
 | J+21, il est content | QR Google Review 30 000 F | 7 500 F |
-| Mois 3 | Vitrine 150 000 F | 37 500 F |
+| Mois 3 | Vitrine 150 000 F | 45 000 F |
 | Mois 7 | Outil de suivi 200 000 F | 50 000 F |
 | | **Sur un seul client** | **107 500 F** |
 
@@ -681,7 +681,7 @@ Paiement **intégral**, jamais échelonné · Le client paie **NEBULA**, jamais 
 « Un seul lien avec tout ce que vous vendez, les prix, et un bouton qui vous envoie la
 commande sur WhatsApp. »
 
-**MA COMMISSION** · 12 500 F à 25 % · 15 000 F à 30 % · 17 500 F à 35 %
+**MA COMMISSION** · 15 000 F à 30 % · 20 000 F à 40 %
 
 **LES 3 QUESTIONS QUI VENDENT**
 1. « Combien de fois par jour on vous demande vos prix et vos photos ? »

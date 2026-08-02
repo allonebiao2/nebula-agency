@@ -92,44 +92,50 @@ STATUSES: Dict[str, Dict[str, str]] = {
 STATUS_POINTS = {"attente": 10, "en_cours": 35, "termine": 70, "annule": 0}
 PAID_BONUS = 30
 
-# ---- RANKS cosmiques : PRESTIGE, selon les VENTES CUMULÉES (toute la carrière) ----
+# ---- RANGS : PRESTIGE, selon les VENTES CUMULÉES (toute la carrière).
+# Titres de vraie societe commerciale depuis le 2026-08-02. Les INSIGNES (icones,
+# couleurs, anneaux) sont inchanges : seules les etiquettes ont ete renommees. ----
 RANKS: List[Tuple[int, str, str]] = [
-    (0,   "Recrue",    "✦"),
-    (1,   "Météore",   "🌑"),
-    (6,   "Comète",    "☄️"),
-    (16,  "Planète",   "🪐"),
-    (36,  "Étoile",    "⭐"),
-    (66,  "Supernova", "💥"),
-    (111, "Nébuleuse", "🌌"),
-    (151, "Galaxie",   "👑"),
+    (0,   "Partenaire Junior",    "✦"),
+    (1,   "Conseiller",           "🌑"),
+    (6,   "Conseiller Confirmé",  "☄️"),
+    (16,  "Conseiller Senior",    "🪐"),
+    (36,  "Chef de Secteur",      "⭐"),
+    (66,  "Chef Régional",        "💥"),
+    (111, "Directeur Commercial", "🌌"),
+    (151, "Directeur Associé",    "👑"),
 ]
-# ---- PALIERS mensuels : ta COMMISSION DIRECTE, selon les ventes DU MOIS (remis à zéro) ----
-# (seuil mini de ventes du mois, label, emoji, taux direct)
-PALIERS: List[Tuple[int, str, str, float]] = [
-    (0,  "STARTER", "⬜", 0.25),   # 1 à 4 ventes / mois
-    (5,  "SILVER",  "🟣", 0.30),   # 5 à 9 ventes / mois
-    (10, "GOLD",    "🟡", 0.35),   # 10+ ventes / mois
-]
-# ---- PALIERS SUPERVISEUR : 2 niveaux seulement, sur les ventes DU MOIS de l'ÉQUIPE ----
-# Pour les partenaires « superviseur » (ex : Romaric DJANKAKI). Le palier est déterminé
-# par le total de clients du mois de l'équipe entière (lui + ses branches N1+N2), mais le
-# taux ne s'applique qu'à SES ventes directes (ses branches lui rapportent toujours 10/5%).
-# (seuil mini de ventes d'équipe du mois, label, emoji, taux direct)
-PALIERS_SUP: List[Tuple[int, str, str, float]] = [
-    (0, "STARTER", "⬜", 0.25),   # 0 à 2 clients d'équipe / mois  → 25%
-    (3, "SILVER",  "🟣", 0.40),   # 3+ clients d'équipe / mois     → 40%
-]
+# ---- PALIERS mensuels : ta COMMISSION DIRECTE (remis à zéro le 1er de chaque mois) ----
+# Grille unique et DÉFINITIVE (décision Mongazi, 2026-08-02).
+#   30 % sur chacune de ses ventes ;
+#   40 % dès que SES ventes + celles de ses filleuls directs atteignent 3 dans le mois.
+# Le taux s'applique à TOUTES ses ventes du mois, rétroactivement, et TOUT REPART À ZÉRO
+# le 1er du mois suivant : il faut refaire 3 ventes chaque mois pour retrouver les 40 %.
+#
+# ⚠️ UN PARTENAIRE NE TOUCHE QUE SUR SES PROPRES VENTES. Rien d'autre, nulle part :
+#    ni commission de réseau, ni pourcentage sur les abonnements. Ce que l'équipe change,
+#    c'est uniquement le SEUIL des 40 %.
+RATE_BASE    = 0.30
+RATE_EQUIPE  = 0.40
+SEUIL_EQUIPE = 3    # lui + ses filleuls directs, ventes validées dans le mois
 # ---- Rôles spéciaux (au-delà de la recrue standard) ----
+# Le rôle « superviseur » ne commande PLUS de barème : depuis la grille unique du
+# 2026-08-02, tout le monde est sur 30/40/50. Il ne reste qu'un insigne d'animation
+# d'équipe, sans effet sur la rémunération.
 ROLE_LABELS = {"superviseur": "Superviseur"}
 
 # ---- FONDATEUR (Mongazi) : titre + rang FIXES, au sommet du réseau (n'évoluent jamais) ----
 FOUNDER_NAME  = os.getenv("NAFF_FOUNDER_NAME", "Mongazi")
 FOUNDER_TITLE = os.getenv("NAFF_FOUNDER_TITLE", "Fondateur")
-FOUNDER_RANK  = os.getenv("NAFF_FOUNDER_RANK", "Big Bang")   # rang suprême, origine du réseau
+FOUNDER_RANK  = os.getenv("NAFF_FOUNDER_RANK", "Président Fondateur")   # rang suprême, origine du réseau
 
-# ---- Profondeurs réseau (FIXES, identiques pour tous — Vague B : parrainage) ----
-DEPTH_N1 = 0.10   # sur les ventes de tes recrues directes
-DEPTH_N2 = 0.05   # sur les ventes des recrues de tes recrues
+# ---- PLUS AUCUNE COMMISSION DE RÉSEAU (décision Mongazi, 2026-08-02) ----
+# Le parrainage ne verse plus rien, ni au 1er ni au 2e niveau. Les filleuls comptent
+# uniquement pour faire monter le PALIER de leur parrain (marche des 40 %, voir
+# `palier_for`). Les deux constantes restent à 0 pour que l'historique déjà écrit en
+# base (`level` = 'n1' / 'n2') continue de s'afficher sans casser les bilans.
+DEPTH_N1 = 0.0
+DEPTH_N2 = 0.0
 # Réseaux Mobile Money du Bénin
 RESEAUX = ["MTN MoMo", "Moov Money", "Celtiis Cash"]
 
@@ -156,7 +162,8 @@ TERMS_HTML = """
 <p>Le Partenaire agit en <b>professionnel indépendant</b>. Les présentes ne créent <b>aucun contrat de travail</b>, ni mandat de représentation légale, ni société entre les parties. Le Partenaire ne peut ni engager NEBULA, ni encaisser de paiement au nom de NEBULA, ni promettre des prestations non prévues.</p>
 
 <h4>4. Commissions</h4>
-<p>La commission directe du Partenaire dépend de son <b>palier mensuel</b> (de 25% à 35% selon le nombre de ventes du mois). Le Partenaire perçoit également une commission de <b>profondeur</b> sur son réseau : <b>10% (Niveau&nbsp;1)</b> sur les ventes de ses recrues directes et <b>5% (Niveau&nbsp;2)</b> sur celles de leurs recrues. Une commission n'est due que lorsque le <b>client a effectivement payé</b> NEBULA. Le versement se fait par Mobile Money sur le numéro déclaré par le Partenaire, après réclamation et validation.</p>
+<p>La commission du Partenaire dépend de son <b>palier mensuel</b>, recalculé le 1er de chaque mois et appliqué à toutes ses ventes du mois : <b>30%</b> par défaut, <b>40%</b> dès que ses ventes et celles de ses filleuls directs atteignent <b>3</b> dans le mois, <b>50%</b> dès qu'il réalise <b>4 ventes</b> ou plus à lui seul.</p>
+<p><b>Il n'existe aucune commission de réseau.</b> Le Partenaire ne perçoit rien sur les ventes de ses filleuls : celles-ci comptent uniquement pour faire monter son propre palier. Une commission n'est due que lorsque le <b>client a effectivement payé</b> NEBULA, et elle est reprise si ce paiement est remboursé. Le versement se fait par Mobile Money sur le numéro déclaré par le Partenaire, après réclamation et validation.</p>
 
 <h4>5. Obligations & éthique</h4>
 <p>Le Partenaire s'engage à représenter NEBULA avec honnêteté : pas de fausses promesses, pas de prix inventés, pas de spam ni de pratiques trompeuses, respect de l'image de NEBULA et des personnes contactées. Tout manquement peut entraîner la suspension ou l'exclusion.</p>
@@ -249,11 +256,12 @@ def init_db():
             level TEXT,                          -- 'direct' | 'n1' | 'n2'
             amount REAL,
             status TEXT DEFAULT 'due',           -- 'due' | 'claimed' | 'paid' | 'void'
+                                                 -- level 'reprise' = montant NÉGATIF (art. 6.7)
             created REAL, claimed_at REAL, paid_at REAL)""")
         c.execute("""CREATE TABLE IF NOT EXISTS subscriptions(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             lead_id INTEGER NOT NULL,            -- le client
-            affiliate_id INTEGER NOT NULL,       -- le partenaire qui l'a apporté (récurrent À VIE)
+            affiliate_id INTEGER NOT NULL,       -- le partenaire qui l'a apporté (aucune commission)
             offre TEXT,                          -- 'catalogue' | 'vitrine'
             montant REAL DEFAULT 20000,
             debut REAL,                          -- date de mise en service
@@ -424,36 +432,31 @@ def month_start_ts() -> float:
     now = datetime.datetime.now()
     return datetime.datetime(now.year, now.month, 1).timestamp()
 
-def palier_for(ventes_mois: int) -> Dict[str, Any]:
-    cur = PALIERS[0]; nxt = None
-    for i, p in enumerate(PALIERS):
-        if ventes_mois >= p[0]:
-            cur = p; nxt = PALIERS[i+1] if i+1 < len(PALIERS) else None
+def palier_for(ventes_mois: int, equipe_mois: int = 0) -> Dict[str, Any]:
+    """Le taux du mois. Deux marches, et rien au-dessus :
+         40 % dès que LUI + SES FILLEULS DIRECTS atteignent 3 ventes validées dans le mois ;
+         30 % sinon.
+    `equipe_mois` inclut déjà ses propres ventes. Les filleuls ne lui versent AUCUNE
+    commission : ils ne servent qu'à atteindre ce seuil plus vite.
+    Tout repart à zéro le 1er du mois : les 40 % ne sont jamais acquis."""
+    equipe_mois = max(equipe_mois, ventes_mois)
+    if equipe_mois >= SEUIL_EQUIPE:
+        label, emoji, rate, nxt = "ARGENT", "🟣", RATE_EQUIPE, None
+    else:
+        label, emoji, rate = "BRONZE", "⬜", RATE_BASE
+        nxt = ("ARGENT", "🟣", RATE_EQUIPE, SEUIL_EQUIPE - equipe_mois)
     return {
-        "label": cur[1], "emoji": cur[2], "rate": cur[3], "pct": int(round(cur[3] * 100)),
-        "next_label": nxt[1] if nxt else None, "next_emoji": nxt[2] if nxt else None,
-        "next_pct": int(round(nxt[3] * 100)) if nxt else None,
-        "to_next": max(0, nxt[0] - ventes_mois) if nxt else 0,
-        "min": cur[0], "next_min": nxt[0] if nxt else None,
+        "label": label, "emoji": emoji, "rate": rate, "pct": int(round(rate * 100)),
+        "next_label": nxt[0] if nxt else None,
+        "next_emoji": nxt[1] if nxt else None,
+        "next_pct": int(round(nxt[2] * 100)) if nxt else None,
+        "to_next": nxt[3] if nxt else 0,
+        "min": 0, "next_min": None,
+        "equipe_mois": equipe_mois, "ventes_mois": ventes_mois,
+        "seuil_equipe": SEUIL_EQUIPE,
     }
 
-def palier_sup_for(team_mois: int) -> Dict[str, Any]:
-    """Palier d'un SUPERVISEUR : 2 niveaux, déterminés par les clients du mois de
-    son équipe entière (lui + branches). Le taux s'applique à ses ventes directes."""
-    cur = PALIERS_SUP[0]; nxt = None
-    for i, p in enumerate(PALIERS_SUP):
-        if team_mois >= p[0]:
-            cur = p; nxt = PALIERS_SUP[i+1] if i+1 < len(PALIERS_SUP) else None
-    return {
-        "label": cur[1], "emoji": cur[2], "rate": cur[3], "pct": int(round(cur[3] * 100)),
-        "next_label": nxt[1] if nxt else None, "next_emoji": nxt[2] if nxt else None,
-        "next_pct": int(round(nxt[3] * 100)) if nxt else None,
-        "to_next": max(0, nxt[0] - team_mois) if nxt else 0,
-        "min": cur[0], "next_min": nxt[0] if nxt else None,
-        "scope": "team", "team_mois": team_mois,
-    }
-
-def commission_of(service: str, montant: float, rate: float = 0.25) -> int:
+def commission_of(service: str, montant: float, rate: float = RATE_BASE) -> int:
     base = montant if montant and montant > 0 else SERVICES.get(service, {}).get("price", 0)
     return int(round(base * rate))
 
@@ -477,25 +480,25 @@ def stats_of(affiliate_id: int) -> Dict[str, Any]:
                 ventes_mois += 1
         if st != "annule":
             nb_real += 1
-    # --- RANG (pour TOUS) : on grimpe sur ses ventes + celles de son équipe (N1+N2) ---
+    # --- RANG (pour TOUS) : on grimpe sur ses ventes + celles de son équipe (toute la descendance).
+    # NB : le RANG et le palier SUPERVISEUR comptent encore la 2e profondeur — c'est un mécanisme
+    # de reconnaissance, pas un versement : plus aucune commission de réseau n'existe. ---
     ventes_rank = team_cumul_count(affiliate_id)          # inclut déjà ses propres ventes
     team_ventes = max(0, ventes_rank - ventes)            # part apportée par les branches
     # --- PALIER du mois -> taux de commission DIRECTE ---
-    if role == "superviseur":
-        team_mois = team_month_count(affiliate_id)        # clients du mois : lui + ses branches
-        pal = palier_sup_for(team_mois)
-        rate = pal["rate"]                                # s'applique à SES ventes directes
-        paliers_scale = PALIERS_SUP
-    else:
-        team_mois = None
-        pal = palier_for(ventes_mois)                     # palier du mois -> taux direct
-        rate = pal["rate"]
-        if override > 0:                                  # taux personnalisé fixe (legacy)
-            rate = override
-            pal = {"label": "SPÉCIAL", "emoji": "★", "rate": override, "pct": int(round(override * 100)),
-                   "next_label": None, "next_emoji": None, "next_pct": None, "to_next": 0,
-                   "min": 0, "next_min": None}
-        paliers_scale = PALIERS
+    # GRILLE UNIQUE pour tout le monde, superviseur compris : 30 / 40 / 50.
+    # Les filleuls directs ne versent aucune commission ; leurs ventes du mois
+    # s'ajoutent aux siennes pour faire monter la marche des 40 %.
+    team_mois = team_month_count(affiliate_id)            # lui + ses filleuls directs, ce mois-ci
+    pal = palier_for(ventes_mois, team_mois)
+    rate = pal["rate"]
+    if override > 0:                                      # taux personnalisé fixe (legacy)
+        rate = override
+        pal = {"label": "SPÉCIAL", "emoji": "★", "rate": override, "pct": int(round(override * 100)),
+               "next_label": None, "next_emoji": None, "next_pct": None, "to_next": 0,
+               "min": 0, "next_min": None}
+    paliers_scale = [(0, "BRONZE", "⬜", RATE_BASE),
+                     (SEUIL_EQUIPE, "ARGENT", "🟣", RATE_EQUIPE)]
     rcm = 0; potentiel = 0
     for r in rows:
         com = commission_of(r["service"], r["montant"], rate)
@@ -528,20 +531,17 @@ def _month_paid_count(aid: int) -> int:
                          (aid, ms)).fetchone()["n"]
 
 def _downline_ids(aid: int) -> List[int]:
-    """IDs de tout le réseau descendant ACTIF (N1 + N2) d'un affilié."""
+    """IDs des FILLEULS DIRECTS actifs d'un affilié. UNE SEULE PROFONDEUR depuis le
+    2026-08-02 : il n'y a plus de second niveau nulle part, ni en versement ni en comptage.
+    Sert au RANG et à la marche des 40 % du palier, jamais à un versement."""
     if not aid:                       # aid=0 = client direct (pas un affilié) : pas de descendance
         return []
-    ids: List[int] = []
     with db() as c:
-        n1 = [r["id"] for r in c.execute("SELECT id FROM affiliates WHERE parrain_id=? AND actif=1", (aid,)).fetchall()]
-    ids += n1
-    for n1id in n1:
-        with db() as c:
-            ids += [r["id"] for r in c.execute("SELECT id FROM affiliates WHERE parrain_id=? AND actif=1", (n1id,)).fetchall()]
-    return ids
+        return [r["id"] for r in c.execute(
+            "SELECT id FROM affiliates WHERE parrain_id=? AND actif=1", (aid,)).fetchall()]
 
 def team_cumul_count(aid: int) -> int:
-    """Ventes payées CUMULÉES de l'affilié + tout son réseau (N1+N2). Base du RANG (pour TOUS)."""
+    """Ventes payées CUMULÉES de l'affilié + toute sa descendance. Base du RANG (pour TOUS)."""
     if not aid:
         return 0
     total = _paid_value(aid)[0]
@@ -550,7 +550,7 @@ def team_cumul_count(aid: int) -> int:
     return total
 
 def team_month_count(aid: int) -> int:
-    """Clients payés CE MOIS par l'affilié + tout son réseau (N1+N2). Base du palier SUPERVISEUR."""
+    """Clients payés CE MOIS par l'affilié + toute sa descendance. Base du palier SUPERVISEUR."""
     if not aid:
         return 0
     total = _month_paid_count(aid)
@@ -559,28 +559,32 @@ def team_month_count(aid: int) -> int:
     return total
 
 def network_of(aid: int) -> Dict[str, Any]:
-    """Réseau d'un affilié en ARBRE : N1 (recrues directes, 10%), chaque N1 portant ses N2 (5%)."""
-    def line(a, rate):
-        cnt, val = _paid_value(a["id"])
-        arole = (a["role"] or "").strip().lower() if "role" in a.keys() else ""
-        return {"name": affiliate_label(a), "code": a["code"], "ventes": cnt,
-                "rank": rank_for(team_cumul_count(a["id"]))["label"],
-                "role_label": ROLE_LABELS.get(arole, ""), "commission": int(round(val * rate))}
+    """Le réseau d'un affilié : ses FILLEULS DIRECTS, et rien en dessous.
+    Plus aucune commission n'est versée sur eux. Ce qu'on renvoie, c'est le nombre de
+    ventes qu'ils ont faites CE MOIS, parce que c'est ce qui fait monter le palier de
+    leur parrain à 40 % (voir `palier_for`)."""
     with db() as c:
-        n1 = c.execute("SELECT * FROM affiliates WHERE parrain_id=? AND actif=1 ORDER BY created", (aid,)).fetchall()
-    n1_list = []; n1_comm = 0; n2_comm = 0; n2_count = 0
+        n1 = c.execute("SELECT * FROM affiliates WHERE parrain_id=? AND actif=1 ORDER BY created",
+                       (aid,)).fetchall()
+    n1_list = []
+    ventes_mois_equipe = 0
     for a in n1:
-        with db() as c:
-            kids = c.execute("SELECT * FROM affiliates WHERE parrain_id=? AND actif=1 ORDER BY created", (a["id"],)).fetchall()
-        children = [line(k, DEPTH_N2) for k in kids]
-        n2_count += len(children)
-        n2_comm += sum(x["commission"] for x in children)
-        node = line(a, DEPTH_N1); node["children"] = children
-        n1_comm += node["commission"]
-        n1_list.append(node)
+        cnt, _val = _paid_value(a["id"])
+        mois = _month_paid_count(a["id"])
+        ventes_mois_equipe += mois
+        arole = (a["role"] or "").strip().lower() if "role" in a.keys() else ""
+        n1_list.append({
+            "name": affiliate_label(a), "code": a["code"], "ventes": cnt,
+            "ventes_mois": mois,
+            "rank": rank_for(team_cumul_count(a["id"]))["label"],
+            "role_label": ROLE_LABELS.get(arole, ""),
+            "commission": 0,          # le parrainage ne verse plus rien
+            "children": [],           # une seule profondeur
+        })
     return {
-        "n1": n1_list, "n1_count": len(n1_list), "n2_count": n2_count,
-        "n1_commission": n1_comm, "n2_commission": n2_comm, "network_total": n1_comm + n2_comm,
+        "n1": n1_list, "n1_count": len(n1_list), "n2_count": 0,
+        "n1_commission": 0, "n2_commission": 0, "network_total": 0,
+        "ventes_mois_equipe": ventes_mois_equipe,
     }
 
 def tg_send(chat: Any, text: str):
@@ -777,7 +781,8 @@ def fmoney(n) -> str:
     return f"{int(round(n or 0)):,}".replace(",", " ")
 
 def generate_commissions(lead: sqlite3.Row) -> Dict[str, Any]:
-    """À la vente PAYÉE : crée auto les commissions direct + N1 + N2, alerte chaque bénéficiaire,
+    """À la vente PAYÉE : crée auto la commission du VENDEUR, et lui seul. Il n'y a plus
+    aucune commission de réseau. Alerte le bénéficiaire,
     et RENVOIE le détail complet (qui touche combien, quel %, MoMo) pour l'afficher tout de suite à l'admin."""
     client = (str(lead["prenom"] or "") + " " + str(lead["nom"] or "")).strip() or "ce client"
     price = lead["montant"] if lead["montant"] else SERVICES.get(lead["service"], {}).get("price", 0)
@@ -785,25 +790,24 @@ def generate_commissions(lead: sqlite3.Row) -> Dict[str, Any]:
     empty = {"client": client, "price": int(price or 0), "service": svc, "lines": [], "total": 0, "already": False}
     entries = []  # (beneficiary_row, level, pct, amount)
     with db() as c:
-        if c.execute("SELECT COUNT(*) n FROM commissions WHERE lead_id=? AND status!='void'", (lead["id"],)).fetchone()["n"]:
+        # une REPRISE n'est pas une commission : elle ne doit pas bloquer une regeneration
+        if c.execute("SELECT COUNT(*) n FROM commissions WHERE lead_id=? AND status!='void' "
+                     "AND level!='reprise'", (lead["id"],)).fetchone()["n"]:
             return {**empty, "already": True}  # idempotent : déjà généré
         aff = c.execute("SELECT * FROM affiliates WHERE id=?", (lead["affiliate_id"],)).fetchone()
         if not aff:
             return empty                                   # client direct (site) : aucune commission
         rate = stats_of(aff["id"])["direct_rate"]
         entries.append((aff, "direct", rate, int(round(price * rate))))
-        p1 = c.execute("SELECT * FROM affiliates WHERE id=? AND actif=1", (aff["parrain_id"] or 0,)).fetchone()
-        if p1:
-            entries.append((p1, "n1", DEPTH_N1, int(round(price * DEPTH_N1))))
-            p2 = c.execute("SELECT * FROM affiliates WHERE id=? AND actif=1", (p1["parrain_id"] or 0,)).fetchone()
-            if p2:
-                entries.append((p2, "n2", DEPTH_N2, int(round(price * DEPTH_N2))))
+        # PLUS AUCUNE COMMISSION DE RÉSEAU : la vente ne rémunère que celui qui l'a faite.
+        # Le parrain, lui, voit cette vente compter dans son palier du mois (`palier_for`).
         now = time.time()
         for ben, lvl, pct, amt in entries:
             if amt > 0:
                 c.execute("INSERT INTO commissions(lead_id,beneficiary_id,level,amount,status,created) VALUES(?,?,?,?,'due',?)",
                           (lead["id"], ben["id"], lvl, amt, now))
-    labels = {"direct": "vente directe", "n1": "réseau N1", "n2": "réseau N2"}
+    labels = {"direct": "vente directe", "n1": "parrainage (supprimé)",
+              "n2": "réseau N2 (supprimé)", "reprise": "reprise de commission"}
     lines = []
     for ben, lvl, pct, amt in entries:
         if amt <= 0:
@@ -820,21 +824,42 @@ def generate_commissions(lead: sqlite3.Row) -> Dict[str, Any]:
     return {"client": client, "price": int(price or 0), "service": svc, "lines": lines, "total": total, "already": False}
 
 def void_commissions(lead_id: int):
-    """Annule les commissions de VENTE d'un lead dé-marqué payé.
+    """Vente dé-marquée payée (remboursement, impayé, erreur de saisie).
+
+    Deux cas, et le second est celui qui manquait :
+      - commission PAS ENCORE VERSÉE  -> 'void', elle disparaît, personne n'est lésé ;
+      - commission DÉJÀ VERSÉE        -> on ne peut plus l'annuler, l'argent est parti.
+        On écrit alors une REPRISE : une ligne de montant NÉGATIF, statut 'due', qui
+        vient en déduction automatique du prochain versement (le solde dû est calculé
+        par somme). C'est l'article 6.7 du contrat partenaire.
+
     ⚠️ N'annule JAMAIS les commissions d'abonnement (level='abonnement') : elles
-    correspondent à des encaissements distincts et sont acquises à vie."""
+    correspondent à des encaissements distincts (historique d'avant le 2026-08-02)."""
     with db() as c:
+        deja = c.execute("SELECT beneficiary_id, amount FROM commissions "
+                         "WHERE lead_id=? AND status='paid' AND level IN ('direct','n1','n2')",
+                         (lead_id,)).fetchall()
         c.execute("UPDATE commissions SET status='void' WHERE lead_id=? AND status!='paid' "
                   "AND level IN ('direct','n1','n2')", (lead_id,))
+        now = time.time()
+        for r in deja:
+            montant = int(r["amount"] or 0)
+            if montant > 0:
+                c.execute("INSERT INTO commissions(lead_id,beneficiary_id,level,amount,status,created) "
+                          "VALUES(?,?,'reprise',?,'due',?)",
+                          (lead_id, r["beneficiary_id"], -montant, now))
 
 
 # ============================================================================
-#  ABONNEMENTS — 20 000 F / 6 mois, commission de 25 % ACQUISE À VIE
+#  ABONNEMENTS : 20 000 F / 6 mois, revenu de NEBULA. AUCUNE commission partenaire.
 #  Voir _documents/nebula-agency/vente/10-RELANCE-RENOUVELLEMENT.md
 # ============================================================================
 
 SUB_MONTANT = 20000          # F CFA par semestre
-SUB_RATE = 0.25              # part du partenaire, quel que soit son palier
+# ⚠️ LE PARTENAIRE NE TOUCHE PLUS RIEN SUR LES ABONNEMENTS (décision Mongazi, 2026-08-02).
+# L'abonnement reste un revenu de NEBULA et continue d'être suivi et relancé ici, mais il
+# ne génère plus aucune commission. Un partenaire n'est payé que sur SES ventes.
+SUB_RATE = 0.0
 SUB_MOIS = 6                 # durée d'un abonnement
 SUB_OFFRES = ("catalogue", "vitrine")   # seules offres qui portent un abonnement
 
@@ -871,29 +896,22 @@ def ensure_subscription(lead: sqlite3.Row) -> Optional[int]:
     return sid
 
 def record_subscription_payment(sub_id: int) -> Dict[str, Any]:
-    """Encaissement d'un abonnement : décale l'échéance de 6 mois ET crée la
-    commission de 25 % du partenaire. C'est ce lien qui rend le récurrent à vie
-    réellement traçable — la commission n'existe pas ailleurs."""
+    """Encaissement d'un abonnement : on décale simplement l'échéance de 6 mois.
+
+    ⚠️ AUCUNE COMMISSION N'EST CRÉÉE. Depuis le 2026-08-02 le partenaire ne perçoit plus
+    rien sur les abonnements : il n'est payé que sur ses propres ventes. L'abonnement
+    reste suivi ici parce que c'est un revenu de NEBULA et qu'il faut le relancer."""
     now = time.time()
     with db() as c:
-        s = c.execute("SELECT * FROM subscriptions WHERE id=?", (sub_id,)).fetchone()
-        if not s:
+        s_row = c.execute("SELECT * FROM subscriptions WHERE id=?", (sub_id,)).fetchone()
+        if not s_row:
             return {"ok": False, "error": "introuvable"}
-        lead = c.execute("SELECT * FROM leads WHERE id=?", (s["lead_id"],)).fetchone()
-        amount = int(round((s["montant"] or SUB_MONTANT) * SUB_RATE))
-        # Le partenaire touche même s'il a quitté le programme : acquis à vie.
-        c.execute("INSERT INTO commissions(lead_id,beneficiary_id,level,amount,status,created) "
-                  "VALUES(?,?,'abonnement',?,'due',?)",
-                  (s["lead_id"], s["affiliate_id"], amount, now))
         c.execute("UPDATE subscriptions SET echeance=?, statut='actif', relances=0, "
                   "dernier_rappel=0, updated=? WHERE id=?",
-                  (_plus_mois(max(s["echeance"] or now, now), SUB_MOIS), now, sub_id))
-        nouvelle = c.execute("SELECT echeance FROM subscriptions WHERE id=?", (sub_id,)).fetchone()["echeance"]
-    client = f"{lead['prenom']} {lead['nom']}".strip() if lead else "client"
-    notify("affiliate", s["affiliate_id"],
-           f"Commission d'abonnement à réclamer : {fmoney(amount)} F (25 % sur le "
-           f"renouvellement de {client}).", s["lead_id"], kind="commission", ref_aff=s["affiliate_id"])
-    return {"ok": True, "amount": amount, "echeance": nouvelle}
+                  (_plus_mois(max(s_row["echeance"] or now, now), SUB_MOIS), now, sub_id))
+        nouvelle = c.execute("SELECT echeance FROM subscriptions WHERE id=?",
+                             (sub_id,)).fetchone()["echeance"]
+    return {"ok": True, "amount": 0, "echeance": nouvelle}
 
 def subscriptions_due() -> Dict[str, list]:
     """Abonnements à relancer, classés par palier. Consommé par le workflow n8n
@@ -987,10 +1005,10 @@ _SEED_DOCS = [
              "<h4>« On m'a déjà pris de l'argent »</h4><p>Ne défends jamais NEBULA avec des mots, défends-la avec des liens : djambarteam.com, graindesthetique.com, au-braise-dor.pages.dev. Livraison 5 à 7 jours, pas six mois.</p>"
              "<h4>« Je n'ai pas le temps »</h4><p>« Justement, vous n'avez rien à faire : vos photos et vos prix, et NEBULA s'occupe de tout. »</p>"),
             ("Tes commissions expliquées", "Formation",
-             "Paliers, portefeuille à vie, réseau, paiement.",
-             "<h4>Ta commission directe (palier du mois)</h4><ul><li><b>STARTER</b> (1 à 4 ventes/mois) : 25%</li><li><b>SILVER</b> (5 à 9 ventes/mois) : 30%</li><li><b>GOLD</b> (10+ ventes/mois) : 35%</li></ul><p>Remis à zéro chaque mois. <b>Ne finis jamais un mois à 4 ou à 9 ventes</b> : la suivante fait monter TOUT ton mois, rétroactivement.</p>"
-             "<h4>Ton portefeuille : le récurrent</h4><p>Chaque client abonné te rapporte <b>5 000 F tous les 6 mois</b> (25 % de son abonnement), renouvellements compris, <b>et tu le gardes à vie</b>, même si tu arrêtes un jour. 30 clients = 150 000 F par semestre sans rien vendre. Le récurrent ne compte pas dans ton palier.</p>"
-             "<h4>Ton réseau</h4><p><b>10%</b> sur les ventes des partenaires que tu recrutes (N1) et <b>5%</b> sur celles de leurs recrues (N2). Ces commissions démarrent à partir de ta propre première vente.</p>"
+             "La grille 30 / 40 %, ce que l'équipe y change, et comment tu es payé.",
+             "<h4>Ta commission (palier du mois)</h4><ul><li><b>BRONZE</b> : <b>30%</b>, par défaut</li><li><b>ARGENT</b> : <b>40%</b>, dès que TES ventes + celles de TES FILLEULS atteignent <b>3</b> dans le mois</li><li><b>OR</b> : <b>50%</b>, dès que TU fais <b>4 ventes</b> ou plus à toi seul</li></ul><p>Remis à zéro le 1er du mois, et appliqué à TOUT ton mois, rétroactivement. <b>Ne finis jamais un mois à 3 ventes</b> : la 4e fait passer tout le mois de 40 à 50%.</p><p><b>Tu ne touches aucune commission sur les ventes de tes filleuls.</b> Elles servent uniquement à faire monter ton palier.</p>"
+             "<h4>Tu es payé sur TES ventes, et sur rien d'autre</h4><p>Pas de pourcentage sur les abonnements, pas de commission sur les ventes de tes filleuls. <b>Une seule source de gain : ce que tu vends toi-même.</b></p>"
+             "<h4>Ce que ton équipe change</h4><p>Les ventes de tes filleuls directs s'ajoutent aux tiennes pour atteindre les <b>3 ventes du mois</b> qui débloquent les <b>40%</b>. Elles ne te versent rien : elles te font travailler à un taux plus élevé.</p>"
              "<h4>Quand es-tu payé ?</h4><p>Dès que ton client a payé NEBULA, ta commission apparaît dans <b>Mes gains</b>. Tu cliques <b>Réclamer</b>, et <b>NEBULA te verse sous 24 à 72 heures</b> sur ton Mobile Money.</p>"
              "<h4>Règle d'or</h4><p><b>Tu ne touches jamais l'argent d'un client</b>, sous aucune forme. Le client paie NEBULA, toujours.</p>"),
 ]
@@ -1084,7 +1102,7 @@ def seed_docs():
         ("NEBULA_Programme_Partenaires.pdf", "2026-06-21",
          "Brochure du Programme Partenaires (PDF premium)", "Formation",
          "La présentation complète à montrer aux prospects et à garder sous la main : "
-         "vision, offres et prix (dont 15 000 F/6 mois d'hébergement), commissions 25-40% + réseau N1/N2, "
+         "vision, offres et prix (dont 20 000 F/6 mois d'abonnement), la grille 30 / 40 %, "
          "rangs, et l'exemple chiffré du réseau. 14 pages, prête à partager."),
         ("kit-nebula.pdf", "2026-06-21",
          "Kit NEBULA — l'essentiel du partenaire (PDF)", "Formation",
@@ -1227,9 +1245,12 @@ def api_config():
         "services": SERVICES, "statuses": STATUSES, "reseaux": RESEAUX,
         "commission_rate": COMMISSION_RATE, "momo": {"number": MOMO_NUMBER, "name": MOMO_NAME},
         "whatsapp": WHATSAPP, "ranks": [{"min": r[0], "label": r[1], "emoji": r[2]} for r in RANKS],
-        "paliers": [{"min": p[0], "label": p[1], "emoji": p[2], "pct": int(round(p[3] * 100))} for p in PALIERS],
-        "paliers_sup": [{"min": p[0], "label": p[1], "emoji": p[2], "pct": int(round(p[3] * 100))} for p in PALIERS_SUP],
-        "depths": {"n1": int(DEPTH_N1 * 100), "n2": int(DEPTH_N2 * 100)},
+        "paliers": [
+            {"min": 0, "label": "BRONZE", "emoji": "⬜", "pct": int(round(RATE_BASE * 100))},
+            {"min": SEUIL_EQUIPE, "label": "ARGENT", "emoji": "🟣", "pct": int(round(RATE_EQUIPE * 100))},
+        ],
+        "seuils": {"equipe": SEUIL_EQUIPE},
+        "depths": {},   # plus aucune commission de réseau
         "founder": {"name": FOUNDER_NAME, "title": FOUNDER_TITLE, "rank": FOUNDER_RANK},
     }
 
@@ -1610,7 +1631,8 @@ async def admin_set_rate(aid: int, req: Request, naff_session: Optional[str] = C
 @app.post("/api/admin/affiliates/{aid}/role")
 async def admin_set_role(aid: int, req: Request, naff_session: Optional[str] = Cookie(default=None)):
     """Définit le rôle spécial d'un partenaire. 'superviseur' = barème 2 paliers d'équipe
-    (Starter 25% <3 clients/mois, Silver 40% dès 3), titre « Superviseur ». '' = recrue standard."""
+    Depuis la grille unique du 2026-08-02, ce rôle ne change PLUS le barème : il ne reste
+    qu'un insigne d'animation d'équipe. '' = partenaire standard."""
     if not need_admin(naff_session):
         return JSONResponse({"error": "auth"}, status_code=401)
     d = await req.json()
@@ -1737,7 +1759,7 @@ async def admin_set_payment(lid: int, req: Request, naff_session: Optional[str] 
     breakdown = None
     sub_id = None
     if paye:
-        breakdown = generate_commissions(r)      # crée + alerte direct / N1 / N2 + RENVOIE le détail
+        breakdown = generate_commissions(r)      # crée + alerte le vendeur / son parrain + RENVOIE le détail
         sub_id = ensure_subscription(r)          # ouvre l'abonnement (catalogue / vitrine)
     else:
         void_commissions(lid)
@@ -1780,7 +1802,7 @@ def admin_subscriptions_due(naff_session: Optional[str] = Cookie(default=None),
 
 @app.post("/api/admin/subscriptions/{sid}/paid")
 async def admin_subscription_paid(sid: int, naff_session: Optional[str] = Cookie(default=None)):
-    """L'abonnement a été encaissé : échéance décalée de 6 mois + commission 25 %."""
+    """L'abonnement a été encaissé : échéance décalée de 6 mois. Aucune commission."""
     if not need_admin(naff_session):
         return JSONResponse({"error": "auth"}, status_code=401)
     return record_subscription_payment(sid)
@@ -2323,9 +2345,12 @@ def doc_public(r: sqlite3.Row) -> Dict[str, Any]:
 
 @app.get("/api/partenaire/portefeuille")
 def partner_portefeuille(naff_session: Optional[str] = Cookie(default=None)):
-    """Les abonnements que le partenaire a apportés : ce qu'ils lui rapportent tous
-    les 6 mois, et quand relancer. C'est ce qui transforme le récurrent en habitude
-    de travail plutôt qu'en rente passive."""
+    """Les abonnements que le partenaire a apportés, et quand ils arrivent à échéance.
+
+    ⚠️ Ils ne lui rapportent RIEN : depuis le 2026-08-02 il n'existe plus aucune commission
+    d'abonnement. On les lui montre quand même, parce qu'un renouvellement est le meilleur
+    prétexte de reprise de contact qui existe, et que c'est là qu'il vend la marche
+    suivante de l'escalier."""
     aff = need_affiliate(naff_session)
     if aff is None:
         return JSONResponse({"error": "auth"}, status_code=401)
@@ -2344,7 +2369,7 @@ def partner_portefeuille(naff_session: Optional[str] = Cookie(default=None)):
         clients.append({
             "client": f"{r['prenom']} {r['nom']}".strip(),
             "offre": r["offre"],
-            "ma_part": int(round((r["montant"] or SUB_MONTANT) * SUB_RATE)),
+            "ma_part": 0,   # plus aucune commission d'abonnement
             "echeance": datetime.datetime.fromtimestamp(r["echeance"]).strftime("%d/%m/%Y") if r["echeance"] else "",
             "jours_restants": int(((r["echeance"] or now) - now) // 86400),
             "statut": r["statut"],
@@ -2355,9 +2380,9 @@ def partner_portefeuille(naff_session: Optional[str] = Cookie(default=None)):
         "nb": len(clients),
         "par_semestre": par_semestre,
         "deja_genere": int(encaisse),
-        "note": "25 % de chaque abonnement encaissé, renouvellements compris. "
-                "Acquis à vie, même si vous quittez le programme. "
-                "Ne compte pas dans votre palier du mois.",
+        "note": "Ces abonnements ne vous versent aucune commission : vous n'êtes payé que "
+                "sur vos propres ventes. Ils sont ici parce qu'une échéance de renouvellement "
+                "est le meilleur moment pour reprendre contact et vendre la marche suivante.",
     }
 
 @app.get("/api/partenaire/documents")
@@ -2845,9 +2870,9 @@ def brain_context_aff(aid: int) -> str:
         leads = c.execute("SELECT * FROM leads WHERE affiliate_id=? ORDER BY created DESC", (aid,)).fetchall()
     s = stats_of(aid); rk = s["rank"]; pal = s["palier"]
     nxt = (f"Encore {rk['to_next']} vente(s) pour le rang {rk['next_label']} {rk['next_emoji']}."
-           if rk["next_label"] else "Rang Galaxie (suprême) atteint, bravo.")
+           if rk["next_label"] else "Rang Directeur Associé (suprême) atteint, bravo.")
     palnxt = (f"Encore {pal['to_next']} vente(s) CE MOIS pour passer {pal['next_label']} ({pal['next_pct']}% en direct)."
-              if pal["next_label"] else "Palier GOLD (max) atteint ce mois.")
+              if pal["next_label"] else "Palier OR (max) atteint ce mois.")
     cl = [f"- {(str(l['prenom'] or '')+' '+str(l['nom'] or '')).strip()} : "
           f"{SERVICES.get(l['service'], {}).get('label', l['service'])} — {STATUSES[l['status']]['label']}"
           f"{' — PAYÉ' if l['paye'] else ''}" for l in leads]

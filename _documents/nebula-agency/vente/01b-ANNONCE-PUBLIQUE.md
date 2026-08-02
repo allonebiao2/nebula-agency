@@ -1,4 +1,4 @@
-# ANNONCE DE RECRUTEMENT — NEBULA Agency
+# ANNONCE DE RECRUTEMENT · NEBULA Agency
 ## Conseillers en Digitalisation · Cotonou
 
 > **Ce document est PUBLIC.** Il peut être envoyé librement à toute personne qui souhaite
@@ -63,29 +63,30 @@ Votre pourcentage monte avec votre nombre de ventes dans le mois.
 
 | Votre palier du mois | Ventes payées | Votre commission |
 |---|---|---|
-| STARTER | 1 à 4 | **25 %** |
-| SILVER | 5 à 9 | **30 %** |
-| GOLD | 10 et plus | **35 %** |
+| BRONZE | par défaut | **30 %** |
+| ARGENT | vos ventes + celles de vos filleuls atteignent **3** | **40 %** |
+
+**Le compteur repart à zéro le 1er de chaque mois.** Les 40 % ne sont jamais acquis : il faut refaire 3 ventes tous les mois.
 
 **Concrètement, dans votre poche :**
 
-- Un Catalogue vendu à 50 000 F → **12 500 F**
-- Une Vitrine vendue à 150 000 F → **37 500 F**
-- Un Outil métier vendu à 300 000 F → **75 000 F**
+- Un Catalogue vendu à 50 000 F → **15 000 F**, et **20 000 F** au palier ARGENT
+- Une Vitrine vendue à 150 000 F → **45 000 F**, et **60 000 F** au palier ARGENT
+- Un Outil métier vendu à 300 000 F → **90 000 F**, et **120 000 F** au palier ARGENT
 - Un mois à 6 ventes (4 Catalogues + 2 Vitrines) → **150 000 F de commission**
 
-**Et vos commissions ne s'arrêtent pas à vos propres ventes.**
-Vous recrutez quelqu'un ? Vous touchez **10 %** de ses ventes. Il recrute à son tour ?
-Vous touchez encore **5 %**. À vie, tant qu'ils vendent.
+**Et vos filleuls vous font gagner plus, sans rien prendre à personne.**
+Vous ne touchez **aucune commission** sur leurs ventes. En revanche **leurs ventes du mois
+comptent avec les vôtres** : dès 3 au total, **tout votre mois passe à 40 %**. Personne ne
+gagne d'argent sur le dos de personne ici.
 
 **Vous êtes payé sous 24 à 72 heures**, par Mobile Money, sur simple réclamation depuis votre
 espace personnel. Chaque commission est tracée du premier jour au versement.
 
-**Et vos gains ne s'arrêtent jamais.** Chaque client que vous apportez paie un abonnement de
-20 000 F tous les 6 mois : **vous en touchez 25 %, soit 5 000 F par client et par semestre,
-et vous les gardez à vie**, même si un jour vous arrêtez. Avec 30 clients, cela fait
-150 000 F par semestre sans vendre quoi que ce soit de nouveau.
-Ce que vous construisez reste à vous.
+**Une seule règle, et elle est claire : vous êtes payé sur ce que VOUS vendez.**
+Pas de pourcentage sur les abonnements, pas de commission sur les ventes des autres. Pas de
+rente, pas de promesse de revenu passif. En échange, le taux est haut et il tombe tout de
+suite : **30 % dès la première vente, 40 % dès la troisième du mois.**
 
 ---
 
@@ -159,7 +160,7 @@ et il perd son temps autant que le nôtre.
 **POUR POSTULER**
 
 **En ligne :** https://partenaires.nebula-agency.online/devenir
-**Par WhatsApp :** +229 96 74 07 32 — écrivez simplement **« PARTENAIRE »** et votre prénom.
+**Par WhatsApp :** +229 96 74 07 32, écrivez simplement **« PARTENAIRE »** et votre prénom.
 
 *Candidatures ouvertes jusqu'au 21 jours après la publication de cette annonce. NEBULA Agency · Cotonou, Bénin ·
 www.nebula-agency.online*

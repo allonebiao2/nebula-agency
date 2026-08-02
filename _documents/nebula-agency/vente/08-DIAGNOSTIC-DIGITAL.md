@@ -299,9 +299,9 @@ compréhension) : automatisations n8n, WhatsApp automatisé, base de données s�
 intelligence artificielle pour les réponses et les rapports, paiement Mobile Money.
 
 **Vos trois preuves à montrer :**
-- **Boussole** — savoir ce qu'on gagne vraiment, coût de revient et marge
-- **Digital HSE** — le poste de pilotage, tout sur un écran avec les alertes
-- **Au Braisé d'Or** — la prise de commande en ligne
+- **Boussole**, savoir ce qu'on gagne vraiment, coût de revient et marge
+- **Digital HSE**, le poste de pilotage, tout sur un écran avec les alertes
+- **Au Braisé d'Or**, la prise de commande en ligne
 
 ⚠️ **Avant toute démonstration, la phrase obligatoire :**
 > « Ce n'est pas ça que vous aurez. Ça, c'est pour vous montrer ce qu'on sait construire.

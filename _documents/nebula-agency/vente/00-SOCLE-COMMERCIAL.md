@@ -1,4 +1,4 @@
-# SOCLE COMMERCIAL NEBULA — la source de vérité de la vente
+# SOCLE COMMERCIAL NEBULA · la source de vérité de la vente
 
 > **À quoi sert ce document.** C'est la référence unique de tout ce qui se dit en vente chez
 > NEBULA : les offres, les prix, ce qui est inclus, les délais, les gains du partenaire, les
@@ -31,7 +31,7 @@ C'est **une seule ligne**, elle couvre l'hébergement, la sécurité **et les mo
 contenu** (textes, prix, photos, ajout ou retrait de produits). Elle accompagne le Catalogue
 et la Vitrine.
 
-> Le récurrent est **par semestre**, jamais par mois. Un partenaire qui dit « 20 000 par mois »
+> L'abonnement est **par semestre**, jamais par mois. Un partenaire qui dit « 20 000 par mois »
 > fait perdre la vente sur-le-champ. On dit : « 20 000 francs tous les six mois, soit environ
 > 3 300 francs par mois, et vos modifications sont comprises dedans. »
 
@@ -43,7 +43,7 @@ Le **QR Code Google Review** est sans abonnement.
 
 ### 1.2 Ce qui est inclus, exactement
 
-**Catalogue Digital — 50 000 F**
+**Catalogue Digital · 50 000 F**
 - Jusqu'à **20 produits** avec photo, description et prix
 - Bouton de commande qui envoie directement sur son WhatsApp
 - QR Code à imprimer et à coller
@@ -51,7 +51,7 @@ Le **QR Code Google Review** est sans abonnement.
 - **Au-delà de 20 produits : 15 000 F par lot de 10 produits supplémentaires**
   *(un client à 35 produits paie 50 000 + 30 000 = 80 000 F)*
 
-**Vitrine Digitale — 150 000 F**
+**Vitrine Digitale · 150 000 F**
 - **Une page complète**, avec toutes les sections : accueil, présentation, services ou
   produits, galerie photos et vidéos, avis clients, contact, carte, bouton WhatsApp
 - QR Code
@@ -59,7 +59,7 @@ Le **QR Code Google Review** est sans abonnement.
 - **Nom de domaine personnalisé offert la 1ère année**, puis 16 000 F par an
 - **Page supplémentaire : 30 000 F par page** *(un hub de 4 pages = 150 000 + 90 000 = 240 000 F)*
 
-**Outil Digital sur mesure — 55 000 à 500 000 F**
+**Outil Digital sur mesure · 55 000 à 500 000 F**
 - Le prix sort du **configurateur du site** (www.nebula-agency.online), jamais de la tête
   du partenaire
 - Plancher 55 000 F, plafond 500 000 F
@@ -151,78 +151,122 @@ Le palier se calcule sur le **nombre de ventes payées dans le mois en cours**, 
 à zéro chaque mois**. Il s'applique à **tous les services**, Outil métier et QR Google Review
 compris.
 
-| Palier | Ventes payées dans le mois | Commission |
+| Palier | Condition, dans le mois | Commission |
 |---|---|---|
-| **STARTER** | 1 à 4 | **25 %** |
-| **SILVER** | 5 à 9 | **30 %** |
-| **GOLD** | 10 et plus | **35 %** |
+| **BRONZE** | par défaut | **30 %** |
+| **ARGENT** | ses ventes **+ celles de ses filleuls directs** atteignent **3** | **40 %** |
 
-### 4.2 Commission sur le récurrent (le portefeuille)
+**Il n'y a rien au-dessus de 40 %, et les 40 % ne sont jamais acquis.** Le compteur
+**repart à zéro le 1er de chaque mois** : il faut refaire 3 ventes tous les mois pour
+retrouver le taux haut. Un bon mois ne paie pas le mois suivant.
 
-**25 % de chaque abonnement encaissé, renouvellements compris.**
-Soit **5 000 F par client tous les 6 mois**, à taux fixe, quel que soit son palier du mois.
+> **⛔ Il n'existe plus aucune commission de réseau.** Un parrain ne touche **rien** sur les
+> ventes de ses filleuls. Ce que les filleuls changent, c'est **son palier** : leurs ventes
+> du mois s'ajoutent aux siennes pour atteindre le seuil de 3 qui débloque les 40 %.
+>
+> C'est la phrase à dire en recrutement : **« personne ne gagne d'argent sur le dos de
+> personne ici. »** Ce n'est plus un argument marketing, c'est devenu vrai.
 
-| Son portefeuille | Ce que ça lui rapporte, sans rien vendre |
+### 4.2 Le partenaire n'est payé que sur SES ventes
+
+**Il n'existe aucune autre source de rémunération. Aucune.**
+
+| | |
 |---|---|
-| 10 clients abonnés | 50 000 F par semestre |
-| 30 clients abonnés | 150 000 F par semestre |
-| 60 clients abonnés | 300 000 F par semestre |
+| Ses propres ventes | ✅ **30 % ou 40 %**, c'est tout |
+| Les ventes de ses filleuls | ⛔ **rien.** Elles comptent seulement pour son seuil de 3 |
+| Les abonnements de ses clients | ⛔ **rien.** L'abonnement est un revenu de NEBULA |
+| Le renouvellement du nom de domaine | ⛔ rien : c'est un coût refacturé au prix coûtant |
 
-**Trois règles qui encadrent le récurrent :**
+> **Pourquoi il n'y a plus de récurrent.** Une commission récurrente est une rente : elle
+> paie quelqu'un qui ne travaille plus, sur un client qu'il ne suit plus, et elle grossit
+> chaque mois sans que personne ne vende rien. Elle rend aussi l'entreprise impossible à
+> piloter, parce que la dette augmente tout le temps.
+>
+> Ce qu'on met à la place est plus simple et plus honnête : **on paie mieux ce qui est
+> vendu**, tout de suite. 30 % au lieu de 25, et 40 % dès trois ventes dans le mois.
 
-1. **Il ne compte pas dans le palier.** Seules les ventes nouvelles font monter de 25 à 30 puis
-   35 %. Sans cette règle, un ancien partenaire atteindrait GOLD chaque mois sans prospecter
-   personne, et le système récompenserait l'ancienneté au lieu de l'effort.
-2. **Il est acquis à vie.** Le partenaire garde ses gains récurrents même s'il quitte le
-   programme ou s'il est désactivé. Ce qu'il construit lui appartient. C'est un argument de
-   recrutement majeur : dites-le dans l'annonce.
-3. **Le réseau ne s'applique pas au récurrent.** Les 10 % N1 et 5 % N2 portent sur les ventes,
-   pas sur les abonnements.
-
-**Le renouvellement du nom de domaine (16 000 F/an) ne donne lieu à aucune commission :**
-c'est un coût refacturé au prix coûtant, pas une vente.
+**Ce qui remplace l'argument « rente » au recrutement :** on ne promet plus un revenu passif.
+On promet **un taux élevé, immédiat, sur un produit qui se vend en une visite**. C'est un
+argument de vendeur, pas d'investisseur, et c'est le bon public.
 
 ### 4.3 Les relances de renouvellement
 
 **Double dispositif :** un rappel automatique part au client à l'échéance, puis **le partenaire
 relance personnellement** si le client ne réagit pas.
 
-> ⚠️ **Le rappel automatique devient une infrastructure obligatoire, pas un confort.**
-> Comme le récurrent est acquis à vie, les clients d'un partenaire parti n'ont plus personne
-> pour les relancer : c'est l'automatisation qui portera cette collecte.
-> À construire avec n8n + WhatsApp (stack existant).
+> ⚠️ **Le rappel automatique est une infrastructure obligatoire, pas un confort.**
+> Aucun partenaire n'a plus d'intérêt financier à faire renouveler un abonnement : c'est
+> désormais **NEBULA seule** qui porte cette collecte, et elle ne tient que par
+> l'automatisation. À construire avec n8n + WhatsApp (stack existant).
+>
+> Le partenaire actif, lui, garde une bonne raison de rappeler son client à l'échéance :
+> c'est le meilleur moment pour lui vendre la marche suivante de l'escalier.
 
 Pour le partenaire actif, l'échéance de renouvellement est **le meilleur prétexte de reprise
 de contact qui existe**, et le moment idéal pour vendre la marche supérieure de l'escalier.
 
-### 4.4 Réseau
+### 4.4 Ce que les filleuls changent (et ce qu'ils ne rapportent pas)
 
-**N1 : 10 %** sur les ventes de ses recrues · **N2 : 5 %** sur les ventes de leurs recrues.
-À vie, tant qu'ils vendent. Le réseau ne compte pas dans le palier : seules ses ventes à lui
-le font monter.
+**Aucune commission. Jamais. À aucune profondeur.**
+
+Faire entrer quelqu'un dans le programme ne verse rien à son parrain. En échange, **les
+ventes de ses filleuls directs s'ajoutent aux siennes** dans le compteur du mois : dès que
+le total atteint **3**, tout son mois passe à **40 %**, rétroactivement, sur **ses** ventes
+à lui.
+
+| Ce qu'il fait | Ce que font ses filleuls | Son taux du mois |
+|---|---|---|
+| 1 vente | 0 | 30 % |
+| 1 vente | 2 ventes | **40 %** sur sa vente |
+| 3 ventes | 0 | **40 %** |
+| 1 vente | 5 ventes | **40 %** sur sa vente |
+
+
+**Une seule profondeur, et elle ne sert qu'au comptage** : les recrues de ses recrues ne
+comptent nulle part.
+
+> **Pourquoi ce système est meilleur que l'ancien.** Payer un parrain sur le travail d'un
+> autre, c'est ce qui fait ressembler un programme à une pyramide, et c'est ce qui fait
+> fuir les gens sérieux. Ici, on ne touche que sur **ce qu'on vend soi-même**. Amener
+> quelqu'un de bon reste payant, mais par un autre chemin : **ça vous fait travailler à un
+> taux plus élevé.** Et un parrain qui ne vend rien lui-même ne gagne rien du tout.
 
 ### 4.5 En francs
 
-| Vente | 25 % | 30 % | 35 % |
+| Vente | 30 % | 40 % |
 |---|---|---|---|
-| QR Google Review · 30 000 F | 7 500 F | 9 000 F | 10 500 F |
-| Catalogue · 50 000 F | 12 500 F | 15 000 F | 17 500 F |
-| Vitrine · 150 000 F | 37 500 F | 45 000 F | 52 500 F |
-| Outil · 300 000 F | 75 000 F | 90 000 F | 105 000 F |
+| QR Google Review · 30 000 F | 9 000 F | 12 000 F |
+| Catalogue · 50 000 F | 15 000 F | 20 000 F |
+| Vitrine · 150 000 F | 45 000 F | 60 000 F |
+| Outil · 300 000 F | 90 000 F | 120 000 F |
 
-**Mois type :** 4 Catalogues + 2 Vitrines = 6 ventes → 500 000 F de chiffre → palier SILVER
-30 % → **150 000 F de commission**, plus 5 000 F par client déjà au portefeuille.
+**Mois type :** 4 Catalogues + 2 Vitrines = 6 ventes → 500 000 F de chiffre → **palier
+ARGENT à 40 %** (le seuil de 3 est dépassé) → **200 000 F de commission**. Et le mois
+suivant, le compteur repart de zéro.
 
 ### 4.6 Comment l'argent arrive
 
 1. Le client paie NEBULA. 2. NEBULA marque le paiement. 3. Les commissions se créent
-**automatiquement** (vendeur + N1 + N2), chacun est alerté. 4. Le partenaire clique
+**automatiquement** (le vendeur, et son parrain s'il en a un), chacun est alerté. 4. Le partenaire clique
 **« Réclamer »**. 5. **NEBULA paie sous 24 à 72h** en Mobile Money.
 
 **Sur un projet en 70/30, la commission se verse en deux fois**, au rythme des encaissements.
 **La vente compte dans le palier du mois dès le premier versement.**
 
 > **Une vente = un lead payé.** Un contact intéressé qui ne paie pas ne génère aucune commission.
+
+**Et une commission n'est acquise que sur de l'argent gardé.** Si un montant encaissé est
+remboursé au client, la commission correspondante est reprise : annulée si elle n'est pas
+encore versée, déduite des versements suivants si elle l'est déjà (contrat, article 6.7).
+
+**L'exception qui rend la règle juste : si le remboursement vient d'une faute de NEBULA**
+travail non livré, non conforme, abandonné : **la commission reste acquise au partenaire.**
+Il a fait son travail, il n'a pas à payer notre erreur.
+
+> Le remboursement doit rester exceptionnel : la règle est qu'**on reprend le travail jusqu'à
+> satisfaction**. Un partenaire à qui on reprend une commission tous les mois est un partenaire
+> qui part. Si le cas se répète, le problème est chez nous, pas chez lui.
 
 ### 4.7 Transparence dans l'espace partenaire
 
@@ -237,8 +281,24 @@ Sa légitimité vient de son lien `/p/CODE`, de sa carte de visite générée et
 
 ### 4.8 Les rangs (prestige, ventes cumulées à vie)
 
-Météore (1-5) · Comète (6-15) · Planète (16-35) · Étoile (36-65) · Supernova (66-110) ·
-Nébuleuse (111-150) · **Galaxie (151+)**. Le rang ne change pas la commission.
+Les titres sont ceux d'une vraie maison de vente : ils disent le niveau réel de la personne,
+pas un décor. Le rang **ne change pas la commission**, il dit qui vous avez en face.
+
+| Ventes cumulées | Rang |
+|---|---|
+| 0 | Partenaire Junior |
+| 1 à 5 | Conseiller |
+| 6 à 15 | Conseiller Confirmé |
+| 16 à 35 | Conseiller Senior |
+| 36 à 65 | Chef de Secteur |
+| 66 à 110 | Chef Régional |
+| 111 à 150 | Directeur Commercial |
+| **151 et plus** | **Directeur Associé** |
+
+Au sommet du réseau, **Mongazi BIAO, Président Fondateur**, rang fixe.
+
+*(Les insignes et les couleurs n'ont pas changé, seuls les titres ont été renommés
+le 2026-08-02 : les anciens noms cosmiques faisaient jeu vidéo, pas société.)*
 
 ---
 
@@ -276,7 +336,7 @@ vendrait l'offre d'entrée.
 ### 5.5 Recrutement de filleuls
 
 Un partenaire peut **inviter** qui il veut dès le premier jour, mais il **ne touche ses
-commissions réseau qu'à partir de sa propre première vente**.
+le bénéfice de leurs ventes dans son palier qu'à partir de sa propre première vente**.
 
 > On ne récompense jamais quelqu'un qui recrute sans avoir jamais vendu : il explique mal
 > le métier, ses recrues abandonnent, et le programme dérive vers le recrutement au détriment
@@ -289,7 +349,7 @@ Seul le **recrutement** de la vague 1 est limité à Cotonou.
 
 ### 5.7 Certification : ce qu'un partenaire a le droit de vendre
 
-> **Modifié le 2026-08-01 — les guides et l'autorisation de vendre sont deux choses.**
+> **Modifié le 2026-08-01, les guides et l'autorisation de vendre sont deux choses.**
 > **Les cinq guides sont remis dès l'entrée**, à tout le monde. Un partenaire qui
 > comprend l'escalier en entier vend mieux le premier barreau : il sait où il emmène
 > son client. Ce qui reste échelonné, c'est le **droit de conclure seul**.
@@ -302,7 +362,7 @@ Seul le **recrutement** de la vague 1 est limité à Cotonou.
 
 **Avant d'y avoir droit, un partenaire n'est pas bloqué : il passe la main.** Il détecte
 le besoin, il obtient le rendez-vous, et Mongazi conclut avec lui. **Le partenaire garde
-100 % de sa commission au taux plein** — l'apport vaut la vente.
+100 % de sa commission au taux plein**, l'apport vaut la vente.
 
 Le binôme ne coûte rien : **le partenaire garde 100 % de sa commission au taux plein.**
 
@@ -408,7 +468,7 @@ Preuves de capacité sur l'Outil métier : **Boussole**, **Digital HSE**, **Vend
 | Point | Décision |
 |---|---|
 | **Statut** | Partenaire commissionné, sur le programme existant |
-| **Recrutement** | **Cotonou uniquement, AUCUN QUOTA DE PLACES** *(décision du 2026-08-01, remplace les 8 places)*, sélection sur entretien — **l'entretien reste obligatoire, c'est le seul filtre** |
+| **Recrutement** | **Cotonou uniquement, AUCUN QUOTA DE PLACES** *(décision du 2026-08-01, remplace les 8 places)*, sélection sur entretien, **l'entretien reste obligatoire, c'est le seul filtre** |
 | **Le vrai plafond** | Ce n'est plus le nombre de partenaires, c'est la **capacité à livrer en 5 à 7 jours**. Le jour où ce délai glisse, on ralentit le recrutement |
 | **Candidatures** | Ouvertes **21 jours** après publication de l'annonce |
 | **Formation** | **Visio Google Meet**, guides remis, charte signée avant les accès |

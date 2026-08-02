@@ -11,20 +11,20 @@
 **On n'envoie pas les neuf PDF dans le groupe.** Trois raisons : deux documents sont
 internes, trois se méritent, et un partenaire noyé sous 9 fichiers n'en lit aucun.
 
-### ✅ À envoyer maintenant, dans le groupe — **les 5 guides**
+### ✅ À envoyer maintenant, dans le groupe · **les 5 guides**
 
 | Document | Pourquoi |
 |---|---|
 | **`02-MANUEL-DU-PARTENAIRE.pdf`** | Le socle du métier. À lire avant tout le reste |
-| **`03-GUIDE-CATALOGUE.pdf`** | 50 000 F — le barreau d'entrée, vendable dès le jour 1 |
-| **`04-GUIDE-VITRINE.pdf`** | 150 000 F — le deuxième barreau |
-| **`05-GUIDE-OUTIL-METIER.pdf`** | 55 000 à 500 000 F — le troisième, celui qui change une vie de vendeur |
+| **`03-GUIDE-CATALOGUE.pdf`** | 50 000 F, le barreau d'entrée, vendable dès le jour 1 |
+| **`04-GUIDE-VITRINE.pdf`** | 150 000 F, le deuxième barreau |
+| **`05-GUIDE-OUTIL-METIER.pdf`** | 55 000 à 500 000 F, le troisième, celui qui change une vie de vendeur |
 | **`06-ARSENAL-SCRIPTS.pdf`** | Tous les messages prêts à copier |
 
 > **Décision du 2026-08-01 : les guides et l'autorisation de vendre sont deux choses.**
 > Un partenaire qui comprend l'escalier en entier vend mieux le premier barreau, parce
 > qu'il sait où il emmène son client. Ce qui reste échelonné, c'est le **droit de conclure
-> seul** — et avant d'y avoir droit, le partenaire n'est pas bloqué : **il passe la main
+> seul**, et avant d'y avoir droit, le partenaire n'est pas bloqué : **il passe la main
 > et garde 100 % de sa commission**.
 
 ### ⛔ À ne PAS envoyer dans le groupe
@@ -53,15 +53,15 @@ Le métier. Trouver des prospects, la méthode de vente en 7 temps,
 relancer sans harceler, les 5 phrases qui tuent une vente.
 👉 Celui-là d'abord, même si vous avez déjà vendu.
 
-2️⃣ GUIDE CATALOGUE — 50 000 F
+2️⃣ GUIDE CATALOGUE · 50 000 F
 Notre porte d'entrée. À qui la vendre, quoi dire, les objections
 et quoi répondre. Vous pouvez la vendre dès demain.
 
-3️⃣ GUIDE VITRINE — 150 000 F
+3️⃣ GUIDE VITRINE · 150 000 F
 Le deuxième barreau. Vous le lisez maintenant pour savoir où vous
 emmenez votre client.
 
-4️⃣ GUIDE OUTIL MÉTIER — 55 000 à 500 000 F
+4️⃣ GUIDE OUTIL MÉTIER · 55 000 à 500 000 F
 Le troisième. C'est celui qui fait les gros mois.
 
 5️⃣ ARSENAL DES SCRIPTS
@@ -73,7 +73,7 @@ le premier service quand on sait où on emmène le client.
 
 Mais on ne saute pas les marches. On entre TOUJOURS par le catalogue
 à 50 000 F. Un commerçant méfiant dit oui à 50 000, pas à 150 000.
-Attaquez à 150 000 et vous perdez le client — et les trois ventes
+Attaquez à 150 000 et vous perdez le client. Et les trois ventes
 qui allaient suivre.
 
 Pour la Vitrine et l'Outil métier, tant que vous n'y avez pas droit,
@@ -91,7 +91,7 @@ Lundi on en parle.
 litige que c'est vous qui payez.
 
 ```
-⚠️ IMPORTANT — un prix a changé
+⚠️ IMPORTANT : un prix a changé
 
 L'abonnement est passé de 15 000 F à 20 000 F pour 6 mois.
 Les modifications du site sont maintenant COMPRISES dedans.
@@ -100,14 +100,15 @@ Si vous avez annoncé 15 000 F à un prospect ces derniers jours,
 dites-le moi, je gère.
 
 Et rappelez-vous ce que ça vous rapporte :
-25 % de chaque abonnement, à chaque renouvellement, À VIE.
-Un client que vous vendez aujourd'hui vous paie encore dans deux ans.
+Vous n'êtes payé que sur vos ventes, mais le taux monte :
+30 % dès la première, 40 % dès la troisième du mois.
 ```
 
 ### Message 3 · l'affiche de recrutement (parrainage)
 
-**Oui, il faut la leur envoyer.** Ils touchent **10 % sur leur niveau 1** et **5 % sur leur
-niveau 2** : amener quelqu'un de bon, c'est leur intérêt direct.
+**Oui, il faut la leur envoyer.** Ils ne touchent **rien** sur les ventes de leurs filleuls,
+mais **ces ventes comptent avec les leurs** pour faire monter leur palier à 40 %. Amener
+quelqu'un de bon reste leur intérêt direct, sans que ça ressemble à une pyramide.
 
 ```
 On ouvre le recrutement de la vague 1 à Cotonou.
@@ -119,8 +120,9 @@ Envoyez-lui cette affiche.
 et toutes les candidatures ne passent pas. Ne promettez rien à personne.
 
 Mais si quelqu'un que vous amenez est retenu et qu'il vend,
-vous touchez 10 % de ses commissions. Et 5 % sur ceux qu'il amène.
-C'est du revenu que vous ne travaillez pas.
+vous touchez 15 % de ses ventes, à vie.
+C'est NEBULA qui vous les paie en plus : ça ne retire rien à votre filleul,
+il gagne exactement comme s'il était venu seul.
 
 Envoyez-moi les noms en privé avant qu'ils postulent.
 ```
@@ -164,7 +166,7 @@ Rien à payer, jamais.
 | Quand | Quoi |
 |---|---|
 | **Ce soir** | Message 1 + les 5 PDF |
-| **Ce soir, 10 min après** | Message 2 (le prix) — séparé, pour qu'il soit lu |
+| **Ce soir, 10 min après** | Message 2 (le prix), séparé, pour qu'il soit lu |
 | **Demain** | Message 3 + l'affiche de recrutement |
 | **Demain** | Message 4 (le point hebdo), avec un jour et une heure précis |
 | **Dès que vous voulez** | Message 5 + le contrat, en privé, un par un |
@@ -180,19 +182,19 @@ n'ouvre rien.
 CONSEILLERS EN DIGITALISATION · recrutement ouvert · aucun quota ». Vos 3 partenaires
 actifs ne posent donc plus aucun problème de cohérence.
 
-Le message 3 reste valable tel quel, à un mot près — remplacez « il y a un entretien, et
+Le message 3 reste valable tel quel, à un mot près, remplacez « il y a un entretien, et
 toutes les candidatures ne passent pas » par la même chose : **c'est toujours vrai, et
 c'est même le seul filtre qui reste.**
 
 ⚠️ **Ce qu'il faut surveiller à la place du quota :** le délai de livraison de 5 à 7 jours.
 C'est lui, maintenant, votre vrai plafond. Le jour où il glisse, on ralentit le recrutement
-— sans attendre que les clients réclament.
+sans attendre que les clients réclament.
 
 ## 5. Ce qui manque encore, et qui bloque
 
 | # | Point | Conséquence tant que ce n'est pas fait |
 |---|---|---|
-| 1 | ~~Le numéro IFU~~ **RÉGLÉ** : le contrat porte « IFU et RCCM en cours d'immatriculation ». Il est **signable en l'état**, les numéros suivront par avenant | — |
+| 1 | ~~Le numéro IFU~~ **RÉGLÉ** : le contrat porte « IFU et RCCM en cours d'immatriculation ». Il est **signable en l'état**, les numéros suivront par avenant | |
 | 2 | **Téléverser les PDF dans l'espace partenaire** | Le groupe WhatsApp perd les fichiers au bout de quelques jours ; l'espace, non |
 | 3 | **Vérifier que `/devenir` notifie l'admin** | Les candidatures de l'affiche tombent dans le vide |
 | 4 | **Le jour et l'heure du point hebdo** | Le message 4 ne peut pas partir sans |

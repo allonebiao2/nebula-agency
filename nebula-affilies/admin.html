@@ -84,8 +84,8 @@ const TOUR = [
   { icon: 'spark', title: 'Bienvenue dans ta console NEBULA', text: 'Le poste de pilotage de ton réseau d\'affiliés : tu suis les clients, tu valides les recrues, et tu paies les commissions. Voici chaque zone.' },
   { icon: 'chart', title: 'Tableau de bord', text: 'Vue d\'ensemble : affiliés actifs, clients reçus, payés, commissions dues, et le classement de tes meilleurs partenaires.' },
   { icon: 'users', title: 'Affiliés', text: 'Tes partenaires : rang, palier, ventes, RCM. Crée un nouveau partenaire (code + PIN générés), suspends/réactive si besoin.' },
-  { icon: 'spark', title: 'Réseau', text: 'L\'arborescence complète : qui a recruté qui, sur toutes les branches (N1, N2…).' },
-  { icon: 'folder', title: 'Clients', text: 'Tous les clients du réseau. Change le statut (attente → en cours → terminé) et marque le <b>paiement</b> : ça génère <b>automatiquement</b> les commissions (vendeur + N1 + N2) et alerte chacun.' },
+  { icon: 'spark', title: 'Réseau', text: 'Qui a fait entrer qui. Une seule profondeur, et <b>aucune commission de réseau</b> : les filleuls font monter le palier de leur parrain, ils ne lui versent rien.' },
+  { icon: 'folder', title: 'Clients', text: 'Tous les clients du réseau. Change le statut (attente → en cours → terminé) et marque le <b>paiement</b> : ça génère <b>automatiquement</b> la commission du vendeur, lui seul, et l'alerte.' },
   { icon: 'coins', title: 'Paiements', text: 'Les commissions à verser, groupées par affilié avec leur <b>numéro MoMo</b>. Les réclamations passent en tête. Après ton virement, clique <b>Marquer payé</b>.' },
   { icon: 'plus', title: 'Recrues', text: 'Les candidatures de nouveaux affiliés : les <b>candidatures publiques</b> (via « Devenir partenaire » sur le site, avec CGU acceptées) et les <b>recrues parrainées</b>. Valide → le partenaire est créé et rattaché à son parrain.' },
   { icon: 'trophy', title: 'Classement', text: 'Le niveau de tout ton réseau (rang, ventes, RCM, performance), en temps réel — pratique pour repérer qui pousser.' },
@@ -134,7 +134,7 @@ function renderDash() {
       <div class="col-3 rv"><div class="card clickable" data-go="paiements"><div class="in stat"><div class="lbl">Commissions dues</div><div class="num mono" style="color:var(--gold)" id="k-com">0</div><div class="sub">F CFA</div></div></div></div>
 
       <div class="col-12 rv"><button class="card pg-cta clickable" id="dash-pay" style="width:100%;text-align:left;cursor:pointer;color:var(--ink)"><div class="in" style="display:flex;align-items:center;gap:14px;justify-content:space-between;flex-wrap:wrap">
-        <div style="display:flex;align-items:center;gap:13px"><span class="pg-ico">${icon('coins')}</span><div><div style="font-weight:700">Plan de rémunération &amp; paiements</div><div class="meta">Paliers, réseau N1/N2, superviseur, et comment chaque partenaire est payé — tout au clair.</div></div></div>
+        <div style="display:flex;align-items:center;gap:13px"><span class="pg-ico">${icon('coins')}</span><div><div style="font-weight:700">Plan de rémunération &amp; paiements</div><div class="meta">La grille 30 / 40 %, ce que les filleuls y changent, et comment chaque partenaire est payé.</div></div></div>
         <span class="btn sm primary">Voir<span class="ico">${icon('arrow')}</span></span>
       </div></button></div>
 
@@ -195,8 +195,8 @@ function renderAff() {
     const p = document.getElementById('pin-' + a.id); if (p) p.onclick = () => resetPin(a.id, ((a.prenom || '') + ' ' + (a.nom || '')).trim() || a.code);
   });
 }
-const RANK_ICON = { 'Recrue': 'spark', 'Météore': 'meteor', 'Comète': 'comet', 'Planète': 'planet', 'Étoile': 'star', 'Supernova': 'supernova', 'Nébuleuse': 'nebula', 'Galaxie': 'crown' };
-const PALIER_COLOR = { 'STARTER': '#9aa0c0', 'SILVER': '#cdd6ef', 'GOLD': '#e7c987', 'SPÉCIAL': '#e6c34c' };
+const RANK_ICON = { 'Partenaire Junior': 'spark', 'Conseiller': 'meteor', 'Conseiller Confirmé': 'comet', 'Conseiller Senior': 'planet', 'Chef de Secteur': 'star', 'Chef Régional': 'supernova', 'Directeur Commercial': 'nebula', 'Directeur Associé': 'crown' };
+const PALIER_COLOR = { 'BRONZE': '#9aa0c0', 'ARGENT': '#e7c987', 'SPÉCIAL': '#e6c34c' };
 function rankSvg(label) { return icon(RANK_ICON[label] || 'spark'); }
 function palBadge(p) { return `<span class="pal-badge" style="--c:${PALIER_COLOR[p.label] || '#9aa0c0'}">${esc(p.label)}</span>`; }
 
@@ -205,7 +205,7 @@ function affRow(a) {
   return `<div class="rv"><div class="card"><div class="in">
     <div class="flex between wrap" style="gap:14px">
       <div class="flex" style="gap:13px">
-        <div class="emblem${a.rank.label === 'Galaxie' ? ' king' : ''}" style="width:52px;height:52px;border-radius:15px;--c:${a.accent}">${a.role_label ? icon('shield') : rankSvg(a.rank.label)}</div>
+        <div class="emblem${a.rank.label === 'Directeur Associé' ? ' king' : ''}" style="width:52px;height:52px;border-radius:15px;--c:${a.accent}">${a.role_label ? icon('shield') : rankSvg(a.rank.label)}</div>
         <div><div class="ttl" style="font-size:1.05rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap">${esc(name)} <span class="chip">${a.code}</span>${a.role_label ? NA.roleBadge(a.role_label, { size: 'sm' }) : ''}</div>
           <div class="meta" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${a.role_label ? '' : a.rank.label + ' · '}<b style="color:var(--ink)">${a.ventes}</b> perso${a.team_ventes ? ' + <b style="color:var(--ink)">' + a.team_ventes + '</b> équipe' : ''} · ${palBadge(a.palier)} ${a.palier.pct}%${a.actif ? '' : ' · <span style="color:var(--bad)">suspendu</span>'}</div>
           <div class="meta mt8">${esc(a.momo_reseau || '—')} · ${esc(a.momo_number || '—')}</div></div>
@@ -301,7 +301,7 @@ function orgLi(n, tc, apex) {
 async function renderReseauAdmin() {
   let d; try { d = await api('/api/admin/network'); } catch (e) { return; }
   const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#7b5cff';
-  const F = (CFG && CFG.founder) || { name: 'Mongazi', title: 'Fondateur', rank: 'Big Bang' };
+  const F = (CFG && CFG.founder) || { name: 'Mongazi', title: 'Fondateur', rank: 'Président Fondateur' };
   const apex = { name: F.name + ' · ' + F.title, code: '', rank: F.rank, palier: '', ventes: 0, children: d.roots || [] };
   orgComputeTeam(apex); d.totalVentes = apex._teamVentes; ORG = d;
   const body = (d.roots && d.roots.length)
@@ -427,21 +427,20 @@ function renderAffiliateModal(d) {
       </div>
       <div class="aff-sec">
         <div class="eyebrow"><span class="dot"></span>Position dans le réseau</div>
-        <div class="aff-row"><span class="meta">Parrain — touche le N1 sur ses ventes</span>${up(d.parrain)}</div>
-        <div class="aff-row"><span class="meta">Grand-parrain — touche le N2</span>${up(d.grandparrain)}</div>
-        <div class="flex gap8 mt8 wrap"><span class="chip">${d.n1_count} filleul${d.n1_count > 1 ? 's' : ''} (N1)</span><span class="chip">${d.n2_count} (N2)</span><span class="chip">RCM ${fmt(p.rcm)} F</span>${p.momo_number ? `<span class="chip">${esc(p.momo_reseau || '')} ${esc(p.momo_number)}</span>` : ''}${p.email ? `<span class="chip">${esc(p.email)}</span>` : ''}</div>
+        <div class="aff-row"><span class="meta">Parrain (ses ventes comptent dans le palier du parrain)</span>${up(d.parrain)}</div>
+        <div class="flex gap8 mt8 wrap"><span class="chip">${d.n1_count} filleul${d.n1_count > 1 ? 's' : ''} direct${d.n1_count > 1 ? 's' : ''}</span><span class="chip">RCM ${fmt(p.rcm)} F</span>${p.momo_number ? `<span class="chip">${esc(p.momo_reseau || '')} ${esc(p.momo_number)}</span>` : ''}${p.email ? `<span class="chip">${esc(p.email)}</span>` : ''}</div>
         <div class="flex gap8 mt8"><button class="btn sm ghost" style="flex:1" id="aff-center">Le situer dans la pyramide</button><button class="btn sm ghost" style="flex:1" id="aff-msg">Lui écrire</button></div>
         ${p.email ? `<button class="btn sm ghost block mt8" id="aff-email">Envoyer ses accès par email</button>` : `<p class="meta mt8">Pas d'email enregistré — envoie les accès via WhatsApp (kit de validation).</p>`}
       </div>
       <div class="aff-sec">
         <div class="eyebrow"><span class="dot"></span>Rôle &amp; rémunération</div>
         <p class="meta" style="margin:6px 0 11px;line-height:1.6">
-          <b style="color:var(--ink)">Recrue</b> — palier perso 25 → 30 → 35 % selon SES ventes du mois.<br>
-          <b style="color:var(--ink)">Superviseur</b> — barème 2 paliers d'équipe : <b style="color:var(--accent)">25 %</b> de 0 à 2 clients/mois, <b style="color:var(--accent)">40 %</b> dès 3 (lui + ses branches). Le taux s'applique à ses ventes directes ; ses branches lui rapportent toujours 10 / 5 %.
+<b style="color:var(--ink)">Grille unique, pour tout le monde</b> : <b style="color:var(--accent)">30 %</b> sur chaque vente, <b style="color:var(--accent)">40 %</b> dès que ses ventes + celles de ses filleuls directs atteignent <b>3</b> dans le mois. Appliqué à TOUT le mois, remis à zéro le 1er : les 40 % ne sont jamais acquis.<br>
+          <b style="color:var(--ink)">Il n'est payé que sur SES ventes</b> : aucune commission de réseau, aucun pourcentage sur les abonnements.
         </p>
         <div class="flex gap8 wrap">
-          <button class="btn sm ${p.is_supervisor ? 'ghost' : 'primary'}" id="role-none">Recrue standard</button>
-          <button class="btn sm ${p.is_supervisor ? 'primary' : 'ghost'}" id="role-sup">Superviseur · 25 / 40 équipe</button>
+          <button class="btn sm ${p.is_supervisor ? 'ghost' : 'primary'}" id="role-none">Partenaire standard</button>
+          <button class="btn sm ${p.is_supervisor ? 'primary' : 'ghost'}" id="role-sup">Superviseur · insigne</button>
         </div>
       </div>
       <div class="aff-sec">
@@ -944,7 +943,7 @@ async function renderRangs() {
   // les rôles spéciaux (Superviseur…) sont HORS échelle de rang → couloir « Direction » à part
   const roleMembers = LBr.filter(a => a.role_label);
   const ranked = LBr.filter(a => !a.role_label);
-  const order = NA.RANK_ORDER.slice().reverse(); // Galaxie (haut) → Recrue (bas)
+  const order = NA.RANK_ORDER.slice().reverse(); // Directeur Associé (haut) → Partenaire Junior (bas)
   const directionLane = roleMembers.length ? `<div class="rv" style="border:1px solid var(--goldline,rgba(231,201,135,.3));border-radius:18px;padding:16px;margin-bottom:12px;background:radial-gradient(120% 80% at 0% 0%, color-mix(in srgb,var(--accent) 16%,transparent), transparent 62%)">
       <div class="flex" style="gap:14px;align-items:center;margin-bottom:12px"><span class="role-ico" style="width:34px;height:34px;display:grid;place-items:center;border-radius:11px;background:var(--accent);color:#07060e">${icon('shield')}</span>
         <div style="flex:1;min-width:0"><div style="font-family:'Space Grotesk';font-weight:700;font-size:1.1rem">Direction &amp; encadrement</div>
@@ -974,7 +973,7 @@ async function renderRangs() {
   document.getElementById('v-rangs').innerHTML = `
     <div class="rv mb16"><span class="eyebrow"><span class="dot"></span>Progression du réseau</span>
       <h2 class="mt8" style="font-size:1.8rem">L'échelle des rangs</h2>
-      <p class="muted mt8">Qui est à quel rang, du sommet (Galaxie) à la base (Recrue). Touche un partenaire pour ouvrir sa fiche complète.</p></div>
+      <p class="muted mt8">Qui est à quel rang, du sommet (Directeur Associé) à la base (Partenaire Junior). Touche un partenaire pour ouvrir sa fiche complète.</p></div>
     ${directionLane}${lanes}`;
   document.querySelectorAll('#v-rangs .rank-mem[data-uid]').forEach(b => b.onclick = () => openAffiliate(b.dataset.uid.replace(/^a/, '')));
 }
@@ -1062,7 +1061,7 @@ function contactCard(c) {
 }
 function renderChatFilters() {
   const wrap = document.getElementById('chatFilters'); if (!wrap) return;
-  const palOrder = ['STARTER', 'SILVER', 'GOLD'];
+  const palOrder = ['BRONZE', 'ARGENT'];
   const pals = palOrder.filter(p => CHAT_DATA.contacts.some(c => c.palier === p));
   const ranks = [...new Set(CHAT_DATA.contacts.map(c => c.rank).filter(Boolean))].sort((a, b) => NA.RANK_ORDER.indexOf(a) - NA.RANK_ORDER.indexOf(b));
   const chip = (v, lbl) => `<span class="chat-chip${CHAT_FILTER.f === v ? ' on' : ''}" data-chip="${v}">${esc(lbl)}</span>`;
