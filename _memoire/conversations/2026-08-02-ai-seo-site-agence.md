@@ -257,3 +257,24 @@ essayant une par une : **`eu-central-1`**.
   sans sauvegarde. Romaric DJANKAKI (`RBNXF`, taux spécial 40 %) en premier.
 - **Changer le mot de passe Supabase** : il a transité par la conversation.
 - Render endort l'instance après 15 minutes sans visite, réveil en ~1 minute.
+
+## Romaric DJANKAKI restauré — premier partenaire ressaisi
+
+Traité comme une **restauration, pas une création**. L'API `/api/admin/affiliates` génère
+un code et un PIN aléatoires ; or Romaric a déjà `RBNXF` sur sa carte de visite et dans ses
+liens de parrainage. Lui donner un nouveau code aurait invalidé tout ce qu'il a déjà diffusé.
+
+Méthode : création par l'API (pour que toute la logique métier s'applique), **puis remise de
+son code `RBNXF` et de son PIN `0067`**, ce dernier re-haché avec la même fonction `hash_pw`
+que le serveur. Taux spécial **40 %** reposé par l'endpoint prévu pour ça.
+
+Vérifié : il se connecte avec `RBNXF`/`0067`, son espace se charge avec ses statistiques à
+zéro, et ses trois liens publics répondent 200.
+
+⚠️ **Piège rencontré** : Cloudflare renvoie **403** à un client d'API sans en-tête de
+navigateur. Un `urllib` Python nu ne peut pas se connecter au back-office ; il faut poser un
+`User-Agent` de navigateur. À savoir pour tout script qui pilotera l'application.
+
+⚠️ **Son numéro est à confirmer** : posé en `22967218256`, l'ancien format béninois à
+8 chiffres. Depuis le 30/11/2024, l'ARCEP impose `+229 01 XX XX XX XX`. **Un numéro Mobile
+Money faux, c'est une commission qui n'arrive jamais.**
