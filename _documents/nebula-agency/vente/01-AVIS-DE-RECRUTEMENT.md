@@ -7,7 +7,8 @@
 > 3. La version affiche A4 avec QR code
 > 4. La version réseaux sociaux (Facebook, LinkedIn)
 > 5. La grille de sélection notée sur 20
-> 6. Le script d'entretien (10 questions et ce qu'il faut entendre)
+> 6. Le script d'entretien (12 questions et ce qu'il faut entendre), dont **deux qui
+>    servent uniquement à détecter le candidat qui croit que « c'est juste du closing »**
 > 7. Le message de bienvenue du partenaire retenu
 > 8. Le plan de diffusion sur 14 jours
 >
@@ -40,7 +41,8 @@ Trois principes tiennent cette annonce, et il ne faut pas les diluer :
 ### NEBULA AGENCY RECRUTE DES CONSEILLERS EN DIGITALISATION
 #### Cotonou · Statut partenaire commissionné · Candidatures ouvertes
 
-**À Cotonou, 9 commerçants sur 10 vendent sur WhatsApp sans rien derrière.**
+**Entrez dans n'importe quel marché de Cotonou et demandez à un commerçant de vous montrer
+son site.** Vous entendrez la même réponse toute la journée : « j'ai une page Facebook ».
 Pas de site. Pas de catalogue. Invisibles sur Google. Ils perdent des clients tous les jours et
 ils ne le savent même pas.
 
@@ -99,7 +101,7 @@ Votre pourcentage monte avec votre nombre de ventes dans le mois.
 - Un Catalogue vendu à 50 000 F → **15 000 F**, et **20 000 F** au palier ARGENT
 - Une Vitrine vendue à 150 000 F → **45 000 F**, et **60 000 F** au palier ARGENT
 - Un Outil métier vendu à 300 000 F → **90 000 F**, et **120 000 F** au palier ARGENT
-- Un mois à 6 ventes (4 Catalogues + 2 Vitrines) → **150 000 F de commission**
+- Un mois à 6 ventes (4 Catalogues + 2 Vitrines) → **200 000 F de commission**
 
 **Et vos filleuls vous font gagner plus, sans rien prendre à personne.**
 Vous ne touchez **aucune commission** sur leurs ventes. En revanche **leurs ventes du mois
@@ -308,6 +310,12 @@ Candidature : https://partenaires.nebula-agency.online/devenir
 | **Honnêteté** | Est-il capable de dire « je ne sais pas » plutôt que d'inventer ? | /2 |
 | **TOTAL** | | **/20** |
 
+> ⚠️ **Le malentendu le plus fréquent, et le plus coûteux : « c'est juste du closing ».**
+> Un candidat sur trois arrive en croyant qu'on lui donnera des rendez-vous, une liste de
+> prospects ou des acheteurs déjà convaincus. **Il faut le détromper pendant l'entretien,
+> jamais après.** Un partenaire qui découvre la prospection au bout de deux semaines
+> abandonne, et il repart en disant du mal du programme. La question 6 bis est là pour ça.
+
 **Décision :**
 - **16 à 20** → Retenu, à accompagner en priorité, candidat pour la certification Outil métier
 - **12 à 15** → Retenu à l'essai, on regarde ses 30 premiers jours
@@ -318,11 +326,13 @@ Candidature : https://partenaires.nebula-agency.online/devenir
 - Il demande combien il touchera **avant** d'avoir demandé ce qu'il vendra
 - Il a menti sur une expérience vérifiable
 - Il veut « juste envoyer le lien à des gens » sans rencontrer personne
+- **Il croit qu'on lui fournira des prospects, des rendez-vous ou une liste**, et il ne
+  change pas d'avis quand on lui explique que non (voir question 6 bis)
 - Il parle mal d'un ancien employeur ou d'une ancienne équipe
 
 ---
 
-## 6. SCRIPT D'ENTRETIEN (20 minutes, 10 questions)
+## 6. SCRIPT D'ENTRETIEN (20 minutes, 12 questions)
 
 **Cadre à poser en ouverture (30 secondes) :**
 > « Merci d'être venu. Je vais vous poser quelques questions pour comprendre qui vous êtes,
@@ -336,6 +346,15 @@ Candidature : https://partenaires.nebula-agency.online/devenir
 *On écoute :* est-ce qu'il structure son récit ? Est-ce qu'il est occupé, ou totalement disponible ?
 *Bon signe :* une activité en cours, même petite. Quelqu'un d'actif reste actif.
 *Mauvais signe :* un discours flou, ou « je cherche depuis longtemps » sans rien avoir tenté.
+
+**1 bis. Selon vous, à quoi ressemble une journée de travail chez nous ?**
+*Posée tôt, avant qu'on ait rien expliqué. C'est la question qui révèle le malentendu.*
+*Bon signe :* il parle de sortir, de rencontrer des commerçants, de revenir les voir.
+*Mauvais signe :* « vous m'envoyez les clients et je conclus », « je travaille depuis chez
+moi », « je poste le lien sur mes réseaux ».
+*Que faire du mauvais signe :* ne le disqualifiez pas tout de suite. Détrompez-le
+franchement, puis **reposez la question 6 bis à la fin**. Beaucoup changent d'avis et
+deviennent bons ; ceux qui n'en démordent pas sont éliminatoires.
 
 **2. Racontez-moi la dernière fois que vous avez convaincu quelqu'un de quelque chose.**
 *On écoute :* est-ce qu'il a une histoire précise et concrète, avec un nom et une situation ?
@@ -382,6 +401,28 @@ Candidature : https://partenaires.nebula-agency.online/devenir
 *Bon signe :* il demande le délai de paiement des commissions, ce qui se passe si un client
 n'est pas satisfait, s'il peut vendre hors de Cotonou.
 *Mauvais signe :* aucune question.
+
+---
+
+**6 bis. Je vous décris la réalité, dites-moi honnêtement si c'est pour vous.**
+*À lire mot pour mot, sans adoucir :*
+
+> « Personne ne va vous donner de clients. Pas de liste, pas de rendez-vous pris pour vous,
+> pas de prospects qui attendent votre appel. Vous marchez dans votre quartier, vous entrez
+> dans les boutiques, vous vous présentez, on vous dit non plus souvent que oui, et vous
+> revenez la semaine suivante. Le closing, c'est le dernier quart d'heure. Le reste, c'est
+> marcher et revenir.
+>
+> Ceux qui abandonnent chez nous abandonnent dans les deux premières semaines, juste avant
+> leur première vente. Est-ce que c'est un travail que vous vous voyez faire pendant six
+> mois ? »
+
+*On écoute :* la réponse immédiate, pas celle qu'il construit après trois secondes.
+*Bon signe :* il ne bronche pas, ou il pose une question pratique (« je commence par quel
+marché ? », « on a des supports ? »). Quelqu'un qui projette déjà l'action est bon.
+*Mauvais signe :* il négocie (« mais il y aura quand même des contacts, non ? »), il
+demande un fixe, ou il change de sujet.
+*Éliminatoire :* il insiste pour qu'on lui fournisse les clients.
 
 ---
 
