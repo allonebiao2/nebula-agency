@@ -211,11 +211,11 @@ footer b{color:#C3CCE4}
   </section>
 
   <section class="card">
-    <h2>Mon réseau (en plus)</h2>
+    <h2>Mon parrainage (en plus)</h2>
     <div class="row">
       <div class="info">
         <div class="nm">Ventes de mes filleuls</div>
-        <div class="pr">N1 · 10 % de leur chiffre</div>
+        <div class="pr">15 % de leur chiffre</div>
       </div>
       <div class="step">
         <button type="button" data-act="-" data-k="n1" aria-label="Retirer">−</button>
@@ -223,20 +223,11 @@ footer b{color:#C3CCE4}
         <button type="button" data-act="+" data-k="n1" aria-label="Ajouter">+</button>
       </div>
     </div>
-    <div class="row">
-      <div class="info">
-        <div class="nm">Ventes de leurs recrues</div>
-        <div class="pr">N2 · 5 % de leur chiffre</div>
-      </div>
-      <div class="step">
-        <button type="button" data-act="-" data-k="n2" aria-label="Retirer">−</button>
-        <span class="val" id="v-n2">0</span>
-        <button type="button" data-act="+" data-k="n2" aria-label="Ajouter">+</button>
-      </div>
-    </div>
     <p style="color:var(--dim);font-size:12px;margin-top:12px">
-      Estimation basée sur une vente moyenne de 100 000 F. Le réseau ne compte pas dans ton palier :
-      seules tes ventes à toi le font monter.
+      Estimation basée sur une vente moyenne de 100 000 F. Une seule profondeur : rien sur les
+      recrues de tes recrues. Ces 15 % sont <b style="color:var(--txt)">offerts par NEBULA</b> —
+      ils ne sont jamais retirés des gains de ton filleul. Le parrainage ne compte pas dans ton
+      palier : seules tes ventes à toi le font monter.
     </p>
   </section>
 
@@ -257,7 +248,7 @@ footer b{color:#C3CCE4}
 
   var PRIX = { cat:50000, vit:150000 };
   var MOY_RESEAU = 100000;
-  var s = { cat:0, vit:0, out:0, n1:0, n2:0, montantOut:180000 };
+  var s = { cat:0, vit:0, out:0, n1:0, montantOut:180000 };
 
   var el = function(id){ return document.getElementById(id); };
 
@@ -277,14 +268,13 @@ footer b{color:#C3CCE4}
     var ca = s.cat * PRIX.cat + s.vit * PRIX.vit + s.out * s.montantOut;
     var t  = taux(nb);
     var direct = ca * t;
-    var reseau = s.n1 * MOY_RESEAU * 0.10 + s.n2 * MOY_RESEAU * 0.05;
+    var reseau = s.n1 * MOY_RESEAU * 0.15;
     var total = direct + reseau;
 
     el("v-cat").textContent = s.cat;
     el("v-vit").textContent = s.vit;
     el("v-out").textContent = s.out;
     el("v-n1").textContent  = s.n1;
-    el("v-n2").textContent  = s.n2;
     el("pr-out").textContent = fmt(s.montantOut) + " F";
 
     el("gain").textContent = fmt(total);
@@ -292,7 +282,7 @@ footer b{color:#C3CCE4}
     el("ca").textContent   = fmt(ca);
     el("taux").textContent = t ? Math.round(t * 100) + " %" : "—";
     el("lab").textContent  = reseau > 0
-      ? "Ta commission de ce mois, réseau compris"
+      ? "Ta commission de ce mois, parrainage compris"
       : "Ta commission de ce mois";
 
     var badge = el("badge");
@@ -352,7 +342,7 @@ footer b{color:#C3CCE4}
   });
 
   el("reset").addEventListener("click", function(){
-    s.cat = s.vit = s.out = s.n1 = s.n2 = 0;
+    s.cat = s.vit = s.out = s.n1 = 0;
     render();
   });
 
@@ -360,7 +350,7 @@ footer b{color:#C3CCE4}
     var nb = s.cat + s.vit + s.out;
     var ca = s.cat * PRIX.cat + s.vit * PRIX.vit + s.out * s.montantOut;
     var t  = taux(nb);
-    var total = ca * t + s.n1 * MOY_RESEAU * 0.10 + s.n2 * MOY_RESEAU * 0.05;
+    var total = ca * t + s.n1 * MOY_RESEAU * 0.15;
 
     var txt = "Mon mois chez NEBULA Agency\n"
       + "- " + nb + " vente" + (nb > 1 ? "s" : "") + " payée" + (nb > 1 ? "s" : "") + "\n"

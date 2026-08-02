@@ -146,10 +146,17 @@ encaissé**, souscription initiale et renouvellements compris, soit 5 000 F par 
 et par semestre. Cette commission ne compte pas dans le décompte des ventes de l'article 6.1.
 Le renouvellement du nom de domaine ne donne lieu à aucune commission.
 
-**6.3 Commissions de réseau.** Le Partenaire perçoit **10 %** sur les ventes des partenaires
-qu'il a recrutés (niveau 1) et **5 %** sur les ventes des partenaires recrutés par ces
-derniers (niveau 2). Ces commissions ne s'appliquent pas aux abonnements.
-**Elles ne sont dues qu'à compter de la première vente réalisée par le Partenaire lui-même.**
+**6.3 Prime de parrainage.** Le Partenaire perçoit **15 %** du montant encaissé sur les ventes
+des partenaires qu'il a lui-même fait entrer dans le programme. **Le parrainage comporte une
+seule profondeur : aucune commission n'est due sur les ventes des partenaires recrutés par
+ses propres filleuls.**
+
+Cette prime est **versée en supplément par NEBULA**. Elle n'est **en aucun cas prélevée sur la
+commission du filleul**, qui perçoit l'intégralité de ce que prévoit l'article 6.1, exactement
+comme s'il était entré seul dans le programme.
+
+Cette prime ne s'applique pas aux abonnements. **Elle n'est due qu'à compter de la première
+vente réalisée par le Partenaire lui-même.**
 
 **6.4 Fait générateur.** Une commission est due dès lors que le client a effectivement payé.
 Sur un règlement en 70 % / 30 %, la commission est versée en deux fois, au rythme des
@@ -249,7 +256,7 @@ signature.
   dans les délais de l'article 6.5 ;
 - les **commissions sur abonnement de l'article 6.2 sont maintenues à vie**, tant que les
   clients concernés restent abonnés ;
-- les commissions de réseau de l'article 6.3 cessent ;
+- les primes de parrainage de l'article 6.3 cessent ;
 - les prospects encore attribués sont libérés.
 
 **12.4 Inactivité.** Sans aucune vente pendant **2 mois**, NEBULA prend contact avec le
@@ -320,7 +327,8 @@ qu'après réception de cette signature.**
 **Je gagne**
 - 25 % de 1 à 4 ventes dans le mois, 30 % de 5 à 9, 35 % à partir de 10
 - 25 % sur chaque abonnement de mes clients, tous les 6 mois, **et je les garde à vie**
-- 10 % sur les ventes de ceux que je recrute, 5 % sur celles de leurs recrues
+- 15 % sur les ventes de ceux que je fais entrer — **offert par NEBULA, jamais retiré
+  de leurs gains à eux**. Une seule profondeur : rien sur les recrues de mes recrues
 - Je suis payé **sous 24 à 72 heures** après réclamation
 
 **Je dois**

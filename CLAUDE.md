@@ -113,7 +113,9 @@ et par quoi commencer. Mis à jour à chaque fin de session importante.
 - **L'escalier** : on entre TOUJOURS par le Catalogue à 50 000 F, jamais par la Vitrine.
   Un commerçant méfiant dit oui à 50 k, pas à 150 k. Puis Vitrine, puis Outil métier.
 - **Abonnement : 20 000 F / 6 mois, modifications comprises** (remplace les 15 000 F partout)
-- **Commissions** 25 / 30 / 35 % selon les ventes du mois · N1 10 % · N2 5 %
+- **Commissions** 25 / 30 / 35 % selon les ventes du mois · **parrainage 15 %, UNE SEULE
+  PROFONDEUR** (pas de 2e niveau, supprimé le 2026-08-02). Les 15 % sont **payés en plus par
+  NEBULA**, jamais prélevés sur la commission du filleul
 - **Récurrent : 25 % de chaque abonnement, ACQUIS À VIE**, ne compte pas dans le palier
 - **Versement des commissions : 24 à 72h** après réclamation
 - Vague 1 : **Cotonou, 8 places**, objectif 30 ventes / 90 jours

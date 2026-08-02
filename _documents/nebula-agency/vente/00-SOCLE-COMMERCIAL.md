@@ -176,8 +176,8 @@ Soit **5 000 F par client tous les 6 mois**, à taux fixe, quel que soit son pal
 2. **Il est acquis à vie.** Le partenaire garde ses gains récurrents même s'il quitte le
    programme ou s'il est désactivé. Ce qu'il construit lui appartient. C'est un argument de
    recrutement majeur : dites-le dans l'annonce.
-3. **Le réseau ne s'applique pas au récurrent.** Les 10 % N1 et 5 % N2 portent sur les ventes,
-   pas sur les abonnements.
+3. **Le parrainage ne s'applique pas au récurrent.** Les 15 % du parrainage portent sur les
+   ventes, pas sur les abonnements.
 
 **Le renouvellement du nom de domaine (16 000 F/an) ne donne lieu à aucune commission :**
 c'est un coût refacturé au prix coûtant, pas une vente.
@@ -195,11 +195,23 @@ relance personnellement** si le client ne réagit pas.
 Pour le partenaire actif, l'échéance de renouvellement est **le meilleur prétexte de reprise
 de contact qui existe**, et le moment idéal pour vendre la marche supérieure de l'escalier.
 
-### 4.4 Réseau
+### 4.4 Parrainage — une seule profondeur
 
-**N1 : 10 %** sur les ventes de ses recrues · **N2 : 5 %** sur les ventes de leurs recrues.
-À vie, tant qu'ils vendent. Le réseau ne compte pas dans le palier : seules ses ventes à lui
-le font monter.
+**15 %** sur les ventes de ceux qu'on a fait entrer. **Une seule profondeur : il n'y a pas de
+second niveau.** À vie, tant qu'ils vendent. Le parrainage ne compte pas dans le palier :
+seules ses ventes à lui le font monter.
+
+> **Ce que le partenaire doit comprendre, et ce qu'il faut lui dire mot pour mot :**
+> ces 15 % **ne sont pas prélevés sur les gains de son filleul**. Le filleul touche sa
+> commission entière, exactement comme s'il était venu seul. Les 15 % sont **payés en plus,
+> par NEBULA** — un remerciement à celui qui a fait grandir la maison.
+>
+> C'est ce qui distingue le programme d'un système pyramidal : **personne ne gagne sur le
+> dos de personne.**
+
+**Pourquoi une seule profondeur.** Un second niveau paie quelqu'un pour une vente faite par
+une personne qu'il n'a jamais rencontrée, dans une équipe qu'il n'anime pas. Ça ressemble à
+une pyramide, ça se défend mal, et ça coûte cher sans rien produire.
 
 ### 4.5 En francs
 
@@ -216,7 +228,7 @@ le font monter.
 ### 4.6 Comment l'argent arrive
 
 1. Le client paie NEBULA. 2. NEBULA marque le paiement. 3. Les commissions se créent
-**automatiquement** (vendeur + N1 + N2), chacun est alerté. 4. Le partenaire clique
+**automatiquement** (le vendeur, et son parrain s'il en a un), chacun est alerté. 4. Le partenaire clique
 **« Réclamer »**. 5. **NEBULA paie sous 24 à 72h** en Mobile Money.
 
 **Sur un projet en 70/30, la commission se verse en deux fois**, au rythme des encaissements.
@@ -276,7 +288,7 @@ vendrait l'offre d'entrée.
 ### 5.5 Recrutement de filleuls
 
 Un partenaire peut **inviter** qui il veut dès le premier jour, mais il **ne touche ses
-commissions réseau qu'à partir de sa propre première vente**.
+commissions de parrainage qu'à partir de sa propre première vente**.
 
 > On ne récompense jamais quelqu'un qui recrute sans avoir jamais vendu : il explique mal
 > le métier, ses recrues abandonnent, et le programme dérive vers le recrutement au détriment

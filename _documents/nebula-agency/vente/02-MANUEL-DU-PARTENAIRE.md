@@ -493,8 +493,12 @@ qui s'énerve, et qui doute de vous.
 Le palier **se remet à zéro chaque mois**. Il s'applique à **tous les services**,
 Outil métier compris.
 
-**Réseau :** 10 % sur les ventes de ceux que vous recrutez (N1), 5 % sur les ventes de leurs
-recrues (N2). À vie, tant qu'ils vendent.
+**Parrainage :** 15 % sur les ventes de ceux que vous faites entrer. **Une seule
+profondeur** — rien sur les ventes de leurs propres recrues. À vie, tant qu'ils vendent.
+
+> Ces 15 % sont **payés en plus par NEBULA**. Ils ne sont **jamais prélevés sur la commission
+> de votre filleul** : il touche exactement ce qu'il aurait touché en venant seul.
+> Dites-le tel quel quand vous recrutez — c'est ce qui vous distingue d'une pyramide.
 
 **Une vente = un lead payé.** Un client intéressé qui ne paie pas ne génère aucune commission.
 

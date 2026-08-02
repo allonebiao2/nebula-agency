@@ -102,7 +102,7 @@ const TOUR = [
   { icon: 'chart', title: 'Mon QG', text: 'Ta vue d\'ensemble : ton <b>rang</b> (prestige, selon tes ventes cumulées), ton <b>palier du mois</b> (ta commission directe, de 25% à 35%), et ton <b>RCM</b> (total généré à vie).' },
   { icon: 'coins', title: 'Mes gains', text: 'Toutes tes commissions, tracées. Quand un montant est « à réclamer », clique <b>Réclamer</b> : NEBULA est prévenue et te paie en Mobile Money.' },
   { icon: 'folder', title: 'Mes clients', text: 'Les commerçants que tu as amenés. NEBULA met à jour les statuts (en cours, terminé) et le paiement — tu suis tout en direct.' },
-  { icon: 'users', title: 'Mon réseau', text: 'Recrute des partenaires avec ton <b>lien de recrutement</b>. Tu gagnes <b>10%</b> sur leurs ventes (N1) et <b>5%</b> sur celles de leurs recrues (N2). Ton arbre est ici.' },
+  { icon: 'users', title: 'Mon réseau', text: 'Recrute des partenaires avec ton <b>lien de recrutement</b>. Tu gagnes <b>15%</b> sur les ventes de ceux que tu fais entrer — <b>offerts par NEBULA</b>, jamais retirés de leurs gains. Ton arbre est ici.' },
   { icon: 'trophy', title: 'Classement', text: 'Vois le niveau de <b>toute l\'équipe</b> : rang, ventes, RCM, performance. Les clients de chacun restent privés — ici, on compare les scores. Grimpe !' },
   { icon: 'chat', title: 'Messages', text: 'Ton bureau est vivant : écris à un partenaire en privé, ou à toute l\'équipe dans le <b>salon NEBULA</b>. Une tonalité sonne dès que ça bouge sur la plateforme.' },
   { icon: 'link', title: 'Mon lien', text: 'Ton <b>lien unique</b> à partager partout : celui qui l\'ouvre choisit de <b>demander une vitrine</b> (il devient ton client) ou de <b>devenir partenaire</b> (il rejoint ton réseau). Un seul lien, un seul QR — tout t\'est attribué.' },
@@ -176,7 +176,7 @@ function renderHome() {
       <div class="col-3 rv"><div class="card clickable" data-go="clients"><div class="in stat"><div class="lbl">Clients actifs</div><div class="num mono" style="color:var(--info)" id="n-cli">0</div><div class="sub">attente + en cours</div></div></div></div>
 
       <div class="col-12 rv"><button class="card pg-cta clickable" id="home-pay" style="width:100%;text-align:left;cursor:pointer;color:var(--ink)"><div class="in" style="display:flex;align-items:center;gap:14px;justify-content:space-between;flex-wrap:wrap">
-        <div style="display:flex;align-items:center;gap:13px"><span class="pg-ico">${icon('coins')}</span><div><div style="font-weight:700">Ma rémunération — tout est clair</div><div class="meta">Mes paliers, mes 3 sources de gains (vente directe + réseau N1/N2), et comment je suis payé.</div></div></div>
+        <div style="display:flex;align-items:center;gap:13px"><span class="pg-ico">${icon('coins')}</span><div><div style="font-weight:700">Ma rémunération — tout est clair</div><div class="meta">Mes paliers, mes 3 sources de gains (vente directe + abonnements + parrainage), et comment je suis payé.</div></div></div>
         <span class="btn sm primary">Voir<span class="ico">${icon('arrow')}</span></span>
       </div></button></div>
 
@@ -257,8 +257,7 @@ async function renderGains() {
         </div>
         <div class="flex gap8 mt16 wrap">
           <span class="chip">Direct : <b style="color:var(--ink)">${fmt(e.direct)}</b> F</span>
-          <span class="chip">Réseau N1 (10%) : <b style="color:var(--ink)">${fmt(e.n1)}</b> F</span>
-          <span class="chip">Réseau N2 (5%) : <b style="color:var(--ink)">${fmt(e.n2)}</b> F</span>
+          <span class="chip">Parrainage (15%) : <b style="color:var(--ink)">${fmt(e.n1)}</b> F</span>
         </div>
       </div></div></div>
       <div class="col-12 rv"><div class="card"><div class="in">
@@ -288,7 +287,7 @@ function renderReseau() {
       <div class="col-7 rv"><div class="card glow"><div class="in">
         <span class="eyebrow"><span class="dot"></span>Ton lien de recrutement</span>
         <h2 class="mt8" style="font-size:1.5rem">Recrute, et touche sur leurs ventes.</h2>
-        <p class="muted mt8 mb16">Partage ce lien : qui le remplit devient ta recrue (après validation NEBULA). Tu gagnes <b style="color:var(--ink)">10%</b> sur tes recrues (N1) et <b style="color:var(--ink)">5%</b> sur leurs recrues (N2).</p>
+        <p class="muted mt8 mb16">Partage ce lien : qui le remplit devient ta recrue (après validation NEBULA). Tu gagnes <b style="color:var(--ink)">15%</b> sur les ventes de tes recrues directes. <b>Une seule profondeur</b> : rien sur les recrues de tes recrues.</p>
         <div class="field"><div class="wrap"><input id="rlk" readonly value="${esc(link)}" style="font-family:JetBrains Mono;font-size:.85rem"></div></div>
         <div class="flex gap8 wrap">
           <button class="btn primary" id="rcopy">Copier le lien<span class="ico">${icon('copy')}</span></button>
@@ -298,14 +297,14 @@ function renderReseau() {
       <div class="col-5 rv"><div class="card"><div class="in">
         <span class="eyebrow"><span class="dot"></span>Tes gains réseau</span>
         <div class="stat mt16"><div class="lbl">Commissions de profondeur</div><div class="num accent mono" id="n-net">0</div>
-          <div class="sub">N1 (10%) <span class="mono">${fmt(net.n1_commission)}</span> F · N2 (5%) <span class="mono">${fmt(net.n2_commission)}</span> F</div></div>
-        <div class="flex gap8 mt16 wrap"><span class="chip">${net.n1_count} recrue${net.n1_count > 1 ? 's' : ''} N1</span><span class="chip">${net.n2_count} en N2</span></div>
+          <div class="sub">Parrainage 15% <span class="mono">${fmt(net.n1_commission)}</span> F</div></div>
+        <div class="flex gap8 mt16 wrap"><span class="chip">${net.n1_count} recrue${net.n1_count > 1 ? 's' : ''} directe${net.n1_count > 1 ? 's' : ''}</span><span class="chip">${net.n2_count} au 2e niveau (non rémunéré)</span></div>
       </div></div></div>
       <div class="col-12 rv"><div class="card"><div class="in">
         <div class="flex between wrap" style="align-items:center;gap:10px"><h3>Ton équipe en schéma</h3><span class="chip">Parrain · Toi · Filleuls</span></div>
         <div class="anti-ponzi mt16">
           <div class="ap-ico">${icon('shield')}</div>
-          <div><b>Ce n'est pas un système pyramidal.</b> Ici, <b>chacun est son propre patron</b> : ton revenu vient d'abord de <b>tes</b> ventes. Quand une personne que tu as parrainée réussit, tu touches un bonus de remerciement (N1&nbsp;10%, N2&nbsp;5%) — sans rien retirer à personne. Un filleul peut très bien gagner plus que son parrain.</div>
+          <div><b>Ce n'est pas un système pyramidal.</b> Ici, <b>chacun est son propre patron</b> : ton revenu vient d'abord de <b>tes</b> ventes. Quand une personne que tu as fait entrer réussit, NEBULA te verse <b>15%</b> en remerciement — <b>c'est NEBULA qui paie, ça ne sort pas de la poche de ton filleul</b>, qui gagne exactement comme s'il était venu seul. Une seule profondeur, et un filleul peut très bien gagner plus que son parrain.</div>
         </div>
         ${net.n1.length ? `
         <div class="org-toolbar mt16">
@@ -337,7 +336,7 @@ function pCard(n, apex, level) {
       <div class="oname">${esc(n.name)} — toi</div>
       <div class="ostats"><span class="ochip"><b>${n.ventes}</b> vente${n.ventes > 1 ? 's' : ''}</span><span class="ochip"><b>${n._team || 0}</b> dans ton équipe</span></div></div>`;
   }
-  const lvlLabel = level === 1 ? 'N1 · 10% pour toi' : 'N2 · 5% pour toi';
+  const lvlLabel = level === 1 ? 'Filleul direct · 15% pour toi' : '2e niveau · non rémunéré';
   const teamCount = n._team || 0;
   const toggle = teamCount ? `<button class="otoggle" title="Replier / déplier">− ${teamCount}</button>` : '';
   return `<div class="onode" style="--tc:${level === 1 ? 'var(--accent)' : '#22d3ee'}" data-code="${esc(n.code || '')}" data-name="${esc((n.name || '').toLowerCase())}">
@@ -355,7 +354,7 @@ function pLi(n, apex, level) {
 }
 function openFilleul(code) {
   const e = MYNET[code]; if (!e) return; const n = e.node; sound.sfx.open();
-  const lvl = e.level === 1 ? 'Filleul direct (N1) — tu touches 10% sur ses ventes' : 'Filleul de filleul (N2) — tu touches 5% sur ses ventes';
+  const lvl = e.level === 1 ? 'Filleul direct — tu touches 15% sur ses ventes' : 'Filleul de filleul — non rémunéré (une seule profondeur)';
   document.getElementById('doc-in').innerHTML = `
     <div class="flex between" style="align-items:flex-start"><div class="flex" style="gap:14px;align-items:center">
       ${NA.idBadge(n, { size: 'lg' })}

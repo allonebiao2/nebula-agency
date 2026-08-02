@@ -41,6 +41,7 @@ DOCS = [
     ("06-ARSENAL-SCRIPTS.md",       "Arsenal du Partenaire · Scripts"),
     ("08-DIAGNOSTIC-DIGITAL.md",    "Le Diagnostic Digital"),
     ("09-CONTRAT-PARTENAIRE.md",    "Contrat de Partenaire"),
+    ("12-GUIDE-DES-APPELS.md",      "Le Guide des Appels"),
 ]
 
 CSS = """

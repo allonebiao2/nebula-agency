@@ -11,7 +11,7 @@ Dernière grosse mise à jour : **2026-07-31** (module Abonnements + alignement 
 - **App LIVE** : **https://partenaires.nebula-agency.online** (HTTPS valide via **relais Cloudflare Pages gratuit** — voir §5) + secours `https://nebula-affilies-production.up.railway.app`.
 - **Admin Mongazi** : `…/cockpit-d59fa50d` (URL secrète, env `NAFF_ADMIN_PATH`) · `allonebiao@gmail.com` / **`dylanfurax`** (env `NAFF_ADMIN_PASS`). Anti-force-brute + portail `/` partenaire-only.
 - **Partenaire** : `/` (code + PIN) · **« Code/PIN oublié ? »** → notifie l'admin qui renvoie les accès. Plus de compte DEMO (plateforme démarre vide).
-- **Romaric DJANKAKI** = partenaire privilégié **40%** (code `RBNXF`, PIN `0067`, WhatsApp +229 67 21 82 56) ; réseau N1 10%/N2 5% normal. Taux perso = colonne `direct_rate_override` + endpoint admin `/rate`.
+- **Romaric DJANKAKI** = partenaire privilégié **40%** (code `RBNXF`, PIN `0067`, WhatsApp +229 67 21 82 56) ; parrainage 15% une seule profondeur. Taux perso = colonne `direct_rate_override` + endpoint admin `/rate`.
 - **Espaces** :
   - `/` portail (connexion partenaire OU admin) — marqué « réservé aux partenaires »
   - `/partenaire` espace partenaire (code + PIN)
@@ -89,7 +89,7 @@ contredit les autres. C'est arrivé avec « Répondre aux objections ».
 
 1. **RANKING cosmique** (prestige, ventes CUMULÉES) : Météore 1-5 / Comète 6-15 / Planète 16-35 / Étoile 36-65 / Supernova 66-110 / Nébuleuse 111-150 / **Galaxie 151+** (statut spécial). Icônes SVG pro.
 2. **PALIERS mensuels** (= commission DIRECTE, remis à zéro chaque mois) : STARTER 1-4 = 25 % / SILVER 5-9 = 30 % / GOLD 10+ = 35 %.
-3. **PROFONDEURS réseau** (fixes) : N1 = 10 % (recrues directes), N2 = 5 % (recrues des recrues).
+3. **PARRAINAGE** (fixe) : **15 % sur les ventes des recrues directes. UNE SEULE PROFONDEUR** — le 2e niveau a été supprimé le 2026-08-02 (`DEPTH_N2 = 0.0`, conservé à 0 pour ne pas casser l'historique en base). Les 15 % sont **payés en plus par NEBULA**, jamais prélevés sur la commission du filleul.
 
 « Une vente » = un lead **payé**. Commission générée **automatiquement** quand l'admin marque le paiement.
 
@@ -98,7 +98,7 @@ contredit les autres. C'est arrivé avec « Répondre aux objections ».
 ## 4. Inventaire des fonctionnalités (toutes LIVE)
 
 - **Back-office 2 faces** : statuts client (attente / en cours / terminé / annulé), paiement gris↔vert fluo, notifs in-app.
-- **Commissions automatisées** : vente payée → 3 commissions auto (direct + N1 + N2) → chacun alerté → **Réclamer** (partenaire) → admin voit le MoMo → **Marquer payé** (groupé) → notifié. Registre 100 % tracé. **RCM poussé** = bilan à vie (`earnings_of`).
+- **Commissions automatisées** : vente payée → 2 commissions auto (le vendeur + son parrain à 15 %) → chacun alerté → **Réclamer** (partenaire) → admin voit le MoMo → **Marquer payé** (groupé) → notifié. Registre 100 % tracé. **RCM poussé** = bilan à vie (`earnings_of`).
 - **Parrainage / réseau** : arbre N1→N2 visualisé côté partenaire ET admin (forêt complète).
 - **Candidatures** : publiques (`/devenir`, avec **CGU obligatoires** horodatées + IP) + parrainées → l'admin valide dans l'onglet *Recrues* → crée le partenaire (code+PIN).
 - **Documentation** : notes / PDF / liens par catégorie ; l'admin gère (upload), les partenaires lisent/téléchargent ; MAJ instantanée. Contenu pro seedé (5 guides).

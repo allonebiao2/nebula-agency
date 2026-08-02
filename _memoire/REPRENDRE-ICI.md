@@ -81,7 +81,7 @@ dans `_documents/nebula-agency/vente/`.
 | Paiement | Catalogue intégral · Vitrine et Outil **70 % / 30 %** |
 | Commission | 25 % (1-4 ventes/mois) · 30 % (5-9) · 35 % (10+) |
 | **Récurrent** | **25 % de chaque abonnement, ACQUIS À VIE**, ne compte pas dans le palier |
-| Réseau | N1 10 %, N2 5 %, à partir de la 1re vente du partenaire |
+| Parrainage | **15 %, une seule profondeur** (N2 supprimé le 2026-08-02), à partir de la 1re vente du partenaire · offert par NEBULA, jamais retiré au filleul |
 | Versement | **24 à 72h** après réclamation |
 | Vague 1 | Cotonou, **AUCUN QUOTA DE PLACES** *(décision 2026-08-01, remplace les 8 places)*, candidatures 21 jours, objectif 30 ventes / 90 jours |
 | **Le filtre** | L'**entretien**, obligatoire — c'est le seul qui reste. **Le vrai plafond n'est plus le nombre de partenaires mais la capacité à livrer en 5 à 7 jours** : le jour où ce délai glisse, on ralentit le recrutement |

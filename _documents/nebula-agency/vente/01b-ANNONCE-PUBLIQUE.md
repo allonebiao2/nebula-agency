@@ -75,8 +75,9 @@ Votre pourcentage monte avec votre nombre de ventes dans le mois.
 - Un mois à 6 ventes (4 Catalogues + 2 Vitrines) → **150 000 F de commission**
 
 **Et vos commissions ne s'arrêtent pas à vos propres ventes.**
-Vous recrutez quelqu'un ? Vous touchez **10 %** de ses ventes. Il recrute à son tour ?
-Vous touchez encore **5 %**. À vie, tant qu'ils vendent.
+Vous faites entrer quelqu'un ? Vous touchez **15 %** de ses ventes, à vie, tant qu'il vend.
+**Ces 15 % sont offerts par NEBULA : ils ne sont jamais retirés de ce que gagne votre
+filleul.** Il touche sa commission entière, exactement comme s'il était venu seul.
 
 **Vous êtes payé sous 24 à 72 heures**, par Mobile Money, sur simple réclamation depuis votre
 espace personnel. Chaque commission est tracée du premier jour au versement.

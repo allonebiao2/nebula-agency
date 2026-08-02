@@ -106,8 +106,9 @@ Un client que vous vendez aujourd'hui vous paie encore dans deux ans.
 
 ### Message 3 · l'affiche de recrutement (parrainage)
 
-**Oui, il faut la leur envoyer.** Ils touchent **10 % sur leur niveau 1** et **5 % sur leur
-niveau 2** : amener quelqu'un de bon, c'est leur intérêt direct.
+**Oui, il faut la leur envoyer.** Ils touchent **15 % sur les ventes de ceux qu'ils font
+entrer** — offerts par NEBULA, jamais retirés des gains du filleul. Amener quelqu'un de bon,
+c'est leur intérêt direct.
 
 ```
 On ouvre le recrutement de la vague 1 à Cotonou.
@@ -119,8 +120,9 @@ Envoyez-lui cette affiche.
 et toutes les candidatures ne passent pas. Ne promettez rien à personne.
 
 Mais si quelqu'un que vous amenez est retenu et qu'il vend,
-vous touchez 10 % de ses commissions. Et 5 % sur ceux qu'il amène.
-C'est du revenu que vous ne travaillez pas.
+vous touchez 15 % de ses ventes, à vie.
+C'est NEBULA qui vous les paie en plus : ça ne retire rien à votre filleul,
+il gagne exactement comme s'il était venu seul.
 
 Envoyez-moi les noms en privé avant qu'ils postulent.
 ```

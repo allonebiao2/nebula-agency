@@ -372,7 +372,7 @@ Si la réponse est "rien", on doit parler.
 
 ---
 
-# PARTIE 7 · RECRUTER UN FILLEUL (10 % à vie)
+# PARTIE 7 · RECRUTER UN FILLEUL (15 % à vie)
 
 **À envoyer à quelqu'un que vous jugez bon vendeur. Pas à tout le monde :
 un filleul qui ne vend jamais ne vous rapporte rien et encombre l'équipe.**
@@ -390,6 +390,11 @@ Si ça t'intéresse : [votre lien /p/VOTRECODE]
 
 ⚠️ **Ne promettez jamais de gains à quelqu'un que vous recrutez.**
 Donnez la grille, pas des promesses. Un filleul déçu part et parle en mal.
+
+**Et dites-lui toujours cette phrase, mot pour mot :**
+« Les 15 % que je touche, c'est NEBULA qui me les paie en plus. Ça ne sort pas de ta poche —
+tu gagnes exactement pareil que si tu étais venu tout seul. »
+C'est la phrase qui lève la méfiance. Sans elle, on vous prend pour une pyramide.
 
 ---
 
