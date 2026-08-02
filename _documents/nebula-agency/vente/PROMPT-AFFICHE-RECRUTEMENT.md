@@ -255,3 +255,170 @@ salles de sport · églises et paroisses · boutiques de téléphonie · campus.
 ---
 
 *NEBULA Agency · Cotonou, Bénin · Adossé à `00-SOCLE-COMMERCIAL.md` et `01-AVIS-DE-RECRUTEMENT.md`.*
+
+---
+
+# VARIANTE « NOUS RECRUTONS » · format réseaux sociaux
+
+> **Ajoutée le 2026-08-02**, d'après trois affiches de référence fournies par Mongazi
+> (immeuble/chevrons orange, mégaphone vert et ocre, chaise de bureau sur fond rouge).
+>
+> Ce n'est **pas** l'affiche A4 imprimée ci-dessus. C'est la version **réseaux sociaux et
+> statut WhatsApp** : plus courte, plus frappante, faite pour être vue en trois secondes.
+
+## Ce que les trois références ont en commun, et qu'on reprend
+
+1. **Un mot énorme** qui occupe le tiers haut, lisible en vignette.
+2. **UNE seule couleur d'accent** sur un fond sombre ou saturé. Jamais trois.
+3. **Un objet héros** détouré, éclairé comme une photo produit (mégaphone, chaise).
+4. **Des pastilles flottantes** qui portent les postes ou les avantages.
+5. **Un bloc contact compact en bas**, séparé visuellement du reste.
+6. **Le logo à un coin**, discret.
+
+**Ce qu'on ne reprend pas :** leur maquette exacte, leurs couleurs, leur objet. On reprend
+l'énergie et la structure, pas le dessin.
+
+## ⚠️ Deux règles à ne jamais enfreindre sur cette affiche
+
+- **Aucune rareté inventée.** Pas de « 8 places », pas de « plus que 3 jours ». Le
+  recrutement est **sans quota** (décision du 2026-08-01) : écrire le contraire est un
+  mensonge que le premier candidat vérifiera. **L'urgence vient de la vitesse, pas de la
+  rareté** : entretien sous 72 heures, et on peut vendre le jour même.
+- **Aucun chiffre faux.** 30 % à 40 % par vente, 20 % sur l'abonnement à vie, paiement sous
+  24 à 72 h. Ce sont les vrais chiffres, ils suffisent.
+
+---
+
+## PROMPT · Nano Banana Pro (Gemini 3 Pro Image)
+
+**Pièces jointes, dans cet ordre :** le **logo NEBULA en premier**, puis les **trois
+affiches de référence**. Inversés, le modèle traite le logo comme un modèle de style et la
+marque disparaît.
+
+```
+Create ONE original recruitment poster for NEBULA Agency.
+
+ATTACHED INPUTS, read these roles carefully:
+  IMAGE 1 = THE LOGO of NEBULA Agency (cosmic swirl + wordmark).
+            It is AN ASSET TO PLACE, never a style reference, never a
+            subject to reinterpret. Place it, do not redraw it.
+  IMAGES 2, 3, 4 = STYLE REFERENCES, for ENERGY AND STRUCTURE ONLY.
+            Learn from them: one enormous headline word, a single accent
+            colour, a hero object lit like a product shot, floating pill
+            labels, a compact contact block at the bottom.
+            Their colours, their objects, their text and their brands are
+            IRRELEVANT and must never appear in the output.
+
+ART DIRECTION:
+Deep space brand world, premium and confident. Background #060713, never
+pure black. A nebula cloud sweeps diagonally from lower left to upper
+right in cyan #22D3EE, blue #4F6FFF and violet #9333EA, with a warm gold
+#E8C88A glow near the centre. Fine star field, subtle grain. GOLD #E8C88A
+is the single accent colour used for the key figures and the call to
+action. Text in near-white #EEF0FB.
+
+HERO OBJECT (right half, lit like a studio product shot, cut out):
+A modern smartphone held upright in a dark-skinned hand, seen at a slight
+angle. From the screen rises a spiral of light and particles in cyan and
+violet, echoing a galaxy, as if the phone were opening a small universe.
+The screen itself glows softly and shows no interface, no icons, no text.
+Sharp rim light on the hand and the phone edges.
+
+TEXT TO RENDER, verbatim French with correct diacritics and apostrophes.
+Render NOTHING else:
+
+  Small kicker, top left, uppercase, letter-spaced, gold:
+      "NEBULA AGENCY · COTONOU"
+
+  Headline, upper third, two stacked lines, the second by far the largest:
+      "NOUS"                    <- large, near-white
+      "RECRUTONS"               <- ENORMOUS, heavy condensed sans, gold
+  Subtitle directly under it, medium, near-white:
+      "Conseillers en Digitalisation"
+
+  Four floating pill-shaped labels over the left half, rounded, dark
+  translucent with a thin gold outline, each one line:
+      "30 % à 40 % par vente"
+      "20 % de chaque abonnement, à vie"
+      "Payé sous 24 à 72 h"
+      "Aucun frais d'entrée"
+
+  One short line under the pills, small, cyan, uppercase, letter-spaced:
+      "SUR LE TERRAIN, PAS DERRIÈRE UN BUREAU"
+
+  Urgency strip, a thin gold horizontal bar with dark text inside:
+      "ENTRETIEN SOUS 72 H · VOUS POUVEZ VENDRE LE JOUR MÊME"
+
+  Contact block at the bottom, visually separated, compact:
+      "Écrivez « PARTENAIRE » au +229 96 74 07 32"
+      "partenaires.nebula-agency.online/devenir"
+
+  The NEBULA logo sits in the bottom left corner, small and discreet.
+
+LAYOUT: 4:5 vertical, 1080 x 1350 px. Left half carries the text, right
+half the hero object. Nothing touches the edges. The word "RECRUTONS"
+must stay legible at 20% size.
+
+NO other words, no numbers, no invented statistics, no scarcity claims,
+no fake UI, no watermark, no extra logos, no stock-photo people.
+```
+
+---
+
+## PROMPT · ChatGPT (GPT Image)
+
+**Même affiche, mais le prompt est raccourci.** GPT Image rend moins bien les blocs de texte
+longs et n'accepte que trois formats : carré, portrait `1024 x 1536`, paysage `1536 x 1024`.
+**Demandez le portrait.** Attendez-vous à devoir régénérer deux ou trois fois pour obtenir
+tout le texte correct, et à corriger les accents.
+
+```
+Create a recruitment poster, portrait 1024 x 1536.
+
+I am attaching the NEBULA Agency logo first: PLACE it in the bottom left
+corner, small. Do not redraw it, do not use it as a style reference.
+The other attached images are style references for ENERGY ONLY: one huge
+headline, one accent colour, a hero object, floating pill labels, a
+contact block at the bottom. Ignore their colours, objects and text.
+
+Style: deep space. Background #060713. A nebula sweeps diagonally in cyan
+#22D3EE, blue #4F6FFF and violet #9333EA. Gold #E8C88A is the ONLY accent
+colour. Text near-white #EEF0FB. Premium, confident, high contrast.
+
+Hero object, right half, lit like a product shot: a smartphone held
+upright in a dark-skinned hand, a spiral of cyan and violet light rising
+from its screen like a small galaxy. No interface on the screen.
+
+Render this French text EXACTLY, with the accents, and nothing else:
+  top left, small, gold:      "NEBULA AGENCY · COTONOU"
+  headline, two lines:        "NOUS" then "RECRUTONS" (huge, gold)
+  subtitle:                   "Conseillers en Digitalisation"
+  four pill labels, left side:
+                              "30 % à 40 % par vente"
+                              "20 % de chaque abonnement, à vie"
+                              "Payé sous 24 à 72 h"
+                              "Aucun frais d'entrée"
+  one cyan line:              "SUR LE TERRAIN, PAS DERRIÈRE UN BUREAU"
+  gold bar:                   "ENTRETIEN SOUS 72 H"
+  bottom contact block:       "Écrivez « PARTENAIRE » au +229 96 74 07 32"
+                              "partenaires.nebula-agency.online/devenir"
+
+No other text. No invented numbers. No fake scarcity. No watermark.
+```
+
+---
+
+## Les cinq contrôles avant de publier
+
+| | |
+|---|---|
+| **Les chiffres** | 30 à 40 %, 20 % à vie, 24 à 72 h. Un chiffre faux sur une affiche est une promesse qu'on devra tenir |
+| **Le numéro** | `+229 96 74 07 32`, chiffre par chiffre. C'est l'erreur la plus coûteuse et la plus fréquente |
+| **Les accents** | « Payé », « MÊME », « DERRIÈRE », « Écrivez ». Les modèles les perdent |
+| **Le logo** | Placé, pas redessiné. S'il est déformé ou réinventé, régénérer |
+| **La lisibilité en vignette** | Réduisez l'image à 20 %. Si « RECRUTONS » n'est plus lisible, l'affiche est morte dans un fil |
+
+⚠️ **Et la ligne à ne jamais retirer : « SUR LE TERRAIN, PAS DERRIÈRE UN BUREAU ».**
+C'est elle qui évite le candidat qui croit qu'il aura « juste à closer ». Une affiche qui ne
+filtre pas fait perdre des entretiens.
+
