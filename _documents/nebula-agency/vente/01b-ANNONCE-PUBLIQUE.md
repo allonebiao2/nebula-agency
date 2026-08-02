@@ -65,13 +65,14 @@ Votre pourcentage monte avec votre nombre de ventes dans le mois.
 |---|---|---|
 | BRONZE | par défaut | **30 %** |
 | ARGENT | vos ventes + celles de vos filleuls atteignent **3** | **40 %** |
-| OR | **vous faites 4 ventes ou plus à vous seul** | **50 %** |
+
+**Le compteur repart à zéro le 1er de chaque mois.** Les 40 % ne sont jamais acquis : il faut refaire 3 ventes tous les mois.
 
 **Concrètement, dans votre poche :**
 
-- Un Catalogue vendu à 50 000 F → **15 000 F**, et **25 000 F** au palier OR
-- Une Vitrine vendue à 150 000 F → **45 000 F**, et **75 000 F** au palier OR
-- Un Outil métier vendu à 300 000 F → **90 000 F**, et **150 000 F** au palier OR
+- Un Catalogue vendu à 50 000 F → **15 000 F**, et **20 000 F** au palier ARGENT
+- Une Vitrine vendue à 150 000 F → **45 000 F**, et **60 000 F** au palier ARGENT
+- Un Outil métier vendu à 300 000 F → **90 000 F**, et **120 000 F** au palier ARGENT
 - Un mois à 6 ventes (4 Catalogues + 2 Vitrines) → **150 000 F de commission**
 
 **Et vos filleuls vous font gagner plus, sans rien prendre à personne.**
@@ -82,11 +83,10 @@ gagne d'argent sur le dos de personne ici.
 **Vous êtes payé sous 24 à 72 heures**, par Mobile Money, sur simple réclamation depuis votre
 espace personnel. Chaque commission est tracée du premier jour au versement.
 
-**Et vos gains ne s'arrêtent jamais.** Chaque client que vous apportez paie un abonnement de
-20 000 F tous les 6 mois : **vous en touchez 15 %, soit 3 000 F par client et par semestre,
-pendant 24 mois** (quatre versements), **même si vous arrêtez avant la fin**. Avec 30 clients, cela fait
-150 000 F par semestre sans vendre quoi que ce soit de nouveau.
-Ce que vous construisez reste à vous.
+**Une seule règle, et elle est claire : vous êtes payé sur ce que VOUS vendez.**
+Pas de pourcentage sur les abonnements, pas de commission sur les ventes des autres. Pas de
+rente, pas de promesse de revenu passif. En échange, le taux est haut et il tombe tout de
+suite : **30 % dès la première vente, 40 % dès la troisième du mois.**
 
 ---
 

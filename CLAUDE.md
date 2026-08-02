@@ -113,17 +113,20 @@ et par quoi commencer. Mis à jour à chaque fin de session importante.
 - **L'escalier** : on entre TOUJOURS par le Catalogue à 50 000 F, jamais par la Vitrine.
   Un commerçant méfiant dit oui à 50 k, pas à 150 k. Puis Vitrine, puis Outil métier.
 - **Abonnement : 20 000 F / 6 mois, modifications comprises** (remplace les 15 000 F partout)
-- **GRILLE UNIQUE depuis le 2026-08-02** : **30 %** par défaut · **40 %** dès que ses ventes
-  **+ celles de ses filleuls directs** atteignent **3** dans le mois · **50 %** dès qu'il fait
-  **4 ventes à lui seul**. Le taux s'applique à TOUT le mois, remis à zéro le 1er
+- **GRILLE UNIQUE ET DÉFINITIVE (2026-08-02)** : **30 %** sur chaque vente · **40 %** dès que
+  ses ventes **+ celles de ses filleuls directs** atteignent **3** dans le mois. Rien au-dessus.
+  Le taux s'applique à TOUT le mois et **repart à zéro le 1er** : les 40 % se regagnent
+  chaque mois
+- ⛔ **UN PARTENAIRE N'EST PAYÉ QUE SUR SES PROPRES VENTES.** Plus aucun récurrent, plus
+  aucun pourcentage sur les abonnements, plus aucune commission de réseau. L'abonnement
+  (20 000 F/6 mois) est un revenu de NEBULA seule
 - ⛔ **AUCUNE COMMISSION DE RÉSEAU, à aucune profondeur.** Un parrain ne touche **rien** sur
-  ses filleuls : leurs ventes font seulement monter **son palier**. « Personne ne gagne
-  d'argent sur le dos de personne » est devenu littéralement vrai
+  ses filleuls : leurs ventes comptent seulement dans son **seuil de 3**. « Personne ne gagne
+  d'argent sur le dos de personne » est littéralement vrai
+- ⚠️ **La relance des renouvellements devient critique** : aucun partenaire n'a plus intérêt
+  à faire renouveler un client. C'est NEBULA seule qui porte cette collecte, via n8n
 - Le rôle **superviseur** ne commande plus de barème : la grille unique l'a remplacé, il ne
   reste qu'un insigne
-- **Récurrent : 15 % de chaque abonnement** (3 000 F par client et par semestre),
-  **pendant 24 mois par client = 4 versements maximum**, puis extinction. Ne compte pas
-  dans le palier
 - **Rangs renommés le 2026-08-02** (titres de vraie société, insignes inchangés) :
   Partenaire Junior · Conseiller · Conseiller Confirmé · Conseiller Senior · Chef de
   Secteur · Chef Régional · Directeur Commercial · Directeur Associé · Président Fondateur

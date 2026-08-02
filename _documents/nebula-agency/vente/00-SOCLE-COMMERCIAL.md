@@ -31,7 +31,7 @@ C'est **une seule ligne**, elle couvre l'hébergement, la sécurité **et les mo
 contenu** (textes, prix, photos, ajout ou retrait de produits). Elle accompagne le Catalogue
 et la Vitrine.
 
-> Le récurrent est **par semestre**, jamais par mois. Un partenaire qui dit « 20 000 par mois »
+> L'abonnement est **par semestre**, jamais par mois. Un partenaire qui dit « 20 000 par mois »
 > fait perdre la vente sur-le-champ. On dit : « 20 000 francs tous les six mois, soit environ
 > 3 300 francs par mois, et vos modifications sont comprises dedans. »
 
@@ -154,60 +154,54 @@ compris.
 | Palier | Condition, dans le mois | Commission |
 |---|---|---|
 | **BRONZE** | par défaut | **30 %** |
-| **ARGENT** | ses ventes **+ celles de ses filleuls** atteignent **3** | **40 %** |
-| **OR** | **il fait 4 ventes ou plus à lui seul** | **50 %** |
+| **ARGENT** | ses ventes **+ celles de ses filleuls directs** atteignent **3** | **40 %** |
+
+**Il n'y a rien au-dessus de 40 %, et les 40 % ne sont jamais acquis.** Le compteur
+**repart à zéro le 1er de chaque mois** : il faut refaire 3 ventes tous les mois pour
+retrouver le taux haut. Un bon mois ne paie pas le mois suivant.
 
 > **⛔ Il n'existe plus aucune commission de réseau.** Un parrain ne touche **rien** sur les
 > ventes de ses filleuls. Ce que les filleuls changent, c'est **son palier** : leurs ventes
-> du mois s'ajoutent aux siennes pour atteindre la marche des 40 %.
+> du mois s'ajoutent aux siennes pour atteindre le seuil de 3 qui débloque les 40 %.
 >
 > C'est la phrase à dire en recrutement : **« personne ne gagne d'argent sur le dos de
 > personne ici. »** Ce n'est plus un argument marketing, c'est devenu vrai.
 
-### 4.2 Commission sur le récurrent (le portefeuille)
+### 4.2 Le partenaire n'est payé que sur SES ventes
 
-**15 % de chaque abonnement encaissé, tous les 6 mois, pendant 24 mois.**
-Soit **3 000 F par client et par semestre**, à taux fixe, quel que soit son palier du mois,
-et **4 versements au maximum par client** (24 mois). Au-delà, le client continue de payer
-NEBULA mais le partenaire ne touche plus rien sur lui.
+**Il n'existe aucune autre source de rémunération. Aucune.**
 
-| Son portefeuille | Par semestre | Sur les 24 mois |
-|---|---|---|
-| 10 clients abonnés | 30 000 F | 120 000 F |
-| 30 clients abonnés | 90 000 F | 360 000 F |
-| 60 clients abonnés | 180 000 F | 720 000 F |
+| | |
+|---|---|
+| Ses propres ventes | ✅ **30 % ou 40 %**, c'est tout |
+| Les ventes de ses filleuls | ⛔ **rien.** Elles comptent seulement pour son seuil de 3 |
+| Les abonnements de ses clients | ⛔ **rien.** L'abonnement est un revenu de NEBULA |
+| Le renouvellement du nom de domaine | ⛔ rien : c'est un coût refacturé au prix coûtant |
 
-> **Pourquoi 24 mois et pas à vie.** Une commission à vie est une dette qui ne s'éteint
-> jamais, y compris envers quelqu'un qui a quitté le programme depuis des années et ne
-> s'occupe plus de personne. 24 mois, c'est exactement la durée pendant laquelle il
-> s'interdit de démarcher nos clients : **il est payé aussi longtemps qu'il est tenu.**
+> **Pourquoi il n'y a plus de récurrent.** Une commission récurrente est une rente : elle
+> paie quelqu'un qui ne travaille plus, sur un client qu'il ne suit plus, et elle grossit
+> chaque mois sans que personne ne vende rien. Elle rend aussi l'entreprise impossible à
+> piloter, parce que la dette augmente tout le temps.
+>
+> Ce qu'on met à la place est plus simple et plus honnête : **on paie mieux ce qui est
+> vendu**, tout de suite. 30 % au lieu de 25, et 40 % dès trois ventes dans le mois.
 
-**Trois règles qui encadrent le récurrent :**
-
-1. **Il ne compte pas dans le palier.** Seules les ventes nouvelles font monter de 30 à 40
-   puis 50 %. Sans cette règle, un ancien partenaire serait au palier OR chaque mois sans
-   prospecter personne, et le système récompenserait l'ancienneté au lieu de l'effort.
-2. **Il court tant qu'il est partenaire, et 24 mois après son départ.** Tant qu'il est
-   actif, il touche le récurrent de tous ses clients, sans limite de durée. S'il quitte le
-   programme ou s'il est désactivé, il le garde encore **24 mois**, exactement la durée
-   pendant laquelle il s'interdit de démarcher nos clients (contrat, articles 11 et 12.3).
-   Il est payé aussi longtemps qu'il est tenu : c'est ce qui rend la clause défendable.
-   C'est un argument de recrutement majeur, à dire tel quel dans l'annonce.
-3. **Le récurrent ne fait pas monter le palier d'un parrain.** Seules les ventes comptent
-   dans les compteurs du mois, jamais les renouvellements d'abonnement.
-
-**Le renouvellement du nom de domaine (16 000 F/an) ne donne lieu à aucune commission :**
-c'est un coût refacturé au prix coûtant, pas une vente.
+**Ce qui remplace l'argument « rente » au recrutement :** on ne promet plus un revenu passif.
+On promet **un taux élevé, immédiat, sur un produit qui se vend en une visite**. C'est un
+argument de vendeur, pas d'investisseur, et c'est le bon public.
 
 ### 4.3 Les relances de renouvellement
 
 **Double dispositif :** un rappel automatique part au client à l'échéance, puis **le partenaire
 relance personnellement** si le client ne réagit pas.
 
-> ⚠️ **Le rappel automatique devient une infrastructure obligatoire, pas un confort.**
-> Comme le récurrent se poursuit après le départ, les clients d'un partenaire parti n'ont plus personne
-> pour les relancer : c'est l'automatisation qui portera cette collecte.
-> À construire avec n8n + WhatsApp (stack existant).
+> ⚠️ **Le rappel automatique est une infrastructure obligatoire, pas un confort.**
+> Aucun partenaire n'a plus d'intérêt financier à faire renouveler un abonnement : c'est
+> désormais **NEBULA seule** qui porte cette collecte, et elle ne tient que par
+> l'automatisation. À construire avec n8n + WhatsApp (stack existant).
+>
+> Le partenaire actif, lui, garde une bonne raison de rappeler son client à l'échéance :
+> c'est le meilleur moment pour lui vendre la marche suivante de l'escalier.
 
 Pour le partenaire actif, l'échéance de renouvellement est **le meilleur prétexte de reprise
 de contact qui existe**, et le moment idéal pour vendre la marche supérieure de l'escalier.
@@ -226,7 +220,8 @@ le total atteint **3**, tout son mois passe à **40 %**, rétroactivement, sur *
 | 1 vente | 0 | 30 % |
 | 1 vente | 2 ventes | **40 %** sur sa vente |
 | 3 ventes | 0 | **40 %** |
-| 4 ventes | peu importe | **50 %** |
+| 1 vente | 5 ventes | **40 %** sur sa vente |
+
 
 **Une seule profondeur, et elle ne sert qu'au comptage** : les recrues de ses recrues ne
 comptent nulle part.
@@ -239,16 +234,16 @@ comptent nulle part.
 
 ### 4.5 En francs
 
-| Vente | 30 % | 40 % | 50 % |
+| Vente | 30 % | 40 % |
 |---|---|---|---|
-| QR Google Review · 30 000 F | 9 000 F | 12 000 F | 15 000 F |
-| Catalogue · 50 000 F | 15 000 F | 20 000 F | 25 000 F |
-| Vitrine · 150 000 F | 45 000 F | 60 000 F | 75 000 F |
-| Outil · 300 000 F | 90 000 F | 120 000 F | 150 000 F |
+| QR Google Review · 30 000 F | 9 000 F | 12 000 F |
+| Catalogue · 50 000 F | 15 000 F | 20 000 F |
+| Vitrine · 150 000 F | 45 000 F | 60 000 F |
+| Outil · 300 000 F | 90 000 F | 120 000 F |
 
-**Mois type :** 4 Catalogues + 2 Vitrines = 6 ventes → 500 000 F de chiffre → **palier OR
-à 50 %** (il a fait plus de 3 ventes à lui seul) → **250 000 F de commission**, plus 3 000 F
-par client déjà au portefeuille.
+**Mois type :** 4 Catalogues + 2 Vitrines = 6 ventes → 500 000 F de chiffre → **palier
+ARGENT à 40 %** (le seuil de 3 est dépassé) → **200 000 F de commission**. Et le mois
+suivant, le compteur repart de zéro.
 
 ### 4.6 Comment l'argent arrive
 

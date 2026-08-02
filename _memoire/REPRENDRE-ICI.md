@@ -79,8 +79,8 @@ dans `_documents/nebula-agency/vente/`.
 | QR Google Review | **30 000 F** |
 | **Abonnement** | **20 000 F tous les 6 mois, modifications comprises** (ex-15 000 F) |
 | Paiement | Catalogue intégral · Vitrine et Outil **70 % / 30 %** |
-| Commission | **30 %** par défaut · **40 %** si ses ventes + celles de ses filleuls atteignent 3 dans le mois · **50 %** s'il fait 4 ventes à lui seul |
-| **Récurrent** | **15 % de chaque abonnement, 4 versements max (24 mois)**, ne compte pas dans le palier |
+| Commission | **30 %** par vente · **40 %** dès que ses ventes + celles de ses filleuls atteignent **3** dans le mois. Repart à zéro le 1er |
+| **Récurrent** | ⛔ **SUPPRIMÉ (2026-08-02).** Le partenaire n'est payé que sur SES ventes |
 | Parrainage | **Aucune commission, à aucune profondeur** (2026-08-02). Les ventes des filleuls directs comptent avec les siennes pour le palier des 40 %, à partir de sa 1re vente |
 | Versement | **24 à 72h** après réclamation |
 | Vague 1 | Cotonou, **AUCUN QUOTA DE PLACES** *(décision 2026-08-01, remplace les 8 places)*, candidatures 21 jours, objectif 30 ventes / 90 jours |
@@ -234,7 +234,7 @@ l'ombre, fond uni, format portrait.
 - **`refresh_seeded_docs()`** corrige au démarrage les 5 guides déjà en base qui poussaient
   la Vitrine en premier. Idempotente, ne touche pas les documents ajoutés à la main.
 - **Module Abonnements** : table `subscriptions`, ouverture automatique à l'encaissement,
-  commission de 15 % au renouvellement, 6 endpoints, portefeuille partenaire.
+  aucune commission au renouvellement, 6 endpoints, suivi partenaire.
 
 ---
 

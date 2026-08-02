@@ -681,7 +681,7 @@ Paiement **intégral**, jamais échelonné · Le client paie **NEBULA**, jamais 
 « Un seul lien avec tout ce que vous vendez, les prix, et un bouton qui vous envoie la
 commande sur WhatsApp. »
 
-**MA COMMISSION** · 15 000 F à 30 % · 20 000 F à 40 % · 25 000 F à 50 %
+**MA COMMISSION** · 15 000 F à 30 % · 20 000 F à 40 %
 
 **LES 3 QUESTIONS QUI VENDENT**
 1. « Combien de fois par jour on vous demande vos prix et vos photos ? »

@@ -666,7 +666,7 @@ Vitrine Digitale + QR · **150 000 F** une page complète · +30 000 F par page
 **70 % au démarrage, 30 % à la mise en ligne** · **5 à 7 jours**
 « Aujourd'hui, quelqu'un qui cherche votre nom ne trouve rien. Demain, il trouve votre maison. »
 
-**MA COMMISSION** · 45 000 F à 30 % · 60 000 F à 40 % · 75 000 F à 50 %
+**MA COMMISSION** · 45 000 F à 30 % · 60 000 F à 40 %
 
 **MON ARME · LE TEST GOOGLE**
 « On cherche votre nom ensemble, comme le ferait quelqu'un qui a entendu parler de vous. »

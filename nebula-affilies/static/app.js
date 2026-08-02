@@ -483,7 +483,7 @@ const NA = (() => {
       <div class="pg-src"><div class="pg-n">2</div><div><b>Réseau niveau 1 — ${dN1}%</b> sur chaque vente de ${admin ? 'ses' : 'tes'} filleuls directs.</div></div>
       <div class="pg-src"><div class="pg-n">3</div><div><b>Réseau niveau 2 — ${dN2}%</b> sur chaque vente des filleuls de ${admin ? 'ses' : 'tes'} filleuls.</div></div>
       ${(isSup && !admin) ? `<p class="muted mt8">Tu es <b style="color:var(--ink)">Superviseur</b> : ton palier monte avec les clients de TOUTE ton équipe (toi + branches), mais le % s'applique à tes ventes directes — tes branches te rapportent en plus le ${dN1}% / ${dN2}%.</p>` : ''}</div>`;
-    const earn = admin ? '' : sec('Mes gains (à vie, tracés)', `<div class="pg-grid">
+    const earn = admin ? '' : sec('Mes gains (tracés depuis le début)', `<div class="pg-grid">
         <div class="pg-stat"><div class="num mono accent">${money(e.generated)}</div><small>généré au total</small></div>
         <div class="pg-stat"><div class="num mono" style="color:var(--ok)">${money(e.paid)}</div><small>déjà payé</small></div>
         <div class="pg-stat"><div class="num mono" style="color:#e6c34c">${money(e.due)}</div><small>à réclamer</small></div>

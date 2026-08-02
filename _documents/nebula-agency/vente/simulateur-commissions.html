@@ -205,8 +205,7 @@ footer b{color:#C3CCE4}
     <h2>Les paliers du mois</h2>
     <div class="grid">
       <div class="tier" id="t-30"><div class="t">Bronze</div><div class="p">30 %</div><div class="v">par défaut</div></div>
-      <div class="tier" id="t-40"><div class="t">Argent</div><div class="p">40 %</div><div class="v">3 ventes avec mon équipe</div></div>
-      <div class="tier" id="t-50"><div class="t">Or</div><div class="p">50 %</div><div class="v">4 ventes à moi seul</div></div>
+      <div class="tier" id="t-40"><div class="t">Argent</div><div class="p">40 %</div><div class="v">3 ventes dans le mois, moi + mon équipe</div></div>
     </div>
   </section>
 
@@ -227,8 +226,9 @@ footer b{color:#C3CCE4}
 <b style="color:var(--txt)">Tu ne touches aucune commission sur leurs ventes.</b> Elles
       s'ajoutent aux tiennes pour faire monter ton palier : dès <b style="color:var(--txt)">3
       au total</b>, tout ton mois passe à 40 %. Et dès que tu fais <b style="color:var(--txt)">4
-      ventes à toi seul</b>, tu passes à 50 %. Une seule profondeur : les recrues de tes recrues
-      ne comptent pas.
+      au total</b>, tout ton mois passe à 40 %. Une seule profondeur : les recrues de tes
+      recrues ne comptent pas. Et <b style="color:var(--txt)">ça repart à zéro le 1er du
+      mois</b> : les 40 % se regagnent chaque mois.
     </p>
   </section>
 
@@ -258,8 +258,7 @@ footer b{color:#C3CCE4}
   }
 
   function taux(nb, equipe){
-    if (nb >= 4)                    return 0.50;   // 4 ventes a lui seul
-    if ((nb + (equipe || 0)) >= 3)  return 0.40;   // lui + ses filleuls
+    if ((nb + (equipe || 0)) >= 3)  return 0.40;   // lui + ses filleuls, 3 ventes
     if (nb >= 1)                    return 0.30;
     return 0;
   }
@@ -286,32 +285,27 @@ footer b{color:#C3CCE4}
 
     var badge = el("badge");
     badge.className = "badge";
-    if (nb >= 4)                     { badge.textContent = "Palier OR";     badge.classList.add("gold"); }
-    else if ((nb + s.n1) >= 3 && nb)  { badge.textContent = "Palier ARGENT"; badge.classList.add("silver"); }
-    else if (nb >= 1)                 { badge.textContent = "Palier BRONZE"; badge.classList.add("starter"); }
+    if ((nb + s.n1) >= 3 && nb)  { badge.textContent = "Palier ARGENT"; badge.classList.add("gold"); }
+    else if (nb >= 1)            { badge.textContent = "Palier BRONZE"; badge.classList.add("starter"); }
     else              { badge.textContent = "Aucune vente"; }
 
     ["25","30","35"].forEach(function(k){ el("t-" + k).classList.remove("on"); });
-    if (nb >= 4)                     el("t-50").classList.add("on");
-    else if ((nb + s.n1) >= 3 && nb)  el("t-40").classList.add("on");
-    else if (nb >= 1)                 el("t-30").classList.add("on");
+    if ((nb + s.n1) >= 3 && nb)  el("t-40").classList.add("on");
+    else if (nb >= 1)            el("t-30").classList.add("on");
 
     // Le message qui pousse a aller chercher la vente manquante
     var push = el("push");
     push.className = "push";
     if (nb === 0) {
       push.hidden = true;
-    } else if (nb >= 4) {
+    } else if ((nb + s.n1) >= 3) {
       push.hidden = false;
       push.classList.add("max");
       push.innerHTML = "Tu es au <b>taux maximum</b>. Chaque vente supplémentaire te rapporte "
-        + "50 % pleins. Continue.";
+        + "40 % pleins. Et le 1er du mois prochain, le compteur repart à zéro.";
     } else {
-      var equipe = nb + s.n1;
-      var versArgent = (equipe < 3);
-      var seuil = versArgent ? 3 : 4;
-      var suivant = versArgent ? 0.40 : 0.50;
-      var manque = versArgent ? (3 - equipe) : (4 - nb);
+      var suivant = 0.40;
+      var manque = 3 - (nb + s.n1);
       var bonus = ca * (suivant - t);
       push.hidden = false;
       push.innerHTML = "Il te manque <b>" + manque + " vente" + (manque > 1 ? "s" : "")

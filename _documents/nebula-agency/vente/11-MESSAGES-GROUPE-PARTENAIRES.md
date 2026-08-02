@@ -100,8 +100,8 @@ Si vous avez annoncé 15 000 F à un prospect ces derniers jours,
 dites-le moi, je gère.
 
 Et rappelez-vous ce que ça vous rapporte :
-15 % de chaque abonnement, tous les 6 mois, pendant 24 mois.
-Un client que vous vendez aujourd'hui vous paie encore dans deux ans.
+Vous n'êtes payé que sur vos ventes, mais le taux monte :
+30 % dès la première, 40 % dès la troisième du mois.
 ```
 
 ### Message 3 · l'affiche de recrutement (parrainage)

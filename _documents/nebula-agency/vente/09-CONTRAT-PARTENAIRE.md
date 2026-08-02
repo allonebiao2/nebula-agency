@@ -137,21 +137,18 @@ en cours :
 |---|---|
 | par défaut | **30 %** |
 | ses ventes **et celles de ses filleuls directs** atteignent **3** | **40 %** |
-| il réalise **4 ventes ou plus à lui seul** | **50 %** |
 
-Le taux le plus élevé atteint s'applique à **l'intégralité de ses ventes du mois**. Le palier
-est recalculé chaque mois et repart à zéro le 1er de chaque mois.
+Le taux atteint s'applique à **l'intégralité de ses ventes du mois civil**. Le palier est
+**recalculé chaque mois et repart à zéro le 1er de chaque mois** : le taux de 40 % n'est
+jamais acquis et doit être atteint de nouveau chaque mois.
 
-**6.2 Commission sur abonnement.** Le Partenaire perçoit **15 % de chaque abonnement
-encaissé**, souscription initiale et renouvellements compris, soit 3 000 F par client
-et par semestre.
+**6.2 Absence de toute autre rémunération.** Le Partenaire est rémunéré **exclusivement**
+au titre de l'article 6.1, sur les ventes qu'il a lui-même apportées.
 
-Cette commission est due **pendant 24 mois par client**, soit **quatre versements au
-maximum**, à compter de la souscription initiale. Au terme de ces 24 mois elle s'éteint,
-que le client reste abonné ou non.
-
-Elle ne compte pas dans le décompte des ventes de l'article 6.1. Le renouvellement du nom
-de domaine ne donne lieu à aucune commission.
+Il ne perçoit **aucune commission, prime ou pourcentage** sur les abonnements souscrits par
+les clients qu'il a apportés, ni sur le renouvellement des noms de domaine, ni sur aucune
+autre recette de NEBULA. L'abonnement est un revenu propre de NEBULA, en contrepartie de
+l'hébergement, de la sécurité et des modifications qu'elle assure.
 
 **6.3 Absence de commission de réseau.** **Le Partenaire ne perçoit aucune commission sur
 les ventes réalisées par les partenaires qu'il a fait entrer dans le programme**, ni à aucun
@@ -193,7 +190,7 @@ est reprise :
   le Partenaire à NEBULA.
 
 La reprise porte **uniquement sur la part effectivement remboursée**. Elle s'applique de la
-même façon à toute commission d'abonnement. Elle est **tracée dans l'espace
+même façon à toute somme déjà versée. Elle est **tracée dans l'espace
 partenaire** et notifiée au Partenaire.
 
 **Aucune reprise n'est possible lorsque le remboursement résulte d'une faute de NEBULA**
@@ -290,9 +287,12 @@ restent la **propriété de NEBULA** et doivent être restitués ou détruits à
 directement ou indirectement, les clients de NEBULA qu'il a lui-même apportés ou dont il a
 eu connaissance, pour leur proposer des prestations concurrentes.
 
-**11.2** Cette obligation est la contrepartie directe du maintien de ses commissions sur
-abonnement pendant 24 mois après son départ, prévu à l'article 12.3. Les deux durées sont
-identiques : le Partenaire est payé exactement aussi longtemps qu'il est tenu.
+**11.2** Cette obligation trouve sa contrepartie dans ce que NEBULA apporte au Partenaire
+sans aucune charge pour lui : l'accès gratuit au programme, sans droit d'entrée ni achat
+de stock ; la formation, les guides de vente et les scripts ; les outils, l'espace personnel
+et les supports commerciaux ; et la production intégrale des prestations vendues. Elle porte
+sur la seule clientèle de NEBULA, constituée à ses frais, et ne fait pas obstacle à ce que
+le Partenaire exerce librement toute autre activité auprès de toute autre personne.
 
 ---
 
@@ -308,17 +308,14 @@ signature.
 **12.3 Sort des commissions.** À la fin du contrat, quelle qu'en soit la cause :
 - les commissions dues sur des ventes déjà encaissées **restent dues** et sont réglées
   dans les délais de l'article 6.5 ;
-- les **commissions sur abonnement de l'article 6.2 sont maintenues pendant 24 mois** à
-  compter de la fin du contrat, tant que les clients concernés restent abonnés. Elles
-  s'éteignent au terme de ces 24 mois, en même temps que l'obligation de non-sollicitation
-  de l'article 11 ;
+- aucune commission d'abonnement n'est due, ni pendant le contrat ni après, conformément
+  à l'article 6.2 ;
 - le bénéfice des ventes de ses filleuls dans son palier (article 6.3) cesse ;
 - les prospects encore attribués sont libérés.
 
 **12.4 Inactivité.** Sans aucune vente pendant **2 mois**, NEBULA prend contact avec le
 Partenaire. Sans aucune vente pendant **4 mois**, les accès à l'espace partenaire sont
-désactivés et les prospects libérés. Les commissions sur abonnement restent alors maintenues
-dans les conditions de l'article 12.3.
+désactivés et les prospects libérés.
 
 ---
 
@@ -390,10 +387,10 @@ qu'après réception de cette signature.**
 *Cette page n'a pas de valeur contractuelle. Elle résume ce qui compte au quotidien.*
 
 **Je gagne**
-- **30 %** par défaut · **40 %** dès que mes ventes et celles de mes filleuls atteignent 3
-  dans le mois · **50 %** dès que j'en fais 4 à moi seul. Le taux s'applique à TOUT mon mois
-- 15 % sur chaque abonnement de mes clients, soit 3 000 F tous les 6 mois, **pendant
-  24 mois par client** (4 versements), même si j'arrête avant la fin
+- **30 %** sur chaque vente · **40 %** dès que mes ventes et celles de mes filleuls
+  atteignent 3 dans le mois. Le taux s'applique à TOUT mon mois, et **repart à zéro le 1er**
+- **rien sur les abonnements de mes clients** : ils appartiennent à NEBULA, qui héberge,
+  sécurise et modifie les sites
 - **rien du tout sur les ventes de mes filleuls** : aucune commission de réseau n'existe.
   Leurs ventes comptent seulement avec les miennes pour faire monter mon palier
 - Je suis payé **sous 24 à 72 heures** après réclamation
@@ -411,9 +408,9 @@ qu'après réception de cette signature.**
 la commission correspondante m'est reprise, sauf si le remboursement vient d'une faute de
 NEBULA, auquel cas je la garde.
 
-**Si je pars**, mes commissions sur abonnement continuent **24 mois**, la durée exacte
-pendant laquelle je m'interdis de démarcher les clients de NEBULA. Je suis payé aussi
-longtemps que je suis tenu.
+**Si je pars**, les commissions déjà acquises sur des ventes encaissées me restent dues.
+Il n'y a rien d'autre : pas de rente, pas de revenu qui continue. En revanche je m'interdis
+de démarcher les clients de NEBULA pendant 24 mois.
 
 ---
 

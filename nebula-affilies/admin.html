@@ -134,7 +134,7 @@ function renderDash() {
       <div class="col-3 rv"><div class="card clickable" data-go="paiements"><div class="in stat"><div class="lbl">Commissions dues</div><div class="num mono" style="color:var(--gold)" id="k-com">0</div><div class="sub">F CFA</div></div></div></div>
 
       <div class="col-12 rv"><button class="card pg-cta clickable" id="dash-pay" style="width:100%;text-align:left;cursor:pointer;color:var(--ink)"><div class="in" style="display:flex;align-items:center;gap:14px;justify-content:space-between;flex-wrap:wrap">
-        <div style="display:flex;align-items:center;gap:13px"><span class="pg-ico">${icon('coins')}</span><div><div style="font-weight:700">Plan de rémunération &amp; paiements</div><div class="meta">La grille 30 / 40 / 50 %, ce que les filleuls y changent, et comment chaque partenaire est payé.</div></div></div>
+        <div style="display:flex;align-items:center;gap:13px"><span class="pg-ico">${icon('coins')}</span><div><div style="font-weight:700">Plan de rémunération &amp; paiements</div><div class="meta">La grille 30 / 40 %, ce que les filleuls y changent, et comment chaque partenaire est payé.</div></div></div>
         <span class="btn sm primary">Voir<span class="ico">${icon('arrow')}</span></span>
       </div></button></div>
 
@@ -196,7 +196,7 @@ function renderAff() {
   });
 }
 const RANK_ICON = { 'Partenaire Junior': 'spark', 'Conseiller': 'meteor', 'Conseiller Confirmé': 'comet', 'Conseiller Senior': 'planet', 'Chef de Secteur': 'star', 'Chef Régional': 'supernova', 'Directeur Commercial': 'nebula', 'Directeur Associé': 'crown' };
-const PALIER_COLOR = { 'BRONZE': '#9aa0c0', 'ARGENT': '#cdd6ef', 'OR': '#e7c987', 'SPÉCIAL': '#e6c34c' };
+const PALIER_COLOR = { 'BRONZE': '#9aa0c0', 'ARGENT': '#e7c987', 'SPÉCIAL': '#e6c34c' };
 function rankSvg(label) { return icon(RANK_ICON[label] || 'spark'); }
 function palBadge(p) { return `<span class="pal-badge" style="--c:${PALIER_COLOR[p.label] || '#9aa0c0'}">${esc(p.label)}</span>`; }
 
@@ -435,8 +435,8 @@ function renderAffiliateModal(d) {
       <div class="aff-sec">
         <div class="eyebrow"><span class="dot"></span>Rôle &amp; rémunération</div>
         <p class="meta" style="margin:6px 0 11px;line-height:1.6">
-<b style="color:var(--ink)">Grille unique, pour tout le monde</b> : <b style="color:var(--accent)">30 %</b> par défaut, <b style="color:var(--accent)">40 %</b> dès que ses ventes + celles de ses filleuls atteignent <b>3</b> dans le mois, <b style="color:var(--accent)">50 %</b> dès qu'il fait <b>4 ventes</b> à lui seul. Remis à zéro le 1er du mois, appliqué à TOUT le mois.<br>
-          <b style="color:var(--ink)">Aucune commission de réseau</b> : un parrain ne touche rien sur ses filleuls, leurs ventes font monter son palier.
+<b style="color:var(--ink)">Grille unique, pour tout le monde</b> : <b style="color:var(--accent)">30 %</b> sur chaque vente, <b style="color:var(--accent)">40 %</b> dès que ses ventes + celles de ses filleuls directs atteignent <b>3</b> dans le mois. Appliqué à TOUT le mois, remis à zéro le 1er : les 40 % ne sont jamais acquis.<br>
+          <b style="color:var(--ink)">Il n'est payé que sur SES ventes</b> : aucune commission de réseau, aucun pourcentage sur les abonnements.
         </p>
         <div class="flex gap8 wrap">
           <button class="btn sm ${p.is_supervisor ? 'ghost' : 'primary'}" id="role-none">Partenaire standard</button>
@@ -1061,7 +1061,7 @@ function contactCard(c) {
 }
 function renderChatFilters() {
   const wrap = document.getElementById('chatFilters'); if (!wrap) return;
-  const palOrder = ['BRONZE', 'ARGENT', 'OR'];
+  const palOrder = ['BRONZE', 'ARGENT'];
   const pals = palOrder.filter(p => CHAT_DATA.contacts.some(c => c.palier === p));
   const ranks = [...new Set(CHAT_DATA.contacts.map(c => c.rank).filter(Boolean))].sort((a, b) => NA.RANK_ORDER.indexOf(a) - NA.RANK_ORDER.indexOf(b));
   const chip = (v, lbl) => `<span class="chat-chip${CHAT_FILTER.f === v ? ' on' : ''}" data-chip="${v}">${esc(lbl)}</span>`;

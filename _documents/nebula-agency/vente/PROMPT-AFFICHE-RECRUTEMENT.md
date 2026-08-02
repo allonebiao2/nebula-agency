@@ -24,7 +24,7 @@ Deux conséquences à garder en tête :
    ralentir le recrutement, pas attendre les réclamations.
 
 Ce qui donne envie n'a jamais été la rareté : ce sont **les chiffres réels** (15 000 à
-150 000 F par vente, 250 000 F sur un bon mois) et **les trois barrières qu'on enlève**
+120 000 F par vente, 200 000 F sur un bon mois) et **les trois barrières qu'on enlève**
 (aucun diplôme, rien à payer, aucune compétence technique). Au Bénin, la plupart des
 annonces disent « gains attractifs », ça ne veut rien dire et ça sent l'arnaque. Nous,
 on écrit les montants.
@@ -125,12 +125,12 @@ on the large sizes, wide letter-spacing on the small uppercase labels.
    Set inside a thin-bordered rectangle with a faint dark glass fill.
    Three lines, the middle figure by far the largest, in gold #E8C88A:
 
-      "30 % à 50 % par vente"
-      "15 000 F à 150 000 F"
+      "30 % à 40 % par vente"
+      "15 000 F à 120 000 F"
       "150 000 F sur un bon mois"
 
    Small caption beneath, grey, smaller:
-      "Et 15 % de chaque abonnement, pendant 24 mois."
+      "Payé sous 24 à 72 heures, en Mobile Money."
 
 5. THE THREE BARRIERS, one line, three items separated by thin vertical
    rules, uppercase, letterspaced, white:
@@ -227,7 +227,7 @@ and the reserved white square. Foot line only:
 | 1 | **Le QR scanne, testé sur un vrai téléphone** | Un QR mort, c'est l'impression entière perdue |
 | 2 | Réduire l'affiche à 20 %, « DES CONSEILLERS » et « 150 000 F » se lisent-ils ? | Elle sera vue de loin, ou en vignette |
 | 3 | Les accents : `commerçants`, `DIPLÔME`, `À PAYER`, `COMPÉTENCE` | Une faute sur une affiche imprimée est définitive |
-| 4 | Les montants sont-ils **exacts** : 30-50 %, 15 000 à 150 000, 150 000 | Un chiffre faux sur une affiche = une promesse qu'on devra tenir |
+| 4 | Les montants sont-ils **exacts** : 30-40 %, 15 000 à 120 000, 200 000 | Un chiffre faux sur une affiche = une promesse qu'on devra tenir |
 | 5 | Le numéro WhatsApp est-il le bon, et **répond-il** ? | Envoyer un vrai message dessus avant d'imprimer |
 | 6 | Le logo est-il **intact**, pas redessiné, pas recoloré ? | Le modèle a tendance à « améliorer » les logos |
 | 7 | Aucun mot ajouté par le modèle ? | Un slogan inventé peut engager l'agence |

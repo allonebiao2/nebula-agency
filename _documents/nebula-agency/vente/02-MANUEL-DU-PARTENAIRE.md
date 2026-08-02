@@ -488,7 +488,6 @@ qui s'énerve, et qui doute de vous.
 |---|---|---|
 | **BRONZE** | par défaut | **30 %** |
 | **ARGENT** | vos ventes + celles de vos filleuls atteignent **3** | **40 %** |
-| **OR** | **vous faites 4 ventes ou plus à vous seul** | **50 %** |
 
 Le palier **se remet à zéro chaque mois**. Il s'applique à **tous les services**,
 Outil métier compris.
@@ -510,30 +509,30 @@ total, tout votre mois passe à 40 %.
 4. Vous cliquez sur **« Réclamer »** dans votre espace
 5. **NEBULA vous paie sous 24 à 72 heures** en Mobile Money. Tout est tracé, du premier jour au versement
 
-## 5.2bis Votre portefeuille : le récurrent
+## 5.2bis Ce que vous ne touchez pas, et pourquoi
 
-Chaque client abonné vous rapporte **3 000 F tous les 6 mois** (15 % de son abonnement de
-20 000 F), **renouvellements compris et à vie**, même si vous quittez le programme.
+**Vous êtes payé sur vos ventes. Sur rien d'autre.**
 
-| Votre portefeuille | Sans rien vendre |
-|---|---|
-| 10 clients | 30 000 F par semestre |
-| 30 clients | 90 000 F par semestre |
-| 60 clients | 180 000 F par semestre |
+Pas de pourcentage sur les abonnements de vos clients, pas de commission sur les ventes de
+vos filleuls. Il n'y a pas de rente chez NEBULA, et c'est volontaire : l'argent va à celui
+qui vend, pas à celui qui a vendu il y a deux ans.
 
-Le récurrent **ne compte pas dans votre palier** : seules vos ventes nouvelles vous font
-passer de 30 à 40 puis 50 %. Et l'échéance de renouvellement est **le meilleur prétexte de
-reprise de contact qui existe** pour vendre la marche suivante de l'escalier.
+**Ce que vous y gagnez :** un taux plus élevé, tout de suite. 30 % dès la première vente au
+lieu de 25, et 40 % dès la troisième du mois.
+
+**L'échéance d'abonnement reste votre meilleur outil**, même si elle ne vous verse rien :
+c'est le moment parfait pour rappeler un client content et lui vendre la marche suivante
+de l'escalier. Vos clients abonnés sont affichés dans votre espace pour cette raison.
 
 ## 5.3 Le calcul qui doit vous obséder
 
 **Il vous manque toujours une vente pour changer de palier.**
 
-Vous êtes à 3 ventes le 25 du mois ? La 4ème ne vous rapporte pas seulement sa commission :
-elle fait passer **tout votre mois** de 40 % à 50 %. Sur 3 ventes déjà faites, c'est de l'argent
-qui tombe rétroactivement.
+Vous êtes à 2 ventes le 25 du mois ? La 3ème ne vous rapporte pas seulement sa commission :
+elle fait passer **tout votre mois** de 30 % à 40 %. Sur 2 ventes déjà faites, c'est de l'argent
+qui tombe rétroactivement. Et les ventes de vos filleuls comptent dans ce total.
 
-**Ne finissez jamais un mois à 3 ventes.** Regardez votre compteur le 20 du mois,
+**Ne finissez jamais un mois à 2 ventes.** Regardez votre compteur le 20 du mois,
 et allez chercher celle qui manque.
 
 ## 5.4 Votre montée en gamme
@@ -642,11 +641,11 @@ semaine. La vente vient d'elle-même quand la conversation est bonne.
 | L'Outil sur mesure ? | De 55 000 à 500 000 F, sur devis |
 | L'abonnement ? | 20 000 F **tous les 6 mois**, modifications comprises |
 | Quand suis-je payé ? | **24 à 72h** après réclamation |
-| Ce que je touche sur l'abonnement ? | 15 %, soit 3 000 F par client par semestre, **pendant 24 mois** (4 versements), même si j'arrête avant |
+| Ce que je touche sur l'abonnement ? | **Rien.** L'abonnement est un revenu de NEBULA, qui héberge, sécurise et modifie le site |
 | Un client à 35 produits ? | 50 000 + 15 000 par lot de 10 = 80 000 F |
 | Une vitrine à 3 pages ? | 150 000 + 2 × 30 000 = 210 000 F |
 | Le délai ? | 5 à 7 jours après le brief complet |
-| Ma commission sur une vitrine ? | 45 000 F à 30 %, 60 000 F à 40 %, 75 000 F à 50 % |
+| Ma commission sur une vitrine ? | 45 000 F à 30 %, 60 000 F à 40 % |
 | Combien de clients NEBULA a livrés ? | 9, tous consultables en ligne |
 | Un site à montrer pour un restaurant ? | Au Braisé d'Or |
 | Un site à montrer pour une bijouterie ? | Djambar Team |

@@ -94,12 +94,12 @@ function payDot(p) { return `<span class="pay ${p ? 'ok' : ''}"><span class="dot
 function initials(n) { return (n || '?').split(' ').filter(Boolean).slice(0, 2).map(x => x[0]).join('').toUpperCase(); }
 
 const RANK_ICON = { 'Partenaire Junior': 'spark', 'Conseiller': 'meteor', 'Conseiller Confirmé': 'comet', 'Conseiller Senior': 'planet', 'Chef de Secteur': 'star', 'Chef Régional': 'supernova', 'Directeur Commercial': 'nebula', 'Directeur Associé': 'crown' };
-const PALIER_COLOR = { 'BRONZE': '#9aa0c0', 'ARGENT': '#cdd6ef', 'OR': '#e7c987', 'SPÉCIAL': '#e6c34c' };
+const PALIER_COLOR = { 'BRONZE': '#9aa0c0', 'ARGENT': '#e7c987', 'SPÉCIAL': '#e6c34c' };
 function rankSvg(label) { return icon(RANK_ICON[label] || 'spark'); }
 
 const TOUR = [
   { icon: 'spark', title: 'Bienvenue dans ton bureau NEBULA', text: 'En quelques écrans : tu amènes des clients, tu recrutes des partenaires, et tu encaisses tes commissions. Suivons le guide ensemble.' },
-  { icon: 'chart', title: 'Mon QG', text: 'Ta vue d\'ensemble : ton <b>rang</b> (prestige, selon tes ventes cumulées), ton <b>palier du mois</b> (ta commission, de 30% à 50%), et ton <b>RCM</b> (total généré à vie).' },
+  { icon: 'chart', title: 'Mon QG', text: 'Ta vue d\'ensemble : ton <b>rang</b> (prestige, selon tes ventes cumulées), ton <b>palier du mois</b> (ta commission, 30% ou 40%), et ton <b>RCM</b> (total généré à vie).' },
   { icon: 'coins', title: 'Mes gains', text: 'Toutes tes commissions, tracées. Quand un montant est « à réclamer », clique <b>Réclamer</b> : NEBULA est prévenue et te paie en Mobile Money.' },
   { icon: 'folder', title: 'Mes clients', text: 'Les commerçants que tu as amenés. NEBULA met à jour les statuts (en cours, terminé) et le paiement — tu suis tout en direct.' },
   { icon: 'users', title: 'Mon réseau', text: 'Recrute des partenaires avec ton <b>lien de recrutement</b>. Tu ne touches <b>aucune commission</b> sur leurs ventes, mais <b>leurs ventes du mois s\'ajoutent aux tiennes</b> pour te faire passer à <b>40%</b>. Ton équipe est ici.' },
@@ -139,7 +139,7 @@ function renderHome() {
   const palBase = s.ventes_mois;
   const palUnit = 'vente';
   const nextRank = r.next_label ? `Encore <b style="color:var(--ink)">${r.to_next}</b> vente${r.to_next > 1 ? 's' : ''} (toi + équipe) pour le rang ${r.next_label}` : 'Directeur Associé : rang suprême atteint';
-  const nextPal = p.next_label ? `Encore <b style="color:var(--ink)">${p.to_next}</b> ${palUnit}${p.to_next > 1 ? 's' : ''} ce mois → ${p.next_label} ${p.next_pct}%` : (p.label === 'SPÉCIAL' ? 'Taux spécial, partenaire privilégié' : 'OR, palier max ce mois');
+  const nextPal = p.next_label ? `Encore <b style="color:var(--ink)">${p.to_next}</b> ${palUnit}${p.to_next > 1 ? 's' : ''} ce mois → ${p.next_label} ${p.next_pct}%` : (p.label === 'SPÉCIAL' ? 'Taux spécial, partenaire privilégié' : 'ARGENT, palier max ce mois');
   const palPct = p.next_min ? Math.min(100, Math.round(palBase * 100 / p.next_min)) : 100;
   const perVitrine = fmt(Math.round(150000 * p.rate));
   document.getElementById('v-home').innerHTML = `
@@ -178,7 +178,7 @@ function renderHome() {
       <div class="col-3 rv"><div class="card clickable" data-go="clients"><div class="in stat"><div class="lbl">Clients actifs</div><div class="num mono" style="color:var(--info)" id="n-cli">0</div><div class="sub">attente + en cours</div></div></div></div>
 
       <div class="col-12 rv"><button class="card pg-cta clickable" id="home-pay" style="width:100%;text-align:left;cursor:pointer;color:var(--ink)"><div class="in" style="display:flex;align-items:center;gap:14px;justify-content:space-between;flex-wrap:wrap">
-        <div style="display:flex;align-items:center;gap:13px"><span class="pg-ico">${icon('coins')}</span><div><div style="font-weight:700">Ma rémunération — tout est clair</div><div class="meta">Mes paliers 30 / 40 / 50 %, mes 2 sources de gains (mes ventes + mes abonnements), et comment je suis payé.</div></div></div>
+        <div style="display:flex;align-items:center;gap:13px"><span class="pg-ico">${icon('coins')}</span><div><div style="font-weight:700">Ma rémunération — tout est clair</div><div class="meta">Mes paliers 30 / 40 %, ma seule source de gain (mes ventes), et comment je suis payé.</div></div></div>
         <span class="btn sm primary">Voir<span class="ico">${icon('arrow')}</span></span>
       </div></button></div>
 
@@ -288,7 +288,7 @@ function renderReseau() {
       <div class="col-7 rv"><div class="card glow"><div class="in">
         <span class="eyebrow"><span class="dot"></span>Ton lien de recrutement</span>
         <h2 class="mt8" style="font-size:1.5rem">Recrute, et touche sur leurs ventes.</h2>
-        <p class="muted mt8 mb16">Partage ce lien : qui le remplit devient ta recrue (après validation NEBULA). <b>Tu ne touches rien sur leurs ventes</b>. En revanche <b style="color:var(--ink)">leurs ventes du mois comptent avec les tiennes</b> : dès 3 au total, tout ton mois passe à <b style="color:var(--ink)">40%</b>.</p>
+        <p class="muted mt8 mb16">Partage ce lien : qui le remplit devient ta recrue (après validation NEBULA). <b>Tu ne touches rien sur leurs ventes</b>. En revanche <b style="color:var(--ink)">leurs ventes du mois comptent avec les tiennes</b> : dès 3 au total, tout ton mois passe à <b style="color:var(--ink)">40%</b>. Et ça repart à zéro le 1er du mois : il faut refaire 3 ventes chaque mois.</p>
         <div class="field"><div class="wrap"><input id="rlk" readonly value="${esc(link)}" style="font-family:JetBrains Mono;font-size:.85rem"></div></div>
         <div class="flex gap8 wrap">
           <button class="btn primary" id="rcopy">Copier le lien<span class="ico">${icon('copy')}</span></button>
@@ -789,7 +789,7 @@ function contactCard(c) {
 }
 function renderChatFilters() {
   const wrap = document.getElementById('chatFilters'); if (!wrap) return;
-  const palOrder = ['BRONZE', 'ARGENT', 'OR'];
+  const palOrder = ['BRONZE', 'ARGENT'];
   const pals = palOrder.filter(p => CHAT_DATA.contacts.some(c => c.palier === p));
   const ranks = [...new Set(CHAT_DATA.contacts.map(c => c.rank).filter(Boolean))].sort((a, b) => NA.RANK_ORDER.indexOf(a) - NA.RANK_ORDER.indexOf(b));
   const chip = (v, lbl) => `<span class="chat-chip${CHAT_FILTER.f === v ? ' on' : ''}" data-chip="${v}">${esc(lbl)}</span>`;
