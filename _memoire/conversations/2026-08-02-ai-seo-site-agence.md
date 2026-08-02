@@ -191,3 +191,69 @@ et GPTBot, ClaudeBot, PerplexityBot à 200.
 Ce n'est pas une divergence apex/www, c'est le **script de mesure injecté par Cloudflare**,
 avec un jeton unique par requête. Comparer des md5 de pages proxifiées ne prouve rien :
 comparer la taille et le titre.
+
+---
+
+# 2026-08-02 (suite) — Le bureau des partenaires remis en ligne : Render + Supabase
+
+**https://partenaires.nebula-agency.online répond de nouveau**, vérifié 15 fois d'affilée
+sans un échec. Portail, espace partenaire, page de recrutement, cockpit : tous à 200.
+
+## Le montage retenu, et pourquoi
+
+Railway avait fait disparaître l'application et exige désormais une carte bancaire, que
+Mongazi n'a pas. Le VPS Hostinger, envisagé ensuite, **ne lui appartient plus** : le
+certificat de `72.61.103.56` est au nom de `api-preprod.normly.fr`, l'IP a été réattribuée.
+
+D'où : **le code sur Render** (gratuit, sans carte) et **les données sur Supabase**
+(gratuit, sans carte, sauvegardes quotidiennes). Ce découpage n'est pas un luxe : le disque
+de Render est **éphémère**, un fichier SQLite y serait effacé à chaque redémarrage.
+
+Le domaine n'a pas bougé : le relais Cloudflare `nebula-partenaires` existait déjà, seule
+son origine a changé. Aucun DNS touché, le HTTPS a continué de marcher.
+
+## Ce qui a coincé, et ce que ça apprend
+
+**1. L'auto-déploiement ne fonctionne pas.** Le dépôt étant branché par URL publique (sans
+l'application GitHub), GitHub ne prévient jamais Render : un `git push` ne déploie rien.
+Il faut un `POST /v1/services/{id}/deploys`. Cela a d'abord donné l'illusion d'un correctif
+qui ne prenait pas.
+
+**2. Une requête sur huit repartait avec `x-render-routing: no-server`** — et ces requêtes
+**n'apparaissaient même pas dans les journaux de l'application**. C'est ce détail qui a
+donné la réponse : elles n'atteignaient jamais le code, le routage les jetait avant.
+Deux causes, toutes deux fermées :
+- l'hébergeur sondait `/`, qui rend une page complète et dépend de la base : une lenteur de
+  Supabase suffisait à faire croire que l'application était morte ;
+- une sonde `HEAD /` recevait **405 Method Not Allowed**, l'application n'acceptant que
+  `GET`. Un répartiteur de charge lit un 405 comme une panne.
+
+→ **`/healthz`**, qui répond en GET **comme en HEAD** et ne touche ni la base ni le disque.
+Après quoi : 15 essais sur 15. **Un point de contrôle ne doit jamais dépendre de la base :
+sinon une base lente fait déclarer l'application morte, et l'hébergeur cesse de lui envoyer
+des visiteurs.**
+
+**3. Le tableau de bord Supabase a déplacé les chaînes de connexion** derrière un bouton
+« Connect », et Mongazi avait perdu son mot de passe. Contourné en reconstruisant la chaîne
+à partir du seul mot de passe (`_trouve_dsn.py`), la région du pooler étant trouvée en les
+essayant une par une : **`eu-central-1`**.
+
+## Vérifié pour de vrai, pas seulement « ça répond »
+
+- Base : schéma `naff`, 16 tables sur 16, **aucune colonne en `REAL`** (Postgres arrondirait
+  les horodatages), identité automatique sur les 14 tables à `id`.
+- Application lancée contre Supabase **en local d'abord**, puis un vrai
+  `POST /api/site-lead` **depuis Render** : demande enregistrée dans Supabase, notification
+  créée, `service_raw` extrait, horodatage exact. C'est le chemin qui passe par
+  `cur.lastrowid`. Lignes de test supprimées, base à zéro.
+- Site de l'agence : les **3 appels** à l'ancienne adresse Railway rebranchés, plus aucune
+  occurrence de « railway » dans la page en ligne. NOVA ne renvoie plus une erreur mais un
+  repli poli vers WhatsApp, faute de clé Anthropic.
+
+## Ce qui reste
+
+- Poser `ANTHROPIC_API_KEY` (NOVA), `RESEND_API_KEY` (emails d'accès), `NAFF_CRON_KEY`.
+- **Ressaisir les partenaires** : les données de production étaient sur le disque Railway,
+  sans sauvegarde. Romaric DJANKAKI (`RBNXF`, taux spécial 40 %) en premier.
+- **Changer le mot de passe Supabase** : il a transité par la conversation.
+- Render endort l'instance après 15 minutes sans visite, réveil en ~1 minute.

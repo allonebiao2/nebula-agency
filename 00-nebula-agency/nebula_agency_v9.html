@@ -1209,7 +1209,7 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
 </div>
 <script>
 (function(){
-  var API='https://nebula-affilies-production.up.railway.app/api/agency-chat';
+  var API='https://partenaires.nebula-agency.online/api/agency-chat';
   var fab=document.getElementById('novaFab'),panel=document.getElementById('novaPanel'),
       log=document.getElementById('novaLog'),input=document.getElementById('novaInput'),
       sendBtn=document.getElementById('novaSend'),closeBtn=document.getElementById('novaClose');
@@ -1259,7 +1259,7 @@ if(document.getElementById('fc_maps').checked)f.push('Google Maps');
 if(document.getElementById('fc_avis').checked)f.push('Section avis');
 var na=function(v){return v||'Non précisé';};
 var msg=['🚀 *NOUVELLE COMMANDE — NEBULA AGENCY*','═══════════════════════════════','','👤 *CONTACT*','• Nom : '+nom,'• WhatsApp : '+tel,'• Email : '+email,'• Marque : '+marque,'• Secteur : '+secteur,'• Ville : '+ville,'','🎯 *PROJET*','• Service : '+niveau,'• Objectif : '+objectif,'• Ampleur : '+na(pages),'• Délai : '+delai,'','🎨 *STYLE & CONTENU*','• Style visuel : '+na(style),'• Langue : '+na(langue),'• Présence en ligne : '+na(existant),'• Contenus prêts : '+na(contenu),'• Couleurs : '+na(couleurs),'• Inspiration : '+na(inspiration),'• Réseaux : '+na(reseaux),'• Logo : '+logo,'','✅ *OPTIONS SUPPLÉMENTAIRES*',f.length?f.map(function(x){return '• '+x;}).join('\n'):'• Aucune option supplémentaire','','📝 *DESCRIPTION*',desc,'','═══════════════════════════════','📩 Envoyé via nebula-agency.online'].join('\n');
-try{fetch('https://nebula-affilies-production.up.railway.app/api/site-lead',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({nom:nom,numero:tel,email:email,service:niveau,message:msg})}).catch(function(){});}catch(e){}
+try{fetch('https://partenaires.nebula-agency.online/api/site-lead',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({nom:nom,numero:tel,email:email,service:niveau,message:msg})}).catch(function(){});}catch(e){}
 window.open('https://wa.me/22996740732?text='+encodeURIComponent(msg),'_blank');}
 
 /* ===== Configurateur de devis — cadrage projet (fourchette 55 000 – 500 000 F) ===== */
@@ -1316,7 +1316,7 @@ var DEVIS={base:60000,factMin:0.9,factMax:1.25,plancher:55000,plafond:500000,pas
     if(note)foot.push('• Note : '+note);
     foot=foot.concat(['','═══════════════','📩 Devis généré sur nebula-agency.online']);
     var msg=head.concat(det).concat(foot).join('\n');
-    try{fetch('https://nebula-affilies-production.up.railway.app/api/site-lead',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({nom:nom,numero:tel,email:email,devis_email:true,service:'Cadrage projet — '+F(d.min)+' à '+F(d.max),message:msg})}).catch(function(){});}catch(e){}
+    try{fetch('https://partenaires.nebula-agency.online/api/site-lead',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({nom:nom,numero:tel,email:email,devis_email:true,service:'Cadrage projet — '+F(d.min)+' à '+F(d.max),message:msg})}).catch(function(){});}catch(e){}
     window.open('https://wa.me/22996740732?text='+encodeURIComponent(msg),'_blank');
   };
 })();

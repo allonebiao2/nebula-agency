@@ -1,6 +1,37 @@
 # Bureau des partenaires — remise en ligne (Render + Supabase)
 
 > Écrit le 2026-08-02, après la disparition de l'application sur Railway.
+>
+> ## ✅ FAIT LE 2026-08-02 — le bureau est en ligne
+>
+> **https://partenaires.nebula-agency.online** répond, vérifié 15 fois d'affilée sans un
+> seul échec. Portail, espace partenaire, page de recrutement et cockpit à 200.
+>
+> | | |
+> |---|---|
+> | Service Render | `srv-d9nni7e7bikc73c9oksg` · https://nebula-affilies.onrender.com |
+> | Base | Supabase, schéma `naff`, pooler `aws-0-eu-central-1`, port 6543 |
+> | Relais | Pages `nebula-partenaires`, origine repointée vers Render |
+> | Clé API Render | `secrets/render.env` |
+>
+> ⚠️ **L'auto-déploiement ne marche PAS.** Le dépôt est branché par son URL publique, sans
+> l'application GitHub, donc GitHub ne prévient jamais Render. Un `git push` ne déploie
+> rien. Il faut déclencher à la main :
+> ```
+> curl -X POST https://api.render.com/v1/services/srv-d9nni7e7bikc73c9oksg/deploys >      -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: application/json" -d '{}'
+> ```
+>
+> ⚠️ **Piège rencontré, à connaître :** au début, une requête sur huit repartait avec
+> `x-render-routing: no-server`, et ces requêtes **n'apparaissaient même pas dans les
+> journaux** de l'application. Deux causes fermées : l'hébergeur sondait `/`, qui rend une
+> page complète et dépend de la base ; et une sonde `HEAD /` recevait **405 Method Not
+> Allowed**, ce qu'un répartiteur lit comme une panne. D'où **`/healthz`**, qui répond en
+> GET comme en HEAD et ne touche ni la base ni le disque. Depuis, 15 essais sur 15.
+>
+> **Reste à faire :** poser `ANTHROPIC_API_KEY` (NOVA répond aujourd'hui un repli poli vers
+> WhatsApp), `RESEND_API_KEY` (emails d'accès), `NAFF_CRON_KEY` (relance des abonnements),
+> et **ressaisir les partenaires** (la base est vide, cf. la section sur les données perdues).
+>
 > À suivre dans l'ordre. Chaque étape se vérifie avant de passer à la suivante.
 
 ---
