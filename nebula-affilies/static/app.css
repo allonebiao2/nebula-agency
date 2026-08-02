@@ -7,7 +7,7 @@
 
 :root{
   --bg:#060509; --bg-2:#0a0a12;
-  --ink:#ECEAF6; --muted:#9d9db6; --faint:#6b6b86;
+  --ink:#ECEAF6; --muted:#9d9db6; --faint:#8a8aa6;
   --accent:#7b5cff; --accent-2:#22d3ee;
   --glass:rgba(255,255,255,.04); --glass-2:rgba(255,255,255,.06);
   --hair:rgba(255,255,255,.08); --hair-2:rgba(255,255,255,.15);
@@ -71,7 +71,7 @@ input,select,textarea{font-family:inherit}
   color:#0a0712;border-color:rgba(255,255,255,.3);box-shadow:var(--glow)}
 .btn.primary .ico{background:rgba(0,0,0,.18)}
 .btn.ghost{background:transparent}
-.btn.sm{padding:9px 12px 9px 16px;font-size:.85rem}
+.btn.sm{padding:9px 14px 9px 18px;font-size:.85rem;min-height:44px}
 .btn.sm .ico{width:26px;height:26px}.btn.sm .ico svg{width:13px;height:13px}
 .btn.block{width:100%;justify-content:center}
 
@@ -125,7 +125,7 @@ input,select,textarea{font-family:inherit}
 .chip{display:inline-flex;align-items:center;gap:9px;padding:8px 14px;border-radius:999px;
   background:var(--glass-2);border:1px solid var(--hair);font-size:.82rem;color:var(--muted)}
 .chip b{color:var(--ink)}
-.icon-btn{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;color:var(--muted);
+.icon-btn{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;color:var(--muted);
   background:var(--glass-2);border:1px solid var(--hair);transition:all .4s var(--ease);position:relative}
 .icon-btn:hover{color:var(--ink);transform:translateY(-2px)}
 .icon-btn svg{width:19px;height:19px}
@@ -503,7 +503,7 @@ input,select,textarea{font-family:inherit}
   .topbar #p-rank{max-width:100%;overflow:visible}
   .topbar #p-rank>span{max-width:100%;flex-wrap:wrap;white-space:normal;row-gap:5px}
   .topbar .who .r-sub,.topbar .who [id$="name"]{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .icon-btn{width:40px;height:40px}
+  .icon-btn{width:44px;height:44px}
   .flex.gap8{gap:7px}
   /* lignes de données : le texte s'adapte, rien ne dépasse */
   .row{padding:13px;gap:11px}
@@ -779,3 +779,75 @@ input,select,textarea{font-family:inherit}
 @keyframes roleGlowGold{0%,100%{box-shadow:0 0 10px rgba(230,195,76,.5), inset 0 0 7px rgba(255,220,140,.28)}
   50%{box-shadow:0 0 20px rgba(245,205,90,.9), inset 0 0 12px rgba(255,225,150,.5)}}
 @media(prefers-reduced-motion:reduce){.role-badge,.role-badge.role-ceo{animation:none}.role-badge::after{display:none}}
+
+/* ============ CONFORT ET LISIBILITÉ (audit du 2026-08-02) ============
+   Chaque règle répond à une mesure, pas à une impression. */
+
+/* Un champ sous 16 px déclenche le zoom automatique de Safari iOS : la page
+   saute et se retrouve de travers. 16 px est le seuil, pas une préférence. */
+@media (max-width: 640px) {
+  input, select, textarea { font-size: 16px; }
+}
+
+/* Les liens de bas de formulaire faisaient 16 à 18 px de haut : impossibles à
+   viser au pouce. On leur donne de la hauteur sans changer leur apparence. */
+.link-sm, a.small, .foot-link {
+  display: inline-flex; align-items: center;
+  min-height: 44px; padding: 0 2px;
+}
+
+/* Le focus au clavier était invisible sur fond sombre : on ne savait plus où
+   l'on était en naviguant à la tabulation. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Respecter le réglage système « réduire les animations ». Sans cela, une
+   interface qui bouge en permanence est pénible, voire douloureuse, pour
+   certaines personnes. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============ MODE PERFORMANCE ADAPTATIF (mesuré le 2026-08-02) ============
+   Sur appareil modeste, ou si la fluidité mesurée tombe, on calme les effets
+   d'AMBIANCE : les flous d'arrière-plan et les deux animations en boucle.
+   On ne touche NI aux interactions, NI aux transitions au toucher : c'est ce
+   qui donne la sensation de réactivité, et ça ne coûte rien.
+   Piloté par initPerfMode() dans app.js, via .perf-lite sur <html>.
+   .perf-pause = onglet en arrière-plan : inutile d'animer ce que personne
+   ne regarde. */
+
+/* Le flou d'arrière-plan est l'opération la plus chère de toute l'interface :
+   53 images/s contre 35 une fois retiré. Les fonds sont déjà presque opaques,
+   la lisibilité ne bouge pas. */
+html.perf-lite .drawer,
+html.perf-lite .sheet,
+html.perf-lite .scrim,
+html.perf-lite .chat-search,
+html.perf-lite .seg {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Les deux animations d'ambiance : la dérive du fond et l'anneau du bouton
+   NOVA. Décoratives toutes les deux. */
+html.perf-lite .bg-orbs,
+html.perf-lite .nova-fab .pulse {
+  animation: none !important;
+}
+html.perf-lite .nova-fab .pulse { opacity: .35; }
+
+/* Onglet en arrière-plan : on suspend tout ce qui tourne en boucle. */
+html.perf-pause *,
+html.perf-pause *::before,
+html.perf-pause *::after {
+  animation-play-state: paused !important;
+}

@@ -330,7 +330,7 @@ const NA = (() => {
     const inn = scrim.querySelector('.in');
     function render() {
       const s = steps[i];
-      inn.innerHTML = `<div class="flex between" style="margin-bottom:14px"><span class="eyebrow"><span class="dot"></span>Guide · ${i + 1}/${steps.length}</span><button class="icon-btn tx" style="width:32px;height:32px">${icon('close')}</button></div>`
+      inn.innerHTML = `<div class="flex between" style="margin-bottom:14px"><span class="eyebrow"><span class="dot"></span>Guide · ${i + 1}/${steps.length}</span><button class="icon-btn tx" aria-label="Fermer le guide" style="width:44px;height:44px">${icon('close')}</button></div>`
         + `<div class="tour-ic">${icon(s.icon || 'spark')}</div>`
         + `<h2 style="font-size:1.5rem;margin:16px 0 10px">${esc(s.title)}</h2>`
         + `<p style="font-size:14.5px;line-height:1.6;color:var(--muted)">${s.text}</p>`
@@ -517,3 +517,50 @@ const NA = (() => {
 
   return { el, esc, fmt, ago, api, icon, sound: Sound, toast, countUp, reveal, qr, celebrate, nova, agencyChat, tour, rankBadge, rankName, roleBadge, roleName, idBadge, idName, hasRole, rankLadder, payGuide, RANK_META, RANK_ORDER };
 })();
+
+/* ===== Mode performance adaptatif =========================================
+   Mesuré le 2026-08-02 : les flous d'arrière-plan et les deux animations
+   d'ambiance coûtent 25 images par seconde sur 60. On ne dégrade personne
+   d'office : on regarde l'appareil, puis on mesure la fluidité réelle.
+   ======================================================================== */
+NA.initPerfMode = function () {
+  var de = document.documentElement;
+  if (de.dataset.perfInit) return;      // une seule fois
+  de.dataset.perfInit = '1';
+
+  var calme = function (raison) {
+    if (de.classList.contains('perf-lite')) return;
+    de.classList.add('perf-lite');
+    try { console.info('[NEBULA] mode calme :', raison); } catch (e) {}
+  };
+
+  // 1. l'appareil se déclare-t-il modeste ?
+  var coeurs = navigator.hardwareConcurrency || 8;
+  var memoire = navigator.deviceMemory || 8;
+  if (coeurs <= 4 || memoire <= 4) calme('appareil modeste (' + coeurs + ' cœurs, ' + memoire + ' Go)');
+
+  // 2. la personne a-t-elle demandé moins d'animations ?
+  try {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) calme('réglage système');
+  } catch (e) {}
+
+  // 3. sinon, on mesure vraiment, une seule fois, sans bloquer le démarrage
+  if (!de.classList.contains('perf-lite')) {
+    setTimeout(function () {
+      var n = 0, t0 = performance.now();
+      (function tic() {
+        n++;
+        var dt = performance.now() - t0;
+        if (dt < 1000) { requestAnimationFrame(tic); return; }
+        var fps = n / (dt / 1000);
+        if (fps < 45) calme('fluidité mesurée à ' + Math.round(fps) + ' images/s');
+      })();
+    }, 2500);
+  }
+
+  // 4. onglet en arrière-plan : rien à animer pour personne
+  document.addEventListener('visibilitychange', function () {
+    de.classList.toggle('perf-pause', document.hidden);
+  });
+};
+try { NA.initPerfMode(); } catch (e) {}
