@@ -1,7 +1,9 @@
 // Relais NEBULA Affiliés (Cloudflare Pages, mode avancé _worker.js).
-// partenaires.nebula-agency.online -> app Railway, appelée par son vrai nom de service
-// (donc Railway reconnaît le Host et répond). SSL fourni gratuitement par Cloudflare.
-const ORIGIN = "https://nebula-affilies-production.up.railway.app";
+// partenaires.nebula-agency.online -> app Render, appelée par son vrai nom de service.
+// SSL fourni gratuitement par Cloudflare.
+// 2026-08-02 : Railway avait fait disparaître l'application (404 Application not found
+// sur l'origine elle-même). Bascule vers Render + Supabase, cf nebula-affilies/DEPLOIEMENT.md.
+const ORIGIN = "https://nebula-affilies.onrender.com";
 
 export default {
   async fetch(request) {

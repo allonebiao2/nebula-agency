@@ -1173,6 +1173,21 @@ def served_page(name: str, request: Request) -> HTMLResponse:
 def home():
     return page("index.html")
 
+# Point de contrôle de l'hébergeur. Volontairement le plus bête possible :
+# il ne lit ni la base ni un fichier. Si l'hébergeur sondait « / », une lenteur
+# de Supabase suffirait à faire croire que l'application est morte, et il
+# cesserait de router les visiteurs vers elle.
+# Répond aussi en HEAD : les sondes des répartiteurs de charge utilisent HEAD,
+# et une route qui n'accepte que GET leur renvoie 405, donc « en panne ».
+@app.get("/healthz")
+@app.head("/healthz")
+def healthz():
+    return JSONResponse({"ok": True})
+
+@app.head("/")
+def home_head():
+    return HTMLResponse("")
+
 # Console NEBULA : dashboard servi UNIQUEMENT à un admin connecté (sinon retour au portail public,
 # sans jamais révéler l'URL secrète de connexion). La page de login admin vit sur ADMIN_PATH.
 @app.get("/admin", response_class=HTMLResponse)
