@@ -10,7 +10,15 @@
 > Pour les premiers partenaires il fait le travail. Au-delà d'une trentaine de partenaires,
 > faites-le relire par un juriste béninois.
 >
-> Version 1.1 · 2026-08-01
+> **Version 1.2 · 2026-08-02.** Ce qui change depuis la 1.1 : la grille de commission
+> devient **30 % / 40 %** (art. 6.1), **toute commission de réseau est supprimée** (art. 6.3),
+> la commission d'abonnement passe à **20 % à vie** (art. 6.2), et quatre articles
+> apparaissent : évolution du barème (6.7), reprise de commission (6.8), propriété du client
+> (7.4 et 7.5) et indemnités forfaitaires (8.13).
+>
+> ⚠️ **Pour un partenaire déjà sous contrat en version 1.1**, l'article 6.7 impose un
+> **préavis écrit de 30 jours** avant toute baisse de barème. Faites-lui signer la 1.2 ou
+> notifiez-lui le changement par écrit, daté.
 
 ---
 
@@ -151,10 +159,18 @@ après la fin du présent contrat**. Elle ne compte pas dans le décompte des ve
 l'article 6.1. Le renouvellement du nom de domaine ne donne lieu à aucune commission.
 
 **6.2 bis Suspension du service en cas de non-paiement.** À défaut de règlement de
-l'abonnement à son échéance, **NEBULA suspend la prestation** : l'hébergement et la
-maintenance de sécurité sont interrompus et la réalisation cesse d'être accessible en ligne.
-Le service est rétabli dès régularisation. Le Partenaire informe son client de cette règle
-avant l'échéance ; aucune commission n'est due sur un abonnement non encaissé.
+l'abonnement à son échéance, le client dispose d'un **délai de courtoisie de 7 jours**
+pendant lequel la prestation est maintenue.
+
+**Au 8e jour, NEBULA suspend la prestation** : l'hébergement et la maintenance de sécurité
+sont interrompus et la réalisation cesse d'être accessible en ligne. Les données du client
+sont **conservées 6 mois**, puis supprimées après un dernier avertissement.
+
+Le service est rétabli dès régularisation, moyennant le règlement du semestre dû et, le cas
+échéant, des frais de réactivation en vigueur. Ces frais ne donnent lieu à aucune commission.
+
+Le Partenaire informe son client de cette règle **avant** l'échéance. Aucune commission n'est
+due sur un abonnement non encaissé.
 
 **6.3 Absence de commission de réseau.** **Le Partenaire ne perçoit aucune commission sur
 les ventes réalisées par les partenaires qu'il a fait entrer dans le programme**, ni à aucun

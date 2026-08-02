@@ -329,8 +329,8 @@ Bonjour [Prénom], [votre prénom] de NEBULA.
 Votre abonnement arrive à échéance le [date], je vous préviens à l'avance
 pour que ça ne vous surprenne pas.
 
-S'il n'est pas réglé, le site est coupé : l'hébergement et la sécurité
-s'arrêtent, et votre QR ne mènera plus à rien.
+Vous avez 7 jours après la date. Passé ce délai le site est coupé :
+l'hébergement et la sécurité s'arrêtent, et votre QR ne mènera plus à rien.
 
 C'est 20 000 F pour six mois, avec vos modifications comprises.
 Je vous envoie le numéro Mobile Money ?

@@ -98,11 +98,46 @@ Quatre messages, puis une action humaine. Rien de plus : au-delà, on harcèle.
 | **J-15** | Le client | Prévenir, avec un rappel de ce que l'abonnement couvre |
 | **J-3** | Le client | Rappeler, plus court |
 | **J-3** | **Le partenaire** | L'alerter pour qu'il relance personnellement |
-| **J+3** | Le client | Le site est toujours en ligne, mais l'abonnement est en retard |
-| **J+10** | **Mongazi** | Alerte : dossier à traiter à la main |
+| **J+3** | Le client | Le site est en ligne, mais l'échéance est passée. On annonce la date de coupure |
+| **J+7** | Le client | **Dernier avis : le site est coupé demain** |
+| **J+8** | (automatique) | **SUSPENSION AUTOMATIQUE** du site, et alerte à Mongazi et au partenaire |
+| **M+6** | Le client | Dernier avertissement avant suppression des données |
 
-**Après J+10, plus aucun message automatique.** Un client qui n'a pas payé après trois
-rappels ne paiera pas au quatrième : il faut un appel humain.
+**Après J+8, plus aucun message automatique au client.** Un client suspendu qui veut revenir
+appelle : c'est le moment de la reprise humaine, pas du message.
+
+### Pourquoi 8 jours, et pas 45
+
+C'est le réglage qui rapporte le plus, et ce n'est pas le plus dur :
+
+1. **Une échéance qu'on n'applique pas est une échéance qui n'existe pas.** Un client coupé
+   au 45e jour apprend que la date est décorative, et il attendra encore plus longtemps au
+   semestre suivant. Le retard devient l'habitude de tout le parc.
+2. **Sept jours de courtoisie suffisent** pour un virement Mobile Money, un déplacement ou
+   une absence. Au-delà, ce n'est plus un délai, c'est un crédit gratuit que NEBULA accorde.
+3. **Le levier est à son maximum juste après l'échéance**, tant que le site tourne encore et
+   que le commerçant a le QR affiché dans sa boutique. Il s'effondre après : un client coupé
+   depuis six semaines a déjà pris l'habitude de vivre sans.
+4. **Six mois de conservation des données** ne coûtent presque rien et gardent récupérable un
+   client qui vaut 20 000 F par semestre. Supprimer vite ne fait économiser rien du tout.
+
+### 💰 Les frais de réactivation, à valider
+
+**Proposition : 5 000 F pour remettre un site coupé en ligne**, en plus du semestre dû.
+
+C'est ce qui transforme le retard en recette au lieu d'en faire une perte sèche, et surtout
+c'est ce qui rend le paiement à l'heure **strictement moins cher** que le retard. Deux règles
+qui le rendent acceptable :
+
+- **Aucun frais si le client règle pendant les 7 jours de courtoisie.** Le délai devient une
+  faveur qu'on peut perdre, pas un droit acquis.
+- **Ces frais ne portent aucune commission partenaire** : ils couvrent la remise en ligne,
+  ils ne sont pas un abonnement.
+
+⚠️ **C'est un tarif nouveau, à votre validation.** Le risque existe : un petit commerçant en
+retard de huit jours à qui on réclame 5 000 F de plus peut renoncer, et vous perdez alors
+20 000 F par semestre plus les 4 000 F du partenaire. Si vous préférez la sécurité, mettez
+la suspension en place sans les frais et ajoutez-les au deuxième semestre.
 
 ---
 
@@ -134,7 +169,8 @@ Un appel de votre part vaut mieux que dix messages automatiques.
 Et c'est le meilleur moment pour lui parler de la suite : une vitrine, une page
 de plus, un outil de suivi.
 
-À la clé pour vous : 5 000 F de commission sur ce renouvellement.
+À la clé pour vous : 4 000 F de commission sur ce renouvellement, et vous les toucherez
+encore au suivant, et à celui d'après.
 ```
 
 **J+3 · au client**
@@ -142,15 +178,38 @@ de plus, un outil de suivi.
 Bonjour [Nom], votre abonnement était dû le [date].
 Votre site est toujours en ligne, pas d'inquiétude.
 
-Pour le maintenir et garder vos modifications comprises, il reste 20 000 F à régler.
-Je m'occupe de tout dès que c'est fait.
+Je vous préviens simplement à l'avance : sans règlement, il sera coupé
+le [date + 8 jours] : l'hébergement et la sécurité s'arrêtent, et votre
+QR code ne mènera plus à rien.
+
+20 000 F pour 6 mois, vos modifications comprises. Je m'occupe de tout
+dès que c'est réglé.
 ```
 
-**J+10 · à Mongazi**
+**J+7 · au client (le dernier avis)**
 ```
-⚠️ ABONNEMENT EN RETARD DE 10 JOURS
+Bonjour [Nom], je ne veux pas que ça vous surprenne : sans règlement,
+votre site sera coupé demain [date].
+
+Vos données sont conservées, rien n'est perdu, et je le remets en ligne
+dès réception. 20 000 F.
+```
+
+**J+8 · à Mongazi et au partenaire**
+```
+⛔ SITE SUSPENDU · 8 jours de retard
 Client : [nom] · Partenaire : [prénom] · Échéance : [date] · Montant : 20 000 F
-3 rappels envoyés, aucun règlement. À traiter à la main.
+4 rappels envoyés, aucun règlement. Site coupé, données conservées 6 mois.
+Un appel humain est la seule chose qui le récupère maintenant.
+```
+
+**M+6 · au client (dernier avertissement)**
+```
+Bonjour [Nom], votre site est hors ligne depuis six mois.
+Ses données seront supprimées le [date] et il ne sera plus récupérable.
+
+S'il vous reste un doute, dites-le moi avant : une fois supprimé,
+tout est à refaire.
 ```
 
 ---
@@ -162,7 +221,7 @@ Client : [nom] · Partenaire : [prénom] · Échéance : [date] · Montant : 20 
 ```
 1. Cron  ->  tous les jours à 08h00 (heure de Cotonou)
 2. HTTP  ->  GET /api/admin/subscriptions/due
-             renvoie les abonnements à J-15, J-3, J+3, J+10
+             renvoie les abonnements à J-15, J-3, J+3, J+7, J+8, M+6
 3. Switch ->  aiguillage selon le palier d'échéance
 4. Twilio WhatsApp -> message au client (gabarits du §4)
 5. HTTP  ->  POST /api/admin/subscriptions/{id}/rappel
@@ -197,12 +256,10 @@ en tête, identifiants dans les Credentials n8n et jamais en dur.
 
 ## 7. Ce qu'il reste à décider
 
-- [x] **Que se passe-t-il si un client ne renouvelle jamais ?** **Le site est coupé** :
-      hébergement et sécurité interrompus (contrat client, et article 6.2 bis du contrat
-      partenaire). *Reste à fixer le délai. Recommandation inchangée : prévenir à J+30,
-      suspendre à J+45, conserver les données 6 mois. **Couper sans prévenir crée des
-      histoires qui circulent vite à Cotonou** : le préavis n'est pas une politesse, c'est
-      une protection.*
+- [x] **Que se passe-t-il si un client ne renouvelle jamais ? TRANCHÉ le 2026-08-02.**
+      **Courtoisie de 7 jours, suspension à J+8, données conservées 6 mois.** Le préavis
+      n'est pas une politesse, c'est une protection : couper sans prévenir crée des
+      histoires qui circulent vite à Cotonou. Voir §3 pour le raisonnement.
 - [ ] **Un client peut-il payer 12 mois d'avance** (40 000 F) ? *Recommandation : oui, avec
       un mois offert. Vous encaissez d'avance et vous supprimez une relance sur deux.*
 - [ ] **Le partenaire voit-il les échéances de ses clients** dans son espace ?

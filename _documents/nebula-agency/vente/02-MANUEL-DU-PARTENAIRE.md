@@ -530,9 +530,13 @@ avec les vôtres pour atteindre les 3 du mois, elles ne vous versent aucune comm
 
 **Un abonnement non payé, c'est 4 000 F que vous perdez, tous les six mois, pour toujours.**
 
-Et pour le client, ce n'est pas anodin non plus : **sans paiement, son site est coupé.**
-L'hébergement s'arrête, la sécurité aussi, son QR code ne mène plus à rien et ses clients
-tombent sur une page d'erreur.
+Et pour le client, ce n'est pas anodin non plus : **sans paiement, son site est coupé au
+8e jour de retard.** L'hébergement s'arrête, la sécurité aussi, son QR code ne mène plus à
+rien et ses clients tombent sur une page d'erreur. Ses données sont gardées 6 mois, mais la
+remise en ligne peut coûter des frais de réactivation.
+
+**Il a 7 jours de courtoisie après l'échéance, pas davantage.** Dites-le lui à l'avance :
+c'est précisément ce qui vous évite d'avoir à l'annoncer trop tard.
 
 **Ce qu'on dit, mot pour mot, une semaine avant l'échéance :**
 

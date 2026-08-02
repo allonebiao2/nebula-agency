@@ -211,6 +211,26 @@ c'est un coût refacturé au prix coûtant, pas une vente.
 ⚠️ **Le partenaire y a un intérêt direct, et il faut le lui répéter :** un abonnement non
 payé, c'est **4 000 F qu'il perd**, tous les six mois, pour toujours.
 
+### 4.2 ter Le calendrier de coupure (tranché le 2026-08-02)
+
+| Moment | Ce qui se passe |
+|---|---|
+| J-15 et J-3 | Rappels au client · alerte au partenaire à J-3 |
+| **J+0 à J+7** | **Délai de courtoisie.** Le site reste en ligne, on annonce la date de coupure |
+| **J+8** | **Le site est coupé.** Hébergement et sécurité interrompus, données conservées |
+| M+6 | Dernier avertissement, puis suppression des données |
+
+**Pourquoi 8 jours et pas 45 :** une échéance qu'on n'applique pas est une échéance qui
+n'existe pas. Un client coupé au 45e jour apprend que la date est décorative et attendra
+davantage au semestre suivant. Sept jours suffisent pour un virement, un déplacement ou une
+absence ; au-delà, c'est un crédit gratuit. Et **le levier est maximal juste après
+l'échéance**, tant que le QR est encore affiché dans la boutique et que le site tourne.
+
+**Frais de réactivation : 5 000 F** pour remettre en ligne un site coupé, en plus du semestre
+dû. **Aucun frais si le client règle pendant les 7 jours de courtoisie** : le délai est une
+faveur qu'on peut perdre, pas un droit. Ces frais **ne portent aucune commission partenaire**,
+ils couvrent la remise en ligne.
+
 ### 4.3 Les relances de renouvellement
 
 **Double dispositif :** un rappel automatique part au client à l'échéance, puis **le partenaire
