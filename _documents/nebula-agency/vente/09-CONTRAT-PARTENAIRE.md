@@ -20,7 +20,7 @@
 
 **Monsieur Mongazi BIAO**, exerçant sous l'enseigne **NEBULA Agency**,
 domicilié à Cotonou, République du Bénin,
-**IFU et RCCM en cours d'immatriculation** — les numéros seront communiqués au Partenaire
+**IFU et RCCM en cours d'immatriculation**, les numéros seront communiqués au Partenaire
 dès leur obtention,
 téléphone **+229 96 74 07 32**, site **www.nebula-agency.online**,
 
@@ -169,7 +169,14 @@ du présent contrat.
 **6.6 Réclamation.** Toute contestation sur le calcul d'une commission doit être formulée
 dans les 30 jours suivant son versement.
 
-**6.7 Reprise de commission.** Une commission n'est définitivement acquise que sur une somme
+**6.7 Évolution du barème.** NEBULA peut faire évoluer les taux de commission et de prime
+des articles 6.1 à 6.3, moyennant un **préavis écrit de 30 jours**. Le nouveau barème ne
+s'applique qu'aux **ventes conclues après son entrée en vigueur** : aucune commission déjà
+acquise n'est affectée, et les affaires déjà engagées restent aux conditions en vigueur au
+moment de l'accord du client. Le Partenaire qui refuse le nouveau barème peut résilier dans
+les conditions de l'article 12.2.
+
+**6.8 Reprise de commission.** Une commission n'est définitivement acquise que sur une somme
 **définitivement encaissée et conservée** par NEBULA.
 
 Si un montant déjà encaissé est **remboursé au client**, ou si un encaissement est
@@ -186,7 +193,7 @@ même façon à la prime de parrainage de l'article 6.3. Elle est **tracée dans
 partenaire** et notifiée au Partenaire.
 
 **Aucune reprise n'est possible lorsque le remboursement résulte d'une faute de NEBULA**
-— travail non livré, non conforme à la commande, ou abandonné de son fait. Dans ce cas la
+travail non livré, non conforme à la commande, ou abandonné de son fait. Dans ce cas la
 commission reste acquise au Partenaire, qui a fait son travail.
 
 ---
@@ -201,6 +208,15 @@ redevient disponible.
 
 **7.3** Lorsqu'un client déjà livré souscrit une nouvelle offre, la commission revient au
 **Partenaire d'origine**, tant que celui-ci est actif.
+
+**7.4 Propriété du client et des livrables.** Le client est **client de NEBULA**. Le
+Partenaire est rémunéré pour l'avoir apporté ; il n'acquiert aucun droit sur le client
+lui-même, sur le contrat qui le lie à NEBULA, ni sur les fichiers, codes, visuels et noms de
+domaine produits pour lui, qui demeurent la propriété de NEBULA jusqu'à leur éventuelle
+cession au client.
+
+**7.5** Le Partenaire ne peut ni transférer, ni vendre, ni céder à un tiers son portefeuille
+de clients ou de filleuls, ni le présent contrat, sans l'accord écrit préalable de NEBULA.
 
 ---
 
@@ -224,6 +240,19 @@ Le Partenaire s'engage à :
 12. Ne jamais exiger d'un candidat au partenariat le versement d'une somme quelconque.
 
 **Tout manquement grave aux points 8, 10 ou 12 entraîne la résiliation immédiate.**
+
+**8.13 Indemnités forfaitaires.** La résiliation ne répare pas le préjudice. Sont donc dues,
+en sus de la résiliation et de la restitution des sommes indûment perçues :
+
+| Manquement | Indemnité |
+|---|---|
+| Percevoir une somme d'un client (article 5) | **le double de la somme perçue**, avec un minimum de 50 000 F |
+| Démarcher un client de NEBULA en violation de l'article 11 | **150 000 F par client démarché** |
+| Exiger un versement d'un candidat au partenariat (point 12) | **100 000 F** |
+
+Ces montants sont **forfaitaires et libératoires** : ils correspondent à une estimation
+raisonnable du préjudice et dispensent NEBULA d'en rapporter la preuve chiffrée. Ils sont
+déductibles des commissions restant dues au Partenaire.
 
 ---
 
@@ -257,8 +286,9 @@ restent la **propriété de NEBULA** et doivent être restitués ou détruits à
 directement ou indirectement, les clients de NEBULA qu'il a lui-même apportés ou dont il a
 eu connaissance, pour leur proposer des prestations concurrentes.
 
-**11.2** Cette obligation est la contrepartie directe du maintien à vie de ses commissions
-sur abonnement prévu à l'article 12.3.
+**11.2** Cette obligation est la contrepartie directe du maintien de ses commissions sur
+abonnement pendant 24 mois après son départ, prévu à l'article 12.3. Les deux durées sont
+identiques : le Partenaire est payé exactement aussi longtemps qu'il est tenu.
 
 ---
 
@@ -274,15 +304,17 @@ signature.
 **12.3 Sort des commissions.** À la fin du contrat, quelle qu'en soit la cause :
 - les commissions dues sur des ventes déjà encaissées **restent dues** et sont réglées
   dans les délais de l'article 6.5 ;
-- les **commissions sur abonnement de l'article 6.2 sont maintenues à vie**, tant que les
-  clients concernés restent abonnés ;
+- les **commissions sur abonnement de l'article 6.2 sont maintenues pendant 24 mois** à
+  compter de la fin du contrat, tant que les clients concernés restent abonnés. Elles
+  s'éteignent au terme de ces 24 mois, en même temps que l'obligation de non-sollicitation
+  de l'article 11 ;
 - les primes de parrainage de l'article 6.3 cessent ;
 - les prospects encore attribués sont libérés.
 
 **12.4 Inactivité.** Sans aucune vente pendant **2 mois**, NEBULA prend contact avec le
 Partenaire. Sans aucune vente pendant **4 mois**, les accès à l'espace partenaire sont
-désactivés et les prospects libérés. Les commissions sur abonnement restent maintenues
-conformément à l'article 12.3.
+désactivés et les prospects libérés. Les commissions sur abonnement restent alors maintenues
+dans les conditions de l'article 12.3.
 
 ---
 
@@ -295,7 +327,7 @@ La reprise du travail est la règle ; **le remboursement demeure exceptionnel**.
 acquise** : il a fait son travail, il est payé.
 
 **Si un remboursement intervient malgré tout**, la commission correspondante est reprise
-dans les conditions de l'**article 6.7** — sauf lorsque le remboursement résulte d'une faute
+dans les conditions de l'**article 6.8**, sauf lorsque le remboursement résulte d'une faute
 de NEBULA, auquel cas elle reste acquise au Partenaire.
 
 > Cette règle n'est pas dirigée contre le Partenaire : une commission se paie sur de l'argent
@@ -355,8 +387,9 @@ qu'après réception de cette signature.**
 
 **Je gagne**
 - 25 % de 1 à 4 ventes dans le mois, 30 % de 5 à 9, 35 % à partir de 10
-- 25 % sur chaque abonnement de mes clients, tous les 6 mois, **et je les garde à vie**
-- 15 % sur les ventes de ceux que je fais entrer — **offert par NEBULA, jamais retiré
+- 25 % sur chaque abonnement de mes clients, tous les 6 mois, **et je les garde 24 mois
+  après mon départ** si j'arrête
+- 15 % sur les ventes de ceux que je fais entrer, **offert par NEBULA, jamais retiré
   de leurs gains à eux**. Une seule profondeur : rien sur les recrues de mes recrues
 - Je suis payé **sous 24 à 72 heures** après réclamation
 
@@ -370,11 +403,12 @@ qu'après réception de cette signature.**
 - Démarcher les clients NEBULA pendant 24 mois après mon départ
 
 **Si un client est remboursé** (rare : NEBULA reprend le travail jusqu'à satisfaction),
-la commission correspondante m'est reprise — sauf si le remboursement vient d'une faute de
+la commission correspondante m'est reprise, sauf si le remboursement vient d'une faute de
 NEBULA, auquel cas je la garde.
 
-**Si je pars**, mes commissions sur abonnement continuent. C'est ce que j'ai construit,
-ça reste à moi.
+**Si je pars**, mes commissions sur abonnement continuent **24 mois**, la durée exacte
+pendant laquelle je m'interdis de démarcher les clients de NEBULA. Je suis payé aussi
+longtemps que je suis tenu.
 
 ---
 

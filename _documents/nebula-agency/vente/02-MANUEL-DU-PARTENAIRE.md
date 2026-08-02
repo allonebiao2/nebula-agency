@@ -13,7 +13,7 @@
 
 ---
 
-# PARTIE 1 — CE QUE VOUS DEVEZ SAVOIR AVANT DE SORTIR
+# PARTIE 1 · CE QUE VOUS DEVEZ SAVOIR AVANT DE SORTIR
 
 ## 1.1 Qui vous représentez
 
@@ -114,7 +114,7 @@ client. Un vendeur qui vérifie gagne sa confiance.
 
 ---
 
-# PARTIE 2 — TROUVER DES PROSPECTS
+# PARTIE 2 · TROUVER DES PROSPECTS
 
 ## 2.1 Votre première liste : les 20 noms
 
@@ -184,7 +184,7 @@ au dos de votre carte de visite générée depuis votre espace.
 | Commerçants abordés | 5 à 10 | 30 à 50 |
 | Vraies conversations (plus de 5 minutes) | 2 à 4 | 12 à 20 |
 | Démonstrations faites | 1 à 2 | 6 à 10 |
-| Ventes conclues | — | **1 à 3** |
+| Ventes conclues | | **1 à 3** |
 
 *Repères de départ, à ajuster après la première vague. Notez vos vrais chiffres : le jour où
 vous connaissez votre ratio, vous savez exactement combien de portes ouvrir pour gagner
@@ -196,7 +196,7 @@ semaine puis disparaît.
 
 ---
 
-# PARTIE 3 — LA MÉTHODE DE VENTE NEBULA EN 7 TEMPS
+# PARTIE 3 · LA MÉTHODE DE VENTE NEBULA EN 7 TEMPS
 
 C'est la colonne vertébrale. Les 3 guides de service déclinent ces 7 temps avec leurs
 arguments propres. Ne sautez jamais une étape, surtout pas la troisième.
@@ -233,7 +233,7 @@ c'est 40 minutes volées à quelqu'un qui aurait acheté.
 
 ---
 
-## Temps 2 · OUVRIR — les 30 premières secondes
+## Temps 2 · OUVRIR · les 30 premières secondes
 
 **Ne commencez jamais par « bonjour, je vends des sites internet ».** Vous venez de vous
 transformer en démarcheur, et le rideau tombe.
@@ -266,7 +266,7 @@ que vous vous intéressiez à lui. Et vous avez demandé un engagement minuscule
 
 ---
 
-## Temps 3 · DIAGNOSTIQUER — le temps le plus important
+## Temps 3 · DIAGNOSTIQUER · le temps le plus important
 
 **C'est ici que les ventes se gagnent, et c'est l'étape que 90 % des vendeurs sautent.**
 
@@ -294,7 +294,7 @@ sa propre phrase. Il ne la discute jamais.
 
 ---
 
-## Temps 4 · MONTRER — téléphone en main
+## Temps 4 · MONTRER · téléphone en main
 
 **Ne décrivez jamais ce que vous pouvez montrer.** Un site livré vaut dix minutes d'explication.
 
@@ -317,7 +317,7 @@ une démonstration a perdu la vente. Prévoyez.
 
 ---
 
-## Temps 5 · PROPOSER — annoncer le prix, puis se taire
+## Temps 5 · PROPOSER · annoncer le prix, puis se taire
 
 **Le prix ne s'annonce jamais en premier, et il ne s'excuse jamais.**
 
@@ -345,7 +345,7 @@ Comptez dans votre tête. Attendez. **Laissez-le répondre.**
 
 ---
 
-## Temps 6 · LEVER — traiter l'objection
+## Temps 6 · LEVER · traiter l'objection
 
 **Une objection n'est pas un refus. C'est une demande d'information déguisée.**
 Le client qui objecte est intéressé, sinon il serait déjà parti.
@@ -440,7 +440,7 @@ celui qui a 300 rencontres oubliées.
 
 ---
 
-# PARTIE 4 — LE BRIEF : CE QU'IL FAUT RAMENER
+# PARTIE 4 · LE BRIEF : CE QU'IL FAUT RAMENER
 
 Vous ne livrez rien, mais **rien ne se livre sans vous**. Le délai de 5 à 7 jours démarre
 quand NEBULA reçoit un brief complet. Un brief incomplet, c'est un client qui attend,
@@ -480,7 +480,7 @@ qui s'énerve, et qui doute de vous.
 
 ---
 
-# PARTIE 5 — VOTRE ARGENT
+# PARTIE 5 · VOTRE ARGENT
 
 ## 5.1 Comment vous êtes payé
 
@@ -494,11 +494,11 @@ Le palier **se remet à zéro chaque mois**. Il s'applique à **tous les service
 Outil métier compris.
 
 **Parrainage :** 15 % sur les ventes de ceux que vous faites entrer. **Une seule
-profondeur** — rien sur les ventes de leurs propres recrues. À vie, tant qu'ils vendent.
+profondeur**, rien sur les ventes de leurs propres recrues. À vie, tant qu'ils vendent.
 
 > Ces 15 % sont **payés en plus par NEBULA**. Ils ne sont **jamais prélevés sur la commission
 > de votre filleul** : il touche exactement ce qu'il aurait touché en venant seul.
-> Dites-le tel quel quand vous recrutez — c'est ce qui vous distingue d'une pyramide.
+> Dites-le tel quel quand vous recrutez : c'est ce qui vous distingue d'une pyramide.
 
 **Une vente = un lead payé.** Un client intéressé qui ne paie pas ne génère aucune commission.
 
@@ -549,7 +549,7 @@ C'est une sécurité pour le client et pour vous, pas une retenue.
 
 ---
 
-# PARTIE 6 — LES RÈGLES
+# PARTIE 6 · LES RÈGLES
 
 ## 6.1 Les 10 interdits absolus
 
@@ -593,7 +593,7 @@ Le jargon fait fuir. Traduisez, toujours.
 
 ---
 
-# PARTIE 7 — VOTRE ESPACE PARTENAIRE
+# PARTIE 7 · VOTRE ESPACE PARTENAIRE
 
 Tout se passe sur **https://partenaires.nebula-agency.online** avec votre code et votre PIN.
 
@@ -614,7 +614,7 @@ classement. C'est deux minutes et ça se voit.
 
 ---
 
-# PARTIE 8 — VOS 7 PREMIERS JOURS
+# PARTIE 8 · VOS 7 PREMIERS JOURS
 
 | Jour | Ce que vous faites |
 |---|---|
@@ -631,7 +631,7 @@ semaine. La vente vient d'elle-même quand la conversation est bonne.
 
 ---
 
-# PARTIE 9 — CE QU'IL FAUT SAVOIR PAR CŒUR
+# PARTIE 9 · CE QU'IL FAUT SAVOIR PAR CŒUR
 
 *Vous devez pouvoir répondre à ça sans réfléchir, en pleine rue, sans notes.*
 
@@ -642,7 +642,7 @@ semaine. La vente vient d'elle-même quand la conversation est bonne.
 | L'Outil sur mesure ? | De 55 000 à 500 000 F, sur devis |
 | L'abonnement ? | 20 000 F **tous les 6 mois**, modifications comprises |
 | Quand suis-je payé ? | **24 à 72h** après réclamation |
-| Ce que je touche sur l'abonnement ? | 25 %, soit 5 000 F par client par semestre, **à vie** |
+| Ce que je touche sur l'abonnement ? | 25 %, soit 5 000 F par client par semestre, tant que je suis partenaire **et 24 mois après mon départ** |
 | Un client à 35 produits ? | 50 000 + 15 000 par lot de 10 = 80 000 F |
 | Une vitrine à 3 pages ? | 150 000 + 2 × 30 000 = 210 000 F |
 | Le délai ? | 5 à 7 jours après le brief complet |

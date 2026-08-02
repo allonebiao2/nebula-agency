@@ -115,9 +115,12 @@ PALIERS: List[Tuple[int, str, str, float]] = [
 # par le total de clients du mois de l'équipe entière (lui + ses branches), mais le
 # taux ne s'applique qu'à SES ventes directes (ses filleuls lui rapportent toujours 15 %).
 # (seuil mini de ventes d'équipe du mois, label, emoji, taux direct)
+# ⚠️ Seuil relevé de 3 à 8 le 2026-08-02. À 3 ventes d'équipe, le 40 % se déclenchait
+# presque tous les mois sans que le superviseur ait vendu lui-même : 40 % + 15 % de prime
+# au parrain = 55 % du chiffre sorti en commissions. À 8, il faut une vraie équipe active.
 PALIERS_SUP: List[Tuple[int, str, str, float]] = [
-    (0, "STARTER", "⬜", 0.25),   # 0 à 2 clients d'équipe / mois  → 25%
-    (3, "SILVER",  "🟣", 0.40),   # 3+ clients d'équipe / mois     → 40%
+    (0, "STARTER", "⬜", 0.25),   # 0 à 7 clients d'équipe / mois  → 25%
+    (8, "SILVER",  "🟣", 0.40),   # 8+ clients d'équipe / mois     → 40%
 ]
 # ---- Rôles spéciaux (au-delà de la recrue standard) ----
 ROLE_LABELS = {"superviseur": "Superviseur"}

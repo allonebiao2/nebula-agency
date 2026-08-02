@@ -24,7 +24,7 @@ vend parce que le commerçant *voit* ses produits défiler. Il ne se vend pas pa
 a bien expliqué.
 
 Au téléphone, l'étape 4 est **impossible**. Si vous annoncez un prix, vous le faites à
-quelqu'un qui n'a rien vu — et un prix sans démonstration ne s'entend que d'une seule
+quelqu'un qui n'a rien vu, et un prix sans démonstration ne s'entend que d'une seule
 façon : c'est cher.
 
 **Conséquence pratique :** un appel réussi ne se termine jamais par une vente. Il se termine
@@ -49,7 +49,7 @@ Ce qui passe :
 
 ---
 
-# PARTIE 1 · LA NOTE VOCALE — votre meilleure arme
+# PARTIE 1 · LA NOTE VOCALE · votre meilleure arme
 
 ## 1.1 Les six règles
 
@@ -62,21 +62,21 @@ Ce qui passe :
 5. **Vous ne dites pas le prix.** Jamais. Même s'il est bas, surtout s'il est bas.
 6. **Vous finissez par une question fermée sur l'horaire**, pas par « qu'en pensez-vous ».
 
-## 1.2 La note vocale de premier contact — à dire, pas à lire
+## 1.2 La note vocale de premier contact · à dire, pas à lire
 
 > **Ne lisez pas ce texte mot pour mot.** Une note vocale lue s'entend immédiatement et fait
 > démarcheur. Apprenez la structure, puis parlez normalement, avec vos mots.
 
 ```
-Bonjour [Madame Adjovi] — [nom de sa boutique], c'est bien vous ?
+Bonjour [Madame Adjovi], [nom de sa boutique], c'est bien vous ?
 
 Je m'appelle [Prénom], je travaille avec NEBULA Agency, ici à Cotonou.
-On fait des catalogues sur téléphone pour les commerçants —
+On fait des catalogues sur téléphone pour les commerçants :
 vos produits, avec les photos et les prix, que vos clients ouvrent
 en scannant un code, sans installer quoi que ce soit.
 
 Je préfère vous le montrer que vous l'expliquer, ça prend deux minutes.
-Je passe dans votre quartier [jeudi] — vous êtes plutôt là le matin
+Je passe dans votre quartier [jeudi], vous êtes plutôt là le matin
 ou en fin d'après-midi ?
 ```
 
@@ -84,7 +84,7 @@ ou en fin d'après-midi ?
 une phrase concrète, **on ne demande pas s'il est intéressé** (il dirait non par réflexe),
 on demande **quand**.
 
-## 1.3 La note vocale de relance — après un message sans réponse
+## 1.3 La note vocale de relance · après un message sans réponse
 
 ```
 Bonjour [Prénom], [votre prénom] de NEBULA.
@@ -96,7 +96,7 @@ Si ça ne vous parle pas, dites-le moi franchement et je ne reviens plus.
 ```
 
 ⚠️ **« Dites-le moi franchement et je ne reviens plus » est la phrase la plus rentable du
-document.** Elle rend le refus facile — et c'est précisément pour ça que beaucoup répondent
+document.** Elle rend le refus facile, et c'est précisément pour ça que beaucoup répondent
 oui. Ne la retirez jamais pour « garder la porte ouverte ».
 
 ---
@@ -106,12 +106,12 @@ oui. Ne la retirez jamais pour « garder la porte ouverte ».
 ## 2.1 L'appel tiède (il a vu l'affiche, scanné un QR, ou on vous a recommandé)
 
 **C'est l'appel le plus facile et le plus souvent gâché.** L'erreur : se comporter comme si
-on partait de zéro. Il a déjà fait un pas — nommez-le.
+on partait de zéro. Il a déjà fait un pas, nommez-le.
 
 ```
 Bonjour [Prénom], [votre prénom] de NEBULA Agency.
 Vous avez [scanné notre code / vu notre affiche / c'est Monsieur X qui m'a donné
-votre numéro] — je vous appelle comme promis.
+votre numéro], je vous appelle comme promis.
 
 Je ne vais pas vous prendre du temps au téléphone : le mieux c'est que je passe
 vous montrer, c'est visuel. Vous êtes à la boutique cette semaine ?
@@ -120,13 +120,13 @@ vous montrer, c'est visuel. Vous êtes à la boutique cette semaine ?
 ## 2.2 L'appel semi-froid (vous avez déjà écrit, il a lu, pas répondu)
 
 ```
-Bonjour, [Prénom] ? — [votre prénom], de NEBULA Agency, je vous ai écrit sur
+Bonjour, [Prénom] ? Ici [votre prénom], de NEBULA Agency, je vous ai écrit sur
 WhatsApp lundi. Je ne vous dérange pas deux minutes ?
 
 [il répond]
 
 Je fais court. On équipe les commerçants de Cotonou d'un catalogue sur téléphone.
-Je ne vous demande pas d'acheter quoi que ce soit — je vous demande dix minutes
+Je ne vous demande pas d'acheter quoi que ce soit, je vous demande dix minutes
 pour vous le montrer. Vous êtes là demain matin ?
 ```
 
@@ -150,7 +150,7 @@ L'apprenti, la vendeuse, le neveu, la petite sœur : quelqu'un d'autre décroche
 ## 3.1 La règle absolue
 
 **Ne vendez jamais à la personne qui décroche.** Elle n'a pas le pouvoir de dire oui, mais
-elle a tout pouvoir de dire non — et son non est définitif, parce que le patron ne saura
+elle a tout pouvoir de dire non, et son non est définitif, parce que le patron ne saura
 jamais que vous avez appelé.
 
 ## 3.2 Ce qui fonctionne
@@ -158,15 +158,15 @@ jamais que vous avez appelé.
 **Soyez précis et court. Une personne floue se fait filtrer.**
 
 ```
-— Allô ?
-— Bonjour, [votre prénom] de NEBULA Agency. Le patron est là ?
-— Il est occupé / il n'est pas là. C'est pourquoi ?
-— C'est pour le catalogue de la boutique. Il est là vers quelle heure,
-  que je rappelle au bon moment ?
+LUI  : Allô ?
+VOUS : Bonjour, [votre prénom] de NEBULA Agency. Le patron est là ?
+LUI  : Il est occupé / il n'est pas là. C'est pourquoi ?
+VOUS : C'est pour le catalogue de la boutique. Il est là vers quelle heure,
+       que je rappelle au bon moment ?
 ```
 
 **Les trois clés :**
-1. **« Le catalogue de la boutique »** — c'est concret et ça semble déjà en cours. Ce n'est
+1. **« Le catalogue de la boutique »** : c'est concret et ça semble déjà en cours. Ce n'est
    pas un mensonge : c'est le sujet de votre appel.
 2. **Vous ne demandez pas à parler au patron, vous demandez à quelle heure il est là.**
    Une question d'horaire est facile à répondre, elle ne demande aucune décision.
@@ -178,7 +178,7 @@ jamais que vous avez appelé.
 **Acceptez immédiatement, et obtenez le bon numéro.**
 
 ```
-Bien sûr. Je lui envoie sur WhatsApp — c'est bien le numéro de la boutique
+Bien sûr. Je lui envoie sur WhatsApp : c'est bien le numéro de la boutique
 ou il a un autre numéro ?
 ```
 
@@ -199,7 +199,7 @@ Ce n'est pas un refus, c'est une demande de temps. **Ne le prenez jamais mal.**
 ```
 Je fais ça tout de suite. Je vous envoie une note vocale de trente secondes
 et deux images. Vous regardez quand vous avez un moment, et je vous rappelle
-[jeudi] — ça vous va ?
+[jeudi], ça vous va ?
 ```
 
 ⚠️ **Obtenez toujours une date de rappel.** Sans elle, « envoyez-moi un WhatsApp » veut
@@ -221,7 +221,7 @@ Un partenaire qui insiste à ce moment-là perd le prospect définitivement.
 **La question la plus dangereuse du document.** Répondre = tuer la vente.
 
 ```
-Ça dépend de ce que vous vendez et du nombre de produits — c'est justement
+Ça dépend de ce que vous vendez et du nombre de produits : c'est justement
 pour ça que je préfère passer. Je vous montre, et je vous donne le prix
 exact sur place. Ça ne vous engage à rien.
 ```
@@ -231,7 +231,7 @@ S'il insiste une deuxième fois :
 ```
 Je comprends, personne n'aime perdre son temps. Nos formules démarrent
 à 50 000 F, mais je ne veux pas vous annoncer un chiffre avant d'avoir vu
-votre boutique — je risque de vous dire trop, ou pas assez.
+votre boutique, je risque de vous dire trop, ou pas assez.
 ```
 
 ⚠️ **On ne donne le plancher qu'à la deuxième insistance**, et toujours accompagné de la
@@ -240,7 +240,7 @@ raison pour laquelle on ne s'engage pas.
 ### 4 · « J'ai déjà une page Facebook »
 
 ```
-C'est bien, ça veut dire que vous êtes déjà en ligne — la plupart ne le sont pas.
+C'est bien, ça veut dire que vous êtes déjà en ligne, la plupart ne le sont pas.
 Ce qu'on fait est différent : sur Facebook vos produits descendent et disparaissent.
 Là, c'est un catalogue fixe, que le client ouvre en scannant, avec les prix.
 Les deux marchent ensemble. Je vous montre en dix minutes ?
@@ -269,11 +269,11 @@ Si vous préférez que je ne rappelle pas, dites-le moi, je le note et c'est ré
 ```
 
 **Ne mentez jamais sur ce point.** Un commerçant qui vous prend en flagrant délit de mensonge
-en parle à tout le marché — et à Cotonou, un marché, ça se parle.
+en parle à tout le marché, et à Cotonou, un marché, ça se parle.
 
 ---
 
-# PARTIE 5 · L'APPEL DE FIN — verrouiller le rendez-vous
+# PARTIE 5 · L'APPEL DE FIN · verrouiller le rendez-vous
 
 Un rendez-vous mal verrouillé ne tient pas. **Ces quatre choses, systématiquement :**
 
@@ -282,7 +282,7 @@ Un rendez-vous mal verrouillé ne tient pas. **Ces quatre choses, systématiquem
 2. **Donnez une durée courte et tenez-la.** « Ça prendra quinze minutes. »
 3. **Annoncez ce que vous apporterez.** « Je viens avec mon téléphone, je vous montre
    deux exemples. »
-4. **Envoyez la confirmation écrite dans la minute** — pendant qu'il a encore votre voix
+4. **Envoyez la confirmation écrite dans la minute**, pendant qu'il a encore votre voix
    en tête.
 
 ```

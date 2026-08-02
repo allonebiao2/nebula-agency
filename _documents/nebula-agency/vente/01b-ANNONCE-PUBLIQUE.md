@@ -1,4 +1,4 @@
-# ANNONCE DE RECRUTEMENT — NEBULA Agency
+# ANNONCE DE RECRUTEMENT · NEBULA Agency
 ## Conseillers en Digitalisation · Cotonou
 
 > **Ce document est PUBLIC.** Il peut être envoyé librement à toute personne qui souhaite
@@ -84,7 +84,8 @@ espace personnel. Chaque commission est tracée du premier jour au versement.
 
 **Et vos gains ne s'arrêtent jamais.** Chaque client que vous apportez paie un abonnement de
 20 000 F tous les 6 mois : **vous en touchez 25 %, soit 5 000 F par client et par semestre,
-et vous les gardez à vie**, même si un jour vous arrêtez. Avec 30 clients, cela fait
+et vous les gardez tant que vous êtes partenaire**, plus **24 mois après votre départ**
+si un jour vous arrêtez. Avec 30 clients, cela fait
 150 000 F par semestre sans vendre quoi que ce soit de nouveau.
 Ce que vous construisez reste à vous.
 
@@ -160,7 +161,7 @@ et il perd son temps autant que le nôtre.
 **POUR POSTULER**
 
 **En ligne :** https://partenaires.nebula-agency.online/devenir
-**Par WhatsApp :** +229 96 74 07 32 — écrivez simplement **« PARTENAIRE »** et votre prénom.
+**Par WhatsApp :** +229 96 74 07 32, écrivez simplement **« PARTENAIRE »** et votre prénom.
 
 *Candidatures ouvertes jusqu'au 21 jours après la publication de cette annonce. NEBULA Agency · Cotonou, Bénin ·
 www.nebula-agency.online*

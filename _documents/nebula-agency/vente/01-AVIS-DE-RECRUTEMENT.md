@@ -1,4 +1,4 @@
-# AVIS DE RECRUTEMENT — Conseillers en Digitalisation NEBULA
+# AVIS DE RECRUTEMENT · Conseillers en Digitalisation NEBULA
 ## Vague 1 · Cotonou · **recrutement ouvert**
 
 > **Contenu de ce document**
@@ -21,7 +21,7 @@ Trois principes tiennent cette annonce, et il ne faut pas les diluer :
 
 1. **Le recrutement est ouvert, la sélection ne l'est pas.** *(Décision du 2026-08-01 : on
    retire le quota de 8 places. Objectif = un maximum de partenaires.)* Le nombre de places
-   ne filtre plus rien — **c'est l'entretien qui filtre, et il reste obligatoire**. On dit
+   ne filtre plus rien, **c'est l'entretien qui filtre, et il reste obligatoire**. On dit
    donc franchement : tout le monde peut postuler, tout le monde ne sera pas retenu.
    ⚠️ **Le vrai plafond n'est plus le nombre de vendeurs, c'est la capacité à livrer.**
    Surveiller le délai de 5 à 7 jours : le jour où il glisse, on ralentit le recrutement.
@@ -110,7 +110,8 @@ espace personnel. Chaque commission est tracée du premier jour au versement.
 
 **Et vos gains ne s'arrêtent jamais.** Chaque client que vous apportez paie un abonnement de
 20 000 F tous les 6 mois : **vous en touchez 25 %, soit 5 000 F par client et par semestre,
-et vous les gardez à vie**, même si un jour vous arrêtez. Avec 30 clients, cela fait
+et vous les gardez tant que vous êtes partenaire**, plus **24 mois après votre départ**
+si un jour vous arrêtez. Avec 30 clients, cela fait
 150 000 F par semestre sans vendre quoi que ce soit de nouveau.
 Ce que vous construisez reste à vous.
 
@@ -186,7 +187,7 @@ et il perd son temps autant que le nôtre.
 **POUR POSTULER**
 
 **En ligne :** https://partenaires.nebula-agency.online/devenir
-**Par WhatsApp :** +229 96 74 07 32 — écrivez simplement **« PARTENAIRE »** et votre prénom.
+**Par WhatsApp :** +229 96 74 07 32, écrivez simplement **« PARTENAIRE »** et votre prénom.
 
 *Candidatures ouvertes jusqu'au 21 jours après la publication de cette annonce. NEBULA Agency · Cotonou, Bénin ·
 www.nebula-agency.online*
@@ -226,7 +227,7 @@ Vous savez parler aux gens ? On vous paie 25 à 35 % sur chaque vente.
 
 > Format à produire selon la charte cosmique NEBULA, comme les affiches clients déjà réalisées.
 > **Le prompt de génération est dans `PROMPT-AFFICHE-RECRUTEMENT.md`** (+ variantes 9:16 et 1:1).
-> ⚠️ **Le QR ne se génère pas par IA** — il ne scannerait pas. Le vrai fichier, testé, est dans
+> ⚠️ **Le QR ne se génère pas par IA**, il ne scannerait pas. Le vrai fichier, testé, est dans
 > `assets/QR-devenir-partenaire.png` et pointe vers `https://partenaires.nebula-agency.online/devenir`.
 
 ```
@@ -413,7 +414,7 @@ attribué automatiquement. Partagez-le, mettez-le en statut, générez votre car
 dans l'espace.
 
 Rappel de vos gains : 25 % dès la 1ère vente, 30 % à partir de 5 ventes dans le mois,
-35 % à partir de 10. Plus 15 % sur les ventes de ceux que vous faites entrer — offerts
+35 % à partir de 10. Plus 15 % sur les ventes de ceux que vous faites entrer, offerts
 par NEBULA, jamais retirés de leurs gains à eux.
 
 Une question, à n'importe quelle heure : NOVA est dans votre espace. Une question qui compte

@@ -392,7 +392,7 @@ Si ça t'intéresse : [votre lien /p/VOTRECODE]
 Donnez la grille, pas des promesses. Un filleul déçu part et parle en mal.
 
 **Et dites-lui toujours cette phrase, mot pour mot :**
-« Les 15 % que je touche, c'est NEBULA qui me les paie en plus. Ça ne sort pas de ta poche —
+« Les 15 % que je touche, c'est NEBULA qui me les paie en plus. Ça ne sort pas de ta poche :
 tu gagnes exactement pareil que si tu étais venu tout seul. »
 C'est la phrase qui lève la méfiance. Sans elle, on vous prend pour une pyramide.
 

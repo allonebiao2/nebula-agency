@@ -10,7 +10,7 @@
 > Conséquence : les clients d'un partenaire parti n'ont plus personne pour les relancer.
 > C'est l'automatisation qui portera cette collecte, ou personne ne la portera.
 >
-> **Version 2.0 · 2026-07-31 — le modèle de données est IMPLÉMENTÉ.**
+> **Version 2.0 · 2026-07-31, le modèle de données est IMPLÉMENTÉ.**
 > Table `subscriptions`, ouverture automatique à l'encaissement, génération de la
 > commission de 25 % au renouvellement, endpoints pour n8n et portefeuille partenaire :
 > tout est en place dans `nebula-affilies/server.py` et testé. Il ne reste que le

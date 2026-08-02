@@ -1,4 +1,4 @@
-# SOCLE COMMERCIAL NEBULA — la source de vérité de la vente
+# SOCLE COMMERCIAL NEBULA · la source de vérité de la vente
 
 > **À quoi sert ce document.** C'est la référence unique de tout ce qui se dit en vente chez
 > NEBULA : les offres, les prix, ce qui est inclus, les délais, les gains du partenaire, les
@@ -43,7 +43,7 @@ Le **QR Code Google Review** est sans abonnement.
 
 ### 1.2 Ce qui est inclus, exactement
 
-**Catalogue Digital — 50 000 F**
+**Catalogue Digital · 50 000 F**
 - Jusqu'à **20 produits** avec photo, description et prix
 - Bouton de commande qui envoie directement sur son WhatsApp
 - QR Code à imprimer et à coller
@@ -51,7 +51,7 @@ Le **QR Code Google Review** est sans abonnement.
 - **Au-delà de 20 produits : 15 000 F par lot de 10 produits supplémentaires**
   *(un client à 35 produits paie 50 000 + 30 000 = 80 000 F)*
 
-**Vitrine Digitale — 150 000 F**
+**Vitrine Digitale · 150 000 F**
 - **Une page complète**, avec toutes les sections : accueil, présentation, services ou
   produits, galerie photos et vidéos, avis clients, contact, carte, bouton WhatsApp
 - QR Code
@@ -59,7 +59,7 @@ Le **QR Code Google Review** est sans abonnement.
 - **Nom de domaine personnalisé offert la 1ère année**, puis 16 000 F par an
 - **Page supplémentaire : 30 000 F par page** *(un hub de 4 pages = 150 000 + 90 000 = 240 000 F)*
 
-**Outil Digital sur mesure — 55 000 à 500 000 F**
+**Outil Digital sur mesure · 55 000 à 500 000 F**
 - Le prix sort du **configurateur du site** (www.nebula-agency.online), jamais de la tête
   du partenaire
 - Plancher 55 000 F, plafond 500 000 F
@@ -173,9 +173,12 @@ Soit **5 000 F par client tous les 6 mois**, à taux fixe, quel que soit son pal
 1. **Il ne compte pas dans le palier.** Seules les ventes nouvelles font monter de 25 à 30 puis
    35 %. Sans cette règle, un ancien partenaire atteindrait GOLD chaque mois sans prospecter
    personne, et le système récompenserait l'ancienneté au lieu de l'effort.
-2. **Il est acquis à vie.** Le partenaire garde ses gains récurrents même s'il quitte le
-   programme ou s'il est désactivé. Ce qu'il construit lui appartient. C'est un argument de
-   recrutement majeur : dites-le dans l'annonce.
+2. **Il court tant qu'il est partenaire, et 24 mois après son départ.** Tant qu'il est
+   actif, il touche le récurrent de tous ses clients, sans limite de durée. S'il quitte le
+   programme ou s'il est désactivé, il le garde encore **24 mois**, exactement la durée
+   pendant laquelle il s'interdit de démarcher nos clients (contrat, articles 11 et 12.3).
+   Il est payé aussi longtemps qu'il est tenu : c'est ce qui rend la clause défendable.
+   C'est un argument de recrutement majeur, à dire tel quel dans l'annonce.
 3. **Le parrainage ne s'applique pas au récurrent.** Les 15 % du parrainage portent sur les
    ventes, pas sur les abonnements.
 
@@ -188,14 +191,14 @@ c'est un coût refacturé au prix coûtant, pas une vente.
 relance personnellement** si le client ne réagit pas.
 
 > ⚠️ **Le rappel automatique devient une infrastructure obligatoire, pas un confort.**
-> Comme le récurrent est acquis à vie, les clients d'un partenaire parti n'ont plus personne
+> Comme le récurrent se poursuit après le départ, les clients d'un partenaire parti n'ont plus personne
 > pour les relancer : c'est l'automatisation qui portera cette collecte.
 > À construire avec n8n + WhatsApp (stack existant).
 
 Pour le partenaire actif, l'échéance de renouvellement est **le meilleur prétexte de reprise
 de contact qui existe**, et le moment idéal pour vendre la marche supérieure de l'escalier.
 
-### 4.4 Parrainage — une seule profondeur
+### 4.4 Parrainage · une seule profondeur
 
 **15 %** sur les ventes de ceux qu'on a fait entrer. **Une seule profondeur : il n'y a pas de
 second niveau.** À vie, tant qu'ils vendent. Le parrainage ne compte pas dans le palier :
@@ -204,7 +207,7 @@ seules ses ventes à lui le font monter.
 > **Ce que le partenaire doit comprendre, et ce qu'il faut lui dire mot pour mot :**
 > ces 15 % **ne sont pas prélevés sur les gains de son filleul**. Le filleul touche sa
 > commission entière, exactement comme s'il était venu seul. Les 15 % sont **payés en plus,
-> par NEBULA** — un remerciement à celui qui a fait grandir la maison.
+> par NEBULA**, un remerciement à celui qui a fait grandir la maison.
 >
 > C'est ce qui distingue le programme d'un système pyramidal : **personne ne gagne sur le
 > dos de personne.**
@@ -241,12 +244,12 @@ remboursé au client, la commission correspondante est reprise : annulée si ell
 encore versée, déduite des versements suivants si elle l'est déjà (contrat, article 6.7).
 
 **L'exception qui rend la règle juste : si le remboursement vient d'une faute de NEBULA**
-— travail non livré, non conforme, abandonné — **la commission reste acquise au partenaire.**
+travail non livré, non conforme, abandonné : **la commission reste acquise au partenaire.**
 Il a fait son travail, il n'a pas à payer notre erreur.
 
 > Le remboursement doit rester exceptionnel : la règle est qu'**on reprend le travail jusqu'à
 > satisfaction**. Un partenaire à qui on reprend une commission tous les mois est un partenaire
-> qui part — si le cas se répète, le problème est chez nous, pas chez lui.
+> qui part. Si le cas se répète, le problème est chez nous, pas chez lui.
 
 ### 4.7 Transparence dans l'espace partenaire
 
@@ -313,7 +316,7 @@ Seul le **recrutement** de la vague 1 est limité à Cotonou.
 
 ### 5.7 Certification : ce qu'un partenaire a le droit de vendre
 
-> **Modifié le 2026-08-01 — les guides et l'autorisation de vendre sont deux choses.**
+> **Modifié le 2026-08-01, les guides et l'autorisation de vendre sont deux choses.**
 > **Les cinq guides sont remis dès l'entrée**, à tout le monde. Un partenaire qui
 > comprend l'escalier en entier vend mieux le premier barreau : il sait où il emmène
 > son client. Ce qui reste échelonné, c'est le **droit de conclure seul**.
@@ -326,7 +329,7 @@ Seul le **recrutement** de la vague 1 est limité à Cotonou.
 
 **Avant d'y avoir droit, un partenaire n'est pas bloqué : il passe la main.** Il détecte
 le besoin, il obtient le rendez-vous, et Mongazi conclut avec lui. **Le partenaire garde
-100 % de sa commission au taux plein** — l'apport vaut la vente.
+100 % de sa commission au taux plein**, l'apport vaut la vente.
 
 Le binôme ne coûte rien : **le partenaire garde 100 % de sa commission au taux plein.**
 
@@ -432,7 +435,7 @@ Preuves de capacité sur l'Outil métier : **Boussole**, **Digital HSE**, **Vend
 | Point | Décision |
 |---|---|
 | **Statut** | Partenaire commissionné, sur le programme existant |
-| **Recrutement** | **Cotonou uniquement, AUCUN QUOTA DE PLACES** *(décision du 2026-08-01, remplace les 8 places)*, sélection sur entretien — **l'entretien reste obligatoire, c'est le seul filtre** |
+| **Recrutement** | **Cotonou uniquement, AUCUN QUOTA DE PLACES** *(décision du 2026-08-01, remplace les 8 places)*, sélection sur entretien, **l'entretien reste obligatoire, c'est le seul filtre** |
 | **Le vrai plafond** | Ce n'est plus le nombre de partenaires, c'est la **capacité à livrer en 5 à 7 jours**. Le jour où ce délai glisse, on ralentit le recrutement |
 | **Candidatures** | Ouvertes **21 jours** après publication de l'annonce |
 | **Formation** | **Visio Google Meet**, guides remis, charte signée avant les accès |
