@@ -130,7 +130,7 @@ on the large sizes, wide letter-spacing on the small uppercase labels.
       "150 000 F sur un bon mois"
 
    Small caption beneath, grey, smaller:
-      "Et 25 % de chaque abonnement, à chaque renouvellement."
+      "Et 15 % de chaque abonnement, pendant 24 mois."
 
 5. THE THREE BARRIERS, one line, three items separated by thin vertical
    rules, uppercase, letterspaced, white:

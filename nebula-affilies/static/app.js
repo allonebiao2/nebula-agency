@@ -350,27 +350,27 @@ const NA = (() => {
   /* ---------- INSIGNES DE RANG (un médaillon unique par rang) ---------- */
   // Chaque rang a son icône, ses couleurs, son anneau et sa lueur propres.
   const RANK_META = {
-    'Recrue':    { icon: 'spark',     c1: '#b9c2dd', c2: '#7b86a8', ring: 'solid' },
-    'Météore':   { icon: 'meteor',    c1: '#ff9a5a', c2: '#d8401a', ring: 'solid' },
-    'Comète':    { icon: 'comet',     c1: '#67e8ff', c2: '#2a7bff', ring: 'solid' },
-    'Planète':   { icon: 'planet',    c1: '#4df0a6', c2: '#0f9e6e', ring: 'orbit' },
-    'Étoile':    { icon: 'star',      c1: '#ffe27a', c2: '#e0a615', ring: 'rays'  },
-    'Supernova': { icon: 'supernova', c1: '#ff8ad4', c2: '#ff2d6e', ring: 'burst' },
-    'Nébuleuse': { icon: 'nebula',    c1: '#c79bff', c2: '#6d3bff', ring: 'orbit' },
-    'Galaxie':   { icon: 'crown',     c1: '#ffe9a8', c2: '#a06bff', ring: 'cosmic' },
-    'Big Bang':  { icon: 'supernova', c1: '#fff3b0', c2: '#ff4dd8', ring: 'cosmic' },  // fondateur : rang suprême, fixe
+    'Partenaire Junior':    { icon: 'spark',     c1: '#b9c2dd', c2: '#7b86a8', ring: 'solid' },
+    'Conseiller':   { icon: 'meteor',    c1: '#ff9a5a', c2: '#d8401a', ring: 'solid' },
+    'Conseiller Confirmé':    { icon: 'comet',     c1: '#67e8ff', c2: '#2a7bff', ring: 'solid' },
+    'Conseiller Senior':   { icon: 'planet',    c1: '#4df0a6', c2: '#0f9e6e', ring: 'orbit' },
+    'Chef de Secteur':    { icon: 'star',      c1: '#ffe27a', c2: '#e0a615', ring: 'rays'  },
+    'Chef Régional': { icon: 'supernova', c1: '#ff8ad4', c2: '#ff2d6e', ring: 'burst' },
+    'Directeur Commercial': { icon: 'nebula',    c1: '#c79bff', c2: '#6d3bff', ring: 'orbit' },
+    'Directeur Associé':   { icon: 'crown',     c1: '#ffe9a8', c2: '#a06bff', ring: 'cosmic' },
+    'Président Fondateur':  { icon: 'supernova', c1: '#fff3b0', c2: '#ff4dd8', ring: 'cosmic' },  // fondateur : rang suprême, fixe
   };
-  const RANK_ORDER = ['Recrue', 'Météore', 'Comète', 'Planète', 'Étoile', 'Supernova', 'Nébuleuse', 'Galaxie', 'Big Bang'];
+  const RANK_ORDER = ['Partenaire Junior', 'Conseiller', 'Conseiller Confirmé', 'Conseiller Senior', 'Chef de Secteur', 'Chef Régional', 'Directeur Commercial', 'Directeur Associé', 'Président Fondateur'];
   function rankSlug(label) { return 'rk-' + (RANK_ORDER.indexOf(label) + 1); }
   // size: 'sm' | 'md' | 'lg' ; opts.glow pour la lueur (défaut true)
   function rankBadge(label, opts = {}) {
-    const m = RANK_META[label] || RANK_META['Recrue'];
+    const m = RANK_META[label] || RANK_META['Partenaire Junior'];
     const size = opts.size || 'md';
     const glow = opts.glow === false ? ' no-glow' : '';
     return `<span class="rk ${rankSlug(label)} rk-${size} ring-${m.ring}${glow}" style="--c1:${m.c1};--c2:${m.c2}" title="${esc(label)}">`
       + `<span class="rk-ring"></span><span class="rk-core">${icon(m.icon)}</span></span>`;
   }
-  function rankName(label) { return `<span class="rk-name" style="--c1:${(RANK_META[label] || RANK_META['Recrue']).c1};--c2:${(RANK_META[label] || RANK_META['Recrue']).c2}">${esc(label)}</span>`; }
+  function rankName(label) { return `<span class="rk-name" style="--c1:${(RANK_META[label] || RANK_META['Partenaire Junior']).c1};--c2:${(RANK_META[label] || RANK_META['Partenaire Junior']).c2}">${esc(label)}</span>`; }
   // Badge de RÔLE spécial (CEO, Superviseur…) — distinct de l'insigne de rang cosmique.
   // Brille/s'illumine (classe .role-badge animée). CEO = doré royal, autres = violet/cyan.
   function roleBadge(label, opts = {}) {
@@ -399,10 +399,10 @@ const NA = (() => {
   // idName  = le nom (rôle → « Superviseur »/« CEO » ; rang → nom du rang). Les deux sont
   // COMPLÉMENTAIRES (jamais le mot deux fois) : un appelant affiche idBadge + idName côte à côte.
   function idBadge(o, opts = {}) {
-    return (o && o.role_label) ? roleBadge(o.role_label, { ...opts, iconOnly: true }) : rankBadge((o && o.rank) || 'Recrue', opts);
+    return (o && o.role_label) ? roleBadge(o.role_label, { ...opts, iconOnly: true }) : rankBadge((o && o.rank) || 'Partenaire Junior', opts);
   }
   function idName(o) {
-    return (o && o.role_label) ? roleName(o.role_label) : rankName((o && o.rank) || 'Recrue');
+    return (o && o.role_label) ? roleName(o.role_label) : rankName((o && o.rank) || 'Partenaire Junior');
   }
   const hasRole = (o) => !!(o && o.role_label);
 

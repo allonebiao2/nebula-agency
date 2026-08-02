@@ -116,9 +116,15 @@ et par quoi commencer. Mis à jour à chaque fin de session importante.
 - **Commissions** 25 / 30 / 35 % selon les ventes du mois · **parrainage 15 %, UNE SEULE
   PROFONDEUR** (pas de 2e niveau, supprimé le 2026-08-02). Les 15 % sont **payés en plus par
   NEBULA**, jamais prélevés sur la commission du filleul
-- **Récurrent : 25 % de chaque abonnement**, tant qu'il est partenaire **et 24 mois après
-  son départ** (durée alignée sur la non-sollicitation, contrat art. 11 et 12.3). Ne compte
-  pas dans le palier
+- **Récurrent : 15 % de chaque abonnement** (3 000 F par client et par semestre),
+  **pendant 24 mois par client = 4 versements maximum**, puis extinction. Ne compte pas
+  dans le palier
+- **Superviseur** (rôle attribué, pas un palier) : **30 %** de base sur ses ventes,
+  **40 %** si son équipe fait **6 clients dans le mois** OU s'il fait **4 ventes** à lui
+  seul. Ses filleuls lui rapportent les 15 % ordinaires
+- **Rangs renommés le 2026-08-02** (titres de vraie société, insignes inchangés) :
+  Partenaire Junior · Conseiller · Conseiller Confirmé · Conseiller Senior · Chef de
+  Secteur · Chef Régional · Directeur Commercial · Directeur Associé · Président Fondateur
 - **Versement des commissions : 24 à 72h** après réclamation
 - **Barème révisable** avec préavis de 30 jours, sur les ventes futures (art. 6.7) ·
   **le client appartient à NEBULA** (art. 7.4) · **indemnités forfaitaires** en cas

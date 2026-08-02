@@ -512,7 +512,7 @@ profondeur**, rien sur les ventes de leurs propres recrues. À vie, tant qu'ils 
 
 ## 5.2bis Votre portefeuille : le récurrent
 
-Chaque client abonné vous rapporte **5 000 F tous les 6 mois** (25 % de son abonnement de
+Chaque client abonné vous rapporte **3 000 F tous les 6 mois** (15 % de son abonnement de
 20 000 F), **renouvellements compris et à vie**, même si vous quittez le programme.
 
 | Votre portefeuille | Sans rien vendre |
@@ -642,7 +642,7 @@ semaine. La vente vient d'elle-même quand la conversation est bonne.
 | L'Outil sur mesure ? | De 55 000 à 500 000 F, sur devis |
 | L'abonnement ? | 20 000 F **tous les 6 mois**, modifications comprises |
 | Quand suis-je payé ? | **24 à 72h** après réclamation |
-| Ce que je touche sur l'abonnement ? | 25 %, soit 5 000 F par client par semestre, tant que je suis partenaire **et 24 mois après mon départ** |
+| Ce que je touche sur l'abonnement ? | 15 %, soit 3 000 F par client par semestre, **pendant 24 mois** (4 versements), même si j'arrête avant |
 | Un client à 35 produits ? | 50 000 + 15 000 par lot de 10 = 80 000 F |
 | Une vitrine à 3 pages ? | 150 000 + 2 × 30 000 = 210 000 F |
 | Le délai ? | 5 à 7 jours après le brief complet |

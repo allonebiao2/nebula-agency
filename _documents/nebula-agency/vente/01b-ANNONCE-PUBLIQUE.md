@@ -83,9 +83,8 @@ filleul.** Il touche sa commission entière, exactement comme s'il était venu s
 espace personnel. Chaque commission est tracée du premier jour au versement.
 
 **Et vos gains ne s'arrêtent jamais.** Chaque client que vous apportez paie un abonnement de
-20 000 F tous les 6 mois : **vous en touchez 25 %, soit 5 000 F par client et par semestre,
-et vous les gardez tant que vous êtes partenaire**, plus **24 mois après votre départ**
-si un jour vous arrêtez. Avec 30 clients, cela fait
+20 000 F tous les 6 mois : **vous en touchez 15 %, soit 3 000 F par client et par semestre,
+pendant 24 mois** (quatre versements), **même si vous arrêtez avant la fin**. Avec 30 clients, cela fait
 150 000 F par semestre sans vendre quoi que ce soit de nouveau.
 Ce que vous construisez reste à vous.
 

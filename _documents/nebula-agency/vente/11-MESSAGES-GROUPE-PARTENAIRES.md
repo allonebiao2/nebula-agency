@@ -100,7 +100,7 @@ Si vous avez annoncé 15 000 F à un prospect ces derniers jours,
 dites-le moi, je gère.
 
 Et rappelez-vous ce que ça vous rapporte :
-25 % de chaque abonnement, à chaque renouvellement, À VIE.
+15 % de chaque abonnement, tous les 6 mois, pendant 24 mois.
 Un client que vous vendez aujourd'hui vous paie encore dans deux ans.
 ```
 

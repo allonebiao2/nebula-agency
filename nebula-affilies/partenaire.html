@@ -93,7 +93,7 @@ function statusPill(st) { const s = CFG.statuses[st] || { label: st, color: '#88
 function payDot(p) { return `<span class="pay ${p ? 'ok' : ''}"><span class="dot"></span>${p ? 'Payé' : 'En attente'}</span>`; }
 function initials(n) { return (n || '?').split(' ').filter(Boolean).slice(0, 2).map(x => x[0]).join('').toUpperCase(); }
 
-const RANK_ICON = { 'Recrue': 'spark', 'Météore': 'meteor', 'Comète': 'comet', 'Planète': 'planet', 'Étoile': 'star', 'Supernova': 'supernova', 'Nébuleuse': 'nebula', 'Galaxie': 'crown' };
+const RANK_ICON = { 'Partenaire Junior': 'spark', 'Conseiller': 'meteor', 'Conseiller Confirmé': 'comet', 'Conseiller Senior': 'planet', 'Chef de Secteur': 'star', 'Chef Régional': 'supernova', 'Directeur Commercial': 'nebula', 'Directeur Associé': 'crown' };
 const PALIER_COLOR = { 'STARTER': '#9aa0c0', 'SILVER': '#cdd6ef', 'GOLD': '#e7c987', 'SPÉCIAL': '#e6c34c' };
 function rankSvg(label) { return icon(RANK_ICON[label] || 'spark'); }
 
@@ -136,7 +136,7 @@ function renderHome() {
   const sup = s.is_supervisor;
   const palBase = sup ? (s.team_mois || 0) : s.ventes_mois;        // ce qui fait monter le palier
   const palUnit = sup ? 'client' : 'vente';                         // superviseur : clients d'équipe
-  const nextRank = r.next_label ? `Encore <b style="color:var(--ink)">${r.to_next}</b> vente${r.to_next > 1 ? 's' : ''} (toi + équipe) pour le rang ${r.next_label}` : 'Galaxie — rang suprême atteint';
+  const nextRank = r.next_label ? `Encore <b style="color:var(--ink)">${r.to_next}</b> vente${r.to_next > 1 ? 's' : ''} (toi + équipe) pour le rang ${r.next_label}` : 'Directeur Associé : rang suprême atteint';
   const nextPal = p.next_label ? `Encore <b style="color:var(--ink)">${p.to_next}</b> ${palUnit}${p.to_next > 1 ? 's' : ''}${sup ? " d'équipe" : ''} ce mois → ${p.next_label} ${p.next_pct}%` : (p.label === 'SPÉCIAL' ? 'Taux spécial — partenaire privilégié' : (sup ? 'SILVER — palier max ce mois' : 'GOLD — palier max ce mois'));
   const palPct = p.next_min ? Math.min(100, Math.round(palBase * 100 / p.next_min)) : 100;
   const perVitrine = fmt(Math.round(150000 * p.rate));
@@ -153,7 +153,7 @@ function renderHome() {
         ` : `
         <span class="eyebrow"><span class="dot"></span>Ton rang · prestige (toi + équipe) <span class="tap-hint">voir l'échelle</span></span>
         <div class="rank mt16">
-          <div class="emblem${r.label === 'Galaxie' ? ' king' : ''}">${rankSvg(r.label)}</div>
+          <div class="emblem${r.label === 'Directeur Associé' ? ' king' : ''}">${rankSvg(r.label)}</div>
           <div><div class="r-name">${esc(r.label)}</div><div class="r-sub">Niveau ${r.level} / ${r.max_level} · ${s.ventes_rank} vente${s.ventes_rank > 1 ? 's' : ''} (toi + équipe)</div></div>
         </div>
         <div class="xp"><div class="track"><div class="fill" id="xpfill"></div></div>

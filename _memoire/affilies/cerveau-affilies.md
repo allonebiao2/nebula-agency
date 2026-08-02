@@ -87,7 +87,7 @@ contredit les autres. C'est arrivé avec « Répondre aux objections ».
 
 ## 3. Système de gains (3 couches) — à valider par Mongazi
 
-1. **RANKING cosmique** (prestige, ventes CUMULÉES) : Météore 1-5 / Comète 6-15 / Planète 16-35 / Étoile 36-65 / Supernova 66-110 / Nébuleuse 111-150 / **Galaxie 151+** (statut spécial). Icônes SVG pro.
+1. **RANKING cosmique** (prestige, ventes CUMULÉES) : Conseiller 1-5 / Conseiller Confirmé 6-15 / Conseiller Senior 16-35 / Étoile 36-65 / Chef Régional 66-110 / Directeur Commercial 111-150 / **Directeur Associé 151+** (statut spécial). Icônes SVG pro.
 2. **PALIERS mensuels** (= commission DIRECTE, remis à zéro chaque mois) : STARTER 1-4 = 25 % / SILVER 5-9 = 30 % / GOLD 10+ = 35 %.
 3. **PARRAINAGE** (fixe) : **15 % sur les ventes des recrues directes. UNE SEULE PROFONDEUR** — le 2e niveau a été supprimé le 2026-08-02 (`DEPTH_N2 = 0.0`, conservé à 0 pour ne pas casser l'historique en base). Les 15 % sont **payés en plus par NEBULA**, jamais prélevés sur la commission du filleul.
 
@@ -155,7 +155,7 @@ contredit les autres. C'est arrivé avec « Répondre aux objections ».
 
 - **Arborescence = org-chart pyramide + poste de pilotage des paiements (admin)** : apex NEBULA (logo), connecteurs, insigne de rang, métriques d'équipe, zoom/pan/recherche/replier. **Tout cliquable** : badge or « dû/à payer » (pulsant si réclamé) sur qui doit recevoir (qu'il réclame ou non) ; clic → fiche `openAffiliate` (parrain/grand-parrain N1/N2, commissions + **Marquer payé**, clients + **Valider paiement**, filleuls) ; **notifs cliquables** → centrent+ouvrent la personne (`notifs.ref_aff`). Back : `/api/admin/affiliate/{id}/detail` + `/api/admin/network` enrichi (owed/clients/parrain). **Classement** ouvre aussi cette fiche + « Lui écrire ».
 - **Pyramide d'équipe côté PARTENAIRE** : sa branche (lui→N1→N2), clic filleul = fiche **lecture seule** (confidentialité : jamais clients/gains privés des autres). `network_of` renvoie `rank`.
-- **Vue « Rangs »** (onglet admin) : échelle Galaxie→Recrue, qui est à quel rang, cliquable.
+- **Vue « Rangs »** (onglet admin) : échelle Directeur Associé→Recrue, qui est à quel rang, cliquable.
 - **Email d'accès automatique** (validation candidature/recrue) via **Resend** : `send_access_email`/`access_email_html`, colonnes `affiliates.email`/`recruits.email`, champ email au formulaire de recrutement, bouton admin « Envoyer ses accès par email » (`/api/admin/affiliates/{id}/email-access`). **Expéditeur = `contact@nebula-agency.online`** (seul domaine vérifié Resend). Vars Railway : `RESEND_API_KEY`,`EMAIL_FROM_ADDRESS`,`EMAIL_FROM_NAME`,`EMAIL_REPLY_TO`.
 - **Carte de visite pro à imprimer** : `makeCard()` → paysage 2100×1200 (~600 DPI, 8,9×5,1 cm), logo + photo + nom/rang + QR blanc scannable + lien, polices marque.
 - **Alertes renforcées** : (son) carillon fort `sfx.alert` + **vibration** (`navigator.vibrate`) à chaque notif ; (Telegram) bot **@Nova_de_nebula_bot** (webhook repris de Vendora), le partenaire relie son Telegram (Profil → Alertes Telegram → deep-link `?start=<tg_token>`), `notify()` envoie aussi en Telegram (thread). **Anti-bruit** : seulement `client|vente|commission|paiement|recrue`, opt-in (`tg_chat`), jamais en boucle. Webhook `/api/telegram/webhook` (secret `NAFF_TG_SECRET`), vars `TELEGRAM_BOT_TOKEN`,`NAFF_TG_BOT_USERNAME`. ⚠️ un seul webhook par bot → si Vendora redémarre, lui rebrancher le sien.

@@ -159,14 +159,21 @@ compris.
 
 ### 4.2 Commission sur le récurrent (le portefeuille)
 
-**25 % de chaque abonnement encaissé, renouvellements compris.**
-Soit **5 000 F par client tous les 6 mois**, à taux fixe, quel que soit son palier du mois.
+**15 % de chaque abonnement encaissé, tous les 6 mois, pendant 24 mois.**
+Soit **3 000 F par client et par semestre**, à taux fixe, quel que soit son palier du mois,
+et **4 versements au maximum par client** (24 mois). Au-delà, le client continue de payer
+NEBULA mais le partenaire ne touche plus rien sur lui.
 
-| Son portefeuille | Ce que ça lui rapporte, sans rien vendre |
-|---|---|
-| 10 clients abonnés | 50 000 F par semestre |
-| 30 clients abonnés | 150 000 F par semestre |
-| 60 clients abonnés | 300 000 F par semestre |
+| Son portefeuille | Par semestre | Sur les 24 mois |
+|---|---|---|
+| 10 clients abonnés | 30 000 F | 120 000 F |
+| 30 clients abonnés | 90 000 F | 360 000 F |
+| 60 clients abonnés | 180 000 F | 720 000 F |
+
+> **Pourquoi 24 mois et pas à vie.** Une commission à vie est une dette qui ne s'éteint
+> jamais, y compris envers quelqu'un qui a quitté le programme depuis des années et ne
+> s'occupe plus de personne. 24 mois, c'est exactement la durée pendant laquelle il
+> s'interdit de démarcher nos clients : **il est payé aussi longtemps qu'il est tenu.**
 
 **Trois règles qui encadrent le récurrent :**
 
@@ -226,7 +233,18 @@ une pyramide, ça se défend mal, et ça coûte cher sans rien produire.
 | Outil · 300 000 F | 75 000 F | 90 000 F | 105 000 F |
 
 **Mois type :** 4 Catalogues + 2 Vitrines = 6 ventes → 500 000 F de chiffre → palier SILVER
-30 % → **150 000 F de commission**, plus 5 000 F par client déjà au portefeuille.
+30 % → **150 000 F de commission**, plus 3 000 F par client déjà au portefeuille.
+
+### 4.5 bis Le superviseur
+
+Un rôle attribué par NEBULA, pas un palier qu'on atteint. Le superviseur anime une équipe.
+
+- **30 %** sur chacune de ses ventes, quoi qu'il arrive ;
+- **40 %** dès que **son équipe fait 6 clients payés dans le mois**, **ou** dès que
+  **lui seul fait plus de 3 ventes dans le mois** (donc 4 et plus). Le plus favorable
+  des deux compteurs l'emporte, et tout repart à zéro le 1er du mois ;
+- sur les ventes des membres de son équipe, il touche **15 %**, la prime de parrainage
+  ordinaire, ni plus ni moins.
 
 ### 4.6 Comment l'argent arrive
 
@@ -264,8 +282,24 @@ Sa légitimité vient de son lien `/p/CODE`, de sa carte de visite générée et
 
 ### 4.8 Les rangs (prestige, ventes cumulées à vie)
 
-Météore (1-5) · Comète (6-15) · Planète (16-35) · Étoile (36-65) · Supernova (66-110) ·
-Nébuleuse (111-150) · **Galaxie (151+)**. Le rang ne change pas la commission.
+Les titres sont ceux d'une vraie maison de vente : ils disent le niveau réel de la personne,
+pas un décor. Le rang **ne change pas la commission**, il dit qui vous avez en face.
+
+| Ventes cumulées | Rang |
+|---|---|
+| 0 | Partenaire Junior |
+| 1 à 5 | Conseiller |
+| 6 à 15 | Conseiller Confirmé |
+| 16 à 35 | Conseiller Senior |
+| 36 à 65 | Chef de Secteur |
+| 66 à 110 | Chef Régional |
+| 111 à 150 | Directeur Commercial |
+| **151 et plus** | **Directeur Associé** |
+
+Au sommet du réseau, **Mongazi BIAO, Président Fondateur**, rang fixe.
+
+*(Les insignes et les couleurs n'ont pas changé, seuls les titres ont été renommés
+le 2026-08-02 : les anciens noms cosmiques faisaient jeu vidéo, pas société.)*
 
 ---
 

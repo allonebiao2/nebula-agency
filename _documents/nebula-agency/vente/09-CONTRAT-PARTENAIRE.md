@@ -141,10 +141,16 @@ en cours :
 
 Le palier est recalculé chaque mois et repart à zéro le 1er de chaque mois.
 
-**6.2 Commission sur abonnement.** Le Partenaire perçoit **25 % de chaque abonnement
-encaissé**, souscription initiale et renouvellements compris, soit 5 000 F par client
-et par semestre. Cette commission ne compte pas dans le décompte des ventes de l'article 6.1.
-Le renouvellement du nom de domaine ne donne lieu à aucune commission.
+**6.2 Commission sur abonnement.** Le Partenaire perçoit **15 % de chaque abonnement
+encaissé**, souscription initiale et renouvellements compris, soit 3 000 F par client
+et par semestre.
+
+Cette commission est due **pendant 24 mois par client**, soit **quatre versements au
+maximum**, à compter de la souscription initiale. Au terme de ces 24 mois elle s'éteint,
+que le client reste abonné ou non.
+
+Elle ne compte pas dans le décompte des ventes de l'article 6.1. Le renouvellement du nom
+de domaine ne donne lieu à aucune commission.
 
 **6.3 Prime de parrainage.** Le Partenaire perçoit **15 %** du montant encaissé sur les ventes
 des partenaires qu'il a lui-même fait entrer dans le programme. **Le parrainage comporte une
@@ -387,8 +393,8 @@ qu'après réception de cette signature.**
 
 **Je gagne**
 - 25 % de 1 à 4 ventes dans le mois, 30 % de 5 à 9, 35 % à partir de 10
-- 25 % sur chaque abonnement de mes clients, tous les 6 mois, **et je les garde 24 mois
-  après mon départ** si j'arrête
+- 15 % sur chaque abonnement de mes clients, soit 3 000 F tous les 6 mois, **pendant
+  24 mois par client** (4 versements), même si j'arrête avant la fin
 - 15 % sur les ventes de ceux que je fais entrer, **offert par NEBULA, jamais retiré
   de leurs gains à eux**. Une seule profondeur : rien sur les recrues de mes recrues
 - Je suis payé **sous 24 à 72 heures** après réclamation
