@@ -140,7 +140,7 @@
       carnet:    { label: 'Carnet clients', color: 'var(--acc)', desc: 'Clients, crédits et relances.' },
       factures:  { label: 'Factures & devis', color: 'var(--acc2)', desc: 'Factures normalisées et devis pour tes clients.' },
       equipe:    { label: 'Mon équipe',     color: '#3a86ff', desc: 'Vendeurs, rôles et sécurité.' },
-      produits:  { label: 'Mes produits',   color: 'var(--good2)', desc: 'Ce qui te rapporte vraiment, ce qui dort.' },
+      produits:  { label: 'Mes produits',   color: '#6bf0a0', desc: 'Ce qui te rapporte vraiment, ce qui dort.' },
       reglages:  { label: 'Réglages',       color: '#8a93a6', desc: 'Identité, sécurité, données et cloud.' },
     };
     // Accueil : HUD de bienvenue (salutation dynamique) + 2 mastodontes Vendre / Dépenser
@@ -258,13 +258,6 @@
     // Interactions Catalogue : filtres, steppers -/+ (physique), ajout/modif/suppression via feuille
     function bindStock() {
       const scr = view.querySelector('.screen'); if (!scr) return;
-      const pl = scr.querySelector('.prodlist');
-      if (pl && _entryFx && !_fxSeen.catalogue && !rmMotion()) {   // les produits se posent sur les étagères
-        _fxSeen.catalogue = 1; pl.classList.add('shelf');
-        pl.querySelectorAll('.prod').forEach((el, i) => el.style.setProperty('--i', Math.min(i, 12)));
-        try { playDrawerPull(); } catch (e) {}
-      }
-      _entryFx = false;
       const render = () => { view.innerHTML = catalogueHTML(); bindStock(); };
       scr.querySelectorAll('[data-catf]').forEach((b) => b.addEventListener('click', () => { _catFilter = b.dataset.catf; playPop(true); render(); }));
       scr.querySelectorAll('[data-qty]').forEach((b) => b.addEventListener('click', () => {
@@ -820,8 +813,8 @@
         const resaHTML = rk.length
           ? '<div class="vresa"><span class="vresa__ttl">À réserver sur cette vente</span>' +
             rk.map((k) => '<div class="vresa__row"><span>' + k + '</span><b>' + fF(resa[k]) + '</b></div>').join('') +
-            '<div class="vresa__row" style="border-top:1px solid rgba(var(--fg), .14);margin-top:5px;padding-top:7px"><span><b style="color: var(--tx)">Total à réserver</b></span><b>' + fF(rk.reduce((s, k2) => s + resa[k2], 0)) + '</b></div>' +
-            '<div class="vresa__row" style="padding-top:3px"><span>Ce qui te reste vraiment</span><b style="color:var(--good2)">' + fF(v.total - rk.reduce((s, k2) => s + resa[k2], 0)) + '</b></div></div>'
+            '<div class="vresa__row" style="border-top:1px solid rgba(255,255,255,.14);margin-top:5px;padding-top:7px"><span><b style="color:#fff">Total à réserver</b></span><b>' + fF(rk.reduce((s, k2) => s + resa[k2], 0)) + '</b></div>' +
+            '<div class="vresa__row" style="padding-top:3px"><span>Ce qui te reste vraiment</span><b style="color:#6bf0a0">' + fF(v.total - rk.reduce((s, k2) => s + resa[k2], 0)) + '</b></div></div>'
           : '';
         body.innerHTML = lines +
           '<div class="vdetail__row"><span>' + mode + '</span><span>' + relTime(v.ts) + '</span></div>' +
@@ -1027,7 +1020,7 @@
         const bestH = hs.reduce((a, b) => (parH[b] > parH[a] ? b : a), hs[0]);
         let bars = '';
         for (let h = h0; h <= h1; h++) bars += '<div class="rbar' + (h === bestH ? ' rbar--best' : '') + '" style="--i:' + (h - h0) + '"><span class="rbar__b" style="height:' + Math.max(3, (parH[h] || 0) / mxH * 100).toFixed(0) + '%"></span><span class="rbar__l">' + h + 'h</span></div>';
-        heureHTML = '<div class="panel"><h3 class="panel__ttl" style="--sc:#ff9d4d"><i></i>Tes heures de pointe</h3><div class="rythm">' + bars + '</div>' +
+        heureHTML = '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--acc2)"><i></i>Tes heures de pointe</h3><div class="rythm">' + bars + '</div>' +
           '<p class="ia__txt">Ton pic est vers <b>' + bestH + 'h</b> (' + fF(parH[bestH]) + '). Sois prêt avant : stock sorti, monnaie prête, personnel présent.</p></div>';
       }
       return '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--acc2)"><i></i>Tes jours forts</h3><div class="rythm">' + barsJ + '</div>' +
@@ -1043,7 +1036,7 @@
       const pct = caB > 0 ? Math.round((caA - caB) / caB * 100) : (caA > 0 ? 100 : 0);
       const cls = pct > 2 ? 'up' : pct < -2 ? 'dn' : 'eq';
       const fleche = pct > 2 ? '&#9650; +' + pct + '%' : pct < -2 ? '&#9660; ' + pct + '%' : '= stable';
-      return '<div class="panel"><h3 class="panel__ttl" style="--sc:#ffb020"><i></i>Comparé à la période d\'avant</h3>' +
+      return '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--acc2)"><i></i>Comparé à la période d\'avant</h3>' +
         '<div class="cmp"><div class="cmpc"><span>Avant</span><b>' + fF(caB) + '</b></div>' +
         '<span class="cmparrow cmparrow--' + cls + '">' + fleche + '</span>' +
         '<div class="cmpc"><span>Maintenant</span><b>' + fF(caA) + '</b></div></div>' +
@@ -1063,7 +1056,7 @@
       const today = new Date(), pad = (n) => String(n).padStart(2, '0');
       const dv = today.getFullYear() + '-' + pad(today.getMonth() + 1) + '-' + pad(today.getDate()), mv = today.getFullYear() + '-' + pad(today.getMonth() + 1);
       const singleDay = (_statSel.kind === 'today' || _statSel.kind === 'yesterday' || _statSel.kind === 'day');
-      return '<div class="screen wide" style="--sc:#ffd2a8"><span class="screen__tag">Statistiques</span><h1 class="screen__title">Tes chiffres</h1>' +
+      return '<div class="screen wide" style="--sc:#ffe9c9"><span class="screen__tag">Statistiques</span><h1 class="screen__title">Tes chiffres</h1>' +
         '<p class="screen__sub">Choisis un jour, un mois, une année ou une période : je sors les chiffres et mon analyse.</p>' +
         '<div class="statchips">' + chips + '</div>' +
         '<div class="statper">Période affichée : <b>' + r.lbl + '</b></div>' +
@@ -1074,11 +1067,16 @@
           kpi('ben', 'Bénéfice', (ben >= 0 ? '+' : '') + fF(ben), ben >= 0 ? 'ce qui te reste' : 'tu es en perte', 2) +
           kpi('marge', 'Marge', marge + ' %', 'sur 100 F vendus', 3) +
         '</div>' +
+<<<<<<< actuel
+        '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--bad)"><i></i>Où part ton argent</h3>' + (dep > 0 ? donutSVG(cats, 'Dépensé') : '<p class="ia__txt">Pas de dépense sur cette période.</p>') + '</div>' +
+        '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--good)"><i></i>' + (singleDay ? 'Les 7 jours qui y mènent' : 'Évolution') + '</h3>' + (bks ? barsSVG(bks) : '<p class="ia__txt">Rien à tracer pour l\'instant.</p>') + '</div>' +
+=======
         panierHTML(r) +
         comparaisonHTML(r) +
         '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--bad)"><i></i>Où part ton argent</h3>' + (dep > 0 ? donutSVG(cats, 'Dépensé') : '<p class="ia__txt">Pas de dépense sur cette période.</p>') + '</div>' +
         '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--good)"><i></i>' + (singleDay ? 'Les 7 jours qui y mènent' : 'Évolution') + '</h3>' + (bks ? barsSVG(bks) : '<p class="ia__txt">Rien à tracer pour l\'instant.</p>') + '</div>' +
         rythmeHTML(r) +
+>>>>>>> apport
         '<div class="sheet-scrim" data-stclose></div>' +
         '<div class="sheet" data-stsheet><div class="sheet__grip"></div><h3 class="sheet__title">Choisir une période</h3>' +
           '<div class="seg" data-stkind>' + [['day', 'Jour'], ['monthpick', 'Mois'], ['yearpick', 'Année'], ['range', 'Période']].map((k, i) => '<button class="seg-btn' + (i === 0 ? ' is-on' : '') + '" data-stk="' + k[0] + '">' + k[1] + '</button>').join('') + '</div>' +
@@ -1091,8 +1089,6 @@
     }
     function bindStats() {
       const scr = view.querySelector('.screen'); if (!scr) return;
-      if (_entryFx && !_fxSeen.statistiques && !rmMotion()) { _fxSeen.statistiques = 1; fxConstellation(); }
-      _entryFx = false;
       countUpNums(scr);   // les chiffres montent de 0 (effet compteur)
       const render = () => { view.innerHTML = statsHTML(); bindStats(); };
       scr.querySelectorAll('[data-sper]').forEach((b) => b.addEventListener('click', () => { _statSel = { kind: b.dataset.sper }; playPop(true); render(); }));
@@ -1121,7 +1117,7 @@
       const ps = produitsStats(_prodPer), sv = stockValeur();
       const seg = [[7, '7 jours'], [30, '30 jours'], [90, '3 mois']].map((k) => '<button class="seg-btn' + (k[0] === _prodPer ? ' is-on' : '') + '" data-pper="' + k[0] + '">' + k[1] + '</button>').join('');
       if (!ps.list.length) {
-        return '<div class="screen wide" style="--sc:var(--good2)"><span class="screen__tag">Mes produits</span><h1 class="screen__title">Ce qui rapporte</h1>' +
+        return '<div class="screen wide" style="--sc:#6bf0a0"><span class="screen__tag">Mes produits</span><h1 class="screen__title">Ce qui rapporte</h1>' +
           '<div class="seg">' + seg + '</div>' +
           '<p class="pos__empty">Aucune vente sur cette période. Dès que tu encaisses, je te dis <b>quel produit te rapporte le plus</b> — et ce n\'est presque jamais celui qu\'on croit.</p></div>';
       }
@@ -1145,19 +1141,19 @@
           '<p class="ia__txt">Il t\'a rapporté <b>' + fF(champion.marge) + '</b> de bénéfice en ' + ps.jours + ' jours (' + champion.qty + ' vendus). Ne tombe jamais en rupture dessus.</p></div>';
       const pareto = vitals.length ? '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--acc2)"><i></i>La règle des 20/80</h3>' +
         '<p class="ia__txt"><b>' + vitals.length + ' produit' + (vitals.length > 1 ? 's' : '') + '</b> sur ' + ps.list.length + ' font <b>80% de ton chiffre</b> : ' +
-        vitals.slice(0, 4).map((p) => '<b style="color:var(--good2)">' + p.nom + '</b>').join(', ') + (vitals.length > 4 ? '…' : '') +
+        vitals.slice(0, 4).map((p) => '<b style="color:#6bf0a0">' + p.nom + '</b>').join(', ') + (vitals.length > 4 ? '…' : '') +
         '. Ce sont eux qui méritent ton stock, ta place en vitrine et ton énergie.</p></div>' : '';
       const dorm = ps.dormants.length ? '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--bad)"><i></i>Ce qui dort sur l\'étagère</h3>' +
         '<div class="prank" style="margin-top:0">' + ps.dormants.slice(0, 6).map((d, i) => '<div class="prow prow--dead" style="--i:' + i + '">' +
           '<span class="prow__n" style="background:rgba(255,138,151,.85)">!</span>' +
           '<span class="prow__id"><span class="prow__nm">' + d.nom + '</span><span class="prow__sub">' + d.qty + ' en stock · aucune vente depuis ' + ps.jours + ' jours</span></span>' +
-          '<span class="prow__amt"><b style="color:var(--bad2)">' + fF(d.immo) + '</b><small>immobilisés</small></span></div>').join('') + '</div>' +
-        '<p class="ia__txt" style="margin-top:10px">Total qui dort : <b style="color:var(--bad2)">' + fF(ps.dormants.reduce((s, d) => s + d.immo, 0)) + '</b>. Promotion, lot, ou on arrête d\'en racheter.</p></div>' : '';
-      const stock = (!isService() && sv.cout > 0) ? '<div class="panel"><h3 class="panel__ttl" style="--sc:#ffb020"><i></i>Ton stock en chiffres</h3>' +
+          '<span class="prow__amt"><b style="color:#ff8a97">' + fF(d.immo) + '</b><small>immobilisés</small></span></div>').join('') + '</div>' +
+        '<p class="ia__txt" style="margin-top:10px">Total qui dort : <b style="color:#ff8a97">' + fF(ps.dormants.reduce((s, d) => s + d.immo, 0)) + '</b>. Promotion, lot, ou on arrête d\'en racheter.</p></div>' : '';
+      const stock = (!isService() && sv.cout > 0) ? '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--acc2)"><i></i>Ton stock en chiffres</h3>' +
         '<div class="tres" style="margin-top:2px"><div class="tcard"><span>Immobilisé</span><b>' + fF(sv.cout) + '</b><small>ce que ça t\'a coûté</small></div>' +
         '<div class="tcard"><span>Rotation</span><b>' + sv.rotation.toFixed(1) + '×</b><small>par mois</small></div></div>' +
         '<p class="ia__txt" style="margin-top:10px">' + (sv.rotation < 0.8 ? 'Ton stock tourne lentement : trop d\'argent immobilisé. Achète moins, mais plus souvent.' : sv.rotation > 3 ? 'Rotation rapide : ton argent travaille bien. Surveille juste les ruptures.' : 'Rotation correcte.') + '</p></div>' : '';
-      return '<div class="screen wide" style="--sc:var(--good2)"><span class="screen__tag">Mes produits</span><h1 class="screen__title">Ce qui rapporte</h1>' +
+      return '<div class="screen wide" style="--sc:#6bf0a0"><span class="screen__tag">Mes produits</span><h1 class="screen__title">Ce qui rapporte</h1>' +
         '<p class="screen__sub">Classés par <b>bénéfice réellement apporté</b> — pas par chiffre d\'affaires.</p>' +
         '<div class="seg">' + seg + '</div>' +
         alerte + '<div class="prank">' + rows + '</div>' + pareto + dorm + stock +
@@ -1165,9 +1161,6 @@
     }
     function bindProduits() {
       const scr = view.querySelector('.screen'); if (!scr) return;
-      const rk = scr.querySelector('.prank');
-      if (rk && _entryFx && !_fxSeen.produits && !rmMotion()) { _fxSeen.produits = 1; rk.classList.add('podium'); try { playSell(); } catch (e) {} }
-      _entryFx = false;
       scr.querySelectorAll('[data-pper]').forEach((b) => b.addEventListener('click', () => { _prodPer = +b.dataset.pper; playPop(true); view.innerHTML = produitsHTML(); bindProduits(); }));
     }
 
@@ -1330,6 +1323,9 @@
       const cats = depByCat();
       const src = ca > 0 ? hbar('Espèces', esp, ca, 'var(--good)') + hbar('Mobile Money', momo, ca, 'var(--acc)') + hbar('Crédit (à récupérer)', cred, ca, 'var(--acc)') : '<p class="ia__txt">Aucune vente enregistrée.</p>';
       const out = dep > 0 ? cats.map((c) => hbar(c.name, c.val, dep, c.color)).join('') : '<p class="ia__txt">Aucune dépense enregistrée.</p>';
+<<<<<<< actuel
+      return '<div class="screen wide" style="--sc:var(--acc2)"><span class="screen__tag">Le bilan</span><h1 class="screen__title">Ta santé</h1>' +
+=======
       const sc = scoreSante(), pm = pointMort(), tr = treso(), fi = fiabilite(), pj = projectionMois(), sv = stockValeur(), rec = recurrentMois();
       const R = 58, C = 2 * Math.PI * R;
       const scoreHTML = '<div class="score"><div class="score__wrap">' +
@@ -1358,14 +1354,15 @@
           '<p class="bem__txt">À ton rythme actuel (<b>' + fF(pj.parJour) + '/jour</b>), tu finiras le mois autour de <b>' + fF(pj.fin) + '</b>' +
           (pj.obj > 0 ? (pj.manque > 0 ? ' — soit <b>' + fF(pj.manque) + ' sous ton objectif</b>. Pour le tenir : <b>' + fF(pj.parJourRequis) + ' par jour</b> sur les ' + pj.restant + ' jours restants.' : ' — <b>objectif du mois dépassé</b>. Beau travail.') : '.') + '</p></div>' : '';
       const stockHTML = (!isService() && sv.cout > 0) ? '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--acc2)"><i></i>Ton argent qui dort</h3>' +
-          '<p class="ia__txt">Tu as <b style="color:var(--acc3)">' + fF(sv.cout) + '</b> immobilisés en stock (valeur de revente : ' + fF(sv.vente) + '). Ton stock tourne <b>' + sv.rotation.toFixed(1) + ' fois par mois</b>' +
+          '<p class="ia__txt">Tu as <b style="color:#ffd9a0">' + fF(sv.cout) + '</b> immobilisés en stock (valeur de revente : ' + fF(sv.vente) + '). Ton stock tourne <b>' + sv.rotation.toFixed(1) + ' fois par mois</b>' +
           (sv.rotation < 0.8 ? ' — c\'est lent : trop d\'argent dort sur l\'étagère.' : sv.rotation > 3 ? ' — excellent, ton argent travaille vite.' : ' — rythme correct.') + '</p>' +
           '<button class="setbtn" data-goto="produits" style="margin-top:10px">Voir le détail par produit &rsaquo;</button></div>' : '';
-      const recHTML = rec > 0 ? '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--good)"><i></i>Revenu récurrent</h3><p class="ia__txt"><b style="color:var(--good2)">' + fF(rec) + '</b> viennent d\'abonnements ce mois-ci. C\'est la partie de ton chiffre sur laquelle tu peux compter chaque mois — la plus précieuse.</p></div>' : '';
-      const fiabHTML = fi.jours >= 3 ? '<div class="fiab"><span class="fiab__ring" style="background:conic-gradient(' + (fi.pct >= 70 ? 'var(--good)' : 'var(--acc2)') + ' ' + (fi.pct * 3.6) + 'deg, rgba(var(--fg), .1) 0)">' + fi.pct + '</span>' +
+      const recHTML = rec > 0 ? '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--good)"><i></i>Revenu récurrent</h3><p class="ia__txt"><b style="color:#6bf0a0">' + fF(rec) + '</b> viennent d\'abonnements ce mois-ci. C\'est la partie de ton chiffre sur laquelle tu peux compter chaque mois — la plus précieuse.</p></div>' : '';
+      const fiabHTML = fi.jours >= 3 ? '<div class="fiab"><span class="fiab__ring" style="background:conic-gradient(' + (fi.pct >= 70 ? 'var(--good)' : 'var(--acc2)') + ' ' + (fi.pct * 3.6) + 'deg, rgba(255,255,255,.1) 0)">' + fi.pct + '</span>' +
           '<span>Tu as noté quelque chose <b>' + fi.saisis + ' jour' + (fi.saisis > 1 ? 's' : '') + ' sur ' + fi.jours + '</b> ce mois-ci. ' + (fi.pct >= 70 ? 'Tes chiffres sont fiables.' : 'Plus tu notes, plus ces chiffres disent la vérité.') + '</span></div>' : '';
-      return '<div class="screen wide" style="--sc:#ff9d4d"><span class="screen__tag">Le bilan</span><h1 class="screen__title">Ta santé</h1>' +
+      return '<div class="screen wide" style="--sc:var(--acc2)"><span class="screen__tag">Le bilan</span><h1 class="screen__title">Ta santé</h1>' +
         scoreHTML +
+>>>>>>> apport
         '<div class="benhero ben--' + (ben >= 0 ? 'ok' : 'bad') + '"><span class="benhero__lbl">Bénéfice net</span><b class="benhero__num">' + (ben >= 0 ? '+' : '') + fF(ben) + '</b><span class="benhero__sub">' + (ben >= 0 ? "Ton commerce gagne de l'argent" : "Ton commerce perd de l'argent") + '</span></div>' +
         tresHTML + pmHTML + pjHTML +
         envsHTML() +
@@ -1373,16 +1370,17 @@
         iaBanner() +
         '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--good)"><i></i>D\'où vient ton argent</h3>' + src + '</div>' +
         '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--bad)"><i></i>Ce qui pèse le plus</h3>' + out + '</div>' +
-        (persoTotal() > 0 ? '<div class="panel"><h3 class="panel__ttl" style="--sc:#ff9d4d"><i></i>Poche perso</h3><p class="ia__txt">Tu as sorti <b style="color:var(--acc3)">' + fF(persoTotal()) + '</b> pour tes dépenses personnelles. C\'est ton argent, mais ce n\'est pas compté dans le bénéfice du business.</p></div>' : '') +
+        (persoTotal() > 0 ? '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--acc2)"><i></i>Poche perso</h3><p class="ia__txt">Tu as sorti <b style="color:#c9a7ff">' + fF(persoTotal()) + '</b> pour tes dépenses personnelles. C\'est ton argent, mais ce n\'est pas compté dans le bénéfice du business.</p></div>' : '') +
+<<<<<<< actuel
+=======
         '<div class="setbtns" style="max-width:500px;margin:16px auto 0">' +
           '<button class="setbtn" data-rapport>&#128196; Rapport du mois (PDF)</button>' +
           '<button class="setbtn" data-rapportwa>&#128241; Envoyer par WhatsApp</button>' +
         '</div>' +
+>>>>>>> apport
       '</div>';
     }
     function bindBilan() {
-      if (_entryFx && !_fxSeen.bilan && !rmMotion()) { _fxSeen.bilan = 1; fxECG(scoreSante().total); }   // l'ECG raconte la santé
-      _entryFx = false;
       countUpNums(view);   // le bénéfice net monte de 0
       const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
       view.querySelectorAll('[data-envfill]').forEach((f) => {   // les enveloppes se remplissent à l'arrivée
@@ -1618,8 +1616,6 @@
     }
     function bindCarnet() {
       const scr = view.querySelector('.screen'); if (!scr) return;
-      if (_entryFx && !_fxSeen.carnet && !rmMotion()) { _fxSeen.carnet = 1; fxPages(); }
-      _entryFx = false;
       const sheet = scr.querySelector('[data-csheet]'), scrim = scr.querySelector('[data-csclose]'), body = scr.querySelector('[data-csbody]'), title = scr.querySelector('[data-cstitle]');
       const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
       const render = () => { view.innerHTML = carnetHTML(); bindCarnet(); };
@@ -1765,8 +1761,6 @@
     }
     function bindFactures() {
       const scr = view.querySelector('.screen'); if (!scr) return;
-      if (_entryFx && _facMode === 'list' && !_fxSeen.factures && !rmMotion()) { _fxSeen.factures = 1; fxStamp(scr); }
-      _entryFx = false;
       const render = () => { view.innerHTML = facturesHTML(); bindFactures(); };
       if (_facMode === 'list') {
         scr.querySelectorAll('[data-facf]').forEach((b) => b.addEventListener('click', () => { _facFilter = b.dataset.facf; playPop(true); render(); }));
@@ -1847,7 +1841,7 @@
           '<div class="member__perms">' + perms + '</div>' +
           (acts ? '<div class="member__act">' + acts + '</div>' : '') + '</div>';
       }).join('');
-      return '<div class="screen wide" style="--sc:#ff7a3d"><span class="screen__tag">Mon équipe</span><h1 class="screen__title">Ton équipe</h1>' +
+      return '<div class="screen wide" style="--sc:#3a86ff"><span class="screen__tag">Mon équipe</span><h1 class="screen__title">Ton équipe</h1>' +
         '<div class="ia"><span class="ia__orb"></span><span class="ia__chip">&#10022; Sécurité anti-vol</span><h3 class="ia__title">Chacun son code</h3><p class="ia__txt">Chaque vendeur a son propre code : tu vois <b>qui a vendu quoi</b>, et un vendeur ne voit ni ton <b>bénéfice</b> ni tes <b>réglages</b>. C\'est ta protection contre les pertes.</p></div>' +
         '<div class="members">' + rows + '</div>' +
         '<span class="fab__lbl">Ajouter</span><button class="fab fab--blue" data-memnew aria-label="Ajouter un membre">+</button>' +
@@ -1855,9 +1849,6 @@
     }
     function bindEquipe() {
       const scr = view.querySelector('.screen'); if (!scr) return;
-      const mem = scr.querySelector('.members');
-      if (mem && _entryFx && !_fxSeen.equipe && !rmMotion()) { _fxSeen.equipe = 1; mem.classList.add('scanned'); scr.querySelectorAll('.member').forEach((m, i) => m.style.setProperty('--i', i)); try { playAnalyticValidate(); } catch (e) {} }
-      _entryFx = false;
       const sheet = scr.querySelector('[data-msheet]'), scrim = scr.querySelector('[data-msclose]'), body = scr.querySelector('[data-msbody]'), title = scr.querySelector('[data-mstitle]');
       const close = () => { sheet.classList.remove('is-open'); scrim.classList.remove('is-open'); };
       const render = () => { view.innerHTML = equipeHTML(); bindEquipe(); };
@@ -1916,6 +1907,8 @@
       if (new Date().getDate() >= 10 && e.manque > 0 && e.ca > 0) A.push({ tone: 'warn', ac: 'var(--bad)', ic: ICO_HOME, nav: 'bilan', tx: 'Ta marge du mois ne couvre pas encore tes charges : il manque <b>' + fF(e.manque) + '</b>.' });
       const streak = calcStreak();
       if (streak >= 3) A.push({ tone: 'good', ac: 'var(--good)', ic: ICO_STAR, nav: 'statistiques', tx: '<b>' + streak + ' jours de suite</b> à objectif atteint. Sérieusement stylé.' });
+<<<<<<< actuel
+=======
       // --- pilotage : point mort, trésorerie, argent qui dort
       const pm = pointMort(), tr = treso(), jm = new Date().getDate();
       if (pm.caNecessaire > 0 && !pm.atteintLe && jm >= 15) A.push({ tone: 'warn', ac: 'var(--bad)', ic: ICO_FLAG, nav: 'bilan', tx: 'On est le ' + jm + ' et ton <b>point mort</b> n\'est pas atteint : encore <b>' + fF(pm.reste) + '</b> à vendre pour ne rien perdre.' });
@@ -1923,6 +1916,7 @@
       if (tr.autonomie !== null && tr.autonomie < 7 && tr.sorties > 0) A.push({ tone: 'warn', ac: 'var(--bad)', ic: ICO_HOME, nav: 'bilan', tx: 'Trésorerie tendue : ta caisse ne couvre plus que <b>' + tr.autonomie + ' jour' + (tr.autonomie > 1 ? 's' : '') + '</b> de charges.' });
       const dorm = produitsStats(30).dormants;
       if (dorm.length >= 2) { const imm = dorm.reduce((s2, d) => s2 + d.immo, 0); A.push({ tone: '', ac: 'var(--acc2)', ic: ICO_BOX, nav: 'produits', tx: '<b>' + fF(imm) + '</b> dorment dans ' + dorm.length + ' produits invendus depuis 30 jours. Promo ou on arrête d\'en racheter ?' }); }
+>>>>>>> apport
       return A;
     }
     function calcStreak() {   // jours consécutifs à objectif atteint (aujourd'hui compte dès qu'il est atteint)
@@ -2009,7 +2003,11 @@
       const alerts = computeAlerts();
       const arows = alerts.map((al, i) => '<button class="alertrow' + (al.tone ? ' alertrow--' + al.tone : '') + '" style="--i:' + i + ';--ac:' + al.ac + '" data-algo="' + al.nav + '"><span class="alertrow__ic">' + al.ic + '</span><span class="alertrow__tx">' + al.tx + '</span><span class="alertrow__go">&#8250;</span></button>').join('');
       const chat = (SM.chat || []).slice(-6).map((c) => '<div class="bub bub--q">' + c.q + '</div><div class="bub bub--a">' + c.a + '</div>').join('');
+<<<<<<< actuel
+      const qs = ['CA du jour ?', 'Qui me doit ?', 'Stock bas ?', 'Mes enveloppes ?', 'Meilleur produit ?'].map((t) => '<button class="freqchip" data-quickq>' + t + '</button>').join('');
+=======
       const qs = ['CA du jour ?', 'Mon point mort ?', 'Ma trésorerie ?', 'Qui me doit ?', 'Quel produit rapporte ?', 'Fin de mois ?', 'Mon score ?', 'Quel jour fort ?'].map((t) => '<button class="freqchip" data-quickq>' + t + '</button>').join('');
+>>>>>>> apport
       return '<div class="screen wide" style="--sc:var(--acc2)">' +
         '<span class="screen__tag">Boussole</span>' +
         '<div class="calib" data-calib aria-hidden="true"><svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="2"/><circle cx="50" cy="50" r="36" stroke="currentColor" stroke-width="1" opacity=".4"/><g class="calib__needle"><path d="M50 14 L43 50 L57 50 Z" fill="currentColor"/><path d="M50 86 L43 50 L57 50 Z" fill="currentColor" opacity=".35"/></g><circle cx="50" cy="50" r="3.5" fill="currentColor"/></svg></div>' +
@@ -2141,9 +2139,12 @@
           '<div class="setrow2">' + inp('bifu', 'N° IFU (factures)', b.ifu) + inp('brc', 'N° RCCM (factures)', b.rc) + '</div>' +
           '<p class="setnote">Ces infos apparaissent sur tes factures et devis — c\'est ce qui les rend officielles.</p>' +
           '<button class="sheet__add" data-bizsave>Enregistrer l\'identité</button></div>' +
-        '<div class="setgrp" style="--i:0;--gc:var(--good2)"><h3 class="setgrp__ttl">&#127909; Apprendre à utiliser Boussole</h3>' +
+<<<<<<< actuel
+=======
+        '<div class="setgrp" style="--i:0;--gc:#6bf0a0"><h3 class="setgrp__ttl">&#127909; Apprendre à utiliser Boussole</h3>' +
           '<p class="setnote" style="margin-top:0">La visite guidée te remontre l\'essentiel en une minute. Le bouton <b>?</b> en haut de l\'écran explique toujours la page où tu te trouves.</p>' +
           '<div class="setbtns"><button class="setbtn" data-tourreplay>&#9654; Revoir la visite guidée</button><button class="setbtn" data-aideopen>&#10068; Aide de cet écran</button></div></div>' +
+>>>>>>> apport
         '<div class="setgrp" style="--i:1;--gc:var(--good)"><h3 class="setgrp__ttl">' + ICO_KEY + 'Sécurité</h3>' +
           '<p class="setnote" style="margin-top:0">' + (patron.pinH ? 'Code patron défini : les écrans sensibles (bilan, stats, réglages…) sont protégés quand un vendeur tient la caisse.' : 'Aucun code patron. Définis-en un : sans lui, n\'importe qui peut voir ton bénéfice.') + '</p>' +
           '<div class="setrow2"><input class="sheet__txt" data-pinnew type="password" inputmode="numeric" maxlength="4" placeholder="Nouveau code (4 chiffres)"><button class="setbtn" data-pinset>' + (patron.pinH ? 'Changer le code' : 'Définir le code') + '</button></div></div>' +
@@ -2164,8 +2165,6 @@
     }
     function bindReglages() {
       const scr = view.querySelector('.screen'); if (!scr) return;
-      if (_entryFx && !_fxSeen.reglages && !rmMotion()) { _fxSeen.reglages = 1; fxGears(); }
-      _entryFx = false;
       const g = (s) => scr.querySelector(s);
       g('[data-bizsave]').addEventListener('click', () => {
         SM.biz = { nom: g('[data-bnom]').value.trim(), prenom: g('[data-bprenom]').value.trim(), tel: g('[data-btel]').value.trim(), adresse: g('[data-badresse]').value.trim(), ifu: g('[data-bifu]').value.trim(), rc: g('[data-brc]').value.trim(), activite: (SM.biz || {}).activite || '' };
@@ -2415,70 +2414,6 @@
       const pm = pointMort();
       if (pm.caNecessaire > 0 && !pm.atteintLe) return { ic: '&#128200;', t: 'Encore ' + fF(pm.reste) + ' avant de gagner', s: 'C\'est ton point mort du mois. En dessous, le commerce perd de l\'argent.', nav: 'bilan' };
       return { ic: '&#129534;', t: 'Regarde ta note de santé', s: 'Tout roule aujourd\'hui. Va voir ton bilan : je te dis ce qui peut encore progresser.', nav: 'bilan' };
-    }
-    /* ============================================================================
-       VAGUE 2 — moteur des mises en scène par écran (+ l'icône qui s'envole)
-       ========================================================================== */
-    const rmMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
-    function fxLayer(ms) {   // calque temporaire, non bloquant, auto-nettoyé
-      const l = document.createElement('div'); l.className = 'fx-layer'; l.setAttribute('aria-hidden', 'true');
-      document.body.appendChild(l); setTimeout(() => l.remove(), ms || 1800); return l;
-    }
-    function flyIcon(btn) {   // FIL ROUGE : l'icône du menu file vers le centre de l'écran
-      if (rmMotion() || !btn) return;
-      const ic = btn.querySelector('.navbtn__ic'); if (!ic) return;
-      const b = ic.getBoundingClientRect();
-      const el = document.createElement('div'); el.className = 'flyico'; el.setAttribute('aria-hidden', 'true');
-      el.innerHTML = ic.innerHTML;
-      el.style.left = b.left + 'px'; el.style.top = b.top + 'px';
-      el.style.setProperty('--dx', Math.round(innerWidth / 2 - b.left - 21) + 'px');
-      el.style.setProperty('--dy', Math.round(innerHeight * 0.42 - b.top - 21) + 'px');
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 620);
-    }
-    // --- BILAN : électrocardiogramme (irrégulier quand la santé est mauvaise)
-    function fxECG(score) {
-      const l = fxLayer(1500), w = innerWidth;
-      const mid = 60, bon = score >= 60;
-      let d = 'M0 ' + mid, x = 0;
-      while (x < w) {
-        const pas = bon ? 74 : 52 + Math.random() * 34;
-        const h = bon ? 40 : 24 + Math.random() * 34;
-        d += ' L' + (x + pas * .28) + ' ' + mid + ' L' + (x + pas * .38) + ' ' + (mid - h) + ' L' + (x + pas * .48) + ' ' + (mid + h * .55) + ' L' + (x + pas * .58) + ' ' + mid;
-        x += pas;
-      }
-      l.innerHTML = '<svg class="ecg" viewBox="0 0 ' + w + ' 120" preserveAspectRatio="none"><path d="' + d + '"/></svg>' +
-        '<span class="ecg__blip" style="left:' + Math.round(w * .5) + 'px;top:' + Math.round(innerHeight * .38 + 60) + 'px"></span>';
-      try { playCountTicks(700); setTimeout(() => playPop(false), 480); } catch (e) {}
-    }
-    // --- STATISTIQUES : constellation (points qui s'allument puis se relient)
-    function fxConstellation() {
-      const l = fxLayer(2000), w = innerWidth, h = innerHeight;
-      const n = 7, pts = [];
-      for (let i = 0; i < n; i++) pts.push([Math.round(w * (0.12 + 0.76 * i / (n - 1))), Math.round(h * (0.30 + Math.random() * 0.26))]);
-      l.innerHTML = pts.map((pp, i) => '<span class="cst__star" style="left:' + pp[0] + 'px;top:' + pp[1] + 'px;--i:' + i + '"></span>').join('') +
-        '<svg class="cst__line" viewBox="0 0 ' + w + ' ' + h + '"><polyline points="' + pts.map((pp) => pp.join(',')).join(' ') + '"/></svg>';
-      try { playDataScan(); setTimeout(() => playAnalyticValidate(), 620); } catch (e) {}
-    }
-    // --- CARNET : le répertoire qui se feuillette
-    function fxPages() {
-      const l = fxLayer(1200);
-      l.innerHTML = '<span class="flip"></span><span class="flip"></span><span class="flip"></span>';
-      try { playSwoosh(); setTimeout(playSwoosh, 150); setTimeout(playSwoosh, 300); } catch (e) {}
-    }
-    // --- FACTURES : le tampon qui frappe
-    function fxStamp(scr) {
-      const l = fxLayer(1000);
-      l.innerHTML = '<span class="stamp2">Boussole</span>';
-      if (scr) { scr.classList.add('fx-shake'); setTimeout(() => scr.classList.remove('fx-shake'), 900); }
-      try { setTimeout(() => { playGearLock(); if (navigator.vibrate) navigator.vibrate(22); }, 300); } catch (e) {}
-    }
-    // --- RÉGLAGES : les engrenages qui s'engrènent
-    function fxGears() {
-      const l = fxLayer(1200);
-      const roue = '<svg viewBox="0 0 100 100" width="66" height="66" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round"><circle cx="50" cy="50" r="20"/><path d="M50 6v14M50 80v14M6 50h14M80 50h14M19 19l10 10M71 71l10 10M81 19L71 29M29 71l-10 10"/></svg>';
-      l.innerHTML = '<span class="gear gear--l">' + roue + '</span><span class="gear gear--r">' + roue + '</span>';
-      try { playGearLock(); setTimeout(playGearLock, 330); } catch (e) {}
     }
     /* ---- Animations de touché : une signature par famille d'items ---- */
     (function bindTapFX() {
@@ -3134,27 +3069,6 @@
       snap(SLIDE, 900); snap(SLIDE + 0.07, 700);   // double clac « clac-clac »
     }
 
-    /* ===== THÈME : sombre (noir + orange) / clair (blanc + orange) =====
-       Par défaut on suit le téléphone ; dès que l'utilisateur choisit, son choix gagne. */
-    const ICON_MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a7 7 0 1 0 10.5 10.5z"/></svg>';
-    const ICON_SUN  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/></svg>';
-    function themeActuel() {
-      try { const t = localStorage.getItem('boussole:theme'); if (t === 'light' || t === 'dark') return t; } catch (e) {}
-      return matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-    }
-    function appliquerTheme(t, memoriser) {
-      document.documentElement.dataset.theme = t;
-      if (memoriser) { try { localStorage.setItem('boussole:theme', t); } catch (e) {} }
-      const btn = drawer.querySelector('[data-theme-toggle]');
-      if (btn) {
-        const lbl = btn.querySelector('[data-theme-label]'); if (lbl) lbl.textContent = t === 'light' ? 'Thème clair' : 'Thème sombre';
-        const ic = btn.querySelector('.footbtn__ic'); if (ic) ic.innerHTML = t === 'light' ? ICON_SUN : ICON_MOON;
-      }
-      const meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute('content', t === 'light' ? '#fffdfb' : '#0a0a0c');
-    }
-    appliquerTheme(themeActuel(), false);
-
     // ===== Option "Mute" (coupe-son), persistée dans les réglages =====
     const ICON_SOUND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a4 4 0 0 1 0 7"/></svg>';
     const ICON_MUTE  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>';
@@ -3242,18 +3156,12 @@
     async function doLogout() { try { const c = supa(); if (c) await c.auth.signOut(); } catch (e) {} location.href = 'connexion.html'; }
     drawer.addEventListener('click', (e) => {
       const b = e.target.closest('[data-sfx-hover]'); if (!b) return;
-      if (b.dataset.themeToggle !== undefined) {   // bascule de thème : ne ferme pas le menu
-        const t = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
-        appliquerTheme(t, true); playPop(t === 'light');
-        toast(t === 'light' ? 'Thème clair activé' : 'Thème sombre activé', { ms: 2200 });
-        return;
-      }
       if (b.dataset.mute !== undefined) { toggleMute(); return; }   // toggle son : ne ferme pas le menu
       if (!b.classList.contains('navbtn')) playClick();            // footer ; les navbtn ont leur glitch/snap au pointerdown
       // le flash néon (glitch + snap) est déclenché au pointerdown, voir plus bas
       if (b.dataset.logout !== undefined) { setTimeout(doLogout, 220); return; }
       if (b.dataset.go) { setActiveNav(b.dataset.go); showSection(b.dataset.go, false); setTimeout(closeMenu, 220); return; }   // Paramètres (pied du tiroir)
-      if (b.dataset.nav) { flyIcon(b); setActiveNav(b.dataset.nav); showSection(b.dataset.nav, false); }   // l'icône s'envole vers l'écran qu'elle ouvre
+      if (b.dataset.nav) { setActiveNav(b.dataset.nav); showSection(b.dataset.nav, false); }   // HUD : l'écran change instantanément (caméra sèche)
       setTimeout(closeMenu, 220);                       // laisse le temps de VOIR le clic "Miles" (~200 ms) avant de fermer
     });
   
