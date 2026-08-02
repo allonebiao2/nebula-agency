@@ -12,7 +12,7 @@
 >
 > **Version 2.0 · 2026-07-31, le modèle de données est IMPLÉMENTÉ.**
 > Table `subscriptions`, ouverture automatique à l'encaissement, génération de la
-> commission de 25 % au renouvellement, endpoints pour n8n et portefeuille partenaire :
+> commission de 15 % au renouvellement (4 versements max), endpoints n8n et portefeuille :
 > tout est en place dans `nebula-affilies/server.py` et testé. Il ne reste que le
 > workflow n8n lui-même à construire.
 
@@ -43,7 +43,7 @@ Table `subscriptions` créée dans `nebula-affilies/server.py`, une ligne par cl
 |---|---|
 | `id` | identifiant |
 | `lead_id` | le client (lien vers `leads`) |
-| `affiliate_id` | **le partenaire qui l'a apporté** (c'est lui qui touchera les 25 % à vie) |
+| `affiliate_id` | **le partenaire qui l'a apporté** (c'est lui qui touchera les 15 %, 4 fois) |
 | `offre` | catalogue · vitrine |
 | `montant` | 20 000 |
 | `debut` | date de mise en ligne |
@@ -53,7 +53,7 @@ Table `subscriptions` créée dans `nebula-affilies/server.py`, une ligne par cl
 | `relances` | compteur de rappels envoyés pour l'échéance en cours |
 
 **Règle métier, implémentée dans `record_subscription_payment()` :** quand un abonnement
-est encaissé, on décale `echeance` de 6 mois **et on crée la commission de 25 %** pour
+est encaissé, on décale `echeance` de 6 mois **et on crée la commission de 15 %** pour
 `affiliate_id`, dans la table `commissions` existante avec `level='abonnement'`.
 
 C'est ce lien-là qui rend la promesse « récurrent à vie » réellement tenable : elle est
@@ -77,7 +77,7 @@ catalogue et vitrine uniquement) · `record_subscription_payment()` · `subscrip
 |---|---|
 | `GET /api/admin/subscriptions` | Liste, jours restants, récurrent semestriel total |
 | `GET /api/admin/subscriptions/due` | **Consommé par n8n**, accepte `?key=NAFF_CRON_KEY` |
-| `POST /api/admin/subscriptions/{id}/paid` | Encaissement : échéance +6 mois et commission 25 % |
+| `POST /api/admin/subscriptions/{id}/paid` | Encaissement : échéance +6 mois et commission 15 % |
 | `POST /api/admin/subscriptions/{id}/rappel` | Marque le rappel envoyé (anti-doublon) |
 | `POST /api/admin/subscriptions/{id}/resilier` | Résiliation |
 | `GET /api/partenaire/portefeuille` | Le partenaire voit ses abonnements et ses échéances |
@@ -212,7 +212,7 @@ en tête, identifiants dans les Credentials n8n et jamais en dur.
 | # | Quoi | Effort |
 |---|---|---|
 | 1 | Table `subscriptions` + création automatique à la mise en ligne d'un client | 1 séance |
-| 2 | Génération automatique de la commission de 25 % à chaque encaissement | 1 séance |
+| 2 | Génération automatique de la commission de 15 % à chaque encaissement | 1 séance |
 | 3 | Endpoints `/due` et `/rappel` | courte |
 | 4 | Workflow n8n avec les 4 gabarits | 1 séance |
 | 5 | Onglet « Mon portefeuille » côté partenaire | 1 séance |

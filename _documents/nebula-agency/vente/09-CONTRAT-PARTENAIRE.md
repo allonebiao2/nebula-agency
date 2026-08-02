@@ -133,13 +133,14 @@ payé qu'une fois constaté sur le compte de NEBULA.
 effectivement encaissé par NEBULA, selon le nombre de ventes payées dans le mois civil
 en cours :
 
-| Ventes payées dans le mois | Commission |
+| Condition, dans le mois civil | Commission |
 |---|---|
-| 1 à 4 | **25 %** |
-| 5 à 9 | **30 %** |
-| 10 et plus | **35 %** |
+| par défaut | **30 %** |
+| ses ventes **et celles de ses filleuls directs** atteignent **3** | **40 %** |
+| il réalise **4 ventes ou plus à lui seul** | **50 %** |
 
-Le palier est recalculé chaque mois et repart à zéro le 1er de chaque mois.
+Le taux le plus élevé atteint s'applique à **l'intégralité de ses ventes du mois**. Le palier
+est recalculé chaque mois et repart à zéro le 1er de chaque mois.
 
 **6.2 Commission sur abonnement.** Le Partenaire perçoit **15 % de chaque abonnement
 encaissé**, souscription initiale et renouvellements compris, soit 3 000 F par client
@@ -152,17 +153,14 @@ que le client reste abonné ou non.
 Elle ne compte pas dans le décompte des ventes de l'article 6.1. Le renouvellement du nom
 de domaine ne donne lieu à aucune commission.
 
-**6.3 Prime de parrainage.** Le Partenaire perçoit **15 %** du montant encaissé sur les ventes
-des partenaires qu'il a lui-même fait entrer dans le programme. **Le parrainage comporte une
-seule profondeur : aucune commission n'est due sur les ventes des partenaires recrutés par
-ses propres filleuls.**
+**6.3 Absence de commission de réseau.** **Le Partenaire ne perçoit aucune commission sur
+les ventes réalisées par les partenaires qu'il a fait entrer dans le programme**, ni à aucun
+autre niveau du réseau. Il n'existe aucune rémunération de parrainage, de profondeur ou de
+réseau, sous quelque forme que ce soit.
 
-Cette prime est **versée en supplément par NEBULA**. Elle n'est **en aucun cas prélevée sur la
-commission du filleul**, qui perçoit l'intégralité de ce que prévoit l'article 6.1, exactement
-comme s'il était entré seul dans le programme.
-
-Cette prime ne s'applique pas aux abonnements. **Elle n'est due qu'à compter de la première
-vente réalisée par le Partenaire lui-même.**
+Les ventes de ses **filleuls directs** sont uniquement prises en compte, avec les siennes,
+pour déterminer son palier mensuel au titre de l'article 6.1. Ce bénéfice n'est acquis qu'à
+compter de la première vente réalisée par le Partenaire lui-même.
 
 **6.4 Fait générateur.** Une commission est due dès lors que le client a effectivement payé.
 Sur un règlement en 70 % / 30 %, la commission est versée en deux fois, au rythme des
@@ -195,7 +193,7 @@ est reprise :
   le Partenaire à NEBULA.
 
 La reprise porte **uniquement sur la part effectivement remboursée**. Elle s'applique de la
-même façon à la prime de parrainage de l'article 6.3. Elle est **tracée dans l'espace
+même façon à toute commission d'abonnement. Elle est **tracée dans l'espace
 partenaire** et notifiée au Partenaire.
 
 **Aucune reprise n'est possible lorsque le remboursement résulte d'une faute de NEBULA**
@@ -314,7 +312,7 @@ signature.
   compter de la fin du contrat, tant que les clients concernés restent abonnés. Elles
   s'éteignent au terme de ces 24 mois, en même temps que l'obligation de non-sollicitation
   de l'article 11 ;
-- les primes de parrainage de l'article 6.3 cessent ;
+- le bénéfice des ventes de ses filleuls dans son palier (article 6.3) cesse ;
 - les prospects encore attribués sont libérés.
 
 **12.4 Inactivité.** Sans aucune vente pendant **2 mois**, NEBULA prend contact avec le
@@ -392,11 +390,12 @@ qu'après réception de cette signature.**
 *Cette page n'a pas de valeur contractuelle. Elle résume ce qui compte au quotidien.*
 
 **Je gagne**
-- 25 % de 1 à 4 ventes dans le mois, 30 % de 5 à 9, 35 % à partir de 10
+- **30 %** par défaut · **40 %** dès que mes ventes et celles de mes filleuls atteignent 3
+  dans le mois · **50 %** dès que j'en fais 4 à moi seul. Le taux s'applique à TOUT mon mois
 - 15 % sur chaque abonnement de mes clients, soit 3 000 F tous les 6 mois, **pendant
   24 mois par client** (4 versements), même si j'arrête avant la fin
-- 15 % sur les ventes de ceux que je fais entrer, **offert par NEBULA, jamais retiré
-  de leurs gains à eux**. Une seule profondeur : rien sur les recrues de mes recrues
+- **rien du tout sur les ventes de mes filleuls** : aucune commission de réseau n'existe.
+  Leurs ventes comptent seulement avec les miennes pour faire monter mon palier
 - Je suis payé **sous 24 à 72 heures** après réclamation
 
 **Je dois**

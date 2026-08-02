@@ -11,7 +11,7 @@ Dernière grosse mise à jour : **2026-07-31** (module Abonnements + alignement 
 - **App LIVE** : **https://partenaires.nebula-agency.online** (HTTPS valide via **relais Cloudflare Pages gratuit** — voir §5) + secours `https://nebula-affilies-production.up.railway.app`.
 - **Admin Mongazi** : `…/cockpit-d59fa50d` (URL secrète, env `NAFF_ADMIN_PATH`) · `allonebiao@gmail.com` / **`dylanfurax`** (env `NAFF_ADMIN_PASS`). Anti-force-brute + portail `/` partenaire-only.
 - **Partenaire** : `/` (code + PIN) · **« Code/PIN oublié ? »** → notifie l'admin qui renvoie les accès. Plus de compte DEMO (plateforme démarre vide).
-- **Romaric DJANKAKI** = partenaire privilégié **40%** (code `RBNXF`, PIN `0067`, WhatsApp +229 67 21 82 56) ; parrainage 15% une seule profondeur. Taux perso = colonne `direct_rate_override` + endpoint admin `/rate`.
+- **Romaric DJANKAKI** = partenaire privilégié **40%** (code `RBNXF`, PIN `0067`, WhatsApp +229 67 21 82 56) ; aucune commission de réseau (grille unique 30/40/50). Taux perso = colonne `direct_rate_override` + endpoint admin `/rate`.
 - **Espaces** :
   - `/` portail (connexion partenaire OU admin) — marqué « réservé aux partenaires »
   - `/partenaire` espace partenaire (code + PIN)
@@ -43,7 +43,7 @@ Dernière grosse mise à jour : **2026-07-31** (module Abonnements + alignement 
 
 ## 2bis. MODULE ABONNEMENTS (2026-07-31) — le récurrent à vie, tracé
 
-Le programme promet au partenaire **25 % de chaque abonnement client, acquis à vie**, même
+Le programme promet au partenaire **15 % de chaque abonnement client, 4 versements (24 mois)**, même
 après son départ. Cette promesse n'était traçable nulle part : aucune table ne portait de
 date d'échéance. Elle l'est désormais.
 
@@ -52,7 +52,7 @@ date d'échéance. Elle l'est désormais.
 - **`ensure_subscription(lead)`** — idempotente, appelée quand l'admin marque une vente
   payée. Catalogue et Vitrine uniquement (le QR Review n'a pas d'abonnement).
 - **`record_subscription_payment(sid)`** — décale l'échéance de 6 mois **et** crée la
-  commission de 25 % dans la table `commissions` avec **`level='abonnement'`**.
+  commission de 15 % dans la table `commissions` avec **`level='abonnement'`**, plafonnée à 4.
 - **`subscriptions_due()`** — paliers J-15 / J-3 / J+3 / J+10, **un seul message par
   abonnement et par jour**, plafond de **3 relances** par échéance.
 - **`_plus_mois()`** — mois calendaires, gère les fins de mois.
@@ -88,8 +88,8 @@ contredit les autres. C'est arrivé avec « Répondre aux objections ».
 ## 3. Système de gains (3 couches) — à valider par Mongazi
 
 1. **RANKING cosmique** (prestige, ventes CUMULÉES) : Conseiller 1-5 / Conseiller Confirmé 6-15 / Conseiller Senior 16-35 / Étoile 36-65 / Chef Régional 66-110 / Directeur Commercial 111-150 / **Directeur Associé 151+** (statut spécial). Icônes SVG pro.
-2. **PALIERS mensuels** (= commission DIRECTE, remis à zéro chaque mois) : STARTER 1-4 = 25 % / SILVER 5-9 = 30 % / GOLD 10+ = 35 %.
-3. **PARRAINAGE** (fixe) : **15 % sur les ventes des recrues directes. UNE SEULE PROFONDEUR** — le 2e niveau a été supprimé le 2026-08-02 (`DEPTH_N2 = 0.0`, conservé à 0 pour ne pas casser l'historique en base). Les 15 % sont **payés en plus par NEBULA**, jamais prélevés sur la commission du filleul.
+2. **PALIERS mensuels** (= commission, remis à zéro chaque mois) : **BRONZE 30 %** par défaut / **ARGENT 40 %** dès que ses ventes + celles de ses filleuls directs atteignent 3 / **OR 50 %** dès qu'il fait 4 ventes à lui seul. Le taux s'applique à TOUT le mois.
+3. **AUCUNE COMMISSION DE RÉSEAU** (2026-08-02) : `DEPTH_N1 = DEPTH_N2 = 0.0`, conservés à zéro pour que l'historique déjà en base continue de s'afficher. Un parrain ne touche rien sur ses filleuls ; **leurs ventes du mois s'ajoutent aux siennes dans `palier_for` pour atteindre la marche des 40 %**. Grille unique 30 / 40 / 50.
 
 « Une vente » = un lead **payé**. Commission générée **automatiquement** quand l'admin marque le paiement.
 
@@ -98,7 +98,7 @@ contredit les autres. C'est arrivé avec « Répondre aux objections ».
 ## 4. Inventaire des fonctionnalités (toutes LIVE)
 
 - **Back-office 2 faces** : statuts client (attente / en cours / terminé / annulé), paiement gris↔vert fluo, notifs in-app.
-- **Commissions automatisées** : vente payée → 2 commissions auto (le vendeur + son parrain à 15 %) → chacun alerté → **Réclamer** (partenaire) → admin voit le MoMo → **Marquer payé** (groupé) → notifié. Registre 100 % tracé. **RCM poussé** = bilan à vie (`earnings_of`).
+- **Commissions automatisées** : vente payée → 1 commission auto (le vendeur, et lui seul) → chacun alerté → **Réclamer** (partenaire) → admin voit le MoMo → **Marquer payé** (groupé) → notifié. Registre 100 % tracé. **RCM poussé** = bilan à vie (`earnings_of`).
 - **Parrainage / réseau** : arbre N1→N2 visualisé côté partenaire ET admin (forêt complète).
 - **Candidatures** : publiques (`/devenir`, avec **CGU obligatoires** horodatées + IP) + parrainées → l'admin valide dans l'onglet *Recrues* → crée le partenaire (code+PIN).
 - **Documentation** : notes / PDF / liens par catégorie ; l'admin gère (upload), les partenaires lisent/téléchargent ; MAJ instantanée. Contenu pro seedé (5 guides).

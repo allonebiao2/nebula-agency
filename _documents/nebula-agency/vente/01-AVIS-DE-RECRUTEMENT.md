@@ -27,7 +27,7 @@ Trois principes tiennent cette annonce, et il ne faut pas les diluer :
    Surveiller le délai de 5 à 7 jours : le jour où il glisse, on ralentit le recrutement.
 2. **On donne les chiffres réels.** La plupart des annonces de commission au Bénin disent
    « gains attractifs ». Ça ne veut rien dire et ça sent l'arnaque. Nous, on écrit
-   **37 500 F sur une vitrine, 150 000 F sur un mois à 6 ventes.** Les vrais vendeurs calculent.
+   **45 000 F sur une vitrine, 250 000 F sur un mois à 6 ventes.** Les vrais vendeurs calculent.
 3. **On dit franchement ce que ce n'est pas.** Pas de salaire fixe, pas de gain sans travail.
    Éliminer les mauvais profils dans l'annonce coûte moins cher que les éliminer en entretien.
 
@@ -89,21 +89,21 @@ Votre pourcentage monte avec votre nombre de ventes dans le mois.
 
 | Votre palier du mois | Ventes payées | Votre commission |
 |---|---|---|
-| STARTER | 1 à 4 | **25 %** |
-| SILVER | 5 à 9 | **30 %** |
-| GOLD | 10 et plus | **35 %** |
+| BRONZE | par défaut | **30 %** |
+| ARGENT | vos ventes + celles de vos filleuls atteignent **3** | **40 %** |
+| OR | **vous faites 4 ventes ou plus à vous seul** | **50 %** |
 
 **Concrètement, dans votre poche :**
 
-- Un Catalogue vendu à 50 000 F → **12 500 F**
-- Une Vitrine vendue à 150 000 F → **37 500 F**
-- Un Outil métier vendu à 300 000 F → **75 000 F**
+- Un Catalogue vendu à 50 000 F → **15 000 F**, et **25 000 F** au palier OR
+- Une Vitrine vendue à 150 000 F → **45 000 F**, et **75 000 F** au palier OR
+- Un Outil métier vendu à 300 000 F → **90 000 F**, et **150 000 F** au palier OR
 - Un mois à 6 ventes (4 Catalogues + 2 Vitrines) → **150 000 F de commission**
 
-**Et vos commissions ne s'arrêtent pas à vos propres ventes.**
-Vous faites entrer quelqu'un ? Vous touchez **15 %** de ses ventes, à vie, tant qu'il vend.
-**Ces 15 % sont offerts par NEBULA : ils ne sont jamais retirés de ce que gagne votre
-filleul.** Il touche sa commission entière, exactement comme s'il était venu seul.
+**Et vos filleuls vous font gagner plus, sans rien prendre à personne.**
+Vous ne touchez **aucune commission** sur leurs ventes. En revanche **leurs ventes du mois
+comptent avec les vôtres** : dès 3 au total, **tout votre mois passe à 40 %**. Personne ne
+gagne d'argent sur le dos de personne ici.
 
 **Vous êtes payé sous 24 à 72 heures**, par Mobile Money, sur simple réclamation depuis votre
 espace personnel. Chaque commission est tracée du premier jour au versement.
@@ -163,7 +163,7 @@ Nous préférons être clairs tout de suite, ça vous évitera de perdre votre t
 - **Ce n'est pas de l'argent facile.** Il faut sortir, marcher, parler, essuyer des refus.
   Les bons partenaires font 5 à 10 rencontres par jour.
 - **Ce n'est pas un système où l'on gagne en recrutant.** Vous gagnez en **vendant**.
-  Le parrainage est un bonus qui vient après, pas le cœur du métier.
+  Faire entrer quelqu'un fait monter votre palier, ça ne remplace jamais la vente.
 - **Il n'y a rien à payer pour entrer.** Ni frais de dossier, ni kit à acheter, ni stock à avancer.
   Si quelqu'un vous demande de l'argent en notre nom, c'est un imposteur, signalez-le nous.
 
@@ -204,8 +204,8 @@ NEBULA AGENCY RECRUTE · Cotonou · Sans quota
 Nous créons les sites et catalogues des commerçants de Cotonou (9 clients déjà en ligne).
 Nous cherchons le maximum de personnes pour aller les présenter.
 
-Vous gagnez 25 % à 35 % sur chaque vente.
-Une vitrine vendue = 37 500 F pour vous. Un bon mois = 150 000 F.
+Vous gagnez 30 % à 50 % sur chaque vente.
+Une vitrine vendue = 45 000 F pour vous, 75 000 F au palier OR.
 
 Aucun diplôme exigé. Rien à payer. Vous ne livrez rien, vous vendez.
 Candidature (5 min) : https://partenaires.nebula-agency.online/devenir
@@ -216,7 +216,7 @@ Ou écrivez PARTENAIRE au +229 96 74 07 32
 
 ```
 Recrutement ouvert · Cotonou · NEBULA Agency
-Vous savez parler aux gens ? On vous paie 25 à 35 % sur chaque vente.
+Vous savez parler aux gens ? On vous paie 30 à 50 % sur chaque vente.
 Écrivez PARTENAIRE au 96 74 07 32
 ```
 
@@ -243,9 +243,9 @@ Vous savez parler aux gens ? On vous paie 25 à 35 % sur chaque vente.
 
    Vous vendez nos sites et catalogues.
    Nous livrons tout en 5 à 7 jours.
-   Vous touchez 25 % à 35 % par vente.
+   Vous touchez 30 % à 50 % par vente.
 
-        Une vente = 12 500 F à 75 000 F
+        Une vente = 15 000 F à 150 000 F
         Un bon mois = 150 000 F
 
    ─────────────────────────────────
@@ -280,7 +280,7 @@ Nous en avons déjà livré à des bijoutiers, des instituts de beauté, des res
 des caves à vins, des pâtissières, des ébénistes. Tout est en ligne, visible, vérifiable.
 
 Nous ouvrons le recrutement de Conseillers en Digitalisation à Cotonou, sans quota de places.
-Vous présentez nos offres, nous produisons tout, vous touchez 25 % à 35 % par vente.
+Vous présentez nos offres, nous produisons tout, vous touchez 30 % à 50 % par vente.
 Pas de diplôme exigé, rien à payer pour entrer.
 
 Si vous savez tenir une conversation avec un commerçant, on vous apprend le reste.
@@ -412,9 +412,9 @@ Votre lien personnel est votre outil le plus important : tout ce qui passe par l
 attribué automatiquement. Partagez-le, mettez-le en statut, générez votre carte de visite
 dans l'espace.
 
-Rappel de vos gains : 25 % dès la 1ère vente, 30 % à partir de 5 ventes dans le mois,
-35 % à partir de 10. Plus 15 % sur les ventes de ceux que vous faites entrer, offerts
-par NEBULA, jamais retirés de leurs gains à eux.
+Rappel de vos gains : 30 % dès la 1ère vente, 40 % dès que vos ventes et celles de vos
+filleuls atteignent 3 dans le mois, 50 % dès que vous en faites 4 à vous seul. Aucune
+commission sur vos filleuls : leurs ventes font monter votre palier, c'est tout.
 
 Une question, à n'importe quelle heure : NOVA est dans votre espace. Une question qui compte
 vraiment : vous m'écrivez directement.
@@ -434,7 +434,7 @@ Mongazi · NEBULA Agency
 | J2 | Envoi ciblé aux anciens clients et connaissances : « qui connaissez-vous ? » | WhatsApp direct |
 | J3 | Impression et pose de 30 affiches | Cybercafés, écoles, agences MoMo |
 | J4 | Publication dans les groupes Facebook emploi et business de Cotonou | Facebook Groupes |
-| J5 | Relance du statut avec un angle différent (« une vitrine vendue = 37 500 F ») | WhatsApp |
+| J5 | Relance du statut avec un angle différent (« une vitrine vendue = 45 000 F ») | WhatsApp |
 | J7 | Premier tri des candidatures + premiers appels | Téléphone |
 | J8-J11 | Entretiens (grille notée systématique) | Présentiel et WhatsApp |
 | J12 | Décisions et envoi des refus, poliment, porte ouverte | WhatsApp |

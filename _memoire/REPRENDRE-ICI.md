@@ -79,9 +79,9 @@ dans `_documents/nebula-agency/vente/`.
 | QR Google Review | **30 000 F** |
 | **Abonnement** | **20 000 F tous les 6 mois, modifications comprises** (ex-15 000 F) |
 | Paiement | Catalogue intégral · Vitrine et Outil **70 % / 30 %** |
-| Commission | 25 % (1-4 ventes/mois) · 30 % (5-9) · 35 % (10+) |
-| **Récurrent** | **25 % de chaque abonnement, ACQUIS À VIE**, ne compte pas dans le palier |
-| Parrainage | **15 %, une seule profondeur** (N2 supprimé le 2026-08-02), à partir de la 1re vente du partenaire · offert par NEBULA, jamais retiré au filleul |
+| Commission | **30 %** par défaut · **40 %** si ses ventes + celles de ses filleuls atteignent 3 dans le mois · **50 %** s'il fait 4 ventes à lui seul |
+| **Récurrent** | **15 % de chaque abonnement, 4 versements max (24 mois)**, ne compte pas dans le palier |
+| Parrainage | **Aucune commission, à aucune profondeur** (2026-08-02). Les ventes des filleuls directs comptent avec les siennes pour le palier des 40 %, à partir de sa 1re vente |
 | Versement | **24 à 72h** après réclamation |
 | Vague 1 | Cotonou, **AUCUN QUOTA DE PLACES** *(décision 2026-08-01, remplace les 8 places)*, candidatures 21 jours, objectif 30 ventes / 90 jours |
 | **Le filtre** | L'**entretien**, obligatoire — c'est le seul qui reste. **Le vrai plafond n'est plus le nombre de partenaires mais la capacité à livrer en 5 à 7 jours** : le jour où ce délai glisse, on ralentit le recrutement |
@@ -234,7 +234,7 @@ l'ombre, fond uni, format portrait.
 - **`refresh_seeded_docs()`** corrige au démarrage les 5 guides déjà en base qui poussaient
   la Vitrine en premier. Idempotente, ne touche pas les documents ajoutés à la main.
 - **Module Abonnements** : table `subscriptions`, ouverture automatique à l'encaissement,
-  commission de 25 % au renouvellement, 6 endpoints, portefeuille partenaire.
+  commission de 15 % au renouvellement, 6 endpoints, portefeuille partenaire.
 
 ---
 

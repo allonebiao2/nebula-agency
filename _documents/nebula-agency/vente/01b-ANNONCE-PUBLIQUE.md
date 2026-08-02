@@ -63,21 +63,21 @@ Votre pourcentage monte avec votre nombre de ventes dans le mois.
 
 | Votre palier du mois | Ventes payées | Votre commission |
 |---|---|---|
-| STARTER | 1 à 4 | **25 %** |
-| SILVER | 5 à 9 | **30 %** |
-| GOLD | 10 et plus | **35 %** |
+| BRONZE | par défaut | **30 %** |
+| ARGENT | vos ventes + celles de vos filleuls atteignent **3** | **40 %** |
+| OR | **vous faites 4 ventes ou plus à vous seul** | **50 %** |
 
 **Concrètement, dans votre poche :**
 
-- Un Catalogue vendu à 50 000 F → **12 500 F**
-- Une Vitrine vendue à 150 000 F → **37 500 F**
-- Un Outil métier vendu à 300 000 F → **75 000 F**
+- Un Catalogue vendu à 50 000 F → **15 000 F**, et **25 000 F** au palier OR
+- Une Vitrine vendue à 150 000 F → **45 000 F**, et **75 000 F** au palier OR
+- Un Outil métier vendu à 300 000 F → **90 000 F**, et **150 000 F** au palier OR
 - Un mois à 6 ventes (4 Catalogues + 2 Vitrines) → **150 000 F de commission**
 
-**Et vos commissions ne s'arrêtent pas à vos propres ventes.**
-Vous faites entrer quelqu'un ? Vous touchez **15 %** de ses ventes, à vie, tant qu'il vend.
-**Ces 15 % sont offerts par NEBULA : ils ne sont jamais retirés de ce que gagne votre
-filleul.** Il touche sa commission entière, exactement comme s'il était venu seul.
+**Et vos filleuls vous font gagner plus, sans rien prendre à personne.**
+Vous ne touchez **aucune commission** sur leurs ventes. En revanche **leurs ventes du mois
+comptent avec les vôtres** : dès 3 au total, **tout votre mois passe à 40 %**. Personne ne
+gagne d'argent sur le dos de personne ici.
 
 **Vous êtes payé sous 24 à 72 heures**, par Mobile Money, sur simple réclamation depuis votre
 espace personnel. Chaque commission est tracée du premier jour au versement.

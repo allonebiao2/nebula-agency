@@ -82,10 +82,10 @@ revenez le voir trois semaines plus tard : la Vitrine se vend presque toute seul
 
 Un exemple concret de ce que ça donne sur un an, avec un seul client :
 
-| Moment | Vente | Votre commission (palier 25 %) |
+| Moment | Vente | Votre commission (palier 30 %) |
 |---|---|---|
-| Janvier | Catalogue 50 000 F | 12 500 F |
-| Mars | Vitrine 150 000 F | 37 500 F |
+| Janvier | Catalogue 50 000 F | 15 000 F |
+| Mars | Vitrine 150 000 F | 45 000 F |
 | Juillet | Outil de suivi 200 000 F | 50 000 F |
 | | **Total sur un client** | **100 000 F** |
 
@@ -486,19 +486,19 @@ qui s'énerve, et qui doute de vous.
 
 | Palier du mois | Ventes payées dans le mois | Commission |
 |---|---|---|
-| **STARTER** | 1 à 4 | **25 %** |
-| **SILVER** | 5 à 9 | **30 %** |
-| **GOLD** | 10 et plus | **35 %** |
+| **BRONZE** | par défaut | **30 %** |
+| **ARGENT** | vos ventes + celles de vos filleuls atteignent **3** | **40 %** |
+| **OR** | **vous faites 4 ventes ou plus à vous seul** | **50 %** |
 
 Le palier **se remet à zéro chaque mois**. Il s'applique à **tous les services**,
 Outil métier compris.
 
-**Parrainage :** 15 % sur les ventes de ceux que vous faites entrer. **Une seule
-profondeur**, rien sur les ventes de leurs propres recrues. À vie, tant qu'ils vendent.
+**Vos filleuls :** vous ne touchez **aucune commission** sur leurs ventes. Ce qu'ils font,
+c'est faire monter **votre palier** : leurs ventes du mois s'ajoutent aux vôtres, et dès 3 au
+total, tout votre mois passe à 40 %.
 
-> Ces 15 % sont **payés en plus par NEBULA**. Ils ne sont **jamais prélevés sur la commission
-> de votre filleul** : il touche exactement ce qu'il aurait touché en venant seul.
-> Dites-le tel quel quand vous recrutez : c'est ce qui vous distingue d'une pyramide.
+> **Personne ne gagne d'argent sur le dos de personne ici.** Dites-le tel quel quand vous
+> recrutez : c'est ce qui vous distingue d'une pyramide, et c'est vrai.
 
 **Une vente = un lead payé.** Un client intéressé qui ne paie pas ne génère aucune commission.
 
@@ -517,23 +517,23 @@ Chaque client abonné vous rapporte **3 000 F tous les 6 mois** (15 % de son abo
 
 | Votre portefeuille | Sans rien vendre |
 |---|---|
-| 10 clients | 50 000 F par semestre |
-| 30 clients | 150 000 F par semestre |
-| 60 clients | 300 000 F par semestre |
+| 10 clients | 30 000 F par semestre |
+| 30 clients | 90 000 F par semestre |
+| 60 clients | 180 000 F par semestre |
 
 Le récurrent **ne compte pas dans votre palier** : seules vos ventes nouvelles vous font
-passer de 25 à 30 puis 35 %. Et l'échéance de renouvellement est **le meilleur prétexte de
+passer de 30 à 40 puis 50 %. Et l'échéance de renouvellement est **le meilleur prétexte de
 reprise de contact qui existe** pour vendre la marche suivante de l'escalier.
 
 ## 5.3 Le calcul qui doit vous obséder
 
 **Il vous manque toujours une vente pour changer de palier.**
 
-Vous êtes à 4 ventes le 25 du mois ? La 5ème ne vous rapporte pas seulement sa commission :
-elle fait passer **tout votre mois** de 25 % à 30 %. Sur 4 ventes déjà faites, c'est de l'argent
+Vous êtes à 3 ventes le 25 du mois ? La 4ème ne vous rapporte pas seulement sa commission :
+elle fait passer **tout votre mois** de 40 % à 50 %. Sur 3 ventes déjà faites, c'est de l'argent
 qui tombe rétroactivement.
 
-**Ne finissez jamais un mois à 4 ou à 9 ventes.** Regardez votre compteur le 20 du mois,
+**Ne finissez jamais un mois à 3 ventes.** Regardez votre compteur le 20 du mois,
 et allez chercher celle qui manque.
 
 ## 5.4 Votre montée en gamme
@@ -646,7 +646,7 @@ semaine. La vente vient d'elle-même quand la conversation est bonne.
 | Un client à 35 produits ? | 50 000 + 15 000 par lot de 10 = 80 000 F |
 | Une vitrine à 3 pages ? | 150 000 + 2 × 30 000 = 210 000 F |
 | Le délai ? | 5 à 7 jours après le brief complet |
-| Ma commission sur une vitrine ? | 37 500 F à 25 %, 45 000 F à 30 %, 52 500 F à 35 % |
+| Ma commission sur une vitrine ? | 45 000 F à 30 %, 60 000 F à 40 %, 75 000 F à 50 % |
 | Combien de clients NEBULA a livrés ? | 9, tous consultables en ligne |
 | Un site à montrer pour un restaurant ? | Au Braisé d'Or |
 | Un site à montrer pour une bijouterie ? | Djambar Team |

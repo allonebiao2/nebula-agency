@@ -94,15 +94,15 @@ function payDot(p) { return `<span class="pay ${p ? 'ok' : ''}"><span class="dot
 function initials(n) { return (n || '?').split(' ').filter(Boolean).slice(0, 2).map(x => x[0]).join('').toUpperCase(); }
 
 const RANK_ICON = { 'Partenaire Junior': 'spark', 'Conseiller': 'meteor', 'Conseiller Confirmé': 'comet', 'Conseiller Senior': 'planet', 'Chef de Secteur': 'star', 'Chef Régional': 'supernova', 'Directeur Commercial': 'nebula', 'Directeur Associé': 'crown' };
-const PALIER_COLOR = { 'STARTER': '#9aa0c0', 'SILVER': '#cdd6ef', 'GOLD': '#e7c987', 'SPÉCIAL': '#e6c34c' };
+const PALIER_COLOR = { 'BRONZE': '#9aa0c0', 'ARGENT': '#cdd6ef', 'OR': '#e7c987', 'SPÉCIAL': '#e6c34c' };
 function rankSvg(label) { return icon(RANK_ICON[label] || 'spark'); }
 
 const TOUR = [
   { icon: 'spark', title: 'Bienvenue dans ton bureau NEBULA', text: 'En quelques écrans : tu amènes des clients, tu recrutes des partenaires, et tu encaisses tes commissions. Suivons le guide ensemble.' },
-  { icon: 'chart', title: 'Mon QG', text: 'Ta vue d\'ensemble : ton <b>rang</b> (prestige, selon tes ventes cumulées), ton <b>palier du mois</b> (ta commission directe, de 25% à 35%), et ton <b>RCM</b> (total généré à vie).' },
+  { icon: 'chart', title: 'Mon QG', text: 'Ta vue d\'ensemble : ton <b>rang</b> (prestige, selon tes ventes cumulées), ton <b>palier du mois</b> (ta commission, de 30% à 50%), et ton <b>RCM</b> (total généré à vie).' },
   { icon: 'coins', title: 'Mes gains', text: 'Toutes tes commissions, tracées. Quand un montant est « à réclamer », clique <b>Réclamer</b> : NEBULA est prévenue et te paie en Mobile Money.' },
   { icon: 'folder', title: 'Mes clients', text: 'Les commerçants que tu as amenés. NEBULA met à jour les statuts (en cours, terminé) et le paiement — tu suis tout en direct.' },
-  { icon: 'users', title: 'Mon réseau', text: 'Recrute des partenaires avec ton <b>lien de recrutement</b>. Tu gagnes <b>15%</b> sur les ventes de ceux que tu fais entrer — <b>offerts par NEBULA</b>, jamais retirés de leurs gains. Ton arbre est ici.' },
+  { icon: 'users', title: 'Mon réseau', text: 'Recrute des partenaires avec ton <b>lien de recrutement</b>. Tu ne touches <b>aucune commission</b> sur leurs ventes, mais <b>leurs ventes du mois s\'ajoutent aux tiennes</b> pour te faire passer à <b>40%</b>. Ton équipe est ici.' },
   { icon: 'trophy', title: 'Classement', text: 'Vois le niveau de <b>toute l\'équipe</b> : rang, ventes, RCM, performance. Les clients de chacun restent privés — ici, on compare les scores. Grimpe !' },
   { icon: 'chat', title: 'Messages', text: 'Ton bureau est vivant : écris à un partenaire en privé, ou à toute l\'équipe dans le <b>salon NEBULA</b>. Une tonalité sonne dès que ça bouge sur la plateforme.' },
   { icon: 'link', title: 'Mon lien', text: 'Ton <b>lien unique</b> à partager partout : celui qui l\'ouvre choisit de <b>demander une vitrine</b> (il devient ton client) ou de <b>devenir partenaire</b> (il rejoint ton réseau). Un seul lien, un seul QR — tout t\'est attribué.' },
@@ -134,10 +134,12 @@ function switchView(id) {
 function renderHome() {
   const s = ME.stats, r = s.rank, p = s.palier;
   const sup = s.is_supervisor;
-  const palBase = sup ? (s.team_mois || 0) : s.ventes_mois;        // ce qui fait monter le palier
-  const palUnit = sup ? 'client' : 'vente';                         // superviseur : clients d'équipe
+  // Grille unique : ce qui fait monter le palier, c'est SES ventes, et pour la marche
+  // des 40 % le total avec ses filleuls directs. Aucun barème distinct pour un superviseur.
+  const palBase = s.ventes_mois;
+  const palUnit = 'vente';
   const nextRank = r.next_label ? `Encore <b style="color:var(--ink)">${r.to_next}</b> vente${r.to_next > 1 ? 's' : ''} (toi + équipe) pour le rang ${r.next_label}` : 'Directeur Associé : rang suprême atteint';
-  const nextPal = p.next_label ? `Encore <b style="color:var(--ink)">${p.to_next}</b> ${palUnit}${p.to_next > 1 ? 's' : ''}${sup ? " d'équipe" : ''} ce mois → ${p.next_label} ${p.next_pct}%` : (p.label === 'SPÉCIAL' ? 'Taux spécial — partenaire privilégié' : (sup ? 'SILVER — palier max ce mois' : 'GOLD — palier max ce mois'));
+  const nextPal = p.next_label ? `Encore <b style="color:var(--ink)">${p.to_next}</b> ${palUnit}${p.to_next > 1 ? 's' : ''} ce mois → ${p.next_label} ${p.next_pct}%` : (p.label === 'SPÉCIAL' ? 'Taux spécial, partenaire privilégié' : 'OR, palier max ce mois');
   const palPct = p.next_min ? Math.min(100, Math.round(palBase * 100 / p.next_min)) : 100;
   const perVitrine = fmt(Math.round(150000 * p.rate));
   document.getElementById('v-home').innerHTML = `
@@ -167,7 +169,7 @@ function renderHome() {
           <div class="r-sub">Commission directe <b style="color:var(--accent)">${p.pct}%</b> — <span class="mono">${perVitrine}</span> F / vitrine</div>
         </div>
         <div class="xp"><div class="track"><div class="fill" id="palfill" style="background:linear-gradient(90deg,var(--accent),var(--ok))"></div></div>
-          <div class="meta"><span>${nextPal}</span><span class="mono">${palBase}${sup ? " d'équipe" : ''} ce mois</span></div></div>
+          <div class="meta"><span>${nextPal}</span><span class="mono">${palBase} ce mois${(s.team_mois || 0) > palBase ? ` · ${s.team_mois} avec l'équipe` : ''}</span></div></div>
       </div></div></div>
 
       <div class="col-3 rv"><div class="card clickable" data-go="gains"><div class="in stat"><div class="lbl">RCM · total généré (à vie)</div><div class="num accent mono" id="n-rcm">0</div><div class="sub" id="n-rcm-sub">tracé</div></div></div></div>
@@ -176,7 +178,7 @@ function renderHome() {
       <div class="col-3 rv"><div class="card clickable" data-go="clients"><div class="in stat"><div class="lbl">Clients actifs</div><div class="num mono" style="color:var(--info)" id="n-cli">0</div><div class="sub">attente + en cours</div></div></div></div>
 
       <div class="col-12 rv"><button class="card pg-cta clickable" id="home-pay" style="width:100%;text-align:left;cursor:pointer;color:var(--ink)"><div class="in" style="display:flex;align-items:center;gap:14px;justify-content:space-between;flex-wrap:wrap">
-        <div style="display:flex;align-items:center;gap:13px"><span class="pg-ico">${icon('coins')}</span><div><div style="font-weight:700">Ma rémunération — tout est clair</div><div class="meta">Mes paliers, mes 3 sources de gains (vente directe + abonnements + parrainage), et comment je suis payé.</div></div></div>
+        <div style="display:flex;align-items:center;gap:13px"><span class="pg-ico">${icon('coins')}</span><div><div style="font-weight:700">Ma rémunération — tout est clair</div><div class="meta">Mes paliers 30 / 40 / 50 %, mes 2 sources de gains (mes ventes + mes abonnements), et comment je suis payé.</div></div></div>
         <span class="btn sm primary">Voir<span class="ico">${icon('arrow')}</span></span>
       </div></button></div>
 
@@ -257,7 +259,6 @@ async function renderGains() {
         </div>
         <div class="flex gap8 mt16 wrap">
           <span class="chip">Direct : <b style="color:var(--ink)">${fmt(e.direct)}</b> F</span>
-          <span class="chip">Parrainage (15%) : <b style="color:var(--ink)">${fmt(e.n1)}</b> F</span>
         </div>
       </div></div></div>
       <div class="col-12 rv"><div class="card"><div class="in">
@@ -276,7 +277,7 @@ async function renderGains() {
 }
 
 function renderReseau() {
-  const net = ME.network || { n1: [], n2: [], n1_commission: 0, n2_commission: 0, network_total: 0, n1_count: 0, n2_count: 0 };
+  const net = ME.network || { n1: [], n1_count: 0, n2_count: 0, ventes_mois_equipe: 0 };
   const link = location.origin + '/p/' + ME.code + '?go=partenaire';
   MYNET = {};
   const MY_APEX = { name: ME.name, code: ME.code, ventes: ME.stats.ventes, rank: ME.stats.rank.label, children: net.n1 || [] };
@@ -287,7 +288,7 @@ function renderReseau() {
       <div class="col-7 rv"><div class="card glow"><div class="in">
         <span class="eyebrow"><span class="dot"></span>Ton lien de recrutement</span>
         <h2 class="mt8" style="font-size:1.5rem">Recrute, et touche sur leurs ventes.</h2>
-        <p class="muted mt8 mb16">Partage ce lien : qui le remplit devient ta recrue (après validation NEBULA). Tu gagnes <b style="color:var(--ink)">15%</b> sur les ventes de tes recrues directes. <b>Une seule profondeur</b> : rien sur les recrues de tes recrues.</p>
+        <p class="muted mt8 mb16">Partage ce lien : qui le remplit devient ta recrue (après validation NEBULA). <b>Tu ne touches rien sur leurs ventes</b>. En revanche <b style="color:var(--ink)">leurs ventes du mois comptent avec les tiennes</b> : dès 3 au total, tout ton mois passe à <b style="color:var(--ink)">40%</b>.</p>
         <div class="field"><div class="wrap"><input id="rlk" readonly value="${esc(link)}" style="font-family:JetBrains Mono;font-size:.85rem"></div></div>
         <div class="flex gap8 wrap">
           <button class="btn primary" id="rcopy">Copier le lien<span class="ico">${icon('copy')}</span></button>
@@ -297,14 +298,14 @@ function renderReseau() {
       <div class="col-5 rv"><div class="card"><div class="in">
         <span class="eyebrow"><span class="dot"></span>Tes gains réseau</span>
         <div class="stat mt16"><div class="lbl">Commissions de profondeur</div><div class="num accent mono" id="n-net">0</div>
-          <div class="sub">Parrainage 15% <span class="mono">${fmt(net.n1_commission)}</span> F</div></div>
-        <div class="flex gap8 mt16 wrap"><span class="chip">${net.n1_count} recrue${net.n1_count > 1 ? 's' : ''} directe${net.n1_count > 1 ? 's' : ''}</span><span class="chip">${net.n2_count} au 2e niveau (non rémunéré)</span></div>
+          <div class="sub">Ventes de l&rsquo;équipe ce mois <span class="mono">${fmt(net.ventes_mois_equipe || 0)}</span></div></div>
+        <div class="flex gap8 mt16 wrap"><span class="chip">${net.n1_count} recrue${net.n1_count > 1 ? 's' : ''} directe${net.n1_count > 1 ? 's' : ''}</span><span class="chip">Leurs ventes comptent dans ton palier</span></div>
       </div></div></div>
       <div class="col-12 rv"><div class="card"><div class="in">
         <div class="flex between wrap" style="align-items:center;gap:10px"><h3>Ton équipe en schéma</h3><span class="chip">Parrain · Toi · Filleuls</span></div>
         <div class="anti-ponzi mt16">
           <div class="ap-ico">${icon('shield')}</div>
-          <div><b>Ce n'est pas un système pyramidal.</b> Ici, <b>chacun est son propre patron</b> : ton revenu vient d'abord de <b>tes</b> ventes. Quand une personne que tu as fait entrer réussit, NEBULA te verse <b>15%</b> en remerciement — <b>c'est NEBULA qui paie, ça ne sort pas de la poche de ton filleul</b>, qui gagne exactement comme s'il était venu seul. Une seule profondeur, et un filleul peut très bien gagner plus que son parrain.</div>
+          <div><b>Ce n'est pas un système pyramidal.</b> <b>Personne ne gagne d'argent sur le travail de quelqu'un d'autre</b> : ton revenu vient uniquement de <b>tes</b> ventes. Faire entrer quelqu'un de bon ne te verse aucune commission, ça fait monter <b>ton palier</b> : ses ventes du mois comptent avec les tiennes. Tu gagnes plus sur TES ventes, jamais sur les siennes.</div>
         </div>
         ${net.n1.length ? `
         <div class="org-toolbar mt16">
@@ -336,7 +337,7 @@ function pCard(n, apex, level) {
       <div class="oname">${esc(n.name)} — toi</div>
       <div class="ostats"><span class="ochip"><b>${n.ventes}</b> vente${n.ventes > 1 ? 's' : ''}</span><span class="ochip"><b>${n._team || 0}</b> dans ton équipe</span></div></div>`;
   }
-  const lvlLabel = level === 1 ? 'Filleul direct · 15% pour toi' : '2e niveau · non rémunéré';
+  const lvlLabel = 'Filleul direct · ses ventes comptent dans ton palier';
   const teamCount = n._team || 0;
   const toggle = teamCount ? `<button class="otoggle" title="Replier / déplier">− ${teamCount}</button>` : '';
   return `<div class="onode" style="--tc:${level === 1 ? 'var(--accent)' : '#22d3ee'}" data-code="${esc(n.code || '')}" data-name="${esc((n.name || '').toLowerCase())}">
@@ -354,7 +355,7 @@ function pLi(n, apex, level) {
 }
 function openFilleul(code) {
   const e = MYNET[code]; if (!e) return; const n = e.node; sound.sfx.open();
-  const lvl = e.level === 1 ? 'Filleul direct — tu touches 15% sur ses ventes' : 'Filleul de filleul — non rémunéré (une seule profondeur)';
+  const lvl = 'Filleul direct : ses ventes du mois comptent dans ton palier';
   document.getElementById('doc-in').innerHTML = `
     <div class="flex between" style="align-items:flex-start"><div class="flex" style="gap:14px;align-items:center">
       ${NA.idBadge(n, { size: 'lg' })}
@@ -788,7 +789,7 @@ function contactCard(c) {
 }
 function renderChatFilters() {
   const wrap = document.getElementById('chatFilters'); if (!wrap) return;
-  const palOrder = ['STARTER', 'SILVER', 'GOLD'];
+  const palOrder = ['BRONZE', 'ARGENT', 'OR'];
   const pals = palOrder.filter(p => CHAT_DATA.contacts.some(c => c.palier === p));
   const ranks = [...new Set(CHAT_DATA.contacts.map(c => c.rank).filter(Boolean))].sort((a, b) => NA.RANK_ORDER.indexOf(a) - NA.RANK_ORDER.indexOf(b));
   const chip = (v, lbl) => `<span class="chat-chip${CHAT_FILTER.f === v ? ' on' : ''}" data-chip="${v}">${esc(lbl)}</span>`;

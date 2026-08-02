@@ -446,7 +446,7 @@ const NA = (() => {
       <div class="rl-list">${rows}</div>
       <div class="rl-paltitle">${palTeam ? 'Ta commission du mois — selon les clients du mois de ton équipe (toi + branches)' : 'Ta commission du mois — selon tes ventes du mois'}</div>
       <div class="rl-pals">${pals}</div>
-      <div class="rl-foot">Profondeurs réseau (fixes) : N1 ${_cfgCache.depths ? _cfgCache.depths.n1 : 10}% · N2 ${_cfgCache.depths ? _cfgCache.depths.n2 : 5}% sur ton réseau.</div>
+      <div class="rl-foot">Aucune commission de réseau : les ventes de tes filleuls font monter TON palier, elles ne te versent rien.</div>
     </div></div></div>`);
     document.body.appendChild(scrim);
     requestAnimationFrame(() => scrim.classList.add('on'));
@@ -459,11 +459,11 @@ const NA = (() => {
   /* ---------- GUIDE RÉMUNÉRATION & PAIEMENTS (clic → tout est expliqué) ---------- */
   async function payGuide(opts = {}) {
     if (!_cfgCache) { try { _cfgCache = await api('/api/config'); } catch (e) { _cfgCache = {}; } }
-    const cfg = _cfgCache, dN1 = (cfg.depths || {}).n1 || 10, dN2 = (cfg.depths || {}).n2 || 5;
+    const cfg = _cfgCache;
     const admin = opts.mode === 'admin';
     const s = opts.stats || {}, e = opts.earnings || {};
     const isSup = !!s.is_supervisor, pal = s.palier || {};
-    const rate = s.direct_rate || pal.rate || 0.25;
+    const rate = s.direct_rate || pal.rate || 0.30;
     const money = n => fmt(n || 0) + ' F';
     const sec = (title, body) => `<div class="pg-sec"><div class="eyebrow"><span class="dot"></span>${title}</div>${body}</div>`;
     const scale = (!admin && s.paliers && s.paliers.length) ? s.paliers : (cfg.paliers || []);
@@ -474,8 +474,7 @@ const NA = (() => {
       const cur = !admin && pal.label === p.label;
       return `<div class="pg-pal${cur ? ' cur' : ''}"><b>${esc(p.label)}</b><span>${rng} ${palUnit}</span><em>${p.pct}%</em></div>`;
     }).join('');
-    const supScale = (admin && (cfg.paliers_sup || []).length)
-      ? `<p class="muted mt8" style="font-size:.86rem">Superviseur (ex : Romaric) — barème d'équipe : ${(cfg.paliers_sup).map(p => `<b>${esc(p.label)} ${p.pct}%</b>`).join(' · ')} (selon les clients du mois de toute sa branche ; % sur ses ventes directes).</p>` : '';
+    const supScale = '';
     const sources = `<div class="pg-srcs">
       <div class="pg-src"><div class="pg-n">1</div><div><b>Vente directe</b> — le palier du mois.
         ${admin ? `Chaque partenaire touche le % de son palier sur les ventes qu'il fait lui-même.`
@@ -489,7 +488,7 @@ const NA = (() => {
         <div class="pg-stat"><div class="num mono" style="color:var(--ok)">${money(e.paid)}</div><small>déjà payé</small></div>
         <div class="pg-stat"><div class="num mono" style="color:#e6c34c">${money(e.due)}</div><small>à réclamer</small></div>
         <div class="pg-stat"><div class="num mono">${money(e.claimed)}</div><small>réclamé (en cours)</small></div>
-      </div><p class="muted mt8">Répartition : vente directe ${money(e.direct)} · réseau N1 ${money(e.n1)} · réseau N2 ${money(e.n2)}.</p>`);
+      </div><p class="muted mt8">Répartition : ventes ${money(e.direct)} · abonnements ${money(e.abonnement || 0)}.</p>`);
     const how = sec(admin ? 'Comment NEBULA paie' : 'Comment je suis payé', `<div class="pg-steps">
         <div><b>1.</b> ${admin ? 'Le partenaire clique' : 'Tu cliques'} <b>Réclamer</b> dès qu'une vente est payée.</div>
         <div><b>2.</b> ${admin ? 'Tu reçois' : 'NEBULA reçoit'} l'alerte avec le numéro Mobile Money.</div>

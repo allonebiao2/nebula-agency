@@ -11,7 +11,7 @@
 >
 > **Et une vérité à accepter tout de suite :** sur cette offre, **votre travail n'est pas de
 > conclure. Votre travail est de détecter, de qualifier et de passer la main.** Le partenaire
-> qui comprend ça gagne 75 000 F sur un dossier. Celui qui veut tout faire seul perd le client.
+> qui comprend ça gagne 90 000 F sur un dossier. Celui qui veut tout faire seul perd le client.
 >
 > Version 1.0 · 2026-07-30 · NEBULA Agency, Cotonou
 > Confidentiel · réservé aux partenaires certifiés
@@ -539,7 +539,7 @@ Vous avez posé la question 4 du diagnostic : combien de gens lui doivent de l'a
 **Sur le Catalogue, conclure c'est encaisser 50 000 F.
 Sur l'Outil métier, conclure c'est obtenir le rendez-vous de cadrage avec Mongazi.**
 
-C'est tout. C'est votre travail, il s'arrête là, et il vaut jusqu'à 105 000 F de commission.
+C'est tout. C'est votre travail, il s'arrête là, et il vaut jusqu'à 150 000 F de commission.
 
 **Ce que vous ne faites JAMAIS sur cette offre :**
 - Annoncer un prix ferme
@@ -573,7 +573,7 @@ compte dans votre palier du mois **dès le premier versement**.
 ## 10.3 Ce que vous rapportez à Mongazi le jour même
 
 **Le dossier de qualification.** C'est votre livrable sur cette offre, et c'est ce qui fait
-la différence entre un partenaire qui gagne 75 000 F et un qui fait perdre du temps à tout
+la différence entre un partenaire qui gagne 90 000 F et un qui fait perdre du temps à tout
 le monde.
 
 - [ ] **Le métier exact** et ce que fait vraiment l'entreprise
@@ -673,7 +673,7 @@ Outil Digital sur mesure · **55 000 à 500 000 F** · le prix sort du configura
 « Tout est dans votre tête et dans votre cahier. On met ça dans un outil qui est à vous,
 et vous le consultez de votre téléphone, où que vous soyez. »
 
-**MA COMMISSION** · 75 000 F à 25 % sur un dossier à 300 000 F · jusqu'à 105 000 F à 35 %
+**MA COMMISSION** · 90 000 F à 30 % sur un dossier à 300 000 F · jusqu'à 150 000 F à 50 %
 
 **LES 5 SIGNES D'UN VRAI DOSSIER** (il en faut 2)
 Des employés · Du stock · Plusieurs points · De la vente à crédit · Une obligation réglementaire

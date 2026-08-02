@@ -372,15 +372,15 @@ Si la réponse est "rien", on doit parler.
 
 ---
 
-# PARTIE 7 · RECRUTER UN FILLEUL (15 % à vie)
+# PARTIE 7 · RECRUTER UN FILLEUL (pour monter en palier)
 
 **À envoyer à quelqu'un que vous jugez bon vendeur. Pas à tout le monde :
-un filleul qui ne vend jamais ne vous rapporte rien et encombre l'équipe.**
+un filleul qui ne vend jamais ne fait pas monter votre palier et encombre l'équipe.**
 
 ```
 Salut [Prénom],
 Je bosse avec NEBULA Agency, on vend les catalogues et sites des commerçants de Cotonou.
-Je gagne entre 12 500 et 52 500 F par vente.
+Je gagne entre 15 000 et 75 000 F par vente.
 
 Je pense que tu serais bon là-dedans, tu sais parler aux gens.
 
@@ -392,8 +392,9 @@ Si ça t'intéresse : [votre lien /p/VOTRECODE]
 Donnez la grille, pas des promesses. Un filleul déçu part et parle en mal.
 
 **Et dites-lui toujours cette phrase, mot pour mot :**
-« Les 15 % que je touche, c'est NEBULA qui me les paie en plus. Ça ne sort pas de ta poche :
-tu gagnes exactement pareil que si tu étais venu tout seul. »
+« Je ne touche rien sur tes ventes. Zéro. Ce que ça me rapporte, c'est que tes ventes
+comptent avec les miennes pour monter mon palier. Toi tu gagnes exactement pareil que si
+tu étais venu tout seul. »
 C'est la phrase qui lève la méfiance. Sans elle, on vous prend pour une pyramide.
 
 ---
