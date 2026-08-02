@@ -431,3 +431,62 @@ mesurer.
 JavaScript, 0 requête en échec. Vérifié en ligne, connecté : le cockpit ne produit aucune
 erreur, `--faint` vaut bien `#8a8aa6`, et le mode calme s'active tout seul sur un appareil
 modeste.
+
+---
+
+## Boussole : le PILOTAGE et la VISITE GUIDÉE, portés sans perdre la performance
+
+**En production : https://boussole-19d.pages.dev** · module 232 → **297 Ko**
+
+Ce que ça change pour un commerçant : l'application répondait bien à « combien j'ai fait ? »,
+jamais à « **est-ce que je vais tenir ?** ».
+
+| | |
+|---|---|
+| **Point mort** | charges fixes ÷ taux de marge réel → CA minimum vital, objectif quotidien de survie, et le jour du mois où il a été franchi |
+| **Trésorerie** | encaissé réel, **vendu à crédit** (dans le bénéfice mais pas dans la caisse), argent dehors, **autonomie en jours de charges** |
+| **Score de santé /100** | rentabilité, trésorerie, crédits, stock, suivi — avec la composante qui pénalise le plus, dite en clair |
+| **Rythme** | panier moyen, jours forts, heures de pointe, comparaison de périodes |
+| **Mes produits** | classement par **bénéfice réellement apporté**, pas par chiffre d'affaires · règle 20/80 · dormants · rotation |
+| **Projection, rapport** | atterrissage fin de mois, récurrent, fiabilité, **rapport mensuel imprimable + WhatsApp** |
+| **Visite guidée** | rejouable, aide par écran, et « **⚡ À FAIRE MAINTENANT** » |
+
+### La méthode, et le piège qu'elle a évité
+
+Ces apports avaient été écrits quand tout le JavaScript vivait dans `app.html` ; `main` l'a
+depuis externalisé et y a ajouté le mode performance. **Fusionner la branche aurait tout
+remis en ligne.**
+
+`boussole/_outils/_porte_pilotage.py` fait donc une **vraie fusion à trois voies, séparément
+sur chaque fichier** : style et structure d'un côté, code de l'autre.
+
+Deux gestes ont fait tomber les conflits :
+1. **Viser la pointe de la branche** plutôt qu'un commit intermédiaire : sa palette est déjà
+   celle transplantée dans `main`, donc `app.html` fusionne **proprement** (52 conflits → 0).
+2. **Normaliser les couleurs de l'apport** sur la convention en place avant de fusionner :
+   les deux lignées avaient recoloré le même code différemment, ce qui fabriquait des
+   conflits qui n'en étaient pas.
+
+Restaient 13 conflits, arbitrés par des **règles nommées**, le script disant ce qu'il a
+décidé pour chacun.
+
+⚠️ **La règle qui compte est sémantique** : *si un côté appelle une fonction du pilotage,
+c'est le nouveau code.* Ma première règle comptait les lignes, et elle était **fausse** :
+un conflit aurait fait **disparaître tout l'affichage du score de santé**, silencieusement,
+parce que le nouveau bloc « ressemblait » à une modification plutôt qu'à un ajout. Compter
+des lignes ne dit pas ce qu'un morceau de code **fait**.
+
+**Non repris volontairement** : la vague 2 des transitions, qui remplace le tiroir 3D. Autre
+chantier, non demandé, et le script le dit explicitement quand il conserve l'existant.
+
+### Vérifié en navigateur
+
+0 erreur JavaScript. « Mes produits » et « Aide » apparaissent dans le menu. Et l'application
+annonce d'elle-même, sur les données de démo :
+
+> « TON COMMERCE EST À **50/100** — FRAGILE, MAIS RATTRAPABLE. CE QUI TE PÉNALISE LE PLUS :
+> TA CAISSE NE TIENT QUE 0 JOUR DE CHARGES. »
+
+Avec, juste en dessous, « ⚡ À FAIRE MAINTENANT · Réapprovisionne Pain doré — 1 produit est
+en rupture : chaque heure sans stock est une vente perdue. » La visite guidée se lance à la
+première visite.

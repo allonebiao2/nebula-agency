@@ -48,6 +48,8 @@ clients/*/_dist/
 00-nebula-agency/_dist/
 # assemblé à chaque déploiement du site de l'agence depuis 00-nebula-agency/
 _tmp_pages/
+# résultat brut d'une fusion à arbitrer, régénéré à la demande
+boussole/_dist_fusion/
 
 # Fichiers temporaires / diagnostics
 _tmp_build_pdf.py
