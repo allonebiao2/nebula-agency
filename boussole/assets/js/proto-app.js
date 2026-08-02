@@ -113,15 +113,15 @@
     const ICON_SPEND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v10"/><path d="M8.5 9.5 12 13l3.5-3.5"/><path d="M4.5 20h15"/></svg>';
     const SECTIONS = {
       accueil:   { label: 'Accueil',        color: '#ff2e43', desc: 'Vue d’ensemble de ton activité.' },
-      catalogue: { label: 'Catalogue',      color: '#ffd23f', desc: 'Tes produits et prestations.' },
-      ventes:    { label: 'Mes ventes',     color: '#34d399', desc: 'Historique et suivi de tes ventes.' },
-      depenses:  { label: 'Mes dépenses',   color: '#e11d48', desc: 'Ce qui sort de ta caisse.' },
-      caisse:    { label: 'La caisse',      color: '#f6a63c', desc: 'Encaisse une vente en un geste.' },
-      bilan:     { label: 'Le bilan',       color: '#b98cff', desc: 'Tes chiffres et ton rapport de santé.' },
+      catalogue: { label: 'Catalogue',      color: 'var(--acc2)', desc: 'Tes produits et prestations.' },
+      ventes:    { label: 'Mes ventes',     color: 'var(--good)', desc: 'Historique et suivi de tes ventes.' },
+      depenses:  { label: 'Mes dépenses',   color: 'var(--bad)', desc: 'Ce qui sort de ta caisse.' },
+      caisse:    { label: 'La caisse',      color: 'var(--acc)', desc: 'Encaisse une vente en un geste.' },
+      bilan:     { label: 'Le bilan',       color: 'var(--acc2)', desc: 'Tes chiffres et ton rapport de santé.' },
       statistiques: { label: 'Statistiques', color: '#ffe9c9', desc: 'Tendances, analyses et projections de ton activité.' },
-      objectifs: { label: 'Objectifs', color: '#ffd23f', desc: 'Tes buts de revenu et tes projets d\'achat.' },
-      carnet:    { label: 'Carnet clients', color: '#ff8a3d', desc: 'Clients, crédits et relances.' },
-      factures:  { label: 'Factures & devis', color: '#4cc9ff', desc: 'Factures normalisées et devis pour tes clients.' },
+      objectifs: { label: 'Objectifs', color: 'var(--acc2)', desc: 'Tes buts de revenu et tes projets d\'achat.' },
+      carnet:    { label: 'Carnet clients', color: 'var(--acc)', desc: 'Clients, crédits et relances.' },
+      factures:  { label: 'Factures & devis', color: 'var(--acc2)', desc: 'Factures normalisées et devis pour tes clients.' },
       equipe:    { label: 'Mon équipe',     color: '#3a86ff', desc: 'Vendeurs, rôles et sécurité.' },
       reglages:  { label: 'Réglages',       color: '#8a93a6', desc: 'Identité, sécurité, données et cloud.' },
     };
@@ -129,7 +129,7 @@
     function accueilHTML(cls) {
       const ca = salesTotal(), stoday = salesToday(), objPct = Math.min(100, Math.round(stoday / objJour() * 100));   // vrais chiffres
       const masked = activeRole() === 'vendeur';   // un vendeur ne voit pas la caisse totale ni l'objectif : anti-vol
-      return '<div class="screen home portal" style="--sc:#f6a63c">' +   // portail « retour au nexus » (clip-path circulaire) au lieu de la caméra cine/hud
+      return '<div class="screen home portal" style="--sc:var(--acc)">' +   // portail « retour au nexus » (clip-path circulaire) au lieu de la caméra cine/hud
           '<div class="hud">' +
             '<span class="hud__sys"><i></i>Système en ligne</span>' +
             '<h1 class="hud__hi"></h1>' +   // rempli par le Smart Greeting Engine (typing)
@@ -216,14 +216,14 @@
           : '<span class="prod__illim">illimité</span>';
         return '<div class="prod" style="--i:' + idx + '" data-id="' + p.id + '">' +
           '<button class="prod__main" data-edit="' + p.id + '">' +
-            '<span class="prod__disc" style="background:radial-gradient(120% 120% at 30% 25%,' + col + ',' + col + '99);color:#04121a">' + p.nom.charAt(0).toUpperCase() + '</span>' +
+            '<span class="prod__disc" style="background:radial-gradient(120% 120% at 30% 25%,' + col + ',' + col + '99);color:var(--on-acc)">' + p.nom.charAt(0).toUpperCase() + '</span>' +
             '<span class="prod__info"><span class="prod__name">' + p.nom + '</span>' +
               '<span class="prod__badges"><span class="ptype ptype--' + p.type + '">' + PTYPE_LBL[p.type] + '</span>' + rec + '</span>' +
               '<span class="prod__nums"><b>' + fF(p.prix) + '</b> · coût ' + fF(p.cout || 0) + (p.couts && p.couts.length ? ' (' + p.couts.length + ' postes)' : '') + ' · <i class="' + mcls + '">marge ' + mp + '%</i></span>' +
             '</span></button>' + ctrl + '</div>';
       }).join('');
       const seg = ['tous', 'physique', 'digital', 'service'].map((k) => '<button class="seg-btn' + (k === f ? ' is-on' : '') + '" data-catf="' + k + '">' + ({ tous: 'Tout', physique: 'Physique', digital: 'Digital', service: 'Service' }[k]) + '</button>').join('');
-      return '<div class="screen wide" style="--sc:#ffd23f">' +
+      return '<div class="screen wide" style="--sc:var(--acc2)">' +
           '<div class="drawer3d">' +   // le tiroir qui sort = le CONTENU (le FAB reste ancré au viewport)
             '<span class="screen__tag">Catalogue</span>' +
             '<h1 class="screen__title">Ton catalogue</h1>' +
@@ -314,7 +314,7 @@
     }
 
     // ===== BOUSSOLE — écran DÉPENSES : liste catégorisée + FAB « Ajout rapide » =====
-    const CATS = { 'Fournitures': '#f6a63c', 'Stock': '#5ad1c8', 'Transport': '#ffd23f', 'Loyer': '#b98cff', 'Marketing': '#ff6ec7', 'Divers': '#34d399' };
+    const CATS = { 'Fournitures': 'var(--acc)', 'Stock': '#ffa347', 'Transport': 'var(--acc2)', 'Loyer': 'var(--acc2)', 'Marketing': '#ffa347', 'Divers': 'var(--good)' };
     const FREQ_LBL = { mois: 'mensuel', '2mois': 'tous les 2 mois', semaine: 'hebdo' };
     const expTotal = () => (SM.depenses || []).filter((d) => !d.perso).reduce((s, d) => s + (+d.montant || 0), 0);   // business (hors poche perso)
     const persoTotal = () => (SM.depenses || []).filter((d) => d.perso).reduce((s, d) => s + (+d.montant || 0), 0);
@@ -339,7 +339,7 @@
       const chips = Object.keys(CATS).map((c) => '<button class="catchip" data-cat="' + c + '" style="--cc:' + CATS[c] + '">' + c + '</button>').join('');
       const freqs = [['mois', 'Mensuel'], ['2mois', 'Tous les 2 mois'], ['semaine', 'Hebdo']].map((f) => '<button class="freqchip" data-freq="' + f[0] + '">' + f[1] + '</button>').join('');
       const pt = persoTotal();
-      return '<div class="screen expenses" style="--sc:#e11d48">' +
+      return '<div class="screen expenses" style="--sc:var(--bad)">' +
           '<span class="screen__tag">Dépenses</span>' +
           '<h1 class="screen__title">Ce qui sort</h1>' +
           '<p class="screen__sub" style="margin-top:4px">Touche une sortie pour la modifier ou la supprimer.</p>' +
@@ -569,7 +569,7 @@
     function barsSVG(days) {
       const max = Math.max(1, ...days.map((d) => Math.max(d.ca, d.dep)));
       const cols = days.map((d, i) => '<div class="barcol"><div class="barcol__pair" style="--i:' + i + '"><span class="bar bar--ca" style="height:' + Math.max(3, d.ca / max * 100).toFixed(1) + '%"></span><span class="bar bar--dep" style="height:' + Math.max(3, d.dep / max * 100).toFixed(1) + '%"></span></div><span class="barcol__lbl">' + d.lbl + '</span></div>').join('');
-      return '<div class="bars">' + cols + '</div><div class="chartkey"><span><b style="background:#34d399"></b>Ventes</span><span><b style="background:#e11d48"></b>Dépenses</span></div>';
+      return '<div class="bars">' + cols + '</div><div class="chartkey"><span><b style="background:var(--good)"></b>Ventes</span><span><b style="background:var(--bad)"></b>Dépenses</span></div>';
     }
     const hbar = (name, val, total, color) => { const pct = total > 0 ? Math.round(val / total * 100) : 0; return '<div class="hbar"><div class="hbar__top"><span class="hbar__name">' + name + '</span><span class="hbar__val">' + fF(val) + '<i>' + pct + '%</i></span></div><div class="hbar__track"><span class="hbar__fill" style="width:' + pct + '%;background:' + color + ';box-shadow:0 0 10px -2px ' + color + '"></span></div></div>'; };
 
@@ -589,7 +589,7 @@
     const kpi = (mod, lbl, num, sub, i) => '<div class="kpi kpi--' + mod + '" style="--i:' + i + '"><span class="kpi__lbl">' + lbl + '</span><span class="kpi__num">' + num + '</span><span class="kpi__sub">' + sub + '</span></div>';
 
     /* ===== CAISSE (POS) : touche les produits, choisis le paiement, encaisse ===== */
-    const TILE_COLORS = ['#f6a63c', '#34d399', '#ffd23f', '#b98cff', '#ff8a3d', '#ff6ec7'];
+    const TILE_COLORS = ['var(--acc)', 'var(--good)', 'var(--acc2)', 'var(--acc2)', 'var(--acc)', '#ffa347'];
     let _ticket = [];               // panier courant [{id,nom,prix,qty}]
     let _payMode = 'espèces';
     const tkTotal = () => _ticket.reduce((s, l) => s + l.prix * l.qty, 0);
@@ -599,14 +599,14 @@
         const col = TILE_COLORS[i % TILE_COLORS.length], rupt = p.type === 'physique' && p.qty <= 0;
         return '<button class="pos-tile' + (rupt ? ' rupt' : '') + '" data-pos="' + p.id + '" style="--i:' + i + ';--tc:' + col + '">' +
           '<span class="pos-tile__badge" data-badge="' + p.id + '">0</span>' +
-          '<span class="pos-tile__disc" style="background:radial-gradient(120% 120% at 30% 25%,' + col + ',' + col + '99);color:#04121a">' + p.nom.charAt(0).toUpperCase() + '</span>' +
+          '<span class="pos-tile__disc" style="background:radial-gradient(120% 120% at 30% 25%,' + col + ',' + col + '99);color:var(--on-acc)">' + p.nom.charAt(0).toUpperCase() + '</span>' +
           '<span class="pos-tile__name">' + p.nom + '</span>' +
           (rupt ? '<span class="pos-tile__rupt">Rupture</span>' : '<span class="pos-tile__price">' + fF(priceNum(p.prix)) + '</span>') +
           '</button>';
       }).join('');
       const pay = (m, cls, lbl, ic) => '<button class="paymode paymode--' + cls + (m === _payMode ? ' is-on' : '') + '" data-pay="' + m + '">' + ic + lbl + '</button>';
       const empty = !SM.stock.length ? '<p class="pos__empty">Ton catalogue est vide. Ajoute d\'abord tes produits : la caisse se remplit toute seule.</p><button class="sheet__add" data-goto="catalogue" style="max-width:280px;margin:14px auto 0;display:block">Ouvrir le catalogue</button>' : '';
-      return '<div class="screen" style="--sc:#34d399">' +
+      return '<div class="screen" style="--sc:var(--good)">' +
         '<span class="screen__tag">Caisse</span>' +
         '<h1 class="screen__title">Encaisser</h1>' +
         '<p class="screen__sub">Touche les produits vendus, choisis le paiement, encaisse.</p>' +
@@ -694,7 +694,7 @@
       };
       const openClientPick = () => {
         const rows = (SM.clients || []).slice().sort((a, b) => b.lastBuy - a.lastBuy).map((c) =>
-          '<button class="swrow" data-ccpick="' + c.id + '"><span class="swrow__av" style="background:radial-gradient(120% 120% at 30% 25%,#ffc46a,#ff8a3d)">' + c.nom.charAt(0).toUpperCase() + '</span>' +
+          '<button class="swrow" data-ccpick="' + c.id + '"><span class="swrow__av" style="background:radial-gradient(120% 120% at 30% 25%,var(--acc2),var(--acc))">' + c.nom.charAt(0).toUpperCase() + '</span>' +
           '<span class="swrow__nm">' + c.nom + '<small>' + (c.dette > 0 ? 'doit déjà ' + fF(c.dette) : 'à jour') + '</small></span></button>').join('');
         ccBody.innerHTML = rows +
           '<input class="sheet__txt" data-ccnom type="text" placeholder="Ou nouveau client : son nom" style="margin-top:6px">' +
@@ -732,7 +732,7 @@
       }).join('');
       const search = list.length > 6 ? '<div class="searchbar">' + ICO_SEARCH + '<input class="sheet__txt" data-vsearch type="search" placeholder="Chercher une vente (produit, client, montant…)"></div>' : '';
       const more = list.length > PAGE_SIZE ? '<button class="morebtn" data-vmore>Voir plus (' + (list.length - PAGE_SIZE) + ' autres ventes)</button>' : '';
-      return '<div class="screen" style="--sc:#34d399"><span class="screen__tag">Mes ventes</span><h1 class="screen__title">Tes ventes</h1>' +
+      return '<div class="screen" style="--sc:var(--good)"><span class="screen__tag">Mes ventes</span><h1 class="screen__title">Tes ventes</h1>' +
         '<div class="sales-total">Encaissé aujourd\'hui<b class="stamp">' + fF(salesToday()) + '</b></div>' + search +
         (list.length ? '<p class="screen__sub" style="margin-top:4px">Touche une vente pour la voir en détail, la modifier ou la supprimer.</p><div class="printwrap" data-print><span class="print__roll" aria-hidden="true"></span><div class="saleslist">' + rows + '</div></div>' + more : '<p class="pos__empty">Aucune vente pour l\'instant. Va à <b>La caisse</b> pour encaisser ta première vente.</p>') +
         iaBanner() +
@@ -974,13 +974,13 @@
         '<div class="statper">Période affichée : <b>' + r.lbl + '</b></div>' +
         iaBannerPeriod(r) +
         '<div class="kpis">' +
-          kpi('ca', 'Encaissé', fF(ca), 'ventes de la période', 0).replace('</div>', sparkSVG(bks, '#34d399') + '</div>') +
+          kpi('ca', 'Encaissé', fF(ca), 'ventes de la période', 0).replace('</div>', sparkSVG(bks, 'var(--good)') + '</div>') +
           kpi('dep', 'Dépensé', fF(dep), 'sorties de la période', 1) +
           kpi('ben', 'Bénéfice', (ben >= 0 ? '+' : '') + fF(ben), ben >= 0 ? 'ce qui te reste' : 'tu es en perte', 2) +
           kpi('marge', 'Marge', marge + ' %', 'sur 100 F vendus', 3) +
         '</div>' +
-        '<div class="panel"><h3 class="panel__ttl" style="--sc:#e11d48"><i></i>Où part ton argent</h3>' + (dep > 0 ? donutSVG(cats, 'Dépensé') : '<p class="ia__txt">Pas de dépense sur cette période.</p>') + '</div>' +
-        '<div class="panel"><h3 class="panel__ttl" style="--sc:#34d399"><i></i>' + (singleDay ? 'Les 7 jours qui y mènent' : 'Évolution') + '</h3>' + (bks ? barsSVG(bks) : '<p class="ia__txt">Rien à tracer pour l\'instant.</p>') + '</div>' +
+        '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--bad)"><i></i>Où part ton argent</h3>' + (dep > 0 ? donutSVG(cats, 'Dépensé') : '<p class="ia__txt">Pas de dépense sur cette période.</p>') + '</div>' +
+        '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--good)"><i></i>' + (singleDay ? 'Les 7 jours qui y mènent' : 'Évolution') + '</h3>' + (bks ? barsSVG(bks) : '<p class="ia__txt">Rien à tracer pour l\'instant.</p>') + '</div>' +
         '<div class="sheet-scrim" data-stclose></div>' +
         '<div class="sheet" data-stsheet><div class="sheet__grip"></div><h3 class="sheet__title">Choisir une période</h3>' +
           '<div class="seg" data-stkind>' + [['day', 'Jour'], ['monthpick', 'Mois'], ['yearpick', 'Année'], ['range', 'Période']].map((k, i) => '<button class="seg-btn' + (i === 0 ? ' is-on' : '') + '" data-stk="' + k[0] + '">' + k[1] + '</button>').join('') + '</div>' +
@@ -1038,24 +1038,24 @@
         '<div class="env" style="--i:' + i + ';--ec:' + ec + '"><div class="env__head"><span class="env__ic">' + ic + '</span><span class="env__name">' + name + '</span><b class="env__amt">' + fF(amt) + '</b></div>' +
         '<div class="env__bar"><span class="env__fill" data-envfill="' + pct.toFixed(0) + '"></span></div><span class="env__sub">' + sub + '</span></div>';
       return '<h3 class="objsec" style="margin-top:18px">Les 3 enveloppes du mois</h3><div class="envs">' +
-        env(0, '#f6a63c', ICO_LOOP, 'Relance production', e.cout, e.cout / mx * 100, 'Le coût de revient de tes ventes : garde-le pour racheter la matière / le stock.') +
-        env(1, '#b98cff', ICO_HOME, 'Charges du mois', e.env2, e.env2 / mx * 100, (e.manque > 0 ? 'Ta marge couvre ' + fF(e.env2) + ' sur ' + fF(e.charges) + ' de charges : il manque encore ' + fF(e.manque) + '.' : 'Tes charges (' + fF(e.charges) + ') sont couvertes par la marge. Solide.')) +
-        env(2, '#34d399', ICO_SAFE, 'Bénéfice net', e.env3, e.env3 / mx * 100, e.env3 > 0 ? 'Ce qui est vraiment à toi ce mois-ci : mets-en une partie de côté.' : 'Rien à mettre de côté pour l\'instant : vends un peu plus ou allège une charge.') +
+        env(0, 'var(--acc)', ICO_LOOP, 'Relance production', e.cout, e.cout / mx * 100, 'Le coût de revient de tes ventes : garde-le pour racheter la matière / le stock.') +
+        env(1, 'var(--acc2)', ICO_HOME, 'Charges du mois', e.env2, e.env2 / mx * 100, (e.manque > 0 ? 'Ta marge couvre ' + fF(e.env2) + ' sur ' + fF(e.charges) + ' de charges : il manque encore ' + fF(e.manque) + '.' : 'Tes charges (' + fF(e.charges) + ') sont couvertes par la marge. Solide.')) +
+        env(2, 'var(--good)', ICO_SAFE, 'Bénéfice net', e.env3, e.env3 / mx * 100, e.env3 > 0 ? 'Ce qui est vraiment à toi ce mois-ci : mets-en une partie de côté.' : 'Rien à mettre de côté pour l\'instant : vends un peu plus ou allège une charge.') +
       '</div>';
     }
     function bilanHTML() {
       const ca = salesTotal(), dep = expTotal(), ben = ca - dep;
       const mo = salesByMode(), esp = mo['espèces'] || 0, momo = mo['momo'] || 0, cred = mo['credit'] || 0;
       const cats = depByCat();
-      const src = ca > 0 ? hbar('Espèces', esp, ca, '#34d399') + hbar('Mobile Money', momo, ca, '#f6a63c') + hbar('Crédit (à récupérer)', cred, ca, '#ff8a3d') : '<p class="ia__txt">Aucune vente enregistrée.</p>';
+      const src = ca > 0 ? hbar('Espèces', esp, ca, 'var(--good)') + hbar('Mobile Money', momo, ca, 'var(--acc)') + hbar('Crédit (à récupérer)', cred, ca, 'var(--acc)') : '<p class="ia__txt">Aucune vente enregistrée.</p>';
       const out = dep > 0 ? cats.map((c) => hbar(c.name, c.val, dep, c.color)).join('') : '<p class="ia__txt">Aucune dépense enregistrée.</p>';
-      return '<div class="screen wide" style="--sc:#b98cff"><span class="screen__tag">Le bilan</span><h1 class="screen__title">Ta santé</h1>' +
+      return '<div class="screen wide" style="--sc:var(--acc2)"><span class="screen__tag">Le bilan</span><h1 class="screen__title">Ta santé</h1>' +
         '<div class="benhero ben--' + (ben >= 0 ? 'ok' : 'bad') + '"><span class="benhero__lbl">Bénéfice net</span><b class="benhero__num">' + (ben >= 0 ? '+' : '') + fF(ben) + '</b><span class="benhero__sub">' + (ben >= 0 ? "Ton commerce gagne de l'argent" : "Ton commerce perd de l'argent") + '</span></div>' +
         envsHTML() +
         iaBanner() +
-        '<div class="panel"><h3 class="panel__ttl" style="--sc:#34d399"><i></i>D\'où vient ton argent</h3>' + src + '</div>' +
-        '<div class="panel"><h3 class="panel__ttl" style="--sc:#e11d48"><i></i>Ce qui pèse le plus</h3>' + out + '</div>' +
-        (persoTotal() > 0 ? '<div class="panel"><h3 class="panel__ttl" style="--sc:#b98cff"><i></i>Poche perso</h3><p class="ia__txt">Tu as sorti <b style="color:#c9a7ff">' + fF(persoTotal()) + '</b> pour tes dépenses personnelles. C\'est ton argent, mais ce n\'est pas compté dans le bénéfice du business.</p></div>' : '') +
+        '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--good)"><i></i>D\'où vient ton argent</h3>' + src + '</div>' +
+        '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--bad)"><i></i>Ce qui pèse le plus</h3>' + out + '</div>' +
+        (persoTotal() > 0 ? '<div class="panel"><h3 class="panel__ttl" style="--sc:var(--acc2)"><i></i>Poche perso</h3><p class="ia__txt">Tu as sorti <b style="color:#c9a7ff">' + fF(persoTotal()) + '</b> pour tes dépenses personnelles. C\'est ton argent, mais ce n\'est pas compté dans le bénéfice du business.</p></div>' : '') +
       '</div>';
     }
     function bindBilan() {
@@ -1114,15 +1114,15 @@
       const cibles = (SM.cibles || []).map((c, i) => {
         const p = c.montant > 0 ? Math.min(100, c.epargne / c.montant * 100) : 0, reste = Math.max(0, c.montant - c.epargne), j = rate > 0 ? Math.ceil(reste / rate) : null;
         return '<div class="cible" style="--i:' + i + '"><div class="cible__top"><span class="cible__name">' + c.nom + '</span><span class="cible__amt">' + fF(c.montant) + '</span></div>' +
-          '<div class="hbar__track"><span class="hbar__fill" style="width:' + p.toFixed(0) + '%;background:#ffd23f;box-shadow:0 0 10px -2px #ffd23f"></span></div>' +
+          '<div class="hbar__track"><span class="hbar__fill" style="width:' + p.toFixed(0) + '%;background:var(--acc2);box-shadow:0 0 10px -2px var(--acc2)"></span></div>' +
           '<div class="cible__foot"><span>' + fF(c.epargne) + ' épargnés</span><span>' + (reste > 0 ? (j !== null ? 'reste ' + fF(reste) + ' · ≈ ' + j + ' j' : 'reste ' + fF(reste)) : 'Atteint !') + '</span></div>' +
           '<div class="cible__act"><button class="cible__add" data-cibleadd="' + c.id + '">+ ajouter à l\'épargne</button><button class="cible__mod" data-cibleedit="' + c.id + '">Modifier</button></div></div>';
       }).join('');
-      return '<div class="screen wide" style="--sc:#ffd23f"><span class="screen__tag">Objectifs</span><h1 class="screen__title">Tes objectifs</h1>' +
+      return '<div class="screen wide" style="--sc:var(--acc2)"><span class="screen__tag">Objectifs</span><h1 class="screen__title">Tes objectifs</h1>' +
         '<div class="seg">' + seg + '</div>' +
         '<div class="panel objgoal" data-objgoal>' +
           '<span class="arrowfly" aria-hidden="true"><svg viewBox="0 0 74 74" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><path d="M6 68 L58 16"/><path d="M58 16 l-16 3 M58 16 l-3 16"/><path d="M10 56 l8 8 M16 50 l8 8" stroke-width="3" opacity=".7"/></svg></span>' +
-          '<div class="objgoal__ring">' + ringSVG(pct, '#ffd23f', M[_objPer][0]) + '</div>' +
+          '<div class="objgoal__ring">' + ringSVG(pct, 'var(--acc2)', M[_objPer][0]) + '</div>' +
           '<div class="objgoal__info"><span class="objgoal__cur">' + fF(cur) + '</span><span class="objgoal__tgt">sur ' + fF(tgt) + ' visés</span><button class="objgoal__edit" data-edittgt>Modifier l\'objectif</button></div></div>' +
         iaBannerObj(_objPer, cur, tgt, rate) +
         '<h3 class="objsec">Objectifs d\'achat</h3>' +
@@ -1222,7 +1222,7 @@
           (due ? '<button class="cbtn cbtn--paid" data-paid="' + c.id + '">Marquer payé</button>' : '') +
           '<button class="cbtn cbtn--auto' + (c.autoRelance ? ' is-on' : '') + '" data-auto="' + c.id + '">Relance auto</button></div></div>';
       }).join('');
-      return '<div class="screen wide" style="--sc:#ff8a3d"><span class="screen__tag">Carnet clients</span><h1 class="screen__title">Tes clients</h1>' +
+      return '<div class="screen wide" style="--sc:var(--acc)"><span class="screen__tag">Carnet clients</span><h1 class="screen__title">Tes clients</h1>' +
         '<div class="sales-total">À récupérer<b style="color:#ffb27a;text-shadow:0 0 14px rgba(255,138,61,.4)">' + fF(total) + '</b></div>' +
         iaBannerCarnet() +
         '<div class="clients">' + (rows || '<p class="pos__empty">Aucun client. Ajoute ton premier client.</p>') + '</div>' +
@@ -1324,18 +1324,18 @@
       const rows = list.map((d, i) => '<button class="docrow" style="--i:' + i + '" data-doc="' + d.id + '"><span class="docrow__ic">' + ICO_DOC + '</span>' +
         '<span class="docrow__id"><span class="docrow__num">' + d.num + '</span><span class="docrow__cli">' + d.clientNom + ' · ' + fDate(d.date) + '</span></span>' +
         '<span class="docrow__right"><span class="docrow__amt">' + fF(docTTC(d)) + '</span><span class="docstatut docstatut--' + d.statut + '">' + d.statut + '</span></span></button>').join('');
-      return '<div class="screen wide" style="--sc:#4cc9ff"><span class="screen__tag">Factures &amp; devis</span><h1 class="screen__title">Tes documents</h1>' +
+      return '<div class="screen wide" style="--sc:var(--acc2)"><span class="screen__tag">Factures &amp; devis</span><h1 class="screen__title">Tes documents</h1>' +
         '<div class="seg">' + seg + '</div>' +
         '<div class="doclist">' + (rows || '<p class="pos__empty">Aucun document ici. Touche le <b>+</b> pour créer une facture ou un devis.</p>') + '</div>' +
         '<span class="fab__lbl">Nouveau document</span><button class="fab fab--sky" data-facnew aria-label="Créer une facture ou un devis">+</button></div>';
     }
     function facBuilderHTML() {
       const d = _facDraft;
-      const tiles = SM.stock.map((p, i) => { const q = (d.items.find((x) => x.id === p.id) || {}).qty || 0; return '<button class="pos-tile' + (q > 0 ? ' has' : '') + '" data-add="' + p.id + '" style="--i:' + i + '"><span class="pos-tile__badge">' + q + '</span><span class="pos-tile__disc" style="background:radial-gradient(120% 120% at 30% 25%,' + TILE_COLORS[i % TILE_COLORS.length] + ',' + TILE_COLORS[i % TILE_COLORS.length] + '99);color:#04121a">' + p.nom.charAt(0).toUpperCase() + '</span><span class="pos-tile__name">' + p.nom + '</span><span class="pos-tile__price">' + fF(p.prix) + '</span></button>'; }).join('');
+      const tiles = SM.stock.map((p, i) => { const q = (d.items.find((x) => x.id === p.id) || {}).qty || 0; return '<button class="pos-tile' + (q > 0 ? ' has' : '') + '" data-add="' + p.id + '" style="--i:' + i + '"><span class="pos-tile__badge">' + q + '</span><span class="pos-tile__disc" style="background:radial-gradient(120% 120% at 30% 25%,' + TILE_COLORS[i % TILE_COLORS.length] + ',' + TILE_COLORS[i % TILE_COLORS.length] + '99);color:var(--on-acc)">' + p.nom.charAt(0).toUpperCase() + '</span><span class="pos-tile__name">' + p.nom + '</span><span class="pos-tile__price">' + fF(p.prix) + '</span></button>'; }).join('');
       const lines = d.items.map((it, i) => '<div class="bline"><span class="bline__name">' + it.nom + ' <span class="bline__pu">×' + it.qty + '</span></span><span class="bline__amt">' + fF(it.prix * it.qty) + '</span><button class="bline__x" data-rmline="' + i + '" aria-label="Retirer">×</button></div>').join('');
       const ht = docHT(d), tva = d.tva ? Math.round(ht * TVA_RATE) : 0;
       const typeSeg = ['facture', 'devis'].map((k) => '<button class="seg-btn' + (k === d.type ? ' is-on' : '') + '" data-btype="' + k + '">' + (k === 'facture' ? 'Facture' : 'Devis') + '</button>').join('');
-      return '<div class="screen wide" style="--sc:#4cc9ff"><span class="screen__tag">Nouveau</span><h1 class="screen__title">Créer</h1><div class="builder">' +
+      return '<div class="screen wide" style="--sc:var(--acc2)"><span class="screen__tag">Nouveau</span><h1 class="screen__title">Créer</h1><div class="builder">' +
         '<div class="seg">' + typeSeg + '</div>' +
         '<input class="sheet__txt" data-bclient type="text" placeholder="Nom du client" value="' + (d.clientNom || '') + '" style="margin-top:12px">' +
         '<p class="objsec" style="margin:14px auto 6px">Touche un article pour l\'ajouter</p>' +
@@ -1353,7 +1353,7 @@
     function facDetailHTML() {
       const d = _facView, ht = docHT(d), tva = docTVA(d);
       const rows = d.items.map((it) => '<tr><td>' + it.nom + '</td><td class="r">' + it.qty + '</td><td class="r">' + fF(it.prix) + '</td><td class="r">' + fF(it.prix * it.qty) + '</td></tr>').join('');
-      return '<div class="screen wide" style="--sc:#4cc9ff"><span class="screen__tag">' + (d.type === 'facture' ? 'Facture' : 'Devis') + '</span><h1 class="screen__title">' + d.num + '</h1>' +
+      return '<div class="screen wide" style="--sc:var(--acc2)"><span class="screen__tag">' + (d.type === 'facture' ? 'Facture' : 'Devis') + '</span><h1 class="screen__title">' + d.num + '</h1>' +
         '<p class="screen__sub" style="margin-top:6px">Statut : <button class="docstatut docstatut--' + d.statut + '" data-cyclestat style="cursor:pointer;border:0;font:inherit">' + d.statut + ' &#8635;</button> <span style="opacity:.55;font-size:12px">(touche pour changer)</span></p>' +
         '<div class="doc"><div class="doc__head"><div class="doc__brand">' + bizNom() + '<small>' + bizLine() + '</small></div><div class="doc__type"><b>' + (d.type === 'facture' ? 'FACTURE' : 'DEVIS') + '</b><span>' + d.num + '</span></div></div>' +
           '<div class="doc__meta"><span>Facturé à<br><b>' + d.clientNom + '</b></span><span>Date<br><b>' + fDate(d.date) + '</b></span></div>' +
@@ -1366,7 +1366,7 @@
     function printDoc(d) {
       const ht = docHT(d), tva = docTVA(d);
       const rows = d.items.map((it) => '<tr><td>' + it.nom + '</td><td class="r">' + it.qty + '</td><td class="r">' + fF(it.prix) + '</td><td class="r">' + fF(it.prix * it.qty) + '</td></tr>').join('');
-      const css = 'body{font-family:Arial,Helvetica,sans-serif;color:#14161c;max-width:640px;margin:24px auto;padding:0 20px}.h{display:flex;justify-content:space-between;border-bottom:2px solid #14161c;padding-bottom:14px}.h b{font-size:20px}.t{text-align:right}.t .big{font-size:22px;font-weight:800;letter-spacing:.04em}.meta{display:flex;justify-content:space-between;margin:16px 0;font-size:13px;color:#444}.meta b{color:#14161c}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}th{text-align:left;border-bottom:1px solid #ccc;padding:7px 4px;font-size:11px;text-transform:uppercase;color:#666}td{padding:8px 4px;border-bottom:1px solid #eee}.r{text-align:right}.tot{margin:14px 0 0 auto;width:55%}.tot div{display:flex;justify-content:space-between;padding:3px 0;font-size:13px}.tot .ttc{font-size:17px;font-weight:800;border-top:2px solid #14161c;margin-top:6px;padding-top:8px}.foot{margin-top:22px;font-size:12px;color:#666;text-align:center}';
+      const css = 'body{font-family:Arial,Helvetica,sans-serif;color:var(--ink);max-width:640px;margin:24px auto;padding:0 20px}.h{display:flex;justify-content:space-between;border-bottom:2px solid var(--ink);padding-bottom:14px}.h b{font-size:20px}.t{text-align:right}.t .big{font-size:22px;font-weight:800;letter-spacing:.04em}.meta{display:flex;justify-content:space-between;margin:16px 0;font-size:13px;color:#444}.meta b{color:var(--ink)}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}th{text-align:left;border-bottom:1px solid #ccc;padding:7px 4px;font-size:11px;text-transform:uppercase;color:#666}td{padding:8px 4px;border-bottom:1px solid #eee}.r{text-align:right}.tot{margin:14px 0 0 auto;width:55%}.tot div{display:flex;justify-content:space-between;padding:3px 0;font-size:13px}.tot .ttc{font-size:17px;font-weight:800;border-top:2px solid var(--ink);margin-top:6px;padding-top:8px}.foot{margin-top:22px;font-size:12px;color:#666;text-align:center}';
       const html = '<!doctype html><html><head><meta charset="utf-8"><title>' + d.num + '</title><style>' + css + '</style></head><body>' +
         '<div class="h"><div><b>' + bizNom() + '</b><div style="font-size:12px;color:#666">' + bizLine() + '</div></div><div class="t"><div class="big">' + (d.type === 'facture' ? 'FACTURE' : 'DEVIS') + '</div><div style="font-size:12px;color:#666">' + d.num + '</div></div></div>' +
         '<div class="meta"><div>Facturé à<br><b>' + d.clientNom + '</b></div><div>Date<br><b>' + fDate(d.date) + '</b></div></div>' +
@@ -1512,18 +1512,18 @@
       const A = [];
       const rupt = SM.stock.filter((p) => p.type === 'physique' && p.qty <= 0);
       const bas = SM.stock.filter((p) => p.type === 'physique' && p.qty > 0 && p.qty <= CRIT);
-      if (rupt.length) A.push({ tone: 'warn', ac: '#e11d48', ic: ICO_BOX, nav: 'catalogue', tx: '<b>' + rupt.length + ' produit' + (rupt.length > 1 ? 's' : '') + ' en rupture</b> (' + rupt.slice(0, 2).map((p) => p.nom).join(', ') + (rupt.length > 2 ? '…' : '') + ') : tu perds des ventes.' });
-      if (bas.length) A.push({ tone: '', ac: '#ffd23f', ic: ICO_BOX, nav: 'catalogue', tx: 'Stock bas sur <b>' + bas.map((p) => p.nom).slice(0, 3).join(', ') + '</b> : pense au réassort.' });
+      if (rupt.length) A.push({ tone: 'warn', ac: 'var(--bad)', ic: ICO_BOX, nav: 'catalogue', tx: '<b>' + rupt.length + ' produit' + (rupt.length > 1 ? 's' : '') + ' en rupture</b> (' + rupt.slice(0, 2).map((p) => p.nom).join(', ') + (rupt.length > 2 ? '…' : '') + ') : tu perds des ventes.' });
+      if (bas.length) A.push({ tone: '', ac: 'var(--acc2)', ic: ICO_BOX, nav: 'catalogue', tx: 'Stock bas sur <b>' + bas.map((p) => p.nom).slice(0, 3).join(', ') + '</b> : pense au réassort.' });
       const h = new Date().getHours(), st = salesToday(), obj = objJour();
-      if (h >= 14 && obj > 0 && st < obj * 0.4) A.push({ tone: 'warn', ac: '#ff8a3d', ic: ICO_FLAG, nav: 'caisse', tx: 'Il est ' + h + ' h et tu es à <b>' + Math.round(st / obj * 100) + '%</b> de ton objectif du jour. On pousse ?' });
+      if (h >= 14 && obj > 0 && st < obj * 0.4) A.push({ tone: 'warn', ac: 'var(--acc)', ic: ICO_FLAG, nav: 'caisse', tx: 'Il est ' + h + ' h et tu es à <b>' + Math.round(st / obj * 100) + '%</b> de ton objectif du jour. On pousse ?' });
       const due = (SM.clients || []).filter((c) => c.dette > 0 && Date.now() - c.lastBuy > 7 * DAY);
-      if (due.length) { const tot = due.reduce((s, c) => s + c.dette, 0); A.push({ tone: 'warn', ac: '#ff8a3d', ic: ICO_HAND, nav: 'carnet', tx: '<b>' + fF(tot) + '</b> de dettes qui traînent depuis plus de 7 jours (' + due[0].nom + (due.length > 1 ? ' +' + (due.length - 1) : '') + '). Relance maintenant.' }); }
+      if (due.length) { const tot = due.reduce((s, c) => s + c.dette, 0); A.push({ tone: 'warn', ac: 'var(--acc)', ic: ICO_HAND, nav: 'carnet', tx: '<b>' + fF(tot) + '</b> de dettes qui traînent depuis plus de 7 jours (' + due[0].nom + (due.length > 1 ? ' +' + (due.length - 1) : '') + '). Relance maintenant.' }); }
       const orphans = (SM.ventes || []).filter((v) => v.mode === 'credit' && !v.clientId);
-      if (orphans.length) A.push({ tone: '', ac: '#b98cff', ic: ICO_HAND, nav: 'ventes', tx: '<b>' + orphans.length + ' vente' + (orphans.length > 1 ? 's' : '') + ' à crédit sans fiche client</b> : tu risques d\'oublier qui te doit.' });
+      if (orphans.length) A.push({ tone: '', ac: 'var(--acc2)', ic: ICO_HAND, nav: 'ventes', tx: '<b>' + orphans.length + ' vente' + (orphans.length > 1 ? 's' : '') + ' à crédit sans fiche client</b> : tu risques d\'oublier qui te doit.' });
       const e = enveloppes();
-      if (new Date().getDate() >= 10 && e.manque > 0 && e.ca > 0) A.push({ tone: 'warn', ac: '#e11d48', ic: ICO_HOME, nav: 'bilan', tx: 'Ta marge du mois ne couvre pas encore tes charges : il manque <b>' + fF(e.manque) + '</b>.' });
+      if (new Date().getDate() >= 10 && e.manque > 0 && e.ca > 0) A.push({ tone: 'warn', ac: 'var(--bad)', ic: ICO_HOME, nav: 'bilan', tx: 'Ta marge du mois ne couvre pas encore tes charges : il manque <b>' + fF(e.manque) + '</b>.' });
       const streak = calcStreak();
-      if (streak >= 3) A.push({ tone: 'good', ac: '#34d399', ic: ICO_STAR, nav: 'statistiques', tx: '<b>' + streak + ' jours de suite</b> à objectif atteint. Sérieusement stylé.' });
+      if (streak >= 3) A.push({ tone: 'good', ac: 'var(--good)', ic: ICO_STAR, nav: 'statistiques', tx: '<b>' + streak + ' jours de suite</b> à objectif atteint. Sérieusement stylé.' });
       return A;
     }
     function calcStreak() {   // jours consécutifs à objectif atteint (aujourd'hui compte dès qu'il est atteint)
@@ -1535,7 +1535,7 @@
     }
     function confettiBurst() {   // pluie d'or : objectif du jour atteint (1 fois par jour)
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      const cols = ['#f6a63c', '#ffd23f', '#34d399', '#ff6ec7', '#b98cff', '#ffffff'];
+      const cols = ['var(--acc)', 'var(--acc2)', 'var(--good)', '#ffa347', 'var(--acc2)', '#ffffff'];
       const box = document.createElement('div'); box.className = 'confetti'; let h = '';
       for (let i = 0; i < 44; i++) {
         h += '<span style="left:' + (Math.random() * 100).toFixed(1) + '%;background:' + cols[i % cols.length] + ';color:' + cols[i % cols.length] +
@@ -1603,7 +1603,7 @@
       const arows = alerts.map((al, i) => '<button class="alertrow' + (al.tone ? ' alertrow--' + al.tone : '') + '" style="--i:' + i + ';--ac:' + al.ac + '" data-algo="' + al.nav + '"><span class="alertrow__ic">' + al.ic + '</span><span class="alertrow__tx">' + al.tx + '</span><span class="alertrow__go">&#8250;</span></button>').join('');
       const chat = (SM.chat || []).slice(-6).map((c) => '<div class="bub bub--q">' + c.q + '</div><div class="bub bub--a">' + c.a + '</div>').join('');
       const qs = ['CA du jour ?', 'Qui me doit ?', 'Stock bas ?', 'Mes enveloppes ?', 'Meilleur produit ?'].map((t) => '<button class="freqchip" data-quickq>' + t + '</button>').join('');
-      return '<div class="screen wide" style="--sc:#ffc46a">' +
+      return '<div class="screen wide" style="--sc:var(--acc2)">' +
         '<span class="screen__tag">Boussole</span>' +
         '<div class="calib" data-calib aria-hidden="true"><svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="2"/><circle cx="50" cy="50" r="36" stroke="currentColor" stroke-width="1" opacity=".4"/><g class="calib__needle"><path d="M50 14 L43 50 L57 50 Z" fill="currentColor"/><path d="M50 86 L43 50 L57 50 Z" fill="currentColor" opacity=".35"/></g><circle cx="50" cy="50" r="3.5" fill="currentColor"/></svg></div>' +
         '<h1 class="screen__title">Ton copilote</h1>' +
@@ -1652,7 +1652,7 @@
     function lockHTML(nav) {
       const patron = (SM.equipe || []).find((m) => m.role === 'patron') || {};
       const s = SECTIONS[nav] || { label: nav };
-      return '<div class="screen" style="--sc:#ffc46a"><div class="lock" data-lock>' +
+      return '<div class="screen" style="--sc:var(--acc2)"><div class="lock" data-lock>' +
         '<svg class="lock__shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 4.5 5.5v6c0 5 3.2 8.4 7.5 10 4.3-1.6 7.5-5 7.5-10v-6z"/><rect x="9" y="10.5" width="6" height="5" rx="1.2"/><path d="M10.5 10.5V9a1.5 1.5 0 0 1 3 0v1.5"/></svg>' +
         '<h1 class="screen__title" style="font-size:26px">' + s.label + ' est verrouillé</h1>' +
         '<p class="screen__sub">Cet écran est réservé au patron. ' + (activeMember().nom ? 'Connecté : <b>' + activeMember().nom + '</b> (' + ROLE_LBL[activeRole()] + ').' : '') + '</p>' +
@@ -1674,13 +1674,13 @@
       if (goBtn) { goBtn.addEventListener('click', tryPin); pin.addEventListener('keydown', (e) => { if (e.key === 'Enter') tryPin(); }); setTimeout(() => { try { pin.focus(); } catch (_) {} }, 220); }
     }
     /* ---- « Qui tient la caisse ? » : membre actif (chaque vente porte son nom) ---- */
-    const ROLE_COLORS = { patron: '#f6a63c', gerant: '#3a86ff', vendeur: '#34d399' };
+    const ROLE_COLORS = { patron: 'var(--acc)', gerant: '#3a86ff', vendeur: 'var(--good)' };
     function setAvatar() {
       const av = document.querySelector('.hdr__avatar'); if (!av) return;
       const m = activeMember();
       av.textContent = (m.nom || 'P').charAt(0).toUpperCase();
       av.setAttribute('aria-label', 'Caisse tenue par ' + m.nom + ' — changer');
-      av.style.background = 'radial-gradient(120% 120% at 30% 25%, color-mix(in srgb, ' + (ROLE_COLORS[m.role] || '#f6a63c') + ' 45%, #fff), ' + (ROLE_COLORS[m.role] || '#f6a63c') + ')';
+      av.style.background = 'radial-gradient(120% 120% at 30% 25%, color-mix(in srgb, ' + (ROLE_COLORS[m.role] || 'var(--acc)') + ' 45%, #fff), ' + (ROLE_COLORS[m.role] || 'var(--acc)') + ')';
     }
     function openSwitch() {
       const sheet = document.querySelector('[data-swsheet]'), scrim = document.querySelector('[data-swclose]'), body = document.querySelector('[data-swbody]');
@@ -1689,7 +1689,7 @@
       const renderList = () => {
         body.innerHTML = (SM.equipe || []).filter((m) => m.actif || m.role === 'patron').map((m) =>
           '<button class="swrow' + (m.id === SM.meta.activeId ? ' is-cur' : '') + '" data-swpick="' + m.id + '">' +
-          '<span class="swrow__av" style="background:radial-gradient(120% 120% at 30% 25%, color-mix(in srgb, ' + (ROLE_COLORS[m.role] || '#f6a63c') + ' 45%, #fff), ' + (ROLE_COLORS[m.role] || '#f6a63c') + ')">' + m.nom.charAt(0).toUpperCase() + '</span>' +
+          '<span class="swrow__av" style="background:radial-gradient(120% 120% at 30% 25%, color-mix(in srgb, ' + (ROLE_COLORS[m.role] || 'var(--acc)') + ' 45%, #fff), ' + (ROLE_COLORS[m.role] || 'var(--acc)') + ')">' + m.nom.charAt(0).toUpperCase() + '</span>' +
           '<span class="swrow__nm">' + m.nom + '<small>' + ROLE_LBL[m.role] + (m.id === SM.meta.activeId ? ' · aux commandes' : '') + '</small></span></button>').join('') +
           '<p class="setnote">Chaque vente est signée du nom de celui qui tient la caisse : tu sais toujours qui a vendu quoi.</p>';
         body.querySelectorAll('[data-swpick]').forEach((b) => b.addEventListener('click', () => {
@@ -1728,20 +1728,20 @@
       return '<div class="screen wide" style="--sc:#8a93a6"><span class="screen__tag">Réglages</span><h1 class="screen__title">Ton commerce</h1>' +
         '<p class="screen__sub">Identité, sécurité, données : tout ce qui fait de Boussole TON outil.</p>' +
         (SM.meta.demo ? '<span class="demochip">&#9888; Mode démo — données d\'exemple</span>' : '') +
-        '<div class="setgrp" style="--i:0;--gc:#ffc46a"><h3 class="setgrp__ttl">' + ICO_ID + 'Identité du commerce</h3>' +
+        '<div class="setgrp" style="--i:0;--gc:var(--acc2)"><h3 class="setgrp__ttl">' + ICO_ID + 'Identité du commerce</h3>' +
           '<div class="setrow2">' + inp('bnom', 'Nom du commerce', b.nom) + inp('bprenom', 'Ton prénom', b.prenom) + '</div>' +
           '<div class="setrow2">' + inp('btel', 'Téléphone', b.tel, 'tel') + inp('badresse', 'Adresse / quartier', b.adresse) + '</div>' +
           '<div class="setrow2">' + inp('bifu', 'N° IFU (factures)', b.ifu) + inp('brc', 'N° RCCM (factures)', b.rc) + '</div>' +
           '<p class="setnote">Ces infos apparaissent sur tes factures et devis — c\'est ce qui les rend officielles.</p>' +
           '<button class="sheet__add" data-bizsave>Enregistrer l\'identité</button></div>' +
-        '<div class="setgrp" style="--i:1;--gc:#34d399"><h3 class="setgrp__ttl">' + ICO_KEY + 'Sécurité</h3>' +
+        '<div class="setgrp" style="--i:1;--gc:var(--good)"><h3 class="setgrp__ttl">' + ICO_KEY + 'Sécurité</h3>' +
           '<p class="setnote" style="margin-top:0">' + (patron.pinH ? 'Code patron défini : les écrans sensibles (bilan, stats, réglages…) sont protégés quand un vendeur tient la caisse.' : 'Aucun code patron. Définis-en un : sans lui, n\'importe qui peut voir ton bénéfice.') + '</p>' +
           '<div class="setrow2"><input class="sheet__txt" data-pinnew type="password" inputmode="numeric" maxlength="4" placeholder="Nouveau code (4 chiffres)"><button class="setbtn" data-pinset>' + (patron.pinH ? 'Changer le code' : 'Définir le code') + '</button></div></div>' +
-        '<div class="setgrp" style="--i:2;--gc:#b98cff"><h3 class="setgrp__ttl">' + ICO_BOT + 'IA Boussole</h3>' +
+        '<div class="setgrp" style="--i:2;--gc:var(--acc2)"><h3 class="setgrp__ttl">' + ICO_BOT + 'IA Boussole</h3>' +
           inp('iahook', 'Webhook IA (optionnel, ex : https://n8n…/boussole)', SM.meta.iaHook, 'url') +
           '<p class="setnote">Sans webhook, je réponds avec mes règles locales (ça marche hors-ligne). Avec, tes questions libres passent par ton IA n8n/Claude.</p>' +
           '<button class="sheet__add" data-iasave>Enregistrer</button></div>' +
-        '<div class="setgrp" style="--i:3;--gc:#4cc9ff"><h3 class="setgrp__ttl">' + ICO_DATA + 'Tes données</h3>' +
+        '<div class="setgrp" style="--i:3;--gc:var(--acc2)"><h3 class="setgrp__ttl">' + ICO_DATA + 'Tes données</h3>' +
           '<div class="setbtns"><button class="setbtn" data-export>&#11015; Exporter (sauvegarde)</button><button class="setbtn" data-importbtn>&#11014; Importer</button>' +
           (SM.meta.demo ? '<button class="setbtn setbtn--warn" data-wipedemo>Quitter la démo (repartir à zéro)</button>' : '<button class="setbtn" data-loaddemo>Charger la démo (essai)</button>') +
           '<button class="setbtn setbtn--warn" data-wipe>Tout effacer</button></div>' +
@@ -1960,7 +1960,7 @@
       if (nav === 'ventes') { view.innerHTML = ventesHTML(); bindVentes(); return; }
       if (nav === 'statistiques' || nav === 'bilan') {   // ecrans lourds (graphes SVG) : on acquitte le tap TOUT DE SUITE (squelette) et on rend le contenu a la frame suivante -> pas de gel percu
         const isBil = nav === 'bilan';
-        view.innerHTML = '<div class="screen wide" style="--sc:' + (isBil ? '#b98cff' : '#ffe9c9') + '"><span class="screen__tag">' + (isBil ? 'Le bilan' : 'Statistiques') + '</span><h1 class="screen__title">' + (isBil ? 'Ta santé' : 'Tes chiffres') + '</h1><p class="screen__sub">Un instant&hellip;</p></div>';
+        view.innerHTML = '<div class="screen wide" style="--sc:' + (isBil ? 'var(--acc2)' : '#ffe9c9') + '"><span class="screen__tag">' + (isBil ? 'Le bilan' : 'Statistiques') + '</span><h1 class="screen__title">' + (isBil ? 'Ta santé' : 'Tes chiffres') + '</h1><p class="screen__sub">Un instant&hellip;</p></div>';
         const build = isBil ? function () { view.innerHTML = bilanHTML(); bindBilan(); } : function () { view.innerHTML = statsHTML(); bindStats(); };
         requestAnimationFrame(function () { requestAnimationFrame(build); });
         return;

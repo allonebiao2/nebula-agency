@@ -1,0 +1,17 @@
+# Boussole — en-têtes de publication (Cloudflare Pages)
+# Reconstitués depuis la production le 2026-08-02 : ils n'existaient que dans le
+# déploiement, pas dans le dépôt. Un redéploiement les aurait perdus.
+
+/assets/*
+  Access-Control-Allow-Origin: *
+  Cache-Control: no-cache
+  X-Content-Type-Options: nosniff
+
+/sw.js
+  Cache-Control: no-cache
+  Service-Worker-Allowed: /
+
+/*
+  Cache-Control: public, max-age=0, must-revalidate
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

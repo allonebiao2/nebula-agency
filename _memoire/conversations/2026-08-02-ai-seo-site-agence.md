@@ -278,3 +278,76 @@ navigateur. Un `urllib` Python nu ne peut pas se connecter au back-office ; il f
 ⚠️ **Son numéro est à confirmer** : posé en `22967218256`, l'ancien format béninois à
 8 chiffres. Depuis le 30/11/2024, l'ARCEP impose `+229 01 XX XX XX XX`. **Un numéro Mobile
 Money faux, c'est une commission qui n'arrive jamais.**
+
+---
+
+## Boussole passe en « ORANGE & NUIT » — transplantation, pas fusion
+
+**En production : https://boussole-19d.pages.dev** · essai conservé sur
+`orange.boussole-19d.pages.dev`
+
+L'identité vivait sur une branche jamais fusionnée (`protocole-boussole-memoire-9xy3j4`).
+La fusion a été **tentée puis annulée**, et c'est le bon réflexe : elle butait sur un seul
+conflit, mais le conflit disait tout.
+
+```
+main       : <script src="../assets/js/proto-app.js">   ← les 238 Ko sortis du fichier
+la branche : les 238 Ko réécrits À L'INTÉRIEUR du fichier
+```
+
+La branche avait travaillé **avant** l'externalisation. Fusionner aurait remis tout le code
+en ligne et **annulé le mode performance adaptatif**, donc la fluidité sur les appareils
+modestes. Les deux lignées étaient complémentaires, pas concurrentes :
+
+| main depuis le 25/07 | la branche depuis le 25/07 |
+|---|---|
+| module externalisé, boot non-bloquant, mode performance adaptatif | Orange & Nuit, visite guidée, aide par écran, pilotage (point mort, trésorerie, score de santé) |
+
+### La méthode : mesurer ce que chacun a touché
+
+- **CSS** : main n'avait changé que **1 412 octets** (le bloc `.perf-lite`), la branche
+  **27 860**. → le CSS se transplante en bloc, en recollant `.perf-lite` derrière.
+- **JS** : la branche avait remplacé **58 couleurs générées par le JavaScript** par des
+  jetons ; le module de main n'en avait aucun. Sans ce second volet, on aurait eu une
+  interface orange avec des **graphiques restés en ambre et en cyan**.
+
+Les règles de remplacement n'ont pas été devinées : elles ont été **déduites** en comparant
+le JS de la branche à celui d'avant (`difflib` + extraction des couleurs), ce qui a donné
+12 règles sûres (`#f6a63c → var(--acc)`, `#34d399 → var(--good)`, `#4cc9ff → var(--acc2)`…).
+**82 couleurs** converties dans le module, **0 ancienne couleur restante**.
+
+`boussole/_outils/_orange_nuit.py`, idempotent, fait les deux volets et refuse d'écrire si le
+module externalisé ou le mode performance a disparu.
+
+### Deux bugs corrigés au passage
+
+La branche définissait `--bad2: var(--bad2);` (thème sombre) et `--bad: var(--bad);`
+(thème clair) : **des jetons qui se référencent eux-mêmes ne produisent rien**. Le rouge des
+alertes n'aurait pas fonctionné. Remplacés par `#ff8a96` et `#e11d48`, cohérents avec le
+couple `good`/`good2` de chaque thème.
+
+### Découverte : deux fichiers de production n'étaient nulle part dans le dépôt
+
+`sw.js` (**kill-switch** qui désinstalle l'ancien service worker et vide ses caches) et
+`_headers` n'existaient **que dans le déploiement**. Un redéploiement les aurait effacés, et
+des visiteurs seraient restés coincés sur une version périmée. Récupérés depuis la
+production, rangés dans `boussole/_deploy/`, et `boussole/_outils/_build_dist.py` les inclut
+désormais. Ce script aplatit le proto (`connexion.html` → `index.html`, `../assets/` →
+`/assets/`) et **refuse de publier** si le module externalisé, le mode performance, la
+palette ou le thème clair manquent.
+
+### Vérifié
+
+md5 du fichier servi **identique** au fichier local. Palette orange, thème clair, mode
+performance, module externalisé : tous présents dans la page réellement servie. Module :
+0 ancienne couleur, 64 jetons.
+
+⚠️ Piège de mesure : un premier `curl` avait renvoyé un fichier corrompu et fait croire que
+la palette manquait en prod. **Retélécharger avant de conclure** — deuxième fois de la
+journée que ce réflexe évite un faux diagnostic.
+
+### Pas repris de la branche
+
+L'**écran de pilotage** (point mort, trésorerie, score de santé, rapport mensuel), la
+**visite guidée animée** et l'**aide par écran**. Ce sont des fonctions, pas des couleurs :
+un chantier à part, à décider séparément.
