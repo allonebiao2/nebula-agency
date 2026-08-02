@@ -173,3 +173,17 @@ vie · un marqueur de migration manquant. Aucun n'était visible à la lecture d
   données : c'est ainsi qu'on croit à tort qu'une section existe.
 - **Ne pas conclure sur une seule mesure** : un timeout curl, une propagation en cours ou un
   308 non suivi fabriquent de faux diagnostics.
+- **Une apostrophe française non échappée casse tout un bloc `<script>`.** `text: '… et
+  l'alerte.'` ferme la chaîne et rend muettes toutes les lignes qui suivent. `node --check`
+  sur le FICHIER ne la voit pas : il faut vérifier **chaque bloc inline séparément**. Le
+  remède est aussi le plus juste typographiquement : l'apostrophe courbe.
+- **Corriger la mesure avant de corriger le design.** Une sonde de contraste qui lit
+  `rgba(255,255,255,.04)` comme du blanc, au lieu de le fondre sur le fond, invente des
+  « textes pâles » qui n'existent pas. Composer les fonds translucides, et ignorer les
+  textes en dégradé où il n'y a rien à mesurer.
+- **Isoler avant d'optimiser.** Retirer une chose à la fois et remesurer désigne le vrai
+  coupable : sur les back-offices, les flous d'arrière-plan et 2 animations coûtaient 25
+  images sur 60, et les ombres **rien du tout**.
+- **Un banc de mesure chargé ment.** La même page mesurait 60 images/s puis 14 selon ce qui
+  tournait à côté. Comparer seulement des mesures prises **d'une traite**, et se méfier des
+  chiffres absolus.

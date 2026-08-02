@@ -351,3 +351,83 @@ journée que ce réflexe évite un faux diagnostic.
 L'**écran de pilotage** (point mort, trésorerie, score de santé, rapport mensuel), la
 **visite guidée animée** et l'**aide par écran**. Ce sont des fonctions, pas des couleurs :
 un chantier à part, à décider séparément.
+
+---
+
+## Les back-offices : une erreur bloquante, l'accessibilité, la fluidité
+
+Demande de Mongazi : « améliore le rendu, le visuel des back-offices, le mien et celui des
+partenaires, corrige toutes les erreurs et rends ça fluide. »
+
+**Méthode : mesurer d'abord.** `nebula-affilies/_outils/_audit_ui.py` se connecte pour de
+vrai (cockpit **et** espace partenaire, avec le compte de Romaric), sur 3 formats, et relève
+ce que l'œil ne voit pas : erreurs JavaScript, requêtes en échec, débordements mesurés,
+cibles sous 44 px, contrastes, animations en boucle sous un flou.
+
+### 1. Une erreur JavaScript qui cassait la moitié du cockpit
+
+```js
+text: 'Tous les clients du réseau. … et l'alerte.'
+                                        ↑ la chaîne se ferme ici
+```
+
+Une **apostrophe française non échappée** dans une chaîne à guillemets simples. Elle cassait
+**tout le bloc `<script>` d'`admin.html`**, donc une partie du cockpit ne s'exécutait pas.
+Corrigée par une apostrophe **typographique** : le bug disparaît et la typographie est juste.
+
+⚠️ `node --check` sur le **fichier** ne l'attrape pas : il faut vérifier **chaque bloc inline
+séparément**. C'est ce qui l'a trouvée.
+
+### 2. Accessibilité, sur mesure
+
+- `--faint` donnait **3,69** de contraste sur les libellés de statistiques, là où il en faut
+  4,5. Passé à `#8a8aa6` → **5,68**, en restant plus discret que `--muted` (7,19) : la
+  hiérarchie visuelle tient.
+- **Cibles tactiles** sous 44 px : boutons ronds (42, et 40 en mobile), croix des
+  notifications (34), croix du guide (32), petits boutons (38 de haut). Toutes à 44.
+- Champs à **16 px en mobile** : en dessous, Safari iOS zoome tout seul et la page part de
+  travers.
+- **Focus clavier** rendu visible, il ne l'était pas sur fond sombre.
+- `prefers-reduced-motion` respecté.
+
+### 3. Fluidité : isoler avant de trancher
+
+Mesure d'une traite, sur un écran de téléphone, en défilant :
+
+| | images/s |
+|---|---|
+| tel quel | **35** |
+| sans les flous d'arrière-plan | 53 |
+| sans les animations infinies | 56 |
+| sans les ombres | 35 (**aucun effet**) |
+| sans flous NI animations | **60** (le plafond) |
+
+Les **14 flous d'arrière-plan** et les **2 animations d'ambiance** coûtent 25 images sur 60.
+Les ombres ne coûtent rien : on n'y a pas touché.
+
+D'où un **mode adaptatif** (`initPerfMode` + `.perf-lite`), le patron déjà éprouvé sur
+Boussole : personne n'est dégradé d'office. Sur appareil modeste (≤ 4 cœurs ou ≤ 4 Go), ou
+si la fluidité mesurée tombe sous 45, on calme les effets **d'ambiance**. Jamais les
+interactions, jamais les transitions au toucher : ce sont elles qui donnent la sensation de
+réactivité, et elles ne coûtent rien.
+
+⚠️ **Le gain exact sur les téléphones réels n'est pas certifiable depuis cette machine** : la
+référence variait de 14 à 60 images/s selon la charge. Ce qui est solide, c'est l'isolation
+des deux coupables, faite d'une traite à charge égale.
+
+### ⚠️ Le piège que j'ai failli payer
+
+Ma **première sonde de contraste était fausse** : elle lisait `rgba(255,255,255,.04)` comme
+du blanc au lieu de le **fondre sur le noir**, et signalait 13 « textes pâles » inexistants,
+dont des textes en dégradé mesurés à 1,03. J'allais corriger un design qui n'avait rien.
+
+**Corriger la MESURE avant de corriger le design.** La sonde compose désormais les fonds
+translucides jusqu'à un fond opaque, et ignore les textes en dégradé, où il n'y a rien à
+mesurer.
+
+### Résultat
+
+**9 combinaisons** (3 formats × 3 pages) au vert, **deux passages de suite**, 0 erreur
+JavaScript, 0 requête en échec. Vérifié en ligne, connecté : le cockpit ne produit aucune
+erreur, `--faint` vaut bien `#8a8aa6`, et le mode calme s'active tout seul sur un appareil
+modeste.
