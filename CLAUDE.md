@@ -121,6 +121,44 @@ bloque **par défaut** ; le réglage `ai_bots_protection` n'existe nulle part da
 bord, il faut `PUT /zones/{zone}/bot_management` avec un jeton portant `Zone · Bot Management`.
 À vérifier sur **chaque nouveau domaine**.
 
+## 🟢 OÙ ATTERRIT LE TRAVAIL — règle absolue, toutes machines
+
+**Tout finit dans `main`, sur `github.com/allonebiao2/nebula-agency`. Il n'y a pas d'autre
+endroit.** Que la session tourne dans le terminal de Cotonou, sur le téléphone de Mongazi ou
+sur claude.ai/code, le travail n'existe que lorsqu'il est **dans `main`**.
+
+⚠️ **Claude Code sur téléphone et sur le web travaille sur une branche `claude/…`.**
+Cette branche **n'arrive jamais dans `main` toute seule**. Le 2026-08-02, neuf branches
+s'étaient accumulées, dont une qui portait **toute la refonte des commissions** : sans un
+coup d'œil au hasard, personne ne l'aurait su.
+
+### Ce que fait CHAQUE session avant de se terminer
+
+1. `git fetch origin && git merge origin/main` — **récupérer `main` AVANT de fusionner vers
+   lui.** `main` bouge pendant qu'on travaille, c'est le piège n° 1 de ce dépôt.
+2. `git diff --stat origin/main..HEAD` — rien d'étranger au chantier ?
+3. **Fusionner dans `main` et pousser.** Si la session ne peut pas (sandbox), elle **le dit
+   explicitement** à Mongazi, avec le nom de sa branche.
+4. **Dispatcher la mémoire**, comme d'habitude : `_memoire/conversations/[date]-[sujet].md`,
+   le journal, le `CONTEXT.md` du client, `_memoire/lecons.md` si on a appris quelque chose,
+   et cette page si une règle change. Voir « RÈGLE AUTOMATIQUE — MÉMOIRE ET DISPATCH ».
+5. **Redéployer** ce qui est concerné (voir « Infrastructure »). Un `git push` ne déploie
+   **rien** tout seul, ni sur Cloudflare Pages ni sur Render.
+
+### Au DÉBUT de chaque session, en une commande
+
+```bash
+python scripts/rapatrier.py
+```
+
+Il liste ce qui traîne sur les autres branches, dit si la fusion passerait sans conflit, et
+signale celles qui touchent du sensible (contrat, socle commercial, `server.py`,
+`_worker.js`, `secrets/`, ce fichier). Avec `--fusionner`, il rapatrie.
+
+⚠️ **Ne jamais fusionner en bloc sans regarder.** Certaines vieilles branches ressusciteraient
+des fichiers obsolètes : celle de mai 2026 renommerait le site en `v7`, une autre rajouterait
+une configuration Fly.io abandonnée. Le script montre, l'humain tranche.
+
 ## 🔴 REPRENDRE UNE SESSION
 **Lire `_memoire/REPRENDRE-ICI.md` en premier.** Il dit où on en est, ce qui bloque,
 et par quoi commencer. Mis à jour à chaque fin de session importante.
