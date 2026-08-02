@@ -354,3 +354,28 @@ règles) et `_documents/nebula-agency/vente/05-GUIDE-OUTIL-METIER.md` (cadrage).
 ---
 
 *NEBULA Agency · Cotonou*
+
+
+---
+
+## 7. V3 « LE FIL » — déployée le 2026-08-02
+
+La vitrine mise en ligne le 1er août a été remplacée par la **V3**, bâtie sur le standard
+« 100 000 € » (`_memoire/procedure-vitrine/DIRECTION-ARTISTIQUE.md`, dont ce dossier est la
+**référence d'exécution**).
+
+Ce qui la distingue, et ce qu'il faut voir sur un téléphone pour savoir qu'on est bien
+dessus : le **rideau qui s'ouvre** au chargement (un fil descend, deux pans s'écartent), les
+**titres en Bodoni Moda** (serif fin à déliés très contrastés), et les **cartes qui
+s'enfoncent** sous le doigt avec une lueur.
+
+⚠️ **La source est `_vitrine_src.html`. `vitrine.html` est GÉNÉRÉ, ne jamais l'éditer à la
+main.** Chaîne : `_build.py` (injecte logo et favicon en base64) → `_qc.py` (71 contrôles) →
+`_predeploy.py` (enchaîne tout et prépare `_dist/`).
+
+⚠️ `_outils/_apply_infos.py` est **OBSOLÈTE** : il patchait le livrable directement, ce qui
+écraserait la V3.
+
+**Déploiement :** `python _predeploy.py` puis
+`npx wrangler@3 pages deploy _dist --project-name hillary-m-styl --branch main`.
+Contrôle en une commande : `grep -c "Bodoni Moda" vitrine.html` doit valoir au moins 1.

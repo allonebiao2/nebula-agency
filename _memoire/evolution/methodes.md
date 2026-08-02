@@ -110,3 +110,25 @@ Manuel : `_memoire/procedure-vitrine/DIRECTION-ARTISTIQUE.md`.
 
 > _vide pour le moment._
 > Quand une méthode est retirée, la déplacer ici avec **date d'arrêt** et **raison**.
+
+## 2026-08-02 — mesurer avant d'agir, et se méfier d'une seule mesure
+
+Trois habitudes prises aujourd'hui, chacune née d'une erreur évitée de justesse.
+
+**1. Comparer le vivant au local avant de redéployer.** « Déploie tout » sur 14 projets,
+c'est 14 occasions d'envoyer le mauvais dossier sur un site qui marchait. À la place :
+télécharger chaque page publique, comparer son md5 à la source, et ne déployer que ce qui a
+bougé. Sur tout le parc, une seule dérive : **11 octets** sur un fichier de 314 Ko.
+
+**2. Ne jamais conclure sur une seule mesure.** Un timeout curl, un 308 non suivi, une
+propagation en cours : chacun fabrique un faux diagnostic. Un résultat isolé au milieu de
+résultats contraires se relance **toujours** avant d'être cru.
+
+**3. Vérifier le chemin, pas la façade.** Un lien qui s'affiche ne prouve rien. Sur la chaîne
+« devenir partenaire », c'est une vraie candidature envoyée de l'extérieur qui a prouvé que
+tout tenait : formulaire → API → base → notification. Idem pour un QR : il se valide **sur
+l'affiche imprimée**, pas sur le fichier QR isolé.
+
+**Corollaire sur les diagnostics :** quand une requête échoue, regarder si elle **apparaît
+dans les journaux**. Si elle n'y est pas, le problème est en amont du code, et chercher dans
+le code fait perdre des heures.

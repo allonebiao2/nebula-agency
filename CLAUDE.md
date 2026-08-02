@@ -102,6 +102,25 @@
 - **Reste à faire** : Agenda · comparateur de 2 périodes · vague 2 des transitions (Bilan-ECG, Stats-constellation, Carnet, Factures, Équipe, Réglages) · exécuter `etat.sql` dans Supabase pour activer la synchro · migration proto → app live.
 - Détail complet : `boussole/README.md` + `_memoire/conversations/2026-07-25-boussole-*.md`
 
+## Infrastructure — où tourne quoi (2026-08-02)
+
+| Ce qui tourne | Où | Notes |
+|---|---|---|
+| Les 12 vitrines et outils | **Cloudflare Pages** | un déploiement est un **instantané complet** : ce qui manque sur le disque disparaît du site |
+| **Bureau des partenaires** | **Render** (`srv-d9nni7e7bikc73c9oksg`) + **Supabase** (schéma `naff`) | Railway a fait disparaître l'app le 2026-08-01, données de prod perdues |
+| Le domaine des partenaires | relais Cloudflare Pages `nebula-partenaires` | change d'origine sans toucher au DNS |
+
+⚠️ **Railway est abandonné** (exige une carte). ⚠️ **Le VPS Hostinger `72.61.103.56`
+n'appartient plus à Mongazi** (certificat au nom de `api-preprod.normly.fr`) : ne jamais y
+toucher. ⚠️ **L'auto-déploiement Render ne marche pas** (dépôt branché par URL publique) :
+`POST /v1/services/{id}/deploys`. Clés dans `secrets/` : `render.env`, `supabase.env`,
+`nebula-affilies.env` (miroir des variables du service), `cloudflare.env`.
+
+**Les robots des IA sont autorisés** sur les 4 domaines depuis le 2026-08-02. Cloudflare les
+bloque **par défaut** ; le réglage `ai_bots_protection` n'existe nulle part dans le tableau de
+bord, il faut `PUT /zones/{zone}/bot_management` avec un jeton portant `Zone · Bot Management`.
+À vérifier sur **chaque nouveau domaine**.
+
 ## 🔴 REPRENDRE UNE SESSION
 **Lire `_memoire/REPRENDRE-ICI.md` en premier.** Il dit où on en est, ce qui bloque,
 et par quoi commencer. Mis à jour à chaque fin de session importante.

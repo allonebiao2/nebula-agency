@@ -572,3 +572,20 @@
 - **Conséquences** : `void_commissions()` a dû être corrigée pour ne jamais annuler une
   commission d'abonnement. Reste à poser `NAFF_CRON_KEY` sur Railway et à construire le
   workflow n8n `nebula-affilies-renouvellements`.
+
+## 2026-08-02
+
+- **Railway est abandonné.** Il exige une carte bancaire, que Mongazi n'a pas, et il a fait
+  disparaître l'application sans préavis. Le bureau des partenaires vit désormais sur
+  **Render** (code) + **Supabase** (données). Le découpage est imposé par le disque éphémère
+  de Render.
+- **Les tables des partenaires vont dans le projet Supabase de Boussole**, sous le schéma
+  `naff`, parce que le plan gratuit n'autorise que 2 projets actifs. Le schéma n'est **pas**
+  exposé à l'API REST : les commissions et les numéros Mobile Money ne sont atteignables par
+  aucune clé publique.
+- **Les robots des IA sont autorisés** sur les 4 domaines. CCBot et Bytespider restent
+  refusés : ils aspirent sans rien rendre.
+- **Le numéro d'Hillary n'a pas de `01`** (confirmé par Mongazi), contrairement à tous les
+  autres numéros du dépôt et au plan de numérotation en vigueur.
+- **Un partenaire perdu se restaure, il ne se recrée pas** : lui rendre son code d'origine
+  préserve sa carte de visite et les liens qu'il a déjà distribués.

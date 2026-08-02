@@ -150,3 +150,26 @@ Trois bugs seraient partis en production : une colonne `a.numero` qui n'existe p
 `affiliates` (c'est `momo_number`) et qui aurait fait planter le cron à sa première
 exécution six mois plus tard · `void_commissions()` qui annulait le récurrent acquis à
 vie · un marqueur de migration manquant. Aucun n'était visible à la lecture du code.
+
+## 2026-08-02 — hébergement, DNS et robots
+
+- **Un déploiement Cloudflare Pages est un instantané complet.** Ce qui manque sur le disque
+  disparaît du site. Lire `git status` avant tout `pages deploy .`, et se méfier des ` D `
+  non stagés.
+- **Déployer `.` publie aussi les notes internes.** Un `_dist` explicite est la seule façon
+  de savoir ce qui part en ligne.
+- **`REAL` en PostgreSQL fait 4 octets** et arrondit un horodatage Unix. En SQLite il en fait
+  8. Toute date migrée doit passer en `double precision`.
+- **Un point de contrôle d'hébergeur ne doit jamais dépendre de la base.** Sinon une base
+  lente fait déclarer l'application morte et l'hébergeur cesse de lui envoyer des visiteurs.
+  Il doit aussi répondre en **HEAD** : un 405 est lu comme une panne.
+- **Toujours interroger l'origine avant d'accuser le proxy.** Un 404 sur un domaine relayé
+  peut venir de l'origine, pas du relais.
+- **525 puis 522 après correction du DNS** = le nom d'hôte manque côté Cloudflare Pages.
+- **Cloudflare bloque les robots des IA par défaut** depuis le 1er juillet 2025, et le
+  réglage `ai_bots_protection` n'apparaît nulle part dans le tableau de bord.
+- **Cloudflare renvoie 403 aux clients d'API sans en-tête de navigateur.**
+- **Sur une page à images base64, tout `grep` ment** tant qu'on n'a pas neutralisé les
+  données : c'est ainsi qu'on croit à tort qu'une section existe.
+- **Ne pas conclure sur une seule mesure** : un timeout curl, une propagation en cours ou un
+  308 non suivi fabriquent de faux diagnostics.

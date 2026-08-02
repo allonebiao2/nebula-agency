@@ -1,5 +1,5 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-08-01
+## Point de reprise pour une session terminal · dernière mise à jour 2026-08-02
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
@@ -7,32 +7,49 @@
 
 ---
 
-## 0. 🚨 URGENT — le bureau des partenaires est HORS LIGNE (constaté le 2026-08-01)
+## 0. ÉTAT DU PARC AU 2026-08-02 — tout est en ligne
 
-`https://partenaires.nebula-agency.online` renvoie **`404 Application not found`**, et ce 404
-vient de **Railway**, pas du relais Cloudflare : l'origine
-`nebula-affilies-production.up.railway.app` répond la même chose en direct.
-Même panne pour **Vitrina** (`vitrina-production-686b.up.railway.app`).
-Les deux relais `_worker.js` sont sains, ils pointent vers des applications qui n'existent plus.
+**Le bureau des partenaires est REVENU.** Railway avait fait disparaître l'application ;
+elle tourne désormais sur **Render + Supabase**. Détail complet et marche à suivre :
+`nebula-affilies/DEPLOIEMENT.md`.
 
-**Le token de `secrets/railway.env` est refusé (« Unauthorized »)** → rien ne peut être relancé
-en ligne de commande. Il faut un token neuf, ou passer par le dashboard Railway.
+| Adresse | État |
+|---|---|
+| **partenaires.nebula-agency.online** | ✅ en ligne (Render `srv-d9nni7e7bikc73c9oksg` + Supabase schéma `naff`) |
+| ton cockpit : `…/cockpit-d59fa50d` | ✅ mot de passe `dylanfurax` |
+| www.nebula-agency.online **et l'apex** | ✅ l'apex servait la page de parking Hostinger, réparé |
+| hillary-m-styl.pages.dev (client 10) | ✅ V3 « LE FIL » |
+| les 11 autres sites du parc | ✅ audités un par un, à jour |
+| vitrina.nebula-agency.online | ⛔ toujours hors ligne (même panne Railway, non traitée) |
 
-Pourquoi c'est prioritaire : c'est l'outil de la vague de recrutement des 8 partenaires de
-Cotonou. Tant qu'il est éteint, aucun partenaire ne peut se connecter ni réclamer sa commission.
+**Les robots des IA ne sont plus bloqués.** Cloudflare les interdisait par défaut sur les
+4 domaines : GPTBot, ClaudeBot, PerplexityBot, OAI-SearchBot et Google-Extended répondent
+maintenant 200 partout. Le réglage s'appelle `ai_bots_protection` et **n'existe nulle part
+dans le tableau de bord** : il faut `PUT /zones/{zone}/bot_management` avec un jeton portant
+`Zone · Bot Management`.
 
-**Les liens de back-office**, pour mémoire :
+### ⚠️ Les cinq pièges du jour, à ne pas repayer
 
-| Back-office | Lien | État |
-|---|---|---|
-| Partenaires — admin Mongazi | `https://partenaires.nebula-agency.online/cockpit-d59fa50d` | ⛔ hors ligne |
-| Partenaires — espace partenaire | `https://partenaires.nebula-agency.online/partenaire` | ⛔ hors ligne |
-| Luxury Club 229 | `https://luxuryclub229.com/admin` | ✅ en ligne |
-| Boussole — cockpit licences | `https://boussole-19d.pages.dev` → `#cockpit-licences` | ✅ en ligne |
+1. **Auto-déploiement Render inactif** (dépôt branché par URL publique) : un `git push` ne
+   déploie rien, il faut `POST /v1/services/{id}/deploys`.
+2. **`REAL` de PostgreSQL fait 4 octets et arrondit un horodatage Unix** → `double precision`.
+3. **Un point de contrôle ne doit jamais dépendre de la base** : sinon une base lente fait
+   déclarer l'application morte (`x-render-routing: no-server`).
+4. **Cloudflare renvoie 403 aux clients d'API sans en-tête de navigateur.**
+5. **Un déploiement Cloudflare Pages est un instantané complet** : ce qui manque sur le
+   disque disparaît du site. Lire `git status` avant tout `pages deploy .`.
 
-**Le reste du parc va bien.** Audit complet du 2026-08-01 : les 12 sites Cloudflare Pages
-répondent 200 et servent exactement la source locale. Détail et méthode dans
-`_memoire/conversations/2026-08-01-deploiement-general-audit-du-parc.md`.
+### Ce qui reste, par ordre d'importance
+
+1. **Le catalogue d'Hillary** : 12 pièces d'exemple avec des prix d'exemple sont EN LIGNE.
+2. **Ressaisir les partenaires** : la base est vide, seul **Romaric** (`RBNXF`/`0067`,
+   40 %) a été restauré. Les données de production sont parties avec Railway, sans sauvegarde.
+3. **Changer le mot de passe Supabase** et les clés Anthropic/Resend : ils ont transité par
+   une conversation.
+4. **Confirmer le numéro de Romaric** : posé en 8 chiffres, l'ARCEP impose 10 depuis le
+   30/11/2024. Un numéro Mobile Money faux, c'est une commission qui n'arrive jamais.
+
+**Journal complet de la journée :** `_memoire/journal/2026-08-02-journal.md`
 
 ---
 
@@ -106,9 +123,9 @@ npx -y wrangler@3 pages deploy _tmp_pages --project-name nebula-agency --branch 
 Identifiants dans `secrets/cloudflare.env`.
 **Contrôle :** plus aucune occurrence de « 15 000 F » sur la page Tarifs.
 
-### 3.2 Poser `NAFF_CRON_KEY` sur Railway
-Une chaîne secrète au choix. Sans elle, n8n ne pourra pas lire les échéances
-d'abonnement. Une minute de travail, et ça débloque toute la relance automatique.
+### 3.2 Poser `NAFF_CRON_KEY` ✅ FAIT le 2026-08-02
+Générée et posée sur **Render** (plus Railway), notée dans `secrets/render.env`.
+La relance automatique des abonnements n'attend plus que le workflow n8n (§5).
 
 ### 3.3 ~~Compléter le numéro IFU~~ ✅ RÉGLÉ le 2026-08-01
 Décision de Mongazi : l'IFU viendra plus tard. Le contrat porte désormais
