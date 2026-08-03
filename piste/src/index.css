@@ -1,0 +1,311 @@
+@import "tailwindcss";
+
+/*
+  PISTE · la direction artistique.
+
+  LA PHRASE :
+  « Une piste, c'est une trace qu'on relève sur le terrain et qu'on suit
+    jusqu'à la porte du commerçant. »
+
+  De cette phrase sortent tous les gestes : la trace qui se dessine, le repère
+  qu'on plante, le semis de points relevés, le tampon qu'on pose, la porte qui
+  s'ouvre. La couleur est celle de la piste en latérite.
+
+  Interdits tenus : jamais #000 ni #fff en fond · aucune animation infinie sous
+  un backdrop-filter (il n'y a aucun backdrop-filter ici) · aucune transform sur
+  un écran qui porte un position:fixed · prefers-reduced-motion respecté ·
+  grain figé sur téléphone.
+*/
+
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  src: url('/polices/bricolage-latin.woff2') format('woff2');
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@theme {
+  --color-encre: #14110E;
+  --color-encre2: #1e1915;
+  --color-nuit: #0c0a08;
+  --color-papier: #f4efe6;
+  --color-papier2: #e8e0d2;
+  --color-laterite: #c1502e;
+  --color-braise: #f0854f;
+  --color-brique: #a8401f;
+  --color-sable: #c6baa8;
+  --color-sourd: #6b6055;
+  --color-vert: #1f6e4a;
+  --color-vertclair: #6fd8a4;
+  --color-rouge: #a3202f;
+  --color-rougeclair: #ff9aa5;
+  --color-creme: #fff8f2;
+  --color-trait: #d9cfbc;
+  --color-traitsombre: #362d26;
+
+  --font-display: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Bricolage Grotesque', ui-sans-serif, system-ui, -apple-system,
+    'Segoe UI', sans-serif;
+}
+
+/* --------------------------------------------------------------- socle --- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-papier);
+  color: var(--color-encre);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-braise);
+  color: var(--color-encre);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-braise);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+  margin: 0;
+  text-wrap: balance;
+}
+
+p { text-wrap: pretty; }
+
+input, select, textarea, button {
+  font-family: inherit;
+  font-size: 16px; /* jamais moins : iOS zoome en dessous */
+}
+
+/* le grain : la poussière de la piste. Figé sur téléphone. */
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.055;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ------------------------------------------------------- la révélation --- */
+
+.revele {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--d, 0ms);
+}
+.revele.vu {
+  opacity: 1;
+  transform: none;
+}
+
+/* ------------------------------------------ 1. la trace qui se dessine --- */
+
+.trace path,
+.trace line {
+  stroke-dasharray: var(--long, 1200);
+  stroke-dashoffset: var(--long, 1200);
+  transition: stroke-dashoffset 2.4s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.trace.vu path,
+.trace.vu line {
+  stroke-dashoffset: 0;
+}
+
+/* ------------------------------------------------ 2. le repère qu'on pose - */
+
+.repere {
+  opacity: 0;
+  transform: translateY(-14px) scale(0.4);
+  /* le repère tombe et s'immobilise : la décélération porte le geste, aucun
+     rebond ne l'aide. */
+  transition: opacity 0.35s ease-out, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--d, 0ms);
+  transform-origin: center;
+}
+.vu .repere {
+  opacity: 1;
+  transform: none;
+}
+
+/* --------------------------------------------- 3. le semis de relevés ---- */
+
+.point {
+  opacity: 0;
+  transform: scale(0.2);
+  transition: opacity 0.4s ease-out, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--d, 0ms);
+}
+.vu .point {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------------------------------------------- 4. le ruban qui défile --- */
+
+.ruban {
+  display: flex;
+  width: max-content;
+  animation: glisse 42s linear infinite;
+}
+@keyframes glisse {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ------------------------------------------------- 5. le tampon posé ----- */
+
+.tampon {
+  opacity: 0;
+  transform: rotate(-14deg) scale(1.7);
+  /* un tampon frappe et s'arrête net : il ne rebondit pas. */
+  transition: opacity 0.18s ease-out, transform 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--d, 0ms);
+}
+.vu .tampon {
+  opacity: 1;
+  transform: rotate(-7deg) scale(1);
+}
+
+/* ------------------------------------ 6. la fiche qu'on relève du sol ---- */
+
+.leve {
+  opacity: 0;
+  transform: translateY(24px) rotate(1.5deg);
+  transition: opacity 0.6s ease-out, transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--d, 0ms);
+}
+.vu.leve, .vu .leve {
+  opacity: 1;
+  transform: none;
+}
+
+/* ----------------------------------- 7. le relevé qui s'écrit ligne à ligne */
+
+.ligne-relevee {
+  opacity: 0;
+  clip-path: inset(0 100% 0 0);
+  transition: opacity 0.25s linear, clip-path 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+  transition-delay: var(--d, 0ms);
+}
+.vu .ligne-relevee {
+  opacity: 1;
+  clip-path: inset(0 0 0 0);
+}
+
+/* --------------------------------------------- 8. la porte qui s'ouvre --- */
+
+@keyframes porte {
+  from { transform: perspective(700px) rotateY(-72deg); opacity: 0; }
+  to   { transform: perspective(700px) rotateY(0); opacity: 1; }
+}
+.porte {
+  transform-origin: left center;
+  animation: porte 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ------------------------------------------ le compteur du questionnaire - */
+
+.jalon {
+  transition: background-color 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* le curseur de volume, dessiné à la main pour rester ≥ 44 px au pouce */
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 44px;
+  background: transparent;
+  cursor: pointer;
+}
+input[type='range']::-webkit-slider-runnable-track {
+  height: 10px;
+  border-radius: 99px;
+  background: var(--piste-remplie, var(--color-papier2));
+}
+input[type='range']::-moz-range-track {
+  height: 10px;
+  border-radius: 99px;
+  background: var(--color-papier2);
+}
+input[type='range']::-moz-range-progress {
+  height: 10px;
+  border-radius: 99px;
+  background: var(--color-brique);
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 30px;
+  height: 30px;
+  margin-top: -10px;
+  border-radius: 99px;
+  background: var(--color-brique);
+  border: 4px solid var(--color-papier);
+  box-shadow: 0 2px 10px rgb(20 17 14 / 0.35);
+}
+input[type='range']::-moz-range-thumb {
+  width: 26px;
+  height: 26px;
+  border-radius: 99px;
+  background: var(--color-brique);
+  border: 4px solid var(--color-papier);
+}
+
+/* --------------------------------------------------- écrans modestes ----- */
+
+@media (max-width: 640px) {
+  /* le grain reste, le repaint disparaît */
+  .grain::after { opacity: 0.04; }
+  .nappe { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .revele, .repere, .point, .tampon, .leve, .ligne-relevee {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+  .trace path, .trace line { stroke-dashoffset: 0 !important; }
+  .ruban { animation: none; }
+}
+
+@media print {
+  .sansimpression { display: none !important; }
+}

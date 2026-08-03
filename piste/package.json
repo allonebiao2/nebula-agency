@@ -1,0 +1,23 @@
+{
+  "name": "piste",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "PISTE by NEBULA - vitrine, questionnaire, calculateur, cockpit (V1)",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173",
+    "qc": "node _qc.js"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "tailwindcss": "^4.1.0",
+    "vite": "^6.3.0"
+  }
+}
