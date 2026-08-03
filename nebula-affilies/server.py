@@ -20,13 +20,14 @@ paiement (gris → vert fluo) : l'affilié est notifié à chaque étape.
 Lancement local :  uvicorn server:app --port 8780 --reload
 Stack identique à NEXO/Vendora (FastAPI + SQLite, 100% gratuit, sans CB).
 """
+import base64
 import os, json, time, pathlib, sqlite3, hmac, hashlib, base64, secrets, re, threading, datetime, contextlib
 from typing import Any, Dict, List, Optional, Tuple
 
 import httpx
 from urllib.parse import quote
 from fastapi import FastAPI, Request, Response, Cookie, UploadFile, File, Form
-from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -2672,20 +2673,28 @@ async def upload_my_photo(file: UploadFile = File(...), naff_session: Optional[s
         return JSONResponse({"error": "auth"}, status_code=401)
     if not file or not file.filename:
         return JSONResponse({"ok": False, "error": "Aucun fichier."}, status_code=400)
-    fname, _ = await store_upload(file, "photo")
+    # La photo est rangée DANS LA BASE, en base64, et non sur le disque :
+    # celui de Render s'efface à chaque déploiement, donc une photo posée le
+    # matin disparaissait le soir sans que personne comprenne pourquoi.
+    data = await file.read()
+    if len(data) > 700_000:
+        return JSONResponse({"ok": False,
+                             "error": "Photo trop lourde (700 Ko maximum). Réduis-la avant de l'envoyer."},
+                            status_code=400)
+    ext = (file.filename or "").rsplit(".", 1)[-1].lower()
+    mime = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png",
+            "webp": "image/webp", "gif": "image/gif"}.get(ext)
+    if not mime:
+        return JSONResponse({"ok": False,
+                             "error": "Format non reconnu. Utilise une photo JPG, PNG ou WEBP."},
+                            status_code=400)
+    fname = "data:" + mime + ";base64," + base64.b64encode(data).decode("ascii")
+
     if me == "admin":
-        old = setting_get("admin_photo")
-        if old:
-            try: (UP_DIR / old).unlink()
-            except Exception: pass
         setting_set("admin_photo", fname)
     else:
         aid = int(me[1:])
         with db() as c:
-            r = c.execute("SELECT photo FROM affiliates WHERE id=?", (aid,)).fetchone()
-            if r and r["photo"]:
-                try: (UP_DIR / r["photo"]).unlink()
-                except Exception: pass
             c.execute("UPDATE affiliates SET photo=? WHERE id=?", (fname, aid))
     return {"ok": True, "url": photo_url(me)}
 
@@ -2706,6 +2715,16 @@ def serve_photo(who: str, naff_session: Optional[str] = Cookie(default=None)):
             fname = ""
     if not fname:
         return JSONResponse({"error": "introuvable"}, status_code=404)
+    # photo rangée en base (le cas normal depuis le 2026-08-03)
+    if fname.startswith("data:"):
+        try:
+            entete, b64 = fname.split(",", 1)
+            mime = entete[5:].split(";")[0] or "image/jpeg"
+            return Response(content=base64.b64decode(b64), media_type=mime,
+                            headers={"Cache-Control": "private, max-age=300"})
+        except Exception:
+            return JSONResponse({"error": "illisible"}, status_code=404)
+    # ancien stockage sur disque : conservé pour les photos posées avant
     fp = UP_DIR / fname
     if not fp.exists():
         return JSONResponse({"error": "introuvable"}, status_code=404)
