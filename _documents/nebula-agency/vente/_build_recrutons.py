@@ -18,8 +18,10 @@ dessin se corrige au pixel là où une photo générée se rejoue au hasard.
 import base64, glob, pathlib, subprocess, sys
 
 ICI = pathlib.Path(__file__).resolve().parent
-SRC = ICI / "_affiche_recrutons_src.html"
-OUT = ICI / "_affiche_recrutons.html"
+import sys as _s
+V916 = "--916" in _s.argv
+SRC = ICI / ("_affiche_recrutons_916_src.html" if V916 else "_affiche_recrutons_src.html")
+OUT = ICI / ("_affiche_recrutons_916.html" if V916 else "_affiche_recrutons.html")
 ASSETS = ICI / "assets"
 LOGO = ICI / "assets/nebula-logo-transparent.png"   # detoure, fond noir retire
 
@@ -87,14 +89,14 @@ def main():
     OUT.write_text(html, encoding="utf-8")
     print("  source assemblée :", OUT.name, OUT.stat().st_size, "octets")
 
-    png = ASSETS / "Affiche-NOUS-RECRUTONS.png"
+    png = ASSETS / ("Affiche-NOUS-RECRUTONS-9x16.png" if V916 else "Affiche-NOUS-RECRUTONS.png")
     import asyncio
     from playwright.async_api import async_playwright
 
     async def shot():
         async with async_playwright() as pw:
             br = await pw.chromium.launch(executable_path=CHROME)
-            ctx = await br.new_context(viewport={"width": 1080, "height": 1350},
+            ctx = await br.new_context(viewport={"width": 1080, "height": 1920 if V916 else 1350},
                                        device_scale_factor=2)
             pg = await ctx.new_page()
             await pg.goto(OUT.as_uri(), wait_until="networkidle")
@@ -117,14 +119,15 @@ def main():
             return deb
 
     d = asyncio.run(shot())
-    if d["w"] > 1080 or d["h"] > 1350:
-        print("  ❌ DEBORDEMENT : %d x %d au lieu de 1080 x 1350" % (d["w"], d["h"]))
+    H = 1920 if V916 else 1350
+    if d["w"] > 1080 or d["h"] > H:
+        print("  ❌ DEBORDEMENT : %d x %d au lieu de 1080 x %d" % (d["w"], d["h"], H))
         return 1
     if d["err"]:
         for e in d["err"]:
             print("  ❌", e)
         return 1
-    print("  mise en page : %d x %d — ca tient" % (d["w"], d["h"]))
+    print("  mise en page : %d x %d, ca tient" % (d["w"], d["h"]))
     print("  PNG   :", png.name, png.stat().st_size, "octets")
     return 0
 

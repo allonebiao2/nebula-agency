@@ -128,6 +128,78 @@ il gagne exactement comme s'il était venu seul.
 Envoyez-moi les noms en privé avant qu'ils postulent.
 ```
 
+### ⚠️ Message 3 bis · LE CHANGEMENT DE BARÈME · à envoyer en priorité
+
+> **C'est le message le plus important du document, et il a une échéance.**
+> L'article 6.7 du contrat impose **30 jours de préavis écrit** avant toute baisse de
+> barème. Vos 3 partenaires sont encore en version 1.1. **Tant que ce message n'est pas
+> parti, le compteur ne tourne pas** et le nouveau barème ne leur est pas opposable.
+>
+> **En individuel, pas dans le groupe.** Un changement de rémunération se dit à chacun,
+> et chacun doit pouvoir répondre sans public.
+>
+> ⚠️ **Ne pas cacher ce qui baisse.** Ils s'en apercevront au premier versement, et un
+> partenaire qui découvre une baisse qu'on lui a dissimulée ne reste pas. Ce qui monte est
+> plus gros que ce qui baisse : c'est ça qu'il faut montrer, sans rien effacer.
+
+```
+Bonjour [Prénom],
+
+Je vous écris individuellement parce que ça vous concerne directement :
+le barème change à partir du [date + 30 jours]. Le contrat prévoit
+30 jours de préavis, on est dans les délais, et rien ne bouge avant.
+
+CE QUI MONTE, et c'est le plus gros :
+Avant, vous étiez à 25 % jusqu'à 4 ventes dans le mois.
+Maintenant c'est 30 % dès la première vente, et 40 % dès que vos
+ventes et celles de vos filleuls atteignent 3 dans le mois.
+
+Sur une vitrine à 150 000 F : vous passez de 37 500 F à 45 000 F,
+et à 60 000 F au palier haut. Sur un mois à 6 ventes, vous passez
+de 150 000 F à 200 000 F.
+
+CE QUI BAISSE, et je ne vais pas vous le cacher :
+L'abonnement passe de 25 % à 20 %, soit 4 000 F par client et par
+semestre au lieu de 5 000 F. Il reste acquis À VIE, même si un jour
+vous arrêtez.
+
+CE QUI DISPARAÎT :
+Les commissions de réseau. Vous ne touchez plus 10 % sur les ventes
+de vos filleuls. En échange, leurs ventes comptent maintenant AVEC
+les vôtres pour vous faire passer à 40 %.
+
+Pourquoi ce changement : on ne veut plus que quelqu'un gagne de
+l'argent sur le travail d'un autre. C'est ce qui fait ressembler un
+programme à une pyramide, et ça fait fuir les bons vendeurs. Chez
+NEBULA, on est payé sur ce qu'on vend soi-même. Et pour compenser,
+on paie mieux ce qui est vendu.
+
+UNE CHOSE NOUVELLE À SAVOIR POUR VOS CLIENTS :
+Sans paiement de l'abonnement, le site est coupé au 8e jour :
+hébergement et sécurité s'arrêtent. Prévenez-les une semaine avant
+l'échéance. Ce n'est pas une menace, c'est un fait technique, et un
+abonnement non payé c'est aussi 4 000 F que vous perdez.
+
+Je vous envoie le nouveau contrat en version 1.2. Prenez le temps de
+le lire. Si quelque chose ne vous va pas, appelez-moi, on en parle.
+
+Mongazi
+```
+
+**Ce qu'il faut faire dans la foulée :**
+
+1. **Envoyer le contrat 1.2 en PDF** dans la même conversation, individuellement.
+2. **Noter la date d'envoi** pour chaque partenaire : c'est elle qui fait courir les
+   30 jours, et c'est elle qu'on produira en cas de litige.
+3. **Appeler chacun dans les 48 heures.** Un message sur un barème se lit mal ; un appel
+   de cinq minutes évite trois semaines de rumeur.
+
+> **Ce qu'il ne faut pas faire :** attendre que la nouvelle grille soit déployée dans
+> l'espace partenaire. S'ils la découvrent dans l'application avant votre message, vous
+> avez perdu la main, et le préavis n'existe pas.
+
+---
+
 ### Message 4 · le point hebdomadaire
 
 ```
