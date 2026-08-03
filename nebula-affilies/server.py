@@ -1058,12 +1058,21 @@ def publier_documents():
     """
     now = time.time()
     attendus = {}
-    for fkey, version, title, cat, desc in DOCS_PARTENAIRES:
+    for rang, (fkey, version, title, cat, desc) in enumerate(DOCS_PARTENAIRES):
         src = HERE / "assets" / "docs-partenaires" / fkey
         if not src.exists():
             print("publier_documents: fichier absent,", fkey)
             continue
-        attendus[title] = (src, version, cat, desc)
+        # La liste s'affiche par date de mise a jour decroissante. On donne donc
+        # a chaque document une date VOLONTAIRE, calculee sur sa version et son
+        # rang, pour que l'ordre a l'ecran soit l'ordre de lecture : le manuel
+        # d'abord, le contrat ensuite, l'annonce en dernier. Sans cela les neuf
+        # partagent la meme seconde et sortent a l'envers.
+        try:
+            base = time.mktime(time.strptime(version, "%Y-%m-%d"))
+        except Exception:
+            base = now
+        attendus[title] = (src, version, cat, desc, base - rang * 60)
 
     try:
         with db() as c:
@@ -1077,7 +1086,7 @@ def publier_documents():
                     c.execute("DELETE FROM documents WHERE id=?", (r["id"],))
 
             # 3. les documents du jour
-            for title, (src, version, cat, desc) in attendus.items():
+            for title, (src, version, cat, desc, quand) in attendus.items():
                 marque = version                      # la version tient lieu d'empreinte
                 row = c.execute("SELECT id, filename FROM documents WHERE title=?", (title,)).fetchone()
                 if row and row["filename"] == marque:
@@ -1087,11 +1096,11 @@ def publier_documents():
                 if row:
                     c.execute("UPDATE documents SET category=?,description=?,kind='pdf',body=?,"
                               "url=?,filename=?,size=?,updated=? WHERE id=?",
-                              (cat, desc, corps, "nebula:socle", marque, len(data), now, row["id"]))
+                              (cat, desc, corps, "nebula:socle", marque, len(data), quand, row["id"]))
                 else:
                     c.execute("INSERT INTO documents(title,category,description,kind,body,url,filename,size,updated,created) "
                               "VALUES(?,?,?,'pdf',?,?,?,?,?,?)",
-                              (title, cat, desc, corps, "nebula:socle", marque, len(data), now, now))
+                              (title, cat, desc, corps, "nebula:socle", marque, len(data), quand, quand))
     except Exception as e:
         print("publier_documents:", e)
 
