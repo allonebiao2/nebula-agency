@@ -1188,5 +1188,230 @@ logo. **Seuls l'objet et la phrase changent.** C'est la répétition qui crée l
 
 ---
 
+---
+
+# CARROUSEL TIKTOK · 3 IMAGES · décor studio monochrome
+
+> **Version 2, du 2026-08-02.** Remplace la version en collage rouge et noir plus haut :
+> le studio monochrome donne un rendu nettement plus crédible, et **la zone logo réservée**
+> permet enfin de coller le vrai logo.
+
+**Format : 9:16, 1080 x 1920 px.**
+
+⚠️ **Trois zones à respecter, et elles se cumulent :**
+
+| Zone | Pourquoi |
+|---|---|
+| **Haut, 12 %** | Bande vide réservée au logo, qu'on colle soi-même |
+| **Bas, 250 px** | Légende et boutons TikTok |
+| **Droite, 150 px** | Colonne d'icônes TikTok |
+
+**Sujet du carrousel : un client qui doit demander le prix achète moins.**
+
+**Le fil narratif :** l'image 1 nomme la douleur, la 2 l'explique, la 3 donne la sortie.
+Si on peut lire la 3 sans avoir vu la 1, le carrousel a raté.
+
+**La règle de série :** même studio indigo, même lumière, même barre dorée en bas. **Seuls
+l'objet et la phrase changent.** C'est la répétition qui construit la marque.
+
+---
+
+## IMAGE 1 · LE HOOK
+
+```
+Create ONE original social media graphic, first slide of a 3-slide TikTok
+carousel. A surreal monochrome studio scene, PHOTOGRAPHED, not illustrated.
+
+ATTACHED INPUTS = STYLE REFERENCES, for CRAFT ONLY: a single-colour studio
+set with real depth and a cast shadow, one oversized absurd prop, an
+enormous headline passing IN FRONT of the object, a full-width bar closing
+the image. Their colours, objects, text and brands must never appear.
+
+PHOTOGRAPHIC QUALITY, this is the priority:
+Medium format camera, 85mm, shallow depth of field. REAL MATERIALS with
+honest wear. Matte seamless paper floor with visible texture. ONE warm key
+light from the upper left, a soft fill, one long clean cast shadow. Deep
+contrast, rich blacks, cinematic. It must look like a photograph taken in
+a real studio, never a 3D render, never a smooth plastic mock-up.
+
+ART DIRECTION: deep indigo monochrome #1B1F3B, floor and back wall in the
+same tone. Warm gold #E8C88A is the ONLY second colour. No stars, no
+nebula, no particles, no glow, no lens flare.
+
+THE SCENE:
+An ENORMOUS cardboard price tag, the kind tied with string to market goods,
+hangs alone in the middle of the empty studio, suspended from above by a
+worn string. It is taller than a person. Its surface is COMPLETELY BLANK:
+no price, no number, no writing, nothing. Same indigo as the room, with
+soft creases and worn edges. On the floor beneath it, a single modern
+smartphone lies FACE DOWN, screen hidden, dark.
+
+TEXT TO RENDER, verbatim French with correct diacritics. Render NOTHING else:
+  Headline in three stacked lines, upper half, set IN FRONT of the tag so
+  the tag partly covers the letters:
+      "Il n'a pas dit"        <- medium, gold, elegant italic serif
+      "NON"                   <- ENORMOUS, heavy condensed sans, near-white
+      "il a juste arrêté de répondre"
+                              <- small, near-white, uppercase, tracked
+  Tiny word, lower centre, gold, small:
+      "Glissez"
+  A full-width bar across the very bottom, gold fill, dark indigo text,
+  centred, small:
+      "nebula-agency.online"
+
+LOGO SAFE ZONE, read this twice:
+Do NOT draw, render, invent or place any logo, emblem, monogram, brand
+mark, icon or company name anywhere in the image. There must be NO logo.
+Leave the TOP 12% of the canvas as a CLEAN EMPTY BAND: flat indigo only,
+no objects, no text, no shadow crossing it, perfectly uniform.
+
+LAYOUT: 9:16 vertical, 1080 x 1920 px. Keep the subject and ALL text
+inside the central column: leave 150 px clear on the right edge and 250 px
+clear above the bottom bar. "NON" must stay legible at 20% size.
+
+DO NOT PRODUCE: any logo or brand name, galaxies, particles, glow, sci-fi
+atmosphere, people, faces, hands, 3D-render smoothness, plastic surfaces,
+invented statistics, percentages, watermarks, or any words beyond those
+listed above.
+```
+
+---
+
+## IMAGE 2 · LA VALEUR
+
+```
+Create ONE original social media graphic, second slide of a 3-slide TikTok
+carousel. Same series, same studio, same craft as the previous slide.
+
+ATTACHED INPUTS = STYLE REFERENCES, for CRAFT ONLY. Their colours, objects,
+text and brands must never appear.
+
+PHOTOGRAPHIC QUALITY: identical to slide 1. Medium format, 85mm, real worn
+materials, matte paper floor, ONE warm key light from the upper left, long
+clean cast shadow, cinematic contrast. A real photograph, never a render.
+
+ART DIRECTION: identical. Deep indigo monochrome #1B1F3B. Warm gold
+#E8C88A is the ONLY second colour. No particles, no glow.
+
+THE SCENE:
+TWO enormous cardboard price tags stand upright side by side on the studio
+floor, each taller than a person, leaning slightly back. A thin vertical
+gold line runs on the floor between them.
+The LEFT tag is COMPLETELY BLANK: no price, no writing, nothing.
+The RIGHT tag carries ONE clear price printed large in gold: "25 000 FCFA".
+Both tags are the same worn indigo cardboard.
+
+TEXT TO RENDER, verbatim French with correct diacritics. Render NOTHING else:
+  Small label, upper left, uppercase, letter-spaced, gold:
+      "LE SAVIEZ-VOUS ?"
+  Headline in three stacked lines, upper half, set IN FRONT of the tags:
+      "Un prix caché"         <- medium, gold, elegant italic serif
+      "FAIT FUIR"             <- ENORMOUS, heavy condensed sans, near-white
+      "avant même la question"
+                              <- small, near-white, uppercase, tracked
+  Two tiny captions on the floor, one under each tag, near-white, small:
+      under the left tag:  "il demande, il attend, il compare"
+      under the right tag: "il décide"
+  Body paragraph, small, TWO lines maximum, lower left on the floor:
+      "Le prix visible n'est pas une faiblesse. C'est ce qui permet au
+      client de dire oui pendant qu'il en a encore envie."
+  A full-width bar across the very bottom, gold fill, dark indigo text,
+  centred, small:
+      "nebula-agency.online"
+
+LOGO SAFE ZONE, read this twice:
+Do NOT draw, render, invent or place any logo, emblem, monogram, brand
+mark, icon or company name anywhere. Leave the TOP 12% of the canvas as a
+CLEAN EMPTY BAND: flat indigo only, no objects, no text, no shadow
+crossing it, perfectly uniform.
+
+LAYOUT: 9:16 vertical, 1080 x 1920 px. Leave 150 px clear on the right
+edge and 250 px clear above the bottom bar.
+
+DO NOT PRODUCE: any logo or brand name, galaxies, particles, glow, people,
+faces, hands, 3D-render smoothness, plastic surfaces, percentages,
+invented statistics, watermarks, or any words beyond those listed above.
+```
+
+---
+
+## IMAGE 3 · L'APPEL À L'ACTION
+
+```
+Create ONE original social media graphic, final slide of a 3-slide TikTok
+carousel. Same series, same studio, same craft as the two previous slides.
+
+ATTACHED INPUTS = STYLE REFERENCES, for CRAFT ONLY. Their colours, objects,
+text and brands must never appear.
+
+PHOTOGRAPHIC QUALITY: identical to slides 1 and 2. Medium format, 85mm,
+real worn materials, matte paper floor, ONE warm key light from the upper
+left, long clean cast shadow, cinematic contrast. A real photograph.
+
+ART DIRECTION: identical. Deep indigo monochrome #1B1F3B. Warm gold
+#E8C88A is the ONLY second colour. No particles, no glow.
+
+THE SCENE:
+A large FREESTANDING SIGN BOARD stands on the studio floor, the size of a
+shop A-frame, made of worn indigo board. On its face, a crisp QR code
+printed in warm gold, sharp and complete, its squares clean and readable.
+In front of the board, standing upright and leaning against it, a modern
+smartphone GLOWING WARM GOLD. Its screen shows a REAL PRODUCT CATALOGUE:
+a clean grid of six square product photos with short price labels reading
+in FCFA underneath, a simple header bar, a light interface. Ordinary retail
+products, generic, no readable brand names.
+
+TEXT TO RENDER, verbatim French with correct diacritics. Render NOTHING else:
+  Headline in two stacked lines, upper half, set IN FRONT of the board:
+      "Vos prix, vos photos"  <- medium, gold, elegant italic serif
+      "EN UN SCAN"            <- ENORMOUS, heavy condensed sans, near-white
+  Body, small, TWO lines, centred under the headline:
+      "NEBULA Agency fabrique le catalogue de votre commerce.
+      Vos clients l'ouvrent sans rien installer."
+  Call to action block, a solid gold rectangle with dark indigo text
+  inside, placed clearly ABOVE the bottom bar:
+      "ÉCRIVEZ-NOUS SUR WHATSAPP"
+  Two short lines under that block, small, near-white, one per line:
+      "Abonnez-vous pour la suite"
+      "Dites en commentaire : votre métier"
+  A full-width bar across the very bottom, gold fill, dark indigo text,
+  centred, small:
+      "nebula-agency.online"
+
+LOGO SAFE ZONE, read this twice:
+Do NOT draw, render, invent or place any logo, emblem, monogram, brand
+mark, icon or company name anywhere. Leave the TOP 12% of the canvas as a
+CLEAN EMPTY BAND: flat indigo only, no objects, no text, no shadow
+crossing it, perfectly uniform.
+
+LAYOUT: 9:16 vertical, 1080 x 1920 px. Leave 150 px clear on the right
+edge. The call to action block and the two lines under it must sit ABOVE
+the bottom 250 px, never inside that zone.
+
+DO NOT PRODUCE: any logo or brand name, galaxies, particles, glow, people,
+faces, hands, 3D-render smoothness, plastic surfaces, fake social media
+interface, invented handles, percentages, invented statistics, watermarks,
+or any words beyond those listed above.
+```
+
+---
+
+## Les six contrôles avant de publier
+
+| | |
+|---|---|
+| **La bande du haut est-elle vide ?** | C'est là que va votre logo. Si un objet ou une ombre la traverse, régénérer |
+| **Le bas et la droite** | 250 px et 150 px libres, sinon TikTok mange le texte et le CTA |
+| **Les accents** | « arrêté », « caché », « même », « décide », « métier », « ÉCRIVEZ » |
+| **Les trois se ressemblent-elles ?** | Même indigo, même lumière, même barre dorée. Si la 2 ou la 3 dérive, la régénérer en joignant la 1 comme référence supplémentaire |
+| **Aucun pourcentage, aucune statistique** | Règle absolue de la rubrique. Le « 25 000 FCFA » de l'image 2 est un prix d'étiquette, pas une statistique |
+| **La photo, pas le rendu** | Si la matière paraît lisse et plastique, c'est raté. On veut du carton usé et une vraie ombre |
+
+**Le montage final, trente secondes :** ouvrez les trois images, posez votre PNG de logo dans
+la bande vide du haut, **à la même position exacte sur les trois**, exportez. C'est cette
+répétition à l'identique qui fait la série.
+
+---
+
 *NEBULA Agency · Cotonou, Bénin · Document vivant. Ajouter chaque nouveau post ici.*
 
