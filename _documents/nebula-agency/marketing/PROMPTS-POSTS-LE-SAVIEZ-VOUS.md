@@ -928,4 +928,129 @@ NO other words, no numbers, no watermark, no fake UI, no invented handles.
 
 ---
 
+---
+
+# DIRECTION ARTISTIQUE 3 · LE STUDIO MONOCHROME ÉTRANGE
+
+> **Ajoutée le 2026-08-02**, d'après trois références : la planche collage rouge et noir,
+> une affiche Webbwizz (studio orange, portable posé sur des tubes géants) et une affiche
+> Uptown Pro (studio bordeaux, portable sur drapé).
+
+## Ce que ces trois références font, et que les deux autres directions ne font pas
+
+1. **Un décor de studio d'une seule couleur**, saturée, du sol au fond. Pas un fond : un
+   **lieu**, avec de la profondeur et une vraie ombre portée.
+2. **Un appareil réel qui montre le vrai travail.** L'écran n'est jamais décoratif : il
+   affiche un site, un catalogue, quelque chose qu'on pourrait ouvrir.
+3. **Un objet surdimensionné et absurde** dans le décor (des tubes géants, un drapé) qui
+   rend la scène étrange sans la rendre fausse.
+4. **Le titre passe DEVANT l'objet**, en très gros, et se fait recouvrir en partie par lui.
+   C'est ce chevauchement qui donne la profondeur.
+5. **Une barre d'adresse en bas**, pleine largeur, qui ferme l'image.
+
+> **Pourquoi cette direction règle le problème de crédibilité.** Un studio monochrome, c'est
+> un décor de photographe : ça se lit comme une marque qui a les moyens de faire une photo.
+> Une nébuleuse, ça se lit comme un fond d'écran. **L'étrangeté vient de l'objet, jamais de
+> l'effet lumineux.**
+
+---
+
+## PROMPT · post « LE SAVIEZ-VOUS ? » n° 3
+
+**Sujet : la boutique ferme, le catalogue reste ouvert.** Vérité observable, aucun chiffre.
+
+**Pièces jointes, dans cet ordre :** le **logo NEBULA en premier**, puis les **trois
+références**. Inversés, le modèle traite le logo comme un modèle de style.
+
+```
+Create ONE original informative social media graphic for NEBULA Agency.
+A surreal monochrome studio scene, photographed, not illustrated.
+
+ATTACHED INPUTS, read these roles carefully:
+  IMAGE 1 = THE LOGO of NEBULA Agency. It is AN ASSET TO PLACE, never a
+            style reference, never a subject to reinterpret. Place it,
+            do not redraw it.
+  IMAGES 2, 3, 4 = STYLE REFERENCES, for CRAFT ONLY: a single-colour
+            studio set with real depth and a cast shadow, one real device
+            showing real work on its screen, one oversized absurd prop,
+            an enormous headline passing IN FRONT of the object and partly
+            hidden BY it, and a full-width address bar closing the image.
+            Their colours, objects, text and brands must never appear.
+
+ART DIRECTION:
+A deep indigo monochrome studio, colour #1B1F3B, floor and back wall in
+the same tone, softly graded. ONE warm key light from the upper left, one
+long clean cast shadow. Everything in the set is that same indigo except
+the accents. Warm gold #E8C88A is the ONLY second colour. No stars, no
+nebula, no particles, no glow, no lens flare. Photographic, matte, calm.
+
+THE SCENE, strange but physically believable:
+In the middle of the empty studio stands a METAL SHOP SHUTTER, the rolling
+kind found on market stalls, pulled three quarters down. It stands alone,
+attached to nothing, like a sculpture. It is the same indigo as the room,
+ribbed, slightly worn.
+Underneath the shutter, in the narrow gap at floor level, a single modern
+smartphone lies flat on its back, screen facing up, GLOWING WARM GOLD. Its
+screen shows a REAL PRODUCT CATALOGUE: a clean grid of six square product
+photos with short price labels, a simple header bar, a light interface.
+Ordinary retail products, generic, no readable brand names.
+Behind the shutter, leaning against the back wall, an OVERSIZED ANALOGUE
+WALL CLOCK, twice the height of the shutter, its hands showing eleven
+o'clock. Same indigo, thin gold hands.
+
+TEXT TO RENDER, verbatim French with correct diacritics and apostrophes.
+Render NOTHING else:
+
+  Small label, top left, uppercase, letter-spaced, gold:
+      "LE SAVIEZ-VOUS ?"
+
+  Headline in three stacked lines, upper half, set IN FRONT of the shutter
+  so the shutter and the clock partly cover the letters:
+      "Votre boutique ferme a 19 h"
+      (render exactly as: "Votre boutique ferme à 19 h")
+                              <- small, near-white, uppercase, tracked
+      "PAS VOS CLIENTS"       <- ENORMOUS, heavy condensed sans, near-white
+      "ils regardent encore a 23 h"
+      (render exactly as: "ils regardent encore à 23 h")
+                              <- small, gold, italic
+
+  Body paragraph, small, two lines, lower left, on the floor area:
+      "Un rideau qui descend arrête la journée. Un catalogue avec un QR
+      code, non : le client regarde le soir et commande le matin."
+
+  A full-width bar across the very bottom, gold fill, dark indigo text,
+  centred, small:
+      "nebula-agency.online"
+
+  The NEBULA logo sits at the top centre, small and discreet.
+
+LAYOUT: 4:5 vertical, 1080 x 1350 px. The shutter occupies the central
+third. Generous empty floor in the lower area. Nothing touches the edges
+except the bottom bar. "PAS VOS CLIENTS" must stay legible at 20% size.
+
+DO NOT PRODUCE: nebula clouds, galaxies, star fields, particles, sparkles,
+neon glow, sci-fi atmosphere, people, faces, hands, stock-photo staff,
+readable brand names on the screen, invented statistics, percentages,
+watermarks, extra logos, or any words beyond those listed above.
+```
+
+---
+
+## Les variantes du même décor, pour la suite de la série
+
+Le décor tient, on change **l'objet étrange et la phrase**. C'est ce qui fait une série.
+
+| Objet dans le studio | Ce qu'il enseigne |
+|---|---|
+| Une **balance de marché** dont un plateau porte un téléphone et l'autre une pile de cartes de visite | Ce qui pèse aujourd'hui dans la décision d'un client |
+| Un **cadenas géant** dont l'anse est un câble de charge | Un commerce sans catalogue est fermé même quand il est ouvert |
+| Une **cabine téléphonique** vide, un téléphone posé devant | On ne rappelle plus, on scanne |
+| Un **panier de marché renversé**, les produits alignés en grille au sol comme sur un écran | Le catalogue, c'est son étal, rangé |
+
+**Règle de série :** même studio, même lumière, même barre dorée en bas, même position du
+logo. **Seuls l'objet et la phrase changent.** C'est la répétition qui crée la marque.
+
+---
+
 *NEBULA Agency · Cotonou, Bénin · Document vivant. Ajouter chaque nouveau post ici.*
+
