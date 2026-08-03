@@ -289,40 +289,66 @@ l'énergie et la structure, pas le dessin.
 
 ---
 
-## PROMPT · Nano Banana Pro (Gemini 3 Pro Image)
+## ⚠️ LA LEÇON DU 1er ESSAI · pourquoi la version « cosmos » a raté
 
-**Pièces jointes, dans cet ordre :** le **logo NEBULA en premier**, puis les **trois
-affiches de référence**. Inversés, le modèle traite le logo comme un modèle de style et la
-marque disparaît.
+Le premier prompt demandait une nébuleuse balayant tout le cadre et une galaxie sortant de
+l'écran du téléphone. Le résultat était magnifique et **inutilisable** : ça ressemblait à une
+publicité de cryptomonnaie ou d'astrologie, pas à une entreprise qui recrute.
+
+**Ce qui rend une affiche de recrutement crédible, c'est le calme.** Regardez les trois
+références : un fond plat ou une photo sobre, **un seul objet réel**, aucun effet lumineux.
+Elles inspirent confiance parce qu'elles ne cherchent pas à impressionner.
+
+| Ce qui tuait la crédibilité | Ce qu'on fait à la place |
+|---|---|
+| Nébuleuse sur tout le cadre | Fond bleu nuit **plat**, un seul dégradé très discret |
+| Une galaxie sur l'écran du téléphone | **Un vrai catalogue produit** à l'écran : c'est le produit qu'on vend |
+| Particules, halos, étoiles partout | Rien. Une lumière de studio, propre |
+| Violet et cyan saturés partout | **L'or seulement**, en accent, sur fond bleu nuit |
+
+**La règle à retenir : l'identité NEBULA passe par le logo, l'or et le bleu nuit. Pas par
+une galaxie.** Une agence qui vend du sérieux à des commerçants ne peut pas avoir l'air d'un
+fond d'écran.
+
+---
+
+## PROMPT · Nano Banana Pro (Gemini 3 Pro Image) · VERSION SOBRE
+
+**Pièces jointes, dans cet ordre :** le **logo NEBULA en premier**, puis les **trois affiches
+de référence**. Inversés, le modèle traite le logo comme un modèle de style.
 
 ```
 Create ONE original recruitment poster for NEBULA Agency.
+Corporate, sober, credible. This is a real company hiring real people.
 
 ATTACHED INPUTS, read these roles carefully:
-  IMAGE 1 = THE LOGO of NEBULA Agency (cosmic swirl + wordmark).
-            It is AN ASSET TO PLACE, never a style reference, never a
-            subject to reinterpret. Place it, do not redraw it.
-  IMAGES 2, 3, 4 = STYLE REFERENCES, for ENERGY AND STRUCTURE ONLY.
-            Learn from them: one enormous headline word, a single accent
-            colour, a hero object lit like a product shot, floating pill
-            labels, a compact contact block at the bottom.
-            Their colours, their objects, their text and their brands are
-            IRRELEVANT and must never appear in the output.
+  IMAGE 1 = THE LOGO of NEBULA Agency. It is AN ASSET TO PLACE, never a
+            style reference, never a subject to reinterpret. Place it,
+            do not redraw it, do not restyle it.
+  IMAGES 2, 3, 4 = STYLE REFERENCES, for ENERGY AND STRUCTURE ONLY:
+            one enormous headline word, a single accent colour, ONE real
+            object lit like a product shot, floating pill labels, a
+            compact contact block at the bottom. Their colours, objects,
+            text and brands must never appear in the output.
 
-ART DIRECTION:
-Deep space brand world, premium and confident. Background #060713, never
-pure black. A nebula cloud sweeps diagonally from lower left to upper
-right in cyan #22D3EE, blue #4F6FFF and violet #9333EA, with a warm gold
-#E8C88A glow near the centre. Fine star field, subtle grain. GOLD #E8C88A
-is the single accent colour used for the key figures and the call to
-action. Text in near-white #EEF0FB.
+ART DIRECTION, restraint is the point:
+Flat deep navy background #0B1020, with ONE very subtle darker vignette
+toward the corners. Nothing else in the background: no clouds, no nebula,
+no stars, no particles, no glow, no light rays.
+GOLD #E8C88A is the ONLY accent colour, used sparingly: the hero word, the
+thin pill outlines, the urgency bar. Text in clean near-white #EEF0FB.
+Flat, editorial, high contrast, generous margins, strict alignment.
+The mood is a serious agency, not science fiction.
 
-HERO OBJECT (right half, lit like a studio product shot, cut out):
-A modern smartphone held upright in a dark-skinned hand, seen at a slight
-angle. From the screen rises a spiral of light and particles in cyan and
-violet, echoing a galaxy, as if the phone were opening a small universe.
-The screen itself glows softly and shows no interface, no icons, no text.
-Sharp rim light on the hand and the phone edges.
+HERO OBJECT (right side, cut out, studio product shot, ONE soft key light
+from the upper left, a clean shadow, nothing more):
+A modern smartphone held upright in a dark-skinned hand, slightly angled.
+THE SCREEN SHOWS A REAL PRODUCT CATALOGUE: a clean grid of six square
+product photos with short price labels underneath, a simple header bar,
+a neutral light interface. Ordinary retail products, generic, no readable
+brand names, no logos on the screen. The screen looks like a working
+website, sharp and believable. NO galaxy, NO spiral, NO glow coming out
+of the screen.
 
 TEXT TO RENDER, verbatim French with correct diacritics and apostrophes.
 Render NOTHING else:
@@ -330,80 +356,87 @@ Render NOTHING else:
   Small kicker, top left, uppercase, letter-spaced, gold:
       "NEBULA AGENCY · COTONOU"
 
-  Headline, upper third, two stacked lines, the second by far the largest:
+  Headline, upper left, two stacked lines, tight leading:
       "NOUS"                    <- large, near-white
       "RECRUTONS"               <- ENORMOUS, heavy condensed sans, gold
-  Subtitle directly under it, medium, near-white:
+  Subtitle directly under, medium weight, near-white:
       "Conseillers en Digitalisation"
 
-  Four floating pill-shaped labels over the left half, rounded, dark
-  translucent with a thin gold outline, each one line:
+  Four pill-shaped labels stacked down the left side, rounded, dark navy
+  fill with a thin gold outline, each on one line:
       "30 % à 40 % par vente"
       "20 % de chaque abonnement, à vie"
       "Payé sous 24 à 72 h"
       "Aucun frais d'entrée"
 
-  One short line under the pills, small, cyan, uppercase, letter-spaced:
+  One short line under the pills, small, near-white, uppercase, letter-spaced:
       "SUR LE TERRAIN, PAS DERRIÈRE UN BUREAU"
 
-  Urgency strip, a thin gold horizontal bar with dark text inside:
+  Urgency bar, a solid gold horizontal band spanning the width, dark navy
+  text inside, uppercase:
       "ENTRETIEN SOUS 72 H · VOUS POUVEZ VENDRE LE JOUR MÊME"
 
-  Contact block at the bottom, visually separated, compact:
+  Contact block below the bar, on flat navy, centred, compact:
       "Écrivez « PARTENAIRE » au +229 96 74 07 32"
       "partenaires.nebula-agency.online/devenir"
 
-  The NEBULA logo sits in the bottom left corner, small and discreet.
+  The NEBULA logo sits bottom left, small, clearly legible against the
+  flat navy.
 
-LAYOUT: 4:5 vertical, 1080 x 1350 px. Left half carries the text, right
-half the hero object. Nothing touches the edges. The word "RECRUTONS"
-must stay legible at 20% size.
+LAYOUT: 4:5 vertical, 1080 x 1350 px. Text occupies the left 55%, the
+phone the right 45%. Wide margins. Nothing touches the edges.
+"RECRUTONS" must stay legible at 20% size.
 
-NO other words, no numbers, no invented statistics, no scarcity claims,
-no fake UI, no watermark, no extra logos, no stock-photo people.
+DO NOT PRODUCE: nebula clouds, galaxies, spirals, star fields, floating
+particles, sparkles, lens flares, neon glow, purple and cyan haze, sci-fi
+or fantasy atmosphere, crypto-advert aesthetics, stock-photo smiling
+teams, fake UI on the screen other than the product grid described,
+invented statistics, scarcity claims, watermarks, extra logos, or any
+words beyond those listed above.
 ```
 
 ---
 
-## PROMPT · ChatGPT (GPT Image)
+## PROMPT · ChatGPT (GPT Image) · VERSION SOBRE
 
-**Même affiche, mais le prompt est raccourci.** GPT Image rend moins bien les blocs de texte
-longs et n'accepte que trois formats : carré, portrait `1024 x 1536`, paysage `1536 x 1024`.
-**Demandez le portrait.** Attendez-vous à devoir régénérer deux ou trois fois pour obtenir
-tout le texte correct, et à corriger les accents.
+Portrait **1024 x 1536**. Prévoyez deux ou trois régénérations et vérifiez les accents.
 
 ```
-Create a recruitment poster, portrait 1024 x 1536.
+Create a recruitment poster, portrait 1024 x 1536. Corporate and sober,
+a real company hiring. NOT science fiction, NOT a crypto advert.
 
-I am attaching the NEBULA Agency logo first: PLACE it in the bottom left
-corner, small. Do not redraw it, do not use it as a style reference.
-The other attached images are style references for ENERGY ONLY: one huge
-headline, one accent colour, a hero object, floating pill labels, a
-contact block at the bottom. Ignore their colours, objects and text.
+The NEBULA Agency logo is attached FIRST: PLACE it bottom left, small,
+legible. Do not redraw it, do not use it as a style reference. The other
+attached images are style references for STRUCTURE ONLY (one huge
+headline, one accent colour, one real object, pill labels, contact block
+at the bottom). Ignore their colours, objects and text.
 
-Style: deep space. Background #060713. A nebula sweeps diagonally in cyan
-#22D3EE, blue #4F6FFF and violet #9333EA. Gold #E8C88A is the ONLY accent
-colour. Text near-white #EEF0FB. Premium, confident, high contrast.
+Style: FLAT deep navy background #0B1020 with a subtle corner vignette.
+NO clouds, NO nebula, NO stars, NO particles, NO glow. Gold #E8C88A is
+the ONLY accent colour. Text near-white #EEF0FB. Editorial, high
+contrast, generous margins.
 
-Hero object, right half, lit like a product shot: a smartphone held
-upright in a dark-skinned hand, a spiral of cyan and violet light rising
-from its screen like a small galaxy. No interface on the screen.
+Hero object, right side, cut out, one soft key light: a smartphone held
+upright in a dark-skinned hand. THE SCREEN SHOWS A REAL PRODUCT CATALOGUE:
+a clean grid of six product photos with short price labels, a simple
+header, a light neutral interface. Generic products, no brand names.
+Nothing glowing, nothing magical coming out of the screen.
 
 Render this French text EXACTLY, with the accents, and nothing else:
-  top left, small, gold:      "NEBULA AGENCY · COTONOU"
-  headline, two lines:        "NOUS" then "RECRUTONS" (huge, gold)
-  subtitle:                   "Conseillers en Digitalisation"
-  four pill labels, left side:
-                              "30 % à 40 % par vente"
-                              "20 % de chaque abonnement, à vie"
-                              "Payé sous 24 à 72 h"
-                              "Aucun frais d'entrée"
-  one cyan line:              "SUR LE TERRAIN, PAS DERRIÈRE UN BUREAU"
-  gold bar:                   "ENTRETIEN SOUS 72 H"
-  bottom contact block:       "Écrivez « PARTENAIRE » au +229 96 74 07 32"
-                              "partenaires.nebula-agency.online/devenir"
+  top left, small, gold:   "NEBULA AGENCY · COTONOU"
+  headline, two lines:     "NOUS" then "RECRUTONS" (huge, gold)
+  subtitle:                "Conseillers en Digitalisation"
+  four pill labels, left:  "30 % à 40 % par vente"
+                           "20 % de chaque abonnement, à vie"
+                           "Payé sous 24 à 72 h"
+                           "Aucun frais d'entrée"
+  one line:                "SUR LE TERRAIN, PAS DERRIÈRE UN BUREAU"
+  solid gold bar:          "ENTRETIEN SOUS 72 H"
+  bottom contact block:    "Écrivez « PARTENAIRE » au +229 96 74 07 32"
+                           "partenaires.nebula-agency.online/devenir"
 
 No other text. No invented numbers. No fake scarcity. No watermark.
+No galaxies, no particles, no glow.
 ```
 
 ---
