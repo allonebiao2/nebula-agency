@@ -23,7 +23,7 @@ Ce qui n'a PAS besoin d'être traduit, vérifié requête par requête :
   · `ON CONFLICT ... DO UPDATE SET x=excluded.x` est déjà de la syntaxe Postgres
   · un seul `%` dans tout le SQL, et il est dans un paramètre, pas dans le texte
 """
-import os, re, sqlite3, contextlib
+import os, re, sqlite3, contextlib, threading, contextvars
 from pathlib import Path
 
 DSN = (os.getenv("DATABASE_URL") or "").strip()
@@ -107,16 +107,118 @@ class _ConnexionPG:
         self._c.close()
 
 
+# ---------------------------------------------------------------------------
+# Une seule connexion par requête, et pas une par appel de fonction.
+#
+# Mesuré le 2026-08-03 : ouvrir une connexion vers Supabase coûte **1,3 s**
+# (7 s la première, poignée de main TLS comprise). Sur SQLite c'était de l'ordre
+# de la microseconde, donc le code appelait `db()` librement, y compris dans des
+# fonctions imbriquées.
+#
+# Conséquence après la migration : `/api/admin/affiliates` ouvrait 1 connexion
+# pour la liste, puis 2 par partenaire (statistiques + gains). Neuf connexions
+# pour 4 partenaires, soit ~12 s — et ça grandit avec le réseau. La page
+# attendait sans jamais rien afficher : l'écran noir.
+#
+# Le remède, en deux temps :
+#   1. `ouvrir()` devient RÉENTRANT : un `with` imbriqué réutilise la connexion
+#      déjà ouverte au lieu d'en créer une.
+#   2. `requete()` tient une connexion pour TOUTE la durée d'une requête HTTP.
+#      Sans cela, la réentrance ne suffit pas : le code fait souvent
+#      `with db(): lire la liste`, PUIS boucle en dehors du bloc, donc la
+#      connexion est déjà refermée. Ce motif se répète à douze endroits ; les
+#      corriger un par un serait long et risqué. Une connexion par requête les
+#      répare tous, sans toucher à un seul appel.
+#
+# On utilise un ContextVar et non un thread-local : Starlette exécute les
+# fonctions synchrones dans un fil séparé, mais il RECOPIE le contexte, donc la
+# connexion suit la requête jusque dans ce fil.
+# ---------------------------------------------------------------------------
+_porteur = contextvars.ContextVar("naff_conn", default=None)
+_local = threading.local()   # repli hors requête HTTP (démarrage, scripts, cron)
+
+
 @contextlib.contextmanager
-def ouvrir(chemin_sqlite: Path):
-    """Le même contrat que l'ancien `db()` : on entre, on écrit, ça commit."""
+def requete(chemin_sqlite: Path):
+    """Une seule connexion pour toute la requête, ouverte à la première lecture.
+
+    Si la requête ne touche jamais la base (fichier statique, page publique),
+    aucune connexion n'est ouverte : on ne paie que ce qu'on utilise.
+    """
+    porteur = {"conn": None, "brut": None}
+    jeton = _porteur.set(porteur)
+    try:
+        yield
+        c = porteur["conn"]
+        if c is not None:
+            c.commit()
+    except Exception:
+        c = porteur["conn"]
+        if c is not None:
+            try:
+                c.rollback()
+            except Exception:
+                pass
+        raise
+    finally:
+        _porteur.reset(jeton)
+        c = porteur["conn"]
+        if c is not None:
+            try:
+                c.close()
+            except Exception:
+                pass
+
+
+def _ouvrir_brut(chemin_sqlite: Path):
+    """Ouvre une connexion neuve, SQLite ou PostgreSQL selon la configuration."""
     if not IS_PG:
         c = sqlite3.connect(chemin_sqlite, timeout=30)
         c.row_factory = sqlite3.Row
+        return c
+    import psycopg
+    from psycopg.rows import dict_row
+    brut = psycopg.connect(DSN, row_factory=dict_row, connect_timeout=15)
+    conn = _ConnexionPG(brut)
+    # search_path : toutes les tables vivent dans « naff », donc aucune requête
+    # du serveur n'a besoin d'être préfixée.
+    brut.cursor().execute(f"SET search_path TO {SCHEMA}, public")
+    return conn
+
+
+@contextlib.contextmanager
+def ouvrir(chemin_sqlite: Path):
+    """Le même contrat que l'ancien `db()` : on entre, on écrit, ça commit.
+
+    Réentrant, et adossé à la connexion de la requête quand il y en a une.
+    """
+    # 1. une requête HTTP est en cours : on lui emprunte sa connexion
+    porteur = _porteur.get()
+    if porteur is not None:
+        if porteur["conn"] is None:
+            porteur["conn"] = _ouvrir_brut(chemin_sqlite)
+        yield porteur["conn"]      # ni commit ni close ici : `requete()` s'en charge
+        return
+
+    # 2. déjà dans une transaction sur ce fil : on prête la connexion en cours
+    interne = getattr(_local, "conn", None)
+    if interne is not None:
+        _local.profondeur += 1
+        try:
+            yield interne
+        finally:
+            _local.profondeur -= 1
+        return
+
+    if not IS_PG:
+        c = sqlite3.connect(chemin_sqlite, timeout=30)
+        c.row_factory = sqlite3.Row
+        _local.conn, _local.profondeur = c, 1
         try:
             yield c
             c.commit()
         finally:
+            _local.conn, _local.profondeur = None, 0
             c.close()
         return
 
@@ -125,6 +227,7 @@ def ouvrir(chemin_sqlite: Path):
 
     brut = psycopg.connect(DSN, row_factory=dict_row, connect_timeout=15)
     conn = _ConnexionPG(brut)
+    _local.conn, _local.profondeur = conn, 1
     try:
         # search_path : toutes les tables vivent dans « naff », donc aucune
         # requête du serveur n'a besoin d'être préfixée.
@@ -138,6 +241,7 @@ def ouvrir(chemin_sqlite: Path):
             pass
         raise
     finally:
+        _local.conn, _local.profondeur = None, 0
         conn.close()
 
 

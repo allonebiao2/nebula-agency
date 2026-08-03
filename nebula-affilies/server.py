@@ -1163,6 +1163,17 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"],
                    allow_headers=["*"], allow_credentials=True)
 app.mount("/static", StaticFiles(directory=str(HERE / "static")), name="static")
 
+@app.middleware("http")
+async def une_connexion_par_requete(request: Request, call_next):
+    """Tient UNE connexion pour toute la requête, ouverte à la première lecture.
+
+    Sans cela, le code ouvrait une connexion par appel de fonction : sur SQLite
+    c'était gratuit, sur Supabase c'est 1,3 s chacune. La page des affiliés en
+    ouvrait neuf pour quatre partenaires, et l'écran restait noir en attendant.
+    Une requête qui ne touche pas la base n'ouvre rien."""
+    with dbx.requete(DBF):
+        return await call_next(request)
+
 def _asset_ver() -> str:
     """Version automatique des assets = empreinte (taille+mtime) de app.js + app.css.
     Change à CHAQUE déploiement où ces fichiers changent → le navigateur refetch tout seul.
