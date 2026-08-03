@@ -9,6 +9,9 @@
   --bg:#060509; --bg-2:#0a0a12;
   --ink:#ECEAF6; --muted:#9d9db6; --faint:#8a8aa6;
   --accent:#7b5cff; --accent-2:#22d3ee;
+  /* Le violet d'accent donne 4,02 de contraste en petit texte, il en faut 4,5.
+     On garde #7b5cff pour les aplats et les bordures, et on éclaircit pour le TEXTE. */
+  --accent-tx:#9b86ff;
   --glass:rgba(255,255,255,.04); --glass-2:rgba(255,255,255,.06);
   --hair:rgba(255,255,255,.08); --hair-2:rgba(255,255,255,.15);
   --ok:#36f5a0; --warn:#f5b14c; --info:#4cc6ff; --bad:#ff5c7a; --gold:#e6c34c;
@@ -306,7 +309,7 @@ input,select,textarea{font-family:inherit}
 .rank-click:hover{transform:translateY(-1px);filter:brightness(1.12)}
 .clickable{cursor:pointer}
 .card.clickable:hover{border-color:var(--hair-2)}
-.tap-hint{font-size:.6rem;letter-spacing:.04em;text-transform:none;color:var(--accent);background:color-mix(in srgb,var(--accent) 15%,transparent);border:1px solid color-mix(in srgb,var(--accent) 32%,transparent);border-radius:20px;padding:2px 8px;margin-left:7px;font-weight:600;vertical-align:middle}
+.tap-hint{font-size:.6rem;letter-spacing:.04em;text-transform:none;color:var(--accent-tx);background:color-mix(in srgb,var(--accent-tx) 15%,transparent);border:1px solid color-mix(in srgb,var(--accent-tx) 32%,transparent);border-radius:20px;padding:2px 8px;margin-left:7px;font-weight:600;vertical-align:middle}
 
 /* ---- Recherche + filtres du chat ---- */
 .chat-search{position:sticky;top:0;z-index:3;background:var(--bg-2,rgba(12,12,20,.92));backdrop-filter:blur(8px);padding:12px 12px 8px;border-bottom:1px solid var(--hair)}
@@ -851,3 +854,57 @@ html.perf-pause *::before,
 html.perf-pause *::after {
   animation-play-state: paused !important;
 }
+
+/* ============ DENSITÉ SUR TÉLÉPHONE (mesuré le 2026-08-03) ============
+   Avant : 4 compteurs occupaient tout l'écran, 108 px chacun, et il fallait
+   faire défiler 1 811 px pour lire le tableau de bord. Une carte qui porte un
+   seul chiffre n'a pas besoin de toute la largeur d'un téléphone. */
+
+@media (max-width: 640px) {
+
+  /* Les petites cartes de chiffres vont PAR DEUX. C'est le changement qui
+     divise par deux la hauteur du tableau de bord. */
+  .col-3 { grid-column: span 6; }
+  .bento { gap: 10px; }
+
+  /* On resserre l'intérieur des cartes : 16 px de marge sur un écran de 390 px,
+     c'est 8 % de la largeur perdue de chaque côté. */
+  .card > .in { padding: 13px 14px; }
+  .work { padding: 14px 12px 104px; }
+
+  /* Le chiffre reste le héros, mais 2,4 rem sur un téléphone poussait la carte
+     à 108 px de haut pour rien. */
+  .stat .num { font-size: 1.85rem; }
+  .stat .lbl {
+    font-size: .7rem;
+    letter-spacing: .06em;      /* .14em étirait les libellés sur 2 lignes */
+    margin-bottom: 5px;
+    line-height: 1.25;
+  }
+  .stat .sub { font-size: .76rem; margin-top: 4px; }
+
+  /* L'en-tête prenait 62 px avant même le premier chiffre. */
+  .topbar { margin-bottom: 14px; }
+  .topbar h2 { font-size: 1.28rem !important; }
+
+  /* Les titres de section : lisibles sans manger un tiers de l'écran. */
+  .h-section { font-size: 1.3rem; }
+
+  /* Les lignes de liste : de l'air, mais pas du vide. */
+  .rl-row { padding: 9px 11px; gap: 10px; }
+  .lb-row { padding: 10px 12px; gap: 10px; grid-template-columns: 30px 40px 1fr auto; }
+
+  /* Les pastilles d'information ne doivent pas faire une ligne chacune. */
+  .chip { font-size: .74rem; padding: 5px 9px; }
+}
+
+/* Très petits téléphones : on garde deux colonnes, on ne rétrécit que le texte.
+   Repasser à une colonne annulerait tout le gain. */
+@media (max-width: 360px) {
+  .stat .num { font-size: 1.6rem; }
+  .stat .lbl { font-size: .66rem; }
+  .card > .in { padding: 11px 12px; }
+}
+
+/* Les petits liens en couleur d'accent : lisibles (6,04 contre 4,02 avant). */
+.link-accent, a.accent, .accent-link, .muted a, .meta a { color: var(--accent-tx); }

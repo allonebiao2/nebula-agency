@@ -1564,7 +1564,8 @@ async def admin_create_affiliate(req: Request, naff_session: Optional[str] = Coo
         c.execute("""INSERT INTO affiliates(code,nom,prenom,momo_number,momo_reseau,pin,accent,actif,created)
                      VALUES(?,?,?,?,?,?,?,1,?)""",
                   (code, nom, prenom, momo, reseau, hash_pw(pin), "#7b5cff", time.time()))
-    return {"ok": True, "code": code, "pin": pin, "numero": (r["numero"] if r else "")}
+    # le numéro saisi à la création, pour que le bouton WhatsApp ouvre la bonne conversation
+    return {"ok": True, "code": code, "pin": pin, "numero": momo}
 
 @app.post("/api/admin/affiliates/{aid}/toggle")
 def admin_toggle_affiliate(aid: int, naff_session: Optional[str] = Cookie(default=None)):

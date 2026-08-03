@@ -179,6 +179,15 @@ def _ouvrir_brut(chemin_sqlite: Path):
     import psycopg
     from psycopg.rows import dict_row
     brut = psycopg.connect(DSN, row_factory=dict_row, connect_timeout=15)
+    # ⚠️ INDISPENSABLE avec le pooler de Supabase (port 6543, mode transaction).
+    # psycopg3 « prépare » automatiquement une requête après 5 exécutions, pour
+    # aller plus vite. Mais le pooler multiplexe les connexions : la requête
+    # préparée sur un serveur n'existe pas sur le suivant, et on obtient
+    #     DuplicatePreparedStatement: prepared statement "_pg3_0" already exists
+    # Le bug n'apparaît qu'au-delà de 5 exécutions de la MÊME requête sur une
+    # connexion : il est donc resté invisible tant qu'on ouvrait une connexion
+    # par appel, et il est sorti dès qu'on a commencé à les réutiliser.
+    brut.prepare_threshold = None
     conn = _ConnexionPG(brut)
     # search_path : toutes les tables vivent dans « naff », donc aucune requête
     # du serveur n'a besoin d'être préfixée.
@@ -226,6 +235,7 @@ def ouvrir(chemin_sqlite: Path):
     from psycopg.rows import dict_row
 
     brut = psycopg.connect(DSN, row_factory=dict_row, connect_timeout=15)
+    brut.prepare_threshold = None     # cf. l'explication dans _ouvrir_brut
     conn = _ConnexionPG(brut)
     _local.conn, _local.profondeur = conn, 1
     try:
