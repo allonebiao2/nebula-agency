@@ -247,7 +247,7 @@ async function createAff() {
   try {
     const d = await api('/api/admin/affiliates', { body });
     sound.sfx.cash();
-    renderAccessKit({ title: 'Partenaire créé', code: d.code, pin: d.pin, name: (body.prenom + ' ' + body.nom).trim(), onDone: renderAff });
+    renderAccessKit({ title: 'Partenaire créé', code: d.code, pin: d.pin, name: (body.prenom + ' ' + body.nom).trim(), onDone: renderAff, numero: body.numero || body.momo_number });
   } catch (e) { toast(e.data?.error || 'Erreur', 'bad'); }
 }
 async function resetPin(id, name) {
@@ -584,7 +584,7 @@ function welcomeMessage(code, pin, name) {
     + `Connecte-toi, partage ton lien, suis tes clients et tes commissions. On t'accompagne.`;
 }
 /* Carte d'accès réutilisable : Copier + Envoyer sur WhatsApp */
-function renderAccessKit({ title, code, pin, name, onDone, emailSent, email }) {
+function renderAccessKit({ title, code, pin, name, onDone, emailSent, email, numero }) {
   const msg = welcomeMessage(code, pin, name);
   const emailLine = emailSent
     ? `<div class="card mt12" style="border-color:color-mix(in srgb,var(--ok) 45%,transparent)"><div class="in" style="padding:12px 16px;color:var(--ok)">✓ Email d'accès envoyé automatiquement à <b>${esc(email)}</b>.</div></div>`
@@ -608,14 +608,20 @@ function renderAccessKit({ title, code, pin, name, onDone, emailSent, email }) {
       </div>
     </div>`;
   document.getElementById('modal').classList.add('on');
-  document.getElementById('am-wa').href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+    // Avec le numéro, WhatsApp ouvre DIRECTEMENT la conversation de la personne.
+  // Sans lui, il ouvrait juste WhatsApp et il fallait chercher le contact.
+  const bWa = document.getElementById('am-wa');
+  bWa.href = numero ? waLink(numero, msg) : 'https://wa.me/?text=' + encodeURIComponent(msg);
+  bWa.textContent = '';
+  bWa.innerHTML = (numero ? 'Envoyer à ' + esc(String(numero)) : 'Envoyer sur WhatsApp')
+    + '<span class="ico">' + icon('phone') + '</span>';
   document.getElementById('am-wa').onclick = () => sound.sfx.cash();
   document.getElementById('am-cp').onclick = () => { navigator.clipboard?.writeText(msg); sound.sfx.ok(); toast('Kit copié ✓', 'ok'); };
   document.getElementById('am-done').onclick = async () => { closeModal(); await refresh(); if (onDone) onDone(); reveal(); };
 }
-function showAccessModal(title, code, pin, onDone, emailSent, email) { renderAccessKit({ title, code, pin, onDone, emailSent, email }); }
+function showAccessModal(title, code, pin, onDone, emailSent, email, numero) { renderAccessKit({ title, code, pin, onDone, emailSent, email, numero }); }
 async function approveCand(id) {
-  try { const d = await api(`/api/admin/candidatures/${id}/approve`, { body: {} }); sound.sfx.cash(); showAccessModal('Candidature validée', d.code, d.pin, renderRecrues, d.email_sent, d.email); renderRecrues(); }
+  try { const d = await api(`/api/admin/candidatures/${id}/approve`, { body: {} }); sound.sfx.cash(); showAccessModal('Candidature validée', d.code, d.pin, renderRecrues, d.email_sent, d.email, d.numero); renderRecrues(); }
   catch (e) { toast('Erreur', 'bad'); }
 }
 async function rejectCand(id) {
@@ -636,7 +642,7 @@ async function approveRecruit(id) {
   try {
     const d = await api(`/api/admin/recruits/${id}/approve`, { body: {} });
     sound.sfx.cash();
-    showAccessModal('Recrue validée', d.code, d.pin, renderRecrues, d.email_sent, d.email);
+    showAccessModal('Recrue validée', d.code, d.pin, renderRecrues, d.email_sent, d.email, d.numero);
     renderRecrues();
   } catch (e) { toast('Erreur', 'bad'); }
 }

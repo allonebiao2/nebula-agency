@@ -41,10 +41,10 @@
           <div class="col-6 field"><label>Nom</label><div class="wrap"><input id="nom" placeholder="Ton nom"></div></div>
         </div>
         <div class="bento" style="gap:0 14px">
-          <div class="col-6 field"><label>Numéro WhatsApp</label><div class="wrap"><input id="numero" inputmode="tel" placeholder="Ex : 01 96 74 07 32"></div></div>
+          <div class="col-6 field"><label>Numéro WhatsApp <span style="color:var(--bad)">obligatoire</span></label><div class="wrap"><input id="numero" inputmode="tel" placeholder="Ex : 01 96 74 07 32"></div></div>
           <div class="col-6 field"><label>Ville</label><div class="wrap"><input id="ville" placeholder="Cotonou, Calavi…"></div></div>
         </div>
-        <div class="field"><label>Email <span class="faint">(facultatif)</span></label><div class="wrap"><input id="email" type="email" placeholder="pour recevoir tes accès"></div></div>
+        <div class="field"><label>Email <span style="color:var(--bad)">obligatoire</span></label><div class="wrap"><input id="email" type="email" required autocomplete="email" placeholder="ton@email.com — tes accès y seront envoyés"></div></div>
         <div class="bento" style="gap:0 14px">
           <div class="col-6 field"><label>Numéro Mobile Money</label><div class="wrap"><input id="momo" inputmode="tel" placeholder="Pour être payé"></div></div>
           <div class="col-6 field"><label>Réseau</label><div class="wrap"><select id="reseau"></select></div></div>
@@ -58,7 +58,7 @@
         <div class="field"><label>Un mot sur toi <span class="faint">(facultatif)</span></label><div class="wrap"><textarea id="motivation" placeholder="Pourquoi tu veux rejoindre NEBULA, ce que tu fais déjà…"></textarea></div></div>
         <div class="field"><label>Code de ton parrain <span class="faint">(si quelqu'un t'a invité)</span></label><div class="wrap"><input id="parrain" placeholder="Ex : DEMO" style="text-transform:uppercase;letter-spacing:.15em"></div></div>
         <button class="btn primary block mt8" id="next">Continuer vers les conditions<span class="ico" id="a-next"></span></button>
-        <p class="center faint mt16" style="font-size:.78rem">NEBULA examine ta candidature et t'envoie tes accès partenaire · Cotonou, Bénin</p>
+        <p class="center faint mt16" style="font-size:.78rem">Tes accès arrivent sur ton WhatsApp ET sur ton email. Les deux sont obligatoires · Cotonou, Bénin</p>
       </div></div>
     </div>
 
@@ -88,7 +88,15 @@
       <div class="card glow"><div class="in center" style="padding:46px 26px">
         <div class="avatar" id="check" style="margin:0 auto 18px;width:66px;height:66px;background:linear-gradient(135deg,var(--ok),#1f9e6e)"></div>
         <h2 style="font-size:1.8rem">Candidature envoyée !</h2>
-        <p class="lead mt16">Merci ! NEBULA examine ta candidature et te recontacte vite sur WhatsApp avec ton lien et tes accès partenaire.</p>
+        <p class="lead mt16">Merci ! NEBULA examine ta candidature et te répond vite.</p>
+        <div class="card mt24" style="border-color:color-mix(in srgb,var(--warn) 55%,transparent);text-align:left">
+          <div class="in">
+            <b style="color:var(--warn)">Surveille ces deux endroits, tous les jours</b>
+            <p class="mt8" style="line-height:1.7">Ta réponse et tes accès arrivent <b>sur ton WhatsApp</b> et <b>sur ton email</b>.
+            Regarde aussi tes <b>spams</b> : c'est là que les emails d'accès se cachent souvent.</p>
+            <p class="meta mt8">Si tu ne vois rien sous 48 heures, écris-nous sur WhatsApp.</p>
+          </div>
+        </div>
         <a class="btn ghost mt24" href="/">Retour à l'accueil</a>
       </div></div>
     </div>
@@ -130,7 +138,13 @@
 
   document.getElementById('next').onclick = () => {
     const d = collect();
-    if (!(d.prenom || d.nom) || !d.numero) return toast('Prénom/nom et numéro WhatsApp obligatoires', 'bad');
+    if (!(d.prenom || d.nom)) return toast('Dis-nous ton nom', 'bad');
+    // Les deux canaux par lesquels arrivent les accès. Sans eux, une candidature
+    // acceptée reste sans réponse : le partenaire ne reçoit jamais son code.
+    const numOk = d.numero.replace(/\D/g, '').length >= 8;
+    if (!numOk) return toast('Ton numéro WhatsApp est obligatoire, et il doit être complet', 'bad');
+    const mailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email);
+    if (!mailOk) return toast('Ton email est obligatoire : c’est là que NEBULA envoie tes accès', 'bad');
     sound.sfx.tab();
     document.getElementById('form-wrap').classList.add('hide');
     document.getElementById('terms-wrap').classList.remove('hide');

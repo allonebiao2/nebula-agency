@@ -1564,7 +1564,7 @@ async def admin_create_affiliate(req: Request, naff_session: Optional[str] = Coo
         c.execute("""INSERT INTO affiliates(code,nom,prenom,momo_number,momo_reseau,pin,accent,actif,created)
                      VALUES(?,?,?,?,?,?,?,1,?)""",
                   (code, nom, prenom, momo, reseau, hash_pw(pin), "#7b5cff", time.time()))
-    return {"ok": True, "code": code, "pin": pin}
+    return {"ok": True, "code": code, "pin": pin, "numero": (r["numero"] if r else "")}
 
 @app.post("/api/admin/affiliates/{aid}/toggle")
 def admin_toggle_affiliate(aid: int, naff_session: Optional[str] = Cookie(default=None)):
@@ -1917,7 +1917,7 @@ def admin_recruit_approve(rid: int, naff_session: Optional[str] = Cookie(default
     who = (str(r["prenom"] or "") + " " + str(r["nom"] or "")).strip()
     notify("affiliate", r["parrain_id"], f"Ta recrue {who} est validée — elle rejoint ton réseau (N1).", kind="recrue", ref_aff=r["parrain_id"])
     sent = send_access_email(email, who or code, code, pin, parrain_name) if email else {"ok": False}
-    return {"ok": True, "code": code, "pin": pin, "email": email, "email_sent": bool(sent.get("ok"))}
+    return {"ok": True, "code": code, "pin": pin, "numero": (r["numero"] if r else ""), "email": email, "email_sent": bool(sent.get("ok"))}
 
 @app.post("/api/admin/recruits/{rid}/reject")
 def admin_recruit_reject(rid: int, naff_session: Optional[str] = Cookie(default=None)):
@@ -2290,6 +2290,11 @@ async def create_candidature(req: Request):
     if not (nom or prenom) or not numero:
         return JSONResponse({"ok": False, "error": "Nom et numéro WhatsApp obligatoires."}, status_code=400)
     email = clean(d.get("email"), 120); ville = clean(d.get("ville"), 80)
+    # L'email est OBLIGATOIRE depuis le 2026-08-03 : c'est le second canal par
+    # lequel arrivent les accès. Avec le seul WhatsApp, un numéro mal saisi et
+    # le partenaire ne reçoit jamais son code.
+    if not email or "@" not in email or "." not in email.split("@")[-1]:
+        return JSONResponse({"ok": False, "error": "Une adresse email valide est obligatoire : c'est là que NEBULA envoie tes accès."}, status_code=400)
     momo = clean(d.get("momo_number"), 30); reseau = clean(d.get("momo_reseau"), 30) or RESEAUX[0]
     exp = clean(d.get("experience"), 60); motiv = clean(d.get("motivation"), 600)
     canaux = clean(d.get("canaux"), 200); parrain = clean(d.get("parrain_code"), 12).upper()
@@ -2351,7 +2356,7 @@ def admin_candidature_approve(cid: int, naff_session: Optional[str] = Cookie(def
             notify("affiliate", parrain_id, f"Ta recrue {who} est validée — elle rejoint ton réseau (N1).", kind="recrue", ref_aff=parrain_id)
     name = (str(r["prenom"] or "") + " " + str(r["nom"] or "")).strip() or code
     sent = send_access_email(email, name, code, pin, parrain_name) if email else {"ok": False}
-    return {"ok": True, "code": code, "pin": pin, "email": email, "email_sent": bool(sent.get("ok"))}
+    return {"ok": True, "code": code, "pin": pin, "numero": (r["numero"] if r else ""), "email": email, "email_sent": bool(sent.get("ok"))}
 
 @app.post("/api/admin/candidatures/{cid}/reject")
 def admin_candidature_reject(cid: int, naff_session: Optional[str] = Cookie(default=None)):
