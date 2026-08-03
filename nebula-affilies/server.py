@@ -2298,6 +2298,13 @@ async def create_candidature(req: Request):
     momo = clean(d.get("momo_number"), 30); reseau = clean(d.get("momo_reseau"), 30) or RESEAUX[0]
     exp = clean(d.get("experience"), 60); motiv = clean(d.get("motivation"), 600)
     canaux = clean(d.get("canaux"), 200); parrain = clean(d.get("parrain_code"), 12).upper()
+    # Les trois questions qui trient vraiment un candidat (ajoutées le 2026-08-03) :
+    # son réseau réel de commerçants, le temps qu'il peut donner, et s'il a un
+    # téléphone à lui. Aucune ne parle d'âge ni de diplôme : sans pouvoir
+    # prédictif sur ce métier, et ça écarterait des bons.
+    reseau_com = clean(d.get("reseau_commercants"), 20)
+    dispo = clean(d.get("dispo"), 40)
+    outil = clean(d.get("outil"), 40)
     ip = (req.headers.get("x-forwarded-for", "").split(",")[0].strip() or (req.client.host if req.client else ""))[:60]
     with db() as c:
         if phone_is_affiliate(c, numero, momo):
@@ -2305,10 +2312,10 @@ async def create_candidature(req: Request):
         if phone_is_pending(c, numero, momo):
             return JSONResponse({"ok": False, "error": "Une candidature avec ce numéro est déjà en cours de validation. Patiente, NEBULA revient vers toi."}, status_code=409)
         c.execute("""INSERT INTO candidatures(nom,prenom,email,numero,ville,momo_number,momo_reseau,
-                     experience,motivation,canaux,parrain_code,terms_version,accepted_at,ip,status,created)
-                     VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?, 'pending', ?)""",
+                     experience,motivation,canaux,parrain_code,terms_version,accepted_at,ip,status,created,reseau_commercants,dispo,outil)
+                     VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?, 'pending', ?,?,?,?)""",
                   (nom, prenom, email, numero, ville, momo, reseau, exp, motiv, canaux, parrain,
-                   TERMS_VERSION, time.time(), ip, time.time()))
+                   TERMS_VERSION, time.time(), ip, time.time(), reseau_com, dispo, outil))
     who = (prenom + " " + nom).strip()
     notify("admin", 0, f"Nouvelle candidature partenaire : {who} ({numero}){' · ville ' + ville if ville else ''} — CGU v{TERMS_VERSION} acceptées.", kind="recrue")
     tg_admin(f"🔔 NEBULA Affiliés — nouvelle candidature partenaire : {who} ({numero}).")
@@ -2324,6 +2331,7 @@ def admin_candidatures(naff_session: Optional[str] = Cookie(default=None)):
         "id": r["id"], "nom": r["nom"], "prenom": r["prenom"], "email": r["email"], "numero": r["numero"],
         "ville": r["ville"], "momo_number": r["momo_number"], "momo_reseau": r["momo_reseau"],
         "experience": r["experience"], "motivation": r["motivation"], "canaux": r["canaux"],
+        "reseau_commercants": r["reseau_commercants"], "dispo": r["dispo"], "outil": r["outil"],
         "parrain_code": r["parrain_code"], "terms_version": r["terms_version"],
         "accepted_at": r["accepted_at"], "created": r["created"],
     } for r in rows]}

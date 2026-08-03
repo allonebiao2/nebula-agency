@@ -54,8 +54,27 @@
           <option value="Un peu d'expérience">J'ai déjà vendu un peu</option>
           <option value="Vendeur régulier">Je vends régulièrement / commercial</option>
         </select></div></div>
+        <div class="field"><label>Combien de commerçants connais-tu personnellement ?</label><div class="wrap"><select id="reseau_commercants">
+          <option value="">— choisis —</option>
+          <option value="0-2">Aucun ou presque</option>
+          <option value="3-10">Entre 3 et 10</option>
+          <option value="10-30">Entre 10 et 30</option>
+          <option value="30+">Plus de 30</option>
+        </select></div><p class="meta mt8">Des gens que tu pourrais appeler demain, pas des inconnus.</p></div>
+        <div class="field"><label>Combien de temps peux-tu y consacrer ?</label><div class="wrap"><select id="dispo">
+          <option value="">— choisis —</option>
+          <option value="Quelques heures/semaine">Quelques heures par semaine</option>
+          <option value="Mi-temps">À mi-temps, plusieurs demi-journées</option>
+          <option value="Plein temps">À plein temps</option>
+        </select></div></div>
+        <div class="field"><label>Ton téléphone et ta connexion</label><div class="wrap"><select id="outil">
+          <option value="">— choisis —</option>
+          <option value="Smartphone + data">J'ai un smartphone et de la data régulièrement</option>
+          <option value="Smartphone, data limitee">J'ai un smartphone, mais peu de data</option>
+          <option value="Telephone partage">Je partage un téléphone avec quelqu'un</option>
+        </select></div><p class="meta mt8">Tout se passe sur WhatsApp : sans téléphone à toi, c'est difficile.</p></div>
         <div class="field"><label>Où comptes-tu promouvoir ? <span class="faint">(facultatif)</span></label><div class="wrap"><input id="canaux" placeholder="WhatsApp, Facebook, en personne, mon entourage…"></div></div>
-        <div class="field"><label>Un mot sur toi <span class="faint">(facultatif)</span></label><div class="wrap"><textarea id="motivation" placeholder="Pourquoi tu veux rejoindre NEBULA, ce que tu fais déjà…"></textarea></div></div>
+        <div class="field"><label>Raconte une fois où tu as convaincu quelqu’un d’acheter quelque chose</label><div class="wrap"><textarea id="motivation" placeholder="N’importe quoi : un vêtement, un service, une idée. Ce qui compte, c’est comment tu t’y es pris."></textarea></div></div>
         <div class="field"><label>Code de ton parrain <span class="faint">(si quelqu'un t'a invité)</span></label><div class="wrap"><input id="parrain" placeholder="Ex : DEMO" style="text-transform:uppercase;letter-spacing:.15em"></div></div>
         <button class="btn primary block mt8" id="next">Continuer vers les conditions<span class="ico" id="a-next"></span></button>
         <p class="center faint mt16" style="font-size:.78rem">Tes accès arrivent sur ton WhatsApp ET sur ton email. Les deux sont obligatoires · Cotonou, Bénin</p>
@@ -131,6 +150,9 @@
       momo_reseau: document.getElementById('reseau').value,
       experience: document.getElementById('experience').value,
       canaux: document.getElementById('canaux').value.trim(),
+      reseau_commercants: document.getElementById('reseau_commercants').value,
+      dispo: document.getElementById('dispo').value,
+      outil: document.getElementById('outil').value,
       motivation: document.getElementById('motivation').value.trim(),
       parrain_code: document.getElementById('parrain').value.trim().toUpperCase(),
     };

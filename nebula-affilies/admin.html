@@ -565,6 +565,11 @@ function candCard(c) {
       <div><div class="ttl">${esc(name)} <span class="muted" style="font-weight:400">· ${esc(c.numero)}</span></div>
         <div class="meta">${c.ville ? esc(c.ville) + ' · ' : ''}${esc(c.experience || '')} · ${esc(c.momo_reseau || '')} ${esc(c.momo_number || '')} · ${ago(c.created)}</div>
         ${c.email ? `<div class="meta mt8">${esc(c.email)}</div>` : ''}
+        ${c.reseau_commercants || c.dispo || c.outil ? `<div class="flex gap8 mt8" style="flex-wrap:wrap">
+          ${c.reseau_commercants ? `<span class="chip">${esc(c.reseau_commercants)} commerçants connus</span>` : ''}
+          ${c.dispo ? `<span class="chip">${esc(c.dispo)}</span>` : ''}
+          ${c.outil ? `<span class="chip">${esc(c.outil)}</span>` : ''}
+        </div>` : ''}
         ${c.canaux ? `<div class="meta mt8">Promo : ${esc(c.canaux)}</div>` : ''}
         ${c.motivation ? `<div class="meta mt8" style="font-style:italic">« ${esc(c.motivation)} »</div>` : ''}
         <div class="flex gap8 mt8 wrap"><span class="chip" style="color:var(--ok)">CGU v${esc(c.terms_version)} acceptées</span>${c.parrain_code ? `<span class="chip">parrain ${esc(c.parrain_code)}</span>` : '<span class="chip">candidature directe</span>'}</div>
