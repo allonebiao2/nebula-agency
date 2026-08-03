@@ -187,3 +187,61 @@ vie · un marqueur de migration manquant. Aucun n'était visible à la lecture d
 - **Un banc de mesure chargé ment.** La même page mesurait 60 images/s puis 14 selon ce qui
   tournait à côté. Comparer seulement des mesures prises **d'une traite**, et se méfier des
   chiffres absolus.
+
+## 2026-08-03 — Quatre leçons des back-offices sur Postgres
+
+### 1. Ce qui était gratuit sur SQLite coûte 1,3 s sur Supabase
+
+Ouvrir une connexion coûtait une microseconde en local ; le code appelait donc
+`db()` librement, y compris dans des fonctions imbriquées. Après la migration,
+un écran ouvrait **neuf connexions** et mettait douze secondes : l'écran restait
+noir. **Après un changement de base, il ne faut pas relire les requêtes, il faut
+compter les CONNEXIONS.**
+
+Le remède qui répare tout d'un coup : **une connexion par requête HTTP**, tenue
+dans un `ContextVar` (pas un thread-local : Starlette exécute le synchrone dans
+un autre fil, mais il recopie le contexte). Corriger les douze appels un par un
+aurait été long et risqué.
+
+### 2. Réparer la performance peut réveiller un bug endormi
+
+Aussitôt la connexion réutilisée : `DuplicatePreparedStatement "_pg3_0"`.
+psycopg3 prépare une requête après 5 exécutions ; le pooler Supabase multiplexe
+et la requête préparée n'existe plus sur le serveur suivant.
+**`prepare_threshold = None` est obligatoire avec le pooler**, y compris dans le
+moindre script d'administration.
+
+Le bug était invisible tant qu'on ouvrait une connexion par appel. **Un correctif
+de performance change les conditions d'exécution : il faut retester ce qui
+marchait, pas seulement ce qu'on répare.**
+
+### 3. Sur un hébergement sans disque, ce qui n'est pas en base n'existe pas
+
+Render efface le disque à chaque déploiement. Trois choses écrivaient dessus sans
+qu'on s'en rende compte : les photos de profil, les PDF envoyés depuis le
+cockpit, et les PDF publiés automatiquement. Tout était référencé en base et
+introuvable à l'ouverture. **Tout ce qui doit survivre va en base, en base64.**
+
+### 4. Vider une table ne suffit pas quand le code la resème
+
+La zone Documents avait **trois** mécanismes qui recréaient les mêmes entrées à
+chaque démarrage, dont un qui les réécrivait systématiquement. Supprimer les
+lignes n'aurait rien changé : elles seraient revenues au redémarrage suivant.
+
+**Avant de supprimer des données, chercher qui les fabrique.** Et remplacer les
+mécanismes concurrents par **un seul**, idempotent, qui sait distinguer ce qu'il
+a posé lui-même de ce qu'un humain a ajouté.
+
+### Bonus, sur l'outillage
+
+- Une expression régulière avec `re.S` et `(?:#.*
+)*` part en boucle : le `.`
+  mange les retours à la ligne. Sur un fichier de 2 500 lignes, ça bloque la
+  session. **Découper un fichier se fait par LIGNES, pas par regex gloutonne.**
+- Une marche arrière « tant que la ligne est indentée » avale la fonction du
+  dessus. Elle a failli supprimer `seed_content()` en silence ; seule une
+  assertion posée **avant** l'écriture l'a évité. **Toujours vérifier avant
+  d'écrire, jamais après.**
+- Un chemin d'exécutable écrit en dur (`/opt/pw-browsers/…`) rend un script
+  inutilisable dès qu'on change de machine. **On cherche l'outil, on ne le
+  suppose pas.**

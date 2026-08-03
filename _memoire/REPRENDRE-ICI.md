@@ -1,11 +1,35 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-08-02
+## Point de reprise pour une session terminal · dernière mise à jour 2026-08-03
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
 
 ---
+
+## 0 bis. LE 2026-08-03 — les back-offices
+
+**L'écran noir est réparé** et ce n'était pas le JavaScript : `/api/admin/affiliates`
+ouvrait neuf connexions Supabase à 1,3 s pièce. Une connexion par requête HTTP
+désormais (`dbx.py`), et **`prepare_threshold = None` obligatoire** avec le pooler.
+
+**La zone Documents est refaite** : les 7 entrées précédentes (5 notes en dur, 2 PDF
+dont les fichiers avaient disparu) sont remplacées par **10 vrais PDF en base**,
+contrat compris, dans l'ordre de lecture. Vérifié en vrai depuis un compte partenaire.
+
+**Refonte vague 1 en ligne** : navigation ÉCRITE (les icônes seules ne se devinent
+pas), deux thèmes dont un clair pour le plein soleil, et le vocabulaire d'un
+débutant. Fiches de cadrage : `nebula-affilies/PRODUCT.md` et `DESIGN.md`.
+
+### ▶️ PAR QUOI COMMENCER
+**La refonte, vagues 2 et suivantes : les ÉCRANS eux-mêmes**, écran par écran, comme
+Mongazi l'a demandé. Compteurs avec leur tendance, vrais tableaux avec pastilles de
+statut et action au bout de la ligne, états vides qui disent quoi faire. La coquille
+est prête, le contenu des écrans ne l'est pas.
+
+Autres points ouverts : tester un transfert d'argent **Togo → Bénin** (le document 13
+promet le Togo, le paiement n'est pas vérifié) · confirmer le numéro de Romaric ·
+4 commits non fusionnés sur `claude/github-repo-context-nisd2r`.
 
 ## 0. ÉTAT DU PARC AU 2026-08-02 — tout est en ligne
 

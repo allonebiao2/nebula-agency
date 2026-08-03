@@ -160,6 +160,26 @@ signale celles qui touchent du sensible (contrat, socle commercial, `server.py`,
 des fichiers obsolètes : celle de mai 2026 renommerait le site en `v7`, une autre rajouterait
 une configuration Fly.io abandonnée. Le script montre, l'humain tranche.
 
+## Bureau des partenaires — la bibliothèque de documents (2026-08-03)
+
+**Les 10 PDF que tout partenaire doit avoir sont rangés DANS LA BASE, en base64**,
+jamais sur le disque : celui de Render s'efface à chaque déploiement, et c'est ce
+qui avait tué les deux anciens PDF (référencés en base, fichiers disparus).
+
+Pour en publier un nouveau, ou une nouvelle version : poser le fichier dans
+`nebula-affilies/assets/docs-partenaires/` et **changer sa version** dans
+`DOCS_PARTENAIRES` (`server.py`). Sans changement de version, `publier_documents()`
+ne rejoue rien. Il ne touche jamais un document ajouté à la main depuis le cockpit
+(marqueur `url = 'nebula:socle'`).
+
+⚠️ **`00-SOCLE-COMMERCIAL` et `01-AVIS-DE-RECRUTEMENT` restent INTERNES** : ils ne
+vont jamais dans la bibliothèque des partenaires.
+
+⚠️ **Supabase, dans tout code qui parle à la base** : `prepare_threshold = None`
+est obligatoire avec le pooler (port 6543), y compris dans un script d'un soir.
+Et **une connexion par requête HTTP**, jamais une par fonction : une connexion
+coûte 1,3 s, contre une microseconde sur SQLite. C'est ce qui donnait l'écran noir.
+
 ## 🔴 REPRENDRE UNE SESSION
 **Lire `_memoire/REPRENDRE-ICI.md` en premier.** Il dit où on en est, ce qui bloque,
 et par quoi commencer. Mis à jour à chaque fin de session importante.

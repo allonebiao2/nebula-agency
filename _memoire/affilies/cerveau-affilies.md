@@ -71,19 +71,37 @@ vente aurait sinon supprimé le récurrent acquis à vie.
 **À poser sur Railway : `NAFF_CRON_KEY`.** Sans elle, n8n ne peut pas lire les échéances.
 Spécification du workflow : `_documents/nebula-agency/vente/10-RELANCE-RENOUVELLEMENT.md`.
 
-## 2ter. Documents de démarrage : migration automatique
+## 2ter. La bibliothèque de documents (refaite le 2026-08-03)
 
-`seed_content()` ne s'exécute que si la table `documents` est **vide** : modifier le code ne
-corrige jamais la production. Les 5 guides seedés poussaient la Vitrine en premier, contre
-la stratégie de l'escalier.
+**Les 10 PDF de la force de vente, rangés DANS LA BASE, en base64.** Pas sur le
+disque : celui de Render s'efface à chaque déploiement, et c'est précisément ce
+qui avait tué les deux anciens PDF (référencés en base, fichiers disparus, clic
+sans effet).
 
-**`refresh_seeded_docs()`** (appelée au démarrage, après `seed_content()`) supprime les deux
-fiches produit renommées, réécrit les trois autres **si et seulement si** leur corps porte
-encore un marqueur de l'ancienne version, et **ne touche jamais un document ajouté à la
-main**. Idempotente. La liste vit dans la constante module `_SEED_DOCS`.
+Un seul mécanisme, **`publier_documents()`**, appelé au démarrage. Il est
+idempotent : il compare une **version** (une date, stockée dans `filename`), ne
+relit le fichier que si elle change, retire ce qu'il a lui-même posé et qui n'est
+plus au programme, et **ne touche jamais** un document ajouté à la main depuis le
+cockpit. Ce qui lui appartient porte le marqueur **`url = 'nebula:socle'`**.
 
-⚠️ **Il faut un marqueur par document conservé**, sinon un guide reste en arrière et
-contredit les autres. C'est arrivé avec « Répondre aux objections ».
+Pour publier une nouvelle version : remplacer le fichier dans
+`nebula-affilies/assets/docs-partenaires/` et **changer sa version** dans
+`DOCS_PARTENAIRES` (`server.py`). Sans changement de version, rien ne bouge.
+
+L'ordre d'affichage suit `updated DESC`. Chaque document reçoit donc une date
+**volontaire**, calculée sur sa version et son rang, pour que l'ordre à l'écran
+soit l'ordre de lecture : le manuel d'abord, l'annonce en dernier. Sans cela les
+dix partagent la même seconde et sortent à l'envers.
+
+Les envois manuels depuis le cockpit passent eux aussi par la base désormais.
+
+⚠️ **Volontairement absents, ils restent internes** : `00-SOCLE-COMMERCIAL` (les
+décisions et les marges) et `01-AVIS-DE-RECRUTEMENT` (le dossier de sélection).
+
+⚠️ **Ce qui a été supprimé** : `_SEED_DOCS` (5 notes écrites en dur),
+`refresh_seeded_docs()` et `seed_docs()`. Ces trois mécanismes concurrents
+recréaient les mêmes entrées à chaque démarrage, dont un qui les réécrivait
+systématiquement : vider la table n'aurait donc rien réglé.
 
 ## 3. Système de gains (3 couches) — à valider par Mongazi
 
