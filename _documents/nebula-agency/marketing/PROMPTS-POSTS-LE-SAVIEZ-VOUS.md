@@ -1036,6 +1036,142 @@ watermarks, extra logos, or any words beyond those listed above.
 
 ---
 
+## ⚠️ LA LEÇON DU POST N° 3 · ne demandez plus au modèle de placer le logo
+
+Les deux moteurs ont produit une bonne image, et **tous les deux ont redessiné le logo**
+au lieu de le placer, texte « NEBULA AGENCY » compris. Résultat : impossible de coller le
+vrai logo par-dessus sans que la version inventée dépasse.
+
+**Aucun modèle d'image ne place un logo. Il le réinterprète, toujours.** Même avec
+« place it, do not redraw it » écrit en majuscules. C'est une limite du procédé, pas une
+erreur de formulation.
+
+### La solution : la zone réservée
+
+**On ne demande plus le logo. On demande un vide propre, et on colle le vrai logo dessus.**
+
+Ajoutez ce bloc à la fin de n'importe quel prompt de la série :
+
+```
+LOGO SAFE ZONE, read this twice:
+Do NOT draw, render, invent or place any logo, emblem, monogram, brand
+mark, icon or company name anywhere in the image. There must be NO logo
+of any kind.
+Instead, leave the top 12% of the canvas as a CLEAN EMPTY BAND: flat
+background colour only, no objects, no text, no gradient banding, no
+shadow crossing it. It must be perfectly uniform so a logo can be placed
+on top afterwards.
+```
+
+Puis, sur le fichier reçu : ouvrez-le, posez votre PNG de logo dans la bande vide, exportez.
+**Trente secondes, et le logo est net à chaque fois, identique d'un post à l'autre.** C'est
+précisément la répétition à l'identique qui crée la série.
+
+### Ce que chaque moteur a fait de mieux, à combiner
+
+| | **Gemini (Nano Banana Pro)** | **ChatGPT (GPT Image)** |
+|---|---|---|
+| Mise en page | ⭐ Meilleure. Hiérarchie claire, texte au sol bien posé | Titre trop haut, texte du bas écrasé |
+| Photographie | Rideau un peu lisse, presque en plastique | ⭐ Bien meilleure. Vraie matière, vraie lumière de studio |
+| Format | ⭐ 4:5, le bon format pour un fil | 2:3, trop haut, coupé sur Instagram |
+| Écran du téléphone | Grille correcte | ⭐ Prix en FCFA lisibles, plus crédible |
+
+**Le prompt corrigé ci-dessous prend la mise en page et le format de Gemini, et exige la
+matière photographique de ChatGPT.**
+
+---
+
+## PROMPT · post n° 3, VERSION CORRIGÉE (zone logo réservée)
+
+**Une seule pièce jointe : les trois références de style. N'envoyez plus le logo au modèle**,
+vous le collerez vous-même.
+
+```
+Create ONE original informative social media graphic for NEBULA Agency.
+A surreal monochrome studio scene, PHOTOGRAPHED, not illustrated.
+
+ATTACHED INPUTS = STYLE REFERENCES, for CRAFT ONLY: a single-colour studio
+set with real depth and a cast shadow, one real device showing real work
+on its screen, one oversized absurd prop, an enormous headline passing IN
+FRONT of the object and partly hidden BY it, and a full-width address bar
+closing the image. Their colours, objects, text and brands must never
+appear in the output.
+
+PHOTOGRAPHIC QUALITY, this is the priority:
+Shot on a medium format camera, 85mm, shallow depth of field. REAL
+MATERIALS: the shutter is aged painted steel with fine scratches, dents
+and honest wear. The floor is matte seamless paper with visible texture.
+One warm key light from the upper left, a soft fill, one long clean cast
+shadow. Deep contrast, rich blacks, cinematic. It must look like a
+photograph taken in a real studio, never like a 3D render and never like
+a smooth plastic mock-up.
+
+ART DIRECTION:
+Deep indigo monochrome, colour #1B1F3B, floor and back wall in the same
+tone. Everything in the set is that indigo except the accents. Warm gold
+#E8C88A is the ONLY second colour. No stars, no nebula, no particles, no
+glow, no lens flare.
+
+THE SCENE, strange but physically believable:
+In the middle of the empty studio stands a METAL SHOP SHUTTER, the rolling
+kind found on market stalls, pulled three quarters down, standing alone
+and attached to nothing, like a sculpture.
+Underneath it, in the narrow gap at floor level, a single modern
+smartphone lies flat on its back, screen facing up, GLOWING WARM GOLD.
+Its screen shows a REAL PRODUCT CATALOGUE: a clean grid of six square
+product photos with short price labels reading in FCFA underneath, a
+simple header bar, a light interface. Ordinary retail products, generic,
+no readable brand names.
+Behind the shutter, leaning against the back wall, an OVERSIZED ANALOGUE
+WALL CLOCK, twice the height of the shutter, hands showing eleven
+o'clock, thin gold hands on an indigo face.
+
+TEXT TO RENDER, verbatim French with correct diacritics and apostrophes.
+Render NOTHING else:
+
+  Small label, upper left, uppercase, letter-spaced, gold:
+      "LE SAVIEZ-VOUS ?"
+
+  Headline in three stacked lines, upper half, set IN FRONT of the shutter
+  so the shutter and the clock partly cover the letters:
+      "VOTRE BOUTIQUE FERME À 19 H"
+                              <- small, near-white, uppercase, tracked
+      "PAS VOS CLIENTS"       <- ENORMOUS, heavy condensed sans, near-white
+      "ils regardent encore à 23 h"
+                              <- medium, gold, elegant italic serif
+
+  Body paragraph, small, TWO lines maximum, lower left on the floor area,
+  with clear space around it:
+      "Un rideau qui descend arrête la journée. Un catalogue avec un QR
+      code, non : le client regarde le soir et commande le matin."
+
+  A full-width bar across the very bottom, gold fill, dark indigo text,
+  centred, small:
+      "nebula-agency.online"
+
+LOGO SAFE ZONE, read this twice:
+Do NOT draw, render, invent or place any logo, emblem, monogram, brand
+mark, icon or company name anywhere in the image. There must be NO logo
+of any kind.
+Instead, leave the TOP 12% of the canvas as a CLEAN EMPTY BAND: flat
+indigo background only, no objects, no text, no gradient banding, no
+shadow crossing it, perfectly uniform, so a logo can be placed on top
+afterwards.
+
+LAYOUT: 4:5 vertical, 1080 x 1350 px, this exact ratio. The shutter
+occupies the central third. Generous empty floor in the lower area.
+Nothing touches the edges except the bottom bar. "PAS VOS CLIENTS" must
+stay legible at 20% size.
+
+DO NOT PRODUCE: any logo or brand name, nebula clouds, galaxies, star
+fields, particles, sparkles, neon glow, sci-fi atmosphere, people, faces,
+hands, 3D-render smoothness, plastic surfaces, readable brand names on the
+screen, invented statistics, percentages, watermarks, or any words beyond
+those listed above.
+```
+
+---
+
 ## Les variantes du même décor, pour la suite de la série
 
 Le décor tient, on change **l'objet étrange et la phrase**. C'est ce qui fait une série.

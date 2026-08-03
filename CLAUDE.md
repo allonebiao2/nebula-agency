@@ -146,6 +146,9 @@ et par quoi commencer. Mis à jour à chaque fin de session importante.
   sauf si le remboursement vient d'une faute de NEBULA : le partenaire garde alors sa commission
 - Vague 1 : **Cotonou, 8 places**, objectif 30 ventes / 90 jours
 - Rubrique marketing **« LE SAVIEZ-VOUS ? »** : `_documents/nebula-agency/marketing/`
+- ⛔ **Ne jamais demander à un modèle d'image de placer le logo** : il le redessine toujours,
+  texte compris, et on ne peut plus coller le vrai par-dessus. On demande une **zone vide
+  réservée** (12 % du haut, aplat uniforme) et on colle le logo soi-même après
 
 ## 🎨 STANDARD OBLIGATOIRE — toute vitrine, tout client, à partir du 2026-08-01
 **Avant d'écrire une ligne de CSS : lire `_memoire/procedure-vitrine/DIRECTION-ARTISTIQUE.md`.**
