@@ -31,7 +31,7 @@
       </div>
       <div class="flex gap8">
         <button class="icon-btn" id="help" title="Guide d'utilisation"></button>
-        <button class="icon-btn" id="snd" title="Son des notifications (activer / couper)"></button>
+        <button class="icon-btn" id="theme-b" onclick="NAFF_TOGGLE_THEME()" title="Changer de thème"></button><button class="icon-btn" id="snd" title="Son des notifications (activer / couper)"></button>
         <button class="icon-btn" id="amb" title="Musique d'ambiance"></button>
         <button class="icon-btn" id="bell" title="Notifications"></button>
       </div>
@@ -76,15 +76,15 @@ const ROOT = document.documentElement;
 let ME = null, LEADS = [], CFG = null;
 
 const NAV = [
-  { id: 'home', icon: 'chart', label: 'Mon QG' },
-  { id: 'gains', icon: 'coins', label: 'Mes gains' },
+  { id: 'home', icon: 'chart', court: 'Accueil', label: 'Mon QG' },
+  { id: 'gains', icon: 'coins', court: 'Mes gains', label: 'Mes gains' },
   { id: 'clients', icon: 'folder', label: 'Mes clients' },
-  { id: 'reseau', icon: 'users', label: 'Mon réseau' },
-  { id: 'classement', icon: 'trophy', label: 'Classement' },
-  { id: 'messages', icon: 'chat', label: 'Messages' },
+  { id: 'reseau', icon: 'users', court: 'Recruté', label: 'Mon réseau' },
+  { id: 'classement', icon: 'trophy', court: 'Classement', label: 'Classement' },
+  { id: 'messages', icon: 'chat', court: 'Messages', label: 'Messages' },
   { id: 'link', icon: 'link', label: 'Mon lien' },
-  { id: 'docs', icon: 'doc', label: 'Documentation' },
-  { id: 'publi', icon: 'megaphone', label: 'Publication' },
+  { id: 'docs', icon: 'doc', court: 'Documents', label: 'Documents' },
+  { id: 'publi', icon: 'megaphone', court: 'Partager', label: 'À partager' },
   { id: 'perso', icon: 'palette', label: 'Personnaliser' },
 ];
 const SWATCHES = ['#7b5cff','#22d3ee','#36f5a0','#e6c34c','#ff5c7a','#4c8cff','#ff8a3c','#d957ff'];
@@ -99,7 +99,7 @@ function rankSvg(label) { return icon(RANK_ICON[label] || 'spark'); }
 
 const TOUR = [
   { icon: 'spark', title: 'Bienvenue dans ton bureau NEBULA', text: 'En quelques écrans : tu amènes des clients, tu recrutes des partenaires, et tu encaisses tes commissions. Suivons le guide ensemble.' },
-  { icon: 'chart', title: 'Mon QG', text: 'Ta vue d\'ensemble : ton <b>rang</b> (prestige, selon tes ventes cumulées), ton <b>palier du mois</b> (ta commission, 30% ou 40%), et ton <b>RCM</b> (total généré à vie).' },
+  { icon: 'chart', title: 'Mon QG', text: 'Ta vue d\'ensemble : ton <b>rang</b> (prestige, selon tes ventes cumulées), ton <b>palier du mois</b> (ta commission, 30% ou 40%), et ton <b>Total gagné</b> (total généré à vie).' },
   { icon: 'coins', title: 'Mes gains', text: 'Toutes tes commissions, tracées. Quand un montant est « à réclamer », clique <b>Réclamer</b> : NEBULA est prévenue et te paie en Mobile Money.' },
   { icon: 'folder', title: 'Mes clients', text: 'Les commerçants que tu as amenés. NEBULA met à jour les statuts (en cours, terminé) et le paiement — tu suis tout en direct.' },
   { icon: 'users', title: 'Mon réseau', text: 'Recrute des partenaires avec ton <b>lien de recrutement</b>. Tu ne touches <b>aucune commission</b> sur leurs ventes, mais <b>leurs ventes du mois s\'ajoutent aux tiennes</b> pour te faire passer à <b>40%</b>. Ton équipe est ici.' },
@@ -114,11 +114,18 @@ const TOUR = [
 
 function buildDock() {
   const nav = document.getElementById('nav');
-  NAV.forEach(n => {
-    const b = el(`<button class="nav-i" id="navi-${n.id}" data-v="${n.id}" title="${n.label}">${icon(n.icon)}</button>`);
-    b.onclick = () => switchView(n.id);
+  const dock = nav.closest('.dock') || nav;
+  const PRINCIPALES = 5;                      // ce qu'on voit sans déplier, sur téléphone
+  NAV.forEach((n, i) => {
+    const b = el(`<button class="nav-i" id="navi-${n.id}" data-v="${n.id}" data-rang="${i < PRINCIPALES ? 'tete' : 'reste'}" title="${n.label}">${icon(n.icon)}<span class="nav-tx"><span class="nav-long">${n.label}</span><span class="nav-court">${n.court || n.label}</span></span></button>`);
+    b.onclick = () => { switchView(n.id); dock.classList.remove('deplie'); };
     nav.appendChild(b);
   });
+  // « Plus » : sur téléphone, une navigation de 12 icônes muettes qui défile
+  // n'est pas une navigation, c'est une devinette.
+  const plus = el(`<button class="nav-i" data-plus="1" title="Voir tout le menu">${icon('menu') || icon('spark')}<span class="nav-tx">Plus</span></button>`);
+  plus.onclick = () => { dock.classList.toggle('deplie'); sound.sfx.tab(); };
+  nav.appendChild(plus);
   document.getElementById('logout').innerHTML = icon('logout');
   document.getElementById('logout').onclick = async () => { await api('/api/logout', { body: {} }); location.href = '/'; };
 }

@@ -29,7 +29,7 @@
       </div>
       <div class="flex gap8">
         <button class="icon-btn" id="help" title="Guide d'utilisation"></button>
-        <button class="icon-btn" id="snd" title="Son des notifications (activer / couper)"></button>
+        <button class="icon-btn" id="theme-b" onclick="NAFF_TOGGLE_THEME()" title="Changer de thème"></button><button class="icon-btn" id="snd" title="Son des notifications (activer / couper)"></button>
         <button class="icon-btn" id="amb" title="Musique d'ambiance"></button>
         <button class="icon-btn" id="bell" title="Notifications"></button>
       </div>
@@ -65,20 +65,20 @@ const { icon, api, toast, sound, countUp, reveal, esc, fmt, ago, el } = NA;
 let CFG = null, OVER = null, AFFS = [], LEADS = [];
 
 const NAV = [
-  { id: 'dash', icon: 'chart', label: 'Tableau de bord' },
-  { id: 'aff', icon: 'users', label: 'Affiliés' },
-  { id: 'reseau', icon: 'spark', label: 'Réseau' },
-  { id: 'leads', icon: 'folder', label: 'Clients' },
-  { id: 'paiements', icon: 'coins', label: 'Paiements' },
-  { id: 'recrues', icon: 'plus', label: 'Recrues' },
-  { id: 'classement', icon: 'trophy', label: 'Classement' },
-  { id: 'rangs', icon: 'medal', label: 'Rangs' },
-  { id: 'messages', icon: 'chat', label: 'Messages' },
-  { id: 'docs', icon: 'doc', label: 'Documentation' },
-  { id: 'publi', icon: 'megaphone', label: 'Publication' },
-  { id: 'questions', icon: 'help', label: 'Questions prospects' },
+  { id: 'dash', icon: 'chart', court: 'Accueil', label: 'Tableau de bord' },
+  { id: 'aff', icon: 'users', court: 'Équipe', label: 'Mes partenaires' },
+  { id: 'reseau', icon: 'spark', court: 'Recruté', label: 'Qui a recruté qui' },
+  { id: 'leads', icon: 'folder', court: 'Clients', label: 'Les clients' },
+  { id: 'paiements', icon: 'coins', court: 'À payer', label: 'À payer' },
+  { id: 'recrues', icon: 'plus', court: 'Candidats', label: 'Candidatures' },
+  { id: 'classement', icon: 'trophy', court: 'Classement', label: 'Classement' },
+  { id: 'rangs', icon: 'medal', court: 'Rangs', label: 'Les rangs' },
+  { id: 'messages', icon: 'chat', court: 'Messages', label: 'Messages' },
+  { id: 'docs', icon: 'doc', court: 'Documents', label: 'Documents' },
+  { id: 'publi', icon: 'megaphone', court: 'Partager', label: 'À partager' },
+  { id: 'questions', icon: 'help', court: 'Questions', label: 'Questions reçues' },
 ];
-const TITLES = { dash: 'Tableau de bord', aff: 'Réseau d\'affiliés', reseau: 'Arborescence du réseau', leads: 'Clients du réseau', paiements: 'Commissions à verser', recrues: 'Candidatures & recrues', classement: 'Classement du réseau', rangs: 'L\'échelle des rangs', messages: 'Messagerie', docs: 'Documentation partenaires', publi: 'Contenus à publier', questions: 'Questions des prospects' };
+const TITLES = { dash: 'Tableau de bord', aff: 'Mes partenaires', reseau: 'Qui a recruté qui', leads: 'Les clients', paiements: 'Ce que je dois payer', recrues: 'Candidatures reçues', classement: 'Classement', rangs: 'Les rangs', messages: 'Messagerie', docs: 'Documents des partenaires', publi: 'Contenus à partager', questions: 'Questions reçues' };
 
 const TOUR = [
   { icon: 'spark', title: 'Bienvenue dans ta console NEBULA', text: 'Le poste de pilotage de ton réseau d\'affiliés : tu suis les clients, tu valides les recrues, et tu paies les commissions. Voici chaque zone.' },
@@ -101,7 +101,18 @@ function initials(n) { return (n || '?').split(' ').filter(Boolean).slice(0, 2).
 
 function buildDock() {
   const nav = document.getElementById('nav');
-  NAV.forEach(n => { const b = el(`<button class="nav-i" id="navi-${n.id}" data-v="${n.id}" title="${n.label}">${icon(n.icon)}</button>`); b.onclick = () => switchView(n.id); nav.appendChild(b); });
+  const dock = nav.closest('.dock') || nav;
+  const PRINCIPALES = 5;                      // ce qu'on voit sans déplier, sur téléphone
+  NAV.forEach((n, i) => {
+    const b = el(`<button class="nav-i" id="navi-${n.id}" data-v="${n.id}" data-rang="${i < PRINCIPALES ? 'tete' : 'reste'}" title="${n.label}">${icon(n.icon)}<span class="nav-tx"><span class="nav-long">${n.label}</span><span class="nav-court">${n.court || n.label}</span></span></button>`);
+    b.onclick = () => { switchView(n.id); dock.classList.remove('deplie'); };
+    nav.appendChild(b);
+  });
+  // « Plus » : sur téléphone, une navigation de 12 icônes muettes qui défile
+  // n'est pas une navigation, c'est une devinette.
+  const plus = el(`<button class="nav-i" data-plus="1" title="Voir tout le menu">${icon('menu') || icon('spark')}<span class="nav-tx">Plus</span></button>`);
+  plus.onclick = () => { dock.classList.toggle('deplie'); sound.sfx.tab(); };
+  nav.appendChild(plus);
   document.getElementById('logout').innerHTML = icon('logout');
   document.getElementById('logout').onclick = async () => { await api('/api/logout', { body: {} }); location.href = '{{ADMIN_PATH}}'; };
 }
@@ -141,7 +152,7 @@ function renderDash() {
       <div class="col-12 rv" id="dash-tg"></div>
 
       <div class="col-5 rv"><div class="card clickable" data-go="leads"><div class="in">
-        <h3 class="mb16">Pipeline</h3>
+        <h3 class="mb16">Où en sont tes clients</h3>
         ${['attente', 'en_cours', 'termine', 'annule'].map(k => `
           <div class="flex between" style="padding:11px 0;border-bottom:1px solid var(--hair)">
             ${statusPill(k)}<b class="mono">${OVER.by_status[k] || 0}</b></div>`).join('')}

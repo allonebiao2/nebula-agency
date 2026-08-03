@@ -564,3 +564,26 @@ NA.initPerfMode = function () {
   });
 };
 try { NA.initPerfMode(); } catch (e) {}
+
+/* ===== Thème clair / sombre =================================================
+   Le clair n'est pas décoratif : il existe pour le téléphone en plein soleil.
+   Le choix est mémorisé, et suit le réglage du système à la première visite. */
+(function themeInit() {
+  const CLE = 'naff_theme';
+  const de = document.documentElement;
+  const sysClair = () => { try { return matchMedia('(prefers-color-scheme: light)').matches; } catch (e) { return false; } };
+  const lu = (() => { try { return localStorage.getItem(CLE); } catch (e) { return null; } })();
+  const poser = (t) => {
+    de.setAttribute('data-theme', t);
+    try { localStorage.setItem(CLE, t); } catch (e) {}
+    const b = document.getElementById('theme-b');
+    if (b) {
+      b.innerHTML = (typeof icon === 'function') ? icon(t === 'clair' ? 'moon' : 'sun') || (t === 'clair' ? '🌙' : '☀️') : (t === 'clair' ? '🌙' : '☀️');
+      b.title = t === 'clair' ? 'Passer en sombre' : 'Passer en clair';
+      b.setAttribute('aria-label', b.title);
+    }
+  };
+  // Sombre par defaut (decision Mongazi) : le clair se choisit, il ne s'impose pas.
+  poser(lu || 'sombre');
+  window.NAFF_TOGGLE_THEME = () => poser(de.getAttribute('data-theme') === 'clair' ? 'sombre' : 'clair');
+})();

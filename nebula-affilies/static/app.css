@@ -908,3 +908,81 @@ html.perf-pause *::after {
 
 /* Les petits liens en couleur d'accent : lisibles (6,04 contre 4,02 avant). */
 .link-accent, a.accent, .accent-link, .muted a, .meta a { color: var(--accent-tx); }
+
+/* ══════════ REFONTE, VAGUE 1 : LA COQUILLE (2026-08-03) ══════════
+   Voir PRODUCT.md et DESIGN.md. Trois idées : la navigation porte des MOTS,
+   deux thèmes au choix, et le décor cesse de concurrencer l'information. */
+
+/* ---- Thème clair. Les statuts changent de VALEUR, pas juste d'opacité :
+        un vert clair sur blanc ne se lit pas. ---- */
+html[data-theme="clair"] {
+  --bg:#f7f7fa; --bg-2:#eeeef4;
+  --ink:#16161f; --muted:#55536b; --faint:#6c6a82;
+  --glass:rgba(0,0,0,.025); --glass-2:rgba(0,0,0,.045);
+  --hair:rgba(0,0,0,.10); --hair-2:rgba(0,0,0,.16);
+  --accent:#6a45f5; --accent-tx:#5a35e0; --accent-2:#0e7490;
+  --ok:#0a8f57; --warn:#a86a00; --bad:#c8253f; --gold:#8a6a00;
+  --sh-soft:0 18px 44px -22px rgba(20,16,60,.28);
+  color-scheme: light;
+}
+html[data-theme="clair"] body { color: var(--ink); }
+/* Le décor nocturne n'a aucun sens sur fond clair. */
+html[data-theme="clair"] .bg-orbs { opacity:.28; filter:saturate(.7); }
+html[data-theme="clair"] .bg-grain { display:none; }
+html[data-theme="clair"] .dock { background:#ffffff; }
+html[data-theme="clair"] .card > .in {
+  background: linear-gradient(180deg, rgba(0,0,0,.012), rgba(0,0,0,.004));
+}
+
+/* ---- La navigation porte des mots ---- */
+.app { grid-template-columns: 216px 1fr; }
+.dock { background: var(--surface-2, rgba(255,255,255,.03)); }
+.nav-i {
+  display: flex; align-items: center; gap: 11px;
+  width: 100%; height: auto; min-height: 44px;
+  padding: 9px 12px; border-radius: 12px;
+  justify-content: flex-start; text-align: left;
+  font-size: .875rem; font-weight: 500; line-height: 1.25;
+  color: var(--muted);
+}
+.nav-i .nav-tx { display: block; }
+.nav-i svg { flex: 0 0 19px; }
+.nav-i.on { color: var(--ink); background: color-mix(in srgb, var(--accent) 16%, transparent); }
+.nav-i:hover { color: var(--ink); }
+
+/* ---- Téléphone : 5 entrées avec leur mot, le reste sous « Plus » ---- */
+@media (max-width: 640px) {
+  .app { grid-template-columns: 1fr; }
+  .dock { display: grid; grid-template-columns: repeat(6, 1fr); gap: 2px;
+          padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+          overflow: visible; }
+  .nav-i {
+    flex-direction: column; gap: 3px; padding: 6px 2px;
+    min-height: 50px; font-size: .62rem; font-weight: 600;
+    letter-spacing: .01em; text-align: center; justify-content: center;
+  }
+  .nav-i .nav-tx {
+    max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .nav-i svg { flex: none; width: 20px; height: 20px; }
+  /* au-delà de la 5e entrée, on passe par « Plus » */
+  .dock .nav-i[data-rang="reste"] { display: none; }
+  .dock.deplie .nav-i[data-rang="reste"] { display: flex; }
+  .dock.deplie { grid-template-columns: repeat(4, 1fr); max-height: 62vh; overflow-y: auto; }
+}
+@media (min-width: 641px) {
+  .nav-i[data-plus] { display: none; }   /* « Plus » n'existe que sur téléphone */
+}
+
+/* Le mot long sur PC, le mot court sur téléphone : « Tableau de bord » ne tient
+   pas dans un sixième de 390 px, il s'affichait « Tablea… ». */
+.nav-court { display: none; }
+@media (max-width: 640px) {
+  .nav-long { display: none; }
+  .nav-court { display: inline; }
+  /* la déconnexion quitte la grille du bas : elle vit dans « Plus » */
+  .dock #logout { display: none; }
+  .dock.deplie #logout { display: flex; grid-column: span 4; min-height: 44px;
+    flex-direction: row; gap: 8px; color: var(--bad); }
+  .dock.deplie #logout::after { content: 'Se déconnecter'; font-size: .8rem; font-weight: 600; }
+}
