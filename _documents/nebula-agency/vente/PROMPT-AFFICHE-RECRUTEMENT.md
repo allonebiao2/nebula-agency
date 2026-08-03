@@ -455,3 +455,118 @@ No galaxies, no particles, no glow.
 C'est elle qui évite le candidat qui croit qu'il aura « juste à closer ». Une affiche qui ne
 filtre pas fait perdre des entretiens.
 
+---
+
+# VERSION 3 · « NOUS RECRUTONS » copie fidèle du style Stay Atlas / ofsys
+
+> **Ajoutée le 2026-08-02.** Mongazi veut ce style **exactement**. Ci-dessous l'analyse
+> structurelle des références, puis le prompt qui impose chaque élément un par un.
+
+## Les 8 éléments qui FONT ce style · aucun n'est optionnel
+
+| # | Élément | Ce qu'il fait |
+|---|---|---|
+| **1** | **Deux couleurs, une dominante et un accent.** Rien d'autre | C'est la discipline qui fait « pro ». Trois couleurs et l'affiche s'effondre |
+| **2** | **Un panneau de couleur à grand angle arrondi** qui porte tout le contenu, posé sur un fond plus sombre | Le device structurel de Stay Atlas. C'est lui qui donne l'air d'une maquette payée |
+| **3** | **Titre en deux lignes à saut de taille brutal** : ligne 1 petite et colorée, ligne 2 ÉNORME et blanche | « We Are » puis « HIRING! ». Le contraste de taille est plus important que la police |
+| **4** | **UN objet réel détouré, éclairé comme une photo produit**, qui déborde du panneau | Le mégaphone, la chaise. Il donne l'échelle et la crédibilité |
+| **5** | **Des pastilles arrondies flottantes** posées sur l'objet, chacune portant une info | Le device d'ofsys. C'est ce qui rend l'information lisible en trois secondes |
+| **6** | **Deux annotations à petite icône** (épingle de lieu, horloge) | Détail qui fait « vraie agence » : ça situe et ça rassure |
+| **7** | **Une phrase courte en bas du panneau**, discrète | « FRESHERS ARE WELCOME. » Chez nous, c'est la ligne qui filtre |
+| **8** | **Une barre de contact pleine largeur tout en bas**, détachée du panneau | Le numéro y est le plus gros élément après le titre |
+
+## Ce qu'on garde de la 3e référence (la planche collage)
+
+Uniquement **la discipline typographique** : un mot gigantesque, des tailles très contrastées,
+et un seul accent coloré. Rien de son sujet ni de ses couleurs.
+
+---
+
+## PROMPT · ChatGPT (GPT Image), portrait 1024 x 1536
+
+**N'envoyez PAS le logo au modèle.** Il le redessinerait. Le prompt réserve une bande vide
+en haut, vous y collerez le vrai logo après.
+
+```
+Create a recruitment poster, portrait 1024 x 1536. Flat vector-style
+graphic design, corporate and confident. NOT photorealistic scenery, NOT
+science fiction, NOT a crypto advert.
+
+The attached images are STYLE REFERENCES for LAYOUT AND STRUCTURE ONLY.
+Copy their construction, never their colours, objects, text or brands.
+
+STRUCTURE, follow this exactly:
+
+1. BACKGROUND: a flat deep navy field, colour #0B1020, edge to edge.
+
+2. PANEL: a large warm gold panel, colour #E8C88A, covering roughly 80%
+   of the canvas, inset from the left, top and right edges, with ONE very
+   large rounded corner at its bottom right. The navy shows around it.
+   All content sits on this panel.
+
+3. HEADLINE, top of the panel, two lines, brutal size jump:
+      "NOUS"          <- medium size, deep navy #0B1020, bold
+      "RECRUTONS"     <- ENORMOUS, tall condensed sans, WHITE, tight
+                         letter spacing, filling the panel width
+   Directly under, one line, deep navy, medium:
+      "Conseillers en Digitalisation"
+
+4. HERO OBJECT, right side: a modern smartphone held upright in a
+   dark-skinned hand, cut out, lit like a studio product shot, DUOTONE in
+   navy and gold to match the palette. It BLEEDS OFF the right edge of the
+   gold panel onto the navy background. Its screen shows a clean product
+   catalogue: a grid of six small product photos with short price labels.
+   No glow, no particles, no galaxy.
+
+5. FOUR FLOATING PILL LABELS over the left half, rounded rectangles filled
+   deep navy with white text, slightly overlapping each other, one line each:
+      "30 % à 40 % par vente"
+      "20 % de chaque abonnement, à vie"
+      "Payé sous 24 à 72 h"
+      "Aucun frais d'entrée"
+
+6. TWO SMALL ICON ANNOTATIONS in deep navy, tiny icon then text:
+      a location pin icon + "Cotonou"
+      a clock icon + "Entretien sous 72 h"
+
+7. ONE SHORT LINE at the bottom left of the gold panel, small, deep navy,
+   uppercase, letter-spaced:
+      "SUR LE TERRAIN, PAS DERRIÈRE UN BUREAU"
+
+8. CONTACT BAR across the very bottom of the canvas, full width, WHITE
+   background, separated from the panel:
+      left, small deep navy:  "partenaires.nebula-agency.online/devenir"
+      right, LARGE and BOLD deep navy, with a small WhatsApp icon before it:
+                              "+229 96 74 07 32"
+
+LOGO SAFE ZONE, read this twice: do NOT draw, render, invent or place any
+logo, emblem, monogram, icon or company name anywhere in the image. Leave
+the TOP 10% of the gold panel as a CLEAN EMPTY BAND, flat gold only, no
+text and no object crossing it, so a logo can be placed there afterwards.
+
+Render this French text EXACTLY as written above, with every accent
+(à, é, è, ê, È, DERRIÈRE, Payé). Render NO other words.
+
+DO NOT PRODUCE: any logo or brand name, a third colour, galaxies, stars,
+particles, glow, gradients on the background, photorealistic rooms,
+smiling stock-photo people, faces, invented statistics, percentages other
+than those written above, fake scarcity, watermarks.
+```
+
+---
+
+## Les six contrôles avant de publier
+
+| | |
+|---|---|
+| **Deux couleurs** | Bleu nuit et or. Si une troisième apparaît, régénérer |
+| **Le saut de taille** | « RECRUTONS » doit écraser « NOUS ». S'ils font la même taille, c'est raté |
+| **La bande du haut** | Vide, aplat or, prête pour votre logo |
+| **Le numéro** | `+229 96 74 07 32`, chiffre par chiffre. L'erreur la plus coûteuse |
+| **Les accents** | « Payé », « DERRIÈRE », « à vie », « d'entrée » |
+| **La vignette** | Réduisez à 20 % : si « RECRUTONS » n'est plus lisible, l'affiche est morte |
+
+⚠️ **Ne retirez jamais la ligne « SUR LE TERRAIN, PAS DERRIÈRE UN BUREAU ».** Elle occupe la
+place du « FRESHERS ARE WELCOME. » de la référence, et c'est elle qui écarte le candidat qui
+croit qu'il aura juste à closer.
+
