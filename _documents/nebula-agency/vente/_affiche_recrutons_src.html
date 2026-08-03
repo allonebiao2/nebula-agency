@@ -1,0 +1,119 @@
+<!doctype html><html lang="fr"><meta charset="utf-8">
+<title>NOUS RECRUTONS · NEBULA Agency</title>
+<style>
+@font-face{font-family:Archivo;src:url("data:font/woff2;base64,__ARCHIVO__") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:Manrope;src:url("data:font/woff2;base64,__MANROPE__") format("woff2");font-weight:200 800;font-display:block}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1350px;overflow:hidden}
+body{font-family:Manrope,system-ui,sans-serif;background:#0B1020;-webkit-font-smoothing:antialiased}
+.aff{position:relative;width:1080px;height:1350px;background:#0B1020;overflow:hidden}
+
+/* 2 · le panneau dore, grand angle arrondi en bas a droite */
+.panneau{position:absolute;left:42px;top:38px;right:42px;bottom:236px;
+  background:linear-gradient(158deg,#F0D69C 0%,#E8C88A 46%,#DEBA76 100%);
+  border-radius:24px 24px 200px 24px;
+  box-shadow:0 24px 60px rgba(0,0,0,.34)}
+.col{position:absolute;left:58px;top:96px;width:610px;z-index:4}
+
+/* 3 · le titre, saut de taille brutal */
+.t1{font-family:Archivo;font-weight:800;font-size:58px;line-height:1;color:#0B1020;letter-spacing:-.01em}
+.t2{font-family:Archivo;font-weight:900;font-size:150px;line-height:.84;color:#fff;
+  letter-spacing:-.045em;margin-top:4px;transform:scaleX(.855);transform-origin:left center;
+  white-space:nowrap;text-shadow:0 4px 0 rgba(11,16,32,.13)}
+.t3{font-family:Manrope;font-weight:700;font-size:29px;color:#0B1020;margin-top:16px}
+
+/* 5 · les pastilles flottantes */
+.pills{margin-top:50px}
+.pill{display:table;background:#0B1020;color:#fff;border-radius:999px;
+  padding:16px 30px;font-family:Manrope;font-weight:700;font-size:25px;
+  margin-bottom:16px;box-shadow:0 8px 20px rgba(11,16,32,.26);white-space:nowrap}
+.pill b{color:#E8C88A;font-weight:800}
+.pill:nth-child(2){margin-left:28px}
+.pill:nth-child(3){margin-left:12px}
+.pill:nth-child(4){margin-left:36px}
+
+/* le chiffre qui donne envie */
+.gain{margin-top:38px;padding-left:20px;border-left:5px solid #0B1020}
+.gain-h{font-family:Manrope;font-weight:700;font-size:23px;color:#0B1020;opacity:.72}
+.gain-v{font-family:Archivo;font-weight:900;font-size:58px;color:#0B1020;line-height:1.04;
+  letter-spacing:-.025em;margin-top:2px}
+
+/* 6 · les deux annotations a icone */
+.annos{display:flex;gap:38px;align-items:center;margin-top:34px}
+.anno{display:flex;align-items:center;gap:10px;font-family:Manrope;font-weight:700;
+  font-size:23px;color:#0B1020;white-space:nowrap}
+.anno svg{width:22px;height:22px;flex:none}
+
+/* 4 · l'objet hero, il deborde du panneau */
+.hero{position:absolute;right:-30px;bottom:250px;width:492px;z-index:3;
+  filter:drop-shadow(-22px 28px 40px rgba(11,16,32,.42))}
+.hero svg{display:block;width:100%;height:auto}
+
+/* 7 · la ligne qui filtre */
+.filtre{position:absolute;left:58px;bottom:272px;font-family:Archivo;font-weight:700;
+  font-size:21px;letter-spacing:.13em;color:#0B1020;text-transform:uppercase;opacity:.82;z-index:4}
+
+/* le logo, sur le bleu nuit : un logo lumineux ne tient pas sur de l'or */
+.logo{position:absolute;left:0;bottom:114px;width:100%;height:122px;
+  display:flex;align-items:center;justify-content:center;z-index:5}
+.logo img{height:96px;width:auto;display:block}
+
+/* 8 · la barre de contact, detachee */
+.barre{position:absolute;left:0;bottom:0;width:100%;height:114px;background:#fff;
+  display:flex;align-items:center;justify-content:space-between;padding:0 52px;z-index:6}
+.b-site{font-family:Manrope;font-weight:600;font-size:23px;color:#0B1020;opacity:.72}
+.b-tel{display:flex;align-items:center;gap:14px}
+.b-tel svg{width:38px;height:38px;flex:none}
+.b-tel span{font-family:Archivo;font-weight:900;font-size:42px;color:#0B1020;letter-spacing:-.02em}
+</style>
+
+<div class="aff">
+  <div class="panneau"></div>
+
+  <div class="col">
+    <div class="t1">NOUS</div>
+    <div class="t2" id="hero-word">RECRUTONS</div>
+    <div class="t3">Conseillers en Digitalisation</div>
+
+    <div class="pills">
+      <div class="pill"><b>30 % à 40 %</b> par vente</div>
+      <div class="pill"><b>20 %</b> de chaque abonnement, à vie</div>
+      <div class="pill">Payé sous <b>24 à 72 h</b></div>
+      <div class="pill"><b>Aucun</b> frais d'entrée</div>
+    </div>
+
+    <div class="gain">
+      <div class="gain-h">Une vitrine vendue, c'est</div>
+      <div class="gain-v">45 000 F pour vous</div>
+    </div>
+
+    <div class="annos">
+      <div class="anno">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0B1020" stroke-width="2.1"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/>
+        </svg><span>Cotonou</span>
+      </div>
+      <div class="anno">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0B1020" stroke-width="2.1"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="8.6"/><path d="M12 7v5.2l3.4 2"/>
+        </svg><span>Entretien sous 72 h</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="filtre">Sur le terrain, pas derrière un bureau</div>
+
+  __HERO__
+
+  <div class="logo"><img src="data:image/png;base64,__LOGO__" alt=""></div>
+
+  <div class="barre">
+    <div class="b-site">partenaires.nebula-agency.online/devenir</div>
+    <div class="b-tel">
+      <svg viewBox="0 0 24 24" fill="#0B1020"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5.6 14.2c-.2.7-1.2 1.3-1.9 1.4-.5.1-1.1.2-3.2-.7-2.7-1.1-4.4-3.8-4.5-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9 1-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1.9 2 1.2 2.3 1.4.3.1.4.1.6-.1l.9-1c.2-.2.3-.2.6-.1l2 .9c.3.1.4.2.5.3.1.2.1.9-.1 1.6z"/></svg>
+      <span>+229 96 74 07 32</span>
+    </div>
+  </div>
+</div>
