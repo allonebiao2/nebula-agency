@@ -16,7 +16,31 @@ import markdown
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(ROOT, "pdf")
-CHROME = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
+def _trouver_chrome():
+    """Chrome headless, quelle que soit la machine.
+
+    Ce script a d'abord tourne dans un conteneur Linux ; le chemin y etait ecrit
+    en dur. Depuis Cotonou il tourne aussi sous Windows, ou ce chemin n'existe
+    pas. On cherche donc, au lieu de supposer.
+    """
+    import shutil
+    pistes = [
+        "/opt/pw-browsers/chromium-1194/chrome-linux/chrome",
+        r"C:/Program Files/Google/Chrome/Application/chrome.exe",
+        r"C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
+        r"C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+    ]
+    for p in pistes:
+        if os.path.exists(p):
+            return p
+    for nom in ("google-chrome", "chromium", "chromium-browser", "chrome"):
+        t = shutil.which(nom)
+        if t:
+            return t
+    raise SystemExit("Aucun navigateur trouve pour fabriquer les PDF.")
+
+
+CHROME = _trouver_chrome()
 
 # Documents destinés aux partenaires (le socle 00 et l'avis 01 restent internes,
 # mais on les génère aussi : ils servent à Mongazi).
@@ -42,6 +66,7 @@ DOCS = [
     ("08-DIAGNOSTIC-DIGITAL.md",    "Le Diagnostic Digital"),
     ("09-CONTRAT-PARTENAIRE.md",    "Contrat de Partenaire"),
     ("12-GUIDE-DES-APPELS.md",      "Le Guide des Appels"),
+    ("13-PROSPECTION-BENIN-TOGO.md", "Prospection par metier · Benin et Togo"),
 ]
 
 CSS = """

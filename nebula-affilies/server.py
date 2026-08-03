@@ -1033,6 +1033,8 @@ DOCS_PARTENAIRES = [
      "Au téléphone on ne vend jamais : on décroche le rendez-vous. Voilà comment."),
     ("08-DIAGNOSTIC-DIGITAL.pdf", "2026-08-03", "La visite chez le commerçant", "Vente",
      "Les questions à poser chez le client pour repérer ce dont il a vraiment besoin."),
+    ("13-PROSPECTION-BENIN-TOGO.pdf", "2026-08-03", "Trouver des clients : Bénin et Togo", "Vente",
+     "Le message exact pour un restaurant, pour un salon de couture, pour un particulier. Où les trouver, et ce que le Togo change."),
     ("01b-ANNONCE-PUBLIQUE.pdf", "2026-08-03", "L'annonce à partager", "Marketing",
      "Le texte à publier pour recruter quelqu'un dans ton équipe."),
 ]
