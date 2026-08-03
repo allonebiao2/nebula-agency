@@ -982,60 +982,11 @@ async def store_upload(up: UploadFile, prefix: str) -> Tuple[str, int]:
     (UP_DIR / name).write_bytes(data)
     return name, len(data)
 
-# Documents de démarrage du back-office partenaires.
-# ⚠️ Stratégie de l'escalier : on entre par le CATALOGUE, jamais par la Vitrine.
-_SEED_DOCS = [
-            ("Guide de démarrage du partenaire", "Formation",
-             "Tes 3 premières ventes, pas à pas.",
-             "<h4>Bienvenue dans l'équipe NEBULA</h4><p>Ton métier : présenter nos offres à des commerçants et encaisser des commissions. Pas de stock, pas de capital, aucune compétence technique. <b>Tu vends, NEBULA livre.</b></p>"
-             "<h4>1. Récupère ton lien</h4><p>Onglet <b>Mon lien</b> → copie-le. Tout client qui le remplit devient le tien automatiquement. Enregistre chaque prospect le jour même : il est à toi pendant <b>60 jours</b>.</p>"
-             "<h4>2. L'escalier : commence TOUJOURS par le catalogue</h4><p>Nos 3 offres ne sont pas 3 produits, c'est un escalier : <b>Catalogue 50 000 F</b> → <b>Vitrine 150 000 F</b> → <b>Outil métier</b>. Un commerçant méfiant dit oui à 50 000 F, il ne dit pas oui à 150 000 F le premier jour. Vends le catalogue, laisse NEBULA l'émerveiller, reviens 3 semaines après : la vitrine se vend presque toute seule. <b>Celui qui attaque au prix fort brûle son prospect.</b></p>"
-             "<h4>3. Vise les bons commerçants</h4><ul><li>Restaurants, pâtisseries, boutiques de mode, cosmétiques, bijoux, caves, quincailleries</li><li>Le signal en or : une enseigne avec un numéro WhatsApp dessus</li><li>Toute personne qui vend déjà sur WhatsApp sans site derrière</li></ul>"
-             "<h4>4. Le bon message</h4><p>« Bonjour, j'ai vu vos produits, c'est du beau travail. Une question : vos clients vous demandent vos prix et vos photos combien de fois par jour ? »<br>Pas de prix dans le premier message. Jamais.</p>"
-             "<h4>5. Ta première liste</h4><p>Avant de sortir dans la rue, écris <b>20 noms</b> de commerçants que tu connais déjà. Ta première vente sortira presque toujours de cette liste.</p>"),
-            ("Catalogue Digital + QR — ton arme d'entrée", "Produits",
-             "50 000 F. Vendable dès aujourd'hui.",
-             "<h4>C'est quoi</h4><p>Une page avec tous ses produits (photo, description, prix), un bouton qui envoie la commande sur son WhatsApp, et un QR code à coller sur son comptoir. <b>Jusqu'à 20 produits inclus</b> ; au-delà, 15 000 F par lot de 10.</p>"
-             "<h4>Prix</h4><p><b>50 000 FCFA</b>, paiement intégral (jamais échelonné) + abonnement 20 000 F tous les 6 mois, <b>modifications comprises</b>. Livré en 5 à 7 jours.</p>"
-             "<h4>Ce qu'il achète vraiment</h4><p>Il arrête de renvoyer les mêmes photos vingt fois par jour, et il arrête de perdre les commandes de la nuit.</p>"
-             "<h4>Les 3 questions qui vendent</h4><ul><li>« Combien de fois par jour on vous demande vos prix et vos photos ? »</li><li>« Il se passe quoi quand un client écrit à 22h ? »</li><li>« Combien de commandes vous perdez par mois faute de réponse ? »</li></ul><p>Laisse-le donner le chiffre. Il dépassera presque toujours 50 000 F, et c'est lui qui l'aura dit.</p>"
-             "<h4>Après le prix</h4><p>Tu annonces <b>50 000 francs</b>… et tu te tais. Celui qui parle en premier après le prix a perdu.</p>"),
-            ("Vitrine Digitale + QR — après ta 1re vente livrée", "Produits",
-             "150 000 F. Tu vends la crédibilité, pas le temps.",
-             "<h4>C'est quoi</h4><p><b>Une page complète</b> : accueil, présentation, services ou produits, galerie, avis clients, contact, carte, bouton WhatsApp. Page supplémentaire 30 000 F. <b>Nom de domaine offert la 1re année</b>, puis 16 000 F/an.</p>"
-             "<h4>Prix</h4><p><b>150 000 FCFA</b> — 70 % au démarrage, 30 % à la mise en ligne (intégral encouragé) + abonnement 20 000 F / 6 mois, modifications comprises.</p>"
-             "<h4>Ce qu'il achète vraiment</h4><p>Le droit d'être pris au sérieux par des gens qui ne le connaissent pas encore. <b>Ne la vends jamais comme « un catalogue en mieux ».</b></p>"
-             "<h4>Ton arme : le test Google</h4><p>« On cherche votre nom sur Google, ensemble, comme le ferait quelqu'un qui a entendu parler de vous. » Tu tapes, tu lui tends le téléphone, <b>tu te tais</b>. Puis : « Voilà ce que voit quelqu'un qui a entendu parler de vous. »<br><b>Tu ne ris jamais. Tu ne dis jamais « vous n'existez pas ».</b></p>"
-             "<h4>Le prix se compare à son plus gros client</h4><p>« Votre plus gros client de l'année vous a rapporté combien ? Un seul comme lui et le site est remboursé. » <b>Ne le compare jamais au prix du catalogue.</b></p>"
-             "<h4>S'il dit « je préfère commencer par le catalogue »</h4><p><b>Dis oui.</b> Ce n'est pas une objection, c'est une vente. Tu encaisses 50 000 F aujourd'hui et tu reviens pour 150 000 F.</p>"),
-            ("Répondre aux objections", "Vente",
-             "Les phrases qui débloquent une vente.",
-             "<h4>La méthode : accueillir, questionner, répondre</h4><p>Une objection n'est pas un refus, c'est une demande d'information. Ne dégaine jamais du tac au tac : marque un temps, puis réponds, et termine par une question.</p>"
-             "<h4>« C'est trop cher »</h4><p>« Cher par rapport à quoi ? » — puis reprends SES chiffres : « vous m'avez dit que vous gagniez X sur une commande ; il vous faut Y commandes récupérées sur l'année pour rembourser. »</p>"
-             "<h4>« Je vais réfléchir »</h4><p>« Bien sûr. Juste pour que je vous aide : c'est le montant, le moment, ou vous voulez en parler à quelqu'un ? » <b>Ne pars jamais sans savoir laquelle des trois.</b></p>"
-             "<h4>« J'ai déjà Facebook »</h4><p>« Gardez-le. Vos photos y descendent dans le fil au bout d'une semaine. Le catalogue, lui, ne descend jamais. Et il est à vous. »</p>"
-             "<h4>« Et si je veux ajouter des produits ? »</h4><p>« C'est compris dans votre abonnement. 20 000 F tous les six mois et vous demandez vos modifications quand vous voulez. Chez d'autres, vous payez à chaque changement. »</p>"
-             "<h4>« On m'a déjà pris de l'argent »</h4><p>Ne défends jamais NEBULA avec des mots, défends-la avec des liens : djambarteam.com, graindesthetique.com, au-braise-dor.pages.dev. Livraison 5 à 7 jours, pas six mois.</p>"
-             "<h4>« Je n'ai pas le temps »</h4><p>« Justement, vous n'avez rien à faire : vos photos et vos prix, et NEBULA s'occupe de tout. »</p>"),
-            ("Tes commissions expliquées", "Formation",
-             "La grille 30 / 40 %, tes 20 % sur les abonnements, et comment tu es payé.",
-             "<h4>Ta commission (palier du mois)</h4><ul><li><b>BRONZE</b> : <b>30%</b>, par défaut</li><li><b>ARGENT</b> : <b>40%</b>, dès que TES ventes + celles de TES FILLEULS atteignent <b>3</b> dans le mois</li><li><b>OR</b> : <b>50%</b>, dès que TU fais <b>4 ventes</b> ou plus à toi seul</li></ul><p>Remis à zéro le 1er du mois, et appliqué à TOUT ton mois, rétroactivement. <b>Ne finis jamais un mois à 3 ventes</b> : la 4e fait passer tout le mois de 40 à 50%.</p><p><b>Tu ne touches aucune commission sur les ventes de tes filleuls.</b> Elles servent uniquement à faire monter ton palier.</p>"
-             "<h4>Ton portefeuille : 20 % de chaque abonnement, à vie</h4><p>Chaque client abonné te rapporte <b>4 000 F tous les 6 mois</b> (20 % de son abonnement de 20 000 F), <b>renouvellements compris et à vie</b>, même si tu quittes le programme. 30 clients = <b>120 000 F par semestre</b> sans rien vendre de nouveau. Le récurrent ne compte pas dans ton palier du mois.</p>"
-             "<h4>⚠️ Relance tes clients à l'échéance, c'est ton argent</h4><p>Si le client ne paie pas son abonnement, <b>son site est coupé</b> : l'hébergement et la sécurité s'arrêtent, le QR ne mène plus à rien. Dis-le lui simplement, sans menacer : c'est un fait technique, pas une punition. Un client relancé à temps renouvelle presque toujours, et <b>c'est ta commission autant que la nôtre</b>.</p>"
-             "<h4>Ce que ton équipe change</h4><p>Les ventes de tes filleuls directs s'ajoutent aux tiennes pour atteindre les <b>3 ventes du mois</b> qui débloquent les <b>40%</b>. Elles ne te versent aucune commission : elles te font travailler à un taux plus élevé.</p>"
-             "<h4>Quand es-tu payé ?</h4><p>Dès que ton client a payé NEBULA, ta commission apparaît dans <b>Mes gains</b>. Tu cliques <b>Réclamer</b>, et <b>NEBULA te verse sous 24 à 72 heures</b> sur ton Mobile Money.</p>"
-             "<h4>Règle d'or</h4><p><b>Tu ne touches jamais l'argent d'un client</b>, sous aucune forme. Le client paie NEBULA, toujours.</p>"),
-]
 
 def seed_content():
     """Documents & publications de départ (modèles NEBULA pro, immédiatement utiles)."""
     now = time.time()
     with db() as c:
-        if not c.execute("SELECT COUNT(*) n FROM documents").fetchone()["n"]:
-            docs = _SEED_DOCS
-            for t, cat, desc, body in docs:
-                c.execute("INSERT INTO documents(title,category,description,kind,body,updated,created) VALUES(?,?,?,'note',?,?,?)",
-                          (t, cat, desc, body, now, now))
         if not c.execute("SELECT COUNT(*) n FROM publications").fetchone()["n"]:
             pubs = [
                 ("Script d'approche WhatsApp", "script", "WhatsApp",
@@ -1055,106 +1006,102 @@ def seed_content():
                 c.execute("INSERT INTO publications(title,ptype,body,script,platforms,media_kind,updated,created) VALUES(?,?,?,?,?,'none',?,?)",
                           (t, pt, body, script, plat, now, now))
 
-def refresh_seeded_docs():
-    """Remplace les documents de démarrage qui portent encore l'ancien discours.
+# ---------------------------------------------------------------------------
+# La bibliothèque de documents des partenaires.
+#
+# Rangée DANS LA BASE, en base64, et non sur le disque : le disque de Render
+# s'efface à chaque déploiement, et c'est précisément pour cela que les anciens
+# PDF étaient référencés en base mais ne s'ouvraient plus.
+#
+# Pour publier une nouvelle version d'un document : remplacer le fichier dans
+# assets/docs-partenaires/ et changer sa VERSION ci-dessous.
+# ---------------------------------------------------------------------------
+DOCS_PARTENAIRES = [
+    ("02-MANUEL-DU-PARTENAIRE.pdf", "2026-08-03", "Le manuel du partenaire", "Formation",
+     "Ton métier de A à Z : trouver des commerçants, présenter, relancer, être payé. À lire en premier."),
+    ("09-CONTRAT-PARTENAIRE.pdf", "2026-08-03", "Ton contrat de partenaire", "Juridique",
+     "À imprimer, signer, scanner et renvoyer. Il dit ce que NEBULA te doit et ce que tu dois à NEBULA."),
+    ("03-GUIDE-CATALOGUE.pdf", "2026-08-03", "Vendre le Catalogue (50 000 F)", "Produits",
+     "Ton offre d'entrée, celle qui se vend le plus facilement. Commence toujours par elle."),
+    ("04-GUIDE-VITRINE.pdf", "2026-08-03", "Vendre la Vitrine (150 000 F)", "Produits",
+     "La deuxième marche. Elle se vend presque seule à un client déjà content de son catalogue."),
+    ("05-GUIDE-OUTIL-METIER.pdf", "2026-08-03", "Vendre l'Outil sur mesure", "Produits",
+     "Pour les commerces qui ont un vrai besoin de gestion. De 55 000 à 500 000 F."),
+    ("06-ARSENAL-SCRIPTS.pdf", "2026-08-03", "Tous les messages prêts à envoyer", "Vente",
+     "Premier contact, relance, réponse aux objections. À copier, coller, envoyer."),
+    ("12-GUIDE-DES-APPELS.pdf", "2026-08-03", "Au téléphone", "Vente",
+     "Au téléphone on ne vend jamais : on décroche le rendez-vous. Voilà comment."),
+    ("08-DIAGNOSTIC-DIGITAL.pdf", "2026-08-03", "La visite chez le commerçant", "Vente",
+     "Les questions à poser chez le client pour repérer ce dont il a vraiment besoin."),
+    ("01b-ANNONCE-PUBLIQUE.pdf", "2026-08-03", "L'annonce à partager", "Marketing",
+     "Le texte à publier pour recruter quelqu'un dans ton équipe."),
+]
 
-    `seed_content()` ne s'exécute que sur une base vide : en production les anciens
-    textes sont déjà en base et un simple déploiement ne les corrigerait pas. Or
-    l'ancien guide présentait la Vitrine comme « ton produit le plus rémunérateur »
-    et invitait à la pousser en premier, ce qui contredit frontalement la stratégie
-    de l'escalier (on entre par le Catalogue à 50 000 F).
+# Les 7 entrées de l'ancienne bibliothèque, retirées une bonne fois (elles
+# n'existent plus nulle part ailleurs, y compris chez les partenaires).
+DOCS_RETIRES = [
+    "Guide de démarrage du partenaire",
+    "Catalogue Digital + QR — ton arme d'entrée",
+    "Vitrine Digitale + QR — après ta 1re vente livrée",
+    "Répondre aux objections",
+    "Tes commissions expliquées",
+    "Brochure du Programme Partenaires (PDF premium)",
+    "Kit NEBULA — l'essentiel du partenaire (PDF)",
+]
 
-    Idempotent : ne touche que ce qui porte encore une marque de l'ancienne version,
-    ne crée jamais de doublon, et laisse intact tout document ajouté à la main.
+
+def publier_documents():
+    """Pose les documents des partenaires en base. Idempotent.
+
+    Ne touche jamais aux documents ajoutés à la main depuis le cockpit : seuls
+    ceux marqués `url = 'nebula:socle'` appartiennent à cette fonction.
     """
-    OBSOLETES = ("Vitrine Digitale + QR — fiche produit & argumentaire",
-                 "Catalogue Digital + QR — fiche produit & argumentaire")
-    # Un marqueur par document conservé : une phrase qui n'existe QUE dans l'ancienne
-    # version. Sans cela un document reste en arrière et contredit les autres.
-    MARQUEURS = ("ton produit le plus rémunérateur",              # fiche Vitrine
-                 "vitrine digitale pro + QR code</b> pour vendre mieux",  # guide de démarrage
-                 "Vise 3 contacts par jour",                      # guide de démarrage
-                 "La vitrine se rembourse en quelques ventes",    # objections
-                 "qu'est-ce qui vous retient",                    # objections
-                 "NEBULA te verse sur ton Mobile Money.</p>")     # commissions
     now = time.time()
-    remplaces = 0
+    attendus = {}
+    for fkey, version, title, cat, desc in DOCS_PARTENAIRES:
+        src = HERE / "assets" / "docs-partenaires" / fkey
+        if not src.exists():
+            print("publier_documents: fichier absent,", fkey)
+            continue
+        attendus[title] = (src, version, cat, desc)
+
     try:
         with db() as c:
-            if not c.execute("SELECT COUNT(*) n FROM documents").fetchone()["n"]:
-                return 0                      # base vide : seed_content() s'en charge
-            # 1. Les fiches produit renommées : on retire les anciennes.
-            for t in OBSOLETES:
-                r = c.execute("SELECT id FROM documents WHERE title=?", (t,)).fetchone()
-                if r:
+            # 1. l'ancienne bibliothèque s'en va
+            for t in DOCS_RETIRES:
+                c.execute("DELETE FROM documents WHERE title=?", (t,))
+
+            # 2. ce que cette fonction avait posé et qui n'est plus au programme
+            for r in c.execute("SELECT id, title FROM documents WHERE url=?", ("nebula:socle",)).fetchall():
+                if r["title"] not in attendus:
                     c.execute("DELETE FROM documents WHERE id=?", (r["id"],))
-                    remplaces += 1
-            # 2. Les titres conservés : on réécrit si le corps est encore l'ancien.
-            for title, cat, desc, body in _SEED_DOCS:
-                r = c.execute("SELECT id, body FROM documents WHERE title=?", (title,)).fetchone()
-                if r is None:
-                    c.execute("INSERT INTO documents(title,category,description,kind,body,updated,created) "
-                              "VALUES(?,?,?,'note',?,?,?)", (title, cat, desc, body, now, now))
-                    remplaces += 1
-                elif any(m in (r["body"] or "") for m in MARQUEURS):
-                    c.execute("UPDATE documents SET category=?,description=?,body=?,updated=? WHERE id=?",
-                              (cat, desc, body, now, r["id"]))
-                    remplaces += 1
-    except Exception as e:
-        print("refresh_seeded_docs:", e)
-        return 0
-    if remplaces:
-        print(f"refresh_seeded_docs: {remplaces} document(s) mis à jour")
-    return remplaces
 
-
-def seed_docs():
-    """Publie automatiquement les PDF livrés dans le repo (assets/) dans la Documentation,
-    visibles côté partenaire ET admin. Idempotent. Pour pousser une nouvelle version d'un PDF :
-    remplacer le fichier dans assets/ et bumper sa 'version' ci-dessous."""
-    BUNDLED = [
-        ("NEBULA_Programme_Partenaires.pdf", "2026-06-21",
-         "Brochure du Programme Partenaires (PDF premium)", "Formation",
-         "La présentation complète à montrer aux prospects et à garder sous la main : "
-         "vision, offres et prix (dont 20 000 F/6 mois d'abonnement), la grille 30 / 40 %, "
-         "rangs, et l'exemple chiffré du réseau. 14 pages, prête à partager."),
-        ("kit-nebula.pdf", "2026-06-21",
-         "Kit NEBULA — l'essentiel du partenaire (PDF)", "Formation",
-         "Le kit de démarrage à garder sous la main : qui nous sommes, nos offres, et les arguments "
-         "clés pour présenter NEBULA à un commerçant. À partager sans modération."),
-    ]
-    for fkey, version, title, cat, desc in BUNDLED:
-        src = HERE / "assets" / fkey
-        if not src.exists():
-            continue
-        marker = re.sub(r"[^a-zA-Z0-9]", "_", fkey) + "_" + version + ".pdf"
-        try:
-            with db() as c:
-                row = c.execute("SELECT * FROM documents WHERE title=?", (title,)).fetchone()
-                if row and row["filename"] == marker:
-                    continue  # déjà à jour
-                data = src.read_bytes(); size = len(data); now = time.time()
-                (UP_DIR / marker).write_bytes(data)
-                if row and row["filename"] and row["filename"] != marker:
-                    try: (UP_DIR / row["filename"]).unlink()
-                    except Exception: pass
+            # 3. les documents du jour
+            for title, (src, version, cat, desc) in attendus.items():
+                marque = version                      # la version tient lieu d'empreinte
+                row = c.execute("SELECT id, filename FROM documents WHERE title=?", (title,)).fetchone()
+                if row and row["filename"] == marque:
+                    continue                          # déjà à jour, on ne relit pas le fichier
+                data = src.read_bytes()
+                corps = "data:application/pdf;base64," + base64.b64encode(data).decode("ascii")
                 if row:
-                    c.execute("UPDATE documents SET category=?,description=?,kind='pdf',filename=?,size=?,updated=? WHERE id=?",
-                              (cat, desc, marker, size, now, row["id"]))
+                    c.execute("UPDATE documents SET category=?,description=?,kind='pdf',body=?,"
+                              "url=?,filename=?,size=?,updated=? WHERE id=?",
+                              (cat, desc, corps, "nebula:socle", marque, len(data), now, row["id"]))
                 else:
-                    c.execute("""INSERT INTO documents(title,category,description,kind,body,url,filename,size,updated,created)
-                                 VALUES(?,?,?,'pdf','','',?,?,?,?)""",
-                              (title, cat, desc, marker, size, now, now))
-        except Exception as e:
-            print("seed_docs:", fkey, e)
+                    c.execute("INSERT INTO documents(title,category,description,kind,body,url,filename,size,updated,created) "
+                              "VALUES(?,?,?,'pdf',?,?,?,?,?,?)",
+                              (title, cat, desc, corps, "nebula:socle", marque, len(data), now, now))
+    except Exception as e:
+        print("publier_documents:", e)
+
 
 def seed():
     # Plus de compte démo : la plateforme démarre vide, prête pour de vrais partenaires.
     return
 seed()
 seed_content()
-refresh_seeded_docs()   # corrige les documents de démarrage déjà en base (idempotent)
-seed_docs()
+publier_documents()     # les 9 documents des partenaires, en base (idempotent)
 
 # ----------------------------------------------------------------------------
 # App
@@ -2453,7 +2400,12 @@ async def admin_doc_save(
         category = "Autre"
     fname = ""; size = 0
     if file is not None and file.filename:
-        fname, size = await store_upload(file, "doc")
+        # Le PDF part EN BASE, en base64, et non sur le disque : celui de Render
+        # s'efface a chaque deploiement (c'est ce qui avait tue les 2 anciens PDF).
+        data = await file.read()
+        size = len(data)
+        body = "data:application/pdf;base64," + base64.b64encode(data).decode("ascii")
+        fname = time.strftime("%Y-%m-%d")      # la date tient lieu de version
         kind = "pdf"
     now = time.time()
     with db() as c:
@@ -2492,12 +2444,27 @@ def serve_doc(did: int, naff_session: Optional[str] = Cookie(default=None)):
         return JSONResponse({"error": "auth"}, status_code=401)
     with db() as c:
         r = c.execute("SELECT * FROM documents WHERE id=?", (did,)).fetchone()
-    if not r or not r["filename"]:
+    if not r:
+        return JSONResponse({"error": "introuvable"}, status_code=404)
+    dl = re.sub(r"[^a-zA-Z0-9._-]", "_", (r["title"] or "document"))[:60] + ".pdf"
+    # Le PDF est rangé DANS LA BASE (depuis le 2026-08-03) : le disque de Render
+    # s'efface a chaque deploiement, et c'est pour ca que les anciens documents
+    # ne s'ouvraient plus. Le corps porte une adresse « data: ».
+    corps = r["body"] or ""
+    if corps.startswith("data:"):
+        try:
+            _, b64 = corps.split(",", 1)
+            return Response(content=base64.b64decode(b64), media_type="application/pdf",
+                            headers={"Content-Disposition": f'attachment; filename="{dl}"',
+                                     "Cache-Control": "private, max-age=600"})
+        except Exception:
+            return JSONResponse({"error": "illisible"}, status_code=404)
+    # ancien stockage sur disque, conservé pour ce qui aurait survécu
+    if not r["filename"]:
         return JSONResponse({"error": "introuvable"}, status_code=404)
     fp = UP_DIR / r["filename"]
     if not fp.exists():
         return JSONResponse({"error": "introuvable"}, status_code=404)
-    dl = re.sub(r"[^a-zA-Z0-9._-]", "_", (r["title"] or "document"))[:60] + ".pdf"
     return FileResponse(str(fp), media_type="application/pdf", filename=dl)
 
 # ===========================  PUBLICATION (contenus à poster)  ===============
