@@ -101,23 +101,16 @@ def main():
             await pg.wait_for_timeout(500)
             # rien ne doit deborder du cadre
             deb = await pg.evaluate("""()=>{
-              const b=document.body, r=[];
-              // le titre deborde-t-il du panneau ? (le defaut du 1er essai)
-              const mot=document.getElementById('hero-word').getBoundingClientRect();
-              const pan=document.querySelector('.panneau').getBoundingClientRect();
-              if(mot.right > pan.right-40) r.push('titre deborde du panneau');
-              // deux blocs se chevauchent-ils ?
-              const a=document.querySelector('.pills').getBoundingClientRect();
-              const c=document.querySelector('.annos').getBoundingClientRect();
-              if(a.bottom > c.top+1) r.push('pastilles et annotations se chevauchent');
-              const f=document.querySelector('.filtre').getBoundingClientRect();
-              if(c.bottom > f.top+1) r.push('annotations et ligne du bas se chevauchent');
-              const lo=document.querySelector('.logo img').getBoundingClientRect();
-              if(lo.top < pan.bottom-1) r.push('le logo empiete sur le panneau dore');
-              const ba=document.querySelector('.barre').getBoundingClientRect();
-              if(lo.bottom > ba.top+1) r.push('le logo empiete sur la barre de contact');
-              const he=document.querySelector('.hero').getBoundingClientRect();
-              if(he.bottom > pan.bottom+1) r.push('le telephone descend sous le panneau');
+              const b=document.body, r=[], R=e=>document.querySelector(e).getBoundingClientRect();
+              // .t2 est en inline-block : sa boite epouse le mot, et
+              // getBoundingClientRect tient deja compte du scaleX
+              const bx=R('.t2');
+              if(bx.right > 1080-40) r.push('titre deborde du cadre ('+Math.round(bx.right)+' px)');
+              if(R('.pills').bottom > R('.gain').top+1) r.push('pastilles et chiffre se chevauchent');
+              if(R('.gain').bottom > R('.annos').top+1) r.push('chiffre et reperes se chevauchent');
+              if(R('.annos').bottom > R('.filtre').top+1) r.push('reperes et ligne du bas se chevauchent');
+              if(R('.filtre').bottom > R('.urgence').top+1) r.push('ligne du bas et barre doree se chevauchent');
+              if(R('.hero').bottom > R('.urgence').top+1) r.push('le telephone descend sous la barre doree');
               return {w:b.scrollWidth, h:b.scrollHeight, err:r};}""")
             await pg.screenshot(path=str(png))
             await br.close()
