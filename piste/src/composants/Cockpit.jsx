@@ -8,6 +8,7 @@ import {
 } from '../donnees.js'
 import { SUPPLEMENTS, fcfa } from '../prix.js'
 import { ajouter, ecrire, estExpiree, lire, resteEn } from '../stockage.js'
+import { livrerCarnet, motDePasseCockpit, poserMotDePasse } from '../supabase.js'
 import { Bouton, Chiffre } from './Ui.jsx'
 import { Puce } from './Trace.jsx'
 
@@ -236,6 +237,45 @@ export default function Cockpit({ aller }) {
   const majSignalements = (l) => {
     setSignalements(l)
     ecrire('signalements', l)
+  }
+
+  /* Fabriquer le carnet et l'envoyer. Le mot de passe est demandé une fois et
+     gardé dans CE navigateur : il n'est pas dans le site, parce que cette
+     fonction fabrique de la marchandise. */
+  async function livrer(c) {
+    let mdp = motDePasseCockpit()
+    if (!mdp) {
+      mdp = window.prompt(
+        'Mot de passe du cockpit. Il autorise la fabrication d’un carnet. ' +
+          'Il est demande une fois, puis garde dans ce navigateur.'
+      )
+      if (!mdp) return
+      poserMotDePasse(mdp.trim())
+    }
+    setErreur('')
+    majCommandes(commandes.map((x) => (x.ref === c.ref ? { ...x, enCours: true } : x)))
+    const r = await livrerCarnet(c.ref)
+    if (r?.ok) {
+      majCommandes(
+        commandes.map((x) =>
+          x.ref === c.ref
+            ? { ...x, enCours: false, etat: 'livree', lienCarnet: r.lien, livreeLe: new Date().toISOString() }
+            : x
+        )
+      )
+      return
+    }
+    majCommandes(commandes.map((x) => (x.ref === c.ref ? { ...x, enCours: false } : x)))
+    if (r?.erreur === 'mot de passe') {
+      poserMotDePasse('')
+      setErreur('Mot de passe refusé. Réessayez, il vous sera redemandé.')
+      return
+    }
+    setErreur(
+      r?.libres !== undefined
+        ? `Pas assez de fiches libres : ${r.libres} disponibles. Le moteur collecte chaque nuit, ou proposez une autre ville.`
+        : `La fabrication a échoué : ${r?.erreur || 'raison inconnue'}. La commande n'a pas bougé, vous pouvez réessayer.`
+    )
   }
 
   const changerEtat = (ref, etat) =>
@@ -537,7 +577,7 @@ export default function Cockpit({ aller }) {
               </p>
             )}
             {visibles.map((c) => (
-              <Ligne key={c.ref} c={c} onEtat={changerEtat} onRetirer={retirer} />
+              <Ligne key={c.ref} c={c} onEtat={changerEtat} onRetirer={retirer} onLivrer={livrer} />
             ))}
           </div>
         )}
@@ -563,7 +603,7 @@ export default function Cockpit({ aller }) {
 
 /* ------------------------------------------------------------------------- */
 
-function Ligne({ c, onEtat, onRetirer }) {
+function Ligne({ c, onEtat, onRetirer, onLivrer }) {
   const [ouvert, setOuvert] = useState(false)
   const expiree = estExpiree(c)
   const etat = ETATS.find((e) => e.cle === c.etat) || ETATS[0]
@@ -604,6 +644,20 @@ function Ligne({ c, onEtat, onRetirer }) {
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
+        {/* ⚠️ LE GESTE QUI COMPTE. Vous confirmez le paiement, le serveur
+            fabrique le carnet, réserve les fiches 90 jours et envoie le lien au
+            client ET à vous. Plus besoin d'être devant son PC. */}
+        {c.etat === 'payee' && !c.lienCarnet && (
+          <Bouton className="px-5" onClick={() => onLivrer(c)} disabled={c.enCours}>
+            {c.enCours ? 'Fabrication…' : 'Fabriquer et envoyer le carnet'}
+          </Bouton>
+        )}
+        {c.lienCarnet && (
+          <Bouton ton="contour" className="px-5" href={c.lienCarnet} target="_blank" rel="noopener">
+            Voir le carnet livré
+          </Bouton>
+        )}
+
         {/* Le lien du carnet part par email tout seul. Ce bouton l'envoie AUSSI
             sur le WhatsApp du client, en un clic : la conversation s'ouvre avec
             le message déjà écrit. Un clic vaut mieux qu'un copier-coller, et

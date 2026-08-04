@@ -124,3 +124,47 @@ export async function signalerInjoignable(jeton, fiche) {
   } catch (e) {}
   marquerFiche(jeton, fiche, 'injoignable')
 }
+
+/* ═══════ FABRIQUER ET ENVOYER UN CARNET, depuis le cockpit ═══════
+   Mongazi confirme le paiement, et le carnet part : le serveur choisit les
+   fiches libres, compose les messages, reserve 90 jours, et envoie le lien au
+   client ET a lui. Plus besoin d'etre devant son PC.
+
+   ⚠️ Le mot de passe n'est PAS dans le site : il est demande au moment du clic
+   et garde dans ce navigateur seulement. Cette fonction fabrique de la
+   marchandise ; sans garde, n'importe qui se ferait livrer en devinant une
+   reference. */
+const CLE_MDP = 'piste_cockpit_mdp'
+
+export function motDePasseCockpit() {
+  try {
+    return localStorage.getItem(CLE_MDP) || ''
+  } catch (e) {
+    return ''
+  }
+}
+
+export function poserMotDePasse(v) {
+  try {
+    localStorage.setItem(CLE_MDP, v || '')
+  } catch (e) {}
+}
+
+export async function livrerCarnet(reference) {
+  const motdepasse = motDePasseCockpit()
+  if (!motdepasse) return { ok: false, erreur: 'mot de passe' }
+  try {
+    const r = await fetch(`${URL_BASE}/functions/v1/piste-livrer`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: CLE_PUBLIQUE,
+        Authorization: `Bearer ${CLE_PUBLIQUE}`,
+      },
+      body: JSON.stringify({ reference, motdepasse }),
+    })
+    return await r.json()
+  } catch (e) {
+    return { ok: false, erreur: 'réseau' }
+  }
+}

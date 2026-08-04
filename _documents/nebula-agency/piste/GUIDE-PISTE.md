@@ -56,9 +56,31 @@ numéro, c'est le geste le plus coûteux qui existe.
 
 Quand l'argent est là, marquez **« payée »** dans le cockpit.
 
-## Geste 3 · Fabriquer le carnet
+## Geste 3 · Fabriquer le carnet · UN SEUL BOUTON
 
-Sur votre PC, une seule commande :
+Dans le cockpit, sur une commande marquée « payée », appuyez sur
+**« Fabriquer et envoyer le carnet »**.
+
+Le serveur fait tout, sans vous :
+- il choisit les fiches libres, en **alternant** entre les métiers demandés
+- il compose le message d'approche de chacune, à partir de ce que le client vend
+- il **réserve les fiches 90 jours** pour ce client seul
+- il **envoie le lien au client** par email, et à vous aussi
+
+Le mot de passe du cockpit vous est demandé **une seule fois**, puis gardé dans
+ce navigateur. Il est dans `secrets/piste.env`.
+
+⚠️ **Un double clic ne livre pas deux fois.** La deuxième fois, le serveur rend
+le lien existant. Sinon les fiches seraient réservées deux fois et le client
+recevrait deux liens différents.
+
+⚠️ **Si le stock ne suffit pas**, rien n'est fabriqué et le cockpit vous dit
+combien de fiches sont réellement libres. La commande ne bouge pas, vous pouvez
+réessayer après une nuit de collecte.
+
+### La voie de secours, sur le PC
+
+Si le serveur ne répond pas, ou pour composer un carnet à la main :
 
 ```
 python piste/_carnet.py --metier restaurant,alimentation --ville cotonou --n 50 \
@@ -72,12 +94,8 @@ Pour voir ce qui est disponible avant de composer :
 python piste/_carnet.py --voir
 ```
 
-Ce que ça fait, tout seul :
-- réserve les fiches **90 jours** pour ce client, personne d'autre ne les aura
-- fabrique le carnet et son lien
-- **envoie l'email au client** avec le lien
-- **vous envoie la confirmation** avec le même lien
-- écrit une copie dans `piste/_carnets/PISTE-4471.txt`
+Elle fait la même chose que le bouton, et écrit en plus une copie dans
+`piste/_carnets/PISTE-4471.txt`.
 
 ## Geste 4 · Si « numéro testé » est coché, vous appelez
 
