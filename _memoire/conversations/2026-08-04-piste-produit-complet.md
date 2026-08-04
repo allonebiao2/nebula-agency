@@ -449,3 +449,32 @@ sombre, et le contrôle vérifie le contraste **dans les deux**.
    se referme sur ce dépôt.
 
 **175 contrôles verts** (91 + 39 + 25 + 20), zéro rouge.
+
+### La police : Orbitron dehors, IBM Plex Mono à sa place
+
+Mongazi avait demandé « ultra gaming ». Voyant le résultat : « **je préfère une
+police professionnelle** ». Il a raison, et la leçon vaut d'être gardée.
+
+> **PISTE vend du travail à des commerçants, pas un jeu. Une typo qui fait
+> vaisseau spatial fait douter du sérieux de ce qu'elle affiche — et ici, elle
+> affichait de l'argent.**
+
+**IBM Plex Mono** est ce qu'on trouve sur les vrais écrans de supervision :
+technique sans être costumée. Et ses chiffres ont tous la même largeur, donc
+les montants s'alignent en colonne et un total ne danse pas quand il change.
+
+Le texte courant reste en **Bricolage Grotesque** : une chasse fixe se lit mal
+sur un paragraphe entier. *Grotesque pour lire, mono pour compter* — deux
+familles vraiment différentes, pas deux presque pareilles.
+
+⚠️ **Les animations n'ont pas bougé** : compteurs qui montent, jauges, courbes,
+équerres d'angle. C'était la typographie qui faisait jeu vidéo, pas le
+mouvement. Distinguer les deux évite de jeter le bon avec le mauvais.
+
+`orbitron-latin.woff2` supprimé : 12 Ko de moins, et plus de doute sur laquelle
+est active.
+
+**Au passage, la garde d'honnêteté a fonctionné toute seule** : au moment de la
+capture, l'entonnoir avait franchi les dix visites qu'il exigeait et affichait
+enfin de vrais taux (57 % vont jusqu'au bout). Il s'est débloqué sans qu'on y
+touche, exactement comme prévu.
