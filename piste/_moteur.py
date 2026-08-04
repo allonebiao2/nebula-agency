@@ -40,6 +40,13 @@ from pathlib import Path
 
 RACINE = Path(__file__).resolve().parent.parent
 COTONOU = {"Cotonou", "Abomey-Calavi", "Godomey", "Cocotomey"}
+# Le Grand Abidjan : les communes du district. Tout le reste de la Cote d'Ivoire
+# part dans « autres villes », on ne fait pas passer Bouake pour Abidjan.
+ABIDJAN = {
+    "Abidjan", "Cocody", "Yopougon", "Treichville", "Plateau", "Marcory",
+    "Adjame", "Adjamé", "Abobo", "Koumassi", "Port-Bouet", "Port-Bouët",
+    "Attecoube", "Attécoubé", "Bingerville", "Songon", "Anyama", "Riviera",
+}
 
 # ─────────────────────────── LES VIVIERS ───────────────────────────────────
 # Une categorie d'annuaire n'est pas un metier vendable : « boutiques pret-a-
@@ -101,7 +108,7 @@ METIERS_CONNUS = set(METIERS)
 SOURCES = []
 for _cle, (_nom, _sing, _cats) in METIERS.items():
     for _c in _cats:
-        for _pays, _p in (("BJ", "bj"), ("TG", "tg")):
+        for _pays, _p in (("BJ", "bj"), ("TG", "tg"), ("CI", "ci")):
             SOURCES.append((f"https://www.goafricaonline.com/{_p}/annuaire/{_c}", _cle, _pays))
 
 ENTETES = {
@@ -115,13 +122,20 @@ PAUSE = 1.2  # secondes entre deux requêtes, jamais moins
 def ville_cle(pays, localite):
     if pays == "BJ":
         return "cotonou" if localite in COTONOU else "benin-autres"
+    if pays == "CI":
+        return "abidjan" if localite in ABIDJAN else "ci-autres"
     return "lome" if localite.startswith("Lom") else "togo-autres"
 
 
 def est_fixe(pays, n):
     if not n:
         return True
-    return n.startswith(("0121", "0120")) if pays == "BJ" else n.startswith("22")
+    if pays == "BJ":
+        return n.startswith(("0121", "0120"))
+    if pays == "CI":
+        # Cote d'Ivoire : les fixes commencent par 2, les mobiles par 0 ou 1.
+        return n.startswith("2")
+    return n.startswith("22")
 
 
 def empreinte(nom, numero):
@@ -140,6 +154,11 @@ def normaliser(pays, brut):
         c = c[3:] if c.startswith("229") else c
         if len(c) == 8:
             c = "01" + c
+        return c if len(c) == 10 else ""
+    if pays == "CI":
+        # Cote d'Ivoire : 10 chiffres depuis la reforme du 31 janvier 2021.
+        # Un annuaire qui affiche encore 8 chiffres donne un numero MORT.
+        c = c[3:] if c.startswith("225") else c
         return c if len(c) == 10 else ""
     c = c[3:] if c.startswith("228") else c
     return c if len(c) == 8 else ""

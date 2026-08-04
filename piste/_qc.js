@@ -33,6 +33,7 @@ const DIST = path.resolve(ICI, 'dist')
 /* Les chiffres du stock changent chaque nuit depuis que le moteur tourne : on
    les LIT dans les donnees du site, on ne les fige jamais dans le controle. */
 const D = await import('./src/donnees.js')
+const PX = await import('./src/prix.js')
 const nombre = (v) => String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
 
 /* ⚠️ Les libelles viennent des DONNEES, jamais d'une copie. « Ateliers de
@@ -330,16 +331,23 @@ const totalAffiche = (page) =>
         /* Pas le total : c'est un compteur ANIME, et la capture arrive avant
            qu'il ait fini de monter. On verifie les nombres fixes, qui disent
            la meme chose sans dependre d'une animation. */
-        const attendu = [
-          nombre(D.stock('couture', 'cotonou')),
-          nombre(D.totalMetier('couture')),
-          nombre(D.totalMetier('restaurant')),
-        ]
+        /* La vitrine a ete raccourcie le 2026-08-04 : les sections « prix »,
+           « stock » et « la fiche » ont disparu au profit du generateur, qui
+           montre tout ca en direct. Il ne reste que le TOTAL, dans l'entete. */
+        const attendu = [nombre(D.TOTAL_FICHES)]
         const manque = attendu.filter((x) => !m.texte.replace(/[\s  ]/g, ' ').includes(x))
         dire(manque.length === 0, `${t} : la vitrine annonce le stock réel ${attendu.join(' et ')}${manque.length ? ' · manque ' + manque.join(',') : ''}`)
+        /* Abidjan a longtemps ete annonce et vide. Il est desormais rempli
+           par le moteur. La REGLE qui compte n'est pas « Abidjan est bientot
+           dispo » mais « aucune ville n'est annoncee sans stock ». */
+        const villesVides = D.VILLES.filter(
+          (v) => !D.METIERS.some((mm) => D.stock(mm.cle, v.cle) >= D.MINIMUM)
+        )
         dire(
-          m.texte.includes('Abidjan') && /bientôt/i.test(m.texte),
-          `${t} : Abidjan est annoncé comme bientôt disponible`
+          villesVides.every((v) => !m.texte.includes(v.nom) || /bientôt/i.test(m.texte)),
+          `${t} : aucune ville n'est annoncée sans stock${
+            villesVides.length ? ' · vides : ' + villesVides.map((v) => v.cle).join(',') : ''
+          }`
         )
         dire(
           !/\b(lead|leads|scoring|enrichissement)\b/i.test(m.texte),
@@ -373,7 +381,8 @@ const totalAffiche = (page) =>
   let t = await totalAffiche(page)
   dire(t === '1000', `calcul A · 10 fiches sans option = 1 000 F (lu : ${t})`)
 
-  /* B · 50 fiches, numéro testé + message : (100+150+50) x 50 = 15 000, -10% = 13 500 */
+  /* B · 50 fiches, numero teste + message. Le bareme change (plafond a 250 F
+     par fiche depuis le 2026-08-04) : on CALCULE, on ne recopie pas. */
   await poser(page, 50)
   await attendre(150)
   await cliquerTexte(page, 'button', 'Continuer')
@@ -381,12 +390,15 @@ const totalAffiche = (page) =>
   await cocher(page, ['Le numéro est testé', 'Le message déjà écrit'])
   await attendre(250)
   t = await totalAffiche(page)
-  dire(t === '13500', `calcul B · 50 fiches, testé + message = 13 500 F (lu : ${t})`)
+  const attB = String(PX.calcul(50, { teste: 1, message: 1 }).total)
+  dire(t === attB, `calcul B · 50 fiches, testé + message = ${attB} F (lu : ${t})`)
 
   /* C · tout le stock de couture a Cotonou, les quatre options.
      Le nombre vient de la base : il change chaque nuit, le calcul non. */
   const maxCouture = D.stock('couture', 'cotonou')
-  const attenduC = String(Math.round(500 * maxCouture * (maxCouture >= 500 ? 0.7 : maxCouture >= 200 ? 0.8 : maxCouture >= 50 ? 0.9 : 1)))
+  const attenduC = String(
+    PX.calcul(maxCouture, { teste: 1, sansSite: 1, dirigeant: 1, message: 1 }).total
+  )
   await cocher(page, ["Il n'a rien en ligne", 'Le nom du dirigeant'])
   await cliquerTexte(page, 'button', 'Revenir')
   await attendre(250)
@@ -459,25 +471,13 @@ const totalAffiche = (page) =>
   await ouvrir(page, base, '#/')
   await attendre(200)
   const vitrineTexte = await page.evaluate(() => document.body.innerText)
-  /* On ne fige pas un nom : le releve peut grandir. Ce qui compte, c'est que
-     le commerce affiche fasse partie des fiches REELLEMENT relevees, jamais
-     d'un exemple invente. */
-  const { FICHES } = D
-  const montree = FICHES.find((f) => vitrineTexte.includes(f.nom))
-  dire(
-    !!montree,
-    `la fiche d'exemple porte un vrai commerce relevé${montree ? ` (${montree.nom})` : ''}`
-  )
-  dire(
-    !!montree && vitrineTexte.includes(montree.localite),
-    `sa localité relevée est affichée${montree ? ` (${montree.localite})` : ''}`
-  )
-  dire(
-    /••/.test(vitrineTexte),
-    `le numéro de la fiche d'exemple est partiellement masqué sur la vitrine`
-  )
+  /* Les vraies fiches et leur masquage se testent desormais dans
+     `_qc_generateur.js` : elles vivent dans le generateur, plus sur la
+     vitrine, qui a ete raccourcie. */
   /* ------------------------ 5. la commande complète, jusqu'au paiement ---- */
   await jusquAuVolume(page, base, M('couture'), 'Cotonou et ses environs')
+  const attenduPaiement = PX.fcfa(PX.calcul(24, { teste: 1, message: 1 }).total)
+    .replace(/[\s  ]+/g, ' ')
   await poser(page, 24)
   await attendre(150)
   await cliquerTexte(page, 'button', 'Continuer') /* → suppléments */
@@ -528,7 +528,9 @@ const totalAffiche = (page) =>
   await cliquerTexte(page, 'button', 'Envoyer ma commande sur WhatsApp')
   await attendre(500)
 
-  const paiement = await page.evaluate(() => {
+  /* ⚠️ `page.evaluate` s'execute dans le NAVIGATEUR : une variable de Node
+     n'y existe pas. Le montant attendu se passe en argument. */
+  const paiement = await page.evaluate((attenduPaiement) => {
     const t = document.body.innerText
     /* `fcfa()` compose en typographie francaise : espace FINE INSECABLE (U+202F)
        entre les milliers, espace INSECABLE (U+00A0) avant le F. C'est correct, et
@@ -538,7 +540,7 @@ const totalAffiche = (page) =>
     const plat = t.replace(/[\s  ]+/g, ' ')
     return {
       code: (t.match(/PISTE-[A-Z0-9]{4}/) || [''])[0],
-      montant: /7 200 F/.test(plat),
+      montant: plat.includes(attenduPaiement),
       rebours: /Il vous reste/.test(plat) && /\d+ h \d\d min/.test(plat),
       mailEtWhatsapp: /Surveillez votre boîte mail ET votre WhatsApp/.test(t),
       expediteur: /Payez bien depuis le numéro que vous avez donné/.test(t),
@@ -548,9 +550,9 @@ const totalAffiche = (page) =>
       pasDeTogoNiCI: !/(Togo|Côte d'Ivoire)/.test(t),
       vingtQuatre: /24 heures/.test(plat),
     }
-  })
+  }, attenduPaiement)
   dire(/^PISTE-[A-Z0-9]{4}$/.test(paiement.code), `le code de commande est au format PISTE-XXXX (${paiement.code})`)
-  dire(paiement.montant, `l'écran de paiement affiche le montant exact (7 200 F)`)
+  dire(paiement.montant, `l'écran de paiement affiche le montant exact (${attenduPaiement})`)
   dire(paiement.rebours, `le compte à rebours de 24 heures est affiché`)
   dire(paiement.mailEtWhatsapp, `« surveillez votre boîte mail ET votre WhatsApp » est dit`)
   dire(paiement.expediteur, `l'acheteur est rappelé de payer depuis le numéro déclaré`)

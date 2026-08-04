@@ -8,11 +8,17 @@
 
 export const BASE = 100
 
+/* ⚠️ PLAFOND · une fiche coûte entre 100 F et 250 F, jamais plus (Mongazi,
+   2026-08-04). Les quatre suppléments réunis valent donc exactement 150 F :
+   60 + 40 + 30 + 20. Si un supplément change de prix, la somme doit rester
+   à 150, sinon le plafond saute sans que personne s'en aperçoive. */
+export const PLAFOND = 250
+
 export const SUPPLEMENTS = [
   {
     cle: 'teste',
     court: "le numéro testé",
-    prix: 150,
+    prix: 60,
     nom: 'Le numéro est testé',
     resume: 'La ligne sonne, et le compte WhatsApp existe.',
     detail:
@@ -21,7 +27,7 @@ export const SUPPLEMENTS = [
   {
     cle: 'sansSite',
     court: "ceux qui n'ont rien en ligne",
-    prix: 100,
+    prix: 40,
     nom: "Il n'a rien en ligne",
     resume: 'Ce commerce n\'a ni site, ni page qui tourne.',
     detail:
@@ -30,7 +36,7 @@ export const SUPPLEMENTS = [
   {
     cle: 'dirigeant',
     court: "le nom du dirigeant",
-    prix: 100,
+    prix: 30,
     nom: 'Le nom du dirigeant',
     resume: 'Pour dire son nom au lieu de dire « bonjour ».',
     detail:
@@ -39,7 +45,7 @@ export const SUPPLEMENTS = [
   {
     cle: 'message',
     court: "le message déjà écrit",
-    prix: 50,
+    prix: 20,
     nom: 'Le message déjà écrit',
     resume: 'Rédigé pour ce commerce, à partir de ce que vous vendez.',
     detail:
@@ -68,6 +74,10 @@ export function prochainPalier(n) {
 
   { lignes, unitaire, sousTotal, taux, remise, total, parFiche }
 */
+/* Le contrôle du plafond, fait ici et pas dans un commentaire : une règle qui
+   n'est vérifiée nulle part n'est pas une règle. */
+export const UNITAIRE_MAX = BASE + SUPPLEMENTS.reduce((s, x) => s + x.prix, 0)
+
 export function calcul(nombre, options = {}) {
   const n = Math.max(0, Math.round(nombre || 0))
   const choisis = SUPPLEMENTS.filter((s) => options[s.cle])

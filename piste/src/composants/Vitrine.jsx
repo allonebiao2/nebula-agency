@@ -13,7 +13,7 @@ import {
   VILLES,
   ficheExemple,
 } from '../donnees.js'
-import { BASE, SUPPLEMENTS, PALIERS, calcul, fcfa } from '../prix.js'
+import { BASE, SUPPLEMENTS, PALIERS, calcul, fcfa, nombre as nombreJoli } from '../prix.js'
 import FicheExemple from './FicheExemple.jsx'
 import Generateur from './Generateur.jsx'
 import Relief from './Relief.jsx'
@@ -26,13 +26,24 @@ const OFFRE_EXEMPLE =
 
 /* ------------------------------------------------------------------ héros - */
 
-function Heros({ aller }) {
+/*
+  L'ENTÊTE · courte, volontairement.
+
+  Mongazi, le 2026-08-04 : « c'est trop long la vitrine, trop d'informations,
+  montrons directement le générateur ». Une page de vente qui explique avant de
+  laisser essayer, c'est une page qu'on quitte. L'outil EST l'argument : on
+  arrive dessus, on règle, on voit un prix et de vraies fiches.
+
+  Il reste donc une promesse en une phrase, la scène 3D à côté, et c'est tout.
+  Ce qui rassure (la preuve, la garantie) est passé SOUS le générateur, pour
+  ceux qui descendent.
+*/
+function Entete() {
   return (
-    <Section fond="encre" grain interieur="pt-6 pb-9 sm:pt-9 sm:pb-24">
+    <Section fond="encre" grain interieur="pt-6 pb-8 sm:pt-8 sm:pb-10">
       <div className="flex items-center justify-between gap-4">
         <p className="font-display text-[1.05rem] font-bold tracking-tight">
-          PISTE{' '}
-          <span className="font-normal text-sable">by NEBULA</span>
+          PISTE <span className="font-normal text-sable">by NEBULA</span>
         </p>
         <a
           href={`https://wa.me/${NEBULA_WHATSAPP}`}
@@ -44,106 +55,39 @@ function Heros({ aller }) {
         </a>
       </div>
 
-      <div className="mt-7 grid gap-10 sm:mt-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-8">
+      <div className="mt-6 grid items-center gap-6 sm:mt-8 lg:grid-cols-[1.1fr_0.9fr]">
         <div>
-          <Revele>
-            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.24em] text-braise">
-              Bénin · Togo
-            </p>
-          </Revele>
-          <Revele d={80}>
-            <h1 className="mt-3 text-[clamp(2.15rem,8.6vw,4.35rem)] sm:mt-4">
-              Des commerçants{' '}
-              <span className="hidden sm:inline">
-                <br />
-              </span>
-              à qui parler{' '}
-              <span className="hidden sm:inline">
-                <br />
-              </span>
-              <span className="text-braise">demain matin.</span>
-            </h1>
-          </Revele>
-          <Revele d={180}>
-            <p className="mt-4 max-w-[34rem] text-[1rem] leading-relaxed text-sable sm:mt-6 sm:text-[1.15rem]">
-              Vous dites qui vous cherchez. On vous rend un carnet de commerces
-              réels : le nom, le quartier, le numéro au bon format, et le message
-              déjà écrit pour chacun.
-              <span className="hidden sm:inline">
-                {' '}Vous ouvrez sur votre téléphone, vous appuyez, la
-                conversation démarre.
-              </span>
-            </p>
-          </Revele>
-          <Revele d={260} className="mt-6 flex flex-wrap gap-3 sm:mt-8">
-            <Bouton ton="pleinClair" href="#generateur">
-              Composer ma commande
-            </Bouton>
-            {/* ⚠️ On masque le CONTENEUR : `hidden` posé sur le bouton perdrait
-                contre le `inline-flex` que le composant applique déjà. */}
-            <span className="hidden sm:block">
-              <Bouton ton="contourSombre" href="#fiche">
-                Voir une vraie fiche
-              </Bouton>
-            </span>
-          </Revele>
-          <Revele d={340} className="hidden sm:block">
-            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-[0.88rem] text-sable">
-              {[
-                `Minimum ${MINIMUM} fiches`,
-                `À partir de ${fcfa(BASE)} la fiche`,
-                'Livré sous 24 heures',
-              ].map((x) => (
-                <li key={x} className="flex items-center gap-2">
-                  <Puce className="h-4 w-4 text-braise" />
-                  {x}
-                </li>
-              ))}
-            </ul>
-          </Revele>
+          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-braise">
+            Bénin · Togo · Côte d'Ivoire
+          </p>
+          <h1 className="mt-3 text-[clamp(2rem,7.6vw,3.4rem)]">
+            Des commerçants à qui parler{' '}
+            <span className="text-braise">demain matin.</span>
+          </h1>
+          <p className="mt-4 max-w-[36rem] text-[0.98rem] leading-relaxed text-sable sm:text-[1.08rem]">
+            Dites qui vous cherchez, le prix s'affiche, et vous voyez de vraies fiches avant
+            de payer.
+          </p>
+          <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-[0.85rem] text-sable">
+            {[
+              `${nombreJoli(TOTAL_FICHES)} commerces relevés`,
+              `À partir de ${fcfa(BASE)} la fiche`,
+              'Livré sous 24 heures',
+            ].map((x) => (
+              <li key={x} className="flex items-center gap-2">
+                <Puce className="h-4 w-4 text-braise" />
+                {x}
+              </li>
+            ))}
+          </ul>
         </div>
 
-        {/* La scène 3D. Elle s'éteint toute seule sur appareil modeste et
-            sous `prefers-reduced-motion` : voir Relief.jsx. */}
-        <div className="hidden text-braise sm:block">
+        {/* La scène 3D. Elle s'éteint seule sur appareil modeste. */}
+        <div className="hidden text-braise lg:block">
           <Relief />
-          <p className="mt-1 text-center text-[0.8rem] text-sable">
-            On relève la trace, on la suit, on arrive à la porte.
-          </p>
         </div>
       </div>
     </Section>
-  )
-}
-
-/* ------------------------------------------------------------------ ruban - */
-
-function Ruban() {
-  const mots = [
-    `${TOTAL_FICHES} commerces relevés le ${DATE_RELEVE}`,
-    'Bénin et Togo',
-    'toute fiche injoignable est remplacée',
-    '90 jours pour vous seul',
-    'livré sous 24 heures',
-  ]
-  return (
-    <div className="overflow-hidden bg-brique py-3 text-creme select-none" aria-hidden="true">
-      <div className="ruban">
-        {[0, 1].map((k) => (
-          <div key={k} className="flex shrink-0 items-center">
-            {mots.map((m) => (
-              <span
-                key={m}
-                className="flex items-center gap-4 whitespace-nowrap px-4 text-[0.82rem] font-semibold uppercase tracking-[0.14em]"
-              >
-                {m}
-                <span className="text-creme/55">·</span>
-              </span>
-            ))}
-          </div>
-        ))}
-      </div>
-    </div>
   )
 }
 
@@ -170,29 +114,6 @@ const RECU = [
   },
 ]
 
-function CeQueVousRecevez() {
-  return (
-    <Section fond="papier" interieur="py-20 sm:py-28">
-      <Titre sur="Ce que vous recevez">
-        Pas un fichier.
-        <br />
-        Un carnet de travail.
-      </Titre>
-      <div className="relative mt-12 grid gap-8 sm:gap-10 lg:grid-cols-3">
-        {RECU.map((r, i) => (
-          <Revele key={r.n} d={i * 120} className="relative">
-            <div className="flex items-baseline gap-3">
-              <Chiffre className="text-[2.6rem] text-brique/25">{r.n}</Chiffre>
-              <h3 className="text-[1.35rem] leading-tight">{r.titre}</h3>
-            </div>
-            <p className="mt-3 text-[0.98rem] leading-relaxed text-sourd">{r.texte}</p>
-          </Revele>
-        ))}
-      </div>
-    </Section>
-  )
-}
-
 /* ------------------------------------------------------------------ preuve */
 
 function Preuve({ aller }) {
@@ -206,7 +127,7 @@ function Preuve({ aller }) {
             Comptez les points.
           </Titre>
           <p className="mt-6 max-w-[32rem] text-[1.02rem] leading-relaxed text-sable">
-            Le {DATE_RELEVE}, {TOTAL_FICHES} commerces du Bénin et du Togo ont été
+            Le {DATE_RELEVE}, {nombreJoli(TOTAL_FICHES)} commerces du Bénin, du Togo et de Côte d'Ivoire ont été
             relevés et rendus dans ce format exact, en une heure. PISTE, c'est cette
             heure automatisée, et vendue.
           </p>
@@ -248,185 +169,10 @@ function Preuve({ aller }) {
         <div>
           <Semis repartition={REPARTITION} total={TOTAL_FICHES} />
           <p className="mt-4 text-center text-[0.8rem] text-sable">
-            17 colonnes, 11 lignes. Un point par commerce relevé.
+            {Math.max(1, Math.ceil(TOTAL_FICHES / (17 * 13))) === 1
+              ? 'Un point par commerce relevé.'
+              : `Un point pour ${Math.ceil(TOTAL_FICHES / (17 * 13))} commerces relevés.`}
           </p>
-        </div>
-      </div>
-    </Section>
-  )
-}
-
-/* -------------------------------------------------------------- la fiche - */
-
-function LaFiche() {
-  const [metier, setMetier] = useState('couture')
-  const fiche = ficheExemple(metier, metier === 'patisserie' ? 'cotonou' : 'lome')
-  const dispos = METIERS.filter((m) => !m.horsStock)
-
-  return (
-    <Section fond="papier2" id="fiche" interieur="py-20 sm:py-28">
-      <div className="grid gap-12 lg:grid-cols-[1fr_0.95fr] lg:items-start lg:gap-16">
-        <div>
-          <Titre sur="Avant de payer">
-            Voici exactement
-            <br />
-            ce que vous recevez.
-          </Titre>
-          <p className="mt-6 text-[1.02rem] leading-relaxed text-sourd">
-            Pas une maquette. Un commerce réel, relevé le {DATE_RELEVE}, affiché avec
-            les quatre informations en plus déjà cochées. Choisissez un métier, la
-            fiche change.
-          </p>
-
-          <div className="mt-6 flex flex-wrap gap-2">
-            {dispos.map((m) => (
-              <button
-                key={m.cle}
-                type="button"
-                onClick={() => setMetier(m.cle)}
-                aria-pressed={metier === m.cle}
-                className={`min-h-[44px] rounded-full border px-4 text-[0.9rem] font-semibold transition-colors ${
-                  metier === m.cle
-                    ? 'border-brique bg-brique text-creme'
-                    : 'border-trait bg-creme text-sourd hover:border-sourd'
-                }`}
-              >
-                {m.court}
-              </button>
-            ))}
-          </div>
-
-          <div className="mt-8 rounded-2xl border border-trait bg-creme p-5">
-            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-sourd">
-              Ce que vend l'acheteur, dans cet exemple
-            </p>
-            <p className="mt-2 text-[0.98rem] leading-relaxed">« {OFFRE_EXEMPLE} »</p>
-            <p className="mt-2 text-[0.82rem] text-sourd">
-              C'est la phrase que vous écrivez à la sixième question. C'est elle qui
-              fabrique le message de chaque fiche.
-            </p>
-          </div>
-        </div>
-
-        <FicheExemple
-          key={metier}
-          fiche={fiche}
-          offre={OFFRE_EXEMPLE}
-          options={{ teste: true, sansSite: true, dirigeant: true, message: true }}
-        />
-      </div>
-    </Section>
-  )
-}
-
-/* ---------------------------------------------------------------- le prix - */
-
-function Prix({ aller }) {
-  const demo = calcul(24, { teste: true, message: true })
-  return (
-    <Section fond="papier" interieur="py-20 sm:py-28">
-      <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
-        <div>
-          <Titre sur="Le prix">
-            Toutes les fiches
-            <br />
-            au même prix de base.
-          </Titre>
-          <p className="mt-6 text-[1.02rem] leading-relaxed text-sourd">
-            {fcfa(BASE)} la fiche : le nom du commerce, son métier, sa ville, son
-            quartier, son numéro au bon format. Ce sont les informations en plus qui
-            font monter le prix, et c'est vous qui les choisissez.
-          </p>
-
-          <div className="mt-8 space-y-2.5">
-            <div className="flex items-baseline justify-between gap-4 rounded-2xl border border-encre/15 bg-creme px-4 py-3.5">
-              <div>
-                <p className="font-semibold">La fiche de base</p>
-                <p className="text-[0.85rem] text-sourd">
-                  Nom, métier, ville, quartier, numéro au bon format
-                </p>
-              </div>
-              <Chiffre className="shrink-0 text-[1.25rem]">{fcfa(BASE)}</Chiffre>
-            </div>
-            {SUPPLEMENTS.map((s, i) => (
-              <Revele
-                key={s.cle}
-                d={i * 90}
-                className="flex items-baseline justify-between gap-4 rounded-2xl border border-trait bg-creme/60 px-4 py-3.5"
-              >
-                <div>
-                  <p className="font-semibold">{s.nom}</p>
-                  <p className="text-[0.85rem] text-sourd">{s.resume}</p>
-                </div>
-                <Chiffre className="shrink-0 text-[1.15rem] text-brique">
-                  + {fcfa(s.prix)}
-                </Chiffre>
-              </Revele>
-            ))}
-          </div>
-
-          <p className="mt-5 text-[0.95rem] text-sourd">
-            Une fiche va donc de {fcfa(100)} à {fcfa(500)}.
-          </p>
-        </div>
-
-        <div>
-          <div className="rounded-2xl border border-encre/15 bg-encre p-6 text-papier sm:p-7">
-            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-braise">
-              Un exemple, calculé devant vous
-            </p>
-            <p className="mt-3 text-[0.95rem] text-sable">
-              24 fiches, avec le numéro testé et le message déjà écrit.
-            </p>
-            <dl className="mt-5 space-y-2 text-[0.95rem]">
-              {demo.lignes.map((l) => (
-                <div key={l.cle} className="flex items-baseline justify-between gap-3">
-                  <dt className="text-sable">
-                    {l.nom}{' '}
-                    <span className="text-sable/70">
-                      {fcfa(l.unite)} × {l.n}
-                    </span>
-                  </dt>
-                  <dd className="tabular-nums">{fcfa(l.montant)}</dd>
-                </div>
-              ))}
-              <div className="flex items-baseline justify-between gap-3 border-t border-traitsombre pt-3">
-                <dt className="text-sable">Remise au volume</dt>
-                <dd className="tabular-nums text-sable">
-                  {demo.taux ? '- ' + fcfa(demo.remise) : 'aucune sous 50 fiches'}
-                </dd>
-              </div>
-              <div className="flex items-baseline justify-between gap-3 border-t border-traitsombre pt-3">
-                <dt className="font-semibold">À payer</dt>
-                <dd>
-                  <Chiffre className="text-[1.6rem] text-braise">{fcfa(demo.total)}</Chiffre>
-                </dd>
-              </div>
-            </dl>
-            <p className="mt-4 text-[0.85rem] text-sable">
-              Soit {fcfa(demo.parFiche)} la fiche. Jamais un total qui tombe du ciel :
-              le calcul reste affiché pendant que vous cochez.
-            </p>
-          </div>
-
-          <div className="mt-6 rounded-2xl border border-trait bg-creme p-5">
-            <p className="font-semibold">Plus vous en prenez, moins la fiche coûte</p>
-            <ul className="mt-3 flex flex-wrap gap-2">
-              {[...PALIERS].reverse().map((p) => (
-                <li
-                  key={p.seuil}
-                  className="rounded-full border border-trait px-3.5 py-1.5 text-[0.88rem]"
-                >
-                  <b className="font-semibold">{p.seuil} fiches</b> :{' '}
-                  <span className="text-brique">- {Math.round(p.taux * 100)} %</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <Bouton className="mt-6 w-full sm:w-auto" onClick={() => aller('#/commander')}>
-            Composer ma commande
-          </Bouton>
         </div>
       </div>
     </Section>
@@ -528,194 +274,61 @@ function Engagements() {
   )
 }
 
-/* ------------------------------------------------------------------ stock - */
-
-function Stock({ aller }) {
-  const metiers = METIERS.filter((m) => !m.horsStock)
-  return (
-    <Section fond="papier" interieur="py-20 sm:py-28">
-      <Titre sur="Le stock, aujourd'hui">
-        Ce qui existe vraiment,
-        <br />
-        et rien d'autre.
-      </Titre>
-      <p className="mt-6 max-w-[42rem] text-[1.02rem] leading-relaxed text-sourd">
-        Ces nombres sont ceux du relevé du {DATE_RELEVE}. Ils descendent au fur et à
-        mesure des ventes, parce qu'une fiche vendue est réservée 90 jours à son
-        acheteur.
-      </p>
-
-      <div className="mt-10 overflow-x-auto">
-        <table className="w-full min-w-[34rem] border-collapse text-left">
-          <caption className="sr-only">
-            Nombre de fiches disponibles par métier et par ville
-          </caption>
-          <thead>
-            <tr className="border-b border-encre/20">
-              <th scope="col" className="py-3 pr-4 text-[0.8rem] font-semibold uppercase tracking-[0.12em] text-sourd">
-                Ville
-              </th>
-              {metiers.map((m) => (
-                <th
-                  key={m.cle}
-                  scope="col"
-                  className="py-3 px-2 text-right text-[0.8rem] font-semibold uppercase tracking-[0.12em] text-sourd"
-                >
-                  {m.court}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {VILLES.map((v) => (
-              <tr key={v.cle} className="border-b border-trait align-top">
-                <th scope="row" className="py-4 pr-4 font-normal">
-                  <span className="block font-semibold">{v.nom}</span>
-                  <span className="block text-[0.82rem] text-sourd">
-                    {v.pays} · {v.detail}
-                  </span>
-                </th>
-                {metiers.map((m) => {
-                  const n = STOCK[m.cle + '|' + v.cle] || 0
-                  return (
-                    <td key={m.cle} className="py-4 px-2 text-right">
-                      {n >= MINIMUM ? (
-                        <Chiffre className="text-[1.3rem] text-vert">{n}</Chiffre>
-                      ) : n > 0 ? (
-                        <span className="text-[0.85rem] text-sourd">
-                          <Chiffre className="text-[1.05rem]">{n}</Chiffre>
-                          <span className="block">sous le minimum</span>
-                        </span>
-                      ) : (
-                        <span className="text-[0.85rem] text-sourd">
-                          {v.bientot ? 'bientôt' : 'rien'}
-                        </span>
-                      )}
-                    </td>
-                  )
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="mt-8 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-2xl border-2 border-brique/30 bg-creme p-5">
-          <p className="font-semibold">Abidjan : rien pour l'instant.</p>
-          <p className="mt-2 text-[0.94rem] leading-relaxed text-sourd">
-            Aucune source ivoirienne n'a encore été relevée. On préfère l'écrire noir
-            sur blanc plutôt que vous laisser commander du vide. Choisissez quand même
-            Abidjan dans le questionnaire : on enregistre votre demande, et c'est elle
-            qui décide de l'ordre du travail.
-          </p>
-        </div>
-        <div className="rounded-2xl border border-trait bg-creme p-5">
-          <p className="font-semibold">Votre métier n'est pas dans la liste ?</p>
-          <p className="mt-2 text-[0.94rem] leading-relaxed text-sourd">
-            Coiffure, quincaillerie, pharmacie, garage, école : rien n'est encore relevé
-            pour ces métiers. Dites-le dans le questionnaire, à la première question. On
-            vous prévient le jour où c'est prêt, sans rien vous promettre entretemps.
-          </p>
-          <Bouton ton="contour" className="mt-4" onClick={() => aller('#/commander')}>
-            Demander un métier
-          </Bouton>
-        </div>
-      </div>
-
-      <Bouton className="mt-10" onClick={() => aller('#/commander')}>
-        Composer ma commande
-      </Bouton>
-    </Section>
-  )
-}
-
-/* -------------------------------------------------------------- fin + pied */
-
-function Fin({ aller }) {
-  return (
-    <>
-      <Section fond="nuit" grain interieur="py-20 text-center sm:py-28">
-        <Revele>
-          <h2 className="mx-auto max-w-[24rem] text-[clamp(2.2rem,8vw,3.8rem)]">
-            Six questions.
-            <br />
-            <span className="text-braise">Le prix devant vous.</span>
-          </h2>
-        </Revele>
-        <Revele d={120}>
-          <p className="mx-auto mt-6 max-w-[34rem] text-[1.02rem] leading-relaxed text-sable">
-            Vous composez, vous voyez le calcul se faire, vous voyez la fiche que vous
-            allez recevoir. Vous ne payez qu'après. Ça prend deux minutes.
-          </p>
-        </Revele>
-        <Revele d={200} className="mt-9 flex flex-wrap justify-center gap-3">
-          <Bouton ton="pleinClair" onClick={() => aller('#/commander')}>
-            Composer ma commande
-          </Bouton>
-          <Bouton
-            ton="contourSombre"
-            href={`https://wa.me/${NEBULA_WHATSAPP}`}
-            target="_blank"
-            rel="noopener"
-          >
-            Parler à quelqu'un
-          </Bouton>
-        </Revele>
-      </Section>
-
-      <footer className="bg-nuit pb-12 text-sable">
-        <div className="mx-auto w-full max-w-[68rem] border-t border-traitsombre px-5 pt-10 sm:px-8">
-          <div className="flex flex-wrap items-start justify-between gap-8">
-            <div>
-              <p className="font-display text-[1.1rem] font-bold text-papier">
-                PISTE <span className="font-normal text-sable">by NEBULA</span>
-              </p>
-              <p className="mt-2 max-w-[26rem] text-[0.9rem] leading-relaxed">
-                NEBULA Agency · Cotonou, Bénin. On conçoit l'outil métier de chaque
-                secteur. PISTE est le nôtre : trouver à qui parler.
-              </p>
-            </div>
-            <div className="text-[0.9rem]">
-              <button
-                type="button"
-                onClick={() => aller('#/donnees')}
-                className="flex min-h-[44px] items-center font-semibold text-braise underline underline-offset-4"
-              >
-                D'où viennent nos données
-              </button>
-              <a
-                className="flex min-h-[44px] items-center underline underline-offset-4 hover:text-braise"
-                href={`https://wa.me/${NEBULA_WHATSAPP}`}
-                target="_blank"
-                rel="noopener"
-              >
-                WhatsApp {NEBULA_WHATSAPP_JOLI}
-              </a>
-              <a
-                className="flex min-h-[44px] items-center underline underline-offset-4 hover:text-braise"
-                href="https://www.nebula-agency.online"
-                target="_blank"
-                rel="noopener"
-              >
-                nebula-agency.online
-              </a>
-            </div>
-          </div>
-          <p className="mt-8 text-[0.82rem] leading-relaxed text-sable/75">
-            PISTE ne relève que des informations publiées publiquement par des
-            entreprises. Un commerce qui demande à sortir de la base en sort, et ne
-            revient dans aucune livraison : écrivez au numéro ci-dessus. Les carnets
-            partent de {EMAIL_ENVOI} : ajoutez cette adresse à vos contacts pour qu'elle
-            ne tombe pas dans vos courriers indésirables.
-          </p>
-        </div>
-      </footer>
-    </>
-  )
-}
-
 /* ------------------------------------------------------------------ barre - */
+
+/* Le pied de page. Il vivait dans une section de vente qu'on vient de retirer :
+   on le sort, parce qu'il porte le legal, le contact et l'origine des donnees. */
+function PiedDePage() {
+  return (
+    <footer className="bg-nuit pb-12 text-sable">
+      <div className="mx-auto w-full max-w-[68rem] border-t border-traitsombre px-5 pt-10 sm:px-8">
+        <div className="flex flex-wrap items-start justify-between gap-8">
+          <div>
+            <p className="font-display text-[1.1rem] font-bold text-papier">
+              PISTE <span className="font-normal text-sable">by NEBULA</span>
+            </p>
+            <p className="mt-2 max-w-[26rem] text-[0.9rem] leading-relaxed">
+              NEBULA Agency · Cotonou, Bénin. On conçoit l'outil métier de chaque
+              secteur. PISTE est le nôtre : trouver à qui parler.
+            </p>
+          </div>
+          <div className="text-[0.9rem]">
+            <button
+              type="button"
+              onClick={() => aller('#/donnees')}
+              className="flex min-h-[44px] items-center font-semibold text-braise underline underline-offset-4"
+            >
+              D'où viennent nos données
+            </button>
+            <a
+              className="flex min-h-[44px] items-center underline underline-offset-4 hover:text-braise"
+              href={`https://wa.me/${NEBULA_WHATSAPP}`}
+              target="_blank"
+              rel="noopener"
+            >
+              WhatsApp {NEBULA_WHATSAPP_JOLI}
+            </a>
+            <a
+              className="flex min-h-[44px] items-center underline underline-offset-4 hover:text-braise"
+              href="https://www.nebula-agency.online"
+              target="_blank"
+              rel="noopener"
+            >
+              nebula-agency.online
+            </a>
+          </div>
+        </div>
+        <p className="mt-8 text-[0.82rem] leading-relaxed text-sable/75">
+          PISTE ne relève que des informations publiées publiquement par des
+          entreprises. Un commerce qui demande à sortir de la base en sort, et ne
+          revient dans aucune livraison : écrivez au numéro ci-dessus. Les carnets
+          partent de {EMAIL_ENVOI} : ajoutez cette adresse à vos contacts pour qu'elle
+          ne tombe pas dans vos courriers indésirables.
+        </p>
+      </div>
+    </footer>
+  )
+}
 
 function BarreMobile({ gen }) {
   const [vue, setVue] = useState(false)
@@ -770,23 +383,20 @@ export default function Vitrine({ aller }) {
 
   return (
     <>
-      <Heros aller={aller} />
+      <Entete />
 
-      {/* Le générateur, juste sous le héros. Sur téléphone le héros est
-          raccourci pour que le haut du panneau dépasse : on VOIT qu'il y a un
-          outil dessous, on n'a pas à le deviner (décisions 47 et 48). */}
-      <Section fond="papier" interieur="pb-14 pt-8 sm:pb-20 sm:pt-12">
+      {/* L'OUTIL, tout de suite. C'est lui l'argument de vente. */}
+      <Section fond="papier" interieur="pb-12 pt-7 sm:pb-16 sm:pt-10">
         <Generateur aller={aller} onEtat={surEtat} />
       </Section>
 
-      <Ruban />
-      <CeQueVousRecevez />
+      {/* Ce qui rassure, en dessous, pour ceux qui descendent. Rien de plus :
+          quatre sections de vente lues par personne valent moins qu'une seule
+          qu'on lit. */}
       <Preuve aller={aller} />
-      <LaFiche />
-      <Prix aller={aller} />
       <Engagements />
-      <Stock aller={aller} />
-      <Fin aller={aller} />
+
+      <PiedDePage />
       <div className="h-20 lg:hidden" aria-hidden="true" />
       <BarreMobile gen={gen} />
     </>

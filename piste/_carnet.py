@@ -40,7 +40,12 @@ VILLES = {
     "lome": "Lomé",
     "togo-autres": "Autres villes du Togo",
 }
-PRIX = {"base": 100, "teste": 150, "sansSite": 100, "dirigeant": 100, "message": 50}
+# ⚠️ Doit rester identique a src/prix.js. Une fiche coute entre 100 F et 250 F,
+# jamais plus : les quatre supplements reunis valent exactement 150 F.
+PRIX = {"base": 100, "teste": 60, "sansSite": 40, "dirigeant": 30, "message": 20}
+assert PRIX["base"] + sum(v for k, v in PRIX.items() if k != "base") == 250, (
+    "le plafond de 250 F par fiche est casse"
+)
 PALIERS = [(500, 0.30), (200, 0.20), (50, 0.10)]
 
 
@@ -125,6 +130,95 @@ def deja_livrees(c):
     return pris
 
 
+def relances(c, jours=7):
+    """Les carnets livrés il y a `jours` jours ou plus, et jamais relancés.
+
+    POURQUOI CE MESSAGE EXISTE
+    Un acheteur content qui n'entend plus parler de vous ne recommande pas. Et
+    surtout : c'est la SEULE façon de savoir si les fiches ont vraiment servi.
+    C'est le chiffre qui dira si le barème tient et si la donnée est bonne.
+
+    Le message n'est pas générique : il lit les marques que le client a posées
+    dans son carnet et lui parle de SES résultats. « Vous avez marqué 4
+    rendez-vous » vaut cent fois « alors, ça s'est bien passé ? »."""
+    from datetime import datetime, timedelta, timezone
+
+    limite = datetime.now(timezone.utc) - timedelta(days=jours)
+    sortie = []
+    for r in c.execute(
+        """select k.jeton, k.reference, k.client, k.commande, k.cree_le,
+                  (select count(*) from piste.retours t where t.jeton = k.jeton) marques,
+                  (select count(*) from piste.retours t
+                    where t.jeton = k.jeton and t.marque = 'rdv') rdv,
+                  (select count(*) from piste.retours t
+                    where t.jeton = k.jeton and t.marque = 'vendu') vendu,
+                  (select count(*) from piste.retours t
+                    where t.jeton = k.jeton and t.marque = 'injoignable') injoignables
+           from piste.carnets k
+           where k.cree_le < %s
+           order by k.cree_le""",
+        (limite,),
+    ).fetchall():
+        sortie.append(r)
+    return sortie
+
+
+def texte_relance(r):
+    cl = r["client"] or {}
+    cmd = r["commande"] or {}
+    prenom = (cl.get("prenom") or "").strip() or "Bonjour"
+    n = cmd.get("n") or 0
+
+    lignes = [f"Bonjour {prenom},", ""]
+    if r["marques"]:
+        # On lui parle de SES chiffres. Il sait qu'on regarde, c'est écrit dans
+        # son carnet : il n'y a rien à cacher, et ça rend le message crédible.
+        bouts = []
+        if r["rdv"]:
+            bouts.append(f"{r['rdv']} rendez-vous")
+        if r["vendu"]:
+            bouts.append(f"{r['vendu']} vente" + ("s" if r["vendu"] > 1 else ""))
+        if bouts:
+            lignes.append(
+                f"Dans votre carnet {r['reference']}, vous avez marqué "
+                + " et ".join(bouts)
+                + ". Bravo."
+            )
+        else:
+            lignes.append(
+                f"J'ai vu que vous aviez commencé à travailler votre carnet {r['reference']}."
+            )
+        lignes.append("")
+        lignes.append("Une question simple : combien de ces commerces vous ont répondu ?")
+    else:
+        lignes.append(
+            f"Votre carnet {r['reference']} vous a été livré il y a une semaine, "
+            f"avec {n} fiches."
+        )
+        lignes.append("")
+        lignes.append(
+            "Vous avez eu le temps de vous en servir ? Si quelque chose bloque, "
+            "dites-le moi : c'est plus utile pour moi que si vous ne dites rien."
+        )
+    lignes.append("")
+    lignes.append(
+        "Votre réponse me sert vraiment : c'est comme ça que je choisis mieux "
+        "les fiches de la prochaine fois."
+    )
+    if r["injoignables"]:
+        lignes.append("")
+        lignes.append(
+            f"Vous avez signalé {r['injoignables']} fiche"
+            + ("s" if r["injoignables"] > 1 else "")
+            + " injoignable"
+            + ("s" if r["injoignables"] > 1 else "")
+            + ". Je vous les remplace, c'est prévu et c'est sans frais."
+        )
+    lignes.append("")
+    lignes.append("NEBULA Agency")
+    return "\n".join(lignes)
+
+
 def calcul(n, options):
     unitaire = PRIX["base"] + sum(PRIX[o] for o in options)
     sous = unitaire * n
@@ -147,9 +241,39 @@ def main():
     a.add_argument("--tel", default="")
     a.add_argument("--ref", default="")
     a.add_argument("--ecrire", action="store_true", help="écrit vraiment le carnet")
+    a.add_argument("--relances", action="store_true", help="les messages à J+7 à envoyer")
     o = a.parse_args()
 
     c = connexion()
+
+    if o.relances:
+        l = relances(c)
+        if not l:
+            print("\n  Aucun carnet livré depuis plus de 7 jours. Rien à relancer.")
+            return 0
+        print(f"\n  {len(l)} carnet(s) à relancer :\n")
+        for r in l:
+            cl = r["client"] or {}
+            wa = (cl.get("tel") or cl.get("whatsapp") or "").strip()
+            print("  " + "─" * 66)
+            print(f"  {r['reference']} · {cl.get('prenom','')} {cl.get('nom','')} · {wa or 'pas de numéro'}")
+            def _s(n):
+                return "s" if n > 1 else ""
+
+            print(
+                f"  {r['marques']} marque{_s(r['marques'])}"
+                f" · {r['rdv']} rendez-vous"
+                f" · {r['vendu']} vendu{_s(r['vendu'])}"
+                f" · {r['injoignables']} injoignable{_s(r['injoignables'])}"
+            )
+            if wa:
+                from urllib.parse import quote
+                print(f"  https://wa.me/{wa}?text={quote(texte_relance(r))}")
+            print()
+            print("  " + texte_relance(r).replace("\n", "\n"))
+            print()
+        return 0
+
     par = viviers(c)
     pris = deja_livrees(c)
 

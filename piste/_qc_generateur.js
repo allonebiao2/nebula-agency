@@ -31,6 +31,7 @@ const MIME = {
    quinze metiers de plus, et tous les controles qui l'avaient en dur ont
    casse d'un coup. On lit la source. */
 const D = await import('./src/donnees.js')
+const PX = await import('./src/prix.js')
 const M = (cle) => (D.METIERS.find((x) => x.cle === cle) || {}).nom || cle
 const V = (cle) => (D.VILLES.find((x) => x.cle === cle) || {}).nom || cle
 
@@ -165,11 +166,11 @@ const serveur = http.createServer((q, r) => {
 
   /* ------------------------------------------------------- 3. les trois fiches */
   const apercu = await page.evaluate(() => {
-    const c = [...document.querySelectorAll('.apercu-fiche')]
+    const c = [...document.querySelectorAll('.carte-fiche')]
     return {
       nb: c.length,
       masques: c.filter((x) => /••/.test(x.innerText)).length,
-      noms: c.map((x) => x.querySelector('p')?.innerText.trim()),
+      noms: c.map((x) => x.querySelector('.carte-nom')?.innerText.trim()),
     }
   })
   dire(apercu.nb === 3, `trois fiches d'aperçu sont montrées (${apercu.nb})`)
@@ -185,7 +186,7 @@ const serveur = http.createServer((q, r) => {
   /* elles changent quand la ville change */
   await clic(V('lome'))
   const apresLome = await page.evaluate(() =>
-    [...document.querySelectorAll('.apercu-fiche')].map((x) => x.querySelector('p')?.innerText.trim())
+    [...document.querySelectorAll('.carte-fiche')].map((x) => x.querySelector('.carte-nom')?.innerText.trim())
   )
   dire(
     apresLome.join('|') !== apercu.noms.join('|'),
@@ -213,8 +214,8 @@ const serveur = http.createServer((q, r) => {
 
   await clic('10')
   total = await lireTotal()
-  /* 10 fiches sans option : 100 x 10 = 1 000, aucune remise sous 50 */
-  dire(total === '1000', `10 fiches sans option = 1 000 F, sans remise (lu : ${total})`)
+  const attendu10 = String(PX.calcul(10, {}).total)
+  dire(total === attendu10, `10 fiches sans option = ${attendu10} F (lu : ${total})`)
 
   /* ------------------------------------------- 5. les suppléments et le message */
   await page.evaluate(() => {
@@ -225,8 +226,8 @@ const serveur = http.createServer((q, r) => {
   })
   await attendre(260)
   total = await lireTotal()
-  /* (100 + 150) x 10 = 2 500, aucune remise */
-  dire(total === '2500', `avec le numéro testé, 10 fiches = 2 500 F (lu : ${total})`)
+  const attendu10t = String(PX.calcul(10, { teste: 1 }).total)
+  dire(total === attendu10t, `avec le numéro testé, 10 fiches = ${attendu10t} F (lu : ${total})`)
   t = await texte()
   dire(/le numéro testé/.test(await phrase()), `la phrase dit maintenant l'option choisie`)
 
@@ -255,7 +256,7 @@ const serveur = http.createServer((q, r) => {
   })
   await attendre(2800)
   const messageEcrit = await page.evaluate(() =>
-    [...document.querySelectorAll('.apercu-fiche')].filter((x) =>
+    [...document.querySelectorAll('.carte-fiche')].filter((x) =>
       /assurance santé/.test(x.innerText)
     ).length
   )

@@ -4,6 +4,7 @@ import Questionnaire from './composants/Questionnaire.jsx'
 import Cockpit from './composants/Cockpit.jsx'
 import Origine from './composants/Origine.jsx'
 import Carnet from './composants/Carnet.jsx'
+import Recu from './composants/Recu.jsx'
 
 /*
   Trois écrans, une adresse. Le routage passe par le `#` : Cloudflare Pages sert
@@ -25,7 +26,7 @@ const ROUTES = {
    qui n'est JAMAIS envoyé au serveur. Le lien est donc privé par construction,
    sans compte ni mot de passe (décisions 24, 29 et 33). */
 export function lireJeton(h) {
-  const m = (h || '').match(/^#\/carnet\/([A-Za-z0-9_-]{8,})/)
+  const m = (h || '').match(/^#\/(?:carnet|recu)\/([A-Za-z0-9_-]{8,})/)
   return m ? m[1] : ''
 }
 
@@ -33,6 +34,7 @@ function lireRoute(h) {
   if (typeof window === 'undefined') return 'vitrine'
   if (!h || !h.startsWith('#/')) return null
   if (h.startsWith('#/carnet')) return 'carnet'
+  if (h.startsWith('#/recu')) return 'recu'
   return ROUTES[h.replace(/\/$/, '') || '#/'] || 'vitrine'
 }
 
@@ -67,6 +69,7 @@ export default function App() {
   }, [])
 
   if (route === 'carnet') return <Carnet jeton={lireJeton(hash)} aller={aller} />
+  if (route === 'recu') return <Recu jeton={lireJeton(hash)} aller={aller} />
   if (route === 'commander') return <Questionnaire aller={aller} />
   if (route === 'origine') return <Origine aller={aller} />
   if (route === 'cockpit') return <Cockpit aller={aller} />

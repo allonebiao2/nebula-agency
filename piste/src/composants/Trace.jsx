@@ -96,11 +96,23 @@ export function TracePiste({ repere = 5, className = '', hauteur = '' }) {
 export function Semis({ repartition, total }) {
   const ref = useRevele()
   const couleurs = ['bg-braise', 'bg-vertclair', 'bg-creme']
+
+  /* ⚠️ UN POINT PAR COMMERCE NE TIENT PAS. Le semis marchait avec 187
+     commerces. Le moteur en ramene des milliers, et la grille est devenue une
+     colonne de quinze ecrans de haut, sur un site dont on venait justement de
+     retirer la longueur inutile.
+
+     On garde l'idee (voir la masse, comparer les metiers) en fixant le NOMBRE
+     DE POINTS, pas l'echelle : 17 colonnes sur 13 lignes, et chaque point vaut
+     ce qu'il doit valoir. La legende le dit, elle ne le cache pas. */
+  const CASES = 17 * 13
+  const parPoint = Math.max(1, Math.ceil(total / CASES))
   const suite = []
   repartition.forEach((r, i) => {
-    for (let k = 0; k < r.n; k++) suite.push(i)
+    for (let k = 0; k < Math.round(r.n / parPoint); k++) suite.push(i)
   })
-  while (suite.length < total) suite.push(0)
+  while (suite.length < CASES) suite.push(0)
+  suite.length = CASES
 
   return (
     <div ref={ref} className="revele">
@@ -118,7 +130,7 @@ export function Semis({ repartition, total }) {
         ))}
       </div>
       <p className="sr-only">
-        {total} points, un par commerce relevé :{' '}
+        {total} commerces relevés :{' '}
         {repartition.map((r) => `${r.n} ${r.nom}`).join(', ')}.
       </p>
     </div>

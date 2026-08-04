@@ -341,7 +341,13 @@ export default function Carnet({ jeton, aller }) {
           )}
         </div>
 
-        <p className="mt-10 text-center text-[0.78rem] leading-relaxed text-sourd">
+        <div className="mt-9 flex justify-center">
+          <Bouton ton="contour" onClick={() => aller(`#/recu/${jeton}`)}>
+            Mon reçu
+          </Bouton>
+        </div>
+
+        <p className="mt-8 text-center text-[0.78rem] leading-relaxed text-sourd">
           Vos marques nous servent à mieux choisir vos prochaines fiches. On ne regarde que
           ça : ce que vous écrivez à un commerce ne nous regarde pas.
           <br />

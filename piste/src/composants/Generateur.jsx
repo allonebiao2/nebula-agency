@@ -163,13 +163,14 @@ function Interrupteur({ s, actif, onClick, n }) {
 function FicheApercu({ f, offre, avecMessage, retard }) {
   const m = METIERS.find((x) => x.cle === f.metier)
   const [ecrit, setEcrit] = useState('')
+  const carte = useRef(null)
   const message = useMemo(
     () => (avecMessage ? messagePourFiche(f, offre) : ''),
     [f, offre, avecMessage]
   )
 
-  /* Le message s'écrit lettre par lettre : c'est l'animation signature de
-     l'aperçu, et elle vient du métier. On s'arrête net si la fiche change. */
+  /* Le message s'écrit lettre par lettre : l'animation signature de l'aperçu,
+     et elle vient du métier. On s'arrête net si la fiche change. */
   useEffect(() => {
     if (!message) {
       setEcrit('')
@@ -190,26 +191,82 @@ function FicheApercu({ f, offre, avecMessage, retard }) {
     return () => clearInterval(t)
   }, [message])
 
+  /* La carte s'incline vers le pointeur. Uniquement sur écran large et à la
+     souris : au doigt, une carte qui bouge sous le pouce gêne au lieu d'aider. */
+  function incliner(e) {
+    const el = carte.current
+    if (!el || window.innerWidth < 1024) return
+    const r = el.getBoundingClientRect()
+    const x = (e.clientX - r.left) / r.width - 0.5
+    const y = (e.clientY - r.top) / r.height - 0.5
+    el.style.setProperty('--rx', `${(-y * 7).toFixed(2)}deg`)
+    el.style.setProperty('--ry', `${(x * 9).toFixed(2)}deg`)
+    el.style.setProperty('--lx', `${(x + 0.5) * 100}%`)
+    el.style.setProperty('--ly', `${(y + 0.5) * 100}%`)
+  }
+  function reposer() {
+    const el = carte.current
+    if (!el) return
+    el.style.setProperty('--rx', '0deg')
+    el.style.setProperty('--ry', '0deg')
+  }
+
+  const initiales = f.nom
+    .replace(/[^A-Za-zÀ-ÿ ]/g, ' ')
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((x) => x[0])
+    .join('')
+    .toUpperCase()
+
   return (
     <article
-      className="apercu-fiche rounded-2xl border border-trait bg-creme p-4"
+      ref={carte}
+      onPointerMove={incliner}
+      onPointerLeave={reposer}
+      className="carte-fiche"
       style={{ animationDelay: `${retard}ms` }}
     >
-      <p className="text-[0.95rem] font-semibold leading-tight text-encre">{f.nom}</p>
-      <p className="mt-1 text-[0.78rem] text-sourd">
-        {m?.singulier}
-        {(f.quartier || f.localite) && ' · '}
-        {[f.quartier, f.localite].filter(Boolean).join(', ')}
-      </p>
-      <p className="mt-2 font-mono text-[0.85rem] tabular-nums text-encre">
-        {numeroMasque(f.pays, f.numero)}
-      </p>
-      {avecMessage && (
-        <p className="mt-3 whitespace-pre-line rounded-xl bg-papier2/70 px-3 py-2 text-[0.78rem] leading-snug text-encre">
-          {ecrit}
-          <span className="curseur-ecrit" aria-hidden />
-        </p>
-      )}
+      <div className="carte-corps">
+        <span className="carte-brillance" aria-hidden />
+
+        {/* la bande du haut : le métier, comme sur une carte officielle */}
+        <div className="carte-bande">
+          <span className="carte-metier">{m?.singulier || 'commerce'}</span>
+          <span className="carte-pays">{f.pays === 'BJ' ? 'BJ' : f.pays === 'CI' ? 'CI' : 'TG'}</span>
+        </div>
+
+        <div className="carte-haut">
+          <span className="carte-initiales" aria-hidden>
+            {initiales || '?'}
+          </span>
+          <span className="min-w-0">
+            <span className="carte-nom">{f.nom}</span>
+            <span className="carte-lieu">
+              {[f.quartier, f.localite].filter(Boolean).join(' · ')}
+            </span>
+          </span>
+        </div>
+
+        <dl className="carte-champs">
+          <div>
+            <dt>Téléphone</dt>
+            <dd className="font-mono tabular-nums">{numeroMasque(f.pays, f.numero)}</dd>
+          </div>
+          <div>
+            <dt>Quartier</dt>
+            <dd>{f.quartier || f.localite}</dd>
+          </div>
+        </dl>
+
+        {avecMessage && (
+          <p className="carte-message">
+            {ecrit}
+            <span className="curseur-ecrit" aria-hidden />
+          </p>
+        )}
+      </div>
     </article>
   )
 }

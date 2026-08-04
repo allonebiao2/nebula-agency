@@ -531,6 +531,191 @@ input[type='range']::-moz-range-thumb {
   .relief-quadrillage { transition: none !important; opacity: 1 !important; transform: none !important; }
 }
 
+/* ═══════════ LA CARTE DE FICHE · une carte d'identite de commerce ═════════
+   Mongazi : « une belle presentation des fiches comme une sorte de fiche ou
+   carte d'identite ». C'est ce qu'on vend : elle doit se tenir comme un
+   document, pas comme un bloc de texte.
+
+   Le relief vient de `perspective` + `rotateY` : la carte s'incline vers le
+   pointeur, et un reflet la suit. Uniquement a la souris et sur grand ecran :
+   au doigt, une carte qui bouge sous le pouce gene au lieu d'aider. */
+
+.carte-fiche {
+  perspective: 800px;
+  animation: fiche 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  /* ⚠️ Un element de grille vaut `min-width: auto` par defaut : il refuse de
+     descendre sous la largeur de son contenu. Un nom d'annuaire a rallonge
+     poussait donc la carte a 447 px dans un ecran de 390, et toute la page
+     debordait sur le cote. Deux lignes reglent ca, et il faut les deux. */
+  min-width: 0;
+  max-width: 100%;
+}
+@keyframes fiche {
+  from { opacity: 0; transform: translate3d(0, 16px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+.carte-corps {
+  min-width: 0;
+  max-width: 100%;
+  --rx: 0deg;
+  --ry: 0deg;
+  --lx: 50%;
+  --ly: 0%;
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid var(--color-trait);
+  background:
+    linear-gradient(158deg, rgba(255, 255, 255, 0.9), rgba(255, 248, 242, 0.6)),
+    var(--color-creme);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 10px 26px -18px rgba(60, 30, 10, 0.45);
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  transform-style: preserve-3d;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease-out;
+}
+.carte-fiche:hover .carte-corps {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 20px 40px -20px rgba(60, 30, 10, 0.5);
+}
+/* le reflet qui suit le pointeur : c'est lui qui donne la matiere */
+.carte-brillance {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    22rem circle at var(--lx) var(--ly),
+    rgba(255, 255, 255, 0.75),
+    transparent 45%
+  );
+  transition: opacity 0.3s ease-out;
+}
+.carte-fiche:hover .carte-brillance { opacity: 1; }
+
+/* la bande du haut, comme l'en-tete d'une piece officielle */
+.carte-bande {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 13px;
+  background: var(--color-encre);
+  color: var(--color-sable);
+}
+.carte-metier {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.carte-pays {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--color-brique);
+  color: var(--color-creme);
+}
+
+.carte-haut {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 11px;
+  padding: 13px 13px 9px;
+}
+.carte-initiales {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: linear-gradient(150deg, var(--color-braise), var(--color-brique));
+  color: var(--color-creme);
+  font-weight: 800;
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 6px 14px -8px rgba(168, 64, 31, 0.9);
+}
+.carte-nom {
+  display: block;
+  font-size: 0.94rem;
+  font-weight: 650;
+  line-height: 1.2;
+  color: var(--color-encre);
+  /* un nom d'annuaire peut etre tres long : on coupe proprement */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.carte-lieu {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.74rem;
+  color: var(--color-sourd);
+}
+
+.carte-champs {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  padding: 0 13px 13px;
+  border-bottom: 1px dashed var(--color-trait);
+}
+.carte-champs dt {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-sourd);
+}
+.carte-champs dd {
+  margin-top: 2px;
+  font-size: 0.8rem;
+  color: var(--color-encre);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.carte-message {
+  margin: 11px 13px 13px;
+  padding: 9px 11px;
+  border-radius: 10px;
+  background: rgba(240, 133, 79, 0.09);
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--color-encre);
+  white-space: pre-line;
+}
+
+@media (max-width: 1023px) {
+  /* pas d'inclinaison au doigt : la carte reste posee */
+  .carte-corps { transform: none !important; }
+  .carte-brillance { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .carte-fiche { animation: none; }
+  .carte-corps { transform: none !important; transition: none; }
+}
+
 @media print {
   .sansimpression { display: none !important; }
+
+  /* Le recu part chez un comptable : encre noire sur papier blanc, aucun aplat
+     qui vide une cartouche, aucune ombre, aucune bordure arrondie inutile. */
+  .recu, .recu * {
+    background: #fff !important;
+    color: #000 !important;
+    box-shadow: none !important;
+  }
+  .recu { max-width: none; padding: 0; }
+  .recu article { border: none !important; border-radius: 0 !important; padding: 0 !important; }
+  .recu th, .recu td { border-color: #999 !important; }
+  .recu header, .recu section, .recu footer, .recu tr { border-color: #bbb !important; }
+  @page { margin: 16mm; }
 }

@@ -21,7 +21,7 @@ from pathlib import Path
 
 RACINE = Path(__file__).resolve().parent.parent
 DONNEES = RACINE / "piste/src/donnees.js"
-VILLES = ["cotonou", "benin-autres", "lome", "togo-autres", "abidjan"]
+VILLES = ["cotonou", "benin-autres", "lome", "togo-autres", "abidjan", "ci-autres"]
 
 # ⚠️ Les metiers viennent du MOTEUR, pas d'une liste recopiee ici. Le vivier
 # comptait neuf metiers pendant que le site n'en vendait que trois : personne ne
@@ -32,24 +32,48 @@ _m = _iu.module_from_spec(_spec)
 _spec.loader.exec_module(_m)
 METIERS = list(_m.METIERS)
 
+# Le PLURIEL qui se lit dans la phrase « Je cherche 50 ___ a Cotonou ».
+# Le nom du menu ne marche pas la : « 50 couture et mode a Cotonou » ne veut
+# rien dire. Une liste de menu et une phrase ne demandent pas les memes mots.
+PLURIELS = {
+    "couture": "ateliers de couture",
+    "restaurant": "restaurants et maquis",
+    "patisserie": "pâtisseries",
+    "beaute": "salons de beauté",
+    "alimentation": "commerces d'alimentation",
+    "quincaillerie": "quincailleries",
+    "auto": "garages et vendeurs de pièces",
+    "maison": "magasins de décoration",
+    "sante": "cabinets et pharmacies",
+    "ecole": "écoles et centres de formation",
+    "informatique": "cybercafés et commerces informatiques",
+    "imprimerie": "imprimeries et agences",
+    "hotel": "hôtels",
+    "immobilier": "agences immobilières",
+    "transport": "transporteurs et agences de voyage",
+    "services": "sociétés de services",
+    "artisan": "artisans",
+    "commerce": "commerces",
+}
+
 # Les exemples qui aident le client a reconnaitre son metier, en un coup d'oeil.
 EXEMPLES = {
-    "couture": "tailleurs, couturieres, brodeurs, pret-a-porter",
+    "couture": "tailleurs, couturières, brodeurs, prêt-à-porter",
     "restaurant": "restaurants, maquis, bars, buvettes, traiteurs",
     "patisserie": "patissiers, boulangers",
     "beaute": "salons de coiffure, instituts, spas",
-    "alimentation": "epiceries, supermarches, poissonneries",
-    "quincaillerie": "quincailleries, plomberie, vitrerie, batiment",
-    "auto": "garages, pieces detachees, vente de motos",
-    "maison": "ameublement, decoration, produits d'entretien",
-    "sante": "cabinets, pharmacies, veterinaires",
-    "ecole": "ecoles, centres de formation",
-    "informatique": "cybercafes, vente de materiel, telephonie",
+    "alimentation": "épiceries, supermarchés, poissonneries",
+    "quincaillerie": "quincailleries, plomberie, vitrerie, bâtiment",
+    "auto": "garages, pièces détachées, vente de motos",
+    "maison": "ameublement, décoration, produits d'entretien",
+    "sante": "cabinets, pharmacies, vétérinaires",
+    "ecole": "écoles, centres de formation",
+    "informatique": "cybercafés, vente de matériel, téléphonie",
     "imprimerie": "imprimeries, agences de communication",
-    "hotel": "hotels, auberges, tourisme",
+    "hotel": "hôtels, auberges, tourisme",
     "immobilier": "agences et promoteurs immobiliers",
     "transport": "transporteurs, courrier, agences de voyage",
-    "services": "nettoyage, gardiennage, comptabilite, assurance",
+    "services": "nettoyage, gardiennage, comptabilité, assurance",
     "artisan": "artisans, galeries d'art, articles de sport",
     "commerce": "import-export, negoce, commerces divers",
 }
@@ -157,7 +181,7 @@ def main():
             continue          # rien a vendre dans ce metier : on ne le propose pas
         lignes.append("  {")
         lignes.append(f"    cle: '{cle}',")
-        lignes.append(f"    pluriel: {js(nom.lower())},")
+        lignes.append(f"    pluriel: {js(PLURIELS.get(cle, nom.lower()))},")
         lignes.append(f"    nom: {js(nom)},")
         lignes.append(f"    court: {js(nom.split(' et ')[0].split(',')[0])},")
         lignes.append(f"    singulier: {js(singulier)},")
