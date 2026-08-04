@@ -2,7 +2,7 @@
 
 > Vendre des prospects d'entreprise vérifiés, prêts à être contactés, en Afrique
 > de l'Ouest francophone.
-> Écrit le 2026-08-03, à partir des **46 décisions** de Mongazi.
+> Écrit le 2026-08-03, à partir des **66 décisions** de Mongazi.
 
 ## Register
 
@@ -29,7 +29,7 @@ marque l'état, on reprend le lendemain où on s'est arrêté.
 
 ---
 
-## 2. Les 46 décisions
+## 2. Les 66 décisions
 
 ### Qui, quoi, combien
 
@@ -147,6 +147,87 @@ reviendront pas. Il sert aussi à **mesurer quelles sources vieillissent mal**.
 La nuance de la décision 46 compte : le moteur peut s'étendre un peu dans
 l'espace, **jamais dans la qualité**. Une fiche moins complète livrée pour faire
 le nombre, c'est le client qui la découvre, et c'est la confiance qui part.
+
+### L'interface generateur (decisions 47 a 58)
+
+Mongazi : « je veux que ce soit une interface genre GENERATEUR qu'on voit
+directement sans perte de temps, comme ca meme un enfant puisse comprendre et
+commander. J'aime bien comment c'est actuellement aussi, mais on doit optimiser
+100 % pour convertir et pousser les gens plus rapidement a passer commande. »
+
+| # | Question | Decision |
+|---|---|---|
+| 47 | L'arrivee | **Le heros actuel est garde, le generateur vient juste dessous** |
+| 48 | Sur telephone | **Le heros est raccourci** (titre sur 2 lignes) pour que **le haut du generateur depasse** en bas de l'ecran. On VOIT qu'il y a un outil dessous |
+| 49 | Les 6 questions | **Tout sur un seul panneau.** Metier, ville, nombre, options ensemble, le prix se recalcule a chaque geste |
+| 50 | Quand le prix apparait | **Des le premier reglage**, pas avant, et il suit ensuite chaque geste |
+| 51 | L'apercu | **3 VRAIES fiches qui changent en direct** selon le metier et la ville choisis |
+| 52 | Masquage de l'apercu | **Les 4 derniers chiffres masques** : `+229 01 97 27 •• ••`. On voit que le numero est vrai et complet, on ne peut pas s'en servir |
+| 53 | Barre mobile | **Le prix et « Commander » colles en bas**, toujours visibles pendant le reglage |
+| 54 | Nombre de clics | **Quatre**, le recapitulatif est garde avant les coordonnees |
+| 55 | Le nombre de fiches | **Trois paquets a appuyer (10 · 50 · 100) PLUS le curseur** pour le nombre exact |
+| 56 | Les supplements | **Quatre interrupteurs avec leur prix ecrit dessus**, et le total qui monte a l'activation |
+| 57 | « Vous vendez quoi ? » | **Obligatoire des qu'il coche « le message deja ecrit »** : sans savoir ce qu'il vend, on ne peut pas rediger |
+| 58 | Stock vide | **Le panneau bascule en « prevenez-moi »** a la seconde ou il choisit une ville ou un metier sans stock |
+
+**Decision 59 · la phrase qui se complete toute seule.** En haut du panneau :
+« Je cherche **50 ateliers de couture** a **Cotonou**, avec le **numero teste**. »
+Elle se reecrit a chaque reglage. C'est ce qui rend l'outil comprehensible sans
+connaitre un seul mot technique : on comprend sa propre commande en la lisant.
+
+### L'identite et le mouvement (decisions 60 a 63)
+
+| # | Question | Decision |
+|---|---|---|
+| 60 | Le logo | **Le signe de l'onglet devient le logo** : une trace en pointilles qui monte et se termine sur un point plein, orange sur carre sombre arrondi. Dessine en SVG, net a toutes les tailles |
+| 61 | Les images | **Mongazi les genere avec Google** a partir des prompts fournis, puis les depose dans `_partage/`. Ambiance uniquement : aucun visage, aucun numero lisible, aucun ecran de telephone lisible |
+| 62 | Les animations | **A fond sur PC, allegees sur telephone** — mais ⚠️ **elles doivent rester BELLES ET FLUIDES sur telephone**, pas seulement moins nombreuses. Alleger ne veut pas dire bacler |
+| 63 | Une animation par section | Toutes tirees du metier : relever une trace jusqu'a une porte. Liste au paragraphe 10 |
+
+### Ce qui se construit, et dans quel ordre (decisions 64 a 66)
+
+| # | Question | Decision |
+|---|---|---|
+| 64 | Les commandes | **Supabase**, comme le bureau des partenaires. Le cockpit ne voyait que les commandes passees dans le navigateur de Mongazi : ce n'etait pas une liste, c'etait un carnet personnel |
+| 65 | Le carnet du client | **Construit maintenant.** C'est le trou le plus serieux : on pouvait vendre sans pouvoir livrer |
+| 66 | Le moteur de collecte | **Les deux** : Vibe Prospecting d'abord pour avoir du stock vite, notre propre moteur en parallele pour ne pas en dependre |
+
+**L'ordre de travail : le generateur, puis le carnet, puis le moteur.** D'abord
+ce que le client voit et qui decide de la vente, ensuite savoir livrer, ensuite
+remplir le stock.
+
+---
+
+## 10. Une animation par section, toutes tirees du metier
+
+Le metier de PISTE, c'est **relever une trace jusqu'a une porte**. Tout en sort.
+Une animation qui pourrait etre copiee-collee chez un autre client est a refaire.
+
+| Section | Animation signature |
+|---|---|
+| Heros | la trace se dessine, les reperes tombent un par un, la porte s'eclaire |
+| La preuve · 187 | la grille se remplit point par point, et **les 13 fixes s'allument d'une autre couleur** en dernier |
+| Comment ca marche | les questions s'empilent comme des fiches qu'on pose sur une table |
+| Ce que vous recevez | le carnet s'ouvre, et **le message s'ecrit lettre par lettre** dans la bulle WhatsApp |
+| Le bareme | chaque supplement coche fait **monter le prix par paliers visibles**, jamais d'un bond |
+| La garantie | une fiche se barre, glisse hors du carnet, **une autre prend sa place** |
+| L'exclusivite | 90 jours qui se decomptent, puis la fiche qui revient au stock |
+| D'ou viennent les donnees | trois sources qui **convergent en une seule fiche** : le dedoublonnage rendu visible |
+| Appel final | la porte s'ouvre |
+
+## 11. Les images d'ambiance
+
+Trois, pas plus. Elles ne montrent jamais un prospect : ce sont des ambiances.
+
+| Fichier | Ou | Ce que c'est |
+|---|---|---|
+| `public/images/rue-cotonou.webp` | derriere le heros, couche de fond tres basse | une rue commercante au petit matin, pour que la trace coure sur une vraie rue |
+| `public/images/carnet-en-main.webp` | section « ce que vous recevez » | une main tenant un telephone dans la rue, **ecran noir** |
+| `public/images/porte.webp` | l'appel final | une porte d'echoppe usee, la ou la trace s'arrete |
+
+⚠️ Regle absolue : **aucun visage, aucun texte lisible, aucun numero, aucun
+logo, aucun ecran de telephone rempli.** Un ecran rempli serait une fausse
+capture de produit, et c'est interdit.
 
 ---
 
