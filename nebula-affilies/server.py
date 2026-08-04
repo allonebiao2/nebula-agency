@@ -1312,7 +1312,7 @@ async def create_site_lead(req: Request):
         ).fetchone()
         if deja:
             return {"ok": True, "id": deja["id"], "doublon": True}
-        cur = c.execute(""""""INSERT INTO leads(affiliate_id,nom,prenom,numero,service,service_raw,message,status,paye,created,updated,source)
+        cur = c.execute("""INSERT INTO leads(affiliate_id,nom,prenom,numero,service,service_raw,message,status,paye,created,updated,source)
                            VALUES(0,?,?,?,?,?,?,'attente',0,?,?,'site')""",
                         (nom, "", numero, service, service_raw, brief, now, now))
         lead_id = cur.lastrowid
