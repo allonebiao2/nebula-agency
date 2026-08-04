@@ -41,7 +41,7 @@
           <div class="col-6 field"><label>Nom</label><div class="wrap"><input id="nom" placeholder="Ton nom"></div></div>
         </div>
         <div class="bento" style="gap:0 14px">
-          <div class="col-6 field"><label>Numéro WhatsApp <span style="color:var(--bad)">obligatoire</span></label><div class="wrap"><input id="numero" inputmode="tel" placeholder="Ex : 01 96 74 07 32"></div></div>
+          <div class="col-6 field"><label>Numéro WhatsApp <span style="color:var(--bad)">obligatoire</span></label><div class="wrap"><input id="numero" inputmode="tel" placeholder="Ex : 01 96 74 07 32"></div><p class="meta mt8" id="aide-num">Écris-le <b>exactement comme il est enregistré sur ton WhatsApp</b>. Au Bénin, certains comptes portent encore l'ancien numéro à 8 chiffres, d'autres le nouveau à 10 chiffres avec le 01 : donne celui que TON compte utilise, pas celui de ta carte SIM si ce n'est pas le même. C'est sur ce numéro que tes accès arrivent.</p></div>
           <div class="col-6 field"><label>Ville</label><div class="wrap"><input id="ville" placeholder="Cotonou, Calavi…"></div></div>
         </div>
         <div class="field"><label>Email <span style="color:var(--bad)">obligatoire</span></label><div class="wrap"><input id="email" type="email" required autocomplete="email" placeholder="ton@email.com — tes accès y seront envoyés"></div></div>
@@ -163,8 +163,17 @@
     if (!(d.prenom || d.nom)) return toast('Dis-nous ton nom', 'bad');
     // Les deux canaux par lesquels arrivent les accès. Sans eux, une candidature
     // acceptée reste sans réponse : le partenaire ne reçoit jamais son code.
-    const numOk = d.numero.replace(/\D/g, '').length >= 8;
-    if (!numOk) return toast('Ton numéro WhatsApp est obligatoire, et il doit être complet', 'bad');
+    /* ⚠️ Au Bénin le numéro fait 10 chiffres depuis le 30/11/2024, MAIS un
+       compte WhatsApp peut être resté sur l'ancien à 8 chiffres. On accepte
+       donc les deux, et on refuse tout ce qui est entre les deux : un numéro
+       à 9 chiffres est une faute de frappe, pas un vrai numéro. C'est ce qui
+       a fait échouer une prise de contact le 4 août. */
+    const chiffres = d.numero.replace(/\D/g, '').replace(/^00/, '').replace(/^229/, '');
+    const numOk = chiffres.length === 8 || chiffres.length === 10;
+    if (!numOk) return toast(
+      chiffres.length ? 'Ce numéro fait ' + chiffres.length + ' chiffres. Il en faut 10 (avec le 01), ou 8 si ton WhatsApp est resté sur ton ancien numéro.'
+                      : 'Ton numéro WhatsApp est obligatoire.',
+      'bad');
     const mailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email);
     if (!mailOk) return toast('Ton email est obligatoire : c’est là que NEBULA envoie tes accès', 'bad');
     sound.sfx.tab();

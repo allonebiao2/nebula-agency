@@ -629,8 +629,25 @@ function renderAccessKit({ title, code, pin, name, onDone, emailSent, email, num
   const bWa = document.getElementById('am-wa');
   bWa.href = numero ? waLink(numero, msg) : 'https://wa.me/?text=' + encodeURIComponent(msg);
   bWa.textContent = '';
-  bWa.innerHTML = (numero ? 'Envoyer à ' + esc(String(numero)) : 'Envoyer sur WhatsApp')
+  bWa.innerHTML = (numero ? 'Envoyer au +' + esc(waNumero(numero)) : 'Envoyer sur WhatsApp')
     + '<span class="ico">' + icon('phone') + '</span>';
+
+  /* Le repli, affiche seulement quand il a un sens : un compte reste parfois
+     sur l'ancien numero a 8 chiffres. Mieux vaut un deuxieme bouton qu'un
+     candidat qui voit « ce numero n'est pas sur WhatsApp ». */
+  const autre = numero ? waLinkAutreForme(numero, msg) : '';
+  const zone = document.getElementById('am-wa').parentElement;
+  const vieuxBouton = document.getElementById('am-wa-ancien');
+  if (vieuxBouton) vieuxBouton.remove();
+  if (autre) {
+    const b = document.createElement('a');
+    b.id = 'am-wa-ancien';
+    b.className = bWa.className.replace(/btn-primary/, 'btn-ghost');
+    b.href = autre; b.target = '_blank'; b.rel = 'noopener';
+    b.innerHTML = 'Pas sur WhatsApp ? Essayer l’autre forme';
+    b.title = "Au Benin deux formes coexistent : 8 chiffres (avant novembre 2024) et 10 chiffres avec le 01. Les gens donnent souvent celle que leur compte ne porte pas.";
+    zone.appendChild(b);
+  }
   document.getElementById('am-wa').onclick = () => sound.sfx.cash();
   document.getElementById('am-cp').onclick = () => { navigator.clipboard?.writeText(msg); sound.sfx.ok(); toast('Kit copié ✓', 'ok'); };
   document.getElementById('am-done').onclick = async () => { closeModal(); await refresh(); if (onDone) onDone(); reveal(); };
@@ -679,10 +696,41 @@ function fmtDateTime(ts) {
   const d = new Date(ts * 1000);
   return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }) + ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 }
-function waLink(numero, text) {
+/* ⚠️ AU BÉNIN, LE « 01 » N'EST PAS UN PRÉFIXE À RETIRER : IL FAIT PARTIE DU
+   NUMÉRO. L'ancienne version faisait `replace(/^0+/, '')` — le réflexe correct
+   dans la plupart des pays, faux ici depuis la réforme ARCEP du 30/11/2024.
+   Résultat : 0162178411 devenait +229162178411, un numéro qui n'existe pas, et
+   WhatsApp répondait « ce numéro n'est pas sur WhatsApp ». Ça s'est vu sur une
+   vraie candidature le 4 août, devant le candidat. */
+function waNumero(numero) {
   let n = String(numero || '').replace(/\D/g, '');
-  if (n && !n.startsWith('229')) { n = n.replace(/^0+/, ''); if (n.length <= 10) n = '229' + n; }
+  if (!n) return '';
+  n = n.replace(/^00/, '');            // 00229… → 229…
+  if (n.startsWith('229')) return n;   // déjà international
+  return '229' + n;                    // on n'enlève JAMAIS le zéro de tête
+}
+function waLink(numero, text) {
+  const n = waNumero(numero);
   return 'https://wa.me/' + n + (text ? '?text=' + encodeURIComponent(text) : '');
+}
+/* L'AUTRE FORME DU MÊME NUMÉRO, et elle marche dans LES DEUX SENS.
+
+   Au Bénin, deux formes coexistent : l'ancienne à 8 chiffres, d'avant la
+   réforme ARCEP du 30/11/2024, et la nouvelle à 10 chiffres avec le « 01 ».
+   Un compte WhatsApp peut être resté sur l'ancienne — c'est le cas de celui de
+   Mongazi — et **les gens donnent souvent celle qu'ils n'utilisent pas, sans
+   le savoir**. Ils ne mentent pas : ils ne savent simplement pas laquelle leur
+   compte porte.
+
+   On ne peut donc pas deviner. On propose l'autre forme, dans le sens qui
+   manque, plutôt que de laisser quelqu'un devant « ce numéro n'est pas sur
+   WhatsApp » avec un candidat en face de soi. */
+function waLinkAutreForme(numero, text) {
+  const n = String(numero || '').replace(/\D/g, '').replace(/^00/, '').replace(/^229/, '');
+  const suffixe = text ? '?text=' + encodeURIComponent(text) : '';
+  if (n.length === 10 && n.startsWith('0')) return 'https://wa.me/229' + n.slice(2) + suffixe;
+  if (n.length === 8) return 'https://wa.me/22901' + n + suffixe;
+  return '';
 }
 function renderLeads() {
   const counts = { all: LEADS.length, attente: 0, en_cours: 0, termine: 0, annule: 0 };
