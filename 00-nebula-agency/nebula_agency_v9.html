@@ -1238,6 +1238,34 @@ section{position:relative;padding:clamp(72px,11vh,128px) 0}
 </button>
 
 <script>
+/* ═══════════ ENVOI D'UN PROSPECT · corrigé le 2026-08-04 ═══════════
+   CE QUI SE PASSAIT
+   Le code faisait `fetch(...)` SANS l'attendre, puis `window.open(wa.me)`
+   juste apres. Sur telephone, ouvrir WhatsApp met la page en arriere-plan et
+   le navigateur ANNULE la requete en cours. Le prospect partait sur le
+   WhatsApp de Mongazi, mais n'arrivait jamais dans le back-office.
+
+   Ca ne se voyait pas : l'appel etait enveloppe dans un `catch` vide, donc
+   l'echec etait silencieux. Sur PC, avec le serveur deja reveille, ca passait ;
+   sur telephone, avec Render qui met 30 a 60 secondes a se reveiller, jamais.
+   Angelique AVOCEVOU, 4 aout 2026, 09h47 : perdue exactement comme ca.
+
+   LE REMEDE
+   `navigator.sendBeacon` : le NAVIGATEUR prend l'envoi en charge et le termine
+   meme si la page disparait. C'est fait pour ce cas precis. On l'envoie en
+   `text/plain` pour eviter la verification prealable CORS, et le serveur lit
+   le corps en JSON quel que soit son type. Repli en `fetch` avec `keepalive`
+   pour les rares navigateurs sans sendBeacon.                                */
+function nebEnvoyerProspect(donnees){
+  var url='https://partenaires.nebula-agency.online/api/site-lead';
+  var corps=JSON.stringify(donnees);
+  try{
+    if(navigator.sendBeacon && navigator.sendBeacon(url,new Blob([corps],{type:'text/plain'}))) return true;
+  }catch(e){}
+  try{fetch(url,{method:'POST',headers:{'content-type':'text/plain'},body:corps,keepalive:true}).catch(function(){});}catch(e){}
+  return false;
+}
+
 /* année */
 document.getElementById('year').textContent=new Date().getFullYear();
 var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -1259,7 +1287,7 @@ if(document.getElementById('fc_maps').checked)f.push('Google Maps');
 if(document.getElementById('fc_avis').checked)f.push('Section avis');
 var na=function(v){return v||'Non précisé';};
 var msg=['🚀 *NOUVELLE COMMANDE — NEBULA AGENCY*','═══════════════════════════════','','👤 *CONTACT*','• Nom : '+nom,'• WhatsApp : '+tel,'• Email : '+email,'• Marque : '+marque,'• Secteur : '+secteur,'• Ville : '+ville,'','🎯 *PROJET*','• Service : '+niveau,'• Objectif : '+objectif,'• Ampleur : '+na(pages),'• Délai : '+delai,'','🎨 *STYLE & CONTENU*','• Style visuel : '+na(style),'• Langue : '+na(langue),'• Présence en ligne : '+na(existant),'• Contenus prêts : '+na(contenu),'• Couleurs : '+na(couleurs),'• Inspiration : '+na(inspiration),'• Réseaux : '+na(reseaux),'• Logo : '+logo,'','✅ *OPTIONS SUPPLÉMENTAIRES*',f.length?f.map(function(x){return '• '+x;}).join('\n'):'• Aucune option supplémentaire','','📝 *DESCRIPTION*',desc,'','═══════════════════════════════','📩 Envoyé via nebula-agency.online'].join('\n');
-try{fetch('https://partenaires.nebula-agency.online/api/site-lead',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({nom:nom,numero:tel,email:email,service:niveau,message:msg})}).catch(function(){});}catch(e){}
+nebEnvoyerProspect({nom:nom,numero:tel,email:email,service:niveau,message:msg});
 window.open('https://wa.me/22996740732?text='+encodeURIComponent(msg),'_blank');}
 
 /* ===== Configurateur de devis — cadrage projet (fourchette 55 000 – 500 000 F) ===== */
@@ -1316,7 +1344,7 @@ var DEVIS={base:60000,factMin:0.9,factMax:1.25,plancher:55000,plafond:500000,pas
     if(note)foot.push('• Note : '+note);
     foot=foot.concat(['','═══════════════','📩 Devis généré sur nebula-agency.online']);
     var msg=head.concat(det).concat(foot).join('\n');
-    try{fetch('https://partenaires.nebula-agency.online/api/site-lead',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({nom:nom,numero:tel,email:email,devis_email:true,service:'Cadrage projet — '+F(d.min)+' à '+F(d.max),message:msg})}).catch(function(){});}catch(e){}
+    nebEnvoyerProspect({nom:nom,numero:tel,email:email,devis_email:true,service:'Cadrage projet — '+F(d.min)+' à '+F(d.max),message:msg});
     window.open('https://wa.me/22996740732?text='+encodeURIComponent(msg),'_blank');
   };
 })();

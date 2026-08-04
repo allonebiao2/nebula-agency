@@ -1299,7 +1299,20 @@ async def create_site_lead(req: Request):
     brief = clean(d.get("message"), 1800)            # le brief complet (déjà mis en forme par le site)
     now = time.time()
     with db() as c:
-        cur = c.execute("""INSERT INTO leads(affiliate_id,nom,prenom,numero,service,service_raw,message,status,paye,created,updated,source)
+        # ⚠️ Anti-doublon. Jérémie Elone s'est retrouvé QUATRE fois dans la
+        # liste le 3 août : il a cliqué plusieurs fois parce que WhatsApp ne
+        # s'ouvrait pas tout de suite. Une garde côté navigateur ne suffit pas,
+        # elle saute au premier rechargement de page : on tranche ici, où ça
+        # tient quel que soit l'appareil. Même numéro, même service, moins de
+        # dix minutes : c'est le même envoi, on rend le premier.
+        deja = c.execute(
+            "SELECT id FROM leads WHERE numero=? AND service_raw=? AND created > ? "
+            "ORDER BY created DESC LIMIT 1",
+            (numero, service_raw, now - 600),
+        ).fetchone()
+        if deja:
+            return {"ok": True, "id": deja["id"], "doublon": True}
+        cur = c.execute(""""""INSERT INTO leads(affiliate_id,nom,prenom,numero,service,service_raw,message,status,paye,created,updated,source)
                            VALUES(0,?,?,?,?,?,?,'attente',0,?,?,'site')""",
                         (nom, "", numero, service, service_raw, brief, now, now))
         lead_id = cur.lastrowid
