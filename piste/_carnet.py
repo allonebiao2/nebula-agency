@@ -219,6 +219,49 @@ def texte_relance(r):
     return "\n".join(lignes)
 
 
+def reglages(c):
+    return {x["cle"]: x["valeur"] for x in c.execute("select cle, valeur from piste.config").fetchall()}
+
+
+def envoyer_courriel(c, a, sujet, texte):
+    """Envoie pour de vrai, par Resend. La cle vit en base, jamais dans le depot.
+
+    ⚠️ Un envoi rate ne fait JAMAIS echouer la fabrication du carnet. Le lien
+    est de toute facon ecrit dans piste/_carnets/ : Mongazi peut l'envoyer a la
+    main. Perdre un courriel est ennuyeux, perdre un carnet deja paye ne l'est
+    pas."""
+    import urllib.request, urllib.error
+
+    r = reglages(c)
+    clef = r.get("resend_key")
+    if not clef or not a or "@" not in a:
+        return False, "pas d'adresse ou pas de cle"
+    corps = json.dumps({
+        "from": r.get("email_expediteur", "PISTE <piste@nebula-agency.online>"),
+        "to": [a],
+        "subject": sujet,
+        "text": texte,
+    }).encode("utf-8")
+    req = urllib.request.Request(
+        "https://api.resend.com/emails", data=corps,
+        headers={
+            "Authorization": f"Bearer {clef}",
+            "Content-Type": "application/json",
+            # ⚠️ Sans User-Agent, Cloudflare refuse la requete avec « error code:
+            # 1010 » devant l'API de Resend. Deuxieme fois aujourd'hui qu'un
+            # client sans identite se fait fermer la porte.
+            "User-Agent": "PISTE/1.0 (NEBULA Agency, Cotonou)",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=20) as rep:
+            return True, json.load(rep).get("id", "")
+    except urllib.error.HTTPError as e:
+        return False, e.read().decode("utf-8", "replace")[:150]
+    except Exception as e:
+        return False, str(e)[:150]
+
+
 def calcul(n, options):
     unitaire = PRIX["base"] + sum(PRIX[o] for o in options)
     sous = unitaire * n
@@ -400,7 +443,8 @@ fiche est remplacée sans frais, et la remplaçante apparaît dans ce même lien
 
 Ces fiches sont à vous seul pendant 90 jours.
 
-Gardez ce lien : il ne périme pas. Perdu ? Écrivez-nous, on vous le renvoie.
+Ce lien vous arrive par email ET sur votre WhatsApp : gardez celui des deux que
+vous retrouvez le plus vite. Il ne périme pas. Perdu ? Écrivez-nous.
 
 NEBULA Agency
 """
@@ -410,7 +454,36 @@ NEBULA Agency
         f"{lien}\n\n{courriel}"
     )
 
-    print(f"\n  ✓ carnet écrit · {ref}")
+    # ---- on envoie, tout de suite et pour de vrai ------------------------
+    # Le client recoit son carnet par EMAIL, et Mongazi recoit la meme chose
+    # dans sa boite : il ne depend plus de son seul WhatsApp pour savoir ou en
+    # est une commande.
+    corps_client = courriel.split("\n", 2)[2].strip()
+    ok_client, info = envoyer_courriel(
+        c, o.email, f"Votre carnet PISTE est prêt · {ref}", corps_client
+    )
+    ok_admin, _ = envoyer_courriel(
+        c,
+        reglages(c).get("email_admin", ""),
+        f"PISTE LIVRÉ · {o.n} fiches · {ref}",
+        "\n".join([
+            f"Carnet {ref} livré à {o.prenom} {o.nom}.",
+            "",
+            f"Commande   {o.n} fiches · {metier_nom} · {VILLES[o.ville]}",
+            f"Encaissé   {prix[chr(39)+chr(39)] if False else prix['total']} F",
+            f"Client     {o.email or 'pas d email'} · +{o.tel or 'pas de numéro'}",
+            "",
+            "Le lien du carnet :",
+            lien,
+            "",
+            "Ces fiches sont réservées à ce client pendant 90 jours.",
+            "Dans une semaine : python piste/_carnet.py --relances",
+        ]),
+    )
+
+    print(f"\n✓ carnet écrit · {ref}")
+    print(f"  courriel au client : {'ENVOYÉ' if ok_client else 'NON · ' + str(info)}")
+    print(f"  courriel à vous    : {'ENVOYÉ' if ok_admin else 'NON'}")
     print(f"\n  LE LIEN À ENVOYER\n  {lien}")
     print(f"\n  Le courriel prêt à copier est dans piste/_carnets/{ref}.txt")
     return 0

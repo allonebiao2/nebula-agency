@@ -56,6 +56,33 @@ async function appeler(porte, corps, garderEnVie = false) {
    que le prospect Angelique a ete perdu par le site de l'agence le 4 aout. On
    ne refait pas la meme erreur ici. */
 export async function deposerCommande(reference, client, commande) {
+  const corps = JSON.stringify({ reference, client, commande })
+  const options = {
+    method: 'POST',
+    keepalive: true,
+    headers: {
+      'Content-Type': 'application/json',
+      apikey: CLE_PUBLIQUE,
+      Authorization: `Bearer ${CLE_PUBLIQUE}`,
+    },
+    body: corps,
+  }
+
+  /* La fonction serveur enregistre la commande ET envoie les deux courriels :
+     un a Mongazi, pour qu'il la voie AUSSI dans sa boite mail et pas seulement
+     sur son WhatsApp, et un a l'acheteur avec ce qu'il doit payer.
+     La cle d'envoi vit en base, cote serveur : elle ne peut pas partir ici. */
+  try {
+    const r = await fetch(`${URL_BASE}/functions/v1/piste-commande`, options)
+    if (r.ok) return true
+  } catch (e) {
+    /* on tombe sur le filet ci-dessous */
+  }
+
+  /* ⚠️ LE FILET. Si la fonction serveur est indisponible, la commande passe
+     quand meme par la porte directe : elle sera sans courriel, mais elle
+     EXISTERA. Perdre un courriel est ennuyeux, perdre une commande ne l'est
+     pas : c'est exactement ce qui est arrive au site de l'agence le 4 aout. */
   try {
     const r = await appeler('piste_commander', {
       p_reference: reference,
