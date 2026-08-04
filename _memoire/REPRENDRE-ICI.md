@@ -1,9 +1,37 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-08-03
+## Point de reprise pour une session terminal · dernière mise à jour 2026-08-04
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
+
+---
+
+## 0 ter. LE 2026-08-04 — PISTE existe et il est en ligne
+
+**https://piste.nebula-agency.online** · construit, déployé, corrigé dans la
+journée. 88 décisions dans `piste/PRODUCT.md`, 7 817 fiches en base,
+130 contrôles verts.
+
+Le client règle sur un panneau, voit le prix et trois vraies fiches, paie en
+Mobile Money, et reçoit un **lien privé à vie** vers son carnet. Le moteur
+collecte **chaque nuit sur GitHub Actions**.
+
+⚠️ **Le dépôt est PUBLIC.** La marchandise ne doit jamais y revenir : les
+outils dans git, les données dans Supabase (schéma `piste`).
+
+⚠️ **Si un site s'affiche sans style** : `python scripts/purger.py --verifier`
+puis `python scripts/purger.py`. Cloudflare peut mettre une erreur en cache
+pour un an, et un 200 ne prouve rien.
+
+### ▶️ PAR QUOI COMMENCER
+Les **stratégies de vente de PISTE** : elles ont été demandées trois fois et
+jamais abordées. Le produit est prêt, il n'a pas encore de plan pour trouver
+ses premiers acheteurs.
+
+Ensuite : le deuxième vivier (les structures, via Vibe Prospecting), la marque
+de déploiement sur les autres sites du parc, et tester un paiement
+Togo/Côte d'Ivoire vers un compte béninois.
 
 ---
 

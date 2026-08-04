@@ -103,6 +103,33 @@
 - **Reste à faire** : Agenda · comparateur de 2 périodes · vague 2 des transitions (Bilan-ECG, Stats-constellation, Carnet, Factures, Équipe, Réglages) · exécuter `etat.sql` dans Supabase pour activer la synchro · migration proto → app live.
 - Détail complet : `boussole/README.md` + `_memoire/conversations/2026-07-25-boussole-*.md`
 
+### PISTE — vendre des prospects d'entreprise  *(SaaS vertical n°2)*
+- **Ce que c'est** : le client dit qui il cherche, PISTE lui livre un **carnet
+  de prospects réels**, avec le message déjà écrit pour chacun. Pas un fichier :
+  un carnet de travail qu'on ouvre au téléphone, où on appuie, et la
+  conversation WhatsApp démarre.
+- **En ligne** : https://piste.nebula-agency.online · cockpit `#/cockpit` ·
+  carnet client `#/carnet/<jeton>` · reçu `#/recu/<jeton>`
+- **Qui achète** : celui qui vend AUX commerçants (grossiste, assureur,
+  fournisseur, banque, agence). ⚠️ **Pas les partenaires NEBULA.**
+- **Le barème** : **100 F la fiche, 250 F maximum tout compris.** Quatre
+  suppléments qui valent exactement 150 F réunis (numéro testé +60 · pas de
+  site +40 · dirigeant +30 · message écrit +20). Minimum 10 fiches,
+  exclusivité 90 jours, livraison 24 h, **MTN MoMo seul**.
+- **Le vivier** : 7 817 fiches (Bénin, Togo, Côte d'Ivoire), 18 métiers. Le
+  moteur tourne **chaque nuit sur GitHub Actions**, gratuitement.
+- **⚠️ La marchandise n'est JAMAIS dans le dépôt** : `allonebiao2/nebula-agency`
+  est PUBLIC. Le dépôt garde les outils, Supabase (schéma `piste`) garde les
+  données. Les numéros d'aperçu sont **coupés à la source**, pas masqués à
+  l'affichage.
+- **Les outils** (sur le PC, jamais dans le site) :
+  `python piste/_moteur.py --voir|--collecter` · `python piste/_carnet.py …
+  --ecrire` · `python piste/_carnet.py --relances` · `python piste/_stock.py`
+- **Le contrôle** : `_qc.js` + `_qc_generateur.js` + `_qc_carnet.mjs`, tous
+  verts avant déploiement. ⚠️ Ils LISENT le stock et les libellés dans les
+  données : ne jamais y recopier un chiffre ou un nom de métier.
+- **Source de vérité : `piste/PRODUCT.md`**, 88 décisions.
+
 ## Infrastructure — où tourne quoi (2026-08-02)
 
 | Ce qui tourne | Où | Notes |

@@ -129,6 +129,82 @@ function Rebours({ date }) {
   )
 }
 
+/* ═══════════════ LA MARCHE À SUIVRE ═══════════════
+   Mongazi travaille souvent entre deux rendez-vous, sur son téléphone. Les six
+   gestes d'une commande tiennent dans sa tête aujourd'hui parce qu'il n'y en a
+   eu que quelques-unes : à dix par jour, ça ne tiendra plus, et ce qui n'est
+   écrit nulle part se fait de travers un jour de fatigue.
+
+   Elle est repliée par défaut : quand on connaît, on n'a pas besoin de la
+   relire, et elle ne doit pas repousser les commandes vers le bas. */
+const GESTES = [
+  [
+    'La commande arrive',
+    'Sur votre WhatsApp, le message commence par « PISTE COMMANDE ». Elle est déjà en base : rien ne se perd. Collez le message ci-dessous pour la ranger ici aussi.',
+  ],
+  [
+    'Vous vérifiez le paiement',
+    "Dans MTN MoMo, cherchez le NUMÉRO et le NOM que l'acheteur a déclarés : c'est ce qui s'affiche à la réception, pas la référence. Puis marquez « payée ».",
+  ],
+  [
+    'Vous fabriquez le carnet',
+    'Sur votre PC, une commande : python piste/_carnet.py --metier … --ville … --n … --ecrire. Les fiches sont réservées 90 jours pour ce client seul.',
+  ],
+  [
+    'Si « numéro testé » est coché, vous appelez',
+    "Chaque numéro, avant l'envoi. Une fiche qui ne répond pas ne part pas : elle est remplacée. L'outil ne peut pas composer à votre place, il vous le rappelle.",
+  ],
+  [
+    'Vous envoyez le lien',
+    "L'outil vous rend le lien ET le courriel déjà écrit, dans piste/_carnets/. Envoyez-le par email et par WhatsApp, puis marquez « livrée ».",
+  ],
+  [
+    'Une semaine après, vous relancez',
+    "python piste/_carnet.py --relances vous rend un message écrit à partir de SES résultats. C'est aussi ce qui vous dit si vos fiches ont vraiment servi.",
+  ],
+]
+
+function MarcheASuivre() {
+  const [ouvert, setOuvert] = useState(false)
+  return (
+    <section className="mt-4 overflow-hidden rounded-2xl border border-trait bg-creme/60">
+      <button
+        type="button"
+        onClick={() => setOuvert((o) => !o)}
+        aria-expanded={ouvert}
+        className="flex min-h-[52px] w-full items-center justify-between gap-3 px-5 text-left"
+      >
+        <span className="text-[0.95rem] font-semibold text-encre">
+          Marche à suivre · les 6 gestes d'une commande
+        </span>
+        <span className="flex-none text-[0.85rem] font-semibold text-brique">
+          {ouvert ? 'Replier' : 'Dérouler'}
+        </span>
+      </button>
+
+      {ouvert && (
+        <ol className="divide-y divide-trait border-t border-trait">
+          {GESTES.map(([titre, dessous], i) => (
+            <li key={titre} className="flex items-start gap-3.5 px-5 py-3.5">
+              <span className="mt-0.5 flex-none font-display text-[0.95rem] font-bold tabular-nums leading-none text-brique">
+                {i + 1}
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[0.92rem] font-semibold leading-tight text-encre">
+                  {titre}
+                </span>
+                <span className="mt-0.5 block text-[0.84rem] leading-snug text-sourd">
+                  {dessous}
+                </span>
+              </span>
+            </li>
+          ))}
+        </ol>
+      )}
+    </section>
+  )
+}
+
 /* ------------------------------------------------------------------------- */
 
 export default function Cockpit({ aller }) {
@@ -309,15 +385,21 @@ export default function Cockpit({ aller }) {
       <div className="mx-auto w-full max-w-[68rem] px-5 py-8 sm:px-8 sm:py-12">
         <h1 className="text-[clamp(1.8rem,6vw,2.6rem)]">Qui a payé, qu'est-ce que je livre.</h1>
 
+        {/* ⚠️ Cet encadré disait « ce cockpit vit dans CE navigateur ». Ce
+            n'est plus vrai depuis le 2026-08-04 : la commande part AUSSI en
+            base au moment où l'acheteur file sur WhatsApp. Un cockpit qui
+            décrit un fonctionnement périmé fait travailler de travers. */}
         <div className="mt-6 rounded-2xl border-2 border-brique/30 bg-creme p-5">
-          <p className="font-semibold">Ce cockpit vit dans CE navigateur.</p>
+          <p className="font-semibold">Ce tableau est votre copie de travail.</p>
           <p className="mt-1.5 text-[0.94rem] leading-relaxed text-sourd">
-            La V1 n'a pas de serveur : rien ne remonte tout seul depuis le téléphone du
-            client. Quand une commande, un signalement ou une demande arrive sur le WhatsApp
-            de NEBULA ({NEBULA_WHATSAPP_JOLI}), copiez le message et collez-le ci-dessous. Il
-            se range tout seul, avec son prix, son code et ses coordonnées.
+            Chaque commande part en base au moment où l'acheteur file sur WhatsApp : elle
+            n'est jamais perdue, même si vous ne voyez pas passer son message. Ici, vous
+            gardez la vôtre : collez le message reçu au {NEBULA_WHATSAPP_JOLI} ci-dessous, il
+            se range tout seul avec son prix, son code et ses coordonnées.
           </p>
         </div>
+
+        <MarcheASuivre />
 
         <div className="mt-6 grid gap-3 sm:grid-cols-3">
           {[
