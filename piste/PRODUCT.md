@@ -2,7 +2,7 @@
 
 > Vendre des prospects d'entreprise vérifiés, prêts à être contactés, en Afrique
 > de l'Ouest francophone.
-> Écrit le 2026-08-03, à partir des **84 décisions** de Mongazi.
+> Écrit le 2026-08-03, à partir des **88 décisions** de Mongazi.
 
 ## Register
 
@@ -29,7 +29,7 @@ marque l'état, on reprend le lendemain où on s'est arrêté.
 
 ---
 
-## 2. Les 84 décisions
+## 2. Les 88 décisions
 
 ### Qui, quoi, combien
 
@@ -343,6 +343,29 @@ commande. On ne melange pas ce qui se vend et ce qui n'existe pas.
 ⏳ **Le numero de depot reste a poser** (`MOMO_DEPOT` dans `donnees.js`). Tant
 qu'il est vide, il est donne a la main dans la conversation WhatsApp, et le
 site ne l'invente pas.
+
+### L'accroche et les trois etapes (decisions 85 a 88)
+
+| # | Question | Decision |
+|---|---|---|
+| 85 | L'accroche du heros | **« Vos clients existent deja. Ils sont juste introuvables. »** |
+| 86 | Les etapes | **Trois**, numero + titre + une ligne, separees par un trait |
+| 87 | Ou | **Bande fine DANS le heros**, pour que le generateur reste visible d'emblee |
+| 88 | A qui on parle | **Celui qui vend AUX commercants** (grossiste, assureur, fournisseur, banque, agence), en restant **legerement ouvert** a l'independant qui demarche des commerces |
+
+⚠️ **Pourquoi l'ancienne accroche a saute.** « Des commercants a qui parler
+demain matin » avait du caractere, mais elle ne disait pas qu'on **achete une
+liste** : un visiteur pouvait croire a un service de prospection fait pour lui.
+La nouvelle nomme d'abord ce qu'il vit, et le sous-titre dit le reste.
+
+⚠️ **Comment on reste « legerement ouvert » sans diluer.** On cite les METIERS
+qu'on a en stock plutot qu'un profil d'acheteur. Le vivier ne contient que des
+commerces : parler a quelqu'un qui cherche des particuliers serait lui vendre
+la mauvaise chose.
+
+Mesure apres coup : le generateur apparait a 663 px sur un ecran de 844, donc
+il depasse toujours dans le premier ecran. La bande coute 68 px sur PC et
+201 px sur telephone.
 
 ---
 

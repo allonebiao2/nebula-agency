@@ -38,9 +38,59 @@ const OFFRE_EXEMPLE =
   Ce qui rassure (la preuve, la garantie) est passé SOUS le générateur, pour
   ceux qui descendent.
 */
+/* Les trois etapes. Une bande fine, pas une section : elle doit couter le
+   moins de hauteur possible pour que le generateur reste visible d'emblee.
+
+   Sur PC les trois tiennent cote a cote, separees par un trait vertical. Sur
+   telephone elles s'empilent, separees par un trait horizontal : trois textes
+   courts cote a cote sur 390 px ne se lisent pas. */
+const ETAPES = [
+  ['Vous choisissez', 'Métier, ville, nombre. Le prix s’affiche.'],
+  ['Vous payez', 'Mobile Money. On vérifie et on prépare.'],
+  ['Vous recevez votre carnet', 'Sous 24 h. Vous appuyez, la conversation s’ouvre.'],
+]
+
+function Etapes() {
+  return (
+    <ol className="mt-7 grid divide-y divide-traitsombre border-y border-traitsombre sm:mt-9 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+      {ETAPES.map(([titre, dessous], i) => (
+        <li key={titre} className="flex items-start gap-3 py-3.5 sm:px-5 sm:first:pl-0 sm:last:pr-0">
+          <span className="mt-0.5 flex-none font-display text-[0.95rem] font-bold tabular-nums leading-none text-braise">
+            {i + 1}
+          </span>
+          <span className="min-w-0">
+            <span className="block text-[0.9rem] font-semibold leading-tight text-papier">
+              {titre}
+            </span>
+            <span className="mt-0.5 block text-[0.8rem] leading-snug text-sable">{dessous}</span>
+          </span>
+        </li>
+      ))}
+    </ol>
+  )
+}
+
+/*
+  L'ENTÊTE · courte, volontairement.
+
+  Mongazi, le 2026-08-04 : « c'est trop long la vitrine, trop d'informations,
+  montrons directement le générateur ». Une page de vente qui explique avant de
+  laisser essayer, c'est une page qu'on quitte. L'outil EST l'argument.
+
+  L'ACCROCHE, corrigée le même jour. « Des commerçants à qui parler demain
+  matin » avait du caractère, mais elle ne disait pas qu'on ACHÈTE UNE LISTE :
+  un visiteur pouvait croire à un service de prospection fait pour lui. La
+  nouvelle nomme d'abord ce qu'il vit, et le sous-titre dit le reste.
+
+  À QUI ON PARLE : celui qui vend AUX commerçants. Grossiste, assureur,
+  fournisseur, banque, agence. Le vivier ne contient que des commerces, donc
+  parler à quelqu'un qui cherche des particuliers serait lui vendre la mauvaise
+  chose. On reste juste assez ouvert pour l'indépendant qui démarche des
+  commerces, en citant les métiers plutôt qu'un profil d'acheteur.
+*/
 function Entete() {
   return (
-    <Section fond="encre" grain interieur="pt-6 pb-8 sm:pt-8 sm:pb-10">
+    <Section fond="encre" grain interieur="pt-5 pb-6 sm:pt-8 sm:pb-9">
       <div className="flex items-center justify-between gap-4">
         <p className="font-display text-[1.05rem] font-bold tracking-tight">
           PISTE <span className="font-normal text-sable">by NEBULA</span>
@@ -55,24 +105,29 @@ function Entete() {
         </a>
       </div>
 
-      <div className="mt-6 grid items-center gap-6 sm:mt-8 lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="mt-5 grid items-center gap-6 sm:mt-8 lg:grid-cols-[1.1fr_0.9fr]">
         <div>
           <p className="text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-braise">
             Bénin · Togo · Côte d'Ivoire
           </p>
-          <h1 className="mt-3 text-[clamp(2rem,7.6vw,3.4rem)]">
-            Des commerçants à qui parler{' '}
-            <span className="text-braise">demain matin.</span>
+          {/* La coupure est FORCÉE entre les deux phrases : laissée libre, le
+              navigateur écrivait « Ils sont » puis « juste introuvables », et
+              une phrase coupée en deux ne se lit pas d'un coup d'œil. */}
+          <h1 className="mt-3 text-[clamp(1.95rem,7.2vw,3.2rem)] text-balance">
+            Vos clients existent déjà.
+            <br />
+            <span className="text-braise">Ils sont juste introuvables.</span>
           </h1>
-          <p className="mt-4 max-w-[36rem] text-[0.98rem] leading-relaxed text-sable sm:text-[1.08rem]">
-            Dites qui vous cherchez, le prix s'affiche, et vous voyez de vraies fiches avant
-            de payer.
+          <p className="mt-4 max-w-[38rem] text-[0.98rem] leading-relaxed text-sable sm:text-[1.06rem]">
+            PISTE vous donne leur nom, leur quartier et leur numéro WhatsApp. Vous dites quel
+            métier et quelle ville, le prix s'affiche, et vous voyez de vraies fiches avant de
+            payer.
           </p>
-          <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-[0.85rem] text-sable">
+          <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-1.5 text-[0.84rem] text-sable">
             {[
               `${nombreJoli(TOTAL_FICHES)} commerces relevés`,
-              `À partir de ${fcfa(BASE)} la fiche`,
-              'Livré sous 24 heures',
+              `Dès ${fcfa(BASE)} la fiche`,
+              'Livré sous 24 h',
             ].map((x) => (
               <li key={x} className="flex items-center gap-2">
                 <Puce className="h-4 w-4 text-braise" />
@@ -87,34 +142,11 @@ function Entete() {
           <Relief />
         </div>
       </div>
+
+      <Etapes />
     </Section>
   )
 }
-
-/* --------------------------------------------------- ce que vous recevez - */
-
-const RECU = [
-  {
-    n: '01',
-    titre: 'Le carnet, dans votre téléphone',
-    texte:
-      "Une page privée qui n'appartient qu'à vous. Un commerce, un bouton : WhatsApp s'ouvre sur la bonne conversation, avec le bon message. Vous marquez où vous en êtes, vous fermez, vous reprenez le lendemain au même endroit.",
-  },
-  {
-    n: '02',
-    titre: 'Le même travail pour votre ordinateur',
-    texte:
-      "Un fichier qui s'ouvre dans Excel ou dans Google Sheets, pour le donner à votre équipe et suivre qui fait quoi.",
-  },
-  {
-    n: '03',
-    titre: 'Le message, déjà écrit',
-    texte:
-      'Vous nous dites en une phrase ce que vous vendez. Chaque message est rédigé à partir de cette phrase et du métier du commerçant. Vous appuyez, vous envoyez.',
-  },
-]
-
-/* ------------------------------------------------------------------ preuve */
 
 function Preuve({ aller }) {
   return (
