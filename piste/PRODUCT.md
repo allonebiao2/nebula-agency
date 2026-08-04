@@ -2,7 +2,7 @@
 
 > Vendre des prospects d'entreprise vérifiés, prêts à être contactés, en Afrique
 > de l'Ouest francophone.
-> Écrit le 2026-08-03, à partir des **36 décisions** de Mongazi.
+> Écrit le 2026-08-03, à partir des **46 décisions** de Mongazi.
 
 ## Register
 
@@ -29,7 +29,7 @@ marque l'état, on reprend le lendemain où on s'est arrêté.
 
 ---
 
-## 2. Les 36 décisions
+## 2. Les 46 décisions
 
 ### Qui, quoi, combien
 
@@ -111,6 +111,42 @@ reviendront pas. Il sert aussi à **mesurer quelles sources vieillissent mal**.
 | 34 | Le cockpit de Mongazi | **Dans PISTE, séparé** du bureau des partenaires. Rien ne doit pouvoir casser celui qui porte les commissions |
 | 35 | Facture | **Reçu PDF par défaut, facture normalisée sur demande.** ⚠️ Le régime e-MECeF applicable reste à vérifier selon le statut fiscal de NEBULA |
 | 36 | Après-vente | **Un message à J+7 : « combien de ces prospects vous ont répondu ? »** C'est le chiffre qui dira si le barème et la donnée tiennent |
+
+### Le rythme et le stock (décisions 37 à 42)
+
+| # | Question | Décision |
+|---|---|---|
+| 37 | Capacité de traitement | **5 à 10 commandes par jour** |
+| 38 | Délai annoncé | **24 h partout, sans nuance.** Une seule promesse, y compris le dimanche |
+| 39 | Métier ou ville absent | **Le site enregistre la demande** et prévient quand c'est prêt. Chaque demande dit où investir |
+| 40 | Stock au lancement | **On ouvre avec les 187 fiches existantes** |
+| 41 | Comment on tient la charge | ⚠️ **LE MOTEUR DE COLLECTE PASSE EN V1.** Voir l'encadré ci-dessous |
+| 42 | Viviers prioritaires | **Tout** : plus de métiers à Cotonou · les mêmes métiers dans plus de villes · Abidjan depuis zéro · et **les commerçants sans site web**, tous métiers confondus |
+
+> ### ⚠️ Pourquoi le moteur de collecte ne peut plus attendre la V2
+>
+> 187 fiches, 5 à 10 commandes par jour, minimum 10 fiches, et une exclusivité
+> qui retire chaque fiche vendue du stock pendant 90 jours : **sept commandes de
+> 30 fiches et il ne reste plus rien à vendre.** Le site afficherait
+> « 0 disponible » dès la deuxième journée, et le compteur en direct de la
+> décision 21 rendrait la boutique inutilisable au lieu de la protéger.
+>
+> Le moteur de collecte **fait donc partie de la V1**, au même titre que la
+> vitrine. C'est ce qui retarde l'ouverture d'une à deux semaines, et c'est la
+> seule voie qui tienne à dix commandes par jour.
+
+### Le moteur (décisions 43 à 46)
+
+| # | Question | Décision |
+|---|---|---|
+| 43 | Origine des données | **Une page qui l'explique franchement** : d'où vient la donnée, ce qui est vérifié, ce qui ne l'est pas, et le droit à l'oubli des commerces |
+| 44 | Adresse d'envoi | **piste@nebula-agency.online** ⚠️ SPF, DKIM et DMARC à poser, sinon les emails tombent en indésirable |
+| 45 | Où tourne le moteur | **GitHub Actions.** Gratuit, sans carte bancaire, il se réveille chaque nuit, collecte, écrit, s'éteint |
+| 46 | Vivier insuffisant | **Élargissement LÉGER aux communes voisines, clairement marqué sur la fiche, PUIS alerte Telegram** si le compte n'y est toujours pas. Le moteur ne baisse jamais son exigence de qualité tout seul |
+
+La nuance de la décision 46 compte : le moteur peut s'étendre un peu dans
+l'espace, **jamais dans la qualité**. Une fiche moins complète livrée pour faire
+le nombre, c'est le client qui la découvre, et c'est la confiance qui part.
 
 ---
 
@@ -263,8 +299,11 @@ Le stock affiché en direct s'appuie en V1 sur un **inventaire écrit à la main
 (métier × ville → nombre disponible), alimenté par le carnet du 2026-08-03.
 En V2 il vient de la base.
 
-Hors périmètre V1, assumé : le moteur de collecte, la livraison automatique, le
-paiement en ligne, le compte client, la gestion de l'exclusivité en base.
+⚠️ **Le moteur de collecte fait maintenant partie de la V1** (décision 41). Il
+tourne sur GitHub Actions, chaque nuit, et alimente le stock.
+
+Hors périmètre V1, assumé : la livraison automatique, le paiement en ligne, le
+compte client.
 
 ---
 
