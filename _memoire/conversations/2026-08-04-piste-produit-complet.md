@@ -367,3 +367,85 @@ faux.**
   rien : deux façons de capturer l'accueil en croyant capturer autre chose.
 - Les **fonctions de bord vivent enfin dans le dépôt** (`piste/supabase/functions/`).
   Elles n'existaient nulle part : un incident chez Supabase les aurait perdues.
+
+---
+
+## « Je ne me vois pas lancer les appels moi-même »
+
+### La promesse que le vendeur ne pouvait pas tenir
+
+Le site disait, mot pour mot : « **Chaque numéro est composé avant l'envoi.** »
+Le supplément coûtait 60 F la fiche, le plus cher des quatre. Et le seul moyen
+de le tenir était que Mongazi compose lui-même, un numéro à la fois. **Dix
+commandes de cinquante fiches font cinq cents appels.**
+
+> **Une promesse que le vendeur ne peut pas tenir n'est pas une option, c'est
+> une dette.**
+
+Trois voies étaient possibles (un carnet de contacts WhatsApp importé en bloc,
+changer la promesse, ou retirer l'option). **Mongazi a choisi de changer la
+promesse et de la rendre vraie** : zéro geste de sa part, pour toujours.
+
+### Ce que « vérifié » veut dire maintenant
+
+Trois contrôles que la machine fait seule :
+
+1. **Le numéro appartient à une tranche réellement attribuée par le
+   régulateur.** Hors de ces tranches, la ligne ne peut pas exister.
+   Sources vérifiées le 2026-08-04, pas supposées :
+   - **Bénin** : ARCEP, réforme du 30/11/2024, 10 chiffres, préfixe `01`.
+     MTN `0142 0146 0150-0154 0156-0157 0159 0161-0162 0166-0167 0169
+     0190-0191 0196-0197` · Moov `0145 0155 0158 0160 0163-0165 0168 0194-0195
+     0198-0199` · Celtiis `0120-0124 0128-0129 0140-0144 0147-0149 0192-0193`.
+     ⚠️ Tout le bloc `012x` est accepté : les fixes historiques y vivent, et la
+     source ne parlait que des mobiles. Mieux vaut garder un douteux que jeter
+     un vrai fixe.
+   - **Togo** : 8 chiffres, mobiles en `7x` et `9x`, fixes en `2x`.
+   - **Côte d'Ivoire** : 10 chiffres depuis le 31/01/2021. Moov `01`/`21`,
+     MTN `05`/`25`, Orange `07`/`27`.
+2. **La fiche a été revue à sa source depuis moins de deux mois.**
+3. **Aucun client ne l'a signalée injoignable** : le signal le plus fort, parce
+   qu'un vrai humain a vraiment essayé.
+
+Plus la garantie qui existait déjà et qui est ce que l'acheteur veut vraiment :
+si ça ne répond pas, on remplace, gratuitement.
+
+⚠️ **Aucune des trois ne prouve qu'on décrochera**, et rien dans le produit ne
+doit le laisser croire. L'ancienne promesse survivait à **trois endroits**
+(`prix.js`, la marche à suivre du cockpit, la page « d'où viennent les fiches »)
+et dans l'e-mail de livraison qui demandait d'appeler chaque numéro.
+
+**Chiffre honnête** : 7 809 fiches sur 7 817 passent déjà, parce que tout le
+vivier a été relevé le même jour. Le tri prendra de la valeur avec le temps.
+
+⏳ **Plus tard** : un vrai test réseau (requête opérateur, ~3 F par numéro
+contre 60 F facturés) devient possible dès qu'un moyen de paiement
+international existe. Mongazi : « garder ça en tête, on verra ».
+
+### Le thème clair, par défaut
+
+Mongazi travaille souvent dehors : **un écran sombre au soleil de Cotonou ne se
+lit pas**. Le cockpit s'ouvre en clair, le sombre est à un bouton, le choix
+reste dans l'appareil.
+
+⚠️ **Deux palettes, pas une.** Un cyan néon lisible sur du noir devient
+illisible sur du papier. Chaque couleur a sa version claire et sa version
+sombre, et le contrôle vérifie le contraste **dans les deux**.
+
+### Quatre vrais défauts trouvés en chemin
+
+1. **L'onglet actif écrivait en sombre sur brique sombre, à 3,03:1.** Une
+   correction faite pour le thème sombre s'appliquait aussi au clair.
+2. **Une variable de Node référencée DANS le navigateur.** Le code passé à
+   `page.evaluate` est sérialisé : il n'y voit rien de Node. Une capture
+   montrait l'accueil en croyant montrer le cockpit ; un contrôle plantait.
+   **Toujours passer la valeur en argument.** Rencontré deux fois en une heure.
+3. **Le contrôle de contraste disait qu'un texte était illisible sans dire
+   OÙ.** Il rend maintenant la couleur, le fond et la classe. *Un défaut qu'on
+   ne peut pas localiser est un défaut qu'on ne corrige pas.*
+4. **Trois contrôles ont accusé le calcul des prix alors que le prix était
+   juste** : ils cliquaient sur un libellé écrit en dur, devenu obsolète. Ils
+   le **lisent** désormais dans le module. C'est la troisième fois que ce piège
+   se referme sur ce dépôt.
+
+**175 contrôles verts** (91 + 39 + 25 + 20), zéro rouge.
