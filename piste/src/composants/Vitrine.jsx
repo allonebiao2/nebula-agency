@@ -78,9 +78,13 @@ function Heros({ aller }) {
             <Bouton ton="pleinClair" href="#generateur">
               Composer ma commande
             </Bouton>
-            <Bouton ton="contourSombre" href="#fiche" className="hidden sm:inline-flex">
-              Voir une vraie fiche
-            </Bouton>
+            {/* ⚠️ On masque le CONTENEUR : `hidden` posé sur le bouton perdrait
+                contre le `inline-flex` que le composant applique déjà. */}
+            <span className="hidden sm:block">
+              <Bouton ton="contourSombre" href="#fiche">
+                Voir une vraie fiche
+              </Bouton>
+            </span>
           </Revele>
           <Revele d={340} className="hidden sm:block">
             <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-[0.88rem] text-sable">

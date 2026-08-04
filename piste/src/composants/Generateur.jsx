@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import {
   METIERS,
   VILLES,
@@ -64,17 +64,20 @@ function Phrase({ metier, ville, n, options, dispo }) {
       {morceaux.length === 0 ? (
         <span className="text-sourd">…dites-nous quoi, juste en dessous.</span>
       ) : (
-        morceaux.map((x) => (
-          <span
-            key={x.cle}
-            className={
-              x.fort
-                ? 'phrase-mot font-semibold text-brique'
-                : 'phrase-mot text-sourd'
-            }
-          >
-            {x.t}{' '}
-          </span>
+        morceaux.map((x, i) => (
+          /* ⚠️ L'espace se pose ENTRE les éléments, jamais dedans : un
+             `inline-block` avale l'espace qui le termine, et on lisait
+             « coutureà Cotonou ». */
+          <Fragment key={x.cle}>
+            <span
+              className={
+                x.fort ? 'phrase-mot font-semibold text-brique' : 'phrase-mot text-sourd'
+              }
+            >
+              {x.t}
+            </span>
+            {i < morceaux.length - 1 ? ' ' : ''}
+          </Fragment>
         ))
       )}
       {m && v && dispo >= MINIMUM && <span className="text-sourd">.</span>}
