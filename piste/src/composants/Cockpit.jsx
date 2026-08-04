@@ -11,6 +11,7 @@ import { CLES, ajouter, ecrire, estExpiree, lire, resteEn } from '../stockage.js
 import {
   etatCommandeServeur,
   listerCommandes,
+  lireTableau,
   livrerCarnet,
   motDePasseCockpit,
   poserMotDePasse,
@@ -26,6 +27,7 @@ import {
   sonnerLivraison,
 } from '../son.js'
 import { Bouton, Chiffre } from './Ui.jsx'
+import { Classement, Compteur, Courbe, Entonnoir, Stat, TEINTES } from './Hud.jsx'
 import { Puce } from './Trace.jsx'
 
 /*
@@ -40,7 +42,7 @@ import { Puce } from './Trace.jsx'
 const ETATS = [
   { cle: 'recue', nom: 'À encaisser', suite: 'Marquer payé', pastille: 'bg-braise/20 text-brique' },
   { cle: 'payee', nom: 'À livrer', suite: 'Marquer livré', pastille: 'bg-vert/15 text-vert' },
-  { cle: 'livree', nom: 'Livrées', suite: null, pastille: 'bg-encre/10 text-sourd' },
+  { cle: 'livree', nom: 'Livrées', suite: null, pastille: 'bg-[rgba(255,248,242,0.09)] text-sourd' },
 ]
 
 /* Lit une commande collée depuis WhatsApp : la ligne technique d'abord, le
@@ -138,7 +140,7 @@ function Rebours({ date }) {
   return (
     <span
       className={`rounded-full px-2.5 py-1 text-[0.75rem] font-semibold ${
-        t.h < 6 ? 'bg-brique/12 text-brique' : 'bg-encre/8 text-sourd'
+        t.h < 6 ? 'bg-brique/12 text-brique' : 'bg-[rgba(255,248,242,0.07)] text-sourd'
       }`}
     >
       il reste {t.texte}
@@ -314,6 +316,274 @@ function Veille({ veille, son, notifs, onSon, onNotifs }) {
   )
 }
 
+/*
+  ══════════════════════════════════════════════ LE TABLEAU DE BORD ═══
+
+  Mongazi : « je veux plus d'infos, genre des courbes, pour bien suivre
+  l'évolution du business et comment les clients interagissent avec PISTE, et
+  même les passants : combien de personnes viennent, combien achètent ».
+
+  Avant, PISTE ne comptait RIEN. Impossible de savoir si une journée était
+  bonne, quel métier remplir ensuite, ou à quel moment les gens s'en vont.
+
+  ⚠️ ON DIT « VISITES », JAMAIS « PERSONNES ». Le jeton de comptage meurt à la
+  fermeture de l'onglet : il compte des passages, pas des êtres humains.
+  Écrire « personnes » ferait un chiffre plus flatteur et faux, et on
+  prendrait des décisions dessus.
+*/
+function TableauDeBord({ t, jours, setJours, enCours }) {
+  if (!t) {
+    return (
+      <div className="hud-panneau mt-6">
+        <p className="hud-etiquette">Tableau de bord</p>
+        <p className="mt-2 text-[0.88rem] leading-relaxed text-sourd">
+          {enCours ? 'On rassemble les chiffres…' : 'Les chiffres arrivent dès que la veille répond.'}
+        </p>
+      </div>
+    )
+  }
+
+  const e = t.entonnoir || {}
+  const a = t.argent || {}
+  const v = t.vivier || {}
+  const marques = t.marques || {}
+  const nomMetier = (c) => METIERS.find((m) => m.cle === c)?.nom || c
+  const nomVille = (c) => VILLES.find((x) => x.cle === c)?.nom || c
+
+  /*
+    ⚠️ ON NE COMPARE QUE CE QUI EST COMPARABLE.
+
+    Les commandes existent depuis des jours, le comptage des visites depuis
+    quelques heures. Diviser l'un par l'autre a affiché « sur 100 qui
+    composent une commande, 2600 vont jusqu'au bout ». Un tableau qui affiche
+    2600 % ne sert plus à rien : on cesse de le croire, y compris quand il a
+    raison.
+
+    Le serveur renvoie donc un second entonnoir, restreint à la période où
+    TOUT est mesuré. Les taux ne sortent que de celui-là, et tant qu'il n'y a
+    pas de quoi calculer, on écrit un tiret. Un tiret honnête vaut mieux qu'un
+    pourcentage faux.
+  */
+  const comp = t.entonnoirComparable
+  /* ⚠️ IL FAUT UN MINIMUM POUR OSER UN TAUX. Avec une seule configuration
+     mesurée, « 0 sur 100 vont jusqu'au bout » est arithmétiquement exact et
+     se lit comme « personne n'achète ». Un chiffre exact qui donne une
+     conclusion fausse est pire qu'une case vide. En dessous de dix, on dit
+     qu'on ne sait pas encore. */
+  const ASSEZ = 10
+  const assez = !!comp && comp.configurent >= ASSEZ
+  const tauxAchat = assez ? Math.round((comp.commandent / comp.configurent) * 100) : null
+  const tauxPaye = comp && comp.commandent ? Math.round((comp.payees / comp.commandent) * 100) : null
+  const partLibre = v.total ? Math.round((v.libres / v.total) * 100) : 0
+  const depuisQuand = t.compteDepuis
+    ? new Date(t.compteDepuis).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })
+    : null
+
+  const PERIODES = [7, 30, 90]
+
+  return (
+    <section className="mt-7">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="hud-titre text-[1.05rem] hud-lueur-orange">TABLEAU DE BORD</h2>
+        <div className="flex gap-1.5">
+          {PERIODES.map((j) => (
+            <button
+              key={j}
+              type="button"
+              data-actif={jours === j ? 'oui' : 'non'}
+              onClick={() => setJours(j)}
+              className="hud-onglet min-h-[44px] rounded-lg px-3.5 text-[0.74rem]"
+            >
+              {j} J
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ── les grands chiffres, chacun sa couleur ── */}
+      <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Stat
+          titre="Encaissé"
+          valeur={a.encaisse}
+          format={fcfa}
+          /* Un zéro qui brille en vert se lit comme une réussite. Tant que
+             rien n'est encaissé, le chiffre reste éteint. */
+          ton={a.encaisse ? 'vert' : 'sourd'}
+          dessous={`${fcfa(a.attente || 0)} encore à encaisser`}
+        />
+        <Stat
+          titre="Commandé"
+          valeur={a.commande}
+          format={fcfa}
+          ton="orange"
+          dessous={`${e.commandent || 0} commandes · panier ${fcfa(a.panier || 0)}`}
+        />
+        <Stat
+          titre="Visites"
+          valeur={e.visites}
+          ton="cyan"
+          dessous={`${e.configurent || 0} ${(e.configurent || 0) > 1 ? 'ont' : 'a'} composé une commande`}
+        />
+        <Stat
+          titre="Fiches vendues"
+          valeur={a.fiches}
+          ton="violet"
+          dessous={`${v.libres || 0} encore libres sur ${v.total || 0}`}
+          jauge={partLibre}
+        />
+      </div>
+
+      {/* ── la courbe ── */}
+      <div className="hud-panneau hud-entre mt-3">
+        <p className="hud-etiquette">L’évolution, jour par jour</p>
+        <div className="mt-3">
+          <Courbe
+            points={t.jours || []}
+            series={[
+              { cle: 'visites', nom: 'Visites', couleur: TEINTES.cyan },
+              { cle: 'commandes', nom: 'Commandes', couleur: TEINTES.orange },
+              { cle: 'carnets', nom: 'Carnets livrés', couleur: TEINTES.vert },
+            ]}
+          />
+        </div>
+      </div>
+
+      <div className="hud-panneau hud-entre mt-3">
+        <p className="hud-etiquette">Le chiffre d’affaires, jour par jour</p>
+        <div className="mt-3">
+          <Courbe
+            points={t.jours || []}
+            hauteur={130}
+            series={[
+              { cle: 'chiffre', nom: 'Commandé', couleur: TEINTES.violet, format: fcfa },
+            ]}
+          />
+        </div>
+      </div>
+
+      {/* ── l'entonnoir et les classements ── */}
+      <div className="mt-3 grid gap-3 lg:grid-cols-2">
+        <div className="hud-panneau hud-entre">
+          <p className="hud-etiquette">Où les gens s’arrêtent</p>
+          <p className="mt-1.5 mb-3 text-[0.8rem] leading-relaxed text-sourd">
+            {assez ? (
+              <>
+                Sur 100 qui composent une commande, <b className="text-brique">{tauxAchat}</b> vont
+                jusqu’au bout
+                {tauxPaye !== null && (
+                  <>
+                    , et <b className="text-brique">{tauxPaye}</b> commandes sur 100 sont payées
+                  </>
+                )}
+                .
+              </>
+            ) : (
+              <>
+                Pas encore assez de visites mesurées pour un taux honnête : il en faut une
+                dizaine, il y en a {comp?.configurent || 0}.
+                {depuisQuand &&
+                  ` Le comptage a commencé le ${depuisQuand} ; avant cette date, seules les commandes sont connues.`}
+              </>
+            )}
+          </p>
+          <Entonnoir
+            comparable={assez}
+            etapes={[
+              {
+                nom: 'Sont venus sur PISTE',
+                n: e.visites || 0,
+                couleur: TEINTES.cyan,
+                ton: 'cyan',
+                dessous: 'Des visites, pas des personnes : le compteur meurt quand l’onglet se ferme.',
+              },
+              {
+                nom: 'Ont composé une commande',
+                n: e.configurent || 0,
+                couleur: TEINTES.violet,
+                ton: 'violet',
+              },
+              {
+                nom: 'Sont allés jusqu’au bout',
+                n: e.commandent || 0,
+                couleur: TEINTES.orange,
+                ton: 'orange',
+              },
+              {
+                nom: 'Ont payé',
+                n: e.payees || 0,
+                couleur: TEINTES.vert,
+                ton: 'vert',
+              },
+              {
+                nom: 'Ont reçu leur carnet',
+                n: e.livrees || 0,
+                couleur: TEINTES.vert,
+                ton: 'vert',
+              },
+            ]}
+          />
+        </div>
+
+        <div className="grid gap-3">
+          <div className="hud-panneau hud-entre">
+            <p className="hud-etiquette">Les métiers les plus cherchés</p>
+            <p className="mt-1.5 mb-3 text-[0.8rem] leading-relaxed text-sourd">
+              Ce que les gens cherchent, même sans acheter. C’est ça qui dit quel vivier
+              remplir ensuite.
+            </p>
+            <Classement
+              lignes={t.metiers || []}
+              nomDe={nomMetier}
+              couleur={TEINTES.cyan}
+              vide="Personne n’a encore composé de commande sur cette période."
+            />
+          </div>
+          <div className="hud-panneau hud-entre">
+            <p className="hud-etiquette">Les villes les plus cherchées</p>
+            <Classement
+              lignes={t.villes || []}
+              nomDe={nomVille}
+              couleur={TEINTES.violet}
+              vide="Rien à afficher pour l’instant."
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* ── ce que les clients font de leurs fiches ── */}
+      <div className="hud-panneau hud-entre mt-3">
+        <p className="hud-etiquette">Ce que vos clients font de leurs fiches</p>
+        <p className="mt-1.5 text-[0.8rem] leading-relaxed text-sourd">
+          Chaque fois qu’un client marque une fiche dans son carnet, ça remonte ici. C’est
+          le seul signal qui dise quelles fiches valent quelque chose.
+        </p>
+        {t.marquesTotal ? (
+          <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {[
+              ['ecrit', 'Ont écrit', 'orange'],
+              ['rdv', 'Veulent les voir', 'cyan'],
+              ['vendu', 'Ont vendu', 'vert'],
+              ['non', 'Pas intéressés', 'rouge'],
+            ].map(([cle, nom, ton]) => (
+              <div key={cle}>
+                <p className="hud-etiquette">{nom}</p>
+                <p className={`mt-1 text-[1.35rem] font-black leading-none hud-lueur-${ton}`}>
+                  <Compteur valeur={marques[cle] || 0} />
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-3 text-[0.82rem] text-sourd">
+            Aucun retour pour l’instant. Ça se remplit dès qu’un client travaille dans son
+            carnet.
+          </p>
+        )}
+      </div>
+    </section>
+  )
+}
+
 export default function Cockpit({ aller }) {
   const [commandes, setCommandes] = useState([])
   const [demandes, setDemandes] = useState([])
@@ -328,6 +598,9 @@ export default function Cockpit({ aller }) {
   const [notifs, setNotifs] = useState(() => etatNotifications())
   const [veille, setVeille] = useState({ quand: null, etat: 'attente' })
   const [nouvelles, setNouvelles] = useState([])
+  const [tableau, setTableau] = useState(null)
+  const [jours, setJours] = useState(30)
+  const [chargeTableau, setChargeTableau] = useState(true)
 
   useEffect(() => {
     setCommandes(lire('commandes'))
@@ -336,6 +609,26 @@ export default function Cockpit({ aller }) {
     const i = setInterval(() => rafraichir((x) => x + 1), 30000)
     return () => clearInterval(i)
   }, [])
+
+  /* Le tableau de bord se recharge quand on change de période, et toutes les
+     deux minutes : plus souvent ne sert à rien, ces chiffres bougent lentement. */
+  useEffect(() => {
+    if (!motDePasseCockpit()) return
+    let vivant = true
+    const charger = async () => {
+      const r = await lireTableau(jours)
+      if (!vivant) return
+      setChargeTableau(false)
+      if (r?.ok) setTableau(r.tableau)
+    }
+    setChargeTableau(true)
+    charger()
+    const i = setInterval(charger, 120000)
+    return () => {
+      vivant = false
+      clearInterval(i)
+    }
+  }, [jours])
 
   /*
     LE SON NE PEUT PAS S'OUVRIR TOUT SEUL.
@@ -644,7 +937,7 @@ export default function Cockpit({ aller }) {
       : commandes.filter((c) => c.etat === onglet && !estExpiree(c))
 
   return (
-    <div className="min-h-screen bg-papier pb-28">
+    <div className="hud min-h-screen pb-28">
       <header className="border-b border-trait bg-creme">
         <div className="mx-auto flex w-full max-w-[68rem] items-center justify-between gap-4 px-5 py-3.5 sm:px-8">
           <button
@@ -662,21 +955,12 @@ export default function Cockpit({ aller }) {
       </header>
 
       <div className="mx-auto w-full max-w-[68rem] px-5 py-8 sm:px-8 sm:py-12">
-        <h1 className="text-[clamp(1.8rem,6vw,2.6rem)]">Qui a payé, qu'est-ce que je livre.</h1>
+        <h1 className="hud-titre text-[clamp(1.5rem,5.4vw,2.2rem)] leading-tight">
+          QUI A PAYÉ,
+          <br />
+          <span className="hud-lueur-orange">QU’EST-CE QUE JE LIVRE.</span>
+        </h1>
 
-        {/* ⚠️ Cet encadré disait « ce cockpit vit dans CE navigateur ». Ce
-            n'est plus vrai depuis le 2026-08-04 : la commande part AUSSI en
-            base au moment où l'acheteur file sur WhatsApp. Un cockpit qui
-            décrit un fonctionnement périmé fait travailler de travers. */}
-        <div className="mt-6 rounded-2xl border-2 border-brique/30 bg-creme p-5">
-          <p className="font-semibold">Ce tableau est votre copie de travail.</p>
-          <p className="mt-1.5 text-[0.94rem] leading-relaxed text-sourd">
-            Chaque commande part en base au moment où l'acheteur file sur WhatsApp : elle
-            n'est jamais perdue, même si vous ne voyez pas passer son message. Ici, vous
-            gardez la vôtre : collez le message reçu au {NEBULA_WHATSAPP_JOLI} ci-dessous, il
-            se range tout seul avec son prix, son code et ses coordonnées.
-          </p>
-        </div>
 
         <Veille
           veille={veille}
@@ -685,6 +969,8 @@ export default function Cockpit({ aller }) {
           onSon={() => setSon(true)}
           onNotifs={async () => setNotifs(await demanderNotifications())}
         />
+
+        <TableauDeBord t={tableau} jours={jours} setJours={setJours} enCours={chargeTableau} />
 
         {/* Ce qui vient d'arriver, en clair. La tonalité prévient ; ce bandeau
             dit QUOI, parce qu'un son seul oblige à chercher. */}
@@ -713,6 +999,20 @@ export default function Cockpit({ aller }) {
             </ul>
           </div>
         )}
+
+        {/* ⚠️ Cet encadré disait « ce cockpit vit dans CE navigateur ». Ce
+            n'est plus vrai depuis le 2026-08-04 : la commande part AUSSI en
+            base au moment où l'acheteur file sur WhatsApp. Un cockpit qui
+            décrit un fonctionnement périmé fait travailler de travers. */}
+        <div className="mt-6 rounded-2xl border-2 border-brique/30 bg-creme p-5">
+          <p className="font-semibold">Ce tableau est votre copie de travail.</p>
+          <p className="mt-1.5 text-[0.94rem] leading-relaxed text-sourd">
+            Chaque commande part en base au moment où l'acheteur file sur WhatsApp : elle
+            n'est jamais perdue, même si vous ne voyez pas passer son message. Ici, vous
+            gardez la vôtre : collez le message reçu au {NEBULA_WHATSAPP_JOLI} ci-dessous, il
+            se range tout seul avec son prix, son code et ses coordonnées.
+          </p>
+        </div>
 
         <MarcheASuivre />
 
@@ -766,7 +1066,7 @@ export default function Cockpit({ aller }) {
               aria-pressed={onglet === e.cle}
               className={`min-h-[44px] rounded-full border px-4 text-[0.88rem] font-semibold transition-colors ${
                 onglet === e.cle
-                  ? 'border-brique bg-brique text-creme'
+                  ? 'border-brique bg-brique text-[#1a1108]'
                   : 'border-trait text-sourd hover:border-sourd'
               }`}
             >
@@ -860,7 +1160,7 @@ export default function Cockpit({ aller }) {
 
       {annulable && (
         <div className="fixed inset-x-0 bottom-0 z-50 px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <div className="mx-auto flex w-full max-w-[34rem] items-center justify-between gap-4 rounded-2xl bg-encre px-5 py-3.5 text-papier shadow-[0_18px_50px_-18px_rgb(20_17_14/0.7)]">
+          <div className="mx-auto flex w-full max-w-[34rem] items-center justify-between gap-4 rounded-2xl border border-[rgba(240,133,79,0.35)] bg-[#1b130d] px-5 py-3.5 text-[#efe6da] shadow-[0_18px_50px_-18px_rgb(20_17_14/0.7)]">
             <span className="text-[0.92rem]">Commande {annulable.c?.ref} retirée.</span>
             <button
               type="button"

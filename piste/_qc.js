@@ -266,7 +266,10 @@ const totalAffiche = (page) =>
     { nom: 'telephone', w: 390, h: 844, mobile: true },
     { nom: 'PC', w: 1440, h: 900, mobile: false },
   ]
-  const ROUTES = [
+  /* Notre base. Tout le reste est un tiers. */
+const NOTRE_SERVEUR = 'https://xukduhqqfzogisoimhyo.supabase.co'
+
+const ROUTES = [
     { nom: 'vitrine', h: '#/' },
     { nom: 'commander', h: '#/commander' },
     { nom: 'donnees', h: '#/donnees' },
@@ -283,9 +286,17 @@ const totalAffiche = (page) =>
       page.on('console', (m) => {
         if (m.type() === 'error') erreurs.push(m.text())
       })
+      /* ⚠️ CETTE REGLE VISE LES TIERS, PAS NOTRE PROPRE SERVEUR.
+         Elle existe pour interdire un CDN, une police distante, un mouchard :
+         tout ce qui met le site a la merci de quelqu'un d'autre. Nos propres
+         appels a Supabase (lire un carnet, compter une visite) sont le
+         fonctionnement normal du produit. Les compter comme des fautes aurait
+         pousse a supprimer la mesure au lieu de supprimer les dependances. */
       page.on('request', (req) => {
         const u = req.url()
-        if (!u.startsWith(base) && !u.startsWith('data:') && !u.startsWith('blob:')) externes.push(u)
+        if (u.startsWith(base) || u.startsWith('data:') || u.startsWith('blob:')) return
+        if (u.startsWith(NOTRE_SERVEUR)) return
+        externes.push(u)
       })
       await page.setViewport({
         width: e.w,

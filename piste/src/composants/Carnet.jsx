@@ -27,19 +27,63 @@ import { Bouton } from './Ui.jsx'
   n'écrit rien ne peut rien casser.
 */
 
+/*
+  LES QUATRE RÉPONSES.
+
+  Elles s'appelaient « Écrit · Rendez-vous · Vendu · Non ». Mongazi lui-même
+  ne savait pas ce qu'elles voulaient dire : quatre mots posés sans phrase
+  autour, dans une page qu'on ouvre debout dans la rue. Si celui qui vend le
+  produit ne comprend pas, aucun client ne comprendra.
+
+  Elles disent maintenant ce qui S'EST PASSÉ, à la première personne, comme on
+  le raconterait à quelqu'un. Un libellé qui se lit tout seul vaut mieux qu'un
+  libellé court avec une légende à côté.
+*/
 const ETATS = [
-  { cle: 'ecrit', mot: 'Écrit', classe: 'bg-[#a86a00] text-creme border-transparent' },
-  { cle: 'rdv', mot: 'Rendez-vous', classe: 'bg-brique text-creme border-transparent' },
-  { cle: 'vendu', mot: 'Vendu', classe: 'bg-vert text-creme border-transparent' },
-  { cle: 'non', mot: 'Non', classe: 'bg-rouge text-creme border-transparent' },
+  {
+    cle: 'ecrit',
+    mot: 'J’ai écrit',
+    aide: 'Vous les avez contactés. Vous attendez leur réponse.',
+    classe: 'bg-[#a86a00] text-creme border-transparent',
+  },
+  {
+    cle: 'rdv',
+    mot: 'Il veut me voir',
+    aide: 'Ils ont répondu et veulent en parler. C’est votre meilleure piste.',
+    classe: 'bg-brique text-creme border-transparent',
+  },
+  {
+    cle: 'vendu',
+    mot: 'J’ai vendu',
+    aide: 'C’est fait, ils ont acheté. Bravo.',
+    classe: 'bg-vert text-creme border-transparent',
+  },
+  {
+    cle: 'non',
+    mot: 'Pas intéressé',
+    aide: 'Ils ont dit non. La fiche passe en gris, vous ne la reverrez plus en premier.',
+    classe: 'bg-rouge text-creme border-transparent',
+  },
 ]
 
 const FILTRES = [
   { cle: '', mot: 'Tout' },
-  { cle: 'reste', mot: 'Pas encore faits' },
-  { cle: 'rdv', mot: 'Rendez-vous' },
+  { cle: 'reste', mot: 'Pas encore contactés' },
+  { cle: 'ecrit', mot: 'J’ai écrit' },
+  { cle: 'rdv', mot: 'Veulent me voir' },
   { cle: 'vendu', mot: 'Vendus' },
 ]
+
+/* Les initiales du commerce, comme sur une carte : deux lettres suffisent à
+   reconnaître une fiche du coin de l'oeil. */
+function initiales(nom) {
+  const mots = String(nom || '')
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+    .split(/\s+/)
+    .filter((m) => m.length > 1)
+  if (!mots.length) return '??'
+  return (mots[0][0] + (mots[1]?.[0] || mots[0][1] || '')).toUpperCase()
+}
 
 function cleEtat(jeton) {
   return `piste_carnet_${jeton}`
@@ -47,86 +91,269 @@ function cleEtat(jeton) {
 
 /* ------------------------------------------------------------------ ligne - */
 
-function Ligne({ f, etat, poser, signaler }) {
+function Fiche({ f, rang, total, etat, poser, signaler, metierNom }) {
+  const [ouvert, setOuvert] = useState(false)
   const m = METIERS.find((x) => x.cle === f.metier)
   const fixe = estFixe(f.pays, f.numero)
   const tel = international(f.pays, f.numero)
   const lieu = [f.quartier, f.localite].filter(Boolean).join(' · ')
+  const marque = ETATS.find((e) => e.cle === etat)
+
+  /*
+    OUVRIR WHATSAPP MARQUE « J'ai écrit », mais SEULEMENT si rien n'est encore
+    marqué : on n'écrase jamais un « J'ai vendu » parce que la personne a
+    rouvert la conversation. Sans ça, le seul signal d'apprentissage de PISTE
+    dépendait d'un second geste que personne ne fait debout dans la rue.
+  */
+  const jeContacte = () => {
+    if (!etat) poser('ecrit')
+    setOuvert(true)
+  }
 
   return (
-    <article
-      className={`rounded-2xl border bg-creme p-4 transition-opacity duration-200 ${
-        etat === 'non' ? 'border-trait opacity-55' : 'border-trait'
-      } ${etat === 'vendu' ? 'border-vert' : ''}`}
-    >
-      <h3 className="text-[1rem] font-semibold leading-tight text-encre">{f.nom}</h3>
-      <p className="mt-1 text-[0.8rem] text-sourd">
-        {m?.singulier || 'commerce'}
-        {lieu && ` · ${lieu}`}
-      </p>
-      <p className="mt-1.5 font-mono text-[0.9rem] tabular-nums text-encre">
-        {numeroJoli(f.pays, f.numero)}
-        {fixe && <span className="ml-2 font-sans text-[0.72rem] text-sourd">ligne fixe</span>}
-      </p>
+    <article className="dossier" data-ouvert={ouvert ? 'oui' : 'non'}>
+      <div className={`dossier-carte ${etat === 'non' ? 'opacity-60' : ''}`}>
+        <div className="dossier-trame" aria-hidden="true" />
 
-      {f.dirigeant && (
-        <p className="mt-1 text-[0.82rem] text-encre">
-          <span className="text-sourd">Demander </span>
-          {f.dirigeant}
-        </p>
-      )}
-      {f.sansSite && (
-        <p className="mt-1 text-[0.82rem] font-medium text-brique">
-          N'a rien en ligne. C'est le bon moment.
-        </p>
-      )}
+        {/* la bande du haut : un document numéroté, pas une ligne de liste */}
+        <div className="dossier-bande">
+          <span className="truncate">{m?.singulier || metierNom || 'commerce'}</span>
+          <span className="flex-none font-mono tabular-nums tracking-normal">
+            {String(rang).padStart(2, '0')}/{String(total).padStart(2, '0')}
+          </span>
+        </div>
 
-      <div className="mt-3 flex flex-wrap gap-2">
-        {fixe ? (
-          <Bouton ton="contour" className="flex-1" href={`tel:+${tel}`}>
-            Appeler
-          </Bouton>
-        ) : (
-          <>
-            <Bouton
-              ton="plein"
-              className="flex-1"
-              href={`https://wa.me/${tel}${
-                f.message ? `?text=${encodeURIComponent(f.message)}` : ''
-              }`}
-              target="_blank"
-              rel="noopener"
-            >
-              Écrire sur WhatsApp
-            </Bouton>
-            <Bouton ton="contour" className="flex-none px-5" href={`tel:+${tel}`}>
-              Appeler
-            </Bouton>
-          </>
-        )}
-      </div>
-
-      <div className="mt-3 flex flex-wrap items-center gap-1.5">
-        {ETATS.map((e) => (
-          <button
-            key={e.cle}
-            type="button"
-            aria-pressed={etat === e.cle}
-            onClick={() => poser(etat === e.cle ? '' : e.cle)}
-            className={`min-h-[44px] rounded-xl border px-3 text-[0.8rem] font-semibold transition-colors duration-150 ${
-              etat === e.cle ? e.classe : 'border-trait bg-transparent text-sourd hover:border-sourd'
-            }`}
-          >
-            {e.mot}
-          </button>
-        ))}
+        {/* ⚠️ Le corps entier ouvre la fiche : dans la rue, au pouce, viser une
+            petite flèche ne marche pas. */}
         <button
           type="button"
-          onClick={signaler}
-          className="ml-auto min-h-[44px] px-2 text-[0.78rem] font-medium text-sourd underline underline-offset-4 hover:text-brique"
+          className="dossier-poignee"
+          aria-expanded={ouvert}
+          onClick={() => setOuvert((o) => !o)}
         >
-          Injoignable ?
+          <div className="flex min-w-0 items-center gap-3 px-3.5 pb-3 pt-3.5">
+            <span className="dossier-initiales" aria-hidden="true">
+              {initiales(f.nom)}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-[1.02rem] font-semibold leading-tight text-encre">
+                {f.nom}
+              </span>
+              {lieu && <span className="mt-0.5 block text-[0.8rem] text-sourd">{lieu}</span>}
+              <span className="mt-1 block font-mono text-[0.92rem] tabular-nums text-encre">
+                {numeroJoli(f.pays, f.numero)}
+                {fixe && (
+                  <span className="ml-2 font-sans text-[0.7rem] text-sourd">ligne fixe</span>
+                )}
+              </span>
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between gap-2 px-3.5 pb-3">
+            {marque ? (
+              <span
+                className={`rounded-lg px-2.5 py-1 text-[0.74rem] font-semibold ${marque.classe}`}
+              >
+                {marque.mot}
+              </span>
+            ) : (
+              <span className="text-[0.76rem] text-sourd">Pas encore contacté</span>
+            )}
+            <span className="flex items-center gap-1.5 text-[0.76rem] font-semibold text-brique">
+              {ouvert ? 'Replier' : 'Voir la fiche'}
+              <svg
+                viewBox="0 0 12 12"
+                aria-hidden="true"
+                className={`h-3 w-3 transition-transform duration-300 ${ouvert ? 'rotate-180' : ''}`}
+              >
+                <path
+                  d="M2 4.2 6 8.2l4-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+          </div>
         </button>
+
+        {/* Les deux gestes qui rapportent restent TOUJOURS visibles : les
+            cacher derrière une ouverture reviendrait à cacher ce qu'on vend. */}
+        <div className="flex flex-wrap gap-2 px-3.5 pb-3.5">
+          {fixe ? (
+            <Bouton ton="contour" className="flex-1" href={`tel:+${tel}`} onClick={jeContacte}>
+              Appeler
+            </Bouton>
+          ) : (
+            <>
+              <Bouton
+                ton="plein"
+                className="flex-1"
+                href={`https://wa.me/${tel}${
+                  f.message ? `?text=${encodeURIComponent(f.message)}` : ''
+                }`}
+                target="_blank"
+                rel="noopener"
+                onClick={jeContacte}
+              >
+                Écrire sur WhatsApp
+              </Bouton>
+              <Bouton
+                ton="contour"
+                className="flex-none px-5"
+                href={`tel:+${tel}`}
+                onClick={jeContacte}
+              >
+                Appeler
+              </Bouton>
+            </>
+          )}
+        </div>
+
+        {/* ─────────────────────────────────────────── le dos de la fiche ── */}
+        <div className="dossier-dos">
+          <div className="dossier-dedans">
+            <div className="dossier-perfore px-3.5 pb-4 pt-3.5">
+              <dl className="dossier-releve">
+                <dt>Commerce</dt>
+                <dd>{f.nom}</dd>
+
+                <dt>Métier</dt>
+                <dd>{m?.singulier || metierNom || 'commerce'}</dd>
+
+                <dt>Où</dt>
+                <dd>{lieu || 'non précisé'}</dd>
+
+                <dt>Numéro</dt>
+                <dd className="font-mono tabular-nums">
+                  {numeroJoli(f.pays, f.numero)}
+                  {fixe && <span className="ml-2 font-sans text-sourd">ligne fixe</span>}
+                </dd>
+
+                {f.dirigeant && (
+                  <>
+                    <dt>Demander</dt>
+                    <dd>{f.dirigeant}</dd>
+                  </>
+                )}
+                {f.sansSite && (
+                  <>
+                    <dt>Sur internet</dt>
+                    <dd className="font-medium text-brique">
+                      Rien du tout. C’est le bon moment pour les approcher.
+                    </dd>
+                  </>
+                )}
+              </dl>
+
+              {fixe && (
+                <p className="mt-3.5 rounded-xl bg-papier2/60 px-3 py-2.5 text-[0.82rem] leading-relaxed text-sourd">
+                  C’est un numéro fixe : il n’a pas WhatsApp. On l’appelle, on ne lui écrit
+                  pas.
+                </p>
+              )}
+
+              {f.message && !fixe && (
+                <div className="mt-3.5">
+                  <p className="text-[0.66rem] font-bold uppercase tracking-[0.09em] text-sourd">
+                    Le message qui partira
+                  </p>
+                  <p className="mt-1.5 whitespace-pre-line rounded-xl bg-braise/10 px-3 py-2.5 text-[0.84rem] leading-relaxed text-encre">
+                    {f.message}
+                  </p>
+                  <p className="mt-1.5 text-[0.78rem] text-sourd">
+                    Il s’écrit tout seul dans WhatsApp. Vous pouvez le changer avant
+                    d’envoyer.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* ─────────────────────────── les quatre réponses, expliquées ── */}
+            <div className="dossier-perfore bg-papier2/35 px-3.5 pb-4 pt-3.5">
+              <p className="text-[0.9rem] font-semibold text-encre">
+                Où en êtes-vous avec ce commerce ?
+              </p>
+              <p className="mt-1 text-[0.82rem] leading-relaxed text-sourd">
+                Appuyez sur ce qui s’est passé. Ça reste dans votre téléphone, même sans
+                réseau, et ça nous aide à mieux choisir vos prochaines fiches.
+              </p>
+
+              <div className="mt-3 grid gap-2">
+                {ETATS.map((e) => {
+                  const actif = etat === e.cle
+                  return (
+                    <button
+                      key={e.cle}
+                      type="button"
+                      aria-pressed={actif}
+                      onClick={() => poser(actif ? '' : e.cle)}
+                      className={`flex min-h-[52px] items-start gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors duration-150 ${
+                        actif ? e.classe : 'border-trait bg-creme hover:border-sourd'
+                      }`}
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={`mt-0.5 grid h-5 w-5 flex-none place-items-center rounded-full border-2 ${
+                          actif ? 'border-creme bg-creme/25' : 'border-trait'
+                        }`}
+                      >
+                        {actif && (
+                          <svg viewBox="0 0 12 12" className="h-3 w-3">
+                            <path
+                              d="M2.5 6.3 5 8.7l4.5-5"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        )}
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-[0.9rem] font-semibold">{e.mot}</span>
+                        <span
+                          className={`mt-0.5 block text-[0.78rem] leading-snug ${
+                            actif ? 'opacity-90' : 'text-sourd'
+                          }`}
+                        >
+                          {e.aide}
+                        </span>
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+
+              {etat && (
+                <button
+                  type="button"
+                  onClick={() => poser('')}
+                  className="mt-2 min-h-[44px] px-1 text-[0.8rem] font-medium text-sourd underline underline-offset-4 hover:text-brique"
+                >
+                  Effacer ma réponse
+                </button>
+              )}
+            </div>
+
+            <div className="px-3.5 pb-4 pt-3">
+              <button
+                type="button"
+                onClick={signaler}
+                className="min-h-[44px] text-[0.82rem] font-medium text-sourd underline underline-offset-4 hover:text-brique"
+              >
+                Ce numéro ne répond plus ?
+              </button>
+              <p className="mt-1 text-[0.78rem] leading-relaxed text-sourd">
+                Dites-le nous : on la remplace sans rien vous facturer, et la remplaçante
+                apparaît dans ce même carnet.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </article>
   )
@@ -316,11 +543,48 @@ export default function Carnet({ jeton, aller }) {
             {cmd.villeNom ? ` à ${cmd.villeNom}` : ''}, {fiches.length} fiches.
           </p>
           <p className="mt-2">
-            Une fiche ne répond plus ? Appuyez sur « Injoignable ? » : elle est remplacée sans
-            frais, et la remplaçante apparaît dans ce même lien. Ces fiches sont à vous seul
-            pendant 90 jours.
+            Ces fiches sont à vous seul pendant 90 jours.
           </p>
         </div>
+
+        {/*
+          ⚠️ CE BLOC EST LE PLUS IMPORTANT DE LA PAGE.
+          Le carnet arrive chez des gens qui n'ont jamais fait de démarchage.
+          Sans ces trois phrases, ils voyaient une liste de numéros et quatre
+          mots qu'ils ne comprenaient pas. Un outil qu'il faut deviner n'est
+          pas un outil, c'est un devoir.
+        */}
+        <ol className="mt-3 grid gap-2.5 rounded-2xl border border-trait bg-creme p-4">
+          {[
+            [
+              'Appuyez sur « Écrire sur WhatsApp ».',
+              'La conversation s’ouvre toute seule, avec le message déjà écrit. Vous n’avez qu’à envoyer.',
+            ],
+            [
+              'Dites ce qui s’est passé.',
+              'Ouvrez la fiche et appuyez sur « J’ai écrit », « Il veut me voir », « J’ai vendu » ou « Pas intéressé ». C’est comme ça que vous savez où vous en êtes.',
+            ],
+            [
+              'Fermez quand vous voulez.',
+              'Votre avancement reste dans ce téléphone, même sans réseau. Revenez par le même lien, tout y est.',
+            ],
+          ].map(([titre, dessous], i) => (
+            <li key={titre} className="flex gap-3">
+              <span
+                aria-hidden="true"
+                className="grid h-6 w-6 flex-none place-items-center rounded-full bg-brique text-[0.76rem] font-bold text-creme"
+              >
+                {i + 1}
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[0.9rem] font-semibold text-encre">{titre}</span>
+                <span className="mt-0.5 block text-[0.84rem] leading-relaxed text-sourd">
+                  {dessous}
+                </span>
+              </span>
+            </li>
+          ))}
+        </ol>
 
         {/* ----------------------------------------------------- les fiches - */}
         <div className="mt-4 grid gap-3">
@@ -329,10 +593,13 @@ export default function Carnet({ jeton, aller }) {
               Rien avec ces filtres. Appuyez sur « Tout » pour revoir votre carnet entier.
             </p>
           ) : (
-            visibles.map((f) => (
-              <Ligne
+            visibles.map((f, i) => (
+              <Fiche
                 key={f.nom + f.numero}
                 f={f}
+                rang={i + 1}
+                total={visibles.length}
+                metierNom={cmd.metierNom}
                 etat={etats[f.nom] || ''}
                 poser={(v) => poser(f.nom, v)}
                 signaler={() => signaler(f)}

@@ -12,7 +12,7 @@ import {
   plurielsListe,
 } from '../donnees.js'
 import { BASE, SUPPLEMENTS, calcul, fcfa, nombre as jolinombre } from '../prix.js'
-import { deposerCommande } from '../supabase.js'
+import { deposerCommande, marquerVisite } from '../supabase.js'
 import { CLES, ajouter, lire } from '../stockage.js'
 import FicheExemple from './FicheExemple.jsx'
 import Paiement from './Paiement.jsx'
@@ -254,6 +254,13 @@ export default function Questionnaire({ aller }) {
     setOffre(reprise.offre || '')
     setEtape(7)
   }, [reprise])
+  /* « Il a configuré » = il a choisi un métier ET une ville. Avant ça, il
+     regarde ; après, il compose vraiment une commande. C'est le seul point de
+     l'entonnoir qui distingue un passant d'un acheteur potentiel. */
+  useEffect(() => {
+    if (metier && ville) marquerVisite('configure', { metier, ville, n })
+  }, [metier, ville])
+
   const haut = useRef(null)
 
   const dispo = useMemo(() => stock(metier, ville), [metier, ville])
@@ -453,6 +460,7 @@ export default function Questionnaire({ aller }) {
         total: c.total,
       }
     )
+    marquerVisite('commande', { metier, ville, n, total: c.total })
     setCommande({ ...enr, texte })
     window.open(
       `https://wa.me/${NEBULA_WHATSAPP}?text=${encodeURIComponent(texte)}`,

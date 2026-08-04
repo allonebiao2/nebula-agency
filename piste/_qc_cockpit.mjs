@@ -70,9 +70,24 @@ p.on('response', async (r) => {
   try {
     const t = await r.text()
     const d = JSON.parse(t)
+    /* ⚠️ Chercher le MOT « fiches » etait faux : le tableau de bord renvoie
+       `"fiches": 632`, c'est-a-dire un NOMBRE de fiches vendues, pas des
+       fiches. Un controle qui confond un compteur avec de la marchandise
+       devient rouge sans qu'aucune fuite n'existe, et on finit par
+       l'ignorer. On cherche donc ce qui fuirait vraiment : un numero de
+       telephone, un nom de dirigeant, un identifiant de fiche. */
     reponses.push({
       ok: d.ok === true,
-      fuite: /"numero"|"fiches"|"fixe"|"dirigeant"/.test(t),
+      /* ⚠️ On NE cherche PAS un numero de telephone : la liste des commandes
+         contient le WhatsApp de l'acheteur, qui est le SIEN et qui doit
+         s'afficher pour qu'on puisse le rappeler. Un numero seul ne dit pas
+         d'ou il vient ; ce qui trahit une fiche du vivier, c'est le NOM du
+         champ qui la transporte. */
+      fuite:
+        /"numero"\s*:\s*"/.test(t) ||
+        /"dirigeant"\s*:\s*"/.test(t) ||
+        /"fixe"\s*:/.test(t) ||
+        /"fiches"\s*:\s*\[/.test(t),
     })
   } catch (e) {}
 })

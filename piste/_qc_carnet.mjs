@@ -31,10 +31,17 @@ const r = await p.evaluate(()=>{
   const cartes=[...document.querySelectorAll('article')]
   const wa=[...document.querySelectorAll('a[href^="https://wa.me/"]')]
   const tel=[...document.querySelectorAll('a[href^="tel:"]')]
-  const petites=[...document.querySelectorAll('button,a,input')].filter(e=>{const b=e.getBoundingClientRect();return b.height>0&&b.width>0&&b.height<44})
+  /* ⚠️ Le dos de la fiche est REPLIE : il porte `rotateX(-86deg)`, et un
+     `getBoundingClientRect()` rend la boite APRES transformation, donc
+     ecrasee a quelques pixels. Mesurer la revient a inventer 120 defauts
+     qui n'existent pas. On ne mesure que ce qui est reellement visible ;
+     le dos est mesure plus bas, une fois ouvert. */
+  const visible=e=>{const d=e.closest('.dossier-dedans');return !d||e.closest("[data-ouvert='oui']")}
+  const petites=[...document.querySelectorAll('button,a,input')].filter(visible).filter(e=>{const b=e.getBoundingClientRect();return b.height>0&&b.width>0&&b.height<44})
   return {
     fiches:cartes.length,
-    ref:/PISTE-V2/.test(t),
+    ref:/PISTE-[A-Z0-9]{4}/.test(t),
+    annonce:Number((t.match(/(\d+)\s+fiches/)||[])[1])||0,
     texte:t.slice(0,400),
     wa:wa.length, tel:tel.length,
     mobiles: cartes.filter(c=>!/ligne fixe/.test(c.innerText)).length,
@@ -43,26 +50,51 @@ const r = await p.evaluate(()=>{
     numeroComplet: /\b\d\d \d\d \d\d \d\d\b/.test(t),
     masque: /••/.test(t),
     fixeSansWa: cartes.filter(c=>/ligne fixe/.test(c.innerText) && c.querySelector('a[href^="https://wa.me/"]')).length,
-    injoignable: [...document.querySelectorAll('article button')].filter(b=>/Injoignable/.test(b.innerText)).length,
+    injoignable: [...document.querySelectorAll('article button')].filter(b=>/ne répond plus/.test(b.innerText)).length,
     deborde: document.documentElement.scrollWidth-document.documentElement.clientWidth,
     petites: petites.length,
     cadratin: /[\u2014\u2013]/.test(t),
   }
 })
-dire(r.fiches===30, `les 30 fiches achetées sont là (${r.fiches})`)
+/* ⚠️ On LIT combien de fiches ce carnet contient au lieu d'ecrire 30 dans
+   le script : le jour ou on teste un autre carnet, un controle qui recopie
+   un chiffre devient rouge sans qu'aucun defaut n'existe. */
+dire(r.fiches>0 && r.fiches===r.annonce, `toutes les fiches annoncees sont la (${r.fiches}/${r.annonce})`)
 dire(r.ref, `la référence du carnet est affichée`)
 dire(r.numeroComplet, `les numéros sont COMPLETS : c'est payé`)
 dire(!r.masque, `plus aucun masquage dans le carnet`)
 dire(r.wa===r.mobiles, `un bouton WhatsApp par fiche joignable, et rien de plus (${r.wa} pour ${r.mobiles} mobiles, ${r.fixes} fixes)`)
 dire(r.waAvecMessage===r.wa, `chacun porte le message déjà écrit (${r.waAvecMessage})`)
 dire(r.fixeSansWa===0, `aucun bouton WhatsApp sur une ligne fixe (${r.fixeSansWa})`)
-dire(r.injoignable===30, `chaque fiche a son bouton « Injoignable ? » (${r.injoignable})`)
+dire(r.injoignable===r.fiches, `chaque fiche peut signaler un numero mort (${r.injoignable}/${r.fiches})`)
 dire(r.deborde<=0, `aucun débordement horizontal (${r.deborde} px)`)
 dire(r.petites===0, `aucune cible sous 44 px (${r.petites})`)
 dire(!r.cadratin, `aucun tiret cadratin`)
 
+// --- la fiche s'ouvre, et le dos devient reellement lisible ---
+await p.evaluate(()=>{document.querySelector('.dossier-poignee')?.click()})
+await dodo(700)
+const dos = await p.evaluate(()=>{
+  const d=document.querySelector("[data-ouvert='oui'] .dossier-dedans")
+  if(!d) return {ouvert:false}
+  const b=d.getBoundingClientRect()
+  const cibles=[...d.querySelectorAll('button,a')].filter(e=>{const r=e.getBoundingClientRect();return r.height>0&&r.width>0})
+  return {
+    ouvert:b.height>120,
+    hauteur:Math.round(b.height),
+    petites:cibles.filter(e=>e.getBoundingClientRect().height<44).length,
+    reponses:['J\u2019ai \u00e9crit','Il veut me voir','J\u2019ai vendu','Pas int\u00e9ress\u00e9']
+      .filter(m=>d.innerText.includes(m)).length,
+    explique:/Où en êtes-vous/.test(d.innerText),
+  }
+})
+dire(dos.ouvert, `la fiche s'ouvre vraiment quand on appuie dessus (${dos.hauteur||0} px)`)
+dire(dos.reponses===4, `les quatre réponses sont dans le dos (${dos.reponses}/4)`)
+dire(dos.explique, `le dos explique à quoi servent ces réponses`)
+dire(dos.petites===0, `dans la fiche ouverte, aucune cible sous 44 px (${dos.petites})`)
+
 // --- l'avancement se garde ---
-await p.evaluate(()=>{[...document.querySelectorAll('button')].find(b=>b.innerText.trim()==='Vendu')?.click()})
+await p.evaluate(()=>{[...document.querySelectorAll('button')].find(b=>b.innerText.startsWith('J\u2019ai vendu'))?.click()})
 await dodo(400)
 const avant = await p.evaluate(()=>document.body.innerText.match(/(\d+) vendus?\b/)?.[1])
 await p.reload({waitUntil:'networkidle0'})

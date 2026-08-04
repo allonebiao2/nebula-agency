@@ -5,6 +5,7 @@ import Cockpit from './composants/Cockpit.jsx'
 import Origine from './composants/Origine.jsx'
 import Carnet from './composants/Carnet.jsx'
 import Recu from './composants/Recu.jsx'
+import { marquerVisite } from './supabase.js'
 
 /*
   Trois écrans, une adresse. Le routage passe par le `#` : Cloudflare Pages sert
@@ -57,6 +58,14 @@ export default function App() {
     window.addEventListener('hashchange', surHash)
     return () => window.removeEventListener('hashchange', surHash)
   }, [])
+
+  /* ⚠️ On ne compte PAS les passages dans le cockpit : c'est l'écran de
+     Mongazi, pas celui d'un visiteur. Le compter gonflerait l'entonnoir avec
+     nos propres visites, et l'entonnoir servirait à se mentir. */
+  useEffect(() => {
+    if (route === 'cockpit') return
+    marquerVisite(route === 'carnet' ? 'carnet' : 'arrivee')
+  }, [route])
 
   const aller = useCallback((h) => {
     if (window.location.hash === h) {

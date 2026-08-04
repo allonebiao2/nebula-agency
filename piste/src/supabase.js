@@ -216,3 +216,83 @@ export async function etatCommandeServeur(reference, etat) {
     return { ok: false, erreur: 'réseau' }
   }
 }
+
+/*
+  ══════════════════════════════════════════════════════ CE QU'ON COMPTE ═══
+
+  PISTE ne comptait RIEN. On ne savait pas combien de gens venaient, combien
+  configuraient une commande, ni lesquels partaient en route. Impossible, donc,
+  de savoir quel métier remplir ensuite ni où les gens abandonnent.
+
+  ⚠️ CE QU'ON NE STOCKE PAS, ET C'EST VOLONTAIRE
+    pas d'adresse IP · pas de navigateur · pas de cookie · aucun identifiant
+    qui suive quelqu'un d'un jour sur l'autre · aucune donnée personnelle.
+
+  Le jeton de visite est tiré au hasard, vit dans l'ONGLET, et meurt à sa
+  fermeture. Il compte des VISITES, pas des personnes, et c'est exactement ce
+  que le cockpit affichera : promettre des personnes serait faux.
+
+  Une mesure ne doit jamais faire échouer ce qu'elle mesure : tout est en
+  « au mieux », sans await, et une panne réseau ne se voit pas.
+*/
+const CLE_VISITE = 'piste_visite'
+
+function jetonVisite() {
+  try {
+    let v = sessionStorage.getItem(CLE_VISITE)
+    if (!v) {
+      v = [...crypto.getRandomValues(new Uint8Array(9))]
+        .map((b) => b.toString(36))
+        .join('')
+        .slice(0, 12)
+      sessionStorage.setItem(CLE_VISITE, v)
+    }
+    return v
+  } catch (e) {
+    return 'sans-stockage'
+  }
+}
+
+/* Une étape franchie une seule fois par visite : sans ça, un client qui change
+   trois fois de métier compterait pour trois, et l'entonnoir mentirait. */
+const dejaVu = new Set()
+
+export function marquerVisite(etape, extra = {}) {
+  const cle = etape + (extra.metier || '') + (extra.ville || '')
+  if (etape !== 'commande' && dejaVu.has(cle)) return
+  dejaVu.add(cle)
+  try {
+    appeler(
+      'piste_marquer_visite',
+      {
+        p_visite: jetonVisite(),
+        p_etape: etape,
+        p_metier: extra.metier || null,
+        p_ville: extra.ville || null,
+        p_n: extra.n || null,
+        p_total: extra.total || null,
+      },
+      true
+    ).catch(() => {})
+  } catch (e) {}
+}
+
+/* Le tableau de bord du cockpit, en un seul appel. */
+export async function lireTableau(jours = 30) {
+  const motdepasse = motDePasseCockpit()
+  if (!motdepasse) return { ok: false, erreur: 'mot de passe' }
+  try {
+    const r = await fetch(`${URL_BASE}/functions/v1/piste-cockpit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: CLE_PUBLIQUE,
+        Authorization: `Bearer ${CLE_PUBLIQUE}`,
+      },
+      body: JSON.stringify({ action: 'tableau', jours, motdepasse }),
+    })
+    return await r.json()
+  } catch (e) {
+    return { ok: false, erreur: 'réseau' }
+  }
+}
