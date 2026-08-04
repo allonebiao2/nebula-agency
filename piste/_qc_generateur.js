@@ -32,6 +32,14 @@ const MIME = {
    casse d'un coup. On lit la source. */
 const D = await import('./src/donnees.js')
 const PX = await import('./src/prix.js')
+/* ⚠️ ON LIT LES LIBELLES DANS LE MODULE, ON NE LES RECOPIE PAS.
+   Le jour ou « Le numero est teste » est devenu « Le numero est verifie »,
+   trois controles sont passes au rouge d'un coup en accusant le calcul des
+   prix, alors que le prix etait juste : le controle cliquait simplement a
+   cote. Un controle qui recopie une chaine casse a chaque mot change. */
+const OPT_VERIFIE = PX.SUPPLEMENTS.find((x) => x.cle === 'teste')
+const NOM_VERIFIE = OPT_VERIFIE.nom
+const COURT_VERIFIE = OPT_VERIFIE.court
 const M = (cle) => (D.METIERS.find((x) => x.cle === cle) || {}).nom || cle
 const V = (cle) => (D.VILLES.find((x) => x.cle === cle) || {}).nom || cle
 
@@ -218,18 +226,26 @@ const serveur = http.createServer((q, r) => {
   dire(total === attendu10, `10 fiches sans option = ${attendu10} F (lu : ${total})`)
 
   /* ------------------------------------------- 5. les suppléments et le message */
-  await page.evaluate(() => {
+  /* ⚠️ Le code passé au navigateur ne voit AUCUNE variable de Node : il est
+     sérialisé puis évalué là-bas. `NOM_VERIFIE` y valait « undefined » et tout
+     le contrôle plantait. On passe la valeur en ARGUMENT, toujours. */
+  await page.evaluate((nom) => {
     const e = [...document.querySelectorAll('[role="switch"]')].find((x) =>
-      x.innerText.includes('Le numéro est testé')
+      x.innerText.includes(nom)
     )
     e?.click()
-  })
+  }, NOM_VERIFIE)
   await attendre(260)
   total = await lireTotal()
   const attendu10t = String(PX.calcul(10, { teste: 1 }).total)
   dire(total === attendu10t, `avec le numéro testé, 10 fiches = ${attendu10t} F (lu : ${total})`)
   t = await texte()
-  dire(/le numéro testé/.test(await phrase()), `la phrase dit maintenant l'option choisie`)
+  /* Une inclusion simple : echapper une chaine pour en faire un regex etait
+     inutile ici, et l'echappement lui-meme a casse le fichier. */
+  dire(
+    (await phrase()).includes(COURT_VERIFIE),
+    `la phrase dit maintenant l'option choisie`
+  )
 
   await page.evaluate(() => {
     const e = [...document.querySelectorAll('[role="switch"]')].find((x) =>

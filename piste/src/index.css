@@ -917,7 +917,7 @@ input[type='range']::-moz-range-thumb {
    D'où la règle : on ne remappe en jeton QUE ce qui n'a qu'un seul rôle
    (les textes secondaires, les traits, les couleurs de signal), et on
    bascule les fonds à double emploi UN PAR UN, sans toucher aux textes. */
-.hud {
+.hud[data-theme='sombre'] {
   --color-sourd: #a1927f;
   --color-trait: rgba(240, 133, 79, 0.2);
   --color-traitsombre: rgba(240, 133, 79, 0.3);
@@ -928,25 +928,30 @@ input[type='range']::-moz-range-thumb {
   --color-rouge: #ff8090;
 }
 /* les fonds basculent… */
-.hud .bg-papier { background-color: #0a0806; }
-.hud .bg-creme { background-color: rgba(255, 248, 242, 0.045); }
-.hud .bg-papier2 { background-color: rgba(255, 248, 242, 0.06); }
+.hud[data-theme='sombre'] .bg-papier { background-color: #0a0806; }
+.hud[data-theme='sombre'] .bg-creme { background-color: rgba(255, 248, 242, 0.045); }
+.hud[data-theme='sombre'] .bg-papier2 { background-color: rgba(255, 248, 242, 0.06); }
 /* …et les textes sombres deviennent clairs */
-.hud .text-encre { color: #efe6da; }
-.hud .hover\:border-encre:hover { border-color: rgba(240, 133, 79, 0.55); }
+.hud[data-theme='sombre'] .text-encre { color: #efe6da; }
+.hud[data-theme='sombre'] .hover\:border-encre:hover { border-color: rgba(240, 133, 79, 0.55); }
 /* du texte posé sur de l'orange doit être SOMBRE, pas clair */
-.hud .bg-brique.text-creme,
-.hud .bg-brique { color: #1a1108; }
-.hud .text-brique { color: var(--color-brique); }
+/* ⚠️ LE TEXTE POSÉ SUR LA BRIQUE CHANGE AVEC LE THÈME, ET IL LE FAUT.
+   En clair, la brique est foncée (#a8401f) : le texte doit être clair.
+   En sombre, elle devient orange vif (#f0854f) : le texte doit être foncé.
+   Poser une seule fois `text-[#1a1108]` dans le JSX donnait du sombre sur du
+   sombre en thème clair, à 3,03:1 pour un onglet qu'on lit tout le temps. */
+.hud[data-theme='sombre'] .bg-brique.text-creme,
+.hud[data-theme='sombre'] .bg-brique { color: #1a1108; }
+.hud[data-theme='sombre'] .text-brique { color: var(--color-brique); }
 /* le champ de saisie : sur fond sombre, un placeholder à 60 % est illisible */
-.hud input,
-.hud textarea {
+.hud[data-theme='sombre'] input,
+.hud[data-theme='sombre'] textarea {
   background-color: rgba(255, 248, 242, 0.05);
   color: #efe6da;
   border-color: rgba(240, 133, 79, 0.25);
 }
-.hud input::placeholder,
-.hud textarea::placeholder { color: #8e8171; }
+.hud[data-theme='sombre'] input::placeholder,
+.hud[data-theme='sombre'] textarea::placeholder { color: #8e8171; }
 
 /* ═══════════════════════════════════════════════════════════════ LE HUD ═══
    LE COCKPIT · un poste de pilotage, pas une page.
@@ -970,6 +975,33 @@ input[type='range']::-moz-range-thumb {
    fluides sur un téléphone (leçon latence du 2026-07-21). */
 
 .hud {
+  /* ── LE THÈME CLAIR EST LE DÉFAUT ──────────────────────────────────────
+     Mongazi travaille souvent dehors, en plein jour : un écran sombre au
+     soleil de Cotonou ne se lit pas. Le cockpit s'ouvre donc en clair, et le
+     sombre est à un bouton.
+     ⚠️ Les teintes du HUD ne sont PAS les mêmes dans les deux thèmes : un
+     cyan néon qui brille sur du noir devient illisible sur du papier. Chaque
+     couleur est reprise en version foncée, et le contraste vérifié. */
+  --hud-fond: #f4efe6;
+  --hud-panneau: rgba(255, 255, 255, 0.72);
+  --hud-trait: rgba(168, 64, 31, 0.22);
+  --hud-orange: #a8401f;
+  --hud-vert: #16714a;
+  --hud-cyan: #0d6d85;
+  --hud-violet: #6737c4;
+  --hud-rouge: #a3202f;
+  --hud-texte: #14110e;
+  --hud-sourd: #6b6055;
+  --hud-lueur: 0;
+
+  min-height: 100dvh;
+  background:
+    radial-gradient(90rem 46rem at 50% -12%, rgba(168, 64, 31, 0.07), transparent 62%),
+    var(--hud-fond);
+  color: var(--hud-texte);
+}
+
+.hud[data-theme='sombre'] {
   --hud-fond: #0a0806;
   --hud-panneau: rgba(255, 248, 242, 0.035);
   --hud-trait: rgba(240, 133, 79, 0.22);
@@ -980,12 +1012,10 @@ input[type='range']::-moz-range-thumb {
   --hud-rouge: #ff8090;
   --hud-texte: #efe6da;
   --hud-sourd: #9b8d7e;
-
-  min-height: 100dvh;
+  --hud-lueur: 1;
   background:
     radial-gradient(90rem 46rem at 50% -12%, rgba(240, 133, 79, 0.13), transparent 62%),
     var(--hud-fond);
-  color: var(--hud-texte);
 }
 /* la grille de fond : c'est elle qui dit « instrument » avant toute animation */
 .hud::before {
@@ -996,10 +1026,15 @@ input[type='range']::-moz-range-thumb {
   z-index: 0;
   opacity: 0.5;
   background-image:
-    linear-gradient(rgba(240, 133, 79, 0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(240, 133, 79, 0.055) 1px, transparent 1px);
+    linear-gradient(rgba(168, 64, 31, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168, 64, 31, 0.055) 1px, transparent 1px);
   background-size: 46px 46px;
   mask-image: radial-gradient(75rem 55rem at 50% 0%, #000 30%, transparent 78%);
+}
+.hud[data-theme='sombre']::before {
+  background-image:
+    linear-gradient(rgba(240, 133, 79, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(240, 133, 79, 0.055) 1px, transparent 1px);
 }
 .hud > * { position: relative; z-index: 1; }
 
@@ -1052,11 +1087,19 @@ input[type='range']::-moz-range-thumb {
   border-bottom-right-radius: 14px;
 }
 
-.hud-lueur-orange { color: var(--hud-orange); text-shadow: 0 0 22px rgba(240, 133, 79, 0.5); }
-.hud-lueur-vert   { color: var(--hud-vert);   text-shadow: 0 0 22px rgba(111, 216, 164, 0.45); }
-.hud-lueur-cyan   { color: var(--hud-cyan);   text-shadow: 0 0 22px rgba(86, 214, 238, 0.45); }
-.hud-lueur-violet { color: var(--hud-violet); text-shadow: 0 0 22px rgba(180, 140, 255, 0.45); }
-.hud-lueur-rouge  { color: var(--hud-rouge);  text-shadow: 0 0 22px rgba(255, 128, 144, 0.45); }
+/* ⚠️ Une lueur autour d'un chiffre EMPÂTE le texte sur fond clair : elle ne
+   sert que sur du noir, où elle imite un afficheur. Sur papier, on garde la
+   couleur et on jette le halo. */
+.hud-lueur-orange { color: var(--hud-orange); }
+.hud-lueur-vert   { color: var(--hud-vert); }
+.hud-lueur-cyan   { color: var(--hud-cyan); }
+.hud-lueur-violet { color: var(--hud-violet); }
+.hud-lueur-rouge  { color: var(--hud-rouge); }
+.hud[data-theme='sombre'] .hud-lueur-orange { text-shadow: 0 0 22px rgba(240, 133, 79, 0.5); }
+.hud[data-theme='sombre'] .hud-lueur-vert   { text-shadow: 0 0 22px rgba(111, 216, 164, 0.45); }
+.hud[data-theme='sombre'] .hud-lueur-cyan   { text-shadow: 0 0 22px rgba(86, 214, 238, 0.45); }
+.hud[data-theme='sombre'] .hud-lueur-violet { text-shadow: 0 0 22px rgba(180, 140, 255, 0.45); }
+.hud[data-theme='sombre'] .hud-lueur-rouge  { text-shadow: 0 0 22px rgba(255, 128, 144, 0.45); }
 /* pas de lueur : un chiffre a zero ne doit pas briller comme un exploit */
 .hud-lueur-sourd  { color: var(--hud-sourd); }
 
@@ -1066,8 +1109,9 @@ input[type='range']::-moz-range-thumb {
   height: 7px;
   border-radius: 999px;
   overflow: hidden;
-  background: rgba(255, 248, 242, 0.09);
+  background: rgba(20, 17, 14, 0.1);
 }
+.hud[data-theme='sombre'] .hud-jauge { background: rgba(255, 248, 242, 0.09); }
 .hud-jauge-fond {
   height: 100%;
   border-radius: 999px;
@@ -1135,9 +1179,14 @@ input[type='range']::-moz-range-thumb {
 }
 .hud-onglet[aria-pressed='true'],
 .hud-onglet[data-actif='oui'] {
-  color: #1a1108;
+  color: #fff8f2;
   background: var(--hud-orange);
   border-color: var(--hud-orange);
+  box-shadow: 0 0 24px -4px rgba(168, 64, 31, 0.5);
+}
+.hud[data-theme='sombre'] .hud-onglet[aria-pressed='true'],
+.hud[data-theme='sombre'] .hud-onglet[data-actif='oui'] {
+  color: #1a1108;
   box-shadow: 0 0 24px -4px rgba(240, 133, 79, 0.75);
 }
 

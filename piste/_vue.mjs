@@ -23,6 +23,8 @@ const srv = http.createServer((q, r) => {
 await new Promise((r) => srv.listen(0, r))
 const base = `http://127.0.0.1:${srv.address().port}`
 
+const THEME = process.argv.includes('--sombre') ? 'sombre' : 'clair'
+
 const nav = await puppeteer.launch({
   executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
   headless: 'new',
@@ -34,9 +36,16 @@ await p.setViewport({ width: LARGE, height: LARGE < 700 ? 844 : 1000 })
    changement de dièse est une navigation dans le même document, et la capture
    montre alors l'accueil en croyant montrer la page demandée. On pose le
    stockage AVANT le chargement et on ouvre l'adresse complète d'un coup. */
-await p.evaluateOnNewDocument(() => {
-  try { localStorage.setItem('piste_cockpit_mdp', '19984') } catch (e) {}
-})
+/* ⚠️ Le code passé au navigateur ne voit AUCUNE variable de Node : il est
+   sérialisé puis évalué là-bas. `THEME` y valait « undefined », et la capture
+   montrait le thème clair en croyant montrer le sombre. On passe la valeur en
+   ARGUMENT, c'est le seul chemin. */
+await p.evaluateOnNewDocument((t) => {
+  try {
+    localStorage.setItem('piste_cockpit_mdp', '19984')
+    localStorage.setItem('piste_theme_cockpit', t)
+  } catch (e) {}
+}, THEME)
 await p.goto(`${base}/${ROUTE}`, { waitUntil: 'networkidle0' })
 await new Promise((r) => setTimeout(r, 2500))
 

@@ -27,7 +27,7 @@ import {
   sonnerLivraison,
 } from '../son.js'
 import { Bouton, Chiffre } from './Ui.jsx'
-import { Classement, Compteur, Courbe, Entonnoir, Stat, TEINTES } from './Hud.jsx'
+import { Classement, Compteur, Courbe, Entonnoir, PALETTES, Stat } from './Hud.jsx'
 import { Puce } from './Trace.jsx'
 
 /*
@@ -170,8 +170,8 @@ const GESTES = [
     'Sur votre PC, une commande : python piste/_carnet.py --metier … --ville … --n … --ecrire. Les fiches sont réservées 90 jours pour ce client seul.',
   ],
   [
-    'Si « numéro testé » est coché, vous appelez',
-    "Chaque numéro, avant l'envoi. Une fiche qui ne répond pas ne part pas : elle est remplacée. L'outil ne peut pas composer à votre place, il vous le rappelle.",
+    'Si « numéro vérifié » est coché, vous ne faites RIEN',
+    "Le serveur s'en charge : il ne sert que des fiches dont le numéro est dans une tranche réellement attribuée, revue à sa source depuis moins de deux mois, et jamais signalée injoignable. Avant, cette étape disait « vous appelez chaque numéro » : personne ne pouvait tenir ça.",
   ],
   [
     'Vous envoyez le lien',
@@ -331,7 +331,7 @@ function Veille({ veille, son, notifs, onSon, onNotifs }) {
   Écrire « personnes » ferait un chiffre plus flatteur et faux, et on
   prendrait des décisions dessus.
 */
-function TableauDeBord({ t, jours, setJours, enCours }) {
+function TableauDeBord({ t, jours, setJours, enCours, teintes }) {
   if (!t) {
     return (
       <div className="hud-panneau mt-6">
@@ -439,10 +439,11 @@ function TableauDeBord({ t, jours, setJours, enCours }) {
         <div className="mt-3">
           <Courbe
             points={t.jours || []}
+            fond={teintes.fond}
             series={[
-              { cle: 'visites', nom: 'Visites', couleur: TEINTES.cyan },
-              { cle: 'commandes', nom: 'Commandes', couleur: TEINTES.orange },
-              { cle: 'carnets', nom: 'Carnets livrés', couleur: TEINTES.vert },
+              { cle: 'visites', nom: 'Visites', couleur: teintes.cyan },
+              { cle: 'commandes', nom: 'Commandes', couleur: teintes.orange },
+              { cle: 'carnets', nom: 'Carnets livrés', couleur: teintes.vert },
             ]}
           />
         </div>
@@ -453,9 +454,10 @@ function TableauDeBord({ t, jours, setJours, enCours }) {
         <div className="mt-3">
           <Courbe
             points={t.jours || []}
+            fond={teintes.fond}
             hauteur={130}
             series={[
-              { cle: 'chiffre', nom: 'Commandé', couleur: TEINTES.violet, format: fcfa },
+              { cle: 'chiffre', nom: 'Commandé', couleur: teintes.violet, format: fcfa },
             ]}
           />
         </div>
@@ -492,32 +494,32 @@ function TableauDeBord({ t, jours, setJours, enCours }) {
               {
                 nom: 'Sont venus sur PISTE',
                 n: e.visites || 0,
-                couleur: TEINTES.cyan,
+                couleur: teintes.cyan,
                 ton: 'cyan',
                 dessous: 'Des visites, pas des personnes : le compteur meurt quand l’onglet se ferme.',
               },
               {
                 nom: 'Ont composé une commande',
                 n: e.configurent || 0,
-                couleur: TEINTES.violet,
+                couleur: teintes.violet,
                 ton: 'violet',
               },
               {
                 nom: 'Sont allés jusqu’au bout',
                 n: e.commandent || 0,
-                couleur: TEINTES.orange,
+                couleur: teintes.orange,
                 ton: 'orange',
               },
               {
                 nom: 'Ont payé',
                 n: e.payees || 0,
-                couleur: TEINTES.vert,
+                couleur: teintes.vert,
                 ton: 'vert',
               },
               {
                 nom: 'Ont reçu leur carnet',
                 n: e.livrees || 0,
-                couleur: TEINTES.vert,
+                couleur: teintes.vert,
                 ton: 'vert',
               },
             ]}
@@ -534,7 +536,7 @@ function TableauDeBord({ t, jours, setJours, enCours }) {
             <Classement
               lignes={t.metiers || []}
               nomDe={nomMetier}
-              couleur={TEINTES.cyan}
+              couleur={teintes.cyan}
               vide="Personne n’a encore composé de commande sur cette période."
             />
           </div>
@@ -543,7 +545,7 @@ function TableauDeBord({ t, jours, setJours, enCours }) {
             <Classement
               lignes={t.villes || []}
               nomDe={nomVille}
-              couleur={TEINTES.violet}
+              couleur={teintes.violet}
               vide="Rien à afficher pour l’instant."
             />
           </div>
@@ -601,6 +603,26 @@ export default function Cockpit({ aller }) {
   const [tableau, setTableau] = useState(null)
   const [jours, setJours] = useState(30)
   const [chargeTableau, setChargeTableau] = useState(true)
+  /*
+    LE THÈME. Clair par défaut : Mongazi travaille souvent dehors, en plein
+    jour, et un écran sombre au soleil de Cotonou ne se lit pas. Le choix reste
+    dans l'appareil, donc chacun garde le sien.
+  */
+  const [theme, setTheme] = useState(() => {
+    try {
+      return localStorage.getItem('piste_theme_cockpit') === 'sombre' ? 'sombre' : 'clair'
+    } catch (e) {
+      return 'clair'
+    }
+  })
+  const teintes = PALETTES[theme]
+  const basculerTheme = () => {
+    const suite = theme === 'sombre' ? 'clair' : 'sombre'
+    setTheme(suite)
+    try {
+      localStorage.setItem('piste_theme_cockpit', suite)
+    } catch (e) {}
+  }
 
   useEffect(() => {
     setCommandes(lire('commandes'))
@@ -937,7 +959,7 @@ export default function Cockpit({ aller }) {
       : commandes.filter((c) => c.etat === onglet && !estExpiree(c))
 
   return (
-    <div className="hud min-h-screen pb-28">
+    <div className="hud min-h-screen pb-28" data-theme={theme}>
       <header className="border-b border-trait bg-creme">
         <div className="mx-auto flex w-full max-w-[68rem] items-center justify-between gap-4 px-5 py-3.5 sm:px-8">
           <button
@@ -948,9 +970,49 @@ export default function Cockpit({ aller }) {
             <Puce className="h-4 w-4 text-brique" />
             PISTE <span className="font-normal text-sourd">· cockpit</span>
           </button>
-          <Bouton ton="nu" onClick={exporter} disabled={!commandes.length}>
-            Exporter en CSV
-          </Bouton>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={basculerTheme}
+              aria-pressed={theme === 'sombre'}
+              title={theme === 'sombre' ? 'Passer en clair' : 'Passer en sombre'}
+              className="hud-onglet grid h-11 w-11 place-items-center rounded-full"
+            >
+              <span className="sr-only">
+                {theme === 'sombre' ? 'Passer en thème clair' : 'Passer en thème sombre'}
+              </span>
+              {theme === 'sombre' ? (
+                /* un soleil : on propose de revenir au jour */
+                <svg viewBox="0 0 20 20" className="h-4.5 w-4.5" aria-hidden="true">
+                  <circle cx="10" cy="10" r="3.6" fill="currentColor" />
+                  {[0, 45, 90, 135, 180, 225, 270, 315].map((a) => (
+                    <line
+                      key={a}
+                      x1="10"
+                      y1="2.4"
+                      x2="10"
+                      y2="4.6"
+                      stroke="currentColor"
+                      strokeWidth="1.7"
+                      strokeLinecap="round"
+                      transform={`rotate(${a} 10 10)`}
+                    />
+                  ))}
+                </svg>
+              ) : (
+                /* une lune : on propose la nuit */
+                <svg viewBox="0 0 20 20" className="h-4.5 w-4.5" aria-hidden="true">
+                  <path
+                    d="M15.4 12.4A6.2 6.2 0 0 1 7.6 4.6a6.2 6.2 0 1 0 7.8 7.8Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              )}
+            </button>
+            <Bouton ton="nu" onClick={exporter} disabled={!commandes.length}>
+              Exporter en CSV
+            </Bouton>
+          </div>
         </div>
       </header>
 
@@ -970,7 +1032,13 @@ export default function Cockpit({ aller }) {
           onNotifs={async () => setNotifs(await demanderNotifications())}
         />
 
-        <TableauDeBord t={tableau} jours={jours} setJours={setJours} enCours={chargeTableau} />
+        <TableauDeBord
+          t={tableau}
+          jours={jours}
+          setJours={setJours}
+          enCours={chargeTableau}
+          teintes={teintes}
+        />
 
         {/* Ce qui vient d'arriver, en clair. La tonalité prévient ; ce bandeau
             dit QUOI, parce qu'un son seul oblige à chercher. */}
@@ -1066,7 +1134,7 @@ export default function Cockpit({ aller }) {
               aria-pressed={onglet === e.cle}
               className={`min-h-[44px] rounded-full border px-4 text-[0.88rem] font-semibold transition-colors ${
                 onglet === e.cle
-                  ? 'border-brique bg-brique text-[#1a1108]'
+                  ? 'border-brique bg-brique text-creme'
                   : 'border-trait text-sourd hover:border-sourd'
               }`}
             >

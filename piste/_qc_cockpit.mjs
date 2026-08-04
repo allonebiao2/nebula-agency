@@ -204,6 +204,78 @@ const c = await p.evaluate(() => ({ ...window.__audio }))
 dire(c.contextes === 1, 'un second appui ne crée pas un second contexte audio')
 dire(c.demarres >= 12, `il rejoue la tonalité au second appui (${c.demarres} notes au total)`)
 
+/* ── LES DEUX THÈMES ──────────────────────────────────────────────────────
+   Le cockpit s'ouvre en CLAIR : Mongazi travaille souvent dehors, en plein
+   jour, et un écran sombre au soleil ne se lit pas. Le sombre est à un
+   bouton, et le choix doit survivre au rechargement. */
+const themeDepart = await p.evaluate(() =>
+  document.querySelector('.hud')?.getAttribute('data-theme')
+)
+dire(themeDepart === 'clair', `le cockpit s'ouvre en thème clair (${themeDepart})`)
+
+const bascule = await p.evaluateHandle(() =>
+  [...document.querySelectorAll('button')].find((b) =>
+    /Passer en thème/.test(b.innerText || b.textContent || '')
+  )
+)
+await bascule.asElement()?.click()
+await dodo(400)
+const apresBascule = await p.evaluate(() => ({
+  theme: document.querySelector('.hud')?.getAttribute('data-theme'),
+  garde: localStorage.getItem('piste_theme_cockpit'),
+  fond: getComputedStyle(document.querySelector('.hud')).backgroundColor,
+}))
+dire(apresBascule.theme === 'sombre', `le bouton bascule en sombre (${apresBascule.theme})`)
+dire(apresBascule.garde === 'sombre', 'le choix est gardé dans l’appareil')
+
+await p.reload({ waitUntil: 'networkidle0' })
+await dodo(900)
+const apresRechargement = await p.evaluate(() =>
+  document.querySelector('.hud')?.getAttribute('data-theme')
+)
+dire(apresRechargement === 'sombre', `le thème survit au rechargement (${apresRechargement})`)
+
+/* ⚠️ Un chiffre doit rester LISIBLE dans les deux thèmes. Un cyan néon
+   parfait sur du noir devient illisible sur du papier : on vérifie que la
+   couleur du texte n'est pas quasi identique au fond. */
+const contraste = await p.evaluate(() => {
+  const lum = (c) => {
+    const [r, g, b] = c.match(/\d+/g).map(Number).map((v) => {
+      const x = v / 255
+      return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4)
+    })
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+  }
+  const fond = lum(getComputedStyle(document.querySelector('.hud')).backgroundColor)
+  const pires = [...document.querySelectorAll('[class*="hud-lueur-"]')].map((e) => {
+    const l = lum(getComputedStyle(e).color)
+    return (Math.max(l, fond) + 0.05) / (Math.min(l, fond) + 0.05)
+  })
+  return pires.length ? Math.min(...pires) : 99
+})
+dire(contraste >= 3, `en sombre, chaque chiffre garde du contraste (le pire : ${contraste.toFixed(1)}:1)`)
+
+/* et on repasse en clair pour la suite */
+await p.evaluate(() => localStorage.setItem('piste_theme_cockpit', 'clair'))
+await p.reload({ waitUntil: 'networkidle0' })
+await dodo(900)
+const clairContraste = await p.evaluate(() => {
+  const lum = (c) => {
+    const [r, g, b] = c.match(/\d+/g).map(Number).map((v) => {
+      const x = v / 255
+      return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4)
+    })
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+  }
+  const fond = lum(getComputedStyle(document.querySelector('.hud')).backgroundColor)
+  const pires = [...document.querySelectorAll('[class*="hud-lueur-"]')].map((e) => {
+    const l = lum(getComputedStyle(e).color)
+    return (Math.max(l, fond) + 0.05) / (Math.min(l, fond) + 0.05)
+  })
+  return pires.length ? Math.min(...pires) : 99
+})
+dire(clairContraste >= 3, `en clair, chaque chiffre garde du contraste (le pire : ${clairContraste.toFixed(1)}:1)`)
+
 /* Le grand écran doit tenir aussi. */
 await p.setViewport({ width: 1440, height: 900 })
 await dodo(400)

@@ -13,13 +13,34 @@ import { fcfa } from '../prix.js'
   On ne colle donc jamais une transparence derrière une variable. Les teintes
   du HUD vivent ici, en clair, et les composants les reçoivent telles quelles.
 */
-export const TEINTES = {
-  orange: '#f0854f',
-  vert: '#6fd8a4',
-  cyan: '#56d6ee',
-  violet: '#b48cff',
-  rouge: '#ff8090',
+/*
+  ⚠️ DEUX PALETTES, PAS UNE.
+  Un cyan néon lisible sur du noir devient illisible sur du papier : le
+  contraste tombe sous le seuil et le chiffre disparaît. Chaque couleur a donc
+  sa version claire (foncée, pour ressortir sur papier) et sa version sombre
+  (lumineuse, pour ressortir sur noir).
+*/
+export const PALETTES = {
+  clair: {
+    orange: '#a8401f',
+    vert: '#16714a',
+    cyan: '#0d6d85',
+    violet: '#6737c4',
+    rouge: '#a3202f',
+    fond: '#f4efe6',
+  },
+  sombre: {
+    orange: '#f0854f',
+    vert: '#6fd8a4',
+    cyan: '#56d6ee',
+    violet: '#b48cff',
+    rouge: '#ff8090',
+    fond: '#0a0806',
+  },
 }
+
+/* Gardé pour ne rien casser : c'est la palette sombre. */
+export const TEINTES = PALETTES.sombre
 
 /*
   LES INSTRUMENTS DU COCKPIT.
@@ -99,7 +120,7 @@ export function Stat({ titre, valeur, dessous, ton = 'orange', format, jauge }) 
   de grandeur différent se superposent et ne veulent plus rien dire. On note
   donc le maximum affiché, en clair, au-dessus.
 */
-export function Courbe({ points, series, hauteur = 150 }) {
+export function Courbe({ points, series, hauteur = 150, fond = PALETTES.sombre.fond }) {
   const [survol, setSurvol] = useState(-1)
   const L = 720
   const H = hauteur
@@ -187,7 +208,7 @@ export function Courbe({ points, series, hauteur = 150 }) {
             {i >= 0 && (
               <circle
                 cx={x(i)} cy={y(points[i][s.cle])} r="4"
-                fill={s.couleur} stroke="#0a0806" strokeWidth="2"
+                fill={s.couleur} stroke={fond} strokeWidth="2"
               />
             )}
           </g>

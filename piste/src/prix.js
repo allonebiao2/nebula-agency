@@ -15,14 +15,42 @@ export const BASE = 100
 export const PLAFOND = 250
 
 export const SUPPLEMENTS = [
+  /*
+    ⚠️ CETTE OPTION A CHANGÉ DE PROMESSE LE 2026-08-04, ET IL FAUT SAVOIR
+    POURQUOI AVANT D'Y RETOUCHER.
+
+    Elle disait : « Chaque numéro est composé avant l'envoi. » Personne ne
+    pouvait tenir ça : seul le pouce de Mongazi compose, un numéro à la fois.
+    Dix commandes de cinquante fiches font cinq cents appels. Ses mots :
+    « je ne me vois pas lancer les appels moi-même ».
+
+    Une promesse que le vendeur ne peut pas tenir n'est pas une option, c'est
+    une dette. Elle dit maintenant TROIS choses que la machine prouve seule :
+
+      1. le numéro est dans une tranche réellement attribuée par le régulateur
+         (ARCEP Bénin, ARCEP Togo, plan ivoirien de 2021 : voir
+         `piste.numero_plausible`). Hors de ces tranches, la ligne ne peut pas
+         exister ;
+      2. la fiche a été revue à sa source il y a moins de soixante jours ;
+      3. aucun client ne l'a signalée injoignable, et c'est le signal le plus
+         fort : un vrai humain a vraiment essayé.
+
+    Plus la garantie qui existait déjà et qui est ce que l'acheteur veut
+    vraiment : si ça ne répond pas, on remplace, gratuitement.
+
+    ⚠️ NE JAMAIS REVENIR À « la ligne sonne ». Aucune de ces trois vérifications
+    ne prouve qu'on décrochera. Le jour où un vrai test réseau sera possible
+    (une requête opérateur coûte environ 3 F par numéro, mais demande une carte
+    bancaire que Mongazi n'a pas), cette option pourra redevenir un vrai test.
+  */
   {
     cle: 'teste',
-    court: "le numéro testé",
+    court: 'le numéro vérifié',
     prix: 60,
-    nom: 'Le numéro est testé',
-    resume: 'La ligne sonne, et le compte WhatsApp existe.',
+    nom: 'Le numéro est vérifié',
+    resume: 'Ligne attribuée, fiche revue récemment, jamais signalée morte.',
     detail:
-      'Chaque numéro est composé avant l\'envoi. S\'il ne répond plus, la fiche ne part pas : elle est remplacée par une autre.',
+      'Trois contrôles avant l\'envoi : le numéro appartient à une tranche réellement attribuée par le régulateur, la fiche a été revue à sa source il y a moins de deux mois, et aucun client ne l\'a signalée injoignable. Et si malgré tout ça ne répond pas, on la remplace gratuitement.',
   },
   {
     cle: 'sansSite',

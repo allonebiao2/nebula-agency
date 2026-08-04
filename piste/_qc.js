@@ -34,6 +34,14 @@ const DIST = path.resolve(ICI, 'dist')
    les LIT dans les donnees du site, on ne les fige jamais dans le controle. */
 const D = await import('./src/donnees.js')
 const PX = await import('./src/prix.js')
+/* ⚠️ ON LIT LES LIBELLES DANS LE MODULE, ON NE LES RECOPIE PAS.
+   Le jour ou « Le numero est teste » est devenu « Le numero est verifie »,
+   trois controles sont passes au rouge d'un coup en accusant le calcul des
+   prix, alors que le prix etait juste : le controle cliquait simplement a
+   cote. Un controle qui recopie une chaine casse a chaque mot change. */
+const OPT_VERIFIE = PX.SUPPLEMENTS.find((x) => x.cle === 'teste')
+const NOM_VERIFIE = OPT_VERIFIE.nom
+const COURT_VERIFIE = OPT_VERIFIE.court
 const nombre = (v) => String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
 
 /* ⚠️ Les libelles viennent des DONNEES, jamais d'une copie. « Ateliers de
@@ -162,6 +170,13 @@ const MESURES = () => {
         exige,
         px: Math.round(px),
         t: e.innerText.slice(0, 46).replace(/\s+/g, ' '),
+        /* ⚠️ Sans ces trois champs, un contraste rouge est INTROUVABLE : on
+           connaît le texte fautif mais ni sa couleur, ni son fond, ni la
+           classe qui les pose. On perd alors plus de temps à chercher le
+           coupable qu'à le corriger. */
+        couleur: s.color,
+        fond: `rgb(${Math.round(f.r)}, ${Math.round(f.g)}, ${Math.round(f.b)})`,
+        ou: (e.className || '').toString().slice(0, 90),
       })
     }
   })
@@ -398,7 +413,7 @@ const ROUTES = [
   await attendre(150)
   await cliquerTexte(page, 'button', 'Continuer')
   await attendre(250)
-  await cocher(page, ['Le numéro est testé', 'Le message déjà écrit'])
+  await cocher(page, [NOM_VERIFIE, 'Le message déjà écrit'])
   await attendre(250)
   t = await totalAffiche(page)
   const attB = String(PX.calcul(50, { teste: 1, message: 1 }).total)
@@ -493,7 +508,7 @@ const ROUTES = [
   await attendre(150)
   await cliquerTexte(page, 'button', 'Continuer') /* → suppléments */
   await attendre(250)
-  await cocher(page, ['Le numéro est testé', 'Le message déjà écrit'])
+  await cocher(page, [NOM_VERIFIE, 'Le message déjà écrit'])
   await cliquerTexte(page, 'button', 'Continuer') /* → offre */
   await attendre(250)
   await page.evaluate(() => {
