@@ -34,6 +34,42 @@ export const NEBULA_WHATSAPP_JOLI = '+229 96 74 07 32'
 export const DATE_RELEVE = '3 août 2026'
 export const MINIMUM = 10
 
+/* L'adresse d'où partent les carnets (décision 44). Elle est annoncée AVANT
+   l'envoi pour que l'acheteur la reconnaisse et ne la classe pas en
+   indésirable. ⚠️ SPF, DKIM et DMARC restent à poser côté DNS. */
+export const EMAIL_ENVOI = 'piste@nebula-agency.online'
+
+/* Une commande non payée expire au bout de 24 heures, les fiches retournent
+   au stock (décision 28). */
+export const HEURES_VALIDITE = 24
+
+/*
+  ⚠️ À REMPLIR UNE SEULE FOIS, ICI, PAR MONGAZI.
+
+  Décision 25 : MTN MoMo et Moov Flooz du Bénin, et rien d'autre au lancement.
+  Tant qu'un `numero` vaut `null`, l'écran de paiement le dit franchement et
+  renvoie sur WhatsApp : PISTE n'affiche jamais un numéro qu'il n'a pas, et un
+  faux numéro de paiement coûterait bien plus cher qu'une phrase honnête.
+
+    numero    : les 10 chiffres, format béninois (ex. '0196740732')
+    titulaire : le nom qui s'affiche à l'écran de l'acheteur quand il valide
+*/
+export const MOBILE_MONEY = [
+  { cle: 'mtn', operateur: 'MTN MoMo', numero: null, titulaire: null },
+  { cle: 'moov', operateur: 'Moov Flooz', numero: null, titulaire: null },
+]
+
+export const MOMO_PRET = MOBILE_MONEY.some((m) => m.numero)
+
+/* Le code de commande, décision 26. Ni O ni 0, ni I ni 1 : il se lit à voix
+   haute au téléphone sans qu'on se trompe. */
+export function nouvelleReference() {
+  const A = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
+  let s = ''
+  for (let i = 0; i < 4; i++) s += A[Math.floor(Math.random() * A.length)]
+  return 'PISTE-' + s
+}
+
 /* ------------------------------------------------------------------ métiers */
 
 export const METIERS = [
@@ -252,7 +288,8 @@ export function ficheExemple(metier, ville) {
 
 /* Le message qui accompagne chaque fiche, écrit à partir de la phrase de
    l'acheteur et du métier du commerçant. C'est un vrai message, pas une
-   maquette : c'est exactement ce que le carnet contient. */
+   maquette : c'est exactement ce que le carnet contient.
+
    ⚠️ La salutation reste « Bonjour, » dans cet exemple. Le nom du dirigeant
    se pose exactement là quand le supplément est pris, mais PISTE n'affiche
    pas un nom qu'il n'a pas relevé : ce serait une fausse donnée. */

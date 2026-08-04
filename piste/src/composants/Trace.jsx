@@ -15,7 +15,7 @@ import { useRevele } from './Revele.jsx'
 const CHEMIN =
   'M14 268 C 96 272, 104 194, 176 190 S 252 214, 300 154 S 372 62, 462 82 S 548 128, 586 92'
 
-export function TracePiste({ repere = 5, className = '', hauteur = 'h-44 sm:h-56' }) {
+export function TracePiste({ repere = 5, className = '', hauteur = '' }) {
   const hote = useRevele()
   const chemin = useRef(null)
   const [pts, setPts] = useState([])
@@ -39,7 +39,7 @@ export function TracePiste({ repere = 5, className = '', hauteur = 'h-44 sm:h-56
   return (
     <div ref={hote} className={`trace ${className}`}>
       <svg
-        viewBox="0 0 600 320"
+        viewBox="-6 -14 618 348"
         className={`w-full ${hauteur}`}
         role="img"
         aria-label="Une trace qui traverse le terrain, avec des repères posés dessus et une porte au bout."
@@ -49,35 +49,38 @@ export function TracePiste({ repere = 5, className = '', hauteur = 'h-44 sm:h-56
           d={CHEMIN}
           fill="none"
           stroke="currentColor"
-          strokeWidth="3"
+          strokeWidth="3.4"
           strokeLinecap="round"
           strokeDasharray="14 13"
           style={{ '--long': long, strokeDasharray: '14 13' }}
-          opacity="0.55"
+          opacity="0.62"
         />
+        {/* Deux groupes : celui du dehors POSE le repère sur la courbe, celui du
+            dedans l'anime. Une transformation CSS écrase l'attribut `transform`
+            d'un SVG : les mélanger empile tous les repères sur l'origine. */}
         {pts.map((p, i) => {
           const dernier = i === pts.length - 1
           return (
-            <g
-              key={i}
-              className="repere"
-              style={{ '--d': `${400 + i * 320}ms` }}
-              transform={`translate(${p.x} ${p.y})`}
-            >
-              {dernier ? (
-                <g>
-                  <rect x="-13" y="-34" width="26" height="34" rx="13" ry="14" fill="currentColor" />
-                  <circle cx="5" cy="-15" r="2.4" fill="var(--color-encre)" />
-                </g>
-              ) : (
-                <>
-                  <path
-                    d="M0 0 C -9 -12, -13 -17, -13 -23 A 13 13 0 1 1 13 -23 C 13 -17, 9 -12, 0 0 Z"
-                    fill="currentColor"
-                  />
-                  <circle cx="0" cy="-23" r="5" fill="var(--color-encre)" />
-                </>
-              )}
+            <g key={i} transform={`translate(${p.x} ${p.y})`}>
+              <g className="repere" style={{ '--d': `${420 + i * 300}ms` }}>
+                {dernier ? (
+                  <g>
+                    <path
+                      d="M-15 0 L -15 -30 A 15 15 0 0 1 15 -30 L 15 0 Z"
+                      fill="currentColor"
+                    />
+                    <circle cx="7" cy="-14" r="2.6" fill="var(--color-encre)" />
+                  </g>
+                ) : (
+                  <>
+                    <path
+                      d="M0 0 C -9 -12, -13 -17, -13 -23 A 13 13 0 1 1 13 -23 C 13 -17, 9 -12, 0 0 Z"
+                      fill="currentColor"
+                    />
+                    <circle cx="0" cy="-23" r="5" fill="var(--color-encre)" />
+                  </>
+                )}
+              </g>
             </g>
           )
         })}
