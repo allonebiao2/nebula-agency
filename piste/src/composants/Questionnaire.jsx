@@ -287,9 +287,15 @@ export default function Questionnaire({ aller }) {
 
      On accepte donc 8 ou 10 pour le WhatsApp, et on complète le Mobile Money
      au lieu de refuser bêtement quelqu'un qui a tapé son ancien numéro. */
-  const momoSaisi = (memeNumero && codePays === '229' ? telChiffres : momoNumero).replace(/\D/g, '')
-  const momoChiffres =
-    codePays === '229' && momoSaisi.length === 8 ? '01' + momoSaisi : momoSaisi
+  /* ⚠️ ON N'AJOUTE RIEN AU NUMÉRO DE PAIEMENT. La première version complétait
+     un numéro de 8 chiffres en « 01 » + les 8. C'est faux comme principe : le
+     préfixe du Bénin peut passer à 02 un jour, et surtout, compléter en silence
+     le numéro depuis lequel quelqu'un va envoyer de l'argent, c'est exactement
+     la sorte de service rendu qui fait perdre de l'argent à quelqu'un.
+     On compte les chiffres, on dit ce qui manque, en rouge, et on le laisse
+     corriger lui-même. */
+  const momoChiffres = (memeNumero && codePays === '229' ? telChiffres : momoNumero).replace(/\D/g, '')
+  const momoManque = codePays === '229' ? 10 - momoChiffres.length : 0
 
   const emailOk = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email.trim())
   const telOk =
@@ -298,7 +304,7 @@ export default function Questionnaire({ aller }) {
       : codePays === '229'
         ? telChiffres.length === 8 || telChiffres.length === 10
         : telChiffres.length === pays.chiffres
-  const momoOk = momoChiffres.length === 10 && momoChiffres.startsWith('01')
+  const momoOk = momoChiffres.length === 10
   const nomOk = prenom.trim().length >= 2 && nom.trim().length >= 2
 
   const peutAvancer = () => {
@@ -333,8 +339,14 @@ export default function Questionnaire({ aller }) {
   const texteCommande = (ref) => {
     const pris = SUPPLEMENTS.filter((s) => options[s.cle])
     const ope = MOBILE_MONEY.find((m) => m.cle === momoOperateur)
+    /* ⚠️ LES TROIS PREMIERS MOTS DOIVENT TOUT DIRE. WhatsApp montre le debut du
+       message dans la liste des conversations : Mongazi doit savoir que c'est
+       une commande PISTE, combien de fiches et combien ca rapporte, SANS
+       ouvrir la conversation. Un message qui commence par « Bonjour » oblige a
+       entrer pour comprendre, et une commande peut attendre des heures. */
     return [
-      `Commande ${ref}`,
+      `PISTE COMMANDE · ${n} fiches · ${fcfa(c.total)}`,
+      `Reference ${ref}`,
       '',
       `Métier : ${metiersListe.length > 1 ? plurielsListe(metiersListe) : objetMetier?.nom}`,
       `Ville : ${objetVille?.nom} (${objetVille?.pays})`,
@@ -359,7 +371,7 @@ export default function Questionnaire({ aller }) {
       `WhatsApp : +${numeroComplet}`,
       `Je paierai depuis le +229 ${momoChiffres} (${ope?.operateur})`,
       '',
-      'Merci de me confirmer le numéro à créditer.',
+      'Je fais le dépôt et je vous envoie la capture.',
       '',
       'Référence de traitement, à ne pas modifier :',
       'PISTE:' +
@@ -924,8 +936,9 @@ export default function Questionnaire({ aller }) {
                         </div>
                         {essai && !momoOk && (
                           <span className="mt-1.5 block text-[0.85rem] text-rouge">
-                            Un numéro Mobile Money fait 10 chiffres et commence par 01. Tapez
-                            les 8 chiffres si vous préférez, on ajoute le 01.
+                            {momoManque > 0
+                              ? `Il manque ${momoManque} chiffre${momoManque > 1 ? 's' : ''} : un numéro Mobile Money en fait 10.`
+                              : `Il y a ${-momoManque} chiffre${momoManque < -1 ? 's' : ''} de trop : un numéro Mobile Money en fait 10.`}
                           </span>
                         )}
                       </label>

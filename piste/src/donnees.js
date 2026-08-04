@@ -59,15 +59,21 @@ export const MOBILE_MONEY = [
      annoncer un moyen de paiement qu'on ne peut pas encaisser, c'est promettre
      un virement qui n'arrivera jamais. On le remettra le jour où le compte
      existe, pas avant. */
-  { cle: 'mtn', operateur: 'MTN MoMo', numero: null, titulaire: null },
+  {
+    cle: 'mtn',
+    operateur: 'MTN MoMo',
+    numero: '01 96 74 07 32',
+    titulaire: 'BIAO Mongazi Yan Karl',
+  },
 ]
 
 /* ⚠️ LE NUMÉRO DE DÉPÔT N'EST PAS LE NUMÉRO WHATSAPP. Celui sur lequel on écrit
    à NEBULA et celui qui reçoit l'argent sont deux numéros différents. Tant que
    le numéro de dépôt n'est pas posé ici, il est donné à la main dans la
    conversation WhatsApp, et le site ne l'invente pas. */
-export const MOMO_DEPOT = null
-export const MOMO_DEPOT_JOLI = null
+export const MOMO_DEPOT = '0196740732'
+export const MOMO_DEPOT_JOLI = '01 96 74 07 32'
+export const MOMO_TITULAIRE = 'BIAO Mongazi Yan Karl'
 
 export const MOMO_PRET = MOBILE_MONEY.some((m) => m.numero)
 
