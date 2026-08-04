@@ -370,32 +370,32 @@ export const STOCK = {
   'immobilier|benin-autres': 13,
   'immobilier|lome': 101,
   'immobilier|togo-autres': 4,
-  'immobilier|abidjan': 16,
-  'immobilier|ci-autres': 4,
+  'immobilier|abidjan': 136,
+  'immobilier|ci-autres': 12,
   'transport|cotonou': 116,
   'transport|benin-autres': 12,
   'transport|lome': 62,
   'transport|togo-autres': 1,
-  'transport|abidjan': 0,
-  'transport|ci-autres': 0,
+  'transport|abidjan': 190,
+  'transport|ci-autres': 2,
   'services|cotonou': 404,
   'services|benin-autres': 32,
   'services|lome': 269,
   'services|togo-autres': 9,
-  'services|abidjan': 0,
-  'services|ci-autres': 0,
+  'services|abidjan': 541,
+  'services|ci-autres': 49,
   'artisan|cotonou': 39,
   'artisan|benin-autres': 1,
   'artisan|lome': 58,
   'artisan|togo-autres': 1,
-  'artisan|abidjan': 0,
-  'artisan|ci-autres': 0,
+  'artisan|abidjan': 99,
+  'artisan|ci-autres': 15,
   'commerce|cotonou': 39,
   'commerce|benin-autres': 69,
   'commerce|lome': 49,
   'commerce|togo-autres': 1,
-  'commerce|abidjan': 0,
-  'commerce|ci-autres': 0,
+  'commerce|abidjan': 143,
+  'commerce|ci-autres': 8,
 }
 
 export function stock(metier, ville) {
@@ -419,7 +419,7 @@ export const REPARTITION = [
 
 /* Lignes fixes comptées sur _donnees.py : 5 au Bénin (préfixe 0121)
    et 8 au Togo (préfixe 22). Elles n'ont pas WhatsApp, on les appelle. */
-export const NOMBRE_FIXES = 1665
+export const NOMBRE_FIXES = 2248
 
 /* ----------------------------------------------- fiches réelles d'exemple --
 
@@ -1836,6 +1836,12 @@ export const FICHES = [
     pays: 'TG', numero: '9787XXXX',
   },
   {
+    nom: '3B INGENIERIE INTERNATIONAL',
+    metier: 'immobilier', ville: 'abidjan',
+    localite: 'Abidjan', quartier: 'Riviera Faya',
+    pays: 'CI', numero: '074796XXXX',
+  },
+  {
     nom: 'A&B Habitats et divers',
     metier: 'immobilier', ville: 'abidjan',
     localite: 'Abidjan', quartier: 'Bp 100 Abidjan cocody rivera faya',
@@ -1846,12 +1852,6 @@ export const FICHES = [
     metier: 'immobilier', ville: 'abidjan',
     localite: 'Abidjan', quartier: 'Cité des arts',
     pays: 'CI', numero: '054666XXXX',
-  },
-  {
-    nom: 'ABS axiome bâtiment services',
-    metier: 'immobilier', ville: 'abidjan',
-    localite: 'Abidjan', quartier: '13 BP 2235 abidjan, 13 - Abobo',
-    pays: 'CI', numero: '050594XXXX',
   },
   {
     nom: '3A CORPORATE GROUPS',
@@ -1926,6 +1926,30 @@ export const FICHES = [
     pays: 'TG', numero: '9122XXXX',
   },
   {
+    nom: 'ABC VOYAGES',
+    metier: 'transport', ville: 'abidjan',
+    localite: 'Abidjan', quartier: 'Non loin de la Pharmacie Ananeraie, Oasis - Ananeraie',
+    pays: 'CI', numero: '075812XXXX',
+  },
+  {
+    nom: 'ABSSOVOYAGE',
+    metier: 'transport', ville: 'abidjan',
+    localite: 'Abidjan', quartier: 'Après l’ancienne banque SIB à gauche, immeuble la Vida, Rez de chaussée - Résidentiel',
+    pays: 'CI', numero: '070753XXXX',
+  },
+  {
+    nom: 'AC GROUP',
+    metier: 'transport', ville: 'abidjan',
+    localite: 'Abidjan', quartier: 'Carrefour Bluetooth angré',
+    pays: 'CI', numero: '076762XXXX',
+  },
+  {
+    nom: 'MAHANAÏM SARL',
+    metier: 'transport', ville: 'ci-autres',
+    localite: 'Korhogo', quartier: '-',
+    pays: 'CI', numero: '074725XXXX',
+  },
+  {
     nom: '.KMS SECURITE',
     metier: 'services', ville: 'cotonou',
     localite: 'Cotonou', quartier: 'FIDJROSSE',
@@ -1998,6 +2022,42 @@ export const FICHES = [
     pays: 'TG', numero: '7020XXXX',
   },
   {
+    nom: '2BK SECURITE',
+    metier: 'services', ville: 'abidjan',
+    localite: 'Abidjan', quartier: 'Face star 11 - Angré Djibi',
+    pays: 'CI', numero: '050508XXXX',
+  },
+  {
+    nom: '2DS GROUP',
+    metier: 'services', ville: 'abidjan',
+    localite: 'Abidjan', quartier: 'Route d\'Abatta, non loin de l\'école Jules Vernes - Riviera Faya',
+    pays: 'CI', numero: '078821XXXX',
+  },
+  {
+    nom: '2ETS',
+    metier: 'services', ville: 'abidjan',
+    localite: 'Abidjan', quartier: 'Angré chateau',
+    pays: 'CI', numero: '070813XXXX',
+  },
+  {
+    nom: '2A CONSULTING ET SERVICES',
+    metier: 'services', ville: 'ci-autres',
+    localite: 'Bonoua', quartier: 'Yaou',
+    pays: 'CI', numero: '075963XXXX',
+  },
+  {
+    nom: 'AGENCE COULIBALY SERVICE',
+    metier: 'services', ville: 'ci-autres',
+    localite: 'Daloa', quartier: 'Quartier Commerce, non loin de Orange CI',
+    pays: 'CI', numero: '070710XXXX',
+  },
+  {
+    nom: 'AGENCE DORONE',
+    metier: 'services', ville: 'ci-autres',
+    localite: 'Korhogo', quartier: 'Petit Paris, Imm Yaya',
+    pays: 'CI', numero: '010229XXXX',
+  },
+  {
     nom: 'AFRICAN ART',
     metier: 'artisan', ville: 'cotonou',
     localite: 'Cotonou', quartier: 'Zogbo',
@@ -2044,6 +2104,42 @@ export const FICHES = [
     metier: 'artisan', ville: 'togo-autres',
     localite: 'Agbodrafo', quartier: 'Rue de l’Auberge du Lac, Maison BIG-BANG Kpessi',
     pays: 'TG', numero: '9338XXXX',
+  },
+  {
+    nom: '2A DESIGN',
+    metier: 'artisan', ville: 'abidjan',
+    localite: 'Abidjan', quartier: 'Deux plateaux Aghien',
+    pays: 'CI', numero: '014233XXXX',
+  },
+  {
+    nom: 'A COMME ART',
+    metier: 'artisan', ville: 'abidjan',
+    localite: 'Abidjan', quartier: 'Val doyen',
+    pays: 'CI', numero: '070726XXXX',
+  },
+  {
+    nom: 'AFRICAN EUROPEAN GLOBAL ARTWORK',
+    metier: 'artisan', ville: 'abidjan',
+    localite: 'Abidjan', quartier: 'Treichville, avenue 16',
+    pays: 'CI', numero: '077999XXXX',
+  },
+  {
+    nom: 'ASSAKRO DESIGN',
+    metier: 'artisan', ville: 'ci-autres',
+    localite: 'Grand-Bassam', quartier: 'Village Artisanat',
+    pays: 'CI', numero: '050580XXXX',
+  },
+  {
+    nom: 'BATIKIER BLO',
+    metier: 'artisan', ville: 'ci-autres',
+    localite: 'Grand-Bassam', quartier: 'Village des Artisans',
+    pays: 'CI', numero: '070946XXXX',
+  },
+  {
+    nom: 'BRUCE. KI\'ART',
+    metier: 'artisan', ville: 'ci-autres',
+    localite: 'Yamoussoukro', quartier: '-',
+    pays: 'CI', numero: '077736XXXX',
   },
   {
     nom: 'AFRICAIN OBJECTS',
@@ -2098,6 +2194,42 @@ export const FICHES = [
     metier: 'commerce', ville: 'lome',
     localite: 'Lomé', quartier: 'Marché décaw2w2',
     pays: 'TG', numero: '2074XXXX',
+  },
+  {
+    nom: 'AFRICA MARTINO BUSINESS',
+    metier: 'commerce', ville: 'abidjan',
+    localite: 'Abidjan', quartier: 'Star 10 - Angré 9è tranche',
+    pays: 'CI', numero: '070900XXXX',
+  },
+  {
+    nom: 'AK COMPAGNIE',
+    metier: 'commerce', ville: 'abidjan',
+    localite: 'Bingerville', quartier: 'Carrefour BCEAO, Abatta',
+    pays: 'CI', numero: '076936XXXX',
+  },
+  {
+    nom: 'BAT-IMMOBILIER',
+    metier: 'commerce', ville: 'abidjan',
+    localite: 'Abidjan', quartier: 'Deux plateaux, carrefour macaci',
+    pays: 'CI', numero: '010243XXXX',
+  },
+  {
+    nom: 'AFRI TRADING',
+    metier: 'commerce', ville: 'ci-autres',
+    localite: 'Grand-Bassam', quartier: 'Mockeyville',
+    pays: 'CI', numero: '050671XXXX',
+  },
+  {
+    nom: 'AFRICNEDI (AFRIQUE CONSTRUCTION NEGOCE ET DISTRIBUTION)',
+    metier: 'commerce', ville: 'ci-autres',
+    localite: 'Bouaké', quartier: 'Av. Felix Houphouet Boigny, Dar es Salam',
+    pays: 'CI', numero: '050521XXXX',
+  },
+  {
+    nom: 'AG FOODS',
+    metier: 'commerce', ville: 'ci-autres',
+    localite: 'San-Pédro', quartier: 'Quartier Lac',
+    pays: 'CI', numero: '050143XXXX',
   },
 ]
 
