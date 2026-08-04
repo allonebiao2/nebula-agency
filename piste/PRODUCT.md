@@ -2,7 +2,7 @@
 
 > Vendre des prospects d'entreprise vérifiés, prêts à être contactés, en Afrique
 > de l'Ouest francophone.
-> Écrit le 2026-08-03, à partir des **66 décisions** de Mongazi.
+> Écrit le 2026-08-03, à partir des **68 décisions** de Mongazi.
 
 ## Register
 
@@ -29,7 +29,7 @@ marque l'état, on reprend le lendemain où on s'est arrêté.
 
 ---
 
-## 2. Les 66 décisions
+## 2. Les 68 décisions
 
 ### Qui, quoi, combien
 
@@ -245,6 +245,36 @@ Ce ne sont pas des décisions produit, ce sont les règles de fabrication.
 automatique suppose un moteur qui mesure la qualité ; en V1 ce moteur n'existe
 pas. **En V1, Mongazi valide et envoie.** Le seuil devient la règle en V2,
 calibré sur les 20 premières commandes réelles.
+
+### Les deux viviers (décision 67, 2026-08-04)
+
+Vibe Prospecting a d'abord été jugé inutile pour PISTE, et c'était une erreur de
+cadrage : sa base ne contient pas les maquis ni les ateliers de couture, mais
+elle contient de **vraies structures** (banques, cabinets, agences, sociétés de
+logistique). Mongazi : « du moment que ce sont des structures, on doit pouvoir
+les garder aussi et les proposer si le client cherche ceux-là en question. »
+
+PISTE vend donc **deux viviers**, et le client dit lequel il cherche :
+
+| Vivier | Ce qu'il contient | D'où il vient |
+|---|---|---|
+| **Les commerces** | maquis, restaurants, ateliers de couture, pâtisseries | notre moteur, sur les annuaires professionnels locaux |
+| **Les structures** | banques, cabinets, agences, sociétés, ONG | Vibe Prospecting, base d'entreprises déclarées |
+
+Ce ne sont pas les mêmes acheteurs : on vend un maquis à un grossiste en
+boissons, on vend une banque à un éditeur de logiciels. Le questionnaire doit
+donc demander **lequel des deux** avant tout le reste.
+
+⚠️ Ce que Vibe Prospecting **ne donne pas** : le numéro de téléphone d'une
+entreprise. Il donne le nom, le domaine, la description, le secteur, la taille.
+Le barème des suppléments ne s'applique donc pas tel quel à ce vivier : à
+retravailler avant de le mettre en vente.
+
+⚠️ Vibe Prospecting se paie **en crédits**. Contrairement au moteur, chaque
+fiche vendue a un coût d'achat : il faut le connaître avant de fixer le prix.
+
+**Décision 68 · aucun nouveau nom de domaine.** PISTE reste sur
+`piste.nebula-agency.online`. Rien à acheter, rien à renouveler.
 
 ---
 
