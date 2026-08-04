@@ -225,13 +225,26 @@ input, select, textarea, button {
 
 /* --------------------------------------------- 8. la porte qui s'ouvre --- */
 
-@keyframes porte {
-  from { transform: perspective(700px) rotateY(-72deg); opacity: 0; }
-  to   { transform: perspective(700px) rotateY(0); opacity: 1; }
-}
+/*
+  ⚠️ La porte s'ouvre À L'ARRIVÉE, pas au chargement.
+
+  Première version : une `animation` posée sur la classe. Elle se jouait dès
+  que la page se construisait, tout en bas de l'écran, et l'utilisateur qui
+  descendait jusque-là trouvait la porte déjà ouverte — le geste signature de
+  la section était dépensé sans que personne le voie. C'est une transition
+  pilotée par `.vu`, comme les sept autres.
+*/
 .porte {
   transform-origin: left center;
-  animation: porte 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+  opacity: 0;
+  transform: perspective(700px) rotateY(-72deg);
+  transition: opacity 0.5s ease-out, transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--d, 0ms);
+}
+.vu.porte,
+.vu .porte {
+  opacity: 1;
+  transform: perspective(700px) rotateY(0);
 }
 
 /* ------------------------------------------ le compteur du questionnaire - */
@@ -297,7 +310,7 @@ input[type='range']::-moz-range-thumb {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
-  .revele, .repere, .point, .tampon, .leve, .ligne-relevee {
+  .revele, .repere, .point, .tampon, .leve, .ligne-relevee, .porte {
     opacity: 1 !important;
     transform: none !important;
     clip-path: none !important;

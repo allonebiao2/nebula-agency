@@ -1,9 +1,42 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-08-03
+## Point de reprise pour une session terminal · dernière mise à jour 2026-08-04
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
+
+---
+
+## 0 ter. LE 2026-08-04 — PISTE, la V1 est construite
+
+**`piste/` est passé d'une fiche produit à un produit qui tourne.** Vitrine,
+questionnaire en 6 questions, calculateur de prix détaillé, écran de paiement,
+cockpit, page « d'où vient la donnée ». **95 contrôles verts**, captures
+regardées section par section en 390 et 1440.
+
+⚠️ **La branche est `claude/continuation-xu5ma7`** (session distante). Elle
+**n'arrive pas dans `main` toute seule** : `python scripts/rapatrier.py`.
+
+### ⛔ Un seul blocage, et il est chez Mongazi
+
+**Les deux numéros Mobile Money qui reçoivent l'argent** (MTN MoMo et Moov
+Flooz), en **10 chiffres commençant par `01`**, avec le **nom du titulaire tel
+qu'il s'affiche à la réception**. On les écrit dans `piste/src/donnees.js`
+(bloc `MOMO`), on passe `aConfirmer` à `false`, et c'est tout.
+
+Tant que le drapeau est levé : **aucun numéro n'est affiché** — la page dit que
+le numéro arrive sur WhatsApp, ce qui est vrai, et le parcours marche entier —
+et **`node piste/_predeploy.js` refuse** de préparer une mise en ligne.
+
+### ▶️ PAR QUOI COMMENCER
+
+Les numéros, puis `node _predeploy.js`, puis Cloudflare Pages (projet `piste`)
+et le sous-domaine. **Ensuite le moteur de collecte** (décision 41) : sans lui,
+sept commandes de 30 fiches vident le stock, puisque l'exclusivité de 90 jours
+retire du stock chaque fiche vendue.
+
+Tout est dans **`piste/README.md`** : marche à suivre, les 7 pièges déjà payés,
+ce qui reste.
 
 ---
 

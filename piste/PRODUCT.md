@@ -284,16 +284,40 @@ documents long terme, file de tâches, `tool_calls` audités.
 de compilation, contrairement au reste du parc NEBULA qui est en HTML pur. Le
 résultat compilé se déploie normalement sur Cloudflare Pages.
 
-À construire :
+### ✅ Construit le 2026-08-04 — marche de bout en bout, 95 contrôles verts
 
-1. **La vitrine** : ce qu'est PISTE, pour qui, la preuve (les 187 fiches déjà
+Marche à suivre, pièges et reste à faire : **`piste/README.md`**.
+
+1. ✅ **La vitrine** : ce qu'est PISTE, pour qui, la preuve (les 187 fiches déjà
    livrées), la garantie de remplacement, l'exclusivité de 90 jours.
-2. **Le questionnaire** en 6 étapes, une question par écran sur téléphone.
-3. **Le calculateur de prix en direct**, qui montre le détail du calcul.
-4. **La fiche d'exemple**, visible avant de payer, avec de vraies données.
-5. **La commande** : email et WhatsApp obligatoires, instructions Mobile Money,
-   envoi de la commande rédigée sur le WhatsApp de NEBULA.
-6. **Le cockpit** : les commandes reçues, marquer payé, marquer livré.
+2. ✅ **Le questionnaire** en 6 étapes (+ les coordonnées), une question par
+   écran sur téléphone.
+3. ✅ **Le calculateur de prix en direct**, qui montre le détail du calcul,
+   ligne par ligne, remise comprise.
+4. ✅ **La fiche d'exemple**, visible avant de payer, avec de vraies données du
+   carnet du 3 août.
+5. ✅ **La commande** : email et WhatsApp obligatoires, instructions Mobile
+   Money, envoi de la commande rédigée sur le WhatsApp de NEBULA.
+6. ✅ **Le cockpit** : coller le message reçu, marquer payé, marquer livré,
+   sortir le CSV.
+
+Ajoutés en cours de route, parce qu'on ne peut pas vendre sans :
+
+7. ✅ **La page « d'où vient la donnée »** (décision 43), avec le bouton de
+   retrait pour les commerces.
+8. ✅ **La demande de vivier** (décision 39) quand le métier ou la ville
+   n'existe pas encore.
+
+### ⛔ Ce qui bloque la mise en ligne, et rien d'autre
+
+**Les deux numéros Mobile Money ne sont pas confirmés.** Tant que
+`MOMO.aConfirmer` vaut `true` dans `src/donnees.js`, la page de paiement
+n'affiche **aucun numéro** — elle dit que le numéro arrive sur WhatsApp, ce qui
+est vrai et ce qui marche — et `node _predeploy.js` refuse de préparer un
+déploiement.
+
+Il faut : les deux numéros (MTN MoMo, Moov Flooz) en **10 chiffres commençant
+par `01`**, et le **nom du titulaire tel qu'il s'affiche à la réception**.
 
 Le stock affiché en direct s'appuie en V1 sur un **inventaire écrit à la main**
 (métier × ville → nombre disponible), alimenté par le carnet du 2026-08-03.

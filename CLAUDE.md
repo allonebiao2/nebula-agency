@@ -103,6 +103,34 @@
 - **Reste à faire** : Agenda · comparateur de 2 périodes · vague 2 des transitions (Bilan-ECG, Stats-constellation, Carnet, Factures, Équipe, Réglages) · exécuter `etat.sql` dans Supabase pour activer la synchro · migration proto → app live.
 - Détail complet : `boussole/README.md` + `_memoire/conversations/2026-07-25-boussole-*.md`
 
+### PISTE — vendre des prospects vérifiés  *(SaaS vertical n°2)*
+- **Ce que c'est** : le client dit qui il cherche, PISTE lui livre un **carnet
+  de prospects réels** avec **le message déjà écrit** pour chacun. 100 F la
+  fiche, 4 suppléments payants, minimum 10 fiches, livré sous 24 h, exclusivité
+  90 jours, remplacement gratuit d'une fiche injoignable.
+- **Où c'est** : `piste/` · adresse prévue `piste.nebula-agency.online`
+  (Cloudflare Pages, projet `piste`) · **pas encore déployé**.
+- **Décisions produit** : `piste/PRODUCT.md` (46 décisions). **En cas de
+  désaccord avec le code, c'est PRODUCT.md qui a raison.**
+- **Marche à suivre, pièges, reste à faire** : `piste/README.md`.
+- **Stack** : React + Tailwind v4 + Vite (⚠️ seul produit du parc avec une étape
+  de compilation, demande explicite de Mongazi). `npm run build` puis
+  `npm run qc` (**95 contrôles**), enfin `node _predeploy.js`.
+- ⛔ **CE QUI BLOQUE LA MISE EN LIGNE** : les **deux numéros Mobile Money** ne
+  sont pas confirmés (`MOMO.aConfirmer` dans `src/donnees.js`). Tant que le
+  drapeau est levé, **aucun numéro n'est affiché** — la page dit que le numéro
+  arrive sur WhatsApp, ce qui est vrai et ce qui marche — et `_predeploy.js`
+  **refuse** de préparer un déploiement. Il faut 10 chiffres commençant par
+  `01` (ARCEP depuis le 30/11/2024) **et** le nom du titulaire.
+- **En V1 il n'y a pas de serveur** : la commande voyage par **WhatsApp**, et
+  Mongazi colle le message reçu dans son cockpit. `composerMessage()` et
+  `lireMessage()` (`src/etat.js`) vont **ensemble** : toucher à l'un sans
+  l'autre casse le cockpit.
+- **Reste** : le **moteur de collecte** (décision 41, GitHub Actions, chaque
+  nuit) — sans lui, sept commandes de 30 fiches vident le stock, puisque
+  l'exclusivité retire chaque fiche vendue · Abidjan (aucune source ivoirienne
+  relevée, affiché « bientôt ») · SPF/DKIM/DMARC sur `piste@nebula-agency.online`.
+
 ## Infrastructure — où tourne quoi (2026-08-02)
 
 | Ce qui tourne | Où | Notes |

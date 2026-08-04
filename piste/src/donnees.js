@@ -31,8 +31,40 @@
 
 export const NEBULA_WHATSAPP = '22996740732'
 export const NEBULA_WHATSAPP_JOLI = '+229 96 74 07 32'
+export const EMAIL = 'piste@nebula-agency.online'
+export const ADRESSE = 'piste.nebula-agency.online'
 export const DATE_RELEVE = '3 août 2026'
 export const MINIMUM = 10
+export const EXCLUSIVITE_JOURS = 90
+
+/* ------------------------------------------------ ⛔ À CONFIRMER --------
+
+   LES NUMÉROS QUI REÇOIVENT L'ARGENT.
+
+   Ils ne sont pas encore confirmés par Mongazi, et **un numéro Mobile Money
+   faux, c'est un client qui paie un inconnu**. Tant que `aConfirmer` vaut
+   `true` :
+
+     · la page de paiement N'AFFICHE AUCUN NUMÉRO. Elle dit la vérité — le
+       numéro arrive sur WhatsApp à la seconde où la commande part — et le
+       parcours fonctionne quand même, de bout en bout.
+     · `node _predeploy.js` REFUSE de préparer une mise en ligne.
+
+   Le jour où les deux numéros sont confirmés : on les écrit ici, on passe
+   `aConfirmer` à false, et la page les affiche. Rien d'autre à toucher.
+
+   ⚠️ Depuis le 30/11/2024 l'ARCEP béninoise impose 10 chiffres, préfixe
+   `01`. Un numéro à 8 chiffres est un numéro d'avant la réforme.           */
+
+export const MOMO = {
+  aConfirmer: true,
+  comptes: [
+    { reseau: 'MTN MoMo', numero: '', titulaire: '' },
+    { reseau: 'Moov Flooz', numero: '', titulaire: '' },
+  ],
+}
+
+export const RESEAUX = MOMO.comptes.map((c) => c.reseau)
 
 /* ------------------------------------------------------------------ métiers */
 
@@ -252,7 +284,8 @@ export function ficheExemple(metier, ville) {
 
 /* Le message qui accompagne chaque fiche, écrit à partir de la phrase de
    l'acheteur et du métier du commerçant. C'est un vrai message, pas une
-   maquette : c'est exactement ce que le carnet contient. */
+   maquette : c'est exactement ce que le carnet contient.
+
    ⚠️ La salutation reste « Bonjour, » dans cet exemple. Le nom du dirigeant
    se pose exactement là quand le supplément est pris, mais PISTE n'affiche
    pas un nom qu'il n'a pas relevé : ce serait une fausse donnée. */
@@ -266,6 +299,9 @@ export function messagePourFiche(fiche, offre) {
     phrase
       ? `${phrase.charAt(0).toUpperCase()}${phrase.slice(1)}.`
       : 'Je vous écris au sujet de ce que je propose aux commerces comme le vôtre.',
-    'Est-ce que je peux vous en dire deux mots ? Ça prend deux minutes.',
+    /* Espace insécable avant le « ? » : sans elle, le point d'interrogation
+       part seul à la ligne suivante dans une colonne étroite. C'est la règle
+       typographique française, et WhatsApp la respecte. */
+    'Est-ce que je peux vous en dire deux mots ? Ça prend deux minutes.',
   ].join('\n\n')
 }

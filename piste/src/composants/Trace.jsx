@@ -58,12 +58,22 @@ export function TracePiste({ repere = 5, className = '', hauteur = 'h-44 sm:h-56
         {pts.map((p, i) => {
           const dernier = i === pts.length - 1
           return (
-            <g
-              key={i}
-              className="repere"
-              style={{ '--d': `${400 + i * 320}ms` }}
-              transform={`translate(${p.x} ${p.y})`}
-            >
+            /*
+              ⚠️ DEUX GROUPES, ET C'EST OBLIGATOIRE.
+
+              Le groupe extérieur POSE le repère sur la courbe, avec l'attribut
+              SVG `transform`. Le groupe intérieur l'ANIME, avec un `transform`
+              CSS. Les deux ne peuvent pas vivre sur le même élément : en SVG,
+              un `transform` CSS ne s'ajoute pas à l'attribut, il l'efface.
+
+              Première version : un seul groupe. `.vu .repere { transform: none }`
+              effaçait le `translate(x y)`, les cinq repères retombaient sur le
+              coin haut-gauche du viewBox — donc hors cadre, donc invisibles.
+              Le geste signature du héros ne s'est jamais affiché, et les 92
+              contrôles verts n'y ont rien vu : il a fallu regarder l'image.
+            */
+            <g key={i} transform={`translate(${p.x} ${p.y})`}>
+              <g className="repere" style={{ '--d': `${260 + i * 190}ms` }}>
               {dernier ? (
                 <g>
                   <rect x="-13" y="-34" width="26" height="34" rx="13" ry="14" fill="currentColor" />
@@ -78,6 +88,7 @@ export function TracePiste({ repere = 5, className = '', hauteur = 'h-44 sm:h-56
                   <circle cx="0" cy="-23" r="5" fill="var(--color-encre)" />
                 </>
               )}
+              </g>
             </g>
           )
         })}
@@ -90,9 +101,17 @@ export function TracePiste({ repere = 5, className = '', hauteur = 'h-44 sm:h-56
   LE SEMIS. 187 points, un par commerce relevé. 17 colonnes sur 11 lignes,
   exactement 187 : on peut les compter.
 */
+/*
+  Les couleurs du semis sont exportées : la légende les lit ici plutôt que de
+  les recopier. Elles avaient déjà divergé une fois — le semis peignait les
+  pâtisseries en crème (invisible sur le papier) pendant que la légende
+  annonçait du sable. Deux points sur 187 : personne ne les trouvait.
+*/
+export const COULEURS_SEMIS = ['bg-braise', 'bg-vertclair', 'bg-brique']
+
 export function Semis({ repartition, total }) {
   const ref = useRevele()
-  const couleurs = ['bg-braise', 'bg-vertclair', 'bg-creme']
+  const couleurs = COULEURS_SEMIS
   const suite = []
   repartition.forEach((r, i) => {
     for (let k = 0; k < r.n; k++) suite.push(i)

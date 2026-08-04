@@ -1,3 +1,8 @@
 node_modules/
 dist/
 .vite/
+
+# Les captures sont des images qu'on REGARDE, puis qu'on jette. Elles se
+# refont en une commande (`node _captures.mjs`) et n'ont rien à faire dans
+# l'historique : elles pèsent des mégaoctets et changent à chaque pixel.
+_captures/
