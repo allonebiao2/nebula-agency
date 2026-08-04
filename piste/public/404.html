@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Adresse introuvable · PISTE</title>
+    <!--
+      CE FICHIER N'EST PAS DÉCORATIF, IL BOUCHE UN TROU.
+
+      Sans lui, Cloudflare Pages répond « 200 » et sert la page d'accueil pour
+      TOUTE adresse inconnue, y compris un fichier manquant sous /assets/. Or
+      /assets/* porte « Cache-Control: immutable, max-age=31536000 » : le HTML
+      se retrouvait mis en cache à la place de la feuille de style, pour un an,
+      et le site apparaissait entièrement sans style sans pouvoir se réparer.
+
+      C'est arrivé DEUX FOIS, le 2026-08-04. Avec ce fichier, une adresse
+      inconnue répond un vrai 404, et un 404 ne se fait pas mettre en cache
+      comme une ressource permanente.
+
+      PISTE n'a pas besoin de la bascule « application d'une seule page » : ses
+      routes sont toutes après un dièse (#/carnet, #/cockpit…), elles ne
+      touchent jamais le serveur.
+    -->
+    <style>
+      :root { color-scheme: dark }
+      * { box-sizing: border-box }
+      body {
+        margin: 0; min-height: 100dvh; display: grid; place-items: center;
+        padding: 2rem 1.5rem; background: #0c0a08; color: #f4efe6;
+        font: 400 1rem/1.65 ui-sans-serif, system-ui, -apple-system, sans-serif;
+        text-align: center;
+      }
+      main { max-width: 34rem }
+      p.code {
+        margin: 0 0 1.25rem; font-size: .8125rem; letter-spacing: .16em;
+        color: #c1502e; font-weight: 600;
+      }
+      h1 {
+        margin: 0 0 .75rem; font-size: clamp(1.75rem, 6vw, 2.75rem);
+        line-height: 1.1; font-weight: 600; text-wrap: balance;
+      }
+      p.dit { margin: 0 0 2rem; color: #c6baa8; text-wrap: pretty }
+      a {
+        display: inline-block; padding: .875rem 1.75rem; border-radius: 999px;
+        background: #c1502e; color: #fff8f2; text-decoration: none;
+        font-weight: 600; min-height: 44px;
+        transition: background .25s cubic-bezier(.22, 1, .36, 1);
+      }
+      a:hover, a:focus-visible { background: #a8401f }
+      @media (prefers-reduced-motion: reduce) { a { transition: none } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="code">ERREUR 404</p>
+      <h1>Cette adresse n’existe pas</h1>
+      <p class="dit">
+        Si vous suiviez le lien d’un carnet, recopiez-le en entier : il se termine
+        par une longue suite de lettres, et il suffit qu’il en manque une.
+      </p>
+      <a href="/">Revenir à l’accueil</a>
+    </main>
+  </body>
+</html>

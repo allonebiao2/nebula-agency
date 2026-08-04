@@ -14,6 +14,28 @@ POURQUOI CET OUTIL EXISTE
   changer les noms des fichiers compilés. Ce script existe pour qu'on n'en soit
   plus jamais réduit là.
 
+⚠️ NE VÉRIFIEZ JAMAIS DANS LA SECONDE QUI SUIT UN DÉPLOIEMENT
+  Le même jour, la panne s'est reproduite, et c'est CE SCRIPT qui l'a causée.
+  `--verifier` a demandé la feuille de style pendant que le déploiement se
+  propageait encore. Le fichier n'existait pas encore partout, Cloudflare a
+  reçu la page de repli en HTML, et l'a mise en cache À LA PLACE du CSS.
+
+  Vérifier à travers un cache n'est pas un geste neutre : la réponse obtenue
+  est ÉCRITE dans le cache. Une vérification trop tôt fabrique la panne qu'elle
+  cherche.
+
+  L'ordre correct, et il n'y en a qu'un :
+      1. déployer
+      2. vérifier l'URL DU DÉPLOIEMENT (elle ne passe par aucun cache)
+      3. purger le domaine
+      4. attendre ~45 s
+      5. seulement là, vérifier le domaine
+
+  Depuis, PISTE a un `404.html` : un fichier absent répond un vrai 404 au lieu
+  d'une page en HTML avec un code 200. Sans lui, Cloudflare Pages sert la page
+  d'accueil pour toute adresse inconnue, et `/assets/*` porte `immutable` un an.
+  Tout nouveau site du parc doit avoir ce fichier.
+
 USAGE
     python scripts/purger.py                       tous les sites du parc
     python scripts/purger.py piste                 un seul
@@ -107,11 +129,19 @@ def verifier(hote):
                 urllib.request.Request(f"https://{hote}{u}", headers=NAVIGATEUR), timeout=20
             ) as rep:
                 debut = rep.read(200).decode("utf-8", "replace")
+                cache = rep.headers.get("cf-cache-status", "?")
         except Exception as e:
             soucis.append(f"{u} : {e}")
             continue
         if "error code" in debut.lower() or "<html" in debut.lower():
-            soucis.append(f"{u} : sert une ERREUR ({debut.strip()[:40]})")
+            # HIT = le cache tient une mauvaise copie, une purge suffit.
+            # MISS = l'origine elle-même est cassée, purger n'y changera rien.
+            remede = (
+                "purgez, c'est le cache qui tient une mauvaise copie"
+                if cache.upper().startswith("HIT")
+                else "l'ORIGINE est cassée, purger n'y changera rien : redéployez"
+            )
+            soucis.append(f"{u} : sert du HTML (cf-cache-status {cache}) · {remede}")
     return "sain" if not soucis else " · ".join(soucis)
 
 

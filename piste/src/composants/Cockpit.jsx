@@ -246,8 +246,15 @@ export default function Cockpit({ aller }) {
     let mdp = motDePasseCockpit()
     if (!mdp) {
       mdp = window.prompt(
-        'Mot de passe du cockpit. Il autorise la fabrication d’un carnet. ' +
-          'Il est demande une fois, puis garde dans ce navigateur.'
+        [
+          'Code du cockpit PISTE (5 chiffres).',
+          '',
+          'Ce n’est pas un code Google ni un code reçu par SMS : c’est le code que',
+          'vous avez choisi, celui qui autorise la fabrication d’un carnet.',
+          '',
+          'Il n’est demandé qu’une fois par appareil. Au bout de 10 essais ratés, le',
+          'cockpit se bloque 15 minutes, puis rouvre tout seul.',
+        ].join(String.fromCharCode(10))
       )
       if (!mdp) return
       poserMotDePasse(mdp.trim())
@@ -266,9 +273,19 @@ export default function Cockpit({ aller }) {
       return
     }
     majCommandes(commandes.map((x) => (x.ref === c.ref ? { ...x, enCours: false } : x)))
+    /* Le verrou et le mauvais code sont deux choses différentes. On efface le
+       code enregistré quand il est FAUX, jamais quand le compteur a simplement
+       mordu : sinon un verrou ferait oublier un code pourtant bon. */
+    if (r?.verrouille) {
+      setErreur(r.erreur + ' Votre code reste enregistré, rien à retaper.')
+      return
+    }
     if (r?.erreur === 'mot de passe') {
       poserMotDePasse('')
-      setErreur('Mot de passe refusé. Réessayez, il vous sera redemandé.')
+      setErreur(
+        'Code refusé. Ce n’est pas un code Google : c’est le code à 5 chiffres du ' +
+          'cockpit. Il vous sera redemandé.'
+      )
       return
     }
     setErreur(

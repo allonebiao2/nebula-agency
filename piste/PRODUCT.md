@@ -509,6 +509,29 @@ compte client.
 
 ---
 
+## 8 bis. Le code du cockpit (décisions 89 et 90)
+
+| # | Question | Décision |
+|---|---|---|
+| 89 | Ce qui protège la fabrication d'un carnet | **Un code à 5 chiffres choisi par Mongazi**, pas une suite de 24 caractères au hasard. Le premier code généré était juste, en théorie : sur un téléphone, entre deux rendez-vous, il était inutilisable, et Mongazi l'a d'abord pris pour un code Google |
+| 90 | Ce qui remplace la longueur du code | **Un compteur d'essais.** Au-delà de **10 échecs en 15 minutes**, tout est refusé pendant 15 minutes, même le bon code. Se tromper trois fois ne gêne jamais ; essayer mille codes est arrêté au dixième |
+
+Le code vit dans `piste.config` (clé `motdepasse_cockpit`), lisible seulement
+par `public.piste_reglages()` accordée au `service_role`. Il n'est **jamais**
+dans le site.
+
+> **Un secret qu'on ne peut pas taper n'est pas un secret, c'est un blocage.**
+> La sécurité ne vient pas de la longueur du code mais de ce qui arrive à celui
+> qui le devine mal. Un code court plus un compteur vaut mieux qu'un code long
+> que son propriétaire ne peut pas saisir.
+
+Le message d'entrée dit désormais **ce que le code est** (« ce n'est pas un
+code Google ni un code reçu par SMS »), et le verrou n'efface jamais un code
+déjà enregistré : un compteur qui mord ne doit pas faire oublier un code
+pourtant bon.
+
+---
+
 ## 9. Ce qui reste à vérifier avant de vendre
 
 - **Abidjan** : aucune source n'a encore été testée pour la Côte d'Ivoire.

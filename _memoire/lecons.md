@@ -289,6 +289,45 @@ et redéployer ne changeait rien.
 Vaut pour **tous les sites du parc** : les douze vitrines sont sur Cloudflare
 Pages et peuvent subir exactement la même panne.
 
+### La même panne, une deuxième fois le même jour — et cette fois c'est l'outil de contrôle qui l'a causée
+
+Quelques heures plus tard, PISTE est réapparu sans style. Même symptôme, cause
+différente, et bien plus instructive.
+
+**Deux défauts se combinaient.**
+
+1. **Un fichier absent répondait `200` avec du HTML.** Cloudflare Pages sert la
+   page d'accueil pour toute adresse inconnue dès qu'il n'y a pas de
+   `404.html` : c'est la bascule « application d'une seule page », activée
+   toute seule.
+2. **`/assets/*` porte `Cache-Control: immutable, max-age=31536000`.** Cette
+   règle s'applique à ce qui est SERVI sous ce chemin, pas au fichier qu'on
+   croyait y mettre. Le HTML de repli héritait donc d'un an de cache.
+
+**Et le déclencheur, c'est `purger.py --verifier`, lancé dans la seconde qui
+suivait le déploiement.** La propagation n'était pas finie, le fichier
+n'existait pas encore partout, la vérification a reçu la page de repli, et
+Cloudflare l'a écrite dans le cache **à la place du CSS**.
+
+> **Vérifier à travers un cache n'est pas un geste neutre : la réponse obtenue
+> est écrite dans le cache. Une vérification trop tôt fabrique la panne qu'elle
+> cherche.**
+
+**Les deux remèdes, tous deux posés.**
+
+- **Un `404.html` dans `public/`.** Une adresse inconnue répond enfin un vrai
+  404, et un 404 ne se fait pas mettre en cache comme une ressource permanente.
+  ⚠️ **À poser sur chaque nouveau site du parc.** PISTE n'avait de toute façon
+  aucun besoin de la bascule SPA : ses routes sont toutes après un dièse
+  (`#/carnet`, `#/cockpit`), elles ne touchent jamais le serveur.
+- **L'ordre de vérification, écrit en tête de `purger.py`** : déployer →
+  vérifier **l'URL du déploiement** (`xxxx.piste-uex.pages.dev`, qui ne passe
+  par aucun cache) → purger → attendre ~45 s → vérifier le domaine.
+
+`--verifier` lit désormais `cf-cache-status` et tranche tout seul : `HIT` sur
+du HTML = le cache tient une mauvaise copie, une purge suffit. `MISS` = c'est
+l'origine qui est cassée, purger n'y changera rien.
+
 ## 2026-08-04 — Le « 01 » béninois n'est pas un préfixe à retirer
 
 Une candidature arrive avec le numéro `0162178411`. Le bouton WhatsApp du
