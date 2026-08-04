@@ -245,3 +245,41 @@ a posé lui-même de ce qu'un humain a ajouté.
 - Un chemin d'exécutable écrit en dur (`/opt/pw-browsers/…`) rend un script
   inutilisable dès qu'on change de machine. **On cherche l'outil, on ne le
   suppose pas.**
+
+## 2026-08-04 — Cloudflare peut mettre une ERREUR en cache pour un an
+
+PISTE est apparu entièrement sans style : texte noir sur blanc, police par
+défaut, un aplat noir géant à la place du décor. La feuille de style répondait
+pourtant **200, avec le bon type et la bonne taille**. Son contenu, lui, était
+`error code: 502`.
+
+Pendant un déploiement, Cloudflare a reçu un 502 passager de l'origine et l'a
+mis en cache **à la place du fichier**. Or les fichiers compilés portent
+`Cache-Control: immutable, max-age=31536000` — parfaitement correct pour un nom
+qui contient une empreinte de contenu, mais fatal ici : l'erreur restait servie
+pendant un an.
+
+**Le piège qui empêchait de réparer.** Vite nomme les fichiers d'après leur
+CONTENU. Reconstruire à l'identique redonnait exactement les mêmes noms, donc
+les mêmes adresses empoisonnées. Le site ne pouvait pas se réparer tout seul,
+et redéployer ne changeait rien.
+
+**Ce qu'il faut retenir.**
+
+1. **Un 200 ne prouve rien.** Il faut regarder le CORPS. `curl -sI` disait
+   `Content-Type: text/css`, taille correcte, `cf-cache-status: HIT`. Seul
+   `curl -s ... | head -c 200` a montré l'erreur.
+2. **Comparer l'origine et le domaine.** `piste-uex.pages.dev` servait le bon
+   fichier pendant que `piste.nebula-agency.online` servait l'erreur : ça
+   désigne le cache en trois secondes.
+3. **Le remède permanent** : une marque de déploiement dans le nom des fichiers
+   (`index-2608041417-D5MeerQ9.css`). Chaque publication produit des adresses
+   neuves, et une erreur en cache ne survit plus à un déploiement. Le coût est
+   un chargement de plus pour un visiteur déjà venu.
+4. ⚠️ **Le jeton Cloudflare de `secrets/cloudflare-zone.env` ne peut PAS
+   purger le cache** (« Authentication error » sur `purge_cache`). Il faudrait
+   un jeton portant `Zone · Cache Purge`. Tant qu'on ne l'a pas, la seule
+   sortie est de changer les noms de fichiers.
+
+Vaut pour **tous les sites du parc** : les douze vitrines sont sur Cloudflare
+Pages et peuvent subir exactement la même panne.
