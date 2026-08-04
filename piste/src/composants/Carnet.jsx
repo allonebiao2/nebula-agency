@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { METIERS, NEBULA_WHATSAPP, estFixe, numeroJoli, international } from '../donnees.js'
-import { ouvrirCarnet } from '../supabase.js'
+import { marquerFiche, ouvrirCarnet } from '../supabase.js'
 import { Bouton } from './Ui.jsx'
 
 /*
@@ -184,6 +184,11 @@ export default function Carnet({ jeton, aller }) {
       } catch (err) {}
       return suite
     })
+    /* La marque remonte. C'est le SEUL signal qui dise quelles fiches valent
+       quelque chose, et il est annoncé au client en toutes lettres plus bas :
+       une donnée reprise en silence n'est pas un signal, c'est une prise.
+       Si le réseau manque, l'avancement reste quand même dans le téléphone. */
+    marquerFiche(jeton, nom, v)
   }
 
   const fiches = carnet?.fiches || []
@@ -209,6 +214,7 @@ export default function Carnet({ jeton, aller }) {
       '',
       'Merci de la remplacer.',
     ].join('\n')
+    marquerFiche(jeton, f.nom, 'injoignable')
     window.open(`https://wa.me/${NEBULA_WHATSAPP}?text=${encodeURIComponent(texte)}`, '_blank')
   }
 
@@ -336,6 +342,10 @@ export default function Carnet({ jeton, aller }) {
         </div>
 
         <p className="mt-10 text-center text-[0.78rem] leading-relaxed text-sourd">
+          Vos marques nous servent à mieux choisir vos prochaines fiches. On ne regarde que
+          ça : ce que vous écrivez à un commerce ne nous regarde pas.
+          <br />
+          <br />
           Gardez ce lien : il est à vous, il ne périme pas, et votre avancement s'y garde.
           <br />
           Perdu ? Écrivez-nous, on vous le renvoie.

@@ -384,6 +384,153 @@ input[type='range']::-moz-range-thumb {
   .curseur-ecrit { animation: none; visibility: hidden; }
 }
 
+/* ═══════════════ LE RELIEF · la scene 3D du heros (decision 77) ═══════════
+   De la VRAIE 3D, sans une seule bibliotheque : `perspective` pose un sol qui
+   fuit vers l'horizon, `translateZ` decolle la trace au-dessus, et chaque
+   repere projette son ombre a sa verticale. Zero octet de plus a charger.
+
+   Tout ce qui bouge passe par `transform` et `opacity`. C'est ce qui tient les
+   60 images par seconde sur un telephone d'entree de gamme. */
+
+.relief {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 6 / 4;
+  perspective: 900px;
+  perspective-origin: 50% 42%;
+  --tx: 0deg;
+  --ty: 0deg;
+}
+.relief-monde {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--ty)) rotateY(var(--tx));
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---- le sol : un quadrillage couche a plat, qui fuit ---- */
+.relief-sol {
+  position: absolute;
+  inset: 12% -30% -22% -30%;
+  transform: rotateX(66deg) translateZ(-40px);
+  transform-origin: 50% 100%;
+  overflow: hidden;
+  border-radius: 50% 50% 0 0 / 14% 14% 0 0;
+}
+.relief-quadrillage {
+  position: absolute;
+  inset: -20%;
+  background-image:
+    linear-gradient(to right, rgba(240, 133, 79, 0.30) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(240, 133, 79, 0.24) 1px, transparent 1px);
+  background-size: 44px 44px;
+  opacity: 0;
+  transform: translate3d(0, 30px, 0);
+  transition: opacity 1.1s ease-out, transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+  /* la grille s'efface vers le fond : c'est ce qui fabrique la profondeur */
+  mask-image: linear-gradient(to top, #000 8%, rgba(0, 0, 0, 0.25) 52%, transparent 88%);
+}
+.relief-vivant .relief-quadrillage {
+  opacity: 1;
+  transform: none;
+}
+.relief-horizon {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 42%;
+  background: linear-gradient(to top, rgba(240, 133, 79, 0.09), transparent);
+}
+
+/* ---- la trace, decollee du sol ---- */
+.relief-trace {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: translateZ(52px);
+  overflow: visible;
+}
+.relief-fil,
+.relief-ombre {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  transition: stroke-dashoffset 1.9s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.relief-ombre {
+  stroke: rgba(0, 0, 0, 0.4);
+  transform: translate3d(6px, 30px, -52px) scaleY(0.35);
+  transform-origin: 50% 100%;
+  filter: blur(3px);
+}
+.relief-vivant .relief-fil,
+.relief-vivant .relief-ombre {
+  stroke-dashoffset: 0;
+}
+
+/* ---- les reperes : ils se plantent, ils ne s'affichent pas ----
+   Ils vivent DANS le SVG : rien a convertir, ils sont sur la courbe.
+
+   ⚠️ Regle de la charte, apprise ici a la dure : une revelation doit ENRICHIR
+   un etat deja visible, jamais le cacher. La premiere version partait de
+   `opacity: 0` avec une animation d'entree ; l'animation ne s'est pas
+   declenchee et les reperes sont restes invisibles pour toujours, sans que
+   rien ne signale l'erreur. Desormais ils sont visibles par defaut, et c'est
+   la classe `relief-vivant` qui ajoute le mouvement. Si le mouvement ne vient
+   pas, on voit quand meme les reperes. */
+.relief-jalon {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transform: translateY(-14px) scaleY(0.55);
+  opacity: 0;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s ease-out;
+  transition-delay: var(--d, 0ms);
+}
+.relief-vivant .relief-jalon { transform: none; opacity: 1; }
+.relief-tige { stroke: var(--color-braise); stroke-width: 2; stroke-linecap: round; opacity: 0.75; }
+.relief-tete { fill: var(--color-braise); }
+.relief-halo { fill: var(--color-braise); opacity: 0.18; }
+.relief-tache { fill: rgba(0, 0, 0, 0.5); }
+
+/* ---- la porte, au bout de la trace ---- */
+.relief-porte {
+  opacity: 0;
+  transition: opacity 0.7s ease-out 1.9s;
+}
+.relief-vivant .relief-porte { opacity: 1; }
+.relief-battant {
+  fill: rgba(240, 133, 79, 0.16);
+  stroke: var(--color-braise);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+.relief-lueur { fill: var(--color-braise); opacity: 0.13; }
+
+/* ---- ce qui l'eteint ---- */
+.relief-doux .relief-monde { transform: none; transition: none; }
+.relief-doux .relief-jalon { transition: none; transform: none; opacity: 1; }
+.relief-doux .relief-fil,
+.relief-doux .relief-ombre { transition: none; stroke-dashoffset: 0; }
+.relief-doux .relief-quadrillage { transition: none; opacity: 1; transform: none; }
+.relief-doux .relief-porte { transition: none; opacity: 1; }
+
+@media (max-width: 640px) {
+  /* le sol reste, la poursuite du pointeur n'a aucun sens au doigt */
+  .relief { aspect-ratio: 6 / 3.4; perspective: 700px; }
+  .relief-monde { transform: none; }
+  .relief-ombre { display: none; }   /* une ombre floutee coute cher pour rien */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .relief-monde { transform: none !important; transition: none !important; }
+  .relief-jalon, .relief-porte { transition: none !important; transform: none !important; opacity: 1 !important; }
+  .relief-fil, .relief-ombre { transition: none !important; stroke-dashoffset: 0 !important; }
+  .relief-quadrillage { transition: none !important; opacity: 1 !important; transform: none !important; }
+}
+
 @media print {
   .sansimpression { display: none !important; }
 }

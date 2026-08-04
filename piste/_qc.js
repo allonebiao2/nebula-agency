@@ -34,6 +34,13 @@ const DIST = path.resolve(ICI, 'dist')
    les LIT dans les donnees du site, on ne les fige jamais dans le controle. */
 const D = await import('./src/donnees.js')
 const nombre = (v) => String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+
+/* ⚠️ Les libelles viennent des DONNEES, jamais d'une copie. « Ateliers de
+   couture » est devenu « Couture et mode » le jour ou le moteur a ramene
+   quinze metiers de plus, et tous les controles qui l'avaient en dur ont
+   casse d'un coup. On lit la source. */
+const M = (cle) => (D.METIERS.find((x) => x.cle === cle) || {}).nom || cle
+const V = (cle) => (D.VILLES.find((x) => x.cle === cle) || {}).nom || cle
 const CAPTURES = path.resolve(ICI, '_qc_captures')
 const PORT = 4319
 
@@ -360,7 +367,7 @@ const totalAffiche = (page) =>
   await page.setViewport({ width: 1440, height: 1000 })
 
   /* A · 10 fiches, aucune option : 100 x 10 = 1 000, aucune remise */
-  await jusquAuVolume(page, base, 'Ateliers de couture', 'Cotonou et ses environs')
+  await jusquAuVolume(page, base, M('couture'), 'Cotonou et ses environs')
   await poser(page, 10)
   await attendre(200)
   let t = await totalAffiche(page)
@@ -393,7 +400,7 @@ const totalAffiche = (page) =>
   dire(t === attenduC, `calcul C · ${maxCouture} fiches, les 4 options = ${attenduC} F (lu : ${t})`)
 
   /* ------------------------------- 3. le minimum et le stock, refusés ----- */
-  await jusquAuVolume(page, base, 'Ateliers de couture', 'Cotonou et ses environs')
+  await jusquAuVolume(page, base, M('couture'), 'Cotonou et ses environs')
   await poser(page, 3)
   await attendre(200)
   const bas = await page.evaluate(() => document.querySelector('input[type=range]').value)
@@ -414,12 +421,10 @@ const totalAffiche = (page) =>
 
   /* Les combinaisons SOUS LE MINIMUM se cherchent en base plutot que de se
      supposer : ce qui etait vide ce matin peut etre plein ce soir. */
-  const NOMS_M = { couture: 'Ateliers de couture', restaurant: 'Restaurants, maquis et bars', patisserie: 'Pâtisseries et boulangeries' }
-  const NOMS_V = { cotonou: 'Cotonou et ses environs', 'benin-autres': 'Autres villes du Bénin', lome: 'Lomé', 'togo-autres': 'Autres villes du Togo', abidjan: 'Abidjan' }
   const vides = []
-  for (const m of Object.keys(NOMS_M)) {
-    for (const v of Object.keys(NOMS_V)) {
-      if (D.stock(m, v) < D.MINIMUM) vides.push([NOMS_M[m], NOMS_V[v], `${m} · ${NOMS_V[v]} (${D.stock(m, v)} en stock)`])
+  for (const m of D.METIERS.filter((x) => !x.horsStock).map((x) => x.cle)) {
+    for (const v of D.VILLES.map((x) => x.cle)) {
+      if (D.stock(m, v) < D.MINIMUM) vides.push([M(m), V(v), `${m} · ${V(v)} (${D.stock(m, v)} en stock)`])
     }
   }
   dire(vides.length > 0, `au moins une combinaison est sous le minimum, et se teste (${vides.length})`)
@@ -439,7 +444,7 @@ const totalAffiche = (page) =>
 
   /* métier hors catalogue : refusé à la vente, mais la demande est prise */
   await ouvrir(page, base, '#/commander')
-  await cliquerTexte(page, 'button', 'Un autre métier')
+  await cliquerTexte(page, 'button', M('autre'))
   await attendre(250)
   const horsStock = await page.evaluate(() => ({
     bloque: [...document.querySelectorAll('button')]
@@ -472,7 +477,7 @@ const totalAffiche = (page) =>
     `le numéro de la fiche d'exemple est partiellement masqué sur la vitrine`
   )
   /* ------------------------ 5. la commande complète, jusqu'au paiement ---- */
-  await jusquAuVolume(page, base, 'Ateliers de couture', 'Cotonou et ses environs')
+  await jusquAuVolume(page, base, M('couture'), 'Cotonou et ses environs')
   await poser(page, 24)
   await attendre(150)
   await cliquerTexte(page, 'button', 'Continuer') /* → suppléments */

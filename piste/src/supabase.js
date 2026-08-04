@@ -32,3 +32,47 @@ export async function ouvrirCarnet(jeton) {
   const l = await r.json()
   return Array.isArray(l) ? l[0] || null : l || null
 }
+
+/* Une seule fonction pour appeler la base. Les trois portes publiques ne
+   savent faire qu'une chose chacune, et aucune ne sait lister quoi que ce
+   soit : ni les carnets, ni les commandes, ni les retours. */
+async function appeler(porte, corps, garderEnVie = false) {
+  return fetch(`${URL_BASE}/rest/v1/rpc/${porte}`, {
+    method: 'POST',
+    keepalive: garderEnVie,
+    headers: {
+      'Content-Type': 'application/json',
+      apikey: CLE_PUBLIQUE,
+      Authorization: `Bearer ${CLE_PUBLIQUE}`,
+    },
+    body: JSON.stringify(corps),
+  })
+}
+
+/* La commande, deposee au moment ou l'acheteur part sur WhatsApp.
+
+   ⚠️ `keepalive` n'est pas un detail : sans lui, ouvrir WhatsApp met la page en
+   arriere-plan et le navigateur ANNULE la requete. C'est exactement comme ca
+   que le prospect Angelique a ete perdu par le site de l'agence le 4 aout. On
+   ne refait pas la meme erreur ici. */
+export async function deposerCommande(reference, client, commande) {
+  try {
+    const r = await appeler('piste_commander', {
+      p_reference: reference,
+      p_client: client,
+      p_commande: commande,
+    }, true)
+    return r.ok
+  } catch (e) {
+    return false
+  }
+}
+
+/* Une marque du carnet. Le client sait que ca remonte : c'est ecrit dans le
+   carnet, en toutes lettres. Une donnee reprise en silence n'est pas un
+   signal, c'est une prise. */
+export async function marquerFiche(jeton, fiche, marque) {
+  try {
+    await appeler('piste_marquer', { p_jeton: jeton, p_fiche: fiche, p_marque: marque }, true)
+  } catch (e) {}
+}

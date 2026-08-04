@@ -40,17 +40,69 @@ from pathlib import Path
 
 RACINE = Path(__file__).resolve().parent.parent
 COTONOU = {"Cotonou", "Abomey-Calavi", "Godomey", "Cocotomey"}
-METIERS_CONNUS = {"couture", "restaurant", "patisserie"}
 
-# Chaque source dit : d'où, quel métier, quel pays, et combien de pages.
-SOURCES = [
-    ("https://www.goafricaonline.com/bj/annuaire/ateliers-de-couture", "couture", "BJ"),
-    ("https://www.goafricaonline.com/bj/annuaire/restaurants", "restaurant", "BJ"),
-    ("https://www.goafricaonline.com/bj/annuaire/boulangeries-patisseries", "patisserie", "BJ"),
-    ("https://www.goafricaonline.com/tg/annuaire/ateliers-de-couture", "couture", "TG"),
-    ("https://www.goafricaonline.com/tg/annuaire/restaurants", "restaurant", "TG"),
-    ("https://www.goafricaonline.com/tg/annuaire/boulangeries-patisseries", "patisserie", "TG"),
-]
+# ─────────────────────────── LES VIVIERS ───────────────────────────────────
+# Une categorie d'annuaire n'est pas un metier vendable : « boutiques pret-a-
+# porter » et « mode vetements textiles » sont le meme client pour l'acheteur.
+# On regroupe donc les 96 categories en metiers que le client reconnait.
+#
+# ⚠️ CE QUI EST VOLONTAIREMENT ECARTE : administrations, ambassades, consulats,
+# commissariats, lieux de culte, ordres professionnels, associations, urgences,
+# aeroports. Ce ne sont pas des commerces : personne ne leur vend un catalogue,
+# et les demarcher serait une perte de temps pour l'acheteur comme pour eux.
+METIERS = {
+    "couture": ("Couture et mode", "atelier de couture", [
+        "ateliers-de-couture", "mode-vetements-textiles", "vente-vetements-textiles",
+        "boutiques-pret-a-porter"]),
+    "restaurant": ("Restaurants, maquis et bars", "restaurant", [
+        "restaurants", "traiteurs", "brasseries"]),
+    "patisserie": ("Pâtisseries et boulangeries", "pâtisserie", [
+        "boulangeries-patisseries"]),
+    "beaute": ("Beauté et bien-être", "salon de beauté", [
+        "salon-beaute-esthetique", "bien-etre", "spa-sauna", "hygiene-corporelle-sante"]),
+    "alimentation": ("Alimentation et supermarchés", "commerce d'alimentation", [
+        "alimentation", "supermarches", "poissoneries", "abattoirs-viande",
+        "entreprises-agroalimentaires"]),
+    "quincaillerie": ("Quincaillerie et bâtiment", "quincaillerie", [
+        "quincailleries", "plomberie-sanitaires", "miroiterie-vitrerie",
+        "entreprises-batiment-construction", "societes-specialistes-aluminium"]),
+    "auto": ("Auto, moto et pièces", "garage", [
+        "automobile-moto", "vente-cycles-motos", "vente-voitures-automobile"]),
+    "maison": ("Maison et décoration", "magasin de décoration", [
+        "ameublement", "maison-decoration", "produits-entretien", "produits-hygiene"]),
+    "sante": ("Santé et pharmacies", "cabinet de santé", [
+        "sante", "veterinaires", "pharmacies-veterinaires", "chirurgiens", "cardiologues"]),
+    "ecole": ("Écoles et formation", "établissement scolaire", [
+        "ecoles-primaires", "ecole-secondaire-technique", "formations-education"]),
+    "informatique": ("Informatique et cybercafés", "commerce informatique", [
+        "informatique-internet", "cybercafes", "telecommunications"]),
+    "imprimerie": ("Imprimerie et communication", "imprimerie", [
+        "imprimeries", "communication-publicite", "agences-de-communication", "cartonnerie"]),
+    "hotel": ("Hôtels et tourisme", "hôtel", [
+        "auberges", "tourisme-et-loisirs"]),
+    "immobilier": ("Immobilier", "agence immobilière", [
+        "agences-immobilieres", "professionnels-immobilier", "promoteurs-immobiliers"]),
+    "transport": ("Transport et voyage", "société de transport", [
+        "transports", "courrier-express", "agences-de-voyage"]),
+    "services": ("Services aux entreprises", "société de services", [
+        "societes-services", "societes-nettoyage-industriel", "societes-gardiennage-securite",
+        "societes-securite", "societes-travail-temporaire-interim", "audit-conseil",
+        "expert-comptable", "comptabilite-juridique-conseil", "assurances",
+        "courtiers-en-assurance"]),
+    "artisan": ("Artisans et art", "artisan", [
+        "artisans", "galerie-art", "animaux", "vente-articles-sport", "sport"]),
+    "commerce": ("Commerces divers", "commerce", [
+        "commerces", "commerce-import-export", "societes-negoce", "centrales-achat"]),
+}
+
+METIERS_CONNUS = set(METIERS)
+
+# Ce que le moteur va parcourir : chaque categorie, dans chaque pays.
+SOURCES = []
+for _cle, (_nom, _sing, _cats) in METIERS.items():
+    for _c in _cats:
+        for _pays, _p in (("BJ", "bj"), ("TG", "tg")):
+            SOURCES.append((f"https://www.goafricaonline.com/{_p}/annuaire/{_c}", _cle, _pays))
 
 ENTETES = {
     # On se présente. Un robot qui ment sur ce qu'il est n'a pas sa place ici.

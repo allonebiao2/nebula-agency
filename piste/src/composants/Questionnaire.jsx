@@ -11,6 +11,7 @@ import {
   stock,
 } from '../donnees.js'
 import { BASE, SUPPLEMENTS, calcul, fcfa, nombre as jolinombre } from '../prix.js'
+import { deposerCommande } from '../supabase.js'
 import { CLES, ajouter, lire } from '../stockage.js'
 import FicheExemple from './FicheExemple.jsx'
 import Paiement from './Paiement.jsx'
@@ -379,6 +380,33 @@ export default function Questionnaire({ aller }) {
       etat: 'recue',
     }
     ajouter('commandes', enr)
+    /* La commande part AUSSI en base, et pas seulement dans ce navigateur.
+       Sans ça, le cockpit ne voyait que les commandes passées depuis l'appareil
+       de Mongazi : ce n'était pas une liste, c'était un carnet personnel. Une
+       commande passée depuis le téléphone d'un client n'existait nulle part.
+       C'est exactement comme ça que le prospect Angélique a été perdu par le
+       site de l'agence le 4 août. */
+    deposerCommande(
+      ref,
+      {
+        prenom: prenom.trim(),
+        nom: nom.trim(),
+        email: email.trim(),
+        whatsapp: numeroComplet,
+        momo: momoChiffres,
+        operateur: momoOperateur,
+      },
+      {
+        metier,
+        ville,
+        quartier: quartier.trim(),
+        n,
+        options: enr.options,
+        offre: offre.trim(),
+        unitaire: c.unitaire,
+        total: c.total,
+      }
+    )
     setCommande({ ...enr, texte })
     window.open(
       `https://wa.me/${NEBULA_WHATSAPP}?text=${encodeURIComponent(texte)}`,

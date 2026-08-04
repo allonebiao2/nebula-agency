@@ -16,6 +16,7 @@ import {
 import { BASE, SUPPLEMENTS, PALIERS, calcul, fcfa } from '../prix.js'
 import FicheExemple from './FicheExemple.jsx'
 import Generateur from './Generateur.jsx'
+import Relief from './Relief.jsx'
 import { Compteur, Revele, useRevele } from './Revele.jsx'
 import { Bouton, Chiffre, Section, Titre } from './Ui.jsx'
 import { Puce, Semis, TracePiste } from './Trace.jsx'
@@ -102,8 +103,10 @@ function Heros({ aller }) {
           </Revele>
         </div>
 
+        {/* La scène 3D. Elle s'éteint toute seule sur appareil modeste et
+            sous `prefers-reduced-motion` : voir Relief.jsx. */}
         <div className="hidden text-braise sm:block">
-          <TracePiste repere={5} />
+          <Relief />
           <p className="mt-1 text-center text-[0.8rem] text-sable">
             On relève la trace, on la suit, on arrive à la porte.
           </p>

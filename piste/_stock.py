@@ -22,7 +22,37 @@ from pathlib import Path
 RACINE = Path(__file__).resolve().parent.parent
 DONNEES = RACINE / "piste/src/donnees.js"
 VILLES = ["cotonou", "benin-autres", "lome", "togo-autres", "abidjan"]
-METIERS = ["couture", "restaurant", "patisserie", "autre"]
+
+# ⚠️ Les metiers viennent du MOTEUR, pas d'une liste recopiee ici. Le vivier
+# comptait neuf metiers pendant que le site n'en vendait que trois : personne ne
+# pouvait acheter les six autres. Une seule source, et la divergence disparait.
+import importlib.util as _iu
+_spec = _iu.spec_from_file_location("_m", RACINE / "piste/_moteur.py")
+_m = _iu.module_from_spec(_spec)
+_spec.loader.exec_module(_m)
+METIERS = list(_m.METIERS)
+
+# Les exemples qui aident le client a reconnaitre son metier, en un coup d'oeil.
+EXEMPLES = {
+    "couture": "tailleurs, couturieres, brodeurs, pret-a-porter",
+    "restaurant": "restaurants, maquis, bars, buvettes, traiteurs",
+    "patisserie": "patissiers, boulangers",
+    "beaute": "salons de coiffure, instituts, spas",
+    "alimentation": "epiceries, supermarches, poissonneries",
+    "quincaillerie": "quincailleries, plomberie, vitrerie, batiment",
+    "auto": "garages, pieces detachees, vente de motos",
+    "maison": "ameublement, decoration, produits d'entretien",
+    "sante": "cabinets, pharmacies, veterinaires",
+    "ecole": "ecoles, centres de formation",
+    "informatique": "cybercafes, vente de materiel, telephonie",
+    "imprimerie": "imprimeries, agences de communication",
+    "hotel": "hotels, auberges, tourisme",
+    "immobilier": "agences et promoteurs immobiliers",
+    "transport": "transporteurs, courrier, agences de voyage",
+    "services": "nettoyage, gardiennage, comptabilite, assurance",
+    "artisan": "artisans, galeries d'art, articles de sport",
+    "commerce": "import-export, negoce, commerces divers",
+}
 
 
 def connexion():
@@ -120,7 +150,27 @@ def main():
 
     # ---- on repose tout ----------------------------------------------------
     s = io.open(DONNEES, encoding="utf-8").read()
-    for nom, bloc in (("STOCK", bloc_stock), ("FICHES", bloc_fiches)):
+    lignes = []
+    for cle in METIERS:
+        nom, singulier, _cats = _m.METIERS[cle]
+        if not any(compte.get(f"{cle}|{v}", 0) >= 10 for v in VILLES):
+            continue          # rien a vendre dans ce metier : on ne le propose pas
+        lignes.append("  {")
+        lignes.append(f"    cle: '{cle}',")
+        lignes.append(f"    pluriel: {js(nom.lower())},")
+        lignes.append(f"    nom: {js(nom)},")
+        lignes.append(f"    court: {js(nom.split(' et ')[0].split(',')[0])},")
+        lignes.append(f"    singulier: {js(singulier)},")
+        lignes.append(f"    exemple: {js(EXEMPLES.get(cle, ''))},")
+        lignes.append("  },")
+    lignes += ["  {", "    cle: 'autre',", "    pluriel: 'commerces',",
+               "    nom: 'Un autre métier',", "    court: 'Autre métier',",
+               "    singulier: 'commerce',",
+               "    exemple: " + js("dites-nous lequel, on vous prévient quand c'est prêt") + ",",
+               "    horsStock: true,", "  },"]
+    bloc_metiers = "export const METIERS = [\n" + "\n".join(lignes) + "\n]"
+
+    for nom, bloc in (("METIERS", bloc_metiers), ("STOCK", bloc_stock), ("FICHES", bloc_fiches)):
         deb = s.index(f"export const {nom} = ")
         fin = s.index("\n}", deb) + 2 if nom == "STOCK" else s.index("\n]", deb) + 2
         s = s[:deb] + bloc + s[fin:]

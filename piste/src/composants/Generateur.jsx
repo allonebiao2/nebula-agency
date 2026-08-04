@@ -87,21 +87,27 @@ function Phrase({ metier, ville, n, options, dispo }) {
 
 /* ------------------------------------------------------------- les choix -- */
 
-function Pastille({ actif, desactive, onClick, titre, dessous, droite }) {
+function Pastille({ actif, desactive, onClick, titre, dessous, droite, compact = false }) {
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={desactive}
       aria-pressed={actif}
-      className={`group relative flex min-h-[56px] w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-[border-color,background-color,transform] duration-200 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-45 disabled:active:translate-y-0 ${
+      className={`group relative flex min-h-[56px] w-full items-center gap-3 rounded-2xl border text-left ${
+        compact ? 'px-3 py-2.5' : 'px-4 py-3'
+      } transition-[border-color,background-color,transform] duration-200 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-45 disabled:active:translate-y-0 ${
         actif
           ? 'border-brique bg-creme shadow-[0_0_0_1px_var(--color-brique)]'
           : 'border-trait bg-creme/60 hover:border-sourd'
       }`}
     >
       <span className="min-w-0 flex-1">
-        <span className="block text-[0.98rem] font-semibold leading-tight text-encre">
+        <span
+          className={`block font-semibold leading-tight text-encre ${
+            compact ? 'text-[0.86rem]' : 'text-[0.98rem]'
+          }`}
+        >
           {titre}
         </span>
         {dessous && (
@@ -297,14 +303,19 @@ export default function Generateur({ aller, onEtat }) {
           <legend className="mb-3 text-[0.82rem] font-semibold text-encre">
             1 · Quel métier vous cherchez ?
           </legend>
-          <div className="grid gap-2 sm:grid-cols-2">
+          {/* ⚠️ Onze métiers au lieu de trois depuis que le moteur collecte.
+              Onze cartes hautes, c'est un panneau qu'on fait défiler avant même
+              d'avoir choisi : deux colonnes dès le téléphone, et l'exemple ne
+              s'affiche que sur le métier choisi. On garde tout dans un écran. */}
+          <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">
             {METIERS.map((m) => (
               <Pastille
                 key={m.cle}
                 actif={metier === m.cle}
                 onClick={() => setMetier(m.cle)}
                 titre={m.nom}
-                dessous={m.exemple}
+                dessous={metier === m.cle ? m.exemple : ''}
+                compact
               />
             ))}
           </div>

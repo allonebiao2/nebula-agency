@@ -26,6 +26,14 @@ const MIME = {
   '.svg': 'image/svg+xml',
 }
 
+/* ⚠️ Les libelles viennent des DONNEES, jamais d'une copie. « Ateliers de
+   couture » est devenu « Couture et mode » le jour ou le moteur a ramene
+   quinze metiers de plus, et tous les controles qui l'avaient en dur ont
+   casse d'un coup. On lit la source. */
+const D = await import('./src/donnees.js')
+const M = (cle) => (D.METIERS.find((x) => x.cle === cle) || {}).nom || cle
+const V = (cle) => (D.VILLES.find((x) => x.cle === cle) || {}).nom || cle
+
 const ok = []
 const ko = []
 const dire = (bon, quoi) => (bon ? ok : ko).push(quoi)
@@ -137,12 +145,16 @@ const serveur = http.createServer((q, r) => {
   dire(!/à payer/i.test(t), `aucun prix n'est affiché avant le premier réglage`)
 
   /* ------------------------------------------------ 2. le prix dès le réglage */
-  await clic('Ateliers de couture')
+  await clic(M('couture'))
   t = await texte()
-  dire(/ateliers de couture/.test(await phrase()), `la phrase se réécrit avec le métier choisi`)
+  const P = (cle) => (D.METIERS.find((x) => x.cle === cle) || {}).pluriel || cle
+  dire(
+    new RegExp(P('couture'), 'i').test(await phrase()),
+    `la phrase se réécrit avec le métier choisi (« ${P('couture')} »)`
+  )
   dire(/Dans quelle ville/.test(t), `la question suivante apparaît sur le même panneau`)
 
-  await clic('Cotonou et ses environs')
+  await clic(V('cotonou'))
   t = await texte()
   dire(/Je cherche.*Cotonou/.test(await phrase()), `la phrase porte maintenant la ville`)
   dire(/à payer/i.test(t), `le prix apparaît dès que le réglage suffit`)
@@ -166,12 +178,12 @@ const serveur = http.createServer((q, r) => {
     `les trois numéros sont partiellement masqués (${apercu.masques} sur ${apercu.nb})`
   )
 
-  const { FICHES, stock: stockDeja } = await import('./src/donnees.js')
+  const { FICHES, stock: stockDeja } = D
   const toutesVraies = apercu.noms.every((n) => FICHES.some((f) => f.nom === n))
   dire(toutesVraies, `les trois fiches sont de VRAIS commerces relevés`)
 
   /* elles changent quand la ville change */
-  await clic('Lomé')
+  await clic(V('lome'))
   const apresLome = await page.evaluate(() =>
     [...document.querySelectorAll('.apercu-fiche')].map((x) => x.querySelector('p')?.innerText.trim())
   )
@@ -253,24 +265,12 @@ const serveur = http.createServer((q, r) => {
   /* On CHERCHE une combinaison sous le minimum au lieu d'en supposer une : le
      moteur collecte chaque nuit, et « Autres villes du Bénin » etait vide ce
      matin, plein ce soir. Un controle qui fige une donnee vivante ment. */
-  const NOMS_M = {
-    couture: 'Ateliers de couture',
-    restaurant: 'Restaurants, maquis et bars',
-    patisserie: 'Pâtisseries et boulangeries',
-  }
-  const NOMS_V = {
-    cotonou: 'Cotonou et ses environs',
-    'benin-autres': 'Autres villes du Bénin',
-    lome: 'Lomé',
-    'togo-autres': 'Autres villes du Togo',
-    abidjan: 'Abidjan',
-  }
   const { MINIMUM: MINI } = await import('./src/donnees.js')
   const stockDe = stockDeja
   let creux = null
-  for (const m of Object.keys(NOMS_M)) {
-    for (const v of Object.keys(NOMS_V)) {
-      if (!creux && stockDe(m, v) < MINI) creux = [NOMS_M[m], NOMS_V[v]]
+  for (const m of D.METIERS.filter((x) => !x.horsStock).map((x) => x.cle)) {
+    for (const v of D.VILLES.map((x) => x.cle)) {
+      if (!creux && stockDe(m, v) < MINI) creux = [M(m), V(v)]
     }
   }
   dire(!!creux, `une combinaison sous le minimum existe et se teste${creux ? ` (${creux.join(' · ')})` : ''}`)
@@ -294,14 +294,14 @@ const serveur = http.createServer((q, r) => {
 
   /* ------------------------------------- 7. « Un autre métier » n'est pas vendu */
   await ouvrir()
-  await clic('Un autre métier')
+  await clic(M('autre'))
   t = await texte()
   dire(/on ne va pas vous le vendre/i.test(t), `un métier non relevé bascule aussi en demande`)
 
   /* -------------------------------- 8. de la vitrine au récapitulatif, direct - */
   await ouvrir()
-  await clic('Restaurants, maquis et bars')
-  await clic('Cotonou et ses environs')
+  await clic(M('restaurant'))
+  await clic(V('cotonou'))
   await clic('10')
   const avantDepart = await lireTotal()
   await clic('Commander')
@@ -330,8 +330,8 @@ const serveur = http.createServer((q, r) => {
   ]) {
     await page.setViewport({ width: w, height: h })
     await ouvrir()
-    await clic('Ateliers de couture')
-    await clic('Cotonou et ses environs')
+    await clic(M('couture'))
+    await clic(V('cotonou'))
     const forme = await page.evaluate(() => {
       const petites = [...document.querySelectorAll('#generateur button, #generateur input, #generateur textarea')]
         .filter((e) => {
@@ -362,8 +362,8 @@ const serveur = http.createServer((q, r) => {
   /* la barre du bas, sur téléphone seulement */
   await page.setViewport({ width: 390, height: 844 })
   await ouvrir()
-  await clic('Ateliers de couture')
-  await clic('Cotonou et ses environs')
+  await clic(M('couture'))
+  await clic(V('cotonou'))
   const nbFixes = await page.evaluate(
     () =>
       [...document.querySelectorAll('div')].filter(
