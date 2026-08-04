@@ -103,3 +103,24 @@ export async function marquerFiche(jeton, fiche, marque) {
     await appeler('piste_marquer', { p_jeton: jeton, p_fiche: fiche, p_marque: marque }, true)
   } catch (e) {}
 }
+
+/* Un signalement « injoignable ». Il passe par la fonction serveur, qui pose
+   la marque ET prévient Mongazi par courriel : sans alerte, un signalement
+   dort dans une table que personne ne regarde. Le repli garde au moins la
+   marque si le serveur est indisponible. */
+export async function signalerInjoignable(jeton, fiche) {
+  try {
+    const r = await fetch(`${URL_BASE}/functions/v1/piste-signalement`, {
+      method: 'POST',
+      keepalive: true,
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: CLE_PUBLIQUE,
+        Authorization: `Bearer ${CLE_PUBLIQUE}`,
+      },
+      body: JSON.stringify({ jeton, fiche }),
+    })
+    if (r.ok) return
+  } catch (e) {}
+  marquerFiche(jeton, fiche, 'injoignable')
+}

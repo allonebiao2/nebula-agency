@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { METIERS, NEBULA_WHATSAPP, estFixe, numeroJoli, international } from '../donnees.js'
-import { marquerFiche, ouvrirCarnet } from '../supabase.js'
+import { marquerFiche, ouvrirCarnet, signalerInjoignable } from '../supabase.js'
 import { Bouton } from './Ui.jsx'
 
 /*
@@ -214,7 +214,7 @@ export default function Carnet({ jeton, aller }) {
       '',
       'Merci de la remplacer.',
     ].join('\n')
-    marquerFiche(jeton, f.nom, 'injoignable')
+    signalerInjoignable(jeton, f.nom)
     window.open(`https://wa.me/${NEBULA_WHATSAPP}?text=${encodeURIComponent(texte)}`, '_blank')
   }
 

@@ -604,6 +604,36 @@ function Ligne({ c, onEtat, onRetirer }) {
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
+        {/* Le lien du carnet part par email tout seul. Ce bouton l'envoie AUSSI
+            sur le WhatsApp du client, en un clic : la conversation s'ouvre avec
+            le message déjà écrit. Un clic vaut mieux qu'un copier-coller, et
+            c'est le seul geste qui reste manuel. */}
+        {c.etat === 'payee' && c.wa && (
+          <Bouton
+            ton="contour"
+            className="px-5"
+            href={`https://wa.me/${String(c.wa).replace(/\D/g, '')}?text=${encodeURIComponent(
+              [
+                `Bonjour ${c.prenom || ''},`.trim(),
+                '',
+                `Votre carnet PISTE est prêt : ${c.n} fiches.`,
+                'Il vient de partir sur votre email, et le voici aussi ici :',
+                '',
+                '[COLLEZ LE LIEN DU CARNET ICI]',
+                '',
+                'Ouvrez-le sur votre téléphone, appuyez sur une fiche, la',
+                'conversation démarre. Une fiche injoignable ? Le bouton est',
+                'dans le carnet, on la remplace sans frais.',
+                '',
+                'NEBULA Agency',
+              ].join(String.fromCharCode(10))
+            )}`}
+            target="_blank"
+            rel="noopener"
+          >
+            Envoyer sur son WhatsApp
+          </Bouton>
+        )}
         {suivant && !expiree && (
           <Bouton className="px-5" onClick={() => onEtat(c.ref, suivant.cle)}>
             {etat.suite}
