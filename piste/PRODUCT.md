@@ -2,7 +2,7 @@
 
 > Vendre des prospects d'entreprise vérifiés, prêts à être contactés, en Afrique
 > de l'Ouest francophone.
-> Écrit le 2026-08-03, à partir des **68 décisions** de Mongazi.
+> Écrit le 2026-08-03, à partir des **80 décisions** de Mongazi.
 
 ## Register
 
@@ -29,7 +29,7 @@ marque l'état, on reprend le lendemain où on s'est arrêté.
 
 ---
 
-## 2. Les 68 décisions
+## 2. Les 80 décisions
 
 ### Qui, quoi, combien
 
@@ -275,6 +275,51 @@ fiche vendue a un coût d'achat : il faut le connaître avant de fixer le prix.
 
 **Décision 68 · aucun nouveau nom de domaine.** PISTE reste sur
 `piste.nebula-agency.online`. Rien à acheter, rien à renouveler.
+
+### Le vivier a 10 000 (decisions 69 a 72)
+
+| # | Question | Decision |
+|---|---|---|
+| 69 | Comment atteindre 10 000 | **Beaucoup plus de metiers** (coiffure, quincaillerie, pharmacie, garage, hotel, ecole, imprimerie, bijouterie...) **+ OpenStreetMap + Jiji et CoinAfrique** |
+| 70 | Sur ces trois sources | **La creme de la creme uniquement.** Ce qui n'est pas de qualite est ignore, pas range « pour plus tard » |
+| 71 | Fiches sans numero | **Vivier separe « a visiter »**, jamais melange. ⚠️ Mongazi : « le numero de telephone est tres important » : sans lui, la fiche n'est pas presentee, ou elle perd en valeur |
+| 72 | Rythme et vieillissement | **Un peu chaque nuit, sans forcer** (3 a 4 semaines pour 10 000) · le moteur **reverifie les anciennes et declasse** celles qui ont disparu |
+
+⚠️ **Ce que « creme de la creme » veut dire, concretement.** Une fiche entre dans
+le vivier vendable si et seulement si : elle a un **numero valide au bon
+format**, un **nom lisible**, un **metier identifie** et une **localite**. Tout
+le reste va dans « a visiter » ou nulle part. On ne gonfle pas un compteur.
+
+### L'apprentissage (decisions 73 a 76)
+
+| # | Question | Decision |
+|---|---|---|
+| 73 | D'ou vient le signal | **Les marques du carnet remontent** (Ecrit / Rendez-vous / Vendu / Non), **et on le dit** au client : « vos marques nous servent a mieux choisir vos prochaines fiches » |
+| 74 | Ce qu'il apprend d'abord | **Quelles fiches repondent** : quel metier, quel quartier, quel type de commerce |
+| 75 | Methode | **Des regles qui deviennent un modele.** Un score ecrit a la main d'abord, dont chaque retour ajuste les poids. Le modele ne remplace les regles qu'avec quelques milliers de retours |
+| 76 | Ce qu'il en fait | **Servir les meilleures en premier** · **prevenir quand une source se gate** · **conseiller l'acheteur** avec de vrais chiffres |
+
+⚠️ **Pourquoi pas un modele tout de suite.** Zero vente enregistree = rien a
+lire. Un modele entraine sur rien invente des reponses : il aurait l'air savant
+et il serait faux. Les regles, elles, sont justes des le premier jour et
+s'ameliorent ensuite.
+
+⚠️ **Le prix ne bougera PAS tout seul** (option ecartee) : un prix qui change
+sans qu'on comprenne pourquoi fait fuir, surtout sur un premier achat.
+
+### Le visuel (decisions 77 a 78)
+
+| # | Question | Decision |
+|---|---|---|
+| 77 | La 3D | **Dans le heros seulement.** Une scene legere : la trace qui court sur un relief, les reperes qui se posent en profondeur. **Coupee automatiquement sur appareil modeste** |
+| 78 | Les fiches de prospects | **« Ultra belles » veut dire : on travaille vite, debout.** Le nom, le quartier et le bouton se trouvent en une seconde, au pouce. Hierarchie nette, gros boutons, etats lisibles au soleil. La beaute sert le travail |
+
+### Ce qui se finit, et la mise en ligne (decisions 79 a 80)
+
+| # | Question | Decision |
+|---|---|---|
+| 79 | Ce qui reste | **Les quatre** : le deuxieme vivier (structures) · les commandes dans Supabase · le recu PDF et le message a J+7 · Abidjan |
+| 80 | Mise en ligne | **MAINTENANT**, et on ameliore en ligne. PISTE est deja vendable : 1 149 fiches, le generateur, le carnet |
 
 ---
 
