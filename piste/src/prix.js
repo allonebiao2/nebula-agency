@@ -11,6 +11,7 @@ export const BASE = 100
 export const SUPPLEMENTS = [
   {
     cle: 'teste',
+    court: "le numéro testé",
     prix: 150,
     nom: 'Le numéro est testé',
     resume: 'La ligne sonne, et le compte WhatsApp existe.',
@@ -19,6 +20,7 @@ export const SUPPLEMENTS = [
   },
   {
     cle: 'sansSite',
+    court: "ceux qui n'ont rien en ligne",
     prix: 100,
     nom: "Il n'a rien en ligne",
     resume: 'Ce commerce n\'a ni site, ni page qui tourne.',
@@ -27,6 +29,7 @@ export const SUPPLEMENTS = [
   },
   {
     cle: 'dirigeant',
+    court: "le nom du dirigeant",
     prix: 100,
     nom: 'Le nom du dirigeant',
     resume: 'Pour dire son nom au lieu de dire « bonjour ».',
@@ -35,6 +38,7 @@ export const SUPPLEMENTS = [
   },
   {
     cle: 'message',
+    court: "le message déjà écrit",
     prix: 50,
     nom: 'Le message déjà écrit',
     resume: 'Rédigé pour ce commerce, à partir de ce que vous vendez.',

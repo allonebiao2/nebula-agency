@@ -12,6 +12,8 @@
 import { HEURES_VALIDITE } from './donnees.js'
 
 export const CLES = {
+  /* Ce que le generateur a compose, transmis a l'ecran de commande. */
+  brouillon: 'piste_brouillon_v1',
   commandes: 'piste_commandes_v1',
   demandes: 'piste_demandes_v1',
   signalements: 'piste_signalements_v1',

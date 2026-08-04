@@ -306,6 +306,84 @@ input[type='range']::-moz-range-thumb {
   .ruban { animation: none; }
 }
 
+/* ═══════════════════ LE GÉNÉRATEUR · le mouvement (décisions 47 à 62) ══════
+   Règle tenue partout ici : uniquement `transform` et `opacity`, jamais une
+   propriété de mise en page. C'est ce qui fait tenir 60 images par seconde sur
+   un téléphone d'entrée de gamme. « Allégé sur téléphone » ne veut pas dire
+   bâclé : les animations qui restent doivent être BELLES et FLUIDES.
+
+   ⚠️ À ne pas confondre avec `.revele`, qui attend le défilement et n'apparaît
+   qu'avec `.vu`. Ici les blocs surgissent au moment d'un choix : ils doivent
+   jouer TOUT DE SUITE, sinon ils resteraient invisibles pour toujours. */
+
+@keyframes pousse {
+  from { opacity: 0; transform: translate3d(0, 14px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+.pousse {
+  animation: pousse 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+}
+
+/* La phrase qui se réécrit : chaque mot décidé se pose, il ne clignote pas. */
+@keyframes mot {
+  from { opacity: 0; transform: translate3d(0, 0.35em, 0); }
+  to   { opacity: 1; transform: none; }
+}
+.phrase-mot {
+  display: inline-block;
+  animation: mot 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Les trois fiches de l'aperçu se posent l'une après l'autre, comme des
+   cartons qu'on aligne sur une table. Le décalage vient de `animationDelay`. */
+@keyframes fiche {
+  from { opacity: 0; transform: translate3d(0, 16px, 0) scale(0.985); }
+  to   { opacity: 1; transform: none; }
+}
+.apercu-fiche {
+  animation: fiche 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Le curseur qui suit le message pendant qu'il s'écrit. */
+.curseur-ecrit {
+  display: inline-block;
+  width: 2px;
+  height: 0.95em;
+  margin-left: 1px;
+  vertical-align: -0.12em;
+  background: var(--color-brique);
+  animation: clignote 1s steps(2, start) infinite;
+}
+@keyframes clignote { to { visibility: hidden; } }
+
+/* La barre collée en bas monte une fois, quand le prix apparaît. */
+@keyframes monte {
+  from { transform: translate3d(0, 100%, 0); }
+  to   { transform: none; }
+}
+.barre-bas {
+  animation: monte 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* Le total qui change doit se remarquer sans sauter aux yeux. */
+@keyframes bat {
+  0%   { transform: none; }
+  40%  { transform: scale(1.045); }
+  100% { transform: none; }
+}
+.bat { animation: bat 0.32s cubic-bezier(0.22, 1, 0.36, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .pousse, .phrase-mot, .apercu-fiche, .barre-bas, .bat {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .curseur-ecrit { animation: none; visibility: hidden; }
+}
+
 @media print {
   .sansimpression { display: none !important; }
 }

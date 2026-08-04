@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   DATE_RELEVE,
   EMAIL_ENVOI,
@@ -15,6 +15,7 @@ import {
 } from '../donnees.js'
 import { BASE, SUPPLEMENTS, PALIERS, calcul, fcfa } from '../prix.js'
 import FicheExemple from './FicheExemple.jsx'
+import Generateur from './Generateur.jsx'
 import { Compteur, Revele, useRevele } from './Revele.jsx'
 import { Bouton, Chiffre, Section, Titre } from './Ui.jsx'
 import { Puce, Semis, TracePiste } from './Trace.jsx'
@@ -26,7 +27,7 @@ const OFFRE_EXEMPLE =
 
 function Heros({ aller }) {
   return (
-    <Section fond="encre" grain interieur="pt-7 pb-16 sm:pt-9 sm:pb-24">
+    <Section fond="encre" grain interieur="pt-6 pb-9 sm:pt-9 sm:pb-24">
       <div className="flex items-center justify-between gap-4">
         <p className="font-display text-[1.05rem] font-bold tracking-tight">
           PISTE{' '}
@@ -42,7 +43,7 @@ function Heros({ aller }) {
         </a>
       </div>
 
-      <div className="mt-10 grid gap-10 sm:mt-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-8">
+      <div className="mt-7 grid gap-10 sm:mt-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-8">
         <div>
           <Revele>
             <p className="text-[0.72rem] font-semibold uppercase tracking-[0.24em] text-braise">
@@ -50,30 +51,38 @@ function Heros({ aller }) {
             </p>
           </Revele>
           <Revele d={80}>
-            <h1 className="mt-4 text-[clamp(2.6rem,10.4vw,4.35rem)]">
-              Des commerçants
-              <br />à qui parler
-              <br />
+            <h1 className="mt-3 text-[clamp(2.15rem,8.6vw,4.35rem)] sm:mt-4">
+              Des commerçants{' '}
+              <span className="hidden sm:inline">
+                <br />
+              </span>
+              à qui parler{' '}
+              <span className="hidden sm:inline">
+                <br />
+              </span>
               <span className="text-braise">demain matin.</span>
             </h1>
           </Revele>
           <Revele d={180}>
-            <p className="mt-6 max-w-[34rem] text-[1.05rem] leading-relaxed text-sable sm:text-[1.15rem]">
+            <p className="mt-4 max-w-[34rem] text-[1rem] leading-relaxed text-sable sm:mt-6 sm:text-[1.15rem]">
               Vous dites qui vous cherchez. On vous rend un carnet de commerces
               réels : le nom, le quartier, le numéro au bon format, et le message
-              déjà écrit pour chacun. Vous ouvrez sur votre téléphone, vous
-              appuyez, la conversation démarre.
+              déjà écrit pour chacun.
+              <span className="hidden sm:inline">
+                {' '}Vous ouvrez sur votre téléphone, vous appuyez, la
+                conversation démarre.
+              </span>
             </p>
           </Revele>
-          <Revele d={260} className="mt-8 flex flex-wrap gap-3">
-            <Bouton ton="pleinClair" onClick={() => aller('#/commander')}>
+          <Revele d={260} className="mt-6 flex flex-wrap gap-3 sm:mt-8">
+            <Bouton ton="pleinClair" href="#generateur">
               Composer ma commande
             </Bouton>
-            <Bouton ton="contourSombre" href="#fiche">
+            <Bouton ton="contourSombre" href="#fiche" className="hidden sm:inline-flex">
               Voir une vraie fiche
             </Bouton>
           </Revele>
-          <Revele d={340}>
+          <Revele d={340} className="hidden sm:block">
             <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-[0.88rem] text-sable">
               {[
                 `Minimum ${MINIMUM} fiches`,
@@ -89,7 +98,7 @@ function Heros({ aller }) {
           </Revele>
         </div>
 
-        <div className="text-braise">
+        <div className="hidden text-braise sm:block">
           <TracePiste repere={5} />
           <p className="mt-1 text-center text-[0.8rem] text-sable">
             On relève la trace, on la suit, on arrive à la porte.
@@ -701,23 +710,42 @@ function Fin({ aller }) {
 
 /* ------------------------------------------------------------------ barre - */
 
-function BarreMobile({ aller }) {
+function BarreMobile({ gen }) {
   const [vue, setVue] = useState(false)
   useEffect(() => {
-    const surScroll = () => setVue(window.scrollY > 620)
+    const surScroll = () => setVue(window.scrollY > 420)
     surScroll()
     window.addEventListener('scroll', surScroll, { passive: true })
     return () => window.removeEventListener('scroll', surScroll)
   }, [])
+
+  /* Tant que rien n'est réglé, la barre ramène au générateur. Dès qu'un prix
+     existe, elle devient le prix ET le bouton de commande : c'est ce qu'on
+     veut sous le pouce pendant qu'on règle (décision 53). */
+  const avecPrix = !!gen?.prixVisible
   return (
     <div
       className={`fixed inset-x-0 bottom-0 z-40 border-t border-traitsombre bg-encre/97 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 transition-opacity duration-300 lg:hidden ${
-        vue ? 'opacity-100' : 'pointer-events-none opacity-0'
+        vue || avecPrix ? 'opacity-100' : 'pointer-events-none opacity-0'
       }`}
     >
-      <Bouton ton="pleinClair" className="w-full" onClick={() => aller('#/commander')}>
-        Composer ma commande
-      </Bouton>
+      {avecPrix ? (
+        <div className="flex items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="text-[0.66rem] uppercase tracking-wider text-sable/70">À payer</p>
+            <p className="font-display text-[1.35rem] font-bold tabular-nums leading-none text-braise">
+              {fcfa(gen.total)}
+            </p>
+          </div>
+          <Bouton ton="pleinClair" className="flex-none px-5" onClick={gen.commander}>
+            Commander
+          </Bouton>
+        </div>
+      ) : (
+        <Bouton ton="pleinClair" className="w-full" href="#generateur">
+          Composer ma commande
+        </Bouton>
+      )}
     </div>
   )
 }
@@ -725,9 +753,25 @@ function BarreMobile({ aller }) {
 /* ------------------------------------------------------------------------- */
 
 export default function Vitrine({ aller }) {
+  /* L'état du générateur remonte ici pour que la barre du bas soit unique. */
+  const [gen, setGen] = useState(null)
+  const surEtat = useCallback((e) => {
+    setGen((v) =>
+      v && v.prixVisible === e.prixVisible && v.total === e.total && v.n === e.n ? v : e
+    )
+  }, [])
+
   return (
     <>
       <Heros aller={aller} />
+
+      {/* Le générateur, juste sous le héros. Sur téléphone le héros est
+          raccourci pour que le haut du panneau dépasse : on VOIT qu'il y a un
+          outil dessous, on n'a pas à le deviner (décisions 47 et 48). */}
+      <Section fond="papier" interieur="pb-14 pt-8 sm:pb-20 sm:pt-12">
+        <Generateur aller={aller} onEtat={surEtat} />
+      </Section>
+
       <Ruban />
       <CeQueVousRecevez />
       <Preuve aller={aller} />
@@ -737,7 +781,7 @@ export default function Vitrine({ aller }) {
       <Stock aller={aller} />
       <Fin aller={aller} />
       <div className="h-20 lg:hidden" aria-hidden="true" />
-      <BarreMobile aller={aller} />
+      <BarreMobile gen={gen} />
     </>
   )
 }

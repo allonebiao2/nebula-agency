@@ -75,6 +75,7 @@ export function nouvelleReference() {
 export const METIERS = [
   {
     cle: 'couture',
+    pluriel: 'ateliers de couture',
     nom: 'Ateliers de couture',
     court: 'Couture',
     singulier: 'atelier de couture',
@@ -82,6 +83,7 @@ export const METIERS = [
   },
   {
     cle: 'restaurant',
+    pluriel: 'restaurants',
     nom: 'Restaurants, maquis et bars',
     court: 'Restaurants',
     singulier: 'restaurant',
@@ -89,6 +91,7 @@ export const METIERS = [
   },
   {
     cle: 'patisserie',
+    pluriel: 'pâtisseries',
     nom: 'Pâtisseries et boulangeries',
     court: 'Pâtisseries',
     singulier: 'pâtisserie',
@@ -96,6 +99,7 @@ export const METIERS = [
   },
   {
     cle: 'autre',
+    pluriel: 'commerces',
     nom: 'Un autre métier',
     court: 'Autre métier',
     singulier: 'commerce',
@@ -109,30 +113,35 @@ export const METIERS = [
 export const VILLES = [
   {
     cle: 'cotonou',
+    court: 'Cotonou',
     nom: 'Cotonou et ses environs',
     pays: 'Bénin',
     detail: 'Cotonou, Abomey-Calavi, Godomey, Cocotomey',
   },
   {
     cle: 'benin-autres',
+    court: 'une autre ville du Bénin',
     nom: 'Autres villes du Bénin',
     pays: 'Bénin',
     detail: 'Porto-Novo, Parakou, Bohicon, Ouidah, Abomey, Lokossa, Kandi…',
   },
   {
     cle: 'lome',
+    court: 'Lomé',
     nom: 'Lomé',
     pays: 'Togo',
     detail: 'tous les quartiers, de Bè Klikamé à Agoè',
   },
   {
     cle: 'togo-autres',
+    court: 'une autre ville du Togo',
     nom: 'Autres villes du Togo',
     pays: 'Togo',
     detail: 'Kpalimé, Bafilo',
   },
   {
     cle: 'abidjan',
+    court: 'Abidjan',
     nom: 'Abidjan',
     pays: "Côte d'Ivoire",
     detail: "aucune source ivoirienne n'a encore été relevée",
@@ -198,54 +207,128 @@ export const NOMBRE_FIXES = 13
    l'achète, et le commerce n'a pas demandé à voir son numéro affiché en
    entier sur une page de vente.                                              */
 
+/* Des fiches VRAIES, relevees le 3 aout 2026 dans le meme annuaire que le
+   carnet des 187. Trois par combinaison metier x ville quand elles existent :
+   l'apercu du generateur en montre trois qui changent selon ce qu'on choisit
+   (decision 51), et il ne montrera jamais une fiche inventee.
+
+   Le numero est affiche partiellement masque tant que rien n'est paye
+   (decision 52) : on voit qu'il est vrai et complet, on ne peut pas s'en
+   servir. Aucun fixe ici, ils n'ont pas WhatsApp. */
 export const FICHES = [
   {
-    nom: 'BOUBAKAR COUTURE',
-    metier: 'couture', ville: 'lome',
-    localite: 'Lomé', quartier: 'Hédzranawoé',
-    pays: 'TG', numero: '90749679',
+    nom: "ACHILLE'S COUTURE",
+    metier: 'couture', ville: 'cotonou',
+    localite: 'Abomey-Calavi', quartier: '',
+    pays: 'BJ', numero: '0197277159',
   },
   {
-    nom: 'ADEBISSI FASHION',
+    nom: "2AF CREATION",
+    metier: 'couture', ville: 'cotonou',
+    localite: 'Abomey-Calavi', quartier: '',
+    pays: 'BJ', numero: '0166958770',
+  },
+  {
+    nom: "ADEBISSI FASHION",
     metier: 'couture', ville: 'cotonou',
     localite: 'Cotonou', quartier: '',
     pays: 'BJ', numero: '0197075503',
   },
   {
-    nom: 'COUTURE MA LUMIERE',
+    nom: "ABA GROUP INTERNATIONAL",
+    metier: 'couture', ville: 'lome',
+    localite: 'Lomé', quartier: 'Adidogomé',
+    pays: 'TG', numero: '90589921',
+  },
+  {
+    nom: "ABRAHAM COUPE ET STYLE",
+    metier: 'couture', ville: 'lome',
+    localite: 'Lomé', quartier: 'Kégué',
+    pays: 'TG', numero: '92469211',
+  },
+  {
+    nom: "AFRO-LADY DESIGN",
+    metier: 'couture', ville: 'lome',
+    localite: 'Lomé', quartier: 'Avédji',
+    pays: 'TG', numero: '90976097',
+  },
+  {
+    nom: "COUTURE MA LUMIERE",
     metier: 'couture', ville: 'togo-autres',
     localite: 'Bafilo', quartier: '',
     pays: 'TG', numero: '90114366',
   },
   {
-    nom: 'Maquis Le Kédjénou',
-    metier: 'restaurant', ville: 'cotonou',
-    localite: 'Cotonou', quartier: 'Abokicodji Lazare',
-    pays: 'BJ', numero: '0160022929',
+    nom: "Boulangerie-Pâtisserie Pain Ivoir",
+    metier: 'patisserie', ville: 'cotonou',
+    localite: 'Cotonou', quartier: '',
+    pays: 'BJ', numero: '0197483730',
   },
   {
-    nom: '228 Kebab Kégué',
-    metier: 'restaurant', ville: 'lome',
-    localite: 'Lomé', quartier: 'Kégué',
-    pays: 'TG', numero: '91494444',
+    nom: "B & S Restaurant - Pâtisserie",
+    metier: 'patisserie', ville: 'cotonou',
+    localite: 'Abomey-Calavi', quartier: '',
+    pays: 'BJ', numero: '0191026060',
   },
   {
-    nom: 'Bar Restaurant Les Orchidées You And Me',
+    nom: "Bar Infinity",
+    metier: 'restaurant', ville: 'benin-autres',
+    localite: 'Porto-Novo', quartier: '',
+    pays: 'BJ', numero: '0151355196',
+  },
+  {
+    nom: "Bar Restaurant Les Orchidées You And Me",
     metier: 'restaurant', ville: 'benin-autres',
     localite: 'Porto-Novo', quartier: '',
     pays: 'BJ', numero: '0198101692',
   },
   {
-    nom: 'AFRICA BAR CHEZ CORNEILLE',
+    nom: "AfricanFoodseum",
+    metier: 'restaurant', ville: 'benin-autres',
+    localite: 'Porto-Novo', quartier: '',
+    pays: 'BJ', numero: '0162747628',
+  },
+  {
+    nom: "Allo Sandwich Agla 2",
+    metier: 'restaurant', ville: 'cotonou',
+    localite: 'Cotonou', quartier: 'Agla',
+    pays: 'BJ', numero: '0169122222',
+  },
+  {
+    nom: "Beach Life (plage Erevan)",
+    metier: 'restaurant', ville: 'cotonou',
+    localite: 'Cotonou', quartier: 'Bord de mer',
+    pays: 'BJ', numero: '0197570206',
+  },
+  {
+    nom: "Maquis Le Kédjénou",
+    metier: 'restaurant', ville: 'cotonou',
+    localite: 'Cotonou', quartier: 'Abokicodji Lazare',
+    pays: 'BJ', numero: '0160022929',
+  },
+  {
+    nom: "228 Kebab Kégué",
+    metier: 'restaurant', ville: 'lome',
+    localite: 'Lomé', quartier: 'Kégué',
+    pays: 'TG', numero: '91494444',
+  },
+  {
+    nom: "IVOIRE-ATTIEKE",
+    metier: 'restaurant', ville: 'lome',
+    localite: 'Lomé', quartier: '',
+    pays: 'TG', numero: '90706262',
+  },
+  {
+    nom: "ALT MÜNCHEN",
+    metier: 'restaurant', ville: 'lome',
+    localite: 'Lomé', quartier: '',
+    pays: 'TG', numero: '90046845',
+  },
+  {
+    nom: "AFRICA BAR CHEZ CORNEILLE",
     metier: 'restaurant', ville: 'togo-autres',
     localite: 'Kpalimé', quartier: '',
     pays: 'TG', numero: '90349592',
-  },
-  {
-    nom: 'Boulangerie-Pâtisserie Pain Ivoir',
-    metier: 'patisserie', ville: 'cotonou',
-    localite: 'Cotonou', quartier: '',
-    pays: 'BJ', numero: '0197483730',
   },
 ]
 
@@ -277,6 +360,28 @@ export function international(pays, numero) {
 }
 
 /* Choisit la fiche d'exemple la plus proche de ce que la personne demande. */
+/* Les fiches de l'apercu du generateur : celles du metier ET de la ville
+   choisis d'abord, puis celles du metier seul, puis n'importe lesquelles.
+   On complete plutot que de rendre une liste vide : l'apercu ne doit jamais
+   se retrouver a zero pendant qu'on regle. Aucune fiche n'est inventee. */
+export function fichesApercu(metier, ville, combien = 3) {
+  const pris = new Set()
+  const sortie = []
+  const prendre = (liste) => {
+    for (const f of liste) {
+      if (sortie.length >= combien) return
+      if (pris.has(f.nom)) continue
+      pris.add(f.nom)
+      sortie.push(f)
+    }
+  }
+  prendre(FICHES.filter((f) => f.metier === metier && f.ville === ville))
+  prendre(FICHES.filter((f) => f.metier === metier))
+  prendre(FICHES.filter((f) => f.ville === ville))
+  prendre(FICHES)
+  return sortie
+}
+
 export function ficheExemple(metier, ville) {
   return (
     FICHES.find((f) => f.metier === metier && f.ville === ville) ||

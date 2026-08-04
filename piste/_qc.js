@@ -429,10 +429,18 @@ const totalAffiche = (page) =>
   await ouvrir(page, base, '#/')
   await attendre(200)
   const vitrineTexte = await page.evaluate(() => document.body.innerText)
-  const vraies = ['BOUBAKAR COUTURE', 'Hédzranawoé']
+  /* On ne fige pas un nom : le releve peut grandir. Ce qui compte, c'est que
+     le commerce affiche fasse partie des fiches REELLEMENT relevees, jamais
+     d'un exemple invente. */
+  const { FICHES } = await import('./src/donnees.js')
+  const montree = FICHES.find((f) => vitrineTexte.includes(f.nom))
   dire(
-    vraies.every((v) => vitrineTexte.includes(v)),
-    `la fiche d'exemple porte un vrai commerce relevé (${vraies.join(', ')})`
+    !!montree,
+    `la fiche d'exemple porte un vrai commerce relevé${montree ? ` (${montree.nom})` : ''}`
+  )
+  dire(
+    !!montree && vitrineTexte.includes(montree.localite),
+    `sa localité relevée est affichée${montree ? ` (${montree.localite})` : ''}`
   )
   dire(
     /••/.test(vitrineTexte),

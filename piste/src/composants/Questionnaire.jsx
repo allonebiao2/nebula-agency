@@ -11,7 +11,7 @@ import {
   stock,
 } from '../donnees.js'
 import { BASE, SUPPLEMENTS, calcul, fcfa, nombre as jolinombre } from '../prix.js'
-import { ajouter } from '../stockage.js'
+import { CLES, ajouter, lire } from '../stockage.js'
 import FicheExemple from './FicheExemple.jsx'
 import Paiement from './Paiement.jsx'
 import Demande from './Demande.jsx'
@@ -210,8 +210,34 @@ export default function Questionnaire({ aller }) {
   const [momoNumero, setMomoNumero] = useState('')
   const [memeNumero, setMemeNumero] = useState(false)
 
+  /* Ce que le générateur a composé sur la vitrine. On reprend au
+     récapitulatif : reposer les six questions à quelqu'un qui vient de tout
+     régler, c'est lui faire refaire son travail (décision 54). Si rien n'a été
+     composé, l'écran garde ses six étapes et fonctionne seul. */
+  const [reprise] = useState(() => {
+    try {
+      const b = lire(CLES.brouillon)[0]
+      if (!b || !b.metier || !b.ville) return null
+      localStorage.removeItem(CLES.brouillon)
+      return b
+    } catch (e) {
+      return null
+    }
+  })
+
   const [essai, setEssai] = useState(false)
   const [commande, setCommande] = useState(null)
+
+  useEffect(() => {
+    if (!reprise) return
+    setMetier(reprise.metier)
+    setVille(reprise.ville)
+    setQuartier(reprise.quartier || '')
+    setN(reprise.n)
+    setOptions(reprise.options || {})
+    setOffre(reprise.offre || '')
+    setEtape(7)
+  }, [reprise])
   const haut = useRef(null)
 
   const dispo = useMemo(() => stock(metier, ville), [metier, ville])
