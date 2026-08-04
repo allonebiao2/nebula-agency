@@ -26,8 +26,6 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 RACINE = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(RACINE / "_documents/nebula-agency/vente/prospection"))
-from _donnees import PROSPECTS  # noqa: E402
 
 SITE = "https://piste.nebula-agency.online"
 COTONOU = {"Cotonou", "Abomey-Calavi", "Godomey", "Cocotomey"}
@@ -77,25 +75,22 @@ def message_pour(f, offre):
     )
 
 
-def viviers():
-    """Tout ce qui est relevé, rangé par métier et par ville. Les fixes restent :
-    ils se vendent, on les appelle au lieu de leur écrire."""
+def viviers(c):
+    """Tout ce qui est relevé, rangé par métier et par ville.
+
+    ⚠️ Lu DANS LA BASE, plus dans le dépôt : `allonebiao2/nebula-agency` est
+    public, et une fiche rangée dans un fichier y serait lisible gratuitement
+    par tout le monde. Le dépôt garde les outils, la base garde la marchandise.
+
+    Les lignes fixes restent du lot : elles se vendent, on les appelle au lieu
+    de leur écrire, et le carnet le dit sur la fiche."""
     par = {}
-    for nom, pays, ville, quartier, metier, num in PROSPECTS:
-        if not num or metier not in METIERS:
-            continue
-        k = (metier, ville_cle(pays, ville))
-        par.setdefault(k, []).append(
-            dict(
-                nom=nom,
-                metier=metier,
-                ville=k[1],
-                localite=ville,
-                quartier=quartier,
-                pays=pays,
-                numero=num,
-            )
-        )
+    for r in c.execute(
+        """select nom, metier, ville, localite, quartier, pays, numero, fixe,
+                  site, dirigeant
+           from piste.fiches where actif order by nom"""
+    ).fetchall():
+        par.setdefault((r["metier"], r["ville"]), []).append(dict(r))
     return par
 
 
@@ -154,8 +149,8 @@ def main():
     a.add_argument("--ecrire", action="store_true", help="écrit vraiment le carnet")
     o = a.parse_args()
 
-    par = viviers()
     c = connexion()
+    par = viviers(c)
     pris = deja_livrees(c)
 
     if o.voir or not (o.metier and o.ville and o.n):
@@ -194,7 +189,7 @@ def main():
 
     choisies = libres[: o.n]
     for f in choisies:
-        f["fixe"] = est_fixe(f["pays"], f["numero"])
+        f["fixe"] = bool(f.get("fixe"))
         if "message" in options and not f["fixe"]:
             f["message"] = message_pour(f, o.offre)
         if "sansSite" in options:

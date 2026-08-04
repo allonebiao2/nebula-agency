@@ -34,9 +34,11 @@ const r = await p.evaluate(()=>{
   const petites=[...document.querySelectorAll('button,a,input')].filter(e=>{const b=e.getBoundingClientRect();return b.height>0&&b.width>0&&b.height<44})
   return {
     fiches:cartes.length,
-    ref:/PISTE-TEST/.test(t),
+    ref:/PISTE-V2/.test(t),
     texte:t.slice(0,400),
     wa:wa.length, tel:tel.length,
+    mobiles: cartes.filter(c=>!/ligne fixe/.test(c.innerText)).length,
+    fixes: cartes.filter(c=>/ligne fixe/.test(c.innerText)).length,
     waAvecMessage: wa.filter(a=>a.href.includes('?text=')).length,
     numeroComplet: /\b\d\d \d\d \d\d \d\d\b/.test(t),
     masque: /••/.test(t),
@@ -47,14 +49,14 @@ const r = await p.evaluate(()=>{
     cadratin: /[\u2014\u2013]/.test(t),
   }
 })
-dire(r.fiches===12, `les 12 fiches achetées sont là (${r.fiches})`)
+dire(r.fiches===30, `les 30 fiches achetées sont là (${r.fiches})`)
 dire(r.ref, `la référence du carnet est affichée`)
 dire(r.numeroComplet, `les numéros sont COMPLETS : c'est payé`)
 dire(!r.masque, `plus aucun masquage dans le carnet`)
-dire(r.wa===10, `10 boutons WhatsApp, un par fiche joignable (${r.wa})`)
-dire(r.waAvecMessage===10, `chacun porte le message déjà écrit (${r.waAvecMessage})`)
+dire(r.wa===r.mobiles, `un bouton WhatsApp par fiche joignable, et rien de plus (${r.wa} pour ${r.mobiles} mobiles, ${r.fixes} fixes)`)
+dire(r.waAvecMessage===r.wa, `chacun porte le message déjà écrit (${r.waAvecMessage})`)
 dire(r.fixeSansWa===0, `aucun bouton WhatsApp sur une ligne fixe (${r.fixeSansWa})`)
-dire(r.injoignable===12, `chaque fiche a son bouton « Injoignable ? » (${r.injoignable})`)
+dire(r.injoignable===30, `chaque fiche a son bouton « Injoignable ? » (${r.injoignable})`)
 dire(r.deborde<=0, `aucun débordement horizontal (${r.deborde} px)`)
 dire(r.petites===0, `aucune cible sous 44 px (${r.petites})`)
 dire(!r.cadratin, `aucun tiret cadratin`)

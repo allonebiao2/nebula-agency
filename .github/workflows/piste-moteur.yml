@@ -1,0 +1,58 @@
+# PISTE · le moteur de collecte, chaque nuit.
+#
+# Pourquoi GitHub Actions : c'est gratuit, sans carte bancaire, et ça se
+# réveille tout seul. Un moteur qui ne tourne que les jours où on y pense ne
+# résout pas le problème qu'il est censé résoudre.
+#
+# ⚠️ Ce qu'il collecte ne revient JAMAIS dans le dépôt. Le dépôt est public :
+# une fiche rangée dans un fichier serait lisible par tout le monde, et c'est
+# exactement ce que PISTE vend. Tout part dans Supabase.
+#
+# À POSER UNE FOIS, dans Réglages du dépôt · Secrets and variables · Actions :
+#   PISTE_DATABASE_URL   la chaîne de connexion Supabase (port 6543, pooler)
+
+name: PISTE · moteur de collecte
+
+on:
+  schedule:
+    # 03:00 UTC, soit 04:00 à Cotonou. Personne ne commande à cette heure-là.
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      pages:
+        description: "Pages à parcourir par source"
+        required: false
+        default: '12'
+
+jobs:
+  collecter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Installer psycopg
+        run: pip install --quiet "psycopg[binary]"
+
+      - name: Collecter
+        env:
+          # Le moteur lit `secrets/supabase.env`, qui n'est pas dans le dépôt.
+          # On le reconstitue ici, uniquement le temps du travail.
+          PISTE_DATABASE_URL: ${{ secrets.PISTE_DATABASE_URL }}
+        run: |
+          if [ -z "$PISTE_DATABASE_URL" ]; then
+            echo "Le secret PISTE_DATABASE_URL n'est pas posé. Rien à faire."
+            exit 1
+          fi
+          mkdir -p secrets
+          printf 'DATABASE_URL=%s\n' "$PISTE_DATABASE_URL" > secrets/supabase.env
+          python piste/_moteur.py --collecter --pages "${{ github.event.inputs.pages || '12' }}"
+          python piste/_moteur.py --voir
+
+      - name: Effacer la chaîne de connexion
+        if: always()
+        run: rm -f secrets/supabase.env

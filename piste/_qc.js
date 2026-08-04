@@ -29,6 +29,11 @@ import puppeteer from 'puppeteer-core'
 const ICI = path.dirname(fileURLToPath(import.meta.url))
 const CHROME = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
 const DIST = path.resolve(ICI, 'dist')
+
+/* Les chiffres du stock changent chaque nuit depuis que le moteur tourne : on
+   les LIT dans les donnees du site, on ne les fige jamais dans le controle. */
+const D = await import('./src/donnees.js')
+const nombre = (v) => String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
 const CAPTURES = path.resolve(ICI, '_qc_captures')
 const PORT = 4319
 
@@ -312,9 +317,19 @@ const totalAffiche = (page) =>
       dire(!m.cadratin, `${t} : aucun tiret cadratin ${m.extraitCadratin}`)
 
       if (r.nom === 'vitrine') {
-        const attendu = ['187', '57', '53', '28', '26', '19']
-        const manque = attendu.filter((x) => !m.texte.includes(x))
-        dire(manque.length === 0, `${t} : les vrais comptes du stock sont affichés ${manque.join(',')}`)
+        /* On ne fige plus les nombres : le moteur collecte chaque nuit, et un
+           controle qui attend « 187 » devient faux le lendemain. On verifie que
+           la vitrine annonce bien CE QUI EST EN BASE, quel qu'il soit. */
+        /* Pas le total : c'est un compteur ANIME, et la capture arrive avant
+           qu'il ait fini de monter. On verifie les nombres fixes, qui disent
+           la meme chose sans dependre d'une animation. */
+        const attendu = [
+          nombre(D.stock('couture', 'cotonou')),
+          nombre(D.totalMetier('couture')),
+          nombre(D.totalMetier('restaurant')),
+        ]
+        const manque = attendu.filter((x) => !m.texte.replace(/[\s  ]/g, ' ').includes(x))
+        dire(manque.length === 0, `${t} : la vitrine annonce le stock réel ${attendu.join(' et ')}${manque.length ? ' · manque ' + manque.join(',') : ''}`)
         dire(
           m.texte.includes('Abidjan') && /bientôt/i.test(m.texte),
           `${t} : Abidjan est annoncé comme bientôt disponible`
@@ -361,18 +376,21 @@ const totalAffiche = (page) =>
   t = await totalAffiche(page)
   dire(t === '13500', `calcul B · 50 fiches, testé + message = 13 500 F (lu : ${t})`)
 
-  /* C · 57 fiches, les quatre options : 500 x 57 = 28 500, -10% = 25 650 */
+  /* C · tout le stock de couture a Cotonou, les quatre options.
+     Le nombre vient de la base : il change chaque nuit, le calcul non. */
+  const maxCouture = D.stock('couture', 'cotonou')
+  const attenduC = String(Math.round(500 * maxCouture * (maxCouture >= 500 ? 0.7 : maxCouture >= 200 ? 0.8 : maxCouture >= 50 ? 0.9 : 1)))
   await cocher(page, ["Il n'a rien en ligne", 'Le nom du dirigeant'])
   await cliquerTexte(page, 'button', 'Revenir')
   await attendre(250)
-  await poser(page, 999) /* le navigateur borne au max */
+  await poser(page, 99999) /* le navigateur borne au max */
   await attendre(200)
   const nAffiche = await page.evaluate(() => document.querySelector('input[type=range]').value)
-  dire(nAffiche === '57', `le curseur ne dépasse pas le stock réel de 57 (lu : ${nAffiche})`)
+  dire(nAffiche === String(maxCouture), `le curseur ne dépasse pas le stock réel de ${maxCouture} (lu : ${nAffiche})`)
   await cliquerTexte(page, 'button', 'Continuer')
   await attendre(250)
   t = await totalAffiche(page)
-  dire(t === '25650', `calcul C · 57 fiches, les 4 options = 25 650 F (lu : ${t})`)
+  dire(t === attenduC, `calcul C · ${maxCouture} fiches, les 4 options = ${attenduC} F (lu : ${t})`)
 
   /* ------------------------------- 3. le minimum et le stock, refusés ----- */
   await jusquAuVolume(page, base, 'Ateliers de couture', 'Cotonou et ses environs')
@@ -394,12 +412,19 @@ const totalAffiche = (page) =>
       }
     })
 
-  for (const [metier, ville, quoi] of [
-    ['Ateliers de couture', 'Autres villes du Togo', '1 fiche seulement au Togo hors Lomé'],
-    ['Ateliers de couture', 'Abidjan', 'Abidjan, rien pour le moment'],
-    ['Ateliers de couture', 'Autres villes du Bénin', 'couture hors Cotonou au Bénin'],
-    ['Pâtisseries et boulangeries', 'Cotonou et ses environs', 'pâtisserie, 2 fiches en tout'],
-  ]) {
+  /* Les combinaisons SOUS LE MINIMUM se cherchent en base plutot que de se
+     supposer : ce qui etait vide ce matin peut etre plein ce soir. */
+  const NOMS_M = { couture: 'Ateliers de couture', restaurant: 'Restaurants, maquis et bars', patisserie: 'Pâtisseries et boulangeries' }
+  const NOMS_V = { cotonou: 'Cotonou et ses environs', 'benin-autres': 'Autres villes du Bénin', lome: 'Lomé', 'togo-autres': 'Autres villes du Togo', abidjan: 'Abidjan' }
+  const vides = []
+  for (const m of Object.keys(NOMS_M)) {
+    for (const v of Object.keys(NOMS_V)) {
+      if (D.stock(m, v) < D.MINIMUM) vides.push([NOMS_M[m], NOMS_V[v], `${m} · ${NOMS_V[v]} (${D.stock(m, v)} en stock)`])
+    }
+  }
+  dire(vides.length > 0, `au moins une combinaison est sous le minimum, et se teste (${vides.length})`)
+
+  for (const [metier, ville, quoi] of vides.slice(0, 4)) {
     await ouvrir(page, base, '#/commander')
     await cliquerTexte(page, 'button', metier)
     await attendre(120)
@@ -432,7 +457,7 @@ const totalAffiche = (page) =>
   /* On ne fige pas un nom : le releve peut grandir. Ce qui compte, c'est que
      le commerce affiche fasse partie des fiches REELLEMENT relevees, jamais
      d'un exemple invente. */
-  const { FICHES } = await import('./src/donnees.js')
+  const { FICHES } = D
   const montree = FICHES.find((f) => vitrineTexte.includes(f.nom))
   dire(
     !!montree,

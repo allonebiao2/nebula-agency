@@ -31,7 +31,7 @@
 
 export const NEBULA_WHATSAPP = '22996740732'
 export const NEBULA_WHATSAPP_JOLI = '+229 96 74 07 32'
-export const DATE_RELEVE = '3 août 2026'
+export const DATE_RELEVE = '4 août 2026'
 export const MINIMUM = 10
 
 /* L'adresse d'où partent les carnets (décision 44). Elle est annoncée AVANT
@@ -152,24 +152,21 @@ export const VILLES = [
 /* L'inventaire, écrit à la main à partir des comptes ci-dessus.
    En V2 il viendra de la base. Clé : `metier|ville`. */
 export const STOCK = {
-  'couture|cotonou': 57,
-  'couture|benin-autres': 0,
-  'couture|lome': 53,
+  'couture|cotonou': 148,
+  'couture|benin-autres': 18,
+  'couture|lome': 104,
   'couture|togo-autres': 1,
   'couture|abidjan': 0,
-
-  'restaurant|cotonou': 28,
-  'restaurant|benin-autres': 26,
-  'restaurant|lome': 19,
-  'restaurant|togo-autres': 1,
+  'restaurant|cotonou': 267,
+  'restaurant|benin-autres': 118,
+  'restaurant|lome': 270,
+  'restaurant|togo-autres': 50,
   'restaurant|abidjan': 0,
-
-  'patisserie|cotonou': 2,
-  'patisserie|benin-autres': 0,
-  'patisserie|lome': 0,
-  'patisserie|togo-autres': 0,
+  'patisserie|cotonou': 87,
+  'patisserie|benin-autres': 12,
+  'patisserie|lome': 45,
+  'patisserie|togo-autres': 3,
   'patisserie|abidjan': 0,
-
   'autre|cotonou': 0,
   'autre|benin-autres': 0,
   'autre|lome': 0,
@@ -198,7 +195,7 @@ export const REPARTITION = [
 
 /* Lignes fixes comptées sur _donnees.py : 5 au Bénin (préfixe 0121)
    et 8 au Togo (préfixe 22). Elles n'ont pas WhatsApp, on les appelle. */
-export const NOMBRE_FIXES = 13
+export const NOMBRE_FIXES = 161
 
 /* ----------------------------------------------- fiches réelles d'exemple --
 
@@ -217,118 +214,202 @@ export const NOMBRE_FIXES = 13
    servir. Aucun fixe ici, ils n'ont pas WhatsApp. */
 export const FICHES = [
   {
-    nom: "ACHILLE'S COUTURE",
+    nom: 'ADOLPHO GSM',
     metier: 'couture', ville: 'cotonou',
-    localite: 'Abomey-Calavi', quartier: '',
-    pays: 'BJ', numero: '0197277159',
+    localite: 'Abomey-Calavi', quartier: 'Akassato',
+    pays: 'BJ', numero: '019690XXXX',
   },
   {
-    nom: "2AF CREATION",
+    nom: 'ANTONIO\'S COUTURE',
     metier: 'couture', ville: 'cotonou',
-    localite: 'Abomey-Calavi', quartier: '',
-    pays: 'BJ', numero: '0166958770',
+    localite: 'Abomey-Calavi', quartier: 'Abomey calavi, Djadjo',
+    pays: 'BJ', numero: '016760XXXX',
   },
   {
-    nom: "ADEBISSI FASHION",
+    nom: 'BERN\'S COUTURE',
     metier: 'couture', ville: 'cotonou',
-    localite: 'Cotonou', quartier: '',
-    pays: 'BJ', numero: '0197075503',
+    localite: 'Abomey-Calavi', quartier: 'Sénédé',
+    pays: 'BJ', numero: '016639XXXX',
   },
   {
-    nom: "ABA GROUP INTERNATIONAL",
+    nom: 'AGOSBIL',
+    metier: 'couture', ville: 'benin-autres',
+    localite: 'Zagnanado', quartier: 'Agonlin houégbo',
+    pays: 'BJ', numero: '016478XXXX',
+  },
+  {
+    nom: 'DIEU EST GRAND',
+    metier: 'couture', ville: 'benin-autres',
+    localite: 'Glazoué', quartier: '-',
+    pays: 'BJ', numero: '019168XXXX',
+  },
+  {
+    nom: 'DIEU MERCI',
+    metier: 'couture', ville: 'benin-autres',
+    localite: 'Aplahoué', quartier: 'Azovè, à côté de Radio Gameli',
+    pays: 'BJ', numero: '019508XXXX',
+  },
+  {
+    nom: 'ABA GROUP INTERNATIONAL',
     metier: 'couture', ville: 'lome',
     localite: 'Lomé', quartier: 'Adidogomé',
-    pays: 'TG', numero: '90589921',
+    pays: 'TG', numero: '9058XXXX',
   },
   {
-    nom: "ABRAHAM COUPE ET STYLE",
+    nom: 'ABRAHAM COUPE ET STYLE',
     metier: 'couture', ville: 'lome',
     localite: 'Lomé', quartier: 'Kégué',
-    pays: 'TG', numero: '92469211',
+    pays: 'TG', numero: '9246XXXX',
   },
   {
-    nom: "AFRO-LADY DESIGN",
+    nom: 'AFRO-LADY DESIGN',
     metier: 'couture', ville: 'lome',
     localite: 'Lomé', quartier: 'Avédji',
-    pays: 'TG', numero: '90976097',
+    pays: 'TG', numero: '9097XXXX',
   },
   {
-    nom: "COUTURE MA LUMIERE",
-    metier: 'couture', ville: 'togo-autres',
-    localite: 'Bafilo', quartier: '',
-    pays: 'TG', numero: '90114366',
-  },
-  {
-    nom: "Boulangerie-Pâtisserie Pain Ivoir",
-    metier: 'patisserie', ville: 'cotonou',
-    localite: 'Cotonou', quartier: '',
-    pays: 'BJ', numero: '0197483730',
-  },
-  {
-    nom: "B & S Restaurant - Pâtisserie",
-    metier: 'patisserie', ville: 'cotonou',
-    localite: 'Abomey-Calavi', quartier: '',
-    pays: 'BJ', numero: '0191026060',
-  },
-  {
-    nom: "Bar Infinity",
-    metier: 'restaurant', ville: 'benin-autres',
-    localite: 'Porto-Novo', quartier: '',
-    pays: 'BJ', numero: '0151355196',
-  },
-  {
-    nom: "Bar Restaurant Les Orchidées You And Me",
-    metier: 'restaurant', ville: 'benin-autres',
-    localite: 'Porto-Novo', quartier: '',
-    pays: 'BJ', numero: '0198101692',
-  },
-  {
-    nom: "AfricanFoodseum",
-    metier: 'restaurant', ville: 'benin-autres',
-    localite: 'Porto-Novo', quartier: '',
-    pays: 'BJ', numero: '0162747628',
-  },
-  {
-    nom: "Allo Sandwich Agla 2",
+    nom: '3-D AMITIE',
     metier: 'restaurant', ville: 'cotonou',
-    localite: 'Cotonou', quartier: 'Agla',
-    pays: 'BJ', numero: '0169122222',
+    localite: 'Abomey-Calavi', quartier: 'Calavi Kpota',
+    pays: 'BJ', numero: '015229XXXX',
   },
   {
-    nom: "Beach Life (plage Erevan)",
+    nom: 'ACHILLE\'S SAVEURS',
     metier: 'restaurant', ville: 'cotonou',
-    localite: 'Cotonou', quartier: 'Bord de mer',
-    pays: 'BJ', numero: '0197570206',
+    localite: 'Abomey-Calavi', quartier: 'Fifansi',
+    pays: 'BJ', numero: '019703XXXX',
   },
   {
-    nom: "Maquis Le Kédjénou",
+    nom: 'ADJIKE SERVICES',
     metier: 'restaurant', ville: 'cotonou',
-    localite: 'Cotonou', quartier: 'Abokicodji Lazare',
-    pays: 'BJ', numero: '0160022929',
+    localite: 'Abomey-Calavi', quartier: 'Calavi Kpota',
+    pays: 'BJ', numero: '019623XXXX',
   },
   {
-    nom: "228 Kebab Kégué",
+    nom: 'ABATCHINOU',
+    metier: 'restaurant', ville: 'benin-autres',
+    localite: 'Dassa-Zoumé', quartier: 'Agbégbé',
+    pays: 'BJ', numero: '019732XXXX',
+  },
+  {
+    nom: 'Abraham',
+    metier: 'restaurant', ville: 'benin-autres',
+    localite: 'Parakou', quartier: '9J3J+7P3 petit pere - Zongo Nord',
+    pays: 'BJ', numero: '019784XXXX',
+  },
+  {
+    nom: 'AGAPE DELICE',
+    metier: 'restaurant', ville: 'benin-autres',
+    localite: 'Porto-Novo', quartier: 'FJR4+JRG Maison NOUNAGNON Antoine, Bd Tokpota',
+    pays: 'BJ', numero: '016902XXXX',
+  },
+  {
+    nom: '228 Kebab Kégué',
     metier: 'restaurant', ville: 'lome',
     localite: 'Lomé', quartier: 'Kégué',
-    pays: 'TG', numero: '91494444',
+    pays: 'TG', numero: '9149XXXX',
   },
   {
-    nom: "IVOIRE-ATTIEKE",
+    nom: 'Above all food clinic',
     metier: 'restaurant', ville: 'lome',
-    localite: 'Lomé', quartier: '',
-    pays: 'TG', numero: '90706262',
+    localite: 'Lomé', quartier: '70468969 - Kanyikope',
+    pays: 'TG', numero: '7046XXXX',
   },
   {
-    nom: "ALT MÜNCHEN",
+    nom: 'AGOE MARKET',
     metier: 'restaurant', ville: 'lome',
-    localite: 'Lomé', quartier: '',
-    pays: 'TG', numero: '90046845',
+    localite: 'Lomé', quartier: 'Route Nationale N°1, Prés du Commissariat, WAGES, Agoégnivé',
+    pays: 'TG', numero: '9010XXXX',
   },
   {
-    nom: "AFRICA BAR CHEZ CORNEILLE",
+    nom: 'Alogavi la Casa de Cuba',
     metier: 'restaurant', ville: 'togo-autres',
-    localite: 'Kpalimé', quartier: '',
-    pays: 'TG', numero: '90349592',
+    localite: 'Agbodrafo', quartier: '6F46+P72',
+    pays: 'TG', numero: '9391XXXX',
+  },
+  {
+    nom: 'Auberge Edmonton',
+    metier: 'restaurant', ville: 'togo-autres',
+    localite: 'Adétikopé', quartier: '8698+WQF',
+    pays: 'TG', numero: '9001XXXX',
+  },
+  {
+    nom: 'Bar la colombe',
+    metier: 'restaurant', ville: 'togo-autres',
+    localite: 'N2', quartier: '6F4H+V4F',
+    pays: 'TG', numero: '9036XXXX',
+  },
+  {
+    nom: 'ADO GATEAU',
+    metier: 'patisserie', ville: 'cotonou',
+    localite: 'Abomey-Calavi', quartier: 'Hêvié',
+    pays: 'BJ', numero: '016169XXXX',
+  },
+  {
+    nom: 'ART GOURMET BY HERMES AGBOTON',
+    metier: 'patisserie', ville: 'cotonou',
+    localite: 'Cotonou', quartier: 'Maromilitaire, Cotonou',
+    pays: 'BJ', numero: '019885XXXX',
+  },
+  {
+    nom: 'AU DOUCEUR DE LUCIE',
+    metier: 'patisserie', ville: 'cotonou',
+    localite: 'Cotonou', quartier: '-',
+    pays: 'BJ', numero: '019755XXXX',
+  },
+  {
+    nom: 'AYE ET FILS',
+    metier: 'patisserie', ville: 'benin-autres',
+    localite: 'Porto-Novo', quartier: 'Sedjeko',
+    pays: 'BJ', numero: '019788XXXX',
+  },
+  {
+    nom: 'ETS BIDOSSESSI ET FILS',
+    metier: 'patisserie', ville: 'benin-autres',
+    localite: 'Bohicon', quartier: 'Quartier Honmèho situé enface du Jardin Public',
+    pays: 'BJ', numero: '019738XXXX',
+  },
+  {
+    nom: 'ETS ETINCELLE',
+    metier: 'patisserie', ville: 'benin-autres',
+    localite: 'Bohicon', quartier: 'Quartier Sèhouèho situé en face de la Maison des Soeurs Saint Augustin sur la route de Covè',
+    pays: 'BJ', numero: '016984XXXX',
+  },
+  {
+    nom: 'ALADIAH DELICES',
+    metier: 'patisserie', ville: 'lome',
+    localite: 'Lomé', quartier: 'Attiégou, face rue Koklo Ku Ato',
+    pays: 'TG', numero: '7012XXXX',
+  },
+  {
+    nom: 'Au Bon Pain GTA',
+    metier: 'patisserie', ville: 'lome',
+    localite: 'Lomé', quartier: 'Av. de la Chance',
+    pays: 'TG', numero: '9296XXXX',
+  },
+  {
+    nom: 'AU FIN PALAIS',
+    metier: 'patisserie', ville: 'lome',
+    localite: 'Lomé', quartier: 'Route de Misssion Tové',
+    pays: 'TG', numero: '9005XXXX',
+  },
+  {
+    nom: 'Boulangerie Baguette',
+    metier: 'patisserie', ville: 'togo-autres',
+    localite: 'Agouenyive', quartier: '46GG+5J4',
+    pays: 'TG', numero: '9360XXXX',
+  },
+  {
+    nom: 'Boulangerie St Michel',
+    metier: 'patisserie', ville: 'togo-autres',
+    localite: 'Tsevie', quartier: 'Boloumondji',
+    pays: 'TG', numero: '9926XXXX',
+  },
+  {
+    nom: 'Tsévié Délices',
+    metier: 'patisserie', ville: 'togo-autres',
+    localite: 'Tsevie', quartier: 'C686+32R',
+    pays: 'TG', numero: '9702XXXX',
   },
 ]
 
@@ -350,9 +431,11 @@ export function numeroJoli(pays, numero) {
 }
 
 /* Sur la vitrine : deux chiffres masqués. Dans le carnet livré : tout. */
+/* Les fiches d'aperçu portent un numéro COUPÉ à la source : ses quatre
+   derniers chiffres n'existent nulle part dans le site (voir `_stock.py`).
+   Un masque qui n'existe qu'à l'écran ne masque rien, il décore. */
 export function numeroMasque(pays, numero) {
-  const j = numeroJoli(pays, numero)
-  return j.slice(0, -2) + '••'
+  return numeroJoli(pays, numero).replace(/X/g, '•')
 }
 
 export function international(pays, numero) {

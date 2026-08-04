@@ -166,7 +166,7 @@ const serveur = http.createServer((q, r) => {
     `les trois numéros sont partiellement masqués (${apercu.masques} sur ${apercu.nb})`
   )
 
-  const { FICHES } = await import('./src/donnees.js')
+  const { FICHES, stock: stockDeja } = await import('./src/donnees.js')
   const toutesVraies = apercu.noms.every((n) => FICHES.some((f) => f.nom === n))
   dire(toutesVraies, `les trois fiches sont de VRAIS commerces relevés`)
 
@@ -189,11 +189,14 @@ const serveur = http.createServer((q, r) => {
       .filter((x) => ['10', '50', '100'].includes(x))
   )
   dire(paquets.length >= 2, `les paquets à appuyer sont proposés (${paquets.join(', ')})`)
-  /* Couture à Lomé, c'est 53 fiches : le paquet de 100 ne doit PAS exister.
-     On ne propose jamais d'appuyer sur un nombre qu'on ne peut pas livrer. */
+  /* La regle, elle, ne bouge pas : on ne propose JAMAIS d'appuyer sur un
+     nombre qu'on ne peut pas livrer. Le stock de couture a Lome change chaque
+     nuit, alors on le lit au lieu de le figer. */
+  const dispoLome = stockDeja('couture', 'lome')
+  const trop = paquets.filter((p) => Number(p) > dispoLome)
   dire(
-    !paquets.includes('100'),
-    `le paquet de 100 disparaît quand le stock ne le permet pas (53 à Lomé)`
+    trop.length === 0,
+    `aucun paquet ne dépasse le stock réel de ${dispoLome} à Lomé${trop.length ? ' · ' + trop.join(',') : ''}`
   )
 
   await clic('10')
@@ -247,9 +250,34 @@ const serveur = http.createServer((q, r) => {
   dire(messageEcrit === 3, `le message s'écrit dans les trois fiches (${messageEcrit})`)
 
   /* -------------------------------------------- 6. le stock vide, et la demande */
+  /* On CHERCHE une combinaison sous le minimum au lieu d'en supposer une : le
+     moteur collecte chaque nuit, et « Autres villes du Bénin » etait vide ce
+     matin, plein ce soir. Un controle qui fige une donnee vivante ment. */
+  const NOMS_M = {
+    couture: 'Ateliers de couture',
+    restaurant: 'Restaurants, maquis et bars',
+    patisserie: 'Pâtisseries et boulangeries',
+  }
+  const NOMS_V = {
+    cotonou: 'Cotonou et ses environs',
+    'benin-autres': 'Autres villes du Bénin',
+    lome: 'Lomé',
+    'togo-autres': 'Autres villes du Togo',
+    abidjan: 'Abidjan',
+  }
+  const { MINIMUM: MINI } = await import('./src/donnees.js')
+  const stockDe = stockDeja
+  let creux = null
+  for (const m of Object.keys(NOMS_M)) {
+    for (const v of Object.keys(NOMS_V)) {
+      if (!creux && stockDe(m, v) < MINI) creux = [NOMS_M[m], NOMS_V[v]]
+    }
+  }
+  dire(!!creux, `une combinaison sous le minimum existe et se teste${creux ? ` (${creux.join(' · ')})` : ''}`)
+
   await ouvrir()
-  await clic('Ateliers de couture')
-  await clic('Autres villes du Bénin')
+  await clic(creux[0])
+  await clic(creux[1])
   t = await texte()
   dire(/on ne va pas vous le vendre/i.test(t), `sans stock, le panneau bascule en « prévenez-moi »`)
   dire(!/à payer/i.test(t), `et aucun prix n'est affiché pour ce qu'on n'a pas`)
