@@ -194,3 +194,79 @@ Deux remèdes posés :
 
 État final vérifié en ligne : CSS `text/css`, JS `application/javascript`,
 fichier absent `404`, nouveau message du cockpit servi, 130 contrôles verts.
+
+---
+
+## Le cockpit ne lisait pas le serveur · tonalité et notifications
+
+### Le trou, découvert en voulant ajouter une sonnerie
+
+Mongazi a demandé une tonalité quand une commande arrive. En cherchant où la
+brancher, on découvre que **le cockpit ne lisait que le navigateur de
+Mongazi**. Une commande passée depuis le téléphone d'un client existait en
+base, déclenchait deux courriels, et **n'apparaissait jamais** tant qu'il ne
+recollait pas le message WhatsApp à la main.
+
+C'est exactement la panne du site de l'agence (Angélique, le matin même), une
+étape plus loin : la donnée était bien enregistrée, mais **personne n'allait
+jamais la chercher**.
+
+> **Le jour où la porte a été ouverte : 24 commandes dormaient en base sans
+> avoir jamais été vues.**
+
+La décision 64 de `PRODUCT.md` disait « les commandes vivent dans Supabase ».
+C'était vrai pour l'écriture, faux pour la lecture. **Une décision écrite n'est
+pas une décision appliquée.**
+
+### Ce qui est posé
+
+- `public.piste_commandes_recentes()` et `piste_etat_commande()`, accordées au
+  seul `service_role`, traversées par la fonction de bord **`piste-cockpit`**
+  (code du cockpit exigé, même compteur d'essais)
+- **la veille** : le cockpit interroge le serveur toutes les 30 s et fusionne
+- **la tonalité** (`src/son.js`) : trois notes qui montent, deux fois, entièrement
+  synthétisées. Aucun fichier audio : un mp3, c'est un chargement de plus, un
+  404 possible, et une seconde de retard au moment où on a besoin d'être prévenu
+- **la notification système**, pour être prévenu même quand PISTE est derrière
+  une autre fenêtre
+- **l'état payé/livré remonte en base** : sans ça, une commande marquée payée
+  sur le PC réapparaît « à encaisser » sur le téléphone, et on encaisse deux fois
+
+### Deux vocabulaires pour la même chose = une commande invisible
+
+La base écrivait `attente`, le cockpit dit `recue`. Sans traduction, les
+commandes atterrissaient dans un onglet qui n'existe pas. On traduit **à la
+porte**, une seule fois, plutôt que d'entretenir deux vérités.
+
+### Le son : trois précautions, toutes déjà connues, toutes nécessaires
+
+1. **Aucun navigateur ne joue avant un geste.** Le contexte s'ouvre au premier
+   toucher. ⚠️ Sur PC la molette ne compte pas, sur mobile un toucher compte :
+   d'où le bouton **« Tester la tonalité »**, qui permet de le PROUVER au lieu
+   de l'espérer.
+2. **Le tampon silencieux iOS**, sans quoi un iPhone reste muet pour toujours
+   alors que le code paraît parfait.
+3. **Gain plus fort sur mobile + compresseur** : un niveau réglé à l'oreille
+   sur un PC est inaudible dans la rue à Cotonou.
+
+**Et il ne sonne pas au premier chargement.** Une alarme qui hurle à chaque
+ouverture, on l'éteint le deuxième jour, et elle ne sert plus jamais.
+
+### Le contrôle (`_qc_cockpit.mjs`, 19 verts)
+
+Il ne regarde pas un bouton : il **compte les oscillateurs réellement
+démarrés** et vérifie que le contexte audio est passé à `running`. Un son qui
+ne se prouve pas est un son dont on découvre l'absence le jour où une commande
+arrive.
+
+**Une erreur de contrôle corrigée en route** : chercher « un numéro » dans la
+page pour détecter une fuite était faux — le cockpit **affiche exprès** le
+numéro Mobile Money du client, pour rapprocher les paiements. Le contrôle lit
+maintenant la **réponse réseau** et vérifie qu'elle ne transporte aucune fiche.
+
+**149 contrôles verts au total** (91 général + 39 générateur + 19 cockpit).
+
+### Commande de test posée
+
+`PISTE-T522` · Test NEBULA · 10 fiches restaurant Cotonou · 1 200 F ·
+deux courriels partis vers `allonebiao@gmail.com`.
