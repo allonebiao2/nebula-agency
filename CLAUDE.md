@@ -180,6 +180,25 @@ est obligatoire avec le pooler (port 6543), y compris dans un script d'un soir.
 Et **une connexion par requête HTTP**, jamais une par fonction : une connexion
 coûte 1,3 s, contre une microseconde sur SQLite. C'est ce qui donnait l'écran noir.
 
+## Quand un site s'affiche « tout cassé », sans style (2026-08-04)
+
+**Cloudflare a mis une erreur en cache À LA PLACE d'un fichier.** C'est arrivé
+à PISTE : la feuille de style répondait `200`, bon type, bonne taille, et son
+contenu était `error code: 502`. Nos fichiers portent `Cache-Control: immutable`
+pour un an, donc l'erreur était servie pour un an.
+
+```bash
+python scripts/purger.py --verifier     # regarde le CORPS des fichiers servis
+python scripts/purger.py                # vide le cache des 5 hôtes
+python scripts/purger.py piste          # un seul site
+```
+
+⚠️ **Un 200 ne prouve rien**, il faut lire le corps. ⚠️ **Comparer l'origine
+`*.pages.dev` et le domaine** désigne le cache en trois secondes. ⚠️ Les
+fichiers compilés de PISTE portent une **marque de déploiement** dans leur nom
+pour qu'une erreur en cache ne survive jamais à une publication : à reprendre
+sur les autres sites s'ils subissent la même panne.
+
 ## 🔴 REPRENDRE UNE SESSION
 **Lire `_memoire/REPRENDRE-ICI.md` en premier.** Il dit où on en est, ce qui bloque,
 et par quoi commencer. Mis à jour à chaque fin de session importante.

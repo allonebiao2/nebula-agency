@@ -276,10 +276,15 @@ et redéployer ne changeait rien.
    (`index-2608041417-D5MeerQ9.css`). Chaque publication produit des adresses
    neuves, et une erreur en cache ne survit plus à un déploiement. Le coût est
    un chargement de plus pour un visiteur déjà venu.
-4. ⚠️ **Le jeton Cloudflare de `secrets/cloudflare-zone.env` ne peut PAS
-   purger le cache** (« Authentication error » sur `purge_cache`). Il faudrait
-   un jeton portant `Zone · Cache Purge`. Tant qu'on ne l'a pas, la seule
-   sortie est de changer les noms de fichiers.
+4. ✅ **Le bouton de secours existe depuis le 2026-08-04** :
+   `python scripts/purger.py` vide le cache des cinq hôtes du parc, et
+   `--verifier` regarde le CORPS des fichiers servis sans rien purger.
+   Il s'appuie sur `CLOUDFLARE_PURGE_TOKEN` dans `secrets/cloudflare-zone.env`.
+   ⚠️ Le jeton de zone qui existait avant ne suffisait pas : il sait LIRE la
+   zone, pas la purger. Il faut la permission `Zone · Cache Purge · Purge`.
+5. ⚠️ **Cloudflare renvoie 403 à un script qui ne se présente pas comme un
+   navigateur.** Un contrôle automatique doit envoyer un vrai `User-Agent`,
+   sinon il croit le site cassé alors que le visiteur, lui, le voit bien.
 
 Vaut pour **tous les sites du parc** : les douze vitrines sont sur Cloudflare
 Pages et peuvent subir exactement la même panne.
