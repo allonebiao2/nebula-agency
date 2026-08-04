@@ -4,7 +4,9 @@ import {
   VILLES,
   MINIMUM,
   stock,
-  fichesApercu,
+  stockMulti,
+  fichesApercuMulti,
+  plurielsListe,
   numeroMasque,
   messagePourFiche,
 } from '../donnees.js'
@@ -36,16 +38,16 @@ const PAQUETS = [10, 50, 100]
 
 /* -------------------------------------------------- la phrase qui s'écrit - */
 
-function Phrase({ metier, ville, n, options, dispo }) {
-  const m = METIERS.find((x) => x.cle === metier)
+function Phrase({ metiers, ville, n, options, dispo }) {
+  const libelle = plurielsListe(metiers)
   const v = VILLES.find((x) => x.cle === ville)
   const pris = SUPPLEMENTS.filter((s) => options[s.cle])
 
   /* Chaque morceau apparaît quand il est décidé, et pas avant : la phrase
      raconte l'avancement au lieu de montrer des trous à remplir. */
   const morceaux = []
-  if (m && n) morceaux.push({ cle: 'n', fort: true, t: `${nombre(n)} ${m.pluriel}` })
-  else if (m) morceaux.push({ cle: 'm', fort: true, t: m.pluriel })
+  if (libelle && n) morceaux.push({ cle: 'n', fort: true, t: `${nombre(n)} ${libelle}` })
+  else if (libelle) morceaux.push({ cle: 'm', fort: true, t: libelle })
   if (v) morceaux.push({ cle: 'v', t: 'à' }, { cle: 'vn', fort: true, t: v.court })
   if (pris.length) {
     morceaux.push({ cle: 'a', t: ', avec' })
@@ -80,7 +82,7 @@ function Phrase({ metier, ville, n, options, dispo }) {
           </Fragment>
         ))
       )}
-      {m && v && dispo >= MINIMUM && <span className="text-sourd">.</span>}
+      {libelle && v && dispo >= MINIMUM && <span className="text-sourd">.</span>}
     </p>
   )
 }
@@ -274,7 +276,10 @@ function FicheApercu({ f, offre, avecMessage, retard }) {
 /* ================================================================ panneau = */
 
 export default function Generateur({ aller, onEtat }) {
-  const [metier, setMetier] = useState('')
+  /* Une LISTE, pas un metier. Un grossiste en boissons veut les restaurants
+     ET les alimentations : l'obliger a commander deux fois, c'est lui
+     facturer deux fois le minimum de dix fiches pour rien. */
+  const [metiers, setMetiers] = useState([])
   const [ville, setVille] = useState('')
   const [n, setN] = useState(50)
   const [options, setOptions] = useState({})
@@ -285,11 +290,22 @@ export default function Generateur({ aller, onEtat }) {
   const [contact, setContact] = useState('')
   const [envoyee, setEnvoyee] = useState(false)
 
-  const objetMetier = METIERS.find((m) => m.cle === metier)
   const objetVille = VILLES.find((v) => v.cle === ville)
-  const horsCatalogue = !!objetMetier?.horsStock
-  const dispo = metier && ville && !horsCatalogue ? stock(metier, ville) : null
-  const vide = (metier && horsCatalogue) || (dispo !== null && dispo < MINIMUM)
+  const horsCatalogue = metiers.some((c) => METIERS.find((m) => m.cle === c)?.horsStock)
+  const choisis = metiers.length > 0
+  const dispo = choisis && ville && !horsCatalogue ? stockMulti(metiers, ville) : null
+  const vide = (choisis && horsCatalogue) || (dispo !== null && dispo < MINIMUM)
+
+  function basculer(cle) {
+    const objet = METIERS.find((m) => m.cle === cle)
+    setMetiers((l) => {
+      if (l.includes(cle)) return l.filter((x) => x !== cle)
+      /* « Un autre métier » ne se combine avec rien : c'est une demande, pas
+         une commande. On ne mélange pas ce qui se vend et ce qui n'existe pas. */
+      if (objet?.horsStock) return [cle]
+      return [...l.filter((x) => !METIERS.find((m) => m.cle === x)?.horsStock), cle]
+    })
+  }
 
   /* Le curseur ne dépasse jamais le stock réel : on ne vend pas ce qui n'existe pas. */
   const plafond = dispo && dispo >= MINIMUM ? dispo : 100
@@ -299,14 +315,14 @@ export default function Generateur({ aller, onEtat }) {
 
   const c = useMemo(() => calcul(n, options), [n, options])
   /* Le prix n'apparaît qu'à partir du premier réglage (décision 50). */
-  const prixVisible = !!metier && !vide
+  const prixVisible = choisis && !vide
   const fiches = useMemo(
-    () => (metier ? fichesApercu(metier, ville || 'cotonou', 3) : []),
-    [metier, ville]
+    () => (choisis && !horsCatalogue ? fichesApercuMulti(metiers, ville || 'cotonou', 3) : []),
+    [metiers, ville, choisis, horsCatalogue]
   )
   const veutMessage = !!options.message
   const offreOk = !veutMessage || offre.trim().length >= 8
-  const pret = !!metier && !!ville && !vide && n >= MINIMUM && offreOk
+  const pret = choisis && !!ville && !vide && n >= MINIMUM && offreOk
 
   const champOffre = useRef(null)
 
@@ -318,7 +334,7 @@ export default function Generateur({ aller, onEtat }) {
     }
     /* Le générateur ne fait que composer : le récapitulatif, les coordonnées et
        le paiement restent l'écran de commande, qui les tient déjà. */
-    ecrire(CLES.brouillon, [{ metier, ville, quartier: '', n, options, offre }])
+    ecrire(CLES.brouillon, [{ metiers, ville, quartier: '', n, options, offre }])
     aller('#/commander')
   }
 
@@ -326,7 +342,7 @@ export default function Generateur({ aller, onEtat }) {
     if (contact.trim().length < 5) return
     ajouter(CLES.demandes, {
       reference: 'D-' + Date.now().toString(36).toUpperCase().slice(-5),
-      metier: objetMetier?.nom || metier,
+      metier: plurielsListe(metiers) || metiers.join(', '),
       ville: objetVille?.nom || ville,
       contact: contact.trim(),
       date: new Date().toISOString(),
@@ -351,15 +367,18 @@ export default function Generateur({ aller, onEtat }) {
         <p className="mb-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-brique">
           Composez votre commande
         </p>
-        <Phrase metier={metier} ville={ville} n={n} options={options} dispo={dispo} />
+        <Phrase metiers={metiers} ville={ville} n={n} options={options} dispo={dispo} />
       </div>
 
       <div className="rounded-b-3xl border border-trait bg-creme/40 px-5 py-6 sm:px-7">
         {/* ------------------------------------------------------- 1. le métier */}
         <fieldset>
-          <legend className="mb-3 text-[0.82rem] font-semibold text-encre">
+          <legend className="mb-1 text-[0.82rem] font-semibold text-encre">
             1 · Quel métier vous cherchez ?
           </legend>
+          <p className="mb-3 text-[0.78rem] text-sourd">
+            Vous pouvez en choisir plusieurs. Appuyez de nouveau pour retirer.
+          </p>
           {/* ⚠️ Onze métiers au lieu de trois depuis que le moteur collecte.
               Onze cartes hautes, c'est un panneau qu'on fait défiler avant même
               d'avoir choisi : deux colonnes dès le téléphone, et l'exemple ne
@@ -368,10 +387,10 @@ export default function Generateur({ aller, onEtat }) {
             {METIERS.map((m) => (
               <Pastille
                 key={m.cle}
-                actif={metier === m.cle}
-                onClick={() => setMetier(m.cle)}
+                actif={metiers.includes(m.cle)}
+                onClick={() => basculer(m.cle)}
                 titre={m.nom}
-                dessous={metier === m.cle ? m.exemple : ''}
+                dessous={metiers.includes(m.cle) ? m.exemple : ''}
                 compact
               />
             ))}
@@ -379,7 +398,7 @@ export default function Generateur({ aller, onEtat }) {
         </fieldset>
 
         {/* -------------------------------------------------------- 2. la ville */}
-        {metier && !horsCatalogue && (
+        {choisis && !horsCatalogue && (
           <fieldset className="pousse mt-7">
             <legend className="mb-1 text-[0.82rem] font-semibold text-encre">
               2 · Dans quelle ville ?
@@ -389,7 +408,7 @@ export default function Generateur({ aller, onEtat }) {
             </p>
             <div className="grid gap-2 sm:grid-cols-2">
               {VILLES.map((v) => {
-                const d = stock(metier, v.cle)
+                const d = stockMulti(metiers, v.cle)
                 const assez = d >= MINIMUM
                 return (
                   <Pastille
@@ -428,7 +447,7 @@ export default function Generateur({ aller, onEtat }) {
                 <p className="mt-2 text-[0.9rem] leading-relaxed text-sourd">
                   On vous prévient dès que{' '}
                   <span className="font-semibold text-encre">
-                    {objetMetier?.pluriel || 'ce métier'}
+                    {plurielsListe(metiers) || 'ce métier'}
                     {objetVille ? ` à ${objetVille.court}` : ''}
                   </span>{' '}
                   sont prêts. Vous serez servi avant tout le monde.
@@ -463,7 +482,7 @@ export default function Generateur({ aller, onEtat }) {
         )}
 
         {/* ------------------------------------------------------ 3. le nombre */}
-        {metier && ville && !vide && (
+        {choisis && ville && !vide && (
           <fieldset className="pousse mt-7">
             <legend className="mb-3 text-[0.82rem] font-semibold text-encre">
               3 · Combien de fiches ?
@@ -535,7 +554,7 @@ export default function Generateur({ aller, onEtat }) {
         )}
 
         {/* -------------------------------------------------- 4. les suppléments */}
-        {metier && ville && !vide && (
+        {choisis && ville && !vide && (
           <fieldset className="pousse mt-7">
             <legend className="mb-1 text-[0.82rem] font-semibold text-encre">
               4 · Quelles informations en plus ?
@@ -590,7 +609,7 @@ export default function Generateur({ aller, onEtat }) {
         )}
 
         {/* ------------------------------------------------------- 5. l'aperçu */}
-        {metier && !vide && fiches.length > 0 && (
+        {choisis && !vide && fiches.length > 0 && (
           <div className="pousse mt-8 border-t border-trait pt-6">
             <p className="text-[0.82rem] font-semibold text-encre">
               Voilà ce que vous recevrez.

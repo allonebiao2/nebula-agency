@@ -545,10 +545,11 @@ const totalAffiche = (page) =>
       mailEtWhatsapp: /Surveillez votre boîte mail ET votre WhatsApp/.test(t),
       expediteur: /Payez bien depuis le numéro que vous avez donné/.test(t),
       momoDeclare: /\+229 0166000000/.test(plat),
-      moyens: /MTN MoMo/.test(plat) && /Moov Flooz/.test(plat),
+      moyens: /MTN MoMo/.test(plat) && !/Moov|Flooz/.test(plat),
       email: /piste@nebula-agency\.online/.test(t),
       pasDeTogoNiCI: !/(Togo|Côte d'Ivoire)/.test(t),
       vingtQuatre: /24 heures/.test(plat),
+      depotDistinct: /n'est\s*pas le numéro WhatsApp/.test(plat),
     }
   }, attenduPaiement)
   dire(/^PISTE-[A-Z0-9]{4}$/.test(paiement.code), `le code de commande est au format PISTE-XXXX (${paiement.code})`)
@@ -557,9 +558,13 @@ const totalAffiche = (page) =>
   dire(paiement.mailEtWhatsapp, `« surveillez votre boîte mail ET votre WhatsApp » est dit`)
   dire(paiement.expediteur, `l'acheteur est rappelé de payer depuis le numéro déclaré`)
   dire(paiement.momoDeclare, `le numéro Mobile Money déclaré est repris à l'écran`)
-  dire(paiement.moyens, `MTN MoMo et Moov Flooz sont les deux moyens annoncés`)
+  dire(paiement.moyens, `MTN MoMo est le seul moyen annoncé, plus aucune trace de Moov`)
   dire(paiement.email, `l'adresse d'envoi ${'piste@nebula-agency.online'} est annoncée`)
   dire(paiement.pasDeTogoNiCI, `l'écran de paiement ne promet rien au Togo ni en Côte d'Ivoire`)
+  dire(
+    paiement.depotDistinct,
+    `l'écran prévient que le numéro de dépôt n'est PAS le numéro WhatsApp`
+  )
   dire(paiement.vingtQuatre, `le délai de 24 heures est répété sur l'écran de paiement`)
 
   const range = await page.evaluate(() => {

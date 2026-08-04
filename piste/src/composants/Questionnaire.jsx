@@ -9,6 +9,7 @@ import {
   messagePourFiche,
   nouvelleReference,
   stock,
+  plurielsListe,
 } from '../donnees.js'
 import { BASE, SUPPLEMENTS, calcul, fcfa, nombre as jolinombre } from '../prix.js'
 import { deposerCommande } from '../supabase.js'
@@ -123,7 +124,9 @@ function Carte({ actif, onClick, titre, dessous, droite, desactive, className = 
   )
 }
 
-function Resume({ metier, ville, quartier, n, options }) {
+function Resume({ metier, metiersListe, ville, quartier, n, options }) {
+  const libelleMetier =
+    metiersListe && metiersListe.length > 1 ? plurielsListe(metiersListe) : metier?.nom
   const pris = SUPPLEMENTS.filter((s) => options[s.cle])
   const ligne = (t, v) =>
     v ? (
@@ -134,7 +137,7 @@ function Resume({ metier, ville, quartier, n, options }) {
     ) : null
   return (
     <div className="space-y-1.5">
-      {ligne('Métier', metier?.nom)}
+      {ligne(metiersListe && metiersListe.length > 1 ? 'Métiers' : 'Métier', libelleMetier)}
       {ligne('Ville', ville?.nom)}
       {ligne('Quartier', quartier?.trim() || null)}
       {ligne('Fiches', n ? jolinombre(n) : null)}
@@ -194,6 +197,12 @@ function Entete({ aller, etape }) {
 export default function Questionnaire({ aller }) {
   const [etape, setEtape] = useState(1)
   const [metier, setMetier] = useState('')
+  /* Le générateur peut envoyer PLUSIEURS métiers. Les six étapes de secours de
+     cet écran n'en gèrent qu'un : `metier` reste le premier, et `metiersListe`
+     porte l'ensemble pour l'affichage et pour le message WhatsApp. Sans ça, un
+     client qui commande restaurants + alimentations verrait « Restaurants »
+     tout court sur son récapitulatif, et se demanderait ce qu'il a payé. */
+  const [metiersListe, setMetiersListe] = useState([])
   const [metierLibre, setMetierLibre] = useState('')
   const [ville, setVille] = useState('')
   const [quartier, setQuartier] = useState('')
@@ -218,7 +227,11 @@ export default function Questionnaire({ aller }) {
   const [reprise] = useState(() => {
     try {
       const b = lire(CLES.brouillon)[0]
-      if (!b || !b.metier || !b.ville) return null
+      /* Le générateur envoie une LISTE de métiers depuis le 2026-08-04.
+         On accepte les deux formes : l'ancienne clé `metier` reste lue pour
+         qu'un brouillon déjà posé dans un navigateur ne se perde pas. */
+      const l = b && (b.metiers || (b.metier ? [b.metier] : []))
+      if (!b || !l || l.length === 0 || !b.ville) return null
       localStorage.removeItem(CLES.brouillon)
       return b
     } catch (e) {
@@ -231,7 +244,9 @@ export default function Questionnaire({ aller }) {
 
   useEffect(() => {
     if (!reprise) return
-    setMetier(reprise.metier)
+    const l = reprise.metiers || (reprise.metier ? [reprise.metier] : [])
+    setMetiersListe(l)
+    setMetier(l[0] || '')
     setVille(reprise.ville)
     setQuartier(reprise.quartier || '')
     setN(reprise.n)
@@ -259,14 +274,31 @@ export default function Questionnaire({ aller }) {
 
   const pays = PAYS_TEL.find((p) => p.code === codePays)
   const telChiffres = tel.replace(/\D/g, '')
-  const momoChiffres = (memeNumero && codePays === '229' ? telChiffres : momoNumero).replace(/\D/g, '')
+
+  /* ⚠️ DEUX RÈGLES DIFFÉRENTES, ET C'EST VOULU (Mongazi, 2026-08-04).
+
+     Le compte WhatsApp d'un Béninois peut être resté enregistré sous son
+     ANCIEN numéro à 8 chiffres, celui d'avant la réforme ARCEP. C'est le cas
+     de Mongazi lui-même. Exiger 10 chiffres là, c'est refuser un vrai client
+     dont le WhatsApp fonctionne parfaitement.
+
+     Le Mobile Money, lui, porte TOUJOURS le préfixe 01 : dix chiffres, sans
+     exception. Un dépôt vers 8 chiffres n'arrive nulle part.
+
+     On accepte donc 8 ou 10 pour le WhatsApp, et on complète le Mobile Money
+     au lieu de refuser bêtement quelqu'un qui a tapé son ancien numéro. */
+  const momoSaisi = (memeNumero && codePays === '229' ? telChiffres : momoNumero).replace(/\D/g, '')
+  const momoChiffres =
+    codePays === '229' && momoSaisi.length === 8 ? '01' + momoSaisi : momoSaisi
 
   const emailOk = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email.trim())
   const telOk =
     codePays === 'autre'
       ? /^\d{1,4}$/.test(autreCode.replace(/\D/g, '')) && telChiffres.length >= 6
-      : telChiffres.length === pays.chiffres
-  const momoOk = momoChiffres.length === 10
+      : codePays === '229'
+        ? telChiffres.length === 8 || telChiffres.length === 10
+        : telChiffres.length === pays.chiffres
+  const momoOk = momoChiffres.length === 10 && momoChiffres.startsWith('01')
   const nomOk = prenom.trim().length >= 2 && nom.trim().length >= 2
 
   const peutAvancer = () => {
@@ -304,7 +336,7 @@ export default function Questionnaire({ aller }) {
     return [
       `Commande ${ref}`,
       '',
-      `Métier : ${objetMetier?.nom}`,
+      `Métier : ${metiersListe.length > 1 ? plurielsListe(metiersListe) : objetMetier?.nom}`,
       `Ville : ${objetVille?.nom} (${objetVille?.pays})`,
       `Quartier : ${quartier.trim() || 'pas de préférence'}`,
       `Nombre de fiches : ${n}`,
@@ -364,6 +396,7 @@ export default function Questionnaire({ aller }) {
       ref,
       date: new Date().toISOString(),
       metier,
+      metiers: metiersListe.length ? metiersListe : [metier],
       ville,
       quartier: quartier.trim(),
       n,
@@ -398,6 +431,7 @@ export default function Questionnaire({ aller }) {
       },
       {
         metier,
+        metiers: metiersListe.length ? metiersListe : [metier],
         ville,
         quartier: quartier.trim(),
         n,
@@ -821,7 +855,9 @@ export default function Questionnaire({ aller }) {
                       <span className="mt-1.5 block text-[0.85rem] text-rouge">
                         {codePays === 'autre'
                           ? "Indiquez l'indicatif du pays et le numéro."
-                          : `Un numéro ${pays.nom} fait ${pays.chiffres} chiffres.`}
+                          : codePays === '229'
+                            ? 'Un numéro béninois fait 10 chiffres, ou 8 si votre WhatsApp est resté sur votre ancien numéro.'
+                            : `Un numéro ${pays.nom} fait ${pays.chiffres} chiffres.`}
                       </span>
                     )}
                   </div>
@@ -888,14 +924,15 @@ export default function Questionnaire({ aller }) {
                         </div>
                         {essai && !momoOk && (
                           <span className="mt-1.5 block text-[0.85rem] text-rouge">
-                            Un numéro béninois fait 10 chiffres.
+                            Un numéro Mobile Money fait 10 chiffres et commence par 01. Tapez
+                            les 8 chiffres si vous préférez, on ajoute le 01.
                           </span>
                         )}
                       </label>
                     )}
 
                     <p className="mt-4 text-[0.85rem] leading-relaxed text-sourd">
-                      Deux moyens acceptés aujourd'hui : MTN MoMo et Moov Flooz, au Bénin. Si vous
+                      Un seul moyen accepté aujourd'hui : MTN MoMo, au Bénin. Si vous
                       payez depuis un autre pays, écrivez-nous d'abord : ce n'est pas encore
                       ouvert.
                     </p>
@@ -931,6 +968,7 @@ export default function Questionnaire({ aller }) {
                   <div className="mt-2 rounded-2xl border border-trait bg-creme p-5">
                     <Resume
                       metier={objetMetier}
+                      metiersListe={metiersListe}
                       ville={objetVille}
                       quartier={quartier}
                       n={n}
@@ -993,6 +1031,7 @@ export default function Questionnaire({ aller }) {
               <div className="mt-4">
                 <Resume
                   metier={objetMetier}
+                  metiersListe={metiersListe}
                   ville={objetVille}
                   quartier={quartier}
                   n={etape >= 4 ? n : null}

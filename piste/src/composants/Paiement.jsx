@@ -148,9 +148,17 @@ export default function Paiement({ commande, aller }) {
               travers.
             </p>
           )}
+          {/* ⚠️ Le numéro qui reçoit l'argent n'est PAS celui sur lequel on nous
+              écrit. Le dire ici évite le geste le plus coûteux qui soit : un
+              dépôt envoyé au mauvais numéro. */}
+          <p className="mt-3 rounded-xl bg-encre px-4 py-3 text-[0.88rem] leading-relaxed text-braise">
+            <b className="font-semibold">Attention :</b> le numéro qui reçoit l'argent n'est
+            pas le numéro WhatsApp sur lequel vous nous écrivez. N'envoyez rien avant de
+            l'avoir reçu dans la conversation.
+          </p>
           <p className="mt-3 text-[0.88rem] leading-relaxed text-sable">
-            Deux moyens acceptés aujourd'hui : <b className="font-semibold text-papier">MTN
-            MoMo</b> et <b className="font-semibold text-papier">Moov Flooz</b>, au Bénin. Si
+            Un seul moyen accepté aujourd'hui : <b className="font-semibold text-papier">MTN
+            MoMo</b>, au Bénin. Si
             vous payez depuis un autre pays, écrivez-nous d'abord : ce n'est pas encore
             ouvert.
           </p>

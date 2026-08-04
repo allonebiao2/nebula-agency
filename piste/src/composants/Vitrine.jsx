@@ -204,7 +204,7 @@ const ENGAGEMENTS = [
   },
   {
     t: 'Vous payez par Mobile Money, à la main',
-    d: "MTN MoMo ou Moov Flooz, au Bénin. Aucun paiement ne se fait sur ce site : on vous donne le numéro et le montant exact, vous envoyez, on vérifie. Une commande non payée reste valable 24 heures, ensuite les fiches retournent au stock.",
+    d: "MTN MoMo, au Bénin. Aucun paiement ne se fait sur ce site : on vous donne le numéro de dépôt et le montant exact dans la conversation WhatsApp, vous envoyez, on vérifie. Une commande non payée reste valable 24 heures, ensuite les fiches retournent au stock.",
   },
 ]
 

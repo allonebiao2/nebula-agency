@@ -35,22 +35,25 @@ METIERS = list(_m.METIERS)
 # Le PLURIEL qui se lit dans la phrase « Je cherche 50 ___ a Cotonou ».
 # Le nom du menu ne marche pas la : « 50 couture et mode a Cotonou » ne veut
 # rien dire. Une liste de menu et une phrase ne demandent pas les memes mots.
+# ⚠️ Aucun pluriel ne contient « et » : ils s'enchainent dans la phrase
+# « Je cherche 50 ateliers de couture et restaurants a Cotonou », et deux « et »
+# dans la meme phrase la rendent illisible.
 PLURIELS = {
     "couture": "ateliers de couture",
-    "restaurant": "restaurants et maquis",
+    "restaurant": "restaurants",
     "patisserie": "pâtisseries",
     "beaute": "salons de beauté",
     "alimentation": "commerces d'alimentation",
     "quincaillerie": "quincailleries",
-    "auto": "garages et vendeurs de pièces",
+    "auto": "garages",
     "maison": "magasins de décoration",
-    "sante": "cabinets et pharmacies",
-    "ecole": "écoles et centres de formation",
-    "informatique": "cybercafés et commerces informatiques",
-    "imprimerie": "imprimeries et agences",
+    "sante": "pharmacies",
+    "ecole": "écoles",
+    "informatique": "cybercafés",
+    "imprimerie": "imprimeries",
     "hotel": "hôtels",
     "immobilier": "agences immobilières",
-    "transport": "transporteurs et agences de voyage",
+    "transport": "transporteurs",
     "services": "sociétés de services",
     "artisan": "artisans",
     "commerce": "commerces",
@@ -132,9 +135,13 @@ def main():
     bloc_stock = "export const STOCK = {\n" + "\n".join(lignes) + "\n}"
 
     # ---- trois fiches d'aperçu par combinaison, numéro coupé ----------------
+    # ⚠️ TOUS les metiers, pas les trois premiers. Depuis qu'on peut en choisir
+    # plusieurs a la fois, un metier sans fiche d'apercu fait retomber l'apercu
+    # sur un autre metier : le client demandait « beaute » et voyait deux
+    # ateliers de couture.
     fiches = []
-    for m in METIERS[:3]:
-        for v in VILLES[:4]:
+    for m in METIERS:
+        for v in VILLES:
             for r in c.execute(
                 """select nom, metier, ville, localite, quartier, pays, numero
                    from piste.fiches

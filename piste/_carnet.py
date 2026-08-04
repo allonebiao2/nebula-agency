@@ -230,7 +230,7 @@ def calcul(n, options):
 def main():
     a = argparse.ArgumentParser(add_help=True)
     a.add_argument("--voir", action="store_true", help="montre le disponible, n'écrit rien")
-    a.add_argument("--metier", choices=list(METIERS))
+    a.add_argument("--metier", help="un ou plusieurs, separes par une virgule : couture,restaurant")
     a.add_argument("--ville", choices=list(VILLES))
     a.add_argument("--n", type=int)
     a.add_argument("--options", default="", help="teste,sansSite,dirigeant,message")
@@ -294,9 +294,26 @@ def main():
     if "message" in options and len(o.offre.strip()) < 8:
         raise SystemExit("  --offre est obligatoire avec l'option « message »")
 
-    libres = [f for f in par.get((o.metier, o.ville), []) if f["nom"] not in pris]
-    # Celles qui portent un quartier d'abord : une fiche située se travaille mieux.
-    libres.sort(key=lambda f: (not f["quartier"], f["nom"]))
+    # ⚠️ Plusieurs metiers a la fois. Un grossiste en boissons veut les
+    # restaurants ET les alimentations : on melange les viviers, et on ALTERNE
+    # entre eux pour que le carnet ne soit pas un bloc d'un metier suivi d'un
+    # bloc d'un autre. Le client travaille sa tournee, pas un classement.
+    demandes = [x.strip() for x in re.split(r"[,\s]+", o.metier or "") if x.strip()]
+    for x in demandes:
+        if x not in METIERS:
+            raise SystemExit(f"  metier inconnu : {x} · connus : {', '.join(METIERS)}")
+    paniers = []
+    for m in demandes:
+        l = [f for f in par.get((m, o.ville), []) if f["nom"] not in pris]
+        l.sort(key=lambda f: (not f["quartier"], f["nom"]))
+        paniers.append(l)
+    libres = []
+    tour = 0
+    while any(len(pa) > tour for pa in paniers):
+        for pa in paniers:
+            if len(pa) > tour:
+                libres.append(pa[tour])
+        tour += 1
 
     if "teste" in options:
         # ⚠️ Le numéro « testé » se teste À LA MAIN avant l'envoi. Cet outil ne
@@ -322,7 +339,7 @@ def main():
     prix = calcul(o.n, options)
     jeton = secrets.token_urlsafe(24)
     ref = o.ref or "PISTE-" + secrets.token_hex(2).upper()
-    metier_nom, _ = METIERS[o.metier]
+    metier_nom = " et ".join(METIERS[m][0] for m in demandes)
 
     print(f"  {len(choisies)} fiches composées · {sum(1 for f in choisies if f['fixe'])} fixes")
     print(f"  {metier_nom} · {VILLES[o.ville]}")
@@ -343,7 +360,8 @@ def main():
             ),
             json.dumps(
                 dict(
-                    metier=o.metier,
+                    metier=demandes[0],
+                    metiers=demandes,
                     metierNom=metier_nom,
                     ville=o.ville,
                     villeNom=VILLES[o.ville],

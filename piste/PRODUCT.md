@@ -2,7 +2,7 @@
 
 > Vendre des prospects d'entreprise vérifiés, prêts à être contactés, en Afrique
 > de l'Ouest francophone.
-> Écrit le 2026-08-03, à partir des **80 décisions** de Mongazi.
+> Écrit le 2026-08-03, à partir des **84 décisions** de Mongazi.
 
 ## Register
 
@@ -29,7 +29,7 @@ marque l'état, on reprend le lendemain où on s'est arrêté.
 
 ---
 
-## 2. Les 80 décisions
+## 2. Les 84 décisions
 
 ### Qui, quoi, combien
 
@@ -320,6 +320,29 @@ sans qu'on comprenne pourquoi fait fuir, surtout sur un premier achat.
 |---|---|---|
 | 79 | Ce qui reste | **Les quatre** : le deuxieme vivier (structures) · les commandes dans Supabase · le recu PDF et le message a J+7 · Abidjan |
 | 80 | Mise en ligne | **MAINTENANT**, et on ameliore en ligne. PISTE est deja vendable : 1 149 fiches, le generateur, le carnet |
+
+### Plusieurs metiers, et les numeros (decisions 81 a 84)
+
+| # | Question | Decision |
+|---|---|---|
+| 81 | Plusieurs metiers a la fois | **Oui.** Le client coche autant de metiers qu'il veut, le stock se cumule, l'apercu alterne entre eux |
+| 82 | Moyens de paiement | **MTN MoMo SEUL.** Moov Flooz retire : annoncer un moyen qu'on ne peut pas encaisser, c'est promettre un virement qui n'arrivera jamais |
+| 83 | Le numero de depot | **Ce n'est PAS le numero WhatsApp.** Ce sont deux numeros differents, et l'ecran de paiement le dit noir sur blanc |
+| 84 | Format des numeros | **WhatsApp : 8 OU 10 chiffres** au Benin · **Mobile Money : 10 chiffres, toujours**, et on ajoute le `01` si le client tape 8 |
+
+⚠️ **Pourquoi deux regles differentes.** Le compte WhatsApp d'un Beninois peut
+etre reste enregistre sous son ANCIEN numero a 8 chiffres, celui d'avant la
+reforme ARCEP. C'est le cas de Mongazi lui-meme. Exiger dix chiffres la, c'est
+refuser un vrai client dont le WhatsApp fonctionne parfaitement. Le Mobile
+Money, lui, porte toujours le prefixe `01` : un depot vers huit chiffres
+n'arrive nulle part.
+
+⚠️ **« Un autre metier » ne se combine avec rien** : c'est une demande, pas une
+commande. On ne melange pas ce qui se vend et ce qui n'existe pas.
+
+⏳ **Le numero de depot reste a poser** (`MOMO_DEPOT` dans `donnees.js`). Tant
+qu'il est vide, il est donne a la main dans la conversation WhatsApp, et le
+site ne l'invente pas.
 
 ---
 
