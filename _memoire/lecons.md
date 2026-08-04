@@ -288,3 +288,36 @@ et redéployer ne changeait rien.
 
 Vaut pour **tous les sites du parc** : les douze vitrines sont sur Cloudflare
 Pages et peuvent subir exactement la même panne.
+
+## 2026-08-04 — Le « 01 » béninois n'est pas un préfixe à retirer
+
+Une candidature arrive avec le numéro `0162178411`. Le bouton WhatsApp du
+cockpit ouvre `+229162178411`. WhatsApp répond : **« ce numéro n'est pas sur
+WhatsApp »**, devant le candidat.
+
+**La cause.** `waLink()` faisait `replace(/^0+/, '')`. C'est le réflexe correct
+dans la plupart des pays, où le zéro de tête est un préfixe national. **Au
+Bénin, depuis la réforme ARCEP du 30 novembre 2024, le `01` fait partie du
+numéro.** La forme internationale est `229` + le numéro entier, zéro compris.
+
+**Le vrai problème, plus profond.** Deux formes coexistent : 8 chiffres
+(l'ancienne) et 10 chiffres avec le `01`. Un compte WhatsApp peut être resté
+sur l'ancienne. Et **les gens donnent souvent celle que leur compte ne porte
+pas, sans le savoir** : ils ne mentent pas, ils l'ignorent.
+
+**On ne peut donc pas deviner.** Toute interface qui ouvre une conversation
+WhatsApp doit proposer **l'autre forme** en second bouton, dans les deux sens.
+
+**Ce qu'il faut retenir.**
+
+1. **Un réflexe universel n'est pas une règle locale.** Retirer le zéro de tête
+   est juste presque partout, et faux ici.
+2. **Accepter 8 OU 10, refuser 9.** Un numéro à 9 chiffres est une faute de
+   frappe. Et le message d'erreur doit dire **combien de chiffres ont été
+   tapés**, jamais « numéro invalide ».
+3. ⚠️ **Le Mobile Money fait toujours 10 chiffres**, mais on ne le complète
+   JAMAIS en silence : on compte, on dit ce qui manque, on laisse corriger.
+4. `phone_key()` de `server.py` a le droit de retirer les zéros : elle
+   **compare** des numéros, elle n'en compose pas.
+
+Détail complet : mémoire Claude `reference_numeros-benin`.
