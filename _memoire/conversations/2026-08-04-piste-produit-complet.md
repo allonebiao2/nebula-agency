@@ -270,3 +270,100 @@ maintenant la **réponse réseau** et vérifie qu'elle ne transporte aucune fich
 
 `PISTE-T522` · Test NEBULA · 10 fiches restaurant Cotonou · 1 200 F ·
 deux courriels partis vers `allonebiao@gmail.com`.
+
+---
+
+## La fiche, les quatre mots, et le cockpit devenu poste de pilotage
+
+### « Écrit · Rendez-vous · Vendu · Non » : personne ne comprenait
+
+Mongazi : « **et tout ceci doit être expliqué rapidement et simplement pour le
+client car moi-même je ne comprends rien** ».
+
+Quatre mots posés sans phrase autour, dans une page qu'on ouvre debout dans la
+rue. **Si celui qui vend le produit ne comprend pas, aucun client ne
+comprendra.**
+
+Ils disent maintenant ce qui **s'est passé**, à la première personne :
+« J'ai écrit » · « Il veut me voir » · « J'ai vendu » · « Pas intéressé »,
+chacun avec sa phrase d'explication. Plus un mode d'emploi en trois gestes en
+haut du carnet.
+
+### La fiche : belle avant l'achat, plate après
+
+Le client voyait une carte en relief dans l'aperçu du générateur, et recevait
+une **liste plate** une fois payé. C'était à l'envers : ce qu'on livre doit se
+tenir mieux que ce qu'on montre.
+
+La fiche est devenue un document numéroté qu'on ouvre : bandeau sombre,
+initiales, trame de sécurité, et un **dos qui bascule en 3D** autour de son
+bord haut, comme une fiche cartonnée qu'on retourne. Le dos porte un relevé
+façon facture et **le message qui partira**, en clair, avant d'envoyer.
+
+⚠️ **Une rotation n'anime pas la hauteur.** Sans `grid-template-rows` de `0fr`
+à `1fr`, tout ce qui est en dessous saute d'un coup pendant que le dos tourne
+joliment dans le vide. Il faut les deux.
+
+**Ouvrir WhatsApp marque « J'ai écrit »**, mais seulement si rien n'est encore
+marqué. Sans ça, le seul signal d'apprentissage de PISTE dépendait d'un second
+geste que personne ne fait dans la rue.
+
+### Le cockpit : PISTE ne comptait RIEN
+
+Mongazi voulait « des courbes, combien de personnes viennent, combien
+achètent ». Il n'y avait aucune mesure. Nouvelle table `piste.visites`, porte
+d'écriture ouverte au site, et `piste_tableau()` qui rend tout en un appel :
+courbes 30 jours, entonnoir, argent, métiers et villes les plus cherchés,
+retours des clients, état du vivier.
+
+⚠️ **Aucune IP, aucun cookie, aucun identifiant qui survive à l'onglet.** Et on
+écrit « visites », jamais « personnes » : promettre des personnes serait faux.
+
+Direction **salle de contrôle** : le cockpit passe en sombre (ce qui donne au
+passage le rythme sombre/clair que la charte demande), police **Orbitron** pour
+les chiffres, compteurs qui montent, jauges, courbes SVG **sans une seule
+bibliothèque**, équerres d'angle.
+
+### ⚠️ Le tableau affichait « 1300 % vont jusqu'au bout »
+
+Les commandes existent depuis des jours, le comptage des visites depuis une
+heure. Diviser l'un par l'autre donne un chiffre absurde.
+
+> **Un écran qui affiche 1300 % ne sert plus à rien : on cesse de le croire, y
+> compris quand il a raison.**
+
+Remède : un **second entonnoir restreint à la période entièrement mesurée**, un
+**seuil de dix** en dessous duquel aucun taux ne s'affiche, et une phrase qui
+dit depuis quand on compte. **Un blanc honnête vaut mieux qu'un pourcentage
+faux.**
+
+### Trois pièges techniques, tous documentés dans le code
+
+1. **Remapper les jetons de couleur en bloc** a produit des boutons orange
+   **parfaitement vides** : `creme` sert de fond de carte ET de texte clair sur
+   les boutons. On ne remappe en jeton que ce qui n'a qu'un seul rôle.
+2. **`linear-gradient(90deg, var(--x), var(--x)55)` est invalide.** Coller une
+   transparence hexadécimale derrière une variable CSS fait jeter le dégradé
+   **entier**, sans erreur, et les jauges restent vides.
+3. **Deux vocabulaires pour la même chose** (`attente` en base, `recue` au
+   cockpit) faisaient atterrir les commandes dans un onglet inexistant.
+
+### Trois contrôles étaient FAUX, corrigés plutôt que contournés
+
+- ils **codaient des chiffres en dur** (« les 30 fiches ») alors qu'on teste un
+  carnet de 24
+- ils mesuraient des cibles **à travers une rotation de 86°**, qui écrase la
+  boîte : 120 défauts inventés
+- ils prenaient le **WhatsApp de l'acheteur** pour une fuite du vivier. Un
+  numéro seul ne dit pas d'où il vient ; ce qui trahit une fiche, c'est le
+  **nom du champ** qui la transporte
+
+**169 contrôles verts** (91 + 39 + 19 + 20).
+
+### Au passage
+
+- **`_vue.mjs`** : regarder une page section par section. ⚠️ Git Bash **avale**
+  un argument qui commence par `#`, et aller de `/` à `/#/route` ne recharge
+  rien : deux façons de capturer l'accueil en croyant capturer autre chose.
+- Les **fonctions de bord vivent enfin dans le dépôt** (`piste/supabase/functions/`).
+  Elles n'existaient nulle part : un incident chez Supabase les aurait perdues.
