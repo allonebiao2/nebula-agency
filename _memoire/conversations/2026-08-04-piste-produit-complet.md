@@ -136,3 +136,61 @@ métiers du site **découlent maintenant du moteur**.
 - [[2026-08-03-backoffices-refonte-et-documents]]
 - `_memoire/lecons.md` — la panne Cloudflare, les leçons Postgres
 - `scripts/purger.py` — le bouton de secours du cache
+
+---
+
+## Rallonge du soir · le code du cockpit, et la panne de cache qui revient
+
+### Un secret qu'on ne peut pas taper n'est pas un secret, c'est un blocage
+
+Mongazi a voulu fabriquer un carnet et s'est heurté à une demande de mot de
+passe. Il a cru à un code Google, a tenté `2915`, et s'est fait refuser.
+
+Le mot de passe était **24 caractères au hasard**. Juste en théorie. Sur un
+téléphone, entre deux rendez-vous, inutilisable. Et le message ne disait ni ce
+que c'était, ni où le trouver.
+
+**Mongazi a choisi son code : `19984`.** C'est le bon choix, et la sécurité se
+déplace : elle ne vient plus de la longueur du code mais de **ce qui arrive à
+celui qui le devine mal**.
+
+- table `piste.tentatives` + `public.piste_verrouille()` / `piste_tentative()`
+- **10 échecs en 15 minutes** et tout est refusé 15 minutes, **même le bon code**
+- se tromper trois fois ne gêne jamais ; essayer mille codes est arrêté au dixième
+- **le verrou n'efface jamais le code enregistré** : un compteur qui mord ne doit
+  pas faire oublier un code pourtant bon
+
+Vérifié en ligne : mauvais code → 401 · dixième essai → 429 · le bon code
+pendant le verrou → refusé aussi · compteur vidé après le test.
+
+Décisions **89 et 90** ajoutées à `piste/PRODUCT.md`.
+
+### La panne de cache est revenue, et c'est notre outil de contrôle qui l'a causée
+
+Même symptôme que l'après-midi (site sans style), cause différente.
+
+**Deux défauts se combinaient.** Un fichier absent répondait **200 avec du
+HTML** (Cloudflare Pages sert la page d'accueil pour toute adresse inconnue
+quand il n'y a pas de `404.html`), et `/assets/*` porte `immutable` un an. Le
+HTML de repli héritait donc d'un an de cache, à la place du CSS.
+
+**Le déclencheur : `purger.py --verifier`, lancé dans la seconde suivant le
+déploiement.** La propagation n'était pas finie ; la vérification a reçu la
+page de repli, et Cloudflare l'a écrite dans le cache.
+
+> **Vérifier à travers un cache n'est pas un geste neutre : la réponse obtenue
+> est écrite dans le cache. Une vérification trop tôt fabrique la panne qu'elle
+> cherche.**
+
+Deux remèdes posés :
+
+- **`piste/public/404.html`** : une adresse inconnue répond enfin un vrai 404,
+  qui ne se met pas en cache comme une ressource permanente. ⚠️ **À poser sur
+  chaque site du parc** — ajouté à la PHASE 8 de `procedure-vitrine/PROCEDURE.md`.
+- **L'ordre de vérification** écrit en tête de `purger.py` : origine d'abord
+  (aucun cache devant), domaine en dernier, 45 s d'attente entre les deux.
+  `--verifier` lit maintenant `cf-cache-status` et dit si c'est le cache ou
+  l'origine.
+
+État final vérifié en ligne : CSS `text/css`, JS `application/javascript`,
+fichier absent `404`, nouveau message du cockpit servi, 130 contrôles verts.

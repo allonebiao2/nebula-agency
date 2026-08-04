@@ -126,6 +126,26 @@ Script **ré-exécutable** (quand le client envoie d'autres photos). Voir `SKILL
 3. **Lien `*.pages.dev` live immédiat** (HTTPS auto, **zéro DNS**). Vérifier 200 + titre en prod.
 4. **Domaine custom** = étape **séparée, pas à pas** (souvent DNS Hostinger → peut nécessiter le client) ; à faire quand le domaine final est prêt.
 
+### ⚠️ Un `404.html` est OBLIGATOIRE dans `_dist/`
+
+Sans lui, Cloudflare Pages répond **200 avec la page d'accueil** pour toute
+adresse inconnue, y compris un fichier manquant sous `/assets/`. Or `_headers`
+y pose `Cache-Control: immutable, max-age=31536000` : **le HTML se fait mettre
+en cache à la place du CSS, pour un an**, et le site apparaît entièrement sans
+style sans pouvoir se réparer. Arrivé deux fois le 2026-08-04 sur PISTE.
+Gabarit : `piste/public/404.html`.
+
+### ⚠️ L'ordre de vérification, et il n'y en a qu'un
+
+**Vérifier à travers un cache n'est pas neutre : la réponse obtenue est ÉCRITE
+dans le cache. Une vérification trop tôt fabrique la panne qu'elle cherche.**
+
+1. déployer
+2. vérifier **l'URL du déploiement** (`xxxx.projet.pages.dev`, aucun cache devant)
+3. `python scripts/purger.py <projet>`
+4. attendre ~45 s
+5. seulement là, `python scripts/purger.py <projet> --verifier`
+
 **Livrable** : URL live HTTPS.
 
 ---
