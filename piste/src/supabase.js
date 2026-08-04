@@ -168,3 +168,51 @@ export async function livrerCarnet(reference) {
     return { ok: false, erreur: 'réseau' }
   }
 }
+
+/*
+  LIRE LES COMMANDES DEPUIS LE SERVEUR.
+
+  Le cockpit ne lisait que ce navigateur. Une commande passée depuis le
+  téléphone d'un client existait en base, déclenchait deux courriels, et
+  n'apparaissait jamais ici tant que Mongazi ne recollait pas le message
+  WhatsApp à la main. Ce n'était pas une liste, c'était un carnet personnel.
+*/
+export async function listerCommandes() {
+  const motdepasse = motDePasseCockpit()
+  if (!motdepasse) return { ok: false, erreur: 'mot de passe' }
+  try {
+    const r = await fetch(`${URL_BASE}/functions/v1/piste-cockpit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: CLE_PUBLIQUE,
+        Authorization: `Bearer ${CLE_PUBLIQUE}`,
+      },
+      body: JSON.stringify({ motdepasse }),
+    })
+    return await r.json()
+  } catch (e) {
+    return { ok: false, erreur: 'réseau' }
+  }
+}
+
+/* Marquer payé / livré EN BASE, pas seulement dans ce navigateur : sinon
+   l'état vu depuis le téléphone contredit celui vu depuis le PC. */
+export async function etatCommandeServeur(reference, etat) {
+  const motdepasse = motDePasseCockpit()
+  if (!motdepasse) return { ok: false, erreur: 'mot de passe' }
+  try {
+    const r = await fetch(`${URL_BASE}/functions/v1/piste-cockpit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: CLE_PUBLIQUE,
+        Authorization: `Bearer ${CLE_PUBLIQUE}`,
+      },
+      body: JSON.stringify({ action: 'etat', reference, etat, motdepasse }),
+    })
+    return await r.json()
+  } catch (e) {
+    return { ok: false, erreur: 'réseau' }
+  }
+}

@@ -7,8 +7,24 @@ import {
   nouvelleReference,
 } from '../donnees.js'
 import { SUPPLEMENTS, fcfa } from '../prix.js'
-import { ajouter, ecrire, estExpiree, lire, resteEn } from '../stockage.js'
-import { livrerCarnet, motDePasseCockpit, poserMotDePasse } from '../supabase.js'
+import { CLES, ajouter, ecrire, estExpiree, lire, resteEn } from '../stockage.js'
+import {
+  etatCommandeServeur,
+  listerCommandes,
+  livrerCarnet,
+  motDePasseCockpit,
+  poserMotDePasse,
+} from '../supabase.js'
+import {
+  demanderNotifications,
+  etatNotifications,
+  notifier,
+  notificationsPossibles,
+  ouvrirLeSon,
+  sonPret,
+  sonnerCommande,
+  sonnerLivraison,
+} from '../son.js'
 import { Bouton, Chiffre } from './Ui.jsx'
 import { Puce } from './Trace.jsx'
 
@@ -208,6 +224,96 @@ function MarcheASuivre() {
 
 /* ------------------------------------------------------------------------- */
 
+/*
+  LA BARRE DE VEILLE.
+
+  Une alerte qu'on ne peut pas vérifier ne rassure personne : on finit par
+  garder l'onglet ouvert « au cas où » sans jamais savoir si ça marche. Cette
+  barre dit trois choses en un coup d'oeil : le serveur répond ou non, le son
+  est ouvert ou non, les notifications sont autorisées ou non. Et elle laisse
+  ESSAYER la tonalité tout de suite, plutôt que d'attendre une vraie commande
+  pour découvrir qu'on n'entend rien.
+*/
+function Veille({ veille, son, notifs, onSon, onNotifs }) {
+  const [teste, setTeste] = useState('')
+
+  const etats = {
+    ok: { p: 'bg-vert', t: 'La veille tourne' },
+    attente: { p: 'bg-sable', t: 'Premier contact…' },
+    panne: { p: 'bg-rouge', t: 'Le serveur ne répond pas' },
+    verrouille: { p: 'bg-rouge', t: 'Cockpit bloqué 15 minutes' },
+  }
+  const e = etats[veille.etat] || etats.attente
+
+  /* Un seul geste, un seul son. Ouvrir le contexte audio ET jouer la tonalité,
+     dans cet ordre, parce que l'ouverture n'est possible QUE pendant un geste
+     de l'utilisateur. */
+  const essayer = () => {
+    const ouvert = ouvrirLeSon()
+    if (ouvert) onSon()
+    const joue = ouvert && sonnerCommande()
+    setTeste(
+      joue
+        ? 'Vous devez entendre trois notes qui montent, deux fois. Si vous n’entendez rien, montez le volume et vérifiez que le téléphone n’est pas en silencieux.'
+        : "Le son n'a pas pu s'ouvrir sur cet appareil."
+    )
+    setTimeout(() => setTeste(''), 9000)
+  }
+
+  return (
+    <div className="mt-6 rounded-2xl border border-trait bg-creme p-4 sm:p-5">
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+        <span className="inline-flex items-center gap-2 text-[0.94rem] font-semibold">
+          <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${e.p}`} aria-hidden="true" />
+          {e.t}
+        </span>
+        {veille.quand && (
+          <span className="text-[0.86rem] text-sourd">
+            vérifié à{' '}
+            {veille.quand.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+          </span>
+        )}
+      </div>
+
+      <p className="mt-2.5 text-[0.92rem] leading-relaxed text-sourd">
+        Le cockpit interroge le serveur toutes les 30 secondes. Une commande passée depuis
+        le téléphone d'un client arrive ici toute seule, avec une tonalité.
+      </p>
+
+      <div className="mt-4 flex flex-wrap items-center gap-2.5">
+        <Bouton ton="nu" onClick={essayer}>
+          {son ? 'Tester la tonalité' : 'Activer le son'}
+        </Bouton>
+
+        {notificationsPossibles() && notifs !== 'granted' && (
+          <Bouton ton="nu" onClick={onNotifs} disabled={notifs === 'denied'}>
+            {notifs === 'denied' ? 'Notifications refusées' : 'Autoriser les notifications'}
+          </Bouton>
+        )}
+        {notifs === 'granted' && (
+          <span className="text-[0.86rem] text-vert">Notifications autorisées</span>
+        )}
+      </div>
+
+      {teste && <p className="mt-3 text-[0.9rem] text-encre">{teste}</p>}
+
+      {notifs === 'denied' && (
+        <p className="mt-3 text-[0.88rem] leading-relaxed text-sourd">
+          Votre navigateur les a bloquées. Pour les rétablir : appuyez sur le cadenas à
+          gauche de l'adresse, puis autorisez les notifications pour ce site. Le son, lui,
+          continue de marcher.
+        </p>
+      )}
+      {!son && (
+        <p className="mt-3 text-[0.88rem] leading-relaxed text-sourd">
+          Aucun navigateur ne joue un son avant que vous ayez touché la page. Appuyez une
+          fois sur « Activer le son » : ensuite, ça sonne tout seul.
+        </p>
+      )}
+    </div>
+  )
+}
+
 export default function Cockpit({ aller }) {
   const [commandes, setCommandes] = useState([])
   const [demandes, setDemandes] = useState([])
@@ -218,12 +324,123 @@ export default function Cockpit({ aller }) {
   const [onglet, setOnglet] = useState('recue')
   const [, rafraichir] = useState(0)
 
+  const [son, setSon] = useState(false)
+  const [notifs, setNotifs] = useState(() => etatNotifications())
+  const [veille, setVeille] = useState({ quand: null, etat: 'attente' })
+  const [nouvelles, setNouvelles] = useState([])
+
   useEffect(() => {
     setCommandes(lire('commandes'))
     setDemandes(lire('demandes'))
     setSignalements(lire('signalements'))
     const i = setInterval(() => rafraichir((x) => x + 1), 30000)
     return () => clearInterval(i)
+  }, [])
+
+  /*
+    LE SON NE PEUT PAS S'OUVRIR TOUT SEUL.
+    Aucun navigateur ne joue quoi que ce soit avant un geste de l'utilisateur :
+    un contexte audio créé au chargement naît muet. On l'ouvre donc au PREMIER
+    clic ou toucher, une seule fois, puis on retire l'écouteur.
+    ⚠️ Sur PC la molette ne compte pas comme un geste ; sur mobile un toucher
+    compte. C'est pour ça qu'il y a aussi un bouton « Tester la tonalité » :
+    sans geste explicite, on ne peut RIEN promettre.
+  */
+  useEffect(() => {
+    if (sonPret()) {
+      setSon(true)
+      return
+    }
+    const ouvrir = () => {
+      if (ouvrirLeSon()) setSon(true)
+    }
+    const evts = ['pointerdown', 'touchstart', 'keydown']
+    evts.forEach((e) => document.addEventListener(e, ouvrir, { once: true, passive: true }))
+    return () => evts.forEach((e) => document.removeEventListener(e, ouvrir))
+  }, [])
+
+  /*
+    LA VEILLE : le cockpit interroge le serveur toutes les 30 secondes.
+
+    Avant, il ne lisait que CE navigateur. Une commande passée depuis le
+    téléphone d'un client existait en base, déclenchait deux courriels, et
+    n'apparaissait jamais ici tant que Mongazi ne recollait pas le message
+    WhatsApp à la main.
+
+    ⚠️ La première réponse ne sonne PAS : au premier chargement, tout est
+    « nouveau ». Une alarme qui hurle à chaque ouverture, on l'éteint le
+    deuxième jour, et elle ne sert plus jamais à rien.
+  */
+  useEffect(() => {
+    if (!motDePasseCockpit()) return
+    let vivant = true
+    let premiere = true
+
+    const connues = () => {
+      try {
+        return new Set(JSON.parse(localStorage.getItem(CLES.refsVues) || '[]'))
+      } catch (e) {
+        return new Set()
+      }
+    }
+    const retenir = (set) => {
+      try {
+        localStorage.setItem(CLES.refsVues, JSON.stringify([...set].slice(0, 400)))
+      } catch (e) {}
+    }
+
+    const regarder = async () => {
+      const r = await listerCommandes()
+      if (!vivant) return
+      if (!r?.ok) {
+        setVeille({ quand: new Date(), etat: r?.verrouille ? 'verrouille' : 'panne' })
+        return
+      }
+      setVeille({ quand: new Date(), etat: 'ok' })
+
+      const vues = connues()
+      const arrivees = (r.commandes || []).filter((c) => !vues.has(c.ref))
+      for (const c of r.commandes || []) vues.add(c.ref)
+      retenir(vues)
+
+      /* On fusionne : le serveur fait foi sur ce qu'il connaît, le local
+         garde ce qui n'a été collé qu'ici. */
+      setCommandes((avant) => {
+        const parRef = new Map(avant.map((c) => [c.ref, c]))
+        for (const c of r.commandes || []) {
+          const d = parRef.get(c.ref)
+          parRef.set(c.ref, d ? { ...c, ...d, lienCarnet: d.lienCarnet || c.lienCarnet } : c)
+        }
+        const liste = [...parRef.values()].sort(
+          (x, y) => new Date(y.date || 0) - new Date(x.date || 0)
+        )
+        ecrire('commandes', liste)
+        return liste
+      })
+
+      if (premiere) {
+        premiere = false
+        return
+      }
+      if (!arrivees.length) return
+
+      setNouvelles((n) => [...arrivees, ...n].slice(0, 8))
+      sonnerCommande()
+      const c = arrivees[0]
+      notifier(
+        arrivees.length === 1 ? `Commande ${c.ref} · ${fcfa(c.total)}` : `${arrivees.length} nouvelles commandes`,
+        arrivees.length === 1
+          ? `${[c.prenom, c.nom].filter(Boolean).join(' ') || 'Un client'} · ${c.n} fiches`
+          : arrivees.map((x) => x.ref).join(', ')
+      )
+    }
+
+    regarder()
+    const i = setInterval(regarder, 30000)
+    return () => {
+      vivant = false
+      clearInterval(i)
+    }
   }, [])
 
   const majCommandes = (l) => {
@@ -270,6 +487,7 @@ export default function Cockpit({ aller }) {
             : x
         )
       )
+      sonnerLivraison()
       return
     }
     majCommandes(commandes.map((x) => (x.ref === c.ref ? { ...x, enCours: false } : x)))
@@ -295,7 +513,9 @@ export default function Cockpit({ aller }) {
     )
   }
 
-  const changerEtat = (ref, etat) =>
+  /* L'état change ici ET en base. Sinon une commande marquée payée sur le PC
+     réapparaît « à encaisser » sur le téléphone, et on encaisse deux fois. */
+  const changerEtat = (ref, etat) => {
     majCommandes(
       commandes.map((c) =>
         c.ref === ref
@@ -303,6 +523,8 @@ export default function Cockpit({ aller }) {
           : c
       )
     )
+    etatCommandeServeur(ref, etat)
+  }
 
   const retirer = (ref) => {
     const c = commandes.find((x) => x.ref === ref)
@@ -455,6 +677,42 @@ export default function Cockpit({ aller }) {
             se range tout seul avec son prix, son code et ses coordonnées.
           </p>
         </div>
+
+        <Veille
+          veille={veille}
+          son={son}
+          notifs={notifs}
+          onSon={() => setSon(true)}
+          onNotifs={async () => setNotifs(await demanderNotifications())}
+        />
+
+        {/* Ce qui vient d'arriver, en clair. La tonalité prévient ; ce bandeau
+            dit QUOI, parce qu'un son seul oblige à chercher. */}
+        {nouvelles.length > 0 && (
+          <div className="mt-4 rounded-2xl border-2 border-vert/40 bg-vert/5 p-5">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <p className="font-semibold text-vert">
+                {nouvelles.length === 1
+                  ? 'Une commande vient d’arriver'
+                  : `${nouvelles.length} commandes viennent d’arriver`}
+              </p>
+              <Bouton ton="nu" onClick={() => setNouvelles([])}>
+                J’ai vu
+              </Bouton>
+            </div>
+            <ul className="mt-3 space-y-1.5">
+              {nouvelles.map((c) => (
+                <li key={c.ref} className="text-[0.94rem] leading-relaxed">
+                  <span className="font-semibold">{c.ref}</span>{' '}
+                  <span className="text-sourd">
+                    · {[c.prenom, c.nom].filter(Boolean).join(' ') || 'client sans nom'} ·{' '}
+                    {c.n} fiches · {fcfa(c.total)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <MarcheASuivre />
 
