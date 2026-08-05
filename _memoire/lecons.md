@@ -360,3 +360,43 @@ WhatsApp doit proposer **l'autre forme** en second bouton, dans les deux sens.
    **compare** des numéros, elle n'en compose pas.
 
 Détail complet : mémoire Claude `reference_numeros-benin`.
+
+---
+
+## 2026-08-05 · Normaliser du texte détruit les jokers d'un lexique
+
+**Le générateur de devis lit la demande d'un client** avec un lexique de motifs
+écrits `produit*`, `command*`, `graphique*` : l'étoile veut dire « et toutes ses
+terminaisons ». Le compilateur de motifs faisait, dans cet ordre :
+
+```js
+normaliser(mot)          // accents pliés, ponctuation -> espaces
+  .split(/\s+/)          // puis on cherche l'étoile
+```
+
+**L'étoile n'est pas une lettre.** `normaliser` l'a donc changée en espace,
+`.trim()` l'a effacée, et `produit*` est devenu « produit » tout court, qui ne
+trouve jamais « produits ». Le lexique entier était devenu littéral sans que
+rien ne signale d'erreur.
+
+**Une seule cause, quatre symptômes qui semblaient indépendants** : un catalogue
+non détecté, une option de configurateur manquée, un secteur non reconnu, un
+surlignage à trous. On peut passer une heure à débuguer quatre bugs qui n'en
+sont qu'un.
+
+**Ce qu'il faut retenir.**
+
+1. **Les métacaractères sortent du texte AVANT la normalisation**, jamais
+   après. Toute fonction qui « nettoie » une chaîne effacera ce qui n'est pas
+   une lettre, y compris ce qui portait du sens.
+2. **Une normalisation qui conserve la longueur** (un caractère pour un
+   caractère : accent plié, ponctuation en espace) permet de retrouver le mot
+   dans le texte d'origine. C'est ce qui rend le surlignage possible, et ça ne
+   coûte rien à écrire dès le départ.
+3. ⚠️ **Un mot de reconnaissance doit être un mot que personne n'emploie pour
+   autre chose.** `table*` attrapait « tableau de bord », `argent` attrapait
+   « il n'a pas beaucoup d'argent ». Un lexique se relit en se demandant, pour
+   chaque entrée : dans quelle phrase innocente ce mot apparaît-il ?
+4. **Et surtout : ces quatre bugs ont été trouvés par la suite de contrôle,
+   pas à l'œil.** Un moteur qui lit du texte se teste avec de vraies phrases et
+   des montants attendus, sinon il a l'air de marcher.

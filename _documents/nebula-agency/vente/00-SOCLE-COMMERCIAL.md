@@ -536,6 +536,7 @@ Preuves de capacité sur l'Outil métier : **Boussole**, **Digital HSE**, **Vend
 | `07-MISE-EN-LIGNE.md` | Publication des supports, ordre de lancement |
 | `08-DIAGNOSTIC-DIGITAL.md` | La consultation professionnelle et la détection des automatisations |
 | `simulateur-commissions.html` | Simulateur de gains |
+| `generateur-devis.html` | Générateur de devis : la demande du client, tapée ou dictée, devient un prix de cette grille |
 | `fiche-diagnostic.html` | Fiche de diagnostic à remplir chez le client |
 
 ---

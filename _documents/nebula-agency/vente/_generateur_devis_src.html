@@ -1,0 +1,1634 @@
+<title>Générateur de devis · NEBULA Agency</title>
+<style>
+/*@FONTS@*/
+
+/* ============================================================
+   GÉNÉRATEUR DE DEVIS NEBULA
+   Charte maison : nuit #070A14, bleu / violet / cyan, or = l'argent.
+   Deux thèmes : la nuit NEBULA et le jour (l'outil sert dehors).
+   ============================================================ */
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  /* fonds et matière */
+  --fond:#070A14;
+  --fond2:#0B0F1E;
+  --surf:rgba(255,255,255,.045);
+  --surf2:rgba(255,255,255,.075);
+  --ligne:rgba(255,255,255,.10);
+  --ligne2:rgba(255,255,255,.18);
+  /* texte : neutres biaisés bleu, jamais gris pur */
+  --txt:#EAEEF9;
+  --dim:#9AA6C4;
+  --faible:#6C7796;
+  /* accents NEBULA */
+  --bleu:#4A7DFF;   --bleu-t:#7FA3FF;
+  --violet:#9B5CFF; --violet-t:#B98CFF;
+  --cyan:#3FD8E6;   --cyan-t:#6FE4EE;
+  --or:#F6A63C;     --or-t:#FFC172;
+  --vert:#34D399;   --vert-t:#5FE0B4;
+  --rouge:#FF6B6B;  --rouge-t:#FF9494;
+  /* teintes de surlignage */
+  --h-cat:rgba(63,216,230,.22);
+  --h-vit:rgba(155,92,255,.24);
+  --h-out:rgba(74,125,255,.24);
+  --h-qr:rgba(246,166,60,.22);
+  --h-qte:rgba(52,211,153,.22);
+  --ombre:0 18px 40px -22px rgba(0,0,0,.9);
+  --ease:cubic-bezier(.16,1,.3,1);
+  --halo1:rgba(155,92,255,.16);
+  --halo2:rgba(63,216,230,.10);
+  color-scheme:dark;
+}
+
+@media (prefers-color-scheme:light){
+  :root{
+    --fond:#EFF3FB; --fond2:#E5EBF7;
+    --surf:rgba(255,255,255,.86); --surf2:#FFFFFF;
+    --ligne:rgba(12,24,62,.13); --ligne2:rgba(12,24,62,.24);
+    --txt:#080C18; --dim:#525E7D; --faible:#79839F;
+    --bleu:#2E5FE8; --bleu-t:#1E47C4;
+    --violet:#7A38E0; --violet-t:#6425C6;
+    --cyan:#0E8C9E; --cyan-t:#0A6E7D;
+    --or:#B87309; --or-t:#8F5A05;
+    --vert:#0E8F63; --vert-t:#0A7150;
+    --rouge:#C93030; --rouge-t:#A62222;
+    --h-cat:rgba(14,140,158,.16); --h-vit:rgba(122,56,224,.15);
+    --h-out:rgba(46,95,232,.15); --h-qr:rgba(184,115,9,.17);
+    --h-qte:rgba(14,143,99,.16);
+    --ombre:0 16px 34px -24px rgba(10,20,60,.5);
+    --halo1:rgba(122,56,224,.10); --halo2:rgba(14,140,158,.08);
+    color-scheme:light;
+  }
+}
+/* le sélecteur du lecteur doit gagner dans les deux sens */
+:root[data-theme="dark"]{
+  --fond:#070A14; --fond2:#0B0F1E;
+  --surf:rgba(255,255,255,.045); --surf2:rgba(255,255,255,.075);
+  --ligne:rgba(255,255,255,.10); --ligne2:rgba(255,255,255,.18);
+  --txt:#EAEEF9; --dim:#9AA6C4; --faible:#6C7796;
+  --bleu:#4A7DFF; --bleu-t:#7FA3FF;
+  --violet:#9B5CFF; --violet-t:#B98CFF;
+  --cyan:#3FD8E6; --cyan-t:#6FE4EE;
+  --or:#F6A63C; --or-t:#FFC172;
+  --vert:#34D399; --vert-t:#5FE0B4;
+  --rouge:#FF6B6B; --rouge-t:#FF9494;
+  --h-cat:rgba(63,216,230,.22); --h-vit:rgba(155,92,255,.24);
+  --h-out:rgba(74,125,255,.24); --h-qr:rgba(246,166,60,.22);
+  --h-qte:rgba(52,211,153,.22);
+  --ombre:0 18px 40px -22px rgba(0,0,0,.9);
+  --halo1:rgba(155,92,255,.16); --halo2:rgba(63,216,230,.10);
+  color-scheme:dark;
+}
+:root[data-theme="light"]{
+  --fond:#EFF3FB; --fond2:#E5EBF7;
+  --surf:rgba(255,255,255,.86); --surf2:#FFFFFF;
+  --ligne:rgba(12,24,62,.13); --ligne2:rgba(12,24,62,.24);
+  --txt:#080C18; --dim:#525E7D; --faible:#79839F;
+  --bleu:#2E5FE8; --bleu-t:#1E47C4;
+  --violet:#7A38E0; --violet-t:#6425C6;
+  --cyan:#0E8C9E; --cyan-t:#0A6E7D;
+  --or:#B87309; --or-t:#8F5A05;
+  --vert:#0E8F63; --vert-t:#0A7150;
+  --rouge:#C93030; --rouge-t:#A62222;
+  --h-cat:rgba(14,140,158,.16); --h-vit:rgba(122,56,224,.15);
+  --h-out:rgba(46,95,232,.15); --h-qr:rgba(184,115,9,.17);
+  --h-qte:rgba(14,143,99,.16);
+  --ombre:0 16px 34px -24px rgba(10,20,60,.5);
+  --halo1:rgba(122,56,224,.10); --halo2:rgba(14,140,158,.08);
+  color-scheme:light;
+}
+
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  background:var(--fond);
+  background-image:
+    radial-gradient(90vw 55vh at 15% -8%,var(--halo1),transparent 62%),
+    radial-gradient(80vw 45vh at 105% 4%,var(--halo2),transparent 60%);
+  background-attachment:fixed;
+  color:var(--txt);
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  font-size:16px;line-height:1.55;
+  padding:22px 15px calc(96px + env(safe-area-inset-bottom,0px));
+  -webkit-font-smoothing:antialiased;
+}
+.page{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+
+/* ---------- en-tête ---------- */
+.chapeau{display:flex;flex-direction:column;gap:11px;padding:2px 0 4px}
+.marque{
+  display:inline-flex;align-items:center;gap:9px;align-self:flex-start;
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10.5px;font-weight:500;
+  letter-spacing:.17em;text-transform:uppercase;color:var(--dim);
+}
+.pastille{
+  width:9px;height:9px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--bleu),var(--violet));
+  box-shadow:0 0 12px var(--violet);
+}
+h1{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(28px,7.6vw,40px);line-height:1.08;letter-spacing:-.028em;
+  text-wrap:balance;
+}
+h1 em{
+  font-style:normal;
+  background:linear-gradient(102deg,var(--bleu),var(--violet) 48%,var(--cyan));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.chapo{color:var(--dim);font-size:15px;max-width:52ch;text-wrap:pretty}
+.source{
+  display:inline-flex;align-items:center;gap:7px;align-self:flex-start;
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;
+  color:var(--faible);border:1px solid var(--ligne);border-radius:999px;
+  padding:5px 11px;background:var(--surf);
+}
+.source b{color:var(--dim);font-weight:500}
+
+/* ---------- les trois mouvements ---------- */
+.mvt{
+  background:var(--surf);border:1px solid var(--ligne);border-radius:20px;
+  padding:17px 15px 18px;display:flex;flex-direction:column;gap:14px;
+  box-shadow:var(--ombre);
+}
+.mvt.eteint{opacity:.42;pointer-events:none;filter:saturate(.4)}
+.mvt-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.num{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:13px;
+  width:26px;height:26px;flex-shrink:0;border-radius:9px;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:linear-gradient(140deg,var(--bleu),var(--violet));
+  color:#fff;align-self:center;letter-spacing:0;
+}
+.mvt-h h2{
+  font-family:'Syne',sans-serif;font-weight:700;font-size:19px;
+  letter-spacing:-.015em;line-height:1.2;
+}
+.mvt-h .aide{color:var(--faible);font-size:12.5px;margin-left:auto}
+
+/* ---------- 1 · la parole ---------- */
+textarea#brief{
+  width:100%;min-height:132px;resize:vertical;
+  background:var(--fond2);color:var(--txt);
+  border:1px solid var(--ligne2);border-radius:14px;padding:13px 14px;
+  font-family:inherit;font-size:16px;line-height:1.5;
+  transition:border-color .2s var(--ease),box-shadow .2s var(--ease);
+}
+textarea#brief::placeholder{color:var(--faible)}
+textarea#brief:focus{outline:none;border-color:var(--bleu);box-shadow:0 0 0 3px rgba(74,125,255,.2)}
+.outils{display:flex;gap:9px;flex-wrap:wrap}
+button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.btn{
+  min-height:46px;padding:0 16px;border-radius:13px;border:1px solid var(--ligne2);
+  background:var(--surf2);color:var(--txt);font-size:14.5px;font-weight:600;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  transition:border-color .18s var(--ease),background .18s var(--ease),color .18s var(--ease);
+}
+.btn:hover{border-color:var(--ligne2);background:var(--surf)}
+a.btn{text-decoration:none}
+.btn svg{width:18px;height:18px;flex-shrink:0}
+.btn-micro{border-color:var(--violet);color:var(--violet-t)}
+.btn-micro[aria-pressed="true"]{background:var(--rouge);border-color:var(--rouge);color:#fff}
+.btn-micro[aria-pressed="true"] .rond{
+  width:9px;height:9px;border-radius:50%;background:#fff;animation:bat 1.1s ease-in-out infinite;
+}
+@keyframes bat{0%,100%{opacity:1}50%{opacity:.25}}
+.btn-fant{border-color:transparent;background:transparent;color:var(--faible);padding:0 10px}
+.btn-fant:hover{color:var(--txt);background:var(--surf2)}
+:focus-visible{outline:2px solid var(--bleu);outline-offset:2px;border-radius:8px}
+
+.note{font-size:13px;color:var(--dim);line-height:1.45}
+.note.alerte{color:var(--or-t)}
+.exemples{display:flex;flex-direction:column;gap:7px}
+.exemples .lab{
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10.5px;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--faible);
+}
+.ex{
+  text-align:left;width:100%;padding:10px 12px;border-radius:12px;
+  border:1px dashed var(--ligne2);background:transparent;color:var(--dim);
+  font-size:13.5px;line-height:1.45;transition:color .18s var(--ease),border-color .18s var(--ease);
+}
+.ex:hover{color:var(--txt);border-color:var(--bleu);border-style:solid}
+.ex b{color:var(--txt);font-weight:600}
+
+/* ---------- 2 · la lecture ---------- */
+.surl{
+  background:var(--fond2);border:1px solid var(--ligne);border-radius:14px;
+  padding:13px 14px;font-size:15px;line-height:1.72;color:var(--dim);
+  max-height:210px;overflow-y:auto;
+}
+.surl mark{
+  background:transparent;color:var(--txt);border-radius:4px;padding:1px 3px;
+  font-weight:600;box-decoration-break:clone;-webkit-box-decoration-break:clone;
+}
+.surl mark.m-catalogue{background:var(--h-cat);box-shadow:inset 0 -2px 0 var(--cyan)}
+.surl mark.m-vitrine{background:var(--h-vit);box-shadow:inset 0 -2px 0 var(--violet)}
+.surl mark.m-outil{background:var(--h-out);box-shadow:inset 0 -2px 0 var(--bleu)}
+.surl mark.m-qr{background:var(--h-qr);box-shadow:inset 0 -2px 0 var(--or)}
+.surl mark.m-qte{background:var(--h-qte);box-shadow:inset 0 -2px 0 var(--vert)}
+.surl .rien{color:var(--faible);font-style:italic}
+
+.legende{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:11.5px;color:var(--faible)}
+.legende span{display:inline-flex;align-items:center;gap:6px}
+.legende i{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+.bloc-lab{
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10.5px;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--faible);
+  margin-bottom:-4px;
+}
+.offres{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.offre{
+  position:relative;text-align:left;padding:12px 12px 11px;border-radius:14px;
+  border:1px solid var(--ligne2);background:var(--surf2);color:var(--dim);
+  display:flex;flex-direction:column;gap:3px;min-height:70px;
+  transition:border-color .18s var(--ease),color .18s var(--ease),background .18s var(--ease);
+}
+.offre .t{font-weight:700;font-size:14.5px;color:var(--txt);line-height:1.25}
+.offre .p{
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;
+  color:var(--faible);font-variant-numeric:tabular-nums;
+}
+.offre[aria-pressed="true"]{background:var(--surf)}
+.offre[aria-pressed="true"].o-catalogue{border-color:var(--cyan)}
+.offre[aria-pressed="true"].o-catalogue .p{color:var(--cyan-t)}
+.offre[aria-pressed="true"].o-vitrine{border-color:var(--violet)}
+.offre[aria-pressed="true"].o-vitrine .p{color:var(--violet-t)}
+.offre[aria-pressed="true"].o-outil{border-color:var(--bleu)}
+.offre[aria-pressed="true"].o-outil .p{color:var(--bleu-t)}
+.offre[aria-pressed="true"].o-qr{border-color:var(--or)}
+.offre[aria-pressed="true"].o-qr .p{color:var(--or-t)}
+.offre .coche{
+  position:absolute;top:10px;right:10px;width:17px;height:17px;border-radius:50%;
+  border:1.5px solid var(--ligne2);display:flex;align-items:center;justify-content:center;
+}
+.offre .coche svg{width:10px;height:10px;opacity:0;stroke:#fff;stroke-width:3.4;fill:none}
+.offre[aria-pressed="true"] .coche{border-color:transparent;background:var(--vert)}
+.offre[aria-pressed="true"] .coche svg{opacity:1}
+
+.compteurs{display:flex;flex-direction:column;gap:2px}
+.cpt{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--ligne)}
+.cpt:last-child{border-bottom:0}
+.cpt .info{flex:1;min-width:0}
+.cpt .nm{font-weight:600;font-size:14.5px}
+.cpt .sd{color:var(--faible);font-size:12px;margin-top:1px;line-height:1.35}
+.pas{display:flex;align-items:center;gap:3px;flex-shrink:0}
+.pas button{
+  width:44px;height:44px;border-radius:12px;border:1px solid var(--ligne2);
+  background:var(--surf2);color:var(--txt);font-size:20px;line-height:1;font-weight:600;
+  display:flex;align-items:center;justify-content:center;transition:background .16s var(--ease);
+}
+.pas button:hover{background:var(--surf)}
+.pas button:disabled{opacity:.3;cursor:not-allowed}
+.pas .v{
+  min-width:42px;text-align:center;font-family:'JetBrains Mono',ui-monospace,monospace;
+  font-size:15px;font-weight:500;font-variant-numeric:tabular-nums;
+}
+
+.jetons{display:flex;flex-wrap:wrap;gap:7px}
+.jeton{
+  padding:7px 11px;border-radius:999px;border:1px solid var(--ligne2);
+  background:transparent;color:var(--faible);font-size:12.5px;font-weight:500;
+  display:inline-flex;align-items:center;gap:7px;min-height:44px;
+  transition:color .16s var(--ease),border-color .16s var(--ease),background .16s var(--ease);
+}
+.jeton .px{
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;
+  opacity:.75;font-variant-numeric:tabular-nums;
+}
+.jeton:hover{color:var(--txt);border-color:var(--ligne2)}
+.jeton[aria-pressed="true"]{
+  color:var(--txt);border-color:var(--bleu);background:rgba(74,125,255,.13);
+}
+.jeton[aria-pressed="true"] .px{color:var(--bleu-t);opacity:1}
+.grp{display:flex;flex-direction:column;gap:8px}
+.grp>.t{
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10.5px;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--faible);
+}
+
+/* ---------- alertes de doctrine ---------- */
+.alertes{display:flex;flex-direction:column;gap:8px}
+.al{
+  display:flex;gap:10px;padding:11px 12px;border-radius:13px;
+  border:1px solid var(--ligne2);background:var(--surf2);
+  font-size:13.5px;line-height:1.48;color:var(--dim);
+}
+.al svg{width:17px;height:17px;flex-shrink:0;margin-top:2px}
+.al b{color:var(--txt);font-weight:650}
+.al.rouge{border-color:rgba(255,107,107,.42)}
+.al.rouge svg{color:var(--rouge)}
+.al.or{border-color:rgba(246,166,60,.42)}
+.al.or svg{color:var(--or)}
+.al.bleu{border-color:rgba(74,125,255,.42)}
+.al.bleu svg{color:var(--bleu)}
+.al .ref{
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;
+  color:var(--faible);display:block;margin-top:3px;
+}
+
+/* ---------- 3 · le devis ---------- */
+.prix{
+  display:flex;flex-direction:column;gap:3px;padding:16px 0 4px;
+  border-bottom:1px solid var(--ligne);
+}
+.prix .lab{
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10.5px;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--faible);
+}
+.prix .n{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(31px,9.4vw,46px);line-height:1.02;letter-spacing:-.035em;
+  color:var(--or-t);font-variant-numeric:tabular-nums;
+}
+.prix .n small{font-size:.46em;font-weight:700;letter-spacing:-.01em;color:var(--or)}
+.prix .n .b{white-space:nowrap}
+.prix .n.plage{font-size:clamp(23px,6.6vw,34px)}
+.prix .sous{color:var(--dim);font-size:13.5px;margin-top:4px}
+
+.lignes{display:flex;flex-direction:column;font-variant-numeric:tabular-nums}
+.lg{display:flex;gap:12px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--ligne)}
+.lg:last-child{border-bottom:0}
+.lg .d{flex:1;min-width:0;font-size:14.5px}
+.lg .d small{display:block;color:var(--faible);font-size:12px;line-height:1.4;margin-top:1px}
+.lg .m{
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:14px;font-weight:500;
+  white-space:nowrap;color:var(--txt);
+}
+.lg.tot{border-top:1px solid var(--ligne2);border-bottom:0;margin-top:2px;padding-top:11px}
+.lg.tot .d{font-weight:700;font-size:15px}
+.lg.tot .m{color:var(--or-t);font-weight:500;font-size:16px}
+.lg.gratuit .m{color:var(--vert-t)}
+
+.faits{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.fait{
+  padding:11px 12px;border-radius:13px;background:var(--surf2);
+  border:1px solid var(--ligne);display:flex;flex-direction:column;gap:2px;
+}
+.fait .k{
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;
+  letter-spacing:.11em;text-transform:uppercase;color:var(--faible);
+}
+.fait .v{font-size:14px;font-weight:600;line-height:1.3}
+.fait .v small{display:block;font-weight:400;font-size:12px;color:var(--dim);margin-top:2px}
+
+.commission{
+  border:1px solid rgba(52,211,153,.34);border-radius:15px;padding:13px 13px 12px;
+  display:flex;flex-direction:column;gap:10px;background:var(--surf2);
+}
+.commission .h{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.commission .h .t{font-weight:700;font-size:14.5px}
+.bascule{
+  display:inline-flex;border:1px solid var(--ligne2);border-radius:999px;
+  padding:2px;gap:2px;margin-left:auto;background:var(--fond2);
+}
+.bascule button{
+  border:0;background:transparent;color:var(--faible);border-radius:999px;
+  padding:6px 15px;font-size:12.5px;font-weight:650;min-height:44px;
+  font-family:'JetBrains Mono',ui-monospace,monospace;
+  transition:background .16s var(--ease),color .16s var(--ease);
+}
+.bascule button[aria-pressed="true"]{background:var(--vert);color:#04120C}
+.commission .gains{display:flex;gap:16px;flex-wrap:wrap;align-items:baseline}
+.commission .gain .n{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:25px;letter-spacing:-.025em;
+  color:var(--vert-t);font-variant-numeric:tabular-nums;line-height:1.1;
+}
+.commission .gain .k{font-size:11.5px;color:var(--faible);margin-top:1px}
+.commission .pied{font-size:12.5px;color:var(--dim);line-height:1.45}
+
+.msg-h{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.msg-h .t{font-weight:700;font-size:14.5px}
+.msg-h .q{font-size:12px;color:var(--faible)}
+textarea.msg{
+  width:100%;min-height:190px;resize:vertical;
+  background:var(--fond2);color:var(--txt);border:1px solid var(--ligne);
+  border-radius:14px;padding:13px 14px;
+  font-family:'JetBrains Mono',ui-monospace,monospace;
+  font-size:12.5px;line-height:1.62;white-space:pre-wrap;
+}
+textarea.msg:focus{outline:none;border-color:var(--bleu)}
+.nom-client{
+  width:100%;background:var(--fond2);color:var(--txt);
+  border:1px solid var(--ligne2);border-radius:12px;padding:11px 13px;
+  font-family:inherit;font-size:15px;min-height:44px;
+}
+.nom-client:focus{outline:none;border-color:var(--bleu)}
+.nom-client::placeholder{color:var(--faible)}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.btn-vert{border-color:var(--vert);color:var(--vert-t)}
+.btn-vert.ok{background:var(--vert);border-color:var(--vert);color:#04120C}
+
+details.interne{border-top:1px solid var(--ligne);padding-top:12px}
+details.interne summary{
+  cursor:pointer;font-weight:650;font-size:14px;list-style:none;
+  display:flex;align-items:center;gap:8px;min-height:44px;
+}
+details.interne summary::-webkit-details-marker{display:none}
+details.interne summary .fl{
+  transition:transform .2s var(--ease);color:var(--faible);display:inline-flex;
+}
+details.interne[open] summary .fl{transform:rotate(90deg)}
+details.interne .corps{display:flex;flex-direction:column;gap:10px;padding-top:11px}
+
+/* ---------- barre collante ---------- */
+.barre{
+  position:fixed;left:0;right:0;bottom:0;z-index:40;
+  padding:10px 15px calc(10px + env(safe-area-inset-bottom,0px));
+  background:color-mix(in srgb,var(--fond) 86%,transparent);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-top:1px solid var(--ligne);
+}
+.barre .in{
+  max-width:640px;margin:0 auto;display:flex;align-items:center;gap:12px;
+}
+.barre .g{flex:1;min-width:0}
+.barre .k{
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--faible);
+}
+.barre .v{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:20px;letter-spacing:-.025em;
+  color:var(--or-t);font-variant-numeric:tabular-nums;line-height:1.2;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.barre .v.plage{font-size:16px}
+.barre .v.vide{color:var(--faible);font-size:14px;font-family:'Inter',sans-serif;font-weight:500;letter-spacing:0}
+.barre a.aller{
+  flex-shrink:0;min-height:44px;padding:0 15px;border-radius:12px;
+  background:linear-gradient(135deg,var(--bleu),var(--violet));color:#fff;
+  font-size:14px;font-weight:650;text-decoration:none;
+  display:inline-flex;align-items:center;gap:7px;
+}
+
+footer{
+  color:var(--faible);font-size:12px;line-height:1.55;text-align:center;
+  padding:6px 4px 0;display:flex;flex-direction:column;gap:5px;
+}
+footer code{
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;color:var(--dim);
+}
+
+@media (max-width:340px){
+  .offres{grid-template-columns:1fr}
+  .faits{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+  html{scroll-behavior:auto}
+}
+</style>
+
+<div class="page">
+
+  <header class="chapeau">
+    <span class="marque"><i class="pastille"></i>NEBULA Agency · outil interne</span>
+    <h1>Ce que le client dit,<br><em>ce que ça coûte.</em></h1>
+    <p class="chapo">Collez sa demande, ou dictez sa note vocale. La grille officielle fait le prix, jamais vous.</p>
+    <span class="source">Barème du <b>30 juillet 2026</b> · socle commercial v2.0</span>
+  </header>
+
+  <!-- ======== 1 · LA PAROLE ======== -->
+  <section class="mvt" id="mvt1">
+    <div class="mvt-h"><span class="num">1</span><h2>Ce que le client demande</h2></div>
+
+    <textarea id="brief" rows="5" spellcheck="false"
+      placeholder="Ex : elle vend des pagnes, elle veut que ses clientes voient les modèles avec les prix et commandent sur WhatsApp…"></textarea>
+
+    <div class="outils">
+      <button type="button" class="btn btn-micro" id="micro" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></svg>
+        <span id="micro-txt">Dicter la note vocale</span>
+      </button>
+      <button type="button" class="btn btn-fant" id="vider">Effacer</button>
+    </div>
+    <p class="note" id="micro-note"></p>
+
+    <div class="exemples">
+      <span class="lab">Ou partez d'un cas réel</span>
+      <button type="button" class="ex" data-ex="1"><b>Une couturière</b> · « Elle vend des pagnes et des sacs, elle veut que ses clientes voient les modèles avec les prix et commandent sur WhatsApp. Elle a une trentaine d'articles. »</button>
+      <button type="button" class="ex" data-ex="2"><b>Un cabinet</b> · « Il veut un vrai site pour être trouvé sur Google, avec ses services, une galerie et les avis de ses clients. Il lui faut aussi une page équipe et une page tarifs. »</button>
+      <button type="button" class="ex" data-ex="3"><b>Trois boutiques</b> · « Il veut suivre son stock chaque jour, connaître ses dettes et ses marges, un tableau de bord avec des graphiques et un rapport automatique par email chaque fin de mois. Cinq personnes vont l'utiliser. »</button>
+    </div>
+  </section>
+
+  <!-- ======== 2 · LA LECTURE ======== -->
+  <section class="mvt eteint" id="mvt2">
+    <div class="mvt-h"><span class="num">2</span><h2>Ce que j'ai compris</h2><span class="aide">corrigez si je me trompe</span></div>
+
+    <div class="surl" id="surlignage"><span class="rien">Les mots qui font le prix s'allumeront ici, dans la phrase du client.</span></div>
+    <div class="legende" id="legende" hidden>
+      <span><i style="background:var(--cyan)"></i>catalogue</span>
+      <span><i style="background:var(--violet)"></i>vitrine</span>
+      <span><i style="background:var(--bleu)"></i>outil métier</span>
+      <span><i style="background:var(--or)"></i>avis Google</span>
+      <span><i style="background:var(--vert)"></i>quantité</span>
+    </div>
+
+    <div class="grp">
+      <span class="t">L'offre · touchez pour corriger</span>
+      <div class="offres" id="offres"></div>
+    </div>
+
+    <div class="grp" id="grp-compteurs" hidden>
+      <span class="t">Les quantités</span>
+      <div class="compteurs" id="compteurs"></div>
+    </div>
+
+    <div class="grp" id="grp-options" hidden>
+      <span class="t">Ce que l'outil doit faire · barème du configurateur</span>
+      <div class="jetons" id="options"></div>
+    </div>
+
+    <div class="alertes" id="alertes"></div>
+  </section>
+
+  <!-- ======== 3 · LE DEVIS ======== -->
+  <section class="mvt eteint" id="mvt3">
+    <div class="mvt-h"><span class="num">3</span><h2>Le devis</h2></div>
+
+    <div class="prix">
+      <span class="lab" id="prix-lab">Mise en service</span>
+      <div class="n" id="prix-n">—</div>
+      <p class="sous" id="prix-sous"></p>
+    </div>
+
+    <div class="lignes" id="lignes"></div>
+    <div class="faits" id="faits"></div>
+
+    <div class="commission">
+      <div class="h">
+        <span class="t">Ce que ça vous rapporte</span>
+        <div class="bascule" role="group" aria-label="Palier de commission">
+          <button type="button" data-taux="30" aria-pressed="true">30 %</button>
+          <button type="button" data-taux="40" aria-pressed="false">40 %</button>
+        </div>
+      </div>
+      <div class="gains">
+        <div class="gain"><div class="n" id="com-n">—</div><div class="k">sur cette vente</div></div>
+        <div class="gain" id="gain-r"><div class="n" id="com-r">—</div><div class="k">tous les 6 mois, à vie</div></div>
+      </div>
+      <p class="pied" id="com-pied"></p>
+    </div>
+
+    <div class="grp">
+      <div class="msg-h">
+        <span class="t">Le message pour le client</span>
+        <span class="q">relisez-le avant d'envoyer</span>
+      </div>
+      <input type="text" class="nom-client" id="nom-client" placeholder="Prénom du client (optionnel)" autocomplete="off">
+      <textarea class="msg" id="msg" spellcheck="false"></textarea>
+      <div class="actions">
+        <button type="button" class="btn btn-vert" id="copier">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          <span id="copier-txt">Copier le message</span>
+        </button>
+        <a class="btn" id="wa" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 20Z"/></svg>
+          Ouvrir WhatsApp
+        </a>
+      </div>
+    </div>
+
+    <details class="interne">
+      <summary>
+        <span class="fl"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+        La fiche pour NEBULA
+      </summary>
+      <div class="corps">
+        <p class="note">Le récapitulatif à transmettre. Il contient votre commission : ne l'envoyez jamais au client.</p>
+        <textarea class="msg" id="fiche" spellcheck="false" style="min-height:160px"></textarea>
+        <div class="actions">
+          <button type="button" class="btn btn-vert" id="copier-fiche">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+            <span id="copier-fiche-txt">Copier la fiche</span>
+          </button>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <footer>
+    <div>Les prix viennent de <code>00-SOCLE-COMMERCIAL.md</code> et du configurateur de <code>nebula-agency.online</code>.</div>
+    <div>Le client paie NEBULA, jamais vous. Aucun prix hors grille, aucune remise décidée seul.</div>
+  </footer>
+</div>
+
+<div class="barre">
+  <div class="in">
+    <div class="g">
+      <div class="k" id="barre-k">Total</div>
+      <div class="v vide" id="barre-v">Rien à chiffrer pour l'instant</div>
+    </div>
+    <a class="aller" href="#mvt3" id="barre-a" hidden>Le devis</a>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ==========================================================================
+   1 · LA GRILLE OFFICIELLE
+   Source : _documents/nebula-agency/vente/00-SOCLE-COMMERCIAL.md (v2.0, 2026-07-30)
+   Les poids de l'outil métier sont ceux du configurateur du site
+   (00-nebula-agency/nebula_agency_v9.html, attributs data-price + var DEVIS).
+   Un chiffre qui change ici doit d'abord changer dans le socle.
+   ========================================================================== */
+
+var G = {
+  catalogue : { nom:'Catalogue Digital + QR Code', prix:50000, inclus:20, lot:15000, lotTaille:10,
+                delai:'5 à 7 jours', paiement:'integral', abo:true },
+  vitrine   : { nom:'Vitrine Digitale + QR Code', prix:150000, page:30000,
+                delai:'5 à 7 jours', paiement:'7030', abo:true, domaine:16000 },
+  outil     : { nom:'Outil Digital sur mesure', base:60000, fmin:0.9, fmax:1.25,
+                plancher:55000, plafond:500000, pas:5000,
+                delai:'selon cadrage', paiement:'7030', abo:false },
+  qr        : { nom:'QR Code Google Review', prix:30000,
+                delai:'quelques jours', paiement:'integral', abo:false },
+  abonnement:20000, aboMois:6, recurrent:4000, diagnostic:25000
+};
+
+/* ==========================================================================
+   2 · CE QUI DÉSIGNE UNE OFFRE
+   `poids` = force du signal. L'offre la plus forte est proposée.
+   ========================================================================== */
+
+var SIGNAUX = [
+  /* --- catalogue --- */
+  {o:'catalogue', p:5, m:['catalogue']},
+  {o:'catalogue', p:4, m:['command*','panier','bon de commande']},
+  {o:'catalogue', p:3, m:['produit*','article*','plat*','modele*','reference*']},
+  {o:'catalogue', p:3, m:['menu','carte des plats','liste de prix','ses prix','les prix','mes prix','voir les prix','afficher les prix']},
+  {o:'catalogue', p:2, m:['vendre en ligne','vente en ligne','acheter en ligne','montrer ce que je vends','montrer ses produits','presenter ses produits']},
+  {o:'catalogue', p:1, m:['boutique','magasin','stock a montrer','qr code','qr']},
+
+  /* --- vitrine --- */
+  {o:'vitrine', p:5, m:['vitrine']},
+  {o:'vitrine', p:4, m:['site web','site internet','un site','son site','mon site','avoir un site','site vitrine']},
+  {o:'vitrine', p:3, m:['google','etre visible','etre trouve','qu on me trouve','qu on le trouve','visibilite','referencement','seo']},
+  {o:'vitrine', p:3, m:['nom de domaine','domaine','point com','com']},
+  {o:'vitrine', p:2, m:['credibilite','credible','serieu*','professionnel*','image de marque','rassurer','confiance']},
+  {o:'vitrine', p:2, m:['galerie','a propos','presentation','se presenter','presenter son entreprise','portfolio','realisation*','temoignage*','avis client*']},
+  {o:'vitrine', p:2, m:['page*']},
+  {o:'vitrine', p:1, m:['entreprise','societe','cabinet','agence','institut','clinique','ecole']},
+
+  /* --- outil métier --- */
+  {o:'outil', p:5, m:['logiciel','tableau de bord','dashboard','cockpit','application mobile','appli mobile']},
+  {o:'outil', p:4, m:['gerer','gestion','pilot*','suivre','suivi','controler','controle']},
+  {o:'outil', p:4, m:['stock*','inventaire','dette*','credit*','creance*','impaye*']},
+  {o:'outil', p:3, m:['caisse','comptabilite','compta','tresorerie','marge*','benefice*','rentabilite','chiffre d affaires','recette*','depense*']},
+  {o:'outil', p:3, m:['facture*','devis','bon de livraison','recu*']},
+  {o:'outil', p:3, m:['rapport*','statistique*','bilan*','graphique*','courbe*','camembert']},
+  {o:'outil', p:3, m:['automatis*','automatique*','base de donnees','tableur','excel']},
+  {o:'outil', p:2, m:['employe*','personnel','equipe','vendeur*','agent*','collaborateur*','salarie*']},
+  {o:'outil', p:2, m:['plusieurs boutiques','plusieurs magasins','succursale*','plusieurs points de vente','deux boutiques','trois boutiques']},
+  {o:'outil', p:2, m:['planning','agenda','rendez vous','reservation*','alerte*','notification*']},
+  {o:'outil', p:2, m:['cahier','carnet','a la main','papier']},
+
+  /* --- QR Google Review --- */
+  {o:'qr', p:6, m:['avis google','google review*','note google','etoiles google','avis sur google','noter sur google','avis en ligne']}
+];
+
+/* ==========================================================================
+   3 · LES OPTIONS DE L'OUTIL MÉTIER
+   `px` = data-price exact du configurateur du site.
+   ========================================================================== */
+
+var OPTIONS = [
+  /* entrée */
+  {id:'photos',   g:'Entrée',     lib:'Images / photos',          px:10000,  m:['photo*','image*','visuel*']},
+  {id:'excel',    g:'Entrée',     lib:'Fichiers Excel',           px:15000,  m:['excel','tableur','csv','google sheet*']},
+  {id:'clients',  g:'Entrée',     lib:'Infos clients',            px:10000,  m:['fichier client*','base client*','infos client*','coordonnees','contacts client*','fidelite']},
+  {id:'videos',   g:'Entrée',     lib:'Vidéos',                   px:30000,  m:['video*']},
+  {id:'import',   g:'Entrée',     lib:'Import de fichier',        px:20000,  m:['importer','import','charger un fichier','televerser']},
+  {id:'connex',   g:'Entrée',     lib:'Connexion à un outil',     px:45000,  m:['connect*','integrer','integration','api','synchronis*','relier','brancher']},
+  {id:'saisie',   g:'Entrée',     lib:'Les clients renseignent',  px:35000,  m:['formulaire','les clients remplissent','ils remplissent','remplissent eux memes','saisissent eux memes','s inscrivent']},
+  {id:'semaine',  g:'Entrée',     lib:'Données chaque semaine',   px:15000,  m:['chaque semaine','toutes les semaines','hebdomadaire','par semaine']},
+  {id:'jour',     g:'Entrée',     lib:'Données chaque jour',      px:30000,  m:['chaque jour','tous les jours','quotidien*','journalier','en temps reel','au jour le jour']},
+  {id:'vol-moy',  g:'Entrée',     lib:'Volume moyen',             px:15000,  m:['centaines','une centaine','quelques centaines']},
+  {id:'vol-grd',  g:'Entrée',     lib:'Gros volume',              px:35000,  m:['milliers','beaucoup de donnees','gros volume','enorme','des milliers']},
+
+  /* traitement */
+  {id:'calculs',  g:'Traitement', lib:'Calculs automatiques',     px:20000,  m:['calcul*','additionner','total automatique','somme automatique','compter automatiquement']},
+  {id:'graph',    g:'Traitement', lib:'Graphiques / visuels',     px:25000,  m:['graphique*','courbe*','camembert','diagramme*','histogramme*']},
+  {id:'ia',       g:'Traitement', lib:'Analyse écrite par IA',    px:60000,  m:['intelligence artificielle','analyse ecrite','conseil automatique','qui me conseille','assistant','chatgpt','ia']},
+  {id:'tri',      g:'Traitement', lib:'Classement / tri',         px:20000,  m:['class*','trier','tri','ranger','ordonner']},
+  {id:'envoi',    g:'Traitement', lib:'Envoi automatique',        px:45000,  m:['envoi automatique','envoyer automatiquement','rappel automatique','relance automatique','notification*','sms automatique','message automatique','alerte automatique']},
+  {id:'docs',     g:'Traitement', lib:'Génération de documents',  px:30000,  m:['generer un document','bon de livraison','recu*','attestation*','pdf','imprimer un document','editer un document']},
+  {id:'recherche',g:'Traitement', lib:'Recherche / filtrage',     px:20000,  m:['rechercher','recherche','filtr*','retrouver']},
+  {id:'facture',  g:'Traitement', lib:'Factures normalisées & devis', px:120000, m:['facture normalisee*','facture certifiee*','mecef','e mecef','dgi','norme fiscale','facture aux normes','facture legale']},
+
+  /* niveau */
+  {id:'niv-int',  g:'Niveau',     lib:'Niveau intermédiaire',     px:30000,  m:[]},
+  {id:'niv-av',   g:'Niveau',     lib:'Niveau avancé (IA)',       px:90000,  m:[]},
+
+  /* intégrations */
+  {id:'telegram', g:'Connexions', lib:'Telegram',                 px:45000,  m:['telegram']},
+  {id:'email',    g:'Connexions', lib:'Email',                    px:20000,  m:['email','e mail','mail','courriel']},
+
+  /* sortie */
+  {id:'doc',      g:'Sortie',     lib:'Document PDF / Word',      px:30000,  m:['word','document a telecharger','export*','telecharger un document']},
+  {id:'tdb',      g:'Sortie',     lib:'Tableau de bord',          px:100000, m:['tableau de bord','dashboard','ecran de suivi','vue d ensemble']},
+  {id:'cockpit',  g:'Sortie',     lib:'Cockpit tout-en-un',       px:180000, m:['cockpit','poste de pilotage','tout sur un seul ecran','tout en un','tout au meme endroit']},
+  {id:'site',     g:'Sortie',     lib:'Site / vitrine liée',      px:70000,  m:['avec un site','plus un site','et un site','site vitrine aussi']},
+  {id:'rapport',  g:'Sortie',     lib:'Rapport auto par email',   px:50000,  m:['rapport automatique','rapport chaque mois','rapport par email','bilan mensuel','rapport mensuel','rapport chaque semaine','rapport chaque fin de mois']},
+  {id:'appli',    g:'Sortie',     lib:'Application mobile',       px:300000, m:['application mobile','appli mobile','play store','app store','application telephone','application android','android','ios']},
+
+  /* qui consulte */
+  {id:'v-equipe', g:'Qui consulte', lib:'Son équipe',             px:20000,  m:['mon equipe','son equipe','mes employe*','ses employe*','mes vendeur*','ses vendeur*','mon personnel','son personnel','mes agent*']},
+  {id:'v-client', g:'Qui consulte', lib:'Ses clients',            px:30000,  m:['mes clients puissent','ses clients puissent','mes clients voient','ses clients voient','acces client*','espace client*']},
+  {id:'v-part',   g:'Qui consulte', lib:'Partenaires / investisseurs', px:15000, m:['investisseur*','bailleur*','actionnaire*','sa banque','ma banque']},
+
+  /* finition */
+  {id:'fin-pro',  g:'Finition',   lib:'Finition professionnelle', px:25000,  m:['soigne*','propre','bien fait','presentable']},
+  {id:'fin-prem', g:'Finition',   lib:'Finition premium',         px:70000,  m:['premium','haut de gamme','luxe','luxueu*','tres beau','impressionnant','magnifique']},
+
+  /* utilisateurs et délai */
+  {id:'u-2a5',    g:'Détails',    lib:'2 à 5 utilisateurs',       px:20000,  m:[]},
+  {id:'u-plus',   g:'Détails',    lib:'Plus de 5 utilisateurs',   px:45000,  m:[]},
+  {id:'urgent',   g:'Détails',    lib:'Délai urgent',             px:40000,  m:['urgent*','presse','au plus vite','rapidement','le plus vite','cette semaine','dans trois jours','dans 3 jours','avant la fin de la semaine']}
+];
+
+/* signaux de prudence : ils ne coûtent rien, ils changent le conseil */
+var PRUDENCE = ['pas cher','moins cher','petit budget','budget serre','je debute','il debute','elle debute','je commence','il commence','elle commence','pas beaucoup d argent','pas les moyens','trop cher','reduire','remise','reduction','rabais','negocier'];
+var PREMIER_GOOGLE = ['premier sur google','premiere page','numero un sur google','etre premier','top de google','en tete de google'];
+
+/* les preuves à montrer, par métier (socle §10) */
+var SECTEURS = [
+  {mots:['restaurant','plat*','menu','cuisine','braise','grillade*','patisserie*','gateau*','traiteur','maquis','fast food','snack'],
+   preuve:'Au Braisé d’Or · au-braise-dor.pages.dev', quoi:'un menu de 48 plats commandables'},
+  {mots:['institut','beaute','coiffure','esthetique','spa','ongle*','maquillage','cosmetique','soin*','massage','salon'],
+   preuve:'Grain d’Esthétique · graindesthetique.com', quoi:'une vitrine avec prise de rendez-vous'},
+  {mots:['bijou*','joaillerie','orfevre*','couture','pagne*','tissu*','vetement*','chaussure*','tailleur','styliste','pret a porter'],
+   preuve:'Djambar Team · djambarteam.com', quoi:'une vitrine haut de gamme, multi-pages'},
+  {mots:['vin*','champagne*','boisson*','alcool','cave','whisky*','spiritueux','biere*','liqueur*'],
+   preuve:'Speed × Weinkeller · speed-weinkeller.pages.dev', quoi:'un catalogue de 60 fiches produits'},
+  {mots:['meuble*','bois massif','ebenisterie','menuiserie','mobilier','etagere*','ameublement'],
+   preuve:'HH Design · hh-design.pages.dev', quoi:'une vitrine avec fiches produit et devis'},
+  {mots:['photograph*','evenementiel','mariage*','video*','studio','communication'],
+   preuve:'Djambar Team · djambarteam.com', quoi:'les pôles communication et événementiel'}
+];
+
+/* ==========================================================================
+   4 · LIRE LE TEXTE
+   Normalisation caractère par caractère : la chaîne normalisée garde
+   exactement la longueur de l'originale, donc un index trouvé dans l'une
+   pointe le même mot dans l'autre. C'est ce qui permet le surlignage.
+   ========================================================================== */
+
+var REMPL = {'œ':'o','Œ':'o','æ':'a','Æ':'a','ß':'s'};
+
+function normaliser(txt){
+  var out = '';
+  for (var i = 0; i < txt.length; i++){
+    var c = txt[i];
+    if (REMPL[c]) { out += REMPL[c]; continue; }
+    var d = c.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    d = (d.charAt(0) || ' ').toLowerCase();
+    out += /[a-z0-9]/.test(d) ? d : ' ';
+  }
+  return out;
+}
+
+/* « produit* » -> /[^a-z0-9]produit[a-z0-9]*[^a-z0-9]/ sur la chaîne bordée d'espaces */
+var cacheRx = {};
+function motRegex(mot){
+  if (cacheRx[mot]) { cacheRx[mot].lastIndex = 0; return cacheRx[mot]; }
+  /* ⚠️ L'étoile se retire AVANT la normalisation : `normaliser` la changerait
+     en espace, et « produit* » ne trouverait plus « produits ». */
+  var corps = mot.trim()
+    .split(/\s+/)
+    .map(function(t){
+      var etoile = t.charAt(t.length - 1) === '*';
+      if (etoile) t = t.slice(0, -1);
+      var n = normaliser(t).trim().split(/\s+/).filter(Boolean).join('[^a-z0-9]+');
+      if (!n) return '';
+      return etoile ? n + '[a-z0-9]*' : n;
+    })
+    .filter(Boolean)
+    .join('[^a-z0-9]+');
+  var rx = new RegExp('[^a-z0-9](' + corps + ')[^a-z0-9]', 'g');
+  cacheRx[mot] = rx;
+  return rx;
+}
+
+/* rend toutes les occurrences : {debut, fin} en index du texte ORIGINAL */
+function trouver(norme, mot){
+  var borde = ' ' + norme + ' ';
+  var rx = motRegex(mot), res = [], m;
+  while ((m = rx.exec(borde)) !== null){
+    res.push({ debut: m.index, fin: m.index + m[0].length - 2 });  /* -2 : les bornes */
+    rx.lastIndex = m.index + 1;                                     /* chevauchements */
+  }
+  return res;
+}
+
+var CHIFFRES = {un:1,une:1,deux:2,trois:3,quatre:4,cinq:5,six:6,sept:7,huit:8,neuf:9,dix:10,onze:11,douze:12,treize:13,quatorze:14,quinze:15,seize:16,vingt:20,trentaine:30,vingtaine:20,quarantaine:40,cinquantaine:50,centaine:100,trente:30,quarante:40,cinquante:50,soixante:60,cent:100,mille:1000};
+
+/* un nombre + un mot d'unité : « 30 articles », « une trentaine de modèles », « cinq personnes » */
+function quantite(norme, unites){
+  var borde = ' ' + norme + ' ';
+  var noms = Object.keys(CHIFFRES).join('|');
+  var u = unites.map(function(t){ return t.replace(/\*/g, '[a-z0-9]*'); }).join('|');
+  var rx = new RegExp('[^a-z0-9](\\d{1,5}|' + noms + ')[^a-z0-9]+(?:de[^a-z0-9]+|d[^a-z0-9]+)?(?:' + u + ')[^a-z0-9]', 'g');
+  var m, meilleur = null;
+  while ((m = rx.exec(borde)) !== null){
+    var brut = m[1];
+    var n = /^\d+$/.test(brut) ? parseInt(brut, 10) : CHIFFRES[brut];
+    if (!n) continue;
+    var trouvaille = { n:n, debut:m.index, fin:m.index + m[0].length - 2 };
+    if (!meilleur || n > meilleur.n) meilleur = trouvaille;
+    rx.lastIndex = m.index + 1;
+  }
+  return meilleur;
+}
+
+/* ==========================================================================
+   5 · L'ÉTAT
+   `auto` = ce que la lecture propose · `main` = ce que le partenaire corrige.
+   La correction manuelle gagne toujours, et survit à une nouvelle lecture.
+   ========================================================================== */
+
+var E = {
+  brief:'', norme:'',
+  offresAuto:{}, offresMain:{},
+  optionsAuto:{}, optionsMain:{},
+  produits:20, produitsAuto:20,
+  pages:1, pagesAuto:1,
+  users:1, usersAuto:1,
+  marques:[], prudent:false, premierGoogle:false, secteur:null,
+  taux:30, nomClient:''
+};
+
+function offreActive(id){
+  return E.offresMain.hasOwnProperty(id) ? E.offresMain[id] : !!E.offresAuto[id];
+}
+function optionActive(id){
+  return E.optionsMain.hasOwnProperty(id) ? E.optionsMain[id] : !!E.optionsAuto[id];
+}
+function offresChoisies(){
+  return ['catalogue','vitrine','outil','qr'].filter(offreActive);
+}
+
+/* ==========================================================================
+   6 · LA LECTURE
+   ========================================================================== */
+
+function lire(){
+  var t = E.brief;
+  E.norme = normaliser(t);
+  var marques = [];
+  var scores = { catalogue:0, vitrine:0, outil:0, qr:0 };
+
+  SIGNAUX.forEach(function(s){
+    s.m.forEach(function(mot){
+      trouver(E.norme, mot).forEach(function(pos){
+        scores[s.o] += s.p;
+        marques.push({ debut:pos.debut, fin:pos.fin, type:s.o });
+      });
+    });
+  });
+
+  var opt = {};
+  OPTIONS.forEach(function(o){
+    o.m.forEach(function(mot){
+      var hits = trouver(E.norme, mot);
+      if (hits.length){
+        opt[o.id] = true;
+        hits.forEach(function(pos){ marques.push({ debut:pos.debut, fin:pos.fin, type:'outil' }); });
+      }
+    });
+  });
+
+  /* le niveau se déduit, il ne se dit pas */
+  if (opt.ia) opt['niv-av'] = true;
+  else if (opt.calculs || opt.graph || opt.tdb || opt.cockpit) opt['niv-int'] = true;
+
+  /* les quantités */
+  var qProd = quantite(E.norme, ['produit*','article*','reference*','plat*','modele*','piece*','item*']);
+  var qPage = quantite(E.norme, ['page*','rubrique*','onglet*']);
+  var qUser = quantite(E.norme, ['personne*','employe*','utilisateur*','vendeur*','agent*','collaborateur*','salarie*']);
+  [qProd, qPage, qUser].forEach(function(q){
+    if (q) marques.push({ debut:q.debut, fin:q.fin, type:'qte' });
+  });
+
+  E.produitsAuto = qProd ? Math.max(1, qProd.n) : G.catalogue.inclus;
+  E.usersAuto    = qUser ? Math.max(1, qUser.n) : 1;
+
+  /* Les pages se comptent rarement à voix haute. « 4 pages » se lit tel quel ;
+     « une page équipe et une page tarifs » ne dit pas 1, il dit deux pages
+     nommées EN PLUS de l'accueil. Une seule mention reste ambiguë : on garde 1,
+     le partenaire ajuste au compteur. */
+  var mentionsPage = trouver(E.norme, 'page*').length;
+  if (qPage && qPage.n >= 2) E.pagesAuto = qPage.n;
+  else if (mentionsPage >= 2) E.pagesAuto = 1 + mentionsPage;
+  else E.pagesAuto = 1;
+
+  if (qUser){
+    if (qUser.n > 5) opt['u-plus'] = true;
+    else if (qUser.n >= 2) opt['u-2a5'] = true;
+  }
+
+  /* prudence, promesse Google, secteur */
+  E.prudent = PRUDENCE.some(function(m){ return trouver(E.norme, m).length > 0; });
+  E.premierGoogle = PREMIER_GOOGLE.some(function(m){ return trouver(E.norme, m).length > 0; });
+  E.secteur = null;
+  for (var i = 0; i < SECTEURS.length && !E.secteur; i++){
+    for (var j = 0; j < SECTEURS[i].mots.length; j++){
+      if (trouver(E.norme, SECTEURS[i].mots[j]).length){ E.secteur = SECTEURS[i]; break; }
+    }
+  }
+
+  /* l'offre : la plus forte l'emporte, le QR s'ajoute seul */
+  var principale = null, meilleur = 0;
+  ['catalogue','vitrine','outil'].forEach(function(o){
+    if (scores[o] > meilleur){ meilleur = scores[o]; principale = o; }
+  });
+  var seuil = 3;
+  E.offresAuto = {};
+  if (principale && scores[principale] >= seuil) E.offresAuto[principale] = true;
+  if (scores.qr >= 6) E.offresAuto.qr = true;
+  E.scores = scores;
+
+  E.optionsAuto = opt;
+  E.marques = fusionner(marques);
+}
+
+/* deux mots surlignés ne peuvent pas se chevaucher : le plus long gagne */
+function fusionner(liste){
+  liste.sort(function(a,b){ return a.debut - b.debut || (b.fin - b.debut) - (a.fin - a.debut); });
+  var out = [];
+  liste.forEach(function(m){
+    if (m.fin <= m.debut) return;
+    var dernier = out[out.length - 1];
+    if (dernier && m.debut < dernier.fin){
+      if (m.fin > dernier.fin && m.debut >= dernier.debut) return;
+      return;
+    }
+    out.push(m);
+  });
+  return out;
+}
+
+/* ==========================================================================
+   7 · LE CALCUL
+   ========================================================================== */
+
+function arrondi(n){ return Math.round(n / G.outil.pas) * G.outil.pas; }
+function borner(n){ return Math.max(G.outil.plancher, Math.min(n, G.outil.plafond)); }
+
+function calculer(){
+  var choisies = offresChoisies();
+  var lignes = [], total = 0, abo = false, domaine = false;
+  var fourchette = null;
+
+  if (choisies.indexOf('catalogue') >= 0){
+    lignes.push({ t:G.catalogue.nom, s:'Jusqu’à ' + G.catalogue.inclus + ' produits, commande sur WhatsApp, QR code', m:G.catalogue.prix });
+    total += G.catalogue.prix;
+    var sup = Math.max(0, E.produits - G.catalogue.inclus);
+    var lots = Math.ceil(sup / G.catalogue.lotTaille);
+    if (lots > 0){
+      var mLots = lots * G.catalogue.lot;
+      lignes.push({ t:lots + ' lot' + (lots > 1 ? 's' : '') + ' de ' + G.catalogue.lotTaille + ' produits en plus',
+                    s:E.produits + ' produits au total', m:mLots });
+      total += mLots;
+    }
+    abo = true;
+  }
+
+  if (choisies.indexOf('vitrine') >= 0){
+    lignes.push({ t:G.vitrine.nom, s:'Une page complète : accueil, services, galerie, avis, contact, carte', m:G.vitrine.prix });
+    total += G.vitrine.prix;
+    var pagesSup = Math.max(0, E.pages - 1);
+    if (pagesSup > 0){
+      var mPages = pagesSup * G.vitrine.page;
+      lignes.push({ t:pagesSup + ' page' + (pagesSup > 1 ? 's' : '') + ' supplémentaire' + (pagesSup > 1 ? 's' : ''),
+                    s:E.pages + ' pages au total', m:mPages });
+      total += mPages;
+    }
+    lignes.push({ t:'Nom de domaine personnalisé', s:'Offert la 1re année, puis ' + fr(G.vitrine.domaine) + ' F par an', m:0, gratuit:true });
+    abo = true; domaine = true;
+  }
+
+  if (choisies.indexOf('outil') >= 0){
+    var somme = G.outil.base, retenues = [];
+    OPTIONS.forEach(function(o){
+      if (optionActive(o.id)){ somme += o.px; retenues.push(o); }
+    });
+    fourchette = { min:borner(arrondi(somme * G.outil.fmin)), max:borner(arrondi(somme * G.outil.fmax)),
+                   brut:somme, options:retenues };
+    if (fourchette.min > fourchette.max) fourchette.min = fourchette.max;
+    lignes.push({ t:G.outil.nom,
+                  s:'Base de conception ' + frFD(G.outil.base) + (retenues.length ? ' · ' + retenues.length + ' option' + (retenues.length > 1 ? 's' : '') + ' retenue' + (retenues.length > 1 ? 's' : '') : ''),
+                  m:null, plage:fourchette });
+    total += fourchette.min;
+  }
+
+  if (choisies.indexOf('qr') >= 0){
+    lignes.push({ t:G.qr.nom, s:'Les avis Google de ses clients, sans effort · sans abonnement', m:G.qr.prix });
+    total += G.qr.prix;
+  }
+
+  /* paiement : intégral seulement si tout ce qui est vendu se règle intégral */
+  var paiement = 'integral';
+  choisies.forEach(function(o){ if (G[o].paiement === '7030') paiement = '7030'; });
+
+  /* délai : le plus long l'emporte */
+  var delai = '5 à 7 jours';
+  if (choisies.length === 1 && choisies[0] === 'qr') delai = 'quelques jours';
+  if (choisies.indexOf('outil') >= 0) delai = choisies.length > 1 ? '5 à 7 jours · outil selon cadrage' : 'fixé au cadrage';
+
+  var totalMax = fourchette ? (total - fourchette.min + fourchette.max) : total;
+
+  return { choisies:choisies, lignes:lignes, total:total, totalMax:totalMax,
+           abo:abo, domaine:domaine, paiement:paiement, delai:delai, fourchette:fourchette };
+}
+
+/* ==========================================================================
+   8 · LES GARDE-FOUS  (socle §6 · « ce qu'un partenaire ne promet JAMAIS »)
+   ========================================================================== */
+
+function alertes(d){
+  var a = [];
+
+  if (d.choisies.length > 1 && d.choisies.filter(function(o){ return o !== 'qr'; }).length > 1){
+    a.push({ ton:'or', t:'Deux offres d’un coup font perdre les deux.',
+             c:'Le socle dit d’entrer par le Catalogue : un commerçant méfiant dit oui à 50 000 F, pas à 150 000 F le premier jour. Vendez la marche du bas, la suivante se vend presque seule.',
+             r:'socle §1.3 · l’escalier' });
+  }
+
+  if (E.prudent && (d.choisies.indexOf('vitrine') >= 0 || d.choisies.indexOf('outil') >= 0)){
+    a.push({ ton:'or', t:'Il a parlé d’argent. Dans le doute, vendez le Catalogue.',
+             c:'Une vente à 50 000 F qui ouvre la porte vaut infiniment mieux qu’un refus à 150 000 F qui la ferme. Vous reviendrez pour la Vitrine.',
+             r:'guide vitrine §5' });
+  }
+
+  if (d.choisies.indexOf('outil') >= 0){
+    a.push({ ton:'bleu', t:'Sur l’Outil, cette fourchette n’est pas un prix ferme.',
+             c:'Le devis se ferme au cadrage avec Mongazi. Annoncez-la comme le fait le configurateur du site : « fourchette indicative, devis confirmé après un court échange ». Ne calculez jamais un prix de tête.',
+             r:'socle §6.12' });
+  }
+
+  if (optionActive('facture') && d.choisies.indexOf('outil') >= 0){
+    a.push({ ton:'rouge', t:'Ne promettez jamais la facture normalisée comme acquise.',
+             c:'Au Bénin cela veut dire conforme DGI (e-MECeF). C’est une capacité vendable, mais la conformité s’étudie au cas par cas.',
+             r:'socle §6.4' });
+  }
+
+  if (E.premierGoogle){
+    a.push({ ton:'rouge', t:'Jamais « vous serez premier sur Google ».',
+             c:'On optimise, on ne garantit aucune position. Dites : « vous existerez sur Google, avec vos vraies informations ».',
+             r:'socle §6.2' });
+  }
+
+  if (optionActive('urgent') || trouver(E.norme, 'demain').length || trouver(E.norme, 'aujourd hui').length){
+    a.push({ ton:'rouge', t:'Jamais un délai plus court que 5 à 7 jours.',
+             c:'Même sous la pression. Le délai tenu vaut mieux que le délai promis, et il court à partir du brief complet et du paiement.',
+             r:'socle §6.1' });
+  }
+
+  if (E.prudent && trouver(E.norme, 'remise').length + trouver(E.norme, 'reduction').length + trouver(E.norme, 'negocier').length > 0){
+    a.push({ ton:'rouge', t:'Aucune remise décidée seul, aucun prix hors grille.',
+             c:'Toute demande de geste commercial remonte à NEBULA. C’est ce qui protège votre commission autant que le prix.',
+             r:'socle §6.3' });
+  }
+
+  if (E.secteur && d.choisies.length){
+    a.push({ ton:'bleu', t:'La preuve à lui montrer : ' + E.secteur.preuve,
+             c:'Il y verra ' + E.secteur.quoi + '. Montrer un site livré répond à la méfiance mieux que n’importe quel argument.',
+             r:'socle §10' });
+  }
+
+  return a;
+}
+
+/* ==========================================================================
+   9 · LES MOTS DU DEVIS
+   ========================================================================== */
+
+function fr(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+function frF(n){ return fr(n) + ' F'; }
+/* À l'écran, un montant ne se coupe jamais entre le millier et la centaine :
+   « 60 / 000 F » sur deux lignes se lit comme deux nombres. Les textes copiés
+   gardent l'espace normale, eux, pour ne rien casser dans WhatsApp. */
+var NB = '\u00A0';
+function frD(n){ return fr(n).replace(/ /g, NB); }
+function frFD(n){ return frD(n) + NB + 'F'; }
+
+function texteClient(d){
+  var nom = E.nomClient.trim();
+  var L = [];
+  L.push(nom ? 'Bonjour ' + nom + ',' : 'Bonjour,');
+  L.push('');
+  L.push('Voici ce que je vous propose, suite à notre échange.');
+  L.push('');
+
+  if (d.choisies.indexOf('catalogue') >= 0){
+    var sup = Math.max(0, E.produits - G.catalogue.inclus);
+    var lots = Math.ceil(sup / G.catalogue.lotTaille);
+    var pCat = G.catalogue.prix + lots * G.catalogue.lot;
+    L.push('CATALOGUE DIGITAL + QR CODE — ' + frF(pCat));
+    L.push(lots > 0
+      ? '· Vos ' + E.produits + ' produits, chacun avec sa photo, sa description et son prix'
+      : '· Vos produits, jusqu’à ' + G.catalogue.inclus + ', chacun avec sa photo, sa description et son prix');
+    L.push('· Un bouton de commande qui arrive directement sur votre WhatsApp');
+    L.push('· Votre QR code à imprimer et à coller dans la boutique');
+    L.push('· Livré en 5 à 7 jours');
+    L.push('');
+  }
+
+  if (d.choisies.indexOf('vitrine') >= 0){
+    var pagesSup = Math.max(0, E.pages - 1);
+    var pVit = G.vitrine.prix + pagesSup * G.vitrine.page;
+    L.push('VITRINE DIGITALE + QR CODE — ' + frF(pVit));
+    L.push('· ' + (E.pages > 1 ? E.pages + ' pages complètes' : 'Une page complète') + ' : accueil, présentation, services, galerie photos et vidéos, avis clients, contact et carte');
+    L.push('· Votre nom de domaine personnalisé, offert la première année');
+    L.push('· Votre présence sur Google, avec vos vraies informations');
+    L.push('· Livrée en 5 à 7 jours');
+    L.push('');
+  }
+
+  if (d.choisies.indexOf('outil') >= 0){
+    var f = d.fourchette;
+    L.push('OUTIL DIGITAL SUR MESURE — ' + fr(f.min) + ' à ' + frF(f.max));
+    if (f.options.length){
+      f.options.slice(0, 8).forEach(function(o){ L.push('· ' + o.lib); });
+    }
+    L.push('· Fourchette indicative : le devis est confirmé après un court échange de cadrage, sans engagement');
+    L.push('');
+  }
+
+  if (d.choisies.indexOf('qr') >= 0){
+    L.push('QR CODE GOOGLE REVIEW — ' + frF(G.qr.prix));
+    L.push('· Vos clients laissent leur avis Google en scannant, sans rien chercher');
+    L.push('· Sans abonnement');
+    L.push('');
+  }
+
+  if (d.choisies.length > 1){
+    L.push(d.fourchette ? 'TOTAL : à partir de ' + frF(d.total) : 'TOTAL : ' + frF(d.total));
+    L.push('');
+  }
+
+  if (d.abo){
+    L.push('Ensuite : ' + frF(G.abonnement) + ' tous les 6 mois, soit environ 3 300 F par mois.');
+    L.push('Cela couvre l’hébergement, la sécurité et vos modifications de contenu : changer un prix, ajouter un produit, remplacer une photo, c’est compris.');
+    L.push('');
+  }
+  if (d.domaine){
+    L.push('Le nom de domaine est offert la première année, puis ' + frF(G.vitrine.domaine) + ' par an.');
+    L.push('');
+  }
+
+  L.push(d.paiement === 'integral'
+    ? 'Règlement intégral au démarrage, à NEBULA Agency.'
+    : 'Règlement : 70 % au démarrage, 30 % à la mise en ligne, à NEBULA Agency.');
+  L.push('Mobile Money ou virement bancaire, comme vous préférez.');
+  L.push('');
+  L.push('Dites-moi si c’est clair, et on démarre quand vous êtes prêt.');
+  return L.join('\n');
+}
+
+function texteFiche(d){
+  var maintenant = new Date();
+  var date = maintenant.toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric' });
+  var L = [];
+  L.push('DEVIS NEBULA — ' + (E.nomClient.trim() || 'client à nommer') + ' — ' + date);
+  L.push('');
+  d.lignes.forEach(function(l){
+    if (l.plage) L.push('· ' + l.t + ' : ' + fr(l.plage.min) + ' à ' + frF(l.plage.max));
+    else if (l.gratuit) L.push('· ' + l.t + ' : offert la 1re année');
+    else L.push('· ' + l.t + ' : ' + frF(l.m));
+  });
+  L.push('');
+  L.push('MISE EN SERVICE : ' + (d.fourchette ? fr(d.total) + ' à ' + frF(d.totalMax) : frF(d.total)));
+  if (d.abo) L.push('ABONNEMENT : ' + frF(G.abonnement) + ' / 6 mois, modifications comprises');
+  L.push('PAIEMENT : ' + (d.paiement === 'integral' ? 'intégral' : '70 % au démarrage (' + frF(Math.round(d.total * 0.7)) + '), 30 % à la mise en ligne (' + frF(d.total - Math.round(d.total * 0.7)) + ')'));
+  L.push('DÉLAI : ' + d.delai);
+  L.push('');
+  L.push('MA COMMISSION : ' + frF(d.total * 0.30) + ' à 30 % · ' + frF(d.total * 0.40) + ' à 40 %');
+  if (d.abo) L.push('RÉCURRENT : ' + frF(G.recurrent) + ' tous les 6 mois, à vie');
+
+  if (d.fourchette && d.fourchette.options.length){
+    L.push('');
+    L.push('OPTIONS RETENUES (configurateur) :');
+    d.fourchette.options.forEach(function(o){ L.push('  · ' + o.g + ' — ' + o.lib + ' : ' + frF(o.px)); });
+    L.push('  Base ' + frF(G.outil.base) + ' · brut ' + frF(d.fourchette.brut) + ' · fourchette ×0,9 / ×1,25');
+  }
+
+  if (E.secteur) { L.push(''); L.push('PREUVE À MONTRER : ' + E.secteur.preuve); }
+  L.push('');
+  L.push('CE QU’IL A DIT :');
+  L.push('« ' + E.brief.trim() + ' »');
+  return L.join('\n');
+}
+
+/* ==========================================================================
+   10 · L'AFFICHAGE
+   ========================================================================== */
+
+var $ = function(id){ return document.getElementById(id); };
+var LIB = { catalogue:'Catalogue', vitrine:'Vitrine', outil:'Outil métier', qr:'Avis Google' };
+var PX  = { catalogue:'50\u00A0000\u00A0F', vitrine:'150\u00A0000\u00A0F',
+            outil:'55\u00A0000 – 500\u00A0000\u00A0F', qr:'30\u00A0000\u00A0F' };
+var COCHE = '<span class="coche"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 13 4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+
+function echapper(s){
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function rendreSurlignage(){
+  var el = $('surlignage');
+  if (!E.brief.trim()){
+    el.innerHTML = '<span class="rien">Les mots qui font le prix s’allumeront ici, dans la phrase du client.</span>';
+    $('legende').hidden = true;
+    return;
+  }
+  var html = '', pos = 0;
+  E.marques.forEach(function(m){
+    if (m.debut < pos) return;
+    html += echapper(E.brief.slice(pos, m.debut));
+    html += '<mark class="m-' + m.type + '">' + echapper(E.brief.slice(m.debut, m.fin)) + '</mark>';
+    pos = m.fin;
+  });
+  html += echapper(E.brief.slice(pos));
+  el.innerHTML = html;
+  $('legende').hidden = E.marques.length === 0;
+}
+
+function rendreOffres(){
+  var h = ['catalogue','vitrine','outil','qr'].map(function(o){
+    var on = offreActive(o);
+    return '<button type="button" class="offre o-' + o + '" data-offre="' + o + '" aria-pressed="' + on + '">'
+      + COCHE
+      + '<span class="t">' + LIB[o] + '</span>'
+      + '<span class="p">' + PX[o] + '</span>'
+      + '</button>';
+  }).join('');
+  $('offres').innerHTML = h;
+}
+
+function rendreCompteurs(){
+  var ch = offresChoisies(), l = [];
+  if (ch.indexOf('catalogue') >= 0)
+    l.push({ k:'produits', nm:'Produits au catalogue', sd:'20 compris · +' + frFD(G.catalogue.lot) + ' par lot de 10', v:E.produits, min:1, pas:5 });
+  if (ch.indexOf('vitrine') >= 0)
+    l.push({ k:'pages', nm:'Pages du site', sd:'1 comprise · +' + frFD(G.vitrine.page) + ' par page', v:E.pages, min:1, pas:1 });
+  if (ch.indexOf('outil') >= 0)
+    l.push({ k:'users', nm:'Personnes qui l’utilisent', sd:'2 à 5 : +' + frFD(20000) + ' · plus de 5 : +' + frFD(45000), v:E.users, min:1, pas:1 });
+
+  $('grp-compteurs').hidden = l.length === 0;
+  $('compteurs').innerHTML = l.map(function(c){
+    return '<div class="cpt"><div class="info"><div class="nm">' + c.nm + '</div><div class="sd">' + c.sd + '</div></div>'
+      + '<div class="pas">'
+      + '<button type="button" data-cpt="' + c.k + '" data-d="-1" aria-label="Moins"' + (c.v <= c.min ? ' disabled' : '') + '>−</button>'
+      + '<span class="v">' + c.v + '</span>'
+      + '<button type="button" data-cpt="' + c.k + '" data-d="1" aria-label="Plus">+</button>'
+      + '</div></div>';
+  }).join('');
+}
+
+function rendreOptions(){
+  var actif = offreActive('outil');
+  $('grp-options').hidden = !actif;
+  if (!actif) return;
+  var groupes = [], vus = {};
+  OPTIONS.forEach(function(o){ if (!vus[o.g]){ vus[o.g] = true; groupes.push(o.g); } });
+  $('options').innerHTML = groupes.map(function(g){
+    var jetons = OPTIONS.filter(function(o){ return o.g === g; }).map(function(o){
+      var on = optionActive(o.id);
+      return '<button type="button" class="jeton" data-opt="' + o.id + '" aria-pressed="' + on + '">'
+        + o.lib + '<span class="px">+' + frD(o.px) + '</span></button>';
+    }).join('');
+    return '<div class="grp" style="width:100%"><span class="t">' + g + '</span><div class="jetons">' + jetons + '</div></div>';
+  }).join('');
+}
+
+function rendreAlertes(d){
+  var a = alertes(d);
+  var ico = {
+    rouge:'<path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/>',
+    or:'<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/>',
+    bleu:'<circle cx="12" cy="12" r="9"/><path d="M12 16v-4"/><path d="M12 8h.01"/>'
+  };
+  $('alertes').innerHTML = a.map(function(x){
+    return '<div class="al ' + x.ton + '">'
+      + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ico[x.ton] + '</svg>'
+      + '<div><b>' + x.t + '</b> ' + x.c + '<span class="ref">' + x.r + '</span></div></div>';
+  }).join('');
+}
+
+function rendreDevis(d){
+  var vide = d.choisies.length === 0;
+  $('mvt2').classList.toggle('eteint', !E.brief.trim() && vide);
+  $('mvt3').classList.toggle('eteint', vide);
+
+  if (vide){
+    $('prix-n').textContent = '—';
+    $('prix-sous').textContent = 'Choisissez au moins une offre.';
+    $('lignes').innerHTML = '';
+    $('faits').innerHTML = '';
+    $('com-n').textContent = '—';
+    $('com-r').textContent = '—';
+    $('com-pied').textContent = '';
+    $('msg').value = '';
+    $('fiche').value = '';
+    $('barre-v').textContent = 'Rien à chiffrer pour l’instant';
+    $('barre-v').classList.add('vide');
+    $('barre-k').textContent = 'Total';
+    $('barre-a').hidden = true;
+    return;
+  }
+
+  /* le chiffre */
+  if (d.fourchette && d.choisies.length === 1){
+    $('prix-lab').textContent = 'Fourchette indicative';
+    $('prix-n').innerHTML = '<span class="b">' + frD(d.total) + '</span> '
+      + '<span class="b"><small>à</small> ' + frD(d.totalMax) + ' <small>F</small></span>';
+    $('prix-n').classList.add('plage');
+    $('prix-sous').textContent = 'Le devis ferme se construit au cadrage. Annoncez-la comme une fourchette, jamais comme un prix.';
+  } else {
+    $('prix-lab').textContent = 'Mise en service';
+    $('prix-n').innerHTML = (d.fourchette ? '<small>à partir de</small> ' : '')
+      + '<span class="b">' + frD(d.total) + ' <small>F</small></span>';
+    $('prix-n').classList.remove('plage');
+    $('prix-sous').textContent = d.abo
+      ? 'Puis ' + frFD(G.abonnement) + ' tous les 6 mois, modifications comprises.'
+      : 'Sans abonnement.';
+  }
+
+  /* les lignes */
+  $('lignes').innerHTML = d.lignes.map(function(l){
+    var m = l.plage ? frD(l.plage.min) + ' – ' + frFD(l.plage.max) : (l.gratuit ? 'offert' : frFD(l.m));
+    return '<div class="lg' + (l.gratuit ? ' gratuit' : '') + '"><div class="d">' + l.t + '<small>' + l.s + '</small></div><div class="m">' + m + '</div></div>';
+  }).join('')
+  + '<div class="lg tot"><div class="d">Total mise en service</div><div class="m">'
+  + (d.fourchette ? frD(d.total) + ' – ' + frFD(d.totalMax) : frFD(d.total)) + '</div></div>';
+
+  /* les faits */
+  var faits = [];
+  faits.push({ k:'Délai', v:d.delai,
+    s:d.delai === 'fixé au cadrage' ? 'la date se fixe avec Mongazi, jamais par vous'
+                                    : 'à partir du brief complet et du paiement' });
+  faits.push(d.paiement === 'integral'
+    ? { k:'Paiement', v:'Intégral', s:'au démarrage, à NEBULA' }
+    : { k:'Paiement', v:'70 % / 30 %', s:frFD(Math.round(d.total * 0.7)) + ' puis ' + frFD(d.total - Math.round(d.total * 0.7)) });
+  if (d.abo) faits.push({ k:'Abonnement', v:frFD(G.abonnement) + ' / 6 mois', s:'hébergement, sécurité et modifications' });
+  if (d.domaine) faits.push({ k:'Nom de domaine', v:'Offert 1 an', s:'puis ' + frFD(G.vitrine.domaine) + ' par an, sans commission' });
+  $('faits').innerHTML = faits.map(function(f){
+    return '<div class="fait"><span class="k">' + f.k + '</span><span class="v">' + f.v + '<small>' + f.s + '</small></span></div>';
+  }).join('');
+
+  /* la commission */
+  var com = d.total * (E.taux / 100);
+  $('com-n').textContent = frFD(com);
+  $('com-r').textContent = frFD(G.recurrent);
+  $('gain-r').hidden = !d.abo;
+  var pied = E.taux === 40
+    ? 'Palier ARGENT : il faut 3 ventes dans le mois, les vôtres et celles de vos filleuls directs. Le compteur repart à zéro le 1er.'
+    : 'Palier BRONZE. À 3 ventes dans le mois, tout le mois passe à 40 %, rétroactivement.';
+  if (d.fourchette) pied += ' Sur l’Outil, la commission suit le prix ferme du cadrage.';
+  if (!d.abo) pied += ' Cette vente ne porte pas d’abonnement, donc pas de récurrent.';
+  $('com-pied').textContent = pied;
+
+  /* les textes */
+  $('msg').value = texteClient(d);
+  $('fiche').value = texteFiche(d);
+  var wa = 'https://wa.me/?text=' + encodeURIComponent($('msg').value);
+  $('wa').setAttribute('href', wa);
+
+  /* la barre */
+  $('barre-k').textContent = d.fourchette && d.choisies.length === 1 ? 'Fourchette' : 'Mise en service';
+  $('barre-v').textContent = d.fourchette ? frD(d.total) + ' – ' + frFD(d.totalMax) : frFD(d.total);
+  $('barre-v').classList.remove('vide');
+  $('barre-v').classList.toggle('plage', !!d.fourchette);
+  $('barre-a').hidden = false;
+}
+
+function tout(){
+  lire();
+  var d = calculer();
+  rendreSurlignage();
+  rendreOffres();
+  rendreCompteurs();
+  rendreOptions();
+  rendreAlertes(d);
+  rendreDevis(d);
+}
+
+/* ==========================================================================
+   11 · LES GESTES
+   ========================================================================== */
+
+var EXEMPLES = {
+  '1':'Elle vend des pagnes et des sacs, elle veut que ses clientes voient les modèles avec les prix et commandent sur WhatsApp. Elle a une trentaine d’articles.',
+  '2':'Il veut un vrai site pour être trouvé sur Google, avec ses services, une galerie et les avis de ses clients. Il lui faut aussi une page équipe et une page tarifs.',
+  '3':'Il a trois boutiques, il veut suivre son stock chaque jour, connaître ses dettes et ses marges, un tableau de bord avec des graphiques et un rapport automatique par email chaque fin de mois. Cinq personnes vont l’utiliser.'
+};
+
+var brief = $('brief');
+
+function majBrief(){
+  E.brief = brief.value;
+  E.offresMain = {};
+  E.optionsMain = {};
+  lire();
+  E.produits = E.produitsAuto;
+  E.pages = E.pagesAuto;
+  E.users = E.usersAuto;
+  tout();
+}
+
+brief.addEventListener('input', majBrief);
+
+$('vider').addEventListener('click', function(){
+  brief.value = '';
+  $('nom-client').value = '';
+  E.nomClient = '';
+  majBrief();
+  brief.focus();
+});
+
+Array.prototype.forEach.call(document.querySelectorAll('.ex'), function(b){
+  b.addEventListener('click', function(){
+    brief.value = EXEMPLES[b.getAttribute('data-ex')];
+    majBrief();
+    $('mvt2').scrollIntoView({ behavior:'smooth', block:'start' });
+  });
+});
+
+$('offres').addEventListener('click', function(e){
+  var b = e.target.closest('[data-offre]');
+  if (!b) return;
+  var o = b.getAttribute('data-offre');
+  E.offresMain[o] = !offreActive(o);
+  if (o === 'catalogue' && E.offresMain[o]) E.produits = E.produitsAuto;
+  if (o === 'vitrine' && E.offresMain[o]) E.pages = E.pagesAuto;
+  tout();
+});
+
+$('compteurs').addEventListener('click', function(e){
+  var b = e.target.closest('[data-cpt]');
+  if (!b) return;
+  var k = b.getAttribute('data-cpt'), d = parseInt(b.getAttribute('data-d'), 10);
+  var pas = k === 'produits' ? 5 : 1;
+  var v = E[k] + d * pas;
+  E[k] = Math.max(1, Math.min(v, 999));
+  if (k === 'users'){
+    delete E.optionsMain['u-2a5'];
+    delete E.optionsMain['u-plus'];
+    E.optionsAuto['u-2a5'] = E.users >= 2 && E.users <= 5;
+    E.optionsAuto['u-plus'] = E.users > 5;
+    E.optionsMain['u-2a5'] = E.users >= 2 && E.users <= 5;
+    E.optionsMain['u-plus'] = E.users > 5;
+  }
+  var dd = calculer();
+  rendreCompteurs();
+  rendreOptions();
+  rendreAlertes(dd);
+  rendreDevis(dd);
+});
+
+$('options').addEventListener('click', function(e){
+  var b = e.target.closest('[data-opt]');
+  if (!b) return;
+  var id = b.getAttribute('data-opt');
+  E.optionsMain[id] = !optionActive(id);
+  var d = calculer();
+  rendreOptions();
+  rendreAlertes(d);
+  rendreDevis(d);
+});
+
+Array.prototype.forEach.call(document.querySelectorAll('.bascule button'), function(b){
+  b.addEventListener('click', function(){
+    E.taux = parseInt(b.getAttribute('data-taux'), 10);
+    Array.prototype.forEach.call(document.querySelectorAll('.bascule button'), function(x){
+      x.setAttribute('aria-pressed', String(parseInt(x.getAttribute('data-taux'), 10) === E.taux));
+    });
+    rendreDevis(calculer());
+  });
+});
+
+$('nom-client').addEventListener('input', function(){
+  E.nomClient = $('nom-client').value;
+  var d = calculer();
+  if (d.choisies.length){
+    $('msg').value = texteClient(d);
+    $('fiche').value = texteFiche(d);
+    $('wa').setAttribute('href', 'https://wa.me/?text=' + encodeURIComponent($('msg').value));
+  }
+});
+
+/* ---------- copier, avec les trois recours ---------- */
+function copier(champ, bouton, libelle){
+  var texte = $(champ).value;
+  if (!texte.trim()) return;
+  var fini = function(ok){
+    var b = $(bouton), t = $(bouton + '-txt');
+    t.textContent = ok ? 'Copié' : 'Sélectionnez et copiez';
+    b.classList.toggle('ok', ok);
+    if (!ok){ $(champ).focus(); $(champ).select(); }
+    setTimeout(function(){ t.textContent = libelle; b.classList.remove('ok'); }, 2200);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(texte).then(function(){ fini(true); }, function(){ fini(secours(champ)); });
+  } else {
+    fini(secours(champ));
+  }
+}
+function secours(champ){
+  try {
+    var el = $(champ);
+    el.focus(); el.select();
+    var ok = document.execCommand && document.execCommand('copy');
+    return !!ok;
+  } catch (err){ return false; }
+}
+$('copier').addEventListener('click', function(){ copier('msg', 'copier', 'Copier le message'); });
+$('copier-fiche').addEventListener('click', function(){ copier('fiche', 'copier-fiche', 'Copier la fiche'); });
+
+/* ==========================================================================
+   12 · LA NOTE VOCALE
+   Reconnaissance du navigateur quand elle existe. Quand elle n'existe pas,
+   ou qu'un cadre bloque le micro, on dit le vrai recours : le micro du
+   clavier du téléphone écrit dans le champ, et il marche partout.
+   ========================================================================== */
+
+var RECOURS = 'Dictée non disponible ici. Le micro du clavier de votre téléphone fait la même chose : touchez le champ ci-dessus, puis le micro du clavier.';
+var Reco = window.SpeechRecognition || window.webkitSpeechRecognition;
+var reco = null, ecoute = false, texteAvant = '';
+
+function noteMicro(txt, alerte){
+  var n = $('micro-note');
+  n.textContent = txt || '';
+  n.classList.toggle('alerte', !!alerte);
+}
+
+if (!Reco){
+  $('micro').disabled = true;
+  $('micro').style.opacity = '.45';
+  $('micro').style.cursor = 'not-allowed';
+  noteMicro(RECOURS);
+} else {
+  $('micro').addEventListener('click', function(){
+    if (ecoute){ if (reco) reco.stop(); return; }
+    try {
+      reco = new Reco();
+    } catch (err){
+      noteMicro(RECOURS, true);
+      return;
+    }
+    reco.lang = 'fr-FR';
+    reco.continuous = true;
+    reco.interimResults = true;
+    texteAvant = brief.value;
+
+    reco.onstart = function(){
+      ecoute = true;
+      $('micro').setAttribute('aria-pressed', 'true');
+      $('micro-txt').textContent = 'J’écoute — toucher pour arrêter';
+      noteMicro('Parlez normalement, ou faites écouter la note vocale du client à voix haute.');
+    };
+    reco.onresult = function(ev){
+      var fige = '', encours = '';
+      for (var i = 0; i < ev.results.length; i++){
+        if (ev.results[i].isFinal) fige += ev.results[i][0].transcript;
+        else encours += ev.results[i][0].transcript;
+      }
+      brief.value = (texteAvant ? texteAvant.replace(/\s*$/, '') + ' ' : '') + fige + encours;
+      majBrief();
+    };
+    reco.onerror = function(ev){
+      var m = {
+        'not-allowed':'Le micro est refusé ici. Utilisez le micro du clavier de votre téléphone : touchez le champ, puis le micro du clavier.',
+        'service-not-allowed':'Le micro est refusé ici. Utilisez le micro du clavier de votre téléphone.',
+        'no-speech':'Je n’ai rien entendu. Réessayez en parlant plus près.',
+        'audio-capture':'Aucun micro trouvé sur cet appareil.',
+        'network':'La dictée a besoin du réseau. Tapez le texte, ou réessayez avec une meilleure connexion.'
+      };
+      noteMicro(m[ev.error] || RECOURS, true);
+    };
+    reco.onend = function(){
+      ecoute = false;
+      $('micro').setAttribute('aria-pressed', 'false');
+      $('micro-txt').textContent = 'Dicter la note vocale';
+      if (brief.value.trim() && !$('micro-note').classList.contains('alerte')) noteMicro('');
+    };
+
+    try {
+      reco.start();
+    } catch (err){
+      noteMicro(RECOURS, true);
+    }
+  });
+}
+
+/* ---------- premier rendu ---------- */
+tout();
+
+})();
+</script>

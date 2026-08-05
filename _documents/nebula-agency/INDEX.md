@@ -18,6 +18,15 @@
 - **06-ARSENAL-SCRIPTS.md** — Tous les messages prêts à copier : les 7 règles du message qui marche, premier contact (froid, boutique, recommandation, annonce à son réseau), après démonstration, relances J+2/J+7/J+21/J+45 et réveil à 3 mois, après-vente (confirmation, mi-parcours, livraison, avis, recommandation), réponses rapides, 5 statuts WhatsApp, recrutement d'un filleul, et **ce qu'on n'écrit jamais**.
 - **simulateur-commissions.html** — Page autonome (aucune dépendance, fonctionne sur téléphone) : le partenaire entre ses ventes du mois et voit sa commission, son palier, et **combien de ventes il lui manque pour changer de palier et ce que ça rapporte rétroactivement**. Sert aussi en entretien de recrutement.
 - **08-DIAGNOSTIC-DIGITAL.md** — **La consultation professionnelle** qui ouvre les portes de l'Outil métier : le diagnostic offert (valeur 25 000 F), la cartographie en 3 temps (entrée / traitement / sortie, calée sur le configurateur), **les 40 questions dans l'ordre**, le test du cahier, ce qu'on observe sans le demander, **la grille de détection des automatisations**, comment chiffrer la douleur, le rapport à NEBULA, la restitution menée par Mongazi, les 8 erreurs qui tuent un diagnostic.
+- **generateur-devis.html** — Page autonome (aucune dépendance, marche hors ligne, pensée pour le téléphone) :
+  le partenaire colle la demande du client **ou la dicte**, et l'outil en sort le devis chiffré sur la grille,
+  le message prêt à envoyer au client et la fiche interne pour NEBULA. Les mots du client sont **surlignés dans
+  sa propre phrase**, de la couleur de la ligne de devis qu'ils ont produite : on voit pourquoi le prix est ce
+  qu'il est. Les garde-fous du §6 s'affichent quand le brief les met en danger (« premier sur Google », « c'est
+  urgent », « facture normalisée », client au budget serré, deux offres à la fois). ⚠️ Prix issus de
+  `00-SOCLE-COMMERCIAL.md` et du configurateur du site, jamais d'ailleurs : `_qc_devis.mjs` compare les deux.
+  On édite `_generateur_devis_src.html`, puis `python3 _build_devis.py`.
+
 - **fiche-diagnostic.html** — Fiche à remplir sur le téléphone chez le client (sauvegarde automatique, marche hors ligne) : un bouton envoie le rapport structuré complet sur le WhatsApp de NEBULA.
 - **09-CONTRAT-PARTENAIRE.md** — **Contrat d'apporteur d'affaires indépendant** à faire signer : indépendance, mission, tarifs, encaissement, commissions (paliers, récurrent à vie, réseau), attribution des clients à 60 jours, 12 engagements, exclusivité de métier, confidentialité, non-sollicitation 24 mois, durée et fin de contrat, réclamations. Avec une annexe résumée pour le partenaire.
 - **10-RELANCE-RENOUVELLEMENT.md** — Spécification de la relance automatique des abonnements. ⚠️ Constat : **aucun suivi des abonnements n'existe aujourd'hui dans l'app** (aucune table ne porte de date d'échéance). Contient le modèle de données à créer, le calendrier de relance (J-15 / J-3 / J+3 / J+10), les 5 messages mot pour mot, le workflow n8n, les garde-fous et l'ordre de construction.

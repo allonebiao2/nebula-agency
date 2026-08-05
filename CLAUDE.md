@@ -233,7 +233,12 @@ et par quoi commencer. Mis à jour à chaque fin de session importante.
 ## Force de vente & partenaires (chantier 2026-07-30/31)
 - **Source de vérité des prix et des règles : `_documents/nebula-agency/vente/00-SOCLE-COMMERCIAL.md`.**
   En cas de différence avec un autre fichier, c'est lui qui a raison.
-- 13 documents + 2 outils HTML + 9 PDF dans `_documents/nebula-agency/vente/`
+- 13 documents + **3 outils HTML** + 9 PDF dans `_documents/nebula-agency/vente/`
+- **Générateur de devis** (`generateur-devis.html`, 2026-08-05) : on colle ou on dicte
+  ce que le client veut, il sort le devis sur la grille, le message prêt pour le client
+  et la fiche pour NEBULA. Les prix viennent du socle et du configurateur du site,
+  jamais d'ailleurs. ⚠️ On édite `_generateur_devis_src.html`, puis `python3 _build_devis.py` ;
+  `_qc_devis.mjs` (47 contrôles) doit être vert, il compare au configurateur au franc près
 - **L'escalier** : on entre TOUJOURS par le Catalogue à 50 000 F, jamais par la Vitrine.
   Un commerçant méfiant dit oui à 50 k, pas à 150 k. Puis Vitrine, puis Outil métier.
 - **Abonnement : 20 000 F / 6 mois, modifications comprises** (remplace les 15 000 F partout)
