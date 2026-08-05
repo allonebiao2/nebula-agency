@@ -513,11 +513,11 @@ footer code{
   <header class="chapeau">
     <span class="marque"><i class="pastille"></i>NEBULA Agency · outil interne</span>
     <h1>Ce que le client dit,<br><em>ce que ça coûte.</em></h1>
-    <p class="chapo">Collez sa demande, ou dictez sa note vocale. La grille officielle fait le prix, jamais vous.</p>
+    <p class="chapo" id="chapo">Collez ce que le client vous a dit. Vous saurez quoi lui répondre, et ce qu’il reste à lui demander pour fermer le prix.</p>
     <span class="source">Barème du <b>30 juillet 2026</b> · socle commercial v2.0</span>
     <div class="modes" role="group" aria-label="Qui se sert de l’outil">
-      <button type="button" data-mode="nebula" aria-pressed="true">Pour moi · NEBULA</button>
-      <button type="button" data-mode="partenaire" aria-pressed="false">Pour un partenaire</button>
+      <button type="button" data-mode="nebula" aria-pressed="true">Moi · NEBULA</button>
+      <button type="button" data-mode="partenaire" aria-pressed="false">Un partenaire</button>
     </div>
   </header>
 
@@ -627,10 +627,10 @@ footer code{
     <details class="interne">
       <summary>
         <span class="fl"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
-        La fiche pour NEBULA
+        <span id="fiche-titre">Ma note pour ce devis</span>
       </summary>
       <div class="corps">
-        <p class="note">Le récapitulatif à transmettre. Il contient votre commission : ne l'envoyez jamais au client.</p>
+        <p class="note" id="fiche-note">Ce que vous gardez pour vous : le périmètre, ce qui reste ouvert, et la phrase exacte du client.</p>
         <textarea class="msg" id="fiche" spellcheck="false" style="min-height:160px"></textarea>
         <div class="actions">
           <button type="button" class="btn btn-vert" id="copier-fiche">
@@ -644,7 +644,7 @@ footer code{
 
   <footer>
     <div>Les prix viennent de <code>00-SOCLE-COMMERCIAL.md</code> et du configurateur de <code>nebula-agency.online</code>.</div>
-    <div>Le client paie NEBULA, jamais vous. Aucun prix hors grille, aucune remise décidée seul.</div>
+    <div id="pied2">Un prix hors grille se décide, il ne se subit pas : si vous sortez du barème, notez-le dans le socle.</div>
   </footer>
 </div>
 
@@ -1120,6 +1120,7 @@ function calculer(){
 
 function alertes(d){
   var a = [];
+  var moi = E.mode === 'nebula';
 
   if (d.choisies.length > 1 && d.choisies.filter(function(o){ return o !== 'qr'; }).length > 1){
     a.push({ ton:'or', t:'Deux offres d’un coup font perdre les deux.',
@@ -1128,14 +1129,18 @@ function alertes(d){
   }
 
   if (E.prudent && (d.choisies.indexOf('vitrine') >= 0 || d.choisies.indexOf('outil') >= 0)){
-    a.push({ ton:'or', t:'Il a parlé d’argent. Dans le doute, vendez le Catalogue.',
-             c:'Une vente à 50 000 F qui ouvre la porte vaut infiniment mieux qu’un refus à 150 000 F qui la ferme. Vous reviendrez pour la Vitrine.',
+    a.push({ ton:'or', t:'Il a parlé d’argent. Dans le doute, le Catalogue.',
+             c:'Une vente à 50 000 F qui ouvre la porte vaut infiniment mieux qu’un refus à 150 000 F qui la ferme. '
+             + (moi ? 'Vous revenez pour la Vitrine quand il a vu que ça marche.'
+                    : 'Vous reviendrez pour la Vitrine.'),
              r:'guide vitrine §5' });
   }
 
   if (d.choisies.indexOf('outil') >= 0){
     a.push({ ton:'bleu', t:'Sur l’Outil, cette fourchette n’est pas un prix ferme.',
-             c:'Le devis se ferme au cadrage avec Mongazi. Annoncez-la comme le fait le configurateur du site : « fourchette indicative, devis confirmé après un court échange ». Ne calculez jamais un prix de tête.',
+             c:moi
+               ? 'Elle se ferme quand vous cadrez le projet. Elle sort du configurateur et pas d’une intuition : c’est exactement ce qui la rend défendable devant le client, et devant vous-même dans six mois.'
+               : 'Le devis se ferme au cadrage avec Mongazi. Annoncez-la comme le fait le configurateur du site : « fourchette indicative, devis confirmé après un court échange ». Ne calculez jamais un prix de tête.',
              r:'socle §6.12' });
   }
 
@@ -1158,20 +1163,25 @@ function alertes(d){
   }
 
   if (E.prudent && trouver(E.norme, 'remise').length + trouver(E.norme, 'reduction').length + trouver(E.norme, 'negocier').length > 0){
-    a.push({ ton:'rouge', t:'Aucune remise décidée seul, aucun prix hors grille.',
-             c:'Toute demande de geste commercial remonte à NEBULA. C’est ce qui protège votre commission autant que le prix.',
-             r:'socle §6.3' });
+    a.push(moi
+      ? { ton:'or', t:'Il demande un geste. C’est votre décision, mais elle s’écrit.',
+          c:'Un prix accordé une fois devient le prix de référence de ce client, et il le racontera. Si vous descendez, retirez quelque chose du périmètre en face : une remise sans contrepartie apprend que le barème est décoratif.',
+          r:'socle §6.3' }
+      : { ton:'rouge', t:'Aucune remise décidée seul, aucun prix hors grille.',
+          c:'Toute demande de geste commercial remonte à NEBULA. C’est ce qui protège votre commission autant que le prix.',
+          r:'socle §6.3' });
   }
 
   if (E.second && d.choisies.indexOf(E.second) < 0){
     a.push({ ton:'bleu', t:'Il a aussi parlé de ' + LIB[E.second].toLowerCase() + ' · ' + PX[E.second].replace(/\u00A0/g, ' ') + '.',
-             c:'Touchez la carte pour l’ajouter et voir le total. Mais souvenez-vous de l’escalier : '
-             + 'ce qui se vend, c’est une marche à la fois. L’autre reviendra, et elle vous reviendra à vous.',
+             c:'Touchez la carte pour l’ajouter et voir le total. Mais l’escalier tient : ce qui se vend, c’est une marche à la fois. '
+             + (moi ? 'L’autre se vendra presque seule une fois la première livrée.'
+                    : 'L’autre reviendra, et elle vous reviendra à vous.'),
              r:'socle §1.3 et §5.4' });
   }
 
   if (E.secteur && d.choisies.length){
-    a.push({ ton:'bleu', t:'La preuve à lui montrer : ' + E.secteur.preuve,
+    a.push({ ton:'bleu', t:'La preuve à lui montrer : ' + E.secteur.preuve + '.',
              c:'Il y verra ' + E.secteur.quoi + '. Montrer un site livré répond à la méfiance mieux que n’importe quel argument.',
              r:'socle §10' });
   }
@@ -1528,6 +1538,32 @@ function rendreDevis(d){
   $('barre-a').hidden = false;
 }
 
+/* Le même outil ne parle pas de la même façon à celui qui fixe les prix et à
+   celui qui les applique. Un partenaire n'a pas le droit de décider une remise,
+   Mongazi si. Dire l'inverse à l'un ou à l'autre rend l'outil faux. */
+var VOIX = {
+  nebula:{
+    chapo:'Collez ce que le client vous a dit. Vous saurez quoi lui répondre, et ce qu’il reste à lui demander pour fermer le prix.',
+    ficheTitre:'Ma note pour ce devis',
+    ficheNote:'Ce que vous gardez pour vous : le périmètre, ce qui reste ouvert, et la phrase exacte du client.',
+    pied:'Un prix hors grille se décide, il ne se subit pas : si vous sortez du barème, notez-le dans le socle.'
+  },
+  partenaire:{
+    chapo:'Collez sa demande, ou dictez sa note vocale. La grille officielle fait le prix, jamais vous.',
+    ficheTitre:'La fiche pour NEBULA',
+    ficheNote:'Le récapitulatif à transmettre. Il contient votre commission : ne l’envoyez jamais au client.',
+    pied:'Le client paie NEBULA, jamais vous. Aucun prix hors grille, aucune remise décidée seul.'
+  }
+};
+
+function rendreVoix(){
+  var v = VOIX[E.mode];
+  $('chapo').textContent = v.chapo;
+  $('fiche-titre').textContent = v.ficheTitre;
+  $('fiche-note').textContent = v.ficheNote;
+  $('pied2').textContent = v.pied;
+}
+
 function tout(){
   lire();
   var d = calculer();
@@ -1537,6 +1573,7 @@ function tout(){
   rendreOptions();
   rendreAlertes(d);
   rendreDevis(d);
+  rendreVoix();
 }
 
 /* ==========================================================================

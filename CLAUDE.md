@@ -236,8 +236,11 @@ et par quoi commencer. Mis à jour à chaque fin de session importante.
 - 13 documents + **3 outils HTML** + 9 PDF dans `_documents/nebula-agency/vente/`
 - **Générateur de devis** (`generateur-devis.html`, 2026-08-05) : on colle ou on dicte
   ce que le client veut, il sort le devis sur la grille, le message prêt pour le client
-  et la fiche pour NEBULA. **Deux modes** : « Pour moi · NEBULA » (par défaut, sans
-  commission, pour savoir quoi facturer) et « Pour un partenaire ». Quand le client n'a
+  et la fiche pour NEBULA. ⚠️ **C'est D'ABORD l'outil de Mongazi**, pas celui
+  des partenaires : mode « Moi · NEBULA » par défaut, sans commission, et l'outil ne
+  lui dit jamais d'en référer à NEBULA ni ne lui interdit une remise (NEBULA, c'est lui).
+  Le mode « Un partenaire » remet la commission, la fiche à transmettre et les interdits
+  du §6. Les deux voix sont contrôlées par `_qc_devis.mjs`. Quand le client n'a
   pas dit le périmètre, l'outil donne un **intervalle bâti sur deux hypothèses nommées**
   (une page ou le hub de 4 pages) et affiche **la question qui ferme le prix**, jamais
   un pourcentage inventé. Les prix viennent du socle et du configurateur du site,

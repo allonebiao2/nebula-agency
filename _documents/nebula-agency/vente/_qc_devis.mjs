@@ -257,6 +257,40 @@ egal('une seule page annoncée ferme le prix', r.total, '150 000 F');
 r = await soumettre("Elle veut vendre ses produits sur WhatsApp, avec un bouton de commande.");
 egal('catalogue sans nombre de produits = 50 000 à 95 000 F', r.total, '50 000 – 95 000 F');
 
+/* La voix : l'outil est d'abord celui de Mongazi. Il ne doit jamais lui dire
+   d'en référer à NEBULA, ni lui interdire une remise : NEBULA, c'est lui. */
+r = await soumettre("Il veut un outil pour gérer son stock, mais il trouve ça cher et demande une remise.");
+const voixNebula = await page.evaluate(() => ({
+  chapo: document.getElementById('chapo').textContent,
+  fiche: document.getElementById('fiche-titre').textContent,
+  pied: document.getElementById('pied2').textContent,
+  alertes: Array.from(document.querySelectorAll('#alertes .al')).map(a => a.textContent).join(' ')
+}));
+verifier('en mode NEBULA, on ne vous renvoie pas à Mongazi',
+  !/avec Mongazi|remonte à NEBULA|à voir avec Mongazi/i.test(voixNebula.alertes),
+  voixNebula.alertes.slice(0, 120));
+verifier('en mode NEBULA, la remise est présentée comme votre décision',
+  /votre décision/i.test(voixNebula.alertes), voixNebula.alertes.slice(0, 120));
+verifier('en mode NEBULA, aucune phrase ne dit « jamais vous »',
+  !/jamais vous/i.test(voixNebula.chapo + voixNebula.pied),
+  voixNebula.chapo + ' | ' + voixNebula.pied);
+egal('en mode NEBULA, la fiche est la vôtre', voixNebula.fiche, 'Ma note pour ce devis');
+
+await page.click('.modes button[data-mode="partenaire"]');
+await page.waitForTimeout(60);
+const voixPartenaire = await page.evaluate(() => ({
+  fiche: document.getElementById('fiche-titre').textContent,
+  pied: document.getElementById('pied2').textContent,
+  alertes: Array.from(document.querySelectorAll('#alertes .al')).map(a => a.textContent).join(' ')
+}));
+egal('en mode partenaire, la fiche repart chez NEBULA', voixPartenaire.fiche, 'La fiche pour NEBULA');
+verifier('en mode partenaire, la remise remonte bien à NEBULA',
+  /remonte à NEBULA/i.test(voixPartenaire.alertes), voixPartenaire.alertes.slice(0, 120));
+verifier('en mode partenaire, le pied rappelle qui encaisse',
+  /Le client paie NEBULA/.test(voixPartenaire.pied), voixPartenaire.pied);
+await page.click('.modes button[data-mode="nebula"]');
+await page.waitForTimeout(60);
+
 /* un brief qui dit deux choses : la seconde offre ne doit pas disparaître */
 r = await soumettre("Elle a une clinique esthétique de luxe. Elle veut un site pour présenter sa maison, avec ses soins et ses produits que ses clientes puissent commander sur WhatsApp. Elle a trois marques.");
 verifier('la seconde offre lue est signalée', r.alertes.some(a => /Il a aussi parlé de/.test(a)),
@@ -314,6 +348,13 @@ const petites = await page.evaluate(() => {
   return p;
 });
 verifier('toutes les cibles font au moins 44 px de haut', petites.length === 0, petites.slice(0, 5).join(' | '));
+
+/* le titre d'un avertissement se termine, il ne se colle pas à sa suite */
+await soumettre("Elle a un institut de beauté et veut un site avec ses soins.");
+const titres = await page.evaluate(() =>
+  Array.from(document.querySelectorAll('#alertes .al b')).map(b => b.textContent.trim()));
+verifier('chaque titre d’avertissement est ponctué',
+  titres.every(t => /[.:!?]$/.test(t)), titres.filter(t => !/[.:!?]$/.test(t)).join(' | '));
 
 /* la barre collante ne doit jamais couper le montant : c'est le seul chiffre
    visible quand on fait défiler, un « 300 000 – 420 … » ne sert à rien */
