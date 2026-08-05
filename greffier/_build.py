@@ -30,12 +30,8 @@ POLICES = {
 }
 
 
-def main() -> int:
-    source = ICI / "_maquette_src.html"
-    if not source.exists():
-        print(f"⛔ introuvable : {source}")
-        return 1
-
+def construire(source: pathlib.Path) -> int:
+    """Une source `_nom_src.html` devient `nom.html`, polices embarquées."""
     html = source.read_text(encoding="utf-8")
 
     for marque, chemin in POLICES.items():
@@ -54,9 +50,21 @@ def main() -> int:
         print(f"⛔ marques non remplacées : {set(restants)}")
         return 1
 
-    sortie = ICI / "maquette.html"
+    sortie = ICI / (source.stem.removeprefix("_").removesuffix("_src") + ".html")
     sortie.write_text(html, encoding="utf-8")
     print(f"\n✅ {sortie.name} · {len(html.encode('utf-8')) // 1024} Ko")
+    return 0
+
+
+def main() -> int:
+    sources = sorted(ICI.glob("_*_src.html"))
+    if not sources:
+        print("⛔ aucune source `_*_src.html`")
+        return 1
+    for source in sources:
+        print(f"\n── {source.name}")
+        if construire(source):
+            return 1
     return 0
 
 
