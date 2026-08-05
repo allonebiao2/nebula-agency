@@ -236,7 +236,11 @@ et par quoi commencer. Mis à jour à chaque fin de session importante.
 - 13 documents + **3 outils HTML** + 9 PDF dans `_documents/nebula-agency/vente/`
 - **Générateur de devis** (`generateur-devis.html`, 2026-08-05) : on colle ou on dicte
   ce que le client veut, il sort le devis sur la grille, le message prêt pour le client
-  et la fiche pour NEBULA. Les prix viennent du socle et du configurateur du site,
+  et la fiche pour NEBULA. **Deux modes** : « Pour moi · NEBULA » (par défaut, sans
+  commission, pour savoir quoi facturer) et « Pour un partenaire ». Quand le client n'a
+  pas dit le périmètre, l'outil donne un **intervalle bâti sur deux hypothèses nommées**
+  (une page ou le hub de 4 pages) et affiche **la question qui ferme le prix**, jamais
+  un pourcentage inventé. Les prix viennent du socle et du configurateur du site,
   jamais d'ailleurs. ⚠️ On édite `_generateur_devis_src.html`, puis `python3 _build_devis.py` ;
   `_qc_devis.mjs` (47 contrôles) doit être vert, il compare au configurateur au franc près
 - **L'escalier** : on entre TOUJOURS par le Catalogue à 50 000 F, jamais par la Vitrine.

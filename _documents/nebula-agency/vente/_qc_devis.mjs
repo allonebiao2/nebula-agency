@@ -97,6 +97,7 @@ async function soumettre(texte) {
     })),
     alertes: Array.from(document.querySelectorAll('#alertes .al b')).map(b => b.textContent),
     surlignes: Array.from(document.querySelectorAll('#surlignage mark')).map(m => m.textContent),
+    cadrage: document.getElementById('cadrage').hidden ? '' : document.getElementById('cadrage').textContent,
     msg: document.getElementById('msg').value,
     fiche: document.getElementById('fiche').value
   }));
@@ -210,12 +211,58 @@ verifier('§10 · la preuve du métier est proposée', r.alertes.some(a => /Miss
 /* la commission ne doit jamais partir chez le client */
 r = await soumettre(BRIEF_OUTIL);
 verifier('le message client ne contient aucune commission', !/commission/i.test(r.msg));
-verifier('la fiche interne, elle, la contient', /COMMISSION/.test(r.fiche));
+verifier('en mode NEBULA, la fiche parle périmètre, pas commission',
+  /INTERVALLE À ANNONCER/.test(r.fiche) && !/MA COMMISSION/.test(r.fiche));
+/* ⚠️ `hidden` ne cache rien si une règle CSS pose un `display`. On mesure donc
+   ce que l'œil voit, jamais l'attribut : c'est ce qui avait laissé passer le bug. */
+const cacheReel = await page.evaluate(() => {
+  const dur = [];
+  ['commission', 'cadrage', 'grp-options', 'grp-compteurs', 'legende', 'gain-r', 'barre-a']
+    .forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.hidden && getComputedStyle(el).display !== 'none') dur.push(id);
+    });
+  return dur;
+});
+verifier('un bloc marqué caché est vraiment invisible', cacheReel.length === 0,
+  'encore visibles : ' + cacheReel.join(', '));
+verifier('en mode NEBULA, la commission ne s’affiche pas',
+  await page.evaluate(() => getComputedStyle(document.getElementById('commission')).display === 'none'));
+await page.click('.modes button[data-mode="partenaire"]');
+await page.waitForTimeout(60);
+const fichePartenaire = await page.evaluate(() => ({
+  fiche: document.getElementById('fiche').value,
+  commissionVisible: getComputedStyle(document.getElementById('commission')).display !== 'none'
+}));
+verifier('en mode partenaire, la commission revient',
+  /MA COMMISSION/.test(fichePartenaire.fiche) && fichePartenaire.commissionVisible);
+await page.click('.modes button[data-mode="nebula"]');
+await page.waitForTimeout(60);
 
 /* le surlignage : les mots du client sont bien montrés */
 r = await soumettre("Elle veut un catalogue de 30 produits commandables sur WhatsApp.");
 verifier('les mots déclencheurs sont surlignés', r.surlignes.length >= 3, r.surlignes.join(' | '));
 verifier('« catalogue » est surligné', r.surlignes.some(m => /catalogue/i.test(m)), r.surlignes.join(' | '));
+
+/* l'intervalle de cadrage : il sort de deux hypothèses nommées, jamais d'un pourcentage */
+r = await soumettre("Madame veut un site pour son institut de beauté.");
+egal('site sans nombre de pages = 150 000 à 240 000 F', r.total, '150 000 – 240 000 F');
+verifier('l’outil dit ce qu’il reste à demander', /Combien de pages/i.test(r.cadrage), r.cadrage.slice(0, 80));
+verifier('le message assume l’intervalle au lieu d’un chiffre sec',
+  /je n’ai pas encore/.test(r.msg), (r.msg.split('\n').find(l => /dépend/.test(l)) || '').slice(0, 70));
+
+r = await soumettre("Il lui faut un site vitrine pour son entreprise, une seule page suffit.");
+egal('une seule page annoncée ferme le prix', r.total, '150 000 F');
+
+r = await soumettre("Elle veut vendre ses produits sur WhatsApp, avec un bouton de commande.");
+egal('catalogue sans nombre de produits = 50 000 à 95 000 F', r.total, '50 000 – 95 000 F');
+
+/* un brief qui dit deux choses : la seconde offre ne doit pas disparaître */
+r = await soumettre("Elle a une clinique esthétique de luxe. Elle veut un site pour présenter sa maison, avec ses soins et ses produits que ses clientes puissent commander sur WhatsApp. Elle a trois marques.");
+verifier('la seconde offre lue est signalée', r.alertes.some(a => /Il a aussi parlé de/.test(a)),
+  r.alertes.join(' | '));
+verifier('et elle est chiffrée dans le signalement',
+  r.alertes.some(a => /150 000 F|50 000 F/.test(a)), r.alertes.join(' | '));
 
 /* le texte vide ne chiffre rien */
 r = await soumettre('');
@@ -226,7 +273,7 @@ await soumettre("Elle veut un catalogue de 30 produits.");
 await page.click('[data-offre="vitrine"]');
 await page.waitForTimeout(60);
 const apres = await page.evaluate(() => document.getElementById('barre-v').textContent.replace(/\s+/g, ' ').trim());
-egal('le partenaire peut ajouter la vitrine à la main', apres, '215 000 F');
+egal('ajouter la vitrine à la main ouvre le périmètre des pages', apres, '215 000 – 305 000 F');
 
 /* ===================================================================
    4 · LA PAGE

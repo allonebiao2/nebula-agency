@@ -400,3 +400,41 @@ sont qu'un.
 4. **Et surtout : ces quatre bugs ont été trouvés par la suite de contrôle,
    pas à l'œil.** Un moteur qui lit du texte se teste avec de vraies phrases et
    des montants attendus, sinon il a l'air de marcher.
+
+---
+
+## 2026-08-05 · `hidden` ne cache rien dès qu'une règle pose un `display`
+
+Le générateur de devis a deux modes. En mode NEBULA, le bloc « Ce que ça vous
+rapporte » n'a rien à faire sous les yeux de Mongazi : le code faisait donc
+
+```js
+$('commission').hidden = E.mode === 'nebula';
+```
+
+et le contrôle vérifiait `document.getElementById('commission').hidden`, qui
+répondait `true`. **Le bloc restait pourtant affiché à l'écran.**
+
+`hidden` n'est qu'un indice de présentation, équivalent à `display:none` dans
+la feuille de style du navigateur. La moindre règle d'auteur le bat :
+
+```css
+.commission{display:flex}   /* gagne contre [hidden] */
+```
+
+**Sept éléments de la page étaient dans ce cas** : la commission, le bloc de
+cadrage, les compteurs, les options, la légende, le récurrent et le bouton de
+la barre. Certains se cachaient mal depuis le début sans que personne ne le
+voie, parce qu'ils n'apparaissent que dans des cas rarement regardés.
+
+**Ce qu'il faut retenir.**
+
+1. **Poser `[hidden]{display:none !important}` dès la première ligne de CSS**,
+   dans toute page qui cache quoi que ce soit par l'attribut. Une ligne.
+2. ⚠️ **Un contrôle qui lit `el.hidden` ne contrôle rien.** Il lit ce que le
+   code a demandé, pas ce que l'œil voit. Il faut mesurer
+   `getComputedStyle(el).display`, sinon le contrôle est vert et l'écran est
+   faux.
+3. **C'est la capture qui a trouvé le bug, encore une fois.** Le contrôle
+   affirmait « caché », l'image montrait 45 000 F de commission en vert. Entre
+   les deux, c'est toujours l'image qui a raison.
