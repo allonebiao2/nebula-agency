@@ -83,3 +83,66 @@ ligne : c'est ce qui fait la différence entre trois images et un carrousel.
 
 ⚠️ Travail poussé sur la branche `claude/nebula-carousel-post-5cp35d`, **pas encore dans
 `main`** : la session tourne sur claude.ai/code et attend la validation de Mongazi.
+
+---
+
+## Deuxième demande, même journée : WhatsApp et TikTok
+
+Mongazi a voulu **le même message sur trois canaux le même jour**, avec une exigence nette :
+les trois doivent être **diamétralement opposés**. Et il a précisé sa façon de faire :
+**la référence de style en première pièce jointe, le logo en seconde.**
+
+### Ce qui a été produit
+
+`_documents/nebula-agency/marketing/POST-DU-JOUR-MULTICANAL.md`
+
+- le tableau des **trois mondes** (musée / écran dans le noir / photocopie collée)
+- le prompt du **statut WhatsApp** 9:16, avec le texte du statut et le message de diffusion
+- les **trois prompts du carrousel TikTok** 9:16
+- les **zones mortes** de chaque réseau, en pixels
+- l'ordre de publication dans la journée
+
+### La leçon du jour : l'écart ne se joue pas sur la couleur
+
+Trois posts se ressemblent quand on ne change que la palette. Ce qui les sépare vraiment :
+
+| Ce qui change | Instagram | WhatsApp | TikTok |
+|---|---|---|---|
+| Le **registre** | vous | vous | **tu** |
+| L'**action demandée** | aimer, s'abonner | **répondre au statut** | s'abonner, liker |
+| Le **temps de lecture** | 8 secondes | 2 secondes | 1 seconde par image |
+| La **matière** | papier imprimé | écran dans le noir | photocopie déchirée |
+
+Le tutoiement sur TikTok fait plus pour la différence que n'importe quel changement de
+couleur : le post ne peut plus être lu comme un recyclage d'Instagram.
+
+### Les zones mortes, le détail qui tue un bon post
+
+Elles ne se voient qu'une fois le post publié, et c'est trop tard.
+
+- **TikTok** : les 480 px du bas (légende, pseudo, son) et les 240 px de droite (boutons).
+  Un titre centré verticalement finit à moitié derrière les boutons.
+- **WhatsApp** : les 220 px du haut (barre de profil) et les 340 px du bas (champ
+  « Répondre »).
+
+### L'ordre des pièces jointes a été inversé partout
+
+Le prompt-maître de 2026-07-30 disait **logo en premier**, sinon le modèle prend le logo
+pour un modèle de style. Mongazi envoie dans l'autre sens. Les prompts du carrousel
+Instagram ont donc été **réécrits dans son ordre** (référence = IMAGE 1, logo = IMAGE 2),
+avec un bloc anti-confusion qui nomme les deux rôles deux fois et une phrase de rappel :
+« the STYLE comes from IMAGE 1. The LOGO is IMAGE 2. »
+Si le logo se fait quand même réinterpréter, le dépannage dit de revenir à l'ancien ordre.
+
+### La décision qui engage
+
+Le statut WhatsApp promet de **faire le test gratuitement pour celui qui répond « TEST »**.
+Dix secondes par personne. C'est ce qui transforme un statut en conversation, mais c'est une
+promesse : si elle n'est pas tenue, il faut retirer la ligne du visuel.
+
+### Reste à faire
+
+- Envoyer **une référence différente par canal**, sinon les trois seront cousines
+- Poser les images dans WhatsApp et TikTok **avant publication** pour voir ce que
+  l'interface recouvre
+- Décider si la journée multicanale devient un rythme régulier ou reste un coup

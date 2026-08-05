@@ -53,10 +53,14 @@ sacrifie toujours la troisième.
 
 | Ordre | Fichier | Rôle |
 |---|---|---|
-| 1 | `nebula-affilies/static/nebula-logo.png` | le logo, à poser tel quel |
-| 2 | `_documents/nebula-agency/marketing/references/REF-marbre-rouge.jpg` | le style à imiter |
+| 1 | `_documents/nebula-agency/marketing/references/REF-marbre-rouge.jpg` | le style à imiter |
+| 2 | `nebula-affilies/static/nebula-logo.png` | le logo, à poser tel quel |
 
-Inversés, le modèle prend le logo pour un modèle de style et la marque disparaît.
+⚠️ **C'est l'ordre inverse de celui du prompt-maître de 2026-07-30**, qui mettait le logo en
+premier. On suit ici l'ordre que Mongazi utilise vraiment, et chaque prompt commence donc
+par un bloc anti-confusion qui nomme les deux rôles deux fois. Si le logo se fait quand même
+réinterpréter, remettre le logo en premier et échanger « IMAGE 1 » et « IMAGE 2 » dans le
+prompt.
 
 **Pour les images 2 et 3 :** rester dans la même conversation et **joindre en plus l'image
 que le modèle vient de générer**. Sans ça, le marbre change de grain, la marge bouge de
@@ -93,16 +97,20 @@ ce qui rend la peur crédible au lieu de la rendre suspecte.
 NEBULA AGENCY — CAROUSEL "LE SAVIEZ-VOUS ?" — SLIDE 1 OF 3
 ===========================================================
 
-ATTACHED INPUTS — read these roles carefully, do not confuse them:
+ATTACHED INPUTS — two attachments, two different roles.
+Read this block twice. Swapping the two roles ruins the image.
 
-  IMAGE 1 = THE LOGO.
-     The official NEBULA Agency logo. It is an ASSET TO PLACE,
-     never a style reference, never a subject to reinterpret.
-
-  IMAGE 2 = THE STYLE REFERENCE.
+  IMAGE 1 = THE STYLE REFERENCE.
      An existing NEBULA post. Inherit its DESIGN LANGUAGE *and* its
      COLOUR PALETTE. Its subject, its words, its message and its
      caption must never appear in the output.
+
+  IMAGE 2 = THE LOGO.
+     The official NEBULA Agency logo. An ASSET TO PLACE, exactly as
+     provided. Never a style reference, never a subject to
+     reinterpret, never redrawn, restyled, recoloured or cropped.
+
+  To be explicit: the STYLE comes from IMAGE 1. The LOGO is IMAGE 2.
 
 -----------------------------------------------------------
 TASK
@@ -192,7 +200,7 @@ SWIPE CUE (bottom right, just above the site URL):
 
 FOOTER (identical on all three slides):
   logo bottom-left, about 12% of canvas width, pixel-faithful
-  placement of IMAGE 1: do not redraw, restyle, recolour, crop or
+  placement of IMAGE 2: do not redraw, restyle, recolour, crop or
   rotate it, and never add a wordmark of your own.
   "nebula-agency.online" bottom-right, tiny muted grey type.
 
@@ -248,11 +256,12 @@ high-fidelity text rendering.
 NEBULA AGENCY — CAROUSEL "LE SAVIEZ-VOUS ?" — SLIDE 2 OF 3
 ===========================================================
 
-ATTACHED INPUTS:
+ATTACHED INPUTS — three attachments, three different roles:
 
-  IMAGE 1 = THE LOGO. An asset to place, never a style reference.
-  IMAGE 2 = THE STYLE REFERENCE. Inherit its design language and
+  IMAGE 1 = THE STYLE REFERENCE. Inherit its design language and
             its palette. Its subject and its words never appear.
+  IMAGE 2 = THE LOGO. An asset to place exactly as provided,
+            never a style reference, never redrawn or recoloured.
   IMAGE 3 = SLIDE 1 OF THIS CAROUSEL, which you generated just
             before. This is the CONSISTENCY REFERENCE.
 
@@ -321,7 +330,7 @@ SWIPE CUE (bottom right, just above the site URL):
   a single thin red arrow pointing right, discreet, no pill,
   no word.
 
-FOOTER: logo bottom-left, pixel-faithful placement of IMAGE 1,
+FOOTER: logo bottom-left, pixel-faithful placement of IMAGE 2,
 about 12% of canvas width. "nebula-agency.online" bottom-right in
 tiny muted grey type. Same sizes and positions as slide 1.
 
@@ -369,10 +378,11 @@ high-fidelity text rendering.
 NEBULA AGENCY — CAROUSEL "LE SAVIEZ-VOUS ?" — SLIDE 3 OF 3
 ===========================================================
 
-ATTACHED INPUTS:
+ATTACHED INPUTS — three attachments, three different roles:
 
-  IMAGE 1 = THE LOGO. An asset to place, never a style reference.
-  IMAGE 2 = THE STYLE REFERENCE. Design language and palette only.
+  IMAGE 1 = THE STYLE REFERENCE. Design language and palette only.
+  IMAGE 2 = THE LOGO. An asset to place exactly as provided,
+            never a style reference, never redrawn or recoloured.
   IMAGE 3 = SLIDE 2 OF THIS CAROUSEL, which you generated just
             before. This is the CONSISTENCY REFERENCE.
 
@@ -438,7 +448,7 @@ CALL-TO-ACTION BAND (new on this slide only):
   The band must read as the same red as the two bars behind the
   bust: same ink, promoted to a button.
 
-FOOTER: logo bottom-left, pixel-faithful placement of IMAGE 1,
+FOOTER: logo bottom-left, pixel-faithful placement of IMAGE 2,
 about 12% of canvas width. "nebula-agency.online" bottom-right in
 tiny muted grey type. Same sizes and positions as slides 1 and 2.
 
@@ -544,8 +554,8 @@ répondre en trois mots depuis un téléphone.
 | Ce qui rate | Ce qu'on ajoute au prompt |
 |---|---|
 | Le violet du prompt-maître revient | `MODE A: inherit the reference palette. Bone paper, black ink, one editorial red. No violet, no blue, no cyan anywhere.` |
-| Le sujet de la référence réapparaît | `IMAGE 2 is a FORM reference only. Its subject must not appear. If in doubt, ignore its content entirely.` |
-| Le logo est redessiné | `The logo must be a pixel-faithful placement of IMAGE 1. Treat it as a pasted asset, not as something to generate.` |
+| Le sujet de la référence réapparaît | `IMAGE 1 is a FORM reference only. Its subject must not appear. If in doubt, ignore its content entirely.` |
+| Le logo est redessiné | `The logo must be a pixel-faithful placement of IMAGE 2, the second attachment. Treat it as a pasted asset, not as something to generate.` Si ça persiste, remettre le logo en première position et échanger les numéros dans le prompt |
 | Les 3 images ne se ressemblent pas | Regénérer la 2 et la 3 **en joignant la précédente**, avec `Match IMAGE 3 exactly: same paper, same grain, same margins, same type sizes.` |
 | « INTROUVABLE » déborde ou casse | Remplacer par `"INVISIBLE"`, deux lettres de moins, même sens |
 | Du texte parasite s'ajoute | `Render ONLY the quoted strings. Any additional word is a failure.` |
