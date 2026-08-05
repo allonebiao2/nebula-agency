@@ -45,6 +45,9 @@ _partage/actuellement-je-travails-sur-mon-outil-boussole-regarde-dans/
 clients/*/_deploy_netlify/
 _dist/
 clients/*/_dist/
+
+# Captures de contrôle — régénérables (`python _qc.py --voir`), lourdes
+clients/*/_qc_captures/
 00-nebula-agency/_dist/
 # assemblé à chaque déploiement du site de l'agence depuis 00-nebula-agency/
 _tmp_pages/

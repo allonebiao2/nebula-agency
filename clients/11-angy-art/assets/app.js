@@ -1,0 +1,526 @@
+/* ==================================================================
+   ANGY ART — le comportement, écrit à la main.
+   Défilement lissé, curseur suiveur, révélations au scroll, carrousel
+   en coverflow, modale de demande : aucune bibliothèque, zéro Ko de
+   dépendance. Tout ce qui suit ENRICHIT une page déjà lisible sans JS.
+   ================================================================== */
+(function () {
+  'use strict';
+
+  /* ================================================================
+     ZONE À COMPLÉTER — c'est ici, et nulle part ailleurs.
+     ================================================================ */
+
+  /* LES ŒUVRES.
+     Tant que ce tableau est vide, le carrousel présente LES MATIÈRES
+     de l'atelier (ci-dessous), qui sont vraies et n'inventent rien.
+     Dès qu'une ligne est ajoutée ici, les œuvres remplacent les
+     matières : cartel, compteur, vue en grand suivent tout seuls.
+
+     Poser le fichier dans assets/images/gallery/.
+     ⛔ Jamais d'image générée par IA. Jamais un titre inventé.
+
+     { f:'ma-piece.jpg', t:'Titre', tech:'Technique mixte, relief',
+       an:'2026', mat:'Pigment, lin brut, feuille de cuivre', ar:'4/5' }
+  */
+  var OEUVRES = [];
+
+  /* LES MATIÈRES — l'état honnête du carrousel tant qu'il n'y a pas
+     de photo. Ce ne sont pas des œuvres, ce sont des surfaces. */
+  var MATIERES = [
+    { l: "MATIÈRE · ATELIER", t: "Toile brute", s: "Le lin tendu, avant le premier geste.",
+      ar: "4/5", v: "--ang:90deg;--fw:1px;--fs:5px;--fa:.05;--c1:#524839;--c2:#2e2820" },
+    { l: "MATIÈRE · ATELIER", t: "Pigment", s: "La couleur posée, reprise, poncée jusqu'à ce qu'elle tienne.",
+      ar: "1/1", v: "--ang:24deg;--fw:3px;--fs:14px;--fa:.045;--c1:#63492c;--c2:#32251a" },
+    { l: "MATIÈRE · ATELIER", t: "Relief", s: "La surface qu'on creuse et qu'on rehausse. Le cœur du travail.",
+      ar: "3/4", v: "--ang:118deg;--fw:2px;--fs:7px;--fa:.085;--c1:#4e4738;--c2:#2a251d" },
+    { l: "MATIÈRE · ATELIER", t: "Textile", s: "Le motif qui vient du tissu, et la trame qu'il laisse.",
+      ar: "5/4", v: "--ang:90deg;--fw:2px;--fs:9px;--fa:.07;--c1:#5f5342;--c2:#332b22" },
+    { l: "MATIÈRE · ATELIER", t: "Lumière", s: "La dernière matière. Sans elle, un relief n'est qu'une surface.",
+      ar: "4/5", v: "--ang:66deg;--fw:1px;--fs:22px;--fa:.10;--c1:#75592c;--c2:#2f271a" }
+  ];
+
+  /* Les messages WhatsApp, un par porte d'entrée. Le numéro vit dans
+     index.html : les liens fonctionnent même si ce fichier ne charge pas. */
+  var MSG = {
+    portfolio: "Bonjour Angélique, j'ai vu votre site. Pouvez-vous m'envoyer le portfolio complet des pièces disponibles ?",
+    direct:    "Bonjour Angélique, j'ai vu votre site et je voudrais échanger avec vous."
+  };
+
+  /* ================================================================ */
+
+  var $ = function (s, c) { return (c || document).querySelector(s); };
+  var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
+  var doux = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fin = matchMedia('(hover:hover) and (pointer:fine)').matches;
+  var petit = matchMedia('(max-width: 880px)').matches;
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c];
+    });
+  }
+
+  /* ---------- 1. Les portes WhatsApp -------------------------------- */
+  var NUM = '';
+  $$('[data-wa]').forEach(function (a) {
+    var base = (a.getAttribute('href') || '').split('?')[0];
+    if (base.indexOf('wa.me') === -1) return;
+    NUM = base;
+    var m = MSG[a.getAttribute('data-wa')] || MSG.direct;
+    a.setAttribute('href', base + '?text=' + encodeURIComponent(m));
+    a.setAttribute('rel', 'noopener');
+    a.setAttribute('target', '_blank');
+  });
+
+  /* ---------- 2. Longueur des tracés normalisée à 1 ------------------ */
+  $$('.entailles path, .scene-tr path').forEach(function (p) {
+    p.setAttribute('pathLength', '1');
+  });
+
+  /* ---------- 3. Le découpage en mots -------------------------------- */
+  function decouper(el) {
+    Array.prototype.slice.call(el.childNodes).forEach(function (nd) {
+      if (nd.nodeType === 3) {
+        if (!nd.textContent.trim()) return;
+        var frag = document.createDocumentFragment();
+        nd.textContent.split(/(\s+)/).forEach(function (t) {
+          if (!t) return;
+          if (!t.trim()) { frag.appendChild(document.createTextNode(t)); return; }
+          var m = document.createElement('span'); m.className = 'mot';
+          var i = document.createElement('span'); i.textContent = t;
+          m.appendChild(i); frag.appendChild(m);
+        });
+        nd.parentNode.replaceChild(frag, nd);
+      } else if (nd.nodeType === 1 && nd.tagName !== 'BR') {
+        decouper(nd);
+      }
+    });
+  }
+  if (!doux) {
+    $$('[data-mots]').forEach(function (el) {
+      decouper(el);
+      $$('.mot', el).forEach(function (m, i) { m.style.setProperty('--d', (i * 42) + 'ms'); });
+    });
+  }
+
+  /* ---------- 4. Les révélations -------------------------------------
+     Un balayage au défilement plutôt qu'un IntersectionObserver.
+     Pourquoi : avec un observateur seul, un visiteur qui clique « L'ATELIER »
+     saute par-dessus la démarche, l'observateur ne se déclenche jamais pour
+     elle, et ses textes restent invisibles POUR TOUJOURS. Ici, tout ce qui
+     est passé au-dessus de la ligne de flottaison est révélé, sauté ou non.
+     Chaque élément n'est traité qu'une fois, et jamais rejoué en remontant. */
+  (function revelations() {
+    var restants = $$('[data-mots], .lab, .rv, .plein, .split-i, .split-t, .split-lg,'
+      + ' .cit-i, .cit-a, .cars-b, .folio-d, .tags, .plein-d, .plein .pill');
+    if (doux) { restants.forEach(function (el) { el.classList.add('vu'); }); return; }
+
+    var attente = false;
+    function balayer() {
+      attente = false;
+      var seuil = innerHeight * 0.92;
+      restants = restants.filter(function (el) {
+        if (el.getBoundingClientRect().top >= seuil) return true;
+        el.classList.add('vu');
+        return false;
+      });
+      if (!restants.length) {
+        removeEventListener('scroll', pousser);
+        removeEventListener('resize', pousser);
+      }
+    }
+    function pousser() {
+      if (attente) return;
+      attente = true;
+      requestAnimationFrame(balayer);
+    }
+    addEventListener('scroll', pousser, { passive: true });
+    addEventListener('resize', pousser, { passive: true });
+    balayer();
+  })();
+
+  /* ---------- 5. Le héros s'ouvre ------------------------------------ */
+  (function heros() {
+    var h = $('.hero');
+    if (!h) return;
+    if (doux) { h.classList.add('ouvert'); return; }
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { h.classList.add('ouvert'); });
+    });
+  })();
+
+  /* ---------- 6. Le défilement lissé --------------------------------
+     L'équivalent maison de Lenis : on interpole scrollTop, on ne
+     transforme rien. Les éléments en position:fixed restent intacts. */
+  var majCible = function () {};
+  if (fin && !doux) {
+    (function lisse() {
+      var cible = window.scrollY, courant = window.scrollY, anime = false;
+      document.documentElement.style.scrollBehavior = 'auto';
+
+      function borne(v) {
+        return Math.max(0, Math.min(document.documentElement.scrollHeight - innerHeight, v));
+      }
+      function boucle() {
+        courant += (cible - courant) * 0.095;
+        if (Math.abs(cible - courant) < 0.5) { courant = cible; anime = false; }
+        window.scrollTo(0, courant);
+        if (anime) requestAnimationFrame(boucle);
+      }
+      function lancer() { if (!anime) { anime = true; requestAnimationFrame(boucle); } }
+
+      majCible = function (v) { cible = borne(v); lancer(); };
+
+      window.addEventListener('wheel', function (e) {
+        if (e.ctrlKey) return;                                  /* le zoom reste le zoom */
+        if (document.querySelector('dialog[open]')) return;     /* pas dans une modale */
+        if (e.target.closest && e.target.closest('select')) return;
+        e.preventDefault();
+        cible = borne(cible + e.deltaY * (e.deltaMode === 1 ? 18 : 1));
+        lancer();
+      }, { passive: false });
+
+      window.addEventListener('scroll', function () {
+        if (!anime) { cible = window.scrollY; courant = window.scrollY; }
+      }, { passive: true });
+      window.addEventListener('resize', function () { cible = borne(cible); }, { passive: true });
+    })();
+  }
+
+  /* les ancres passent par le même moteur */
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var id = a.getAttribute('href').slice(1);
+    if (!id) return;
+    var c = document.getElementById(id);
+    if (!c) return;
+    e.preventDefault();
+    var y = c.getBoundingClientRect().top + window.scrollY;
+    if (fin && !doux) majCible(y);
+    else window.scrollTo({ top: y, behavior: doux ? 'auto' : 'smooth' });
+    history.replaceState(null, '', '#' + id);
+  });
+
+  /* ---------- 7. Le curseur ------------------------------------------ */
+  if (fin && !doux) {
+    (function curseur() {
+      var c = $('#cur'), t = $('#curT');
+      if (!c) return;
+      document.body.classList.add('cur-ok');
+      var x = innerWidth / 2, y = innerHeight / 2, cx = x, cy = y, anime = false, ne = false;
+
+      window.addEventListener('pointermove', function (e) {
+        x = e.clientX; y = e.clientY;
+        if (!ne) { ne = true; cx = x; cy = y; }      /* il naît sous la souris */
+        c.classList.add('on');
+        if (!anime) { anime = true; requestAnimationFrame(suivre); }
+      }, { passive: true });
+
+      function suivre() {
+        cx += (x - cx) * 0.15;                    /* le lerp demandé */
+        cy += (y - cy) * 0.15;
+        c.style.transform = 'translate3d(' + cx.toFixed(2) + 'px,' + cy.toFixed(2) + 'px,0)';
+        if (Math.abs(x - cx) > 0.3 || Math.abs(y - cy) > 0.3) requestAnimationFrame(suivre);
+        else anime = false;                       /* la boucle s'arrête d'elle-même */
+      }
+
+      document.addEventListener('pointerover', function (e) {
+        var z = e.target.closest && e.target.closest('[data-cur]');
+        var lien = e.target.closest && e.target.closest('a,button,select');
+        c.classList.toggle('gros', !!(z || lien));
+        t.textContent = z ? z.getAttribute('data-cur') : '';
+      });
+      document.addEventListener('pointerleave', function () { c.classList.remove('on'); });
+    })();
+  }
+
+  /* ---------- 8. Le parallaxe de l'image d'atelier -------------------- */
+  if (!doux) {
+    (function parallaxe() {
+      var els = $$('[data-para] .scene');
+      if (!els.length) return;
+      var attente = false;
+      function poser() {
+        attente = false;
+        els.forEach(function (el) {
+          var r = el.parentNode.getBoundingClientRect();
+          if (r.bottom < -200 || r.top > innerHeight + 200) return;
+          var k = (r.top + r.height / 2 - innerHeight / 2) / innerHeight;
+          el.style.transform = 'translate3d(0,' + (k * -34).toFixed(1) + 'px,0) scale(1.06)';
+        });
+      }
+      addEventListener('scroll', function () {
+        if (attente) return;
+        attente = true; requestAnimationFrame(poser);
+      }, { passive: true });
+      poser();
+    })();
+  }
+
+  /* ---------- 9. La barre de navigation ------------------------------ */
+  (function navigation() {
+    var nav = $('#nav'), b = $('#burger'), l = $('#navC');
+    addEventListener('scroll', function () {
+      if (nav) nav.classList.toggle('pose', scrollY > 40);
+    }, { passive: true });
+    if (!b || !l) return;
+    function basculer(o) {
+      b.setAttribute('aria-expanded', o ? 'true' : 'false');
+      b.setAttribute('aria-label', o ? 'Fermer le menu' : 'Ouvrir le menu');
+      l.classList.toggle('ouvert', o);
+      document.body.classList.toggle('fige', o);
+    }
+    b.addEventListener('click', function () { basculer(b.getAttribute('aria-expanded') !== 'true'); });
+    l.addEventListener('click', function (e) { if (e.target.closest('a')) basculer(false); });
+    addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && b.getAttribute('aria-expanded') === 'true') { basculer(false); b.focus(); }
+    });
+  })();
+
+  /* ---------- 10. LE CARROUSEL --------------------------------------- */
+  (function carrousel() {
+    var zone = $('#cars'), piste = $('#carsP');
+    if (!zone || !piste) return;
+
+    var reels = OEUVRES.filter(function (o) { return o && o.f; });
+    var oeuvres = reels.length > 0;
+    var data = oeuvres ? reels : MATIERES;
+    if (!data.length) { zone.remove(); return; }
+
+    /* le bloc de texte, à gauche du centre */
+    var txt = document.createElement('div');
+    txt.className = 'cars-t';
+    zone.appendChild(txt);
+
+    piste.innerHTML = data.map(function (o, i) {
+      var ar = o.ar || '4/5';
+      if (oeuvres) {
+        var alt = (o.t ? o.t + ', ' : '') + (o.tech || 'œuvre') + ' par Angélique Avocevou';
+        return '<figure class="car" data-i="' + i + '"><div class="car-c" style="--ar:' + esc(ar) + '">' +
+          '<img src="assets/images/gallery/' + esc(o.f) + '" alt="' + esc(alt) + '" loading="lazy" decoding="async">' +
+          '</div></figure>';
+      }
+      return '<figure class="car" data-i="' + i + '"><div class="car-c" style="--ar:' + esc(ar) + '">' +
+        '<div class="scene scene--var" style="' + esc(o.v) + '"><i class="rai"></i></div>' +
+        '</div></figure>';
+    }).join('');
+
+    var cartes = $$('.car', piste);
+    var actif = 0, n = cartes.length;
+    var cpt = $('#carsC');
+
+    function deux(v) { return (v < 10 ? '0' : '') + v; }
+
+    function ecrire() {
+      var o = data[actif];
+      txt.classList.add('chg');
+      setTimeout(function () {
+        txt.innerHTML =
+          '<p class="l">' + esc(oeuvres ? ((o.tech || 'TECHNIQUE MIXTE') + ' · ' + (o.an || '')).toUpperCase() : o.l) + '</p>' +
+          '<p class="t">' + esc(o.t || 'Sans titre') + '</p>' +
+          '<p class="s">' + esc(oeuvres ? (o.mat || '') : o.s) + '</p>';
+        txt.classList.remove('chg');
+      }, 230);
+      if (cpt) cpt.innerHTML = deux(actif + 1) + ' <i>—</i> ' + deux(n);
+    }
+
+    function placer() {
+      var pas = cartes[0].offsetWidth * 1.02;
+      cartes.forEach(function (c, i) {
+        var o = i - actif;
+        if (o > n / 2) o -= n;
+        if (o < -n / 2) o += n;
+        var a = Math.abs(o);
+        var sc = a === 0 ? 1 : (a === 1 ? 0.6 : 0.45);
+        var op = a === 0 ? 1 : (a === 1 ? 0.55 : 0.22);
+        var bl = a === 0 ? 0 : (a === 1 ? 3 : 5);
+        var gs = a === 0 ? 0 : (a === 1 ? 0.15 : 0.35);
+        c.style.setProperty('--tx', (o * pas).toFixed(1) + 'px');
+        c.style.setProperty('--sc', sc);
+        c.style.setProperty('--op', op);
+        c.style.setProperty('--bl', bl + 'px');
+        c.style.setProperty('--gs', gs);
+        c.classList.toggle('car--act', a === 0);
+        c.setAttribute('aria-hidden', a === 0 ? 'false' : 'true');
+      });
+    }
+
+    function aller(i) { actif = (i + n) % n; placer(); ecrire(); }
+
+    $('#carPrev').addEventListener('click', function () { aller(actif - 1); });
+    $('#carNext').addEventListener('click', function () { aller(actif + 1); });
+    addEventListener('resize', placer, { passive: true });
+
+    /* le glissement du doigt */
+    var dx = 0, dep = false;
+    zone.addEventListener('pointerdown', function (e) { dep = true; dx = e.clientX; });
+    zone.addEventListener('pointerup', function (e) {
+      if (!dep) return;
+      dep = false;
+      var d = e.clientX - dx;
+      if (Math.abs(d) > 42) aller(actif + (d < 0 ? 1 : -1));
+      else if (oeuvres) ouvrirLoupe(actif);
+    });
+    zone.addEventListener('pointercancel', function () { dep = false; });
+
+    aller(0);
+
+    /* la vue en grand, seulement quand il y a de vraies photos */
+    var d = $('#loupe'), f = $('#loupeF'), cap = $('#loupeCap');
+    var img = null;
+    function ouvrirLoupe(i) {
+      if (!oeuvres || !d || !d.showModal) return;
+      if (!img) { img = document.createElement('img'); f.insertBefore(img, cap); }
+      var o = data[i];
+      img.src = 'assets/images/gallery/' + o.f;
+      img.alt = (o.t ? o.t + ', ' : '') + (o.tech || 'œuvre') + ' par Angélique Avocevou';
+      cap.textContent = [o.t, o.tech, o.an].filter(Boolean).join(' · ');
+      d.showModal();
+      document.body.classList.add('fige');
+    }
+    if (d) {
+      $('#loupeX').addEventListener('click', function () { d.close(); });
+      d.addEventListener('click', function (e) { if (e.target === d) d.close(); });
+      d.addEventListener('close', function () { document.body.classList.remove('fige'); });
+    }
+  })();
+
+  /* ---------- 11. LA MODALE : la demande de visite -------------------- */
+  (function modale() {
+    var d = $('#mod');
+    if (!d || !d.showModal) return;
+    var f = $('#modF'), err = $('#modE'), ok = $('#modOk');
+    var champs = { cherche: $('#chCherche'), format: $('#chFormat'), quand: $('#chQuand') };
+    var dernier = null;
+
+    $$('[data-modale]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        dernier = b;
+        ok.hidden = true; err.hidden = true;
+        champs.cherche.parentNode.classList.remove('mal');
+        d.showModal();
+        document.body.classList.add('fige');
+      });
+    });
+
+    function fermer() { d.close(); }
+    $('#modX').addEventListener('click', fermer);
+    d.addEventListener('click', function (e) { if (e.target === d) fermer(); });
+    d.addEventListener('close', function () {
+      document.body.classList.remove('fige');
+      if (dernier) dernier.focus();
+    });
+
+    champs.cherche.addEventListener('change', function () {
+      if (champs.cherche.value) { err.hidden = true; champs.cherche.parentNode.classList.remove('mal'); }
+    });
+
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!champs.cherche.value) {
+        err.hidden = false;
+        champs.cherche.parentNode.classList.add('mal');
+        champs.cherche.focus();
+        return;
+      }
+      var l = ["Bonjour Angélique, j'ai vu votre site."];
+      l.push('Ce que je cherche : ' + champs.cherche.value + '.');
+      if (champs.format.value) l.push('Format ou espace : ' + champs.format.value + '.');
+      if (champs.quand.value) l.push('Quand : ' + champs.quand.value + '.');
+      l.push('Pouvez-vous me dire comment on avance ?');
+      var url = (NUM || 'https://wa.me/2290152006490') + '?text=' + encodeURIComponent(l.join('\n'));
+      ok.hidden = false;
+      window.open(url, '_blank', 'noopener');
+    });
+  })();
+
+  /* ---------- 12. L'ambiance de l'atelier -----------------------------
+     Synthétisée : aucun fichier, aucun droit à payer, 0 Ko de réseau.
+     Éteinte par défaut. Jamais un son sans un geste de l'utilisateur. */
+  (function ambiance() {
+    var b = $('#fabSon');
+    if (!b) return;
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) { b.hidden = true; return; }
+
+    var ctx = null, maitre = null, minuteur = null, allume = false;
+    var VOL = petit ? 0.15 : 0.10;
+    var NOTES = [110, 146.83, 164.81, 220, 246.94, 293.66];
+
+    function batir() {
+      ctx = new AC();
+      var bf = ctx.createBuffer(1, 1, 22050), s = ctx.createBufferSource();
+      s.buffer = bf; s.connect(ctx.destination); s.start(0);   /* déblocage iOS */
+
+      var comp = ctx.createDynamicsCompressor();
+      comp.threshold.value = -26; comp.knee.value = 22; comp.ratio.value = 8;
+      comp.attack.value = 0.006; comp.release.value = 0.3;
+      maitre = ctx.createGain(); maitre.gain.value = 0;
+      maitre.connect(comp); comp.connect(ctx.destination);
+
+      var filtre = ctx.createBiquadFilter();
+      filtre.type = 'lowpass'; filtre.frequency.value = 420; filtre.Q.value = 0.6;
+      filtre.connect(maitre);
+
+      [55, 82.41, 110].forEach(function (fr, i) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = i === 2 ? 'triangle' : 'sine';
+        o.frequency.value = fr * (1 + (i - 1) * 0.0016);
+        g.gain.value = [0.5, 0.3, 0.14][i];
+        o.connect(g); g.connect(filtre); o.start();
+      });
+
+      var nb = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate), dd = nb.getChannelData(0);
+      for (var i = 0; i < dd.length; i++) dd[i] = (Math.random() * 2 - 1) * 0.5;
+      var src = ctx.createBufferSource(); src.buffer = nb; src.loop = true;
+      var bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 620; bp.Q.value = 0.5;
+      var ng = ctx.createGain(); ng.gain.value = 0.02;
+      src.connect(bp); bp.connect(ng); ng.connect(maitre); src.start();
+
+      var lfo = ctx.createOscillator(), lg = ctx.createGain();
+      lfo.frequency.value = 0.035; lg.gain.value = 170;
+      lfo.connect(lg); lg.connect(filtre.frequency); lfo.start();
+    }
+
+    function goutte() {
+      if (!allume || !ctx) return;
+      var fr = NOTES[(Math.random() * NOTES.length) | 0];
+      var o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime;
+      o.type = 'sine'; o.frequency.value = fr;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.07, t + 0.05);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 3.4);
+      o.connect(g); g.connect(maitre); o.start(t); o.stop(t + 3.6);
+      minuteur = setTimeout(goutte, 7000 + Math.random() * 11000);
+    }
+
+    b.addEventListener('click', function () {
+      if (allume) {
+        allume = false; clearTimeout(minuteur);
+        maitre.gain.cancelScheduledValues(ctx.currentTime);
+        maitre.gain.setValueAtTime(maitre.gain.value, ctx.currentTime);
+        maitre.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.7);
+        b.setAttribute('aria-pressed', 'false');
+        b.setAttribute('aria-label', "Activer l'ambiance sonore de l'atelier");
+      } else {
+        if (!ctx) batir();
+        if (ctx.state === 'suspended') ctx.resume();
+        allume = true;
+        maitre.gain.cancelScheduledValues(ctx.currentTime);
+        maitre.gain.setValueAtTime(maitre.gain.value, ctx.currentTime);
+        maitre.gain.linearRampToValueAtTime(VOL, ctx.currentTime + 1.6);
+        minuteur = setTimeout(goutte, 3200);
+        b.setAttribute('aria-pressed', 'true');
+        b.setAttribute('aria-label', "Couper l'ambiance sonore de l'atelier");
+      }
+    });
+
+    document.addEventListener('visibilitychange', function () {
+      if (!ctx || !allume) return;
+      document.hidden ? ctx.suspend() : ctx.resume();
+    });
+  })();
+
+})();

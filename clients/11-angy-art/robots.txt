@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Les robots des IA sont les bienvenus : c'est ainsi qu'une artiste se fait citer.
+User-agent: GPTBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://angy-art.pages.dev/sitemap.xml

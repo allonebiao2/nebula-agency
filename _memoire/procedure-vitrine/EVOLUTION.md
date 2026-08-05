@@ -600,3 +600,69 @@ tête de `SKILL.md`, en PHASE 1 et PHASE 6 de `PROCEDURE.md`, et en tête des `C
 fait croire à des débordements qui n'existent pas.
 
 **Exécution de référence :** `clients/10-hillary-m-styl/` (direction « LE FIL »), 64 contrôles.
+
+---
+
+## 2026-08-05 — Un `IntersectionObserver` seul laisse des sections vides POUR TOUJOURS
+
+**Trouvé sur Angy Art (#11), à corriger sur tout le parc.**
+
+Toutes nos vitrines révèlent au défilement avec le même motif : un `IntersectionObserver`
+qui pose `.vu`, puis `unobserve`. Ça marche tant que le visiteur **fait défiler**.
+
+Un visiteur qui **clique une entrée du menu** saute par-dessus une ou deux sections.
+L'observateur ne se déclenche jamais pour elles. Leurs textes restent à `opacity: 0`
+**définitivement** : il faut remonter puis redescendre pour les faire apparaître.
+
+Ça ne se voit ni dans une capture (on scrolle pour capturer), ni dans le code, ni dans un
+contrôle de débordement. C'est un défaut qu'on ne trouve qu'en le cherchant.
+
+**Le contrôle qui l'attrape**, à ajouter à toute suite QC :
+
+```python
+# après un défilement complet, que reste-t-il d'invisible ?
+f = page.evaluate("""() => [...document.querySelectorAll('main p, main h1, main h2, main li')]
+  .filter(el => parseFloat(getComputedStyle(el).opacity) < .5)
+  .map(el => el.tagName + '.' + (el.className||'').split(' ')[0]) """)
+assert not f, f
+```
+
+**Le remède** : remplacer l'observateur par un balayage au défilement. Tout ce qui est
+passé au-dessus de la ligne de flottaison est révélé, sauté ou non. Chaque élément est
+traité une seule fois (donc jamais rejoué en remontant, ce qui était la raison d'être du
+`unobserve`), et l'écouteur se retire quand la liste est vide.
+
+```js
+var restants = $$('.rv, [data-mots], …');
+function balayer() {
+  var seuil = innerHeight * 0.92;
+  restants = restants.filter(function (el) {
+    if (el.getBoundingClientRect().top >= seuil) return true;
+    el.classList.add('vu');
+    return false;
+  });
+  if (!restants.length) { removeEventListener('scroll', pousser); }
+}
+function pousser() { if (!attente) { attente = true; requestAnimationFrame(balayer); } }
+addEventListener('scroll', pousser, { passive: true });
+balayer();
+```
+
+⚠️ **À reprendre sur les vitrines existantes** : Djambar, Miss cakes, Speed×Weinkeller,
+HH Design, Au Braisé d'Or, Hillary. Toutes ont un menu qui saute des sections.
+
+### Trois autres leçons de la même session
+
+- **Ne jamais reprendre la palette d'un brief sans la calculer.** L'or « élégant »
+  `#c9b99a` demandé donne **1,68:1** sur le crème `#f3efe6`. Illisible, pas raffiné.
+  Il a fallu un second or, `#7e6d3a` (4,4:1), pour tout ce qui est posé sur clair.
+- **`npx wrangler` peut casser d'un coup** : `The package "@cloudflare/workerd-windows-64"
+  could not be found`. Le cache npx est corrompu. Supprimer le dossier fautif signalé dans
+  la trace, sous `AppData/Local/npm-cache/_npx/`, puis relancer. Rien d'autre à faire.
+- **La console Windows est en cp1252** : un seul `≤` dans un `print()` fait tomber tout un
+  script Python au premier contrôle. `sys.stdout.reconfigure(encoding="utf-8",
+  errors="replace")` en tête de chaque script, systématiquement.
+
+**Exécution de référence :** `clients/11-angy-art/` (direction éditoriale noir/crème),
+66 contrôles, **zéro bibliothèque** là où le brief en demandait quatre (Next.js, GSAP,
+Lenis, Swiper), tous réécrits en natif pour tenir la 4G de Cotonou.
