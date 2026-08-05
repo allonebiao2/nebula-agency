@@ -1,0 +1,1139 @@
+<title>PLUME · compte rendu d'assemblée générale</title>
+
+<style>
+/*
+  PLUME by NEBULA · la maquette du compte rendu.
+
+  LA PHRASE :
+  « Un compte rendu, c'est une ONDE de parole qu'on fige en ligne d'écriture. »
+
+  Tous les gestes en sortent, un par section, et jamais deux fois le même :
+    couverture ...... l'onde se dessine, puis s'aplatit en ligne d'écriture
+    l'essentiel ..... les chiffres se déposent
+    décisions ....... le sceau qu'on appose
+    temps de parole . les ondes de chacun, qui poussent
+    frise ........... la bande d'enregistrement qui défile
+    actions ......... la case qui se coche
+    verbatim ........ le texte qui s'écrit sous un curseur de lecture
+    validation ...... la ligne de signature qui se trace
+
+  PERMANENT : le rail d'onde à gauche se remplit au défilement. On lit le
+  document et on joue la réunion : c'est le même geste.
+
+  ⚠️ Le rail est en `position: fixed`. Aucun de ses ancêtres ne porte de
+  `transform`, sinon il défilerait avec la page (leçon du FAB, 2026-07-25).
+  ⚠️ Aucune animation infinie sous un `backdrop-filter` : il n'y en a aucun.
+
+  THÈME : cette page assume UN SEUL monde, celui d'un acte imprimé qui alterne
+  l'encre et le papier de registre. Il n'y a pas de fond unique à inverser :
+  la bascule claire/sombre du lecteur ne change donc rien, et c'est voulu.
+*/
+
+@font-face {
+  font-family: 'Bodoni PL';
+  src: url('@BODONI@') format('woff2');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Bodoni PL';
+  src: url('@BODONI_IT@') format('woff2');
+  font-weight: 400 900;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Archivo PL';
+  src: url('@ARCHIVO@') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Le papier d'un registre, pas une crème chaude : gris-vert froid. */
+  --registre: #e8ebe6;
+  --registre-dense: #dce1dc;
+  --papier-vif: #f2f4f0;
+
+  /* L'encre : un vert-noir, jamais un noir pur. */
+  --encre: #141c1a;
+  --nuit: #0b100f;
+
+  /* L'unique accent : le vert du sceau. Deux valeurs, une par fond. */
+  --sceau: #0f5c4a;
+  --sceau-vif: #2fa184;
+
+  /* Les signaux, et rien d'autre en couleur. */
+  --ocre: #8c5a16;
+  --ocre-vif: #c9903a;
+  --grenat: #8e2f26;
+  --grenat-vif: #d8776b;
+
+  --trait: #c3cbc3;
+  --trait-nuit: #263230;
+  --sourd: #5c6560;
+  --sourd-nuit: #7d8a85;
+
+  --display: 'Bodoni PL', 'Bodoni MT', Didot, 'Times New Roman', serif;
+  --texte: 'Archivo PL', ui-sans-serif, system-ui, sans-serif;
+  --registre-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+
+  --colonne: 60rem;
+  --marge-rail: 4.5rem;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--registre);
+  color: var(--encre);
+  font-family: var(--texte);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1, h2, h3 {
+  font-family: var(--display);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  margin: 0;
+  text-wrap: balance;
+}
+p { margin: 0; text-wrap: pretty; }
+
+:focus-visible {
+  outline: 2px solid var(--sceau-vif);
+  outline-offset: 3px;
+}
+
+/* ------------------------------------------------------------- structure - */
+
+.doc { position: relative; }
+
+.bande {
+  position: relative;
+  padding: clamp(3.5rem, 8vw, 7rem) 1.5rem;
+}
+.bande > .dedans {
+  max-width: var(--colonne);
+  margin: 0 auto;
+  padding-left: var(--marge-rail);
+}
+@media (max-width: 860px) {
+  :root { --marge-rail: 2.75rem; }
+}
+
+.bande--encre { background: var(--encre); color: var(--registre); }
+.bande--nuit { background: var(--nuit); color: var(--registre); }
+.bande--dense { background: var(--registre-dense); }
+.bande--vif { background: var(--papier-vif); }
+
+/* le filet de tête : une ligne d'écriture qui traverse */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-family: var(--registre-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sourd);
+  margin-bottom: 1.5rem;
+}
+.bande--encre .eyebrow, .bande--nuit .eyebrow { color: var(--sourd-nuit); }
+.eyebrow::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--trait);
+}
+.bande--encre .eyebrow::after, .bande--nuit .eyebrow::after { background: var(--trait-nuit); }
+
+.titre-bande {
+  font-size: clamp(2rem, 5.2vw, 3.4rem);
+  max-width: 22ch;
+}
+.chapeau {
+  margin-top: 1.25rem;
+  max-width: 62ch;
+  font-size: 1.02rem;
+  color: var(--sourd);
+}
+.bande--encre .chapeau, .bande--nuit .chapeau { color: #b3bfba; }
+
+.ital { font-family: var(--display); font-style: italic; color: var(--sceau); }
+.bande--encre .ital, .bande--nuit .ital { color: var(--sceau-vif); }
+
+/* --------------------------------------------------- le rail d'onde fixe - */
+
+.rail {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--marge-rail);
+  z-index: 20;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.25rem 0;
+  /* ⚠️ PAS de `mix-blend-mode: difference` : le rail traverse des bandes
+     encre ET des bandes papier, et la différence retournait le vert en rouge
+     sombre sur les fonds clairs. Une couleur qui tient sur les deux fonds
+     coûte moins cher qu'un effet qui ment sur la moitié de la page. */
+}
+.rail-piste {
+  position: relative;
+  flex: 1;
+  width: 3px;
+  background: rgba(125, 138, 133, .34);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.rail-plein {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: var(--lu, 0%);
+  background: var(--sceau-vif);
+}
+.rail-temps {
+  font-family: var(--registre-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  color: #8d9a95;
+  writing-mode: vertical-rl;
+  margin-top: 0.75rem;
+}
+@media (max-width: 620px) { .rail-temps { display: none; } }
+
+/* ------------------------------------------- 1. l'onde de la couverture -- */
+
+.couverture { min-height: 92vh; display: flex; flex-direction: column; justify-content: center; }
+.specimen {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  align-self: flex-start;
+  border: 1px solid var(--ocre-vif);
+  color: var(--ocre-vif);
+  font-family: var(--registre-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.75rem;
+  margin-bottom: 2.5rem;
+}
+.specimen::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--ocre-vif);
+  border-radius: 50%;
+}
+
+.acte {
+  font-size: clamp(2.95rem, 8.4vw, 5.6rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+}
+.organisation {
+  margin-top: 1.5rem;
+  font-family: var(--registre-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sceau-vif);
+}
+
+#onde { display: block; width: 100%; height: 118px; margin: 1.75rem 0 1.25rem; }
+
+.coordonnees {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 2.5rem;
+  border-top: 1px solid var(--trait-nuit);
+  padding-top: 1.5rem;
+}
+.coordonnees div { padding: 0.5rem 0; }
+.coordonnees dt {
+  font-family: var(--registre-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sourd-nuit);
+}
+.coordonnees dd {
+  margin: 0.25rem 0 0;
+  font-size: 1.02rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ⚠️ Pas de `inline-flex` ici : chaque nœud de texte devient un élément de
+   la boîte, et le `gap` creuse un trou de part et d'autre du gras. C'était
+   visible à l'écran : « écrit en  4 min 12 s . Relu par… ». */
+.fabrique {
+  margin-top: 2.25rem;
+  font-size: 0.92rem;
+  color: #b3bfba;
+}
+.fabrique b { color: var(--sceau-vif); font-variant-numeric: tabular-nums; }
+
+/* ------------------------------------ 2. les chiffres qui se déposent ---- */
+
+.depots {
+  display: grid;
+  gap: 1px;
+  background: var(--trait);
+  border: 1px solid var(--trait);
+  margin-top: 2.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+}
+.depot {
+  background: var(--registre);
+  padding: 1.5rem 1.25rem;
+}
+/* ⚠️ Les chiffres ne sont PAS en didone. À ce corps, les déliés du Bodoni
+   disparaissent : le « 4 » devenait une barre oblique et « 107 » se lisait
+   « l07 ». Un chiffre doit se lire, pas être élégant. */
+.depot-n {
+  font-family: var(--texte);
+  font-size: clamp(2.4rem, 5vw, 3.2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--sceau);
+}
+.depot-n small { font-size: 0.42em; font-family: var(--texte); font-weight: 600; }
+.depot-l {
+  margin-top: 0.5rem;
+  font-family: var(--registre-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sourd);
+}
+
+/* -------------------------------------------- 3. le sceau qu'on appose --- */
+
+.decisions { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
+
+.decision {
+  position: relative;
+  background: var(--papier-vif);
+  border: 1px solid var(--trait);
+  border-left: 4px solid var(--sceau);
+  padding: 1.5rem 1.5rem 1.35rem;
+}
+.decision[data-etat='reporte'] { border-left-color: var(--ocre); }
+.decision[data-etat='trancher'] { border-left-color: var(--grenat); }
+
+.decision-tete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+.tc {
+  font-family: var(--registre-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--sceau);
+  border: 1px solid var(--trait);
+  background: var(--registre);
+  padding: 0.2rem 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+.bande--encre .tc, .bande--nuit .tc {
+  color: var(--sceau-vif);
+  border-color: var(--trait-nuit);
+  background: transparent;
+}
+.etat {
+  font-family: var(--registre-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0.22rem 0.55rem;
+  border: 1px solid currentColor;
+}
+.etat--tranche { color: var(--sceau); }
+.etat--reporte { color: var(--ocre); }
+.etat--trancher { color: var(--grenat); }
+
+.decision h3 { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 34ch; }
+.decision-detail { margin-top: 0.75rem; color: var(--sourd); font-size: 0.95rem; }
+
+.vote {
+  margin-top: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  font-family: var(--registre-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  color: var(--sourd);
+  font-variant-numeric: tabular-nums;
+}
+/* la jauge s'arrête avant le sceau : les deux se chevauchaient */
+.decision[data-etat='tranche'] .vote { padding-right: 6rem; }
+@media (max-width: 620px) { .decision[data-etat='tranche'] .vote { padding-right: 0; } }
+.jauge {
+  flex: 1;
+  min-width: 9rem;
+  height: 7px;
+  display: flex;
+  background: var(--trait);
+  overflow: hidden;
+}
+.jauge i { display: block; height: 100%; width: 0; transition: width 1s cubic-bezier(.2,.8,.2,1); }
+.vu .jauge i { width: var(--w); }
+.jauge .pour { background: var(--sceau); }
+.jauge .contre { background: var(--grenat); }
+.jauge .abst { background: #9aa39d; }
+
+/* le sceau : il frappe et s'arrête net */
+.sceau {
+  position: absolute;
+  right: 1.1rem;
+  bottom: 1.1rem;
+  width: 74px; height: 74px;
+  opacity: 0;
+  transform: rotate(-18deg) scale(1.6);
+  transition: opacity .18s ease-out, transform .34s cubic-bezier(.16,1,.3,1);
+  transition-delay: var(--d, 260ms);
+  color: var(--sceau);
+}
+.vu .sceau { opacity: .9; transform: rotate(-9deg) scale(1); }
+.decision[data-etat='reporte'] .sceau,
+.decision[data-etat='trancher'] .sceau { display: none; }
+@media (max-width: 620px) { .sceau { display: none; } }
+
+/* --------------------------------------- 4. les ondes de temps de parole - */
+
+.paroles { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 1.1rem; }
+.parole { display: grid; grid-template-columns: minmax(8rem, 14rem) 1fr auto; gap: 1rem; align-items: center; }
+@media (max-width: 620px) {
+  /* placement explicite : sans lui, le pourcentage passait SOUS l'onde et
+     se retrouvait seul, aligné à droite, sans rien à quoi se rattacher. */
+  .parole { grid-template-columns: 1fr auto; }
+  .parole .parole-nom { grid-column: 1; grid-row: 1; }
+  .parole .parole-pct { grid-column: 2; grid-row: 1; }
+  .parole .onde-barre { grid-column: 1 / -1; grid-row: 2; }
+}
+.parole-nom { font-size: 0.98rem; }
+.parole-nom small { display: block; color: var(--sourd-nuit); font-size: 0.78rem; }
+.onde-barre {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.onde-barre span {
+  flex: 1;
+  background: var(--sceau-vif);
+  height: 4px;
+  transform: scaleY(0);
+  transform-origin: center;
+  transition: transform .5s cubic-bezier(.16,1,.3,1);
+}
+.vu .onde-barre span { transform: scaleY(var(--h, 1)); }
+.parole--faible .onde-barre span { background: #4e5f5a; }
+.parole-pct {
+  font-family: var(--texte);
+  font-size: 1.55rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  min-width: 3.5ch;
+  text-align: right;
+}
+.constat {
+  margin-top: 2rem;
+  border-left: 3px solid var(--ocre-vif);
+  padding: 0.15rem 0 0.15rem 1.25rem;
+  max-width: 54ch;
+  font-size: 1.05rem;
+}
+
+/* ------------------------------------ 5. la bande d'enregistrement -------- */
+
+.frise { margin-top: 2.5rem; border-top: 1px solid var(--trait); }
+.segment {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--trait);
+  opacity: 0;
+  transform: translateX(-18px);
+  transition: opacity .5s ease-out, transform .6s cubic-bezier(.2,.9,.25,1);
+  transition-delay: var(--d, 0ms);
+}
+.vu .segment { opacity: 1; transform: none; }
+.segment-tc { font-family: var(--registre-mono); font-size: 0.76rem; color: var(--sceau); font-variant-numeric: tabular-nums; }
+.segment-nom { font-size: 1rem; }
+.segment-duree {
+  font-family: var(--registre-mono);
+  font-size: 0.74rem;
+  color: var(--sourd);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.segment-barre { grid-column: 1 / -1; height: 5px; background: var(--trait); overflow: hidden; }
+.segment-barre i { display: block; height: 100%; width: 0; background: var(--sceau); transition: width .8s cubic-bezier(.2,.8,.2,1); transition-delay: var(--d, 0ms); }
+.vu .segment-barre i { width: var(--w); }
+
+/* ---------------------------------------------- 6. la case qui se coche -- */
+
+.actions { margin-top: 2.5rem; width: 100%; border-collapse: collapse; }
+.actions caption { text-align: left; font-family: var(--registre-mono); font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--sourd); padding-bottom: 0.75rem; }
+.actions th {
+  text-align: left;
+  font-family: var(--registre-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sourd);
+  font-weight: 500;
+  border-bottom: 1px solid var(--encre);
+  padding: 0 0.75rem 0.6rem 0;
+}
+.actions td { padding: 0.95rem 0.75rem 0.95rem 0; border-bottom: 1px solid var(--trait); vertical-align: top; font-size: 0.96rem; }
+.actions td:last-child, .actions th:last-child { padding-right: 0; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.case { width: 2.1rem; }
+.case svg { width: 20px; height: 20px; display: block; }
+.case path {
+  stroke: var(--sceau);
+  stroke-width: 2.2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 30;
+  stroke-dashoffset: 30;
+  transition: stroke-dashoffset .55s cubic-bezier(.6,0,.35,1);
+  transition-delay: var(--d, 0ms);
+}
+.vu .case path { stroke-dashoffset: 0; }
+.case rect { fill: none; stroke: var(--trait); stroke-width: 1.5; }
+
+/* ------------------------------------------------ 7. le verbatim lu ------ */
+
+.extraits { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 2rem; }
+.extrait { position: relative; padding-left: 1.5rem; border-left: 1px solid var(--trait-nuit); }
+.extrait-tete { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-bottom: 0.75rem; }
+.extrait-qui { font-family: var(--registre-mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--sourd-nuit); }
+.extrait blockquote {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(1.15rem, 2.6vw, 1.55rem);
+  line-height: 1.35;
+  max-width: 40ch;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path .85s cubic-bezier(.5,0,.2,1);
+  transition-delay: var(--d, 0ms);
+}
+/*
+  ⚠️ LES DEUX FORMES DU SÉLECTEUR SONT OBLIGATOIRES.
+
+  `.vu` est posé PAR l'observateur SUR l'élément qui porte `.rev`. Ici, c'est
+  `.extrait` lui-même. Écrire seulement `.vu .extrait blockquote` exige que
+  `.vu` soit un ANCÊTRE : la règle ne s'applique jamais, et la citation reste
+  découpée à zéro, donc invisible.
+
+  C'est exactement ce qui est arrivé : les trois citations et les deux
+  signatures étaient absentes de la page, et rien ne le signalait. Il a fallu
+  regarder l'image.
+*/
+.vu .extrait blockquote,
+.extrait.vu blockquote { clip-path: inset(0 0 0 0); }
+
+/* le curseur de lecture qui descend le long de la citation */
+.extrait::after {
+  content: '';
+  position: absolute;
+  left: -1px; top: 0;
+  width: 1px; height: 0;
+  background: var(--sceau-vif);
+  transition: height .85s cubic-bezier(.5,0,.2,1);
+  transition-delay: var(--d, 0ms);
+}
+.vu .extrait::after,
+.extrait.vu::after { height: 100%; }
+
+.replier { margin-top: 2.25rem; border-top: 1px solid var(--trait-nuit); padding-top: 1.25rem; }
+.replier summary {
+  cursor: pointer;
+  font-family: var(--registre-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sceau-vif);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.replier p { margin-top: 1rem; max-width: 66ch; color: #b3bfba; font-size: 0.95rem; }
+
+/* --------------------------------------- 8. la ligne de signature ------- */
+
+.signatures { margin-top: 2.5rem; display: grid; gap: 2.5rem; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
+.signature svg { width: 100%; height: 46px; display: block; }
+.signature path {
+  fill: none;
+  stroke: var(--sceau);
+  stroke-width: 1.5;
+  stroke-dasharray: 320;
+  stroke-dashoffset: 320;
+  transition: stroke-dashoffset 1.4s cubic-bezier(.5,0,.2,1);
+  transition-delay: var(--d, 0ms);
+}
+.vu .signature path,
+.signature.vu path { stroke-dashoffset: 0; }
+.signature-l { margin-top: 0.5rem; border-top: 1px solid var(--encre); padding-top: 0.5rem; font-family: var(--registre-mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--sourd); }
+
+.avertissement {
+  margin-top: 2.5rem;
+  border: 1px solid var(--ocre);
+  background: rgba(140, 90, 22, 0.06);
+  padding: 1.25rem 1.35rem;
+  max-width: 62ch;
+  font-size: 0.96rem;
+}
+.avertissement b { color: var(--ocre); }
+
+/* ------------------------------------------------------------- le pied -- */
+
+.pied { background: var(--nuit); color: var(--sourd-nuit); }
+.pied .dedans { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: space-between; align-items: flex-end; }
+.marque-plume { font-family: var(--display); font-size: 1.5rem; color: var(--registre); }
+.marque-plume span { font-style: italic; color: var(--sceau-vif); }
+.pied small { display: block; font-family: var(--registre-mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.5rem; }
+
+/* ------------------------------------------------------- la révélation -- */
+
+.rev { opacity: 0; transform: translateY(16px); transition: opacity .7s ease-out, transform .7s cubic-bezier(.2,.9,.25,1); }
+.rev.vu { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    transition-duration: .001ms !important;
+  }
+  .rev, .segment { opacity: 1 !important; transform: none !important; }
+  .extrait blockquote { clip-path: none !important; }
+  .sceau { opacity: .9 !important; transform: rotate(-9deg) !important; }
+  .case path, .signature path { stroke-dashoffset: 0 !important; }
+}
+
+/* ------------------------------------------------------- l'impression --- */
+
+@media print {
+  .rail, .replier, .sceau { display: none !important; }
+  body { background: #fff; color: #000; font-size: 11pt; }
+  .bande { padding: 1.2cm 0; break-inside: avoid; }
+  .bande--encre, .bande--nuit, .bande--dense, .bande--vif { background: #fff !important; color: #000 !important; }
+  .bande--encre .chapeau, .bande--nuit .chapeau, .pied { color: #333 !important; }
+  .bande > .dedans { padding-left: 0; max-width: none; }
+  .couverture { min-height: auto; break-after: page; }
+  #onde { height: 60px; }
+  .rev, .segment { opacity: 1 !important; transform: none !important; }
+  .extrait blockquote { clip-path: none !important; }
+  .case path, .signature path { stroke-dashoffset: 0 !important; }
+  .decisions, .extraits { gap: 0.6cm; }
+  .decision { break-inside: avoid; }
+}
+</style>
+
+<div class="doc">
+
+  <!-- le rail : on lit le document, on joue la réunion -->
+  <div class="rail" aria-hidden="true">
+    <div class="rail-piste"><div class="rail-plein" id="railPlein"></div></div>
+    <div class="rail-temps" id="railTemps">00:00:00</div>
+  </div>
+
+  <!-- ══════════════════════════════ 1 · COUVERTURE ══════════════════════ -->
+  <section class="bande bande--encre couverture">
+    <div class="dedans">
+      <span class="specimen">Spécimen · document de démonstration</span>
+
+      <p class="organisation">Coopérative agricole de Gbédji</p>
+      <h1 class="acte">Assemblée<br>générale<br><span class="ital">ordinaire</span></h1>
+
+      <canvas id="onde" aria-hidden="true"></canvas>
+
+      <dl class="coordonnees">
+        <div><dt>Séance du</dt><dd>27 juillet 2026</dd></div>
+        <div><dt>Lieu</dt><dd>Gbédji, Zogbodomey</dd></div>
+        <div><dt>Présents</dt><dd>23 sur 27</dd></div>
+        <div><dt>Quorum</dt><dd>atteint</dd></div>
+        <div><dt>Durée</dt><dd>1 h 47 min</dd></div>
+      </dl>
+
+      <p class="fabrique">
+        Enregistré, puis écrit en <b>4 min 12 s</b>. Relu par le secrétaire de séance.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════ 2 · L'ESSENTIEL ═════════════════════ -->
+  <section class="bande bande--vif">
+    <div class="dedans">
+      <p class="eyebrow">Ce qu'il faut retenir</p>
+      <h2 class="titre-bande rev">L'essentiel en <span class="ital">trente secondes</span>.</h2>
+      <p class="chapeau rev">
+        La page que votre bailleur lira. Le reste du document est là pour qu'on
+        puisse la contester, ligne par ligne, et ne pas y arriver.
+      </p>
+
+      <div class="depots rev">
+        <div class="depot"><p class="depot-n" data-compte="4">0</p><p class="depot-l">décisions</p></div>
+        <div class="depot"><p class="depot-n" data-compte="2">0</p><p class="depot-l">tranchées ce soir</p></div>
+        <div class="depot"><p class="depot-n" data-compte="6">0</p><p class="depot-l">actions engagées</p></div>
+        <div class="depot"><p class="depot-n" data-compte="107">0</p><p class="depot-l">minutes enregistrées</p></div>
+        <div class="depot"><p class="depot-n">4<small>&nbsp;min 12</small></p><p class="depot-l">pour l'écrire</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════ 3 · LES DÉCISIONS ═══════════════════ -->
+  <section class="bande bande--dense">
+    <div class="dedans">
+      <p class="eyebrow">Registre des décisions</p>
+      <h2 class="titre-bande rev">Quatre points. <span class="ital">Deux tranchés.</span></h2>
+      <p class="chapeau rev">
+        Chaque décision porte la seconde exacte où elle a été prise. Un clic et
+        on réécoute : c'est ce qui rend ce document opposable.
+      </p>
+
+      <div class="decisions">
+
+        <article class="decision rev" data-etat="tranche">
+          <div class="decision-tete">
+            <span class="tc">00:14:22</span>
+            <span class="etat etat--tranche">Tranché</span>
+          </div>
+          <h3>Adoption des comptes de l'exercice 2025</h3>
+          <p class="decision-detail">
+            Les comptes sont adoptés après lecture du rapport du trésorier et
+            réponse aux questions sur le poste transport.
+          </p>
+          <div class="vote">
+            <span>18 pour · 3 contre · 2 abstentions</span>
+            <span class="jauge">
+              <i class="pour" style="--w:78%"></i><i class="contre" style="--w:13%"></i><i class="abst" style="--w:9%"></i>
+            </span>
+          </div>
+          <svg class="sceau" viewBox="0 0 100 100" aria-hidden="true">
+            <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="2.5"/>
+            <circle cx="50" cy="50" r="37" fill="none" stroke="currentColor" stroke-width="1"/>
+            <path d="M30 52 L44 65 L71 36" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </article>
+
+        <article class="decision rev" data-etat="tranche">
+          <div class="decision-tete">
+            <span class="tc">00:41:07</span>
+            <span class="etat etat--tranche">Tranché</span>
+          </div>
+          <h3>Prix de rachat du maïs fixé à 165 F le kilo</h3>
+          <p class="decision-detail">
+            Pour toute la campagne 2026-2027, sur proposition du bureau et après
+            l'avis du représentant de la faîtière.
+          </p>
+          <div class="vote">
+            <span>Unanimité des 23 présents</span>
+            <span class="jauge"><i class="pour" style="--w:100%"></i></span>
+          </div>
+          <svg class="sceau" viewBox="0 0 100 100" aria-hidden="true" style="--d:380ms">
+            <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="2.5"/>
+            <circle cx="50" cy="50" r="37" fill="none" stroke="currentColor" stroke-width="1"/>
+            <path d="M30 52 L44 65 L71 36" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </article>
+
+        <article class="decision rev" data-etat="reporte">
+          <div class="decision-tete">
+            <span class="tc">01:12:35</span>
+            <span class="etat etat--reporte">Reporté</span>
+          </div>
+          <h3>Achat d'un second magasin de stockage à Bohicon</h3>
+          <p class="decision-detail">
+            Reporté : deux des trois devis exigés par le règlement intérieur
+            manquent au dossier. Nouvelle inscription à l'ordre du jour dès
+            réception.
+          </p>
+        </article>
+
+        <article class="decision rev" data-etat="trancher">
+          <div class="decision-tete">
+            <span class="tc">01:33:48</span>
+            <span class="etat etat--trancher">À trancher</span>
+          </div>
+          <h3>Renouvellement du bureau</h3>
+          <p class="decision-detail">
+            Renvoyé à une assemblée générale extraordinaire, à convoquer sous
+            trois semaines. Aucun vote n'a été ouvert ce soir.
+          </p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════ 4 · TEMPS DE PAROLE ═════════════════ -->
+  <section class="bande bande--nuit">
+    <div class="dedans">
+      <p class="eyebrow">Répartition de la parole</p>
+      <h2 class="titre-bande rev">Qui a parlé, et <span class="ital">combien</span>.</h2>
+      <p class="chapeau rev">
+        Mesuré sur la durée d'enregistrement, hors silences. Cette section se
+        désactive pour les organisations qui préfèrent ne pas l'afficher.
+      </p>
+
+      <div class="paroles" id="paroles"></div>
+
+      <p class="constat rev">
+        Le président a occupé <b>41 %</b> du temps de parole. Les douze membres
+        qui sont intervenus s'en partagent <b>18 %</b>.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════ 5 · LA FRISE ════════════════════════ -->
+  <section class="bande bande--vif">
+    <div class="dedans">
+      <p class="eyebrow">Déroulé de la séance</p>
+      <h2 class="titre-bande rev">Une heure quarante-sept, <span class="ital">minute par minute</span>.</h2>
+      <p class="chapeau rev">
+        Le temps réellement passé sur chaque point. Deux sujets ont mangé la
+        moitié de la séance.
+      </p>
+      <div class="frise" id="frise"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════ 6 · LES ACTIONS ═════════════════════ -->
+  <section class="bande bande--dense">
+    <div class="dedans">
+      <p class="eyebrow">Ce qui doit être fait</p>
+      <h2 class="titre-bande rev">Six actions. <span class="ital">Chacune a un nom.</span></h2>
+      <p class="chapeau rev">
+        Une action sans responsable et sans date n'est pas une action, c'est un
+        souhait. PLUME refuse d'en écrire une sans les deux.
+      </p>
+      <div style="overflow-x:auto">
+        <table class="actions">
+          <caption>Extraites des décisions ci-dessus</caption>
+          <thead>
+            <tr><th class="case"></th><th>Action</th><th>Responsable</th><th>Échéance</th></tr>
+          </thead>
+          <tbody id="actions"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════ 7 · LE VERBATIM ═════════════════════ -->
+  <section class="bande bande--encre">
+    <div class="dedans">
+      <p class="eyebrow">Ce qui a été dit</p>
+      <h2 class="titre-bande rev">Les mots qui ont <span class="ital">fait basculer</span>.</h2>
+      <p class="chapeau rev">
+        Trois extraits, chacun rattaché à sa décision et à sa seconde. Le
+        verbatim complet est en annexe, replié.
+      </p>
+
+      <div class="extraits">
+        <div class="extrait rev">
+          <div class="extrait-tete">
+            <span class="tc">00:41:52</span>
+            <span class="extrait-qui">Représentant de la faîtière</span>
+          </div>
+          <blockquote>« Si vous descendez sous cent soixante, les producteurs vendront au bord de la route, et vous n'aurez pas de volume à livrer. »</blockquote>
+        </div>
+
+        <div class="extrait rev">
+          <div class="extrait-tete">
+            <span class="tc">01:14:08</span>
+            <span class="extrait-qui">Trésorier</span>
+          </div>
+          <blockquote>« Je ne signerai pas un engagement sur un magasin dont nous n'avons qu'un seul devis. Ce n'est pas de la méfiance, c'est la règle que nous nous sommes donnée. »</blockquote>
+        </div>
+
+        <div class="extrait rev">
+          <div class="extrait-tete">
+            <span class="tc">01:34:20</span>
+            <span class="extrait-qui">Président de séance</span>
+          </div>
+          <blockquote>« Ne tranchons pas ce soir. Un bureau renouvelé à vingt-trois dans la fatigue, c'est un bureau contesté dans un mois. »</blockquote>
+        </div>
+      </div>
+
+      <details class="replier">
+        <summary>Ouvrir le verbatim complet · 1 h 47 min</summary>
+        <p>
+          Le verbatim intégral accompagne le document, horodaté et attribué
+          intervenant par intervenant. Il n'est pas destiné à être lu : il est
+          là pour être consulté le jour où une décision est contestée. C'est la
+          différence entre un compte rendu qu'on croit et un compte rendu qu'on
+          vérifie.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════ 8 · VALIDATION ══════════════════════ -->
+  <section class="bande bande--vif">
+    <div class="dedans">
+      <p class="eyebrow">Validation</p>
+      <h2 class="titre-bande rev">Ce document n'est pas encore <span class="ital">un acte</span>.</h2>
+
+      <div class="avertissement rev">
+        <b>Il le devient à la signature.</b> PLUME écrit, range et horodate. Il
+        ne certifie rien. Ce compte rendu n'a de valeur qu'une fois relu et
+        signé par le président et le secrétaire de séance, qui en restent les
+        seuls responsables.
+      </div>
+
+      <div class="signatures">
+        <div class="signature rev">
+          <svg viewBox="0 0 300 46" aria-hidden="true">
+            <path d="M8 34 C 34 8, 52 40, 74 22 S 108 4, 126 28 S 158 40, 178 18 C 196 -2, 214 34, 238 24 S 276 12, 292 26"/>
+          </svg>
+          <p class="signature-l">Président de séance</p>
+        </div>
+        <div class="signature rev">
+          <svg viewBox="0 0 300 46" aria-hidden="true" style="--d:320ms">
+            <path d="M10 30 C 28 14, 44 36, 66 24 S 96 6, 120 30 S 150 38, 172 20 C 190 6, 210 32, 232 22 S 268 16, 290 30"/>
+          </svg>
+          <p class="signature-l">Secrétaire de séance</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════ PIED ════════════════════════════════ -->
+  <footer class="bande pied">
+    <div class="dedans">
+      <div>
+        <p class="marque-plume">PLUME <span>by NEBULA</span></p>
+        <small>Vous parlez, elle écrit</small>
+      </div>
+      <div>
+        <small>Spécimen · aucune donnée réelle</small>
+        <small style="margin-top:.35rem">nebula-agency.online</small>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+(() => {
+  'use strict'
+  const doux = matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  /* ---------------------------------------------------- les données ---- */
+
+  const PAROLES = [
+    { nom: 'Le président', role: 'M. Adjovi', pct: 41 },
+    { nom: 'Le trésorier', role: 'M. Sossou', pct: 22 },
+    { nom: 'Les membres', role: '12 intervenants', pct: 18, faible: true },
+    { nom: 'La secrétaire', role: 'Mme Ahouandjinou', pct: 14 },
+    { nom: 'La faîtière', role: 'représentant invité', pct: 5, faible: true },
+  ]
+
+  const FRISE = [
+    { tc: '00:00', nom: 'Ouverture et vérification du quorum', min: 9 },
+    { tc: '00:09', nom: 'Rapport moral du président', min: 5 },
+    { tc: '00:14', nom: 'Comptes de l’exercice 2025', min: 27 },
+    { tc: '00:41', nom: 'Prix de rachat du maïs', min: 31 },
+    { tc: '01:12', nom: 'Magasin de stockage de Bohicon', min: 21 },
+    { tc: '01:33', nom: 'Renouvellement du bureau', min: 14 },
+  ]
+
+  const ACTIONS = [
+    ['Transmettre les comptes validés à la faîtière', 'Trésorier', '10 août'],
+    ['Afficher le prix de rachat dans les six villages', 'Secrétaire', '3 août'],
+    ['Réunir les deux devis manquants du magasin', 'Président', '30 août'],
+    ['Convoquer l’assemblée extraordinaire', 'Secrétaire', '15 août'],
+    ['Ouvrir le compte de campagne à la banque', 'Trésorier', '20 août'],
+    ['Recenser les producteurs de la campagne', 'Chargé de production', '5 sept.'],
+  ]
+
+  /* ------------------------------------------------- le remplissage ---- */
+
+  const echapper = (s) => String(s).replace(/[&<>"]/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
+
+  document.getElementById('paroles').innerHTML = PAROLES.map((p, i) => {
+    /* l'onde de chacun : 26 barres dont la hauteur suit son temps de parole */
+    const barres = Array.from({ length: 26 }, (_, k) => {
+      const creux = 0.35 + 0.65 * Math.abs(Math.sin(k * 1.7 + i))
+      return `<span style="--h:${(p.pct / 41 * creux * 6).toFixed(2)}"></span>`
+    }).join('')
+    return `<div class="parole${p.faible ? ' parole--faible' : ''} rev" style="--d:${i * 90}ms">
+      <p class="parole-nom">${echapper(p.nom)}<small>${echapper(p.role)}</small></p>
+      <div class="onde-barre" aria-hidden="true">${barres}</div>
+      <p class="parole-pct">${p.pct}<span style="font-size:.62em;font-weight:500">&nbsp;%</span></p>
+    </div>`
+  }).join('')
+
+  const totalMin = FRISE.reduce((s, f) => s + f.min, 0)
+  document.getElementById('frise').innerHTML = FRISE.map((f, i) => `
+    <div class="segment" style="--d:${i * 110}ms">
+      <span class="segment-tc">${f.tc}</span>
+      <span class="segment-nom">${echapper(f.nom)}</span>
+      <span class="segment-duree">${f.min} min</span>
+      <span class="segment-barre"><i style="--w:${(f.min / totalMin * 100).toFixed(1)}%"></i></span>
+    </div>`).join('')
+
+  const COCHE = `<svg viewBox="0 0 24 24"><rect x="2.5" y="2.5" width="19" height="19" rx="2"/><path d="M7 12.5 L10.5 16 L17 8.5"/></svg>`
+  document.getElementById('actions').innerHTML = ACTIONS.map(([quoi, qui, quand], i) => `
+    <tr>
+      <td class="case" style="--d:${i * 110}ms">${COCHE}</td>
+      <td>${echapper(quoi)}</td>
+      <td>${echapper(qui)}</td>
+      <td>${echapper(quand)}</td>
+    </tr>`).join('')
+
+  /* ------------------------------------------ la révélation, un seul obs */
+
+  const obs = new IntersectionObserver((entrees) => {
+    entrees.forEach((e) => {
+      if (!e.isIntersecting) return
+      e.target.classList.add('vu')
+      obs.unobserve(e.target)
+    })
+  }, { rootMargin: '0px 0px -6% 0px', threshold: 0.12 })
+
+  document.querySelectorAll('.rev, .frise, .actions, .decisions > *').forEach((el) => obs.observe(el))
+
+  /* les chiffres qui se déposent */
+  const compteurs = new IntersectionObserver((entrees) => {
+    entrees.forEach((e) => {
+      if (!e.isIntersecting) return
+      compteurs.unobserve(e.target)
+      const cible = +e.target.dataset.compte
+      if (doux) { e.target.textContent = cible; return }
+      let t0 = null
+      const pas = (t) => {
+        if (t0 === null) t0 = t
+        const k = Math.min(1, (t - t0) / 1100)
+        e.target.textContent = Math.round(cible * (1 - Math.pow(1 - k, 3)))
+        if (k < 1) requestAnimationFrame(pas)
+      }
+      requestAnimationFrame(pas)
+    })
+  }, { threshold: 0.6 })
+  document.querySelectorAll('[data-compte]').forEach((el) => compteurs.observe(el))
+
+  /* ------------------------------------ le rail : lire, c'est jouer ----- */
+
+  const plein = document.getElementById('railPlein')
+  const temps = document.getElementById('railTemps')
+  const DUREE = 107 * 60 /* 1 h 47 en secondes */
+  let planifie = false
+
+  const majRail = () => {
+    planifie = false
+    const h = document.documentElement.scrollHeight - innerHeight
+    const k = h > 0 ? Math.min(1, Math.max(0, scrollY / h)) : 0
+    plein.style.setProperty('--lu', (k * 100).toFixed(2) + '%')
+    const s = Math.round(k * DUREE)
+    const hh = String(Math.floor(s / 3600)).padStart(2, '0')
+    const mm = String(Math.floor((s % 3600) / 60)).padStart(2, '0')
+    const ss = String(s % 60).padStart(2, '0')
+    temps.textContent = `${hh}:${mm}:${ss}`
+  }
+  addEventListener('scroll', () => {
+    if (planifie) return
+    planifie = true
+    requestAnimationFrame(majRail)
+  }, { passive: true })
+  addEventListener('resize', majRail)
+  majRail()
+
+  /* --------------------------- l'onde de couverture, sur canvas --------- */
+
+  const cv = document.getElementById('onde')
+  const ctx = cv.getContext('2d')
+  let largeur = 0, hauteur = 0
+
+  const dimensionner = () => {
+    const r = cv.getBoundingClientRect()
+    const dpr = Math.min(2, devicePixelRatio || 1)
+    largeur = Math.max(1, Math.round(r.width))
+    hauteur = Math.max(1, Math.round(r.height))
+    cv.width = largeur * dpr
+    cv.height = hauteur * dpr
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+  }
+
+  /* une forme d'onde stable, tirée d'un bruit reproductible */
+  const N = 128
+  const graines = Array.from({ length: N }, (_, i) => {
+    const a = Math.sin(i * 12.9898) * 43758.5453
+    const bruit = a - Math.floor(a)
+    const enveloppe = 0.35 + 0.65 * Math.sin((i / N) * Math.PI)
+    return (0.25 + 0.75 * bruit) * enveloppe
+  })
+
+  const dessiner = (k) => {
+    ctx.clearRect(0, 0, largeur, hauteur)
+    const milieu = hauteur / 2
+    const pas = largeur / N
+    const large = Math.max(1.5, pas * 0.42)
+
+    /* la ligne d'écriture, dessous : c'est là que l'onde se dépose */
+    ctx.strokeStyle = 'rgba(195,203,195,.28)'
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.moveTo(0, milieu)
+    ctx.lineTo(largeur * Math.min(1, k * 1.15), milieu)
+    ctx.stroke()
+
+    for (let i = 0; i < N; i++) {
+      const apparu = Math.min(1, Math.max(0, (k * 1.35) - i / N))
+      if (apparu <= 0) continue
+      /* chaque barre monte, puis retombe vers la ligne : l'onde se fige */
+      const chute = Math.min(1, Math.max(0, (k - 0.62) / 0.38))
+      /* elle se dépose, elle ne s'efface pas : on garde près de la moitié
+         de l'amplitude, sinon le geste du métier disparaît de la page. */
+      const h = graines[i] * (hauteur * 0.46) * apparu * (1 - chute * 0.52)
+      const x = i * pas + pas / 2
+      ctx.fillStyle = i % 7 === 0 ? '#2fa184' : 'rgba(47,161,132,.42)'
+      ctx.fillRect(x - large / 2, milieu - h, large, h * 2)
+    }
+  }
+
+  let debut = null
+  const jouer = (t) => {
+    if (debut === null) debut = t
+    const k = Math.min(1, (t - debut) / 2200)
+    dessiner(k)
+    if (k < 1) requestAnimationFrame(jouer)
+  }
+
+  const lancer = () => {
+    dimensionner()
+    if (doux) { dessiner(1); return }
+    debut = null
+    requestAnimationFrame(jouer)
+  }
+
+  addEventListener('resize', () => { dimensionner(); dessiner(1) })
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(lancer)
+  else lancer()
+})()
+</script>
