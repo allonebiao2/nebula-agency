@@ -36,10 +36,10 @@
      ont été retirés le 2026-08-06 : un vêtement sans prix dans un carrousel
      qui mène au catalogue reste une promesse. Ici, tout est réel. */
   var COLLECTIONS = [
-    { f:'coll-1.webp', l:'Cérémonie',    t:'Robe de cérémonie', s:'Bustier structuré, jupe à volants de satin' },
-    { f:'coll-2.webp', l:'Sur-mesure',   t:"L'ensemble Mira",   s:'Haut à manches ballon, jupe à volants étagés' },
-    { f:'coll-3.webp', l:'Fait main',    t:'Ensemble JOSY',     s:'Pantalon large, empiècements peints, corset lacé' },
-    { f:'coll-4.webp', l:'Sur-mesure',   t:'Robe de ville',     s:'Dos nu, wax à feuillages et panneaux de satin' }
+    { f:'piece-ceremonie.webp', l:'Cérémonie',    t:'Robe de cérémonie', s:'Bustier structuré, jupe à volants de satin' },
+    { f:'piece-mira.webp', l:'Sur-mesure',   t:"L'ensemble Mira",   s:'Haut à manches ballon, jupe à volants étagés' },
+    { f:'piece-josy.webp', l:'Fait main',    t:'Ensemble JOSY',     s:'Pantalon large, empiècements peints, corset lacé' },
+    { f:'piece-ville.webp', l:'Sur-mesure',   t:'Robe de ville',     s:'Dos nu, wax à feuillages et panneaux de satin' }
   ];
   /* ================================================================ */
 
@@ -265,10 +265,16 @@
     var sc = $('#hsc'), num = $('#hnum'), col = $('#hcol'), des = $('#hdes'), cpt = $('#hcpt');
     if (!sc) return;
 
+    /* ⚠️ AUCUNE image du héros en `loading="lazy"`. Elles sont quatre, elles
+       pèsent 760 Ko à elles toutes, et le visiteur les verra toutes : la
+       première transition attendait le téléchargement ET le décodage de la
+       suivante, et la pièce restait immobile ~300 ms après le clic. Ça se
+       voyait comme un raté. Elles sont chargées tout de suite et décodées
+       en arrière-plan dès que la page est posée. */
     sc.innerHTML = HERO.map(function (o, i) {
       var img = o.f
         ? '<img src="assets/images/' + esc(o.f) + '" alt="' + esc(o.t) + ', création Hillary M. Styl"'
-          + (i ? ' loading="lazy"' : ' fetchpriority="high"') + ' decoding="async">'
+          + (i ? '' : ' fetchpriority="high"') + ' decoding="async">'
         : SIL;
       return '<figure class="hsl' + (i === 0 ? ' act' : '') + '" data-i="' + i + '">'
         + '<div class="hsl-c">' + img + '</div></figure>';
@@ -276,6 +282,58 @@
 
     var sl = $$('.hsl', sc), n = sl.length, actif = 0, occupe = false;
 
+    /* on décode les mannequins pendant que le visiteur lit le héros : au
+       premier clic, la pièce est déjà prête à peindre. `decode()` ne bloque
+       pas le fil principal, et l'échec est sans conséquence. */
+    setTimeout(function () {
+      $$('img', sc).forEach(function (im) {
+        if (im.decode) im.decode().catch(function () {});
+      });
+    }, 1200);
+
+    /* Le chiffre géant roule DANS LE SENS du glissement et sur la MÊME durée.
+       Deux chiffres coexistent le temps du croisement : l'ancien sort par le
+       haut, le nouveau entre par le bas (et l'inverse en marche arrière).
+
+       ⚠️ En DEUX temps, et c'est tout l'intérêt : `preparerNum` fabrique le
+       chiffre et le pose à son point de départ, `aller()` récupère la fonction
+       de départ et la déclenche DANS LA MÊME IMAGE que le glissement. Les deux
+       transitions partent donc sur la même horloge, à la milliseconde.
+       Avant, tout ce travail se faisait AVANT le mouvement : fabriquer un
+       glyphe de 30rem coûte un calcul de mise en page, et la pièce restait
+       immobile un demi-tour d'horloge après le clic. */
+    function preparerNum(i, sens) {
+      if (!num) return function () {};
+      /* ⚠️ un chiffre déjà en train de sortir n'a plus rien à faire là. Sans
+         ça, cliquer vite empilait « 0302 » : le verrou de `aller()` et le
+         retrait de l'ancien chiffre tombent tous deux à 1050 ms, et selon
+         lequel gagne la course, un chiffre restait sur le carreau. */
+      $$('span.hn-s', num).forEach(function (s) { num.removeChild(s); });
+      var vieux = num.querySelector('span');
+      var neuf = document.createElement('span');
+      neuf.textContent = d2(i + 1);
+      neuf.className = 'hn-e';
+      neuf.style.setProperty('--s', sens > 0 ? '1' : '-1');
+      num.appendChild(neuf);
+      if (vieux) vieux.style.setProperty('--s', sens > 0 ? '1' : '-1');
+      /* on force le calcul MAINTENANT : au moment du départ, il ne reste
+         plus qu'à changer une classe. */
+      void neuf.offsetWidth;
+      return function () {
+        neuf.classList.remove('hn-e');
+        if (vieux) vieux.classList.add('hn-s');
+        setTimeout(function () {
+          /* seule la transition LA PLUS RÉCENTE fait le ménage, et elle ne
+             laisse qu'un chiffre. Une transition dépassée ne touche à rien :
+             elle effacerait le chiffre de celle qui l'a doublée. */
+          if (num.lastElementChild !== neuf) return;
+          $$('span', num).forEach(function (s) { if (s !== neuf) num.removeChild(s); });
+        }, 1050);
+      };
+    }
+
+    /* la couleur et les deux textes : ils ne portent pas le mouvement, ils
+       le suivent. On les traite APRÈS le départ pour ne pas le retarder. */
     function ecrire(i) {
       var o = HERO[i];
       /* LA COULEUR SUIT LE VÊTEMENT. La teinte dominante de chaque pièce est
@@ -283,19 +341,15 @@
          la nappe de fond, le trait sous le titre et le badge de tête.
          Le magenta de la maison reste ailleurs — ici c'est le tissu qui parle. */
       if (o.c) document.documentElement.style.setProperty('--piece', o.c);
-      if (num) {
-        num.classList.add('chg');
-        setTimeout(function () {
-          num.innerHTML = '<span>' + d2(i + 1) + '</span>';
-          num.classList.remove('chg');
-        }, 240);
-      }
       [col, des].forEach(function (e) { if (e) e.classList.add('chg'); });
+      /* les deux textes se relèvent au tiers du glissement : assez tard pour
+         faire partie du même mouvement, assez tôt pour être lisibles à
+         l'arrivée de la pièce. */
       setTimeout(function () {
         if (col) col.innerHTML = '<b>' + esc(o.col) + '</b><span class="m">' + esc(o.mat) + '</span>';
         if (des) des.innerHTML = '<b>' + esc(o.t) + '</b><p>' + esc(o.d) + '</p>';
         [col, des].forEach(function (e) { if (e) e.classList.remove('chg'); });
-      }, 260);
+      }, 340);
       if (cpt) cpt.textContent = d2(i + 1) + ' — ' + d2(n);
     }
 
@@ -307,20 +361,27 @@
       var sort = sl[actif], entre = sl[i];
       entre.classList.remove('act', 'sort', 'entre');
       entre.classList.add(sens > 0 ? 'entre' : 'sort');
-      /* le numéro change AU DÉBUT du mouvement */
-      ecrire(i);
+      var partirNum = preparerNum(i, sens);
+      sc.classList.add('bouge');   /* ombres coupées : voir style-page.css */
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
+          /* LA MÊME IMAGE pour les trois : la pièce sort, la pièce entre,
+             le chiffre roule. Rien d'autre ne se glisse entre eux. */
           sort.classList.remove('act');
           sort.classList.add(sens > 0 ? 'sort' : 'entre');
           entre.classList.remove('sort', 'entre');
           entre.classList.add('act');
+          partirNum();
+          /* la couleur et les textes à l'image suivante : leur recalcul ne
+             doit pas s'intercaler dans le départ du mouvement. */
+          requestAnimationFrame(function () { ecrire(i); });
         });
       });
       setTimeout(function () {
         sl.forEach(function (s) { if (s !== entre) s.classList.remove('act', 'sort', 'entre'); });
+        sc.classList.remove('bouge');
         actif = i; occupe = false;
-      }, 950);
+      }, 1050);   /* doit couvrir la transition CSS (1 s) */
     }
 
     var prev = $('#hPrev'), next = $('#hNext');
@@ -349,7 +410,10 @@
     }
     sc.addEventListener('pointerenter', function () { clearInterval(minuteur); });
     sc.addEventListener('pointerleave', relancer);
-    ecrire(0); relancer();
+    /* au premier rendu il n'y a rien à croiser : le chiffre du balisage est
+       déjà le bon, on pose seulement la couleur, les textes et le compteur. */
+    ecrire(0);
+    relancer();
   })();
 
   /* ---------- 9 · LES COLLECTIONS — coverflow (Swiper réécrit) ---- */

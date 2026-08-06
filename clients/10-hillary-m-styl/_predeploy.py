@@ -95,7 +95,9 @@ def main():
     print("       ✅ " + OUT.name + f" — {OUT.stat().st_size // 1024} Ko")
 
     # ---------- 3. contrôle qualité ----------
-    etape(3, "contrôle qualité (71 contrôles)")
+    # ⚠️ jamais de nombre recopié ici : la suite en gagne à chaque défaut
+    #    corrigé, et un chiffre figé finit toujours par mentir.
+    etape(3, "contrôle qualité (suite complète)")
     r = subprocess.run([sys.executable, "_qc.py"], cwd=ICI,
                        capture_output=True, text=True)
     sortie = r.stdout + r.stderr
@@ -155,8 +157,27 @@ def main():
              + ", ".join(sorted(manquantes)[:6]),
              "Relancez `python _pose_images.py`, puis ce script.")
 
+    # UNE PAGE 404, TOUJOURS. Sans elle, Cloudflare Pages répond 200 avec le
+    # HTML d'accueil pour un fichier absent — et ce 200 hérite du cache
+    # `immutable` d'un an. Une erreur reste alors servie pendant un an à la
+    # place du fichier. C'est la panne qui a cassé PISTE (2026-08-04).
+    (DIST / "404.html").write_text(
+        '<!doctype html><html lang="fr"><meta charset="utf-8">'
+        '<meta name="viewport" content="width=device-width,initial-scale=1">'
+        '<title>Page introuvable — HILLARY M. STYL</title>'
+        '<style>html{background:#0B0A0C;color:#F4F1EC;font:16px/1.6 system-ui,sans-serif}'
+        'body{margin:0;min-height:100vh;display:grid;place-items:center;text-align:center;padding:24px}'
+        'h1{font-size:clamp(1.6rem,6vw,2.6rem);margin:0 0 12px;font-weight:700}'
+        'p{margin:0 0 26px;color:rgba(244,241,236,.68)}'
+        'a{display:inline-block;padding:15px 26px;border-radius:50px;background:#E6007E;'
+        'color:#fff;text-decoration:none;font-weight:600;letter-spacing:.06em}</style>'
+        '<div><h1>Cette page n\'existe pas.</h1>'
+        '<p>Le fil s\'est arrêté ici. Reprenons depuis le début.</p>'
+        '<a href="/">Retour à l\'accueil</a></div></html>', encoding="utf-8")
+
     poids = (DIST / "index.html").stat().st_size
     print(f"       ✅ _dist/index.html — {poids // 1024} Ko")
+    print("       ✅ 404.html — un fichier absent ne sera jamais mis en cache un an")
     print(f"       ✅ {n_img} images copiées — {poids_img // 1024} Ko")
     print(f"          total à publier : {(poids + poids_img) // 1024} Ko")
     print("")

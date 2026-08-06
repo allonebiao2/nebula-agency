@@ -90,6 +90,28 @@ async def main():
             # ⚠️ le nombre vient des DONNÉES, jamais recopié ici
             att = await page.evaluate("()=>PIECES.filter(p=>p.cat==='sm').length")
             ok(n == att, f"[{w}px] {att} pieces sur-mesure affichees (vu {n})")
+
+            # UN PRIX NE SE COUPE PAS EN DEUX. Un Range qui renvoie plusieurs
+            # rectangles, c'est un texte passe a la ligne. « 100 000 » / « F »
+            # sur deux lignes faisait une carte cassee en 390 px (2026-08-06).
+            coupes = await page.evaluate("""()=>{
+              const out=[];
+              document.querySelectorAll('.piece .bd .pr, .piece .bd .del').forEach(e=>{
+                e.querySelectorAll('span').forEach(s=>{
+                  const r=document.createRange(); r.selectNodeContents(s);
+                  if(r.getClientRects().length>1) out.push(s.textContent.trim());
+                });
+                e.childNodes.forEach(nd=>{
+                  if(nd.nodeType===3 && nd.textContent.trim()){
+                    const r=document.createRange(); r.selectNodeContents(nd);
+                    if(r.getClientRects().length>1) out.push(nd.textContent.trim());
+                  }
+                });
+              });
+              return out;}""")
+            ok(not coupes, f"[{w}px] prix et delais sur une seule ligne"
+               + ("" if not coupes else " -> coupes : " + "; ".join(coupes[:4])))
+
             await page.locator(".piece").first.click()
             await page.wait_for_selector("#ov.on")
             # les champs entrent en pivotant (« le carnet ») : mesurer pendant
@@ -304,6 +326,94 @@ async def main():
         nc = await page.locator(".car").count()
         ok(nh >= 3, f"le heros presente {nh} creations")
         ok(nc >= 4, f"le carrousel presente {nc} pieces")
+
+        # LE CHIFFRE GEANT SUIT LA PIECE.
+        # Il roulait 240 ms puis se remplacait d'un coup, alors que le
+        # glissement dure 1,15 s : il arrivait 900 ms avant le vetement.
+        # On verifie qu'ils se croisent VRAIMENT en cours de route, et qu'il
+        # n'en reste qu'un a l'arrivee, accorde au compteur.
+        # ⚠️ on ECHANTILLONNE tout le glissement au lieu de regarder a un
+        #    instant fixe : le defilement automatique peut avaler le clic, et
+        #    un controle qui tombe au mauvais moment ment dans les deux sens.
+        croise = await page.evaluate("""()=>new Promise(res=>{
+            const t0=performance.now(); let vu2=0, ymin=0, ymax=0, clics=0;
+            function clic(){ document.getElementById('hNext').click(); clics++; }
+            clic();
+            (function tick(){
+              const sp=[...document.querySelectorAll('#hnum span')];
+              if(sp.length===2){
+                vu2++;
+                const y=sp.map(s=>new DOMMatrix(getComputedStyle(s).transform).m42);
+                ymin=Math.min(ymin,...y); ymax=Math.max(ymax,...y);
+              }
+              const t=performance.now()-t0;
+              if(t>340 && vu2===0 && clics<3){ clic(); }
+              if(t>2200) return res({vu2, ymin:Math.round(ymin), ymax:Math.round(ymax), clics});
+              requestAnimationFrame(tick);
+            })();})""")
+        ok(croise["vu2"] > 0,
+           f"le chiffre croise pendant le glissement (vu sur {croise['vu2']} image(s))")
+        # l'ecart suffit a prouver le croisement : l'un est haut, l'autre bas.
+        # ⚠️ ne PAS exiger de voir le chiffre entrant en positif : la courbe
+        #    part vite, et un rendu lent le rate sans que rien ne cloche.
+        ok(croise["ymin"] < -20 and (croise["ymax"] - croise["ymin"]) > 120,
+           f"les deux chiffres sont de part et d'autre (y de {croise['ymin']} a {croise['ymax']})")
+        await page.wait_for_timeout(1400)
+        fin_ = await page.evaluate("""()=>({n:document.querySelectorAll('#hnum span').length,
+             num:(document.getElementById('hnum').textContent||'').trim(),
+             cpt:(document.getElementById('hcpt').textContent||'').trim()})""")
+        ok(fin_["n"] == 1, f"un seul chiffre a l'arrivee (vu {fin_['n']})")
+        ok(fin_["cpt"].startswith(fin_["num"]),
+           f"le chiffre geant et le compteur disent la meme chose ({fin_['num']} / {fin_['cpt']})")
+
+        # cliquer vite ne doit rien empiler ni desaccorder
+        for _ in range(4):
+            await page.evaluate("()=>document.getElementById('hPrev').click()")
+            await page.wait_for_timeout(150)
+            await page.evaluate("()=>document.getElementById('hNext').click()")
+            await page.wait_for_timeout(150)
+        await page.wait_for_timeout(1600)
+        ap = await page.evaluate("""()=>({n:document.querySelectorAll('#hnum span').length,
+             num:(document.getElementById('hnum').textContent||'').trim(),
+             cpt:(document.getElementById('hcpt').textContent||'').trim(),
+             act:document.querySelectorAll('.hsl.act').length})""")
+        ok(ap["n"] == 1 and ap["act"] == 1 and ap["cpt"].startswith(ap["num"]),
+           f"clics rapides : rien ne s'empile ({ap['n']} chiffre, {ap['act']} diapo, {ap['num']}/{ap['cpt']})")
+
+        # LES PIECES SONT DETOUREES, ET RIEN NE LES ENCADRE.
+        # Deux defauts vus par Mongazi le 2026-08-06 : une bande blanche autour
+        # du mannequin (image non detouree) et un cadre autour des pieces du
+        # carrousel (fond opaque sur le conteneur). Un rectangle blanc couvre
+        # aussi le chiffre geant : l'effet du heros disparait avec lui.
+        opaques = []
+        for f in sorted(glob.glob(str(pathlib.Path(__file__).resolve().parent
+                                      / "assets" / "images" / "hero-*.webp"))
+                        + glob.glob(str(pathlib.Path(__file__).resolve().parent
+                                        / "assets" / "images" / "piece-*.webp"))):
+            try:
+                from PIL import Image
+                im = Image.open(f)
+                a = im.convert("RGBA").getchannel("A")
+                if a.getextrema()[0] > 8:          # aucun pixel transparent
+                    opaques.append(pathlib.Path(f).name)
+            except Exception as e:
+                opaques.append(pathlib.Path(f).name + " (illisible)")
+        ok(not opaques, "heros et carrousel : images detourees (fond transparent)"
+           + ("" if not opaques else " -> opaques : " + ", ".join(opaques)))
+
+        cadres = await page.evaluate("""()=>{
+          const out=[];
+          document.querySelectorAll('.car-c, .hsl').forEach(e=>{
+            const s=getComputedStyle(e);
+            const bg=s.backgroundColor||'';
+            const m=bg.match(/rgba?\\(([^)]+)\\)/);
+            const op=m ? (m[1].split(',')[3]===undefined ? 1 : parseFloat(m[1].split(',')[3])) : 0;
+            if(op>0.02) out.push((e.className||e.tagName)+' '+bg);
+            if(parseFloat(s.borderTopWidth)>0) out.push((e.className||e.tagName)+' bordure');
+          });
+          return out;}""")
+        ok(not cadres, "heros et carrousel : aucun cadre autour des pieces"
+           + ("" if not cadres else " -> " + str(cadres[:3])))
 
         # regle du depot : jamais d'animation infinie sous un backdrop-filter
         mauvais = await page.evaluate("""()=>{

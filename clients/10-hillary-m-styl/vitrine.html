@@ -232,8 +232,12 @@ em{font-style:italic;font-weight:400}
 /* LA NAPPE QUI SUIT LE TISSU : une lueur de la couleur de la pièce qui passe,
    derrière la silhouette. Elle change en même temps que la diapositive. */
 .hero::before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
+  /* `in oklab` et pas `in srgb` : un bleu à 22 % en srgb sur du papier crème
+     devient un voile gris sale. En oklab la teinte survit à la transparence,
+     et la nappe reste une COULEUR — c'est tout l'intérêt de la faire suivre
+     le tissu. Vu sur l'ensemble JOSY (denim) le 2026-08-06. */
   background:radial-gradient(58% 46% at 50% 42%,
-    color-mix(in srgb, var(--piece) 22%, transparent), transparent 72%);
+    color-mix(in oklab, var(--piece) 26%, transparent), transparent 72%);
   transition:background 1.1s var(--e-s)}
 @supports not (background: color-mix(in srgb, red 20%, transparent)){
   .hero::before{background:radial-gradient(58% 46% at 50% 42%,
@@ -246,28 +250,64 @@ em{font-style:italic;font-weight:400}
 .hnum{position:absolute;top:50%;left:50%;transform:translate(-50%,-54%);z-index:1;
   font-family:var(--ff-d);font-weight:700;font-size:clamp(11rem,42vw,30rem);line-height:.8;
   letter-spacing:-.05em;pointer-events:none;
-  color:color-mix(in srgb, var(--piece) 16%, #ddd8ce);
+  color:color-mix(in srgb, var(--piece) 14%, #e2ddd2);
   transition:color 1.1s var(--e-s);
-  text-shadow:0 1px 0 rgba(255,255,255,.95),0 3px 3px rgba(26,26,26,.08);
-  overflow:hidden;height:.98em;display:flex;align-items:flex-start}
-.hnum span{display:block;transition:transform .85s var(--e),opacity .5s ease}
-.hnum.chg span{transform:translateY(-100%);opacity:0}
+  /* pas d'ombre portée dure : le mannequin couvre le milieu du chiffre, et
+     le pied plat du « 2 » de Bodoni se retrouvait seul, cerné de blanc et de
+     gris — une dalle qui passait pour un bug. Un simple relief de papier. */
+  text-shadow:0 1px 0 rgba(255,255,255,.7);
+  /* et le chiffre s'enfonce dans le papier au lieu de finir au couteau */
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 54%,rgba(0,0,0,.34) 88%,rgba(0,0,0,0) 100%);
+  mask-image:linear-gradient(180deg,#000 0%,#000 54%,rgba(0,0,0,.34) 88%,rgba(0,0,0,0) 100%);
+  overflow:hidden;height:.98em;display:grid;align-items:start;justify-items:center}
+/* LE CHIFFRE SUIT LA PIÈCE. Les deux chiffres se croisent sur EXACTEMENT
+   l'horloge du glissement (1,15 s, même courbe que `.hsl`) et dans le SENS du
+   mouvement : `--s` vaut 1 vers l'avant, -1 vers l'arrière.
+   ⚠️ Avant, le chiffre roulait 240 ms puis se remplaçait d'un coup : il
+   arrivait 900 ms avant le vêtement et ça se voyait comme un raté.
+   Vu par Mongazi le 2026-08-06. */
+.hnum span{grid-area:1/1;display:block;
+  transition:transform 1s cubic-bezier(.25,1,.5,1),
+             opacity .62s cubic-bezier(.33,0,.2,1)}
+.hnum span.hn-e{transform:translateY(calc(var(--s,1) * 100%));opacity:0}
+.hnum span.hn-s{transform:translateY(calc(var(--s,1) * -100%));opacity:0}
+@media (prefers-reduced-motion:reduce){
+  .hnum span{transition:opacity .3s linear}
+  .hnum span.hn-e,.hnum span.hn-s{transform:none}
+}
 
 /* la scène du slider */
 .hsc{position:relative;z-index:2;width:min(60%,560px);height:min(75vh,720px);
   display:grid;place-items:center}
 @media (max-width:1024px){ .hsc{width:min(74%,420px);height:min(58vh,520px)} }
+/* ⚠️ LA COURBE PART TOUT DE SUITE. `cubic-bezier(.45,.02,.2,1)` démarrait
+   presque à plat : la pièce restait figée ~580 ms après le clic, puis se
+   précipitait. On voyait un raté, pas un glissement. Un ease-out quart
+   bouge dès la première image et se pose longuement. */
 .hsl{position:absolute;inset:0;opacity:0;
-  transition:transform .9s cubic-bezier(.65,0,.35,1),opacity .55s var(--e-s)}
+  transition:transform 1s cubic-bezier(.25,1,.5,1),
+             opacity .62s cubic-bezier(.33,0,.2,1)}
 .hsl.act{opacity:1;transform:none;z-index:2}
-.hsl.sort{opacity:.3;transform:translateX(-100%) skewX(-3deg);z-index:1}
-.hsl.entre{opacity:.3;transform:translateX(100%) skewX(3deg);z-index:1}
+.hsl.sort{opacity:0;transform:translateX(-62%) skewX(-2.5deg) scale(.96);z-index:1}
+.hsl.entre{opacity:0;transform:translateX(62%) skewX(2.5deg) scale(.96);z-index:1}
 .hsl-c{position:relative;width:100%;height:100%;overflow:hidden}
 .hsl-c:has(img){background:none}
 /* un mannequin DÉTOURÉ : il se pose entier, il ne se recadre pas.
    C'est ce qui laisse le numéro géant passer derrière lui. */
 .hsl-c img{width:100%;height:100%;object-fit:contain;object-position:center bottom;
-  filter:drop-shadow(0 26px 40px rgba(26,26,26,.16))}
+  filter:drop-shadow(0 30px 26px rgba(26,26,26,.10))}
+/* ⚠️ PENDANT LE MOUVEMENT, PAS D'OMBRE PORTÉE ET PAS D'OMBRE AU SOL.
+   Une `drop-shadow` sur une photo détourée de 700 px se recalcule à CHAQUE
+   image : c'est ce qui fait hacher le glissement sur un téléphone. L'ombre
+   revient dès que la pièce est posée, et personne ne voit qu'elle est
+   partie une seconde. */
+.hsc.bouge .hsl-c img{filter:none}
+.hsc.bouge .hsl-c::after{opacity:0}
+.hsc.bouge .hsl{will-change:transform,opacity}
+/* l'ombre au sol : elle donne le poids sans redessiner le contour */
+.hsl-c::after{content:'';position:absolute;left:14%;right:14%;bottom:2%;height:26px;
+  border-radius:50%;pointer-events:none;z-index:-1;
+  background:radial-gradient(50% 50% at 50% 50%,rgba(26,26,26,.20),transparent 72%)}
 /* le mannequin de substitution, tant qu'il n'y a pas de photo */
 .hsl-c .sil{position:absolute;inset:0;display:grid;place-items:center;background:none}
 .hsl-c .sil svg{width:66%;height:auto;opacity:.7}
@@ -409,11 +449,16 @@ em{font-style:italic;font-weight:400}
   opacity:var(--op,1);filter:blur(var(--bl,0px));
   transition:transform .8s cubic-bezier(.4,0,.2,1),opacity .8s var(--e-s),filter .8s var(--e-s);
   will-change:transform}
-.car-c{position:relative;aspect-ratio:4/5;overflow:hidden;background:var(--papier-2);
-  box-shadow:0 30px 64px -34px rgba(26,26,26,.55)}
-.car-c img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.car-c .sil{position:absolute;inset:0;display:grid;place-items:center;
-  background:linear-gradient(160deg,#fff,var(--papier-2))}
+.car-c{position:relative;aspect-ratio:4/5;background:none;overflow:visible}
+/* une piece detouree ne se met pas dans une boite : elle se pose.
+   L'ombre est AU SOL, jamais autour du contour. */
+.car-c img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+  object-position:center bottom;
+  filter:drop-shadow(0 24px 22px rgba(26,26,26,.12))}
+.car-c::after{content:'';position:absolute;left:16%;right:16%;bottom:1%;height:22px;
+  border-radius:50%;pointer-events:none;z-index:-1;
+  background:radial-gradient(50% 50% at 50% 50%,rgba(26,26,26,.16),transparent 72%)}
+.car-c .sil{position:absolute;inset:0;display:grid;place-items:center;background:none}
 .car-c .sil svg{width:62%;height:auto;opacity:.42}
 .car-c .sil path{fill:none;stroke:var(--encre-2);stroke-width:1.1;stroke-linejoin:round}
 .car--act{z-index:4}
@@ -576,7 +621,16 @@ em{font-style:italic;font-weight:400}
 .piece .ph{position:relative;aspect-ratio:4/5;overflow:hidden;background:var(--papier-2);
   display:grid;place-items:center;
   background-image:linear-gradient(160deg,#fff,var(--papier-2))}
-.piece .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* la pièce est DÉTOURÉE : elle se pose sur le papier de la carte, entière.
+   En `cover` elle serait recadrée aux épaules, et le fond blanc du studio
+   ferait un rectangle blanc sur du papier crème. Vu à l'œil le 2026-08-06. */
+.piece .ph img{position:absolute;inset:0;width:100%;height:100%;
+  object-fit:contain;object-position:center bottom;
+  filter:drop-shadow(0 14px 14px rgba(26,26,26,.13))}
+/* l'ombre au sol, la même que dans le héros et le carrousel */
+.piece .ph::after{content:'';position:absolute;left:20%;right:20%;bottom:2%;height:14px;
+  border-radius:50%;pointer-events:none;z-index:1;
+  background:radial-gradient(50% 50% at 50% 50%,rgba(26,26,26,.17),transparent 72%)}
 .piece .ph .mark{width:46%;aspect-ratio:1;opacity:.30;filter:grayscale(1);
   background:var(--logo) center/contain no-repeat}
 .piece .ph .avenir{position:absolute;left:0;right:0;bottom:0;padding:9px 12px;
@@ -598,6 +652,13 @@ em{font-style:italic;font-weight:400}
 .piece .bd .ds{display:block;margin-top:6px;font-size:13px;color:var(--tx-c);line-height:1.5}
 .piece .bd .meta{display:flex;align-items:center;justify-content:space-between;gap:12px;
   margin-top:12px;padding-top:12px;border-top:1px solid var(--fil-c)}
+/* un prix ne se coupe jamais en deux. En deux colonnes sur un telephone,
+   « 100 000 F » tombait sur deux lignes et « 14 jours » aussi : la carte
+   avait l'air cassee. Vu a l'oeil en 390 px le 2026-08-06. */
+.piece .bd .pr,.piece .bd .del{white-space:nowrap}
+@media(max-width:560px){
+  .piece .bd .meta{flex-direction:column;align-items:flex-start;gap:9px}
+}
 .piece .bd .pr{font-family:var(--ff-u);font-weight:700;font-size:13px;letter-spacing:.04em;
   color:var(--rose);display:flex;flex-direction:column;gap:2px}
 .piece .bd .pr .dev{font-weight:500;font-size:10.5px;letter-spacing:.06em;
@@ -1479,6 +1540,15 @@ var JOURS = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
 var MOIS  = ["janvier","février","mars","avril","mai","juin","juillet","août",
              "septembre","octobre","novembre","décembre"];
 
+/* Libellé d'un délai. Ses quatre pièces sont à 2 semaines FERMES : jmin et
+   jmax valent 14 tous les deux, et « 14 à 14 jours » se lit comme une erreur
+   de la maison. Quand les deux bornes se rejoignent, on n'annonce qu'un
+   chiffre. Vu à l'œil sur le catalogue le 2026-08-06. */
+function libDelai(a, b){
+  a = Number(a); b = Number(b);
+  return a === b ? a + " jours" : a + " à " + b + " jours";
+}
+
 /* Date de disponibilité — annoncée sur la BORNE HAUTE du délai.
    Promettre le jour 8 d'un « 8 à 14 jours » fabrique un client déçu. */
 function dateDispo(jours){
@@ -1535,7 +1605,7 @@ function carte(p){
       '<h3>'+esc(p.nom)+'</h3>'+
       '<p class="ds">'+esc(p.ds)+'</p>'+
       '<div class="meta"><span class="pr">'+prix+dev+'</span>'+
-        '<span class="del">'+HORLOGE+'<span>'+p.jmin+' à '+p.jmax+' jours</span></span></div>'+
+        '<span class="del">'+HORLOGE+'<span>'+libDelai(p.jmin, p.jmax)+'</span></span></div>'+
     '</div></button>';
 }
 function rendreGrille(cat){
@@ -1757,12 +1827,13 @@ function vue2(){
 function vue3(){
   var p = etat.piece;
   var h = '<div class="stitle">Quand la voulez-vous ?</div>'+
-    '<div class="sdesc">Cette pièce demande normalement '+p.jmin+' à '+p.jmax+' jours de confection.</div>'+
+    '<div class="sdesc">Cette pièce demande normalement '+libDelai(p.jmin, p.jmax)+' de confection.</div>'+
     '<div class="opts">'+
-      opt3(DELAIS.normal, "Confection en "+p.jmin+" à "+p.jmax+" jours")+
+      opt3(DELAIS.normal, "Confection en "+libDelai(p.jmin, p.jmax))+
       opt3(DELAIS.express, "Votre tenue en "
-        +(p.expMin != null ? p.expMin : DELAIS.express.jmin)+" à "
-        +(p.expMax != null ? p.expMax : DELAIS.express.jmax)+" jours maximum")+
+        +libDelai(p.expMin != null ? p.expMin : DELAIS.express.jmin,
+                  p.expMax != null ? p.expMax : DELAIS.express.jmax)
+        +" maximum")+
     '</div>';
 
   if(etat.delai){
@@ -2063,10 +2134,10 @@ document.getElementById("waBas").href =
      ont été retirés le 2026-08-06 : un vêtement sans prix dans un carrousel
      qui mène au catalogue reste une promesse. Ici, tout est réel. */
   var COLLECTIONS = [
-    { f:'coll-1.webp', l:'Cérémonie',    t:'Robe de cérémonie', s:'Bustier structuré, jupe à volants de satin' },
-    { f:'coll-2.webp', l:'Sur-mesure',   t:"L'ensemble Mira",   s:'Haut à manches ballon, jupe à volants étagés' },
-    { f:'coll-3.webp', l:'Fait main',    t:'Ensemble JOSY',     s:'Pantalon large, empiècements peints, corset lacé' },
-    { f:'coll-4.webp', l:'Sur-mesure',   t:'Robe de ville',     s:'Dos nu, wax à feuillages et panneaux de satin' }
+    { f:'piece-ceremonie.webp', l:'Cérémonie',    t:'Robe de cérémonie', s:'Bustier structuré, jupe à volants de satin' },
+    { f:'piece-mira.webp', l:'Sur-mesure',   t:"L'ensemble Mira",   s:'Haut à manches ballon, jupe à volants étagés' },
+    { f:'piece-josy.webp', l:'Fait main',    t:'Ensemble JOSY',     s:'Pantalon large, empiècements peints, corset lacé' },
+    { f:'piece-ville.webp', l:'Sur-mesure',   t:'Robe de ville',     s:'Dos nu, wax à feuillages et panneaux de satin' }
   ];
   /* ================================================================ */
 
@@ -2292,10 +2363,16 @@ document.getElementById("waBas").href =
     var sc = $('#hsc'), num = $('#hnum'), col = $('#hcol'), des = $('#hdes'), cpt = $('#hcpt');
     if (!sc) return;
 
+    /* ⚠️ AUCUNE image du héros en `loading="lazy"`. Elles sont quatre, elles
+       pèsent 760 Ko à elles toutes, et le visiteur les verra toutes : la
+       première transition attendait le téléchargement ET le décodage de la
+       suivante, et la pièce restait immobile ~300 ms après le clic. Ça se
+       voyait comme un raté. Elles sont chargées tout de suite et décodées
+       en arrière-plan dès que la page est posée. */
     sc.innerHTML = HERO.map(function (o, i) {
       var img = o.f
         ? '<img src="assets/images/' + esc(o.f) + '" alt="' + esc(o.t) + ', création Hillary M. Styl"'
-          + (i ? ' loading="lazy"' : ' fetchpriority="high"') + ' decoding="async">'
+          + (i ? '' : ' fetchpriority="high"') + ' decoding="async">'
         : SIL;
       return '<figure class="hsl' + (i === 0 ? ' act' : '') + '" data-i="' + i + '">'
         + '<div class="hsl-c">' + img + '</div></figure>';
@@ -2303,6 +2380,58 @@ document.getElementById("waBas").href =
 
     var sl = $$('.hsl', sc), n = sl.length, actif = 0, occupe = false;
 
+    /* on décode les mannequins pendant que le visiteur lit le héros : au
+       premier clic, la pièce est déjà prête à peindre. `decode()` ne bloque
+       pas le fil principal, et l'échec est sans conséquence. */
+    setTimeout(function () {
+      $$('img', sc).forEach(function (im) {
+        if (im.decode) im.decode().catch(function () {});
+      });
+    }, 1200);
+
+    /* Le chiffre géant roule DANS LE SENS du glissement et sur la MÊME durée.
+       Deux chiffres coexistent le temps du croisement : l'ancien sort par le
+       haut, le nouveau entre par le bas (et l'inverse en marche arrière).
+
+       ⚠️ En DEUX temps, et c'est tout l'intérêt : `preparerNum` fabrique le
+       chiffre et le pose à son point de départ, `aller()` récupère la fonction
+       de départ et la déclenche DANS LA MÊME IMAGE que le glissement. Les deux
+       transitions partent donc sur la même horloge, à la milliseconde.
+       Avant, tout ce travail se faisait AVANT le mouvement : fabriquer un
+       glyphe de 30rem coûte un calcul de mise en page, et la pièce restait
+       immobile un demi-tour d'horloge après le clic. */
+    function preparerNum(i, sens) {
+      if (!num) return function () {};
+      /* ⚠️ un chiffre déjà en train de sortir n'a plus rien à faire là. Sans
+         ça, cliquer vite empilait « 0302 » : le verrou de `aller()` et le
+         retrait de l'ancien chiffre tombent tous deux à 1050 ms, et selon
+         lequel gagne la course, un chiffre restait sur le carreau. */
+      $$('span.hn-s', num).forEach(function (s) { num.removeChild(s); });
+      var vieux = num.querySelector('span');
+      var neuf = document.createElement('span');
+      neuf.textContent = d2(i + 1);
+      neuf.className = 'hn-e';
+      neuf.style.setProperty('--s', sens > 0 ? '1' : '-1');
+      num.appendChild(neuf);
+      if (vieux) vieux.style.setProperty('--s', sens > 0 ? '1' : '-1');
+      /* on force le calcul MAINTENANT : au moment du départ, il ne reste
+         plus qu'à changer une classe. */
+      void neuf.offsetWidth;
+      return function () {
+        neuf.classList.remove('hn-e');
+        if (vieux) vieux.classList.add('hn-s');
+        setTimeout(function () {
+          /* seule la transition LA PLUS RÉCENTE fait le ménage, et elle ne
+             laisse qu'un chiffre. Une transition dépassée ne touche à rien :
+             elle effacerait le chiffre de celle qui l'a doublée. */
+          if (num.lastElementChild !== neuf) return;
+          $$('span', num).forEach(function (s) { if (s !== neuf) num.removeChild(s); });
+        }, 1050);
+      };
+    }
+
+    /* la couleur et les deux textes : ils ne portent pas le mouvement, ils
+       le suivent. On les traite APRÈS le départ pour ne pas le retarder. */
     function ecrire(i) {
       var o = HERO[i];
       /* LA COULEUR SUIT LE VÊTEMENT. La teinte dominante de chaque pièce est
@@ -2310,19 +2439,15 @@ document.getElementById("waBas").href =
          la nappe de fond, le trait sous le titre et le badge de tête.
          Le magenta de la maison reste ailleurs — ici c'est le tissu qui parle. */
       if (o.c) document.documentElement.style.setProperty('--piece', o.c);
-      if (num) {
-        num.classList.add('chg');
-        setTimeout(function () {
-          num.innerHTML = '<span>' + d2(i + 1) + '</span>';
-          num.classList.remove('chg');
-        }, 240);
-      }
       [col, des].forEach(function (e) { if (e) e.classList.add('chg'); });
+      /* les deux textes se relèvent au tiers du glissement : assez tard pour
+         faire partie du même mouvement, assez tôt pour être lisibles à
+         l'arrivée de la pièce. */
       setTimeout(function () {
         if (col) col.innerHTML = '<b>' + esc(o.col) + '</b><span class="m">' + esc(o.mat) + '</span>';
         if (des) des.innerHTML = '<b>' + esc(o.t) + '</b><p>' + esc(o.d) + '</p>';
         [col, des].forEach(function (e) { if (e) e.classList.remove('chg'); });
-      }, 260);
+      }, 340);
       if (cpt) cpt.textContent = d2(i + 1) + ' — ' + d2(n);
     }
 
@@ -2334,20 +2459,27 @@ document.getElementById("waBas").href =
       var sort = sl[actif], entre = sl[i];
       entre.classList.remove('act', 'sort', 'entre');
       entre.classList.add(sens > 0 ? 'entre' : 'sort');
-      /* le numéro change AU DÉBUT du mouvement */
-      ecrire(i);
+      var partirNum = preparerNum(i, sens);
+      sc.classList.add('bouge');   /* ombres coupées : voir style-page.css */
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
+          /* LA MÊME IMAGE pour les trois : la pièce sort, la pièce entre,
+             le chiffre roule. Rien d'autre ne se glisse entre eux. */
           sort.classList.remove('act');
           sort.classList.add(sens > 0 ? 'sort' : 'entre');
           entre.classList.remove('sort', 'entre');
           entre.classList.add('act');
+          partirNum();
+          /* la couleur et les textes à l'image suivante : leur recalcul ne
+             doit pas s'intercaler dans le départ du mouvement. */
+          requestAnimationFrame(function () { ecrire(i); });
         });
       });
       setTimeout(function () {
         sl.forEach(function (s) { if (s !== entre) s.classList.remove('act', 'sort', 'entre'); });
+        sc.classList.remove('bouge');
         actif = i; occupe = false;
-      }, 950);
+      }, 1050);   /* doit couvrir la transition CSS (1 s) */
     }
 
     var prev = $('#hPrev'), next = $('#hNext');
@@ -2376,7 +2508,10 @@ document.getElementById("waBas").href =
     }
     sc.addEventListener('pointerenter', function () { clearInterval(minuteur); });
     sc.addEventListener('pointerleave', relancer);
-    ecrire(0); relancer();
+    /* au premier rendu il n'y a rien à croiser : le chiffre du balisage est
+       déjà le bon, on pose seulement la couleur, les textes et le compteur. */
+    ecrire(0);
+    relancer();
   })();
 
   /* ---------- 9 · LES COLLECTIONS — coverflow (Swiper réécrit) ---- */

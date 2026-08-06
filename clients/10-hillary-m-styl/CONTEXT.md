@@ -2,7 +2,8 @@
 
 > **Maison de couture · prêt-à-porter & sur-mesure**
 > Vitrine avec catalogue commandable et prise de mesures en ligne.
-> Créé le 2026-07-31 · moteur de mesures refait (v2) · **direction artistique « LE FIL » (v3, 2026-08-01)**.
+> Créé le 2026-07-31 · moteur de mesures refait (v2) · direction artistique « LE FIL » (v3, 2026-08-01)
+> · **V4 « LA COUPE » en ligne, avec ses 4 vraies créations (2026-08-05/06)**.
 
 ---
 
@@ -25,13 +26,13 @@
 |---|---|
 | **`_vitrine_src.html`** | **La source. C'est celui-ci qu'on édite.** ≈70 Ko, lisible, avec des marqueurs `__LOGO_B64__` et `__FAVICON_B64__` à la place des images |
 | `_build.py` | Injecte les images en base64 et écrit `vitrine.html` |
-| `_qc.py` | La suite de contrôle qualité, **71 contrôles**, à passer avant tout déploiement |
+| `_qc.py` | La suite de contrôle qualité, **79 contrôles**, à passer avant tout déploiement (le nombre monte à chaque défaut corrigé) |
 | `vitrine.html` | **Le livrable, généré. Ne jamais l'éditer à la main** : la prochaine construction écraserait la modification |
 
 ```bash
 cd clients/10-hillary-m-styl
 python3 _build.py     # source -> vitrine.html (174 Ko)
-python3 _qc.py        # 71 contrôles, doit afficher « TOUT EST VERT »
+python3 _qc.py        # doit afficher « TOUT EST VERT »
 ```
 
 Pourquoi ce détour : le logo pèse 75 Ko une fois en base64. Éditer directement le
@@ -139,7 +140,7 @@ marqués dans `_vitrine_src.html`, en haut du `<script>`, dans un bloc « ZONE �
 | 2 | **Email de repli** (`EMAIL`) | Le client sans WhatsApp passe par là. Adresse d'exemple pour l'instant |
 | 3 | **Frais d'expédition et jours d'acheminement par pays** (`PAYS`) | Valeurs provisoires. Un tarif faux coûte de l'argent à la cliente **à chaque commande**, et un acheminement faux fausse la date annoncée |
 | 4 | **Délais de confection** (`DELAIS` et `jmin`/`jmax` de chaque pièce) | Normal 7-14 jours, express 1-3 : à valider avec l'atelier |
-| 5 | **Le catalogue** (`PIECES`) | 12 modèles d'exemple avec des prix d'exemple. À remplacer par les vraies pièces |
+| 5 | ~~**Le catalogue** (`PIECES`)~~ ✅ **RÉGLÉ le 2026-08-06** : ses **4 vraies créations** (Robe de cérémonie, ensemble Mira, ensemble JOSY, Robe de ville) avec ses prix en FCFA/€/$, ses délais et **un supplément express propre à chaque pièce**. Détail : `_sources/hillary/PIECES-RECUES.md` |
 | 6 | **Adresse, horaires de l'atelier** (`ATELIER`) | Affichent « à confirmer » |
 | 7 | **Les mesures de la robe ovale** (`MESURES.robe_ovale`) | **Jamais fournies.** 11 mesures proposées par déduction, signalées en jaune dans l'interface : « Liste de mesures en cours de validation par l'atelier » |
 | 8 | **Prix du supplément express** | 10 000 F par défaut |
@@ -167,15 +168,16 @@ sont en 3:4). C'est ce qui fera la différence entre un catalogue correct et un 
 
 ---
 
-## 6ter. 🚨 EN LIGNE — et c'est l'ANCIENNE version
+## 6ter. ✅ EN LIGNE — la V4, à jour
 
-**✅ https://hillary-m-styl.pages.dev** — Cloudflare Pages, projet `hillary-m-styl`,
-déployé le **2026-08-01 à 19h27 depuis une autre session**, dès que le numéro WhatsApp
-a été fourni.
+**✅ https://hillary-m-styl.pages.dev** — Cloudflare Pages, projet `hillary-m-styl`.
+**Ce qui est en ligne est la V4 « LA COUPE »**, avec ses quatre vraies créations
+(dernier déploiement : 2026-08-06).
 
-⚠️ **Ce qui est en ligne, c'est la V2 : le moteur de commande, sans la direction
-artistique « LE FIL ».** Pas de Bodoni Moda, pas de rideau, pas de croquis, aucune des
-animations signatures. **La V3 de ce dépôt doit la remplacer.**
+*Historique : la V2 sans direction artistique est restée en ligne du 1er au 2 août ;
+la V3 « LE FIL » l'a remplacée le 2 août ; la V4 s'est posée dessus le 5-6 août.
+Les avertissements « la V3 doit remplacer l'ancienne » que vous croiseriez encore
+plus bas dans ce fichier sont périmés.*
 
 ### Ce que l'autre session a apporté, et qui est conservé ici
 
@@ -185,23 +187,26 @@ animations signatures. **La V3 de ce dépôt doit la remplacer.**
 | « Retrait sur rendez-vous · le point de retrait vous est donné sur WhatsApp » | idem — **remplace « adresse à confirmer »** |
 | La carte « Horaires » devenue **« Confection »** avec les délais | idem |
 | Ces valeurs **écrites en dur dans le HTML**, pas seulement injectées par le JS | idem — sinon le visiteur voit « — » le temps du script |
-| Affiche A4 + 2 QR (site et WhatsApp pré-rempli) | `assets/docs/` — **toujours valables**, la V3 ne change pas l'adresse |
-| `og:url` + `canonical` | ⚠️ **à reposer dans la V3** (voir ci-dessous) |
+| Affiche A4 + 2 QR (site et WhatsApp pré-rempli) | `assets/docs/` — **toujours valables**, l'adresse n'a pas changé |
+| `og:url` + `canonical` | ✅ **présents dans `_vitrine_src.html`** depuis la V3 |
 
-### ⚠️ Deux pièges pour la prochaine session
+### ⚠️ Un piège pour la prochaine session
 
-1. **`_outils/_apply_infos.py` est OBSOLÈTE.** Il patchait `vitrine.html` directement, ce qui
-   est incompatible avec la chaîne `_vitrine_src.html → _build.py → vitrine.html`. Les vraies
-   valeurs sont désormais **dans la source**. Ne pas le relancer : il écraserait la V3.
-2. **`og:url` et `<link rel="canonical">` ne sont pas encore dans la V3.** À ajouter dans
-   `_vitrine_src.html` avant de déployer — le site se partage surtout sur WhatsApp.
+**`_outils/_apply_infos.py` est OBSOLÈTE.** Il patchait `vitrine.html` directement, ce qui
+est incompatible avec la chaîne `_v4/ → _assembler.py → _vitrine_src.html → _build.py →
+vitrine.html`. Les vraies valeurs sont désormais **dans la source**. Ne pas le relancer :
+il écraserait le travail.
 
-### Le redéploiement, quand la V3 sera validée
+### Le redéploiement
+
+⚠️ **Passer par `_predeploy.py`** : il vérifie la version, construit, lance le contrôle
+qualité, refuse s'il reste un texte d'attente sur la page publique, copie les images,
+**écrit la page 404** et prépare `_dist/`.
 
 ```bash
 cd clients/10-hillary-m-styl
-python3 _build.py && python3 _qc.py          # doit être « TOUT EST VERT »
-mkdir -p _dist && cp vitrine.html _dist/index.html
+python _v4/_assembler.py && python _build.py     # si on a touché à _v4/
+python _predeploy.py                             # tout est vérifié ici
 npx -y wrangler@3 pages deploy _dist --project-name hillary-m-styl --branch main
 ```
 Identifiants dans `secrets/cloudflare.env`. Contrôle : la page doit afficher Bodoni Moda
@@ -308,7 +313,7 @@ animation infinie sur douze cartes coûte cher sur un téléphone d'entrée de g
 
 ---
 
-## 9. Vérifications passées — `python3 _qc.py`, 71 contrôles verts
+## 9. Vérifications passées — `python _qc.py`, tous les contrôles verts
 
 - **Aucun débordement horizontal** sur 390 px, 768 px et 1440 px, page et modale ouverte
 - **Toutes les cibles tactiles ≥ 44 px** (y compris le logo de la barre et les liens du pied)
@@ -370,7 +375,7 @@ dessus : le **rideau qui s'ouvre** au chargement (un fil descend, deux pans s'é
 s'enfoncent** sous le doigt avec une lueur.
 
 ⚠️ **La source est `_vitrine_src.html`. `vitrine.html` est GÉNÉRÉ, ne jamais l'éditer à la
-main.** Chaîne : `_build.py` (injecte logo et favicon en base64) → `_qc.py` (71 contrôles) →
+main.** Chaîne : `_build.py` (injecte logo et favicon en base64) → `_qc.py` →
 `_predeploy.py` (enchaîne tout et prépare `_dist/`).
 
 ⚠️ `_outils/_apply_infos.py` est **OBSOLÈTE** : il patchait le livrable directement, ce qui
@@ -379,3 +384,77 @@ main.** Chaîne : `_build.py` (injecte logo et favicon en base64) → `_qc.py` (
 **Déploiement :** `python _predeploy.py` puis
 `npx wrangler@3 pages deploy _dist --project-name hillary-m-styl --branch main`.
 Contrôle en une commande : `grep -c "Bodoni Moda" vitrine.html` doit valoir au moins 1.
+
+---
+
+## 11. V4 « LA COUPE » — ses vraies créations, détourées (2026-08-05/06)
+
+### La chaîne de construction a changé
+
+La V4 se monte à partir de **huit morceaux** dans `_v4/`, et non plus en éditant
+le HTML à la main :
+
+```bash
+python _v4/_assembler.py    # _v4/*  ->  _vitrine_src.html
+python _build.py            # images en base64 -> vitrine.html
+python _qc.py               # 79 contrôles, « TOUT EST VERT » obligatoire
+python _predeploy.py        # vérifie tout et prépare _dist/ (+ la page 404)
+```
+
+⚠️ **`_v4/garde-moteur.js`, `garde-modale.html`, `garde-css-*.css` ne sont JAMAIS
+régénérés** : ils portent le moteur de commande, qui marche. L'assembleur **refuse
+d'écrire** si l'un des 18 identifiants dont le moteur a besoin manque du balisage.
+C'est ce qui permet de refondre l'apparence sans casser les commandes.
+
+### Ses quatre pièces réelles
+
+| Pièce | Prix | Express | Supplément | Mesures |
+|---|---|---|---|---|
+| Robe de cérémonie | 100 000 F · 150 € · 180 $ | 140 000 F, 2 à 4 j | **+40 000** | robe ovale |
+| L'ensemble Mira | 50 000 F · 75 € · 90 $ | 75 000 F, 2 à 4 j | **+25 000** | robe ovale |
+| Ensemble JOSY | 65 000 F · 100 € · 117 $ | 85 000 F, 2 à 5 j | **+20 000** | robe ovale |
+| Robe de ville | 30 000 F · 45 € · 67 $ | 45 000 F, 2 à 4 j | **+15 000** | robe ovale |
+
+⚠️ **Le supplément express est propre à chaque pièce.** Le moteur appliquait
+10 000 F à tout le monde : une cliente voyait 110 000 F au lieu de 140 000 F, et
+c'est Hillary qui absorbait l'écart. Corrigé par `supExpress(p)`.
+
+⚠️ **Ses prix en trois monnaies ne sont pas des conversions** et ne sont pas
+cohérents entre eux (30 000 F = 45 € mais 67 $). Ce sont **ses** prix : on les
+affiche tels quels, on ne les recalcule jamais.
+
+⚠️ Ses quatre pièces sont toutes en **sur-mesure**. L'onglet « prêt-à-porter » est
+donc vide, et il **se masque tout seul** (`compteCat`, `premiereCatPleine`) : sans
+ça, le catalogue s'ouvrait sur un onglet vide.
+
+### Les images
+
+**Tout ce qui montre un vêtement est une VRAIE photo d'Hillary**, détourée :
+héros, carrousel et cartes du catalogue partagent les fichiers
+`piece-{ceremonie,mira,josy,ville}.webp` (une seule photo par pièce, pas de
+doublon). Les images générées ne servent plus qu'à l'ambiance — l'atelier et le
+lookbook — et elles sont construites **d'après ses quatre tissus**.
+
+Détourage : `rembg` / `isnet-general-use` **sans `alpha_matting`** (1,9 Go de RAM
+et ça tombe), puis seuil alpha, érosion, flou léger et décontamination des bords.
+Sortie **WebP `quality=94, alpha_quality=100, exact=True`** : alpha **bit pour bit
+celui du PNG**, pour 761 Ko au lieu de 3 560 Ko. Sources PNG dans
+`_sources/detoure/`.
+
+### La couleur du héros suit le tissu
+
+La teinte dominante de chaque pièce est relevée sur sa photo (histogramme de
+teintes sur les pixels saturés, pas une moyenne — bleu + rouge donnait du violet)
+et pilote la nappe de fond, le trait sous le titre et le chiffre géant.
+
+⚠️ **`--piece` vit sur `:root`. Ne jamais la redéclarer sur `.hero`** : une
+déclaration locale l'emporte, et le script n'a plus aucun effet.
+
+### Ce que le contrôle qualité surveille maintenant, en plus
+
+- les images du héros et du catalogue **portent un alpha réellement transparent**,
+  lu au pixel ;
+- **aucun fond opaque ni bordure** autour des pièces ;
+- **prix et délais tiennent sur une seule ligne** aux trois largeurs ;
+- **une page `404.html`** est écrite à chaque préparation de déploiement : sans
+  elle, un fichier absent répond 200 et ce 200 se met en cache un an.

@@ -212,6 +212,15 @@ var JOURS = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
 var MOIS  = ["janvier","février","mars","avril","mai","juin","juillet","août",
              "septembre","octobre","novembre","décembre"];
 
+/* Libellé d'un délai. Ses quatre pièces sont à 2 semaines FERMES : jmin et
+   jmax valent 14 tous les deux, et « 14 à 14 jours » se lit comme une erreur
+   de la maison. Quand les deux bornes se rejoignent, on n'annonce qu'un
+   chiffre. Vu à l'œil sur le catalogue le 2026-08-06. */
+function libDelai(a, b){
+  a = Number(a); b = Number(b);
+  return a === b ? a + " jours" : a + " à " + b + " jours";
+}
+
 /* Date de disponibilité — annoncée sur la BORNE HAUTE du délai.
    Promettre le jour 8 d'un « 8 à 14 jours » fabrique un client déçu. */
 function dateDispo(jours){
@@ -268,7 +277,7 @@ function carte(p){
       '<h3>'+esc(p.nom)+'</h3>'+
       '<p class="ds">'+esc(p.ds)+'</p>'+
       '<div class="meta"><span class="pr">'+prix+dev+'</span>'+
-        '<span class="del">'+HORLOGE+'<span>'+p.jmin+' à '+p.jmax+' jours</span></span></div>'+
+        '<span class="del">'+HORLOGE+'<span>'+libDelai(p.jmin, p.jmax)+'</span></span></div>'+
     '</div></button>';
 }
 function rendreGrille(cat){
@@ -490,12 +499,13 @@ function vue2(){
 function vue3(){
   var p = etat.piece;
   var h = '<div class="stitle">Quand la voulez-vous ?</div>'+
-    '<div class="sdesc">Cette pièce demande normalement '+p.jmin+' à '+p.jmax+' jours de confection.</div>'+
+    '<div class="sdesc">Cette pièce demande normalement '+libDelai(p.jmin, p.jmax)+' de confection.</div>'+
     '<div class="opts">'+
-      opt3(DELAIS.normal, "Confection en "+p.jmin+" à "+p.jmax+" jours")+
+      opt3(DELAIS.normal, "Confection en "+libDelai(p.jmin, p.jmax))+
       opt3(DELAIS.express, "Votre tenue en "
-        +(p.expMin != null ? p.expMin : DELAIS.express.jmin)+" à "
-        +(p.expMax != null ? p.expMax : DELAIS.express.jmax)+" jours maximum")+
+        +libDelai(p.expMin != null ? p.expMin : DELAIS.express.jmin,
+                  p.expMax != null ? p.expMax : DELAIS.express.jmax)
+        +" maximum")+
     '</div>';
 
   if(etat.delai){

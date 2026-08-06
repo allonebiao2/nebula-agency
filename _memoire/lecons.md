@@ -391,3 +391,102 @@ visuels occupent le carrousel en attendant les vraies photos. Ce qui les rend te
 
 Le test : *si le client recevait un message d'achat demain, pourrait-il répondre sans
 mentir ?* Si non, l'image n'a rien à faire là.
+
+---
+
+## Un rectangle blanc n'est pas une photo détourée, et un contrôle vert ne le sait pas
+
+*2026-08-06, sur la vitrine d'Hillary M. Styl.*
+
+Le héros de la V4 est bâti sur un effet précis : un chiffre géant passe **derrière**
+la silhouette, et le nom de la maison la chevauche. Les photos étaient des rectangles
+de studio, fond blanc compris. Le chiffre était donc entièrement couvert : l'effet
+n'existait pas, et 74 contrôles étaient verts pendant ce temps.
+
+**Ce que le contrôle ne pouvait pas voir**, il faut le lui apprendre. Trois contrôles
+ajoutés, et la même famille de défaut ne peut plus revenir :
+
+1. les images concernées **portent un canal alpha réellement transparent** — lu au
+   pixel, jamais déduit du nom du fichier ;
+2. **aucun fond opaque ni bordure** sur les conteneurs qui les portent ;
+3. **prix et délais tiennent sur une seule ligne** — un `Range` DOM qui renvoie
+   plusieurs rectangles trahit un retour à la ligne, et « 100 000 » / « F » sur deux
+   lignes fait une carte cassée.
+
+### La transparence n'oblige pas au PNG
+
+Demandé en PNG, livré en WebP, et c'est mieux :
+
+| PNG | WebP sans perte | **WebP `quality=94, alpha_quality=100, exact=True`** |
+|---|---|---|
+| 3 560 Ko | 2 426 Ko | **761 Ko, écart alpha maximum 0** |
+
+Le canal alpha est **bit pour bit celui du PNG**, pour 4,7 fois moins lourd. À
+Cotonou, en 4G, ces 2,8 Mo décident si la page s'affiche. Garder les PNG sources
+pour pouvoir revenir en arrière, et le dire au client plutôt que de livrer en
+silence autre chose que ce qu'il a demandé.
+
+### Un poids annoncé ne prouve rien, seule l'empreinte prouve
+
+`curl -w "%{size_download}"` a annoncé 124 Ko pour un fichier de 194 Ko et fait croire
+à un cache empoisonné. Le fichier servi, téléchargé et comparé en **MD5**, était
+identique à celui du disque. **Comparer les octets, pas les compteurs.**
+
+### Une page 404 sur chaque site, sans exception
+
+Sans `404.html`, Cloudflare Pages répond `200` avec le HTML d'accueil pour un fichier
+absent — et ce `200` hérite du cache `immutable` d'un an. C'est la panne de PISTE du
+2026-08-04. `_predeploy.py` l'écrit désormais tout seul. À reprendre sur le parc.
+
+---
+
+## Une courbe qui part à plat se lit comme un bug
+
+*2026-08-06, sur le héros d'Hillary. Mongazi : « ça bugue un peu, surtout sur les
+chiffres, ça doit suivre ».*
+
+`cubic-bezier(.45,.02,.2,1)` a l'air d'un beau easing sur le papier. Avec un point
+de contrôle à `y = .02`, **il ne se passe presque rien pendant le premier tiers** :
+mesuré, la pièce restait immobile **580 ms après le clic**, puis se précipitait.
+Personne ne dit « ton easing est mal choisi » : on dit « ça bugue ».
+
+Un ease-out qui bouge dès la première image (`cubic-bezier(.25,1,.5,1)`) règle
+tout. **Vérifier le début de la courbe, pas seulement sa fin.**
+
+### Ce qui accompagne un mouvement ne doit pas le porter
+
+Fabriquer un glyphe de 30 rem coûte un calcul de mise en page. Poser une variable
+CSS sur `:root` coûte un recalcul de tout le document. Faire ces deux choses
+**avant** de changer les classes qui lancent la transition, c'est retarder le
+départ de ce qu'on veut voir bouger.
+
+L'ordre qui marche : préparer hors du chemin critique → **lancer le mouvement et
+tout ce qui doit être en phase dans la MÊME image** → la couleur et les textes à
+l'image suivante.
+
+### Deux horloges pour un seul geste, c'est une horloge de trop
+
+Le chiffre géant roulait 240 ms puis se remplaçait d'un coup, pendant que la pièce
+glissait 1,15 s. Deux éléments d'un même geste doivent partager **la durée ET la
+courbe**, sinon l'œil voit un raté même sans savoir le nommer.
+
+### Deux minuteurs qui tombent à la même milliseconde, c'est une course
+
+Le verrou de la transition et le retrait de l'ancien chiffre étaient tous deux à
+1050 ms. Selon lequel gagnait, un chiffre restait empilé (« 0302 ») quand on
+cliquait vite. Règle : **seule l'opération la plus récente fait le ménage**, et
+elle le fait complètement (`if (conteneur.lastElementChild !== moi) return;`).
+
+### Un contrôle ne doit pas regarder à un instant fixe
+
+La première version du contrôle échantillonnait à 420 ms et tombait pendant un
+défilement automatique qui avait avalé le clic : elle criait au bug sur du code
+juste. Elle échantillonne maintenant **tout le mouvement**, et reclique si rien
+n'a bougé. Et elle n'exige pas de voir une valeur précise : une courbe rapide
+peut passer entre deux images d'un rendu lent sans que rien ne cloche.
+
+### Un aplat de couleur à faible opacité doit se mélanger en oklab
+
+`color-mix(in srgb, <bleu> 22%, transparent)` sur du papier crème donne un **voile
+gris sale**. `in oklab` garde la teinte. Quand une couleur doit se *voir* comme
+une couleur, ne pas la mélanger en srgb.

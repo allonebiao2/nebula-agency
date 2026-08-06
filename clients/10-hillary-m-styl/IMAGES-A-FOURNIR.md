@@ -6,8 +6,8 @@
 
 | Emplacement | Origine | Fichiers |
 |---|---|---|
-| **Catalogue commandable** | ✅ **SES 4 VRAIES PIÈCES** | `piece-*.webp` |
-| **Carrousel des collections** | ✅ **SES 4 VRAIES PIÈCES** | `coll-1..4.webp` |
+| **Catalogue commandable** | ✅ **SES 4 VRAIES PIÈCES, détourées** | `piece-*.webp` |
+| **Carrousel des collections** | ✅ **les mêmes fichiers** | `piece-*.webp` |
 | **Héros** | ✅ **SES 4 PIÈCES, détourées** | `hero-1..4.webp` |
 | Atelier (3 plans) | générées **d'après SES tissus** | `atelier-*.webp` |
 | Lookbook (6 vues) | générées **d'après SES pièces** | `look-*.webp` |
@@ -19,9 +19,22 @@ l'ambiance — l'atelier et le lookbook — et elles sont construites à partir 
 à la main, wax ocre à feuillages turquoise), pour qu'elles aient l'air de sortir
 de son atelier et pas d'un atelier générique.
 
-⚠️ **Les mannequins du héros sont DÉTOURÉS** (`rembg` / `isnet-general-use`,
-sans `alpha_matting`). C'est ce qui permet au numéro géant de passer derrière la
-silhouette. Avec un rectangle, le chiffre est entièrement couvert.
+⚠️ **Toutes les pièces sont DÉTOURÉES** (`rembg` / `isnet-general-use`, sans
+`alpha_matting` : il demande 1,9 Go de RAM et tombe). C'est ce qui permet au
+numéro géant de passer derrière la silhouette au héros. Avec un rectangle, le
+chiffre est entièrement couvert et l'effet du brief n'existe pas. Au carrousel
+et sur les cartes, c'est ce qui pose la pièce sur le papier au lieu de
+l'enfermer dans une boîte blanche.
+
+**La transparence est livrée en WebP, pas en PNG** — et c'est mieux : à
+`quality=94, alpha_quality=100, exact=True`, le canal alpha est **bit pour bit
+celui du PNG** pour 761 Ko au lieu de 3 560 Ko. Les PNG sources sont gardés dans
+`_sources/detoure/` si on veut revenir en arrière.
+
+⚠️ **Une seule photo par pièce.** Le carrousel et le catalogue partagent les
+mêmes fichiers `piece-*.webp` : le navigateur n'en télécharge qu'un pour les
+deux surfaces. Les anciens `coll-*.webp` étaient les mêmes photos en double, ils
+ont été supprimés.
 
 ✨ **La couleur du héros suit le tissu.** La teinte dominante de chaque pièce est
 relevée sur sa photo (`_v4/_couleurs.json`) et pilote la nappe de fond, le trait
@@ -125,9 +138,12 @@ avec son vrai nom, sa vraie matière, son vrai prix.
 Nom · Matière · Prix · Délai (jours) · Prêt-à-porter ou sur-mesure
 ```
 
-⚠️ **Les 12 pièces actuellement dans le catalogue sont des EXEMPLES.** Une
-cliente peut commander aujourd'hui une « Robe Amazone » qui n'existe pas.
-C'est le point le plus urgent du dossier, avant même les photos du héros.
+✅ **Réglé le 2026-08-06.** Les douze pièces d'exemple ont été remplacées par
+**ses quatre vraies créations**, avec ses prix, ses délais et ses suppléments
+express propres à chaque pièce. Plus rien de commandable n'est inventé.
+
+⚠️ Reste le vrai point bloquant : **les 11 mesures de la robe ovale ne sont
+toujours pas validées par l'atelier**, et ses quatre pièces en dépendent.
 
 ---
 

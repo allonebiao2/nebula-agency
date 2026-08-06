@@ -49,13 +49,9 @@ LOT = [
     ("look-4", "look-4.webp", 1000, 78),
     ("look-5", "look-5.webp", 1100, 76),
     ("look-6", "look-6.webp", 900, 78),
-    # le carrousel des collections — sans prix, sans bouton de commande
-    ("coll-1", "coll-1.webp", 820, 80),
-    ("coll-2", "coll-2.webp", 820, 80),
-    ("coll-3", "coll-3.webp", 820, 80),
-    ("coll-4", "coll-4.webp", 820, 80),
-    ("coll-5", "coll-5.webp", 820, 80),
-    ("coll-6", "coll-6.webp", 820, 80),
+    # ⛔ PAS de coll-* ici : le carrousel porte SES VRAIES PIECES, detourees.
+    #    Ce script les ecraserait par des vetements generes. C'est arrive le
+    #    2026-08-06 : le carrousel s'est retrouve plein de robes qui n'existent pas.
 ]
 
 
