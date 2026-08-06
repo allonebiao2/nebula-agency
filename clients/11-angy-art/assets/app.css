@@ -13,7 +13,7 @@
   --creme-2:#e7e1d4;
   --blanc:#ffffff;
   --encre:#1a1a1a;
-  --or:#c9b99a;          /* sur noir : 10,3:1 */
+  --or:#bd9f64;          /* SON or, relevé sur le logo · 7,8:1 sur noir */
   --or-f:#7e6d3a;        /* sur crème : 4,4:1 — l'or clair y est illisible */
   --tx-n:rgba(255,255,255,.72);
   --tx-c:#54504a;
@@ -87,7 +87,8 @@ body::after{content:'';position:fixed;inset:-30%;z-index:35;pointer-events:none;
 .nav.pose{background:rgba(10,10,10,.92);
   box-shadow:inset 0 -1px 0 rgba(255,255,255,.09)}
 .nav-logo{font-family:var(--ff-d);font-size:19px;letter-spacing:.01em;
-  display:inline-flex;align-items:center;min-height:44px;flex:0 0 auto}
+  display:inline-flex;align-items:center;gap:11px;min-height:44px;flex:0 0 auto}
+.nav-g{width:auto;height:26px;flex:0 0 auto}
 .nav-c{margin:0 auto;display:flex;align-items:center;gap:clamp(18px,2.4vw,38px)}
 .nav-c a{font-size:10.5px;font-weight:500;letter-spacing:.15em;color:var(--tx-n);
   min-height:44px;display:inline-flex;align-items:center;position:relative;
@@ -235,6 +236,12 @@ body::after{content:'';position:fixed;inset:-30%;z-index:35;pointer-events:none;
 .scene:has(.scene-p) .scene-mur{display:none}
 .scene:has(.scene-p){background:#0a0a0a}
 .scene:has(.scene-p)::before{display:none}
+.scene:has(.scene-p)::after{
+  background:
+    radial-gradient(92% 66% at 22% 12%,rgba(255,238,212,.10),transparent 74%),
+    linear-gradient(0deg,rgba(0,0,0,.24),transparent 44%)}
+/* la lumière rasante passe encore, mais discrètement, sur une vraie photo */
+.scene:has(.scene-p) .rai{opacity:.5}
 .cadre .scene{position:absolute}
 /* la lumière rasante */
 .scene::after{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
@@ -361,14 +368,19 @@ body::after{content:'';position:fixed;inset:-30%;z-index:35;pointer-events:none;
 .car-c{position:relative;aspect-ratio:var(--ar,4/5);overflow:hidden;
   border-radius:50% 50% 6px 6px / 30% 30% 6px 6px;
   box-shadow:0 40px 80px -46px rgba(0,0,0,.95)}
+.car--photo .car-c{border-radius:2px;box-shadow:0 46px 90px -50px rgba(0,0,0,1)}
+/* une photo voisine attire trop : on la recule d'un cran de plus */
+.car--photo:not(.car--act){opacity:calc(var(--op,1) * .66)}
 .car-c img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:3}
 .car--act{z-index:4}
 
 .cars-t{position:absolute;left:var(--pad);top:50%;transform:translateY(-50%);z-index:6;
   max-width:min(330px,26vw);pointer-events:none}
 /* le texte reste lisible même quand une carte passe derrière lui */
-.cars-t::before{content:'';position:absolute;inset:-28px -60px -28px -60px;z-index:-1;
-  background:radial-gradient(66% 58% at 32% 50%,rgba(10,10,10,.92),rgba(10,10,10,0) 74%)}
+.cars-t::before{content:'';position:absolute;inset:-40px -90px -40px -80px;z-index:-1;
+  background:
+    linear-gradient(90deg,rgba(10,10,10,.97) 42%,rgba(10,10,10,0) 100%),
+    radial-gradient(76% 66% at 30% 50%,rgba(10,10,10,.96),rgba(10,10,10,0) 78%)}
 .cars-t .l{font-size:10px;font-weight:500;letter-spacing:.16em;color:var(--or)}
 .cars-t .t{margin-top:14px;font-family:var(--ff-d);font-size:clamp(1.5rem,2.7vw,2.3rem);
   line-height:1.06;letter-spacing:-.02em}
@@ -434,7 +446,9 @@ body::after{content:'';position:fixed;inset:-30%;z-index:35;pointer-events:none;
   padding:clamp(44px,5vw,66px) var(--pad) calc(26px + env(safe-area-inset-bottom))}
 .pied-in{max-width:var(--max);margin:0 auto;display:grid;gap:28px clamp(30px,5vw,70px);
   grid-template-columns:minmax(0,auto) minmax(0,1fr) minmax(0,auto);align-items:start}
-.pied-l{font-family:var(--ff-d);font-size:20px}
+.pied-l{font-family:var(--ff-d);font-size:20px;
+  display:flex;align-items:center;gap:12px}
+.pied-g{width:auto;height:34px;flex:0 0 auto}
 .pied-c{display:grid;gap:2px;font-size:13px;color:var(--tx-n)}
 /* le téléphone et l'e-mail se touchent au doigt : 44 px, pas 15 */
 .pied-c a{display:inline-flex;align-items:center;min-height:44px;
@@ -479,6 +493,7 @@ body::after{content:'';position:fixed;inset:-30%;z-index:35;pointer-events:none;
   transition:transform .4s var(--e)}
 .mod-x svg{width:18px;height:18px;fill:none;stroke:var(--tx-n);stroke-width:1.3;stroke-linecap:round}
 .mod-x:hover{transform:rotate(45deg)}
+.mod-g{width:auto;height:38px;margin-bottom:20px}
 .mod-l{font-size:10px;font-weight:500;letter-spacing:.2em;color:var(--tx-n)}
 .mod-h{margin-top:14px;font-family:var(--ff-d);font-size:clamp(1.9rem,5vw,3rem);
   line-height:1.04;letter-spacing:-.024em}

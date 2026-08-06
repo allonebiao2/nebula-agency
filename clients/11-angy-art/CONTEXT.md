@@ -5,7 +5,7 @@ Commande reçue le **2026-08-05** via le formulaire nebula-agency.online.
 
 | | |
 |---|---|
-| Marque | **Angy Art** |
+| Marque | **Angy Art** — accroche officielle : **« Inspiré d'en haut, enraciné ici. »** |
 | WhatsApp | **+229 01 52 00 64 90** — ⚠️ **à tester une fois** (voir § 4) |
 | E-mail | angyavocevou@gmail.com |
 | Instagram | [@angy_art_creatif](https://instagram.com/angy_art_creatif) |
@@ -40,8 +40,9 @@ Cibles visées : collectionneurs, décorateurs, architectes, entreprises, passio
 **Esthétique « Selva Toscana »**, imposée par Mongazi le 2026-08-05 : éditorial
 noir `#0a0a0a` / crème `#f3efe6`, **Playfair Display + Public Sans**, italiques dorés,
 curseur suiveur, défilement lourd, carrousel en coverflow.
-⚠️ **L'or `#c9b99a` du brief est illisible sur le crème (1,68:1)** : les italiques et les
-liens sur fond clair utilisent `#7e6d3a` (4,4:1). Tout le détail, et la liste de ce qui a
+**L'or du site est SON or**, `#bd9f64`, relevé au pixel sur son logo (7,8:1 sur noir).
+⚠️ Sur le crème il ne donne que 2,2:1 : les italiques et les liens sur fond clair
+utilisent `#7e6d3a` (4,4:1). L'or `#c9b99a` du brief initial était pire encore (1,68:1). Tout le détail, et la liste de ce qui a
 été écarté du brief avec les motifs, dans **`DESIGN.md`** (à lire avant tout CSS).
 
 Une première direction « L'ENTAILLE » (indigo, Young Serif) avait été construite le matin
@@ -77,9 +78,9 @@ npx wrangler pages deploy clients/11-angy-art/_dist --project-name=angy-art --br
 | # | Quoi | Où ça se pose | État |
 |---|---|---|---|
 | 1 | **Numéro WhatsApp** | les `href="https://wa.me/…"` de `index.html` (écrits en dur pour marcher sans JS) | ⚠️ câblé sur `2290152006490` (la forme donnée au formulaire). **Envoyer un message de test.** Si le lien n'ouvre pas la bonne conversation, essayer `22952006490` — au Bénin les deux formes vivent, et les gens donnent souvent la mauvaise sans le savoir. |
-| 2 | **Photos des œuvres** | tableau `OEUVRES` en haut de `assets/app.js` + `assets/images/gallery/` | ⛔ aucune. Le carrousel présente en attendant **les matières de l'atelier** (toile, pigment, relief, textile, lumière), qui sont vraies. Une ligne ajoutée dans `OEUVRES` remplace les matières par les œuvres : cartel, compteur et vue en grand suivent tout seuls. **Aucune image IA, aucun titre inventé** : règle absolue. |
-| 3 | **Logo** | `assets/images/favicon.svg` + `_build_assets.py` (favicon, OG) | ⏳ annoncé sur WhatsApp. En attendant, monogramme typographique `A·A` gravé, remplaçable sans refonte. |
-| 4 | **Photos d'atelier / portrait** | héros, « La démarche », « L'atelier », « La visite » | ⏳ **quatre emplacements** attendent une vraie photo. Chacun est un `.scene` : y poser une `<img class="scene-p">` suffit, la matière dessous disparaît. |
+| 2 | **Photos des œuvres** | tableau `OEUVRES` en haut de `assets/app.js` + `assets/images/gallery/` | ⚠️ **PRÉFIGURATION.** 8 visuels générés (Nano Banana Pro, 2026-08-05) occupent le carrousel pour montrer la direction. Ils portent un titre et une technique, **jamais un prix, une dimension ni une mention « disponible »** : ce sont des ambiances, pas un catalogue. **Ils partent le jour où Angélique envoie les photos de ses vraies pièces** : remplacer le fichier et le titre dans `OEUVRES`, le reste suit. Le message à lui envoyer, avec les 5 règles de prise de vue, est dans `PROMPTS-IMAGES.md` § 3. |
+| 3 | **Logo** | `_sources/logo-transparent.png` → `_build_assets.py` | ✅ **REÇU le 2026-08-05.** Le glyphe (axe vertical, deux barres, deux points) est détouré et posé dans la nav, le pied, la modale, le favicon, l'OG et l'affiche. Son accroche « Inspiré d'en haut, enraciné ici. » remplace celle qu'on avait écrite. |
+| 4 | **Photos d'atelier / portrait** | héros, « La démarche », « L'atelier », « La citation », « La visite » | ⚠️ **PRÉFIGURATION.** Les 5 scènes sont générées (matière en macro, mains au travail, la salle, un vernissage, la salle le soir). Elles peuvent rester : ce sont des **ambiances**, pas des œuvres à vendre. À remplacer quand elle enverra de vraies photos d'atelier. Chacune est un `.scene` : changer le `src` de l'`<img class="scene-p">` suffit. |
 | 5 | **Vrais témoignages** | section « La citation » | ⏳ la section affiche une phrase **d'Angélique**, signée d'elle. Le jour où un vrai client écrit : remplacer la citation et l'attribution. ⛔ Jamais un faux critique, jamais un faux magazine. |
 | 6 | **Adresse / atelier** | pied de page + « L'atelier » | ⏳ « Cotonou » seul pour l'instant. Pas de carte tant que l'adresse n'est pas donnée : un mauvais repère est pire que pas de repère. |
 | 7 | **Musique** | FAB son | ✅ ambiance de salle **synthétisée** (Web Audio, aucun fichier, aucun droit à payer). Remplaçable par une piste dont elle détient les droits. |
@@ -104,7 +105,25 @@ npx wrangler pages deploy clients/11-angy-art/_dist --project-name=angy-art --br
   déjà rédigée. Il n'y a pas d'agenda derrière : annoncer une disponibilité qu'on ne tient
   pas coûte le client.
 
-## 6. Journal
+## 6. Les images générées
+
+**8 œuvres + 5 scènes, produites le 2026-08-05 via WaveSpeed (Nano Banana Pro, 0,14 $ pièce).**
+
+- Les prompts, le socle commun et les variations : `_gen_images.py` (relançable).
+- Les originaux : `_sources/ia/` (non déployés).
+- Le passage au web : `python _pose_images.py` (redimensionne, unifie les fonds des
+  œuvres par un assombrissement radial, écrit en WebP).
+- Coût total de la session : **2,80 $**. Solde restant : 7,49 $.
+
+⚠️ **Les 8 œuvres du carrousel sont une préfiguration, pas le catalogue.** Elles montrent
+ce que le site fera avec de vraies photos. Aucune ne porte de prix ni de dimension. Le
+jour où Angélique envoie ses pièces, on remplace, et rien d'autre ne bouge.
+
+Deux corrections faites en les regardant : les visiteurs du vernissage étaient deux
+Européens (relancé avec un couple ouest-africain), et les fonds des 8 œuvres allaient du
+gris clair au gris foncé (unifiés au tirage).
+
+## 7. Journal
 
 - **2026-08-05** — Réception de la commande. Direction « L'ENTAILLE » construite le matin
   (indigo, Young Serif), puis **remplacée en cours de session** par l'esthétique
@@ -113,9 +132,17 @@ npx wrangler pages deploy clients/11-angy-art/_dist --project-name=angy-art --br
   (quatre tours de correction), affiche A4 + 2 QR décodés, **déployé et vérifié en ligne**
   sur https://angy-art.pages.dev.
 
+  **Second temps, le même jour** : le vrai logo arrive (glyphe or + accroche
+  « Inspiré d'en haut, enraciné ici. »). Il remplace le monogramme provisoire partout,
+  **son or `#bd9f64` devient l'or du site**, et son accroche remplace celle qu'on avait
+  écrite. Puis 13 visuels générés et posés (voir § 6), affiche refaite avec le vrai logo
+  et la vraie photo, **67 contrôles verts**, redéployé.
+
   Défauts trouvés **en regardant**, que le contrôle automatique ne voyait pas :
   matières trop sombres (des trous noirs), titres qui passaient sous la barre fixe,
   textes traversés par les cadres du mur, « ÉCRIRE SUR WHATSAPP » affiché deux fois,
   monogramme à une seule barre (il se lisait « A Λ »), trou de 8 cm au milieu de
   l'affiche. Le seul défaut attrapé par le contrôle, et le plus grave, était invisible
   à l'œil : **les textes d'une section sautée restaient cachés pour toujours.**
+  Le monogramme provisoire n'avait qu'une barre sur deux A : il se lisait « A Λ ».
+  Il a disparu avec l'arrivée du vrai logo.

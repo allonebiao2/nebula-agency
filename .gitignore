@@ -71,3 +71,6 @@ clients/*/_diag.html
 
 __pycache__/
 node_modules/
+
+# Originaux des images (logo source, rendus IA bruts) — lourds, non déployés
+clients/*/_sources/

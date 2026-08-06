@@ -12,18 +12,18 @@
 <meta property="og:locale" content="fr_FR">
 <meta property="og:site_name" content="Angy Art">
 <meta property="og:title" content="Angy Art — Angélique Avocevou, artiste plasticienne">
-<meta property="og:description" content="On ne peint pas la mémoire. On la creuse. Œuvres contemporaines en relief, atelier à Cotonou.">
+<meta property="og:description" content="Inspiré d'en haut, enraciné ici. Œuvres contemporaines en relief, atelier à Cotonou.">
 <meta property="og:url" content="https://angy-art.pages.dev/">
 <meta property="og:image" content="https://angy-art.pages.dev/assets/images/og/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/images/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="assets/images/favicon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Public+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/app.css?v=20260805c">
+<link rel="stylesheet" href="assets/app.css?v=20260806b">
 <script>document.documentElement.className+=' js';</script>
 </head>
 <body>
@@ -33,7 +33,10 @@
 
 <!-- ============ NAVIGATION ============ -->
 <header class="nav" id="nav">
-  <a class="nav-logo" href="#haut">Angy&nbsp;Art</a>
+  <a class="nav-logo" href="#haut" aria-label="Angy Art, retour en haut">
+    <img class="nav-g" src="assets/images/logos/marque.png" alt="" width="497" height="385">
+    <span>Angy&nbsp;Art</span>
+  </a>
   <nav class="nav-c" id="navC" aria-label="Navigation principale">
     <a href="#demarche">LA DÉMARCHE</a>
     <a href="#portfolio">LE PORTFOLIO</a>
@@ -61,7 +64,7 @@
         <span class="lev"><span>ANGY</span></span>
         <span class="lev"><span>ART</span></span>
       </h1>
-      <p class="hero-st lev"><span><em>Un atelier à Cotonou, guidé par la mémoire.</em></span></p>
+      <p class="hero-st lev"><span><em>Inspiré d'en haut, enraciné ici.</em></span></p>
       <p class="hero-d">Des œuvres contemporaines nées du relief, de la matière brute
         et de la patience de la main.</p>
     </div>
@@ -70,6 +73,7 @@
     <div class="hero-img" id="heroImg" data-cur="OUVRIR">
       <div class="cadre">
         <div class="scene scene--toile" aria-hidden="true">
+          <img class="scene-p" src="assets/images/scenes/hero.webp" alt="" width="1100" height="1366" fetchpriority="high" decoding="async">
           <svg class="entailles" viewBox="0 0 400 500" fill="none" aria-hidden="true">
             <g>
               <path d="M70 400 C70 300 124 232 200 232 C276 232 330 300 330 400"/>
@@ -115,6 +119,7 @@
     <div class="split-i" data-para>
       <!-- l'emplacement de la vraie photo d'atelier -->
       <div class="scene scene--atelier" aria-hidden="true">
+        <img class="scene-p" src="assets/images/scenes/demarche.webp" alt="" loading="lazy" decoding="async">
         <i class="rai"></i>
         <svg viewBox="0 0 600 760" fill="none" aria-hidden="true" class="scene-tr">
           <path d="M120 660 C120 520 200 420 300 420 C400 420 480 520 480 660"/>
@@ -175,6 +180,7 @@
 <!-- ============ 4. L'ATELIER (plein écran) ============ -->
 <section class="plein atelier" id="atelier" aria-labelledby="h2c">
   <div class="scene scene--salle" aria-hidden="true">
+    <img class="scene-p" src="assets/images/scenes/atelier.webp" alt="" loading="lazy" decoding="async">
     <i class="rai rai--large"></i>
     <svg viewBox="0 0 1600 900" fill="none" aria-hidden="true" class="scene-mur">
       <g class="cad">
@@ -203,7 +209,10 @@
 <!-- ============ 5. LA CITATION (split) ============ -->
 <section class="cit" aria-labelledby="h2d">
   <div class="cit-i">
-    <div class="scene scene--lin" aria-hidden="true"><i class="rai"></i></div>
+    <div class="scene scene--lin" aria-hidden="true">
+      <img class="scene-p" src="assets/images/scenes/vernissage.webp" alt="" loading="lazy" decoding="async">
+      <i class="rai"></i>
+    </div>
   </div>
   <div class="cit-t">
     <p class="lab lab--n">COLLECTIONNER, EN SILENCE <b></b></p>
@@ -216,6 +225,7 @@
 <!-- ============ 6. LA VISITE (plein écran) ============ -->
 <section class="plein visite" id="visite" aria-labelledby="h2e">
   <div class="scene scene--soir" aria-hidden="true">
+    <img class="scene-p" src="assets/images/scenes/soir.webp" alt="" loading="lazy" decoding="async">
     <i class="rai rai--chaud"></i>
     <svg viewBox="0 0 1600 900" fill="none" aria-hidden="true" class="scene-mur">
       <g class="cad">
@@ -239,7 +249,10 @@
 <!-- ============ PIED ============ -->
 <footer class="pied">
   <div class="pied-in">
-    <p class="pied-l">Angy&nbsp;Art</p>
+    <p class="pied-l">
+      <img class="pied-g" src="assets/images/logos/marque.png" alt="" width="497" height="385">
+      <span>Angy&nbsp;Art</span>
+    </p>
     <div class="pied-c">
       <p>Atelier à Cotonou, Bénin</p>
       <p><a href="https://wa.me/2290152006490" data-wa="direct">+229 01 52 00 64 90</a></p>
@@ -269,6 +282,7 @@
   <button class="mod-x" id="modX" aria-label="Fermer">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6 18 18M18 6 6 18"/></svg>
   </button>
+  <img class="mod-g" src="assets/images/logos/marque.png" alt="" width="497" height="385">
   <p class="mod-l" id="modT">VOTRE VISITE CHEZ ANGY ART</p>
   <p class="mod-h">Parlons <em>de votre projet.</em></p>
 
@@ -336,6 +350,6 @@
 ]}
 </script>
 
-<script src="assets/app.js?v=20260805c"></script>
+<script src="assets/app.js?v=20260806b"></script>
 </body>
 </html>

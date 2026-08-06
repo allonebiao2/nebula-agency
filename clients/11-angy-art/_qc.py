@@ -231,9 +231,17 @@ def main():
                   img: document.querySelectorAll('.car img').length,
                   sc: getComputedStyle(document.querySelector('.car--act')).getPropertyValue('--sc').trim()
                 })""")
-                bon(f"{c['n']} diapositives, une seule active") if c["n"] == 5 and c["act"] == 1 \
+                # le nombre vient des DONNÉES : jamais recopié dans le contrôle
+                bon(f"{c['n']} diapositives, une seule active") if c["n"] >= 3 and c["act"] == 1 \
                     else mauvais(f"carrousel : {c['n']} diapositives, {c['act']} active(s)")
-                bon(f"compteur = « {c['cpt'].strip()} »") if "05" in c["cpt"] else mauvais(f"compteur : {c['cpt']}")
+                bon(f"compteur cohérent : « {c['cpt'].strip()} »") \
+                    if f"{c['n']:02d}" in c["cpt"] and "01" in c["cpt"] \
+                    else mauvais(f"compteur {c['cpt']!r} ne correspond pas aux {c['n']} diapositives")
+                orphelin = page.evaluate(
+                    "() => { const l = (document.querySelector('.cars-t .l')||{}).textContent || '';"
+                    "  return /[\\u00b7\\u2013-]\\s*$/.test(l.trim()) ? l : ''; }")
+                bon("le cartel ne finit pas par un séparateur orphelin") if not orphelin \
+                    else mauvais(f"cartel mal formé : {orphelin!r}")
                 bon(f"bloc de texte rempli : « {c['txt'][:46].strip()}… »") if len(c["txt"]) > 20 \
                     else mauvais("le bloc de texte du carrousel est vide")
                 bon("aucune œuvre inventée : zéro image dans le carrousel") if c["img"] == 0 \

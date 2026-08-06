@@ -360,3 +360,34 @@ WhatsApp doit proposer **l'autre forme** en second bouton, dans les deux sens.
    **compare** des numéros, elle n'en compose pas.
 
 Détail complet : mémoire Claude `reference_numeros-benin`.
+
+
+---
+
+## Une image générée ne devient jamais le catalogue d'un client
+
+*2026-08-05, en illustrant le portfolio d'Angy Art.*
+
+On sait générer des visuels superbes pour 0,14 $ pièce. C'est une tentation nouvelle,
+et elle a un bord tranchant.
+
+**Ce qui est autorisé** : l'ambiance, la matière, le lieu, la texture, le geste. Un
+atelier, des mains dans le pigment, un mur en fin de journée. Personne ne peut écrire
+« je veux acheter celle-là ».
+
+**Ce qui ne l'est jamais** : une pièce présentée comme vendable. Un collectionneur qui
+écrit pour acquérir une toile qui n'existe pas, ce n'est pas nous qui répondons, c'est
+l'artiste. Et elle perd le client, et sa parole avec.
+
+**Entre les deux, une zone qu'il faut baliser explicitement.** Chez Angy Art, huit
+visuels occupent le carrousel en attendant les vraies photos. Ce qui les rend tenables :
+
+1. **Aucun prix, aucune dimension, aucune mention « disponible ».** Un titre et une
+   technique décrivent ; un prix engage.
+2. **Le `CONTEXT.md` le dit noir sur blanc**, et le commentaire est en tête du tableau
+   dans le code, là où quelqu'un le lira forcément.
+3. **Le message pour obtenir les vraies photos est déjà écrit** et prêt à envoyer.
+   Une préfiguration n'est acceptable que si le chemin pour en sortir est posé.
+
+Le test : *si le client recevait un message d'achat demain, pourrait-il répondre sans
+mentir ?* Si non, l'image n'a rien à faire là.

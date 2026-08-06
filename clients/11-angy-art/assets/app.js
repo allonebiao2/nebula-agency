@@ -23,7 +23,21 @@
      { f:'ma-piece.jpg', t:'Titre', tech:'Technique mixte, relief',
        an:'2026', mat:'Pigment, lin brut, feuille de cuivre', ar:'4/5' }
   */
-  var OEUVRES = [];
+  /* ⚠️ VISUELS DE PRÉFIGURATION, générés le 2026-08-05. Ils montrent la
+     DIRECTION, pas le catalogue. Ils partent le jour où Angélique envoie les
+     photos de ses vraies pièces : remplacer le fichier et le titre, le reste
+     suit. Aucun prix, aucune dimension, aucune mention « disponible » ne doit
+     leur être associée. */
+  var OEUVRES = [
+    { f:"oeuvre-1.webp", t:"Spirales", mat:"Terre cuite, feuille d'or, lin brut", ar:"900/1117" },
+    { f:"oeuvre-2.webp", t:"Chevrons", mat:"Pigment indigo, incisions, lin", ar:"1/1" },
+    { f:"oeuvre-3.webp", t:"Le masque", mat:"Relief, matériaux rapportés, terre", ar:"180/241" },
+    { f:"oeuvre-4.webp", t:"Trame", mat:"Terre rouge, textile indigo, lin", ar:"36/29" },
+    { f:"oeuvre-5.webp", t:"Astre", mat:"Noir sur noir, éclats d'or", ar:"900/1117" },
+    { f:"oeuvre-6.webp", t:"Strates", mat:"Ocres, terre d'ombre, gris cendre", ar:"1/1" },
+    { f:"oeuvre-7.webp", t:"Damier", mat:"Rouge profond, feuille d'or", ar:"180/241" },
+    { f:"oeuvre-8.webp", t:"Entrelacs", mat:"Kaolin, fusain, lin brut", ar:"900/1117" },
+  ];
 
   /* LES MATIÈRES — l'état honnête du carrousel tant qu'il n'y a pas
      de photo. Ce ne sont pas des œuvres, ce sont des surfaces. */
@@ -298,7 +312,7 @@
       var ar = o.ar || '4/5';
       if (oeuvres) {
         var alt = (o.t ? o.t + ', ' : '') + (o.tech || 'œuvre') + ' par Angélique Avocevou';
-        return '<figure class="car" data-i="' + i + '"><div class="car-c" style="--ar:' + esc(ar) + '">' +
+        return '<figure class="car car--photo" data-i="' + i + '"><div class="car-c" style="--ar:' + esc(ar) + '">' +
           '<img src="assets/images/gallery/' + esc(o.f) + '" alt="' + esc(alt) + '" loading="lazy" decoding="async">' +
           '</div></figure>';
       }
@@ -317,8 +331,11 @@
       var o = data[actif];
       txt.classList.add('chg');
       setTimeout(function () {
+        var etiq = oeuvres
+          ? [o.tech || 'Technique mixte', o.an].filter(Boolean).join(' · ').toUpperCase()
+          : o.l;
         txt.innerHTML =
-          '<p class="l">' + esc(oeuvres ? ((o.tech || 'TECHNIQUE MIXTE') + ' · ' + (o.an || '')).toUpperCase() : o.l) + '</p>' +
+          '<p class="l">' + esc(etiq) + '</p>' +
           '<p class="t">' + esc(o.t || 'Sans titre') + '</p>' +
           '<p class="s">' + esc(oeuvres ? (o.mat || '') : o.s) + '</p>';
         txt.classList.remove('chg');

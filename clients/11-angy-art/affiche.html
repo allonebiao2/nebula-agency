@@ -24,8 +24,7 @@
   .z{position:relative;z-index:1}
 
   header{padding:14mm 16mm 0;display:flex;align-items:flex-start;justify-content:space-between}
-  .mono{width:19mm;height:auto}
-  .mono path{stroke:#f3efe6;stroke-width:6;fill:none;stroke-linecap:square}
+  .mono{width:15mm;height:auto;display:block}
   .co{text-align:right;font-size:7pt;letter-spacing:.2em;color:rgba(255,255,255,.62);line-height:1.9}
   .co i{font-style:normal;color:#c9b99a}
 
@@ -39,9 +38,8 @@
   .de{margin-top:5mm;font-size:9.5pt;line-height:1.66;color:rgba(255,255,255,.78);max-width:98mm}
   .trait{margin-top:7mm;width:26mm;height:1px;background:#c9b99a}
 
-  .arche svg{width:100%;height:auto;display:block}
-  .arche .c{fill:rgba(255,255,255,.02);stroke:rgba(201,185,154,.55);stroke-width:2}
-  .arche .e{fill:none;stroke:rgba(243,239,230,.56);stroke-width:1.8;stroke-linecap:round}
+  .arche .ph{width:100%;height:76mm;object-fit:cover;display:block;
+    border-radius:26mm 26mm 1mm 1mm / 20mm 20mm 1mm 1mm}
   .arche .lg{margin-top:3.5mm;text-align:center;font-size:6.5pt;letter-spacing:.2em;
     color:rgba(255,255,255,.55)}
 
@@ -75,16 +73,14 @@
 <body>
 
 <header class="z">
-  <svg class="mono" viewBox="0 0 220 120" fill="none" aria-hidden="true">
-    <path d="M18 96 L58 24 L98 96"/><path d="M34 70 L82 70"/><path d="M122 96 L162 24 L202 96"/><path d="M138 70 L186 70"/>
-  </svg>
+  <img class="mono" src="assets/images/logos/marque.png" alt="Angy Art">
   <p class="co">ATELIER <i>·</i> COTONOU, BÉNIN<br>6.3703° N <i>/</i> 2.3912° E</p>
 </header>
 
 <div class="corps z">
   <div>
     <h1>ANGY<br>ART</h1>
-    <p class="st">Un atelier à Cotonou,<br>guidé par la mémoire.</p>
+    <p class="st">Inspiré d'en haut,<br>enraciné ici.</p>
     <p class="de">Angélique Avocevou, artiste plasticienne. Des œuvres contemporaines nées
       du relief, de la matière brute et de la patience de la main. Aucune pièce n'existe
       en double.</p>
@@ -92,20 +88,7 @@
   </div>
 
   <div class="arche">
-  <svg viewBox="0 0 400 520" fill="none" aria-hidden="true">
-    <path class="c" d="M20 512 L20 220 C20 110 100 20 200 20 C300 20 380 110 380 220 L380 512 Z"/>
-    <g class="e">
-      <path d="M104 116 C148 92 252 92 296 116"/>
-      <path d="M112 144 C154 122 246 122 288 144"/>
-      <path d="M84 200 L108 182 L132 200"/><path d="M148 200 L172 182 L196 200"/>
-      <path d="M212 200 L236 182 L260 200"/><path d="M276 200 L300 182 L324 200"/>
-      <path d="M70 420 C70 320 124 252 200 252 C276 252 330 320 330 420"/>
-      <path d="M100 420 C100 338 145 282 200 282 C255 282 300 338 300 420"/>
-      <path d="M92 460 L92 482"/><path d="M124 456 L124 486"/><path d="M156 460 L156 482"/>
-      <path d="M188 456 L188 486"/><path d="M220 460 L220 482"/><path d="M252 456 L252 486"/>
-      <path d="M284 460 L284 482"/><path d="M308 456 L308 486"/>
-    </g>
-  </svg>
+  <img class="ph" src="assets/images/scenes/hero.webp" alt="">
   <p class="lg">LA MATIÈRE, AVANT L'IMAGE</p>
   </div>
 </div>
