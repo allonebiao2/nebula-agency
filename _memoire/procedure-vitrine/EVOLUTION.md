@@ -736,3 +736,45 @@ finit par pointer vers l'action la plus destructrice possible.
 
 **Exécution de référence :** `clients/10-hillary-m-styl/_v4/` (assembleur,
 morceaux gardés, 74 contrôles) et `IMAGES-A-FOURNIR.md`.
+
+### 2026-08-06 (suite) — Le détourage n'est pas de la finition, c'est l'effet
+
+Sur Hillary V4, le brief demandait un **numéro de diapositive géant derrière le
+mannequin**. Avec une photo rectangulaire, même sur fond blanc, le chiffre est
+**entièrement couvert** : il n'apparaît nulle part. On croit que c'est un
+problème de couleur ou de taille — ce n'en est pas un.
+
+**Il faut détourer le sujet.** Une fois le mannequin sans fond, le chiffre passe
+derrière lui et l'effet existe enfin. Trois tentatives ont été perdues à
+éclaircir, agrandir et déplacer le chiffre avant de comprendre.
+
+```python
+from rembg import remove, new_session
+sess = new_session("isnet-general-use")
+out = remove(im, session=sess)          # ⚠️ SANS alpha_matting
+```
+
+⚠️ **`alpha_matting=True` demande 1,9 Go de RAM** sur une image de 1100 px et
+tombe (`numpy._core._exceptions._ArrayMemoryError`). Sur un fond blanc uni,
+`isnet` seul suffit. Nettoyer ensuite : alpha < 70 → 0, puis recadrer sur la
+boîte alpha. Sans ce nettoyage, la boîte garde l'ombre portée et la silhouette
+reste large (1080 px au lieu de 316).
+
+### Quand un site passe de « fichier unique » à multi-fichiers
+
+Le base64 est la bonne règle pour 2 images de 6 Ko. **Pas pour 19 photos** : le
+HTML passerait 6 Mo, illisible et non cachable. Trois choses changent alors :
+
+1. les photos vont dans `assets/images/`, référencées en relatif ;
+2. **le script de pré-déploiement doit les copier dans `_dist/`** — un
+   déploiement Cloudflare est un instantané complet, ce qui manque disparaît ;
+3. il doit **refuser de préparer** si une image référencée par le HTML n'est pas
+   dans `_dist` :
+
+```python
+manquantes = [r for r in set(re.findall(r'assets/images/([A-Za-z0-9_.-]+)', html))
+              if not (DIST / "assets" / "images" / r).exists()]
+```
+
+Et **relever les délais du contrôle** : 19 images chargées depuis `file://`
+dépassent les 15 s par défaut.

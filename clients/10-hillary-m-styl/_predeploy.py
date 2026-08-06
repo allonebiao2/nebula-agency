@@ -132,9 +132,34 @@ def main():
         shutil.rmtree(DIST)
     DIST.mkdir()
     shutil.copy(OUT, DIST / "index.html")
+
+    # ⚠️ Depuis la V4, le site n'est PLUS un fichier unique : 19 photos vivent
+    #    dans assets/images/. En base64 elles feraient un HTML de plus de 6 Mo,
+    #    illisible, non cachable et impossible à charger en 4G. Un déploiement
+    #    Cloudflare est un instantané complet : ce qui manque ici disparaît du site.
+    src_img = ICI / "assets" / "images"
+    n_img = poids_img = 0
+    if src_img.exists():
+        dst_img = DIST / "assets" / "images"
+        dst_img.mkdir(parents=True, exist_ok=True)
+        for f in sorted(src_img.glob("*.webp")):
+            shutil.copy(f, dst_img / f.name)
+            n_img += 1
+            poids_img += f.stat().st_size
+    # toute image référencée par le HTML doit être dans _dist
+    import re as _re
+    manquantes = [r for r in set(_re.findall(r'assets/images/([A-Za-z0-9_.-]+)', OUT.read_text(encoding="utf-8")))
+                  if not (DIST / "assets" / "images" / r).exists()]
+    if manquantes:
+        stop("des images référencées par la page ne sont pas dans _dist : "
+             + ", ".join(sorted(manquantes)[:6]),
+             "Relancez `python _pose_images.py`, puis ce script.")
+
     poids = (DIST / "index.html").stat().st_size
-    print(f"       ✅ _dist/index.html — {poids // 1024} Ko, un seul fichier")
-    print("          (la vitrine est autonome : logo et favicon en base64)")
+    print(f"       ✅ _dist/index.html — {poids // 1024} Ko")
+    print(f"       ✅ {n_img} images copiées — {poids_img // 1024} Ko")
+    print(f"          total à publier : {(poids + poids_img) // 1024} Ko")
+    print("")
 
     print("\n  " + "─" * 52)
     print("  TOUT EST PRÊT. La commande à lancer :\n")

@@ -229,7 +229,7 @@ em{font-style:italic;font-weight:400}
 
 /* le numéro géant, DERRIÈRE le mannequin et DEVANT le fond */
 .hnum{position:absolute;top:50%;left:50%;transform:translate(-50%,-54%);z-index:1;
-  font-family:var(--ff-d);font-weight:700;font-size:clamp(9rem,30vw,22rem);line-height:.8;
+  font-family:var(--ff-d);font-weight:700;font-size:clamp(11rem,42vw,30rem);line-height:.8;
   letter-spacing:-.05em;color:#ddd8ce;pointer-events:none;
   text-shadow:0 1px 0 rgba(255,255,255,.95),0 3px 3px rgba(26,26,26,.08);
   overflow:hidden;height:.98em;display:flex;align-items:flex-start}
@@ -246,8 +246,11 @@ em{font-style:italic;font-weight:400}
 .hsl.sort{opacity:.3;transform:translateX(-100%) skewX(-3deg);z-index:1}
 .hsl.entre{opacity:.3;transform:translateX(100%) skewX(3deg);z-index:1}
 .hsl-c{position:relative;width:100%;height:100%;overflow:hidden}
-.hsl-c:has(img){background:var(--papier-2)}
-.hsl-c img{width:100%;height:100%;object-fit:cover;object-position:center top}
+.hsl-c:has(img){background:none}
+/* un mannequin DÉTOURÉ : il se pose entier, il ne se recadre pas.
+   C'est ce qui laisse le numéro géant passer derrière lui. */
+.hsl-c img{width:100%;height:100%;object-fit:contain;object-position:center bottom;
+  filter:drop-shadow(0 26px 40px rgba(26,26,26,.16))}
 /* le mannequin de substitution, tant qu'il n'y a pas de photo */
 .hsl-c .sil{position:absolute;inset:0;display:grid;place-items:center;background:none}
 .hsl-c .sil svg{width:66%;height:auto;opacity:.7}
@@ -352,6 +355,9 @@ em{font-style:italic;font-weight:400}
   background:var(--encre-2);box-shadow:0 30px 70px -28px rgba(0,0,0,.85);
   border:1px solid var(--fil-n)}
 .plan img{width:100%;height:100%;object-fit:cover}
+/* la vraie photo efface le dessin de substitution */
+.plan:has(img) .ph,.lk:has(img) .sil,.hsl-c:has(img) .sil,.car-c:has(img) .sil{display:none}
+.plan img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .plan .ph{position:absolute;inset:0;display:grid;place-items:center;
   background:linear-gradient(150deg,#1c1a19,#131211)}
 .plan .ph svg{width:52%;height:auto;opacity:.55}
@@ -638,7 +644,7 @@ em{font-style:italic;font-weight:400}
 @media (max-width:640px){
   .hero{min-height:auto;padding-top:clamp(96px,14vh,128px)}
   .hsc{width:min(80%,320px);height:min(48vh,400px)}
-  .hnum{font-size:clamp(7rem,40vw,12rem)}
+  .hnum{font-size:clamp(8rem,54vw,15rem)}
   /* les badges restaient a cheval sur les bords : on les rentre */
   .bdg{font-size:9.5px;padding:7px 13px;letter-spacing:.08em}
   .bdg--1{top:2%;  right:var(--pad); left:auto}
@@ -1016,12 +1022,14 @@ em{font-style:italic;font-weight:400}
     <!-- 3 emplacements de photo, empilés en perspective -->
     <div class="plans" id="plans" aria-hidden="true">
       <figure class="plan plan--1" style="--d:0ms">
+        <img src="assets/images/atelier-1.webp" alt="Rouleaux de pagne et de wax dans l'atelier" loading="lazy" decoding="async">
         <div class="ph"><svg viewBox="0 0 120 160" fill="none">
           <path d="M20 20h80M20 40h80M20 60h80M20 80h80M20 100h80M20 120h80"/>
           <path d="M30 10v140M50 10v140M70 10v140M90 10v140"/></svg></div>
         <figcaption class="cap">Le tissu</figcaption>
       </figure>
       <figure class="plan plan--2" style="--d:120ms">
+        <img src="assets/images/atelier-2.webp" alt="Un patron épinglé sur le tissu, craie et ciseaux" loading="lazy" decoding="async">
         <div class="ph"><svg viewBox="0 0 120 160" fill="none">
           <path d="M42 24c0-8 6-14 18-14s18 6 18 14"/>
           <path d="M42 24 24 42l10 12 8-8v76h56V46l8 8 10-12-18-18"/>
@@ -1029,6 +1037,7 @@ em{font-style:italic;font-weight:400}
         <figcaption class="cap">Le patron</figcaption>
       </figure>
       <figure class="plan plan--3" style="--d:240ms">
+        <img src="assets/images/atelier-3.webp" alt="Détail d'une couture et d'une broderie à la main" loading="lazy" decoding="async">
         <div class="ph"><svg viewBox="0 0 120 160" fill="none">
           <circle cx="60" cy="52" r="18"/><path d="M42 96c0-14 8-22 18-22s18 8 18 22"/>
           <path d="M24 130c6-18 20-28 36-28s30 10 36 28"/></svg></div>
@@ -1082,21 +1091,27 @@ em{font-style:italic;font-weight:400}
     <div class="look-gr" id="lookGr">
       <!-- 6 emplacements de photo, en mosaïque asymétrique -->
       <figure class="lk lk--1" data-vit="0.8" data-cur="VOIR">
+        <img src="assets/images/look-1.webp" alt="Robe longue en wax portée, en mouvement" loading="lazy" decoding="async">
         <div class="sil"><svg viewBox="0 0 120 160" fill="none"><path d="M46 26c0-8 6-14 14-14s14 6 14 14"/><path d="M46 26 26 44l9 11 11-9v92h28V46l11 9 9-11-20-18"/></svg></div>
         <figcaption class="cap">Silhouette · à venir</figcaption></figure>
       <figure class="lk lk--2" data-vit="1.1" data-cur="VOIR">
+        <img src="assets/images/look-2.webp" alt="Détail du tissu wax, drapé" loading="lazy" decoding="async">
         <div class="sil"><svg viewBox="0 0 120 120" fill="none"><path d="M20 20h80v80H20z"/><path d="M20 44h80M20 68h80M44 20v80M68 20v80"/></svg></div>
         <figcaption class="cap">Détail de tissu · à venir</figcaption></figure>
       <figure class="lk lk--3" data-vit="0.9" data-cur="VOIR">
+        <img src="assets/images/look-3.webp" alt="Une pièce vue de dos, coutures apparentes" loading="lazy" decoding="async">
         <div class="sil"><svg viewBox="0 0 120 160" fill="none"><path d="M60 14c-10 0-16 6-16 14 0 10 6 16 16 16s16-6 16-16c0-8-6-14-16-14z"/><path d="M32 148c0-30 12-46 28-46s28 16 28 46"/></svg></div>
         <figcaption class="cap">Portrait · à venir</figcaption></figure>
       <figure class="lk lk--4" data-vit="1.3" data-cur="VOIR">
+        <img src="assets/images/look-4.webp" alt="Tailleur indigo, assise" loading="lazy" decoding="async">
         <div class="sil"><svg viewBox="0 0 120 160" fill="none"><path d="M40 20h40l14 40-14 90H40L26 60z"/><path d="M40 60h40M40 100h40"/></svg></div>
         <figcaption class="cap">Silhouette · à venir</figcaption></figure>
       <figure class="lk lk--5" data-vit="0.85" data-cur="VOIR">
+        <img src="assets/images/look-5.webp" alt="L'atelier de couture à Cotonou" loading="lazy" decoding="async">
         <div class="sil"><svg viewBox="0 0 150 120" fill="none"><path d="M14 100c30-40 60-60 122-72"/><path d="M14 60c26-16 60-24 96-24"/><path d="M40 100V44M76 100V32M112 100V28"/></svg></div>
         <figcaption class="cap">Atelier · à venir</figcaption></figure>
       <figure class="lk lk--6" data-vit="1.2" data-cur="VOIR">
+        <img src="assets/images/look-6.webp" alt="Détail d'un bouton recouvert et d'un ourlet roulotté" loading="lazy" decoding="async">
         <div class="sil"><svg viewBox="0 0 120 160" fill="none"><path d="M60 10v140"/><path d="M36 34c16-8 32-8 48 0M32 62c18-9 38-9 56 0M28 92c20-10 44-10 64 0"/></svg></div>
         <figcaption class="cap">Détail · à venir</figcaption></figure>
     </div>
@@ -1953,24 +1968,24 @@ document.getElementById("waBas").href =
 
   /* --- 1 · LE HÉROS : 4 mannequins, fond blanc uni impératif --- */
   var HERO = [
-    { f:'', col:'Sur-mesure',     mat:'Vos mesures, votre coupe',
+    { f:'hero-1.webp', col:'Sur-mesure',     mat:'Vos mesures, votre coupe',
       t:'La pièce ajustée',  d:"Tracée sur vos mesures exactes, pas sur une taille standard." },
-    { f:'', col:'Pagne & wax',    mat:'Tissus d’ici, coupe d’aujourd’hui',
+    { f:'hero-2.webp', col:'Pagne & wax',    mat:'Tissus d’ici, coupe d’aujourd’hui',
       t:'Le pagne',          d:"Le tissu qu’on connaît depuis toujours, dans une coupe qui tombe." },
-    { f:'', col:'Prêt-à-porter',  mat:'Par tailles, prêt à partir',
+    { f:'hero-3.webp', col:'Prêt-à-porter',  mat:'Par tailles, prêt à partir',
       t:'Les tailles',       d:"Pour ce qui n’a pas besoin d’attendre l’atelier." },
-    { f:'', col:'Cérémonie',      mat:'Mariages et grandes occasions',
+    { f:'hero-4.webp', col:'Cérémonie',      mat:'Mariages et grandes occasions',
       t:'La tenue de fête',  d:"Ce qu’on porte le jour dont on se souvient." }
   ];
 
   /* --- 3 · LES COLLECTIONS : 6 à 8 pièces phares --- */
   var COLLECTIONS = [
-    { f:'', l:'Sur-mesure',    t:'Robe coupée à la taille', s:'9 mesures · toutes matières' },
-    { f:'', l:'Sur-mesure',    t:'Robe droite',             s:'15 mesures · tombé net' },
-    { f:'', l:'Pagne',         t:'Ensemble pagne',          s:'Haut et bas assortis' },
-    { f:'', l:'Prêt-à-porter', t:'Chemise',                 s:'8 mesures ou par tailles' },
-    { f:'', l:'Sur-mesure',    t:'Pantalon',                s:'6 mesures · ourlet posé à l’essayage' },
-    { f:'', l:'Cérémonie',     t:'Tenue de cérémonie',      s:'Sur rendez-vous · délai à convenir' }
+    { f:'coll-1.webp', l:'Sur-mesure',    t:'Robe coupée à la taille', s:'9 mesures · toutes matières' },
+    { f:'coll-2.webp', l:'Sur-mesure',    t:'Robe droite',             s:'15 mesures · tombé net' },
+    { f:'coll-3.webp', l:'Pagne',         t:'Ensemble pagne',          s:'Haut et bas assortis' },
+    { f:'coll-4.webp', l:'Prêt-à-porter', t:'Chemise',                 s:'8 mesures ou par tailles' },
+    { f:'coll-5.webp', l:'Sur-mesure',    t:'Pantalon',                s:'6 mesures · ourlet posé à l’essayage' },
+    { f:'coll-6.webp', l:'Cérémonie',     t:'Tenue de cérémonie',      s:'Sur rendez-vous · délai à convenir' }
   ];
 
   /* ================================================================ */

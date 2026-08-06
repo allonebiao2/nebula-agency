@@ -208,7 +208,7 @@ em{font-style:italic;font-weight:400}
 
 /* le numéro géant, DERRIÈRE le mannequin et DEVANT le fond */
 .hnum{position:absolute;top:50%;left:50%;transform:translate(-50%,-54%);z-index:1;
-  font-family:var(--ff-d);font-weight:700;font-size:clamp(9rem,30vw,22rem);line-height:.8;
+  font-family:var(--ff-d);font-weight:700;font-size:clamp(11rem,42vw,30rem);line-height:.8;
   letter-spacing:-.05em;color:#ddd8ce;pointer-events:none;
   text-shadow:0 1px 0 rgba(255,255,255,.95),0 3px 3px rgba(26,26,26,.08);
   overflow:hidden;height:.98em;display:flex;align-items:flex-start}
@@ -225,8 +225,11 @@ em{font-style:italic;font-weight:400}
 .hsl.sort{opacity:.3;transform:translateX(-100%) skewX(-3deg);z-index:1}
 .hsl.entre{opacity:.3;transform:translateX(100%) skewX(3deg);z-index:1}
 .hsl-c{position:relative;width:100%;height:100%;overflow:hidden}
-.hsl-c:has(img){background:var(--papier-2)}
-.hsl-c img{width:100%;height:100%;object-fit:cover;object-position:center top}
+.hsl-c:has(img){background:none}
+/* un mannequin DÉTOURÉ : il se pose entier, il ne se recadre pas.
+   C'est ce qui laisse le numéro géant passer derrière lui. */
+.hsl-c img{width:100%;height:100%;object-fit:contain;object-position:center bottom;
+  filter:drop-shadow(0 26px 40px rgba(26,26,26,.16))}
 /* le mannequin de substitution, tant qu'il n'y a pas de photo */
 .hsl-c .sil{position:absolute;inset:0;display:grid;place-items:center;background:none}
 .hsl-c .sil svg{width:66%;height:auto;opacity:.7}
@@ -331,6 +334,9 @@ em{font-style:italic;font-weight:400}
   background:var(--encre-2);box-shadow:0 30px 70px -28px rgba(0,0,0,.85);
   border:1px solid var(--fil-n)}
 .plan img{width:100%;height:100%;object-fit:cover}
+/* la vraie photo efface le dessin de substitution */
+.plan:has(img) .ph,.lk:has(img) .sil,.hsl-c:has(img) .sil,.car-c:has(img) .sil{display:none}
+.plan img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .plan .ph{position:absolute;inset:0;display:grid;place-items:center;
   background:linear-gradient(150deg,#1c1a19,#131211)}
 .plan .ph svg{width:52%;height:auto;opacity:.55}
@@ -617,7 +623,7 @@ em{font-style:italic;font-weight:400}
 @media (max-width:640px){
   .hero{min-height:auto;padding-top:clamp(96px,14vh,128px)}
   .hsc{width:min(80%,320px);height:min(48vh,400px)}
-  .hnum{font-size:clamp(7rem,40vw,12rem)}
+  .hnum{font-size:clamp(8rem,54vw,15rem)}
   /* les badges restaient a cheval sur les bords : on les rentre */
   .bdg{font-size:9.5px;padding:7px 13px;letter-spacing:.08em}
   .bdg--1{top:2%;  right:var(--pad); left:auto}

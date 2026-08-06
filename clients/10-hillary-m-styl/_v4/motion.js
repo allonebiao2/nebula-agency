@@ -22,24 +22,24 @@
 
   /* --- 1 · LE HÉROS : 4 mannequins, fond blanc uni impératif --- */
   var HERO = [
-    { f:'', col:'Sur-mesure',     mat:'Vos mesures, votre coupe',
+    { f:'hero-1.webp', col:'Sur-mesure',     mat:'Vos mesures, votre coupe',
       t:'La pièce ajustée',  d:"Tracée sur vos mesures exactes, pas sur une taille standard." },
-    { f:'', col:'Pagne & wax',    mat:'Tissus d’ici, coupe d’aujourd’hui',
+    { f:'hero-2.webp', col:'Pagne & wax',    mat:'Tissus d’ici, coupe d’aujourd’hui',
       t:'Le pagne',          d:"Le tissu qu’on connaît depuis toujours, dans une coupe qui tombe." },
-    { f:'', col:'Prêt-à-porter',  mat:'Par tailles, prêt à partir',
+    { f:'hero-3.webp', col:'Prêt-à-porter',  mat:'Par tailles, prêt à partir',
       t:'Les tailles',       d:"Pour ce qui n’a pas besoin d’attendre l’atelier." },
-    { f:'', col:'Cérémonie',      mat:'Mariages et grandes occasions',
+    { f:'hero-4.webp', col:'Cérémonie',      mat:'Mariages et grandes occasions',
       t:'La tenue de fête',  d:"Ce qu’on porte le jour dont on se souvient." }
   ];
 
   /* --- 3 · LES COLLECTIONS : 6 à 8 pièces phares --- */
   var COLLECTIONS = [
-    { f:'', l:'Sur-mesure',    t:'Robe coupée à la taille', s:'9 mesures · toutes matières' },
-    { f:'', l:'Sur-mesure',    t:'Robe droite',             s:'15 mesures · tombé net' },
-    { f:'', l:'Pagne',         t:'Ensemble pagne',          s:'Haut et bas assortis' },
-    { f:'', l:'Prêt-à-porter', t:'Chemise',                 s:'8 mesures ou par tailles' },
-    { f:'', l:'Sur-mesure',    t:'Pantalon',                s:'6 mesures · ourlet posé à l’essayage' },
-    { f:'', l:'Cérémonie',     t:'Tenue de cérémonie',      s:'Sur rendez-vous · délai à convenir' }
+    { f:'coll-1.webp', l:'Sur-mesure',    t:'Robe coupée à la taille', s:'9 mesures · toutes matières' },
+    { f:'coll-2.webp', l:'Sur-mesure',    t:'Robe droite',             s:'15 mesures · tombé net' },
+    { f:'coll-3.webp', l:'Pagne',         t:'Ensemble pagne',          s:'Haut et bas assortis' },
+    { f:'coll-4.webp', l:'Prêt-à-porter', t:'Chemise',                 s:'8 mesures ou par tailles' },
+    { f:'coll-5.webp', l:'Sur-mesure',    t:'Pantalon',                s:'6 mesures · ourlet posé à l’essayage' },
+    { f:'coll-6.webp', l:'Cérémonie',     t:'Tenue de cérémonie',      s:'Sur rendez-vous · délai à convenir' }
   ];
 
   /* ================================================================ */

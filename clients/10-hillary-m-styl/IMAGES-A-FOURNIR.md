@@ -1,13 +1,41 @@
 # HILLARY M. STYL — les images à apporter, niveau par niveau
 
-> **La V4 « LA COUPE » est en ligne et fonctionne sans une seule photo.**
-> Chaque emplacement montre un dessin au trait. Ce document dit, pour chaque
-> niveau : combien d'images, quel cadrage, et **où exactement** on les pose.
+> **ÉTAT AU 2026-08-06 : 19 visuels générés (WaveSpeed / Nano Banana Pro, 2,66 $)
+> occupent tous les emplacements, sauf le catalogue commandable.**
+>
+> Ce sont des **images de préfiguration** : elles montrent ce que le site fera
+> avec les vraies photos d'Hillary. Elles partent le jour où elle envoie les
+> siennes. Ce document reste le cahier des charges de la prise de vue.
+>
+> ⛔ **Le catalogue commandable (`PIECES`) n'a reçu AUCUNE image générée.** Il
+> porte des prix, des délais et un bouton de commande : une cliente qui verse un
+> acompte sur une robe qui n'existe pas, c'est la maison qui répond. Le carrousel
+> des collections, lui, n'a ni prix ni bouton — une préfiguration y est tenable.
 >
 > Ordre d'importance : **le carrousel du catalogue d'abord** (c'est lui qui
 > déclenche les commandes), puis le héros, puis le lookbook.
 
 ---
+
+## Ce qui est en place aujourd'hui
+
+| Emplacement | Générées | Où elles vivent |
+|---|---|---|
+| Héros | **4**, mannequins **détourés** (rembg) | `assets/images/hero-*.webp` |
+| Atelier | **3** | `assets/images/atelier-*.webp` |
+| Lookbook | **6** | `assets/images/look-*.webp` |
+| Carrousel collections | **6** | `assets/images/coll-*.webp` |
+| **Catalogue commandable** | ⛔ **aucune, volontairement** | — |
+
+⚠️ **Le détourage des mannequins n'est pas un détail** : c'est lui qui permet au
+numéro géant de passer DERRIÈRE la silhouette. Avec un rectangle photo, le
+chiffre est entièrement couvert et l'effet central de la référence disparaît.
+Outil : `rembg` modèle `isnet-general-use`, **sans `alpha_matting`** (il demande
+1,9 Go de RAM sur ces tailles et tombe), puis seuil d'alpha à 70 et recadrage.
+
+⚠️ **Le site n'est PLUS un fichier unique.** 19 photos en base64 feraient un HTML
+de plus de 6 Mo. Elles vivent dans `assets/images/` ; `_predeploy.py` les copie
+dans `_dist/` et **refuse de préparer** un déploiement s'il en manque une.
 
 ## Comment on pose une image, dans tous les cas
 

@@ -61,7 +61,7 @@ async def main():
             ctx = await br.new_context(viewport={"width": w, "height": h},
                                        device_scale_factor=2 if mobile else 1,
                                        is_mobile=mobile, has_touch=mobile)
-            ctx.set_default_timeout(15000)
+            ctx.set_default_timeout(30000)
             await ctx.route('**fonts.g*/**', lambda r: r.abort())
             page = await ctx.new_page()
             errs, failed = [], []
@@ -94,7 +94,7 @@ async def main():
 
         # ---------- tunnel complet ----------
         ctx = await br.new_context(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True)
-        ctx.set_default_timeout(15000)
+        ctx.set_default_timeout(30000)
         await ctx.route('**fonts.g*/**', lambda r: r.abort())
         page = await ctx.new_page()
         errs = []
@@ -203,7 +203,7 @@ async def main():
         await ctx.close()
         # ---------- la couche de mouvement ----------
         ctx = await br.new_context(viewport={"width": 1440, "height": 900}, **CHROME_CTX)
-        ctx.set_default_timeout(15000)
+        ctx.set_default_timeout(30000)
         await ctx.route('**fonts.g*/**', lambda r: r.abort())
         page = await ctx.new_page()
         errs = []
@@ -271,7 +271,7 @@ async def main():
 
         # ---------- le toucher et la vie du catalogue ----------
         ctx = await br.new_context(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True)
-        ctx.set_default_timeout(15000)
+        ctx.set_default_timeout(30000)
         await ctx.route('**fonts.g*/**', lambda r: r.abort())
         page = await ctx.new_page()
         errs = []
