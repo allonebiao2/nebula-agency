@@ -146,3 +146,38 @@ promesse : si elle n'est pas tenue, il faut retirer la ligne du visuel.
 - Poser les images dans WhatsApp et TikTok **avant publication** pour voir ce que
   l'interface recouvre
 - Décider si la journée multicanale devient un rythme régulier ou reste un coup
+
+---
+
+## Troisième passe : « je veux des posts stylés »
+
+Mongazi a confirmé le format (**WhatsApp 1 image, TikTok 3 images**) et posé un seul mot en
+plus : **stylé**. Les deux directions de la version 1 ont donc été refaites.
+
+| | Version 1 | Version 2 |
+|---|---|---|
+| WhatsApp | typo seule sur du noir + une barre de recherche en fil de fer | **NUIT CINÉMA** : un téléphone dressé dans le noir, son écran seule source de lumière, un faisceau volumétrique avec des poussières, un reflet au sol, du grain de film, et « RIEN. » posé DANS le faisceau |
+| TikTok | photocopie, papier déchiré, scotch, feutre | **AFFICHE FLUO** : aplat saturé bord à bord, main découpée au couteau tenant un téléphone, ombre portée dure et décalée, trame de points, typo condensée énorme qui chevauche la découpe, un accent chromé |
+
+### La leçon
+
+**Juste ne suffit pas.** La version 1 disait la bonne chose : un statut nu ressemblait
+quand même à une carte de citation, et une photocopie déchirée à un fanzine. Ni l'un ni
+l'autre ne donne envie d'acheter un site à quelqu'un. C'est exactement la règle du standard
+vitrine appliquée au marketing : *ce n'est pas fini quand ça marche, c'est fini quand ça
+impressionne.*
+
+### Les deux gestes qui ont fait le style
+
+1. **Retirer du texte.** Le statut est passé de six blocs à cinq lignes dont une seule est
+   grosse. Chaque phrase en plus retire du style à celles qui restent.
+2. **Donner un sujet à l'image.** Un objet, une lumière, beaucoup de noir sur WhatsApp ;
+   une main découpée et une ombre dure sur TikTok. Une image sans sujet n'est pas une
+   image, c'est un fond.
+
+### Le fil rouge TikTok
+
+Sur les trois images : **la même main, le même téléphone, le même angle**. Seul l'écran
+change (vide, occupé par un autre, occupé par toi) et l'aplat s'inverse au milieu puis
+revient. C'est ce qui fait un carrousel au lieu de trois posts, et c'est ce qui referme la
+boucle quand TikTok la rejoue.
