@@ -210,26 +210,45 @@ async def main():
         page.on("pageerror", lambda e: errs.append(str(e)))
         await page.goto(URL, wait_until="domcontentloaded")
 
-        ok(await page.locator("#rideau").count() == 1, "le rideau d'ouverture est present au chargement")
-        await page.wait_for_timeout(3000)
-        ok(await page.locator("#rideau").count() == 0,
-           "le rideau se retire du DOM apres l'ouverture (il ne bloque rien)")
+        # V4 : le loader s'appelle #load et se retire par la classe .fini
+        ok(await page.locator("#load").count() == 1, "le loader d'ouverture est present au chargement")
+        await page.wait_for_timeout(3400)
+        fini = await page.evaluate("()=>{const l=document.getElementById('load'); return !l || l.classList.contains('fini') || getComputedStyle(l).display==='none';}")
+        ok(fini, "le loader s'efface apres l'ouverture (il ne bloque rien)")
 
         await page.evaluate("()=>window.scrollTo(0, document.body.scrollHeight*0.55)")
         await page.wait_for_timeout(500)
-        t = await page.evaluate("()=>getComputedStyle(document.getElementById('fil')).transform")
-        ok(t not in ("none", "matrix(0, 0, 0, 1, 0, 0)"), f"le fil de progression suit le defilement ({t})")
+        # V4 : la barre s'inverse en passant sur une section encre
+        inv = await page.evaluate("()=>{const n=document.getElementById('nav'); return !!n && n.classList.contains('pose');}")
+        ok(inv, "la barre de navigation se pose au defilement")
 
         # chaque signature de section se declenche
-        for sel, nom in [("#maison [data-pil]", "01 le point de couture"),
-                         ("#catalogue .piece", "02 le patron a la craie"),
-                         ("#process [data-et]", "03 le fil qui relie"),
-                         ("#apropos [data-drape]", "04 le drape"),
-                         ("#atelier [data-coupe]", "05 la coupe")]:
-            await page.evaluate("s=>document.querySelector(s).scrollIntoView({block:'center'})", sel)
+        for sel, nom in [("#maison .piliers", "01 les piliers"),
+                         ("#collections .coll-d", "02 les collections"),
+                         ("#lookbook .lk", "03 le lookbook"),
+                         ("#process .et", "04 le processus"),
+                         ("#contact .socs", "05 le contact")]:
+            await page.evaluate("s=>{const e=document.querySelector(s); if(e) e.scrollIntoView({block:'center'});}", sel)
             await page.wait_for_timeout(950)
             n = await page.locator(sel + ".vu").count()
-            ok(n >= 1, f"signature {nom} : declenchee ({n} element(s))")
+            ok(n >= 1, f"revelation {nom} : declenchee ({n} element(s))")
+
+        # V4 : le compteur du lookbook suit le defilement
+        # ⚠️ offsetTop est relatif a l'ancetre POSITIONNE (.look est en relative),
+        #    pas au document. C'est getBoundingClientRect()+scrollY qui donne
+        #    la vraie position. Le controle se trompait, pas le site.
+        await page.evaluate("""()=>{const e=document.getElementById('lookSc');
+          if(e) window.scrollTo(0, e.getBoundingClientRect().top + scrollY + e.offsetHeight*0.7);}""")
+        await page.wait_for_timeout(800)
+        c = await page.evaluate("()=>(document.getElementById('lkPage')||{}).textContent||''")
+        ok("/" in c and c.strip() != "01 / 06",
+           f"le compteur du lookbook a avance ({c.strip()})")
+
+        # V4 : le heros presente bien 4 creations, le carrousel 6 pieces
+        nh = await page.locator(".hsl").count()
+        nc = await page.locator(".car").count()
+        ok(nh >= 3, f"le heros presente {nh} creations")
+        ok(nc >= 4, f"le carrousel presente {nc} pieces")
 
         # regle du depot : jamais d'animation infinie sous un backdrop-filter
         mauvais = await page.evaluate("""()=>{
@@ -246,7 +265,7 @@ async def main():
           return out;}""")
         ok(not mauvais, "aucune animation infinie sous un backdrop-filter" + ("" if not mauvais else " -> " + str(mauvais[:3])))
 
-        await overflow(page, "[1440px] apres ouverture du rideau")
+        await overflow(page, "[1440px] apres ouverture du loader")
         ok(not errs, "couche de mouvement : aucune erreur JS" + ("" if not errs else " -> " + errs[0][:140]))
         await ctx.close()
 

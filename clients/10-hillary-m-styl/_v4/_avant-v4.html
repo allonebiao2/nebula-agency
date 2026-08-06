@@ -230,9 +230,9 @@ em{font-style:italic;font-weight:400}
 /* le numéro géant, DERRIÈRE le mannequin et DEVANT le fond */
 .hnum{position:absolute;top:50%;left:50%;transform:translate(-50%,-54%);z-index:1;
   font-family:var(--ff-d);font-weight:700;font-size:clamp(9rem,30vw,22rem);line-height:.8;
-  letter-spacing:-.05em;color:#ddd8ce;pointer-events:none;
-  text-shadow:0 1px 0 rgba(255,255,255,.95),0 3px 3px rgba(26,26,26,.08);
-  overflow:hidden;height:.98em;display:flex;align-items:flex-start}
+  letter-spacing:-.05em;color:var(--blanc);pointer-events:none;
+  text-shadow:0 2px 0 rgba(26,26,26,.05),0 18px 60px rgba(26,26,26,.10);
+  overflow:hidden;height:.8em;display:flex;align-items:flex-start}
 .hnum span{display:block;transition:transform .85s var(--e),opacity .5s ease}
 .hnum.chg span{transform:translateY(-100%);opacity:0}
 
@@ -245,13 +245,13 @@ em{font-style:italic;font-weight:400}
 .hsl.act{opacity:1;transform:none;z-index:2}
 .hsl.sort{opacity:.3;transform:translateX(-100%) skewX(-3deg);z-index:1}
 .hsl.entre{opacity:.3;transform:translateX(100%) skewX(3deg);z-index:1}
-.hsl-c{position:relative;width:100%;height:100%;overflow:hidden}
-.hsl-c:has(img){background:var(--papier-2)}
+.hsl-c{position:relative;width:100%;height:100%;overflow:hidden;background:var(--papier-2)}
 .hsl-c img{width:100%;height:100%;object-fit:cover;object-position:center top}
 /* le mannequin de substitution, tant qu'il n'y a pas de photo */
-.hsl-c .sil{position:absolute;inset:0;display:grid;place-items:center;background:none}
-.hsl-c .sil svg{width:66%;height:auto;opacity:.7}
-.hsl-c .sil path{fill:var(--papier);stroke:var(--encre-2);stroke-width:1.3;stroke-linejoin:round}
+.hsl-c .sil{position:absolute;inset:0;display:grid;place-items:center;
+  background:linear-gradient(168deg,#fff,var(--papier-2))}
+.hsl-c .sil svg{width:64%;height:auto;opacity:.5}
+.hsl-c .sil path{fill:none;stroke:var(--encre-2);stroke-width:1.1;stroke-linejoin:round}
 
 /* le titre de collection, à droite */
 .hcol{position:absolute;right:var(--pad);top:50%;transform:translateY(-50%);z-index:4;
@@ -261,8 +261,8 @@ em{font-style:italic;font-weight:400}
 .hcol .m{display:block;margin-top:10px;font-family:var(--ff-u);font-size:10.5px;
   font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:rgba(26,26,26,.55)}
 /* la description, à gauche */
-.hdes{position:absolute;left:var(--pad);top:56%;transform:translateY(-50%);z-index:4;
-  max-width:min(250px,20vw);pointer-events:none}
+.hdes{position:absolute;left:var(--pad);top:50%;transform:translateY(-50%);z-index:4;
+  max-width:min(250px,21vw);pointer-events:none}
 .hdes b{display:block;font-family:var(--ff-d);font-weight:700;font-size:1.32rem;line-height:1.1}
 .hdes p{margin-top:9px;font-size:13.5px;line-height:1.55;color:var(--tx-c)}
 .hcol,.hdes{transition:opacity .4s var(--e-s),transform .5s var(--e-s)}
@@ -284,8 +284,8 @@ em{font-style:italic;font-weight:400}
 .js .hero.ouvert .bdg{opacity:1;transition:opacity .5s ease var(--d,0ms)}
 
 /* le grand titre, en bas, qui passe derrière le mannequin */
-.hbig{position:relative;z-index:3;text-align:center;pointer-events:none;
-  margin-top:clamp(-130px,-8.5vw,-40px);mix-blend-mode:multiply}
+.hbig{position:relative;z-index:1;text-align:center;pointer-events:none;
+  margin-top:clamp(-140px,-9vw,-40px)}
 .hbig h1{font-size:clamp(2.6rem,11vw,8.4rem);line-height:.86;letter-spacing:-.04em}
 .hbig .bl{display:block;overflow:hidden}
 .hbig .bl>span{display:block}
@@ -637,21 +637,11 @@ em{font-style:italic;font-weight:400}
 }
 @media (max-width:640px){
   .hero{min-height:auto;padding-top:clamp(96px,14vh,128px)}
-  .hsc{width:min(80%,320px);height:min(48vh,400px)}
-  .hnum{font-size:clamp(7rem,40vw,12rem)}
-  /* les badges restaient a cheval sur les bords : on les rentre */
-  .bdg{font-size:9.5px;padding:7px 13px;letter-spacing:.08em}
-  .bdg--1{top:2%;  right:var(--pad); left:auto}
-  .bdg--2{top:2%;  left:var(--pad);  right:auto}
-  .bdg--3{bottom:auto;top:auto;right:var(--pad);left:auto;
-    top:calc(48vh + 60px);animation-duration:5.4s}
-  .bdg--4{display:none}
-  /* le grand titre ne doit plus ecraser la description */
-  .hbig{margin-top:clamp(18px,4vw,30px);mix-blend-mode:normal}
-  .hbig h1{font-size:clamp(2.4rem,13vw,3.6rem)}
-  .hcol{order:3;margin-top:clamp(70px,16vw,96px)}
-  .nav-logo{font-size:15px}
-  .nav-logo .mk{width:22px;height:22px}
+  .hsc{width:min(84%,340px);height:min(52vh,420px)}
+  .hnum{font-size:clamp(7rem,42vw,13rem)}
+  .bdg--1{top:6%;right:2%} .bdg--2{top:40%;left:0}
+  .bdg--3{bottom:16%;right:2%} .bdg--4{display:none}
+  .bdg{font-size:10px;padding:8px 15px}
   .hfle{display:none}
   .piliers li{grid-template-columns:1fr;gap:2px}
   .plans{height:clamp(280px,86vw,400px)}
@@ -958,10 +948,10 @@ em{font-style:italic;font-weight:400}
       <span>Défiler</span>
     </a>
 
-    <nav class="hsoc" aria-label="Accès rapides">
-      <a href="#catalogue">COMMANDER</a>
-      <a href="#lookbook">LOOKBOOK</a>
-      <a href="#contact">CONTACT</a>
+    <nav class="hsoc" aria-label="Réseaux sociaux">
+      <a href="#contact">INSTAGRAM</a>
+      <a href="#contact">FACEBOOK</a>
+      <a href="#contact">TIKTOK</a>
     </nav>
   </div>
 
@@ -1104,8 +1094,8 @@ em{font-style:italic;font-weight:400}
 
   <div class="look-bas">
     <span id="lkPage">01 / 06</span>
-    <nav class="look-soc" aria-label="Accès rapides">
-      <a href="#catalogue">COMMANDER</a><a href="#contact">CONTACT</a>
+    <nav class="look-soc" aria-label="Réseaux sociaux">
+      <a href="#contact">FB</a><a href="#contact">IG</a><a href="#contact">TT</a>
     </nav>
   </div>
 </section>
@@ -1179,14 +1169,11 @@ em{font-style:italic;font-weight:400}
         </div>
       </div>
 
-      <!-- ⚠️ Les comptes sociaux ne sont pas encore fournis. Plutot que d'afficher
-           un texte d'attente sur un site public, on montre ce qui est vrai : la
-           conversation. Les liens se posent le jour ou elle donne ses comptes. -->
       <div class="socs">
+        <a class="soc" href="#contact"><b>Instagram</b><span>à confirmer</span></a>
+        <a class="soc" href="#contact"><b>Facebook</b><span>à confirmer</span></a>
+        <a class="soc" href="#contact"><b>TikTok</b><span>à confirmer</span></a>
         <a class="soc" href="#" data-wa-soc><b>WhatsApp</b><span>+229 51 37 47 93</span></a>
-        <a class="soc" href="#catalogue"><b>Commander</b><span>Le catalogue</span></a>
-        <a class="soc" href="#lookbook"><b>Lookbook</b><span>Saison 2026</span></a>
-        <a class="soc" href="#maison"><b>L'atelier</b><span>Cotonou</span></a>
       </div>
     </div>
   </div>
@@ -2437,108 +2424,6 @@ document.getElementById("waBas").href =
       setTimeout(function () { soc.setAttribute('href', bas.getAttribute('href') || '#'); }, 0);
     }
   })();
-
-  /* ==================================================================
-     REPRIS DE LA V3 — le toucher, les cartes du catalogue, le tunnel.
-     Le CSS gardé (`garde-css-toucher.css`) en dépend : sans ce bloc,
-     l'onde ne naît jamais, les cartes n'ont plus d'inclinaison et les
-     étapes du tunnel perdent leur animation. Trois régressions
-     trouvées par le contrôle, pas à l'œil.
-     ================================================================== */
-
-
-  /* ================================================================
-     LE TOUCHER — l'onde, l'enfoncement, la vibration
-     Une seule écoute déléguée : les cartes et les options sont
-     recréées à chaque rendu, un écouteur par élément fuirait.
-     ================================================================ */
-  var SEL_TAP = "[data-tap],.piece,.bt,.opt,.taille,.tab,.porte,.x,.wa,.cta,.alt";
-  var ROT = [-1.6, 1.2, -0.9, 1.7, -1.3, 0.8];
-
-  function vibre(ms){
-    /* Android uniquement : iOS ne l'expose pas dans Safari.
-       On ne vibre que sur un CHOIX, jamais au simple défilement. */
-    if(doux) return;
-    try{ if(navigator.vibrate) navigator.vibrate(ms); }catch(e){}
-  }
-
-  function onde(el, x, y){
-    if(doux || !el) return;
-    var r = el.getBoundingClientRect();
-    var d = Math.max(r.width, r.height) * 2.1;
-    var o = document.createElement("span");
-    o.className = "onde" + (el.matches(".bt.p,.bt.w,.porte.a,.wa,.cta,.taille.sel") ? " clair" : "");
-    o.style.width = o.style.height = d + "px";
-    o.style.left = (x - r.left) + "px";
-    o.style.top  = (y - r.top) + "px";
-    el.appendChild(o);
-    setTimeout(function(){ if(o.parentNode) o.parentNode.removeChild(o); }, 700);
-  }
-
-  document.addEventListener("pointerdown", function(e){
-    var el = e.target.closest && e.target.closest(SEL_TAP);
-    if(!el || el.disabled) return;
-    var st = getComputedStyle(el);
-    if(st.position === "static") el.style.position = "relative";
-    if(st.overflow === "visible") el.style.overflow = "hidden";
-    onde(el, e.clientX, e.clientY);
-    /* la carte du catalogue : le tissu brille, la craie se retrace */
-    if(el.classList.contains("piece")){
-      el.classList.remove("brille");
-      void el.offsetWidth;
-      el.classList.add("brille");
-    }
-    if(el.matches(".opt,.taille,.bt.p,.bt.w,.piece,.porte,.tab")) vibre(9);
-  }, {passive:true});
-
-  /* ---- 02 · le catalogue : des échantillons qu'on pose ---- */
-  function poserCartes(){
-    Array.prototype.forEach.call(document.querySelectorAll("#grille .piece"), function(el,i){
-      el.style.setProperty("--rot", ROT[i % ROT.length] + "deg");
-      el.setAttribute("data-tap","");
-    });
-  }
-  /* la table se vide avant qu'on repose : sans ça, changer d'onglet est
-     un remplacement brutal — c'est ce qui faisait « sage » */
-  if(typeof onglet === "function"){
-    var _on = onglet;
-    onglet = function(cat){
-      var g = document.getElementById("grille");
-      if(!g || doux){ _on(cat); poserCartes(); return; }
-      g.classList.add("sort");
-      setTimeout(function(){
-        _on(cat); poserCartes(); g.classList.remove("sort");
-      }, 175);
-    };
-  }
-  poserCartes();
-
-  /* ---- le tunnel : l'étape en cours pilote son animation ---- */
-  if(typeof dessiner === "function"){
-    var _de2 = dessiner;
-    dessiner = function(){
-      _de2();
-      var bd = document.getElementById("shBd");
-      if(!bd || !etat) return;
-      bd.setAttribute("data-e", String(etat.etape));
-      Array.prototype.forEach.call(bd.querySelectorAll(".taille"), function(t,i){
-        t.style.setProperty("--t", i);
-      });
-    };
-  }
-
-  /* ---- la modale : le carnet qui s'ouvre, les champs qui se posent ---- */
-  if(typeof dessiner === "function"){
-    var _de = dessiner;
-    dessiner = function(){
-      _de();
-      var bd = document.getElementById("shBd");
-      if(!bd) return;
-      Array.prototype.forEach.call(bd.querySelectorAll(".fd"), function(el,i){
-        el.style.setProperty("--d", Math.min(i, 14));
-      });
-    };
-  }
 
   /* ---------- 13 · LA MODALE : verrouiller le fond ----------------
      Le moteur expose ouvrir()/fermer() ; on les enveloppe pour

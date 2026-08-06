@@ -8,7 +8,7 @@ HILLARY M. STYL — le garde-fou avant mise en ligne.
 
 Il enchaîne, et il S'ARRÊTE au premier problème :
 
-  1. la V3 est-elle bien là ?      (sinon on déploierait l'ancienne version)
+  1. la V4 est-elle bien là ?      (sinon on déploierait l'ancienne version)
   2. `_build.py`                    source -> vitrine.html
   3. `_qc.py`                       71 contrôles, tous verts obligatoires
   4. aucun reliquat public          numéro de test, « à confirmer », placeholders
@@ -24,6 +24,14 @@ import re
 import shutil
 import subprocess
 import sys
+
+# la console Windows est en cp1252 : un seul caractere de trace fait tomber
+# tout le script au premier affichage. Lecon du 2026-08-05, revue le 08-06.
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
 
 ICI = pathlib.Path(__file__).resolve().parent
 SRC = ICI / "_vitrine_src.html"
@@ -59,20 +67,24 @@ def main():
     print("\n  HILLARY M. STYL — vérification avant mise en ligne")
     print("  " + "─" * 52)
 
-    # ---------- 1. est-ce bien la V3 ? ----------
+    # ---------- 1. est-ce bien la V4 « LA COUPE » ? ----------
     etape(1, "la bonne version est-elle là ?")
     if not SRC.exists():
         echec("`_vitrine_src.html` est absent.",
               "Vous êtes sur une branche qui n'a pas la V3. Faites :\n"
               "     git fetch origin && git checkout claude/github-repo-context-nisd2r")
     s = SRC.read_text(encoding="utf-8")
-    for marqueur, quoi in [("Bodoni Moda", "la typographie de la V3"),
-                           ("croquis", "le croquis du héros"),
-                           ("data-tap", "les réactions au toucher")]:
+    for marqueur, quoi in [("Bodoni Moda", "la typographie de la maison"),
+                           ("LA COUPE", "la direction V4"),
+                           ("hsl-c", "le slider éditorial du héros"),
+                           ("look-cpt", "le compteur fixe du lookbook"),
+                           ("class=\"bdg", "les badges flottants"),
+                           ("data-tap", "les réactions au toucher"),
+                           ("var MESURES", "le moteur de mesures")]:
         if marqueur not in s:
             echec(f"la source ne contient pas {quoi} (`{marqueur}`).",
-                  "Ce n'est pas la V3 « LE FIL ». Ne déployez pas.")
-    print("       ✅ source V3 « LE FIL » confirmée")
+                  "Ce n'est pas la V4 « LA COUPE ». Ne déployez pas.")
+    print("       ✅ source V4 « LA COUPE » confirmée, moteur inclus")
 
     # ---------- 2. construire ----------
     etape(2, "construction du livrable")
@@ -129,7 +141,8 @@ def main():
     print(f"    npx -y wrangler@3 pages deploy _dist --project-name {PROJET} --branch main\n")
     print("  Identifiants : secrets/cloudflare.env")
     print("  Après coup, ouvrez https://hillary-m-styl.pages.dev et vérifiez")
-    print("  que le rideau s'ouvre et que les titres sont en Bodoni (serif fin).")
+    print("  que le loader se fend en deux, que le numéro géant passe derrière la")
+    print("  silhouette, et que le compteur du lookbook avance au défilement.")
     print("  ⚠️ Le catalogue est encore composé de PIÈCES D'EXEMPLE.")
     return 0
 

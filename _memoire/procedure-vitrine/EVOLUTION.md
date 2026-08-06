@@ -666,3 +666,73 @@ HH Design, Au Braisé d'Or, Hillary. Toutes ont un menu qui saute des sections.
 **Exécution de référence :** `clients/11-angy-art/` (direction éditoriale noir/crème),
 66 contrôles, **zéro bibliothèque** là où le brief en demandait quatre (Next.js, GSAP,
 Lenis, Swiper), tous réécrits en natif pour tenir la 4G de Cotonou.
+
+---
+
+## 2026-08-06 — Refondre un site qui a un MOTEUR : la méthode des morceaux gardés
+
+**Hillary M. Styl V4.** Le brief de refonte ne parlait que d'esthétique et ne
+mentionnait nulle part le moteur de commande — la seule partie du site qui
+rapporte. Une refonte « à la lettre » l'aurait emporté sans que personne ne s'en
+aperçoive avant la première commande perdue.
+
+**La méthode, à reprendre sur toute refonte d'un site qui fait quelque chose :**
+
+1. **Trouver la frontière** entre le moteur et la présentation. Ici : une ligne
+   nette dans le `<script>`, entre les données/tunnel et les animations.
+2. **Extraire les morceaux à garder dans des fichiers séparés**, préfixés
+   `garde-` pour qu'on ne les touche pas par réflexe.
+3. **Relever automatiquement les identifiants dont le moteur dépend** :
+
+```python
+ids = sorted(set(re.findall(r'getElementById\("([^"]+)"\)', moteur)))
+```
+
+   Sur Hillary : **18 identifiants**, plus deux sélecteurs. Aucun n'aurait été
+   retrouvé à la main.
+
+4. **Un assembleur qui REFUSE d'écrire** si un identifiant manque du nouveau
+   balisage. C'est ce qui transforme une bonne intention en garantie.
+
+```python
+manquants = [i for i in exiges if ('id="'+i+'"') not in out]
+if manquants: raise SystemExit("⛔ identifiants absents : " + ", ".join(manquants))
+```
+
+5. **Rebrancher ce que le CSS gardé attend.** Trois régressions sont apparues
+   parce que le CSS conservé dépendait de comportements de l'ancienne couche
+   mouvement : l'onde au toucher, les inclinaisons des cartes, l'attribut
+   `data-e` du tunnel. **Aucune ne se voyait sur une capture.** C'est la suite
+   de contrôle qui les a trouvées.
+
+### ⚠️ Une sauvegarde qui se réécrit n'est pas une sauvegarde
+
+L'assembleur écrivait `_avant-v4.html` à chaque exécution. Au deuxième passage,
+il a sauvegardé la V4 par-dessus la V3 : la seule copie du comportement d'origine
+avait disparu. Récupérée par `git show HEAD:...`.
+
+**Toute sauvegarde automatique doit refuser d'écraser une sauvegarde existante.**
+
+```python
+if os.path.exists(SRC) and not os.path.exists(sauve):
+    ...   # une seule fois, jamais deux
+```
+
+### Deux contrôles qui se trompaient, pas le site
+
+- **`offsetTop` est relatif à l'ancêtre POSITIONNÉ**, pas au document. Une
+  section en `position:relative` suffit à fausser un contrôle qui défile.
+  Utiliser `getBoundingClientRect().top + scrollY`.
+- **Un contrôle ne recopie jamais un chiffre.** Les contrôles du carrousel
+  attendaient « 5 diapositives » ; ils lisent maintenant les données. Règle déjà
+  écrite pour PISTE, à appliquer sur tout le parc.
+
+### Et une leçon de document
+
+`DEPLOIEMENT.md` décrivait un piège réel devenu faux cinq jours plus tard, et
+pointait vers la branche dont la fusion aurait supprimé **30 790 lignes** de
+`main`. **Un document qui décrit un piège doit être daté et re-vérifié** : il
+finit par pointer vers l'action la plus destructrice possible.
+
+**Exécution de référence :** `clients/10-hillary-m-styl/_v4/` (assembleur,
+morceaux gardés, 74 contrôles) et `IMAGES-A-FOURNIR.md`.

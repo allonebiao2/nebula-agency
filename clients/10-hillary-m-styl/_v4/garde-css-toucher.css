@@ -1,0 +1,65 @@
+/* ==================================================================
+   LE TOUCHER — enfoncement, lueur, et vibration (Android)
+   Une seule règle pour tout ce qui se touche. Les règles d'appui
+   sont EN FIN DE FEUILLE : à spécificité égale, la dernière gagne.
+   ================================================================== */
+[data-tap]{position:relative;overflow:hidden;
+  -webkit-touch-callout:none;user-select:none;
+  transition:transform .22s var(--e-s),box-shadow .3s var(--e),border-color .3s}
+.onde{position:absolute;border-radius:50%;pointer-events:none;z-index:3;
+  background:radial-gradient(circle,rgba(230,0,126,.42),rgba(230,0,126,0) 68%);
+  transform:translate(-50%,-50%) scale(0);animation:onde .62s var(--e) forwards}
+.onde.clair{background:radial-gradient(circle,rgba(255,255,255,.40),rgba(255,255,255,0) 68%)}
+@keyframes onde{to{transform:translate(-50%,-50%) scale(1);opacity:0}}
+
+/* ---------- 02 · LE CATALOGUE · les échantillons qu'on pose ------
+   Les cartes ne « montent » plus : elles se posent sur la table,
+   légèrement de travers, comme des coupons de tissu qu'on aligne.  */
+.piece{transform:translateY(38px) rotate(var(--rot,0deg)) scale(.965);
+  transition:opacity .8s var(--e),transform .8s var(--e);
+  transition-delay:calc(var(--d,0)*.085s)}
+.piece.vu{opacity:1;transform:translateY(0) rotate(0deg) scale(1)}
+/* la lumière qui balaie le tissu — au doigt et au survol seulement,
+   jamais en boucle : une animation infinie sur 12 cartes coûte cher */
+.piece .ph:after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.62) 50%,transparent 62%);
+  transform:translateX(-120%);opacity:0}
+.piece.brille .ph:after{animation:brille .85s var(--e) forwards}
+@keyframes brille{0%{opacity:1;transform:translateX(-120%)}100%{opacity:1;transform:translateX(120%)}}
+/* la craie se retrace quand on touche la carte */
+.piece.brille .patron rect{animation:retrace .9s var(--e)}
+@keyframes retrace{from{stroke-dashoffset:460}to{stroke-dashoffset:0}}
+/* le changement d'onglet : la table se vide avant qu'on repose */
+.grid{transition:opacity .18s ease,transform .18s ease}
+.grid.sort{opacity:0;transform:translateY(-10px)}
+
+/* ---------- LE TUNNEL · une animation par étape ------------------ */
+/* 1 · le carnet de mesures qui s'ouvre */
+#shBd[data-e="1"] .mes .fd{transform-origin:50% 0;
+  animation:carnet .55s var(--e) both}
+@keyframes carnet{from{opacity:0;transform:perspective(700px) rotateX(-42deg)}}
+#shBd[data-e="1"] .taille{animation:etiquette .5s var(--e-s) both;
+  animation-delay:calc(var(--t,0)*.045s)}
+@keyframes etiquette{from{opacity:0;transform:translateY(-16px) rotate(-6deg)}}
+/* 2 · la carte de livraison qui se déplie */
+#shBd[data-e="2"] .opt{transform-origin:0 50%;animation:deplie .6s var(--e) both}
+#shBd[data-e="2"] .opt:nth-child(2){animation-delay:.09s}
+@keyframes deplie{from{opacity:0;transform:perspective(900px) rotateY(-34deg)}}
+/* 3 · le sablier : le choix se remplit de haut en bas */
+#shBd[data-e="3"] .opt{animation:sablier .55s var(--e) both}
+#shBd[data-e="3"] .opt:nth-child(2){animation-delay:.1s}
+@keyframes sablier{from{opacity:0;clip-path:inset(0 0 100% 0)}}
+/* 4 · l'étiquette qu'on coud : les champs entrent en piquant */
+#shBd[data-e="4"] .fd{animation:couds .55s var(--e) both}
+@keyframes couds{from{opacity:0;transform:translateX(-18px)}}
+#shBd[data-e="4"] .recap{animation:couds .6s var(--e) .18s both}
+
+/* ---------- L'APPUI — en dernier, volontairement ---------------- */
+[data-tap]:active{transform:scale(.972)}
+.piece:active{transform:translateY(0) rotate(0deg) scale(.972)}
+.opt:active{transform:translateX(3px) scale(.985)}
+.taille:active{transform:scale(.94)}
+@media (prefers-reduced-motion:reduce){
+  [data-tap]:active,.piece:active,.opt:active,.taille:active{transform:none}
+  .onde{display:none}
+}
