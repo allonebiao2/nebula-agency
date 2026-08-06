@@ -4,8 +4,11 @@
 > expérience. Ce document l'adapte à Hillary, corrige ce qui ne tiendrait pas, et liste
 > **tout ce qu'il faut obtenir d'elle** avant de construire.
 >
-> ⚠️ **Rien n'est encore construit.** La V3 « LE FIL » est en ligne et le reste tant que
-> les décisions du § 2 ne sont pas prises.
+> ⚠️ **Rien n'est encore construit.** La V3 « LE FIL » est en ligne et le reste jusqu'à
+> l'arrivée des photos.
+>
+> **État au 2026-08-06** : décision du pagne ✅ tranchée (§ 2.1, elle fait tout).
+> **En attente : les photos et les descriptions d'Hillary**, que Mongazi envoie.
 
 ---
 
@@ -56,21 +59,24 @@ une **grammaire**, pas une direction : sans la phrase, on décore.
 
 ## 2. ⚠️ TROIS DÉCISIONS À PRENDRE AVANT DE CONSTRUIRE
 
-### 2.1 Le pagne et le wax — la plus importante
+### 2.1 Le pagne et le wax — ✅ TRANCHÉ le 2026-08-06
 
-**Le brief décrit une maison spécialisée dans le pagne et le wax.** Rien dans le dossier
-d'Hillary ne dit ça : elle est enregistrée comme **couture, prêt-à-porter par tailles et
-sur-mesure, femmes et hommes, cérémonies et quotidien**.
+**Réponse de Mongazi : « elle fait tout, nous sommes au Bénin, la maison mère.
+Tout pagne et habit, elle le fait. »**
 
-Si elle n'est pas une maison de wax, alors « Collection Kente », « Collection Wax », le
-badge « PAGNE & WAX » et « nous transformons le wax en silhouette » sont **faux**, et une
-cliente arrive en demandant du pagne qu'elle ne fait pas.
+Ce qui se décide donc, et ce qui ne se décide pas :
 
-- **À confirmer avec elle en une question.** Trois réponses possibles :
-  - *oui, c'est mon cœur de métier* → on prend le brief tel quel ;
-  - *j'en fais, parmi d'autres tissus* → le wax devient **une** collection, pas l'identité ;
-  - *non* → on remplace les collections wax par ses vraies lignes et on abandonne les
-    accents terre cuite / ocre / indigo / vert.
+- **Le wax est une matière et une collection, pas l'identité de la maison.** Elle fait
+  aussi bien un boubou en pagne qu'un tailleur. Le site doit montrer **l'étendue**, pas
+  se réduire à un créneau.
+- ⛔ **Donc pas de badge « PAGNE & WAX » seul en héros** : il rétrécirait la maison à un
+  seul tissu. Les badges disent l'étendue : `PAGNE & WAX` · `PRÊT-À-PORTER` ·
+  `SUR-MESURE` · `EXPRESS 1 À 3 JOURS`.
+- **Le magenta reste l'accent de la maison** (logo, ruban, monogramme). Les quatre
+  couleurs wax servent **à l'intérieur** des collections concernées, jamais à remplacer
+  sa signature — dans le respect strict de la règle de contraste du § 2.2.
+- **« Collection Kente » est abandonné** : c'est ghanéen, pas béninois, et rien ne dit
+  qu'elle en fait. On nommera ses collections avec **ses** mots, quand elle les enverra.
 
 ### 2.2 La palette — bonne nouvelle, elle est déjà à 90 % la sienne
 
@@ -230,6 +236,43 @@ trois références reposent entièrement sur l'image.
 ⚠️ **Toute vidéo tournée au téléphone est en HEVC** et ne se lit ni dans Chrome ni dans
 Firefox : **transcoder en H.264** (`-c:v libx264 -pix_fmt yuv420p -an -crf 30
 -movflags +faststart`), viser **moins de 500 Ko** par boucle.
+
+### 📝 Les descriptions — ce que j'en fais quand elles arrivent
+
+Mongazi envoie **les photos ET les descriptions d'Hillary**. Elles ne sont pas jetées :
+elles sont la matière. Ce qu'on améliore, c'est la façon dont elles vendent.
+
+**Les cinq règles appliquées à chaque pièce** (skill `copywriting`) :
+
+| Règle | Ce que ça change |
+|---|---|
+| **Le concret bat le flou** | « élégante et raffinée » ne dit rien. « Coupe empire, wax hollandais, broderie main au col » dit tout et se vérifie. |
+| **Nommer l'occasion** | une cliente de Cotonou n'achète pas « une robe », elle achète *pour une cérémonie*, *pour le bureau*, *pour un mariage*. Chaque pièce doit dire **quand on la porte**. |
+| **Le bénéfice, pas la caractéristique** | « doublure intégrale » → « ne transparaît pas, même en plein soleil ». « Taille élastiquée » → « se reporte après la grossesse ». |
+| **Ses mots à elle** | on garde son vocabulaire de métier (bazin, pagne, doublure, pince, patronage). Le jargon d'agence sonne faux chez une couturière. |
+| **Rien d'inventé** | aucune matière, aucune finition, aucun prix qu'elle n'a pas donnés. Si une information manque, on la lui demande — on ne la comble pas. |
+
+**Le gabarit d'une fiche**, tel qu'il entrera dans le moteur :
+
+```
+NOM          celui qu'elle donne, gardé tel quel
+UNE LIGNE    coupe + matière + le détail qui la distingue      (12 à 18 mots)
+L'OCCASION   quand on la porte, en une demi-phrase
+MATIÈRES     nommées précisément
+PRIX         le sien
+DÉLAI        normal 7-14 j · express 1-3 j
+```
+
+Exemple de transformation, à titre d'illustration seulement (**la vraie pièce viendra
+d'elle**) :
+
+> *avant* — « Belle robe en pagne, très élégante, disponible sur commande. »
+> *après* — « **Coupe droite en pagne, fente au dos, doublure intégrale.**
+> Pour une cérémonie où l'on reste debout longtemps. »
+
+⚠️ **Ordre de travail** : les descriptions sont réécrites **avant** que les pièces
+n'entrent dans le catalogue commandable. Une fiche qui part sur WhatsApp avec un prix
+engage la maison ; on ne la publie pas à moitié.
 
 ### Textes et informations
 
