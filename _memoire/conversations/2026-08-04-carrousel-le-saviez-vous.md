@@ -181,3 +181,57 @@ Sur les trois images : **la même main, le même téléphone, le même angle**. 
 change (vide, occupé par un autre, occupé par toi) et l'aplat s'inverse au milieu puis
 revient. C'est ce qui fait un carrousel au lieu de trois posts, et c'est ce qui referme la
 boucle quand TikTok la rejoue.
+
+---
+
+## Quatrième passe : « mets en valeur les images que je t'ai envoyées »
+
+Mongazi : retirer ce que j'avais inventé, mettre ce qu'il envoie, et que ce soit
+**transparent et pro**. Version 3 des prompts.
+
+### Le renversement
+
+Jusque-là les prompts disaient : *« la référence est une référence de FORME, son sujet ne
+doit jamais apparaître »*, puis inventaient un décor à côté (une barre de recherche en fil
+de fer, un téléphone dans un faisceau de lumière, une main découpée). C'est l'inverse
+maintenant :
+
+> **IMAGE 1 EST LA MATIÈRE DU POST.** Son sujet, sa palette, sa texture, sa lumière et son
+> métier typographique passent tous. On ne change que l'état du sujet, le cadrage et les
+> mots. *« Si tu te surprends à inventer un objet, arrête : le sujet est déjà dans
+> IMAGE 1. »*
+
+Un modèle qui invente un décor invente aussi un style, et le post cesse de ressembler à la
+marque. En lui donnant le sujet, on ne lui laisse qu'un travail : mettre en scène et écrire
+proprement. C'est là qu'il est bon.
+
+### Les trois états, le fil rouge du carrousel
+
+Le même sujet, celui de la référence, dans trois états : **effacé, remplacé, revenu.**
+Ça marche avec n'importe quelle référence, et ça referme la boucle quand TikTok rejoue la
+première image.
+
+### Ce que « transparent et pro » voulait dire, et le vrai coupable
+
+Un bloc **LOGO INTEGRATION** a été ajouté à tous les prompts (5 au total) : transparence
+gardée, aucune boîte, aucune plaque, aucun contour, aucune lueur, aucune ombre derrière,
+jamais redessiné ni recoloré, posé sur une zone calme, lisible à 20 %.
+
+Mais le vrai problème n'était pas dans le prompt, il était **dans le fichier** :
+
+> `nebula-affilies/static/nebula-logo.png` fait **900 x 600 px** et le logo n'y occupe que
+> **382 x 256 px**, soit **42 % de la largeur**. **58 % de la surface est du vide
+> transparent.** Demandé « à 12 % de la largeur du visuel », le logo réellement visible
+> tombait à **5 %** : il avait l'air perdu, quoi qu'on écrive dans le prompt.
+
+D'où `_documents/nebula-agency/marketing/logo/nebula-logo-detoure.png` (382 x 256), à
+envoyer **par défaut, toujours**, pour tout visuel généré.
+
+⚠️ **Le logo est violet et bleu.** Superbe sur fond sombre, il jure sur un papier clair ou
+un aplat saturé. La référence marbre affiche d'ailleurs « NEBULA / Agency » **en noir**, pas
+la galaxie : une version monochrome reste à produire.
+
+### Reste à faire
+
+- Produire une **version monochrome du logo** (noir et blanc) pour les fonds clairs
+- Vérifier sur les premières générations que le logo ne revient pas dans une boîte blanche

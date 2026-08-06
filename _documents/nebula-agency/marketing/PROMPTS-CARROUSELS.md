@@ -54,7 +54,11 @@ sacrifie toujours la troisième.
 | Ordre | Fichier | Rôle |
 |---|---|---|
 | 1 | `_documents/nebula-agency/marketing/references/REF-marbre-rouge.jpg` | le style à imiter |
-| 2 | `nebula-affilies/static/nebula-logo.png` | le logo, à poser tel quel |
+| 2 | `logo/nebula-logo-detoure.png` | le logo, à poser tel quel |
+
+⚠️ **Envoyer le logo DÉTOURÉ, jamais celui de `nebula-affilies/static/`.** Ce dernier fait
+900 x 600 px alors que le logo n'y occupe que 382 x 256 px : le reste est du vide
+transparent. Demandé « à 12 % de la largeur », le logo réellement visible tombait à 5 %.
 
 ⚠️ **C'est l'ordre inverse de celui du prompt-maître de 2026-07-30**, qui mettait le logo en
 premier. On suit ici l'ordre que Mongazi utilise vraiment, et chaque prompt commence donc
@@ -162,6 +166,23 @@ This label never changes across the series: same words, same place,
 same size, same colour, same tracking.
 
 -----------------------------------------------------------
+LOGO INTEGRATION — read twice, most attempts fail here
+-----------------------------------------------------------
+IMAGE 2 is a PNG with a TRANSPARENT background. Place it exactly as
+provided and KEEP that transparency.
+  - the logo sits DIRECTLY on the artwork. NO white box, NO black
+    box, NO coloured plate, NO rounded card, NO badge, NO circle,
+    NO outline, NO glow, NO drop shadow behind it.
+  - do NOT redraw it, restyle it, recolour it, stretch it, crop it,
+    rotate it, or add a wordmark or tagline of your own.
+  - reserve a CALM area for it: no busy texture and no strong
+    contrast directly behind it, so it reads cleanly with no plate.
+  - size it so its wordmark stays comfortably readable when the whole
+    image is viewed at 20% of its size, bottom-left, aligned to the
+    same margin as the body text.
+A logo pasted on a white rectangle is a failed image.
+
+-----------------------------------------------------------
 CONTENT — render these strings verbatim, nothing else
 -----------------------------------------------------------
 LABEL ....... "LE SAVIEZ-VOUS ?"        (top-left)
@@ -199,9 +220,7 @@ SWIPE CUE (bottom right, just above the site URL):
   followed by a thin white arrow pointing right.
 
 FOOTER (identical on all three slides):
-  logo bottom-left, about 12% of canvas width, pixel-faithful
-  placement of IMAGE 2: do not redraw, restyle, recolour, crop or
-  rotate it, and never add a wordmark of your own.
+  the logo from IMAGE 2, bottom-left, per the LOGO INTEGRATION block.
   "nebula-agency.online" bottom-right, tiny muted grey type.
 
 -----------------------------------------------------------
@@ -291,6 +310,23 @@ Typography in three cuts: serif italic black, MASSIVE CONDENSED
 SERIF CAPS in red, clean sans-serif black.
 
 -----------------------------------------------------------
+LOGO INTEGRATION — read twice, most attempts fail here
+-----------------------------------------------------------
+IMAGE 2 is a PNG with a TRANSPARENT background. Place it exactly as
+provided and KEEP that transparency.
+  - the logo sits DIRECTLY on the artwork. NO white box, NO black
+    box, NO coloured plate, NO rounded card, NO badge, NO circle,
+    NO outline, NO glow, NO drop shadow behind it.
+  - do NOT redraw it, restyle it, recolour it, stretch it, crop it,
+    rotate it, or add a wordmark or tagline of your own.
+  - reserve a CALM area for it: no busy texture and no strong
+    contrast directly behind it, so it reads cleanly with no plate.
+  - size it so its wordmark stays comfortably readable when the whole
+    image is viewed at 20% of its size, bottom-left, aligned to the
+    same margin as the body text.
+A logo pasted on a white rectangle is a failed image.
+
+-----------------------------------------------------------
 CONTENT — render these strings verbatim, nothing else
 -----------------------------------------------------------
 LABEL ....... "LE SAVIEZ-VOUS ?"        (top-left, unchanged)
@@ -330,9 +366,9 @@ SWIPE CUE (bottom right, just above the site URL):
   a single thin red arrow pointing right, discreet, no pill,
   no word.
 
-FOOTER: logo bottom-left, pixel-faithful placement of IMAGE 2,
-about 12% of canvas width. "nebula-agency.online" bottom-right in
-tiny muted grey type. Same sizes and positions as slide 1.
+FOOTER: the logo from IMAGE 2, bottom-left, per the LOGO INTEGRATION
+block, same size and same position as slide 1.
+"nebula-agency.online" bottom-right in tiny muted grey type.
 
 -----------------------------------------------------------
 LAYOUT
@@ -406,6 +442,23 @@ red bars passing behind the shoulders. One red-outlined annotation
 square joined by a thin red line. Typography in three cuts.
 
 -----------------------------------------------------------
+LOGO INTEGRATION — read twice, most attempts fail here
+-----------------------------------------------------------
+IMAGE 2 is a PNG with a TRANSPARENT background. Place it exactly as
+provided and KEEP that transparency.
+  - the logo sits DIRECTLY on the artwork. NO white box, NO black
+    box, NO coloured plate, NO rounded card, NO badge, NO circle,
+    NO outline, NO glow, NO drop shadow behind it.
+  - do NOT redraw it, restyle it, recolour it, stretch it, crop it,
+    rotate it, or add a wordmark or tagline of your own.
+  - reserve a CALM area for it: no busy texture and no strong
+    contrast directly behind it, so it reads cleanly with no plate.
+  - size it so its wordmark stays comfortably readable when the whole
+    image is viewed at 20% of its size, bottom-left, aligned to the
+    same margin as the body text.
+A logo pasted on a white rectangle is a failed image.
+
+-----------------------------------------------------------
 CONTENT — render these strings verbatim, nothing else
 -----------------------------------------------------------
 LABEL ....... "LE SAVIEZ-VOUS ?"        (top-left, unchanged)
@@ -448,9 +501,9 @@ CALL-TO-ACTION BAND (new on this slide only):
   The band must read as the same red as the two bars behind the
   bust: same ink, promoted to a button.
 
-FOOTER: logo bottom-left, pixel-faithful placement of IMAGE 2,
-about 12% of canvas width. "nebula-agency.online" bottom-right in
-tiny muted grey type. Same sizes and positions as slides 1 and 2.
+FOOTER: the logo from IMAGE 2, bottom-left, per the LOGO INTEGRATION
+block, same size and same position as slides 1 and 2.
+"nebula-agency.online" bottom-right in tiny muted grey type.
 
 -----------------------------------------------------------
 LAYOUT
@@ -556,6 +609,8 @@ répondre en trois mots depuis un téléphone.
 | Le violet du prompt-maître revient | `MODE A: inherit the reference palette. Bone paper, black ink, one editorial red. No violet, no blue, no cyan anywhere.` |
 | Le sujet de la référence réapparaît | `IMAGE 1 is a FORM reference only. Its subject must not appear. If in doubt, ignore its content entirely.` |
 | Le logo est redessiné | `The logo must be a pixel-faithful placement of IMAGE 2, the second attachment. Treat it as a pasted asset, not as something to generate.` Si ça persiste, remettre le logo en première position et échanger les numéros dans le prompt |
+| **Le logo arrive dans un cadre blanc** | `IMAGE 2 has a transparent background. Place it directly on the artwork with NO box, NO plate, NO card, NO outline, NO glow and NO shadow behind it.` |
+| **Le logo est minuscule** | Envoyer `logo/nebula-logo-detoure.png` et non le fichier de `nebula-affilies/static/`, dont 58 % de la surface est du vide |
 | Les 3 images ne se ressemblent pas | Regénérer la 2 et la 3 **en joignant la précédente**, avec `Match IMAGE 3 exactly: same paper, same grain, same margins, same type sizes.` |
 | « INTROUVABLE » déborde ou casse | Remplacer par `"INVISIBLE"`, deux lettres de moins, même sens |
 | Du texte parasite s'ajoute | `Render ONLY the quoted strings. Any additional word is a failure.` |
