@@ -1,20 +1,17 @@
 # HILLARY M. STYL — LE DÉPLOIEMENT
 
 > **À lire par Claude Code dans le terminal de Mongazi, avant tout déploiement.**
-> Dernière mise à jour : 2026-08-01.
+> Dernière mise à jour : 2026-08-06.
 
 ---
 
-## ⚠️ LE PIÈGE, EN UNE PHRASE
+## L'ÉTAT, EN UNE PHRASE
 
-**La V3 « LE FIL » n'est PAS sur `main`.** Elle vit sur la branche
-`claude/github-repo-context-nisd2r`.
+**La V3 « LE FIL » est sur `main` et elle est EN LIGNE.** Vérifié le 2026-08-06 :
+`vitrine.html` de `main` et la page servie par https://hillary-m-styl.pages.dev sont
+**identiques octet pour octet** (181 256 caractères, même empreinte `3d769e1c`).
 
-Si vous déployez depuis `main`, vous **redéployez l'ancienne version** — celle qui est
-déjà en ligne, sans direction artistique. Le site n'aura pas bougé, et on croira que
-le déploiement a échoué alors qu'il aura parfaitement fonctionné.
-
-**Comment le vérifier en une commande, sans réfléchir :**
+**Le contrôle en une commande, avant de toucher à quoi que ce soit :**
 
 ```bash
 grep -c "Bodoni Moda" clients/10-hillary-m-styl/vitrine.html
@@ -22,16 +19,22 @@ grep -c "Bodoni Moda" clients/10-hillary-m-styl/vitrine.html
 
 | Résultat | Signification |
 |---|---|
-| **0** | ⛔ vous êtes sur l'ancienne version. **Ne déployez pas.** |
-| **≥ 1** | ✅ c'est la V3 |
+| **≥ 1** | ✅ c'est bien la V3 |
+| **0** | ⛔ vous êtes sur une vieille version. **Ne déployez pas**, cherchez pourquoi. |
+
+### ⛔ La branche `claude/github-repo-context-nisd2r` est PÉRIMÉE
+
+Elle portait la V3 avant qu'elle n'arrive sur `main`. Depuis, `main` a beaucoup avancé :
+**la fusionner supprimerait 30 790 lignes**, dont tout PISTE, `scripts/purger.py` et
+`scripts/rapatrier.py`. Ne la fusionnez pas. Ne déployez pas depuis elle.
 
 ---
 
 ## LA PROCÉDURE, EN TROIS COMMANDES
 
 ```bash
-# 1. se placer sur la branche qui porte la V3
-git fetch origin && git checkout claude/github-repo-context-nisd2r && git pull
+# 1. partir de main, à jour
+git checkout main && git fetch origin && git merge origin/main
 
 # 2. construire, contrôler, préparer  (il s'arrête au premier problème)
 cd clients/10-hillary-m-styl && python3 _predeploy.py
@@ -39,6 +42,10 @@ cd clients/10-hillary-m-styl && python3 _predeploy.py
 # 3. publier  (la commande exacte est réaffichée par l'étape 2)
 npx -y wrangler@3 pages deploy _dist --project-name hillary-m-styl --branch main
 ```
+
+⚠️ **Ne vérifiez pas le site dans les secondes qui suivent** : le bord de Cloudflare peut
+servir l'ancienne version un instant, et on croit à un échec. Attendre ~30 s, puis lire
+le **corps** du fichier servi, pas seulement le code 200.
 
 Identifiants Cloudflare : `secrets/cloudflare.env` (gitignoré, présent en local seulement).
 
@@ -90,26 +97,26 @@ Et **envoyez une vraie commande de test** jusqu'à WhatsApp, une fois.
 | ⚠️ **Mesures de la robe ovale** | Jamais fournies. 11 mesures proposées, signalées en jaune dans l'interface |
 | ⚠️ **Email de repli** | Adresse d'exemple |
 
-**Le catalogue d'exemple est déjà en ligne depuis le 2026-08-01** (déployé par une autre
-session). Le redéployer en V3 ne l'aggrave pas — mais **c'est la première chose à obtenir
-d'Hillary.**
+**Le catalogue d'exemple est en ligne depuis le 2026-08-01.** C'est le point le plus
+urgent du dossier : **une cliente peut commander aujourd'hui une « Robe Amazone » qui
+n'existe pas.** Obtenir les vraies pièces et les vrais prix passe avant tout le reste.
 
 ---
 
-## SI VOUS VOULEZ QUE `main` PORTE LA V3
+## L'HISTOIRE, POUR QUE PERSONNE NE LA REJOUE
 
-Rien ne l'empêche techniquement, mais c'est une décision de Mongazi. Le jour venu :
+La V3 a été construite sur une branche `claude/…` et est restée trois jours sans arriver
+sur `main`, pendant que le site en ligne servait encore la V2. Ce document décrivait alors
+un piège réel : « déployer depuis `main` republie l'ancienne version ».
 
-```bash
-git checkout main && git pull
-git merge claude/github-repo-context-nisd2r      # vérifier les conflits
-git diff --stat origin/main..HEAD                # rien d'étranger au chantier ?
-git push origin main
-```
+**C'est réglé.** La V3 est sur `main`, en ligne, et la branche d'origine est devenue
+dangereuse. Ce qui reste vrai, et qui l'est pour tout le dépôt :
 
-⚠️ **`main` bouge pendant qu'on travaille** (piège n° 1 du dépôt). Toujours fusionner
-`origin/main` dans la branche AVANT de fusionner vers `main`, et vérifier qu'aucun autre
-chantier n'apparaît dans le diff.
+- **`main` bouge pendant qu'on travaille.** Toujours `git fetch origin && git merge
+  origin/main` AVANT de fusionner vers `main`.
+- **Une branche `claude/…` n'arrive jamais dans `main` toute seule.**
+  `python scripts/rapatrier.py` liste ce qui traîne, dit si la fusion passerait, et
+  signale ce qui touche du sensible.
 
 ---
 
