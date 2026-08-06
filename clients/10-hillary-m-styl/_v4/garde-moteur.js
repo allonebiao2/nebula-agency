@@ -46,12 +46,25 @@ var PAYS = [
 ];
 
 /* ---------- 4 · DELAIS DE CONFECTION ---------------------------- */
+/* ⚠️ 2026-08-06 — LE SUPPLÉMENT EXPRESS N'EST PAS FIXE.
+   Hillary facture l'express PAR PIÈCE : +40 000 sur une robe à 100 000,
+   +15 000 sur une robe à 30 000. Un supplément unique lui faisait absorber
+   l'écart à chaque commande. Chaque pièce porte donc `expPrix` (le prix
+   express TOTAL) et `expMin`/`expMax` (son propre délai express).
+   Les valeurs de DELAIS ne servent plus que de repli. */
 var DELAIS = {
   normal:  {id:"normal",  nom:"Délai normal",  jmin:7, jmax:14, sup:0,
             desc:"Confection sereine, dans l'ordre des commandes"},
-  express: {id:"express", nom:"Délai express", jmin:1, jmax:3,  sup:10000,
+  express: {id:"express", nom:"Délai express", jmin:2, jmax:4,  sup:0,
             desc:"Commande précipitée, passée devant les autres"}
 };
+
+/* le supplément express réellement dû, pour la pièce en cours */
+function supExpress(p){
+  if(!p) return 0;
+  if(p.expPrix != null && p.prix != null) return Math.max(0, p.expPrix - p.prix);
+  return DELAIS.express.sup;
+}
 
 /* ---------- 7 · LES JEUX DE MESURES PAR TYPE DE VÊTEMENT --------
    C'est le cœur de l'outil : les mesures dépendent du VÊTEMENT,
@@ -144,31 +157,46 @@ var AIDE = "Vous pouvez prendre les mesures vous-même ou inviter quelqu'un à l
 var TAILLES = ["XS","S","M","L","XL","XXL"];
 
 var PIECES = [
-  {id:"p1", cat:"pap", nom:"Robe Amazone",        prix:35000, jmin:7,  jmax:10, tag:"Nouveauté",
-   ds:"Robe droite en wax, col rond, manches trois-quarts."},
-  {id:"p2", cat:"pap", nom:"Chemise Lagune",      prix:22000, jmin:5,  jmax:8,  tag:"",
-   ds:"Chemise en coton léger, coupe droite, poche poitrine."},
-  {id:"p3", cat:"pap", nom:"Ensemble Kora",       prix:48000, jmin:8,  jmax:12, tag:"",
-   ds:"Haut et pantalon assortis, tissu imprimé, ceinture nouée."},
-  {id:"p4", cat:"pap", nom:"Pantalon Sablé",      prix:25000, jmin:5,  jmax:8,  tag:"",
-   ds:"Pantalon fluide taille haute, deux poches latérales."},
-  {id:"p5", cat:"pap", nom:"Robe Vespérale",      prix:52000, jmin:8,  jmax:12, tag:"Cérémonie",
-   ds:"Robe longue de cérémonie, dos travaillé, doublure."},
-  {id:"p6", cat:"pap", nom:"Boubou Sahel",        prix:40000, jmin:7,  jmax:10, tag:"",
-   ds:"Boubou brodé au col et aux poignets, coupe ample."},
+  /* ⚠️ LES VRAIES PIÈCES D'HILLARY, reçues le 2026-08-06.
+     Les 12 pièces d'exemple ont disparu : une cliente pouvait commander une
+     « Robe Amazone » qui n'existe pas.
+       prix    = confection normale        · expPrix = prix express TOTAL
+       jmin/jmax = délai normal (jours)    · expMin/expMax = délai express
+       type    = jeu de mesures            · img = photo dans assets/images/
+     Descriptions réécrites à partir de ses mots, rien d'inventé. */
 
-  {id:"s1", cat:"sm", nom:"Robe coupée à la taille", prix:45000, jmin:7, jmax:14, type:"robe_taille", tag:"",
-   ds:"Buste ajusté, jupe montée à la taille. Courte ou longue, à votre choix."},
-  {id:"s2", cat:"sm", nom:"Robe droite",             prix:55000, jmin:8, jmax:14, type:"robe_droite", tag:"Signature",
-   ds:"La coupe la plus exigeante de la maison : quinze mesures pour une tombée parfaite."},
-  {id:"s3", cat:"sm", nom:"Robe ovale",              prix:58000, jmin:8, jmax:14, type:"robe_ovale", tag:"",
-   ds:"Volume arrondi, taille suggérée. Une pièce de caractère."},
-  {id:"s4", cat:"sm", nom:"Pantalon sur-mesure",     prix:30000, jmin:5, jmax:10, type:"pantalon", tag:"",
-   ds:"Droit, fuselé ou large. Six mesures suffisent."},
-  {id:"s5", cat:"sm", nom:"Chemise ou haut",         prix:28000, jmin:5, jmax:10, type:"haut", tag:"",
-   ds:"Chemise, chemisier, haut de cérémonie. Femme ou homme."},
-  {id:"s6", cat:"sm", nom:"Création libre",          prix:null,  jmin:10,jmax:21, typeLibre:true, tag:"Sur devis",
-   ds:"Vous avez un modèle en tête ou une photo. On en discute, on chiffre, on coud."}
+  {id:"h1", cat:"sm", nom:"Robe de cérémonie", type:"robe_ovale", tag:"Cérémonie",
+   img:"piece-ceremonie.webp",
+   prix:100000, jmin:14, jmax:14, expPrix:140000, expMin:2, expMax:4,
+   eur:150, usd:180, eurExp:210, usdExp:252,
+   ds:"Bustier structuré, jupe ample à volants de satin, gele assorti. Deux tie-dye qui se répondent, un de chaque côté. Pour le jour où l'on vous regarde."},
+
+  {id:"h2", cat:"sm", nom:"L'ensemble Mira", type:"robe_ovale", tag:"",
+   img:"piece-mira.webp",
+   prix:50000, jmin:14, jmax:14, expPrix:75000, expMin:2, expMax:4,
+   eur:75, usd:90, eurExp:112, usdExp:135,
+   ds:"Haut court à manches ballon et jupe longue à volants étagés. Se porte à une cérémonie, à un cocktail ou à un dîner : c'est la même pièce, ce sont les chaussures qui changent."},
+
+  {id:"h3", cat:"sm", nom:"Ensemble JOSY", type:"robe_ovale", tag:"Fait main",
+   img:"piece-josy.webp",
+   prix:65000, jmin:14, jmax:14, expPrix:85000, expMin:2, expMax:5,
+   eur:100, usd:117, eurExp:127, usdExp:150,
+   ds:"Pantalon large en jean, empiècements peints à la main, ceinture corset lacée dans le dos. Entièrement fait à la main, du premier trait au dernier lacet."},
+
+  {id:"h4", cat:"sm", nom:"Robe de ville", type:"robe_ovale", tag:"",
+   img:"piece-ville.webp",
+   prix:30000, jmin:14, jmax:14, expPrix:45000, expMin:2, expMax:4,
+   eur:45, usd:67, eurExp:67, usdExp:81,
+   ds:"Dos nu attaché à la nuque, wax à feuillages et panneaux de satin qui s'ouvrent à la marche. La pièce qui va du bureau au dîner sans se changer."},
+
+  /* Une CRÉATION LIBRE : ce n'est pas un vêtement inventé, c'est un service.
+     Aucun prix (« sur devis »), aucune photo revendiquée : le client décrit
+     ce qu'il veut, choisit le type de vêtement, et on en parle. C'était déjà
+     là avant, et c'est la porte d'entrée pour tout ce qui n'est pas au
+     catalogue — ce qui, chez une couturière, est la majorité du travail. */
+  {id:"h9", cat:"sm", nom:"Création libre", typeLibre:true, tag:"Sur devis",
+   prix:null, jmin:14, jmax:14, expMin:2, expMax:5,
+   ds:"Vous avez un modèle en tête, une photo, une idée. Vous choisissez le vêtement, vous donnez vos mesures, et le prix se décide ensemble avant de commencer."}
 ];
 
 /* ================================================================
@@ -225,14 +253,21 @@ var HORLOGE = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d
 
 function carte(p){
   var prix = p.prix==null ? "Sur devis" : fcfa(p.prix);
+  /* Hillary donne ses prix en trois monnaies. On les affiche tels quels :
+     ce sont SES prix, pas une conversion — on ne les recalcule jamais. */
+  var dev = (p.eur!=null||p.usd!=null)
+    ? '<span class="dev">'+[p.eur!=null?p.eur+" €":null, p.usd!=null?"$"+p.usd:null]
+        .filter(Boolean).join(" · ")+'</span>' : '';
   return '<button class="piece" type="button" data-id="'+p.id+'">'+
     '<div class="ph">'+(p.tag?'<span class="tag">'+esc(p.tag)+'</span>':'')+
-      '<div class="mark"></div><span class="avenir">Photo à venir</span>'+
+      (p.img
+        ? '<img src="assets/images/'+esc(p.img)+'" alt="'+esc(p.nom)+', création Hillary M. Styl" loading="lazy" decoding="async">'
+        : '<div class="mark"></div><span class="avenir">Photo à venir</span>')+
       '<span class="voile"><span>Commander</span></span></div>'+
     '<div class="bd">'+
       '<h3>'+esc(p.nom)+'</h3>'+
       '<p class="ds">'+esc(p.ds)+'</p>'+
-      '<div class="meta"><span class="pr">'+prix+'</span>'+
+      '<div class="meta"><span class="pr">'+prix+dev+'</span>'+
         '<span class="del">'+HORLOGE+'<span>'+p.jmin+' à '+p.jmax+' jours</span></span></div>'+
     '</div></button>';
 }
@@ -240,9 +275,25 @@ function rendreGrille(cat){
   var g = document.getElementById("grille");
   g.innerHTML = PIECES.filter(function(p){return p.cat===cat;}).map(carte).join("");
 }
+function compteCat(cat){
+  return PIECES.filter(function(p){return p.cat===cat;}).length;
+}
 function onglet(cat){
-  $$(".tab").forEach(function(t){ t.setAttribute("aria-selected", t.dataset.onglet===cat ? "true":"false"); });
+  /* ⚠️ un onglet vide ne s'affiche pas, et n'est jamais celui qu'on ouvre.
+     Le 2026-08-06, les 4 vraies pièces étaient toutes en sur-mesure : le
+     catalogue s'ouvrait sur un « prêt-à-porter » sans une seule pièce. */
+  $$(".tab").forEach(function(t){
+    var vide = compteCat(t.dataset.onglet) === 0;
+    t.hidden = vide;
+    t.setAttribute("aria-selected", (!vide && t.dataset.onglet===cat) ? "true":"false");
+  });
+  var tabs = document.querySelector(".tabs");
+  if(tabs) tabs.hidden = $$(".tab").filter(function(t){return !t.hidden;}).length < 2;
   rendreGrille(cat);
+}
+function premiereCatPleine(){
+  var c = ["pap","sm"].filter(function(x){ return compteCat(x) > 0; });
+  return c.length ? c[0] : "pap";
 }
 $$("[data-onglet]").forEach(function(b){
   b.addEventListener("click", function(){
@@ -252,7 +303,7 @@ $$("[data-onglet]").forEach(function(b){
     }
   });
 });
-onglet("pap");
+onglet(premiereCatPleine());
 
 /* ---------- état de la commande --------------------------------- */
 var etat = null;
@@ -309,7 +360,7 @@ function totalCommande(){
   if(etat.piece.prix==null) return null;                 /* sur devis */
   var f = fraisLivraison();
   if(f===null) return null;                              /* pays « autre » */
-  var sup = etat.delai ? etat.delai.sup : 0;
+  var sup = (etat.delai && etat.delai.id === "express") ? supExpress(etat.piece) : 0;
   return etat.piece.prix + f + sup;
 }
 function joursTotal(){
@@ -317,7 +368,7 @@ function joursTotal(){
   /* borne haute du délai de confection propre à la pièce, ajustée
      par le mode de délai choisi, plus l'acheminement */
   var conf = etat.delai.id==="express"
-    ? etat.delai.jmax
+    ? (etat.piece.expMax != null ? etat.piece.expMax : etat.delai.jmax)
     : Math.max(etat.piece.jmax, etat.delai.jmin);
   return conf + joursAcheminement();
 }
@@ -442,7 +493,9 @@ function vue3(){
     '<div class="sdesc">Cette pièce demande normalement '+p.jmin+' à '+p.jmax+' jours de confection.</div>'+
     '<div class="opts">'+
       opt3(DELAIS.normal, "Confection en "+p.jmin+" à "+p.jmax+" jours")+
-      opt3(DELAIS.express, "Votre tenue en "+DELAIS.express.jmin+" à "+DELAIS.express.jmax+" jours maximum")+
+      opt3(DELAIS.express, "Votre tenue en "
+        +(p.expMin != null ? p.expMin : DELAIS.express.jmin)+" à "
+        +(p.expMax != null ? p.expMax : DELAIS.express.jmax)+" jours maximum")+
     '</div>';
 
   if(etat.delai){
@@ -463,9 +516,10 @@ function vue3(){
   return h;
 }
 function opt3(d, sous){
+  var sd = d.id==="express" ? supExpress(etat.piece) : 0;
   return '<button class="opt'+(etat.delai&&etat.delai.id===d.id?" sel":"")+'" type="button" data-delai="'+d.id+'">'+
     '<span class="rd"></span><span class="tx"><b>'+esc(d.nom)+'</b><span>'+esc(sous)+'</span></span>'+
-    '<span class="pz">'+(d.sup? "+ "+fcfa(d.sup) : "Inclus")+'</span></button>';
+    '<span class="pz">'+(sd? "+ "+fcfa(sd) : "Inclus")+'</span></button>';
 }
 
 /* --- étape 4 : coordonnées + récapitulatif --- */
@@ -502,7 +556,10 @@ function recap(){
     var f = fraisLivraison();
     lignes.push(["Expédition "+(etat.pays?etat.pays.nom:""), f===null ? "À confirmer" : fcfa(f)]);
   }
-  if(etat.delai) lignes.push([etat.delai.nom, etat.delai.sup ? fcfa(etat.delai.sup) : "Inclus"]);
+  if(etat.delai){
+    var _s = etat.delai.id==="express" ? supExpress(etat.piece) : 0;
+    lignes.push([etat.delai.nom, _s ? fcfa(_s) : "Inclus"]);
+  }
   var j = joursTotal();
   if(j!=null) lignes.push(["Disponible le", dateFr(dateDispo(j))]);
 
@@ -668,7 +725,8 @@ function message(){
   if(etat.delai){
     L.push("");
     L.push("*DÉLAI*");
-    L.push(etat.delai.nom+(etat.delai.sup? " (+ "+fcfa(etat.delai.sup)+")" : ""));
+    var _se = etat.delai.id==="express" ? supExpress(etat.piece) : 0;
+    L.push(etat.delai.nom+(_se? " (+ "+fcfa(_se)+")" : ""));
     var j = joursTotal();
     if(j!=null) L.push("Disponible au plus tard le "+dateFr(dateDispo(j)));
   }

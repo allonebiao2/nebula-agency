@@ -48,6 +48,11 @@
 
   --z-fond:0; --z-corps:1; --z-nav:50; --z-cur:70; --z-load:110; --z-mod:120;
 
+  /* la couleur de la pièce affichée au héros, posée par le script à chaque
+     diapositive. ⚠️ Ne JAMAIS la redéclarer sur .hero : une déclaration locale
+     l'emporte sur celle-ci, et le script n'a plus aucun effet. */
+  --piece:#E6007E;
+
   /* le logo, declare UNE fois : _build.py y injecte le base64 */
   --logo:url("data:image/webp;base64,__LOGO_B64__");
 }
@@ -203,13 +208,25 @@ em{font-style:italic;font-weight:400}
    ================================================================== */
 .hero{position:relative;min-height:100svh;padding:clamp(88px,12vh,132px) 0 clamp(24px,4vh,40px);
   display:flex;flex-direction:column;background:var(--papier);overflow:clip}
+/* LA NAPPE QUI SUIT LE TISSU : une lueur de la couleur de la pièce qui passe,
+   derrière la silhouette. Elle change en même temps que la diapositive. */
+.hero::before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(58% 46% at 50% 42%,
+    color-mix(in srgb, var(--piece) 22%, transparent), transparent 72%);
+  transition:background 1.1s var(--e-s)}
+@supports not (background: color-mix(in srgb, red 20%, transparent)){
+  .hero::before{background:radial-gradient(58% 46% at 50% 42%,
+    rgba(230,0,126,.10), transparent 72%)}
+}
 
 .hero-in{flex:1 1 auto;position:relative;display:grid;place-items:center;width:100%}
 
 /* le numéro géant, DERRIÈRE le mannequin et DEVANT le fond */
 .hnum{position:absolute;top:50%;left:50%;transform:translate(-50%,-54%);z-index:1;
   font-family:var(--ff-d);font-weight:700;font-size:clamp(11rem,42vw,30rem);line-height:.8;
-  letter-spacing:-.05em;color:#ddd8ce;pointer-events:none;
+  letter-spacing:-.05em;pointer-events:none;
+  color:color-mix(in srgb, var(--piece) 16%, #ddd8ce);
+  transition:color 1.1s var(--e-s);
   text-shadow:0 1px 0 rgba(255,255,255,.95),0 3px 3px rgba(26,26,26,.08);
   overflow:hidden;height:.98em;display:flex;align-items:flex-start}
 .hnum span{display:block;transition:transform .85s var(--e),opacity .5s ease}
@@ -236,12 +253,15 @@ em{font-style:italic;font-weight:400}
 .hsl-c .sil path{fill:var(--papier);stroke:var(--encre-2);stroke-width:1.3;stroke-linejoin:round}
 
 /* le titre de collection, à droite */
-.hcol{position:absolute;right:var(--pad);top:50%;transform:translateY(-50%);z-index:4;
+.hcol{position:absolute;right:calc(var(--pad) + 38px);top:52%;transform:translateY(-50%);z-index:4;
   text-align:right;max-width:min(260px,22vw);pointer-events:none}
 .hcol b{display:block;font-family:var(--ff-d);font-weight:700;
   font-size:clamp(1.5rem,2.6vw,2.4rem);line-height:1.02;letter-spacing:-.02em}
 .hcol .m{display:block;margin-top:10px;font-family:var(--ff-u);font-size:10.5px;
-  font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:rgba(26,26,26,.55)}
+  font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:rgba(26,26,26,.62)}
+/* le trait sous le titre de collection prend la couleur du tissu */
+.hcol b::after{content:'';display:block;height:2px;width:52px;margin:12px 0 0 auto;
+  background:var(--piece);transition:background 1.1s var(--e-s)}
 /* la description, à gauche */
 .hdes{position:absolute;left:var(--pad);top:56%;transform:translateY(-50%);z-index:4;
   max-width:min(250px,20vw);pointer-events:none}
@@ -288,7 +308,7 @@ em{font-style:italic;font-weight:400}
 .rond:hover{background:var(--encre);border-color:var(--encre);color:#fff}
 .hcpt{font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.15em;
   color:rgba(26,26,26,.55);min-width:76px;text-align:center}
-.hsoc{position:absolute;right:var(--pad);bottom:clamp(24px,6vh,72px);z-index:6;
+.hsoc{position:absolute;right:calc(var(--pad) - 12px);bottom:clamp(24px,6vh,72px);z-index:6;
   display:flex;flex-direction:column;gap:14px}
 .hsoc a{font-family:var(--ff-u);font-size:10.5px;font-weight:600;letter-spacing:.14em;
   writing-mode:vertical-rl;color:rgba(26,26,26,.55);min-height:44px;
@@ -535,6 +555,7 @@ em{font-style:italic;font-weight:400}
 .piece .ph{position:relative;aspect-ratio:4/5;overflow:hidden;background:var(--papier-2);
   display:grid;place-items:center;
   background-image:linear-gradient(160deg,#fff,var(--papier-2))}
+.piece .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .piece .ph .mark{width:46%;aspect-ratio:1;opacity:.30;filter:grayscale(1);
   background:var(--logo) center/contain no-repeat}
 .piece .ph .avenir{position:absolute;left:0;right:0;bottom:0;padding:9px 12px;
@@ -557,7 +578,9 @@ em{font-style:italic;font-weight:400}
 .piece .bd .meta{display:flex;align-items:center;justify-content:space-between;gap:12px;
   margin-top:12px;padding-top:12px;border-top:1px solid var(--fil-c)}
 .piece .bd .pr{font-family:var(--ff-u);font-weight:700;font-size:13px;letter-spacing:.04em;
-  color:var(--rose)}
+  color:var(--rose);display:flex;flex-direction:column;gap:2px}
+.piece .bd .pr .dev{font-weight:500;font-size:10.5px;letter-spacing:.06em;
+  color:rgba(26,26,26,.55)}
 .piece .bd .del{display:inline-flex;align-items:center;gap:6px;
   font-family:var(--ff-u);font-size:10px;font-weight:600;letter-spacing:.1em;
   text-transform:uppercase;color:rgba(26,26,26,.55)}

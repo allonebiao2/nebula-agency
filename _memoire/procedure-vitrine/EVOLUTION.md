@@ -778,3 +778,70 @@ manquantes = [r for r in set(re.findall(r'assets/images/([A-Za-z0-9_.-]+)', html
 
 Et **relever les délais du contrôle** : 19 images chargées depuis `file://`
 dépassent les 15 s par défaut.
+
+---
+
+## 2026-08-06 (fin) — Le jour où les vraies pièces arrivent
+
+**Hillary a envoyé 4 pièces réelles avec leurs prix.** Ce qui a sauté au passage,
+et qu'aucun brief n'annonce jamais :
+
+### 1. Le supplément express n'est pas fixe
+
+Le moteur appliquait **10 000 F à toutes les pièces**. Ses vrais chiffres :
+
+| Pièce | Normal | Express | Écart |
+|---|---|---|---|
+| Robe de cérémonie | 100 000 | 140 000 | **+40 000** |
+| Robe de ville | 30 000 | 45 000 | **+15 000** |
+
+Une cliente aurait vu 110 000 F au lieu de 140 000 : **la couturière absorbait
+l'écart à chaque commande.** Le supplément et le délai express sont maintenant
+**propres à chaque pièce** (`expPrix`, `expMin`, `expMax`).
+
+**La leçon générale : un tarif « global » dans un moteur de commande est une
+hypothèse, pas une donnée.** Tant que le client n'a pas donné ses vrais chiffres,
+on ne sait pas si la variable est globale ou par article.
+
+### 2. Un onglet peut devenir vide
+
+Ses 4 pièces étaient toutes en sur-mesure. L'onglet « prêt-à-porter » se
+retrouvait vide **et c'était celui qui s'ouvrait** : le catalogue s'affichait
+sans une seule pièce. Un onglet dont la catégorie est vide se masque désormais,
+et n'est jamais celui qu'on ouvre.
+
+### 3. Une refonte de données casse les contrôles qui nommaient les données
+
+Le contrôle cliquait « Robe Amazone », « Pantalon sur-mesure », attendait « 6
+pièces », « 57 000 F », « 10 jours ». Toutes ces valeurs venaient des pièces
+d'exemple. **Onze assertions ont dû être rebranchées sur les données**, ce qui
+était la règle depuis PISTE et n'avait pas été appliqué ici.
+
+```python
+att = await page.evaluate("()=>PIECES.filter(p=>p.cat==='sm').length")
+ok(n == att, f"{att} pieces sur-mesure affichees (vu {n})")
+```
+
+⚠️ Et un contrôle ne clique pas un onglet qui peut être masqué : il appelle le
+moteur (`onglet('sm')`).
+
+### 4. Une variable CSS redéclarée localement annule le script
+
+Le héros devait changer de couleur avec la pièce affichée. Le script posait
+`--piece` sur `:root`, mais le CSS la redéclarait sur `.hero` comme valeur de
+repli. **La déclaration locale l'emporte** : la couleur ne changeait jamais.
+La valeur de repli va sur `:root`, jamais sur l'élément qui l'utilise.
+
+### 5. Extraire une couleur : la moyenne ne marche pas
+
+Pour faire suivre la couleur du vêtement, la **moyenne** des pixels d'une robe
+bleu-et-rouge donne du violet boueux. Il faut l'**histogramme de teintes** sur
+les pixels saturés, garder le pic, puis remonter saturation et valeur pour que
+la couleur tienne sur du papier.
+
+```python
+sat = (mx-mn)/mx ; garder sat>0.4 et 0.25<mx<0.97
+hist = histogram(hue, bins=36) ; pic = hist.argmax()
+h,s,v = rgb_to_hsv(moyenne_du_pic)
+couleur = hsv_to_rgb(h, clamp(s*1.25, .55, .92), clamp(v, .42, .72))
+```

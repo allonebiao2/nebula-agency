@@ -168,7 +168,9 @@ def main():
     print("  Après coup, ouvrez https://hillary-m-styl.pages.dev et vérifiez")
     print("  que le loader se fend en deux, que le numéro géant passe derrière la")
     print("  silhouette, et que le compteur du lookbook avance au défilement.")
-    print("  ⚠️ Le catalogue est encore composé de PIÈCES D'EXEMPLE.")
+    print("  ✅ Le catalogue porte les VRAIES pieces d'Hillary (recues le 2026-08-06).")
+    print("  ⚠️ Reste a confirmer : les 11 mesures de la robe ovale, la matiere de")
+    print("     chaque piece, et le libelle « Robe de ville » (voir _sources/hillary/).")
     return 0
 
 

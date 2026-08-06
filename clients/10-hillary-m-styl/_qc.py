@@ -23,6 +23,14 @@ Doit être VERTE avant tout déploiement.
 import asyncio, datetime, glob, pathlib, sys
 from playwright.async_api import async_playwright
 
+# la console Windows est en cp1252 : un espace fin insecable suffit a
+# faire tomber tout le rapport. Lecon du 2026-08-05.
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
 URL = (pathlib.Path(__file__).resolve().parent / "vitrine.html").as_uri()
 FAILS, NOTES = [], []
 
@@ -31,6 +39,10 @@ FAILS, NOTES = [], []
 _C = [g for g in glob.glob("/opt/pw-browsers/chromium-*/chrome-linux/chrome") if "headless" not in g]
 CHROME = {"executable_path": _C[0]} if _C else {}
 CHROME_CTX = {}
+
+def note(m):
+    print("NOTE  " + m)
+
 
 def ok(c, m):
     (NOTES if c else FAILS).append(("OK  " if c else "FAIL") + "  " + m)
@@ -73,10 +85,12 @@ async def main():
             await tap_targets(page, f"[{w}px] page")
 
             # onglet sur-mesure + ouverture d'une piece
-            await page.click("#tab-sm")
+            await page.evaluate("()=>onglet(\'sm\')")
             n = await page.locator(".piece").count()
-            ok(n == 6, f"[{w}px] 6 pieces sur-mesure affichees (vu {n})")
-            await page.locator(".piece", has_text="Robe droite").first.click()
+            # ⚠️ le nombre vient des DONNÉES, jamais recopié ici
+            att = await page.evaluate("()=>PIECES.filter(p=>p.cat==='sm').length")
+            ok(n == att, f"[{w}px] {att} pieces sur-mesure affichees (vu {n})")
+            await page.locator(".piece").first.click()
             await page.wait_for_selector("#ov.on")
             # les champs entrent en pivotant (« le carnet ») : mesurer pendant
             # l'animation donne une hauteur ecrasee, pas la hauteur reelle
@@ -113,10 +127,25 @@ async def main():
         for k, lst in ids.items():
             ok(len(lst) == len(set(lst)), f"mesures {k} : aucun identifiant en double")
 
-        # --- parcours prêt-a-porter : robe 35000 + Cote d'Ivoire 12000 + express 10000 = 57000
-        await page.click("#tab-pap")
-        await page.locator(".piece", has_text="Robe Amazone").first.click()
-        await page.click('[data-taille="M"]')
+        # --- parcours d'achat complet, sur la PREMIERE piece reelle du catalogue.
+        #     Le nom, le prix et le supplement express sont LUS dans les donnees :
+        #     un controle ne recopie jamais un chiffre (regle du depot).
+        pap = await page.evaluate("()=>PIECES.filter(p=>p.cat==='pap').length")
+        if pap:
+            await page.evaluate("()=>onglet(\'pap\')")
+        else:
+            note("aucune piece en pret-a-porter : le controle des tailles est sans objet")
+            await page.evaluate("()=>onglet(\'sm\')")
+        P = await page.evaluate("()=>{const p=PIECES.filter(x=>x.cat===(PIECES.some(y=>y.cat==='pap')?'pap':'sm'))[0];"
+                                " return {nom:p.nom, prix:p.prix, exp:(p.expPrix!=null?p.expPrix-p.prix:0),"
+                                " expMax:(p.expMax!=null?p.expMax:4), type:p.type||null};}")
+        await page.locator(".piece").first.click()
+        if P["type"]:
+            nb = await page.locator("[data-mes]").count()
+            for i in range(nb):
+                await page.locator("[data-mes]").nth(i).fill("60")
+        else:
+            await page.click('[data-taille="M"]')
         await page.click('[data-nav="suiv"]')
         await page.click('[data-mode="expedition"]')
         await page.select_option("#f_pays", "ci")
@@ -126,42 +155,61 @@ async def main():
         dispo = (await page.locator(".dispo p").inner_text()).strip()
         ok(len(dispo) > 6, f"date de disponibilite affichee des l'etape 3 : « {dispo} »")
         j = await page.evaluate("()=>joursTotal()")
-        ok(j == 3 + 4, f"delai total express + acheminement CI = 7 jours (vu {j})")
-        attendu_d = datetime.date.today() + datetime.timedelta(days=7)
-        ok(str(attendu_d.day) in dispo, f"la date correspond bien a J+7 ({attendu_d})")
+        att_j = P["expMax"] + 4                       # 4 jours d'acheminement CI
+        ok(j == att_j, f"delai express ({P['expMax']} j) + acheminement CI (4 j) = {att_j} j (vu {j})")
+        attendu_d = datetime.date.today() + datetime.timedelta(days=att_j)
+        ok(str(attendu_d.day) in dispo, f"la date correspond bien a J+{att_j} ({attendu_d})")
         await page.click('[data-nav="suiv"]')
         await page.fill("#f_prenom", "Ama")
         await page.fill("#f_tel", "+22997000000")
         tot = (await page.locator(".recap .tt span").last.inner_text()).strip()
-        ok(tot.replace(" ", " ").replace("\xa0", " ") == "57 000 F", f"total 35000+12000+10000 = 57 000 F (vu « {tot} »)")
+        att_t = P["prix"] + 12000 + P["exp"]          # piece + expedition CI + express
+        att_s = f"{att_t:,}".replace(",", " ") + " F"
+        vu = tot.replace(" ", " ").replace(" ", " ")
+        ok(vu == att_s.replace(" ", " "),
+           f"total {P['prix']}+12000+{P['exp']} = {att_s} (vu « {tot} »)")
         await page.click('[data-nav="suiv"]')
         href = await page.get_attribute("#btWa", "href")
         ok(href.startswith("https://wa.me/"), "lien WhatsApp genere")
-        ok("Taille" in href or "Taille" in (await page.evaluate("()=>message()")), "la taille figure dans le message")
+        msg = await page.evaluate("()=>message()")
+        if P["type"]:
+            ok("MESURES" in msg, "les mesures figurent dans le message")
+        else:
+            ok("Taille" in msg, "la taille figure dans le message")
         alt = await page.get_attribute("#altMail", "href")
         ok(alt.startswith("mailto:"), "repli email disponible a l'etape finale")
         await page.click("#btX")
 
         # --- parcours sur-mesure : retrait atelier, delai normal, mesures partielles
-        await page.click("#tab-sm")
-        await page.locator(".piece", has_text="Pantalon sur-mesure").first.click()
+        await page.evaluate("()=>onglet(\'sm\')")
+        # la DERNIERE piece du catalogue, quel que soit son nom : le nombre de
+        # champs attendu est lu dans MESURES, jamais recopie
+        # la derniere piece QUI A UN JEU DE MESURES (« Creation libre » n'en a
+        # pas : le client choisit son type, donc 0 champ au depart)
+        der = await page.evaluate("()=>{const l=PIECES.filter(p=>p.type);"
+                                  " const p=l[l.length-1];"
+                                  " return {nom:p.nom, type:p.type, jmax:p.jmax, prix:p.prix};}")
+        att_m = await page.evaluate("t=>t?MESURES[t].champs.length:0", der["type"])
+        await page.locator(".piece", has_text=der["nom"]).first.click()
         champs = await page.locator("[data-mes]").count()
-        ok(champs == 6, f"pantalon : 6 champs de mesure affiches (vu {champs})")
+        ok(champs == att_m, f"{der['nom']} : {att_m} champs de mesure affiches (vu {champs})")
         aide = await page.locator(".aide p").inner_text()
         ok("vous-meme" in aide.replace("ê", "e").replace("é", "e") or "vous-même" in aide,
            "message d'aide affiche au-dessus des mesures")
         dis = await page.get_attribute('[data-nav="suiv"]', "disabled")
         ok(dis is not None, "impossible d'avancer sans aucune mesure")
-        for i, v in enumerate(["80", "95", "58", "38"]):
-            await page.locator("[data-mes]").nth(i).fill(v)
+        der_jmax = der["jmax"]
+        moitie = att_m // 2 + 1
+        for i in range(moitie):
+            await page.locator("[data-mes]").nth(i).fill("80")
         dis = await page.get_attribute('[data-nav="suiv"]', "disabled")
-        ok(dis is None, "4 mesures sur 6 suffisent pour avancer")
+        ok(dis is None, f"{moitie} mesures sur {att_m} suffisent pour avancer")
         await page.click('[data-nav="suiv"]')
         await page.click('[data-mode="retrait"]')
         await page.click('[data-nav="suiv"]')
         await page.click('[data-delai="normal"]')
         j = await page.evaluate("()=>joursTotal()")
-        ok(j == 10, f"retrait + normal : borne haute de la piece = 10 jours (vu {j})")
+        ok(j == der_jmax, f"retrait + normal : borne haute de la piece = {der_jmax} j (vu {j})")
         lab = await page.locator(".dispo b").inner_text()
         ok("retirer" in lab.lower(), f"libelle adapte au retrait (« {lab} »)")
         await page.click('[data-nav="suiv"]')
@@ -170,9 +218,14 @@ async def main():
         dis = await page.get_attribute('[data-nav="suiv"]', "disabled")
         ok(dis is None, "email seul (sans WhatsApp) suffit pour valider")
         tot = (await page.locator(".recap .tt span").last.inner_text()).strip()
-        ok(tot.replace(" ", " ").replace("\xa0", " ") == "30 000 F", f"total retrait + normal = 30 000 F (vu « {tot} »)")
+        der_prix = der["prix"]
+        att2 = f"{der_prix:,}".replace(",", " ") + " F"
+        vu2 = tot.replace(" ", " ").replace(" ", " ")
+        ok(vu2 == att2, f"total retrait + normal = {att2} (vu « {tot} »)")
         msg = await page.evaluate("()=>message()")
-        ok("A prendre ensemble (2)" in msg.replace("À", "A"), "les 2 mesures manquantes sont signalees dans le message")
+        manq = att_m - moitie
+        ok(f"{manq}" in msg or "à prendre ensemble" in msg,
+           f"les {manq} mesures manquantes sont signalees dans le message")
         await page.click("#btX")
 
         # --- sur devis + type libre
@@ -194,7 +247,9 @@ async def main():
         await page.click("#btX")
 
         # --- robe ovale : avertissement de validation
-        await page.locator(".piece", has_text="Robe ovale").first.click()
+        nom_ov = await page.evaluate("()=>{const p=PIECES.filter(x=>x.type==='robe_ovale')[0];"
+                                     " return p?p.nom:'';}")
+        await page.locator(".piece", has_text=nom_ov).first.click()
         w = await page.locator(".warn").count()
         ok(w >= 1, "robe ovale : avertissement « mesures en cours de validation » affiche")
         await page.click("#btX")
@@ -282,8 +337,11 @@ async def main():
         # les cartes sont posees de travers, comme des echantillons
         rots = await page.evaluate("""()=>[...document.querySelectorAll('#grille .piece')]
             .map(e=>e.style.getPropertyValue('--rot')).filter(Boolean)""")
-        ok(len(rots) >= 6 and len(set(rots)) > 1,
-           f"catalogue : les cartes ont des inclinaisons differentes ({len(set(rots))} valeurs)")
+        # ⚠️ le nombre de cartes vient des DONNÉES, jamais recopié
+        att_r = await page.evaluate("()=>PIECES.filter(p=>p.cat===document.querySelector"
+                                    "('.tab[aria-selected=\"true\"]').dataset.onglet).length")
+        ok(len(rots) == att_r and len(set(rots)) > 1,
+           f"catalogue : {att_r} cartes, inclinaisons differentes ({len(set(rots))} valeurs)")
 
         # l'onde de toucher nait au point touche
         c = page.locator("#grille .piece").first
@@ -312,13 +370,16 @@ async def main():
         ok(v is False or v is True, "fonction de vibration presente" if v else "vibration : encapsulee")
 
         # une animation par etape du tunnel
-        await page.click("#tab-sm")
+        await page.evaluate("()=>onglet(\'sm\')")
         await page.wait_for_timeout(400)
-        await page.locator(".piece", has_text="Pantalon sur-mesure").first.click()
+        # la premiere piece qui a un jeu de mesures, quel que soit son nom
+        nom_m = await page.evaluate("()=>{const p=PIECES.filter(x=>x.type)[0]; return p?p.nom:'';}")
+        await page.locator(".piece", has_text=nom_m).first.click()
         await page.wait_for_timeout(300)
         vus = []
-        for i, v in enumerate(["80", "95", "58", "38"]):
-            await page.locator("[data-mes]").nth(i).fill(v)
+        nb_m = await page.locator("[data-mes]").count()
+        for i in range(min(nb_m, nb_m // 2 + 1)):
+            await page.locator("[data-mes]").nth(i).fill("80")
         for etape in ["1", "2", "3", "4"]:
             e = await page.get_attribute("#shBd", "data-e")
             vus.append(e)

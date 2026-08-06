@@ -71,82 +71,81 @@ HERO = [
    + "with a structured bodice and a long full skirt. " + FOND_BLANC + NEG),
 ]
 
-# --- 2 · L'ATELIER : trois plans rapprochés, fond sombre ---------------
+# ===================================================================
+# LES TISSUS D'HILLARY — relevés sur SES quatre pièces réelles.
+# Tout ce qui suit s'y réfère : les images d'ambiance doivent avoir l'air
+# de sortir de SON atelier, pas d'un atelier générique.
+# ===================================================================
+T1 = ("hand-dyed indigo and white tie-dye adire fabric with radiating sunburst "
+      "and starburst motifs, next to a matching deep red and black tie-dye")
+T2 = ("golden yellow, cobalt blue and dark brown West African wax print with "
+      "bold curved linear motifs and circular medallions")
+T3 = ("raw indigo denim with hand-painted floral panels in blue, white and "
+      "deep red, and a laced corset belt in the same denim")
+T4 = ("ochre wax print with turquoise and navy ivy-leaf motifs, paired with "
+      "bright turquoise satin")
+LUM = ("Warm low side light raking across the surface, deep shadow behind, dust "
+       "in the beam. ")
+
+# --- 2 · L'ATELIER : trois plans, SES tissus ---------------------------
 ATELIER = [
   ("atelier-1", "3:4",
-   "Close-up photograph of rolls of " + TISSU + "stacked and standing upright in "
-   "a tailor's workshop, folded edges and selvedges visible, the patterns crisp. "
-   "Warm low side light raking across the folds, deep shadow behind. Shot on an "
-   "85mm lens, f/4, shallow depth of field, tactile, editorial. " + NEG),
+   "Close-up photograph of rolls and folded lengths of fabric standing upright in "
+   "a Beninese tailor's workshop: " + T1 + ", " + T2 + ", and " + T4 + ". "
+   "The folds and selvedges visible, the prints crisp. " + LUM
+   + "Shot on an 85mm lens, f/4, tactile, editorial. " + NEG),
   ("atelier-2", "3:4",
-   "Close-up photograph of a tailor's cutting table: a paper dress pattern pinned "
-   "to dark fabric, tailor's chalk, a measuring tape, fabric shears and pins. "
-   "A dark-skinned hand resting at the edge of the frame, face out of frame. "
-   "Warm low side light, deep shadow. Shot on a 50mm lens, f/2.8. " + NEG),
+   "Close-up photograph of a Beninese tailor's cutting table: a paper dress "
+   "pattern pinned onto " + T2 + ", tailor's chalk, a measuring tape, heavy "
+   "fabric shears and a row of pins. A dark-skinned hand resting at the edge of "
+   "the frame, face out of frame. " + LUM
+   + "Shot on a 50mm lens, f/2.8. " + NEG),
   ("atelier-3", "3:4",
-   "Extreme close-up photograph of a finished seam and hand embroidery on "
-   + TISSU + "the stitches crisp and regular, a needle still in the cloth. "
-   "Warm raking light, deep shadow, every thread visible. Shot on a 100mm macro "
-   "lens, f/5.6, extremely detailed. " + NEG),
+   "Extreme close-up of a finished seam where " + T4 + " meets satin: the "
+   "topstitching crisp and regular, a needle still in the cloth, a covered "
+   "button beside it. " + LUM
+   + "Shot on a 100mm macro lens, f/5.6, every thread visible. " + NEG),
 ]
 
-# --- 4 · LE LOOKBOOK : éditorial, formats variés ----------------------
-#     Elles s'affichent en noir et blanc et reprennent leurs couleurs au survol,
-#     donc on génère EN COULEUR.
+# --- 4 · LE LOOKBOOK : éditorial, SES pièces --------------------------
+#     Affiché en noir et blanc, couleurs au survol : on génère EN COULEUR.
 LOOK = [
-  ("look-1", "4:5", QUI + "photographed full length walking, wearing a long dress in "
-   + TISSU + "the fabric caught mid-movement. Editorial fashion photograph in a "
-   "bright plain room, warm daylight from a tall window on the left, plain pale "
+  ("look-1", "4:5", QUI + "photographed full length walking, wearing a long "
+   "full-skirted ceremony gown made of " + T1 + ", the skirt caught mid-movement, "
+   "a matching tied headwrap. Editorial fashion photograph in a bright plain "
+   "room in Cotonou, warm daylight from a tall window on the left, plain pale "
    "wall behind. Shot on a 50mm lens, f/2, natural light. " + NEG),
   ("look-2", "1:1",
-   "Extreme close-up detail of " + TISSU + "draped and folded, the weave and the "
-   "printed motif filling the frame. Warm raking light from the left, every fibre "
-   "visible. Shot on a 100mm macro lens, f/8. " + NEG),
-  ("look-3", "3:4", QUI + "photographed from behind, from the shoulders down, wearing "
-   "a dress in " + TISSU + "the back seam and the tie at the waist visible. Plain "
-   "pale wall, warm side light. Shot on an 85mm lens, f/2.8. " + NEG + "Face not visible."),
-  ("look-4", "4:5", QUI + "seated on a plain wooden stool, wearing a tailored jacket "
-   "and skirt in deep indigo, hands resting in her lap. Bright plain room, warm "
-   "daylight from the side. Shot on a 50mm lens, f/2. " + NEG),
+   "Extreme close-up detail of " + T1 + ", draped and folded so the dye pattern "
+   "fills the frame, the cotton weave visible. " + LUM
+   + "Shot on a 100mm macro lens, f/8. " + NEG),
+  ("look-3", "3:4", QUI + "photographed from behind, from the shoulders down, "
+   "wearing a long halter-neck gown in " + T4 + ", the back zip and the satin "
+   "panels visible. Plain pale wall, warm side light. Shot on an 85mm lens, "
+   "f/2.8. " + NEG + "Face not visible."),
+  ("look-4", "4:5", QUI + "seated on a plain wooden stool, wearing wide "
+   "high-waisted trousers in " + T3 + ", a plain black top, hands resting. "
+   "Bright plain room, warm daylight from the side. Shot on a 50mm lens, f/2. " + NEG),
   ("look-5", "5:4",
-   "Wide photograph of a tailor's workshop in Cotonou, empty of people: a sewing "
-   "machine on a wooden table, folds of " + TISSU + "a dress form, spools of thread, "
-   "shears. Warm afternoon light entering hard from a window on the left, dust in "
-   "the beam, deep shadow on the right. Shot on a 35mm lens, f/5.6. " + NEG),
+   "Wide photograph of a Beninese tailor's workshop, empty of people: a sewing "
+   "machine on a wooden table, folded lengths of " + T2 + " and " + T1 + ", a "
+   "dress form wearing an unfinished bodice, spools of thread, heavy shears. "
+   "Warm afternoon light entering hard from a window on the left, dust in the "
+   "beam, deep shadow on the right. Shot on a 35mm lens, f/5.6. " + NEG),
   ("look-6", "3:4",
-   "Extreme close-up of a hand-finished detail on a garment: a covered button, a "
-   "rolled hem and a line of hand stitching on " + TISSU + "A dark-skinned "
-   "fingertip at the edge of the frame. Warm raking light, deep shadow. Shot on a "
-   "100mm macro lens, f/5.6. " + NEG + "Face not visible."),
-]
-
-# --- 3 · LES COLLECTIONS : socle identique, une ligne qui change -------
-#     ⚠️ Ces images vont dans le CARROUSEL (sans prix, sans bouton de commande),
-#        jamais dans le catalogue commandable.
-SOCLE_COLL = (
-  "Studio product photograph of a single finished garment presented on a plain "
-  "dress form, centred, shot square-on against a seamless very light warm grey "
-  "background. Soft large key light from the upper left at a low angle to reveal "
-  "the fabric texture and the fall of the cloth, subtle fill from the right, no "
-  "hotspots. Identical lighting, distance and framing across the whole series. "
-  "Shot on an 85mm lens, f/8, colour-accurate, high-end catalogue quality. "
-  "Vertical 4:5. ")
-COLL = [
-  ("coll-1", "PIÈCE: a fitted dress cut at the waist, deep indigo fabric, clean seams"),
-  ("coll-2", "PIÈCE: a straight column dress in plain black fabric, long sleeves"),
-  ("coll-3", "PIÈCE: a two-piece set, top and wrap skirt, in " + TISSU.rstrip(', ')),
-  ("coll-4", "PIÈCE: a simple cream shirt with a sharp collar and covered buttons"),
-  ("coll-5", "PIÈCE: wide high-waisted trousers in dark fabric, sharp crease"),
-  ("coll-6", "PIÈCE: a ceremony gown with a structured bodice and a long full skirt in "
-   + TISSU.rstrip(', ')),
+   "Extreme close-up of a hand-painted floral panel on " + T3 + ": the brush "
+   "strokes visible in the paint, a line of hand stitching along the edge, a "
+   "metal eyelet of the corset lacing. A dark-skinned fingertip at the edge of "
+   "the frame. " + LUM + "Shot on a 100mm macro lens, f/5.6. " + NEG
+   + "Face not visible."),
 ]
 
 LOTS = {
   "hero": HERO,
   "atelier": ATELIER,
   "lookbook": LOOK,
-  "collections": [(n, "4:5", SOCLE_COLL + v + ". " + NEG + "No human figure, no face, no hands.")
-                  for n, v in COLL],
+  # ⛔ plus de « collections » : le carrousel porte SES VRAIES pièces
+  #    (coll-1..4 = ses photos). On ne génère plus de vêtements.
 }
 
 
@@ -205,8 +204,8 @@ def lot(k, travaux):
 if __name__ == "__main__":
     k = cle()
     quoi = sys.argv[1] if len(sys.argv) > 1 else ""
-    if quoi == "tout":
-        lot(k, LOTS["hero"] + LOTS["atelier"] + LOTS["lookbook"] + LOTS["collections"])
+    if quoi == "tout":   # atelier + lookbook seulement
+        lot(k, LOTS["atelier"] + LOTS["lookbook"])
     elif quoi in LOTS:
         lot(k, LOTS[quoi])
     else:
