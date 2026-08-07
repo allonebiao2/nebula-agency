@@ -38,7 +38,7 @@ et que personne n'ose demander.
 | 5 | Il faut payer quelque chose tous les mois ? | **NON** |
 | 6 | Vous avez déjà livré en retard ? | **OUI** |
 | 7 | Vous l'avez dit au client avant ? | **OUI** |
-| 8 | Vos clients, ce sont de vrais commerçants d'ici ? | **OUI** |
+| 8 | Vos clients sont de vrais commerçants d'ici ? | **OUI** |
 | 9 | Je peux vous écrire maintenant ? | **OUI** |
 
 **Pourquoi ça marche** : quatre « non » qui démolissent ce que les gens croient,
@@ -63,7 +63,7 @@ on donne raison au spectateur. C'est ce qui le retient.
 | 2 | J'ai déjà une page Facebook. J'ai besoin d'un site ? | **NON** |
 | 3 | Donc un site ne sert à rien ? | **NON** |
 | 4 | Vous répétez vingt fois par jour les mêmes prix sur WhatsApp ? | **OUI** |
-| 5 | Vos clients vous demandent des photos que vous cherchez à chaque fois ? | **OUI** |
+| 5 | Vous renvoyez la même photo dix fois par jour ? | **OUI** |
 | 6 | Ça, un lien peut le faire à votre place ? | **OUI** |
 | 7 | Et ça coûte moins qu'un carton de marchandise ? | **OUI** |
 | 8 | Vous voulez le lien ? | **OUI** |
