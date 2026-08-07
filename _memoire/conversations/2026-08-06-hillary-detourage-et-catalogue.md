@@ -264,3 +264,98 @@ Et même en ligne, l'émulation réseau varie assez d'un essai à l'autre (HTML 
 
 **« sans JavaScript : une vraie pièce et son texte s'affichent »** — un contexte
 Playwright avec `java_script_enabled=False`.
+
+---
+
+# Quatrième passe · l'audit complet
+
+Mongazi : « analyse, s'il y a des erreurs, corrige-les ». Neuf défauts trouvés,
+tous corrigés, tous verrouillés par un contrôle.
+
+## Les deux qui coûtaient de l'argent
+
+**1 · Une adresse email inventée, en ligne, avec un `mailto:` réel.**
+`contact@hillarymstyl.com` était affichée dans le bloc contact ET servait de
+destination au lien « je n'ai pas WhatsApp » de la dernière étape du tunnel.
+Une cliente sans WhatsApp envoyait sa commande **dans le vide**, et personne ne
+pouvait le savoir. Le code portait pourtant `/* ⚠ À REMPLACER */` depuis le
+premier jour.
+
+`EMAIL` est maintenant **vide** : la ligne disparaît du bloc contact et le repli
+devient **un appel téléphonique** vers son vrai numéro. Pour rallumer l'email,
+il suffit d'écrire l'adresse à cet endroit, rien d'autre.
+**Un contact faux est pire que pas de contact.**
+
+**2 · Le bloc contact contredisait chaque carte du catalogue.**
+Il annonçait « Confection : 7 à 14 jours · 1 à 3 jours en express », alors que
+ses quatre pièces sont à **deux semaines fermes** et l'express de **2 à 5 jours**.
+Deux chiffres différents sur la même page, c'est le client qui choisit celui qui
+l'arrange, et la maison qui s'explique. Corrigé partout, y compris le badge du
+héros (« EXPRESS 1 À 3 JOURS ») et les valeurs de secours du moteur.
+
+## Le défaut qu'on voyait sans le voir
+
+**3 · Les quatre étapes du processus avaient le titre dans la mauvaise colonne.**
+`.et span{grid-column:2}` frappait aussi le numéro, qui est un `<span class="n">` :
+le titre se retrouvait dans la colonne de 86 px, « La mesure » se cassait en deux
+lignes et **« L'essayage » chevauchait le « 04 »**.
+
+⚠️ **La spécificité ne protège de rien ici** : `.et .n` (0-2-0) l'emporte bien
+sur `.et span` (0-1-1) pour ce qu'il déclare, mais `grid-column` n'y était pas
+déclaré. Un sélecteur de type qui attrape un élément voisin est un piège qu'aucun
+calcul de spécificité ne signale. `.et>span:not(.n)`.
+
+## Le site sans JavaScript, suite
+
+**4 · Le bouton principal ne menait nulle part.** « Écrire sur WhatsApp » portait
+`href="#"` et n'était rempli que par le script. Sans lui, aucun moyen de joindre
+la maison. Les liens WhatsApp sont désormais **écrits en dur** dans le HTML, le
+script se contente d'y ajouter le message pré-rempli.
+
+**5 · Aucun lien téléphonique nulle part.** Le numéro était du texte. Une ligne
+**Téléphone** avec un vrai `tel:` remplace l'email fantôme.
+
+## Trois contrastes sous la barre
+
+| Élément | Avant | Après |
+|---|---|---|
+| Bouton **« Écrire sur WhatsApp »** | **3,09:1** | `#128040` → **5,0:1** |
+| Étiquette « Cérémonie » du carrousel | 4,13:1 | `--rose-f #c9006c` → **5,2:1** |
+| Badge « PAGNE & WAX » | 4,21:1 | `--terre #a8452a` → **5,9:1** |
+
+⚠️ **`--rose` n'a pas bougé** : c'est sa signature, elle reste telle quelle en
+aplat, en gros corps et sur l'encre. Seul le **petit corps sur fond clair** passe
+par `--rose-f`. Le vert de la marque WhatsApp est fait pour porter du texte
+foncé, pas du blanc.
+
+## Deux textes d'attente restés en ligne
+
+**6 · « Photo à venir »** sur la carte « Création libre » → **« Votre modèle »**.
+Cette carte n'a pas de photo parce qu'elle n'a pas de modèle : c'est ça qu'il
+faut écrire.
+
+**7 · Les six légendes du lookbook disaient « · à venir »** alors que les six
+photos sont là depuis deux jours. Réécrites : « La silhouette », « Le tissu, de
+près », « Le dos, les coutures »…
+
+## Le menu illisible pendant son fondu
+
+**8 ·** La barre de navigation croisait sa couleur de texte (0,4 s) et son fond
+(0,5 s) : **à mi-chemin les deux valaient le même gris**, mesuré **1,01:1**, deux
+fois sur la page. Les deux passent à **0,22 s** : la zone trouble dure ~100 ms.
+
+**9 ·** Le lien téléphone faisait **20 px de haut**. Cible portée à 44 px et
+souligné, sinon rien ne dit qu'il se touche.
+
+## Ce qui a été vérifié et qui allait
+
+CLS **0,025** (bon en dessous de 0,1) · aucune erreur JS · aucune réponse ≥ 400 ·
+aucun identifiant en double · aucune image sans `alt` · aucun bouton vide ·
+aucun débordement horizontal · un seul `<h1>` · `lang="fr"` · WebKit réel.
+
+## Six contrôles de plus (91 au total)
+
+Aucune adresse email affichée qui ne soit celle configurée · le bloc contact
+annonce le même délai que le catalogue · le même express · le repli sans
+WhatsApp mène quelque part de réel · son libellé dit ce que le lien fait
+vraiment · sans JavaScript : aucun lien mort, et on peut écrire **et** appeler.

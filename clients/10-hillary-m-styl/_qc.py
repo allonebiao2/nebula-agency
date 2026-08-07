@@ -198,8 +198,19 @@ async def main():
             ok("MESURES" in msg, "les mesures figurent dans le message")
         else:
             ok("Taille" in msg, "la taille figure dans le message")
+        # ⚠️ ne PAS recopier « mailto: » ici : tant qu'Hillary n'a pas donne son
+        #    adresse, EMAIL est vide et le repli est un appel. Ce qui compte,
+        #    c'est qu'il mene QUELQUE PART DE REEL. Une adresse inventee est
+        #    restee en ligne, et les commandes de qui n'a pas WhatsApp
+        #    partaient dans le vide (2026-08-06).
         alt = await page.get_attribute("#altMail", "href")
-        ok(alt.startswith("mailto:"), "repli email disponible a l'etape finale")
+        mail_cfg = await page.evaluate("()=>EMAIL")
+        attendu = "mailto:" + mail_cfg if mail_cfg else "tel:+"
+        ok(alt.startswith(attendu),
+           f"repli sans WhatsApp : lien reel a l'etape finale ({alt[:34]})")
+        libelle = (await page.inner_text("#altMail")).lower()
+        ok(("email" in libelle) == bool(mail_cfg),
+           "le libelle du repli dit ce que le lien fait vraiment")
         await page.click("#btX")
 
         # --- parcours sur-mesure : retrait atelier, delai normal, mesures partielles
@@ -327,6 +338,28 @@ async def main():
         ok(nh >= 3, f"le heros presente {nh} creations")
         ok(nc >= 4, f"le carrousel presente {nc} pieces")
 
+        # AUCUN CONTACT AFFICHE NE DOIT MENER DANS LE VIDE, et les delais
+        # annonces dans le bloc contact doivent dire la meme chose que le
+        # catalogue. Une adresse inventee et un « 7 a 14 jours » qui
+        # contredisait chaque carte sont restes en ligne (2026-08-06).
+        cont = await page.evaluate("""()=>{
+          const t=document.body.innerText;
+          const mails=(t.match(/[\\w.+-]+@[\\w-]+\\.[\\w.]+/g)||[]);
+          const j=[...new Set((PIECES.filter(p=>p.jmax!=null).map(p=>p.jmax)))];
+          const e=[...new Set((PIECES.filter(p=>p.expMax!=null).map(p=>p.expMax)))];
+          return {mails, hor:(document.getElementById('hor')||{}).textContent||'',
+                  jmax:Math.max.apply(null,j), expMax:Math.max.apply(null,e),
+                  expMin:Math.min.apply(null,PIECES.filter(p=>p.expMin!=null).map(p=>p.expMin))};}""")
+        ok(not cont["mails"] or (await page.evaluate("()=>EMAIL")) in cont["mails"],
+           "aucune adresse email affichee qui ne soit celle configuree"
+           + ("" if not cont["mails"] else " -> " + ", ".join(cont["mails"][:3])))
+        sem = str(cont["jmax"] // 7)
+        ok((sem + " semaine") in cont["hor"] or str(cont["jmax"]) in cont["hor"],
+           f"le bloc contact annonce le meme delai que le catalogue ({cont['hor'][:52]})")
+        ok(str(cont["expMax"]) in cont["hor"] and str(cont["expMin"]) in cont["hor"],
+           f"le bloc contact annonce le meme express que le catalogue "
+           f"({cont['expMin']} a {cont['expMax']} jours)")
+
         # LA PAGE MONTRE UNE VRAIE PIECE MEME SANS JAVASCRIPT.
         # Sans ca, un navigateur qui limite le script (Opera Mini en mode
         # economie, un mode « Lite ») affiche un heros vide : un chiffre geant
@@ -347,6 +380,19 @@ async def main():
         ok(bool(sans["img"]) and sans["des"] > 20 and sans["col"] > 10,
            "sans JavaScript : une vraie piece et son texte s'affichent"
            + f" (photo {sans['img']}, {sans['des']} + {sans['col']} caracteres)")
+        # ⚠️ et surtout : on doit pouvoir JOINDRE LA MAISON. Le bouton
+        #    principal avait href="#" et n'etait rempli que par le script.
+        morts = await pg2.evaluate("""()=>[...document.querySelectorAll('a')]
+            .filter(a=>{const h=a.getAttribute('href')||'';
+              return (h==='#'||h==='') && !a.classList.contains('skip');})
+            .map(a=>(a.className||a.id||a.tagName)+' « '+(a.textContent||'').trim().slice(0,26)+' »')""")
+        joindre = await pg2.evaluate("""()=>({
+            wa:[...document.querySelectorAll('a[href*="wa.me"]')].length,
+            tel:[...document.querySelectorAll('a[href^="tel:"]')].length})""")
+        ok(not morts, "sans JavaScript : aucun lien mort"
+           + ("" if not morts else " -> " + "; ".join(morts[:4])))
+        ok(joindre["wa"] >= 1 and joindre["tel"] >= 1,
+           f"sans JavaScript : on peut ecrire ET appeler ({joindre['wa']} WhatsApp, {joindre['tel']} telephone)")
         await ctx2.close()
 
         # LE CHIFFRE GEANT SUIT LA PIECE.

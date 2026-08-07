@@ -540,3 +540,55 @@ compression) à une URL en ligne.
 donc aucun halo au contour) et écart RVB moyen de 3 sur 255, invisible sur une
 photo, pour **moitié moins d'octets**. Script réutilisable :
 `clients/10-hillary-m-styl/_alleger.py`.
+
+---
+
+## Un contact faux est pire que pas de contact
+
+*2026-08-06, audit de la vitrine d'Hillary.*
+
+Une adresse email inventée, `contact@hillarymstyl.com`, était **affichée sur le
+site en ligne** et servait de destination réelle au lien « je n'ai pas WhatsApp »
+de la dernière étape du tunnel de commande. Une cliente sans WhatsApp envoyait sa
+commande **dans le vide**, et ni elle ni la maison ne pouvaient le savoir.
+
+Le code portait `/* ⚠ À REMPLACER */` depuis le premier jour. **Un avertissement
+dans le code n'a jamais empêché un déploiement.**
+
+**La règle** : une coordonnée qu'on n'a pas ne s'invente pas, elle **disparaît**.
+Le champ reste vide, la ligne se retire toute seule, et le repli bascule sur un
+canal réel (ici un `tel:` vers son vrai numéro). Le jour où le client donne la
+vraie valeur, on l'écrit à un seul endroit et tout revient.
+
+**Le contrôle qui va avec** : aucune adresse email affichée sur la page qui ne
+soit celle configurée, et le lien de repli doit mener quelque part de réel —
+sans jamais recopier « mailto: » dans le contrôle, sinon il empêche la
+correction.
+
+### Deux chiffres différents sur la même page, c'est le client qui choisit
+
+Le bloc contact annonçait « 7 à 14 jours · 1 à 3 jours en express » quand chaque
+carte du catalogue disait « 14 jours » et « 2 à 5 jours ». Un délai vit à
+**plusieurs endroits** : la carte, la fiche, le bloc contact, le badge du héros,
+et les valeurs de secours du moteur. Un contrôle doit **comparer les endroits
+entre eux**, pas vérifier un chiffre écrit à la main.
+
+### Un sélecteur de type attrape le voisin, et la spécificité ne prévient pas
+
+`.et span{grid-column:2}` frappait aussi le numéro, un `<span class="n">` : le
+titre passait dans la colonne de 86 px du numéro et « L'essayage » chevauchait le
+« 04 ». `.et .n` (0-2-0) l'emporte pourtant sur `.et span` (0-1-1) — mais
+seulement pour ce qu'il **déclare**, et `grid-column` n'y était pas.
+Écrire `.et>span:not(.n)`.
+
+### Un fondu de navigation peut rendre le menu invisible
+
+La barre croisait sa couleur de texte (0,4 s) et son fond (0,5 s) : à mi-chemin
+les deux valaient le même gris, **1,01:1 mesuré**. Quand deux propriétés
+opposées se croisent, les faire **courtes et ensemble** (0,22 s) : la zone
+trouble dure 100 ms au lieu d'un demi-tour d'horloge.
+
+### La marque WhatsApp n'est pas faite pour du texte blanc
+
+`#25D366` et `#1EA855` portent du texte **foncé**. En blanc dessus on tombe à
+**3,09:1**. Pour un bouton vert à texte blanc : `#128040` (5,0:1).

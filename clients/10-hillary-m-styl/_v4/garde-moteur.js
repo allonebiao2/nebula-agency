@@ -19,13 +19,25 @@
 
 /* ---------- 1 & 2 · CONTACT ------------------------------------- */
 var WHATSAPP = "22951374793";            /* +229 51 37 47 93 — fourni par Mongazi le 2026-08-01 */
-var EMAIL    = "contact@hillarymstyl.com"; /* ⚠ À REMPLACER */
+/* ⛔ VIDE TANT QU'HILLARY N'A PAS DONNÉ SA VRAIE ADRESSE.
+   Une adresse inventée était affichée sur le site EN LIGNE et servait de
+   destination réelle au lien « je n'ai pas WhatsApp » : la commande
+   partait dans le vide et personne ne le savait. Un contact faux est pire
+   que pas de contact. Tant que c'est vide, la ligne « Email » disparaît du
+   bloc contact et le lien de repli est remplacé par un appel téléphonique.
+   Pour l'activer : écrire l'adresse ici, rien d'autre à toucher. */
+var EMAIL    = "";
 
 /* ---------- 6 · ATELIER ----------------------------------------- */
 var ATELIER = {
   pays: "bj",
   adresse: "Retrait sur rendez-vous · le point de retrait vous est donné sur WhatsApp",
-  horaires: "Confection : 7 à 14 jours · 1 à 3 jours en express"
+  /* ⚠️ ACCORDÉ AU CATALOGUE. Ses quatre pièces sont à deux semaines fermes
+     et l'express va de 2 à 5 jours selon la pièce : le bloc contact
+     annonçait « 7 à 14 jours · 1 à 3 jours », ce qui contredisait chaque
+     carte du catalogue. Deux chiffres différents sur la même page, c'est
+     le client qui choisit celui qui l'arrange. */
+  horaires: "Confection : 2 semaines · 2 à 5 jours en express"
 };
 
 /* ---------- 3 · PAYS, FRAIS ET ACHEMINEMENT --------------------- */
@@ -53,9 +65,12 @@ var PAYS = [
    express TOTAL) et `expMin`/`expMax` (son propre délai express).
    Les valeurs de DELAIS ne servent plus que de repli. */
 var DELAIS = {
-  normal:  {id:"normal",  nom:"Délai normal",  jmin:7, jmax:14, sup:0,
+  /* ⚠️ ce sont les valeurs de SECOURS, pour une pièce qui n'apporterait pas
+     les siennes. Elles doivent dire la même chose que le catalogue : ses
+     quatre pièces sont à deux semaines, express de 2 à 5 jours. */
+  normal:  {id:"normal",  nom:"Délai normal",  jmin:14, jmax:14, sup:0,
             desc:"Confection sereine, dans l'ordre des commandes"},
-  express: {id:"express", nom:"Délai express", jmin:2, jmax:4,  sup:0,
+  express: {id:"express", nom:"Délai express", jmin:2, jmax:5,  sup:0,
             desc:"Commande précipitée, passée devant les autres"}
 };
 
@@ -271,7 +286,11 @@ function carte(p){
     '<div class="ph">'+(p.tag?'<span class="tag">'+esc(p.tag)+'</span>':'')+
       (p.img
         ? '<img src="assets/images/'+esc(p.img)+'" alt="'+esc(p.nom)+', création Hillary M. Styl" loading="lazy" decoding="async">'
-        : '<div class="mark"></div><span class="avenir">Photo à venir</span>')+
+        /* ⚠️ PAS de « photo à venir » sur un site en ligne : un texte
+           d'attente dit au client que la maison n'est pas prête. Cette carte
+           est la « Création libre » — elle n'a pas de photo parce qu'elle n'a
+           pas de modèle, et c'est ça qu'il faut écrire. */
+        : '<div class="mark"></div><span class="avenir">Votre modèle</span>')+
       '<span class="voile"><span>Commander</span></span></div>'+
     '<div class="bd">'+
       '<h3>'+esc(p.nom)+'</h3>'+
@@ -681,9 +700,19 @@ function brancher(){
 
   var wa = document.getElementById("btWa");
   if(wa) wa.href = "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(message());
+  /* le repli pour qui n'a pas WhatsApp : par email si la maison en a une,
+     par téléphone sinon. Jamais un lien qui ne mène nulle part. */
   var al = document.getElementById("altMail");
-  if(al) al.href = "mailto:"+EMAIL+"?subject="+encodeURIComponent("Commande — "+etat.piece.nom)+
-                   "&body="+encodeURIComponent(message());
+  if(al){
+    if(EMAIL){
+      al.href = "mailto:"+EMAIL+"?subject="+encodeURIComponent("Commande — "+etat.piece.nom)+
+                "&body="+encodeURIComponent(message());
+      al.textContent = "Je n'ai pas WhatsApp — envoyer par email";
+    } else {
+      al.href = "tel:+"+WHATSAPP;
+      al.textContent = "Je n'ai pas WhatsApp — appeler l'atelier";
+    }
+  }
 }
 function lie(id, cle){
   var el = document.getElementById(id);
@@ -761,7 +790,13 @@ function message(){
 document.getElementById("an").textContent = new Date().getFullYear();
 document.getElementById("adr").textContent  = ATELIER.adresse;
 document.getElementById("hor").textContent  = ATELIER.horaires;
-document.getElementById("mail").textContent = EMAIL;
+(function(){
+  var m = document.getElementById("mail");
+  if(!m) return;
+  var ligne = m.closest(".coord");
+  if(EMAIL){ m.innerHTML = '<a href="mailto:'+EMAIL+'">'+EMAIL+'</a>'; }
+  else if(ligne){ ligne.remove(); }   /* pas d'adresse : pas de ligne */
+})();
 document.getElementById("waBas").href =
   "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent("Bonjour HILLARY M. STYL, j'ai une question avant de commander.");
 

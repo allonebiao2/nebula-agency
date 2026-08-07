@@ -49,10 +49,16 @@
   --rose:#E6007E;
   --rose-cl:#FF3FA4;
   --rose-p:#FFE9F5;
+  /* le magenta de la maison en PETIT corps sur un fond clair : #E6007E
+     n'y tient que 4,13:1 sur le papier et 3,55:1 sur le papier gris.
+     ⚠️ ne PAS toucher à --rose : c'est sa signature, elle reste telle
+     quelle en aplat, en gros corps et sur l'encre. */
+  --rose-f:#c9006c;     /* papier 5,2:1 ✅ · carte blanche 5,7:1 ✅ */
 
   /* les accents wax — elle fait tout, ils servent aux collections.
      ⚠️ chacun n'est lisible que sur UN fond : voir BRIEF-V4.md § 2.2 */
-  --terre:#c75b39;      /* papier 3,9 · encre 4,6  — gros corps only */
+  --terre:#a8452a;      /* fond du badge : blanc dessus = 5,9:1 ✅
+                          ⚠️ ancien #c75b39 = 4,21:1, sous la barre */
   --ocre:#d4a017;       /* papier 2,2 ⛔ · encre 8,2 ✅ */
   --indigo:#2e1a47;     /* papier 14,2 ✅ · encre 1,3 ⛔ */
   --vert:#1b4332;       /* papier 10,2 ✅ · encre 1,8 ⛔ */
@@ -166,7 +172,11 @@ em{font-style:italic;font-weight:400}
 .nav{position:fixed;top:0;left:0;right:0;z-index:var(--z-nav);
   display:flex;align-items:center;gap:20px;
   padding:clamp(14px,2vw,24px) var(--pad);
-  transition:background-color .5s var(--e-s),box-shadow .5s var(--e-s),color .4s ease}
+  /* ⚠️ COURT, ET LES DEUX ENSEMBLE. Le fond et le texte se croisaient sur
+     un demi-fondu : à mi-chemin ils valaient le même gris et le menu
+     devenait ILLISIBLE (mesuré 1,01:1 à 260 ms, deux fois sur la page).
+     À 0,22 s la zone trouble dure ~100 ms et personne ne la voit. */
+  transition:background-color .22s var(--e-s),box-shadow .22s var(--e-s),color .22s var(--e-s)}
 .nav.pose{background:rgba(247,245,240,.94);box-shadow:inset 0 -1px 0 var(--fil-c)}
 .nav.sombre{color:#fff}
 .nav.sombre.pose{background:rgba(12,12,12,.94);box-shadow:inset 0 -1px 0 var(--fil-n)}
@@ -476,7 +486,7 @@ em{font-style:italic;font-weight:400}
 .cars-t::before{content:'';position:absolute;inset:-34px -70px -34px -60px;z-index:-1;
   background:linear-gradient(90deg,var(--papier) 46%,rgba(247,245,240,0) 100%)}
 .cars-t .l{font-family:var(--ff-u);font-size:10.5px;font-weight:600;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--rose)}
+  text-transform:uppercase;color:var(--rose-f)}
 .cars-t .t{margin-top:12px;font-family:var(--ff-d);font-weight:700;
   font-size:clamp(1.4rem,2.4vw,2rem);line-height:1.04;letter-spacing:-.02em}
 .cars-t .s{margin-top:10px;font-size:13.5px;color:var(--tx-c)}
@@ -558,8 +568,15 @@ em{font-style:italic;font-weight:400}
   line-height:.9;letter-spacing:-.03em;color:rgba(255,255,255,.34);
   grid-row:span 2;transition:color .6s var(--e-s)}
 .et.act .n{color:#fff}
-.et b{font-family:var(--ff-d);font-weight:700;font-size:clamp(1.2rem,2vw,1.6rem);color:#fff}
-.et span{grid-column:2;font-size:14.5px;color:var(--tx-n)}
+.et b{grid-column:2;font-family:var(--ff-d);font-weight:700;
+  font-size:clamp(1.2rem,2vw,1.6rem);color:#fff}
+/* ⚠️ `:not(.n)` OBLIGATOIRE. Le numéro est lui aussi un <span> : un sélecteur
+   `.et span` lui collait `grid-column:2`, le titre se retrouvait dans la
+   colonne de 86 px du numéro, « La mesure » se coupait en deux lignes et
+   « L'essayage » chevauchait le « 04 ». Vu à l'œil le 2026-08-06.
+   ⚠️ La specificite ne protege de rien ici : `.et .n` (0-2-0) l'emporte sur
+   `.et span` (0-1-1) pour ce qu'il declare, mais `grid-column` n'y etait pas. */
+.et>span:not(.n){grid-column:2;font-size:14.5px;color:var(--tx-n)}
 .js .et{opacity:0;transform:translateY(28px);
   transition:opacity .8s ease var(--d,0ms),transform .9s var(--e) var(--d,0ms),
              border-color .5s ease}
@@ -589,6 +606,14 @@ em{font-style:italic;font-weight:400}
 .coord b{display:block;font-family:var(--ff-u);font-size:10px;font-weight:600;
   letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.62)}
 .coord span{display:block;margin-top:4px;font-size:15px;color:#fff}
+/* un numéro qu'on appelle est une CIBLE : 20 px de haut sur un téléphone,
+   c'est un lien qu'on rate. Souligné aussi, sinon rien ne dit qu'il se
+   touche. Vu par le contrôle des cibles le 2026-08-06. */
+.coord a{display:inline-flex;align-items:center;min-height:44px;
+  text-decoration:underline;text-underline-offset:4px;
+  text-decoration-color:rgba(255,255,255,.4);
+  transition:text-decoration-color .3s ease}
+.coord a:hover{text-decoration-color:#fff}
 .socs{margin-top:30px;display:grid;gap:1px;grid-template-columns:repeat(4,1fr)}
 .soc{padding:18px 0 0;border-top:1px solid var(--fil-n);min-height:78px;
   transition:transform .35s var(--e-s),color .35s ease}
@@ -597,11 +622,13 @@ em{font-style:italic;font-weight:400}
 .soc span{display:block;margin-top:5px;font-size:12.5px;color:var(--tx-n)}
 .soc:hover{transform:translateY(-4px);color:var(--ocre)}
 .wa{display:inline-flex;align-items:center;gap:11px;min-height:52px;padding:15px 28px;
-  border-radius:50px;background:#1EA855;color:#fff;
+  border-radius:50px;background:#128040;color:#fff;   /* blanc dessus = 5,0:1 ✅
+     ⚠️ ancien #1EA855 = 3,09:1 : le vert de la marque WhatsApp est fait
+     pour porter du texte foncé, pas du blanc. */
   font-family:var(--ff-u);font-size:11px;font-weight:600;letter-spacing:.14em;
   text-transform:uppercase;transition:background-color .35s var(--e-s)}
 .wa svg{width:19px;height:19px;fill:currentColor}
-.wa:hover{background:#17c85f}
+.wa:hover{background:#0f7038}
 
 /* ---------- PIED -------------------------------------------------- */
 .pied{background:var(--encre);color:var(--tx-n);
@@ -1057,7 +1084,7 @@ em{font-style:italic;font-weight:400}
     <span class="bdg bdg--1" style="--d:0ms">PAGNE &amp; WAX</span>
     <span class="bdg bdg--2" style="--d:180ms">SUR-MESURE</span>
     <span class="bdg bdg--3" style="--d:360ms">PRÊT-À-PORTER</span>
-    <span class="bdg bdg--4" style="--d:540ms">EXPRESS 1 À 3 JOURS</span>
+    <span class="bdg bdg--4" style="--d:540ms">EXPRESS EN QUELQUES JOURS</span>
 
     <a class="hfle" href="#maison" aria-label="Descendre">
       <svg viewBox="0 0 14 20" aria-hidden="true"><path d="M7 1v16M2 12l5 5 5-5"/></svg>
@@ -1193,27 +1220,27 @@ em{font-style:italic;font-weight:400}
       <figure class="lk lk--1" data-vit="0.8" data-cur="VOIR">
         <img src="assets/images/look-1.webp" alt="Robe longue en wax portée, en mouvement" loading="lazy" decoding="async">
         <div class="sil"><svg viewBox="0 0 120 160" fill="none"><path d="M46 26c0-8 6-14 14-14s14 6 14 14"/><path d="M46 26 26 44l9 11 11-9v92h28V46l11 9 9-11-20-18"/></svg></div>
-        <figcaption class="cap">Silhouette · à venir</figcaption></figure>
+        <figcaption class="cap">La silhouette</figcaption></figure>
       <figure class="lk lk--2" data-vit="1.1" data-cur="VOIR">
         <img src="assets/images/look-2.webp" alt="Détail du tissu wax, drapé" loading="lazy" decoding="async">
         <div class="sil"><svg viewBox="0 0 120 120" fill="none"><path d="M20 20h80v80H20z"/><path d="M20 44h80M20 68h80M44 20v80M68 20v80"/></svg></div>
-        <figcaption class="cap">Détail de tissu · à venir</figcaption></figure>
+        <figcaption class="cap">Le tissu, de près</figcaption></figure>
       <figure class="lk lk--3" data-vit="0.9" data-cur="VOIR">
         <img src="assets/images/look-3.webp" alt="Une pièce vue de dos, coutures apparentes" loading="lazy" decoding="async">
         <div class="sil"><svg viewBox="0 0 120 160" fill="none"><path d="M60 14c-10 0-16 6-16 14 0 10 6 16 16 16s16-6 16-16c0-8-6-14-16-14z"/><path d="M32 148c0-30 12-46 28-46s28 16 28 46"/></svg></div>
-        <figcaption class="cap">Portrait · à venir</figcaption></figure>
+        <figcaption class="cap">Le dos, les coutures</figcaption></figure>
       <figure class="lk lk--4" data-vit="1.3" data-cur="VOIR">
         <img src="assets/images/look-4.webp" alt="Tailleur indigo, assise" loading="lazy" decoding="async">
         <div class="sil"><svg viewBox="0 0 120 160" fill="none"><path d="M40 20h40l14 40-14 90H40L26 60z"/><path d="M40 60h40M40 100h40"/></svg></div>
-        <figcaption class="cap">Silhouette · à venir</figcaption></figure>
+        <figcaption class="cap">Le tailleur indigo</figcaption></figure>
       <figure class="lk lk--5" data-vit="0.85" data-cur="VOIR">
         <img src="assets/images/look-5.webp" alt="L'atelier de couture à Cotonou" loading="lazy" decoding="async">
         <div class="sil"><svg viewBox="0 0 150 120" fill="none"><path d="M14 100c30-40 60-60 122-72"/><path d="M14 60c26-16 60-24 96-24"/><path d="M40 100V44M76 100V32M112 100V28"/></svg></div>
-        <figcaption class="cap">Atelier · à venir</figcaption></figure>
+        <figcaption class="cap">L'atelier, Cotonou</figcaption></figure>
       <figure class="lk lk--6" data-vit="1.2" data-cur="VOIR">
         <img src="assets/images/look-6.webp" alt="Détail d'un bouton recouvert et d'un ourlet roulotté" loading="lazy" decoding="async">
         <div class="sil"><svg viewBox="0 0 120 160" fill="none"><path d="M60 10v140"/><path d="M36 34c16-8 32-8 48 0M32 62c18-9 38-9 56 0M28 92c20-10 44-10 64 0"/></svg></div>
-        <figcaption class="cap">Détail · à venir</figcaption></figure>
+        <figcaption class="cap">Le fil, le bouton</figcaption></figure>
     </div>
   </div>
 
@@ -1270,7 +1297,11 @@ em{font-style:italic;font-weight:400}
       <p class="deck deck--n">Pour un mariage, une cérémonie, ou pour ce que vous portez tous
         les jours. Dites-moi d'abord ce que vous cherchez.</p>
       <div class="pills">
-        <a class="wa" id="waBas" href="#" data-mag data-tap>
+        <!-- ⚠️ le lien est ECRIT EN DUR. Le script le reecrit avec le message
+     pre-rempli, mais sans lui le bouton principal du site ne menait
+     nulle part (href="#"). Un visiteur dont le navigateur limite le
+     JavaScript n'avait aucun moyen d'ecrire a la maison. -->
+        <a class="wa" id="waBas" href="https://wa.me/22951374793?text=Bonjour%20HILLARY%20M.%20STYL%2C%20j%27ai%20une%20question%20avant%20de%20commander." data-mag data-tap>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2zm5.6 14.2c-.2.7-1.2 1.3-1.9 1.4-.5.1-1.1.2-3.2-.7-2.7-1.1-4.4-3.8-4.5-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9 1-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1.9 2 1.2 2.3 1.4.3.1.4.1.6-.1l.9-1c.2-.2.3-.2.6-.1l2 .9c.3.1.4.2.5.3.1.2.1.9-.1 1.6z"/></svg>
           <span>Écrire sur WhatsApp</span>
         </a>
@@ -1286,11 +1317,17 @@ em{font-style:italic;font-weight:400}
         </div>
         <div class="coord">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
-          <div><b>Confection</b><span id="hor">Confection : 7 à 14 jours · 1 à 3 jours en express</span></div>
+          <div><b>Confection</b><span id="hor">Confection : 2 semaines · 2 à 5 jours en express</span></div>
+        </div>
+        <!-- le repli de qui n'a pas WhatsApp : un numero qu'on APPELLE.
+             Il remplace l'adresse email inventee qui etait affichee ici. -->
+        <div class="coord">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3h3l1.5 4-2 1.5a12 12 0 006.5 6.5L17 13l4 1.5v3a2 2 0 01-2.2 2A16.5 16.5 0 014 7.2 2 2 0 016 5z"/></svg>
+          <div><b>Téléphone</b><span><a href="tel:+22951374793">+229 51 37 47 93</a></span></div>
         </div>
         <div class="coord">
           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
-          <div><b>Email</b><span id="mail">contact@hillarymstyl.com</span></div>
+          <div><b>Email</b><span id="mail"></span></div>
         </div>
       </div>
 
@@ -1298,7 +1335,7 @@ em{font-style:italic;font-weight:400}
            un texte d'attente sur un site public, on montre ce qui est vrai : la
            conversation. Les liens se posent le jour ou elle donne ses comptes. -->
       <div class="socs">
-        <a class="soc" href="#" data-wa-soc><b>WhatsApp</b><span>+229 51 37 47 93</span></a>
+        <a class="soc" href="https://wa.me/22951374793" data-wa-soc><b>WhatsApp</b><span>+229 51 37 47 93</span></a>
         <a class="soc" href="#catalogue"><b>Commander</b><span>Le catalogue</span></a>
         <a class="soc" href="#lookbook"><b>Lookbook</b><span>Saison 2026</span></a>
         <a class="soc" href="#maison"><b>L'atelier</b><span>Cotonou</span></a>
@@ -1363,13 +1400,25 @@ em{font-style:italic;font-weight:400}
 
 /* ---------- 1 & 2 · CONTACT ------------------------------------- */
 var WHATSAPP = "22951374793";            /* +229 51 37 47 93 — fourni par Mongazi le 2026-08-01 */
-var EMAIL    = "contact@hillarymstyl.com"; /* ⚠ À REMPLACER */
+/* ⛔ VIDE TANT QU'HILLARY N'A PAS DONNÉ SA VRAIE ADRESSE.
+   Une adresse inventée était affichée sur le site EN LIGNE et servait de
+   destination réelle au lien « je n'ai pas WhatsApp » : la commande
+   partait dans le vide et personne ne le savait. Un contact faux est pire
+   que pas de contact. Tant que c'est vide, la ligne « Email » disparaît du
+   bloc contact et le lien de repli est remplacé par un appel téléphonique.
+   Pour l'activer : écrire l'adresse ici, rien d'autre à toucher. */
+var EMAIL    = "";
 
 /* ---------- 6 · ATELIER ----------------------------------------- */
 var ATELIER = {
   pays: "bj",
   adresse: "Retrait sur rendez-vous · le point de retrait vous est donné sur WhatsApp",
-  horaires: "Confection : 7 à 14 jours · 1 à 3 jours en express"
+  /* ⚠️ ACCORDÉ AU CATALOGUE. Ses quatre pièces sont à deux semaines fermes
+     et l'express va de 2 à 5 jours selon la pièce : le bloc contact
+     annonçait « 7 à 14 jours · 1 à 3 jours », ce qui contredisait chaque
+     carte du catalogue. Deux chiffres différents sur la même page, c'est
+     le client qui choisit celui qui l'arrange. */
+  horaires: "Confection : 2 semaines · 2 à 5 jours en express"
 };
 
 /* ---------- 3 · PAYS, FRAIS ET ACHEMINEMENT --------------------- */
@@ -1397,9 +1446,12 @@ var PAYS = [
    express TOTAL) et `expMin`/`expMax` (son propre délai express).
    Les valeurs de DELAIS ne servent plus que de repli. */
 var DELAIS = {
-  normal:  {id:"normal",  nom:"Délai normal",  jmin:7, jmax:14, sup:0,
+  /* ⚠️ ce sont les valeurs de SECOURS, pour une pièce qui n'apporterait pas
+     les siennes. Elles doivent dire la même chose que le catalogue : ses
+     quatre pièces sont à deux semaines, express de 2 à 5 jours. */
+  normal:  {id:"normal",  nom:"Délai normal",  jmin:14, jmax:14, sup:0,
             desc:"Confection sereine, dans l'ordre des commandes"},
-  express: {id:"express", nom:"Délai express", jmin:2, jmax:4,  sup:0,
+  express: {id:"express", nom:"Délai express", jmin:2, jmax:5,  sup:0,
             desc:"Commande précipitée, passée devant les autres"}
 };
 
@@ -1615,7 +1667,11 @@ function carte(p){
     '<div class="ph">'+(p.tag?'<span class="tag">'+esc(p.tag)+'</span>':'')+
       (p.img
         ? '<img src="assets/images/'+esc(p.img)+'" alt="'+esc(p.nom)+', création Hillary M. Styl" loading="lazy" decoding="async">'
-        : '<div class="mark"></div><span class="avenir">Photo à venir</span>')+
+        /* ⚠️ PAS de « photo à venir » sur un site en ligne : un texte
+           d'attente dit au client que la maison n'est pas prête. Cette carte
+           est la « Création libre » — elle n'a pas de photo parce qu'elle n'a
+           pas de modèle, et c'est ça qu'il faut écrire. */
+        : '<div class="mark"></div><span class="avenir">Votre modèle</span>')+
       '<span class="voile"><span>Commander</span></span></div>'+
     '<div class="bd">'+
       '<h3>'+esc(p.nom)+'</h3>'+
@@ -2025,9 +2081,19 @@ function brancher(){
 
   var wa = document.getElementById("btWa");
   if(wa) wa.href = "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(message());
+  /* le repli pour qui n'a pas WhatsApp : par email si la maison en a une,
+     par téléphone sinon. Jamais un lien qui ne mène nulle part. */
   var al = document.getElementById("altMail");
-  if(al) al.href = "mailto:"+EMAIL+"?subject="+encodeURIComponent("Commande — "+etat.piece.nom)+
-                   "&body="+encodeURIComponent(message());
+  if(al){
+    if(EMAIL){
+      al.href = "mailto:"+EMAIL+"?subject="+encodeURIComponent("Commande — "+etat.piece.nom)+
+                "&body="+encodeURIComponent(message());
+      al.textContent = "Je n'ai pas WhatsApp — envoyer par email";
+    } else {
+      al.href = "tel:+"+WHATSAPP;
+      al.textContent = "Je n'ai pas WhatsApp — appeler l'atelier";
+    }
+  }
 }
 function lie(id, cle){
   var el = document.getElementById(id);
@@ -2105,7 +2171,13 @@ function message(){
 document.getElementById("an").textContent = new Date().getFullYear();
 document.getElementById("adr").textContent  = ATELIER.adresse;
 document.getElementById("hor").textContent  = ATELIER.horaires;
-document.getElementById("mail").textContent = EMAIL;
+(function(){
+  var m = document.getElementById("mail");
+  if(!m) return;
+  var ligne = m.closest(".coord");
+  if(EMAIL){ m.innerHTML = '<a href="mailto:'+EMAIL+'">'+EMAIL+'</a>'; }
+  else if(ligne){ ligne.remove(); }   /* pas d'adresse : pas de ligne */
+})();
 document.getElementById("waBas").href =
   "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent("Bonjour HILLARY M. STYL, j'ai une question avant de commander.");
 
