@@ -327,6 +327,28 @@ async def main():
         ok(nh >= 3, f"le heros presente {nh} creations")
         ok(nc >= 4, f"le carrousel presente {nc} pieces")
 
+        # LA PAGE MONTRE UNE VRAIE PIECE MEME SANS JAVASCRIPT.
+        # Sans ca, un navigateur qui limite le script (Opera Mini en mode
+        # economie, un mode « Lite ») affiche un heros vide : un chiffre geant
+        # sur du rose, aucun vetement. C'est « la page ne marche pas ».
+        ctx2 = await br.new_context(viewport={"width": 360, "height": 740},
+                                    is_mobile=True, has_touch=True,
+                                    java_script_enabled=False)
+        pg2 = await ctx2.new_page()
+        await ctx2.route('**fonts.g*/**', lambda r: r.abort())
+        await pg2.goto(URL, wait_until="load")
+        await pg2.wait_for_timeout(1200)
+        sans = await pg2.evaluate("""()=>{
+          const i=document.querySelector('#hsc img');
+          const d=document.getElementById('hdes'), c=document.getElementById('hcol');
+          return {img:i?i.getAttribute('src'):null,
+                  des:(d&&d.textContent||'').trim().length,
+                  col:(c&&c.textContent||'').trim().length};}""")
+        ok(bool(sans["img"]) and sans["des"] > 20 and sans["col"] > 10,
+           "sans JavaScript : une vraie piece et son texte s'affichent"
+           + f" (photo {sans['img']}, {sans['des']} + {sans['col']} caracteres)")
+        await ctx2.close()
+
         # LE CHIFFRE GEANT SUIT LA PIECE.
         # Il roulait 240 ms puis se remplacait d'un coup, alors que le
         # glissement dure 1,15 s : il arrivait 900 ms avant le vetement.

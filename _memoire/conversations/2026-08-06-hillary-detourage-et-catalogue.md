@@ -205,3 +205,62 @@ n'empile rien.
 échantillonnait à 420 ms et tombait pendant un défilement automatique qui avait
 avalé le clic. Elle échantillonne maintenant **tout le glissement**, et reclique
 si rien n'a bougé.
+
+---
+
+# Troisième passe · « la page ne marche pas sur mon téléphone »
+
+## Ce qui a été vérifié, et qui allait
+
+| Vérification | Résultat |
+|---|---|
+| Chromium émulé Android et iPhone | charge, aucune erreur, aucune réponse ≥ 400 |
+| **WebKit réel** (le moteur de Safari iOS) | charge, le héros glisse, la modale s'ouvre |
+| Service worker fantôme d'une ancienne version | **aucun** |
+| En-tête de cache du HTML | `max-age=0, must-revalidate` — pas de vieille page servie |
+| Débordement horizontal | aucun, aux trois largeurs |
+
+## Ce qui n'allait pas : la page ne montrait rien sans JavaScript
+
+**Le héros ET le catalogue étaient entièrement construits par le script.**
+Sans lui, le visiteur voyait une page rose avec un chiffre géant, le nom de la
+maison, et **aucun vêtement**. C'est très exactement « la page ne marche pas ».
+
+Ça arrive pour de vrai en Afrique de l'Ouest : **Opera Mini en mode économie**
+(rendu côté serveur, script fortement limité), les modes « Lite » des
+navigateurs Android, un réseau qui coupe pendant le chargement du script.
+
+**La première pièce est maintenant écrite dans le HTML** — la photo, son nom et
+sa description. Le script ajoute les trois autres à la suite et n'y touche pas.
+Bénéfice double : le navigateur **découvre la photo en lisant la page** au lieu
+d'attendre que le script tourne.
+
+## Et la page était lourde au mauvais endroit
+
+- **2 367 Ko d'images → 1 622 Ko** (`_alleger.py`). Les découpes passent en
+  qualité 84 : **l'alpha reste bit pour bit identique** (c'est lui qui porte le
+  détourage, une seule dent dedans fait un halo), seul le RVB est plus
+  compressé — écart moyen de 3 sur 255, invisible.
+- **Les quatre mannequins partaient en même temps** (ma faute, deuxième passe) :
+  sur une 4G, quatre téléchargements simultanés donnent quatre pièces lentes au
+  lieu d'une rapide. Maintenant la première part seule, avec un
+  `<link rel="preload">` dans le `<head>`, et les trois autres suivent **une par
+  une** une fois qu'elle est peinte. Un clic anticipé les réclame à la demande.
+
+## ⚠️ Deux fois piégé par l'instrument de mesure
+
+1. **`page.wait_for_function` de Playwright sonde en `requestAnimationFrame`.**
+   Sous 4× de ralentissement processeur, les rAF sont affamés : il a annoncé
+   « première pièce à 9,3 s » alors que la chronologie réseau montrait l'image
+   **reçue à 2,6 s**. Lire les **vraies métriques du navigateur** (`navigation`,
+   `resource`, `PerformanceObserver` LCP), jamais une boucle à soi.
+2. **Comparer un `file://` et une URL en ligne n'a aucun sens** : pas de
+   compression sur le premier, 203 Ko au lieu de 82 Ko.
+
+Et même en ligne, l'émulation réseau varie assez d'un essai à l'autre (HTML reçu
+à 1,7 s puis à 3,7 s sur la même page) pour qu'on ne conclue pas d'un seul tir.
+
+## Un contrôle de plus (85)
+
+**« sans JavaScript : une vraie pièce et son texte s'affichent »** — un contexte
+Playwright avec `java_script_enabled=False`.

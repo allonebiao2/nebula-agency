@@ -15,6 +15,14 @@
 <meta property="og:url" content="https://hillary-m-styl.pages.dev/">
 <meta property="og:description" content="Pagne, prêt-à-porter et sur-mesure. Donnez vos mesures, connaissez le jour exact où votre tenue sera prête.">
 <link rel="icon" href="data:image/png;base64,__FAVICON_B64__">
+<!-- ⚠️ LA PREMIERE PIECE DOIT PARTIR AVANT LE RESTE.
+     Les mannequins du heros sont poses par le script : le navigateur ne peut
+     donc pas les decouvrir en lisant le HTML, et la premiere photo n'etait
+     demandee qu'une fois tout le reste charge. Mesure sur une 4G a 1,6 Mb/s :
+     elle apparaissait a la NEUVIEME seconde, sur une page deja affichee, avec
+     son chiffre geant et ses textes mais sans vetement. Ca ne ressemble pas a
+     un site qui charge, ca ressemble a un site casse. -->
+<link rel="preload" as="image" href="assets/images/hero-1.webp" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,700;1,6..96,400;1,6..96,500&family=Archivo:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1026,16 +1034,24 @@ em{font-style:italic;font-weight:400}
     <!-- le numéro géant : derrière le mannequin, devant le fond -->
     <div class="hnum" id="hnum" aria-hidden="true"><span>01</span></div>
 
-    <!-- la description, à gauche -->
-    <div class="hdes" id="hdes" aria-hidden="true"></div>
+    <!-- la description, à gauche.
+         ⚠️ ÉCRITE EN DUR, pas seulement injectée par le script : sans elle,
+         un visiteur dont le navigateur limite le JavaScript (Opera Mini en
+         mode économie, un mode « Lite », un réseau qui coupe le script)
+         voyait un héros SANS VÊTEMENT et SANS TEXTE. Le script réécrit ces
+         valeurs à la première diapositive : il n'y a pas de double entretien
+         tant qu'on ne change pas la pièce n° 1. -->
+    <div class="hdes" id="hdes" aria-hidden="true"><b>Robe de cérémonie</b><p>Bustier structuré, jupe à volants de satin, gele assorti.</p></div>
 
-    <!-- la scène : 4 emplacements de photo, prêts -->
+    <!-- la scène. La PREMIÈRE pièce est dans le HTML : le navigateur la
+         découvre en lisant la page, il n'attend pas que le script tourne. -->
     <div class="hsc" id="hsc" data-cur="VOIR">
-      <!-- les diapositives sont posées par le script depuis HERO -->
+      <figure class="hsl act" data-i="0"><div class="hsl-c"><img src="assets/images/hero-1.webp" alt="Robe de cérémonie, création Hillary M. Styl" fetchpriority="high" decoding="async"></div></figure>
+      <!-- les trois autres sont posées par le script depuis HERO -->
     </div>
 
     <!-- le titre de collection, à droite -->
-    <div class="hcol" id="hcol" aria-hidden="true"></div>
+    <div class="hcol" id="hcol" aria-hidden="true"><b>Robe de cérémonie</b><span class="m">Sur-mesure · 2 semaines</span></div>
 
     <!-- les badges flottants -->
     <span class="bdg bdg--1" style="--d:0ms">PAGNE &amp; WAX</span>
@@ -2363,31 +2379,63 @@ document.getElementById("waBas").href =
     var sc = $('#hsc'), num = $('#hnum'), col = $('#hcol'), des = $('#hdes'), cpt = $('#hcpt');
     if (!sc) return;
 
-    /* ⚠️ AUCUNE image du héros en `loading="lazy"`. Elles sont quatre, elles
-       pèsent 760 Ko à elles toutes, et le visiteur les verra toutes : la
-       première transition attendait le téléchargement ET le décodage de la
-       suivante, et la pièce restait immobile ~300 ms après le clic. Ça se
-       voyait comme un raté. Elles sont chargées tout de suite et décodées
-       en arrière-plan dès que la page est posée. */
-    sc.innerHTML = HERO.map(function (o, i) {
+    /* ⚠️ LA PREMIÈRE PIÈCE D'ABORD, LES TROIS AUTRES ENSUITE.
+       `loading="lazy"` faisait attendre le téléchargement au moment du clic,
+       et la pièce restait immobile. Les charger toutes les quatre d'un coup
+       est pire : elles se partagent la bande passante, et sur une 4G à
+       1,6 Mb/s la PREMIÈRE n'arrivait qu'à la neuvième seconde, sur une page
+       déjà affichée et vide de vêtement. C'est ça, « la page ne marche pas ».
+       Alors : la première part seule (et le `<link rel=preload>` du `<head>`
+       la demande avant même ce script), les trois autres suivent une fois
+       qu'elle est peinte. Un clic anticipé les réclame à la demande. */
+    /* ⚠️ LA PREMIÈRE DIAPOSITIVE EST DÉJÀ DANS LE HTML et on n'y touche pas :
+       c'est elle que voit un visiteur dont le navigateur limite le
+       JavaScript, et c'est elle que le navigateur télécharge sans attendre
+       que ce script tourne. On ajoute les trois autres à la suite. */
+    var premiere = sc.querySelector('.hsl');
+    sc.insertAdjacentHTML('beforeend', HERO.map(function (o, i) {
+      if (premiere && i === 0) return '';
       var img = o.f
-        ? '<img src="assets/images/' + esc(o.f) + '" alt="' + esc(o.t) + ', création Hillary M. Styl"'
+        ? '<img ' + (i ? 'data-src' : 'src') + '="assets/images/' + esc(o.f) + '"'
+          + ' alt="' + esc(o.t) + ', création Hillary M. Styl"'
           + (i ? '' : ' fetchpriority="high"') + ' decoding="async">'
         : SIL;
       return '<figure class="hsl' + (i === 0 ? ' act' : '') + '" data-i="' + i + '">'
         + '<div class="hsl-c">' + img + '</div></figure>';
-    }).join('');
+    }).join(''));
 
     var sl = $$('.hsl', sc), n = sl.length, actif = 0, occupe = false;
 
-    /* on décode les mannequins pendant que le visiteur lit le héros : au
-       premier clic, la pièce est déjà prête à peindre. `decode()` ne bloque
-       pas le fil principal, et l'échec est sans conséquence. */
-    setTimeout(function () {
-      $$('img', sc).forEach(function (im) {
-        if (im.decode) im.decode().catch(function () {});
-      });
-    }, 1200);
+    /* réclamer une pièce : au clic si elle n'est pas encore là, ou en fond
+       une fois la première peinte. `decode()` évite le à-coup du premier
+       affichage et ne bloque pas le fil principal. */
+    function charger(i) {
+      var im = sl[i] && sl[i].querySelector('img[data-src]');
+      if (!im) return;
+      im.src = im.getAttribute('data-src');
+      im.removeAttribute('data-src');
+      if (im.decode) im.decode().catch(function () {});
+    }
+    (function suite() {
+      var prem = sl[0] && sl[0].querySelector('img');
+      function lancer() {
+        /* une par une, jamais en rafale : trois téléchargements simultanés
+           sur une 4G, c'est trois pièces lentes au lieu d'une rapide. */
+        var i = 1;
+        (function suivante() {
+          if (i >= sl.length) return;
+          var k = i++;
+          charger(k);
+          var im = sl[k] && sl[k].querySelector('img');
+          if (!im || im.complete) return setTimeout(suivante, 60);
+          im.addEventListener('load', function () { setTimeout(suivante, 60); }, { once: true });
+          im.addEventListener('error', function () { setTimeout(suivante, 60); }, { once: true });
+        })();
+      }
+      if (!prem || prem.complete) return setTimeout(lancer, 400);
+      prem.addEventListener('load', function () { setTimeout(lancer, 400); }, { once: true });
+      prem.addEventListener('error', function () { setTimeout(lancer, 400); }, { once: true });
+    })();
 
     /* Le chiffre géant roule DANS LE SENS du glissement et sur la MÊME durée.
        Deux chiffres coexistent le temps du croisement : l'ancien sort par le
@@ -2456,6 +2504,7 @@ document.getElementById("waBas").href =
       i = (i + n) % n;
       if (i === actif) return;
       occupe = true;
+      charger(i);                  /* si le visiteur va plus vite que le réseau */
       var sort = sl[actif], entre = sl[i];
       entre.classList.remove('act', 'sort', 'entre');
       entre.classList.add(sens > 0 ? 'entre' : 'sort');

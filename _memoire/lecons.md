@@ -490,3 +490,53 @@ peut passer entre deux images d'un rendu lent sans que rien ne cloche.
 `color-mix(in srgb, <bleu> 22%, transparent)` sur du papier crème donne un **voile
 gris sale**. `in oklab` garde la teinte. Quand une couleur doit se *voir* comme
 une couleur, ne pas la mélanger en srgb.
+
+---
+
+## Une page dont TOUT est construit par le script ne marche pas pour tout le monde
+
+*2026-08-06, Mongazi : « la page ne marche pas sur mon téléphone ».*
+
+Le héros et le catalogue d'Hillary étaient entièrement injectés par le
+JavaScript. Sans lui : une page rose, un chiffre géant, le nom de la maison, et
+**aucun vêtement**. Le visiteur ne dit pas « le script n'a pas tourné », il dit
+« ça ne marche pas ».
+
+Ça arrive pour de vrai chez nous : **Opera Mini en mode économie** (rendu côté
+serveur, script fortement limité), les modes « Lite » d'Android, un réseau qui
+coupe pendant le chargement du script.
+
+**Règle : ce qui prouve que le site existe doit être dans le HTML.** Une vraie
+photo, un vrai nom, un vrai texte, un vrai numéro de téléphone. Le script
+enrichit, il ne fonde pas. Bénéfice en prime : le navigateur découvre l'image en
+lisant la page, au lieu d'attendre que le script tourne.
+
+**Contrôle à ajouter partout** : un contexte Playwright avec
+`java_script_enabled=False`, et on vérifie qu'il reste une photo et un texte.
+
+### Charger quatre images d'un coup, c'est quatre images lentes
+
+Sur une 4G à 1,6 Mb/s, lancer les quatre mannequins du héros ensemble donne
+quatre pièces lentes au lieu d'une rapide. La première part **seule** (avec un
+`<link rel="preload" as="image">` dans le `<head>`, parce qu'une image injectée
+par le script est invisible au préchargeur du navigateur), les autres suivent
+**une par une** quand elle est peinte, et un clic anticipé les réclame.
+
+### ⚠️ Ne jamais mesurer une performance avec sa propre boucle
+
+`page.wait_for_function` de Playwright sonde en `requestAnimationFrame`. Sous
+4× de ralentissement processeur, les rAF sont affamés : il a annoncé « première
+pièce à 9,3 s » alors que la chronologie réseau montrait l'image **reçue à
+2,6 s**. J'ai optimisé pendant une heure d'après un chiffre faux.
+
+Lire les **vraies métriques du navigateur** : `performance.getEntriesByType`
+(`navigation`, `resource`) et un `PerformanceObserver` sur
+`largest-contentful-paint`. Et ne jamais comparer un `file://` (sans
+compression) à une URL en ligne.
+
+### Compresser une image détourée : l'alpha reste sans perte, le RVB non
+
+`quality=84, alpha_quality=100, exact=True` : **écart alpha 0** (bit pour bit,
+donc aucun halo au contour) et écart RVB moyen de 3 sur 255, invisible sur une
+photo, pour **moitié moins d'octets**. Script réutilisable :
+`clients/10-hillary-m-styl/_alleger.py`.

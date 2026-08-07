@@ -54,6 +54,14 @@ TETE = """<!DOCTYPE html>
 <meta property="og:url" content="https://hillary-m-styl.pages.dev/">
 <meta property="og:description" content="Pagne, prêt-à-porter et sur-mesure. Donnez vos mesures, connaissez le jour exact où votre tenue sera prête.">
 <link rel="icon" href="data:image/png;base64,__FAVICON_B64__">
+<!-- ⚠️ LA PREMIERE PIECE DOIT PARTIR AVANT LE RESTE.
+     Les mannequins du heros sont poses par le script : le navigateur ne peut
+     donc pas les decouvrir en lisant le HTML, et la premiere photo n'etait
+     demandee qu'une fois tout le reste charge. Mesure sur une 4G a 1,6 Mb/s :
+     elle apparaissait a la NEUVIEME seconde, sur une page deja affichee, avec
+     son chiffre geant et ses textes mais sans vetement. Ca ne ressemble pas a
+     un site qui charge, ca ressemble a un site casse. -->
+<link rel="preload" as="image" href="assets/images/hero-1.webp" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,700;1,6..96,400;1,6..96,500&family=Archivo:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">

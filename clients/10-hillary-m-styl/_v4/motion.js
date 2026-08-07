@@ -265,31 +265,63 @@
     var sc = $('#hsc'), num = $('#hnum'), col = $('#hcol'), des = $('#hdes'), cpt = $('#hcpt');
     if (!sc) return;
 
-    /* ⚠️ AUCUNE image du héros en `loading="lazy"`. Elles sont quatre, elles
-       pèsent 760 Ko à elles toutes, et le visiteur les verra toutes : la
-       première transition attendait le téléchargement ET le décodage de la
-       suivante, et la pièce restait immobile ~300 ms après le clic. Ça se
-       voyait comme un raté. Elles sont chargées tout de suite et décodées
-       en arrière-plan dès que la page est posée. */
-    sc.innerHTML = HERO.map(function (o, i) {
+    /* ⚠️ LA PREMIÈRE PIÈCE D'ABORD, LES TROIS AUTRES ENSUITE.
+       `loading="lazy"` faisait attendre le téléchargement au moment du clic,
+       et la pièce restait immobile. Les charger toutes les quatre d'un coup
+       est pire : elles se partagent la bande passante, et sur une 4G à
+       1,6 Mb/s la PREMIÈRE n'arrivait qu'à la neuvième seconde, sur une page
+       déjà affichée et vide de vêtement. C'est ça, « la page ne marche pas ».
+       Alors : la première part seule (et le `<link rel=preload>` du `<head>`
+       la demande avant même ce script), les trois autres suivent une fois
+       qu'elle est peinte. Un clic anticipé les réclame à la demande. */
+    /* ⚠️ LA PREMIÈRE DIAPOSITIVE EST DÉJÀ DANS LE HTML et on n'y touche pas :
+       c'est elle que voit un visiteur dont le navigateur limite le
+       JavaScript, et c'est elle que le navigateur télécharge sans attendre
+       que ce script tourne. On ajoute les trois autres à la suite. */
+    var premiere = sc.querySelector('.hsl');
+    sc.insertAdjacentHTML('beforeend', HERO.map(function (o, i) {
+      if (premiere && i === 0) return '';
       var img = o.f
-        ? '<img src="assets/images/' + esc(o.f) + '" alt="' + esc(o.t) + ', création Hillary M. Styl"'
+        ? '<img ' + (i ? 'data-src' : 'src') + '="assets/images/' + esc(o.f) + '"'
+          + ' alt="' + esc(o.t) + ', création Hillary M. Styl"'
           + (i ? '' : ' fetchpriority="high"') + ' decoding="async">'
         : SIL;
       return '<figure class="hsl' + (i === 0 ? ' act' : '') + '" data-i="' + i + '">'
         + '<div class="hsl-c">' + img + '</div></figure>';
-    }).join('');
+    }).join(''));
 
     var sl = $$('.hsl', sc), n = sl.length, actif = 0, occupe = false;
 
-    /* on décode les mannequins pendant que le visiteur lit le héros : au
-       premier clic, la pièce est déjà prête à peindre. `decode()` ne bloque
-       pas le fil principal, et l'échec est sans conséquence. */
-    setTimeout(function () {
-      $$('img', sc).forEach(function (im) {
-        if (im.decode) im.decode().catch(function () {});
-      });
-    }, 1200);
+    /* réclamer une pièce : au clic si elle n'est pas encore là, ou en fond
+       une fois la première peinte. `decode()` évite le à-coup du premier
+       affichage et ne bloque pas le fil principal. */
+    function charger(i) {
+      var im = sl[i] && sl[i].querySelector('img[data-src]');
+      if (!im) return;
+      im.src = im.getAttribute('data-src');
+      im.removeAttribute('data-src');
+      if (im.decode) im.decode().catch(function () {});
+    }
+    (function suite() {
+      var prem = sl[0] && sl[0].querySelector('img');
+      function lancer() {
+        /* une par une, jamais en rafale : trois téléchargements simultanés
+           sur une 4G, c'est trois pièces lentes au lieu d'une rapide. */
+        var i = 1;
+        (function suivante() {
+          if (i >= sl.length) return;
+          var k = i++;
+          charger(k);
+          var im = sl[k] && sl[k].querySelector('img');
+          if (!im || im.complete) return setTimeout(suivante, 60);
+          im.addEventListener('load', function () { setTimeout(suivante, 60); }, { once: true });
+          im.addEventListener('error', function () { setTimeout(suivante, 60); }, { once: true });
+        })();
+      }
+      if (!prem || prem.complete) return setTimeout(lancer, 400);
+      prem.addEventListener('load', function () { setTimeout(lancer, 400); }, { once: true });
+      prem.addEventListener('error', function () { setTimeout(lancer, 400); }, { once: true });
+    })();
 
     /* Le chiffre géant roule DANS LE SENS du glissement et sur la MÊME durée.
        Deux chiffres coexistent le temps du croisement : l'ancien sort par le
@@ -358,6 +390,7 @@
       i = (i + n) % n;
       if (i === actif) return;
       occupe = true;
+      charger(i);                  /* si le visiteur va plus vite que le réseau */
       var sort = sl[actif], entre = sl[i];
       entre.classList.remove('act', 'sort', 'entre');
       entre.classList.add(sens > 0 ? 'entre' : 'sort');

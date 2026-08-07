@@ -40,16 +40,24 @@
     <!-- le numéro géant : derrière le mannequin, devant le fond -->
     <div class="hnum" id="hnum" aria-hidden="true"><span>01</span></div>
 
-    <!-- la description, à gauche -->
-    <div class="hdes" id="hdes" aria-hidden="true"></div>
+    <!-- la description, à gauche.
+         ⚠️ ÉCRITE EN DUR, pas seulement injectée par le script : sans elle,
+         un visiteur dont le navigateur limite le JavaScript (Opera Mini en
+         mode économie, un mode « Lite », un réseau qui coupe le script)
+         voyait un héros SANS VÊTEMENT et SANS TEXTE. Le script réécrit ces
+         valeurs à la première diapositive : il n'y a pas de double entretien
+         tant qu'on ne change pas la pièce n° 1. -->
+    <div class="hdes" id="hdes" aria-hidden="true"><b>Robe de cérémonie</b><p>Bustier structuré, jupe à volants de satin, gele assorti.</p></div>
 
-    <!-- la scène : 4 emplacements de photo, prêts -->
+    <!-- la scène. La PREMIÈRE pièce est dans le HTML : le navigateur la
+         découvre en lisant la page, il n'attend pas que le script tourne. -->
     <div class="hsc" id="hsc" data-cur="VOIR">
-      <!-- les diapositives sont posées par le script depuis HERO -->
+      <figure class="hsl act" data-i="0"><div class="hsl-c"><img src="assets/images/hero-1.webp" alt="Robe de cérémonie, création Hillary M. Styl" fetchpriority="high" decoding="async"></div></figure>
+      <!-- les trois autres sont posées par le script depuis HERO -->
     </div>
 
     <!-- le titre de collection, à droite -->
-    <div class="hcol" id="hcol" aria-hidden="true"></div>
+    <div class="hcol" id="hcol" aria-hidden="true"><b>Robe de cérémonie</b><span class="m">Sur-mesure · 2 semaines</span></div>
 
     <!-- les badges flottants -->
     <span class="bdg bdg--1" style="--d:0ms">PAGNE &amp; WAX</span>
