@@ -59,6 +59,55 @@ em{font-style:italic}
 body::after{content:'';position:fixed;inset:-30%;z-index:35;pointer-events:none;
   background-image:var(--grain);opacity:.05;mix-blend-mode:overlay}
 
+/* ==================================================================
+   LE RIDEAU D'OUVERTURE
+   Un panneau crème porte le nom, un filet se tire, un compteur monte,
+   puis le panneau se retire vers le haut et découvre le héros.
+   ⚠️ Il n'existe que si le JavaScript tourne (`html.js`) : sans lui la
+   page doit rester lisible immédiatement, jamais masquée par un voile
+   qui ne partira pas.
+   ================================================================== */
+.rideau{display:none}
+.js .rideau{display:grid;position:fixed;inset:0;z-index:100;
+  place-items:center;background:var(--creme);
+  transform:translate3d(0,0,0);
+  transition:transform 1.15s var(--e-x)}
+.js .rideau.parti{transform:translate3d(0,-101%,0)}
+.rideau-in{display:grid;justify-items:center;gap:14px}
+.rideau-g{width:auto;height:44px}
+.rideau-t{font-family:var(--ff-d);font-size:clamp(1.6rem,4.2vw,2.5rem);
+  letter-spacing:.01em;color:var(--encre)}
+.rideau-t i{font-style:normal;color:var(--or-f)}
+/* le filet se tire sous le nom, comme un trait de pinceau */
+.rideau-f{display:block;width:min(200px,42vw);height:1px;background:var(--or-f);
+  transform:scaleX(0);transform-origin:0 50%;
+  transition:transform 1s var(--e-x) .12s}
+.js .rideau.tire .rideau-f{transform:scaleX(1)}
+.rideau-n{position:absolute;right:var(--pad);bottom:clamp(20px,4vh,34px);
+  font-size:11px;font-weight:500;letter-spacing:.16em;color:var(--tx-c)}
+/* pendant le rideau, la page ne défile pas sous lui */
+body.rideau-la{overflow:hidden}
+
+/* ==================================================================
+   LE PASSAGE D'UNE SECTION À L'AUTRE
+   Dans la référence, la section qui arrive glisse PAR-DESSUS la
+   précédente sous forme de bande, au lieu de défiler à plat. On rejoue
+   ce geste : un volet de la couleur opposée couvre la section, puis se
+   retire vers le haut quand elle entre.
+   ⚠️ `scaleY` sur un pseudo-élément, jamais sur la section elle-même :
+   une transformation sur un ancêtre casserait les éléments en
+   `position:fixed` (la barre, le curseur, le bouton du son).
+   ================================================================== */
+.js .sec,.js .cit{position:relative}
+.js .sec::before,.js .cit::before{content:'';position:absolute;inset:0;z-index:9;
+  pointer-events:none;transform-origin:50% 0;
+  transform:scaleY(1);transition:transform 1.05s var(--e-x)}
+.js .sec--noir::before{background:var(--creme)}
+.js .sec--creme::before,.js .sec--papier::before{background:var(--noir)}
+.js .cit::before{background:var(--creme)}
+.js .sec.leve::before,.js .cit.leve::before{transform:scaleY(0)}
+html:not(.js) .sec::before,html:not(.js) .cit::before{display:none}
+
 /* ---------- LE CURSEUR ------------------------------------------- */
 .cur{position:fixed;top:0;left:0;z-index:var(--z-cur);width:80px;height:80px;
   margin:-40px 0 0 -40px;border-radius:50%;pointer-events:none;opacity:0;
@@ -200,7 +249,8 @@ body::after{content:'';position:fixed;inset:-30%;z-index:35;pointer-events:none;
 .js .hero-img{opacity:0;transform:translateX(90px);
   transition:opacity 1.2s ease .3s,transform 1.2s var(--e-x) .3s}
 .js .hero.ouvert .hero-img{opacity:1;transform:none}
-.cadre{position:relative;aspect-ratio:4/5;overflow:hidden;
+/* l'arche est carrée depuis que le héros porte une œuvre : voir _photos.py */
+.cadre{position:relative;aspect-ratio:1/1;overflow:hidden;
   border-radius:50% 50% 10px 10px / 34% 34% 10px 10px;
   box-shadow:0 40px 90px -50px rgba(0,0,0,.95);
   animation:flotte 6s ease-in-out infinite alternate}
@@ -249,7 +299,10 @@ body::after{content:'';position:fixed;inset:-30%;z-index:35;pointer-events:none;
    rien ne repeint (une transition de `filter` sur une image de cette taille
    ferait tressauter l'entrée du héros sur un téléphone). */
 .scene-p--enduit{filter:saturate(.04) brightness(1.34) contrast(.78)}
-.js .scene-p--peint{opacity:0;transition:opacity 1.9s var(--e) .45s}
+/* ⚠️ Depuis le rideau, cette montée ne commence qu'à ~1,05 s. À 1,9 s de
+   durée et 0,45 s d'attente, la couleur n'était pleine qu'à 3,4 s : le
+   visiteur croyait à une image délavée. Raccourcie en conséquence. */
+.js .scene-p--peint{opacity:0;transition:opacity 1.25s var(--e) .1s}
 .js .hero.ouvert .scene-p--peint{opacity:1}
 .scene:has(.scene-p) .scene-tr,
 .scene:has(.scene-p) .entailles,

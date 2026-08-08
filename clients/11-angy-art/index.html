@@ -14,19 +14,33 @@
 <meta property="og:title" content="Angy Art — Angélique Avocevou, artiste plasticienne">
 <meta property="og:description" content="Inspiré d'en haut, enraciné ici. Œuvres contemporaines en relief, atelier à Cotonou.">
 <meta property="og:url" content="https://angy-art.pages.dev/">
-<meta property="og:image" content="https://angy-art.pages.dev/assets/images/og/og.png">
+<meta property="og:image" content="https://angy-art.pages.dev/assets/images/og/og.png?v=20260808c">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="assets/images/favicon.png" type="image/png">
-<link rel="apple-touch-icon" href="assets/images/favicon-180.png">
+<link rel="icon" href="assets/images/favicon.png?v=20260808c" type="image/png">
+<link rel="apple-touch-icon" href="assets/images/favicon-180.png?v=20260808c">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Public+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/app.css?v=20260808a">
+<link rel="stylesheet" href="assets/app.css?v=20260808c">
 <script>document.documentElement.className+=' js';</script>
 </head>
 <body>
+
+<!-- ============ LE RIDEAU D'OUVERTURE ============
+     Un panneau crème porte le nom, un filet se tire dessous, un compteur monte,
+     puis le panneau se retire vers le haut. Il est écrit DANS le HTML et non
+     posé par JavaScript : sans JS il n'apparaît jamais, et la page reste
+     lisible tout de suite. -->
+<div class="rideau" id="rideau" aria-hidden="true">
+  <div class="rideau-in">
+    <img class="rideau-g" src="assets/images/logos/marque.png?v=20260808c" alt="" width="497" height="385">
+    <p class="rideau-t">Angy <i>·</i> Art</p>
+    <span class="rideau-f"></span>
+  </div>
+  <p class="rideau-n" id="rideauN">00</p>
+</div>
 
 <!-- ============ LE CURSEUR ============ -->
 <div class="cur" id="cur" aria-hidden="true"><span id="curT"></span></div>
@@ -34,7 +48,7 @@
 <!-- ============ NAVIGATION ============ -->
 <header class="nav" id="nav">
   <a class="nav-logo" href="#haut" aria-label="Angy Art, retour en haut">
-    <img class="nav-g" src="assets/images/logos/marque.png" alt="" width="497" height="385">
+    <img class="nav-g" src="assets/images/logos/marque.png?v=20260808c" alt="" width="497" height="385">
     <span>Angy&nbsp;Art</span>
   </a>
   <nav class="nav-c" id="navC" aria-label="Navigation principale">
@@ -69,21 +83,23 @@
         et de la patience de la main.</p>
     </div>
 
-    <!-- LA VRAIE PHOTO. Deux calques du MÊME fichier (un seul téléchargement) :
-         dessous la version « enduit », sans couleur, dessus la version peinte
-         qui monte en opacité. C'est son geste : la forme blanche d'abord, le
-         pigment ensuite. L'opacité seule s'anime, donc rien ne repeint. -->
+    <!-- UNE ŒUVRE, sur fond sombre : c'est le seul de ses cadrages qui se fond
+         dans le noir de la page au lieu d'y poser un rectangle beige.
+         Deux calques du MÊME fichier (un seul téléchargement) : dessous la
+         version « enduit », sans couleur, dessus la version peinte qui monte en
+         opacité. Les masques se peignent sous les yeux du visiteur, comme elle
+         les peint. L'opacité seule s'anime, donc rien ne repeint. -->
     <div class="hero-img" id="heroImg">
       <div class="cadre">
         <div class="scene scene--toile">
-          <img class="scene-p scene-p--enduit" src="assets/images/scenes/hero.webp" alt=""
-               aria-hidden="true" width="1023" height="1276" fetchpriority="high" decoding="async">
-          <img class="scene-p scene-p--peint" src="assets/images/scenes/hero.webp"
-               alt="Angélique Avocevou trace au pinceau les motifs blancs d'un grand masque en relief, dans la cour de son atelier à Cotonou."
-               width="1023" height="1276" fetchpriority="high" decoding="async">
+          <img class="scene-p scene-p--enduit" src="assets/images/scenes/hero.webp?v=20260808c" alt=""
+               aria-hidden="true" width="783" height="783" fetchpriority="high" decoding="async">
+          <img class="scene-p scene-p--peint" src="assets/images/scenes/hero.webp?v=20260808c"
+               alt="Deux masques en relief d'Angélique Avocevou, terre et blanc, posés sur des socles dorés devant un mur de noyer."
+               width="783" height="783" fetchpriority="high" decoding="async">
         </div>
       </div>
-      <p class="hero-lg">LE TRAIT SE POSE À LA MAIN</p>
+      <p class="hero-lg">MODELÉ ET PEINT À LA MAIN</p>
     </div>
   </div>
 
@@ -105,7 +121,7 @@
   <div class="split">
     <div class="split-i" data-para>
       <div class="scene scene--atelier">
-        <img class="scene-p" src="assets/images/scenes/demarche.webp"
+        <img class="scene-p" src="assets/images/scenes/demarche.webp?v=20260808c"
              alt="Angélique Avocevou, penchée sur sa table, tire un trait blanc au pinceau fin sur un masque orange."
              width="900" height="1200" loading="lazy" decoding="async">
         <i class="rai"></i>
@@ -146,7 +162,7 @@
   <ol class="temps-l">
     <li class="tp">
       <div class="tp-i">
-        <img src="assets/images/scenes/temps-1.webp" width="780" height="927" loading="lazy" decoding="async"
+        <img src="assets/images/scenes/temps-1.webp?v=20260808c" width="780" height="927" loading="lazy" decoding="async"
              alt="Angélique applique l'enduit blanc au pinceau sur une forme découpée, encore sans couleur.">
       </div>
       <p class="tp-n">01</p>
@@ -156,7 +172,7 @@
     </li>
     <li class="tp">
       <div class="tp-i">
-        <img src="assets/images/scenes/temps-2.webp" width="780" height="927" loading="lazy" decoding="async"
+        <img src="assets/images/scenes/temps-2.webp?v=20260808c" width="780" height="927" loading="lazy" decoding="async"
              alt="Angélique mélange un orange sur une palette tenue dans un cadre doré, devant la pièce à peindre.">
       </div>
       <p class="tp-n">02</p>
@@ -166,7 +182,7 @@
     </li>
     <li class="tp">
       <div class="tp-i">
-        <img src="assets/images/scenes/temps-3.webp" width="780" height="928" loading="lazy" decoding="async"
+        <img src="assets/images/scenes/temps-3.webp?v=20260808c" width="780" height="928" loading="lazy" decoding="async"
              alt="Angélique trace une ligne blanche au pinceau fin sur un masque terracotta posé à plat.">
       </div>
       <p class="tp-n">03</p>
@@ -176,7 +192,7 @@
     </li>
     <li class="tp">
       <div class="tp-i">
-        <img src="assets/images/scenes/temps-4.webp" width="780" height="929" loading="lazy" decoding="async"
+        <img src="assets/images/scenes/temps-4.webp?v=20260808c" width="780" height="929" loading="lazy" decoding="async"
              alt="Angélique, assise sur un tabouret, peint une toile de plus de deux mètres portant deux grands masques.">
       </div>
       <p class="tp-n">04</p>
@@ -222,7 +238,7 @@
      restaurant, un hall. Une pièce monumentale tient le mur d'une salle. -->
 <section class="plein lieux" id="lieux" aria-labelledby="h2l">
   <div class="scene scene--salle">
-    <img class="scene-p scene-p--haut" src="assets/images/scenes/lieu.webp"
+    <img class="scene-p scene-p--haut" src="assets/images/scenes/lieu.webp?v=20260808c"
          alt="Un masque monumental en relief, terre et blanc, occupe le mur de pierre d'un restaurant où dînent des convives."
          width="768" height="1364" loading="lazy" decoding="async">
     <i class="rai rai--large"></i>
@@ -247,7 +263,7 @@
 <section class="cit" aria-labelledby="h2d">
   <div class="cit-i">
     <div class="scene scene--lin">
-      <img class="scene-p" src="assets/images/scenes/matiere.webp"
+      <img class="scene-p" src="assets/images/scenes/matiere.webp?v=20260808c"
            alt="Gros plan sur le relief d'un masque : la terre rouge sculptée, les motifs blancs peints à la main."
            width="594" height="860" loading="lazy" decoding="async">
       <i class="rai"></i>
@@ -264,7 +280,7 @@
 <!-- ============ 6. LA VISITE (plein écran) ============ -->
 <section class="plein visite" id="visite" aria-labelledby="h2e">
   <div class="scene scene--soir">
-    <img class="scene-p" src="assets/images/scenes/visite.webp"
+    <img class="scene-p" src="assets/images/scenes/visite.webp?v=20260808c"
          alt="Deux masques en terre et blanc, sur socles dorés, posés sur une tablette de marbre devant un mur de noyer."
          width="1500" height="1000" loading="lazy" decoding="async">
     <i class="rai rai--chaud"></i>
@@ -284,7 +300,7 @@
 <footer class="pied">
   <div class="pied-in">
     <p class="pied-l">
-      <img class="pied-g" src="assets/images/logos/marque.png" alt="" width="497" height="385">
+      <img class="pied-g" src="assets/images/logos/marque.png?v=20260808c" alt="" width="497" height="385">
       <span>Angy&nbsp;Art</span>
     </p>
     <div class="pied-c">
@@ -316,7 +332,7 @@
   <button class="mod-x" id="modX" aria-label="Fermer">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6 18 18M18 6 6 18"/></svg>
   </button>
-  <img class="mod-g" src="assets/images/logos/marque.png" alt="" width="497" height="385">
+  <img class="mod-g" src="assets/images/logos/marque.png?v=20260808c" alt="" width="497" height="385">
   <p class="mod-l" id="modT">VOTRE VISITE CHEZ ANGY ART</p>
   <p class="mod-h">Parlons <em>de votre projet.</em></p>
 
@@ -384,6 +400,6 @@
 ]}
 </script>
 
-<script src="assets/app.js?v=20260808a"></script>
+<script src="assets/app.js?v=20260808c"></script>
 </body>
 </html>

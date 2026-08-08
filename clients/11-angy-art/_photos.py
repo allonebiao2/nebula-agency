@@ -61,8 +61,22 @@ def poser(im, dest, large, qualite=84):
 # ── ce que chaque photo devient, et où elle atterrit ──────────────────────
 # (source, sortie, dossier, recadrage, largeur finale)
 PLAN = [
-    # LE HÉROS — elle peint dehors, de profil, sur le grand masque en relief.
-    ("atelier-dehors.webp", "hero.webp", SCENES, (0.00, 0.05, 1.00, 0.88), 1100),
+    # LE HÉROS — UNE ŒUVRE, demandée par Mongazi le 2026-08-08, avec une seule
+    # consigne : que ce soit spectaculaire. Cinq cadrages serrés ont été
+    # regardés côte à côte ; le duo gagne pour une raison qui n'est pas une
+    # question de goût : c'est le SEUL sur fond sombre. Les quatre autres posent
+    # leur masque sur un mur beige pâle, qui devient un rectangle lumineux au
+    # milieu d'une page noire. Ici le noyer se fond dans la page, les visages
+    # flottent, et les socles dorés reprennent SON or `#bd9f64`.
+    # Cadrage propre au héros, plus serré que la carte `situ-1` du carrousel.
+    # ⚠️ Cadrage CARRÉ, et l'arche du héros l'est devenue avec lui : en 4/5, un
+    # cadre portrait découpé dans une photo paysage force à prendre une tranche
+    # verticale étroite, donc du mur au-dessus et beaucoup de marbre blanc en
+    # dessous. Ce marbre était la zone la plus claire du cadre et tirait l'œil
+    # vers le bas, loin des visages.
+    # La fenêtre est décalée d'un cran vers la gauche : à 0,755 un éclat de la
+    # tranche des livres du décor entrait par le bord droit.
+    ("situ-duo.webp", "hero.webp", SCENES, (0.233, 0.10, 0.743, 0.865), 900),
 
     # 01 LA DÉMARCHE — le geste de précision, le pinceau fin.
     ("atelier-precision.webp", "demarche.webp", SCENES, (0.02, 0.03, 1.00, 0.90), 900),

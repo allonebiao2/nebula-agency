@@ -234,7 +234,9 @@ def main():
                     if r.status >= 400 and "127.0.0.1" in r.url else None)
 
             page.goto(BASE, wait_until="networkidle")
-            page.wait_for_timeout(1800)
+            # ⚠️ le rideau d'ouverture dure ~2,3 s (compte puis retrait) :
+            # mesurer avant, c'est mesurer le rideau et non la page.
+            page.wait_for_timeout(3400)
             page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
             page.wait_for_timeout(2200)
             page.evaluate("window.scrollTo(0, 0)")
@@ -299,14 +301,33 @@ def main():
                 else:
                     bon(f"{a_} et {b_} ne se touchent pas")
 
+            # ⚠️ Nos images portent `Cache-Control: immutable` pour UN AN. Une
+            # image qui change de contenu sans changer d'URL reste servie par
+            # le navigateur du visiteur pendant tout ce temps. Le 2026-08-08,
+            # Mongazi voyait encore l'ancienne image générée alors que le
+            # serveur envoyait déjà la vraie (MD5 identique au fichier).
+            titre("Toute image porte sa marque de version")
+            sans = page.evaluate("""() => [...document.querySelectorAll('img')]
+                .map(i => i.getAttribute('src') || '')
+                .filter(s => s.indexOf('assets/images/') === 0 && s.indexOf('?v=') === -1)""")
+            n_img = page.evaluate("() => document.querySelectorAll('img').length")
+            bon(f"{n_img} images, toutes versionnées") if not sans \
+                else mauvais(f"{len(sans)} image(s) sans ?v= : {sans[:3]}")
+
             # Le seul contrôle qui regarde vraiment ce qu'il y a SOUS le texte.
             titre("Texte posé sur une photo")
             for nom_, sel_, seuil_ in [("description « pour un lieu »", ".lieux .plein-d", 4.5),
                                        ("titre « pour un lieu »", ".lieux .plein-t", 3.0),
                                        ("description « la visite »", "#visite .plein-d", 4.5),
                                        ("légende du héros", ".hero-lg", 4.5)]:
-                page.evaluate("s => document.querySelector(s)?.scrollIntoView({block:'center'})", sel_)
-                page.wait_for_timeout(900)
+                # ⚠️ On coupe le lissage AVANT de se placer : sinon la course
+                # dure plus longtemps que l'attente, la boîte lue est périmée,
+                # et l'élément paraît « hors du viewport ».
+                page.evaluate("""(s) => {
+                  document.documentElement.style.scrollBehavior = 'auto';
+                  document.querySelector(s)?.scrollIntoView({block:'center', behavior:'instant'});
+                }""", sel_)
+                page.wait_for_timeout(500)
                 r_, quoi_ = fond_derriere(page, sel_)
                 if r_ is None:
                     mauvais(f"{nom_} : {quoi_}")

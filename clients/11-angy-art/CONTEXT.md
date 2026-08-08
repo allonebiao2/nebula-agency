@@ -77,6 +77,52 @@ _qc_captures/         les captures (jamais déployées)
 _dist/                ce qui part sur Cloudflare (généré)
 ```
 
+### La navigation reprend celle de la référence (Selva Toscana)
+
+Le 2026-08-08, Mongazi envoie une capture vidéo du site **Selva Toscana**, la
+référence qu'il avait imposée en août, et demande que « chaque défilement,
+navigation, déplacement » soit pareil. Comparaison faite image par image
+(38 s de vidéo, relues dans un navigateur) : **le site avait déjà** le
+défilement lissé inertiel, le curseur suiveur en médaillon, le carrousel
+coverflow, le rythme sombre/clair, les titres didone géants à mot italique, la
+révélation mot à mot et la modale de fin. **Deux choses manquaient**, elles ont
+été posées :
+
+1. **Le rideau d'ouverture** : panneau crème plein écran, glyphe + « Angy · Art »,
+   un filet doré qui se tire, un compteur qui monte de 00 à 100 en 1 s, puis le
+   panneau se retire vers le haut et le héros ouvre dans la foulée.
+2. **Le volet de section** : chaque section est couverte par un volet de la
+   couleur OPPOSÉE (noir sur une section crème, crème sur une section noire),
+   qui se retire vers le haut quand elle entre. Le volet est donc invisible
+   contre la section précédente : la suivante a l'air de glisser par-dessus.
+   ⚠️ Le `scaleY` porte sur un **pseudo-élément**, jamais sur la section :
+   une transformation sur un ancêtre casserait la barre fixe et le curseur.
+
+⚠️ **Le compte du rideau tourne au minuteur, pas sur `requestAnimationFrame`.**
+Et ⚠️ **pour mesurer une animation d'ouverture, ne jamais se fier à des
+`wait_for_timeout` empilés autour de captures d'écran** : une capture coûte des
+centaines de millisecondes et décale toutes les mesures. Deux diagnostics
+successifs ont conclu à tort que le rideau ne durait pas 1 s. La vérité s'obtient
+en faisant mesurer la PAGE elle-même, ou avec un chargement par instant observé.
+
+⚠️ Le QC attend **3 400 ms** après le chargement pour cette raison : mesurer
+avant, c'est mesurer le rideau et non la page.
+
+### ⚠️ Toute image DOIT porter `?v=` — sinon le visiteur voit l'ancienne un an
+
+Le 2026-08-08, Mongazi voyait encore **l'ancienne image générée** dans le héros
+alors que le serveur envoyait déjà la vraie photo. Vérifié : le fichier servi
+était **identique au disque, MD5 pour MD5**. Ce n'était donc ni le déploiement,
+ni Cloudflare, ni un cache empoisonné : c'était **son propre navigateur**, qui
+gardait `hero.webp` parce que le nom n'avait pas changé et que l'en-tête dit
+`immutable, max-age=31536000`.
+
+Toutes les URL d'images portent désormais `?v=` (même cran que `app.css` et
+`app.js`), y compris `og:image` et les chemins construits par `app.js`
+(constante `VER` en haut du fichier). **À bumper dès qu'une image change de
+contenu sans changer de nom.** Un contrôle le vérifie : « toute image porte sa
+marque de version ».
+
 ### ⚠️ Les anciennes images restent en cache, et on ne peut pas les purger
 
 Après le passage aux vraies photos, les 4 anciennes images générées répondaient
@@ -147,13 +193,31 @@ Angélique au travail, à Cotonou. Ce sont elles qui portent l'authenticité du 
 
 | Fichier produit | Ce qu'on y voit | Où |
 |---|---|---|
-| `scenes/hero.webp` | de profil, dehors, elle trace les motifs blancs d'un grand masque | héros |
+| `scenes/matiere.webp` | détail du relief, sans personne (recadré dans la photo « dehors ») | 04 La citation |
 | `scenes/demarche.webp` | penchée sur sa table, fleurs bleues, pinceau fin | 01 La démarche |
 | `scenes/temps-1.webp` | l'enduit blanc sur une forme encore nue | 02 · La forme |
 | `scenes/temps-2.webp` | elle mélange l'orange, palette dans un cadre doré | 02 · La couleur |
 | `scenes/temps-3.webp` | la ligne blanche au pinceau sur le terracotta | 02 · Le trait |
 | `scenes/temps-4.webp` | assise sur un tabouret devant une toile de plus de 2 m | 02 · L'échelle |
-| `scenes/matiere.webp` | détail du relief, sans personne (recadré dans le héros) | 04 La citation |
+
+### b bis. Le héros porte UNE ŒUVRE, pas l'artiste
+
+Mongazi a tranché le 2026-08-08 : « utilise une des images des œuvres
+d'Angélique, ça doit être spectaculaire ». Le héros montre donc **le duo
+terracotta sur socles dorés** (`scenes/hero.webp`, recadré depuis `situ-duo`,
+plus serré que la carte `situ-1` du carrousel).
+
+⚠️ **Le choix ne tient pas au goût.** Cinq cadrages serrés ont été regardés côte
+à côte : terracotta seul, duo, perles, relief réel, jaune. Quatre posent leur
+masque sur **un mur beige pâle**, qui devient un rectangle lumineux au milieu
+d'une page noire. Le duo est le seul sur **fond sombre** : le noyer se fond dans
+la page, les visages flottent, et **les socles dorés reprennent son or
+`#bd9f64`**. C'est cette règle qu'il faut garder si l'image change un jour :
+sur cette page, un fond clair tue l'effet.
+
+La photo d'elle qui peint dehors n'est pas perdue : elle nourrit toujours
+`matiere.webp` (le détail de relief de la citation), et les sept photos
+d'atelier tiennent les sections 01 et 02.
 
 ### b. Les 6 mises en situation + le lieu — ses vrais masques, décors montés
 

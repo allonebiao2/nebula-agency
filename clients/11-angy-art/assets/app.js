@@ -25,6 +25,14 @@
      Le jour où ses photos d'œuvres arrivent (fond neutre, une pièce par
      image), elles vont dans un tableau ŒUVRES séparé, avec leur vrai titre,
      leur technique et leurs dimensions. Les deux ne se mélangent pas. */
+  /* ⚠️ LA MARQUE DE VERSION DES IMAGES. À bumper en même temps que le `?v=`
+     de index.html dès qu'une image change de contenu SANS changer de nom.
+     Nos images portent `Cache-Control: immutable` pour un an : le 2026-08-08,
+     Mongazi voyait encore l'ancienne image générée alors que le serveur
+     envoyait déjà la vraie photo (MD5 identique au fichier du disque). Ce
+     n'était ni le déploiement ni Cloudflare : c'était son propre navigateur. */
+  var VER = '?v=20260808c';
+
   var SITUATIONS = [
     { f: "situ-1.webp", ar: "798/1004", t: "Deux visages, terre et blanc",
       s: "Socles dorés, tablette de marbre, mur de noyer." },
@@ -141,14 +149,79 @@
     balayer();
   })();
 
-  /* ---------- 5. Le héros s'ouvre ------------------------------------ */
-  (function heros() {
+  /* ---------- 4 bis. Le passage d'une section à l'autre ---------------
+     Un volet de la couleur opposée couvre chaque section, puis se retire
+     vers le haut quand elle entre : la section suivante a l'air de glisser
+     par-dessus la précédente. Même balayage que les révélations, donc une
+     section sautée par un clic de menu lève quand même son volet. */
+  (function volets() {
+    var restants = $$('.sec, .cit');
+    if (doux) { restants.forEach(function (s) { s.classList.add('leve'); }); return; }
+
+    var attente = false;
+    function balayer() {
+      attente = false;
+      var seuil = innerHeight * 0.86;
+      restants = restants.filter(function (s) {
+        if (s.getBoundingClientRect().top >= seuil) return true;
+        s.classList.add('leve');
+        return false;
+      });
+      if (!restants.length) {
+        removeEventListener('scroll', pousser);
+        removeEventListener('resize', pousser);
+      }
+    }
+    function pousser() {
+      if (attente) return;
+      attente = true;
+      requestAnimationFrame(balayer);
+    }
+    addEventListener('scroll', pousser, { passive: true });
+    addEventListener('resize', pousser, { passive: true });
+    balayer();
+  })();
+
+  /* ---------- 5. Le rideau, puis le héros s'ouvre ---------------------
+     Le rideau porte le nom, tire son filet, compte, puis se retire vers le
+     haut. Le héros n'ouvre qu'APRÈS : ses lettres montent pendant que le
+     panneau s'en va, c'est ce qui donne l'enchaînement. */
+  (function ouverture() {
     var h = $('.hero');
-    if (!h) return;
-    if (doux) { h.classList.add('ouvert'); return; }
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () { h.classList.add('ouvert'); });
-    });
+    var r = $('#rideau'), n = $('#rideauN');
+
+    function ouvrirHeros() { if (h) h.classList.add('ouvert'); }
+
+    if (doux || !r) {
+      if (r) r.remove();
+      document.body.classList.remove('rideau-la');
+      ouvrirHeros();
+      return;
+    }
+
+    document.body.classList.add('rideau-la');
+    requestAnimationFrame(function () { r.classList.add('tire'); });
+
+    /* ⚠️ Le compte tourne au MINUTEUR, pas sur `requestAnimationFrame`.
+       Mesuré le 2026-08-08 : avec rAF, le compteur atteignait 100 et le
+       rideau partait en moins de 200 ms au lieu de 1 000. Un minuteur est
+       plus grossier mais il tient la durée qu'on lui donne, et pour un
+       compteur qui affiche des entiers la finesse de rAF n'apporte rien. */
+    var PAS = 40, TOTAL = 25;             /* 25 x 40 ms = 1 s d'ouverture */
+    var i = 0;
+    var tic = setInterval(function () {
+      i += 1;
+      var v = Math.min(100, Math.round(i * 100 / TOTAL));
+      if (n) n.textContent = (v < 10 ? '0' : '') + v;
+      if (i < TOTAL) return;
+      clearInterval(tic);
+      r.classList.add('parti');
+      document.body.classList.remove('rideau-la');
+      ouvrirHeros();
+      /* on le retire du document : un panneau plein écran, même parti,
+         reste un calque que le navigateur compose à chaque image */
+      setTimeout(function () { if (r.parentNode) r.parentNode.removeChild(r); }, 1300);
+    }, PAS);
   })();
 
   /* ---------- 6. Le défilement lissé --------------------------------
@@ -308,7 +381,7 @@
     piste.innerHTML = data.map(function (o, i) {
       return '<figure class="car car--photo" data-i="' + i + '">' +
         '<div class="car-c" style="--ar:' + esc(o.ar || '4/5') + '">' +
-        '<img src="assets/images/situations/' + esc(o.f) + '" alt="' + esc(legende(o)) +
+        '<img src="assets/images/situations/' + esc(o.f) + VER + '" alt="' + esc(legende(o)) +
         '" loading="lazy" decoding="async">' +
         '</div></figure>';
     }).join('');
@@ -380,7 +453,7 @@
       if (!d || !d.showModal) return;
       if (!img) { img = document.createElement('img'); f.insertBefore(img, cap); }
       var o = data[i];
-      img.src = 'assets/images/situations/' + o.f;
+      img.src = 'assets/images/situations/' + o.f + VER;
       img.alt = legende(o);
       /* même en grand, le cartel rappelle ce que l'image est */
       cap.textContent = 'MISE EN SITUATION · ' + o.t.toUpperCase();
