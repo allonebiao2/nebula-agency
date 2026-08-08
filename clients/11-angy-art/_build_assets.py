@@ -126,7 +126,14 @@ def faire_favicons(marque):
 
 
 def faire_og(marque):
-    """La carte de partage : le glyphe, le nom, l'accroche d'Angélique."""
+    """La carte de partage : le glyphe, le nom, l'accroche d'Angélique.
+
+    Depuis le 2026-08-08 elle porte aussi une VRAIE photo d'atelier sur sa
+    moitié droite. C'est cette vignette que voient les gens quand le lien
+    circule sur WhatsApp : une carte de texte seule ne dit pas qu'il y a
+    une artiste derrière. La photo se fond vers le noir pour que le texte
+    de gauche reste entièrement lisible.
+    """
     os.makedirs(os.path.join(IMG, "og"), exist_ok=True)
     L, H, S = 1200, 630, 2
     im = Image.new("RGB", (L * S, H * S), NOIR)
@@ -139,6 +146,21 @@ def faire_og(marque):
         k = k ** 1.6
         d.line([(x, 0), (x - 150 * S, H * S)],
                fill=(int(10 + 32 * k), int(10 + 27 * k), int(10 + 19 * k)))
+
+    photo = os.path.join(IMG, "scenes", "hero.webp")
+    if os.path.exists(photo):
+        pl = int(L * S * 0.52)                      # la photo occupe la droite
+        ph = H * S
+        p = Image.open(photo).convert("RGB")
+        r = max(pl / p.width, ph / p.height)
+        p = p.resize((max(1, int(p.width * r)), max(1, int(p.height * r))), Image.LANCZOS)
+        p = p.crop((p.width - pl, 0, p.width, ph))  # on garde le bord droit : le masque
+        # le fondu : opaque à droite, transparent là où commence le texte
+        masque = Image.new("L", (pl, ph), 0)
+        md = ImageDraw.Draw(masque)
+        for x in range(pl):
+            md.line([(x, 0), (x, ph)], fill=int(255 * min(1.0, (x / pl) ** 0.9 * 1.35)))
+        im.paste(p, (L * S - pl, 0), masque)
 
     mg = 78 * S
     poser(im, marque, mg + 62 * S, 150 * S, 168 * S)
@@ -180,6 +202,16 @@ def faire_qr(donnee, nom, libelle):
 
 
 if __name__ == "__main__":
+    import sys
+
+    # `--og` refait la seule carte de partage, à partir du glyphe DÉJÀ détouré.
+    # Utile là où `_sources/` n'est pas là : ce dossier est gitignoré, donc il
+    # n'existe que sur la machine où le logo a été reçu.
+    if "--og" in sys.argv:
+        print("ANGY ART — la carte de partage seule")
+        faire_og(Image.open(os.path.join(IMG, "logos", "marque.png")).convert("RGBA"))
+        raise SystemExit(0)
+
     print("ANGY ART — assets, à partir du vrai logo")
     marque, complet = faire_logos()
     faire_favicons(marque)

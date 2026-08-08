@@ -31,6 +31,73 @@ def titre(t): print(f"\n== {t}")
 class Muet(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 
+
+# ── contraste mesuré SUR LA PHOTO, pas sur la couleur calculée ─────────────
+# Le contrôle de contraste classique lit `background-color`. Au-dessus d'une
+# photo cette couleur est transparente : il ne voit donc RIEN, et laisse
+# passer un texte blanc posé sur un masque orange vif. Ici on masque le
+# texte, on photographie la zone, et on mesure les pixels qui restent.
+
+def _lin(c):
+    c /= 255.0
+    return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+
+
+def luminance(r, g, b):
+    return 0.2126 * _lin(r) + 0.7152 * _lin(g) + 0.0722 * _lin(b)
+
+
+def contraste(l1, l2):
+    a, b = max(l1, l2), min(l1, l2)
+    return round((a + 0.05) / (b + 0.05), 2)
+
+
+def fond_derriere(page, sel, alpha=0.72):
+    """Rend (contraste, description) pour un texte clair posé sur une photo.
+
+    On retient le DÉCILE LE PLUS CLAIR du fond : c'est là que le texte se perd,
+    et une moyenne le noierait. Le texte est du blanc à `alpha` composité sur
+    ce fond, exactement comme le navigateur le peint.
+    """
+    from PIL import Image
+    el = page.query_selector(sel)
+    if el is None:
+        return None, f"{sel} introuvable"
+    page.evaluate("s => document.querySelector(s).style.visibility='hidden'", sel)
+    # ⚠️ La boîte se lit APRÈS que tout se soit posé. Lue avant, pendant que le
+    # défilement doux finissait sa course, elle était périmée de quelques
+    # centaines de pixels : on mesurait la photo au lieu du fond du texte.
+    page.wait_for_timeout(450)
+    boite = el.bounding_box()
+    if not boite or boite["width"] < 8 or boite["height"] < 8:
+        page.evaluate("s => document.querySelector(s).style.visibility=''", sel)
+        return None, f"{sel} sans surface"
+    brut = page.screenshot()          # le viewport, rien d'autre
+    page.evaluate("s => document.querySelector(s).style.visibility=''", sel)
+    import io
+    plein = Image.open(io.BytesIO(brut)).convert("RGB")
+    # ⚠️ `bounding_box()` parle en pixels CSS relatifs au VIEWPORT, alors que
+    # `screenshot(clip=…)` parle en pixels de la PAGE : les mélanger fait
+    # mesurer une zone qui n'a rien à voir. On découpe donc nous-mêmes, en
+    # remettant l'échelle de l'écran (device_scale_factor).
+    ech = plein.width / page.viewport_size["width"]
+    g = max(0, int(boite["x"] * ech))
+    h = max(0, int(boite["y"] * ech))
+    d = min(plein.width, int((boite["x"] + boite["width"]) * ech))
+    b = min(plein.height, int((boite["y"] + boite["height"]) * ech))
+    if d - g < 2 or b - h < 2:
+        return None, f"{sel} hors du viewport"
+    im = plein.crop((g, h, d, b))
+    px = list(im.getdata())
+    lums = sorted(luminance(*p) for p in px)
+    pire = lums[int(len(lums) * 0.9)]          # le fond le plus clair
+    i = min(range(len(px)), key=lambda k: abs(luminance(*px[k]) - pire))
+    fr, fg, fb = px[i]
+    tr = alpha * 255 + (1 - alpha) * fr        # blanc à `alpha` sur ce fond
+    tg = alpha * 255 + (1 - alpha) * fg
+    tb = alpha * 255 + (1 - alpha) * fb
+    return contraste(luminance(tr, tg, tb), pire), f"fond le plus clair rgb({fr},{fg},{fb})"
+
 def servir():
     socketserver.TCPServer.allow_reuse_address = True
     srv = socketserver.TCPServer(("127.0.0.1", PORT), functools.partial(Muet, directory=RACINE))
@@ -130,11 +197,14 @@ SELS = [
     ["label sur crème", ".demarche .lab"], ["italique or sur crème", ".demarche .grand em"],
     ["texte démarche", ".split-t p"], ["légende démarche", ".split-lg"],
     ["lien souligné", ".split-t .sous"],
+    ["label des quatre temps", ".temps .lab"], ["italique or sur papier", ".temps .grand em"],
+    ["description des quatre temps", ".temps-d"],
+    ["numéro d'étape", ".tp-n"], ["titre d'étape", ".tp-t"], ["texte d'étape", ".tp-s"],
     ["label sur noir", ".folio .lab"], ["italique or sur noir", ".folio .grand em"],
     ["description portfolio", ".folio-d"],
     ["label carrousel", ".cars-t .l"], ["sous-titre carrousel", ".cars-t .s"],
     ["compteur", ".cars-c"], ["bouton pilule", ".cars-b .pill"],
-    ["description plein écran", ".atelier .plein-d"], ["étiquettes", ".tags li"],
+    ["description plein écran", ".lieux .plein-d"], ["étiquettes", ".tags li"],
     ["attribution citation", ".cit-a"],
     ["coordonnées du pied", ".pied-c"], ["liens du pied", ".pied-r a"],
     ["mentions du pied", ".pied-b"],
@@ -192,6 +262,76 @@ def main():
                 }""")
                 bon("le menu burger apparaît sur téléphone") if b else mauvais("pas de burger sur téléphone")
                 if VOIR: capturer(page, "tel")
+
+            # Le défilement est écrit à la main, donc `scroll-margin-top` doit
+            # être retranché explicitement. Quand on l'oublie, l'étiquette de
+            # la section arrive collée sous la barre fixe : invisible sur les
+            # captures d'ensemble, très visible pour qui clique le menu.
+            # Deux boîtes qui se croisent : invisible dans un contrôle de
+            # débordement, très visible à l'œil. Vu à 768 px, où la pilule
+            # centrée en absolu s'asseyait sur la ligne des métriques.
+            titre("Rien ne se chevauche")
+            page.evaluate("() => window.scrollTo(0, 0)")
+            page.wait_for_timeout(400)
+            # ⚠️ On compare aux boîtes qui portent VRAIMENT du texte. Comparer à
+            # `.hero-mx` (un <ul> large de toute la page même quand ses trois
+            # libellés sont courts) déclarait un chevauchement inexistant.
+            for a_, b_ in [(".hero-pill", ".hero-mx li"), (".hero-pill", ".cadre"),
+                           (".hero-lg", ".cadre")]:
+                croise = page.evaluate("""([sa, sb]) => {
+                  const A = document.querySelector(sa);
+                  const Bs = [...document.querySelectorAll(sb)];
+                  if (!A || !Bs.length) return null;
+                  const a = A.getBoundingClientRect();
+                  let pire = 0;
+                  for (const B of Bs) {
+                    const b = B.getBoundingClientRect();
+                    const x = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+                    const y = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+                    if (x > 2 && y > 2) pire = Math.max(pire, Math.round(Math.min(x, y)));
+                  }
+                  return pire;
+                }""", [a_, b_])
+                if croise is None:
+                    bon(f"{a_} / {b_} : absent à cette taille")
+                elif croise:
+                    mauvais(f"{a_} chevauche {b_} sur {croise} px")
+                else:
+                    bon(f"{a_} et {b_} ne se touchent pas")
+
+            # Le seul contrôle qui regarde vraiment ce qu'il y a SOUS le texte.
+            titre("Texte posé sur une photo")
+            for nom_, sel_, seuil_ in [("description « pour un lieu »", ".lieux .plein-d", 4.5),
+                                       ("titre « pour un lieu »", ".lieux .plein-t", 3.0),
+                                       ("description « la visite »", "#visite .plein-d", 4.5),
+                                       ("légende du héros", ".hero-lg", 4.5)]:
+                page.evaluate("s => document.querySelector(s)?.scrollIntoView({block:'center'})", sel_)
+                page.wait_for_timeout(900)
+                r_, quoi_ = fond_derriere(page, sel_)
+                if r_ is None:
+                    mauvais(f"{nom_} : {quoi_}")
+                elif r_ >= seuil_:
+                    bon(f"{nom_} : {r_}:1 sur la photo ({quoi_})")
+                else:
+                    mauvais(f"{nom_} : {r_}:1 < {seuil_} SUR LA PHOTO ({quoi_})")
+
+            titre("Arrivée par le menu")
+            for ancre, sel in [("#demarche", ".demarche .lab"),
+                               ("#atelier", ".temps .lab"),
+                               ("#portfolio", ".folio .lab")]:
+                page.evaluate("() => window.scrollTo(0, 0)")
+                page.wait_for_timeout(300)
+                page.evaluate(f"document.querySelector('a[href=\"{ancre}\"]').click()")
+                page.wait_for_timeout(1700)
+                jeu = page.evaluate("""(sel) => {
+                  const l = document.querySelector(sel).getBoundingClientRect();
+                  const n = document.querySelector('.nav').getBoundingClientRect();
+                  return Math.round(l.top - n.bottom);
+                }""", sel)
+                bon(f"{ancre} : l'étiquette respire sous la barre ({jeu} px)") if jeu >= 16 \
+                    else mauvais(f"{ancre} : l'étiquette arrive à {jeu} px de la barre fixe ({sel})")
+            page.evaluate("() => window.scrollTo(0, 0)")
+            page.wait_for_timeout(400)
 
             if larg == 1440:
                 titre("Typographie")
@@ -338,7 +478,8 @@ def main():
         page.goto(BASE, wait_until="load")
         page.wait_for_timeout(900)
         txt = page.inner_text("main")
-        for att in ["ANGY", "LA DÉMARCHE", "LE PORTFOLIO", "Retrouvons-nous", "Venez pour l'œuvre"]:
+        for att in ["ANGY", "LA DÉMARCHE", "L'ATELIER", "DANS UN LIEU",
+                    "par sa main", "La forme", "Le trait", "Retrouvons-nous"]:
             bon(f"sans JS : « {att} » reste lisible") if att in txt \
                 else mauvais(f"sans JS : « {att} » a disparu")
         h = page.get_attribute('.split-t .sous', 'href')
@@ -373,7 +514,7 @@ def main():
     print("Tout est vert.")
 
 
-SECTIONS = ".hero, #demarche, #portfolio, #atelier, .cit, #visite, .pied"
+SECTIONS = ".hero, #demarche, #atelier, #portfolio, #lieux, .cit, #visite, .pied"
 
 def capturer(page, tag):
     d = os.path.join(RACINE, "_qc_captures")

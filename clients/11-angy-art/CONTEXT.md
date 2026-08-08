@@ -55,16 +55,42 @@ même puis remplacée. Sa phrase fondatrice survit et porte encore les scènes :
 index.html            la page (source directe, aucun build : zéro image base64)
 assets/app.css        tout le style        ⚠️ bumper ?v= à chaque modif
 assets/app.js         tout le comportement ⚠️ bumper ?v= à chaque modif
-                      ↳ les tableaux OEUVRES et MATIERES sont EN HAUT du fichier
-assets/images/        favicon / og / qr / gallery  (gallery vide, en attente)
+                      ↳ le tableau SITUATIONS est EN HAUT du fichier
+assets/images/scenes/      les 9 photos d'atelier posées dans les sections
+assets/images/situations/  les 6 mises en situation du carrousel
+assets/images/        favicon / logos / og / qr
+_sources/photos/      les 15 photos d'origine, archivées en WebP qualité 95
+                      ⚠️ `clients/*/_sources/` est GITIGNORÉ : ce dossier n'existe
+                      que sur la machine où les photos ont été reçues. Sans lui,
+                      `_photos.py` ne peut pas tourner (les sorties, elles, sont
+                      bien dans le dépôt).
+_photos.py            fabrique les images du site depuis _sources/photos
+                      `python _photos.py --voir` détaille chaque sortie
 affiche.html          l'affiche A4 imprimable → assets/docs/Affiche_Angy_Art_A4.pdf
-_qc.py                la suite de contrôle : 66 contrôles, verte avant tout déploiement
+_qc.py                la suite de contrôle : 82 contrôles, verte avant tout déploiement
                       `python _qc.py --voir` produit aussi les captures par section
 _build_assets.py      favicon + OG + QR (ré-exécutable, chaque QR est RELU par décodage)
+                      `python _build_assets.py --og` refait la seule carte de partage,
+                      sans avoir besoin du logo source
 404.html _headers robots.txt sitemap.xml
 _qc_captures/         les captures (jamais déployées)
 _dist/                ce qui part sur Cloudflare (généré)
 ```
+
+### ⚠️ Les anciennes images restent en cache, et on ne peut pas les purger
+
+Après le passage aux vraies photos, les 4 anciennes images générées répondaient
+encore **200** à leur URL. Vérification faite : `cf-cache-status: HIT`,
+`max-age=31536000, immutable`. C'est le **cache de bordure**, pas le déploiement,
+et la preuve tient en une ligne : la même URL sur l'alias du déploiement
+(`https://<hash>.angy-art.pages.dev/...`) renvoie bien **404**.
+
+Sur un domaine `*.pages.dev`, **il n'y a pas de purge** : ce n'est pas une zone du
+compte, `scripts/purger.py` ne peut rien. Ces copies vivront jusqu'à un an. Sans
+conséquence ici (plus rien ne les référence), mais à savoir : **un fichier retiré
+d'un site NEBULA ne disparaît pas d'Internet le jour où on le retire.** La seule
+vraie protection est celle déjà posée sur PISTE : une marque de déploiement dans
+le nom des fichiers compilés.
 
 ### Pour publier une modification
 ```bash
@@ -78,9 +104,9 @@ npx wrangler pages deploy clients/11-angy-art/_dist --project-name=angy-art --br
 | # | Quoi | Où ça se pose | État |
 |---|---|---|---|
 | 1 | **Numéro WhatsApp** | les `href="https://wa.me/…"` de `index.html` (écrits en dur pour marcher sans JS) | ⚠️ câblé sur `2290152006490` (la forme donnée au formulaire). **Envoyer un message de test.** Si le lien n'ouvre pas la bonne conversation, essayer `22952006490` — au Bénin les deux formes vivent, et les gens donnent souvent la mauvaise sans le savoir. |
-| 2 | **Photos des œuvres** | tableau `OEUVRES` en haut de `assets/app.js` + `assets/images/gallery/` | ⚠️ **PRÉFIGURATION.** 8 visuels générés (Nano Banana Pro, 2026-08-05) occupent le carrousel pour montrer la direction. Ils portent un titre et une technique, **jamais un prix, une dimension ni une mention « disponible »** : ce sont des ambiances, pas un catalogue. **Ils partent le jour où Angélique envoie les photos de ses vraies pièces** : remplacer le fichier et le titre dans `OEUVRES`, le reste suit. Le message à lui envoyer, avec les 5 règles de prise de vue, est dans `PROMPTS-IMAGES.md` § 3. |
+| 2 | **Photos des œuvres, détourées** | un tableau `OEUVRES` à créer dans `assets/app.js`, à côté de `SITUATIONS` | ⏳ **C'est ce qui manque encore.** Le carrousel montre aujourd'hui 6 **mises en situation** (ses vrais masques dans des intérieurs de présentation), et le dit. Ce qu'il n'a pas : la pièce seule, sur fond neutre, avec **son vrai titre, sa technique et ses dimensions**. Mongazi a annoncé ces photos-là pour plus tard. ⛔ Quand elles arrivent, elles vont dans un tableau **séparé** : une œuvre au catalogue et une mise en situation ne se mélangent pas. Les 5 règles de prise de vue sont dans `PROMPTS-IMAGES.md` § 3. |
 | 3 | **Logo** | `_sources/logo-transparent.png` → `_build_assets.py` | ✅ **REÇU le 2026-08-05.** Le glyphe (axe vertical, deux barres, deux points) est détouré et posé dans la nav, le pied, la modale, le favicon, l'OG et l'affiche. Son accroche « Inspiré d'en haut, enraciné ici. » remplace celle qu'on avait écrite. |
-| 4 | **Photos d'atelier / portrait** | héros, « La démarche », « L'atelier », « La citation », « La visite » | ⚠️ **PRÉFIGURATION.** Les 5 scènes sont générées (matière en macro, mains au travail, la salle, un vernissage, la salle le soir). Elles peuvent rester : ce sont des **ambiances**, pas des œuvres à vendre. À remplacer quand elle enverra de vraies photos d'atelier. Chacune est un `.scene` : changer le `src` de l'`<img class="scene-p">` suffit. |
+| 4 | **Photos d'atelier / portrait** | héros, « La démarche », les 4 temps, « La citation », « Pour un lieu », « La visite » | ✅ **REÇUES ET POSÉES le 2026-08-08.** 7 photos réelles d'Angélique au travail. **Plus une seule image générée sur le site.** Détail au § 6. |
 | 5 | **Vrais témoignages** | section « La citation » | ⏳ la section affiche une phrase **d'Angélique**, signée d'elle. Le jour où un vrai client écrit : remplacer la citation et l'attribution. ⛔ Jamais un faux critique, jamais un faux magazine. |
 | 6 | **Adresse / atelier** | pied de page + « L'atelier » | ⏳ « Cotonou » seul pour l'instant. Pas de carte tant que l'adresse n'est pas donnée : un mauvais repère est pire que pas de repère. |
 | 7 | **Musique** | FAB son | ✅ ambiance de salle **synthétisée** (Web Audio, aucun fichier, aucun droit à payer). Remplaçable par une piste dont elle détient les droits. |
@@ -105,23 +131,56 @@ npx wrangler pages deploy clients/11-angy-art/_dist --project-name=angy-art --br
   déjà rédigée. Il n'y a pas d'agenda derrière : annoncer une disponibilité qu'on ne tient
   pas coûte le client.
 
-## 6. Les images générées
+## 6. Les images du site — TOUTES RÉELLES depuis le 2026-08-08
 
-**8 œuvres + 5 scènes, produites le 2026-08-05 via WaveSpeed (Nano Banana Pro, 0,14 $ pièce).**
+**Les 13 images générées par IA ont été supprimées** (8 fausses œuvres + 5 scènes
+d'ambiance), avec `_gen_images.py` et `_pose_images.py`. Les prompts restent tracés dans
+`PROMPTS-IMAGES.md`, et l'historique git garde le reste. Coût enterré : 2,80 $.
 
-- Les prompts, le socle commun et les variations : `_gen_images.py` (relançable).
-- Les originaux : `_sources/ia/` (non déployés).
-- Le passage au web : `python _pose_images.py` (redimensionne, unifie les fonds des
-  œuvres par un assombrissement radial, écrit en WebP).
-- Coût total de la session : **2,80 $**. Solde restant : 7,49 $.
+Mongazi a envoyé **15 photos** le 2026-08-08, en précisant : « ce ne sont pas ses
+produits, ce sont des images pour rendre son activité plus authentique ». Deux familles,
+et elles ne se traitent pas pareil.
 
-⚠️ **Les 8 œuvres du carrousel sont une préfiguration, pas le catalogue.** Elles montrent
-ce que le site fera avec de vraies photos. Aucune ne porte de prix ni de dimension. Le
-jour où Angélique envoie ses pièces, on remplace, et rien d'autre ne bouge.
+### a. Les 7 photos d'atelier — 100 % réelles, aucune retouche
 
-Deux corrections faites en les regardant : les visiteurs du vernissage étaient deux
-Européens (relancé avec un couple ouest-africain), et les fonds des 8 œuvres allaient du
-gris clair au gris foncé (unifiés au tirage).
+Angélique au travail, à Cotonou. Ce sont elles qui portent l'authenticité du site.
+
+| Fichier produit | Ce qu'on y voit | Où |
+|---|---|---|
+| `scenes/hero.webp` | de profil, dehors, elle trace les motifs blancs d'un grand masque | héros |
+| `scenes/demarche.webp` | penchée sur sa table, fleurs bleues, pinceau fin | 01 La démarche |
+| `scenes/temps-1.webp` | l'enduit blanc sur une forme encore nue | 02 · La forme |
+| `scenes/temps-2.webp` | elle mélange l'orange, palette dans un cadre doré | 02 · La couleur |
+| `scenes/temps-3.webp` | la ligne blanche au pinceau sur le terracotta | 02 · Le trait |
+| `scenes/temps-4.webp` | assise sur un tabouret devant une toile de plus de 2 m | 02 · L'échelle |
+| `scenes/matiere.webp` | détail du relief, sans personne (recadré dans le héros) | 04 La citation |
+
+### b. Les 6 mises en situation + le lieu — ses vrais masques, décors montés
+
+⚠️ **Les MASQUES sont bien les siens. Les INTÉRIEURS sont des rendus.** La preuve est
+dans les photos elles-mêmes : le terracotta à spirale de `situ-1` est **exactement** celui
+qu'elle peint sur `temps-3`, et le jaune/orange de `situ-2` est celui de `demarche`.
+
+Donc le site les annonce pour ce qu'elles sont. Le mot **« MISE EN SITUATION »** est le
+cartel de chaque carte, il est répété dans la vue en grand, dans le texte alternatif lu
+par les lecteurs d'écran, et la description de la section le dit en toutes lettres.
+⛔ **Aucun prix, aucune dimension, aucun titre d'œuvre inventé** : `t` décrit ce qu'on
+voit (« Le bleu outremer »), il ne nomme pas une pièce. Seule Angélique peut la nommer.
+
+Une seule retouche, sur `situ-3` : le dos d'un livre du décor portait **« PICASO »**.
+C'est une faute du décor, pas de l'œuvre : elle est noyée dans un flou dégradé, comme une
+profondeur de champ. ⚠️ Un flou posé sur un rectangle net **se voit** (on distingue les
+quatre arêtes) : le masque est dégradé sur 55 px et déborde sur du mur uni.
+
+`lieu.webp` (le masque monumental dans un restaurant) sert l'axe le plus commercial de son
+activité : équiper un hôtel, un restaurant, un hall.
+
+### c. La carte de partage
+
+`assets/images/og/og.png` porte désormais **une vraie photo d'atelier** sur sa moitié
+droite, fondue vers le noir pour que le texte de gauche reste lisible. C'est cette
+vignette que voient les gens quand le lien circule sur WhatsApp, et c'est là que se joue
+la première impression au Bénin. `python _build_assets.py --og` la refait seule.
 
 ## 7. Journal
 
@@ -146,3 +205,50 @@ gris clair au gris foncé (unifiés au tirage).
   à l'œil : **les textes d'une section sautée restaient cachés pour toujours.**
   Le monogramme provisoire n'avait qu'une barre sur deux A : il se lisait « A Λ ».
   Il a disparu avec l'arrivée du vrai logo.
+
+- **2026-08-08 — LES VRAIES PHOTOS. Le site ne contient plus une seule image générée.**
+
+  Mongazi envoie 15 photos, en précisant que ce ne sont pas les produits d'Angélique
+  mais de quoi rendre son activité authentique. Les 13 visuels IA sont **supprimés**
+  (§ 6), et avec eux les 8 fausses œuvres du carrousel, qui étaient le point faible
+  du site depuis sa mise en ligne.
+
+  Nouvelle architecture, **7 sections** au lieu de 6 :
+
+  1. héros, elle peint dehors · 2. La démarche · **3. La main, en quatre temps**
+  (nouvelle : l'enduit, le pigment, le trait, l'échelle) · 4. Dans un lieu
+  (ex-portfolio, six mises en situation) · 5. La citation, sur un détail de relief ·
+  **6. Pour un lieu** (nouvelle : hôtels, restaurants, halls) · 7. La visite.
+  L'ancien plein écran « L'ATELIER » disparaît : les quatre temps disent la même
+  chose, en vrai. L'ancre `#atelier` du menu pointe désormais sur eux.
+
+  **La signature du héros vient de son propre geste** : la photo se révèle d'abord
+  sans couleur, comme la forme enduite de blanc, puis le pigment monte. Deux calques
+  du même fichier, donc un seul téléchargement, et **seule l'opacité s'anime** : une
+  transition de `filter` sur une image de cette taille aurait fait tressauter
+  l'entrée du héros sur un téléphone.
+
+  Défauts trouvés **en regardant, puis mesurés**, qu'aucun contrôle ne voyait :
+
+  - ⛔ **Cliquer une entrée du menu posait l'étiquette de section à 6 px sous la
+    barre fixe** (mesuré à 390 px). Le défilement est écrit à la main, donc
+    `scroll-margin-top` n'était **pas** appliqué : il faut le lire et le retrancher.
+    Défaut **antérieur** à cette session, il touchait aussi `#demarche` et
+    `#portfolio`. Corrigé : 6 px → 90 px.
+  - ⛔ **Le texte de « Pour un lieu » se posait sur un masque orange vif.** C'est la
+    photo la plus claire du site et le voile standard tombe à 20 % en son milieu.
+    ⚠️ **Le contrôle de contraste ne pouvait pas le voir** : il lit la couleur de
+    fond *calculée*, qui est transparente au-dessus d'une photo.
+  - ⛔ À 768 px, « DÉCOUVRIR L'ATELIER » **barrait** « PIÈCES · UNIQUES ».
+  - Le flou posé sur le livre « PICASO » laissait voir ses **quatre arêtes**.
+
+  Trois familles de contrôles ajoutées, pour que rien de tout ça ne revienne :
+  **l'arrivée par le menu**, **le chevauchement des boîtes**, et surtout le
+  **contraste mesuré sur les pixels réellement rendus** (on masque le texte, on
+  photographie la zone, on prend le décile le plus clair du fond).
+
+  ⚠️ Deux pièges rencontrés en écrivant ces contrôles, notés pour la prochaine fois :
+  `page.screenshot(clip=…)` et `bounding_box()` **ne parlent pas dans le même
+  repère** (page contre viewport) ; et une boîte lue **avant** que le défilement
+  doux se soit posé est périmée de plusieurs centaines de pixels. Les deux
+  faisaient mesurer une zone qui n'avait rien à voir.

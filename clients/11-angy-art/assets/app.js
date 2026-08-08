@@ -11,47 +11,33 @@
      ZONE À COMPLÉTER — c'est ici, et nulle part ailleurs.
      ================================================================ */
 
-  /* LES ŒUVRES.
-     Tant que ce tableau est vide, le carrousel présente LES MATIÈRES
-     de l'atelier (ci-dessous), qui sont vraies et n'inventent rien.
-     Dès qu'une ligne est ajoutée ici, les œuvres remplacent les
-     matières : cartel, compteur, vue en grand suivent tout seuls.
+  /* LES MISES EN SITUATION.
+     Ce sont ses VRAIS masques, photographiés dans des intérieurs de
+     présentation montés. Preuve qu'ils sont d'elle : le terracotta à
+     spirale de situ-1 est celui qu'elle peint dans « Le trait », et le
+     jaune/orange de situ-2 est celui de la section « La démarche ».
 
-     Poser le fichier dans assets/images/gallery/.
-     ⛔ Jamais d'image générée par IA. Jamais un titre inventé.
+     ⛔ JAMAIS un prix, JAMAIS une dimension, JAMAIS le mot « disponible ».
+        Une mise en situation n'est pas un catalogue, et le cartel le dit.
+     ⛔ JAMAIS un titre d'œuvre inventé : `t` décrit ce qu'on voit, rien de
+        plus. Seule Angélique peut nommer une pièce.
 
-     { f:'ma-piece.jpg', t:'Titre', tech:'Technique mixte, relief',
-       an:'2026', mat:'Pigment, lin brut, feuille de cuivre', ar:'4/5' }
-  */
-  /* ⚠️ VISUELS DE PRÉFIGURATION, générés le 2026-08-05. Ils montrent la
-     DIRECTION, pas le catalogue. Ils partent le jour où Angélique envoie les
-     photos de ses vraies pièces : remplacer le fichier et le titre, le reste
-     suit. Aucun prix, aucune dimension, aucune mention « disponible » ne doit
-     leur être associée. */
-  var OEUVRES = [
-    { f:"oeuvre-1.webp", t:"Spirales", mat:"Terre cuite, feuille d'or, lin brut", ar:"900/1117" },
-    { f:"oeuvre-2.webp", t:"Chevrons", mat:"Pigment indigo, incisions, lin", ar:"1/1" },
-    { f:"oeuvre-3.webp", t:"Le masque", mat:"Relief, matériaux rapportés, terre", ar:"180/241" },
-    { f:"oeuvre-4.webp", t:"Trame", mat:"Terre rouge, textile indigo, lin", ar:"36/29" },
-    { f:"oeuvre-5.webp", t:"Astre", mat:"Noir sur noir, éclats d'or", ar:"900/1117" },
-    { f:"oeuvre-6.webp", t:"Strates", mat:"Ocres, terre d'ombre, gris cendre", ar:"1/1" },
-    { f:"oeuvre-7.webp", t:"Damier", mat:"Rouge profond, feuille d'or", ar:"180/241" },
-    { f:"oeuvre-8.webp", t:"Entrelacs", mat:"Kaolin, fusain, lin brut", ar:"900/1117" },
-  ];
-
-  /* LES MATIÈRES — l'état honnête du carrousel tant qu'il n'y a pas
-     de photo. Ce ne sont pas des œuvres, ce sont des surfaces. */
-  var MATIERES = [
-    { l: "MATIÈRE · ATELIER", t: "Toile brute", s: "Le lin tendu, avant le premier geste.",
-      ar: "4/5", v: "--ang:90deg;--fw:1px;--fs:5px;--fa:.05;--c1:#524839;--c2:#2e2820" },
-    { l: "MATIÈRE · ATELIER", t: "Pigment", s: "La couleur posée, reprise, poncée jusqu'à ce qu'elle tienne.",
-      ar: "1/1", v: "--ang:24deg;--fw:3px;--fs:14px;--fa:.045;--c1:#63492c;--c2:#32251a" },
-    { l: "MATIÈRE · ATELIER", t: "Relief", s: "La surface qu'on creuse et qu'on rehausse. Le cœur du travail.",
-      ar: "3/4", v: "--ang:118deg;--fw:2px;--fs:7px;--fa:.085;--c1:#4e4738;--c2:#2a251d" },
-    { l: "MATIÈRE · ATELIER", t: "Textile", s: "Le motif qui vient du tissu, et la trame qu'il laisse.",
-      ar: "5/4", v: "--ang:90deg;--fw:2px;--fs:9px;--fa:.07;--c1:#5f5342;--c2:#332b22" },
-    { l: "MATIÈRE · ATELIER", t: "Lumière", s: "La dernière matière. Sans elle, un relief n'est qu'une surface.",
-      ar: "4/5", v: "--ang:66deg;--fw:1px;--fs:22px;--fa:.10;--c1:#75592c;--c2:#2f271a" }
+     Le jour où ses photos d'œuvres arrivent (fond neutre, une pièce par
+     image), elles vont dans un tableau ŒUVRES séparé, avec leur vrai titre,
+     leur technique et leurs dimensions. Les deux ne se mélangent pas. */
+  var SITUATIONS = [
+    { f: "situ-1.webp", ar: "798/1004", t: "Deux visages, terre et blanc",
+      s: "Socles dorés, tablette de marbre, mur de noyer." },
+    { f: "situ-2.webp", ar: "4/5", t: "Le collier de perles",
+      s: "Jaune et terre, tige serpentine, socle noir." },
+    { f: "situ-3.webp", ar: "4/5", t: "Le bleu outremer",
+      s: "Boucles vertes, tige en spirale, niche de pierre claire." },
+    { f: "situ-4.webp", ar: "4/5", t: "Jaune et terre",
+      s: "Socle clair, épis secs, lumière rasante de niche." },
+    { f: "situ-5.webp", ar: "4/5", t: "Le visage terracotta",
+      s: "Boucles jaunes, socle blanc, étagère de noyer." },
+    { f: "situ-6.webp", ar: "4/5", t: "Le même, sur socle noir",
+      s: "Travertin, vase d'épis, lumière chaude." }
   ];
 
   /* Les messages WhatsApp, un par porte d'entrée. Le numéro vit dans
@@ -127,7 +113,8 @@
      Chaque élément n'est traité qu'une fois, et jamais rejoué en remontant. */
   (function revelations() {
     var restants = $$('[data-mots], .lab, .rv, .plein, .split-i, .split-t, .split-lg,'
-      + ' .cit-i, .cit-a, .cars-b, .folio-d, .tags, .plein-d, .plein .pill');
+      + ' .cit-i, .cit-a, .cars-b, .folio-d, .tags, .plein-d, .plein .pill,'
+      + ' .temps-d, .tp');
     if (doux) { restants.forEach(function (el) { el.classList.add('vu'); }); return; }
 
     var attente = false;
@@ -211,7 +198,13 @@
     var c = document.getElementById(id);
     if (!c) return;
     e.preventDefault();
-    var y = c.getBoundingClientRect().top + window.scrollY;
+    /* ⚠️ On défile à la main, donc `scroll-margin-top` n'est PAS appliqué tout
+       seul : il faut le lire et le retrancher. Sans ça, sur téléphone, cliquer
+       une entrée du menu posait l'étiquette de section à 6 px sous la barre
+       fixe (mesuré) : elle la touchait presque. Sur grand écran le défaut se
+       cachait derrière le grand rembourrage des sections. */
+    var marge = parseFloat(getComputedStyle(c).scrollMarginTop) || 0;
+    var y = c.getBoundingClientRect().top + window.scrollY - marge;
     if (fin && !doux) majCible(y);
     else window.scrollTo({ top: y, behavior: doux ? 'auto' : 'smooth' });
     history.replaceState(null, '', '#' + id);
@@ -298,9 +291,7 @@
     var zone = $('#cars'), piste = $('#carsP');
     if (!zone || !piste) return;
 
-    var reels = OEUVRES.filter(function (o) { return o && o.f; });
-    var oeuvres = reels.length > 0;
-    var data = oeuvres ? reels : MATIERES;
+    var data = SITUATIONS.filter(function (o) { return o && o.f; });
     if (!data.length) { zone.remove(); return; }
 
     /* le bloc de texte, à gauche du centre */
@@ -308,16 +299,17 @@
     txt.className = 'cars-t';
     zone.appendChild(txt);
 
+    /* Le texte alternatif dit ce que c'est, et ce que ce n'est pas.
+       Un lecteur d'écran ne doit pas croire à une fiche produit. */
+    function legende(o) {
+      return o.t + ", pièce d'Angélique Avocevou, en mise en situation. " + o.s;
+    }
+
     piste.innerHTML = data.map(function (o, i) {
-      var ar = o.ar || '4/5';
-      if (oeuvres) {
-        var alt = (o.t ? o.t + ', ' : '') + (o.tech || 'œuvre') + ' par Angélique Avocevou';
-        return '<figure class="car car--photo" data-i="' + i + '"><div class="car-c" style="--ar:' + esc(ar) + '">' +
-          '<img src="assets/images/gallery/' + esc(o.f) + '" alt="' + esc(alt) + '" loading="lazy" decoding="async">' +
-          '</div></figure>';
-      }
-      return '<figure class="car" data-i="' + i + '"><div class="car-c" style="--ar:' + esc(ar) + '">' +
-        '<div class="scene scene--var" style="' + esc(o.v) + '"><i class="rai"></i></div>' +
+      return '<figure class="car car--photo" data-i="' + i + '">' +
+        '<div class="car-c" style="--ar:' + esc(o.ar || '4/5') + '">' +
+        '<img src="assets/images/situations/' + esc(o.f) + '" alt="' + esc(legende(o)) +
+        '" loading="lazy" decoding="async">' +
         '</div></figure>';
     }).join('');
 
@@ -331,13 +323,10 @@
       var o = data[actif];
       txt.classList.add('chg');
       setTimeout(function () {
-        var etiq = oeuvres
-          ? [o.tech || 'Technique mixte', o.an].filter(Boolean).join(' · ').toUpperCase()
-          : o.l;
         txt.innerHTML =
-          '<p class="l">' + esc(etiq) + '</p>' +
-          '<p class="t">' + esc(o.t || 'Sans titre') + '</p>' +
-          '<p class="s">' + esc(oeuvres ? (o.mat || '') : o.s) + '</p>';
+          '<p class="l">MISE EN SITUATION</p>' +
+          '<p class="t">' + esc(o.t) + '</p>' +
+          '<p class="s">' + esc(o.s) + '</p>';
         txt.classList.remove('chg');
       }, 230);
       if (cpt) cpt.innerHTML = deux(actif + 1) + ' <i>—</i> ' + deux(n);
@@ -378,22 +367,23 @@
       dep = false;
       var d = e.clientX - dx;
       if (Math.abs(d) > 42) aller(actif + (d < 0 ? 1 : -1));
-      else if (oeuvres) ouvrirLoupe(actif);
+      else ouvrirLoupe(actif);
     });
     zone.addEventListener('pointercancel', function () { dep = false; });
 
     aller(0);
 
-    /* la vue en grand, seulement quand il y a de vraies photos */
+    /* la vue en grand */
     var d = $('#loupe'), f = $('#loupeF'), cap = $('#loupeCap');
     var img = null;
     function ouvrirLoupe(i) {
-      if (!oeuvres || !d || !d.showModal) return;
+      if (!d || !d.showModal) return;
       if (!img) { img = document.createElement('img'); f.insertBefore(img, cap); }
       var o = data[i];
-      img.src = 'assets/images/gallery/' + o.f;
-      img.alt = (o.t ? o.t + ', ' : '') + (o.tech || 'œuvre') + ' par Angélique Avocevou';
-      cap.textContent = [o.t, o.tech, o.an].filter(Boolean).join(' · ');
+      img.src = 'assets/images/situations/' + o.f;
+      img.alt = legende(o);
+      /* même en grand, le cartel rappelle ce que l'image est */
+      cap.textContent = 'MISE EN SITUATION · ' + o.t.toUpperCase();
       d.showModal();
       document.body.classList.add('fige');
     }
