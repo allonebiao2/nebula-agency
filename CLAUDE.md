@@ -137,6 +137,37 @@
   données : ne jamais y recopier un chiffre ou un nom de métier.
 - **Source de vérité : `piste/PRODUCT.md`**, 88 décisions.
 
+### BÉNIN MON PAYS — l'expérience du pays  *(objet éditorial, pas un SaaS)*
+- **Ce que c'est** : « pas un site sur le Bénin, **un voyage au Bénin qui dure
+  sept minutes** ». 8 stations dans l'ordre réel de la latitude, de la **Porte
+  du Non-Retour (km 0)** au **fleuve Niger (km 617)**, sur une échelle de 700 km.
+  Le défilement est la route, l'anneau du coin est **gradué en kilomètres**.
+- **La règle qui fait tout** : **un verbe d'interaction DIFFÉRENT par lieu**
+  (tenir, remonter, choisir, pagayer, frotter, descendre, attendre, arriver).
+  Si une interaction pourrait être copiée-collée ailleurs, elle est à refaire.
+- **Le refus fondateur** : la référence de Mongazi (« GLOBETROTTER ») a un bouton
+  **« HASARD »**, donc c'est un catalogue. Ici **l'ordre des lieux EST le sens**,
+  et rien ne se tire au sort.
+- **Où** : `benin-mon-pays/` · `python benin-mon-pays/_qc.py` (**63 contrôles**),
+  `_voir.py` (planches 390 + 1440, à REGARDER), `_images.py`.
+- ⚠️ **NOM PAS TRANCHÉ** (Bénin mon pays · MON BÉNIN · SEPT CENTS · REMONTER) et
+  **PAS DÉPLOYÉ, volontairement** : le nom et le point de départ sont des
+  décisions de Mongazi. **10 questions posées le 2026-08-09, sans réponse.**
+- ⚠️ **Les km sont des latitudes converties**, pas des distances routières
+  (Cotonou→Malanville fait ~730 km par la route et casserait l'échelle).
+- ⛔ **Aucune image générée d'un lieu réel.** En attendant les photos, le site est
+  un **atlas dessiné** (relevés SVG qui se tracent), fini en l'état.
+- **Couche « haltes » conçue mais PAS ouverte** : l'unité est « quelqu'un qui
+  fabrique quelque chose, dans un endroit », donc une coiffeuse et un parc
+  national sont le même objet ; un commerce apparaît à sa **latitude réelle** et
+  **la position ne s'achète pas**. Les 5 artisans déjà clients sont les premières
+  haltes naturelles, **mais il faut leur accord écrit**.
+- **Règle des éléments fixes, née ici** : un **instrument flottant ne recouvre
+  jamais du texte** ; seules les **bandes de bord** en ont le droit, et elles
+  doivent être **vraiment opaques** (vérifié en photographiant, pas en lisant le
+  CSS). Réserver une marge ne suffit pas : un `fixed` est ancré au viewport.
+- Détail complet : `benin-mon-pays/CONTEXT.md`
+
 ## Infrastructure — où tourne quoi (2026-08-02)
 
 | Ce qui tourne | Où | Notes |

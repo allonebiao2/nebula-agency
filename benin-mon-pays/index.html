@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fr" class="pas-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bénin mon pays · De l'océan au fleuve</title>
+<meta name="description" content="Un voyage de sept minutes à travers le Bénin, de la Porte du Non-Retour au fleuve Niger. Huit lieux, sept cents kilomètres, et le pays raconté par ceux qui le font.">
+<meta name="theme-color" content="#0b0a09">
+<meta name="author" content="NEBULA Agency">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bénin mon pays">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Bénin mon pays · De l'océan au fleuve">
+<meta property="og:description" content="Sept cents kilomètres, huit lieux, un seul mouvement. Le Bénin comme vous ne l'avez jamais parcouru.">
+<meta property="og:image" content="assets/images/og.png?v=20260809a">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="assets/images/favicon.svg?v=20260809a" type="image/svg+xml">
+<!-- Aucune police distante, aucune requête vers un tiers : la page doit
+     s'ouvrir en moins de trois secondes sur un téléphone moyen en 3G. -->
+<link rel="stylesheet" href="assets/app.css?v=20260809a">
+
+<script>document.documentElement.className = 'js';</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TouristTrip",
+  "name": "Bénin mon pays, de l'océan au fleuve",
+  "description": "Un parcours de huit lieux à travers le Bénin, de la Porte du Non-Retour à Ouidah jusqu'au fleuve Niger, sur environ sept cents kilomètres.",
+  "touristType": "Voyageur curieux du Bénin, diaspora afro-descendante",
+  "itinerary": {
+    "@type": "ItemList",
+    "numberOfItems": 8,
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "item": {"@type": "TouristAttraction", "name": "La Porte du Non-Retour", "address": "Ouidah, Bénin"}},
+      {"@type": "ListItem", "position": 2, "item": {"@type": "TouristAttraction", "name": "Ouidah", "address": "Ouidah, Bénin"}},
+      {"@type": "ListItem", "position": 3, "item": {"@type": "TouristAttraction", "name": "Cotonou", "address": "Cotonou, Bénin"}},
+      {"@type": "ListItem", "position": 4, "item": {"@type": "TouristAttraction", "name": "Ganvié", "address": "Lac Nokoué, Bénin"}},
+      {"@type": "ListItem", "position": 5, "item": {"@type": "TouristAttraction", "name": "Les palais royaux d'Abomey", "address": "Abomey, Bénin"}},
+      {"@type": "ListItem", "position": 6, "item": {"@type": "TouristAttraction", "name": "Le Koutammakou et les Tata Somba", "address": "Boukoumbé, Bénin"}},
+      {"@type": "ListItem", "position": 7, "item": {"@type": "TouristAttraction", "name": "Le parc national de la Pendjari", "address": "Atacora, Bénin"}},
+      {"@type": "ListItem", "position": 8, "item": {"@type": "TouristAttraction", "name": "Le fleuve Niger à Malanville", "address": "Malanville, Bénin"}}
+    ]
+  }
+}
+</script>
+</head>
+<body>
+
+<!-- ═══ LE RIDEAU ═══════════════════════════════════════════════ -->
+<div class="rideau" id="rideau" aria-hidden="true">
+  <div class="rideau-h"></div>
+  <div class="rideau-b"></div>
+  <div class="rideau-c">
+    <p class="rideau-t">Bénin <i>mon</i> pays</p>
+    <span class="rideau-f"></span>
+    <p class="rideau-n"><b id="rideauN">0</b> <small>km</small></p>
+  </div>
+</div>
+
+<!-- ═══ LE SEUIL D'ENTRÉE (autorise le son) ═════════════════════ -->
+<div class="seuil" id="seuil" hidden>
+  <div class="seuil-in">
+    <p class="seuil-k">Sept cents kilomètres · huit lieux</p>
+    <h1 class="seuil-t">Bénin <i>mon</i> pays</h1>
+    <p class="seuil-p">De la Porte du Non-Retour jusqu'au fleuve.<br>Le voyage remonte la route, à l'envers.</p>
+    <button class="seuil-b" id="entrer" type="button">
+      <span class="seuil-o" aria-hidden="true"></span>
+      Toucher pour entrer
+    </button>
+    <p class="seuil-s">Le son fait partie du voyage. Vous pourrez le couper.</p>
+  </div>
+</div>
+
+<!-- ═══ BARRE FIXE ══════════════════════════════════════════════ -->
+<header class="barre" id="barre">
+  <a class="barre-m" href="#station-0">Bénin mon pays</a>
+  <nav class="barre-n" aria-label="Aller à un lieu">
+    <button class="barre-b" id="ouvrirCarte" type="button" aria-expanded="false" aria-controls="carte">
+      <span aria-hidden="true"></span><span aria-hidden="true"></span>
+      Les huit lieux
+    </button>
+  </nav>
+  <button class="barre-s" id="sonBtn" type="button" aria-pressed="false" title="Couper ou remettre le son">
+    <span class="barre-so" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="vh">Son</span>
+  </button>
+</header>
+
+<!-- ═══ LA JAUGE (l'anneau gradué) ══════════════════════════════ -->
+<div class="jauge" id="jauge" aria-hidden="true">
+  <svg viewBox="0 0 200 200" class="jauge-a" id="jaugeA"></svg>
+  <p class="jauge-k"><b id="jaugeN">0</b><small>km</small></p>
+  <p class="jauge-l" id="jaugeL">au nord de l'océan</p>
+</div>
+
+<!-- ═══ LE PANNEAU DES HUIT LIEUX ═══════════════════════════════ -->
+<div class="carte" id="carte" hidden>
+  <div class="carte-in">
+    <p class="carte-k">Le pays, du sud au nord</p>
+    <ol class="carte-l" id="carteL"></ol>
+    <p class="carte-n">Les kilomètres sont comptés à vol d'oiseau depuis la côte.</p>
+  </div>
+</div>
+
+<main id="route" class="route">
+
+<!-- ═══ 0 · LA PORTE ════════════════════════════════════════════ -->
+<section class="st st--porte" id="station-0" data-km="0" data-verbe="tenir"
+         data-encre="#08070a" data-terre="#7d2f1c" data-motif="porte">
+  <div class="st-fond" aria-hidden="true"><div class="st-grain"></div><div class="st-motif"></div></div>
+  <div class="st-in">
+    <p class="st-k"><span class="st-km">km 0</span> · Ouidah, sur le sable</p>
+    <h2 class="st-t"><span class="mot">La</span> <span class="mot">Porte</span></h2>
+    <p class="st-r">La Porte du Non-Retour</p>
+    <div class="st-tx">
+      <p>Ici la terre s'arrête. Le monument a été élevé en 1995, au bout de la Route des Esclaves, qui court sur environ trois kilomètres et demi depuis la ville jusqu'à cette plage.</p>
+      <p>Pendant près de trois siècles, des femmes et des hommes ont fait ce chemin dans un seul sens.</p>
+      <p><strong>Vous allez le remonter.</strong></p>
+    </div>
+  </div>
+  <div class="tenir" id="tenir">
+    <button class="tenir-b" id="tenirB" type="button">
+      <svg class="tenir-c" viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="46" class="tenir-p"></circle>
+        <circle cx="50" cy="50" r="46" class="tenir-j" id="tenirJ"></circle>
+      </svg>
+      <span class="tenir-l" id="tenirL">Appuyer et tenir</span>
+    </button>
+    <p class="tenir-n">Le seul endroit du voyage où l'on ne peut pas passer sans s'arrêter.</p>
+  </div>
+</section>
+
+<!-- ═══ 1 · OUIDAH ══════════════════════════════════════════════ -->
+<section class="st" id="station-1" data-km="6" data-verbe="remonter"
+         data-encre="#160c0b" data-terre="#a4462a" data-motif="route">
+  <div class="st-fond" aria-hidden="true"><div class="st-grain"></div><div class="st-motif"></div></div>
+  <div class="st-in">
+    <p class="st-k"><span class="st-km">km 6</span> · Ouidah</p>
+    <h2 class="st-t"><span class="mot">Ouidah</span></h2>
+    <p class="st-r">La ville qui garde la mémoire</p>
+    <div class="st-tx">
+      <p>On remonte. L'Arbre de l'Oubli, la case du Zomaï où l'on enfermait dans le noir, l'Arbre du Retour. Puis la forêt sacrée de Kpassè, le temple des Pythons, et le fort portugais devenu musée d'histoire.</p>
+      <p>Depuis janvier 2024, la ville accueille les Vodun Days. Au Bénin, le vodoun n'est pas une curiosité pour visiteurs : c'est une religion reconnue, et le 10 janvier est une fête nationale.</p>
+    </div>
+  </div>
+  <p class="st-jauge" data-jauge>3 500 m parcourus depuis la mer</p>
+</section>
+
+<!-- ═══ 2 · COTONOU ═════════════════════════════════════════════ -->
+<section class="st" id="station-2" data-km="7" data-verbe="choisir"
+         data-encre="#0a1014" data-terre="#c07a2c" data-motif="marche">
+  <div class="st-fond" aria-hidden="true"><div class="st-grain"></div><div class="st-motif"></div></div>
+  <div class="st-in">
+    <p class="st-k"><span class="st-km">km 7</span> · Cotonou</p>
+    <h2 class="st-t"><span class="mot">Cotonou</span></h2>
+    <p class="st-r">Presque à la même hauteur qu'Ouidah</p>
+    <div class="st-tx">
+      <p>Dantokpa, l'un des plus grands marchés d'Afrique de l'Ouest. On n'y entre pas, on s'y laisse prendre. Il n'y a pas un chemin, il y en a mille, et il faut en choisir un.</p>
+      <p>Plus loin, la Place de l'Amazone et sa statue dressée en 2022, puis la Fondation Zinsou pour l'art contemporain.</p>
+    </div>
+  </div>
+  <div class="choisir" id="choisir" aria-hidden="true"></div>
+</section>
+
+<!-- ═══ 3 · GANVIÉ ══════════════════════════════════════════════ -->
+<section class="st" id="station-3" data-km="18" data-verbe="pagayer"
+         data-encre="#06120f" data-terre="#2f7d63" data-motif="pilotis">
+  <div class="st-fond" aria-hidden="true"><div class="st-grain"></div><div class="st-motif"></div></div>
+  <div class="st-in">
+    <p class="st-k"><span class="st-km">km 18</span> · Lac Nokoué</p>
+    <h2 class="st-t"><span class="mot">Ganvié</span></h2>
+    <p class="st-r">La cité sur l'eau</p>
+    <div class="st-tx">
+      <p>On l'appelle souvent la Venise de l'Afrique, et c'est une phrase qui ne dit rien. Ganvié n'a pas été bâtie sur l'eau pour la beauté.</p>
+      <p>Les Tofinu s'y sont installés pour échapper aux razzias du royaume du Dahomey, dont les guerriers avaient l'interdit religieux d'entrer dans l'eau. <strong>Le lac était la seule chose qui vous sauvait.</strong></p>
+      <p>Aujourd'hui on y vit sur pilotis, on y pêche à l'acadja, et le marché se tient en pirogue.</p>
+    </div>
+  </div>
+  <div class="pagaie" id="pagaie">
+    <p class="pagaie-l">Glissez le doigt pour avancer à la pirogue</p>
+    <div class="pagaie-p" id="pagaieP" role="slider" tabindex="0"
+         aria-label="Avancer sur l'eau" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+  </div>
+</section>
+
+<!-- ═══ HALTE · LA MÉMOIRE ══════════════════════════════════════ -->
+<section class="ha" id="halte-1" data-terre="#a4462a">
+  <div class="ha-pan" aria-hidden="true"></div>
+  <div class="ha-in">
+    <p class="ha-k">La halte · 01</p>
+    <h2 class="ha-t" data-fantome>La mémoire</h2>
+    <div class="ha-tx">
+      <p class="ha-ch">Ce que le sud garde</p>
+      <p>Les quatre premiers lieux de ce voyage tiennent dans les vingt premiers kilomètres du pays. Tout le reste, six cent quatre-vingts kilomètres, est encore devant.</p>
+      <p>C'est la première chose que le Bénin apprend à qui le traverse : <strong>le sud est dense, et le pays est long.</strong></p>
+    </div>
+    <div class="ha-ch2">
+      <div class="ha-c"><b>1625</b><span>premier roi du Danxomè</span></div>
+      <div class="ha-c"><b>1995</b><span>la Porte est élevée</span></div>
+      <div class="ha-c"><b>2021</b><span>26 œuvres reviennent</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 4 · ABOMEY ══════════════════════════════════════════════ -->
+<section class="st" id="station-4" data-km="98" data-verbe="frotter"
+         data-encre="#180b06" data-terre="#b5561f" data-motif="relief">
+  <div class="st-fond" aria-hidden="true"><div class="st-grain"></div><div class="st-motif"></div></div>
+  <div class="st-in">
+    <p class="st-k"><span class="st-km">km 98</span> · Abomey</p>
+    <h2 class="st-t"><span class="mot">Abomey</span></h2>
+    <p class="st-r">Les palais royaux du Danxomè</p>
+    <div class="st-tx">
+      <p>Douze rois se sont succédé de 1625 à 1900. Les palais sont inscrits au patrimoine mondial depuis 1985.</p>
+      <p>Sur les murs, les bas-reliefs ne décorent pas : <strong>ils racontent.</strong> Chaque règne y a laissé ses signes, ses animaux, ses batailles. C'est une archive, écrite dans la terre.</p>
+      <p>C'est aussi ici qu'on rencontre les Mino, ce corps de femmes soldats que l'Europe a appelé les Amazones. En novembre 2021, la France a restitué vingt-six œuvres prises en 1892.</p>
+    </div>
+  </div>
+  <div class="frotter" id="frotter">
+    <p class="frotter-l">Passez le doigt sur le mur</p>
+    <div class="frotter-m" id="frotterM"></div>
+  </div>
+</section>
+
+<!-- ═══ LE SAUT ═════════════════════════════════════════════════ -->
+<section class="saut" id="saut">
+  <div class="saut-in">
+    <p class="saut-p" data-mots>Tout ce que vous venez de voir tient dans les cent premiers kilomètres.</p>
+    <p class="saut-s" data-mots>Le pays en fait sept cents.</p>
+    <div class="saut-b" aria-hidden="true"><span id="sautB"></span></div>
+  </div>
+</section>
+
+<!-- ═══ 5 · KOUTAMMAKOU ═════════════════════════════════════════ -->
+<section class="st" id="station-5" data-km="430" data-verbe="descendre"
+         data-encre="#141008" data-terre="#c98b3a" data-motif="tata">
+  <div class="st-fond" aria-hidden="true"><div class="st-grain"></div><div class="st-motif"></div></div>
+  <div class="st-in">
+    <p class="st-k"><span class="st-km">km 430</span> · Boukoumbé, Atacora</p>
+    <h2 class="st-t"><span class="mot">Koutammakou</span></h2>
+    <p class="st-r">Les Tata Somba</p>
+    <div class="st-tx">
+      <p>Chez les Batammariba, une maison n'est pas un abri : c'est une forteresse à étages, bâtie en terre, et elle se lit de bas en haut.</p>
+      <p>En bas le bétail. Au milieu les greniers. En haut la terrasse, où l'on dort et où l'on sèche le mil. Et dans la cour, les ancêtres.</p>
+      <p>Le Koutammakou est inscrit au patrimoine mondial depuis 2004 du côté togolais, et le versant béninois a été ajouté en 2023.</p>
+    </div>
+  </div>
+  <div class="tata" id="tata">
+    <p class="tata-l">Descendez dans la maison</p>
+    <div class="tata-c" id="tataC">
+      <div class="tata-n" data-n="3"><b>La terrasse</b><span>on y dort, on y sèche le mil</span></div>
+      <div class="tata-n" data-n="2"><b>Les greniers</b><span>le mil, le sorgho, l'année entière</span></div>
+      <div class="tata-n" data-n="1"><b>Le bétail</b><span>à l'abri, sous la maison</span></div>
+      <div class="tata-n" data-n="0"><b>La cour</b><span>les ancêtres reposent ici</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 6 · LA PENDJARI ═════════════════════════════════════════ -->
+<section class="st st--attente" id="station-6" data-km="538" data-verbe="attendre"
+         data-encre="#0d1109" data-terre="#8a9a4a" data-motif="courbes">
+  <div class="st-fond" aria-hidden="true"><div class="st-grain"></div><div class="st-motif"></div></div>
+  <div class="st-in">
+    <p class="st-k"><span class="st-km">km 538</span> · Atacora</p>
+    <h2 class="st-t"><span class="mot">La</span> <span class="mot">Pendjari</span></h2>
+    <p class="st-r">Le parc national</p>
+    <div class="st-tx">
+      <p>Ici, vous ne commandez rien. La caméra avance seule, lentement, et vous ne pouvez que regarder. C'est exactement cela, un safari : <strong>on attend.</strong></p>
+      <p>Le parc fait partie du complexe W-Arly-Pendjari inscrit au patrimoine mondial. Il abrite l'une des dernières populations de lions d'Afrique de l'Ouest, des éléphants, des guépards. Sa gestion est confiée à African Parks depuis 2017.</p>
+    </div>
+    <p class="st-av"><strong>À savoir avant de partir.</strong> Le nord du Bénin est affecté depuis 2021 par le débordement sécuritaire du Sahel. Une partie de la zone est soumise à restrictions. Consultez les conseils aux voyageurs de votre pays et renseignez-vous localement avant tout déplacement.</p>
+  </div>
+  <p class="attente" id="attente"><span id="attenteN">0</span> secondes d'attente</p>
+</section>
+
+<!-- ═══ 7 · LE FLEUVE ═══════════════════════════════════════════ -->
+<section class="st st--fin" id="station-7" data-km="617" data-verbe="arriver"
+         data-encre="#101418" data-terre="#c9a24a" data-motif="fleuve">
+  <div class="st-fond" aria-hidden="true"><div class="st-grain"></div><div class="st-motif"></div></div>
+  <div class="st-in">
+    <p class="st-k"><span class="st-km">km 617</span> · Malanville</p>
+    <h2 class="st-t"><span class="mot">Le</span> <span class="mot">Fleuve</span></h2>
+    <p class="st-r">Le Niger, tout en haut</p>
+    <div class="st-tx">
+      <p>Le fleuve ferme le pays par le nord. De l'autre rive, c'est déjà le Niger.</p>
+      <p>Entre cette eau et celle d'où vous êtes parti, il y a sept cents kilomètres, une langue qui change tous les cent kilomètres, et un pays qui n'a jamais eu besoin d'être grand.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ LE CARNET ═══════════════════════════════════════════════ -->
+<section class="ca" id="carnet">
+  <div class="ca-in">
+    <p class="ca-k">Le carnet</p>
+    <h2 class="ca-t">Ce que vous remportez</h2>
+    <div class="ca-g" id="caG"></div>
+    <p class="ca-p">Ce voyage est indépendant. Il n'est commandé par personne, et aucun lieu n'y a acheté sa place : chacun est à la latitude où il se trouve vraiment.</p>
+    <div class="ca-b">
+      <button class="ca-r" id="refaire" type="button">Refaire le voyage</button>
+      <a class="ca-w" id="partager" href="#" rel="noopener">Partager sur WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="pied">
+  <div class="pied-in">
+    <p class="pied-t">Bénin mon pays</p>
+    <p class="pied-p">Une expérience éditoriale indépendante, écrite et construite à Cotonou par <strong>NEBULA Agency</strong>.</p>
+    <p class="pied-s">Les distances sont des latitudes converties en kilomètres depuis la côte, arrondies. Les dates et les faits cités sont publics et vérifiables. Aucune image de ce site ne prétend représenter un lieu qu'elle ne représente pas : les visuels sont des relevés dessinés, en attendant les photographies.</p>
+    <p class="pied-c">© <span id="an">2026</span> NEBULA Agency · Cotonou, Bénin</p>
+  </div>
+</footer>
+
+<div class="curseur" id="curseur" aria-hidden="true"><span></span></div>
+
+<script src="assets/app.js?v=20260809a" defer></script>
+</body>
+</html>
