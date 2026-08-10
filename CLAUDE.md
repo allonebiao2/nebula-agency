@@ -162,11 +162,20 @@
   **sous licence à chercher** · **sons générés (WaveSpeed)** · voix **plus tard**
   · haltes **oui, Mongazi demande l'accord des 5 artisans** · annuaire **en objet
   SÉPARÉ, même identité** · **cap sur les Vodun Days de janvier**.
+- ✅ **WaveSpeed FAIT de l'audio** (vérifié 2026-08-10) : 342 modèles audio sur
+  979. Le bon pour une ambiance est **`mirelo-ai/sfx-1.6/text-to-audio` avec
+  `ambience: true`**, le SEUL qui boucle sans couture, à **0,01 $ la seconde**.
+  Les 8 ambiances de Mon Bénin ont coûté **0,64 $**. (Moins cher :
+  `sonilo/v1/text-to-sfx` à 0,002 $/s, mais aucune garantie de boucle.)
 - ⚠️ **Le son généré est une MATIÈRE, pas un document.** Une ambiance fabriquée
   présentée comme « le bruit de Ganvié » est le même mensonge qu'une photo
-  générée du lieu. À écrire dans les crédits, à remplacer par de vrais
-  enregistrements. ⚠️ **Vérifier que WaveSpeed fait de l'audio** avant d'y
-  dépenser un crédit.
+  générée du lieu. C'est **écrit dans le pied de page** de Mon Bénin, et un
+  contrôle le vérifie. À remplacer par de vrais enregistrements.
+- ⚠️ **Toujours mesurer un son généré, jamais l'écouter de confiance** : 8
+  fichiers de taille identique (débit constant) peuvent être 8 fois le même.
+  Comparer les MD5 **et** le profil spectral. Vérifier le **raccord de boucle**
+  (début contre fin) et **normaliser les niveaux** : bruts, l'écart entre deux
+  ambiances atteignait un facteur 15.
 - ⚠️ **L'annuaire d'entreprises (« un Google My Business béninois, ultra stylé »)
   est un SECOND objet**, pas une couche du voyage : un parcours linéaire de 11
   lieux ne porte pas 5 000 fiches. **Note due à Mongazi** : ce que perdrait PISTE

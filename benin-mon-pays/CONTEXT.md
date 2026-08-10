@@ -112,9 +112,21 @@ c'est ce qui reste à faire.
   image : une variable sur `:root` recalcule tout le document (leçon Hillary).
 - **Le compte du rideau tourne au minuteur**, pas sur `requestAnimationFrame`
   (leçon Angy Art).
-- **Le son est synthétisé en Web Audio**, aucun fichier : une nappe filtrée dont
-  la fréquence monte avec la latitude, l'eau devient du vent. Rien ne sonne
-  avant un geste. Silence d'amorçage iOS + compresseur.
+- **Huit ambiances générées avec WaveSpeed**, une par lieu (Mirelo SFX 1.6,
+  `ambience: true`, 8 s, 0,64 $ au total). La nappe synthétisée qui se déformait
+  avec la latitude est **remplacée** : chaque lieu a désormais SON son.
+  ⚠️ **Le modèle choisi est le seul qui boucle SANS COUTURE.** Une ambiance qui
+  claque toutes les huit secondes est pire que pas d'ambiance : le raccord est
+  mesuré (début contre fin sur 40 ms, écart 7,9 %).
+  ⚠️ **Niveaux normalisés à -20 LUFS** : bruts, l'écart entre le Koutammakou
+  (vent sec, 49 % de silence) et la Pendjari (cicadas) était d'un **facteur 15**.
+  Après normalisation : 1,9. Les originaux sont gardés dans `_sources_sons/`,
+  une régénération coûte de l'argent.
+  ⚠️ **Jamais chargées d'avance** : 380 Ko de son sur une page de 231 Ko. Seul
+  le lieu où l'on se trouve télécharge son ambiance (48 Ko), et seulement si le
+  son est allumé. Un contrôle vérifie qu'aucun son ne part avant le geste
+  d'entrée. Rien ne sonne avant un geste, silence d'amorçage iOS + compresseur.
+  Scripts : `_sons.py` (génération) et `_sons_finir.py` (normalisation).
 - **Aucun emprisonnement** : on entre au bouton (avec le son) **ou** en
   défilant (sans). Le verbe « tenir » de la Porte **ne bloque pas** le
   défilement : la gravité vient du texte, pas de la privation de liberté.

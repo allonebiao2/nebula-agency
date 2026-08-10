@@ -20,7 +20,9 @@ GARDE = [
     "assets/fonts/bodoni-italic.woff2",
     "assets/images/favicon.svg",
     "assets/images/og.png",
-]
+] + ["assets/sons/%s.mp3" % n for n in
+     ("porte", "ouidah", "cotonou", "ganvie",
+      "abomey", "koutammakou", "pendjari", "fleuve")]
 
 if os.path.isdir(DIST):
     shutil.rmtree(DIST)
@@ -75,6 +77,9 @@ head = """/assets/fonts/*
   Cache-Control: public, max-age=31536000, immutable
 
 /assets/app.*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/sons/*
   Cache-Control: public, max-age=31536000, immutable
 
 /index.html

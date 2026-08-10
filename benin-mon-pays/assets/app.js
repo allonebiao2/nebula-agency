@@ -26,6 +26,10 @@
     };
   }
 
+  /* la marque de version, reprise des URL des ressources : sans elle
+     un son remplace resterait un an dans le cache du navigateur */
+  var VER = '?v=20260810b';
+
   var stations = $$('.st');
   var barreH = 60;
 
@@ -237,15 +241,9 @@
      et c'est aussi la politesse. */
 
   var Son = (function () {
-    var ctx = null, gain = null, actif = false, sources = [];
-
-    function bruit(dur) {
-      var n = Math.floor(ctx.sampleRate * dur);
-      var b = ctx.createBuffer(1, n, ctx.sampleRate);
-      var d = b.getChannelData(0);
-      for (var i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
-      return b;
-    }
+    var ctx = null, matre = null, muet = false;
+    var cache = {}, courant = null, enCours = null;
+    var VOL = 0.34, FONDU = 2.2;   /* secondes */
 
     function demarrer() {
       if (ctx) return;
@@ -258,51 +256,79 @@
       s0.buffer = ctx.createBuffer(1, 1, 22050);
       s0.connect(ctx.destination); s0.start(0);
 
-      gain = ctx.createGain();
-      gain.gain.value = 0;
+      matre = ctx.createGain();
+      matre.gain.value = muet ? 0 : 1;
       var comp = ctx.createDynamicsCompressor();
-      gain.connect(comp); comp.connect(ctx.destination);
+      matre.connect(comp); comp.connect(ctx.destination);
 
-      /* la nappe : un bruit filtré, dont la couleur suit la latitude */
-      var src = ctx.createBufferSource();
-      src.buffer = bruit(4); src.loop = true;
-      var f = ctx.createBiquadFilter();
-      f.type = 'lowpass'; f.frequency.value = 420; f.Q.value = 1.2;
-      src.connect(f); f.connect(gain); src.start(0);
-      sources.push({ src: src, filtre: f });
-
-      /* une respiration lente */
-      var lfo = ctx.createOscillator(), lg = ctx.createGain();
-      lfo.frequency.value = 0.07; lg.gain.value = 190;
-      lfo.connect(lg); lg.connect(f.frequency); lfo.start(0);
-
-      actif = true;
-      monter();
+      if (enCours) poser(enCours);
     }
 
-    function monter() {
-      if (!ctx || !gain) return;
-      gain.gain.cancelScheduledValues(ctx.currentTime);
-      gain.gain.setTargetAtTime(0.16, ctx.currentTime, 1.4);
+    /* Une ambiance n'est TÉLÉCHARGÉE qu'à l'arrivée sur son lieu, et
+       seulement si le son est allumé : sinon les 380 Ko de sons
+       doubleraient le poids d'une page de 231 Ko. */
+    function charger(nom) {
+      if (cache[nom]) return cache[nom];
+      cache[nom] = fetch('assets/sons/' + nom + '.mp3' + VER)
+        .then(function (r) {
+          if (!r.ok) throw new Error(r.status);
+          return r.arrayBuffer();
+        })
+        .then(function (ab) {
+          return new Promise(function (ok, non) {
+            ctx.decodeAudioData(ab, ok, non);
+          });
+        })
+        .catch(function () { cache[nom] = null; return null; });
+      return cache[nom];
     }
-    function couper() {
-      if (!ctx || !gain) return;
-      gain.gain.cancelScheduledValues(ctx.currentTime);
-      gain.gain.setTargetAtTime(0, ctx.currentTime, 0.4);
+
+    function fondreSortie(v) {
+      if (!v) return;
+      try {
+        v.g.gain.cancelScheduledValues(ctx.currentTime);
+        v.g.gain.setTargetAtTime(0, ctx.currentTime, FONDU / 3);
+        setTimeout(function () { try { v.s.stop(); } catch (e) {} }, FONDU * 1000 + 400);
+      } catch (e) {}
+    }
+
+    function poser(nom) {
+      if (!ctx || !matre) { enCours = nom; return; }
+      if (courant && courant.nom === nom) return;
+      enCours = nom;
+
+      charger(nom).then(function (buf) {
+        /* la personne a pu changer de lieu pendant le téléchargement */
+        if (!buf || enCours !== nom) return;
+        if (courant && courant.nom === nom) return;
+
+        var s = ctx.createBufferSource();
+        s.buffer = buf;
+        s.loop = true;                 /* boucle sans couture : le son est
+                                          généré avec `ambience: true` */
+        var g = ctx.createGain();
+        g.gain.value = 0;
+        s.connect(g); g.connect(matre);
+        s.start(0);
+        g.gain.setTargetAtTime(VOL, ctx.currentTime, FONDU / 3);
+
+        fondreSortie(courant);
+        courant = { nom: nom, s: s, g: g };
+      });
     }
 
     return {
       demarrer: demarrer,
       dispo: function () { return !!ctx; },
-      basculer: function (muet) { if (muet) couper(); else monter(); },
-      /* p va de 0 (l'océan) à 1 (le fleuve) : l'eau devient du vent */
-      latitude: function (p) {
-        if (!ctx || !sources.length) return;
-        var f = sources[0].filtre;
-        f.frequency.setTargetAtTime(360 + p * 1500, ctx.currentTime, 1.2);
-        f.Q.setTargetAtTime(1.2 + p * 2.4, ctx.currentTime, 1.2);
+      basculer: function (m) {
+        muet = m;
+        if (!ctx || !matre) return;
+        matre.gain.cancelScheduledValues(ctx.currentTime);
+        matre.gain.setTargetAtTime(m ? 0 : 1, ctx.currentTime, 0.35);
       },
-      actif: function () { return actif; }
+      /* chaque lieu a SON ambiance : plus de nappe unique qui se déforme */
+      lieu: poser,
+      actif: function () { return !!ctx; }
     };
   })();
 
@@ -433,7 +459,8 @@
       stationCour = idx;
       var terre = a.getAttribute('data-terre');
       if (terre) D.documentElement.style.setProperty('--terre', terre);
-      Son.latitude(clamp(km / KM_MAX, 0, 1));
+      var s = a.getAttribute('data-son');
+      if (s) Son.lieu(s);
       rangerJauge(a);
     }
   }
@@ -571,6 +598,7 @@
       return {
         i: i, id: st.id, nom: nom, lieu: lieu,
         km: st.getAttribute('data-km') || '0',
+        son: st.getAttribute('data-son') || '',
         encre: st.getAttribute('data-encre') || '#0b0a09',
         terre: st.getAttribute('data-terre') || '#a4462a',
         motif: st.getAttribute('data-motif') || 'porte'
@@ -620,6 +648,8 @@
     function poser(l) {
       fond.style.setProperty('--po-fond', l.encre);
       dessiner(motif, l, 7919 + l.i * 131);
+      /* au portail on ENTEND déjà le lieu qu'on regarde */
+      if (l.son) Son.lieu(l.son);
     }
 
     function aller(n) {

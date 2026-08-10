@@ -398,6 +398,68 @@ def controler():
           and min(traits["traits"]) > 8,
           "le menu montre bien trois traits", traits)
 
+        # ═══ 12 · LE SON ═══════════════════════════════════════════
+        # Une ambiance par lieu, jamais chargée d'avance : 380 Ko de son
+        # sur une page de 231 Ko, c'est le poids qui décide.
+        sons = pg.eval_on_selector_all(".st", "e=>e.map(x=>x.dataset.son||'')")
+        v(all(sons) and len(set(sons)) == 8,
+          "une ambiance DIFFÉRENTE déclarée par lieu", sons)
+
+        credit = pg.eval_on_selector(".pied-s", "e=>e.textContent")
+        v("générées" in credit and "pas des enregistrements" in credit,
+          "le pied dit que les ambiances sont générées, pas des enregistrements")
+
+        ctx.close()
+
+        # passe dédiée : on écoute les requêtes de son
+        ctxs = nav.new_context(viewport={"width": 1280, "height": 800})
+        ps = ctxs.new_page()
+        recus = []
+        ps.on("request", lambda r: recus.append(r.url.split("/")[-1].split("?")[0])
+              if "/sons/" in r.url else None)
+        ps.goto(BASE, wait_until="domcontentloaded")
+        ps.wait_for_timeout(2000)
+        v(not recus, "aucun son n'est téléchargé avant d'entrer", recus[:3])
+
+        ps.click("#entrer")
+        ps.wait_for_timeout(2500)
+        v(recus == ["porte.mp3"],
+          "le portail charge l'ambiance du lieu affiché, et elle seule", recus)
+
+        ps.evaluate("""()=>{const e=document.getElementById('station-6');
+            const r=e.getBoundingClientRect();
+            window.scrollTo(0, r.top+window.scrollY+r.height/2-window.innerHeight/2);}""")
+        ps.wait_for_timeout(2400)
+        v("pendjari.mp3" in recus, "arriver sur un lieu charge SON ambiance", recus)
+        v(len(recus) == len(set(recus)),
+          "aucune ambiance n'est retéléchargée deux fois", recus)
+
+        # le son ne démarre jamais tout seul
+        etat = ps.evaluate("""()=>{
+          const b=document.getElementById('sonBtn');
+          return b ? b.getAttribute('aria-pressed') : null;
+        }""")
+        v(etat == "false", "le son est allumé après le geste d'entrée, pas avant", etat)
+
+        # couper doit vraiment couper
+        ps.click("#sonBtn")
+        ps.wait_for_timeout(1400)
+        v(ps.eval_on_selector("#sonBtn", "e=>e.getAttribute('aria-pressed')") == "true",
+          "le bouton coupe le son")
+
+        poids = ps.evaluate("""()=>{
+          let tot=0;
+          for(const r of performance.getEntriesByType('resource'))
+            if(!r.name.includes('/sons/')) tot += (r.transferSize||r.encodedBodySize||0);
+          return Math.round(tot/1024);
+        }""")
+        v(poids <= 260, "la page sans les sons reste sous 260 Ko", "%s Ko" % poids)
+        ctxs.close()
+
+        ctx = nav.new_context(viewport={"width": 1440, "height": 900})
+        pg = ctx.new_page()
+        entrer(pg)
+
         ctx.close()
 
         # ── PASSE 2 · téléphone 390, tactile ───────────────────────
