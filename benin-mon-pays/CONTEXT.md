@@ -1,9 +1,15 @@
-# BÉNIN MON PAYS · l'expérience
+# MON BÉNIN · l'expérience
 
-> Nom **provisoire**. Trois autres sont sur la table : MON BÉNIN, SEPT CENTS,
-> REMONTER. Mongazi tranche. Le nom apparaît dans le `<title>`, l'image de
-> partage, le JSON-LD, le rideau et le pied : **le changer touche 6 endroits**,
-> tous listés en fin de fiche.
+> **Nom tranché par Mongazi le 2026-08-10 : « Mon Bénin »**, avec **« sept cents
+> kilomètres »** en signature. Le dossier garde son ancien nom `benin-mon-pays/`.
+>
+> ## 🌍 EN LIGNE (dev) : **https://dev.mon-benin.pages.dev**
+> Projet Cloudflare Pages `mon-benin`, branche `dev`, production `main` (vide).
+> Publier : `python benin-mon-pays/_dist.py` puis déployer `_dist` sur `dev`.
+> ⚠️ Un agent non navigateur reçoit **403** sur `*.pages.dev` (filtrage de bots
+> Cloudflare). Vérifier avec un vrai `User-Agent`, et **rouvrir les robots IA sur
+> le vrai domaine** quand il sera acheté (`PUT /zones/{zone}/bot_management`).
+> **Vrai domaine : plus tard**, Mongazi l'achètera.
 
 Produit **interne NEBULA**, pas une vitrine client. Il ne vit pas dans
 `clients/`.
@@ -39,10 +45,9 @@ un pays en couloir. Donc **le défilement est la route**, et l'anneau du coin es
 Et le voyage **part de la Porte du Non-Retour, sur le sable, et remonte** la
 Route des Esclaves vers l'intérieur : le visiteur refait le chemin à l'envers.
 
-⚠️ **Décision réservée à Mongazi** (question 3 posée le 2026-08-09, sans réponse
-à ce jour) : ouvrir sur la mémoire de l'esclavage, ou sur quelque chose de
-lumineux, et placer la Porte au milieu. Tout est écrit pour qu'un
-réordonnancement soit une simple permutation des `<section class="st">`.
+✅ **Tranché le 2026-08-10 : on part de la Porte.** Mongazi a choisi d'ouvrir
+sur la mémoire. Tout reste écrit pour qu'un réordonnancement soit une simple
+permutation des `<section class="st">`.
 
 ## 4. Les huit stations
 

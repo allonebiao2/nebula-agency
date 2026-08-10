@@ -103,13 +103,15 @@ def og():
 
     # le titre, à gauche
     x0 = 86
-    d.text((x0, 148), "SEPT CENTS KILOMÈTRES · HUIT LIEUX", font=SANS(19), fill=(176, 166, 150))
-    d.text((x0, 202), "Bénin", font=SERIF(104), fill=CLAIR)
+    d.text((x0, 148), "HUIT LIEUX · UN SEUL MOUVEMENT", font=SANS(19), fill=(176, 166, 150))
+    f_n = SERIF(104)
     f_i = SERIF_I(104)
-    d.text((x0, 316), "mon", font=f_i, fill=OR)
-    # on mesure « mon » au lieu de deviner : l'italique déborde de sa boîte
-    lm = d.textbbox((x0, 316), "mon", font=f_i)[2] - x0
-    d.text((x0 + lm + 26, 316), "pays", font=SERIF(104), fill=CLAIR)
+    d.text((x0, 232), "Mon", font=f_n, fill=CLAIR)
+    # on mesure au lieu de deviner : l'italique déborde de sa boîte
+    lm = d.textbbox((x0, 232), "Mon", font=f_n)[2] - x0
+    d.text((x0 + lm + 30, 232), "Bénin", font=f_i, fill=OR)
+    d.text((x0, 384), "S E P T   C E N T S   K I L O M È T R E S",
+           font=SANS(23), fill=(205, 196, 182))
     d.line([x0, 452, x0 + 300, 452], fill=TERRE, width=3)
     d.text((x0, 478), "De la Porte du Non-Retour jusqu'au fleuve.", font=SANS(26), fill=(226, 219, 206))
     d.text((x0, 516), "Le voyage remonte la route, à l'envers.", font=SANS(26), fill=(226, 219, 206))

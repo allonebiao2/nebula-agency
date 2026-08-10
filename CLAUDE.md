@@ -137,7 +137,7 @@
   données : ne jamais y recopier un chiffre ou un nom de métier.
 - **Source de vérité : `piste/PRODUCT.md`**, 88 décisions.
 
-### BÉNIN MON PAYS — l'expérience du pays  *(objet éditorial, pas un SaaS)*
+### MON BÉNIN — l'expérience du pays  *(objet éditorial, pas un SaaS)*
 - **Ce que c'est** : « pas un site sur le Bénin, **un voyage au Bénin qui dure
   sept minutes** ». 8 stations dans l'ordre réel de la latitude, de la **Porte
   du Non-Retour (km 0)** au **fleuve Niger (km 617)**, sur une échelle de 700 km.
@@ -150,9 +150,27 @@
   et rien ne se tire au sort.
 - **Où** : `benin-mon-pays/` · `python benin-mon-pays/_qc.py` (**63 contrôles**),
   `_voir.py` (planches 390 + 1440, à REGARDER), `_images.py`.
-- ⚠️ **NOM PAS TRANCHÉ** (Bénin mon pays · MON BÉNIN · SEPT CENTS · REMONTER) et
-  **PAS DÉPLOYÉ, volontairement** : le nom et le point de départ sont des
-  décisions de Mongazi. **10 questions posées le 2026-08-09, sans réponse.**
+- **LIVE (dev) : https://dev.mon-benin.pages.dev** · projet Cloudflare Pages
+  `mon-benin`, branche `dev` · publier = `python benin-mon-pays/_dist.py` puis
+  déployer `_dist` · **231 Ko la page entière**, donc les 3 s en 3G sont tenues
+  par construction · ⚠️ un agent non navigateur reçoit **403** sur `*.pages.dev`
+  (filtrage de bots) : vérifier avec un vrai `User-Agent`.
+- **13 décisions prises par Mongazi le 2026-08-10** : nom **MON BÉNIN** +
+  « sept cents kilomètres » · **départ à la Porte** · cible **diaspora
+  afro-descendante** · **bilingue FR/EN dès la sortie** · **11 lieux** (les 8 +
+  Porto-Novo « retourner », Grand-Popo « mêler », Dassa « compter ») · photos
+  **sous licence à chercher** · **sons générés (WaveSpeed)** · voix **plus tard**
+  · haltes **oui, Mongazi demande l'accord des 5 artisans** · annuaire **en objet
+  SÉPARÉ, même identité** · **cap sur les Vodun Days de janvier**.
+- ⚠️ **Le son généré est une MATIÈRE, pas un document.** Une ambiance fabriquée
+  présentée comme « le bruit de Ganvié » est le même mensonge qu'une photo
+  générée du lieu. À écrire dans les crédits, à remplacer par de vrais
+  enregistrements. ⚠️ **Vérifier que WaveSpeed fait de l'audio** avant d'y
+  dépenser un crédit.
+- ⚠️ **L'annuaire d'entreprises (« un Google My Business béninois, ultra stylé »)
+  est un SECOND objet**, pas une couche du voyage : un parcours linéaire de 11
+  lieux ne porte pas 5 000 fiches. **Note due à Mongazi** : ce que perdrait PISTE
+  (100 F la fiche, exclusivité 90 j) contre ce que gagnerait l'annuaire.
 - ⚠️ **Les km sont des latitudes converties**, pas des distances routières
   (Cotonou→Malanville fait ~730 km par la route et casserait l'échelle).
 - ⛔ **Aucune image générée d'un lieu réel.** En attendant les photos, le site est

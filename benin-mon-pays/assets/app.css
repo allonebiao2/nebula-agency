@@ -162,7 +162,16 @@ body.rideau-la { overflow: hidden; }
 }
 .seuil-t i { font-style: italic; color: #d99a5e; }   /* 7,4:1 sur l'encre */
 
+/* La signature demandée par Mongazi, sous le nom. */
+.seuil-sig {
+  margin: 0 0 26px;
+  font-size: 11.5px; letter-spacing: .42em; text-transform: uppercase;
+  color: #cdc4b6;
+}
 .seuil-p { margin: 0 0 40px; color: var(--clair-d); }
+
+/* Le nom porte son italique partout où il apparaît. */
+.barre-m i, .pied-t i { font-style: italic; color: #e0a878; }
 
 .seuil-b {
   display: inline-flex; align-items: center; gap: 14px;
