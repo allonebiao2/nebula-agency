@@ -592,3 +592,74 @@ trouble dure 100 ms au lieu d'un demi-tour d'horloge.
 
 `#25D366` et `#1EA855` portent du texte **foncé**. En blanc dessus on tombe à
 **3,09:1**. Pour un bouton vert à texte blanc : `#128040` (5,0:1).
+
+
+## 2026-08-10 — Un son généré se MESURE, il ne s'écoute pas de confiance
+
+- **Contexte** : les huit ambiances de Mon Bénin, générées avec WaveSpeed.
+- **Ce qui s'est passé** : les huit fichiers pesaient **exactement 64 592
+  octets**. C'est normal en MP3 à débit constant et durée égale, mais ça ne
+  prouve rien : on aurait pu me renvoyer huit fois le même son. Comparés par
+  **MD5 et profil spectral par bandes**, ils étaient bien différents, et leurs
+  profils correspondaient aux textes. En revanche leurs **niveaux** avaient un
+  **facteur 15** d'écart : le voyage serait passé du quasi-silence au fort.
+- **Leçon** : trois contrôles obligatoires sur tout son généré, dans cet ordre :
+  **différence réelle** (MD5 + spectre), **raccord de boucle** (moyenne des 40
+  premières ms contre les 40 dernières), **niveaux** (`loudnorm=I=-20`).
+- **À appliquer** : ne jamais livrer un son généré sans ces trois mesures. Et
+  garder les originaux : régénérer coûte de l'argent.
+
+## 2026-08-10 — Un élément fixe finit toujours par recouvrir du contenu
+
+- **Contexte** : l'anneau des kilomètres de Mon Bénin.
+- **Ce qui s'est passé** : réserver une marge en bas de section ne suffisait
+  pas. Un `position: fixed` est ancré au **viewport**, pas à la section : dès
+  qu'une section dépasse la hauteur d'écran, du contenu passe dessous. L'anneau
+  s'est posé sur l'avertissement de la Pendjari, sur le curseur de Ganvié, sur
+  « Les greniers » et sur le bouton WhatsApp.
+- **Leçon** : **un instrument flottant ne recouvre jamais du texte. Seules les
+  bandes de bord en ont le droit, et alors elles doivent être vraiment
+  opaques.**
+- **À appliquer** : décaler l'instrument du côté opposé au contenu, ou le
+  transformer en bande de bord au téléphone. Et vérifier l'opacité en
+  **photographiant**, jamais en lisant une chaîne CSS : `getComputedStyle` d'un
+  dégradé renvoie une forme imprévisible et le contrôle passe pour de mauvaises
+  raisons.
+
+## 2026-08-10 — Une police distante casse la promesse de vitesse
+
+- **Contexte** : Mon Bénin chargeait Fraunces depuis Google Fonts.
+- **Ce qui s'est passé** : le test s'est **bloqué** dessus, et le réseau a mis
+  plus de deux minutes à répondre. Le site promettait « 3 secondes en 3G ».
+- **Leçon** : une dépendance à un tiers dans le chemin critique annule la
+  promesse de performance, quelle que soit la qualité du reste.
+- **À appliquer** : polices servies depuis notre domaine, `font-display: swap`,
+  et **un contrôle automatique qui échoue si une requête sort du site**. Le
+  dépôt contient déjà Bodoni Moda, Archivo, Manrope, Bricolage Grotesque et
+  Plex Mono en woff2 : les reprendre plutôt que d'en charger de nouvelles.
+
+## 2026-08-10 — L'alias d'un déploiement Cloudflare Pages a du retard
+
+- **Contexte** : trois publications successives de Mon Bénin.
+- **Ce qui s'est passé** : `dev.<projet>.pages.dev` servait encore l'ancienne
+  version quelques secondes après la fin du déploiement, alors que l'URL
+  immuable (`<hash>.<projet>.pages.dev`) servait déjà la nouvelle. Ça a fait
+  conclure deux fois à une publication ratée, dont un faux 404 sur les sons.
+- **Leçon** : après un déploiement, **vérifier sur l'URL immuable**, ou attendre.
+  Comparer les deux désigne le problème en trois secondes.
+- **À appliquer** : dans tout script de vérification, interroger l'URL immuable
+  renvoyée par wrangler, pas seulement l'alias.
+
+## 2026-08-10 — Le disque plein se déguise en panne de réseau
+
+- **Contexte** : l'installation de wrangler puis le démarrage du navigateur de
+  test échouaient, avec des délais dépassés.
+- **Ce qui s'est passé** : le disque était à **0 octet libre sur 271 Go**.
+  L'erreur visible était `ENOSPC` noyée dans des avertissements npm, puis un
+  simple délai dépassé au lancement du navigateur.
+- **Leçon** : devant une lenteur ou un délai dépassé inexplicable sur cette
+  machine, **regarder l'espace disque avant le réseau**.
+- **À appliquer** : `df -h /c`. Récupérable sans risque : le cache npm, les
+  profils Playwright abandonnés dans `%TEMP%`, les paquets d'une installation
+  ratée. ⚠️ **Ne pas vider `%TEMP%` en entier** : Claude Code y écrit ses
+  propres fichiers de travail et supprime sa sortie en cours.

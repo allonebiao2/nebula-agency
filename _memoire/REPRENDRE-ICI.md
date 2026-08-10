@@ -1,9 +1,50 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-08-04
+## Point de reprise pour une session terminal · dernière mise à jour 2026-08-10
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
+
+---
+
+## 0. LE 2026-08-10 — MON BÉNIN est en ligne
+
+**https://dev.mon-benin.pages.dev** · dossier `benin-mon-pays/` · projet
+Cloudflare Pages `mon-benin`, branche `dev`.
+
+Un **voyage de sept cents kilomètres** de la Porte du Non-Retour au fleuve
+Niger, huit stations dans l'ordre réel de la latitude, **un verbe
+d'interaction différent par lieu**, et **huit ambiances sonores générées avec
+WaveSpeed**. Zéro bibliothèque, zéro requête vers un tiers, **189 Ko la page
+sans les sons**. **91 contrôles verts.**
+
+**Treize décisions prises par Mongazi** ce jour-là : voir `_memoire/decisions.md`
+et `benin-mon-pays/CONTEXT.md`.
+
+### ▶️ PAR QUOI COMMENCER
+1. **HILLARY M. STYL** : Mongazi a dit « on continue avec Hillary ». ⚠️ Le vrai
+   bloquant n'est pas les photos, ce sont **les 11 mesures de la robe ovale,
+   jamais validées par l'atelier depuis le 6 août** : ses quatre pièces en
+   dépendent toutes.
+2. **Mon Bénin, vague suivante** : les 3 lieux décidés (Porto-Novo
+   « retourner », Grand-Popo « mêler », Dassa « compter »), puis l'anglais
+   complet, puis les photos et les voix, puis l'annuaire.
+3. **La note due à Mongazi** : ce que perdrait PISTE (100 F la fiche,
+   exclusivité 90 jours) contre ce que gagnerait l'annuaire d'entreprises, avec
+   les chiffres réels du vivier de 7 817 fiches.
+
+### ⚠️ CE QUI BLOQUE OU MENACE
+- **Le disque de la machine est saturé.** Il est passé à **0 octet libre sur
+  271 Go** pendant la session : ça a empêché l'installation des outils puis le
+  démarrage du navigateur de test. Nettoyé, mais **il reste peu de marge**.
+  Vérifier avec `df -h /c`. Récupérable : cache npm, profils Playwright
+  abandonnés. ⚠️ Ne pas vider `%TEMP%` en entier, Claude Code y travaille.
+- **La branche `worktree-angy-photos` n'est pas fusionnée dans `main`.** Elle
+  porte ANGY ART et tout Mon Bénin.
+- **Un agent non navigateur reçoit 403** sur `*.pages.dev` : filtrage de bots
+  Cloudflare. Vérifier avec un vrai `User-Agent`.
+- **L'alias `dev` a quelques secondes de retard** sur l'URL immuable après un
+  déploiement.
 
 ---
 

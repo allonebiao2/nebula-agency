@@ -1,103 +1,108 @@
-# 2026-08-09/10 · BÉNIN MON PAYS, l'expérience du pays
+# 2026-08-09/10 · MON BÉNIN, l'expérience du pays
+
+**En ligne : https://dev.mon-benin.pages.dev** · dossier `benin-mon-pays/`
 
 ## Ce que Mongazi a demandé
 
 Une page qui met le Bénin en valeur « comme personne ne l'avait fait avant » :
-faire découvrir le pays aux Béninois eux-mêmes, donner envie à ceux qui n'y sont
-jamais venus, montrer sa capacité à construire des expériences hors du commun, et
-se faire repérer par des institutions ou des entreprises. Plus tard, des
-commerces viendront dessus, avec l'histoire de leur fondateur.
+faire découvrir le pays aux Béninois, donner envie à ceux qui n'y sont jamais
+venus, montrer sa capacité à construire des expériences hors du commun, et se
+faire repérer par des institutions ou des entreprises. Plus tard, des commerces
+viendront dessus, avec l'histoire de leur fondateur.
 
-Il a envoyé **trois vidéos de référence** et un prompt écrit pour une maison de
-couture, en demandant de l'adapter au projet.
+Il a envoyé **quatre vidéos** (dont deux fois le même fichier, md5 identique) et
+un prompt écrit pour une maison de couture, à adapter.
 
-## Ce qui a été décidé
+## La phrase
 
-### La phrase
 **« Ce n'est pas un site sur le Bénin. C'est un voyage au Bénin qui dure sept
 minutes. »**
 
-### Le refus qui définit le projet
-La vidéo 1 est **« GLOBETROTTER »**, un vrai site de destinations (Highlands,
-Sahara, Dolomites, Maldives). Elle a un bouton **« HASARD »** qui téléporte au
-sort : la preuve, écrite dans son interface, que c'est un catalogue. On a pris
-son savoir-faire et **refusé sa structure**. Ici l'ordre des lieux est le sens.
+## Le refus qui définit le projet
 
-### La structure
-Le Bénin s'étend sur environ 700 km de l'Atlantique au Niger : un pays en
-couloir. Donc **le défilement est la route**. Le voyage part de la **Porte du
-Non-Retour, sur le sable**, et **remonte la Route des Esclaves à l'envers**.
+La référence principale est **« GLOBETROTTER »**, un vrai site de destinations
+(Highlands, Sahara, Dolomites, Maldives). Elle a un bouton **« HASARD »** qui
+téléporte au sort : la preuve, écrite dans son interface, que c'est un
+**catalogue**. On a pris son savoir-faire et refusé sa structure. Ici l'ordre des
+lieux est le sens.
 
-Huit stations, **un verbe différent pour chacune** : tenir · remonter · choisir ·
-pagayer · frotter · descendre · attendre · arriver.
+⚠️ Mongazi a ensuite **redemandé explicitement le bouton « au hasard »**, en
+demandant que le héros soit « exactement comme ça à 100 % ». C'est fait, et
+signalé une fois, pas deux.
 
-### Ce qui vient des vidéos
-- **V1** : le rideau, les cercles concentriques (devenus **un anneau gradué en
-  kilomètres**, un instrument et non un ornement), la poussée verticale vers une
-  page claire, le collage.
-- **V2** (« Bon Mode ») : **le panneau qui EST la transition**, côté alterné, et
-  le titre fantôme qui se solidifie. C'est la meilleure idée des trois.
-- **V3** : le fond qui morphe sombre ↔ clair (ici : **le pays s'éclaircit vers le
-  nord**), la parallaxe par mot, le flou.
+## Les 13 décisions du 2026-08-10
 
-### Ce qui a été refusé du prompt
-GSAP, ScrollTrigger, SplitText, Draggable, InertiaPlugin, Lenis (150 à 250 Ko
-avant la première image) · les 300vh de défilement artificiel · le bouton
-« HASARD » · le `backdrop-filter` sous une rotation infinie · **l'or `#D4AF37`
-sur le crème, mesuré à 1,86:1, illisible** (le même piège que l'or d'Angélique).
+Nom **MON BÉNIN** + « sept cents kilomètres » en signature · départ **à la
+Porte** · cible **diaspora afro-descendante** · **bilingue FR/EN dès la
+sortie** · **11 lieux** (les 8 + Porto-Novo « retourner », Grand-Popo « mêler »,
+Dassa « compter ») · photos **sous licence, à chercher** · **sons générés
+(WaveSpeed)** · voix **plus tard** · haltes **oui, Mongazi demande l'accord des
+5 artisans** · annuaire **en objet SÉPARÉ, même identité** · PISTE **note
+d'abord** · **dev maintenant, vrai domaine plus tard** · cap sur les **Vodun
+Days de janvier**.
+
+## Ce qui est construit
+
+**Huit stations** dans l'ordre réel de la latitude, de la Porte du Non-Retour
+(km 0) au fleuve Niger (km 617), avec **un verbe d'interaction différent par
+lieu** : tenir, remonter, choisir, pagayer, frotter, descendre, attendre,
+arriver.
+
+**Le portail**, relevé image par image sur la référence : deux cercles
+concentriques, le nom en très grand très espacé, le filet, la région et le
+kilomètre, les flèches, « partager » à la verticale à gauche, « découvrir ce
+lieu » au centre, « au hasard » et son bouton rond doré à droite. **Le lieu
+suivant arrive PAR LE CERCLE** : l'iris part exactement du rayon du cercle
+intérieur, mesuré sur l'élément rendu.
+
+**Huit ambiances sonores générées avec WaveSpeed**, une par lieu.
 
 ## Ce qui a été appris
 
 ### La police distante était une faute
-La page chargeait Fraunces chez Google. Le test s'est **bloqué** dessus, et le
-réseau met plus de deux minutes à répondre ici. C'était contraire à la promesse
-« 3 secondes en 3G » que je m'étais fixée. **Bodoni Moda est désormais servi
-depuis `assets/fonts/`**, repris du dossier Hillary : 100 Ko, `font-display:
-swap`, aucune requête vers un tiers, et un contrôle le vérifie.
+La page chargeait Fraunces chez Google et le test s'est **bloqué** dessus.
+Contraire à la promesse « 3 s en 3G ». Bodoni Moda est désormais servi en local
+(repris du dossier Hillary), et un contrôle vérifie qu'**aucune requête ne sort**.
 
 ### Un élément fixe finit toujours par recouvrir du contenu
-Réserver une marge en bas d'une section **ne suffit pas** : un `position: fixed`
-est ancré au viewport, pas à la section. La règle retenue :
-
-> **Un instrument flottant ne recouvre jamais du texte. Seules les bandes de bord
-> en ont le droit, et alors elles doivent être vraiment opaques.**
-
-Deux remèdes : l'anneau **se range du côté opposé au cartel** à chaque station
-(sinon il se posait sur l'avertissement de la Pendjari), et **au téléphone il
-devient une réglette de bord opaque** (un disque de 84 px se posait sur le
-curseur de Ganvié, sur « Les greniers » et sur le bouton WhatsApp).
+Réserver une marge ne suffit pas : un `fixed` est ancré au viewport. Règle :
+**un instrument flottant ne recouvre jamais du texte, seules les bandes de bord
+en ont le droit, et alors elles doivent être vraiment opaques.**
 
 ### Un compteur qui contredit son étiquette
 La jauge interpolait en continu : elle affichait **3** en face de « km 0 » et
-**166** en face de « km 98 ». Corrigé : quand une station occupe le milieu de
-l'écran, la jauge affiche **son** kilomètre exact, et n'interpole que dans les
-intervalles.
+**166** en face de « km 98 ».
 
 ### Vérifier en photographiant, pas en lisant le CSS
-Le contrôle d'opacité de la barre lisait `getComputedStyle(...,'::before')` et
-échouait pour une mauvaise raison. Refait : on **photographie** la barre pendant
-qu'un motif clair défile dessous, et on regarde la luminance la plus claire.
-Même principe que le contraste mesuré sur les pixels rendus.
+Le contrôle d'opacité de la barre lisait une chaîne CSS et échouait pour une
+mauvaise raison. Refait en photographiant la barre pendant qu'un motif clair
+défile dessous.
 
-### Trois signalements de mise en page, tous justes
-`padding-left`, `width` et surtout le curseur suiveur qui écrivait `top/left`
-**à chaque image** plus quatre propriétés de mise en page animées. Tout est passé
-en `transform` et `opacity`.
+### Le son : mesurer, jamais écouter de confiance
+Les huit MP3 pesaient **exactement 64 592 octets**. Normal à débit constant,
+mais ça ne prouve rien. Comparés par **MD5 et profil spectral** : bien
+différents, et leurs profils correspondent aux textes. Le **raccord de boucle**
+mesuré à 7,9 %. Les **niveaux** avaient un **facteur 15** d'écart, ramené à 1,9
+par normalisation à ‑20 LUFS.
+
+### Deux défauts de CSS qui ne se voient qu'à l'œil
+`inline-flex` **supprime l'espace** entre ses éléments : la marque se lisait
+« MONBÉNIN ». Et d'anciennes règles `.barre-b span` **aplatissaient le menu
+hamburger à un seul trait**.
+
+### L'alias d'un déploiement Cloudflare a du retard
+`dev.mon-benin.pages.dev` accuse quelques secondes de retard sur l'URL immuable
+du déploiement. Ça a fait croire deux fois à une publication ratée, dont un faux
+404 sur les sons.
 
 ## L'état
 
-- `benin-mon-pays/` : `index.html`, `assets/app.css`, `assets/app.js`,
-  `assets/fonts/`, `assets/images/`, `_qc.py`, `_voir.py`, `_images.py`,
-  `CONTEXT.md`
-- **63 contrôles verts, 0 échec.** Zéro erreur JS, zéro réponse ≥ 400, **zéro
-  requête vers un tiers**, aucun débordement en 390 / 768 / 1440.
-- **PAS DÉPLOYÉ, volontairement** : le nom n'est pas tranché et le point de
-  départ (ouvrir ou non sur l'esclavage) est une décision de Mongazi.
+**91 contrôles verts, 0 échec.** Zéro erreur JS, zéro requête vers un tiers,
+aucun débordement en 390 / 768 / 1440. **189 Ko la page sans les sons**, 48 Ko
+par ambiance chargée à l'arrivée sur son lieu.
 
-## Ce qui attend une réponse
+## Ce qui reste
 
-Le **nom** (Bénin mon pays · MON BÉNIN · SEPT CENTS · REMONTER) et les **10
-questions** posées le 2026-08-09, dont les trois qui décident de la structure :
-le point de départ, les **photos** (deux par lieu, **en portrait**), et les
-**voix** — sans lesquelles le projet reste beau et froid, comme les trois
-références.
+Les 3 nouveaux lieux et leurs verbes · l'anglais complet · les photos (deux par
+lieu, **en portrait**) · les voix · l'annuaire · **la note due à Mongazi** sur
+ce que perdrait PISTE contre ce que gagnerait l'annuaire.
