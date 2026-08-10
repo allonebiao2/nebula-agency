@@ -281,6 +281,9 @@ body.sur-clair .barre-s { color: #14110d; }
   pointer-events: none;
 }
 .jauge.la { opacity: 1; visibility: visible; }
+/* Le portail porte ses propres cercles : l anneau des kilometres s y
+   posait sur le bouton « au hasard ». Il appartient a la route. */
+body.au-portail .jauge { opacity: 0; visibility: hidden; }
 
 .jauge-a { position: absolute; inset: 0; width: 100%; height: 100%; }
 .jauge-a .grad  { stroke: rgba(242,237,229,.26); stroke-width: 1; }
@@ -870,4 +873,281 @@ body.bloque { overflow: hidden; }
   .js .st--attente.vue .st-motif svg { animation: none; }
   .js .seuil-o { animation: none; }
   .curseur { display: none !important; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   LE PORTAIL
+   Composition relevée sur la référence envoyée par Mongazi :
+   deux cercles concentriques centrés, le nom très grand et très
+   espacé, la région dessous, les flèches, et trois commandes aux
+   coins bas. Le lieu suivant arrive PAR LE CERCLE.
+   ═══════════════════════════════════════════════════════════════ */
+
+.po {
+  position: relative;
+  min-height: 100svh;
+  display: grid; place-items: center;
+  overflow: hidden;
+  background: var(--encre);
+  scroll-margin-top: 0;
+  isolation: isolate;
+}
+
+.po-fond, .po-iris { position: absolute; inset: 0; z-index: 0; }
+.po-iris {
+  z-index: 1; opacity: 0;
+  clip-path: circle(0px at 50% 50%);
+  will-change: clip-path, opacity;
+}
+.po-iris.pret { opacity: 1; clip-path: circle(var(--r0, 36svh) at 50% 50%); }
+.po-iris.va {
+  clip-path: circle(150vmax at 50% 50%);
+  transition: clip-path 1.15s var(--e-x);
+}
+
+.po-nappe {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(120% 84% at 50% 44%,
+      color-mix(in oklab, var(--po-terre, #a4462a) 26%, var(--po-fond, #08070a)) 0%,
+      var(--po-fond, #08070a) 62%),
+    var(--po-fond, #08070a);
+}
+/* Le motif et les cercles sont tous des arcs fins : sans ecart d echelle
+   ils se confondent. Le motif est donc bien plus grand, et plus sourd. */
+.po-motif { transform: scale(1.42); }
+.po-motif {
+  position: absolute; inset: 0; display: grid; place-items: center; opacity: .22;
+}
+.po-motif svg { width: min(96vw, 1000px); height: auto; overflow: visible; }
+.po-motif .tr {
+  fill: none; stroke: var(--po-terre, #a4462a); stroke-width: 1.3;
+  stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke;
+}
+.po-motif .tr-f { fill: var(--po-terre, #a4462a); stroke: none; opacity: .5; }
+.po-grain {
+  position: absolute; inset: 0; pointer-events: none;
+  opacity: .26; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'>\
+<filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/>\
+<feColorMatrix type='saturate' values='0'/></filter>\
+<rect width='180' height='180' filter='url(%23n)' opacity='.55'/></svg>");
+  background-size: 180px 180px;
+}
+
+/* ─── les deux cercles ────────────────────────────────────────── */
+.po-cercles {
+  position: absolute; inset: 0; z-index: 2;
+  display: grid; place-items: center; pointer-events: none;
+}
+.po-c {
+  position: absolute; border-radius: 50%; aspect-ratio: 1;
+  border: 1px solid rgba(255,255,255,.28);
+}
+.po-c1 { width: 72svh; background: rgba(255,255,255,.035); }
+.po-c2 { width: 134svh; border-color: rgba(255,255,255,.14); }
+
+.js .po-cercles {
+  transform: rotate(0deg) scale(1);
+  transition: transform 1.15s var(--e-x);
+}
+.js .po-cercles.bouge { transform: rotate(45deg) scale(1.05); }
+
+/* ─── le centre ───────────────────────────────────────────────── */
+.po-centre {
+  position: relative; z-index: 3;
+  display: grid; justify-items: center; gap: 0;
+  text-align: center; padding: 0 var(--marge);
+  width: 100%;
+}
+
+.po-t {
+  margin: 0;
+  font-family: var(--ff-d); font-weight: 300;
+  font-size: clamp(30px, 7.2vw, 96px);
+  line-height: 1.02; letter-spacing: .30em; text-indent: .30em;
+  text-transform: uppercase; color: #fff;
+  white-space: nowrap;
+}
+.po-t .l { display: inline-block; will-change: transform; }
+.js .po-t .l {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity .45s linear, transform .7s var(--e);
+}
+.js .po-t.la .l { opacity: 1; transform: none; }
+.js .po-t.sort .l {
+  opacity: 0; transform: translateY(-26px);
+  transition: opacity .3s linear, transform .45s var(--e);
+}
+
+.po-fil {
+  display: block; height: 1px; width: min(64vw, 660px);
+  margin: clamp(14px, 2.4vh, 26px) 0 clamp(13px, 2.2vh, 22px);
+  background: rgba(255,255,255,.55);
+  transform: scaleX(0); transform-origin: 50% 50%;
+}
+.js .po-fil { transition: transform .9s var(--e) .12s; }
+.js .po.pret .po-fil { transform: scaleX(1); }
+html:not(.js) .po-fil { transform: none; }
+
+.po-r {
+  margin: 0;
+  font-size: clamp(9.5px, 1vw, 12px); letter-spacing: .42em; text-indent: .42em;
+  text-transform: uppercase; color: rgba(255,255,255,.88);
+}
+.js .po-r { opacity: 0; transition: opacity .5s linear .25s; }
+.js .po.pret .po-r { opacity: 1; }
+
+.po-nav {
+  display: flex; align-items: center; gap: 14px;
+  margin-top: clamp(20px, 3.4vh, 40px);
+}
+.po-sep { display: block; width: 1px; height: 30px; background: rgba(255,255,255,.34); }
+.po-fl {
+  display: grid; place-items: center;
+  width: 52px; height: 52px; padding: 0;
+  background: none; border: 0; cursor: pointer;
+  color: rgba(255,255,255,.72);
+  transition: color .3s, transform .35s var(--e);
+}
+.po-fl:hover, .po-fl:focus-visible { color: #fff; }
+.po-prec:hover, .po-prec:focus-visible { transform: translateX(-4px); }
+.po-suiv:hover, .po-suiv:focus-visible { transform: translateX(4px); }
+
+/* ─── les trois commandes du bas ──────────────────────────────── */
+.po-part, .po-has, .po-dec { position: absolute; z-index: 4; }
+
+.po-part {
+  left: var(--marge); bottom: clamp(20px, 4vh, 44px);
+  display: grid; justify-items: center; gap: 12px;
+}
+.po-part-t {
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  font-size: 9.5px; letter-spacing: .34em; text-transform: uppercase;
+  color: rgba(255,255,255,.72);
+}
+.po-part-f { display: block; width: 1px; height: 34px; background: rgba(255,255,255,.34); }
+.po-part-b {
+  display: grid; place-items: center; width: 44px; height: 44px;
+  color: rgba(255,255,255,.78); transition: color .3s;
+}
+.po-part-b:hover, .po-part-b:focus-visible { color: #fff; }
+
+.po-dec {
+  left: 50%; transform: translateX(-50%);
+  bottom: clamp(20px, 4vh, 44px);
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 44px; padding: 0 8px;
+  font-size: 10px; letter-spacing: .28em; text-transform: uppercase;
+  color: #fff; text-decoration: none;
+}
+.po-dec::after {
+  content: ''; position: absolute; left: 8px; right: 8px; bottom: 8px;
+  height: 1px; background: rgba(255,255,255,.85);
+  transform: scaleX(1); transform-origin: 0 50%;
+  transition: transform .5s var(--e);
+}
+.po-dec:hover::after, .po-dec:focus-visible::after { transform: scaleX(.35); }
+
+.po-has {
+  right: var(--marge); bottom: clamp(20px, 4vh, 44px);
+  display: flex; align-items: center; gap: 14px;
+}
+.po-has-t {
+  font-size: 9.5px; letter-spacing: .3em; text-transform: uppercase;
+  color: rgba(255,255,255,.78);
+}
+.po-has-f { display: block; width: 34px; height: 1px; background: rgba(255,255,255,.34); }
+.po-has-b {
+  display: grid; place-items: center;
+  width: 52px; height: 52px; flex: none; border: 0; border-radius: 50%;
+  background: var(--po-or, #d9c05a); color: #14110d; cursor: pointer;
+  transition: transform .5s var(--e), background-color .4s linear;
+}
+.po-has-b:hover, .po-has-b:focus-visible { transform: rotate(180deg); }
+.po-has-b.tourne { transform: rotate(540deg); }
+
+/* ─── la barre, recomposée comme la référence ─────────────────── */
+.barre { justify-content: space-between; }
+.barre-g, .barre-d { display: flex; align-items: center; gap: clamp(6px, 1.4vw, 20px); }
+.barre-m {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  font-size: 13px; letter-spacing: .26em; text-transform: uppercase;
+  white-space: nowrap;
+  /* .barre-m est en inline-flex : le flex SUPPRIME l espace entre les
+     elements, et la marque se lisait « MONBENIN ». */
+  gap: .34em;
+}
+.barre-m i { font-style: normal; color: #e0a878; }
+
+.barre-b { min-width: 44px; min-height: 44px; padding: 0; gap: 0; font-size: 0; }
+/* Les anciennes regles .barre-b span (d avant la recomposition de la barre)
+   aplatissaient ce bloc a 1 px de haut : le menu ne montrait qu un trait. */
+.barre-b .barre-h {
+  display: grid; gap: 4px;
+  width: auto; height: auto; background: none; margin: 0; transform: none;
+}
+.barre-b .barre-h i { display: block; width: 20px; height: 1px; background: currentColor;
+  transition: transform .35s var(--e), opacity .25s linear; }
+.barre-b[aria-expanded="true"] .barre-h i:nth-child(2) { opacity: 0; }
+.barre-b[aria-expanded="true"] .barre-h i:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+.barre-b[aria-expanded="true"] .barre-h i:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+
+.barre-l {
+  min-height: 44px; padding: 0 4px; background: none; border: 0; cursor: pointer;
+  font-size: 9.5px; letter-spacing: .26em; text-transform: uppercase;
+  color: var(--clair-d); position: relative; transition: color .3s;
+}
+.barre-l::after {
+  content: ''; position: absolute; left: 4px; right: 4px; bottom: 11px;
+  height: 1px; background: currentColor; opacity: .6;
+}
+.barre-l:hover, .barre-l:focus-visible { color: var(--clair); }
+.barre-q {
+  display: grid; place-items: center; width: 44px; height: 44px;
+  background: none; border: 0; cursor: pointer; color: var(--clair-d);
+  transition: color .3s;
+}
+.barre-q:hover, .barre-q:focus-visible { color: var(--clair); }
+
+/* ─── le champ de recherche du panneau ────────────────────────── */
+.carte-ch { display: block; margin: 0 0 22px; }
+.carte-ch input {
+  width: 100%; min-height: 52px; padding: 0 16px;
+  background: rgba(242,237,229,.05); color: var(--clair);
+  border: 1px solid rgba(242,237,229,.20); border-radius: 0;
+  font: inherit; font-size: 15px;
+}
+.carte-ch input::placeholder { color: #8d8578; }
+.carte-ch input:focus-visible { outline: 2px solid #e5b47a; outline-offset: 2px; }
+.carte-v { margin: 22px 0 0; color: var(--clair-d); }
+
+/* ─── au téléphone ────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .po-c1 { width: 62svh; }
+  .po-c2 { width: 104svh; }
+  .po-t { font-size: clamp(24px, 8.4vw, 46px); letter-spacing: .22em; text-indent: .22em; }
+  .po-fil { width: 78vw; }
+  .barre-m { font-size: 11.5px; letter-spacing: .2em; }
+  .barre-l { display: none; }
+  .po-part-t, .po-has-t { display: none; }
+  .po-part-f, .po-has-f { display: none; }
+  .po-dec { font-size: 9.5px; letter-spacing: .22em; }
+  .po { padding-bottom: 34px; }
+}
+
+@media (max-width: 560px) {
+  .po-t { font-size: clamp(21px, 8.6vw, 34px); }
+  .po-c1 { width: 54svh; }
+  .po-c2 { width: 88svh; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .po-t .l { opacity: 1; transform: none; }
+  .js .po-fil { transform: scaleX(1); }
+  .js .po-r { opacity: 1; }
+  .js .po-cercles.bouge { transform: none; }
+  .po-iris { display: none; }
 }

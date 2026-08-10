@@ -13,15 +13,15 @@
 <meta property="og:locale" content="fr_FR">
 <meta property="og:title" content="Mon Bénin · Sept cents kilomètres">
 <meta property="og:description" content="Sept cents kilomètres, huit lieux, un seul mouvement. Le Bénin comme vous ne l'avez jamais parcouru.">
-<meta property="og:image" content="assets/images/og.png?v=20260810a">
+<meta property="og:image" content="assets/images/og.png?v=20260810b">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 
-<link rel="icon" href="assets/images/favicon.svg?v=20260810a" type="image/svg+xml">
+<link rel="icon" href="assets/images/favicon.svg?v=20260810b" type="image/svg+xml">
 <!-- Aucune police distante, aucune requête vers un tiers : la page doit
      s'ouvrir en moins de trois secondes sur un téléphone moyen en 3G. -->
-<link rel="stylesheet" href="assets/app.css?v=20260810a">
+<link rel="stylesheet" href="assets/app.css?v=20260810b">
 
 <script>document.documentElement.className = 'js';</script>
 
@@ -79,17 +79,29 @@
 
 <!-- ═══ BARRE FIXE ══════════════════════════════════════════════ -->
 <header class="barre" id="barre">
-  <a class="barre-m" href="#station-0">Mon <i>Bénin</i></a>
-  <nav class="barre-n" aria-label="Aller à un lieu">
+  <div class="barre-g">
     <button class="barre-b" id="ouvrirCarte" type="button" aria-expanded="false" aria-controls="carte">
-      <span aria-hidden="true"></span><span aria-hidden="true"></span>
-      Les huit lieux
+      <span class="barre-h" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="vh">Ouvrir la liste des lieux</span>
     </button>
-  </nav>
-  <button class="barre-s" id="sonBtn" type="button" aria-pressed="false" title="Couper ou remettre le son">
-    <span class="barre-so" aria-hidden="true"><i></i><i></i><i></i></span>
-    <span class="vh">Son</span>
-  </button>
+    <button class="barre-s" id="sonBtn" type="button" aria-pressed="false" title="Couper ou remettre le son">
+      <span class="barre-so" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="vh">Son</span>
+    </button>
+  </div>
+
+  <a class="barre-m" href="#portail">Mon <i>Bénin</i></a>
+
+  <div class="barre-d">
+    <button class="barre-l" id="ouvrirListe" type="button" aria-controls="carte">Les onze lieux</button>
+    <button class="barre-q" id="ouvrirRech" type="button" aria-controls="carte">
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="17" height="17">
+        <circle cx="10.5" cy="10.5" r="6.6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M15.4 15.4 L20.5 20.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span class="vh">Chercher un lieu</span>
+    </button>
+  </div>
 </header>
 
 <!-- ═══ LA JAUGE (l'anneau gradué) ══════════════════════════════ -->
@@ -103,12 +115,93 @@
 <div class="carte" id="carte" hidden>
   <div class="carte-in">
     <p class="carte-k">Le pays, du sud au nord</p>
+    <label class="carte-ch">
+      <span class="vh">Chercher un lieu</span>
+      <input type="search" id="carteQ" placeholder="Chercher un lieu, une ville, un geste" autocomplete="off">
+    </label>
     <ol class="carte-l" id="carteL"></ol>
+    <p class="carte-v" id="carteV" hidden>Aucun lieu ne porte ce nom.</p>
     <p class="carte-n">Les kilomètres sont comptés à vol d'oiseau depuis la côte.</p>
   </div>
 </div>
 
 <main id="route" class="route">
+
+<!-- ═══ LE PORTAIL ══════════════════════════════════════════════
+     Composition et commandes reprises de la référence envoyée par
+     Mongazi : deux cercles concentriques, le nom du lieu en très
+     grand très espacé, la région dessous, les flèches, « partager »
+     à gauche, « découvrir » au centre, « au hasard » à droite.
+     Le lieu suivant arrive PAR LE CERCLE (iris). -->
+<section class="po" id="portail" aria-label="Choisir un lieu">
+  <div class="po-fond" aria-hidden="true">
+    <div class="po-nappe" id="poNappe"></div>
+    <div class="po-motif" id="poMotif"></div>
+    <div class="po-grain"></div>
+  </div>
+  <div class="po-iris" id="poIris" aria-hidden="true">
+    <div class="po-nappe" id="poIrisNappe"></div>
+    <div class="po-motif" id="poIrisMotif"></div>
+    <div class="po-grain"></div>
+  </div>
+
+  <div class="po-cercles" id="poCercles" aria-hidden="true">
+    <span class="po-c po-c1"></span>
+    <span class="po-c po-c2"></span>
+  </div>
+
+  <div class="po-centre">
+    <h1 class="po-t" id="poT">La Porte</h1>
+    <span class="po-fil" aria-hidden="true"></span>
+    <p class="po-r" id="poR">Ouidah &middot; km 0</p>
+    <div class="po-nav">
+      <button class="po-fl po-prec" id="poPrec" type="button">
+        <svg viewBox="0 0 40 10" aria-hidden="true" width="34" height="9">
+          <path d="M38 5 H3 M9 1 L3 5 L9 9" fill="none" stroke="currentColor" stroke-width="1.1"/>
+        </svg>
+        <span class="vh">Lieu pr&eacute;c&eacute;dent</span>
+      </button>
+      <span class="po-sep" aria-hidden="true"></span>
+      <button class="po-fl po-suiv" id="poSuiv" type="button">
+        <svg viewBox="0 0 40 10" aria-hidden="true" width="34" height="9">
+          <path d="M2 5 H37 M31 1 L37 5 L31 9" fill="none" stroke="currentColor" stroke-width="1.1"/>
+        </svg>
+        <span class="vh">Lieu suivant</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="po-part">
+    <span class="po-part-t">Partager</span>
+    <span class="po-part-f" aria-hidden="true"></span>
+    <a class="po-part-b" id="poPartage" href="#" rel="noopener">
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
+        <circle cx="18" cy="5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+        <circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+        <circle cx="18" cy="19" r="2.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M15.6 6.3 8.4 10.7M8.4 13.3l7.2 4.4" stroke="currentColor" stroke-width="1.4"/>
+      </svg>
+      <span class="vh">Partager sur WhatsApp</span>
+    </a>
+  </div>
+
+  <a class="po-dec" id="poDec" href="#station-0">D&eacute;couvrir ce lieu</a>
+
+  <div class="po-has">
+    <span class="po-has-t">Au hasard</span>
+    <span class="po-has-f" aria-hidden="true"></span>
+    <button class="po-has-b" id="poHasard" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="19" height="19">
+        <path d="M3 7h4l3.2 4.2M21 7h-5l-8 10H3M21 17h-5" fill="none"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M18.6 4.6 21 7l-2.4 2.4M18.6 14.6 21 17l-2.4 2.4" fill="none"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="vh">Un lieu au hasard</span>
+    </button>
+  </div>
+</section>
+
 
 <!-- ═══ 0 · LA PORTE ════════════════════════════════════════════ -->
 <section class="st st--porte" id="station-0" data-km="0" data-verbe="tenir"
@@ -321,6 +414,6 @@
 
 <div class="curseur" id="curseur" aria-hidden="true"><span></span></div>
 
-<script src="assets/app.js?v=20260810a" defer></script>
+<script src="assets/app.js?v=20260810b" defer></script>
 </body>
 </html>

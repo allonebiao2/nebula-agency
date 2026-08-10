@@ -44,7 +44,7 @@ def servir():
 
 
 def entrer(pg):
-    pg.goto(BASE, wait_until="load")
+    pg.goto(BASE, wait_until="domcontentloaded")
     pg.wait_for_timeout(1800)
     pg.click("#entrer")
     pg.wait_for_timeout(900)
@@ -252,7 +252,7 @@ def controler():
 
         # 9 · arriver par le MENU révèle quand même (piège de l'observer)
         pg2 = ctx.new_page()
-        pg2.goto(BASE, wait_until="load")
+        pg2.goto(BASE, wait_until="domcontentloaded")
         pg2.wait_for_timeout(1800)
         pg2.click("#entrer")
         pg2.wait_for_timeout(600)
@@ -283,6 +283,120 @@ def controler():
             d = pg.evaluate("()=>document.documentElement.scrollWidth - document.documentElement.clientWidth")
             v(d <= 1, "aucun débordement horizontal en %d" % larg, "%spx" % d)
         pg.set_viewport_size({"width": 1440, "height": 900})
+
+        # ═══ 11 · LE PORTAIL ═══════════════════════════════════════
+        aller(pg, "portail")
+        pg.evaluate("()=>window.scrollTo(0,0)")
+        pg.wait_for_timeout(600)
+
+        v(pg.eval_on_selector_all("#portail", "e=>e.length") == 1, "le portail existe")
+        v(pg.eval_on_selector_all(".po-c", "e=>e.length") == 2,
+          "le portail porte bien DEUX cercles concentriques")
+
+        nom0 = pg.eval_on_selector("#poT", "e=>e.textContent.replace(/\\s+/g,' ').trim()")
+        reg0 = pg.eval_on_selector("#poR", "e=>e.textContent.trim()")
+        v(nom0 and "Porte" in nom0, "le portail ouvre sur le premier lieu", nom0)
+        v(reg0.startswith("Ouidah") and reg0.endswith("km 0"),
+          "la région et le kilomètre s'affichent sous le nom", reg0)
+
+        # la flèche suivante change vraiment de lieu
+        pg.click("#poSuiv")
+        pg.wait_for_timeout(1500)
+        nom1 = pg.eval_on_selector("#poT", "e=>e.textContent.replace(/\\s+/g,' ').trim()")
+        reg1 = pg.eval_on_selector("#poR", "e=>e.textContent.trim()")
+        v(nom1 != nom0, "la flèche suivante change de lieu", "%s -> %s" % (nom0, nom1))
+        v("km 6" in reg1, "le kilomètre suit le lieu", reg1)
+        href1 = pg.eval_on_selector("#poDec", "e=>e.getAttribute('href')")
+        v(href1 == "#station-1", "« découvrir ce lieu » pointe le bon lieu", href1)
+
+        # l'iris revient bien à zéro : sinon il masquerait le fond
+        etat = pg.eval_on_selector("#poIris",
+                                   "e=>e.className + '|' + getComputedStyle(e).opacity")
+        v("va" not in etat and "pret" not in etat,
+          "l'iris se referme après la transition", etat)
+
+        # la flèche précédente revient
+        pg.click("#poPrec")
+        pg.wait_for_timeout(1500)
+        v(pg.eval_on_selector("#poT", "e=>e.textContent.replace(/\\s+/g,' ').trim()") == nom0,
+          "la flèche précédente revient au lieu d'avant")
+
+        # le hasard change de lieu
+        avant = pg.eval_on_selector("#poT", "e=>e.textContent")
+        pg.click("#poHasard")
+        pg.wait_for_timeout(1500)
+        v(pg.eval_on_selector("#poT", "e=>e.textContent") != avant,
+          "« au hasard » change de lieu")
+
+        # le titre ne déborde jamais, quel que soit le lieu
+        deb = pg.evaluate("""()=>{
+          const e=document.getElementById('poT');
+          return Math.round(e.scrollWidth - e.clientWidth);
+        }""")
+        v(deb <= 1, "le nom du lieu tient dans l'écran au portail", "%spx" % deb)
+
+        # l'anneau des kilomètres s'efface : il se posait sur « au hasard »
+        pg.evaluate("()=>window.scrollTo(0,0)")
+        pg.wait_for_timeout(600)
+        vis = pg.eval_on_selector("#jauge", "e=>getComputedStyle(e).visibility")
+        v(vis == "hidden", "l'anneau des kilomètres s'efface sur le portail", vis)
+
+        # rien ne se chevauche au portail
+        chev = pg.evaluate("""()=>{
+          const sel=['#poHasard','#poDec','#poPartage','#poT','#poR','#poSuiv','#poPrec'];
+          const bs=sel.map(s=>[s,document.querySelector(s)])
+                      .filter(x=>x[1])
+                      .map(x=>[x[0],x[1].getBoundingClientRect()]);
+          const bad=[];
+          for(let i=0;i<bs.length;i++) for(let j=i+1;j<bs.length;j++){
+            const a=bs[i][1], b=bs[j][1];
+            const ox=Math.min(a.right,b.right)-Math.max(a.left,b.left);
+            const oy=Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top);
+            if(ox>4&&oy>4) bad.push(bs[i][0]+' sur '+bs[j][0]);
+          }
+          return bad;
+        }""")
+        v(not chev, "aucune commande du portail n'en recouvre une autre", chev[:2])
+
+        # le partage porte un vrai lien
+        lien = pg.eval_on_selector("#poPartage", "e=>e.getAttribute('href')")
+        v(lien and lien.startswith("https://wa.me/?text="),
+          "le bouton partager porte un vrai lien WhatsApp", lien)
+
+        # contraste du nom et de la région, sur les pixels rendus
+        for sel, nom in [("#poT", "le nom du lieu"), ("#poR", "la région")]:
+            f = fond_reel(pg, sel)
+            c = couleur_texte(pg, sel)
+            if f and c:
+                r = contraste(c, f)
+                v(r >= 4.5, "contraste de %s au portail : %.2f:1" % (nom, r), "%.2f:1" % r)
+
+        # la recherche filtre vraiment
+        pg.click("#ouvrirRech")
+        pg.wait_for_timeout(900)
+        pg.fill("#carteQ", "ganvi")
+        pg.wait_for_timeout(400)
+        vus = pg.eval_on_selector_all("#carteL li", "e=>e.filter(x=>!x.hidden).length")
+        v(vus == 1, "la recherche filtre les lieux", "%s lieux visibles" % vus)
+        pg.fill("#carteQ", "zzzz")
+        pg.wait_for_timeout(400)
+        v(pg.eval_on_selector("#carteV", "e=>!e.hidden"),
+          "la recherche dit quand elle ne trouve rien")
+        pg.keyboard.press("Escape")
+        pg.wait_for_timeout(900)
+
+        # le menu doit montrer TROIS traits : d'anciennes règles l'avaient
+        # aplati à un seul, et un QC vert ne l'aurait jamais vu.
+        traits = pg.evaluate("""()=>{
+          const h=document.querySelector('#ouvrirCarte .barre-h');
+          if(!h) return null;
+          const r=h.getBoundingClientRect();
+          const t=[...h.querySelectorAll('i')].map(i=>Math.round(i.getBoundingClientRect().width));
+          return {haut: Math.round(r.height), traits: t};
+        }""")
+        v(traits and traits["haut"] >= 8 and len(traits["traits"]) == 3
+          and min(traits["traits"]) > 8,
+          "le menu montre bien trois traits", traits)
 
         ctx.close()
 
@@ -337,7 +451,7 @@ def controler():
         ctx3 = nav.new_context(viewport={"width": 1200, "height": 860},
                                reduced_motion="reduce")
         m3 = ctx3.new_page()
-        m3.goto(BASE, wait_until="load")
+        m3.goto(BASE, wait_until="domcontentloaded")
         m3.wait_for_timeout(900)
         v(m3.eval_on_selector_all("#rideau", "e=>e.length===0 || getComputedStyle(e[0]).display==='none'"),
           "sans animation, aucun rideau ne bloque")

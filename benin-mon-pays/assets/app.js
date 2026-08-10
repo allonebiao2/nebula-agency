@@ -451,6 +451,16 @@
     jauge.style.setProperty('--jx', dec.toFixed(0) + 'px');
   }
 
+  /* le portail a ses propres cercles : l'anneau des kilomètres s'efface
+     tant qu'il occupe l'écran, sinon il se pose sur « au hasard » */
+  function majPortail() {
+    var po = $('#portail');
+    if (!po) return;
+    var b = po.getBoundingClientRect();
+    var mil = W.innerHeight * 0.5;
+    D.body.classList.toggle('au-portail', b.top < mil && b.bottom > mil);
+  }
+
   /* le fond clair ou sombre sous le curseur */
   function majFond() {
     var clairs = $$('.ha, .ca');
@@ -466,32 +476,58 @@
 
   function construireCarte() {
     var ul = $('#carteL'), bt = $('#ouvrirCarte'), pan = $('#carte');
+    var champ = $('#carteQ'), vide = $('#carteV');
     if (!ul || !bt || !pan) return;
 
     var h = '';
     stations.forEach(function (st) {
       var t = $('.st-t', st);
       var nom = t ? t.textContent.trim().replace(/\s+/g, ' ') : '';
-      h += '<li><a class="carte-a" href="#' + st.id + '">' +
+      var r = $('.st-r', st);
+      h += '<li data-cle="' + (nom + ' ' + (r ? r.textContent : '') + ' ' +
+           (st.getAttribute('data-verbe') || '')).toLowerCase() + '">' +
+           '<a class="carte-a" href="#' + st.id + '">' +
            '<span class="km">km ' + (st.getAttribute('data-km') || '0') + '</span>' +
            '<span class="nm">' + nom + '</span>' +
            '<span class="vb">' + (st.getAttribute('data-verbe') || '') + '</span></a></li>';
     });
     ul.innerHTML = h;
 
-    function ouvrir(o) {
+    function ouvrir(o, versRecherche) {
       bt.setAttribute('aria-expanded', o ? 'true' : 'false');
       if (o) {
         pan.hidden = false;
-        requestAnimationFrame(function () { pan.classList.add('la'); });
+        requestAnimationFrame(function () {
+          pan.classList.add('la');
+          if (versRecherche && champ) champ.focus();
+        });
       } else {
         pan.classList.remove('la');
-        setTimeout(function () { if (bt.getAttribute('aria-expanded') === 'false') pan.hidden = true; }, 800);
+        setTimeout(function () {
+          if (bt.getAttribute('aria-expanded') === 'false') pan.hidden = true;
+        }, 800);
       }
     }
+    ouvrirCarte = ouvrir;
 
     bt.addEventListener('click', function () {
       ouvrir(bt.getAttribute('aria-expanded') !== 'true');
+    });
+    var bl = $('#ouvrirListe');
+    if (bl) bl.addEventListener('click', function () { ouvrir(true); });
+    var br = $('#ouvrirRech');
+    if (br) br.addEventListener('click', function () { ouvrir(true, true); });
+
+    /* la recherche : on filtre les lieux, on ne cherche pas ailleurs */
+    if (champ) champ.addEventListener('input', function () {
+      var q = champ.value.trim().toLowerCase();
+      var n = 0;
+      $$('li', ul).forEach(function (li) {
+        var vu = !q || li.getAttribute('data-cle').indexOf(q) >= 0;
+        li.hidden = !vu;
+        if (vu) n += 1;
+      });
+      if (vide) vide.hidden = (n > 0);
     });
 
     ul.addEventListener('click', function (e) {
@@ -506,6 +542,164 @@
     D.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && bt.getAttribute('aria-expanded') === 'true') ouvrir(false);
     });
+  }
+
+  var ouvrirCarte = null;
+
+  /* ═══ 7 bis · LE PORTAIL ════════════════════════════════════
+     Composition et commandes reprises de la référence : deux cercles,
+     le nom très grand, les flèches, le hasard. Le lieu suivant arrive
+     PAR LE CERCLE, jamais par un fondu. */
+
+  function portail() {
+    var po = $('#portail');
+    if (!po || !stations.length) return;
+
+    var elT = $('#poT'), elR = $('#poR'), dec = $('#poDec');
+    var fond = $('#poNappe'), motif = $('#poMotif');
+    var iris = $('#poIris'), iFond = $('#poIrisNappe'), iMotif = $('#poIrisMotif');
+    var cercles = $('#poCercles'), part = $('#poPartage');
+    var c1 = $('.po-c1', po);
+
+    var LIEUX = stations.map(function (st, i) {
+      var t = $('.st-t', st), k = $('.st-k', st);
+      var nom = t ? t.textContent.trim().replace(/\s+/g, ' ') : '';
+      /* « km 0 · Ouidah, sur le sable » → « Ouidah » : au portail on veut
+         le lieu seul, comme la région sous le nom dans la référence. */
+      var lieu = k ? k.textContent.replace(/\s+/g, ' ').split('·').pop()
+                      .split(',')[0].trim() : '';
+      return {
+        i: i, id: st.id, nom: nom, lieu: lieu,
+        km: st.getAttribute('data-km') || '0',
+        encre: st.getAttribute('data-encre') || '#0b0a09',
+        terre: st.getAttribute('data-terre') || '#a4462a',
+        motif: st.getAttribute('data-motif') || 'porte'
+      };
+    });
+
+    var cour = 0, occupe = false;
+
+    function dessiner(boite, l, graine) {
+      var f = MOTIFS[l.motif];
+      boite.innerHTML = f ? f(alea(graine)) : '';
+      boite.style.setProperty('--po-terre', l.terre);
+      if (doux) return;
+      $$('.tr', boite).forEach(function (t) {
+        var L = 900;
+        try { L = t.getTotalLength ? Math.ceil(t.getTotalLength()) : 900; } catch (e) {}
+        t.style.strokeDasharray = L;
+        t.style.strokeDashoffset = 0;
+      });
+    }
+
+    function lettres(mot) {
+      return mot.split('').map(function (c) {
+        return c === ' '
+          ? '<span class="l">&nbsp;</span>'
+          : '<span class="l">' + c + '</span>';
+      }).join('');
+    }
+
+    function ecrire(l, retard) {
+      elT.innerHTML = lettres(l.nom);
+      var ls = $$('.l', elT);
+      ls.forEach(function (s, i) {
+        s.style.transitionDelay = (retard + i * 0.028).toFixed(3) + 's';
+      });
+      requestAnimationFrame(function () { elT.classList.add('la'); });
+      elR.textContent = l.lieu + ' · km ' + l.km;
+      dec.setAttribute('href', '#' + l.id);
+      if (part) {
+        var txt = 'Regarde ' + l.nom + ', au Bénin. ' +
+                  W.location.href.split('#')[0];
+        part.setAttribute('href', 'https://wa.me/?text=' + encodeURIComponent(txt));
+      }
+      po.setAttribute('data-lieu', l.id);
+    }
+
+    function poser(l) {
+      fond.style.setProperty('--po-fond', l.encre);
+      dessiner(motif, l, 7919 + l.i * 131);
+    }
+
+    function aller(n) {
+      if (occupe) return;
+      n = ((n % LIEUX.length) + LIEUX.length) % LIEUX.length;
+      if (n === cour) return;
+      var l = LIEUX[n];
+
+      if (doux) {
+        cour = n; poser(l); ecrire(l, 0);
+        return;
+      }
+
+      occupe = true;
+
+      /* le titre sort */
+      elT.classList.remove('la');
+      elT.classList.add('sort');
+      $$('.l', elT).forEach(function (s, i) {
+        s.style.transitionDelay = (i * 0.018).toFixed(3) + 's';
+      });
+
+      /* le nouveau lieu est préparé DANS le cercle, hors du chemin critique */
+      iFond.style.setProperty('--po-fond', l.encre);
+      dessiner(iMotif, l, 7919 + l.i * 131);
+      var r = c1 ? (c1.getBoundingClientRect().width / 2) : 200;
+      iris.style.setProperty('--r0', r.toFixed(0) + 'px');
+      iris.classList.remove('va');
+      iris.classList.add('pret');
+      cercles.classList.add('bouge');
+
+      /* tout part dans la MÊME image */
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { iris.classList.add('va'); });
+      });
+
+      setTimeout(function () {
+        /* on transfère au fond, puis on remet l'iris à zéro sans transition */
+        cour = n;
+        poser(l);
+        iris.classList.remove('va');
+        iris.classList.remove('pret');
+        cercles.classList.remove('bouge');
+        elT.classList.remove('sort');
+        ecrire(l, 0.05);
+        occupe = false;
+      }, 1180);
+    }
+
+    /* les commandes */
+    var bp = $('#poPrec'), bs = $('#poSuiv'), bh = $('#poHasard');
+    if (bp) bp.addEventListener('click', function () { aller(cour - 1); });
+    if (bs) bs.addEventListener('click', function () { aller(cour + 1); });
+    if (bh) bh.addEventListener('click', function () {
+      bh.classList.add('tourne');
+      setTimeout(function () { bh.classList.remove('tourne'); }, 700);
+      var n = cour;
+      while (n === cour && LIEUX.length > 1) n = Math.floor(Math.random() * LIEUX.length);
+      aller(n);
+    });
+
+    /* les flèches du clavier, quand le portail occupe l'écran */
+    D.addEventListener('keydown', function (e) {
+      var b = po.getBoundingClientRect();
+      if (b.bottom < W.innerHeight * 0.5) return;
+      if (e.key === 'ArrowLeft') { aller(cour - 1); }
+      if (e.key === 'ArrowRight') { aller(cour + 1); }
+    });
+
+    if (dec) dec.addEventListener('click', function (e) {
+      e.preventDefault();
+      var c = D.getElementById(dec.getAttribute('href').slice(1));
+      allerA(c);
+      balayer();
+    });
+
+    /* état de départ */
+    poser(LIEUX[0]);
+    ecrire(LIEUX[0], 0.15);
+    po.classList.add('pret');
   }
 
   /* ═══ 8 · LES VERBES ════════════════════════════════════════ */
@@ -880,6 +1074,7 @@
     if (D.fonts && D.fonts.ready) D.fonts.ready.then(ajusterTitres);
     construireJauge();
     construireCarte();
+    portail();
     verbeTenir();
     verbeChoisir();
     verbePagayer();
@@ -900,6 +1095,7 @@
       requestAnimationFrame(function () {
         balayer();
         majJauge();
+        majPortail();
         majFond();
         if (tacheTata) tacheTata();
         if (tacheAttente) tacheAttente();

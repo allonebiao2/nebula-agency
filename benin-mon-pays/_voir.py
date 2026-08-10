@@ -24,7 +24,7 @@ def servir():
     return srv
 
 
-SECTIONS = ["station-0", "station-1", "station-2", "station-3", "halte-1",
+SECTIONS = ["portail", "station-0", "station-1", "station-2", "station-3", "halte-1",
             "station-4", "saut", "station-5", "station-6", "station-7", "carnet"]
 
 
@@ -55,7 +55,7 @@ def passe(pw, larg, haut, mobile, etiq):
     pg.on("response", lambda r: manquants.append("%d %s" % (r.status, r.url))
           if r.status >= 400 else None)
 
-    pg.goto("http://127.0.0.1:%d/index.html" % PORT, wait_until="load")
+    pg.goto("http://127.0.0.1:%d/index.html" % PORT, wait_until="domcontentloaded")
     pg.wait_for_timeout(1800)                       # le rideau
     pg.click("#entrer")
     pg.wait_for_timeout(900)
@@ -83,8 +83,8 @@ if __name__ == "__main__":
         with sync_playwright() as pw:
             f14, e14, m14 = passe(pw, 1440, 900, False, "pc")
             f39, e39, m39 = passe(pw, 390, 844, True, "tel")
-        planche(f14, 3, 620, "planche_pc.png")
-        planche(f39, 6, 300, "planche_tel.png")
+        planche(f14, 4, 470, "planche_pc.png")
+        planche(f39, 6, 290, "planche_tel.png")
         print("\nerreurs JS  PC :", e14 or "aucune")
         print("erreurs JS  TEL:", e39 or "aucune")
         print("reponses>=400  :", (m14 + m39) or "aucune")
