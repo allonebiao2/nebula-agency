@@ -172,10 +172,24 @@
   décidés, pas construits) : corrigé le 2026-08-11, et **un contrôle vérifie
   que le mot et le nombre concordent**. Même famille que la jauge qui
   contredisait son étiquette.
-- **LIVE (dev) : https://dev.mon-benin.pages.dev** · projet Cloudflare Pages
-  `mon-benin`, branche `dev` · publier = `python benin-mon-pays/_dist.py` puis
-  déployer `_dist` · **231 Ko la page entière**, donc les 3 s en 3G sont tenues
-  par construction · ⚠️ un agent non navigateur reçoit **403** sur `*.pages.dev`
+- **LIVE : https://mon-benin.pages.dev — UNE SEULE ADRESSE** · projet
+  Cloudflare Pages `mon-benin`, **branche `main` uniquement** · publier =
+  `python benin-mon-pays/_dist.py` puis déployer `_dist` sur `main`
+  · ⚠️ **le site a longtemps répondu à DEUX adresses** (`dev.` et la
+  production, qui elle rendait 404) **et n'en nommait aucune** : ni `canonical`
+  ni `og:url`. Mongazi : « il est censé y en avoir une seule ». Les 9
+  déploiements `dev` sont supprimés. **Pour essayer, le QC et un serveur local,
+  jamais une deuxième adresse en ligne**
+  · **le portail avance TOUT SEUL** (6,2 s) avec 4 garde-fous, et **ne
+  télécharge aucune ambiance** en tournant (380 Ko non demandés)
+  · **le héros porte la PHOTO du lieu** (`-po.webp`, `_photos_portail.py`, qui
+  **vise un poids** et non une qualité), et le contraste du titre est mesuré
+  **sur les huit lieux**, pas sur un seul
+  · ⚠️ **BÉNINÉO = agence de tourisme** (`@mybenineo`), partenaire possible et
+  première halte naturelle ; **ses photos ne sont sur aucun disque** et **rien
+  d'elle n'est publié sans accord écrit**
+  · **premier écran sous 320 Ko**, donc les 3 s en 3G sont tenues par
+  construction · ⚠️ un agent non navigateur reçoit **403** sur `*.pages.dev`
   (filtrage de bots) : vérifier avec un vrai `User-Agent`.
 - **13 décisions prises par Mongazi le 2026-08-10** : nom **MON BÉNIN** +
   « sept cents kilomètres » · **départ à la Porte** · cible **diaspora

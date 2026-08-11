@@ -35,6 +35,13 @@
 | 21 | « mets toutes mes demandes et ce qu'il reste à faire séparément en mémoire » | ✅ ce fichier + `RESTE-A-FAIRE.md` |
 | 28 | **2026-08-11** : « le logo que je veux doit être aux couleurs du drapeau du pays et en forme du Bénin » | ✅ **fait et en ligne** : le contour du pays rempli du drapeau, traversé par la ligne des 700 km, point d'or au km 0. Le méridien gradué est retiré |
 | 29 | **2026-08-11** : « dis-moi tout ce que je dois t'apporter en contenu » | ✅ `benin-mon-pays/CE-QUE-TU-DOIS-APPORTER.md` : photos, voix, 3 lieux, anglais, accords, domaine, sons, et ce dont je n'ai **pas** besoin |
+| 30 | **2026-08-11** : « crédite Béninéo, c'est la page Instagram de la personne chez qui je prends les images, mets carrément son insta en valeur » | ⏳ **écrit et spécifié**, rien publié : il faut son **accord écrit**. ✅ identifiant trouvé sur son site : **@mybenineo** |
+| 31 | **2026-08-11** : « pour chaque image fais des recherches et parle de ce que je t'envoie pour enrichir l'histoire, mettre la culture et le pays en avant » | ✅ **5 fiches** dans `benin-mon-pays/_sources/fiches/`, et les faits posés dans les stations |
+| 32 | **2026-08-11** : « il y a encore plus d'endroits que ces 11, ça va devenir plus grand, et le côté voir les business doit être assez visible » | ⏳ **architecture écrite** (CONTEXT §7 bis) : deux étages, stations (8 à 12) et haltes (illimitées). **Reste à trancher** : combien de stations, et l'annuaire séparé ou non |
+| 33 | **2026-08-11** : « dans le héros les éléments doivent avancer tout seuls ; toute animation doit se faire sans attendre une intervention humaine » | ✅ **fait**, tour de 6,2 s + 4 garde-fous |
+| 34 | **2026-08-11** : « mets les vraies images dans le héros » | ✅ **fait** avec les 8 photos du site. ⛔ Celles de Béninéo ne sont sur aucun disque |
+| 35 | **2026-08-11** : « la page ne passe pas » puis « il est censé avoir qu'un seul, pourquoi deux ? » | ✅ **une seule adresse** : mon-benin.pages.dev. `dev` supprimé, `canonical` posé |
+| 36 | **2026-08-11** : « mets tout sur la vitrine » | ✅ toute la recherche du jour est dans les stations |
 
 ### HILLARY M. STYL
 

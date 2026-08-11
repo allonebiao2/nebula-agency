@@ -18,12 +18,26 @@
 
 ---
 
-## 🌍 MON BÉNIN — https://dev.mon-benin.pages.dev
+## 🌍 MON BÉNIN — https://mon-benin.pages.dev
 
 > **La liste complète de ce que Mongazi doit apporter, avec les formats exacts
 > et les interdits : `benin-mon-pays/CE-QUE-TU-DOIS-APPORTER.md`** (2026-08-11).
 > Ordre conseillé : les deux photos de la Porte, puis une voix sur ce même
 > lieu, puis l'accord écrit des cinq artisans.
+>
+> ⛔ **LE BLOCAGE N° 1 : les photos de Béninéo ne sont sur AUCUN disque.**
+> Sept images envoyées le 2026-08-11 dans la conversation. Vérifié : `_partage/`,
+> Téléchargements, Bureau, Images, Documents, et le Drive. Le document
+> **« Mon bénin apport »** ne contient que les quatre textes.
+> **Marche à suivre : ajouter les photos DANS ce même Google Doc**, une image
+> posée dans un Doc s'extrait à sa taille d'origine. Mongazi ne touche pas au PC.
+>
+> ⚠️ **BÉNINÉO EST UNE AGENCE DE TOURISME**, pas une page de photos : circuits
+> culturels et mémoriels, conciergerie, coffrets EbunBox, boutique. Instagram
+> **@mybenineo** (confirmé sur `benineo.com`), WhatsApp **+33 6 46 39 66 46**.
+> **C'est un partenaire, pas un fournisseur à qui l'on demande une faveur** :
+> ils vendent ce que Mon Bénin donne envie d'acheter. Première halte naturelle.
+> ⛔ **Rien de Béninéo n'est publié** tant qu'on n'a pas son **accord écrit**.
 >
 > ✅ **Le logo est fait** (2026-08-11) : le pays au drapeau, la ligne des
 > 700 km, le point d'or au km 0. Voir `benin-mon-pays/CONTEXT.md` §10 bis.
@@ -110,8 +124,9 @@
 
 - [ ] **La marque de déploiement** sur les autres sites : la protection
       anti-cache-empoisonné de PISTE, demandée par Mongazi le 2026-08-04.
-- [ ] **Fusionner `worktree-angy-photos` dans `main`.** La branche porte ANGY
-      ART, tout MON BÉNIN et toute la vague HILLARY.
+- [x] ~~Fusionner `worktree-angy-photos` dans `main`~~ ✅ **fait le
+      2026-08-11**, et refait à chaque commit depuis. `main` porte ANGY ART,
+      tout MON BÉNIN et toute la vague HILLARY.
 
 ---
 
