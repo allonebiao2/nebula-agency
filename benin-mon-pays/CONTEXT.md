@@ -3,8 +3,11 @@
 > **Nom tranché par Mongazi le 2026-08-10 : « Mon Bénin »**, avec **« sept cents
 > kilomètres »** en signature. Le dossier garde son ancien nom `benin-mon-pays/`.
 >
-> ## 🌍 EN LIGNE (dev) : **https://dev.mon-benin.pages.dev**
-> Projet Cloudflare Pages `mon-benin`, branche `dev`, production `main` (vide).
+> ## 🌍 EN LIGNE : **https://mon-benin.pages.dev** et **https://dev.mon-benin.pages.dev**
+> Projet Cloudflare Pages `mon-benin`. ⚠️ **La production était VIDE jusqu'au
+> 2026-08-11** : `mon-benin.pages.dev`, l'adresse la plus courte et la plus
+> facile à taper, répondait **404**. Mongazi est tombé dessus (« la page ne
+> passe pas »). **Publier sur les DEUX branches**, `dev` et `main`.
 > Publier : `python benin-mon-pays/_dist.py` puis déployer `_dist` sur `dev`.
 > ⚠️ Un agent non navigateur reçoit **403** sur `*.pages.dev` (filtrage de bots
 > Cloudflare). Vérifier avec un vrai `User-Agent`, et **rouvrir les robots IA sur
