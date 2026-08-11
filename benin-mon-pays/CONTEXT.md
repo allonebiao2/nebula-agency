@@ -152,6 +152,28 @@ soit pas le Bénin : la moitié des images étiquetées « Bénin » en ligne so
 ghanéennes ou togolaises. ⛔ Aucune personne identifiable sans accord écrit,
 **jamais un enfant**.
 
+**Le photographe (2026-08-11) : BÉNINNÉO**, une page Instagram. Mongazi prend
+les images chez lui et demande que son Instagram soit **mis en valeur**, pas
+relégué : le crédit va **sur chaque photo** (ligne `.st-ph`, celle que les
+visiteurs voient vraiment), **plus un bloc à son nom dans le pied** avec un
+bouton vers son compte. ⚠️ **Créditer n'est pas être autorisé** : il faut son
+**accord écrit** avant toute mise en ligne. ⚠️ **Son identifiant exact doit
+être copié depuis l'application**, jamais deviné : un lien qui tombe sur le
+mauvais compte est pire que pas de lien. ⚠️ **Instagram ne rend jamais plus de
+1 080 px de large** et recompresse : sur un site en plein écran ça se voit sur
+ordinateur, donc **demander les fichiers d'origine**.
+
+**Chaque image reçue passe par `_entrer_photos.py`** : portrait ou paysage,
+taille réelle, passage par une messagerie mesuré au poids par pixel, et **GPS
+quand la photo en porte** (une photo géolocalisée se pose seule à sa latitude,
+le kilomètre se calcule au lieu de se deviner).
+
+**Et chaque image reçoit une recherche** (demande de Mongazi) : identifier ce
+qu'elle montre, ne garder que du **public et vérifiable**, écrire ce qui fait
+que l'endroit existe plutôt qu'une légende de carte postale, **dire dans le
+texte quand une source manque ou diverge**, et donner les sources à Mongazi.
+⛔ Aucune histoire inventée.
+
 En attendant les vraies photos, **le site est un atlas dessiné** : chaque lieu a
 un relevé géométrique en SVG qui se trace à l'arrivée. Ce n'est pas un
 bouche-trou, c'est fini en l'état. Les photos viendront **dans** les aplats de
@@ -160,6 +182,45 @@ couleur.
 **Ce qu'il faut demander** : deux photos par lieu, **en portrait** (90 % des
 photos de tourisme sont en paysage et se recadrent mal en plein écran vertical),
 une très large pour l'arrivée et une serrée sur un détail humain.
+
+## 7 bis. LE PAYS EST PLUS GRAND QUE 11 LIEUX (2026-08-11)
+
+**Mongazi :** « parmi tout, il y a encore plus d'endroits que ces 11 que nous
+avions soulevés, ça va devenir plus grand, et le côté voir les business doit
+tout aussi être assez visible ».
+
+⚠️ **On ne peut pas simplement ajouter des stations.** La règle fondatrice est
+**un verbe d'interaction DIFFÉRENT par lieu**. À quarante lieux, ou bien on
+invente quarante mécaniques (personne ne le fait honnêtement), ou bien on
+copie-colle, et la règle tombe. Et un défilement de quarante sections n'est
+plus un voyage de sept minutes, c'est un catalogue : exactement ce que le
+projet a refusé au premier jour.
+
+**La réponse : deux étages sur UNE seule route.**
+
+| | **Les stations** | **Les haltes** |
+|---|---|---|
+| Combien | **8 à 12, jamais plus** | autant qu'on veut |
+| Ce que c'est | le film : plein écran, son, verbe propre | un arrêt sur la route |
+| Traitement | une signature unique par lieu | **un seul format, répété** |
+| Qui y entre | les grands lieux du pays | tout le reste : lieux, artisans, **commerces** |
+
+**Un commerce est une halte, et une halte est un lieu.** L'unité du projet
+n'est pas « l'endroit touristique », c'est **quelqu'un qui fabrique quelque
+chose, dans un endroit**. Le pêcheur de Ganvié, le maçon batammariba et la
+coiffeuse de Ganhi sont le même objet. C'est ce qui permet à un salon de
+coiffure de cohabiter avec la Porte du Non-Retour sans que ce soit obscène,
+et c'est ce qui rend « voir les business » légitime au milieu du voyage.
+
+**Rendre les business visibles, sans casser le film :** une entrée écrite dans
+la barre (pas une icône, elles ne se devinent pas), les haltes qui **affleurent
+sur la route à leur latitude** pendant le voyage, et une vue « toutes les
+haltes » qui s'ouvre par-dessus sans quitter la page.
+
+⏳ **À trancher par Mongazi** : combien de stations gardent le traitement
+complet, et si l'annuaire d'entreprises reste un **objet séparé** (décision du
+2026-08-10) ou devient la vue « toutes les haltes » de ce site. Les deux se
+défendent ; ce qui ne se défend pas, c'est quarante stations.
 
 ## 8. La couche « haltes » (les commerces), pas encore ouverte
 

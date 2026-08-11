@@ -18,6 +18,75 @@ une seconde ce que le reste du site construit en sept minutes.
 
 ---
 
+## 0. BÉNINNÉO · le photographe, et ce qu'il faut de lui
+
+**Décidé le 2026-08-11 :** les photos viendront de **Béninnéo**, et son
+Instagram est mis **en valeur**, pas relégué en petit en bas de page. Trois
+endroits, et c'est le premier qui compte :
+
+1. **Sur chaque photo du voyage** : « Photographie · Béninnéo », dans la ligne
+   qui porte déjà la légende. C'est le seul crédit que la plupart des visiteurs
+   verront, parce que peu de gens vont jusqu'au pied de page.
+2. **Un bloc à son nom dans le pied**, avec un vrai bouton vers son Instagram,
+   au-dessus de la liste des licences.
+3. **Dans le partage** : quand une de ses photos porte l'aperçu, son nom suit.
+
+### ⚠️ Deux choses avant de poser une seule image
+
+- **Créditer n'est pas être autorisé.** Le crédit dit d'où vient la photo, il
+  ne donne aucun droit de la publier. Il me faut **son accord écrit**, une
+  phrase suffit : « j'accepte que mes photos soient publiées sur le site Mon
+  Bénin, avec mon nom et mon Instagram ». Message par message, c'est valable.
+  Sans ça, le site publie l'œuvre de quelqu'un sans son autorisation, et c'est
+  exactement le reproche qu'on ferait à un concurrent.
+- **Son identifiant Instagram exact, copié depuis l'application.** Je ne le
+  devine pas et je ne l'écris pas de mémoire : un lien qui tombe sur le mauvais
+  compte est pire que pas de lien. (C'est la faute de l'adresse email inventée
+  chez Hillary, on ne la repaie pas.)
+
+### ⚠️ Et une limite technique qu'il vaut mieux connaître tout de suite
+
+**Instagram ne rend jamais une image au-delà de 1 080 px de large**, et il la
+recompresse. Sur ce site, une photo occupe **tout l'écran** : 1 080 px passent
+sur un téléphone, et se voient sur un ordinateur.
+
+**Donc : demande-lui les fichiers d'origine**, ceux de son appareil ou de sa
+galerie, pas les images téléchargées depuis sa page. C'est la même démarche,
+et ça change tout à l'affichage. Si on n'a que les versions Instagram, on les
+utilise, mais en cadre plus petit, pas en plein écran.
+
+Je mesure chaque fichier reçu, un par un :
+
+```bash
+python benin-mon-pays/_entrer_photos.py _partage
+```
+
+Il dit, pour chaque image : portrait ou paysage, taille réelle, si elle est
+passée par une messagerie (le poids par pixel le trahit), et **ses coordonnées
+GPS quand elle en porte**. Une photo géolocalisée se pose toute seule à sa
+latitude sur la route, et le kilomètre se calcule au lieu de se deviner.
+
+## 0 bis. CE QUE JE FAIS DE CHAQUE IMAGE QUE TU M'ENVOIES
+
+**Demande de Mongazi : « pour chaque image, fais des recherches et parle de ce
+que je t'envoie pour enrichir l'histoire, mettre la culture et le pays en
+avant. »** La méthode, à chaque photo :
+
+1. **J'identifie ce qu'elle montre**, précisément : le lieu, l'objet, le geste.
+   Si je ne suis pas sûr, **je te le demande** au lieu de deviner.
+2. **Je cherche**, et je ne garde que ce qui est **public et vérifiable** : une
+   date, un chiffre, un nom, une décision. Chaque fait du site l'est déjà.
+3. **J'écris le texte du lieu** : pas une légende de carte postale, ce qui
+   fait que cet endroit existe. Ganvié n'est pas « un joli village sur
+   pilotis », c'est un village bâti sur l'eau **parce que l'eau était la seule
+   chose qui sauvait des razzias**. C'est ça, mettre la culture en avant.
+4. **Si une source manque ou si deux sources divergent, je l'écris dans le
+   texte.** ⛔ Aucune histoire inventée, jamais. Un Béninois voit une erreur
+   sur son pays en deux secondes, et le charme tombe.
+5. **Je te donne mes sources**, pour que tu puisses trancher quand un ancien
+   ou un guide dit autre chose que l'encyclopédie. Sur ce pays, c'est souvent
+   l'ancien qui a raison.
+
 ## 1. LES PHOTOS · c'est le premier levier, très loin devant
 
 **Ce qu'il y a aujourd'hui :** 8 photos vraies, mais **empruntées** (Wikimedia
