@@ -180,8 +180,13 @@
   .dish:hover{border-color:var(--brd-strong);box-shadow:0 34px 64px -26px rgba(0,0,0,.92),0 0 34px -10px rgba(255,120,30,.42),inset 0 1px 0 rgba(255,240,220,.18)}
   .dish__media{position:relative;aspect-ratio:5/4;overflow:hidden;background-color:#1c1108;
     background-size:cover;background-position:center;background-repeat:no-repeat}
-  .dish__media.photo{transition:transform .6s cubic-bezier(.2,.7,.2,1)}
-  .dish:hover .dish__media.photo{transform:scale(1.045)}
+  /* LA PHOTO EST UNE VRAIE IMAGE, ET ELLE EST DIFFEREE.
+     Avant, les 48 photos etaient des fonds CSS : un navigateur ne sait pas
+     les differer, et il telechargeait 4,3 Mo AVANT meme qu'on arrive au
+     menu. A Cotonou, c'est un catalogue que personne n'attend. */
+  .dish__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
+    transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+  .dish:hover .dish__img{transform:scale(1.045)}
   .dish__media.ph{display:grid;place-items:center;background-image:
     radial-gradient(120% 100% at 50% 118%, rgba(255,120,30,.5), transparent 60%),
     linear-gradient(160deg,#2c1809,#160c06)}
@@ -766,8 +771,8 @@
     c.items.forEach(function(it,ii){
       var key=ci+'_'+ii, ph=photoFor(it);
       mhtml+='<article class="dish reveal" data-open="'+key+'" data-name="'+it.n.toLowerCase()+'">'
-        +'<div class="dish__media '+(ph?'photo':'ph')+'"'+(ph?' style="background-image:url('+ph+')"':'')+'>'
-          +(ph?'':GLYPH)
+        +'<div class="dish__media '+(ph?'photo':'ph')+'">'
+            +(ph?'<img class="dish__img" src="'+ph+'" alt="'+it.n+'" loading="lazy" decoding="async" width="640" height="512">':GLYPH)
           +(it.joq?'<span class="badge-joq"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.9H22l-6 4.6 2.3 7-6.3-4.4L5.7 20l2.3-7-6-4.6h7.6z"/></svg>Signature JOQ</span>':'')
           +priceChip(it)
         +'</div>'
