@@ -20,6 +20,14 @@
 
 ## 🌍 MON BÉNIN — https://dev.mon-benin.pages.dev
 
+> **La liste complète de ce que Mongazi doit apporter, avec les formats exacts
+> et les interdits : `benin-mon-pays/CE-QUE-TU-DOIS-APPORTER.md`** (2026-08-11).
+> Ordre conseillé : les deux photos de la Porte, puis une voix sur ce même
+> lieu, puis l'accord écrit des cinq artisans.
+>
+> ✅ **Le logo est fait** (2026-08-11) : le pays au drapeau, la ligne des
+> 700 km, le point d'or au km 0. Voir `benin-mon-pays/CONTEXT.md` §10 bis.
+
 ### La suite du voyage
 - [ ] **Les 3 lieux qui manquent** sur les 11 décidés, avec leur verbe :
       **Porto-Novo « retourner »** (l'église baroque brésilienne devenue
@@ -40,6 +48,10 @@
       de page en attendant.
 - [ ] **Plus de photos**, et des photos en **portrait** : le site est en
       plein écran vertical, et 90 % des photos de tourisme sont en paysage.
+      ⚠️ Les 8 photos actuelles sont vraies mais **empruntées** (CC BY et
+      CC BY-SA) : le crédit de l'auteur est obligatoire, il est affiché en bas
+      de page, et n'importe qui peut se servir des mêmes images. **Ce ne sont
+      pas nos images.** Deux par lieu, l'arrivée large et le détail serré.
 
 ### L'annuaire d'entreprises
 - [ ] **La note due à Mongazi** avant qu'il tranche : ce que perdrait PISTE

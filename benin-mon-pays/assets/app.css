@@ -1227,17 +1227,16 @@ html:not(.js) .st-photo { opacity: 1; }
 .pied-crn { margin: 0; font-size: 12px; color: #8d8578; max-width: 640px; }
 
 /* ── LE LOGO ──────────────────────────────────────────────────────
-   La marque est le méridien gradué : le cercle du pays, la ligne des
-   sept cents kilomètres qui le traverse, et le point d'or au kilomètre
-   zéro. C'est l'instrument du site lui-même, pas un ornement ajouté.
-   Le texte du logo est tracé en COURBES : il ne dépend d'aucune police
-   installée chez le lecteur. */
+   La marque est LE PAYS rempli du drapeau, traversé par la ligne des
+   sept cents kilomètres, avec le point d'or au kilomètre zéro sur la
+   côte. Le texte du logo est tracé en COURBES : il ne dépend d'aucune
+   police installée chez le lecteur.
+   ⚠️ PLUS AUCUN FILTRE ICI. La marque était monochrome et la barre la
+   retournait en `invert(1)` pour la poser sur l'encre : avec le drapeau,
+   inverser rend le vert MAGENTA. La marque est désormais remplie, donc
+   lisible telle quelle sur l'encre comme sur le papier. */
 .barre-m { gap: .5em; }
-.barre-lo {
-  width: 26px; height: 26px; flex: none;
-  filter: invert(1) brightness(1.6);   /* la version claire, sur l'encre */
-}
-body.sur-clair .barre-lo { filter: none; }
+.barre-lo { width: 26px; height: 26px; flex: none; }
 
 .pied-lo {
   width: min(296px, 74vw); height: auto; margin: 0 0 14px;

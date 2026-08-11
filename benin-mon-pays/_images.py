@@ -18,6 +18,12 @@ CLAIR = (242, 237, 229)
 TERRE = (164, 70, 42)
 OR = (229, 180, 122)
 
+# Le drapeau, mêmes couleurs officielles que le logo (voir `_logo.py`).
+VERT = (0, 135, 81)
+JAUNE = (252, 209, 22)
+ROUGE = (232, 17, 45)
+OR_LOGO = (201, 162, 74)
+
 
 def police(noms, taille):
     for n in noms:
@@ -36,30 +42,67 @@ SERIF_I = lambda t: police(["georgiai.ttf", "timesi.ttf", "DejaVuSerif-Italic.tt
 SANS = lambda t: police(["segoeui.ttf", "arial.ttf", "DejaVuSans.ttf"], t)
 
 
-# ── 1 · LE FAVICON : l'anneau gradué, l'emblème du site ────────────
-def favicon():
-    p = []
-    for i in range(24):
-        a = (i / 24) * math.tau - math.pi / 2
-        lg = 4 if i % 6 == 0 else 2.2
-        x1, y1 = 16 + math.cos(a) * 10.5, 16 + math.sin(a) * 10.5
-        x2, y2 = 16 + math.cos(a) * (10.5 + lg), 16 + math.sin(a) * (10.5 + lg)
-        o = "1" if i % 6 == 0 else ".45"
-        p.append(
-            '<line x1="%.2f" y1="%.2f" x2="%.2f" y2="%.2f" stroke="#e5b47a" '
-            'stroke-width="1.3" opacity="%s"/>' % (x1, y1, x2, y2, o)
-        )
-    svg = (
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">'
-        '<rect width="32" height="32" fill="#0b0a09"/>'
-        '<circle cx="16" cy="16" r="10.5" fill="none" stroke="#a4462a" stroke-width="1.6"/>'
-        + "".join(p)
-        + '<path d="M16 16 L16 7.5" stroke="#f2ede5" stroke-width="1.7" stroke-linecap="round"/>'
-        "</svg>"
-    )
-    with io.open(os.path.join(IMG, "favicon.svg"), "w", encoding="utf-8") as f:
-        f.write(svg)
-    print("favicon.svg  ", len(svg), "octets")
+# ── 1 · LE FAVICON ─────────────────────────────────────────────────
+# ⚠️ IL N'Y EN A PLUS QU'UN, et il est écrit par `_logo.py` :
+# `assets/images/logo/favicon.svg`. Celui qui vivait ici (l'anneau gradué)
+# était orphelin depuis que `index.html` pointe vers le dossier du logo :
+# deux favicons dans un dépôt, c'est celui que personne ne regarde qui finit
+# par partir en ligne.
+
+
+# ── 1 bis · LE PAYS, dessiné au drapeau ────────────────────────────
+def pays(im, cx, cy, hauteur, ligne=True, sur=4):
+    """Colle le Bénin rempli du drapeau, avec la ligne des 700 km.
+
+    ⚠️ Dessiné à `sur` fois la taille puis réduit : PIL ne lisse pas les
+    polygones, et un contour de pays en escalier se voit immédiatement.
+    """
+    from _logo import PART_VERTE, pays_points
+    from _contour import MALANVILLE, PORTE
+
+    pts, (bx, by, bw, bh), projeter = pays_points(
+        cx * sur, cy * sur, hauteur * sur, 0.006)
+
+    masque = Image.new("L", (im.width * sur, im.height * sur), 0)
+    ImageDraw.Draw(masque).polygon(pts, fill=255)
+
+    drap = Image.new("RGB", masque.size, ENCRE)
+    dd = ImageDraw.Draw(drap)
+    vx = bx + bw * PART_VERTE
+    dd.rectangle([bx - 4, by - 4, vx, by + bh + 4], fill=VERT)
+    dd.rectangle([vx, by - 4, bx + bw + 4, by + bh / 2.0], fill=JAUNE)
+    dd.rectangle([vx, by + bh / 2.0, bx + bw + 4, by + bh + 4], fill=ROUGE)
+
+    if ligne:
+        x0, y0 = projeter(*PORTE)
+        x1, y1 = projeter(*MALANVILLE)
+        xf, yf = x0 + (x1 - x0) * 1.16, y0 + (y1 - y0) * 1.16
+        e = max(2, int(hauteur * sur * 0.0085))
+        dd.line([x0, y0, xf, yf], fill=ENCRE, width=e)
+        ang = math.atan2(y1 - y0, x1 - x0) + math.pi / 2
+        for i in range(1, 7):
+            t = i / 7.0
+            mx, my = x0 + (x1 - x0) * t, y0 + (y1 - y0) * t
+            lg = hauteur * sur * 0.019
+            dd.line([mx - math.cos(ang) * lg / 2, my - math.sin(ang) * lg / 2,
+                     mx + math.cos(ang) * lg / 2, my + math.sin(ang) * lg / 2],
+                    fill=ENCRE, width=max(1, int(e * 0.62)))
+
+    corps = Image.new("RGBA", masque.size, (0, 0, 0, 0))
+    corps.paste(drap, (0, 0), masque)
+
+    if ligne:
+        # le kilomètre zéro, par-dessus la découpe : il déborde sur la mer,
+        # comme le monument lui-même
+        x0, y0 = projeter(*PORTE)
+        dc = ImageDraw.Draw(corps)
+        r = hauteur * sur * 0.028
+        dc.ellipse([x0 - r, y0 - r, x0 + r, y0 + r], fill=ENCRE + (255,))
+        r2 = hauteur * sur * 0.015
+        dc.ellipse([x0 - r2, y0 - r2, x0 + r2, y0 + r2], fill=OR_LOGO + (255,))
+
+    corps = corps.resize((im.width, im.height), Image.LANCZOS)
+    im.paste(corps, (0, 0), corps)
 
 
 # ── 2 · L'IMAGE DE PARTAGE ─────────────────────────────────────────
@@ -80,26 +123,19 @@ def og():
             ),
         )
 
-    # l'anneau gradué, à droite
-    cx, cy, R = 960, 315, 168
-    d.ellipse([cx - R, cy - R, cx + R, cy + R], outline=(72, 62, 52), width=2)
-    for i in range(48):
-        a = (i / 48) * math.tau - math.pi / 2
-        lg = 17 if i % 6 == 0 else 9
-        x1, y1 = cx + math.cos(a) * (R + 8), cy + math.sin(a) * (R + 8)
-        x2, y2 = cx + math.cos(a) * (R + 8 + lg), cy + math.sin(a) * (R + 8 + lg)
-        d.line([x1, y1, x2, y2], fill=(96, 84, 70) if i % 6 else (150, 132, 108), width=2)
-    # l'arc parcouru
-    d.arc([cx - R, cy - R, cx + R, cy + R], -90, 158, fill=TERRE, width=6)
+    # LE PAYS, à droite : c'est la marque depuis le 2026-08-11. La vignette
+    # WhatsApp est la première impression au Bénin, elle porte le logo.
+    cx, cy = 962, 292
+    pays(im, cx, cy, 462)
+    d = ImageDraw.Draw(im)
 
-    f_km = SERIF(64)
-    f_u = SANS(18)
+    f_km, f_u = SERIF(52), SANS(17)
     t = "700"
     b = d.textbbox((0, 0), t, font=f_km)
-    d.text((cx - (b[2] - b[0]) / 2, cy - 52), t, font=f_km, fill=CLAIR)
+    d.text((cx - (b[2] - b[0]) / 2, 552), t, font=f_km, fill=CLAIR)
     t2 = "K M"
     b2 = d.textbbox((0, 0), t2, font=f_u)
-    d.text((cx - (b2[2] - b2[0]) / 2, cy + 26), t2, font=f_u, fill=(160, 150, 136))
+    d.text((cx - (b2[2] - b2[0]) / 2, 604), t2, font=f_u, fill=(160, 150, 136))
 
     # le titre, à gauche
     x0 = 86
@@ -123,5 +159,4 @@ def og():
 
 
 if __name__ == "__main__":
-    favicon()
     og()

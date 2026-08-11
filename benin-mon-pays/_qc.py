@@ -104,6 +104,36 @@ def couleur_texte(pg, sel):
 
 
 # ═══════════════════════════════════════════════════════════════════
+# ─── le logo, sur le disque ────────────────────────────────────────
+def controler_logo():
+    """Ce que l'œil ne vérifie pas tout seul sur une marque de pays.
+
+    ⚠️ Le contour EST le Bénin : si quelqu'un remplace le fichier par un
+    autre pays, rien ne le signale à l'écran. On mesure ses bornes.
+    """
+    sys.path.insert(0, ICI)
+    import _contour
+
+    lons = [p[0] for p in _contour.CONTOUR]
+    lats = [p[1] for p in _contour.CONTOUR]
+    v(len(_contour.CONTOUR) >= 140, "le contour du pays est entier",
+      len(_contour.CONTOUR))
+    v(0.70 < min(lons) < 0.85 and 3.75 < max(lons) < 3.95
+      and 6.10 < min(lats) < 6.30 and 12.30 < max(lats) < 12.50,
+      "le contour est bien celui du Bénin (bornes mesurées)",
+      "lon %.2f..%.2f lat %.2f..%.2f" % (min(lons), max(lons),
+                                         min(lats), max(lats)))
+
+    drapeau = ("#008751", "#fcd116", "#e8112d")
+    for nom in ("logo.svg", "logo-clair.svg", "logo-marque.svg",
+                "logo-marque-clair.svg", "favicon.svg"):
+        p = os.path.join(ICI, "assets", "images", "logo", nom)
+        s = io.open(p, encoding="utf-8").read().lower()
+        v(all(c in s for c in drapeau),
+          "%s porte les trois couleurs du drapeau" % nom)
+        v("<text" not in s, "%s n'a aucun texte non tracé" % nom)
+
+
 def controler():
     with sync_playwright() as pw:
         nav = pw.chromium.launch()
@@ -124,9 +154,26 @@ def controler():
         v(not mauvaises, "aucune réponse >= 400", mauvaises[:3])
         v(not externes, "aucune requête vers un tiers (page autonome)", externes[:3])
 
+        # ⚠️ LE PIÈGE DU LOGO EN COULEURS : la barre retournait la marque en
+        # `filter: invert(1)` du temps où elle était monochrome. Avec le
+        # drapeau, inverser rend le vert MAGENTA, et rien ne l'annonce.
+        f = pg.eval_on_selector(".barre-lo", "e=>getComputedStyle(e).filter")
+        v(f in ("none", ""), "aucun filtre ne retourne les couleurs du logo", f)
+        for sel in (".barre-lo", ".pied-lo"):
+            w = pg.eval_on_selector(sel, "e=>e.naturalWidth||0")
+            v(w > 0, "%s affiche une vraie image" % sel, w)
+
         # 1 · les huit stations existent et sont dans l'ordre
         n = pg.eval_on_selector_all(".st", "e=>e.length")
         v(n == 8, "huit stations", n)
+
+        # ⚠️ MÊME FAMILLE QUE LA JAUGE QUI CONTREDISAIT SON ÉTIQUETTE : le
+        # bouton annonçait « Les onze lieux » alors que le site en portait
+        # huit. Les trois autres sont décidés, pas construits.
+        mots = {8: "huit", 9: "neuf", 10: "dix", 11: "onze", 12: "douze"}
+        t = pg.eval_on_selector("#ouvrirListe", "e=>e.textContent.trim()")
+        v(mots.get(n, "?") in t.lower(),
+          "le bouton annonce le nombre de lieux réellement construits", t)
         kms = pg.eval_on_selector_all(".st", "e=>e.map(x=>+x.dataset.km)")
         v(kms == KM, "kilomètres dans l'ordre réel du sud au nord", kms)
         verbes = pg.eval_on_selector_all(".st", "e=>e.map(x=>x.dataset.verbe)")
@@ -546,6 +593,7 @@ def controler():
 if __name__ == "__main__":
     srv = servir()
     try:
+        controler_logo()
         controler()
     finally:
         srv.shutdown()

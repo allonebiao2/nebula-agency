@@ -148,8 +148,30 @@
 - **Le refus fondateur** : la référence de Mongazi (« GLOBETROTTER ») a un bouton
   **« HASARD »**, donc c'est un catalogue. Ici **l'ordre des lieux EST le sens**,
   et rien ne se tire au sort.
-- **Où** : `benin-mon-pays/` · `python benin-mon-pays/_qc.py` (**63 contrôles**),
-  `_voir.py` (planches 390 + 1440, à REGARDER), `_images.py`.
+- **Où** : `benin-mon-pays/` · `python benin-mon-pays/_qc.py` (**107 contrôles**),
+  `_voir.py` (planches 390 + 1440, à REGARDER), `_logo.py` + `_logo_png.py`,
+  `_images.py`.
+- **LA MARQUE (2026-08-11, demandée par Mongazi) : le CONTOUR DU BÉNIN rempli
+  du DRAPEAU**, traversé par la ligne des 700 km, point d'or au km 0, sept
+  graduations. Le méridien gradué d'avant est retiré. ⚠️ Contour **Natural
+  Earth 50 m, domaine public** (geoBoundaries est en CC BY : un logo se recopie
+  partout, il ne peut pas traîner un crédit) · couleurs **lues sur le fichier
+  officiel** (`#008751` `#fcd116` `#e8112d`, bande verte à **40 %**) · la ligne
+  est **prolongée et arrêtée par la découpe du pays**, sinon elle s'interrompt
+  au milieu du jaune · ⚠️ **PIÈGE : `filter: invert(1)` dans la barre rendait
+  le vert MAGENTA** (légitime tant que la marque était monochrome) → la petite
+  marque est **remplie, sans contour ni ligne**, et un contrôle lit le `filter`
+  calculé · **un seul favicon** désormais · l'**image de partage porte la
+  marque** · PNG rendus par **Playwright** (cairosvg inutilisable ici).
+- **CE QUE MONGAZI DOIT APPORTER : `benin-mon-pays/CE-QUE-TU-DOIS-APPORTER.md`**
+  (2026-08-11). ⚠️ **Les 8 photos en ligne sont vraies mais EMPRUNTÉES**
+  (CC BY / CC BY-SA, crédit obligatoire, en paysage) : ce ne sont pas nos
+  images. Ordre conseillé : les 2 photos de la Porte, une voix sur ce lieu,
+  puis l'accord écrit des 5 artisans.
+- ⚠️ **Le bouton annonçait « Les onze lieux » pour 8 sections** (les 11 sont
+  décidés, pas construits) : corrigé le 2026-08-11, et **un contrôle vérifie
+  que le mot et le nombre concordent**. Même famille que la jauge qui
+  contredisait son étiquette.
 - **LIVE (dev) : https://dev.mon-benin.pages.dev** · projet Cloudflare Pages
   `mon-benin`, branche `dev` · publier = `python benin-mon-pays/_dist.py` puis
   déployer `_dist` · **231 Ko la page entière**, donc les 3 s en 3G sont tenues

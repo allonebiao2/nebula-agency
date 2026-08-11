@@ -31,8 +31,10 @@
 | 17 | Déployer en **dev**, vrai domaine acheté plus tard | ✅ dev.mon-benin.pages.dev |
 | 18 | Cap sur **les Vodun Days de janvier** | ⏳ échéance |
 | 19 | « je ne vois absolument aucune image du Bénin » | ✅ corrigé : 8 photos réelles |
-| 20 | « un logo simple mais surtout pro et institutionnel, fond noir, blanc, SVG, complet, à mettre partout » | ✅ fait |
+| 20 | « un logo simple mais surtout pro et institutionnel, fond noir, blanc, SVG, complet, à mettre partout » | ✅ fait, puis **remplacé** par la demande 28 |
 | 21 | « mets toutes mes demandes et ce qu'il reste à faire séparément en mémoire » | ✅ ce fichier + `RESTE-A-FAIRE.md` |
+| 28 | **2026-08-11** : « le logo que je veux doit être aux couleurs du drapeau du pays et en forme du Bénin » | ✅ **fait et en ligne** : le contour du pays rempli du drapeau, traversé par la ligne des 700 km, point d'or au km 0. Le méridien gradué est retiré |
+| 29 | **2026-08-11** : « dis-moi tout ce que je dois t'apporter en contenu » | ✅ `benin-mon-pays/CE-QUE-TU-DOIS-APPORTER.md` : photos, voix, 3 lieux, anglais, accords, domaine, sons, et ce dont je n'ai **pas** besoin |
 
 ### HILLARY M. STYL
 

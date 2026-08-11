@@ -203,9 +203,10 @@ section Pendjari. Le dire augmente la crédibilité, il ne la réduit pas.
 ## 10. Le contrôle qualité
 
 ```bash
-python benin-mon-pays/_qc.py      # 63 contrôles, tous verts au 2026-08-10
+python benin-mon-pays/_qc.py      # 107 contrôles, tous verts au 2026-08-11
 python benin-mon-pays/_voir.py    # planches contact 390 + 1440, à REGARDER
-python benin-mon-pays/_images.py  # favicon + image de partage
+python benin-mon-pays/_logo.py    # le logo (SVG), puis _logo_png.py
+python benin-mon-pays/_images.py  # l'image de partage
 ```
 
 Ce que le QC voit et que l'œil oublie : le compteur qui **contredit
@@ -214,6 +215,52 @@ pose sur du texte, le **contraste mesuré sur les pixels rendus** (lire
 `background-color` est aveugle au-dessus d'un motif), une section atteinte **par
 le menu** qui ne se révèle pas, les cibles sous 44 px, et le débordement
 horizontal en 390 / 768 / 1440.
+
+## 10 bis. LA MARQUE · le pays au drapeau (2026-08-11)
+
+**Demande de Mongazi, mot pour mot : « le logo que je veux doit être aux
+couleurs du drapeau du pays et en forme du Bénin ».** C'est fait, et le
+méridien gradué qui servait de marque avant est retiré.
+
+Le logo est **le contour du Bénin rempli du drapeau** (vert au guindant sur
+**40 %** de la largeur, jaune en haut, rouge en bas), **traversé par la ligne
+des sept cents kilomètres** qui monte de la Porte du Non-Retour au fleuve, avec
+le **point d'or du kilomètre zéro** sur la côte et **sept graduations**, une par
+centaine de kilomètres.
+
+- ⚠️ **Le contour vient de Natural Earth 50 m, domaine public** (`_contour.py`,
+  146 points, simplifiés au dessin). Ce choix n'est pas neutre : geoBoundaries
+  est en CC BY, donc **attribution obligatoire**, et un logo se recopie partout
+  sans pouvoir traîner un crédit derrière lui.
+- ⚠️ **Les couleurs sont celles du fichier officiel** (`#008751` `#fcd116`
+  `#e8112d`), et la bande verte fait bien 40 % (360 sur 900). Un drapeau
+  approximatif sur un logo de pays se voit en deux secondes.
+- ⚠️ **La ligne est prolongée au-delà de Malanville et c'est la découpe du pays
+  qui l'arrête.** Sans ça elle s'interrompait au milieu du jaune et avait l'air
+  inachevée. Le fleuve **est** la frontière, la ligne doit y finir. Fait
+  vérifié sur les coordonnées : tirée droite de la Porte à Malanville, elle
+  tient entièrement à l'intérieur du pays.
+- ⚠️ **« MON BÉNIN » reste monochrome.** Trois couleurs dans la marque et trois
+  dans le mot, ça fait une enseigne. C'est aussi ce qui permet de poser le logo
+  sur l'encre comme sur le papier sans le refaire.
+- ⚠️ **LE PIÈGE, corrigé : `.barre-lo` portait `filter: invert(1)`** du temps
+  où la marque était monochrome. Sur un drapeau, inverser rend **le vert
+  magenta**. La petite marque est donc **remplie, sans contour ni ligne** (à
+  26 px un trait de plus est une rayure), lisible telle quelle sur les deux
+  fonds, et **le filtre est parti**. Un contrôle le vérifie désormais.
+- Il n'y a **plus qu'un seul favicon** : `assets/images/logo/favicon.svg`.
+  Celui qui vivait dans `assets/images/` était orphelin depuis longtemps.
+- **L'image de partage porte la marque** : la vignette WhatsApp est la première
+  impression au Bénin.
+- Fabrication : `python _logo.py` puis `python _logo_png.py` (cairosvg est
+  inutilisable ici, `libcairo-2.dll` manque ; Playwright rend le même SVG).
+
+## 10 ter. CE QUE MONGAZI DOIT APPORTER
+
+**`CE-QUE-TU-DOIS-APPORTER.md`**, écrit le 2026-08-11 à sa demande : photos
+(deux par lieu, en portrait, format et interdits détaillés), voix, les 3 lieux
+manquants, l'anglais, l'accord écrit des 5 artisans, le domaine, les sons
+réels, ce dont je n'ai **pas** besoin, et deux messages prêts à copier.
 
 ## 11. Si le nom change, ces 6 endroits
 
@@ -226,11 +273,21 @@ horizontal en 390 / 768 / 1440.
 
 ## 12. Ce qui reste
 
-- [ ] **Le nom** (4 options sur la table)
-- [ ] **Les 10 questions** posées le 2026-08-09, sans réponse
-- [ ] Les **photos**, deux par lieu, en portrait
+*Le détail, avec les formats et les interdits : `CE-QUE-TU-DOIS-APPORTER.md`.*
+
+- [ ] Les **photos**, deux par lieu, **en portrait** : c'est le premier levier,
+      très loin devant. Les 8 actuelles sont vraies mais **empruntées**
+      (CC BY / CC BY-SA, crédit obligatoire, en paysage)
 - [ ] Les **voix** : sans elles, le projet reste beau et froid
-- [ ] Le déploiement (**volontairement pas fait** : le nom et le point de départ
-      ne sont pas tranchés)
-- [ ] Anglais en 2e vague (la diaspora visée est largement anglophone)
+- [ ] Les **3 lieux décidés et pas construits** : Porto-Novo « retourner »,
+      Grand-Popo « mêler », Dassa « compter ». ⚠️ Le bouton annonçait « Les
+      onze lieux » pour huit sections : corrigé le 2026-08-11, et **un contrôle
+      vérifie maintenant que le mot et le nombre concordent**
+- [ ] L'**anglais** (je traduis ; il reste 2 décisions à Mongazi)
+- [ ] L'**accord écrit des 5 artisans** avant toute halte
+- [ ] Le **vrai domaine**, puis rouvrir les robots des IA dessus
+- [ ] Les **sons réels**, en remplacement des ambiances générées
+- [x] Le nom : **MON BÉNIN**, tranché le 2026-08-10
+- [x] Le déploiement : en ligne sur `dev.mon-benin.pages.dev`
+- [x] Le logo : **le pays au drapeau**, posé le 2026-08-11 (§10 bis)
 - [ ] Fenêtre calendaire : **les Vodun Days de janvier**, à Ouidah
