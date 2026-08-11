@@ -585,7 +585,49 @@ def controler():
         aller(m3, "station-4")
         op = m3.eval_on_selector("#station-4 .st-tx p", "e=>+getComputedStyle(e).opacity")
         v(op > .9, "sans animation, le texte est visible d'emblée", op)
+        # ⛔ et surtout : le portail ne doit PAS tourner tout seul ici.
+        d0 = m3.eval_on_selector("#portail", "e=>e.getAttribute('data-lieu')")
+        m3.evaluate("()=>window.scrollTo(0,0)")
+        m3.wait_for_timeout(9000)
+        d1 = m3.eval_on_selector("#portail", "e=>e.getAttribute('data-lieu')")
+        v(d0 == d1, "mouvement réduit : le portail ne tourne pas tout seul",
+          "%s -> %s" % (d0, d1))
         ctx3.close()
+
+        # ── PASSE 4 · LE PORTAIL AVANCE TOUT SEUL ─────────────────
+        # Demande de Mongazi : « les éléments doivent avancer tout seuls ».
+        # ⚠️ Et le tour automatique ne doit RIEN télécharger : les huit
+        # ambiances font 380 Ko que personne n'a demandés.
+        ctx4 = nav.new_context(viewport={"width": 1280, "height": 860})
+        p4 = ctx4.new_page()
+        sons4 = []
+        p4.on("request", lambda r: sons4.append(r.url.split("/")[-1].split("?")[0])
+              if "/sons/" in r.url else None)
+        p4.goto(BASE, wait_until="domcontentloaded")
+        p4.wait_for_timeout(1500)
+        p4.click("#entrer")
+        p4.wait_for_timeout(1200)
+        a0 = p4.eval_on_selector("#portail", "e=>e.getAttribute('data-lieu')")
+        p4.wait_for_timeout(9500)          # 1,8 s d'attente + un tour de 6,2 s
+        a1 = p4.eval_on_selector("#portail", "e=>e.getAttribute('data-lieu')")
+        v(a0 != a1, "le portail avance tout seul, sans qu'on touche à rien",
+          "%s -> %s" % (a0, a1))
+        v(sons4 == ["porte.mp3"],
+          "le tour automatique ne télécharge aucune ambiance de plus", sons4)
+        # un vrai geste reprend la main, et repousse le tour
+        p4.click("#poSuiv")
+        # ⚠️ 1 600 ms, pas 600 : `data-lieu` n'est réécrit qu'à la FIN de
+        # l'iris, à 1 180 ms. Mesurer avant, c'est accuser le code d'un
+        # retard qui est celui du test.
+        p4.wait_for_timeout(1600)
+        b0 = p4.eval_on_selector("#portail", "e=>e.getAttribute('data-lieu')")
+        v(b0 != a1, "la flèche reprend la main sur le tour automatique",
+          "%s -> %s" % (a1, b0))
+        p4.wait_for_timeout(7000)          # moins que les 12 s de repos
+        b1 = p4.eval_on_selector("#portail", "e=>e.getAttribute('data-lieu')")
+        v(b0 == b1, "après un geste, le tour laisse le visiteur tranquille",
+          "%s -> %s" % (b0, b1))
+        ctx4.close()
 
         nav.close()
 

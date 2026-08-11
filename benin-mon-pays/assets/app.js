@@ -699,21 +699,26 @@
       po.setAttribute('data-lieu', l.id);
     }
 
-    function poser(l) {
+    function poser(l, muet) {
       fond.style.setProperty('--po-fond', l.encre);
       dessiner(motif, l, 7919 + l.i * 131);
-      /* au portail on ENTEND déjà le lieu qu'on regarde */
-      if (l.son) Son.lieu(l.son);
+      /* au portail on ENTEND déjà le lieu qu'on regarde.
+         ⚠️ SAUF quand le portail tourne TOUT SEUL : sinon les huit
+         ambiances se téléchargent en une minute, soit 380 Ko que
+         personne n'a demandés. Le tour automatique est un regard,
+         pas une visite ; l'ambiance ne suit que sur un vrai geste. */
+      if (l.son && !muet) Son.lieu(l.son);
     }
 
-    function aller(n) {
+    function aller(n, auto) {
       if (occupe) return;
       n = ((n % LIEUX.length) + LIEUX.length) % LIEUX.length;
       if (n === cour) return;
       var l = LIEUX[n];
+      if (!auto) repousser();
 
       if (doux) {
-        cour = n; poser(l); ecrire(l, 0);
+        cour = n; poser(l, auto); ecrire(l, 0);
         return;
       }
 
@@ -743,7 +748,7 @@
       setTimeout(function () {
         /* on transfère au fond, puis on remet l'iris à zéro sans transition */
         cour = n;
-        poser(l);
+        poser(l, auto);
         iris.classList.remove('va');
         iris.classList.remove('pret');
         cercles.classList.remove('bouge');
@@ -752,6 +757,54 @@
         occupe = false;
       }, 1180);
     }
+
+    /* ── LE PORTAIL AVANCE TOUT SEUL ────────────────────────────
+       Demande de Mongazi, mot pour mot : « dans le héros les éléments
+       doivent avancer tout seuls, actuellement ça avance juste quand on
+       clique ; et d'ailleurs toute animation ou mouvement doit se faire
+       sans attendre forcément une intervention humaine. »
+
+       Quatre garde-fous, et aucun n'est facultatif :
+       1. ⛔ RIEN ne tourne si le visiteur a demandé moins d'animations
+          (`prefers-reduced-motion`) : ce n'est pas un réglage de confort,
+          c'est une demande médicale pour certains.
+       2. ⛔ RIEN ne tourne quand le portail n'est plus à l'écran. Un
+          carrousel qui s'anime derrière le dos du visiteur consomme une
+          batterie pour personne.
+       3. ⛔ RIEN ne tourne quand l'onglet est en arrière-plan.
+       4. Un vrai geste (flèche, clavier, hasard) REPOUSSE le tour de
+          douze secondes : on ne se fait pas voler la main. */
+    var TOUR = 6200, REPOS = 12000;
+    var minuteur = 0, reprise = 0;
+
+    function visible() {
+      var b = po.getBoundingClientRect();
+      return b.bottom > W.innerHeight * 0.45 && b.top < W.innerHeight * 0.9;
+    }
+
+    function tourner() {
+      minuteur = 0;
+      if (doux || D.hidden || !visible()) return relancer();
+      aller(cour + 1, true);
+      relancer();
+    }
+
+    function relancer() {
+      if (doux) return;
+      if (minuteur) { clearTimeout(minuteur); }
+      minuteur = setTimeout(tourner, TOUR);
+    }
+
+    function repousser() {
+      if (minuteur) { clearTimeout(minuteur); minuteur = 0; }
+      if (reprise) clearTimeout(reprise);
+      reprise = setTimeout(relancer, REPOS);
+    }
+
+    D.addEventListener('visibilitychange', function () {
+      if (D.hidden) { if (minuteur) { clearTimeout(minuteur); minuteur = 0; } }
+      else relancer();
+    });
 
     /* les commandes */
     var bp = $('#poPrec'), bs = $('#poSuiv'), bh = $('#poHasard');
@@ -784,6 +837,12 @@
     poser(LIEUX[0]);
     ecrire(LIEUX[0], 0.15);
     po.classList.add('pret');
+    /* ⚠️ Le premier tour part APRÈS le geste d'entrée, pas avant : tant
+       que le rideau est là, le portail n'est pas regardé. Et le premier
+       délai est plus long, pour laisser lire le premier nom. */
+    W.addEventListener('nb:entre', function () {
+      setTimeout(relancer, 1800);
+    });
   }
 
   /* ═══ 8 · LES VERBES ════════════════════════════════════════ */
@@ -1105,6 +1164,8 @@
       z.classList.add('parti');
       setTimeout(function () { z.hidden = true; }, 700);
       apres(avecSon);
+      /* le portail ne commence à tourner qu'une fois le rideau parti */
+      try { W.dispatchEvent(new Event('nb:entre')); } catch (e) {}
     }
 
     if (b) b.addEventListener('click', function () { entrer(true); });
