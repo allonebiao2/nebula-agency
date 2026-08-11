@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* La scène : un mur clair, pas un blanc pur. Un blanc pur sous une assiette
+     détourée fait « fond de catalogue » ; un gris chaud fait « pièce ». */
+  --mur: #ede9e3;
+  --mur-2: #e3ded7;
+  --encre: #1d1a17;
+  --encre-2: #55504a;
+  --verre: rgba(255, 255, 255, 0.82);
+  --verre-brd: rgba(255, 255, 255, 0.9);
+  --ombre: 0 20px 60px rgba(0, 0, 0, 0.08);
+  --wash: #f6ede6; /* réécrite par le plat courant */
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--mur);
+  color: var(--encre);
+  font-family: var(--f-texte), system-ui, sans-serif;
+  /* Pas de barre de défilement : la scène occupe l'écran, le défilement est
+     un moteur, pas un contenu. */
+  overflow-x: hidden;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.police-titre {
+  font-family: var(--f-display), system-ui, sans-serif;
+}
+
+/* Le visiteur qui demande moins d'animations en obtient moins. Ce n'est pas
+   un réglage de confort : pour certains, c'est une demande médicale. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* L'assiette respire : ±8 px en 4 s, comme dans la référence. */
+@keyframes flotte {
+  0%, 100% { transform: translateY(-8px); }
+  50%      { transform: translateY(8px); }
+}
+.assiette-flotte { animation: flotte 4s ease-in-out infinite; }
+
+@keyframes pouls {
+  0%   { box-shadow: 0 16px 36px rgba(0,0,0,.18), 0 0 0 0 rgba(29,26,23,.16); }
+  70%  { box-shadow: 0 16px 36px rgba(0,0,0,.18), 0 0 0 14px rgba(29,26,23,0); }
+  100% { box-shadow: 0 16px 36px rgba(0,0,0,.18), 0 0 0 0 rgba(29,26,23,0); }
+}
+.pulse { animation: pouls 2.8s ease-out infinite; }
