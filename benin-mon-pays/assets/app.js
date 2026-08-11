@@ -640,6 +640,7 @@
     var fond = $('#poNappe'), motif = $('#poMotif');
     var iris = $('#poIris'), iFond = $('#poIrisNappe'), iMotif = $('#poIrisMotif');
     var cercles = $('#poCercles'), part = $('#poPartage');
+    var photo = $('#poPhoto'), iPhoto = $('#poIrisPhoto');
     var c1 = $('.po-c1', po);
 
     var LIEUX = stations.map(function (st, i) {
@@ -649,8 +650,14 @@
          le lieu seul, comme la région sous le nom dans la référence. */
       var lieu = k ? k.textContent.replace(/\s+/g, ' ').split('·').pop()
                       .split(',')[0].trim() : '';
+      /* la photo du lieu, en version portail : la même image, plus légère.
+         ⚠️ Le portail enchaîne les huit lieux tout seul, donc chaque
+         kilo-octet est payé huit fois. `_photos_portail.py` les fabrique. */
+      var ph = $('.st-photo', st);
+      var src = ph ? (ph.getAttribute('data-src') || ph.getAttribute('src') || '') : '';
       return {
         i: i, id: st.id, nom: nom, lieu: lieu,
+        photo: src ? src.replace(/\.webp(\?|$)/, '-po.webp$1') : '',
         km: st.getAttribute('data-km') || '0',
         son: st.getAttribute('data-son') || '',
         encre: st.getAttribute('data-encre') || '#0b0a09',
@@ -701,6 +708,7 @@
 
     function poser(l, muet) {
       fond.style.setProperty('--po-fond', l.encre);
+      if (photo && l.photo) photo.src = l.photo;
       dessiner(motif, l, 7919 + l.i * 131);
       /* au portail on ENTEND déjà le lieu qu'on regarde.
          ⚠️ SAUF quand le portail tourne TOUT SEUL : sinon les huit
@@ -733,6 +741,7 @@
 
       /* le nouveau lieu est préparé DANS le cercle, hors du chemin critique */
       iFond.style.setProperty('--po-fond', l.encre);
+      if (iPhoto && l.photo) iPhoto.src = l.photo;
       dessiner(iMotif, l, 7919 + l.i * 131);
       var r = c1 ? (c1.getBoundingClientRect().width / 2) : 200;
       iris.style.setProperty('--r0', r.toFixed(0) + 'px');

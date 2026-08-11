@@ -348,21 +348,75 @@ def controler():
         v(pg.eval_on_selector_all(".po-c", "e=>e.length") == 2,
           "le portail porte bien DEUX cercles concentriques")
 
-        nom0 = pg.eval_on_selector("#poT", "e=>e.textContent.replace(/\\s+/g,' ').trim()")
-        reg0 = pg.eval_on_selector("#poR", "e=>e.textContent.trim()")
-        v(nom0 and "Porte" in nom0, "le portail ouvre sur le premier lieu", nom0)
-        v(reg0.startswith("Ouidah") and reg0.endswith("km 0"),
-          "la région et le kilomètre s'affichent sous le nom", reg0)
+        # ⚠️ LE PORTAIL TOURNE TOUT SEUL DEPUIS LE 2026-08-11. On ne peut
+        # donc plus exiger « le premier lieu » : quand ce contrôle s'exécute,
+        # le portail a pu avancer, et le test échouait UNE FOIS SUR DEUX.
+        # Un contrôle qui crie au loup finit par ne plus être lu.
+        # Ce qui doit rester vrai n'est pas QUEL lieu est affiché, c'est que
+        # le nom, la région, le kilomètre et le lien désignent TOUS LE MÊME.
+        # C'est d'ailleurs le vrai sujet : la jauge affichait 3 en face de
+        # « km 0 ».
+        def lu():
+            i = pg.eval_on_selector("#portail", "e=>e.getAttribute('data-lieu')")
+            return {
+                "id": i,
+                "nom": pg.eval_on_selector("#poT", "e=>e.textContent.replace(/\\s+/g,' ').trim()"),
+                "reg": pg.eval_on_selector("#poR", "e=>e.textContent.trim()"),
+                "dec": pg.eval_on_selector("#poDec", "e=>e.getAttribute('href')"),
+                "km": pg.eval_on_selector("#" + i, "e=>e.dataset.km"),
+                "titre": pg.eval_on_selector("#" + i + " .st-t",
+                                             "e=>e.textContent.replace(/\\s+/g,' ').trim()"),
+                "photo": pg.eval_on_selector("#poPhoto", "e=>e.currentSrc||e.src||''"),
+            }
 
-        # la flèche suivante change vraiment de lieu
+        a = lu()
+        nom0 = a["nom"]
+        v(a["nom"] == a["titre"], "le portail affiche un lieu réel du voyage",
+          "%s / %s" % (a["nom"], a["titre"]))
+        v(a["reg"].endswith("km " + a["km"]),
+          "la région et le kilomètre s'affichent sous le nom", a["reg"])
+        v(a["dec"] == "#" + a["id"],
+          "« découvrir ce lieu » pointe le bon lieu", a["dec"])
+        # LA PHOTO DU LIEU EST DANS LE HÉROS, et c'est bien la sienne.
+        v(a["id"].replace("station-", "") is not None
+          and a["photo"].endswith("-po.webp") or "-po.webp?" in a["photo"],
+          "le héros porte une vraie photo", a["photo"][-46:])
+        sta = pg.eval_on_selector("#" + a["id"] + " .st-photo",
+                                  "e=>e.getAttribute('data-src')||e.src||''")
+        v(sta.split("/")[-1].split(".")[0]
+          == a["photo"].split("/")[-1].split("-po")[0],
+          "la photo du héros est celle du lieu affiché",
+          "%s / %s" % (sta.split("/")[-1], a["photo"].split("/")[-1]))
+
+        # la flèche suivante change vraiment de lieu, et tout suit
         pg.click("#poSuiv")
-        pg.wait_for_timeout(1500)
-        nom1 = pg.eval_on_selector("#poT", "e=>e.textContent.replace(/\\s+/g,' ').trim()")
-        reg1 = pg.eval_on_selector("#poR", "e=>e.textContent.trim()")
-        v(nom1 != nom0, "la flèche suivante change de lieu", "%s -> %s" % (nom0, nom1))
-        v("km 6" in reg1, "le kilomètre suit le lieu", reg1)
-        href1 = pg.eval_on_selector("#poDec", "e=>e.getAttribute('href')")
-        v(href1 == "#station-1", "« découvrir ce lieu » pointe le bon lieu", href1)
+        pg.wait_for_timeout(1600)
+        b = lu()
+        v(b["nom"] != a["nom"], "la flèche suivante change de lieu",
+          "%s -> %s" % (a["nom"], b["nom"]))
+        v(b["reg"].endswith("km " + b["km"]), "le kilomètre suit le lieu", b["reg"])
+        v(b["dec"] == "#" + b["id"], "« découvrir ce lieu » suit le lieu", b["dec"])
+        nom1 = b["nom"]
+
+        # ⚠️ LE CONTRASTE SE MESURE SUR LES HUIT LIEUX, PAS SUR UN SEUL.
+        # Depuis que le portail porte la PHOTO du lieu, le fond du titre
+        # change complètement d'un lieu à l'autre : la Porte est un
+        # crépuscule, le toit de Ouidah est en plein soleil. Mesurer une
+        # seule fois, c'est mesurer le lieu qu'on a eu de la chance d'avoir.
+        pires = []
+        for _ in range(8):
+            f = fond_reel(pg, "#poT")
+            c = couleur_texte(pg, "#poT")
+            if f and c:
+                pires.append((contraste(f, c),
+                              pg.eval_on_selector("#portail", "e=>e.getAttribute('data-lieu')")))
+            pg.click("#poSuiv")
+            pg.wait_for_timeout(1500)
+        pires.sort()
+        v(pires and pires[0][0] >= 4.5,
+          "le nom du portail reste lisible sur LES HUIT photos",
+          "le pire : %.2f:1 sur %s" % pires[0] if pires else "rien mesuré")
+
 
         # l'iris revient bien à zéro : sinon il masquerait le fond
         etat = pg.eval_on_selector("#poIris",

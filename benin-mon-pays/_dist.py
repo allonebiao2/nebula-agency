@@ -22,7 +22,7 @@ GARDE = [
     "assets/fonts/bodoni-normal.woff2",
     "assets/fonts/bodoni-italic.woff2",
     "assets/images/og.png",
-] + ["assets/sons/%s.mp3" % n for n in LIEUX]   + ["assets/images/lieux/%s.webp" % n for n in LIEUX]   + ["assets/images/lieux/%s-min.webp" % n for n in LIEUX]   + ["assets/images/logo/" + f for f in (
+] + ["assets/sons/%s.mp3" % n for n in LIEUX]   + ["assets/images/lieux/%s.webp" % n for n in LIEUX]   + ["assets/images/lieux/%s-min.webp" % n for n in LIEUX]   + ["assets/images/lieux/%s-po.webp" % n for n in LIEUX]   + ["assets/images/logo/" + f for f in (
       "logo.svg", "logo-clair.svg", "logo-marque.svg",
       "logo-marque-clair.svg", "favicon.svg",
       "logo.png", "logo-marque.png")]
