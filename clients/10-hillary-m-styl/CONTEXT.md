@@ -458,3 +458,93 @@ déclaration locale l'emporte, et le script n'a plus aucun effet.
 - **prix et délais tiennent sur une seule ligne** aux trois largeurs ;
 - **une page `404.html`** est écrite à chaque préparation de déploiement : sans
   elle, un fichier absent répond 200 et ce 200 se met en cache un an.
+
+
+---
+
+## VAGUE DU 2026-08-10 — quatre modèles reçus, et un problème de nom
+
+### ⚠️ « Robe de ville » est sa CATÉGORIE, pas un nom de pièce
+
+Mongazi a envoyé quatre modèles en paires (face et dos). **Les quatre portent le
+même nom : « Robe de ville ».** Avec celle déjà en ligne, cela fait **cinq**.
+
+Le problème est concret : **la commande WhatsApp qu'Hillary reçoit contient le
+nom de la pièce.** Cinq pièces homonymes, et elle ne peut pas savoir laquelle
+coudre.
+
+**Noms PROVISOIRES posés**, factuels, tirés de ce que montre la photo :
+
+| id | Nom provisoire | Prix | Express | Mesures |
+|---|---|---|---|---|
+| h4 | Robe de ville **bleue** | 30 000 F · 45 € · ⚠️67 $ | 45 000 F | robe ovale |
+| h5 | Robe de ville **violette** | 40 000 F · 60 € · 72 $ | 55 000 F · 82 € · 100 $ | **haut + pantalon** |
+| h6 | Robe de ville **orange** | 35 000 F · 52 € · 63 $ | 45 000 F · 67 € · 81 $ | robe ovale |
+| h7 | Robe de ville **verte** | 35 000 F · 52 € · 63 $ | 45 000 F · 67 € · 81 $ | robe ovale |
+| h8 | Robe de ville **à tulle** | 35 000 F · 52 € · 63 $ | 45 000 F · 67 € · 81 $ | **haut + pantalon** |
+
+⚠️ **h4 a été RENOMMÉE** de « Robe de ville » à « Robe de ville bleue ». C'était
+déjà un nom que **nous** avions donné, signalé comme à confirmer depuis le
+2026-08-06. À côté de « Robe de ville verte », le nom nu devenait illisible.
+
+⚠️ **Deux pièces sont violettes** : le seul descripteur de couleur ne suffisait
+plus, d'où « à tulle » pour la seconde, son détail le plus visible.
+
+⏳ **À obtenir d'Hillary : ses vrais noms.** Une ligne chacune, et on remplace.
+
+### Le prix en dollar de la robe bleue est douteux
+
+Tous les prix du site suivent **667 F par euro** et **556 F par dollar**, y
+compris les quatre reçus le 2026-08-10, qui le confirment.
+
+**Sauf h4 : 30 000 F affichés 67 $**, soit 448 F par dollar, un écart de +24 %.
+Et **67 est exactement le prix express en euro de cette même pièce**. La valeur
+a probablement glissé d'une case à l'autre le 2026-08-06.
+
+Au taux du site, ce serait **54 $**. ⛔ **Non corrigé** : ses prix sont les
+siens, on ne les recalcule jamais. À trancher avec elle.
+
+### Un jeu de mesures neuf : `haut_pantalon`
+
+Hillary demande mot pour mot « **ceux d'un pantalon et un haut** » pour deux des
+robes (le buste ajusté monté sur une jupe ample). C'est donc l'**union exacte**
+des deux jeux existants, **sans rien réinterpréter**, moins le tour de taille
+qui figurait dans les deux : **13 mesures**.
+
+⚠️ Marqué `aValider: true`, comme la robe ovale.
+⚠️ **« Longueur pantalon » sur une robe se lit mal** pour une cliente : à faire
+reformuler par l'atelier.
+
+### La seconde photo sert à quelque chose
+
+Chaque nouvelle pièce a deux vues. La seconde (`img2`) s'affiche **dans la fiche
+de commande, à l'étape des mesures** : c'est là que la cliente a besoin de voir
+comment la pièce est bâtie derrière (un laçage, un dos nu, un volant). Elle est
+contenue à 78 px de large : une photo pleine largeur pousserait le formulaire
+hors de l'écran.
+
+### Ce que le traitement des photos a appris
+
+⚠️ **Le repérage automatique face / dos s'est trompé sur deux paires sur
+quatre.** L'heuristique comptait les pixels de peau dans le tiers supérieur :
+une vue de dos épaules nues en contient autant qu'un visage. **Remède : monter
+une planche des sources et REGARDER**, ce qui a pris trente secondes.
+
+⚠️ **On calibre en HAUTEUR, jamais en largeur.** À 1 100 px de large, la robe
+verte faisait 2 475 px de haut pour **689 Ko**. Les quatre pièces déjà en ligne
+font toutes **950 px de haut** pour 94 Ko de moyenne : c'est le standard.
+Les nouvelles font 84 à 195 Ko. Et **on n'agrandit jamais** au-delà de la source.
+
+### Observation sur une pièce ancienne
+
+**La photo principale de la robe bleue (h4) est une vue de DOS.** C'est
+antérieur à cette vague, mais ça saute aux yeux maintenant que les autres
+pièces ont une face. À vérifier avec Hillary : a-t-elle une photo de face ?
+
+### Les scripts
+
+- `_detourer.py` — détoure les paires avec rembg/isnet, recadre en hauteur,
+  livre en WebP `quality=94, alpha_quality=100, exact=True`, et **mesure la
+  proportion de matière** pour repérer un détourage raté.
+- Sources dans `_sources/modele-*/face|dos`, PNG maîtres dans
+  `_sources/detoure/`. Le tout est **hors Git** (`clients/*/_sources/`).

@@ -159,6 +159,33 @@ var MESURES = {
       {id:"t_manche",  g:"Les manches",   l:"Tour de manche"},
       {id:"l_manche",  g:"Les manches",   l:"Longueur manche"}
     ]
+  },
+
+  /* Pour une robe bâtie comme deux pièces : un buste ajusté monté sur une
+     jupe ample. Hillary demande mot pour mot « ceux d'un pantalon et un
+     haut » (2026-08-10). C'est donc l'UNION des deux jeux, sans rien
+     réinterpréter, moins le tour de taille qui figurait dans les deux.
+     13 mesures au lieu de 14.
+     ⚠️ « Longueur pantalon » sur une robe se lit mal pour une cliente :
+     à faire reformuler par l'atelier. */
+  haut_pantalon: {
+    nom: "Robe buste et jupe",
+    aValider: true,
+    champs: [
+      {id:"epaules",    g:"Le haut", l:"Épaules"},
+      {id:"carr_dev",   g:"Le haut", l:"Carrure devant"},
+      {id:"carr_dos",   g:"Le haut", l:"Carrure dos"},
+      {id:"poitrine",   g:"Le haut", l:"Tour de poitrine"},
+      {id:"t_taille",   g:"Le haut", l:"Tour de taille"},
+      {id:"t_bassins",  g:"Les tours", l:"Tour de bassins"},
+      {id:"t_cuisse",   g:"Les tours", l:"Tour de cuisse"},
+      {id:"t_genoux",   g:"Les tours", l:"Tour de genoux"},
+      {id:"l_habit",    g:"Les longueurs", l:"Longueur habit"},
+      {id:"l_genou",    g:"Les longueurs", l:"Longueur genou"},
+      {id:"l_pantalon", g:"Les longueurs", l:"Longueur pantalon"},
+      {id:"t_manche",   g:"Les manches",   l:"Tour de manche"},
+      {id:"l_manche",   g:"Les manches",   l:"Longueur manche"}
+    ]
   }
 };
 
@@ -198,11 +225,49 @@ var PIECES = [
    eur:100, usd:117, eurExp:127, usdExp:150,
    ds:"Pantalon large en jean, empiècements peints à la main, ceinture corset lacée dans le dos. Entièrement fait à la main, du premier trait au dernier lacet."},
 
-  {id:"h4", cat:"sm", nom:"Robe de ville", type:"robe_ovale", tag:"",
+  /* ⚠️ Renommee le 2026-08-10. « Robe de ville » etait le nom que NOUS avions
+     donne (deja signale comme a confirmer). Hillary appelle desormais CINQ
+     pieces « Robe de ville » : c'est sa categorie. Le descripteur de couleur
+     est factuel et provisoire, en attendant ses vrais noms. */
+  {id:"h4", cat:"sm", nom:"Robe de ville bleue", type:"robe_ovale", tag:"",
    img:"piece-ville.webp",
    prix:30000, jmin:14, jmax:14, expPrix:45000, expMin:2, expMax:4,
    eur:45, usd:67, eurExp:67, usdExp:81,
    ds:"Dos nu attaché à la nuque, wax à feuillages et panneaux de satin qui s'ouvrent à la marche. La pièce qui va du bureau au dîner sans se changer."},
+
+  /* ── LES TROIS MODELES RECUS LE 2026-08-10 ──────────────────────
+     Hillary les nomme TOUS « Robe de ville » : c'est sa catégorie.
+     Le descripteur de couleur est PROVISOIRE et factuel (ce que montre
+     la photo), le temps qu'elle donne ses vrais noms. Sans lui, la
+     commande WhatsApp est ambiguë.
+     Les descriptions décrivent ce que la photo montre, rien de plus. */
+
+  {id:"h5", cat:"sm", nom:"Robe de ville violette", type:"haut_pantalon", tag:"",
+   img:"piece-violette.webp", img2:"piece-violette-dos.webp",
+   prix:40000, jmin:14, jmax:14, expPrix:55000, expMin:2, expMax:4,
+   eur:60, usd:72, eurExp:82, usdExp:100,
+   ds:"Buste ajusté en uni, manches ballon et jupe longue à volants dans un wax à fougères. Le dos se lace en corset sous une découpe ronde. Le foulard est assorti."},
+
+  {id:"h6", cat:"sm", nom:"Robe de ville orange", type:"robe_ovale", tag:"",
+   img:"piece-orange.webp", img2:"piece-orange-dos.webp",
+   prix:35000, jmin:14, jmax:14, expPrix:45000, expMin:2, expMax:4,
+   eur:52, usd:63, eurExp:67, usdExp:81,
+   ds:"Bustier à découpe sous la poitrine, manches ballon détachées des épaules, jupe courte très ample. Le dos se lace. Semis de motifs blancs sur l'orange."},
+
+  {id:"h7", cat:"sm", nom:"Robe de ville verte", type:"robe_ovale", tag:"",
+   img:"piece-verte.webp", img2:"piece-verte-dos.webp",
+   prix:35000, jmin:14, jmax:14, expPrix:45000, expMin:2, expMax:4,
+   eur:52, usd:63, eurExp:67, usdExp:81,
+   ds:"Une seule épaule, nouée sur le côté. La taille descend bas, la jupe est froncée et très ample. Wax à nœuds jaune et brun sur fond sauge."},
+
+  /* ⚠️ Celle-ci est violette elle aussi : le seul descripteur de couleur ne
+     suffisait plus. On la distingue par ce qui saute aux yeux, son volant
+     de tulle. Nom provisoire, comme les autres. */
+  {id:"h8", cat:"sm", nom:"Robe de ville à tulle", type:"haut_pantalon", tag:"",
+   img:"piece-tulle.webp", img2:"piece-tulle-dos.webp",
+   prix:35000, jmin:14, jmax:14, expPrix:45000, expMin:2, expMax:4,
+   eur:52, usd:63, eurExp:67, usdExp:81,
+   ds:"Col montant noué derrière la nuque, dos entièrement dégagé, jupe courte et évasée. Un volant de tulle violet dépasse sous le wax à volutes."},
 
   /* Une CRÉATION LIBRE : ce n'est pas un vêtement inventé, c'est un service.
      Aucun prix (« sur devis »), aucune photo revendiquée : le client décrit
@@ -448,6 +513,16 @@ function vue1(){
   }
   var jeu = MESURES[etat.typeMesure];
   if(!jeu) return h || '<div class="sdesc">Type de vêtement introuvable.</div>';
+
+  /* La seconde vue, quand la pièce en a une. Elle se montre ICI, au moment
+     où la cliente entre ses mesures : c'est là qu'elle a besoin de voir
+     comment la pièce est bâtie derrière (un laçage, un dos nu, un volant). */
+  if(p.img2){
+    h += '<figure class="dosvue">'+
+         '<img src="assets/images/'+esc(p.img2)+'" alt="'+esc(p.nom)+', vu de dos" '+
+         'loading="lazy" decoding="async">'+
+         '<figcaption>Le dos</figcaption></figure>';
+  }
 
   /* le nom du vêtement descend dans la ligne de description : en didone,
      le tiret cadratin est un cheveu, et « Vos mesures — Robe droite » cassait mal */
@@ -801,4 +876,4 @@ document.getElementById("waBas").href =
   "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent("Bonjour HILLARY M. STYL, j'ai une question avant de commander.");
 
 
-/* ==================================================================
+/* ================================================================== */

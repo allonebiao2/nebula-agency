@@ -20,7 +20,7 @@ Vérifie, sur navigateur réel émulé en 390 / 768 / 1440 px :
 
 Doit être VERTE avant tout déploiement.
 """
-import asyncio, datetime, glob, pathlib, sys
+import asyncio, datetime, glob, pathlib, re, sys
 from playwright.async_api import async_playwright
 
 # la console Windows est en cp1252 : un espace fin insecable suffit a
@@ -31,7 +31,8 @@ try:
 except Exception:
     pass
 
-URL = (pathlib.Path(__file__).resolve().parent / "vitrine.html").as_uri()
+HTML = pathlib.Path(__file__).resolve().parent / "vitrine.html"
+URL = HTML.as_uri()
 FAILS, NOTES = [], []
 
 # Chromium est preinstalle dans l'environnement distant ; en local Playwright
@@ -66,7 +67,27 @@ async def tap_targets(page, label):
       return out;}""")
     ok(not bad, f"{label} : cibles tactiles >= 44px" + ("" if not bad else " -> " + "; ".join(bad[:6])))
 
+def variables_css():
+    """⛔ Le defaut du 2026-08-10 : cinq couleurs etaient utilisees sans
+    jamais etre definies. `background: var(--craie)` sans valeur ne donne
+    pas du blanc, il ne donne RIEN : la fiche de commande n'avait aucun
+    fond et le texte noir se posait sur les photos du catalogue.
+    Aucun controle de contraste ne pouvait le voir : ils lisent la couleur
+    DECLAREE, et une variable vide ne declare rien.
+    Les variables posees a l'execution par le JavaScript sont exclues."""
+    src = HTML.read_text(encoding="utf-8")
+    posees = set(re.findall(r"setProperty\(\s*['\"](--[a-z0-9-]+)", src))
+    utilisees = set(re.findall(r"var\(\s*(--[a-z0-9-]+)\s*\)", src))
+    avec_repli = set(re.findall(r"var\(\s*(--[a-z0-9-]+)\s*,", src))
+    definies = set(re.findall(r"(--[a-z0-9-]+)\s*:", src))
+    manquantes = sorted(utilisees - definies - posees - avec_repli)
+    ok(not manquantes,
+       "aucune variable CSS utilisee sans etre definie"
+       + (" — MANQUE : " + ", ".join(manquantes) if manquantes else ""))
+
+
 async def main():
+    variables_css()
     async with async_playwright() as pw:
         br = await pw.chromium.launch(**CHROME)
         for w, h, mobile in VIEWPORTS:
