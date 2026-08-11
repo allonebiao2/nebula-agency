@@ -3,12 +3,23 @@
 > **Nom tranché par Mongazi le 2026-08-10 : « Mon Bénin »**, avec **« sept cents
 > kilomètres »** en signature. Le dossier garde son ancien nom `benin-mon-pays/`.
 >
-> ## 🌍 EN LIGNE : **https://mon-benin.pages.dev** et **https://dev.mon-benin.pages.dev**
-> Projet Cloudflare Pages `mon-benin`. ⚠️ **La production était VIDE jusqu'au
-> 2026-08-11** : `mon-benin.pages.dev`, l'adresse la plus courte et la plus
-> facile à taper, répondait **404**. Mongazi est tombé dessus (« la page ne
-> passe pas »). **Publier sur les DEUX branches**, `dev` et `main`.
-> Publier : `python benin-mon-pays/_dist.py` puis déployer `_dist` sur `dev`.
+> ## 🌍 EN LIGNE, UNE SEULE ADRESSE : **https://mon-benin.pages.dev**
+> Projet Cloudflare Pages `mon-benin`, **branche `main` uniquement**.
+> Publier : `python benin-mon-pays/_dist.py` puis
+> `wrangler pages deploy _dist --project-name mon-benin --branch main`.
+>
+> ⚠️ **HISTOIRE DE CETTE LIGNE, à ne pas rejouer.** Le site n'a longtemps
+> vécu que sur `dev.mon-benin.pages.dev`, et **`mon-benin.pages.dev` répondait
+> 404** : l'adresse la plus courte, celle qu'on tape de mémoire, était un mur.
+> Mongazi est tombé dessus (« la page ne passe pas »). Corrigé en publiant sur
+> les deux, puis **Mongazi a tranché : « il est censé y en avoir une seule ».**
+> Les 9 déploiements de `dev` sont **supprimés**, l'alias répond 404, et la page
+> porte enfin un **`canonical`** et un **`og:url`** qui nomment la vraie
+> adresse. Elle n'en avait aucun : rien ne disait à Google, à WhatsApp ni à un
+> lecteur qui copie le lien laquelle des deux était le site.
+> **Une adresse publique, une seule.** Pour essayer avant de publier :
+> `python benin-mon-pays/_qc.py` et un serveur local, pas une deuxième adresse
+> en ligne.
 > ⚠️ Un agent non navigateur reçoit **403** sur `*.pages.dev` (filtrage de bots
 > Cloudflare). Vérifier avec un vrai `User-Agent`, et **rouvrir les robots IA sur
 > le vrai domaine** quand il sera acheté (`PUT /zones/{zone}/bot_management`).
