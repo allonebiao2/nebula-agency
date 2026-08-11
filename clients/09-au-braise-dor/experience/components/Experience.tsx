@@ -155,13 +155,15 @@ export default function Experience() {
   const plat = DISHES[i];
 
   return (
-    <div ref={scene} className="relative">
-      {/* LA PISTE : elle ne se voit pas, elle sert de moteur au défilement */}
-      <div ref={piste} style={{ height: `${N * 100}vh` }} aria-hidden />
+    /* ⚠️ `sticky`, PAS `fixed`. Une scène en `fixed` ne se décolle jamais :
+       elle serait restée par-dessus les 48 plats, en travers de la carte.
+       En `sticky` dans un parent haut de N × 100vh, elle tient l'écran le
+       temps du voyage puis rend la main exactement à la fin. */
+    <div ref={scene} className="relative" style={{ height: `${N * 100}vh` }}>
+      <div ref={piste} className="absolute inset-0" aria-hidden />
 
-      {/* LA SCÈNE FIXE, par-dessus */}
       <div
-        className="fixed inset-0 overflow-hidden"
+        className="sticky top-0 h-screen overflow-hidden"
         style={{
           background:
             `radial-gradient(120% 90% at 78% 18%, ${plat.wash}, transparent 62%),` +

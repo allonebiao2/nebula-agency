@@ -1,0 +1,147 @@
+/**
+ * LA CARTE COMPLÈTE — 48 plats, 8 catégories.
+ *
+ * ⚠️ FICHIER GÉNÉRÉ, NE PAS ÉDITER À LA MAIN.
+ * Source : le tableau `CATS` de `../../index.html`, qui reste la vérité.
+ * Régénérer :  node _outils/_extraire_carte.js
+ */
+
+export type Plat = {
+  n: string;
+  d?: string;
+  p: number;
+  p2?: number;
+  joq?: boolean;
+  img: string;
+};
+
+export type Cat = {
+  id: string;
+  label: string;
+  tag: string;
+  note?: string;
+  acc?: "grillades" | "sauces";
+  items: Plat[];
+};
+
+/** Les accompagnements au choix, repris tels quels du site. */
+export const ACC: Record<string, string[]> = {
+  grillades: ["Riz", "Attiéké", "Aloco", "Frites", "Pommes sautées", "Pomme vapeur", "Pâte rouge", "Bomiwo", "Akassa", "Igname frit"],
+  sauces: ["Riz", "Attiéké", "Pâte noire", "Agbéli", "Pâte de manioc", "Pâte de maïs", "Piron", "Akassa", "Pommes sautées", "Frites"],
+};
+
+export const CARTE: Cat[] = [
+  {
+    id: "grillades",
+    label: "Grillades",
+    tag: "La braise",
+    note: "Accompagnements au choix : riz, attiéké, aloco, frites, pommes sautées ou vapeur, pâte rouge, Bomiwo, Akassa, igname frit.",
+    acc: "grillades",
+    items: [
+      { n: "Poulet bicyclette", d: "Poulet fermier saisi au feu de bois, croustillant et fondant.", p: 3000, p2: 6000, img: "/carte/poulet.webp" },
+      { n: "Tilapia braisé", d: "Le tilapia entier, braisé minute, ce goût fumé signature.", p: 3000, p2: 6000, img: "/carte/tilapia.webp" },
+      { n: "Poulet chair", d: "Poulet chair grillé sur la braise.", p: 2500, p2: 5000, img: "/carte/g-poulet-chair.webp" },
+      { n: "Aileron", d: "Aileron mariné et grillé.", p: 3000, img: "/carte/g-aileron.webp" },
+      { n: "Lapin ou mouton frit", d: "Viande frite dorée, tendre à cœur.", p: 3000, img: "/carte/g-lapin-mouton.webp" },
+      { n: "Viande de caille", d: "Caille grillée, fine et parfumée.", p: 3000, img: "/carte/g-caille.webp" },
+    ],
+  },
+  {
+    id: "pizza",
+    label: "Pizza",
+    tag: "Au four",
+    note: "Base sauce tomate maison. Deux tailles pour certaines pizzas.",
+    items: [
+      { n: "À la crème", d: "Saumon, tomate, crème, fromage.", p: 4000, p2: 6000, img: "/carte/p-creme.webp" },
+      { n: "Pêcheur", d: "Thon, crevettes, fromage, oignon, olive noire.", p: 4000, p2: 6000, img: "/carte/pizza.webp" },
+      { n: "Paysanne", d: "Poulet, champignons, tomate, poivron, oignon, fromage, olive.", p: 4000, p2: 6000, img: "/carte/p-paysanne.webp" },
+      { n: "Pili chaud", d: "Piment, viande, boulette. Pour les amateurs de feu.", p: 3000, p2: 5000, img: "/carte/p-pili.webp" },
+      { n: "Napolitaine", d: "Filet d'anchois, fromage, olive noire.", p: 3500, img: "/carte/p-napolitaine.webp" },
+      { n: "Oriental", d: "Jambon, fromage, champignons, thon, poivron, oignon.", p: 3500, img: "/carte/p-oriental.webp" },
+      { n: "Quatre saisons", d: "Jambon, crevette, viande, oignon, tomate, poivrons, olives, maïs.", p: 3500, img: "/carte/p-quatre-saisons.webp" },
+      { n: "Fruit de mer", d: "Poisson, crevettes, oignon, tomate, fromage.", p: 3500, img: "/carte/p-fruit-mer.webp" },
+      { n: "Aux épinards", d: "Thon, oignon, épinards, fromage.", p: 3000, img: "/carte/p-epinards.webp" },
+      { n: "Margherita", d: "Jambon, fromage. La classique.", p: 3000, img: "/carte/p-margherita.webp" },
+    ],
+  },
+  {
+    id: "chawarma",
+    label: "Chawarma",
+    tag: "À la broche",
+    items: [
+      { n: "Chawarma JOQ", d: "Poulet et viande réunis. Notre signature.", p: 3000, joq: true, img: "/carte/chawarma.webp" },
+      { n: "Chawarma au poulet", d: "Poulet mariné, sauce maison.", p: 2500, img: "/carte/c-poulet.webp" },
+      { n: "Chawarma à la viande", d: "Boulettes de viande, généreux.", p: 1500, img: "/carte/c-viande.webp" },
+    ],
+  },
+  {
+    id: "burger",
+    label: "Hamburger",
+    tag: "Fait maison",
+    note: "Servis avec Coca-Cola (sauf végétarien, crispy, nugget).",
+    items: [
+      { n: "Chicken burger", d: "Burger poulet, frites, Coca-Cola.", p: 4000, img: "/carte/b-chicken.webp" },
+      { n: "Crispy poulet", d: "Cuisse de poulet panée, ketchup, piment, frites.", p: 4500, img: "/carte/b-crispy.webp" },
+      { n: "Double burger", d: "Double steak, frites, Coca-Cola.", p: 3500, img: "/carte/b-double.webp" },
+      { n: "Burger végétarien", d: "Pain burger, nuggets de pomme de terre, fromage.", p: 3500, img: "/carte/b-vegetarien.webp" },
+      { n: "Nugget pomme au four", d: "Blanc de poulet, sauce crème, piment, pomme au four.", p: 3500, img: "/carte/b-nugget-pomme.webp" },
+      { n: "Cheese burger", d: "Cheese, viande, frites, Coca-Cola.", p: 3000, img: "/carte/b-cheese.webp" },
+      { n: "Royal burger", d: "Burger, frites, Coca-Cola.", p: 3000, img: "/carte/b-royal.webp" },
+      { n: "King burger", d: "Burger, œuf, Coca-Cola.", p: 2500, img: "/carte/b-king.webp" },
+      { n: "Hamburger simple", d: "Le simple, Coca-Cola inclus.", p: 2500, img: "/carte/b-simple.webp" },
+    ],
+  },
+  {
+    id: "salades",
+    label: "Salades",
+    tag: "Fraîcheur",
+    items: [
+      { n: "Salade JOQ", d: "Laitue, pomme de terre, œuf, carotte, jambon, viande, crevette, maïs, avocat. Notre signature.", p: 4000, joq: true, img: "/carte/salade.webp" },
+      { n: "Salade composée", d: "Laitue, concombre, carotte, oignon, pomme de terre, betterave, maïs, viande, œuf.", p: 3000, img: "/carte/s-composee.webp" },
+      { n: "Salade d'avocats aux crevettes", d: "Laitue, avocat, oignon, tomate, crevettes, sauce Marie-rose.", p: 3000, img: "/carte/s-avocat-crevettes.webp" },
+      { n: "Salade verte", d: "Laitue, tomate, oignon, olive noire.", p: 1000, img: "/carte/s-verte.webp" },
+    ],
+  },
+  {
+    id: "sauces",
+    label: "Sauces & Monyo",
+    tag: "Local",
+    note: "Accompagnements : Agbéli, pâte noire, riz, manioc, maïs, piron, Akassa, attiéké, pommes.",
+    acc: "sauces",
+    items: [
+      { n: "Sauce Béchamel", d: "Champignon, haricot vert, oignon vert, au choix steak, poisson ou poulet à l'ail.", p: 5000, img: "/carte/sc-bechamel.webp" },
+      { n: "Sauce Crème", d: "Filet de poisson à la crème aux champignons.", p: 5000, img: "/carte/sc-creme.webp" },
+      { n: "Moyo Chigan", d: "Sauce tomate, piment vert, oignon, moutarde, poisson ou aileron.", p: 3000, img: "/carte/sc-moyo.webp" },
+      { n: "Sauce poisson frais", d: "Sauce tomate et crin-crin au choix.", p: 3000, img: "/carte/sc-poisson.webp" },
+    ],
+  },
+  {
+    id: "petitdej",
+    label: "Petit-déj",
+    tag: "Le matin",
+    items: [
+      { n: "Plateau Mignon JOQ", d: "Chocolat chaud, beurre, croissant, œuf à la coque, jus de fruit, yaourt.", p: 4000, joq: true, img: "/carte/pd-mignon.webp" },
+      { n: "Plateau complet", d: "Café ou thé, lait, beurre ou confiture, pain ou croissant, omelette, jus.", p: 3500, img: "/carte/pd-complet.webp" },
+      { n: "Cappuccino", d: "Café crémeux.", p: 1500, img: "/carte/pd-cappuccino.webp" },
+      { n: "Omelette aux légumes", d: "Œufs et légumes frais.", p: 1000, img: "/carte/pd-omelette-legumes.webp" },
+      { n: "Omelette nature", d: "La simple et bonne.", p: 1000, img: "/carte/pd-omelette-nature.webp" },
+      { n: "Café au lait", d: "Peak, chaud ou froid.", p: 1000, img: "/carte/pd-cafe-lait.webp" },
+    ],
+  },
+  {
+    id: "cocktails",
+    label: "Cocktails",
+    tag: "Spécial maison",
+    note: "Cocktails frais préparés minute. Avec ou sans alcool.",
+    items: [
+      { n: "JOQ Viagra", d: "Café, campari, suze, jus de gingembre. Notre signature.", p: 3000, joq: true, img: "/carte/cocktail.webp" },
+      { n: "Mojito", d: "Rhum blanc, menthe fraîche, sucre roux, citron vert.", p: 3000, img: "/carte/k-mojito.webp" },
+      { n: "Piña Colada", d: "Rhum blanc, crème de coco, crème fraîche, jus d'ananas.", p: 3000, img: "/carte/k-pina.webp" },
+      { n: "Babariba", d: "Papaye, banane, pomme, lait, sirop de fraise. Sans alcool.", p: 2500, img: "/carte/k-babariba.webp" },
+      { n: "Paparazi", d: "Jus de citron, banane, orange, sirop de framboise. Sans alcool.", p: 2500, img: "/carte/k-paparazi.webp" },
+      { n: "Cocktail de fruit naturel", d: "Papaye, mangue, banane, lait, miel. Sans alcool.", p: 2500, img: "/carte/k-fruit-naturel.webp" },
+    ],
+  },
+];
+
+export const NB_PLATS = CARTE.reduce((n, c) => n + c.items.length, 0);
