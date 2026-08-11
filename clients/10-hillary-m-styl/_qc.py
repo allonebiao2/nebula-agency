@@ -86,10 +86,70 @@ def variables_css():
        + (" — MANQUE : " + ", ".join(manquantes) if manquantes else ""))
 
 
+async def sons(br):
+    """Les sons d'atelier : rien avant un geste, un bouton pour couper,
+    et ce bouton doit rester atteignable MEME la fiche ouverte.
+
+    ⚠️ CE CONTROLE SE FAIT EN HTTP, pas en file://. Les sons sont charges
+    par `fetch`, que Chromium REFUSE depuis une page ouverte en fichier
+    local : le controle voyait zero son et accusait le site a tort.
+    On teste comme la page tourne vraiment.
+    """
+    import functools, http.server, socketserver, threading
+    ici = str(HTML.parent)
+    h = functools.partial(http.server.SimpleHTTPRequestHandler, directory=ici)
+    socketserver.TCPServer.allow_reuse_address = True
+    srv = socketserver.TCPServer(("127.0.0.1", 8823), h)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+
+    ctx = await br.new_context(viewport={"width": 1280, "height": 900})
+    page = await ctx.new_page()
+    recus = []
+    page.on("request", lambda r: recus.append(r.url.split("/")[-1])
+            if "/sons/" in r.url else None)
+    await page.goto("http://127.0.0.1:8823/vitrine.html",
+                    wait_until="domcontentloaded")
+    await page.wait_for_timeout(2600)
+
+    ok(not recus, "aucun son telecharge avant le premier geste"
+       + ("" if not recus else " -> " + ", ".join(recus[:3])))
+    ok(await page.locator(".sonbt").count() == 1,
+       "le bouton de son est present des le chargement")
+
+    # un vrai geste : on ouvre une piece
+    await page.evaluate("()=>{const p=document.querySelector('.piece'); if(p) p.click();}")
+    await page.wait_for_timeout(2600)
+    attendus = {"ouvrir.mp3", "fiche.mp3", "mesure.mp3",
+                "etape.mp3", "couper.mp3", "envoyer.mp3"}
+    ok(set(recus) == attendus,
+       "les 6 sons d'atelier sont charges apres le geste (%d)" % len(set(recus)))
+
+    # ⚠️ la modale est en z-index 120 : sous elle, le bouton devenait
+    # inatteignable et le son ne pouvait plus etre coupe pendant la commande
+    dessus = await page.evaluate("""()=>{
+      const b=document.querySelector('.sonbt');
+      if(!b) return false;
+      const r=b.getBoundingClientRect();
+      const e=document.elementFromPoint(r.x+r.width/2, r.y+r.height/2);
+      return !!(e && (e===b || b.contains(e)));
+    }""")
+    ok(dessus, "le bouton de son reste atteignable la fiche ouverte")
+
+    await page.click(".sonbt")
+    await page.wait_for_timeout(400)
+    presse = await page.eval_on_selector(".sonbt", "e=>e.getAttribute('aria-pressed')")
+    memo = await page.evaluate("()=>localStorage.getItem('hms:muet')")
+    ok(presse == "true" and memo == "1",
+       "couper le son est retenu d'une visite a l'autre")
+    await ctx.close()
+    srv.shutdown()
+
+
 async def main():
     variables_css()
     async with async_playwright() as pw:
         br = await pw.chromium.launch(**CHROME)
+        await sons(br)
         for w, h, mobile in VIEWPORTS:
             ctx = await br.new_context(viewport={"width": w, "height": h},
                                        device_scale_factor=2 if mobile else 1,

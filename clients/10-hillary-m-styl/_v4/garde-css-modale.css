@@ -164,3 +164,28 @@
   flex:none;display:block}
 .dosvue figcaption{font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;
   color:#7A6E63;white-space:nowrap}
+
+/* ── LE BOUTON DE SON ─────────────────────────────────────────────
+   Il doit être visible dès la première seconde : un son qu'on ne peut
+   pas couper est un son qu'on subit. Posé en bas à gauche, à l'opposé
+   du bouton WhatsApp, et il ne recouvre jamais de texte. */
+/* ⚠️ z-index AU-DESSUS de la modale (120). En dessous, le bouton
+   devenait inaccessible des qu'une fiche s'ouvrait : le son genait
+   pendant la commande et on ne pouvait plus le couper. */
+.sonbt{position:fixed;left:18px;bottom:18px;z-index:130;
+  width:46px;height:46px;border-radius:50%;
+  border:1px solid rgba(12,12,12,.16);background:rgba(255,255,255,.92);
+  display:grid;place-items:center;cursor:pointer;padding:0;
+  transition:background-color .25s,border-color .25s,transform .25s}
+.sonbt:hover,.sonbt:focus-visible{background:#fff;border-color:rgba(12,12,12,.34);
+  transform:scale(1.06)}
+.sonbt svg{width:21px;height:21px;fill:none;stroke:#1a1a1a;stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round}
+.sonbt .hp{fill:#1a1a1a;stroke:none}
+.sonbt .off{opacity:0}
+.sonbt[aria-pressed="true"] .on1,
+.sonbt[aria-pressed="true"] .on2{opacity:0}
+.sonbt[aria-pressed="true"] .off{opacity:1}
+.sonbt .vhs{position:absolute;width:1px;height:1px;overflow:hidden;
+  clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+@media(max-width:900px){.sonbt{left:14px;bottom:14px;width:44px;height:44px}}

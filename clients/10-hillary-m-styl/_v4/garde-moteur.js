@@ -877,3 +877,159 @@ document.getElementById("waBas").href =
 
 
 /* ================================================================== */
+
+
+/* ==================================================================
+   LES SONS D'ATELIER
+   ==================================================================
+   Direction « atelier réel », choisie par Mongazi le 2026-08-11 :
+   on entend l'acier, le tissu, la machine. Hillary vend du fait-main,
+   un son trop poli dirait le contraire.
+
+   Six sons seulement, ceux qui portent le sens. Un site où chaque
+   geste sonne devient fatigant en deux minutes, et on peut toujours
+   en ajouter, jamais retirer une habitude.
+
+   ⚠️ Rien ne sonne avant un geste : aucun navigateur ne l'autorise, et
+      quelqu'un peut ouvrir le site au bureau.
+   ⚠️ Silence d'amorçage iOS, sinon la sortie ne s'ouvre jamais.
+   ⚠️ Un verrou par son : sur un clic rapide, dix déclenchements
+      empilés font une bouillie.
+   ================================================================== */
+var Atelier = (function(){
+  var SONS = ["ouvrir","fiche","mesure","etape","couper","envoyer"];
+  var VOL  = 0.30;              /* bas : un son d'interface se sent
+                                   plus qu'il ne s'écoute */
+  var ctx = null, maitre = null, tampons = {}, dernier = {};
+  var muet = false, pret = false;
+
+  try { muet = localStorage.getItem("hms:muet") === "1"; } catch(e){}
+
+  function mobile(){
+    return matchMedia("(hover: none), (max-width: 900px)").matches;
+  }
+
+  function volume(){ return mobile() ? VOL * 1.6 : VOL; }
+
+  function demarrer(){
+    if(ctx) return;
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) return;
+    ctx = new AC();
+
+    /* le silence d'amorçage : iOS n'ouvre la sortie qu'après un vrai son */
+    var s0 = ctx.createBufferSource();
+    s0.buffer = ctx.createBuffer(1, 1, 22050);
+    s0.connect(ctx.destination); s0.start(0);
+
+    maitre = ctx.createGain();
+    maitre.gain.value = muet ? 0 : volume();
+    var comp = ctx.createDynamicsCompressor();
+    maitre.connect(comp); comp.connect(ctx.destination);
+
+    SONS.forEach(function(n){
+      fetch("assets/sons/" + n + ".mp3")
+        .then(function(r){ if(!r.ok) throw 0; return r.arrayBuffer(); })
+        .then(function(ab){
+          return new Promise(function(ok, non){ ctx.decodeAudioData(ab, ok, non); });
+        })
+        .then(function(b){ tampons[n] = b; })
+        .catch(function(){});
+    });
+    pret = true;
+  }
+
+  function jouer(nom){
+    if(!pret || muet || !ctx || !tampons[nom]) return;
+    var t = ctx.currentTime;
+    if(dernier[nom] && t - dernier[nom] < 0.06) return;   /* le verrou */
+    dernier[nom] = t;
+    var s = ctx.createBufferSource();
+    s.buffer = tampons[nom];
+    s.connect(maitre);
+    s.start(0);
+  }
+
+  var bt = null;
+  function majBouton(){
+    if(!bt) return;
+    bt.setAttribute("aria-pressed", muet ? "true" : "false");
+    bt.setAttribute("title", muet ? "Remettre le son" : "Couper le son");
+  }
+
+  function basculer(){
+    muet = !muet;
+    try { localStorage.setItem("hms:muet", muet ? "1" : "0"); } catch(e){}
+    if(maitre && ctx){
+      maitre.gain.cancelScheduledValues(ctx.currentTime);
+      maitre.gain.setTargetAtTime(muet ? 0 : volume(), ctx.currentTime, 0.06);
+    }
+    majBouton();
+    return muet;
+  }
+
+  function poserBouton(){
+    bt = document.createElement("button");
+    bt.type = "button";
+    bt.className = "sonbt";
+    bt.setAttribute("aria-pressed", muet ? "true" : "false");
+    bt.innerHTML =
+      '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+      '<path class="hp" d="M4 9v6h4l5 4V5L8 9H4z"/>' +
+      '<path class="on1" d="M16.5 8.5a5 5 0 010 7"/>' +
+      '<path class="on2" d="M19 6a8.5 8.5 0 010 12"/>' +
+      '<path class="off" d="M17 9.5l5 5M22 9.5l-5 5"/>' +
+      '</svg><span class="vhs">Son</span>';
+    bt.addEventListener("click", function(){ demarrer(); basculer(); });
+    document.body.appendChild(bt);
+    majBouton();
+  }
+
+  /* le premier geste réel ouvre la sortie audio */
+  ["pointerdown","keydown","touchstart"].forEach(function(ev){
+    window.addEventListener(ev, demarrer, { once:true, passive:true });
+  });
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", poserBouton);
+  } else { poserBouton(); }
+
+  return { jouer: jouer, demarrer: demarrer };
+})();
+
+/* --- où chaque son se déclenche ---------------------------------- */
+(function(){
+  function J(n){ return function(){ Atelier.jouer(n); }; }
+
+  /* 1 · le rideau se fend : deux lames d'acier qui s'écartent.
+     Il ne sonne que si un geste a déjà eu lieu, donc au retour sur le
+     site et non à la toute première visite. C'est la règle, pas un
+     défaut : aucun navigateur n'autorise le son avant un geste. */
+  setTimeout(J("ouvrir"), 250);
+
+  /* 2 · une pièce s'ouvre : le tissu qu'on soulève */
+  document.addEventListener("click", function(e){
+    var c = e.target.closest && e.target.closest(".piece");
+    if(c){ Atelier.demarrer(); setTimeout(J("fiche"), 40); }
+  }, true);
+
+  /* 3 · une mesure entrée : le petit claquement du ruban */
+  document.addEventListener("input", function(e){
+    if(e.target && e.target.matches && e.target.matches("[data-mes]")) J("mesure")();
+  }, true);
+
+  /* 4 · l'étape suivante : trois ou quatre points de machine
+     5 · la validation : le coup de ciseaux dans le tissu */
+  document.addEventListener("click", function(e){
+    var b = e.target.closest && e.target.closest("[data-nav]");
+    if(!b || b.getAttribute("data-nav") !== "suiv") return;
+    if(b.hasAttribute("disabled")) return;
+    J(typeof etat !== "undefined" && etat.etape === 4 ? "couper" : "etape")();
+  }, true);
+
+  /* 6 · la commande part : le fil qu'on noue */
+  document.addEventListener("click", function(e){
+    var a = e.target.closest && e.target.closest("#btWa");
+    if(a) J("envoyer")();
+  }, true);
+})();

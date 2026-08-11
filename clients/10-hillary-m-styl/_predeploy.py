@@ -148,14 +148,40 @@ def main():
             shutil.copy(f, dst_img / f.name)
             n_img += 1
             poids_img += f.stat().st_size
-    # toute image référencée par le HTML doit être dans _dist
+    # ⚠️ LES SONS AUSSI. Ils n'étaient pas copiés : la page les demandait,
+    #    Cloudflare répondait 404, et le site partait muet sans que rien
+    #    ne le signale. Un déploiement est un instantané complet.
+    src_son = ICI / "assets" / "sons"
+    n_son = poids_son = 0
+    if src_son.exists():
+        dst_son = DIST / "assets" / "sons"
+        dst_son.mkdir(parents=True, exist_ok=True)
+        for f in sorted(src_son.glob("*.mp3")):
+            shutil.copy(f, dst_son / f.name)
+            n_son += 1
+            poids_son += f.stat().st_size
+
+    # toute image ET tout son référencés par le HTML doivent être dans _dist
     import re as _re
-    manquantes = [r for r in set(_re.findall(r'assets/images/([A-Za-z0-9_.-]+)', OUT.read_text(encoding="utf-8")))
+    _html = OUT.read_text(encoding="utf-8")
+    manquantes = [r for r in set(_re.findall(r'assets/images/([A-Za-z0-9_.-]+)', _html))
                   if not (DIST / "assets" / "images" / r).exists()]
     if manquantes:
         stop("des images référencées par la page ne sont pas dans _dist : "
              + ", ".join(sorted(manquantes)[:6]),
              "Relancez `python _pose_images.py`, puis ce script.")
+
+    sons_manquants = [r for r in set(_re.findall(r'assets/sons/([A-Za-z0-9_.-]+)', _html))
+                      if not (DIST / "assets" / "sons" / r).exists()]
+    # les six sons sont nommés dans un tableau JS, pas dans un chemin complet
+    for n in _re.findall(r'var SONS = \[([^\]]+)\]', _html):
+        for nom in _re.findall(r'"([a-z]+)"', n):
+            if not (DIST / "assets" / "sons" / (nom + ".mp3")).exists():
+                sons_manquants.append(nom + ".mp3")
+    if sons_manquants:
+        stop("des sons référencés par la page ne sont pas dans _dist : "
+             + ", ".join(sorted(set(sons_manquants))[:6]),
+             "Relancez `python _sons_finir.py`, puis ce script.")
 
     # UNE PAGE 404, TOUJOURS. Sans elle, Cloudflare Pages répond 200 avec le
     # HTML d'accueil pour un fichier absent — et ce 200 hérite du cache
@@ -179,6 +205,8 @@ def main():
     print(f"       ✅ _dist/index.html — {poids // 1024} Ko")
     print("       ✅ 404.html — un fichier absent ne sera jamais mis en cache un an")
     print(f"       ✅ {n_img} images copiées — {poids_img // 1024} Ko")
+    if n_son:
+        print(f"       ✅ {n_son} sons d'atelier copiés — {poids_son // 1024} Ko")
     print(f"          total à publier : {(poids + poids_img) // 1024} Ko")
     print("")
 

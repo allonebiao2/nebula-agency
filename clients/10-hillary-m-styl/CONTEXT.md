@@ -548,3 +548,77 @@ pièces ont une face. À vérifier avec Hillary : a-t-elle une photo de face ?
   proportion de matière** pour repérer un détourage raté.
 - Sources dans `_sources/modele-*/face|dos`, PNG maîtres dans
   `_sources/detoure/`. Le tout est **hors Git** (`clients/*/_sources/`).
+
+
+---
+
+## LES SONS D'ATELIER — 2026-08-11
+
+**Direction : « atelier réel »**, choisie par Mongazi. On entend l'acier, le
+tissu, la machine. Hillary vend du fait-main : un son trop poli dirait le
+contraire.
+
+**Six sons, pas quatorze.** Ceux qui portent le sens. Un site où chaque geste
+sonne devient fatigant en deux minutes, et on peut toujours en ajouter, jamais
+retirer une habitude.
+
+| Son | Ce que c'est | Quand |
+|---|---|---|
+| `ouvrir` | deux lames de ciseaux qui s'écartent | le rideau se fend |
+| `fiche` | le tissu qu'on soulève | on ouvre une pièce |
+| `mesure` | le claquement du mètre-ruban | on entre une mesure |
+| `etape` | trois points de machine à coudre | on passe à l'étape suivante |
+| `couper` | le coup de ciseaux dans le tissu | on valide la commande |
+| `envoyer` | le fil qu'on noue | la commande part sur WhatsApp |
+
+Générés avec **WaveSpeed** (`mirelo-ai/sfx-1.6`, `ambience: false`), **0,06 $**
+au total, **18,6 Ko** pour les six. Scripts : `_sons.py` puis `_sons_finir.py`.
+
+### Cinq pièges rencontrés, tous mesurés
+
+1. **`loudnorm` ne marche pas sous quelques secondes.** La mesure EBU R128 a
+   besoin de matière : sur un extrait de 70 ms elle ne rend RIEN. Cinq sons sur
+   six sont sortis muets. On normalise **au pic**, ce qui marche à toute durée.
+2. **⛔ `-ss` APRÈS `-i` laisse le graphe de filtres sur la timeline du fichier
+   entier.** `afade=t=out:st=0.27` éteignait le son à 270 ms du début du
+   source, alors que le coup de ciseaux était à 680 ms : trois sons sortaient
+   parfaitement muets, **avec un poids normal**. Placé avant `-i`, la coupe
+   tombe sur la trame MP3 la plus proche et l'attaque se décale.
+   **Remède : couper sur les ÉCHANTILLONS, en Python.** Plus aucune
+   approximation.
+3. **Le MP3 a un délai d'encodage d'environ 30 ms** : un extrait de 70 ms est
+   presque entièrement mangé. Durée minimale de 300 ms, obtenue en prolongeant
+   **la queue**, jamais le début (la latence au clic doit rester nulle).
+4. **On ne coupe pas au premier bruit.** Les fichiers générés contiennent
+   souvent un blip discret, un silence, puis le vrai son. On part du **pic** et
+   on remonte, en tolérant les micro-creux.
+5. **`fetch` est bloqué depuis une page ouverte en `file://`.** Le QC voyait
+   zéro son et accusait le site à tort : le contrôle se fait désormais **en
+   HTTP**, comme la page tourne vraiment.
+
+### Ce qui est vérifié, et comment
+
+Aucun son n'est ni écouté ni jugé de confiance. On mesure : **pic et RMS**
+(audible ou muet), **facteur de crête** (une attaque nette est au-dessus de 6 ;
+les six sont entre 10 et 19), **position de l'attaque** (0 à 10 %, sauf la
+machine à coudre à 30 %, ce qui est correct : c'est son quatrième point qui est
+le plus fort), et **profil spectral** deux à deux pour qu'aucun son ne soit le
+jumeau d'un autre.
+
+### Les garde-fous
+
+- **Rien ne sonne avant un geste.** Conséquence assumée : à la toute première
+  visite, le rideau est muet. Aucun navigateur n'autorise autre chose.
+- **Silence d'amorçage iOS**, sinon la sortie ne s'ouvre jamais.
+- **Compresseur**, et **gain relevé de 60 % sur téléphone**.
+- **Volume à 0,30** : un son d'interface se sent plus qu'il ne s'écoute.
+- **Verrou de 60 ms par son** : sur un clic rapide, dix déclenchements empilés
+  font une bouillie.
+- **Bouton de coupure en bas à gauche, en z-index 130**, donc **au-dessus de la
+  fiche** : en dessous, il devenait inatteignable dès qu'une fiche s'ouvrait et
+  le son ne pouvait plus être coupé pendant la commande. Le choix est retenu.
+
+⚠️ **`_predeploy.py` ne copiait pas les sons.** La page les aurait demandés,
+Cloudflare aurait répondu 404, et le site serait parti muet sans que rien ne le
+signale. Corrigé, et le script **refuse maintenant de publier** si un son
+référencé manque.
