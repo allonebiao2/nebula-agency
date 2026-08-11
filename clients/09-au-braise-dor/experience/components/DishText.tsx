@@ -39,7 +39,7 @@ export default function DishText({ dish }: { dish: Dish }) {
       /* ⚠️ LE TITRE VIT ENTRE L'ASSIETTE ET LA CARTE, pas au centre. Reglé en
          `left`/`right` et non en largeur fixe : « BICYCLETTE » sortait de
          l'écran, coupé au milieu du mot. Un titre coupé, c'est un site cassé. */
-      className="pointer-events-none absolute left-[46%] right-[calc(5vw+340px)] top-1/2 -translate-y-1/2 max-lg:right-[calc(5vw+296px)] max-md:inset-x-5 max-md:top-auto max-md:bottom-[45vh] max-md:translate-y-0"
+      className="scene-txt pointer-events-none absolute left-[46%] right-[calc(5vw+340px)] top-1/2 -translate-y-1/2 max-lg:right-[calc(5vw+296px)]"
     >
       <p className="dt-kicker mb-3 flex items-center gap-2 text-[0.82rem] font-medium tracking-wide text-[color:var(--encre-2)]">
         <span className="inline-block h-3 w-px bg-[color:var(--encre-2)] opacity-60" />
@@ -55,7 +55,7 @@ export default function DishText({ dish }: { dish: Dish }) {
         </span>
       </h2>
 
-      <div className="pointer-events-auto mt-7 flex items-center gap-9">
+      <div className="dt-act-zone pointer-events-auto mt-7 flex items-center gap-9">
         <a
           className="dt-act group inline-flex items-center gap-2 text-[0.9rem] font-medium text-[color:var(--encre-2)] transition hover:text-[color:var(--encre)]"
           href="#carte"

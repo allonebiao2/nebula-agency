@@ -78,7 +78,7 @@ export default function InfoCard({ dish }: { dish: Dish }) {
   return (
     <aside
       ref={zone}
-      className="absolute right-[5vw] top-1/2 w-[320px] -translate-y-1/2 rounded-3xl p-5 max-lg:w-[280px] max-md:static max-md:mx-auto max-md:mt-4 max-md:w-[calc(100%-2rem)] max-md:translate-y-0"
+      className="scene-carte absolute right-[5vw] top-1/2 w-[320px] -translate-y-1/2 rounded-3xl p-5 max-lg:w-[280px]"
       style={{
         background: "var(--verre)",
         backdropFilter: "blur(20px)",
@@ -87,7 +87,7 @@ export default function InfoCard({ dish }: { dish: Dish }) {
         boxShadow: "var(--ombre)",
       }}
     >
-      <div className="ic-item mb-4 flex items-center gap-3 text-[0.78rem] font-medium">
+      <div className="ic-item ic-onglets mb-4 flex items-center gap-3 text-[0.78rem] font-medium">
         <button
           type="button"
           onClick={() => setOnglet("apercu")}
@@ -115,7 +115,7 @@ export default function InfoCard({ dish }: { dish: Dish }) {
 
       {onglet === "apercu" ? (
         <>
-          <div className="ic-item mb-4 flex items-start gap-4">
+          <div className="ic-item ic-prix-bloc mb-4 flex items-start gap-4">
             <div
               className="grid h-[74px] w-[74px] shrink-0 place-items-center rounded-2xl text-center"
               style={{ background: dish.tint }}
@@ -141,7 +141,7 @@ export default function InfoCard({ dish }: { dish: Dish }) {
             </div>
           </div>
 
-          <p className="ic-item mb-5 text-[0.85rem] leading-[1.55] text-[color:var(--encre-2)]">
+          <p className="ic-item ic-desc mb-5 text-[0.85rem] leading-[1.55] text-[color:var(--encre-2)]">
             {dish.desc}
           </p>
 

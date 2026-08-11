@@ -70,3 +70,53 @@ html.lenis body {
   100% { box-shadow: 0 16px 36px rgba(0,0,0,.18), 0 0 0 0 rgba(29,26,23,0); }
 }
 .pulse { animation: pouls 2.8s ease-out infinite; }
+
+/* ── LA SCÈNE : DEUX MISES EN PAGE, PAS UNE ──────────────────────
+   Sur grand écran, l'assiette est à gauche, le titre au milieu, la carte à
+   droite : la composition de la référence, en positions absolues.
+   ⚠️ SUR TÉLÉPHONE ON EMPILE POUR DE VRAI. Le premier essai posait les trois
+   blocs à 39 %, 56 % et 7 % de la hauteur : ça tenait sur un écran de 844 px
+   et se chevauchait sur un écran de 640, parce qu'un pourcentage de hauteur
+   ne sait rien de la hauteur en pixels du texte qu'il contient. On ne place
+   pas des boîtes à la main, on laisse le navigateur les empiler. */
+.scene-stack { display: contents; }
+.scene-plat {
+  width: min(42vw, 46vh);
+  height: min(42vw, 46vh);
+  transform: translateX(-26vw);
+}
+
+@media (max-width: 767px) {
+  .scene-stack {
+    position: absolute;
+    /* ⚠️ 11,9rem en bas, ce n'est pas un chiffre rond choisi à l'œil : c'est
+       la place que prennent le carrousel (84 px du bas, 100 de haut) et la
+       barre. Réservé trop court, la carte de verre passait par-dessus les
+       miniatures. */
+    inset: 4.5rem 1.25rem 11.9rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.9rem;
+  }
+  .scene-plat,
+  .scene-txt,
+  .scene-carte {
+    position: relative !important;
+    inset: auto !important;
+    transform: none !important;
+  }
+  /* ⚠️ `width: 100%`, pas `auto`. En `auto` la boîte de l'assiette est
+     mesurée à ZÉRO de large : ses enfants sont tous en position absolue, donc
+     elle n'a aucun contenu à mesurer, et l'assiette disparaissait de l'écran
+     alors que l'image était bien chargée. */
+  .scene-plat, .scene-txt, .scene-carte { width: 100% !important; }
+  .scene-plat { height: 30vh; min-height: 150px; }
+  .scene-carte { padding: 0.85rem 0.95rem; }
+  /* la carte garde l'essentiel : le prix et le bouton. Les onglets et la
+     description restent sur grand écran, où il y a la place. */
+  .scene-carte .ic-onglets,
+  .scene-carte .ic-desc,
+  .scene-txt .dt-act-zone { display: none; }
+  .scene-carte .ic-prix-bloc { margin-bottom: 0.7rem; }
+}

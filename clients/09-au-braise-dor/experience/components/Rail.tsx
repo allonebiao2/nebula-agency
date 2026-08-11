@@ -23,7 +23,7 @@ export default function Rail({
   onAller: (n: number) => void;
 }) {
   return (
-    <div className="absolute bottom-[104px] left-1/2 w-[min(60vw,640px)] -translate-x-1/2 max-md:bottom-[92px] max-md:w-[calc(100%-2.5rem)]">
+    <div className="absolute bottom-[104px] left-1/2 w-[min(60vw,640px)] -translate-x-1/2 max-md:bottom-[84px] max-md:w-[calc(100%-2.5rem)]">
       <Swiper
         modules={[Navigation]}
         slidesPerView={4}

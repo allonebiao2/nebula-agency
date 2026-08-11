@@ -185,16 +185,20 @@ export default function Experience() {
         <TopBar />
         <Indicator n={N} actif={i} onAller={aller} />
 
-        {/* L'ASSIETTE : toutes empilées, une seule visible */}
-        <div className="absolute inset-0 grid place-items-center">
+        {/* ⚠️ `scene-stack` est en `display: contents` sur grand écran : il
+            n'existe pas, et l'assiette, le titre et la carte restent posés en
+            absolu comme dans la référence. Sur téléphone il devient une
+            COLONNE et les trois s'empilent pour de vrai.
+            Pourquoi : positionner en pourcentages de hauteur ne marche pas
+            quand les blocs, eux, font une hauteur en pixels. À 640 px de haut,
+            le titre et la carte se chevauchaient quoi qu'on règle. On
+            n'empile pas des boîtes à la main, on laisse le navigateur le
+            faire. */}
+        <div className="scene-stack">
+        <div className="absolute inset-0 grid place-items-center max-md:static max-md:block">
           <div
-            className="relative"
-            style={{
-              width: "min(42vw, 46vh)",
-              height: "min(42vw, 46vh)",
-              transform: "translateX(-26vw)",
-              perspective: "1000px",
-            }}
+            className="scene-plat relative"
+            style={{ perspective: "1000px" }}
           >
             {DISHES.map((d, k) => (
               <div
@@ -222,6 +226,7 @@ export default function Experience() {
 
         <DishText dish={plat} />
         <InfoCard dish={plat} />
+        </div>
         <Rail actif={i} onAller={aller} />
         <BottomNav />
       </div>
