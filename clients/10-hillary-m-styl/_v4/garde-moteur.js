@@ -242,13 +242,13 @@ var PIECES = [
      commande WhatsApp est ambiguë.
      Les descriptions décrivent ce que la photo montre, rien de plus. */
 
-  {id:"h5", cat:"sm", nom:"Robe de ville violette", type:"haut_pantalon", tag:"",
+  {id:"h5", cat:"sm", nom:"Robe de cérémonie violette", type:"haut_pantalon", tag:"Cérémonie",
    img:"piece-violette.webp", img2:"piece-violette-dos.webp",
    prix:40000, jmin:14, jmax:14, expPrix:55000, expMin:2, expMax:4,
    eur:60, usd:72, eurExp:82, usdExp:100,
    ds:"Buste ajusté en uni, manches ballon et jupe longue à volants dans un wax à fougères. Le dos se lace en corset sous une découpe ronde. Le foulard est assorti."},
 
-  {id:"h6", cat:"sm", nom:"Robe de ville orange", type:"robe_ovale", tag:"",
+  {id:"h6", cat:"sm", nom:"Robe Naja", type:"robe_ovale", tag:"",
    img:"piece-orange.webp", img2:"piece-orange-dos.webp",
    prix:35000, jmin:14, jmax:14, expPrix:45000, expMin:2, expMax:4,
    eur:52, usd:63, eurExp:67, usdExp:81,
