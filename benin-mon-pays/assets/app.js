@@ -366,16 +366,54 @@
     W.addEventListener('wheel', surMolette, { passive: false });
   }
 
+  /* ⚠️ UN SAUT N'EST PAS UN DÉFILEMENT À LA MOLETTE. Le lissage de la
+     molette avance de 11,5 % de la distance restante à chaque image :
+     parfait pour amortir un geste, mais il mettait **trois secondes**
+     pour parcourir les 8 600 pixels qui séparent le portail de la
+     Pendjari. Trois secondes après avoir choisi un lieu dans le menu,
+     personne n'attend. Un saut a donc sa propre animation, à durée
+     fixe, qui se règle sur la distance et ne dépasse jamais 1,1 s. */
+  var saut = null;
+
   function allerA(el) {
     if (!el) return;
-    var y = el.getBoundingClientRect().top + W.scrollY - barreH;
-    y = clamp(y, 0, hauteurMax());
-    if (lisse.actif) {
-      lisse.cible = y;
-      if (!lisse.anim) { lisse.anim = true; requestAnimationFrame(boucleLisse); }
-    } else {
-      W.scrollTo({ top: y, behavior: doux ? 'auto' : 'smooth' });
+    var depart = W.scrollY;
+    var cible = clamp(el.getBoundingClientRect().top + depart - barreH,
+                      0, hauteurMax());
+    var d = Math.abs(cible - depart);
+
+    if (doux || d < 4) {
+      W.scrollTo(0, cible);
+      if (lisse.actif) { lisse.cible = lisse.cour = cible; }
+      balayer();
+      return;
     }
+
+    /* entre 420 ms pour un pas de côté et 1 100 ms pour la traversée */
+    var duree = clamp(360 + d * 0.075, 420, 1100);
+    var t0 = 0;
+    if (saut) cancelAnimationFrame(saut);
+    lisse.anim = false;
+
+    function pas(t) {
+      if (!t0) t0 = t;
+      var p = clamp((t - t0) / duree, 0, 1);
+      /* la même courbe que le reste du site */
+      var e = 1 - Math.pow(1 - p, 3);
+      /* ⚠️ on RECALCULE la cible : la hauteur du document bouge pendant
+         le trajet, une photo qui arrive suffit à décaler l'arrivée. */
+      var c = clamp(cible, 0, hauteurMax());
+      var y = depart + (c - depart) * e;
+      W.scrollTo(0, y);
+      if (lisse.actif) { lisse.cible = lisse.cour = y; }
+      if (p < 1) { saut = requestAnimationFrame(pas); return; }
+      saut = null;
+      /* une dernière mesure : si l'arrivée a bougé, on ajuste sec */
+      var reste = el.getBoundingClientRect().top - barreH;
+      if (Math.abs(reste) > 6) W.scrollTo(0, W.scrollY + reste);
+      balayer();
+    }
+    saut = requestAnimationFrame(pas);
   }
 
   /* ═══ 5 · LES RÉVÉLATIONS ═══════════════════════════════════
@@ -385,13 +423,29 @@
 
   var revelables = [];
 
+  /* Le defilement lisse met environ une seconde a arriver : balayer une
+     seule fois juste apres le clic controle une position qui n'est pas
+     encore la bonne, et la section restait invisible pour toujours. */
+  function rebalayer() {
+    balayer();
+    [260, 700, 1300, 2000].forEach(function (d) { setTimeout(balayer, d); });
+  }
+
   function balayer() {
     var h = W.innerHeight, seuil = h * 0.86;
     for (var i = 0; i < revelables.length; i++) {
       var el = revelables[i];
       if (el.__vu) continue;
       var t = el.getBoundingClientRect().top;
-      if (t < seuil) { el.classList.add('vue'); el.__vu = true; }
+      if (t < seuil) {
+        el.classList.add('vue');
+        el.__vu = true;
+        /* ⚠️ La photo n'est demandee QU'ICI. `loading="lazy"` seul en
+           chargeait QUATRE au premier ecran (410 Ko sur une page qui en
+           pesait 189) : le navigateur anticipe tres largement. */
+        var ph = el.querySelector ? el.querySelector('.st-photo[data-src]') : null;
+        if (ph) { ph.src = ph.getAttribute('data-src'); ph.removeAttribute('data-src'); }
+      }
     }
   }
 
@@ -563,7 +617,7 @@
       e.preventDefault();
       ouvrir(false);
       var cible = D.getElementById(a.getAttribute('href').slice(1));
-      setTimeout(function () { allerA(cible); balayer(); }, 220);
+      setTimeout(function () { allerA(cible); rebalayer(); }, 220);
     });
 
     D.addEventListener('keydown', function (e) {
@@ -1184,7 +1238,7 @@
       if (!el) return;
       e.preventDefault();
       allerA(el);
-      balayer();
+      rebalayer();
     });
 
     balayer();

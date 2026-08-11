@@ -1151,3 +1151,98 @@ html:not(.js) .po-fil { transform: none; }
   .js .po-cercles.bouge { transform: none; }
   .po-iris { display: none; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   LES PHOTOGRAPHIES DES LIEUX
+   De vraies photos, sous licence libre, moissonnées sur Wikimedia
+   Commons. Elles remplacent l'atlas dessiné, qui n'était qu'une
+   attente. Le dessin reste dessous, très sourd : il donne la
+   matière que le grain seul ne donnait pas.
+   ═══════════════════════════════════════════════════════════════ */
+
+.st-photo {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: 50% 42%;
+  background-size: cover; background-position: 50% 42%;
+  /* la vignette de 28 px sert de fond pendant le chargement :
+     l'effet et la performance sont la même chose */
+}
+.js .st-photo { opacity: 0; transition: opacity 1.15s var(--e); }
+.js .st.vue .st-photo { opacity: 1; }
+html:not(.js) .st-photo { opacity: 1; }
+
+/* ⚠️ LE VOILE N'EST PAS UNE DÉCORATION. Sans lui, le texte clair se
+   pose sur un ciel blanc ou sur du sable, et devient illisible. Il est
+   plus dense en bas, là où le cartel tombe. */
+.st-voile {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(to bottom,
+      color-mix(in oklab, var(--encre) 62%, transparent) 0%,
+      color-mix(in oklab, var(--encre) 48%, transparent) 34%,
+      color-mix(in oklab, var(--encre) 80%, transparent) 100%),
+    linear-gradient(to right,
+      color-mix(in oklab, var(--encre) 55%, transparent) 0%,
+      transparent 62%);
+}
+
+/* le dessin passe derrière la photo, très sourd : il reste comme une
+   trace du relevé, il ne se bat plus avec elle */
+.st-photo ~ .st-motif { opacity: .07; mix-blend-mode: screen; }
+
+.st-ph {
+  margin: 16px 0 0; padding-top: 13px;
+  border-top: 1px solid rgba(242,237,229,.16);
+  font-size: 12.5px; line-height: 1.5; color: #b9b1a4;
+}
+.st-ph span {
+  display: block; margin-bottom: 3px;
+  font-size: 9.5px; letter-spacing: .26em; text-transform: uppercase;
+  color: #8d8578;
+}
+
+/* ─── le crédit, dans le pied ─────────────────────────────────── */
+.pied-cr {
+  margin: 34px 0 30px; padding-top: 26px;
+  border-top: 1px solid rgba(242,237,229,.14);
+}
+.pied-crt {
+  margin: 0 0 12px; font-family: var(--ff-d); font-weight: 300;
+  font-size: 21px;
+}
+.pied-crp { margin: 0 0 18px; font-size: 13.5px; color: #cdc4b6; max-width: 640px; }
+.pied-crl { margin: 0 0 16px; padding: 0; list-style: none; }
+.pied-crl li {
+  font-size: 12.5px; color: #a49b8d;
+  border-bottom: 1px solid rgba(242,237,229,.07);
+}
+/* ⚠️ Ces liens faisaient 16 px de haut : impossibles à toucher au doigt.
+   Le lien mène à la source de la photo, il fait partie de l'attribution
+   obligatoire, donc il doit être atteignable. */
+.pied-crl a {
+  display: inline-flex; align-items: center; min-height: 44px;
+  padding: 2px 0; color: #e0a878; text-decoration: none;
+}
+.pied-crl a:hover, .pied-crl a:focus-visible { text-decoration: underline; }
+.pied-crn { margin: 0; font-size: 12px; color: #8d8578; max-width: 640px; }
+
+/* ── LE LOGO ──────────────────────────────────────────────────────
+   La marque est le méridien gradué : le cercle du pays, la ligne des
+   sept cents kilomètres qui le traverse, et le point d'or au kilomètre
+   zéro. C'est l'instrument du site lui-même, pas un ornement ajouté.
+   Le texte du logo est tracé en COURBES : il ne dépend d'aucune police
+   installée chez le lecteur. */
+.barre-m { gap: .5em; }
+.barre-lo {
+  width: 26px; height: 26px; flex: none;
+  filter: invert(1) brightness(1.6);   /* la version claire, sur l'encre */
+}
+body.sur-clair .barre-lo { filter: none; }
+
+.pied-lo {
+  width: min(296px, 74vw); height: auto; margin: 0 0 14px;
+  display: block;
+}
+@media (max-width: 560px) {
+  .barre-lo { width: 22px; height: 22px; }
+}

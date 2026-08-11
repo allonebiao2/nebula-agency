@@ -12,6 +12,9 @@ import shutil
 ICI = os.path.dirname(os.path.abspath(__file__))
 DIST = os.path.join(ICI, "_dist")
 
+LIEUX = ("porte", "ouidah", "cotonou", "ganvie",
+         "abomey", "koutammakou", "pendjari", "fleuve")
+
 GARDE = [
     "index.html",
     "assets/app.css",
@@ -20,9 +23,10 @@ GARDE = [
     "assets/fonts/bodoni-italic.woff2",
     "assets/images/favicon.svg",
     "assets/images/og.png",
-] + ["assets/sons/%s.mp3" % n for n in
-     ("porte", "ouidah", "cotonou", "ganvie",
-      "abomey", "koutammakou", "pendjari", "fleuve")]
+] + ["assets/sons/%s.mp3" % n for n in LIEUX]   + ["assets/images/lieux/%s.webp" % n for n in LIEUX]   + ["assets/images/lieux/%s-min.webp" % n for n in LIEUX]   + ["assets/images/logo/" + f for f in (
+      "logo.svg", "logo-clair.svg", "logo-marque.svg",
+      "logo-marque-clair.svg", "favicon.svg",
+      "logo.png", "logo-marque.png")]
 
 if os.path.isdir(DIST):
     shutil.rmtree(DIST)
@@ -94,6 +98,16 @@ head = """/assets/fonts/*
 ph = os.path.join(DIST, "_headers")
 io.open(ph, "w", encoding="utf-8", newline="\n").write(head)
 print("  %-42s %7.1f Ko" % ("_headers", os.path.getsize(ph) / 1024.0))
+
+import re
+_h = io.open(os.path.join(DIST, "index.html"), encoding="utf-8").read()
+manque = []
+for r in set(re.findall(r'assets/[A-Za-z0-9_./-]+\.(?:webp|svg|png|mp3|css|js|woff2)', _h)):
+    if not os.path.exists(os.path.join(DIST, r)):
+        manque.append(r)
+if manque:
+    raise SystemExit("MANQUE dans _dist : " + ", ".join(sorted(manque)[:8]))
+print("  toutes les ressources reclamees par la page sont publiees")
 
 n = sum(len(f) for _, _, f in os.walk(DIST))
 print("\n_dist : %d fichiers, %.2f Mo" % (n, total / 1048576.0))

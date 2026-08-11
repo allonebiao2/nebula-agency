@@ -67,7 +67,18 @@ def passe(pw, larg, haut, mobile, etiq):
           const e=document.getElementById(id);
           if(e) window.scrollTo(0, e.getBoundingClientRect().top + window.scrollY - 54);
         }""", s)
-        pg.wait_for_timeout(1500)                   # le trait se dessine
+        # ⚠️ on ATTEND que la photo soit decodee, on ne devine pas un delai :
+        # a 1500 ms la Porte etait encore sur sa vignette floue.
+        try:
+            pg.wait_for_function("""(id)=>{
+              const p=document.querySelector('#'+id+' .st-photo');
+              if(!p) return true;
+              return p.complete && p.naturalWidth>0 &&
+                     +getComputedStyle(p).opacity > .95;
+            }""", arg=s, timeout=6000)
+        except Exception:
+            pass
+        pg.wait_for_timeout(900)
         f = os.path.join(SORTIE, "%s_%s.png" % (etiq, s))
         pg.screenshot(path=f)
         fichiers.append(f)

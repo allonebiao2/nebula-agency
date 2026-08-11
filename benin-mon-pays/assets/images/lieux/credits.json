@@ -1,0 +1,66 @@
+[
+ {
+  "station": "porte",
+  "legende": "La Porte du Non-Retour, au bout de l'allée de sable, sur la plage d'Ouidah.",
+  "titre": "Door of no return.jpg",
+  "auteur": "Francisco Anzola",
+  "licence": "CC BY 2.0",
+  "page": "https://commons.wikimedia.org/wiki/File%3ADoor_of_no_return.jpg"
+ },
+ {
+  "station": "ouidah",
+  "legende": "Une case au toit de tuiles coniques, dans l'enceinte du temple des Pythons, à Ouidah.",
+  "titre": "Ouidah-Temple des Pythons-Petite case ronde (1).jpg",
+  "auteur": "Ji-Elle",
+  "licence": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File%3AOuidah-Temple_des_Pythons-Petite_case_ronde_%281%29.jpg"
+ },
+ {
+  "station": "cotonou",
+  "legende": "Le marché Dantokpa vu d'en haut : les parasols, les étals, la foule.",
+  "titre": "Marché Dantokpa 10.jpg",
+  "auteur": "Alacoolwiki",
+  "licence": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File%3AMarch%C3%A9_Dantokpa_10.jpg"
+ },
+ {
+  "station": "ganvie",
+  "legende": "Ganvié : les maisons sur pilotis alignées le long d'un chenal du lac Nokoué.",
+  "titre": "Allée ou rue des amoureux à Ganvié.jpg",
+  "auteur": "Saliousoft",
+  "licence": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File%3AAll%C3%A9e_ou_rue_des_amoureux_%C3%A0_Ganvi%C3%A9.jpg"
+ },
+ {
+  "station": "abomey",
+  "legende": "Un bas-relief en terre du quartier de Gbécon-Hounli, à Abomey.",
+  "titre": "Bas-relief d'une résidence du quartier de Gbécon-Hounli, non loin du palais princier de Guézo, figure du cavalier acrobate Aloukiki - A63609S.jpg",
+  "auteur": "Gadmer Frédéric",
+  "licence": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File%3ABas-relief_d%27une_r%C3%A9sidence_du_quartier_de_Gb%C3%A9con-Hounli%2C_non_loin_du_palais_princier_de_Gu%C3%A9zo%2C_figure_du_cavalier_acrobate_Aloukiki_-_A63609S.jpg"
+ },
+ {
+  "station": "koutammakou",
+  "legende": "Une Tata Somba : la maison-forteresse en terre des Batammariba, avec ses tourelles de chaume.",
+  "titre": "Tata Somba 2.jpg",
+  "auteur": "Dominik Schwarz",
+  "licence": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File%3ATata_Somba_2.jpg"
+ },
+ {
+  "station": "pendjari",
+  "legende": "Un baobab au bord d'un point d'eau, dans la savane sèche de la Pendjari.",
+  "titre": "Parc national de la Pendjari-Baobab et échassier.jpg",
+  "auteur": "Ji-Elle",
+  "licence": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File%3AParc_national_de_la_Pendjari-Baobab_et_%C3%A9chassier.jpg"
+ },
+ {
+  "station": "fleuve",
+  "legende": "Les pirogues alignées sur la berge du fleuve Niger, à Malanville.",
+  "titre": "Pirogues sur le fleuve Niger, fermeture de la frontière Niger Bénin 06.jpg",
+  "auteur": "Barke11",
+  "licence": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File%3APirogues_sur_le_fleuve_Niger%2C_fermeture_de_la_fronti%C3%A8re_Niger_B%C3%A9nin_06.jpg"
+ }
+]

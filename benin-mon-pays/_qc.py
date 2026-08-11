@@ -242,6 +242,14 @@ def controler():
 
         # 8 · le verbe FROTTER découvre le mur
         aller(pg, "station-4")
+        # ⚠️ le cartel a grandi depuis que la legende de la photo s'y trouve :
+        # le mur a frotter peut tomber sous l'ecran. On l'amene sous les yeux.
+        pg.evaluate("""()=>{
+          document.documentElement.style.scrollBehavior='auto';
+          document.getElementById('frotterM')
+            .scrollIntoView({block:'center', behavior:'instant'});
+        }""")
+        pg.wait_for_timeout(600)
         m = pg.query_selector("#frotterM")
         mb = m.bounding_box()
         pg.mouse.move(mb["x"] + mb["width"] / 2, mb["y"] + mb["height"] / 2)
@@ -447,13 +455,21 @@ def controler():
         v(ps.eval_on_selector("#sonBtn", "e=>e.getAttribute('aria-pressed')") == "true",
           "le bouton coupe le son")
 
-        poids = ps.evaluate("""()=>{
+        # ⚠️ ON MESURE LE PREMIER ECRAN, pas la somme du voyage. Les huit
+        # photos des lieux se chargent A L'ARRIVEE sur chaque station : les
+        # additionner apres avoir tout parcouru ne dit rien sur le temps
+        # d'ouverture, qui est la seule promesse tenue ici.
+        pn = ctxs.new_page()
+        pn.goto(BASE, wait_until="domcontentloaded")
+        pn.wait_for_timeout(2600)
+        poids = pn.evaluate("""()=>{
           let tot=0;
           for(const r of performance.getEntriesByType('resource'))
-            if(!r.name.includes('/sons/')) tot += (r.transferSize||r.encodedBodySize||0);
+            tot += (r.transferSize||r.encodedBodySize||0);
           return Math.round(tot/1024);
         }""")
-        v(poids <= 260, "la page sans les sons reste sous 260 Ko", "%s Ko" % poids)
+        pn.close()
+        v(poids <= 320, "le premier ecran reste sous 320 Ko", "%s Ko" % poids)
         ctxs.close()
 
         ctx = nav.new_context(viewport={"width": 1440, "height": 900})
