@@ -1,5 +1,6 @@
 import Experience from "@/components/Experience";
 import Carte from "@/components/Carte";
+import Pied from "@/components/Pied";
 
 /**
  * L'expérience passe AU-DESSUS de la carte : les quatre plats signature
@@ -11,6 +12,7 @@ export default function Page() {
     <main>
       <Experience />
       <Carte />
+      <Pied />
     </main>
   );
 }

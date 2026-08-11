@@ -23,9 +23,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Au Braisé d'Or · nos plats signature",
+  title: "Au Braisé d'Or · Grillades au feu de bois · Cotonou",
   description:
-    "Le braisé au feu de bois à Cotonou. Quatre plats signature, et toute la carte à commander sur WhatsApp.",
+    "Au Braisé d'Or, la maison de la braise à Cotonou : grillades au feu de bois, pizzas, chawarma, salades et cocktails. Commande en un geste sur WhatsApp.",
 };
 
 export const viewport: Viewport = {
