@@ -15,6 +15,22 @@ import { TopBar, BottomNav, Indicator } from "./Chrome";
 gsap.registerPlugin(ScrollTrigger, CustomEase);
 
 /**
+ * LE MOUVEMENT DES ASSIETTES : ELLES ROULENT SUR UN ARC.
+ *
+ * ⚠️ PREMIÈRE VERSION FAUSSE, et Mongazi l'a vue tout de suite : je faisais
+ * monter l'assiette tout droit, du bas vers le haut. La vidéo de référence,
+ * relue image par image à 12 centièmes d'intervalle, montre autre chose :
+ * **celle qui arrive vient du HAUT À DROITE, descend en tournant sur
+ * elle-même, et celle qui part continue vers le BAS À GAUCHE.** Elle roule.
+ *
+ * D'où les trois mouvements combinés au lieu d'un seul : un déplacement en
+ * diagonale (74 % de large, 66 % de haut par plat), une rotation de presque un
+ * quart de tour, et l'échelle qui recule. C'est la rotation qui fait la
+ * différence : sans elle, une diagonale reste un glissement, et on ne « roule »
+ * pas.
+ */
+
+/**
  * LA SCÈNE.
  *
  * Le principe de la référence : le fond ne bouge JAMAIS. C'est un plateau sur
@@ -68,10 +84,11 @@ export default function Experience() {
         const d = f - k;
         const a = Math.min(1, Math.abs(d));
         gsap.set(el, {
-          yPercent: -d * 118,
-          scale: 1 - a * 0.4,
-          rotate: d * 5,
-          opacity: 1 - Math.pow(a, 1.4),
+          xPercent: -d * 74,
+          yPercent: d * 66,
+          scale: 1 - a * 0.34,
+          rotate: d * 88,
+          opacity: 1 - Math.pow(a, 1.5),
           zIndex: 10 - Math.round(a * 10),
           pointerEvents: a > 0.5 ? "none" : "auto",
         });
@@ -129,6 +146,75 @@ export default function Experience() {
     window.addEventListener("keydown", f);
     return () => window.removeEventListener("keydown", f);
   }, [aller]);
+
+  /* ── LES PLATS DÉFILENT TOUT SEULS ──────────────────────────────
+     Demande de Mongazi : « le défilement doit être automatique, sans
+     intervention humaine. » Un plat toutes les 5,5 s.
+
+     Quatre garde-fous, et aucun n'est facultatif :
+     1. ⛔ RIEN ne bouge si le visiteur a demandé moins d'animations
+        (`prefers-reduced-motion`) : pour certains c'est une demande médicale.
+     2. ⛔ RIEN ne bouge quand la scène n'est plus à l'écran. Sans ça, le site
+        REMONTERAIT tout seul pendant qu'on lit la carte : le pire défaut
+        qu'une page puisse avoir.
+     3. ⛔ RIEN ne bouge quand l'onglet est en arrière-plan.
+     4. ⚠️ ON AVANCE, ON NE BOUCLE PAS. Arrivé au dernier plat, on s'arrête.
+        Reboucler obligerait la page à remonter d'elle-même vers le premier
+        plat, en travers de quelqu'un qui descend vers le menu. Un site ne se
+        bat pas contre le doigt de son visiteur.
+     5. Un vrai geste repousse le tour de 12 s : on ne vole pas la main. */
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const TOUR = 5500,
+      REPOS = 12000;
+    let minuteur = 0 as ReturnType<typeof setTimeout> | 0;
+    let reprise = 0 as ReturnType<typeof setTimeout> | 0;
+
+    const visible = () => {
+      const el = scene.current?.querySelector(".sticky");
+      if (!el) return false;
+      const r = el.getBoundingClientRect();
+      return r.top > -40 && r.bottom > window.innerHeight * 0.75;
+    };
+
+    const tourner = () => {
+      minuteur = 0;
+      if (document.hidden || !visible()) return relancer();
+      if (iRef.current >= N - 1) return;      // arrivé au bout : on s'arrête
+      aller(iRef.current + 1);
+      relancer();
+    };
+    const relancer = () => {
+      if (minuteur) clearTimeout(minuteur);
+      minuteur = setTimeout(tourner, TOUR);
+    };
+    const repousser = () => {
+      if (minuteur) { clearTimeout(minuteur); minuteur = 0; }
+      if (reprise) clearTimeout(reprise);
+      reprise = setTimeout(relancer, REPOS);
+    };
+
+    const surVisibilite = () => {
+      if (document.hidden) { if (minuteur) { clearTimeout(minuteur); minuteur = 0; } }
+      else relancer();
+    };
+
+    document.addEventListener("visibilitychange", surVisibilite);
+    window.addEventListener("wheel", repousser, { passive: true });
+    window.addEventListener("touchstart", repousser, { passive: true });
+    window.addEventListener("keydown", repousser);
+    const t0 = setTimeout(relancer, 2200);   // le premier plat se laisse lire
+
+    return () => {
+      clearTimeout(t0);
+      if (minuteur) clearTimeout(minuteur);
+      if (reprise) clearTimeout(reprise);
+      document.removeEventListener("visibilitychange", surVisibilite);
+      window.removeEventListener("wheel", repousser);
+      window.removeEventListener("touchstart", repousser);
+      window.removeEventListener("keydown", repousser);
+    };
+  }, [aller, N]);
 
   /* ── le tilt 3D à la souris, très léger, et jamais au doigt ────── */
   useEffect(() => {
