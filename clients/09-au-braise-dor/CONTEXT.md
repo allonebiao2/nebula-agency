@@ -1,4 +1,98 @@
-# Au Braisé d'Or — CONTEXT
+# AU BRAISÉ D'OR — client 09
+
+> ## 🔥 EN LIGNE : **https://au-braise-dor.pages.dev**
+> **⚠️ LE SITE N'EST PLUS `index.html`.** Depuis le 2026-08-12 l'adresse du
+> client sert le projet **Next.js de `experience/`** : une expérience à 4 plats
+> signature, puis les 48 plats commandables en dessous.
+> `index.html` reste dans le dépôt : un retour arrière est un déploiement.
+>
+> **Publier :**
+> ```bash
+> cd clients/09-au-braise-dor/experience
+> npm run build
+> cp -r ../assets/docs out/     # l'affiche A4 et ses QR gardent leur adresse
+> npx wrangler pages deploy out --project-name au-braise-dor --branch main
+> ```
+> ⚠️ **L'alias Cloudflare a du retard** : un fichier peut répondre 404 huit
+> secondes après le déploiement et 200 quinze secondes plus tard.
+>
+> **Pile technique demandée par Mongazi** (j'avais recommandé le natif, il a
+> maintenu, c'est son choix) : Next.js 14 · TypeScript · Tailwind · GSAP +
+> ScrollTrigger + CustomEase · Swiper · Lenis. **179 kB de JS** au premier
+> chargement.
+>
+> **Détail complet :**
+> `_memoire/conversations/2026-08-12-braise-experience-next.md`
+
+## ⚠️ LES SEPT PIÈGES DE CE PROJET, tous trouvés à la mesure
+
+1. **Les 48 photos en `background-image` se téléchargeaient d'un coup** :
+   4,3 Mo avant même d'arriver au menu. Un navigateur ne sait pas différer un
+   fond CSS. → `<img loading="lazy">`.
+2. **`gsap.from()` laisse l'élément invisible si on l'interrompt.** Le bouton
+   « Commander sur WhatsApp » était à `visibility: hidden` : la carte
+   s'affichait complète, sauf le seul bouton qui rapporte de l'argent.
+   → `fromTo()` + `clearProps`, partout, sans exception.
+3. **Une scène en `fixed` ne se décolle jamais** et reste en travers du
+   contenu suivant. → `sticky` dans un parent de N × 100vh.
+4. **On n'empile pas des boîtes à la main sur téléphone** : un pourcentage de
+   hauteur ne sait rien de la hauteur en pixels du texte. → conteneur en
+   `display: contents` sur grand écran, **colonne flex** sur téléphone.
+   ⚠️ Et en `width: auto` une boîte dont les enfants sont tous absolus est
+   mesurée à **zéro de large** : l'assiette disparaissait.
+5. **Un conteneur plein écran avale les clics** des boutons posés avant lui.
+   Le bouton du héros s'illuminait au survol et ne faisait rien.
+   → `pointer-events-none`.
+6. **LENIS TIENT LE DÉFILEMENT DE LA PAGE.** Tout `scrollIntoView` lancé à côté
+   se fait interrompre : le saut vers une catégorie s'arrêtait à **7 382 px**
+   de sa cible, sans erreur en console. → `components/aller.ts`.
+7. **Une vidéo de référence se MESURE image par image** avant d'écrire
+   l'animation, elle ne se résume pas de mémoire. Les assiettes **roulent sur
+   un arc** (haut droite → bas gauche, presque un quart de tour), elles ne
+   montent pas tout droit.
+
+## Ce qui est en ligne
+
+**L'expérience** : 4 plats signature, défilement **automatique** (5,5 s) avec
+cinq garde-fous, titre en deux lignes qui se dédouble, carte de verre, prix qui
+compte de 0, carrousel Swiper à item surélevé, tiroir des 8 univers ouvert
+depuis le héros.
+**La carte** : 48 plats **toujours tous affichés** (le filtre cachait 38
+plats), chips en ancres avec scroll-spy, fiche taille + accompagnement +
+quantité, panier, mode, message WhatsApp rédigé.
+**Le pied** : les deux numéros, l'email, le WiFi, les horaires, le traiteur, la
+place des fêtes, **RC RB/COT/24 A 102350 · IFU 0202501441177**.
+
+⛔ **NI NOTE, NI CHEF, NI « LIKES » INVENTÉS.** La vidéo de référence en
+affichait ; ce restaurant existe. Le carré coloré porte **le prix**, qui est
+vrai. Les champs `chef` et `avis` attendent dans `data/dishes.ts` et
+s'afficheront tout seuls le jour où le restaurant les donnera.
+
+## Les outils
+
+| Fichier | Ce qu'il fait |
+|---|---|
+| `_outils/_extraire_carte.js` | relit `index.html` et régénère `experience/data/carte.ts` (8 catégories, 48 plats). **La carte ne se retape jamais à la main** |
+| `_outils/_carte_claire.py` | passe la carte et le pied dans la langue du héros |
+| `_outils/_catalogue_vente.py` | ancres + scroll-spy + tiroir des catégories |
+
+⚠️ Les trois **s'arrêtent net si un motif a disparu**, pour ne jamais repeindre
+à moitié.
+
+## ⏳ Ce qui reste
+
+- **La vraie photo de la salle.** Le fond est un mur neutre, pas leur
+  restaurant. ⚠️ La vidéo `hero.mp4` montre **le gril**, pas la salle.
+- **Confirmer le numéro WhatsApp** : `01 56 05 71 57` est câblé, l'enseigne
+  affiche `43 99 29 29`.
+- Les **vrais avis** et le **nom du chef**.
+- L'adresse exacte et la carte, le vrai logo, les réseaux.
+- ⏳ **La version « braise »** (vidéo du gril en fond, scène sombre) est dans
+  l'historique en **32062e3** : la reprendre est un `git revert`, pas une
+  reconstruction. Elle a prouvé qu'inverser toute la scène ne demande de
+  réécrire que **cinq jetons de couleur**.
+
+---
 
 ## Identité
 - Client : **Au Braisé d'Or**

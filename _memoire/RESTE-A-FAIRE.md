@@ -120,6 +120,30 @@
 
 ---
 
+## 🔥 AU BRAISÉ D'OR — https://au-braise-dor.pages.dev
+
+> ⚠️ **DEPUIS LE 2026-08-12 LE SITE N'EST PLUS `index.html`** : l'adresse sert
+> le projet **Next.js de `clients/09-au-braise-dor/experience/`**. Publier =
+> `npm run build` puis `cp -r ../assets/docs out/` puis
+> `wrangler pages deploy out --project-name au-braise-dor --branch main`.
+> Les sept pièges du projet sont documentés dans son `CONTEXT.md`.
+
+- [ ] **La vraie photo de la salle.** Le fond de l'expérience est un mur
+      neutre, pas leur restaurant. ⚠️ La vidéo `hero.mp4` montre **le gril**,
+      pas la salle : elle a été essayée puis retirée à la demande de Mongazi.
+- [ ] **Confirmer le numéro WhatsApp** : `01 56 05 71 57` est câblé dans le
+      site, l'enseigne affiche `43 99 29 29`. Un numéro faux, c'est une
+      commande qui n'arrive jamais.
+- [ ] **Les vrais avis et le nom du chef.** Les champs `chef` et `avis`
+      existent dans `experience/data/dishes.ts` et s'afficheront tout seuls.
+      ⛔ Rien d'inventé en attendant : la vidéo de référence affichait
+      « 4.9 ★ » et « 96 likes », ce restaurant existe.
+- [ ] L'**adresse exacte** et la carte, le **vrai logo**, les **réseaux**.
+- [ ] ⏳ **La version « braise »** (vidéo du gril en fond, scène sombre) dort en
+      **32062e3**. La reprendre est un `git revert`, pas une reconstruction.
+
+---
+
 ## 🧰 LE PARC
 
 - [ ] **La marque de déploiement** sur les autres sites : la protection

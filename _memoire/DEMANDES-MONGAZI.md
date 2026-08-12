@@ -53,6 +53,24 @@
 | 25 | « pour chaque tonalité ou déplacement, une tonalité et des effets sonores, dis-moi de A à Z » | ✅ plan des 14 donné |
 | 26 | « **déploie et fais les 6 en atelier réel** » | ✅ 6 sons + déployé |
 
+### AU BRAISÉ D'OR — l'expérience Next.js (2026-08-11/12)
+
+| # | Demande | État |
+|---|---|---|
+| 37 | « la représentation du catalogue, on va le reprendre en entièreté, par contre sans enlever la vidéo et les images des plats » | ✅ fait |
+| 38 | Vidéo de référence + cahier des charges : **Next.js 14, TypeScript, Tailwind, GSAP, Swiper, Lenis**, reproduction fidèle | ✅ **construit avec sa pile**. J'avais recommandé le natif, il a maintenu : c'est son choix |
+| 39 | L'expérience **au-dessus** de la carte, le menu reste | ✅ 4 plats signature puis les 48 plats |
+| 40 | « continue avec les 48 plats en dessous » | ✅ carte **extraite par script**, jamais retapée |
+| 41 | « déploie et envoie-moi le lien » | ✅ d'abord sur une adresse d'essai, le site du client servait de vraies commandes |
+| 42 | « bascule sur l'adresse du client » | ✅ avec récupération des mentions légales, contacts, services, titre SEO et affiche QR |
+| 43 | « le défilement doit être automatique, sans intervention humaine » | ✅ 5,5 s, cinq garde-fous |
+| 44 | « dans la vidéo ça roule en cercle vers la droite, là ça part en vertical » | ✅ **il avait raison** : trajectoire remesurée image par image, les assiettes roulent sur un arc |
+| 45 | « mets la vraie photo de la salle en fond, la vidéo, remets-la » | ⚠️ fait avec la vidéo du **gril** (aucune photo de la salle reçue), puis annulé |
+| 46 | « finalement remets ça comme c'était mdr, c'était trop beau avant » | ✅ `git revert`, la version braise reste en 32062e3 |
+| 47 | « adapte tout le site dans le style de la héros » | ✅ carte et pied passés dans le crème |
+| 48 | « tout accessible depuis cette belle héros, un vrai catalogue optimisé pour la vente » | ✅ tiroir des 8 univers, ancres + scroll-spy, nombre de plats annoncé |
+| 49 | « sauvegarde tout en mémoire » | ✅ ce fichier, le journal, la conversation, le CONTEXT et CLAUDE.md |
+
 ### La machine
 
 | # | Demande | État |
