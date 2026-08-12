@@ -16,11 +16,11 @@ export default function Pied() {
   return (
     <footer
       id="infos"
-      className="relative z-10 border-t border-white/10 bg-[#0b0805] px-6 py-14 text-[#c9b6a2]"
+      className="relative z-10 border-t border-black/[0.07] bg-[color:var(--mur-2)] px-6 py-16 text-[color:var(--encre-2)]"
     >
       <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-3">
         <div>
-          <p className="police-titre mb-3 text-[1.05rem] font-extrabold text-[#f3e9dd]">
+          <p className="police-titre mb-3 text-[1.05rem] font-extrabold text-[color:var(--encre)]">
             Commande &amp; contact
           </p>
           <p className="text-[0.88rem] leading-relaxed">
@@ -47,23 +47,23 @@ export default function Pied() {
         </div>
 
         <div>
-          <p className="police-titre mb-3 text-[1.05rem] font-extrabold text-[#f3e9dd]">
+          <p className="police-titre mb-3 text-[1.05rem] font-extrabold text-[color:var(--encre)]">
             Au-delà du menu
           </p>
           <p className="mb-3 text-[0.88rem] leading-relaxed">
-            <b className="text-[#e8a86a]">Traiteur &amp; réceptions.</b> On
+            <b className="text-[#a8542f]">Traiteur &amp; réceptions.</b> On
             déplace la braise chez vous, et on reçoit vos évènements dans notre
             place des fêtes.
           </p>
           <p className="text-[0.88rem] leading-relaxed">
-            <b className="text-[#e8a86a]">Place des fêtes.</b> Un espace pour vos
+            <b className="text-[#a8542f]">Place des fêtes.</b> Un espace pour vos
             anniversaires, mariages et évènements, avec la cuisine de la maison
             à la carte.
           </p>
         </div>
 
         <div>
-          <p className="police-titre mb-3 text-[1.05rem] font-extrabold text-[#f3e9dd]">
+          <p className="police-titre mb-3 text-[1.05rem] font-extrabold text-[color:var(--encre)]">
             Au Braisé d&apos;Or
           </p>
           <p className="text-[0.88rem] leading-relaxed">
@@ -77,7 +77,7 @@ export default function Pied() {
         </div>
       </div>
 
-      <div className="mx-auto mt-12 max-w-5xl border-t border-white/10 pt-6 text-[0.76rem] text-[#8a7a68]">
+      <div className="mx-auto mt-12 max-w-5xl border-t border-black/[0.08] pt-6 text-[0.76rem] text-[color:var(--encre-2)] opacity-75">
         <p>RC RB/COT/24 A 102350 · IFU 0202501441177</p>
         <p className="mt-1">Vitrine créée par NEBULA Agency · Cotonou</p>
       </div>

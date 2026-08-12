@@ -11,6 +11,7 @@ import DishText from "./DishText";
 import InfoCard from "./InfoCard";
 import Rail from "./Rail";
 import { TopBar, BottomNav, Indicator } from "./Chrome";
+import Categories from "./Categories";
 
 gsap.registerPlugin(ScrollTrigger, CustomEase);
 
@@ -48,6 +49,7 @@ gsap.registerPlugin(ScrollTrigger, CustomEase);
  */
 export default function Experience() {
   const [i, setI] = useState(0);          // le plat courant, entier
+  const [carteOuverte, setCarteOuverte] = useState(false);
   const iRef = useRef(0);
   const scene = useRef<HTMLDivElement>(null);
   const piste = useRef<HTMLDivElement>(null);
@@ -69,6 +71,11 @@ export default function Experience() {
       syncTouch: false,
     });
     lenisRef.current = lenis;
+    /* ⚠️ LENIS TIENT LE DÉFILEMENT DE TOUTE LA PAGE. Un `scrollIntoView` lancé
+       ailleurs se bat contre lui et s'arrête en chemin : mesuré en ligne, le
+       saut vers « Cocktails » restait à 7 382 px de sa cible. On expose donc
+       l'instance, et tout ce qui veut déplacer la page passe par elle. */
+    (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
     lenis.on("scroll", ScrollTrigger.update);
     const raf = (t: number) => lenis.raf(t * 1000);
     gsap.ticker.add(raf);
@@ -124,6 +131,7 @@ export default function Experience() {
       ctx.revert();
       gsap.ticker.remove(raf);
       lenis.destroy();
+      delete (window as unknown as { __lenis?: Lenis }).__lenis;
       lenisRef.current = null;
     };
   }, [N]);
@@ -268,7 +276,7 @@ export default function Experience() {
           aria-hidden
         />
 
-        <TopBar />
+        <TopBar onCarte={() => setCarteOuverte(true)} />
         <Indicator n={N} actif={i} onAller={aller} />
 
         {/* ⚠️ `scene-stack` est en `display: contents` sur grand écran : il
@@ -281,7 +289,11 @@ export default function Experience() {
             n'empile pas des boîtes à la main, on laisse le navigateur le
             faire. */}
         <div className="scene-stack">
-        <div className="absolute inset-0 grid place-items-center max-md:static max-md:block">
+        {/* ⚠️ `pointer-events-none` : ce conteneur fait tout l'écran et il est
+            posé APRÈS les boutons du haut. Sans ça il les recouvre et il avale
+            leurs clics. Le défaut est invisible à l'œil : le bouton s'affiche,
+            s'illumine au survol, et ne fait rien. */}
+        <div className="pointer-events-none absolute inset-0 grid place-items-center max-md:static max-md:block">
           <div
             className="scene-plat relative"
             style={{ perspective: "1000px" }}
@@ -314,6 +326,7 @@ export default function Experience() {
         <InfoCard dish={plat} />
         </div>
         <Rail actif={i} onAller={aller} />
+        <Categories ouvert={carteOuverte} onFermer={() => setCarteOuverte(false)} />
         <BottomNav />
       </div>
     </div>

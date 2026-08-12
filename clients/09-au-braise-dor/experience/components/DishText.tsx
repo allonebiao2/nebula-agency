@@ -3,6 +3,7 @@
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { Dish, lienCommande } from "@/data/dishes";
+import { NB_PLATS } from "@/data/carte";
 
 /**
  * LE TITRE EN DEUX LIGNES, la signature de la référence : une ligne fine et
@@ -63,7 +64,7 @@ export default function DishText({ dish }: { dish: Dish }) {
           <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden>
             <path d="M8 5v14l11-7z" />
           </svg>
-          Voir la carte
+          Voir la carte <span className="opacity-60">· {NB_PLATS} plats</span>
         </a>
         <a
           className="dt-act group inline-flex items-center gap-2 text-[0.9rem] font-medium text-[color:var(--encre-2)] transition hover:text-[color:var(--encre)]"

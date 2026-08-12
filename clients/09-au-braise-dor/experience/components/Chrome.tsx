@@ -2,8 +2,13 @@
 
 import { WHATSAPP } from "@/data/dishes";
 
-/** Les boutons flottants du haut : retour, recherche, menu. */
-export function TopBar() {
+/**
+ * Les boutons flottants du haut : retour, recherche, et LA CARTE.
+ * ⚠️ Le bouton « … » n'est plus décoratif : il ouvre les huit univers avec
+ * leur nombre de plats. Un bouton qui ne mène nulle part sur le premier écran
+ * d'un restaurant, c'est une vente perdue.
+ */
+export function TopBar({ onCarte }: { onCarte: () => void }) {
   return (
     <>
       <a
@@ -32,9 +37,10 @@ export function TopBar() {
         </svg>
       </button>
 
-      <a
-        href="#carte"
-        aria-label="Ouvrir la carte complète"
+      <button
+        type="button"
+        onClick={onCarte}
+        aria-label="Ouvrir toute la carte"
         className="absolute right-6 top-6 grid h-14 w-14 place-items-center rounded-[22px] text-white transition hover:brightness-125 max-md:h-12 max-md:w-12"
         style={{
           background: "rgba(30,30,30,.6)",
@@ -47,7 +53,7 @@ export function TopBar() {
           <circle cx="12" cy="12" r="1.8" />
           <circle cx="19" cy="12" r="1.8" />
         </svg>
-      </a>
+      </button>
     </>
   );
 }
