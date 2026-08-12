@@ -43,12 +43,10 @@ export default function Rail({
               style={{
                 transform: k === actif ? "translateY(-15px)" : "scale(.9)",
                 opacity: k === actif ? 1 : 0.6,
-                /* ⚠️ Le socle était BLANC : posé sur la braise, il faisait
-                   un timbre-poste en plein milieu du feu. Du verre chaud. */
-                background: k === actif ? "rgba(46,30,18,.62)" : "transparent",
-                border: k === actif ? "1px solid rgba(255,226,190,.20)" : "1px solid transparent",
+                background: k === actif ? "rgba(255,255,255,.78)" : "transparent",
                 backdropFilter: k === actif ? "blur(14px)" : undefined,
-                boxShadow: k === actif ? "0 16px 38px rgba(0,0,0,.45)" : undefined,
+                boxShadow:
+                  k === actif ? "0 14px 34px rgba(0,0,0,.10)" : undefined,
               }}
             >
               <span className="relative block h-[64px] w-[64px] overflow-hidden rounded-2xl">
@@ -60,7 +58,7 @@ export default function Rail({
                   className="object-contain"
                 />
               </span>
-              <span className="mt-1.5 block max-w-[84px] truncate text-[10px] font-medium text-[#e2d3c2]">
+              <span className="mt-1.5 block max-w-[84px] truncate text-[10px] font-medium text-[color:var(--encre-2)]">
                 {d.line1} {d.line2}
               </span>
             </button>
@@ -69,7 +67,7 @@ export default function Rail({
       </Swiper>
 
       <button
-        className="rail-prec absolute -left-9 top-1/2 -translate-y-1/2 p-2 text-[#d8cabb] transition hover:text-[color:var(--encre)] max-md:hidden"
+        className="rail-prec absolute -left-9 top-1/2 -translate-y-1/2 p-2 text-[color:var(--encre-2)] transition hover:text-[color:var(--encre)] max-md:hidden"
         aria-label="Plat précédent"
         type="button"
       >
@@ -78,7 +76,7 @@ export default function Rail({
         </svg>
       </button>
       <button
-        className="rail-suiv absolute -right-9 top-1/2 -translate-y-1/2 p-2 text-[#d8cabb] transition hover:text-[color:var(--encre)] max-md:hidden"
+        className="rail-suiv absolute -right-9 top-1/2 -translate-y-1/2 p-2 text-[color:var(--encre-2)] transition hover:text-[color:var(--encre)] max-md:hidden"
         aria-label="Plat suivant"
         type="button"
       >

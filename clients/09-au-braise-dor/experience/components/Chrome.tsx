@@ -9,7 +9,7 @@ export function TopBar() {
       <a
         href="#carte"
         aria-label="Revenir à la carte"
-        className="barre-haut absolute left-6 top-6 grid h-14 w-14 place-items-center rounded-[22px] text-white transition hover:brightness-125 max-md:h-12 max-md:w-12"
+        className="absolute left-6 top-6 grid h-14 w-14 place-items-center rounded-[22px] text-white transition hover:brightness-125 max-md:h-12 max-md:w-12"
         style={{
           background: "rgba(30,30,30,.6)",
           backdropFilter: "blur(12px)",
@@ -35,7 +35,7 @@ export function TopBar() {
       <a
         href="#carte"
         aria-label="Ouvrir la carte complète"
-        className="barre-haut absolute right-6 top-6 grid h-14 w-14 place-items-center rounded-[22px] text-white transition hover:brightness-125 max-md:h-12 max-md:w-12"
+        className="absolute right-6 top-6 grid h-14 w-14 place-items-center rounded-[22px] text-white transition hover:brightness-125 max-md:h-12 max-md:w-12"
         style={{
           background: "rgba(30,30,30,.6)",
           backdropFilter: "blur(12px)",
