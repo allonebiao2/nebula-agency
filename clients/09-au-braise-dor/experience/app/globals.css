@@ -120,3 +120,22 @@ html.lenis body {
   .scene-txt .dt-act-zone { display: none; }
   .scene-carte .ic-prix-bloc { margin-bottom: 0.7rem; }
 }
+
+/* ── LA SCÈNE EST PASSÉE DANS LE SOMBRE (2026-08-12) ──────────────
+   La vidéo du gril est revenue en fond, à la demande de Mongazi. Sur un mur
+   crème un feu ne se voit pas : la scène s'inverse.
+   ⚠️ ON N'A PAS RÉÉCRIT LES COMPOSANTS. Ils lisaient déjà tous leurs couleurs
+   dans des jetons (`--encre`, `--verre`) : il suffit de redéfinir les jetons
+   SUR LA SCÈNE, et le titre, la carte de verre et les boutons suivent. C'est
+   exactement à ça que servent des jetons de couleur. */
+.sur-braise {
+  --encre: #f7f1e8;
+  --encre-2: #d8cabb;
+  --verre: rgba(28, 18, 11, 0.62);
+  --verre-brd: rgba(255, 226, 190, 0.16);
+  --ombre: 0 24px 70px rgba(0, 0, 0, 0.55);
+}
+/* les boutons du haut étaient sombres sur clair : ici c'est l'inverse */
+.sur-braise .barre-haut {
+  background: rgba(255, 240, 225, 0.14) !important;
+}

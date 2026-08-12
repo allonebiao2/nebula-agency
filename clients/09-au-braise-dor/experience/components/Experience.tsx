@@ -248,22 +248,40 @@ export default function Experience() {
     <div ref={scene} className="relative" style={{ height: `${N * 100}vh` }}>
       <div ref={piste} className="absolute inset-0" aria-hidden />
 
-      <div
-        className="sticky top-0 h-screen overflow-hidden"
-        style={{
-          background:
-            `radial-gradient(120% 90% at 78% 18%, ${plat.wash}, transparent 62%),` +
-            "linear-gradient(180deg, var(--mur) 0%, var(--mur-2) 100%)",
-          transition: "background 900ms cubic-bezier(.16,1,.3,1)",
-        }}
-      >
-        {/* le mur : une pièce, pas un aplat. Ombre douce venue de la gauche. */}
+      <div className="sur-braise sticky top-0 h-screen overflow-hidden bg-[#0c0805]">
+        {/* ⚠️ LA VRAIE MATIÈRE DE LA MAISON, remise à la demande de Mongazi.
+            Ce n'est pas la salle : c'est le GRIL, des mains gantées qui
+            retournent le poisson sur les flammes. C'est le film du restaurant,
+            pas une image d'ambiance achetée.
+            ⚠️ ET C'EST POURQUOI LA SCÈNE EST PASSÉE DANS LE SOMBRE : sur un mur
+            crème, un feu ne se voit pas. Il fallait choisir entre garder le
+            blanc de la référence indonésienne et montrer la braise de cette
+            maison-ci. La braise gagne : c'est ce qu'elle vend. */}
+        <video
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+          src="/media/hero.mp4"
+          poster="/media/hero-poster.webp"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-hidden
+        />
+        {/* le voile : sans lui le titre est illisible sur les flammes. Il
+            s'ouvre en bas à gauche, là où le feu doit rester visible. */}
         <div
           className="pointer-events-none absolute inset-0"
           style={{
             background:
-              "radial-gradient(70% 55% at 8% 0%, rgba(255,255,255,.65), transparent 60%)," +
-              "radial-gradient(90% 70% at 50% 118%, rgba(0,0,0,.10), transparent 60%)",
+              /* ⚠️ Le voile est PLUS DENSE À DROITE, là où vivent le titre et
+                 la carte, et PLUS OUVERT À GAUCHE ET EN HAUT, là où le feu doit
+                 se voir. Un voile uniforme réglé pour le texte éteint la
+                 vidéo, et on paie 1,1 Mo pour un aplat marron. */
+              `radial-gradient(95% 70% at 62% 40%, ${plat.wash}1f, transparent 70%),` +
+              "radial-gradient(85% 90% at 74% 48%, rgba(12,8,5,.86), transparent 72%)," +
+              "linear-gradient(180deg, rgba(12,8,5,.34) 0%, rgba(12,8,5,.20) 34%, rgba(12,8,5,.58) 72%, rgba(12,8,5,.86) 100%)",
+            transition: "background 900ms cubic-bezier(.16,1,.3,1)",
           }}
           aria-hidden
         />
