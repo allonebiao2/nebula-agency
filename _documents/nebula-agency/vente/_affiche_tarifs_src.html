@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>NEBULA AGENCY — Nos forfaits</title>
+<style>
+@font-face{font-family:Archivo;src:url("data:font/woff2;base64,__ARCHIVO__") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:Manrope;src:url("data:font/woff2;base64,__MANROPE__") format("woff2");font-weight:100 900;font-display:block}
+
+@page{size:A4 portrait;margin:0}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060713; --cyan:#22D3EE; --blue:#4F6FFF; --violet:#9333EA;
+  --gold:#E8C88A; --txt:#EEF0FB; --mut:#A6ABCE;
+}
+html,body{width:210mm;height:297mm}
+body{background:var(--bg);color:var(--txt);font-family:Manrope,sans-serif;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact;overflow:hidden}
+.page{position:relative;width:210mm;height:297mm;overflow:hidden}
+
+/* ---------- la nébuleuse ---------- */
+.neb{position:absolute;inset:0}
+.neb i{position:absolute;display:block;border-radius:50%;filter:blur(26mm)}
+.n1{width:180mm;height:180mm;right:-52mm;top:-62mm;
+    background:radial-gradient(circle,rgba(34,211,238,.62),rgba(34,211,238,0) 66%)}
+.n2{width:160mm;height:160mm;left:-54mm;top:100mm;
+    background:radial-gradient(circle,rgba(79,111,255,.58),rgba(79,111,255,0) 68%)}
+.n3{width:150mm;height:150mm;right:-38mm;bottom:-46mm;
+    background:radial-gradient(circle,rgba(147,51,234,.56),rgba(147,51,234,0) 68%)}
+.n4{width:96mm;height:96mm;left:52mm;top:2mm;
+    background:radial-gradient(circle,rgba(232,200,138,.24),rgba(232,200,138,0) 70%)}
+.stars{position:absolute;inset:0}
+.grain{position:absolute;inset:0;opacity:.055;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E")}
+/* Le voile garde le texte lisible SANS effacer la nébuleuse : il se creuse là
+   où il n'y a que le titre (18 %) et se ferme sous les cartes de prix. */
+.voile{position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(6,7,19,.34) 0%,rgba(6,7,19,.14) 18%,
+    rgba(6,7,19,.52) 44%,rgba(6,7,19,.80) 74%,rgba(6,7,19,.90) 100%)}
+
+/* ---------- contenu ---------- */
+.in{position:relative;height:100%;display:flex;flex-direction:column;align-items:center;
+    padding:12mm 13mm 10mm;text-align:center}
+.logo{width:36mm;height:auto;display:block;margin-bottom:3.5mm}
+.eyebrow{font-family:Archivo;font-weight:700;font-size:2.9mm;letter-spacing:.40em;
+  text-transform:uppercase;color:var(--cyan)}
+h1{font-family:Archivo;font-weight:800;text-transform:uppercase;line-height:.94;
+   letter-spacing:-.02em;color:#fff;font-size:15.5mm;margin-top:3.5mm}
+.sub{margin-top:3mm;font-size:4mm;line-height:1.45;color:#D6DAF2}
+.sub b{color:var(--gold);font-weight:800}
+
+/* ---------- les trois offres ---------- */
+.offres{margin-top:6.5mm;width:100%;display:flex;flex-direction:column;gap:3.4mm}
+.of{display:grid;grid-template-columns:9mm 1fr 40mm;align-items:center;gap:4mm;
+  text-align:left;border:.3mm solid rgba(166,171,206,.24);border-radius:2.6mm;
+  background:rgba(8,9,22,.76);padding:4.2mm 5mm}
+.of .num{font-family:Archivo;font-weight:800;font-size:7.4mm;line-height:1;
+  color:rgba(255,255,255,.16);letter-spacing:-.04em}
+.of .nom{font-family:Archivo;font-weight:800;font-size:5.3mm;color:#fff;
+  text-transform:uppercase;letter-spacing:.006em;line-height:1.1}
+.of .nom i{font-style:normal;font-weight:700;font-size:3.5mm;color:var(--mut);
+  letter-spacing:.05em}
+.of ul{margin-top:2.2mm;list-style:none}
+.of li{position:relative;padding-left:4.2mm;font-size:3.35mm;line-height:1.48;color:#D6DAF2}
+.of li::before{content:"";position:absolute;left:0;top:1.5mm;width:1.5mm;height:1.5mm;
+  border-radius:50%;background:var(--acc)}
+.of .opt{margin-top:2.2mm;font-size:3mm;color:var(--mut);font-style:italic}
+.of .prix{text-align:right}
+.of .prix b{display:block;font-family:Archivo;font-weight:800;font-size:9.4mm;
+  line-height:1;color:var(--acc);letter-spacing:-.03em;white-space:nowrap}
+.of .prix s{display:block;text-decoration:none;font-family:Archivo;font-weight:700;
+  font-size:3.2mm;color:var(--mut);letter-spacing:.16em;margin-top:1.2mm}
+.of .prix em{display:block;font-style:normal;font-size:3.1mm;color:#D6DAF2;margin-top:2.4mm}
+.of1{--acc:var(--cyan);border-color:rgba(34,211,238,.42)}
+.of2{--acc:var(--gold);border-color:rgba(232,200,138,.42)}
+.of3{--acc:#B98BFF;border-color:rgba(147,51,234,.46)}
+.of .prix .four{font-family:Archivo;font-weight:800;font-size:6.4mm;line-height:1.1;
+  color:var(--acc);letter-spacing:-.02em;display:block;white-space:nowrap}
+
+/* ---------- l'abonnement ---------- */
+.abo{margin-top:4.2mm;width:100%;border:.35mm solid rgba(34,211,238,.40);
+  border-radius:2.6mm;background:rgba(34,211,238,.07);padding:4.4mm 5mm;
+  display:grid;grid-template-columns:1fr auto;align-items:center;gap:5mm;text-align:left}
+.abo .k{font-family:Archivo;font-weight:700;font-size:2.7mm;letter-spacing:.34em;
+  text-transform:uppercase;color:var(--cyan)}
+.abo .t{margin-top:1.8mm;font-size:3.4mm;line-height:1.45;color:#D6DAF2}
+.abo .t b{color:#fff;font-weight:800}
+.abo .v{text-align:right}
+.abo .v b{display:block;font-family:Archivo;font-weight:800;font-size:8mm;color:#fff;
+  line-height:1;letter-spacing:-.03em;white-space:nowrap}
+.abo .v span{display:block;font-size:3.1mm;color:var(--mut);margin-top:1.4mm;white-space:nowrap}
+
+/* ---------- la ligne d'appoint ---------- */
+.plus{margin-top:3.4mm;width:100%;display:flex;align-items:center;justify-content:center;
+  gap:4mm;font-size:3.3mm;color:#D6DAF2;border:.3mm dashed rgba(166,171,206,.34);
+  border-radius:2.2mm;padding:3mm 5mm}
+.plus b{font-family:Archivo;font-weight:800;color:#fff;letter-spacing:.02em}
+.plus u{text-decoration:none;font-family:Archivo;font-weight:800;color:var(--gold);
+  font-size:4.2mm;white-space:nowrap}
+
+/* ---------- le pied ---------- */
+.foot{margin-top:auto;width:100%;display:flex;align-items:center;justify-content:center;
+  gap:6mm;padding-top:5mm}
+.qrbox{width:29mm;height:29mm;background:#fff;border-radius:1.8mm;padding:1.6mm;flex:0 0 auto}
+.qrbox img{width:100%;height:100%;display:block}
+.fcta{text-align:left}
+.fcta b{display:block;font-family:Archivo;font-weight:800;font-size:4.6mm;color:#fff;
+  line-height:1.2}
+.fcta span{display:block;margin-top:1.6mm;font-size:3.2mm;color:var(--mut)}
+.fcta u{display:block;margin-top:2.6mm;font-family:Archivo;font-weight:800;font-size:4.4mm;
+  color:var(--cyan);text-decoration:none;letter-spacing:.02em;white-space:nowrap}
+.ligne{margin-top:4mm;font-family:Archivo;font-weight:600;font-size:2.9mm;letter-spacing:.13em;
+  color:var(--mut);text-transform:uppercase}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="neb"><i class="n1"></i><i class="n2"></i><i class="n3"></i><i class="n4"></i></div>
+  __STARS__
+  <div class="voile"></div>
+  <div class="grain"></div>
+
+  <div class="in">
+    <img class="logo" src="data:image/png;base64,__LOGO__" alt="NEBULA Agency">
+    <div class="eyebrow">Nebula Agency · Cotonou</div>
+    <h1>Nos forfaits</h1>
+    <p class="sub">Un outil pensé pour <b>VOTRE métier</b>, pas un site générique.</p>
+
+    <div class="offres">
+
+      <div class="of of1">
+        <div class="num">01</div>
+        <div>
+          <div class="nom">Catalogue Digital <i>+ QR CODE</i></div>
+          <ul>
+            <li>Jusqu'à 20 produits : photo, description et prix</li>
+            <li>Bouton de commande direct sur votre WhatsApp</li>
+            <li>Votre QR Code à coller en boutique</li>
+          </ul>
+          <div class="opt">Au-delà de 20 produits : 15 000 F par lot de 10.</div>
+        </div>
+        <div class="prix"><b>50 000</b><s>F CFA</s><em>Livré en 5 à 7 jours</em></div>
+      </div>
+
+      <div class="of of2">
+        <div class="num">02</div>
+        <div>
+          <div class="nom">Vitrine Digitale <i>+ QR CODE</i></div>
+          <ul>
+            <li>Une page complète : présentation, services, galerie, avis, contact et carte</li>
+            <li>Visibilité sur Google</li>
+            <li>Nom de domaine à votre nom offert la 1ère année, puis 16 000 F par an</li>
+          </ul>
+          <div class="opt">Page supplémentaire : 30 000 F par page.</div>
+        </div>
+        <div class="prix"><b>150 000</b><s>F CFA</s><em>Livrée en 5 à 7 jours</em></div>
+      </div>
+
+      <div class="of of3">
+        <div class="num">03</div>
+        <div>
+          <div class="nom">Outil Digital <i>SUR MESURE</i></div>
+          <ul>
+            <li>Le logiciel de votre métier : commandes, stock, équipe, factures</li>
+            <li>Tableau de bord : vous savez enfin ce que vous gagnez</li>
+            <li>Diagnostic digital de votre affaire offert, d'une valeur de 25 000 F</li>
+          </ul>
+          <div class="opt">Prix établi après le diagnostic, selon vos besoins.</div>
+        </div>
+        <div class="prix"><span class="four">55 000<br>à 500 000</span><s>F CFA</s><em>Délai selon le projet</em></div>
+      </div>
+
+    </div>
+
+    <div class="abo">
+      <div>
+        <div class="k">Et ensuite, une seule ligne</div>
+        <div class="t">Hébergement, sécurité <b>et vos modifications comprises</b> :
+          textes, prix, photos, ajout ou retrait de produits.</div>
+      </div>
+      <div class="v"><b>20 000 F</b><span>tous les 6 mois, soit 3 300 F par mois</span></div>
+    </div>
+
+    <div class="plus">
+      <b>EN OPTION</b> QR Code Google Review : les avis de vos clients, sans effort, sans abonnement
+      <u>30 000 F</u>
+    </div>
+
+    <div class="foot">
+      <div class="qrbox"><img src="data:image/png;base64,__QR__" alt="QR du site NEBULA"></div>
+      <div class="fcta">
+        <b>Scannez, ou écrivez-nous</b>
+        <span>Devis et conseils gratuits · Cotonou et tout le Bénin</span>
+        <u>WhatsApp +229 96 74 07 32</u>
+      </div>
+    </div>
+
+    <div class="ligne">www.nebula-agency.online</div>
+  </div>
+</div>
+</body>
+</html>
