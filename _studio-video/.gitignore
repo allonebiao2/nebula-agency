@@ -1,0 +1,8 @@
+# Les vidéos rendues : elles se refabriquent, elles n'ont rien à faire dans un
+# dépôt public.
+out/
+
+# Les plans filmés (visage de Mongazi, musique). Lourds, et le dépôt est public.
+# On garde seulement la note qui explique où les déposer.
+public/*
+!public/LISEZ-MOI.md

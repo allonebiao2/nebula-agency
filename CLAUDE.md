@@ -18,6 +18,18 @@
   `_memoire/apprentissages/2026-08-05-wavespeed-nano-banana-pro.md`.
   ⛔ **Une image générée ne devient jamais le catalogue d'un client** : ambiance,
   matière et lieu sont autorisés, une pièce présentée comme vendable ne l'est pas.
+- **Montage vidéo : Remotion 4.0.512**, dans **`_studio-video/`** (jamais à la
+  racine du dépôt). Une vidéo est un programme : on change une question, on
+  relance, la vidéo est refaite à l'identique. Les trois séries TikTok
+  « oui / non » y sont montées à partir des cartes de `_cartes.py`.
+  ⚠️ **Licence** : gratuite tant que NEBULA emploie **3 personnes au plus**,
+  usage commercial compris, **mais on livre le MP4, jamais le projet** (si le
+  client détient la propriété intellectuelle, les effectifs des deux sociétés
+  s'additionnent et la licence lui incombe). ⚠️ **La licence change en 5.0** :
+  la version est figée, ne pas faire `npm update` sans la relire.
+  ⚠️ Sur ce PC, garder `setDelayRenderTimeoutInMilliseconds(120000)` dans
+  `remotion.config.ts` : à 30 s le rendu meurt avant que Chrome ait démarré.
+  Détail : `_studio-video/README.md`.
 - WhatsApp : Twilio
 - Base de données : Supabase
 - Hébergement vitrines : Netlify
