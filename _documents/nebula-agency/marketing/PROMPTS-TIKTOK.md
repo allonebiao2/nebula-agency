@@ -57,6 +57,12 @@ style, et le post cesse de ressembler à la marque.
 
 ## 3. Post n° 1 · « UN PAS DEDANS »
 
+⚠️ **Ce message est finalement parti en statut WhatsApp**, pas sur TikTok : voir
+`PROMPTS-WHATSAPP-STATUT.md`. La version ci-dessous reste utilisable telle quelle si on veut
+le publier aussi sur TikTok. Trois choses seulement changent entre les deux : **on tutoie
+ici et on vouvoie là-bas**, les zones mortes ne sont pas les mêmes, et **l'appel à l'action
+est un abonnement ici, une réponse là-bas**.
+
 **Le sujet :** le numérique, et le fait qu'il n'y a pas besoin de tout comprendre pour
 commencer. Un pied dedans suffit à changer de camp.
 

@@ -94,6 +94,10 @@ publié.
 
 ## 4. WhatsApp · **1 image**
 
+> **Les règles générales du statut** (zones mortes, contraste au soleil, vouvoiement, l'appel
+> à l'action qui se répond d'un caractère) sont dans `PROMPTS-WHATSAPP-STATUT.md`, qui
+> rassemble aussi les autres statuts. Ce paragraphe ne garde que celui du jour.
+
 ### Ce que fait ce statut
 
 Sur WhatsApp, on ne parle pas à des inconnus : ils ont déjà le numéro. Donc on ne demande

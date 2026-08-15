@@ -292,3 +292,45 @@ Toute la classe d'erreur disparaît : peu importe dans quel ordre Mongazi les en
 - Reporter l'identification par contenu dans `PROMPTS-CARROUSELS.md` et
   `POST-DU-JOUR-MULTICANAL.md`
 - Produire la version monochrome du logo pour les fonds clairs
+
+---
+
+## Sixième passe : « c'est un post story WhatsApp »
+
+Correction de destination : le post « UN PAS DEDANS » n'est pas pour TikTok, c'est un
+**statut WhatsApp**. Nouveau fichier `PROMPTS-WHATSAPP-STATUT.md`, qui devient le document
+de référence du format.
+
+### Ce que change vraiment un statut, au-delà du cadre
+
+Ce n'est pas un recadrage. **Trois choses de fond changent**, et c'est la leçon du jour :
+
+| | TikTok | Statut WhatsApp |
+|---|---|---|
+| À qui on parle | des inconnus, qui ne vous connaissent pas | **des gens qui ont déjà votre numéro** |
+| Ce qu'on demande | un abonnement | **une réponse**, jamais un abonnement |
+| Le registre | on tutoie | **on vouvoie** |
+| Les zones mortes | 480 px en bas, 240 px à droite | **220 px en haut, 340 px en bas** |
+| La lumière | consulté n'importe où | **lu dehors, en plein jour, écran à moitié éteint** |
+
+Sur WhatsApp il n'y a rien à faire suivre : il y a une conversation à ouvrir. Un statut qui
+demande un abonnement demande une chose qui n'existe pas.
+
+### La trouvaille : la liste numérotée EST le mécanisme de conversion
+
+Les trois choses à avoir sont **numérotées sur l'image**, et la dernière ligne dit :
+« Répondez 1, 2 ou 3 : je vous dis par où commencer. »
+
+Le lecteur n'a pas à écrire une phrase, ni à expliquer sa situation, ni à demander un devis.
+**Il tape un chiffre.** Et ce chiffre dit déjà ce qui lui manque, donc la conversation
+démarre au bon endroit. Le bloc de valeur et le bouton d'action sont le même objet.
+
+Règle qui en sort : **sur un statut, la meilleure réponse tient en un caractère.** Personne
+ne rédige depuis un statut, tout le monde peut taper « 2 ».
+
+### Ce que ça engage
+
+Les trois réponses doivent être **prêtes avant la publication**, et partir le soir même. Un
+statut qui promet et fait attendre coûte plus cher qu'un statut qui ne demande rien. Les
+trois réponses sont écrites dans le document, et elles entrent toutes par le **Catalogue à
+50 000 F**, jamais par la Vitrine (socle commercial).
