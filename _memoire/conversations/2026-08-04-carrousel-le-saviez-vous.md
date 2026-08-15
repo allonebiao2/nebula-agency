@@ -235,3 +235,60 @@ la galaxie : une version monochrome reste à produire.
 
 - Produire une **version monochrome du logo** (noir et blanc) pour les fonds clairs
 - Vérifier sur les premières générations que le logo ne revient pas dans une boîte blanche
+
+---
+
+## Cinquième passe : le post TikTok « UN PAS DEDANS »
+
+Nouvelle commande, nouveau sujet : **une seule image TikTok**, sur le numérique et sur le
+fait de s'y mettre. Accroche choquante, grosse valeur, effet Wow.
+
+Nouveau fichier : `_documents/nebula-agency/marketing/PROMPTS-TIKTOK.md`
+
+### L'accroche
+
+> **LE NUMÉRIQUE NE TE REMPLACERA PAS. QUELQU'UN, SI.**
+
+Elle rassure sur une ligne et frappe sur la suivante. Le lecteur croit reconnaître le
+discours mou qu'on lui sert partout, et la troisième ligne **déplace la menace** : ce n'est
+pas une machine qui arrive, c'est son voisin. Le choc tient dans le déplacement, pas dans le
+volume, et il passe en une seconde.
+
+### La valeur, et pourquoi elle est grosse
+
+Le post démonte l'excuse la plus répandue, « je ne m'y connais pas ». Il n'y a pas de
+compétence à acquérir, il y a **trois choses concrètes** : une adresse où l'on te trouve, un
+prix qu'on peut lire, une page qui répond quand tu dors.
+
+**« Trois choses. Pas un diplôme. »** C'est la phrase à retenir en fermant l'application.
+Le lecteur repart avec une liste, pas avec une inquiétude : c'est ça qui fait la valeur.
+
+### La trouvaille de mise en scène
+
+**« Avoir un pas dedans » pris au pied de la lettre.** Une fine ligne de lumière traverse le
+cadre. Derrière : éteint, plat, froid. Devant : éclairé, vivant. Le sujet de la référence est
+posé SUR la ligne, avec **une seule partie de lui déjà passée** de l'autre côté. Ce n'est pas
+un saut, c'est un pas. L'image dit exactement ce que dit le texte, sans un mot.
+
+C'est la meilleure façon de trouver une mise en scène : **prendre la phrase du client au
+pied de la lettre.** Mongazi avait écrit « avoir un pas dedans » ; l'image était déjà dans sa
+phrase.
+
+### Le progrès technique : identifier les pièces jointes par leur CONTENU
+
+Depuis le début on numérotait les pièces jointes (« IMAGE 1 = la référence, IMAGE 2 = le
+logo »), et l'ordre changeait d'un message à l'autre. Le prompt ne compte plus sur l'ordre :
+
+> *THE LOGO = the attachment showing a purple and blue cosmic swirl above the wordmark
+> NEBULA, on a transparent background. THE STYLE REFERENCE = the other attachment.
+> If you hesitate: the one with a transparent background and a readable NEBULA AGENCY
+> wordmark is THE LOGO.*
+
+Toute la classe d'erreur disparaît : peu importe dans quel ordre Mongazi les envoie.
+À reprendre dans les autres documents de prompts.
+
+### Reste à faire
+
+- Reporter l'identification par contenu dans `PROMPTS-CARROUSELS.md` et
+  `POST-DU-JOUR-MULTICANAL.md`
+- Produire la version monochrome du logo pour les fonds clairs
