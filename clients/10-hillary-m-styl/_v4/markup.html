@@ -25,6 +25,14 @@
     <a class="nav-ic" href="#catalogue" aria-label="Voir les créations">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
     </a>
+    <!-- Le panier, demandé par Mongazi le 2026-08-16. Ce n'est PAS un panier
+         de paiement : rien ne se règle sur ce site, le Mobile Money se convient
+         sur WhatsApp. C'est la liste de ce que la cliente commande, avec les
+         prix, pour qu'elle voie ce qu'elle envoie avant de l'envoyer. -->
+    <button class="nav-ic pan-bt" id="btPan" type="button" aria-label="Voir mon panier" data-tap>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1.1 12H7.1L6 8z"/><path d="M9.4 8V6.4a2.6 2.6 0 0 1 5.2 0V8"/></svg>
+      <i class="pan-n" id="panN" aria-hidden="true">0</i>
+    </button>
   </div>
   <button class="burger" id="burger" aria-expanded="false" aria-controls="navC" aria-label="Ouvrir le menu">
     <i></i><i></i><i></i>

@@ -689,8 +689,17 @@
     dessiner = function(){
       _de2();
       var bd = document.getElementById("shBd");
-      if(!bd || !etat) return;
-      bd.setAttribute("data-e", String(etat.etape));
+      if(!bd) return;
+      /* ⚠️ Depuis le panier (2026-08-16) il y a DEUX parcours : la fiche
+         d'une pièce (mesures, délai) et la commande (livraison, coordonnées,
+         envoi). Les animations sont écrites par étape dans la feuille de
+         style ; on garde leur sens d'origine :
+           1 mesures · 2 livraison · 3 délai · 4 coordonnées · 5 envoi     */
+      var _e = (typeof cmd !== "undefined" && cmd.actif)
+        ? (cmd.etape === 1 ? 2 : (cmd.etape === 2 ? 4 : 5))
+        : (etat ? (etat.etape === 1 ? 1 : 3) : 0);
+      if(!_e) return;
+      bd.setAttribute("data-e", String(_e));
       Array.prototype.forEach.call(bd.querySelectorAll(".taille"), function(t,i){
         t.style.setProperty("--t", i);
       });

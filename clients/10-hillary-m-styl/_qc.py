@@ -249,20 +249,24 @@ async def main():
                 await page.locator("[data-mes]").nth(i).fill("60")
         else:
             await page.click('[data-taille="M"]')
-        await page.click('[data-nav="suiv"]')
+        # le parcours a panier : mesures -> delai -> panier -> commande
+        await page.click('[data-nav="suiv"]')          # etape 2 : le delai
+        await page.click('[data-exp="1"]')             # express
+        await page.click('[data-nav="suiv"]')          # « Ajouter au panier »
+        ok(await page.locator("#pan.on").count() == 1, "le panier s'ouvre des qu'une piece y tombe")
+        ok((await page.inner_text("#panN")).strip() == "1", "la pastille du panier affiche 1")
+        await page.click('[data-pan="commander"]')
         await page.click('[data-mode="expedition"]')
         await page.select_option("#f_pays", "ci")
         await page.fill("#f_ville", "Abidjan")
-        await page.click('[data-nav="suiv"]')
-        await page.click('[data-delai="express"]')
         dispo = (await page.locator(".dispo p").inner_text()).strip()
-        ok(len(dispo) > 6, f"date de disponibilite affichee des l'etape 3 : « {dispo} »")
+        ok(len(dispo) > 6, f"date de disponibilite affichee des le choix de la livraison : « {dispo} »")
         j = await page.evaluate("()=>joursTotal()")
         att_j = P["expMax"] + 4                       # 4 jours d'acheminement CI
         ok(j == att_j, f"delai express ({P['expMax']} j) + acheminement CI (4 j) = {att_j} j (vu {j})")
         attendu_d = datetime.date.today() + datetime.timedelta(days=att_j)
         ok(str(attendu_d.day) in dispo, f"la date correspond bien a J+{att_j} ({attendu_d})")
-        await page.click('[data-nav="suiv"]')
+        await page.click('[data-nav="suiv"]')          # coordonnees
         await page.fill("#f_prenom", "Ama")
         await page.fill("#f_tel", "+22997000000")
         tot = (await page.locator(".recap .tt span").last.inner_text()).strip()
@@ -293,6 +297,7 @@ async def main():
         ok(("email" in libelle) == bool(mail_cfg),
            "le libelle du repli dit ce que le lien fait vraiment")
         await page.click("#btX")
+        await page.evaluate("()=>{panier=[];sauvePanier();rendrePanier();}")
 
         # --- parcours sur-mesure : retrait atelier, delai normal, mesures partielles
         await page.evaluate("()=>onglet(\'sm\')")
@@ -318,15 +323,16 @@ async def main():
             await page.locator("[data-mes]").nth(i).fill("80")
         dis = await page.get_attribute('[data-nav="suiv"]', "disabled")
         ok(dis is None, f"{moitie} mesures sur {att_m} suffisent pour avancer")
-        await page.click('[data-nav="suiv"]')
+        await page.click('[data-nav="suiv"]')          # etape 2 : le delai
+        await page.click('[data-exp="0"]')             # confection normale
+        await page.click('[data-nav="suiv"]')          # au panier
+        await page.click('[data-pan="commander"]')
         await page.click('[data-mode="retrait"]')
-        await page.click('[data-nav="suiv"]')
-        await page.click('[data-delai="normal"]')
         j = await page.evaluate("()=>joursTotal()")
         ok(j == der_jmax, f"retrait + normal : borne haute de la piece = {der_jmax} j (vu {j})")
         lab = await page.locator(".dispo b").inner_text()
         ok("retirer" in lab.lower(), f"libelle adapte au retrait (« {lab} »)")
-        await page.click('[data-nav="suiv"]')
+        await page.click('[data-nav="suiv"]')          # coordonnees
         await page.fill("#f_prenom", "Koffi")
         await page.fill("#f_mail", "koffi@gmail.com")
         dis = await page.get_attribute('[data-nav="suiv"]', "disabled")
@@ -341,6 +347,7 @@ async def main():
         ok(f"{manq}" in msg or "à prendre ensemble" in msg,
            f"les {manq} mesures manquantes sont signalees dans le message")
         await page.click("#btX")
+        await page.evaluate("()=>{panier=[];sauvePanier();rendrePanier();}")
 
         # --- sur devis + type libre
         await page.locator(".piece", has_text="Creation libre").first.click() if False else None
@@ -350,15 +357,64 @@ async def main():
         await page.select_option("#f_type", "robe_droite")
         champs = await page.locator("[data-mes]").count()
         ok(champs == 15, f"robe droite via creation libre : 15 champs (vu {champs})")
-        await page.evaluate("()=>{etat.mesures={epaules:'40',carr_dev:'36',poitrine:'92',t_sous_sein:'78',t_taille:'70',t_ceinture:'72',t_hanche:'96',l_sous_sein:'22'};etat.etape=3;etat.mode='retrait';dessiner();}")
-        await page.click('[data-delai="express"]')
+        await page.evaluate("()=>{etat.mesures={epaules:'40',carr_dev:'36',poitrine:'92',t_sous_sein:'78',t_taille:'70',t_ceinture:'72',t_hanche:'96',l_sous_sein:'22'};etat.etape=2;dessiner();}")
+        await page.click('[data-exp="1"]')
+        await page.click('[data-nav="suiv"]')          # au panier
+        await page.click('[data-pan="commander"]')
+        await page.click('[data-mode="retrait"]')
         tot = (await page.evaluate("()=>totalCommande()"))
         ok(tot is None, "piece sans prix : le total reste « sur devis »")
-        txt = (await page.locator(".recap .tt span").last.inner_text()) if await page.locator(".recap").count() else ""
         await page.click('[data-nav="suiv"]')
         tt = (await page.locator(".recap .tt span").last.inner_text()).strip()
         ok(tt.lower().startswith("sur devis"), f"affichage « sur devis » dans le recapitulatif (vu « {tt} »)")
         await page.click("#btX")
+        await page.evaluate("()=>{panier=[];sauvePanier();rendrePanier();}")
+
+        # --- LE PANIER (ajoute le 2026-08-16) -----------------------
+        # deux pieces dans le meme panier : le total est la somme, et le
+        # delai retenu est celui de la piece la PLUS LENTE, pas la plus rapide.
+        await page.evaluate("()=>{panier=[];sauvePanier();rendrePanier();}")
+        deux = await page.evaluate("""()=>{const l=PIECES.filter(p=>p.prix!=null&&p.type);
+          return l.slice(0,2).map(p=>({id:p.id,nom:p.nom,prix:p.prix,expPrix:p.expPrix,
+                                       jmax:p.jmax,expMax:p.expMax,type:p.type}));}""")
+        if len(deux) >= 2:
+            for i, pc in enumerate(deux):
+                await page.evaluate("id=>{ouvrir(id);}", pc["id"])
+                nb = await page.locator("[data-mes]").count()
+                for k in range(nb):
+                    await page.locator("[data-mes]").nth(k).fill("70")
+                await page.click('[data-nav="suiv"]')
+                await page.click('[data-exp="%d"]' % (1 if i == 1 else 0))
+                await page.click('[data-nav="suiv"]')
+            n = (await page.inner_text("#panN")).strip()
+            ok(n == "2", f"deux pieces au panier : la pastille affiche 2 (vu {n})")
+            lignes = await page.locator("#panBd .pl").count()
+            ok(lignes == 2, f"le tiroir montre les deux lignes (vu {lignes})")
+            att = deux[0]["prix"] + (deux[1]["expPrix"] or deux[1]["prix"])
+            vu = await page.evaluate("()=>totaux().fcfa")
+            ok(vu == att, f"sous-total = {att} F, la somme des deux lignes (vu {vu})")
+            attj = max(deux[0]["jmax"], deux[1]["expMax"] or 4)
+            vuj = await page.evaluate("()=>joursConfection()")
+            ok(vuj == attj, f"delai retenu = la piece la plus lente, {attj} j (vu {vuj})")
+            # une ligne en moins, un total qui suit
+            await page.locator("#panBd [data-rm]").first.click()
+            vu2 = await page.evaluate("()=>totaux().fcfa")
+            ok(vu2 == (deux[1]["expPrix"] or deux[1]["prix"]),
+               f"une ligne retiree : le total suit (vu {vu2})")
+            # la quantite
+            await page.locator("#panBd [data-plus]").first.click()
+            q = await page.evaluate("()=>totaux().articles")
+            ok(q == 2, f"le bouton + passe la ligne a 2 exemplaires (vu {q})")
+            vu3 = await page.evaluate("()=>totaux().fcfa")
+            ok(vu3 == vu2 * 2, f"deux exemplaires : le prix double ({vu3})")
+            # le panier survit a un rechargement
+            await page.reload(wait_until="domcontentloaded")
+            await page.wait_for_timeout(1200)
+            gard = await page.evaluate("()=>panier.length")
+            ok(gard == 1, f"le panier survit au rechargement de la page (vu {gard} ligne)")
+            await page.evaluate("()=>{panier=[];sauvePanier();rendrePanier();}")
+        else:
+            note("moins de deux pieces chiffrees au catalogue : controle du panier sans objet")
 
         # --- robe ovale : avertissement de validation
         nom_ov = await page.evaluate("()=>{const p=PIECES.filter(x=>x.type==='robe_ovale')[0];"
@@ -639,18 +695,26 @@ async def main():
         nb_m = await page.locator("[data-mes]").count()
         for i in range(min(nb_m, nb_m // 2 + 1)):
             await page.locator("[data-mes]").nth(i).fill("80")
-        for etape in ["1", "2", "3", "4"]:
-            e = await page.get_attribute("#shBd", "data-e")
-            vus.append(e)
-            if etape == "2":
-                await page.click('[data-mode="retrait"]')
-            if etape == "3":
-                await page.click('[data-delai="normal"]')
-            if etape != "4":
-                await page.click('[data-nav="suiv"]')
-                await page.wait_for_timeout(260)
-        ok(vus == ["1", "2", "3", "4"],
+        # parcours a panier : mesures (1) -> delai (3) -> livraison (2)
+        # -> coordonnees (4). Les numeros sont ceux des animations, pas
+        # l'ordre des ecrans : chaque etape garde SON animation d'origine.
+        vus.append(await page.get_attribute("#shBd", "data-e"))
+        await page.click('[data-nav="suiv"]')
+        await page.wait_for_timeout(260)
+        vus.append(await page.get_attribute("#shBd", "data-e"))
+        await page.click('[data-exp="0"]')
+        await page.click('[data-nav="suiv"]')                # au panier
+        await page.wait_for_timeout(260)
+        await page.click('[data-pan="commander"]')
+        await page.wait_for_timeout(260)
+        vus.append(await page.get_attribute("#shBd", "data-e"))
+        await page.click('[data-mode="retrait"]')
+        await page.click('[data-nav="suiv"]')
+        await page.wait_for_timeout(260)
+        vus.append(await page.get_attribute("#shBd", "data-e"))
+        ok(vus == ["1", "3", "2", "4"],
            f"tunnel : chaque etape porte sa propre animation (vu {vus})")
+        await page.evaluate("()=>{panier=[];sauvePanier();rendrePanier();}")
         ok(not errs, "toucher et catalogue : aucune erreur JS"
            + ("" if not errs else " -> " + errs[0][:140]))
         await ctx.close()

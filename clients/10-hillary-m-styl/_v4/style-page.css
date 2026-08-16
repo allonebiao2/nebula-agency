@@ -166,7 +166,10 @@ em{font-style:italic;font-weight:400}
 .nav-c a:hover{opacity:1}
 .nav-c a:hover::after{transform:scaleX(1)}
 .nav-d{display:flex;align-items:center;gap:6px;flex:0 0 auto}
-/* ⛔ pas d'icône panier ni compte : aucun paiement sur le site (règle NEBULA) */
+/* Une icône panier depuis le 2026-08-16, à la demande de Mongazi. ⚠️ Elle ne
+   contredit pas la règle NEBULA : rien ne se paie sur ce site. Le panier est la
+   liste de ce que la cliente commande, avec les prix ; le règlement se convient
+   par Mobile Money sur WhatsApp. Toujours pas d'icône « compte ». */
 .nav-ic{width:44px;height:44px;display:grid;place-items:center;opacity:.66;
   transition:opacity .3s ease}
 .nav-ic svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.4}

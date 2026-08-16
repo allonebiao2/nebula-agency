@@ -622,3 +622,70 @@ jumeau d'un autre.
 Cloudflare aurait répondu 404, et le site serait parti muet sans que rien ne le
 signale. Corrigé, et le script **refuse maintenant de publier** si un son
 référencé manque.
+
+---
+
+## LE PANIER (2026-08-16)
+
+Demandé par Mongazi : « un panier comme pour madame Luxury, histoire que les
+clientes voient ce qu'elles commandent et les prix ».
+
+**Avant**, une cliente qui voulait deux robes envoyait deux messages WhatsApp.
+L'atelier recevait deux commandes sans savoir qu'elles allaient ensemble : même
+cliente, une seule livraison, un seul règlement.
+
+**Le parcours, maintenant** : on ouvre une pièce, on donne ses mesures, on
+choisit son délai, elle tombe dans le panier. Le tiroir montre chaque ligne
+(photo, mesures renseignées, délai, prix), on peut changer la quantité,
+**modifier** une ligne ou la retirer. Puis une seule commande : livraison,
+coordonnées, récapitulatif, un seul message WhatsApp.
+
+### Les calculs, et pourquoi ils sont ainsi
+
+| Ce qui est calculé | La règle |
+|---|---|
+| Prix d'une ligne | `expPrix` si express, sinon `prix`, **fois la quantité** |
+| Sous-total | la somme des lignes |
+| Total | sous-total **+ frais de livraison une seule fois** |
+| € et $ | la somme de SES valeurs, jamais un taux de change |
+| Délai | **la borne haute de la pièce la plus lente**, plus l'acheminement |
+
+⚠️ **Le délai d'une commande est celui de sa pièce la plus lente.** Tout part
+ensemble. Annoncer la plus rapide fabriquerait une cliente déçue. Quand le
+panier mélange une pièce express et une pièce normale, l'écran le dit et propose
+deux envois séparés.
+
+⚠️ **Aucun prix n'est stocké dans le panier**, seulement l'identifiant de la
+pièce et les choix. Un panier oublié une semaine dans le navigateur ne peut donc
+pas ressortir avec un prix périmé.
+
+✅ **Les mesures déjà données se reportent** d'une pièce à l'autre quand le
+champ existe dans les deux jeux : une cliente ne remesure pas son tour de taille
+pour la deuxième robe.
+
+### Deux défauts trouvés en construisant, et corrigés
+
+- ⛔ **Le voile du panier avalait les clics pendant 350 ms après sa fermeture.**
+  `visibility` ne se dégrade pas en douceur, elle bascule à la FIN de la
+  transition. C'est `pointer-events` qui règle ça, immédiatement.
+- ⛔ **Le bouton du son se posait sur « Retour » et sur « Vider le panier »**
+  (il est en `position:fixed` en bas à gauche). Le cacher aurait été plus
+  simple, mais **une règle de la maison veut qu'il reste atteignable** quand une
+  fiche est ouverte : le contrôle qualité l'a refusé. On lui réserve donc un
+  couloir de 78 px dans les deux pieds de page.
+
+### Ce qu'il faut savoir pour y toucher
+
+- Tout est dans `_v4/garde-moteur.js` (le panier, les deux parcours, le
+  message), le balisage du tiroir dans `_v4/garde-modale.html`, ses styles à la
+  fin de `_v4/garde-css-modale.css`, le bouton dans `_v4/markup.html`.
+- ⚠️ **`_predeploy.py` ne lance PAS l'assembleur.** Après une modification de
+  `_v4/*`, il faut `python _v4/_assembler.py` d'abord, sinon on contrôle et on
+  publie l'ancienne version.
+- Les animations par étape sont écrites dans la feuille de style par numéro
+  (`[data-e="1"]`…). Les deux parcours gardent le sens d'origine :
+  **1 mesures · 2 livraison · 3 délai · 4 coordonnées · 5 envoi**.
+- Contrôle qualité : **108 contrôles**, dont ceux du panier (somme des lignes,
+  délai de la pièce la plus lente, quantité, retrait d'une ligne, survie au
+  rechargement).
+
