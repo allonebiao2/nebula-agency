@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cotonou, la ville qui grandit · prototype</title>
+<style>
+:root{
+  --nuit:#0c1420;
+  --lagune:#17415f;
+  --terre:#141d2b;
+  --creme:#f3efe6;
+  --or:#f0c05a;
+  --ocre:#d99a2b;
+  --brique:#b4552d;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--nuit);
+  color:var(--creme);
+  font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
+  overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* ---------- la scène ----------
+   Elle ne prend PAS tout l'écran : on lui réserve une marge en haut pour
+   l'année et une en bas pour la barre du temps. Comme la carte est en
+   « meet », elle tient toujours entière dans ce qui reste, sur n'importe
+   quel écran, et rien ne recouvre rien. */
+#scene{
+  position:fixed;left:0;right:0;
+  top:clamp(92px,21vw,148px);
+  bottom:clamp(132px,20vh,164px);
+}
+#carte{width:100%;height:100%;display:block;touch-action:none}
+
+/* ---------- l'année, en grand ---------- */
+#titre{
+  position:fixed;left:max(16px,env(safe-area-inset-left));
+  top:max(12px,env(safe-area-inset-top));
+  pointer-events:none;
+}
+#soustitre{
+  font-size:clamp(10px,2.8vw,13px);letter-spacing:.3em;text-transform:uppercase;
+  color:rgba(243,239,230,.55);font-weight:700;margin-bottom:2px;
+}
+#annee{
+  font-size:clamp(52px,13vw,104px);
+  font-weight:900;letter-spacing:-.04em;line-height:.86;
+  color:var(--creme);
+  text-shadow:0 4px 40px rgba(0,0,0,.7);
+  font-variant-numeric:tabular-nums;
+}
+
+/* ---------- la barre du temps ---------- */
+#barre{
+  position:fixed;left:0;right:0;bottom:0;
+  padding:10px 18px calc(14px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top,rgba(12,20,32,.97) 60%,rgba(12,20,32,0));
+  display:flex;flex-direction:column;gap:8px;align-items:center;
+}
+#curseur{
+  -webkit-appearance:none;appearance:none;
+  width:min(680px,100%);height:40px;background:transparent;cursor:pointer;
+}
+#curseur::-webkit-slider-runnable-track{height:3px;background:rgba(243,239,230,.22);border-radius:2px}
+#curseur::-moz-range-track{height:3px;background:rgba(243,239,230,.22);border-radius:2px}
+#curseur::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:28px;height:28px;margin-top:-12.5px;border-radius:50%;
+  background:var(--or);border:3px solid var(--nuit);
+  box-shadow:0 0 0 1px rgba(240,192,90,.55),0 6px 20px rgba(0,0,0,.55);
+}
+#curseur::-moz-range-thumb{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--or);border:3px solid var(--nuit);
+}
+#reperes{
+  width:min(680px,100%);display:flex;justify-content:space-between;
+  font-size:11px;letter-spacing:.1em;color:rgba(243,239,230,.45);
+  font-variant-numeric:tabular-nums;margin-top:-10px;
+}
+#actions{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:2px}
+button{
+  font:inherit;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--nuit);background:var(--or);
+  border:0;border-radius:999px;padding:12px 22px;min-height:44px;cursor:pointer;
+}
+button.creux{background:transparent;color:var(--creme);box-shadow:inset 0 0 0 1.5px rgba(243,239,230,.28)}
+button:active{transform:translateY(1px)}
+#note{
+  width:min(680px,100%);text-align:center;
+  font-size:11px;line-height:1.45;color:rgba(243,239,230,.42);
+}
+
+/* ---------- les étiquettes ---------- */
+.etq{
+  font-size:19px;font-weight:700;fill:var(--creme);
+  paint-order:stroke;stroke:rgba(12,20,32,.75);stroke-width:4px;stroke-linejoin:round;
+}
+.etq.eau{fill:#8fc4e8;font-weight:600;font-size:17px;letter-spacing:.16em;text-transform:uppercase;opacity:.85}
+#repereG{transition:opacity .6s ease}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div id="scene">
+  <svg id="carte" viewBox="0 0 1200 1000" preserveAspectRatio="xMidYMid meet" aria-label="Carte schématique de Cotonou">
+    <defs>
+      <linearGradient id="gLac" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#1b4d6f"/><stop offset="1" stop-color="#153c58"/>
+      </linearGradient>
+      <linearGradient id="gOcean" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#12344f"/><stop offset="1" stop-color="#0a1f31"/>
+      </linearGradient>
+    </defs>
+
+    <!-- ⚠️ Le dessin déborde très largement du viewBox, exprès. En « meet »,
+         la carte tient toujours entière, mais elle laisse des bandes vides sur
+         les côtés ou en haut selon l'écran. Le débordement les remplit d'eau et
+         de terre : plus aucune bande morte, sur aucun téléphone. -->
+
+    <!-- la terre -->
+    <rect x="-1200" y="-1200" width="3600" height="3400" fill="var(--terre)"/>
+
+    <!-- le lac Nokoué, au nord -->
+    <path d="M-1200,-1200 H2400 V212 C2000,216 1560,204 1200,196 C1060,236 940,196 800,222 C700,240 660,206 560,214 C440,224 340,190 220,206 C130,218 70,196 0,208 C-360,214 -800,206 -1200,212 Z" fill="url(#gLac)"/>
+
+    <!-- l'océan, au sud -->
+    <path d="M-1200,878 C-800,874 -360,874 0,872 C200,852 400,866 620,858 C820,851 1000,868 1200,850 C1560,846 2000,850 2400,846 V2200 H-1200 Z" fill="url(#gOcean)"/>
+
+    <!-- la bande de sable -->
+    <path d="M-1200,854 C-800,850 -360,850 0,848 C200,828 400,842 620,834 C820,827 1000,844 1200,826 C1560,822 2000,826 2400,822 L2400,848 C2000,852 1560,848 1200,852 C1000,870 820,853 620,860 C400,868 200,854 0,874 C-360,876 -800,876 -1200,880 Z" fill="#2a3446" opacity=".6"/>
+
+    <!-- le chenal, qui coupe la ville en deux -->
+    <path d="M556,150 C552,400 548,620 556,880 H646 C652,620 650,400 646,150 Z" fill="var(--lagune)"/>
+
+    <!-- Le téléphone est haut et étroit, la ville est large : il reste
+         forcément beaucoup d'eau à l'écran. Autant qu'elle vive. -->
+    <g stroke="#8fc4e8" stroke-width="2.5" fill="none" opacity=".13" stroke-linecap="round">
+      <path d="M-400,-140 C-100,-158 200,-122 500,-140 C800,-158 1100,-122 1600,-140"/>
+      <path d="M-400,-40 C-160,-58 140,-22 460,-40 C780,-58 1080,-22 1600,-40"/>
+      <path d="M-400,60 C-60,42 240,78 540,60 C840,42 1140,78 1600,60"/>
+      <path d="M-400,1010 C-100,992 200,1028 500,1010 C800,992 1100,1028 1600,1010"/>
+      <path d="M-400,1110 C-160,1092 140,1128 460,1110 C780,1092 1080,1128 1600,1110"/>
+      <path d="M-400,1210 C-60,1192 240,1228 540,1210 C840,1192 1140,1228 1600,1210"/>
+    </g>
+
+    <g id="villeG"></g>
+    <g id="pontsG"></g>
+    <g id="repereG" opacity="0"></g>
+
+    <text class="etq eau" x="600" y="120" text-anchor="middle">le lac Nokoué</text>
+    <text class="etq eau" x="600" y="945" text-anchor="middle">l'océan Atlantique</text>
+    <text class="etq eau" x="601" y="300" text-anchor="middle" transform="rotate(90 601 300)" style="font-size:14px">le chenal</text>
+  </svg>
+</div>
+
+<div id="titre">
+  <div id="soustitre">Cotonou</div>
+  <div id="annee">1960</div>
+</div>
+
+<div id="barre">
+  <input id="curseur" type="range" min="1960" max="2026" step="1" value="1960" aria-label="Année">
+  <div id="reperes"><span>1960</span><span>1980</span><span>2000</span><span>2026</span></div>
+  <div id="actions">
+    <button id="jouer">Voir la ville pousser</button>
+    <button id="retour" class="creux">Revenir en 1960</button>
+  </div>
+  <p id="note">Tracé schématique, dessiné. Les contours et les dates d'extension restent à caler sur des sources cartographiques.</p>
+</div>
+
+<script>
+(() => {
+"use strict";
+
+const AN0 = 1960, AN1 = 2026;
+const svgNS = "http://www.w3.org/2000/svg";
+const villeG = document.getElementById("villeG");
+const pontsG = document.getElementById("pontsG");
+const repereG = document.getElementById("repereG");
+const anneeEl = document.getElementById("annee");
+const curseur = document.getElementById("curseur");
+
+/* Le hasard doit être TOUJOURS le même : une ville qui change de forme à
+   chaque ouverture n'est pas une ville, c'est du bruit. Graine fixe. */
+let graine = 20260815;
+const alea = () => {
+  graine = (graine * 1664525 + 1013904223) % 4294967296;
+  return graine / 4294967296;
+};
+
+/* La ville ancienne tient près de l'embouchure du chenal, entre la lagune
+   et l'océan. Elle s'étale d'abord le long de la côte, elle remonte vers le
+   lac beaucoup plus tard : d'où le poids plus lourd sur la verticale. */
+const NOYAU = {x: 600, y: 800};
+/* ⚠️ Ces bornes suivent les tracés dessinés plus haut, avec de la marge. Un
+   pâté de maisons qui flotte dans le chenal ou sur la plage se voit tout de
+   suite, et il détruit la crédibilité de la carte entière. */
+const ZONE = {x0: 28, x1: 1172, y0: 250, y1: 812};
+const CHENAL = {x0: 536, x1: 668};
+// On teste la BOÎTE du pâté de maisons, pas son centre : un bloc centré sur
+// la berge a quand même la moitié du corps dans l'eau.
+const dansLeau = (x, y, demi) =>
+  y - demi < ZONE.y0 || y + demi > ZONE.y1 ||
+  (x + demi > CHENAL.x0 && x - demi < CHENAL.x1);
+
+/* Une ville n'est pas un nuage de points : c'est une trame. On sème sur une
+   grille légèrement bousculée, pas au hasard pur, sinon ça fait des confettis
+   et des trous, et l'œil n'y lit pas une ville. */
+const PASX = 26, PASY = 24;
+const blocs = [];
+for (let gx = 0; gx <= (ZONE.x1 - ZONE.x0) / PASX; gx++) {
+  for (let gy = 0; gy <= (ZONE.y1 - ZONE.y0) / PASY; gy++) {
+    const x = ZONE.x0 + gx * PASX + (alea() - .5) * PASX * .55;
+    const y = ZONE.y0 + gy * PASY + (alea() - .5) * PASY * .55;
+    const taille = 10 + alea() * 7;
+    // la diagonale, parce que le bloc est légèrement tourné
+    if (dansLeau(x, y, taille * .78)) continue;
+
+    const dx = (x - NOYAU.x) / 590;
+    const dy = (y - NOYAU.y) / 600;
+    const d = Math.sqrt(dx * dx + dy * dy * 1.6) + (alea() - .5) * .16;
+
+    // Un plancher : tout ce qui est dans le noyau existe déjà en 1960. Sans
+    // lui, l'écran de départ est vide, et une ville vide ne raconte rien.
+    const t = Math.max(0, Math.min(1, (Math.pow(Math.max(0, d), .9) - .30) / 1.21));
+    const naissance = Math.round(AN0 + t * (AN1 - AN0));
+
+    blocs.push({x, y, naissance, taille, angle: (alea() - .5) * 7});
+  }
+}
+
+for (const b of blocs) {
+  const r = document.createElementNS(svgNS, "rect");
+  r.setAttribute("x", (b.x - b.taille / 2).toFixed(1));
+  r.setAttribute("y", (b.y - b.taille / 2).toFixed(1));
+  r.setAttribute("width", b.taille.toFixed(1));
+  r.setAttribute("height", b.taille.toFixed(1));
+  r.setAttribute("rx", "1.5");
+  r.setAttribute("transform", `rotate(${b.angle.toFixed(1)} ${b.x.toFixed(1)} ${b.y.toFixed(1)})`);
+  // La couleur dit l'âge : la vieille ville en crème, les extensions en ocre,
+  // ce qui a poussé depuis 2005 en brique.
+  r.setAttribute("fill", b.naissance < 1985 ? "#f3efe6" : (b.naissance < 2005 ? "#d99a2b" : "#b4552d"));
+  r.style.transformBox = "fill-box";
+  r.style.transformOrigin = "center";
+  r.style.transition = "opacity .45s ease, scale .45s cubic-bezier(.22,1,.36,1)";
+  r.style.opacity = "0";
+  r.style.scale = "0";
+  b.el = r;
+  villeG.appendChild(r);
+}
+
+/* Les ponts sur le chenal. ⚠️ Les années sont des repères de travail, pas
+   des dates vérifiées : à corriger avant toute publication. */
+const PONTS = [
+  {y: 762, an: 1960},
+  {y: 560, an: 1990},
+  {y: 372, an: 2010}
+];
+for (const p of PONTS) {
+  const g = document.createElementNS(svgNS, "rect");
+  g.setAttribute("x", "530"); g.setAttribute("y", String(p.y));
+  g.setAttribute("width", "144"); g.setAttribute("height", "12");
+  g.setAttribute("rx", "6");
+  g.setAttribute("fill", "#f3efe6");
+  g.style.transformBox = "fill-box";
+  g.style.transformOrigin = "center";
+  g.style.transition = "opacity .5s ease, scale .5s cubic-bezier(.22,1,.36,1)";
+  g.style.opacity = "0"; g.style.scale = "0 1";
+  p.el = g;
+  pontsG.appendChild(g);
+}
+
+/* Un seul repère, et il est vérifié : l'Amazone, 30 m, inaugurée le
+   30 juillet 2022. On n'en pose pas d'autre tant que la date n'est pas sûre. */
+const AMAZONE = {x: 840, y: 800, an: 2022};
+{
+  const tige = document.createElementNS(svgNS, "path");
+  tige.setAttribute("d", `M${AMAZONE.x},${AMAZONE.y} L${AMAZONE.x},${AMAZONE.y - 58}`);
+  tige.setAttribute("stroke", "#f0c05a"); tige.setAttribute("stroke-width", "3");
+  const tete = document.createElementNS(svgNS, "circle");
+  tete.setAttribute("cx", AMAZONE.x); tete.setAttribute("cy", AMAZONE.y - 66);
+  tete.setAttribute("r", "9"); tete.setAttribute("fill", "#f0c05a");
+  const txt = document.createElementNS(svgNS, "text");
+  txt.setAttribute("x", AMAZONE.x); txt.setAttribute("y", AMAZONE.y - 86);
+  txt.setAttribute("text-anchor", "middle"); txt.setAttribute("class", "etq");
+  txt.textContent = "l'Amazone";
+  repereG.append(tige, tete, txt);
+}
+
+/* ---------------- le rendu ---------------- */
+let derniere = -1;
+function poser(an) {
+  an = Math.round(an);
+  if (an === derniere) return;
+  derniere = an;
+  anneeEl.textContent = String(an);
+
+  for (const b of blocs) {
+    const vu = b.naissance <= an;
+    if ((b.el.style.opacity === "1") !== vu) {
+      b.el.style.opacity = vu ? "1" : "0";
+      b.el.style.scale = vu ? "1" : "0";
+    }
+  }
+  for (const p of PONTS) {
+    const vu = p.an <= an;
+    p.el.style.opacity = vu ? ".92" : "0";
+    p.el.style.scale = vu ? "1 1" : "0 1";
+  }
+  repereG.setAttribute("opacity", AMAZONE.an <= an ? "1" : "0");
+}
+
+curseur.addEventListener("input", () => poser(+curseur.value));
+
+/* ---------------- la lecture automatique ---------------- */
+let anim = null;
+const jouer = document.getElementById("jouer");
+function arreter() {
+  if (anim) { cancelAnimationFrame(anim); anim = null; jouer.textContent = "Voir la ville pousser"; }
+}
+jouer.addEventListener("click", () => {
+  if (anim) { arreter(); return; }
+  const depart = (+curseur.value >= AN1 - 1) ? AN0 : +curseur.value;
+  if (depart !== +curseur.value) { curseur.value = String(depart); poser(depart); }
+  jouer.textContent = "Arrêter";
+  const t0 = performance.now();
+  const duree = (AN1 - depart) * 110; // environ 7 secondes pour 66 ans
+  const pas = (t) => {
+    const k = Math.min(1, (t - t0) / duree);
+    const val = depart + (AN1 - depart) * k;
+    curseur.value = String(Math.round(val));
+    poser(val);
+    if (k < 1) anim = requestAnimationFrame(pas);
+    else { anim = null; jouer.textContent = "Revoir"; }
+  };
+  anim = requestAnimationFrame(pas);
+});
+
+document.getElementById("retour").addEventListener("click", () => {
+  arreter();
+  curseur.value = String(AN0);
+  poser(AN0);
+});
+
+/* ---------------- on peut aussi glisser sur la carte ---------------- */
+const scene = document.getElementById("scene");
+let glisse = false;
+const depuisX = (clientX) => {
+  const k = Math.min(1, Math.max(0, clientX / window.innerWidth));
+  const an = AN0 + k * (AN1 - AN0);
+  curseur.value = String(Math.round(an));
+  poser(an);
+};
+scene.addEventListener("pointerdown", (e) => {
+  arreter(); glisse = true; scene.setPointerCapture(e.pointerId); depuisX(e.clientX);
+});
+scene.addEventListener("pointermove", (e) => { if (glisse) depuisX(e.clientX); });
+scene.addEventListener("pointerup", () => { glisse = false; });
+scene.addEventListener("pointercancel", () => { glisse = false; });
+
+poser(AN0);
+})();
+</script>
+</body>
+</html>
