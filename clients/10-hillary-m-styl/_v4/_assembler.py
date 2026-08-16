@@ -23,7 +23,7 @@ Le fichier source est reconstruit à partir de six morceaux :
 
 Une sauvegarde de l'ancien source est écrite dans `_v4/_avant-v4.html`.
 """
-import io, os, sys, re
+import io, os, sys, re, json
 
 try:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -36,6 +36,52 @@ SRC = os.path.join(RACINE, "_vitrine_src.html")
 
 def lire(n):
     return io.open(os.path.join(ICI, n), encoding="utf-8").read().rstrip("\n")
+
+# ⚠️ LES FICHES PRODUIT SONT LUES DANS LE MOTEUR, JAMAIS RECOPIÉES ICI.
+# Un prix écrit à deux endroits finit toujours par diverger : c'est ce qui a
+# mis « 7 à 14 jours » en ligne contre « 2 semaines » sur chaque carte.
+def produits():
+    """Extrait les pièces chiffrées de garde-moteur.js et les balise en JSON-LD."""
+    src = lire("garde-moteur.js")
+    d = src.index("var PIECES = [")
+    f = src.index("\n];", d)
+    bloc = src[d:f]
+    fiches = []
+    for morceau in bloc.split('{id:"')[1:]:
+        def champ(cle, texte=True):
+            motif = (cle + r':\s*"((?:[^"\\]|\\.)*)"') if texte else (cle + r':\s*([0-9]+)')
+            m = re.search(motif, morceau)
+            return m.group(1) if m else None
+        nom = champ("nom")
+        prix = champ("prix", False)
+        img = champ("img")
+        ds = champ("ds")
+        if not nom or not prix:
+            continue                      # « Création libre » : sur devis
+        fiche = {
+            "@type": "Product",
+            "name": nom,
+            "brand": {"@id": "https://hillary-m-styl.pages.dev/#maison"},
+            "offers": {
+                "@type": "Offer",
+                "price": int(prix),
+                "priceCurrency": "XOF",
+                "availability": "https://schema.org/MadeToOrder",
+                "url": "https://hillary-m-styl.pages.dev/#catalogue",
+                "seller": {"@id": "https://hillary-m-styl.pages.dev/#maison"},
+            },
+        }
+        if ds:
+            fiche["description"] = ds.replace('\\"', '"')
+        if img:
+            fiche["image"] = "https://hillary-m-styl.pages.dev/assets/images/" + img
+        fiches.append(fiche)
+    if len(fiches) < 4:
+        raise SystemExit("⛔ moins de 4 pièces chiffrées trouvées dans PIECES : "
+                         "le balisage produit est probablement cassé")
+    return ",\n ".join(json.dumps(x, ensure_ascii=False, separators=(",", ":"))
+                      for x in fiches)
+
 
 TETE = """<!DOCTYPE html>
 <html lang="fr">
@@ -53,6 +99,19 @@ TETE = """<!DOCTYPE html>
 <meta property="og:title" content="HILLARY M. STYL — Maison de couture">
 <meta property="og:url" content="https://hillary-m-styl.pages.dev/">
 <meta property="og:description" content="Pagne, prêt-à-porter et sur-mesure. Donnez vos mesures, connaissez le jour exact où votre tenue sera prête.">
+<!-- ⚠️ SANS CETTE IMAGE, un lien partagé sur WhatsApp n'est qu'une ligne de
+     texte grise. Au Bénin, tout circule par WhatsApp : c'est le défaut le plus
+     coûteux qu'un site puisse avoir, et il ne se voit jamais sur le site.
+     En JPEG, pas en WebP : l'aperçu de WhatsApp ne lit pas toujours le WebP.
+     Elle se regénère avec `python _og.py`. -->
+<meta property="og:image" content="https://hillary-m-styl.pages.dev/assets/images/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="HILLARY M. STYL, maison de couture à Cotonou : robe de cérémonie en pagne tie-dye bleu et rouge.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="HILLARY M. STYL — Maison de couture">
+<meta name="twitter:description" content="Sur-mesure, prêt-à-porter, pagne et wax. Vos mesures en ligne, la date de livraison annoncée.">
+<meta name="twitter:image" content="https://hillary-m-styl.pages.dev/assets/images/og.jpg">
 <link rel="icon" href="data:image/png;base64,__FAVICON_B64__">
 <!-- ⚠️ LA PREMIERE PIECE DOIT PARTIR AVANT LE RESTE.
      Les mannequins du heros sont poses par le script : le navigateur ne peut
@@ -76,12 +135,14 @@ JSON_LD = """
 {"@context":"https://schema.org","@graph":[
  {"@type":"ClothingStore","@id":"https://hillary-m-styl.pages.dev/#maison","name":"HILLARY M. STYL","description":"Maison de couture à Cotonou : pagne, wax et tous tissus, prêt-à-porter par tailles et sur-mesure aux mesures exactes.","url":"https://hillary-m-styl.pages.dev/","telephone":"+22951374793","address":{"@type":"PostalAddress","addressLocality":"Cotonou","addressCountry":"BJ"},"areaServed":["BJ","TG","CI","NG"],"currenciesAccepted":"XOF","paymentAccepted":"Mobile Money"},
  {"@type":"WebSite","@id":"https://hillary-m-styl.pages.dev/#site","url":"https://hillary-m-styl.pages.dev/","name":"HILLARY M. STYL","inLanguage":"fr-FR","publisher":{"@id":"https://hillary-m-styl.pages.dev/#maison"}},
+ __PRODUITS__,
  {"@type":"FAQPage","mainEntity":[
-  {"@type":"Question","name":"Faites-vous du sur-mesure ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Les mesures demandées dépendent du type de vêtement, pas du genre : une robe coupée à la taille en demande 9, une robe droite 15, un pantalon 6, une chemise 8. Une mesure que vous ne savez pas prendre se prend ensemble."}},
-  {"@type":"Question","name":"En combien de temps ma tenue est-elle prête ?","acceptedAnswer":{"@type":"Answer","text":"De 7 à 14 jours en confection normale, de 1 à 3 jours en express. La date exacte de disponibilité s'affiche avant que vous ne validiez, acheminement compris."}},
-  {"@type":"Question","name":"Comment se fait le règlement ?","acceptedAnswer":{"@type":"Answer","text":"Par Mobile Money uniquement. Aucun paiement ne se fait sur le site : la commande part sur WhatsApp et le règlement se convient directement."}},
-  {"@type":"Question","name":"Travaillez-vous le pagne et le wax ?","acceptedAnswer":{"@type":"Answer","text":"Oui, comme tous les autres tissus. La maison fait le pagne, le wax, le bazin et la dentelle, en prêt-à-porter comme en sur-mesure."}}]}
-]}
+  {"@type":"Question","name":"Faites-vous du sur-mesure ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Les mesures demandées dépendent du type de vêtement, pas du genre : une robe coupée à la taille en demande 9, une robe droite 15, une robe ovale 11, un pantalon 6, un haut 8."}},
+  {"@type":"Question","name":"En combien de temps ma tenue est-elle prête ?","acceptedAnswer":{"@type":"Answer","text":"Deux semaines en confection normale, 2 à 5 jours en express selon la pièce. La date exacte de disponibilité s'affiche avant que vous ne validiez, acheminement compris."}},
+  {"@type":"Question","name":"Et si je ne sais pas prendre une mesure ?","acceptedAnswer":{"@type":"Answer","text":"Laissez le champ vide. Elle part en « à prendre ensemble » dans votre commande et l'atelier vous rappelle. La moitié des mesures suffit pour envoyer une commande."}},
+  {"@type":"Question","name":"Comment se fait le règlement ?","acceptedAnswer":{"@type":"Answer","text":"Par Mobile Money uniquement. Aucun paiement ne se fait sur ce site : la commande part sur WhatsApp et le règlement se convient directement avec l'atelier."}},
+  {"@type":"Question","name":"Livrez-vous en dehors du Bénin ?","acceptedAnswer":{"@type":"Answer","text":"Oui : Togo, Côte d'Ivoire, Nigeria, Sénégal, Burkina Faso, Mali, Niger, Cameroun, Gabon et France. Les frais et les jours d'acheminement s'affichent quand vous choisissez votre pays."}},
+  {"@type":"Question","name":"Travaillez-vous le pagne et le wax ?","acceptedAnswer":{"@type":"Answer","text":"Oui, comme tous les autres tissus : le pagne, le wax, le bazin et la dentelle, en prêt-à-porter comme en sur-mesure."}}]}]}
 </script>"""
 
 FIN = """
@@ -99,6 +160,9 @@ def main():
           .write(io.open(SRC, encoding="utf-8").read())
         print("  sauvegarde de l'ancien source -> _v4/_avant-v4.html")
 
+    # les fiches produit sont lues dans le moteur à chaque assemblage
+    graphe = JSON_LD.replace("__PRODUITS__", produits())
+
     out = "\n".join([
         TETE,
         lire("style-page.css"),
@@ -111,7 +175,7 @@ def main():
         lire("markup.html"),
         "",
         lire("garde-modale.html"),
-        JSON_LD,
+        graphe,
         "",
         "<script>",
         lire("garde-moteur.js"),

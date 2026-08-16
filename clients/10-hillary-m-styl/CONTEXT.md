@@ -689,3 +689,55 @@ pour la deuxième robe.
   délai de la pièce la plus lente, quantité, retrait d'une ligne, survie au
   rechargement).
 
+---
+
+## CE QUI FAIT VENDRE, ET QUI MANQUAIT (2026-08-16)
+
+Trois défauts trouvés en auditant la vitrine. **Aucun ne se voyait en regardant
+le site** : c'est ce qui les rendait durables.
+
+### 1 · ⛔ Le lien partagé sur WhatsApp n'avait aucune image
+
+Le site n'avait **aucune `og:image`**. Au Bénin, tout circule par WhatsApp : la
+maison apparaissait comme une ligne de texte grise dans une conversation, à côté
+de liens qui, eux, montrent une photo. C'est le défaut le plus coûteux
+commercialement qu'un site puisse avoir.
+
+`python _og.py` fabrique `assets/images/og.jpg` (1200x630, 87 Ko) : **sa vraie
+robe de cérémonie détourée**, son encre, son magenta, son nom en Bodoni.
+⚠️ **En JPEG, pas en WebP** : l'aperçu WhatsApp ne lit pas toujours le WebP.
+⚠️ `_predeploy.py` ne copiait que les `.webp` : il copie maintenant **tout ce que
+la page réclame**, sinon l'image restait sur le disque.
+
+### 2 · ⛔ Un `FAQPage` déclaré, aucune question visible
+
+Le JSON-LD annonçait une FAQ à Google alors que **la page n'en portait aucune**.
+C'est contraire aux règles de Google (le contenu balisé doit être visible), et
+surtout : les six objections que se pose une cliente n'étaient répondues nulle
+part. Pire, les réponses balisées annonçaient **« 7 à 14 jours »** contre
+« 2 semaines » sur chaque carte : la même contradiction que celle corrigée le
+2026-08-06 ailleurs sur le site.
+
+Il y a maintenant une **section « Les questions »** (`#questions`, en `<details>`,
+donc lisible sans JavaScript et au clavier), et le JSON-LD dit **exactement** la
+même chose. ⚠️ **Un contrôle automatique compare les deux** : question par
+question, et vérifie que chaque réponse balisée est visible sur la page. Ils ne
+peuvent plus diverger en silence.
+
+### 3 · ⛔ Aucun balisage produit, alors que les prix sont réels
+
+Les 8 pièces chiffrées sont maintenant balisées en `Product` + `Offer`
+(prix, `XOF`, `MadeToOrder`, photo). ⚠️ **Les fiches sont LUES dans `PIECES`**
+par l'assembleur, jamais recopiées : un prix écrit à deux endroits finit
+toujours par diverger. Un contrôle vérifie que chaque fiche porte le prix du
+catalogue.
+
+### Et le reste
+
+`robots.txt` et `sitemap.xml` sont écrits par `_predeploy.py`, comme le
+`404.html`. Vérifié en ligne : `200` sur les trois, `404` sur une page
+inexistante, `image/jpeg` sur l'image de partage.
+
+**Le contrôle qualité passe de 84 à 120 contrôles** (le panier, puis cette
+couche commerciale).
+

@@ -20,7 +20,7 @@ Vérifie, sur navigateur réel émulé en 390 / 768 / 1440 px :
 
 Doit être VERTE avant tout déploiement.
 """
-import asyncio, datetime, glob, pathlib, re, sys
+import asyncio, datetime, glob, json, pathlib, re, sys
 from playwright.async_api import async_playwright
 
 # la console Windows est en cp1252 : un espace fin insecable suffit a
@@ -86,6 +86,73 @@ def variables_css():
        + (" — MANQUE : " + ", ".join(manquantes) if manquantes else ""))
 
 
+def vitrine_commerciale():
+    """Ce qui fait vendre et ce qui se partage, verifie sur le HTML livre.
+
+    Trois defauts trouves le 2026-08-16, tous invisibles en regardant le site :
+      1. AUCUNE og:image — un lien partage sur WhatsApp n'etait qu'une ligne
+         de texte grise, au Benin ou tout circule par WhatsApp.
+      2. un FAQPage DECLARE sans aucune question visible sur la page. Google
+         exige que le contenu balise soit visible, et surtout : les objections
+         des clientes n'etaient repondues nulle part.
+      3. aucun balisage Product alors que les prix sont reels.
+    """
+    src = HTML.read_text(encoding="utf-8")
+
+    # 1 · l'image de partage
+    m = re.search(r'property="og:image" content="([^"]+)"', src)
+    ok(bool(m), "une image de partage est declaree (og:image)")
+    if m:
+        nom = m.group(1).rsplit("/", 1)[-1]
+        ok((HTML.parent / "assets" / "images" / nom).exists(),
+           f"le fichier de l'image de partage existe vraiment ({nom})")
+        ok(src.count('name="twitter:card"') == 1, "la carte Twitter/X est declaree")
+
+    # 2 · la FAQ balisee et la FAQ visible doivent dire LA MEME CHOSE
+    bloc = re.search(r'<script type="application/ld\+json">(.*?)</script>', src, re.S)
+    ok(bool(bloc), "le graphe de donnees structurees est present")
+    graphe = json.loads(bloc.group(1))
+    faq = [x for x in graphe["@graph"] if x.get("@type") == "FAQPage"]
+    ok(len(faq) == 1, "un seul FAQPage declare")
+    # l'espace insecable avant le « ? » est la bonne typographie francaise :
+    # on la neutralise pour comparer, on ne la retire pas de la page
+    def _plat(t):
+        t = re.sub(r"<[^>]+>", "", t)
+        t = t.replace("&nbsp;", " ").replace(" ", " ")
+        return re.sub(r"\s+", " ", t).strip()
+    q_balisees = [_plat(q["name"]) for q in faq[0]["mainEntity"]]
+    q_visibles = [_plat(q) for q in re.findall(r"<summary>(.*?)</summary>", src, re.S)]
+    ok(len(q_visibles) >= 4, f"la page montre {len(q_visibles)} questions")
+    ok(q_balisees == q_visibles,
+       "les questions balisees sont EXACTEMENT celles que la cliente lit"
+       + ("" if q_balisees == q_visibles else f" — balise {q_balisees} / vu {q_visibles}"))
+
+    # les reponses aussi : une reponse balisee absente de la page est interdite
+    r_balisees = [q["acceptedAnswer"]["text"].strip() for q in faq[0]["mainEntity"]]
+    texte = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", src)).replace(" ", " ")
+    absentes = [r[:40] for r in r_balisees if re.sub(r"\s+", " ", r)[:60] not in texte]
+    ok(not absentes, "chaque reponse balisee est visible sur la page"
+       + ("" if not absentes else " — MANQUE : " + " | ".join(absentes)))
+
+    # 3 · les fiches produit disent le prix du catalogue, pas un autre
+    prods = [x for x in graphe["@graph"] if x.get("@type") == "Product"]
+    ok(len(prods) >= 4, f"{len(prods)} fiches produit balisees")
+    prix_page = dict(re.findall(r'nom:"([^"]+)"[^}]*?prix:(\d+)', src))
+    faux = [p["name"] for p in prods
+            if p["name"] in prix_page and int(prix_page[p["name"]]) != p["offers"]["price"]]
+    ok(not faux, "chaque fiche produit porte le prix du catalogue"
+       + ("" if not faux else " — FAUX : " + ", ".join(faux)))
+    ok(all(p["offers"]["priceCurrency"] == "XOF" for p in prods),
+       "les prix balises sont en francs CFA")
+
+    # 4 · le delai annonce dans la FAQ est celui du catalogue
+    jmax = max(int(x) for x in re.findall(r"jmax:(\d+)", src))
+    sem = jmax // 7
+    rep_delai = " ".join(r for r in r_balisees if "semaine" in r or "jour" in r)
+    ok(f"{sem} semaine" in rep_delai.lower() or "deux semaines" in rep_delai.lower(),
+       f"la FAQ annonce le meme delai que le catalogue ({sem} semaines)")
+
+
 async def sons(br):
     """Les sons d'atelier : rien avant un geste, un bouton pour couper,
     et ce bouton doit rester atteignable MEME la fiche ouverte.
@@ -147,6 +214,7 @@ async def sons(br):
 
 async def main():
     variables_css()
+    vitrine_commerciale()
     async with async_playwright() as pw:
         br = await pw.chromium.launch(**CHROME)
         await sons(br)
