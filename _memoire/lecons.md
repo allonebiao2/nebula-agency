@@ -663,3 +663,49 @@ trouble dure 100 ms au lieu d'un demi-tour d'horloge.
   profils Playwright abandonnés dans `%TEMP%`, les paquets d'une installation
   ratée. ⚠️ **Ne pas vider `%TEMP%` en entier** : Claude Code y écrit ses
   propres fichiers de travail et supprime sa sortie en cours.
+
+## 2026-08-16 — Le voile qui avale les clics après sa fermeture
+
+- **Contexte** : le tiroir du panier d'Hillary se fermait, et pendant un instant
+  la fiche ouverte derrière ne répondait plus.
+- **Ce qui s'est passé** : le voile portait
+  `transition: opacity .35s, visibility .35s`. **`visibility` ne se dégrade pas
+  en douceur : elle bascule à la FIN de la transition.** Le voile était donc
+  invisible mais toujours là, et il interceptait tout pendant 350 ms.
+- **Leçon** : sur tout voile, tiroir ou modale qu'on fait disparaître,
+  **`pointer-events` est ce qui décide**, pas `opacity` ni `visibility`.
+- **À appliquer** : `pointer-events:none` à l'état fermé, `auto` à l'état
+  ouvert. Et le contrôle qui le trouve n'est pas un contrôle de style : c'est un
+  clic qui échoue, avec « intercepts pointer events » dans le journal.
+
+## 2026-08-16 — Le défaut le plus cher est invisible depuis le site
+
+- **Contexte** : audit de la vitrine Hillary avant de « rendre tout parfait ».
+- **Ce qui s'est passé** : le site n'avait **aucune `og:image`**. Au Bénin, un
+  lien se partage sur WhatsApp : la maison apparaissait comme une ligne de texte
+  grise, à côté de liens qui montrent une photo. Personne ne pouvait le voir en
+  regardant le site, et ça durait depuis la mise en ligne.
+- **Leçon** : une vitrine ne se juge pas seulement à l'écran. **Elle se juge
+  aussi dans une conversation WhatsApp, dans un résultat Google et dans un
+  aperçu de partage.** Ce sont trois surfaces qu'aucune capture ne montre.
+- **À appliquer** : à chaque livraison, vérifier `og:image` (**en JPEG**,
+  l'aperçu WhatsApp ne lit pas toujours le WebP), `twitter:card`, `robots.txt`,
+  `sitemap.xml`, et une page `404`. ⚠️ Vérifier aussi que le script de
+  déploiement **copie vraiment** ces fichiers : celui d'Hillary ne copiait que
+  les `.webp`, et l'image de partage restait sur le disque.
+
+## 2026-08-16 — Des données structurées qui promettent ce que la page ne montre pas
+
+- **Contexte** : la page déclarait un `FAQPage` à Google.
+- **Ce qui s'est passé** : **aucune question n'était visible sur la page.**
+  C'est contraire aux règles de Google (le contenu balisé doit être visible), et
+  surtout les objections des clientes n'étaient répondues nulle part. Les
+  réponses cachées annonçaient même un délai que le catalogue contredisait.
+- **Leçon** : un balisage n'est pas une déclaration d'intention. **Ce qu'il
+  annonce doit exister à l'écran, mot pour mot.**
+- **À appliquer** : quand on balise une FAQ, un produit ou un prix, **le lire
+  dans les données du site** au lieu de le recopier, et poser un contrôle qui
+  compare le balisage et la page. Chez Hillary, les fiches produit sont
+  extraites du catalogue par l'assembleur, et un contrôle compare les questions
+  une par une.
+
