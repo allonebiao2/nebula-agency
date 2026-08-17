@@ -709,3 +709,36 @@ trouble dure 100 ms au lieu d'un demi-tour d'horloge.
   extraites du catalogue par l'assembleur, et un contrôle compare les questions
   une par une.
 
+## 2026-08-17 — Quand la porte échoue, ce qu'on publie est l'ancienne version
+
+- **Contexte** : le pré-déploiement d'Hillary a signalé un contrôle rouge, et
+  le déploiement est parti quand même (des commandes enchaînées par `&&`).
+- **Ce qui s'est passé** : `_predeploy.py` s'arrête **avant** de préparer
+  `_dist/`. Le dossier contenait donc encore la version précédente, et
+  `wrangler` l'a publiée **sans le moindre message d'erreur**. Le site est parti
+  avec la nouvelle FAQ mais sans le nouveau héros. Vu en vérifiant en ligne.
+- **Leçon** : un contrôle qui échoue ne laisse pas le livrable en l'état, il le
+  laisse **périmé**. Et un déploiement réussi ne prouve rien sur ce qui a été
+  déployé.
+- **À appliquer** : ne jamais enchaîner « contrôle && déploiement » sans lire la
+  sortie du contrôle, et **vérifier en ligne un élément que la nouvelle version
+  est seule à porter** (ici : le nombre de diapositives du héros).
+
+## 2026-08-17 — Un contrôle qui échoue au hasard accuse le site à tort
+
+- **Contexte** : la suite d'Hillary tombait une fois sur deux sur
+  « Page.goto: Timeout », ce qui ressemble à une panne du site.
+- **Ce qui s'est passé** : le petit serveur HTTP du contrôle était
+  **`socketserver.TCPServer`, mono-tâche**. Le navigateur ouvre plusieurs
+  connexions et les garde ouvertes : l'une bloquait toutes les autres. Tant que
+  la page ne demandait qu'une poignée de fichiers ça passait ; avec **28
+  images**, elle a commencé à ne plus se charger dans le temps imparti.
+  ⚠️ J'ai d'abord soupçonné Google Fonts et corrigé à côté : la panne est
+  revenue au passage suivant.
+- **Leçon** : devant un contrôle intermittent, **regarder d'abord l'instrument**,
+  pas le site. Un contrôle qui échoue au hasard est pire qu'un contrôle absent :
+  on finit par le croire, ou pire, par ne plus le croire du tout.
+- **À appliquer** : `ThreadingTCPServer` (avec `daemon_threads`) dans toute
+  suite qui sert un site à un vrai navigateur. Et confirmer une correction
+  d'intermittence par **plusieurs passages d'affilée**, jamais un seul.
+

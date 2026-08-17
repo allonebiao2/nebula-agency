@@ -164,3 +164,53 @@ des **mesures combinées** (haut + pantalon, haut + jupe).
    Google** pour la fiche.
 4. De **vrais avis** : une fiche à zéro avis ne sort pas dans les résultats
    locaux, et on n'en invente aucun.
+
+---
+
+## 4 · LE HÉROS COMPLÉTÉ, ET UNE SIGNATURE PAR SECTION
+
+Mongazi : « complète le héros en mettant juste les meilleures, dans le même
+style » et « ajoute des animations différentes pour chaque autre section ».
+
+### Le héros montrait 4 pièces sur 8
+
+Les quatre reçues le 2026-08-10 n'y étaient **jamais passées**, ni au carrousel.
+
+- **héros 4 → 7** : violette, Naja orange, verte. **La robe à tulle reste au
+  seul carrousel** : son violet doublait celui de la violette, et deux nappes
+  identiques qui se suivent ne se voient pas.
+- **carrousel 4 → 8**.
+- ⚠️ Les nouvelles diapositives pointent sur `piece-*.webp`, **la même photo
+  détourée** : la réencoder en WebP une seconde fois ne ferait que la dégrader.
+- ⚠️ La teinte de chaque pièce est relevée sur le tissu. **Le seuil de
+  saturation à 0,35 écartait le fond sauge de la robe verte** : il ne restait
+  que ses rubans ocre et sa nappe tombait sur celle de l'orange. À 0,22 on garde
+  les tissus sourds, qui sont aussi des couleurs.
+
+### Cinq sections partageaient la même révélation
+
+Chacune a maintenant la sienne, tirée d'un geste de couture : **l'ourlet qu'on
+déroule** (la maison) · **le portant** (les collections) · **les patrons qu'on
+épingle** (le catalogue) · **le fil qui se dénoue** (les questions) · **la
+couture qui se ferme** (le contact).
+
+⚠️ `#grille` et `.faq-l` ont dû être **ajoutés à la liste balayée** : sans ça,
+ils ne reçoivent jamais la classe `vu` et l'animation ne joue jamais.
+⚠️ `section{overflow-x:clip}` posé en même temps : deux de ces animations
+viennent du côté et poussaient la page, exactement comme les 6 px du site de
+l'agence.
+
+## 5 · DEUX PIÈGES, PAYÉS COMPTANT
+
+1. ⛔ **Le premier déploiement a publié l'ancienne version.** Quand le contrôle
+   échoue, `_predeploy.py` s'arrête **avant** de préparer `_dist/`, et déployer
+   juste après republie le précédent **sans aucun message**. Vu en vérifiant en
+   ligne (4 diapositives au lieu de 7), redéployé, revérifié.
+2. ⛔ **La suite échouait une fois sur deux**, sur « Page.goto: Timeout ».
+   Le coupable n'était pas le site : le serveur de test était
+   **`TCPServer`, mono-tâche**. Le navigateur garde ses connexions ouvertes,
+   l'une bloquait les autres, et la page (28 images désormais) ne se chargeait
+   plus à temps. ⚠️ J'ai d'abord accusé Google Fonts et corrigé à côté.
+   Passé en `ThreadingTCPServer` : **quatre passages verts d'affilée**.
+
+L'en-tête du fichier annonçait encore « 53 contrôles » : il en annonce 121.

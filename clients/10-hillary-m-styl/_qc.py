@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-HILLARY M. STYL — suite de contrôle qualité (53 contrôles).
+HILLARY M. STYL — suite de contrôle qualité (121 contrôles).
 
     python3 _qc.py
 
@@ -178,17 +178,34 @@ async def sons(br):
     import functools, http.server, socketserver, threading
     ici = str(HTML.parent)
     h = functools.partial(http.server.SimpleHTTPRequestHandler, directory=ici)
-    socketserver.TCPServer.allow_reuse_address = True
-    srv = socketserver.TCPServer(("127.0.0.1", 8823), h)
+    # ⚠️ LE SERVEUR DOIT ETRE MULTI-TACHE. `TCPServer` sert UNE requete a la
+    #    fois : le navigateur ouvre plusieurs connexions et les garde
+    #    ouvertes (keep-alive), donc l'une d'elles bloque toutes les autres.
+    #    Tant que la page ne demandait qu'une poignee de fichiers, ca passait ;
+    #    avec 28 images, la suite s'arretait une fois sur deux sur
+    #    « Page.goto: Timeout », ce qui ressemble a une panne du site.
+    #    Trouve le 2026-08-17, apres avoir soupconne les polices a tort.
+    socketserver.ThreadingTCPServer.allow_reuse_address = True
+    socketserver.ThreadingTCPServer.daemon_threads = True
+    srv = socketserver.ThreadingTCPServer(("127.0.0.1", 8823), h)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
 
     ctx = await br.new_context(viewport={"width": 1280, "height": 900})
+    # ⚠️ C'EST ICI QUE LA SUITE ECHOUAIT UNE FOIS SUR DEUX (trouve le
+    #    2026-08-17). Tous les autres contextes coupent la requete vers Google
+    #    Fonts ; celui-ci, non. La feuille de style distante bloque le
+    #    `DOMContentLoaded`, et des que le reseau traine, `goto` depasse ses
+    #    30 secondes : la suite s'arretait sur « Page.goto: Timeout », qui
+    #    ressemble a une panne du site alors que c'est la police qui traine.
+    #    ⚠️ Un controle qui echoue au hasard est pire qu'un controle absent :
+    #    on finit par le croire.
+    await ctx.route('**fonts.g*/**', lambda r: r.abort())
     page = await ctx.new_page()
     recus = []
     page.on("request", lambda r: recus.append(r.url.split("/")[-1])
             if "/sons/" in r.url else None)
     await page.goto("http://127.0.0.1:8823/vitrine.html",
-                    wait_until="domcontentloaded")
+                    wait_until="domcontentloaded", timeout=60000)
     await page.wait_for_timeout(2600)
 
     ok(not recus, "aucun son telecharge avant le premier geste"
