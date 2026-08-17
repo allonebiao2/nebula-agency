@@ -67,3 +67,55 @@ vend rien du tout, c'est lui qui achète le droit d'être cru.
 - Quatre douleurs suivantes déjà cadrées en fin de document (le nom qu'on épelle, la photo
   renvoyée douze fois, le fils qui a fait la page et qui est parti, le mois de travail pour
   rien)
+
+---
+
+## Post n° 2 · le carrousel TikTok « ENVOIE-MOI LE LIEN »
+
+Trois images, 9:16, très émotionnel, une histoire qui mène à une Vitrine faite par NEBULA.
+Invitation à glisser sur les images 1 et 2, appel à l'action sur la 3.
+
+### La douleur
+
+**La petite humiliation quotidienne.** On te demande ton lien, tu regardes ton téléphone, et
+tu n'as rien à envoyer. Ce n'est pas un manque technique : c'est un moment de gêne devant
+quelqu'un. Tout le monde l'a vécu, personne n'en parle. C'est pour ça que l'accroche marche
+en une seconde : elle est entre guillemets, c'est quelqu'un qui parle, et le lecteur reconnaît
+la phrase avant de lire la suite.
+
+### Les trois actes
+
+| Image | La ligne énorme |
+|---|---|
+| 1/3 | **« ENVOIE-MOI LE LIEN. »** |
+| 2/3 | **C'EST LA PREUVE QUE TU EXISTES.** |
+| 3/3 | **QUI TE DÉFEND QUAND TU N'ES PAS LÀ.** |
+
+### La trouvaille : le reflet
+
+Le fil visuel raconte les trois actes **sans un mot** :
+
+1. le sujet est là, éclairé, et **la surface sous lui est parfaitement vide** : aucun reflet.
+   Tu existes, et tu ne laisses aucune trace.
+2. on recule : le sujet est **petit dans un vide immense**, toujours sans reflet. Le vide
+   occupe presque toute l'image, c'est l'absence de preuve.
+3. on se rapproche : **le reflet est là, entier**, et le sujet **sort du cadre**. Le reflet
+   reste sans lui.
+
+La troisième image dit littéralement sa propre phrase : *un endroit qui te défend quand tu
+n'es pas là.* Le reflet ne part pas quand on ferme la boutique.
+
+⚠️ Le prompt insiste pour que le modèle **ne corrige pas** la contradiction de la 3 : il va
+vouloir faire disparaître le reflet en même temps que le sujet, et l'idée mourrait là.
+
+### Pourquoi ça vend une Vitrine et pas un Catalogue
+
+La 3 ne promet pas plus de clients, elle promet **de ne plus avoir à se justifier**. C'est une
+promesse de **dignité**, pas de volume. C'est ce qu'un commerçant qui a des années de métier
+veut entendre, et c'est exactement ce qu'un catalogue de produits ne peut pas donner.
+
+### Une règle de plus
+
+**Aucun chiffre dans l'histoire elle-même** : « des années de métier », jamais « dix ans ».
+Un nombre fabriqué au milieu d'un récit décrédibilise tout ce qui l'entoure, même quand le
+reste est vrai.

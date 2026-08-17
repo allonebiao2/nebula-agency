@@ -295,9 +295,491 @@ nebula-agency.online
 publiquement. On répond « je vous écris en privé » : le prix se donne dans une conversation,
 après avoir compris le besoin, et **on entre par le Catalogue**.
 
+## 4. Post n° 2 · carrousel TikTok « ENVOIE-MOI LE LIEN »
+
+**3 images, 9:16, on tutoie.** L'histoire mène à une Vitrine faite par NEBULA. Invitation à
+glisser sur les images 1 et 2, appel à l'action sur la 3.
+
+**La douleur visée :** la petite humiliation quotidienne. On te demande ton lien, tu regardes
+ton téléphone, et tu n'as rien à envoyer. Ce n'est pas un manque technique, c'est un moment
+de gêne devant quelqu'un. Tout le monde l'a vécu, personne n'en parle.
+
+**Les trois actes :**
+
+| Image | Ce qui se passe | La ligne énorme |
+|---|---|---|
+| 1/3 | la scène, et la gêne | **« ENVOIE-MOI LE LIEN. »** |
+| 2/3 | ce qui manquait vraiment | **C'EST LA PREUVE QUE TU EXISTES.** |
+| 3/3 | ce qu'une vitrine est vraiment | **QUI TE DÉFEND QUAND TU N'ES PAS LÀ.** |
+
+**Le fil visuel, et c'est lui qui fait l'émotion : le reflet.**
+
+1. Le sujet est là, éclairé, et **la surface sous lui est parfaitement vide**. Aucun reflet,
+   aucune ombre, rien. Tu existes, et tu ne laisses aucune trace.
+2. On recule. Le sujet est **petit dans un vide immense**, toujours sans reflet. Le vide
+   occupe presque toute l'image : c'est l'absence de preuve.
+3. On se rapproche. **Le reflet est là**, entier et lumineux, et le sujet, lui, **sort du
+   cadre** : il n'en reste qu'un bord. Le reflet reste sans lui.
+
+C'est exactement la phrase de la troisième image, dite sans un mot : un endroit qui te
+défend quand tu n'es pas là. Le reflet ne part pas quand tu fermes la boutique.
+
+**Pourquoi la 3 vend une Vitrine et pas un Catalogue :** elle ne promet pas plus de clients,
+elle promet **de ne plus avoir à se justifier**. C'est une promesse de dignité, pas de
+volume, et c'est ce qu'un commerçant qui a des années de métier veut entendre.
+
+⚠️ **Toujours aucun prix**, sur aucune des trois images, ni en commentaire.
+⚠️ **Aucun chiffre dans l'histoire non plus** : « des années de métier », jamais « dix ans ».
+Un nombre fabriqué dans une histoire décrédibilise tout le reste.
+
+### PROMPT · image 1 sur 3
+
+```
+===========================================================
+NEBULA AGENCY — TIKTOK CAROUSEL, STORY — SLIDE 1 OF 3
+===========================================================
+
+ATTACHED INPUTS — TWO attachments.
+Identify them BY THEIR CONTENT, not by their order. Never swap their
+roles: swapping them ruins the image.
+
+  THE LOGO = the attachment showing the NEBULA Agency logo: a purple
+     and blue cosmic swirl above the wordmark "NEBULA", with "AGENCY"
+     underneath, on a transparent background.
+     It is an ASSET TO PLACE, exactly as provided. It is never a style
+     reference and never a subject to reinterpret.
+
+  THE STYLE REFERENCE = the other attachment. This one is the design
+     the post takes after, and it is the MATERIAL of the post: its
+     subject, its palette, its texture, its lighting and its
+     typographic craft all carry over.
+
+  If you hesitate: the attachment with a transparent background and a
+  readable "NEBULA AGENCY" wordmark is THE LOGO. The other one is THE
+  STYLE REFERENCE.
+
+-----------------------------------------------------------
+TASK
+-----------------------------------------------------------
+Create SLIDE 1 of a 3-slide TikTok photo carousel for NEBULA Agency, a
+digital studio in Cotonou, Benin, serving West African merchants and
+business owners.
+The three slides tell ONE short, quiet, emotional story. This first one
+is the cover: it has ONE SECOND to stop a thumb, and it must make the
+reader recognise a moment of their own life.
+Restrained and cinematic, like a film still with a subtitle. Never a
+loud advertisement, never a promotional banner, never a price tag.
+It must look designed and expensive, never cheap, never homemade.
+
+-----------------------------------------------------------
+THE MATERIAL — THE STYLE REFERENCE IS THE SOURCE,
+                NOT A VAGUE INSPIRATION
+-----------------------------------------------------------
+Build this image OUT OF the style reference. Do not invent a new
+subject and do not add a decor of your own.
+  KEEP    its main subject, re-staged as described below
+  KEEP    its palette, its texture, its grain and its lighting
+  KEEP    its typographic craft: the same kind of contrast between a
+          huge line and small quiet lines
+  CHANGE  its state, its framing for a 9:16 canvas, and every single
+          word on it
+  DROP    its original words, numbers, captions, logo and watermark:
+          none of them may appear
+If you find yourself inventing a new object, stop. The subject is
+already in the style reference. Nothing else enters the frame.
+
+-----------------------------------------------------------
+THE STAGING — this is the whole idea of the image
+-----------------------------------------------------------
+NO REFLECTION.
+The subject of the style reference stands on a smooth surface, clearly
+lit, present, solid. And the surface directly beneath it is
+PERFECTLY BLANK: no reflection, no mirror image, no cast shadow, no
+mark, nothing at all. The absence must be immediately noticeable and
+faintly unsettling, as if the subject left no trace of itself.
+Keep the surface clean and quiet: do not decorate it, do not fill it.
+No arrow, no icon, no diagram, no phone, no screen, no hand, no second
+object, no label pointing at anything.
+
+-----------------------------------------------------------
+LOGO INTEGRATION — read twice, most attempts fail here
+-----------------------------------------------------------
+The logo attachment is a PNG with a TRANSPARENT background. Place it
+exactly as provided and KEEP that transparency.
+  - it sits DIRECTLY on the artwork. NO white box, NO black box, NO
+    coloured plate, NO rounded card, NO badge, NO circle, NO outline,
+    NO glow, NO drop shadow behind it.
+  - do NOT redraw it, restyle it, recolour it, stretch it, crop it,
+    rotate it, or add a wordmark or tagline of your own.
+  - reserve a CALM area for it: no busy texture and no strong
+    contrast directly behind it, so it reads cleanly with no plate.
+  - size it so its wordmark stays comfortably readable when the whole
+    image is viewed at 20% of its size.
+A logo pasted on a white rectangle is a failed image.
+
+-----------------------------------------------------------
+FORMAT AND SAFE ZONES — a hard requirement
+-----------------------------------------------------------
+Canvas: 1080 x 1920 px, vertical 9:16.
+TikTok draws its own interface OVER this image:
+  - the BOTTOM 480 px are covered by the caption, the username and
+    the progress bar
+  - the RIGHT 240 px are covered by the action buttons
+Nothing that matters may sit in those two strips. The live area is a
+rectangle pushed UP and to the LEFT, and everything below it is
+composed as if it did not exist.
+
+-----------------------------------------------------------
+CONTENT — render these strings verbatim, nothing else
+-----------------------------------------------------------
+COUNTER (top-left, small, uppercase, letter-spaced, muted): "1/3"
+
+THE HOOK (upper half, left-aligned, ENORMOUS all caps, condensed,
+          tight tracking and tight leading, filling the live width.
+          By far the loudest element of the image, and the only large
+          one. Keep the French guillemets, they carry the whole scene:
+          this is someone speaking):
+  "« ENVOIE-MOI"
+  "LE LIEN. »"
+
+THE SUBTITLE (under the hook, MUCH smaller, quiet, two lines):
+  "Tu as regardé ton téléphone."
+  "Tu n’avais rien à envoyer."
+
+SWIPE CUE (left side, below the subtitle, small, uppercase,
+           letter-spaced, in the accent colour of the style
+           reference): "GLISSE" followed by a solid triangular arrow
+           pointing right.
+
+FOOTER: the logo, per the LOGO INTEGRATION block, bottom-LEFT, just
+ABOVE the 480 px bottom safe strip and well clear of the 240 px right
+strip.
+
+-----------------------------------------------------------
+LAYOUT
+-----------------------------------------------------------
+Top to bottom, inside the live area:
+  1. COUNTER
+  2. THE HOOK, two stacked lines        <- the loudest zone
+  3. THE SUBTITLE, two quiet lines
+  4. SWIPE CUE
+  5. THE SUBJECT AND ITS BLANK SURFACE  <- the largest zone
+  6. LOGO
+The hierarchy must be brutal: ONE block is enormous, everything else
+is small. Leave real, quiet space around the subject.
+
+-----------------------------------------------------------
+TEXT RENDERING — read twice
+-----------------------------------------------------------
+- Render ONLY the strings quoted above. Any extra word is a failure.
+- Reproduce them VERBATIM: no translation, no rephrasing, no
+  shortening, no added punctuation, no exclamation marks.
+- Correct French typographic apostrophes ’ exactly as written:
+  "n’avais". Correct diacritics: "téléphone", "regardé".
+- Keep the French guillemets « » with their inner spaces.
+- The hook must be readable at 20% of the image size.
+- No hashtag, no social icon, no interface element, no emoji, no
+  TikTok logo, no play button.
+
+-----------------------------------------------------------
+HARD CONSTRAINTS
+-----------------------------------------------------------
+- NO price, NO amount, NO currency, NO "à partir de", NO discount
+  badge, NO offer sticker. This carousel never quotes a price.
+- NO invented statistics, percentages or figures of any kind.
+- NO testimonial framing: no first name, no age, no portrait, no
+  face, no human figure.
+- NO recognisable third-party brand, app name or interface.
+- NO watermark, no signature, no frame, no border.
+- ONE single idea in this image.
+
+-----------------------------------------------------------
+OUTPUT
+-----------------------------------------------------------
+One finished 1080 x 1920 image, publication-ready,
+high-fidelity text rendering.
+===========================================================
+```
+
+### PROMPT · image 2 sur 3
+
+```
+===========================================================
+NEBULA AGENCY — TIKTOK CAROUSEL, STORY — SLIDE 2 OF 3
+===========================================================
+
+ATTACHED INPUTS — THREE attachments.
+Identify the first two BY THEIR CONTENT, not by their order.
+
+  THE LOGO = the attachment showing the NEBULA Agency logo: a purple
+     and blue cosmic swirl above the wordmark "NEBULA", with "AGENCY"
+     underneath, on a transparent background. An ASSET TO PLACE,
+     exactly as provided, never a style reference.
+
+  THE STYLE REFERENCE = the attachment that is a designed image with
+     its own subject and palette. It is the MATERIAL of the post.
+
+  SLIDE 1 = the image you generated just before, the first slide of
+     this carousel. It is the CONSISTENCY REFERENCE.
+
+-----------------------------------------------------------
+CONSISTENCY — the most important instruction of this prompt
+-----------------------------------------------------------
+Match SLIDE 1 exactly on: the subject and how it is rendered, the
+palette, the texture and grain, the lighting, the type family and
+weight, the counter, the margins, the safe zones and the logo
+placement. The three slides must read as one object when swiped.
+ONE thing changes in the staging, described below, plus the words.
+
+-----------------------------------------------------------
+THE STAGING — this is the whole idea of the image
+-----------------------------------------------------------
+THE VOID.
+Pull far back. The same subject is now SMALL, alone, near the lower
+part of the live area, still standing on the same smooth surface and
+still casting NO reflection and NO shadow.
+Almost the entire frame is empty space around it: quiet, deep,
+unoccupied. The emptiness is the subject of this image, not the
+object. Do not fill it, do not decorate it, do not add texture to it.
+No arrow, no icon, no diagram, no phone, no screen, no hand, no
+second object.
+
+-----------------------------------------------------------
+LOGO INTEGRATION
+-----------------------------------------------------------
+Same rules as slide 1: transparency preserved, no box, no plate, no
+outline, no glow, no shadow behind it, never redrawn or recoloured,
+placed on a calm area, same size and same position as slide 1.
+
+-----------------------------------------------------------
+FORMAT AND SAFE ZONES — identical to slide 1
+-----------------------------------------------------------
+1080 x 1920 px, 9:16. The BOTTOM 480 px and the RIGHT 240 px are
+covered by the TikTok interface: nothing that matters goes there.
+
+-----------------------------------------------------------
+CONTENT — render these strings verbatim, nothing else
+-----------------------------------------------------------
+COUNTER (same place, same size): "2/3"
+
+THE PIVOT (upper part, left-aligned, medium size, quiet):
+  "Ce n’est pas le lien qui manquait."
+
+THE WOUND (immediately under the pivot, ENORMOUS all caps, condensed,
+           tight tracking, in the accent colour of the style
+           reference, three stacked lines filling the live width. The
+           loudest element of the image, and the only large one):
+  "C’EST LA PREUVE"
+  "QUE TU"
+  "EXISTES."
+
+THE WEIGHT (under it, MUCH smaller, quiet, two lines):
+  "Des années de métier, des clients qui reviennent, une réputation construite à la main."
+  "Et rien à montrer en trois secondes."
+
+SWIPE CUE (left side, below, small, uppercase, letter-spaced, in the
+           accent colour): "GLISSE" followed by a solid triangular
+           arrow pointing right.
+
+FOOTER: the logo, per the LOGO INTEGRATION block, bottom-left, same
+size and position as slide 1.
+
+-----------------------------------------------------------
+TEXT RENDERING — read twice
+-----------------------------------------------------------
+- Render ONLY the strings quoted above. Any extra word is a failure.
+- Reproduce them VERBATIM. No translation, no rewording.
+- Correct French typographic apostrophes ’ exactly as written:
+  "n’est", "C’EST". Correct diacritics: "années", "métier",
+  "réputation", "secondes".
+- The huge line must be readable at 20% of the image size.
+- No hashtag, no social icon, no emoji, no interface element.
+
+-----------------------------------------------------------
+HARD CONSTRAINTS
+-----------------------------------------------------------
+- NO price, NO amount, NO currency, NO offer sticker.
+- NO invented statistics, percentages or figures of any kind: the
+  story says "des années", never a number.
+- NO first name, no age, no portrait, no face, no human figure.
+- NO recognisable third-party brand, app name or interface.
+- NO watermark, no frame, no border. ONE single idea.
+
+-----------------------------------------------------------
+OUTPUT
+-----------------------------------------------------------
+One finished 1080 x 1920 image, publication-ready,
+high-fidelity text rendering.
+===========================================================
+```
+
+### PROMPT · image 3 sur 3
+
+```
+===========================================================
+NEBULA AGENCY — TIKTOK CAROUSEL, STORY — SLIDE 3 OF 3
+===========================================================
+
+ATTACHED INPUTS — THREE attachments.
+Identify the first two BY THEIR CONTENT, not by their order.
+
+  THE LOGO = the attachment showing the NEBULA Agency logo: a purple
+     and blue cosmic swirl above the wordmark "NEBULA", with "AGENCY"
+     underneath, on a transparent background. An ASSET TO PLACE,
+     exactly as provided, never a style reference.
+
+  THE STYLE REFERENCE = the attachment that is a designed image with
+     its own subject and palette. It is the MATERIAL of the post.
+
+  SLIDE 2 = the image you generated just before, the second slide of
+     this carousel. It is the CONSISTENCY REFERENCE.
+
+-----------------------------------------------------------
+CONSISTENCY — the most important instruction of this prompt
+-----------------------------------------------------------
+Match SLIDE 2 exactly on: the subject and how it is rendered, the
+palette, the texture and grain, the type family and weight, the
+counter, the margins, the safe zones and the logo placement.
+This slide RESOLVES the story, so its light is warmer and fuller than
+the two before: same world, but no longer cold.
+
+-----------------------------------------------------------
+THE STAGING — this is the whole idea of the image, and it closes
+              the story without a single word
+-----------------------------------------------------------
+THE REFLECTION STAYS.
+Come back close. On the same smooth surface, THE REFLECTION IS NOW
+THERE: complete, luminous, sharp, warm, unmistakably a full reflection
+of the subject.
+And the subject itself is LEAVING THE FRAME: only an edge of it is
+still visible at one side of the image, cropped, almost gone.
+The reflection remains whole and lit WITHOUT the subject above it.
+That contradiction is deliberate and it is the entire message: the
+reflection does not leave when the subject does.
+Do not correct it, do not make the reflection fade, do not add a
+second subject to justify it. No arrow, no icon, no diagram, no
+phone, no screen, no hand.
+
+-----------------------------------------------------------
+LOGO INTEGRATION
+-----------------------------------------------------------
+Same rules as slides 1 and 2: transparency preserved, no box, no
+plate, no outline, no glow, no shadow behind it, never redrawn or
+recoloured, placed on a calm area, same size and same position.
+
+-----------------------------------------------------------
+FORMAT AND SAFE ZONES — identical to slides 1 and 2
+-----------------------------------------------------------
+1080 x 1920 px, 9:16. The BOTTOM 480 px and the RIGHT 240 px are
+covered by the TikTok interface: nothing that matters goes there.
+
+-----------------------------------------------------------
+CONTENT — render these strings verbatim, nothing else
+-----------------------------------------------------------
+COUNTER (same place, same size): "3/3"
+
+THE PIVOT (upper part, left-aligned, medium size, quiet, two lines):
+  "Une vitrine, ce n’est pas un site."
+  "C’est un endroit"
+
+THE PROMISE (immediately under the pivot, ENORMOUS all caps,
+             condensed, tight tracking, in the accent colour, three
+             stacked lines filling the live width. The loudest
+             element of the image, and the only large one):
+  "QUI TE DÉFEND"
+  "QUAND TU"
+  "N’ES PAS LÀ."
+
+THE CLOSE (under it, MUCH smaller, quiet, two lines):
+  "NEBULA Agency construit la tienne, à Cotonou."
+  "Écris-nous en message privé. On en parle, sans engagement."
+
+CALL TO ACTION (a single small solid pill shape in the accent colour,
+                uppercase, tight tracking, placed at the left of the
+                live area below the close): "ABONNE-TOI"
+It is a printed graphic shape, never an app button, never a heart or
+bell icon, never a screenshot of an interface.
+There is NO swipe cue on this slide: the story ends here.
+
+FOOTER: the logo, per the LOGO INTEGRATION block, bottom-left, same
+size and position as slides 1 and 2.
+
+-----------------------------------------------------------
+TEXT RENDERING — read twice
+-----------------------------------------------------------
+- Render ONLY the strings quoted above. Any extra word is a failure.
+- Reproduce them VERBATIM. No translation, no rewording.
+- Correct French typographic apostrophes ’ exactly as written:
+  "n’est", "C’est", "N’ES". Correct diacritics: "DÉFEND", "LÀ",
+  "Écris".
+- "NEBULA Agency" is written exactly like that, and it is TYPE, not
+  the logo: the logo still goes in the footer as well.
+- The huge line must be readable at 20% of the image size.
+- No hashtag, no social icon, no emoji, no interface element.
+
+-----------------------------------------------------------
+HARD CONSTRAINTS
+-----------------------------------------------------------
+- NO price, NO amount, NO currency, NO "à partir de", NO offer
+  sticker. Not even on this final slide.
+- NO invented statistics, percentages or figures of any kind.
+- NO first name, no age, no portrait, no face, no human figure.
+- NO recognisable third-party brand, app name or interface.
+- NO watermark, no frame, no border. ONE single idea.
+
+-----------------------------------------------------------
+OUTPUT
+-----------------------------------------------------------
+One finished 1080 x 1920 image, publication-ready,
+high-fidelity text rendering.
+===========================================================
+```
+
+### La légende TikTok
+
+```
+« Envoie-moi le lien. »
+
+Tu as regardé ton téléphone et tu n’avais rien à envoyer. Pas parce que tu n’as
+rien fait : parce que tout ce que tu as fait est dans ta boutique, dans ta tête,
+dans la bouche de tes clients. Nulle part où on peut le voir en trois secondes.
+
+Ce n’est pas le lien qui manquait. C’est la preuve que tu existes.
+
+Une vitrine, ce n’est pas un site. C’est un endroit qui te défend quand tu n’es
+pas là, qui répond quand tu dors, et qui dit à celui qui hésite que tu es
+sérieux, avant même que tu ouvres la bouche.
+
+NEBULA Agency en construit à Cotonou. Écris-nous, on regarde ta situation
+ensemble, sans engagement.
+
+Abonne-toi, on en remet une chaque semaine.
+
+#cotonou #benin #229 #entrepreneur #business #commerce
+```
+
+**Le premier commentaire, à poster soi-même :**
+
+> À qui as-tu dû dire « je n’ai pas de lien » la dernière fois ? Raconte, je réponds à tout
+> le monde.
+
+⚠️ **Aucun prix en commentaire**, même si on le demande publiquement. « Je t’écris en
+privé », et **on entre par le Catalogue**.
+
+### Contrôles propres à ce carrousel
+
+| Contrôle | Pourquoi |
+|---|---|
+| **Aucun reflet sur les images 1 et 2** | c'est l'absence qui raconte ; un reflet ajouté par erreur tue les trois images |
+| **Le reflet de la 3 est entier alors que le sujet sort du cadre** | c'est la contradiction voulue, le modèle va vouloir la corriger |
+| Le vide de la 2 est resté vide | s'il est rempli, l'image ne dit plus rien |
+| « GLISSE » sur la 1 et la 2, jamais sur la 3 | l'histoire se termine, on ne renvoie pas ailleurs |
+| Le même sujet, la même surface sur les 3 | sinon ce sont trois posts, pas un carrousel |
+| Aucun chiffre dans l'histoire | « des années », jamais « dix ans » |
+
 ---
 
-## 4. Contrôles avant publication
+## 5. Contrôles avant publication
 
 | Contrôle | Pourquoi |
 |---|---|
@@ -312,7 +794,7 @@ après avoir compris le besoin, et **on entre par le Catalogue**.
 
 ---
 
-## 5. Les prochaines douleurs, déjà cadrées
+## 6. Les prochaines douleurs, déjà cadrées
 
 Une par post, jamais deux. Et **jamais deux posts de cette famille d'affilée** : entre les
 deux, un « LE SAVIEZ-VOUS ? » qui ne vend rien du tout. C'est lui qui achète le droit
