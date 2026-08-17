@@ -856,6 +856,116 @@ em{font-style:italic;font-weight:400}
 @media(prefers-reduced-motion:reduce){.faq-q[open] .faq-r{animation:none}}
 
 /* ==================================================================
+   UNE SIGNATURE PAR SECTION (2026-08-17)
+   ==================================================================
+   Mongazi : « ajoute des animations différentes pour chaque autre
+   section ». Il a raison : cinq blocs partageaient la MÊME révélation
+   (`translateY(24px)` + fondu), alors que la règle de la maison est
+   une signature différente par section, tirée du métier.
+
+   Chacune sort d'un geste de couture réel :
+     01 la maison     — l'ourlet qu'on déroule
+     02 les collections — le portant : les cintres qu'on pousse
+     03 le catalogue  — les patrons qu'on épingle
+     04 les questions — le fil qui se dénoue
+     05 le contact    — la couture qui se ferme
+
+   ⚠️ Aucune de ces animations ne déborde : `section{overflow-x:clip}`
+   plus bas. Une révélation qui vient du côté pousse la page tant
+   qu'elle n'a pas joué, et personne ne le voit en la regardant.
+   ⚠️ `clip` et pas `hidden` : `hidden` créerait un conteneur de
+   défilement et casserait les éléments collants.
+   ================================================================== */
+section{overflow-x:clip}
+
+/* ---- 01 · LA MAISON — l'ourlet qu'on déroule ---------------------
+   Les trois piliers se découvrent de gauche à droite, l'un après
+   l'autre, comme un ourlet qu'on déplie sur la table. */
+.js #maison .piliers li{clip-path:inset(0 100% 0 0);opacity:.001}
+.js #maison .piliers.vu li{animation:ourl .82s var(--e) both}
+.js #maison .piliers.vu li:nth-child(2){animation-delay:.13s}
+.js #maison .piliers.vu li:nth-child(3){animation-delay:.26s}
+@keyframes ourl{
+  from{clip-path:inset(0 100% 0 0);opacity:1}
+  to{clip-path:inset(0 0 0 0);opacity:1}
+}
+
+/* ---- 02 · LES COLLECTIONS — le portant ---------------------------
+   Le bloc arrive en glissant, comme un cintre qu'on pousse sur la
+   tringle, et se stabilise après un balancement très court. */
+.js #collections .coll-d{opacity:0;transform:translateX(38px) rotate(.6deg)}
+.js #collections .coll-d.vu{animation:cintre 1s var(--e) both}
+@keyframes cintre{
+  0%{opacity:0;transform:translateX(38px) rotate(.9deg)}
+  62%{opacity:1;transform:translateX(-5px) rotate(-.25deg)}
+  100%{opacity:1;transform:none}
+}
+.js #collections .cars-b{opacity:0;transform:translateY(20px)}
+.js #collections .cars-b.vu{animation:cintre-b .9s var(--e) .14s both}
+@keyframes cintre-b{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+/* ---- 03 · LE CATALOGUE — les patrons qu'on épingle ---------------
+   Chaque carte pivote autour de son coin haut-gauche, comme une
+   feuille de patron qui retombe autour de son épingle, et s'arrête
+   sur l'inclinaison que le script lui a donnée. */
+.js #catalogue #grille .piece{transform-origin:12px 12px}
+.js #catalogue #grille.vu .piece{animation:epingle .7s var(--e) both}
+.js #catalogue #grille.vu .piece:nth-child(2){animation-delay:.06s}
+.js #catalogue #grille.vu .piece:nth-child(3){animation-delay:.12s}
+.js #catalogue #grille.vu .piece:nth-child(4){animation-delay:.18s}
+.js #catalogue #grille.vu .piece:nth-child(n+5){animation-delay:.24s}
+@keyframes epingle{
+  from{opacity:0;transform:rotate(calc(var(--rot,0deg) - 6deg)) translateY(-10px)}
+  to{opacity:1;transform:rotate(var(--rot,0deg))}
+}
+
+/* ---- 04 · LES QUESTIONS — le fil qui se dénoue -------------------
+   Un fil descend le long de la liste, et chaque séparation se trace
+   de gauche à droite derrière lui. */
+.faq .faq-l{position:relative}
+.js .faq .faq-l::before{content:'';position:absolute;left:-1px;top:0;width:1.5px;height:100%;
+  background:var(--rose);transform:scaleY(0);transform-origin:top;opacity:.9}
+.js .faq .faq-l.vu::before{animation:fil 1.15s var(--e) both}
+@keyframes fil{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.js .faq .faq-q{opacity:0}
+.js .faq .faq-l.vu .faq-q{animation:denoue .6s var(--e) both}
+.js .faq .faq-l.vu .faq-q:nth-child(2){animation-delay:.1s}
+.js .faq .faq-l.vu .faq-q:nth-child(3){animation-delay:.2s}
+.js .faq .faq-l.vu .faq-q:nth-child(4){animation-delay:.3s}
+.js .faq .faq-l.vu .faq-q:nth-child(5){animation-delay:.4s}
+.js .faq .faq-l.vu .faq-q:nth-child(6){animation-delay:.5s}
+@keyframes denoue{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+
+/* ---- 05 · LE CONTACT — la couture qui se ferme -------------------
+   Les quatre accès se rapprochent par paires, comme deux pans de
+   tissu qu'on assemble, et le point de couture se pique au milieu. */
+.js #contact .socs{position:relative;opacity:0}
+.js #contact .socs.vu{opacity:1}
+.js #contact .socs>*{opacity:0}
+.js #contact .socs.vu>*{animation:pan .78s var(--e) both}
+.js #contact .socs.vu>*:nth-child(1){--sens:-1}
+.js #contact .socs.vu>*:nth-child(2){--sens:-1;animation-delay:.06s}
+.js #contact .socs.vu>*:nth-child(3){--sens:1;animation-delay:.06s}
+.js #contact .socs.vu>*:nth-child(4){--sens:1}
+@keyframes pan{
+  from{opacity:0;transform:translateX(calc(var(--sens,1) * 26px))}
+  to{opacity:1;transform:none}
+}
+.js #contact .socs::after{content:'';position:absolute;left:0;right:0;top:-1px;height:1.5px;
+  background:repeating-linear-gradient(90deg,var(--rose) 0 7px,transparent 7px 14px);
+  transform:scaleX(0);transform-origin:50% 50%}
+.js #contact .socs.vu::after{animation:pique 1s var(--e) .3s both}
+@keyframes pique{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+@media(prefers-reduced-motion:reduce){
+  .js #maison .piliers li,.js #collections .coll-d,.js #collections .cars-b,
+  .js #catalogue #grille .piece,.js .faq .faq-q,.js #contact .socs,
+  .js #contact .socs>*{animation:none!important;opacity:1!important;
+    transform:none!important;clip-path:none!important}
+  .js .faq .faq-l::before,.js #contact .socs::after{animation:none!important;transform:none!important}
+}
+
+/* ==================================================================
    LA MODALE · le carnet de mesures
    ================================================================== */
 
@@ -1314,7 +1424,7 @@ em{font-style:italic;font-weight:400}
     <button class="rond" id="hPrev" type="button" aria-label="Création précédente" data-tap>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
     </button>
-    <p class="hcpt" id="hcpt" aria-live="polite">01 — 04</p>
+    <p class="hcpt" id="hcpt" aria-live="polite">01 — 07</p>
     <button class="rond" id="hNext" type="button" aria-label="Création suivante" data-tap>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
     </button>
@@ -3097,7 +3207,22 @@ var Atelier = (function(){
     { f:'hero-3.webp', c:'#275eb7', col:'Ensemble JOSY',     mat:'Fait main · 2 semaines',
       t:'Ensemble JOSY',      d:"Pantalon large, empiècements peints, ceinture corset lacée. Fait main." },
     { f:'hero-4.webp', c:'#0e85b7', col:'Robe de ville',     mat:'Sur-mesure · 2 semaines',
-      t:'Robe de ville',      d:"Dos nu, wax à feuillages et panneaux de satin qui s'ouvrent à la marche." }
+      t:'Robe de ville',      d:"Dos nu, wax à feuillages et panneaux de satin qui s'ouvrent à la marche." },
+    /* ── Ajoutées le 2026-08-17. Le héros ne montrait que 4 pièces sur les 8
+       du catalogue : les quatre reçues le 2026-08-10 n'y étaient jamais
+       passées. On prend les trois plus fortes, et on garde la quatrième
+       (la robe à tulle) au seul carrousel : son violet doublait celui de la
+       robe de cérémonie violette, et deux nappes identiques qui se suivent
+       ne se voient pas.
+       ⚠️ Elles pointent sur `piece-*.webp` et non sur un `hero-*.webp` : c'est
+       la MÊME photo détourée, en 950 px de haut. La redécouper en WebP une
+       seconde fois ne ferait que la dégrader. */
+    { f:'piece-violette.webp', c:'#6b3065', col:'Cérémonie',      mat:'Sur-mesure · 2 semaines',
+      t:'Robe de cérémonie violette', d:"Buste ajusté, manches ballon, jupe longue à volants dans un wax à fougères. Le dos se lace en corset." },
+    { f:'piece-orange.webp',   c:'#925437', col:'Sur-mesure',     mat:'Sur-mesure · 2 semaines',
+      t:'Robe Naja',           d:"Bustier à découpe sous la poitrine, manches détachées des épaules, jupe courte très ample." },
+    { f:'piece-verte.webp',    c:'#7e6730', col:'Sur-mesure',     mat:'Sur-mesure · 2 semaines',
+      t:'Robe de ville verte', d:"Une seule épaule, nouée sur le côté. La taille descend bas, la jupe est froncée et très ample." }
   ];
   /* --- 3 · LES COLLECTIONS : 6 à 8 pièces phares --- */
   /* ⛔ LE CARROUSEL NE PORTE QUE SES VRAIES PIÈCES. Les vêtements générés en
@@ -3107,7 +3232,11 @@ var Atelier = (function(){
     { f:'piece-ceremonie.webp', l:'Cérémonie',    t:'Robe de cérémonie', s:'Bustier structuré, jupe à volants de satin' },
     { f:'piece-mira.webp', l:'Sur-mesure',   t:"L'ensemble Mira",   s:'Haut à manches ballon, jupe à volants étagés' },
     { f:'piece-josy.webp', l:'Fait main',    t:'Ensemble JOSY',     s:'Pantalon large, empiècements peints, corset lacé' },
-    { f:'piece-ville.webp', l:'Sur-mesure',   t:'Robe de ville',     s:'Dos nu, wax à feuillages et panneaux de satin' }
+    { f:'piece-ville.webp', l:'Sur-mesure',   t:'Robe de ville',     s:'Dos nu, wax à feuillages et panneaux de satin' },
+    { f:'piece-violette.webp', l:'Cérémonie',  t:'Robe de cérémonie violette', s:'Manches ballon, jupe à volants, dos lacé en corset' },
+    { f:'piece-orange.webp', l:'Sur-mesure',   t:'Robe Naja',         s:'Bustier découpé, manches détachées, jupe très ample' },
+    { f:'piece-verte.webp', l:'Sur-mesure',    t:'Robe de ville verte', s:'Une épaule nouée, taille basse, jupe froncée' },
+    { f:'piece-tulle.webp', l:'Sur-mesure',    t:'Robe de ville à tulle', s:'Col montant noué, dos dégagé, volant de tulle violet' }
   ];
   /* ================================================================ */
 
@@ -3182,7 +3311,10 @@ var Atelier = (function(){
      sections qu'un clic de menu a sautées. Leçon du 2026-08-05. ---- */
   (function revelations() {
     var restants = $$('[data-mots], .lab, .rv, .deck, .piliers, .plans, .cars-b,'
-      + ' .coll-d, .look-hd, .look-bas, .pills, .coords, .socs, .lk, .et');
+      + ' .coll-d, .look-hd, .look-bas, .pills, .coords, .socs, .lk, .et,'
+      /* ajoutés le 2026-08-17 : la grille du catalogue et la liste des
+         questions ont leur propre signature, il leur faut la classe */
+      + ' #grille, .faq-l');
     if (doux) { restants.forEach(function (el) { el.classList.add('vu'); }); return; }
     var attente = false;
     function balayer() {

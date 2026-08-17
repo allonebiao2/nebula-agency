@@ -741,3 +741,64 @@ inexistante, `image/jpeg` sur l'image de partage.
 **Le contrôle qualité passe de 84 à 120 contrôles** (le panier, puis cette
 couche commerciale).
 
+---
+
+## LE HÉROS COMPLÉTÉ ET UNE SIGNATURE PAR SECTION (2026-08-17)
+
+Mongazi : « complète le héros en mettant juste les meilleures, dans le même
+style que ceux déjà présents » et « ajoute des animations différentes pour
+chaque autre section ».
+
+### Le héros montrait 4 pièces sur 8
+
+Les quatre pièces reçues le 2026-08-10 (violette, Naja orange, verte, tulle)
+n'étaient **jamais passées au héros ni au carrousel**. Corrigé :
+
+- **héros : 4 → 7** (violette, Naja, verte ajoutées). La robe **à tulle est
+  restée au seul carrousel** : son violet doublait celui de la robe de
+  cérémonie violette, et deux nappes identiques qui se suivent ne se voient pas.
+- **carrousel : 4 → 8** (les huit vraies pièces).
+- ⚠️ Les nouvelles diapositives pointent sur **`piece-*.webp`**, pas sur un
+  `hero-*.webp` : c'est la **même photo détourée**, en 950 px de haut. La
+  réencoder en WebP une seconde fois ne ferait que la dégrader.
+- Leur **teinte** est relevée sur le tissu comme pour les autres
+  (`_v4/_couleurs.json`) : violette `#6b3065`, Naja `#925437`, verte `#7e6730`.
+  ⚠️ Le seuil de saturation à 0,35 écartait le **fond sauge** de la robe verte :
+  il ne restait que ses rubans ocre et sa nappe tombait sur celle de l'orange.
+  À 0,22 on garde les tissus sourds, qui sont aussi des couleurs.
+- Le compteur de secours du markup passe à `01 — 07` (c'est celui que voit
+  quelqu'un sans JavaScript).
+
+### Cinq sections partageaient la même révélation
+
+La règle de la maison est **une signature différente par section**, et cinq
+blocs partageaient le même `translateY(24px)` + fondu. Chacun a maintenant la
+sienne, tirée d'un geste de couture :
+
+| Section | La signature |
+|---|---|
+| 01 la maison | **l'ourlet qu'on déroule** : les piliers se découvrent de gauche à droite (`clip-path`) |
+| 02 les collections | **le portant** : le bloc glisse comme un cintre poussé sur la tringle, avec un balancement très court |
+| 03 le catalogue | **les patrons qu'on épingle** : chaque carte pivote autour de son coin haut-gauche jusqu'à son inclinaison |
+| 04 les questions | **le fil qui se dénoue** : un fil descend le long de la liste, les questions se posent l'une après l'autre |
+| 05 le contact | **la couture qui se ferme** : les quatre accès se rapprochent par paires, le point se pique au milieu |
+
+⚠️ **`#grille` et `.faq-l` ont été ajoutés à la liste balayée** dans
+`motion.js` : sans ça, ils n'auraient jamais reçu la classe `vu` et leur
+animation n'aurait jamais joué.
+
+⚠️ **`section{overflow-x:clip}` a été ajouté** en même temps. Deux de ces
+animations viennent du côté : une révélation qui part de la droite **pousse la
+page tant qu'elle n'a pas joué**, et personne ne le voit en regardant l'écran.
+C'est exactement le défaut de 6 px trouvé sur le site de l'agence.
+
+### ⚠️ Un piège de déploiement, vérifié à mes dépens
+
+**Quand le contrôle qualité échoue, `_predeploy.py` s'arrête AVANT de préparer
+`_dist/`.** Déployer juste après publie donc **la version précédente**, sans
+aucun message d'erreur. C'est arrivé ici : le site est parti avec la FAQ mais
+sans le nouveau héros. Vérifié en ligne, redéployé, revérifié.
+
+⚠️ Et un contrôle **échoue par intermittence** (une fois sur deux environ) :
+il est passé vert deux fois de suite juste après. À identifier : un contrôle qui
+échoue au hasard est pire qu'un contrôle absent.

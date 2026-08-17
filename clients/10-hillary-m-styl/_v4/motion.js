@@ -29,7 +29,22 @@
     { f:'hero-3.webp', c:'#275eb7', col:'Ensemble JOSY',     mat:'Fait main · 2 semaines',
       t:'Ensemble JOSY',      d:"Pantalon large, empiècements peints, ceinture corset lacée. Fait main." },
     { f:'hero-4.webp', c:'#0e85b7', col:'Robe de ville',     mat:'Sur-mesure · 2 semaines',
-      t:'Robe de ville',      d:"Dos nu, wax à feuillages et panneaux de satin qui s'ouvrent à la marche." }
+      t:'Robe de ville',      d:"Dos nu, wax à feuillages et panneaux de satin qui s'ouvrent à la marche." },
+    /* ── Ajoutées le 2026-08-17. Le héros ne montrait que 4 pièces sur les 8
+       du catalogue : les quatre reçues le 2026-08-10 n'y étaient jamais
+       passées. On prend les trois plus fortes, et on garde la quatrième
+       (la robe à tulle) au seul carrousel : son violet doublait celui de la
+       robe de cérémonie violette, et deux nappes identiques qui se suivent
+       ne se voient pas.
+       ⚠️ Elles pointent sur `piece-*.webp` et non sur un `hero-*.webp` : c'est
+       la MÊME photo détourée, en 950 px de haut. La redécouper en WebP une
+       seconde fois ne ferait que la dégrader. */
+    { f:'piece-violette.webp', c:'#6b3065', col:'Cérémonie',      mat:'Sur-mesure · 2 semaines',
+      t:'Robe de cérémonie violette', d:"Buste ajusté, manches ballon, jupe longue à volants dans un wax à fougères. Le dos se lace en corset." },
+    { f:'piece-orange.webp',   c:'#925437', col:'Sur-mesure',     mat:'Sur-mesure · 2 semaines',
+      t:'Robe Naja',           d:"Bustier à découpe sous la poitrine, manches détachées des épaules, jupe courte très ample." },
+    { f:'piece-verte.webp',    c:'#7e6730', col:'Sur-mesure',     mat:'Sur-mesure · 2 semaines',
+      t:'Robe de ville verte', d:"Une seule épaule, nouée sur le côté. La taille descend bas, la jupe est froncée et très ample." }
   ];
   /* --- 3 · LES COLLECTIONS : 6 à 8 pièces phares --- */
   /* ⛔ LE CARROUSEL NE PORTE QUE SES VRAIES PIÈCES. Les vêtements générés en
@@ -39,7 +54,11 @@
     { f:'piece-ceremonie.webp', l:'Cérémonie',    t:'Robe de cérémonie', s:'Bustier structuré, jupe à volants de satin' },
     { f:'piece-mira.webp', l:'Sur-mesure',   t:"L'ensemble Mira",   s:'Haut à manches ballon, jupe à volants étagés' },
     { f:'piece-josy.webp', l:'Fait main',    t:'Ensemble JOSY',     s:'Pantalon large, empiècements peints, corset lacé' },
-    { f:'piece-ville.webp', l:'Sur-mesure',   t:'Robe de ville',     s:'Dos nu, wax à feuillages et panneaux de satin' }
+    { f:'piece-ville.webp', l:'Sur-mesure',   t:'Robe de ville',     s:'Dos nu, wax à feuillages et panneaux de satin' },
+    { f:'piece-violette.webp', l:'Cérémonie',  t:'Robe de cérémonie violette', s:'Manches ballon, jupe à volants, dos lacé en corset' },
+    { f:'piece-orange.webp', l:'Sur-mesure',   t:'Robe Naja',         s:'Bustier découpé, manches détachées, jupe très ample' },
+    { f:'piece-verte.webp', l:'Sur-mesure',    t:'Robe de ville verte', s:'Une épaule nouée, taille basse, jupe froncée' },
+    { f:'piece-tulle.webp', l:'Sur-mesure',    t:'Robe de ville à tulle', s:'Col montant noué, dos dégagé, volant de tulle violet' }
   ];
   /* ================================================================ */
 
@@ -114,7 +133,10 @@
      sections qu'un clic de menu a sautées. Leçon du 2026-08-05. ---- */
   (function revelations() {
     var restants = $$('[data-mots], .lab, .rv, .deck, .piliers, .plans, .cars-b,'
-      + ' .coll-d, .look-hd, .look-bas, .pills, .coords, .socs, .lk, .et');
+      + ' .coll-d, .look-hd, .look-bas, .pills, .coords, .socs, .lk, .et,'
+      /* ajoutés le 2026-08-17 : la grille du catalogue et la liste des
+         questions ont leur propre signature, il leur faut la classe */
+      + ' #grille, .faq-l');
     if (doux) { restants.forEach(function (el) { el.classList.add('vu'); }); return; }
     var attente = false;
     function balayer() {
