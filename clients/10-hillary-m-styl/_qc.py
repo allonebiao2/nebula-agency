@@ -145,6 +145,19 @@ def vitrine_commerciale():
     ok(all(p["offers"]["priceCurrency"] == "XOF" for p in prods),
        "les prix balises sont en francs CFA")
 
+    # 3 bis · la description de la page ne doit pas contredire le catalogue.
+    # Elle annoncait « express en 1 a 3 jours » quand chaque carte dit 2 a 5 :
+    # c'est le premier texte que lit Google, et il disait autre chose que le site.
+    desc = re.search(r'<meta name="description" content="([^"]+)"', src)
+    if desc:
+        expmax = max(int(x) for x in re.findall(r"expMax:(\d+)", src))
+        expmin = min(int(x) for x in re.findall(r"expMin:(\d+)", src))
+        d = desc.group(1)
+        faux = re.findall(r"(\d+)\s*(?:a|à)\s*(\d+)\s*jours", d)
+        ok(all(int(a) == expmin and int(b) == expmax for a, b in faux),
+           f"la description de la page dit le meme express que le catalogue ({expmin} a {expmax} j)"
+           + ("" if not faux else f" — vu {faux}"))
+
     # 4 · le delai annonce dans la FAQ est celui du catalogue
     jmax = max(int(x) for x in re.findall(r"jmax:(\d+)", src))
     sem = jmax // 7

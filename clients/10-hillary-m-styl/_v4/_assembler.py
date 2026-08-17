@@ -89,7 +89,7 @@ TETE = """<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>HILLARY M. STYL — Maison de couture · pagne, prêt-à-porter &amp; sur-mesure</title>
-<meta name="description" content="HILLARY M. STYL, maison de couture à Cotonou. Pagne, wax et tous tissus. Prêt-à-porter par tailles et sur-mesure aux mesures exactes. Commande en ligne, retrait ou expédition, délai express en 1 à 3 jours.">
+<meta name="description" content="HILLARY M. STYL, maison de couture à Cotonou. Pagne, wax et tous tissus. Prêt-à-porter par tailles et sur-mesure aux mesures exactes. Commande en ligne, retrait ou expédition, confection en deux semaines ou 2 à 5 jours en express.">
 <meta name="theme-color" content="#0c0c0c">
 <meta name="author" content="Hillary M. Styl">
 <link rel="canonical" href="https://hillary-m-styl.pages.dev/">
@@ -133,7 +133,7 @@ MILIEU = """</style>
 JSON_LD = """
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
- {"@type":"ClothingStore","@id":"https://hillary-m-styl.pages.dev/#maison","name":"HILLARY M. STYL","description":"Maison de couture à Cotonou : pagne, wax et tous tissus, prêt-à-porter par tailles et sur-mesure aux mesures exactes.","url":"https://hillary-m-styl.pages.dev/","telephone":"+22951374793","address":{"@type":"PostalAddress","addressLocality":"Cotonou","addressCountry":"BJ"},"areaServed":["BJ","TG","CI","NG"],"currenciesAccepted":"XOF","paymentAccepted":"Mobile Money"},
+ {"@type":"ClothingStore","@id":"https://hillary-m-styl.pages.dev/#maison","name":"HILLARY M. STYL","description":"Maison de couture à Cotonou : pagne, wax et tous tissus, prêt-à-porter par tailles et sur-mesure aux mesures exactes.","url":"https://hillary-m-styl.pages.dev/","telephone":"+22951374793","address":{"@type":"PostalAddress","addressLocality":"Cotonou","addressCountry":"BJ"},"areaServed":["BJ","TG","CI","NG"],"currenciesAccepted":"XOF","paymentAccepted":"Mobile Money","image":"https://hillary-m-styl.pages.dev/assets/images/og.jpg","logo":"https://hillary-m-styl.pages.dev/assets/images/google-logo.jpg","priceRange":"25 000 - 100 000 FCFA"},
  {"@type":"WebSite","@id":"https://hillary-m-styl.pages.dev/#site","url":"https://hillary-m-styl.pages.dev/","name":"HILLARY M. STYL","inLanguage":"fr-FR","publisher":{"@id":"https://hillary-m-styl.pages.dev/#maison"}},
  __PRODUITS__,
  {"@type":"FAQPage","mainEntity":[

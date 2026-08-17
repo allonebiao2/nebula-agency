@@ -96,6 +96,28 @@ def main():
 
     im.save(SORTIE, "JPEG", quality=86, optimize=True, progressive=True)
     print(f"  og.jpg écrit — {os.path.getsize(SORTIE) // 1024} Ko, {L}x{H}")
+
+    # ---- la couverture de la fiche Google (1024x576, format 16:9) -------
+    couv = im.resize((1024, 538), Image.LANCZOS).crop((0, 0, 1024, 538))
+    fond = Image.new("RGB", (1024, 576), ENCRE)
+    fond.paste(couv, (0, 19))
+    c_out = os.path.join(IMG, "google-couverture.jpg")
+    fond.save(c_out, "JPEG", quality=88, optimize=True, progressive=True)
+    print(f"  google-couverture.jpg écrit — {os.path.getsize(c_out) // 1024} Ko, 1024x576")
+
+    # ---- le logo carré de la fiche Google (720x720) ---------------------
+    # ⚠️ Google recadre parfois en cercle : on garde une marge franche, le
+    #    logo ne doit jamais toucher le bord.
+    logo_src = os.path.join(IMG, "logo.png")
+    if os.path.exists(logo_src):
+        carre = Image.new("RGB", (720, 720), PAPIER)
+        lg = Image.open(logo_src).convert("RGBA")
+        r = 560 / lg.width
+        lg = lg.resize((560, max(1, int(lg.height * r))), Image.LANCZOS)
+        carre.paste(lg, ((720 - lg.width) // 2, (720 - lg.height) // 2), lg)
+        l_out = os.path.join(IMG, "google-logo.jpg")
+        carre.save(l_out, "JPEG", quality=92, optimize=True)
+        print(f"  google-logo.jpg écrit — {os.path.getsize(l_out) // 1024} Ko, 720x720")
     return 0
 
 
