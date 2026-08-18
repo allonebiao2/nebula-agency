@@ -742,3 +742,40 @@ trouble dure 100 ms au lieu d'un demi-tour d'horloge.
   suite qui sert un site à un vrai navigateur. Et confirmer une correction
   d'intermittence par **plusieurs passages d'affilée**, jamais un seul.
 
+
+## 2026-08-18 — Une image dans une conversation n'est pas un fichier, et ça dépend d'OÙ tourne la session
+
+- **Contexte** : Mongazi envoie onze modèles en photo depuis son téléphone et
+  demande quatre fois de les mettre en ligne. Il est certain que ça marchait
+  avant, « au même endroit ».
+- **Ce qui s'est passé** : il avait raison, et la vérification l'a prouvé. Les
+  photos des lots précédents sont **sur le disque** alors que git ne les suit
+  pas (`_sources/` est ignoré), et le lot du 10 août a livré **les images
+  finies sans aucune source** — or l'outil de détourage ne sait lire que des
+  fichiers. Donc cette session-là **avait les fichiers**.
+  **Une session lancée depuis le téléphone tourne dans le nuage : les pièces
+  jointes y arrivent comme de vrais fichiers.** Une session qui tourne sur le PC
+  voit l'image sans pouvoir l'écrire nulle part.
+- **Leçon** : ne jamais dire « c'est impossible » quand l'utilisateur affirme
+  que ça marchait. **Aller chercher la trace** (git, dates, ce qu'un outil exige
+  pour fonctionner) : elle dit ce qui s'est réellement passé, et souvent il a
+  raison sur le fait, pas sur la cause.
+- **À appliquer** : quand des photos manquent, deux voies au lieu d'une :
+  refaire la manipulation **depuis le téléphone** (la session du nuage sait
+  écrire les fichiers), ou un **lien** que je télécharge. ⚠️ Une session du
+  téléphone travaille sur une branche `claude/…` qui ne rejoint jamais `main`
+  toute seule.
+
+## 2026-08-18 — Un catalogue peut vivre sans photos, à condition de ne pas mentir
+
+- **Contexte** : onze pièces réelles, prix réels, aucune photo. Mongazi tranche :
+  « mets-les déjà sur la vitrine ».
+- **Ce qui a été fait** : les fiches sont complètes (nom, description, prix en
+  trois monnaies, délai, mesures) et **commandables de bout en bout**. À la
+  place de l'image : le monogramme et **« Photo sur WhatsApp »**.
+- **Leçon** : entre un placeholder qui s'excuse (« photo à venir », qui dit que
+  la maison n'est pas prête) et une absence, il existe une troisième voie :
+  **une phrase vraie et actionnable**, qui envoie le client là où il achète.
+- **À appliquer** : ⚠️ ces pièces n'entrent **ni au héros ni au carrousel** —
+  ces surfaces vivent de la photo. Et ce n'est pas un état final : un drapeau
+  (`photoWa`) marque les fiches, et l'outil qui posera les images le retirera.
