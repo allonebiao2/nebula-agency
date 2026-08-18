@@ -269,6 +269,60 @@ var PIECES = [
    eur:52, usd:63, eurExp:67, usdExp:81,
    ds:"Col montant noué derrière la nuque, dos entièrement dégagé, jupe courte et évasée. Un volant de tulle violet dépasse sous le wax à volutes."},
 
+  /* ── LES 11 MODELES RECUS LES 2026-08-16 ET 17 ──────────────────
+     Poses au catalogue le 2026-08-18 sur demande de Mongazi, AVANT
+     leurs photos : les pieces sont reelles, les prix sont les siens,
+     la commande fonctionne. `photoWa:true` remplace la photo par
+     « Photo sur WhatsApp », qui est vrai et actionnable.
+     ⚠️ Elles n'entrent NI au heros NI au carrousel tant qu'elles
+     n'ont pas d'image : un monogramme en pleine page ne montre rien.
+     `python _nouveaux_modeles.py --poser` posera les photos et
+     retirera ce drapeau. */
+  {id:"h10", cat:"sm", nom:"Robe Organza", type:"robe_ovale", tag:"Cérémonie", photoWa:true,
+   prix:40000, jmin:14, jmax:14, expPrix:55000, expMin:2, expMax:4,
+   eur:60, usd:72, eurExp:82, usdExp:100,
+   ds:"Manches ballon détachées des épaules, col en organza froncé, découpe à la taille, dos lacé au ruban et jupon d'organza sous un wax rouge."},
+  {id:"h11", cat:"sm", nom:"Ensemble Nœud", type:"haut_pantalon", tag:"", photoWa:true,
+   prix:25000, jmin:14, jmax:14, expPrix:35000, expMin:2, expMax:4,
+   eur:37, usd:45, eurExp:52, usdExp:63,
+   ds:"Haut dos nu à col, noué dans le dos, et pantalon large avec un pan de wax rouge et blanc."},
+  {id:"h12", cat:"sm", nom:"Robe Lacée", type:"robe_ovale", tag:"", photoWa:true,
+   prix:35000, jmin:14, jmax:14, expPrix:45000, expMin:2, expMax:4,
+   eur:52, usd:63, eurExp:67, usdExp:81,
+   ds:"Épaules dénudées à fines bretelles, manches ballon, basque à la taille, dos lacé au ruban."},
+  {id:"h13", cat:"sm", nom:"Tailleur Cœurs", type:"haut_pantalon", tag:"Fait main", photoWa:true,
+   prix:50000, jmin:14, jmax:14, expPrix:65000, expMin:2, expMax:4,
+   eur:75, usd:90, eurExp:99, usdExp:115,
+   ds:"Veste cintrée à revers et épaules structurées, pantalon large assorti, wax bordeaux à cœurs."},
+  {id:"h14", cat:"sm", nom:"Ensemble Jean", type:"haut_jupe", tag:"", photoWa:true,
+   prix:35000, jmin:14, jmax:14, expPrix:45000, expMin:2, expMax:4,
+   eur:52, usd:63, eurExp:67, usdExp:81,
+   ds:"Haut court épaules dénudées à manches ballon, jupe longue à volants montée sur un empiècement en jean."},
+  {id:"h15", cat:"sm", nom:"Robe Sirène", type:"robe_droite", tag:"Cérémonie", photoWa:true,
+   prix:40000, jmin:14, jmax:14, expPrix:55000, expMin:2, expMax:4,
+   eur:60, usd:72, eurExp:82, usdExp:100,
+   ds:"Fourreau en wax violet, volants bleu roi en bordure et le long de la fente, traîne et foulard assorti."},
+  {id:"h16", cat:"sm", nom:"Robe Émeraude", type:"haut_jupe", tag:"", photoWa:true,
+   prix:25000, jmin:14, jmax:14, expPrix:35000, expMin:2, expMax:4,
+   eur:37, usd:45, eurExp:52, usdExp:63,
+   ds:"Coupe courte ajustée, manches longues, grands motifs verts et jaunes cernés de noir."},
+  {id:"h17", cat:"sm", nom:"Ensemble Orange", type:"haut_pantalon", tag:"", photoWa:true,
+   prix:35000, jmin:14, jmax:14, expPrix:45000, expMin:2, expMax:4,
+   eur:52, usd:63, eurExp:67, usdExp:81,
+   ds:"Bustier froncé à lien au cou, découpes sur les côtés, bas long et très ample en tissu uni."},
+  {id:"h18", cat:"sm", nom:"Robe Soleil", type:"robe_ovale", tag:"Cérémonie", photoWa:true,
+   prix:25000, jmin:14, jmax:14, expPrix:35000, expMin:2, expMax:4,
+   eur:37, usd:45, eurExp:52, usdExp:63,
+   ds:"Épaules drapées à cordons et pompons, ceinture drapée, jupe très ample en bazin teint rouge et or."},
+  {id:"h19", cat:"sm", nom:"Robe d'été", type:"robe_ovale", tag:"Plage", photoWa:true,
+   prix:35000, jmin:14, jmax:14, expPrix:45000, expMin:2, expMax:4,
+   eur:52, usd:63, eurExp:67, usdExp:81,
+   ds:"Haut court noué au cou et jupe longue très ample, en bazin teint. La pièce d'été, qui va de la plage au déjeuner."},
+  {id:"h20", cat:"sm", nom:"Ensemble Volants", type:"haut_pantalon", tag:"", photoWa:true,
+   prix:40000, jmin:14, jmax:14, expPrix:55000, expMin:2, expMax:4,
+   eur:60, usd:72, eurExp:82, usdExp:100,
+   ds:"Haut court noué devant, manches à trois volants étagés, et pantalon très évasé en jean à empiècements de bazin teint."},
+
   /* Une CRÉATION LIBRE : ce n'est pas un vêtement inventé, c'est un service.
      Aucun prix (« sur devis »), aucune photo revendiquée : le client décrit
      ce qu'il veut, choisit le type de vêtement, et on en parle. C'était déjà
@@ -355,7 +409,8 @@ function carte(p){
            d'attente dit au client que la maison n'est pas prête. Cette carte
            est la « Création libre » — elle n'a pas de photo parce qu'elle n'a
            pas de modèle, et c'est ça qu'il faut écrire. */
-        : '<div class="mark"></div><span class="avenir">Votre modèle</span>')+
+        : '<div class="mark"></div><span class="avenir">'+
+          (p.photoWa ? 'Photo sur WhatsApp' : 'Votre modèle')+'</span>')+
       '<span class="voile"><span>Commander</span></span></div>'+
     '<div class="bd">'+
       '<h3>'+esc(p.nom)+'</h3>'+

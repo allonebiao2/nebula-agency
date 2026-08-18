@@ -124,9 +124,14 @@ La **matière** (wax, bazin, satin, jean…) et si c'est du **prêt-à-porter** 
 > **Il faut un nom par pièce avant publication.**
 
 ## A · « Robe de ville » — rouge et organza *(nom à trancher)*
-Robe longue, wax rouge à motifs blancs, manches ballon, dos lacé au ruban,
-volants blancs, jupon d'organza blanc et crème. Photographiée **de dos**, fond
-jaune.
+Robe longue, wax rouge à motifs blancs, manches ballon détachées des épaules,
+col en organza blanc froncé, découpe à la taille, dos lacé au ruban, jupon
+d'organza blanc et crème. Fond jaune.
+
+✅ **Deux vues, reçues séparément.** Le dos est arrivé le 2026-08-16, la face le
+2026-08-17. ⚠️ La face a d'abord été annoncée comme un modèle de plus : c'est
+**la même pièce** (mêmes prix 40 000 / 55 000, mêmes mesures robe ovale, même
+laçage rose, même jupon d'organza). Rien à dédoubler au catalogue.
 
 | | |
 |---|---|
@@ -300,6 +305,26 @@ et cette photo y répond peut-être toute seule.
 ⚠️ La photo est une **capture d'écran de téléphone** : bandes noires en haut et
 en bas, à couper. Et comme pour l'ensemble Jean, **aucune silhouette isolée**
 pour la carte et le héros : il faudra détourer l'un des deux mannequins.
+
+## K · « Robe de ville » — haut à volants et pantalon jean *(nom à trancher)*
+Haut court noué devant, **manches à trois volants étagés** très larges, en bazin
+tie-dye rouge et blanc. Pantalon **très évasé en jean**, avec des empiècements
+du même tissu rouge sur les côtés. Deux photos, face et dos, fond blanc, un
+seul mannequin : **les meilleures conditions du lot pour le détourage.**
+
+| | |
+|---|---|
+| Confection normale | **2 semaines** |
+| Prix | **40 000 FCFA** · 60 € · 72 $ |
+| Confection express | **2 à 4 jours** |
+| Prix express | **55 000 FCFA** · 82 € · 100 $ (supplément **+15 000**) |
+| Mesures | **celles d'un pantalon ET d'un haut** |
+
+⚠️ **À ne pas confondre avec l'ensemble JOSY**, déjà au catalogue à 65 000 F :
+lui aussi est un pantalon large en jean à empiècements. Ce sont deux pièces
+différentes (JOSY a une ceinture corset lacée et des empiècements peints à la
+main), mais côte à côte dans le catalogue, une cliente hésitera. À faire
+confirmer, et à distinguer par le nom.
 
 ## Ce qui bloque, pour ce lot
 

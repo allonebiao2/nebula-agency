@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-HILLARY M. STYL — les DIX modèles reçus les 2026-08-16 et 17, prêts à entrer.
+HILLARY M. STYL — les ONZE modèles reçus les 2026-08-16 et 17, prêts à entrer.
 
     python _nouveaux_modeles.py           dit ce qui manque, ne touche à rien
     python _nouveaux_modeles.py --poser   détoure, pose les images, injecte
 
 POURQUOI CE FICHIER EXISTE
-Hillary a envoyé dix modèles avec leurs prix, leurs délais et leur type de
+Hillary a envoyé onze modèles avec leurs prix, leurs délais et leur type de
 mesures. **Tout est ici, sauf les photos** : elles ont été montrées dans une
 conversation, elles ne sont jamais devenues des fichiers sur le disque. Ce
 script garde les données au chaud pour que leur arrivée ne coûte qu'une
@@ -47,8 +47,8 @@ MODELES = [
     dict(cle="organza", id="h10", nom="Robe Organza",
          prix=40000, expPrix=55000, eur=60, usd=72, eurExp=82, usdExp=100,
          type="robe_ovale", tag="Cérémonie",
-         indice="robe rouge à motifs blancs, volants blancs, jupon d'organza — photo DE DOS, fond jaune",
-         ds="Manches ballon, dos lacé au ruban, volants blancs et jupon d'organza sous un wax rouge."),
+         indice="robe rouge à motifs blancs, col en organza blanc froncé, jupon d'organza — fond JAUNE, deux vues : face et dos (la face est arrivée le 17/08)",
+         ds="Manches ballon détachées des épaules, col en organza froncé, découpe à la taille, dos lacé au ruban et jupon d'organza sous un wax rouge."),
     dict(cle="noeud", id="h11", nom="Ensemble Nœud",
          prix=25000, expPrix=35000, eur=37, usd=45, eurExp=52, usdExp=63,
          type="haut_pantalon", tag="",
@@ -94,6 +94,11 @@ MODELES = [
          type="robe_ovale", tag="Plage",
          indice="DEUX mannequins, haut court noué au cou + jupe longue : bazin tie-dye brun et jaune à médaillons roses, et tie-dye orange et bleu — capture d'écran, bandes noires à couper",
          ds="Haut court noué au cou et jupe longue très ample, en bazin teint. La pièce d'été, qui va de la plage au déjeuner."),
+    dict(cle="volants", id="h20", nom="Ensemble Volants",
+         prix=40000, expPrix=55000, eur=60, usd=72, eurExp=82, usdExp=100,
+         type="haut_pantalon", tag="",
+         indice="haut court noué devant à MANCHES A TROIS VOLANTS, bazin tie-dye rouge et blanc, + pantalon tres evase en JEAN a empiecements rouges — face et dos, un seul mannequin",
+         ds="Haut court noué devant, manches à trois volants étagés, et pantalon très évasé en jean à empiècements de bazin teint."),
 ]
 
 # Les trois qui iront au héros quand elles seront là : les plus fortes, et

@@ -802,3 +802,30 @@ sans le nouveau héros. Vérifié en ligne, redéployé, revérifié.
 ⚠️ Et un contrôle **échoue par intermittence** (une fois sur deux environ) :
 il est passé vert deux fois de suite juste après. À identifier : un contrôle qui
 échoue au hasard est pire qu'un contrôle absent.
+
+---
+
+## LES 11 MODÈLES POSÉS SANS LEURS PHOTOS (2026-08-18)
+
+Mongazi, après avoir compris que les photos n'arriveraient pas tout de suite :
+« mets-les déjà sur la vitrine ». Décision assumée, exécutée.
+
+**Le catalogue passe de 9 à 20 cartes.** Les 11 nouvelles portent tout sauf
+l'image : nom, description, **prix en trois monnaies**, délai, type de mesures,
+et la commande fonctionne de bout en bout (mesures, délai, panier, WhatsApp).
+
+⚠️ **Le libellé est `Photo sur WhatsApp`, pas « photo à venir ».** La différence
+n'est pas cosmétique : « à venir » dit à la cliente que la maison n'est pas
+prête, « sur WhatsApp » est **vrai et actionnable**, et ça l'envoie là où elle
+commande de toute façon. Le drapeau est `photoWa:true` dans `PIECES`.
+
+⚠️ **Elles n'entrent ni au héros ni au carrousel.** Un monogramme en pleine page
+ne montre rien : ces deux surfaces vivent de la photo. Le héros reste à 7, le
+carrousel à 8.
+
+⚠️ **Ce n'est pas l'état final et il ne faut pas s'y habituer.** Onze cartes sans
+photo à la suite, ça se voit. `python _nouveaux_modeles.py --poser` posera les
+images et retirera le drapeau dès que les fichiers seront là.
+
+Contrôlé : **121 contrôles verts**, 0 erreur JS, la fiche d'une pièce sans photo
+s'ouvre et demande bien ses 11 mesures. Déployé et vérifié en ligne.
