@@ -779,3 +779,43 @@ trouble dure 100 ms au lieu d'un demi-tour d'horloge.
 - **À appliquer** : ⚠️ ces pièces n'entrent **ni au héros ni au carrousel** —
   ces surfaces vivent de la photo. Et ce n'est pas un état final : un drapeau
   (`photoWa`) marque les fiches, et l'outil qui posera les images le retirera.
+
+## 2026-08-18 — Un contrôle de mise en pause a besoin d'un témoin
+
+- **Contexte** : les pièces à deux photos basculent toutes seules, et doivent
+  s'arrêter hors de l'écran. J'écris le contrôle : état, on attend, état, « ils
+  doivent être identiques ». Vert du premier coup.
+- **Le piège** : ce contrôle serait **vert aussi si le mécanisme était mort**.
+  Deux états identiques prouvent l'immobilité, jamais la mise en pause.
+- **Leçon générale** : tout contrôle qui vérifie que **quelque chose ne se
+  produit pas** doit être précédé d'un contrôle qui prouve que **ça se produit**
+  dans les conditions normales. Sans le témoin, on ne teste rien.
+- **À appliquer** : partout où on vérifie une absence — pas d'animation en
+  mouvement réduit, pas de requête réseau, pas de son, pas de bascule hors
+  écran.
+
+## 2026-08-18 — On échantillonne, on ne compare pas deux instantanés
+
+- **Contexte** : « le catalogue tourne » vérifié par un état, 5,2 s d'attente,
+  un second état, « ils doivent différer ». Échec apparent, site intact.
+- **La cause** : la bascule a une période de **7,2 s**. Deux relevés espacés de
+  5,2 s retombent sur la **même phase une fois sur cinq**. Le contrôle échouait
+  au hasard de la seconde où il tombait.
+- **Leçon générale** : pour observer un phénomène **périodique**, on relève à
+  intervalle court sur une fenêtre qui couvre au moins un cycle entier, et on
+  compte les états **distincts**. Deux points sur une sinusoïde ne disent rien.
+- **Même famille** que le contrôle qui échouait au hasard le 2026-08-17 (serveur
+  de test mono-tâche). Un contrôle intermittent finit toujours par être ignoré,
+  et c'est là qu'il laisse passer un vrai défaut.
+
+## 2026-08-18 — Un contrôle qui dit « il manque quelque chose » doit dire QUOI
+
+- **Contexte** : « aucune ressource locale manquante » échouait. Rien d'autre.
+  Une demi-heure pour découvrir qu'il s'agissait des six `.mp3`, et qu'ils
+  étaient bien sur le disque : la page est ouverte en `file://`, où Chromium
+  **interdit `fetch()`** par principe.
+- **Leçon** : un message d'échec qui ne nomme pas l'objet fautif coûte plus cher
+  que le défaut qu'il signale. Il nomme maintenant les fichiers.
+- **Et une leçon de méthode** : avant de corriger, j'ai rejoué le même relevé
+  sur la version de `main`. Identique. **On ne répare pas ce qu'on n'a pas
+  cassé** — et on ne s'attribue pas un défaut antérieur.

@@ -18,9 +18,13 @@ commande, et il REFUSE de travailler tant qu'une photo manque.
 
 COMMENT ON S'EN SERT
 1. Les photos arrivent dans `_partage/`.
-2. On les range, une par dossier : `_sources/modele-<clé>/photo.jpg`
-   (deux photos si on a le dos : la principale d'abord dans l'ordre du nom).
-3. `python _nouveaux_modeles.py --poser`
+2. On les range, une par dossier : `_sources/modele-<clé>/…`
+   · UNE photo  → la pièce a une seule vue ;
+   · DEUX photos → face et dos. Nommer le dos `dos.jpg` (ou `2-dos.jpg`) suffit
+     à fixer l'ordre ; sans ça, c'est l'ordre alphabétique qui tranche.
+     La carte du catalogue et le carrousel les feront alors DÉFILER TOUT SEULS,
+     l'une après l'autre, pendant qu'on les regarde.
+3. `python _nouveaux_modeles.py --poser`   (pose ce qui est prêt, pas plus)
 4. `python _v4/_assembler.py && python _build.py && python _qc.py`
 """
 import io, json, os, re, sys
@@ -101,9 +105,12 @@ MODELES = [
          ds="Haut court noué devant, manches à trois volants étagés, et pantalon très évasé en jean à empiècements de bazin teint."),
 ]
 
-# Les trois qui iront au héros quand elles seront là : les plus fortes, et
-# trois couleurs qui ne se doublent pas.
-HEROS = ["lacee", "coeurs", "soleil"]
+# ⚠️ IL N'Y A PLUS DE LISTE DE TROIS ÉLUES. Mongazi, le 2026-08-18 :
+#    « dans la hero tu n'y mets en plus que les nouvelles, dans le style de
+#    ceux déjà présents, histoire que ça reste cohérent. » Toute pièce qui a
+#    sa photo entre donc au héros, écrite comme ses voisines, et c'est
+#    `poser_heros()` qui choisit l'ORDRE pour que deux nappes de même teinte
+#    ne se suivent jamais.
 
 JMIN = JMAX = 14          # deux semaines fermes, pour les dix
 EXPMIN, EXPMAX = 2, 4     # « 2 à 4 jours », pour les dix
@@ -114,11 +121,30 @@ def dossier(m):
 
 
 def photos(m):
+    """Les photos d'un modèle, LA FACE D'ABORD.
+
+    Hillary envoie certaines pièces en double : une vue de face, une de dos.
+    L'ordre compte — la face va au catalogue, au carrousel et au héros, le dos
+    ne sert qu'à la seconde vue. On le décide dans cet ordre :
+
+      1. un nom qui le dit  (`dos`, `arriere`, `back`) part au second rang ;
+      2. sinon, l'ordre alphabétique, en documentant que `1-…` / `2-…` marche.
+
+    ⚠️ Trois photos ou plus : on garde les deux premières et on le DIT.
+       Choisir en silence, c'est laisser une vue sur le disque sans que
+       personne ne sache qu'elle a été écartée."""
     d = dossier(m)
     if not os.path.isdir(d):
         return []
-    return sorted(f for f in os.listdir(d)
-                  if f.lower().endswith((".jpg", ".jpeg", ".png", ".webp")))
+    l = sorted(f for f in os.listdir(d)
+               if f.lower().endswith((".jpg", ".jpeg", ".png", ".webp")))
+
+    def est_dos(f):
+        return re.search(r"(dos|arriere|arrière|back)", f, re.I) is not None
+
+    face = [f for f in l if not est_dos(f)]
+    dos = [f for f in l if est_dos(f)]
+    return (face + dos) if face else l
 
 
 def etat():
@@ -136,7 +162,10 @@ def dire():
         print(f"  ⛔ {m['nom']:<18} {m['prix']:>6} F   {dossier(m)[len(ICI)+1:]}/")
         print(f"     à reconnaître : {m['indice']}")
     for m in prets:
-        print(f"  ✅ {m['nom']:<18} {m['prix']:>6} F   {len(photos(m))} photo(s)")
+        ph = photos(m)
+        vue = "face + dos ↔ elle switchera toute seule" if len(ph) >= 2 else "face seule"
+        trop = f"  ⚠️ {len(ph) - 2} photo(s) écartée(s)" if len(ph) > 2 else ""
+        print(f"  ✅ {m['nom']:<18} {m['prix']:>6} F   {vue}{trop}")
     if manquants:
         print("\n  Rien n'a été modifié. Déposez les photos dans les dossiers"
               "\n  ci-dessus, puis relancez avec --poser.\n")
@@ -204,21 +233,200 @@ def poser_images(prets):
     return faits
 
 
+def js(v):
+    """Une chaîne écrite dans du JavaScript, échappée pour de bon.
+    ⚠️ Les anciennes lignes étaient bâties en `'%s'` : la première apostrophe
+    dans un nom ou une description cassait tout le fichier, donc tout le site.
+    Aucune des pièces d'aujourd'hui n'en porte — ce n'est pas une raison."""
+    return json.dumps(v, ensure_ascii=False)
+
+
+def jsq(v):
+    """La même chose, mais EN GARDANT LE STYLE DU FICHIER : les entrées du
+    héros et du carrousel écrivent leurs noms de fichier et leurs étiquettes
+    entre apostrophes (`f:'hero-1.webp'`) et leurs textes entre guillemets
+    (`t:"L'ensemble Mira"`). Une pièce ajoutée doit se lire comme ses voisines,
+    sinon le tableau devient un patchwork au fil des vagues.
+    Dès qu'une valeur porte une apostrophe, on repasse aux guillemets : la
+    cohérence ne vaut pas un fichier cassé."""
+    return "'" + v + "'" if ("'" not in v and "\\" not in v) else json.dumps(v, ensure_ascii=False)
+
+
+def teinte_deg(c):
+    """La teinte d'un « #rrggbb », en degrés sur le cercle des couleurs."""
+    import colorsys
+    r, g, b = (int(c[i:i + 2], 16) / 255 for i in (1, 3, 5))
+    return colorsys.rgb_to_hsv(r, g, b)[0] * 360
+
+
+def ecart(a, b):
+    """La distance entre deux teintes (0 à 180)."""
+    d = abs(a - b) % 360
+    return min(d, 360 - d)
+
+
+ECART_MIN = 28   # en dessous, deux nappes se confondent
+
+
+def court(t, n=56):
+    """La légende du carrousel. On coupe sur un MOT, pas au milieu d'un :
+    « jupe longu » s'affiche en grand sous la pièce."""
+    t = t.strip()
+    if len(t) <= n:
+        return t.rstrip(" .,;:")
+    c = t[:n + 1]
+    c = c[:c.rfind(" ")] if " " in c else c[:n]
+    return c.rstrip(" .,;:")
+
+
+def fiche_existante(mot, m, img, img2):
+    """⛔ LE DÉFAUT QUE CE BLOC RÉPARE. Les onze fiches sont ENTRÉES AU
+    CATALOGUE LE 2026-08-18, sans photo, avec `photoWa:true` (« Photo sur
+    WhatsApp »). L'ancien `injecter()` voyait `id:"h10"` déjà présent, écrivait
+    « déjà au catalogue » et passait. Les photos auraient été détourées, posées
+    dans `assets/images/`… et jamais raccrochées à une fiche. Le site n'aurait
+    pas bougé d'un pixel, et rien ne l'aurait signalé.
+
+    Ici on ACCROCHE la photo à la fiche qui existe : on pose `img` (et `img2`
+    s'il y a un dos) et on retire `photoWa:true`, qui devient un mensonge dès
+    que la photo est là. Idempotent : une fiche déjà pourvue n'est pas touchée.
+    Renvoie (source, True) si quelque chose a changé."""
+    d = mot.find(f'{{id:"{m["id"]}"')
+    if d < 0:
+        return mot, False
+    f = mot.index("},", d) + 2
+    bloc = mot[d:f]
+
+    if f'img:"{img}"' in bloc and (not img2 or f'img2:"{img2}"' in bloc):
+        return mot, False
+
+    ligne = f'img:"{img}"' + (f', img2:"{img2}"' if img2 else "")
+    if "img:" in bloc:                       # une photo était déjà là : on remplace
+        neuf_bloc = re.sub(r'img:"[^"]*"(,\s*img2:"[^"]*")?', ligne, bloc, count=1)
+    else:
+        # on insère juste avant la ligne des prix, là où `img` vit sur les
+        # autres fiches — pour que les 20 fiches se lisent de la même façon
+        neuf_bloc, n = re.subn(r"\n(\s*)prix:", "\n\\g<1>" + ligne.replace("\\", "\\\\") + ",\n\\g<1>prix:",
+                               bloc, count=1)
+        if not n:
+            sys.exit(f"⛔ {m['nom']} : ligne « prix: » introuvable, injection annulée")
+
+    # `photoWa:true` a fait son temps : la photo est là.
+    neuf_bloc = re.sub(r",?\s*photoWa:true", "", neuf_bloc, count=1)
+    return mot[:d] + neuf_bloc + mot[f:], True
+
+
+def poser_heros(mtn, faits, coul):
+    """Ajoute les nouvelles pièces au HÉROS, à la suite de celles qui y sont,
+    et dans l'ORDRE qui évite deux nappes voisines de même teinte.
+
+    ⛔ ON NE TOUCHE À AUCUNE ENTRÉE DÉJÀ PRÉSENTE. Elles gardent leur place,
+       leur formulation et leur ponctuation. On ajoute à la suite, dans leur
+       style : `f` `c` `col` `mat` entre apostrophes, `t` et `d` entre
+       guillemets, une pièce par bloc de deux lignes.
+
+    ⚠️ LA RÈGLE DES NAPPES VIENT DU 2026-08-17. La robe à tulle avait été
+       écartée du héros parce que « son violet doublait celui de la robe de
+       cérémonie violette, et deux nappes identiques qui se suivent ne se
+       voient pas » : le héros peint le fond avec la teinte de la pièce, donc
+       deux teintes voisines à la suite, c'est une transition qui n'existe
+       pas. On garde la règle — mais on ne perd plus la pièce : au lieu de
+       l'exclure, on la DÉPLACE.
+
+    ⚠️ Le héros TOURNE en boucle : la dernière diapositive précède la
+       première. La jonction du bout compte autant que les autres."""
+    d = mtn.index("var HERO = [")
+    f = mtn.index("  ];", d)
+    bloc = mtn[d:f]
+    deja = re.findall(r"c:'(#[0-9a-fA-F]{6})'", bloc)
+    presentes = set(re.findall(r"f:'([^']+)'", bloc))
+
+    reste = [m for m in faits
+             if os.path.exists(os.path.join(IMG, f"piece-{m['cle']}.webp"))
+             and f"piece-{m['cle']}.webp" not in presentes
+             and ("piece-" + m["cle"]) in coul]
+    if not reste:
+        return mtn
+
+    t = lambda m: teinte_deg(coul["piece-" + m["cle"]])
+
+    # on enchaîne à partir de la dernière teinte déjà en place
+    suite, prec = [], teinte_deg(deja[-1]) if deja else None
+    while reste:
+        if prec is None:
+            choix = reste[0]
+        else:
+            loin = [m for m in reste if ecart(t(m), prec) >= ECART_MIN]
+            # à défaut, celle qui s'en éloigne le plus : on ne bloque jamais
+            choix = loin[0] if loin else max(reste, key=lambda m: ecart(t(m), prec))
+        reste.remove(choix)
+        suite.append(choix)
+        prec = t(choix)
+
+    # la boucle se referme : si la dernière double la première du héros, on
+    # cherche une permutation qui règle la jonction sans en casser une autre
+    if deja and len(suite) > 1:
+        avant, apres = teinte_deg(deja[-1]), teinte_deg(deja[0])
+
+        def chaine_ok(sq):
+            h = [avant] + [t(m) for m in sq] + [apres]
+            return all(ecart(h[i], h[i + 1]) >= ECART_MIN for i in range(len(h) - 1))
+
+        if not chaine_ok(suite):
+            for i in range(len(suite)):
+                for j in range(i + 1, len(suite)):
+                    e = suite[:]
+                    e[i], e[j] = e[j], e[i]
+                    if chaine_ok(e):
+                        suite = e
+                        break
+                else:
+                    continue
+                break
+            else:
+                print("     ⚠️ deux nappes voisines se ressemblent au héros :"
+                      " regarder l'enchaînement avant de déployer.")
+
+    lignes = []
+    for m in suite:
+        # « Fait main · 2 semaines » quand c'est fait main, comme l'ensemble
+        # JOSY qui est au héros depuis le premier jour. Sinon « Sur-mesure ».
+        mat = ("Fait main" if m["tag"] == "Fait main" else "Sur-mesure") + " · 2 semaines"
+        lignes.append("    { f:%s, c:%s, col:%s, mat:%s,\n      t:%s, d:%s }"
+                      % (jsq(f"piece-{m['cle']}.webp"), jsq(coul["piece-" + m["cle"]]),
+                         jsq(m["tag"] or "Sur-mesure"), jsq(mat), js(m["nom"]), js(m["ds"])))
+
+    print(f"     héros : +{len(suite)} pièce(s) — "
+          + " · ".join(m["nom"] for m in suite))
+    return (mtn[:f].rstrip().rstrip(",") + ",\n" + ",\n".join(lignes) + "\n" + mtn[f:])
+
+
 def injecter(faits):
-    """Ajoute les pièces au catalogue, au carrousel et, pour les meilleures,
-    au héros. Idempotent : une pièce déjà présente n'est pas doublée."""
+    """Accroche la photo à chaque pièce : au catalogue, au carrousel et, pour
+    les meilleures, au héros. Idempotent de bout en bout — on peut relancer."""
     mot = io.open(MOTEUR, encoding="utf-8").read()
     mtn = io.open(MOTION, encoding="utf-8").read()
     coul = json.load(io.open(COULEURS, encoding="utf-8"))
     ajouts = 0
 
     for m in faits:
-        if f'id:"{m["id"]}"' in mot:
-            print(f"     {m['nom']} déjà au catalogue")
-            continue
         img = f"piece-{m['cle']}.webp"
         img2 = f"piece-{m['cle']}-dos.webp"
         a_dos = os.path.exists(os.path.join(IMG, img2))
+        if not os.path.exists(os.path.join(IMG, img)):
+            print(f"     ⛔ {m['nom']} : {img} absente, fiche laissée telle quelle")
+            continue
+
+        if f'id:"{m["id"]}"' in mot:
+            mot, change = fiche_existante(mot, m, img, img2 if a_dos else None)
+            print(f"     {m['nom']} : "
+                  + (("photo posée" + (" + dos" if a_dos else "")) if change
+                     else "déjà pourvue, rien à faire"))
+            if change:
+                coul["piece-" + m["cle"]] = teinte(os.path.join(IMG, img))
+                ajouts += 1
+            continue
+
         fiche = (
             f'\n  {{id:"{m["id"]}", cat:"sm", nom:"{m["nom"]}", type:"{m["type"]}", tag:"{m["tag"]}",\n'
             f'   img:"{img}"' + (f', img2:"{img2}"' if a_dos else "") + ",\n"
@@ -236,45 +444,61 @@ def injecter(faits):
         coul["piece-" + m["cle"]] = teinte(os.path.join(IMG, img))
         ajouts += 1
 
-    # le carrousel prend TOUTES les pièces, le héros seulement les meilleures
+    # ── LE CARROUSEL PREND TOUTES LES PIÈCES ──────────────────────
     for m in faits:
         img = f"piece-{m['cle']}.webp"
-        if img in mtn:
+        img2 = f"piece-{m['cle']}-dos.webp"
+        a_dos = os.path.exists(os.path.join(IMG, img2))
+        if not os.path.exists(os.path.join(IMG, img)) or img in mtn:
             continue
         fin_coll = mtn.index("  ];", mtn.index("var COLLECTIONS = ["))
-        ligne = ("    { f:'%s', l:'%s', t:\"%s\", s:'%s' }"
-                 % (img, m["tag"] or "Sur-mesure", m["nom"], m["ds"][:56]))
+        # `f2` = la vue de dos : c'est elle qui fait respirer la carte active
+        ligne = ("    { f:%s,%s l:%s, t:%s, s:%s }"
+                 % (jsq(img), (" f2:%s," % jsq(img2)) if a_dos else "",
+                    jsq(m["tag"] or "Sur-mesure"), js(m["nom"]), jsq(court(m["ds"]))))
         mtn = (mtn[:fin_coll].rstrip().rstrip(",") + ",\n" + ligne + "\n"
                + mtn[fin_coll:])
-        if m["cle"] in HEROS:
-            fin_hero = mtn.index("  ];", mtn.index("var HERO = ["))
-            h = ("    { f:'%s', c:'%s', col:'%s', mat:'Sur-mesure · 2 semaines',\n"
-                 "      t:\"%s\", d:\"%s\" }"
-                 % (img, coul["piece-" + m["cle"]], m["tag"] or "Sur-mesure",
-                    m["nom"], m["ds"]))
-            mtn = (mtn[:fin_hero].rstrip().rstrip(",") + ",\n" + h + "\n"
-                   + mtn[fin_hero:])
 
+    # ── ET LE HÉROS AUSSI ─────────────────────────────────────────
+    mtn = poser_heros(mtn, faits, coul)
+
+    # ⛔ `motion.js` n'était JAMAIS réécrit : le carrousel et le héros étaient
+    #    calculés ligne par ligne, puis jetés à la sortie de la fonction. Une
+    #    pièce serait entrée au catalogue et nulle part ailleurs.
+    io.open(MOTION, "w", encoding="utf-8", newline="\n").write(mtn)
     io.open(MOTEUR, "w", encoding="utf-8", newline="\n").write(mot)
     io.open(COULEURS, "w", encoding="utf-8", newline="\n").write(
         json.dumps(coul, ensure_ascii=False, indent=1) + "\n")
     print(f"\n  {ajouts} pièce(s) ajoutée(s) au catalogue.")
-    print("  Carrousel : toutes. Héros : " + ", ".join(HEROS) + ".")
+    print("  Carrousel et héros : toutes les pièces qui ont une photo.")
     print("  ⚠️ Regarder le résultat AVANT de déployer : une photo mal détourée")
     print("     se voit au héros, jamais dans un contrôle.")
     print("  Ensuite : python _v4/_assembler.py && python _build.py && python _qc.py")
 
 
 def main():
+    """⚠️ LA RÈGLE A CHANGÉ LE 2026-08-18, ET C'EST VOULU.
+
+    Avant, le script refusait de poser tant qu'une seule photo manquait :
+    « un catalogue à moitié rempli est pire qu'un catalogue qui attend ».
+    C'était juste quand les onze pièces n'étaient nulle part. Elles sont
+    maintenant AU CATALOGUE, en ligne, avec « Photo sur WhatsApp ». Le calcul
+    s'est inversé : chaque photo posée est un gain net, et celles qui manquent
+    encore gardent une mention honnête et actionnable. Attendre la dernière,
+    c'est laisser dix pièces sans image pour une onzième.
+
+    Ce qui n'a PAS changé : on n'invente rien pour combler un trou."""
     prets, manquants = dire()
     if "--poser" not in sys.argv:
         return 0
-    if manquants:
-        print("  ⛔ On ne pose rien tant qu'il manque une photo : un catalogue")
-        print("     à moitié rempli est pire qu'un catalogue qui attend.\n")
+    if not prets:
+        print("  Aucune photo à poser.\n")
         return 1
     print("\n  Détourage et pose…")
     injecter(poser_images(prets))
+    if manquants:
+        print(f"\n  ⏳ {len(manquants)} pièce(s) attendent encore leur photo et"
+              "\n     gardent « Photo sur WhatsApp ». Relancer à leur arrivée.")
     return 0
 
 

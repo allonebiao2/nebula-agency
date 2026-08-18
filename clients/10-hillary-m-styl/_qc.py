@@ -86,6 +86,87 @@ def variables_css():
        + (" — MANQUE : " + ", ".join(manquantes) if manquantes else ""))
 
 
+def deux_vues():
+    """LES PIÈCES PHOTOGRAPHIÉES DE FACE ET DE DOS.
+
+    Hillary envoie certaines pièces en double. Trois façons de rater ça sans
+    qu'aucun contrôle d'affichage ne le voie :
+      · `img2` pointe sur un fichier qui n'existe pas — la seconde vue est un
+        carré vide, et la carte « bascule » vers rien ;
+      · la face et le dos sont LE MÊME FICHIER (deux fois la même photo posée
+        par erreur) — la carte bascule d'une image vers elle-même, ce qui est
+        strictement invisible et donc indétectable à l'œil ;
+      · le carrousel a la seconde vue et le catalogue non, ou l'inverse.
+    On lit les données, jamais un chiffre recopié ici."""
+    import hashlib
+    ici = pathlib.Path(__file__).resolve().parent
+    img = ici / "assets" / "images"
+    mot = (ici / "_v4" / "garde-moteur.js").read_text(encoding="utf-8")
+    mtn = (ici / "_v4" / "motion.js").read_text(encoding="utf-8")
+
+    def somme(f):
+        return hashlib.md5((img / f).read_bytes()).hexdigest()
+
+    # catalogue : chaque `img2` a son `img`, les deux existent et different
+    paires = re.findall(r'img:"([^"]+)",\s*img2:"([^"]+)"', mot)
+    absents, jumeaux = [], []
+    for face, dos in paires:
+        for f in (face, dos):
+            if not (img / f).exists():
+                absents.append(f)
+        if (img / face).exists() and (img / dos).exists() and somme(face) == somme(dos):
+            jumeaux.append(face)
+    ok(not absents, f"catalogue : les {len(paires)} secondes vues ont leur fichier"
+       + ("" if not absents else " -> manquant(s) : " + ", ".join(absents)))
+    ok(not jumeaux, "catalogue : face et dos sont deux photos differentes"
+       + ("" if not jumeaux else " -> identiques : " + ", ".join(jumeaux)))
+
+    # carrousel : meme exigence, et il doit connaitre les memes paires
+    pc = dict(re.findall(r"f:'([^']+)',\s*f2:'([^']+)'", mtn))
+    perdus = [f for f in pc.values() if not (img / f).exists()]
+    ok(not perdus, f"carrousel : les {len(pc)} secondes vues ont leur fichier"
+       + ("" if not perdus else " -> manquant(s) : " + ", ".join(perdus)))
+    manque = [f for f, d in paires if f in mtn and pc.get(f) != d]
+    ok(not manque, "carrousel et catalogue connaissent les memes secondes vues"
+       + ("" if not manque else " -> sans dos au carrousel : " + ", ".join(manque)))
+
+
+def nappes_heros():
+    """LE HÉROS PEINT LE FOND AVEC LA TEINTE DE LA PIÈCE. Deux diapositives
+    voisines de même teinte, c'est une transition qu'on ne voit pas — c'est
+    pour ça que la robe à tulle avait été écartée le 2026-08-17.
+    ⚠️ Le héros TOURNE : la dernière précède la première.
+    C'est une NOTE, pas un échec : l'ordre du héros est un choix humain, et
+    deux voisinages datent d'avant la règle. Elle doit se voir, pas bloquer."""
+    import colorsys
+    mtn = (pathlib.Path(__file__).resolve().parent / "_v4" / "motion.js").read_text(encoding="utf-8")
+    d = mtn.index("var HERO = [")
+    bloc = mtn[d:mtn.index("  ];", d)]
+    cs = re.findall(r"c:'(#[0-9a-fA-F]{6})'", bloc)
+    # ⚠️ `t:` se trouve AUSSI dans `mat:` : sans le bord de mot, les noms se
+    #    decalent d'un cran et le rapport accuse la mauvaise piece.
+    noms = re.findall(r"(?<![a-z])t:['\"](.*?)['\"],?\s*$", bloc, re.M) or cs
+
+    def h(c):
+        r, g, b = (int(c[i:i + 2], 16) / 255 for i in (1, 3, 5))
+        return colorsys.rgb_to_hsv(r, g, b)[0] * 360
+
+    proches = []
+    for i in range(len(cs)):
+        j = (i + 1) % len(cs)
+        e = abs(h(cs[i]) - h(cs[j])) % 360
+        e = min(e, 360 - e)
+        if e < 28:
+            a = noms[i] if i < len(noms) else cs[i]
+            b = noms[j] if j < len(noms) else cs[j]
+            proches.append(f"{a} -> {b} ({e:.0f} deg)")
+    NOTES.append(f"OK    heros : {len(cs)} diapositives, "
+                 + ("aucune nappe voisine identique"
+                    if not proches else f"{len(proches)} voisinage(s) de meme nappe"))
+    if proches:
+        note("heros, nappes voisines a regarder : " + " · ".join(proches))
+
+
 def vitrine_commerciale():
     """Ce qui fait vendre et ce qui se partage, verifie sur le HTML livre.
 
@@ -245,6 +326,8 @@ async def sons(br):
 async def main():
     variables_css()
     vitrine_commerciale()
+    deux_vues()
+    nappes_heros()
     async with async_playwright() as pw:
         br = await pw.chromium.launch(**CHROME)
         await sons(br)
@@ -304,7 +387,18 @@ async def main():
             ext = [u for u in failed if not u.startswith("file:")]
             if ext:
                 NOTES.append("NOTE  requetes externes en echec (polices Google, reseau bloque) : %d" % len(ext))
-            ok(not [u for u in failed if u.startswith("file:")], f"[{w}px] aucune ressource locale manquante")
+            # ⚠️ LES SONS SONT EXCLUS DE CE CONTRÔLE, ET C'EST JUSTIFIÉ.
+            # Cette boucle-ci ouvre la page en `file://`. Chromium y interdit
+            # `fetch()` par principe (CORS), donc les six .mp3 échouent alors
+            # qu'ils sont bien sur le disque et se chargent parfaitement en
+            # HTTPS. Pire : ils n'échouaient qu'APRÈS le clic sur une pièce,
+            # donc le contrôle passait ou non selon la vitesse de la machine.
+            # Les sons ont déjà leur propre contrôle, `sons()`, qui lui sert
+            # la page sur un vrai serveur HTTP. C'est le bon endroit.
+            perdus = [u for u in failed
+                      if u.startswith("file:") and "/assets/sons/" not in u]
+            ok(not perdus, f"[{w}px] aucune ressource locale manquante"
+               + ("" if not perdus else " -> " + "; ".join(u.split("/")[-1] for u in perdus[:5])))
             await ctx.close()
 
         # ---------- tunnel complet ----------
@@ -717,6 +811,157 @@ async def main():
           return out;}""")
         ok(not cadres, "heros et carrousel : aucun cadre autour des pieces"
            + ("" if not cadres else " -> " + str(cadres[:3])))
+
+        # ── LA BASCULE FACE / DOS, VUE ET NON SUPPOSEE ──────────────
+        # Une piece envoyee en double doit passer d'une vue a l'autre TOUTE
+        # SEULE pendant qu'on la regarde, et s'arreter des qu'on ne la
+        # regarde plus. Les quatre controles qui suivent mesurent l'opacite
+        # reellement calculee, ils ne lisent pas le CSS.
+        await page.evaluate("()=>onglet('sm')")
+        await page.evaluate("""()=>{const e=document.getElementById('catalogue');
+          if(e) window.scrollTo(0, e.getBoundingClientRect().top+scrollY+40);}""")
+        await page.wait_for_timeout(700)
+        d = await page.evaluate("""()=>{
+          const l=[...document.querySelectorAll('#grille .ph.duo')];
+          if(!l.length) return {n:0};
+          const c=l[0], p=[...c.querySelectorAll('.vues i')];
+          return {n:l.length, img:c.querySelectorAll('img').length, pts:p.length,
+                  seule:[...document.querySelectorAll('#grille .ph:not(.duo) img')].length};}""")
+        ok(d["n"] >= 1, f"catalogue : {d['n']} piece(s) photographiee(s) de face ET de dos")
+        if d["n"]:
+            ok(d["img"] == 2 and d["pts"] == 2,
+               f"une piece a deux vues porte 2 images et 2 pastilles (vu {d['img']} et {d['pts']})")
+            ok(d["seule"] >= 1,
+               f"une piece a une seule photo n'en porte qu'une ({d['seule']} carte(s))")
+
+            # elle bascule, sans qu'on touche a rien
+            b = await page.evaluate("""()=>new Promise(res=>{
+              const c=document.querySelector('#grille .ph.duo');
+              const a=c.querySelector('.v1'), b=c.querySelector('.v2');
+              const o1=[], o2=[]; let t=0;
+              const id=setInterval(()=>{
+                o1.push(parseFloat(getComputedStyle(a).opacity));
+                o2.push(parseFloat(getComputedStyle(b).opacity));
+                if((t+=200)>=5000){ clearInterval(id);
+                  res({max2:Math.max(...o2), min1:Math.min(...o1)}); }
+              },200);})""")
+            ok(b["max2"] > 0.9 and b["min1"] < 0.1,
+               "la seconde vue prend la place de la premiere, toute seule "
+               f"(dos monte a {b['max2']:.2f}, face descend a {b['min1']:.2f})")
+
+            # la pastille active n'est pas SEULEMENT rose : elle est plus large
+            w = await page.evaluate("""()=>{
+              const p=[...document.querySelector('#grille .ph.duo .vues').children];
+              return p.map(e=>e.getBoundingClientRect().width);}""")
+            ok(max(w) - min(w) >= 4,
+               f"l'etat de la pastille ne tient pas qu'a la couleur (largeurs {w})")
+
+            # ⚠️ ON ECHANTILLONNE, ON NE COMPARE PAS DEUX INSTANTANES.
+            #    Premiere version de ce controle : etat, on attend 5,2 s, etat,
+            #    « ils doivent differer ». La bascule a une periode de 7,2 s
+            #    (3,6 s par vue) : une fois sur cinq, les deux releves tombent
+            #    sur la MEME phase et le controle echoue sans que rien ne soit
+            #    casse. Meme famille que le controle qui echouait au hasard le
+            #    2026-08-17. On releve toutes les 200 ms et on compte les etats
+            #    DISTINCTS : plus aucun hasard.
+            # ⚠️ Et il faut un TEMOIN : « rien ne bascule hors de l'ecran »
+            #    passerait tout seul si le mecanisme etait mort.
+            suivre = """(ms)=>new Promise(res=>{
+              const lire=()=>[...document.querySelectorAll('#grille .ph.duo')]
+                    .map(e=>e.classList.contains('dos')?'D':'f').join('');
+              const vu=new Set([lire()]); let t=0;
+              const id=setInterval(()=>{ vu.add(lire());
+                if((t+=200)>=ms){ clearInterval(id); res([...vu]); } },200);})"""
+            v = await page.evaluate(suivre, 8000)
+            ok(len(v) >= 2, f"sous les yeux, le catalogue tourne tout seul (etats vus : {v})")
+
+            # hors de l'ecran, plus rien ne tourne
+            await page.evaluate("()=>window.scrollTo(0,0)")
+            await page.wait_for_timeout(900)
+            v = await page.evaluate(suivre, 5000)
+            ok(len(v) == 1, f"hors de l'ecran, aucune carte ne bascule (etats vus : {v})")
+
+            # fiche de commande ouverte : le catalogue derriere se fige
+            await page.evaluate("""()=>{const e=document.getElementById('catalogue');
+              if(e) window.scrollTo(0, e.getBoundingClientRect().top+scrollY+40);}""")
+            await page.wait_for_timeout(600)
+            await page.locator(".piece").first.click()
+            await page.wait_for_selector("#ov.on")
+            v = await page.evaluate(suivre, 5000)
+            ok(len(v) == 1, f"fiche ouverte : le catalogue derriere se fige (etats vus : {v})")
+            await page.click("#btX")
+            await page.wait_for_timeout(300)
+
+            # au carrousel, SEULE la carte active respire
+            n2 = await page.evaluate("""()=>{
+              const l=[...document.querySelectorAll('.car')];
+              return l.findIndex(e=>e.querySelector('.car-c.duo'));}""")
+            if n2 >= 0:
+                for _ in range(n2):
+                    await page.click("#cNext")
+                    await page.wait_for_timeout(120)
+                await page.wait_for_timeout(4200)
+                r = await page.evaluate("""()=>({
+                  act:document.querySelectorAll('.car--act .car-c.duo.dos').length,
+                  autres:document.querySelectorAll('.car:not(.car--act) .car-c.dos').length});""")
+                ok(r["act"] == 1 and r["autres"] == 0,
+                   f"carrousel : seule la carte active respire ({r['act']} active, {r['autres']} autre(s))")
+
+        # ── MOUVEMENT REDUIT : PLUS RIEN NE BASCULE ─────────────────
+        # La regle de la maison est constante : `prefers-reduced-motion` coupe
+        # tout ce qui bouge tout seul. Une image qui se substitue a une autre
+        # sans qu'on l'ait demande en fait partie. Le dos reste joignable dans
+        # la fiche de commande (figure « Le dos »), il n'est pas perdu.
+        ctx3 = await br.new_context(viewport={"width": 1440, "height": 900},
+                                    reduced_motion="reduce")
+        pg3 = await ctx3.new_page()
+        await ctx3.route('**fonts.g*/**', lambda r: r.abort())
+        await pg3.goto(URL, wait_until="domcontentloaded")
+        await pg3.wait_for_timeout(2200)
+        await pg3.evaluate("()=>onglet('sm')")
+        await pg3.evaluate("""()=>{const e=document.getElementById('catalogue');
+          if(e) window.scrollTo(0, e.getBoundingClientRect().top+scrollY+40);}""")
+        await pg3.wait_for_timeout(5400)
+        rm = await pg3.evaluate("""()=>{
+          const l=[...document.querySelectorAll('#grille .ph.duo')];
+          if(!l.length) return null;
+          const v=document.querySelector('#grille .ph.duo .vues');
+          return {bascule:l.filter(e=>e.classList.contains('dos')).length,
+                  dos:Math.max(...l.map(e=>parseFloat(getComputedStyle(e.querySelector('.v2')).opacity))),
+                  pastilles:v?getComputedStyle(v).display:'none'};}""")
+        if rm:
+            ok(rm["bascule"] == 0 and rm["dos"] < 0.05,
+               f"mouvement reduit : aucune vue ne bascule ({rm['bascule']} carte(s), dos a {rm['dos']:.2f})")
+            ok(rm["pastilles"] == "none",
+               f"mouvement reduit : pas de pastilles figees (display {rm['pastilles']})")
+        await ctx3.close()
+
+        # ── UNE SECONDE VUE QUI N'ARRIVE PAS NE VIDE PAS LA CARTE ───
+        # La vue de dos est en `loading="lazy"`. Sur une 4G de Cotonou elle
+        # peut n'etre la qu'apres l'heure de la premiere bascule : basculer
+        # quand meme revelerait du VIDE pendant 3,6 s, et la cliente verrait
+        # une carte cassee. On coupe le reseau sur les `-dos.webp` et on
+        # verifie que la carte reste sur sa face, sans jamais se vider.
+        ctx4 = await br.new_context(viewport={"width": 1440, "height": 900})
+        pg4 = await ctx4.new_page()
+        await ctx4.route('**fonts.g*/**', lambda r: r.abort())
+        await ctx4.route('**/*-dos.webp', lambda r: r.abort())
+        await pg4.goto(URL, wait_until="domcontentloaded")
+        await pg4.wait_for_timeout(2200)
+        await pg4.evaluate("()=>onglet('sm')")
+        await pg4.evaluate("""()=>{const e=document.getElementById('catalogue');
+          if(e) window.scrollTo(0, e.getBoundingClientRect().top+scrollY+40);}""")
+        await pg4.wait_for_timeout(8000)
+        vide = await pg4.evaluate("""()=>{
+          const l=[...document.querySelectorAll('#grille .ph.duo')];
+          if(!l.length) return null;
+          return {dos:l.filter(e=>e.classList.contains('dos')).length,
+                  face:Math.min(...l.map(e=>parseFloat(getComputedStyle(e.querySelector('.v1')).opacity)))};}""")
+        if vide:
+            ok(vide["dos"] == 0 and vide["face"] > 0.95,
+               "seconde vue absente : la carte reste sur sa face "
+               f"({vide['dos']} bascule(s), face a {vide['face']:.2f})")
+        await ctx4.close()
 
         # regle du depot : jamais d'animation infinie sous un backdrop-filter
         mauvais = await page.evaluate("""()=>{
