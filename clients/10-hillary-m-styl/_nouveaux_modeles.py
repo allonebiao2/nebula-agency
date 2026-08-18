@@ -92,7 +92,7 @@ MODELES = [
     dict(cle="ete", id="h19", nom="Robe d'été",
          prix=35000, expPrix=45000, eur=52, usd=63, eurExp=67, usdExp=81,
          type="robe_ovale", tag="Plage",
-         indice="DEUX mannequins, haut court noué au cou + jupe longue : bazin tie-dye brun et jaune à médaillons roses, et tie-dye orange et bleu — capture d'écran, bandes noires à couper",
+         indice="DEUX mannequins, haut court noué au cou + jupe longue : bazin tie-dye brun et jaune à médaillons roses, et tie-dye orange et bleu — DEUX vues nettes reçues le 18/08 (face et dos, dos nu noué à la nuque) — ne PAS reprendre la capture d'écran du 17",
          ds="Haut court noué au cou et jupe longue très ample, en bazin teint. La pièce d'été, qui va de la plage au déjeuner."),
     dict(cle="volants", id="h20", nom="Ensemble Volants",
          prix=40000, expPrix=55000, eur=60, usd=72, eurExp=82, usdExp=100,

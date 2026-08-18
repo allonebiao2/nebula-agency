@@ -302,9 +302,17 @@ cliente peut commander n'importe quelle pièce dans un autre tissu, et il faut
 l'écrire sur chaque fiche. C'est la question n° 9 de `QUESTIONS-A-POSER.md`,
 et cette photo y répond peut-être toute seule.
 
-⚠️ La photo est une **capture d'écran de téléphone** : bandes noires en haut et
-en bas, à couper. Et comme pour l'ensemble Jean, **aucune silhouette isolée**
-pour la carte et le héros : il faudra détourer l'un des deux mannequins.
+✅ **De meilleures photos sont arrivées le 2026-08-18** : deux vues, face et dos,
+en pleine résolution et **sans les bandes noires** de la première capture. Ce
+sont celles-là qu'il faut, pas celle du 17.
+
+⚠️ Comme pour l'ensemble Jean, **aucune silhouette isolée** : les deux tissus
+sont portés côte à côte. Pour la carte et le héros, il faudra détourer l'un des
+deux mannequins.
+
+⚠️ **Le dos montre le vrai détail de coupe** : dos entièrement nu, noué à la
+nuque et croisé dans le dos. C'est ce que la cliente voudra voir avant de
+commander : la seconde vue mérite d'être posée dans la fiche (`img2`).
 
 ## K · « Robe de ville » — haut à volants et pantalon jean *(nom à trancher)*
 Haut court noué devant, **manches à trois volants étagés** très larges, en bazin
