@@ -277,6 +277,30 @@ ceinturée, quand le tailleur (D) est à 50 000 et la robe courte verte (G) au m
 prix qu'elle. Ce n'est pas à moi de recalculer ses prix, mais une cliente qui
 compare les fiches verra l'écart. À lui poser une fois.
 
+## J · **Robe d'été** (tenue de plage) — *le seul vrai nom du lot*
+Deux ensembles sur la même photo, chacun porté par un mannequin : un haut
+court noué au cou et une jupe longue très ample. À gauche un bazin tie-dye
+brun et jaune à médaillons roses, à droite un tie-dye orange et bleu avec
+découpes à la taille. Fond blanc.
+
+| | |
+|---|---|
+| Confection normale | **2 semaines** |
+| Prix | **35 000 FCFA** · 52 € · 63 $ |
+| Confection express | **2 à 4 jours** |
+| Prix express | **45 000 FCFA** · 67 € · 81 $ (supplément **+10 000**) |
+| Mesures | **robe ovale** |
+
+⚠️ **À confirmer, et la réponse vaut pour tout le catalogue** : la photo montre
+**le même modèle dans deux tissus différents**. Si c'est bien ça, alors une
+cliente peut commander n'importe quelle pièce dans un autre tissu, et il faut
+l'écrire sur chaque fiche. C'est la question n° 9 de `QUESTIONS-A-POSER.md`,
+et cette photo y répond peut-être toute seule.
+
+⚠️ La photo est une **capture d'écran de téléphone** : bandes noires en haut et
+en bas, à couper. Et comme pour l'ensemble Jean, **aucune silhouette isolée**
+pour la carte et le héros : il faudra détourer l'un des deux mannequins.
+
 ## Ce qui bloque, pour ce lot
 
 1. **Le nom de chaque pièce.** Quatre « Robe de ville » ne peuvent pas coexister.

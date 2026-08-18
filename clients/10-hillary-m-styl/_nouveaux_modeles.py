@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-HILLARY M. STYL — les NEUF modèles reçus le 2026-08-16, prêts à entrer.
+HILLARY M. STYL — les DIX modèles reçus les 2026-08-16 et 17, prêts à entrer.
 
     python _nouveaux_modeles.py           dit ce qui manque, ne touche à rien
     python _nouveaux_modeles.py --poser   détoure, pose les images, injecte
 
 POURQUOI CE FICHIER EXISTE
-Hillary a envoyé neuf modèles avec leurs prix, leurs délais et leur type de
+Hillary a envoyé dix modèles avec leurs prix, leurs délais et leur type de
 mesures. **Tout est ici, sauf les photos** : elles ont été montrées dans une
 conversation, elles ne sont jamais devenues des fichiers sur le disque. Ce
 script garde les données au chaud pour que leur arrivée ne coûte qu'une
@@ -89,14 +89,19 @@ MODELES = [
          type="robe_ovale", tag="Cérémonie",
          indice="robe longue bazin tie-dye ROUGE ET OR, épaules drapées à pompons, sur mannequin",
          ds="Épaules drapées à cordons et pompons, ceinture drapée, jupe très ample en bazin teint rouge et or."),
+    dict(cle="ete", id="h19", nom="Robe d'été",
+         prix=35000, expPrix=45000, eur=52, usd=63, eurExp=67, usdExp=81,
+         type="robe_ovale", tag="Plage",
+         indice="DEUX mannequins, haut court noué au cou + jupe longue : bazin tie-dye brun et jaune à médaillons roses, et tie-dye orange et bleu — capture d'écran, bandes noires à couper",
+         ds="Haut court noué au cou et jupe longue très ample, en bazin teint. La pièce d'été, qui va de la plage au déjeuner."),
 ]
 
 # Les trois qui iront au héros quand elles seront là : les plus fortes, et
 # trois couleurs qui ne se doublent pas.
 HEROS = ["lacee", "coeurs", "soleil"]
 
-JMIN = JMAX = 14          # deux semaines fermes, pour les neuf
-EXPMIN, EXPMAX = 2, 4     # « 2 à 4 jours », pour les neuf
+JMIN = JMAX = 14          # deux semaines fermes, pour les dix
+EXPMIN, EXPMAX = 2, 4     # « 2 à 4 jours », pour les dix
 
 
 def dossier(m):
