@@ -119,3 +119,55 @@ veut entendre, et c'est exactement ce qu'un catalogue de produits ne peut pas do
 **Aucun chiffre dans l'histoire elle-même** : « des années de métier », jamais « dix ans ».
 Un nombre fabriqué au milieu d'un récit décrédibilise tout ce qui l'entoure, même quand le
 reste est vrai.
+
+---
+
+## Statut WhatsApp n° 2 · « N’ACHETEZ PAS DE SITE. »
+
+Demande : un statut du jour **choquant, instructif, qui redirige vers NEBULA**, mais dont
+**le départ soit complètement impensable**.
+
+### Le mécanisme
+
+Le retournement ne vient pas du contenu, il vient de **qui parle** : c'est une agence qui
+vend des sites qui vous dit de ne pas en acheter. La phrase n'a aucun sens venant de celui
+qui la signe, donc on s'arrête pour comprendre.
+
+**La clé de voûte est la ligne minuscule sous l'accroche :** *« Écrit par une agence qui en
+construit. »* Sans elle, c'est un conseil banal. Avec elle, c'est un aveu, et un aveu se lit
+jusqu'au bout. C'est pour ça que le prompt insiste aussi sur le logo : **le renversement ne
+marche que si on voit qui le dit.**
+
+### Ce qu'il enseigne, et pourquoi ça sert la vente
+
+Un site ne fabrique pas de clients, il retient ceux qui vous cherchaient déjà. D'où deux cas,
+que le lecteur peut trancher tout seul :
+
+| Le cas | Ce qu'il lui faut |
+|---|---|
+| personne ne vous cherche encore | pas une Vitrine : le **Catalogue** |
+| on vous cherche et on ne vous trouve pas | la **Vitrine**, et chaque jour coûte |
+
+**C'est le premier statut qui alimente l'escalier au lieu de le court-circuiter.** En disant
+honnêtement « ça ne vous servira à rien » au premier cas, on gagne le droit d'être cru par le
+second. Et le premier atterrit exactement là où le socle veut qu'il atterrisse.
+
+⚠️ **La promesse engage.** Qui répond « MOI » doit recevoir un diagnostic franc, y compris
+« pas encore ». Faire ce numéro puis vendre une Vitrine à tout le monde se retourne contre
+l'agence en une semaine, à Cotonou où tout se sait. Les trois réponses possibles sont écrites
+dans le document.
+
+### L'image
+
+**On retire au lieu de tendre.** Le sujet de la référence est emporté vers le fond, avec une
+traînée derrière lui, et la place qu'il vient de quitter reste vide au premier plan. Toutes
+les publicités poussent quelque chose vers le lecteur ; celle-ci le reprend. L'accroche, dite
+sans un mot.
+
+Le prompt interdit explicitement **tout panneau d'interdiction, croix rouge ou objet barré** :
+le refus est porté par les mots et par le recul, jamais par un symbole d'avertissement.
+
+### Au passage
+
+Trois apostrophes droites traînaient dans les chaînes du **statut n° 1** (`QUELQU'UN`,
+`qu'on`). Corrigées : la règle avait été posée, elle n'avait pas été appliquée rétroactivement.
