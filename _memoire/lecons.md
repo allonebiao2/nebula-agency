@@ -914,3 +914,27 @@ trouble dure 100 ms au lieu d'un demi-tour d'horloge.
   tailles, une fourchette et un supplément se ressemblent sur le papier et ne
   produisent pas le même panier. Même famille que « `p:0` = prix pas encore
   donné » : quand le total ne peut pas être connu, on le dit, on ne l'invente pas.
+
+## 2026-08-19 — Un damier « transparent » peut être peint dans les pixels
+
+- **Contexte** : le client renvoie ses plats **déjà détourés**. Les fichiers
+  arrivent en **RGB sans canal alpha** : le damier gris de son éditeur est
+  aplati dans l'image. Vu à l'écran, ça ressemble à de la transparence ; posé
+  sur une page, c'est un rectangle à carreaux.
+- **Ce qui a coûté quatre tours** : vouloir retirer le damier « proprement » en
+  le reconnaissant à ses deux gris — apprendre les gris sur les coins, remplir
+  depuis les bords, ponter les pixels de transition, rembourrer avant la
+  fermeture, reconstruire la grille. Échec de fond : **sur une des photos les
+  gris du damier étaient 77 et 124, et le bord noir de l'assiette a des reflets
+  dans cette plage.** Aucun seuil ne les sépare.
+- **Ce qui a marché du premier coup** : **rembg sur le fichier à damier.** Un
+  modèle de saillance ne se demande pas de quelle couleur est le fond.
+- **Leçon** : quand un outil générique existe pour « séparer le sujet du fond »,
+  l'essayer AVANT d'écrire un masque sur mesure pour un fond particulier. Le
+  sur-mesure ne bat le général que si le général a échoué.
+- ⚠️ **Et vérifier le canal alpha à la réception** : `im.mode` et
+  `getchannel('A').getextrema()`. Une image « détourée » sans alpha est un
+  piège silencieux.
+- ⚠️ **Archiver la SOURCE REÇUE, jamais un intermédiaire** : j'avais copié mon
+  masque raté dans le dossier d'archive, et l'outil a ensuite travaillé
+  dessus — l'assiette avait disparu et le défaut semblait venir de rembg.

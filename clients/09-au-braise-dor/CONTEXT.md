@@ -116,6 +116,27 @@ Sauce gombo, Sauce krinkrin, Sauce feuille, puis poulet, tilapia, chawarma.
 trois vignettes imprimées et **la forme de l'assiette concorde** (gombo
 octogonale, krinkrin octogonale sur ardoise, feuille hexagonale).
 
+### Les détourages de la maison : `python _outils/_damier.py`
+Mongazi renvoie les trois plats **déjà détourés**, mais les fichiers arrivent en
+**RGB sans canal alpha** : le damier gris de son éditeur est **peint dans les
+pixels**. Il faut donc redétourer, en traitant le damier comme un fond.
+
+⛔ **Quatre tours perdus à vouloir le faire « proprement »** : apprendre les deux
+gris sur les coins, remplir depuis les bords, ponter les pixels de transition,
+rembourrer pour que l'érosion ne mange pas l'anneau du bord, reconstruire la
+grille pour ne retirer que ce qui coïncide avec elle. Échec de fond : **sur le
+gombo les deux gris du damier sont 77 et 124, et le bord noir de l'assiette a
+des reflets dans cette plage.** Aucun seuil de luminance ne les sépare.
+✅ **rembg sort les trois d'un coup, sans une bavure** : un modèle de saillance
+ne se demande pas de quelle couleur est le fond, il voit une assiette.
+⚠️ Et ici **`isnet` gagne**, alors que birefnet gagnait sur les mêmes plats
+photographiés sur fond noir : **le fond change, le gagnant change.**
+
+⚠️ **Piège d'archivage** : j'avais copié dans `_partage/` *mon masque raté* au
+lieu des fichiers de Mongazi, et rembg a donc travaillé sur une image déjà
+abîmée — assiette perdue. **Ce qu'on archive doit être la source reçue, jamais
+un intermédiaire.**
+
 ### Le détourage : `python _outils/_photos_sauces.py`
 Deux formes par photo : **carré opaque** pour la carte, **détouré RGBA** pour le
 héros. Le carré n'est pas un recadrage aveugle — il se centre sur l'assiette
