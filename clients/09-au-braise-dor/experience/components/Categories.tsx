@@ -91,8 +91,17 @@ export default function Categories({
               onClick={() => aller(c.id)}
               className="mb-2 flex w-full items-center gap-3 rounded-2xl p-2.5 text-left transition hover:bg-black/[0.04]"
             >
+              {/* ⚠️ PAS `c.items[0].img` : le premier plat d'un univers peut ne
+                  pas avoir de photo (le petit-dejeuner en compte quatre). On
+                  prend la premiere photo disponible de l'univers, et s'il n'y
+                  en a aucune, la vignette reste un aplat, jamais un lien mort. */}
               <span className="relative block h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-[#e7e0d8]">
-                <Image src={c.items[0].img} alt="" fill sizes="56px" className="object-cover" />
+                {(() => {
+                  const vignette = c.items.find((i) => i.img)?.img;
+                  return vignette ? (
+                    <Image src={vignette} alt="" fill sizes="56px" className="object-cover" />
+                  ) : null;
+                })()}
               </span>
               <span className="min-w-0 flex-1">
                 <span className="police-titre block text-[1rem] font-extrabold text-[color:var(--encre)]">

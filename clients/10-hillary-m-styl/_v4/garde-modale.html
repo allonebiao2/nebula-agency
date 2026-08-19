@@ -5,8 +5,25 @@
       <div class="t"><b id="shTitre">—</b><span id="shSub">—</span></div>
       <button class="x" id="btX" type="button" aria-label="Fermer" data-tap><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>
-    <div class="prog" id="prog"><i></i><i></i><i></i><i></i></div>
+    <div class="prog" id="prog"><i></i><i></i></div>
     <div class="sh-bd" id="shBd"></div>
     <div class="sh-ft" id="shFt"></div>
   </div>
 </div>
+
+<!-- ==================================================================
+     LE PANIER (2026-08-16)
+     Un tiroir, pas une page : la cliente doit pouvoir l'ouvrir, vérifier,
+     et retourner au catalogue sans perdre où elle en était.
+     ================================================================== -->
+<div class="pan-ov" id="panOv"></div>
+<aside class="pan" id="pan" aria-hidden="true" aria-label="Votre panier">
+  <div class="pan-top">
+    <b>Votre panier</b>
+    <button class="x" id="panX" type="button" aria-label="Fermer le panier" data-tap>
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="pan-bd" id="panBd"></div>
+  <div class="pan-ft" id="panFt"></div>
+</aside>

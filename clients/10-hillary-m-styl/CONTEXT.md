@@ -622,3 +622,210 @@ jumeau d'un autre.
 Cloudflare aurait répondu 404, et le site serait parti muet sans que rien ne le
 signale. Corrigé, et le script **refuse maintenant de publier** si un son
 référencé manque.
+
+---
+
+## LE PANIER (2026-08-16)
+
+Demandé par Mongazi : « un panier comme pour madame Luxury, histoire que les
+clientes voient ce qu'elles commandent et les prix ».
+
+**Avant**, une cliente qui voulait deux robes envoyait deux messages WhatsApp.
+L'atelier recevait deux commandes sans savoir qu'elles allaient ensemble : même
+cliente, une seule livraison, un seul règlement.
+
+**Le parcours, maintenant** : on ouvre une pièce, on donne ses mesures, on
+choisit son délai, elle tombe dans le panier. Le tiroir montre chaque ligne
+(photo, mesures renseignées, délai, prix), on peut changer la quantité,
+**modifier** une ligne ou la retirer. Puis une seule commande : livraison,
+coordonnées, récapitulatif, un seul message WhatsApp.
+
+### Les calculs, et pourquoi ils sont ainsi
+
+| Ce qui est calculé | La règle |
+|---|---|
+| Prix d'une ligne | `expPrix` si express, sinon `prix`, **fois la quantité** |
+| Sous-total | la somme des lignes |
+| Total | sous-total **+ frais de livraison une seule fois** |
+| € et $ | la somme de SES valeurs, jamais un taux de change |
+| Délai | **la borne haute de la pièce la plus lente**, plus l'acheminement |
+
+⚠️ **Le délai d'une commande est celui de sa pièce la plus lente.** Tout part
+ensemble. Annoncer la plus rapide fabriquerait une cliente déçue. Quand le
+panier mélange une pièce express et une pièce normale, l'écran le dit et propose
+deux envois séparés.
+
+⚠️ **Aucun prix n'est stocké dans le panier**, seulement l'identifiant de la
+pièce et les choix. Un panier oublié une semaine dans le navigateur ne peut donc
+pas ressortir avec un prix périmé.
+
+✅ **Les mesures déjà données se reportent** d'une pièce à l'autre quand le
+champ existe dans les deux jeux : une cliente ne remesure pas son tour de taille
+pour la deuxième robe.
+
+### Deux défauts trouvés en construisant, et corrigés
+
+- ⛔ **Le voile du panier avalait les clics pendant 350 ms après sa fermeture.**
+  `visibility` ne se dégrade pas en douceur, elle bascule à la FIN de la
+  transition. C'est `pointer-events` qui règle ça, immédiatement.
+- ⛔ **Le bouton du son se posait sur « Retour » et sur « Vider le panier »**
+  (il est en `position:fixed` en bas à gauche). Le cacher aurait été plus
+  simple, mais **une règle de la maison veut qu'il reste atteignable** quand une
+  fiche est ouverte : le contrôle qualité l'a refusé. On lui réserve donc un
+  couloir de 78 px dans les deux pieds de page.
+
+### Ce qu'il faut savoir pour y toucher
+
+- Tout est dans `_v4/garde-moteur.js` (le panier, les deux parcours, le
+  message), le balisage du tiroir dans `_v4/garde-modale.html`, ses styles à la
+  fin de `_v4/garde-css-modale.css`, le bouton dans `_v4/markup.html`.
+- ⚠️ **`_predeploy.py` ne lance PAS l'assembleur.** Après une modification de
+  `_v4/*`, il faut `python _v4/_assembler.py` d'abord, sinon on contrôle et on
+  publie l'ancienne version.
+- Les animations par étape sont écrites dans la feuille de style par numéro
+  (`[data-e="1"]`…). Les deux parcours gardent le sens d'origine :
+  **1 mesures · 2 livraison · 3 délai · 4 coordonnées · 5 envoi**.
+- Contrôle qualité : **108 contrôles**, dont ceux du panier (somme des lignes,
+  délai de la pièce la plus lente, quantité, retrait d'une ligne, survie au
+  rechargement).
+
+---
+
+## CE QUI FAIT VENDRE, ET QUI MANQUAIT (2026-08-16)
+
+Trois défauts trouvés en auditant la vitrine. **Aucun ne se voyait en regardant
+le site** : c'est ce qui les rendait durables.
+
+### 1 · ⛔ Le lien partagé sur WhatsApp n'avait aucune image
+
+Le site n'avait **aucune `og:image`**. Au Bénin, tout circule par WhatsApp : la
+maison apparaissait comme une ligne de texte grise dans une conversation, à côté
+de liens qui, eux, montrent une photo. C'est le défaut le plus coûteux
+commercialement qu'un site puisse avoir.
+
+`python _og.py` fabrique `assets/images/og.jpg` (1200x630, 87 Ko) : **sa vraie
+robe de cérémonie détourée**, son encre, son magenta, son nom en Bodoni.
+⚠️ **En JPEG, pas en WebP** : l'aperçu WhatsApp ne lit pas toujours le WebP.
+⚠️ `_predeploy.py` ne copiait que les `.webp` : il copie maintenant **tout ce que
+la page réclame**, sinon l'image restait sur le disque.
+
+### 2 · ⛔ Un `FAQPage` déclaré, aucune question visible
+
+Le JSON-LD annonçait une FAQ à Google alors que **la page n'en portait aucune**.
+C'est contraire aux règles de Google (le contenu balisé doit être visible), et
+surtout : les six objections que se pose une cliente n'étaient répondues nulle
+part. Pire, les réponses balisées annonçaient **« 7 à 14 jours »** contre
+« 2 semaines » sur chaque carte : la même contradiction que celle corrigée le
+2026-08-06 ailleurs sur le site.
+
+Il y a maintenant une **section « Les questions »** (`#questions`, en `<details>`,
+donc lisible sans JavaScript et au clavier), et le JSON-LD dit **exactement** la
+même chose. ⚠️ **Un contrôle automatique compare les deux** : question par
+question, et vérifie que chaque réponse balisée est visible sur la page. Ils ne
+peuvent plus diverger en silence.
+
+### 3 · ⛔ Aucun balisage produit, alors que les prix sont réels
+
+Les 8 pièces chiffrées sont maintenant balisées en `Product` + `Offer`
+(prix, `XOF`, `MadeToOrder`, photo). ⚠️ **Les fiches sont LUES dans `PIECES`**
+par l'assembleur, jamais recopiées : un prix écrit à deux endroits finit
+toujours par diverger. Un contrôle vérifie que chaque fiche porte le prix du
+catalogue.
+
+### Et le reste
+
+`robots.txt` et `sitemap.xml` sont écrits par `_predeploy.py`, comme le
+`404.html`. Vérifié en ligne : `200` sur les trois, `404` sur une page
+inexistante, `image/jpeg` sur l'image de partage.
+
+**Le contrôle qualité passe de 84 à 120 contrôles** (le panier, puis cette
+couche commerciale).
+
+---
+
+## LE HÉROS COMPLÉTÉ ET UNE SIGNATURE PAR SECTION (2026-08-17)
+
+Mongazi : « complète le héros en mettant juste les meilleures, dans le même
+style que ceux déjà présents » et « ajoute des animations différentes pour
+chaque autre section ».
+
+### Le héros montrait 4 pièces sur 8
+
+Les quatre pièces reçues le 2026-08-10 (violette, Naja orange, verte, tulle)
+n'étaient **jamais passées au héros ni au carrousel**. Corrigé :
+
+- **héros : 4 → 7** (violette, Naja, verte ajoutées). La robe **à tulle est
+  restée au seul carrousel** : son violet doublait celui de la robe de
+  cérémonie violette, et deux nappes identiques qui se suivent ne se voient pas.
+- **carrousel : 4 → 8** (les huit vraies pièces).
+- ⚠️ Les nouvelles diapositives pointent sur **`piece-*.webp`**, pas sur un
+  `hero-*.webp` : c'est la **même photo détourée**, en 950 px de haut. La
+  réencoder en WebP une seconde fois ne ferait que la dégrader.
+- Leur **teinte** est relevée sur le tissu comme pour les autres
+  (`_v4/_couleurs.json`) : violette `#6b3065`, Naja `#925437`, verte `#7e6730`.
+  ⚠️ Le seuil de saturation à 0,35 écartait le **fond sauge** de la robe verte :
+  il ne restait que ses rubans ocre et sa nappe tombait sur celle de l'orange.
+  À 0,22 on garde les tissus sourds, qui sont aussi des couleurs.
+- Le compteur de secours du markup passe à `01 — 07` (c'est celui que voit
+  quelqu'un sans JavaScript).
+
+### Cinq sections partageaient la même révélation
+
+La règle de la maison est **une signature différente par section**, et cinq
+blocs partageaient le même `translateY(24px)` + fondu. Chacun a maintenant la
+sienne, tirée d'un geste de couture :
+
+| Section | La signature |
+|---|---|
+| 01 la maison | **l'ourlet qu'on déroule** : les piliers se découvrent de gauche à droite (`clip-path`) |
+| 02 les collections | **le portant** : le bloc glisse comme un cintre poussé sur la tringle, avec un balancement très court |
+| 03 le catalogue | **les patrons qu'on épingle** : chaque carte pivote autour de son coin haut-gauche jusqu'à son inclinaison |
+| 04 les questions | **le fil qui se dénoue** : un fil descend le long de la liste, les questions se posent l'une après l'autre |
+| 05 le contact | **la couture qui se ferme** : les quatre accès se rapprochent par paires, le point se pique au milieu |
+
+⚠️ **`#grille` et `.faq-l` ont été ajoutés à la liste balayée** dans
+`motion.js` : sans ça, ils n'auraient jamais reçu la classe `vu` et leur
+animation n'aurait jamais joué.
+
+⚠️ **`section{overflow-x:clip}` a été ajouté** en même temps. Deux de ces
+animations viennent du côté : une révélation qui part de la droite **pousse la
+page tant qu'elle n'a pas joué**, et personne ne le voit en regardant l'écran.
+C'est exactement le défaut de 6 px trouvé sur le site de l'agence.
+
+### ⚠️ Un piège de déploiement, vérifié à mes dépens
+
+**Quand le contrôle qualité échoue, `_predeploy.py` s'arrête AVANT de préparer
+`_dist/`.** Déployer juste après publie donc **la version précédente**, sans
+aucun message d'erreur. C'est arrivé ici : le site est parti avec la FAQ mais
+sans le nouveau héros. Vérifié en ligne, redéployé, revérifié.
+
+⚠️ Et un contrôle **échoue par intermittence** (une fois sur deux environ) :
+il est passé vert deux fois de suite juste après. À identifier : un contrôle qui
+échoue au hasard est pire qu'un contrôle absent.
+
+---
+
+## LES 11 MODÈLES POSÉS SANS LEURS PHOTOS (2026-08-18)
+
+Mongazi, après avoir compris que les photos n'arriveraient pas tout de suite :
+« mets-les déjà sur la vitrine ». Décision assumée, exécutée.
+
+**Le catalogue passe de 9 à 20 cartes.** Les 11 nouvelles portent tout sauf
+l'image : nom, description, **prix en trois monnaies**, délai, type de mesures,
+et la commande fonctionne de bout en bout (mesures, délai, panier, WhatsApp).
+
+⚠️ **Le libellé est `Photo sur WhatsApp`, pas « photo à venir ».** La différence
+n'est pas cosmétique : « à venir » dit à la cliente que la maison n'est pas
+prête, « sur WhatsApp » est **vrai et actionnable**, et ça l'envoie là où elle
+commande de toute façon. Le drapeau est `photoWa:true` dans `PIECES`.
+
+⚠️ **Elles n'entrent ni au héros ni au carrousel.** Un monogramme en pleine page
+ne montre rien : ces deux surfaces vivent de la photo. Le héros reste à 7, le
+carrousel à 8.
+
+⚠️ **Ce n'est pas l'état final et il ne faut pas s'y habituer.** Onze cartes sans
+photo à la suite, ça se voit. `python _nouveaux_modeles.py --poser` posera les
+images et retirera le drapeau dès que les fichiers seront là.
+
+Contrôlé : **121 contrôles verts**, 0 erreur JS, la fiche d'une pièce sans photo
+s'ouvre et demande bien ses 11 mesures. Déployé et vérifié en ligne.

@@ -164,6 +164,16 @@ def main():
     # toute image ET tout son référencés par le HTML doivent être dans _dist
     import re as _re
     _html = OUT.read_text(encoding="utf-8")
+    # ⚠️ La boucle ci-dessus ne copie que les .webp. L'image de partage est un
+    #    JPEG (l'aperçu WhatsApp ne lit pas toujours le WebP) : sans cette
+    #    reprise, `og.jpg` restait sur le disque et le lien partagé n'avait
+    #    aucune image. On copie donc tout ce que la page réclame vraiment.
+    for r in sorted(set(_re.findall(r'assets/images/([A-Za-z0-9_.-]+)', _html))):
+        src_f = src_img / r
+        if src_f.exists() and not (DIST / "assets" / "images" / r).exists():
+            shutil.copy(src_f, DIST / "assets" / "images" / r)
+            n_img += 1
+            poids_img += src_f.stat().st_size
     manquantes = [r for r in set(_re.findall(r'assets/images/([A-Za-z0-9_.-]+)', _html))
                   if not (DIST / "assets" / "images" / r).exists()]
     if manquantes:
@@ -200,6 +210,26 @@ def main():
         '<div><h1>Cette page n\'existe pas.</h1>'
         '<p>Le fil s\'est arrêté ici. Reprenons depuis le début.</p>'
         '<a href="/">Retour à l\'accueil</a></div></html>', encoding="utf-8")
+
+    # ROBOTS ET SITEMAP. Sans eux, un moteur découvre la page au hasard des
+    # liens ; avec eux, il sait qu'elle existe et quand elle a changé.
+    import datetime as _dt
+    (DIST / "robots.txt").write_text("\n".join([
+        "User-agent: *",
+        "Allow: /",
+        "",
+        "Sitemap: https://hillary-m-styl.pages.dev/sitemap.xml",
+        "",
+    ]), encoding="utf-8")
+    (DIST / "sitemap.xml").write_text("\n".join([
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+        '  <url><loc>https://hillary-m-styl.pages.dev/</loc>'
+        f'<lastmod>{_dt.date.today().isoformat()}</lastmod>'
+        '<changefreq>weekly</changefreq><priority>1.0</priority></url>',
+        '</urlset>',
+        "",
+    ]), encoding="utf-8")
 
     poids = (DIST / "index.html").stat().st_size
     print(f"       ✅ _dist/index.html — {poids // 1024} Ko")

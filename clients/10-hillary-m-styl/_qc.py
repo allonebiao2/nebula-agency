@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-HILLARY M. STYL — suite de contrôle qualité (53 contrôles).
+HILLARY M. STYL — suite de contrôle qualité (121 contrôles).
 
     python3 _qc.py
 
@@ -20,7 +20,7 @@ Vérifie, sur navigateur réel émulé en 390 / 768 / 1440 px :
 
 Doit être VERTE avant tout déploiement.
 """
-import asyncio, datetime, glob, pathlib, re, sys
+import asyncio, datetime, glob, json, pathlib, re, sys
 from playwright.async_api import async_playwright
 
 # la console Windows est en cp1252 : un espace fin insecable suffit a
@@ -86,6 +86,86 @@ def variables_css():
        + (" — MANQUE : " + ", ".join(manquantes) if manquantes else ""))
 
 
+def vitrine_commerciale():
+    """Ce qui fait vendre et ce qui se partage, verifie sur le HTML livre.
+
+    Trois defauts trouves le 2026-08-16, tous invisibles en regardant le site :
+      1. AUCUNE og:image — un lien partage sur WhatsApp n'etait qu'une ligne
+         de texte grise, au Benin ou tout circule par WhatsApp.
+      2. un FAQPage DECLARE sans aucune question visible sur la page. Google
+         exige que le contenu balise soit visible, et surtout : les objections
+         des clientes n'etaient repondues nulle part.
+      3. aucun balisage Product alors que les prix sont reels.
+    """
+    src = HTML.read_text(encoding="utf-8")
+
+    # 1 · l'image de partage
+    m = re.search(r'property="og:image" content="([^"]+)"', src)
+    ok(bool(m), "une image de partage est declaree (og:image)")
+    if m:
+        nom = m.group(1).rsplit("/", 1)[-1]
+        ok((HTML.parent / "assets" / "images" / nom).exists(),
+           f"le fichier de l'image de partage existe vraiment ({nom})")
+        ok(src.count('name="twitter:card"') == 1, "la carte Twitter/X est declaree")
+
+    # 2 · la FAQ balisee et la FAQ visible doivent dire LA MEME CHOSE
+    bloc = re.search(r'<script type="application/ld\+json">(.*?)</script>', src, re.S)
+    ok(bool(bloc), "le graphe de donnees structurees est present")
+    graphe = json.loads(bloc.group(1))
+    faq = [x for x in graphe["@graph"] if x.get("@type") == "FAQPage"]
+    ok(len(faq) == 1, "un seul FAQPage declare")
+    # l'espace insecable avant le « ? » est la bonne typographie francaise :
+    # on la neutralise pour comparer, on ne la retire pas de la page
+    def _plat(t):
+        t = re.sub(r"<[^>]+>", "", t)
+        t = t.replace("&nbsp;", " ").replace(" ", " ")
+        return re.sub(r"\s+", " ", t).strip()
+    q_balisees = [_plat(q["name"]) for q in faq[0]["mainEntity"]]
+    q_visibles = [_plat(q) for q in re.findall(r"<summary>(.*?)</summary>", src, re.S)]
+    ok(len(q_visibles) >= 4, f"la page montre {len(q_visibles)} questions")
+    ok(q_balisees == q_visibles,
+       "les questions balisees sont EXACTEMENT celles que la cliente lit"
+       + ("" if q_balisees == q_visibles else f" — balise {q_balisees} / vu {q_visibles}"))
+
+    # les reponses aussi : une reponse balisee absente de la page est interdite
+    r_balisees = [q["acceptedAnswer"]["text"].strip() for q in faq[0]["mainEntity"]]
+    texte = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", src)).replace(" ", " ")
+    absentes = [r[:40] for r in r_balisees if re.sub(r"\s+", " ", r)[:60] not in texte]
+    ok(not absentes, "chaque reponse balisee est visible sur la page"
+       + ("" if not absentes else " — MANQUE : " + " | ".join(absentes)))
+
+    # 3 · les fiches produit disent le prix du catalogue, pas un autre
+    prods = [x for x in graphe["@graph"] if x.get("@type") == "Product"]
+    ok(len(prods) >= 4, f"{len(prods)} fiches produit balisees")
+    prix_page = dict(re.findall(r'nom:"([^"]+)"[^}]*?prix:(\d+)', src))
+    faux = [p["name"] for p in prods
+            if p["name"] in prix_page and int(prix_page[p["name"]]) != p["offers"]["price"]]
+    ok(not faux, "chaque fiche produit porte le prix du catalogue"
+       + ("" if not faux else " — FAUX : " + ", ".join(faux)))
+    ok(all(p["offers"]["priceCurrency"] == "XOF" for p in prods),
+       "les prix balises sont en francs CFA")
+
+    # 3 bis · la description de la page ne doit pas contredire le catalogue.
+    # Elle annoncait « express en 1 a 3 jours » quand chaque carte dit 2 a 5 :
+    # c'est le premier texte que lit Google, et il disait autre chose que le site.
+    desc = re.search(r'<meta name="description" content="([^"]+)"', src)
+    if desc:
+        expmax = max(int(x) for x in re.findall(r"expMax:(\d+)", src))
+        expmin = min(int(x) for x in re.findall(r"expMin:(\d+)", src))
+        d = desc.group(1)
+        faux = re.findall(r"(\d+)\s*(?:a|à)\s*(\d+)\s*jours", d)
+        ok(all(int(a) == expmin and int(b) == expmax for a, b in faux),
+           f"la description de la page dit le meme express que le catalogue ({expmin} a {expmax} j)"
+           + ("" if not faux else f" — vu {faux}"))
+
+    # 4 · le delai annonce dans la FAQ est celui du catalogue
+    jmax = max(int(x) for x in re.findall(r"jmax:(\d+)", src))
+    sem = jmax // 7
+    rep_delai = " ".join(r for r in r_balisees if "semaine" in r or "jour" in r)
+    ok(f"{sem} semaine" in rep_delai.lower() or "deux semaines" in rep_delai.lower(),
+       f"la FAQ annonce le meme delai que le catalogue ({sem} semaines)")
+
+
 async def sons(br):
     """Les sons d'atelier : rien avant un geste, un bouton pour couper,
     et ce bouton doit rester atteignable MEME la fiche ouverte.
@@ -98,17 +178,34 @@ async def sons(br):
     import functools, http.server, socketserver, threading
     ici = str(HTML.parent)
     h = functools.partial(http.server.SimpleHTTPRequestHandler, directory=ici)
-    socketserver.TCPServer.allow_reuse_address = True
-    srv = socketserver.TCPServer(("127.0.0.1", 8823), h)
+    # ⚠️ LE SERVEUR DOIT ETRE MULTI-TACHE. `TCPServer` sert UNE requete a la
+    #    fois : le navigateur ouvre plusieurs connexions et les garde
+    #    ouvertes (keep-alive), donc l'une d'elles bloque toutes les autres.
+    #    Tant que la page ne demandait qu'une poignee de fichiers, ca passait ;
+    #    avec 28 images, la suite s'arretait une fois sur deux sur
+    #    « Page.goto: Timeout », ce qui ressemble a une panne du site.
+    #    Trouve le 2026-08-17, apres avoir soupconne les polices a tort.
+    socketserver.ThreadingTCPServer.allow_reuse_address = True
+    socketserver.ThreadingTCPServer.daemon_threads = True
+    srv = socketserver.ThreadingTCPServer(("127.0.0.1", 8823), h)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
 
     ctx = await br.new_context(viewport={"width": 1280, "height": 900})
+    # ⚠️ C'EST ICI QUE LA SUITE ECHOUAIT UNE FOIS SUR DEUX (trouve le
+    #    2026-08-17). Tous les autres contextes coupent la requete vers Google
+    #    Fonts ; celui-ci, non. La feuille de style distante bloque le
+    #    `DOMContentLoaded`, et des que le reseau traine, `goto` depasse ses
+    #    30 secondes : la suite s'arretait sur « Page.goto: Timeout », qui
+    #    ressemble a une panne du site alors que c'est la police qui traine.
+    #    ⚠️ Un controle qui echoue au hasard est pire qu'un controle absent :
+    #    on finit par le croire.
+    await ctx.route('**fonts.g*/**', lambda r: r.abort())
     page = await ctx.new_page()
     recus = []
     page.on("request", lambda r: recus.append(r.url.split("/")[-1])
             if "/sons/" in r.url else None)
     await page.goto("http://127.0.0.1:8823/vitrine.html",
-                    wait_until="domcontentloaded")
+                    wait_until="domcontentloaded", timeout=60000)
     await page.wait_for_timeout(2600)
 
     ok(not recus, "aucun son telecharge avant le premier geste"
@@ -147,6 +244,7 @@ async def sons(br):
 
 async def main():
     variables_css()
+    vitrine_commerciale()
     async with async_playwright() as pw:
         br = await pw.chromium.launch(**CHROME)
         await sons(br)
@@ -249,20 +347,24 @@ async def main():
                 await page.locator("[data-mes]").nth(i).fill("60")
         else:
             await page.click('[data-taille="M"]')
-        await page.click('[data-nav="suiv"]')
+        # le parcours a panier : mesures -> delai -> panier -> commande
+        await page.click('[data-nav="suiv"]')          # etape 2 : le delai
+        await page.click('[data-exp="1"]')             # express
+        await page.click('[data-nav="suiv"]')          # « Ajouter au panier »
+        ok(await page.locator("#pan.on").count() == 1, "le panier s'ouvre des qu'une piece y tombe")
+        ok((await page.inner_text("#panN")).strip() == "1", "la pastille du panier affiche 1")
+        await page.click('[data-pan="commander"]')
         await page.click('[data-mode="expedition"]')
         await page.select_option("#f_pays", "ci")
         await page.fill("#f_ville", "Abidjan")
-        await page.click('[data-nav="suiv"]')
-        await page.click('[data-delai="express"]')
         dispo = (await page.locator(".dispo p").inner_text()).strip()
-        ok(len(dispo) > 6, f"date de disponibilite affichee des l'etape 3 : « {dispo} »")
+        ok(len(dispo) > 6, f"date de disponibilite affichee des le choix de la livraison : « {dispo} »")
         j = await page.evaluate("()=>joursTotal()")
         att_j = P["expMax"] + 4                       # 4 jours d'acheminement CI
         ok(j == att_j, f"delai express ({P['expMax']} j) + acheminement CI (4 j) = {att_j} j (vu {j})")
         attendu_d = datetime.date.today() + datetime.timedelta(days=att_j)
         ok(str(attendu_d.day) in dispo, f"la date correspond bien a J+{att_j} ({attendu_d})")
-        await page.click('[data-nav="suiv"]')
+        await page.click('[data-nav="suiv"]')          # coordonnees
         await page.fill("#f_prenom", "Ama")
         await page.fill("#f_tel", "+22997000000")
         tot = (await page.locator(".recap .tt span").last.inner_text()).strip()
@@ -293,6 +395,7 @@ async def main():
         ok(("email" in libelle) == bool(mail_cfg),
            "le libelle du repli dit ce que le lien fait vraiment")
         await page.click("#btX")
+        await page.evaluate("()=>{panier=[];sauvePanier();rendrePanier();}")
 
         # --- parcours sur-mesure : retrait atelier, delai normal, mesures partielles
         await page.evaluate("()=>onglet(\'sm\')")
@@ -318,15 +421,16 @@ async def main():
             await page.locator("[data-mes]").nth(i).fill("80")
         dis = await page.get_attribute('[data-nav="suiv"]', "disabled")
         ok(dis is None, f"{moitie} mesures sur {att_m} suffisent pour avancer")
-        await page.click('[data-nav="suiv"]')
+        await page.click('[data-nav="suiv"]')          # etape 2 : le delai
+        await page.click('[data-exp="0"]')             # confection normale
+        await page.click('[data-nav="suiv"]')          # au panier
+        await page.click('[data-pan="commander"]')
         await page.click('[data-mode="retrait"]')
-        await page.click('[data-nav="suiv"]')
-        await page.click('[data-delai="normal"]')
         j = await page.evaluate("()=>joursTotal()")
         ok(j == der_jmax, f"retrait + normal : borne haute de la piece = {der_jmax} j (vu {j})")
         lab = await page.locator(".dispo b").inner_text()
         ok("retirer" in lab.lower(), f"libelle adapte au retrait (« {lab} »)")
-        await page.click('[data-nav="suiv"]')
+        await page.click('[data-nav="suiv"]')          # coordonnees
         await page.fill("#f_prenom", "Koffi")
         await page.fill("#f_mail", "koffi@gmail.com")
         dis = await page.get_attribute('[data-nav="suiv"]', "disabled")
@@ -341,6 +445,7 @@ async def main():
         ok(f"{manq}" in msg or "à prendre ensemble" in msg,
            f"les {manq} mesures manquantes sont signalees dans le message")
         await page.click("#btX")
+        await page.evaluate("()=>{panier=[];sauvePanier();rendrePanier();}")
 
         # --- sur devis + type libre
         await page.locator(".piece", has_text="Creation libre").first.click() if False else None
@@ -350,15 +455,64 @@ async def main():
         await page.select_option("#f_type", "robe_droite")
         champs = await page.locator("[data-mes]").count()
         ok(champs == 15, f"robe droite via creation libre : 15 champs (vu {champs})")
-        await page.evaluate("()=>{etat.mesures={epaules:'40',carr_dev:'36',poitrine:'92',t_sous_sein:'78',t_taille:'70',t_ceinture:'72',t_hanche:'96',l_sous_sein:'22'};etat.etape=3;etat.mode='retrait';dessiner();}")
-        await page.click('[data-delai="express"]')
+        await page.evaluate("()=>{etat.mesures={epaules:'40',carr_dev:'36',poitrine:'92',t_sous_sein:'78',t_taille:'70',t_ceinture:'72',t_hanche:'96',l_sous_sein:'22'};etat.etape=2;dessiner();}")
+        await page.click('[data-exp="1"]')
+        await page.click('[data-nav="suiv"]')          # au panier
+        await page.click('[data-pan="commander"]')
+        await page.click('[data-mode="retrait"]')
         tot = (await page.evaluate("()=>totalCommande()"))
         ok(tot is None, "piece sans prix : le total reste « sur devis »")
-        txt = (await page.locator(".recap .tt span").last.inner_text()) if await page.locator(".recap").count() else ""
         await page.click('[data-nav="suiv"]')
         tt = (await page.locator(".recap .tt span").last.inner_text()).strip()
         ok(tt.lower().startswith("sur devis"), f"affichage « sur devis » dans le recapitulatif (vu « {tt} »)")
         await page.click("#btX")
+        await page.evaluate("()=>{panier=[];sauvePanier();rendrePanier();}")
+
+        # --- LE PANIER (ajoute le 2026-08-16) -----------------------
+        # deux pieces dans le meme panier : le total est la somme, et le
+        # delai retenu est celui de la piece la PLUS LENTE, pas la plus rapide.
+        await page.evaluate("()=>{panier=[];sauvePanier();rendrePanier();}")
+        deux = await page.evaluate("""()=>{const l=PIECES.filter(p=>p.prix!=null&&p.type);
+          return l.slice(0,2).map(p=>({id:p.id,nom:p.nom,prix:p.prix,expPrix:p.expPrix,
+                                       jmax:p.jmax,expMax:p.expMax,type:p.type}));}""")
+        if len(deux) >= 2:
+            for i, pc in enumerate(deux):
+                await page.evaluate("id=>{ouvrir(id);}", pc["id"])
+                nb = await page.locator("[data-mes]").count()
+                for k in range(nb):
+                    await page.locator("[data-mes]").nth(k).fill("70")
+                await page.click('[data-nav="suiv"]')
+                await page.click('[data-exp="%d"]' % (1 if i == 1 else 0))
+                await page.click('[data-nav="suiv"]')
+            n = (await page.inner_text("#panN")).strip()
+            ok(n == "2", f"deux pieces au panier : la pastille affiche 2 (vu {n})")
+            lignes = await page.locator("#panBd .pl").count()
+            ok(lignes == 2, f"le tiroir montre les deux lignes (vu {lignes})")
+            att = deux[0]["prix"] + (deux[1]["expPrix"] or deux[1]["prix"])
+            vu = await page.evaluate("()=>totaux().fcfa")
+            ok(vu == att, f"sous-total = {att} F, la somme des deux lignes (vu {vu})")
+            attj = max(deux[0]["jmax"], deux[1]["expMax"] or 4)
+            vuj = await page.evaluate("()=>joursConfection()")
+            ok(vuj == attj, f"delai retenu = la piece la plus lente, {attj} j (vu {vuj})")
+            # une ligne en moins, un total qui suit
+            await page.locator("#panBd [data-rm]").first.click()
+            vu2 = await page.evaluate("()=>totaux().fcfa")
+            ok(vu2 == (deux[1]["expPrix"] or deux[1]["prix"]),
+               f"une ligne retiree : le total suit (vu {vu2})")
+            # la quantite
+            await page.locator("#panBd [data-plus]").first.click()
+            q = await page.evaluate("()=>totaux().articles")
+            ok(q == 2, f"le bouton + passe la ligne a 2 exemplaires (vu {q})")
+            vu3 = await page.evaluate("()=>totaux().fcfa")
+            ok(vu3 == vu2 * 2, f"deux exemplaires : le prix double ({vu3})")
+            # le panier survit a un rechargement
+            await page.reload(wait_until="domcontentloaded")
+            await page.wait_for_timeout(1200)
+            gard = await page.evaluate("()=>panier.length")
+            ok(gard == 1, f"le panier survit au rechargement de la page (vu {gard} ligne)")
+            await page.evaluate("()=>{panier=[];sauvePanier();rendrePanier();}")
+        else:
+            note("moins de deux pieces chiffrees au catalogue : controle du panier sans objet")
 
         # --- robe ovale : avertissement de validation
         nom_ov = await page.evaluate("()=>{const p=PIECES.filter(x=>x.type==='robe_ovale')[0];"
@@ -639,18 +793,26 @@ async def main():
         nb_m = await page.locator("[data-mes]").count()
         for i in range(min(nb_m, nb_m // 2 + 1)):
             await page.locator("[data-mes]").nth(i).fill("80")
-        for etape in ["1", "2", "3", "4"]:
-            e = await page.get_attribute("#shBd", "data-e")
-            vus.append(e)
-            if etape == "2":
-                await page.click('[data-mode="retrait"]')
-            if etape == "3":
-                await page.click('[data-delai="normal"]')
-            if etape != "4":
-                await page.click('[data-nav="suiv"]')
-                await page.wait_for_timeout(260)
-        ok(vus == ["1", "2", "3", "4"],
+        # parcours a panier : mesures (1) -> delai (3) -> livraison (2)
+        # -> coordonnees (4). Les numeros sont ceux des animations, pas
+        # l'ordre des ecrans : chaque etape garde SON animation d'origine.
+        vus.append(await page.get_attribute("#shBd", "data-e"))
+        await page.click('[data-nav="suiv"]')
+        await page.wait_for_timeout(260)
+        vus.append(await page.get_attribute("#shBd", "data-e"))
+        await page.click('[data-exp="0"]')
+        await page.click('[data-nav="suiv"]')                # au panier
+        await page.wait_for_timeout(260)
+        await page.click('[data-pan="commander"]')
+        await page.wait_for_timeout(260)
+        vus.append(await page.get_attribute("#shBd", "data-e"))
+        await page.click('[data-mode="retrait"]')
+        await page.click('[data-nav="suiv"]')
+        await page.wait_for_timeout(260)
+        vus.append(await page.get_attribute("#shBd", "data-e"))
+        ok(vus == ["1", "3", "2", "4"],
            f"tunnel : chaque etape porte sa propre animation (vu {vus})")
+        await page.evaluate("()=>{panier=[];sauvePanier();rendrePanier();}")
         ok(not errs, "toucher et catalogue : aucune erreur JS"
            + ("" if not errs else " -> " + errs[0][:140]))
         await ctx.close()

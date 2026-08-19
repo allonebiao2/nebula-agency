@@ -269,6 +269,60 @@ var PIECES = [
    eur:52, usd:63, eurExp:67, usdExp:81,
    ds:"Col montant noué derrière la nuque, dos entièrement dégagé, jupe courte et évasée. Un volant de tulle violet dépasse sous le wax à volutes."},
 
+  /* ── LES 11 MODELES RECUS LES 2026-08-16 ET 17 ──────────────────
+     Poses au catalogue le 2026-08-18 sur demande de Mongazi, AVANT
+     leurs photos : les pieces sont reelles, les prix sont les siens,
+     la commande fonctionne. `photoWa:true` remplace la photo par
+     « Photo sur WhatsApp », qui est vrai et actionnable.
+     ⚠️ Elles n'entrent NI au heros NI au carrousel tant qu'elles
+     n'ont pas d'image : un monogramme en pleine page ne montre rien.
+     `python _nouveaux_modeles.py --poser` posera les photos et
+     retirera ce drapeau. */
+  {id:"h10", cat:"sm", nom:"Robe Organza", type:"robe_ovale", tag:"Cérémonie", photoWa:true,
+   prix:40000, jmin:14, jmax:14, expPrix:55000, expMin:2, expMax:4,
+   eur:60, usd:72, eurExp:82, usdExp:100,
+   ds:"Manches ballon détachées des épaules, col en organza froncé, découpe à la taille, dos lacé au ruban et jupon d'organza sous un wax rouge."},
+  {id:"h11", cat:"sm", nom:"Ensemble Nœud", type:"haut_pantalon", tag:"", photoWa:true,
+   prix:25000, jmin:14, jmax:14, expPrix:35000, expMin:2, expMax:4,
+   eur:37, usd:45, eurExp:52, usdExp:63,
+   ds:"Haut dos nu à col, noué dans le dos, et pantalon large avec un pan de wax rouge et blanc."},
+  {id:"h12", cat:"sm", nom:"Robe Lacée", type:"robe_ovale", tag:"", photoWa:true,
+   prix:35000, jmin:14, jmax:14, expPrix:45000, expMin:2, expMax:4,
+   eur:52, usd:63, eurExp:67, usdExp:81,
+   ds:"Épaules dénudées à fines bretelles, manches ballon, basque à la taille, dos lacé au ruban."},
+  {id:"h13", cat:"sm", nom:"Tailleur Cœurs", type:"haut_pantalon", tag:"Fait main", photoWa:true,
+   prix:50000, jmin:14, jmax:14, expPrix:65000, expMin:2, expMax:4,
+   eur:75, usd:90, eurExp:99, usdExp:115,
+   ds:"Veste cintrée à revers et épaules structurées, pantalon large assorti, wax bordeaux à cœurs."},
+  {id:"h14", cat:"sm", nom:"Ensemble Jean", type:"haut_jupe", tag:"", photoWa:true,
+   prix:35000, jmin:14, jmax:14, expPrix:45000, expMin:2, expMax:4,
+   eur:52, usd:63, eurExp:67, usdExp:81,
+   ds:"Haut court épaules dénudées à manches ballon, jupe longue à volants montée sur un empiècement en jean."},
+  {id:"h15", cat:"sm", nom:"Robe Sirène", type:"robe_droite", tag:"Cérémonie", photoWa:true,
+   prix:40000, jmin:14, jmax:14, expPrix:55000, expMin:2, expMax:4,
+   eur:60, usd:72, eurExp:82, usdExp:100,
+   ds:"Fourreau en wax violet, volants bleu roi en bordure et le long de la fente, traîne et foulard assorti."},
+  {id:"h16", cat:"sm", nom:"Robe Émeraude", type:"haut_jupe", tag:"", photoWa:true,
+   prix:25000, jmin:14, jmax:14, expPrix:35000, expMin:2, expMax:4,
+   eur:37, usd:45, eurExp:52, usdExp:63,
+   ds:"Coupe courte ajustée, manches longues, grands motifs verts et jaunes cernés de noir."},
+  {id:"h17", cat:"sm", nom:"Ensemble Orange", type:"haut_pantalon", tag:"", photoWa:true,
+   prix:35000, jmin:14, jmax:14, expPrix:45000, expMin:2, expMax:4,
+   eur:52, usd:63, eurExp:67, usdExp:81,
+   ds:"Bustier froncé à lien au cou, découpes sur les côtés, bas long et très ample en tissu uni."},
+  {id:"h18", cat:"sm", nom:"Robe Soleil", type:"robe_ovale", tag:"Cérémonie", photoWa:true,
+   prix:25000, jmin:14, jmax:14, expPrix:35000, expMin:2, expMax:4,
+   eur:37, usd:45, eurExp:52, usdExp:63,
+   ds:"Épaules drapées à cordons et pompons, ceinture drapée, jupe très ample en bazin teint rouge et or."},
+  {id:"h19", cat:"sm", nom:"Robe d'été", type:"robe_ovale", tag:"Plage", photoWa:true,
+   prix:35000, jmin:14, jmax:14, expPrix:45000, expMin:2, expMax:4,
+   eur:52, usd:63, eurExp:67, usdExp:81,
+   ds:"Haut court noué au cou et jupe longue très ample, en bazin teint. La pièce d'été, qui va de la plage au déjeuner."},
+  {id:"h20", cat:"sm", nom:"Ensemble Volants", type:"haut_pantalon", tag:"", photoWa:true,
+   prix:40000, jmin:14, jmax:14, expPrix:55000, expMin:2, expMax:4,
+   eur:60, usd:72, eurExp:82, usdExp:100,
+   ds:"Haut court noué devant, manches à trois volants étagés, et pantalon très évasé en jean à empiècements de bazin teint."},
+
   /* Une CRÉATION LIBRE : ce n'est pas un vêtement inventé, c'est un service.
      Aucun prix (« sur devis »), aucune photo revendiquée : le client décrit
      ce qu'il veut, choisit le type de vêtement, et on en parle. C'était déjà
@@ -355,7 +409,8 @@ function carte(p){
            d'attente dit au client que la maison n'est pas prête. Cette carte
            est la « Création libre » — elle n'a pas de photo parce qu'elle n'a
            pas de modèle, et c'est ça qu'il faut écrire. */
-        : '<div class="mark"></div><span class="avenir">Votre modèle</span>')+
+        : '<div class="mark"></div><span class="avenir">'+
+          (p.photoWa ? 'Photo sur WhatsApp' : 'Votre modèle')+'</span>')+
       '<span class="voile"><span>Commander</span></span></div>'+
     '<div class="bd">'+
       '<h3>'+esc(p.nom)+'</h3>'+
@@ -398,96 +453,248 @@ $$("[data-onglet]").forEach(function(b){
 });
 onglet(premiereCatPleine());
 
-/* ---------- état de la commande --------------------------------- */
+/* ==================================================================
+   LE PANIER ET LA COMMANDE
+   ==================================================================
+   Refait le 2026-08-16, demandé par Mongazi : « un panier comme pour
+   madame Luxury, histoire que les clientes voient ce qu'elles
+   commandent et les prix ».
+
+   Avant, une cliente qui voulait deux robes envoyait deux messages
+   WhatsApp. L'atelier recevait deux commandes sans savoir qu'elles
+   allaient ensemble : même cliente, une seule livraison, un seul
+   règlement. Maintenant : on configure chaque pièce, elle tombe dans
+   le panier, et une seule commande part.
+
+   ⚠️ AUCUN PRIX N'EST STOCKÉ DANS LE PANIER. On garde l'identifiant de
+   la pièce et les choix de la cliente ; le prix est relu dans PIECES à
+   chaque affichage. Un panier oublié une semaine dans le navigateur ne
+   peut donc pas ressortir avec un prix périmé.
+
+   ⚠️ LE DÉLAI D'UNE COMMANDE EST CELUI DE SA PIÈCE LA PLUS LENTE. Tout
+   part ensemble. Annoncer la pièce la plus rapide fabriquerait une
+   cliente déçue, exactement comme annoncer la borne basse d'un délai.
+   ================================================================== */
+
+function pieceDe(id){
+  return PIECES.filter(function(x){ return x.id === id; })[0] || null;
+}
+
+var PKEY  = "hms:panier";
+var panier = [];
+try{
+  var _lu = JSON.parse(localStorage.getItem(PKEY));
+  /* on jette les lignes dont la pièce n'existe plus au catalogue */
+  if(_lu && _lu.length) panier = _lu.filter(function(l){ return !!pieceDe(l.id); });
+}catch(e){ panier = []; }
+
+function sauvePanier(){
+  try{ localStorage.setItem(PKEY, JSON.stringify(panier)); }catch(e){}
+}
+
+/* ---------- prix et totaux -------------------------------------- */
+function prixUnite(l){
+  var p = pieceDe(l.id);
+  if(!p || p.prix == null) return null;                 /* sur devis */
+  return (l.express && p.expPrix != null) ? p.expPrix : p.prix;
+}
+function prixLigne(l){
+  var u = prixUnite(l);
+  return u == null ? null : u * l.qte;
+}
+/* ses prix en euros et en dollars, tels qu'elle les donne, jamais recalculés */
+function deviseUnite(l, cle){
+  var p = pieceDe(l.id);
+  if(!p) return null;
+  var v = l.express ? p[cle + "Exp"] : p[cle];
+  return v == null ? null : v;
+}
+function totaux(){
+  var t = {fcfa:0, eur:0, usd:0, devis:false, eurOk:true, usdOk:true, articles:0};
+  panier.forEach(function(l){
+    t.articles += l.qte;
+    var v = prixLigne(l);
+    if(v == null) t.devis = true; else t.fcfa += v;
+    var e = deviseUnite(l, "eur"); if(e == null) t.eurOk = false; else t.eur += e * l.qte;
+    var u = deviseUnite(l, "usd"); if(u == null) t.usdOk = false; else t.usd += u * l.qte;
+  });
+  return t;
+}
+
+var cmd = {
+  actif:false, etape:1, mode:null, pays:null, ville:"",
+  prenom:"", nom:"", tel:"", mail:"", note:""
+};
+
+function fraisLivraison(){
+  if(cmd.mode !== "expedition" || !cmd.pays) return 0;
+  return cmd.pays.frais == null ? null : cmd.pays.frais;   /* null = tarif au cas par cas */
+}
+function joursAcheminement(){
+  if(cmd.mode !== "expedition" || !cmd.pays) return 0;
+  return cmd.pays.achem || 0;
+}
+function totalCommande(){
+  var t = totaux();
+  if(t.devis) return null;
+  var f = fraisLivraison();
+  if(f === null) return null;
+  return t.fcfa + f;
+}
+/* la borne HAUTE de la pièce la plus lente */
+function joursConfection(){
+  var j = 0;
+  panier.forEach(function(l){
+    var p = pieceDe(l.id); if(!p) return;
+    var v = l.express
+      ? (p.expMax != null ? p.expMax : DELAIS.express.jmax)
+      : Math.max(p.jmax != null ? p.jmax : DELAIS.normal.jmax, DELAIS.normal.jmin);
+    if(v > j) j = v;
+  });
+  return j;
+}
+function joursTotal(){
+  if(!panier.length) return null;
+  return joursConfection() + joursAcheminement();
+}
+/* vrai quand la commande mélange une pièce pressée et une pièce normale :
+   la cliente doit savoir que tout part à la date la plus tardive */
+function melangeDelais(){
+  var e = false, n = false;
+  panier.forEach(function(l){ if(l.express) e = true; else n = true; });
+  return e && n;
+}
+
+/* ---------- ce qui décrit une ligne, en mots -------------------- */
+function libLigne(l){
+  var p = pieceDe(l.id), out = [];
+  if(!p) return "";
+  out.push(p.cat === "sm" ? "Sur-mesure" : "Prêt-à-porter");
+  if(l.taille) out.push("Taille " + l.taille);
+  if(p.cat === "sm" && l.typeMesure && MESURES[l.typeMesure]){
+    var jeu = MESURES[l.typeMesure];
+    var n = jeu.champs.filter(function(c){ return l.mesures[c.id]; }).length;
+    out.push(n + " / " + jeu.champs.length + " mesures");
+  }
+  return out.join(" · ");
+}
+function libDelaiLigne(l){
+  var p = pieceDe(l.id);
+  if(!p) return "";
+  if(l.express){
+    return "Express, " + libDelai(p.expMin != null ? p.expMin : DELAIS.express.jmin,
+                                  p.expMax != null ? p.expMax : DELAIS.express.jmax);
+  }
+  return "Confection en " + libDelai(p.jmin, p.jmax);
+}
+
+/* ==================================================================
+   LA FICHE D'UNE PIÈCE — deux étapes, puis le panier
+   ================================================================== */
 var etat = null;
 
-function ouvrir(id){
-  var p = PIECES.filter(function(x){return x.id===id;})[0];
+function ouvrir(id, cle){
+  var p = pieceDe(id);
   if(!p) return;
-  var m = memoire();
+  var ligne = cle ? panier.filter(function(x){ return x.cle === cle; })[0] : null;
   etat = {
     piece: p,
     etape: 1,
-    taille: null,
-    typeMesure: p.type || (p.typeLibre ? null : null),
-    mesures: {},
-    tissu: "",
-    details: "",
-    mode: null,          /* "retrait" | "expedition" */
-    pays: null,
-    delai: null,
-    prenom: m.prenom||"", nom: m.nom||"", tel: m.tel||"", mail: m.mail||"",
-    ville: m.ville||"", note: ""
+    cle: ligne ? ligne.cle : null,          /* on modifie une ligne existante */
+    taille: ligne ? ligne.taille : null,
+    typeMesure: ligne ? ligne.typeMesure : (p.type || null),
+    mesures: ligne ? JSON.parse(JSON.stringify(ligne.mesures || {})) : mesuresConnues(p.type),
+    tissu: ligne ? ligne.tissu : "",
+    details: ligne ? ligne.details : "",
+    express: ligne ? !!ligne.express : null,
+    qte: ligne ? ligne.qte : 1
   };
+  cmd.actif = false;
   document.getElementById("shTitre").textContent = p.nom;
-  document.getElementById("shSub").textContent = (p.cat==="sm" ? "Sur-mesure" : "Prêt-à-porter")+
-    " · "+(p.prix==null ? "sur devis" : fcfa(p.prix));
+  document.getElementById("shSub").textContent =
+    (p.cat === "sm" ? "Sur-mesure" : "Prêt-à-porter") + " · " +
+    (p.prix == null ? "sur devis" : fcfa(p.prix));
+  montrerModale();
+  dessiner();
+}
+
+/* Une cliente qui commande deux vêtements du même type ne va pas
+   remesurer son tour de taille. On reprend ce qu'elle a déjà donné,
+   champ par champ, et elle corrige si besoin. */
+function mesuresConnues(type){
+  var out = {};
+  if(!type || !MESURES[type]) return out;
+  var champs = MESURES[type].champs.map(function(c){ return c.id; });
+  panier.forEach(function(l){
+    Object.keys(l.mesures || {}).forEach(function(k){
+      if(champs.indexOf(k) >= 0 && !out[k]) out[k] = l.mesures[k];
+    });
+  });
+  return out;
+}
+
+function montrerModale(){
+  /* le tiroir et la fiche ne se superposent jamais : le tiroir est au-dessus
+     dans l'ordre d'empilement, il masquerait la fiche */
+  fermerPanier();
   document.getElementById("ov").classList.add("on");
   document.body.style.overflow = "hidden";
-  dessiner();
+  parDessus(true);
+}
+/* ⚠️ Le bouton du son est en `position:fixed`, en bas à gauche. Il se posait
+   sur « Retour » dans la fiche et sur « Vider le panier » dans le tiroir : un
+   élément flottant finit toujours par recouvrir quelque chose. On l'efface
+   pendant qu'un écran de commande est ouvert. */
+function parDessus(on){
+  document.body.classList.toggle("ecran-on", !!on);
 }
 function fermer(){
   document.getElementById("ov").classList.remove("on");
   document.body.style.overflow = "";
-  etat = null;
+  etat = null; cmd.actif = false;
+  parDessus(false);
 }
+
 document.getElementById("grille").addEventListener("click", function(e){
   var b = e.target.closest ? e.target.closest(".piece") : null;
   if(b) ouvrir(b.dataset.id);
 });
 document.getElementById("btX").addEventListener("click", fermer);
-document.getElementById("ov").addEventListener("click", function(e){ if(e.target===this) fermer(); });
-document.addEventListener("keydown", function(e){ if(e.key==="Escape" && etat) fermer(); });
+document.getElementById("ov").addEventListener("click", function(e){ if(e.target === this) fermer(); });
+document.addEventListener("keydown", function(e){
+  if(e.key !== "Escape") return;
+  if(etat || cmd.actif) fermer();
+  else if(panOuvert()) fermerPanier();
+});
 
-/* ---------- calculs --------------------------------------------- */
-function fraisLivraison(){
-  if(!etat || etat.mode!=="expedition" || !etat.pays) return 0;
-  return etat.pays.frais==null ? null : etat.pays.frais;
-}
-function joursAcheminement(){
-  if(!etat || etat.mode!=="expedition" || !etat.pays) return 0;
-  return etat.pays.achem||0;
-}
-function totalCommande(){
-  if(!etat) return null;
-  if(etat.piece.prix==null) return null;                 /* sur devis */
-  var f = fraisLivraison();
-  if(f===null) return null;                              /* pays « autre » */
-  var sup = (etat.delai && etat.delai.id === "express") ? supExpress(etat.piece) : 0;
-  return etat.piece.prix + f + sup;
-}
-function joursTotal(){
-  if(!etat || !etat.delai) return null;
-  /* borne haute du délai de confection propre à la pièce, ajustée
-     par le mode de délai choisi, plus l'acheminement */
-  var conf = etat.delai.id==="express"
-    ? (etat.piece.expMax != null ? etat.piece.expMax : etat.delai.jmax)
-    : Math.max(etat.piece.jmax, etat.delai.jmin);
-  return conf + joursAcheminement();
-}
+/* ---------- le rendu de la modale ------------------------------- */
+function nbEtapes(){ return cmd.actif ? 3 : 2; }
+function etapeCourante(){ return cmd.actif ? cmd.etape : (etat ? etat.etape : 1); }
 
-/* ---------- rendu ----------------------------------------------- */
 function dessiner(){
-  if(!etat) return;
-  $$("#prog i").forEach(function(i,k){ i.classList.toggle("on", k < etat.etape); });
+  if(!etat && !cmd.actif) return;
+  var prog = document.getElementById("prog");
+  var n = nbEtapes(), e = etapeCourante();
+  prog.innerHTML = new Array(n + 1).join("<i></i>");
+  $$("#prog i").forEach(function(i, k){ i.classList.toggle("on", k < e); });
+
   var bd = document.getElementById("shBd");
   var ft = document.getElementById("shFt");
-  var e  = etat.etape;
 
-  if(e===1)      bd.innerHTML = vue1();
-  else if(e===2) bd.innerHTML = vue2();
-  else if(e===3) bd.innerHTML = vue3();
-  else if(e===4) bd.innerHTML = vue4();
-  else           bd.innerHTML = vue5();
-
+  if(cmd.actif){
+    bd.innerHTML = e === 1 ? vueLivraison() : (e === 2 ? vueCoord() : vueEnvoi());
+  }else{
+    bd.innerHTML = e === 1 ? vueMesures() : vueDelai();
+  }
   ft.innerHTML = pied();
   brancher();
-  document.querySelector(".sheet").scrollTop = 0;
+  var sh = document.querySelector(".sheet");
+  if(sh) sh.scrollTop = 0;
   document.getElementById("ov").scrollTop = 0;
 }
 
-/* --- étape 1 : taille ou mesures --- */
-function vue1(){
+/* --- pièce, étape 1 : taille ou mesures --- */
+function vueMesures(){
   var p = etat.piece;
   if(p.cat==="pap"){
     return '<div class="stitle">Votre taille</div>'+
@@ -553,65 +760,29 @@ function vue1(){
   return h;
 }
 
-/* --- étape 2 : retrait ou expédition --- */
-function vue2(){
-  var h = '<div class="stitle">Retrait ou expédition ?</div>'+
-    '<div class="sdesc">Le retrait à l\'atelier est gratuit et permet l\'essayage. L\'expédition est facturée selon votre pays.</div>'+
-    '<div class="opts">'+
-      '<button class="opt'+(etat.mode==="retrait"?" sel":"")+'" type="button" data-mode="retrait">'+
-        '<span class="rd"></span><span class="tx"><b>Retrait à l\'atelier</b>'+
-        '<span>'+esc(ATELIER.adresse)+' · essayage et retouche sur place</span></span>'+
-        '<span class="pz">Gratuit</span></button>'+
-      '<button class="opt'+(etat.mode==="expedition"?" sel":"")+'" type="button" data-mode="expedition">'+
-        '<span class="rd"></span><span class="tx"><b>Expédition</b>'+
-        '<span>Nous envoyons la tenue chez vous</span></span>'+
-        '<span class="pz" id="pzExp">Selon pays</span></button>'+
-    '</div>';
-
-  if(etat.mode==="expedition"){
-    h += '<div class="fd" style="margin-top:16px"><label for="f_pays">Votre pays</label><select id="f_pays">'+
-      '<option value="">— Choisir votre pays —</option>'+
-      PAYS.map(function(p){
-        return '<option value="'+p.id+'"'+(etat.pays&&etat.pays.id===p.id?" selected":"")+'>'+esc(p.nom)+
-          (p.frais==null? " (frais à confirmer)" : " — "+fcfa(p.frais))+'</option>';
-      }).join("")+'</select></div>';
-    if(etat.pays && etat.pays.frais===null){
-      h += '<div class="warn" style="margin-top:14px">Nous n\'expédions pas encore automatiquement vers ce pays. '+
-           'Envoyez-nous quand même la commande : nous vous donnerons le tarif exact avant tout règlement.</div>';
-    }
-    h += '<div class="fd" style="margin-top:12px"><label for="f_ville">Ville de livraison</label>'+
-         '<input id="f_ville" type="text" placeholder="Cotonou, Abidjan, Dakar…" value="'+esc(etat.ville)+'"></div>';
-  }
-  if(etat.mode==="retrait"){
-    h += '<div class="momo" style="margin-top:16px"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>'+
-         '<span><strong>'+esc(ATELIER.adresse)+'</strong><br>'+esc(ATELIER.horaires)+'</span></div>';
-  }
-  return h;
-}
-
-/* --- étape 3 : délai + date de disponibilité --- */
-function vue3(){
+/* --- pièce, étape 2 : le délai propre à la pièce --- */
+function vueDelai(){
   var p = etat.piece;
   var h = '<div class="stitle">Quand la voulez-vous ?</div>'+
-    '<div class="sdesc">Cette pièce demande normalement '+libDelai(p.jmin, p.jmax)+' de confection.</div>'+
+    '<div class="sdesc">Cette pièce demande normalement '+libDelai(p.jmin, p.jmax)+' de confection. '+
+    'Le délai se choisit pièce par pièce : c\'est le prix de l\'express qui change d\'une pièce à l\'autre.</div>'+
     '<div class="opts">'+
-      opt3(DELAIS.normal, "Confection en "+libDelai(p.jmin, p.jmax))+
-      opt3(DELAIS.express, "Votre tenue en "
-        +libDelai(p.expMin != null ? p.expMin : DELAIS.express.jmin,
-                  p.expMax != null ? p.expMax : DELAIS.express.jmax)
-        +" maximum")+
+      optDelai(false, "Confection en "+libDelai(p.jmin, p.jmax), p)+
+      optDelai(true, "Votre tenue en "+libDelai(p.expMin != null ? p.expMin : DELAIS.express.jmin,
+                                                p.expMax != null ? p.expMax : DELAIS.express.jmax)+" maximum", p)+
     '</div>';
 
-  if(etat.delai){
-    var j = joursTotal();
-    var d = dateDispo(j);
-    var motLivr = etat.mode==="expedition" ? "Chez vous au plus tard le" : "Prête à retirer au plus tard le";
-    var det = etat.mode==="expedition" && joursAcheminement()
-      ? "Confection incluse, plus "+joursAcheminement()+" jour"+(joursAcheminement()>1?"s":"")+" d'acheminement vers "+esc(etat.pays?etat.pays.nom:"")+"."
-      : "Vous pouvez venir l'essayer à l'atelier ce jour-là.";
-    h += '<div class="dispo"><svg viewBox="0 0 24 24"><path d="M4.5 5.5h15v14h-15z"/><path d="M4.5 10h15M8.5 3v4M15.5 3v4"/><path d="M9 15l2 2 4-4"/></svg>'+
-      '<div><b>'+motLivr+'</b><p>'+dateFr(d)+'</p><small>'+det+'</small></div></div>';
-    if(etat.delai.id==="express"){
+  if(etat.express !== null){
+    var u = prixUnite({id:p.id, express:etat.express, qte:1});
+    h += '<div class="recap" style="margin-top:18px">'+
+      '<div class="li"><span>'+esc(p.nom)+'</span><span>'+(u==null?"Sur devis":fcfa(u))+'</span></div>'+
+      '<div class="li"><span>Quantité</span><span>'+
+        '<button class="qbt" type="button" data-qte="-1" aria-label="Retirer un exemplaire">−</button>'+
+        '<b class="qn">'+etat.qte+'</b>'+
+        '<button class="qbt" type="button" data-qte="1" aria-label="Ajouter un exemplaire">+</button>'+
+      '</span></div>'+
+      '<div class="tt"><span>Cette pièce</span><span>'+(u==null?"Sur devis":fcfa(u*etat.qte))+'</span></div></div>';
+    if(etat.express){
       h += '<div class="warn" style="margin-top:14px">Le délai express fait passer votre commande devant les autres. '+
            'Il est confirmé par l\'atelier à la validation : si la charge du moment ne le permet pas, nous vous prévenons '+
            'immédiatement et le supplément n\'est pas dû.</div>';
@@ -619,104 +790,184 @@ function vue3(){
   }
   return h;
 }
-function opt3(d, sous){
-  var sd = d.id==="express" ? supExpress(etat.piece) : 0;
-  return '<button class="opt'+(etat.delai&&etat.delai.id===d.id?" sel":"")+'" type="button" data-delai="'+d.id+'">'+
-    '<span class="rd"></span><span class="tx"><b>'+esc(d.nom)+'</b><span>'+esc(sous)+'</span></span>'+
-    '<span class="pz">'+(sd? "+ "+fcfa(sd) : "Inclus")+'</span></button>';
+function optDelai(ex, sous, p){
+  var sup = ex ? supExpress(p) : 0;
+  var nom = ex ? DELAIS.express.nom : DELAIS.normal.nom;
+  return '<button class="opt'+(etat.express===ex?" sel":"")+'" type="button" data-exp="'+(ex?"1":"0")+'">'+
+    '<span class="rd"></span><span class="tx"><b>'+esc(nom)+'</b><span>'+esc(sous)+'</span></span>'+
+    '<span class="pz">'+(sup ? "+ "+fcfa(sup) : "Inclus")+'</span></button>';
 }
 
-/* --- étape 4 : coordonnées + récapitulatif --- */
-function vue4(){
-  var h = '<div class="stitle">Vos coordonnées</div>'+
-    '<div class="sdesc">Pour vous confirmer la commande et vous prévenir dès que la tenue est prête.</div>'+
-    '<div class="mes">'+
-      '<div class="fd"><label for="f_prenom">Prénom</label><input id="f_prenom" type="text" value="'+esc(etat.prenom)+'" placeholder="Votre prénom"></div>'+
-      '<div class="fd"><label for="f_nom">Nom</label><input id="f_nom" type="text" value="'+esc(etat.nom)+'" placeholder="Votre nom"></div>'+
-      '<div class="fd"><label for="f_tel">Numéro WhatsApp</label><input id="f_tel" type="tel" inputmode="tel" value="'+esc(etat.tel)+'" placeholder="+229 01 …"></div>'+
-      '<div class="fd"><label for="f_mail">Email <span style="font-weight:500;text-transform:none">(si vous n\'avez pas WhatsApp)</span></label><input id="f_mail" type="email" inputmode="email" value="'+esc(etat.mail)+'" placeholder="vous@gmail.com"></div>'+
-      '<div class="fd full"><label for="f_note">Un mot pour l\'atelier ?</label><textarea id="f_note" placeholder="Optionnel">'+esc(etat.note)+'</textarea></div>'+
-    '</div>'+
-    '<div class="momo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 10h6M9 14h6M12 7v10"/></svg>'+
-    '<span><strong>Règlement par Mobile Money uniquement.</strong> Le numéro vous sera communiqué au message de confirmation. Aucun paiement ne se fait sur ce site.</span></div>'+
-    recap()+
-    '<div class="err" id="err"></div>';
+/* ==================================================================
+   LA COMMANDE — livraison, coordonnées, envoi
+   ================================================================== */
+function ouvrirCommande(){
+  if(!panier.length) return;
+  var m = memoire();
+  cmd.actif = true; cmd.etape = 1;
+  cmd.prenom = cmd.prenom || m.prenom || "";
+  cmd.nom    = cmd.nom    || m.nom    || "";
+  cmd.tel    = cmd.tel    || m.tel    || "";
+  cmd.mail   = cmd.mail   || m.mail   || "";
+  cmd.ville  = cmd.ville  || m.ville  || "";
+  etat = null;
+  fermerPanier();
+  var t = totaux();
+  document.getElementById("shTitre").textContent = "Votre commande";
+  document.getElementById("shSub").textContent =
+    t.articles + (t.articles > 1 ? " pièces" : " pièce") + " · " + (t.devis ? "sur devis" : fcfa(t.fcfa));
+  montrerModale();
+  dessiner();
+}
+
+function vueLivraison(){
+  var h = '<div class="stitle">Comment la recevoir ?</div>'+
+    '<div class="sdesc">Retrait à l\'atelier ou expédition. Une seule livraison pour toute la commande.</div>'+
+    '<div class="opts">'+
+      '<button class="opt'+(cmd.mode==="retrait"?" sel":"")+'" type="button" data-mode="retrait">'+
+        '<span class="rd"></span><span class="tx"><b>Retrait à l\'atelier</b>'+
+        '<span>'+esc(ATELIER.adresse)+' · essayage et retouche sur place</span></span>'+
+        '<span class="pz">Gratuit</span></button>'+
+      '<button class="opt'+(cmd.mode==="expedition"?" sel":"")+'" type="button" data-mode="expedition">'+
+        '<span class="rd"></span><span class="tx"><b>Expédition</b>'+
+        '<span>Nous envoyons la tenue chez vous</span></span>'+
+        '<span class="pz">Selon pays</span></button>'+
+    '</div>';
+
+  if(cmd.mode === "expedition"){
+    h += '<div class="fd" style="margin-top:16px"><label for="f_pays">Votre pays</label><select id="f_pays">'+
+      '<option value="">— Choisir votre pays —</option>'+
+      PAYS.map(function(p){
+        return '<option value="'+p.id+'"'+(cmd.pays&&cmd.pays.id===p.id?" selected":"")+'>'+esc(p.nom)+
+          (p.frais==null? " (frais à confirmer)" : " — "+fcfa(p.frais))+'</option>';
+      }).join("")+'</select></div>';
+    if(cmd.pays && cmd.pays.frais === null){
+      h += '<div class="warn" style="margin-top:14px">Nous n\'expédions pas encore automatiquement vers ce pays. '+
+           'Envoyez-nous quand même la commande : nous vous donnerons le tarif exact avant tout règlement.</div>';
+    }
+    h += '<div class="fd" style="margin-top:12px"><label for="f_ville">Ville de livraison</label>'+
+         '<input id="f_ville" type="text" placeholder="Cotonou, Abidjan, Dakar…" value="'+esc(cmd.ville)+'"></div>';
+  }
+  if(cmd.mode === "retrait"){
+    h += '<div class="momo" style="margin-top:16px"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>'+
+         '<span><strong>'+esc(ATELIER.adresse)+'</strong><br>'+esc(ATELIER.horaires)+'</span></div>';
+  }
+
+  var j = joursTotal();
+  if(j != null && cmd.mode){
+    var mot = cmd.mode === "expedition" ? "Chez vous au plus tard le" : "Prête à retirer au plus tard le";
+    var det = cmd.mode === "expedition" && joursAcheminement()
+      ? "Confection incluse, plus "+joursAcheminement()+" jour"+(joursAcheminement()>1?"s":"")+" d'acheminement vers "+esc(cmd.pays?cmd.pays.nom:"")+"."
+      : "Vous pouvez venir l'essayer à l'atelier ce jour-là.";
+    h += '<div class="dispo"><svg viewBox="0 0 24 24"><path d="M4.5 5.5h15v14h-15z"/><path d="M4.5 10h15M8.5 3v4M15.5 3v4"/><path d="M9 15l2 2 4-4"/></svg>'+
+      '<div><b>'+mot+'</b><p>'+dateFr(dateDispo(j))+'</p><small>'+det+'</small></div></div>';
+    if(panier.length > 1){
+      h += '<div class="warn" style="margin-top:14px">Cette date est celle de la pièce la plus longue à confectionner : '+
+           'toute la commande part ensemble.'+
+           (melangeDelais() ? ' Vous avez une pièce en express et une en délai normal : dites-le nous si vous préférez deux envois séparés.' : '')+
+           '</div>';
+    }
+  }
   return h;
 }
 
-function recap(){
-  var p = etat.piece;
-  var lignes = [];
-  lignes.push(["Pièce", p.nom]);
-  if(p.cat==="pap" && etat.taille) lignes.push(["Taille", etat.taille]);
-  if(p.cat==="sm" && etat.typeMesure){
-    var jeu = MESURES[etat.typeMesure];
-    var remplies = jeu.champs.filter(function(c){return etat.mesures[c.id];}).length;
-    lignes.push(["Mesures", remplies+" / "+jeu.champs.length+" renseignées"]);
-  }
-  lignes.push(["Prix de la pièce", p.prix==null ? "Sur devis" : fcfa(p.prix)]);
-  if(etat.mode==="retrait") lignes.push(["Retrait atelier","Gratuit"]);
-  if(etat.mode==="expedition"){
-    var f = fraisLivraison();
-    lignes.push(["Expédition "+(etat.pays?etat.pays.nom:""), f===null ? "À confirmer" : fcfa(f)]);
-  }
-  if(etat.delai){
-    var _s = etat.delai.id==="express" ? supExpress(etat.piece) : 0;
-    lignes.push([etat.delai.nom, _s ? fcfa(_s) : "Inclus"]);
-  }
-  var j = joursTotal();
-  if(j!=null) lignes.push(["Disponible le", dateFr(dateDispo(j))]);
-
-  var t = totalCommande();
-  return '<div class="recap">'+
-    lignes.map(function(l){return '<div class="li"><span>'+esc(l[0])+'</span><span>'+esc(l[1])+'</span></div>';}).join("")+
-    '<div class="tt"><span>Total</span><span>'+(t==null ? "Sur devis" : fcfa(t))+'</span></div></div>';
+function vueCoord(){
+  return '<div class="stitle">Vos coordonnées</div>'+
+    '<div class="sdesc">Pour vous confirmer la commande et vous prévenir dès que la tenue est prête.</div>'+
+    '<div class="mes">'+
+      '<div class="fd"><label for="f_prenom">Prénom</label><input id="f_prenom" type="text" value="'+esc(cmd.prenom)+'" placeholder="Votre prénom"></div>'+
+      '<div class="fd"><label for="f_nom">Nom</label><input id="f_nom" type="text" value="'+esc(cmd.nom)+'" placeholder="Votre nom"></div>'+
+      '<div class="fd"><label for="f_tel">Numéro WhatsApp</label><input id="f_tel" type="tel" inputmode="tel" value="'+esc(cmd.tel)+'" placeholder="+229 01 …"></div>'+
+      '<div class="fd"><label for="f_mail">Email <span style="font-weight:500;text-transform:none">(si vous n\'avez pas WhatsApp)</span></label><input id="f_mail" type="email" inputmode="email" value="'+esc(cmd.mail)+'" placeholder="vous@gmail.com"></div>'+
+      '<div class="fd full"><label for="f_note">Un mot pour l\'atelier ?</label><textarea id="f_note" placeholder="Optionnel">'+esc(cmd.note)+'</textarea></div>'+
+    '</div>'+
+    '<div class="momo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 10h6M9 14h6M12 7v10"/></svg>'+
+    '<span><strong>Règlement par Mobile Money uniquement.</strong> Le numéro vous sera communiqué au message de confirmation. Aucun paiement ne se fait sur ce site.</span></div>'+
+    recapCommande()+
+    '<div class="err" id="err"></div>';
 }
 
-/* --- étape 5 : envoi --- */
-function vue5(){
+function vueEnvoi(){
   return '<div class="fin">'+
     '<div class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></svg></div>'+
     '<h3>Votre commande est prête à partir</h3>'+
-    '<p>Le bouton ci-dessous ouvre WhatsApp avec votre commande déjà écrite : la pièce, vos mesures, '+
+    '<p>Le bouton ci-dessous ouvre WhatsApp avec votre commande déjà écrite : chaque pièce, vos mesures, '+
     'la livraison, le délai et le total. Vous n\'avez qu\'à appuyer sur envoyer.</p>'+
-    recap()+
+    recapCommande()+
     '<a class="alt" id="altMail" href="#">Je n\'ai pas WhatsApp — envoyer par email</a>'+
     '</div>';
 }
 
-/* --- pied de modale --- */
-function pied(){
-  var e = etat.etape;
-  if(e===5){
-    return '<button class="bt g" type="button" data-nav="prec">Retour</button>'+
-      '<a class="bt w" id="btWa" href="#" target="_blank" rel="noopener">'+
-      '<svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2zm5.6 14.2c-.2.7-1.2 1.3-1.9 1.4-.5.1-1.1.2-3.2-.7-2.7-1.1-4.4-3.8-4.5-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9 1-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1.9 2 1.2 2.3 1.4.3.1.4.1.6-.1l.9-1c.2-.2.3-.2.6-.1l2 .9c.3.1.4.2.5.3.1.2.1.9-.1 1.6z"/></svg>'+
-      'Envoyer sur WhatsApp</a>';
+/* le récapitulatif : chaque pièce, puis la livraison, puis le total */
+function recapCommande(){
+  var h = '<div class="recap">';
+  panier.forEach(function(l){
+    var p = pieceDe(l.id); if(!p) return;
+    var v = prixLigne(l);
+    h += '<div class="li"><span>'+esc(p.nom)+(l.qte>1?' × '+l.qte:'')+
+         '<em>'+esc(libLigne(l))+' · '+esc(libDelaiLigne(l))+'</em></span>'+
+         '<span>'+(v==null?"Sur devis":fcfa(v))+'</span></div>';
+  });
+  if(cmd.mode === "retrait") h += '<div class="li"><span>Retrait à l\'atelier</span><span>Gratuit</span></div>';
+  if(cmd.mode === "expedition"){
+    var f = fraisLivraison();
+    h += '<div class="li"><span>Expédition '+esc(cmd.pays?cmd.pays.nom:"")+'</span><span>'+
+         (f === null ? "À confirmer" : fcfa(f))+'</span></div>';
   }
-  var libelle = e===4 ? "Vérifier ma commande" : "Continuer";
-  return (e>1 ? '<button class="bt g" type="button" data-nav="prec">Retour</button>' : '')+
+  var j = joursTotal();
+  if(j != null && cmd.mode) h += '<div class="li"><span>Disponible le</span><span>'+dateFr(dateDispo(j))+'</span></div>';
+
+  var t = totalCommande();
+  h += '<div class="tt"><span>Total</span><span>'+(t==null?"Sur devis":fcfa(t))+'</span></div>';
+  var d = totaux();
+  if(!d.devis && (d.eurOk || d.usdOk)){
+    var dev = [];
+    if(d.eurOk) dev.push(d.eur+" €");
+    if(d.usdOk) dev.push(d.usd+" $");
+    h += '<div class="li dev"><span>Les pièces, en devises</span><span>'+dev.join(" · ")+'</span></div>';
+  }
+  return h + '</div>';
+}
+
+/* ---------- pied de modale -------------------------------------- */
+function pied(){
+  var e = etapeCourante();
+  if(cmd.actif){
+    if(e === 3){
+      return '<button class="bt g" type="button" data-nav="prec">Retour</button>'+
+        '<a class="bt w" id="btWa" href="#" target="_blank" rel="noopener">'+
+        '<svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2zm5.6 14.2c-.2.7-1.2 1.3-1.9 1.4-.5.1-1.1.2-3.2-.7-2.7-1.1-4.4-3.8-4.5-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9 1-2.2c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1.9 2 1.2 2.3 1.4.3.1.4.1.6-.1l.9-1c.2-.2.3-.2.6-.1l2 .9c.3.1.4.2.5.3.1.2.1.9-.1 1.6z"/></svg>'+
+        'Envoyer sur WhatsApp</a>';
+    }
+    return '<button class="bt g" type="button" data-nav="prec">'+(e===1?"Au panier":"Retour")+'</button>'+
+      '<button class="bt p" type="button" data-nav="suiv"'+(peutAvancer()?"":" disabled")+'>'+
+      (e===2?"Vérifier ma commande":"Continuer")+'</button>';
+  }
+  var libelle = etat.etape === 2 ? (etat.cle ? "Mettre à jour le panier" : "Ajouter au panier") : "Continuer";
+  return (etat.etape > 1 ? '<button class="bt g" type="button" data-nav="prec">Retour</button>' : '')+
     '<button class="bt p" type="button" data-nav="suiv"'+(peutAvancer()?"":" disabled")+'>'+libelle+'</button>';
 }
 
 function peutAvancer(){
-  var e = etat.etape, p = etat.piece;
-  if(e===1){
-    if(p.cat==="pap") return !!etat.taille;
+  if(cmd.actif){
+    if(cmd.etape === 1){
+      if(cmd.mode === "retrait") return true;
+      if(cmd.mode === "expedition") return !!cmd.pays;
+      return false;
+    }
+    if(cmd.etape === 2) return !!(cmd.prenom.trim() && (cmd.tel.trim() || cmd.mail.trim()));
+    return true;
+  }
+  var p = etat.piece;
+  if(etat.etape === 1){
+    if(p.cat === "pap") return !!etat.taille;
     if(!etat.typeMesure) return false;
     var jeu = MESURES[etat.typeMesure];
     /* au moins la moitié des mesures : le reste se prend ensemble */
-    var n = jeu.champs.filter(function(c){return etat.mesures[c.id];}).length;
-    return n >= Math.ceil(jeu.champs.length/2);
+    var n = jeu.champs.filter(function(c){ return etat.mesures[c.id]; }).length;
+    return n >= Math.ceil(jeu.champs.length / 2);
   }
-  if(e===2){
-    if(etat.mode==="retrait") return true;
-    if(etat.mode==="expedition") return !!etat.pays;
-    return false;
-  }
-  if(e===3) return !!etat.delai;
-  if(e===4) return !!(etat.prenom.trim() && (etat.tel.trim() || etat.mail.trim()));
-  return true;
+  return etat.express !== null;
 }
 
 /* ---------- branchements ---------------------------------------- */
@@ -728,13 +979,19 @@ function brancher(){
   });
   $$("[data-mode]", bd).forEach(function(b){
     b.addEventListener("click", function(){
-      etat.mode = b.dataset.mode;
-      if(etat.mode==="retrait"){ etat.pays = null; }
+      cmd.mode = b.dataset.mode;
+      if(cmd.mode === "retrait") cmd.pays = null;
       dessiner();
     });
   });
-  $$("[data-delai]", bd).forEach(function(b){
-    b.addEventListener("click", function(){ etat.delai = DELAIS[b.dataset.delai]; dessiner(); });
+  $$("[data-exp]", bd).forEach(function(b){
+    b.addEventListener("click", function(){ etat.express = b.dataset.exp === "1"; dessiner(); });
+  });
+  $$("[data-qte]", bd).forEach(function(b){
+    b.addEventListener("click", function(){
+      etat.qte = Math.max(1, Math.min(10, etat.qte + Number(b.dataset.qte)));
+      dessiner();
+    });
   });
   $$("[data-mes]", bd).forEach(function(i){
     i.addEventListener("input", function(){
@@ -745,29 +1002,43 @@ function brancher(){
   });
 
   var ty = document.getElementById("f_type");
-  if(ty) ty.addEventListener("change", function(){ etat.typeMesure = ty.value||null; etat.mesures = {}; dessiner(); });
-
-  var pa = document.getElementById("f_pays");
-  if(pa) pa.addEventListener("change", function(){
-    etat.pays = PAYS.filter(function(p){return p.id===pa.value;})[0] || null;
+  if(ty) ty.addEventListener("change", function(){
+    etat.typeMesure = ty.value || null;
+    etat.mesures = mesuresConnues(etat.typeMesure);
     dessiner();
   });
 
-  lie("f_tissu","tissu"); lie("f_det","details"); lie("f_ville","ville");
-  lie("f_prenom","prenom"); lie("f_nom","nom"); lie("f_tel","tel");
-  lie("f_mail","mail"); lie("f_note","note");
+  var pa = document.getElementById("f_pays");
+  if(pa) pa.addEventListener("change", function(){
+    cmd.pays = PAYS.filter(function(p){ return p.id === pa.value; })[0] || null;
+    dessiner();
+  });
+
+  lieEtat("f_tissu","tissu"); lieEtat("f_det","details");
+  lieCmd("f_ville","ville"); lieCmd("f_prenom","prenom"); lieCmd("f_nom","nom");
+  lieCmd("f_tel","tel"); lieCmd("f_mail","mail"); lieCmd("f_note","note");
 
   $$("[data-nav]", document.getElementById("shFt")).forEach(function(b){
     b.addEventListener("click", function(){
-      if(b.dataset.nav==="prec"){
-        etat.etape = Math.max(1, etat.etape-1);
+      if(b.dataset.nav === "prec"){
+        if(cmd.actif){
+          if(cmd.etape === 1){ fermer(); ouvrirPanier(); return; }
+          cmd.etape--;
+        }else{
+          etat.etape = Math.max(1, etat.etape - 1);
+        }
       }else{
         if(!peutAvancer()) return;
-        if(etat.etape===4){
-          memorise({prenom:etat.prenom.trim(), nom:etat.nom.trim(), tel:etat.tel.trim(),
-                    mail:etat.mail.trim(), ville:etat.ville.trim()});
+        if(cmd.actif){
+          if(cmd.etape === 2){
+            memorise({prenom:cmd.prenom.trim(), nom:cmd.nom.trim(), tel:cmd.tel.trim(),
+                      mail:cmd.mail.trim(), ville:cmd.ville.trim()});
+          }
+          cmd.etape = Math.min(3, cmd.etape + 1);
+        }else{
+          if(etat.etape === 2){ validerPiece(); return; }
+          etat.etape = 2;
         }
-        etat.etape = Math.min(5, etat.etape+1);
       }
       dessiner();
     });
@@ -775,88 +1046,256 @@ function brancher(){
 
   var wa = document.getElementById("btWa");
   if(wa) wa.href = "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(message());
-  /* le repli pour qui n'a pas WhatsApp : par email si la maison en a une,
-     par téléphone sinon. Jamais un lien qui ne mène nulle part. */
   var al = document.getElementById("altMail");
   if(al){
     if(EMAIL){
-      al.href = "mailto:"+EMAIL+"?subject="+encodeURIComponent("Commande — "+etat.piece.nom)+
+      al.href = "mailto:"+EMAIL+"?subject="+encodeURIComponent("Commande — HILLARY M. STYL")+
                 "&body="+encodeURIComponent(message());
       al.textContent = "Je n'ai pas WhatsApp — envoyer par email";
-    } else {
+    }else{
       al.href = "tel:+"+WHATSAPP;
       al.textContent = "Je n'ai pas WhatsApp — appeler l'atelier";
     }
   }
 }
-function lie(id, cle){
+function lieEtat(id, cle){
   var el = document.getElementById(id);
   if(!el) return;
   el.addEventListener("input", function(){ etat[cle] = el.value; majSuiv(); });
+}
+function lieCmd(id, cle){
+  var el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener("input", function(){ cmd[cle] = el.value; majSuiv(); });
 }
 function majSuiv(){
   var b = document.querySelector('[data-nav="suiv"]');
   if(b) b.disabled = !peutAvancer();
 }
 
-/* ---------- le message de commande ------------------------------ */
-function message(){
-  var p = etat.piece, L = [];
-  L.push("*NOUVELLE COMMANDE — HILLARY M. STYL*");
-  L.push("");
-  L.push("*Pièce :* "+p.nom+" ("+(p.cat==="sm"?"sur-mesure":"prêt-à-porter")+")");
-  L.push("*Prix :* "+(p.prix==null ? "sur devis" : fcfa(p.prix)));
+/* ---------- la pièce tombe dans le panier ----------------------- */
+function validerPiece(){
+  var l = {
+    cle: etat.cle || (etat.piece.id + "-" + Date.now()),
+    id: etat.piece.id,
+    taille: etat.taille,
+    typeMesure: etat.typeMesure,
+    mesures: etat.mesures,
+    tissu: etat.tissu,
+    details: etat.details,
+    express: !!etat.express,
+    qte: etat.qte
+  };
+  var i = -1;
+  panier.forEach(function(x, k){ if(x.cle === l.cle) i = k; });
+  if(i >= 0) panier[i] = l; else panier.push(l);
+  sauvePanier();
+  fermer();
+  majPastille();
+  ouvrirPanier();
+}
 
-  if(p.cat==="pap" && etat.taille) L.push("*Taille :* "+etat.taille);
-
-  if(p.cat==="sm" && etat.typeMesure){
-    var jeu = MESURES[etat.typeMesure];
-    L.push("");
-    L.push("*MESURES — "+jeu.nom+"*");
-    if(jeu.aValider) L.push("_(liste de mesures à valider par l'atelier)_");
-    var manquantes = [];
-    jeu.champs.forEach(function(c){
-      if(etat.mesures[c.id]) L.push("• "+c.l+" : "+etat.mesures[c.id]+" cm");
-      else manquantes.push(c.l);
-    });
-    if(manquantes.length){
-      L.push("");
-      L.push("_À prendre ensemble ("+manquantes.length+") :_ "+manquantes.join(", "));
-    }
-    if(etat.tissu.trim())   L.push(""), L.push("*Tissu :* "+etat.tissu.trim());
+/* ==================================================================
+   LE TIROIR DU PANIER
+   ================================================================== */
+function panOuvert(){
+  var p = document.getElementById("pan");
+  return !!p && p.classList.contains("on");
+}
+function ouvrirPanier(){
+  rendrePanier();
+  document.getElementById("pan").classList.add("on");
+  document.getElementById("panOv").classList.add("on");
+  document.getElementById("pan").setAttribute("aria-hidden","false");
+  document.body.style.overflow = "hidden";
+  parDessus(true);
+}
+function fermerPanier(){
+  var p = document.getElementById("pan");
+  if(!p) return;
+  p.classList.remove("on");
+  p.setAttribute("aria-hidden","true");
+  document.getElementById("panOv").classList.remove("on");
+  if(!document.getElementById("ov").classList.contains("on")){
+    document.body.style.overflow = "";
+    parDessus(false);
   }
-  if(etat.details.trim()){ L.push(""); L.push("*Modèle et détails :* "+etat.details.trim()); }
+}
+function majPastille(){
+  var n = totaux().articles;
+  var b = document.getElementById("panN");
+  if(!b) return;
+  b.textContent = n;
+  b.classList.toggle("on", n > 0);
+}
+
+function rendrePanier(){
+  var bd = document.getElementById("panBd");
+  var ft = document.getElementById("panFt");
+  if(!bd || !ft) return;
+
+  if(!panier.length){
+    bd.innerHTML = '<div class="pan-vide">'+
+      '<svg viewBox="0 0 24 24"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9.5 8V6.5a2.5 2.5 0 015 0V8"/></svg>'+
+      '<p>Votre panier est vide.</p>'+
+      '<span>Choisissez une pièce dans les créations, donnez vos mesures, et elle se posera ici.</span></div>';
+    ft.innerHTML = '<button class="bt g" type="button" data-pan="fermer">Voir les créations</button>';
+    majPastille();
+    return;
+  }
+
+  bd.innerHTML = panier.map(function(l){
+    var p = pieceDe(l.id);
+    if(!p) return "";
+    var v = prixLigne(l);
+    var img = p.img
+      ? '<img class="pl-img" src="assets/images/'+esc(p.img)+'" alt="" loading="lazy" decoding="async">'
+      : '<span class="pl-img pl-mono" aria-hidden="true">'+esc(p.nom.charAt(0))+'</span>';
+    return '<div class="pl">'+img+
+      '<div class="pl-i">'+
+        '<h4>'+esc(p.nom)+'</h4>'+
+        '<div class="pl-d">'+esc(libLigne(l))+'</div>'+
+        '<div class="pl-d">'+(l.express
+            ? '<b class="pl-ex">Express</b> · '+esc(libDelai(pieceDe(l.id).expMin != null ? pieceDe(l.id).expMin : DELAIS.express.jmin,
+                                                             pieceDe(l.id).expMax != null ? pieceDe(l.id).expMax : DELAIS.express.jmax))
+            : esc(libDelaiLigne(l)))+'</div>'+
+        '<div class="pl-c">'+
+          '<span class="qty">'+
+            '<button type="button" data-moins="'+esc(l.cle)+'" aria-label="Retirer un exemplaire">−</button>'+
+            '<b>'+l.qte+'</b>'+
+            '<button type="button" data-plus="'+esc(l.cle)+'" aria-label="Ajouter un exemplaire">+</button>'+
+          '</span>'+
+          '<button class="pl-mod" type="button" data-mod="'+esc(l.cle)+'">Modifier</button>'+
+          '<button class="pl-rm" type="button" data-rm="'+esc(l.cle)+'">Retirer</button>'+
+        '</div>'+
+      '</div>'+
+      '<div class="pl-p">'+(v==null?"Sur devis":fcfa(v))+'</div>'+
+    '</div>';
+  }).join("");
+
+  var t = totaux();
+  var dev = [];
+  if(!t.devis && t.eurOk) dev.push(t.eur+" €");
+  if(!t.devis && t.usdOk) dev.push(t.usd+" $");
+  ft.innerHTML =
+    '<div class="pan-t"><span>Sous-total</span><b>'+(t.devis?"Sur devis":fcfa(t.fcfa))+'</b></div>'+
+    (dev.length ? '<div class="pan-dev">soit '+dev.join(" · ")+'</div>' : '')+
+    '<div class="pan-note">La livraison se choisit à l\'étape suivante. '+
+    'Le règlement se fait par Mobile Money, jamais sur ce site.</div>'+
+    '<button class="bt p" type="button" data-pan="commander">Commander '+
+      (t.articles>1 ? "ces "+t.articles+" pièces" : "cette pièce")+'</button>'+
+    '<button class="bt g" type="button" data-pan="vider">Vider le panier</button>';
+  majPastille();
+}
+
+document.addEventListener("click", function(e){
+  var c = e.target.closest ? e.target.closest("[data-pan],[data-rm],[data-mod],[data-plus],[data-moins]") : null;
+  if(!c) return;
+  if(c.dataset.pan === "fermer"){ fermerPanier(); return; }
+  if(c.dataset.pan === "commander"){ ouvrirCommande(); return; }
+  if(c.dataset.pan === "vider"){
+    if(panier.length && confirm("Vider entièrement votre panier ?")){
+      panier = []; sauvePanier(); rendrePanier();
+    }
+    return;
+  }
+  if(c.dataset.rm){
+    panier = panier.filter(function(l){ return l.cle !== c.dataset.rm; });
+    sauvePanier(); rendrePanier(); return;
+  }
+  if(c.dataset.mod){
+    var l = panier.filter(function(x){ return x.cle === c.dataset.mod; })[0];
+    if(l){ fermerPanier(); ouvrir(l.id, l.cle); }
+    return;
+  }
+  if(c.dataset.plus || c.dataset.moins){
+    var cle = c.dataset.plus || c.dataset.moins;
+    var d = c.dataset.plus ? 1 : -1;
+    panier.forEach(function(x){
+      if(x.cle === cle) x.qte = Math.max(1, Math.min(10, x.qte + d));
+    });
+    sauvePanier(); rendrePanier();
+  }
+});
+
+(function(){
+  var b = document.getElementById("btPan");
+  if(b) b.addEventListener("click", function(){ panOuvert() ? fermerPanier() : ouvrirPanier(); });
+  var x = document.getElementById("panX");
+  if(x) x.addEventListener("click", fermerPanier);
+  var ov = document.getElementById("panOv");
+  if(ov) ov.addEventListener("click", fermerPanier);
+  majPastille();
+})();
+
+/* ==================================================================
+   LE MESSAGE DE COMMANDE
+   ================================================================== */
+function message(){
+  var L = [];
+  L.push("*NOUVELLE COMMANDE — HILLARY M. STYL*");
+  var t = totaux();
+  L.push("_"+t.articles+(t.articles>1?" pièces":" pièce")+"_");
+
+  panier.forEach(function(l, k){
+    var p = pieceDe(l.id); if(!p) return;
+    var v = prixLigne(l);
+    L.push("");
+    L.push("*"+(k+1)+". "+p.nom+"*"+(l.qte>1?" × "+l.qte:""));
+    L.push((p.cat==="sm"?"Sur-mesure":"Prêt-à-porter")+" · "+libDelaiLigne(l));
+    L.push("Prix : "+(v==null?"sur devis":fcfa(v)));
+    if(l.taille) L.push("Taille : "+l.taille);
+    if(p.cat==="sm" && l.typeMesure && MESURES[l.typeMesure]){
+      var jeu = MESURES[l.typeMesure];
+      L.push("MESURES — "+jeu.nom);
+      if(jeu.aValider) L.push("_(liste de mesures à valider par l'atelier)_");
+      var manquantes = [];
+      jeu.champs.forEach(function(c){
+        if(l.mesures[c.id]) L.push("• "+c.l+" : "+l.mesures[c.id]+" cm");
+        else manquantes.push(c.l);
+      });
+      if(manquantes.length) L.push("_À prendre ensemble ("+manquantes.length+") :_ "+manquantes.join(", "));
+    }
+    if((l.tissu||"").trim())   L.push("Tissu : "+l.tissu.trim());
+    if((l.details||"").trim()) L.push("Détails : "+l.details.trim());
+  });
 
   L.push("");
   L.push("*LIVRAISON*");
-  if(etat.mode==="retrait"){
+  if(cmd.mode === "retrait"){
     L.push("Retrait à l'atelier — gratuit");
   }else{
     var f = fraisLivraison();
-    L.push("Expédition — "+(etat.pays?etat.pays.nom:"")+(etat.ville.trim()? ", "+etat.ville.trim() : ""));
+    L.push("Expédition — "+(cmd.pays?cmd.pays.nom:"")+(cmd.ville.trim()? ", "+cmd.ville.trim() : ""));
     L.push("Frais : "+(f===null ? "à confirmer" : fcfa(f)));
   }
-  if(etat.delai){
+
+  var j = joursTotal();
+  if(j != null){
     L.push("");
     L.push("*DÉLAI*");
-    var _se = etat.delai.id==="express" ? supExpress(etat.piece) : 0;
-    L.push(etat.delai.nom+(_se? " (+ "+fcfa(_se)+")" : ""));
-    var j = joursTotal();
-    if(j!=null) L.push("Disponible au plus tard le "+dateFr(dateDispo(j)));
+    L.push("Disponible au plus tard le "+dateFr(dateDispo(j)));
+    if(panier.length > 1) L.push("_(délai de la pièce la plus longue, tout part ensemble)_");
   }
 
-  var t = totalCommande();
+  var tot = totalCommande();
   L.push("");
-  L.push("*TOTAL : "+(t==null ? "sur devis" : fcfa(t))+"*");
+  L.push("*TOTAL : "+(tot==null ? "sur devis" : fcfa(tot))+"*");
+  if(!t.devis && (t.eurOk || t.usdOk)){
+    var dev = [];
+    if(t.eurOk) dev.push(t.eur+" €");
+    if(t.usdOk) dev.push(t.usd+" $");
+    L.push("_(les pièces : "+dev.join(" · ")+")_");
+  }
   L.push("_Règlement par Mobile Money._");
 
   L.push("");
   L.push("*CLIENT*");
-  L.push((etat.prenom.trim()+" "+etat.nom.trim()).trim());
-  if(etat.tel.trim())  L.push("WhatsApp : "+etat.tel.trim());
-  if(etat.mail.trim()) L.push("Email : "+etat.mail.trim());
-  if(etat.ville.trim())L.push("Ville : "+etat.ville.trim());
-  if(etat.note.trim()){ L.push(""); L.push("*Note :* "+etat.note.trim()); }
+  L.push((cmd.prenom.trim()+" "+cmd.nom.trim()).trim());
+  if(cmd.tel.trim())  L.push("WhatsApp : "+cmd.tel.trim());
+  if(cmd.mail.trim()) L.push("Email : "+cmd.mail.trim());
+  if(cmd.ville.trim())L.push("Ville : "+cmd.ville.trim());
+  if(cmd.note.trim()){ L.push(""); L.push("*Note :* "+cmd.note.trim()); }
 
   return L.join("\n");
 }
@@ -1024,7 +1463,7 @@ var Atelier = (function(){
     var b = e.target.closest && e.target.closest("[data-nav]");
     if(!b || b.getAttribute("data-nav") !== "suiv") return;
     if(b.hasAttribute("disabled")) return;
-    J(typeof etat !== "undefined" && etat.etape === 4 ? "couper" : "etape")();
+    J(typeof cmd !== "undefined" && cmd.actif && cmd.etape === 2 ? "couper" : "etape")();
   }, true);
 
   /* 6 · la commande part : le fil qu'on noue */

@@ -39,11 +39,68 @@ modifications. *(Corrigé le 2026-06-20 : était affiché par erreur « /mois »
 
 ## État
 
-- **Version actuelle** : **v9.9.3** (`nebula_agency_v9.html` = `index.html` en prod ; + facturation/factures normalisées + fourchette 55 000 – 500 000 F)
+- **Version actuelle** : **v9.9.5** (`nebula_agency_v9.html` = `index.html` en prod ; + facturation/factures normalisées + fourchette 55 000 – 500 000 F ; portfolio à 9 cartes ; débordement mobile corrigé)
 - **Statut** : **LIVE** https://www.nebula-agency.online (Cloudflare Pages, projet `nebula-agency`, déployé 2026-07-02)
 - **v8 conservé** (`nebula_agency_v8.html`) pour retour arrière.
 
 ### Historique des versions
+
+#### v9.9.5 — 2026-08-16 (le débordement de 6 px sur téléphone)
+
+Ce n'était pas une mise en page trop large : **c'était l'animation d'apparition**.
+
+`.rv-right` part à `translateX(30px)` et revient à zéro quand la section se révèle.
+Deux éléments la portent, `.stats-panel` (bloc « pourquoi ») et `.form` (bloc
+« commander ») : **tant qu'ils n'ont pas été révélés, ils dépassent de 30 px à droite**,
+ce qui donnait 6 px de trop sur un écran de 390.
+
+⚠️ **C'est pour ça que la mesure était trompeuse** : au repos, 6 px ; après avoir fait
+défiler toute la page, 0. Mesurer une seule fois, après défilement, ne montre rien.
+
+Remède : `section{overflow-x:clip}`.
+- **`clip` et pas `hidden`** : `hidden` créerait un conteneur de défilement et
+  **casserait le `position:sticky`** du panneau de statistiques sur grand écran.
+  Vérifié avant/après : comportement identique.
+- `body{overflow-x:hidden}` existait déjà mais ne servait à rien ici : quand `html` est
+  en `visible`, l'overflow du `body` **est propagé au viewport**, donc le `body` lui-même
+  ne rogne plus rien.
+
+Vérifié à 360, 390, 414, 768, 1024 et 1440 px, **au repos et après défilement** : 0 px
+partout. Le formulaire de commande se révèle bien sur téléphone (page de 18 289 px de
+haut à 390 px : il faut descendre pour le voir apparaître). Déployé et vérifié en ligne.
+
+#### v9.9.4 — 2026-08-16 (portfolio remis à jour : 4 cartes → 9, dont une morte)
+
+Signalé par Mongazi : « les liens dans le portfolio ne sont pas à jour ».
+
+**Ce qui était en ligne, et faux :**
+- ⛔ `luxuryskinclinic.netlify.app/ina-luxury.html` → **404, site entièrement disparu**
+  (la racine aussi). Un prospect qui cliquait « voir nos réalisations » tombait sur une
+  page d'erreur. Remplacé par **`luxuryclub229.com`**, qui est le même client (Gloria) à
+  sa nouvelle adresse : INA Luxury et Skin Clinic y sont deux des trois univers.
+- ⛔ **La page partenaires donnait 11 fois cette adresse morte** dans des messages prêts à
+  envoyer aux prospects (« un exemple de ce qu'on fait : … »). Remplacée partout par
+  `hillary-m-styl.pages.dev`.
+- ⚠️ Grain d'Esthétique pointait encore sur l'ancien Netlify au lieu de
+  **`graindesthetique.com`** (migration faite, portfolio pas suivi).
+- ⚠️ Weinkeller pointait sur `/weinkeller.html`, qui redirige vers `/weinkeller`.
+
+**Les 9 cartes, dans l'ordre** : Hillary M. Styl · ANGY ART · Djambar Team · Au Braisé d'Or ·
+Miss cakes · HH Design · Weinkeller by CK · Luxury Club 229 · Grain d'Esthétique.
+Les 5 nouveaux clients (Hillary, ANGY ART, Au Braisé d'Or, Miss cakes, HH Design) n'y
+figuraient pas du tout alors qu'ils sont livrés et en ligne.
+
+**Vignettes** : recapturées à 1280x820 (le ratio exact de la carte, 880/564), réduites à
+720 px et encodées en WebP q62 → 12 à 29 Ko de base64 chacune. Le fichier passe de
+**423 à 497 Ko**. ⚠️ Une vignette en base64 n'est **pas** différée par `loading="lazy"` :
+tout est payé au premier chargement. Si le poids devient un souci, les sortir en fichiers
+`.webp` dans `assets/` est le seul vrai remède.
+
+`llms.txt` (qui, lui, était déjà à jour) complété avec **ANGY ART**.
+
+Contrôlé avant déploiement : 9 vignettes chargées, 0 erreur JS, 0 débordement en plus.
+⚠️ **Débordement horizontal de 6 px sur 390 px : il existait déjà avant** (mesuré sur la
+version d'avant), il n'a pas été introduit ici et reste à corriger.
 
 #### v9.9.3 — 2026-07-03 (facturation + fourchette recalibrée 55 000 – 500 000 F)
 - **Facturation** : nouvelle option dans « 02 · Traitement » (question « Qu'attendez-vous de

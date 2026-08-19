@@ -2,5 +2,8 @@
  "hero-1": "#0b2d92",
  "hero-2": "#ae6e0d",
  "hero-3": "#275eb7",
- "hero-4": "#0e85b7"
+ "hero-4": "#0e85b7",
+ "piece-violette": "#6b3065",
+ "piece-orange": "#925437",
+ "piece-verte": "#7e6730"
 }

@@ -663,3 +663,278 @@ trouble dure 100 ms au lieu d'un demi-tour d'horloge.
   profils Playwright abandonnés dans `%TEMP%`, les paquets d'une installation
   ratée. ⚠️ **Ne pas vider `%TEMP%` en entier** : Claude Code y écrit ses
   propres fichiers de travail et supprime sa sortie en cours.
+
+## 2026-08-16 — Le voile qui avale les clics après sa fermeture
+
+- **Contexte** : le tiroir du panier d'Hillary se fermait, et pendant un instant
+  la fiche ouverte derrière ne répondait plus.
+- **Ce qui s'est passé** : le voile portait
+  `transition: opacity .35s, visibility .35s`. **`visibility` ne se dégrade pas
+  en douceur : elle bascule à la FIN de la transition.** Le voile était donc
+  invisible mais toujours là, et il interceptait tout pendant 350 ms.
+- **Leçon** : sur tout voile, tiroir ou modale qu'on fait disparaître,
+  **`pointer-events` est ce qui décide**, pas `opacity` ni `visibility`.
+- **À appliquer** : `pointer-events:none` à l'état fermé, `auto` à l'état
+  ouvert. Et le contrôle qui le trouve n'est pas un contrôle de style : c'est un
+  clic qui échoue, avec « intercepts pointer events » dans le journal.
+
+## 2026-08-16 — Le défaut le plus cher est invisible depuis le site
+
+- **Contexte** : audit de la vitrine Hillary avant de « rendre tout parfait ».
+- **Ce qui s'est passé** : le site n'avait **aucune `og:image`**. Au Bénin, un
+  lien se partage sur WhatsApp : la maison apparaissait comme une ligne de texte
+  grise, à côté de liens qui montrent une photo. Personne ne pouvait le voir en
+  regardant le site, et ça durait depuis la mise en ligne.
+- **Leçon** : une vitrine ne se juge pas seulement à l'écran. **Elle se juge
+  aussi dans une conversation WhatsApp, dans un résultat Google et dans un
+  aperçu de partage.** Ce sont trois surfaces qu'aucune capture ne montre.
+- **À appliquer** : à chaque livraison, vérifier `og:image` (**en JPEG**,
+  l'aperçu WhatsApp ne lit pas toujours le WebP), `twitter:card`, `robots.txt`,
+  `sitemap.xml`, et une page `404`. ⚠️ Vérifier aussi que le script de
+  déploiement **copie vraiment** ces fichiers : celui d'Hillary ne copiait que
+  les `.webp`, et l'image de partage restait sur le disque.
+
+## 2026-08-16 — Des données structurées qui promettent ce que la page ne montre pas
+
+- **Contexte** : la page déclarait un `FAQPage` à Google.
+- **Ce qui s'est passé** : **aucune question n'était visible sur la page.**
+  C'est contraire aux règles de Google (le contenu balisé doit être visible), et
+  surtout les objections des clientes n'étaient répondues nulle part. Les
+  réponses cachées annonçaient même un délai que le catalogue contredisait.
+- **Leçon** : un balisage n'est pas une déclaration d'intention. **Ce qu'il
+  annonce doit exister à l'écran, mot pour mot.**
+- **À appliquer** : quand on balise une FAQ, un produit ou un prix, **le lire
+  dans les données du site** au lieu de le recopier, et poser un contrôle qui
+  compare le balisage et la page. Chez Hillary, les fiches produit sont
+  extraites du catalogue par l'assembleur, et un contrôle compare les questions
+  une par une.
+
+## 2026-08-17 — Quand la porte échoue, ce qu'on publie est l'ancienne version
+
+- **Contexte** : le pré-déploiement d'Hillary a signalé un contrôle rouge, et
+  le déploiement est parti quand même (des commandes enchaînées par `&&`).
+- **Ce qui s'est passé** : `_predeploy.py` s'arrête **avant** de préparer
+  `_dist/`. Le dossier contenait donc encore la version précédente, et
+  `wrangler` l'a publiée **sans le moindre message d'erreur**. Le site est parti
+  avec la nouvelle FAQ mais sans le nouveau héros. Vu en vérifiant en ligne.
+- **Leçon** : un contrôle qui échoue ne laisse pas le livrable en l'état, il le
+  laisse **périmé**. Et un déploiement réussi ne prouve rien sur ce qui a été
+  déployé.
+- **À appliquer** : ne jamais enchaîner « contrôle && déploiement » sans lire la
+  sortie du contrôle, et **vérifier en ligne un élément que la nouvelle version
+  est seule à porter** (ici : le nombre de diapositives du héros).
+
+## 2026-08-17 — Un contrôle qui échoue au hasard accuse le site à tort
+
+- **Contexte** : la suite d'Hillary tombait une fois sur deux sur
+  « Page.goto: Timeout », ce qui ressemble à une panne du site.
+- **Ce qui s'est passé** : le petit serveur HTTP du contrôle était
+  **`socketserver.TCPServer`, mono-tâche**. Le navigateur ouvre plusieurs
+  connexions et les garde ouvertes : l'une bloquait toutes les autres. Tant que
+  la page ne demandait qu'une poignée de fichiers ça passait ; avec **28
+  images**, elle a commencé à ne plus se charger dans le temps imparti.
+  ⚠️ J'ai d'abord soupçonné Google Fonts et corrigé à côté : la panne est
+  revenue au passage suivant.
+- **Leçon** : devant un contrôle intermittent, **regarder d'abord l'instrument**,
+  pas le site. Un contrôle qui échoue au hasard est pire qu'un contrôle absent :
+  on finit par le croire, ou pire, par ne plus le croire du tout.
+- **À appliquer** : `ThreadingTCPServer` (avec `daemon_threads`) dans toute
+  suite qui sert un site à un vrai navigateur. Et confirmer une correction
+  d'intermittence par **plusieurs passages d'affilée**, jamais un seul.
+
+
+## 2026-08-18 — Une image dans une conversation n'est pas un fichier, et ça dépend d'OÙ tourne la session
+
+- **Contexte** : Mongazi envoie onze modèles en photo depuis son téléphone et
+  demande quatre fois de les mettre en ligne. Il est certain que ça marchait
+  avant, « au même endroit ».
+- **Ce qui s'est passé** : il avait raison, et la vérification l'a prouvé. Les
+  photos des lots précédents sont **sur le disque** alors que git ne les suit
+  pas (`_sources/` est ignoré), et le lot du 10 août a livré **les images
+  finies sans aucune source** — or l'outil de détourage ne sait lire que des
+  fichiers. Donc cette session-là **avait les fichiers**.
+  **Une session lancée depuis le téléphone tourne dans le nuage : les pièces
+  jointes y arrivent comme de vrais fichiers.** Une session qui tourne sur le PC
+  voit l'image sans pouvoir l'écrire nulle part.
+- **Leçon** : ne jamais dire « c'est impossible » quand l'utilisateur affirme
+  que ça marchait. **Aller chercher la trace** (git, dates, ce qu'un outil exige
+  pour fonctionner) : elle dit ce qui s'est réellement passé, et souvent il a
+  raison sur le fait, pas sur la cause.
+- **À appliquer** : quand des photos manquent, deux voies au lieu d'une :
+  refaire la manipulation **depuis le téléphone** (la session du nuage sait
+  écrire les fichiers), ou un **lien** que je télécharge. ⚠️ Une session du
+  téléphone travaille sur une branche `claude/…` qui ne rejoint jamais `main`
+  toute seule.
+
+## 2026-08-18 — Un catalogue peut vivre sans photos, à condition de ne pas mentir
+
+- **Contexte** : onze pièces réelles, prix réels, aucune photo. Mongazi tranche :
+  « mets-les déjà sur la vitrine ».
+- **Ce qui a été fait** : les fiches sont complètes (nom, description, prix en
+  trois monnaies, délai, mesures) et **commandables de bout en bout**. À la
+  place de l'image : le monogramme et **« Photo sur WhatsApp »**.
+- **Leçon** : entre un placeholder qui s'excuse (« photo à venir », qui dit que
+  la maison n'est pas prête) et une absence, il existe une troisième voie :
+  **une phrase vraie et actionnable**, qui envoie le client là où il achète.
+- **À appliquer** : ⚠️ ces pièces n'entrent **ni au héros ni au carrousel** —
+  ces surfaces vivent de la photo. Et ce n'est pas un état final : un drapeau
+  (`photoWa`) marque les fiches, et l'outil qui posera les images le retirera.
+
+## 2026-08-19 — Un contrôle faux coûte plus cher qu'un contrôle absent
+
+- **Contexte** : mesure du contraste de la pastille de prix d'Au Braisé d'Or,
+  posée sur les photos de plats. La méthode d'Angy Art dit, à juste titre, que
+  lire `background-color` est aveugle au-dessus d'une photo : il faut
+  photographier et **prendre le décile le plus clair** pour le texte.
+- **Ce qui s'est passé** : la mesure annonçait **2,15:1** sur une pastille
+  **parfaitement nette**, vérifiée ensuite à l'œil sur une capture agrandie de
+  la seule pastille. Corriger l'animation, le serveur, le recadrage : les
+  chiffres ne bougeaient pas d'un centième.
+- **La cause** : le décile ne marche que si le texte couvre une bonne part de
+  la boîte. Les chiffres d'une pastille en couvrent **un dixième** : le seuil du
+  décile tombe alors **en plein anticrénelage**, et on mesure du gris de bord.
+- **Leçon** : **la couleur du texte est DÉCLARÉE, donc connue et solide ; seul
+  le fond dépend de ce qu'il y a dessous. On déclare l'une, on mesure l'autre.**
+  Et on neutralise l'animation d'apparition avant de photographier, sinon on
+  mesure le contraste d'un fondu.
+- **À appliquer** : quand l'instrument et l'œil se contredisent, **on regarde**
+  — on agrandit l'élément seul, on le met sous les yeux. Deux autres faux
+  rouges de la même soirée : `querySelector('[role=dialog]')` qui mesurait le
+  tiroir toujours monté au lieu de la modale, et un recadrage calculé sur des
+  boîtes lues **avant** la capture, entre lesquelles les images différées
+  avaient déplacé la mise en page.
+
+## 2026-08-19 — On ne corrige pas une donnée contre un résumé
+
+- **Contexte** : le `MENU.md` d'Au Braisé d'Or (transcription des photos du menu
+  papier) donnait « pizza pêcheur 4 000 / (à confirmer) », le site affichait
+  « 4 000 / 6 000 ». Conclusion apparente : un prix inventé, à retirer — et
+  cette pizza est un des 4 plats du héros, le chiffre s'affiche en grand.
+- **Ce qui s'est passé** : en recadrant la photo d'origine au bord coupé, **le
+  6 est lisible**. Le site avait raison, le résumé était trop prudent. Retirer
+  le prix aurait fait perdre la grande taille à la vente.
+- **Leçon** : un fichier de transcription n'est pas la source, c'est une
+  lecture de la source. **Avant de corriger une donnée, remonter à la photo, au
+  scan, au message d'origine.** Le même détour a montré que 4 lignes du
+  petit-déjeuner n'étaient jamais arrivées jusqu'au site.
+- **À appliquer** : marquer dans le fichier de transcription **ce qui est lu**
+  et **ce qui est déduit**, et garder les originaux (`_partage/`) à portée.
+  Une carte à laquelle il manque une ligne a l'air d'une carte complète : elle
+  ne se vérifie qu'en la comparant à autre chose qu'elle-même.
+
+## 2026-08-19 — Retirer un plat n'est pas supprimer une ligne
+
+- **Contexte** : la propriétaire d'Au Braisé d'Or fait retirer 13 plats de sa
+  carte (6 pizzas sur 10, 2 grillades, 2 burgers, 3 cocktails alcoolisés).
+- **Ce qui cassait en silence** : (1) la **pizza pêcheur était un des 4 plats
+  signature du héros** — le visiteur serait arrivé sur un plein écran vantant
+  un plat introuvable trois écrans plus bas ; (2) **deux notes de catégorie
+  devenaient fausses** : « servis avec Coca-Cola sauf végétarien, crispy,
+  nugget » sans plus de crispy ni de nugget, et « avec ou sans alcool » sans
+  plus une goutte d'alcool.
+- **Leçon** : un retrait modifie **tout ce que la page raconte**, pas seulement
+  la liste. Les données se régénèrent ; les **phrases**, elles, ne sont
+  vérifiées par rien.
+- **À appliquer** : après un retrait, chercher le nom du plat **partout**
+  (héros, carrousel, notes de catégorie, pied de page, affiche imprimée) et
+  relire ce que les textes voisins affirment encore. Puis poser **un contrôle
+  par élément retiré**, sur le texte rendu de la page : un plat retiré mais
+  laissé affiché se commande quand même, et c'est le restaurant qui gère la
+  déception du client.
+- ⚠️ **SUITE, le soir même** : la note disait « Lapin », la ligne du menu dit
+  « lapin **ou mouton** frit ». Retirer la ligne entière a **supprimé un plat
+  que la maison vend toujours** — Mongazi l'a corrigé dans l'heure. **Une ligne
+  de menu qui contient un « ou » est deux produits** : quand le client n'en
+  nomme qu'un, on retire ce qu'il nomme, pas la ligne. Et poser la question
+  reste ce qui rattrape le coup : elle était dans ma liste, elle a été lue.
+
+## 2026-08-19 — Quand une information manque, on donne le chemin, pas une valeur
+
+- **Contexte** : la propriétaire ajoute une catégorie « Desserts » (yaourt,
+  glace, cocktail) **sans donner un seul prix**.
+- **Ce qui a été fait** : convention `p:0` = prix pas encore donné. La carte
+  affiche **« Prix sur demande »**, et la fiche remplace le panier par
+  **« Demander le prix sur WhatsApp »**, question déjà rédigée.
+- ⚠️ **Un article sans prix ne doit jamais entrer au panier** : le total
+  mentirait et le message de commande partirait avec un « 0 F ». Un contrôle
+  vérifie qu'aucun « 0 F » n'apparaît nulle part.
+- **Leçon** : c'est la même famille que « Prix sur demande » chez Weinkeller et
+  « Photo sur WhatsApp » chez Hillary. **Ni inventer, ni cacher, ni s'excuser :
+  donner au client le chemin pour obtenir ce qui manque.** Cacher la catégorie
+  aurait privé la maison d'une vente qu'elle vient de demander.
+
+## 2026-08-19 — La source vaut mieux qu'un résumé, le client vaut mieux que la source
+
+- **Contexte** : une heure passée à recadrer les photos du menu papier pour
+  lever deux prix coupés (napolitaine, oriental) et confirmer celui de la
+  pêcheur. Le soir même, la propriétaire **retire ces trois pizzas**.
+- **Leçon** : remonter à la source reste juste — la même lecture a trouvé 4
+  lignes de petit-déjeuner absentes du site, qui, elles, restent. Mais quand
+  une question porte sur **ce que le client veut vendre**, et pas sur ce qu'un
+  document dit, **il faut la lui poser d'abord**. Aucune lecture, si rigoureuse
+  soit-elle, ne devine une décision commerciale.
+- **À appliquer** : trier les questions en deux tas avant d'enquêter — celles
+  qu'un document peut trancher (on lit), celles que seul le client tranche (on
+  demande, et on avance ailleurs pendant ce temps).
+
+## 2026-08-19 — Le même modèle de détourage gagne ici et perd là
+
+- **Contexte** : détourer des plats pour le héros d'Au Braisé d'Or. Deux lots de
+  photos, deux verdicts opposés sur planche comparative.
+- **Les bols de sauce sur fond gris** : `isnet-general-use` garde le bol entier
+  ET la vapeur ; `u2net` ne garde que la viande et jette le bol ;
+  `birefnet-general` déchiquette le bol.
+- **Les assiettes NOIRES sur fond NOIR** : c'est l'inverse. isnet garde une
+  tache de vapeur pleine, une encoche dans l'assiette et un bout d'ardoise ;
+  **birefnet découpe la masse du plat proprement**.
+- **Leçon** : il n'y a pas de « bon modèle » de détourage, il y a un bon modèle
+  **pour ce lot de photos**. Le facteur décisif ici est le contraste entre le
+  sujet et le fond, pas la qualité du modèle.
+- **À appliquer** : **faire la planche comparative à chaque nouveau lot**, la
+  REGARDER sur le fond où l'image sera posée (un halo ne se voit pas sur du
+  blanc), et écrire dans l'outil ce qui a perdu et pourquoi — sinon le suivant
+  refait les essais. ⚠️ Corollaire déjà payé : « nettoyer » un défaut par
+  ouverture morphologique mord dans le sujet. Changer de modèle plutôt que
+  réparer un mauvais masque.
+
+## 2026-08-19 — Un prix qui dépend du choix du client n'est pas deux tailles
+
+- **Contexte** : la carte des sauces annonce « 1 500 F à 3 000 F ». Lu comme
+  Normal/Grand, ça donnait deux boutons de taille et un total exact au panier.
+  Mongazi corrige : « le prix varie en fonction des éléments entre parenthèses ;
+  en fonction de ce que le client veut dedans, le prix augmente. »
+- **Ce que ça change** : ce n'est pas un choix entre deux prix, c'est une
+  **fourchette** dont la valeur exacte se fixe à la commande. Le panier ne peut
+  donc pas afficher un total : il affiche **une fourchette**, et le message
+  WhatsApp dit « merci de me le confirmer ».
+- ⛔ **Et on n'invente pas le prix de chaque ingrédient** pour reconstituer un
+  total : la maison n'a donné qu'une borne basse et une borne haute. Mettre un
+  chiffre en face de « crabe » serait le fabriquer.
+- **Leçon** : avant de modéliser un prix, demander **de quoi il dépend**. Deux
+  tailles, une fourchette et un supplément se ressemblent sur le papier et ne
+  produisent pas le même panier. Même famille que « `p:0` = prix pas encore
+  donné » : quand le total ne peut pas être connu, on le dit, on ne l'invente pas.
+
+## 2026-08-19 — Un damier « transparent » peut être peint dans les pixels
+
+- **Contexte** : le client renvoie ses plats **déjà détourés**. Les fichiers
+  arrivent en **RGB sans canal alpha** : le damier gris de son éditeur est
+  aplati dans l'image. Vu à l'écran, ça ressemble à de la transparence ; posé
+  sur une page, c'est un rectangle à carreaux.
+- **Ce qui a coûté quatre tours** : vouloir retirer le damier « proprement » en
+  le reconnaissant à ses deux gris — apprendre les gris sur les coins, remplir
+  depuis les bords, ponter les pixels de transition, rembourrer avant la
+  fermeture, reconstruire la grille. Échec de fond : **sur une des photos les
+  gris du damier étaient 77 et 124, et le bord noir de l'assiette a des reflets
+  dans cette plage.** Aucun seuil ne les sépare.
+- **Ce qui a marché du premier coup** : **rembg sur le fichier à damier.** Un
+  modèle de saillance ne se demande pas de quelle couleur est le fond.
+- **Leçon** : quand un outil générique existe pour « séparer le sujet du fond »,
+  l'essayer AVANT d'écrire un masque sur mesure pour un fond particulier. Le
+  sur-mesure ne bat le général que si le général a échoué.
+- ⚠️ **Et vérifier le canal alpha à la réception** : `im.mode` et
+  `getchannel('A').getextrema()`. Une image « détourée » sans alpha est un
+  piège silencieux.
+- ⚠️ **Archiver la SOURCE REÇUE, jamais un intermédiaire** : j'avais copié mon
+  masque raté dans le dossier d'archive, et l'outil a ensuite travaillé
+  dessus — l'assiette avait disparu et le défaut semblait venir de rembg.

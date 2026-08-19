@@ -134,9 +134,16 @@ export default function InfoCard({ dish }: { dish: Dish }) {
                 {dish.cat}
               </p>
               <p className="text-[0.78rem] text-[color:var(--encre-2)] opacity-80">
-                {dish.price2
-                  ? `Aussi en grand format, ${dish.price2.toLocaleString("fr-FR")} F`
-                  : "Format unique"}
+                {/* ⚠️ TROIS CAS, PAS DEUX. Une sauce n'a ni « format unique »
+                    ni « grand format » : son prix monte avec ce qu'on met
+                    dedans, et le carré n'en montre que la borne basse. Sans
+                    cette ligne, le héros annoncerait 1 500 F pour un plat qui
+                    peut en coûter 3 500. */}
+                {dish.priceMax
+                  ? `Jusqu'à ${dish.priceMax.toLocaleString("fr-FR")} F selon ce que vous mettez dedans`
+                  : dish.price2
+                    ? `Aussi en grand format, ${dish.price2.toLocaleString("fr-FR")} F`
+                    : "Format unique"}
               </p>
             </div>
           </div>

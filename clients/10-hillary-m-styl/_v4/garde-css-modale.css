@@ -189,3 +189,101 @@
 .sonbt .vhs{position:absolute;width:1px;height:1px;overflow:hidden;
   clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
 @media(max-width:900px){.sonbt{left:14px;bottom:14px;width:44px;height:44px}}
+
+/* ==================================================================
+   LE PANIER · un tiroir qui vient de la droite
+   ==================================================================
+   Demandé par Mongazi le 2026-08-16. ⚠️ Le tiroir est en `fixed` et
+   c'est LUI qu'on anime : on ne pose jamais de `transform` sur un
+   ancêtre, sinon le fixe se décroche (leçon FAB du 2026-07-25).
+   ================================================================== */
+.pan-bt{position:relative;border:0;background:transparent;cursor:pointer;padding:0;color:inherit}
+.pan-n{position:absolute;top:2px;right:2px;min-width:17px;height:17px;padding:0 4px;
+  border-radius:9px;background:var(--rose);color:#fff;
+  font:600 10px/17px var(--ff-u);letter-spacing:0;text-align:center;
+  display:none;font-style:normal}
+.pan-n.on{display:block}
+
+/* ⚠️ `visibility` ne se dégrade pas en douceur : elle bascule à la FIN de la
+   transition. Un voile fermé continuait donc d'avaler les clics pendant
+   350 ms, et la fiche qui s'ouvrait derrière ne répondait pas. C'est
+   `pointer-events` qui règle ça, immédiatement. */
+.pan-ov{position:fixed;inset:0;z-index:124;background:rgba(6,5,7,.5);
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .35s ease,visibility .35s}
+.pan-ov.on{opacity:1;visibility:visible;pointer-events:auto}
+
+.pan{position:fixed;top:0;right:0;bottom:0;z-index:125;width:min(430px,92vw);
+  background:var(--craie);display:flex;flex-direction:column;
+  box-shadow:-24px 0 60px rgba(0,0,0,.28);
+  transform:translateX(101%);transition:transform .48s var(--e);
+  visibility:hidden;pointer-events:none}
+.pan.on{transform:none;visibility:visible;pointer-events:auto}
+
+.pan-top{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:16px 18px;border-bottom:1px solid var(--ligne)}
+.pan-top b{font-family:var(--ff-d);font-size:21px;font-weight:400}
+.pan-bd{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 18px}
+.pan-ft{flex:0 0 auto;border-top:1px solid var(--ligne);padding:14px 18px calc(14px + env(safe-area-inset-bottom));
+  display:flex;flex-direction:column;gap:10px;background:var(--craie)}
+
+.pan-vide{text-align:center;padding:56px 10px;color:var(--gris)}
+.pan-vide svg{width:44px;height:44px;fill:none;stroke:var(--gris);stroke-width:1.2;opacity:.5}
+.pan-vide p{font-family:var(--ff-d);font-size:19px;color:var(--encre);margin:14px 0 6px}
+.pan-vide span{font-size:13.5px;line-height:1.55;display:block;max-width:30ch;margin:0 auto}
+
+.pl{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:start;
+  padding:16px 0;border-bottom:1px solid var(--ligne)}
+.pl:last-child{border-bottom:0}
+.pl-img{width:64px;height:84px;object-fit:contain;object-position:center;border-radius:8px;
+  background:#fff;display:block}
+.pl-mono{display:grid;place-items:center;font-family:var(--ff-d);font-size:26px;color:var(--gris)}
+.pl-i{min-width:0}
+.pl-i h4{margin:0 0 3px;font-family:var(--ff-d);font-size:17px;font-weight:400;line-height:1.15}
+.pl-d{font-size:12px;color:var(--gris);line-height:1.5}
+.pl-ex{color:var(--rose-f);font-weight:700;font-style:normal}
+.pl-c{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:9px}
+.pl-p{font-family:var(--ff-u);font-size:14px;font-weight:600;white-space:nowrap}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--ligne);border-radius:999px;overflow:hidden}
+.qty button{width:32px;height:32px;border:0;background:transparent;cursor:pointer;
+  font-size:17px;line-height:1;color:var(--encre)}
+.qty button:hover{background:var(--papier-2)}
+.qty b{min-width:22px;text-align:center;font:600 13px/1 var(--ff-u)}
+.pl-mod,.pl-rm{border:0;background:transparent;cursor:pointer;padding:6px 2px;
+  font:500 12px/1 var(--ff-u);letter-spacing:.04em;text-decoration:underline;
+  text-underline-offset:3px;color:var(--gris)}
+.pl-rm:hover{color:#a4111a}
+.pl-mod:hover{color:var(--encre)}
+
+.pan-t{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.pan-t span{font:600 11px/1 var(--ff-u);letter-spacing:.16em;text-transform:uppercase;color:var(--gris)}
+.pan-t b{font-family:var(--ff-d);font-size:26px;font-weight:400}
+.pan-dev{margin-top:-6px;font-size:12px;color:var(--gris)}
+.pan-note{font-size:11.5px;line-height:1.5;color:var(--gris)}
+.pan-ft .bt{width:100%}
+
+/* le détail d'une ligne dans le récapitulatif de la modale */
+.recap .li em{display:block;font-style:normal;font-size:11.5px;color:var(--gris);margin-top:2px}
+.recap .li.dev span:last-child{color:var(--gris)}
+/* les boutons de quantité, dans la fiche d'une pièce */
+.qbt{width:30px;height:30px;border:1px solid var(--ligne);background:transparent;border-radius:50%;
+  cursor:pointer;font-size:16px;line-height:1;color:var(--encre);margin:0 4px;vertical-align:middle}
+.qbt:hover{background:var(--papier-2)}
+.qn{display:inline-block;min-width:20px;text-align:center;vertical-align:middle}
+
+@media(max-width:520px){
+  .pan{width:100%}
+  .pl{grid-template-columns:54px 1fr auto;gap:10px}
+  .pl-img{width:54px;height:72px}
+}
+
+/* ⚠️ Le bouton du son est en `position:fixed` en bas à gauche, et il se posait
+   sur « Retour » dans la fiche et sur « Vider le panier » dans le panier.
+   Le cacher serait plus simple, mais une règle de la maison veut qu'il reste
+   ATTEIGNABLE quand une fiche est ouverte : quelqu'un doit pouvoir couper le
+   son pendant qu'il donne ses mesures. On lui réserve donc un couloir dans les
+   deux pieds de page, au lieu de le faire disparaître. */
+@media(max-width:900px){
+  .ecran-on .sh-ft{padding-left:78px}
+  .ecran-on .pan-ft{padding-left:78px}
+}

@@ -25,16 +25,72 @@ gsap.registerPlugin(ScrollTrigger);
  * téléchargeait 4,3 Mo avant même qu'on arrive au menu.
  */
 
+/**
+ * L'ARDOISE — ce qu'on affiche quand la maison n'a pas encore donné sa photo.
+ *
+ * ⚠️ PAS DE « PHOTO À VENIR », PAS DE CADRE VIDE. Un cadre vide dit au client
+ * que le site est en travaux ; « photo à venir » dit que la maison n'est pas
+ * prête. Un restaurant, lui, écrit à l'ardoise ce qu'il n'a pas photographié,
+ * et personne n'y voit un manque. La tuile porte donc le nom du plat, écrit,
+ * et rien d'autre.
+ */
+function Ardoise({ nom, grand = false }: { nom: string; grand?: boolean }) {
+  return (
+    <div
+      className="absolute inset-0 grid place-items-center overflow-hidden"
+      style={{
+        background:
+          "radial-gradient(120% 90% at 50% 0%, #3a312a 0%, #241f1b 60%, #1b1714 100%)",
+      }}
+      aria-hidden="true"
+    >
+      {/* le grain de la pierre, très discret */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.16]"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(115deg, rgba(255,255,255,.10) 0 1px, transparent 1px 7px)",
+        }}
+      />
+      <div className="relative px-4 text-center">
+        <p
+          className={
+            "police-titre font-extrabold leading-[1.12] text-[#f0e6d8] " +
+            (grand ? "text-[1.5rem]" : "text-[1.02rem]")
+          }
+          style={{ textShadow: "0 1px 0 rgba(0,0,0,.45)" }}
+        >
+          {nom}
+        </p>
+        <span
+          className="mx-auto mt-2 block h-px w-10 rounded"
+          style={{ background: "rgba(232,118,58,.75)" }}
+        />
+      </div>
+    </div>
+  );
+}
+
 type Ligne = {
   cle: string;
   nom: string;
   taille?: string;
   acc?: string;
+  /** Ce que le client a demandé dans sa sauce. */
+  dedans?: string[];
   unite: number;
+  /** ⚠️ BORNE HAUTE, quand le prix est une fourchette. Le prix d'une sauce
+   *  dépend de ce qu'on met dedans, et la maison le confirme à la commande :
+   *  le panier affiche donc « de X à Y », jamais un total inventé. */
+  uniteMax?: number;
   qte: number;
 };
 
 const fmt = (n: number) => n.toLocaleString("fr-FR").replace(/ | /g, " ");
+
+/** « 1 500 F » ou « 1 500 à 3 500 F » — jamais un chiffre qu'on ne tient pas. */
+const prix = (bas: number, haut?: number) =>
+  haut && haut !== bas ? `${fmt(bas)} à ${fmt(haut)} F` : `${fmt(bas)} F`;
 
 export default function Carte() {
   /* ⚠️ PLUS DE FILTRE, DES ANCRES. Le filtre masquait les sept autres univers :
@@ -49,6 +105,10 @@ export default function Carte() {
 
   const total = useMemo(
     () => panier.reduce((s, l) => s + l.unite * l.qte, 0),
+    [panier]
+  );
+  const totalMax = useMemo(
+    () => panier.reduce((s, l) => s + (l.uniteMax ?? l.unite) * l.qte, 0),
     [panier]
   );
   const nb = useMemo(() => panier.reduce((s, l) => s + l.qte, 0), [panier]);
@@ -98,7 +158,7 @@ export default function Carte() {
   }, []);
 
   function ajouter(l: Omit<Ligne, "cle">) {
-    const cle = [l.nom, l.taille ?? "", l.acc ?? ""].join("|");
+    const cle = [l.nom, l.taille ?? "", l.acc ?? "", (l.dedans ?? []).join(",")].join("|");
     setPanier((p) => {
       const i = p.findIndex((x) => x.cle === cle);
       if (i < 0) return [...p, { ...l, cle }];
@@ -117,13 +177,22 @@ export default function Carte() {
         (l) =>
           `• ${l.qte} × ${l.nom}` +
           (l.taille ? ` (${l.taille})` : "") +
+          (l.dedans?.length ? ` avec ${l.dedans.join(", ")}` : "") +
           (l.acc ? ` + ${l.acc}` : "") +
-          ` — ${fmt(l.unite * l.qte)} F`
+          ` — ${prix(l.unite * l.qte, l.uniteMax ? l.uniteMax * l.qte : undefined)}`
       )
       .join("\n");
+    /* ⚠️ QUAND IL Y A UNE FOURCHETTE, ON LE DIT. Envoyer « Total : 4 500 F »
+       sur une commande dont le prix dépend de ce qu'on met dedans, c'est
+       annoncer au client un chiffre que la maison ne tiendra pas. */
+    const fourchette = totalMax > total;
     return (
       `Bonjour Au Braisé d'Or, je voudrais commander :\n\n${lignes}\n\n` +
-      `Total : ${fmt(total)} F\nMode : ${lieu}`
+      `Total : ${prix(total, fourchette ? totalMax : undefined)}` +
+      (fourchette
+        ? `\n(le prix exact dépend de ce que je choisis dedans, merci de me le confirmer)`
+        : "") +
+      `\nMode : ${lieu}`
     );
   }
 
@@ -202,17 +271,37 @@ export default function Carte() {
                   onClick={() => setOuvert({ cat: c, plat: p })}
                 >
                   <div className="relative aspect-[5/4] overflow-hidden bg-[#e7e0d8]">
-                    <Image
-                      src={p.img}
-                      alt={p.n}
-                      fill
-                      loading="lazy"
-                      sizes="(max-width: 768px) 45vw, 260px"
-                      className="object-cover transition duration-700 group-hover:scale-[1.05]"
-                    />
-                    <span className="absolute bottom-2 right-2 rounded-full bg-black/65 px-2.5 py-1 text-[0.78rem] font-semibold backdrop-blur">
-                      {fmt(p.p)} F
-                      {p.p2 && <small className="ml-1 opacity-70">/ {fmt(p.p2)} F</small>}
+                    {p.img ? (
+                      <Image
+                        src={p.img}
+                        alt={p.n}
+                        fill
+                        loading="lazy"
+                        sizes="(max-width: 768px) 45vw, 260px"
+                        className="object-cover transition duration-700 group-hover:scale-[1.05]"
+                      />
+                    ) : (
+                      <Ardoise nom={p.n} />
+                    )}
+                    {/* ⚠️ LA COULEUR DU TEXTE EST OBLIGATOIRE ICI. Sans elle la
+                        pastille héritait de `--encre` (#1d1a17) et posait de
+                        l'encre noire sur une pastille noire à 65 % : le prix,
+                        seul chiffre que le client cherche, était invisible sur
+                        les 52 cartes. Mesuré après correction, texte déclaré
+                        contre fond photographié : 13,9:1 à 18:1 selon la photo
+                        posée dessous. `_outils/_qc.py` le vérifie par
+                        catégorie et refuse en dessous de 4,5:1. */}
+                    <span className="absolute bottom-2 right-2 rounded-full bg-black/70 px-2.5 py-1 text-[0.78rem] font-semibold text-[#f6efe6] backdrop-blur">
+                      {p.p === 0 ? (
+                        "Prix sur demande"
+                      ) : p.pMax ? (
+                        prix(p.p, p.pMax)
+                      ) : (
+                        <>
+                          {fmt(p.p)} F
+                          {p.p2 && <small className="ml-1 opacity-90">/ {fmt(p.p2)} F</small>}
+                        </>
+                      )}
                     </span>
                     {p.joq && (
                       <span className="absolute left-2 top-2 rounded-full bg-[#1d1a17] px-2 py-1 text-[0.62rem] font-bold uppercase tracking-wide text-[#f6efe6]">
@@ -233,7 +322,7 @@ export default function Carte() {
                       <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                         <path d="M12 5v14M5 12h14" />
                       </svg>
-                      Ajouter
+                      {p.p === 0 ? "Demander le prix" : "Ajouter"}
                     </span>
                   </div>
                 </article>
@@ -274,7 +363,9 @@ export default function Carte() {
             </div>
             <p className="ml-auto text-[0.85rem] text-[color:var(--encre-2)]">
               <b className="text-[color:var(--encre)]">{nb}</b> article{nb > 1 ? "s" : ""} ·{" "}
-              <b className="text-[color:var(--encre)]">{fmt(total)} F</b>
+              <b className="text-[color:var(--encre)]">
+                {prix(total, totalMax > total ? totalMax : undefined)}
+              </b>
             </p>
             <a
               href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message())}`}
@@ -306,9 +397,35 @@ function Fiche({
 }) {
   const [grand, setGrand] = useState(false);
   const [acc, setAcc] = useState<string>("");
+  const [dedans, setDedans] = useState<string[]>([]);
   const [qte, setQte] = useState(1);
-  const unite = grand && plat.p2 ? plat.p2 : plat.p;
   const accs = cat.acc ? ACC[cat.acc] : null;
+
+  /* ⚠️ DEUX CAS SONT EXACTS, UN SEUL EST UNE FOURCHETTE.
+     Mongazi : « quand on met tout dedans, c'est le prix le plus cher ».
+     Donc rien dedans = la borne basse, tout dedans = la borne haute, et ces
+     deux-là se commandent au franc près. Il n'y a plus qu'entre les deux que
+     le prix reste à confirmer — et là on ne l'interpole pas, la maison n'a
+     jamais donné le prix d'un ingrédient pris séparément. */
+  const garn = plat.garn ?? [];
+  const bas = grand && plat.p2 ? plat.p2 : plat.p;
+  const haut = plat.pMax ?? bas;
+  const tousDedans = garn.length > 0 && dedans.length === garn.length;
+  const rienDedans = garn.length > 0 && dedans.length === 0;
+  const uMin = !plat.pMax ? bas : tousDedans ? haut : bas;
+  const uMax = !plat.pMax ? bas : rienDedans ? bas : haut;
+
+  /* ⚠️ L'ACCOMPAGNEMENT N'EST PAS FACULTATIF. « Toutes les sauces sont
+     servies avec l'accompagnement de votre choix » : une commande sans
+     accompagnement arrive incomplète en cuisine, et c'est le restaurant qui
+     rappelle le client. */
+  const manqueAcc = !!accs && !acc;
+  /* ⚠️ PRIX PAS ENCORE DONNÉ PAR LA MAISON (p = 0). On ne met pas au panier
+     un article dont on ignore le prix : le total mentirait, et le message
+     WhatsApp partirait avec un « 0 F » que personne ne veut lire. La fiche
+     pose la question à la place, ce qui est justement ce que le client
+     ferait. Le jour où le prix arrive, cette branche s'éteint toute seule. */
+  const surDemande = plat.p === 0;
 
   useEffect(() => {
     const f = (e: KeyboardEvent) => e.key === "Escape" && onFermer();
@@ -333,7 +450,11 @@ function Fiche({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="relative aspect-[5/3]">
-          <Image src={plat.img} alt={plat.n} fill sizes="440px" className="object-cover" />
+          {plat.img ? (
+            <Image src={plat.img} alt={plat.n} fill sizes="440px" className="object-cover" />
+          ) : (
+            <Ardoise nom={plat.n} grand />
+          )}
           <button
             type="button"
             onClick={onFermer}
@@ -366,7 +487,49 @@ function Fiche({
                         : { borderColor: "rgba(29,26,23,.18)" }
                     }
                   >
-                    {g ? "Grand" : "Normal"} · {fmt(g ? plat.p2! : plat.p)} F
+                    {(plat.tailles ?? ["Normal", "Grand"])[g ? 1 : 0]} · {fmt(g ? plat.p2! : plat.p)} F
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {plat.garn && plat.garn.length > 0 && (
+            <div className="mt-5">
+              <p className="mb-1 text-[0.75rem] uppercase tracking-widest text-[#a8542f]">
+                Ce que vous voulez dedans
+              </p>
+              {/* ⚠️ ON N'ANNONCE PAS UN PRIX PAR INGRÉDIENT. La maison n'a
+                  donné qu'une fourchette : « le prix varie en fonction des
+                  éléments entre parenthèses ». Mettre un chiffre en face de
+                  chaque case serait l'inventer. On liste, on transmet, la
+                  maison confirme. */}
+              <p className="mb-2 text-[0.78rem] leading-snug text-[color:var(--encre-2)]">
+                {"Sans rien ajouter, c'est "}<b>{fmt(plat.p)} F</b>
+                {". Avec tout, c'est "}<b>{fmt(plat.pMax ?? plat.p)} F</b>{"."}
+                {dedans.length > 0 && !tousDedans && (
+                  <> Entre les deux, la maison vous confirme le prix.</>
+                )}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {plat.garn.map((g) => (
+                  <button
+                    key={g}
+                    type="button"
+                    onClick={() =>
+                      setDedans((d) =>
+                        d.includes(g) ? d.filter((x) => x !== g) : [...d, g]
+                      )
+                    }
+                    aria-pressed={dedans.includes(g)}
+                    className="rounded-full border px-3 py-1.5 text-[0.8rem] transition"
+                    style={
+                      dedans.includes(g)
+                        ? { background: "#1d1a17", color: "#f6efe6", borderColor: "#1d1a17" }
+                        : { borderColor: "rgba(29,26,23,.18)" }
+                    }
+                  >
+                    {g}
                   </button>
                 ))}
               </div>
@@ -376,7 +539,7 @@ function Fiche({
           {accs && (
             <div className="mt-5">
               <p className="mb-2 text-[0.75rem] uppercase tracking-widest text-[#a8542f]">
-                Accompagnement
+                Accompagnement <span className="normal-case tracking-normal opacity-70">· à choisir</span>
               </p>
               <div className="flex flex-wrap gap-2">
                 {accs.map((a) => (
@@ -398,6 +561,19 @@ function Fiche({
             </div>
           )}
 
+          {surDemande ? (
+            <a
+              href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(
+                `Bonjour Au Braisé d'Or, quel est le prix de : ${plat.n} ?`
+              )}`}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-6 flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-[0.9rem] font-bold text-white transition hover:brightness-110"
+              style={{ background: "#128040" }}
+            >
+              Demander le prix sur WhatsApp
+            </a>
+          ) : (
           <div className="mt-6 flex items-center gap-4">
             <div className="flex items-center gap-3 rounded-full border border-black/15 px-2 py-1.5">
               <button type="button" aria-label="Moins" onClick={() => setQte((q) => Math.max(1, q - 1))} className="grid h-8 w-8 place-items-center text-lg">
@@ -410,13 +586,29 @@ function Fiche({
             </div>
             <button
               type="button"
-              onClick={() => onAjouter({ nom: plat.n, taille: plat.p2 ? (grand ? "Grand" : "Normal") : undefined, acc: acc || undefined, unite, qte })}
-              className="flex-1 rounded-full px-4 py-3 text-[0.9rem] font-bold text-[#f6efe6] transition hover:brightness-125"
+              onClick={() =>
+                onAjouter({
+                  nom: plat.n,
+                  taille: plat.p2
+                    ? (plat.tailles ?? ["Normal", "Grand"])[grand ? 1 : 0]
+                    : undefined,
+                  acc: acc || undefined,
+                  dedans: dedans.length ? dedans : undefined,
+                  unite: uMin,
+                  uniteMax: uMax > uMin ? uMax : undefined,
+                  qte,
+                })
+              }
+              disabled={manqueAcc}
+              className="flex-1 rounded-full px-4 py-3 text-[0.9rem] font-bold text-[#f6efe6] transition hover:brightness-125 disabled:cursor-not-allowed disabled:opacity-45"
               style={{ background: "#1d1a17" }}
             >
-              Ajouter · {fmt(unite * qte)} F
+              {manqueAcc
+                ? "Choisissez un accompagnement"
+                : `Ajouter · ${prix(uMin * qte, uMax > uMin ? uMax * qte : undefined)}`}
             </button>
           </div>
+          )}
         </div>
       </div>
     </div>
