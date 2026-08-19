@@ -1,5 +1,5 @@
 /**
- * LA CARTE COMPLÈTE — 43 plats, 9 catégories.
+ * LA CARTE COMPLÈTE — 45 plats, 9 catégories.
  *
  * ⚠️ FICHIER GÉNÉRÉ, NE PAS ÉDITER À LA MAIN.
  * Source : le tableau `CATS` de `../../index.html`, qui reste la vérité.
@@ -107,6 +107,8 @@ export const CARTE: Cat[] = [
       { n: "Moyo Chigan", d: "Sauce tomate, piment vert, oignon, moutarde, poisson ou aileron.", p: 3000, img: "/carte/sc-moyo.webp" },
       { n: "Sauce poisson frais", d: "Sauce tomate et crin-crin au choix.", p: 3000, img: "/carte/sc-poisson.webp" },
       { n: "Sauce gombo", p: 1500, p2: 3000 },
+      { n: "Sauce krinkrin", p: 1500 },
+      { n: "Sauce feuille", p: 1500 },
     ],
   },
   {
