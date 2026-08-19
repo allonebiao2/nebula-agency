@@ -44,17 +44,21 @@ export type Dish = {
 };
 
 export const DISHES: Dish[] = [
-  /* ⚠️ LES SAUCES OUVRENT LE HÉROS, ET CE SONT DE VRAIES PHOTOS (2026-08-19).
-     Mongazi : « c'est un restaurant béninois, donc les plats de la catégorie
-     sauce doivent être mis en avant plus que les autres ; les autres aussi
-     bien sûr, mais ces plats-là en principal. »
-     Les trois qui ouvrent sont les trois sauces dont la maison a envoyé la
-     photo — de vraies photos de plats, retouchées à l'IA, confirmé par
-     Mongazi. Les trois qui suivent portent encore des images générées.
-     ⚠️ L'appariement photo ↔ sauce est VÉRIFIÉ, pas deviné : la feuille de
-     menu de la maison porte trois vignettes imprimées et la forme de
-     l'assiette concorde (gombo octogonale, krinkrin octogonale sur ardoise,
-     feuille hexagonale). */
+  /* ⚠️ QUE DES SAUCES, ET C'EST UN ORDRE (2026-08-19, nuit).
+     Mongazi d'abord : « les plats de la catégorie sauce doivent être mis en
+     avant plus que les autres ; les autres aussi bien sûr, mais ces plats-là
+     en principal. » Puis, en regardant le héros : « je veux qu'ici ce soient
+     les sauces qui soient mises en avant, QUE les sauces. »
+     Le poulet bicyclette, le tilapia et le chawarma JOQ sortent donc du héros.
+     Ils restent à la carte, où ils se commandent comme avant : ce n'est pas
+     un retrait de plat, c'est un choix de vitrine — un restaurant béninois
+     montre ses sauces.
+
+     ⚠️ CES TROIS-LÀ ET PAS D'AUTRES : ce sont les seules sauces dont la maison
+     a envoyé la photo. Les onze autres n'en ont pas, et le héros vit de
+     l'image — une ardoise en plein écran ne vend rien. Moyo Chigan et Sauce
+     poisson frais ont bien un détourage, mais fait à partir d'une image
+     GÉNÉRÉE de juillet : les mettre ici, c'est ouvrir le site sur de l'IA. */
   {
     id: "gombo",
     line1: "SAUCE",
@@ -93,44 +97,6 @@ export const DISHES: Dish[] = [
     img: "/plats/sc-feuille.webp",
     tint: "#3E5136",
     wash: "#EAEFE7",
-  },
-  {
-    id: "poulet",
-    line1: "POULET",
-    line2: "BICYCLETTE",
-    kicker: "#4 Spécialité maison",
-    cat: "Grillades",
-    price: 3000,
-    price2: 6000,
-    desc: "Poulet fermier saisi au feu de bois, croustillant et fondant.",
-    img: "/plats/poulet.webp",
-    tint: "#E8763A",
-    wash: "#F6EDE6",
-  },
-  {
-    id: "tilapia",
-    line1: "TILAPIA",
-    line2: "BRAISÉ",
-    kicker: "#5 Le goût fumé",
-    cat: "Grillades",
-    price: 3000,
-    price2: 6000,
-    desc: "Le tilapia entier, braisé minute, ce goût fumé signature.",
-    img: "/plats/tilapia.webp",
-    tint: "#C9A227",
-    wash: "#F5F1E4",
-  },
-  {
-    id: "chawarma",
-    line1: "CHAWARMA",
-    line2: "JOQ",
-    kicker: "#6 Notre signature",
-    cat: "Chawarma",
-    price: 3000,
-    desc: "Poulet et viande réunis. Notre signature.",
-    img: "/plats/chawarma.webp",
-    tint: "#7E8B5A",
-    wash: "#EFF1E8",
   },
 ];
 

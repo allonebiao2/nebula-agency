@@ -136,6 +136,19 @@ de mouton, pieds de bœuf, yassa, yassa au poulet) rejoignent les 4 de l'ancien
 menu. Les **accompagnements sont remplacés** par la liste de la feuille (15,
 de telibo à toubani).
 
+### Le héros : QUE des sauces
+Mongazi, en regardant le héros en ligne : « je veux qu'ici ce soient les sauces
+qui soient mises en avant, **que les sauces** ». Le poulet bicyclette, le
+tilapia et le chawarma JOQ **sortent du héros**. Ils restent à la carte et se
+commandent comme avant : ce n'est pas un retrait de plat, c'est un choix de
+vitrine — un restaurant béninois montre ses sauces.
+
+⚠️ **Trois, et pas plus** : ce sont les seules sauces dont la maison a envoyé
+la photo, et le héros vit de l'image (une ardoise en plein écran ne vend rien).
+Moyo Chigan et Sauce poisson frais ont bien un détourage, mais fait à partir
+d'une image **générée** de juillet : les mettre là, c'est ouvrir le site sur de
+l'IA. Elles y entreront le jour où la maison les photographie.
+
 ### Le héros : trois vraies photos en tête
 Sauce gombo, Sauce krinkrin, Sauce feuille, puis poulet, tilapia, chawarma.
 ⚠️ **L'appariement photo ↔ sauce est vérifié, pas deviné** : la feuille porte
