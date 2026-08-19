@@ -36,6 +36,16 @@ RACINE = os.path.normpath(RACINE)
 VUES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "_vues")
 CHROME = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
 
+# Les 13 plats que la propriétaire a fait retirer le 2026-08-19 (note
+# manuscrite « Correction pour Au Braisé d'Or »). Ils ne doivent réapparaître
+# ni par une régénération, ni par un retour en arrière mal ciblé.
+RETIRES = [
+    "Napolitaine", "Oriental", "Margherita", "Pili chaud", "À la crème", "Pêcheur",
+    "Lapin ou mouton frit", "Viande de caille",
+    "Crispy poulet", "Nugget pomme au four",
+    "JOQ Viagra", "Mojito", "Piña Colada",
+]
+
 # la carte est la vérité : le QC compte les plats dans les données, il n'en
 # recopie jamais le nombre. Une carte qui grandit ne doit pas rendre le QC faux.
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -140,6 +150,19 @@ def main():
                 dire(not fiche["img"],
                      "[%s] la fiche n'appelle aucune image : ardoise « %s »" % (nom, fiche["titre"]))
                 dire(bool(fiche["bouton"]), "[%s] le bouton de commande est là : %s" % (nom, fiche["bouton"]))
+
+            # ── ce que la propriétaire a fait retirer le 2026-08-19 ──────
+            # ⚠️ un plat retiré de la carte mais laissé sur la page se
+            # commande quand même : le client paie pour un plat qui n'existe
+            # plus, et c'est le restaurant qui gère la déception.
+            page = pg.evaluate("document.getElementById('carte').innerText")
+            for parti in RETIRES:
+                dire(parti not in page, "[%s] « %s » n'est plus sur la carte" % (nom, parti))
+
+            # ⚠️ AUCUN « 0 F » NULLE PART. Un plat dont la maison n'a pas
+            # encore donné le prix porte « Prix sur demande », jamais zéro.
+            dire("0 F" not in page.replace("00 F", "").replace("0 F\n", "0 F "),
+                 "[%s] aucun prix affiché à 0 F" % nom)
 
             dire(not erreurs, "[%s] 0 erreur console%s" % (nom, "" if not erreurs else " → %s" % erreurs[:2]))
             dire(not mauvais, "[%s] 0 réponse ≥ 400%s" % (nom, "" if not mauvais else " → %s" % mauvais[:3]))

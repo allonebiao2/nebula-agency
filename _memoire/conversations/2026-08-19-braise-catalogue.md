@@ -95,6 +95,81 @@ pas prise. L'ardoise rend la bascule immédiate le jour où il tranche.
 - `clients/09-au-braise-dor/_outils/_qc.py` — **nouveau**, 30 contrôles
 - `clients/09-au-braise-dor/MENU.md` · `CONTEXT.md` · `.gitignore`
 
+---
+
+# 2ᵉ temps du 2026-08-19 — la propriétaire corrige la carte
+
+Mongazi envoie **deux photos d'une note manuscrite** : « Correction pour Au
+Braisé d'Or ». Les prix en place sont validés (« la propriétaire n'est pas
+contre »), mais elle veut des retraits et une catégorie de plus.
+
+## 13 plats retirés, une catégorie ajoutée — **52 → 42**
+
+| Catégorie | Retiré | Reste |
+|---|---|---|
+| Pizza | napolitaine · oriental · margherita · pili chaud · à la crème · **pêcheur** | 4 sur 10 |
+| Grillades | lapin ou mouton frit · viande de caille | 4 sur 6 |
+| Chawarma | rien (elle l'écrit) | 3 |
+| Hamburger | crispy poulet · nugget pomme au four | 7 sur 9 |
+| Cocktails | « tout sauf les jus de fruit » → mojito, piña colada, JOQ Viagra | 3 sur 6 |
+
+**Ajouté : Desserts** — yaourt, glace, cocktail, **sans aucun prix**.
+
+## ⚠️ LA LEÇON DU SOIR : retirer un plat ne suffit pas
+
+Un retrait n'est pas une suppression de ligne, c'est une modification de tout
+ce que la page raconte. Trois choses cassaient en silence :
+
+1. **La pizza pêcheur était un des 4 plats signature du héros.** Le visiteur
+   serait arrivé sur un plein écran vantant un plat introuvable dans la carte,
+   trois écrans plus bas. → remplacée par la paysanne, seule pizza restante à
+   deux tailles, donc au même rôle.
+2. **Deux notes de catégorie devenaient des mensonges** : les hamburgers
+   annonçaient « sauf végétarien, crispy, nugget » sans plus de crispy ni de
+   nugget, et les cocktails « avec ou sans alcool » sans plus une goutte
+   d'alcool. Aucun outil ne l'aurait signalé : ce sont des phrases, pas des
+   données.
+3. Les trois cocktails restants répétaient « Sans alcool. » que la note de
+   catégorie dit maintenant une fois pour toutes.
+
+**À appliquer** : après un retrait, chercher le nom du plat partout — héros,
+carrousel, notes de catégorie, pied de page, affiche — puis relire ce que les
+textes voisins affirment encore. Le QC compte désormais **un contrôle par plat
+retiré**, sur le texte rendu de la page.
+
+## Les prix qu'on n'a pas
+
+Elle n'a donné **aucun prix pour les trois desserts**. Convention posée :
+**`p:0` = prix pas encore donné**. La carte affiche **« Prix sur demande »**,
+la fiche remplace le panier par **« Demander le prix sur WhatsApp »** avec la
+question déjà rédigée.
+
+⚠️ **Un article à 0 ne doit jamais entrer au panier** : le total mentirait et
+le message partirait avec un « 0 F ». Un contrôle vérifie qu'aucun « 0 F »
+n'apparaît nulle part sur la page. C'est le même principe que Weinkeller
+(« Prix sur demande » sur 6 bouteilles) et qu'Hillary (« Photo sur WhatsApp ») :
+**quand une information manque, on donne au client le chemin pour l'obtenir,
+on ne bricole pas une valeur.**
+
+## Deux de mes questions sont mortes d'elles-mêmes
+
+Les 2ᵉˢ tailles de la napolitaine et de l'oriental, et le prix de la pêcheur
+que j'avais failli retirer : **les trois pizzas sont retirées de la carte**.
+Une heure de lecture de photos pour des plats qui n'existent plus.
+⚠️ Ce n'est pas du temps perdu — la même lecture a trouvé les 4 lignes de
+petit-déjeuner manquantes, qui, elles, restent. Mais **la leçon est de demander
+au client AVANT de déduire** : la source vaut mieux qu'un résumé, et le client
+vaut mieux que la source.
+
+## Les cinq questions ouvertes
+1. **Prix du yaourt, de la glace et du cocktail.**
+2. **« Cocktail » en dessert = le cocktail de fruits à 2 500 F, ou autre chose ?**
+   Le mot est dans deux onglets à deux prix.
+3. **« Lapin » : le mouton frit part aussi ?** La ligne est « lapin **ou
+   mouton** frit », elle n'a écrit que « lapin ». Toute la ligne est partie.
+4. **Aileron** : le prix corrigé au surligneur.
+5. **Le n° WhatsApp.**
+
 ## État
-✅ Construit (`npm run build`, 181 kB) · ✅ **30 contrôles verts**
+✅ Construit (`npm run build`) · ✅ **64 contrôles verts**
 ⛔ **NON DÉPLOYÉ** — Cloudflare Pages attend l'accord de Mongazi.

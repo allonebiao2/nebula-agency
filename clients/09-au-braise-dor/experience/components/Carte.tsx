@@ -269,8 +269,14 @@ export default function Carte() {
                         posée dessous. `_outils/_qc.py` le vérifie par
                         catégorie et refuse en dessous de 4,5:1. */}
                     <span className="absolute bottom-2 right-2 rounded-full bg-black/70 px-2.5 py-1 text-[0.78rem] font-semibold text-[#f6efe6] backdrop-blur">
-                      {fmt(p.p)} F
-                      {p.p2 && <small className="ml-1 opacity-90">/ {fmt(p.p2)} F</small>}
+                      {p.p === 0 ? (
+                        "Prix sur demande"
+                      ) : (
+                        <>
+                          {fmt(p.p)} F
+                          {p.p2 && <small className="ml-1 opacity-90">/ {fmt(p.p2)} F</small>}
+                        </>
+                      )}
                     </span>
                     {p.joq && (
                       <span className="absolute left-2 top-2 rounded-full bg-[#1d1a17] px-2 py-1 text-[0.62rem] font-bold uppercase tracking-wide text-[#f6efe6]">
@@ -291,7 +297,7 @@ export default function Carte() {
                       <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                         <path d="M12 5v14M5 12h14" />
                       </svg>
-                      Ajouter
+                      {p.p === 0 ? "Demander le prix" : "Ajouter"}
                     </span>
                   </div>
                 </article>
@@ -367,6 +373,12 @@ function Fiche({
   const [qte, setQte] = useState(1);
   const unite = grand && plat.p2 ? plat.p2 : plat.p;
   const accs = cat.acc ? ACC[cat.acc] : null;
+  /* ⚠️ PRIX PAS ENCORE DONNÉ PAR LA MAISON (p = 0). On ne met pas au panier
+     un article dont on ignore le prix : le total mentirait, et le message
+     WhatsApp partirait avec un « 0 F » que personne ne veut lire. La fiche
+     pose la question à la place, ce qui est justement ce que le client
+     ferait. Le jour où le prix arrive, cette branche s'éteint toute seule. */
+  const surDemande = plat.p === 0;
 
   useEffect(() => {
     const f = (e: KeyboardEvent) => e.key === "Escape" && onFermer();
@@ -460,6 +472,19 @@ function Fiche({
             </div>
           )}
 
+          {surDemande ? (
+            <a
+              href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(
+                `Bonjour Au Braisé d'Or, quel est le prix de : ${plat.n} ?`
+              )}`}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-6 flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-[0.9rem] font-bold text-white transition hover:brightness-110"
+              style={{ background: "#128040" }}
+            >
+              Demander le prix sur WhatsApp
+            </a>
+          ) : (
           <div className="mt-6 flex items-center gap-4">
             <div className="flex items-center gap-3 rounded-full border border-black/15 px-2 py-1.5">
               <button type="button" aria-label="Moins" onClick={() => setQte((q) => Math.max(1, q - 1))} className="grid h-8 w-8 place-items-center text-lg">
@@ -479,6 +504,7 @@ function Fiche({
               Ajouter · {fmt(unite * qte)} F
             </button>
           </div>
+          )}
         </div>
       </div>
     </div>

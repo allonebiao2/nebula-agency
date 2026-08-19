@@ -69,14 +69,20 @@ export const DISHES: Dish[] = [
     wash: "#F5F1E4",
   },
   {
+    /* ⚠️ C'ÉTAIT LA PIZZA PÊCHEUR JUSQU'AU 2026-08-19. La propriétaire l'a
+       retirée de la carte ce jour-là, avec cinq autres pizzas. Un héros ne
+       peut pas mettre en avant un plat qu'on ne peut plus commander : le
+       visiteur arrive, s'enthousiasme, et ne le trouve nulle part.
+       La paysanne prend sa place : c'est la seule pizza restante à deux
+       tailles, donc la seule au même rôle sur la carte. */
     id: "pizza",
     line1: "PIZZA",
-    line2: "PÊCHEUR",
+    line2: "PAYSANNE",
     kicker: "#3 Au four",
     cat: "Pizza",
     price: 4000,
     price2: 6000,
-    desc: "Thon, crevettes, fromage, oignon, olive noire.",
+    desc: "Poulet, champignons, tomate, poivron, oignon, fromage, olive.",
     img: "/plats/pizza.webp",
     tint: "#B8574B",
     wash: "#F6E9E6",

@@ -1,5 +1,5 @@
 /**
- * LA CARTE COMPLÈTE — 52 plats, 8 catégories.
+ * LA CARTE COMPLÈTE — 42 plats, 9 catégories.
  *
  * ⚠️ FICHIER GÉNÉRÉ, NE PAS ÉDITER À LA MAIN.
  * Source : le tableau `CATS` de `../../index.html`, qui reste la vérité.
@@ -44,8 +44,6 @@ export const CARTE: Cat[] = [
       { n: "Tilapia braisé", d: "Le tilapia entier, braisé minute, ce goût fumé signature.", p: 3000, p2: 6000, img: "/carte/tilapia.webp" },
       { n: "Poulet chair", d: "Poulet chair grillé sur la braise.", p: 2500, p2: 5000, img: "/carte/g-poulet-chair.webp" },
       { n: "Aileron", d: "Aileron mariné et grillé.", p: 3000, img: "/carte/g-aileron.webp" },
-      { n: "Lapin ou mouton frit", d: "Viande frite dorée, tendre à cœur.", p: 3000, img: "/carte/g-lapin-mouton.webp" },
-      { n: "Viande de caille", d: "Caille grillée, fine et parfumée.", p: 3000, img: "/carte/g-caille.webp" },
     ],
   },
   {
@@ -54,16 +52,10 @@ export const CARTE: Cat[] = [
     tag: "Au four",
     note: "Base sauce tomate maison. Deux tailles pour certaines pizzas.",
     items: [
-      { n: "À la crème", d: "Saumon, tomate, crème, fromage.", p: 4000, p2: 6000, img: "/carte/p-creme.webp" },
-      { n: "Pêcheur", d: "Thon, crevettes, fromage, oignon, olive noire.", p: 4000, p2: 6000, img: "/carte/pizza.webp" },
       { n: "Paysanne", d: "Poulet, champignons, tomate, poivron, oignon, fromage, olive.", p: 4000, p2: 6000, img: "/carte/p-paysanne.webp" },
-      { n: "Pili chaud", d: "Piment, viande, boulette. Pour les amateurs de feu.", p: 3000, p2: 5000, img: "/carte/p-pili.webp" },
-      { n: "Napolitaine", d: "Filet d'anchois, fromage, olive noire.", p: 3500, img: "/carte/p-napolitaine.webp" },
-      { n: "Oriental", d: "Jambon, fromage, champignons, thon, poivron, oignon.", p: 3500, img: "/carte/p-oriental.webp" },
       { n: "Quatre saisons", d: "Jambon, crevette, viande, oignon, tomate, poivrons, olives, maïs.", p: 3500, img: "/carte/p-quatre-saisons.webp" },
       { n: "Fruit de mer", d: "Poisson, crevettes, oignon, tomate, fromage.", p: 3500, img: "/carte/p-fruit-mer.webp" },
       { n: "Aux épinards", d: "Thon, oignon, épinards, fromage.", p: 3000, img: "/carte/p-epinards.webp" },
-      { n: "Margherita", d: "Jambon, fromage. La classique.", p: 3000, img: "/carte/p-margherita.webp" },
     ],
   },
   {
@@ -80,13 +72,11 @@ export const CARTE: Cat[] = [
     id: "burger",
     label: "Hamburger",
     tag: "Fait maison",
-    note: "Servis avec Coca-Cola (sauf végétarien, crispy, nugget).",
+    note: "Servis avec Coca-Cola, sauf le végétarien.",
     items: [
       { n: "Chicken burger", d: "Burger poulet, frites, Coca-Cola.", p: 4000, img: "/carte/b-chicken.webp" },
-      { n: "Crispy poulet", d: "Cuisse de poulet panée, ketchup, piment, frites.", p: 4500, img: "/carte/b-crispy.webp" },
       { n: "Double burger", d: "Double steak, frites, Coca-Cola.", p: 3500, img: "/carte/b-double.webp" },
       { n: "Burger végétarien", d: "Pain burger, nuggets de pomme de terre, fromage.", p: 3500, img: "/carte/b-vegetarien.webp" },
-      { n: "Nugget pomme au four", d: "Blanc de poulet, sauce crème, piment, pomme au four.", p: 3500, img: "/carte/b-nugget-pomme.webp" },
       { n: "Cheese burger", d: "Cheese, viande, frites, Coca-Cola.", p: 3000, img: "/carte/b-cheese.webp" },
       { n: "Royal burger", d: "Burger, frites, Coca-Cola.", p: 3000, img: "/carte/b-royal.webp" },
       { n: "King burger", d: "Burger, œuf, Coca-Cola.", p: 2500, img: "/carte/b-king.webp" },
@@ -138,14 +128,21 @@ export const CARTE: Cat[] = [
     id: "cocktails",
     label: "Cocktails",
     tag: "Spécial maison",
-    note: "Cocktails frais préparés minute. Avec ou sans alcool.",
+    note: "Préparés minute, aux fruits frais. Sans alcool.",
     items: [
-      { n: "JOQ Viagra", d: "Café, campari, suze, jus de gingembre. Notre signature.", p: 3000, joq: true, img: "/carte/cocktail.webp" },
-      { n: "Mojito", d: "Rhum blanc, menthe fraîche, sucre roux, citron vert.", p: 3000, img: "/carte/k-mojito.webp" },
-      { n: "Piña Colada", d: "Rhum blanc, crème de coco, crème fraîche, jus d'ananas.", p: 3000, img: "/carte/k-pina.webp" },
-      { n: "Babariba", d: "Papaye, banane, pomme, lait, sirop de fraise. Sans alcool.", p: 2500, img: "/carte/k-babariba.webp" },
-      { n: "Paparazi", d: "Jus de citron, banane, orange, sirop de framboise. Sans alcool.", p: 2500, img: "/carte/k-paparazi.webp" },
-      { n: "Cocktail de fruit naturel", d: "Papaye, mangue, banane, lait, miel. Sans alcool.", p: 2500, img: "/carte/k-fruit-naturel.webp" },
+      { n: "Babariba", d: "Papaye, banane, pomme, lait, sirop de fraise.", p: 2500, img: "/carte/k-babariba.webp" },
+      { n: "Paparazi", d: "Jus de citron, banane, orange, sirop de framboise.", p: 2500, img: "/carte/k-paparazi.webp" },
+      { n: "Cocktail de fruit naturel", d: "Papaye, mangue, banane, lait, miel.", p: 2500, img: "/carte/k-fruit-naturel.webp" },
+    ],
+  },
+  {
+    id: "dessert",
+    label: "Desserts",
+    tag: "Pour finir",
+    items: [
+      { n: "Yaourt", p: 0 },
+      { n: "Glace", p: 0 },
+      { n: "Cocktail", p: 0 },
     ],
   },
 ];

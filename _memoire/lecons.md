@@ -821,3 +821,52 @@ trouble dure 100 ms au lieu d'un demi-tour d'horloge.
   et **ce qui est déduit**, et garder les originaux (`_partage/`) à portée.
   Une carte à laquelle il manque une ligne a l'air d'une carte complète : elle
   ne se vérifie qu'en la comparant à autre chose qu'elle-même.
+
+## 2026-08-19 — Retirer un plat n'est pas supprimer une ligne
+
+- **Contexte** : la propriétaire d'Au Braisé d'Or fait retirer 13 plats de sa
+  carte (6 pizzas sur 10, 2 grillades, 2 burgers, 3 cocktails alcoolisés).
+- **Ce qui cassait en silence** : (1) la **pizza pêcheur était un des 4 plats
+  signature du héros** — le visiteur serait arrivé sur un plein écran vantant
+  un plat introuvable trois écrans plus bas ; (2) **deux notes de catégorie
+  devenaient fausses** : « servis avec Coca-Cola sauf végétarien, crispy,
+  nugget » sans plus de crispy ni de nugget, et « avec ou sans alcool » sans
+  plus une goutte d'alcool.
+- **Leçon** : un retrait modifie **tout ce que la page raconte**, pas seulement
+  la liste. Les données se régénèrent ; les **phrases**, elles, ne sont
+  vérifiées par rien.
+- **À appliquer** : après un retrait, chercher le nom du plat **partout**
+  (héros, carrousel, notes de catégorie, pied de page, affiche imprimée) et
+  relire ce que les textes voisins affirment encore. Puis poser **un contrôle
+  par élément retiré**, sur le texte rendu de la page : un plat retiré mais
+  laissé affiché se commande quand même, et c'est le restaurant qui gère la
+  déception du client.
+
+## 2026-08-19 — Quand une information manque, on donne le chemin, pas une valeur
+
+- **Contexte** : la propriétaire ajoute une catégorie « Desserts » (yaourt,
+  glace, cocktail) **sans donner un seul prix**.
+- **Ce qui a été fait** : convention `p:0` = prix pas encore donné. La carte
+  affiche **« Prix sur demande »**, et la fiche remplace le panier par
+  **« Demander le prix sur WhatsApp »**, question déjà rédigée.
+- ⚠️ **Un article sans prix ne doit jamais entrer au panier** : le total
+  mentirait et le message de commande partirait avec un « 0 F ». Un contrôle
+  vérifie qu'aucun « 0 F » n'apparaît nulle part.
+- **Leçon** : c'est la même famille que « Prix sur demande » chez Weinkeller et
+  « Photo sur WhatsApp » chez Hillary. **Ni inventer, ni cacher, ni s'excuser :
+  donner au client le chemin pour obtenir ce qui manque.** Cacher la catégorie
+  aurait privé la maison d'une vente qu'elle vient de demander.
+
+## 2026-08-19 — La source vaut mieux qu'un résumé, le client vaut mieux que la source
+
+- **Contexte** : une heure passée à recadrer les photos du menu papier pour
+  lever deux prix coupés (napolitaine, oriental) et confirmer celui de la
+  pêcheur. Le soir même, la propriétaire **retire ces trois pizzas**.
+- **Leçon** : remonter à la source reste juste — la même lecture a trouvé 4
+  lignes de petit-déjeuner absentes du site, qui, elles, restent. Mais quand
+  une question porte sur **ce que le client veut vendre**, et pas sur ce qu'un
+  document dit, **il faut la lui poser d'abord**. Aucune lecture, si rigoureuse
+  soit-elle, ne devine une décision commerciale.
+- **À appliquer** : trier les questions en deux tas avant d'enquêter — celles
+  qu'un document peut trancher (on lit), celles que seul le client tranche (on
+  demande, et on avance ailleurs pendant ce temps).

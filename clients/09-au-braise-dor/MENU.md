@@ -1,5 +1,31 @@
 # Au Braisé d'Or — MENU (extrait des 5 photos du 2026-07-17)
 
+> # ⚠️ LA PROPRIÉTAIRE A CORRIGÉ LA CARTE LE 2026-08-19
+> Note manuscrite « Correction pour Au Braisé d'Or », transmise par Mongazi.
+> **Les prix sont validés** (« la propriétaire n'est pas contre »).
+> **13 plats retirés, une catégorie ajoutée. 52 → 42 plats.**
+>
+> | Catégorie | Retiré |
+> |---|---|
+> | **Pizza** | napolitaine · oriental · margherita · pili chaud · à la crème · **pêcheur** (6 sur 10) |
+> | **Grillades** | lapin ou mouton frit · viande de caille |
+> | **Chawarma** | rien |
+> | **Hamburger** | crispy poulet · nugget pomme au four |
+> | **Cocktails** | « tout sauf les jus de fruit » → mojito · piña colada · JOQ Viagra |
+>
+> **Ajouté : la catégorie Desserts** — yaourt, glace, cocktail.
+> ⏳ **Elle n'a donné aucun prix pour les trois** : ils portent « Prix sur
+> demande » et leur fiche pose la question sur WhatsApp. On n'invente pas un prix.
+>
+> ⚠️ **Conséquence sur le héros** : la **pizza pêcheur était un des 4 plats
+> signature** de l'ouverture. Un héros ne peut pas mettre en avant un plat
+> qu'on ne peut plus commander → remplacée par la **paysanne**, seule pizza
+> restante à deux tailles.
+>
+> ✅ **Deux de mes questions du 19/08 tombent d'elles-mêmes** : les 2ᵉˢ tailles
+> de la napolitaine et de l'oriental n'ont plus d'objet, ces pizzas sont
+> retirées. Le prix de la pêcheur non plus.
+
 > Prix en FCFA. Orthographe légèrement normalisée.
 >
 > **⚠️ RELECTURE DES PHOTOS, 2026-08-19.** La colonne des 2ᵉˢ tailles est coupée
@@ -25,16 +51,16 @@
 - **Salade d'avocats aux crevettes** — laitue, avocat, oignon, tomate, crevettes, sauce Marie-rose — **3 000**
 
 ## Pizza (2 tailles)
-- **À la crème** — saumon, tomate, crème, fromage — **4 000 / 6 000**
-- **Pili chaud** — piment, viande, boulette — **3 000 / 5 000**
+- **À la crème** — saumon, tomate, crème, fromage — **4 000 / 6 000**  ⛔ **RETIRÉ le 19/08 par la propriétaire**
+- **Pili chaud** — piment, viande, boulette — **3 000 / 5 000**  ⛔ **RETIRÉ le 19/08 par la propriétaire**
 - **Paysanne** — poulet, champignons, tomate, poivron, oignon, fromage, olive noire — **4 000 / 6 000**
-- **Napolitaine** — filet d'anchois, fromage, olive noire — **3 500 / 5 …** ⏳ *(2ᵉ prix coupé, commence par 5 — ABSENT du site)*
-- **Pêcheur** — thon, crevettes, fromage, oignon, olive noire — **4 000 / 6 000** *(le 6 est lisible sur la photo : le prix du site est bon)*
-- **Oriental** — jambon, fromage, champignons, thon, poivron, oignon — **3 500 / 5 …** ⏳ *(2ᵉ prix coupé, commence par 5 — ABSENT du site)*
+- **Napolitaine** — filet d'anchois, fromage, olive noire — **3 500 / 5 …** ⏳ *(2ᵉ prix coupé, commence par 5 — ABSENT du site)*  ⛔ **RETIRÉ le 19/08 par la propriétaire**
+- **Pêcheur** — thon, crevettes, fromage, oignon, olive noire — **4 000 / 6 000** *(le 6 est lisible sur la photo : le prix du site est bon)*  ⛔ **RETIRÉ le 19/08 par la propriétaire**
+- **Oriental** — jambon, fromage, champignons, thon, poivron, oignon — **3 500 / 5 …** ⏳ *(2ᵉ prix coupé, commence par 5 — ABSENT du site)*  ⛔ **RETIRÉ le 19/08 par la propriétaire**
 - **Aux épinards** — thon, oignon, épinards, fromage — **3 000** *(pas de 2ᵉ taille : la colonne est vide)*
 - **Quatre saisons** — jambon, crevette, viande, oignon, tomate, poivrons, olives noires, maïs doux, petit pois — **3 500**
 - **Fruit de mer** — poisson, crevettes, oignon, tomate, fromage — **3 500**
-- **Margherita** — jambon, fromage — **3 000**
+- **Margherita** — jambon, fromage — **3 000**  ⛔ **RETIRÉ le 19/08 par la propriétaire**
 - _(toutes sauce tomate de base)_
 
 ## Petit Déjeuner
@@ -66,8 +92,8 @@
 - **Poulet bicyclette** — **3 000 / 6 000**
 - **Aileron** — **3 000** ⏳ *(⚠️ **ligne corrigée à la main au surligneur** sur le menu papier, illisible sur la photo : à refaire confirmer par la maison)*
 - **Tilapia** (braisé) — **3 000 / 6 000**
-- **Lapin ou mouton frit** — **3 000**
-- **Viande de caille** — **3 000**
+- **Lapin ou mouton frit** — **3 000**  ⛔ **RETIRÉ le 19/08 par la propriétaire**
+- **Viande de caille** — **3 000**  ⛔ **RETIRÉ le 19/08 par la propriétaire**
 - **Poulet chair** — **2 500 / 5 000**
 - _Accompagnements_ : riz, attiéké, aloco, frites, pommes sautées, pomme vapeur, pâte rouge, Bomiwo, Akassa, igname frit
 
@@ -78,9 +104,9 @@
 - **Cocktail de fruit naturel** — papaye, mangue, banane, lait, miel — **2 500**
 
 **Avec alcool**
-- **Mojito** — rhum blanc, menthe fraîche, sucre roux, eau gazeuse, citron vert — **3 000**
-- **Piña Colada** — rhum blanc, crème de coco, crème fraîche, jus d'ananas — **3 000**
-- **JOQ Viagra** — café, campari, suze, jus de gingembre — **3 000**
+- **Mojito** — rhum blanc, menthe fraîche, sucre roux, eau gazeuse, citron vert — **3 000**  ⛔ **RETIRÉ le 19/08 par la propriétaire**
+- **Piña Colada** — rhum blanc, crème de coco, crème fraîche, jus d'ananas — **3 000**  ⛔ **RETIRÉ le 19/08 par la propriétaire**
+- **JOQ Viagra** — café, campari, suze, jus de gingembre — **3 000**  ⛔ **RETIRÉ le 19/08 par la propriétaire**
 
 ## Hamburger
 - **Simple** (+ Coca) — **2 500**
@@ -90,8 +116,16 @@
 - **Royal** — burger, frites (+ Coca) — **3 000**
 - **Chicken** — burger poulet, frites (+ Coca) — **4 000**
 - **Végétarien** — pain burger, nuggets de pomme de terre, fromage — **3 500**
-- **Crispy poulet** — cuisse de poulet, chapelure, ketchup, piment + frites — **4 500**
-- **Nugget pomme au four** — blanc de poulet, sauce crème, piment + pomme au four — **3 500**
+- **Crispy poulet** — cuisse de poulet, chapelure, ketchup, piment + frites — **4 500**  ⛔ **RETIRÉ le 19/08 par la propriétaire**
+- **Nugget pomme au four** — blanc de poulet, sauce crème, piment + pomme au four — **3 500**  ⛔ **RETIRÉ le 19/08 par la propriétaire**
+
+## Desserts *(ajoutés le 2026-08-19 par la propriétaire)*
+- **Yaourt** — ⏳ prix non donné
+- **Glace** — ⏳ prix non donné
+- **Cocktail** — ⏳ prix non donné · ⚠️ **à clarifier** : la carte garde par
+  ailleurs 3 cocktails de fruits à 2 500 F (babariba, paparazi, cocktail de
+  fruit naturel). Est-ce le même produit, ou un dessert différent ? En l'état
+  le mot apparaît dans deux onglets, à deux prix.
 
 ---
 ### Observations design
@@ -102,12 +136,17 @@
 ### ⏳ LES QUATRE QUESTIONS À POSER À LA MAISON (2026-08-19)
 Elles portent toutes sur de l'argent qui ne rentre pas aujourd'hui.
 
+> ⚠️ **Mise à jour du 2026-08-19 (soir)** : les deux premières questions sont
+> caduques, la propriétaire a retiré la napolitaine et l'oriental. Voici la
+> liste à jour.
+
 | # | Question | Ce que ça coûte |
 |---|---|---|
-| 1 | **Pizza napolitaine, grande taille : 5 000 ou 5 500 ?** | la grande n'est pas vendable en ligne |
-| 2 | **Pizza oriental, grande taille : 5 000 ou 5 500 ?** | idem |
-| 3 | **Aileron : quel est le prix corrigé au surligneur ?** | le site affiche 3 000, la maison a corrigé le papier |
-| 4 | **Le n° WhatsApp : 01 56 05 71 57 ou 43 99 29 29 ?** | toutes les commandes partent sur le premier |
+| 1 | **Prix du yaourt, de la glace et du cocktail** (desserts) | 3 desserts affichés « prix sur demande », donc pas commandables |
+| 2 | **« Cocktail » en dessert : c'est le cocktail de fruits à 2 500 F, ou autre chose ?** | le mot apparaît dans deux onglets à deux prix |
+| 3 | **« Lapin » : le mouton frit part aussi ?** | la ligne du menu est « lapin **ou mouton** frit » ; elle n'a écrit que « lapin ». Toute la ligne a été retirée |
+| 4 | **Aileron : quel est le prix corrigé au surligneur ?** | le site affiche 3 000, la maison a corrigé le papier |
+| 5 | **Le n° WhatsApp : 01 56 05 71 57 ou 43 99 29 29 ?** | toutes les commandes partent sur le premier |
 
 ⚠️ Les quatre autres pizzas à deux tailles (à la crème, pili chaud, paysanne,
 pêcheur) sont **confirmées par la photo** : leur second prix est bon.

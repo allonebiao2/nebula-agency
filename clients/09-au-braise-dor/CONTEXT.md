@@ -79,6 +79,64 @@ s'afficheront tout seuls le jour où le restaurant les donnera.
 ⚠️ Les trois **s'arrêtent net si un motif a disparu**, pour ne jamais repeindre
 à moitié.
 
+## ✅ CORRECTIONS DE LA PROPRIÉTAIRE — 2026-08-19 (soir) · **52 → 42 plats**
+
+Note manuscrite « Correction pour Au Braisé d'Or », photographiée et transmise
+par Mongazi. **Les prix en place sont validés** (« la propriétaire n'est pas
+contre »). Elle demande des retraits et une catégorie de plus.
+
+### 13 plats retirés
+| Catégorie | Retiré | Reste |
+|---|---|---|
+| **Pizza** | napolitaine · oriental · margherita · pili chaud · à la crème · **pêcheur** | 4 sur 10 |
+| **Grillades** | lapin ou mouton frit · viande de caille | 4 sur 6 |
+| **Chawarma** | rien (elle l'écrit) | 3 |
+| **Hamburger** | crispy poulet · nugget pomme au four | 7 sur 9 |
+| **Cocktails** | « on supprime tout sauf les jus de fruit » → mojito, piña colada, JOQ Viagra | 3 sur 6 |
+
+Salades, sauces et petit-déjeuner : rien à changer.
+
+### Une catégorie ajoutée : **Desserts** (yaourt, glace, cocktail)
+⏳ **Elle n'a donné aucun prix.** Les trois portent **« Prix sur demande »** et
+leur fiche envoie la question sur WhatsApp au lieu d'ajouter au panier.
+Convention posée dans les données : **`p:0` = prix pas encore donné**. On
+n'invente pas un prix, et on ne cache pas une catégorie qu'elle veut vendre.
+⚠️ Un article à 0 ne doit jamais entrer au panier : le total mentirait et le
+message WhatsApp partirait avec un « 0 F ». Un contrôle vérifie qu'aucun
+« 0 F » n'apparaît nulle part.
+
+### ⚠️ Ce que le retrait a cassé, et qu'il fallait réparer
+1. **La pizza pêcheur était un des 4 plats signature du héros.** Un héros ne
+   peut pas mettre en avant un plat qu'on ne peut plus commander : le visiteur
+   arrive, s'enthousiasme, et ne le trouve nulle part. → **paysanne**, seule
+   pizza restante à deux tailles, donc au même rôle sur la carte.
+   ⚠️ Elle réutilise l'image générée de l'ancienne pizza, qui ne représente
+   aucun plat réel : à revoir avec la décision sur les 48 photos.
+2. **Deux notes de catégorie devenaient fausses.** Les hamburgers disaient
+   « sauf végétarien, crispy, nugget » alors que crispy et nugget sont partis ;
+   les cocktails annonçaient « avec ou sans alcool » alors qu'il n'y a plus
+   d'alcool. Réécrites. **Retirer un plat ne suffit pas : il faut relire ce que
+   la page dit encore de lui.**
+3. Les trois cocktails restants répétaient « Sans alcool. » en fin de
+   description, ce que la note de catégorie dit désormais une fois pour toutes.
+
+### ⏳ Les cinq questions à poser (détail en bas de `MENU.md`)
+1. **Prix du yaourt, de la glace et du cocktail** — sans eux, 3 desserts ne se
+   commandent pas.
+2. **« Cocktail » en dessert = le cocktail de fruits à 2 500 F, ou autre chose ?**
+   Le mot apparaît dans deux onglets à deux prix.
+3. **« Lapin » : le mouton frit part aussi ?** La ligne du menu est « lapin
+   **ou mouton** frit », elle n'a écrit que « lapin ». Toute la ligne est partie.
+4. **Aileron** : le prix corrigé au surligneur sur le papier.
+5. **Le n° WhatsApp.**
+
+✅ **Deux questions de la passe précédente sont mortes d'elles-mêmes** : les
+2ᵉˢ tailles de la napolitaine et de l'oriental, et le prix de la pêcheur — les
+trois pizzas sont retirées.
+
+**QC : 64 contrôles verts**, dont un par plat retiré (il ne doit réapparaître
+ni par une régénération ni par un retour en arrière mal ciblé).
+
 ## ✅ PASSE CATALOGUE DU 2026-08-19 — la carte relue contre le menu papier
 
 **On est remonté aux 5 photos du menu** (`_partage/photo_*_2026-07-17_*.jpg`),
