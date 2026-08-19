@@ -579,9 +579,248 @@ vous êtes, même si la réponse est « pas encore ».
 (`_documents/nebula-agency/vente/00-SOCLE-COMMERCIAL.md`). Et si la réponse honnête est
 « pas encore », on la donne : c'est le prix du droit d'être cru la prochaine fois.
 
+## 5. Statut n° 3 · « C’EST L’HEURE. » — cadeau pur
+
+⚠️ **Celui-ci ne vend rien, et c'est volontaire.** Le statut n° 2 était un renversement
+commercial. La règle de la série : **jamais deux statuts d'affilée qui font peur ou qui
+vendent.** Celui-ci est un cadeau, sans contrepartie, et c'est lui qui achète le droit
+d'être cru la prochaine fois.
+
+**L'accroche insulte, puis complimente :** *« Ce n'est pas votre produit. C'est l'heure. »*
+Le lecteur croit une seconde qu'on critique sa marchandise, et on lui retire le reproche
+aussitôt. Ce mouvement-là retient plus sûrement qu'une menace, et il ne laisse aucune
+amertume.
+
+**Ce que ça enseigne, et c'est vrai partout :** à midi le soleil tombe à la verticale, les
+couleurs s'écrasent et l'ombre devient un trou noir. La même chose photographiée avant 9 h
+ou après 16 h devient belle. Aucun logiciel ne rattrape une mauvaise lumière, et **ça ne
+coûte rien à essayer dès demain matin**.
+
+**L'appel à l'action, le plus natif possible sur WhatsApp : envoyer une photo.** C'est un
+geste, pas une rédaction. Personne n'écrit un message depuis un statut, tout le monde peut
+appuyer sur « envoyer une photo ». Et une photo reçue ouvre une vraie conversation, sur son
+produit à lui.
+
+⚠️ **La promesse engage :** qui envoie une photo doit recevoir **une phrase utile et
+honnête**, le jour même, sans que ça devienne un devis. Si la photo est bonne, on le dit et
+on s'arrête là. C'est exactement ce qui fera qu'il reviendra le jour où il aura besoin d'un
+site.
+
+**L'image :** le même objet, coupé en deux par la lumière. À gauche, écrasé par un éclairage
+vertical et dur, couleurs délavées, ombre noire sous lui. À droite, la même matière prise
+dans une lumière basse et chaude, riche, avec du relief et une ombre longue et douce. Une
+seule image, une seule idée, aucune flèche, aucun schéma : la démonstration est dans l'objet.
+
+### LE PROMPT
+
+```
+===========================================================
+NEBULA AGENCY — WHATSAPP STATUS — ONE IMAGE, 9:16
+===========================================================
+
+ATTACHED INPUTS — TWO attachments.
+Identify them BY THEIR CONTENT, not by their order. Never swap their
+roles: swapping them ruins the image.
+
+  THE LOGO = the attachment showing the NEBULA Agency logo: a purple
+     and blue cosmic swirl above the wordmark "NEBULA", with "AGENCY"
+     underneath, on a transparent background.
+     It is an ASSET TO PLACE, exactly as provided. It is never a style
+     reference and never a subject to reinterpret.
+
+  THE STYLE REFERENCE = the other attachment. This one is the design
+     the post takes after, and it is the MATERIAL of the post: its
+     subject, its palette, its texture, its lighting and its
+     typographic craft all carry over.
+
+  If you hesitate: the attachment with a transparent background and a
+  readable "NEBULA AGENCY" wordmark is THE LOGO. The other one is THE
+  STYLE REFERENCE.
+
+-----------------------------------------------------------
+TASK
+-----------------------------------------------------------
+Create ONE original WhatsApp STATUS image for NEBULA Agency, a digital
+studio in Cotonou, Benin, serving West African merchants and business
+owners.
+It is seen on a phone, often outdoors in daylight, at half screen
+brightness. It has ONE SECOND to earn a pause, and it must teach
+something useful in the next five.
+This post SELLS NOTHING. It is a gift: a craft tip the reader can use
+tomorrow morning for free. Keep it generous and calm. Never an
+advertisement, never a promotional banner, never a price tag.
+It must look designed and expensive, never cheap, never homemade.
+
+-----------------------------------------------------------
+THE MATERIAL — THE STYLE REFERENCE IS THE SOURCE,
+                NOT A VAGUE INSPIRATION
+-----------------------------------------------------------
+Build this image OUT OF the style reference. Do not invent a new
+subject and do not add a decor of your own.
+  KEEP    its main subject, re-staged as described below
+  KEEP    its palette, its texture, its grain
+  KEEP    its typographic craft: the same kind of contrast between a
+          huge line and small quiet lines
+  CHANGE  its LIGHTING, which is the whole point of this image, its
+          framing for a 9:16 canvas, and every single word on it
+  DROP    its original words, numbers, captions, logo and watermark:
+          none of them may appear
+If you find yourself inventing a new object, stop. The subject is
+already in the style reference. Nothing else enters the frame.
+
+CONTRAST: push the contrast harder than the style reference does.
+This image is read outdoors, in daylight, on a dimmed screen. Any tone
+that sits close to its neighbour will vanish. Text is either clearly
+light on dark, or clearly dark on light. Never mid-grey on mid-grey.
+
+-----------------------------------------------------------
+THE STAGING — this is the whole idea of the image
+-----------------------------------------------------------
+ONE OBJECT, CUT IN TWO BY THE LIGHT.
+Show the subject of the style reference ONCE, whole and centred, and
+light its two halves completely differently along a clean vertical
+split down its middle.
+  - LEFT HALF: lit from directly overhead by a hard midday light.
+    Colours washed out and flat, no depth, blown highlights, and a
+    small dense BLACK shadow pooled straight underneath it. It looks
+    cheap, and it should.
+  - RIGHT HALF: lit by a low, warm, side light. Saturated colour,
+    visible texture and relief, a long soft shadow stretching to the
+    side, a gentle gradient on the surface. It looks expensive, and
+    it is the SAME object.
+The split must be unmistakable at a glance, and the two halves must
+belong to one single object: this is not two objects side by side, and
+it is not a before-and-after panel.
+No dividing line drawn on top, no arrow, no icon, no diagram, no
+clock, no sun symbol, no label, no caption pointing at either half.
+
+-----------------------------------------------------------
+LOGO INTEGRATION — read twice, most attempts fail here
+-----------------------------------------------------------
+The logo attachment is a PNG with a TRANSPARENT background. Place it
+exactly as provided and KEEP that transparency.
+  - it sits DIRECTLY on the artwork. NO white box, NO black box, NO
+    coloured plate, NO rounded card, NO badge, NO circle, NO outline,
+    NO glow, NO drop shadow behind it.
+  - do NOT redraw it, restyle it, recolour it, stretch it, crop it,
+    rotate it, or add a wordmark or tagline of your own.
+  - reserve a CALM area for it: no busy texture and no strong
+    contrast directly behind it, so it reads cleanly with no plate.
+  - size it so its wordmark stays comfortably readable when the whole
+    image is viewed at 20% of its size.
+A logo pasted on a white rectangle is a failed image.
+
+-----------------------------------------------------------
+FORMAT AND SAFE ZONES — a hard requirement
+-----------------------------------------------------------
+Canvas: 1080 x 1920 px, vertical 9:16.
+WhatsApp draws its own interface OVER this image:
+  - the TOP 220 px are covered by the profile bar
+  - the BOTTOM 340 px are covered by the reply field
+Nothing that matters may sit in those two strips. All text, the logo
+and the subject live inside the central band, between 220 px and
+1580 px from the top. Compose as if those two strips did not exist.
+
+-----------------------------------------------------------
+CONTENT — render these strings verbatim, nothing else
+-----------------------------------------------------------
+THE HOOK (at the TOP of the safe band, so it is the first thing seen.
+          Left-aligned, ENORMOUS all caps, condensed, tight tracking
+          and tight leading, three stacked lines filling the width. By
+          far the loudest element, and the only large one. The FIRST
+          TWO lines in the ink colour of the style reference, THE
+          THIRD in its accent colour):
+  "CE N’EST PAS"
+  "VOTRE PRODUIT."
+  "C’EST L’HEURE."
+
+THE LESSON (under the visual, small, quiet, three lines):
+  "À midi, le soleil tombe droit : les couleurs s’écrasent et l’ombre devient un trou noir."
+  "Avant 9 h ou après 16 h, la même chose devient belle."
+  "À l’ombre, sur un fond uni, sans flash."
+
+CALL TO ACTION (bottom of the safe band, on its own line, in the
+                accent colour, smaller than the hook):
+  "Envoyez-moi une photo de votre produit. Je vous dis en une phrase ce qui la retient."
+
+FOOTER: the logo, per the LOGO INTEGRATION block, centred, placed just
+ABOVE the 340 px bottom safe strip, never inside it, with
+"nebula-agency.online" under it in tiny muted type.
+
+-----------------------------------------------------------
+LAYOUT
+-----------------------------------------------------------
+Inside the central safe band, top to bottom:
+  1. THE HOOK, three stacked lines   <- first seen, loudest
+  2. THE OBJECT CUT IN TWO BY LIGHT  <- the largest zone
+  3. THE LESSON, three quiet lines
+  4. CALL TO ACTION
+  5. LOGO, then the site address
+The hierarchy must be brutal: ONE block is enormous, everything else
+is small. Give the object room: the demonstration needs to be seen
+before the lesson is read.
+
+-----------------------------------------------------------
+TEXT RENDERING — read twice
+-----------------------------------------------------------
+- Render ONLY the strings quoted above, plus "nebula-agency.online".
+  Any extra word is a failure.
+- Reproduce them VERBATIM: no translation, no rephrasing, no
+  shortening, no added punctuation, no exclamation marks.
+- Correct French typographic apostrophes ’ exactly as written:
+  "N’EST", "C’EST", "L’HEURE", "s’écrasent", "l’ombre", "l’ombre".
+- Correct diacritics: "À midi", "après", "écrasent".
+- "9 h" and "16 h" keep their space before the h.
+- The hook must be readable at 20% of the image size.
+- No hashtag, no social icon, no interface element, no emoji.
+
+-----------------------------------------------------------
+HARD CONSTRAINTS
+-----------------------------------------------------------
+- NO price, NO amount, NO currency, NO offer sticker. This post sells
+  nothing at all.
+- NO invented statistics or percentages. The only numerals allowed
+  are the two hours, "9 h" and "16 h".
+- NO first name, no age, no portrait, no face, no human figure.
+- NO recognisable third-party brand, app name or interface.
+- NO clock, NO sun icon, NO before-and-after label, NO split-screen
+  divider drawn on top: the light does the explaining alone.
+- NO watermark, no signature, no frame, no border.
+- ONE single idea in this image.
+
+-----------------------------------------------------------
+OUTPUT
+-----------------------------------------------------------
+One finished 1080 x 1920 image, publication-ready,
+high-fidelity text rendering.
+===========================================================
+```
+
+### Le texte à écrire sous le statut
+
+```
+Essayez demain matin avec le même produit et le même téléphone. Vous verrez la
+différence tout de suite. Envoyez-moi la photo, je vous dis ce qui la retient.
+```
+
+### Ce qu'on répond à une photo reçue
+
+**Une phrase, honnête, le jour même.** Trois choses à regarder, dans cet ordre :
+
+| Ce qu'on voit | La phrase qu'on renvoie |
+|---|---|
+| ombre dure et noire sous l'objet | « C'est la lumière du haut. Refaites-la à l'ombre demain matin, vous ne reconnaîtrez pas le produit. » |
+| fond chargé, du désordre derrière | « Le produit est bon, c'est le fond qui le mange. Un mur uni suffit. » |
+| photo sombre, prise à l'intérieur | « Sortez-la près de la porte, sans flash. La lumière du jour fait tout le travail. » |
+| la photo est bonne | « Celle-là est bonne, ne la retouchez pas. » **et on s'arrête là** |
+
+⚠️ **On ne glisse aucune offre dans cette réponse.** Ni site, ni catalogue, ni « au fait ».
+C'est un cadeau ou ce n'est rien. La vente viendra d'elle-même, plus tard, parce qu'on aura
+été utile sans rien demander.
+
 ---
 
-## 5. Contrôles avant publication
+## 6. Contrôles avant publication
 
 | Contrôle | Pourquoi |
 |---|---|
@@ -597,7 +836,7 @@ vous êtes, même si la réponse est « pas encore ».
 
 ---
 
-## 6. Les prochains statuts
+## 7. Les prochains statuts
 
 Même gabarit : le label, la hiérarchie brutale, les zones mortes, et surtout **la question
 fermée qui se répond d'un caractère**.

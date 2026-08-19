@@ -171,3 +171,48 @@ le refus est porté par les mots et par le recul, jamais par un symbole d'averti
 
 Trois apostrophes droites traînaient dans les chaînes du **statut n° 1** (`QUELQU'UN`,
 `qu'on`). Corrigées : la règle avait été posée, elle n'avait pas été appliquée rétroactivement.
+
+---
+
+## Statut WhatsApp n° 3 · « C’EST L’HEURE. » — le cadeau pur
+
+Demande : « mon post d'aujourd'hui pour WhatsApp ».
+
+**La décision éditoriale :** le n° 2 était un renversement commercial. La règle de la série
+dit **jamais deux statuts d'affilée qui font peur ou qui vendent**. Celui-ci ne vend donc
+rien du tout, et c'est lui qui achètera le droit d'être cru la prochaine fois.
+
+### L'accroche insulte, puis retire le reproche
+
+> **CE N’EST PAS VOTRE PRODUIT. C’EST L’HEURE.**
+
+Le lecteur croit une seconde qu'on critique sa marchandise, et on lui retire le reproche
+aussitôt. **Ce mouvement retient plus sûrement qu'une menace, et il ne laisse aucune
+amertume.** C'est une mécanique différente des deux précédentes : le n° 1 déplaçait la
+menace, le n° 2 renversait l'émetteur, celui-ci disculpe le lecteur.
+
+### Le cadeau
+
+À midi le soleil tombe droit, les couleurs s'écrasent, l'ombre devient un trou noir. Avant
+9 h ou après 16 h, la même chose devient belle. Aucun logiciel ne rattrape une mauvaise
+lumière, et **ça ne coûte rien à essayer dès demain matin**.
+
+### L'appel à l'action le plus natif de WhatsApp : envoyer une photo
+
+Pas une réponse à taper : **un geste**. Personne ne rédige depuis un statut, tout le monde
+peut appuyer sur « envoyer une photo ». Et une photo reçue ouvre une conversation sur **son**
+produit à lui, pas sur notre offre.
+
+⚠️ **La règle qui va avec, et elle est stricte : on ne glisse aucune offre dans la réponse.**
+Ni site, ni catalogue, ni « au fait ». Si la photo est bonne, on le dit et on s'arrête là.
+C'est un cadeau ou ce n'est rien. Les quatre réponses types sont écrites dans le document.
+
+### L'image
+
+**Un seul objet, coupé en deux par la lumière.** À gauche écrasé par un éclairage vertical
+dur, ombre noire dessous ; à droite la même matière dans une lumière basse et chaude, avec du
+relief et une ombre longue. Pas deux objets côte à côte, pas un panneau avant-après : **un
+seul objet**, et c'est ce qui rend la démonstration imparable.
+
+Le prompt interdit l'horloge, le soleil, l'étiquette avant-après et le trait de séparation :
+la lumière explique toute seule.
