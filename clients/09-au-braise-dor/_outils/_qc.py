@@ -41,7 +41,11 @@ CHROME = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
 # ni par une régénération, ni par un retour en arrière mal ciblé.
 RETIRES = [
     "Napolitaine", "Oriental", "Margherita", "Pili chaud", "À la crème", "Pêcheur",
-    "Lapin ou mouton frit", "Viande de caille",
+    # ⚠️ « Lapin » seul, pas toute la ligne : Mongazi a confirmé le 19/08 au
+    # soir que LE MOUTON FRIT RESTE, au même prix. La note manuscrite disait
+    # « Lapin », on avait d'abord retiré la ligne entière « lapin ou mouton
+    # frit » et donc supprimé un plat que la maison vend toujours.
+    "Lapin", "Viande de caille",
     "Crispy poulet", "Nugget pomme au four",
     "JOQ Viagra", "Mojito", "Piña Colada",
 ]

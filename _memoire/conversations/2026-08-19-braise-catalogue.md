@@ -161,14 +161,31 @@ petit-déjeuner manquantes, qui, elles, restent. Mais **la leçon est de demande
 au client AVANT de déduire** : la source vaut mieux qu'un résumé, et le client
 vaut mieux que la source.
 
-## Les cinq questions ouvertes
-1. **Prix du yaourt, de la glace et du cocktail.**
-2. **« Cocktail » en dessert = le cocktail de fruits à 2 500 F, ou autre chose ?**
-   Le mot est dans deux onglets à deux prix.
-3. **« Lapin » : le mouton frit part aussi ?** La ligne est « lapin **ou
-   mouton** frit », elle n'a écrit que « lapin ». Toute la ligne est partie.
-4. **Aileron** : le prix corrigé au surligneur.
-5. **Le n° WhatsApp.**
+## Mongazi tranche dans la foulée (3ᵉ temps du soir)
+
+> « Le mouton frit reste, et le prix reste pareil, enlève les cocktails au
+> niveau du côté dessert, garde juste yaourt et glace, je demanderai les prix
+> plus tard donc gardés sur demande. Et déploie. »
+
+1. ✅ **Le mouton frit reste, à 3 000 F.** ⚠️ **On avait supprimé un plat que la
+   maison vend toujours** : la note disait « Lapin », la ligne du menu papier
+   dit « lapin **ou mouton** frit », et retirer la ligne entière a emporté le
+   mouton avec le lapin. La carte affiche désormais **« Mouton frit »**, et la
+   clé de sa photo a suivi (`'mouton frit'` au lieu de `'lapin ou mouton
+   frit'`), sinon il tombait sur l'ardoise alors que les 4 autres grillades ont
+   la leur.
+   **C'est exactement la question que j'avais posée** — poser la question a
+   rattrapé la perte, mais l'exécution littérale l'avait créée.
+2. ✅ **Le « cocktail » sort des desserts** : il ne reste que le yaourt et la
+   glace. Le doublon que j'avais signalé (le mot dans deux onglets, à deux
+   prix) est tranché dans ce sens.
+3. ✅ **Les prix des desserts viennent plus tard** : « Prix sur demande » est
+   assumé, ce n'est pas un état d'attente honteux.
+
+## Les trois questions qui restent
+1. **Prix du yaourt et de la glace** — Mongazi les demandera.
+2. **Aileron** : le prix corrigé au surligneur.
+3. **Le n° WhatsApp.**
 
 ## État
 ✅ Construit (`npm run build`) · ✅ **64 contrôles verts**

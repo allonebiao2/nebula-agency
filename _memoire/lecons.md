@@ -841,6 +841,12 @@ trouble dure 100 ms au lieu d'un demi-tour d'horloge.
   par élément retiré**, sur le texte rendu de la page : un plat retiré mais
   laissé affiché se commande quand même, et c'est le restaurant qui gère la
   déception du client.
+- ⚠️ **SUITE, le soir même** : la note disait « Lapin », la ligne du menu dit
+  « lapin **ou mouton** frit ». Retirer la ligne entière a **supprimé un plat
+  que la maison vend toujours** — Mongazi l'a corrigé dans l'heure. **Une ligne
+  de menu qui contient un « ou » est deux produits** : quand le client n'en
+  nomme qu'un, on retire ce qu'il nomme, pas la ligne. Et poser la question
+  reste ce qui rattrape le coup : elle était dans ma liste, elle a été lue.
 
 ## 2026-08-19 — Quand une information manque, on donne le chemin, pas une valeur
 

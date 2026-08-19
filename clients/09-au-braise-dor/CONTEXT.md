@@ -89,15 +89,19 @@ contre »). Elle demande des retraits et une catégorie de plus.
 | Catégorie | Retiré | Reste |
 |---|---|---|
 | **Pizza** | napolitaine · oriental · margherita · pili chaud · à la crème · **pêcheur** | 4 sur 10 |
-| **Grillades** | lapin ou mouton frit · viande de caille | 4 sur 6 |
+| **Grillades** | **le lapin seul** · viande de caille — ✅ **le mouton frit reste, même prix** (Mongazi, 19/08 au soir) | 5 sur 6 |
 | **Chawarma** | rien (elle l'écrit) | 3 |
 | **Hamburger** | crispy poulet · nugget pomme au four | 7 sur 9 |
 | **Cocktails** | « on supprime tout sauf les jus de fruit » → mojito, piña colada, JOQ Viagra | 3 sur 6 |
 
 Salades, sauces et petit-déjeuner : rien à changer.
 
-### Une catégorie ajoutée : **Desserts** (yaourt, glace, cocktail)
-⏳ **Elle n'a donné aucun prix.** Les trois portent **« Prix sur demande »** et
+### Une catégorie ajoutée : **Desserts** (yaourt, glace)
+⚠️ Le « cocktail » qu'elle listait **en a été sorti le soir même** (Mongazi) :
+il faisait doublon avec les 3 cocktails de fruits à 2 500 F, dans deux onglets
+et à deux prix.
+⏳ **Aucun prix donné.** Mongazi les demandera plus tard : on garde
+« Prix sur demande », c'est assumé, pas un oubli. Les trois portent **« Prix sur demande »** et
 leur fiche envoie la question sur WhatsApp au lieu d'ajouter au panier.
 Convention posée dans les données : **`p:0` = prix pas encore donné**. On
 n'invente pas un prix, et on ne cache pas une catégorie qu'elle veut vendre.
@@ -120,15 +124,16 @@ message WhatsApp partirait avec un « 0 F ». Un contrôle vérifie qu'aucun
 3. Les trois cocktails restants répétaient « Sans alcool. » en fin de
    description, ce que la note de catégorie dit désormais une fois pour toutes.
 
-### ⏳ Les cinq questions à poser (détail en bas de `MENU.md`)
-1. **Prix du yaourt, de la glace et du cocktail** — sans eux, 3 desserts ne se
-   commandent pas.
-2. **« Cocktail » en dessert = le cocktail de fruits à 2 500 F, ou autre chose ?**
-   Le mot apparaît dans deux onglets à deux prix.
-3. **« Lapin » : le mouton frit part aussi ?** La ligne du menu est « lapin
-   **ou mouton** frit », elle n'a écrit que « lapin ». Toute la ligne est partie.
-4. **Aileron** : le prix corrigé au surligneur sur le papier.
-5. **Le n° WhatsApp.**
+### ⏳ Les trois questions qui restent (détail en bas de `MENU.md`)
+1. **Prix du yaourt et de la glace** — ⏳ Mongazi les demandera plus tard, les
+   deux desserts restent en « Prix sur demande » en attendant.
+2. **Aileron** : le prix corrigé au surligneur sur le papier.
+3. **Le n° WhatsApp.**
+
+✅ **Deux tranchées par Mongazi le soir même** : le mouton frit reste au même
+prix (seul le lapin part) — ⚠️ **on avait retiré la ligne entière et donc
+supprimé un plat que la maison vend toujours** — et le « cocktail » sort des
+desserts.
 
 ✅ **Deux questions de la passe précédente sont mortes d'elles-mêmes** : les
 2ᵉˢ tailles de la napolitaine et de l'oriental, et le prix de la pêcheur — les

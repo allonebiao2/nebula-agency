@@ -44,6 +44,7 @@ export const CARTE: Cat[] = [
       { n: "Tilapia braisé", d: "Le tilapia entier, braisé minute, ce goût fumé signature.", p: 3000, p2: 6000, img: "/carte/tilapia.webp" },
       { n: "Poulet chair", d: "Poulet chair grillé sur la braise.", p: 2500, p2: 5000, img: "/carte/g-poulet-chair.webp" },
       { n: "Aileron", d: "Aileron mariné et grillé.", p: 3000, img: "/carte/g-aileron.webp" },
+      { n: "Mouton frit", d: "Viande frite dorée, tendre à cœur.", p: 3000, img: "/carte/g-lapin-mouton.webp" },
     ],
   },
   {
@@ -142,7 +143,6 @@ export const CARTE: Cat[] = [
     items: [
       { n: "Yaourt", p: 0 },
       { n: "Glace", p: 0 },
-      { n: "Cocktail", p: 0 },
     ],
   },
 ];

@@ -8,14 +8,16 @@
 > | Catégorie | Retiré |
 > |---|---|
 > | **Pizza** | napolitaine · oriental · margherita · pili chaud · à la crème · **pêcheur** (6 sur 10) |
-> | **Grillades** | lapin ou mouton frit · viande de caille |
+> | **Grillades** | **le lapin seul** (le mouton frit reste, même prix) · viande de caille |
 > | **Chawarma** | rien |
 > | **Hamburger** | crispy poulet · nugget pomme au four |
 > | **Cocktails** | « tout sauf les jus de fruit » → mojito · piña colada · JOQ Viagra |
 >
-> **Ajouté : la catégorie Desserts** — yaourt, glace, cocktail.
-> ⏳ **Elle n'a donné aucun prix pour les trois** : ils portent « Prix sur
-> demande » et leur fiche pose la question sur WhatsApp. On n'invente pas un prix.
+> **Ajouté : la catégorie Desserts** — **yaourt et glace** (le « cocktail » en a
+> été sorti le soir même, il faisait doublon avec les cocktails de fruits).
+> ⏳ **Aucun prix donné pour les deux** : ils portent « Prix sur demande » et
+> leur fiche pose la question sur WhatsApp. **Mongazi demandera les prix plus
+> tard, on garde « sur demande » en attendant.** On n'invente pas un prix.
 >
 > ⚠️ **Conséquence sur le héros** : la **pizza pêcheur était un des 4 plats
 > signature** de l'ouverture. Un héros ne peut pas mettre en avant un plat
@@ -92,7 +94,7 @@
 - **Poulet bicyclette** — **3 000 / 6 000**
 - **Aileron** — **3 000** ⏳ *(⚠️ **ligne corrigée à la main au surligneur** sur le menu papier, illisible sur la photo : à refaire confirmer par la maison)*
 - **Tilapia** (braisé) — **3 000 / 6 000**
-- **Lapin ou mouton frit** — **3 000**  ⛔ **RETIRÉ le 19/08 par la propriétaire**
+- ~~**Lapin**~~ **ou mouton frit** — **3 000** · ⛔ le **lapin** est retiré, ✅ **le mouton frit reste au même prix** (confirmé par Mongazi le 19/08 au soir) → la carte affiche « **Mouton frit** »
 - **Viande de caille** — **3 000**  ⛔ **RETIRÉ le 19/08 par la propriétaire**
 - **Poulet chair** — **2 500 / 5 000**
 - _Accompagnements_ : riz, attiéké, aloco, frites, pommes sautées, pomme vapeur, pâte rouge, Bomiwo, Akassa, igname frit
@@ -122,10 +124,9 @@
 ## Desserts *(ajoutés le 2026-08-19 par la propriétaire)*
 - **Yaourt** — ⏳ prix non donné
 - **Glace** — ⏳ prix non donné
-- **Cocktail** — ⏳ prix non donné · ⚠️ **à clarifier** : la carte garde par
-  ailleurs 3 cocktails de fruits à 2 500 F (babariba, paparazi, cocktail de
-  fruit naturel). Est-ce le même produit, ou un dessert différent ? En l'état
-  le mot apparaît dans deux onglets, à deux prix.
+- ~~Cocktail~~ ⛔ **sorti des desserts** le 19/08 au soir (Mongazi) : le mot
+  faisait doublon avec les 3 cocktails de fruits à 2 500 F. **Il ne reste que
+  le yaourt et la glace.**
 
 ---
 ### Observations design
@@ -140,13 +141,15 @@ Elles portent toutes sur de l'argent qui ne rentre pas aujourd'hui.
 > caduques, la propriétaire a retiré la napolitaine et l'oriental. Voici la
 > liste à jour.
 
+✅ **Deux questions tranchées par Mongazi le 19/08 au soir** : le **mouton frit
+reste au même prix** (seul le lapin part), et le **« cocktail » sort des
+desserts**. Il en reste trois.
+
 | # | Question | Ce que ça coûte |
 |---|---|---|
-| 1 | **Prix du yaourt, de la glace et du cocktail** (desserts) | 3 desserts affichés « prix sur demande », donc pas commandables |
-| 2 | **« Cocktail » en dessert : c'est le cocktail de fruits à 2 500 F, ou autre chose ?** | le mot apparaît dans deux onglets à deux prix |
-| 3 | **« Lapin » : le mouton frit part aussi ?** | la ligne du menu est « lapin **ou mouton** frit » ; elle n'a écrit que « lapin ». Toute la ligne a été retirée |
-| 4 | **Aileron : quel est le prix corrigé au surligneur ?** | le site affiche 3 000, la maison a corrigé le papier |
-| 5 | **Le n° WhatsApp : 01 56 05 71 57 ou 43 99 29 29 ?** | toutes les commandes partent sur le premier |
+| 1 | **Prix du yaourt et de la glace** | 2 desserts en « prix sur demande » — ⏳ Mongazi les demandera plus tard, c'est assumé |
+| 2 | **Aileron : quel est le prix corrigé au surligneur ?** | le site affiche 3 000, la maison a corrigé le papier |
+| 3 | **Le n° WhatsApp : 01 56 05 71 57 ou 43 99 29 29 ?** | toutes les commandes partent sur le premier |
 
 ⚠️ Les quatre autres pizzas à deux tailles (à la crème, pili chaud, paysanne,
 pêcheur) sont **confirmées par la photo** : leur second prix est bon.
