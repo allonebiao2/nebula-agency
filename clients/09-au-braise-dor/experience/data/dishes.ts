@@ -42,11 +42,49 @@ export type Dish = {
 };
 
 export const DISHES: Dish[] = [
+  /* ⚠️ LES SAUCES OUVRENT LE HÉROS, ET C'EST VOULU (2026-08-19).
+     Mongazi : « c'est un restaurant béninois, donc les plats de la catégorie
+     sauce doivent être mis en avant plus que les autres ; les autres aussi
+     bien sûr, mais ces plats-là en principal. »
+     Les deux qui ouvrent sont les sauces LOCALES du menu (section « Monyo »).
+     La Béchamel et la Sauce Crème restent à la carte mais pas ici : le menu
+     papier les range sous « Sauces Européennes », elles ne servent pas
+     l'argument. Le gombo, le krinkrin et la sauce feuille — les plus
+     béninoises de toutes — n'ont pas encore de photo : le jour où leurs
+     fichiers arrivent, elles prennent la tête. */
+  {
+    id: "moyo",
+    line1: "MOYO",
+    line2: "CHIGAN",
+    kicker: "#1 La sauce du pays",
+    cat: "Sauces",
+    price: 3000,
+    desc: "Sauce tomate, piment vert, oignon, moutarde, poisson ou aileron.",
+    img: "/plats/sc-moyo.webp",
+    /* teinte relevée sur la photo elle-même, comme chez Hillary : la couleur
+       du héros suit la matière. 5,05:1 avec le blanc du prix. */
+    tint: "#B25324",
+    wash: "#F7EBE4",
+  },
+  {
+    id: "poisson-frais",
+    line1: "SAUCE",
+    line2: "POISSON FRAIS",
+    kicker: "#2 Au poisson frais",
+    cat: "Sauces",
+    price: 3000,
+    desc: "Sauce tomate et crin-crin au choix.",
+    img: "/plats/sc-poisson.webp",
+    /* la même famille de tomate, en plus profond : les deux sauces partagent
+       leur couleur dominante, il fallait les distinguer sans mentir. */
+    tint: "#8A3520",
+    wash: "#F6E8E2",
+  },
   {
     id: "poulet",
     line1: "POULET",
     line2: "BICYCLETTE",
-    kicker: "#1 Spécialité maison",
+    kicker: "#3 Spécialité maison",
     cat: "Grillades",
     price: 3000,
     price2: 6000,
@@ -59,7 +97,7 @@ export const DISHES: Dish[] = [
     id: "tilapia",
     line1: "TILAPIA",
     line2: "BRAISÉ",
-    kicker: "#2 Le goût fumé",
+    kicker: "#4 Le goût fumé",
     cat: "Grillades",
     price: 3000,
     price2: 6000,
@@ -69,16 +107,13 @@ export const DISHES: Dish[] = [
     wash: "#F5F1E4",
   },
   {
-    /* ⚠️ C'ÉTAIT LA PIZZA PÊCHEUR JUSQU'AU 2026-08-19. La propriétaire l'a
-       retirée de la carte ce jour-là, avec cinq autres pizzas. Un héros ne
-       peut pas mettre en avant un plat qu'on ne peut plus commander : le
-       visiteur arrive, s'enthousiasme, et ne le trouve nulle part.
-       La paysanne prend sa place : c'est la seule pizza restante à deux
-       tailles, donc la seule au même rôle sur la carte. */
+    /* ⚠️ C'ÉTAIT LA PIZZA PÊCHEUR JUSQU'AU 2026-08-19, retirée de la carte par
+       la propriétaire. Un héros ne met pas en avant un plat qu'on ne peut plus
+       commander. La paysanne est la seule pizza restante à deux tailles. */
     id: "pizza",
     line1: "PIZZA",
     line2: "PAYSANNE",
-    kicker: "#3 Au four",
+    kicker: "#5 Au four",
     cat: "Pizza",
     price: 4000,
     price2: 6000,
@@ -91,7 +126,7 @@ export const DISHES: Dish[] = [
     id: "chawarma",
     line1: "CHAWARMA",
     line2: "JOQ",
-    kicker: "#4 Notre signature",
+    kicker: "#6 Notre signature",
     cat: "Chawarma",
     price: 3000,
     desc: "Poulet et viande réunis. Notre signature.",

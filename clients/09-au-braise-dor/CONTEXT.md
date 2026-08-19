@@ -79,6 +79,48 @@ s'afficheront tout seuls le jour où le restaurant les donnera.
 ⚠️ Les trois **s'arrêtent net si un motif a disparu**, pour ne jamais repeindre
 à moitié.
 
+## ✅ LE HÉROS PASSE AUX SAUCES — 2026-08-19 (nuit)
+
+> Mongazi : « c'est un restaurant béninois, donc les plats de la catégorie
+> sauce doivent être mis en avant plus que les autres ; dans la héros section
+> ce sont ces plats-là qui défileront automatiquement. Les autres aussi bien
+> sûr, mais ces plats-là en principal. »
+
+**Le héros passe de 4 à 6 plats, les deux sauces en tête** : Moyo Chigan et
+Sauce poisson frais, puis Poulet bicyclette, Tilapia braisé, Pizza Paysanne,
+Chawarma JOQ.
+
+### Pourquoi CES deux sauces et pas les quatre
+Le menu papier range les sauces en **deux sections** : « Monyo » (les locales)
+et « Sauces Européennes ». **Béchamel et Sauce Crème sont les européennes** :
+les mettre en avant pour dire « c'est un restaurant béninois » dirait le
+contraire de l'argument. Elles restent à la carte, pas au héros.
+⚠️ Et leur détourage est raté (voir ci-dessous), ce qui tranche la question.
+
+### Le détourage : `python _outils/_detoure_plats.py`
+Le héros pose l'assiette sur un fond crème, donc **toutes les images de
+`public/plats/` sont en RGBA**, contrairement à celles de `public/carte/`.
+Les sauces n'en avaient pas : elles ont été détourées depuis leur image carrée.
+- **Modèle `isnet-general-use`**, choisi sur planche comparative : `u2net` perd
+  le bol et ne garde que la viande, `birefnet-general` déchiquette le bol.
+  isnet garde le bol entier **et la vapeur**, qui fait tout le charme.
+- ⛔ **Ce qui ne marche pas** : sur Béchamel et Crème, isnet garde un bout de
+  l'ardoise sous le bol. L'ouverture morphologique qui devait l'enlever **mord
+  dans le bol** et laisse une encoche — pire que le mal. Ne pas refaire l'essai.
+- La **teinte du prix est relevée sur la photo** (méthode Hillary) : Moyo
+  `#B25324` (5,05:1 avec le blanc), Poisson frais `#8A3520` — les deux sauces
+  partagent leur dominante tomate, il fallait les distinguer sans mentir.
+
+### ⏳ Ce qui manque pour aller au bout
+**Gombo, krinkrin et sauce feuille — les plus béninoises de toutes — n'ont
+aucune photo sur le disque.** Les images envoyées par Mongazi sont arrivées
+dans la conversation, pas comme fichiers. Le jour où elles atterrissent dans
+`_partage/`, elles prennent la tête du héros.
+⚠️ **Et il faudra d'abord savoir d'où elles viennent** : fond noir, vapeur,
+lumière de studio — elles ont l'allure des 48 images générées de juillet. Si
+elles sont générées, la règle du 2026-08-01 les refuse, et ce serait la
+première fois qu'on en ajoute une **après** la règle.
+
 ## ✅ CORRECTIONS DE LA PROPRIÉTAIRE — 2026-08-19 (soir) · **52 → 42 plats**
 
 Note manuscrite « Correction pour Au Braisé d'Or », photographiée et transmise
