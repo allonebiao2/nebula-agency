@@ -453,3 +453,31 @@ Retours Mongazi après la session Higgsfield → refonte (skill `ui-ux-pro-max` 
 - 2026-07-20 (3) — **Son remplacé** : le client détestait le son synthétique (Web Audio braise/grésillement). **Retiré tout le moteur Web Audio** (ambiance + bruitages survol/clic/boot) → remplacé par une **boucle mp3 « feu de bois »** (`assets/audio/fire-loop.mp3`, source `_partage/Fat Es BBQ 1 minute of relaxing fire sound..mp3`) qui **démarre au 1er contact** (pointerdown/touchstart/keydown, façon NEBULA Agency) avec fondu ; le bouton haut-parleur du header (#sound) coupe/relance, état en `localStorage`. Redéployé. ✅ testé Playwright (fire-loop.mp3 joué au 1er clic).
 - 2026-07-20 (2) — **Polish post-mise en ligne** : (1) **crépitement/ronflement de fond retiré** (`startAmbient` no-op, on garde les retours survol/clic) ; (2) **menu 2 plats par ligne + cartes compactes sur mobile** (`.menu .grid → 1fr 1fr`, description masquée mobile — reste dans la fiche) pour parcourir vite ; (3) **toutes les mentions de brouillon retirées du site public** (« à valider / à confirmer / à préciser / aperçu / exemple / dev-tag ») → carte Maps placeholder remplacée par **vrai lien Google Maps** (recherche par nom+ville), adresse/horaires nettoyés, tags d'avis retirés, watermark « Aperçu NEBULA » supprimé. Nouvelle règle en mémoire : [[feedback_no-placeholder-on-deploy]]. Redéployé + vérifié live.
 - 2026-07-20 — **Refonte (skill ui-ux-pro-max) + 48 photos de plats + 1ER DÉPLOIEMENT** (détail section « REFONTE… » ci-dessus). Scroll-scrub héro abandonné (ne passait pas) → intro douce autoplay ; galerie fusionnée dans les cartes (photo + prix + clic→fiche) ; FAB WhatsApp retiré ; verre fumé ; **z_image** retenu après A/B (0,15 cr) pour générer **42 photos** (+4 réutilisées) = 48 plats photographiés. Solde crédits 66,15/100. **LIVE https://au-braise-dor.pages.dev.** Reste : affiche A4+QR, photo du lieu, n° WhatsApp, adresse/Maps, horaires, logo, réseaux, avis.
+
+## 2026-08-19 · les corrections de la propriétaire sont EN LIGNE
+
+Les modifications arrivées par la session téléphone (13 plats retirés, la carte
+des sauces, les héros détourés, les deux prix exacts) ont été **construites,
+contrôlées et publiées** depuis le PC de Cotonou.
+
+- déploiement : `https://cfc82be6.au-braise-dor.pages.dev` → https://au-braise-dor.pages.dev
+- vérifié **dans le corps de la page servie**, pas sur un code 200 :
+  « Monyo » 0 fois · gombo 9 · krinkrin 5 · 52 plats · Napolitaine / Mojito /
+  Crispy poulet / JOQ Viagra absents · « Mouton frit » toujours là (2 fois)
+- les 3 photos de sauces répondent 200 en `image/webp`, l'affiche A4 aussi
+- un fichier absent répond bien **404** (et non 200, cf. la panne PISTE)
+
+### ⚠️ Le contrôle qualité ne démarrait pas sur ce PC
+
+`_outils/_qc.py` a été écrit sur la machine du nuage. Trois défauts d'instrument,
+corrigés ici, aucun ne venait du site :
+
+1. il **codait en dur** `/opt/pw-browsers/chromium-1194/...` : ce chemin n'existe
+   que sur la machine du nuage. Il n'est plus imposé que s'il existe.
+2. il lisait `#cat-petitdej` après un **délai fixe de 1,5 s** : sur un poste
+   chargé la rubrique n'était pas encore montée et tout s'arrêtait sur un `null`.
+   Il **attend** l'élément.
+3. la console Windows écrit en **cp1252** : un « ≥ » dans un libellé faisait
+   planter la suite **après** l'avoir réussie. Sortie forcée en UTF-8.
+
+**78 contrôles verts, 0 rouge** (mobile 390 + bureau 1440 + lisibilité des prix).

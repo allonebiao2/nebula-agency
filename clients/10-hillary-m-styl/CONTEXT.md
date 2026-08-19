@@ -829,3 +829,117 @@ images et retirera le drapeau dès que les fichiers seront là.
 
 Contrôlé : **121 contrôles verts**, 0 erreur JS, la fiche d'une pièce sans photo
 s'ouvre et demande bien ses 11 mesures. Déployé et vérifié en ligne.
+
+---
+
+## LES PIÈCES ENVOYÉES EN DOUBLE BASCULENT TOUTES SEULES (2026-08-18)
+
+Mongazi : « Je t'enverrai certains en double pour un seul, et d'autres seuls.
+Ceux en double, assure-toi qu'il **switch automatiquement quand on regarde**. »
+Puis : « Dans la hero tu n'y mets en plus que les nouvelles, **dans le style de
+ceux déjà présents**, histoire que ça reste cohérent. »
+
+### La bascule
+
+Une pièce qui a deux photos les montre l'une après l'autre, **au catalogue et
+au carrousel**. `img2` (catalogue) et `f2` (carrousel) portent la vue de dos.
+
+- **hors de l'écran, rien ne tourne** (`IntersectionObserver` → `duoVus`) ;
+- **onglet caché ou fiche ouverte : tout se fige**, et l'échéance est
+  **repoussée** — sans ce report, toutes les cartes rattrapent leur retard d'un
+  coup au retour et basculent ensemble ;
+- **décalage d'une carte à l'autre** : synchrones, elles clignoteraient
+  ensemble comme une panne ;
+- première bascule à **1,6 s** (elle apprend qu'il y a un dos), puis **3,6 s** ;
+- au carrousel, **seule la carte active** respire ; le minuteur repart à chaque
+  changement, donc une pièce qui arrive se montre toujours **de face d'abord**.
+
+⛔ **Jamais de bascule vers une image pas encore arrivée.** La seconde vue est
+en `lazy` : sur une 4G lente on révélerait **du vide pendant 3,6 s**. On attend
+que `.complete` soit vrai. Un contrôle coupe le réseau sur les `-dos.webp` et
+vérifie que la carte reste sur sa face.
+
+⛔ **Le héros ne prend QUE la face.** Son glissement (pièce + chiffre géant,
+même durée, même courbe) a été réglé au millième le 2026-08-06 : une seconde
+vue qui s'y fondrait entrerait en concurrence avec lui.
+
+`prefers-reduced-motion` : rien ne tourne, les pastilles disparaissent, le dos
+reste dans la fiche de commande (figure « Le dos », inchangée).
+
+Pastilles : l'active est **plus large**, pas seulement rose — un état qui ne
+tient qu'à la couleur ne se lit pas pour tout le monde. 4,5:1 et 3,4:1 mesurés.
+
+### Le héros prend les nouvelles
+
+Plus de liste de trois élues. **Toute pièce qui a sa photo entre au héros**,
+écrite comme ses voisines (`f` `c` `col` `mat` en apostrophes, `t` `d` en
+guillemets, `mat:'Fait main · 2 semaines'` si la pièce est faite main).
+
+⚠️ **La règle des nappes du 2026-08-17 est passée dans le code.** Le héros
+peint le fond avec la teinte de la pièce : deux teintes voisines à la suite,
+c'est une transition qui n'existe pas. `poser_heros()` choisit l'**ordre** des
+ajouts (écart minimum 28°, **boucle comprise** : la dernière précède la
+première). On ne perd plus la pièce — au lieu de l'exclure, **on la déplace**.
+⛔ Aucune entrée déjà présente n'est touchée.
+
+⏳ **À TRANCHER PAR MONGAZI** : 2 voisinages de même nappe existent **parmi les
+7 diapositives déjà en place**, antérieurs à la règle —
+`hero-3 #275eb7 → hero-4 #0e85b7` (**19°**) et
+`piece-violette #6b3065 → piece-orange #925437` (**23°**). Deux transitions
+presque invisibles. Un échange de place les réglerait.
+
+### ⛔ Trois bugs qui auraient fait perdre les photos
+
+Dans `_nouveaux_modeles.py`, ils se seraient déclenchés le jour de l'arrivée :
+
+1. **`injecter()` sautait les onze fiches** : elles sont au catalogue depuis le
+   2026-08-18 avec `photoWa:true`, le script voyait `id:"h10"` présent et
+   passait. Les photos auraient été détourées, posées… et **jamais raccrochées
+   à une fiche**. Rien ne l'aurait signalé. → `fiche_existante()`.
+2. **`motion.js` n'était jamais réécrit** : carrousel et héros calculés puis
+   **jetés**. Une pièce serait entrée au catalogue et nulle part ailleurs.
+3. **Chaînes JS bâties en `'%s'`** : la première apostrophe cassait le site.
+   → `js()` / `jsq()`, qui gardent le style du fichier sans risque.
+
+Et la légende du carrousel se coupait **au milieu d'un mot** (« jupe longu »),
+en grand sous la pièce. → `court()` coupe sur un mot.
+
+### La règle du « tout ou rien » est inversée, et c'est voulu
+
+Le script refusait de poser tant qu'une photo manquait. C'était juste quand les
+onze pièces n'étaient nulle part. **Elles sont en ligne** avec « Photo sur
+WhatsApp » : chaque photo posée est désormais un gain net. Attendre la dernière,
+c'est laisser dix pièces sans image pour une onzième.
+
+### Quand les photos arrivent
+
+```
+1. _partage/
+2. _sources/modele-<clé>/  — UNE photo, ou DEUX (nommer le dos `dos.jpg`)
+3. python _nouveaux_modeles.py --poser      (pose ce qui est prêt)
+4. python _v4/_assembler.py && python _build.py && python _qc.py
+5. REGARDER les captures
+```
+
+### Contrôles : 121 → 138
+
+Onze neufs + une note. Ils mesurent l'**opacité réellement calculée**, pas le
+CSS déclaré : fichiers présents, **face et dos non identiques (MD5)**, 2 images
+et 2 pastilles, largeur de la pastille active, témoin « sous les yeux ça
+tourne », pause hors écran, pause fiche ouverte, carrousel (seule l'active),
+mouvement réduit, seconde vue coupée au réseau.
+
+⚠️ **Trois leçons de contrôle**, valables partout :
+1. **un contrôle de mise en pause a besoin d'un témoin** — « rien ne bascule
+   hors de l'écran » passerait tout seul si le mécanisme était **mort** ;
+2. **on échantillonne, on ne compare pas deux instantanés** — la bascule a une
+   période de 7,2 s, deux relevés à 5,2 s d'écart retombent sur la même phase
+   **une fois sur cinq** (même famille que le contrôle qui échouait au hasard) ;
+3. un contrôle qui dit « il manque quelque chose » **nomme ce qui manque**.
+
+⚠️ **Faux positif corrigé, antérieur au chantier** : « aucune ressource locale
+manquante » échouait sur les 6 `.mp3`. Ils sont sur le disque — la boucle ouvre
+la page en `file://`, où Chromium **interdit `fetch()`** (CORS), et l'échec
+n'arrivait qu'**après** le clic, donc au hasard de la vitesse de la machine.
+Les sons ont leur propre contrôle `sons()`, sur un vrai serveur HTTP.
+Vérifié identique sur `main` avant de toucher à quoi que ce soit.

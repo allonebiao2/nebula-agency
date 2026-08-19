@@ -401,10 +401,20 @@ function carte(p){
   var dev = (p.eur!=null||p.usd!=null)
     ? '<span class="dev">'+[p.eur!=null?p.eur+" €":null, p.usd!=null?"$"+p.usd:null]
         .filter(Boolean).join(" · ")+'</span>' : '';
+  /* Une pièce photographiée des DEUX CÔTÉS montre ses deux vues, l'une
+     après l'autre, pendant qu'on la regarde. Voir duoPoser().
+     ⚠️ Un seul `alt`, sur la première : la carte est un <button>, chaque
+     `alt` s'ajoute à son nom lu à voix haute. Deux vues, une phrase. */
+  var duo = !!(p.img && p.img2);
   return '<button class="piece" type="button" data-id="'+p.id+'">'+
-    '<div class="ph">'+(p.tag?'<span class="tag">'+esc(p.tag)+'</span>':'')+
+    '<div class="ph'+(duo?" duo":"")+'">'+(p.tag?'<span class="tag">'+esc(p.tag)+'</span>':'')+
       (p.img
-        ? '<img src="assets/images/'+esc(p.img)+'" alt="'+esc(p.nom)+', création Hillary M. Styl" loading="lazy" decoding="async">'
+        ? '<img class="v1" src="assets/images/'+esc(p.img)+'" alt="'+esc(p.nom)+
+          ', création Hillary M. Styl'+(duo?", vue de face et de dos":"")+'" loading="lazy" decoding="async">'+
+          (duo
+            ? '<img class="v2" src="assets/images/'+esc(p.img2)+'" alt="" loading="lazy" decoding="async">'+
+              '<span class="vues" aria-hidden="true"><i></i><i></i></span>'
+            : '')
         /* ⚠️ PAS de « photo à venir » sur un site en ligne : un texte
            d'attente dit au client que la maison n'est pas prête. Cette carte
            est la « Création libre » — elle n'a pas de photo parce qu'elle n'a
@@ -419,10 +429,86 @@ function carte(p){
         '<span class="del">'+HORLOGE+'<span>'+libDelai(p.jmin, p.jmax)+'</span></span></div>'+
     '</div></button>';
 }
+/* ---------- les pièces à DEUX VUES : la face et le dos -------------
+   Hillary envoie certaines pièces en double : une photo de face, une de
+   dos. La carte les montre l'une après l'autre, toute seule, pendant
+   qu'on la regarde.
+
+   ⚠️ Trois choses qu'on n'a pas le droit d'oublier :
+     · hors de l'écran, une carte ne tourne pas. Un observateur ouvre et
+       ferme le robinet ; le battement s'arrête quand plus rien n'est vu.
+     · onglet en arrière-plan ou écran de commande ouvert : on ne bascule
+       pas ET on repousse l'échéance. Sans ce report, toutes les cartes
+       rattrapent leur retard d'un coup au retour et basculent ensemble.
+     · le va-et-vient est DÉCALÉ d'une carte à l'autre. Synchrones, les
+       cartes du catalogue clignoteraient ensemble comme une panne.
+
+   La PREMIÈRE bascule vient vite (1,6 s) : c'est elle qui apprend à la
+   cliente que la pièce a un dos. Les suivantes prennent leur temps.
+   `prefers-reduced-motion` : rien ne tourne, et le dos reste visible dans
+   la fiche de commande (figure « Le dos »). */
+var DUO_PREMIER = 1600, DUO_PAS = 3600;
+var duoDoux = matchMedia("(prefers-reduced-motion: reduce)").matches;
+var duoIO = null, duoVus = [], duoBat = null;
+
+function duoTour(){
+  var t = Date.now();
+  if(document.hidden || document.body.classList.contains("ecran-on")){
+    duoVus.forEach(function(el, i){ el.dataset.duoT = t + DUO_PAS + i*450; });
+    return;
+  }
+  duoVus.forEach(function(el){
+    if(t < (+el.dataset.duoT || 0)) return;
+    /* ⚠️ ON NE BASCULE JAMAIS VERS UNE IMAGE PAS ENCORE ARRIVÉE. La seconde
+       vue est en `lazy` : sur une 4G lente elle peut n'être là qu'après la
+       première bascule. On révélerait alors du VIDE pendant 3,6 s, et la
+       carte semblerait cassée. Tant qu'elle n'est pas peinte, on attend. */
+    var v2 = el.querySelector(".v2");
+    if(!el.classList.contains("dos") && v2 && !v2.complete){
+      el.dataset.duoT = t + 900;
+      return;
+    }
+    el.dataset.duoT = t + DUO_PAS;
+    el.classList.toggle("dos");
+  });
+}
+function duoVeiller(){
+  if(duoVus.length && !duoBat) duoBat = setInterval(duoTour, 300);
+  else if(!duoVus.length && duoBat){ clearInterval(duoBat); duoBat = null; }
+}
+function duoPoser(){
+  /* rendreGrille() refait tout le HTML : les anciennes cartes n'existent
+     plus. On repart d'un observateur neuf, jamais on n'en empile deux. */
+  if(duoIO){ duoIO.disconnect(); duoIO = null; }
+  duoVus.length = 0;
+  if(duoDoux){ duoVeiller(); return; }
+  var l = $$("#grille .ph.duo");
+  if(!l.length){ duoVeiller(); return; }
+  if(!window.IntersectionObserver){            /* repli : tout tourne */
+    l.forEach(function(el, i){ el.dataset.duoT = Date.now() + DUO_PREMIER + i*900; duoVus.push(el); });
+    duoVeiller(); return;
+  }
+  duoIO = new IntersectionObserver(function(ents){
+    ents.forEach(function(e){
+      var i = duoVus.indexOf(e.target);
+      if(e.isIntersecting){
+        if(i < 0){
+          e.target.dataset.duoT = Date.now() + DUO_PREMIER + (duoVus.length % 3)*700;
+          duoVus.push(e.target);
+        }
+      }else if(i >= 0){ duoVus.splice(i, 1); }
+    });
+    duoVeiller();
+  }, {threshold:0.4});
+  l.forEach(function(el){ duoIO.observe(el); });
+}
+
 function rendreGrille(cat){
   var g = document.getElementById("grille");
   g.innerHTML = PIECES.filter(function(p){return p.cat===cat;}).map(carte).join("");
+  duoPoser();
 }
+
 function compteCat(cat){
   return PIECES.filter(function(p){return p.cat===cat;}).length;
 }

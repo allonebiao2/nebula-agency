@@ -55,10 +55,10 @@
     { f:'piece-mira.webp', l:'Sur-mesure',   t:"L'ensemble Mira",   s:'Haut à manches ballon, jupe à volants étagés' },
     { f:'piece-josy.webp', l:'Fait main',    t:'Ensemble JOSY',     s:'Pantalon large, empiècements peints, corset lacé' },
     { f:'piece-ville.webp', l:'Sur-mesure',   t:'Robe de ville',     s:'Dos nu, wax à feuillages et panneaux de satin' },
-    { f:'piece-violette.webp', l:'Cérémonie',  t:'Robe de cérémonie violette', s:'Manches ballon, jupe à volants, dos lacé en corset' },
-    { f:'piece-orange.webp', l:'Sur-mesure',   t:'Robe Naja',         s:'Bustier découpé, manches détachées, jupe très ample' },
-    { f:'piece-verte.webp', l:'Sur-mesure',    t:'Robe de ville verte', s:'Une épaule nouée, taille basse, jupe froncée' },
-    { f:'piece-tulle.webp', l:'Sur-mesure',    t:'Robe de ville à tulle', s:'Col montant noué, dos dégagé, volant de tulle violet' }
+    { f:'piece-violette.webp', f2:'piece-violette-dos.webp', l:'Cérémonie',  t:'Robe de cérémonie violette', s:'Manches ballon, jupe à volants, dos lacé en corset' },
+    { f:'piece-orange.webp', f2:'piece-orange-dos.webp', l:'Sur-mesure',   t:'Robe Naja',         s:'Bustier découpé, manches détachées, jupe très ample' },
+    { f:'piece-verte.webp', f2:'piece-verte-dos.webp', l:'Sur-mesure',    t:'Robe de ville verte', s:'Une épaule nouée, taille basse, jupe froncée' },
+    { f:'piece-tulle.webp', f2:'piece-tulle-dos.webp', l:'Sur-mesure',    t:'Robe de ville à tulle', s:'Col montant noué, dos dégagé, volant de tulle violet' }
   ];
   /* ================================================================ */
 
@@ -483,11 +483,17 @@
     zone.appendChild(txt);
 
     piste.innerHTML = data.map(function (o, i) {
+      /* `f2` = la même pièce vue de dos. Un seul `alt` : les deux images
+         montrent une seule création, pas deux. */
       var img = o.f
-        ? '<img src="assets/images/' + esc(o.f) + '" alt="' + esc(o.t)
-          + ', création Hillary M. Styl" loading="lazy" decoding="async">'
+        ? '<img class="v1" src="assets/images/' + esc(o.f) + '" alt="' + esc(o.t)
+          + ', création Hillary M. Styl' + (o.f2 ? ', vue de face et de dos' : '') + '" '
+          + 'loading="lazy" decoding="async">'
+          + (o.f2 ? '<img class="v2" src="assets/images/' + esc(o.f2) + '" alt="" '
+                  + 'loading="lazy" decoding="async">' : '')
         : SIL;
-      return '<figure class="car" data-i="' + i + '"><div class="car-c">' + img + '</div></figure>';
+      return '<figure class="car" data-i="' + i + '"><div class="car-c'
+        + (o.f2 ? ' duo' : '') + '">' + img + '</div></figure>';
     }).join('');
 
     var cartes = $$('.car', piste), n = cartes.length, actif = 0;
@@ -519,7 +525,27 @@
         c.setAttribute('aria-hidden', a === 0 ? 'false' : 'true');
       });
     }
-    function aller(i) { actif = (i + n) % n; placer(); ecrire(); }
+    /* La carte active respire de la face au dos, quand la pièce a deux
+       vues. Le minuteur REPART à chaque changement de carte : une pièce
+       qui arrive se montre toujours de face d'abord. Les cartes de côté
+       sont floutées et à 16 % : y faire passer un fondu ne se verrait pas
+       et coûterait pour rien. */
+    var batC = null;
+    function respirer() {
+      if (batC) { clearInterval(batC); batC = null; }
+      $$('.car-c.dos', piste).forEach(function (c) { c.classList.remove('dos'); });
+      if (doux) return;
+      var c = $('.car-c.duo', cartes[actif]);
+      if (!c) return;
+      batC = setInterval(function () {
+        if (document.hidden || document.body.classList.contains('ecran-on')) return;
+        /* même règle qu'au catalogue : on ne montre pas une image absente */
+        var v2 = c.querySelector('.v2');
+        if (!c.classList.contains('dos') && v2 && !v2.complete) return;
+        c.classList.toggle('dos');
+      }, 3600);
+    }
+    function aller(i) { actif = (i + n) % n; placer(); ecrire(); respirer(); }
 
     var p = $('#cPrev'), s = $('#cNext');
     if (p) p.addEventListener('click', function () { aller(actif - 1); });

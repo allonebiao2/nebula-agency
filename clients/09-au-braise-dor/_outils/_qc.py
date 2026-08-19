@@ -28,13 +28,23 @@ coûte plus cher qu'un contrôle absent, parce qu'on le croit.
    on mesure le contraste d'un fondu.
 """
 import functools, http.server, io, os, socketserver, sys, threading
+
+# ⚠️ La console de Windows écrit en cp1252 : un simple « ≥ » dans un libellé
+#    faisait planter le contrôle APRÈS l'avoir réussi. On écrit en UTF-8.
+for _f in (sys.stdout, sys.stderr):
+    try: _f.reconfigure(encoding="utf-8", errors="replace")
+    except Exception: pass
 from playwright.sync_api import sync_playwright
 from PIL import Image
 
 RACINE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "experience", "out")
 RACINE = os.path.normpath(RACINE)
 VUES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "_vues")
-CHROME = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
+# ⚠️ Ce chemin n'existe QUE sur la machine du nuage. Sur un poste Windows,
+#    Playwright trouve son navigateur tout seul : on ne lui impose rien.
+import os as _os
+_C = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
+CHROME = _C if _os.path.exists(_C) else None
 
 # Les 13 plats que la propriétaire a fait retirer le 2026-08-19 (note
 # manuscrite « Correction pour Au Braisé d'Or »). Ils ne doivent réapparaître
@@ -98,7 +108,7 @@ def main():
         print(("  vert  " if bon else "  ROUGE ") + txt)
 
     with sync_playwright() as p:
-        nav = p.chromium.launch(executable_path=CHROME)
+        nav = p.chromium.launch(**({'executable_path': CHROME} if CHROME else {}))
 
         for nom, largeur, hauteur in [("mobile", 390, 844), ("bureau", 1440, 900)]:
             pg = nav.new_page(viewport={"width": largeur, "height": hauteur},
@@ -110,6 +120,11 @@ def main():
                   lambda r: mauvais.append("%d %s" % (r.status, r.url)) if r.status >= 400 else None)
 
             pg.goto("http://127.0.0.1:%d/" % port, wait_until="networkidle", timeout=60000)
+            # ⚠️ « networkidle » ne dit pas que la carte est montée : le 19/08 le
+            #    contrôle a planté sur un `getElementById` qui renvoyait null,
+            #    alors que la rubrique était bien dans la page. On ATTEND l'élément
+            #    au lieu de parier sur un délai fixe (un poste lent perd le pari).
+            pg.wait_for_selector("#cat-petitdej", state="attached", timeout=60000)
             pg.wait_for_timeout(1500)
             pg.evaluate("""() => { const e = document.getElementById('cat-petitdej');
                 window.__lenis ? window.__lenis.scrollTo(e, { immediate: true }) : e.scrollIntoView(); }""")

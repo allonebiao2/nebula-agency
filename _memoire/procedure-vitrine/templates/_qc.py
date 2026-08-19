@@ -31,6 +31,12 @@ Doit être VERTE avant tout déploiement.
 import asyncio, glob, pathlib, sys
 from playwright.async_api import async_playwright
 
+# ⚠️ La console de Windows écrit en cp1252 : un « ≥ » ou un « → » dans un
+#    libellé fait planter la suite APRÈS qu'elle a réussi ses contrôles.
+for _f in (sys.stdout, sys.stderr):
+    try: _f.reconfigure(encoding="utf-8", errors="replace")
+    except Exception: pass
+
 URL = (pathlib.Path(__file__).resolve().parent / "vitrine.html").as_uri()
 FAILS, NOTES = [], []
 

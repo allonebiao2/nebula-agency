@@ -447,6 +447,13 @@ em{font-style:italic;font-weight:400}
 .car-c img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
   object-position:center bottom;
   filter:drop-shadow(0 24px 22px rgba(26,26,26,.12))}
+/* la même respiration au carrousel, mais SEULE la carte active tourne :
+   les cartes de côté sont déjà floutées et à 16 % d'opacité, y faire
+   passer un fondu ne se verrait pas et coûterait pour rien. */
+.car-c .v2{opacity:0;transition:opacity .85s var(--e-s)}
+.car-c .v1{transition:opacity .85s var(--e-s)}
+.car--act .car-c.dos .v2{opacity:1}
+.car--act .car-c.dos .v1{opacity:0}
 .car-c::after{content:'';position:absolute;left:16%;right:16%;bottom:1%;height:22px;
   border-radius:50%;pointer-events:none;z-index:-1;
   background:radial-gradient(50% 50% at 50% 50%,rgba(26,26,26,.16),transparent 72%)}
@@ -640,6 +647,26 @@ em{font-style:italic;font-weight:400}
 .piece .ph::after{content:'';position:absolute;left:20%;right:20%;bottom:2%;height:14px;
   border-radius:50%;pointer-events:none;z-index:1;
   background:radial-gradient(50% 50% at 50% 50%,rgba(26,26,26,.17),transparent 72%)}
+/* ── LES DEUX VUES : LA FACE ET LE DOS ──────────────────────────────
+   Hillary photographie certaines pièces des deux côtés, et elle a raison :
+   un laçage, un dos nu, un volant de tulle ne se voient QUE de dos. La
+   carte les montre l'une après l'autre, toute seule, pendant qu'on la
+   regarde. Hors de l'écran, rien ne tourne (voir `duoPoser()`).
+   ⚠️ On croise DEUX OPACITÉS et rien d'autre. La carte porte déjà un
+   `translateY` au survol : une seconde transform se battrait avec elle.
+   ⚠️ La pastille active est plus LARGE, pas seulement rose : un état qui
+   ne tient qu'à la couleur ne se lit pas pour tout le monde. */
+.piece .ph.duo img{transition:opacity .85s var(--e-s)}
+.piece .ph.duo .v2{opacity:0}
+.piece .ph.duo.dos .v2{opacity:1}
+.piece .ph.duo.dos .v1{opacity:0}
+.piece .ph .vues{position:absolute;right:10px;bottom:9px;z-index:2;
+  display:flex;align-items:center;gap:5px;pointer-events:none}
+.piece .ph .vues i{width:5px;height:5px;border-radius:50px;
+  background:rgba(26,26,26,.45);   /* 3,4:1 sur le papier de la carte */
+  transition:width .55s var(--e-s),background .55s var(--e-s)}
+.piece .ph.duo:not(.dos) .vues i:first-child,
+.piece .ph.duo.dos .vues i:last-child{width:15px;background:var(--rose)}
 .piece .ph .mark{width:46%;aspect-ratio:1;opacity:.30;filter:grayscale(1);
   background:var(--logo) center/contain no-repeat}
 .piece .ph .avenir{position:absolute;left:0;right:0;bottom:0;padding:9px 12px;
@@ -921,4 +948,10 @@ section{overflow-x:clip}
   .js #contact .socs>*{animation:none!important;opacity:1!important;
     transform:none!important;clip-path:none!important}
   .js .faq .faq-l::before,.js #contact .socs::after{animation:none!important;transform:none!important}
+  /* les deux vues ne tournent plus : la face reste, le dos se voit dans la
+     fiche de commande (figure « Le dos »). Deux pastilles figées ne disent
+     rien, on les retire. */
+  .piece .ph.duo .v2,.car-c .v2{opacity:0!important;transition:none!important}
+  .piece .ph.duo .v1,.car-c .v1{opacity:1!important;transition:none!important}
+  .piece .ph .vues{display:none}
 }
