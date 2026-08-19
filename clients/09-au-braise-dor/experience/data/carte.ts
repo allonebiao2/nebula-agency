@@ -97,7 +97,7 @@ export const CARTE: Cat[] = [
   },
   {
     id: "sauces",
-    label: "Sauces & Monyo",
+    label: "Sauces",
     tag: "Local",
     note: "Accompagnements : Agbéli, pâte noire, riz, manioc, maïs, piron, Akassa, attiéké, pommes.",
     acc: "sauces",
