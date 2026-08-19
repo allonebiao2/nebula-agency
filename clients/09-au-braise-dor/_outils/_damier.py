@@ -29,6 +29,7 @@ plats photographiés sur fond noir. Le fond change, le gagnant change :
 import os
 import sys
 
+import numpy as np
 from PIL import Image
 from rembg import remove, new_session
 
@@ -41,15 +42,27 @@ PLATS = os.path.join(RACINE, "experience", "public", "plats")
 # octogonale sur ardoise, feuille hexagonale — les mêmes repères que les trois
 # vignettes imprimées sur la feuille de menu de la maison.
 LOTS = [
-    ("sc-gombo", "2026-08-19-sauce-gombo-detoure.png"),
-    ("sc-krinkrin", "2026-08-19-sauce-krinkrin-detoure.png"),
-    ("sc-feuille", "2026-08-19-sauce-feuille-detoure.png"),
+    ("sc-gombo", "2026-08-19-sauce-gombo-detoure.png", False),
+    ("sc-feuille", "2026-08-19-sauce-feuille-detoure.png", False),
+    # ⚠️ LE KRINKRIN VIENT D'UNE AUTRE SOURCE, ET C'EST VOULU.
+    # Sa version détourée est RECADRÉE TROP SERRÉ : le disque d'ardoise sous
+    # l'assiette sort du cadre à gauche, à droite et en bas, et l'assiette
+    # elle-même touche les bords. Mongazi l'a vu en ligne : « c'est coupé sur
+    # le côté droit, ça doit être bien circulaire comme pour les autres. »
+    # Aucun masque ne rend des pixels qui n'existent pas. La PREMIÈRE photo
+    # (fond noir, `-krinkrin.png`) est, elle, bien cadrée : l'assiette y tient
+    # entière avec de la marge. On repart donc de celle-là.
+    # ⚠️ Et sur celle-là, isnet transforme le panache de vapeur en tache noire
+    # pleine au-dessus de l'assiette : on coupe les lignes du haut tant que
+    # leur largeur reste sous 28 % de la largeur maximale — la vapeur est
+    # étroite, l'assiette est large.
+    ("sc-krinkrin", "2026-08-19-sauce-krinkrin.png", True),
 ]
 
 
 def main():
     session = new_session("isnet-general-use")
-    for slug, fichier in LOTS:
+    for slug, fichier, couper_vapeur in LOTS:
         src = os.path.join(PARTAGE, fichier)
         if not os.path.exists(src):
             sys.exit("⛔ introuvable : " + src)
@@ -60,6 +73,15 @@ def main():
         bas, haut = alpha.getextrema()
         if haut < 250 or bas > 5:
             sys.exit("⛔ %s : alpha de %d à %d, le détourage a échoué." % (slug, bas, haut))
+
+        if couper_vapeur:
+            m = np.asarray(alpha).copy()
+            largeurs = (m > 120).sum(axis=1)
+            depart = int(np.argmax(largeurs > 0.28 * largeurs.max()))
+            m[:depart, :] = 0
+            alpha = Image.fromarray(m)
+            out.putalpha(alpha)
+
         out = out.crop(alpha.getbbox())
         out.thumbnail((1200, 1200), Image.LANCZOS)
 

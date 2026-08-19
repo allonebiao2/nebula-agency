@@ -938,3 +938,26 @@ trouble dure 100 ms au lieu d'un demi-tour d'horloge.
 - ⚠️ **Archiver la SOURCE REÇUE, jamais un intermédiaire** : j'avais copié mon
   masque raté dans le dossier d'archive, et l'outil a ensuite travaillé
   dessus — l'assiette avait disparu et le défaut semblait venir de rembg.
+
+## 2026-08-19 — Un masque ne rend pas des pixels qui n'existent pas
+
+- **Contexte** : Mongazi voit le site en ligne : « la sauce krinkrin a été mal
+  détourée sur le côté droit, c'est coupé, ça doit être bien circulaire comme
+  pour les autres ».
+- **Le réflexe qui a coûté du temps** : chercher un meilleur masque. Cercle
+  ajusté, octogone tracé à l'œil, contour mesuré sur 360 rayons en suivant le
+  liseré brillant du bord de l'assiette — trois tentatives, trois échecs, dont
+  un contour en dents de scie franchement pire que le défaut d'origine.
+- **La vraie cause** : la photo source était **recadrée trop serré**. Le disque
+  d'ardoise sortait du cadre à gauche, à droite et en bas, et l'assiette
+  elle-même touchait les bords. Il n'y avait rien à détourer : l'information
+  manquait.
+- **La solution** : une **autre source**. Le premier envoi de la même sauce,
+  sur fond noir, était bien cadré — l'assiette y tient entière avec de la
+  marge. Trente secondes de traitement au lieu d'une heure de masquage.
+- **Leçon** : devant un sujet coupé, **mesurer d'abord si le sujet touche le
+  bord de l'image** (`getbbox()` contre les dimensions). Si oui, aucun
+  traitement ne le réparera : il faut une autre source, ou la redemander.
+- **À appliquer** : un contrôle à la réception d'une photo destinée à être
+  détourée — le sujet touche-t-il un bord ? Si oui, le dire tout de suite,
+  avant de commencer.
