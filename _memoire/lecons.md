@@ -779,3 +779,45 @@ trouble dure 100 ms au lieu d'un demi-tour d'horloge.
 - **À appliquer** : ⚠️ ces pièces n'entrent **ni au héros ni au carrousel** —
   ces surfaces vivent de la photo. Et ce n'est pas un état final : un drapeau
   (`photoWa`) marque les fiches, et l'outil qui posera les images le retirera.
+
+## 2026-08-19 — Un contrôle faux coûte plus cher qu'un contrôle absent
+
+- **Contexte** : mesure du contraste de la pastille de prix d'Au Braisé d'Or,
+  posée sur les photos de plats. La méthode d'Angy Art dit, à juste titre, que
+  lire `background-color` est aveugle au-dessus d'une photo : il faut
+  photographier et **prendre le décile le plus clair** pour le texte.
+- **Ce qui s'est passé** : la mesure annonçait **2,15:1** sur une pastille
+  **parfaitement nette**, vérifiée ensuite à l'œil sur une capture agrandie de
+  la seule pastille. Corriger l'animation, le serveur, le recadrage : les
+  chiffres ne bougeaient pas d'un centième.
+- **La cause** : le décile ne marche que si le texte couvre une bonne part de
+  la boîte. Les chiffres d'une pastille en couvrent **un dixième** : le seuil du
+  décile tombe alors **en plein anticrénelage**, et on mesure du gris de bord.
+- **Leçon** : **la couleur du texte est DÉCLARÉE, donc connue et solide ; seul
+  le fond dépend de ce qu'il y a dessous. On déclare l'une, on mesure l'autre.**
+  Et on neutralise l'animation d'apparition avant de photographier, sinon on
+  mesure le contraste d'un fondu.
+- **À appliquer** : quand l'instrument et l'œil se contredisent, **on regarde**
+  — on agrandit l'élément seul, on le met sous les yeux. Deux autres faux
+  rouges de la même soirée : `querySelector('[role=dialog]')` qui mesurait le
+  tiroir toujours monté au lieu de la modale, et un recadrage calculé sur des
+  boîtes lues **avant** la capture, entre lesquelles les images différées
+  avaient déplacé la mise en page.
+
+## 2026-08-19 — On ne corrige pas une donnée contre un résumé
+
+- **Contexte** : le `MENU.md` d'Au Braisé d'Or (transcription des photos du menu
+  papier) donnait « pizza pêcheur 4 000 / (à confirmer) », le site affichait
+  « 4 000 / 6 000 ». Conclusion apparente : un prix inventé, à retirer — et
+  cette pizza est un des 4 plats du héros, le chiffre s'affiche en grand.
+- **Ce qui s'est passé** : en recadrant la photo d'origine au bord coupé, **le
+  6 est lisible**. Le site avait raison, le résumé était trop prudent. Retirer
+  le prix aurait fait perdre la grande taille à la vente.
+- **Leçon** : un fichier de transcription n'est pas la source, c'est une
+  lecture de la source. **Avant de corriger une donnée, remonter à la photo, au
+  scan, au message d'origine.** Le même détour a montré que 4 lignes du
+  petit-déjeuner n'étaient jamais arrivées jusqu'au site.
+- **À appliquer** : marquer dans le fichier de transcription **ce qui est lu**
+  et **ce qui est déduit**, et garder les originaux (`_partage/`) à portée.
+  Une carte à laquelle il manque une ligne a l'air d'une carte complète : elle
+  ne se vérifie qu'en la comparant à autre chose qu'elle-même.

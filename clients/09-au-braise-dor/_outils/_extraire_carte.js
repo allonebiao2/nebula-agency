@@ -40,6 +40,7 @@ function bloc(nom, ouvre) {
 const FIRE = "", GRILL = "", DROP = "", LEAF = "", CUP = "", GLASS = "", BURGER = "", PIZZA = "";
 void [FIRE, GRILL, DROP, LEAF, CUP, GLASS, BURGER, PIZZA];
 
+const sansPhoto = [];
 const CATS = eval("(" + bloc("var CATS=", "[") + ")");
 const PHOTO = eval("(" + bloc("var PHOTO=", "{") + ")");
 
@@ -65,7 +66,9 @@ export type Plat = {
   p: number;
   p2?: number;
   joq?: boolean;
-  img: string;
+  /** Absent tant que la maison n'a pas donné sa photo. La carte affiche
+   *  alors une tuile au nom du plat, jamais une image d'emprunt. */
+  img?: string;
 };
 
 export type Cat = {
@@ -97,13 +100,16 @@ CATS.forEach((c) => {
 `;
   c.items.forEach((it) => {
     const k = PHOTO[it.n.toLowerCase()];
-    if (!k) console.warn("  ⚠️ pas de photo pour :", it.n);
+    if (!k) sansPhoto.push(it.n);
     out += `      { n: "${esc(it.n)}"`;
     if (it.d) out += `, d: "${esc(it.d)}"`;
     out += `, p: ${it.p}`;
     if (it.p2) out += `, p2: ${it.p2}`;
     if (it.joq) out += `, joq: true`;
-    out += `, img: "/carte/${k}.webp" },\n`;
+    // ⚠️ SANS PHOTO, PAS DE CHAMP. Écrire `/carte/undefined.webp`
+    // fabriquait un lien mort que rien n'aurait signalé.
+    if (k) out += `, img: "/carte/${k}.webp"`;
+    out += ` },\n`;
   });
   out += "    ],\n  },\n";
 });
@@ -112,6 +118,11 @@ out += "];\n\nexport const NB_PLATS = CARTE.reduce((n, c) => n + c.items.length,
 const dst = path.join(RACINE, "experience", "data", "carte.ts");
 fs.mkdirSync(path.dirname(dst), { recursive: true });
 fs.writeFileSync(dst, out, "utf8");
+if (sansPhoto.length)
+  console.log(
+    "  " + sansPhoto.length + " plat(s) sans photo, tuile au nom du plat : " +
+      sansPhoto.join(", ")
+  );
 console.log(
   CATS.length + " catégories, " +
     CATS.reduce((n, c) => n + c.items.length, 0) + " plats → " + dst

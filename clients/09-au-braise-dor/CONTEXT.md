@@ -79,6 +79,69 @@ s'afficheront tout seuls le jour où le restaurant les donnera.
 ⚠️ Les trois **s'arrêtent net si un motif a disparu**, pour ne jamais repeindre
 à moitié.
 
+## ✅ PASSE CATALOGUE DU 2026-08-19 — la carte relue contre le menu papier
+
+**On est remonté aux 5 photos du menu** (`_partage/photo_*_2026-07-17_*.jpg`),
+recadrées et agrandies, plutôt qu'au `MENU.md` qui en était le résumé. Trois
+choses en sont sorties.
+
+### 1. Le catalogue ne contenait pas tout le menu — **48 → 52 plats**
+Le petit-déjeuner du papier compte **10 lignes**, le site n'en montrait que
+**6**. Manquaient : **café chaud serré (500 F)**, **Lipton citron (500 F)**,
+**œuf sur plat (1 000 F)** et **café au lait écrémé (1 000 F)**. Quatre choses
+que la maison vend, tous les matins, et qu'on ne lui proposait pas.
+Ajoutées dans `index.html` (la vérité), carte régénérée par
+`node _outils/_extraire_carte.js`.
+
+### 2. Le prix était **illisible sur les 52 cartes**
+La pastille de prix n'avait **aucune couleur de texte** : elle héritait de
+`--encre` (`#1d1a17`) et posait de l'encre noire sur un fond noir à 65 %.
+Contraste mesuré sur les pixels rendus : **1,1:1**. Le minimum lisible est
+4,5:1. Autrement dit le seul chiffre que le client cherche n'était pas là.
+→ texte en `#f6efe6`, pastille à 70 %, **mesuré entre 13,9:1 et 18:1**, et un
+contrôle le garde désormais.
+
+### 3. Un plat sans photo a maintenant une place : **l'ardoise**
+⛔ Ni cadre vide, ni « photo à venir » : le premier dit que le site est en
+travaux, le second que la maison n'est pas prête. Un restaurant, lui, **écrit à
+l'ardoise** ce qu'il n'a pas photographié. La tuile porte le nom du plat, un
+filet de braise, et rien d'autre. C'est aussi **le mécanisme qui servira le
+jour où les 48 photos IA sortiront** (voir la question ouverte plus bas).
+
+### Ce que la photo a tranché, et ce qu'elle n'a pas tranché
+La colonne des 2ᵉˢ tailles est coupée au bord de la photo, mais **le premier
+chiffre se lit** en recadrant :
+
+- **confirmés** : à la crème 6 000 · pili chaud 5 000 · paysanne 6 000 ·
+  **pêcheur 6 000** (le `MENU.md` le donnait « à confirmer » : il est bon)
+- **absents du site alors qu'ils existent** : **napolitaine** et **oriental**
+  ont une grande taille, prix coupé, commençant par 5. ⏳
+- **pas de 2ᵉ taille** (colonne vide) : épinards, quatre saisons, fruit de mer,
+  margherita — le site a raison
+- ⚠️ **Aileron : la ligne est corrigée à la main au surligneur** sur le menu
+  papier, et c'est illisible sur la photo. Le site affiche 3 000. ⏳
+
+Les quatre questions à poser à la maison sont dans `MENU.md`, en bas.
+
+### Le QC, enfin écrit : `python _outils/_qc.py`
+**30 contrôles** (après `npm run build`) : le compte des plats **lu dans les
+données** et jamais recopié, les ardoises lisibles, 0 image cassée, 0
+`/carte/undefined.webp`, 0 débordement en 390 et 1440, la fiche qui s'ouvre sur
+un plat sans photo, et **la lisibilité du prix mesurée par catégorie**.
+⚠️ Trois pièges d'instrument sont documentés en tête du fichier : serveur de
+test multi-tâches, les **deux** dialogues de la page, et surtout — le décile le
+plus clair ne mesure pas un texte qui couvre un dixième de sa boîte, il mesure
+son anticrénelage (il annonçait **2,15:1 sur une pastille parfaitement nette**).
+
+### ⛔ LA QUESTION OUVERTE, QUI APPARTIENT À MONGAZI
+**Les 48 photos de plats sont des images générées** (z_image, 2026-07-20).
+Depuis le 2026-08-01 le cerveau dit : « INTERDIT ABSOLU : une photo produit
+générée par IA présentée comme le catalogue du client. » Angy Art a été purgée
+le 2026-08-08, Hillary affiche « Photo sur WhatsApp ». **Au Braisé d'Or est le
+dernier site où la règle n'est pas appliquée.** Rien n'a été touché ici sans
+décision : l'ardoise est prête, la bascule est de retirer `img` des entrées de
+`PHOTO` dans `index.html` et de régénérer.
+
 ## ⏳ Ce qui reste
 
 - **La vraie photo de la salle.** Le fond est un mur neutre, pas leur

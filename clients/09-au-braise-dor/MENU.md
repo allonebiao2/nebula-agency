@@ -1,6 +1,12 @@
 # Au Braisé d'Or — MENU (extrait des 5 photos du 2026-07-17)
 
-> Prix en FCFA. Certaines 2ᵉ tailles (colonne de droite) étaient coupées sur la photo → marquées « (à confirmer) ». Orthographe légèrement normalisée.
+> Prix en FCFA. Orthographe légèrement normalisée.
+>
+> **⚠️ RELECTURE DES PHOTOS, 2026-08-19.** La colonne des 2ᵉˢ tailles est coupée
+> au bord de la photo, mais **le premier chiffre est lisible** en recadrant. Ce
+> fichier a donc été corrigé : les « (à confirmer) » d'origine étaient trop
+> prudents pour trois d'entre eux, et trop optimistes pour aucun. Ce qui reste
+> incertain est marqué **⏳** et attend la maison.
 
 ## Monyo (sauces locales)
 - **Moyo Chigan** — sauce tomate, piment vert, oignon émincé, moutarde, poisson ou aileron — **3 000**
@@ -22,10 +28,10 @@
 - **À la crème** — saumon, tomate, crème, fromage — **4 000 / 6 000**
 - **Pili chaud** — piment, viande, boulette — **3 000 / 5 000**
 - **Paysanne** — poulet, champignons, tomate, poivron, oignon, fromage, olive noire — **4 000 / 6 000**
-- **Napolitaine** — filet d'anchois, fromage, olive noire — **3 500 / (à confirmer)**
-- **Pêcheur** — thon, crevettes, fromage, oignon, olive noire — **4 000 / (à confirmer)**
-- **Oriental** — jambon, fromage, champignons, thon, poivron, oignon — **3 500 / (à confirmer)**
-- **Aux épinards** — thon, oignon, épinards, fromage — **3 000**
+- **Napolitaine** — filet d'anchois, fromage, olive noire — **3 500 / 5 …** ⏳ *(2ᵉ prix coupé, commence par 5 — ABSENT du site)*
+- **Pêcheur** — thon, crevettes, fromage, oignon, olive noire — **4 000 / 6 000** *(le 6 est lisible sur la photo : le prix du site est bon)*
+- **Oriental** — jambon, fromage, champignons, thon, poivron, oignon — **3 500 / 5 …** ⏳ *(2ᵉ prix coupé, commence par 5 — ABSENT du site)*
+- **Aux épinards** — thon, oignon, épinards, fromage — **3 000** *(pas de 2ᵉ taille : la colonne est vide)*
 - **Quatre saisons** — jambon, crevette, viande, oignon, tomate, poivrons, olives noires, maïs doux, petit pois — **3 500**
 - **Fruit de mer** — poisson, crevettes, oignon, tomate, fromage — **3 500**
 - **Margherita** — jambon, fromage — **3 000**
@@ -46,6 +52,11 @@
 **Omelette**
 - Omelette nature — **1 000** · Omelette aux légumes — **1 000** · Œuf sur plat — **1 000**
 
+> ✅ **2026-08-19** : les **10 lignes** du petit-déjeuner sont désormais au
+> catalogue. Il n'en portait que **6** : café chaud serré, Lipton citron,
+> œuf sur plat et café au lait écrémé manquaient, soit **4 lignes que la
+> maison vend et que le site ne proposait pas**.
+
 ## Chawarma
 - À la viande (boulettes) — **1 500**
 - Au poulet — **2 500**
@@ -53,7 +64,7 @@
 
 ## Grillades (2 tailles : moyen / grand)
 - **Poulet bicyclette** — **3 000 / 6 000**
-- **Aileron** — **3 000**
+- **Aileron** — **3 000** ⏳ *(⚠️ **ligne corrigée à la main au surligneur** sur le menu papier, illisible sur la photo : à refaire confirmer par la maison)*
 - **Tilapia** (braisé) — **3 000 / 6 000**
 - **Lapin ou mouton frit** — **3 000**
 - **Viande de caille** — **3 000**
@@ -86,4 +97,19 @@
 ### Observations design
 - Identité menu papier = **orange chaud + blanc**, bandeaux de section orange, « MENU » en **serif décoratif à arabesques**.
 - **« JOQ »** = marqueur des plats signature (Salade JOQ, Chawarma JOQ, Plateau Mignon JOQ, JOQ Viagra) → clarifier le lien avec « Au Braisé d'Or ».
-- Reste à recevoir : n° WhatsApp, photos des plats, adresse/Maps, horaires, logo, réseaux, 2ᵉ prix pizzas/grillades manquants.
+- Reste à recevoir : n° WhatsApp, photos des plats, adresse/Maps, horaires, logo, réseaux.
+
+### ⏳ LES QUATRE QUESTIONS À POSER À LA MAISON (2026-08-19)
+Elles portent toutes sur de l'argent qui ne rentre pas aujourd'hui.
+
+| # | Question | Ce que ça coûte |
+|---|---|---|
+| 1 | **Pizza napolitaine, grande taille : 5 000 ou 5 500 ?** | la grande n'est pas vendable en ligne |
+| 2 | **Pizza oriental, grande taille : 5 000 ou 5 500 ?** | idem |
+| 3 | **Aileron : quel est le prix corrigé au surligneur ?** | le site affiche 3 000, la maison a corrigé le papier |
+| 4 | **Le n° WhatsApp : 01 56 05 71 57 ou 43 99 29 29 ?** | toutes les commandes partent sur le premier |
+
+⚠️ Les quatre autres pizzas à deux tailles (à la crème, pili chaud, paysanne,
+pêcheur) sont **confirmées par la photo** : leur second prix est bon.
+Épinards, quatre saisons, fruit de mer et margherita n'ont **pas** de seconde
+taille, la colonne est vide sur le papier.

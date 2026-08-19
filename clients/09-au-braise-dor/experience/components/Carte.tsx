@@ -25,6 +25,52 @@ gsap.registerPlugin(ScrollTrigger);
  * téléchargeait 4,3 Mo avant même qu'on arrive au menu.
  */
 
+/**
+ * L'ARDOISE — ce qu'on affiche quand la maison n'a pas encore donné sa photo.
+ *
+ * ⚠️ PAS DE « PHOTO À VENIR », PAS DE CADRE VIDE. Un cadre vide dit au client
+ * que le site est en travaux ; « photo à venir » dit que la maison n'est pas
+ * prête. Un restaurant, lui, écrit à l'ardoise ce qu'il n'a pas photographié,
+ * et personne n'y voit un manque. La tuile porte donc le nom du plat, écrit,
+ * et rien d'autre.
+ */
+function Ardoise({ nom, grand = false }: { nom: string; grand?: boolean }) {
+  return (
+    <div
+      className="absolute inset-0 grid place-items-center overflow-hidden"
+      style={{
+        background:
+          "radial-gradient(120% 90% at 50% 0%, #3a312a 0%, #241f1b 60%, #1b1714 100%)",
+      }}
+      aria-hidden="true"
+    >
+      {/* le grain de la pierre, très discret */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.16]"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(115deg, rgba(255,255,255,.10) 0 1px, transparent 1px 7px)",
+        }}
+      />
+      <div className="relative px-4 text-center">
+        <p
+          className={
+            "police-titre font-extrabold leading-[1.12] text-[#f0e6d8] " +
+            (grand ? "text-[1.5rem]" : "text-[1.02rem]")
+          }
+          style={{ textShadow: "0 1px 0 rgba(0,0,0,.45)" }}
+        >
+          {nom}
+        </p>
+        <span
+          className="mx-auto mt-2 block h-px w-10 rounded"
+          style={{ background: "rgba(232,118,58,.75)" }}
+        />
+      </div>
+    </div>
+  );
+}
+
 type Ligne = {
   cle: string;
   nom: string;
@@ -202,17 +248,29 @@ export default function Carte() {
                   onClick={() => setOuvert({ cat: c, plat: p })}
                 >
                   <div className="relative aspect-[5/4] overflow-hidden bg-[#e7e0d8]">
-                    <Image
-                      src={p.img}
-                      alt={p.n}
-                      fill
-                      loading="lazy"
-                      sizes="(max-width: 768px) 45vw, 260px"
-                      className="object-cover transition duration-700 group-hover:scale-[1.05]"
-                    />
-                    <span className="absolute bottom-2 right-2 rounded-full bg-black/65 px-2.5 py-1 text-[0.78rem] font-semibold backdrop-blur">
+                    {p.img ? (
+                      <Image
+                        src={p.img}
+                        alt={p.n}
+                        fill
+                        loading="lazy"
+                        sizes="(max-width: 768px) 45vw, 260px"
+                        className="object-cover transition duration-700 group-hover:scale-[1.05]"
+                      />
+                    ) : (
+                      <Ardoise nom={p.n} />
+                    )}
+                    {/* ⚠️ LA COULEUR DU TEXTE EST OBLIGATOIRE ICI. Sans elle la
+                        pastille héritait de `--encre` (#1d1a17) et posait de
+                        l'encre noire sur une pastille noire à 65 % : le prix,
+                        seul chiffre que le client cherche, était invisible sur
+                        les 52 cartes. Mesuré après correction, texte déclaré
+                        contre fond photographié : 13,9:1 à 18:1 selon la photo
+                        posée dessous. `_outils/_qc.py` le vérifie par
+                        catégorie et refuse en dessous de 4,5:1. */}
+                    <span className="absolute bottom-2 right-2 rounded-full bg-black/70 px-2.5 py-1 text-[0.78rem] font-semibold text-[#f6efe6] backdrop-blur">
                       {fmt(p.p)} F
-                      {p.p2 && <small className="ml-1 opacity-70">/ {fmt(p.p2)} F</small>}
+                      {p.p2 && <small className="ml-1 opacity-90">/ {fmt(p.p2)} F</small>}
                     </span>
                     {p.joq && (
                       <span className="absolute left-2 top-2 rounded-full bg-[#1d1a17] px-2 py-1 text-[0.62rem] font-bold uppercase tracking-wide text-[#f6efe6]">
@@ -333,7 +391,11 @@ function Fiche({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="relative aspect-[5/3]">
-          <Image src={plat.img} alt={plat.n} fill sizes="440px" className="object-cover" />
+          {plat.img ? (
+            <Image src={plat.img} alt={plat.n} fill sizes="440px" className="object-cover" />
+          ) : (
+            <Ardoise nom={plat.n} grand />
+          )}
           <button
             type="button"
             onClick={onFermer}

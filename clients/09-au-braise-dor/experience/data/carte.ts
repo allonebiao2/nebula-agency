@@ -1,5 +1,5 @@
 /**
- * LA CARTE COMPLÈTE — 48 plats, 8 catégories.
+ * LA CARTE COMPLÈTE — 52 plats, 8 catégories.
  *
  * ⚠️ FICHIER GÉNÉRÉ, NE PAS ÉDITER À LA MAIN.
  * Source : le tableau `CATS` de `../../index.html`, qui reste la vérité.
@@ -12,7 +12,9 @@ export type Plat = {
   p: number;
   p2?: number;
   joq?: boolean;
-  img: string;
+  /** Absent tant que la maison n'a pas donné sa photo. La carte affiche
+   *  alors une tuile au nom du plat, jamais une image d'emprunt. */
+  img?: string;
 };
 
 export type Cat = {
@@ -125,7 +127,11 @@ export const CARTE: Cat[] = [
       { n: "Cappuccino", d: "Café crémeux.", p: 1500, img: "/carte/pd-cappuccino.webp" },
       { n: "Omelette aux légumes", d: "Œufs et légumes frais.", p: 1000, img: "/carte/pd-omelette-legumes.webp" },
       { n: "Omelette nature", d: "La simple et bonne.", p: 1000, img: "/carte/pd-omelette-nature.webp" },
+      { n: "Œuf sur plat", d: "Œufs au plat.", p: 1000 },
       { n: "Café au lait", d: "Peak, chaud ou froid.", p: 1000, img: "/carte/pd-cafe-lait.webp" },
+      { n: "Café au lait écrémé", d: "Chaud ou froid, au lait écrémé.", p: 1000 },
+      { n: "Café chaud serré", d: "Le serré, bien chaud.", p: 500 },
+      { n: "Lipton citron", d: "Thé Lipton au citron.", p: 500 },
     ],
   },
   {
