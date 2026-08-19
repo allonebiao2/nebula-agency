@@ -104,6 +104,32 @@ maison n'a donné qu'une fourchette, un chiffre en face de chaque case serait
 inventé. Le message WhatsApp porte les choix, la fourchette, et la phrase
 « merci de me le confirmer ».
 
+### ⚠️ LA RÈGLE DE PRIX, PRÉCISÉE PAR MONGAZI (nuit, 3)
+> « Un client qui veut commander une sauce doit, après avoir choisi la sauce,
+> choisir un accompagnement. Les plats varient de 1 500 à 3 000 F en fonction
+> des éléments qu'ils veulent à l'intérieur — entre parenthèses. **Quand on met
+> tout dedans, c'est le prix le plus cher.** »
+
+Cette dernière phrase change tout : **deux cas sur trois deviennent EXACTS.**
+
+| Ce que le client choisit | Prix affiché | Au panier |
+|---|---|---|
+| **rien dedans** | **1 500 F** exact | 1 500 F |
+| une partie | **1 500 à 3 500 F** | fourchette, la maison confirme |
+| **tout dedans** | **3 500 F** exact | 3 500 F |
+
+⛔ **On n'interpole pas entre les deux.** La maison n'a jamais donné le prix
+d'un ingrédient pris séparément : deux bornes connues ne font pas un barème.
+Le cas « une partie » reste donc une fourchette assumée, et le message WhatsApp
+demande la confirmation.
+
+✅ **L'accompagnement est OBLIGATOIRE.** Le bouton reste bloqué sur
+« Choisissez un accompagnement » tant qu'il n'y en a pas — une commande sans
+accompagnement arrive incomplète en cuisine, et c'est le restaurant qui doit
+rappeler le client. Vaut pour les sauces **et les grillades**, les deux
+catégories qui proposent des accompagnements. Deux contrôles le vérifient :
+bloqué sans, débloqué avec.
+
 ### La catégorie passe de 4 à 14 sauces
 Les 10 de la feuille (gombo, krinkrin, feuille, arachide, graine, tomate, tête
 de mouton, pieds de bœuf, yassa, yassa au poulet) rejoignent les 4 de l'ancien

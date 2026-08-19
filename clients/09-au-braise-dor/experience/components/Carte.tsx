@@ -399,8 +399,27 @@ function Fiche({
   const [acc, setAcc] = useState<string>("");
   const [dedans, setDedans] = useState<string[]>([]);
   const [qte, setQte] = useState(1);
-  const unite = grand && plat.p2 ? plat.p2 : plat.p;
   const accs = cat.acc ? ACC[cat.acc] : null;
+
+  /* ⚠️ DEUX CAS SONT EXACTS, UN SEUL EST UNE FOURCHETTE.
+     Mongazi : « quand on met tout dedans, c'est le prix le plus cher ».
+     Donc rien dedans = la borne basse, tout dedans = la borne haute, et ces
+     deux-là se commandent au franc près. Il n'y a plus qu'entre les deux que
+     le prix reste à confirmer — et là on ne l'interpole pas, la maison n'a
+     jamais donné le prix d'un ingrédient pris séparément. */
+  const garn = plat.garn ?? [];
+  const bas = grand && plat.p2 ? plat.p2 : plat.p;
+  const haut = plat.pMax ?? bas;
+  const tousDedans = garn.length > 0 && dedans.length === garn.length;
+  const rienDedans = garn.length > 0 && dedans.length === 0;
+  const uMin = !plat.pMax ? bas : tousDedans ? haut : bas;
+  const uMax = !plat.pMax ? bas : rienDedans ? bas : haut;
+
+  /* ⚠️ L'ACCOMPAGNEMENT N'EST PAS FACULTATIF. « Toutes les sauces sont
+     servies avec l'accompagnement de votre choix » : une commande sans
+     accompagnement arrive incomplète en cuisine, et c'est le restaurant qui
+     rappelle le client. */
+  const manqueAcc = !!accs && !acc;
   /* ⚠️ PRIX PAS ENCORE DONNÉ PAR LA MAISON (p = 0). On ne met pas au panier
      un article dont on ignore le prix : le total mentirait, et le message
      WhatsApp partirait avec un « 0 F » que personne ne veut lire. La fiche
@@ -486,8 +505,11 @@ function Fiche({
                   chaque case serait l'inventer. On liste, on transmet, la
                   maison confirme. */}
               <p className="mb-2 text-[0.78rem] leading-snug text-[color:var(--encre-2)]">
-                Chaque ajout fait monter le prix : de {prix(plat.p, plat.pMax)}.
-                La maison vous le confirme sur WhatsApp.
+                {"Sans rien ajouter, c'est "}<b>{fmt(plat.p)} F</b>
+                {". Avec tout, c'est "}<b>{fmt(plat.pMax ?? plat.p)} F</b>{"."}
+                {dedans.length > 0 && !tousDedans && (
+                  <> Entre les deux, la maison vous confirme le prix.</>
+                )}
               </p>
               <div className="flex flex-wrap gap-2">
                 {plat.garn.map((g) => (
@@ -517,7 +539,7 @@ function Fiche({
           {accs && (
             <div className="mt-5">
               <p className="mb-2 text-[0.75rem] uppercase tracking-widest text-[#a8542f]">
-                Accompagnement
+                Accompagnement <span className="normal-case tracking-normal opacity-70">· à choisir</span>
               </p>
               <div className="flex flex-wrap gap-2">
                 {accs.map((a) => (
@@ -572,15 +594,18 @@ function Fiche({
                     : undefined,
                   acc: acc || undefined,
                   dedans: dedans.length ? dedans : undefined,
-                  unite,
-                  uniteMax: plat.pMax,
+                  unite: uMin,
+                  uniteMax: uMax > uMin ? uMax : undefined,
                   qte,
                 })
               }
-              className="flex-1 rounded-full px-4 py-3 text-[0.9rem] font-bold text-[#f6efe6] transition hover:brightness-125"
+              disabled={manqueAcc}
+              className="flex-1 rounded-full px-4 py-3 text-[0.9rem] font-bold text-[#f6efe6] transition hover:brightness-125 disabled:cursor-not-allowed disabled:opacity-45"
               style={{ background: "#1d1a17" }}
             >
-              Ajouter · {prix(unite * qte, plat.pMax ? plat.pMax * qte : undefined)}
+              {manqueAcc
+                ? "Choisissez un accompagnement"
+                : `Ajouter · ${prix(uMin * qte, uMax > uMin ? uMax * qte : undefined)}`}
             </button>
           </div>
           )}

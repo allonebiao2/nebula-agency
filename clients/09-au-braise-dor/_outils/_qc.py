@@ -145,15 +145,36 @@ def main():
             fiche = pg.evaluate("""() => {
                 const d = document.querySelector('[role=dialog][aria-label^="Commander"]');
                 if (!d) return null;
-                const b = [...d.querySelectorAll('button')].find(x => /Ajouter/.test(x.textContent || ''));
+                const b = d.querySelector('button.flex-1');
+                const acc = [...d.querySelectorAll('p')]
+                    .some(p => /Accompagnement/.test(p.textContent || ''));
                 return { titre: d.querySelector('h3')?.textContent,
                          bouton: b ? b.textContent.trim() : null,
+                         bloque: b ? b.disabled : null,
+                         demandeAcc: acc,
                          img: !!d.querySelector('img') }; }""")
             dire(fiche is not None, "[%s] la fiche s'ouvre sur un plat sans photo" % nom)
             if fiche:
                 dire(not fiche["img"],
                      "[%s] la fiche n'appelle aucune image : ardoise « %s »" % (nom, fiche["titre"]))
-                dire(bool(fiche["bouton"]), "[%s] le bouton de commande est là : %s" % (nom, fiche["bouton"]))
+                # ⚠️ L'ACCOMPAGNEMENT EST OBLIGATOIRE quand la catégorie en propose.
+                # Une commande sans accompagnement arrive incomplète en cuisine.
+                if fiche["demandeAcc"]:
+                    dire(fiche["bloque"] is True,
+                         "[%s] sans accompagnement, la commande est bloquée : « %s »"
+                         % (nom, fiche["bouton"]))
+                    pg.evaluate("""() => {
+                        const d = document.querySelector('[role=dialog][aria-label^="Commander"]');
+                        const t = [...d.querySelectorAll('p')]
+                            .find(p => /Accompagnement/.test(p.textContent || ''));
+                        t.parentElement.querySelector('button').click(); }""")
+                    pg.wait_for_timeout(300)
+                    fiche = pg.evaluate("""() => {
+                        const d = document.querySelector('[role=dialog][aria-label^="Commander"]');
+                        const b = d.querySelector('button.flex-1');
+                        return { bouton: b.textContent.trim(), bloque: b.disabled }; }""")
+                dire(bool(fiche["bouton"]) and not fiche["bloque"],
+                     "[%s] le bouton de commande est là : %s" % (nom, fiche["bouton"]))
 
             # ── ce que la propriétaire a fait retirer le 2026-08-19 ──────
             # ⚠️ un plat retiré de la carte mais laissé sur la page se
