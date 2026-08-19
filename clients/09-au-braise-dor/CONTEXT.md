@@ -79,6 +79,54 @@ s'afficheront tout seuls le jour où le restaurant les donnera.
 ⚠️ Les trois **s'arrêtent net si un motif a disparu**, pour ne jamais repeindre
 à moitié.
 
+## ✅ LA CARTE DES SAUCES, ET TROIS VRAIES PHOTOS — 2026-08-19 (nuit, 2)
+
+La maison envoie **sa feuille de menu des sauces** (`_partage/2026-08-19-menu-sauces.jpeg`)
+et **trois photos de plats**. Mongazi : « ce sont de vraies images de plats
+béninois que j'ai améliorées avec l'IA, donc on peut les utiliser ».
+**La règle du 2026-08-01 ne s'y applique pas** : ce ne sont pas des images
+générées. Les originaux restent dans `_partage/`, la vérification reste possible.
+
+### ⚠️ LE PRIX EST UNE FOURCHETTE, PAS DEUX TAILLES
+Mongazi : « le prix varie en fonction des éléments entre parenthèses ; en
+fonction de ce que le client veut dans les parenthèses, le prix augmente. »
+**J'avais d'abord lu « 1 500-3 000 » comme Normal/Grand.** C'était faux, et le
+panier aurait annoncé un total que la maison n'aurait pas tenu.
+
+Nouveau modèle dans les données : **`pMax`** (borne haute) et **`garn`** (ce
+qu'on peut mettre dedans). Plus **`tailles`**, pour les deux formats du yassa au
+poulet, qui ne s'appellent pas « Normal / Grand » mais « Quart / Demi-poulet ».
+
+Dans la page : la carte affiche **« 1 500 à 3 500 F »**, la fiche propose
+**« Ce que vous voulez dedans »** (cases à cocher), et **le total du panier est
+lui-même une fourchette**. ⛔ **On n'annonce aucun prix par ingrédient** : la
+maison n'a donné qu'une fourchette, un chiffre en face de chaque case serait
+inventé. Le message WhatsApp porte les choix, la fourchette, et la phrase
+« merci de me le confirmer ».
+
+### La catégorie passe de 4 à 14 sauces
+Les 10 de la feuille (gombo, krinkrin, feuille, arachide, graine, tomate, tête
+de mouton, pieds de bœuf, yassa, yassa au poulet) rejoignent les 4 de l'ancien
+menu. Les **accompagnements sont remplacés** par la liste de la feuille (15,
+de telibo à toubani).
+
+### Le héros : trois vraies photos en tête
+Sauce gombo, Sauce krinkrin, Sauce feuille, puis poulet, tilapia, chawarma.
+⚠️ **L'appariement photo ↔ sauce est vérifié, pas deviné** : la feuille porte
+trois vignettes imprimées et **la forme de l'assiette concorde** (gombo
+octogonale, krinkrin octogonale sur ardoise, feuille hexagonale).
+
+### Le détourage : `python _outils/_photos_sauces.py`
+Deux formes par photo : **carré opaque** pour la carte, **détouré RGBA** pour le
+héros. Le carré n'est pas un recadrage aveugle — il se centre sur l'assiette
+grâce au masque, un recadrage centré coupait le bord sur deux des trois photos.
+⚠️ **MODÈLE : `birefnet-general` ICI, `isnet` POUR LES BOLS.** Planche
+comparative : sur ces photos — **assiettes noires sur fond noir** — isnet garde
+une tache de vapeur pleine au-dessus du krinkrin, une encoche dans l'assiette de
+la feuille et un bout d'ardoise ; birefnet découpe la masse du plat proprement.
+Sur les bols de `_detoure_plats.py`, c'est **exactement l'inverse**.
+→ **Refaire la planche à chaque nouveau lot, ne pas présumer.**
+
 ## ✅ LE HÉROS PASSE AUX SAUCES — 2026-08-19 (nuit)
 
 > Mongazi : « c'est un restaurant béninois, donc les plats de la catégorie

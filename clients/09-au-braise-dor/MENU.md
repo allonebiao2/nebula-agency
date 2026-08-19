@@ -121,6 +121,51 @@
 - **Crispy poulet** — cuisse de poulet, chapelure, ketchup, piment + frites — **4 500**  ⛔ **RETIRÉ le 19/08 par la propriétaire**
 - **Nugget pomme au four** — blanc de poulet, sauce crème, piment + pomme au four — **3 500**  ⛔ **RETIRÉ le 19/08 par la propriétaire**
 
+## Sauces — feuille de menu du 2026-08-19
+> Source : `_partage/2026-08-19-menu-sauces.jpeg` (photo de la feuille, avec ses
+> corrections manuscrites). **Le « 2 » imprimé de la borne basse est corrigé en
+> « 1 » à la main sur les trois premières lignes.**
+
+**⚠️ LE PRIX EST UNE FOURCHETTE, PAS DEUX TAILLES.** Mongazi : « le prix varie
+en fonction des éléments entre parenthèses ; en fonction de ce que le client
+veut dans les parenthèses, le prix augmente. » On avait d'abord lu
+« 1 500-3 000 » comme Normal/Grand : c'était faux, et le panier aurait menti.
+
+| Sauce | Ce qu'on peut mettre dedans | Prix |
+|---|---|---|
+| **Gombo** | crabe · kpanmom · poisson | **1 500 à 3 500 F** |
+| **Krinkrin** | adèmè · crevette · kpanmom | 1 500 à 3 000 F |
+| **Feuille** | gbêkê · poisson · crevette | 1 500 à 3 000 F |
+| **Arachide** | viande de mouton · poisson | 1 500 à 3 000 F |
+| **Graine** | — | 1 500 à 3 000 F |
+| **Tomate** | — | 1 500 à 3 000 F |
+| **Tête de mouton** (gbata) | — | 1 500 à 3 000 F |
+| **Pieds de bœuf** (blokoto) | — | 1 500 à 3 000 F |
+| **Yassa** | poisson · viande | 1 500 à 3 000 F |
+| **Yassa au poulet** | — | quart 2 500 F · demi 3 500 F |
+
+*« Toutes les sauces sont à partir de 1 500 F à 3 000 F. Plus les accompagnements. »*
+
+**Accompagnements** (repris mot pour mot ; « Tègbô » est barré et corrigé en
+« telibo » de la main de la propriétaire) : telibo · Agbéli · Couscous ·
+Atchiéké · Igname pilée · Riz au gras · Frite · Pâte de maïs · Akassa ·
+Riz blanc · Wassa Wassa · Foutou banane · Foutou de manioc · Aloko · Toubani.
+
+### 📷 Trois vraies photos, et comment on sait à quelle sauce elles vont
+Gombo, krinkrin et feuille ont leur photo (`_partage/2026-08-19-sauce-*.png`).
+**Ce sont de vraies photos de plats béninois retouchées à l'IA**, confirmé par
+Mongazi le 2026-08-19 : la règle du 2026-08-01 ne s'y applique donc pas.
+⚠️ **L'appariement n'est pas deviné** : la feuille de menu porte trois vignettes
+imprimées, et **la forme de l'assiette concorde** — gombo octogonale, krinkrin
+octogonale sur ardoise, feuille hexagonale.
+
+⏳ **À vérifier avec la maison** : le gombo est à **3 500 F** en haut de
+fourchette sur la feuille, alors que Mongazi avait dit « 1 500-3 000 » par
+message. J'ai suivi la feuille, qui est le document de la propriétaire.
+⏳ **Doublons possibles** avec l'ancien menu : « Sauce tomate » (nouvelle) et
+« Moyo Chigan » (ancienne, décrite comme une sauce tomate) ; « Sauce feuille »
+et « Sauce poisson frais » (au crin-crin). Les quatre coexistent en attendant.
+
 ## Desserts *(ajoutés le 2026-08-19 par la propriétaire)*
 - **Yaourt** — ⏳ prix non donné
 - **Glace** — ⏳ prix non donné

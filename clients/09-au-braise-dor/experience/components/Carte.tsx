@@ -76,11 +76,21 @@ type Ligne = {
   nom: string;
   taille?: string;
   acc?: string;
+  /** Ce que le client a demandé dans sa sauce. */
+  dedans?: string[];
   unite: number;
+  /** ⚠️ BORNE HAUTE, quand le prix est une fourchette. Le prix d'une sauce
+   *  dépend de ce qu'on met dedans, et la maison le confirme à la commande :
+   *  le panier affiche donc « de X à Y », jamais un total inventé. */
+  uniteMax?: number;
   qte: number;
 };
 
 const fmt = (n: number) => n.toLocaleString("fr-FR").replace(/ | /g, " ");
+
+/** « 1 500 F » ou « 1 500 à 3 500 F » — jamais un chiffre qu'on ne tient pas. */
+const prix = (bas: number, haut?: number) =>
+  haut && haut !== bas ? `${fmt(bas)} à ${fmt(haut)} F` : `${fmt(bas)} F`;
 
 export default function Carte() {
   /* ⚠️ PLUS DE FILTRE, DES ANCRES. Le filtre masquait les sept autres univers :
@@ -95,6 +105,10 @@ export default function Carte() {
 
   const total = useMemo(
     () => panier.reduce((s, l) => s + l.unite * l.qte, 0),
+    [panier]
+  );
+  const totalMax = useMemo(
+    () => panier.reduce((s, l) => s + (l.uniteMax ?? l.unite) * l.qte, 0),
     [panier]
   );
   const nb = useMemo(() => panier.reduce((s, l) => s + l.qte, 0), [panier]);
@@ -144,7 +158,7 @@ export default function Carte() {
   }, []);
 
   function ajouter(l: Omit<Ligne, "cle">) {
-    const cle = [l.nom, l.taille ?? "", l.acc ?? ""].join("|");
+    const cle = [l.nom, l.taille ?? "", l.acc ?? "", (l.dedans ?? []).join(",")].join("|");
     setPanier((p) => {
       const i = p.findIndex((x) => x.cle === cle);
       if (i < 0) return [...p, { ...l, cle }];
@@ -163,13 +177,22 @@ export default function Carte() {
         (l) =>
           `• ${l.qte} × ${l.nom}` +
           (l.taille ? ` (${l.taille})` : "") +
+          (l.dedans?.length ? ` avec ${l.dedans.join(", ")}` : "") +
           (l.acc ? ` + ${l.acc}` : "") +
-          ` — ${fmt(l.unite * l.qte)} F`
+          ` — ${prix(l.unite * l.qte, l.uniteMax ? l.uniteMax * l.qte : undefined)}`
       )
       .join("\n");
+    /* ⚠️ QUAND IL Y A UNE FOURCHETTE, ON LE DIT. Envoyer « Total : 4 500 F »
+       sur une commande dont le prix dépend de ce qu'on met dedans, c'est
+       annoncer au client un chiffre que la maison ne tiendra pas. */
+    const fourchette = totalMax > total;
     return (
       `Bonjour Au Braisé d'Or, je voudrais commander :\n\n${lignes}\n\n` +
-      `Total : ${fmt(total)} F\nMode : ${lieu}`
+      `Total : ${prix(total, fourchette ? totalMax : undefined)}` +
+      (fourchette
+        ? `\n(le prix exact dépend de ce que je choisis dedans, merci de me le confirmer)`
+        : "") +
+      `\nMode : ${lieu}`
     );
   }
 
@@ -271,6 +294,8 @@ export default function Carte() {
                     <span className="absolute bottom-2 right-2 rounded-full bg-black/70 px-2.5 py-1 text-[0.78rem] font-semibold text-[#f6efe6] backdrop-blur">
                       {p.p === 0 ? (
                         "Prix sur demande"
+                      ) : p.pMax ? (
+                        prix(p.p, p.pMax)
                       ) : (
                         <>
                           {fmt(p.p)} F
@@ -338,7 +363,9 @@ export default function Carte() {
             </div>
             <p className="ml-auto text-[0.85rem] text-[color:var(--encre-2)]">
               <b className="text-[color:var(--encre)]">{nb}</b> article{nb > 1 ? "s" : ""} ·{" "}
-              <b className="text-[color:var(--encre)]">{fmt(total)} F</b>
+              <b className="text-[color:var(--encre)]">
+                {prix(total, totalMax > total ? totalMax : undefined)}
+              </b>
             </p>
             <a
               href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message())}`}
@@ -370,6 +397,7 @@ function Fiche({
 }) {
   const [grand, setGrand] = useState(false);
   const [acc, setAcc] = useState<string>("");
+  const [dedans, setDedans] = useState<string[]>([]);
   const [qte, setQte] = useState(1);
   const unite = grand && plat.p2 ? plat.p2 : plat.p;
   const accs = cat.acc ? ACC[cat.acc] : null;
@@ -440,7 +468,46 @@ function Fiche({
                         : { borderColor: "rgba(29,26,23,.18)" }
                     }
                   >
-                    {g ? "Grand" : "Normal"} · {fmt(g ? plat.p2! : plat.p)} F
+                    {(plat.tailles ?? ["Normal", "Grand"])[g ? 1 : 0]} · {fmt(g ? plat.p2! : plat.p)} F
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {plat.garn && plat.garn.length > 0 && (
+            <div className="mt-5">
+              <p className="mb-1 text-[0.75rem] uppercase tracking-widest text-[#a8542f]">
+                Ce que vous voulez dedans
+              </p>
+              {/* ⚠️ ON N'ANNONCE PAS UN PRIX PAR INGRÉDIENT. La maison n'a
+                  donné qu'une fourchette : « le prix varie en fonction des
+                  éléments entre parenthèses ». Mettre un chiffre en face de
+                  chaque case serait l'inventer. On liste, on transmet, la
+                  maison confirme. */}
+              <p className="mb-2 text-[0.78rem] leading-snug text-[color:var(--encre-2)]">
+                Chaque ajout fait monter le prix : de {prix(plat.p, plat.pMax)}.
+                La maison vous le confirme sur WhatsApp.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {plat.garn.map((g) => (
+                  <button
+                    key={g}
+                    type="button"
+                    onClick={() =>
+                      setDedans((d) =>
+                        d.includes(g) ? d.filter((x) => x !== g) : [...d, g]
+                      )
+                    }
+                    aria-pressed={dedans.includes(g)}
+                    className="rounded-full border px-3 py-1.5 text-[0.8rem] transition"
+                    style={
+                      dedans.includes(g)
+                        ? { background: "#1d1a17", color: "#f6efe6", borderColor: "#1d1a17" }
+                        : { borderColor: "rgba(29,26,23,.18)" }
+                    }
+                  >
+                    {g}
                   </button>
                 ))}
               </div>
@@ -497,11 +564,23 @@ function Fiche({
             </div>
             <button
               type="button"
-              onClick={() => onAjouter({ nom: plat.n, taille: plat.p2 ? (grand ? "Grand" : "Normal") : undefined, acc: acc || undefined, unite, qte })}
+              onClick={() =>
+                onAjouter({
+                  nom: plat.n,
+                  taille: plat.p2
+                    ? (plat.tailles ?? ["Normal", "Grand"])[grand ? 1 : 0]
+                    : undefined,
+                  acc: acc || undefined,
+                  dedans: dedans.length ? dedans : undefined,
+                  unite,
+                  uniteMax: plat.pMax,
+                  qte,
+                })
+              }
               className="flex-1 rounded-full px-4 py-3 text-[0.9rem] font-bold text-[#f6efe6] transition hover:brightness-125"
               style={{ background: "#1d1a17" }}
             >
-              Ajouter · {fmt(unite * qte)} F
+              Ajouter · {prix(unite * qte, plat.pMax ? plat.pMax * qte : undefined)}
             </button>
           </div>
           )}

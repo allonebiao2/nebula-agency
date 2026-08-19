@@ -63,8 +63,17 @@ let out = `/**
 export type Plat = {
   n: string;
   d?: string;
+  /** Prix, ou borne BASSE quand pMax est là. */
   p: number;
+  /** Deuxième taille, à son propre prix. Voir aussi tailles. */
   p2?: number;
+  /** ⚠️ FOURCHETTE, PAS DEUX TAILLES. Le prix des sauces dépend de ce que le
+   *  client met dedans (voir garn) : la maison le confirme à la commande. */
+  pMax?: number;
+  /** Ce qu'on peut mettre dedans, et qui fait monter le prix. */
+  garn?: string[];
+  /** Libellés des deux tailles quand ce n'est pas « Normal / Grand ». */
+  tailles?: [string, string];
   joq?: boolean;
   /** Absent tant que la maison n'a pas donné sa photo. La carte affiche
    *  alors une tuile au nom du plat, jamais une image d'emprunt. */
@@ -83,7 +92,10 @@ export type Cat = {
 /** Les accompagnements au choix, repris tels quels du site. */
 export const ACC: Record<string, string[]> = {
   grillades: ["Riz", "Attiéké", "Aloco", "Frites", "Pommes sautées", "Pomme vapeur", "Pâte rouge", "Bomiwo", "Akassa", "Igname frit"],
-  sauces: ["Riz", "Attiéké", "Pâte noire", "Agbéli", "Pâte de manioc", "Pâte de maïs", "Piron", "Akassa", "Pommes sautées", "Frites"],
+  /* ⚠️ Repris MOT POUR MOT de la feuille de menu de la maison (2026-08-19),
+     qui remplace l'ancienne liste. « Tègbô » y est barré et corrigé en
+     « telibo » de sa main : c'est telibo. */
+  sauces: ["Telibo", "Agbéli", "Couscous", "Atchiéké", "Igname pilée", "Riz au gras", "Frites", "Pâte de maïs", "Akassa", "Riz blanc", "Wassa Wassa", "Foutou banane", "Foutou de manioc", "Aloko", "Toubani"],
 };
 
 export const CARTE: Cat[] = [
@@ -105,6 +117,10 @@ CATS.forEach((c) => {
     if (it.d) out += `, d: "${esc(it.d)}"`;
     out += `, p: ${it.p}`;
     if (it.p2) out += `, p2: ${it.p2}`;
+    if (it.pMax) out += `, pMax: ${it.pMax}`;
+    if (it.garn) out += `, garn: [${it.garn.map((g) => `"${esc(g)}"`).join(", ")}]`;
+    if (it.tailles)
+      out += `, tailles: [${it.tailles.map((t) => `"${esc(t)}"`).join(", ")}]`;
     if (it.joq) out += `, joq: true`;
     // ⚠️ SANS PHOTO, PAS DE CHAMP. Écrire `/carte/undefined.webp`
     // fabriquait un lien mort que rien n'aurait signalé.

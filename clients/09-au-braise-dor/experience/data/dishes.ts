@@ -28,6 +28,8 @@ export type Dish = {
   price: number;
   /** Deuxième taille, quand elle existe */
   price2?: number;
+  /** Borne haute, quand le prix dépend de ce qu'on met dedans (les sauces). */
+  priceMax?: number;
   desc: string;
   /** Le fichier détouré, dans /public/plats */
   img: string;
@@ -42,49 +44,61 @@ export type Dish = {
 };
 
 export const DISHES: Dish[] = [
-  /* ⚠️ LES SAUCES OUVRENT LE HÉROS, ET C'EST VOULU (2026-08-19).
+  /* ⚠️ LES SAUCES OUVRENT LE HÉROS, ET CE SONT DE VRAIES PHOTOS (2026-08-19).
      Mongazi : « c'est un restaurant béninois, donc les plats de la catégorie
      sauce doivent être mis en avant plus que les autres ; les autres aussi
      bien sûr, mais ces plats-là en principal. »
-     Les deux qui ouvrent sont les sauces LOCALES du menu (section « Monyo »).
-     La Béchamel et la Sauce Crème restent à la carte mais pas ici : le menu
-     papier les range sous « Sauces Européennes », elles ne servent pas
-     l'argument. Le gombo, le krinkrin et la sauce feuille — les plus
-     béninoises de toutes — n'ont pas encore de photo : le jour où leurs
-     fichiers arrivent, elles prennent la tête. */
+     Les trois qui ouvrent sont les trois sauces dont la maison a envoyé la
+     photo — de vraies photos de plats, retouchées à l'IA, confirmé par
+     Mongazi. Les trois qui suivent portent encore des images générées.
+     ⚠️ L'appariement photo ↔ sauce est VÉRIFIÉ, pas deviné : la feuille de
+     menu de la maison porte trois vignettes imprimées et la forme de
+     l'assiette concorde (gombo octogonale, krinkrin octogonale sur ardoise,
+     feuille hexagonale). */
   {
-    id: "moyo",
-    line1: "MOYO",
-    line2: "CHIGAN",
+    id: "gombo",
+    line1: "SAUCE",
+    line2: "GOMBO",
     kicker: "#1 La sauce du pays",
     cat: "Sauces",
-    price: 3000,
-    desc: "Sauce tomate, piment vert, oignon, moutarde, poisson ou aileron.",
-    img: "/plats/sc-moyo.webp",
-    /* teinte relevée sur la photo elle-même, comme chez Hillary : la couleur
-       du héros suit la matière. 5,05:1 avec le blanc du prix. */
-    tint: "#B25324",
-    wash: "#F7EBE4",
+    price: 1500,
+    priceMax: 3500,
+    desc: "Le gombo de la maison, avec crabe, kpanmom et poisson au choix.",
+    img: "/plats/sc-gombo.webp",
+    tint: "#8C6A1F",
+    wash: "#F5EFDF",
   },
   {
-    id: "poisson-frais",
+    id: "krinkrin",
     line1: "SAUCE",
-    line2: "POISSON FRAIS",
-    kicker: "#2 Au poisson frais",
+    line2: "KRINKRIN",
+    kicker: "#2 L'adèmè pilé",
     cat: "Sauces",
-    price: 3000,
-    desc: "Sauce tomate et crin-crin au choix.",
-    img: "/plats/sc-poisson.webp",
-    /* la même famille de tomate, en plus profond : les deux sauces partagent
-       leur couleur dominante, il fallait les distinguer sans mentir. */
-    tint: "#8A3520",
-    wash: "#F6E8E2",
+    price: 1500,
+    priceMax: 3000,
+    desc: "Adèmè pilé, crevette et kpanmom au choix.",
+    img: "/plats/sc-krinkrin.webp",
+    tint: "#4F5B32",
+    wash: "#EEF0E5",
+  },
+  {
+    id: "feuille",
+    line1: "SAUCE",
+    line2: "FEUILLE",
+    kicker: "#3 Le gbêkê",
+    cat: "Sauces",
+    price: 1500,
+    priceMax: 3000,
+    desc: "Gbêkê mijoté, poisson et crevette au choix.",
+    img: "/plats/sc-feuille.webp",
+    tint: "#3E5136",
+    wash: "#EAEFE7",
   },
   {
     id: "poulet",
     line1: "POULET",
     line2: "BICYCLETTE",
-    kicker: "#3 Spécialité maison",
+    kicker: "#4 Spécialité maison",
     cat: "Grillades",
     price: 3000,
     price2: 6000,
@@ -97,7 +111,7 @@ export const DISHES: Dish[] = [
     id: "tilapia",
     line1: "TILAPIA",
     line2: "BRAISÉ",
-    kicker: "#4 Le goût fumé",
+    kicker: "#5 Le goût fumé",
     cat: "Grillades",
     price: 3000,
     price2: 6000,
@@ -105,22 +119,6 @@ export const DISHES: Dish[] = [
     img: "/plats/tilapia.webp",
     tint: "#C9A227",
     wash: "#F5F1E4",
-  },
-  {
-    /* ⚠️ C'ÉTAIT LA PIZZA PÊCHEUR JUSQU'AU 2026-08-19, retirée de la carte par
-       la propriétaire. Un héros ne met pas en avant un plat qu'on ne peut plus
-       commander. La paysanne est la seule pizza restante à deux tailles. */
-    id: "pizza",
-    line1: "PIZZA",
-    line2: "PAYSANNE",
-    kicker: "#5 Au four",
-    cat: "Pizza",
-    price: 4000,
-    price2: 6000,
-    desc: "Poulet, champignons, tomate, poivron, oignon, fromage, olive.",
-    img: "/plats/pizza.webp",
-    tint: "#B8574B",
-    wash: "#F6E9E6",
   },
   {
     id: "chawarma",

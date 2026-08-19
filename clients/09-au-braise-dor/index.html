@@ -673,15 +673,22 @@
         {n:'Salade verte',d:'Laitue, tomate, oignon, olive noire.',p:1000}
       ]},
     {id:'sauces',label:'Sauces',tag:'Local',icon:FIRE,
-      note:'Accompagnements : Agbéli, pâte noire, riz, manioc, maïs, piron, Akassa, attiéké, pommes.',
+      note:'Toutes les sauces sont servies avec l\'accompagnement de votre choix. Le prix dépend de ce que vous mettez dedans.',
       items:[
+        {n:'Sauce gombo',d:'Le gombo de la maison. Vous choisissez ce qu'+String.fromCharCode(39)+'il y a dedans.',p:1500,pMax:3500,garn:['Crabe','Kpanmom','Poisson']},
+        {n:'Sauce krinkrin',d:'Adèmè pilé, servi bien vert.',p:1500,pMax:3000,garn:['Crevette','Kpanmom']},
+        {n:'Sauce feuille',d:'Gbêkê mijoté.',p:1500,pMax:3000,garn:['Poisson','Crevette']},
+        {n:'Sauce arachide',d:'La pâte d'+String.fromCharCode(39)+'arachide, longuement mijotée.',p:1500,pMax:3000,garn:['Viande de mouton','Poisson']},
+        {n:'Sauce graine',d:'La graine de palme, pressée à la maison.',p:1500,pMax:3000},
+        {n:'Sauce tomate',d:'Tomate fraîche, mijotée.',p:1500,pMax:3000},
+        {n:'Sauce tête de mouton',d:'Le gbata, pour ceux qui savent.',p:1500,pMax:3000},
+        {n:'Sauce pieds de bœuf',d:'Le blokoto, fondant.',p:1500,pMax:3000},
+        {n:'Sauce Yassa',d:'À l'+String.fromCharCode(39)+'oignon et au citron.',p:1500,pMax:3000,garn:['Poisson','Viande']},
+        {n:'Sauce Yassa au poulet',d:'Le yassa, avec du poulet.',p:2500,p2:3500,tailles:['Quart de poulet','Demi-poulet']},
         {n:'Sauce Béchamel',d:'Champignon, haricot vert, oignon vert, au choix steak, poisson ou poulet à l\'ail.',p:5000},
         {n:'Sauce Crème',d:'Filet de poisson à la crème aux champignons.',p:5000},
         {n:'Moyo Chigan',d:'Sauce tomate, piment vert, oignon, moutarde, poisson ou aileron.',p:3000},
-        {n:'Sauce poisson frais',d:'Sauce tomate et crin-crin au choix.',p:3000},
-        {n:'Sauce gombo',p:1500,p2:3000},
-        {n:'Sauce krinkrin',p:1500},
-        {n:'Sauce feuille',p:1500}
+        {n:'Sauce poisson frais',d:'Sauce tomate et crin-crin au choix.',p:3000}
       ]},
     {id:'petitdej',label:'Petit-déj',tag:'Le matin',icon:FIRE,
       items:[
@@ -735,6 +742,7 @@
     'salade joq':'salade', 'salade composée':'s-composee',
     'salade d\'avocats aux crevettes':'s-avocat-crevettes', 'salade verte':'s-verte',
     /* Sauces */
+    'sauce gombo':'sc-gombo', 'sauce krinkrin':'sc-krinkrin', 'sauce feuille':'sc-feuille',
     'sauce béchamel':'sc-bechamel', 'sauce crème':'sc-creme', 'moyo chigan':'sc-moyo', 'sauce poisson frais':'sc-poisson',
     /* Petit-déj */
     'plateau mignon joq':'pd-mignon', 'plateau complet':'pd-complet', 'cappuccino':'pd-cappuccino',

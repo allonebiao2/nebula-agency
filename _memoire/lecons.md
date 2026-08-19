@@ -876,3 +876,41 @@ trouble dure 100 ms au lieu d'un demi-tour d'horloge.
 - **À appliquer** : trier les questions en deux tas avant d'enquêter — celles
   qu'un document peut trancher (on lit), celles que seul le client tranche (on
   demande, et on avance ailleurs pendant ce temps).
+
+## 2026-08-19 — Le même modèle de détourage gagne ici et perd là
+
+- **Contexte** : détourer des plats pour le héros d'Au Braisé d'Or. Deux lots de
+  photos, deux verdicts opposés sur planche comparative.
+- **Les bols de sauce sur fond gris** : `isnet-general-use` garde le bol entier
+  ET la vapeur ; `u2net` ne garde que la viande et jette le bol ;
+  `birefnet-general` déchiquette le bol.
+- **Les assiettes NOIRES sur fond NOIR** : c'est l'inverse. isnet garde une
+  tache de vapeur pleine, une encoche dans l'assiette et un bout d'ardoise ;
+  **birefnet découpe la masse du plat proprement**.
+- **Leçon** : il n'y a pas de « bon modèle » de détourage, il y a un bon modèle
+  **pour ce lot de photos**. Le facteur décisif ici est le contraste entre le
+  sujet et le fond, pas la qualité du modèle.
+- **À appliquer** : **faire la planche comparative à chaque nouveau lot**, la
+  REGARDER sur le fond où l'image sera posée (un halo ne se voit pas sur du
+  blanc), et écrire dans l'outil ce qui a perdu et pourquoi — sinon le suivant
+  refait les essais. ⚠️ Corollaire déjà payé : « nettoyer » un défaut par
+  ouverture morphologique mord dans le sujet. Changer de modèle plutôt que
+  réparer un mauvais masque.
+
+## 2026-08-19 — Un prix qui dépend du choix du client n'est pas deux tailles
+
+- **Contexte** : la carte des sauces annonce « 1 500 F à 3 000 F ». Lu comme
+  Normal/Grand, ça donnait deux boutons de taille et un total exact au panier.
+  Mongazi corrige : « le prix varie en fonction des éléments entre parenthèses ;
+  en fonction de ce que le client veut dedans, le prix augmente. »
+- **Ce que ça change** : ce n'est pas un choix entre deux prix, c'est une
+  **fourchette** dont la valeur exacte se fixe à la commande. Le panier ne peut
+  donc pas afficher un total : il affiche **une fourchette**, et le message
+  WhatsApp dit « merci de me le confirmer ».
+- ⛔ **Et on n'invente pas le prix de chaque ingrédient** pour reconstituer un
+  total : la maison n'a donné qu'une borne basse et une borne haute. Mettre un
+  chiffre en face de « crabe » serait le fabriquer.
+- **Leçon** : avant de modéliser un prix, demander **de quoi il dépend**. Deux
+  tailles, une fourchette et un supplément se ressemblent sur le papier et ne
+  produisent pas le même panier. Même famille que « `p:0` = prix pas encore
+  donné » : quand le total ne peut pas être connu, on le dit, on ne l'invente pas.

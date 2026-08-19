@@ -1,5 +1,5 @@
 /**
- * LA CARTE COMPLÈTE — 45 plats, 9 catégories.
+ * LA CARTE COMPLÈTE — 52 plats, 9 catégories.
  *
  * ⚠️ FICHIER GÉNÉRÉ, NE PAS ÉDITER À LA MAIN.
  * Source : le tableau `CATS` de `../../index.html`, qui reste la vérité.
@@ -9,8 +9,17 @@
 export type Plat = {
   n: string;
   d?: string;
+  /** Prix, ou borne BASSE quand pMax est là. */
   p: number;
+  /** Deuxième taille, à son propre prix. Voir aussi tailles. */
   p2?: number;
+  /** ⚠️ FOURCHETTE, PAS DEUX TAILLES. Le prix des sauces dépend de ce que le
+   *  client met dedans (voir garn) : la maison le confirme à la commande. */
+  pMax?: number;
+  /** Ce qu'on peut mettre dedans, et qui fait monter le prix. */
+  garn?: string[];
+  /** Libellés des deux tailles quand ce n'est pas « Normal / Grand ». */
+  tailles?: [string, string];
   joq?: boolean;
   /** Absent tant que la maison n'a pas donné sa photo. La carte affiche
    *  alors une tuile au nom du plat, jamais une image d'emprunt. */
@@ -29,7 +38,10 @@ export type Cat = {
 /** Les accompagnements au choix, repris tels quels du site. */
 export const ACC: Record<string, string[]> = {
   grillades: ["Riz", "Attiéké", "Aloco", "Frites", "Pommes sautées", "Pomme vapeur", "Pâte rouge", "Bomiwo", "Akassa", "Igname frit"],
-  sauces: ["Riz", "Attiéké", "Pâte noire", "Agbéli", "Pâte de manioc", "Pâte de maïs", "Piron", "Akassa", "Pommes sautées", "Frites"],
+  /* ⚠️ Repris MOT POUR MOT de la feuille de menu de la maison (2026-08-19),
+     qui remplace l'ancienne liste. « Tègbô » y est barré et corrigé en
+     « telibo » de sa main : c'est telibo. */
+  sauces: ["Telibo", "Agbéli", "Couscous", "Atchiéké", "Igname pilée", "Riz au gras", "Frites", "Pâte de maïs", "Akassa", "Riz blanc", "Wassa Wassa", "Foutou banane", "Foutou de manioc", "Aloko", "Toubani"],
 };
 
 export const CARTE: Cat[] = [
@@ -99,16 +111,23 @@ export const CARTE: Cat[] = [
     id: "sauces",
     label: "Sauces",
     tag: "Local",
-    note: "Accompagnements : Agbéli, pâte noire, riz, manioc, maïs, piron, Akassa, attiéké, pommes.",
+    note: "Toutes les sauces sont servies avec l'accompagnement de votre choix. Le prix dépend de ce que vous mettez dedans.",
     acc: "sauces",
     items: [
+      { n: "Sauce gombo", d: "Le gombo de la maison. Vous choisissez ce qu'il y a dedans.", p: 1500, pMax: 3500, garn: ["Crabe", "Kpanmom", "Poisson"], img: "/carte/sc-gombo.webp" },
+      { n: "Sauce krinkrin", d: "Adèmè pilé, servi bien vert.", p: 1500, pMax: 3000, garn: ["Crevette", "Kpanmom"], img: "/carte/sc-krinkrin.webp" },
+      { n: "Sauce feuille", d: "Gbêkê mijoté.", p: 1500, pMax: 3000, garn: ["Poisson", "Crevette"], img: "/carte/sc-feuille.webp" },
+      { n: "Sauce arachide", d: "La pâte d'arachide, longuement mijotée.", p: 1500, pMax: 3000, garn: ["Viande de mouton", "Poisson"] },
+      { n: "Sauce graine", d: "La graine de palme, pressée à la maison.", p: 1500, pMax: 3000 },
+      { n: "Sauce tomate", d: "Tomate fraîche, mijotée.", p: 1500, pMax: 3000 },
+      { n: "Sauce tête de mouton", d: "Le gbata, pour ceux qui savent.", p: 1500, pMax: 3000 },
+      { n: "Sauce pieds de bœuf", d: "Le blokoto, fondant.", p: 1500, pMax: 3000 },
+      { n: "Sauce Yassa", d: "À l'oignon et au citron.", p: 1500, pMax: 3000, garn: ["Poisson", "Viande"] },
+      { n: "Sauce Yassa au poulet", d: "Le yassa, avec du poulet.", p: 2500, p2: 3500, tailles: ["Quart de poulet", "Demi-poulet"] },
       { n: "Sauce Béchamel", d: "Champignon, haricot vert, oignon vert, au choix steak, poisson ou poulet à l'ail.", p: 5000, img: "/carte/sc-bechamel.webp" },
       { n: "Sauce Crème", d: "Filet de poisson à la crème aux champignons.", p: 5000, img: "/carte/sc-creme.webp" },
       { n: "Moyo Chigan", d: "Sauce tomate, piment vert, oignon, moutarde, poisson ou aileron.", p: 3000, img: "/carte/sc-moyo.webp" },
       { n: "Sauce poisson frais", d: "Sauce tomate et crin-crin au choix.", p: 3000, img: "/carte/sc-poisson.webp" },
-      { n: "Sauce gombo", p: 1500, p2: 3000 },
-      { n: "Sauce krinkrin", p: 1500 },
-      { n: "Sauce feuille", p: 1500 },
     ],
   },
   {
