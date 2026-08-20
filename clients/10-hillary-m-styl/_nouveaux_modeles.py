@@ -223,10 +223,22 @@ def teinte(chemin):
             h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
             if s < 0.22 or v < 0.18 or v > 0.92:
                 continue
-            seaux[int(h * 360) // 12].append((r, g, b))
+            seaux[int(h * 360) // 12].append((r, g, b, s))
     if not seaux:
         return "#6b3065"
-    p = seaux[max(seaux, key=lambda k: len(seaux[k]))]
+    # ⚠️ PAS LA COULEUR LA PLUS ÉTENDUE : LA PLUS VIVE PARMI LES GRANDES.
+    #    Le 2026-08-20, la robe verte et jaune est ressortie en BRUN `#9e6033`.
+    #    Ce n'était pas une erreur de calcul : bras et jambes nus couvraient
+    #    23 % de la photo contre 17 % pour le tissu, et la PEAU gagnait. Le
+    #    héros aurait peint son fond couleur peau sous une robe verte.
+    #    Un vêtement est presque toujours plus saturé qu'une peau : on garde
+    #    les teintes qui occupent au moins 15 % de la pièce, et parmi elles on
+    #    prend la plus vive. Vérifié sur les huit pièces : la verte redevient
+    #    verte, l'ensemble en jean gagne son vrai rouge, et les six autres ne
+    #    bougent pas ou à peine.
+    total = sum(len(v) for v in seaux.values())
+    grandes = [k for k, v in seaux.items() if len(v) >= 0.15 * total] or list(seaux)
+    p = seaux[max(grandes, key=lambda k: sum(x[3] for x in seaux[k]) / len(seaux[k]))]
     r = sum(x[0] for x in p) / len(p)
     g = sum(x[1] for x in p) / len(p)
     b = sum(x[2] for x in p) / len(p)
@@ -286,6 +298,91 @@ def poser_images(prets):
                   f"{os.path.getsize(dest)//1024} Ko", flush=True)
         faits.append(m)
     return faits
+
+
+def js(v):
+    """Une chaîne écrite dans du JavaScript, échappée pour de bon.
+    ⚠️ Les anciennes lignes étaient bâties en `'%s'` : la première apostrophe
+    dans un nom ou une description cassait tout le fichier, donc tout le site.
+    Aucune des pièces d'aujourd'hui n'en porte — ce n'est pas une raison."""
+    return json.dumps(v, ensure_ascii=False)
+
+
+def jsq(v):
+    """La même chose, mais EN GARDANT LE STYLE DU FICHIER : les entrées du
+    héros et du carrousel écrivent leurs noms de fichier et leurs étiquettes
+    entre apostrophes (`f:'hero-1.webp'`) et leurs textes entre guillemets
+    (`t:"L'ensemble Mira"`). Une pièce ajoutée doit se lire comme ses voisines,
+    sinon le tableau devient un patchwork au fil des vagues.
+    Dès qu'une valeur porte une apostrophe, on repasse aux guillemets : la
+    cohérence ne vaut pas un fichier cassé."""
+    return "'" + v + "'" if ("'" not in v and "\\" not in v) else json.dumps(v, ensure_ascii=False)
+
+
+def court(t, n=56):
+    """La légende du carrousel. On coupe sur un MOT, pas au milieu d'un :
+    « jupe longu » s'affiche en grand sous la pièce."""
+    t = t.strip()
+    if len(t) <= n:
+        return t.rstrip(" .,;:")
+    c = t[:n + 1]
+    c = c[:c.rfind(" ")] if " " in c else c[:n]
+    return c.rstrip(" .,;:")
+
+
+def teinte_deg(c):
+    """La teinte d'un « #rrggbb », en degrés sur le cercle des couleurs."""
+    import colorsys
+    r, g, b = (int(c[i:i + 2], 16) / 255 for i in (1, 3, 5))
+    return colorsys.rgb_to_hsv(r, g, b)[0] * 360
+
+
+def ecart(a, b):
+    """La distance entre deux teintes (0 à 180)."""
+    d = abs(a - b) % 360
+    return min(d, 360 - d)
+
+
+ECART_MIN = 28   # en dessous, deux nappes se confondent
+
+
+def fiche_existante(mot, m, img, img2):
+    """⛔ LE DÉFAUT QUE CE BLOC RÉPARE. Les onze fiches sont ENTRÉES AU
+    CATALOGUE LE 2026-08-18, sans photo, avec `photoWa:true` (« Photo sur
+    WhatsApp »). L'ancien `injecter()` voyait `id:"h10"` déjà présent, écrivait
+    « déjà au catalogue » et passait. Les photos auraient été détourées, posées
+    dans `assets/images/`… et jamais raccrochées à une fiche. Le site n'aurait
+    pas bougé d'un pixel, et rien ne l'aurait signalé.
+
+    Ici on ACCROCHE la photo à la fiche qui existe : on pose `img` (et `img2`
+    s'il y a un dos) et on retire `photoWa:true`, qui devient un mensonge dès
+    que la photo est là. Idempotent : une fiche déjà pourvue n'est pas touchée.
+    Renvoie (source, True) si quelque chose a changé."""
+    d = mot.find('{id:"%s"' % m["id"])
+    if d < 0:
+        return mot, False
+    f = mot.index("},", d) + 2
+    bloc = mot[d:f]
+
+    if ('img:"%s"' % img) in bloc and (not img2 or ('img2:"%s"' % img2) in bloc):
+        return mot, False
+
+    ligne = 'img:"%s"' % img + (', img2:"%s"' % img2 if img2 else "")
+    if "img:" in bloc:                       # une photo était déjà là : on remplace
+        neuf_bloc = re.sub(r'img:"[^"]*"(,\s*img2:"[^"]*")?', ligne.replace("\\", "\\\\"),
+                           bloc, count=1)
+    else:
+        # on insère juste avant la ligne des prix, là où `img` vit sur les
+        # autres fiches — pour que les 20 fiches se lisent de la même façon
+        neuf_bloc, n = re.subn(r"\n(\s*)prix:",
+                               "\n\\g<1>" + ligne.replace("\\", "\\\\") + ",\n\\g<1>prix:",
+                               bloc, count=1)
+        if not n:
+            sys.exit("⛔ %s : ligne « prix: » introuvable, injection annulée" % m["nom"])
+
+    # `photoWa:true` a fait son temps : la photo est là.
+    neuf_bloc = re.sub(r",?\s*photoWa:true", "", neuf_bloc, count=1)
+    return mot[:d] + neuf_bloc + mot[f:], True
 
 
 def verifier_js(source, chemin):
@@ -529,6 +626,20 @@ def main():
     c'est laisser dix pièces sans image pour une onzième.
 
     Ce qui n'a PAS changé : on n'invente rien pour combler un trou."""
+    # ⚠️ ON VÉRIFIE CE QUI EST GRATUIT AVANT DE LANCER CE QUI EST CHER.
+    #    Le 2026-08-20, une restructuration avait effacé sept fonctions au
+    #    passage. Le script a détouré DOUZE photos pendant dix minutes, puis
+    #    est mort sur `NameError: fiche_existante` à la seconde d'après — au
+    #    moment précis où il allait enfin écrire quelque chose. Le coût d'une
+    #    bourde ne doit pas dépendre de l'endroit où elle explose.
+    absents = [n for n in ("js", "jsq", "court", "teinte_deg", "ecart",
+                           "fiche_existante", "poser_heros", "injecter",
+                           "verifier_js", "detourer_un")
+               if n not in globals()]
+    if absents:
+        sys.exit("⛔ fonctions manquantes, rien n'a été lancé : "
+                 + ", ".join(absents) + "\n")
+
     prets, manquants = dire()
     if "--poser" not in sys.argv:
         return 0
