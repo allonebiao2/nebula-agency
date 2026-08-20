@@ -64,3 +64,23 @@ npx wrangler pages deploy out --project-name au-braise-dor --branch main
 - ⛔ **les 48 photos de plats sont générées par IA** (juillet, avant la règle) :
   Au Braisé d'Or est le **dernier site** où la règle n'est pas appliquée,
   décision de Mongazi en attente.
+
+---
+
+## 2026-08-20 · la quatrième sauce, et une leçon de rapatriement
+
+Trois commits poussés **directement sur `main` depuis le téléphone**, après ma
+publication de la veille :
+
+- la **sauce krinkrin repart d'une autre photo** : elle n'était pas mal
+  détourée, elle était **recadrée trop serré à la source**. Aucun masque ne
+  rend des pixels qui n'existent pas (leçon écrite dans `_memoire/lecons.md`) ;
+- la **sauce graine** a ses deux photos et **entre au héros** : le héros porte
+  désormais **quatre** sauces (gombo, krinkrin, graine, feuille).
+
+⚠️ **Ce qui était en ligne avait donc déjà un cran de retard.** Un `git push`
+ne déploie rien, et un rapatriement n'est fini qu'une fois le site republié.
+Reconstruit, **76 contrôles verts** (deux de moins que la veille : la sauce
+graine n'est plus une ardoise, elle a sa photo), republié, puis vérifié :
+`sc-graine` servi en 200, et le krinkrin servi **identique octet pour octet**
+au fichier du disque (MD5) — donc pas un vieux fichier en cache.

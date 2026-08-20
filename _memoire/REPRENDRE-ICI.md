@@ -1,9 +1,42 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-08-10
+## Point de reprise pour une session terminal · dernière mise à jour 2026-08-20
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
+
+
+---
+
+## 0 bis. LE 2026-08-20 — où en est le parc
+
+### ✅ Au Braisé d'Or : publié et vérifié
+https://au-braise-dor.pages.dev · carte à **9 rubriques / 52 plats**, la
+catégorie **Sauces (14)** et ses **4 vraies photos au héros** (gombo, krinkrin,
+graine, feuille). **76 contrôles verts.** ⚠️ Publier = `npm run build` +
+`cp -r ../assets/docs out/` + `wrangler pages deploy out` : **un `git push` ne
+déploie rien**, et ce site a passé une journée en retard d'un cran pour ça.
+⛔ Reste la **décision sur les 48 photos générées par IA** : c'est le dernier
+site du parc où la règle du 2026-08-01 n'est pas appliquée.
+
+### ⏳ Hillary M. Styl : 11 modèles en ligne SANS leurs photos
+Le catalogue affiche 20 cartes, dont 11 avec « Photo sur WhatsApp ». Deux
+blocages, tous deux du côté de la cliente, aucun technique :
+**les 11 mesures de la robe ovale** (jamais validées depuis le 6 août, ses
+quatre pièces en dépendent) et **les fichiers photo** des nouveaux modèles.
+`python _nouveaux_modeles.py` dit ce qui manque, `--poser` pose ce qui est prêt.
+
+### ⚠️ Le disque de ce PC
+Il est passé à **zéro octet libre** pendant une fusion git le 19/08, ce qui
+casse `git merge` en plein vol. `node_modules` de `_studio-video` a été effacé
+(`npm install` le restaure), celui du Braisé réinstallé (6 minutes ici).
+**Le gros morceau restant est l'image de machine virtuelle de Claude, ~9 Go** :
+décision de Mongazi en attente.
+
+### ▶️ PAR QUOI COMMENCER, aujourd'hui
+1. Les deux réponses d'Hillary (mesures robe ovale, photos).
+2. La décision sur les photos IA d'Au Braisé d'Or.
+3. Le disque.
 
 ---
 
