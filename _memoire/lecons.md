@@ -780,6 +780,165 @@ trouble dure 100 ms au lieu d'un demi-tour d'horloge.
   ces surfaces vivent de la photo. Et ce n'est pas un état final : un drapeau
   (`photoWa`) marque les fiches, et l'outil qui posera les images le retirera.
 
+## 2026-08-19 — Un contrôle faux coûte plus cher qu'un contrôle absent
+
+- **Contexte** : mesure du contraste de la pastille de prix d'Au Braisé d'Or,
+  posée sur les photos de plats. La méthode d'Angy Art dit, à juste titre, que
+  lire `background-color` est aveugle au-dessus d'une photo : il faut
+  photographier et **prendre le décile le plus clair** pour le texte.
+- **Ce qui s'est passé** : la mesure annonçait **2,15:1** sur une pastille
+  **parfaitement nette**, vérifiée ensuite à l'œil sur une capture agrandie de
+  la seule pastille. Corriger l'animation, le serveur, le recadrage : les
+  chiffres ne bougeaient pas d'un centième.
+- **La cause** : le décile ne marche que si le texte couvre une bonne part de
+  la boîte. Les chiffres d'une pastille en couvrent **un dixième** : le seuil du
+  décile tombe alors **en plein anticrénelage**, et on mesure du gris de bord.
+- **Leçon** : **la couleur du texte est DÉCLARÉE, donc connue et solide ; seul
+  le fond dépend de ce qu'il y a dessous. On déclare l'une, on mesure l'autre.**
+  Et on neutralise l'animation d'apparition avant de photographier, sinon on
+  mesure le contraste d'un fondu.
+- **À appliquer** : quand l'instrument et l'œil se contredisent, **on regarde**
+  — on agrandit l'élément seul, on le met sous les yeux. Deux autres faux
+  rouges de la même soirée : `querySelector('[role=dialog]')` qui mesurait le
+  tiroir toujours monté au lieu de la modale, et un recadrage calculé sur des
+  boîtes lues **avant** la capture, entre lesquelles les images différées
+  avaient déplacé la mise en page.
+
+## 2026-08-19 — On ne corrige pas une donnée contre un résumé
+
+- **Contexte** : le `MENU.md` d'Au Braisé d'Or (transcription des photos du menu
+  papier) donnait « pizza pêcheur 4 000 / (à confirmer) », le site affichait
+  « 4 000 / 6 000 ». Conclusion apparente : un prix inventé, à retirer — et
+  cette pizza est un des 4 plats du héros, le chiffre s'affiche en grand.
+- **Ce qui s'est passé** : en recadrant la photo d'origine au bord coupé, **le
+  6 est lisible**. Le site avait raison, le résumé était trop prudent. Retirer
+  le prix aurait fait perdre la grande taille à la vente.
+- **Leçon** : un fichier de transcription n'est pas la source, c'est une
+  lecture de la source. **Avant de corriger une donnée, remonter à la photo, au
+  scan, au message d'origine.** Le même détour a montré que 4 lignes du
+  petit-déjeuner n'étaient jamais arrivées jusqu'au site.
+- **À appliquer** : marquer dans le fichier de transcription **ce qui est lu**
+  et **ce qui est déduit**, et garder les originaux (`_partage/`) à portée.
+  Une carte à laquelle il manque une ligne a l'air d'une carte complète : elle
+  ne se vérifie qu'en la comparant à autre chose qu'elle-même.
+
+## 2026-08-19 — Retirer un plat n'est pas supprimer une ligne
+
+- **Contexte** : la propriétaire d'Au Braisé d'Or fait retirer 13 plats de sa
+  carte (6 pizzas sur 10, 2 grillades, 2 burgers, 3 cocktails alcoolisés).
+- **Ce qui cassait en silence** : (1) la **pizza pêcheur était un des 4 plats
+  signature du héros** — le visiteur serait arrivé sur un plein écran vantant
+  un plat introuvable trois écrans plus bas ; (2) **deux notes de catégorie
+  devenaient fausses** : « servis avec Coca-Cola sauf végétarien, crispy,
+  nugget » sans plus de crispy ni de nugget, et « avec ou sans alcool » sans
+  plus une goutte d'alcool.
+- **Leçon** : un retrait modifie **tout ce que la page raconte**, pas seulement
+  la liste. Les données se régénèrent ; les **phrases**, elles, ne sont
+  vérifiées par rien.
+- **À appliquer** : après un retrait, chercher le nom du plat **partout**
+  (héros, carrousel, notes de catégorie, pied de page, affiche imprimée) et
+  relire ce que les textes voisins affirment encore. Puis poser **un contrôle
+  par élément retiré**, sur le texte rendu de la page : un plat retiré mais
+  laissé affiché se commande quand même, et c'est le restaurant qui gère la
+  déception du client.
+- ⚠️ **SUITE, le soir même** : la note disait « Lapin », la ligne du menu dit
+  « lapin **ou mouton** frit ». Retirer la ligne entière a **supprimé un plat
+  que la maison vend toujours** — Mongazi l'a corrigé dans l'heure. **Une ligne
+  de menu qui contient un « ou » est deux produits** : quand le client n'en
+  nomme qu'un, on retire ce qu'il nomme, pas la ligne. Et poser la question
+  reste ce qui rattrape le coup : elle était dans ma liste, elle a été lue.
+
+## 2026-08-19 — Quand une information manque, on donne le chemin, pas une valeur
+
+- **Contexte** : la propriétaire ajoute une catégorie « Desserts » (yaourt,
+  glace, cocktail) **sans donner un seul prix**.
+- **Ce qui a été fait** : convention `p:0` = prix pas encore donné. La carte
+  affiche **« Prix sur demande »**, et la fiche remplace le panier par
+  **« Demander le prix sur WhatsApp »**, question déjà rédigée.
+- ⚠️ **Un article sans prix ne doit jamais entrer au panier** : le total
+  mentirait et le message de commande partirait avec un « 0 F ». Un contrôle
+  vérifie qu'aucun « 0 F » n'apparaît nulle part.
+- **Leçon** : c'est la même famille que « Prix sur demande » chez Weinkeller et
+  « Photo sur WhatsApp » chez Hillary. **Ni inventer, ni cacher, ni s'excuser :
+  donner au client le chemin pour obtenir ce qui manque.** Cacher la catégorie
+  aurait privé la maison d'une vente qu'elle vient de demander.
+
+## 2026-08-19 — La source vaut mieux qu'un résumé, le client vaut mieux que la source
+
+- **Contexte** : une heure passée à recadrer les photos du menu papier pour
+  lever deux prix coupés (napolitaine, oriental) et confirmer celui de la
+  pêcheur. Le soir même, la propriétaire **retire ces trois pizzas**.
+- **Leçon** : remonter à la source reste juste — la même lecture a trouvé 4
+  lignes de petit-déjeuner absentes du site, qui, elles, restent. Mais quand
+  une question porte sur **ce que le client veut vendre**, et pas sur ce qu'un
+  document dit, **il faut la lui poser d'abord**. Aucune lecture, si rigoureuse
+  soit-elle, ne devine une décision commerciale.
+- **À appliquer** : trier les questions en deux tas avant d'enquêter — celles
+  qu'un document peut trancher (on lit), celles que seul le client tranche (on
+  demande, et on avance ailleurs pendant ce temps).
+
+## 2026-08-19 — Le même modèle de détourage gagne ici et perd là
+
+- **Contexte** : détourer des plats pour le héros d'Au Braisé d'Or. Deux lots de
+  photos, deux verdicts opposés sur planche comparative.
+- **Les bols de sauce sur fond gris** : `isnet-general-use` garde le bol entier
+  ET la vapeur ; `u2net` ne garde que la viande et jette le bol ;
+  `birefnet-general` déchiquette le bol.
+- **Les assiettes NOIRES sur fond NOIR** : c'est l'inverse. isnet garde une
+  tache de vapeur pleine, une encoche dans l'assiette et un bout d'ardoise ;
+  **birefnet découpe la masse du plat proprement**.
+- **Leçon** : il n'y a pas de « bon modèle » de détourage, il y a un bon modèle
+  **pour ce lot de photos**. Le facteur décisif ici est le contraste entre le
+  sujet et le fond, pas la qualité du modèle.
+- **À appliquer** : **faire la planche comparative à chaque nouveau lot**, la
+  REGARDER sur le fond où l'image sera posée (un halo ne se voit pas sur du
+  blanc), et écrire dans l'outil ce qui a perdu et pourquoi — sinon le suivant
+  refait les essais. ⚠️ Corollaire déjà payé : « nettoyer » un défaut par
+  ouverture morphologique mord dans le sujet. Changer de modèle plutôt que
+  réparer un mauvais masque.
+
+## 2026-08-19 — Un prix qui dépend du choix du client n'est pas deux tailles
+
+- **Contexte** : la carte des sauces annonce « 1 500 F à 3 000 F ». Lu comme
+  Normal/Grand, ça donnait deux boutons de taille et un total exact au panier.
+  Mongazi corrige : « le prix varie en fonction des éléments entre parenthèses ;
+  en fonction de ce que le client veut dedans, le prix augmente. »
+- **Ce que ça change** : ce n'est pas un choix entre deux prix, c'est une
+  **fourchette** dont la valeur exacte se fixe à la commande. Le panier ne peut
+  donc pas afficher un total : il affiche **une fourchette**, et le message
+  WhatsApp dit « merci de me le confirmer ».
+- ⛔ **Et on n'invente pas le prix de chaque ingrédient** pour reconstituer un
+  total : la maison n'a donné qu'une borne basse et une borne haute. Mettre un
+  chiffre en face de « crabe » serait le fabriquer.
+- **Leçon** : avant de modéliser un prix, demander **de quoi il dépend**. Deux
+  tailles, une fourchette et un supplément se ressemblent sur le papier et ne
+  produisent pas le même panier. Même famille que « `p:0` = prix pas encore
+  donné » : quand le total ne peut pas être connu, on le dit, on ne l'invente pas.
+
+## 2026-08-19 — Un damier « transparent » peut être peint dans les pixels
+
+- **Contexte** : le client renvoie ses plats **déjà détourés**. Les fichiers
+  arrivent en **RGB sans canal alpha** : le damier gris de son éditeur est
+  aplati dans l'image. Vu à l'écran, ça ressemble à de la transparence ; posé
+  sur une page, c'est un rectangle à carreaux.
+- **Ce qui a coûté quatre tours** : vouloir retirer le damier « proprement » en
+  le reconnaissant à ses deux gris — apprendre les gris sur les coins, remplir
+  depuis les bords, ponter les pixels de transition, rembourrer avant la
+  fermeture, reconstruire la grille. Échec de fond : **sur une des photos les
+  gris du damier étaient 77 et 124, et le bord noir de l'assiette a des reflets
+  dans cette plage.** Aucun seuil ne les sépare.
+- **Ce qui a marché du premier coup** : **rembg sur le fichier à damier.** Un
+  modèle de saillance ne se demande pas de quelle couleur est le fond.
+- **Leçon** : quand un outil générique existe pour « séparer le sujet du fond »,
+  l'essayer AVANT d'écrire un masque sur mesure pour un fond particulier. Le
+  sur-mesure ne bat le général que si le général a échoué.
+- ⚠️ **Et vérifier le canal alpha à la réception** : `im.mode` et
+  `getchannel('A').getextrema()`. Une image « détourée » sans alpha est un
+  piège silencieux.
+- ⚠️ **Archiver la SOURCE REÇUE, jamais un intermédiaire** : j'avais copié mon
+  masque raté dans le dossier d'archive, et l'outil a ensuite travaillé
+  dessus — l'assiette avait disparu et le défaut semblait venir de rembg.
+
 ## 2026-08-18 — Un contrôle de mise en pause a besoin d'un témoin
 
 - **Contexte** : les pièces à deux photos basculent toutes seules, et doivent
@@ -820,6 +979,28 @@ trouble dure 100 ms au lieu d'un demi-tour d'horloge.
   sur la version de `main`. Identique. **On ne répare pas ce qu'on n'a pas
   cassé** — et on ne s'attribue pas un défaut antérieur.
 
+## 2026-08-19 — Un masque ne rend pas des pixels qui n'existent pas
+
+- **Contexte** : Mongazi voit le site en ligne : « la sauce krinkrin a été mal
+  détourée sur le côté droit, c'est coupé, ça doit être bien circulaire comme
+  pour les autres ».
+- **Le réflexe qui a coûté du temps** : chercher un meilleur masque. Cercle
+  ajusté, octogone tracé à l'œil, contour mesuré sur 360 rayons en suivant le
+  liseré brillant du bord de l'assiette — trois tentatives, trois échecs, dont
+  un contour en dents de scie franchement pire que le défaut d'origine.
+- **La vraie cause** : la photo source était **recadrée trop serré**. Le disque
+  d'ardoise sortait du cadre à gauche, à droite et en bas, et l'assiette
+  elle-même touchait les bords. Il n'y avait rien à détourer : l'information
+  manquait.
+- **La solution** : une **autre source**. Le premier envoi de la même sauce,
+  sur fond noir, était bien cadré — l'assiette y tient entière avec de la
+  marge. Trente secondes de traitement au lieu d'une heure de masquage.
+- **Leçon** : devant un sujet coupé, **mesurer d'abord si le sujet touche le
+  bord de l'image** (`getbbox()` contre les dimensions). Si oui, aucun
+  traitement ne le réparera : il faut une autre source, ou la redemander.
+- **À appliquer** : un contrôle à la réception d'une photo destinée à être
+  détourée — le sujet touche-t-il un bord ? Si oui, le dire tout de suite,
+  avant de commencer.
 ## 2026-08-20 — Un écart de teinte n'est pas un écart perçu
 
 - **Contexte** : le héros d'Hillary peint son fond avec la couleur de la pièce.

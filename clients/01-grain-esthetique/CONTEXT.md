@@ -74,9 +74,39 @@ Couche **additive** (images, couleurs, **numéro/liens WhatsApp inchangés** —
 - ⚠️ Token `cloudflare.env` = **Pages-only** (ne gère pas le DNS) → les changements DNS/zone = **action Mongazi dans le dashboard**.
 - **Ancienne version Netlify** (`grain-esthetique-cotonou.netlify.app`) = OBSOLÈTE → à débrancher une fois le domaine live.
 
+## Prospectus « Fête de l'Igname » (2026-08-15)
+Prospectus **A5 recto-verso** (148 × 210 mm), dans l'univers de l'institut : rose `#C4648A`,
+or `#D4AF72`, encre `#1A0E14`, Cormorant Garamond + Jost, équerres dorées, filet à la gemme.
+
+- **Recto** : logo, « À l'occasion de la **Fête de l'Igname** » en or dégradé entre deux
+  feuilles d'igname au trait, l'accroche « **La fête se prépare la veille.** », les 4 offres
+  avec prix barrés, la période, et le rappel WhatsApp.
+- **Verso** : les 6 familles de soins, les maisons partenaires, l'adresse et les horaires,
+  le QR vers `graindesthetique.com`, le pied signé NEBULA.
+- **Fichiers** : `assets/docs/Prospectus_Igname_A5.pdf` (à donner à l'imprimeur) +
+  `..._recto.png` / `..._verso.png` (384 dpi, pour WhatsApp et les réseaux).
+- **Outils** : `_outils/_build_prospectus_igname.py` (fontes, logo et QR **embarqués en
+  base64** : le fichier ne dépend d'aucun réseau) puis `_outils/_render_prospectus_igname.py`.
+
+**Le rendu refuse d'écrire** si une page déborde de l'A5, s'il manque un texte obligatoire,
+s'il reste une apostrophe droite, ou si le QR relu **dans l'image finale** ne pointe pas sur
+le bon domaine. Au premier essai le bas du recto était coupé de 44 mm : c'est exactement ce
+qui part chez l'imprimeur et se découvre une fois les exemplaires payés.
+
+⚠️ **À CONFIRMER PAR JOCELYNE AVANT IMPRESSION** (bloc « ZONE À CONFIRMER » en haut du script) :
+- les **dates** (`Du 15 au 31 août 2026` est une proposition) ;
+- les **quatre montants**, repris tels quels de la promo Fête des Pères qu'elle avait validée.
+
+⚠️ Le logo n'existait qu'en base64 dans la vitrine. Extrait dans
+`assets/images/logo-grain-esthetique.png` (320 × 239) et `-detoure.png` (224 × 162). C'est la
+plus grande version qui existe : agrandie ×4 au Lanczos pour l'impression, elle tient à 28 mm.
+Une **version vectorielle** reste à faire si on veut l'imprimer en grand.
+
 ## À faire / décisions
 - [ ] Confirmer `https://graindesthetique.com` en ligne + SSL actif (custom domain « active »), puis débrancher/supprimer l'ancien Netlify.
 - [ ] Optionnel : vraies photos supplémentaires, vrais avis Google, mini-vidéo institut.
+- [ ] **Prospectus Igname** : faire confirmer dates + montants par Jocelyne, puis imprimer.
+- [ ] Logo en **vectoriel** (le seul existant fait 224 px de large).
 
 ## Liens
 - Vitrine source : `grain-esthetique-LIVE.html`

@@ -79,6 +79,282 @@ s'afficheront tout seuls le jour où le restaurant les donnera.
 ⚠️ Les trois **s'arrêtent net si un motif a disparu**, pour ne jamais repeindre
 à moitié.
 
+## ✅ LA CARTE DES SAUCES, ET TROIS VRAIES PHOTOS — 2026-08-19 (nuit, 2)
+
+La maison envoie **sa feuille de menu des sauces** (`_partage/2026-08-19-menu-sauces.jpeg`)
+et **trois photos de plats**. Mongazi : « ce sont de vraies images de plats
+béninois que j'ai améliorées avec l'IA, donc on peut les utiliser ».
+**La règle du 2026-08-01 ne s'y applique pas** : ce ne sont pas des images
+générées. Les originaux restent dans `_partage/`, la vérification reste possible.
+
+### ⚠️ LE PRIX EST UNE FOURCHETTE, PAS DEUX TAILLES
+Mongazi : « le prix varie en fonction des éléments entre parenthèses ; en
+fonction de ce que le client veut dans les parenthèses, le prix augmente. »
+**J'avais d'abord lu « 1 500-3 000 » comme Normal/Grand.** C'était faux, et le
+panier aurait annoncé un total que la maison n'aurait pas tenu.
+
+Nouveau modèle dans les données : **`pMax`** (borne haute) et **`garn`** (ce
+qu'on peut mettre dedans). Plus **`tailles`**, pour les deux formats du yassa au
+poulet, qui ne s'appellent pas « Normal / Grand » mais « Quart / Demi-poulet ».
+
+Dans la page : la carte affiche **« 1 500 à 3 500 F »**, la fiche propose
+**« Ce que vous voulez dedans »** (cases à cocher), et **le total du panier est
+lui-même une fourchette**. ⛔ **On n'annonce aucun prix par ingrédient** : la
+maison n'a donné qu'une fourchette, un chiffre en face de chaque case serait
+inventé. Le message WhatsApp porte les choix, la fourchette, et la phrase
+« merci de me le confirmer ».
+
+### ⚠️ LA RÈGLE DE PRIX, PRÉCISÉE PAR MONGAZI (nuit, 3)
+> « Un client qui veut commander une sauce doit, après avoir choisi la sauce,
+> choisir un accompagnement. Les plats varient de 1 500 à 3 000 F en fonction
+> des éléments qu'ils veulent à l'intérieur — entre parenthèses. **Quand on met
+> tout dedans, c'est le prix le plus cher.** »
+
+Cette dernière phrase change tout : **deux cas sur trois deviennent EXACTS.**
+
+| Ce que le client choisit | Prix affiché | Au panier |
+|---|---|---|
+| **rien dedans** | **1 500 F** exact | 1 500 F |
+| une partie | **1 500 à 3 500 F** | fourchette, la maison confirme |
+| **tout dedans** | **3 500 F** exact | 3 500 F |
+
+⛔ **On n'interpole pas entre les deux.** La maison n'a jamais donné le prix
+d'un ingrédient pris séparément : deux bornes connues ne font pas un barème.
+Le cas « une partie » reste donc une fourchette assumée, et le message WhatsApp
+demande la confirmation.
+
+✅ **L'accompagnement est OBLIGATOIRE.** Le bouton reste bloqué sur
+« Choisissez un accompagnement » tant qu'il n'y en a pas — une commande sans
+accompagnement arrive incomplète en cuisine, et c'est le restaurant qui doit
+rappeler le client. Vaut pour les sauces **et les grillades**, les deux
+catégories qui proposent des accompagnements. Deux contrôles le vérifient :
+bloqué sans, débloqué avec.
+
+### La catégorie passe de 4 à 14 sauces
+Les 10 de la feuille (gombo, krinkrin, feuille, arachide, graine, tomate, tête
+de mouton, pieds de bœuf, yassa, yassa au poulet) rejoignent les 4 de l'ancien
+menu. Les **accompagnements sont remplacés** par la liste de la feuille (15,
+de telibo à toubani).
+
+### Le héros : QUE des sauces
+Mongazi, en regardant le héros en ligne : « je veux qu'ici ce soient les sauces
+qui soient mises en avant, **que les sauces** ». Le poulet bicyclette, le
+tilapia et le chawarma JOQ **sortent du héros**. Ils restent à la carte et se
+commandent comme avant : ce n'est pas un retrait de plat, c'est un choix de
+vitrine — un restaurant béninois montre ses sauces.
+
+⚠️ **Trois, et pas plus** : ce sont les seules sauces dont la maison a envoyé
+la photo, et le héros vit de l'image (une ardoise en plein écran ne vend rien).
+Moyo Chigan et Sauce poisson frais ont bien un détourage, mais fait à partir
+d'une image **générée** de juillet : les mettre là, c'est ouvrir le site sur de
+l'IA. Elles y entreront le jour où la maison les photographie.
+
+### Le héros : trois vraies photos en tête
+Sauce gombo, Sauce krinkrin, Sauce feuille, puis poulet, tilapia, chawarma.
+⚠️ **L'appariement photo ↔ sauce est vérifié, pas deviné** : la feuille porte
+trois vignettes imprimées et **la forme de l'assiette concorde** (gombo
+octogonale, krinkrin octogonale sur ardoise, feuille hexagonale).
+
+### Les détourages de la maison : `python _outils/_damier.py`
+Mongazi renvoie les trois plats **déjà détourés**, mais les fichiers arrivent en
+**RGB sans canal alpha** : le damier gris de son éditeur est **peint dans les
+pixels**. Il faut donc redétourer, en traitant le damier comme un fond.
+
+⛔ **Quatre tours perdus à vouloir le faire « proprement »** : apprendre les deux
+gris sur les coins, remplir depuis les bords, ponter les pixels de transition,
+rembourrer pour que l'érosion ne mange pas l'anneau du bord, reconstruire la
+grille pour ne retirer que ce qui coïncide avec elle. Échec de fond : **sur le
+gombo les deux gris du damier sont 77 et 124, et le bord noir de l'assiette a
+des reflets dans cette plage.** Aucun seuil de luminance ne les sépare.
+✅ **rembg sort les trois d'un coup, sans une bavure** : un modèle de saillance
+ne se demande pas de quelle couleur est le fond, il voit une assiette.
+⚠️ Et ici **`isnet` gagne**, alors que birefnet gagnait sur les mêmes plats
+photographiés sur fond noir : **le fond change, le gagnant change.**
+
+⚠️ **Piège d'archivage** : j'avais copié dans `_partage/` *mon masque raté* au
+lieu des fichiers de Mongazi, et rembg a donc travaillé sur une image déjà
+abîmée — assiette perdue. **Ce qu'on archive doit être la source reçue, jamais
+un intermédiaire.**
+
+### Le détourage : `python _outils/_photos_sauces.py`
+Deux formes par photo : **carré opaque** pour la carte, **détouré RGBA** pour le
+héros. Le carré n'est pas un recadrage aveugle — il se centre sur l'assiette
+grâce au masque, un recadrage centré coupait le bord sur deux des trois photos.
+⚠️ **MODÈLE : `birefnet-general` ICI, `isnet` POUR LES BOLS.** Planche
+comparative : sur ces photos — **assiettes noires sur fond noir** — isnet garde
+une tache de vapeur pleine au-dessus du krinkrin, une encoche dans l'assiette de
+la feuille et un bout d'ardoise ; birefnet découpe la masse du plat proprement.
+Sur les bols de `_detoure_plats.py`, c'est **exactement l'inverse**.
+→ **Refaire la planche à chaque nouveau lot, ne pas présumer.**
+
+## ✅ LE HÉROS PASSE AUX SAUCES — 2026-08-19 (nuit)
+
+> Mongazi : « c'est un restaurant béninois, donc les plats de la catégorie
+> sauce doivent être mis en avant plus que les autres ; dans la héros section
+> ce sont ces plats-là qui défileront automatiquement. Les autres aussi bien
+> sûr, mais ces plats-là en principal. »
+
+**Le héros passe de 4 à 6 plats, les deux sauces en tête** : Moyo Chigan et
+Sauce poisson frais, puis Poulet bicyclette, Tilapia braisé, Pizza Paysanne,
+Chawarma JOQ.
+
+### Pourquoi CES deux sauces et pas les quatre
+Le menu papier range les sauces en **deux sections** : « Monyo » (les locales)
+et « Sauces Européennes ». **Béchamel et Sauce Crème sont les européennes** :
+les mettre en avant pour dire « c'est un restaurant béninois » dirait le
+contraire de l'argument. Elles restent à la carte, pas au héros.
+⚠️ Et leur détourage est raté (voir ci-dessous), ce qui tranche la question.
+
+### Le détourage : `python _outils/_detoure_plats.py`
+Le héros pose l'assiette sur un fond crème, donc **toutes les images de
+`public/plats/` sont en RGBA**, contrairement à celles de `public/carte/`.
+Les sauces n'en avaient pas : elles ont été détourées depuis leur image carrée.
+- **Modèle `isnet-general-use`**, choisi sur planche comparative : `u2net` perd
+  le bol et ne garde que la viande, `birefnet-general` déchiquette le bol.
+  isnet garde le bol entier **et la vapeur**, qui fait tout le charme.
+- ⛔ **Ce qui ne marche pas** : sur Béchamel et Crème, isnet garde un bout de
+  l'ardoise sous le bol. L'ouverture morphologique qui devait l'enlever **mord
+  dans le bol** et laisse une encoche — pire que le mal. Ne pas refaire l'essai.
+- La **teinte du prix est relevée sur la photo** (méthode Hillary) : Moyo
+  `#B25324` (5,05:1 avec le blanc), Poisson frais `#8A3520` — les deux sauces
+  partagent leur dominante tomate, il fallait les distinguer sans mentir.
+
+### ⏳ Ce qui manque pour aller au bout
+**Gombo, krinkrin et sauce feuille — les plus béninoises de toutes — n'ont
+aucune photo sur le disque.** Les images envoyées par Mongazi sont arrivées
+dans la conversation, pas comme fichiers. Le jour où elles atterrissent dans
+`_partage/`, elles prennent la tête du héros.
+⚠️ **Et il faudra d'abord savoir d'où elles viennent** : fond noir, vapeur,
+lumière de studio — elles ont l'allure des 48 images générées de juillet. Si
+elles sont générées, la règle du 2026-08-01 les refuse, et ce serait la
+première fois qu'on en ajoute une **après** la règle.
+
+## ✅ CORRECTIONS DE LA PROPRIÉTAIRE — 2026-08-19 (soir) · **52 → 42 plats**
+
+Note manuscrite « Correction pour Au Braisé d'Or », photographiée et transmise
+par Mongazi. **Les prix en place sont validés** (« la propriétaire n'est pas
+contre »). Elle demande des retraits et une catégorie de plus.
+
+### 13 plats retirés
+| Catégorie | Retiré | Reste |
+|---|---|---|
+| **Pizza** | napolitaine · oriental · margherita · pili chaud · à la crème · **pêcheur** | 4 sur 10 |
+| **Grillades** | **le lapin seul** · viande de caille — ✅ **le mouton frit reste, même prix** (Mongazi, 19/08 au soir) | 5 sur 6 |
+| **Chawarma** | rien (elle l'écrit) | 3 |
+| **Hamburger** | crispy poulet · nugget pomme au four | 7 sur 9 |
+| **Cocktails** | « on supprime tout sauf les jus de fruit » → mojito, piña colada, JOQ Viagra | 3 sur 6 |
+
+Salades, sauces et petit-déjeuner : rien à changer.
+
+### Une catégorie ajoutée : **Desserts** (yaourt, glace)
+⚠️ Le « cocktail » qu'elle listait **en a été sorti le soir même** (Mongazi) :
+il faisait doublon avec les 3 cocktails de fruits à 2 500 F, dans deux onglets
+et à deux prix.
+⏳ **Aucun prix donné.** Mongazi les demandera plus tard : on garde
+« Prix sur demande », c'est assumé, pas un oubli. Les trois portent **« Prix sur demande »** et
+leur fiche envoie la question sur WhatsApp au lieu d'ajouter au panier.
+Convention posée dans les données : **`p:0` = prix pas encore donné**. On
+n'invente pas un prix, et on ne cache pas une catégorie qu'elle veut vendre.
+⚠️ Un article à 0 ne doit jamais entrer au panier : le total mentirait et le
+message WhatsApp partirait avec un « 0 F ». Un contrôle vérifie qu'aucun
+« 0 F » n'apparaît nulle part.
+
+### ⚠️ Ce que le retrait a cassé, et qu'il fallait réparer
+1. **La pizza pêcheur était un des 4 plats signature du héros.** Un héros ne
+   peut pas mettre en avant un plat qu'on ne peut plus commander : le visiteur
+   arrive, s'enthousiasme, et ne le trouve nulle part. → **paysanne**, seule
+   pizza restante à deux tailles, donc au même rôle sur la carte.
+   ⚠️ Elle réutilise l'image générée de l'ancienne pizza, qui ne représente
+   aucun plat réel : à revoir avec la décision sur les 48 photos.
+2. **Deux notes de catégorie devenaient fausses.** Les hamburgers disaient
+   « sauf végétarien, crispy, nugget » alors que crispy et nugget sont partis ;
+   les cocktails annonçaient « avec ou sans alcool » alors qu'il n'y a plus
+   d'alcool. Réécrites. **Retirer un plat ne suffit pas : il faut relire ce que
+   la page dit encore de lui.**
+3. Les trois cocktails restants répétaient « Sans alcool. » en fin de
+   description, ce que la note de catégorie dit désormais une fois pour toutes.
+
+### ⏳ Les trois questions qui restent (détail en bas de `MENU.md`)
+1. **Prix du yaourt et de la glace** — ⏳ Mongazi les demandera plus tard, les
+   deux desserts restent en « Prix sur demande » en attendant.
+2. **Aileron** : le prix corrigé au surligneur sur le papier.
+3. **Le n° WhatsApp.**
+
+✅ **Deux tranchées par Mongazi le soir même** : le mouton frit reste au même
+prix (seul le lapin part) — ⚠️ **on avait retiré la ligne entière et donc
+supprimé un plat que la maison vend toujours** — et le « cocktail » sort des
+desserts.
+
+✅ **Deux questions de la passe précédente sont mortes d'elles-mêmes** : les
+2ᵉˢ tailles de la napolitaine et de l'oriental, et le prix de la pêcheur — les
+trois pizzas sont retirées.
+
+**QC : 64 contrôles verts**, dont un par plat retiré (il ne doit réapparaître
+ni par une régénération ni par un retour en arrière mal ciblé).
+
+## ✅ PASSE CATALOGUE DU 2026-08-19 — la carte relue contre le menu papier
+
+**On est remonté aux 5 photos du menu** (`_partage/photo_*_2026-07-17_*.jpg`),
+recadrées et agrandies, plutôt qu'au `MENU.md` qui en était le résumé. Trois
+choses en sont sorties.
+
+### 1. Le catalogue ne contenait pas tout le menu — **48 → 52 plats**
+Le petit-déjeuner du papier compte **10 lignes**, le site n'en montrait que
+**6**. Manquaient : **café chaud serré (500 F)**, **Lipton citron (500 F)**,
+**œuf sur plat (1 000 F)** et **café au lait écrémé (1 000 F)**. Quatre choses
+que la maison vend, tous les matins, et qu'on ne lui proposait pas.
+Ajoutées dans `index.html` (la vérité), carte régénérée par
+`node _outils/_extraire_carte.js`.
+
+### 2. Le prix était **illisible sur les 52 cartes**
+La pastille de prix n'avait **aucune couleur de texte** : elle héritait de
+`--encre` (`#1d1a17`) et posait de l'encre noire sur un fond noir à 65 %.
+Contraste mesuré sur les pixels rendus : **1,1:1**. Le minimum lisible est
+4,5:1. Autrement dit le seul chiffre que le client cherche n'était pas là.
+→ texte en `#f6efe6`, pastille à 70 %, **mesuré entre 13,9:1 et 18:1**, et un
+contrôle le garde désormais.
+
+### 3. Un plat sans photo a maintenant une place : **l'ardoise**
+⛔ Ni cadre vide, ni « photo à venir » : le premier dit que le site est en
+travaux, le second que la maison n'est pas prête. Un restaurant, lui, **écrit à
+l'ardoise** ce qu'il n'a pas photographié. La tuile porte le nom du plat, un
+filet de braise, et rien d'autre. C'est aussi **le mécanisme qui servira le
+jour où les 48 photos IA sortiront** (voir la question ouverte plus bas).
+
+### Ce que la photo a tranché, et ce qu'elle n'a pas tranché
+La colonne des 2ᵉˢ tailles est coupée au bord de la photo, mais **le premier
+chiffre se lit** en recadrant :
+
+- **confirmés** : à la crème 6 000 · pili chaud 5 000 · paysanne 6 000 ·
+  **pêcheur 6 000** (le `MENU.md` le donnait « à confirmer » : il est bon)
+- **absents du site alors qu'ils existent** : **napolitaine** et **oriental**
+  ont une grande taille, prix coupé, commençant par 5. ⏳
+- **pas de 2ᵉ taille** (colonne vide) : épinards, quatre saisons, fruit de mer,
+  margherita — le site a raison
+- ⚠️ **Aileron : la ligne est corrigée à la main au surligneur** sur le menu
+  papier, et c'est illisible sur la photo. Le site affiche 3 000. ⏳
+
+Les quatre questions à poser à la maison sont dans `MENU.md`, en bas.
+
+### Le QC, enfin écrit : `python _outils/_qc.py`
+**30 contrôles** (après `npm run build`) : le compte des plats **lu dans les
+données** et jamais recopié, les ardoises lisibles, 0 image cassée, 0
+`/carte/undefined.webp`, 0 débordement en 390 et 1440, la fiche qui s'ouvre sur
+un plat sans photo, et **la lisibilité du prix mesurée par catégorie**.
+⚠️ Trois pièges d'instrument sont documentés en tête du fichier : serveur de
+test multi-tâches, les **deux** dialogues de la page, et surtout — le décile le
+plus clair ne mesure pas un texte qui couvre un dixième de sa boîte, il mesure
+son anticrénelage (il annonçait **2,15:1 sur une pastille parfaitement nette**).
+
+### ⛔ LA QUESTION OUVERTE, QUI APPARTIENT À MONGAZI
+**Les 48 photos de plats sont des images générées** (z_image, 2026-07-20).
+Depuis le 2026-08-01 le cerveau dit : « INTERDIT ABSOLU : une photo produit
+générée par IA présentée comme le catalogue du client. » Angy Art a été purgée
+le 2026-08-08, Hillary affiche « Photo sur WhatsApp ». **Au Braisé d'Or est le
+dernier site où la règle n'est pas appliquée.** Rien n'a été touché ici sans
+décision : l'ardoise est prête, la bascule est de retirer `img` des entrées de
+`PHOTO` dans `index.html` et de régénérer.
+
 ## ⏳ Ce qui reste
 
 - **La vraie photo de la salle.** Le fond est un mur neutre, pas leur
@@ -177,3 +453,107 @@ Retours Mongazi après la session Higgsfield → refonte (skill `ui-ux-pro-max` 
 - 2026-07-20 (3) — **Son remplacé** : le client détestait le son synthétique (Web Audio braise/grésillement). **Retiré tout le moteur Web Audio** (ambiance + bruitages survol/clic/boot) → remplacé par une **boucle mp3 « feu de bois »** (`assets/audio/fire-loop.mp3`, source `_partage/Fat Es BBQ 1 minute of relaxing fire sound..mp3`) qui **démarre au 1er contact** (pointerdown/touchstart/keydown, façon NEBULA Agency) avec fondu ; le bouton haut-parleur du header (#sound) coupe/relance, état en `localStorage`. Redéployé. ✅ testé Playwright (fire-loop.mp3 joué au 1er clic).
 - 2026-07-20 (2) — **Polish post-mise en ligne** : (1) **crépitement/ronflement de fond retiré** (`startAmbient` no-op, on garde les retours survol/clic) ; (2) **menu 2 plats par ligne + cartes compactes sur mobile** (`.menu .grid → 1fr 1fr`, description masquée mobile — reste dans la fiche) pour parcourir vite ; (3) **toutes les mentions de brouillon retirées du site public** (« à valider / à confirmer / à préciser / aperçu / exemple / dev-tag ») → carte Maps placeholder remplacée par **vrai lien Google Maps** (recherche par nom+ville), adresse/horaires nettoyés, tags d'avis retirés, watermark « Aperçu NEBULA » supprimé. Nouvelle règle en mémoire : [[feedback_no-placeholder-on-deploy]]. Redéployé + vérifié live.
 - 2026-07-20 — **Refonte (skill ui-ux-pro-max) + 48 photos de plats + 1ER DÉPLOIEMENT** (détail section « REFONTE… » ci-dessus). Scroll-scrub héro abandonné (ne passait pas) → intro douce autoplay ; galerie fusionnée dans les cartes (photo + prix + clic→fiche) ; FAB WhatsApp retiré ; verre fumé ; **z_image** retenu après A/B (0,15 cr) pour générer **42 photos** (+4 réutilisées) = 48 plats photographiés. Solde crédits 66,15/100. **LIVE https://au-braise-dor.pages.dev.** Reste : affiche A4+QR, photo du lieu, n° WhatsApp, adresse/Maps, horaires, logo, réseaux, avis.
+
+## 2026-08-19 · les corrections de la propriétaire sont EN LIGNE
+
+Les modifications arrivées par la session téléphone (13 plats retirés, la carte
+des sauces, les héros détourés, les deux prix exacts) ont été **construites,
+contrôlées et publiées** depuis le PC de Cotonou.
+
+- déploiement : `https://cfc82be6.au-braise-dor.pages.dev` → https://au-braise-dor.pages.dev
+- vérifié **dans le corps de la page servie**, pas sur un code 200 :
+  « Monyo » 0 fois · gombo 9 · krinkrin 5 · 52 plats · Napolitaine / Mojito /
+  Crispy poulet / JOQ Viagra absents · « Mouton frit » toujours là (2 fois)
+- les 3 photos de sauces répondent 200 en `image/webp`, l'affiche A4 aussi
+- un fichier absent répond bien **404** (et non 200, cf. la panne PISTE)
+
+### ⚠️ Le contrôle qualité ne démarrait pas sur ce PC
+
+`_outils/_qc.py` a été écrit sur la machine du nuage. Trois défauts d'instrument,
+corrigés ici, aucun ne venait du site :
+
+1. il **codait en dur** `/opt/pw-browsers/chromium-1194/...` : ce chemin n'existe
+   que sur la machine du nuage. Il n'est plus imposé que s'il existe.
+2. il lisait `#cat-petitdej` après un **délai fixe de 1,5 s** : sur un poste
+   chargé la rubrique n'était pas encore montée et tout s'arrêtait sur un `null`.
+   Il **attend** l'élément.
+3. la console Windows écrit en **cp1252** : un « ≥ » dans un libellé faisait
+   planter la suite **après** l'avoir réussie. Sortie forcée en UTF-8.
+
+**78 contrôles verts, 0 rouge** (mobile 390 + bureau 1440 + lisibilité des prix).
+
+## 2026-08-20 · Les photos générées par IA sont gardées
+
+**Décision de Mongazi : « les photos IA de Braisé d'Or on les garde, oublie
+ça ».** Les 48 photos de plats (z_image, 20/07, antérieures à la règle du
+2026-08-01) restent en ligne. Le sujet est **clos** : il sort du reste-à-faire.
+
+⚠️ Ce n'est pas une exception à la règle, c'est un héritage assumé. Aucun
+**nouveau** visuel généré n'entre dans ce catalogue ni dans un autre.
+
+### Reste à obtenir de la maison
+
+- le prix du **yaourt** et de la **glace** (affichés « Prix sur demande »)
+- la correction manuscrite au surligneur sur **l'aileron**
+- **confirmer le n° WhatsApp** : 0156057157 câblé, contre 43 99 29 29 sur l'enseigne
+- la **vraie photo de la salle**, les vrais avis, l'adresse, le logo
+
+⚠️ `next@14.2.15` porte une vulnérabilité connue signalée par npm.
+
+## 2026-08-20 · ce qui ne se voyait pas : partage, robots, données structurées
+
+La vitrine avait tout ce qui se regarde et **rien de ce qui ne se voit pas**.
+Trois manques, tous invisibles depuis le site, tous corrigés sans rien demander
+à la maison.
+
+### 1 · Aucune image de partage
+
+Le lien envoyé sur WhatsApp n'était qu'une **ligne de texte grise**. Au Bénin
+tout circule par WhatsApp : c'est le défaut le plus cher qu'une vitrine puisse
+avoir. `python _outils/_og.py` fabrique `og.jpg` (1200x630, 93 Ko, **JPEG** —
+l'aperçu WhatsApp ne lit pas toujours le WebP) : la braise, le nom, et **une
+vraie photo de la maison**, la sauce gombo détourée. Aucun texte inventé.
+
+⚠️ **L'instrument mesurait le texte au lieu du fond.** Le contraste du titre
+tombait à 1,1:1 parce que les pixels les plus clairs de la zone étaient **les
+lettres elles-mêmes**. On relève le fond **avant** d'écrire dessus : 10,8:1.
+
+### 2 · Ni robots.txt, ni sitemap.xml
+
+Écrits. Les robots des IA (GPTBot, ClaudeBot, PerplexityBot) sont explicitement
+autorisés : ils citent la maison.
+
+### 3 · Aucune donnée structurée
+
+Un prix réel ne s'affichait dans aucun résultat Google. La page porte
+maintenant un `Restaurant` complet, **lu dans `CARTE`, jamais recopié** :
+`hasMenu` avec ses 9 rubriques et ses 52 plats, les vrais numéros, l'e-mail.
+
+⛔ **Ce qu'on n'a PAS déclaré** : aucune note ni avis (personne n'en a donné),
+aucune adresse de rue (la maison ne l'a jamais donnée : la ville et le pays
+suffisent, une adresse inventée est pire que pas d'adresse), aucun horaire
+(« ouvert tous les jours » n'est pas un horaire).
+
+⚠️ **UN PLAT A TROIS FAÇONS D'AVOIR UN PRIX**, et les confondre ment :
+`pMax` est une **fourchette** (les sauces, selon ce qu'on met dedans) →
+`AggregateOffer` ; `p2` est une **deuxième taille** → deux offres ; `p: 0` veut
+dire **prix pas encore donné** → aucune offre. Le premier jet ne lisait que
+`p` et annonçait « jusqu'à **5 000 F** » alors que la carte monte à **6 000 F**.
+
+### Le contrôle
+
+`python _outils/_qc_partage.py` = **35 contrôles, sans aucun navigateur** (il
+lit le fichier servi). Il compare le balisage à la carte plat par plat, refuse
+une offre à 0 F, vérifie que les 9 fourchettes portent leur borne haute et que
+les 13 plats retirés ne reviennent pas par le balisage.
+
+⚠️ Il a fallu deux corrections d'instrument : une expression régulière « du nom
+jusqu'au prix » attrapait le prix du plat **suivant** quand un plat tient sur
+plusieurs lignes (les sauces), et `toLocaleString("fr-FR")` sépare les milliers
+par une **espace fine insécable** (U+202F) qu'aucune comparaison de texte ne
+voit venir.
+
+⚠️ **La suite Playwright (76 contrôles) n'a PAS tourné** : les navigateurs ont
+été supprimés le même jour pour libérer le disque. Les changements sont
+entièrement dans l'en-tête du document, sans effet sur la mise en page. Pour la
+relancer : `npx playwright install chromium` (267 Mo).

@@ -11,6 +11,11 @@
 >
 > Outil de génération : **Nano Banana Pro** (Gemini 3 Pro Image).
 > Version 1.0 · 2026-07-30
+>
+> **Format carrousel :** voir `PROMPTS-CARROUSELS.md`. Il porte une **deuxième direction
+> artistique** (« MARBRE & ROUGE » : papier os, un seul rouge éditorial, sculpture de
+> marbre), à ne pas mélanger avec celle-ci dans une même campagne. Le label
+> « LE SAVIEZ-VOUS ? » est le même dans les deux : c'est lui qui fait la série.
 
 ---
 
