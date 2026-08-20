@@ -1050,3 +1050,23 @@ trouble dure 100 ms au lieu d'un demi-tour d'horloge.
   découpe de texte passe sa sortie à `node --check` **avant** de l'écrire. Deux
   bourdes de découpe (une virgule après un commentaire, puis tout l'en-tête du
   fichier effacé) rendaient le site entièrement muet.
+
+## 2026-08-20 — `npx playwright install` n'installe PAS les navigateurs de Python
+
+- **Contexte** : les navigateurs avaient été supprimés pour libérer le disque.
+  Pour republier la vitrine d'Hillary il fallait ses 138 contrôles, donc les
+  réinstaller. J'ai lancé `npx playwright install chromium webkit`.
+- **Ce qui s'est passé** : 430 Mo téléchargés, installés, et le contrôle
+  s'arrête quand même :
+  `Executable doesn't exist at ...\chromium_headless_shell-1223\...`
+- **La cause** : le paquet **Node** et la bibliothèque **Python** épinglent des
+  **numéros de version différents**. `npx` a posé `chromium-1234` et
+  `webkit-2336` ; la bibliothèque Python réclame `1223` et `2287`. Ils vivent
+  dans le même dossier, portent les mêmes noms à un chiffre près, et **ne se
+  remplacent pas**.
+- **La bonne commande**, quand le contrôle est écrit en Python :
+  `python -m playwright install chromium webkit`.
+- ⚠️ **Le coût réel** : 430 Mo pour rien sur une connexion de Cotonou, et le
+  disque qui retombe à **0,08 Go libres** pendant que les deux jeux coexistent.
+- **Leçon** : la commande d'installation doit venir du **même écosystème que le
+  code qui l'utilise**. `npx` pour un `_qc.js`, `python -m` pour un `_qc.py`.
