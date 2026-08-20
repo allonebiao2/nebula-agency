@@ -116,6 +116,21 @@ JMIN = JMAX = 14          # deux semaines fermes, pour les dix
 EXPMIN, EXPMAX = 2, 4     # « 2 à 4 jours », pour les dix
 
 
+BONS = (".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif")
+_DITS = set()
+
+
+def ouvrir_heic():
+    """Les photos d'un iPhone arrivent en HEIC. Sans ce greffon, Pillow ne
+    sait pas les lire et le détourage s'arrête sur une exception. Absent, on
+    continue : les JPEG et les PNG marchent quand même."""
+    try:
+        import pillow_heif
+        pillow_heif.register_heif_opener()
+    except Exception:
+        pass
+
+
 def dossier(m):
     return os.path.join(SRC, "modele-" + m["cle"])
 
@@ -136,8 +151,17 @@ def photos(m):
     d = dossier(m)
     if not os.path.isdir(d):
         return []
-    l = sorted(f for f in os.listdir(d)
-               if f.lower().endswith((".jpg", ".jpeg", ".png", ".webp")))
+    # ⚠️ Le HEIC des iPhone est accepté (voir `ouvrir_heic()`). Il ne l'était
+    #    pas, et un `.heic` déposé dans le dossier était ignoré EN SILENCE :
+    #    le script annonçait « en attente de photo » alors que la photo était
+    #    là, sous les yeux, dans le bon dossier.
+    tout = [f for f in sorted(os.listdir(d)) if not f.startswith(".")]
+    l = [f for f in tout if f.lower().endswith(BONS)]
+    for f in tout:
+        c = os.path.join(os.path.basename(d), f)
+        if f not in l and c not in _DITS:      # `photos()` est appelée plusieurs
+            _DITS.add(c)                       # fois : on ne le dit qu'une
+            print(f"     ⚠️ ignoré (format non géré) : {c}")
 
     def est_dos(f):
         return re.search(r"(dos|arriere|arrière|back)", f, re.I) is not None
@@ -210,6 +234,7 @@ def poser_images(prets):
     encodage. On ne réencode jamais une image déjà posée."""
     from rembg import new_session, remove
     from PIL import Image
+    ouvrir_heic()
     session = new_session("isnet-general-use")
     faits = []
     for m in prets:
