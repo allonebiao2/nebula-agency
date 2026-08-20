@@ -1014,7 +1014,7 @@ et **sept fonctions effacées** par une restructuration, découvertes après
 6. ⚠️ **défaut antérieur** : le héros affiche **« PRÊT-À-PORTER »** alors que
    les 20 pièces sont toutes en sur-mesure, onglet masqué car vide.
 
-## ⚠️ 2026-08-20 · LES PHOTOS SONT DANS `main`, ELLES NE SONT PAS EN LIGNE
+## ✅ 2026-08-20 · LES PHOTOS SONT EN LIGNE (le constat qui suit est résolu)
 
 Vérifié depuis le PC, sur le site servi :
 
@@ -1046,3 +1046,34 @@ version précédente sans un mot**.
 
 `h8` Robe de ville à tulle · `h19` Robe d... · `h20` Ensemble Volants.
 Elles affichent « Photo sur WhatsApp », ce qui est le bon comportement.
+
+### ✅ Publié le 2026-08-20, et vérifié
+
+`_v4/_assembler.py` → `_build.py` → `_predeploy.py` → `wrangler pages deploy`.
+La page servie est **identique octet pour octet** au fichier construit (MD5), et
+les cinq nouvelles images répondent 200 : Soleil, Organza (face et dos), Sirène,
+Orange uni. **Il ne reste que 2 cartes en « Photo sur WhatsApp »** (25 images
+distinctes en ligne).
+
+⚠️ **`npx wrangler` ne marche plus sur ce poste** depuis le nettoyage du disque
+(le paquet vivait dans un `node_modules` supprimé, et le cache npm a été vidé).
+Wrangler 3 est maintenant **installé globalement** : la commande est
+`wrangler pages deploy _dist --project-name hillary-m-styl --branch main`.
+
+### ⚠️ Un contrôle tombait sur un site sain
+
+`OK 137 / FAIL 1` : « l'état de la pastille ne tient pas qu'à la couleur »,
+largeurs mesurées 9,18 et 10,31 px. Le style dit pourtant 5 px et 15 px.
+
+**La largeur est animée.** Pendant le croisement des deux vues, les deux
+pastilles passent toutes les deux par ~9 px et l'écart tombe à 1. Le contrôle
+mesurait **un instant**, et cet instant arrivait juste après les 5 secondes
+d'échantillonnage du contrôle précédent : il tombait donc pile dans la
+transition. Mesuré au repos : **9,7 px d'écart, constant sur 8 secondes**.
+
+Le contrôle **échantillonne maintenant six fois sur une seconde et garde le
+meilleur écart**. Il reste strict : si le style regressait à la seule couleur,
+aucun échantillon n'atteindrait le seuil. **138 contrôles verts.**
+
+⚠️ Même famille que les deux pièges déjà écrits ici : on échantillonne, on ne
+compare pas deux instantanés.

@@ -861,11 +861,25 @@ async def main():
                f"(dos monte a {b['max2']:.2f}, face descend a {b['min1']:.2f})")
 
             # la pastille active n'est pas SEULEMENT rose : elle est plus large
-            w = await page.evaluate("""()=>{
-              const p=[...document.querySelector('#grille .ph.duo .vues').children];
-              return p.map(e=>e.getBoundingClientRect().width);}""")
-            ok(max(w) - min(w) >= 4,
-               f"l'etat de la pastille ne tient pas qu'a la couleur (largeurs {w})")
+            # ⚠️ ON ECHANTILLONNE, ON NE MESURE PAS UN INSTANT. La largeur est
+            #    animee : pendant le croisement des deux vues, les deux
+            #    pastilles passent toutes les deux par ~9 px et l'ecart tombe a
+            #    1. La version d'avant tombait pile la, apres 5 s a echantillonner
+            #    l'opacite juste au-dessus : ECHEC annonce sur un site sain,
+            #    mesure a 9,7 px d'ecart au repos. On garde le MEILLEUR ecart
+            #    vu sur une seconde : si le style regressait a la seule couleur,
+            #    aucun echantillon n'atteindrait le seuil.
+            ecarts = []
+            for _ in range(6):
+                w = await page.evaluate("""()=>{
+                  const p=[...document.querySelector('#grille .ph.duo .vues').children];
+                  return p.map(e=>e.getBoundingClientRect().width);}""")
+                ecarts.append((max(w) - min(w), w))
+                await page.wait_for_timeout(200)
+            meilleur, w = max(ecarts)
+            ok(meilleur >= 4,
+               f"l'etat de la pastille ne tient pas qu'a la couleur "
+               f"(ecart {meilleur:.1f} px, largeurs {[round(x,1) for x in w]})")
 
             # ⚠️ ON ECHANTILLONNE, ON NE COMPARE PAS DEUX INSTANTANES.
             #    Premiere version de ce controle : etat, on attend 5,2 s, etat,
