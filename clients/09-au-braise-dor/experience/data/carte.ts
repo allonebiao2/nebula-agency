@@ -118,7 +118,7 @@ export const CARTE: Cat[] = [
       { n: "Sauce krinkrin", d: "Adèmè pilé, servi bien vert.", p: 1500, pMax: 3000, garn: ["Crevette", "Kpanmom"], img: "/carte/sc-krinkrin.webp" },
       { n: "Sauce feuille", d: "Gbêkê mijoté.", p: 1500, pMax: 3000, garn: ["Poisson", "Crevette"], img: "/carte/sc-feuille.webp" },
       { n: "Sauce arachide", d: "La pâte d'arachide, longuement mijotée.", p: 1500, pMax: 3000, garn: ["Viande de mouton", "Poisson"] },
-      { n: "Sauce graine", d: "La graine de palme, pressée à la maison.", p: 1500, pMax: 3000 },
+      { n: "Sauce graine", d: "La graine de palme, pressée à la maison.", p: 1500, pMax: 3000, img: "/carte/sc-graine.webp" },
       { n: "Sauce tomate", d: "Tomate fraîche, mijotée.", p: 1500, pMax: 3000 },
       { n: "Sauce tête de mouton", d: "Le gbata, pour ceux qui savent.", p: 1500, pMax: 3000 },
       { n: "Sauce pieds de bœuf", d: "Le blokoto, fondant.", p: 1500, pMax: 3000 },

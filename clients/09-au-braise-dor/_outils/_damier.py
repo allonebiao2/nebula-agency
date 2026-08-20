@@ -44,6 +44,7 @@ PLATS = os.path.join(RACINE, "experience", "public", "plats")
 LOTS = [
     ("sc-gombo", "2026-08-19-sauce-gombo-detoure.png", False),
     ("sc-feuille", "2026-08-19-sauce-feuille-detoure.png", False),
+    ("sc-graine", "2026-08-19-sauce-graine-detoure.png", False),
     # ⚠️ LE KRINKRIN VIENT D'UNE AUTRE SOURCE, ET C'EST VOULU.
     # Sa version détourée est RECADRÉE TROP SERRÉ : le disque d'ardoise sous
     # l'assiette sort du cadre à gauche, à droite et en bas, et l'assiette

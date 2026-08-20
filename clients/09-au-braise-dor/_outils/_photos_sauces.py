@@ -40,10 +40,18 @@ PARTAGE = os.path.normpath(os.path.join(RACINE, "..", "..", "_partage"))
 CARTE = os.path.join(RACINE, "experience", "public", "carte")
 PLATS = os.path.join(RACINE, "experience", "public", "plats")
 
+# (slug, fichier, faire_le_heros) — ⚠️ le héros de certaines sauces vient
+# d'un AUTRE fichier, celui que la maison a détouré elle-même : voir
+# `_damier.py`. Le mettre à False ici évite de l'écraser au passage.
 PHOTOS = [
-    ("sc-gombo", "2026-08-19-sauce-gombo.png"),
-    ("sc-krinkrin", "2026-08-19-sauce-krinkrin.png"),
-    ("sc-feuille", "2026-08-19-sauce-feuille.png"),
+    # ⚠️ TOUS À False DEPUIS LE 2026-08-19 : les quatre héros viennent
+    # désormais des fichiers que la maison a détourés elle-même, traités par
+    # `_damier.py`. Laisser True ici les écraserait silencieusement à la
+    # prochaine régénération — et on retrouverait les découpes sans assiette.
+    ("sc-gombo", "2026-08-19-sauce-gombo.png", False),
+    ("sc-krinkrin", "2026-08-19-sauce-krinkrin.png", False),
+    ("sc-feuille", "2026-08-19-sauce-feuille.png", False),
+    ("sc-graine", "2026-08-19-sauce-graine.png", False),
 ]
 
 
@@ -70,7 +78,7 @@ def main():
     # de `_detoure_plats.py`, c'est exactement l'inverse.
     # → Refaire la planche à chaque nouveau lot de photos, ne pas présumer.
     session = new_session("birefnet-general")
-    for slug, fichier in PHOTOS:
+    for slug, fichier, faire_le_heros in PHOTOS:
         src = os.path.join(PARTAGE, fichier)
         if not os.path.exists(src):
             sys.exit("⛔ introuvable : " + src)
@@ -86,6 +94,11 @@ def main():
         car = carre_autour(origine, alpha).resize((900, 900), Image.LANCZOS)
         fc = os.path.join(CARTE, slug + ".webp")
         car.save(fc, "WEBP", quality=82, method=6)
+
+        if not faire_le_heros:
+            print("%-12s carte %3d Ko %dx%d   (héros : voir _damier.py)"
+                  % (slug, os.path.getsize(fc) // 1024, car.width, car.height))
+            continue
 
         # 2. le héros : détouré, RGBA
         det = decoupe.crop(alpha.getbbox())
