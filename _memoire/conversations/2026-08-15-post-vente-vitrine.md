@@ -260,3 +260,47 @@ expliquer, aucune flèche, aucune horloge, aucun sablier.
 Ce statut porte **« LE SAVIEZ-VOUS ? »**, contrairement aux n° 2 et n° 3 qui appartenaient à
 la famille commerciale. C'est la rubrique éditoriale dans sa forme la plus pure, et c'est
 cohérent : l'ancre ne se pose que sur les posts qui ne vendent rien.
+
+---
+
+## Carrousel TikTok n° 2 · « LE NUAGE N’EXISTE PAS » — pure leçon
+
+Demande : un carrousel TikTok de 3 images qui **éduque** autour du site internet, pour que
+les spectateurs se couchent moins bêtes.
+
+### Trois faits qui, bout à bout, expliquent la chose entière
+
+| Image | Le fait | Ce qu'il démonte |
+|---|---|---|
+| 1/3 | **LE NUAGE N’EXISTE PAS.** | le mot que tout le monde répète sans y penser |
+| 2/3 | **TON ADRESSE N’EST PAS TON SITE.** | on croit que le nom de domaine *est* le site |
+| 3/3 | **LE SITE NE VIENT JAMAIS À TOI.** | on croit que la page « arrive » |
+
+**Pourquoi commencer par le nuage.** C'est le seul mot du numérique que tout le monde emploie
+et que personne n'a jamais interrogé. Dire qu'il n'existe pas arrête le pouce en une seconde,
+et la vérité derrière est banale et vertigineuse : c'est la machine de quelqu'un, dans un
+bâtiment, avec une facture d'électricité.
+
+**La leçon arrive en dernier, jamais en premier :** *la machine peut changer, le nom reste à
+toi.* Le spectateur la déduit presque seul après trois faits, ce qui la rend beaucoup plus
+solide qu'un conseil donné d'entrée.
+
+### Le fil visuel : l'original et ses copies
+
+1. le sujet **solide et lourd**, ombre pleine, rien ne flotte, aucune brume : l'image
+   **contredit** le mot au lieu de l'illustrer ;
+2. le sujet d'un côté, **une petite plaque vide** de l'autre, reliée par un fil de lumière :
+   le nom ne contient rien, il pointe ;
+3. le sujet **immobile et intact** pendant que des dizaines de copies translucides s'en
+   échappent : la source ne diminue pas.
+
+⚠️ Les trois pièges de génération sont écrits dans le document : **pas de nuage sur la 1**,
+**la plaque de la 2 doit rester vide** (si le modèle écrit dessus, le fait devient faux), et
+**la source de la 3 ne doit pas s'effriter** (le modèle voudra la consommer, c'est
+exactement le contraire du fait).
+
+### Au passage
+
+Trois apostrophes droites corrigées dans le post TikTok n° 1. Le contrôle qui les repère est
+devenu un réflexe de fin de rédaction : lister les lignes qui commencent par un guillemet et
+contiennent `'`.
