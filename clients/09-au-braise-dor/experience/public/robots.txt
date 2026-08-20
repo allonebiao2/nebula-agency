@@ -1,0 +1,13 @@
+# Au Braisé d'Or — Cotonou
+User-agent: *
+Allow: /
+
+# Les robots des IA sont les bienvenus : ils citent la maison.
+User-agent: GPTBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+
+Sitemap: https://au-braise-dor.pages.dev/sitemap.xml

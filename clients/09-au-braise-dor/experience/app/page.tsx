@@ -1,6 +1,7 @@
 import Experience from "@/components/Experience";
 import Carte from "@/components/Carte";
 import Pied from "@/components/Pied";
+import DonneesStructurees from "@/components/DonneesStructurees";
 
 /**
  * L'expérience passe AU-DESSUS de la carte : les quatre plats signature
@@ -10,6 +11,7 @@ import Pied from "@/components/Pied";
 export default function Page() {
   return (
     <main>
+      <DonneesStructurees />
       <Experience />
       <Carte />
       <Pied />

@@ -499,3 +499,61 @@ corrigés ici, aucun ne venait du site :
 - la **vraie photo de la salle**, les vrais avis, l'adresse, le logo
 
 ⚠️ `next@14.2.15` porte une vulnérabilité connue signalée par npm.
+
+## 2026-08-20 · ce qui ne se voyait pas : partage, robots, données structurées
+
+La vitrine avait tout ce qui se regarde et **rien de ce qui ne se voit pas**.
+Trois manques, tous invisibles depuis le site, tous corrigés sans rien demander
+à la maison.
+
+### 1 · Aucune image de partage
+
+Le lien envoyé sur WhatsApp n'était qu'une **ligne de texte grise**. Au Bénin
+tout circule par WhatsApp : c'est le défaut le plus cher qu'une vitrine puisse
+avoir. `python _outils/_og.py` fabrique `og.jpg` (1200x630, 93 Ko, **JPEG** —
+l'aperçu WhatsApp ne lit pas toujours le WebP) : la braise, le nom, et **une
+vraie photo de la maison**, la sauce gombo détourée. Aucun texte inventé.
+
+⚠️ **L'instrument mesurait le texte au lieu du fond.** Le contraste du titre
+tombait à 1,1:1 parce que les pixels les plus clairs de la zone étaient **les
+lettres elles-mêmes**. On relève le fond **avant** d'écrire dessus : 10,8:1.
+
+### 2 · Ni robots.txt, ni sitemap.xml
+
+Écrits. Les robots des IA (GPTBot, ClaudeBot, PerplexityBot) sont explicitement
+autorisés : ils citent la maison.
+
+### 3 · Aucune donnée structurée
+
+Un prix réel ne s'affichait dans aucun résultat Google. La page porte
+maintenant un `Restaurant` complet, **lu dans `CARTE`, jamais recopié** :
+`hasMenu` avec ses 9 rubriques et ses 52 plats, les vrais numéros, l'e-mail.
+
+⛔ **Ce qu'on n'a PAS déclaré** : aucune note ni avis (personne n'en a donné),
+aucune adresse de rue (la maison ne l'a jamais donnée : la ville et le pays
+suffisent, une adresse inventée est pire que pas d'adresse), aucun horaire
+(« ouvert tous les jours » n'est pas un horaire).
+
+⚠️ **UN PLAT A TROIS FAÇONS D'AVOIR UN PRIX**, et les confondre ment :
+`pMax` est une **fourchette** (les sauces, selon ce qu'on met dedans) →
+`AggregateOffer` ; `p2` est une **deuxième taille** → deux offres ; `p: 0` veut
+dire **prix pas encore donné** → aucune offre. Le premier jet ne lisait que
+`p` et annonçait « jusqu'à **5 000 F** » alors que la carte monte à **6 000 F**.
+
+### Le contrôle
+
+`python _outils/_qc_partage.py` = **35 contrôles, sans aucun navigateur** (il
+lit le fichier servi). Il compare le balisage à la carte plat par plat, refuse
+une offre à 0 F, vérifie que les 9 fourchettes portent leur borne haute et que
+les 13 plats retirés ne reviennent pas par le balisage.
+
+⚠️ Il a fallu deux corrections d'instrument : une expression régulière « du nom
+jusqu'au prix » attrapait le prix du plat **suivant** quand un plat tient sur
+plusieurs lignes (les sauces), et `toLocaleString("fr-FR")` sépare les milliers
+par une **espace fine insécable** (U+202F) qu'aucune comparaison de texte ne
+voit venir.
+
+⚠️ **La suite Playwright (76 contrôles) n'a PAS tourné** : les navigateurs ont
+été supprimés le même jour pour libérer le disque. Les changements sont
+entièrement dans l'en-tête du document, sans effet sur la mise en page. Pour la
+relancer : `npx playwright install chromium` (267 Mo).
