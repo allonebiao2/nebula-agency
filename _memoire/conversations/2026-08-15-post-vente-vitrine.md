@@ -216,3 +216,47 @@ seul objet**, et c'est ce qui rend la démonstration imparable.
 
 Le prompt interdit l'horloge, le soleil, l'étiquette avant-après et le trait de séparation :
 la lumière explique toute seule.
+
+---
+
+## Statut WhatsApp n° 4 · « LE PREMIER SITE DU MONDE EST TOUJOURS EN LIGNE. »
+
+Demande : le post du jour, mais **juste une leçon**, pour qu'on se couche moins bête, et
+**quelque chose de rare autour de la présence en ligne**.
+
+### Le fait
+
+Le tout premier site web du monde, publié en 1991, **répond encore aujourd'hui à la même
+adresse** : `info.cern.ch`. Presque personne ne le sait, et tout le monde peut le vérifier en
+dix secondes.
+
+### Pourquoi ce fait-là
+
+Parce qu'il **va contre l'intuition**. On croit qu'internet est ce qui change le plus vite ;
+en réalité **ce sont les plateformes qui passent, pas les adresses**. Des milliers
+d'applications à la mode sont nées et ont disparu pendant que cette page n'a pas bougé.
+
+C'est la leçon la plus profonde qu'on puisse donner sur la présence en ligne, et elle se
+donne **sans rien vendre** : le lecteur fera lui-même le rapprochement avec son commerce, et
+il le fera mieux que si on le lui avait dit.
+
+### La règle des chiffres, précisée
+
+« Aucune statistique inventée » interdit les pourcentages sortis de nulle part. Elle
+**n'interdit pas un fait historique documenté que le lecteur peut aller contrôler**. La
+différence tient en une chose : **le statut donne l'adresse pour vérifier**. C'est le
+contraire d'un chiffre qu'on demande de croire, et c'est le test à appliquer désormais avant
+de publier un fait.
+
+### L'image : la pose longue
+
+Le sujet de la référence est **parfaitement net et immobile**, et tout autour n'est que
+traînée de lumière floue, celle de ce qui est passé pendant l'exposition. **En pose longue,
+seul ce qui ne bouge pas reste net.** La leçon est déjà dans le phénomène : il n'y a rien à
+expliquer, aucune flèche, aucune horloge, aucun sablier.
+
+### Le label revient
+
+Ce statut porte **« LE SAVIEZ-VOUS ? »**, contrairement aux n° 2 et n° 3 qui appartenaient à
+la famille commerciale. C'est la rubrique éditoriale dans sa forme la plus pure, et c'est
+cohérent : l'ancre ne se pose que sur les posts qui ne vendent rien.

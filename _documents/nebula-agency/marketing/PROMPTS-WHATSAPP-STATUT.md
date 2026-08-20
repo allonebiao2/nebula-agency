@@ -818,9 +818,259 @@ différence tout de suite. Envoyez-moi la photo, je vous dis ce qui la retient.
 C'est un cadeau ou ce n'est rien. La vente viendra d'elle-même, plus tard, parce qu'on aura
 été utile sans rien demander.
 
+## 6. Statut n° 4 · « LE PREMIER SITE DU MONDE EST TOUJOURS EN LIGNE. »
+
+**Celui-ci porte le label « LE SAVIEZ-VOUS ? »**, contrairement aux statuts n° 2 et n° 3.
+C'est la rubrique éditoriale dans sa forme la plus pure : **une leçon, rien d'autre**. Aucune
+douleur, aucun retournement commercial, aucune demande. On se couche moins bête, c'est tout.
+
+**Le fait, et il est rare :** le tout premier site web du monde a été publié en 1991, et il
+répond encore aujourd'hui, à la même adresse, `info.cern.ch`. Presque personne ne le sait, et
+tout le monde peut le vérifier en dix secondes.
+
+**Pourquoi ce fait-là et pas un autre :** parce qu'il enseigne quelque chose de rare sur la
+présence en ligne, et qui va contre l'intuition. On croit qu'internet est ce qui change le
+plus vite. En réalité, **ce sont les plateformes qui passent, pas les adresses.** Des milliers
+d'applications à la mode sont nées et ont disparu pendant que cette page-là n'a pas bougé.
+
+⚠️ **Il est vérifiable, et c'est ce qui autorise à le publier.** La règle « aucune
+statistique inventée » interdit les pourcentages sortis de nulle part ; elle n'interdit pas
+un fait historique documenté que le lecteur peut aller contrôler lui-même. **Le statut donne
+d'ailleurs l'adresse pour ça** : c'est le contraire d'un chiffre qu'on demande de croire.
+
+**Aucun appel à l'action commercial.** Le seul geste proposé est d'aller voir la page. Ce que
+le lecteur en tire pour son propre commerce, il le tire tout seul, et il le tirera mieux que
+si on le lui avait dit.
+
+**L'image :** la pose longue. Le sujet de la référence est **parfaitement net et immobile**,
+et tout l'espace autour de lui est une traînée de lumière floue, celle de tout ce qui est
+passé pendant que la photo se faisait. En pose longue, **seul ce qui ne bouge pas reste net** :
+la leçon est déjà dans le phénomène, il n'y a rien à expliquer.
+
+### LE PROMPT
+
+```
+===========================================================
+NEBULA AGENCY — WHATSAPP STATUS — ONE IMAGE, 9:16
+===========================================================
+
+ATTACHED INPUTS — TWO attachments.
+Identify them BY THEIR CONTENT, not by their order. Never swap their
+roles: swapping them ruins the image.
+
+  THE LOGO = the attachment showing the NEBULA Agency logo: a purple
+     and blue cosmic swirl above the wordmark "NEBULA", with "AGENCY"
+     underneath, on a transparent background.
+     It is an ASSET TO PLACE, exactly as provided. It is never a style
+     reference and never a subject to reinterpret.
+
+  THE STYLE REFERENCE = the other attachment. This one is the design
+     the post takes after, and it is the MATERIAL of the post: its
+     subject, its palette, its texture, its lighting and its
+     typographic craft all carry over.
+
+  If you hesitate: the attachment with a transparent background and a
+  readable "NEBULA AGENCY" wordmark is THE LOGO. The other one is THE
+  STYLE REFERENCE.
+
+-----------------------------------------------------------
+TASK
+-----------------------------------------------------------
+Create ONE original WhatsApp STATUS image for NEBULA Agency, a digital
+studio in Cotonou, Benin, serving West African merchants and business
+owners.
+It is seen on a phone, often outdoors in daylight, at half screen
+brightness. It has ONE SECOND to earn a pause.
+This post TEACHES ONE RARE FACT and sells absolutely nothing. There is
+no offer, no pain, no persuasion: the reader simply goes to bed knowing
+something they did not know this morning. Keep it calm, generous and
+quietly astonishing.
+It must look designed and expensive, never cheap, never homemade.
+
+-----------------------------------------------------------
+THE MATERIAL — THE STYLE REFERENCE IS THE SOURCE,
+                NOT A VAGUE INSPIRATION
+-----------------------------------------------------------
+Build this image OUT OF the style reference. Do not invent a new
+subject and do not add a decor of your own.
+  KEEP    its main subject, re-staged as described below
+  KEEP    its palette, its texture, its grain
+  KEEP    its typographic craft: the same kind of contrast between a
+          huge line and small quiet lines
+  CHANGE  its framing for a 9:16 canvas, the way it is photographed,
+          and every single word on it
+  DROP    its original words, numbers, captions, logo and watermark:
+          none of them may appear
+If you find yourself inventing a new object, stop. The subject is
+already in the style reference. Nothing else enters the frame.
+
+CONTRAST: push the contrast harder than the style reference does.
+This image is read outdoors, in daylight, on a dimmed screen. Any tone
+that sits close to its neighbour will vanish. Text is either clearly
+light on dark, or clearly dark on light. Never mid-grey on mid-grey.
+
+-----------------------------------------------------------
+THE STAGING — this is the whole idea of the image
+-----------------------------------------------------------
+A LONG EXPOSURE. ONLY WHAT DOES NOT MOVE STAYS SHARP.
+Photograph the subject of the style reference as if with a very long
+shutter speed:
+  - THE SUBJECT ITSELF is perfectly SHARP, still, solid, every detail
+    crisp. It did not move for the entire exposure.
+  - EVERYTHING AROUND IT is pure motion blur: long smooth streaks of
+    light sweeping past and through the frame, layered, translucent,
+    going in one general direction. Nothing in the blur is
+    identifiable: no shapes, no objects, no figures, no letters. Only
+    movement that has already gone by.
+The contrast between the one sharp thing and the blurred world around
+it is the entire message, and it must be unmistakable at a glance.
+This is a photographic phenomenon, not a graphic effect: no radial
+zoom filter, no speed lines drawn on top, no arrow, no icon, no
+diagram, no clock, no calendar, no hourglass, no label.
+
+-----------------------------------------------------------
+LOGO INTEGRATION — read twice, most attempts fail here
+-----------------------------------------------------------
+The logo attachment is a PNG with a TRANSPARENT background. Place it
+exactly as provided and KEEP that transparency.
+  - it sits DIRECTLY on the artwork. NO white box, NO black box, NO
+    coloured plate, NO rounded card, NO badge, NO circle, NO outline,
+    NO glow, NO drop shadow behind it.
+  - do NOT redraw it, restyle it, recolour it, stretch it, crop it,
+    rotate it, or add a wordmark or tagline of your own.
+  - reserve a CALM area for it: place it over a quiet part of the
+    blur, never over the sharp subject, so it reads with no plate.
+  - size it so its wordmark stays comfortably readable when the whole
+    image is viewed at 20% of its size.
+A logo pasted on a white rectangle is a failed image.
+
+-----------------------------------------------------------
+FORMAT AND SAFE ZONES — a hard requirement
+-----------------------------------------------------------
+Canvas: 1080 x 1920 px, vertical 9:16.
+WhatsApp draws its own interface OVER this image:
+  - the TOP 220 px are covered by the profile bar
+  - the BOTTOM 340 px are covered by the reply field
+Nothing that matters may sit in those two strips. All text, the logo
+and the subject live inside the central band, between 220 px and
+1580 px from the top. Compose as if those two strips did not exist.
+
+-----------------------------------------------------------
+CONTENT — render these strings verbatim, nothing else
+-----------------------------------------------------------
+LABEL (top of the safe band, small, uppercase, widely letter-spaced,
+       muted): "LE SAVIEZ-VOUS ?"
+
+THE FACT (under the label, left-aligned, ENORMOUS all caps, condensed,
+          tight tracking and tight leading, three stacked lines
+          filling the width. By far the loudest element of the image,
+          and the only large one. The first two lines in the ink
+          colour of the style reference, THE THIRD in its accent
+          colour):
+  "LE PREMIER SITE"
+  "DU MONDE EST"
+  "TOUJOURS EN LIGNE."
+
+THE LESSON (under the visual, small, quiet, three lines):
+  "Publié en 1991. Jamais déplacé, jamais renommé."
+  "Depuis, des milliers d’applications à la mode sont nées, puis ont disparu."
+  "Ce qui dure en ligne, ce n’est pas la plateforme. C’est l’adresse."
+
+THE PROOF (under the lesson, small, in the accent colour, on one line.
+           It is a web address the reader can visit, written as plain
+           type. It is NOT a brand logo and it is NOT an interface):
+  "Allez le voir ce soir : info.cern.ch"
+
+THE APHORISM (bottom of the safe band, medium size, in the accent
+              colour, set apart with real breathing space above it):
+  "Une adresse se garde. Une mode, non."
+
+FOOTER: the logo, per the LOGO INTEGRATION block, centred, placed just
+ABOVE the 340 px bottom safe strip, never inside it, with
+"nebula-agency.online" under it in tiny muted type.
+
+-----------------------------------------------------------
+LAYOUT
+-----------------------------------------------------------
+Inside the central safe band, top to bottom:
+  1. LABEL
+  2. THE FACT, three stacked lines   <- the loudest zone
+  3. THE SHARP SUBJECT IN ITS BLUR   <- the largest zone
+  4. THE LESSON, three quiet lines
+  5. THE PROOF
+  6. THE APHORISM
+  7. LOGO, then the site address
+The hierarchy must be brutal: ONE block is enormous, everything else
+is small. The sharp subject needs room to be seen as sharp: give the
+blur space to run past it.
+
+-----------------------------------------------------------
+TEXT RENDERING — read twice
+-----------------------------------------------------------
+- Render ONLY the strings quoted above, plus "nebula-agency.online".
+  Any extra word is a failure.
+- Reproduce them VERBATIM: no translation, no rephrasing, no
+  shortening, no added punctuation, no exclamation marks.
+- Correct French typographic apostrophes ’ exactly as written:
+  "n’est", "C’est", "l’adresse", "d’applications".
+- Correct diacritics: "Publié", "déplacé", "renommé", "nées".
+- "info.cern.ch" and "nebula-agency.online" must be rendered exactly,
+  in lowercase, with their dots, and must stay legible.
+- "1991" is the only other numeral allowed in the image.
+- The fact must be readable at 20% of the image size.
+- No hashtag, no social icon, no interface element, no emoji.
+
+-----------------------------------------------------------
+HARD CONSTRAINTS
+-----------------------------------------------------------
+- NO price, NO amount, NO currency, NO offer, NO call to action of
+  any commercial kind. This post sells nothing at all.
+- NO invented statistics or percentages. The only figures are the
+  year 1991 and the two web addresses.
+- NO first name, no age, no portrait, no face, no human figure.
+- NO third-party logo, app icon, browser window or interface anywhere
+  in the imagery: "info.cern.ch" appears as plain type only.
+- NO clock, NO calendar, NO hourglass, NO speed lines drawn on top:
+  the long exposure does the explaining alone.
+- NO watermark, no signature, no frame, no border.
+- ONE single idea in this image.
+
+-----------------------------------------------------------
+OUTPUT
+-----------------------------------------------------------
+One finished 1080 x 1920 image, publication-ready,
+high-fidelity text rendering.
+===========================================================
+```
+
+### Le texte à écrire sous le statut
+
+```
+Ouvrez info.cern.ch ce soir. C’est la toute première page du web, publiée en 1991,
+et elle répond encore. Trente-cinq ans, sans changer d’adresse.
+```
+
+### Si quelqu’un répond
+
+Il répondra, parce qu’un fait rare donne envie de réagir. **On ne vend rien à ce
+moment-là.** On raconte : que la page a été écrite au CERN, qu’elle n’a jamais bougé,
+qu’elle est plus vieille que la plupart des applications qu’on a sur son téléphone.
+
+C’est tout. Le lecteur fera lui-même le rapprochement avec son propre commerce, et il le
+fera mieux que si on le lui avait dit.
+
+### Pourquoi ce statut compte, même s’il ne vend rien
+
+Il fait deux choses qu’aucun post commercial ne peut faire :
+
+1. **Il donne une raison de garder le contact.** On suit quelqu’un qui apprend des choses,
+   pas quelqu’un qui propose des choses.
+2. **Il rend crédible la vente d’après.** Une série qui donne vraiment gagne le droit d’être
+   crue quand elle parle d’elle-même.
+
 ---
 
-## 6. Contrôles avant publication
+## 7. Contrôles avant publication
 
 | Contrôle | Pourquoi |
 |---|---|
@@ -836,7 +1086,7 @@ C'est un cadeau ou ce n'est rien. La vente viendra d'elle-même, plus tard, parc
 
 ---
 
-## 7. Les prochains statuts
+## 8. Les prochains statuts
 
 Même gabarit : le label, la hiérarchie brutale, les zones mortes, et surtout **la question
 fermée qui se répond d'un caractère**.
