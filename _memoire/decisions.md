@@ -628,3 +628,51 @@
 
 - **En attente** : les 3 lieux et leurs verbes, l'anglais, les photos, les voix,
   l'annuaire, la note sur PISTE.
+
+---
+
+## 2026-08-20 · Les photos IA d'Au Braisé d'Or : ON LES GARDE
+
+**Décision de Mongazi, mot pour mot : « les photos IA de Braisé d'Or on les
+garde, oublie ça ».**
+
+Les **48 photos de plats** du client 09 ont été générées par IA (z_image, le
+2026-07-20), donc **avant** la règle du 2026-08-01. Elles restent en ligne.
+
+⚠️ **Ce qui ne change PAS** : la règle du cerveau reste entière et absolue.
+
+> ⛔ **INTERDIT ABSOLU : une photo produit générée par IA présentée comme le
+> catalogue du client.** Aucune exception.
+
+Au Braisé d'Or est un **héritage assumé**, pas une exception à la règle. Angy
+Art a été purgée de ses 13 visuels le 2026-08-08, Hillary affiche « Photo sur
+WhatsApp » sur 11 modèles : rien de tout ça n'est remis en cause, et **aucun
+nouveau visuel généré n'entre dans un catalogue**, ici comme ailleurs.
+
+⛔ **Le sujet est clos : ne plus le remonter.** Il figurait dans le « reste à
+faire » de trois fichiers, il en sort.
+
+## 2026-08-20 · Le disque du PC : noté, pas traité
+
+Mongazi : « le disque, garde en mémoire ». Rien n'est supprimé sans son accord.
+
+**0,6 Go libres sur 270 Go** au moment de la mesure. Le 19/08, le disque était
+tombé à **zéro octet** en pleine fusion git (`unable to write file`,
+`index.lock write error`) : ce n'est pas un inconfort, ça casse une opération
+en plein vol.
+
+| Ce qui pèse | Poids |
+|---|---|
+| **Image de machine virtuelle de Claude** (`AppData\Local\Packages\Claude_pzs8sxrjxfjjc\...\rootfs.vhdx`) | **11,93 Go** (9 Go le 19/08 : elle grossit) |
+| `cercle/node_modules` | 0,33 Go |
+| `clients/09-au-braise-dor/experience/node_modules` | 0,30 Go |
+| Cache npm | 0,59 Go |
+| Navigateurs Playwright | 0,43 Go |
+| `piste/node_modules` | 0,05 Go |
+
+- **Le seul geste sans conséquence** : `npm cache clean --force` (0,59 Go, un
+  cache se refabrique). Déjà fait une fois le 19/08, il s'est reconstitué.
+- **Les `node_modules` se réinstallent** mais coûtent du temps : 6 minutes pour
+  celui du Braisé, sur ce poste.
+- ⚠️ **L'image de machine virtuelle n'est pas à moi.** C'est l'environnement de
+  Claude sur ce PC : la supprimer se décide, ne se déduit pas.

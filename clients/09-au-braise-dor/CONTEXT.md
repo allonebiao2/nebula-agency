@@ -481,3 +481,21 @@ corrigés ici, aucun ne venait du site :
    planter la suite **après** l'avoir réussie. Sortie forcée en UTF-8.
 
 **78 contrôles verts, 0 rouge** (mobile 390 + bureau 1440 + lisibilité des prix).
+
+## 2026-08-20 · Les photos générées par IA sont gardées
+
+**Décision de Mongazi : « les photos IA de Braisé d'Or on les garde, oublie
+ça ».** Les 48 photos de plats (z_image, 20/07, antérieures à la règle du
+2026-08-01) restent en ligne. Le sujet est **clos** : il sort du reste-à-faire.
+
+⚠️ Ce n'est pas une exception à la règle, c'est un héritage assumé. Aucun
+**nouveau** visuel généré n'entre dans ce catalogue ni dans un autre.
+
+### Reste à obtenir de la maison
+
+- le prix du **yaourt** et de la **glace** (affichés « Prix sur demande »)
+- la correction manuscrite au surligneur sur **l'aileron**
+- **confirmer le n° WhatsApp** : 0156057157 câblé, contre 43 99 29 29 sur l'enseigne
+- la **vraie photo de la salle**, les vrais avis, l'adresse, le logo
+
+⚠️ `next@14.2.15` porte une vulnérabilité connue signalée par npm.
