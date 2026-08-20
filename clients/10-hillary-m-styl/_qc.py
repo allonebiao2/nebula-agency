@@ -132,39 +132,50 @@ def deux_vues():
 
 
 def nappes_heros():
-    """LE HÉROS PEINT LE FOND AVEC LA TEINTE DE LA PIÈCE. Deux diapositives
-    voisines de même teinte, c'est une transition qu'on ne voit pas — c'est
-    pour ça que la robe à tulle avait été écartée le 2026-08-17.
+    """LE HÉROS PEINT LE FOND AVEC LA COULEUR DE LA PIÈCE. Deux diapositives
+    voisines de couleur trop proche, c'est une transition qu'on ne voit pas.
+
+    ⚠️ ON MESURE EN L*a*b*, PAS EN DEGRÉS DE TEINTE. La première version de ce
+    contrôle comparait des angles et accusait `hero-3 → hero-4` : 19° d'écart,
+    donc « même nappe ». Leur distance perçue est de **33 ΔE** — un bleu
+    profond et un cyan clair, que personne ne confondrait. L'angle ignore la
+    clarté et la saturation, c'est-à-dire l'essentiel. Un faux défaut signalé à
+    Mongazi le 2026-08-20, corrigé le même jour.
+
     ⚠️ Le héros TOURNE : la dernière précède la première.
-    C'est une NOTE, pas un échec : l'ordre du héros est un choix humain, et
-    deux voisinages datent d'avant la règle. Elle doit se voir, pas bloquer."""
-    import colorsys
+    C'est une NOTE, pas un échec : l'ordre du héros est un choix humain, et une
+    collection dominée par les rouges ne peut pas toujours alterner."""
+    import math
     mtn = (pathlib.Path(__file__).resolve().parent / "_v4" / "motion.js").read_text(encoding="utf-8")
     d = mtn.index("var HERO = [")
     bloc = mtn[d:mtn.index("  ];", d)]
     cs = re.findall(r"c:'(#[0-9a-fA-F]{6})'", bloc)
-    # ⚠️ `t:` se trouve AUSSI dans `mat:` : sans le bord de mot, les noms se
-    #    decalent d'un cran et le rapport accuse la mauvaise piece.
-    noms = re.findall(r"(?<![a-z])t:['\"](.*?)['\"],?\s*$", bloc, re.M) or cs
+    fs = re.findall(r"f:'([^']+)'", bloc)
 
-    def h(c):
+    def lab(c):
         r, g, b = (int(c[i:i + 2], 16) / 255 for i in (1, 3, 5))
-        return colorsys.rgb_to_hsv(r, g, b)[0] * 360
+        lin = lambda u: u / 12.92 if u <= 0.04045 else ((u + 0.055) / 1.055) ** 2.4
+        r, g, b = lin(r), lin(g), lin(b)
+        X = (r * .4124 + g * .3576 + b * .1805) / .95047
+        Y = r * .2126 + g * .7152 + b * .0722
+        Z = (r * .0193 + g * .1192 + b * .9505) / 1.08883
+        f = lambda t: t ** (1 / 3) if t > 0.008856 else 7.787 * t + 16 / 116
+        fx, fy, fz = f(X), f(Y), f(Z)
+        return (116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz))
 
     proches = []
     for i in range(len(cs)):
         j = (i + 1) % len(cs)
-        e = abs(h(cs[i]) - h(cs[j])) % 360
-        e = min(e, 360 - e)
-        if e < 28:
-            a = noms[i] if i < len(noms) else cs[i]
-            b = noms[j] if j < len(noms) else cs[j]
-            proches.append(f"{a} -> {b} ({e:.0f} deg)")
-    NOTES.append(f"OK    heros : {len(cs)} diapositives, "
-                 + ("aucune nappe voisine identique"
-                    if not proches else f"{len(proches)} voisinage(s) de meme nappe"))
+        e = math.sqrt(sum((x - y) ** 2 for x, y in zip(lab(cs[i]), lab(cs[j]))))
+        if e < 18:
+            proches.append("%s -> %s (dE %.0f)"
+                           % (fs[i].replace("piece-", "").replace(".webp", ""),
+                              fs[j].replace("piece-", "").replace(".webp", ""), e))
+    NOTES.append("OK    heros : %d diapositives, %s"
+                 % (len(cs), "aucune transition invisible" if not proches
+                    else "%d transition(s) trop proches" % len(proches)))
     if proches:
-        note("heros, nappes voisines a regarder : " + " · ".join(proches))
+        note("heros, transitions a regarder : " + " . ".join(proches))
 
 
 def vitrine_commerciale():

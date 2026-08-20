@@ -48,7 +48,7 @@ COULEURS = os.path.join(ICI, "_v4", "_couleurs.json")
 #    elle corrigera ce qui ne lui va pas ».
 #    `indice` sert à reconnaître la photo au moment de la ranger.
 MODELES = [
-    dict(cle="organza", id="h10", nom="Robe Organza",
+    dict(cle="organza", id="h10", nom="Robe de ville organza",
          prix=40000, expPrix=55000, eur=60, usd=72, eurExp=82, usdExp=100,
          type="robe_ovale", tag="Cérémonie",
          indice="robe rouge à motifs blancs, col en organza blanc froncé, jupon d'organza — fond JAUNE, deux vues : face et dos (la face est arrivée le 17/08)",
@@ -116,6 +116,29 @@ JMIN = JMAX = 14          # deux semaines fermes, pour les dix
 EXPMIN, EXPMAX = 2, 4     # « 2 à 4 jours », pour les dix
 
 
+# ⚠️ BIREFNET, PAS ISNET. Le 2026-08-20, la robe à jupon d'organza a tranché :
+#    `isnet-general-use` rendait le train blanc EN GRIS SALE sur la face, et
+#    l'EFFAÇAIT ENTIÈREMENT sur le dos — il ne restait qu'un disque rouge
+#    flottant. Les tissus translucides (organza, tulle, mousseline) sont
+#    exactement ce que ce modèle ne sait pas voir. `birefnet-general` les garde
+#    intacts. Il est plus lent (~45 s par photo contre ~10 s) et pèse 890 Mo :
+#    c'est le prix d'une pièce qui ressemble à ce qu'Hillary a cousu.
+MODELE = "birefnet-general"
+BONS = (".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif")
+_DITS = set()
+
+
+def ouvrir_heic():
+    """Les photos d'un iPhone arrivent en HEIC. Sans ce greffon, Pillow ne
+    sait pas les lire et le détourage s'arrête sur une exception. Absent, on
+    continue : les JPEG et les PNG marchent quand même."""
+    try:
+        import pillow_heif
+        pillow_heif.register_heif_opener()
+    except Exception:
+        pass
+
+
 def dossier(m):
     return os.path.join(SRC, "modele-" + m["cle"])
 
@@ -136,8 +159,17 @@ def photos(m):
     d = dossier(m)
     if not os.path.isdir(d):
         return []
-    l = sorted(f for f in os.listdir(d)
-               if f.lower().endswith((".jpg", ".jpeg", ".png", ".webp")))
+    # ⚠️ Le HEIC des iPhone est accepté (voir `ouvrir_heic()`). Il ne l'était
+    #    pas, et un `.heic` déposé dans le dossier était ignoré EN SILENCE :
+    #    le script annonçait « en attente de photo » alors que la photo était
+    #    là, sous les yeux, dans le bon dossier.
+    tout = [f for f in sorted(os.listdir(d)) if not f.startswith(".")]
+    l = [f for f in tout if f.lower().endswith(BONS)]
+    for f in tout:
+        c = os.path.join(os.path.basename(d), f)
+        if f not in l and c not in _DITS:      # `photos()` est appelée plusieurs
+            _DITS.add(c)                       # fois : on ne le dit qu'une
+            print(f"     ⚠️ ignoré (format non géré) : {c}")
 
     def est_dos(f):
         return re.search(r"(dos|arriere|arrière|back)", f, re.I) is not None
@@ -191,10 +223,22 @@ def teinte(chemin):
             h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
             if s < 0.22 or v < 0.18 or v > 0.92:
                 continue
-            seaux[int(h * 360) // 12].append((r, g, b))
+            seaux[int(h * 360) // 12].append((r, g, b, s))
     if not seaux:
         return "#6b3065"
-    p = seaux[max(seaux, key=lambda k: len(seaux[k]))]
+    # ⚠️ PAS LA COULEUR LA PLUS ÉTENDUE : LA PLUS VIVE PARMI LES GRANDES.
+    #    Le 2026-08-20, la robe verte et jaune est ressortie en BRUN `#9e6033`.
+    #    Ce n'était pas une erreur de calcul : bras et jambes nus couvraient
+    #    23 % de la photo contre 17 % pour le tissu, et la PEAU gagnait. Le
+    #    héros aurait peint son fond couleur peau sous une robe verte.
+    #    Un vêtement est presque toujours plus saturé qu'une peau : on garde
+    #    les teintes qui occupent au moins 15 % de la pièce, et parmi elles on
+    #    prend la plus vive. Vérifié sur les huit pièces : la verte redevient
+    #    verte, l'ensemble en jean gagne son vrai rouge, et les six autres ne
+    #    bougent pas ou à peine.
+    total = sum(len(v) for v in seaux.values())
+    grandes = [k for k, v in seaux.items() if len(v) >= 0.15 * total] or list(seaux)
+    p = seaux[max(grandes, key=lambda k: sum(x[3] for x in seaux[k]) / len(seaux[k]))]
     r = sum(x[0] for x in p) / len(p)
     g = sum(x[1] for x in p) / len(p)
     b = sum(x[2] for x in p) / len(p)
@@ -205,30 +249,53 @@ def teinte(chemin):
     return "#%02x%02x%02x" % (int(r * 255), int(g * 255), int(b * 255))
 
 
-def poser_images(prets):
-    """Détoure et pose, exactement comme `_detourer.py` : même hauteur, même
-    encodage. On ne réencode jamais une image déjà posée."""
+def detourer_un(src, dest, haut):
+    """Détoure UNE photo et l'écrit. Appelé dans un processus à part.
+
+    ⚠️ POURQUOI UN PROCESSUS PAR PHOTO. Le 2026-08-20, `birefnet-general`
+    enchaînait la première image sans broncher puis se faisait TUER sur la
+    deuxième (code 137), sur une machine où 15 Go étaient libres. Ce n'est
+    pas la machine : onnxruntime ne rend pas ce qu'il a pris entre deux
+    inférences, et le pic finit par dépasser. Un processus par photo borne
+    la casse et rend la mémoire à chaque fois. On paie le rechargement du
+    modèle (~10 s) : c'est le prix d'une chaîne qui va au bout."""
     from rembg import new_session, remove
     from PIL import Image
-    session = new_session("isnet-general-use")
+    ouvrir_heic()
+    session = new_session(MODELE)
+    with open(src, "rb") as fh:
+        im = Image.open(io.BytesIO(remove(fh.read(), session=session))).convert("RGBA")
+    bb = im.getbbox()
+    if bb:
+        im = im.crop(bb)
+    haut = min(haut, im.height)
+    r = haut / float(im.height)
+    im = im.resize((max(1, int(round(im.width * r))), haut), Image.LANCZOS)
+    im.save(dest, "WEBP", quality=94, alpha_quality=100, method=6, exact=True)
+
+
+def poser_images(prets):
+    """Détoure et pose. Même hauteur, même encodage que `_detourer.py`.
+    On ne réencode jamais une image déjà posée."""
+    import subprocess
     faits = []
     for m in prets:
         for rang, f in enumerate(photos(m)[:2]):
             suffixe = "" if rang == 0 else "-dos"
             dest = os.path.join(IMG, f"piece-{m['cle']}{suffixe}.webp")
             if os.path.exists(dest):
-                print(f"     {os.path.basename(dest)} déjà posée")
+                print(f"     {os.path.basename(dest)} déjà posée", flush=True)
                 continue
-            with open(os.path.join(dossier(m), f), "rb") as fh:
-                im = Image.open(io.BytesIO(remove(fh.read(), session=session))).convert("RGBA")
-            bb = im.getbbox()
-            if bb:
-                im = im.crop(bb)
-            haut = min(950 if rang == 0 else 760, im.height)
-            r = haut / float(im.height)
-            im = im.resize((max(1, int(round(im.width * r))), haut), Image.LANCZOS)
-            im.save(dest, "WEBP", quality=94, alpha_quality=100, method=6, exact=True)
-            print(f"     {os.path.basename(dest)} — {os.path.getsize(dest)//1024} Ko")
+            src = os.path.join(dossier(m), f)
+            haut = 950 if rang == 0 else 760
+            r = subprocess.run([sys.executable, os.path.abspath(__file__),
+                                "--une", src, dest, str(haut)],
+                               capture_output=True, text=True)
+            if r.returncode or not os.path.exists(dest):
+                sys.exit(f"\n⛔ {m['nom']} ({f}) : le détourage a échoué"
+                         f" (code {r.returncode})\n{(r.stderr or '')[-400:]}\n")
+            print(f"     {os.path.basename(dest)} — "
+                  f"{os.path.getsize(dest)//1024} Ko", flush=True)
         faits.append(m)
     return faits
 
@@ -252,22 +319,6 @@ def jsq(v):
     return "'" + v + "'" if ("'" not in v and "\\" not in v) else json.dumps(v, ensure_ascii=False)
 
 
-def teinte_deg(c):
-    """La teinte d'un « #rrggbb », en degrés sur le cercle des couleurs."""
-    import colorsys
-    r, g, b = (int(c[i:i + 2], 16) / 255 for i in (1, 3, 5))
-    return colorsys.rgb_to_hsv(r, g, b)[0] * 360
-
-
-def ecart(a, b):
-    """La distance entre deux teintes (0 à 180)."""
-    d = abs(a - b) % 360
-    return min(d, 360 - d)
-
-
-ECART_MIN = 28   # en dessous, deux nappes se confondent
-
-
 def court(t, n=56):
     """La légende du carrousel. On coupe sur un MOT, pas au milieu d'un :
     « jupe longu » s'affiche en grand sous la pièce."""
@@ -277,6 +328,38 @@ def court(t, n=56):
     c = t[:n + 1]
     c = c[:c.rfind(" ")] if " " in c else c[:n]
     return c.rstrip(" .,;:")
+
+
+def teinte_deg(c):
+    """Un « #rrggbb » traduit en L*a*b*, l'espace où une distance ressemble à
+    ce que l'œil perçoit. (Le nom est resté : c'est bien la couleur d'une
+    nappe du héros, mais on ne la réduit plus à un angle.)"""
+    import math
+    r, g, b = (int(c[i:i + 2], 16) / 255 for i in (1, 3, 5))
+    lin = lambda u: u / 12.92 if u <= 0.04045 else ((u + 0.055) / 1.055) ** 2.4
+    r, g, b = lin(r), lin(g), lin(b)
+    X = (r * .4124 + g * .3576 + b * .1805) / .95047
+    Y = r * .2126 + g * .7152 + b * .0722
+    Z = (r * .0193 + g * .1192 + b * .9505) / 1.08883
+    f = lambda t: t ** (1 / 3) if t > 0.008856 else 7.787 * t + 16 / 116
+    fx, fy, fz = f(X), f(Y), f(Z)
+    return (116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz))
+
+
+def ecart(a, b):
+    """⚠️ LA DISTANCE DE TEINTE ÉTAIT UNE MAUVAISE MESURE, et elle m'a fait
+    signaler un faux défaut le 2026-08-20. Les diapositives `hero-3` et
+    `hero-4` sont à 19° l'une de l'autre — donc « même nappe » selon l'ancienne
+    règle — alors que leur écart perçu est de **33 ΔE** : un bleu profond et un
+    cyan clair, que personne ne confondrait. À l'inverse deux rouges à 25°
+    peuvent être indiscernables si leur clarté est la même.
+    L'angle ignore la clarté et la saturation, c'est-à-dire l'essentiel.
+    On mesure donc en L*a*b*, où une distance vaut pour l'œil."""
+    import math
+    return math.sqrt(sum((x - y) ** 2 for x, y in zip(a, b)))
+
+
+ECART_MIN = 18   # en ΔE : en dessous, la transition du héros ne se voit plus
 
 
 def fiche_existante(mot, m, img, img2):
@@ -291,114 +374,178 @@ def fiche_existante(mot, m, img, img2):
     s'il y a un dos) et on retire `photoWa:true`, qui devient un mensonge dès
     que la photo est là. Idempotent : une fiche déjà pourvue n'est pas touchée.
     Renvoie (source, True) si quelque chose a changé."""
-    d = mot.find(f'{{id:"{m["id"]}"')
+    d = mot.find('{id:"%s"' % m["id"])
     if d < 0:
         return mot, False
     f = mot.index("},", d) + 2
     bloc = mot[d:f]
 
-    if f'img:"{img}"' in bloc and (not img2 or f'img2:"{img2}"' in bloc):
+    if ('img:"%s"' % img) in bloc and (not img2 or ('img2:"%s"' % img2) in bloc):
         return mot, False
 
-    ligne = f'img:"{img}"' + (f', img2:"{img2}"' if img2 else "")
+    ligne = 'img:"%s"' % img + (', img2:"%s"' % img2 if img2 else "")
     if "img:" in bloc:                       # une photo était déjà là : on remplace
-        neuf_bloc = re.sub(r'img:"[^"]*"(,\s*img2:"[^"]*")?', ligne, bloc, count=1)
+        neuf_bloc = re.sub(r'img:"[^"]*"(,\s*img2:"[^"]*")?', ligne.replace("\\", "\\\\"),
+                           bloc, count=1)
     else:
         # on insère juste avant la ligne des prix, là où `img` vit sur les
         # autres fiches — pour que les 20 fiches se lisent de la même façon
-        neuf_bloc, n = re.subn(r"\n(\s*)prix:", "\n\\g<1>" + ligne.replace("\\", "\\\\") + ",\n\\g<1>prix:",
+        neuf_bloc, n = re.subn(r"\n(\s*)prix:",
+                               "\n\\g<1>" + ligne.replace("\\", "\\\\") + ",\n\\g<1>prix:",
                                bloc, count=1)
         if not n:
-            sys.exit(f"⛔ {m['nom']} : ligne « prix: » introuvable, injection annulée")
+            sys.exit("⛔ %s : ligne « prix: » introuvable, injection annulée" % m["nom"])
 
     # `photoWa:true` a fait son temps : la photo est là.
     neuf_bloc = re.sub(r",?\s*photoWa:true", "", neuf_bloc, count=1)
     return mot[:d] + neuf_bloc + mot[f:], True
 
 
+def verifier_js(source, chemin):
+    """⛔ ON N'ÉCRIT JAMAIS UN JAVASCRIPT QU'ON N'A PAS FAIT RELIRE.
+
+    Cet outil réécrit `motion.js` et `garde-moteur.js` par découpe de texte.
+    Le 2026-08-20, deux bourdes de suite : une virgule posée après un
+    commentaire (« */, ») et, pire, tout l'en-tête du fichier effacé. Dans les
+    deux cas le site entier devenait muet, et rien ne le disait avant le QC.
+    On passe la sortie à `node --check` AVANT de l'écrire, et on refuse."""
+    import subprocess, tempfile
+    with tempfile.NamedTemporaryFile("w", suffix=".js", encoding="utf-8",
+                                     newline="\n", delete=False) as fh:
+        fh.write(source)
+        tmp = fh.name
+    try:
+        r = subprocess.run(["node", "--check", tmp], capture_output=True, text=True)
+    except FileNotFoundError:
+        os.unlink(tmp)
+        print("     ⚠️ node absent : le JavaScript n'a pas pu être relu.")
+        return
+    os.unlink(tmp)
+    if r.returncode:
+        sys.exit(f"\n⛔ {os.path.basename(chemin)} serait invalide, RIEN n'a été"
+                 f" écrit :\n{(r.stderr or '').strip()[:400]}\n")
+
+
 def poser_heros(mtn, faits, coul):
-    """Ajoute les nouvelles pièces au HÉROS, à la suite de celles qui y sont,
-    et dans l'ORDRE qui évite deux nappes voisines de même teinte.
+    """Réécrit la QUEUE du héros — les pièces que cet outil y a mises — dans
+    l'ORDRE qui évite deux nappes voisines de même teinte.
 
-    ⛔ ON NE TOUCHE À AUCUNE ENTRÉE DÉJÀ PRÉSENTE. Elles gardent leur place,
-       leur formulation et leur ponctuation. On ajoute à la suite, dans leur
-       style : `f` `c` `col` `mat` entre apostrophes, `t` et `d` entre
-       guillemets, une pièce par bloc de deux lignes.
+    ⛔ ON NE TOUCHE À AUCUNE ENTRÉE D'ORIGINE. Les sept diapositives qui
+       étaient là avant (les quatre `hero-*` et les trois pièces du 10/08)
+       gardent leur place, leur texte et leur ponctuation, mot pour mot.
+       Seules les pièces de `MODELES` sont déplaçables : ce sont les nôtres.
 
-    ⚠️ LA RÈGLE DES NAPPES VIENT DU 2026-08-17. La robe à tulle avait été
-       écartée du héros parce que « son violet doublait celui de la robe de
-       cérémonie violette, et deux nappes identiques qui se suivent ne se
-       voient pas » : le héros peint le fond avec la teinte de la pièce, donc
-       deux teintes voisines à la suite, c'est une transition qui n'existe
-       pas. On garde la règle — mais on ne perd plus la pièce : au lieu de
-       l'exclure, on la DÉPLACE.
+    ⚠️ POURQUOI LA QUEUE ENTIÈRE, ET PAS SEULEMENT LE NOUVEAU LOT. Le
+       2026-08-20, les deux premières pièces reçues étaient rouges toutes les
+       deux (2° et 4° de teinte) : aucun ordre ne pouvait les séparer, elles
+       se suivaient forcément. Si l'on n'ordonnait que le lot du jour, ce
+       voisinage resterait figé POUR TOUJOURS, même quand une pièce violette
+       arriverait. En rejouant toute la queue à chaque vague, le défaut se
+       répare tout seul dès qu'une teinte différente entre.
 
-    ⚠️ Le héros TOURNE en boucle : la dernière diapositive précède la
-       première. La jonction du bout compte autant que les autres."""
+    ⚠️ Le héros TOURNE : la dernière diapositive précède la première. La
+       jonction du bout compte autant que les autres."""
     d = mtn.index("var HERO = [")
     f = mtn.index("  ];", d)
     bloc = mtn[d:f]
-    deja = re.findall(r"c:'(#[0-9a-fA-F]{6})'", bloc)
-    presentes = set(re.findall(r"f:'([^']+)'", bloc))
 
-    reste = [m for m in faits
-             if os.path.exists(os.path.join(IMG, f"piece-{m['cle']}.webp"))
-             and f"piece-{m['cle']}.webp" not in presentes
-             and ("piece-" + m["cle"]) in coul]
-    if not reste:
+    # une entrée = « { f:'…', … }, » ; on les sépare sur l'accolade ouvrante
+    morceaux = re.split(r"\n(?=    \{ f:)", bloc)
+    tete, entrees = morceaux[0], morceaux[1:]
+    notres = {"piece-%s.webp" % m["cle"] for m in MODELES}
+
+    fixes, mobiles = [], []
+    for e in entrees:
+        nom = re.search(r"f:'([^']+)'", e)
+        (mobiles if (nom and nom.group(1) in notres) else fixes).append(e)
+
+    # les pièces déjà posées par nous + celles du jour, sans doublon
+    deja = {re.search(r"f:'([^']+)'", e).group(1) for e in mobiles}
+    par_cle = {m["cle"]: m for m in MODELES}
+    a_placer = [par_cle[c] for c in
+                [re.search(r"piece-(.+)\.webp", n).group(1) for n in sorted(deja)]
+                if c in par_cle and ("piece-" + c) in coul]
+    for m in faits:
+        img = f"piece-{m['cle']}.webp"
+        if img in deja:
+            continue
+        if os.path.exists(os.path.join(IMG, img)) and ("piece-" + m["cle"]) in coul:
+            a_placer.append(m)
+    if not a_placer:
         return mtn
 
     t = lambda m: teinte_deg(coul["piece-" + m["cle"]])
+    def virgule(e):
+        """⚠️ La virgule se pose APRÈS l'accolade fermante, jamais à la fin du
+        morceau. Le bloc `hero-4` traîne un commentaire de dix lignes derrière
+        lui : y coller une virgule donne « */, » et casse tout le fichier —
+        donc tout le site. Vu le 2026-08-20."""
+        i = e.rfind("}")
+        if i < 0 or e[i + 1:].lstrip().startswith(","):
+            return e
+        return e[:i + 1] + "," + e[i + 1:]
 
-    # on enchaîne à partir de la dernière teinte déjà en place
-    suite, prec = [], teinte_deg(deja[-1]) if deja else None
+    def coul_de(e):
+        return teinte_deg(re.search(r"c:'(#[0-9a-fA-F]{6})'", e).group(1))
+
+    # la queue s'accroche à la dernière fixe, et la boucle la ramène à la première
+    avant_h = coul_de(fixes[-1]) if fixes else None
+    apres_h = coul_de(fixes[0]) if fixes else None
+
+    reste, suite, prec = list(a_placer), [], avant_h
     while reste:
         if prec is None:
             choix = reste[0]
         else:
             loin = [m for m in reste if ecart(t(m), prec) >= ECART_MIN]
-            # à défaut, celle qui s'en éloigne le plus : on ne bloque jamais
             choix = loin[0] if loin else max(reste, key=lambda m: ecart(t(m), prec))
         reste.remove(choix)
         suite.append(choix)
         prec = t(choix)
 
-    # la boucle se referme : si la dernière double la première du héros, on
-    # cherche une permutation qui règle la jonction sans en casser une autre
-    if deja and len(suite) > 1:
-        avant, apres = teinte_deg(deja[-1]), teinte_deg(deja[0])
+    def chaine(sq):
+        h = ([avant_h] if avant_h is not None else []) + [t(m) for m in sq] \
+            + ([apres_h] if apres_h is not None else [])
+        return [ecart(h[i], h[i + 1]) for i in range(len(h) - 1)]
 
-        def chaine_ok(sq):
-            h = [avant] + [t(m) for m in sq] + [apres]
-            return all(ecart(h[i], h[i + 1]) >= ECART_MIN for i in range(len(h) - 1))
+    if len(suite) > 1 and any(e < ECART_MIN for e in chaine(suite)):
+        meilleur, score = suite, min(chaine(suite))
+        for i in range(len(suite)):
+            for j in range(i + 1, len(suite)):
+                e = suite[:]
+                e[i], e[j] = e[j], e[i]
+                if min(chaine(e)) > score:
+                    meilleur, score = e, min(chaine(e))
+        suite = meilleur
 
-        if not chaine_ok(suite):
-            for i in range(len(suite)):
-                for j in range(i + 1, len(suite)):
-                    e = suite[:]
-                    e[i], e[j] = e[j], e[i]
-                    if chaine_ok(e):
-                        suite = e
-                        break
-                else:
-                    continue
-                break
-            else:
-                print("     ⚠️ deux nappes voisines se ressemblent au héros :"
-                      " regarder l'enchaînement avant de déployer.")
+    mauvais = [f"{a['nom']} -> {b['nom']}" for a, b, e in
+               zip(suite, suite[1:], chaine(suite)[1 if avant_h is not None else 0:])
+               if e < ECART_MIN]
+    if mauvais:
+        print("     ⚠️ nappes voisines au héros, aucun ordre ne les sépare :")
+        for x in mauvais:
+            print(f"        {x}")
+        print("        (ça se réglera tout seul dès qu'une autre teinte entrera)")
 
     lignes = []
     for m in suite:
         # « Fait main · 2 semaines » quand c'est fait main, comme l'ensemble
         # JOSY qui est au héros depuis le premier jour. Sinon « Sur-mesure ».
         mat = ("Fait main" if m["tag"] == "Fait main" else "Sur-mesure") + " · 2 semaines"
-        lignes.append("    { f:%s, c:%s, col:%s, mat:%s,\n      t:%s, d:%s }"
+        lignes.append("    { f:%s, c:%s, col:%s, mat:%s,\n      t:%s, d:%s },"
                       % (jsq(f"piece-{m['cle']}.webp"), jsq(coul["piece-" + m["cle"]]),
                          jsq(m["tag"] or "Sur-mesure"), jsq(mat), js(m["nom"]), js(m["ds"])))
+    lignes[-1] = lignes[-1].rstrip(",")
 
-    print(f"     héros : +{len(suite)} pièce(s) — "
+    print(f"     héros : {len(suite)} pièce(s) à nous, dans cet ordre — "
           + " · ".join(m["nom"] for m in suite))
-    return (mtn[:f].rstrip().rstrip(",") + ",\n" + ",\n".join(lignes) + "\n" + mtn[f:])
+    corps = "\n".join([tete] + [virgule(e) for e in fixes] + lignes)
+    # ⛔ `mtn[:d]` EST LE FICHIER : la bannière, `(function () {`, le
+    #    `'use strict'` et vingt lignes de documentation. Une première
+    #    version renvoyait `corps + mtn[f:]` et rayait tout ça d'un coup :
+    #    le fichier ne se fermait plus, le site entier devenait muet.
+    #    Le tableau du héros n'est pas le fichier, il est DEDANS.
+    return mtn[:d] + corps + "\n" + mtn[f:]
 
 
 def injecter(faits):
@@ -465,7 +612,9 @@ def injecter(faits):
     # ⛔ `motion.js` n'était JAMAIS réécrit : le carrousel et le héros étaient
     #    calculés ligne par ligne, puis jetés à la sortie de la fonction. Une
     #    pièce serait entrée au catalogue et nulle part ailleurs.
+    verifier_js(mtn, MOTION)
     io.open(MOTION, "w", encoding="utf-8", newline="\n").write(mtn)
+    verifier_js(mot, MOTEUR)
     io.open(MOTEUR, "w", encoding="utf-8", newline="\n").write(mot)
     io.open(COULEURS, "w", encoding="utf-8", newline="\n").write(
         json.dumps(coul, ensure_ascii=False, indent=1) + "\n")
@@ -477,6 +626,11 @@ def injecter(faits):
 
 
 def main():
+    # mode interne : une photo, un processus (voir `detourer_un`)
+    if len(sys.argv) == 5 and sys.argv[1] == "--une":
+        detourer_un(sys.argv[2], sys.argv[3], int(sys.argv[4]))
+        return 0
+
     """⚠️ LA RÈGLE A CHANGÉ LE 2026-08-18, ET C'EST VOULU.
 
     Avant, le script refusait de poser tant qu'une seule photo manquait :
@@ -488,6 +642,20 @@ def main():
     c'est laisser dix pièces sans image pour une onzième.
 
     Ce qui n'a PAS changé : on n'invente rien pour combler un trou."""
+    # ⚠️ ON VÉRIFIE CE QUI EST GRATUIT AVANT DE LANCER CE QUI EST CHER.
+    #    Le 2026-08-20, une restructuration avait effacé sept fonctions au
+    #    passage. Le script a détouré DOUZE photos pendant dix minutes, puis
+    #    est mort sur `NameError: fiche_existante` à la seconde d'après — au
+    #    moment précis où il allait enfin écrire quelque chose. Le coût d'une
+    #    bourde ne doit pas dépendre de l'endroit où elle explose.
+    absents = [n for n in ("js", "jsq", "court", "teinte_deg", "ecart",
+                           "fiche_existante", "poser_heros", "injecter",
+                           "verifier_js", "detourer_un")
+               if n not in globals()]
+    if absents:
+        sys.exit("⛔ fonctions manquantes, rien n'a été lancé : "
+                 + ", ".join(absents) + "\n")
+
     prets, manquants = dire()
     if "--poser" not in sys.argv:
         return 0
