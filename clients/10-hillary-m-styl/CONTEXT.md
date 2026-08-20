@@ -1013,3 +1013,36 @@ et **sept fonctions effacées** par une restructuration, découvertes après
    donc lu comme un modèle de message ;
 6. ⚠️ **défaut antérieur** : le héros affiche **« PRÊT-À-PORTER »** alors que
    les 20 pièces sont toutes en sur-mesure, onglet masqué car vide.
+
+## ⚠️ 2026-08-20 · LES PHOTOS SONT DANS `main`, ELLES NE SONT PAS EN LIGNE
+
+Vérifié depuis le PC, sur le site servi :
+
+| | |
+|---|---|
+| `piece-soleil.webp` · `piece-organza.webp` · `piece-organza-dos.webp` · `piece-sirene.webp` · `piece-orange-uni.webp` | **404** |
+| la page servie contre `vitrine.html` du disque | **deux fichiers différents** (MD5) |
+
+**Un `git push` ne déploie rien.** Le travail du téléphone (8 modèles
+photographiés, la Robe Soleil, la bascule face/dos, l'écart des nappes en
+L\*a\*b\*) est bien dans `main` : il n'est pas chez la cliente.
+
+Pour publier : `python _v4/_assembler.py` puis `python _build.py` (faits, la
+page fait 286 261 octets et porte les 4 nouvelles pièces), puis
+`python _predeploy.py`, **qui lance les 138 contrôles et refuse un déploiement
+douteux**.
+
+⚠️ **Ce qui bloque aujourd'hui** : les navigateurs Playwright ont été supprimés
+le matin même pour libérer le disque, et le QC ne peut pas tourner sans eux.
+`npx playwright install chromium webkit` = **430 Mo** (267 Chromium + 166
+WebKit, qui sert au test iPhone réel). Le téléchargement est en cours et très
+lent sur cette connexion.
+
+⛔ **Ne jamais déployer en sautant le QC** : quand il échoue, `_predeploy.py`
+s'arrête **avant** de préparer `_dist/`, et déployer juste après **republie la
+version précédente sans un mot**.
+
+### Il reste 3 pièces sans photo
+
+`h8` Robe de ville à tulle · `h19` Robe d... · `h20` Ensemble Volants.
+Elles affichent « Photo sur WhatsApp », ce qui est le bon comportement.
