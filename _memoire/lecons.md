@@ -819,3 +819,53 @@ trouble dure 100 ms au lieu d'un demi-tour d'horloge.
 - **Et une leçon de méthode** : avant de corriger, j'ai rejoué le même relevé
   sur la version de `main`. Identique. **On ne répare pas ce qu'on n'a pas
   cassé** — et on ne s'attribue pas un défaut antérieur.
+
+## 2026-08-20 — Un écart de teinte n'est pas un écart perçu
+
+- **Contexte** : le héros d'Hillary peint son fond avec la couleur de la pièce.
+  Pour éviter deux transitions invisibles, je compare les couleurs voisines.
+  Première version : la distance entre leurs **angles de teinte**, seuil 28°.
+- **Le faux défaut** : la règle accusait `hero-3 → hero-4`, 19° d'écart. Leur
+  distance perçue est de **33 ΔE** — un bleu profond et un cyan clair, que
+  personne ne confondrait. Je l'avais signalé à Mongazi comme un défaut à
+  corriger. C'était faux.
+- **La cause** : l'angle de teinte ignore la **clarté** et la **saturation**,
+  c'est-à-dire l'essentiel de ce qui distingue deux couleurs à l'œil. Deux
+  rouges à 25° peuvent être indiscernables si leur clarté est la même ; un bleu
+  et un cyan à 19° sautent aux yeux.
+- **Leçon générale** : dès qu'on mesure « est-ce que ces deux couleurs se
+  ressemblent ? », on mesure en **L\*a\*b\***, jamais en degrés de teinte. La
+  conversion tient en dix lignes et ne dépend d'aucune bibliothèque.
+- **Et une leçon plus large** : une mesure commode n'est pas une mesure juste.
+  Avant de faire d'un nombre un critère de qualité, vérifier qu'il dit bien ce
+  qu'on croit — sur un cas où l'on connaît déjà la réponse.
+
+## 2026-08-20 — La couleur dominante d'une photo de mode, c'est souvent la peau
+
+- **Contexte** : le fond du héros est relevé sur la photo de la pièce (teinte
+  dominante des pixels saturés). La robe verte et jaune est ressortie en
+  **brun**.
+- **La cause** : ce n'était pas un bug. Bras et jambes nus couvraient **23 %**
+  de la photo contre **17 %** pour le tissu. La peau gagnait, honnêtement.
+- **Le correctif** : parmi les teintes qui occupent au moins 15 % de la pièce,
+  prendre **la plus saturée**. Un vêtement est presque toujours plus vif qu'une
+  peau. Vérifié sur huit pièces : la verte redevient verte, l'ensemble en jean
+  gagne son vrai rouge, les six autres ne bougent pas.
+- ⚠️ **Ce qui ne marche pas** : un détecteur de peau par bande de teinte. La
+  peau occupe 10-40°, exactement là où vivent les tissus orange et terracotta —
+  et Hillary en a. On aurait réparé une pièce en en cassant une autre.
+
+## 2026-08-20 — Vérifier ce qui est gratuit avant de lancer ce qui est cher
+
+- **Contexte** : le script de pose détoure les photos (45 s chacune) puis les
+  injecte. Une restructuration avait effacé sept fonctions au passage.
+- **Ce qui s'est passé** : il a détouré **douze photos pendant dix minutes**,
+  puis est mort sur `NameError` à la seconde d'après, au moment précis où il
+  allait enfin écrire quelque chose.
+- **Leçon** : le coût d'une bourde ne doit pas dépendre de l'endroit où elle
+  explose. Une étape coûteuse commence par vérifier ses préconditions gratuites
+  — ici, que les fonctions qu'elle appellera existent.
+- **Corollaire, appris le même jour** : un outil qui réécrit du code par
+  découpe de texte passe sa sortie à `node --check` **avant** de l'écrire. Deux
+  bourdes de découpe (une virgule après un commentaire, puis tout l'en-tête du
+  fichier effacé) rendaient le site entièrement muet.

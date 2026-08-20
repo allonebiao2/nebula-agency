@@ -943,3 +943,73 @@ la page en `file://`, où Chromium **interdit `fetch()`** (CORS), et l'échec
 n'arrivait qu'**après** le clic, donc au hasard de la vitesse de la machine.
 Les sons ont leur propre contrôle `sons()`, sur un vrai serveur HTTP.
 Vérifié identique sur `main` avant de toucher à quoi que ce soit.
+
+---
+
+## NEUF MODÈLES REÇOIVENT LEURS VRAIES PHOTOS (2026-08-20)
+
+Détail : `_memoire/conversations/2026-08-20-hillary-photos-recues.md`
+
+**9 des 11 fiches** ont leur image. Il reste **Robe d'été** et **Ensemble
+Volants**, qui gardent « Photo sur WhatsApp ». **Quatre pièces basculent
+face/dos toutes seules** (organza, nœud, lacée, jean).
+
+Les **9 prix et 9 types de mesures** donnés par Mongazi correspondent au
+centime à ce qu'Hillary avait donné le 16/08. Vérifié avant de poser.
+
+⛔ **Deux photos écartées** : la face de la Robe Sirène porte un **emoji ❤️
+collé sur la poitrine** (on garde le profil) ; l'ancienne capture d'écran de la
+Robe d'été reste écartée.
+
+### ⛔ Le détourage : birefnet, pas isnet
+
+`isnet-general-use` rendait le train d'organza blanc **en gris sale** sur la
+face et l'**effaçait entièrement** sur le dos — il ne restait qu'un disque
+rouge flottant. Les tissus translucides sont ce que ce modèle ne sait pas voir.
+**`birefnet-general`** les garde intacts (~45 s par photo, 890 Mo).
+
+⚠️ **Un processus par photo** : birefnet se faisait **tuer sur la deuxième
+image** (code 137) avec 15 Go libres. onnxruntime ne rend pas ce qu'il a pris
+entre deux inférences.
+
+### ⛔ La couleur du héros suivait la peau
+
+La robe verte ressortait en **brun**. Bras et jambes nus couvraient **23 %** de
+la photo contre **17 %** pour le tissu. `teinte()` garde désormais les teintes
+qui occupent **au moins 15 %** de la pièce et prend **la plus saturée** : un
+vêtement est presque toujours plus vif qu'une peau.
+⚠️ Un détecteur de peau par bande de teinte **ne marche pas** : la peau occupe
+10-40°, là où vivent les tissus orange — et Hillary en a un.
+
+### ⚠️ Un faux défaut signalé à tort, puis corrigé
+
+La règle des nappes voisines comparait des **angles de teinte** (seuil 28°) et
+accusait `hero-3 → hero-4`. **C'était faux** : leur distance perçue est de
+**33 ΔE**, un bleu profond et un cyan clair. L'angle ignore la clarté et la
+saturation. **La règle mesure maintenant en L\*a\*b\*, seuil ΔE 18.**
+Résultat : **16 diapositives au héros, aucune transition invisible**.
+⚠️ Avec l'ancienne mesure, **aucun ordre parfait n'existait** (6 pièces chaudes
+contre 3 séparateurs) : la mauvaise mesure fabriquait un problème insoluble.
+
+### ⛔ Trois bourdes de découpe, et deux garde-fous
+
+L'outil réécrit `motion.js` et `garde-moteur.js` par découpe de texte :
+une **virgule après un commentaire** (« `*/,` »), **tout l'en-tête du fichier
+effacé** (bannière, `(function () {`, `'use strict'` — site entièrement muet),
+et **sept fonctions effacées** par une restructuration, découvertes après
+**dix minutes de détourage**.
+→ la sortie passe par **`node --check` avant** d'être écrite, et `main()`
+**vérifie ses fonctions avant** de lancer ce qui est coûteux.
+
+### ⏳ Ce qui attend une réponse
+
+1. les **2 photos** manquantes ;
+2. le **sac beige** tenu devant l'Ensemble Orange — laissé ou retiré ?
+3. le **dos de l'organza** a une teinte **crème** (fond jaune du studio vu à
+   travers le tissu transparent) — neutraliser ou garder ?
+4. ⚠️ **les originaux ne sont pas sauvegardés** : `clients/*/_sources/` est
+   ignoré (ligne 76) et le dépôt est **public** ;
+5. le **nommage** : « Robe de ville » coiffe même un tailleur veste + pantalon,
+   donc lu comme un modèle de message ;
+6. ⚠️ **défaut antérieur** : le héros affiche **« PRÊT-À-PORTER »** alors que
+   les 20 pièces sont toutes en sur-mesure, onglet masqué car vide.

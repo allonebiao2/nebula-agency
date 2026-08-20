@@ -46,8 +46,8 @@
     { f:'piece-verte.webp',    c:'#7e6730', col:'Sur-mesure',     mat:'Sur-mesure · 2 semaines',
       t:'Robe de ville verte', d:"Une seule épaule, nouée sur le côté. La taille descend bas, la jupe est froncée et très ample." },
 
-    { f:'piece-organza.webp', c:'#ad1e1a', col:'Cérémonie', mat:'Sur-mesure · 2 semaines',
-      t:"Robe de ville organza", d:"Manches ballon détachées des épaules, col en organza froncé, découpe à la taille, dos lacé au ruban et jupon d'organza sous un wax rouge." },
+    { f:'piece-coeurs.webp', c:'#952838', col:'Fait main', mat:'Fait main · 2 semaines',
+      t:"Tailleur Cœurs", d:"Veste cintrée à revers et épaules structurées, pantalon large assorti, wax bordeaux à cœurs." },
     { f:'piece-emeraude.webp', c:'#136b16', col:'Sur-mesure', mat:'Sur-mesure · 2 semaines',
       t:"Robe Émeraude", d:"Coupe courte ajustée, manches longues, grands motifs verts et jaunes cernés de noir." },
     { f:'piece-jean.webp', c:'#971f25', col:'Sur-mesure', mat:'Sur-mesure · 2 semaines',
@@ -56,12 +56,14 @@
       t:"Robe Lacée", d:"Épaules dénudées à fines bretelles, manches ballon, basque à la taille, dos lacé au ruban." },
     { f:'piece-noeud.webp', c:'#ad1a24', col:'Sur-mesure', mat:'Sur-mesure · 2 semaines',
       t:"Ensemble Nœud", d:"Haut dos nu à col, noué dans le dos, et pantalon large avec un pan de wax rouge et blanc." },
-    { f:'piece-sirene.webp', c:'#31166b', col:'Cérémonie', mat:'Sur-mesure · 2 semaines',
-      t:"Robe Sirène", d:"Fourreau en wax violet, volants bleu roi en bordure et le long de la fente, traîne et foulard assorti." },
     { f:'piece-orange-uni.webp', c:'#ad4c1e', col:'Sur-mesure', mat:'Sur-mesure · 2 semaines',
       t:"Ensemble Orange", d:"Bustier froncé à lien au cou, découpes sur les côtés, bas long et très ample en tissu uni." },
-    { f:'piece-coeurs.webp', c:'#952838', col:'Fait main', mat:'Fait main · 2 semaines',
-      t:"Tailleur Cœurs", d:"Veste cintrée à revers et épaules structurées, pantalon large assorti, wax bordeaux à cœurs." }
+    { f:'piece-organza.webp', c:'#ad1e1a', col:'Cérémonie', mat:'Sur-mesure · 2 semaines',
+      t:"Robe de ville organza", d:"Manches ballon détachées des épaules, col en organza froncé, découpe à la taille, dos lacé au ruban et jupon d'organza sous un wax rouge." },
+    { f:'piece-sirene.webp', c:'#31166b', col:'Cérémonie', mat:'Sur-mesure · 2 semaines',
+      t:"Robe Sirène", d:"Fourreau en wax violet, volants bleu roi en bordure et le long de la fente, traîne et foulard assorti." },
+    { f:'piece-soleil.webp', c:'#ad1a21', col:'Cérémonie', mat:'Sur-mesure · 2 semaines',
+      t:"Robe Soleil", d:"Épaules drapées à cordons et pompons, ceinture drapée, jupe très ample en bazin teint rouge et or." }
   ];
   /* --- 3 · LES COLLECTIONS : 6 à 8 pièces phares --- */
   /* ⛔ LE CARROUSEL NE PORTE QUE SES VRAIES PIÈCES. Les vêtements générés en
@@ -83,7 +85,8 @@
     { f:'piece-jean.webp', f2:'piece-jean-dos.webp', l:'Sur-mesure', t:"Ensemble Jean", s:'Haut court épaules dénudées à manches ballon, jupe' },
     { f:'piece-sirene.webp', l:'Cérémonie', t:"Robe Sirène", s:'Fourreau en wax violet, volants bleu roi en bordure et' },
     { f:'piece-emeraude.webp', l:'Sur-mesure', t:"Robe Émeraude", s:'Coupe courte ajustée, manches longues, grands motifs' },
-    { f:'piece-orange-uni.webp', l:'Sur-mesure', t:"Ensemble Orange", s:'Bustier froncé à lien au cou, découpes sur les côtés' }
+    { f:'piece-orange-uni.webp', l:'Sur-mesure', t:"Ensemble Orange", s:'Bustier froncé à lien au cou, découpes sur les côtés' },
+    { f:'piece-soleil.webp', l:'Cérémonie', t:"Robe Soleil", s:'Épaules drapées à cordons et pompons, ceinture drapée' }
   ];
   /* ================================================================ */
 

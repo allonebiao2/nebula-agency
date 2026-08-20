@@ -331,19 +331,35 @@ def court(t, n=56):
 
 
 def teinte_deg(c):
-    """La teinte d'un « #rrggbb », en degrés sur le cercle des couleurs."""
-    import colorsys
+    """Un « #rrggbb » traduit en L*a*b*, l'espace où une distance ressemble à
+    ce que l'œil perçoit. (Le nom est resté : c'est bien la couleur d'une
+    nappe du héros, mais on ne la réduit plus à un angle.)"""
+    import math
     r, g, b = (int(c[i:i + 2], 16) / 255 for i in (1, 3, 5))
-    return colorsys.rgb_to_hsv(r, g, b)[0] * 360
+    lin = lambda u: u / 12.92 if u <= 0.04045 else ((u + 0.055) / 1.055) ** 2.4
+    r, g, b = lin(r), lin(g), lin(b)
+    X = (r * .4124 + g * .3576 + b * .1805) / .95047
+    Y = r * .2126 + g * .7152 + b * .0722
+    Z = (r * .0193 + g * .1192 + b * .9505) / 1.08883
+    f = lambda t: t ** (1 / 3) if t > 0.008856 else 7.787 * t + 16 / 116
+    fx, fy, fz = f(X), f(Y), f(Z)
+    return (116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz))
 
 
 def ecart(a, b):
-    """La distance entre deux teintes (0 à 180)."""
-    d = abs(a - b) % 360
-    return min(d, 360 - d)
+    """⚠️ LA DISTANCE DE TEINTE ÉTAIT UNE MAUVAISE MESURE, et elle m'a fait
+    signaler un faux défaut le 2026-08-20. Les diapositives `hero-3` et
+    `hero-4` sont à 19° l'une de l'autre — donc « même nappe » selon l'ancienne
+    règle — alors que leur écart perçu est de **33 ΔE** : un bleu profond et un
+    cyan clair, que personne ne confondrait. À l'inverse deux rouges à 25°
+    peuvent être indiscernables si leur clarté est la même.
+    L'angle ignore la clarté et la saturation, c'est-à-dire l'essentiel.
+    On mesure donc en L*a*b*, où une distance vaut pour l'œil."""
+    import math
+    return math.sqrt(sum((x - y) ** 2 for x, y in zip(a, b)))
 
 
-ECART_MIN = 28   # en dessous, deux nappes se confondent
+ECART_MIN = 18   # en ΔE : en dessous, la transition du héros ne se voit plus
 
 
 def fiche_existante(mot, m, img, img2):
