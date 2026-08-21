@@ -67,6 +67,98 @@ async def tap_targets(page, label):
       return out;}""")
     ok(not bad, f"{label} : cibles tactiles >= 44px" + ("" if not bad else " -> " + "; ".join(bad[:6])))
 
+async def chevauchements(page, label):
+    """AUCUN TEXTE NE PASSE SOUS UNE IMAGE NI SOUS UN INSTRUMENT FLOTTANT.
+
+    Mongazi, 2026-08-21, capture d'iPhone à l'appui : « y'a du texte qui rentre
+    dans les images, et ce n'est pas que là ». Il avait raison deux fois —
+    quatorze endroits mesurés, à trois largeurs :
+      · le titre et la description du carrousel posés SUR la robe (65 % du
+        texte recouvert à 390 px) ;
+      · le bouton du son, en `position:fixed` en bas à gauche, qui mangeait le
+        PREMIER MOT de tout texte passant par là : « 04 », « Conçu par »,
+        « Saison 2026 », le « On » d'un titre.
+
+    CE QUI EST UN DÉFAUT : du texte DANS LE FLUX recouvert par un élément
+    positionné. Un texte volontairement posé sur une photo (le chiffre géant du
+    héros, une légende, un badge, « Commander ») est absolu : il ne compte pas.
+
+    CE QUI N'EN EST PAS : une BANDE DE BORD opaque qui traverse l'écran et
+    touche un bord — c'est le rôle d'un en-tête fixe. ⚠️ Une pastille de 46 px
+    qui flotte n'est pas une bande, même opaque : c'est un instrument, et un
+    instrument ne recouvre jamais du texte (règle née sur Mon Bénin).
+    """
+    JS = r"""()=>{
+      const vis = e => { const s=getComputedStyle(e);
+        return s.display!=='none' && s.visibility!=='hidden' && parseFloat(s.opacity)>0.05; };
+      const flux = e => { const s=getComputedStyle(e);
+        if(s.position==='absolute'||s.position==='fixed'||s.position==='sticky') return false;
+        if(s.position==='relative'){
+          const d=['top','left','right','bottom'].some(p=>s[p]!=='auto'&&parseFloat(s[p])!==0);
+          if(d||(s.transform!=='none')) return false; }
+        return true; };
+      const enFlux = e => { let n=e; while(n && n!==document.body){ if(!flux(n)) return false; n=n.parentElement; } return true; };
+      const bande = e => { let n=e; while(n && n!==document.body){
+          const s=getComputedStyle(n);
+          if(s.position==='fixed'||s.position==='sticky'){
+            const m=(s.backgroundColor||'').match(/rgba?\(([^)]+)\)/);
+            const a=m ? (m[1].split(',')[3]===undefined?1:parseFloat(m[1].split(',')[3])) : 0;
+            const r=n.getBoundingClientRect();
+            const large = r.width>=innerWidth*0.85 || r.height>=innerHeight*0.85;
+            const bord  = r.top<=1||r.left<=1||r.right>=innerWidth-1||r.bottom>=innerHeight-1;
+            if(a>=0.9 && large && bord) return true; }
+          n=n.parentElement; }
+        return false; };
+      const nom = e => { let p=[],n=e;
+        while(n && n.nodeType===1 && p.length<3){
+          p.unshift(n.tagName.toLowerCase()+(n.id?'#'+n.id:'')+(n.className&&typeof n.className==='string'?'.'+n.className.trim().split(/\s+/)[0]:''));
+          n=n.parentElement; }
+        return p.join('>'); };
+      const textes=[];
+      document.querySelectorAll('body *').forEach(e=>{
+        if(!vis(e)) return;
+        let t=''; for(const n of e.childNodes) if(n.nodeType===3) t+=n.textContent;
+        t=t.trim(); if(!t) return;
+        const r=e.getBoundingClientRect();
+        if(r.width<4||r.height<4) return;
+        if(!enFlux(e)) return;
+        textes.push({r,t:t.slice(0,30),s:nom(e)});
+      });
+      const gene=[];
+      document.querySelectorAll('img,button,a,aside,div').forEach(e=>{
+        if(!vis(e)) return;
+        const s=getComputedStyle(e);
+        if(s.position!=='fixed' && !(e.tagName==='IMG' && !flux(e))) return;
+        if(bande(e)) return;
+        const r=e.getBoundingClientRect();
+        if(r.width<10||r.height<10) return;
+        gene.push({r,n:(e.currentSrc||e.src||'').split('/').pop()||nom(e)});
+      });
+      const inter=(a,b)=>{ const x=Math.max(0,Math.min(a.right,b.right)-Math.max(a.left,b.left));
+        const y=Math.max(0,Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)); return x*y; };
+      const out=[];
+      textes.forEach(t=>gene.forEach(g=>{
+        const a=inter(t.r,g.r); if(a<60) return;
+        if(a/(t.r.width*t.r.height) < 0.10) return;
+        out.push(t.t.slice(0,22)+' sous '+String(g.n).slice(0,22));
+      }));
+      return out;
+    }"""
+    vus, H = set(), await page.evaluate("()=>document.body.scrollHeight")
+    haut = await page.evaluate("()=>innerHeight")
+    y = 0
+    while y < H:
+        await page.evaluate(f"()=>window.scrollTo(0,{y})")
+        await page.wait_for_timeout(360)
+        for o in await page.evaluate(JS):
+            vus.add(o)
+        y += int(haut * 0.75)
+    await page.evaluate("()=>window.scrollTo(0,0)")
+    await page.wait_for_timeout(300)
+    ok(not vus, f"{label} : aucun texte sous une image ou un instrument"
+       + ("" if not vus else " -> " + " ; ".join(sorted(vus)[:4])))
+
+
 def variables_css():
     """⛔ Le defaut du 2026-08-10 : cinq couleurs etaient utilisees sans
     jamais etre definies. `background: var(--craie)` sans valeur ne donne
@@ -356,6 +448,7 @@ async def main():
             await page.wait_for_timeout(2500)
             await overflow(page, f"[{w}px] page")
             await tap_targets(page, f"[{w}px] page")
+            await chevauchements(page, f"[{w}px] page")
 
             # onglet sur-mesure + ouverture d'une piece
             await page.evaluate("()=>onglet(\'sm\')")

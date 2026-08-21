@@ -738,8 +738,18 @@ em{font-style:italic;font-weight:400}
   .hdes{order:4;margin-top:10px}
   .hcol.chg,.hdes.chg{transform:translateY(10px)}
   .hsoc{display:none}
+  /* ⛔ LE TEXTE PASSAIT SOUS LES PHOTOS. En dessous de 1180 px il redevenait
+     `position:relative`, donc dans le flux — mais il restait DANS `.cars`, une
+     boîte de hauteur fixe dont la piste (`.cars-p`) est en `position:absolute`
+     et couvre tout. Le titre et la description se retrouvaient posés sur la
+     robe : 65 % du texte recouvert à 390 px, vu par Mongazi sur son iPhone le
+     2026-08-21. On empile pour de bon : `.cars` devient une colonne, la
+     hauteur passe sur la piste, et le texte occupe sa propre ligne au-dessus. */
+  .cars{height:auto;overflow:visible;display:flex;flex-direction:column}
   .cars-t{position:relative;left:auto;top:auto;transform:none;max-width:none;
-    padding:0 var(--pad);text-align:center;margin-bottom:clamp(18px,3vw,28px)}
+    padding:0 var(--pad);text-align:center;margin-bottom:clamp(18px,3vw,28px);
+    order:1}
+  .cars-p{position:relative;order:2;height:clamp(360px,44vw,540px);overflow:hidden}
   .cars-t::before{display:none}
   .cars-t.chg{transform:translateY(10px)}
   .lk--1,.lk--2,.lk--3,.lk--4,.lk--5,.lk--6{
@@ -755,8 +765,12 @@ em{font-style:italic;font-weight:400}
   .nav-c a{font-family:var(--ff-d);font-weight:700;font-size:1.5rem;letter-spacing:-.02em;
     padding:13px 0;border-bottom:1px solid var(--fil-n);opacity:1;text-transform:none}
   .nav-c a::after{display:none}
-  .burger{display:flex;margin-left:auto}
-  .nav-d{display:none}
+  /* ⚠️ La barre garde SON BOUTON DU SON sur téléphone. `display:none` sur tout
+     `.nav-d` le faisait disparaître avec la loupe et le panier — or le son
+     doit rester coupable partout. On masque les autres, pas le conteneur. */
+  .nav-d{display:flex}
+  .nav-d>:not(.sonbt){display:none}
+  .burger{display:flex}
   .hbig{margin-top:clamp(-60px,-6vw,-20px)}
   .look-cpt{height:70svh}
   .look-gr{margin-top:-70svh}
@@ -782,7 +796,7 @@ em{font-style:italic;font-weight:400}
   .piliers li{grid-template-columns:1fr;gap:2px}
   .plans{height:clamp(280px,86vw,400px)}
   .plan{width:60%}
-  .cars{height:clamp(320px,86vw,420px)}
+  .cars-p{height:clamp(320px,86vw,420px)}
   .car{width:min(58vw,240px)}
   .socs{grid-template-columns:1fr 1fr;gap:0 18px}
   .et{grid-template-columns:60px 1fr;padding:22px 20px}

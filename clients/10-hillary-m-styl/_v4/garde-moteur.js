@@ -742,6 +742,22 @@ function montrerModale(){
    pendant qu'un écran de commande est ouvert. */
 function parDessus(on){
   document.body.classList.toggle("ecran-on", !!on);
+  /* ⚠️ LE BOUTON DU SON CHANGE DE PARENT, PAS SEULEMENT DE STYLE.
+     Il vit désormais dans la barre du haut, qui porte `z-index:50` et crée
+     donc un CONTEXTE D'EMPILEMENT : depuis l'intérieur, il ne peut pas
+     passer au-dessus de la fiche (z-index 120), quelle que soit la valeur
+     qu'on lui écrive. Un `z-index:130` sur un enfant d'un parent à 50 vaut
+     50. On le sort donc de la barre le temps de la commande — la maison
+     exige qu'on puisse couper le son en donnant ses mesures — et on l'y
+     remet en refermant. Déplacer un nœud ne perd pas ses écouteurs. */
+  var bt = document.querySelector(".sonbt");
+  if(!bt) return;
+  if(on){
+    document.body.appendChild(bt);
+  }else{
+    var barre = document.querySelector(".nav-d");
+    if(barre) barre.insertBefore(bt, barre.firstChild);
+  }
 }
 function fermer(){
   document.getElementById("ov").classList.remove("on");
@@ -1515,7 +1531,21 @@ var Atelier = (function(){
       '<path class="off" d="M17 9.5l5 5M22 9.5l-5 5"/>' +
       '</svg><span class="vhs">Son</span>';
     bt.addEventListener("click", function(){ demarrer(); basculer(); });
-    document.body.appendChild(bt);
+    /* ⚠️ IL N'EST PLUS POSÉ SUR LA PAGE. En `position:fixed` en bas à gauche,
+       il recouvrait le PREMIER MOT de tout texte qui passait par là : « 04 »
+       dans le processus, « Conçu par » dans le pied, « Saison 2026 », le
+       « On » d'un titre de section — onze endroits mesurés à 390, 768 ET
+       1440 px, vus par Mongazi le 2026-08-21. La règle de la maison est
+       nette : un instrument flottant ne recouvre jamais du texte, seules les
+       bandes de bord en ont le droit. La barre du haut EST une bande de bord,
+       opaque, et il y devient un bouton comme les autres.
+       ⚠️ Il redevient flottant PENDANT UNE COMMANDE (`body.ecran-on`) : la
+       barre passe alors derrière le voile, et la maison exige qu'on puisse
+       couper le son en donnant ses mesures. Le couloir de 78 px des deux
+       pieds de page l'y attend déjà. */
+    var barre = document.querySelector(".nav-d");
+    if(barre) barre.insertBefore(bt, barre.firstChild);
+    else document.body.appendChild(bt);
     majBouton();
   }
 

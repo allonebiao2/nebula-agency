@@ -780,8 +780,18 @@ em{font-style:italic;font-weight:400}
   .hdes{order:4;margin-top:10px}
   .hcol.chg,.hdes.chg{transform:translateY(10px)}
   .hsoc{display:none}
+  /* ⛔ LE TEXTE PASSAIT SOUS LES PHOTOS. En dessous de 1180 px il redevenait
+     `position:relative`, donc dans le flux — mais il restait DANS `.cars`, une
+     boîte de hauteur fixe dont la piste (`.cars-p`) est en `position:absolute`
+     et couvre tout. Le titre et la description se retrouvaient posés sur la
+     robe : 65 % du texte recouvert à 390 px, vu par Mongazi sur son iPhone le
+     2026-08-21. On empile pour de bon : `.cars` devient une colonne, la
+     hauteur passe sur la piste, et le texte occupe sa propre ligne au-dessus. */
+  .cars{height:auto;overflow:visible;display:flex;flex-direction:column}
   .cars-t{position:relative;left:auto;top:auto;transform:none;max-width:none;
-    padding:0 var(--pad);text-align:center;margin-bottom:clamp(18px,3vw,28px)}
+    padding:0 var(--pad);text-align:center;margin-bottom:clamp(18px,3vw,28px);
+    order:1}
+  .cars-p{position:relative;order:2;height:clamp(360px,44vw,540px);overflow:hidden}
   .cars-t::before{display:none}
   .cars-t.chg{transform:translateY(10px)}
   .lk--1,.lk--2,.lk--3,.lk--4,.lk--5,.lk--6{
@@ -797,8 +807,12 @@ em{font-style:italic;font-weight:400}
   .nav-c a{font-family:var(--ff-d);font-weight:700;font-size:1.5rem;letter-spacing:-.02em;
     padding:13px 0;border-bottom:1px solid var(--fil-n);opacity:1;text-transform:none}
   .nav-c a::after{display:none}
-  .burger{display:flex;margin-left:auto}
-  .nav-d{display:none}
+  /* ⚠️ La barre garde SON BOUTON DU SON sur téléphone. `display:none` sur tout
+     `.nav-d` le faisait disparaître avec la loupe et le panier — or le son
+     doit rester coupable partout. On masque les autres, pas le conteneur. */
+  .nav-d{display:flex}
+  .nav-d>:not(.sonbt){display:none}
+  .burger{display:flex}
   .hbig{margin-top:clamp(-60px,-6vw,-20px)}
   .look-cpt{height:70svh}
   .look-gr{margin-top:-70svh}
@@ -824,7 +838,7 @@ em{font-style:italic;font-weight:400}
   .piliers li{grid-template-columns:1fr;gap:2px}
   .plans{height:clamp(280px,86vw,400px)}
   .plan{width:60%}
-  .cars{height:clamp(320px,86vw,420px)}
+  .cars-p{height:clamp(320px,86vw,420px)}
   .car{width:min(58vw,240px)}
   .socs{grid-template-columns:1fr 1fr;gap:0 18px}
   .et{grid-template-columns:60px 1fr;padding:22px 20px}
@@ -1172,23 +1186,30 @@ section{overflow-x:clip}
 /* ⚠️ z-index AU-DESSUS de la modale (120). En dessous, le bouton
    devenait inaccessible des qu'une fiche s'ouvrait : le son genait
    pendant la commande et on ne pouvait plus le couper. */
-.sonbt{position:fixed;left:18px;bottom:18px;z-index:130;
-  width:46px;height:46px;border-radius:50%;
-  border:1px solid rgba(12,12,12,.16);background:rgba(255,255,255,.92);
+/* DANS LA BARRE DU HAUT : un bouton comme la loupe et le panier. Il suit la
+   couleur de la barre (`currentColor`), qui s'inverse sur fond sombre. */
+.sonbt{position:static;width:44px;height:44px;border-radius:50%;
+  border:1px solid transparent;background:none;color:inherit;opacity:.66;
   display:grid;place-items:center;cursor:pointer;padding:0;
-  transition:background-color .25s,border-color .25s,transform .25s}
-.sonbt:hover,.sonbt:focus-visible{background:#fff;border-color:rgba(12,12,12,.34);
-  transform:scale(1.06)}
-.sonbt svg{width:21px;height:21px;fill:none;stroke:#1a1a1a;stroke-width:1.6;
+  transition:background-color .25s,border-color .25s,transform .25s,opacity .25s}
+.sonbt:hover,.sonbt:focus-visible{opacity:1;transform:scale(1.06)}
+/* PENDANT UNE COMMANDE : il redevient flottant, au-dessus du voile, dans le
+   couloir de 78 px que les deux pieds de page lui réservent. */
+.ecran-on .sonbt{position:fixed;left:18px;bottom:18px;z-index:130;
+  width:46px;height:46px;color:#1a1a1a;opacity:1;
+  border-color:rgba(12,12,12,.16);background:rgba(255,255,255,.92)}
+.ecran-on .sonbt:hover,.ecran-on .sonbt:focus-visible{background:#fff;
+  border-color:rgba(12,12,12,.34)}
+.sonbt svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.6;
   stroke-linecap:round;stroke-linejoin:round}
-.sonbt .hp{fill:#1a1a1a;stroke:none}
+.sonbt .hp{fill:currentColor;stroke:none}
 .sonbt .off{opacity:0}
 .sonbt[aria-pressed="true"] .on1,
 .sonbt[aria-pressed="true"] .on2{opacity:0}
 .sonbt[aria-pressed="true"] .off{opacity:1}
 .sonbt .vhs{position:absolute;width:1px;height:1px;overflow:hidden;
   clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
-@media(max-width:900px){.sonbt{left:14px;bottom:14px;width:44px;height:44px}}
+@media(max-width:900px){.ecran-on .sonbt{left:14px;bottom:14px;width:44px;height:44px}}
 
 /* ==================================================================
    LE PANIER · un tiroir qui vient de la droite
@@ -2544,6 +2565,22 @@ function montrerModale(){
    pendant qu'un écran de commande est ouvert. */
 function parDessus(on){
   document.body.classList.toggle("ecran-on", !!on);
+  /* ⚠️ LE BOUTON DU SON CHANGE DE PARENT, PAS SEULEMENT DE STYLE.
+     Il vit désormais dans la barre du haut, qui porte `z-index:50` et crée
+     donc un CONTEXTE D'EMPILEMENT : depuis l'intérieur, il ne peut pas
+     passer au-dessus de la fiche (z-index 120), quelle que soit la valeur
+     qu'on lui écrive. Un `z-index:130` sur un enfant d'un parent à 50 vaut
+     50. On le sort donc de la barre le temps de la commande — la maison
+     exige qu'on puisse couper le son en donnant ses mesures — et on l'y
+     remet en refermant. Déplacer un nœud ne perd pas ses écouteurs. */
+  var bt = document.querySelector(".sonbt");
+  if(!bt) return;
+  if(on){
+    document.body.appendChild(bt);
+  }else{
+    var barre = document.querySelector(".nav-d");
+    if(barre) barre.insertBefore(bt, barre.firstChild);
+  }
 }
 function fermer(){
   document.getElementById("ov").classList.remove("on");
@@ -3317,7 +3354,21 @@ var Atelier = (function(){
       '<path class="off" d="M17 9.5l5 5M22 9.5l-5 5"/>' +
       '</svg><span class="vhs">Son</span>';
     bt.addEventListener("click", function(){ demarrer(); basculer(); });
-    document.body.appendChild(bt);
+    /* ⚠️ IL N'EST PLUS POSÉ SUR LA PAGE. En `position:fixed` en bas à gauche,
+       il recouvrait le PREMIER MOT de tout texte qui passait par là : « 04 »
+       dans le processus, « Conçu par » dans le pied, « Saison 2026 », le
+       « On » d'un titre de section — onze endroits mesurés à 390, 768 ET
+       1440 px, vus par Mongazi le 2026-08-21. La règle de la maison est
+       nette : un instrument flottant ne recouvre jamais du texte, seules les
+       bandes de bord en ont le droit. La barre du haut EST une bande de bord,
+       opaque, et il y devient un bouton comme les autres.
+       ⚠️ Il redevient flottant PENDANT UNE COMMANDE (`body.ecran-on`) : la
+       barre passe alors derrière le voile, et la maison exige qu'on puisse
+       couper le son en donnant ses mesures. Le couloir de 78 px des deux
+       pieds de page l'y attend déjà. */
+    var barre = document.querySelector(".nav-d");
+    if(barre) barre.insertBefore(bt, barre.firstChild);
+    else document.body.appendChild(bt);
     majBouton();
   }
 
