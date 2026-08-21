@@ -316,3 +316,90 @@ la première impression au Bénin. `python _build_assets.py --og` la refait seul
   repère** (page contre viewport) ; et une boîte lue **avant** que le défilement
   doux se soit posé est périmée de plusieurs centaines de pixels. Les deux
   faisaient mesurer une zone qui n'avait rien à voir.
+
+---
+
+## LES CRÉATIONS PERSONNALISÉES (2026-08-21)
+
+Brief d'Angélique reçu par Mongazi : *« Une œuvre qui raconte votre histoire. »*
+Une section nouvelle (`#personnalise`, crème, entre « Pour un lieu » et la
+citation) et les **15 questions en trois temps**.
+
+### La distinction Collections / Créations personnalisées
+
+⚠️ **Le brief l'exige en toutes lettres.** Elle a ses deux blocs, et elle est
+dite : une **collection** existe déjà, avec ses dimensions et sa technique — on
+la regarde, on en choisit une. Une **création personnalisée** n'existe pas
+encore : elle naît de l'histoire du client. **Aucun prix affiché** : c'est une
+œuvre sur commande, pas un produit décoratif.
+
+### Sa signature : l'entaille qui se creuse
+
+« Une œuvre d'Angy, c'est une entaille dans la matière. » Ici c'est l'histoire
+du visiteur qu'on entaille. **Deux traits sur le même chemin** : l'arête claire
+remonte d'un pixel, le creux sombre descend d'un pixel, et le creux se trace
+**160 ms après** l'arête — la main appuie, puis la matière cède. Un seul trait
+n'aurait été qu'un soulignement.
+
+### Le formulaire — ce qu'il fait, et ce qu'il ne peut pas faire
+
+Trois temps (VOTRE HISTOIRE · VOTRE VISION · VOTRE PROJET), comme le tableau du
+brief. Deux champs n'apparaissent que si on en a besoin (type « Autre »,
+dimensions).
+
+⚠️ **IL NE « SOUMET » RIEN, ET C'EST VOLONTAIRE.** Le site est statique : pas de
+serveur, pas de base, pas de boîte mail. Il **rédige** le brief et ouvre la
+conversation WhatsApp avec le texte déjà écrit. Un bouton qui ferait semblant
+d'envoyer serait le pire des défauts : le client croirait sa demande partie.
+
+⚠️ **La question 11 (téléversement) devient une phrase.** On ne peut pas recevoir
+un fichier sans serveur. Plutôt qu'un bouton « Parcourir » qui n'enverrait rien,
+on dit au client de joindre ses photos dans la conversation — au Bénin c'est de
+toute façon le geste naturel — et le message le rappelle à Angélique.
+
+⚠️ **Le nom et la date sont dans le message.** Le brief demande de pouvoir
+identifier une demande par le nom du client et sa date : sans base, c'est le
+message lui-même qui les porte.
+
+⏳ **Ce qui reste hors de portée du statique** (§8 du brief) : notification
+automatique, stockage sécurisé des pièces jointes, historique des demandes.
+Cela demande n8n + un stockage — hors périmètre d'une vitrine.
+
+### ⛔ Trois défauts vus sur les captures, pas dans le code
+
+1. **`.pill--plein` est crème sur noir** : posé sur une section claire il
+   devient **crème sur crème**, donc invisible. Le site n'avait **aucun bouton
+   pour un fond crème** — les sections claires n'avaient que des liens
+   soulignés. → `.pill--encre`, 15,2:1.
+2. **`hidden` ne cachait rien** : `.ch` et `.etp` sont en `display:grid`,
+   `.pill` en `display:inline-flex`, et un `display` déclaré écrase le
+   `display:none` de la feuille par défaut. Le champ « Précisez » s'affichait
+   sans raison, **les trois étapes étaient empilées d'un coup**, et le bouton
+   d'envoi débordait. → sélecteurs d'attribut, sans `!important`.
+3. **Les champs débordaient à 390 px** : un enfant de grille a
+   `min-width:auto`, pas zéro. La piste s'élargit jusqu'à la largeur
+   **intrinsèque** de son contenu, et un long texte d'invite dans un
+   `textarea` poussait les champs dehors. `width:100%` n'y peut rien.
+
+Au passage : la largeur d'une modale se déclare sur `[open]` — un `max-width`
+seul ne sert à rien quand une `width` est fixée ailleurs.
+
+### Contrôles : 106 → 121, tous verts
+
+15 neufs, qui parcourent le formulaire comme une visiteuse. Et **deux qui
+mentaient** :
+- « la demande part sur WhatsApp » ouvrait **vraiment** `wa.me` : il testait la
+  connexion, pas le message, et rendait rouge un site parfait hors ligne. On
+  intercepte `window.open` et on lit l'URL.
+- « deux familles chargées » a besoin de Google Fonts : hors ligne il accusait
+  le site. Il se saute maintenant **en le disant**. Les deux contrôles qui
+  lisent la police *demandée* restent stricts.
+
+### ⏳ À trancher par Mongazi
+
+1. Le brief écrit **« ANGYART »** ; tout le site écrit **« Angy Art »**. J'ai
+   gardé l'orthographe du site. Si elle préfère l'autre, c'est un passage
+   partout (nav, pied, JSON-LD, affiche, OG).
+2. Le **bouton du son** d'Angy est en `position:fixed` en bas à droite, comme
+   l'était celui d'Hillary avant le 2026-08-21 : il peut recouvrir du texte.
+   Le détecteur écrit pour Hillary s'applique tel quel si on veut vérifier.

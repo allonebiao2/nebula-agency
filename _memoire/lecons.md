@@ -1147,3 +1147,48 @@ trouble dure 100 ms au lieu d'un demi-tour d'horloge.
   puis on avance). Une seule vue → 5,5 s.
 - **Leçon** : avant de choisir un intervalle, lister ce qui se passe déjà dans
   cet intervalle. Un nombre rond choisi seul écrase souvent quelque chose.
+
+## 2026-08-21 — `hidden` ne cache rien quand un `display` est déclaré
+
+- **Contexte** : un formulaire en trois étapes, chaque étape `hidden` sauf une,
+  deux champs conditionnels `hidden` eux aussi.
+- **Ce qui s'est passé** : tout était visible. Les trois étapes empilées, les
+  champs conditionnels ouverts, un bouton caché qui débordait de la modale.
+- **La cause** : l'attribut `hidden` ne vaut qu'un `display:none` de la
+  **feuille par défaut du navigateur**. Dès qu'on écrit `.ch{display:grid}` ou
+  `.pill{display:inline-flex}`, on l'écrase — une règle d'auteur passe toujours
+  devant la feuille par défaut, quelle que soit sa spécificité.
+- **Le correctif** : un sélecteur d'attribut, qui est une règle d'auteur lui
+  aussi et gagne par spécificité : `.ch[hidden]{display:none}`. Pas besoin
+  d'`!important`.
+- **À retenir** : dès qu'une classe déclare un `display`, prévoir sa variante
+  `[hidden]` dans la foulée. C'est le même geste, deux lignes plus bas.
+
+## 2026-08-21 — Un enfant de grille a `min-width:auto`, pas zéro
+
+- **Contexte** : des champs à `width:100%` dans une grille, qui débordaient de
+  leur modale sur téléphone.
+- **La cause** : ce n'était pas le champ qui débordait, c'était **la piste qui
+  avait grandi**. Un enfant de grille (comme de flex) a `min-width:auto` : la
+  piste s'élargit jusqu'à la largeur **intrinsèque** de son contenu — ici un
+  long texte d'invite dans un `textarea`. `width:100%` de 800 px reste 800 px.
+- **Le correctif** : `grid-template-columns:minmax(0,1fr)` sur le conteneur, ou
+  `min-width:0` sur les enfants.
+- **À retenir** : quand un enfant à `width:100%` déborde, ce n'est jamais lui
+  qu'il faut regarder. C'est son parent qui a cédé.
+
+## 2026-08-21 — Un contrôle qui a besoin du réseau doit le dire
+
+- **Contexte** : deux contrôles rouges sur une vitrine parfaite. L'un ouvrait
+  **vraiment** `wa.me` pour vérifier qu'un message part ; l'autre attendait que
+  Google Fonts réponde.
+- **Le vrai sujet** : le premier prétendait vérifier **le message**, il
+  vérifiait surtout la connexion. On intercepte `window.open` et on lit l'URL :
+  le contrôle teste enfin ce qu'il annonce, et il devient déterministe.
+- **Pour le second**, la dépendance est irréductible : il se **saute en le
+  disant** quand aucune police ne répond, et reste strict dès qu'il y a du
+  réseau. Les contrôles voisins, qui lisent la police *demandée*, ne dépendent
+  de rien et restent durs.
+- **Leçon** : un contrôle qui rougit pour une raison extérieure au produit
+  apprend à ignorer le rouge. Soit on le rend indépendant, soit il annonce
+  lui-même qu'il ne peut pas juger.
