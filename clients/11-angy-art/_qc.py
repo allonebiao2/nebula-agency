@@ -9,7 +9,17 @@ ANGY ART — suite de contrôle qualité.
 ⚠️ Émulation obligatoire (`is_mobile`). Une capture headless sans émulation
    ignore le meta viewport, rend à 800 px et invente des débordements.
 """
-import http.server, socketserver, threading, functools, sys, os
+import http.server, socketserver, threading, functools, sys, os, glob
+
+# ⚠️ ON DIT À PLAYWRIGHT OÙ EST LE NAVIGATEUR. Dans l'environnement distant,
+#    Chromium est déjà là (`/opt/pw-browsers`) mais Playwright cherche le
+#    numéro de version qu'il attend, ne le trouve pas, et réclame
+#    « playwright install » — un téléchargement inutile de 150 Mo qui ne
+#    marche pas non plus derrière le filtre. On lui donne le chemin.
+#    Sur le PC de Cotonou le motif ne correspond à rien et rien ne change.
+_CH = [g for g in glob.glob("/opt/pw-browsers/chromium-*/chrome-linux/chrome")
+       if "headless" not in g]
+NAVIG = {"executable_path": _CH[0]} if _CH else {}
 
 try:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -217,7 +227,7 @@ def main():
     print(f"\nANGY ART — contrôle qualité   {BASE}")
 
     with sync_playwright() as p:
-        nav = p.chromium.launch(args=["--force-color-profile=srgb"])
+        nav = p.chromium.launch(args=["--force-color-profile=srgb"], **NAVIG)
 
         for larg, haut, mob, nom in [(390, 844, True, "téléphone 390"),
                                      (768, 1024, True, "tablette 768"),

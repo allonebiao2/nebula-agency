@@ -31,7 +31,7 @@
      Mongazi voyait encore l'ancienne image générée alors que le serveur
      envoyait déjà la vraie photo (MD5 identique au fichier du disque). Ce
      n'était ni le déploiement ni Cloudflare : c'était son propre navigateur. */
-  var VER = '?v=20260808c';
+  var VER = '?v=20260821a';
 
   var SITUATIONS = [
     { f: "situ-1.webp", ar: "798/1004", t: "Deux visages, terre et blanc",
@@ -122,7 +122,10 @@
   (function revelations() {
     var restants = $$('[data-mots], .lab, .rv, .plein, .split-i, .split-t, .split-lg,'
       + ' .cit-i, .cit-a, .cars-b, .folio-d, .tags, .plein-d, .plein .pill,'
-      + ' .temps-d, .tp');
+      + ' .temps-d, .tp,'
+      /* ajoutés le 2026-08-21 : la signature « l'entaille » et les blocs de
+         la section des créations personnalisées */
+      + ' .ent, .perso-t, .deux li, .perso-go');
     if (doux) { restants.forEach(function (el) { el.classList.add('vu'); }); return; }
 
     var attente = false;
@@ -514,6 +517,146 @@
       ok.hidden = false;
       window.open(url, '_blank', 'noopener');
     });
+  })();
+
+  /* ---------- 11bis. LE PROJET DE CRÉATION PERSONNALISÉE --------------
+     Les 15 questions du brief d'Angélique, en trois temps.
+
+     ⚠️ CE FORMULAIRE NE « SOUMET » RIEN, et c'est volontaire. Le site est
+     statique : pas de serveur, pas de base, pas de boîte mail. Il RÉDIGE le
+     brief et ouvre la conversation WhatsApp d'Angélique avec le texte déjà
+     écrit. Un bouton « Envoyer » qui ferait semblant d'envoyer serait le
+     pire des défauts : le client croirait sa demande partie.
+
+     ⚠️ LA QUESTION 11 (téléversement) DEVIENT UNE PHRASE. On ne peut pas
+     recevoir un fichier sans serveur. Plutôt qu'un bouton « Parcourir » qui
+     n'enverrait rien, on dit au client de joindre ses photos dans la
+     conversation — au Bénin c'est de toute façon le geste naturel — et le
+     message le rappelle à Angélique pour qu'elle les attende.
+
+     ⚠️ LE NOM ET LA DATE SONT DANS LE MESSAGE. Le brief demande de pouvoir
+     identifier une demande par le nom du client et sa date : sans base de
+     données, c'est le message lui-même qui les porte. */
+  (function personnalise() {
+    var d = $('#per');
+    if (!d) return;
+    var f = $('#perF'), err = $('#perE'), ok = $('#perOk');
+    var prec = $('#perPrec'), suiv = $('#perSuiv'), go = $('#perGo');
+    var etapes = $$('.etp', f), pastilles = $$('#perPas li');
+    var pas = 1, dernier = null;
+    var v = function (id) { var e = $(id); return e ? String(e.value || '').trim() : ''; };
+
+    function montrer() {
+      etapes.forEach(function (e) { e.hidden = (+e.dataset.etp !== pas); });
+      pastilles.forEach(function (li, i) { li.classList.toggle('pas--on', i <= pas - 1); });
+      prec.hidden = pas === 1;
+      suiv.hidden = pas === 3;
+      go.hidden = pas !== 3;
+      err.hidden = true;
+      /* on remonte en haut de la modale : au troisième temps, rester en bas
+         donnait l'impression que rien ne s'était passé */
+      d.scrollTop = 0;
+    }
+    function refus(msg, id) {
+      err.textContent = msg; err.hidden = false;
+      var e = $(id); if (e) { e.parentNode.classList.add('mal'); e.focus(); }
+    }
+    /* on nettoie le liseré rouge dès que le visiteur corrige */
+    f.addEventListener('input', function (e) {
+      if (e.target && e.target.parentNode) e.target.parentNode.classList.remove('mal');
+      err.hidden = true;
+    });
+
+    /* les deux champs qui n'apparaissent que si on en a besoin */
+    var t = $('#pType'), tw = $('#pTypeAW');
+    if (t && tw) t.addEventListener('change', function () { tw.hidden = t.value !== 'Autre'; });
+    var dm = $('#pDim'), dw = $('#pDimW');
+    if (dm && dw) dm.addEventListener('change', function () {
+      dw.hidden = dm.value.indexOf('idée') === -1;
+    });
+
+    $$('[data-perso]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        dernier = b; pas = 1; ok.hidden = true; montrer();
+        d.showModal(); document.body.classList.add('fige');
+      });
+    });
+    $('#perX').addEventListener('click', function () { d.close(); });
+    d.addEventListener('click', function (e) { if (e.target === d) d.close(); });
+    d.addEventListener('close', function () {
+      document.body.classList.remove('fige');
+      if (dernier) dernier.focus();
+    });
+
+    prec.addEventListener('click', function () { if (pas > 1) { pas--; montrer(); } });
+    suiv.addEventListener('click', function () {
+      if (pas === 1 && !v('#pHist')) {
+        return refus("Racontez-moi votre histoire, même en deux lignes : c'est d'elle que naît l'œuvre.", '#pHist');
+      }
+      if (pas < 3) { pas++; montrer(); }
+    });
+
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!v('#pNom')) return refus('Il me faut votre nom pour vous répondre.', '#pNom');
+      if (!v('#pTel') && !v('#pMail')) {
+        return refus('Un numéro WhatsApp ou une adresse e-mail, au choix : sans ça je ne peux pas revenir vers vous.', '#pTel');
+      }
+      var l = ['Bonjour Angélique, je viens de votre site.',
+               'Je souhaite une CRÉATION PERSONNALISÉE.', ''];
+      function ligne(t, x) { if (x) l.push(t + ' : ' + x); }
+
+      l.push('— MON HISTOIRE —');
+      var ty = v('#pType');
+      if (ty === 'Autre' && v('#pTypeA')) ty = v('#pTypeA');
+      ligne("Type d'œuvre", ty);
+      ligne('Destinée', v('#pPour'));
+      ligne("L'histoire", v('#pHist'));
+      ligne('À représenter', v('#pQui'));
+      ligne('Éléments à faire apparaître', v('#pElem'));
+      ligne('Ce que je veux transmettre', v('#pSens'));
+
+      l.push('', '— MA VISION —');
+      ligne('Couleurs', v('#pCoul'));
+      ligne('À éviter', v('#pEvit'));
+      ligne('Liberté artistique', v('#pLib'));
+      ligne("Une œuvre qui m'inspire", v('#pInsp'));
+      var dims = v('#pDim');
+      if (v('#pDimL') && v('#pDimH')) dims = v('#pDimL') + ' x ' + v('#pDimH') + ' cm';
+      ligne('Dimensions', dims);
+      ligne('Où elle sera exposée', v('#pLieu'));
+
+      l.push('', '— MON PROJET —');
+      ligne('Budget', v('#pBud'));
+      var q = v('#pDate');
+      if (q) {
+        var p2 = q.split('-');
+        q = p2.length === 3 ? p2[2] + '/' + p2[1] + '/' + p2[0] : q;
+      }
+      if (v('#pOcc')) q = (q ? q + ' ' : '') + '(' + v('#pOcc') + ')';
+      ligne('Date souhaitée', q);
+
+      l.push('', '— MOI —');
+      ligne('Nom', v('#pNom'));
+      ligne('WhatsApp ou téléphone', v('#pTel'));
+      ligne('E-mail', v('#pMail'));
+      ligne('Ville et pays', v('#pVille'));
+      ligne('Me répondre par', v('#pPref'));
+
+      var n = new Date();
+      var d2 = function (x) { return (x < 10 ? '0' : '') + x; };
+      l.push('', 'Demande envoyée le ' + d2(n.getDate()) + '/' + d2(n.getMonth() + 1)
+             + '/' + n.getFullYear() + '.');
+      if ($('#pPh') && $('#pPh').checked) {
+        l.push('Je vous envoie mes photographies et mes références juste après ce message.');
+      }
+
+      var url = (NUM || 'https://wa.me/2290152006490') + '?text=' + encodeURIComponent(l.join('\n'));
+      ok.hidden = false;
+      window.open(url, '_blank', 'noopener');
+    });
+
+    montrer();
   })();
 
   /* ---------- 12. L'ambiance de l'atelier -----------------------------
