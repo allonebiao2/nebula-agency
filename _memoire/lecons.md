@@ -1070,3 +1070,50 @@ trouble dure 100 ms au lieu d'un demi-tour d'horloge.
   disque qui retombe à **0,08 Go libres** pendant que les deux jeux coexistent.
 - **Leçon** : la commande d'installation doit venir du **même écosystème que le
   code qui l'utilise**. `npx` pour un `_qc.js`, `python -m` pour un `_qc.py`.
+
+## 2026-08-21 — Un enfant ne passe jamais au-dessus du plafond de son parent
+
+- **Contexte** : le bouton du son recouvrait du texte partout. Je l'ai déplacé
+  dans la barre du haut, une bande de bord opaque, où il ne gêne plus rien.
+- **Ce qui a cassé** : il devait rester atteignable pendant une commande, en
+  flottant au-dessus de la fiche. Je lui ai écrit `z-index:130` contre le
+  `z-index:120` de la fiche. Ça n'a pas marché, et c'était normal.
+- **La cause** : la barre porte `z-index:50` et crée donc un **contexte
+  d'empilement**. À l'intérieur, tous les `z-index` sont relatifs à ce 50. Un
+  enfant à 130 vaut 50 vu de l'extérieur. Aucune valeur n'y change quoi que ce
+  soit.
+- **Le correctif** : changer de **parent**, pas de style. Le bouton sort de la
+  barre le temps de la commande (`document.body.appendChild`) et y revient en
+  refermant. Déplacer un nœud ne perd pas ses écouteurs.
+- **À retenir** : quand un `z-index` « ne marche pas », ce n'est presque jamais
+  la valeur. C'est un ancêtre qui a créé un contexte — `z-index`, `transform`,
+  `filter`, `opacity < 1`, `backdrop-filter` en créent tous un.
+
+## 2026-08-21 — Un détecteur qui s'exclut lui-même annonce zéro défaut
+
+- **Contexte** : détecteur de texte recouvert. Pour ne pas accuser l'en-tête
+  fixe, qui a le droit de passer devant, j'exclus « tout élément fixe au fond
+  opaque ».
+- **Le piège** : le bouton du son est fixe **et** opaque à 92 %. Il satisfaisait
+  ma propre exclusion. Le détecteur l'a rangé parmi les meubles légitimes et a
+  annoncé **zéro défaut** alors qu'il en couvrait onze.
+- **Le correctif** : une **bande** de bord traverse l'écran (≥ 85 % d'une
+  dimension) et touche un bord. Une pastille de 46 px qui flotte n'en est pas
+  une, même opaque : c'est un **instrument**, et un instrument ne recouvre
+  jamais du texte.
+- **Leçon générale** : une exclusion écrite pour épargner un cas légitime doit
+  être **serrée sur ce cas**. Trop large, elle épargne le coupable — et un
+  contrôle qui dit « rien à signaler » est pire que pas de contrôle.
+
+## 2026-08-21 — La bonne définition d'un chevauchement
+
+- Ce qui est un défaut : **du texte dans le flux** recouvert par un élément
+  positionné.
+- Ce qui n'en est pas : un texte **posé exprès** sur une photo — le chiffre
+  géant d'un héros, une légende, un badge, un « Commander » au survol. Ils sont
+  en `position:absolute` : c'est la signature de l'intention.
+- Sans cette distinction, un premier jet annonçait **105 défauts** sur la
+  vitrine Hillary, presque tous voulus. Avec elle : **14**, tous réels.
+- **À retenir** : avant de compter des défauts, écrire ce qui en est un. Un
+  détecteur qui ne sait pas distinguer l'intention de l'accident noie le vrai
+  défaut dans le bruit, et on cesse de le lire.

@@ -1077,3 +1077,52 @@ aucun échantillon n'atteindrait le seuil. **138 contrôles verts.**
 
 ⚠️ Même famille que les deux pièges déjà écrits ici : on échantillonne, on ne
 compare pas deux instantanés.
+
+---
+
+## PLUS AUCUN TEXTE SOUS UNE IMAGE NI SOUS UN INSTRUMENT (2026-08-21)
+
+Mongazi, capture d'iPhone à l'appui : « y'a du texte qui rentre dans les
+images, et ce n'est pas que là ». Un détecteur écrit pour l'occasion a trouvé
+**quatorze endroits**, à trois largeurs. **14 → 0.**
+
+### Le carrousel : titre et description posés SUR la robe
+
+Sous 1180 px, `.cars-t` redevenait `position:relative` — donc dans le flux —
+mais restait **dans `.cars`**, une boîte de hauteur fixe dont la piste
+(`.cars-p`) est en `position:absolute` et couvre tout. **65 % du texte
+recouvert à 390 px.** → `.cars` devient une colonne, la hauteur passe sur la
+piste, le texte occupe sa propre ligne au-dessus.
+
+### Le bouton du son mangeait le premier mot de tout ce qui passait
+
+En `position:fixed` en bas à gauche : « 04 » du processus, « Conçu par » dans
+le pied, « Saison 2026 », le « On » d'un titre. **Onze endroits.** Règle de la
+maison : un instrument flottant ne recouvre jamais du texte, seules les bandes
+de bord en ont le droit.
+
+→ **il rejoint la barre du haut**, bande de bord opaque, et y devient un bouton
+comme la loupe et le panier. ⚠️ `.nav-d` était **entièrement masqué sous
+880 px** : on masque désormais ses autres enfants, pas le conteneur.
+
+⚠️ **ET IL CHANGE DE PARENT, PAS SEULEMENT DE STYLE.** La barre porte
+`z-index:50` et crée un **contexte d'empilement** : de l'intérieur, un
+`z-index:130` vaut 50 et le bouton ne peut PAS passer au-dessus de la fiche
+(z-index 120). Or la maison exige qu'on puisse couper le son en donnant ses
+mesures. `parDessus()` le **sort de la barre** le temps de la commande et l'y
+remet en refermant — le contrôle existant a vu l'échec immédiatement.
+
+### Le contrôle, et ce qu'il refuse de compter
+
+`chevauchements()` tourne aux 3 largeurs, en défilant toute la page :
+- **défaut** : du texte **dans le flux** recouvert par un élément positionné ;
+- **pas un défaut** : un texte posé exprès sur une photo (chiffre géant du
+  héros, légende, badge, « Commander ») — il est `absolute`, c'est la signature
+  de l'intention. Sans cette distinction, un premier jet annonçait **105**
+  défauts, presque tous voulus ;
+- **pas un défaut** : une **bande de bord** opaque qui traverse l'écran et
+  touche un bord. ⚠️ Une pastille de 46 px qui flotte n'en est pas une, même
+  opaque — sans ce resserrement, le détecteur **s'excluait lui-même** et
+  annonçait zéro.
+
+**138 → 141 contrôles, tous verts.**
