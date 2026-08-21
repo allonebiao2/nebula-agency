@@ -464,3 +464,123 @@ compare — et l'œuvre s'y pose en `contain`.
   vendue reste affichée à son prix.
 - ⏳ Toujours en attente : l'adresse de l'atelier, de vrais avis, et **tester le
   numéro WhatsApp**.
+
+---
+
+## 2026-08-21 — SON VOCABULAIRE, SA COLLECTION, ET LE MOTEUR DE DÉFILEMENT
+
+Elle a envoyé un récapitulatif de sa vision. On y prend **ses mots**, pas les
+nôtres.
+
+### Le menu suit sa structure
+
+`L'ARTISTE · LA COLLECTION · SUR MESURE · LE JOURNAL · CONTACT`
+
+Les étiquettes des sections s'alignent dessus : `01 L'ARTISTE`,
+`02 LE JOURNAL`, `04 LA COLLECTION`, `06 CRÉATIONS SUR MESURE`. La démarche,
+l'atelier et les créations personnalisées n'ont pas changé de contenu : elles
+ont changé de nom, parce que c'est le sien.
+
+⚠️ L'entrée `ACCUEIL` de son récapitulatif n'est pas ajoutée au menu : le logo
+en haut à gauche ramène déjà en haut, et un menu de six entrées se casse à
+390 px. Le rôle est tenu, le libellé ne l'est pas — **à lui dire**.
+
+### Le héros mène aux œuvres
+
+`DÉCOUVRIR LES ŒUVRES` → `#oeuvres`, au lieu de `DÉCOUVRIR L'ATELIER`. On
+découvre d'abord ce qu'elle vend. Et un **second appel en bas de page** mène au
+sur-mesure : on découvre, puis on agit. Les deux boutons qu'elle demande.
+
+### La collection ÉNERGIES
+
+La section porte le **nom de la collection avant son titre** : on sait dans
+quoi on entre avant de voir les pièces. Le titre est sa phrase telle quelle :
+*« Donner une forme à ce qui ne se voit pas. »*
+
+⏳ **Deux choses manquent, marquées en commentaire dans le HTML :**
+
+1. **Son texte d'introduction de collection.** Le nôtre est *provisoire* et
+   n'assemble que les mots de son récapitulatif (forces invisibles, lumière,
+   liens, résilience, puissance intérieure, rayonnement, visages sculptés,
+   couleurs vibrantes, esthétique africaine, symboles chargés de sens). Une
+   ligne à remplacer le jour où elle envoie le sien.
+2. ⚠️ **Elle annonce CINQ œuvres dans ÉNERGIES. Elle en a envoyé SIX.**
+   Laquelle n'en fait pas partie ? À trancher avant la mise en ligne.
+
+### ⚠️ LE DÉFILEMENT LISSÉ ÉCRASAIT TOUT LE MONDE
+
+Le moteur maison (`app.js`, l'équivalent de Lenis) ne relisait sa cible que
+**lorsqu'il était à l'arrêt** :
+
+```js
+window.addEventListener('scroll', function () {
+  if (!anime) { cible = window.scrollY; courant = window.scrollY; }   /* ⛔ */
+});
+```
+
+Pendant qu'il glissait, il écrasait tout déplacement venu d'ailleurs : la
+**recherche du navigateur**, un **lecteur d'écran**, la touche **Fin**, le
+passage au clavier sur un bouton hors écran. Le saut était annulé sans un mot.
+
+C'est le piège déjà documenté sur **Au Braisé d'Or** (Lenis interrompait tout
+`scrollIntoView`, saut arrêté à 7 382 px de sa cible). Retrouvé ici parce que
+le QC échouait **uniquement en mode captures** : les captures laissent le
+moteur en pleine course.
+
+⚠️ **On ne peut pas adopter tout écart.** Une image perdue laisse la page **sur
+le chemin** du moteur, et l'adopter arrêterait le glissement net au milieu —
+une régression bien plus visible que le défaut réparé. Alors on regarde **où** :
+
+```js
+var bas = Math.min(courant, cible) - 12, haut = Math.max(courant, cible) + 12;
+if (y < bas || y > haut) { cible = borne(y); courant = y; }
+```
+
+Entre `courant` et `cible`, c'est nous. Ailleurs, c'est quelqu'un d'autre, et
+c'est lui qui a raison.
+
+**Mesuré** : sans le correctif, un saut à 200 px est ramené à **5 992 px** ;
+avec, la page reste à 200.
+
+### Quatre mesures qui mentaient parce qu'elles recopiaient
+
+| Ce qui était recopié | Ce que ça a coûté |
+|---|---|
+| trois ancres de menu, dont `#portfolio` | le menu a changé → `null.click()`, le contrôle **plantait** au lieu de tester |
+| les étiquettes `LA DÉMARCHE` / `L'ATELIER` / `DANS UN LIEU` | le contrôle a **accusé le site** d'avoir perdu des textes qu'il avait seulement renommés |
+| huit sélecteurs de sections dans `SECTIONS` | les **deux sections neuves n'ont jamais été photographiées**, et personne ne l'a vu |
+| l'attente de 500 ms avant de mesurer un contraste | l'élément n'était pas à l'écran, et le contrôle criait au **défaut de contraste** |
+
+Les trois premiers lisent la page maintenant. Le quatrième est devenu
+`placer()` : on se place, **puis on vérifie qu'on y est**, et on recommence —
+et si on n'y arrive pas, on le dit **avec le chiffre**.
+
+Ce qui reste écrit en dur dans le contrôle sans JS, ce sont **ses phrases à
+elle** (`ANGY`, `par sa main`, `La forme`, `Le trait`, `Retrouvons-nous`,
+`ÉNERGIES`, `Votre histoire`) : celles-là ne doivent jamais disparaître, quel
+que soit le vocabulaire du menu.
+
+### Le contrôle du moteur a un témoin
+
+« Le défilement lissé laisse passer les autres » prouve **d'abord que ça
+glisse** (3 000 → 4 352 px après un coup de molette), puis saute ailleurs. Sans
+le témoin, un moteur mort passerait le contrôle les doigts dans le nez : une
+page qui ne glisse pas ne ramène évidemment rien. Même leçon que le contrôle de
+pause de Hillary, le 2026-08-18.
+
+⚠️ Contexte **PC uniquement** : le moteur n'existe que sur pointeur fin
+(`(hover:hover) and (pointer:fine)`).
+
+**129 → 146 contrôles, tous verts. Rien n'est déployé.**
+
+### ⏳ Ce qui reste, au 2026-08-21
+
+- **Quelles CINQ œuvres composent ÉNERGIES** (elle en a envoyé six).
+- **Son texte d'introduction de collection** (le nôtre est provisoire).
+- **« ANGYART » ou « Angy Art »** : demandé deux fois, sans réponse. Le site
+  écrit *Angy Art*.
+- Le **texte de la page L'ARTISTE** (« texte spécifique à venir »).
+- Le **statut** de chaque pièce (vendue / disponible).
+- L'`ACCUEIL` du menu : rôle tenu par le logo, libellé absent.
+- Toujours : l'adresse de l'atelier, de vrais avis, **tester le numéro
+  WhatsApp**, et les **photos des œuvres seules** (fond neutre).

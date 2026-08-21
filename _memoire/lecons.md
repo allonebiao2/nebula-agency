@@ -1192,3 +1192,64 @@ trouble dure 100 ms au lieu d'un demi-tour d'horloge.
 - **Leçon** : un contrôle qui rougit pour une raison extérieure au produit
   apprend à ignorer le rouge. Soit on le rend indépendant, soit il annonce
   lui-même qu'il ne peut pas juger.
+
+## 2026-08-21 — Un défilement lissé maison doit CÉDER aux autres
+
+- **Contexte** : le moteur de défilement d'Angy Art (l'équivalent maison de
+  Lenis) ne relisait sa cible que `if (!anime)`, c'est-à-dire **seulement à
+  l'arrêt**. Pendant qu'il glissait, il réécrivait `scrollY` à chaque image et
+  écrasait tout déplacement venu d'ailleurs.
+- **Qui en souffre** : la recherche du navigateur, un lecteur d'écran, la
+  touche Fin, le passage au clavier sur un bouton hors écran, un
+  `scrollIntoView` d'outil de contrôle. Le saut est annulé **sans un mot**.
+  Mesuré : un saut à 200 px ramené à **5 992 px**.
+- ⚠️ **Le correctif naïf est pire que le défaut.** Adopter *tout* écart casse
+  le glissement : une image perdue laisse la page **sur le chemin** du moteur,
+  et l'adopter arrête net le défilement au milieu — une régression visible par
+  tout le monde, pour réparer un cas étroit.
+- **Le bon critère, c'est OÙ** : entre `courant` et `cible` (à 12 px près),
+  c'est nous ; ailleurs, c'est quelqu'un d'autre, et c'est lui qui a raison.
+
+  ```js
+  var bas = Math.min(courant, cible) - 12, haut = Math.max(courant, cible) + 12;
+  if (y < bas || y > haut) { cible = borne(y); courant = y; }
+  ```
+- **À retenir** : c'est la **troisième** apparition de cette famille (Lenis sur
+  Au Braisé d'Or, saut arrêté à 7 382 px de sa cible). Tout défilement lissé,
+  bibliothèque ou maison, prend la main sur `scrollY` : il doit prévoir
+  explicitement ce qui se passe quand un autre y écrit aussi.
+
+## 2026-08-21 — Une liste recopiée finit toujours par mentir sur ce qu'elle décrit
+
+Quatre contrôles, le même jour, sur la même vitrine, pour la même raison :
+
+| Ce qui était recopié | Ce que ça a coûté |
+|---|---|
+| trois ancres de menu | le menu a changé → `null.click()`, le contrôle **plantait** au lieu de tester |
+| les étiquettes de sections | le contrôle a **accusé le site** d'avoir perdu des textes qu'il avait seulement renommés |
+| les sélecteurs de sections des captures | les **deux sections neuves n'ont jamais été photographiées**, et personne ne l'a vu |
+
+- **Le pire des trois est le troisième** : les deux autres crient. Une liste de
+  captures, elle, **ne se plaint pas de ce qu'elle ne montre pas**. Elle a
+  produit huit images vertes pendant que deux sections entières n'étaient
+  jamais regardées.
+- **À retenir** : un contrôle **lit** ce qu'il décrit (`document.querySelectorAll`),
+  il ne le recopie pas. Ce qu'on garde écrit en dur, ce sont les choses qui ne
+  doivent **jamais** changer : les phrases du client, pas le vocabulaire du menu.
+
+## 2026-08-21 — Attendre n'est pas se placer
+
+- **Contexte** : un contrôle de contraste coupait le lissage, appelait
+  `scrollIntoView`, attendait 500 ms, puis mesurait. Il passait tout seul et
+  échouait **juste après les captures** — qui laissent le moteur en pleine
+  course.
+- **Le diagnostic à ne pas rater** : le contrôle criait au *défaut de
+  contraste* alors que l'élément **n'était pas à l'écran**. Un contrôle qui se
+  trompe de coupable envoie chercher une heure au mauvais endroit.
+- **Le correctif** : `placer()` — on se place, **puis on vérifie qu'on y est**,
+  et on recommence jusqu'à six fois. Si on n'y arrive pas, on le dit **avec le
+  chiffre** (« impossible d'amener `.visite-sm` à l'écran : haut −1 240 px »).
+- **À retenir** : face à un moteur qui réécrit `scrollY`, **aucune durée
+  d'attente n'est une preuve**. Il faut regarder où on a atterri. Même famille
+  que « ne jamais mesurer une animation d'ouverture avec des `wait_for_timeout`
+  empilés » (2026-08-08).
