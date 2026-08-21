@@ -125,7 +125,9 @@
       + ' .temps-d, .tp,'
       /* ajoutés le 2026-08-21 : la signature « l'entaille » et les blocs de
          la section des créations personnalisées */
-      + ' .ent, .perso-t, .deux li, .perso-go');
+      + ' .ent, .perso-t, .deux li, .perso-go,'
+      /* la section des œuvres : chaque cartel s'écrit quand sa pièce entre */
+      + ' .oeu, .oeu-intro');
     if (doux) { restants.forEach(function (el) { el.classList.add('vu'); }); return; }
 
     var attente = false;

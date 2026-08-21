@@ -469,6 +469,53 @@ def main():
                 bon("le message de confirmation s'affiche") if okv else mauvais("pas de confirmation après envoi")
                 page.click("#modX"); page.wait_for_timeout(300)
 
+                titre("Les œuvres")
+                # LES SIX PIÈCES, AVEC LEUR CARTEL.
+                # ⚠️ Elles sont écrites EN DUR dans la page, pas dans le
+                # JavaScript : ce qui fait la valeur de ce site — les textes
+                # d'Angélique, les dimensions, les prix — doit rester lisible
+                # sans JS et visible pour les moteurs de recherche.
+                o = page.evaluate("""() => {
+                  const a = [...document.querySelectorAll('.oeu')];
+                  return a.map(e => ({
+                    t: (e.querySelector('.oeu-t') || {}).textContent || '',
+                    dt: [...e.querySelectorAll('.oeu-c dt')].map(x => x.textContent.trim()),
+                    dd: [...e.querySelectorAll('.oeu-c dd')].map(x => x.textContent.trim()),
+                    situ: !!e.querySelector('.oeu-situ'),
+                    texte: [...e.querySelectorAll('.oeu-d p')].length,
+                    wa: (e.querySelector('a[href*="wa.me"]') || {}).href || '',
+                    alt: (e.querySelector('img') || {}).alt || ''
+                  }));
+                }""")
+                bon(f"{len(o)} œuvres au catalogue") if len(o) == 6 \
+                    else mauvais(f"{len(o)} œuvres, six attendues")
+                if o:
+                    sansCartel = [x["t"] for x in o if len(x["dd"]) < 4]
+                    bon("chaque œuvre porte son cartel complet") if not sansCartel \
+                        else mauvais(f"cartel incomplet : {sansCartel}")
+                    sansPrix = [x["t"] for x in o
+                                if not any(("FCFA" in d) or ("demande" in d) for d in x["dd"])]
+                    bon("chaque œuvre annonce son prix, ou qu'il est sur demande") if not sansPrix \
+                        else mauvais(f"sans prix ni mention : {sansPrix}")
+                    sansDim = [x["t"] for x in o if not any("cm" in d for d in x["dd"])]
+                    bon("chaque œuvre annonce ses dimensions") if not sansDim \
+                        else mauvais(f"sans dimensions : {sansDim}")
+                    court = [x["t"] for x in o if x["texte"] < 4]
+                    bon("le texte d'Angélique est dans la PAGE, pas dans le script") if not court \
+                        else mauvais(f"texte trop court ou absent : {court}")
+                    sansWa = [x["t"] for x in o if "wa.me" not in x["wa"] or "text=" not in x["wa"]]
+                    bon("chaque œuvre a son lien d'acquisition, déjà rédigé") if not sansWa \
+                        else mauvais(f"lien d'acquisition manquant : {sansWa}")
+                    sansAlt = [x["t"] for x in o if len(x["alt"]) < 20]
+                    bon("chaque œuvre décrit sa photo aux lecteurs d'écran") if not sansAlt \
+                        else mauvais(f"texte alternatif trop court : {sansAlt}")
+                    # ⚠️ LE CARTEL DE L'HONNÊTETÉ. Les masques sont d'Angélique,
+                    #    les niches de marbre sont des rendus. Trois des six
+                    #    photos sont des mises en situation, et le disent.
+                    nSitu = sum(1 for x in o if x["situ"])
+                    bon(f"{nSitu} photos annoncent « mise en situation »") if nSitu >= 3 \
+                        else mauvais(f"seulement {nSitu} mise(s) en situation annoncée(s)")
+
                 titre("Les créations personnalisées")
                 # LA SECTION EXISTE, ET ELLE DIT LA DISTINCTION.
                 # Le brief d'Angélique l'exige en toutes lettres : une

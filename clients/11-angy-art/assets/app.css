@@ -649,6 +649,65 @@ html:not(.js) .tp-n::after{transform:scaleX(1)}
 .mod-n{font-size:11.5px;color:rgba(255,255,255,.62);text-align:center}
 
 /* ==================================================================
+   LES ŒUVRES — les six pièces, avec leur cartel
+   ================================================================== */
+.oeu-intro{max-width:62ch;margin-top:clamp(18px,2.4vw,28px);
+  font-size:clamp(.95rem,1.15vw,1.05rem);line-height:1.72;color:var(--tx-c)}
+.oeu-g{margin-top:clamp(34px,4.6vw,64px);display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));
+  gap:clamp(30px,3.6vw,56px)}
+.oeu{display:flex;flex-direction:column;min-width:0}
+
+/* la photo garde le cadrage de la prise de vue : le rapport vient du fichier,
+   pas d'un recadrage arbitraire qui couperait un socle ou une boucle. */
+/* ⚠️ UNE BOÎTE COMMUNE, MAIS LA VRAIE PROPORTION DE L'ŒUVRE.
+   Recadrer en carré alignerait les cartes et MENTIRAIT sur la pièce : une
+   œuvre d'1 m 20 sur 80 cm est haute, et ça se voit. On donne donc à toutes
+   la même boîte (les titres s'alignent, on compare) et l'œuvre s'y pose en
+   `contain` : elle garde ses proportions, comme dans un catalogue. */
+.oeu-p{position:relative;margin:0;aspect-ratio:4/5;overflow:hidden;
+  background:rgba(26,26,26,.045)}
+.oeu-p img{width:100%;height:100%;object-fit:contain;display:block}
+/* ⚠️ LE CARTEL DE L'HONNÊTETÉ. Les masques sont bien d'Angélique ; les niches
+   de marbre, les livres et les vases qui les entourent sont des rendus. On le
+   dit sur l'image même, pas en bas de page — règle posée le 2026-08-08. */
+.oeu-situ{position:absolute;left:0;bottom:0;padding:7px 12px;
+  font-size:8.5px;font-weight:500;letter-spacing:.18em;
+  color:var(--creme);background:rgba(10,10,10,.78)}
+
+.oeu-t{margin-top:18px;font-family:var(--ff-d);font-weight:400;
+  font-size:clamp(1.35rem,2.1vw,1.75rem);line-height:1.1;letter-spacing:-.01em}
+
+/* LA SIGNATURE DE CETTE SECTION : le cartel qui s'écrit.
+   Dans une exposition, l'étiquette se lit ligne après ligne — technique,
+   palette, dimensions, prix. Les quatre lignes se posent l'une après l'autre,
+   comme une main qui écrit. C'est le geste du lieu, pas une décoration. */
+.oeu-c{margin:16px 0 0;display:grid;gap:9px;
+  border-top:1px solid rgba(26,26,26,.16);padding-top:15px}
+.oeu-c>div{display:grid;grid-template-columns:88px minmax(0,1fr);gap:12px;align-items:baseline}
+.oeu-c dt{font-size:8.5px;font-weight:500;letter-spacing:.16em;color:var(--tx-c);opacity:.8}
+.oeu-c dd{margin:0;font-size:13px;line-height:1.55;color:var(--tx-c)}
+.oeu-x{color:var(--encre)!important;font-weight:500;letter-spacing:.02em}
+.js .oeu-c>div{opacity:0;transform:translateY(7px)}
+.js .oeu.vu .oeu-c>div{animation:cartel .62s var(--e) both}
+.js .oeu.vu .oeu-c>div:nth-child(2){animation-delay:.09s}
+.js .oeu.vu .oeu-c>div:nth-child(3){animation-delay:.18s}
+.js .oeu.vu .oeu-c>div:nth-child(4){animation-delay:.27s}
+@keyframes cartel{to{opacity:1;transform:none}}
+@media(max-width:560px){ .oeu-c>div{grid-template-columns:78px minmax(0,1fr);gap:10px} }
+
+/* le texte d'Angélique : présent pour tout le monde, déplié à la demande */
+.oeu-d{margin-top:16px}
+.oeu-d summary{list-style:none;cursor:pointer;min-height:44px;display:flex;align-items:center;
+  font-size:10px;font-weight:500;letter-spacing:.16em;color:var(--or-f)}
+.oeu-d summary::-webkit-details-marker{display:none}
+.oeu-d summary::after{content:'+';margin-left:10px;font-size:15px;line-height:1;
+  transition:transform .35s var(--e)}
+.oeu-d[open] summary::after{transform:rotate(45deg)}
+.oeu-d p{margin-top:12px;font-size:13.5px;line-height:1.74;color:var(--tx-c)}
+.oeu .sous{margin-top:14px;align-self:flex-start}
+
+/* ==================================================================
    LES CRÉATIONS PERSONNALISÉES — la section, puis le formulaire
    ================================================================== */
 
