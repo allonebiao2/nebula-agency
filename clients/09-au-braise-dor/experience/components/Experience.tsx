@@ -166,10 +166,19 @@ export default function Experience() {
         REMONTERAIT tout seul pendant qu'on lit la carte : le pire défaut
         qu'une page puisse avoir.
      3. ⛔ RIEN ne bouge quand l'onglet est en arrière-plan.
-     4. ⚠️ ON AVANCE, ON NE BOUCLE PAS. Arrivé au dernier plat, on s'arrête.
-        Reboucler obligerait la page à remonter d'elle-même vers le premier
-        plat, en travers de quelqu'un qui descend vers le menu. Un site ne se
-        bat pas contre le doigt de son visiteur.
+     4. ⚠️ ON REBOUCLE, MAIS SEULEMENT POUR QUELQU'UN QUI REGARDE.
+        La version d'avant s'arrêtait au dernier plat, définitivement : au
+        bout de 22 s la scène était morte, et Mongazi l'a vu (2026-08-21).
+        La crainte qui l'avait dictée était juste — `aller()` fait défiler LA
+        PAGE, donc revenir au premier plat la fait REMONTER, en travers de
+        quelqu'un qui descend vers le menu. Mais cette crainte est déjà
+        couverte deux fois : rien ne bouge si la scène n'est pas à l'écran
+        (garde-fou 2), et un geste repousse tout de 12 s (garde-fou 5). Ne
+        reste donc que le cas du visiteur immobile, qui regarde — et pour lui
+        une scène figée n'est pas une protection, c'est une panne.
+        ⚠️ Le retour au premier plat prend UN TOUR DE PLUS : le dernier plat
+        se laisse regarder deux fois avant qu'on remonte. Une boucle qui se
+        referme sans respirer donne l'impression d'un bug.
      5. Un vrai geste repousse le tour de 12 s : on ne vole pas la main. */
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -188,13 +197,13 @@ export default function Experience() {
     const tourner = () => {
       minuteur = 0;
       if (document.hidden || !visible()) return relancer();
-      if (iRef.current >= N - 1) return;      // arrivé au bout : on s'arrête
-      aller(iRef.current + 1);
-      relancer();
+      const dernier = iRef.current >= N - 1;
+      aller(dernier ? 0 : iRef.current + 1);   // au bout, on revient au premier
+      relancer(dernier ? TOUR : 0);
     };
-    const relancer = () => {
+    const relancer = (sup = 0) => {
       if (minuteur) clearTimeout(minuteur);
-      minuteur = setTimeout(tourner, TOUR);
+      minuteur = setTimeout(tourner, TOUR + sup);
     };
     const repousser = () => {
       if (minuteur) { clearTimeout(minuteur); minuteur = 0; }

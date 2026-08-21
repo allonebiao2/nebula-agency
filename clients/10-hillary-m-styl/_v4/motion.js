@@ -573,7 +573,36 @@
         c.classList.toggle('dos');
       }, 3600);
     }
-    function aller(i) { actif = (i + n) % n; placer(); ecrire(); respirer(); }
+    /* ---------- LE CARROUSEL AVANCE TOUT SEUL ----------------------
+       ⚠️ LA DURÉE SUIT LA PIÈCE, elle n'est pas fixe. Une pièce
+       photographiée des deux côtés montre sa face 3,6 s, se retourne, puis
+       laisse voir son dos avant qu'on passe à la suivante : 7,4 s. Une pièce
+       à une seule vue n'a pas besoin de ce temps : 5,5 s. Avancer toutes les
+       4 s comme un diaporama ordinaire aurait rendu la bascule face/dos
+       invisible — on aurait posé un mécanisme par-dessus l'autre.
+       Il s'arrête au survol, onglet caché, et HORS DE L'ÉCRAN : on n'anime
+       pas ce que personne ne regarde. Un geste le relance. */
+    var autoC = null, vuC = true, surC = false;
+    function relancerC() {
+      clearTimeout(autoC); autoC = null;
+      if (doux || n < 2 || !vuC || surC) return;
+      var d = (data[actif] && data[actif].f2) ? 7400 : 5500;
+      autoC = setTimeout(function () {
+        if (document.hidden) { relancerC(); return; }
+        aller(actif + 1);
+      }, d);
+    }
+    function aller(i) { actif = (i + n) % n; placer(); ecrire(); respirer(); relancerC(); }
+    if (fin) {
+      zone.addEventListener('pointerenter', function () { surC = true; relancerC(); });
+      zone.addEventListener('pointerleave', function () { surC = false; relancerC(); });
+    }
+    document.addEventListener('visibilitychange', relancerC);
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(function (es) {
+        vuC = es[0].isIntersecting; relancerC();
+      }, { threshold: 0.25 }).observe(zone);
+    }
 
     var p = $('#cPrev'), s = $('#cNext');
     if (p) p.addEventListener('click', function () { aller(actif - 1); });
