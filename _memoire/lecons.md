@@ -1117,3 +1117,33 @@ trouble dure 100 ms au lieu d'un demi-tour d'horloge.
 - **À retenir** : avant de compter des défauts, écrire ce qui en est un. Un
   détecteur qui ne sait pas distinguer l'intention de l'accident noie le vrai
   défaut dans le bruit, et on cesse de le lire.
+
+## 2026-08-21 — Un garde-fou qui protège d'un cas déjà couvert devient une panne
+
+- **Contexte** : la scène des plats du Braisé avance toute seule. Une règle
+  écrite plus tôt l'arrêtait **définitivement** au dernier plat, pour ne pas
+  faire remonter la page en travers de quelqu'un qui descend vers le menu.
+- **Le raisonnement était juste, la conclusion trop large.** Le cas redouté
+  était déjà couvert **deux fois** : rien ne bouge quand la scène n'est pas à
+  l'écran, et un geste repousse tout de 12 s. Il ne restait donc que le
+  visiteur **immobile, qui regarde** — et pour lui une scène figée n'est pas
+  une protection, c'est une panne. Au bout de 22 s, le site avait l'air mort.
+- **Leçon** : avant d'ajouter un garde-fou, énumérer qui reste concerné une
+  fois les autres garde-fous appliqués. Si la réponse est « personne qu'on
+  voulait protéger », le garde-fou ne protège plus rien : il casse.
+- **Corollaire** : une boucle qui se referme doit **respirer**. Le dernier
+  élément se laisse regarder un tour de plus avant le retour, sinon le retour
+  ressemble à un bug.
+
+## 2026-08-21 — La cadence d'un carrousel doit compter avec les autres mécanismes
+
+- **Contexte** : le carrousel d'Hillary devait avancer tout seul. Chaque pièce
+  photographiée des deux côtés se retourne 3,6 s après son arrivée.
+- **Le piège évité** : une cadence ordinaire (4 s) aurait fait passer à la
+  pièce suivante **avant** que le dos ait eu le temps de se montrer. On aurait
+  posé un mécanisme par-dessus l'autre et perdu le second, sans que rien ne le
+  signale.
+- **Le correctif** : la durée **suit la pièce**. Deux vues → 7,4 s (face, dos,
+  puis on avance). Une seule vue → 5,5 s.
+- **Leçon** : avant de choisir un intervalle, lister ce qui se passe déjà dans
+  cet intervalle. Un nombre rond choisi seul écrase souvent quelque chose.

@@ -1126,3 +1126,21 @@ remet en refermant — le contrôle existant a vu l'échec immédiatement.
   annonçait zéro.
 
 **138 → 141 contrôles, tous verts.**
+
+---
+
+## LE CARROUSEL AVANCE TOUT SEUL (2026-08-21)
+
+Mongazi : « il faut que les éléments défilent tout seuls ». Le héros tournait
+déjà (5 s) ; le carrousel des collections, lui, ne bougeait qu'au clic.
+
+⚠️ **LA DURÉE SUIT LA PIÈCE, elle n'est pas fixe.** Une pièce photographiée des
+deux côtés montre sa face 3,6 s, se retourne, puis laisse voir son dos avant
+qu'on passe à la suivante : **7,4 s**. Une pièce à une seule vue : **5,5 s**.
+Une cadence ordinaire de 4 s aurait fait passer au suivant **avant** que le dos
+ait eu le temps de se montrer — on aurait posé un mécanisme par-dessus l'autre
+et perdu le second, sans que rien ne le signale.
+
+Il s'arrête au survol, onglet caché, et **hors de l'écran** (on n'anime pas ce
+que personne ne regarde). Un geste le relance. Rien sous mouvement réduit.
+Mesuré : 4 positions en 22 s sans y toucher, puis figé dès qu'il sort du champ.

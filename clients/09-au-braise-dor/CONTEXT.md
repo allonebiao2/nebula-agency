@@ -557,3 +557,24 @@ voit venir.
 été supprimés le même jour pour libérer le disque. Les changements sont
 entièrement dans l'en-tête du document, sans effet sur la mise en page. Pour la
 relancer : `npx playwright install chromium` (267 Mo).
+
+---
+
+## LA SCÈNE NE MEURT PLUS AU DERNIER PLAT (2026-08-21)
+
+Mongazi : « il faut que les éléments défilent tout seuls ». Tout était déjà
+automatique ici — sauf que `if (iRef.current >= N - 1) return;` arrêtait la
+rotation **définitivement** au quatrième plat. Au bout de 22 s, la scène était
+morte et le site avait l'air en panne.
+
+**La crainte d'origine était juste, la conclusion trop large.** ⚠️ `aller()`
+fait défiler **LA PAGE** : revenir au premier plat la fait **remonter**, en
+travers de quelqu'un qui descend vers le menu. Mais ce cas est **déjà couvert
+deux fois** — rien ne bouge quand la scène n'est pas à l'écran (garde-fou 2),
+et un geste repousse tout de 12 s (garde-fou 5). Ne restait que le visiteur
+**immobile, qui regarde** : pour lui, une scène figée n'est pas une protection.
+
+Elle reboucle donc, ⚠️ **avec un tour de plus sur le dernier plat** avant de
+remonter : une boucle qui se referme sans respirer ressemble à un bug.
+Mesuré sur l'export statique : **0 → 1 → 2 → 3 → 0** en 30 s, sans y toucher.
+Build 182 kB, QC **76 verts, 0 rouges**.
