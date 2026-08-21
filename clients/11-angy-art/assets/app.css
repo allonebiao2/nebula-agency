@@ -511,6 +511,14 @@ html:not(.js) .tp-n::after{transform:scaleX(1)}
 .cars-c{margin-left:10px;font-size:10.5px;font-weight:500;letter-spacing:.16em;color:var(--tx-n)}
 .cars-c i{font-style:normal;opacity:.5}
 .pill--n{border-color:var(--fil-n)}
+/* ⚠️ IL N'EXISTAIT AUCUN BOUTON POUR UN FOND CRÈME. `.pill--plein` est crème
+   sur noir : posé sur une section claire, il devient crème sur crème, donc
+   INVISIBLE — c'est ce qui est arrivé au bouton « Raconter mon histoire » le
+   2026-08-21, vu sur la capture avant d'être vu par quiconque. Les sections
+   claires n'avaient jusqu'ici que des liens soulignés. En voici un vrai :
+   encre pleine sur crème, 15,2:1. */
+.pill--encre{background:var(--encre);color:var(--creme);border-color:var(--encre)}
+.pill--encre:hover{background:transparent;color:var(--encre);border-color:var(--encre)}
 
 /* ==================================================================
    4 & 6. LES PLEINS ÉCRANS
@@ -695,7 +703,13 @@ html:not(.js) .tp-n::after{transform:scaleX(1)}
 }
 
 /* ── LE FORMULAIRE EN TROIS TEMPS ─────────────────────────────────── */
-.mod--per{max-width:min(760px,94vw)}
+/* ⚠️ LA LARGEUR SE DÉCLARE SUR `[open]`, comme pour `.mod`. Un simple
+   `max-width` ne sert à rien : `.mod[open]` fixe déjà `width`, et une largeur
+   fixée l'emporte sur un maximum. Quinze questions méritent la place. */
+.mod--per[open]{width:min(720px,calc(100vw - 32px))}
+/* même piège que `.ch` : `.pill` est en `display:inline-flex`, donc `hidden`
+   ne le cachait pas. Le bouton d'envoi débordait de la modale dès l'étape 1. */
+.pill[hidden]{display:none}
 /* les trois pastilles : on voit où l'on est, et combien il reste */
 .pas{display:flex;gap:8px;list-style:none;margin:clamp(20px,3vw,28px) 0 0;padding:0}
 .pas li{flex:1;display:flex;align-items:center;gap:9px;padding-top:12px;
@@ -709,6 +723,21 @@ html:not(.js) .tp-n::after{transform:scaleX(1)}
 @media (max-width:620px){ .pas li span{display:none} .pas li{justify-content:center} }
 
 .etp{display:grid;gap:18px}
+/* ⛔ `hidden` NE CACHE RIEN QUAND ON A DÉCLARÉ UN `display`. `.ch` et `.etp`
+   sont en `display:grid` : l'attribut `hidden`, qui ne vaut qu'un
+   `display:none` de feuille par défaut, était écrasé. Résultat vu sur la
+   capture du 2026-08-21 : le champ « Précisez » s'affichait alors qu'aucun
+   type n'était choisi, et LES TROIS ÉTAPES étaient empilées d'un coup.
+   Le sélecteur d'attribut reprend la main sans `!important`. */
+.ch[hidden],.etp[hidden]{display:none}
+/* ⚠️ UN ENFANT DE GRILLE A `min-width:auto`, PAS ZÉRO. La piste s'élargit
+   alors jusqu'à la largeur INTRINSÈQUE de son contenu : un long texte
+   d'invite dans un `textarea` poussait les champs hors de la modale, à
+   390 px. `width:100%` n'y peut rien — c'est la piste qui a grandi, pas le
+   champ qui a débordé. Vu sur la capture du 2026-08-21. */
+.mod-f,.etp{grid-template-columns:minmax(0,1fr)}
+.ch,.etp,.ch--duo>span{min-width:0}
+.ch input,.ch textarea,.ch select{max-width:100%}
 .per-sep{margin-top:6px;padding-top:18px;border-top:1px solid rgba(255,255,255,.14);
   font-size:9.5px;font-weight:500;letter-spacing:.18em;color:var(--or)}
 

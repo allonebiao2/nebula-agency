@@ -376,8 +376,18 @@ def main():
                 bon(f"texte = {f['c'].split(',')[0]}") if "Public Sans" in f["c"] \
                     else mauvais(f"le texte n'est pas Public Sans : {f['c']}")
                 fam = set(x.strip("'\"") for x in f["charge"])
-                bon(f"deux familles chargées : {sorted(fam)}") if len(fam) >= 2 \
-                    else mauvais(f"une seule famille chargée : {fam}")
+                # ⚠️ CE CONTRÔLE A BESOIN DU RÉSEAU, et il doit le dire.
+                # Les deux familles viennent de Google Fonts. Hors ligne, ou
+                # derrière un filtre, AUCUNE ne se charge : le contrôle
+                # passait au rouge alors que le site est parfait, et un
+                # rapport rouge à tort finit par ne plus être lu.
+                # Les DEUX contrôles au-dessus, eux, restent stricts : ils
+                # lisent la police DEMANDÉE, qui ne dépend d'aucun réseau.
+                if not fam:
+                    print("  [~~] polices Google injoignables ici : contrôle du chargement sauté")
+                else:
+                    bon(f"deux familles chargées : {sorted(fam)}") if len(fam) >= 2 \
+                        else mauvais(f"une seule famille chargée : {fam}")
 
                 titre("Contrastes mesurés à l'écran")
                 for n_, s_, r_, t_ in page.evaluate(JS_CONTRASTE, SELS):
@@ -439,10 +449,16 @@ def main():
                 page.select_option("#chFormat", index=3)
                 page.select_option("#chQuand", index=1)
                 page.wait_for_timeout(200)
-                with page.expect_popup() as pop:
-                    page.click("#modF button[type=submit]")
-                url = pop.value.url
-                pop.value.close()
+                # ⚠️ ON INTERCEPTE `window.open`, ON NE NAVIGUE PAS.
+                # Ce contrôle dit « la demande part sur WhatsApp, déjà
+                # rédigée » : il doit lire le MESSAGE. En ouvrant vraiment
+                # wa.me il testait surtout la connexion — et rendait rouge un
+                # site parfait dès qu'on est hors ligne ou derrière un filtre
+                # (`chrome-error://chromewebdata/`). Corrigé le 2026-08-21.
+                page.evaluate("() => { window.__url = ''; window.open = function (u) { window.__url = u; return null; }; }")
+                page.click("#modF button[type=submit]")
+                page.wait_for_timeout(200)
+                url = page.evaluate("() => window.__url || ''")
                 # wa.me redirige vers api.whatsapp.com : les deux formes sont bonnes
                 bonNum = ("wa.me/2290152006490" in url) or ("phone=2290152006490" in url)
                 bon("la demande part sur WhatsApp, déjà rédigée") if bonNum and "text=" in url \
@@ -452,6 +468,96 @@ def main():
                 okv = page.evaluate("() => !document.querySelector('#modOk').hidden")
                 bon("le message de confirmation s'affiche") if okv else mauvais("pas de confirmation après envoi")
                 page.click("#modX"); page.wait_for_timeout(300)
+
+                titre("Les créations personnalisées")
+                # LA SECTION EXISTE, ET ELLE DIT LA DISTINCTION.
+                # Le brief d'Angélique l'exige en toutes lettres : une
+                # collection existe déjà, une création personnalisée naît de
+                # l'histoire du client. Le contrôle lit les DEUX blocs.
+                sec = page.evaluate("""() => {
+                  const s = document.getElementById('personnalise');
+                  if (!s) return null;
+                  const d = [...s.querySelectorAll('.deux li b')].map(e => e.textContent.trim());
+                  return {titre: (s.querySelector('h2') || {}).textContent || '',
+                          deux: d, ent: !!s.querySelector('.ent path'),
+                          cta: !!s.querySelector('[data-perso]'),
+                          wa: !!s.querySelector('a[href*="wa.me"]')};
+                }""")
+                if not sec:
+                    mauvais("la section des créations personnalisées est absente")
+                else:
+                    bon("la section « créations personnalisées » est là") if "histoire" in sec["titre"].lower() \
+                        else mauvais(f"titre inattendu : {sec['titre'][:50]}")
+                    bon(f"la distinction avec les collections est écrite ({len(sec['deux'])} blocs)") \
+                        if len(sec["deux"]) == 2 else mauvais(f"distinction incomplète : {sec['deux']}")
+                    bon("la signature « l'entaille » est présente") if sec["ent"] \
+                        else mauvais("pas de signature dans cette section")
+                    bon("sans JavaScript, un vrai lien WhatsApp reste") if sec["wa"] \
+                        else mauvais("aucun lien WhatsApp écrit en dur dans la section")
+
+                # LE FORMULAIRE EN TROIS TEMPS, PARCOURU COMME UNE VISITEUSE
+                page.click("[data-perso]"); page.wait_for_timeout(400)
+                e = page.evaluate("""() => ({
+                  vis: [...document.querySelectorAll('#perF .etp')].filter(x => !x.hidden).length,
+                  precise: !document.getElementById('pTypeAW').hidden,
+                  dims: !document.getElementById('pDimW').hidden
+                })""")
+                bon("une seule étape à la fois") if e["vis"] == 1 else mauvais(f"{e['vis']} étapes visibles d'un coup")
+                # ⚠️ `hidden` ne cache rien quand un `display` est déclaré :
+                #    ces deux champs conditionnels l'avaient appris à leurs
+                #    dépens (capture du 2026-08-21).
+                bon("les champs conditionnels restent cachés tant qu'on n'en a pas besoin") \
+                    if not e["precise"] and not e["dims"] else mauvais(f"champ conditionnel visible à tort : {e}")
+
+                page.click("#perSuiv"); page.wait_for_timeout(250)
+                bloque = page.evaluate("() => !document.getElementById('perE').hidden")
+                bon("sans histoire, on ne passe pas à la suite") if bloque \
+                    else mauvais("le premier temps se franchit sans avoir rien raconté")
+
+                page.fill("#pHist", "Le pagne indigo de ma grand-mère, et la maison de Ouidah.")
+                page.select_option("#pType", label="Autre"); page.wait_for_timeout(150)
+                pre = page.evaluate("() => !document.getElementById('pTypeAW').hidden")
+                bon("« Autre » fait apparaître le champ à préciser") if pre \
+                    else mauvais("le champ à préciser ne s'ouvre pas")
+                page.click("#perSuiv"); page.wait_for_timeout(300)
+                # ⚠️ on remplit CE QUI EST À L'ÉCRAN : `#pCoul` vit au deuxième
+                #    temps, et un champ caché ne se remplit pas.
+                page.fill("#pCoul", "indigo et terre")
+                page.click("#perSuiv"); page.wait_for_timeout(300)
+                t3 = page.evaluate("""() => ({
+                  etp: (document.querySelector('#perF .etp:not([hidden])') || {}).dataset,
+                  go: !document.getElementById('perGo').hidden
+                })""")
+                bon("le troisième temps porte le bouton d'envoi") if t3["go"] \
+                    else mauvais("pas de bouton d'envoi au troisième temps")
+
+                page.click("#perGo"); page.wait_for_timeout(200)
+                sansNom = page.evaluate("() => !document.getElementById('perE').hidden")
+                bon("sans nom, la demande ne part pas") if sansNom \
+                    else mauvais("la demande part sans nom")
+
+                page.fill("#pNom", "Awa Kponou")
+                page.fill("#pTel", "+229 97 00 00 00")
+                page.evaluate("() => { window.__u2 = ''; window.open = function (u) { window.__u2 = u; return null; }; }")
+                page.click("#perGo"); page.wait_for_timeout(250)
+                u2 = page.evaluate("() => window.__u2 || ''")
+                from urllib.parse import unquote
+                msg = unquote(u2.split("text=", 1)[1]) if "text=" in u2 else ""
+                bon("le projet part sur WhatsApp, déjà rédigé") \
+                    if ("wa.me/2290152006490" in u2 or "phone=2290152006490" in u2) and msg \
+                    else mauvais(f"le projet ne part pas correctement : {u2[:80]}")
+                # ⚠️ LE MESSAGE DOIT PORTER LES RÉPONSES, PAS UN GABARIT VIDE.
+                #    Sans base de données derrière, ce message EST la demande :
+                #    le nom et la date y sont, comme le brief le demande.
+                manquants = [x for x in ("pagne indigo", "Awa Kponou", "indigo et terre",
+                                         "MON HISTOIRE", "MA VISION", "MON PROJET",
+                                         "Demande envoyée le") if x not in msg]
+                bon(f"le message porte l'histoire, le nom et la date ({len(msg)} caractères)") \
+                    if not manquants else mauvais(f"le message oublie : {manquants}")
+                okv = page.evaluate("() => !document.getElementById('perOk').hidden")
+                bon("la confirmation « votre projet a bien été transmis » s'affiche") if okv \
+                    else mauvais("pas de confirmation après envoi du projet")
+                page.click("#perX"); page.wait_for_timeout(300)
 
                 titre("Garde-fous de performance")
                 bf = page.evaluate("""() => {
