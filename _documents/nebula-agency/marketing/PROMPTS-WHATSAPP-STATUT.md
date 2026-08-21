@@ -1068,9 +1068,268 @@ Il fait deux choses qu’aucun post commercial ne peut faire :
 2. **Il rend crédible la vente d’après.** Une série qui donne vraiment gagne le droit d’être
    crue quand elle parle d’elle-même.
 
+## 7. Statut n° 5 · « LE DERNIER MESSAGE N’EST PAS DE VOUS. »
+
+**La mécanique est nouvelle : ce statut ne fait pas lire, il fait FAIRE.** Et il fait faire
+**dans l’application où il est publié**. Le lecteur n’a rien à croire sur parole : il ouvre
+une conversation, il regarde, et la preuve est dans son propre téléphone.
+
+C’est la quatrième mécanique de la série, après le déplacement de la menace (n° 1), le
+renversement de l’émetteur (n° 2), la disculpation du lecteur (n° 3) et le fait rare
+vérifiable (n° 4). **Ici, on parie sur son téléphone, et on gagne presque à tous les coups.**
+
+**Le pari, et pourquoi il tient :** dans un commerce qui tourne sur WhatsApp, il y a toujours
+des conversations où le dernier message est celui du client. Une question sans réponse, un
+« bonjour » du soir, un « c’est disponible ? » noyé. Ce ne sont pas des clients perdus : ce
+sont des **ventes en attente**, à portée de pouce, depuis des jours.
+
+**Le multiplicateur, c’est ce qui fait mal :** on ne demande pas d’en regarder une, on
+demande d’en **remonter dix et de compter**. Une conversation oubliée, c’est une distraction.
+Sept, c’est un problème d’organisation, et le lecteur le découvre tout seul.
+
+**L’appel à l’action est un nombre**, donc un seul caractère à taper. Et ce nombre **qualifie
+la conversation d’avance** : celui qui répond « 7 » a sept ventes en attente et il le sait
+depuis dix secondes.
+
+⚠️ **La promesse engage, et elle est précise :** qui répond un nombre reçoit **le message de
+relance à copier**, gratuitement, le jour même. Pas un devis, pas une offre. Le texte type
+est plus bas dans ce document : le préparer avant de publier.
+
+**L’image :** ce qui attend est **juste derrière vous**, et vous ne vous êtes pas retourné.
+Un petit point de lumière suspendu à hauteur d’épaule du sujet, immobile depuis longtemps, et
+le sujet tourné dans l’autre sens. La distance est minuscule : c’est à portée de main.
+
+### LE PROMPT
+
+```
+===========================================================
+NEBULA AGENCY — WHATSAPP STATUS — ONE IMAGE, 9:16
+===========================================================
+
+ATTACHED INPUTS — TWO attachments.
+Identify them BY THEIR CONTENT, not by their order. Never swap their
+roles: swapping them ruins the image.
+
+  THE LOGO = the attachment showing the NEBULA Agency logo: a purple
+     and blue cosmic swirl above the wordmark "NEBULA", with "AGENCY"
+     underneath, on a transparent background.
+     It is an ASSET TO PLACE, exactly as provided. It is never a style
+     reference and never a subject to reinterpret.
+
+  THE STYLE REFERENCE = the other attachment. This one is the design
+     the post takes after, and it is the MATERIAL of the post: its
+     subject, its palette, its texture, its lighting and its
+     typographic craft all carry over.
+
+  If you hesitate: the attachment with a transparent background and a
+  readable "NEBULA AGENCY" wordmark is THE LOGO. The other one is THE
+  STYLE REFERENCE.
+
+-----------------------------------------------------------
+TASK
+-----------------------------------------------------------
+Create ONE original WhatsApp STATUS image for NEBULA Agency, a digital
+studio in Cotonou, Benin, serving West African merchants and business
+owners.
+It is seen on a phone, often outdoors in daylight, at half screen
+brightness. It has ONE SECOND to earn a pause.
+This post asks the reader to DO something immediately, inside the very
+app they are reading it in, and the proof appears in their own phone.
+Calm, precise, certain of itself. Never a loud advertisement, never a
+promotional banner, never a price tag.
+It must look designed and expensive, never cheap, never homemade.
+
+-----------------------------------------------------------
+THE MATERIAL — THE STYLE REFERENCE IS THE SOURCE,
+                NOT A VAGUE INSPIRATION
+-----------------------------------------------------------
+Build this image OUT OF the style reference. Do not invent a new
+subject and do not add a decor of your own.
+  KEEP    its main subject, re-staged as described below
+  KEEP    its palette, its texture, its grain and its lighting
+  KEEP    its typographic craft: the same kind of contrast between a
+          huge line and small quiet lines
+  CHANGE  its orientation, its framing for a 9:16 canvas, and every
+          single word on it
+  DROP    its original words, numbers, captions, logo and watermark:
+          none of them may appear
+If you find yourself inventing a new object, stop. The subject is
+already in the style reference. Nothing else enters the frame.
+
+CONTRAST: push the contrast harder than the style reference does.
+This image is read outdoors, in daylight, on a dimmed screen. Any tone
+that sits close to its neighbour will vanish. Text is either clearly
+light on dark, or clearly dark on light. Never mid-grey on mid-grey.
+
+-----------------------------------------------------------
+THE STAGING — this is the whole idea of the image
+-----------------------------------------------------------
+IT IS WAITING RIGHT BEHIND YOU.
+The subject of the style reference is turned AWAY, facing one side of
+the frame, calm and unaware.
+Just behind it, at shoulder height and very close, hangs a single
+small steady point of light. Around that point, a faint halo shows it
+has been there a long while without moving: it has waited.
+The whole tension is the distance, and the distance is tiny: the point
+is within arm's reach, and the subject simply has not turned round.
+Everything else in the frame is quiet and unoccupied. Do not add a
+second point, do not add a crowd, do not fill the space.
+No arrow, no icon, no diagram, no phone, no screen, no message bubble,
+no notification badge, no hand, no label.
+
+-----------------------------------------------------------
+LOGO INTEGRATION — read twice, most attempts fail here
+-----------------------------------------------------------
+The logo attachment is a PNG with a TRANSPARENT background. Place it
+exactly as provided and KEEP that transparency.
+  - it sits DIRECTLY on the artwork. NO white box, NO black box, NO
+    coloured plate, NO rounded card, NO badge, NO circle, NO outline,
+    NO glow, NO drop shadow behind it.
+  - do NOT redraw it, restyle it, recolour it, stretch it, crop it,
+    rotate it, or add a wordmark or tagline of your own.
+  - reserve a CALM area for it: no busy texture and no strong
+    contrast directly behind it, so it reads cleanly with no plate.
+  - size it so its wordmark stays comfortably readable when the whole
+    image is viewed at 20% of its size.
+A logo pasted on a white rectangle is a failed image.
+
+-----------------------------------------------------------
+FORMAT AND SAFE ZONES — a hard requirement
+-----------------------------------------------------------
+Canvas: 1080 x 1920 px, vertical 9:16.
+WhatsApp draws its own interface OVER this image:
+  - the TOP 220 px are covered by the profile bar
+  - the BOTTOM 340 px are covered by the reply field
+Nothing that matters may sit in those two strips. All text, the logo
+and the subject live inside the central band, between 220 px and
+1580 px from the top. Compose as if those two strips did not exist.
+
+-----------------------------------------------------------
+CONTENT — render these strings verbatim, nothing else
+-----------------------------------------------------------
+LABEL (top of the safe band, small, uppercase, widely letter-spaced,
+       muted): "LE SAVIEZ-VOUS ?"
+
+THE CLAIM (under the label, left-aligned, ENORMOUS all caps,
+           condensed, tight tracking and tight leading, three stacked
+           lines filling the width. By far the loudest element of the
+           image, and the only large one. The first two lines in the
+           ink colour of the style reference, THE THIRD in its accent
+           colour):
+  "LE DERNIER"
+  "MESSAGE N’EST"
+  "PAS DE VOUS."
+
+THE INSTRUCTION (immediately under it, small, quiet, one line):
+  "Ouvrez votre conversation client la plus récente. Regardez qui a écrit en dernier."
+
+THE LESSON (under the visual, small, quiet, two lines):
+  "Le dernier message dit qui attend."
+  "Si ce n’est pas vous, c’est vous qu’on attend."
+
+THE MULTIPLIER (under it, small, quiet, one line):
+  "Remontez-en dix et comptez. Ce sont des ventes en attente dans votre poche."
+
+CALL TO ACTION (bottom of the safe band, on its own line, in the
+                accent colour, smaller than the claim):
+  "Répondez-moi ce nombre. Je vous envoie quoi écrire pour les rouvrir."
+
+FOOTER: the logo, per the LOGO INTEGRATION block, centred, placed just
+ABOVE the 340 px bottom safe strip, never inside it, with
+"nebula-agency.online" under it in tiny muted type.
+
+-----------------------------------------------------------
+LAYOUT
+-----------------------------------------------------------
+Inside the central safe band, top to bottom:
+  1. LABEL
+  2. THE CLAIM, three stacked lines   <- the loudest zone
+  3. THE INSTRUCTION
+  4. THE SUBJECT AND THE WAITING LIGHT  <- the largest zone
+  5. THE LESSON, two quiet lines
+  6. THE MULTIPLIER
+  7. CALL TO ACTION
+  8. LOGO, then the site address
+The hierarchy must be brutal: ONE block is enormous, everything else
+is small. Leave real quiet space around the waiting point of light:
+its isolation is what makes it read as waiting.
+
+-----------------------------------------------------------
+TEXT RENDERING — read twice
+-----------------------------------------------------------
+- Render ONLY the strings quoted above, plus "nebula-agency.online".
+  Any extra word is a failure.
+- Reproduce them VERBATIM: no translation, no rephrasing, no
+  shortening, no added punctuation, no exclamation marks.
+- Correct French typographic apostrophes ’ exactly as written:
+  "N’EST", "n’est", "c’est", "qu’on".
+- Correct diacritics: "récente", "dernier", "Répondez".
+- "dix" is written in letters, never in figures.
+- The claim must be readable at 20% of the image size.
+- No hashtag, no social icon, no interface element, no emoji.
+
+-----------------------------------------------------------
+HARD CONSTRAINTS
+-----------------------------------------------------------
+- NO price, NO amount, NO currency, NO offer, NO commercial call to
+  action. This post asks for a number, nothing else.
+- NO invented statistics or percentages. There is no figure anywhere
+  in this image.
+- NO first name, no age, no portrait, no face, no human figure.
+- NO recognisable third-party brand, app name or interface. In
+  particular: no chat bubble, no unread badge, no green tick.
+- NO watermark, no signature, no frame, no border.
+- ONE single idea in this image.
+
+-----------------------------------------------------------
+OUTPUT
+-----------------------------------------------------------
+One finished 1080 x 1920 image, publication-ready,
+high-fidelity text rendering.
+===========================================================
+```
+
+### Le texte à écrire sous le statut
+
+```
+Faites-le maintenant, ça prend dix secondes. Répondez-moi juste le nombre que vous
+avez trouvé, je vous envoie le message de relance à copier.
+```
+
+### Le message de relance à envoyer en retour
+
+**À préparer avant de publier.** Qui répond un nombre reçoit ceci, tel quel, gratuitement.
+
+```
+Voilà ce que vous pouvez leur écrire, en copiant, une conversation à la fois :
+
+« Bonjour, je reprends votre message. Toutes mes excuses pour le délai.
+Est-ce que vous cherchez toujours [ce dont il parlait] ? Je vous réponds
+tout de suite. »
+
+Trois choses la rendent efficace :
+· on ne se justifie pas, on s'excuse en une ligne et on avance ;
+· on rappelle ce qu'il voulait, il n'a pas à remonter la conversation ;
+· on finit par une question fermée, à laquelle on répond par oui ou non.
+
+Commencez par les trois plus récentes. Les plus vieilles répondent moins.
+```
+
+⚠️ **On ne glisse aucune offre dans cette réponse.** Ni site, ni catalogue. Celui qui
+compte sept conversations en attente vient de comprendre tout seul qu'il lui manque quelque
+chose : on ne le lui dit pas, il y reviendra.
+
+### Où ça mène, sans être dit
+
+Le lecteur qui découvre sept ventes en attente dans son téléphone tire lui-même la
+conclusion : **il lui faut quelque chose qui réponde quand lui ne peut pas.** C’est
+exactement ce que fait un catalogue avec ses prix affichés et sa page qui travaille la nuit.
+**Ne pas le formuler dans le statut.** Une conclusion qu’on tire soi-même tient mille fois
+mieux qu’une conclusion qu’on nous vend.
+
 ---
 
-## 7. Contrôles avant publication
+## 8. Contrôles avant publication
 
 | Contrôle | Pourquoi |
 |---|---|
@@ -1086,7 +1345,7 @@ Il fait deux choses qu’aucun post commercial ne peut faire :
 
 ---
 
-## 8. Les prochains statuts
+## 9. Les prochains statuts
 
 Même gabarit : le label, la hiérarchie brutale, les zones mortes, et surtout **la question
 fermée qui se répond d'un caractère**.
