@@ -651,8 +651,17 @@ html:not(.js) .tp-n::after{transform:scaleX(1)}
 /* ==================================================================
    LES ŒUVRES — les six pièces, avec leur cartel
    ================================================================== */
+/* le nom de la collection, AVANT le titre : la hiérarchie qu'elle demande —
+   on sait dans quoi on entre avant de voir les pièces. */
+.oeu-coll{margin-top:clamp(16px,2.2vw,26px);font-size:10px;font-weight:500;
+  letter-spacing:.2em;color:var(--tx-c)}
+.oeu-coll b{font-weight:500;color:var(--or-f)}
 .oeu-intro{max-width:62ch;margin-top:clamp(18px,2.4vw,28px);
   font-size:clamp(.95rem,1.15vw,1.05rem);line-height:1.72;color:var(--tx-c)}
+.oeu-intro b{font-weight:500;color:var(--encre);letter-spacing:.04em}
+/* la ligne pratique se distingue du texte de collection : plus petite, elle
+   informe au lieu de raconter. */
+.oeu-intro--2{margin-top:14px;font-size:13.5px!important;line-height:1.66!important}
 .oeu-g{margin-top:clamp(34px,4.6vw,64px);display:grid;
   grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));
   gap:clamp(30px,3.6vw,56px)}
@@ -741,6 +750,10 @@ html:not(.js) .tp-n::after{transform:scaleX(1)}
   font-size:clamp(1.2rem,1.9vw,1.6rem)!important;line-height:1.28!important;
   letter-spacing:-.01em;color:var(--encre)!important}
 .perso-f em{font-style:italic;color:var(--or-f)}
+
+/* le second appel, en bas de page */
+.visite-sm{margin-top:26px;font-size:13.5px;line-height:1.6;color:rgba(255,255,255,.72)}
+.visite-b{margin-top:12px}
 
 /* ⚠️ LA DISTINCTION EST DEMANDÉE PAR LE BRIEF, en toutes lettres : une
    collection existe déjà, une création personnalisée n'existe pas encore.

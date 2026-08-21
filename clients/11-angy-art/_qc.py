@@ -347,20 +347,36 @@ def main():
                     mauvais(f"{nom_} : {r_}:1 < {seuil_} SUR LA PHOTO ({quoi_})")
 
             titre("Arrivée par le menu")
-            for ancre, sel in [("#demarche", ".demarche .lab"),
-                               ("#atelier", ".temps .lab"),
-                               ("#portfolio", ".folio .lab")]:
+            # ⚠️ CE CONTRÔLE LIT LE MENU, IL NE RECOPIE PLUS D'ANCRES.
+            # Il en portait trois, écrites à la main, dont `#portfolio` : le
+            # jour où le menu a changé (2026-08-21, sur le récapitulatif
+            # d'Angélique), le contrôle a planté sur un `null.click()` au lieu
+            # de tester quoi que ce soit. Une liste recopiée finit toujours par
+            # mentir sur ce qu'elle décrit — et un contrôle qui plante ne
+            # protège plus rien.
+            ancres = page.evaluate("""() => [...document.querySelectorAll('.nav-c a[href^="#"]')]
+                .map(a => a.getAttribute('href'))""")
+            bon(f"le menu porte {len(ancres)} entrées de page") if len(ancres) >= 4 \
+                else mauvais(f"menu trop court : {ancres}")
+            for ancre in ancres:
                 page.evaluate("() => window.scrollTo(0, 0)")
                 page.wait_for_timeout(300)
                 page.evaluate(f"document.querySelector('a[href=\"{ancre}\"]').click()")
                 page.wait_for_timeout(1700)
-                jeu = page.evaluate("""(sel) => {
-                  const l = document.querySelector(sel).getBoundingClientRect();
+                # la première ligne de la section : son étiquette, sinon son titre
+                jeu = page.evaluate("""(a) => {
+                  const s = document.querySelector(a);
+                  if (!s) return null;
+                  const l = s.querySelector('.lab') || s.querySelector('h2');
+                  if (!l) return null;
                   const n = document.querySelector('.nav').getBoundingClientRect();
-                  return Math.round(l.top - n.bottom);
-                }""", sel)
-                bon(f"{ancre} : l'étiquette respire sous la barre ({jeu} px)") if jeu >= 16 \
-                    else mauvais(f"{ancre} : l'étiquette arrive à {jeu} px de la barre fixe ({sel})")
+                  return Math.round(l.getBoundingClientRect().top - n.bottom);
+                }""", ancre)
+                if jeu is None:
+                    mauvais(f"{ancre} : section ou titre introuvable")
+                else:
+                    bon(f"{ancre} : le titre respire sous la barre ({jeu} px)") if jeu >= 16 \
+                        else mauvais(f"{ancre} : le titre arrive à {jeu} px de la barre fixe")
             page.evaluate("() => window.scrollTo(0, 0)")
             page.wait_for_timeout(400)
 
@@ -662,8 +678,21 @@ def main():
         page.goto(BASE, wait_until="load")
         page.wait_for_timeout(900)
         txt = page.inner_text("main")
-        for att in ["ANGY", "LA DÉMARCHE", "L'ATELIER", "DANS UN LIEU",
-                    "par sa main", "La forme", "Le trait", "Retrouvons-nous"]:
+        # ⚠️ LES ÉTIQUETTES SE LISENT DANS LA PAGE, ELLES NE SE RECOPIENT PAS.
+        # La liste portait « LA DÉMARCHE », « L'ATELIER », « DANS UN LIEU » en
+        # dur : le jour où Angélique a donné SON vocabulaire (2026-08-21), le
+        # contrôle a accusé le site d'avoir perdu des textes qu'il n'avait
+        # jamais perdus — il avait seulement changé de mots. Même famille que
+        # le contrôle du menu qui plantait sur une ancre recopiée.
+        # Ce qui reste écrit ici, ce sont les PHRASES d'Angélique : celles-là
+        # ne doivent jamais disparaître, quel que soit le vocabulaire du menu.
+        etiquettes = page.evaluate(
+            "() => [...document.querySelectorAll('main .lab')].map(e => e.textContent.trim())")
+        bon(f"sans JS : les {len(etiquettes)} étiquettes de section sont là") \
+            if len(etiquettes) >= 4 and all(len(e) > 4 for e in etiquettes) \
+            else mauvais(f"sans JS : étiquettes manquantes ou vides : {etiquettes}")
+        for att in ["ANGY", "par sa main", "La forme", "Le trait", "Retrouvons-nous",
+                    "ÉNERGIES", "Votre histoire"]:
             bon(f"sans JS : « {att} » reste lisible") if att in txt \
                 else mauvais(f"sans JS : « {att} » a disparu")
         h = page.get_attribute('.split-t .sous', 'href')
