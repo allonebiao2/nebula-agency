@@ -247,11 +247,36 @@ Si vous savez tenir une conversation avec un commerçant, on vous apprend le res
 Écrivez PARTENAIRE au 01 96 55 55 65
 ```
 
-## 5. VERSION AFFICHE A4 (impression + QR)
+## 5. VERSION AFFICHE — **déjà produite**
 
-> Le prompt de génération de l’affiche est dans `PROMPT-AFFICHE-RECRUTEMENT.md`.
-> ⚠️ **Le QR ne se génère jamais par IA**, il ne scannerait pas. Il faut un vrai fichier
-> testé, pointant ici vers `https://wa.me/2290196555565`.
+**Les fichiers existent, ils sont prêts à imprimer et à publier :**
+
+| Fichier | Pour quoi |
+|---|---|
+| `assets/Affiche-Recrutement-EQUIPE-A4.pdf` | l’imprimeur |
+| `assets/Affiche-Recrutement-EQUIPE-A4.png` | 2481 × 3509, 300 dpi |
+| `assets/Affiche-Recrutement-EQUIPE-9x16.png` | 1080 × 1920, **statut WhatsApp** |
+
+Pour les regénérer, après avoir changé le numéro ou le texte :
+
+```bash
+cd _documents/nebula-agency/vente && python3 _build_affiche_equipe.py
+```
+
+Le script **n’écrit rien tant que tout n’est pas vert** : débordement en hauteur et en
+largeur, **zones mortes de WhatsApp** pour le 9:16, et surtout **le QR relu dans l’image
+finale**. Un QR mort, c’est l’impression entière perdue.
+
+⚠️ **Le 9:16 a été rebâti sur une page plus haute exprès.** Au premier rendu, le QR et le
+numéro tombaient dans les **340 px du bas**, ceux que WhatsApp recouvre avec le champ
+« Répondre » : l’affiche était parfaite sur l’écran et le contact invisible dans
+l’application. Le contrôle qui l’a attrapé est maintenant dans le script.
+
+⚠️ **Le QR ne se génère jamais par IA**, il ne scannerait pas. Celui-ci est un vrai fichier,
+relu après rendu, et il pointe vers `https://wa.me/2290196555565`.
+
+*Le prompt de génération d’une affiche par IA, si on en veut une autre un jour, est dans
+`PROMPT-AFFICHE-RECRUTEMENT.md`. La maquette ci-dessous n’est qu’un rappel de la structure.*
 
 ```
         [ LOGO NEBULA AGENCY ]
