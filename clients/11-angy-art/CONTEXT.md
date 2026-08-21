@@ -403,3 +403,64 @@ mentaient** :
 2. Le **bouton du son** d'Angy est en `position:fixed` en bas à droite, comme
    l'était celui d'Hillary avant le 2026-08-21 : il peut recouvrir du texte.
    Le détecteur écrit pour Hillary s'applique tel quel si on veut vérifier.
+
+---
+
+## SES SIX ŒUVRES ENTRENT AU SITE (2026-08-21)
+
+C'était le manque le plus ancien : *« reste : photos des œuvres seules, dans un
+tableau `OEUVRES` SÉPARÉ de `SITUATIONS` »*. Angélique a envoyé six pièces avec
+titres, techniques, palettes, dimensions, prix et ses propres textes.
+
+| œuvre | dimensions | prix |
+|---|---|---|
+| Bonheur éternel | 1 m 20 × 80 cm | **prix sur demande** |
+| L'Équilibre des Âmes | 75 × 65 cm | 250 000 F |
+| Alliance Solaire | 75 × 65 cm | 250 000 F |
+| Âmes Sœurs | 30 cm | 120 000 F |
+| Force Silencieuse | 30 cm | 110 000 F |
+| Aura | 30 cm | 100 000 F |
+
+⚠️ **Rien n'est inventé** : tout vient d'elle, mot pour mot.
+
+### ⚠️ Trois d'entre elles étaient DÉJÀ sur le site, anonymes
+
+`situ-1`, `situ-2` et `situ-3` du carrousel **sont** Âmes Sœurs, Aura et Force
+Silencieuse. Elles y figuraient comme décor, sans nom ni prix, avec des légendes
+purement descriptives faute de mieux (« Deux visages, terre et blanc »). Elles
+ont maintenant leur identité. Le carrousel garde son rôle d'ambiance.
+
+### ⚠️ Ses textes sont écrits EN DUR dans la page
+
+Pas dans le script. Ce qui fait la valeur de ce site — ses descriptions, les
+dimensions, les prix — doit rester lisible **sans JavaScript** et visible pour
+les moteurs de recherche. Six fiches **`VisualArtwork`** rejoignent le graphe
+JSON-LD, avec leur `Offer` pour les cinq qui ont un prix.
+
+### ⚠️ « MISE EN SITUATION » sur trois photos
+
+Les masques sont bien d'Angélique ; les **niches de marbre, les livres et les
+vases** qui les entourent sont des rendus. Même règle que le carrousel, posée le
+2026-08-08 — et un contrôle vérifie qu'elle tient.
+
+### Sa signature : le cartel qui s'écrit
+
+Dans une exposition, l'étiquette se lit ligne après ligne. Technique, palette,
+dimensions, prix : les quatre se posent l'une après l'autre, comme une main qui
+écrit. Le geste du lieu, pas une décoration.
+
+⚠️ **Une boîte commune, mais la vraie proportion.** Recadrer en carré alignerait
+les cartes et **mentirait sur la pièce** : une œuvre d'1 m 20 sur 80 cm est
+haute, et ça doit se voir. Toutes ont la même boîte — les titres s'alignent, on
+compare — et l'œuvre s'y pose en `contain`.
+
+**663 Ko** pour les six images, toutes en chargement différé.
+**Contrôles : 121 → 129, tous verts.**
+
+### ⏳ Ce qui reste
+
+- Les **autres œuvres** : elle en a sûrement plus que six.
+- Le **statut** de chaque pièce (vendue / disponible) : sans ça, une œuvre
+  vendue reste affichée à son prix.
+- ⏳ Toujours en attente : l'adresse de l'atelier, de vrais avis, et **tester le
+  numéro WhatsApp**.
