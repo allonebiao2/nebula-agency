@@ -260,8 +260,23 @@
         lancer();
       }, { passive: false });
 
+      /* ⚠️ UNE FORCE EXTÉRIEURE PEUT DÉPLACER LA PAGE PENDANT QUE LE MOTEUR
+         GLISSE : la recherche du navigateur, un lecteur d'écran, la touche Fin,
+         le passage au clavier sur un bouton hors écran. Tant que `cible` n'était
+         relue QUE `if (!anime)`, la boucle en cours ramenait la page à SON idée
+         du bon endroit et le saut était annulé sans un mot. C'est le piège
+         déjà documenté sur Au Braisé d'Or (Lenis interrompait tout
+         `scrollIntoView`), retrouvé ici le 2026-08-21.
+         On ne peut pas simplement adopter tout écart : une image perdue laisse
+         la page sur le CHEMIN du moteur, et l'adopter arrêterait le glissement
+         net au milieu. Alors on regarde OÙ : ce qui est entre `courant` et
+         `cible` vient de nous, ce qui est ailleurs vient de quelqu'un d'autre,
+         et c'est lui qui a raison. */
       window.addEventListener('scroll', function () {
-        if (!anime) { cible = window.scrollY; courant = window.scrollY; }
+        var y = window.scrollY;
+        if (!anime) { cible = y; courant = y; return; }
+        var bas = Math.min(courant, cible) - 12, haut = Math.max(courant, cible) + 12;
+        if (y < bas || y > haut) { cible = borne(y); courant = y; }
       }, { passive: true });
       window.addEventListener('resize', function () { cible = borne(cible); }, { passive: true });
     })();

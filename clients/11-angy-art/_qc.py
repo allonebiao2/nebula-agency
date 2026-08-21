@@ -62,6 +62,44 @@ def contraste(l1, l2):
     return round((a + 0.05) / (b + 0.05), 2)
 
 
+def placer(page, sel, essais=6):
+    """Amène `sel` au centre de l'écran et VÉRIFIE qu'il y est arrivé.
+
+    ⚠️ LE SITE A SON PROPRE MOTEUR DE DÉFILEMENT. Tant qu'il glisse, il écrit
+    lui aussi dans `scrollY` : un `scrollIntoView` venu du contrôle est effacé
+    à l'image suivante. Attendre 500 ms ne prouve donc rien — il faut REGARDER
+    où on a atterri, et recommencer.
+
+    Le 2026-08-21 ce contrôle passait seul et échouait juste après les
+    captures, qui laissent le moteur en pleine course : ce n'était pas le
+    site, c'était la mesure. Même famille que la leçon d'Au Braisé d'Or.
+    Rend la boîte finale (ou None), au contrôle de dire ce qu'il en pense.
+    """
+    etat = None
+    for _ in range(essais):
+        page.evaluate("""(s) => {
+          document.documentElement.style.scrollBehavior = 'auto';
+          const e = document.querySelector(s); if (!e) return;
+          const r = e.getBoundingClientRect();
+          window.scrollTo(0, r.top + window.scrollY - (innerHeight - r.height) / 2);
+        }""", sel)
+        page.wait_for_timeout(420)
+        etat = page.evaluate("""(s) => {
+          const e = document.querySelector(s); if (!e) return null;
+          const r = e.getBoundingClientRect();
+          return { haut: Math.round(r.top), bas: Math.round(r.bottom),
+                   h: Math.round(r.height), ecran: innerHeight };
+        }""", sel)
+        if etat is None:
+            return None
+        # une boîte plus haute que l'écran ne rentrera jamais : on demande
+        # seulement qu'elle occupe l'écran.
+        vu = min(etat["bas"], etat["ecran"]) - max(etat["haut"], 0)
+        if vu >= 0.9 * min(etat["h"], etat["ecran"]):
+            return etat
+    return etat
+
+
 def fond_derriere(page, sel, alpha=0.72):
     """Rend (contraste, description) pour un texte clair posé sur une photo.
 
@@ -329,15 +367,26 @@ def main():
             for nom_, sel_, seuil_ in [("description « pour un lieu »", ".lieux .plein-d", 4.5),
                                        ("titre « pour un lieu »", ".lieux .plein-t", 3.0),
                                        ("description « la visite »", "#visite .plein-d", 4.5),
+                                       # le second appel est POSÉ SUR LA PHOTO lui aussi :
+                                       # il se mesure comme le reste, pas « à l'œil ».
+                                       ("relance « sur mesure »", ".visite-sm", 4.5),
+                                       ("bouton « sur mesure »", ".visite-b", 3.0),
                                        ("légende du héros", ".hero-lg", 4.5)]:
-                # ⚠️ On coupe le lissage AVANT de se placer : sinon la course
-                # dure plus longtemps que l'attente, la boîte lue est périmée,
-                # et l'élément paraît « hors du viewport ».
-                page.evaluate("""(s) => {
-                  document.documentElement.style.scrollBehavior = 'auto';
-                  document.querySelector(s)?.scrollIntoView({block:'center', behavior:'instant'});
-                }""", sel_)
-                page.wait_for_timeout(500)
+                # ⚠️ ON SE PLACE, PUIS ON VÉRIFIE QU'ON Y EST. Le moteur de
+                # défilement du site écrit lui aussi dans `scrollY` : couper le
+                # lissage et attendre 500 ms ne suffisait pas, la page revenait.
+                # Voir `placer()`. Et si on n'y arrive pas, on le DIT avec le
+                # chiffre, au lieu de laisser croire à un défaut de contraste.
+                ou_ = placer(page, sel_)
+                if ou_ is None:
+                    mauvais(f"{nom_} : {sel_} introuvable")
+                    continue
+                vu_ = min(ou_["bas"], ou_["ecran"]) - max(ou_["haut"], 0)
+                if vu_ < 0.9 * min(ou_["h"], ou_["ecran"]):
+                    mauvais(f"{nom_} : impossible d'amener {sel_} à l'écran "
+                            f"(haut {ou_['haut']} px, écran {ou_['ecran']} px) "
+                            f"-> le moteur de défilement reprend la main")
+                    continue
                 r_, quoi_ = fond_derriere(page, sel_)
                 if r_ is None:
                     mauvais(f"{nom_} : {quoi_}")
@@ -667,6 +716,37 @@ def main():
                 f = page.evaluate(JS_FANTOMES)
                 bon("après un défilement complet, plus rien n'est resté invisible") if not f                     else mauvais(f"éléments restés invisibles après révélation -> {f}")
 
+                # ⚠️ CE CONTRÔLE A BESOIN D'UN TÉMOIN. Sans lui, il passerait
+                # aussi le jour où le moteur de défilement serait mort : une
+                # page qui ne glisse pas ne ramène évidemment rien. On prouve
+                # donc d'abord QUE ÇA GLISSE, puis on saute par-dessus.
+                # (Le moteur n'existe que sur pointeur fin : c'est ici, en
+                # contexte PC, et nulle part ailleurs.)
+                titre("Le défilement lissé laisse passer les autres")
+                page.evaluate("() => window.scrollTo(0, 3000)")
+                page.wait_for_timeout(700)
+                depart = page.evaluate("() => Math.round(scrollY)")
+                page.mouse.move(700, 400)
+                page.mouse.wheel(0, 3000)
+                page.wait_for_timeout(120)
+                pendant = page.evaluate("() => Math.round(scrollY)")
+                if pendant - depart > 60:
+                    bon(f"témoin : la page glisse bien ({depart} -> {pendant} px)")
+                    # on saute AILLEURS que sur son chemin : il doit céder
+                    page.evaluate("() => window.scrollTo(0, 200)")
+                    page.wait_for_timeout(900)
+                    apres = page.evaluate("() => Math.round(scrollY)")
+                    bon(f"un saut extérieur pendant le glissement tient ({apres} px)") \
+                        if apres < 500 else \
+                        mauvais(f"le moteur a ramené la page à {apres} px : un scrollIntoView "
+                                "venu de la recherche du navigateur ou d'un lecteur d'écran "
+                                "est annulé")
+                else:
+                    mauvais(f"témoin muet : la page n'a pas glissé ({depart} -> {pendant} px), "
+                            "le contrôle ne prouve rien")
+                page.evaluate("() => window.scrollTo(0, 0)")
+                page.wait_for_timeout(600)
+
                 if VOIR: capturer(page, "pc")
 
             ctx.close()
@@ -727,7 +807,12 @@ def main():
     print("Tout est vert.")
 
 
-SECTIONS = ".hero, #demarche, #atelier, #portfolio, #lieux, .cit, #visite, .pied"
+# ⚠️ ON NE RECOPIE PAS LA LISTE DES SECTIONS. Elle en portait huit, écrites à
+# la main : les deux sections ajoutées pour Angélique (les œuvres, le
+# sur-mesure) n'ont JAMAIS été photographiées, et personne ne l'a vu — les
+# captures ne se plaignent pas de ce qu'elles ne montrent pas. Troisième fois
+# que la même famille de défaut sort ici le 2026-08-21.
+SECTIONS = "section, .pied"
 
 def capturer(page, tag):
     d = os.path.join(RACINE, "_qc_captures")
