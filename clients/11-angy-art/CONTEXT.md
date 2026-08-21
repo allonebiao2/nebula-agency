@@ -573,14 +573,43 @@ pause de Hillary, le 2026-08-18.
 
 **129 → 146 contrôles, tous verts. Rien n'est déployé.**
 
+### Les six questions tranchées, faute de réponse
+
+> Mongazi : « fais appliquer ce qui est meilleur pour le moment, si elle veut
+> des modifications plus tard, elle observera et me dira. »
+
+| Question | Ce qui est appliqué | Pourquoi |
+|---|---|---|
+| `ACCUEIL` dans le menu | **ajouté**, en première entrée | il est dans sa liste, et il tient : **mesuré** avant de le poser — 31 px de marge à 1024 px, 101 à 309 px au-delà, et 7 entrées dans le tiroir du téléphone (dernier lien à 686 px sur 844) |
+| Quelles **cinq** œuvres dans ÉNERGIES | **les six restent, aucun nombre n'est annoncé** | en cacher une serait une **perte sèche**, et se tromper de laquelle serait pire. Le jour où elle dit laquelle est à part, c'est un attribut à poser, pas une refonte |
+| Son texte d'introduction | **le nôtre tient sa place**, sans être annoncé comme provisoire | il n'invente rien : il n'assemble que les mots de son récapitulatif, et le titre au-dessus est sa phrase telle quelle. Remplaçable en une ligne |
+| Statut vendue / disponible | **aucun statut inventé** + une phrase : « Chaque pièce est unique : un mot suffit pour savoir si elle est encore disponible. » | une œuvre vendue affichée à son prix ferait écrire quelqu'un **pour rien** ; annoncer « disponible » sur les six serait une affirmation qu'on ne peut pas tenir. Cette phrase est vraie dans les deux cas, et elle tombe **avant la grille** |
+| « ANGYART » ou « Angy Art » | **Angy Art**, en deux mots | c'est ce que portent déjà le logo, la barre, le pied, l'image de partage, le JSON-LD et l'affiche. La cohérence vaut mieux qu'un tirage au sort |
+| Texte de la page L'ARTISTE | **son texte de démarche existant** | il parle d'elle et de sa main. Rien à inventer en attendant le sien |
+
+⚠️ Le libellé du sur-mesure reste **court** dans la barre (« SUR MESURE ») : sa
+formule complète, « CRÉATIONS SUR MESURE », déborderait à 1024 px, et elle se
+lit déjà deux fois plus bas — sur la section et sur le bouton de fin de page.
+
+### ⚠️ Un contrôle qui ne prouvait rien
+
+Une entrée « ACCUEIL » **testée depuis le haut de la page** passerait même si le
+lien était mort : arriver à 0 en partant de 0 n'est pas une preuve. On part donc
+du **bas** pour celle-là (mesuré : 12 082 → 0 px), et du haut pour les autres.
+Même famille que le témoin du 2026-08-18.
+
+**149 contrôles verts.**
+
 ### ⏳ Ce qui reste, au 2026-08-21
 
-- **Quelles CINQ œuvres composent ÉNERGIES** (elle en a envoyé six).
-- **Son texte d'introduction de collection** (le nôtre est provisoire).
-- **« ANGYART » ou « Angy Art »** : demandé deux fois, sans réponse. Le site
-  écrit *Angy Art*.
-- Le **texte de la page L'ARTISTE** (« texte spécifique à venir »).
-- Le **statut** de chaque pièce (vendue / disponible).
-- L'`ACCUEIL` du menu : rôle tenu par le logo, libellé absent.
+- **Publier.** `_dist` est prêt (36 fichiers, 5,11 Mo) mais **rien n'est en
+  ligne** : `secrets/` est ignoré par git, donc une session en conteneur n'a
+  aucun jeton Cloudflare. Depuis le PC de Cotonou :
+  ```bash
+  python clients/11-angy-art/_dist.py
+  npx wrangler pages deploy clients/11-angy-art/_dist --project-name=angy-art --branch=main
+  ```
+- Ce qu'elle pourra corriger **en observant** : la cinquième/sixième œuvre
+  d'ÉNERGIES, son texte d'introduction, le statut de chaque pièce.
 - Toujours : l'adresse de l'atelier, de vrais avis, **tester le numéro
   WhatsApp**, et les **photos des œuvres seules** (fond neutre).

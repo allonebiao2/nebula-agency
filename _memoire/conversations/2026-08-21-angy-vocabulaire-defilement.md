@@ -130,3 +130,56 @@ Hillary, ni Au Braisé d'Or.
 4. Le **texte de la page L'ARTISTE**
 5. Le **statut** de chaque pièce : vendue ou disponible
 6. `ACCUEIL` dans le menu : le logo tient le rôle, faut-il le libellé ?
+
+---
+
+## Suite — les six questions tranchées
+
+> Mongazi : « fais appliquer ce qui est meilleur pour le moment, si elle veut
+> des modifications plus tard, elle observera et me dira. »
+
+| Question | Appliqué | Pourquoi |
+|---|---|---|
+| `ACCUEIL` au menu | **ajouté** | mesuré avant : 31 px de marge à 1024 px, 101 à 309 px au-delà, 7 entrées dans le tiroir |
+| quelles cinq œuvres | **les six, sans annoncer de nombre** | en cacher une = perte sèche ; se tromper de laquelle = pire |
+| son texte d'intro | **le nôtre tient sa place** | il n'assemble que ses mots ; remplaçable en une ligne |
+| vendue / disponible | **aucun statut inventé** + « un mot suffit pour savoir si elle est encore disponible » | une œuvre vendue à son prix ferait écrire pour rien ; « disponible » sur les six serait une affirmation intenable |
+| ANGYART / Angy Art | **Angy Art** | logo, barre, pied, OG, JSON-LD et affiche le portent déjà |
+| page L'ARTISTE | **son texte de démarche** | il parle d'elle ; rien à inventer |
+
+**Une décision de méthode** : chaque fois qu'on tranche à la place du client,
+la raison s'écrit **à côté** de la décision, dans le code. Sans ça, la
+prochaine session ne saura pas si c'est un choix ou un oubli.
+
+### Un contrôle qui ne prouvait rien
+
+Une entrée « ACCUEIL » testée depuis le haut de la page passerait **même si le
+lien était mort** : arriver à 0 en partant de 0 n'est pas une preuve. On part
+du **bas** pour celle-là (12 082 → 0 px). Même famille que le témoin du
+2026-08-18 et que celui du moteur de défilement, plus haut.
+
+**146 → 149 contrôles verts.**
+
+### ⛔ Publication impossible depuis le conteneur
+
+`_dist` est prêt (36 fichiers, 5,11 Mo), mais **`secrets/` est ignoré par git**
+— et c'est la bonne règle, le dépôt est public. Une session qui tourne dans un
+conteneur cloné à neuf n'a donc **aucun jeton Cloudflare**, et aucune variable
+d'environnement ne le remplace. Depuis le PC de Cotonou :
+
+```bash
+python clients/11-angy-art/_dist.py
+npx wrangler pages deploy clients/11-angy-art/_dist --project-name=angy-art --branch=main
+```
+
+⚠️ **À retenir pour toutes les sessions à distance** : elles peuvent écrire,
+contrôler et pousser, mais elles **ne peuvent pas publier**. Le dire tôt évite
+de laisser croire qu'un travail est en ligne.
+
+### ⚠️ 6e réinitialisation du conteneur
+
+Le dépôt local est revenu à un état antérieur (`165c766`) pendant la session.
+`origin/main` était intact : `git stash -u` + `git checkout main` +
+`git merge --ff-only origin/main` a tout récupéré, et le stash ne contenait que
+des restes déjà présents dans `main`. **Pousser tôt et souvent reste la seule
+protection.**

@@ -1253,3 +1253,33 @@ Quatre contrôles, le même jour, sur la même vitrine, pour la même raison :
   d'attente n'est une preuve**. Il faut regarder où on a atterri. Même famille
   que « ne jamais mesurer une animation d'ouverture avec des `wait_for_timeout`
   empilés » (2026-08-08).
+
+## 2026-08-21 — Quand on tranche à la place du client, la raison s'écrit à côté
+
+- **Contexte** : six questions posées au client, aucune réponse, et l'ordre de
+  « faire ce qui est meilleur pour le moment ».
+- **Le piège** : une décision prise à la place de quelqu'un ressemble, trois
+  semaines plus tard, à un oubli. La prochaine session ne peut plus savoir si
+  « les six œuvres » est un choix assumé ou une liste qu'on a mal recopiée.
+- **La règle** : la raison s'écrit **dans le code, à côté de la décision**, pas
+  seulement dans un journal. Le commentaire dit ce qu'on a mesuré (« 31 px de
+  marge à 1024 px »), ce qu'on a refusé (« annoncer disponible sur les six
+  serait une affirmation qu'on ne peut pas tenir ») et ce que coûterait le
+  retour en arrière (« un attribut à poser, pas une refonte »).
+- **Le principe qui a guidé les six** : entre deux inconnues, choisir celle qui
+  **n'affirme rien**. On ne sait pas quelles cinq œuvres composent la
+  collection → on montre les six et on n'annonce aucun nombre. On ne connaît
+  pas le statut des pièces → on n'en invente aucun et on invite à demander.
+  Cacher ou affirmer coûte cher ; se taire proprement ne coûte rien.
+
+## 2026-08-21 — Une session à distance ne peut pas publier, et doit le dire tôt
+
+- **Contexte** : tout était prêt à mettre en ligne — contrôles verts, `_dist`
+  composé, 36 fichiers. Aucun jeton Cloudflare dans le conteneur.
+- **La cause, et c'est la bonne règle** : `secrets/` est ignoré par git parce
+  que le dépôt est **public**. Un conteneur cloné à neuf n'a donc jamais les
+  clés, et aucune variable d'environnement ne les remplace.
+- **À retenir** : une session à distance **écrit, contrôle et pousse** ; elle
+  **ne déploie pas**. Le dire dès qu'on sait, pas à la fin — sinon on laisse
+  croire qu'un travail est en ligne alors qu'il attend une commande sur le PC.
+  C'est le pendant de « un `git push` ne déploie rien tout seul ».
