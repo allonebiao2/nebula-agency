@@ -659,6 +659,13 @@ html:not(.js) .tp-n::after{transform:scaleX(1)}
 .oeu-intro{max-width:62ch;margin-top:clamp(18px,2.4vw,28px);
   font-size:clamp(.95rem,1.15vw,1.05rem);line-height:1.72;color:var(--tx-c)}
 .oeu-intro b{font-weight:500;color:var(--encre);letter-spacing:.04em}
+/* ⚠️ ON NE CONNAÎT PAS LE STATUT DE CHAQUE PIÈCE, alors on n'en invente aucun.
+   Une œuvre vendue qui resterait affichée à son prix ferait écrire quelqu'un
+   pour rien ; annoncer « disponible » sur les six serait une affirmation qu'on
+   ne peut pas tenir. Cette phrase-là est vraie dans les deux cas, et elle tombe
+   AVANT la grille, là où on décide de regarder. */
+.oeu-dispo{display:block;margin-top:8px;font-weight:500;color:var(--encre)}
+
 /* la ligne pratique se distingue du texte de collection : plus petite, elle
    informe au lieu de raconter. */
 .oeu-intro--2{margin-top:14px;font-size:13.5px!important;line-height:1.66!important}

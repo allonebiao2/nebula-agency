@@ -408,10 +408,32 @@ def main():
             bon(f"le menu porte {len(ancres)} entrées de page") if len(ancres) >= 4 \
                 else mauvais(f"menu trop court : {ancres}")
             for ancre in ancres:
-                page.evaluate("() => window.scrollTo(0, 0)")
-                page.wait_for_timeout(300)
+                # ⚠️ UNE ENTRÉE « ACCUEIL » NE SE TESTE PAS DEPUIS LE HAUT.
+                # Partir de 0 pour vérifier qu'on arrive à 0 ne prouve rien : le
+                # contrôle passerait même si le lien était mort. On part donc du
+                # BAS de la page pour celle-là, et du haut pour les autres.
+                haut_ = page.evaluate(f"() => document.querySelector('{ancre}') === "
+                                      "document.querySelector('main')")
+                if haut_:
+                    page.evaluate("() => window.scrollTo(0, document.body.scrollHeight)")
+                else:
+                    page.evaluate("() => window.scrollTo(0, 0)")
+                page.wait_for_timeout(600)
+                depart_ = page.evaluate("() => Math.round(scrollY)")
                 page.evaluate(f"document.querySelector('a[href=\"{ancre}\"]').click()")
                 page.wait_for_timeout(1700)
+
+                if haut_:
+                    y_ = page.evaluate("() => Math.round(scrollY)")
+                    if depart_ < 400:
+                        mauvais(f"{ancre} : la page ne descend pas ({depart_} px), "
+                                "le retour en haut ne prouve rien")
+                    else:
+                        bon(f"« accueil » ramène en haut ({depart_} -> {y_} px)") if y_ <= 20 \
+                            else mauvais(f"« accueil » laisse la page à {y_} px "
+                                         f"(partie de {depart_} px)")
+                    continue
+
                 # la première ligne de la section : son étiquette, sinon son titre
                 jeu = page.evaluate("""(a) => {
                   const s = document.querySelector(a);
