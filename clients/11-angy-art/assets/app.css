@@ -735,6 +735,12 @@ html:not(.js) .tp-n::after{transform:scaleX(1)}
 .perso-t p+p{margin-top:14px}
 .perso-d{font-size:clamp(1.02rem,1.35vw,1.2rem)!important;color:var(--encre)!important}
 .perso-c em{font-style:italic;color:var(--or-f)}
+/* la chute : trois membres qui montent, au corps du titre. Elle ne se lit
+   pas comme le reste du texte, elle se retient. */
+.perso-f{margin-top:20px!important;font-family:var(--ff-d);font-weight:400;
+  font-size:clamp(1.2rem,1.9vw,1.6rem)!important;line-height:1.28!important;
+  letter-spacing:-.01em;color:var(--encre)!important}
+.perso-f em{font-style:italic;color:var(--or-f)}
 
 /* ⚠️ LA DISTINCTION EST DEMANDÉE PAR LE BRIEF, en toutes lettres : une
    collection existe déjà, une création personnalisée n'existe pas encore.
