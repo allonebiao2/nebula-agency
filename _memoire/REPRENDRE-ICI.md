@@ -1,10 +1,46 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-08-20
+## Point de reprise pour une session terminal · dernière mise à jour 2026-08-22
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
 
+
+
+---
+
+## 0 ter. LE 2026-08-22 — LES TROIS VITRINES SONT À JOUR EN LIGNE
+
+Trois clients traînaient le **même** retard : du travail poussé dans `main` et
+**jamais publié**. Un `git push` ne déploie rien.
+
+| | en ligne | ce qui a été publié |
+|---|---|---|
+| **Au Braisé d'Or** | au-braise-dor.pages.dev | 13 plats retirés, les **Sauces (14)** et leurs 4 vraies photos au héros, puis **l'aperçu WhatsApp, robots, sitemap et le balisage `Restaurant`** |
+| **Hillary M. Styl** | hillary-m-styl.pages.dev | **8 modèles photographiés**, la Robe Soleil, la bascule face/dos · il ne reste que **2 cartes** sans photo |
+| **Angy Art** | angy-art.pages.dev | **ses 6 œuvres nommées et chiffrées**, ÉNERGIES, son vocabulaire |
+
+⚠️ **Pourquoi ça s'accumule** : une session lancée depuis le téléphone tourne
+en conteneur et **n'a pas les jetons Cloudflare** (`secrets/` est ignoré par
+git). Elle écrit tout, elle ne publie rien. **Publier est un geste du PC.**
+
+### Les outils, après le ménage du disque
+- ⚠️ **`npx playwright install` ≠ `python -m playwright install`** : Node épingle
+  la version 1234, la bibliothèque Python veut 1223. 430 Mo pour rien.
+- ⚠️ **`npx wrangler` ne marche plus** ici : wrangler 3 est **installé
+  globalement** (`wrangler pages deploy …`).
+- Le disque tourne autour de **0,7 Go libres**. L'image de machine virtuelle de
+  Claude (~12 Go) est le seul vrai morceau, et **Mongazi décide**.
+
+### ▶️ PAR QUOI COMMENCER
+1. **Hillary** : les 11 mesures de la robe ovale (jamais validées depuis le
+   6 août) et les 2 dernières photos.
+2. **Angy** : l'adresse de l'atelier, de vrais avis, **tester son numéro**.
+3. **Au Braisé d'Or** : le prix du yaourt et de la glace, l'aileron surligné,
+   confirmer le numéro WhatsApp.
+4. **15 branches** ne sont pas dans `main` (aucune n'a bougé depuis le 12 août).
+   ⛔ Ne jamais fusionner `claude/github-repo-context-nisd2r` : elle supprimerait
+   30 790 lignes.
 
 ---
 
