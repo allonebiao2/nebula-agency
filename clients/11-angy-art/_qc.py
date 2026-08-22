@@ -147,8 +147,16 @@ def fond_derriere(page, sel, alpha=0.72):
     return contraste(luminance(tr, tg, tb), pire), f"fond le plus clair rgb({fr},{fg},{fb})"
 
 def servir():
-    socketserver.TCPServer.allow_reuse_address = True
-    srv = socketserver.TCPServer(("127.0.0.1", PORT), functools.partial(Muet, directory=RACINE))
+    # ⚠️ SERVEUR MULTI-TÂCHES, PAS `TCPServer`. Le navigateur garde ses
+    #    connexions ouvertes : avec un serveur mono-tâche, l'une bloque les
+    #    autres et la page ne se charge plus dans les temps. Le symptôme est
+    #    « Page.goto: Timeout » et il fait accuser le site, qui n'y est pour
+    #    rien. Même panne réparée chez Hillary le 2026-08-17.
+    class Serveur(socketserver.ThreadingTCPServer):
+        daemon_threads = True
+        allow_reuse_address = True
+
+    srv = Serveur(("127.0.0.1", PORT), functools.partial(Muet, directory=RACINE))
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     return srv
 
@@ -421,7 +429,18 @@ def main():
                 page.wait_for_timeout(600)
                 depart_ = page.evaluate("() => Math.round(scrollY)")
                 page.evaluate(f"document.querySelector('a[href=\"{ancre}\"]').click()")
-                page.wait_for_timeout(1700)
+                # ⚠️ ON ATTEND QUE LA PAGE SE POSE, ON NE PARIE PAS SUR UN DÉLAI.
+                #    Le défilement maison glisse : 1 700 ms suffisaient sur deux
+                #    formats et pas sur le troisième, et le contrôle accusait le
+                #    site d'un défaut qui n'était qu'une seconde manquante.
+                pose, immobile = None, 0
+                for _ in range(40):
+                    page.wait_for_timeout(150)
+                    y_c = page.evaluate("() => Math.round(scrollY)")
+                    immobile = immobile + 1 if y_c == pose else 0
+                    pose = y_c
+                    if immobile >= 3:
+                        break
 
                 if haut_:
                     y_ = page.evaluate("() => Math.round(scrollY)")

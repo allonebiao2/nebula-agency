@@ -613,3 +613,52 @@ Même famille que le témoin du 2026-08-18.
   d'ÉNERGIES, son texte d'introduction, le statut de chaque pièce.
 - Toujours : l'adresse de l'atelier, de vrais avis, **tester le numéro
   WhatsApp**, et les **photos des œuvres seules** (fond neutre).
+
+## ✅ 2026-08-22 · SES SIX ŒUVRES SONT EN LIGNE
+
+Le travail de la session téléphone (les six œuvres nommées et chiffrées, son
+vocabulaire, la collection ÉNERGIES, le second appel, les créations
+personnalisées) était **dans `main` sans être publié** : les six images
+répondaient **404** et la page servie faisait 20 953 octets contre 59 976
+aujourd'hui. La session en conteneur n'avait pas les jetons Cloudflare
+(`secrets/` est ignoré par git) : c'est le PC de Cotonou qui publie.
+
+Vérifié en ligne : les **six fichiers** répondent 200 (`alliance-solaire`,
+`ames-soeurs`, `aura`, `bonheur-eternel`, `equilibre-des-ames`,
+`force-silencieuse`), les prix s'affichent (100 000 / 200 000 / 350 000 /
+500 000 FCFA), et `app.js` servi est **identique octet pour octet** au disque.
+
+⚠️ Version bumpée à **`?v=20260822a`** (27 endroits) : `app.js` a changé, et nos
+fichiers portent `immutable` pour un an.
+
+### ⚠️ Deux pannes de contrôle, un vrai défaut de site
+
+**1 · Le serveur de test était mono-tâche.** `Page.goto: Timeout` sur
+`127.0.0.1:8611`, et rien ne démarrait. Le navigateur garde ses connexions
+ouvertes : l'une bloquait les autres. Passé en `ThreadingTCPServer`, comme chez
+Hillary le 2026-08-17. **Ce n'était pas le site.**
+
+**2 · Le contrôle pariait sur 1 700 ms.** Il attend maintenant que la page
+**se pose** (immobile trois relevés d'affilée, 6 s au plus).
+
+**3 · Et un VRAI défaut, celui-là :** « accueil » ramenait bien en haut sur
+téléphone et sur tablette, mais laissait la page à **284 px** (puis 467 px à
+l'essai suivant) **sur ordinateur**, là où le défilement maison remplace le
+natif. Sa boucle avançait **d'un cran fixe par image** :
+
+```js
+courant += (cible - courant) * 0.095;   // dépend de la cadence
+```
+
+Sur une machine à 30 images par seconde, le même geste dure **deux fois plus
+longtemps** que sur une à 60. Le glissement n'était pas cassé, il n'était pas
+fini. Corrigé en interpolant **au temps** :
+
+```js
+var k = 1 - Math.pow(1 - 0.095, dt / 16.7);
+```
+
+⚠️ **C'est le téléphone bas de gamme de Cotonou qui payait la différence**, et
+aucun contrôle ne l'aurait vu : sur mobile, le moteur maison ne tourne même pas.
+
+**150 contrôles verts, 0 en échec.**

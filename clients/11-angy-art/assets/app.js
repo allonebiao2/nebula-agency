@@ -31,7 +31,7 @@
      Mongazi voyait encore l'ancienne image générée alors que le serveur
      envoyait déjà la vraie photo (MD5 identique au fichier du disque). Ce
      n'était ni le déploiement ni Cloudflare : c'était son propre navigateur. */
-  var VER = '?v=20260821a';
+  var VER = '?v=20260822a';
 
   var SITUATIONS = [
     { f: "situ-1.webp", ar: "798/1004", t: "Deux visages, terre et blanc",
@@ -241,13 +241,26 @@
       function borne(v) {
         return Math.max(0, Math.min(document.documentElement.scrollHeight - innerHeight, v));
       }
-      function boucle() {
-        courant += (cible - courant) * 0.095;
+      /* ⚠️ L'INTERPOLATION SE FAIT AU TEMPS, PAS À L'IMAGE. En avançant d'un
+         cran fixe par image, le glissement dure deux fois plus longtemps sur
+         une machine qui tourne à 30 images/s que sur une qui en fait 60 : le
+         même clic « accueil » ramenait en haut ici, et s'arrêtait encore à
+         284 px là-bas (mesuré le 2026-08-22, page d'accueil de 10 318 px).
+         C'est le téléphone bas de gamme de Cotonou qui payait la différence.
+         `k` est le même 0,095 rapporté à une image de 60 Hz. */
+      var dernier = 0;
+      function boucle(ts) {
+        var dt = dernier ? Math.min(64, ts - dernier) : 16.7;
+        dernier = ts;
+        var k = 1 - Math.pow(1 - 0.095, dt / 16.7);
+        courant += (cible - courant) * k;
         if (Math.abs(cible - courant) < 0.5) { courant = cible; anime = false; }
         window.scrollTo(0, courant);
         if (anime) requestAnimationFrame(boucle);
       }
-      function lancer() { if (!anime) { anime = true; requestAnimationFrame(boucle); } }
+      function lancer() {
+        if (!anime) { anime = true; dernier = 0; requestAnimationFrame(boucle); }
+      }
 
       majCible = function (v) { cible = borne(v); lancer(); };
 
