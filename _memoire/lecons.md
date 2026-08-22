@@ -1283,3 +1283,35 @@ Quatre contrôles, le même jour, sur la même vitrine, pour la même raison :
   **ne déploie pas**. Le dire dès qu'on sait, pas à la fin — sinon on laisse
   croire qu'un travail est en ligne alors qu'il attend une commande sur le PC.
   C'est le pendant de « un `git push` ne déploie rien tout seul ».
+
+## 2026-08-22 — Une animation qui avance PAR IMAGE punit les machines lentes
+
+- **Contexte** : sur la vitrine d'Angy Art, cliquer « accueil » depuis le bas de
+  la page ramenait bien en haut sur téléphone et sur tablette, mais laissait la
+  page à **284 px** sur ordinateur (puis 467 px à l'essai suivant : la valeur
+  changeait à chaque fois).
+- **La fausse piste** : une position qui varie fait penser à une course entre
+  deux mécanismes, ou à une force extérieure qui interrompt le glissement. Le
+  code contenait justement une logique d'adoption des sauts venus d'ailleurs.
+- **La vraie cause** : la boucle interpolait **d'un cran fixe par image** :
+  ```js
+  courant += (cible - courant) * 0.095;
+  ```
+  À 60 images par seconde, le trajet de 10 318 px est fini en 1,1 s. À 30
+  images par seconde, il en faut **plus du double**. Le glissement n'était pas
+  cassé : **il n'était pas fini**. Et la page d'ordinateur, plus chargée en
+  effets, tombe justement sous les 60.
+- **Le correctif** : interpoler **au temps écoulé**, pas à l'image.
+  ```js
+  var dt = Math.min(64, ts - dernier);
+  var k  = 1 - Math.pow(1 - 0.095, dt / 16.7);
+  courant += (cible - courant) * k;
+  ```
+  Le `Math.min(64, …)` évite qu'un gel d'une seconde produise un saut brutal.
+- ⚠️ **Qui payait vraiment** : le moteur maison ne tourne que sur pointeur fin,
+  donc le contrôle ne pouvait le voir que sur ordinateur. Mais **tout ce qui est
+  écrit ainsi ailleurs** (compteurs, révélations, glissements) ralentit sur les
+  téléphones bas de gamme de Cotonou, qui sont nos vrais visiteurs.
+- **À appliquer** : chercher `* 0.0` et `+=` dans les boucles `requestAnimationFrame`
+  du parc. Une interpolation sans `dt` est un défaut qui ne se voit que sur les
+  machines qu'on n'a pas sous la main.
