@@ -1809,7 +1809,7 @@ section{overflow-x:clip}
  {"@type":"Product","name":"Robe Émeraude","brand":{"@id":"https://hillary-m-styl.pages.dev/#maison"},"offers":{"@type":"Offer","price":25000,"priceCurrency":"XOF","availability":"https://schema.org/MadeToOrder","url":"https://hillary-m-styl.pages.dev/#catalogue","seller":{"@id":"https://hillary-m-styl.pages.dev/#maison"}},"description":"Coupe courte ajustée, manches longues, grands motifs verts et jaunes cernés de noir.","image":"https://hillary-m-styl.pages.dev/assets/images/piece-emeraude.webp"},
  {"@type":"Product","name":"Ensemble Orange","brand":{"@id":"https://hillary-m-styl.pages.dev/#maison"},"offers":{"@type":"Offer","price":35000,"priceCurrency":"XOF","availability":"https://schema.org/MadeToOrder","url":"https://hillary-m-styl.pages.dev/#catalogue","seller":{"@id":"https://hillary-m-styl.pages.dev/#maison"}},"description":"Bustier froncé à lien au cou, découpes sur les côtés, bas long et très ample en tissu uni.","image":"https://hillary-m-styl.pages.dev/assets/images/piece-orange-uni.webp"},
  {"@type":"Product","name":"Robe Soleil","brand":{"@id":"https://hillary-m-styl.pages.dev/#maison"},"offers":{"@type":"Offer","price":25000,"priceCurrency":"XOF","availability":"https://schema.org/MadeToOrder","url":"https://hillary-m-styl.pages.dev/#catalogue","seller":{"@id":"https://hillary-m-styl.pages.dev/#maison"}},"description":"Épaules drapées à cordons et pompons, ceinture drapée, jupe très ample en bazin teint rouge et or.","image":"https://hillary-m-styl.pages.dev/assets/images/piece-soleil.webp"},
- {"@type":"Product","name":"Robe d'été","brand":{"@id":"https://hillary-m-styl.pages.dev/#maison"},"offers":{"@type":"Offer","price":35000,"priceCurrency":"XOF","availability":"https://schema.org/MadeToOrder","url":"https://hillary-m-styl.pages.dev/#catalogue","seller":{"@id":"https://hillary-m-styl.pages.dev/#maison"}},"description":"Haut court noué au cou et jupe longue très ample, en bazin teint. La pièce d'été, qui va de la plage au déjeuner."},
+ {"@type":"Product","name":"Robe d'été","brand":{"@id":"https://hillary-m-styl.pages.dev/#maison"},"offers":{"@type":"Offer","price":35000,"priceCurrency":"XOF","availability":"https://schema.org/MadeToOrder","url":"https://hillary-m-styl.pages.dev/#catalogue","seller":{"@id":"https://hillary-m-styl.pages.dev/#maison"}},"description":"Haut court noué au cou et jupe longue très ample, en bazin teint. La pièce d'été, qui va de la plage au déjeuner.","image":"https://hillary-m-styl.pages.dev/assets/images/piece-ete.webp"},
  {"@type":"Product","name":"Ensemble Volants","brand":{"@id":"https://hillary-m-styl.pages.dev/#maison"},"offers":{"@type":"Offer","price":40000,"priceCurrency":"XOF","availability":"https://schema.org/MadeToOrder","url":"https://hillary-m-styl.pages.dev/#catalogue","seller":{"@id":"https://hillary-m-styl.pages.dev/#maison"}},"description":"Haut court noué devant, manches à trois volants étagés, et pantalon très évasé en jean à empiècements de bazin teint."},
  {"@type":"FAQPage","mainEntity":[
   {"@type":"Question","name":"Faites-vous du sur-mesure ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Les mesures demandées dépendent du type de vêtement, pas du genre : une robe coupée à la taille en demande 9, une robe droite 15, une robe ovale 11, un pantalon 6, un haut 8."}},
@@ -2146,7 +2146,8 @@ var PIECES = [
    prix:25000, jmin:14, jmax:14, expPrix:35000, expMin:2, expMax:4,
    eur:37, usd:45, eurExp:52, usdExp:63,
    ds:"Épaules drapées à cordons et pompons, ceinture drapée, jupe très ample en bazin teint rouge et or."},
-  {id:"h19", cat:"sm", nom:"Robe d'été", type:"robe_ovale", tag:"Plage", photoWa:true,
+  {id:"h19", cat:"sm", nom:"Robe d'été", type:"robe_ovale", tag:"Plage",
+   img:"piece-ete.webp",
    prix:35000, jmin:14, jmax:14, expPrix:45000, expMin:2, expMax:4,
    eur:52, usd:63, eurExp:67, usdExp:81,
    ds:"Haut court noué au cou et jupe longue très ample, en bazin teint. La pièce d'été, qui va de la plage au déjeuner."},
@@ -3473,6 +3474,8 @@ var Atelier = (function(){
       t:"Tailleur Cœurs", d:"Veste cintrée à revers et épaules structurées, pantalon large assorti, wax bordeaux à cœurs." },
     { f:'piece-emeraude.webp', c:'#136b16', col:'Sur-mesure', mat:'Sur-mesure · 2 semaines',
       t:"Robe Émeraude", d:"Coupe courte ajustée, manches longues, grands motifs verts et jaunes cernés de noir." },
+    { f:'piece-ete.webp', c:'#8e4527', col:'Plage', mat:'Sur-mesure · 2 semaines',
+      t:"Robe d'été", d:"Haut court noué au cou et jupe longue très ample, en bazin teint. La pièce d'été, qui va de la plage au déjeuner." },
     { f:'piece-jean.webp', c:'#971f25', col:'Sur-mesure', mat:'Sur-mesure · 2 semaines',
       t:"Ensemble Jean", d:"Haut court épaules dénudées à manches ballon, jupe longue à volants montée sur un empiècement en jean." },
     { f:'piece-lacee.webp', c:'#35196b', col:'Sur-mesure', mat:'Sur-mesure · 2 semaines',
@@ -3506,10 +3509,11 @@ var Atelier = (function(){
     { f:'piece-lacee.webp', f2:'piece-lacee-dos.webp', l:'Sur-mesure', t:"Robe Lacée", s:'Épaules dénudées à fines bretelles, manches ballon' },
     { f:'piece-coeurs.webp', l:'Fait main', t:"Tailleur Cœurs", s:'Veste cintrée à revers et épaules structurées, pantalon' },
     { f:'piece-jean.webp', f2:'piece-jean-dos.webp', l:'Sur-mesure', t:"Ensemble Jean", s:'Haut court épaules dénudées à manches ballon, jupe' },
-    { f:'piece-sirene.webp', l:'Cérémonie', t:"Robe Sirène", s:'Fourreau en wax violet, volants bleu roi en bordure et' },
+    { f:'piece-sirene.webp', l:'Cérémonie', t:"Robe Sirène", s:'Fourreau en wax violet, volants bleu roi en bordure' },
     { f:'piece-emeraude.webp', l:'Sur-mesure', t:"Robe Émeraude", s:'Coupe courte ajustée, manches longues, grands motifs' },
     { f:'piece-orange-uni.webp', l:'Sur-mesure', t:"Ensemble Orange", s:'Bustier froncé à lien au cou, découpes sur les côtés' },
-    { f:'piece-soleil.webp', l:'Cérémonie', t:"Robe Soleil", s:'Épaules drapées à cordons et pompons, ceinture drapée' }
+    { f:'piece-soleil.webp', l:'Cérémonie', t:"Robe Soleil", s:'Épaules drapées à cordons et pompons, ceinture drapée' },
+    { f:'piece-ete.webp', l:'Plage', t:"Robe d'été", s:'Haut court noué au cou et jupe longue très ample' }
   ];
   /* ================================================================ */
 

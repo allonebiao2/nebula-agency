@@ -50,6 +50,8 @@
       t:"Tailleur Cœurs", d:"Veste cintrée à revers et épaules structurées, pantalon large assorti, wax bordeaux à cœurs." },
     { f:'piece-emeraude.webp', c:'#136b16', col:'Sur-mesure', mat:'Sur-mesure · 2 semaines',
       t:"Robe Émeraude", d:"Coupe courte ajustée, manches longues, grands motifs verts et jaunes cernés de noir." },
+    { f:'piece-ete.webp', c:'#8e4527', col:'Plage', mat:'Sur-mesure · 2 semaines',
+      t:"Robe d'été", d:"Haut court noué au cou et jupe longue très ample, en bazin teint. La pièce d'été, qui va de la plage au déjeuner." },
     { f:'piece-jean.webp', c:'#971f25', col:'Sur-mesure', mat:'Sur-mesure · 2 semaines',
       t:"Ensemble Jean", d:"Haut court épaules dénudées à manches ballon, jupe longue à volants montée sur un empiècement en jean." },
     { f:'piece-lacee.webp', c:'#35196b', col:'Sur-mesure', mat:'Sur-mesure · 2 semaines',
@@ -83,10 +85,11 @@
     { f:'piece-lacee.webp', f2:'piece-lacee-dos.webp', l:'Sur-mesure', t:"Robe Lacée", s:'Épaules dénudées à fines bretelles, manches ballon' },
     { f:'piece-coeurs.webp', l:'Fait main', t:"Tailleur Cœurs", s:'Veste cintrée à revers et épaules structurées, pantalon' },
     { f:'piece-jean.webp', f2:'piece-jean-dos.webp', l:'Sur-mesure', t:"Ensemble Jean", s:'Haut court épaules dénudées à manches ballon, jupe' },
-    { f:'piece-sirene.webp', l:'Cérémonie', t:"Robe Sirène", s:'Fourreau en wax violet, volants bleu roi en bordure et' },
+    { f:'piece-sirene.webp', l:'Cérémonie', t:"Robe Sirène", s:'Fourreau en wax violet, volants bleu roi en bordure' },
     { f:'piece-emeraude.webp', l:'Sur-mesure', t:"Robe Émeraude", s:'Coupe courte ajustée, manches longues, grands motifs' },
     { f:'piece-orange-uni.webp', l:'Sur-mesure', t:"Ensemble Orange", s:'Bustier froncé à lien au cou, découpes sur les côtés' },
-    { f:'piece-soleil.webp', l:'Cérémonie', t:"Robe Soleil", s:'Épaules drapées à cordons et pompons, ceinture drapée' }
+    { f:'piece-soleil.webp', l:'Cérémonie', t:"Robe Soleil", s:'Épaules drapées à cordons et pompons, ceinture drapée' },
+    { f:'piece-ete.webp', l:'Plage', t:"Robe d'été", s:'Haut court noué au cou et jupe longue très ample' }
   ];
   /* ================================================================ */
 
