@@ -253,14 +253,14 @@ em{font-style:italic;font-weight:400}
   mask-image:linear-gradient(180deg,#000 0%,#000 54%,rgba(0,0,0,.34) 88%,rgba(0,0,0,0) 100%);
   overflow:hidden;height:.98em;display:grid;align-items:start;justify-items:center}
 /* LE CHIFFRE SUIT LA PIÈCE. Les deux chiffres se croisent sur EXACTEMENT
-   l'horloge du glissement (1,15 s, même courbe que `.hsl`) et dans le SENS du
+   l'horloge du glissement (.72 s, même courbe que `.hsl`) et dans le SENS du
    mouvement : `--s` vaut 1 vers l'avant, -1 vers l'arrière.
    ⚠️ Avant, le chiffre roulait 240 ms puis se remplaçait d'un coup : il
    arrivait 900 ms avant le vêtement et ça se voyait comme un raté.
    Vu par Mongazi le 2026-08-06. */
 .hnum span{grid-area:1/1;display:block;
-  transition:transform 1s cubic-bezier(.25,1,.5,1),
-             opacity .62s cubic-bezier(.33,0,.2,1)}
+  transition:transform .72s cubic-bezier(.25,1,.5,1),
+             opacity .46s cubic-bezier(.33,0,.2,1)}
 .hnum span.hn-e{transform:translateY(calc(var(--s,1) * 100%));opacity:0}
 .hnum span.hn-s{transform:translateY(calc(var(--s,1) * -100%));opacity:0}
 @media (prefers-reduced-motion:reduce){
@@ -277,8 +277,8 @@ em{font-style:italic;font-weight:400}
    précipitait. On voyait un raté, pas un glissement. Un ease-out quart
    bouge dès la première image et se pose longuement. */
 .hsl{position:absolute;inset:0;opacity:0;
-  transition:transform 1s cubic-bezier(.25,1,.5,1),
-             opacity .62s cubic-bezier(.33,0,.2,1)}
+  transition:transform .72s cubic-bezier(.25,1,.5,1),
+             opacity .46s cubic-bezier(.33,0,.2,1)}
 .hsl.act{opacity:1;transform:none;z-index:2}
 .hsl.sort{opacity:0;transform:translateX(-62%) skewX(-2.5deg) scale(.96);z-index:1}
 .hsl.entre{opacity:0;transform:translateX(62%) skewX(2.5deg) scale(.96);z-index:1}
@@ -439,7 +439,12 @@ em{font-style:italic;font-weight:400}
 .car{position:absolute;left:50%;top:50%;width:clamp(210px,24vw,340px);margin:0;
   transform:translate3d(calc(-50% + var(--tx,0px)),-50%,0) scale(var(--sc,1));
   opacity:var(--op,1);filter:blur(var(--bl,0px));
-  transition:transform .8s cubic-bezier(.4,0,.2,1),opacity .8s var(--e-s),filter .8s var(--e-s);
+  /* ⚠️ CETTE COURBE PARTAIT À PLAT — exactement le défaut réparé au héros le
+     2026-08-06, jamais reporté ici. `cubic-bezier(.4,0,.2,1)` met un bon
+     sixième de sa durée à démarrer, et une carte qui ne bouge pas tout de
+     suite se lit comme un clic perdu. Même ease-out quart qu'au héros : ça
+     part à la première image et ça se pose longuement. */
+  transition:transform .6s cubic-bezier(.25,1,.5,1),opacity .6s var(--e-s),filter .6s var(--e-s);
   will-change:transform}
 .car-c{position:relative;aspect-ratio:4/5;background:none;overflow:visible}
 /* une piece detouree ne se met pas dans une boite : elle se pose.

@@ -1315,3 +1315,68 @@ Quatre contrôles, le même jour, sur la même vitrine, pour la même raison :
 - **À appliquer** : chercher `* 0.0` et `+=` dans les boucles `requestAnimationFrame`
   du parc. Une interpolation sans `dt` est un défaut qui ne se voit que sur les
   machines qu'on n'a pas sous la main.
+
+## 2026-08-25 — Un défilement lissé maison doit céder aux autres (3e fois)
+
+Troisième apparition, sur le troisième site : Au Braisé d'Or (Lenis, saut
+arrêté à 7 382 px), Angy Art (200 → 5 992 px), Hillary M. Styl (200 → 5 996 px).
+La leçon du 2026-08-21 est confirmée, et elle se généralise :
+
+- **Tout moteur qui écrit dans `scrollY` doit prévoir ce qui arrive quand un
+  autre y écrit aussi.** Bibliothèque ou maison, c'est la même dette.
+- Le critère est **où**, pas **combien** : entre `courant` et `cible` c'est le
+  moteur, ailleurs c'est quelqu'un d'autre, et c'est lui qui a raison.
+- **À faire sur tout nouveau site qui lisse son défilement**, sans attendre que
+  quelqu'un s'en plaigne : les victimes (recherche du navigateur, lecteur
+  d'écran, touche Fin, focus clavier) ne laissent pas de trace.
+
+## 2026-08-25 — `role="dialog"` sur un `<div>` n'apporte que l'étiquette
+
+- **Contexte** : la fiche de commande de Hillary, un `<div role="dialog"
+  aria-modal="true">`. Tout le monde la croyait accessible parce qu'elle
+  portait les bons attributs.
+- **Ce qu'un vrai `<dialog>` fait et qu'un div ne fait PAS** : la couche
+  supérieure, le piège à focus, la mise à l'écart du reste de la page. Mesuré :
+  le focus restait sur `<body>`, **une seule** tabulation sortait vers le
+  catalogue caché, rien n'était `inert`, et en refermant le focus retombait sur
+  `<body>`.
+- **Ce que ça coûtait** : cette fiche **est** le bon de commande. Quelqu'un au
+  clavier ou au lecteur d'écran ne pouvait pas commander.
+- **Les quatre gestes** : donner le focus à l'ouverture, l'enfermer, rendre le
+  fond `inert` **et** `aria-hidden` (pour qui ignore `inert`), le rendre en
+  refermant.
+- ⚠️ **`focus({preventScroll:true})`** : donner le focus fait défiler la page,
+  et un moteur de défilement maison se bat avec.
+- ⚠️ **Une exception voulue doit être écrite à côté du contrôle**, sinon elle
+  ressemble à un défaut : ici le bouton du son est dans la boucle des
+  tabulations parce que la maison exige qu'on puisse couper le son en donnant
+  ses mesures.
+
+## 2026-08-25 — Une correction faite à un endroit n'est pas faite partout
+
+- **Contexte** : le 2026-08-06, la courbe du héros a été réparée (elle partait
+  à plat, la pièce restait figée ~580 ms après le clic). Deux mois plus tard,
+  **le second carrousel du même site portait encore la courbe fautive**.
+- **À retenir** : quand on répare un défaut de sensation, chercher tout de
+  suite **qui d'autre porte le même code**. `grep` sur la valeur (ici
+  `cubic-bezier(.4,0,.2,1)`) coûte dix secondes.
+- Même famille que la leçon du défilement ci-dessus, à l'échelle d'un fichier
+  au lieu d'un dépôt.
+
+## 2026-08-25 — Vérifier sa sonde avant d'accuser le produit
+
+Quatre « défauts » d'affilée pendant un audit, tous dus à la sonde :
+
+| Ce que la sonde disait | Ce que c'était vraiment |
+|---|---|
+| `NaN` dans le message WhatsApp | j'avais injecté un panier au mauvais format (`{id,q,exp}` au lieu de `{id,qte,express}`) |
+| « la fiche ne s'ouvre pas » | le rideau d'ouverture dure **4 800 ms**, j'attendais 4 200 |
+| « la fiche ne s'ouvre pas » (bis) | ce n'est pas un `<dialog>` mais un `div#ov.on` |
+| « le focus sort de la fiche » | c'était le bouton du son, qui y est **par décision** |
+| « le fond reste inerte après fermeture » | le tiroir du panier porte `aria-hidden="true"` **par construction** |
+
+- **La règle** : avant d'annoncer un défaut, se demander *« et si c'était ma
+  mesure ? »*. Un audit qui crie au loup cinq fois n'est plus lu.
+- **Le signe qui ne trompe pas** : la suite de contrôle officielle passe au
+  vert sur le même chemin. Quand elle et la sonde divergent, c'est presque
+  toujours la sonde.

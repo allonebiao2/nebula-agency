@@ -295,14 +295,14 @@ em{font-style:italic;font-weight:400}
   mask-image:linear-gradient(180deg,#000 0%,#000 54%,rgba(0,0,0,.34) 88%,rgba(0,0,0,0) 100%);
   overflow:hidden;height:.98em;display:grid;align-items:start;justify-items:center}
 /* LE CHIFFRE SUIT LA PIÈCE. Les deux chiffres se croisent sur EXACTEMENT
-   l'horloge du glissement (1,15 s, même courbe que `.hsl`) et dans le SENS du
+   l'horloge du glissement (.72 s, même courbe que `.hsl`) et dans le SENS du
    mouvement : `--s` vaut 1 vers l'avant, -1 vers l'arrière.
    ⚠️ Avant, le chiffre roulait 240 ms puis se remplaçait d'un coup : il
    arrivait 900 ms avant le vêtement et ça se voyait comme un raté.
    Vu par Mongazi le 2026-08-06. */
 .hnum span{grid-area:1/1;display:block;
-  transition:transform 1s cubic-bezier(.25,1,.5,1),
-             opacity .62s cubic-bezier(.33,0,.2,1)}
+  transition:transform .72s cubic-bezier(.25,1,.5,1),
+             opacity .46s cubic-bezier(.33,0,.2,1)}
 .hnum span.hn-e{transform:translateY(calc(var(--s,1) * 100%));opacity:0}
 .hnum span.hn-s{transform:translateY(calc(var(--s,1) * -100%));opacity:0}
 @media (prefers-reduced-motion:reduce){
@@ -319,8 +319,8 @@ em{font-style:italic;font-weight:400}
    précipitait. On voyait un raté, pas un glissement. Un ease-out quart
    bouge dès la première image et se pose longuement. */
 .hsl{position:absolute;inset:0;opacity:0;
-  transition:transform 1s cubic-bezier(.25,1,.5,1),
-             opacity .62s cubic-bezier(.33,0,.2,1)}
+  transition:transform .72s cubic-bezier(.25,1,.5,1),
+             opacity .46s cubic-bezier(.33,0,.2,1)}
 .hsl.act{opacity:1;transform:none;z-index:2}
 .hsl.sort{opacity:0;transform:translateX(-62%) skewX(-2.5deg) scale(.96);z-index:1}
 .hsl.entre{opacity:0;transform:translateX(62%) skewX(2.5deg) scale(.96);z-index:1}
@@ -481,7 +481,12 @@ em{font-style:italic;font-weight:400}
 .car{position:absolute;left:50%;top:50%;width:clamp(210px,24vw,340px);margin:0;
   transform:translate3d(calc(-50% + var(--tx,0px)),-50%,0) scale(var(--sc,1));
   opacity:var(--op,1);filter:blur(var(--bl,0px));
-  transition:transform .8s cubic-bezier(.4,0,.2,1),opacity .8s var(--e-s),filter .8s var(--e-s);
+  /* ⚠️ CETTE COURBE PARTAIT À PLAT — exactement le défaut réparé au héros le
+     2026-08-06, jamais reporté ici. `cubic-bezier(.4,0,.2,1)` met un bon
+     sixième de sa durée à démarrer, et une carte qui ne bouge pas tout de
+     suite se lit comme un clic perdu. Même ease-out quart qu'au héros : ça
+     part à la première image et ça se pose longuement. */
+  transition:transform .6s cubic-bezier(.25,1,.5,1),opacity .6s var(--e-s),filter .6s var(--e-s);
   will-change:transform}
 .car-c{position:relative;aspect-ratio:4/5;background:none;overflow:visible}
 /* une piece detouree ne se met pas dans une boite : elle se pose.
@@ -1809,7 +1814,7 @@ section{overflow-x:clip}
  {"@type":"Product","name":"Robe Émeraude","brand":{"@id":"https://hillary-m-styl.pages.dev/#maison"},"offers":{"@type":"Offer","price":25000,"priceCurrency":"XOF","availability":"https://schema.org/MadeToOrder","url":"https://hillary-m-styl.pages.dev/#catalogue","seller":{"@id":"https://hillary-m-styl.pages.dev/#maison"}},"description":"Coupe courte ajustée, manches longues, grands motifs verts et jaunes cernés de noir.","image":"https://hillary-m-styl.pages.dev/assets/images/piece-emeraude.webp"},
  {"@type":"Product","name":"Ensemble Orange","brand":{"@id":"https://hillary-m-styl.pages.dev/#maison"},"offers":{"@type":"Offer","price":35000,"priceCurrency":"XOF","availability":"https://schema.org/MadeToOrder","url":"https://hillary-m-styl.pages.dev/#catalogue","seller":{"@id":"https://hillary-m-styl.pages.dev/#maison"}},"description":"Bustier froncé à lien au cou, découpes sur les côtés, bas long et très ample en tissu uni.","image":"https://hillary-m-styl.pages.dev/assets/images/piece-orange-uni.webp"},
  {"@type":"Product","name":"Robe Soleil","brand":{"@id":"https://hillary-m-styl.pages.dev/#maison"},"offers":{"@type":"Offer","price":25000,"priceCurrency":"XOF","availability":"https://schema.org/MadeToOrder","url":"https://hillary-m-styl.pages.dev/#catalogue","seller":{"@id":"https://hillary-m-styl.pages.dev/#maison"}},"description":"Épaules drapées à cordons et pompons, ceinture drapée, jupe très ample en bazin teint rouge et or.","image":"https://hillary-m-styl.pages.dev/assets/images/piece-soleil.webp"},
- {"@type":"Product","name":"Robe d'été","brand":{"@id":"https://hillary-m-styl.pages.dev/#maison"},"offers":{"@type":"Offer","price":35000,"priceCurrency":"XOF","availability":"https://schema.org/MadeToOrder","url":"https://hillary-m-styl.pages.dev/#catalogue","seller":{"@id":"https://hillary-m-styl.pages.dev/#maison"}},"description":"Haut court noué au cou et jupe longue très ample, en bazin teint. La pièce d'été, qui va de la plage au déjeuner."},
+ {"@type":"Product","name":"Robe d'été","brand":{"@id":"https://hillary-m-styl.pages.dev/#maison"},"offers":{"@type":"Offer","price":35000,"priceCurrency":"XOF","availability":"https://schema.org/MadeToOrder","url":"https://hillary-m-styl.pages.dev/#catalogue","seller":{"@id":"https://hillary-m-styl.pages.dev/#maison"}},"description":"Haut court noué au cou et jupe longue très ample, en bazin teint. La pièce d'été, qui va de la plage au déjeuner.","image":"https://hillary-m-styl.pages.dev/assets/images/piece-ete.webp"},
  {"@type":"Product","name":"Ensemble Volants","brand":{"@id":"https://hillary-m-styl.pages.dev/#maison"},"offers":{"@type":"Offer","price":40000,"priceCurrency":"XOF","availability":"https://schema.org/MadeToOrder","url":"https://hillary-m-styl.pages.dev/#catalogue","seller":{"@id":"https://hillary-m-styl.pages.dev/#maison"}},"description":"Haut court noué devant, manches à trois volants étagés, et pantalon très évasé en jean à empiècements de bazin teint."},
  {"@type":"FAQPage","mainEntity":[
   {"@type":"Question","name":"Faites-vous du sur-mesure ?","acceptedAnswer":{"@type":"Answer","text":"Oui. Les mesures demandées dépendent du type de vêtement, pas du genre : une robe coupée à la taille en demande 9, une robe droite 15, une robe ovale 11, un pantalon 6, un haut 8."}},
@@ -2146,7 +2151,8 @@ var PIECES = [
    prix:25000, jmin:14, jmax:14, expPrix:35000, expMin:2, expMax:4,
    eur:37, usd:45, eurExp:52, usdExp:63,
    ds:"Épaules drapées à cordons et pompons, ceinture drapée, jupe très ample en bazin teint rouge et or."},
-  {id:"h19", cat:"sm", nom:"Robe d'été", type:"robe_ovale", tag:"Plage", photoWa:true,
+  {id:"h19", cat:"sm", nom:"Robe d'été", type:"robe_ovale", tag:"Plage",
+   img:"piece-ete.webp",
    prix:35000, jmin:14, jmax:14, expPrix:45000, expMin:2, expMax:4,
    eur:52, usd:63, eurExp:67, usdExp:81,
    ds:"Haut court noué au cou et jupe longue très ample, en bazin teint. La pièce d'été, qui va de la plage au déjeuner."},
@@ -2551,6 +2557,100 @@ function mesuresConnues(type){
   return out;
 }
 
+/* ================================================================
+   LE CLAVIER ET LES LECTEURS D'ÉCRAN, DEVANT UN ÉCRAN OUVERT
+   ================================================================
+   ⚠️ `role="dialog" aria-modal="true"` SUR UN <div> N'APPORTE QUE
+   L'ÉTIQUETTE. Contrairement à un vrai <dialog>, le navigateur ne pose
+   ni couche supérieure, ni piège à focus, ni mise à l'écart du reste de
+   la page. Mesuré le 2026-08-25, fiche ouverte :
+     · le focus restait sur <body> — on ouvrait une pièce et on ne
+       tabulait pas dedans ;
+     · UNE SEULE tabulation en sortait, et on se promenait dans le
+       catalogue caché derrière ;
+     · rien n'était `inert` : un lecteur d'écran lisait les vingt cartes
+       du fond par-dessus la commande.
+   Cette fiche EST le bon de commande. Quelqu'un au clavier ou au lecteur
+   d'écran ne pouvait pas commander.
+
+   ⚠️ `preventScroll:true` n'est pas un détail : donner le focus fait
+   défiler la page jusqu'à l'élément, et le moteur de défilement maison
+   se serait battu avec.
+   ⚠️ LE BOUTON DU SON RESTE DANS LA BOUCLE. La maison exige qu'on puisse
+   couper le son en donnant ses mesures : il est sorti de la barre par
+   `parDessus()` et il entre dans le cycle des tabulations, en dernier. */
+var ATTRAPABLES = 'a[href],button:not([disabled]),input:not([disabled]),' +
+                  'select:not([disabled]),textarea:not([disabled]),' +
+                  '[tabindex]:not([tabindex="-1"])';
+var _inertes = [], _avantEcran = null;
+
+function ecranCourant(){
+  var o = document.getElementById("ov");
+  if(o && o.classList.contains("on")) return o;
+  var p = document.getElementById("pan");
+  if(p && p.classList.contains("on")) return p;
+  return null;
+}
+function focusables(ec){
+  var l = [].slice.call(ec.querySelectorAll(ATTRAPABLES)).filter(function(e){
+    return e.offsetWidth || e.offsetHeight || e === document.activeElement;
+  });
+  var son = document.querySelector(".sonbt");
+  if(son && !ec.contains(son) && (son.offsetWidth || son.offsetHeight)) l.push(son);
+  return l;
+}
+function fondInerte(on){
+  _inertes.forEach(function(e){
+    try{ e.inert = false; }catch(err){}
+    e.removeAttribute("aria-hidden");
+  });
+  _inertes = [];
+  if(!on) return;
+  var ec = ecranCourant();
+  [].forEach.call(document.body.children, function(e){
+    if(e === ec) return;
+    if(e.id === "ov" || e.id === "pan" || e.id === "panOv") return;
+    if(e.classList && e.classList.contains("sonbt")) return;
+    if(e.contains(ec)) return;                 /* jamais un ancêtre de l'écran */
+    try{ e.inert = true; }catch(err){}
+    e.setAttribute("aria-hidden", "true");     /* pour qui ne connaît pas `inert` */
+    _inertes.push(e);
+  });
+}
+function ouvrirEcran(){
+  if(!_avantEcran) _avantEcran = document.activeElement;
+  fondInerte(true);
+  var ec = ecranCourant();
+  if(!ec) return;
+  var f = ec.querySelector("[autofocus]") || focusables(ec)[0];
+  if(f){ try{ f.focus({ preventScroll: true }); }catch(e){ f.focus(); } }
+}
+function fermerEcran(){
+  fondInerte(false);
+  /* on rend le focus à ce qui l'avait : sans ça il retombe sur <body> et,
+     au clavier, on repart du haut du site à chaque fiche refermée. */
+  var r = _avantEcran; _avantEcran = null;
+  if(r && document.body.contains(r) && (r.offsetWidth || r.offsetHeight)){
+    try{ r.focus({ preventScroll: true }); }catch(e){ r.focus(); }
+  }
+}
+document.addEventListener("keydown", function(e){
+  if(e.key !== "Tab") return;
+  var ec = ecranCourant();
+  if(!ec) return;
+  var f = focusables(ec);
+  if(!f.length) return;
+  var prem = f[0], der = f[f.length - 1];
+  if(!ec.contains(document.activeElement) && document.activeElement !== der){
+    e.preventDefault(); prem.focus({ preventScroll: true }); return;
+  }
+  if(e.shiftKey && document.activeElement === prem){
+    e.preventDefault(); der.focus({ preventScroll: true });
+  }else if(!e.shiftKey && document.activeElement === der){
+    e.preventDefault(); prem.focus({ preventScroll: true });
+  }
+});
+
 function montrerModale(){
   /* le tiroir et la fiche ne se superposent jamais : le tiroir est au-dessus
      dans l'ordre d'empilement, il masquerait la fiche */
@@ -2558,6 +2658,7 @@ function montrerModale(){
   document.getElementById("ov").classList.add("on");
   document.body.style.overflow = "hidden";
   parDessus(true);
+  ouvrirEcran();
 }
 /* ⚠️ Le bouton du son est en `position:fixed`, en bas à gauche. Il se posait
    sur « Retour » dans la fiche et sur « Vider le panier » dans le tiroir : un
@@ -2587,6 +2688,7 @@ function fermer(){
   document.body.style.overflow = "";
   etat = null; cmd.actif = false;
   parDessus(false);
+  fermerEcran();
 }
 
 document.getElementById("grille").addEventListener("click", function(e){
@@ -3043,6 +3145,7 @@ function ouvrirPanier(){
   document.getElementById("pan").setAttribute("aria-hidden","false");
   document.body.style.overflow = "hidden";
   parDessus(true);
+  ouvrirEcran();
 }
 function fermerPanier(){
   var p = document.getElementById("pan");
@@ -3053,6 +3156,10 @@ function fermerPanier(){
   if(!document.getElementById("ov").classList.contains("on")){
     document.body.style.overflow = "";
     parDessus(false);
+    /* ⚠️ seulement quand plus RIEN n'est ouvert : `montrerModale()` referme le
+       tiroir avant d'ouvrir la fiche, et rendre la page au clavier entre les
+       deux ferait clignoter le focus. */
+    fermerEcran();
   }
 }
 function majPastille(){
@@ -3473,6 +3580,8 @@ var Atelier = (function(){
       t:"Tailleur Cœurs", d:"Veste cintrée à revers et épaules structurées, pantalon large assorti, wax bordeaux à cœurs." },
     { f:'piece-emeraude.webp', c:'#136b16', col:'Sur-mesure', mat:'Sur-mesure · 2 semaines',
       t:"Robe Émeraude", d:"Coupe courte ajustée, manches longues, grands motifs verts et jaunes cernés de noir." },
+    { f:'piece-ete.webp', c:'#8e4527', col:'Plage', mat:'Sur-mesure · 2 semaines',
+      t:"Robe d'été", d:"Haut court noué au cou et jupe longue très ample, en bazin teint. La pièce d'été, qui va de la plage au déjeuner." },
     { f:'piece-jean.webp', c:'#971f25', col:'Sur-mesure', mat:'Sur-mesure · 2 semaines',
       t:"Ensemble Jean", d:"Haut court épaules dénudées à manches ballon, jupe longue à volants montée sur un empiècement en jean." },
     { f:'piece-lacee.webp', c:'#35196b', col:'Sur-mesure', mat:'Sur-mesure · 2 semaines',
@@ -3506,10 +3615,11 @@ var Atelier = (function(){
     { f:'piece-lacee.webp', f2:'piece-lacee-dos.webp', l:'Sur-mesure', t:"Robe Lacée", s:'Épaules dénudées à fines bretelles, manches ballon' },
     { f:'piece-coeurs.webp', l:'Fait main', t:"Tailleur Cœurs", s:'Veste cintrée à revers et épaules structurées, pantalon' },
     { f:'piece-jean.webp', f2:'piece-jean-dos.webp', l:'Sur-mesure', t:"Ensemble Jean", s:'Haut court épaules dénudées à manches ballon, jupe' },
-    { f:'piece-sirene.webp', l:'Cérémonie', t:"Robe Sirène", s:'Fourreau en wax violet, volants bleu roi en bordure et' },
+    { f:'piece-sirene.webp', l:'Cérémonie', t:"Robe Sirène", s:'Fourreau en wax violet, volants bleu roi en bordure' },
     { f:'piece-emeraude.webp', l:'Sur-mesure', t:"Robe Émeraude", s:'Coupe courte ajustée, manches longues, grands motifs' },
     { f:'piece-orange-uni.webp', l:'Sur-mesure', t:"Ensemble Orange", s:'Bustier froncé à lien au cou, découpes sur les côtés' },
-    { f:'piece-soleil.webp', l:'Cérémonie', t:"Robe Soleil", s:'Épaules drapées à cordons et pompons, ceinture drapée' }
+    { f:'piece-soleil.webp', l:'Cérémonie', t:"Robe Soleil", s:'Épaules drapées à cordons et pompons, ceinture drapée' },
+    { f:'piece-ete.webp', l:'Plage', t:"Robe d'été", s:'Haut court noué au cou et jupe longue très ample' }
   ];
   /* ================================================================ */
 
@@ -3639,8 +3749,24 @@ var Atelier = (function(){
         cible = borne(cible + e.deltaY * (e.deltaMode === 1 ? 18 : 1));
         lancer();
       }, { passive: false });
+      /* ⚠️ UNE FORCE EXTÉRIEURE PEUT DÉPLACER LA PAGE PENDANT QUE LE MOTEUR
+         GLISSE : la recherche du navigateur, un lecteur d'écran, la touche
+         Fin, le passage au clavier sur un bouton hors écran. Tant que `cible`
+         n'était relue QUE `if (!anime)`, la boucle en cours ramenait la page à
+         SON idée du bon endroit et le saut était annulé sans un mot.
+         Même défaut, mot pour mot, que celui trouvé sur Angy Art le
+         2026-08-21, et déjà rencontré sur Au Braisé d'Or où Lenis arrêtait un
+         `scrollIntoView` à 7 382 px de sa cible.
+         ⚠️ On ne peut pas adopter tout écart : une image qui se charge laisse
+         la page sur le CHEMIN du moteur, et l'adopter arrêterait le
+         glissement net au milieu — une régression bien plus visible que le
+         défaut réparé. Alors on regarde OÙ : entre `courant` et `cible` c'est
+         nous, ailleurs c'est quelqu'un d'autre, et c'est lui qui a raison. */
       addEventListener('scroll', function () {
-        if (!anime) { cible = scrollY; courant = scrollY; }
+        var y = scrollY;
+        if (!anime) { cible = y; courant = y; return; }
+        var bas = Math.min(courant, cible) - 12, haut = Math.max(courant, cible) + 12;
+        if (y < bas || y > haut) { cible = borne(y); courant = y; }
       }, { passive: true });
       addEventListener('resize', function () { cible = borne(cible); }, { passive: true });
     })();
@@ -3833,7 +3959,7 @@ var Atelier = (function(){
              elle effacerait le chiffre de celle qui l'a doublée. */
           if (num.lastElementChild !== neuf) return;
           $$('span', num).forEach(function (s) { if (s !== neuf) num.removeChild(s); });
-        }, 1050);
+        }, 780);
       };
     }
 
@@ -3858,8 +3984,17 @@ var Atelier = (function(){
       if (cpt) cpt.textContent = d2(i + 1) + ' — ' + d2(n);
     }
 
+    /* ⚠️ UN CLIC PENDANT LE GLISSEMENT ÉTAIT JETÉ SANS UN MOT. `occupe`
+       tenait un tour complet : qui appuyait deux fois de suite ne voyait
+       avancer qu'une pièce, et le carrousel passait pour bloqué. On ne peut
+       pas lever le verrou — deux `aller()` qui se croisent empilent les
+       classes, c'est ce qui donnait « 0302 » le 2026-08-06 — alors on RETIENT
+       le dernier geste et on le joue à l'arrivée. Un seul en attente : au
+       delà, le visiteur ne suit plus ce qu'il a demandé. */
+    var enAttente = null;
     function aller(i, sens) {
-      if (occupe || n < 2) return;
+      if (n < 2) return;
+      if (occupe) { enAttente = sens > 0 ? 1 : -1; return; }
       i = (i + n) % n;
       if (i === actif) return;
       occupe = true;
@@ -3887,7 +4022,9 @@ var Atelier = (function(){
         sl.forEach(function (s) { if (s !== entre) s.classList.remove('act', 'sort', 'entre'); });
         sc.classList.remove('bouge');
         actif = i; occupe = false;
-      }, 1050);   /* doit couvrir la transition CSS (1 s) */
+        /* le geste retenu part maintenant, dans le sens qu'on avait demandé */
+        if (enAttente) { var d = enAttente; enAttente = null; aller(actif + d, d); }
+      }, 780);   /* doit couvrir la transition CSS (.72 s) */
     }
 
     var prev = $('#hPrev'), next = $('#hNext');
@@ -3912,7 +4049,7 @@ var Atelier = (function(){
       minuteur = setInterval(function () {
         if (document.hidden) return;
         aller(actif + 1, 1);
-      }, 5000);
+      }, 4200);
     }
     sc.addEventListener('pointerenter', function () { clearInterval(minuteur); });
     sc.addEventListener('pointerleave', relancer);
@@ -4009,7 +4146,10 @@ var Atelier = (function(){
     function relancerC() {
       clearTimeout(autoC); autoC = null;
       if (doux || n < 2 || !vuC || surC) return;
-      var d = (data[actif] && data[actif].f2) ? 7400 : 5500;
+      /* ⚠️ 3 600 ms sont dus à la face avant que la carte se retourne : une
+         pièce à deux vues garde donc un tour plus long, sinon son dos
+         n'aurait pas le temps d'être vu. */
+      var d = (data[actif] && data[actif].f2) ? 6800 : 4400;
       autoC = setTimeout(function () {
         if (document.hidden) { relancerC(); return; }
         aller(actif + 1);

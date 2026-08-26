@@ -98,10 +98,25 @@ MODELES = [
          type="robe_ovale", tag="Plage",
          indice="DEUX mannequins, haut court noué au cou + jupe longue : bazin tie-dye brun et jaune à médaillons roses, et tie-dye orange et bleu — DEUX vues nettes reçues le 18/08 (face et dos, dos nu noué à la nuque) — ne PAS reprendre la capture d'écran du 17",
          ds="Haut court noué au cou et jupe longue très ample, en bazin teint. La pièce d'été, qui va de la plage au déjeuner."),
+    # ⛔ ATTENTION AVANT DE TOUCHER À CETTE FICHE — 2026-08-25.
+    #    Mongazi a envoyé une photo en la présentant comme « pas une robe
+    #    volante mais robe de ville », 40 000 / 55 000, mesures robe ovale.
+    #    Cette photo est DÉJÀ EN LIGNE : elle est, au MD5 près, le dos de
+    #    `h10 Robe de ville organza` (`piece-organza-dos.webp`), dont les six
+    #    prix sont exactement ceux qu'il a donnés et dont la description dit
+    #    déjà « dos lacé au ruban et jupon d'organza sous un wax rouge ».
+    #    Autrement dit : la fiche ci-dessous porte les prix de h10, et rien ne
+    #    prouve qu'un ensemble à volants existe. C'est peut-être un doublon que
+    #    j'ai fabriqué le 16/08 en décrivant deux fois la même robe.
+    #    ⏳ SEULE HILLARY PEUT TRANCHER. Tant qu'elle n'a pas répondu, on ne
+    #    supprime rien (effacer une pièce qu'elle vend est pire que garder une
+    #    ligne en trop) et on n'y pose aucune photo. La question posée :
+    #    « existe-t-il un haut court à manches à trois volants avec un pantalon
+    #    évasé en jean, ou est-ce la robe organza qu'on a comptée deux fois ? »
     dict(cle="volants", id="h20", nom="Ensemble Volants",
          prix=40000, expPrix=55000, eur=60, usd=72, eurExp=82, usdExp=100,
          type="haut_pantalon", tag="",
-         indice="haut court noué devant à MANCHES A TROIS VOLANTS, bazin tie-dye rouge et blanc, + pantalon tres evase en JEAN a empiecements rouges — face et dos, un seul mannequin",
+         indice="⛔ FICHE EN DOUTE, voir la note ci-dessus : les memes prix que h10 Robe de ville organza, et la photo envoyee le 25/08 EST le dos de h10. Ne rien poser ici sans reponse d'Hillary.",
          ds="Haut court noué devant, manches à trois volants étagés, et pantalon très évasé en jean à empiècements de bazin teint."),
 ]
 
@@ -319,15 +334,33 @@ def jsq(v):
     return "'" + v + "'" if ("'" not in v and "\\" not in v) else json.dumps(v, ensure_ascii=False)
 
 
+# ⚠️ ON NE FINIT PAS UNE LÉGENDE SUR UN MOT QUI EN APPELLE UN AUTRE.
+#    Couper sur un mot ne suffisait pas : « jupe longue très ample, en » et
+#    « … bordure et » restaient en suspens sous une photo en grand format, et
+#    ça se lit comme un texte tronqué par erreur, pas comme une phrase courte.
+#    Une préposition, un article ou une conjonction annoncent la suite : on les
+#    retire, et on recommence tant que le dernier mot en est un.
+MOTS_SUSPENDUS = {
+    "de", "du", "des", "le", "la", "les", "un", "une", "et", "ou", "à", "au",
+    "aux", "en", "dans", "sur", "sous", "avec", "pour", "par", "sans", "que",
+    "qui", "ce", "cet", "cette", "son", "sa", "ses", "leur", "leurs", "plus",
+    "très", "tout", "toute", "d'", "l'", "n'", "s'",
+}
+
+
 def court(t, n=56):
     """La légende du carrousel. On coupe sur un MOT, pas au milieu d'un :
-    « jupe longu » s'affiche en grand sous la pièce."""
+    « jupe longu » s'affiche en grand sous la pièce. Et on ne s'arrête pas sur
+    un mot qui en appelle un autre : voir `MOTS_SUSPENDUS`."""
     t = t.strip()
     if len(t) <= n:
         return t.rstrip(" .,;:")
     c = t[:n + 1]
     c = c[:c.rfind(" ")] if " " in c else c[:n]
-    return c.rstrip(" .,;:")
+    c = c.rstrip(" .,;:")
+    while " " in c and c.rsplit(" ", 1)[1].lower().rstrip(",;:") in MOTS_SUSPENDUS:
+        c = c.rsplit(" ", 1)[0].rstrip(" .,;:")
+    return c
 
 
 def teinte_deg(c):

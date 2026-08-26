@@ -1178,6 +1178,94 @@ async def main():
         await page.evaluate("()=>{panier=[];sauvePanier();rendrePanier();}")
         ok(not errs, "toucher et catalogue : aucune erreur JS"
            + ("" if not errs else " -> " + errs[0][:140]))
+
+        # ─────────────────────────────────────────────────────────────
+        # LE CLAVIER ET LES LECTEURS D'ECRAN DEVANT LA FICHE
+        # ⚠️ `role="dialog"` sur un <div> n'apporte QUE l'etiquette : pas de
+        #    couche superieure, pas de piege a focus, pas de mise a l'ecart du
+        #    fond. Mesure le 2026-08-25 : le focus restait sur <body>, UNE
+        #    tabulation en sortait, et rien n'etait `inert`. Cette fiche EST le
+        #    bon de commande — au clavier, on ne pouvait pas commander.
+        # ⚠️ LE BOUTON DU SON EST DANS LA BOUCLE, VOLONTAIREMENT : la maison
+        #    exige qu'on puisse couper le son en donnant ses mesures. Un
+        #    controle qui l'appellerait « fuite » se tromperait de coupable.
+        # ─────────────────────────────────────────────────────────────
+        await page.evaluate("()=>{const p=document.querySelector('.piece'); if(p) p.click();}")
+        await page.wait_for_timeout(1200)
+        e = await page.evaluate("""()=>{
+          const o=document.getElementById('ov'), a=document.activeElement;
+          return { ouverte: o.classList.contains('on'),
+                   dedans: o.contains(a),
+                   n: o.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select,textarea,[tabindex]:not([tabindex="-1"])').length,
+                   inerte: [...document.body.children].some(x =>
+                     x.id !== 'ov' && x.id !== 'pan' && x.id !== 'panOv'
+                     && !x.classList.contains('sonbt')
+                     && (x.inert || x.getAttribute('aria-hidden') === 'true')) };}""")
+        ok(e["ouverte"], "fiche : elle s'ouvre au clic sur une carte")
+        ok(e["dedans"], "fiche : le focus ENTRE dedans (sinon on tabule dans le catalogue cache)")
+        ok(e["inerte"], "fiche : le fond passe en `inert` (sinon un lecteur d'ecran lit les 20 cartes derriere)")
+
+        # un tour complet : rien ne doit sortir de la fiche NI du bouton du son
+        fuite = None
+        for i in range(e["n"] + 4):
+            await page.keyboard.press("Tab")
+            d = await page.evaluate("""()=>{const a=document.activeElement, o=document.getElementById('ov');
+              return o.contains(a) || (a.classList && a.classList.contains('sonbt'))
+                ? null : ((a.tagName||'') + '.' + ((a.className||'').split(' ')[0]));}""")
+            if d:
+                fuite = f"apres {i+1} tabulations, le focus part sur {d}"
+                break
+        ok(fuite is None, "fiche : le focus tourne en boucle dedans (bouton du son compris)"
+           + ("" if fuite is None else " -> " + fuite))
+
+        await page.keyboard.press("Escape")
+        await page.wait_for_timeout(700)
+        f = await page.evaluate("""()=>{
+          const o=document.getElementById('ov'), a=document.activeElement;
+          return { fermee: !o.classList.contains('on'),
+                   rendu: a && a.tagName !== 'BODY',
+                   /* ⚠️ `#pan` porte `aria-hidden="true"` PAR CONSTRUCTION quand le
+                      tiroir est ferme : le compter ici accusait le site d'un
+                      defaut qui n'existe pas. On exclut donc exactement ce que
+                      `fondInerte()` n'a jamais touche, et on NOMME le coupable
+                      s'il y en a un. */
+                   restes: [...document.body.children].filter(x =>
+                     x.id !== 'ov' && x.id !== 'pan' && x.id !== 'panOv'
+                     && !x.classList.contains('sonbt')
+                     && (x.inert || x.getAttribute('aria-hidden') === 'true'))
+                     .map(x => x.tagName + '.' + (x.className||'').split(' ')[0]) };}""")
+        ok(f["fermee"], "fiche : Echap la referme")
+        ok(f["rendu"], "fiche : le focus revient dans la page (sinon on repart du haut du site)")
+        ok(not f["restes"], "fiche : le fond redevient atteignable en refermant"
+           + ("" if not f["restes"] else " -> restent inertes : " + ", ".join(f["restes"])))
+
+        # ─────────────────────────────────────────────────────────────
+        # LE DEFILEMENT LISSE LAISSE PASSER LES AUTRES
+        # ⚠️ CE CONTROLE A BESOIN D'UN TEMOIN : sans lui il passerait aussi le
+        #    jour ou le moteur serait mort — une page qui ne glisse pas ne
+        #    ramene evidemment rien. Meme famille que le controle de pause du
+        #    2026-08-18. Le moteur n'existe que sur pointeur fin : ici, en
+        #    contexte PC, et nulle part ailleurs.
+        # ─────────────────────────────────────────────────────────────
+        await page.evaluate("()=>scrollTo(0,3000)")
+        await page.wait_for_timeout(900)
+        dep = await page.evaluate("()=>Math.round(scrollY)")
+        await page.mouse.move(700, 400)
+        await page.mouse.wheel(0, 3000)
+        await page.wait_for_timeout(120)
+        pend = await page.evaluate("()=>Math.round(scrollY)")
+        if pend - dep > 60:
+            ok(True, f"temoin : la page glisse bien ({dep} -> {pend} px)")
+            await page.evaluate("()=>scrollTo(0,200)")
+            await page.wait_for_timeout(900)
+            ap = await page.evaluate("()=>Math.round(scrollY)")
+            ok(ap < 500, f"un saut exterieur pendant le glissement tient ({ap} px)"
+               + ("" if ap < 500 else " -> recherche du navigateur et lecteur d'ecran annules"))
+        else:
+            ok(False, f"temoin muet : la page n'a pas glisse ({dep} -> {pend}), le controle ne prouve rien")
+        await page.evaluate("()=>scrollTo(0,0)")
+        await page.wait_for_timeout(500)
+
         await ctx.close()
 
         await br.close()
