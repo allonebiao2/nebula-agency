@@ -1380,3 +1380,39 @@ Quatre « défauts » d'affilée pendant un audit, tous dus à la sonde :
 - **Le signe qui ne trompe pas** : la suite de contrôle officielle passe au
   vert sur le même chemin. Quand elle et la sonde divergent, c'est presque
   toujours la sonde.
+
+## 2026-08-26 — `clearProps: "all"` VIDE l'attribut `style`
+
+- **Ce que tout le monde croit** : il retire ce que GSAP a posé.
+  **Ce qu'il fait** : il vide l'attribut `style` de l'élément, y compris ce
+  que le composant y avait écrit lui-même.
+- **Ce que ça a coûté, sur Au Braisé d'Or** : le bouton « Ajouter au panier »
+  du héros portait sa couleur en style en ligne. Après l'animation :
+  `background-color: rgba(0,0,0,0)`, texte crème, sur une carte de verre
+  claire. **1,1:1 mesuré, invisible.** ⚠️ Et le défaut était **antérieur** :
+  l'ancien bouton vert « Commander sur WhatsApp » avait le même sort, **en
+  ligne**, depuis le 12/08. C'est la **deuxième fois** que GSAP fait
+  disparaître le seul bouton qui rapporte de l'argent sur cette carte.
+- Deuxième dégât le même jour : le corps du titre, calculé par plat (donc en
+  ligne), était effacé — la **deuxième ligne**, la très grasse, la signature du
+  héros, ressortait **plus petite que la première**.
+- **La règle** : `clearProps: "opacity,visibility,transform"`, jamais
+  `"all"`. Et ce qui est fixe et décoratif (une couleur de bouton) va dans
+  une **classe**, qu'aucun `clearProps` ne peut atteindre.
+- ⚠️ **Aucun des deux ne fait d'erreur en console, et les deux passaient un QC
+  vert à 90 contrôles.** Ils ont été vus **sur des captures**, en regardant les
+  quatorze sauces une par une. *Une vitrine n'est pas finie quand elle marche.*
+
+## 2026-08-26 — Un instrument qui mesure une animation accuse un site sain
+
+Trois contrôles ont accusé un site parfaitement juste, le même jour :
+
+| Ce que le contrôle disait | Ce que c'était |
+|---|---|
+| « KRINKRIN dépasse de 36 px » | il lisait le `x` d'un `fromTo({x:50})` en cours. ⚠️ **GSAP ignore `prefers-reduced-motion`**, seul votre code le lit → `scrollWidth - clientWidth`, insensible aux transformations |
+| « l'ardoise déborde de 170 px » | il comparait à la boîte **commune**, alors que les 14 assiettes sont **déplacées** par GSAP : il avait attrapé la voisine, garée hors champ → comparer l'enfant à **son propre conteneur**, qui subit la même transformation |
+| « la pile de points est visible » | `display: none` laisse les éléments dans le DOM → tester aussi que la boîte a une taille |
+
+- **La règle** : mesurer une **mise en page**, jamais un instant d'animation.
+  Et quand plusieurs copies d'un élément coexistent, viser **la relation** (un
+  enfant contre son parent), pas une position absolue.
