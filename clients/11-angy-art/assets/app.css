@@ -29,7 +29,7 @@
   --e:cubic-bezier(.25,.46,.45,.94);
   --e-x:cubic-bezier(.19,1,.22,1);
 
-  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* --grain a ete retire avec le calque plein ecran du 2026-08-26 : plus personne ne l'utilise. Voir la note plus bas. */
   --lin:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='t'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.6' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23t)' opacity='.6'/%3E%3C/svg%3E");
 
   --z-scene:0; --z-corps:1; --z-son:40; --z-nav:50; --z-cur:70; --z-mod:90;
@@ -55,9 +55,32 @@ em{font-style:italic}
 ::selection{background:var(--or);color:var(--noir)}
 :focus-visible{outline:1.5px solid var(--or);outline-offset:4px}
 
-/* le grain, partout, très bas */
-body::after{content:'';position:fixed;inset:-30%;z-index:35;pointer-events:none;
-  background-image:var(--grain);opacity:.05;mix-blend-mode:overlay}
+/* ⛔ LE GRAIN PLEIN ÉCRAN A ÉTÉ RETIRÉ LE 2026-08-26. NE PAS LE REMETTRE.
+   C'était : position:fixed; inset:-30%; background-image:var(--grain);
+             opacity:.05; mix-blend-mode:overlay.
+
+   Ce qu'il coûtait, mesuré (`_attribuer.py`, processeur ralenti ×6, 1440 px) :
+   la page passait de 50 ms par image à 33 ms rien qu'en le retirant, et dans
+   une mesure à ×6 plus chargée, de 66,7 ms à 16,8 ms — **un tiers à trois
+   quarts du budget d'une image**, sur toute la page, tout le temps.
+
+   Ce qu'il apportait, mesuré aussi (`_grain_visuel.py`) : **0,90/255 d'écart
+   moyen** sur le héros, **0,46/255** en milieu de page. Deux morceaux
+   agrandis trois fois et posés côte à côte sont indiscernables.
+
+   ⚠️ CE N'EST PAS L'IMAGE DE BRUIT QUI COÛTE, C'EST LE MÉLANGE. Retirer
+   `background-image` ne change rien ; passer `mix-blend-mode` à `normal`
+   rapporte autant que supprimer le calque. Un calque `fixed` qui couvre la
+   fenêtre et qui se MÉLANGE oblige le navigateur à recomposer tout l'écran à
+   chaque image, au lieu de faire glisser un calque déjà peint.
+
+   ⚠️ ET AUCUN REMÈDE DE COMPOSITING NE LE SAUVE : `will-change:opacity`,
+   `transform:translateZ(0)`, `contain:strict` et `isolation:isolate` ont été
+   essayés, trois mesures chacun. Tous à 50 ms, comme sans remède.
+
+   La matière n'est pas perdue : elle vit toujours dans `--lin`, posé sur les
+   photos de scène (`.scene--lin::before` et ses voisines), en `absolute`
+   dans leur section — donc peint seulement quand la section est à l'écran. */
 
 /* ==================================================================
    LE RIDEAU D'OUVERTURE
@@ -133,7 +156,16 @@ html:not(.js) .sec::before,html:not(.js) .cit::before{display:none}
   display:flex;align-items:center;gap:24px;
   padding:clamp(16px,2.1vw,24px) var(--pad);
   transition:background-color .5s var(--e),box-shadow .5s var(--e)}
-.nav.pose{background:rgba(10,10,10,.92);
+/* ⚠️ VRAIMENT OPAQUE, PAS 92 %. Une bande de bord a le droit de recouvrir du
+   texte — c'est la seule chose qui l'ait — mais à condition qu'on ne voie
+   rien au travers. À `.92`, la phrase qui passait dessous restait lisible en
+   filigrane derrière le menu : vu sur une capture du pied de page le
+   2026-08-26. Huit pour cent de transparence ne font pas un effet de verre
+   (il n'y a pas de `backdrop-filter` ici), ils font un fantôme.
+   La règle vient de Mon Bénin, et elle se vérifie EN PHOTOGRAPHIANT :
+   `_audit.py` compare la bande à deux hauteurs de défilement différentes ;
+   si elle est opaque, les deux images sont identiques. */
+.nav.pose{background:var(--noir);
   box-shadow:inset 0 -1px 0 rgba(255,255,255,.09)}
 .nav-logo{font-family:var(--ff-d);font-size:19px;letter-spacing:.01em;
   display:inline-flex;align-items:center;gap:11px;min-height:44px;flex:0 0 auto}
@@ -585,8 +617,12 @@ html:not(.js) .tp-n::after{transform:scaleX(1)}
   transition:color .3s var(--e)}
 .pied-c a:hover{color:var(--or)}
 .pied-r{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:flex-end}
-.pied-r a,.pied-r button{font-size:13px;color:var(--tx-n);min-height:44px;
-  display:inline-flex;align-items:center;transition:color .3s var(--e)}
+/* ⚠️ LA HAUTEUR ÉTAIT DÉJÀ RÉSERVÉE, LA LARGEUR NON. « TikTok » mesurait
+   39 × 44 : quatre pixels de trop peu, sur le seul lien qui porte un mot
+   court. Une cible se mesure dans les DEUX sens. */
+.pied-r a,.pied-r button{font-size:13px;color:var(--tx-n);min-height:44px;min-width:44px;
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:color .3s var(--e)}
 .pied-r a:hover,.pied-r button:hover{color:var(--or)}
 .pied-b{max-width:var(--max);margin:clamp(30px,4vw,48px) auto 0;
   padding-top:22px;border-top:1px solid rgba(255,255,255,.09);
@@ -934,8 +970,8 @@ html:not(.js) .cars,html:not(.js) .cur{display:none}
   .plein{min-height:auto;padding-top:clamp(90px,14vh,120px)}
   .plein-b{gap:22px}
   .pied-b{flex-direction:column;gap:10px}
-  /* on fige ce qui coûte : la texture reste, le repaint disparaît */
-  body::after{animation:none;opacity:.045}
+  /* le grain plein écran n'existe plus (voir la note en tête de fichier) :
+     il n'y a plus rien à figer ici */
   .rai{opacity:.7}
 }
 

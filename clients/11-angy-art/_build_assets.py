@@ -6,11 +6,12 @@ ANGY ART — génération des assets. Ré-exécutable, idempotent.
     python _build_assets.py
 
 Part du VRAI logo d'Angélique (`_sources/logo-transparent.png`) et en tire :
-  · assets/images/logos/marque.png       le glyphe seul, détouré (nav, affiche)
+  · assets/images/logos/marque.png       le glyphe seul, détouré (SOURCE : affiche, OG, favicons)
+  · assets/images/logos/marque.webp      284x220, 9,7 Ko : celle que les PAGES affichent
   · assets/images/logos/logo-complet.png le logo entier, détouré
   · assets/images/favicon.png            32 px, glyphe sur noir
   · assets/images/favicon-180.png        apple-touch
-  · assets/images/og/og.png              1200x630, partage social
+  · assets/images/og/og.jpg              1200x630, partage social (JPEG : voir faire_og)
   · assets/images/qr/qr-whatsapp.png     la conversation, pré-remplie
   · assets/images/qr/qr-site.png         le site
 
@@ -98,6 +99,23 @@ def faire_logos():
     marque.save(os.path.join(IMG, "logos", "marque.png"))
     print(f"  logos/marque.png        {marque.width}x{marque.height}  (le glyphe seul)")
 
+    # ⚠️ DEUX FICHIERS POUR DEUX MÉTIERS, ET C'EST VOULU.
+    #    `marque.png` reste la SOURCE : l'affiche A4 l'imprime, la vignette de
+    #    partage et les favicons se composent à partir d'elle. Elle a besoin de
+    #    sa résolution.
+    #    Mais les pages, elles, ne l'affichent JAMAIS à plus de **57 × 44 px**
+    #    (mesuré : rideau 57×44, barre 34×26, pied 44×34) — et elles
+    #    téléchargeaient 199 Ko pour ça, en deuxième position juste derrière le
+    #    héros, à 2 298 ms sur une 3G. Deux mille trois cents fois plus de
+    #    données que de pixels.
+    #    `marque.webp` fait 284 × 220 : large même sur un écran à 4× la densité,
+    #    et **9,7 Ko**. C'est elle que les pages demandent.
+    web = marque.resize((284, 220), Image.LANCZOS)
+    web.save(os.path.join(IMG, "logos", "marque.webp"), "WEBP",
+             quality=90, alpha_quality=100, method=6, exact=True)
+    print("  logos/marque.webp       284x220  %.1f Ko  (celle des pages)"
+          % (os.path.getsize(os.path.join(IMG, "logos", "marque.webp")) / 1024))
+
     complet = im.crop(im.getchannel("A").getbbox())
     complet.save(os.path.join(IMG, "logos", "logo-complet.png"))
     print(f"  logos/logo-complet.png  {complet.width}x{complet.height}")
@@ -173,8 +191,18 @@ def faire_og(marque):
     d.text((mg, 512 * S), "ARTISTE PLASTICIENNE · COTONOU, BÉNIN",
            font=SANS(18 * S), fill=(166, 162, 154))
 
-    im.resize((L, H), Image.LANCZOS).save(os.path.join(IMG, "og", "og.png"))
-    print("  og/og.png  1200x630")
+    # ⚠️ EN JPEG, ET C'EST UNE RÈGLE DE LA MAISON. Cette vignette est la
+    #    première impression quand le lien circule sur WhatsApp au Bénin, et
+    #    c'est le défaut le plus cher parce qu'il est INVISIBLE depuis le site.
+    #    Elle était en PNG : **566 Ko** pour une carte de texte et une photo.
+    #    En JPEG à 84, la même image pèse **96 Ko** — 83 % de moins, sans
+    #    différence visible, et sans le risque qu'un lecteur de lien abandonne
+    #    un téléchargement trop long.
+    fin = im.resize((L, H), Image.LANCZOS).convert("RGB")
+    fin.save(os.path.join(IMG, "og", "og.jpg"), "JPEG",
+             quality=84, optimize=True, progressive=True, subsampling=1)
+    print("  og/og.jpg  1200x630  %.0f Ko"
+          % (os.path.getsize(os.path.join(IMG, "og", "og.jpg")) / 1024))
 
 
 def faire_qr(donnee, nom, libelle):

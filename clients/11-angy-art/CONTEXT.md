@@ -18,6 +18,56 @@ Commande reçue le **2026-08-05** via le formulaire nebula-agency.online.
 | Options | boutons WhatsApp · galerie photos · musique d'ambiance · section avis |
 | En ligne | https://angy-art.pages.dev (Cloudflare Pages, projet `angy-art`) |
 
+## 0. ⚡ LA FLUIDITÉ (2026-08-26) — lire avant de toucher au CSS
+
+*Détail complet : `_memoire/conversations/2026-08-26-angy-art-fluidite.md`.*
+
+Le site était **vert à 150 contrôles** et tournait à **quinze images par
+seconde** sur un processeur ralenti ×6, avec une tâche de **1 557 ms** pendant
+laquelle la page ne répondait plus. Un QC vert dit que rien n'est cassé ; il ne
+dit pas que ça glisse.
+
+**Après :** 60 images/s, **0 à 1 tâche longue**, et sur téléphone un
+95e centile à **16,8 ms**.
+
+### ⛔ NE PAS REMETTRE LE GRAIN PLEIN ÉCRAN
+`body::after` en `position:fixed` + `mix-blend-mode:overlay` coûtait **un tiers
+à trois quarts du budget d'une image**, sur toute la page, tout le temps — et
+valait **0,90/255** à l'œil (deux morceaux agrandis 3× sont indiscernables).
+⚠️ **Ce n'est pas l'image de bruit qui coûte, c'est le mélange** : retirer
+`background-image` ne change rien, passer à `mix-blend-mode:normal` rapporte
+autant que tout supprimer. ⚠️ **Aucun remède de compositing ne le sauve**
+(`will-change`, `translateZ(0)`, `contain:strict`, `isolation` : quatre
+essais, trois mesures chacun, tous inchangés). La matière vit toujours dans
+`--lin`, posé sur les photos de scène, en `absolute` dans leur section.
+
+### Les trois autres corrections
+- **On lit tout, PUIS on écrit tout** dans les deux balayages du défilement.
+  `classList.add()` au milieu d'une boucle de `getBoundingClientRect()` force
+  un recalcul de mise en page **par élément** : jusqu'à cent dans une seule
+  image, au moment précis où le visiteur commence à défiler.
+- **`marque.png` : 199 Ko pour un rendu de 57 × 44 px**, demandé en deuxième
+  position à 2 298 ms sur une 3G. → **`marque.webp`, 9,7 Ko**, pour les pages.
+  ⚠️ `marque.png` **reste** : l'affiche A4, l'OG et les favicons s'en servent.
+- **La barre du haut était à 92 %** et on lisait le texte au travers. Une bande
+  de bord a le droit de recouvrir, **si elle est vraiment opaque**.
+
+### Les instruments, gardés dans le dossier
+| | |
+|---|---|
+| `_fluidite.py` | la page se chronomètre elle-même, processeur ralenti |
+| `_attribuer.py` | éteint un mécanisme à la fois pour lui attribuer son coût |
+| `_audit.py` | **22 contrôles** sur ce que `_qc.py` ne regarde pas |
+
+⚠️ **Cinq de mes propres sondes ont menti avant de dire vrai** : mesurer le
+poids sur `localhost` (le seuil de `loading="lazy"` grandit avec la vitesse de
+la connexion — j'ai failli réécrire le carrousel pour un défaut inexistant),
+`*{mix-blend-mode}` qui n'atteint pas les pseudo-éléments, un bouton de modale
+mal visé qui rendait deux contrôles vides, la règle des 44 px appliquée à un
+lien dans une phrase, et une barre jugée translucide alors que c'était la
+police qui finissait de charger. **Avant d'annoncer un défaut : « et si c'était
+ma mesure ? »**
+
 ## 1. Ce qu'elle fait, dans ses mots
 
 Œuvres contemporaines qui célèbrent l'identité, la mémoire et le patrimoine africain.
@@ -241,10 +291,16 @@ activité : équiper un hôtel, un restaurant, un hall.
 
 ### c. La carte de partage
 
-`assets/images/og/og.png` porte désormais **une vraie photo d'atelier** sur sa moitié
+`assets/images/og/og.jpg` porte désormais **une vraie photo d'atelier** sur sa moitié
 droite, fondue vers le noir pour que le texte de gauche reste lisible. C'est cette
 vignette que voient les gens quand le lien circule sur WhatsApp, et c'est là que se joue
 la première impression au Bénin. `python _build_assets.py --og` la refait seule.
+
+⚠️ **EN JPEG DEPUIS LE 2026-08-26, ET C'EST UNE RÈGLE DE LA MAISON.** Elle était en
+PNG : **566 Ko** pour une carte de texte et une photo. En JPEG à 84, la même image pèse
+**96 Ko** — 83 % de moins, sans différence visible, et sans le risque qu'un lecteur de
+lien abandonne un téléchargement trop long. C'est le défaut le plus cher d'un site,
+parce qu'il est **invisible depuis le site**.
 
 ## 7. Journal
 

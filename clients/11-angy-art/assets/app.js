@@ -31,7 +31,7 @@
      Mongazi voyait encore l'ancienne image générée alors que le serveur
      envoyait déjà la vraie photo (MD5 identique au fichier du disque). Ce
      n'était ni le déploiement ni Cloudflare : c'était son propre navigateur. */
-  var VER = '?v=20260822a';
+  var VER = '?v=20260826a';
 
   var SITUATIONS = [
     { f: "situ-1.webp", ar: "798/1004", t: "Deux visages, terre et blanc",
@@ -134,11 +134,22 @@
     function balayer() {
       attente = false;
       var seuil = innerHeight * 0.92;
+      /* ⚠️ ON LIT TOUT, PUIS ON ÉCRIT TOUT. Avant, `classList.add('vu')`
+         tombait au MILIEU de la boucle de lecture : chaque classe posée
+         invalide la mise en page, et le `getBoundingClientRect()` suivant
+         oblige le navigateur à la recalculer AVANT de répondre. Au premier
+         écran il reste une centaine d'éléments à balayer : cela faisait
+         jusqu'à cent recalculs complets dans une seule image, exactement au
+         moment où le visiteur commence à défiler. Séparer les deux passes ne
+         change rien à ce qui est révélé, seulement au nombre de recalculs :
+         un seul. */
+      var aVoir = [];
       restants = restants.filter(function (el) {
         if (el.getBoundingClientRect().top >= seuil) return true;
-        el.classList.add('vu');
+        aVoir.push(el);
         return false;
       });
+      for (var i = 0; i < aVoir.length; i++) aVoir[i].classList.add('vu');
       if (!restants.length) {
         removeEventListener('scroll', pousser);
         removeEventListener('resize', pousser);
@@ -167,11 +178,14 @@
     function balayer() {
       attente = false;
       var seuil = innerHeight * 0.86;
+      /* même règle qu'au-dessus : on lit tout, puis on écrit tout */
+      var aLever = [];
       restants = restants.filter(function (s) {
         if (s.getBoundingClientRect().top >= seuil) return true;
-        s.classList.add('leve');
+        aLever.push(s);
         return false;
       });
+      for (var i = 0; i < aLever.length; i++) aLever[i].classList.add('leve');
       if (!restants.length) {
         removeEventListener('scroll', pousser);
         removeEventListener('resize', pousser);
