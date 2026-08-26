@@ -29,6 +29,50 @@ def git(*a, silencieux=False):
 SENSIBLE = re.compile(
     r"(vente/|CONTRAT|SOCLE|server\.py|_worker\.js|secrets/|CLAUDE\.md)", re.I)
 
+# ─────────────────────────────────────────────────────────────────────────────
+# LES BRANCHES DÉJÀ JUGÉES, ET POURQUOI.
+#
+# ⚠️ POURQUOI CETTE LISTE EXISTE. Sans elle, ce script rappelle les mêmes
+# branches à chaque session, et chaque session refait l'enquête depuis zéro :
+# ouvrir le diff, comprendre ce que ça ajoute, décider. Une décision qu'on ne
+# note pas est une décision qu'on reprend.
+#
+# ⛔ ET SURTOUT : `--fusionner` sans `--branche` fusionnait TOUT ce qui passe
+# sans conflit. Trois de ces branches passent sans conflit et ne doivent
+# pourtant jamais rentrer — dont une qui rapatrierait `fly.toml` et
+# `railway.json`, la configuration abandonnée. « Sans conflit » ne veut pas
+# dire « inoffensif ».
+#
+# Écarté n'est pas supprimé : les branches restent sur GitHub, et
+# `--branche <nom>` force la fusion de celle qu'on nomme, en connaissance de
+# cause. Pour retirer une branche d'ici, il faut avoir réglé sa raison.
+# ─────────────────────────────────────────────────────────────────────────────
+ECARTEES = {
+    "claude/github-repo-context-nisd2r":
+        "PÉRIMÉE : supprimerait 30 790 lignes de `main`, tout PISTE compris",
+    "claude/nebula-recruitment-video-jis1c1":
+        "le nom ment : elle n'ajoute pas de vidéo mais `fly.toml` et "
+        "`railway.json`, la configuration abandonnée",
+    "claude/commission-structure-pdf-6z8lof":
+        "PDF et PPTX de commissions au barème d'AVANT la grille unique du "
+        "2026-08-02 : un partenaire finirait par le recevoir",
+    "claude/nebula-agency-redesign-bpVr2":
+        "la refonte de mai, antérieure au site en ligne ; elle réécrit "
+        "`nebula_agency_v5_FINAL` et renommerait le site en v7",
+    "claude/latest-repo-update-mlju2l":
+        "modifie `cercle/src/` et ajoute un plan de semaine de juin périmé",
+    # celles-ci sont en conflit ET portent du commercial d'avant la grille
+    "claude/nebula-agency-pricing-grid-4wnr2z":
+        "affiche des forfaits d'avant la grille unique du 2026-08-02",
+    "claude/nebula-quote-generator-kmr4i6":
+        "générateur de devis d'avant la grille unique du 2026-08-02",
+}
+
+
+def ecartee(nom):
+    """`nom` arrive en `origin/claude/…` : on juge sur la partie stable."""
+    return ECARTEES.get(nom[7:] if nom.startswith("origin/") else nom)
+
 
 def branches_en_retard():
     git("fetch", "origin", "--prune", silencieux=True)
@@ -90,9 +134,15 @@ def main():
     print(f"\n  {len(liste)} branche(s) ne sont pas dans `main` :\n")
     for b in liste:
         ok, etat = fusion_propre(b["nom"])
-        marque = "✅" if ok else "⚠️ "
+        jugee = ecartee(b["nom"])
+        marque = "⛔" if jugee else ("✅" if ok else "⚠️ ")
         print(f"  {marque} {b['nom'][7:]:<48} {b['date']}  "
               f"{len(b['commits'])} commit(s)  {len(b['fichiers'])} fichier(s)  [{etat}]")
+        if jugee:
+            # la décision est écrite : personne ne refait l'enquête
+            print(f"        ⛔ écartée : {jugee}")
+            print()
+            continue
         for c in b["commits"][:3]:
             print(f"        {c}")
         if len(b["commits"]) > 3:
@@ -109,6 +159,13 @@ def main():
 
     faits, refuses = [], []
     for b in liste:
+        # ⛔ UNE BRANCHE ÉCARTÉE NE RENTRE PAS PAR UN `--fusionner` GLOBAL.
+        #    Il faut la nommer avec `--branche`, ce qui est un geste conscient.
+        jugee = ecartee(b["nom"])
+        if jugee and not args.branche:
+            refuses.append((b["nom"], "écartée : " + jugee))
+            print(f"  ⛔ écartée : {b['nom'][7:]}")
+            continue
         ok, etat = fusion_propre(b["nom"])
         if not ok:
             refuses.append((b["nom"], etat)); continue
