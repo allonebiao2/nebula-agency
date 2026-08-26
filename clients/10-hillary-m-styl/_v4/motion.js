@@ -413,7 +413,7 @@
              elle effacerait le chiffre de celle qui l'a doublée. */
           if (num.lastElementChild !== neuf) return;
           $$('span', num).forEach(function (s) { if (s !== neuf) num.removeChild(s); });
-        }, 1050);
+        }, 780);
       };
     }
 
@@ -438,8 +438,17 @@
       if (cpt) cpt.textContent = d2(i + 1) + ' — ' + d2(n);
     }
 
+    /* ⚠️ UN CLIC PENDANT LE GLISSEMENT ÉTAIT JETÉ SANS UN MOT. `occupe`
+       tenait un tour complet : qui appuyait deux fois de suite ne voyait
+       avancer qu'une pièce, et le carrousel passait pour bloqué. On ne peut
+       pas lever le verrou — deux `aller()` qui se croisent empilent les
+       classes, c'est ce qui donnait « 0302 » le 2026-08-06 — alors on RETIENT
+       le dernier geste et on le joue à l'arrivée. Un seul en attente : au
+       delà, le visiteur ne suit plus ce qu'il a demandé. */
+    var enAttente = null;
     function aller(i, sens) {
-      if (occupe || n < 2) return;
+      if (n < 2) return;
+      if (occupe) { enAttente = sens > 0 ? 1 : -1; return; }
       i = (i + n) % n;
       if (i === actif) return;
       occupe = true;
@@ -467,7 +476,9 @@
         sl.forEach(function (s) { if (s !== entre) s.classList.remove('act', 'sort', 'entre'); });
         sc.classList.remove('bouge');
         actif = i; occupe = false;
-      }, 1050);   /* doit couvrir la transition CSS (1 s) */
+        /* le geste retenu part maintenant, dans le sens qu'on avait demandé */
+        if (enAttente) { var d = enAttente; enAttente = null; aller(actif + d, d); }
+      }, 780);   /* doit couvrir la transition CSS (.72 s) */
     }
 
     var prev = $('#hPrev'), next = $('#hNext');
@@ -492,7 +503,7 @@
       minuteur = setInterval(function () {
         if (document.hidden) return;
         aller(actif + 1, 1);
-      }, 5000);
+      }, 4200);
     }
     sc.addEventListener('pointerenter', function () { clearInterval(minuteur); });
     sc.addEventListener('pointerleave', relancer);
@@ -589,7 +600,10 @@
     function relancerC() {
       clearTimeout(autoC); autoC = null;
       if (doux || n < 2 || !vuC || surC) return;
-      var d = (data[actif] && data[actif].f2) ? 7400 : 5500;
+      /* ⚠️ 3 600 ms sont dus à la face avant que la carte se retourne : une
+         pièce à deux vues garde donc un tour plus long, sinon son dos
+         n'aurait pas le temps d'être vu. */
+      var d = (data[actif] && data[actif].f2) ? 6800 : 4400;
       autoC = setTimeout(function () {
         if (document.hidden) { relancerC(); return; }
         aller(actif + 1);
