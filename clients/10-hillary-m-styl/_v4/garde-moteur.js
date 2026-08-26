@@ -729,6 +729,100 @@ function mesuresConnues(type){
   return out;
 }
 
+/* ================================================================
+   LE CLAVIER ET LES LECTEURS D'ÉCRAN, DEVANT UN ÉCRAN OUVERT
+   ================================================================
+   ⚠️ `role="dialog" aria-modal="true"` SUR UN <div> N'APPORTE QUE
+   L'ÉTIQUETTE. Contrairement à un vrai <dialog>, le navigateur ne pose
+   ni couche supérieure, ni piège à focus, ni mise à l'écart du reste de
+   la page. Mesuré le 2026-08-25, fiche ouverte :
+     · le focus restait sur <body> — on ouvrait une pièce et on ne
+       tabulait pas dedans ;
+     · UNE SEULE tabulation en sortait, et on se promenait dans le
+       catalogue caché derrière ;
+     · rien n'était `inert` : un lecteur d'écran lisait les vingt cartes
+       du fond par-dessus la commande.
+   Cette fiche EST le bon de commande. Quelqu'un au clavier ou au lecteur
+   d'écran ne pouvait pas commander.
+
+   ⚠️ `preventScroll:true` n'est pas un détail : donner le focus fait
+   défiler la page jusqu'à l'élément, et le moteur de défilement maison
+   se serait battu avec.
+   ⚠️ LE BOUTON DU SON RESTE DANS LA BOUCLE. La maison exige qu'on puisse
+   couper le son en donnant ses mesures : il est sorti de la barre par
+   `parDessus()` et il entre dans le cycle des tabulations, en dernier. */
+var ATTRAPABLES = 'a[href],button:not([disabled]),input:not([disabled]),' +
+                  'select:not([disabled]),textarea:not([disabled]),' +
+                  '[tabindex]:not([tabindex="-1"])';
+var _inertes = [], _avantEcran = null;
+
+function ecranCourant(){
+  var o = document.getElementById("ov");
+  if(o && o.classList.contains("on")) return o;
+  var p = document.getElementById("pan");
+  if(p && p.classList.contains("on")) return p;
+  return null;
+}
+function focusables(ec){
+  var l = [].slice.call(ec.querySelectorAll(ATTRAPABLES)).filter(function(e){
+    return e.offsetWidth || e.offsetHeight || e === document.activeElement;
+  });
+  var son = document.querySelector(".sonbt");
+  if(son && !ec.contains(son) && (son.offsetWidth || son.offsetHeight)) l.push(son);
+  return l;
+}
+function fondInerte(on){
+  _inertes.forEach(function(e){
+    try{ e.inert = false; }catch(err){}
+    e.removeAttribute("aria-hidden");
+  });
+  _inertes = [];
+  if(!on) return;
+  var ec = ecranCourant();
+  [].forEach.call(document.body.children, function(e){
+    if(e === ec) return;
+    if(e.id === "ov" || e.id === "pan" || e.id === "panOv") return;
+    if(e.classList && e.classList.contains("sonbt")) return;
+    if(e.contains(ec)) return;                 /* jamais un ancêtre de l'écran */
+    try{ e.inert = true; }catch(err){}
+    e.setAttribute("aria-hidden", "true");     /* pour qui ne connaît pas `inert` */
+    _inertes.push(e);
+  });
+}
+function ouvrirEcran(){
+  if(!_avantEcran) _avantEcran = document.activeElement;
+  fondInerte(true);
+  var ec = ecranCourant();
+  if(!ec) return;
+  var f = ec.querySelector("[autofocus]") || focusables(ec)[0];
+  if(f){ try{ f.focus({ preventScroll: true }); }catch(e){ f.focus(); } }
+}
+function fermerEcran(){
+  fondInerte(false);
+  /* on rend le focus à ce qui l'avait : sans ça il retombe sur <body> et,
+     au clavier, on repart du haut du site à chaque fiche refermée. */
+  var r = _avantEcran; _avantEcran = null;
+  if(r && document.body.contains(r) && (r.offsetWidth || r.offsetHeight)){
+    try{ r.focus({ preventScroll: true }); }catch(e){ r.focus(); }
+  }
+}
+document.addEventListener("keydown", function(e){
+  if(e.key !== "Tab") return;
+  var ec = ecranCourant();
+  if(!ec) return;
+  var f = focusables(ec);
+  if(!f.length) return;
+  var prem = f[0], der = f[f.length - 1];
+  if(!ec.contains(document.activeElement) && document.activeElement !== der){
+    e.preventDefault(); prem.focus({ preventScroll: true }); return;
+  }
+  if(e.shiftKey && document.activeElement === prem){
+    e.preventDefault(); der.focus({ preventScroll: true });
+  }else if(!e.shiftKey && document.activeElement === der){
+    e.preventDefault(); prem.focus({ preventScroll: true });
+  }
+});
+
 function montrerModale(){
   /* le tiroir et la fiche ne se superposent jamais : le tiroir est au-dessus
      dans l'ordre d'empilement, il masquerait la fiche */
@@ -736,6 +830,7 @@ function montrerModale(){
   document.getElementById("ov").classList.add("on");
   document.body.style.overflow = "hidden";
   parDessus(true);
+  ouvrirEcran();
 }
 /* ⚠️ Le bouton du son est en `position:fixed`, en bas à gauche. Il se posait
    sur « Retour » dans la fiche et sur « Vider le panier » dans le tiroir : un
@@ -765,6 +860,7 @@ function fermer(){
   document.body.style.overflow = "";
   etat = null; cmd.actif = false;
   parDessus(false);
+  fermerEcran();
 }
 
 document.getElementById("grille").addEventListener("click", function(e){
@@ -1221,6 +1317,7 @@ function ouvrirPanier(){
   document.getElementById("pan").setAttribute("aria-hidden","false");
   document.body.style.overflow = "hidden";
   parDessus(true);
+  ouvrirEcran();
 }
 function fermerPanier(){
   var p = document.getElementById("pan");
@@ -1231,6 +1328,10 @@ function fermerPanier(){
   if(!document.getElementById("ov").classList.contains("on")){
     document.body.style.overflow = "";
     parDessus(false);
+    /* ⚠️ seulement quand plus RIEN n'est ouvert : `montrerModale()` referme le
+       tiroir avant d'ouvrir la fiche, et rendre la page au clavier entre les
+       deux ferait clignoter le focus. */
+    fermerEcran();
   }
 }
 function majPastille(){

@@ -219,8 +219,24 @@
         cible = borne(cible + e.deltaY * (e.deltaMode === 1 ? 18 : 1));
         lancer();
       }, { passive: false });
+      /* ⚠️ UNE FORCE EXTÉRIEURE PEUT DÉPLACER LA PAGE PENDANT QUE LE MOTEUR
+         GLISSE : la recherche du navigateur, un lecteur d'écran, la touche
+         Fin, le passage au clavier sur un bouton hors écran. Tant que `cible`
+         n'était relue QUE `if (!anime)`, la boucle en cours ramenait la page à
+         SON idée du bon endroit et le saut était annulé sans un mot.
+         Même défaut, mot pour mot, que celui trouvé sur Angy Art le
+         2026-08-21, et déjà rencontré sur Au Braisé d'Or où Lenis arrêtait un
+         `scrollIntoView` à 7 382 px de sa cible.
+         ⚠️ On ne peut pas adopter tout écart : une image qui se charge laisse
+         la page sur le CHEMIN du moteur, et l'adopter arrêterait le
+         glissement net au milieu — une régression bien plus visible que le
+         défaut réparé. Alors on regarde OÙ : entre `courant` et `cible` c'est
+         nous, ailleurs c'est quelqu'un d'autre, et c'est lui qui a raison. */
       addEventListener('scroll', function () {
-        if (!anime) { cible = scrollY; courant = scrollY; }
+        var y = scrollY;
+        if (!anime) { cible = y; courant = y; return; }
+        var bas = Math.min(courant, cible) - 12, haut = Math.max(courant, cible) + 12;
+        if (y < bas || y > haut) { cible = borne(y); courant = y; }
       }, { passive: true });
       addEventListener('resize', function () { cible = borne(cible); }, { passive: true });
     })();
