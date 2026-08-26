@@ -712,8 +712,12 @@
       ]},
     {id:'dessert',label:'Desserts',tag:'Pour finir',icon:FIRE,
       items:[
-        {n:'Yaourt',p:0},
-        {n:'Glace',p:0}
+        {n:'Yaourt',p:600},
+        /* ⚠️ TROIS PALIERS, PAS DEUX TAILLES. La glace se vend à la boule :
+           1 000 / 1 500 / 2 500 F (donnés par la maison le 2026-08-26).
+           `p2` n'en porte que deux, et laisser un palier de côté, c'est
+           encaisser moins cher que ce qui sort de la cuisine. */
+        {n:'Glace',d:'Une, deux ou trois boules.',p:1000,paliers:[['1 boule',1000],['2 boules',1500],['3 boules',2500]]}
       ]}
   ];
 
@@ -748,6 +752,10 @@
     /* Petit-déj */
     'plateau mignon joq':'pd-mignon', 'plateau complet':'pd-complet', 'cappuccino':'pd-cappuccino',
     'omelette aux légumes':'pd-omelette-legumes', 'omelette nature':'pd-omelette-nature', 'café au lait':'pd-cafe-lait',
+    'œuf sur plat':'pd-oeuf-plat', 'café au lait écrémé':'pd-cafe-lait-ecreme',
+    'café chaud serré':'pd-cafe-serre', 'lipton citron':'pd-lipton-citron',
+    /* Desserts */
+    'yaourt':'d-yaourt', 'glace':'d-glace',
     /* Cocktails */
     'joq viagra':'cocktail', 'mojito':'k-mojito', 'piña colada':'k-pina',
     'babariba':'k-babariba', 'paparazi':'k-paparazi', 'cocktail de fruit naturel':'k-fruit-naturel'
@@ -757,6 +765,9 @@
   function priceChip(it){
     var h='<span class="dish__chip">'+fmt(it.p)+'<small>F</small>';
     if(it.p2) h+=' <span class="p2">/ '+fmt(it.p2)+'F</span>';
+    /* Un barème à N paliers ne tient pas dans une pastille : on annonce la
+       portée, la fiche donne le prix de chaque cran. */
+    else if(it.paliers) h+=' <span class="p2">à '+fmt(it.paliers[it.paliers.length-1][1])+'F</span>';
     h+='</span>'; return h;
   }
   ['infoWa','socWa'].forEach(function(id){
@@ -912,7 +923,12 @@
   function pendUnit(){ return pend.sizes?pend.sizes[pend.sizeIdx][1]:FLAT[pend.key].it.p; }
   function openOptions(key){
     var e=FLAT[key]; if(!e) return; var it=e.it, cid=e.c.id;
-    pend={ key:key, name:it.n, sizes:it.p2?[['Moyen',it.p],['Grand',it.p2]]:null, sizeIdx:0, accs:ACC[cid]||null, acc:'', note:'', qty:1 };
+    /* ⚠️ UNE SEULE LISTE DE PALIERS, D'OÙ QU'ELLE VIENNE. Un plat déclare soit
+       `paliers` (barème à N crans, la glace), soit `p2` (deux tailles). Et
+       quand `tailles` donne les vrais libellés, on les prend : la sauce yassa
+       se vend au « quart de poulet », pas en « Moyen ». */
+    var tl=it.tailles||['Moyen','Grand'];
+    pend={ key:key, name:it.n, sizes:it.paliers||(it.p2?[[tl[0],it.p],[tl[1],it.p2]]:null), sizeIdx:0, accs:ACC[cid]||null, acc:'', note:'', qty:1 };
     renderOptions(); openSheet(optSheet);
   }
   function renderOptions(){

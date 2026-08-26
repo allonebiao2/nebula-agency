@@ -73,23 +73,42 @@ export function Indicator({
   actif: number;
   onAller: (i: number) => void;
 }) {
+  /* ⚠️ QUATORZE POINTS NE TIENNENT PAS DANS LA HAUTEUR D'UN TÉLÉPHONE.
+     À quatre plats, chaque bouton faisait 20 px avec 10 px d'écart : 110 px,
+     aucun problème. À quatorze, la même colonne mesure 410 px et traverse
+     l'écran de part en part, par-dessus l'assiette. Au-delà de huit sauces,
+     la pile se resserre. */
+  const serre = n > 8;
   return (
-    <div className="absolute left-8 top-1/2 flex -translate-y-1/2 flex-col items-center gap-2.5 max-md:left-4">
+    <div
+      /* ⚠️ PAS DE PILE DE POINTS SUR TÉLÉPHONE. Sur grand écran la colonne
+         vit dans la marge gauche, vide. Sur téléphone la scène est une
+         COLONNE qui prend toute la largeur : les points se posaient sur
+         l'accroche et sur le titre — un instrument flottant par-dessus du
+         texte, exactement ce que la maison s'interdit. Et à quatorze sauces,
+         ce sont quatorze cibles de 5 px sur un écran tactile, quand la bande
+         des miniatures, juste en dessous, donne déjà accès à toutes.
+         (À quatre plats la colonne était courte et le défaut se voyait à
+         peine : c'est le passage à quatorze qui l'a rendu flagrant.) */
+      className={
+        "absolute left-8 top-1/2 flex -translate-y-1/2 flex-col items-center max-md:hidden " +
+        (serre ? "gap-1.5" : "gap-2.5")
+      }
+    >
       {Array.from({ length: n }).map((_, i) => (
         <button
           key={i}
           type="button"
           onClick={() => onAller(i)}
-          aria-label={`Aller au plat ${i + 1}`}
-          className="grid h-5 w-5 place-items-center"
+          aria-label={`Aller à la sauce ${i + 1}`}
+          className={serre ? "grid h-3.5 w-5 place-items-center" : "grid h-5 w-5 place-items-center"}
         >
           <span
             className="block rounded-full transition-all duration-500 ease-out"
             style={{
-              width: i === actif ? 3 : 6,
-              height: i === actif ? 20 : 6,
-              background:
-                i === actif ? "var(--encre)" : "rgba(29,26,23,.28)",
+              width: i === actif ? 3 : serre ? 5 : 6,
+              height: i === actif ? (serre ? 14 : 20) : serre ? 5 : 6,
+              background: i === actif ? "var(--encre)" : "rgba(29,26,23,.28)",
             }}
           />
         </button>
@@ -106,7 +125,7 @@ export function Indicator({
 export function BottomNav() {
   const I = "h-6 w-6";
   return (
-    <nav className="absolute bottom-7 left-1/2 flex -translate-x-1/2 items-end gap-9 max-md:gap-6">
+    <nav className="nav-bas absolute bottom-7 left-1/2 flex -translate-x-1/2 items-end gap-9 transition-[bottom] duration-300 max-md:gap-6">
       <a href="#carte" aria-label="La carte" className="text-[color:var(--encre)] opacity-70 transition hover:opacity-100">
         <svg viewBox="0 0 24 24" className={I} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round">
           <path d="M6 3v8a2 2 0 0 0 4 0V3M8 11v10" />

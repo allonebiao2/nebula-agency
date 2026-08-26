@@ -2,9 +2,12 @@
 
 > ## 🔥 EN LIGNE : **https://au-braise-dor.pages.dev**
 > **⚠️ LE SITE N'EST PLUS `index.html`.** Depuis le 2026-08-12 l'adresse du
-> client sert le projet **Next.js de `experience/`** : une expérience à 4 plats
-> signature, puis les 48 plats commandables en dessous.
+> client sert le projet **Next.js de `experience/`** : **le héros des 14 sauces**
+> (2026-08-26, voir plus bas), puis les 52 plats commandables en dessous.
 > `index.html` reste dans le dépôt : un retour arrière est un déploiement.
+> ⚠️ **Mais `index.html` reste LA VÉRITÉ DES DONNÉES** : son tableau `CATS` et
+> sa table `PHOTO` sont lus par `node _outils/_extraire_carte.js`, qui écrit
+> `experience/data/carte.ts`. On n'édite jamais `carte.ts` à la main.
 >
 > **Publier :**
 > ```bash
@@ -355,8 +358,99 @@ dernier site où la règle n'est pas appliquée.** Rien n'a été touché ici sa
 décision : l'ardoise est prête, la bascule est de retirer `img` des entrées de
 `PHOTO` dans `index.html` et de régénérer.
 
+## 🔥 LE HÉROS DES 14 SAUCES (2026-08-26)
+
+*Détail : `_memoire/conversations/2026-08-26-braise-heros-sauces.md`.*
+
+Trois demandes de Mongazi : **toutes** les sauces au héros, **beaucoup plus
+vite**, et **on commande depuis là**.
+
+### ⛔ Le défilement était le moteur, et c'est ce qui bloquait tout
+La scène était une piste de **N × 100vh** parcourue par le défilement
+(ScrollTrigger « scrub » + aimant). À 4 plats : 400vh. **À 14 sauces :
+1 400vh**, quatorze écrans avant la carte. Et une cadence rapide aurait fait
+**défiler la page toute seule** à toute vitesse.
+→ **La scène tient sur UN écran**, l'index est piloté par un tween sur un
+nombre. Le mouvement des assiettes (diagonale + rotation + échelle, réglé image
+par image sur la vidéo de référence) **n'a pas bougé d'un pixel** : c'est son
+moteur qui a changé, pas son dessin.
+✅ La crainte du 21/08 (« reboucler ferait REMONTER la page ») **n'existe
+plus** : la boucle est franche, sans le tour de respiration.
+✅ On tourne **par le chemin le plus court sur l'anneau** : de la 14e à la 1re,
+on avance d'un cran.
+⚠️ **Lenis reste** : `aller.ts` passe par `window.__lenis` pour sauter aux
+catégories (sans lui, un `scrollIntoView` s'arrête en chemin).
+
+### ⚠️ La pause au survol qui aurait tué le carrousel
+`onPointerEnter` sur la scène : **la scène fait tout l'écran**, la souris est
+toujours dessus, le carrousel ne serait **jamais reparti** sur un ordinateur.
+On ne s'arrête que sur la carte de verre et sur la bande des miniatures.
+
+### `DISHES` est lu dans la carte, plus écrit à la main
+Quatre sauces étaient recopiées avec leur prix : deux vérités pour le même
+plat. `DISHES` = la catégorie **Sauces** de `carte.ts`. Ajouter une sauce à la
+carte la fait entrer au héros toute seule, et **le QC la réclame**.
+Sans photo → **ardoise ronde** avec le **filet à la couleur de la sauce**
+(huit ardoises identiques ressemblent à une panne, huit couleurs à une
+collection).
+⚠️ **Béchamel et Crème n'auront jamais de découpe** : `_detoure_plats.py` le
+documente depuis le 19/08.
+
+### L'optimisation, mesurée
+Les 14 découpes pèsent **plus de 2 Mo** : fenêtre glissante d'images (**4 au
+premier écran**, le QC refuse au-delà de 5), et au-delà de la fenêtre une
+assiette est **rangée une fois** au lieu d'être repositionnée à chaque image.
+
+### Commander depuis le héros : un pont, pas un second moteur
+⛔ Recoder « ajouter au panier » dans le héros = un **deuxième moteur de
+commande** avec sa propre idée du prix et de l'accompagnement.
+✅ `data/commande.ts` : le héros **demande**, la carte **ouvre sa fiche**. Une
+fonction, un nom de plat. Fiche du menu, garnitures, **accompagnement
+obligatoire**, fourchette, panier, message : un seul de chaque.
+⚠️ **La barre du panier recouvrait la scène** (barre du bas + carrousel).
+`body.a-panier` remonte la scène, et un contrôle **mesure le chevauchement**.
+
+### La glace se vend à la boule — le modèle ne savait pas
+`p` / `p2` / `pMax` ne portaient que **deux** tailles, et la fiche tenait la
+taille dans un **booléen**. Le 3e palier de la glace disparaissait : la maison
+encaissait 1 500 F au lieu de 2 500. → **`paliers: [libellé, prix][]`**, un
+barème à N crans, et la fiche ne connaît plus qu'un **index**.
+⚠️ **Le balisage a maintenant QUATRE façons d'avoir un prix** : `pMax` →
+`AggregateOffer` · `p2` → 2 offres · `paliers` → N offres · `p: 0` → aucune.
+
+### ⛔ QUATRE DÉFAUTS QUE LE QC VERT NE VOYAIT PAS
+Trouvés **sur les captures**, pas par un contrôle. `_outils/_vues_heros.py`
+photographie les 14 sauces en 390 et 1440 : les regarder est la seule façon.
+
+1. **`clearProps: "all"` VIDE l'attribut `style`** (il ne retire pas « ce que
+   GSAP a posé »). → **le bouton de commande était INVISIBLE** : fond
+   transparent, texte crème, sur verre clair, **1,1:1**. ⚠️ Défaut **antérieur
+   à cette session** : l'ancien bouton vert avait le même sort **en ligne**.
+   Et le corps du titre, calculé par sauce, était effacé : la **2e ligne
+   ressortait plus petite que la 1re**. → `clearProps:
+   "opacity,visibility,transform"`, et les couleurs fixes dans une **classe**.
+2. **L'ardoise ronde sortait de sa boîte de 100 px** en 390 px : `inset-0` fixe
+   déjà les deux dimensions, donc **`aspect-ratio` est ignoré**, et la boîte
+   n'est carrée que sur grand écran. → conteneur mesuré + `min(100cqw,100cqh)`.
+3. **La pile de points se posait sur le texte** sur téléphone (colonne pleine
+   largeur) → masquée sous 768 px.
+4. **Les deux flèches du carrousel étaient posées SUR des miniatures** :
+   `overflow: visible` + 14 slides qui débordent. → `overflow-x: clip` (garder
+   la verticale, sinon l'ombre de la miniature active est rognée).
+
+### Deux défauts trouvés en chemin
+⛔ La carte de verre listait les accompagnements des **grillades** sous des
+**sauces**. Elle les **lit** maintenant dans la carte.
+⛔ **LE SITE A DEUX NUMÉROS WHATSAPP** : `index.html` = `2290156057157`,
+`experience/data/dishes.ts` (**le fichier servi**) = `22956057157` — **le `01`
+a sauté**. Rien n'a été touché (règle : jamais un lien WhatsApp sans
+confirmation). À trancher.
+
 ## ⏳ Ce qui reste
 
+- **Les six photos de sauces** (arachide, tomate, tête de mouton, pieds de
+  bœuf, Yassa, Yassa au poulet) : les poser dans `PHOTO` d'`index.html` et
+  une découpe dans `experience/public/plats/`, l'ardoise s'éteint toute seule.
 - **La vraie photo de la salle.** Le fond est un mur neutre, pas leur
   restaurant. ⚠️ La vidéo `hero.mp4` montre **le gril**, pas la salle.
 - **Confirmer le numéro WhatsApp** : `01 56 05 71 57` est câblé, l'enseigne

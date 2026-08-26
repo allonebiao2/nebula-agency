@@ -3,6 +3,8 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { Dish, lienCommande } from "@/data/dishes";
+import { commander } from "@/data/commande";
+import { ACC } from "@/data/carte";
 
 /**
  * ⚠️ ICI ON N'UTILISE PLUS `gsap.from()`, ET C'EST UNE LEÇON PAYÉE.
@@ -54,7 +56,18 @@ export default function InfoCard({ dish }: { dish: Dish }) {
           ease: "power2.out",
           stagger: 0.09,
           delay: 0.12,
-          clearProps: "all",
+          /* ⛔ SURTOUT PAS `clearProps: "all"`, ET C'EST UN DÉFAUT MESURÉ.
+             `"all"` ne retire pas « ce que GSAP a posé » : il VIDE L'ATTRIBUT
+             `style` de l'élément. Le bouton qui prend la commande porte sa
+             couleur en style en ligne : après l'animation il se retrouvait à
+             `background-color: rgba(0,0,0,0)` avec un texte crème, sur une
+             carte de verre claire — **invisible**, mesuré à 1,1:1.
+             ⚠️ Le défaut ne datait pas de la refonte : l'ancien bouton vert
+             « Commander sur WhatsApp » avait exactement le même sort. C'est
+             la deuxième fois que GSAP fait disparaître le seul bouton qui
+             rapporte de l'argent sur cette carte (voir la note du haut).
+             On ne nettoie donc que ce que l'animation a réellement touché. */
+          clearProps: "opacity,visibility,transform",
         }
       );
       // le comptage du prix
@@ -159,18 +172,33 @@ export default function InfoCard({ dish }: { dish: Dish }) {
             </p>
           )}
 
-          <a
-            className="ic-item inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-[0.85rem] font-semibold text-white transition hover:brightness-110"
-            style={{ background: "#128040" }}
-            href={lienCommande(dish)}
-            target="_blank"
-            rel="noreferrer"
+          {/* ⚠️ ON COMMANDE ICI, ON NE PART PLUS SUR WHATSAPP.
+              Demande de Mongazi (2026-08-26) : « on doit pouvoir commander
+              directement depuis la hero, ajouter au panier aussi ». Avant, ce
+              bouton ouvrait WhatsApp avec une phrase toute faite : le client
+              quittait le site avant d'avoir choisi son accompagnement, et la
+              maison recevait une commande incomplète.
+              Le bouton ouvre maintenant LA FICHE DU MENU — la vraie, avec ses
+              garnitures et son accompagnement obligatoire — et la sauce tombe
+              dans le même panier que le reste. Voir `data/commande.ts`.
+              ⚠️ Le repli WhatsApp reste : si la carte n'est pas encore montée,
+              `commander()` renvoie faux et le client n'est pas laissé sans
+              rien. */}
+          {/* ⚠️ LA COULEUR EST DANS UNE CLASSE, PAS EN STYLE EN LIGNE. Deux
+              raisons, et la seconde est une ceinture : une classe survit à
+              tout `clearProps`, et elle ne dépend pas de l'ordre des tweens. */}
+          <button
+            type="button"
+            className="ic-item btn-commander inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-[0.85rem] font-semibold transition hover:brightness-125"
+            onClick={() => {
+              if (!commander(dish.nom)) window.open(lienCommande(dish), "_blank");
+            }}
           >
-            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden>
-              <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2m0 2a8 8 0 1 1-4.2 14.8l-.3-.2-2.6.7.7-2.5-.2-.3A8 8 0 0 1 12 4" />
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
+              <path d="M12 5v14M5 12h14" />
             </svg>
-            Commander sur WhatsApp
-          </a>
+            Ajouter au panier
+          </button>
 
           {dish.avis && (
             <p className="ic-item mt-3 text-center text-[0.75rem] text-[color:var(--encre-2)] opacity-75">
@@ -181,9 +209,14 @@ export default function InfoCard({ dish }: { dish: Dish }) {
       ) : (
         <div className="text-[0.85rem] leading-[1.6] text-[color:var(--encre-2)]">
           <p className="mb-3">{dish.desc}</p>
+          {/* ⚠️ CETTE LISTE ÉTAIT FAUSSE, ET ELLE L'EST RESTÉE LONGTEMPS.
+              Elle recopiait les accompagnements des GRILLADES (riz, attiéké,
+              aloco…) alors que le héros ne montre que des sauces, qui se
+              servent avec le telibo, l'agbéli, le wassa wassa, le foutou.
+              Elle est maintenant LUE dans la carte : la maison change sa
+              liste, la ligne suit. */}
           <p className="opacity-80">
-            Accompagnements au choix : riz, attiéké, aloco, frites, pommes
-            sautées ou vapeur, pâte rouge, Bomiwo, Akassa, igname frit.
+            Accompagnements au choix : {ACC.sauces.join(", ").toLowerCase()}.
           </p>
         </div>
       )}

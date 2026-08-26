@@ -7,6 +7,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { CustomEase } from "gsap/CustomEase";
 import { DISHES } from "@/data/dishes";
+import Ardoise from "./Ardoise";
 import DishText from "./DishText";
 import InfoCard from "./InfoCard";
 import Rail from "./Rail";
@@ -28,39 +29,159 @@ gsap.registerPlugin(ScrollTrigger, CustomEase);
  * diagonale (74 % de large, 66 % de haut par plat), une rotation de presque un
  * quart de tour, et l'échelle qui recule. C'est la rotation qui fait la
  * différence : sans elle, une diagonale reste un glissement, et on ne « roule »
- * pas.
+ * pas. Ce mouvement-là n'a pas bougé d'un pixel : c'est son MOTEUR qui a
+ * changé.
  */
 
 /**
- * LA SCÈNE.
+ * ⚠️⚠️ LE DÉFILEMENT N'EST PLUS LE MOTEUR (2026-08-26). C'est le changement
+ * le plus important de ce fichier, et il vient d'une demande de Mongazi :
+ * « je veux que TOUTES les sauces soient dans le carrousel de la hero, et que
+ * ce carrousel avance tout seul et beaucoup plus vite ».
  *
- * Le principe de la référence : le fond ne bouge JAMAIS. C'est un plateau sur
- * lequel des objets flottent. Tout le mouvement est dans les assiettes, le
- * titre et la carte de verre.
+ * L'ancienne scène était une piste de N × 100vh que le défilement parcourait
+ * (« scrub » + aimant). À quatre plats, cela faisait 400vh : un beau voyage.
+ * À QUATORZE SAUCES, cela ferait **1 400vh** — quatorze écrans à traverser
+ * avant d'atteindre la carte. Sur un catalogue de restaurant, c'est un mur.
+ * Et une cadence « beaucoup plus rapide » aurait fait DÉFILER LA PAGE toute
+ * seule à toute vitesse, ce qui n'est pas un carrousel, c'est une fuite.
  *
- * Le défilement n'est pas du contenu, c'est un MOTEUR : une piste de N × 100vh
- * qu'on ne voit pas, dont la progression pilote directement la position des
- * assiettes (« scrub »), avec un aimant (« snap ») pour qu'on s'arrête toujours
- * sur un plat et jamais entre deux.
+ * Donc : la scène tient sur UN écran, et l'index des assiettes est piloté par
+ * un tween sur un simple nombre. Le défilement redevient ce qu'il doit être —
+ * la façon d'aller à la carte.
  *
- * ⚠️ Les assiettes sont TOUTES montées en même temps et empilées : on ne
- * démonte pas un plat pour en monter un autre, sinon la transition attend le
- * décodage de l'image et saccade au premier passage.
+ * ✅ Trois choses tombent d'elles-mêmes avec ce changement :
+ *   - la vieille crainte « rebouler ferait REMONTER la page » n'existe plus,
+ *     puisque avancer ne touche plus au défilement. La boucle est franche,
+ *     sans le tour de respiration qu'il avait fallu ajouter le 2026-08-21 ;
+ *   - le carrousel tourne dans les deux sens par le chemin le plus court :
+ *     de la 14e à la 1re, on avance d'un cran, on ne recule pas de treize ;
+ *   - on peut enfin COMMANDER depuis le héros sans que la scène se dérobe
+ *     sous le doigt (voir `pause`).
+ *
+ * ⚠️ Lenis reste, et ce n'est pas un oubli : `components/aller.ts` passe par
+ * `window.__lenis` pour sauter aux catégories du menu. Un `scrollIntoView`
+ * lancé à côté de Lenis s'arrête en chemin (mesuré en ligne : le saut vers
+ * « Cocktails » restait à 7 382 px de sa cible).
  */
+
+/** Une sauce toutes les 2,8 s. ⚠️ C'était 5,5 s : « beaucoup plus vite ». */
+const TOUR = 2800;
+/** La durée d'un passage. Plus court que 0,62 s, la rotation devient un saut. */
+const GLISSE = 0.62;
+/** Un vrai geste repousse le tour : on ne vole pas la main de quelqu'un qui
+ *  est en train de choisir sa sauce. */
+const REPOS = 7000;
+/**
+ * ⚠️ COMBIEN D'ASSIETTES RESTENT VIVANTES AUTOUR DE LA COURANTE.
+ * À quatre plats, on pouvait tout repositionner à chaque image. À quatorze,
+ * c'est 14 × 7 propriétés par image pour douze assiettes invisibles. Au-delà
+ * de cette fenêtre, l'assiette est RANGÉE une fois pour toutes (opacité 0) et
+ * on ne la retouche plus tant qu'elle ne revient pas.
+ */
+const FENETRE = 2;
+
+const N = DISHES.length;
+
+/** L'écart le plus court sur un anneau : de la 14e à la 1re, c'est +1. */
+function ecart(vers: number, depuis: number) {
+  let d = vers - depuis;
+  while (d > N / 2) d -= N;
+  while (d < -N / 2) d += N;
+  return d;
+}
+
+const modN = (x: number) => ((x % N) + N) % N;
+
 export default function Experience() {
-  const [i, setI] = useState(0);          // le plat courant, entier
+  const [i, setI] = useState(0);
   const [carteOuverte, setCarteOuverte] = useState(false);
+  /**
+   * ⚠️ LES IMAGES N'ARRIVENT PAS TOUTES EN MÊME TEMPS. Les quatorze découpes
+   * pèsent ensemble plus de 2 Mo : les monter d'un coup, c'est refaire la
+   * faute des fonds CSS de l'ancien site (4,3 Mo avant même le menu). On ne
+   * monte que celles qu'on a approchées, et la liste ne fait que grandir :
+   * une assiette déjà chargée ne se recharge jamais.
+   */
+  const [vus, setVus] = useState<number[]>(() =>
+    Array.from(new Set([0, 1, 2, modN(-1)]))
+  );
+
   const iRef = useRef(0);
+  /** La position continue sur l'anneau. Le tween tire dessus, `poser` la lit. */
+  const fRef = useRef({ v: 0 });
   const scene = useRef<HTMLDivElement>(null);
-  const piste = useRef<HTMLDivElement>(null);
   const plats = useRef<(HTMLDivElement | null)[]>([]);
   const lenisRef = useRef<Lenis | null>(null);
-  const N = DISHES.length;
+  const tween = useRef<gsap.core.Tween | null>(null);
+  /** Vrai quand quelqu'un regarde ou touche : la scène attend. */
+  const pause = useRef(false);
+  const visible = useRef(true);
 
-  /* ── le moteur : Lenis + ScrollTrigger scrubbé, avec aimant ────── */
+  /* ── poser les assiettes à une position donnée ─────────────────── */
+  const poser = useCallback((f: number) => {
+    plats.current.forEach((el, k) => {
+      if (!el) return;
+      const d = ecart(k, f) * -1; // >0 : l'assiette est déjà passée
+      const loin = Math.abs(d) > FENETRE + 0.25;
+      if (loin) {
+        // ⚠️ RANGÉE UNE SEULE FOIS. Sans ce garde, on réécrivait sept
+        // propriétés par image sur douze assiettes qu'on ne voit pas.
+        if (el.dataset.gare === "1") return;
+        el.dataset.gare = "1";
+        gsap.set(el, { opacity: 0, pointerEvents: "none", zIndex: 0 });
+        return;
+      }
+      el.dataset.gare = "0";
+      const a = Math.min(1, Math.abs(d));
+      gsap.set(el, {
+        xPercent: -d * 74,
+        yPercent: d * 66,
+        scale: 1 - a * 0.34,
+        rotate: d * 88,
+        opacity: 1 - Math.pow(a, 1.5),
+        zIndex: 10 - Math.round(a * 10),
+        pointerEvents: a > 0.5 ? "none" : "auto",
+      });
+    });
+    const n = modN(Math.round(f));
+    if (n !== iRef.current) {
+      iRef.current = n;
+      setI(n);
+    }
+  }, []);
+
+  /* ── aller à une sauce, par le chemin le plus court ─────────────── */
+  const aller = useCallback(
+    (n: number) => {
+      const doux = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const cible = fRef.current.v + ecart(modN(n), fRef.current.v);
+      tween.current?.kill();
+      if (doux) {
+        fRef.current.v = modN(cible);
+        poser(fRef.current.v);
+        return;
+      }
+      tween.current = gsap.to(fRef.current, {
+        v: cible,
+        duration: GLISSE,
+        ease: "braise",
+        overwrite: true,
+        onUpdate: () => poser(fRef.current.v),
+        onComplete: () => {
+          // on ramène la position dans [0, N[ : sans ça, elle dérive à
+          // l'infini et les comparaisons finissent par perdre en précision.
+          fRef.current.v = modN(cible);
+          poser(fRef.current.v);
+        },
+      });
+    },
+    [poser]
+  );
+
+  /* ── Lenis : le défilement de la page, et rien de plus ──────────── */
   useLayoutEffect(() => {
     const doux = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
     CustomEase.create("braise", "0.16,1,0.3,1");
 
     const lenis = new Lenis({
@@ -72,8 +193,7 @@ export default function Experience() {
     });
     lenisRef.current = lenis;
     /* ⚠️ LENIS TIENT LE DÉFILEMENT DE TOUTE LA PAGE. Un `scrollIntoView` lancé
-       ailleurs se bat contre lui et s'arrête en chemin : mesuré en ligne, le
-       saut vers « Cocktails » restait à 7 382 px de sa cible. On expose donc
+       ailleurs se bat contre lui et s'arrête en chemin. On expose donc
        l'instance, et tout ce qui veut déplacer la page passe par elle. */
     (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
     lenis.on("scroll", ScrollTrigger.update);
@@ -81,165 +201,178 @@ export default function Experience() {
     gsap.ticker.add(raf);
     gsap.ticker.lagSmoothing(0);
 
-    /* ⚠️ CETTE FONCTION DOIT ETRE APPELEE AU MONTAGE, pas seulement au
-       defilement. Sans ca, tant que personne n'a scrolle, les quatre assiettes
-       restent empilees a l'ecran, toutes visibles, l'une sur l'autre. Le
-       defaut ne se voit qu'au premier ecran, celui que tout le monde voit. */
-    const poser = (f: number) => {
-      plats.current.forEach((el, k) => {
-        if (!el) return;
-        const d = f - k;
-        const a = Math.min(1, Math.abs(d));
-        gsap.set(el, {
-          xPercent: -d * 74,
-          yPercent: d * 66,
-          scale: 1 - a * 0.34,
-          rotate: d * 88,
-          opacity: 1 - Math.pow(a, 1.5),
-          zIndex: 10 - Math.round(a * 10),
-          pointerEvents: a > 0.5 ? "none" : "auto",
-        });
-      });
-      const n = Math.round(f);
-      if (n !== iRef.current) {
-        iRef.current = n;
-        setI(n);
-      }
-    };
+    /* ⚠️ POSER AU MONTAGE, PAS SEULEMENT AU PREMIER MOUVEMENT. Sans cet appel,
+       les quatorze assiettes restent empilées à l'écran, toutes visibles,
+       l'une sur l'autre. Le défaut ne se voit qu'au premier écran, celui que
+       tout le monde voit. */
     poser(0);
 
-    const ctx = gsap.context(() => {
-      const st = ScrollTrigger.create({
-        trigger: piste.current,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: doux ? false : 0.6,
-        snap: doux
-          ? undefined
-          : {
-              snapTo: 1 / (N - 1),
-              duration: { min: 0.35, max: 0.9 },   // 0,8 à 1,2 s ressenti
-              ease: "power3.inOut",
-              inertia: false,
-            },
-        onUpdate: (self) => poser(self.progress * (N - 1)),
-      });
-      return () => st.kill();
-    }, scene);
-
     return () => {
-      ctx.revert();
       gsap.ticker.remove(raf);
       lenis.destroy();
       delete (window as unknown as { __lenis?: Lenis }).__lenis;
       lenisRef.current = null;
     };
-  }, [N]);
+  }, [poser]);
 
-  /* ── aller à un plat : par le carrousel, les points, le clavier ── */
-  const aller = useCallback(
-    (n: number) => {
-      const k = Math.max(0, Math.min(N - 1, n));
-      const h = (piste.current?.offsetHeight ?? 0) - window.innerHeight;
-      lenisRef.current?.scrollTo((h * k) / (N - 1), { duration: 1.0 });
-    },
-    [N]
-  );
-
+  /* ── la fenêtre d'images suit la sauce courante ─────────────────── */
   useEffect(() => {
-    const f = (e: KeyboardEvent) => {
-      if (e.key === "ArrowDown" || e.key === "PageDown") aller(iRef.current + 1);
-      if (e.key === "ArrowUp" || e.key === "PageUp") aller(iRef.current - 1);
-    };
-    window.addEventListener("keydown", f);
-    return () => window.removeEventListener("keydown", f);
-  }, [aller]);
+    setVus((v) => {
+      const s = new Set(v);
+      for (let k = -1; k <= 2; k++) s.add(modN(i + k));
+      return s.size === v.length ? v : Array.from(s);
+    });
+  }, [i]);
 
-  /* ── LES PLATS DÉFILENT TOUT SEULS ──────────────────────────────
-     Demande de Mongazi : « le défilement doit être automatique, sans
-     intervention humaine. » Un plat toutes les 5,5 s.
+  /* ── la scène ne tourne que si elle est à l'écran ───────────────── */
+  useEffect(() => {
+    const el = scene.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => {
+        visible.current = e.isIntersecting;
+      },
+      { threshold: 0.35 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
+  /* ── LES SAUCES DÉFILENT TOUT SEULES, VITE ──────────────────────
      Quatre garde-fous, et aucun n'est facultatif :
      1. ⛔ RIEN ne bouge si le visiteur a demandé moins d'animations
         (`prefers-reduced-motion`) : pour certains c'est une demande médicale.
-     2. ⛔ RIEN ne bouge quand la scène n'est plus à l'écran. Sans ça, le site
-        REMONTERAIT tout seul pendant qu'on lit la carte : le pire défaut
-        qu'une page puisse avoir.
-     3. ⛔ RIEN ne bouge quand l'onglet est en arrière-plan.
-     4. ⚠️ ON REBOUCLE, MAIS SEULEMENT POUR QUELQU'UN QUI REGARDE.
-        La version d'avant s'arrêtait au dernier plat, définitivement : au
-        bout de 22 s la scène était morte, et Mongazi l'a vu (2026-08-21).
-        La crainte qui l'avait dictée était juste — `aller()` fait défiler LA
-        PAGE, donc revenir au premier plat la fait REMONTER, en travers de
-        quelqu'un qui descend vers le menu. Mais cette crainte est déjà
-        couverte deux fois : rien ne bouge si la scène n'est pas à l'écran
-        (garde-fou 2), et un geste repousse tout de 12 s (garde-fou 5). Ne
-        reste donc que le cas du visiteur immobile, qui regarde — et pour lui
-        une scène figée n'est pas une protection, c'est une panne.
-        ⚠️ Le retour au premier plat prend UN TOUR DE PLUS : le dernier plat
-        se laisse regarder deux fois avant qu'on remonte. Une boucle qui se
-        referme sans respirer donne l'impression d'un bug.
-     5. Un vrai geste repousse le tour de 12 s : on ne vole pas la main. */
+     2. ⛔ RIEN ne bouge quand la scène n'est plus à l'écran, ni quand
+        l'onglet est en arrière-plan : une scène qui tourne dans le vide,
+        c'est de la batterie prise à quelqu'un qui lit la carte.
+     3. ⛔ RIEN ne bouge tant qu'une fiche de commande est ouverte. La fiche
+        bloque le défilement du corps : c'est ce signal qu'on lit. Sans ça,
+        la sauce changerait DERRIÈRE la fiche pendant qu'on choisit son
+        accompagnement, et on ajouterait au panier autre chose que ce qu'on
+        regardait.
+     4. ⚠️ RIEN ne bouge sous le curseur ou sous le doigt. À 2,8 s, une scène
+        qui avance pendant qu'on vise « Ajouter » rend le bouton inatteignable.
+        C'est la contrepartie de la vitesse demandée.
+     5. Un vrai geste repousse le tour de 7 s. */
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const TOUR = 5500,
-      REPOS = 12000;
     let minuteur = 0 as ReturnType<typeof setTimeout> | 0;
     let reprise = 0 as ReturnType<typeof setTimeout> | 0;
 
-    const visible = () => {
-      const el = scene.current?.querySelector(".sticky");
-      if (!el) return false;
-      const r = el.getBoundingClientRect();
-      return r.top > -40 && r.bottom > window.innerHeight * 0.75;
-    };
+    const bloque = () =>
+      document.hidden ||
+      !visible.current ||
+      pause.current ||
+      document.body.style.overflow === "hidden";
 
-    const tourner = () => {
-      minuteur = 0;
-      if (document.hidden || !visible()) return relancer();
-      const dernier = iRef.current >= N - 1;
-      aller(dernier ? 0 : iRef.current + 1);   // au bout, on revient au premier
-      relancer(dernier ? TOUR : 0);
-    };
     const relancer = (sup = 0) => {
       if (minuteur) clearTimeout(minuteur);
       minuteur = setTimeout(tourner, TOUR + sup);
     };
+    function tourner() {
+      minuteur = 0;
+      if (bloque()) return relancer();
+      aller(iRef.current + 1);
+      relancer();
+    }
     const repousser = () => {
-      if (minuteur) { clearTimeout(minuteur); minuteur = 0; }
+      if (minuteur) {
+        clearTimeout(minuteur);
+        minuteur = 0;
+      }
       if (reprise) clearTimeout(reprise);
-      reprise = setTimeout(relancer, REPOS);
+      reprise = setTimeout(() => relancer(), REPOS);
     };
 
     const surVisibilite = () => {
-      if (document.hidden) { if (minuteur) { clearTimeout(minuteur); minuteur = 0; } }
-      else relancer();
+      if (document.hidden) {
+        if (minuteur) {
+          clearTimeout(minuteur);
+          minuteur = 0;
+        }
+      } else relancer();
     };
 
     document.addEventListener("visibilitychange", surVisibilite);
-    window.addEventListener("wheel", repousser, { passive: true });
-    window.addEventListener("touchstart", repousser, { passive: true });
     window.addEventListener("keydown", repousser);
-    const t0 = setTimeout(relancer, 2200);   // le premier plat se laisse lire
+    const t0 = setTimeout(() => relancer(), 1400); // la 1re sauce se laisse lire
 
     return () => {
       clearTimeout(t0);
       if (minuteur) clearTimeout(minuteur);
       if (reprise) clearTimeout(reprise);
       document.removeEventListener("visibilitychange", surVisibilite);
-      window.removeEventListener("wheel", repousser);
-      window.removeEventListener("touchstart", repousser);
       window.removeEventListener("keydown", repousser);
     };
-  }, [aller, N]);
+  }, [aller]);
+
+  /* ── clavier : GAUCHE / DROITE ──────────────────────────────────
+     ⚠️ Plus HAUT / BAS : ces deux touches doivent redéfiler la page, comme
+     partout ailleurs. Les prendre au héros, c'était emprisonner le visiteur
+     dans le premier écran. */
+  useEffect(() => {
+    const f = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") aller(iRef.current + 1);
+      if (e.key === "ArrowLeft") aller(iRef.current - 1);
+    };
+    window.addEventListener("keydown", f);
+    return () => window.removeEventListener("keydown", f);
+  }, [aller]);
+
+  /* ── le doigt : on fait glisser les assiettes ───────────────────
+     ⚠️ `touch-action: pan-y` sur la zone : le geste horizontal est à nous,
+     le vertical reste au navigateur. Sans ça, on vole le défilement de la
+     page à quelqu'un qui voulait juste descendre voir la carte. */
+  useEffect(() => {
+    const el = scene.current;
+    if (!el) return;
+    let x0 = 0,
+      y0 = 0,
+      actif = false;
+
+    const bas = (e: PointerEvent) => {
+      if ((e.target as HTMLElement).closest("button,a,input,[role=dialog]")) return;
+      actif = true;
+      x0 = e.clientX;
+      y0 = e.clientY;
+      pause.current = true;
+    };
+    const haut = (e: PointerEvent) => {
+      pause.current = false;
+      if (!actif) return;
+      actif = false;
+      const dx = e.clientX - x0;
+      const dy = e.clientY - y0;
+      // un geste horizontal franc, et pas un début de défilement vertical
+      if (Math.abs(dx) > 44 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+        aller(iRef.current + (dx < 0 ? 1 : -1));
+      }
+    };
+    const perdu = () => {
+      actif = false;
+      pause.current = false;
+    };
+
+    el.addEventListener("pointerdown", bas);
+    window.addEventListener("pointerup", haut);
+    window.addEventListener("pointercancel", perdu);
+    return () => {
+      el.removeEventListener("pointerdown", bas);
+      window.removeEventListener("pointerup", haut);
+      window.removeEventListener("pointercancel", perdu);
+    };
+  }, [aller]);
 
   /* ── le tilt 3D à la souris, très léger, et jamais au doigt ────── */
   useEffect(() => {
     const el = scene.current;
     if (!el || window.matchMedia("(pointer: coarse)").matches) return;
     const q = plats.current.map((p) =>
-      p ? { rx: gsap.quickTo(p, "rotationX", { duration: 0.6, ease: "power2.out" }),
-            ry: gsap.quickTo(p, "rotationY", { duration: 0.6, ease: "power2.out" }) }
+      p
+        ? {
+            rx: gsap.quickTo(p, "rotationX", { duration: 0.6, ease: "power2.out" }),
+            ry: gsap.quickTo(p, "rotationY", { duration: 0.6, ease: "power2.out" }),
+          }
         : null
     );
     const f = (e: MouseEvent) => {
@@ -256,57 +389,67 @@ export default function Experience() {
   }, []);
 
   const plat = DISHES[i];
+  const vu = (k: number) => vus.includes(k);
 
   return (
-    /* ⚠️ `sticky`, PAS `fixed`. Une scène en `fixed` ne se décolle jamais :
-       elle serait restée par-dessus les 48 plats, en travers de la carte.
-       En `sticky` dans un parent haut de N × 100vh, elle tient l'écran le
-       temps du voyage puis rend la main exactement à la fin. */
-    <div ref={scene} className="relative" style={{ height: `${N * 100}vh` }}>
-      <div ref={piste} className="absolute inset-0" aria-hidden />
-
+    /* ⚠️ UN SEUL ÉCRAN, PLUS UNE PISTE DE N × 100vh. Voir la note du haut :
+       à quatorze sauces, la piste aurait fait quatorze écrans de haut. */
+    <div
+      ref={scene}
+      /* ⚠️ UN REPÈRE POUR LE CONTRÔLE, ET RIEN D'AUTRE. Sans lui, vérifier
+         « la scène avance-t-elle toute seule ? » revenait à photographier
+         l'écran et à comparer deux images — un contrôle qui échoue au hasard.
+         Le numéro de la sauce courante est écrit là, `_outils/_qc.py` le lit. */
+      data-sauce={i}
+      className="relative h-screen overflow-hidden"
+      style={{
+        background:
+          `radial-gradient(120% 90% at 78% 18%, ${plat.wash}, transparent 62%),` +
+          "linear-gradient(180deg, var(--mur) 0%, var(--mur-2) 100%)",
+        transition: "background 900ms cubic-bezier(.16,1,.3,1)",
+        touchAction: "pan-y",
+      }}
+      /* ⚠️ ON NE MET PAS EN PAUSE PARCE QUE LA SOURIS EST « QUELQUE PART ».
+         Premier jet : `onPointerEnter` sur la scène. Or la scène fait tout
+         l'écran, et la souris d'un visiteur est TOUJOURS quelque part
+         dessus : le carrousel ne repartait jamais sur un ordinateur, et on
+         aurait conclu qu'il est cassé. On ne s'arrête que là où l'on vise
+         quelque chose : la carte de verre (le bouton « Ajouter au panier »)
+         et la bande des miniatures. Au doigt, c'est `pointerdown` qui s'en
+         charge. */
+      onPointerOver={(e) => {
+        if (window.matchMedia("(pointer: coarse)").matches) return;
+        pause.current = !!(e.target as HTMLElement).closest(".scene-carte,.rail-bas");
+      }}
+      onPointerLeave={() => {
+        pause.current = false;
+      }}
+    >
+      {/* le mur : une pièce, pas un aplat. Ombre douce venue de la gauche. */}
       <div
-        className="sticky top-0 h-screen overflow-hidden"
+        className="pointer-events-none absolute inset-0"
         style={{
           background:
-            `radial-gradient(120% 90% at 78% 18%, ${plat.wash}, transparent 62%),` +
-            "linear-gradient(180deg, var(--mur) 0%, var(--mur-2) 100%)",
-          transition: "background 900ms cubic-bezier(.16,1,.3,1)",
+            "radial-gradient(70% 55% at 8% 0%, rgba(255,255,255,.65), transparent 60%)," +
+            "radial-gradient(90% 70% at 50% 118%, rgba(0,0,0,.10), transparent 60%)",
         }}
-      >
-        {/* le mur : une pièce, pas un aplat. Ombre douce venue de la gauche. */}
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(70% 55% at 8% 0%, rgba(255,255,255,.65), transparent 60%)," +
-              "radial-gradient(90% 70% at 50% 118%, rgba(0,0,0,.10), transparent 60%)",
-          }}
-          aria-hidden
-        />
+        aria-hidden
+      />
 
-        <TopBar onCarte={() => setCarteOuverte(true)} />
-        <Indicator n={N} actif={i} onAller={aller} />
+      <TopBar onCarte={() => setCarteOuverte(true)} />
+      <Indicator n={N} actif={i} onAller={aller} />
 
-        {/* ⚠️ `scene-stack` est en `display: contents` sur grand écran : il
-            n'existe pas, et l'assiette, le titre et la carte restent posés en
-            absolu comme dans la référence. Sur téléphone il devient une
-            COLONNE et les trois s'empilent pour de vrai.
-            Pourquoi : positionner en pourcentages de hauteur ne marche pas
-            quand les blocs, eux, font une hauteur en pixels. À 640 px de haut,
-            le titre et la carte se chevauchaient quoi qu'on règle. On
-            n'empile pas des boîtes à la main, on laisse le navigateur le
-            faire. */}
-        <div className="scene-stack">
+      {/* ⚠️ `scene-stack` est en `display: contents` sur grand écran : il
+          n'existe pas, et l'assiette, le titre et la carte restent posés en
+          absolu comme dans la référence. Sur téléphone il devient une
+          COLONNE et les trois s'empilent pour de vrai. */}
+      <div className="scene-stack">
         {/* ⚠️ `pointer-events-none` : ce conteneur fait tout l'écran et il est
             posé APRÈS les boutons du haut. Sans ça il les recouvre et il avale
             leurs clics. Le défaut est invisible à l'œil : le bouton s'affiche,
             s'illumine au survol, et ne fait rien. */}
         <div className="pointer-events-none absolute inset-0 grid place-items-center max-md:static max-md:block">
-          <div
-            className="scene-plat relative"
-            style={{ perspective: "1000px" }}
-          >
+          <div className="scene-plat relative" style={{ perspective: "1000px" }}>
             {DISHES.map((d, k) => (
               <div
                 key={d.id}
@@ -317,14 +460,24 @@ export default function Experience() {
                 style={{ transformStyle: "preserve-3d" }}
               >
                 <div className="assiette-flotte relative h-full w-full">
-                  <Image
-                    src={d.img}
-                    alt={`${d.line1} ${d.line2}`}
-                    fill
-                    priority={k === 0}
-                    sizes="(max-width: 768px) 80vw, 46vw"
-                    className="object-contain drop-shadow-[0_25px_50px_rgba(0,0,0,0.18)]"
-                  />
+                  {d.img ? (
+                    vu(k) && (
+                      <Image
+                        src={d.img}
+                        alt={`${d.line1} ${d.line2}`}
+                        fill
+                        priority={k === 0}
+                        sizes="(max-width: 768px) 80vw, 46vw"
+                        className="object-contain drop-shadow-[0_25px_50px_rgba(0,0,0,0.18)]"
+                      />
+                    )
+                  ) : (
+                    /* ⚠️ LA MAISON N'A PAS ENCORE ENVOYÉ CETTE PHOTO. On écrit
+                       le nom sur une ardoise ronde, à la place de l'assiette :
+                       la sauce reste visible, cliquable et commandable. Un
+                       cadre vide, lui, dirait que le site est en travaux. */
+                    <Ardoise nom={d.nom} forme="assiette" teinte={d.tint} />
+                  )}
                 </div>
               </div>
             ))}
@@ -333,11 +486,11 @@ export default function Experience() {
 
         <DishText dish={plat} />
         <InfoCard dish={plat} />
-        </div>
-        <Rail actif={i} onAller={aller} />
-        <Categories ouvert={carteOuverte} onFermer={() => setCarteOuverte(false)} />
-        <BottomNav />
       </div>
+
+      <Rail actif={i} onAller={aller} />
+      <Categories ouvert={carteOuverte} onFermer={() => setCarteOuverte(false)} />
+      <BottomNav />
     </div>
   );
 }

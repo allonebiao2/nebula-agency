@@ -71,6 +71,59 @@ html.lenis body {
 }
 .pulse { animation: pouls 2.8s ease-out infinite; }
 
+/* La barre du panier bat une fois quand on vient d'y ajouter quelque chose.
+   ⚠️ NI `transform` NI ANIMATION INFINIE : cette barre porte un
+   `backdrop-filter`, et les deux ensemble coûtent une image sur deux sur un
+   téléphone d'entrée de gamme. Une ombre qui bat ne touche ni au calque ni à
+   la mise en page. */
+@keyframes barreBat {
+  0%   { box-shadow: 0 -1px 0 0 rgba(29,26,23,.08); }
+  35%  { box-shadow: 0 -3px 0 0 rgba(232,118,58,.85), 0 -18px 34px -18px rgba(232,118,58,.55); }
+  100% { box-shadow: 0 -1px 0 0 rgba(29,26,23,.08); }
+}
+.barre-bat { animation: barreBat 0.52s ease-out 1; }
+
+/* ⚠️ LE BOUTON QUI PREND LA COMMANDE PORTE SA COULEUR ICI, PAS EN STYLE EN
+   LIGNE. Il est animé par GSAP, et un `clearProps: "all"` VIDE l'attribut
+   `style` : le bouton se retrouvait en texte crème sur fond transparent,
+   au-dessus d'une carte de verre claire. Invisible, mesuré à 1,1:1. Une
+   classe, elle, ne s'efface pas. */
+.btn-commander { background: #1d1a17; color: #f6efe6; }
+
+/* ── L'ARDOISE RONDE DU HÉROS ────────────────────────────────────
+   ⚠️ Elle doit tenir dans sa boîte, qui n'est PAS carrée sur téléphone
+   (100 % × 30vh). Aucun calcul CSS ne sait dire « le plus petit des deux
+   côtés » sans conteneur mesuré : d'où `container-type: size` sur la boîte et
+   `min(100cqw, 100cqh)` sur le disque. La première déclaration `width: 100%`
+   est le repli d'un navigateur qui ne connaît pas les unités `cq` : sans
+   elle, il tomberait sur une largeur automatique, donc nulle. */
+.ardoise-boite { container-type: size; }
+.ardoise-plat {
+  width: 100%;
+  width: min(100cqw, 100cqh);
+  aspect-ratio: 1 / 1;
+}
+
+/* ── QUAND LE PANIER N'EST PAS VIDE, LA SCÈNE LUI FAIT DE LA PLACE ──
+   ⚠️ Depuis qu'on ajoute au panier DEPUIS le héros (2026-08-26), la barre du
+   panier — fixe, en bas, environ 64 px, plus sur téléphone où elle passe à la
+   ligne — apparaît alors qu'on est encore sur la scène. Elle se posait
+   par-dessus la barre du bas et par-dessus le carrousel des sauces : trois
+   rangées de boutons empilées, dont deux inutilisables.
+   Réserver la place en permanence aurait abîmé la scène pour tout le monde,
+   y compris pour qui n'a rien commandé. On la réserve donc au moment où elle
+   sert, et `_outils/_qc.py` mesure qu'il ne reste aucun chevauchement. */
+/* ⚠️ `--barre-h` est MESURÉE par `Carte.tsx`, elle n'est pas écrite ici.
+   Les valeurs en `rem` du premier jet laissaient **8 px de recouvrement** en
+   390 px : la barre passe à la ligne sur téléphone, donc sa hauteur dépend de
+   son contenu. Une hauteur supposée est fausse le jour où le contenu change. */
+body.a-panier .nav-bas { bottom: calc(var(--barre-h, 4rem) + 1.75rem); }
+body.a-panier .rail-bas { bottom: calc(var(--barre-h, 4rem) + 6.5rem); }
+@media (max-width: 767px) {
+  body.a-panier .rail-bas { bottom: calc(var(--barre-h, 4rem) + 5.25rem); }
+  body.a-panier .scene-stack { bottom: calc(var(--barre-h, 4rem) + 11.9rem); }
+}
+
 /* ── LA SCÈNE : DEUX MISES EN PAGE, PAS UNE ──────────────────────
    Sur grand écran, l'assiette est à gauche, le titre au milieu, la carte à
    droite : la composition de la référence, en positions absolues.

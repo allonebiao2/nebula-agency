@@ -74,6 +74,10 @@ export type Plat = {
   garn?: string[];
   /** Libellés des deux tailles quand ce n'est pas « Normal / Grand ». */
   tailles?: [string, string];
+  /** ⚠️ BARÈME À N CRANS, quand deux tailles ne suffisent pas : la glace se
+   *  vend à la boule (1 000 / 1 500 / 2 500 F). Chaque palier porte son
+   *  libellé et son prix exact — ce n'est PAS une fourchette. */
+  paliers?: [string, number][];
   joq?: boolean;
   /** Absent tant que la maison n'a pas donné sa photo. La carte affiche
    *  alors une tuile au nom du plat, jamais une image d'emprunt. */
@@ -121,6 +125,10 @@ CATS.forEach((c) => {
     if (it.garn) out += `, garn: [${it.garn.map((g) => `"${esc(g)}"`).join(", ")}]`;
     if (it.tailles)
       out += `, tailles: [${it.tailles.map((t) => `"${esc(t)}"`).join(", ")}]`;
+    if (it.paliers)
+      out += `, paliers: [${it.paliers
+        .map(([l, v]) => `["${esc(l)}", ${v}]`)
+        .join(", ")}]`;
     if (it.joq) out += `, joq: true`;
     // ⚠️ SANS PHOTO, PAS DE CHAMP. Écrire `/carte/undefined.webp`
     // fabriquait un lien mort que rien n'aurait signalé.

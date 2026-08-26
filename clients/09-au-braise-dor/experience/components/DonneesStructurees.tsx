@@ -27,13 +27,20 @@ export default function DonneesStructurees() {
    *   - `pMax` est une FOURCHETTE (les sauces : le prix dépend de ce qu'on met
    *     dedans) → une offre groupée, de la borne basse à la borne haute ;
    *   - `p2` est une DEUXIÈME TAILLE, à son propre prix → deux offres ;
+   *   - `paliers` est un BARÈME à N crans (la glace, à la boule) → N offres,
+   *     chacune à son prix exact et à son libellé ;
    *   - `p: 0` veut dire « prix pas encore donné » → aucune offre.
    * Le premier jet ne lisait que `p` : le site annonçait « jusqu'à 5 000 F »
    * alors que la carte monte à 6 000 F. Un balisage qui sous-estime est un
    * client qui découvre le vrai prix à table.
    */
   const tous = CARTE.flatMap((c) =>
-    c.items.flatMap((p) => [p.p, p.p2 ?? 0, p.pMax ?? 0]),
+    c.items.flatMap((p) => [
+      p.p,
+      p.p2 ?? 0,
+      p.pMax ?? 0,
+      ...(p.paliers ?? []).map(([, v]) => v),
+    ]),
   ).filter((n) => n > 0);
   const bas = Math.min(...tous);
   const haut = Math.max(...tous);
@@ -49,6 +56,17 @@ export default function DonneesStructurees() {
           priceCurrency: "XOF",
           offerCount: 1,
         },
+      };
+    }
+    if (p.paliers) {
+      return {
+        offers: p.paliers.map(([nom, valeur]) => ({
+          "@type": "Offer",
+          price: String(valeur),
+          priceCurrency: "XOF",
+          availability: "https://schema.org/InStock",
+          name: nom,
+        })),
       };
     }
     const tailles = p.tailles ?? ["Normal", "Grand"];

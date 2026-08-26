@@ -5,6 +5,9 @@ import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ACC, CARTE, NB_PLATS, type Cat, type Plat } from "@/data/carte";
+import { fmt, prix } from "@/data/prix";
+import { brancherCommande } from "@/data/commande";
+import Ardoise from "./Ardoise";
 import { WHATSAPP } from "@/data/dishes";
 import { allerA } from "./aller";
 
@@ -25,52 +28,6 @@ gsap.registerPlugin(ScrollTrigger);
  * téléchargeait 4,3 Mo avant même qu'on arrive au menu.
  */
 
-/**
- * L'ARDOISE — ce qu'on affiche quand la maison n'a pas encore donné sa photo.
- *
- * ⚠️ PAS DE « PHOTO À VENIR », PAS DE CADRE VIDE. Un cadre vide dit au client
- * que le site est en travaux ; « photo à venir » dit que la maison n'est pas
- * prête. Un restaurant, lui, écrit à l'ardoise ce qu'il n'a pas photographié,
- * et personne n'y voit un manque. La tuile porte donc le nom du plat, écrit,
- * et rien d'autre.
- */
-function Ardoise({ nom, grand = false }: { nom: string; grand?: boolean }) {
-  return (
-    <div
-      className="absolute inset-0 grid place-items-center overflow-hidden"
-      style={{
-        background:
-          "radial-gradient(120% 90% at 50% 0%, #3a312a 0%, #241f1b 60%, #1b1714 100%)",
-      }}
-      aria-hidden="true"
-    >
-      {/* le grain de la pierre, très discret */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.16]"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(115deg, rgba(255,255,255,.10) 0 1px, transparent 1px 7px)",
-        }}
-      />
-      <div className="relative px-4 text-center">
-        <p
-          className={
-            "police-titre font-extrabold leading-[1.12] text-[#f0e6d8] " +
-            (grand ? "text-[1.5rem]" : "text-[1.02rem]")
-          }
-          style={{ textShadow: "0 1px 0 rgba(0,0,0,.45)" }}
-        >
-          {nom}
-        </p>
-        <span
-          className="mx-auto mt-2 block h-px w-10 rounded"
-          style={{ background: "rgba(232,118,58,.75)" }}
-        />
-      </div>
-    </div>
-  );
-}
-
 type Ligne = {
   cle: string;
   nom: string;
@@ -85,12 +42,6 @@ type Ligne = {
   uniteMax?: number;
   qte: number;
 };
-
-const fmt = (n: number) => n.toLocaleString("fr-FR").replace(/ | /g, " ");
-
-/** « 1 500 F » ou « 1 500 à 3 500 F » — jamais un chiffre qu'on ne tient pas. */
-const prix = (bas: number, haut?: number) =>
-  haut && haut !== bas ? `${fmt(bas)} à ${fmt(haut)} F` : `${fmt(bas)} F`;
 
 export default function Carte() {
   /* ⚠️ PLUS DE FILTRE, DES ANCRES. Le filtre masquait les sept autres univers :
@@ -134,6 +85,76 @@ export default function Carte() {
   function sauter(id: string) {
     allerA("cat-" + id);
   }
+
+  /* ── LE HÉROS COMMANDE PAR ICI ──────────────────────────────────
+     ⚠️ Le héros ne sait pas ajouter au panier, et c'est voulu : il DEMANDE
+     à la carte d'ouvrir la fiche du plat, et c'est la fiche du menu qui
+     s'ouvre, avec ses garnitures, son accompagnement obligatoire et sa
+     fourchette. Un second moteur de commande dans le héros aurait fini par
+     vendre un autre prix. Voir `data/commande.ts`. */
+  useEffect(() => {
+    brancherCommande((nom) => {
+      for (const c of CARTE) {
+        const p = c.items.find((x) => x.n === nom);
+        if (p) {
+          setOuvert({ cat: c, plat: p });
+          return true;
+        }
+      }
+      return false;
+    });
+    return () => brancherCommande(null);
+  }, []);
+
+  /* ── LA BARRE SE SIGNALE QUAND ELLE GROSSIT ─────────────────────
+     ⚠️ Une sauce ajoutée depuis le héros tombe dans une barre située tout en
+     bas de l'écran : sans un mouvement, on ne voit pas que le geste a marché,
+     et on réappuie. Un battement d'une demi-seconde suffit à le dire. */
+  /* ⚠️ LA BARRE DU PANIER EST FIXE, ET DEPUIS LE 2026-08-26 ELLE PEUT
+     APPARAÎTRE PENDANT QU'ON EST ENCORE SUR LE HÉROS. Elle se posait alors
+     par-dessus la barre du bas de la scène et le carrousel des sauces : deux
+     rangées de boutons rendues inutilisables par une troisième. Le héros ne
+     sait pas ce que fait le panier, mais le corps du document, si. */
+  /* ⚠️ ON MESURE LA BARRE, ON NE DEVINE PAS SA HAUTEUR. Premier jet : des
+     valeurs en `rem` écrites à la main dans le CSS. Le QC a mesuré **8 px de
+     recouvrement** sur la barre du bas en 390 px, parce que la barre passe à
+     la ligne sur téléphone et devient plus haute que prévu. Une hauteur
+     supposée est une hauteur fausse le jour où le contenu change. */
+  const barre = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    document.body.classList.toggle("a-panier", nb > 0);
+    const el = barre.current;
+    if (!nb || !el) {
+      document.body.style.removeProperty("--barre-h");
+      return;
+    }
+    const mesurer = () =>
+      document.body.style.setProperty("--barre-h", el.offsetHeight + "px");
+    mesurer();
+    const ro = new ResizeObserver(mesurer);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [nb]);
+
+  useEffect(
+    () => () => {
+      document.body.classList.remove("a-panier");
+      document.body.style.removeProperty("--barre-h");
+    },
+    []
+  );
+
+  const nbAvant = useRef(0);
+  const [bat, setBat] = useState(false);
+  useEffect(() => {
+    if (nb > nbAvant.current) {
+      setBat(true);
+      const t = setTimeout(() => setBat(false), 520);
+      nbAvant.current = nb;
+      return () => clearTimeout(t);
+    }
+    nbAvant.current = nb;
+  }, [nb]);
 
   /* les blocs de catégorie se révèlent à l'arrivée, une seule fois */
   useEffect(() => {
@@ -296,6 +317,10 @@ export default function Carte() {
                         "Prix sur demande"
                       ) : p.pMax ? (
                         prix(p.p, p.pMax)
+                      ) : p.paliers ? (
+                        /* Trois crans ne tiennent pas dans une pastille : on
+                           annonce la portée, la fiche donne chaque prix. */
+                        prix(p.paliers[0][1], p.paliers[p.paliers.length - 1][1])
                       ) : (
                         <>
                           {fmt(p.p)} F
@@ -342,8 +367,17 @@ export default function Carte() {
       )}
 
       {nb > 0 && (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.08] bg-[color:var(--mur)]/95 px-4 py-3 backdrop-blur">
-          <div className="mx-auto flex max-w-5xl items-center gap-3">
+        <div
+          ref={barre}
+          className={
+            "fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.08] bg-[color:var(--mur)]/95 px-4 py-3 backdrop-blur " +
+            (bat ? "barre-bat" : "")
+          }
+        >
+          {/* ⚠️ `flex-wrap` : à 390 px, trois pastilles de mode + le total +
+              le bouton font 520 px de large. Sans passage à la ligne, la
+              barre débordait de l'écran et le bouton sortait du cadre. */}
+          <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-3">
             <div className="flex gap-1.5">
               {(["place", "emporter", "livraison"] as const).map((m) => (
                 <button
@@ -371,7 +405,7 @@ export default function Carte() {
               href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message())}`}
               target="_blank"
               rel="noreferrer"
-              className="rounded-full px-5 py-2.5 text-[0.85rem] font-semibold text-white transition hover:brightness-110"
+              className="rounded-full px-5 py-2.5 text-center text-[0.85rem] font-semibold text-white transition hover:brightness-110 max-md:w-full"
               style={{ background: "#128040" }}
             >
               Envoyer la commande
@@ -395,7 +429,23 @@ function Fiche({
   onFermer: () => void;
   onAjouter: (l: Omit<Ligne, "cle">) => void;
 }) {
-  const [grand, setGrand] = useState(false);
+  /* ⚠️ UNE SEULE LISTE DE TAILLES, D'OÙ QU'ELLE VIENNE. Un plat déclare soit
+     `paliers` (barème à N crans : la glace se vend à la boule, 1 000 / 1 500 /
+     2 500 F), soit `p2` (deux tailles). Les deux finissent dans le même
+     tableau et le reste de la fiche ne connaît plus qu'un index. Avant, la
+     taille était un booléen `grand` : ajouter un troisième cran demandait de
+     retoucher le prix, le libellé envoyé au panier ET le balisage, trois
+     endroits où l'on peut oublier le troisième prix sans que rien ne le dise. */
+  const paliers: [string, number][] = useMemo(() => {
+    if (plat.paliers) return plat.paliers;
+    if (!plat.p2) return [];
+    const t = plat.tailles ?? ["Normal", "Grand"];
+    return [
+      [t[0], plat.p],
+      [t[1], plat.p2],
+    ];
+  }, [plat]);
+  const [iTaille, setITaille] = useState(0);
   const [acc, setAcc] = useState<string>("");
   const [dedans, setDedans] = useState<string[]>([]);
   const [qte, setQte] = useState(1);
@@ -408,7 +458,7 @@ function Fiche({
      le prix reste à confirmer — et là on ne l'interpole pas, la maison n'a
      jamais donné le prix d'un ingrédient pris séparément. */
   const garn = plat.garn ?? [];
-  const bas = grand && plat.p2 ? plat.p2 : plat.p;
+  const bas = paliers.length ? paliers[iTaille][1] : plat.p;
   const haut = plat.pMax ?? bas;
   const tousDedans = garn.length > 0 && dedans.length === garn.length;
   const rienDedans = garn.length > 0 && dedans.length === 0;
@@ -471,23 +521,25 @@ function Fiche({
           <h3 className="police-titre text-[1.25rem] font-extrabold">{plat.n}</h3>
           {plat.d && <p className="mt-1 text-[0.85rem] text-[color:var(--encre-2)]">{plat.d}</p>}
 
-          {plat.p2 && (
+          {paliers.length > 0 && (
             <div className="mt-5">
               <p className="mb-2 text-[0.75rem] uppercase tracking-widest text-[#a8542f]">Taille</p>
-              <div className="flex gap-2">
-                {[false, true].map((g) => (
+              {/* ⚠️ `flex-wrap` : à trois crans sur un écran de 360 px, trois
+                  boutons sur une ligne coupaient « 2 boules » en deux. */}
+              <div className="flex flex-wrap gap-2">
+                {paliers.map(([libelle, valeur], k) => (
                   <button
-                    key={String(g)}
+                    key={libelle}
                     type="button"
-                    onClick={() => setGrand(g)}
-                    className="flex-1 rounded-2xl border px-3 py-2.5 text-[0.85rem] font-medium transition"
+                    onClick={() => setITaille(k)}
+                    className="min-w-[8.5rem] flex-1 rounded-2xl border px-3 py-2.5 text-[0.85rem] font-medium transition"
                     style={
-                      grand === g
+                      iTaille === k
                         ? { background: "#1d1a17", color: "#f6efe6", borderColor: "#1d1a17" }
                         : { borderColor: "rgba(29,26,23,.18)" }
                     }
                   >
-                    {(plat.tailles ?? ["Normal", "Grand"])[g ? 1 : 0]} · {fmt(g ? plat.p2! : plat.p)} F
+                    {libelle} · {fmt(valeur)} F
                   </button>
                 ))}
               </div>
@@ -589,9 +641,7 @@ function Fiche({
               onClick={() =>
                 onAjouter({
                   nom: plat.n,
-                  taille: plat.p2
-                    ? (plat.tailles ?? ["Normal", "Grand"])[grand ? 1 : 0]
-                    : undefined,
+                  taille: paliers.length ? paliers[iTaille][0] : undefined,
                   acc: acc || undefined,
                   dedans: dedans.length ? dedans : undefined,
                   unite: uMin,

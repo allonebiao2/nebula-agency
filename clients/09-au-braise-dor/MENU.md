@@ -167,8 +167,13 @@ message. J'ai suivi la feuille, qui est le document de la propriétaire.
 et « Sauce poisson frais » (au crin-crin). Les quatre coexistent en attendant.
 
 ## Desserts *(ajoutés le 2026-08-19 par la propriétaire)*
-- **Yaourt** — ⏳ prix non donné
-- **Glace** — ⏳ prix non donné
+- **Yaourt** — ✅ **600 F** *(donné par Mongazi le 2026-08-26)*
+- **Glace** — ✅ **1 boule 1 000 F · 2 boules 1 500 F · 3 boules 2 500 F**
+  *(donné par Mongazi le 2026-08-26)*
+  ⚠️ **Trois prix, pas deux.** Le modèle de données ne connaissait que deux
+  tailles (`p` et `p2`). Un troisième palier n'y entrait pas : il a fallu
+  ajouter `paliers`, un barème à N crans. Sans ça, la boule à 2 500 F
+  disparaissait de la carte et la maison encaissait 1 500 F à sa place.
 - ~~Cocktail~~ ⛔ **sorti des desserts** le 19/08 au soir (Mongazi) : le mot
   faisait doublon avec les 3 cocktails de fruits à 2 500 F. **Il ne reste que
   le yaourt et la glace.**
@@ -190,11 +195,21 @@ Elles portent toutes sur de l'argent qui ne rentre pas aujourd'hui.
 reste au même prix** (seul le lapin part), et le **« cocktail » sort des
 desserts**. Il en reste trois.
 
+✅ **Une troisième question tranchée le 2026-08-26** : le **prix du yaourt et
+de la glace** est arrivé (600 F · 1 000 / 1 500 / 2 500 F). Il en reste deux.
+
 | # | Question | Ce que ça coûte |
 |---|---|---|
-| 1 | **Prix du yaourt et de la glace** | 2 desserts en « prix sur demande » — ⏳ Mongazi les demandera plus tard, c'est assumé |
-| 2 | **Aileron : quel est le prix corrigé au surligneur ?** | le site affiche 3 000, la maison a corrigé le papier |
-| 3 | **Le n° WhatsApp : 01 56 05 71 57 ou 43 99 29 29 ?** | toutes les commandes partent sur le premier |
+| 1 | **Aileron : quel est le prix corrigé au surligneur ?** | le site affiche 3 000, la maison a corrigé le papier |
+| 2 | **Le n° WhatsApp : 01 56 05 71 57 ou 43 99 29 29 ?** | toutes les commandes partent sur le premier |
+
+### ⛔ ET UNE TROISIÈME, TROUVÉE LE 2026-08-26 : LE SITE A DEUX NUMÉROS
+`index.html` écrit `2290156057157` (dix chiffres, avec le `01`).
+`experience/data/dishes.ts`, **le fichier que le site servi utilise**, écrit
+`22956057157` — **le `01` a sauté**. Ce sont deux numéros différents, et c'est
+celui SANS le `01` qui reçoit aujourd'hui toutes les commandes du site.
+⚠️ Rien n'a été touché : le cerveau interdit de modifier un lien WhatsApp sans
+confirmation. À trancher avec la maison, en même temps que la question 2.
 
 ⚠️ Les quatre autres pizzas à deux tailles (à la crème, pili chaud, paysanne,
 pêcheur) sont **confirmées par la photo** : leur second prix est bon.

@@ -65,11 +65,34 @@ RETIRES = [
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 
+def _carte_src():
+    src = os.path.join(RACINE, "..", "data", "carte.ts")
+    return io.open(os.path.normpath(src), encoding="utf-8").read()
+
+
 def plats_attendus():
     """Compte les plats dans `experience/data/carte.ts`, sans les retaper."""
-    src = os.path.join(RACINE, "..", "data", "carte.ts")
-    txt = io.open(os.path.normpath(src), encoding="utf-8").read()
-    return txt.count("      { n: ")
+    return _carte_src().count("      { n: ")
+
+
+def sauces_attendues():
+    """Compte les sauces, qui sont TOUTES au héros depuis le 2026-08-26.
+
+    ⚠️ Lu dans les données, jamais recopié : le jour où la maison ajoute une
+    sauce, ce contrôle doit la réclamer au héros tout seul.
+    """
+    txt = _carte_src()
+    i = txt.index('id: "sauces"')
+    j = txt.index('id: "petitdej"')
+    return txt.count("      { n: ", i, j)
+
+
+def rgb(txt):
+    """« rgb(29, 26, 23) » ou « rgba(…) » → (29, 26, 23). None si transparent."""
+    n = [float(v) for v in txt[txt.index("(") + 1:txt.index(")")].split(",")]
+    if len(n) > 3 and n[3] < 0.99:
+        return None
+    return tuple(int(v) for v in n[:3])
 
 
 def lum(c):
@@ -235,6 +258,301 @@ def main():
                     pire, pire_nom = r, carte.locator("p.police-titre").last.inner_text()
             dire(pire >= 4.5, "[prix] %s : la pastille la moins lisible est « %s » à %.1f:1"
                  % (cat, pire_nom, pire))
+        pg.close()
+
+        # ══ LE HÉROS (refonte du 2026-08-26) ═══════════════════════════════
+        # Trois demandes de Mongazi, trois familles de contrôles : TOUTES les
+        # sauces, ça avance TOUT SEUL et vite, on COMMANDE depuis là.
+        attendues = sauces_attendues()
+        for nom, largeur, hauteur in [("mobile", 390, 844), ("bureau", 1440, 900)]:
+            pg = nav.new_page(viewport={"width": largeur, "height": hauteur},
+                              device_scale_factor=2)
+            bugs = []
+            pg.on("pageerror", lambda e: bugs.append(str(e)))
+            pg.goto("http://127.0.0.1:%d/" % port, wait_until="networkidle", timeout=60000)
+            pg.wait_for_selector("[data-sauce]", timeout=60000)
+
+            # ── 1. toutes les sauces sont là ──────────────────────────────
+            n = pg.evaluate(
+                "document.querySelectorAll('.swiper-slide button[aria-label]').length")
+            dire(n == attendues,
+                 "[héros %s] %d sauces au carrousel (la carte en compte %d)"
+                 % (nom, n, attendues))
+
+            # ── 2. elles ne sont pas TOUTES chargées d'un coup ────────────
+            # ⚠️ Les quatorze découpes pèsent plus de 2 Mo. C'est le premier
+            #    écran : on n'en monte qu'une poignée.
+            img = pg.evaluate("document.querySelectorAll('.scene-plat img').length")
+            dire(img <= 5, "[héros %s] %d assiettes chargées au départ, pas %d"
+                 % (nom, img, attendues))
+
+            # ── 3. ÇA AVANCE TOUT SEUL, et vite ───────────────────────────
+            # ⚠️ LE TÉMOIN D'ABORD. Un contrôle de pause qui n'a pas prouvé
+            #    que le mécanisme tourne passe aussi quand le mécanisme est
+            #    MORT. On prouve donc le mouvement avant de prouver l'arrêt.
+            a = pg.get_attribute("[data-sauce]", "data-sauce")
+            pg.wait_for_timeout(4200)      # une sauce toutes les 2,8 s
+            b = pg.get_attribute("[data-sauce]", "data-sauce")
+            dire(a != b, "[héros %s] la scène avance seule : sauce %s → %s en 4,2 s"
+                 % (nom, a, b))
+
+            # ── 3 bis. LE BOUTON QUI PREND LA COMMANDE EST-IL VISIBLE ? ───
+            # ⛔ TROUVÉ SUR UNE CAPTURE, PAS PAR UN CONTRÔLE, et c'est la
+            #    leçon : `clearProps: "all"` ne retire pas « ce que GSAP a
+            #    posé », il VIDE l'attribut `style`. Le bouton, dont la
+            #    couleur était en style en ligne, finissait en texte crème sur
+            #    fond transparent, au-dessus d'une carte de verre claire :
+            #    **1,1:1**, invisible. ⚠️ Le défaut est ANTÉRIEUR à la refonte
+            #    du héros — l'ancien bouton vert « Commander sur WhatsApp »
+            #    avait exactement le même sort, sur le site en ligne.
+            b = pg.evaluate("""() => {
+                const e = [...document.querySelectorAll('button')]
+                    .find(x => /Ajouter au panier/.test(x.textContent || ''));
+                if (!e) return null;
+                const s = getComputedStyle(e);
+                return { fond: s.backgroundColor, texte: s.color,
+                         opacite: parseFloat(s.opacity) }; }""")
+            dire(b is not None, "[héros %s] le bouton « Ajouter au panier » existe" % nom)
+            if b:
+                fond, texte = rgb(b["fond"]), rgb(b["texte"])
+                dire(fond is not None,
+                     "[héros %s] son fond est opaque : %s" % (nom, b["fond"]))
+                if fond and texte:
+                    r = contraste(texte, fond)
+                    dire(r >= 4.5, "[héros %s] on lit « Ajouter au panier » : %.1f:1"
+                         % (nom, r))
+                dire(b["opacite"] >= 0.99,
+                     "[héros %s] il est à pleine opacité : %.2f" % (nom, b["opacite"]))
+
+            # ── 3 ter. LA DEUXIÈME LIGNE DU TITRE EST LA PLUS GROSSE ──────
+            # ⚠️ C'est LA signature du héros : une ligne fine et espacée, puis
+            #    la même police en très gras juste dessous. Le corps de la 2e
+            #    ligne est calculé par sauce (donc en style en ligne) : le même
+            #    `clearProps: "all"` l'effaçait et la ligne qu'on doit lire
+            #    ressortait plus PETITE que l'autre.
+            t = pg.evaluate("""() => {
+                const a = document.querySelector('.dt-l1');
+                const b = document.querySelector('.dt-l2');
+                if (!a || !b) return null;
+                return { l1: parseFloat(getComputedStyle(a).fontSize),
+                         l2: parseFloat(getComputedStyle(b).fontSize) }; }""")
+            dire(t is not None and t["l2"] > t["l1"],
+                 "[héros %s] la 2e ligne du titre est la plus grosse : %s"
+                 % (nom, "" if not t else "%.0f px contre %.0f" % (t["l2"], t["l1"])))
+
+            # ── 3 ter bis. L'ASSIETTE NE SORT PAS DE SA BOÎTE ─────────────
+            # ⛔ Vu sur capture : l'ardoise ronde débordait de 100 px sous sa
+            #    boîte en 390 px et se posait sur l'accroche et sur le titre.
+            #    `absolute inset-0` fixe DÉJÀ les deux dimensions, donc
+            #    `aspect-ratio` est ignoré — et la boîte de l'assiette n'est
+            #    carrée que sur grand écran.
+            # ⚠️ ET ON VA LA CHERCHER. Mesurer « l'ardoise » sur la sauce
+            #    courante, c'est ne rien mesurer huit fois sur quatorze : il
+            #    n'y en a pas là. On saute donc sur la première sauce qui n'a
+            #    pas de photo. Le jour où la maison les aura toutes envoyées,
+            #    il n'y en aura plus, et le contrôle le DIT au lieu de passer
+            #    en silence.
+            k = pg.evaluate("""() => [...document.querySelectorAll(
+                '.swiper-slide button[aria-label]')].findIndex(b => !b.querySelector('img'))""")
+            if k < 0:
+                dire(True, "[héros %s] plus aucune ardoise : toutes les sauces ont leur photo" % nom)
+            else:
+                pg.evaluate("""(k) => document
+                    .querySelectorAll('.swiper-slide button[aria-label]')[k].click()""", k)
+                pg.wait_for_timeout(900)
+                # ⚠️ ON MESURE L'ENFANT CONTRE SON PROPRE CONTENEUR, PAS
+                #    CONTRE `.scene-plat`. Les quatorze assiettes sont
+                #    DÉPLACÉES par GSAP (74 % de large, 66 % de haut) : les
+                #    comparer à la boîte commune, c'est mesurer un
+                #    déplacement, pas un débordement. Le premier jet annonçait
+                #    « 170 px » sur une ardoise qui tient parfaitement — il
+                #    avait attrapé la voisine, garée hors champ.
+                #    Enfant et conteneur subissent la MÊME transformation :
+                #    leur différence est du pur débordement de mise en page.
+                # ⚠️ ET ON LES MESURE TOUTES. Chercher « celle qui est à
+                #    l'écran » demandait de deviner laquelle : la scène avance
+                #    toute seule, et entre le clic et la mesure elle avait
+                #    parfois changé de sauce — le contrôle renvoyait `None`
+                #    sur un site sain. Puisque la comparaison enfant/parent est
+                #    insensible aux transformations, les huit ardoises se
+                #    mesurent aussi bien garées qu'à l'écran.
+                debord = pg.evaluate("""() => {
+                    const l = [...document.querySelectorAll('.ardoise-plat')];
+                    if (!l.length) return null;
+                    return Math.round(Math.max(...l.map(e => {
+                        const q = e.getBoundingClientRect();
+                        const r = e.parentElement.getBoundingClientRect();
+                        return Math.max(q.bottom - r.bottom, r.top - q.top,
+                                        q.right - r.right, r.left - q.left);
+                    }))); }""")
+                dire(debord is not None and debord <= 1,
+                     "[héros %s] l'ardoise tient dans sa boîte : %s px de débordement"
+                     % (nom, debord))
+
+            # ── 3 quater. LES POINTS NE SE POSENT PAS SUR LE TEXTE ────────
+            # ⚠️ Sur téléphone la scène est une colonne pleine largeur : la
+            #    pile de points tombait sur l'accroche et sur le titre. Un
+            #    instrument flottant ne recouvre jamais du texte.
+            pts = pg.evaluate("""() => {
+                const d = [...document.querySelectorAll('[aria-label^="Aller à la sauce"]')];
+                if (!d.length) return { cache: true, cognes: [] };
+                const b = d[0].parentElement.getBoundingClientRect();
+                // ⚠️ `display: none` laisse les boutons dans le DOM. Sans ce
+                //    test, le contrôle passait en annonçant une pile visible.
+                if (!b.width || !b.height) return { cache: true, cognes: [] };
+                const cognes = [];
+                for (const s of ['.scene-txt', '.scene-carte']) {
+                    const e = document.querySelector(s);
+                    if (!e) continue;
+                    const r = e.getBoundingClientRect();
+                    const h = Math.min(b.bottom, r.bottom) - Math.max(b.top, r.top);
+                    const w = Math.min(b.right, r.right) - Math.max(b.left, r.left);
+                    if (h > 1 && w > 1) cognes.push(s + ' sur ' + Math.round(w) + ' px');
+                }
+                return { cache: false, cognes }; }""")
+            dire(pts["cache"] or not pts["cognes"],
+                 "[héros %s] les points ne recouvrent aucun texte%s"
+                 % (nom, " (masqués sur téléphone)" if pts["cache"]
+                    else ("" if not pts["cognes"] else " → %s" % pts["cognes"])))
+
+            # ── 4. on commande DEPUIS le héros ────────────────────────────
+            pg.evaluate("""() => [...document.querySelectorAll('button')]
+                .find(b => /Ajouter au panier/.test(b.textContent || '')).click()""")
+            pg.wait_for_timeout(700)
+            ouverte = pg.evaluate(
+                """() => !!document.querySelector('[role=dialog][aria-label^="Commander"]')""")
+            dire(ouverte, "[héros %s] « Ajouter au panier » ouvre la fiche de commande" % nom)
+
+            # ── 5. …et la scène s'arrête DERRIÈRE la fiche ────────────────
+            # ⚠️ Sans ça, la sauce change pendant qu'on choisit son
+            #    accompagnement, et on ajoute au panier autre chose que ce
+            #    qu'on regardait.
+            c = pg.get_attribute("[data-sauce]", "data-sauce")
+            pg.wait_for_timeout(4200)
+            d = pg.get_attribute("[data-sauce]", "data-sauce")
+            dire(c == d, "[héros %s] la scène ne tourne plus derrière la fiche (sauce %s)"
+                 % (nom, c))
+
+            # ── 6. la sauce tombe bien dans LE panier ─────────────────────
+            titre = pg.evaluate(
+                """() => document.querySelector('[role=dialog][aria-label^="Commander"] h3').textContent""")
+            pg.evaluate("""() => {
+                const d = document.querySelector('[role=dialog][aria-label^="Commander"]');
+                const t = [...d.querySelectorAll('p')]
+                    .find(p => /Accompagnement/.test(p.textContent || ''));
+                if (t) t.parentElement.querySelector('button').click(); }""")
+            pg.wait_for_timeout(250)
+            pg.evaluate("""() => document
+                .querySelector('[role=dialog][aria-label^="Commander"] button.flex-1').click()""")
+            pg.wait_for_timeout(600)
+            barre = pg.evaluate("""() => {
+                const a = [...document.querySelectorAll('a')]
+                    .find(x => /Envoyer la commande/.test(x.textContent || ''));
+                if (!a) return null;
+                const r = a.getBoundingClientRect();
+                return { visible: r.width > 0 && r.bottom <= innerHeight + 1,
+                         texte: a.parentElement.innerText }; }""")
+            dire(barre is not None and barre["visible"],
+                 "[héros %s] « %s » ajoutée depuis le héros : la barre du panier s'affiche"
+                 % (nom, titre))
+            if barre:
+                dire("1 article" in barre["texte"],
+                     "[héros %s] le panier compte bien un article" % nom)
+
+            # ── 6 bis. LA BARRE DU PANIER NE RECOUVRE RIEN ────────────────
+            # ⚠️ Elle est FIXE et elle apparaît maintenant pendant qu'on est
+            #    encore sur la scène : elle se posait par-dessus la barre du
+            #    bas et par-dessus le carrousel des sauces. Un instrument
+            #    flottant ne recouvre jamais un autre instrument.
+            chevauche = pg.evaluate("""() => {
+                const bar = [...document.querySelectorAll('a')]
+                    .find(x => /Envoyer la commande/.test(x.textContent || ''));
+                if (!bar) return null;
+                const b = bar.closest('div.fixed').getBoundingClientRect();
+                const cognes = [];
+                for (const s of ['.nav-bas', '.rail-bas']) {
+                    const e = document.querySelector(s);
+                    if (!e) continue;
+                    const r = e.getBoundingClientRect();
+                    const h = Math.min(b.bottom, r.bottom) - Math.max(b.top, r.top);
+                    const w = Math.min(b.right, r.right) - Math.max(b.left, r.left);
+                    if (h > 1 && w > 1) cognes.push(s + ' sur ' + Math.round(h) + ' px');
+                }
+                return cognes; }""")
+            dire(chevauche is not None and not chevauche,
+                 "[héros %s] la barre du panier ne recouvre ni la nav ni le carrousel%s"
+                 % (nom, "" if not chevauche else " → %s" % chevauche))
+
+            deb = pg.evaluate(
+                "document.documentElement.scrollWidth - document.documentElement.clientWidth")
+            dire(deb <= 0, "[héros %s] débordement horizontal, panier plein : %d px" % (nom, deb))
+            dire(not bugs, "[héros %s] 0 erreur JS%s"
+                 % (nom, "" if not bugs else " → %s" % bugs[:2]))
+            pg.close()
+
+            # ── 7. aucun titre de sauce ne déborde de sa colonne ──────────
+            # ⚠️ « SAUCE TÊTE DE MOUTON » en très gras traverse la colonne du
+            #    titre, qui ne fait que 366 px sur un écran de 1440.
+            # ⚠️ ET ON MESURE SOUS `prefers-reduced-motion`. Sans ça, la scène
+            #    avance toute seule entre le clic et la mesure : on croit
+            #    mesurer la 7e sauce et on mesure la 8e. Un contrôle qui vise à
+            #    côté une fois sur cinq est pire qu'un contrôle absent.
+            pg = nav.new_page(viewport={"width": largeur, "height": hauteur},
+                              reduced_motion="reduce")
+            pg.goto("http://127.0.0.1:%d/" % port, wait_until="networkidle", timeout=60000)
+            pg.wait_for_selector("[data-sauce]", timeout=60000)
+            pire, pire_nom = -99.0, ""
+            for k in range(attendues):
+                pg.evaluate("""(k) => document
+                    .querySelectorAll('.swiper-slide button[aria-label]')[k].click()""", k)
+                # ⚠️ ON NE MESURE PAS UNE BOÎTE QUI EST EN TRAIN DE GLISSER.
+                #    Premier jet : `getBoundingClientRect().right` comparé au
+                #    parent, 260 ms après le clic. Le titre entre en scène par
+                #    un `fromTo({x: 50})` de 0,7 s (GSAP ignore
+                #    `prefers-reduced-motion`, seul notre code le lit) : on
+                #    mesurait le X de l'animation et le contrôle annonçait
+                #    « KRINKRIN dépasse de 36 px » sur un titre parfaitement
+                #    posé. `scrollWidth - clientWidth` ne connaît pas les
+                #    transformations, et il voit aussi le mot qui ne peut pas
+                #    aller à la ligne — c'est exactement le défaut cherché.
+                pg.wait_for_timeout(1150)
+                m = pg.evaluate("""() => {
+                    const e = document.querySelector('.dt-l2');
+                    if (!e) return null;
+                    return { d: e.scrollWidth - e.clientWidth, t: e.textContent }; }""")
+                if m and m["d"] > pire:
+                    pire, pire_nom = m["d"], m["t"]
+            dire(pire <= 1.0,
+                 "[héros %s] le titre le plus large est « %s », il dépasse de %.0f px"
+                 % (nom, pire_nom, pire))
+            pg.close()
+
+        # ══ LA GLACE SE VEND À LA BOULE ════════════════════════════════════
+        # ⚠️ Trois prix, pas deux. Le modèle ne connaissait que « Normal /
+        #    Grand » : un troisième palier oublié, c'est la maison qui encaisse
+        #    2 500 F de moins sans que personne le voie.
+        pg = nav.new_page(viewport={"width": 1440, "height": 900})
+        pg.goto("http://127.0.0.1:%d/" % port, wait_until="networkidle", timeout=60000)
+        pg.wait_for_selector("#cat-dessert", state="attached", timeout=60000)
+        pg.evaluate("""() => { const e = document.getElementById('cat-dessert');
+            window.__lenis ? window.__lenis.scrollTo(e, { immediate: true }) : e.scrollIntoView(); }""")
+        pg.wait_for_timeout(1500)
+        pg.evaluate("""() => [...document.querySelectorAll('#cat-dessert .ct-item')]
+            .find(a => /Glace/.test(a.innerText)).click()""")
+        pg.wait_for_timeout(800)
+        crans = pg.evaluate("""() => {
+            const d = document.querySelector('[role=dialog][aria-label^="Commander"]');
+            const t = [...d.querySelectorAll('p')].find(p => /^Taille$/.test(p.textContent.trim()));
+            return t ? [...t.parentElement.querySelectorAll('button')].map(b => b.textContent.trim()) : []; }""")
+        dire(len(crans) == 3, "[glace] %d paliers dans la fiche : %s" % (len(crans), crans))
+        # ⚠️ Les prix sont écrits avec des espaces INSÉCABLES (un prix ne se
+        #    coupe pas en fin de ligne) : on compare sans aucune espace, sinon
+        #    le contrôle échoue sur un site parfaitement juste.
+        def serrer(s):
+            return "".join(c for c in s if not c.isspace() and c not in "\u00a0\u202f")
+        for cran in ["1 boule · 1 000 F", "2 boules · 1 500 F", "3 boules · 2 500 F"]:
+            dire(any(serrer(c) == serrer(cran) for c in crans),
+                 "[glace] le palier « %s » est là" % cran)
         pg.close()
         nav.close()
 

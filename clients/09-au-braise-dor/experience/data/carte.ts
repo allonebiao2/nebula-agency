@@ -20,6 +20,10 @@ export type Plat = {
   garn?: string[];
   /** Libellés des deux tailles quand ce n'est pas « Normal / Grand ». */
   tailles?: [string, string];
+  /** ⚠️ BARÈME À N CRANS, quand deux tailles ne suffisent pas : la glace se
+   *  vend à la boule (1 000 / 1 500 / 2 500 F). Chaque palier porte son
+   *  libellé et son prix exact — ce n'est PAS une fourchette. */
+  paliers?: [string, number][];
   joq?: boolean;
   /** Absent tant que la maison n'a pas donné sa photo. La carte affiche
    *  alors une tuile au nom du plat, jamais une image d'emprunt. */
@@ -140,11 +144,11 @@ export const CARTE: Cat[] = [
       { n: "Cappuccino", d: "Café crémeux.", p: 1500, img: "/carte/pd-cappuccino.webp" },
       { n: "Omelette aux légumes", d: "Œufs et légumes frais.", p: 1000, img: "/carte/pd-omelette-legumes.webp" },
       { n: "Omelette nature", d: "La simple et bonne.", p: 1000, img: "/carte/pd-omelette-nature.webp" },
-      { n: "Œuf sur plat", d: "Œufs au plat.", p: 1000 },
+      { n: "Œuf sur plat", d: "Œufs au plat.", p: 1000, img: "/carte/pd-oeuf-plat.webp" },
       { n: "Café au lait", d: "Peak, chaud ou froid.", p: 1000, img: "/carte/pd-cafe-lait.webp" },
-      { n: "Café au lait écrémé", d: "Chaud ou froid, au lait écrémé.", p: 1000 },
-      { n: "Café chaud serré", d: "Le serré, bien chaud.", p: 500 },
-      { n: "Lipton citron", d: "Thé Lipton au citron.", p: 500 },
+      { n: "Café au lait écrémé", d: "Chaud ou froid, au lait écrémé.", p: 1000, img: "/carte/pd-cafe-lait-ecreme.webp" },
+      { n: "Café chaud serré", d: "Le serré, bien chaud.", p: 500, img: "/carte/pd-cafe-serre.webp" },
+      { n: "Lipton citron", d: "Thé Lipton au citron.", p: 500, img: "/carte/pd-lipton-citron.webp" },
     ],
   },
   {
@@ -163,8 +167,8 @@ export const CARTE: Cat[] = [
     label: "Desserts",
     tag: "Pour finir",
     items: [
-      { n: "Yaourt", p: 0 },
-      { n: "Glace", p: 0 },
+      { n: "Yaourt", p: 600, img: "/carte/d-yaourt.webp" },
+      { n: "Glace", d: "Une, deux ou trois boules.", p: 1000, paliers: [["1 boule", 1000], ["2 boules", 1500], ["3 boules", 2500]], img: "/carte/d-glace.webp" },
     ],
   },
 ];
