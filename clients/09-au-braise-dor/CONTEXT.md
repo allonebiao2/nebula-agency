@@ -446,6 +446,79 @@ photographie les 14 sauces en 390 et 1440 : les regarder est la seule façon.
 a sauté**. Rien n'a été touché (règle : jamais un lien WhatsApp sans
 confirmation). À trancher.
 
+## 📍 LA FICHE GOOGLE — dossier complet dans `GOOGLE-BUSINESS.md` (2026-08-27)
+
+**⛔ On ne crée PAS une deuxième fiche.** La maison a déjà une présence sur
+Maps et a perdu l'accès au compte (mail + mail de secours). La demande était
+d'en recréer une sous « Aux Braisé d'Or Restaurant » : refusé, et pour trois
+raisons.
+
+1. ⛔ **« Aux » est une faute** : `au` = à le (singulier), `aux` = à les. Tout
+   le reste de la maison écrit « Au » : l'enseigne, le menu papier,
+   `aubraisedor@gmail.com`, le site, le balisage. Une fiche dont le nom
+   contredit l'enseigne échoue à la **validation vidéo**, qui filme l'enseigne.
+2. ⚠️ **« Restaurant » déplacé à la fin devient un mot-clé** = motif n° 1 de
+   suspension (30 jours et plus pour contester). En revanche, **si l'enseigne
+   peinte dit « RESTAURANT AU BRAISÉ D'OR », ce nom est légitime tel quel** :
+   un nom se recopie, il ne se réarrange pas.
+3. ⛔ **Une 2ᵉ fiche double le problème** : Google déduplique sur
+   adresse + téléphone + activité. Soit il refuse, soit il **fusionne dans la
+   fiche inaccessible** (le travail est perdu), soit **une des deux est
+   suspendue**. Et même si ça passe : on perd les avis, l'ancienneté et la
+   position Maps de l'ancienne, qui reste en ligne et sort devant.
+
+⚡ **Perdre le mail n'est pas perdre la fiche.** Soit elle n'a jamais été
+revendiquée (rien à récupérer, on la revendique), soit elle l'est par un compte
+injoignable, et **c'est exactement le cas prévu par « Demander l'accès »** : le
+propriétaire ne répond jamais, et **ce silence donne la fiche** au bout de
+3 à 7 jours.
+
+### ⛔ Les quatre blocages, tous antérieurs à la fiche
+
+- **QUATRE numéros en circulation**, et ⚡ **une explication** : le Bénin est
+  passé de 8 à 10 chiffres fin 2020 (préfixe `01`). Donc `43 99 29 29` de
+  l'enseigne = `01 43 99 29 29` en ancien format, et surtout
+  ⛔ **`22956057157` de `dishes.ts` = `01 56 05 71 57` AMPUTÉ de son `01`** :
+  c'est l'**ancienne forme** du numéro du site, et c'est **elle qui reçoit
+  toutes les commandes**. → tester `wa.me/22956057157` contre
+  `wa.me/2290156057157` et `wa.me/2290143992929`. **30 secondes.**
+- **L'adresse** : ⚠️ un restaurant où l'on s'assoit **ne peut pas** être en
+  « zone de service » comme Hillary. Adresse physique publique obligatoire,
+  point posé **sur la porte**.
+- **Les horaires** : « ouvert tous les jours » n'en est pas un. ⚠️ Le filtre
+  **« Ouvert »** de Maps est l'un des plus utilisés : sans horaires, la maison
+  est invisible à l'heure où l'on cherche où manger.
+- **Le nom exact de l'enseigne** : le dossier dit « Restaurant Au Braisé d'Or »,
+  le site dit « Au Braisé d'Or ». **Deux noms différents pour Google.** Une
+  photo de l'enseigne tranche, et le site s'aligne dessus.
+
+### Ce que le dossier contient, prêt à recopier
+Nom · catégorie principale *(⚡ le champ le plus lourd de la fiche)* ·
+**catégories secondaires Traiteur et Salle de réception, deux activités déjà
+vendues que personne ne cherche chez elle** · description **714 caractères
+mesurés** (limite 750) · attributs *(⛔ pas d'alcool : la propriétaire a retiré
+les 3 cocktails alcoolisés le 19/08)* · **le menu 52 plats / 9 rubriques** dans
+le module natif · les photos · la validation vidéo · avis, Q&R, posts ·
+**SEO local + GEO**.
+
+⚠️ **Les 48 photos générées restent sur le site (tranché, non rediscuté) mais
+ne montent PAS sur la fiche** : autre surface, autre règle, et un client qui
+commande d'après une image trop belle laisse un avis à une étoile.
+
+⚠️ **GEO : le site est déjà bien parti** (robots IA autorisés, balisage
+`Restaurant` + `Menu` avec les 52 prix, **export statique donc le texte est
+dans le HTML servi** — la plupart des robots d'IA n'exécutent pas le JS). Ce
+qui manque : la fiche elle-même, la **corroboration** par 3-4 sources au même
+NAP, et ⚠️ **un vrai domaine** (`au-braise-dor.pages.dev` n'a aucune autorité
+propre et a l'air provisoire) : c'est le geste au meilleur rapport
+effort/résultat.
+
+### ⚠️ La leçon, pour tous les clients
+À la création de tout compte Google client, **le même jour** : adresse de
+secours + numéro de secours renseignés, notés sur papier, **et NEBULA ajoutée
+comme gestionnaire**. Ce dernier point aurait suffi ici : la fiche serait
+ouverte.
+
 ## ⏳ Ce qui reste
 
 - ✅ **FAIT le 2026-08-26 : les quatorze sauces ont leur photo.** Plus une
