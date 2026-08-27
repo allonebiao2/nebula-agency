@@ -94,6 +94,12 @@ LOTS = [
     #    EXACTEMENT la meme couverture (57,8 %) et la meme forme. On garde isnet
     #    pour que les sept assiettes soient decoupees de la meme main.
     ("sc-yassa", "2026-08-26-sauce-yassa-detoure.jpg", False),
+    # ⚠️ Tomate, 2026-08-26, la derniere. Planche refaite : birefnet mange le
+    #    bord droit de l'assiette et laisse un crochet qui flotte a mi-hauteur ;
+    #    isnet garde l'octogone. SIXIEME lot d'affilee ou isnet gagne sur une
+    #    source en damier. La regle reste de refaire la planche : c'est elle qui
+    #    a evite une viande sans assiette sur la tete de mouton.
+    ("sc-tomate", "2026-08-26-sauce-tomate-detoure.jpg", False),
 ]
 
 
@@ -120,8 +126,16 @@ def reboucher(alpha, seuil=8):
     le panache de vapeur et l'assiette serait « pris entre deux morceaux » lui
     aussi, et on souderait la vapeur au plat.
 
-    Mesure : six des sept assiettes n'ont aucune fente et ressortent
-    identiques ; seul le gombo en a une de 3 px, sans effet visible.
+    ⚠️ POURQUOI 8 % ET PAS PLUS. Les dix assiettes du site ont ete mesurees
+    avant de choisir : six n'ont aucune fente, le gombo en a une de 3 px
+    (0,4 %), la graine 52 px (5,8 %) — mais le moyo 161 px (18,2 %) et le
+    poisson 121 px (12,7 %). Ces deux-la sont des bols ronds simples, et leur
+    « fente » est l'espace entre LE PANACHE DE VAPEUR et le bord du bol : la
+    combler souderait la vapeur au plat. Le seuil ferme les deux vraies fentes
+    et laisse ces deux-la loin au-dessus. (Ils passent par un autre outil, donc
+    la garde est une precaution, pas une necessite.)
+
+    Mesure apres coup : six des sept assiettes ressortent identiques au MD5.
     """
     n = np.asarray(alpha).copy()
     total = 0

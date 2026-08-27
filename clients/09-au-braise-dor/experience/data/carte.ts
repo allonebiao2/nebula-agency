@@ -123,7 +123,7 @@ export const CARTE: Cat[] = [
       { n: "Sauce feuille", d: "Gbêkê mijoté.", p: 1500, pMax: 3000, garn: ["Poisson", "Crevette"], img: "/carte/sc-feuille.webp" },
       { n: "Sauce arachide", d: "La pâte d'arachide, longuement mijotée.", p: 1500, pMax: 3000, garn: ["Viande de mouton", "Poisson"], img: "/carte/sc-arachide.webp" },
       { n: "Sauce graine", d: "La graine de palme, pressée à la maison.", p: 1500, pMax: 3000, img: "/carte/sc-graine.webp" },
-      { n: "Sauce tomate", d: "Tomate fraîche, mijotée.", p: 1500, pMax: 3000 },
+      { n: "Sauce tomate", d: "Tomate fraîche, mijotée.", p: 1500, pMax: 3000, img: "/carte/sc-tomate.webp" },
       { n: "Sauce tête de mouton", d: "Le gbata, pour ceux qui savent.", p: 1500, pMax: 3000, img: "/carte/sc-tete-mouton.webp" },
       { n: "Sauce pieds de bœuf", d: "Le blokoto, fondant.", p: 1500, pMax: 3000, img: "/carte/sc-pieds-boeuf.webp" },
       { n: "Sauce Yassa", d: "À l'oignon et au citron.", p: 1500, pMax: 3000, garn: ["Poisson", "Viande"], img: "/carte/sc-yassa.webp" },

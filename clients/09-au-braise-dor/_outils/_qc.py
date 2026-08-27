@@ -176,9 +176,26 @@ def main():
                 "document.documentElement.scrollWidth - document.documentElement.clientWidth")
             dire(deb <= 0, "[%s] débordement horizontal : %d px" % (nom, deb))
 
-            # ⚠️ la fiche, visée par son étiquette (voir piège 2)
-            pg.evaluate("""() => [...document.querySelectorAll('.ct-item')]
-                .find(x => !x.querySelector('img')).click()""")
+            # ⚠️ CE CONTROLE PLANTAIT SUR UN `null.click()` LE 2026-08-26, le jour
+            #    ou le dernier plat a recu sa photo. Il cherchait « un plat sans
+            #    image » pour ouvrir sa fiche, et il n'y en a plus AUCUN sur les 52.
+            #    Un controle qui plante ne protege plus rien : il doit dire qu'il
+            #    n'a plus de sujet, pas s'arreter au milieu de la suite.
+            # ⚠️ ET SURTOUT : DEUX CHOSES SANS RAPPORT etaient accrochees au meme
+            #    clic. L'ardoise est un cas particulier qui peut disparaitre ;
+            #    l'ACCOMPAGNEMENT OBLIGATOIRE est une regle metier valable pour
+            #    tout plat, et une commande qui part sans lui arrive incomplete en
+            #    cuisine. En laissant les deux ensemble, la seconde serait morte
+            #    avec la premiere, sans un mot. On les separe : a defaut d'ardoise,
+            #    on ouvre une SAUCE, categorie qui exige toujours un accompagnement.
+            vise = pg.evaluate("""() => {
+                const tous = [...document.querySelectorAll(".ct-item")];
+                const sans = tous.find(x => !x.querySelector("img"));
+                if (sans) { sans.click(); return "ardoise"; }
+                const sauce = document.querySelector("#cat-sauces .ct-item");
+                if (sauce) { sauce.click(); return "sauce"; }
+                if (tous[0]) { tous[0].click(); return "premier plat"; }
+                return null; }""")
             pg.wait_for_timeout(900)
             fiche = pg.evaluate("""() => {
                 const d = document.querySelector('[role=dialog][aria-label^="Commander"]');
@@ -191,10 +208,15 @@ def main():
                          bloque: b ? b.disabled : null,
                          demandeAcc: acc,
                          img: !!d.querySelector('img') }; }""")
-            dire(fiche is not None, "[%s] la fiche s'ouvre sur un plat sans photo" % nom)
+            dire(fiche is not None,
+                 "[%s] la fiche s'ouvre (%s)" % (nom, vise or "aucun plat a ouvrir"))
             if fiche:
-                dire(not fiche["img"],
-                     "[%s] la fiche n'appelle aucune image : ardoise « %s »" % (nom, fiche["titre"]))
+                if vise == "ardoise":
+                    dire(not fiche["img"],
+                         "[%s] la fiche n'appelle aucune image : ardoise « %s »"
+                         % (nom, fiche["titre"]))
+                else:
+                    dire(True, "[%s] plus aucune ardoise au menu : les 52 plats ont leur photo,\n       le controle de la fiche sans image n'a plus de sujet" % nom)
                 # ⚠️ L'ACCOMPAGNEMENT EST OBLIGATOIRE quand la catégorie en propose.
                 # Une commande sans accompagnement arrive incomplète en cuisine.
                 if fiche["demandeAcc"]:

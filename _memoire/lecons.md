@@ -1416,3 +1416,62 @@ Trois contrôles ont accusé un site parfaitement juste, le même jour :
 - **La règle** : mesurer une **mise en page**, jamais un instant d'animation.
   Et quand plusieurs copies d'un élément coexistent, viser **la relation** (un
   enfant contre son parent), pas une position absolue.
+
+## 2026-08-26 — Réparer un script qui échouait tôt réveille tout ce qu'il ne faisait plus
+
+- **Contexte** : `_photos_sauces.py` mourait en **code 137 (tué faute de
+  mémoire)** à la deuxième photo — une seule session rembg pour tout le lot,
+  la fuite d'onnxruntime déjà vue chez Hillary. Réparé en donnant **un
+  processus par photo**.
+- **Ce qui a suivi, et que je n'attendais pas** : le script, enfin capable
+  d'aller au bout, a atteint deux fichiers qu'il ne touchait plus depuis des
+  semaines — et les a **écrasés**. Sur l'un, le carré automatique coupait tout
+  le bord du bol : il ne restait qu'une texture jaune sans vaisselle.
+- **La règle** : après avoir réparé un script qui s'arrêtait en chemin,
+  **regarder ce qu'il touche pour la première fois depuis longtemps**. Un
+  `git status` suffit, et il faut le lire ligne par ligne au lieu de committer.
+- **Le correctif durable** : un drapeau qui **gèle** les sorties déjà bonnes,
+  avec la raison écrite à côté. Sans ça, la prochaine exécution refait le même
+  dégât en silence.
+- ⚠️ **Le gel suit le FICHIER, pas le nom.** Quand la photo gelée a été
+  réattribuée à un autre plat, le drapeau devait partir avec elle.
+
+## 2026-08-26 — Un contrôle qui perd son sujet doit le dire, pas planter
+
+- **Contexte** : le jour où le dernier plat a reçu sa photo, la suite de
+  contrôle d'Au Braisé d'Or s'est **arrêtée en plein milieu** sur un
+  `null.click()`. Elle cherchait « un plat sans image » pour ouvrir sa fiche.
+  Il n'y en avait plus aucun.
+- **Le vrai danger n'était pas le plantage** : c'est que **deux contrôles sans
+  rapport étaient accrochés au même clic**. L'ardoise est un cas particulier
+  qui peut disparaître ; l'**accompagnement obligatoire** est une règle métier
+  permanente, et une commande qui part sans lui arrive incomplète en cuisine.
+  En laissant les deux ensemble, la seconde serait morte avec la première,
+  sans un mot.
+- **Ce qu'on fait** : on sépare. Le contrôle spécifique **annonce** qu'il n'a
+  plus de sujet ; le contrôle général se donne une autre cible (ici une sauce,
+  catégorie qui exige toujours un accompagnement) et reste vert.
+- **À retenir** : quand un succès du produit rend un contrôle sans objet,
+  vérifier **ce qui voyageait avec lui**. C'est là que se perdent les contrôles
+  qui comptaient.
+
+## 2026-08-26 — Une assiette n'a ni trou ni fente, mais le seuil se mesure
+
+- **Contexte** : sur une sauce, le masque avait taillé un **couloir vertical**
+  dans le rebord du plat — 158 lignes percées, 52 px au pire. Invisible sur
+  blanc, très visible sur le crème du héros.
+- **Deux passes, deux raisons** : les **cavités** (transparent qu'on ne peut
+  pas atteindre depuis le bord de l'image) et les **fentes** (un couloir qui
+  débouche, et qui échappe donc à la première passe). Un remplissage de cavités
+  seul n'a **rien trouvé**.
+- ⚠️ **Ligne par ligne, jamais colonne par colonne** : en colonnes, l'espace
+  entre le panache de vapeur et l'assiette serait « pris entre deux morceaux »
+  lui aussi, et on souderait la vapeur au plat.
+- ⚠️ **Le seuil ne se devine pas, il se mesure sur tout le parc.** Les dix
+  assiettes ont été mesurées d'abord : six sans aucune fente, une à 0,4 %, la
+  fautive à 5,8 % — **et deux à 12,7 % et 18,2 %**, dont la « fente » est
+  l'espace entre la vapeur et le bol. Un seuil à 8 % ferme les vraies et laisse
+  les fausses.
+- ⚠️ **J'ai failli écrire que ces deux-là étaient « des plats à deux bols ».**
+  Il a suffi de les REGARDER pour voir que non. Une explication plausible qu'on
+  n'a pas vérifiée est une erreur qui attend son tour dans un commentaire.

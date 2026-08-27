@@ -448,9 +448,14 @@ confirmation). À trancher.
 
 ## ⏳ Ce qui reste
 
-- **Les six photos de sauces** (arachide, tomate, tête de mouton, pieds de
-  bœuf, Yassa, Yassa au poulet) : les poser dans `PHOTO` d'`index.html` et
-  une découpe dans `experience/public/plats/`, l'ardoise s'éteint toute seule.
+- ✅ **FAIT le 2026-08-26 : les quatorze sauces ont leur photo.** Plus une
+  seule ardoise, ni dans les sauces ni ailleurs — **les 52 plats du menu ont
+  la leur**. Détail : `_memoire/conversations/2026-08-26-braise-les-sauces.md`.
+  ⚠️ Au passage, une photo portait le nom d'un autre plat depuis le 19/08 :
+  celle dite « sauce graine » était **la sauce arachide** (crémeuse et beige
+  quand la graine est rouge d'huile de palme, et servie dans un **bol rond à
+  bord cuivré** quand tout le reste est dans l'assiette octogonale noire).
+  Réattribuée, sources renommées avec.
 - **La vraie photo de la salle.** Le fond est un mur neutre, pas leur
   restaurant. ⚠️ La vidéo `hero.mp4` montre **le gril**, pas la salle.
 - **Confirmer le numéro WhatsApp** : `01 56 05 71 57` est câblé, l'enseigne
