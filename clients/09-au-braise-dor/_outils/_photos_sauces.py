@@ -29,6 +29,7 @@ la maison porte trois vignettes imprimées, et la FORME DE L'ASSIETTE concorde :
 gombo octogonale, feuille hexagonale, krinkrin octogonale sur ardoise.
 """
 import os
+import subprocess
 import sys
 
 from PIL import Image
@@ -48,10 +49,25 @@ PHOTOS = [
     # désormais des fichiers que la maison a détourés elle-même, traités par
     # `_damier.py`. Laisser True ici les écraserait silencieusement à la
     # prochaine régénération — et on retrouverait les découpes sans assiette.
-    ("sc-gombo", "2026-08-19-sauce-gombo.png", False),
-    ("sc-krinkrin", "2026-08-19-sauce-krinkrin.png", False),
-    ("sc-feuille", "2026-08-19-sauce-feuille.png", False),
-    ("sc-graine", "2026-08-19-sauce-graine.png", False),
+    # (slug, fichier, faire_le_heros, refaire_le_carre)
+    # ⚠️ `refaire_le_carre=False` N'EST PAS UN OUBLI. Le carré automatique se
+    #    centre sur le masque avec 6 % de marge : sur `sc-graine` il coupe TOUT
+    #    LE BORD DU BOL et il ne reste qu'une texture jaune, sans vaisselle —
+    #    la carte du menu en ligne, elle, montre le bol entier. Vu à l'œil le
+    #    2026-08-26 en comparant les deux. `sc-feuille` change aussi de cadre
+    #    sans que personne l'ait demandé.
+    #    Ces deux cartes-là sont donc GELÉES : elles ne se régénèrent plus.
+    #    Sans ce drapeau, la prochaine exécution les écrasait en silence — et
+    #    c'est précisément ce qui vient d'arriver, parce que le script mourait
+    #    jusqu'ici avant de les atteindre.
+    ("sc-gombo", "2026-08-19-sauce-gombo.png", False, True),
+    ("sc-feuille", "2026-08-19-sauce-feuille.png", False, False),
+    ("sc-graine", "2026-08-19-sauce-graine.png", False, False),
+    # ⚠️ Krinkrin refait le 2026-08-26 : la maison a renvoyé la même sauce en
+    #    1254 px sur fond noir, plus nette et mieux éclairée que la photo de
+    #    2026-08-19 dont venait l'ancien carré. Le héros, lui, vient toujours
+    #    du fichier détouré par la maison — d'où le False.
+    ("sc-krinkrin", "2026-08-26-sauce-krinkrin-v2.png", False, True),
 ]
 
 
@@ -69,7 +85,8 @@ def carre_autour(src, masque, marge=0.06):
     return src.crop((g, h, g + cote, h + cote))
 
 
-def main():
+def une(slug, fichier, faire_le_heros, refaire_le_carre=True):
+    """UNE photo, UN processus. Voir `main()` pour le pourquoi."""
     # ⚠️ birefnet ICI, isnet POUR LES BOLS. Ce n'est pas une préférence, c'est
     # une planche comparative (2026-08-19) : sur ces photos-là — assiettes
     # NOIRES sur fond NOIR — isnet garde une tache de vapeur pleine au-dessus
@@ -78,41 +95,63 @@ def main():
     # de `_detoure_plats.py`, c'est exactement l'inverse.
     # → Refaire la planche à chaque nouveau lot de photos, ne pas présumer.
     session = new_session("birefnet-general")
-    for slug, fichier, faire_le_heros in PHOTOS:
-        src = os.path.join(PARTAGE, fichier)
-        if not os.path.exists(src):
-            sys.exit("⛔ introuvable : " + src)
-        origine = Image.open(src).convert("RGB")
+    src = os.path.join(PARTAGE, fichier)
+    if not os.path.exists(src):
+        sys.exit("⛔ introuvable : " + src)
+    origine = Image.open(src).convert("RGB")
 
-        decoupe = remove(origine, session=session, post_process_mask=True)
-        alpha = decoupe.getchannel("A")
-        bas, haut = alpha.getextrema()
-        if haut < 250 or bas > 5:
-            sys.exit("⛔ %s : alpha de %d à %d, le détourage a échoué." % (slug, bas, haut))
+    decoupe = remove(origine, session=session, post_process_mask=True)
+    alpha = decoupe.getchannel("A")
+    bas, haut = alpha.getextrema()
+    if haut < 250 or bas > 5:
+        sys.exit("⛔ %s : alpha de %d à %d, le détourage a échoué." % (slug, bas, haut))
 
-        # 1. la carte : carré, opaque, centré sur l'assiette
+    # 1. la carte : carré, opaque, centré sur l'assiette
+    fc = os.path.join(CARTE, slug + ".webp")
+    if refaire_le_carre:
         car = carre_autour(origine, alpha).resize((900, 900), Image.LANCZOS)
-        fc = os.path.join(CARTE, slug + ".webp")
         car.save(fc, "WEBP", quality=82, method=6)
+        etat = "carte %3d Ko 900x900" % (os.path.getsize(fc) // 1024)
+    else:
+        etat = "carte GELEE, laissee telle quelle"
 
-        if not faire_le_heros:
-            print("%-12s carte %3d Ko %dx%d   (héros : voir _damier.py)"
-                  % (slug, os.path.getsize(fc) // 1024, car.width, car.height))
-            continue
+    if not faire_le_heros:
+        print("%-12s %s   (héros : voir _damier.py)" % (slug, etat))
+        return
 
-        # 2. le héros : détouré, RGBA
-        det = decoupe.crop(alpha.getbbox())
-        det.thumbnail((1200, 1200), Image.LANCZOS)
-        fp = os.path.join(PLATS, slug + ".webp")
-        det.save(fp, "WEBP", quality=94, alpha_quality=100, exact=True)
+    # 2. le héros : détouré, RGBA
+    det = decoupe.crop(alpha.getbbox())
+    det.thumbnail((1200, 1200), Image.LANCZOS)
+    fp = os.path.join(PLATS, slug + ".webp")
+    det.save(fp, "WEBP", quality=94, alpha_quality=100, exact=True)
 
-        print("%-12s carte %3d Ko %dx%d   héros %3d Ko %dx%d"
-              % (slug, os.path.getsize(fc) // 1024, car.width, car.height,
-                 os.path.getsize(fp) // 1024, det.width, det.height))
+    print("%-12s %s   héros %3d Ko %dx%d"
+          % (slug, etat, os.path.getsize(fp) // 1024, det.width, det.height))
+
+
+def main():
+    # ⚠️ UNE PHOTO, UN PROCESSUS. Ce script gardait une seule session rembg
+    # pour tout le lot : il mourait en **code 137 (tué faute de mémoire)** dès
+    # la DEUXIÈME photo, après avoir écrit la première sans se plaindre. On
+    # croyait donc que le lot était passé, alors qu'une seule image l'était.
+    # Trouvé le 2026-08-26 en régénérant le krinkrin ; c'est la même fuite
+    # d'onnxruntime que celle notée chez Hillary le 2026-08-20. Le seul
+    # remède qui tienne est de rendre la mémoire au système : on ressort.
+    for slug, fichier, faire_le_heros, refaire in PHOTOS:
+        r = subprocess.run([sys.executable, os.path.abspath(__file__), "--une",
+                            slug, fichier, "1" if faire_le_heros else "0",
+                            "1" if refaire else "0"])
+        if r.returncode != 0:
+            sys.exit("⛔ %s : le détourage s'est arrêté (code %d)%s"
+                     % (slug, r.returncode,
+                        " — tué faute de mémoire" if r.returncode == 137 else ""))
 
     print("\n⚠️ REGARDER LE DÉTOURAGE SUR FOND CRÈME (#ede9e3), jamais sur du blanc :")
     print("   un halo clair ne se voit que sur le fond où l'image sera posée.")
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == "--une":
+        une(sys.argv[2], sys.argv[3], sys.argv[4] == "1", sys.argv[5] == "1")
+    else:
+        main()

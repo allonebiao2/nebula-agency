@@ -321,8 +321,33 @@ def main():
                     r = contraste(texte, fond)
                     dire(r >= 4.5, "[héros %s] on lit « Ajouter au panier » : %.1f:1"
                          % (nom, r))
-                dire(b["opacite"] >= 0.99,
-                     "[héros %s] il est à pleine opacité : %.2f" % (nom, b["opacite"]))
+                # ⚠️ ON ÉCHANTILLONNE, ON NE PHOTOGRAPHIE PAS. Le héros change
+                #    de sauce en permanence et le bouton traverse un fondu de
+                #    ~750 ms à chaque passage : un relevé unique tombait dedans
+                #    environ une fois sur quatre et déclarait le bouton
+                #    invisible. Mesuré le 2026-08-26, 63 relevés en 16 s :
+                #    min 0,00, MAX 1,00, médiane 1,00, pleine opacité 71 % du
+                #    temps. Le site allait bien, le contrôle mentait — et il
+                #    mentait déjà sur `main`, les deux rouges y étaient.
+                #    Ce qu'on veut savoir tient en une phrase : le bouton
+                #    DEVIENT-IL pleinement visible ? On regarde donc le maximum
+                #    sur un cycle complet. Le défaut d'origine
+                #    (`clearProps:"all"` qui vidait le style et laissait le
+                #    bouton transparent POUR TOUJOURS) reste attrapé : dans ce
+                #    cas-là le maximum ne monte jamais.
+                ops = []
+                for _ in range(28):
+                    o = pg.evaluate("""() => {
+                        const e = [...document.querySelectorAll("button")]
+                            .find(x => /Ajouter au panier/.test(x.textContent || ""));
+                        return e ? parseFloat(getComputedStyle(e).opacity) : null; }""")
+                    if o is not None:
+                        ops.append(o)
+                    pg.wait_for_timeout(250)
+                haut = max(ops) if ops else 0
+                dire(haut >= 0.99,
+                     "[héros %s] il atteint la pleine opacité : %.2f (max sur %d relevés)"
+                     % (nom, haut, len(ops)))
 
             # ── 3 ter. LA DEUXIÈME LIGNE DU TITRE EST LA PLUS GROSSE ──────
             # ⚠️ C'est LA signature du héros : une ligne fine et espacée, puis

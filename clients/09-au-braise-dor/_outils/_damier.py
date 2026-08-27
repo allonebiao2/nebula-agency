@@ -45,19 +45,25 @@ LOTS = [
     ("sc-gombo", "2026-08-19-sauce-gombo-detoure.png", False),
     ("sc-feuille", "2026-08-19-sauce-feuille-detoure.png", False),
     ("sc-graine", "2026-08-19-sauce-graine-detoure.png", False),
-    # ⚠️ LE KRINKRIN VIENT D'UNE AUTRE SOURCE, ET C'EST VOULU.
-    # Sa version détourée est RECADRÉE TROP SERRÉ : le disque d'ardoise sous
-    # l'assiette sort du cadre à gauche, à droite et en bas, et l'assiette
-    # elle-même touche les bords. Mongazi l'a vu en ligne : « c'est coupé sur
-    # le côté droit, ça doit être bien circulaire comme pour les autres. »
-    # Aucun masque ne rend des pixels qui n'existent pas. La PREMIÈRE photo
-    # (fond noir, `-krinkrin.png`) est, elle, bien cadrée : l'assiette y tient
-    # entière avec de la marge. On repart donc de celle-là.
-    # ⚠️ Et sur celle-là, isnet transforme le panache de vapeur en tache noire
-    # pleine au-dessus de l'assiette : on coupe les lignes du haut tant que
-    # leur largeur reste sous 28 % de la largeur maximale — la vapeur est
-    # étroite, l'assiette est large.
-    ("sc-krinkrin", "2026-08-19-sauce-krinkrin.png", True),
+    # ⚠️ LE KRINKRIN REJOINT LES AUTRES LE 2026-08-26, et l'exception tombe.
+    # Il venait d'une source à part pour une seule raison : sa version
+    # détourée de 2026-08-19 était RECADRÉE TROP SERRÉ — l'assiette touchait
+    # les bords et l'ardoise sortait du cadre à gauche, à droite et en bas.
+    # On repartait donc de la photo sur fond noir, où l'assiette tient
+    # entière… mais assiette NOIRE sur table NOIRE : le masque gardait une
+    # dalle de table sous le plat (16,7 % de transparent seulement), et sur le
+    # fond crème du héros ça faisait un pâté sombre. C'est le défaut que
+    # Mongazi a signalé : « elle a mal été découpée au niveau de la héros ».
+    # Il a renvoyé le plat détouré par ses soins, cette fois CORRECTEMENT
+    # CADRÉ. La raison de l'exception n'existe plus.
+    # ⚠️ Et la rustine anti-vapeur ne sert plus : mesuré sur cette source, il
+    # n'y a que 9 lignes étroites au-dessus de l'assiette et leur largeur
+    # croît régulièrement (10, 51, 86, 116…) — c'est le coin de l'octogone qui
+    # s'élargit, pas un panache transformé en tache.
+    # ⚠️ Le fichier porte l'extension .jpg et ce n'est pas une erreur : le
+    # damier arrive PEINT DANS LES PIXELS, sans canal alpha, et cette fois
+    # aplati en JPEG. On ne le renomme pas en .png pour faire joli.
+    ("sc-krinkrin", "2026-08-26-sauce-krinkrin-detoure.jpg", False),
 ]
 
 
