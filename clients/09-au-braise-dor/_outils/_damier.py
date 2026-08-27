@@ -64,6 +64,12 @@ LOTS = [
     # damier arrive PEINT DANS LES PIXELS, sans canal alpha, et cette fois
     # aplati en JPEG. On ne le renomme pas en .png pour faire joli.
     ("sc-krinkrin", "2026-08-26-sauce-krinkrin-detoure.jpg", False),
+    # ⚠️ Tête de mouton (gbotâ), 2026-08-26. Planche refaite comme toujours :
+    #    ici birefnet JETTE L'ASSIETTE et ne garde que la viande, qui flotte
+    #    sans bol ni sauce (23,4 % d'opaque contre 49,6). isnet garde le plat
+    #    entier, bord compris. L'écart entre les deux modèles est le plus net
+    #    qu'on ait mesuré : 26 points.
+    ("sc-tete-mouton", "2026-08-26-sauce-tete-mouton-detoure.jpg", False),
 ]
 
 

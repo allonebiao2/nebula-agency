@@ -68,6 +68,7 @@ PHOTOS = [
     #    2026-08-19 dont venait l'ancien carré. Le héros, lui, vient toujours
     #    du fichier détouré par la maison — d'où le False.
     ("sc-krinkrin", "2026-08-26-sauce-krinkrin-v2.png", False, True),
+    ("sc-tete-mouton", "2026-08-26-sauce-tete-mouton.png", False, True),
 ]
 
 
