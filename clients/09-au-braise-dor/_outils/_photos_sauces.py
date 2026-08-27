@@ -62,7 +62,10 @@ PHOTOS = [
     #    jusqu'ici avant de les atteindre.
     ("sc-gombo", "2026-08-19-sauce-gombo.png", False, True),
     ("sc-feuille", "2026-08-19-sauce-feuille.png", False, False),
-    ("sc-graine", "2026-08-19-sauce-graine.png", False, False),
+    # ⛔ Renommee le 2026-08-26 : ce n'etait pas la graine mais l'arachide.
+    #    ⚠️ LE GEL SUIT LE FICHIER. Le carre automatique coupait tout le bord
+    #    du bol sur cette photo-la ; la carte en ligne, bien cadree, reste.
+    ("sc-arachide", "2026-08-19-sauce-arachide.png", False, False),
     # ⚠️ Krinkrin refait le 2026-08-26 : la maison a renvoyé la même sauce en
     #    1254 px sur fond noir, plus nette et mieux éclairée que la photo de
     #    2026-08-19 dont venait l'ancien carré. Le héros, lui, vient toujours
@@ -71,6 +74,7 @@ PHOTOS = [
     ("sc-tete-mouton", "2026-08-26-sauce-tete-mouton.png", False, True),
     ("sc-yassa-poulet", "2026-08-26-sauce-yassa-poulet.png", False, True),
     ("sc-pieds-boeuf", "2026-08-26-sauce-pieds-boeuf.png", False, True),
+    ("sc-graine", "2026-08-26-sauce-graine.png", False, True),
 ]
 
 

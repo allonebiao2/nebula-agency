@@ -30,7 +30,7 @@ import os
 import sys
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 from rembg import remove, new_session
 
 RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -44,7 +44,15 @@ PLATS = os.path.join(RACINE, "experience", "public", "plats")
 LOTS = [
     ("sc-gombo", "2026-08-19-sauce-gombo-detoure.png", False),
     ("sc-feuille", "2026-08-19-sauce-feuille-detoure.png", False),
-    ("sc-graine", "2026-08-19-sauce-graine-detoure.png", False),
+    # ⛔ CETTE PHOTO N'A JAMAIS ETE LA SAUCE GRAINE. Mongazi, 2026-08-26 :
+    #    « celle actuelle sur la vitrine est pour la sauce d'arachide de base ».
+    #    Il a raison, et ca se voit a deux choses : la sauce est CREMEUSE ET
+    #    BEIGE (la graine est rouge, c'est de l'huile de palme), et le plat est
+    #    un bol rond a bord CUIVRE — toutes les autres photos de la maison sont
+    #    dans la meme assiette octogonale noire. C'etait un autre jour, un autre
+    #    plat. Le fichier source a ete renomme lui aussi : on ne garde pas dans
+    #    `_partage` un nom qui ment.
+    ("sc-arachide", "2026-08-19-sauce-arachide-detoure.png", False),
     # ⚠️ LE KRINKRIN REJOINT LES AUTRES LE 2026-08-26, et l'exception tombe.
     # Il venait d'une source à part pour une seule raison : sa version
     # détourée de 2026-08-19 était RECADRÉE TROP SERRÉ — l'assiette touchait
@@ -80,7 +88,64 @@ LOTS = [
     #    masse de viande sort avec un contour dechire ; isnet garde l'octogone.
     #    QUATRIEME lot d'affilee ou isnet gagne sur une source en damier.
     ("sc-pieds-boeuf", "2026-08-26-sauce-pieds-boeuf-detoure.jpg", False),
+    # la VRAIE sauce graine, recue le 2026-08-26 : rouge d'huile de palme.
+    ("sc-graine", "2026-08-26-sauce-graine-detoure.jpg", False),
 ]
+
+
+def reboucher(alpha, seuil=8):
+    """⚠️ UNE ASSIETTE N'A NI TROU NI FENTE.
+
+    Sur la sauce graine (2026-08-26), le masque a taille un COULOIR VERTICAL
+    dans le rebord du plat : 158 lignes percees, 52 px au pire, soit 5,8 % de
+    la largeur. Invisible sur fond blanc, bien visible sur le creme du heros —
+    une morsure claire au milieu de l'assiette.
+
+    Deux passes, et elles ne servent pas a la meme chose :
+
+    1. LES CAVITES. Tout ce qui est transparent et qu'on ne peut PAS atteindre
+       depuis le bord de l'image est, par definition, enferme. Le fond
+       communique toujours avec le bord ; la vapeur aussi, qui monte jusqu'en
+       haut du cadre.
+
+    2. LES FENTES. Un couloir qui DEBOUCHE echappe a la premiere passe. On
+       reboucle donc ligne par ligne : tout intervalle transparent pris entre
+       deux morceaux de plat et plus etroit que 8 % de la largeur est comble.
+
+    ⚠️ LIGNE PAR LIGNE, JAMAIS COLONNE PAR COLONNE. En colonnes, l'espace entre
+    le panache de vapeur et l'assiette serait « pris entre deux morceaux » lui
+    aussi, et on souderait la vapeur au plat.
+
+    Mesure : six des sept assiettes n'ont aucune fente et ressortent
+    identiques ; seul le gombo en a une de 3 px, sans effet visible.
+    """
+    n = np.asarray(alpha).copy()
+    total = 0
+
+    dehors = Image.new("L", (n.shape[1] + 2, n.shape[0] + 2), 0)
+    dehors.paste(Image.fromarray((n > seuil).astype("uint8") * 255), (1, 1))
+    ImageDraw.floodfill(dehors, (0, 0), 128)
+    atteint = np.asarray(dehors)[1:-1, 1:-1] == 128
+    cavites = (n <= seuil) & (~atteint)
+    if cavites.any():
+        n[cavites] = 255
+        total += int(cavites.sum())
+
+    maxi = int(0.08 * n.shape[1])
+    op = n > seuil
+    for y in range(n.shape[0]):
+        xs = np.flatnonzero(op[y])
+        if xs.size < 2:
+            continue
+        d = np.diff(xs)
+        for i in np.flatnonzero(d > 1):
+            if d[i] - 1 <= maxi:
+                n[y, xs[i] + 1:xs[i + 1]] = 255
+                total += int(d[i]) - 1
+
+    if not total:
+        return alpha, 0
+    return Image.fromarray(n), total
 
 
 def main():
@@ -104,6 +169,11 @@ def main():
             m[:depart, :] = 0
             alpha = Image.fromarray(m)
             out.putalpha(alpha)
+
+        alpha, comble = reboucher(alpha)
+        if comble:
+            out.putalpha(alpha)
+            print("   %-13s %d px de trou ou de fente reboucher" % (slug, comble))
 
         out = out.crop(alpha.getbbox())
         out.thumbnail((1200, 1200), Image.LANCZOS)
