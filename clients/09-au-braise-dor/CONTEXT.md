@@ -677,3 +677,70 @@ Elle reboucle donc, ⚠️ **avec un tour de plus sur le dernier plat** avant de
 remonter : une boucle qui se referme sans respirer ressemble à un bug.
 Mesuré sur l'export statique : **0 → 1 → 2 → 3 → 0** en 30 s, sans y toucher.
 Build 182 kB, QC **76 verts, 0 rouges**.
+
+---
+
+## ⛔ SIX PHOTOS LIVRÉES, AFFICHÉES NULLE PART (2026-08-27)
+
+*Détail complet : `_memoire/conversations/2026-08-27-braise-deux-machines.md`.*
+
+Les six découpes de sauce (arachide, tomate, tête de mouton, pieds de bœuf,
+yassa, yassa au poulet) étaient dans `main` depuis la veille : fichiers
+propres, pesés, poussés, en 200. **Et le héros posait quand même son ardoise
+sur les six**, en plein premier écran.
+
+Parce que le héros ne lit pas le dossier `/plats`, il lit le `DECO` de
+`dishes.ts` :
+
+```ts
+img: d?.img,     // d = DECO[nom]  →  absent = ardoise
+```
+
+et **aucun des sept commits qui ont posé les images n'a touché `dishes.ts`**.
+
+⚠️ **RIEN NE POUVAIT LE SIGNALER.** Le contrôle « 0 image cassée » ne voit que
+les images **demandées**. Une image qu'on ne réclame jamais ne peut pas être
+cassée : elle est parfaite et invisible. **Un fichier livré n'est pas un
+fichier affiché.**
+
+**Posé le 27/08** : les six `img:` du `DECO` · les six correspondances de la
+page de repli `index.html` · les images de carte manquantes dans
+`assets/images/` (elle en réclamait déjà trois qui n'existaient pas).
+
+**Nouveau contrôle** : *aucune découpe inutilisée dans `/plats`*. Il lit les
+**deux** côtés dans les fichiers, sans recopier aucune liste : le jour où une
+sauce arrive, il la réclame tout seul.
+
+### Le héros, après
+
+| | avant | après |
+|---|---|---|
+| plats illustrés | 46 / 52 | **52 / 52** |
+| sauces montrées au héros | 6 | **12** |
+| ardoises rondes au héros | 8 | **2** |
+
+Les deux qui restent sont **Béchamel** et **Crème** : elles n'auront **jamais**
+de découpe (plat noir sur fond noir, noté depuis le 19/08). Leur ardoise ronde
+au filet de la couleur de la sauce est le rendu définitif, pas un pis-aller.
+
+### ⚠️ ET LE MÊME TRAVAIL A ÉTÉ FAIT DEUX FOIS
+
+Le PC de Cotonou avait, non commité, une chaîne complète pour ces six sauces
+(deux outils, images, correctif du QC) — pendant que `origin/main` portait déjà
+le même travail, poussé depuis le téléphone en 7 commits (`fb93ec7` →
+`aeba870`), à partir des **mêmes photos sources au bit près**.
+
+La version de `main` est gardée : elle est plus mûre (rembg/isnet contre une
+reconstruction d'alpha depuis le damier — **approche déjà mesurée et rejetée**
+dans `_damier.py` : *« les deux gris du damier sont 77 et 124, et le bord noir
+de l'assiette a des reflets dans cette plage »*), et son correctif du QC sépare
+l'**ardoise** de l'**accompagnement obligatoire** au lieu de laisser les deux
+accrochés au même clic. Le commit local `70e3d8b` est **écarté**, pas perdu.
+
+⚠️ **Le garder aurait posé un piège** : `_poser_sauces.py` aurait réécrit en
+silence les cadrages que `_photos_sauces.py` gèle exprès, photo par photo.
+
+**Cause racine, corrigée dans `scripts/rapatrier.py`** : le script de début de
+session **excluait `origin/main`** de son inventaire et ne surveillait que les
+branches `claude/…`. Une session du téléphone pousse **directement dans
+`main`** : il répondait « ✅ Rien ne traîne » avec sept commits de retard.

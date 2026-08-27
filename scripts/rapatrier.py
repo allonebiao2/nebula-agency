@@ -74,6 +74,34 @@ def ecartee(nom):
     return ECARTEES.get(nom[7:] if nom.startswith("origin/") else nom)
 
 
+def main_en_retard():
+    """`main` local est-il derrière `origin/main` ?
+
+    ⛔ LA PANNE DU 2026-08-27, ET ELLE A COÛTÉ UNE JOURNÉE DE TRAVAIL EN DOUBLE.
+    Ce script excluait `origin/main` de son inventaire (voir la ligne juste en
+    dessous) : il ne surveillait que les branches `claude/…`. Or une session
+    lancée depuis le téléphone pousse DIRECTEMENT dans `main`. Ce jour-là, le
+    PC de Cotonou a refait de zéro les six photos de sauces d'Au Braisé d'Or —
+    outils compris — alors que le travail dormait dans `main` depuis la veille,
+    fait autrement et mieux documenté.
+
+    ⚠️ « Rien ne traîne sur les branches » ne veut pas dire « je suis à jour ».
+    """
+    git("fetch", "origin", "--prune", silencieux=True)
+    commits = git("log", "--oneline", "main..origin/main").splitlines()
+    if not commits:
+        return 0
+    print("\n  ⛔ `main` LOCAL EST EN RETARD DE %d COMMIT(S) SUR origin/main.\n"
+          % len(commits))
+    for c in commits[:12]:
+        print("     " + c)
+    if len(commits) > 12:
+        print("     … et %d autres" % (len(commits) - 12))
+    print("\n     Avant de travailler :  git merge origin/main")
+    print("     Sinon on refait ce qui est déjà fait — c'est arrivé le 27/08.\n")
+    return len(commits)
+
+
 def branches_en_retard():
     git("fetch", "origin", "--prune", silencieux=True)
     sortie = []
@@ -120,6 +148,10 @@ def main():
         print("⛔ Le dossier de travail n'est pas propre. Commiter ou ranger d'abord.")
         return 1
 
+    # ⚠️ D'ABORD `main` lui-même : une branche oubliée coûte une fusion, un
+    #    `main` en retard coûte le travail refait deux fois.
+    retard = main_en_retard()
+
     liste = branches_en_retard()
     if args.branche:
         liste = [b for b in liste if b["nom"].endswith(args.branche)]
@@ -128,6 +160,10 @@ def main():
             return 1
 
     if not liste:
+        if retard:
+            print("  Aucune branche ne traîne, mais `main` local est en retard : "
+                  "faire `git merge origin/main` avant de commencer.")
+            return 1
         print("  ✅ Rien ne traîne : tout est déjà dans `main`.")
         return 0
 

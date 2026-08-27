@@ -1475,3 +1475,58 @@ Trois contrôles ont accusé un site parfaitement juste, le même jour :
 - ⚠️ **J'ai failli écrire que ces deux-là étaient « des plats à deux bols ».**
   Il a suffi de les REGARDER pour voir que non. Une explication plausible qu'on
   n'a pas vérifiée est une erreur qui attend son tour dans un commentaire.
+
+## 2026-08-27 — Un fichier livré n'est pas un fichier affiché
+
+- **Contexte** : Au Braisé d'Or. Six découpes de sauce étaient dans `main`,
+  propres, pesées, poussées, en 200. **Et le héros posait quand même son
+  ardoise** sur les six, en plein premier écran.
+- **Ce qui s'est passé** : le héros ne lit pas le dossier `/plats`, il lit le
+  `DECO` de `dishes.ts` (`img: d?.img` — absent = ardoise). Les sept commits
+  qui ont posé les images n'ont jamais touché `dishes.ts`.
+- ⚠️ **Rien ne pouvait le signaler.** Le contrôle « 0 image cassée » ne voit
+  que les images **demandées** ; une image qu'on ne réclame jamais ne peut pas
+  être cassée. Elle est parfaite, et invisible. Le manque est silencieux par
+  construction : il n'y a ni erreur, ni 404, ni ligne rouge.
+- **Leçon** : vérifier qu'un asset existe, pèse, répond 200 et n'est pas cassé
+  ne prouve **rien**. Il faut vérifier qu'il est **demandé**.
+- **À appliquer** : un contrôle qui lit **les deux côtés dans les fichiers** —
+  ce qui est sur le disque contre ce que le code référence — et qui nomme les
+  orphelins. Posé sur le client 09 (« aucune découpe inutilisée dans /plats »).
+  **À reprendre partout où des médias sont posés à la main** : Hillary
+  (`piece-*.webp`), Angy Art (`oeuvre-*`), Weinkeller (les bouteilles).
+
+## 2026-08-27 — `git fetch` se fait AVANT de travailler, pas avant de pousser
+
+- **Contexte** : le PC de Cotonou a refait de zéro les six photos de sauces
+  d'Au Braisé d'Or — images, deux outils neufs, correctif du QC — alors que le
+  travail dormait dans `origin/main` depuis la veille, poussé en 7 commits par
+  une session lancée depuis le téléphone. **Mêmes photos sources, au bit près.**
+- **Pourquoi personne n'a rien vu** : `scripts/rapatrier.py`, le script de
+  début de session qui existe précisément pour ça, **excluait `origin/main`**
+  de son inventaire (`if b == "origin/main": continue`). Il ne surveillait que
+  les branches `claude/…`. Or une session du téléphone pousse **directement
+  dans `main`**. Le script répondait « ✅ Rien ne traîne ».
+- **Leçon** : « rien ne traîne sur les branches » ne veut pas dire « je suis à
+  jour ». Une branche oubliée coûte une fusion ; **un `main` en retard coûte le
+  travail refait deux fois**.
+- **À appliquer** : `main_en_retard()` tourne désormais **avant** l'inventaire
+  des branches et refuse de dire que tout va bien.
+
+## 2026-08-27 — Deux versions du même travail : on compare, on ne fusionne pas
+
+- **Contexte** : deux chaînes d'outils, écrites le même jour par deux machines,
+  produisaient les mêmes six images de sauces.
+- **Ce qui départage** : les **mesures déjà écrites dans les fichiers**. La
+  version locale reconstruisait l'alpha en reconnaissant le damier et en se
+  propageant depuis les bords — approche que l'autre session avait déjà
+  **essayée, mesurée et rejetée** : *« sur le gombo, les deux gris du damier
+  sont 77 et 124, et le bord noir de l'assiette a des reflets dans cette plage.
+  Aucun seuil de luminance ne les sépare. »* Elle était écrite en tête de
+  `_damier.py`, dans `main`, depuis huit jours.
+- ⚠️ **Garder les deux aurait été le pire choix** : le script local aurait
+  **réécrit en silence** les cadrages que l'autre gèle exprès, photo par photo.
+  Deux outils qui écrivent le même fichier finissent toujours par s'écraser.
+- **À appliquer** : lire ce que l'autre version a écrit **avant** de défendre
+  la sienne, et ne garder de la sienne que ce que l'autre n'a pas — ici, le
+  câblage du héros, que personne n'avait fait.

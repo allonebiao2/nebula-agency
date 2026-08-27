@@ -130,6 +130,23 @@ def main():
         (ok if bon else ko).append(txt)
         print(("  vert  " if bon else "  ROUGE ") + txt)
 
+    # ⛔ AUCUNE DÉCOUPE NE DORT DANS `/plats` SANS ÊTRE AFFICHÉE.
+    #    Le 2026-08-27, six découpes de sauce étaient dans le dépôt, propres,
+    #    pesées, poussées — et le héros posait quand même son ardoise, parce
+    #    que personne n'avait ajouté `img:` dans le DECO de `dishes.ts`. Rien
+    #    ne l'a signalé : le fichier existe, il répond 200, il n'est jamais
+    #    demandé. Une image qu'on ne réclame pas ne peut pas être « cassée ».
+    #    ⚠️ Ce contrôle lit les DEUX côtés dans les fichiers, il ne recopie
+    #    aucune liste : le jour où une sauce arrive, il la réclame tout seul.
+    deco = io.open(os.path.normpath(os.path.join(RACINE, "..", "data", "dishes.ts")),
+                   encoding="utf-8").read()
+    orphelines = sorted(
+        f[:-5] for f in os.listdir(os.path.join(RACINE, "..", "public", "plats"))
+        if f.startswith("sc-") and f.endswith(".webp") and ('/plats/' + f) not in deco)
+    dire(not orphelines,
+         "aucune découpe inutilisée dans /plats%s"
+         % ("" if not orphelines else " → %s ne sont posées nulle part" % orphelines))
+
     with sync_playwright() as p:
         nav = p.chromium.launch(**({'executable_path': CHROME} if CHROME else {}))
 

@@ -74,3 +74,8 @@ node_modules/
 
 # Originaux des images (logo source, rendus IA bruts) — lourds, non déployés
 clients/*/_sources/
+
+# Planches d essai de _partage/ (verification des decoupes sur fond creme).
+# Regenerables a la demande, elles n ont rien a faire dans un depot public.
+_partage/_essai-*
+_partage/_planche-*
