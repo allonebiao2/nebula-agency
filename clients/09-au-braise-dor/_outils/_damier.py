@@ -75,6 +75,11 @@ LOTS = [
     #    garde l'octogone entier. Troisieme lot d'affilee ou isnet gagne sur
     #    une source en damier — la conclusion de ce fichier tient.
     ("sc-yassa-poulet", "2026-08-26-sauce-yassa-poulet-detoure.jpg", False),
+    # ⚠️ Pieds de boeuf (blokoto), 2026-08-26. Planche refaite : birefnet mange
+    #    presque tout le bord noir, il ne reste qu'un filet en bas a gauche et la
+    #    masse de viande sort avec un contour dechire ; isnet garde l'octogone.
+    #    QUATRIEME lot d'affilee ou isnet gagne sur une source en damier.
+    ("sc-pieds-boeuf", "2026-08-26-sauce-pieds-boeuf-detoure.jpg", False),
 ]
 
 
