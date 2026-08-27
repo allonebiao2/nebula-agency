@@ -69,6 +69,7 @@ PHOTOS = [
     #    du fichier détouré par la maison — d'où le False.
     ("sc-krinkrin", "2026-08-26-sauce-krinkrin-v2.png", False, True),
     ("sc-tete-mouton", "2026-08-26-sauce-tete-mouton.png", False, True),
+    ("sc-yassa-poulet", "2026-08-26-sauce-yassa-poulet.png", False, True),
 ]
 
 

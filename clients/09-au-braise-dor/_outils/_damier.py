@@ -70,6 +70,11 @@ LOTS = [
     #    entier, bord compris. L'écart entre les deux modèles est le plus net
     #    qu'on ait mesuré : 26 points.
     ("sc-tete-mouton", "2026-08-26-sauce-tete-mouton-detoure.jpg", False),
+    # ⚠️ Yassa au poulet, 2026-08-26. Planche refaite : birefnet mange le bord
+    #    noir de l'assiette a gauche et laisse une encoche a droite ; isnet
+    #    garde l'octogone entier. Troisieme lot d'affilee ou isnet gagne sur
+    #    une source en damier — la conclusion de ce fichier tient.
+    ("sc-yassa-poulet", "2026-08-26-sauce-yassa-poulet-detoure.jpg", False),
 ]
 
 
