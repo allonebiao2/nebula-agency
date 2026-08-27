@@ -75,6 +75,7 @@ PHOTOS = [
     ("sc-yassa-poulet", "2026-08-26-sauce-yassa-poulet.png", False, True),
     ("sc-pieds-boeuf", "2026-08-26-sauce-pieds-boeuf.png", False, True),
     ("sc-graine", "2026-08-26-sauce-graine.png", False, True),
+    ("sc-yassa", "2026-08-26-sauce-yassa.png", False, True),
 ]
 
 

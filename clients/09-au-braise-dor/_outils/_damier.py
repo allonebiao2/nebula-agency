@@ -90,6 +90,10 @@ LOTS = [
     ("sc-pieds-boeuf", "2026-08-26-sauce-pieds-boeuf-detoure.jpg", False),
     # la VRAIE sauce graine, recue le 2026-08-26 : rouge d'huile de palme.
     ("sc-graine", "2026-08-26-sauce-graine-detoure.jpg", False),
+    # ⚠️ Yassa, 2026-08-26. Planche refaite : ici les deux modeles donnent
+    #    EXACTEMENT la meme couverture (57,8 %) et la meme forme. On garde isnet
+    #    pour que les sept assiettes soient decoupees de la meme main.
+    ("sc-yassa", "2026-08-26-sauce-yassa-detoure.jpg", False),
 ]
 
 
