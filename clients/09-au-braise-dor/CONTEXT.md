@@ -744,3 +744,26 @@ silence les cadrages que `_photos_sauces.py` gèle exprès, photo par photo.
 session **excluait `origin/main`** de son inventaire et ne surveillait que les
 branches `claude/…`. Une session du téléphone pousse **directement dans
 `main`** : il répondait « ✅ Rien ne traîne » avec sept commits de retard.
+
+### ⏳ VU EN REGARDANT LES 12 DÉCOUPES : LA VAPEUR DE `sc-moyo` ET `sc-poisson`
+
+Les douze découpes ont été posées côte à côte sur le crème du site
+(`#ede9e3`) et regardées. Onze sont propres : assiette entière, aucun halo,
+aucun escalier dans le bord. **Deux ne le sont pas.**
+
+Sur **`sc-moyo`** et **`sc-poisson`**, le **panache de vapeur** est sorti du
+masque en **forme pleine, gris foncé et opaque** : au-dessus du plat flotte
+une silhouette qui ressemble à une **anse ou un crochet**, pas à de la vapeur.
+Sur fond blanc ça passe ; sur le crème du héros, c'est une tache.
+
+⚠️ **Ce n'est pas un défaut du 27/08** : ces deux découpes sont en ligne depuis
+le 26/08, elles n'ont pas été retouchées aujourd'hui. Personne ne l'avait vu
+parce qu'on regarde les images **une par une** — c'est en les mettant **toutes
+les douze ensemble** que les deux intruses sautent aux yeux.
+
+**Le remède est déjà écrit dans `_damier.py`** : c'est la « rustine
+anti-vapeur », dont la note dit qu'elle ne servait plus sur la krinkrin
+(9 lignes étroites, largeur croissante = le coin de l'octogone). Sur ces deux
+plats-là, il y a bien un panache. ⚠️ **Refaire la planche comparative des
+modèles pour ces deux photos** avant de choisir : `isnet` gagne sur damier,
+`birefnet` sur fond noir, et **le fond change le gagnant**.
