@@ -79,3 +79,8 @@ clients/*/_sources/
 # Regenerables a la demande, elles n ont rien a faire dans un depot public.
 _partage/_essai-*
 _partage/_planche-*
+
+# Base des conversations du Standard WhatsApp (jamais commitée : elle contient
+# les messages de vrais clients).
+whatsapp-agent.db
+*.db-journal

@@ -1,0 +1,5 @@
+# Le kit ne dépend que du SDK Anthropic et d'un lecteur YAML.
+# Tout le reste (HTTP, base, webhooks, signatures) est en bibliothèque standard :
+# c'est ce qui permet de le déployer là où on ne choisit pas l'hébergement.
+anthropic>=1.2.0
+PyYAML>=6.0
