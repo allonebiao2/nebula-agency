@@ -155,6 +155,10 @@ def create_order(o: OrderIn):
     c.commit(); c.close()
     doublons = _ref_doublon(o.ref, sauf_id=oid)
     garde = ""
+    if not (o.ref or "").strip():
+        # On accepte quand meme : une vente par un partenaire ou en main propre
+        # n'a pas de reference. Mais ca doit sauter aux yeux.
+        garde += "\n\n*AUCUNE RÉFÉRENCE FOURNIE* : vente hors ligne, ou client qui n'a pas payé."
     if doublons:
         garde = (f"\n\n*ATTENTION* : cette référence a déjà été utilisée sur "
                  f"{doublons} autre(s) commande(s). À vérifier avant de valider.")

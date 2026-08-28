@@ -183,7 +183,7 @@
       <label>Ton WhatsApp</label><input id="c_wa" type="tel" placeholder="229...">
       <label>Ton email <span style="color:var(--muted);font-weight:400">(pour le rappel d'échéance hébergement)</span></label><input id="c_email" type="email" placeholder="nom@email.com">
       <label>Réseau utilisé</label><select id="c_net"><option>MTN</option><option>Moov</option><option>Autre</option></select>
-      <label>Référence de la transaction (optionnel)</label><input id="c_ref" type="text" placeholder="Ex : MP240612...">
+      <label>Référence de la transaction</label><input id="c_ref" type="text" placeholder="Ex : MP240612.1432.A81234" required><div style="font-size:12.5px;color:var(--muted);margin:-6px 0 12px;line-height:1.45">Le SMS Mobile Money te donne ce code juste apr&egrave;s le paiement. Sans lui, on ne peut pas retrouver ton versement.</div>
       <button class="btn-gold" id="sendOrder">J'ai payé — envoyer ma commande</button>
     </div>
     <div id="doneStep" style="display:none;text-align:center;padding:10px 0">
@@ -428,6 +428,11 @@ document.getElementById('sendOrder').onclick=async()=>{
   const cwa=document.getElementById('c_wa').value.trim();
   const cemail=document.getElementById('c_email').value.trim();
   if(!cname||!cwa||!cemail){alert('Remplis ton nom, ton WhatsApp et ton email.');return;}
+  const refVal=document.getElementById('c_ref').value.trim();
+  if(!refVal){
+    alert("Il manque la r\u00e9f\u00e9rence de ta transaction Mobile Money.\n\nElle est dans le SMS re\u00e7u apr\u00e8s le paiement, du genre MP240612.1432.A81234.");
+    document.getElementById('c_ref').focus(); return;
+  }
   const btn=document.getElementById('sendOrder');btn.disabled=true;btn.textContent='Envoi...';
   try{
     const res=await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
