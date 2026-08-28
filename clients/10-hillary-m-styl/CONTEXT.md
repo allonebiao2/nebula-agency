@@ -1144,3 +1144,38 @@ et perdu le second, sans que rien ne le signale.
 Il s'arrête au survol, onglet caché, et **hors de l'écran** (on n'anime pas ce
 que personne ne regarde). Un geste le relance. Rien sous mouvement réduit.
 Mesuré : 4 positions en 22 s sans y toucher, puis figé dès qu'il sort du champ.
+
+
+---
+
+## 2026-08-27 — « Ensemble Volants » retiré : la fiche n'a jamais existé
+
+**Catalogue : 20 → 19 cartes, et toutes ont leur photo.** Plus une seule
+« Photo sur WhatsApp ».
+
+Mongazi a renvoyé la même photo une deuxième fois, avec les mêmes mots : « ce
+n'est pas une robe volante mais robe de ville », 40 000 / 55 000, mesures d'une
+robe ovale. Trois preuves concordantes :
+
+1. Les **six prix** de `h20` étaient identiques à ceux de `h10 Robe de ville
+   organza`, au franc et au centime près.
+2. La seule photo jamais associée à `h20` est, **au pixel près** (empreinte
+   `c2c3d9d2389a4c57`), le **dos de `h10`** déjà en ligne. Mesurée le 25 **et**
+   le 27, même résultat.
+3. La description de `h10` disait déjà ce que montre la photo : « dos lacé au
+   ruban et jupon d'organza sous un wax rouge ».
+
+⛔ **C'est moi qui l'avais fabriquée**, le 16/08, en décrivant deux fois la même
+robe depuis une photo montrée en conversation. Voir `_memoire/lecons.md` :
+*une description inventée coûte plus cher qu'une case vide*.
+
+Le mécanisme `photoWa` **reste en place** — ce n'est pas du code mort, c'est
+une place qui attend le prochain modèle arrivé avant son image.
+
+⏳ **Il reste à publier.** Le site en ligne date d'avant le 26 août : il montre
+encore la Robe d'été sans photo, alors qu'elle en a une depuis. Depuis le PC :
+
+```bash
+cd clients/10-hillary-m-styl && python3 _predeploy.py
+npx -y wrangler@3 pages deploy _dist --project-name hillary-m-styl --branch main
+```

@@ -1530,3 +1530,30 @@ Trois contrôles ont accusé un site parfaitement juste, le même jour :
 - **À appliquer** : lire ce que l'autre version a écrit **avant** de défendre
   la sienne, et ne garder de la sienne que ce que l'autre n'a pas — ici, le
   câblage du héros, que personne n'avait fait.
+
+## 2026-08-27 — Une description inventée coûte plus cher qu'une case vide
+
+- **Ce que j'ai fait** : le 16 août, Hillary a montré ses modèles **en
+  conversation**, sans envoyer de fichiers. J'ai noté leurs prix et leurs
+  délais — exacts — et j'ai **rédigé une description pour chacun d'après ce que
+  je croyais voir**. L'un d'eux est devenu « Ensemble Volants : haut court noué
+  devant, manches à trois volants étagés, pantalon très évasé en jean ».
+- **Ce que c'était vraiment** : la **robe de ville organza**, déjà au
+  catalogue, décrite deux fois. Un vêtement que la maison ne coud pas a occupé
+  une carte pendant **onze jours**, avec « Photo sur WhatsApp », et un client
+  aurait pu le commander.
+- **Ce qui l'a révélé, et qu'il fallait regarder plus tôt** : les **six prix
+  étaient identiques** à ceux d'une fiche existante, au franc et au centime
+  près. Deux vêtements différents qui coûtent exactement pareil en normal, en
+  express, en francs, en euros et en dollars, ça n'arrive pas.
+- ⚠️ **La règle** : on peut noter un prix entendu, un délai entendu, un nom
+  entendu. **On ne rédige pas la description d'un vêtement qu'on n'a pas vu en
+  fichier.** Une fiche sans description attend ; une fiche mal décrite ment, et
+  elle ment avec l'autorité du catalogue.
+- ⚠️ **Le garde-fou qui manquait** : à la création d'une fiche, comparer ses
+  prix à ceux des fiches existantes. Un jeu de six valeurs qui se répète est un
+  doublon jusqu'à preuve du contraire.
+- **Ce qui a permis de trancher** : l'**empreinte au pixel** de la photo,
+  mesurée les deux fois où elle est arrivée (25 et 27 août) — identique au dos
+  d'une pièce déjà en ligne. Mesurer une image au lieu de la reconnaître à
+  l'œil, c'est ce qui transforme un soupçon en preuve.
