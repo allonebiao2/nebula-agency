@@ -1630,3 +1630,26 @@ Trois contrôles ont accusé un site parfaitement juste, le même jour :
   **lisent les deux côtés** (le fichier et le catalogue) et les comparent. Un
   contrôle qui recopie un chiffre de la donnée devient faux le jour où la donnée
   change — c'est-à-dire précisément le jour où il devrait servir.
+
+## 2026-08-28 — `git merge-tree` imprime le CONTENU : on lit son code de sortie
+
+- **Le défaut** : `scripts/rapatrier.py` jugeait qu'une branche était en conflit
+  en cherchant « CONFLICT » ou « <<<<<<< » dans la sortie de la forme ancienne
+  de `git merge-tree`. Or cette forme **imprime le contenu fusionné des
+  fichiers**. Toute branche portant ces mots quelque part était accusée.
+- **Le cas réel** : la branche du Standard WhatsApp sortait `[conflits]` à cause
+  d'un `ON CONFLICT(...) DO UPDATE` — l'**upsert SQLite** de `memoire.py` —
+  alors que `main` en était l'**ancêtre direct** : la fusion était une simple
+  avance rapide.
+- ⚠️ **Le défaut vise précisément ce qu'il ne faut pas rater** : les seules
+  branches qu'il accuse à tort sont celles qui parlent de git ou de SQLite,
+  c'est-à-dire de l'outillage. Une branche saine écartée par le script chargé de
+  ne rien perdre, c'est le pire endroit où mettre un faux positif.
+- **Ce qui l'a borné** : avoir comparé l'ancien et le nouveau verdict **sur les
+  21 branches** avant de corriger. Une seule était mal jugée. Mesurer l'ampleur
+  d'un défaut avant de le réparer évite d'en faire un drame ou de le sous-estimer.
+- ⚠️ **La règle** : quand un outil rend un **code de sortie**, on lit le code de
+  sortie. `git merge-tree --write-tree` (git ≥ 2.38) rend 0 pour propre et 1 pour
+  conflit : c'est un verdict. Chercher un mot dans un texte, c'est une lecture,
+  et une lecture se trompe. Sur un git trop ancien, le script dit désormais
+  « indécidable » au lieu d'inventer un verdict.
