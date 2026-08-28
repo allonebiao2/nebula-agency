@@ -1557,3 +1557,76 @@ Trois contrôles ont accusé un site parfaitement juste, le même jour :
   mesurée les deux fois où elle est arrivée (25 et 27 août) — identique au dos
   d'une pièce déjà en ligne. Mesurer une image au lieu de la reconnaître à
   l'œil, c'est ce qui transforme un soupçon en preuve.
+
+## 2026-08-28 — Une consigne dans un prompt n'est pas un contrôle
+
+- **Le cas** : l'agent WhatsApp doit ne jamais inventer un prix. Le prompt le dit
+  en majuscules, trois fois, avec la raison. Ça ne suffit pas : un modèle qui
+  parle argent finit par arrondir, et il le fait avec le même aplomb que quand
+  il a raison.
+- ⚠️ **La règle** : tout ce qui coûte de l'argent au client se vérifie **en
+  code, après la génération, avant l'envoi**. Le prompt oriente, il ne garantit
+  pas. Un garde-fou qui relit la réponse et bloque l'envoi est la seule chose
+  qui transforme une démonstration en produit livrable.
+- **Ce que ça change en pratique** : quand le garde-fou bloque, le client reçoit
+  une phrase honnête (« je préfère vous confirmer ce point exactement ») et le
+  patron reçoit **le message que l'agent allait envoyer, en entier**. On ne perd
+  pas la vente, on la passe à un humain.
+
+## 2026-08-28 — Un contrôle de prix doit ATTACHER le montant à l'article
+
+- **Le premier jet** vérifiait qu'un montant était atteignable en additionnant
+  des articles de la carte. Il acceptait « le tilapia braisé est à 4 500 F »,
+  parce que 4 500 = 3 000 + 1 500 : une addition possible, pour un prix faux.
+- ⛔ **Mesuré, et c'est le chiffre qui a tout décidé** : sur la carte d'Au
+  Braisé d'Or, **90 % des montants ronds** entre 100 et 18 000 F sont
+  atteignables en six articles ou moins. Chez Hillary, dont les prix sont gros
+  et espacés, **2 %**. Un contrôle qui accepte 90 % des valeurs ne contrôle rien
+  — et il paraissait excellent tant qu'on ne le mesurait que chez Hillary.
+- ⚠️ **La correction** : chaque montant est **attaché au nom d'article le plus
+  proche dans sa phrase**, et vérifié contre CET article. Un total n'est admis
+  que s'il combine **au moins deux** articles nommés — sinon « le cappuccino est
+  à 600 F » passerait, 600 F étant le prix du yaourt cité juste après.
+- ⚠️ **Les mots qui reconnaissent un article sont CALCULÉS depuis les données** :
+  un mot ne désigne un plat que s'il n'appartient qu'à lui dans toute la carte
+  (« tilapia », « gombo » oui ; « sauce », « poulet » non). Le jour où la maison
+  ajoute un second plat au tilapia, le mot cesse tout seul d'être distinctif.
+
+## 2026-08-28 — Un nombre qui SUIT un nom n'est pas une quantité
+
+- « Trois yaourts, ça fait 1 800 F » est vrai (3 × 600). Pour l'accepter, le
+  garde-fou lit la quantité écrite devant le nom.
+- ⛔ **Le piège** : « la glace **4 boules** est à 3 000 F ». Le 4 compte des
+  boules, pas des glaces. Lu comme une quantité, il valide 3 × 1 000 = 3 000 F
+  pour un barème qui s'arrête à 2 500 F — exactement l'erreur d'encaissement
+  que les paliers avaient été créés pour empêcher le 26 août.
+- ⚠️ **La règle** : une quantité se lit **avant** le nom, dans les quelques
+  caractères qui le précèdent. Un nombre placé après compte autre chose.
+
+## 2026-08-28 — Un chemin de sortie oublié ne se voit que si un contrôle l'emprunte
+
+- **Le défaut** : le service ne prévenait la maison que lorsqu'il y avait une
+  **escalade**. Une commande confirmée était donc enregistrée, récapitulée au
+  client… et **personne au restaurant ne l'apprenait**. Un client serait venu
+  chercher un plat que personne n'avait mis sur le feu.
+- **Comment il est sorti** : un contrôle qui disait « la maison reçoit la
+  commande », écrit parce que la liste des contrôles suivait les chemins et non
+  le code. Aucune relecture ne l'avait vu — les deux branches (`escalades`,
+  `commandes`) sont voisines de trois lignes et l'une avait l'air de couvrir
+  l'autre.
+- ⚠️ **La règle** : lister les SORTIES d'un service (répondre, prévenir,
+  enregistrer, se taire) et écrire un contrôle par sortie, avant de lire le
+  code. Un contrôle par fonction rate ce qu'un contrôle par chemin trouve.
+
+## 2026-08-28 — Lire le fichier qui fait autorité, la preuve est venue le jour même
+
+- Le kit WhatsApp ne recopie aucun catalogue : il **lit** `carte.ts` et le
+  tableau `PIECES` de la vitrine d'Hillary.
+- **La démonstration, non provoquée** : pendant la session, `main` a avancé de
+  deux commits, dont un qui **retirait « Ensemble Volants »** du fichier
+  d'Hillary. Après la fusion, l'agent est passé de 20 à 19 pièces **sans une
+  ligne modifiée**, et les 146 contrôles sont restés verts.
+- ⚠️ **Pourquoi les contrôles ont tenu** : aucun ne dit « 20 pièces ». Ils
+  **lisent les deux côtés** (le fichier et le catalogue) et les comparent. Un
+  contrôle qui recopie un chiffre de la donnée devient faux le jour où la donnée
+  change — c'est-à-dire précisément le jour où il devrait servir.
