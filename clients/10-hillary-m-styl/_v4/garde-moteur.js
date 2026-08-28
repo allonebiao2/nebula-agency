@@ -269,15 +269,23 @@ var PIECES = [
    eur:52, usd:63, eurExp:67, usdExp:81,
    ds:"Col montant noué derrière la nuque, dos entièrement dégagé, jupe courte et évasée. Un volant de tulle violet dépasse sous le wax à volutes."},
 
-  /* ── LES 11 MODELES RECUS LES 2026-08-16 ET 17 ──────────────────
+  /* ── LES MODELES RECUS LES 2026-08-16 ET 17 ─────────────────────
      Poses au catalogue le 2026-08-18 sur demande de Mongazi, AVANT
      leurs photos : les pieces sont reelles, les prix sont les siens,
-     la commande fonctionne. `photoWa:true` remplace la photo par
+     la commande fonctionne. `photoWa:true` remplacait la photo par
      « Photo sur WhatsApp », qui est vrai et actionnable.
-     ⚠️ Elles n'entrent NI au heros NI au carrousel tant qu'elles
-     n'ont pas d'image : un monogramme en pleine page ne montre rien.
-     `python _nouveaux_modeles.py --poser` posera les photos et
-     retirera ce drapeau. */
+     ⚠️ Une piece sans image n'entre NI au heros NI au carrousel :
+     un monogramme en pleine page ne montre rien.
+     `python _nouveaux_modeles.py --poser` pose les photos et retire
+     le drapeau.
+
+     ✅ DEPUIS LE 2026-08-27, PLUS AUCUNE FICHE NE LE PORTE : les 19
+     pieces du catalogue ont toutes leur photo. Le mecanisme reste en
+     place pour le prochain modele qui arrivera avant son image — ce
+     n'est pas du code mort, c'est une place qui attend.
+     ⚠️ Elles etaient ONZE a leur arrivee, elles sont DIX : la
+     onzieme, « Ensemble Volants », etait la robe de ville organza
+     comptee deux fois. Voir la note dans `_nouveaux_modeles.py`. */
   {id:"h10", cat:"sm", nom:"Robe de ville organza", type:"robe_ovale", tag:"Cérémonie",
    img:"piece-organza.webp", img2:"piece-organza-dos.webp",
    prix:40000, jmin:14, jmax:14, expPrix:55000, expMin:2, expMax:4,
@@ -328,10 +336,6 @@ var PIECES = [
    prix:35000, jmin:14, jmax:14, expPrix:45000, expMin:2, expMax:4,
    eur:52, usd:63, eurExp:67, usdExp:81,
    ds:"Haut court noué au cou et jupe longue très ample, en bazin teint. La pièce d'été, qui va de la plage au déjeuner."},
-  {id:"h20", cat:"sm", nom:"Ensemble Volants", type:"haut_pantalon", tag:"", photoWa:true,
-   prix:40000, jmin:14, jmax:14, expPrix:55000, expMin:2, expMax:4,
-   eur:60, usd:72, eurExp:82, usdExp:100,
-   ds:"Haut court noué devant, manches à trois volants étagés, et pantalon très évasé en jean à empiècements de bazin teint."},
 
   /* Une CRÉATION LIBRE : ce n'est pas un vêtement inventé, c'est un service.
      Aucun prix (« sur devis »), aucune photo revendiquée : le client décrit

@@ -98,26 +98,23 @@ MODELES = [
          type="robe_ovale", tag="Plage",
          indice="DEUX mannequins, haut court noué au cou + jupe longue : bazin tie-dye brun et jaune à médaillons roses, et tie-dye orange et bleu — DEUX vues nettes reçues le 18/08 (face et dos, dos nu noué à la nuque) — ne PAS reprendre la capture d'écran du 17",
          ds="Haut court noué au cou et jupe longue très ample, en bazin teint. La pièce d'été, qui va de la plage au déjeuner."),
-    # ⛔ ATTENTION AVANT DE TOUCHER À CETTE FICHE — 2026-08-25.
-    #    Mongazi a envoyé une photo en la présentant comme « pas une robe
-    #    volante mais robe de ville », 40 000 / 55 000, mesures robe ovale.
-    #    Cette photo est DÉJÀ EN LIGNE : elle est, au MD5 près, le dos de
-    #    `h10 Robe de ville organza` (`piece-organza-dos.webp`), dont les six
-    #    prix sont exactement ceux qu'il a donnés et dont la description dit
-    #    déjà « dos lacé au ruban et jupon d'organza sous un wax rouge ».
-    #    Autrement dit : la fiche ci-dessous porte les prix de h10, et rien ne
-    #    prouve qu'un ensemble à volants existe. C'est peut-être un doublon que
-    #    j'ai fabriqué le 16/08 en décrivant deux fois la même robe.
-    #    ⏳ SEULE HILLARY PEUT TRANCHER. Tant qu'elle n'a pas répondu, on ne
-    #    supprime rien (effacer une pièce qu'elle vend est pire que garder une
-    #    ligne en trop) et on n'y pose aucune photo. La question posée :
-    #    « existe-t-il un haut court à manches à trois volants avec un pantalon
-    #    évasé en jean, ou est-ce la robe organza qu'on a comptée deux fois ? »
-    dict(cle="volants", id="h20", nom="Ensemble Volants",
-         prix=40000, expPrix=55000, eur=60, usd=72, eurExp=82, usdExp=100,
-         type="haut_pantalon", tag="",
-         indice="⛔ FICHE EN DOUTE, voir la note ci-dessus : les memes prix que h10 Robe de ville organza, et la photo envoyee le 25/08 EST le dos de h10. Ne rien poser ici sans reponse d'Hillary.",
-         ds="Haut court noué devant, manches à trois volants étagés, et pantalon très évasé en jean à empiècements de bazin teint."),
+    # ⛔ FICHE SUPPRIMÉE LE 2026-08-27 — « Ensemble Volants » n'a jamais existé.
+    #    Je l'avais créée le 16/08 depuis une photo montrée en conversation, en
+    #    la décrivant comme un haut court à trois volants avec un pantalon
+    #    évasé en jean. Trois preuves concordantes disent que c'était la ROBE
+    #    DE VILLE ORGANZA (h10), comptée deux fois :
+    #      · les SIX prix étaient identiques à ceux de h10, au franc et au
+    #        centime près (40 000 / 55 000 · 60 / 72 · 82 / 100) ;
+    #      · la seule photo jamais associée à cette fiche est, au pixel près
+    #        (empreinte c2c3d9d2389a4c57), le DOS de h10 déjà en ligne —
+    #        envoyée deux fois, le 25 et le 27 août ;
+    #      · Mongazi l'a dit deux fois, dans ces mots : « ce n'est pas une robe
+    #        volante mais robe de ville », avec ces prix-là et les mesures
+    #        d'une robe ovale, qui sont celles de h10.
+    #    ⚠️ NE PAS LA RECRÉER sans une photo qui montre vraiment un haut et un
+    #    pantalon. Une description inventée coûte plus cher qu'une case vide :
+    #    elle a occupé une carte du catalogue pendant onze jours, avec
+    #    « Photo sur WhatsApp », pour un vêtement que la maison ne coud pas.
 ]
 
 # ⚠️ IL N'Y A PLUS DE LISTE DE TROIS ÉLUES. Mongazi, le 2026-08-18 :
