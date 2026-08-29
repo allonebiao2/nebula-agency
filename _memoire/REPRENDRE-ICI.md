@@ -57,8 +57,17 @@ WhatsApp » : c'était le seul maillon que personne n'avait automatisé.
    et l'enseigne un troisième (43 99 29 29). La fiche est **vide exprès** et le
    serveur refuse de démarrer en le disant. **Seul Mongazi peut trancher.**
 2. **Le numéro qui reçoit les alertes**, pour chaque maison.
-3. **Le premier appel réel au modèle** : le conteneur d'écriture n'avait aucune
-   clé Anthropic. Tout le reste est éprouvé, ça pas encore. **C'est un geste du PC.**
+3. ~~**Le premier appel réel au modèle**~~ ✅ **FAIT le 2026-08-29, depuis le PC.**
+   La clé était déjà là, dans `secrets/nebula-affilies.env`. Question posée :
+   « c'est combien le tilapia braisé en grand ? » → réponse : **6 000 F**, avec
+   les neuf accompagnements, tous lus dans `carte.ts`. 123 jetons en entrée,
+   95 en sortie. La chaîne complète (carte réelle → Claude → garde-fou →
+   réponse) tourne.
+   ```bash
+   # la cle est dans secrets/nebula-affilies.env
+   python whatsapp-agent/simuler.py braise-dor        # vrai modele
+   python whatsapp-agent/simuler.py braise-dor --faux # sans cle, la mecanique
+   ```
 
 ### ✅ LE TRAVAIL EST DANS `main` DEPUIS LE 2026-08-29
 `claude/whatsapp-automation-agent-ryk9j5` a été fusionnée (fusion propre, comme
