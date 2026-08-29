@@ -718,3 +718,35 @@ var k = 1 - Math.pow(1 - 0.095, dt / 16.7);
 aucun contrôle ne l'aurait vu : sur mobile, le moteur maison ne tourne même pas.
 
 **150 contrôles verts, 0 en échec.**
+
+
+---
+
+## 2026-08-27 — Le bouton « Découvrir les œuvres » est retiré
+
+Demandé par Angélique. Il avait été ajouté le 21/08 sur son propre
+récapitulatif (« un bouton pour Découvrir les œuvres menant directement à la
+collection ») : elle change d'avis en le voyant, c'est son droit et c'est
+exactement à ça que sert une mise en ligne.
+
+Retiré **partout**, pas seulement du balisage : les quatre règles CSS qui le
+portaient (position absolue sur grand écran, retour dans le flux sous 768 px,
+révélation à l'ouverture du héros, exception « mouvement réduit ») sont parties
+avec lui. Il ne reste **aucune trace** de `.hero-pill` dans le projet.
+
+⚠️ **Et les deux paires du contrôle de chevauchement qui le nommaient.** Elles
+ne plantaient pas — le contrôle rend `None` et annonce « absent à cette
+taille » — mais **un contrôle qui décrit un élément disparu ne protège plus
+rien et fait croire qu'il veille.** Remplacées par une paire qui, elle, n'était
+pas testée : `.hero-mx li` contre `.cadre`.
+
+**Arithmétique vérifiée plutôt que supposée** : 149 → 146. Six contrôles
+partis (deux paires × trois largeurs), trois gagnés (une paire × trois
+largeurs). La baisse s'explique entièrement.
+
+Regardé à 390, 768 et 1440 : aucun trou. Le bouton était en position absolue,
+sa disparition ne déplace rien ; la ligne des métriques garde ses 42 à 48 px
+de marge basse.
+
+⚠️ La collection reste atteignable depuis le haut par l'entrée **LA
+COLLECTION** du menu. Rien n'est isolé.

@@ -334,8 +334,12 @@ def main():
             # ⚠️ On compare aux boîtes qui portent VRAIMENT du texte. Comparer à
             # `.hero-mx` (un <ul> large de toute la page même quand ses trois
             # libellés sont courts) déclarait un chevauchement inexistant.
-            for a_, b_ in [(".hero-pill", ".hero-mx li"), (".hero-pill", ".cadre"),
-                           (".hero-lg", ".cadre")]:
+            # ⚠️ `.hero-pill` retiré le 2026-08-27 à la demande d'Angélique : les
+            #    deux paires qui le nommaient sont parties avec lui. Elles ne
+            #    plantaient pas — le contrôle rend `None` et annonce « absent à
+            #    cette taille » — mais un contrôle qui décrit un élément
+            #    disparu ne protège plus rien et fait croire qu'il veille.
+            for a_, b_ in [(".hero-lg", ".cadre"), (".hero-mx li", ".cadre")]:
                 croise = page.evaluate("""([sa, sb]) => {
                   const A = document.querySelector(sa);
                   const Bs = [...document.querySelectorAll(sb)];
