@@ -251,3 +251,76 @@ automatiquement. Son temps réel par vente : environ deux minutes.
 ⚠️ **Sur le deuil** : vrai besoin, mais une seule maladresse de ton abîme la
 marque pour longtemps. Faire relire par quelqu'un qui vient d'enterrer un
 proche avant de vendre cette ligne.
+
+---
+
+## Suite du 2026-08-28 — le réveil de Render, réglé sans payer un franc
+
+Mongazi a envoyé une capture : `partenaires.nebula-agency.online` affichait
+« APPLICATION LOADING » pendant 26 s. Consigne : « je ne veux rien payer, mais
+arrange-moi la situation ».
+
+### Les faits vérifiés
+
+- Render endort un service gratuit après **15 min** sans trafic, réveil **~1 min**.
+- ⚠️ **Les 750 h gratuites sont PAR ESPACE DE TRAVAIL, pas par service.** Un
+  service éveillé 24h/24 = **720 h**, soit presque tout le quota. **Deux
+  services = 1 440 h : les DEUX sont suspendus.** Réveiller trop est pire que
+  ne rien faire.
+- ⛔ **Un proxy inverse NE RÈGLE PAS un réveil** : si Cloudflare interroge
+  Render, la requête attend quand même. C'était le piège du réflexe.
+
+### Le vrai danger, qui n'était pas celui de la capture
+
+Dans l'architecture d'origine, c'est le serveur Python qui sert **la page
+cadeau** (`/v/{slug}`). Donc la destinataire tape le lien à minuit et tombe sur
+« APPLICATION LOADING » pendant une minute. **Ce n'est pas un site lent, c'est
+le cadeau détruit** : tout le produit tient dans ce moment d'ouverture.
+
+### La solution : séparer selon QUI attend
+
+- **Ce que le client et la destinataire touchent** → Cloudflare KV, servi
+  depuis le bord, **aucun réveil, jamais**, gratuit (1 000 écritures et
+  100 000 lectures par jour, une vente = une écriture).
+- **Le back-office et la validation** → Render a le droit de dormir : le seul
+  qui attend, c'est Mongazi, et il prend déjà 2 min pour lire son SMS.
+
+### Ce qui a été écrit
+
+- **`.github/workflows/reveil.yml`** : ping toutes les 10 min de **06h à 23h**
+  Cotonou (`*/10 5-21 * * *` UTC, le Bénin est à UTC+1 sans heure d'été).
+  **510 h/mois sur 750, marge de 240 h.** Le calcul est écrit dans le fichier
+  avec l'avertissement de le refaire avant d'ajouter une URL. Liste d'URLs dans
+  la variable de dépôt `URLS_A_REVEILLER` ; absente, le workflow ne fait rien.
+  ⚠️ **Ce n'est pas une garantie** : GitHub peut retarder un déclenchement
+  programmé de plusieurs minutes. Le réveil devient rare, pas impossible.
+- **`vitrina/publier.py`** : pose le HTML validé dans Cloudflare KV
+  (`publier`), et **`retirer`** pour le retrait sous 24 h. ⚠️ **Supprimer en
+  base NE SUFFIT PAS** : tant que la page est dans KV, le bord la sert.
+- **`vitrina/cfproxy/_worker.js` réécrit** : `/v/{slug}` servi depuis KV **sans
+  jamais toucher l'origine** ; l'aperçu non validé retombe sur l'origine (c'est
+  acceptable, l'acheteur vient de POSTer donc elle est réveillée) ; le reste est
+  relayé. `noindex` posé (une page cadeau porte un prénom et des photos).
+  ⛔ **L'ancienne version pointait encore vers Railway**
+  (`vitrina-production-686b.up.railway.app`), abandonné le 2026-08-01 : elle
+  relayait vers un service mort et rien ne le signalait. L'origine se pose
+  désormais en variable `ORIGINE`.
+- **`server.py`** : `/sante` (point de réveil sans base ni rendu), publication
+  au bord à la validation, retrait du bord à la suppression. ⚠️ **L'alerte DIT
+  si la page n'a pas pu être publiée sur Cloudflare** (« servie par Render,
+  environ une minute d'attente ») au lieu de le taire.
+
+### Contrôles
+
+`vitrina/_qc.py` **36 verts** (dont : la page est posée sur Cloudflare à la
+validation, la suppression retire du bord, et **Cloudflare absent ne casse rien
+mais l'alerte le dit**). Nouveau `vitrina/cfproxy/_qc_worker.mjs` **15 verts**
+en Node (dont : **aucun appel à l'origine** pour une page livrée, un slug tordu
+n'interroge pas KV, et sans `ORIGINE` un message clair au lieu d'une page
+blanche).
+
+### À poser côté Cloudflare et GitHub
+
+Variables `CF_ACCOUNT_ID`, `CF_KV_NAMESPACE_ID`, `CF_API_TOKEN` (permission
+Workers KV Storage · Edit) ; sur le projet Pages, la variable `ORIGINE` et la
+liaison KV nommée `PAGES` ; dans le dépôt, la variable `URLS_A_REVEILLER`.

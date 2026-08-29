@@ -89,7 +89,43 @@ page2 = c.get(f"/a/{oid2}/{server._order_token(oid2)}").text
 t("doublon signale sur la fiche", "Référence déjà vue" in page2)
 t("une reference vide ne declenche rien", server._ref_doublon("") == 0)
 
-print("\n=== 7. Aucun rail joignable : la commande survit ===")
+print("\n=== 7. Cloudflare : la page part au bord du reseau ===")
+import publier as P
+poses={}; retires=[]
+P.publier=lambda slug,html:(poses.__setitem__(slug,html),True)[1]
+P.retirer=lambda slug:(retires.append(slug),True)[1]
+server.publier=P
+envois.clear()
+r=c.post("/api/order",json={"pack":"pro","biz_name":"Cadeau","client_name":"Ana",
+ "whatsapp":"22990000000","network":"MTN MoMo","ref":"CF-1","html":"<h1>page cadeau</h1>"})
+o3=r.json()["id"]; sl3=r.json()["slug"]
+envois.clear()
+c.post(f"/api/order/{o3}/validate",data={"token":server._order_token(o3)},follow_redirects=False)
+t("la page est POSEE sur Cloudflare a la validation", sl3 in poses, str(list(poses)))
+t("  -> c'est bien le HTML de la page", poses.get(sl3)=="<h1>page cadeau</h1>")
+conf=[e[1] for e in envois if e[0]=="MONGAZI"]
+t("l'alerte confirme le service instantane", any("Cloudflare" in x and "instantan" in x for x in conf), str(conf))
+c.post(f"/api/order/{o3}/delete", cookies={"vitrina_auth":server._auth_token()}, follow_redirects=False)
+t("SUPPRIMER RETIRE AUSSI DU BORD (retrait 24h)", sl3 in retires, str(retires))
+
+print("\n=== 8. Cloudflare absent : rien ne casse, mais on le DIT ===")
+P.publier=lambda slug,html:False
+envois.clear()
+r=c.post("/api/order",json={"pack":"pro","biz_name":"Sans CF","client_name":"B",
+ "whatsapp":"22990000001","network":"Moov","ref":"CF-2","html":"<p>z</p>"})
+o4=r.json()["id"]; envois.clear()
+rv=c.post(f"/api/order/{o4}/validate",data={"token":server._order_token(o4)},follow_redirects=False)
+t("la validation reussit quand meme", rv.status_code==303)
+row=server.db().execute("SELECT status FROM orders WHERE id=?",(o4,)).fetchone()
+t("la page est en ligne malgre tout", row["status"]=="live")
+conf=[e[1] for e in envois if e[0]=="MONGAZI"]
+t("l'alerte AVERTIT du reveil lent", any("NON publi" in x and "Render" in x for x in conf), str(conf))
+
+print("\n=== 9. Le point de reveil est bon marche ===")
+rs=c.get("/sante")
+t("/sante repond 200", rs.status_code==200 and rs.json()=={"ok":True})
+
+print("\n=== 10. Aucun rail joignable : la commande survit ===")
 import notify as N
 N.alerter_mongazi = lambda t: {"whatsapp": False, "telegram": False}
 r3 = c.post("/api/order", json={"pack":"pro","biz_name":"Sans reseau","client_name":"Z",

@@ -33,7 +33,8 @@ MOMO_NUMBER  = os.environ.get("MOMO_NUMBER", "")
 MOMO_NETWORK = os.environ.get("MOMO_NETWORK", "")
 PACKS = {"express": 15000, "pro": 25000, "business": 45000}
 
-import notify  # alertes WhatsApp + Telegram (best-effort, jamais bloquant)
+import notify   # alertes WhatsApp + Telegram (best-effort, jamais bloquant)
+import publier  # pose la page sur Cloudflare KV (aucun réveil à l'ouverture)
 
 def db():
     c = sqlite3.connect(DB); c.row_factory = sqlite3.Row; return c
@@ -138,6 +139,14 @@ class OrderIn(BaseModel):
     ref: str = ""
     html: str = ""
 
+@app.get("/sante")
+def sante():
+    """Point de réveil. Volontairement le moins cher possible : aucune requête
+    en base, aucun rendu. C'est ce que pingue .github/workflows/reveil.yml
+    toutes les 10 minutes aux heures ouvrées pour que Render ne s'endorme pas.
+    """
+    return {"ok": True}
+
 @app.get("/api/config")
 def config():
     return {"momo_name": MOMO_NAME, "momo_number": MOMO_NUMBER, "momo_network": MOMO_NETWORK, "packs": PACKS}
@@ -186,8 +195,15 @@ def validate(oid: int, request: Request, token: str = Form("")):
     if not r:
         raise HTTPException(404)
 
-    # Des que Mongazi valide, le travail part tout seul : la page est en ligne
-    # ET la cliente est prevenue. Plus aucun clic apres la decision.
+    # Des que Mongazi valide, le travail part tout seul : la page part au bord
+    # du reseau, elle est en ligne, ET la cliente est prevenue. Plus aucun clic
+    # apres la decision.
+    #
+    # La publication sur Cloudflare est ce qui garantit qu'une page ouverte a
+    # minuit s'affiche tout de suite. Si elle echoue, la page reste servie par
+    # ce serveur : ca marche, mais avec le reveil lent de Render. On ne le tait
+    # surtout pas, on le dit dans l'alerte.
+    au_bord = publier.publier(r["slug"], r["html"])
     lien = f"{BASE_URL}/v/{r['slug']}"
     envoye = False
     if r["whatsapp"]:
@@ -195,11 +211,16 @@ def validate(oid: int, request: Request, token: str = Form("")):
             r["whatsapp"],
             f"Bonjour {r['client_name']}, votre site est en ligne :\n{lien}\n\n"
             f"Mettez ce lien dans votre bio Instagram et sur WhatsApp.\n\nVitrina by NEBULA")
-    tg(f"Valide : {r['biz_name']} est en ligne.\n{lien}\n\n"
-       + ("Cliente prévenue automatiquement sur WhatsApp."
+    tg(f"Validé : {r['biz_name']} est en ligne.\n{lien}\n\n"
+       + ("Cliente prévenue automatiquement sur WhatsApp.\n"
           if envoye else
           "ATTENTION : la cliente n'a PAS pu être prévenue automatiquement. "
-          "Utilise le bouton WhatsApp du back-office."))
+          "Utilise le bouton WhatsApp du back-office.\n")
+       + ("Page servie par Cloudflare : elle s'ouvre instantanément."
+          if au_bord else
+          "ATTENTION : page NON publiée sur Cloudflare, elle est servie par "
+          "Render. Premier visiteur après une pause : environ une minute "
+          "d'attente."))
     return RedirectResponse(f"/a/{oid}/{_order_token(oid)}", status_code=303)
 
 @app.post("/api/order/{oid}/reject")
@@ -211,7 +232,14 @@ def reject(oid: int, request: Request, token: str = Form("")):
 @app.post("/api/order/{oid}/delete")
 def delete_order(oid: int, request: Request):
     if not _is_authed(request): raise HTTPException(403)
-    c = db(); c.execute("DELETE FROM orders WHERE id=?", (oid,)); c.commit(); c.close()
+    c = db()
+    r = c.execute("SELECT slug FROM orders WHERE id=?", (oid,)).fetchone()
+    c.execute("DELETE FROM orders WHERE id=?", (oid,)); c.commit(); c.close()
+    # ⚠️ Supprimer en base NE SUFFIT PAS : tant que la page est dans KV, le
+    # bord du réseau continue de la servir. C'est ce qui rend possible le
+    # retrait sous 24 h demandé par la personne visée par une page.
+    if r:
+        publier.retirer(r["slug"])
     return RedirectResponse("/admin", status_code=303)
 
 @app.get("/v/{slug}", response_class=HTMLResponse)

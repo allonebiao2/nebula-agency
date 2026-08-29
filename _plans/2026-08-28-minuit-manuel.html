@@ -196,8 +196,8 @@ footer b{font-family:var(--f-mono);font-size:.69rem;letter-spacing:.13em;text-tr
 
       <div class="step"><span class="n">02</span><div>
         <h4>Déployer le serveur</h4>
-        <p>Un service Render de plus, comme le bureau des partenaires. Le <code>Procfile</code> existe déjà. Attention : l'auto-déploiement Render ne marche pas sur ce dépôt, il faut appeler <code>POST /v1/services/{id}/deploys</code>.</p>
-        <p>Un sous-domaine du genre <code>minuit.nebula-agency.online</code>, comme PISTE.</p>
+        <p>Le back-office et la commande sur un service Render gratuit, le <code>Procfile</code> existe déjà. Attention : l'auto-déploiement ne marche pas sur ce dépôt, il faut appeler <code>POST /v1/services/{id}/deploys</code>.</p>
+        <p><strong>Mais les pages cadeau ne vont pas sur Render.</strong> Render endort un service gratuit après 15 minutes et met une minute à se réveiller : une page ouverte à minuit afficherait « APPLICATION LOADING ». Elles partent dans Cloudflare KV à la validation et sont servies depuis le bord du réseau. C'est déjà écrit.</p>
       </div><span class="etat reste">à faire</span></div>
 
       <div class="step"><span class="n">03</span><div>
@@ -548,7 +548,8 @@ Et voilà nos pages déjà en ligne : <em>[2 ou 3 liens]</em></div>
           <tr><td><strong>Le gabarit émotionnel</strong></td><td style="color:var(--wax);font-weight:600">N'existe pas</td><td><strong>Le vrai travail.</strong> Formulaire d'occasion et page cadeau au standard maison.</td></tr>
           <tr><td>Sauvegarde du formulaire pendant le paiement</td><td style="color:var(--wax);font-weight:600">N'existe pas</td><td>Quelques lignes. Sans elles, tu perds des ventes déjà gagnées.</td></tr>
           <tr><td>Livraison programmée à l'heure choisie</td><td style="color:var(--wax);font-weight:600">N'existe pas</td><td>La fonction qui donne son nom au produit. À faire avec n8n.</td></tr>
-          <tr><td>Serveur en ligne</td><td style="color:var(--wax);font-weight:600">Pas déployé</td><td>Un service Render, un sous-domaine.</td></tr>
+          <tr><td>Pages servies sans réveil</td><td style="color:var(--good);font-weight:600">Écrit et testé</td><td>Poser les 3 variables Cloudflare et lier l'espace KV.</td></tr>
+          <tr><td>Serveur en ligne</td><td style="color:var(--wax);font-weight:600">Pas déployé</td><td>Un service Render gratuit, un sous-domaine.</td></tr>
         </tbody>
       </table>
     </div>
