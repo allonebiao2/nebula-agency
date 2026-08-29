@@ -1239,34 +1239,53 @@ async def main():
         ok(not f["restes"], "fiche : le fond redevient atteignable en refermant"
            + ("" if not f["restes"] else " -> restent inertes : " + ", ".join(f["restes"])))
 
+        await ctx.close()
+
         # ─────────────────────────────────────────────────────────────
         # LE DEFILEMENT LISSE LAISSE PASSER LES AUTRES
         # ⚠️ CE CONTROLE A BESOIN D'UN TEMOIN : sans lui il passerait aussi le
         #    jour ou le moteur serait mort — une page qui ne glisse pas ne
         #    ramene evidemment rien. Meme famille que le controle de pause du
-        #    2026-08-18. Le moteur n'existe que sur pointeur fin : ici, en
-        #    contexte PC, et nulle part ailleurs.
+        #    2026-08-18.
+        # ⛔ ET IL A BESOIN DU BON CONTEXTE. Ecrit le 2026-08-25 avec le
+        #    commentaire « ici, en contexte PC », il tournait en realite dans le
+        #    contexte du TOUCHER : 390 x 844, `is_mobile`, `has_touch`. Deux
+        #    consequences, toutes deux silencieuses : le moteur maison ne
+        #    s'allume que sur `pointer:fine`, donc il n'etait pas la ; et
+        #    `mouse.move(700, 400)` vise x = 700 sur une page large de 390, donc
+        #    la molette tombait HORS DE L'ECRAN. Le temoin a fini par le dire
+        #    (« la page n'a pas glisse, 3003 -> 3000 ») le 2026-08-29 — c'est
+        #    exactement son travail. Mesure a cote, en contexte PC : la page
+        #    passe de 3000 a 4032 px en 120 ms, le moteur va tres bien.
+        #    ⚠️ Un controle place dans le mauvais contexte ne mesure pas ce
+        #    qu'il croit, et il est VERT tant que personne ne le lui demande.
         # ─────────────────────────────────────────────────────────────
-        await page.evaluate("()=>scrollTo(0,3000)")
-        await page.wait_for_timeout(900)
-        dep = await page.evaluate("()=>Math.round(scrollY)")
-        await page.mouse.move(700, 400)
-        await page.mouse.wheel(0, 3000)
-        await page.wait_for_timeout(120)
-        pend = await page.evaluate("()=>Math.round(scrollY)")
+        ctxs = await br.new_context(viewport={"width": 1440, "height": 900})
+        ctxs.set_default_timeout(30000)
+        await ctxs.route('**fonts.g*/**', lambda r: r.abort())
+        pgs = await ctxs.new_page()
+        await pgs.goto(URL, wait_until="domcontentloaded")
+        await pgs.wait_for_timeout(2600)
+        fin = await pgs.evaluate("()=>matchMedia('(pointer:fine)').matches")
+        ok(fin, "defilement : le controle tourne bien sur pointeur fin (le moteur n'existe que la)")
+
+        await pgs.evaluate("()=>scrollTo(0,3000)")
+        await pgs.wait_for_timeout(900)
+        dep = await pgs.evaluate("()=>Math.round(scrollY)")
+        await pgs.mouse.move(700, 400)
+        await pgs.mouse.wheel(0, 3000)
+        await pgs.wait_for_timeout(120)
+        pend = await pgs.evaluate("()=>Math.round(scrollY)")
         if pend - dep > 60:
             ok(True, f"temoin : la page glisse bien ({dep} -> {pend} px)")
-            await page.evaluate("()=>scrollTo(0,200)")
-            await page.wait_for_timeout(900)
-            ap = await page.evaluate("()=>Math.round(scrollY)")
+            await pgs.evaluate("()=>scrollTo(0,200)")
+            await pgs.wait_for_timeout(900)
+            ap = await pgs.evaluate("()=>Math.round(scrollY)")
             ok(ap < 500, f"un saut exterieur pendant le glissement tient ({ap} px)"
                + ("" if ap < 500 else " -> recherche du navigateur et lecteur d'ecran annules"))
         else:
             ok(False, f"temoin muet : la page n'a pas glisse ({dep} -> {pend}), le controle ne prouve rien")
-        await page.evaluate("()=>scrollTo(0,0)")
-        await page.wait_for_timeout(500)
-
-        await ctx.close()
+        await ctxs.close()
 
         await br.close()
 
