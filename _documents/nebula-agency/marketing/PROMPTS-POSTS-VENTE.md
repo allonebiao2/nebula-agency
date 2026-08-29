@@ -777,9 +777,320 @@ privé », et **on entre par le Catalogue**.
 | Le même sujet, la même surface sur les 3 | sinon ce sont trois posts, pas un carrousel |
 | Aucun chiffre dans l'histoire | « des années », jamais « dix ans » |
 
+## 5. Post n° 3 · « MONSIEUR INTROUVABLE » — direction « HÉROS DE COTONOU »
+
+**Référence :** `references/REF-heros-comic.jpg` · format **4:5, 1080 x 1350**.
+**Ton :** samedi. Drôle, grand public, et cinglant sous la blague.
+
+### ⚠️ Ce qu'on ne reprend pas de la référence, et pourquoi
+
+La référence met en scène **Spider-Man**. C'est une marque déposée Marvel et Disney, et le
+costume comme le lettrage sont protégés. Deux raisons de ne pas le reprendre, dans cet ordre
+d'importance pratique :
+
+1. **Les modèles d'image refusent de le générer.** Un prompt qui demande Spider-Man revient
+   vide ou dénaturé. Le post n'existerait pas.
+2. C'est l'emprunt du personnage de quelqu'un d'autre, et une agence qui vend de l'identité
+   de marque a mauvaise grâce à se déguiser avec celle d'un autre.
+
+**Et ce n'est pas ce qui fait la force de cette image.** Ce qui la fait, c'est la **vue
+subjective en plongée depuis un toit**, les jambes qui pendent au-dessus du vide, **le
+téléphone tenu dans la main gantée avec l'écran lisible**, et le **logotype comic**. Tout ça
+se garde. On change le héros, et il devient le nôtre.
+
+### La direction « HÉROS DE COTONOU »
+
+| Ce qu'on garde de la référence | Ce qu'on change |
+|---|---|
+| vue subjective en plongée, jambes pendantes au bord d'un toit | **une ville ouest-africaine au crépuscule**, pas Manhattan |
+| téléphone dans la main gantée, écran net et lisible | l'écran montre **une recherche vide**, c'est le gag |
+| logotype comic à contour épais et ombre portée | **violet et cyan NEBULA**, pas rouge et bleu |
+| sous-titre en capitales sous le logotype | il porte la chute, pas une annonce |
+| lumière chaude de fin de journée | tôles, marché, motos, poussière dorée |
+
+**Le costume est original :** nuit profonde et cyan, motif de **constellations** et non de
+toile, masque intégral aux yeux **ovales et lumineux**. Aucune araignée, aucun rouge, aucune
+toile. Le prompt le décrit en positif, jamais par comparaison : c'est ce qui l'empêche d'être
+refusé et ce qui l'empêche de dériver.
+
+### L'idée : un anti-héros
+
+> **MONSIEUR INTROUVABLE**
+> *Le seul héros que personne ne peut appeler.*
+
+Le gag tient en une seconde : **c'est un super-pouvoir présenté comme une qualité, et c'est
+une catastrophe.** Le lecteur rit, puis il se reconnaît, et le rire est déjà passé.
+
+**La chute, en bas de l'image :**
+> *Son pouvoir : disparaître dès qu'on le cherche.*
+> *Sa faiblesse : c'est involontaire.*
+
+C'est la ligne du post. Elle transforme la blague en constat, sans reproche et sans leçon.
+
+**Le gag visuel double le texte :** le héros, assis au bord du toit, **se cherche lui-même
+sur son propre téléphone** et ne se trouve pas. On peut comprendre le post sans lire un mot.
+
+**La sortie, en une ligne :** *« Vous n'êtes pas obligé de garder ce pouvoir. »* On ne vend
+rien, on ne nomme aucun produit, on n'affiche aucun prix. On ouvre une porte, en riant.
+
+### Pourquoi c'est un bon post de samedi
+
+Le samedi, personne n'a envie d'une leçon. **L'humour fait passer une douleur que le
+sérieux ferait fuir.** Et un anti-héros est plus partageable qu'un conseil : on l'envoie à
+un ami commerçant en disant « c'est toi ça », et c'est l'ami qui fait le travail de
+diffusion. C'est le seul post de la série conçu pour être **transféré**, pas seulement lu.
+
+### LE PROMPT
+
+```
+===========================================================
+NEBULA AGENCY — COMIC HERO POSTER — ONE IMAGE, 4:5
+===========================================================
+
+ATTACHED INPUTS — TWO attachments.
+Identify them BY THEIR CONTENT, not by their order. Never swap their
+roles: swapping them ruins the image.
+
+  THE LOGO = the attachment showing the NEBULA Agency logo: a purple
+     and blue cosmic swirl above the wordmark "NEBULA", with "AGENCY"
+     underneath, on a transparent background.
+     It is an ASSET TO PLACE, exactly as provided. It is never a style
+     reference and never a subject to reinterpret.
+
+  THE STYLE REFERENCE = the other attachment. It is a cinematic
+     first-person poster: a masked hero sitting on the ledge of a
+     rooftop, legs hanging over a city far below, holding a phone,
+     with a comic-book logotype across the top.
+     Take from it: the CAMERA, the FRAMING, the LIGHT, the LEVEL OF
+     FINISH and the comic logotype treatment.
+
+  If you hesitate: the attachment with a transparent background and a
+  readable "NEBULA AGENCY" wordmark is THE LOGO. The other one is THE
+  STYLE REFERENCE.
+
+-----------------------------------------------------------
+TASK
+-----------------------------------------------------------
+Create ONE original comic-poster social image for NEBULA Agency, a
+digital studio in Cotonou, Benin, serving West African merchants and
+business owners.
+It is funny first and true second: the reader smiles, then recognises
+themself, and the smile has already done its work.
+Cinematic, warm, premium. Never cheap, never clip-art, never a meme.
+
+-----------------------------------------------------------
+THE HERO — ORIGINAL CHARACTER, DESIGNED FROM SCRATCH
+-----------------------------------------------------------
+Invent an ORIGINAL masked hero. Design them from this description
+alone, and from nothing else:
+  - a full-body suit in DEEP NIGHT PURPLE and BLACK, with fine
+    luminous CYAN lines running along the seams like constellations
+    joined by light
+  - scattered tiny star points across the fabric, as if the suit held
+    a night sky
+  - a full face mask with NO mouth and NO nose, and two long OVAL eye
+    lenses glowing soft cyan
+  - matte gloves and boots in the same deep purple, with cyan piping
+This character belongs to NEBULA and to nobody else. The suit is
+purple, black and cyan: there is NO red, NO web pattern, NO spider,
+NO insect motif and NO existing comic character anywhere in the image.
+
+-----------------------------------------------------------
+THE SHOT — take this from the reference
+-----------------------------------------------------------
+FIRST-PERSON POINT OF VIEW, looking down.
+We are the hero. We see our own legs in the purple suit, knees bent,
+feet in cyan-piped boots hanging over the edge of a high rooftop, and
+our own gloved hands in the lower part of the frame.
+Far below, seen almost vertically, a WEST AFRICAN CITY at golden hour:
+low buildings with corrugated metal roofs catching the last light,
+a busy market street, motorbikes, dust glowing in the warm air, a
+lagoon reflecting the sky in the distance. It is Cotonou, not New York:
+no glass skyscrapers, no Manhattan grid.
+Vertigo, warmth, and calm above the noise.
+
+-----------------------------------------------------------
+THE PHONE — this is the joke, and it must be readable
+-----------------------------------------------------------
+One gloved hand holds a modern smartphone, screen turned toward us,
+tilted, sharply in focus and clearly legible.
+On the screen: a plain search field with a short name typed into it,
+and BELOW IT NOTHING AT ALL. An empty result area: one thin grey line,
+a lot of white space, no results, no cards, no listings.
+The hero is looking themself up, and they are not there. That is the
+entire gag, and it must be understandable without reading a word.
+No app name, no logo, no interface anyone could recognise, no chat
+bubble, no green tick, no notification badge.
+
+-----------------------------------------------------------
+THE LOGOTYPE — take the treatment from the reference
+-----------------------------------------------------------
+Across the upper part of the image, a COMIC-BOOK LOGOTYPE in the style
+of a superhero title: heavy condensed capitals, strong perspective,
+thick outline, hard drop shadow, slight upward tilt.
+Colour it in NEBULA violet with a cyan outline and a black shadow.
+It reads exactly:
+  "MONSIEUR INTROUVABLE"
+Directly under it, smaller, in warm gold capitals with a thin dark
+outline, in the same comic manner:
+  "LE SEUL HÉROS QUE PERSONNE NE PEUT APPELER"
+
+-----------------------------------------------------------
+LOGO INTEGRATION — read twice, most attempts fail here
+-----------------------------------------------------------
+The logo attachment is a PNG with a TRANSPARENT background. Place it
+at the TOP of the image, centred, above the logotype, small, exactly
+as provided, and KEEP that transparency.
+  - it sits DIRECTLY on the photograph. NO white box, NO black box, NO
+    coloured plate, NO rounded card, NO badge, NO outline, NO glow,
+    NO drop shadow behind it.
+  - do NOT redraw it, restyle it, recolour it, stretch it, crop it,
+    rotate it, or add a wordmark or tagline of your own.
+  - keep the sky behind it clean and uncluttered so it reads without
+    any plate.
+  - size it so its wordmark stays comfortably readable when the whole
+    image is viewed at 20% of its size.
+A logo pasted on a plate is a failed image.
+
+-----------------------------------------------------------
+FORMAT
+-----------------------------------------------------------
+Canvas: 1080 x 1350 px, vertical 4:5, for an Instagram and Facebook
+feed. The phone sits in the lower middle third and must never be
+covered by type.
+
+-----------------------------------------------------------
+CONTENT — render these strings verbatim, nothing else
+-----------------------------------------------------------
+LOGOTYPE (comic title, upper area, the loudest element):
+  "MONSIEUR INTROUVABLE"
+
+SUBTITLE (right under it, gold comic capitals):
+  "LE SEUL HÉROS QUE PERSONNE NE PEUT APPELER"
+
+THE PUNCHLINE (lower area, under the phone, small, clean sans-serif,
+               white with a soft dark shadow so it reads over the
+               city, two lines, centred):
+  "Son pouvoir : disparaître dès qu’on le cherche."
+  "Sa faiblesse : c’est involontaire."
+
+THE WAY OUT (under the punchline, one line, in cyan, smaller):
+  "Vous n’êtes pas obligé de garder ce pouvoir."
+
+FOOTER: "nebula-agency.online" at the very bottom, centred, small,
+in white type over the darker part of the city.
+
+-----------------------------------------------------------
+LAYOUT
+-----------------------------------------------------------
+Top to bottom:
+  1. NEBULA logo, centred
+  2. LOGOTYPE "MONSIEUR INTROUVABLE"     <- the loudest zone
+  3. SUBTITLE
+  4. THE LEGS, THE CITY BELOW, THE HAND AND THE PHONE  <- largest zone
+  5. PUNCHLINE, two lines
+  6. THE WAY OUT
+  7. site address
+Keep the phone screen entirely clear of any text overlay: the joke is
+on the screen and it must stay readable.
+
+-----------------------------------------------------------
+TEXT RENDERING — read twice
+-----------------------------------------------------------
+- Render ONLY the strings quoted above, plus "nebula-agency.online".
+  Any extra word is a failure.
+- Reproduce them VERBATIM: no translation, no rephrasing, no
+  shortening, no added punctuation, no exclamation marks.
+- Correct French typographic apostrophes ’ exactly as written:
+  "qu’on", "c’est", "n’êtes".
+- Correct diacritics: "HÉROS", "dès", "disparaître".
+- Keep the space before the colons, as French requires:
+  "Son pouvoir : ", "Sa faiblesse : ".
+- No readable text on the phone beyond a short typed name in the
+  search field. No result text of any kind under it.
+- The logotype must be readable at 20% of the image size.
+- No hashtag, no social icon, no emoji, no speech bubble, no comic
+  sound effect word.
+
+-----------------------------------------------------------
+HARD CONSTRAINTS
+-----------------------------------------------------------
+- The hero is ORIGINAL. NO existing comic or film character, NO red
+  and blue suit, NO web pattern, NO spider, NO mask resembling any
+  published superhero. Purple, black and cyan only.
+- NO visible human face, no skin: the hero is fully masked and gloved.
+- NO price, NO amount, NO currency, NO offer, NO discount badge.
+- NO invented statistics, percentages, follower counts or client
+  counts. No figures anywhere.
+- NO recognisable third-party brand, app name or interface.
+- NO watermark, no frame, no border.
+- ONE single joke, told once.
+
+-----------------------------------------------------------
+OUTPUT
+-----------------------------------------------------------
+One finished 1080 x 1350 image, publication-ready, cinematic quality,
+high-fidelity text rendering.
+===========================================================
+```
+
+### Pour le passer en statut WhatsApp ou en TikTok (9:16)
+
+```
+FORMAT: 1080 x 1920 px, vertical 9:16. The vertigo works even better
+in this format: give more sky and more city below the feet.
+SAFE ZONES — WhatsApp status: the TOP 220 px and the BOTTOM 340 px are
+covered by the interface. TikTok: the BOTTOM 480 px and the RIGHT
+240 px are. The logo, the logotype, the subtitle, the phone and every
+line of type must sit outside those strips.
+```
+
+### La légende
+
+```
+MONSIEUR INTROUVABLE
+
+Son pouvoir : disparaître dès qu’on le cherche.
+Sa faiblesse : c’est involontaire.
+
+Il est bon dans son métier. Ses clients l’adorent. On parle de lui au marché,
+dans les salons, dans les groupes WhatsApp. Et chaque fois que quelqu’un tape
+son nom quelque part, il n’y a rien.
+
+Ce n’est pas un problème de talent. C’est un problème d’adresse.
+
+Le vrai super-pouvoir, ce n’est pas d’être partout. C’est d’être trouvable
+quand on vous cherche, une seule fois, au bon endroit.
+
+Vous n’êtes pas obligé de garder ce pouvoir. Écrivez-nous, on en parle.
+
+NEBULA Agency · Cotonou
+nebula-agency.online
+```
+
+**Le premier commentaire, à poster soi-même :**
+
+> Taguez le commerçant que vous connaissez et qu’on ne trouve jamais nulle part. Il se
+> reconnaîtra.
+
+C’est le seul post de la série **conçu pour être transféré**. On ne demande pas de liker :
+on demande de désigner quelqu’un, et c’est beaucoup plus facile à faire.
+
+### Contrôles propres à ce post
+
+| Contrôle | Pourquoi |
+|---|---|
+| **Le héros n’est aucun personnage existant** | costume violet, noir et cyan, constellations et non toile, aucun rouge |
+| **L’écran du téléphone est vide sous la recherche** | c’est tout le gag ; s’il y a des résultats, le post ne dit plus rien |
+| Aucun texte par-dessus l’écran | il doit rester lisible, c’est la blague |
+| **Aucun chiffre nulle part** | la référence affiche des compteurs d’abonnés, nous non |
+| Le logo n’a aucune plaque derrière lui | sur une photo, le modèle en ajoute une par réflexe |
+| C’est Cotonou, pas Manhattan | tôles, marché, motos, lagune : sinon le post ne parle à personne d’ici |
+| Réduire à 20 % | si le logotype ne se lit plus, le post est mort dans le fil |
+
 ---
 
-## 5. Contrôles avant publication
+## 6. Contrôles avant publication
 
 | Contrôle | Pourquoi |
 |---|---|
@@ -794,7 +1105,7 @@ privé », et **on entre par le Catalogue**.
 
 ---
 
-## 6. Les prochaines douleurs, déjà cadrées
+## 7. Les prochaines douleurs, déjà cadrées
 
 Une par post, jamais deux. Et **jamais deux posts de cette famille d'affilée** : entre les
 deux, un « LE SAVIEZ-VOUS ? » qui ne vend rien du tout. C'est lui qui achète le droit
