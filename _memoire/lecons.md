@@ -1653,3 +1653,53 @@ Trois contrôles ont accusé un site parfaitement juste, le même jour :
   conflit : c'est un verdict. Chercher un mot dans un texte, c'est une lecture,
   et une lecture se trompe. Sur un git trop ancien, le script dit désormais
   « indécidable » au lieu d'inventer un verdict.
+
+## 2026-08-29 — Un contrôle dans le mauvais contexte ne mesure pas ce qu'il croit
+
+- **Contexte** : le QC d'Hillary refusait le déploiement sur un seul rouge —
+  *« témoin muet : la page n'a pas glissé (3003 → 3000) »*. Le contrôle est
+  celui du **défilement lissé** (est-ce qu'un saut extérieur, recherche du
+  navigateur ou lecteur d'écran, survit au glissement).
+- ⚠️ **Le site allait très bien.** Mesuré à côté, en contexte PC : la page
+  passe de **3 000 à 4 032 px en 120 ms**, document de 12 369 px, moteur
+  présent, `pointer:fine` vrai. Rien de cassé.
+- ⛔ **Le contrôle tournait dans le contexte du TOUCHER** : `390 × 844`,
+  `is_mobile`, `has_touch` — alors que son propre commentaire disait *« le
+  moteur n'existe que sur pointeur fin : ici, en contexte PC »*. Deux
+  conséquences, toutes deux silencieuses :
+  1. le moteur maison ne s'allume que sur `pointer:fine`, **il n'était pas là** ;
+  2. `mouse.move(700, 400)` vise x = 700 sur une page large de **390** : la
+     molette tombait **hors de l'écran**.
+- **Ce qui a sauvé la mise** : le **témoin**, ajouté le 25/08 pour une tout
+  autre raison (« sans lui, il passerait aussi le jour où le moteur serait
+  mort »). Il n'a pas dit « le site est cassé », il a dit **« je ne prouve
+  rien »**. C'est exactement son travail, et c'est la différence entre un
+  contrôle rouge et un contrôle inutile.
+- **Leçon** : un contrôle hérite du contexte où il est **écrit**, pas de celui
+  qu'il **décrit**. Tant qu'il est vert, personne ne vérifie qu'il regarde au
+  bon endroit — et il peut être vert pour la mauvaise raison pendant des
+  semaines.
+- **À appliquer** : quand un contrôle dépend d'une condition d'environnement
+  (pointeur fin, mouvement réduit, largeur), **il la vérifie et le dit** :
+  `ok(fin, "le contrôle tourne bien sur pointeur fin")` est posé juste avant.
+  Et un contrôle déplacé prend **son propre contexte**, il n'emprunte pas
+  celui du bloc voisin.
+
+## 2026-08-29 — Une date de déploiement ne prouve rien, les octets servis oui
+
+- **Contexte** : vérifier le parc entier revenait à comparer, pour chaque
+  site, la date du dernier déploiement Cloudflare à celle du dernier commit
+  touchant son dossier. **Sept sites sur quinze ressortaient « en retard ».**
+- **Faux dans les deux sens** : un commit peut ne toucher que le `CONTEXT.md`
+  ou un outil, et un déploiement du même jour peut être antérieur au commit.
+  Sur PISTE, la date disait « en retard » ; le site sert `plexmono` et ne sert
+  plus `orbitron` : **il était à jour**.
+- **Ce qui tranche** : télécharger la page et comparer son **corps** au fichier
+  du dépôt. Un seul site était réellement en retard.
+- ⚠️ **Cloudflare INJECTE une ligne dans le HTML servi** (Web Analytics,
+  `challenge-platform`) sur les domaines qui ont l'analytique : la comparaison
+  au MD5 échoue alors que les pages sont identiques. Retirer ces lignes avant
+  de comparer — et **dire combien on en a retiré**, sinon on masque une vraie
+  différence sous prétexte de nettoyage.
+- **À appliquer** : `_outils/_verif_parc.py` (à poser dans les scripts) compare
+  chaque site à sa source, pas à sa date.

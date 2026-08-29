@@ -1,9 +1,36 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-08-28
+## Point de reprise pour une session terminal · dernière mise à jour 2026-08-29
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
 > Il est mis à jour à chaque fin de session importante.
+
+---
+
+## 0 sexies. LE 2026-08-29 — TOUT LE PARC SERT CE QU'IL Y A DANS LE DÉPÔT
+
+**17 adresses vérifiées, une seule était en retard : Hillary M. Styl**, publiée
+depuis (151 contrôles verts). Les 3 branches du 28/08 sont dans `main`.
+
+```bash
+python scripts/verif_parc.py     # chaque site, comparé à sa source
+```
+
+⚠️ **Ne jamais juger « en retard » sur une date.** Comparer la date du dernier
+déploiement à celle du dernier commit déclarait **7 sites sur 15 en retard** ;
+un seul l'était. Un commit peut ne toucher qu'un `CONTEXT.md`, et un
+déploiement du même jour peut être antérieur au commit. **C'est le corps servi
+qui tranche.**
+⚠️ **Cloudflare injecte une ligne dans le HTML servi** (Web Analytics) sur les
+domaines qui ont l'analytique : le MD5 diffère alors que la page est
+identique. Le script la retire et dit combien.
+
+⛔ **Un contrôle peut être vert pour la mauvaise raison.** Celui du défilement
+lissé d'Hillary tournait dans le contexte du **toucher** (390 px, `has_touch`)
+alors qu'il testait un moteur qui n'existe que sur **pointeur fin**, et sa
+molette visait x = 700 sur une page large de 390. C'est **le témoin** qui l'a
+dit — « je ne prouve rien » — pas un plantage. Détail :
+`_memoire/journal/2026-08-29-journal.md`.
 
 
 
@@ -33,9 +60,13 @@ WhatsApp » : c'était le seul maillon que personne n'avait automatisé.
 3. **Le premier appel réel au modèle** : le conteneur d'écriture n'avait aucune
    clé Anthropic. Tout le reste est éprouvé, ça pas encore. **C'est un geste du PC.**
 
-### ⚠️ LE TRAVAIL EST SUR UNE BRANCHE, PAS DANS `main`
-`claude/whatsapp-automation-agent-ryk9j5` — 5 commits, fusion **propre** (`main`
-en est l'ancêtre direct). Elle attend la validation de Mongazi.
+### ✅ LE TRAVAIL EST DANS `main` DEPUIS LE 2026-08-29
+`claude/whatsapp-automation-agent-ryk9j5` a été fusionnée (fusion propre, comme
+annoncé), avec les deux autres branches du 28/08 : le manuel Minuit + Vitrina
+(`claude/video-project-analysis-monetization-18oh7b`) et la direction « BLEU
+ÉLECTRIQUE » (`claude/nebula-carousel-post-5cp35d`).
+**Contrôlé après fusion** : `python whatsapp-agent/_qc.py` → **146/146 verts**.
+Les trois blocages ci-dessus restent entiers : ils attendent Mongazi.
 
 ⚠️ **`main` local était 131 commits en retard** au 28/08 : le piège n°1 du dépôt.
 `git checkout main && git merge --ff-only origin/main` avant tout.
