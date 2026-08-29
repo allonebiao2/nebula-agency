@@ -324,3 +324,63 @@ blanche).
 Variables `CF_ACCOUNT_ID`, `CF_KV_NAMESPACE_ID`, `CF_API_TOKEN` (permission
 Workers KV Storage · Edit) ; sur le projet Pages, la variable `ORIGINE` et la
 liaison KV nommée `PAGES` ; dans le dépôt, la variable `URLS_A_REVEILLER`.
+
+---
+
+## Suite du 2026-08-28 — LA LETTRE EXISTE
+
+Mongazi : « lance le projet de lettre maintenant, le back-office après, je veux
+que ce soit visuellement et textuellement comme ceux dans les vidéos ».
+
+**`vitrina/lettre/gabarit.html`** · QC `python3 _qc.py` = **35 contrôles verts**
+
+### La phrase, dont tout découle
+*Une lettre, c'est du papier qu'on a plié, scellé, et qu'on ouvre en tremblant.*
+Papier, cire, encre, pli. Aucune animation ne vient d'ailleurs.
+
+### Le parcours, repris du vocabulaire des vidéos
+Enveloppe bordeaux + **cachet de cire doré** (V4) → « Touche le cachet » (V3)
+→ le cachet **se fend en deux**, le rabat s'ouvre, le papier glisse → **code
+secret au clavier** (V1, V2) → « Bienvenue mon amour » en manuscrite (V2)
+→ la lettre dont **chaque ligne monte comme si on l'écrivait** → mes mots
+(papiers pliés qui se déplient) → polaroïds qui tombent de travers → notre
+musique (sillon du disque) → **le « Non » qui s'enfuit** (V3, V5) → pied viral
+« Créer la mienne sur Minuit ».
+
+### ⛔ Défauts trouvés et corrigés
+
+- **`--or-clair:#d3ae६8` contenait un chiffre DEVANAGARI** au lieu d'un 6. La
+  couleur était invalide, donc le dégradé du cachet était invalide, donc **le
+  cachet de cire ne s'affichait pas du tout** et le prénom était illisible. Une
+  seule frappe tuait les deux éléments les plus importants du premier écran.
+- ⛔ **LE « NON » SE POSAIT SUR LE « OUI »** et le rendait incliquable : le gag
+  tuait la page, on ne pouvait plus répondre. Il calcule maintenant une zone
+  interdite autour du Oui, et se colle dans le coin opposé si la place manque.
+  Contrôle dédié : après **15 fuites**, le Oui reste cliquable.
+- ⛔ **Les légendes des polaroïds étaient coupées en plein mot** (« Notre
+  premi… ») : trouvé **sur une capture, pas dans le code**. Une légende tronquée
+  sur la photo d'un cadeau est pire que pas de légende. Elles passent à la ligne.
+- Cibles tactiles du sommaire à 31 px → **44 px**.
+
+### ⚠️ Leçons de mesure
+
+- **`document.fonts.check()` MENT** : il rendait `true` alors que
+  `document.fonts.size` valait **0** et que la requête Google Fonts avait
+  échoué. On mesure **la largeur réelle d'un glyphe** (168 px en script contre
+  108 px en monospace), jamais l'API.
+- **La police manuscrite est EMBARQUÉE en base64** (Petit Formal Script, OFL,
+  réduite aux caractères français : 23,7 Ko). Une lettre ouverte à minuit sur
+  une connexion lente ne peut pas attendre deux allers-retours vers un serveur
+  de polices : c'est elle qui porte toute l'émotion. EB Garamond reste au CDN
+  avec Georgia en repli, qui ne coûte rien à la lettre.
+- **Un faux positif de MON contrôle** : `text-transform:uppercase` rend « TA
+  PHOTO ICI », et je cherchais « Ta photo ici ». On lit ce qui est RENDU.
+
+### Règles tenues
+⛔ **Aucune photo inventée** : sans photo, le cadre affiche « Ta photo ici » et
+n'émet aucune `<img>`. ⛔ Aucune bibliothèque. `noindex` posé (une page cadeau
+porte un prénom et des photos). `prefers-reduced-motion` respecté.
+
+### Reste
+Le **back-office** (le formulaire qui écrit le bloc `LETTRE`), demandé pour
+après.
