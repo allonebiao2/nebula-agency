@@ -1,0 +1,576 @@
+<title>Le Manuel Minuit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --ink:#14181d; --ink-2:#232a31; --paper:#eff1f2; --paper-2:#e4e7e9; --card:#f7f8f9;
+  --slate:#5c6670; --slate-2:#7d868f; --line:#d3d8db; --line-2:#c2c9cd;
+  --wax:#8e2233; --wax-soft:#a8394a; --wax-wash:rgba(142,34,51,.07);
+  --gold:#7d6230; --gold-wash:rgba(125,98,48,.09);
+  --sys:#1f5f68; --sys-wash:rgba(31,95,104,.09);
+  --good:#2c6350; --warn:#8a5a1a;
+  --f-disp:"Fraunces",Georgia,"Times New Roman",serif;
+  --f-body:"Instrument Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ink:#e9ecee; --ink-2:#c8cfd4; --paper:#12161a; --paper-2:#1a1f24; --card:#191e23;
+  --slate:#98a2aa; --slate-2:#7b858d; --line:#2a3238; --line-2:#3a444b;
+  --wax:#e28391; --wax-soft:#cf6a7a; --wax-wash:rgba(226,131,145,.10);
+  --gold:#c9a765; --gold-wash:rgba(201,167,101,.11);
+  --sys:#7fc4cd; --sys-wash:rgba(127,196,205,.11);
+  --good:#68b295; --warn:#d1a15c;
+}}
+:root[data-theme="dark"]{
+  --ink:#e9ecee; --ink-2:#c8cfd4; --paper:#12161a; --paper-2:#1a1f24; --card:#191e23;
+  --slate:#98a2aa; --slate-2:#7b858d; --line:#2a3238; --line-2:#3a444b;
+  --wax:#e28391; --wax-soft:#cf6a7a; --wax-wash:rgba(226,131,145,.10);
+  --gold:#c9a765; --gold-wash:rgba(201,167,101,.11);
+  --sys:#7fc4cd; --sys-wash:rgba(127,196,205,.11);
+  --good:#68b295; --warn:#d1a15c;
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);
+  font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.col{max-width:680px}
+
+h1,h2,h3,h4{font-family:var(--f-disp);font-weight:600;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.5rem,5.6vw,4rem);line-height:1.03;letter-spacing:-.022em;font-weight:700}
+h2{font-size:clamp(1.7rem,3.2vw,2.35rem);line-height:1.12;letter-spacing:-.015em}
+h3{font-size:1.26rem;line-height:1.26}
+h4{font-size:1.04rem;line-height:1.3;font-weight:600}
+p{margin:0 0 1.05em}
+a{color:var(--wax);text-decoration:none;border-bottom:1px solid color-mix(in oklab,var(--wax) 35%,transparent)}
+a:hover{border-bottom-color:var(--wax)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--wax);outline-offset:3px;border-radius:2px}
+strong{font-weight:600;color:var(--ink)}
+.lede{font-size:1.22rem;line-height:1.5;color:var(--ink-2)}
+.eyebrow{font-family:var(--f-mono);font-size:.7rem;font-weight:500;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--slate)}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+header.top{border-bottom:1px solid var(--line);background:var(--paper)}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:11px}
+.seal{width:26px;height:26px;border-radius:50%;flex:none;position:relative;
+  background:radial-gradient(circle at 34% 30%,var(--wax-soft),var(--wax) 62%);
+  box-shadow:inset 0 0 0 1.5px color-mix(in oklab,var(--wax) 55%,transparent)}
+.seal::after{content:"";position:absolute;inset:0;margin:auto;width:9px;height:9px;
+  border-radius:50%;border:1.5px solid rgba(255,255,255,.6)}
+.brand b{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;font-weight:600}
+.hero{padding:70px 0 58px}
+.hero .eyebrow{display:block;margin-bottom:20px}
+.hero h1{margin-bottom:24px}
+.hero h1 i{font-style:italic;color:var(--wax);font-weight:400}
+
+section{padding:60px 0;border-top:1px solid var(--line)}
+.shead{margin-bottom:32px}
+.shead .eyebrow{display:block;margin-bottom:11px}
+.shead p{color:var(--ink-2);max-width:660px;margin-top:14px;margin-bottom:0}
+
+.tscroll{overflow-x:auto;margin:0 0 8px;border:1px solid var(--line);border-radius:3px;background:var(--card)}
+table{width:100%;border-collapse:collapse;font-size:.92rem;min-width:680px}
+th,td{text-align:left;padding:13px 15px;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{font-family:var(--f-mono);font-size:.66rem;font-weight:600;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--slate);background:var(--paper-2);
+  border-bottom:1px solid var(--line-2);white-space:nowrap}
+tbody tr:last-child td{border-bottom:none}
+td.money{font-family:var(--f-mono);font-variant-numeric:tabular-nums;color:var(--gold);font-weight:500;white-space:nowrap}
+td.fig{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+caption{caption-side:bottom;text-align:left;padding:11px 15px;font-size:.82rem;color:var(--slate);border-top:1px solid var(--line)}
+
+/* étapes numérotées */
+.steps{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px}
+.step{background:var(--card);display:grid;grid-template-columns:46px 1fr auto;gap:20px;padding:20px 22px;align-items:start}
+@media(max-width:680px){.step{grid-template-columns:34px 1fr;gap:14px}.step .etat{grid-column:2}}
+.step .n{font-family:var(--f-mono);font-size:1.05rem;font-weight:600;color:var(--wax);
+  font-variant-numeric:tabular-nums;padding-top:1px}
+.step h4{margin-bottom:6px}
+.step p{margin:0;font-size:.93rem;color:var(--ink-2)}
+.step p+p{margin-top:8px}
+.step code{font-family:var(--f-mono);font-size:.85em;background:var(--paper-2);padding:1px 6px;border-radius:3px}
+.etat{font-family:var(--f-mono);font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;
+  font-weight:600;padding:4px 9px;border-radius:2px;white-space:nowrap;border:1px solid var(--line-2);color:var(--slate)}
+.etat.fait{color:var(--good);border-color:color-mix(in oklab,var(--good) 45%,transparent);background:rgba(44,99,80,.08)}
+.etat.reste{color:var(--wax);border-color:color-mix(in oklab,var(--wax) 42%,transparent);background:var(--wax-wash)}
+
+/* acteurs */
+.acteur{font-family:var(--f-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+  font-weight:600;padding:3px 8px;border-radius:2px;white-space:nowrap;display:inline-block}
+.a-cli{color:var(--slate);background:var(--paper-2);border:1px solid var(--line-2)}
+.a-sys{color:var(--sys);background:var(--sys-wash);border:1px solid color-mix(in oklab,var(--sys) 40%,transparent)}
+.a-mon{color:var(--wax);background:var(--wax-wash);border:1px solid color-mix(in oklab,var(--wax) 42%,transparent)}
+
+figure{margin:0 0 8px;border:1px solid var(--line);border-radius:3px;background:var(--card);padding:24px 22px 6px}
+figure .svgwrap{overflow-x:auto;overflow-y:hidden;margin:0 -6px}
+figure svg{display:block;min-width:760px;max-width:100%;height:auto;margin:0 auto}
+@media(min-width:820px){figure svg{min-width:0}}
+figure .glisse{display:none;font-family:var(--f-mono);font-size:.63rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--slate-2);padding:9px 2px 0}
+@media(max-width:819px){figure .glisse{display:block}}
+figcaption{font-size:.85rem;color:var(--slate);padding:14px 2px 12px;border-top:1px solid var(--line);margin-top:18px}
+
+/* écrans client */
+.ecrans{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1px;
+  background:var(--line);border:1px solid var(--line);border-radius:3px}
+.ec{background:var(--card);padding:20px}
+.ec .t{font-family:var(--f-mono);font-size:.63rem;letter-spacing:.11em;color:var(--wax);font-weight:600;display:block;margin-bottom:9px}
+.ec h4{margin-bottom:7px;font-size:.98rem}
+.ec p{margin:0;font-size:.88rem;color:var(--ink-2)}
+.ec .dit{margin-top:10px;font-size:.84rem;color:var(--slate);border-left:2px solid var(--line-2);padding-left:11px;font-style:italic}
+
+/* scripts copiables */
+.script{border:1px solid var(--line);border-radius:3px;background:var(--card);margin:0 0 16px;overflow:hidden}
+.script .sh{display:flex;justify-content:space-between;gap:14px;align-items:center;
+  padding:12px 18px;background:var(--paper-2);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.script .sh b{font-size:.93rem;font-weight:600}
+.script .sh span{font-family:var(--f-mono);font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;color:var(--slate)}
+.script .sb{padding:18px;font-size:.93rem;line-height:1.6;white-space:pre-wrap;color:var(--ink-2)}
+.script .sb em{color:var(--wax);font-style:normal;font-weight:600}
+
+/* calendrier */
+.cal{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px}
+.mois{background:var(--card);display:grid;grid-template-columns:96px 1fr 78px;gap:16px;padding:14px 18px;align-items:center}
+@media(max-width:680px){.mois{grid-template-columns:1fr;gap:6px}}
+.mois .m{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;font-weight:600;color:var(--ink-2)}
+.mois .q{font-size:.9rem;color:var(--ink-2)}
+.mois .j{display:flex;gap:3px;align-items:center;justify-content:flex-end}
+@media(max-width:680px){.mois .j{justify-content:flex-start}}
+.mois .j i{display:block;width:9px;height:20px;border-radius:1px;background:var(--line-2)}
+.mois .j i.on{background:var(--wax)}
+.mois.pic{background:var(--wax-wash)}
+
+.stamp{border:1px solid var(--line-2);border-left:3px solid var(--wax);border-radius:3px;
+  background:var(--wax-wash);padding:24px 28px;margin:32px 0}
+.stamp .eyebrow{color:var(--wax);display:block;margin-bottom:10px}
+.stamp p{margin:0;font-family:var(--f-disp);font-size:1.16rem;line-height:1.42;color:var(--ink)}
+.stamp p+p{margin-top:11px;font-size:1.02rem;font-family:var(--f-body);color:var(--ink-2)}
+
+.note{border-left:2px solid var(--line-2);padding:4px 0 4px 20px;margin:24px 0;font-size:.93rem;color:var(--slate)}
+.note b{color:var(--ink-2)}
+.warnbox{border:1px solid var(--line-2);border-radius:3px;padding:20px 24px;margin:28px 0;background:var(--gold-wash)}
+.warnbox .eyebrow{color:var(--warn);display:block;margin-bottom:10px}
+.warnbox ul{margin:0;padding-left:20px}
+.warnbox li{margin-bottom:8px;font-size:.93rem;color:var(--ink-2)}
+.warnbox li:last-child{margin-bottom:0}
+
+footer{border-top:1px solid var(--line);padding:40px 0 58px;color:var(--slate);font-size:.87rem}
+footer .cols{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:flex-end}
+footer b{font-family:var(--f-mono);font-size:.69rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-2);display:block;margin-bottom:6px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="wrap topbar">
+    <div class="brand"><span class="seal" aria-hidden="true"></span><b>NEBULA Agency · Manuel</b></div>
+    <div class="eyebrow">Compagnon du dossier Minuit</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <span class="eyebrow">Mise en ligne · vente · procédure client · occasions</span>
+    <h1>Comment ça se passe,<br><i>concrètement</i></h1>
+    <p class="lede col">Le dossier disait quoi vendre et pourquoi. Celui-ci dit ce qui se passe le mardi matin : ce que tu fais une seule fois pour ouvrir, ce qui se passe à chaque vente, ce que le client voit écran par écran, et le calendrier des occasions au Bénin.</p>
+  </div>
+
+  <!-- 1. MISE EN LIGNE -->
+  <section style="border-top:1px solid var(--line)">
+    <div class="shead col">
+      <span class="eyebrow">Partie 1 · À faire une seule fois</span>
+      <h2>Ouvrir la boutique</h2>
+      <p>Huit étapes, dans cet ordre. Trois sont déjà faites. La seule qui demande du vrai travail est la sixième.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step"><span class="n">01</span><div>
+        <h4>Poser les variables</h4>
+        <p>Copier <code>vitrina/.env.exemple</code> en <code>.env</code> et remplir : <code>WHATSAPP_TOKEN</code>, <code>WHATSAPP_PHONE_NUMBER_ID</code>, <code>MONGAZI_WHATSAPP</code>, <code>TG_TOKEN</code>, <code>TG_CHAT</code>, et le compte Mobile Money affiché au client.</p>
+        <p>Les identifiants WhatsApp sont ceux de <code>boutique-ia</code>, même application Meta. Rien de neuf à créer.</p>
+      </div><span class="etat reste">à faire</span></div>
+
+      <div class="step"><span class="n">02</span><div>
+        <h4>Déployer le serveur</h4>
+        <p>Un service Render de plus, comme le bureau des partenaires. Le <code>Procfile</code> existe déjà. Attention : l'auto-déploiement Render ne marche pas sur ce dépôt, il faut appeler <code>POST /v1/services/{id}/deploys</code>.</p>
+        <p>Un sous-domaine du genre <code>minuit.nebula-agency.online</code>, comme PISTE.</p>
+      </div><span class="etat reste">à faire</span></div>
+
+      <div class="step"><span class="n">03</span><div>
+        <h4>Le compte qui encaisse</h4>
+        <p>Un numéro Mobile Money <strong>dédié à ce produit</strong>, pas ton numéro personnel. Tu dois pouvoir lire tes SMS de paiement sans les mélanger aux virements de l'agence, sinon la vérification devient pénible dès la dixième commande.</p>
+      </div><span class="etat reste">à faire</span></div>
+
+      <div class="step"><span class="n">04</span><div>
+        <h4>Les alertes</h4>
+        <p>WhatsApp et Telegram branchés, avec le lien de validation à un tap. Déjà écrit, 28 contrôles verts.</p>
+      </div><span class="etat fait">fait</span></div>
+
+      <div class="step"><span class="n">05</span><div>
+        <h4>Le garde-fou du paiement</h4>
+        <p>Référence de transaction exigée, doublons signalés, alerte bruyante si une commande arrive sans référence. Déjà écrit.</p>
+      </div><span class="etat fait">fait</span></div>
+
+      <div class="step"><span class="n">06</span><div>
+        <h4>Le premier gabarit émotionnel</h4>
+        <p><strong>C'est le vrai travail.</strong> Aujourd'hui <code>creer.html</code> fabrique des vitrines de commerce, pas des pages cadeau. Il faut un formulaire d'occasion (prénom, mot, photos, musique, code secret, heure de livraison) et un gabarit au standard maison, avec son seuil.</p>
+        <p>Un seul, irréprochable. Pas dix médiocres.</p>
+      </div><span class="etat reste">à faire</span></div>
+
+      <div class="step"><span class="n">07</span><div>
+        <h4>La page produit et l'affiche</h4>
+        <p>Trois exemples à ouvrir en vrai, les prix, les occasions, le pied « Créer la mienne ». Plus l'affiche A4 avec QR, que tu sais déjà produire pour tes clients.</p>
+      </div><span class="etat reste">à faire</span></div>
+
+      <div class="step"><span class="n">08</span><div>
+        <h4>La commande à blanc</h4>
+        <p>Avant d'ouvrir à qui que ce soit : passer <strong>une vraie commande avec un vrai paiement de 100 F</strong> depuis un autre téléphone. Vérifier que l'alerte arrive, que la référence s'affiche, que le lien ouvre la fiche, que la validation met en ligne et que le message part tout seul.</p>
+        <p>Une boutique qui n'a jamais encaissé une seule fois n'est pas ouverte, elle est en préparation.</p>
+      </div><span class="etat reste">à faire</span></div>
+    </div>
+  </section>
+
+  <!-- 2. LE FLUX -->
+  <section>
+    <div class="shead col">
+      <span class="eyebrow">Partie 2 · À chaque vente</span>
+      <h2>Qui fait quoi, et qui attend qui</h2>
+      <p>Trois acteurs seulement. Le seul moment où la machine s'arrête pour t'attendre est encadré en rouge : c'est ta vérification du SMS, et c'est volontaire.</p>
+    </div>
+
+    <figure>
+      <div class="svgwrap">
+      <svg viewBox="0 0 900 340" role="img" aria-label="Parcours d'une vente : le client remplit et paie, le système alerte Mongazi, Mongazi vérifie le SMS Mobile Money et valide, puis le système met la page en ligne et prévient le client automatiquement.">
+        <defs>
+          <marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <polygon points="0,0 10,5 0,10" fill="currentColor"/>
+          </marker>
+          <marker id="flr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <polygon points="0,0 10,5 0,10" fill="#8e2233"/>
+          </marker>
+        </defs>
+
+        <!-- lanes -->
+        <g font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1.2" fill="currentColor" opacity=".62">
+          <text x="8" y="62">CLIENT</text>
+          <text x="8" y="172">SYSTÈME</text>
+          <text x="8" y="282">MONGAZI</text>
+        </g>
+        <g stroke="currentColor" opacity=".16">
+          <line x1="0" y1="96" x2="900" y2="96"/>
+          <line x1="0" y1="206" x2="900" y2="206"/>
+        </g>
+
+        <!-- client lane -->
+        <g fill="none" stroke="currentColor" stroke-width="1.3">
+          <rect x="96" y="34" width="128" height="42" rx="4"/>
+          <rect x="256" y="34" width="128" height="42" rx="4"/>
+          <rect x="416" y="34" width="128" height="42" rx="4"/>
+          <rect x="736" y="34" width="150" height="42" rx="4"/>
+        </g>
+        <g font-family="Instrument Sans, sans-serif" font-size="12" fill="currentColor" text-anchor="middle">
+          <text x="160" y="52">Il remplit</text><text x="160" y="67" opacity=".62">mot, photos, code</text>
+          <text x="320" y="52">Il paie MoMo</text><text x="320" y="67" opacity=".62">sur ton numéro</text>
+          <text x="480" y="52">Il tape la réf</text><text x="480" y="67" opacity=".62">du SMS reçu</text>
+          <text x="811" y="52">Il reçoit son lien</text><text x="811" y="67" opacity=".62">sur WhatsApp</text>
+        </g>
+
+        <!-- system lane -->
+        <g fill="none" stroke="currentColor" stroke-width="1.3">
+          <rect x="416" y="144" width="128" height="42" rx="4"/>
+          <rect x="736" y="144" width="150" height="42" rx="4"/>
+        </g>
+        <g font-family="Instrument Sans, sans-serif" font-size="12" fill="currentColor" text-anchor="middle">
+          <text x="480" y="162">Commande</text><text x="480" y="177" opacity=".62">enregistrée</text>
+          <text x="811" y="162">Page en ligne</text><text x="811" y="177" opacity=".62">+ envoi auto</text>
+        </g>
+
+        <!-- mongazi lane : the only human stop -->
+        <g fill="none" stroke="#8e2233" stroke-width="1.8">
+          <rect x="576" y="254" width="128" height="42" rx="4"/>
+        </g>
+        <g font-family="Instrument Sans, sans-serif" font-size="12" fill="#8e2233" text-anchor="middle" font-weight="600">
+          <text x="640" y="272">Il vérifie le SMS</text><text x="640" y="287" font-weight="400">puis il valide</text>
+        </g>
+
+        <!-- arrows -->
+        <g stroke="currentColor" stroke-width="1.3" marker-end="url(#fl)" fill="none">
+          <line x1="224" y1="55" x2="250" y2="55"/>
+          <line x1="384" y1="55" x2="410" y2="55"/>
+          <path d="M 480 76 L 480 138"/>
+        </g>
+        <g stroke="#8e2233" stroke-width="1.5" marker-end="url(#flr)" fill="none">
+          <path d="M 544 165 L 640 165 L 640 248"/>
+          <path d="M 704 275 L 811 275 L 811 190"/>
+        </g>
+        <g stroke="currentColor" stroke-width="1.3" marker-end="url(#fl)" fill="none">
+          <path d="M 811 144 L 811 82"/>
+        </g>
+
+        <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#8e2233" letter-spacing=".5">
+          <text x="552" y="158">alerte WhatsApp</text>
+          <text x="712" y="268">1 tap</text>
+        </g>
+        <g font-family="IBM Plex Mono, monospace" font-size="10" fill="currentColor" opacity=".6" letter-spacing=".5">
+          <text x="488" y="112">réf. de transaction</text>
+          <text x="820" y="116">automatique</text>
+        </g>
+      </svg>
+      </div>
+      <p class="glisse">Glisse le sch&eacute;ma vers la gauche pour le suivre</p>
+      <figcaption>Le seul arrêt humain est ta vérification du SMS Mobile Money. Tout ce qui suit ta validation part sans toi : mise en ligne et envoi du lien au client.</figcaption>
+    </figure>
+
+    <div class="tscroll" style="margin-top:24px">
+      <table>
+        <thead><tr><th>Moment</th><th>Acteur</th><th>Ce qui se passe</th><th>Durée</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><span class="acteur a-cli">Client</span></td><td>Il remplit sa page et voit son aperçu en direct dans le navigateur.</td><td class="fig">5 à 15 min</td></tr>
+          <tr><td>2</td><td><span class="acteur a-cli">Client</span></td><td>Il transfère la somme sur ton numéro Mobile Money, hors du site.</td><td class="fig">1 min</td></tr>
+          <tr><td>3</td><td><span class="acteur a-cli">Client</span></td><td>Il revient, colle la référence du SMS, envoie. Il voit « Commande reçue ».</td><td class="fig">30 s</td></tr>
+          <tr><td>4</td><td><span class="acteur a-sys">Système</span></td><td>Commande enregistrée. Alerte WhatsApp et Telegram vers toi, avec la référence, le doublon éventuel, et le lien signé.</td><td class="fig">instantané</td></tr>
+          <tr><td>5</td><td><span class="acteur a-mon">Mongazi</span></td><td><strong>Tu ouvres ton SMS Mobile Money et tu vérifies que la somme est arrivée.</strong> Puis tu tapes le lien et tu appuies sur Valider.</td><td class="fig">2 min</td></tr>
+          <tr><td>6</td><td><span class="acteur a-sys">Système</span></td><td>La page passe en ligne. Le client reçoit son lien sur WhatsApp automatiquement. Tu reçois la confirmation.</td><td class="fig">instantané</td></tr>
+          <tr><td>7</td><td><span class="acteur a-cli">Client</span></td><td>Il envoie le lien à la personne, ou la page part à l'heure qu'il a choisie.</td><td class="fig">à son heure</td></tr>
+        </tbody>
+        <caption>Ton temps réel par vente : environ deux minutes, dont l'essentiel est la lecture du SMS.</caption>
+      </table>
+    </div>
+
+    <div class="stamp">
+      <span class="eyebrow">La règle qui tient tout</span>
+      <p>Ne valide jamais sans avoir vu le SMS Mobile Money correspondant.</p>
+      <p>Comme rien n'est généré ni envoyé avant ta validation, une fausse référence ne te coûte rien tant que tu vérifies. Toute la sécurité du modèle tient sur cette seule habitude.</p>
+    </div>
+  </section>
+
+  <!-- 3. CÔTÉ CLIENT -->
+  <section>
+    <div class="shead col">
+      <span class="eyebrow">Partie 3 · Écran par écran</span>
+      <h2>Ce que le client vit</h2>
+      <p>Six écrans. Le troisième est celui qui fait la vente : il voit sa page finie avant d'avoir payé un franc.</p>
+    </div>
+
+    <div class="ecrans">
+      <div class="ec"><span class="t">ÉCRAN 1</span><h4>Il arrive</h4>
+        <p>Depuis une vidéo, un statut WhatsApp, ou le QR d'une affiche chez un commerçant. Il voit trois exemples qu'il peut ouvrir pour de vrai.</p>
+        <div class="dit">« Ah donc ça existe vraiment. »</div></div>
+      <div class="ec"><span class="t">ÉCRAN 2</span><h4>Il choisit l'occasion</h4>
+        <p>Anniversaire, mois de rencontre, demande, excuse, fête des mères. L'occasion décide du gabarit et du prix.</p></div>
+      <div class="ec"><span class="t">ÉCRAN 3</span><h4>Il remplit et il voit</h4>
+        <p>Prénom, son mot, ses photos, une musique, le code secret, l'heure de livraison. <strong>L'aperçu se construit sous ses yeux au fur et à mesure.</strong></p>
+        <div class="dit">C'est ici que la vente se fait, pas sur le prix.</div></div>
+      <div class="ec"><span class="t">ÉCRAN 4</span><h4>Il paie</h4>
+        <p>Le site affiche ton numéro, le réseau et la somme exacte. Il quitte le site, fait son transfert, reçoit son SMS.</p>
+        <div class="dit">Le moment le plus fragile de toute la chaîne.</div></div>
+      <div class="ec"><span class="t">ÉCRAN 5</span><h4>Il colle la référence</h4>
+        <p>Le code du SMS, du genre <span class="num">MP260827.1432.A81234</span>. Le formulaire refuse d'envoyer sans lui.</p></div>
+      <div class="ec"><span class="t">ÉCRAN 6</span><h4>Il attend, mais pas dans le vide</h4>
+        <p>« Commande reçue. Tu recevras ton lien sur WhatsApp. » Avec le lien de son aperçu, qu'il peut déjà montrer.</p></div>
+    </div>
+
+    <div class="warnbox">
+      <span class="eyebrow">Le trou de l'écran 4, à boucher avant d'ouvrir</span>
+      <ul>
+        <li>Pour payer, le client <strong>quitte la page</strong> : il bascule sur son application Mobile Money ou compose un code USSD. S'il revient et que le navigateur a vidé l'onglet, <strong>il a tout perdu</strong> : son mot, ses photos, son travail de quinze minutes. Il ne recommencera pas.</li>
+        <li>Le remède tient en quelques lignes : sauvegarder le formulaire dans le navigateur à chaque frappe, et le restaurer au retour. Sans cela, tu perdras des ventes déjà gagnées, et tu ne sauras même pas qu'elles ont existé.</li>
+        <li>Deuxième garde-fou : afficher <strong>la somme exacte au franc près</strong> à côté du numéro. Un client qui envoie 5 000 F au lieu de 5 500 F crée un litige que tu dois arbitrer à la main.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 4. OCCASIONS -->
+  <section>
+    <div class="shead col">
+      <span class="eyebrow">Partie 4 · Le catalogue</span>
+      <h2>Les occasions, et ce qui change à chaque fois</h2>
+      <p>Le moteur ne change pas. Ce qui change, c'est le seuil, le vocabulaire, et qui paie.</p>
+    </div>
+
+    <div class="tscroll">
+      <table>
+        <thead><tr><th>Occasion</th><th>Qui achète</th><th class="fig">Palier</th><th>Ce qui change dans la page</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Mois de rencontre</strong><br><span style="color:var(--slate);font-size:.85rem">« Happy 1 month »</span></td><td>18 à 25 ans</td><td class="money">2 000 F</td><td>Compteur de jours ensemble, le « Non » qui s'enfuit. Le volume de base, toute l'année.</td></tr>
+          <tr><td><strong>Anniversaire</strong></td><td>Conjoint, ami, famille</td><td class="money">2 000 à 5 000 F</td><td>Enveloppe à cachet, la lettre qui s'écrit, la photo en polaroïd. Livraison à minuit pile.</td></tr>
+          <tr><td><strong>Invitation à un rendez-vous</strong></td><td>Jeune homme</td><td class="money">5 000 F</td><td>Lieu, date, créneaux au choix, confirmation, ajout au calendrier. La mécanique de V3.</td></tr>
+          <tr><td><strong>Demande en mariage</strong></td><td>Le fiancé</td><td class="money">10 000 F</td><td>Un seul seuil, une seule question, la réponse t'est notifiée. Sobriété maximale.</td></tr>
+          <tr><td><strong>Excuse, réconciliation</strong></td><td>Tout âge</td><td class="money">2 000 F</td><td>Pas de confettis, pas de musique gaie. Ton juste, sinon c'est insultant.</td></tr>
+          <tr><td><strong>Fête des mères, des pères</strong></td><td>Enfants, diaspora</td><td class="money">5 000 F · 15 €</td><td>Plusieurs signataires possibles, la fratrie signe la même page. Gros vendeur diaspora.</td></tr>
+          <tr><td><strong>Faire-part de mariage</strong></td><td>Les deux familles</td><td class="money">25 000 F</td><td>Programme, plan d'accès, confirmation des invités, liste de contribution. <strong>200 à 500 partages par vente.</strong></td></tr>
+          <tr><td><strong>Pack mariage</strong></td><td>Les deux familles</td><td class="money">75 000 F</td><td>Le faire-part, plus la galerie d'après et la page de remerciement.</td></tr>
+          <tr><td><strong>Naissance, baptême</strong></td><td>La famille</td><td class="money">10 000 à 25 000 F</td><td>Annonce, photos, informations pratiques. Même moteur que le mariage, plus court.</td></tr>
+          <tr><td><strong>Deuil, funérailles</strong></td><td>La famille</td><td class="money">15 000 à 50 000 F</td><td>Programme des obsèques, lieu, horaires, livre de condoléances. <strong>Aucune animation ludique, aucun emoji, jamais.</strong></td></tr>
+        </tbody>
+        <caption>Le romantique fait le volume et les vidéos. Les quatre dernières lignes font le chiffre d'affaires.</caption>
+      </table>
+    </div>
+
+    <div class="note col">
+      <b>Sur le deuil :</b> c'est un vrai besoin, aujourd'hui servi par des programmes imprimés et des images WhatsApp illisibles. Mais une seule maladresse de ton et la réputation de la marque est abîmée pour longtemps. Si tu ouvres cette ligne, fais-la relire par quelqu'un qui vient d'enterrer un proche, avant de la vendre.
+    </div>
+  </section>
+
+  <!-- 5. CALENDRIER -->
+  <section>
+    <div class="shead col">
+      <span class="eyebrow">Partie 5 · L'année</span>
+      <h2>Quand préparer, quand publier</h2>
+      <p>Le calendrier est connu d'avance. Il n'y a aucune raison d'improviser en février.</p>
+    </div>
+
+    <div class="cal">
+      <div class="mois"><span class="m">Janvier</span><span class="q">Vodun Days, la diaspora est encore au pays. <strong>Tout le mois se prépare pour février</strong> : gabarits et vidéos rendus à l'avance.</span><span class="j"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></div>
+      <div class="mois pic"><span class="m">Février</span><span class="q"><strong>Le pic. Saint-Valentin.</strong> Deux à quatre fois un mois ordinaire. Si les gabarits ne sont pas prêts au 1er, le mois est perdu.</span><span class="j"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+      <div class="mois"><span class="m">Mars</span><span class="q">Journée de la femme le 8. Occasion réelle et peu servie.</span><span class="j"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></div>
+      <div class="mois"><span class="m">Avril · Mai</span><span class="q">Fête des mères. Le meilleur mois de la diaspora, en euros.</span><span class="j"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></div>
+      <div class="mois"><span class="m">Juin</span><span class="q">Fête des pères. Anniversaires, base régulière.</span><span class="j"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></div>
+      <div class="mois"><span class="m">Juil · Août</span><span class="q">Creux romantique. <strong>Le moment d'aller chercher le B2B</strong> : salles de fête, traiteurs, photographes, via PISTE.</span><span class="j"><i class="on"></i><i></i><i></i><i></i><i></i></span></div>
+      <div class="mois"><span class="m">Sept · Oct</span><span class="q">Rentrée. Préparation de la saison des mariages.</span><span class="j"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></div>
+      <div class="mois pic"><span class="m">Nov · Déc</span><span class="q"><strong>Saison sèche et retour de la diaspora.</strong> Mariages, faire-part, 31 décembre. Le meilleur chiffre d'affaires de l'année, à ticket élevé.</span><span class="j"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></div>
+    </div>
+
+    <div class="note col">
+      <b>À noter :</b> les fêtes musulmanes (Ramadan, Tabaski) et chrétiennes se déplacent dans l'année et concernent une grande partie du pays. Elles méritent leurs propres gabarits, mais elles ne se calent pas sur une grille fixe : à inscrire chaque année à la main.
+    </div>
+  </section>
+
+  <!-- 6. VENDRE -->
+  <section>
+    <div class="shead col">
+      <span class="eyebrow">Partie 6 · Les scripts</span>
+      <h2>Ce que tu écris, mot pour mot</h2>
+      <p>Quatre messages à copier. Remplacer ce qui est en rouge.</p>
+    </div>
+
+    <div class="script">
+      <div class="sh"><b>Au commerçant, pour en faire un revendeur</b><span>Le canal le plus rentable</span></div>
+      <div class="sb">Bonjour <em>[Prénom]</em>,
+
+Une idée pour vos clients. Quand quelqu'un achète <em>[une bague / un gâteau / un bouquet]</em> chez vous, c'est presque toujours pour offrir. Je vous propose d'y joindre une page cadeau personnalisée : la personne scanne un QR, écrit son mot, met ses photos, et son cadeau arrive avec une page à son nom.
+
+Vous ne payez rien par vente. <em>[Montant]</em> F par mois, pages illimitées, à votre marque, avec votre logo dessus.
+
+Ça vous donne un argument que personne d'autre n'a en ville. Je vous montre en deux minutes, quand vous voulez.</div>
+    </div>
+
+    <div class="script">
+      <div class="sh"><b>Au professionnel de l'événement</b><span>Le revenu récurrent</span></div>
+      <div class="sb">Bonjour <em>[Prénom]</em>,
+
+Vous organisez des mariages. La partie que tout le monde déteste, c'est compter les invités pour le traiteur.
+
+Je fais des faire-part numériques avec confirmation : chaque invité répond en un geste, vous voyez le compte en direct, et l'invitation se partage sur WhatsApp au lieu d'être imprimée.
+
+Vous le vendez à votre nom, dans vos formules. <em>[Montant]</em> F par mois, sans limite de mariages.
+
+Je vous en fais un pour votre prochain client, gratuitement, pour que vous voyiez.</div>
+    </div>
+
+    <div class="script">
+      <div class="sh"><b>Réponse à « c'est combien ? »</b><span>Ne jamais donner le prix seul</span></div>
+      <div class="sb">Ça dépend de ce que tu veux dedans, ça commence à <em>2 000 F</em>.
+
+Le plus pris c'est à <em>5 000 F</em> : ta lettre, tes photos, une musique, un code secret que seule elle connaît, et ça arrive à l'heure que tu choisis, même à minuit pile.
+
+Tu peux la construire d'abord et la voir en entier avant de payer : <em>[lien]</em></div>
+    </div>
+
+    <div class="script">
+      <div class="sh"><b>Réponse à « comment je sais que c'est pas une arnaque ? »</b><span>La question la plus fréquente, et elle est légitime</span></div>
+      <div class="sb">Question normale, tu as raison de la poser.
+
+Tu fais ta page en entier avant de payer quoi que ce soit, et tu la vois en vrai avec un lien. Si elle ne te plaît pas, tu ne paies pas.
+
+Le paiement, c'est un transfert Mobile Money classique sur <em>[numéro]</em>, au nom de <em>[nom]</em>. Rien à taper sur le site, aucune carte.
+
+Et voilà nos pages déjà en ligne : <em>[2 ou 3 liens]</em></div>
+    </div>
+
+    <div class="note col">
+      <b>Le canal zéro, celui qui ne coûte rien :</b> chaque page gratuite porte « Créer la mienne sur ... » en pied. Chaque personne qui reçoit un cadeau voit d'où il vient. C'est le seul canal qui grandit tout seul, et il tient en une ligne de HTML.
+    </div>
+  </section>
+
+  <!-- 7. QUAND ÇA COINCE -->
+  <section>
+    <div class="shead col">
+      <span class="eyebrow">Partie 7 · Les cas tordus</span>
+      <h2>Quand ça se passe mal</h2>
+      <p>Décidés d'avance, pour ne pas improviser un soir de Saint-Valentin.</p>
+    </div>
+
+    <div class="tscroll">
+      <table>
+        <thead><tr><th>Situation</th><th>Ce que tu fais</th><th>Ce que tu dis</th></tr></thead>
+        <tbody>
+          <tr><td>La référence ne correspond à aucun SMS</td><td>Tu ne valides pas. Tu demandes une capture du SMS.</td><td>« Je ne retrouve pas ce versement. Tu peux m'envoyer la capture du SMS ? »</td></tr>
+          <tr><td>La référence est signalée en double</td><td>Tu vérifies le montant reçu. Si un seul versement couvre deux pages, tu valides les deux.</td><td>Rien, sauf si ça ne colle pas.</td></tr>
+          <tr><td>Il a payé moins que le prix</td><td>Tu valides le palier correspondant à ce qu'il a versé, pas celui qu'il a demandé.</td><td>« J'ai reçu <span class="num">X</span> F, ça correspond à la formule <span class="num">Y</span>. Tu veux compléter ou on part là-dessus ? »</td></tr>
+          <tr><td>Il veut modifier après la mise en ligne</td><td>Une retouche offerte dans les 24 h. Au-delà, c'est une nouvelle commande.</td><td>« Envoie-moi ce qu'il faut changer, je le fais aujourd'hui. »</td></tr>
+          <tr><td>Il a rempli mais jamais payé</td><td>Rien d'automatique. Un seul message le lendemain, jamais deux.</td><td>« Ta page t'attend, elle est prête : <span class="num">[lien aperçu]</span> »</td></tr>
+          <tr><td><strong>La personne visée demande le retrait</strong></td><td><strong>Tu retires immédiatement, sans discuter et sans prévenir l'acheteur.</strong> Tu ne rembourses pas.</td><td>« C'est retiré. »</td></tr>
+          <tr><td>Le client réclame son lien alors que tu dors</td><td>C'est pour ça que la promesse est « à l'heure que tu choisis », jamais « immédiat ».</td><td>Rien à dire : la promesse tenue est celle qui a été faite.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="warnbox">
+      <span class="eyebrow">La ligne rouge</span>
+      <ul>
+        <li>Une page porte de vraies photos, un vrai prénom, et parfois <strong>une adresse et une heure de rendez-vous</strong>. Quelqu'un s'en servira un jour contre un ex.</li>
+        <li>Avant la première vente, pas après le premier incident : adresse impossible à deviner, code obligatoire, expiration, aucune indexation, et retrait sous 24 h sur simple demande de la personne concernée.</li>
+        <li>La demande de retrait de la personne visée passe <strong>toujours</strong> avant le confort de l'acheteur. Ce n'est pas négociable, et ça n'a pas besoin d'être justifié.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 8. RESTE -->
+  <section>
+    <div class="shead col">
+      <span class="eyebrow">Partie 8 · L'état réel</span>
+      <h2>Ce qui existe, ce qui manque</h2>
+    </div>
+
+    <div class="tscroll">
+      <table>
+        <thead><tr><th>Brique</th><th>État</th><th>Reste à faire</th></tr></thead>
+        <tbody>
+          <tr><td>Commande, paiement déclaré, validation</td><td style="color:var(--good);font-weight:600">Écrit et testé</td><td>Rien. 28 contrôles verts.</td></tr>
+          <tr><td>Alertes WhatsApp et Telegram</td><td style="color:var(--good);font-weight:600">Écrit et testé</td><td>Poser les variables.</td></tr>
+          <tr><td>Lien de validation à un tap</td><td style="color:var(--good);font-weight:600">Écrit et testé</td><td>Rien.</td></tr>
+          <tr><td>Envoi automatique au client</td><td style="color:var(--good);font-weight:600">Écrit et testé</td><td>Modèle Meta à faire approuver pour sortir de la fenêtre de 24 h.</td></tr>
+          <tr><td><strong>Le gabarit émotionnel</strong></td><td style="color:var(--wax);font-weight:600">N'existe pas</td><td><strong>Le vrai travail.</strong> Formulaire d'occasion et page cadeau au standard maison.</td></tr>
+          <tr><td>Sauvegarde du formulaire pendant le paiement</td><td style="color:var(--wax);font-weight:600">N'existe pas</td><td>Quelques lignes. Sans elles, tu perds des ventes déjà gagnées.</td></tr>
+          <tr><td>Livraison programmée à l'heure choisie</td><td style="color:var(--wax);font-weight:600">N'existe pas</td><td>La fonction qui donne son nom au produit. À faire avec n8n.</td></tr>
+          <tr><td>Serveur en ligne</td><td style="color:var(--wax);font-weight:600">Pas déployé</td><td>Un service Render, un sous-domaine.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="stamp">
+      <span class="eyebrow">L'ordre, si tu ne devais retenir qu'une chose</span>
+      <p>Un gabarit irréprochable, la sauvegarde du formulaire, la livraison à l'heure choisie. Dans cet ordre.</p>
+      <p>Le reste de la machine est déjà là et fonctionne. Ce sont ces trois briques, et rien d'autre, qui séparent le dépôt d'aujourd'hui d'une boutique qui encaisse.</p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap cols">
+    <div>
+      <b>Sources de ce manuel</b>
+      La procédure décrite est celle du code réel de <span class="num">vitrina/</span>, pas une intention : parcours de commande, alertes, jeton de validation, détection des doublons, envoi automatique.
+    </div>
+    <div style="text-align:right">
+      <b>NEBULA Agency</b>
+      Manuel interne · 28 août 2026
+    </div>
+  </div>
+</footer>

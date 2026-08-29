@@ -200,3 +200,54 @@ Boussole et PISTE.
 - Aucun code produit, aucun déploiement. **Dossier de décision uniquement.**
 - Branche `claude/video-project-analysis-monetization-18oh7b`, **rien fusionné
   dans `main`** : en attente de validation de Mongazi.
+
+---
+
+## Suite du 2026-08-28 — le manuel opérationnel
+
+Mongazi : « Comment on vendra ça ? Je veux les étapes de la mise en ligne
+jusqu'à comment le client fait, et les divers événements. »
+
+**Manuel : `_plans/2026-08-28-minuit-manuel.html`**
+(artifact : https://claude.ai/code/artifact/3cd64652-a154-4004-bedd-5abea81346de)
+
+Huit parties : ouvrir la boutique (8 étapes, 3 déjà faites) · le flux d'une
+vente avec schéma des 3 acteurs · le parcours client écran par écran · le
+catalogue des 10 occasions · le calendrier de l'année au Bénin · 4 scripts de
+vente mot pour mot · les cas tordus · l'état réel des briques.
+
+### ⛔ Deux défauts trouvés dans le code en écrivant la procédure
+
+1. **La référence de transaction était marquée « (optionnel) »** dans
+   `creer.html` alors que c'est TOUT le mécanisme de vérification décidé par
+   Mongazi. Corrigé : champ exigé côté client avec explication (« le SMS te
+   donne ce code »), et le serveur **crie** `*AUCUNE RÉFÉRENCE FOURNIE*` dans
+   l'alerte si une commande arrive sans (on accepte quand même : une vente par
+   un partenaire ou en main propre n'en a pas).
+
+2. ⚠️ **LE TROU DE L'ÉCRAN 4, PAS ENCORE BOUCHÉ** : pour payer, le client
+   **quitte la page** (appli Mobile Money ou code USSD). S'il revient et que le
+   navigateur a vidé l'onglet, **il a tout perdu** : son mot, ses photos, 15 min
+   de travail. Il ne recommencera pas, et on ne saura jamais que la vente a
+   existé. Remède = sauvegarder le formulaire dans le navigateur à chaque frappe
+   et le restaurer au retour. **À faire avant d'ouvrir.**
+
+### Le flux réel (tiré du code, pas d'une intention)
+
+Client remplit et voit son aperçu → il paie hors du site → il colle la réf →
+alerte WhatsApp+Telegram avec réf, doublon et lien signé → **Mongazi vérifie le
+SMS puis valide (seul arrêt humain, ~2 min)** → page en ligne + client prévenu
+automatiquement. Son temps réel par vente : environ deux minutes.
+
+### Ce qui reste (par ordre)
+
+1. **Le gabarit émotionnel** (le vrai travail : `creer.html` fabrique
+   aujourd'hui des vitrines de commerce, pas des pages cadeau)
+2. **La sauvegarde du formulaire pendant le paiement** (quelques lignes)
+3. **La livraison à l'heure choisie** (la fonction qui donne son nom au produit)
+4. Déploiement Render + sous-domaine, variables WhatsApp, numéro MoMo dédié
+5. La commande à blanc avec un vrai paiement de 100 F avant d'ouvrir
+
+⚠️ **Sur le deuil** : vrai besoin, mais une seule maladresse de ton abîme la
+marque pour longtemps. Faire relire par quelqu'un qui vient d'enterrer un
+proche avant de vendre cette ligne.
