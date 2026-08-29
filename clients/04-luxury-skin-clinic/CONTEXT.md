@@ -509,3 +509,53 @@ cache HTTP Netlify rend les re-visites quasi-instantanées.
 - **QR étiquette produits → INA Luxury** (`https://luxuryclub229.com/ina-luxury`) : à coller sur ses produits. Livrables `assets/docs/` : `qr-ina-luxury.svg`/`.png` (ECC H) + `Etiquette_QR_INA_Luxury.pdf`/`.png` (étiquette carrée ~60 mm, charte crème/or).
 - **QR « menu des soins » → Luxury Skin Clinic** (`https://luxuryclub229.com/luxury-skin-clinic#soins`) : pour les **tables de la clinique**. **Affiche carrée modifiée** (`affiche-luxury-skin-clinic-carre.html`, QR remplacé + « Le menu de nos soins »), régénérée `Affiche_Luxury_Skin_Clinic_Carre.pdf`/`.png` ; QR nu `qr-luxury-skin-clinic-soins.png`/`.svg` (ECC M).
 - **3 QR bien distincts** : carte de visite → hub (univers) · étiquette → produits INA · tables → menu des soins. Tous **vérifiés par décodage jsqr**. Rien à déployer.
+
+## 2026-08-29 — DEVIS « vitrine virtuelle sur tablette » (nouveau projet, Outil métier)
+
+Gloria veut **remplacer ses étagères par une tablette** posée entre deux sièges : la
+cliente choisit assise, l'assistante encaisse et emballe, la maison suit son stock.
+Livrable : `assets/docs/Devis_Vitrine_Tablette_LUXURY_CLUB_229.pdf` (4 pages), source
+`devis-vitrine-tablette.html`, fabriqué par `_build_devis.py`.
+
+**PRIX PROPOSÉ : 420 000 F** (formule « Maison ») · fourchette **320 000 à 480 000 F**
+· abonnement 20 000 F / 6 mois, 1er semestre offert · 70 % / 30 %.
+
+⚠️ **Le devis est chiffré sur les MAQUETTES, pas sur les notes.** Ses notes décrivaient
+une étagère numérique simple ; les 4 maquettes envoyées le 29/08 montrent un **logiciel
+de boutique complet** : hero carrousel, recherche, filtres, favoris, back-office avec
+CRUD produits, cycle de vie des commandes à 4 statuts, export, comptes utilisateurs,
+tableau de bord. C'est ce qui fait passer le projet de ~280 000 à 420 000 F.
+
+⛔ **CINQ CONTRADICTIONS relevées entre ses notes et ses maquettes** (écrites dans le
+devis, à trancher avec elle) :
+1. Les notes disent « **nom et prix uniquement, aucune description** » ; les maquettes
+   portent des accroches partout et un paragraphe entier sur le produit vedette.
+2. Les maquettes portent l'enseigne **Luxury Skin Clinic** et vendent des **produits** —
+   or sur son site, Luxury Skin Clinic ce sont les **11 soins**, et les produits sont
+   chez **INA Luxury**. Quel catalogue va sur la tablette ?
+3. ⚠️ **Les prix des maquettes ne sont pas les siens** : elles affichent 15 000 à
+   28 000 F ; ses prix réels vont de **4 000 à 40 000 F, médiane 10 000 F**, et
+   **32 de ses 48 produits sont sous 15 000 F** (mesuré dans `ina-luxury.html`).
+4. Le menu des maquettes annonce des rayons **vides** chez elle (Solaires, Coffrets,
+   Accessoires) → règle posée : un rayon n'apparaît que s'il a des produits.
+5. Le récapitulatif affiche une ligne « **Livraison** » alors que ses notes décrivent
+   une vente en boutique.
+
+⚠️ **L'argument qui porte le prix : il ne peut pas y avoir deux stocks.** Son site prend
+déjà des commandes ; si la tablette tient son stock dans son coin, le site dira « en
+stock » quand la boutique aura vendu la dernière pièce. D'où la base unique, le décompte
+**au serveur** (deux tablettes ne vendent pas la même dernière pièce), le retrait du
+stock **à la commande validée et jamais à l'ajout au panier**, et la résistance aux
+coupures de réseau.
+
+**Mesuré ce jour dans le catalogue en ligne** : 48 produits INA Luxury (46 chiffrés ;
+sans prix : Rose Purifiant Sérum, Kojic Beauty Bar), 11 soins, 7 articles Cozy.
+
+⚠️ **Piège de fabrication du PDF** : Chrome ne passe pas par le mandataire réseau et
+n'avait **jamais reçu Google Fonts**, sans le dire — le devis sortait en Liberation/
+DejaVu. Les polices sont désormais **embarquées** dans `assets/fonts/` : le PDF se
+refabrique à l'identique, hors ligne, sur n'importe quelle machine.
+⛔ **Défaut vu sur la CAPTURE, pas dans le code** : `strong` est déclaré en encre presque
+noire pour tout le document ; dans le seul bloc à fond noir, les mots en gras étaient
+**invisibles** (**1,27:1 mesuré**) — et c'étaient les trois noms de formules, dans la
+phrase qui porte la recommandation. Corrigé en blanc (19,4:1).
