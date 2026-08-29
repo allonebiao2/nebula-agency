@@ -270,6 +270,65 @@ Et alors :
 
 ---
 
+## 3 bis · ⛔ LE COMPTE `bl…` EST PERDU — tranché par Mongazi le 2026-08-27
+
+> « Elle ne se rappelle plus, c'est perdu, considère ça comme ça. »
+
+**La porte 1 est fermée définitivement.** Ni la propriétaire, ni ses appareils,
+ni le formulaire « adresse e-mail oubliée » ne rendront ce compte. On n'y
+revient pas.
+
+⚡ **Ce n'est pas une mauvaise nouvelle : c'est le cas où « Demander l'accès »
+fonctionne le mieux.** Toute la procédure repose sur le fait que le
+propriétaire actuel **ne répond pas** dans les 3 jours. Habituellement c'est un
+pari. Ici c'est une **certitude** : la boîte qui va recevoir le mail de Google
+n'est ouverte par personne.
+
+**Le chemin est donc unique, et il est fiable.**
+
+### J+0 · aujourd'hui, 30 minutes
+
+1. **Créer le compte Google de la maison.** Par exemple
+   `aubraisedor.cotonou@gmail.com`. ⛔ **Pas le compte personnel de Mongazi** :
+   la fiche naîtrait au mauvais endroit et demanderait un transfert ensuite.
+   ⚠️ **Le jour même, sans exception** : adresse de secours **et** numéro de
+   secours renseignés, **notés sur papier**, remis à la propriétaire. C'est
+   toute la raison d'être de ce dossier : **il n'y a pas de troisième fois.**
+2. **Trancher le numéro** (test des trois liens WhatsApp, §4.1) : c'est lui qui
+   va dans le formulaire.
+3. **Envoyer la demande** : Propriétaire / Possession, jamais Gestion (§2 ter).
+4. **Noter la date d'envoi.** Le délai part de là.
+
+### J+3 · le silence devient une clé
+Google a écrit au propriétaire, personne n'a lu. L'option de **revendiquer et
+valider soi-même** apparaît. La prendre.
+
+### J+7 · si rien n'a bougé, « Faire appel »
+⚠️ **C'est désormais le chemin le plus probable**, et c'est là que les preuves
+comptent. Le dossier d'appel, à réunir **pendant l'attente** :
+
+- [ ] photo de **l'enseigne**, nette, nom parfaitement lisible
+- [ ] **RC RB/COT/24 A 102350**
+- [ ] **IFU 0202501441177**
+- [ ] une **facture, un bail ou un document officiel** au nom de
+      l'établissement, portant l'adresse
+- [ ] le site : `https://au-braise-dor.pages.dev`
+- [ ] une photo de la propriétaire **devant l'établissement** (parfois demandée)
+
+### ⛔ Pendant toute l'attente
+- **ne créer aucune fiche**, sous aucun nom ;
+- **ne pas renvoyer la demande**, ni depuis un autre compte ;
+- **ne pas modifier la fiche existante** via « Suggérer une modification » :
+  une fiche qu'on est en train de revendiquer ne se retouche pas de l'extérieur.
+
+### ⚡ Et surtout : l'attente n'est pas du temps mort
+Les 3 à 7 jours servent à réunir **tout ce qui manque** (§11), pour que le jour
+où l'accès tombe, la fiche se remplisse **en une heure** au lieu de trois
+semaines. C'est le vrai chemin critique : **ce n'est pas Google qui fait
+attendre, ce sont l'adresse, les horaires, le numéro et les six photos.**
+
+---
+
 ## 4 · LES QUATRE BLOCAGES, AVANT D'ÉCRIRE QUOI QUE CE SOIT
 
 Ce ne sont pas des détails de remplissage. **Trois d'entre eux coûtent des

@@ -503,6 +503,24 @@ préférence** (aucun transfert ensuite, et dossier bien plus solide si ça fini
 en appel manuel) ; à défaut celui de Mongazi, **avec transfert de la propriété
 principale ensuite**.
 
+### ⛔ LE COMPTE `bl…` EST PERDU (tranché par Mongazi le 2026-08-27)
+
+« Elle ne se rappelle plus, c'est perdu, considère ça comme ça. » **On n'y
+revient plus.** ⚡ Et c'est le cas où « Demander l'accès » marche le mieux : la
+procédure repose sur le **silence du propriétaire pendant 3 jours**, et ce
+silence est désormais **certain**.
+
+Chemin unique : **J+0** créer le compte de la maison *(⛔ pas celui de Mongazi)*
+avec **secours mail + secours téléphone le jour même, notés sur papier**,
+trancher le numéro, envoyer la demande en **Propriétaire** · **J+3** l'option de
+revendiquer apparaît · **J+7** « Faire appel » avec enseigne + RC + IFU +
+document officiel *(c'est le chemin le plus probable)*.
+⛔ Pendant l'attente : aucune fiche créée, aucune 2ᵉ demande, aucune
+modification de la fiche existante.
+⚡ **L'attente n'est pas du temps mort** : c'est le créneau pour réunir adresse,
+horaires, numéro et les six photos. **Le chemin critique n'est pas Google, ce
+sont les informations manquantes.**
+
 ### ⛔ Les quatre blocages, tous antérieurs à la fiche
 
 - **QUATRE numéros en circulation**, et ⚡ **une explication** : le Bénin est
