@@ -9,7 +9,7 @@
 > pas un produit, on raconte une scène que le lecteur a vécue. Il achète parce qu'il s'est
 > reconnu, pas parce qu'on a listé des fonctionnalités.
 >
-> Version 1.0 · 2026-08-15
+> Version 1.1 · 2026-08-29
 
 ---
 
@@ -1090,7 +1090,376 @@ on demande de désigner quelqu’un, et c’est beaucoup plus facile à faire.
 
 ---
 
-## 6. Contrôles avant publication
+## 6. Post n° 4 · « L’HEURE DORÉE » · le post de 17 h
+
+**La douleur visée :** le commerçant ferme sa boutique au moment précis où son client
+commence à chercher. Entre les deux, il n’y a rien : personne pour répondre, aucun endroit
+où atterrir. **Ce n’est pas une urgence qu’on invente, c’est une urgence qui se produit ce
+soir même**, quelques heures après la publication du post.
+
+### Les deux urgences, et pourquoi une seule tient
+
+**L’urgence fabriquée**, « plus que 3 places », « ça finit ce soir », un compte à rebours,
+fonctionne une fois, puis brûle la confiance. Elle serait fausse dans notre cas, donc
+interdite par le socle commercial et par les trois interdits du § 1. Et un commerçant à qui
+on a menti une fois ne revient pas.
+
+**L’urgence réelle** est déjà dans la vie du lecteur. On ne la crée pas, on la **nomme**.
+Elle ne s’épuise jamais parce qu’elle se reproduit tous les soirs.
+
+**Et l’heure de publication est l’urgence.** Le post sort à 17 h et il dit *« Il est 17 h. »*
+Le lecteur regarde son téléphone, il est vraiment 17 h, il est vraiment en train de fermer.
+C’est le seul post de la série qui soit **synchronisé avec la minute où il est lu** : c’est
+ce qui remplace le faux compte à rebours, et c’est infiniment plus fort.
+
+### L’idée
+
+Trois lignes qui montent, comme dans la référence, sauf qu’ici ce sont trois temps d’une
+histoire et pas trois morceaux d’un slogan de service :
+
+> **Il est 17 h.**
+> **Vous fermez.**
+> **Eux commencent.**
+
+Le troisième est le coup. Il tient en deux mots et il n’explique rien : c’est le lecteur qui
+complète, et ce qu’il complète lui appartient.
+
+**La scène :** vue de dessus, un comptoir de boutique à l’heure de la fermeture. Le mur
+derrière est un aplat ambre saturé, comme l’orange de la référence, mais c’est **la couleur
+de la lumière de 17 h**. Dessus tombe **l’ombre longue et dure d’un rideau métallique à
+moitié baissé** : de longues barres horizontales qui traversent tout le cadre. C’est la
+différence la plus importante avec la référence, où l’ombre n’est qu’une jolie ombre :
+**ici l’ombre raconte la fermeture.**
+
+Sur le comptoir, une main qui lâche un trousseau de clés, et à côté, grand et incliné
+exactement comme l’ordinateur de la référence, **un téléphone posé écran vers le haut**. À
+l’écran, la page de la boutique, et une bande de notification :
+
+> **Commande reçue · 20 h 14**
+
+**Il a fermé à 17 h. La commande est arrivée à 20 h 14.** L’écart entre les deux chiffres
+est tout le post, et il se lit sans une seule phrase d’explication.
+
+**La signature, en bas, à la place de *We Design & Launch It.* :**
+
+> *Votre page, elle, ne ferme pas.*
+
+### Où va l’appel à l’action, et pourquoi ça dépend du canal
+
+**Fil Instagram et Facebook : l’appel reste dans la légende.** Sur un fil, personne n’écrit
+depuis un pixel : on écrit depuis le texte, là où le doigt est déjà. Charger l’image d’une
+ligne de plus abîme la composition sans rien gagner.
+
+**Statut WhatsApp et TikTok : l’appel passe sur l’image**, puisqu’il n’y a pas de légende.
+C’est la seule différence entre les deux versions.
+
+### ⚠️ Ce que la ligne « On répond ce soir » engage
+
+Si le post sort à 17 h avec *« Écrivez-nous avant 20 h. On répond ce soir. »*, **il faut
+répondre ce soir-là**, y compris à 19 h 50. Une promesse d’heure non tenue coûte plus cher
+que tout ce que le post rapporte, et c’est exactement le genre de détail qui se raconte.
+
+Si la soirée n’est pas gardée, remplacer par : **« Écrivez-nous ce soir. »**, sans promesse
+de délai. Le reste du post ne change pas.
+
+### Pourquoi cette image bat la référence
+
+| | La référence | Le nôtre |
+|---|---|---|
+| L’ombre | décorative, elle remplit le vide | **elle signifie** : c’est le rideau qui descend |
+| Le titre | un slogan de service en trois morceaux | **trois temps d’une histoire**, la chute en deux mots |
+| La scène | un canapé, un ordinateur, nulle part | **un comptoir de Cotonou**, un lieu que le lecteur a |
+| L’écran | un joli site, admiré | **un bénéfice en train d’arriver**, avec une heure dessus |
+| L’heure | aucune | **le post est synchronisé avec la minute où on le lit** |
+
+### LE PROMPT
+
+```
+===========================================================
+NEBULA AGENCY — GOLDEN HOUR POSTER — ONE IMAGE, 4:5
+===========================================================
+
+ATTACHED INPUTS — TWO attachments.
+Identify them BY THEIR CONTENT, not by their order. Never swap
+their roles: swapping them ruins the image.
+
+  THE STYLE REFERENCE = the attachment showing a flat saturated
+     ORANGE wall, an overhead shot of a person on a sofa with a
+     laptop on their lap, a large three-line white headline in the
+     upper left, and one short centred line of text at the very
+     bottom.
+     Take from it: the FLAT SATURATED SINGLE-COLOUR BACKGROUND, the
+     HIGH OVERHEAD CAMERA and its slight tilt, the SOFT DIRECTIONAL
+     LIGHT casting a LONG SHADOW on the wall, the THREE-LINE
+     HEADLINE RISING IN WEIGHT with a thin horizontal rule after the
+     first line, the way the main object OVERLAPS AND PARTLY HIDES
+     the last headline line, the tiny centred signature line at the
+     bottom, and its level of finish.
+     Take NOTHING of its subject, its words, its brand or its hue.
+
+  THE LOGO = the attachment showing the NEBULA Agency logo: a purple
+     and blue cosmic swirl above the wordmark "NEBULA", with
+     "AGENCY" underneath, on a transparent background.
+     It is an ASSET TO PLACE, exactly as provided. It is never a
+     style reference and never a subject to reinterpret.
+
+  If you hesitate: the attachment with a transparent background and
+  a readable "NEBULA AGENCY" wordmark is THE LOGO. The other one is
+  THE STYLE REFERENCE.
+
+-----------------------------------------------------------
+TASK
+-----------------------------------------------------------
+Create ONE original social image for NEBULA Agency, a digital
+studio in Cotonou, Benin, that builds pages and online catalogues
+for West African merchants.
+The image is published at 17:00 and it says so. Every element must
+feel like the exact minute a small shop closes for the day.
+Cinematic, warm, premium, editorial. Never cheap, never clip-art,
+never a stock-photo mood board.
+
+-----------------------------------------------------------
+THE COLOUR — this replaces the orange of the reference
+-----------------------------------------------------------
+One FLAT SATURATED WALL fills the entire background, in DEEP GOLDEN
+AMBER: the colour of five-o-clock sunlight on a painted wall in
+Cotonou. Rich, warm, slightly reddish, fully saturated.
+Copy the reference's FLATNESS and SATURATION, not its hue: ours is
+warmer, deeper and more golden than its orange.
+The wall stays a single flat colour: no gradient mesh, no texture
+overlay, no pattern, no bokeh, no vignette.
+
+-----------------------------------------------------------
+THE LIGHT AND THE SHADOW — this carries the meaning
+-----------------------------------------------------------
+Low late-afternoon sun coming from the left, hard and warm.
+Across the amber wall falls the LONG HARD SHADOW OF A HALF-CLOSED
+ROLLING METAL SHUTTER: a stack of long horizontal shadow bars,
+slightly angled, crossing the upper part of the frame, with the
+open gap of light underneath them.
+It must read instantly as a shop being closed, and it must be
+beautiful. This shadow is not decoration: it is the subject.
+
+-----------------------------------------------------------
+THE SHOT
+-----------------------------------------------------------
+Shot from DIRECTLY ABOVE (overhead flat lay), at the same camera
+height and the same slight tilt as the reference.
+A worn wooden shop counter fills the lower two thirds of the frame,
+warm timber, a few honest scratches, nothing else on it.
+Entering the frame from the bottom edge, ONE HAND and forearm, dark
+brown skin, letting go of a bunch of keys that has just landed on
+the counter. The hand is open and relaxed: the day is over.
+NO face, no head, no full person: a hand and a forearm only, exactly
+as the reference shows only a hand on the trackpad.
+
+-----------------------------------------------------------
+THE PHONE — same role as the laptop in the reference
+-----------------------------------------------------------
+Beside the keys, LARGE in the frame and tilted diagonally exactly
+like the laptop in the reference, a MODERN SMARTPHONE lies screen
+up on the counter, sharply in focus and clearly legible. It must
+OVERLAP AND PARTLY HIDE the last line of the headline, the way the
+laptop overlaps the last line in the reference.
+
+-----------------------------------------------------------
+THE PHONE SCREEN — this is the payoff, keep it readable
+-----------------------------------------------------------
+On the screen, a premium modern shop page: a dark elegant header
+band, one appetising product photograph, and under it a short list
+of three items in clean type WITH NO PRICES.
+Across the top of that page, a soft GREEN NOTIFICATION BAND with
+one short line of text on it.
+The page must look expensive and real, exactly as the laptop screen
+in the reference shows a real, well-designed website.
+No app name, no recognisable interface, no chat bubble, no social
+icon, no notification badge, no menu bar of any known product.
+
+-----------------------------------------------------------
+LOGO INTEGRATION — read twice, most attempts fail here
+-----------------------------------------------------------
+The logo attachment is a PNG with a TRANSPARENT background. Place
+it at the TOP of the image, centred, above the headline, small,
+exactly as provided, and KEEP that transparency.
+  - it sits DIRECTLY on the amber wall. NO white box, NO black box,
+    NO coloured plate, NO rounded card, NO badge, NO outline, NO
+    glow, NO drop shadow behind it.
+  - do NOT redraw it, restyle it, recolour it, stretch it, crop it,
+    rotate it, or add a wordmark or tagline of your own.
+  - keep the wall behind it clean, with no shadow bar crossing it,
+    so it reads without any plate.
+  - size it so its wordmark stays comfortably readable when the
+    whole image is viewed at 20% of its size.
+A logo pasted on a plate is a failed image.
+
+-----------------------------------------------------------
+FORMAT
+-----------------------------------------------------------
+Canvas: 1080 x 1350 px, vertical 4:5, for an Instagram and Facebook
+feed.
+
+-----------------------------------------------------------
+CONTENT — render these strings verbatim, nothing else
+-----------------------------------------------------------
+HEADLINE, upper left, three lines stacked and rising in weight and
+size, in warm off-white, exactly the treatment of the reference:
+
+  line 1 — light weight, followed to its right by a LONG THIN
+           HORIZONTAL RULE, exactly as in the reference:
+    "Il est 17 h."
+
+  line 2 — bold:
+    "Vous fermez."
+
+  line 3 — heaviest and largest, partly overlapped by the phone:
+    "Eux commencent."
+
+ON THE PHONE SCREEN, inside the green notification band, small but
+perfectly legible:
+    "Commande reçue · 20 h 14"
+
+SIGNATURE, centred at the very bottom, small, off-white, semi-bold,
+in the exact place the reference puts its own closing line:
+    "Votre page, elle, ne ferme pas."
+
+FOOTER, directly under it, tiny, centred, off-white at reduced
+opacity:
+    "nebula-agency.online"
+
+-----------------------------------------------------------
+LAYOUT
+-----------------------------------------------------------
+Top to bottom:
+  1. NEBULA logo, centred, on clean wall
+  2. HEADLINE, three lines, upper left        <- loudest zone
+  3. THE SHUTTER SHADOW across the wall
+  4. THE COUNTER, THE KEYS, THE HAND, THE PHONE   <- largest zone
+  5. SIGNATURE line
+  6. site address
+The phone screen must stay entirely clear of any text overlay: the
+notification is the payoff and it must remain readable.
+
+-----------------------------------------------------------
+TEXT RENDERING — read twice
+-----------------------------------------------------------
+- Render ONLY the strings quoted above. Any extra word is a failure.
+- Reproduce them VERBATIM: no translation, no rephrasing, no
+  shortening, no added punctuation, no exclamation marks.
+- THERE IS NO APOSTROPHE ANYWHERE IN THIS IMAGE. If an apostrophe
+  appears, a word has been invented and the image is wrong.
+- Keep the space inside the hours: "17 h", "20 h 14". A number, a
+  space, then a lowercase h. Never "17h", never "17:00", never
+  "5 PM".
+- The separator in "Commande reçue · 20 h 14" is a MIDDLE DOT ·
+  It is not a hyphen, not a dash, not a bullet, not a slash.
+- Correct diacritics: "reçue" with its cedilla.
+- The three headline lines must still be readable when the image is
+  viewed at 20% of its size.
+- No hashtag, no emoji, no icon, no arrow, no star, no rating, no
+  badge, no button shape, no sticker.
+
+-----------------------------------------------------------
+HARD CONSTRAINTS
+-----------------------------------------------------------
+- NO price, NO amount, NO currency symbol, NO offer, NO discount,
+  NO percentage, anywhere, including on the phone screen.
+- NO invented statistics, follower counts, client counts, review
+  counts, stars or ratings. No figures except "17 h" and "20 h 14".
+- NO visible human face and no full person: a hand and a forearm
+  only.
+- NO recognisable third-party brand, app, logo or interface, on the
+  screen or anywhere else in the frame.
+- NO watermark, no frame, no border, no rounded corners on the
+  image itself.
+- Nothing on the counter beyond the counter, the keys, the hand and
+  the phone. The emptiness around them is the point.
+- One idea, told once. No second object, no second message.
+
+-----------------------------------------------------------
+OUTPUT
+-----------------------------------------------------------
+One finished 1080 x 1350 image, publication-ready, cinematic
+quality, high-fidelity text rendering.
+===========================================================
+```
+
+### Pour le statut WhatsApp et TikTok (9:16)
+
+Même prompt, en remplaçant le bloc FORMAT par celui-ci. **Une seule chose change dans le
+contenu : l’appel à l’action monte sur l’image**, puisqu’un statut n’a pas de légende.
+
+```
+-----------------------------------------------------------
+FORMAT
+-----------------------------------------------------------
+Canvas: 1080 x 1920 px, vertical 9:16.
+Give more amber wall above the headline and more counter below the
+phone. The shutter shadow gets longer and crosses more of the wall.
+
+SAFE ZONES — WhatsApp status: the TOP 220 px and the BOTTOM 340 px
+are covered by the interface. TikTok: the BOTTOM 480 px and the
+RIGHT 240 px are. The logo, every headline line, the phone screen,
+the signature and the address must all sit outside those strips.
+
+ADD ONE LINE — a status has no caption, so the call belongs on the
+image. Between the signature and the address, centred, smaller, in
+warm gold:
+    "Écrivez-nous avant 20 h. On répond ce soir."
+```
+
+### La légende · fil Instagram et Facebook
+
+```
+Il est 17 h.
+
+Vous baissez le rideau. Vous rangez la caisse. Vous rentrez.
+La journée est finie, et elle a été longue.
+
+Elle ne fait que commencer pour eux.
+
+À 20 h, quelqu’un cherche où acheter. À 21 h, quelqu’un demande à un
+groupe WhatsApp si on connaît quelqu’un. À 22 h, quelqu’un a déjà
+commandé, ailleurs.
+
+Ce n’est pas qu’ils ne vous voulaient pas. C’est qu’à cette heure-là,
+vous n’étiez nulle part.
+
+Une boutique ferme. Une page, non. Elle montre ce que vous vendez, elle
+prend les commandes, elle répond à la question « c’est combien » pendant
+que vous dormez. Le matin, vous les trouvez.
+
+Votre page, elle, ne ferme pas.
+
+Écrivez-nous avant 20 h. On répond ce soir.
+
+NEBULA Agency · Cotonou
+nebula-agency.online
+```
+
+**Le premier commentaire, à poster soi-même :**
+
+> Et vous, votre dernière commande de la journée, elle tombe à quelle heure ?
+
+C’est une question à laquelle on répond avec un chiffre, donc facile ; et chaque réponse
+est un commerçant qui vient d’admettre tout seul que sa journée continue sans lui.
+
+### Contrôles propres à ce post
+
+| Contrôle | Pourquoi |
+|---|---|
+| **Publier à 17 h, pas à 16 h ni à 18 h** | tout le post repose sur « Il est 17 h » ; décalé, il ment |
+| **Garder la soirée si on écrit « On répond ce soir »** | une promesse d’heure non tenue coûte plus que le post ne rapporte |
+| Les deux heures se lisent : 17 h en haut, 20 h 14 à l’écran | l’écart entre les deux **est** le post |
+| L’ombre est celle d’un rideau, pas une ombre décorative | c’est la seule chose qui raconte la fermeture |
+| Le mur reste un aplat | un dégradé, et l’image redevient une photo de banque d’images |
+| **Aucun prix, y compris sur l’écran du téléphone** | l’escalier passe par le Catalogue, pas par le tarif |
+| Aucune apostrophe sur l’image | il n’y en a pas une seule ; s’il en apparaît une, un mot a été inventé |
+| Le logo n’a aucune plaque derrière lui | sur un aplat, le modèle en ajoute une par réflexe |
+| Réduire à 20 % | si « Eux commencent. » ne se lit plus, le post est mort dans le fil |
+
+---
+
+## 7. Contrôles avant publication
 
 | Contrôle | Pourquoi |
 |---|---|
@@ -1105,7 +1474,7 @@ on demande de désigner quelqu’un, et c’est beaucoup plus facile à faire.
 
 ---
 
-## 7. Les prochaines douleurs, déjà cadrées
+## 8. Les prochaines douleurs, déjà cadrées
 
 Une par post, jamais deux. Et **jamais deux posts de cette famille d'affilée** : entre les
 deux, un « LE SAVIEZ-VOUS ? » qui ne vend rien du tout. C'est lui qui achète le droit
