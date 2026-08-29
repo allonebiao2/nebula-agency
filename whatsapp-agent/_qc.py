@@ -35,6 +35,7 @@ from agent.service import Service, charger_catalogue         # noqa: E402
 from canaux.console import CanalConsole                      # noqa: E402
 from canaux.meta import CanalMeta                            # noqa: E402
 from canaux.twilio import CanalTwilio                        # noqa: E402
+from canaux.whapi import CanalWhapi                        # noqa: E402
 from lecteurs import braise, hillary                         # noqa: E402
 from lecteurs.js_litteral import ErreurLitteral, lire_declaration  # noqa: E402
 from tests.faux import FauxModele                            # noqa: E402
@@ -389,6 +390,37 @@ def controles_canaux() -> None:
     controle("twilio · un canal non configuré n'envoie rien",
              not CanalTwilio().envoyer("229", "coucou"))
 
+    # --- Whapi : le canal qui branche un WhatsApp ordinaire ---------------
+    charge = {"messages": [
+        {"from": "22997001122", "from_name": "Awa", "id": "w1", "type": "text",
+         "text": {"body": "bonsoir"}},
+        {"from": "22997001122", "from_me": True, "id": "w2", "type": "text",
+         "text": {"body": "ma propre réponse"}},
+        {"chat_id": "22997003344@s.whatsapp.net", "id": "w3", "type": "text",
+         "text": {"body": "via chat_id"}},
+        {"from": "22997005566", "id": "w4", "type": "audio"}]}
+    lus_w = CanalWhapi.lire_entrant(charge)
+    controle("whapi · UN MESSAGE SORTANT (from_me) EST IGNORÉ",
+             all(m.texte != "ma propre réponse" for m in lus_w),
+             "sans ça l'agent se répond à lui-même jusqu'au plafond anti-abus")
+    controle("whapi · le message entrant est lu, avec son nom de profil",
+             any(m.texte == "bonsoir" and m.nom_profil == "Awa" for m in lus_w))
+    controle("whapi · le numéro se retrouve dans chat_id quand « from » manque",
+             any(m.numero == "22997003344" for m in lus_w))
+    controle("whapi · un vocal passe, sans texte (il ira à un humain)",
+             any(m.type == "audio" and not m.texte for m in lus_w))
+    controle("whapi · les accusés de statut ne produisent aucun message",
+             CanalWhapi.lire_entrant({"statuses": [{"status": "delivered"}]}) == [])
+    controle("whapi · un appel vide ne casse rien", CanalWhapi.lire_entrant({}) == [])
+    controle("whapi · un canal non configuré n'envoie rien",
+             not CanalWhapi().envoyer("229", "coucou"))
+    w = CanalWhapi(jeton="x", secret="s3cr3t")
+    controle("whapi · le bon secret passe", w.verifier_secret("s3cr3t"))
+    controle("whapi · un mauvais secret est refusé", not w.verifier_secret("pirate"))
+    controle("whapi · sans en-tête, c'est refusé", not w.verifier_secret(None))
+    controle("whapi · sans secret configuré, on laisse passer (et le serveur le crie)",
+             CanalWhapi(jeton="x").verifier_secret(None))
+
     console = CanalConsole()
     console.envoyer("229", "message")
     controle("console · garde ce qu'elle a « envoyé »", console.envoyes == [("229", "message")])
@@ -591,11 +623,37 @@ def controles_chaine() -> None:
              [m["role"] for m in envoyes[:3]] == ["user", "assistant", "user"])
 
 
+def controles_outils() -> None:
+    """Les scripts livrés démarrent-ils, et disent-ils la vérité ?"""
+    import subprocess
+
+    for script in ("simuler.py", "serveur.py", "installer.py", "demonstration.py", "_qc.py"):
+        chemin = RACINE_KIT / script
+        controle(f"outils · {script} existe", chemin.exists())
+        controle(f"outils · {script} compile",
+                 subprocess.run([sys.executable, "-m", "py_compile", str(chemin)],
+                                capture_output=True).returncode == 0)
+
+    demo = subprocess.run([sys.executable, str(RACINE_KIT / "demonstration.py")],
+                          capture_output=True, text=True)
+    controle("outils · la démonstration tourne de bout en bout",
+             demo.returncode == 0, demo.stderr[-200:])
+    controle("outils · la démonstration MONTRE le garde-fou bloquer",
+             "GARDE-FOU" in demo.stdout and "N'EST PAS PARTI" in demo.stdout)
+    controle("outils · la démonstration dit ce qui est simulé",
+             "écrites d'avance" in demo.stdout,
+             "sans cette phrase, on ferait croire que le modèle a parlé")
+    controle("outils · l'installateur n'écrit aucun numéro par défaut",
+             not re.search(r'numero_patron[:=]\s*["\']\d', 
+                           (RACINE_KIT / "installer.py").read_text(encoding="utf-8")))
+
+
 # =====================================================================
 def main() -> int:
     for bloc in (controles_parseur, controles_catalogue, controles_garde,
                  controles_memoire, controles_canaux, controles_maisons,
-                 controles_prompt, controles_chaine):
+                 controles_prompt, controles_chaine,
+                 controles_outils):
         bloc()
 
     for titre in VERTS:

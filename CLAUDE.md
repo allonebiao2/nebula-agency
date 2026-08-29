@@ -249,9 +249,21 @@
   commande, prévient le patron, et **passe la main dès qu'il ne sait pas**. Les
   onze vitrines finissent toutes sur « écrire sur WhatsApp » : c'était le seul
   maillon que personne n'avait automatisé.
-- **Où** : `whatsapp-agent/` · `python whatsapp-agent/simuler.py braise-dor`
-  (terminal, sans compte WhatsApp) · `python whatsapp-agent/_qc.py`
-  (**146 contrôles**, sans clé et sans réseau) · `serveur.py` = le webhook.
+- **Où** : `whatsapp-agent/` · `python whatsapp-agent/demonstration.py` (le voir
+  travailler, garde-fou compris) · `simuler.py <maison>` (lui parler) ·
+  **`installer.py`** (l'assistant : deux numéros, un jeton, et c'est branché) ·
+  `_qc.py` (**171 contrôles**, sans clé et sans réseau) · `serveur.py` = le webhook.
+- **QUATRE CANAUX, et le choix compte** : ⚡ **Whapi.cloud** branche le WhatsApp
+  ORDINAIRE du client en scannant un QR code — ni vérification d'entreprise, ni
+  Phone Number ID : c'est le chemin qui met un commerçant de Cotonou en ligne le
+  jour même. ⚠️ **Ce n'est PAS l'API officielle** : abonnement mensuel par numéro
+  et **WhatsApp peut suspendre un numéro qui automatise par ce chemin** (un
+  restaurant qui perd son numéro perd son carnet d'adresses) → pilote oui,
+  définitif non. ⚠️ **Whapi ne signe pas ses appels** : poser `WA_WHAPI_SECRET`
+  et le recopier dans les « custom headers » (`X-Nebula-Secret`), sinon
+  l'adresse du webhook suffit à faire parler l'agent d'un client — le serveur le
+  crie au démarrage. · **Meta Cloud API** = l'officiel, à livrer. · **Twilio** =
+  le bac à sable. · **console** = les essais.
 - ⚠️ **Ce n'est PAS Vendora.** `boutique-ia/` est le SaaS des commerçants qui
   s'inscrivent ; LE STANDARD sert les **clients NEBULA qui existent déjà**, dont
   le catalogue vit dans leur propre dossier.

@@ -55,23 +55,56 @@ n'inventera donc sous aucun prétexte.
 
 ```bash
 pip install -r whatsapp-agent/requirements.txt
-python whatsapp-agent/simuler.py braise-dor          # avec le vrai modèle
-python whatsapp-agent/simuler.py braise-dor --faux   # sans clé, pour voir la mécanique
+
+python whatsapp-agent/demonstration.py               # voir l'agent travailler, sans rien installer
+python whatsapp-agent/simuler.py braise-dor          # lui parler, avec le vrai modèle
+python whatsapp-agent/simuler.py braise-dor --faux   # lui parler sans clé
 ```
+
+`demonstration.py` joue une vraie conversation : un prix, une fourchette, une
+commande, une réservation passée à un humain — et **un prix inventé que le
+garde-fou bloque sous vos yeux**. Les répliques de l'agent sont écrites d'avance
+(pas de clé ici) ; la carte, le garde-fou, la mémoire et les alertes sont réels.
 
 Le simulateur monte **exactement** la chaîne de production — même carte, même
 mémoire, même garde-fou — dans un terminal. Tapez `/carte` pour voir ce que
 l'agent a vraiment lu. Essayez de le piéger sur un prix.
 
 ```bash
-python whatsapp-agent/_qc.py     # 146 contrôles, sans clé et sans réseau
+python whatsapp-agent/_qc.py     # 171 contrôles, sans clé et sans réseau
 ```
 
 ---
 
 ## Mettre un client en ligne
 
-### 1. Chez Meta (une fois par client, ~30 min)
+### Le plus rapide : `python whatsapp-agent/installer.py`
+
+L'assistant pose ce que seul vous savez (les deux numéros, le jeton), écrit
+`.env`, complète la fiche, lance les 171 contrôles et affiche **l'adresse exacte
+du webhook et le secret à recopier chez le fournisseur**. Il ne devine rien :
+ce qu'on ne lui dit pas reste vide, et il le dit.
+
+### Option A — Whapi.cloud : le WhatsApp du client, branché aujourd'hui
+
+C'est le chemin sans paperasse. On crée un « channel » chez Whapi, on **scanne
+un QR code depuis le téléphone de la maison** (comme WhatsApp Web), on copie le
+jeton. Pas de vérification d'entreprise, pas de Phone Number ID, pas d'App
+Secret : le numéro que les clients connaissent déjà répond dans l'heure.
+
+Le webhook va sur `https://…/whapi/<id-de-la-maison>`.
+
+⚠️ **Ce n'est pas l'API officielle.** Whapi pilote une session WhatsApp comme le
+ferait un appareil lié. C'est rapide, ça coûte un abonnement mensuel par numéro,
+et **WhatsApp peut suspendre un numéro qui automatise par ce chemin** — un
+restaurant qui perd son numéro perd son carnet d'adresses. À prendre pour un
+pilote, une démonstration, ou en connaissance de cause.
+
+⚠️ **Whapi ne signe pas ses appels.** Posez `WA_WHAPI_SECRET` et recopiez-le
+dans les « custom headers » du webhook (`X-Nebula-Secret`), sinon l'adresse
+suffit à faire parler l'agent d'un client. Le serveur le crie au démarrage.
+
+### Option B — Meta Cloud API : l'officiel (une fois par client, ~30 min)
 
 1. **Meta Business Manager** → l'entreprise du client → vérification d'entreprise.
    Sans elle : 250 contacts / 24 h maximum.
@@ -81,13 +114,13 @@ python whatsapp-agent/_qc.py     # 146 contrôles, sans clé et sans réseau
 4. Webhook → URL `https://…/webhook/<id-de-la-maison>`, champ `messages`,
    avec le mot de passe de vérification que vous avez choisi.
 
-### 2. Les variables
+### Les variables
 
 Copier `.env.example`, remplir. **`WA_META_SECRET` n'est pas facultatif** : sans
 lui, le webhook refuse tout — un webhook public sans signature vérifiée, c'est
 un inconnu qui fait parler l'agent d'un client et dépense ses jetons.
 
-### 3. Démarrer
+### Démarrer
 
 ```bash
 python whatsapp-agent/serveur.py --port 8020 --racine .
@@ -183,7 +216,9 @@ humain, pas transcrit), les images, les relances hors fenêtre, le paiement.
 | `agent/service.py` | un message entre, une réponse sort, la maison est prévenue |
 | `agent/maison.py` | la fiche d'un client, et ce qui l'empêche de démarrer |
 | `lecteurs/` | un lecteur par client + le lecteur de littéraux JS/TS |
-| `canaux/` | Meta Cloud API · Twilio · console |
+| `canaux/` | **Whapi** (WhatsApp ordinaire) · Meta Cloud API · Twilio · console |
 | `serveur.py` | le webhook (bibliothèque standard, en threads) |
 | `simuler.py` | parler à l'agent dans un terminal |
-| `_qc.py` | **146 contrôles**, sans clé et sans réseau |
+| `demonstration.py` | le voir travailler, garde-fou compris |
+| `installer.py` | l'assistant : deux numéros, un jeton, et c'est branché |
+| `_qc.py` | **171 contrôles**, sans clé et sans réseau |

@@ -38,6 +38,7 @@ from agent.service import Service                # noqa: E402
 from canaux.console import CanalConsole          # noqa: E402
 from canaux.meta import CanalMeta                # noqa: E402
 from canaux.twilio import CanalTwilio            # noqa: E402
+from canaux.whapi import ENTETE_SECRET, CanalWhapi  # noqa: E402
 
 log = logging.getLogger("whatsapp-agent.serveur")
 
@@ -67,8 +68,15 @@ def construire_canal(maison_id: str):
         jeton=_env("WA_TWILIO_TOKEN", maison_id),
         numero=_env("WA_TWILIO_FROM", maison_id),
     )
+    whapi = CanalWhapi(
+        jeton=_env("WA_WHAPI_TOKEN", maison_id),
+        base=_env("WA_WHAPI_BASE", maison_id, ""),
+        secret=_env("WA_WHAPI_SECRET", maison_id),
+    )
     if lequel == "meta" or (not lequel and meta.configure()):
         return meta
+    if lequel == "whapi" or (not lequel and whapi.configure()):
+        return whapi
     if lequel == "twilio" or (not lequel and twilio.configure()):
         return twilio
     if lequel == "console":
@@ -101,6 +109,12 @@ class Standard:
             lignes.append(f"  ✓ {identifiant:12} {len(service.catalogue):3} articles "
                           f"· canal {service.canal.nom} "
                           f"· {'configuré' if service.canal.configure() else 'NON CONFIGURÉ'}")
+            if isinstance(service.canal, CanalWhapi) and not service.canal.secret:
+                # Whapi ne signe pas ses appels : sans en-tête secret, l'adresse
+                # du webhook suffit à faire parler l'agent d'un client.
+                lignes.append("       ⚠️ webhook Whapi SANS SECRET : posez "
+                              "WA_WHAPI_SECRET et recopiez-le dans les "
+                              "« custom headers » du webhook Whapi.")
         for identifiant, manques in self.refusees.items():
             lignes.append(f"  ✗ {identifiant:12} pas démarrée : " + " ; ".join(manques))
         return "\n".join(lignes) or "  (aucune maison)"
@@ -174,6 +188,19 @@ class Poignee(BaseHTTPRequestHandler):
                 # qui fait parler l'agent d'un client et dépense ses jetons.
                 log.warning("signature refusée sur /webhook/%s", identifiant)
                 return self._repondre(403, "signature refusée")
+            try:
+                charge = json.loads(corps.decode("utf-8"))
+            except (UnicodeDecodeError, json.JSONDecodeError):
+                return self._repondre(400, "JSON illisible")
+            entrants = canal.lire_entrant(charge)
+
+        elif url.path.startswith("/whapi/"):
+            canal = self.standard.canaux[identifiant]
+            if not isinstance(canal, CanalWhapi):
+                return self._repondre(404, "cette maison n'écoute pas Whapi")
+            if not canal.verifier_secret(self.headers.get(ENTETE_SECRET)):
+                log.warning("secret refusé sur /whapi/%s", identifiant)
+                return self._repondre(403, "secret refusé")
             try:
                 charge = json.loads(corps.decode("utf-8"))
             except (UnicodeDecodeError, json.JSONDecodeError):
