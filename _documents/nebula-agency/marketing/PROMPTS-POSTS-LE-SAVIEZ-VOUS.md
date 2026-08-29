@@ -12,6 +12,10 @@
 > Outil de génération : **Nano Banana Pro** (Gemini 3 Pro Image).
 > Version 1.0 · 2026-07-30
 >
+> **Troisième direction artistique, « BLEU ÉLECTRIQUE » : voir le §7.** Blanc pur, un seul
+> bleu, grotesque géométrique, annotation par pastilles. Diamétralement opposée aux deux
+> autres, et faite pour parler à un chef d'entreprise.
+>
 > **Format carrousel :** voir `PROMPTS-CARROUSELS.md`. Il porte une **deuxième direction
 > artistique** (« MARBRE & ROUGE » : papier os, un seul rouge éditorial, sculpture de
 > marbre), à ne pas mélanger avec celle-ci dans une même campagne. Le label
@@ -336,7 +340,7 @@ TOPIC ....... La lumière dure de midi écrase les couleurs et creuse des
               bien meilleures photos de produits.
 LABEL ....... "LE SAVIEZ-VOUS ?"
 HEADLINE .... "Vos photos ratent"
-              "à cause de l'heure."
+              "à cause de l’heure."
               Emphasis word: "l'heure"
 TEACHING VISUAL:
               The same single stylised product object, shown twice side by side
@@ -359,7 +363,7 @@ TOPIC ....... La diaspora achète pour sa famille restée au pays, mais
               elle ne peut rien vérifier à distance, donc elle n'ose pas.
 LABEL ....... "LE SAVIEZ-VOUS ?"
 HEADLINE .... "Il veut commander"
-              "de l'étranger."
+              "de l’étranger."
               Emphasis word: "l'étranger"
 TEACHING VISUAL:
               A simplified globe curve at the bottom of the frame, with a thin
@@ -456,7 +460,7 @@ TEACHING VISUAL:
               Inline captions: "Quatre façons de l'écrire" (top) /
               "Une seule adresse" (bottom)
 BODY ........ "Il tape votre nom de mémoire."
-              "S'il se trompe, il ne vous trouve pas."
+              "S’il se trompe, il ne vous trouve pas."
 ```
 **Légende :** Votre nom, vous l'écrivez parfaitement. Vos clients, non. Ils oublient un
 accent, ajoutent un espace, se trompent d'une lettre — et ils ne recommencent pas. Une
@@ -515,9 +519,9 @@ TEACHING VISUAL:
               world toward the dome and BOUNCES OFF its surface, drawn with a
               small deflection mark. No brand names, no app logos of any kind.
               Inline captions: "Il vit ici" (inside) /
-              "Il n'existe pas ici" (outside)
+              "Il n’existe pas ici" (outside)
 BODY ........ "Il est très bien là où il est."
-              "Le problème, c'est qu'il n'en sort pas."
+              "Le problème, c’est qu’il n’en sort pas."
 ```
 **Légende :** Le catalogue de WhatsApp Business est utile, et gratuit — on ne va pas dire
 le contraire. Mais il ne vit que dans l'application. On ne le trouve pas sur internet, on
@@ -540,7 +544,7 @@ TEACHING VISUAL:
               Split composition, vertical divider. LEFT: a tall stacked column
               of twelve chat bubbles, cramped and repetitive, the same short
               questions recurring — render three of them legibly:
-              "C'est combien ?", "Tu l'as en rouge ?", "Tu livres ?" — and let
+              "C’est combien ?", "Tu l’as en rouge ?", "Tu livres ?" — and let
               the rest fade into a compressed grey stack. A large numeral "12"
               floats faintly behind them. RIGHT: ONE single luminous product
               card, showing a price line, three small colour dots, and a small
@@ -548,7 +552,7 @@ TEACHING VISUAL:
               behind it, clean and confident.
               Inline captions: "Douze messages" / "Un lien"
 BODY ........ "Chaque question posée est une vente ralentie."
-              "Répondez avant qu'elle arrive."
+              "Répondez avant qu’elle arrive."
 ```
 **Légende :** Comptez vos conversations d'hier. Combien de fois avez-vous écrit le même
 prix, la même couleur, le même « oui je livre » ? Ce ne sont pas des clients difficiles :
@@ -677,6 +681,355 @@ Les posts 1, 2, 5 et 6 sont **exactement les insights centraux des guides de ven
 Les partenaires diront donc en boutique exactement ce que les posts racontent en ligne.
 Le prospect a déjà entendu l'idée avant que le vendeur n'arrive : c'est ce qui transforme
 une visite en conversation.
+
+---
+
+## 7. Troisième direction artistique · « BLEU ÉLECTRIQUE »
+
+**Référence :** `references/REF-bleu-electrique.jpg` · format **4:5, 1080 x 1350**.
+
+C'est la troisième direction de la maison, et elle est **diamétralement opposée aux deux
+autres** : là où « MARBRE & ROUGE » est un papier imprimé et où la nuit cosmique est une
+nébuleuse, celle-ci est **blanche, nette, commerciale**. Aucun grain, aucune texture, aucune
+poésie. C'est le registre des studios SaaS, et c'est exactement ce qui manquait à NEBULA pour
+parler à un chef d'entreprise plutôt qu'à un lecteur.
+
+### Les neuf marqueurs à respecter
+
+1. **Fond blanc pur** `#FFFFFF`. Aucune texture, aucun grain, aucun dégradé de fond.
+2. **Un seul bleu électrique**, celui de la référence, autour de `#0F5BFF`. Avec le noir et le
+   blanc, ça fait trois valeurs et pas une de plus.
+3. **Une forme organique bleue** en haut à gauche, à pétales arrondis, **qui déborde du
+   cadre**. C'est la seule fantaisie de la direction.
+4. **Le logo en haut à droite**, petit, en noir.
+5. **Le titre en trois lignes d'intensité croissante**, et c'est LA signature :
+   - ligne 1 : noir nu ;
+   - ligne 2 : noir **dans un cadre à filet fin bleu** ;
+   - ligne 3 : **blanc sur un bloc bleu plein, légèrement incliné**, et énorme.
+6. **Typographie** : un grotesque géométrique très gras, **en casse mixte**, jamais en
+   capitales. Interlettrage serré.
+7. **Un mockup produit au centre**, photographique, posé sur une **dalle de pierre en noir et
+   blanc** qui traverse le bas du cadre.
+8. **Des pastilles bleues arrondies flottantes** : un cercle blanc avec une icône à gauche, un
+   libellé blanc à droite, **reliées au mockup par un trait pointillé bleu fin à angle droit**.
+9. **L'adresse du site en bas, centrée**, en blanc sur la pierre.
+
+### ⚠️ Les deux pièges de cette référence
+
+**1. Les pastilles de la référence contiennent un chiffre de notoriété inventé.** Elle
+affiche « Trusted By 1000+ Clients ». NEBULA en a une dizaine, tous vérifiables et tous
+nommés dans l'avis de recrutement. **Ne jamais recopier ce genre de pastille.** Une agence de
+Cotonou qui annonce mille clients se fait démonter en un commentaire, et elle perd bien plus
+que le post ne rapporte. Dans notre version, **les pastilles ne portent aucun argument de
+vente et aucun chiffre** : elles portent les questions du client.
+
+**2. Le label de la rubrique doit se déplacer un peu.** La forme organique occupe l'angle
+supérieur gauche, donc « LE SAVIEZ-VOUS ? » se pose **juste en dessous**, toujours aligné à
+gauche et toujours en haut. C'est le seul assouplissement accepté, et il vaut pour toute
+cette direction.
+
+---
+
+## 8. Post n° 16 · « ILS POSENT TOUS LES MÊMES QUESTIONS. »
+
+**Direction : BLEU ÉLECTRIQUE · 4:5 · famille « ça vous concerne ».**
+
+### Ce que le post enseigne, et pourquoi c'est un vrai retournement
+
+Tout le monde subit les mêmes messages sans jamais y voir autre chose que de l'agacement :
+*« c'est combien ? »*, *« c'est disponible ? »*, *« tu livres ? »*, dix fois par jour.
+
+Le renversement tient en une phrase : **ce ne sont pas des questions, ce sont des
+informations qui manquent.** Une question qu'on vous repose n'est pas un client pénible,
+c'est **un trou dans votre présentation, et il est toujours au même endroit**.
+
+À partir de là, le lecteur ne voit plus jamais ces messages de la même façon. C'est ça, un
+« le saviez-vous » qui vaut d'être publié : il change ce qu'on voit, pas ce qu'on sait.
+
+### Pourquoi ça convertit, sans qu'on vende quoi que ce soit
+
+Parce que le remède est **évident et visible dans l'image elle-même**. Le dispositif
+d'annotation de la référence sert ici à montrer que **les trois questions ont déjà leur
+réponse écrite** sur une fiche produit : le prix, la disponibilité, la livraison. Le lecteur
+n'a pas besoin qu'on lui dise ce qu'il lui faut, il le voit.
+
+**On inverse l'usage du dispositif :** la référence annote un produit pour vanter ses
+qualités ; nous, on annote un produit avec **les questions du client**, et chaque trait
+pointillé va se poser sur la ligne qui y répond déjà. C'est la démonstration, pas l'argument.
+
+### L'appel à l'action, et pourquoi il est facile
+
+*« Répondez-moi la question qu'on vous pose le plus. »* Il la connaît par cœur, il la tape en
+trois mots, sans réfléchir. Et **cette question dit tout de son commerce** : celui qui répond
+« c'est combien ? » n'affiche pas ses prix, celui qui répond « c'est où ? » n'a pas d'adresse
+trouvable. La conversation démarre au bon endroit sans qu'on ait rien demandé d'autre.
+
+⚠️ **La promesse engage :** on répond où cette information devrait être écrite, concrètement,
+et gratuitement. **Aucun devis dans cette réponse.**
+
+### LE PROMPT
+
+```
+===========================================================
+NEBULA AGENCY — SOCIAL POST « LE SAVIEZ-VOUS ? » — 4:5
+DIRECTION: ELECTRIC BLUE
+===========================================================
+
+ATTACHED INPUTS — TWO attachments.
+Identify them BY THEIR CONTENT, not by their order. Never swap their
+roles: swapping them ruins the image.
+
+  THE LOGO = the attachment showing the NEBULA Agency logo: a purple
+     and blue cosmic swirl above the wordmark "NEBULA", with "AGENCY"
+     underneath, on a transparent background.
+     It is an ASSET TO PLACE, exactly as provided. It is never a style
+     reference and never a subject to reinterpret.
+
+  THE STYLE REFERENCE = the other attachment. It is a white, blue and
+     black agency poster showing a laptop on a stone slab with floating
+     blue pills. Its DESIGN LANGUAGE is the design language of this
+     post, and it must be followed closely.
+
+  If you hesitate: the attachment with a transparent background and a
+  readable "NEBULA AGENCY" wordmark is THE LOGO. The other one is THE
+  STYLE REFERENCE.
+
+-----------------------------------------------------------
+TASK
+-----------------------------------------------------------
+Create ONE original social media image for NEBULA Agency, a digital
+studio in Cotonou, Benin, serving West African merchants and business
+owners.
+It teaches ONE idea that changes how the reader sees something they
+live through every single day. Clean, commercial, confident, modern.
+It must look designed and expensive, never cheap, never homemade.
+
+-----------------------------------------------------------
+THE DESIGN LANGUAGE — copy the reference closely, this one time
+-----------------------------------------------------------
+Unlike other briefs, here you follow the STYLE REFERENCE tightly. Take
+all nine of these from it:
+
+  1. PURE WHITE background #FFFFFF. No texture, no grain, no gradient
+     backdrop, no paper, no noise. Absolutely flat white.
+  2. ONE electric blue only, the blue of the reference, around #0F5BFF.
+     With black and white that makes three values and no more. No
+     second accent colour anywhere.
+  3. An ORGANIC BLUE SHAPE with rounded petals in the TOP-LEFT corner,
+     bleeding off the edge of the canvas.
+  4. Type: a heavy GEOMETRIC GROTESQUE, tight letter-spacing, set in
+     MIXED CASE. Never all caps.
+  5. The headline in THREE lines of rising intensity, exactly as in the
+     reference. This is the signature of the design, reproduce it:
+       line 1 — plain black text, medium size
+       line 2 — black text INSIDE a thin blue outlined rectangle
+       line 3 — WHITE text on a SOLID BLUE BLOCK, slightly rotated,
+                by far the largest element of the image
+  6. A photographic PRODUCT MOCKUP at the centre, resting on a
+     BLACK-AND-WHITE STONE SLAB that crosses the lower part of the
+     frame. The slab is desaturated; everything else keeps its colour.
+  7. FLOATING BLUE PILLS: rounded blue capsules, each with a white
+     circle holding a simple line icon on the left and a white label
+     on the right, casting a soft shadow.
+  8. Each pill is joined to the mockup by a THIN DASHED BLUE LINE that
+     turns at a RIGHT ANGLE, exactly like the reference.
+  9. The website address at the BOTTOM, centred, in white type over
+     the dark stone.
+
+-----------------------------------------------------------
+THE MOCKUP AND THE ANNOTATION — this is the whole idea
+-----------------------------------------------------------
+Replace the reference's laptop with a MODERN SMARTPHONE, seen straight
+on, standing upright on the stone slab, screen clearly readable.
+On its screen: a clean, well-designed PRODUCT PAGE. A large product
+photograph at the top, and under it a short stack of lines, of which
+THREE must be plainly visible and legible:
+     a PRICE line, an AVAILABILITY line, and a DELIVERY line.
+Then a single blue action button at the bottom of the screen.
+Design that page in the same white-and-electric-blue language: it is a
+NEBULA product, not a copy of an existing app.
+
+THE THREE PILLS CARRY THE CUSTOMER'S QUESTIONS, and each dashed line
+lands precisely on the line of the screen that already answers it:
+  - the pill "C’est combien ?"    points at the PRICE line
+  - the pill "C’est disponible ?" points at the AVAILABILITY line
+  - the pill "Tu livres ?"        points at the DELIVERY line
+That correspondence is the entire demonstration: the questions people
+keep asking are already answered, in writing, in one place. Make each
+dashed line clearly reach its own target and no other.
+
+-----------------------------------------------------------
+LOGO INTEGRATION — read twice, most attempts fail here
+-----------------------------------------------------------
+The logo attachment is a PNG with a TRANSPARENT background. Place it
+in the TOP-RIGHT corner, small, exactly as provided, and KEEP that
+transparency.
+  - it sits DIRECTLY on the white. NO white box, NO coloured plate, NO
+    rounded card, NO badge, NO circle, NO outline, NO glow, NO shadow.
+  - do NOT redraw it, restyle it, recolour it, stretch it, crop it,
+    rotate it, or add a wordmark or tagline of your own.
+  - keep the area behind it perfectly empty white.
+  - size it so its wordmark stays comfortably readable when the whole
+    image is viewed at 20% of its size.
+A logo pasted on a plate is a failed image.
+
+-----------------------------------------------------------
+FORMAT
+-----------------------------------------------------------
+Canvas: 1080 x 1350 px, vertical 4:5, for an Instagram and Facebook
+feed. Generous margins. Nothing important touches the edges, except
+the organic blue shape, which is meant to bleed off the top-left.
+
+-----------------------------------------------------------
+CONTENT — render these strings verbatim, nothing else
+-----------------------------------------------------------
+LABEL (top-left, just under the organic blue shape, small, uppercase,
+       widely letter-spaced, in the electric blue):
+  "LE SAVIEZ-VOUS ?"
+
+HEADLINE (centred, three stacked lines of rising intensity):
+  line 1, plain black, medium:                 "Ils posent tous"
+  line 2, black inside a thin blue outline:    "les mêmes"
+  line 3, white on a solid slightly rotated
+          blue block, ENORMOUS:                "questions."
+
+THE THREE PILLS (on the mockup, exactly as described above):
+  "C’est combien ?"
+  "C’est disponible ?"
+  "Tu livres ?"
+
+THE LESSON (under the mockup, black, small, two lines, centred):
+  "Ce ne sont pas des questions."
+  "Ce sont des informations qui manquent."
+
+CALL TO ACTION (under the lesson, in the electric blue, one line):
+  "Répondez-moi celle qu’on vous pose le plus."
+
+FOOTER: the site address at the very bottom, centred, in white over
+the stone: "nebula-agency.online"
+
+-----------------------------------------------------------
+LAYOUT
+-----------------------------------------------------------
+Top to bottom:
+  1. organic blue shape (top-left) · LOGO (top-right)
+  2. LABEL
+  3. HEADLINE, three stacked lines      <- the loudest zone
+  4. THE PHONE ON THE STONE, WITH ITS THREE PILLS  <- the largest zone
+  5. THE LESSON, two lines
+  6. CALL TO ACTION
+  7. site address over the stone
+The three pills sit around the phone, not on top of it: two on the
+left edge and one on the right, so the screen stays fully readable.
+
+-----------------------------------------------------------
+TEXT RENDERING — read twice
+-----------------------------------------------------------
+- Render ONLY the strings quoted above. Any extra word is a failure.
+- Reproduce them VERBATIM: no translation, no rephrasing, no
+  shortening, no added punctuation, no exclamation marks.
+- Correct French typographic apostrophes ’ exactly as written:
+  "C’est", "qu’on".
+- Correct diacritics: "mêmes", "Répondez".
+- Keep the space before the question marks, as French requires:
+  "C’est combien ?", "C’est disponible ?", "LE SAVIEZ-VOUS ?"
+- The headline must be readable at 20% of the image size.
+- The price, availability and delivery lines on the phone screen may
+  show short realistic French labels, but NO amount, NO number, NO
+  currency: write them as words only.
+- No hashtag, no social icon, no emoji.
+
+-----------------------------------------------------------
+HARD CONSTRAINTS
+-----------------------------------------------------------
+- NO client-count claim, NO "1000+ clients", NO rating, NO star, NO
+  award badge, NO testimonial. The reference has one; it must NOT be
+  copied. NEBULA has a dozen clients and every claim it makes is
+  verifiable.
+- NO invented statistics, percentages or figures of any kind, anywhere,
+  including on the phone screen.
+- NO price, NO amount, NO currency.
+- NO human face, no portrait, no person.
+- NO recognisable third-party brand, app, messaging interface, chat
+  bubble, green tick or app icon. The screen is a NEBULA product page.
+- NO second accent colour: white, black, and one electric blue.
+- NO watermark, no frame, no border.
+- ONE single idea in this image.
+
+-----------------------------------------------------------
+OUTPUT
+-----------------------------------------------------------
+One finished 1080 x 1350 image, publication-ready,
+high-fidelity text rendering.
+===========================================================
+```
+
+### Pour le passer en statut WhatsApp (9:16)
+
+Trois lignes à remplacer, rien d’autre :
+
+```
+FORMAT: 1080 x 1920 px, vertical 9:16.
+SAFE ZONES: the TOP 220 px are covered by the WhatsApp profile bar and
+the BOTTOM 340 px by the reply field. Nothing that matters may sit in
+those two strips: the logo, the label, the headline, the phone, the
+pills, the lesson and the call to action all live between 220 px and
+1580 px from the top.
+CALL TO ACTION: replace it with "Répondez à ce statut avec celle qu’on
+vous pose le plus."
+```
+
+### La légende
+
+```
+Ce ne sont pas des questions.
+
+« C’est combien ? » · « C’est disponible ? » · « Tu livres ? »
+Dix fois par jour, les mêmes, à des gens différents.
+
+On croit que ce sont des clients pénibles. C’est l’inverse : ce sont des clients
+intéressés, qui butent sur la même information manquante. Une question qu’on vous
+repose n’est jamais un hasard. C’est un trou, et il est toujours au même endroit.
+
+Écrivez la réponse une seule fois, à un endroit qu’on peut ouvrir, et vous
+arrêtez de la donner vingt fois par semaine. Ce n’est pas du temps gagné :
+c’est de la vente qui arrête de refroidir.
+
+Répondez-moi celle qu’on vous pose le plus. Je vous dis où elle devrait être
+écrite, gratuitement.
+
+NEBULA Agency · Cotonou
+nebula-agency.online
+```
+
+**Le premier commentaire, à poster soi-même :**
+
+> Laquelle on vous pose le plus ? Écrivez-la, je réponds à tout le monde.
+
+### Ce qu’on répond selon la question reçue
+
+| Il répond | Ce qui manque, et ce qu’on lui dit |
+|---|---|
+| « c’est combien ? » | ses prix ne sont écrits nulle part. Un prix affiché est une gêne en moins entre lui et la vente |
+| « c’est disponible ? » | son stock n’est visible nulle part, il paie chaque rupture deux fois |
+| « tu livres ? » | ses conditions ne sont écrites nulle part, et le client hésite au dernier mètre |
+| « c’est où ? » | il est introuvable : ce n’est plus un trou, c’est une porte fermée |
+
+⚠️ **Aucun devis dans cette réponse.** On dit **où** l’information devrait être écrite, pas
+combien ça coûte de l’écrire. Et **on entre par le Catalogue**
+(`_documents/nebula-agency/vente/00-SOCLE-COMMERCIAL.md`).
+
+### Contrôles propres à ce post
+
+| Contrôle | Pourquoi |
+|---|---|
+| **Aucune pastille avec un chiffre de clients** | la référence en a une, la recopier serait un mensonge démontable |
+| **Chaque pointillé atteint SA ligne** | si les trois traits se croisent ou se rejoignent, la démonstration disparaît |
+| **Aucun montant sur l’écran du téléphone** | la ligne « prix » existe, le chiffre non |
+| Trois valeurs seulement : blanc, noir, bleu | une quatrième couleur et la direction s’effondre |
+| Le fond est un blanc plat, sans grain | c’est ce qui l’oppose aux deux autres directions |
+| Le logo n’a aucune plaque derrière lui | sur du blanc pur, une plaque se voit immédiatement |
+| Réduire à 20 % | si « questions. » ne se lit plus, le post est mort dans le fil |
 
 ---
 
