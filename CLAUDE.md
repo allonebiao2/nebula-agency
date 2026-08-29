@@ -243,6 +243,57 @@
   CSS). Réserver une marge ne suffit pas : un `fixed` est ancré au viewport.
 - Détail complet : `benin-mon-pays/CONTEXT.md`
 
+### LE STANDARD — l'agent WhatsApp des clients  *(produit interne, 2026-08-28)*
+- **Ce que c'est** : celui qui décroche. Un client écrit sur le WhatsApp d'une
+  maison, l'agent répond avec **la carte réelle de cette maison**, prend la
+  commande, prévient le patron, et **passe la main dès qu'il ne sait pas**. Les
+  onze vitrines finissent toutes sur « écrire sur WhatsApp » : c'était le seul
+  maillon que personne n'avait automatisé.
+- **Où** : `whatsapp-agent/` · `python whatsapp-agent/simuler.py braise-dor`
+  (terminal, sans compte WhatsApp) · `python whatsapp-agent/_qc.py`
+  (**146 contrôles**, sans clé et sans réseau) · `serveur.py` = le webhook.
+- ⚠️ **Ce n'est PAS Vendora.** `boutique-ia/` est le SaaS des commerçants qui
+  s'inscrivent ; LE STANDARD sert les **clients NEBULA qui existent déjà**, dont
+  le catalogue vit dans leur propre dossier.
+- **LA RÈGLE FONDATRICE : le catalogue n'est jamais recopié, il est LU** dans le
+  fichier qui fait autorité sur le site (`carte.ts` chez Au Braisé d'Or, `PIECES`
+  chez Hillary), par un lecteur de littéraux JS/TS qui **n'exécute aucun code**.
+  La maison change un prix sur son site, l'agent change le jour même. ⚠️ Preuve
+  arrivée toute seule le jour de l'écriture : `main` a retiré une pièce
+  d'Hillary, l'agent est passé de **20 à 19 sans une ligne modifiée**, QC vert.
+- ⛔ **LE GARDE-FOU DES PRIX, et c'est lui qui rend le kit livrable** : une
+  consigne dans un prompt n'est pas un contrôle. Le code **relit chaque réponse
+  avant l'envoi** et bloque tout montant que la carte ne porte pas. ⚠️ Le montant
+  est **ATTACHÉ au plat nommé dans la même phrase** — mesuré, vérifier un total
+  nu ne vaut rien chez un restaurateur (**90 %** des montants ronds sont une
+  addition possible de la carte, contre **2 %** chez Hillary). D'où la règle
+  « nomme l'article que tu chiffres » dans le prompt. Blocage = le client reçoit
+  une phrase honnête, le patron reçoit **le message bloqué en entier**.
+- **Les cinq façons d'avoir un prix** sont toutes portées (simple · deux tailles
+  · fourchette · barème à N crans · prix sur demande) : la carte du Braisé d'Or
+  les utilise toutes, et les aplatir faisait encaisser 1 000 F une glace à 2 500.
+- **Stack** : Python, **aucune dépendance hors `anthropic` et PyYAML** (HTTP,
+  webhooks, signatures, base : bibliothèque standard) · SQLite par numéro ·
+  **`claude-sonnet-5`** (règle maison : jamais Opus sur du texte client) · socle
+  mis en cache, l'heure posée **après** la coupure · trois canaux (Meta Cloud
+  API, Twilio, console).
+- **Ajouter un client = deux fichiers** : un `lecteurs/<client>.py` (~60 lignes)
+  et une fiche `maisons/<client>.yaml`. ⚠️ **Aucun prix dans une fiche** — le QC
+  le refuse : un prix recopié est une deuxième vérité.
+- ⚠️ **La fenêtre de 24 h** : répondre à un client est toujours permis,
+  **prévenir le patron ne l'est pas toujours**. Hors fenêtre il faut un modèle
+  pré-approuvé par Meta — pas fait. L'escalade est journalisée et gardée en base.
+- ⛔ **RESTE À FAIRE, et ça bloque la mise en ligne** : **le numéro d'Au Braisé
+  d'Or** (le dépôt en porte deux, l'enseigne un troisième — fiche **vide
+  exprès**, le serveur refuse de démarrer et dit ce qui manque) · le numéro qui
+  reçoit les alertes par maison · **le premier appel réel au modèle** (le
+  conteneur d'écriture n'avait pas de clé) · vocaux et images (passés à un
+  humain, pas transcrits).
+- **Coût** : une conversation de dix messages ≈ **16 F CFA** cache chaud,
+  **33 F** cache froid. Conversation de service Meta gratuite jusqu'à 1 000/mois.
+- Détail : `whatsapp-agent/README.md` et
+  `_memoire/conversations/2026-08-28-standard-whatsapp.md`
+
 ## Infrastructure — où tourne quoi (2026-08-02)
 
 | Ce qui tourne | Où | Notes |

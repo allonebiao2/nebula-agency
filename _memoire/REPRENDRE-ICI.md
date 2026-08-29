@@ -1,5 +1,5 @@
 # REPRENDRE ICI
-## Point de reprise pour une session terminal · dernière mise à jour 2026-08-22
+## Point de reprise pour une session terminal · dernière mise à jour 2026-08-28
 
 > **À lire en premier** quand on ouvre une session sur ce dépôt.
 > Ce fichier dit où on en est, ce qui bloque, et par quoi commencer.
@@ -8,6 +8,43 @@
 
 
 ---
+
+## 0 quinquies. LE 2026-08-28 — LE STANDARD, L'AGENT WHATSAPP DES CLIENTS
+
+Nouveau produit interne : **`whatsapp-agent/`**. Un client écrit sur le WhatsApp
+d'une maison, l'agent répond avec **la carte réelle de cette maison, lue dans le
+fichier que son site sert**, prend la commande, prévient le patron, et passe la
+main dès qu'il ne sait pas. Les onze vitrines finissent toutes sur « écrire sur
+WhatsApp » : c'était le seul maillon que personne n'avait automatisé.
+
+- **Essayer sans compte WhatsApp** : `python whatsapp-agent/simuler.py braise-dor --faux`
+- **Contrôler** : `python whatsapp-agent/_qc.py` → **146 contrôles**, sans clé ni réseau
+- ⚠️ **Ce n'est pas Vendora** : `boutique-ia/` sert les commerçants qui s'inscrivent ;
+  LE STANDARD sert les clients NEBULA qui existent déjà.
+- ⛔ **Le garde-fou des prix** est ce qui rend le kit livrable : le code relit
+  chaque réponse avant l'envoi et bloque tout montant que la carte ne porte pas.
+
+### ⛔ CE QUI BLOQUE LA MISE EN LIGNE
+1. **Le numéro d'Au Braisé d'Or.** Le dépôt en porte **deux** (`index.html`
+   `2290156057157` · `dishes.ts`, le fichier servi, `22956057157` sans le `01`)
+   et l'enseigne un troisième (43 99 29 29). La fiche est **vide exprès** et le
+   serveur refuse de démarrer en le disant. **Seul Mongazi peut trancher.**
+2. **Le numéro qui reçoit les alertes**, pour chaque maison.
+3. **Le premier appel réel au modèle** : le conteneur d'écriture n'avait aucune
+   clé Anthropic. Tout le reste est éprouvé, ça pas encore. **C'est un geste du PC.**
+
+### ⚠️ LE TRAVAIL EST SUR UNE BRANCHE, PAS DANS `main`
+`claude/whatsapp-automation-agent-ryk9j5` — 5 commits, fusion **propre** (`main`
+en est l'ancêtre direct). Elle attend la validation de Mongazi.
+
+⚠️ **`main` local était 131 commits en retard** au 28/08 : le piège n°1 du dépôt.
+`git checkout main && git merge --ff-only origin/main` avant tout.
+
+⛔ **`scripts/rapatrier.py` mentait** : il jugeait un conflit en cherchant le mot
+« CONFLICT » dans la sortie de `git merge-tree`, qui **imprime le contenu des
+fichiers**. Un `ON CONFLICT` SQLite suffisait à faire écarter une branche saine.
+Corrigé sur la branche ci-dessus (on lit le **code de sortie**). Mesuré avant de
+corriger : **un seul faux positif sur les 21 branches**.
 
 ## 0 ter. LE 2026-08-22 — LES TROIS VITRINES SONT À JOUR EN LIGNE
 

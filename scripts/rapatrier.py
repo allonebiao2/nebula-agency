@@ -125,14 +125,37 @@ def branches_en_retard():
 
 
 def fusion_propre(nom):
-    """Vérifie qu'une fusion passerait sans conflit, sans rien modifier."""
+    """Vérifie qu'une fusion passerait sans conflit, sans rien modifier.
+
+    ⚠️ ON LIT LE CODE DE SORTIE, PAS LE TEXTE. La forme ancienne de
+    `git merge-tree` IMPRIME LE CONTENU DES FICHIERS fusionnés : y chercher la
+    chaîne « CONFLICT » ou « <<<<<<< » accuse toute branche qui contient ces
+    mots quelque part dans son code ou sa documentation.
+
+    Mesuré le 2026-08-28 : la branche du Standard WhatsApp était déclarée « en
+    conflit » à cause d'un `ON CONFLICT(...) DO UPDATE` — l'upsert SQLite — dans
+    `whatsapp-agent/agent/memoire.py`, alors que `main` en était l'ANCÊTRE
+    DIRECT et que la fusion était une simple avance rapide. Les vingt autres
+    branches étaient jugées correctement : le défaut n'accuse que celles qui
+    parlent de conflits, et ce sont justement celles qui touchent à git ou à
+    SQLite. Une branche saine écartée pour cette raison, c'est du travail perdu.
+
+    La forme moderne (`--write-tree`, git ≥ 2.38) rend **0** quand c'est propre
+    et **1** quand ça conflit : c'est un verdict, pas une lecture. Sur un git
+    plus ancien, on ne devine pas — on le dit, et la branche n'est pas fusionnée
+    automatiquement.
+    """
     base = git("merge-base", "main", nom)
     if not base:
         return False, "base introuvable"
-    arbre = git("merge-tree", base, "main", nom, silencieux=True)
-    if "<<<<<<<" in arbre or "CONFLICT" in arbre:
+    r = subprocess.run(
+        ["git", "merge-tree", "--write-tree", "--name-only", "main", nom],
+        capture_output=True, text=True, encoding="utf-8", errors="replace")
+    if r.returncode == 0:
+        return True, "propre"
+    if r.returncode == 1:
         return False, "conflits"
-    return True, "propre"
+    return False, "indécidable (git < 2.38) : à vérifier à la main"
 
 
 def main():
