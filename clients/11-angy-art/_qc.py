@@ -339,7 +339,14 @@ def main():
             #    plantaient pas — le contrôle rend `None` et annonce « absent à
             #    cette taille » — mais un contrôle qui décrit un élément
             #    disparu ne protège plus rien et fait croire qu'il veille.
-            for a_, b_ in [(".hero-lg", ".cadre"), (".hero-mx li", ".cadre")]:
+            # ⚠️ `.son` CONTRE LE SOMMAIRE : le bouton du son est en
+            #    `position:fixed` en bas à droite, et il se posait sur
+            #    « DÉCOUVRIR LES ŒUVRES » — 11 × 34 px, à 390 px seulement,
+            #    c'est-à-dire pile la pastille qu'Angélique a nommée et pile
+            #    la largeur où elle regarde. Un instrument flottant ne
+            #    recouvre jamais du texte (règle née sur Mon Bénin).
+            for a_, b_ in [(".hero-lg", ".cadre"), (".hero-mx li", ".cadre"),
+                           (".son", ".hero-plan a")]:
                 croise = page.evaluate("""([sa, sb]) => {
                   const A = document.querySelector(sa);
                   const Bs = [...document.querySelectorAll(sb)];
