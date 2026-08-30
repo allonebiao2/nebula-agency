@@ -217,8 +217,18 @@ html:not(.js) .sec::before,html:not(.js) .cit::before{display:none}
 .sous:hover svg{transform:translateX(5px)}
 
 /* ---------- LABELS ET GRANDS TEXTES ------------------------------ */
-.lab{display:flex;align-items:center;gap:14px;
-  font-size:10.5px;font-weight:500;letter-spacing:.15em;color:var(--encre)}
+/* ⚠️ LE NOM DE LA SECTION SE LIT EN PREMIER. Angélique, 2026-08-27 : « le
+   texte qui suit immédiatement les titres de section est plus grand que les
+   titres eux-mêmes, ce qui détourne l'attention ». Mesuré avant d'y toucher :
+   l'étiquette faisait 10,5 px et la phrase en dessous 80 px sur ordinateur —
+   SEPT FOIS ET DEMIE plus grosse. Et c'était le SEUL endroit du site où la
+   suite dépassait son titre : les six étiquettes, nulle part ailleurs.
+   Le nom prend donc la taille d'affichage, et la phrase devient ce qu'elle
+   est : une entrée en matière. L'interlettrage descend de .15 à .07em, sinon
+   « 05 — CRÉATIONS SUR MESURE » s'étale. */
+.lab{display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  font-size:clamp(1.45rem,3.4vw,2.9rem);font-weight:500;letter-spacing:.07em;
+  line-height:1.12;color:var(--encre)}
 .lab i{font-style:normal;opacity:.5}
 .lab b{flex:1 1 auto;height:1px;background:var(--fil-c);max-width:min(340px,26vw);
   transform:scaleX(0);transform-origin:0 50%;transition:transform 1.1s var(--e-x) .15s}
@@ -226,8 +236,27 @@ html:not(.js) .sec::before,html:not(.js) .cit::before{display:none}
 .lab--n{color:var(--tx-n)}
 .lab--n b{background:var(--fil-n)}
 
-.grand{font-size:clamp(2.1rem,5.9vw,5rem);line-height:1.03;letter-spacing:-.024em;
-  color:var(--encre);max-width:19ch;text-wrap:balance}
+/* la phrase suit le nom, elle ne le couvre plus */
+/* ── LE SOMMAIRE DU HÉROS ────────────────────────────────────────────
+   Il remplace le bouton unique : sur téléphone elle veut voir tout le
+   site d'un coup d'œil, le burger ne lui suffit pas. Cibles de 44 px,
+   contour plutôt que plein — six pastilles blanches pleines feraient un
+   mur au bas du héros. */
+.hero-plan{max-width:var(--max);width:100%;margin:clamp(24px,3.2vh,38px) auto 0}
+.hero-plan-t{font-size:10px;font-weight:500;letter-spacing:.2em;
+  color:var(--or);margin:0 0 12px}
+.hero-plan ul{display:flex;flex-wrap:wrap;gap:9px;list-style:none;margin:0;padding:0}
+.hero-plan a{display:flex;align-items:center;min-height:44px;padding:0 17px;
+  border:1px solid rgba(255,255,255,.24);border-radius:999px;
+  font-size:11px;font-weight:500;letter-spacing:.13em;color:var(--blanc);
+  text-decoration:none;white-space:nowrap;
+  transition:border-color .32s ease,color .32s ease}
+.hero-plan a:hover,.hero-plan a:focus-visible{border-color:var(--or);color:var(--or)}
+.js .hero-plan{opacity:0;transition:opacity .8s ease 1.05s}
+.js .hero.ouvert .hero-plan{opacity:1}
+
+.grand{font-size:clamp(1.2rem,2.5vw,2.1rem);line-height:1.22;letter-spacing:-.012em;
+  color:var(--encre);max-width:28ch;text-wrap:balance}
 .grand--n{color:var(--blanc)}
 .grand em{color:var(--or-f)}
 .grand--n em{color:var(--or)}
@@ -593,8 +622,11 @@ html:not(.js) .tp-n::after{transform:scaleX(1)}
 .cit-i{position:relative;min-height:clamp(340px,44vw,660px)}
 .cit-t{padding:clamp(56px,7vw,110px) var(--pad);display:flex;flex-direction:column;
   justify-content:center}
-.cit blockquote{margin-top:clamp(26px,3.2vw,44px);max-width:16ch;
-  font-size:clamp(1.7rem,3.5vw,3rem)}
+/* ⚠️ La citation passait devant son étiquette de 1,6 px (48 contre 46,4) :
+   assez pour que l'œil parte sur elle d'abord — ce qu'Angélique reproche
+   justement au reste du site. Elle descend sous l'étiquette. */
+.cit blockquote{margin-top:clamp(24px,3vw,38px);max-width:20ch;
+  font-size:clamp(1.3rem,2.7vw,2.35rem);line-height:1.24}
 .cit-a{margin-top:clamp(26px,3vw,40px);
   font-size:10.5px;font-weight:500;letter-spacing:.16em;color:var(--or)}
 
@@ -977,7 +1009,7 @@ html:not(.js) .cars,html:not(.js) .cur{display:none}
   .cadre{animation:none;transform:none}
   .rai{animation:none;transform:translate3d(30%,0,0) rotate(8deg)}
   .js .lev > span,.js .mot > span{transform:none;opacity:1}
-  .js .rv,.js .hero-d,.js .hero-img,.js .hero-mx li{opacity:1;transform:none}
+  .js .rv,.js .hero-d,.js .hero-img,.js .hero-mx li,.js .hero-plan{opacity:1;transform:none}
   .js .tp,.js .temps-d{opacity:1;transform:none}
   .js .scene-p--peint{opacity:1}
   .tp-n::after{transform:scaleX(1)}
