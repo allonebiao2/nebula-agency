@@ -64,9 +64,10 @@ nominative est une couche que personne n'avait demandée.
 
 ## Les documents alignés derrière
 
-- **Socle commercial §8** : la section « ce qui n'est PAS dans le programme » ne parlait que
-  de **Boussole**. Elle porte maintenant les **quatre** logiciels dans un tableau, plus un
-  §8.2 : le partenaire peut les **citer comme preuves de capacité**, il ne les propose pas.
+- **Socle commercial §8** : la section « ce qui n'est PAS dans le programme » gagne une
+  phrase de tête (le partenaire vend Catalogue, Vitrine, Outil sur mesure, plus le QR) et
+  **garde la seule exclusion posée par Mongazi lui-même, Boussole**. ⚠️ Le tableau à quatre
+  logiciels que j'y avais mis a été retiré le soir même, voir la correction plus haut.
 - **Manuel §5.2 ter** : « la remise en ligne peut coûter des frais de réactivation » devient
   **5 000 F**, avec la phrase qui compte : ces 5 000 F **ne rapportent rien au partenaire**,
   donc il n'a aucun intérêt à laisser un client tomber.
@@ -128,7 +129,8 @@ deux fois. On ne modifie pas un document contractuel à l'aveugle.
 
 ## Ce qui reste
 
-- **confirmer** que l'Outil sur mesure reste dans le périmètre partenaire (voir plus haut) ;
 - les **13 documents de vente** n'ont pas tous été relus : seuls le contrat, le socle et le
-  manuel ont été alignés. Les guides 03/04/05 ne parlent pas des logiciels édités ;
-- IFU et RCCM à porter dès obtention (un avenant d'une ligne).
+  manuel ont été touchés ;
+- IFU et RCCM à porter dès obtention (un avenant d'une ligne) ;
+- la date reste `[date]` sur l'exemplaire signé : elle se remplit quand le partenaire
+  contresigne.
