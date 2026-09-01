@@ -10,15 +10,24 @@
 > Pour les premiers partenaires il fait le travail. Au-delà d'une trentaine de partenaires,
 > faites-le relire par un juriste béninois.
 >
-> **Version 1.2 · 2026-08-02.** Ce qui change depuis la 1.1 : la grille de commission
-> devient **30 % / 40 %** (art. 6.1), **toute commission de réseau est supprimée** (art. 6.3),
-> la commission d'abonnement passe à **20 % à vie** (art. 6.2), et quatre articles
-> apparaissent : évolution du barème (6.7), reprise de commission (6.8), propriété du client
-> (7.4 et 7.5) et indemnités forfaitaires (8.13).
+> **Version 1.3 · 2026-09-02.** Ce qui change depuis la 1.2, **sans toucher à un seul
+> taux de commission** : le **périmètre de vente du Partenaire** est écrit noir sur blanc
+> (art. 4.4), les **logiciels métier édités par NEBULA sont expressément exclus du
+> programme** (art. 4.5), les **frais de réactivation sont chiffrés à 5 000 F**
+> (art. 4.1 et 6.2 bis), un treizième engagement s'ajoute à l'article 8, et l'article 14
+> sur les données personnelles est complété.
 >
-> ⚠️ **Pour un partenaire déjà sous contrat en version 1.1**, l'article 6.7 impose un
-> **préavis écrit de 30 jours** avant toute baisse de barème. Faites-lui signer la 1.2 ou
+> **Aucune commission ne baisse entre la 1.2 et la 1.3.** Le préavis de l'article 6.7 n'a
+> donc pas lieu de jouer : un partenaire en 1.2 ne perd rien au passage en 1.3.
+>
+> ⚠️ **Pour un partenaire encore sous contrat en version 1.1**, l'article 6.7 impose un
+> **préavis écrit de 30 jours** avant toute baisse de barème. Faites-lui signer la 1.3 ou
 > notifiez-lui le changement par écrit, daté.
+>
+> *Pour mémoire, la 1.2 du 2026-08-02 avait apporté :* la grille **30 % / 40 %** (art. 6.1),
+> la **suppression de toute commission de réseau** (art. 6.3), l'abonnement à **20 % à vie**
+> (art. 6.2), l'évolution du barème (6.7), la reprise de commission (6.8), la propriété du
+> client (7.4 et 7.5) et les indemnités forfaitaires (8.13).
 
 ---
 
@@ -109,12 +118,42 @@ sera fait et quand.
 | Outil Digital sur mesure | 55 000 à 500 000 F, selon configurateur |
 | Abonnement (hébergement, sécurité, modifications) | 20 000 F tous les 6 mois |
 | Nom de domaine | offert la 1ère année, puis 16 000 F par an |
+| Réactivation d'un site coupé pour non-paiement | 5 000 F, en sus du semestre dû |
 
 **4.2** Ces tarifs sont fixés exclusivement par NEBULA. **Le Partenaire ne peut ni les
 modifier, ni consentir de remise, ni négocier de sa propre initiative.**
 
 **4.3** NEBULA peut faire évoluer ses tarifs. Le Partenaire en est informé par écrit.
 Les affaires déjà engagées restent aux conditions en vigueur au moment de l'accord du client.
+
+**4.4 Le périmètre de vente du Partenaire.** Le Partenaire présente et fait souscrire les
+offres du tableau de l'article 4.1, **et elles seules** :
+
+- le **Catalogue Digital + QR Code** et le **QR Code Google Review** : dès son entrée dans
+  le programme, guide lu et quiz validé ;
+- la **Vitrine Digitale + QR Code** : après sa **première vente livrée** ;
+- l'**Outil Digital sur mesure** : après **3 ventes**, et en binôme avec NEBULA sur ses
+  **3 premiers dossiers**. Le prix sort du configurateur du site, jamais du Partenaire.
+
+L'abonnement de 20 000 F par semestre accompagne le Catalogue et la Vitrine. Le QR Code
+Google Review est sans abonnement.
+
+**4.5 Les produits édités par NEBULA sont hors du programme.** NEBULA édite par ailleurs
+ses propres logiciels métier, vendus à l'abonnement et sous leurs propres conditions,
+notamment **Boussole**, **PISTE**, **LE STANDARD** et **Digital HSE**, ainsi que tout
+logiciel du même genre qu'elle éditera par la suite.
+
+**Ces produits ne font pas partie du présent contrat.** Le Partenaire ne les vend pas, ne
+les présente pas comme faisant partie de son offre, n'annonce à leur sujet ni prix ni délai
+ni fonctionnalité, et **ils n'ouvrent droit à aucune commission**, ni à la mise en service,
+ni sur l'abonnement.
+
+Le Partenaire qui rencontre un besoin manifeste **le signale à NEBULA, sans engagement de sa
+part** ; NEBULA traite le dossier en direct. Signaler un tel dossier ne crée aucun droit à
+rémunération.
+
+Si NEBULA ouvre un jour l'un de ces produits au programme partenaires, elle le fera **par
+écrit et avec son propre barème**, qui ne se déduit d'aucun article du présent contrat.
 
 ---
 
@@ -166,8 +205,10 @@ pendant lequel la prestation est maintenue.
 sont interrompus et la réalisation cesse d'être accessible en ligne. Les données du client
 sont **conservées 6 mois**, puis supprimées après un dernier avertissement.
 
-Le service est rétabli dès régularisation, moyennant le règlement du semestre dû et, le cas
-échéant, des frais de réactivation en vigueur. Ces frais ne donnent lieu à aucune commission.
+Le service est rétabli dès régularisation, moyennant le règlement du semestre dû et des
+**frais de réactivation de 5 000 F**. **Aucun frais n'est dû si le client règle pendant les
+7 jours de courtoisie** : ce délai est une faveur, pas un droit acquis. Ces frais couvrent
+la remise en ligne et **ne donnent lieu à aucune commission**.
 
 Le Partenaire informe son client de cette règle **avant** l'échéance. Aucune commission n'est
 due sur un abonnement non encaissé.
@@ -260,7 +301,9 @@ Le Partenaire s'engage à :
 10. Utiliser les documents, visuels et scripts de NEBULA **exclusivement** pour promouvoir
     ses offres ;
 11. Transmettre à NEBULA, sans délai, toute réclamation client ;
-12. Ne jamais exiger d'un candidat au partenariat le versement d'une somme quelconque.
+12. Ne jamais exiger d'un candidat au partenariat le versement d'une somme quelconque ;
+13. **Ne jamais présenter, vendre, chiffrer ni promettre un produit édité par NEBULA**
+    placé hors du programme par l'article 4.5.
 
 **Tout manquement grave aux points 8, 10 ou 12 entraîne la résiliation immédiate.**
 
@@ -360,9 +403,26 @@ de NEBULA, auquel cas elle reste acquise au Partenaire.
 
 ## ARTICLE 14 · DONNÉES PERSONNELLES
 
-Les données recueillies par le Partenaire auprès des prospects et clients ne peuvent être
-utilisées que dans le cadre du présent contrat. Elles ne peuvent être cédées, revendues,
-ni conservées à titre personnel après la fin du contrat.
+**14.1** Les données recueillies par le Partenaire auprès des prospects et clients ne
+peuvent être utilisées que dans le cadre du présent contrat. Elles ne peuvent être cédées,
+revendues, ni conservées à titre personnel après la fin du contrat.
+
+**14.2** Le Partenaire ne recueille **que ce qui est nécessaire** à la vente et à la
+réalisation : identité, coordonnées, activité, besoin exprimé. Il ne recueille **aucune
+donnée bancaire** et **aucune donnée sensible**.
+
+**14.3** Le Partenaire dit à la personne, dès le premier contact, **qui il représente et
+pourquoi il note ses coordonnées**. Une personne qui demande à ne plus être contactée est
+retirée du fichier sans discussion, et le Partenaire en informe NEBULA.
+
+**14.4** À la fin du contrat, le Partenaire **restitue ou détruit** les fichiers de
+prospects et de clients qu'il détient, **sur tout support, y compris son téléphone
+personnel**.
+
+**14.5** Le Partenaire prévient NEBULA **sans délai** s'il perd, se fait voler ou se fait
+détourner un fichier contenant des données de prospects ou de clients. NEBULA est
+responsable du traitement et fait le nécessaire auprès de l'autorité béninoise de
+protection des données à caractère personnel (APDP).
 
 ---
 
@@ -385,22 +445,29 @@ Les parties s'engagent à rechercher une solution amiable. À défaut, le litige
 
 ## SIGNATURES
 
-Fait à **[lieu]**, le **[date]**, en deux exemplaires originaux.
+Fait à **Cotonou**, le **[date]**, en deux exemplaires originaux.
 
 Le présent contrat est signé à la main par les deux parties. Le Partenaire en renvoie une
 photographie lisible à NEBULA par WhatsApp. **Les accès à l'espace partenaire ne sont créés
 qu'après réception de cette signature.**
 
-<br>
-
-| **Pour NEBULA Agency** | **Le Partenaire** |
-|---|---|
-| Mongazi BIAO | [Nom et prénoms] |
-| | |
-| *Signature* | *Signature précédée de la mention manuscrite* |
-| | *« Lu et approuvé »* |
-| | |
-| ______________________ | ______________________ |
+<div class="sigs">
+  <div class="sigbox">
+    <div class="sigwho">Pour NEBULA Agency</div>
+    <div class="signame">Mongazi BIAO, fondateur</div>
+    <div class="sigslot"><!--SIGNATURE-NEBULA--></div>
+    <div class="sigrule"></div>
+    <div class="sigmention">Signature</div>
+  </div>
+  <div class="sigbox">
+    <div class="sigwho">Le Partenaire</div>
+    <div class="signame">[Nom et prénoms]</div>
+    <div class="sigslot"></div>
+    <div class="sigrule"></div>
+    <div class="sigmention">Signature, précédée de la mention manuscrite
+      <strong>« Lu et approuvé »</strong></div>
+  </div>
+</div>
 
 ---
 
@@ -413,7 +480,9 @@ qu'après réception de cette signature.**
   atteignent 3 dans le mois. Le taux s'applique à TOUT mon mois, et **repart à zéro le 1er**
 - **20 % de chaque abonnement de mes clients**, soit 4 000 F tous les 6 mois, **à vie**,
   même si j'arrête un jour. Je dois les relancer avant l'échéance : sans paiement, leur
-  site est coupé et je perds ma commission
+  site est coupé au 8e jour et je perds ma commission. La remise en ligne leur coûte
+  **5 000 F de plus**, sur lesquels je ne touche rien : c'est un fait que j'annonce
+  avant l'échéance, jamais une menace que je brandis
 - **rien du tout sur les ventes de mes filleuls** : aucune commission de réseau n'existe.
   Leurs ventes comptent seulement avec les miennes pour faire monter mon palier
 - Je suis payé **sous 24 à 72 heures** après réclamation
@@ -422,6 +491,16 @@ qu'après réception de cette signature.**
 - Enregistrer chaque prospect le jour même : il est à moi pendant 60 jours
 - Ne jamais toucher l'argent d'un client
 - Ne jamais promettre un délai, un prix d'outil, ou une fonctionnalité
+
+**Je vends**
+- le **Catalogue + QR Code** et le **QR Code Google Review** dès mon entrée
+- la **Vitrine** après ma première vente livrée
+- l'**Outil sur mesure** après 3 ventes, en binôme avec NEBULA sur mes 3 premiers dossiers
+
+**Je ne vends pas**
+- les logiciels que NEBULA édite elle-même : **Boussole, PISTE, LE STANDARD, Digital HSE**.
+  Ils sont hors du programme et ne rapportent **aucune commission**. Si je tombe sur un
+  besoin de ce genre, je le signale et je n'engage rien
 
 **Je ne peux pas**
 - Vendre des sites ou logiciels pour une autre agence pendant que je suis partenaire

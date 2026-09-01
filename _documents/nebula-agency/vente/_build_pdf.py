@@ -42,6 +42,28 @@ def _trouver_chrome():
 
 CHROME = _trouver_chrome()
 
+# La signature manuscrite de Mongazi vit dans secrets/, qui est ignore par git.
+# Le depot est PUBLIC : une signature commitee serait recuperable par n'importe
+# qui, et une signature qui traine se colle sur n'importe quel papier. Le PDF
+# signe sort donc dans pdf/signe/, lui aussi hors de git.
+REPO = os.path.abspath(os.path.join(ROOT, "..", "..", ".."))
+SIGNATURE = os.path.join(REPO, "secrets", "signature-mongazi.png")
+OUT_SIGNE = os.path.join(OUT, "signe")
+
+# Documents qui existent en deux etats : un exemplaire vierge, versionne, et un
+# exemplaire deja signe par NEBULA, que le partenaire n'a plus qu'a contresigner.
+A_SIGNER = {"09-CONTRAT-PARTENAIRE.md"}
+
+
+def _signature_html():
+    """La signature en base64, ou None si le fichier n'est pas sur la machine."""
+    if not os.path.exists(SIGNATURE):
+        return None
+    import base64
+    with open(SIGNATURE, "rb") as fh:
+        b64 = base64.b64encode(fh.read()).decode("ascii")
+    return "<img alt='Signature de Mongazi BIAO' src='data:image/png;base64,%s'>" % b64
+
 # Documents destinés aux partenaires (le socle 00 et l'avis 01 restent internes,
 # mais on les génère aussi : ils servent à Mongazi).
 # La date de couverture suit le fichier source : un PDF ne doit jamais
@@ -123,10 +145,24 @@ pre code{background:none;color:inherit;padding:0;font-size:9.3pt}
 
 .foot{margin-top:9mm;padding-top:3.5mm;border-top:.6pt solid #D7DCEA;
   font-size:8.6pt;color:#77809B;text-align:center}
+
+/* Bloc des signatures. Les deux cadres ont la meme hauteur de creux, pour que
+   le PDF signe et le PDF vierge se superposent au millimetre. */
+.sigs{display:flex;gap:8mm;margin:7mm 0 2mm;page-break-inside:avoid}
+.sigbox{flex:1 1 0;border:.8pt solid #D7DCEA;border-radius:2.5mm;
+  padding:4mm 5mm 3.5mm;background:#FBFCFE}
+.sigwho{font-size:8.4pt;letter-spacing:.16em;text-transform:uppercase;
+  color:#6B76A0;margin-bottom:1.6mm}
+.signame{font-size:11pt;font-weight:700;color:#14112E;margin-bottom:1mm}
+.sigslot{height:26mm;display:flex;align-items:flex-end;justify-content:flex-start;
+  overflow:hidden}
+.sigslot img{max-height:25mm;max-width:100%}
+.sigrule{border-top:.7pt solid #9AA4C2;margin:0 0 1.8mm}
+.sigmention{font-size:8.4pt;color:#77809B;line-height:1.45}
 """
 
 
-def build(md_name, title):
+def build(md_name, title, signer=False):
     global VERSION
     src = os.path.join(ROOT, md_name)
     if not os.path.exists(src):
@@ -145,6 +181,16 @@ def build(md_name, title):
         extensions=["tables", "fenced_code", "sane_lists"],
         output_format="html5",
     )
+
+    # Le marqueur est un commentaire HTML : dans l'exemplaire vierge il ne se
+    # voit pas, et le creux garde exactement la meme hauteur.
+    if signer:
+        sig = _signature_html()
+        if sig is None:
+            print("    signature absente (%s), exemplaire signe non produit"
+                  % os.path.basename(SIGNATURE))
+            return None
+        html_body = html_body.replace("<!--SIGNATURE-NEBULA-->", sig)
 
     conf = (CONF_PUBLIC if md_name in PUBLICS else
             "Document confidentiel &middot; réservé aux partenaires actifs de NEBULA "
@@ -166,8 +212,10 @@ def build(md_name, title):
         "</body></html>"
     )
 
-    os.makedirs(OUT, exist_ok=True)
-    pdf = os.path.join(OUT, md_name.replace(".md", ".pdf"))
+    dossier = OUT_SIGNE if signer else OUT
+    os.makedirs(dossier, exist_ok=True)
+    nom = md_name.replace(".md", "-SIGNE.pdf" if signer else ".pdf")
+    pdf = os.path.join(dossier, nom)
     with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False, encoding="utf-8") as fh:
         fh.write(page)
         tmp = fh.name
@@ -189,5 +237,14 @@ if __name__ == "__main__":
         if out:
             ko = os.path.getsize(out) // 1024
             total += ko
-            print(f"  {os.path.basename(out):32s} {ko:5d} Ko")
+            print(f"  {os.path.basename(out):38s} {ko:5d} Ko")
     print(f"\n  {total} Ko au total  ->  {OUT}")
+
+    print("\nExemplaires signés par NEBULA (hors git)\n")
+    for name, title in DOCS:
+        if name not in A_SIGNER:
+            continue
+        out = build(name, title, signer=True)
+        if out:
+            print(f"  {os.path.basename(out):38s} "
+                  f"{os.path.getsize(out) // 1024:5d} Ko  ->  {OUT_SIGNE}")

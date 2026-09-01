@@ -458,9 +458,35 @@ Méthode complète : `08-DIAGNOSTIC-DIGITAL.md`.
 
 ## 8. Ce qui n'est PAS dans le programme partenaires
 
-**Boussole** (l'outil de gestion financière du commerçant) reste hors du programme. Les
-partenaires ne le vendent pas. S'ils rencontrent un cas manifestement Boussole, ils le
-signalent à NEBULA sans engagement de leur part.
+**Le partenaire vend trois choses : le Catalogue, la Vitrine, le QR Code Google Review.**
+L'Outil sur mesure s'ouvre à lui plus tard, après 3 ventes et en binôme (§5.7). Tout le
+reste appartient à NEBULA.
+
+### 8.1 Les logiciels que NEBULA édite elle-même
+
+NEBULA n'est pas qu'un studio de vitrines : elle **édite ses propres logiciels métier**,
+vendus à l'abonnement et sous leurs propres conditions.
+
+| Logiciel | Ce que c'est | Statut partenaire |
+|---|---|---|
+| **Boussole** | La gestion financière du commerçant | **hors programme** |
+| **PISTE** | La vente de prospects d'entreprise | **hors programme** |
+| **LE STANDARD** | L'agent WhatsApp qui décroche pour une maison | **hors programme** |
+| **Digital HSE** | Le reporting HSE des industriels | **hors programme** |
+
+**Les partenaires ne les vendent pas**, n'annoncent à leur sujet ni prix ni délai, et
+**n'y touchent aucune commission**, ni à la mise en service ni sur l'abonnement. Celui qui
+rencontre un cas manifeste **le signale à NEBULA sans engagement de sa part** ; NEBULA
+traite le dossier en direct.
+
+C'est l'**article 4.5 du contrat**. Ce n'est pas une punition : ces produits se vendent avec
+une démonstration, un accompagnement et un suivi que le programme d'apporteur d'affaires ne
+porte pas. Le jour où l'un d'eux s'ouvrira, ce sera **par écrit et avec son propre barème**.
+
+### 8.2 Ce que le partenaire peut quand même en dire
+
+Il peut les **citer comme preuves de capacité** : « la maison qui a fait ça peut faire votre
+outil ». Il ne les propose pas, il ne les chiffre pas.
 
 ---
 
