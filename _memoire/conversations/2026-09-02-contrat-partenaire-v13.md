@@ -24,16 +24,41 @@ partenaire en 1.2 ne perd rien.
 | Article | Ce qui apparaît |
 |---|---|
 | **4.4** | Le **périmètre de vente**, écrit noir sur blanc : Catalogue et QR Google dès l'entrée, Vitrine après la 1re vente livrée, Outil sur mesure après 3 ventes et en binôme |
-| **4.5** | Les **logiciels édités par NEBULA sont hors du programme** : pas vendus, pas chiffrés, **aucune commission**. Le partenaire signale et n'engage rien |
 | **4.1 et 6.2 bis** | Les **frais de réactivation chiffrés à 5 000 F**, et « aucun frais si le client règle pendant les 7 jours de courtoisie » |
-| **8.13** | Treizième engagement : ne jamais présenter ni chiffrer un produit de l'article 4.5 |
+| **8, point 13** | Ne jamais vendre ni chiffrer une prestation absente du tableau de l'article 4.1 |
 | **14.1 à 14.5** | Données personnelles étoffées : minimisation, information de la personne, destruction en fin de contrat **y compris sur le téléphone personnel**, alerte sans délai en cas de fuite, APDP nommée |
 
-⚠️ **L'Outil sur mesure a été GARDÉ** alors que Mongazi n'a cité que trois offres. Raison :
-le socle commercial, qui est la source de vérité, le porte explicitement (l'escalier §1.3, la
-certification §5.7, le barème §4.5). Le retirer aurait supprimé une ligne de revenu partenaire
-contre la source de vérité. Il est donc dans le contrat **avec sa condition d'accès**.
-**À confirmer par Mongazi.**
+✅ **L'Outil sur mesure a été GARDÉ**, et Mongazi l'a confirmé le soir même : « ya juste
+outil metier, catalogue digital et vitrine ». Le socle le portait déjà (l'escalier §1.3, la
+certification §5.7, le barème §4.5) ; le retirer aurait supprimé une ligne de revenu
+partenaire contre la source de vérité.
+
+---
+
+## ⛔ CORRECTION LE SOIR MÊME : aucun logiciel n'est nommé dans le contrat
+
+Mongazi : « **dans le contrat ya rien qui concerne boussole et autre bordel, ya juste outil
+metier, catalogue digital et vitrine** ».
+
+L'article 4.5 que j'avais écrit (Boussole, PISTE, LE STANDARD, Digital HSE expressément
+exclus) est **entièrement supprimé**, avec l'engagement 13 qui y renvoyait et le passage de
+l'annexe qui les listait.
+
+⚠️ **La protection ne disparaît pas pour autant** : l'article 4.4 dit déjà « les offres du
+tableau de l'article 4.1, **et elles seules** ». C'est du meilleur droit que d'énumérer des
+produits : une liste nominative **oblige à un avenant à chaque nouveau logiciel**, et un
+logiciel absent de la liste devient discutable. L'engagement 13 a été recentré sur la même
+idée : ne jamais vendre ni chiffrer une prestation absente du tableau des tarifs.
+
+⚠️ **Le socle a été ramené à sa forme d'origine.** Il excluait **Boussole seul**, et c'était
+une décision de Mongazi antérieure à cette session. Le tableau à quatre logiciels que j'y
+avais ajouté était de ma propre initiative : il est retiré. On ne garde pas dans un document
+interne ce qu'on vient de faire sortir du contrat.
+
+⚠️ **Leçon** : quand le fondateur dit « c'est juste les deux, c'est pour les partenaires le
+contrat », il répond à la question posée (est-ce que ça se vend ?) et **pas à la question
+suivante** (faut-il l'écrire ?). Un périmètre positif se suffit à lui-même ; l'exclusion
+nominative est une couche que personne n'avait demandée.
 
 ---
 

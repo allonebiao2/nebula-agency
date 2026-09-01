@@ -12,10 +12,8 @@
 >
 > **Version 1.3 · 2026-09-02.** Ce qui change depuis la 1.2, **sans toucher à un seul
 > taux de commission** : le **périmètre de vente du Partenaire** est écrit noir sur blanc
-> (art. 4.4), les **logiciels métier édités par NEBULA sont expressément exclus du
-> programme** (art. 4.5), les **frais de réactivation sont chiffrés à 5 000 F**
-> (art. 4.1 et 6.2 bis), un treizième engagement s'ajoute à l'article 8, et l'article 14
-> sur les données personnelles est complété.
+> (art. 4.4), les **frais de réactivation sont chiffrés à 5 000 F** (art. 4.1 et 6.2 bis),
+> et l'article 14 sur les données personnelles est complété.
 >
 > **Aucune commission ne baisse entre la 1.2 et la 1.3.** Le préavis de l'article 6.7 n'a
 > donc pas lieu de jouer : un partenaire en 1.2 ne perd rien au passage en 1.3.
@@ -137,23 +135,6 @@ offres du tableau de l'article 4.1, **et elles seules** :
 
 L'abonnement de 20 000 F par semestre accompagne le Catalogue et la Vitrine. Le QR Code
 Google Review est sans abonnement.
-
-**4.5 Les produits édités par NEBULA sont hors du programme.** NEBULA édite par ailleurs
-ses propres logiciels métier, vendus à l'abonnement et sous leurs propres conditions,
-notamment **Boussole**, **PISTE**, **LE STANDARD** et **Digital HSE**, ainsi que tout
-logiciel du même genre qu'elle éditera par la suite.
-
-**Ces produits ne font pas partie du présent contrat.** Le Partenaire ne les vend pas, ne
-les présente pas comme faisant partie de son offre, n'annonce à leur sujet ni prix ni délai
-ni fonctionnalité, et **ils n'ouvrent droit à aucune commission**, ni à la mise en service,
-ni sur l'abonnement.
-
-Le Partenaire qui rencontre un besoin manifeste **le signale à NEBULA, sans engagement de sa
-part** ; NEBULA traite le dossier en direct. Signaler un tel dossier ne crée aucun droit à
-rémunération.
-
-Si NEBULA ouvre un jour l'un de ces produits au programme partenaires, elle le fera **par
-écrit et avec son propre barème**, qui ne se déduit d'aucun article du présent contrat.
 
 ---
 
@@ -302,8 +283,8 @@ Le Partenaire s'engage à :
     ses offres ;
 11. Transmettre à NEBULA, sans délai, toute réclamation client ;
 12. Ne jamais exiger d'un candidat au partenariat le versement d'une somme quelconque ;
-13. **Ne jamais présenter, vendre, chiffrer ni promettre un produit édité par NEBULA**
-    placé hors du programme par l'article 4.5.
+13. **Ne jamais vendre ni chiffrer une prestation qui ne figure pas au tableau de
+    l'article 4.1**, ni promettre que NEBULA la réalisera.
 
 **Tout manquement grave aux points 8, 10 ou 12 entraîne la résiliation immédiate.**
 
@@ -497,10 +478,9 @@ qu'après réception de cette signature.**
 - la **Vitrine** après ma première vente livrée
 - l'**Outil sur mesure** après 3 ventes, en binôme avec NEBULA sur mes 3 premiers dossiers
 
-**Je ne vends pas**
-- les logiciels que NEBULA édite elle-même : **Boussole, PISTE, LE STANDARD, Digital HSE**.
-  Ils sont hors du programme et ne rapportent **aucune commission**. Si je tombe sur un
-  besoin de ce genre, je le signale et je n'engage rien
+**Je ne vends rien d'autre**
+- ce qui n'est pas au tableau des tarifs ne se vend pas et ne se chiffre pas. Si un client
+  demande autre chose, je le remonte à NEBULA et je n'engage rien
 
 **Je ne peux pas**
 - Vendre des sites ou logiciels pour une autre agence pendant que je suis partenaire

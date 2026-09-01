@@ -425,11 +425,14 @@ et par quoi commencer. Mis à jour à chaque fin de session importante.
 - **Contrat partenaire en version 1.3** (2026-09-02). Un partenaire encore en 1.1 doit
   recevoir un préavis écrit de 30 jours avant toute baisse de barème (art. 6.7). ⚠️ **La 1.3
   ne baisse aucun taux** : le préavis n'a pas lieu de jouer entre la 1.2 et la 1.3
-- ⛔ **Le partenaire vend TROIS choses** : Catalogue, Vitrine, QR Code Google Review.
-  L'Outil sur mesure s'ouvre après **3 ventes et en binôme** (art. 4.4). ⚠️ **Les logiciels
-  que NEBULA édite elle-même sont HORS du programme** : **Boussole, PISTE, LE STANDARD,
-  Digital HSE** ne se vendent pas, ne se chiffrent pas et **ne rapportent aucune commission**
-  (art. 4.5, socle §8). Le partenaire les **cite comme preuves de capacité**, rien de plus
+- ⛔ **Le contrat partenaire ne parle que de TROIS offres** : **Catalogue Digital**,
+  **Vitrine**, **Outil métier**, plus le QR Code Google Review. L'article 4.4 dit « les
+  offres du tableau de l'article 4.1, **et elles seules** », et l'Outil s'ouvre après
+  **3 ventes et en binôme**. ⚠️ **Aucun logiciel édité par NEBULA n'est nommé dans le
+  contrat** (Mongazi, 2026-09-02 : « dans le contrat ya rien qui concerne boussole et autre
+  bordel ») : le « et elles seules » suffit, et nommer les produits obligerait à un avenant
+  à chaque nouveau logiciel. Le socle §8 garde la seule exclusion que Mongazi avait posée
+  lui-même, Boussole
 - **Frais de réactivation : 5 000 F**, chiffrés au contrat (art. 4.1 et 6.2 bis). **Aucun
   frais si le client règle pendant les 7 jours de courtoisie.** Ils ne rapportent rien au
   partenaire : c'est ce qui lui ôte tout intérêt à laisser un client tomber
