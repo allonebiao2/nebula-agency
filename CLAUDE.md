@@ -243,6 +243,44 @@
   CSS). Réserver une marge ne suffit pas : un `fixed` est ancré au viewport.
 - Détail complet : `benin-mon-pays/CONTEXT.md`
 
+### MINUIT — la lettre digitale  *(produit interne, 2026-09-02)*
+- **Ce que c'est** : « une lettre digitale, c'est **une enveloppe cachetée qu'on
+  ouvre à l'heure dite** ». L'acheteur écrit son mot, choisit l'heure, paie en
+  Mobile Money ; la destinataire reçoit un lien, brise le cachet, et lit.
+  Dossier de décision : `_plans/2026-08-27-minuit-dossier.html` · manuel
+  d'exploitation : `_plans/2026-08-28-minuit-manuel.html` · code : **`minuit/`**.
+- **La thèse** : *le romantique est le marketing, l'événement est le chiffre
+  d'affaires, le B2B est la retraite.* Un seul moteur, trois habillages.
+- **Fait le 2026-09-02** : **le gabarit** (`lettre.html`) et **le constructeur**
+  (`creer.html`), **78 contrôles verts** (`python minuit/_qc.py`), quatre
+  passages d'affilée. ⏳ Restent **la livraison à l'heure choisie** (n8n, la
+  fonction qui donne son nom au produit et qu'aucun concurrent ne propose) et
+  **le serveur en ligne** (Render).
+- ⛔ **`</script>` écrit par un acheteur TUE la page** : les données atterrissent
+  dans un bloc `<script>`, et **`json.dumps` ne protège pas de ça**. Toute
+  sérialisation passe par **`minuit/_injecter.py`**, seul endroit, qui neutralise
+  `</`, `<!--` et U+2028/U+2029. ⚠️ **Le commentaire qui documentait ce piège le
+  contenait en clair** et fermait lui-même le bloc ; ⚠️ **la fonction qui
+  neutralise U+2028 les portait en clair dans ses regex**. → **`node --check` sur
+  le script en ligne avant d'écrire**, et se méfier d'un fichier qui documente
+  son propre piège.
+- ⛔ **Le seuil EST le produit** : une lettre livrée garde toujours son cachet.
+  L'aperçu du constructeur s'ouvre (l'acheteur doit voir SES mots, c'est là que
+  la vente se fait), mais **le drapeau d'aperçu ne part jamais dans la commande**,
+  et un contrôle le vérifie.
+- ⚠️ **Aucune police téléchargée, aucun appel réseau, `noindex`** : une lettre
+  s'ouvre dans un taxi et n'a rien à faire dans un moteur. **Les photos sont des
+  données (`data:`), jamais des liens** : un lien distant ferait dépendre la
+  lettre d'un serveur et **fuiterait l'heure d'ouverture** vers un tiers.
+- ⛔ **La sauvegarde du formulaire n'est pas un confort** : pour payer, l'acheteur
+  QUITTE la page. Sans restauration au retour il perd son quart d'heure, ne
+  recommence pas, et **on ne sait même pas que la vente a existé**.
+- ⏳ **Avant la première vente** : le risque de détournement (adresse non
+  devinable, expiration, retrait sous 24 h, CGU) — aucune des 5 références du
+  dossier ne le traite. ⛔ **Jamais de MP3 hébergé** (contrefaçon). ⚠️ **Le deuil
+  ne se décore pas** : sobriété totale, aucun emoji, relecture par quelqu'un qui
+  vient d'enterrer un proche avant de le vendre.
+
 ### LE STANDARD — l'agent WhatsApp des clients  *(produit interne, 2026-08-28)*
 - **Ce que c'est** : celui qui décroche. Un client écrit sur le WhatsApp d'une
   maison, l'agent répond avec **la carte réelle de cette maison**, prend la
