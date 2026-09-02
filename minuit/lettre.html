@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<title>Une lettre pour toi</title>
+<!--
+  MINUIT · le gabarit de la lettre.
+
+  La phrase qui tient tout : une lettre digitale, c'est une ENVELOPPE CACHETEE
+  qu'on ouvre a l'heure dite. Le sceau, le pli, l'encre qui seche. Chaque
+  animation de cette page sort de cet objet, et d'aucun autre.
+
+  Regles de la maison respectees ici :
+  - aucune bibliotheque, aucun appel reseau, aucune image externe ;
+  - AUCUNE police telechargee : la pile est systeme, choisie et assumee.
+    Iowan Old Style (Apple) et Palatino (Windows) sont de vraies faces de
+    correspondance, plus chaudes que Georgia, et deja sur la machine. Une
+    lettre doit s'ouvrir dans un taxi : on ne fait pas attendre un cadeau
+    derriere un fichier de 40 Ko. Ne PAS rajouter Google Fonts ici ;
+  - une animation signature DIFFERENTE par section, toutes tirees du metier ;
+  - jamais #000 ni #fff en fond : une encre, un papier ;
+  - prefers-reduced-motion honore partout ;
+  - noindex : une lettre est privee, elle n'a rien a faire dans un moteur.
+
+  Les donnees sont injectees a la place de MINUIT_DONNEES par le constructeur
+  (creer.html) ou par le serveur. Le gabarit ne va JAMAIS chercher un fichier :
+  photos et sons sont des donnees, ou ne sont pas.
+-->
+<style>
+:root{
+  /* Ni noir ni blanc : une encre de nuit, un papier de lettre. */
+  --nuit:#141019;
+  --nuit-2:#1d1826;
+  --papier:#f4ede0;
+  --papier-2:#ebe0cd;
+  --encre:#241d2b;
+  --cire:#8c2f39;
+  --cire-clair:#b2434e;
+  --or:#c9a227;
+  --or-doux:#e0c266;
+  --gris:#6d6478;
+  --pli:rgba(36,29,43,.12);
+  --t:cubic-bezier(.25,1,.5,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--nuit);color:var(--papier);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  line-height:1.6;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+.serif{font-family:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",Times,serif;font-feature-settings:"liga" 1}
+img{max-width:100%;display:block}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--or-doux);outline-offset:3px;border-radius:4px}
+/* Voir est-apercu dans le script : on ne retire JAMAIS le focus ailleurs. */
+.est-apercu #l-titre:focus-visible{outline:none}
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ══════════════════════════════════════════════════════════════════
+   1 · LE SEUIL · l'enveloppe fermee, le cachet de cire
+   Signature : LE CACHET RESPIRE, PUIS SE BRISE.
+   Le seuil EST le produit : il cree l'attente et rend la page privee.
+   ══════════════════════════════════════════════════════════════════ */
+#seuil{
+  position:fixed;inset:0;z-index:100;
+  background:radial-gradient(120% 90% at 50% 40%,var(--nuit-2) 0%,var(--nuit) 62%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:clamp(18px,4vh,34px);padding:24px;text-align:center;
+  transition:opacity .7s var(--t),visibility .7s;
+}
+#seuil.parti{opacity:0;visibility:hidden;pointer-events:none}
+.pour{font-size:clamp(13px,3.4vw,15px);letter-spacing:.24em;text-transform:uppercase;color:var(--gris)}
+.pour b{color:var(--or-doux);font-weight:600}
+
+.enveloppe{
+  position:relative;width:min(78vw,340px);aspect-ratio:1.62;
+  background:linear-gradient(168deg,var(--papier) 0%,var(--papier-2) 100%);
+  border-radius:6px;box-shadow:0 30px 70px rgba(0,0,0,.55),0 2px 0 rgba(255,255,255,.35) inset;
+}
+/* Le rabat est DESSINE, pas bricole en pseudo-element : un triangle tourne a
+   45 deg rendait deux coins sombres en bas au lieu d'un V depuis le haut. */
+.rabat{position:absolute;inset:0;width:100%;height:100%;border-radius:6px}
+.cachet{
+  position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);
+  width:clamp(64px,17vw,84px);aspect-ratio:1;border-radius:50%;
+  display:grid;place-items:center;z-index:3;
+  background:radial-gradient(circle at 34% 30%,var(--cire-clair),var(--cire) 62%,#6d1f27 100%);
+  box-shadow:0 8px 20px rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.28) inset;
+  color:var(--papier);font-size:clamp(19px,5vw,24px);letter-spacing:.06em;
+  animation:respire 3.4s ease-in-out infinite;
+}
+.cachet::after{
+  content:"";position:absolute;inset:5px;border-radius:50%;
+  border:1px dashed rgba(244,237,224,.42);
+}
+@keyframes respire{
+  0%,100%{transform:translate(-50%,-50%) scale(1)}
+  50%{transform:translate(-50%,-50%) scale(1.045)}
+}
+/* Les trois eclats de cire, au brisement. */
+.eclat{position:absolute;left:50%;top:52%;width:clamp(30px,8vw,40px);aspect-ratio:1;
+  background:radial-gradient(circle at 40% 34%,var(--cire-clair),var(--cire) 70%);
+  border-radius:46% 54% 38% 62%;opacity:0;pointer-events:none;z-index:4}
+.brise .cachet{animation:none;opacity:0;transition:opacity .18s}
+.brise .e1{animation:eclat1 .85s var(--t) forwards}
+.brise .e2{animation:eclat2 .85s var(--t) forwards}
+.brise .e3{animation:eclat3 .85s var(--t) forwards}
+@keyframes eclat1{0%{opacity:1;transform:translate(-50%,-50%)}
+  100%{opacity:0;transform:translate(-190%,40%) rotate(-58deg)}}
+@keyframes eclat2{0%{opacity:1;transform:translate(-50%,-50%)}
+  100%{opacity:0;transform:translate(90%,70%) rotate(46deg)}}
+@keyframes eclat3{0%{opacity:1;transform:translate(-50%,-50%)}
+  100%{opacity:0;transform:translate(-30%,-160%) rotate(18deg)}}
+
+.touche{font-size:clamp(13px,3.5vw,15px);color:var(--gris);letter-spacing:.05em}
+.ouvrir{
+  padding:14px 30px;border-radius:999px;background:var(--papier);color:var(--encre);
+  font-weight:700;font-size:15px;letter-spacing:.02em;
+  box-shadow:0 12px 30px rgba(0,0,0,.4);transition:transform .2s var(--t),box-shadow .2s;
+  min-height:48px;
+}
+.ouvrir:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(0,0,0,.5)}
+.ouvrir:active{transform:translateY(0)}
+
+/* Le code secret : quatre cases, pas un champ de mot de passe. */
+#code{display:none;flex-direction:column;align-items:center;gap:12px}
+#code.on{display:flex}
+.cases{display:flex;gap:10px}
+.cases input{
+  width:clamp(44px,12vw,54px);height:clamp(54px,14vw,64px);text-align:center;
+  font-size:clamp(20px,5.5vw,26px);font-weight:700;color:var(--papier);
+  background:rgba(244,237,224,.06);border:1.5px solid rgba(244,237,224,.22);
+  border-radius:12px;font-family:inherit;
+}
+.cases input:focus{outline:none;border-color:var(--or-doux);background:rgba(244,237,224,.12)}
+.cases.faux{animation:non .4s}
+@keyframes non{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.aide{font-size:13px;color:var(--gris);max-width:30ch}
+
+/* ══════════════════════════════════════════════════════════════════
+   2 · LE PLI · la lettre sort et se deplie
+   Signature : LE DEPLIAGE, en trois volets.
+   ══════════════════════════════════════════════════════════════════ */
+main{opacity:0;transition:opacity .5s .25s}
+main.ouverte{opacity:1}
+
+.feuille{
+  max-width:min(92vw,660px);margin:clamp(24px,7vh,64px) auto;
+  background:linear-gradient(178deg,var(--papier) 0%,var(--papier-2) 100%);
+  color:var(--encre);border-radius:4px;
+  padding:clamp(28px,7vw,58px) clamp(22px,6vw,54px);
+  box-shadow:0 40px 90px rgba(0,0,0,.5);
+  position:relative;overflow:hidden;
+}
+/* Les deux plis d'une lettre pliee en trois. Ils s'effacent au depliage. */
+.feuille::before,.feuille::after{
+  content:"";position:absolute;left:0;right:0;height:1px;background:var(--pli);
+  transition:opacity 1.1s .35s var(--t);
+}
+.feuille::before{top:33.33%}
+.feuille::after{top:66.66%}
+.ouverte .feuille::before,.ouverte .feuille::after{opacity:0}
+.feuille{transform:scaleY(.06);transform-origin:top center;
+  transition:transform 1s var(--t)}
+.ouverte .feuille{transform:scaleY(1)}
+
+.entete{text-align:center;margin-bottom:clamp(22px,5vw,34px)}
+.occasion{font-size:11.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--cire);font-weight:700}
+.titre{font-size:clamp(30px,9vw,52px);line-height:1.08;margin:10px 0 0;font-weight:600;
+  letter-spacing:-.015em}
+.filet{width:52px;height:2px;background:var(--or);margin:18px auto 0;border-radius:2px}
+
+/* ══════════════════════════════════════════════════════════════════
+   3 · LA LETTRE · le texte s'ecrit, l'encre seche
+   Signature : L'ENCRE QUI SECHE (flou -> net, ligne apres ligne).
+   ══════════════════════════════════════════════════════════════════ */
+.lettre p{
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",Times,serif;
+  font-size:clamp(17px,4.5vw,20px);line-height:1.82;margin:0 0 1.05em;
+  opacity:0;filter:blur(3px);transform:translateY(6px);
+}
+.ouverte .lettre p{animation:seche .9s var(--t) forwards;
+  animation-delay:calc(.85s + var(--i,0) * .42s)}
+@keyframes seche{to{opacity:1;filter:blur(0);transform:none}}
+
+/* ══════════════════════════════════════════════════════════════════
+   4 · LES PHOTOS · polaroids
+   Signature : LE POLAROID QUI SE DEVELOPPE (du blanc vers l'image).
+   ══════════════════════════════════════════════════════════════════ */
+.photos{display:flex;flex-wrap:wrap;gap:clamp(14px,4vw,24px);justify-content:center;
+  margin:clamp(26px,6vw,40px) 0}
+.polaroid{
+  background:#fbf7ef;padding:10px 10px 34px;border-radius:2px;
+  box-shadow:0 14px 30px rgba(36,29,43,.24);
+  width:clamp(140px,42vw,200px);
+  transform:rotate(var(--r,-2deg));
+}
+.polaroid .cadre{position:relative;aspect-ratio:1;overflow:hidden;background:#e8e2d6}
+.polaroid img{width:100%;height:100%;object-fit:cover}
+/* Le voile blanc qui se retire : c'est le developpement. */
+.polaroid .cadre::after{
+  content:"";position:absolute;inset:0;background:#fbf7ef;
+}
+.ouverte .polaroid .cadre::after{animation:developpe 2.1s var(--t) forwards;
+  animation-delay:calc(1.4s + var(--j,0) * .5s)}
+@keyframes developpe{to{opacity:0}}
+.polaroid figcaption{font-size:13px;text-align:center;padding-top:10px;color:var(--gris);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",Times,serif;font-style:italic}
+
+/* ══════════════════════════════════════════════════════════════════
+   5 · LE COMPTE · les jours ensemble
+   Signature : LES CHIFFRES QUI ROULENT.
+   ══════════════════════════════════════════════════════════════════ */
+.compte{text-align:center;margin:clamp(26px,6vw,42px) 0;
+  padding:clamp(20px,5vw,30px) 0;border-top:1px solid var(--pli);border-bottom:1px solid var(--pli)}
+.compte .n{font-size:clamp(38px,12vw,68px);font-weight:600;line-height:1;
+  letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--cire)}
+.compte .l{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);margin-top:8px}
+
+/* ══════════════════════════════════════════════════════════════════
+   6 · LA SIGNATURE · le nom se trace
+   Signature : LE TRAIT QUI S'ECRIT (stroke-dashoffset).
+   ══════════════════════════════════════════════════════════════════ */
+.signe{text-align:right;margin-top:clamp(24px,6vw,38px)}
+.signe .de{font-size:14px;color:var(--gris);letter-spacing:.02em}
+.signe .nom{font-family:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",Times,serif;font-style:italic;font-weight:600;
+  font-size:clamp(24px,7vw,34px);color:var(--encre);margin-top:2px;position:relative;
+  display:inline-block;padding-bottom:8px}
+.signe .nom svg{position:absolute;left:0;right:0;bottom:0;height:10px;width:100%;overflow:visible}
+.signe .nom path{fill:none;stroke:var(--or);stroke-width:2.2;stroke-linecap:round;
+  stroke-dasharray:220;stroke-dashoffset:220}
+.ouverte .signe .nom path{animation:trace 1.1s 1.9s var(--t) forwards}
+@keyframes trace{to{stroke-dashoffset:0}}
+
+/* ══════════════════════════════════════════════════════════════════
+   7 · LE PIED VIRAL · la boucle de croissance
+   Chaque destinataire est un acheteur possible. C'est le seul endroit
+   de la page ou NEBULA parle, et il reste discret.
+   ══════════════════════════════════════════════════════════════════ */
+.pied{text-align:center;padding:clamp(30px,8vw,56px) 20px clamp(40px,10vw,70px)}
+.pied a{
+  display:inline-flex;align-items:center;gap:9px;min-height:48px;
+  padding:13px 26px;border-radius:999px;
+  background:var(--papier);color:var(--encre);text-decoration:none;
+  font-weight:700;font-size:14.5px;
+  box-shadow:0 14px 34px rgba(0,0,0,.42);transition:transform .2s var(--t)}
+.pied a:hover{transform:translateY(-2px)}
+.pied .sceau{width:20px;height:20px;border-radius:50%;
+  background:radial-gradient(circle at 36% 32%,var(--cire-clair),var(--cire) 70%);flex:none}
+.pied .note{font-size:12.5px;color:var(--gris);margin-top:14px;letter-spacing:.04em}
+
+/* ── Le mouvement reduit : la lettre s'ouvre, mais rien ne bouge. ── */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s!important;animation-delay:0s!important;
+    transition-duration:.001s!important}
+  .feuille{transform:none}
+  .lettre p{opacity:1;filter:none;transform:none}
+  .polaroid .cadre::after{opacity:0}
+  .signe .nom path{stroke-dashoffset:0}
+  .cachet{animation:none}
+}
+</style>
+</head>
+<body>
+
+<!-- 1 · LE SEUIL -->
+<div id="seuil">
+  <p class="pour">Pour <b id="s-pour">toi</b></p>
+
+  <div class="enveloppe" id="env">
+    <svg class="rabat" viewBox="0 0 324 200" preserveAspectRatio="none" aria-hidden="true">
+      <!-- les deux coutures laterales, qui donnent l'epaisseur -->
+      <path d="M0,14 L162,132 L0,200 Z" fill="#e6dac4" opacity=".55"/>
+      <path d="M324,14 L162,132 L324,200 Z" fill="#e6dac4" opacity=".55"/>
+      <!-- le rabat, en V depuis le haut -->
+      <path d="M0,6 L324,6 L162,140 Z" fill="#efe5d2"/>
+      <path d="M0,6 L324,6 L162,140 Z" fill="none" stroke="#241d2b" stroke-opacity=".13"/>
+    </svg>
+    <span class="eclat e1"></span><span class="eclat e2"></span><span class="eclat e3"></span>
+    <div class="cachet serif" aria-hidden="true"><span id="s-init">M</span></div>
+  </div>
+
+  <p class="touche" id="s-touche">Une lettre t'attend.</p>
+  <button class="ouvrir" id="btn-ouvrir">Briser le cachet</button>
+
+  <div id="code">
+    <p class="aide">Cette lettre est fermée par un code. Celui qui te l'envoie te l'a donné.</p>
+    <div class="cases" id="cases">
+      <input type="text" inputmode="numeric" maxlength="1" aria-label="Chiffre 1">
+      <input type="text" inputmode="numeric" maxlength="1" aria-label="Chiffre 2">
+      <input type="text" inputmode="numeric" maxlength="1" aria-label="Chiffre 3">
+      <input type="text" inputmode="numeric" maxlength="1" aria-label="Chiffre 4">
+    </div>
+    <p class="aide" id="code-msg" role="status" aria-live="polite"></p>
+  </div>
+</div>
+
+<!-- 2 à 6 · LA LETTRE -->
+<main id="lettre" aria-hidden="true">
+  <article class="feuille">
+    <header class="entete">
+      <p class="occasion" id="l-occasion"></p>
+      <h1 class="titre serif" id="l-titre"></h1>
+      <div class="filet"></div>
+    </header>
+
+    <div class="lettre" id="l-corps"></div>
+
+    <div class="photos" id="l-photos"></div>
+
+    <div class="compte" id="l-compte" hidden>
+      <div class="n serif" id="l-jours">0</div>
+      <div class="l" id="l-jours-lib">jours</div>
+    </div>
+
+    <div class="signe">
+      <p class="de">Avec tout mon cœur,</p>
+      <p class="nom" id="l-de">
+        <span id="l-de-nom"></span>
+        <svg viewBox="0 0 200 10" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M2,7 C40,2 78,9 116,4 C146,0 176,6 198,3"/>
+        </svg>
+      </p>
+    </div>
+  </article>
+
+  <!-- 7 · LE PIED VIRAL -->
+  <footer class="pied" id="l-pied">
+    <a id="pied-lien" href="#" rel="noopener">
+      <span class="sceau" aria-hidden="true"></span>
+      Fais la tienne sur MINUIT
+    </a>
+    <p class="note">Une lettre, une enveloppe, un cachet. En cinq minutes.</p>
+  </footer>
+</main>
+
+<script>
+"use strict";
+/* Les donnees de CETTE lettre. Le constructeur remplace la ligne entiere.
+   Rien n'est charge depuis le reseau : une lettre doit s'ouvrir dans un taxi. */
+var D = /*MINUIT_DONNEES*/{
+  occasion:"Anniversaire",
+  pour:"Zara",
+  de:"Robert",
+  titre:"Joyeux anniversaire",
+  code:"",
+  lettre:[
+    "Je ne sais pas écrire les belles phrases, alors je vais écrire les vraies.",
+    "Depuis que tu es là, les journées ordinaires ont cessé d'être ordinaires.",
+    "Bon anniversaire. Je nous souhaite encore beaucoup de jours comme ceux-là."
+  ],
+  photos:[],
+  depuis:"",
+  pied:true,
+  lien:"https://nebula-agency.online/minuit"
+}/*FIN_MINUIT_DONNEES*/;
+
+var $ = function(s){ return document.querySelector(s); };
+var doux = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ── Poser le contenu. On echappe tout : le texte vient d'un acheteur. ── */
+function txt(el, v){ el.textContent = v == null ? "" : String(v); }
+
+txt($("#s-pour"), D.pour || "toi");
+txt($("#s-init"), (D.de || "M").trim().charAt(0).toUpperCase() || "M");
+txt($("#l-occasion"), D.occasion || "");
+txt($("#l-titre"), D.titre || "");
+txt($("#l-de-nom"), D.de || "");
+document.title = "Une lettre pour " + (D.pour || "toi");
+
+var corps = $("#l-corps");
+(D.lettre || []).forEach(function(ligne, i){
+  var p = document.createElement("p");
+  p.style.setProperty("--i", i);
+  p.textContent = ligne;
+  corps.appendChild(p);
+});
+
+/* Les photos sont des donnees (data:), jamais des liens : une lettre ne doit
+   dependre d'aucun serveur, et un lien externe fuiterait vers un tiers. */
+var bacPhotos = $("#l-photos");
+(D.photos || []).forEach(function(ph, j){
+  var src = (ph && ph.src) || "";
+  if (src.slice(0, 5) !== "data:") { return; }
+  var fig = document.createElement("figure");
+  fig.className = "polaroid";
+  fig.style.setProperty("--j", j);
+  fig.style.setProperty("--r", (j % 2 ? 2.2 : -2.4) + "deg");
+  var cadre = document.createElement("div");
+  cadre.className = "cadre";
+  var im = document.createElement("img");
+  im.src = src;
+  im.alt = ph.legende ? String(ph.legende) : "Photo souvenir";
+  im.loading = "lazy";
+  im.decoding = "async";
+  cadre.appendChild(im);
+  fig.appendChild(cadre);
+  if (ph.legende) {
+    var c = document.createElement("figcaption");
+    c.textContent = ph.legende;
+    fig.appendChild(c);
+  }
+  bacPhotos.appendChild(fig);
+});
+
+/* Le compte des jours. Une date future donnerait un nombre negatif : on la
+   refuse plutot que d'afficher « -12 jours ensemble ». */
+var jours = 0;
+if (D.depuis) {
+  var d0 = new Date(D.depuis + "T00:00:00");
+  if (!isNaN(d0)) {
+    jours = Math.floor((Date.now() - d0.getTime()) / 86400000);
+  }
+}
+if (jours > 0) {
+  $("#l-compte").hidden = false;
+  $("#l-jours-lib").textContent = jours > 1 ? "jours ensemble" : "jour ensemble";
+}
+
+if (!D.pied) { $("#l-pied").hidden = true; }
+else { $("#pied-lien").href = D.lien || "https://nebula-agency.online/minuit"; }
+
+/* ── Les chiffres qui roulent, une fois la lettre ouverte. ── */
+function rouler(){
+  var el = $("#l-jours");
+  if (jours <= 0) { return; }
+  if (doux) { el.textContent = String(jours); return; }
+  var t0 = 0, duree = 1200;
+  function pas(t){
+    if (!t0) { t0 = t; }
+    var k = Math.min(1, (t - t0) / duree);
+    /* Sortie douce : les derniers chiffres ralentissent, comme un compteur. */
+    var e = 1 - Math.pow(1 - k, 3);
+    el.textContent = String(Math.round(jours * e));
+    if (k < 1) { requestAnimationFrame(pas); }
+  }
+  requestAnimationFrame(pas);
+}
+
+/* ── L'ouverture. ── */
+var ouvert = false;
+function ouvrir(){
+  if (ouvert) { return; }
+  ouvert = true;
+  var env = $("#env");
+  env.classList.add("brise");
+  var attendre = doux ? 0 : 620;
+  setTimeout(function(){
+    $("#seuil").classList.add("parti");
+    var m = $("#lettre");
+    m.classList.add("ouverte");
+    m.setAttribute("aria-hidden", "false");
+    /* Le focus suit l'ouverture : au clavier et au lecteur d'ecran, on doit
+       arriver DANS la lettre, pas rester sur un bouton qui a disparu. */
+    var h = $("#l-titre");
+    h.setAttribute("tabindex", "-1");
+    h.focus({ preventScroll: true });
+    setTimeout(rouler, doux ? 0 : 900);
+  }, attendre);
+}
+
+/* ── Le code secret. ── */
+var cases = Array.prototype.slice.call(document.querySelectorAll("#cases input"));
+function verifier(){
+  var saisi = cases.map(function(c){ return c.value; }).join("");
+  if (saisi.length < 4) { return; }
+  if (saisi === String(D.code)) {
+    $("#code-msg").textContent = "";
+    ouvrir();
+  } else {
+    $("#cases").classList.remove("faux");
+    void $("#cases").offsetWidth;   /* redemarrer l'animation */
+    $("#cases").classList.add("faux");
+    $("#code-msg").textContent = "Ce n'est pas le bon code. Redemande-le.";
+    cases.forEach(function(c){ c.value = ""; });
+    cases[0].focus();
+  }
+}
+cases.forEach(function(c, i){
+  c.addEventListener("input", function(){
+    c.value = c.value.replace(/\D/g, "");
+    if (c.value && i < 3) { cases[i + 1].focus(); }
+    verifier();
+  });
+  c.addEventListener("keydown", function(e){
+    if (e.key === "Backspace" && !c.value && i > 0) { cases[i - 1].focus(); }
+  });
+});
+
+$("#btn-ouvrir").addEventListener("click", function(){
+  if (D.code) {
+    $("#code").classList.add("on");
+    $("#btn-ouvrir").hidden = true;
+    $("#s-touche").textContent = "Entre le code qu'on t'a donné.";
+    cases[0].focus();
+  } else {
+    ouvrir();
+  }
+});
+/* Le cachet lui-meme s'ouvre : c'est l'objet, pas le bouton, qu'on a envie
+   de toucher. Le bouton reste, pour le clavier et pour ceux qui hesitent. */
+$("#env").addEventListener("click", function(){ $("#btn-ouvrir").click(); });
+
+/* L'apercu du constructeur ouvre la lettre tout de suite : l'acheteur doit
+   voir SES mots pendant qu'il les tape. Le drapeau n'existe que la ; une
+   lettre reellement envoyee ne le porte jamais, et garde donc son seuil. */
+if (D.apercu) {
+  /* Dans l'apercu, le titre ne porte pas son cercle de focus : il est juste
+     dans une vraie lettre (au clavier, on doit savoir ou on est arrive) mais
+     ici c'est un rectangle dore en plein milieu de l'ecran de vente. */
+  document.documentElement.classList.add("est-apercu");
+  ouvrir();
+}
+</script>
+</body>
+</html>

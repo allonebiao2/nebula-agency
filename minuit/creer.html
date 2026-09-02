@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>MINUIT · écris ta lettre</title>
+<!--
+  MINUIT · le constructeur.
+
+  Les six ecrans du manuel : il arrive, il choisit l'occasion, il remplit ET IL
+  VOIT, il paie, il colle la reference, il attend sans etre dans le vide.
+
+  ⛔ LE TROU DE L'ECRAN 4, et la raison d'etre de la moitie de ce fichier.
+  Pour payer, l'acheteur QUITTE la page : il bascule sur son application Mobile
+  Money ou compose un code USSD. S'il revient et que le navigateur a vide
+  l'onglet, il a perdu son mot, ses photos, son quart d'heure. Il ne
+  recommencera pas, et on ne saura meme pas que la vente a existe.
+  D'ou : on sauvegarde a CHAQUE frappe, et on restaure au retour.
+
+  ⚠️ L'apercu n'est pas une approximation : c'est le VRAI gabarit, charge et
+  rempli. Ce que l'acheteur voit est exactement ce que recevra la destinataire.
+-->
+<style>
+:root{
+  --nuit:#141019;--nuit-2:#1d1826;--papier:#f4ede0;--papier-2:#ebe0cd;
+  --encre:#241d2b;--cire:#8c2f39;--cire-clair:#b2434e;--or:#c9a227;
+  --gris:#6d6478;--gris-clair:#a79eb4;--ligne:rgba(244,237,224,.14);
+  --t:cubic-bezier(.25,1,.5,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--nuit);color:var(--papier);min-height:100vh;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+.serif{font-family:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",Times,serif}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--or);outline-offset:3px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ── La barre ── */
+header{
+  position:sticky;top:0;z-index:30;background:rgba(20,16,25,.97);
+  border-bottom:1px solid var(--ligne);padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+}
+.marque{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.14em;font-size:15px}
+.sceau{width:22px;height:22px;border-radius:50%;flex:none;
+  background:radial-gradient(circle at 36% 32%,var(--cire-clair),var(--cire) 70%)}
+.etapes{display:flex;gap:6px}
+.etapes i{width:26px;height:4px;border-radius:2px;background:var(--ligne);transition:background .3s}
+.etapes i.on{background:var(--or)}
+
+/* ── La mise en page ── */
+.plan{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,460px);
+  gap:0;align-items:start}
+@media(max-width:900px){.plan{grid-template-columns:1fr}}
+.col{padding:clamp(20px,4vw,38px)}
+.apercu-col{position:sticky;top:59px;border-left:1px solid var(--ligne);
+  background:var(--nuit-2);min-height:calc(100vh - 59px)}
+@media(max-width:900px){.apercu-col{position:static;border-left:0;border-top:1px solid var(--ligne);min-height:0}}
+
+h1{font-size:clamp(24px,5vw,32px);line-height:1.15;font-weight:600;margin-bottom:6px}
+.sous{color:var(--gris-clair);font-size:14.5px;margin-bottom:24px}
+.groupe{margin-bottom:20px}
+label{display:block;font-size:13px;font-weight:700;margin-bottom:7px;letter-spacing:.02em}
+.indice{font-size:12.5px;color:var(--gris);font-weight:400;margin-top:5px}
+input[type=text],input[type=tel],input[type=date],input[type=time],textarea,select{
+  width:100%;background:rgba(244,237,224,.05);color:var(--papier);
+  border:1.5px solid var(--ligne);border-radius:11px;padding:12px 14px;
+  font-size:15px;font-family:inherit;min-height:48px;transition:border-color .15s;
+}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--or);background:rgba(244,237,224,.09)}
+textarea{resize:vertical;min-height:132px;line-height:1.7}
+.deux{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:420px){.deux{grid-template-columns:1fr}}
+
+/* ── Les occasions ── */
+.occasions{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:11px}
+.occ{border:1.5px solid var(--ligne);border-radius:14px;padding:15px 14px;text-align:left;
+  transition:.18s var(--t);min-height:78px;display:flex;flex-direction:column;gap:3px}
+.occ:hover{border-color:rgba(201,162,39,.5);transform:translateY(-2px)}
+.occ.on{border-color:var(--or);background:rgba(201,162,39,.10)}
+.occ b{font-size:15px}
+.occ span{font-size:12.5px;color:var(--gris-clair)}
+.occ em{font-style:normal;font-size:12.5px;color:var(--or);font-weight:700}
+
+/* ── Les paliers ── */
+.paliers{display:grid;gap:10px}
+.pal{display:flex;align-items:flex-start;gap:12px;border:1.5px solid var(--ligne);
+  border-radius:14px;padding:14px;cursor:pointer;transition:.18s var(--t);text-align:left;width:100%}
+.pal.on{border-color:var(--or);background:rgba(201,162,39,.10)}
+.pal .pt{flex:1}
+.pal b{display:block;font-size:15px}
+.pal span{font-size:12.5px;color:var(--gris-clair)}
+.pal .px{font-weight:800;font-size:16px;color:var(--or);white-space:nowrap}
+
+/* ── Les photos ── */
+.photos{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.vign{position:relative;width:76px;height:76px;border-radius:10px;overflow:hidden;
+  border:1.5px solid var(--ligne)}
+.vign img{width:100%;height:100%;object-fit:cover;display:block}
+.vign button{position:absolute;top:3px;right:3px;width:24px;height:24px;border-radius:50%;
+  background:rgba(20,16,25,.86);font-size:14px;line-height:1;display:grid;place-items:center}
+.ajout{width:76px;height:76px;border-radius:10px;border:1.5px dashed var(--ligne);
+  display:grid;place-items:center;font-size:26px;color:var(--gris-clair)}
+
+/* ── L'apercu ── */
+.apercu-t{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--gris);
+  margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.telephone{width:100%;max-width:340px;margin:0 auto;aspect-ratio:9/17.5;
+  border-radius:26px;overflow:hidden;border:1px solid var(--ligne);
+  box-shadow:0 30px 70px rgba(0,0,0,.5);background:var(--nuit)}
+.telephone iframe{width:100%;height:100%;border:0;display:block}
+.rejouer{font-size:13px;color:var(--or);font-weight:700;padding:8px 4px;min-height:44px}
+
+/* ── Les boutons ── */
+.actions{display:flex;gap:11px;margin-top:26px;flex-wrap:wrap}
+.pri{background:var(--papier);color:var(--encre);border-radius:999px;padding:14px 28px;
+  font-weight:800;font-size:15px;min-height:48px;transition:transform .18s var(--t)}
+.pri:hover{transform:translateY(-2px)}
+.pri[disabled]{opacity:.4;pointer-events:none}
+.sec{border:1.5px solid var(--ligne);border-radius:999px;padding:14px 24px;
+  font-weight:700;font-size:15px;min-height:48px}
+
+/* ── Le paiement ── */
+.somme{background:rgba(201,162,39,.12);border:1.5px solid rgba(201,162,39,.4);
+  border-radius:16px;padding:20px;text-align:center;margin-bottom:18px}
+.somme .n{font-size:clamp(30px,8vw,40px);font-weight:800;color:var(--or);line-height:1.1}
+.somme .l{font-size:13px;color:var(--gris-clair);margin-top:4px}
+.numero{background:rgba(244,237,224,.05);border:1.5px solid var(--ligne);border-radius:14px;
+  padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.numero b{font-size:19px;letter-spacing:.04em;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.numero span{font-size:12.5px;color:var(--gris-clair);display:block}
+.copier{border:1.5px solid var(--ligne);border-radius:999px;padding:9px 16px;font-size:13px;
+  font-weight:700;min-height:44px;white-space:nowrap}
+/* Pas de barre d'accent a gauche : on prend le langage du produit, un
+   point de cire, et une bordure complete qui ne crie pas. */
+.avert{background:rgba(140,47,57,.13);border:1px solid rgba(178,67,78,.34);
+  border-radius:12px;padding:13px 15px 13px 40px;font-size:13.5px;
+  margin-bottom:18px;position:relative}
+.avert::before{content:"";position:absolute;left:15px;top:16px;width:12px;height:12px;
+  border-radius:50%;background:radial-gradient(circle at 36% 32%,var(--cire-clair),var(--cire) 70%)}
+
+/* ── L'attente ── */
+.fini{text-align:center;padding:clamp(30px,8vw,60px) 0}
+.fini .rond{width:74px;height:74px;border-radius:50%;margin:0 auto 20px;
+  background:radial-gradient(circle at 36% 32%,var(--cire-clair),var(--cire) 70%);
+  display:grid;place-items:center;font-size:32px}
+.lien{display:block;background:rgba(244,237,224,.05);border:1.5px solid var(--ligne);
+  border-radius:12px;padding:13px;font-size:13px;word-break:break-all;margin:16px 0;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--or)}
+
+.ecran{display:none}
+.ecran.on{display:block}
+.repris{background:rgba(201,162,39,.13);border:1px solid rgba(201,162,39,.4);
+  border-radius:12px;padding:12px 14px;font-size:13.5px;margin-bottom:18px;
+  display:flex;gap:10px;align-items:center;justify-content:space-between}
+.repris button{font-size:13px;font-weight:700;color:var(--or);text-decoration:underline;min-height:44px;padding:0 6px}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s!important;transition-duration:.001s!important}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="marque"><span class="sceau" aria-hidden="true"></span>MINUIT</div>
+  <div class="etapes" role="progressbar" aria-label="Avancement" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" id="jauge">
+    <i class="on"></i><i></i><i></i><i></i>
+  </div>
+</header>
+
+<div class="plan">
+  <div class="col">
+
+    <!-- ÉCRAN 2 · l'occasion -->
+    <section class="ecran on" id="e-occasion">
+      <h1 class="serif">Pour quelle occasion ?</h1>
+      <p class="sous">L'occasion décide du ton de la lettre, et du prix.</p>
+      <div class="occasions" id="liste-occasions"></div>
+    </section>
+
+    <!-- ÉCRAN 3 · il remplit ET il voit -->
+    <section class="ecran" id="e-lettre">
+      <h1 class="serif">Écris-la.</h1>
+      <p class="sous">Tout ce que tu tapes apparaît à droite, comme elle le verra.</p>
+
+      <div class="repris" id="repris" hidden>
+        <span>On a retrouvé ta lettre en cours.</span>
+        <button type="button" id="btn-oublier">Recommencer à zéro</button>
+      </div>
+
+      <div class="deux">
+        <div class="groupe">
+          <label for="f-pour">Elle s'appelle</label>
+          <input type="text" id="f-pour" maxlength="30" placeholder="Zara" autocomplete="off">
+        </div>
+        <div class="groupe">
+          <label for="f-de">Et toi</label>
+          <input type="text" id="f-de" maxlength="30" placeholder="Robert" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="groupe">
+        <label for="f-titre">Le grand titre</label>
+        <input type="text" id="f-titre" maxlength="60" placeholder="Joyeux anniversaire">
+      </div>
+
+      <div class="groupe">
+        <label for="f-lettre">Ton mot</label>
+        <textarea id="f-lettre" maxlength="1200"
+          placeholder="Écris comme tu parles.&#10;&#10;Une ligne vide sépare deux paragraphes."></textarea>
+        <p class="indice"><span id="c-lettre">0</span> / 1200 caractères</p>
+      </div>
+
+      <div class="groupe">
+        <label>Vos photos <span style="font-weight:400;color:var(--gris)">(3 au maximum)</span></label>
+        <div class="photos" id="bac-photos">
+          <label class="ajout" for="f-photo" title="Ajouter une photo">+
+            <span class="sr">Ajouter une photo</span></label>
+          <input type="file" id="f-photo" accept="image/*" multiple class="sr">
+        </div>
+        <p class="indice">Elles sont réduites et rangées dans la lettre elle-même. Rien n'est envoyé tant que tu n'as pas commandé.</p>
+      </div>
+
+      <div class="deux">
+        <div class="groupe">
+          <label for="f-depuis">Ensemble depuis <span style="font-weight:400;color:var(--gris)">(facultatif)</span></label>
+          <input type="date" id="f-depuis">
+          <p class="indice">Affiche le nombre de jours.</p>
+        </div>
+        <div class="groupe">
+          <label for="f-code">Code secret <span style="font-weight:400;color:var(--gris)">(facultatif)</span></label>
+          <input type="text" id="f-code" inputmode="numeric" maxlength="4" placeholder="4 chiffres">
+          <p class="indice">Elle ne l'ouvre qu'avec ce code.</p>
+        </div>
+      </div>
+
+      <div class="groupe">
+        <label for="f-quand">Elle la reçoit</label>
+        <div class="deux">
+          <input type="date" id="f-quand">
+          <input type="time" id="f-quand-h" value="00:00">
+        </div>
+        <p class="indice">À minuit pile, c'est ce qui fait le produit. Laisse vide pour une remise tout de suite.</p>
+      </div>
+
+      <div class="actions">
+        <button class="sec" data-vers="e-occasion">Retour</button>
+        <button class="pri" id="vers-palier">Choisir mon offre</button>
+      </div>
+    </section>
+
+    <!-- ÉCRAN 3 bis · le palier -->
+    <section class="ecran" id="e-palier">
+      <h1 class="serif">Choisis ton offre.</h1>
+      <p class="sous">La lettre est déjà écrite. Elle ne change pas selon le prix.</p>
+      <div class="paliers" id="liste-paliers"></div>
+      <div class="actions">
+        <button class="sec" data-vers="e-lettre">Retour</button>
+        <button class="pri" id="vers-paiement">Continuer</button>
+      </div>
+    </section>
+
+    <!-- ÉCRAN 4 et 5 · il paie, il colle la référence -->
+    <section class="ecran" id="e-paiement">
+      <h1 class="serif">Le règlement.</h1>
+      <p class="sous">Mobile Money. Tu quittes cette page, puis tu reviens : <b>ta lettre t'attend, elle est gardée.</b></p>
+
+      <div class="somme">
+        <div class="n" id="p-somme">2 000 F</div>
+        <div class="l">Envoie exactement cette somme, au franc près.</div>
+      </div>
+
+      <div class="numero">
+        <div><b id="p-numero">01 96 74 07 32</b><span id="p-nom">NEBULA Agency</span></div>
+        <button class="copier" id="btn-copier">Copier</button>
+      </div>
+
+      <div class="avert">
+        Une somme différente crée un litige qu'il faut arbitrer à la main, et ta lettre attend pendant ce temps.
+      </div>
+
+      <div class="groupe">
+        <label for="f-ref">La référence de ton SMS</label>
+        <input type="text" id="f-ref" placeholder="MP260827.1432.A81234" autocomplete="off">
+        <p class="indice">Ton opérateur te l'envoie par SMS juste après le transfert. Copie-la en entier.</p>
+      </div>
+
+      <div class="deux">
+        <div class="groupe">
+          <label for="f-wa">Ton WhatsApp</label>
+          <input type="tel" id="f-wa" placeholder="01 97 08 55 76" autocomplete="tel">
+          <p class="indice">C'est là qu'on t'envoie le lien.</p>
+        </div>
+        <div class="groupe">
+          <label for="f-reseau">Le réseau</label>
+          <select id="f-reseau">
+            <option value="MTN">MTN MoMo</option>
+            <option value="Moov">Moov Money</option>
+            <option value="Celtiis">Celtiis Cash</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="sec" data-vers="e-palier">Retour</button>
+        <button class="pri" id="btn-commander">J'ai payé, envoyer</button>
+      </div>
+    </section>
+
+    <!-- ÉCRAN 6 · il attend, mais pas dans le vide -->
+    <section class="ecran" id="e-fini">
+      <div class="fini">
+        <div class="rond" aria-hidden="true">✓</div>
+        <h1 class="serif">Commande reçue.</h1>
+        <p class="sous">On vérifie ton règlement, puis tu reçois ton lien sur WhatsApp. En attendant, voici ton aperçu : tu peux déjà le regarder.</p>
+        <a class="lien" id="lien-apercu" href="#" download="ma-lettre.html">Télécharger mon aperçu</a>
+        <p class="indice" id="fini-quand"></p>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- L'aperçu : le VRAI gabarit, pas une imitation -->
+  <aside class="col apercu-col">
+    <div class="apercu-t">
+      <span>Ce qu'elle verra</span>
+      <button class="rejouer" id="btn-rejouer">Rejouer l'ouverture</button>
+    </div>
+    <div class="telephone">
+      <iframe id="apercu" title="Aperçu de la lettre"
+              sandbox="allow-scripts"></iframe>
+    </div>
+  </aside>
+</div>
+
+<script>
+"use strict";
+
+/* ══════════════════════════════════════════════════════════════════════
+   Le catalogue. Les prix viennent du manuel Minuit et de nulle part
+   ailleurs : on ne recopie jamais un prix a la main dans deux fichiers.
+   ══════════════════════════════════════════════════════════════════════ */
+var OCCASIONS = [
+  {id:"mois",     nom:"Mois de rencontre", note:"« Happy 1 month »", titre:"Un mois avec toi", prix:2000},
+  {id:"anniv",    nom:"Anniversaire",      note:"Le plus demandé",   titre:"Joyeux anniversaire", prix:2000},
+  {id:"rdv",      nom:"Une invitation",    note:"Un rendez-vous",    titre:"Ça te dit ?", prix:5000},
+  {id:"pardon",   nom:"Excuse",            note:"Réconciliation",    titre:"Je m'excuse", prix:2000},
+  {id:"maman",    nom:"Fête des mères",    note:"Toute la fratrie",  titre:"Merci maman", prix:5000},
+  {id:"demande",  nom:"Demande en mariage",note:"Sobriété maximale", titre:"Veux-tu m'épouser ?", prix:10000}
+];
+var PALIERS = [
+  {id:"gratuit", nom:"Gratuit",     desc:"7 jours en ligne, une photo, le pied MINUIT reste", prix:0,     pied:true},
+  {id:"mot",     nom:"Le Mot",      desc:"Un an en ligne, sans le pied MINUIT",               prix:2000,  pied:false},
+  {id:"lettre",  nom:"La Lettre",   desc:"Un an, trois photos, ton code secret",              prix:5000,  pied:false},
+  {id:"coffret", nom:"Le Coffret",  desc:"Tout, plus la livraison WhatsApp à l'heure choisie",prix:10000, pied:false}
+];
+var MOMO = { nom:"NEBULA Agency", numero:"01 96 74 07 32", reseau:"MTN" };
+var CLE = "minuit:brouillon";
+
+var $ = function(s){ return document.querySelector(s); };
+var $$ = function(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); };
+var fmt = function(n){ return n === 0 ? "Offert" : String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " F"; };
+
+/* L'etat. C'est LUI qu'on sauvegarde, jamais le DOM. */
+var E = {
+  occasion:"anniv", palier:"lettre",
+  pour:"", de:"", titre:"", lettre:"", photos:[],
+  depuis:"", code:"", quand:"", quandH:"00:00",
+  ref:"", wa:"", reseau:"MTN"
+};
+
+/* ══════════════════════════════════════════════════════════════════════
+   ⛔ LA SAUVEGARDE. Le trou de l'ecran 4.
+   L'acheteur QUITTE la page pour payer. S'il revient sur un formulaire
+   vide, il a perdu son quart d'heure et il ne recommencera pas.
+   On ecrit a chaque frappe. Le navigateur peut refuser (mode prive,
+   quota plein) : ca ne doit JAMAIS casser la page.
+   ══════════════════════════════════════════════════════════════════════ */
+function garder(){
+  try { localStorage.setItem(CLE, JSON.stringify(E)); }
+  catch (e) { /* mode prive ou quota : on continue sans filet, mais on continue */ }
+}
+function reprendre(){
+  var brut = null;
+  try { brut = localStorage.getItem(CLE); } catch (e) { return false; }
+  if (!brut) { return false; }
+  try {
+    var v = JSON.parse(brut);
+    Object.keys(E).forEach(function(k){ if (k in v) { E[k] = v[k]; } });
+    return !!(E.lettre || E.pour || E.photos.length);
+  } catch (e) { return false; }
+}
+function oublier(){
+  try { localStorage.removeItem(CLE); } catch (e) {}
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   L'apercu : on charge le VRAI gabarit et on y pose les donnees.
+   Meme regle d'injection que le serveur : la balise fermante de script,
+   ecrite par un acheteur dans son mot, fermerait le bloc et tuerait la page.
+   Voir _injecter.py.
+
+   ⚠️ On ne l'ecrit PAS en clair ici : ce commentaire-ci avait d'abord ete
+   redige avec la balise litterale, et il fermait donc lui-meme le bloc. Le
+   commentaire qui explique le piege peut contenir le piege.
+   ══════════════════════════════════════════════════════════════════════ */
+var GABARIT = null;
+var rejouerSeuil = false;
+
+function serialiser(o){
+  return JSON.stringify(o)
+    .replace(/<\//g, "<\\/")
+    .replace(/<!--/g, "<\\!--")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
+}
+
+function donnees(){
+  var occ = OCCASIONS.filter(function(o){ return o.id === E.occasion; })[0] || OCCASIONS[1];
+  var pal = PALIERS.filter(function(p){ return p.id === E.palier; })[0] || PALIERS[2];
+  var lignes = (E.lettre || "").split(/\n{2,}/)
+    .map(function(s){ return s.replace(/\n/g, " ").trim(); })
+    .filter(Boolean);
+  var maxPhotos = pal.id === "gratuit" ? 1 : 3;
+  return {
+    occasion: occ.nom,
+    pour: E.pour || "toi",
+    de: E.de || "",
+    titre: E.titre || occ.titre,
+    code: pal.id === "gratuit" ? "" : (E.code || ""),
+    lettre: lignes.length ? lignes : ["Ta lettre s'écrit ici, au fur et à mesure."],
+    photos: E.photos.slice(0, maxPhotos).map(function(p){
+      return { src: p.src, legende: p.legende || "" };
+    }),
+    depuis: E.depuis || "",
+    pied: pal.pied,
+    lien: "https://nebula-agency.online/minuit",
+    /* Ouvert d'office pendant l'ecriture, ferme quand on demande a revoir
+       le seuil. Ce drapeau ne part JAMAIS dans la lettre commandee : voir
+       htmlCommande(). */
+    apercu: !rejouerSeuil
+  };
+}
+
+function batir(d){
+  if (!GABARIT) { return "<p style='color:#f4ede0;font-family:sans-serif;padding:24px'>Aperçu en cours de chargement…</p>"; }
+  var a = GABARIT.indexOf("/*MINUIT_DONNEES*/");
+  var b = GABARIT.indexOf("/*FIN_MINUIT_DONNEES*/") + "/*FIN_MINUIT_DONNEES*/".length;
+  return GABARIT.slice(0, a) + serialiser(d) + GABARIT.slice(b);
+}
+
+/* Ce qu'on montre a l'acheteur : ouvert, pour qu'il voie ses mots. */
+function htmlLettre(){ return batir(donnees()); }
+
+/* ⛔ Ce qu'on LIVRE : jamais le drapeau d'apercu, sinon la destinataire
+   recevrait une lettre deja ouverte, sans son cachet a briser. Le seuil EST
+   le produit. */
+function htmlCommande(){
+  var d = donnees();
+  delete d.apercu;
+  return batir(d);
+}
+
+var minuteur = null;
+function peindre(){
+  /* On ne reconstruit pas l'iframe a chaque touche : ca rejouerait
+     l'ouverture en boucle et rendrait la frappe hachee. */
+  clearTimeout(minuteur);
+  minuteur = setTimeout(function(){
+    $("#apercu").srcdoc = htmlLettre();
+  }, 260);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Les ecrans
+   ══════════════════════════════════════════════════════════════════════ */
+var ORDRE = ["e-occasion", "e-lettre", "e-palier", "e-paiement", "e-fini"];
+function aller(id){
+  $$(".ecran").forEach(function(s){ s.classList.toggle("on", s.id === id); });
+  var i = ORDRE.indexOf(id);
+  $$("#jauge i").forEach(function(b, k){ b.classList.toggle("on", k <= Math.min(i, 3)); });
+  $("#jauge").setAttribute("aria-valuenow", String(Math.min(i + 1, 4)));
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* ── Les occasions ── */
+OCCASIONS.forEach(function(o){
+  var b = document.createElement("button");
+  b.type = "button";
+  b.className = "occ" + (o.id === E.occasion ? " on" : "");
+  b.dataset.id = o.id;
+  var n = document.createElement("b"); n.textContent = o.nom;
+  var s = document.createElement("span"); s.textContent = o.note;
+  var e = document.createElement("em"); e.textContent = "dès " + fmt(o.prix);
+  b.appendChild(n); b.appendChild(s); b.appendChild(e);
+  b.addEventListener("click", function(){
+    E.occasion = o.id;
+    if (!E.titre) { $("#f-titre").value = o.titre; E.titre = o.titre; }
+    $$(".occ").forEach(function(x){ x.classList.toggle("on", x.dataset.id === o.id); });
+    garder(); peindre(); aller("e-lettre");
+  });
+  $("#liste-occasions").appendChild(b);
+});
+
+/* ── Les paliers ── */
+PALIERS.forEach(function(p){
+  var b = document.createElement("button");
+  b.type = "button";
+  b.className = "pal" + (p.id === E.palier ? " on" : "");
+  b.dataset.id = p.id;
+  var t = document.createElement("div"); t.className = "pt";
+  var n = document.createElement("b"); n.textContent = p.nom;
+  var d = document.createElement("span"); d.textContent = p.desc;
+  t.appendChild(n); t.appendChild(d);
+  var x = document.createElement("div"); x.className = "px"; x.textContent = fmt(p.prix);
+  b.appendChild(t); b.appendChild(x);
+  b.addEventListener("click", function(){
+    E.palier = p.id;
+    $$(".pal").forEach(function(y){ y.classList.toggle("on", y.dataset.id === p.id); });
+    $("#p-somme").textContent = fmt(p.prix);
+    garder(); peindre();
+  });
+  $("#liste-paliers").appendChild(b);
+});
+
+/* ── Les champs. Un seul chemin : champ -> etat -> sauvegarde -> apercu. ── */
+var CHAMPS = { "f-pour":"pour", "f-de":"de", "f-titre":"titre", "f-lettre":"lettre",
+               "f-depuis":"depuis", "f-code":"code", "f-quand":"quand",
+               "f-quand-h":"quandH", "f-ref":"ref", "f-wa":"wa", "f-reseau":"reseau" };
+Object.keys(CHAMPS).forEach(function(id){
+  var el = document.getElementById(id);
+  if (!el) { return; }
+  el.addEventListener("input", function(){
+    if (id === "f-code") { el.value = el.value.replace(/\D/g, ""); }
+    E[CHAMPS[id]] = el.value;
+    if (id === "f-lettre") { $("#c-lettre").textContent = String(el.value.length); }
+    garder();
+    peindre();
+  });
+});
+
+/* ── Les photos. Reduites AVANT d'entrer dans l'etat : une photo de
+     téléphone fait 4 Mo, et tout ceci part dans un seul HTML. ── */
+function reduire(fichier, cb){
+  var fr = new FileReader();
+  fr.onload = function(){
+    var im = new Image();
+    im.onload = function(){
+      var max = 900;
+      var k = Math.min(1, max / Math.max(im.width, im.height));
+      var c = document.createElement("canvas");
+      c.width = Math.round(im.width * k);
+      c.height = Math.round(im.height * k);
+      c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+      cb(c.toDataURL("image/jpeg", 0.82));
+    };
+    im.onerror = function(){ cb(null); };
+    im.src = fr.result;
+  };
+  fr.onerror = function(){ cb(null); };
+  fr.readAsDataURL(fichier);
+}
+
+function dessinerPhotos(){
+  var bac = $("#bac-photos");
+  $$(".vign").forEach(function(v){ v.remove(); });
+  E.photos.forEach(function(p, i){
+    var d = document.createElement("div");
+    d.className = "vign";
+    var im = document.createElement("img");
+    im.src = p.src; im.alt = "Photo " + (i + 1);
+    var b = document.createElement("button");
+    b.type = "button"; b.textContent = "×";
+    b.setAttribute("aria-label", "Retirer la photo " + (i + 1));
+    b.addEventListener("click", function(){
+      E.photos.splice(i, 1); dessinerPhotos(); garder(); peindre();
+    });
+    d.appendChild(im); d.appendChild(b);
+    bac.insertBefore(d, bac.firstChild);
+  });
+  $(".ajout").hidden = E.photos.length >= 3;
+}
+
+$("#f-photo").addEventListener("change", function(ev){
+  var fs = Array.prototype.slice.call(ev.target.files).slice(0, 3 - E.photos.length);
+  fs.forEach(function(f){
+    reduire(f, function(src){
+      if (!src) { return; }
+      E.photos.push({ src: src, legende: "" });
+      dessinerPhotos(); garder(); peindre();
+    });
+  });
+  ev.target.value = "";
+});
+
+/* ── La navigation ── */
+$$("[data-vers]").forEach(function(b){
+  b.addEventListener("click", function(){ aller(b.dataset.vers); });
+});
+$("#vers-palier").addEventListener("click", function(){ aller("e-palier"); });
+$("#vers-paiement").addEventListener("click", function(){
+  var p = PALIERS.filter(function(x){ return x.id === E.palier; })[0];
+  $("#p-somme").textContent = fmt(p.prix);
+  aller(p.prix === 0 ? "e-paiement" : "e-paiement");
+});
+$("#btn-rejouer").addEventListener("click", function(){
+  /* On rejoue le seuil : enveloppe fermee, cachet a briser. */
+  rejouerSeuil = true;
+  $("#apercu").srcdoc = htmlLettre();
+  rejouerSeuil = false;
+});
+$("#btn-oublier").addEventListener("click", function(){
+  oublier();
+  location.reload();
+});
+
+$("#btn-copier").addEventListener("click", function(){
+  var n = MOMO.numero.replace(/\s/g, "");
+  var fini = function(){
+    $("#btn-copier").textContent = "Copié";
+    setTimeout(function(){ $("#btn-copier").textContent = "Copier"; }, 1800);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(n).then(fini, fini);
+  } else { fini(); }
+});
+
+/* ── La commande. Le formulaire refuse de partir sans la reference : sans
+     elle, il faut arbitrer a la main, et la lettre attend. ── */
+$("#btn-commander").addEventListener("click", function(){
+  var p = PALIERS.filter(function(x){ return x.id === E.palier; })[0];
+  if (p.prix > 0 && !E.ref.trim()) {
+    $("#f-ref").focus();
+    $("#f-ref").style.borderColor = "var(--cire-clair)";
+    return;
+  }
+  if (!E.wa.trim()) {
+    $("#f-wa").focus();
+    $("#f-wa").style.borderColor = "var(--cire-clair)";
+    return;
+  }
+  var html = htmlCommande();
+  var blob = new Blob([html], { type: "text/html" });
+  $("#lien-apercu").href = URL.createObjectURL(blob);
+  var q = E.quand ? ("Elle la recevra le " + E.quand + " à " + (E.quandH || "00:00") + ".")
+                  : "Elle la recevra dès que ton règlement est vérifié.";
+  $("#fini-quand").textContent = q;
+
+  /* Le serveur de vitrina attend exactement cette forme. On n'invente pas
+     un deuxieme parcours de commande : celui-la est ecrit et teste. */
+  var commande = {
+    pack: E.palier, biz_name: "Lettre " + (E.pour || "sans nom"),
+    client_name: E.de || "", whatsapp: E.wa, email: "",
+    network: E.reseau, ref: E.ref, html: html
+  };
+  window.MINUIT_COMMANDE = commande;   /* lisible par le QC et par le serveur */
+
+  aller("e-fini");
+  /* On n'oublie le brouillon qu'une fois la commande partie ET l'apercu
+     remis : effacer plus tot, c'est reprendre le risque de l'ecran 4. */
+  oublier();
+});
+
+/* ══════════════════════════════════════════════════════════════════════
+   Le demarrage
+   ══════════════════════════════════════════════════════════════════════ */
+$("#p-numero").textContent = MOMO.numero;
+$("#p-nom").textContent = MOMO.nom;
+
+var repris = reprendre();
+Object.keys(CHAMPS).forEach(function(id){
+  var el = document.getElementById(id);
+  if (el && E[CHAMPS[id]]) { el.value = E[CHAMPS[id]]; }
+});
+$("#c-lettre").textContent = String((E.lettre || "").length);
+dessinerPhotos();
+$$(".occ").forEach(function(x){ x.classList.toggle("on", x.dataset.id === E.occasion); });
+$$(".pal").forEach(function(x){ x.classList.toggle("on", x.dataset.id === E.palier); });
+
+if (repris) {
+  $("#repris").hidden = false;
+  aller("e-lettre");
+}
+
+/* Le gabarit est charge une fois, puis rempli a chaque frappe. */
+fetch("lettre.html")
+  .then(function(r){ return r.text(); })
+  .then(function(t){ GABARIT = t; $("#apercu").srcdoc = htmlLettre(); })
+  .catch(function(){
+    $("#apercu").srcdoc =
+      "<p style='color:#f4ede0;font-family:sans-serif;padding:24px;line-height:1.6'>" +
+      "L'aperçu a besoin d'un serveur. Lance <code>python -m http.server</code> " +
+      "dans le dossier minuit/.</p>";
+  });
+</script>
+</body>
+</html>
