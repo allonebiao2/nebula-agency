@@ -74,3 +74,8 @@ node_modules/
 
 # Originaux des images (logo source, rendus IA bruts) — lourds, non déployés
 clients/*/_sources/
+
+# Affiche Grain d'Esthétique : le HTML intermédiaire pése 1,6 Mo (fontes
+# embarquées en base64) et se régénére en une commande. Le dépôt garde les
+# scripts et les livrables, pas l'échafaudage.
+clients/01-grain-esthetique/affiche_institut.html

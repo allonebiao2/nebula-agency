@@ -74,6 +74,76 @@ Couche **additive** (images, couleurs, **numéro/liens WhatsApp inchangés** —
 - ⚠️ Token `cloudflare.env` = **Pages-only** (ne gère pas le DNS) → les changements DNS/zone = **action Mongazi dans le dashboard**.
 - **Ancienne version Netlify** (`grain-esthetique-cotonou.netlify.app`) = OBSOLÈTE → à débrancher une fois le domaine live.
 
+## ✅ NOUVELLE AFFICHE CARRÉE 1:1 POUR L'INSTITUT (2026-09-02)
+
+**`assets/docs/Affiche_Grain_Institut.pdf`** (imprimeur) · **`.png` 4320×4320**
+(net jusqu'à **36 × 36 cm à 300 dpi**) · **`.jpg` 1600 px, 204 Ko** (WhatsApp).
+Outils : `_outils/_build_affiche_institut.py` puis `_outils/_render_affiche_institut.py`.
+⚠️ L'ancienne `Affiche_Grain_Carre.*` est **conservée**, rien n'a été écrasé.
+
+### La phrase, avant le dessin
+Un institut comme celui-ci, c'est **un grain de peau qu'on révèle** : le nom le
+dit déjà. L'objet concret est donc **le grain**, dense sur les bords et effacé
+au centre là où le regard se pose. Et **sa marque est un œil** : il tient le
+haut de l'affiche, et on le retrouve **au centre du QR**.
+
+### ⚡ SON LOGO EST ENFIN VECTORIEL (tâche ouverte depuis le 2026-08-15)
+`_outils/_vectoriser_logo.py` → `assets/images/logo-grain-esthetique.svg` (95 Ko,
+55 contours) + `logo-grain-marque.svg` (l'œil seul). ⚠️ **Ce n'est pas un
+redessin** : on trace les contours de SON fichier, c'est son logo au pixel près,
+seulement rendu extensible. Le seul PNG existant fait **224 × 162** : agrandi
+sur une affiche imprimée il est flou, et un logo flou sur un mur d'institut dit
+le contraire de ce que la maison vend (comparaison regardée côte à côte).
+⚠️ **On agrandit ×8 au Lanczos AVANT de seuiller** : tracer à 224 px donne des
+marches d'escalier que rien ne rattrape ensuite · `RETR_CCOMP` pour garder les
+**trous** (sans lui la pupille et le compteur des lettres se remplissent) ·
+courbes de Bézier par les milieux, sinon le polygone se voit à l'agrandissement.
+
+### Ce que l'ancienne affiche n'avait pas
+**son logo** (le nom était simplement retapé) · **ce que la maison fait** (les 6
+familles de soins) · **les maisons partenaires**, qui disent « haut de gamme »
+sans l'écrire · **les horaires** (une affiche murale sans horaires oblige à
+demander) · et son QR mangeait **un tiers** de l'affiche.
+
+### ⛔ Rien n'est inventé
+Numéro, quartier, ville et horaires sont **lus dans le JSON-LD du site**, jamais
+recopiés : recopier fabrique une deuxième vérité, et le jour où les horaires
+changent c'est la cliente qui trouve porte close. L'accroche **« La beauté est
+un art de vivre »** est **sa phrase**, publiée sur sa page À Propos. Aucun prix,
+aucune note, aucun avis, aucun slogan fabriqué.
+⚠️ **`Lot N 18` n'est PAS sur l'affiche** : il figure dans ce CONTEXT.md mais pas
+sur le site. L'y mettre donnerait deux adresses différentes pour une même maison.
+⚠️ Les icônes reprennent **le vocabulaire du site** section par section (éclat =
+Radiance · feuille = Respiration · goutte = Glisse · vernis · gemme · **nœud
+papillon** pour l'Espace Hommes). Une affiche qui parle une autre langue que le
+site n'est pas la même maison.
+
+### ⚠️ Le rendu REFUSE d'écrire — 11 contrôles
+Fontes réellement chargées (sinon Cormorant retombe en serif générique et **ça ne
+se voit pas sur une petite capture**) · aucun débordement du carré ni du cadre
+doré · **le QR relu dans l'image FINALE rendue**, œil de la marque compris ·
+14 textes obligatoires · apostrophes typographiques · **contrastes mesurés sur
+les pixels rendus** (le fond est un dégradé : lire `background-color` ne dit rien).
+
+⚠️ **Les fontes sont embarquées en base64.** Une affiche qui part chez
+l'imprimeur ne peut pas dépendre du réseau. Le HTML intermédiaire pèse 1,6 Mo,
+il est **gitignoré** et se régénère en une commande.
+
+### ⛔ Trois défauts que le QC vert ne voyait pas, trouvés sur les captures
+1. la grille des 6 soins était **étalée sur 916 px** : les icônes flottaient loin
+   de leur mot, le bloc n'était pas composé → largeur bornée à 600 px ;
+2. le **nœud papillon se lisait « ∞ »** → deux ailes trapézoïdales + un vrai nœud ;
+3. **l'adresse du site touchait la ligne de contact** → on libère 26 px, et
+   `margin-top:auto` du pied en fait l'air qui manquait.
+⚠️ Et deux rouges du 1er jet étaient réels : **ça débordait de 139 px**, et la
+ville était à **4,1:1** (mauve trop clair sur le rose du haut → `#6F5462`, 6,3:1).
+
+### ⏳ Variante à faire quand on aura le lien
+Une 2ᵉ affiche avec **QR vers les avis Google** (`g.page/r/…`) : posée à
+l'accueil, elle vaut plus qu'un QR vers le site pour une cliente qui vient de
+sortir de soin. C'est le produit « QR Code Google Review » de NEBULA (30 000 F).
+**Le lien n'existe que depuis sa fiche Google**, à récupérer auprès d'elle.
+
 ## Prospectus « Fête de l'Igname » (2026-08-15)
 Prospectus **A5 recto-verso** (148 × 210 mm), dans l'univers de l'institut : rose `#C4648A`,
 or `#D4AF72`, encre `#1A0E14`, Cormorant Garamond + Jost, équerres dorées, filet à la gemme.
@@ -106,7 +176,7 @@ Une **version vectorielle** reste à faire si on veut l'imprimer en grand.
 - [ ] Confirmer `https://graindesthetique.com` en ligne + SSL actif (custom domain « active »), puis débrancher/supprimer l'ancien Netlify.
 - [ ] Optionnel : vraies photos supplémentaires, vrais avis Google, mini-vidéo institut.
 - [ ] **Prospectus Igname** : faire confirmer dates + montants par Jocelyne, puis imprimer.
-- [ ] Logo en **vectoriel** (le seul existant fait 224 px de large).
+- [x] ✅ **Logo en vectoriel FAIT le 2026-09-02** : `assets/images/logo-grain-esthetique.svg` (+ `logo-grain-marque.svg`), tracé de son PNG par `_outils/_vectoriser_logo.py`.
 
 ## Liens
 - Vitrine source : `grain-esthetique-LIVE.html`
