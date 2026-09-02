@@ -98,6 +98,30 @@ la teinte bleue (`B - R`) donne un **alpha continu**, donc des traits qui garden
 - ⚠️ **la feuille n'a jamais été cherchée** : le carrelage est presque aussi clair qu'elle.
   Chercher l'encre directement évite tout le problème.
 
+### ⛔ `_partage/` EST VERSIONNÉ, et la photo y a atterri
+
+Mongazi a redéposé la photo dans **`_partage/signature.JPG`**, pensant bien faire.
+⚠️ **`_partage/` n'était pas ignoré par git et 33 de ses fichiers sont déjà suivis** : un
+`git add -A` aurait publié sa signature manuscrite sur un dépôt **public**. Vérifié à temps,
+elle n'avait jamais été commitée.
+
+La règle posée vise **le nom du fichier, pas le dossier** (`signature.jpg`, `.JPG`, `.png`,
+`signature-*`) : une photo envoyée arrive rarement deux fois au même endroit. Contrôlé que la
+règle n'attrape aucun fichier légitime déjà suivi (la note
+`2026-07-25-boussole-signatures-mastodontes.md` reste versionnée).
+
+⚠️ **Leçon générale** : protéger `secrets/` et le dossier des PDF signés ne suffisait pas.
+Le point d'entrée d'un fichier sensible n'est pas là où on le range, c'est **là où on le
+dépose**, et sur ce dépôt c'est `_partage/`.
+
+### La photo redéposée était la même
+
+MD5 différents, **pixels identiques à 100 %** (même 4032 × 3024, écart moyen 0,00). C'était
+la photo de la veille, seulement réencodée. Aucun PDF à refaire.
+⚠️ **Un MD5 différent ne prouve pas une image différente** : c'est l'inverse de la leçon du
+06/08 chez Hillary, où des compteurs d'octets identiques cachaient un cache empoisonné. Ici
+il fallait comparer **les pixels**, pas les octets.
+
 ### Le sens
 
 ⚠️ **On ne devine pas le sens d'une signature, on la regarde.** La boîte faisait

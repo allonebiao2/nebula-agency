@@ -28,6 +28,17 @@ secrets/
 # Le PDF vierge, lui, reste versionné.
 _documents/nebula-agency/vente/pdf/signe/
 
+# La PHOTO de la signature, où qu'elle soit posée. _partage/ est versionné
+# (33 fichiers y sont suivis) : sans cette règle, un « git add -A » publierait
+# la signature de Mongazi sur un dépôt public. La règle vise le nom, pas le
+# dossier, parce que le fichier arrive rarement au même endroit.
+signature.jpg
+signature.JPG
+signature.jpeg
+signature.png
+signature-*.png
+signature-*.jpg
+
 # Captures d'écran locales — ne pas versionner
 _tmp_screenshots/
 
