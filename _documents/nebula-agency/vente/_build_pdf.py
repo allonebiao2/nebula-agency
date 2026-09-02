@@ -66,9 +66,23 @@ def _signature_html():
 
 # Documents destinés aux partenaires (le socle 00 et l'avis 01 restent internes,
 # mais on les génère aussi : ils servent à Mongazi).
-# La date de couverture suit le fichier source : un PDF ne doit jamais
-# annoncer une version plus ancienne que le texte qu'il contient.
 VERSION = ""
+
+# ⚠️ La couverture lisait la DATE DE MODIFICATION du fichier. Un `git clone`
+# remet cette date au jour du clone : le contrat aurait annoncé « Version
+# 2026-09-14 » en couverture et « Version 1.3 · 2026-09-02 » dans son texte,
+# deux dates qui se contredisent sur une piece contractuelle. La version se lit
+# donc DANS le document, qui la porte deja ; le mtime n'est plus qu'un secours.
+_RE_VERSION = re.compile(
+    r"Version\s+(\d+\.\d+\s*·\s*\d{4}-\d{2}-\d{2}|\d{4}-\d{2}-\d{2})")
+
+
+def _version(text, src):
+    m = _RE_VERSION.search(text)
+    if m:
+        return re.sub(r"\s*·\s*", " · ", m.group(1))
+    import datetime
+    return datetime.date.fromtimestamp(os.path.getmtime(src)).isoformat()
 
 # Documents PUBLICS : diffusables librement. La couverture ne doit surtout pas
 # porter la mention « confidentiel » — un candidat qui la lit n'ose plus la partager.
@@ -148,6 +162,11 @@ pre code{background:none;color:inherit;padding:0;font-size:9.3pt}
 
 /* Bloc des signatures. Les deux cadres ont la meme hauteur de creux, pour que
    le PDF signe et le PDF vierge se superposent au millimetre. */
+/* Le bloc tenait a 7mm pres en bas de la page 10 : les deux cadres partaient
+   seuls sur la page suivante, orphelins de leur titre. On ne joue pas au
+   millimetre avec ca, le texte du contrat bougera encore. La page des
+   signatures commence donc toujours a neuf, titre et cadres ensemble. */
+.siglead{page-break-before:always}
 .sigs{display:flex;gap:8mm;margin:7mm 0 2mm;page-break-inside:avoid}
 .sigbox{flex:1 1 0;border:.8pt solid #D7DCEA;border-radius:2.5mm;
   padding:4mm 5mm 3.5mm;background:#FBFCFE}
@@ -168,10 +187,9 @@ def build(md_name, title, signer=False):
     if not os.path.exists(src):
         print("  absent :", md_name)
         return None
-    import datetime
-    VERSION = datetime.date.fromtimestamp(os.path.getmtime(src)).isoformat()
     with open(src, encoding="utf-8") as fh:
         text = fh.read()
+    VERSION = _version(text, src)
 
     # Retirer le bloc d'en-tête interne (titre + citation de cadrage) : la couverture le remplace.
     body_md = re.sub(r"^#\s+.*?(?=\n---\n)", "", text, count=1, flags=re.S).lstrip("\n-")
@@ -184,6 +202,11 @@ def build(md_name, title, signer=False):
 
     # Le marqueur est un commentaire HTML : dans l'exemplaire vierge il ne se
     # voit pas, et le creux garde exactement la meme hauteur.
+    # Le titre SIGNATURES ouvre sa propre page (voir .siglead). Seul le contrat
+    # porte ce titre : le remplacement ne touche aucun autre document.
+    html_body = html_body.replace(
+        "<h2>SIGNATURES</h2>", '<h2 class="siglead">SIGNATURES</h2>')
+
     if signer:
         sig = _signature_html()
         if sig is None:

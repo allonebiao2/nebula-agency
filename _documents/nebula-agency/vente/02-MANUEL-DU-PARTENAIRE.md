@@ -8,7 +8,9 @@
 > Les 3 guides (Catalogue, Vitrine, Outil métier) viennent après, et ils supposent
 > que vous avez lu celui-ci.
 >
-> Version 1.0 · 2026-07-30 · NEBULA Agency, Cotonou
+> Version 1.1 · 2026-09-02 · NEBULA Agency, Cotonou
+> *1.1 : les frais de réactivation sont chiffrés à 5 000 F, et le §5.2 ter dit qu'ils ne
+> rapportent rien au partenaire.*
 > Confidentiel · réservé aux partenaires actifs
 
 ---

@@ -1017,9 +1017,9 @@ def seed_content():
 # assets/docs-partenaires/ et changer sa VERSION ci-dessous.
 # ---------------------------------------------------------------------------
 DOCS_PARTENAIRES = [
-    ("02-MANUEL-DU-PARTENAIRE.pdf", "2026-08-03", "Le manuel du partenaire", "Formation",
+    ("02-MANUEL-DU-PARTENAIRE.pdf", "2026-09-02", "Le manuel du partenaire", "Formation",
      "Ton métier de A à Z : trouver des commerçants, présenter, relancer, être payé. À lire en premier."),
-    ("09-CONTRAT-PARTENAIRE.pdf", "2026-08-03", "Ton contrat de partenaire", "Juridique",
+    ("09-CONTRAT-PARTENAIRE.pdf", "2026-09-02", "Ton contrat de partenaire", "Juridique",
      "À imprimer, signer, scanner et renvoyer. Il dit ce que NEBULA te doit et ce que tu dois à NEBULA."),
     ("03-GUIDE-CATALOGUE.pdf", "2026-08-03", "Vendre le Catalogue (50 000 F)", "Produits",
      "Ton offre d'entrée, celle qui se vend le plus facilement. Commence toujours par elle."),

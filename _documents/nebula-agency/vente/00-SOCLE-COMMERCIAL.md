@@ -6,7 +6,9 @@
 > de vente en découlent tous.
 > Si un chiffre change, **il change ici d'abord**, puis on répercute.
 >
-> **Version 2.0 · 2026-07-30 · Toutes les décisions validées par Mongazi**
+> **Version 2.1 · 2026-09-02 · Toutes les décisions validées par Mongazi**
+> *2.1 : le §8 dit d'abord ce que le partenaire VEND (Catalogue, Vitrine, Outil sur
+> mesure, plus le QR Google), avant de dire ce qu'il ne vend pas.*
 > Confidentiel · usage interne NEBULA et partenaires actifs
 
 ---
