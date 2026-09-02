@@ -158,3 +158,77 @@ deux fois. On ne modifie pas un document contractuel à l'aveugle.
 - IFU et RCCM à porter dès obtention (un avenant d'une ligne) ;
 - la date reste `[date]` sur l'exemplaire signé : elle se remplit quand le partenaire
   contresigne.
+
+---
+
+## Deuxième passe, le soir : le contrat n'arrivait pas jusqu'aux partenaires
+
+⛔ **La bibliothèque du cockpit servait encore le contrat du 3 août.** Le 1.3 était dans le
+dépôt depuis le matin, mais `nebula-affilies/assets/docs-partenaires/09-CONTRAT-PARTENAIRE.pdf`
+n'avait pas bougé : ni l'article 4.4, ni l'APDP, pas même une version en couverture. Un
+partenaire qui téléchargeait « son contrat » depuis son espace signait **l'ancien**.
+
+⚠️ **Écrire le document ne le publie pas.** Trois copies vivent dans ce dépôt et elles ne
+bougent pas ensemble : le Markdown, le PDF de `vente/pdf/`, et **celui de la bibliothèque**,
+qui est le seul que le partenaire voit. La version de `DOCS_PARTENAIRES` a été passée au
+2026-09-02 : sans ce changement, `publier_documents()` ne rejoue rien et la base garde
+l'ancien fichier même si l'octet a changé sur le disque.
+
+## Le socle et le manuel dataient d'avant leur propre texte
+
+Tous deux avaient été modifiés le matin **en gardant leur ligne « Version · 2026-07-30 »**.
+Le socle passe en **2.1**, le manuel en **1.1**.
+
+⚠️ Ce n'est pas cosmétique : le socle est la **source de vérité des prix**, et l'**article 15
+du contrat en fait une pièce contractuelle**. Un document contractuel daté plus vieux que son
+propre contenu se fait écarter comme périmé par celui qui le compare au contrat.
+
+## ⛔ La couverture lisait la date de MODIFICATION du fichier
+
+`VERSION = date.fromtimestamp(getmtime(src))`. Un `git clone` remet cette date au jour du
+clone : le contrat aurait annoncé **la date du clone en couverture** et « Version 1.3 ·
+2026-09-02 » dans son texte. **Deux dates qui se contredisent sur une pièce contractuelle.**
+
+La version se lit maintenant **dans le document**, qui la porte déjà ; le mtime n'est plus
+qu'un secours pour les deux fichiers qui n'ont pas de ligne de version.
+
+⚠️ **C'est le mtime qui masquait le problème du socle** : il affichait la date d'aujourd'hui,
+donc la couverture semblait juste. Corriger la lecture a rendu l'incohérence visible.
+
+## La page des signatures partait seule
+
+Le bloc tenait **à 7 mm près** en bas de la page 10 : les deux cadres passaient à la page
+suivante, **orphelins de leur titre**, sous un tiers de page blanc. On ne joue pas au
+millimètre avec ça, le texte du contrat bougera encore : la page des signatures **commence
+désormais à neuf**, titre et cadres ensemble. Nombre de pages inchangé (12), et vierge et
+signé se superposent toujours à **0,00 pt** (mesuré sur quatre repères de la page).
+
+## `_signature.py` : la méthode était en mémoire, le code avait disparu
+
+Le détourage n'avait **jamais été commité**. Réécrit d'après la note du matin, et vérifié de
+bout en bout sur une fausse photo fabriquée pour l'occasion (encre bleue sur papier clair
+posé sur un carrelage clair, feuille tournée d'un quart de tour) : boîte trouvée
+**463 × 1350**, très proche des 426 × 1192 de la vraie, alpha continu, quart de tour horaire
+correct. **Planche sur damier regardée**, pas seulement des chiffres lus.
+
+⛔ **Mon propre `--voir` écrivait la planche à la racine du dépôt**, où rien ne l'ignorait :
+la signature aurait été poussée sur un dépôt **public** au premier `git add -A`. C'est
+exactement la leçon de ce matin sur `_partage/`, refaite par moi douze heures plus tard.
+La planche sort maintenant dans `pdf/signe/`, déjà ignoré.
+⚠️ **Une leçon écrite ne protège pas le code écrit après elle.** Le garde-fou utile n'est pas
+la note, c'est le contrôle : `git status` a été relu avant le commit, et c'est lui qui a vu.
+
+## ⛔ La photo de la signature est perdue, et c'est structurel
+
+Le conteneur a été réinitialisé (≈15e fois de la session). La photo vivait dans les deux
+seuls endroits qui la protègent : `secrets/` et `_partage/signature.JPG`, **tous deux ignorés
+par git**. Ignoré par git veut dire **absent du clone qui reconstruit la machine**.
+
+⚠️ **Ce qui protège la signature du dépôt public est exactement ce qui la fait disparaître à
+chaque réinitialisation.** Il n'y a pas de réglage à changer : c'est le prix du dépôt public,
+et il est juste. La conséquence pratique est qu'une session dans le nuage ne peut produire
+l'exemplaire signé **que dans la séance où Mongazi envoie la photo**. Sur son PC, `secrets/`
+survit, et l'exemplaire signé se refait quand il veut.
+
+Le PDF **vierge** en 1.3, lui, est versionné : il est livré, à jour, et c'est sur lui que la
+signature se posera sans rien déplacer.
