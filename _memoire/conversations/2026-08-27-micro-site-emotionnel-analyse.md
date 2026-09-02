@@ -384,3 +384,118 @@ porte un prénom et des photos). `prefers-reduced-motion` respecté.
 ### Reste
 Le **back-office** (le formulaire qui écrit le bloc `LETTRE`), demandé pour
 après.
+
+---
+
+## Suite du 2026-08-28 — LE BACK-OFFICE, UNE QUESTION PAR ÉCRAN
+
+**`vitrina/lettre/creer.html`** · QC `python3 _qc_creer.py` = **50 contrôles verts**
+(il remplit vraiment les onze étapes dans un navigateur et vérifie la lettre produite)
+
+Essais en ligne : lettre https://claude.ai/code/artifact/f1db259e-8281-44f1-a74a-1abdc6482ce6
+(code **0410**) · formulaire https://claude.ai/code/artifact/5a4c085d-2418-4420-902c-f9e90146bda2
+
+### Onze étapes
+occasion (5 choix qui pré-remplissent le ton) · pour qui/de qui · la lettre ·
+la signature · mes mots · nos photos · notre musique · la question · le code
+secret · **l'aperçu (la vraie lettre dans un cadre)** · le paiement.
+
+### ⚡ LE TROU DE L'ÉCRAN 4 EST BOUCHÉ
+Tout est sauvegardé dans le navigateur **à chaque frappe** (`minuit:brouillon:v1`),
+et le brouillon n'est oublié **qu'après** l'envoi. Le client qui part payer en
+Mobile Money et revient **repart là où il s'était arrêté**, et on le lui dit
+(« On a retrouvé ta lettre »). Contrôlé en ouvrant un second onglet du même
+contexte.
+
+### ⚠️ UNE SEULE VÉRITÉ POUR LE GABARIT
+`creer.html` ne recopie pas la lettre : il va chercher `gabarit.html` et
+remplace le bloc entre **`MINUIT:DEBUT_CONTENU`** et **`MINUIT:FIN_CONTENU`**.
+Le jour où le gabarit change, toutes les lettres suivantes en profitent.
+
+### ⛔ TROIS DÉFAUTS RÉELS TROUVÉS
+
+1. ⛔ **LE `<link>` GOOGLE FONTS BLOQUAIT L'EXÉCUTION DU SCRIPT.** Mesuré :
+   **12 640 ms** avant que le prénom s'affiche quand le CDN ne répond pas.
+   Pendant ce temps la lettre montrait **« toi » et « M »** (les valeurs écrites
+   en dur dans le gabarit) au lieu du prénom et de l'initiale : le produit
+   ratant son seul moment, sur le premier écran. → `media="print"` puis bascule
+   `this.media='all'` : **73 ms**, CDN totalement coupé. Contrôle dédié qui
+   coupe `fonts.googleapis.com` et exige moins de 2 500 ms.
+2. ⛔ **`maxlength="4"` sur le code coupait AVANT le filtre** : taper ou coller
+   « abc1234 » laissait « abc1 », puis le filtre retirait les lettres et le code
+   devenait **« 1 »**. Le maxlength est retiré, le filtre plafonne déjà.
+3. ⛔ **`</script>` dans le gabarit embarqué** fermait la balise du shim de la
+   version d'essai (« Invalid or unexpected token »). Il faut échapper les
+   `</` en `<\/` pour embarquer du HTML dans du JavaScript.
+
+### ⚠️ QUATRE FAUX ROUGES DE MES PROPRES CONTRÔLES
+- « ÉTAPE 1 SUR 11 » en majuscules (`text-transform`) contre « sur 11 » cherché
+  en minuscules. **Troisième fois** dans cette session : on lit ce qui est
+  RENDU, jamais la casse de la source.
+- « const LETTRE » cherché dans `creer.html` : il l'ÉCRIT, c'est normal. Le
+  contrôle est devenu structurel (`.enveloppe{` et `#seuil{` absents).
+- « TOUCHE LE CACHET » : présent dans le texte d'aide **du formulaire**.
+- Lire l'iframe de l'aperçu **avant que son script ait tourné** renvoie les
+  valeurs d'exemple. → fonction `attendre_iframe()` qui attend le signal.
+  ⚠️ C'est en corrigeant ce faux rouge qu'on a trouvé le défaut n°1 : le
+  produit était vraiment lent, pas seulement mal mesuré.
+
+### Photos
+Réduites **dans le navigateur** (1000 px, JPEG 82 %) avant d'entrer dans la
+page, plafond 3,2 Mo avec avertissement : la lettre part entière dans KV, une
+photo brute de téléphone la rendrait impossible à ouvrir sur une connexion
+béninoise. ⛔ Sans photo, aucune `<img>` n'est émise et le cadre le dit.
+
+### Reste
+Déploiement (Render + Cloudflare KV + les variables), et la **livraison à
+l'heure choisie**.
+
+---
+
+## ⛔ 2026-09-02 — LE MÊME TRAVAIL A ÉTÉ FAIT DEUX FOIS (encore)
+
+Pendant que cette session construisait `vitrina/lettre/`, une autre a poussé
+**`minuit/`** directement dans `main` (commit `cfa8576`), à partir du même
+dossier et du même manuel. Deuxième occurrence après celle du 2026-08-27.
+⚠️ `git fetch` au DÉBUT ne suffit pas quand une session du téléphone pousse
+dans `main` PENDANT le travail.
+
+### Les deux versions, mesurées
+
+| | `minuit/` (dans `main`) | `vitrina/lettre/` (branche) |
+|---|---|---|
+| Lettre | **22 233 o** | 62 060 o |
+| Polices | **aucun téléchargement**, pile système (Iowan Old Style, Palatino) | Petit Formal Script en base64 + EB Garamond au CDN |
+| Appels réseau de la lettre | **zéro** | 1 (feuille de style) |
+| Architecture | chercher `lettre.html` + remplacer le bloc | identique |
+| Sauvegarde formulaire | oui | oui |
+| Écrans du formulaire | 6 (ceux du manuel) | **11** |
+| Contrôles | 78 | 35 + 50 |
+| README | oui | non |
+
+### ✅ VERDICT : on garde `minuit/`
+Sur le point qui décide, **elle est meilleure** : 22 Ko et zéro appel réseau.
+Ma réponse (embarquer la police en base64) était le bon instinct, la leur va
+plus loin et plus juste : **ne télécharger aucune police**, prendre de vraies
+faces de correspondance déjà sur l'appareil. Le défaut du `<link>` bloquant que
+j'ai trouvé et mesuré (**12 640 ms**) **n'existe pas chez elle** : sa conception
+l'évite. Les deux sessions ont convergé sur la même architecture, ce qui est
+bon signe pour le dessin.
+
+### ⛔ MAIS LE BUG DU `maxlength` Y ÉTAIT AUSSI, ET IL EST CORRIGÉ
+`minuit/creer.html` avait `<input id="f-code" maxlength="4">` avec un filtre
+`replace(/\D/g,"")`. Prouvé en navigateur : coller « abc1234 » laissait
+« abc1 », le filtre retirait les lettres, **le code tombait à « 1 »**.
+→ `maxlength` retiré, le filtre plafonne lui-même (`.slice(0,4)`). Vérifié :
+« abc1234 » → « 1234 », et « 12345678 » → « 1234 ».
+
+### À porter de `vitrina/lettre/` vers `minuit/`, puis jeter le doublon
+1. **Les 11 étapes au lieu de 6** : Mongazi a demandé « un à un étape par
+   étape ». Le manuel décrivait 6 écrans côté client, sa demande en veut plus.
+2. **Le contrôle du CDN de polices** (coupe `fonts.googleapis.com`, exige
+   moins de 2 500 ms) : assurance bon marché si quelqu'un rajoute un jour un
+   `<link>` de police.
+3. **`attendre_iframe()`** : lire l'aperçu avant que son script ait tourné rend
+   les valeurs d'exemple et fait accuser le produit à tort.
+
+⏳ **Mongazi tranche** : fusionner puis supprimer `vitrina/lettre/`, ou l'inverse.

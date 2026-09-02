@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Minuit · créer une lettre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- ⚠️ CHARGEE SANS BLOQUER. Une feuille de style externe bloque
+     l'execution du script : tant qu'elle n'est pas arrivee, la lettre
+     affiche « toi » et « M » au lieu du prenom et de l'initiale.
+     Mesure faite : 12 640 ms quand le CDN de polices ne repond pas.
+     Avec media="print" puis bascule, rien n'attend : Georgia s'affiche
+     tout de suite et EB Garamond prend le relais si elle arrive. -->
+<link rel="stylesheet" media="print" onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+
+<!-- =====================================================================
+     MINUIT · le back-office de création
+     NEBULA Agency
+
+     UNE QUESTION PAR ÉCRAN. C'est un formulaire qu'on remplit au pouce,
+     debout, dans un taxi. Onze champs sur un seul écran font abandonner ;
+     onze écrans d'un champ se remplissent.
+
+     ⚠️ TOUT EST SAUVEGARDÉ DANS LE NAVIGATEUR À CHAQUE FRAPPE. C'est le
+     défaut le plus cher du parcours, documenté avant d'être écrit : pour
+     payer, le client QUITTE la page (application Mobile Money ou code
+     USSD). S'il revient et que l'onglet a été vidé, il perd son mot, ses
+     photos, un quart d'heure de travail, et il ne recommence pas. On ne
+     saurait même pas que la vente a existé.
+
+     ⚠️ LA LETTRE N'EST PAS RECOPIÉE ICI. On va chercher gabarit.html et on
+     remplace le bloc entre les marqueurs MINUIT:DEBUT_CONTENU et
+     MINUIT:FIN_CONTENU. Une seule vérité : le jour où le gabarit change,
+     toutes les lettres suivantes en profitent sans toucher ce fichier.
+
+     ⛔ AUCUNE PHOTO INVENTÉE. Les photos viennent du téléphone du client,
+     sont réduites et compressées ici, et deviennent des données dans la
+     page. Sans photo, le cadre reste vide et le dit.
+     ===================================================================== -->
+
+<style>
+:root{
+  --nuit:#2b0d14; --papier:#f7f3ec; --carte:#fffdf9;
+  --encre:#2e2620; --encre-2:#6a5c4e;
+  --cire:#8e2233; --cire-clair:#a8394a; --cire-lav:rgba(142,34,51,.07);
+  --or:#9c7735;
+  --trait:#e0d6c6; --trait-2:#cfc2ad;
+  --bon:#2c6350;
+  --serif:"EB Garamond",Garamond,Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--papier);color:var(--encre);font-family:var(--sans);
+  font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;padding-bottom:96px;
+}
+
+/* ---------- barre du haut : où on en est ---------- */
+.haut{
+  position:sticky;top:0;z-index:30;background:var(--papier);
+  border-bottom:1px solid var(--trait);padding:12px 18px 0;
+}
+.haut .ligne{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.marque{font-family:var(--serif);font-size:19px;font-weight:600;color:var(--cire)}
+.compte{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--encre-2);
+  font-variant-numeric:tabular-nums}
+.jauge{height:3px;background:var(--trait);border-radius:2px;margin:11px 0 0;overflow:hidden}
+.jauge i{display:block;height:100%;background:var(--cire);width:0;transition:width .45s cubic-bezier(.25,1,.5,1)}
+
+/* ---------- une étape ---------- */
+main{max-width:560px;margin:0 auto;padding:26px 18px 0}
+.etape{display:none}
+.etape.la{display:block;animation:entre .38s cubic-bezier(.25,1,.5,1)}
+@keyframes entre{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.rubrique{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--or);margin:0 0 10px}
+h1{font-family:var(--serif);font-size:clamp(1.55rem,5.6vw,2.1rem);line-height:1.18;
+  margin:0 0 8px;font-weight:600}
+.aide{color:var(--encre-2);font-size:14.5px;margin:0 0 22px}
+
+label{display:block;font-size:13px;font-weight:600;margin:0 0 6px;color:var(--encre)}
+.opt{font-weight:400;color:var(--encre-2)}
+input[type=text],input[type=tel],input[type=date],input[type=time],textarea,select{
+  width:100%;font-family:var(--serif);font-size:17px;color:var(--encre);
+  background:var(--carte);border:1.5px solid var(--trait-2);border-radius:8px;
+  padding:13px 14px;margin:0 0 16px;min-height:50px;
+}
+textarea{line-height:1.6;resize:vertical}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--cire)}
+select{font-family:var(--sans);font-size:16px}
+
+/* choix d'occasion */
+.choix{display:grid;gap:10px;margin:0 0 18px}
+.choix button{
+  text-align:left;background:var(--carte);border:1.5px solid var(--trait-2);
+  border-radius:10px;padding:15px 16px;cursor:pointer;min-height:56px;
+  font-family:var(--sans);font-size:16px;color:var(--encre);
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+}
+.choix button:hover{border-color:var(--cire)}
+.choix button[aria-pressed=true]{border-color:var(--cire);background:var(--cire-lav)}
+.choix button b{font-weight:600;display:block}
+.choix button span{font-size:13px;color:var(--encre-2);display:block;margin-top:2px}
+.choix button i{font-style:normal;color:var(--cire);font-size:19px;opacity:0}
+.choix button[aria-pressed=true] i{opacity:1}
+
+/* listes à rallonge : mots, photos, musiques */
+.rangs{display:flex;flex-direction:column;gap:9px;margin:0 0 12px}
+.rang{display:flex;gap:8px;align-items:flex-start}
+.rang input{margin:0}
+.rang .oter{
+  flex:none;width:46px;min-height:50px;border:1.5px solid var(--trait-2);border-radius:8px;
+  background:var(--carte);color:var(--cire);font-size:19px;cursor:pointer;
+}
+.rang .oter:hover{border-color:var(--cire)}
+.ajouter{
+  background:none;border:1.5px dashed var(--trait-2);border-radius:8px;
+  padding:12px;width:100%;min-height:48px;cursor:pointer;
+  font-family:var(--sans);font-size:14px;color:var(--encre-2);
+}
+.ajouter:hover{border-color:var(--cire);color:var(--cire)}
+
+/* photos */
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:11px;margin:0 0 14px}
+.vig{position:relative;background:var(--carte);border:1.5px solid var(--trait-2);border-radius:8px;
+  padding:7px 7px 0;display:flex;flex-direction:column;gap:6px}
+.vig img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:4px;display:block}
+.vig .lg{width:100%;font-size:13px;font-family:var(--serif);border:none;border-top:1px solid var(--trait);
+  background:none;padding:8px 2px;margin:0;min-height:38px;text-align:center}
+.vig .lg:focus{outline:none;border-top-color:var(--cire)}
+.vig .x{position:absolute;top:-8px;right:-8px;width:26px;height:26px;border-radius:50%;
+  background:var(--cire);color:#fff;border:none;font-size:15px;line-height:1;cursor:pointer}
+.poids{font-size:12.5px;color:var(--encre-2);margin:0 0 14px}
+.poids.gros{color:var(--cire);font-weight:600}
+
+/* encarts */
+.note{border-left:2px solid var(--trait-2);padding:2px 0 2px 14px;margin:0 0 18px;
+  font-size:13.5px;color:var(--encre-2)}
+.note b{color:var(--encre)}
+.avert{background:rgba(156,119,53,.09);border:1px solid rgba(156,119,53,.3);
+  border-radius:8px;padding:13px 15px;margin:0 0 18px;font-size:13.5px;color:var(--encre)}
+.paie{background:var(--carte);border:1.5px solid var(--trait-2);border-radius:10px;
+  padding:18px;margin:0 0 18px}
+.paie dl{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;margin:0;font-size:15px}
+.paie dt{color:var(--encre-2)}
+.paie dd{margin:0;font-weight:600;font-family:var(--serif);font-size:17px}
+.paie .gros{font-size:23px;color:var(--cire)}
+
+/* bas de page : les deux boutons */
+.bas{
+  position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--papier);
+  border-top:1px solid var(--trait);padding:12px 18px calc(12px + env(safe-area-inset-bottom));
+  display:flex;gap:10px;justify-content:center;
+}
+.bas .dedans{max-width:560px;width:100%;display:flex;gap:10px}
+.bt{
+  flex:1;min-height:52px;border-radius:999px;border:1.5px solid var(--cire);
+  font-family:var(--sans);font-size:16px;font-weight:600;cursor:pointer;
+}
+.bt.suite{background:var(--cire);color:#fff8f2}
+.bt.suite:hover{background:var(--cire-clair)}
+.bt.suite:disabled{opacity:.45;cursor:not-allowed}
+.bt.retour{background:none;color:var(--cire);flex:0 0 40%}
+.bt:focus-visible{outline:2px solid var(--or);outline-offset:2px}
+
+/* aperçu */
+.apercu{width:100%;height:min(66vh,560px);border:1.5px solid var(--trait-2);border-radius:12px;
+  background:var(--nuit);margin:0 0 14px;display:block}
+.recap{font-size:14px;color:var(--encre-2);margin:0 0 18px}
+.recap b{color:var(--encre)}
+
+.fini{text-align:center;padding:18px 0}
+.fini .rond{width:62px;height:62px;border-radius:50%;background:var(--bon);color:#fff;
+  display:grid;place-items:center;font-size:31px;margin:0 auto 16px}
+.lien{display:block;word-break:break-all;font-family:var(--serif);font-size:16px;
+  background:var(--carte);border:1.5px solid var(--trait-2);border-radius:8px;
+  padding:13px;margin:0 0 14px;color:var(--cire);text-decoration:none}
+
+.err{color:var(--cire);font-size:13.5px;margin:-8px 0 14px;min-height:1.2em}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<div class="haut">
+  <div class="ligne">
+    <span class="marque">Minuit</span>
+    <span class="compte" id="compte">Étape 1 sur 11</span>
+  </div>
+  <div class="jauge"><i id="jauge"></i></div>
+</div>
+
+<main id="main"></main>
+
+<div class="bas">
+  <div class="dedans">
+    <button class="bt retour" id="bRetour" type="button">Retour</button>
+    <button class="bt suite" id="bSuite" type="button">Continuer</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* =====================================================================
+   1 · LES ONZE ÉTAPES
+   Une question par écran, dans l'ordre où on y pense en offrant.
+   ===================================================================== */
+const OCCASIONS = [
+  { id:"mois",   nom:"Notre mois",        aide:"L'anniversaire de rencontre",       accueil:"Bienvenue mon amour, prends ton temps.", question:"Tu m'aimes encore ?" },
+  { id:"anniv",  nom:"Son anniversaire",  aide:"Le jour de sa naissance",           accueil:"Joyeux anniversaire, mon amour.",        question:"Tu me laisses recommencer l'an prochain ?" },
+  { id:"demande",nom:"Une demande",       aide:"Un rendez-vous, ou plus",           accueil:"J'ai une question à te poser.",           question:"Tu dis oui ?" },
+  { id:"pardon", nom:"Des excuses",       aide:"Se rattraper, sobrement",           accueil:"Je voulais te le dire autrement.",        question:"" },
+  { id:"rien",   nom:"Sans occasion",     aide:"Juste parce que",                   accueil:"Pas de raison. Juste toi.",               question:"" },
+];
+
+const ETAPES = [
+  "occasion","qui","mot","signature","mots","photos","musique","question","code","apercu","paiement"
+];
+
+/* =====================================================================
+   2 · L'ÉTAT, SAUVEGARDÉ À CHAQUE FRAPPE
+   ⚠️ Sans cette sauvegarde, un client qui part payer en Mobile Money et
+   revient sur un onglet vidé perd tout. C'est la vente la plus facile à
+   perdre, et on ne saurait jamais qu'elle a existé.
+   ===================================================================== */
+const CLE = "minuit:brouillon:v1";
+const vide = () => ({
+  occasion:"mois", pour:"", de:"", initiale:"",
+  accueil:"", corps:"", signature:"",
+  mots:[""], photos:[], musiques:[{titre:"",artiste:""}],
+  question:"", reponse:"Je le savais.",
+  code:"", indice:"",
+  livraison:"", heure:"",
+  moiNom:"", moiWa:"", reseau:"MTN", ref:"",
+  etape:0
+});
+let E = vide();
+
+function garder(){
+  try { localStorage.setItem(CLE, JSON.stringify(E)); } catch(e){ /* mode privé : on continue */ }
+}
+function reprendre(){
+  try {
+    const b = localStorage.getItem(CLE);
+    if (b) { E = Object.assign(vide(), JSON.parse(b)); return true; }
+  } catch(e){}
+  return false;
+}
+function oublier(){ try { localStorage.removeItem(CLE); } catch(e){} }
+
+/* =====================================================================
+   3 · LES ÉCRANS
+   ===================================================================== */
+const $ = (s) => document.querySelector(s);
+const main = $("#main");
+const esc = (v) => String(v==null?"":v)
+  .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+
+function occ(){ return OCCASIONS.find(o=>o.id===E.occasion) || OCCASIONS[0]; }
+
+const ECRANS = {
+  occasion: () => `
+    <p class="rubrique">L'occasion</p>
+    <h1>C'est pour quoi ?</h1>
+    <p class="aide">Elle décide du ton de la lettre, et de la question à la fin.</p>
+    <div class="choix" id="choixOcc">
+      ${OCCASIONS.map(o=>`
+        <button type="button" data-occ="${o.id}" aria-pressed="${o.id===E.occasion}">
+          <span><b>${esc(o.nom)}</b><span>${esc(o.aide)}</span></span><i>&#10003;</i>
+        </button>`).join("")}
+    </div>`,
+
+  qui: () => `
+    <p class="rubrique">Les prénoms</p>
+    <h1>Pour qui, de qui ?</h1>
+    <p class="aide">Son prénom s'écrit sur l'enveloppe, ton initiale est gravée dans le cachet de cire.</p>
+    <label for="fPour">Son prénom</label>
+    <input type="text" id="fPour" value="${esc(E.pour)}" placeholder="Ama" autocomplete="off">
+    <label for="fDe">Ton prénom</label>
+    <input type="text" id="fDe" value="${esc(E.de)}" placeholder="Koffi" autocomplete="off">
+    <label for="fIni">La lettre du cachet <span class="opt">(vide = la première de ton prénom)</span></label>
+    <input type="text" id="fIni" value="${esc(E.initiale)}" placeholder="K" maxlength="2">`,
+
+  mot: () => `
+    <p class="rubrique">La lettre</p>
+    <h1>Qu'est-ce que tu veux lui dire ?</h1>
+    <p class="aide">Écris comme tu parles. Une ligne vide sépare deux paragraphes.</p>
+    <label for="fAccueil">La première phrase, celle qui s'affiche en grand</label>
+    <input type="text" id="fAccueil" value="${esc(E.accueil || occ().accueil)}">
+    <label for="fCorps">Ta lettre</label>
+    <textarea id="fCorps" rows="9" placeholder="Je ne sais pas écrire les choses comme il faut, alors je les écris comme elles viennent.">${esc(E.corps)}</textarea>
+    <p class="note"><b>Trois paragraphes suffisent.</b> Une lettre trop longue ne se lit pas jusqu'au bout, et c'est la fin qui compte.</p>`,
+
+  signature: () => `
+    <p class="rubrique">La signature</p>
+    <h1>Comment tu signes ?</h1>
+    <p class="aide">Elle s'écrit à la main, en bas de la lettre.</p>
+    <label for="fSign">Ta signature</label>
+    <input type="text" id="fSign" value="${esc(E.signature)}" placeholder="Pour toujours, Koffi">`,
+
+  mots: () => `
+    <p class="rubrique">Mes mots pour toi</p>
+    <h1>Des petites phrases ?</h1>
+    <p class="aide">Elles se déplient une par une, comme des papiers pliés. Laisse vide si tu n'en veux pas.</p>
+    <div class="rangs" id="rangsMots"></div>
+    <button class="ajouter" type="button" id="plusMot">Ajouter une phrase</button>`,
+
+  photos: () => `
+    <p class="rubrique">Nos photos</p>
+    <h1>Tes photos</h1>
+    <p class="aide">Elles tombent comme des polaroïds, légèrement de travers.</p>
+    <div class="photos" id="grillePhotos"></div>
+    <p class="poids" id="poids"></p>
+    <button class="ajouter" type="button" id="plusPhoto">Choisir des photos</button>
+    <input type="file" id="fichiers" accept="image/*" multiple hidden>
+    <p class="note"><b>Sans photo, la lettre reste belle</b> : le cadre affiche « Ta photo ici » au lieu d'inventer une image.</p>`,
+
+  musique: () => `
+    <p class="rubrique">Notre musique</p>
+    <h1>Vos morceaux ?</h1>
+    <p class="aide">Un titre, un artiste, et le lien si tu l'as. Laisse vide si tu n'en veux pas.</p>
+    <div class="rangs" id="rangsMus"></div>
+    <button class="ajouter" type="button" id="plusMus">Ajouter un morceau</button>
+    <p class="note">On met un <b>lien</b> vers le morceau, jamais le fichier : héberger la musique de quelqu'un d'autre est interdit.</p>`,
+
+  question: () => `
+    <p class="rubrique">La question</p>
+    <h1>Une question à la fin ?</h1>
+    <p class="aide">Avec un bouton « Non » qui s'enfuit et se moque. Laisse vide pour ne pas en mettre.</p>
+    <label for="fQ">La question</label>
+    <input type="text" id="fQ" value="${esc(E.question || occ().question)}" placeholder="Tu m'aimes encore ?">
+    <label for="fRep">Ce qui s'affiche quand elle dit oui</label>
+    <input type="text" id="fRep" value="${esc(E.reponse)}" placeholder="Je le savais.">`,
+
+  code: () => `
+    <p class="rubrique">Le seuil</p>
+    <h1>Un code secret ?</h1>
+    <p class="aide">Quatre chiffres que seule elle peut deviner. Laisse vide et la lettre s'ouvre directement.</p>
+    <label for="fCode">Le code <span class="opt">(4 chiffres)</span></label>
+    <input type="tel" id="fCode" value="${esc(E.code)}" inputmode="numeric" placeholder="0410">
+    <!-- ⚠️ PAS de maxlength ici. Avec maxlength=4, taper ou coller "abc1234"
+         laissait "abc1", et le filtre qui retire les lettres ne voyait plus
+         qu'un seul chiffre : le code devenait "1". Le filtre plafonne déjà
+         à quatre chiffres, c'est lui qui fait autorité. -->
+    <label for="fInd">L'indice qu'elle verra</label>
+    <input type="text" id="fInd" value="${esc(E.indice)}" placeholder="Le jour où on s'est vus, jour et mois.">
+    <p class="note"><b>Le code n'est pas une serrure de banque</b>, c'est un seuil : il crée l'attente et rend la lettre privée.</p>`,
+
+  apercu: () => `
+    <p class="rubrique">L'aperçu</p>
+    <h1>Voilà sa lettre</h1>
+    <p class="aide">Exactement ce qu'elle verra. Touche le cachet pour l'ouvrir.</p>
+    <iframe class="apercu" id="cadre" title="Aperçu de la lettre"></iframe>
+    <p class="recap" id="recap"></p>`,
+
+  paiement: () => `
+    <p class="rubrique">Le paiement</p>
+    <h1>Envoie, et colle la référence</h1>
+    <div class="paie">
+      <dl>
+        <dt>À envoyer</dt><dd class="gros" id="montant">5 000 F</dd>
+        <dt>Numéro</dt><dd id="numero">à configurer</dd>
+        <dt>Au nom de</dt><dd id="nomMomo">à configurer</dd>
+      </dl>
+    </div>
+    <div class="avert"><b>Rien à taper sur ce site.</b> C'est un transfert Mobile Money ordinaire, vers un numéro que tu vois. Si la lettre ne te plaît pas, tu ne paies pas.</div>
+    <label for="fNom">Ton nom</label>
+    <input type="text" id="fNom" value="${esc(E.moiNom)}" placeholder="Ton nom">
+    <label for="fWa">Ton WhatsApp <span class="opt">(c'est là qu'arrive le lien)</span></label>
+    <input type="tel" id="fWa" value="${esc(E.moiWa)}" placeholder="229...">
+    <label for="fRes">Réseau utilisé</label>
+    <select id="fRes">
+      ${["MTN","Moov","Celtiis","Autre"].map(r=>`<option ${r===E.reseau?"selected":""}>${r}</option>`).join("")}
+    </select>
+    <label for="fRef">Référence de la transaction</label>
+    <input type="text" id="fRef" value="${esc(E.ref)}" placeholder="MP260827.1432.A81234">
+    <p class="note">Le SMS Mobile Money te donne ce code juste après le paiement. <b>Sans lui, on ne peut pas retrouver ton versement.</b></p>
+    <p class="err" id="errPaie"></p>`,
+};
+
+/* =====================================================================
+   4 · LE MONTAGE DE CHAQUE ÉCRAN
+   ===================================================================== */
+let i = 0;
+
+function rendre(){
+  const nom = ETAPES[i];
+  main.innerHTML = `<section class="etape la">${ECRANS[nom]()}</section>`;
+  $("#compte").textContent = `Étape ${i+1} sur ${ETAPES.length}`;
+  $("#jauge").style.width = ((i+1)/ETAPES.length*100) + "%";
+  $("#bRetour").style.visibility = i === 0 ? "hidden" : "visible";
+  $("#bSuite").textContent = nom === "paiement" ? "J'ai payé, envoyer" :
+                             nom === "apercu"   ? "C'est bon, payer" : "Continuer";
+  brancher(nom);
+  window.scrollTo(0,0);
+  E.etape = i; garder();
+}
+
+function lier(sel, champ, filtre){
+  const el = $(sel); if (!el) return;
+  el.addEventListener("input", () => {
+    E[champ] = filtre ? filtre(el.value) : el.value;
+    if (filtre) el.value = E[champ];
+    garder();
+  });
+}
+
+function brancher(nom){
+  if (nom === "occasion"){
+    $("#choixOcc").addEventListener("click", (ev) => {
+      const b = ev.target.closest("button[data-occ]"); if (!b) return;
+      E.occasion = b.dataset.occ;
+      // On ne remplace un texte que s'il n'a pas déjà été écrit par le client.
+      const o = occ();
+      if (!E.accueil)  E.accueil  = o.accueil;
+      if (!E.question) E.question = o.question;
+      garder(); rendre();
+    });
+  }
+  if (nom === "qui"){
+    lier("#fPour","pour"); lier("#fDe","de");
+    lier("#fIni","initiale", v => v.slice(0,2));
+  }
+  if (nom === "mot"){ lier("#fAccueil","accueil"); lier("#fCorps","corps"); }
+  if (nom === "signature"){ lier("#fSign","signature"); }
+  if (nom === "mots"){ rangsTexte("mots","#rangsMots","#plusMot","Mange à l'heure."); }
+  if (nom === "photos"){ brancherPhotos(); }
+  if (nom === "musique"){ rangsMusique(); }
+  if (nom === "question"){ lier("#fQ","question"); lier("#fRep","reponse"); }
+  if (nom === "code"){
+    lier("#fCode","code", v => v.replace(/\D/g,"").slice(0,4));
+    lier("#fInd","indice");
+  }
+  if (nom === "apercu"){ montrerApercu(); }
+  if (nom === "paiement"){
+    lier("#fNom","moiNom"); lier("#fWa","moiWa"); lier("#fRef","ref");
+    const s = $("#fRes"); s.addEventListener("change", () => { E.reseau = s.value; garder(); });
+    poserMomo();
+  }
+}
+
+/* ---------- listes de texte ---------- */
+function rangsTexte(champ, zone, bouton, exemple){
+  const dessiner = () => {
+    const z = $(zone);
+    z.innerHTML = E[champ].map((v,k)=>`
+      <div class="rang">
+        <input type="text" value="${esc(v)}" data-k="${k}" placeholder="${esc(exemple)}">
+        <button class="oter" type="button" data-oter="${k}" aria-label="Retirer">&times;</button>
+      </div>`).join("");
+    z.querySelectorAll("input").forEach(el => {
+      el.addEventListener("input", () => { E[champ][+el.dataset.k] = el.value; garder(); });
+    });
+    z.querySelectorAll("[data-oter]").forEach(b => {
+      b.addEventListener("click", () => {
+        E[champ].splice(+b.dataset.oter,1);
+        if (!E[champ].length) E[champ] = [""];
+        garder(); dessiner();
+      });
+    });
+  };
+  dessiner();
+  $(bouton).addEventListener("click", () => { E[champ].push(""); garder(); dessiner(); });
+}
+
+function rangsMusique(){
+  const dessiner = () => {
+    const z = $("#rangsMus");
+    z.innerHTML = E.musiques.map((m,k)=>`
+      <div class="rang">
+        <input type="text" value="${esc(m.titre)}" data-k="${k}" data-f="titre" placeholder="Le titre">
+        <button class="oter" type="button" data-oter="${k}" aria-label="Retirer">&times;</button>
+      </div>
+      <div class="rang">
+        <input type="text" value="${esc(m.artiste)}" data-k="${k}" data-f="artiste" placeholder="L'artiste">
+      </div>
+      <div class="rang">
+        <input type="text" value="${esc(m.lien||"")}" data-k="${k}" data-f="lien" placeholder="Le lien (facultatif)">
+      </div>`).join("");
+    z.querySelectorAll("input").forEach(el => {
+      el.addEventListener("input", () => {
+        E.musiques[+el.dataset.k][el.dataset.f] = el.value; garder();
+      });
+    });
+    z.querySelectorAll("[data-oter]").forEach(b => {
+      b.addEventListener("click", () => {
+        E.musiques.splice(+b.dataset.oter,1);
+        if (!E.musiques.length) E.musiques = [{titre:"",artiste:""}];
+        garder(); dessiner();
+      });
+    });
+  };
+  dessiner();
+  $("#plusMus").addEventListener("click", () => {
+    E.musiques.push({titre:"",artiste:""}); garder(); dessiner();
+  });
+}
+
+/* ---------- photos : réduites ICI, dans le navigateur ----------
+   La page part entière dans Cloudflare KV : une photo de 4 Mo sortie d'un
+   téléphone rendrait la lettre impossible à ouvrir sur une connexion
+   béninoise. On réduit à 1000 px et on compresse en JPEG.               */
+const MAX_COTE = 1000, QUALITE = 0.82, PLAFOND = 3.2 * 1024 * 1024;
+
+function reduire(fichier){
+  return new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onerror = () => rej(new Error("lecture impossible"));
+    fr.onload = () => {
+      const im = new Image();
+      im.onerror = () => rej(new Error("image illisible"));
+      im.onload = () => {
+        const e = Math.min(1, MAX_COTE / Math.max(im.width, im.height));
+        const c = document.createElement("canvas");
+        c.width = Math.round(im.width * e); c.height = Math.round(im.height * e);
+        c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+        res(c.toDataURL("image/jpeg", QUALITE));
+      };
+      im.src = fr.result;
+    };
+    fr.readAsDataURL(fichier);
+  });
+}
+
+function poidsTotal(){ return E.photos.reduce((s,p)=>s+(p.src?p.src.length:0),0); }
+
+function brancherPhotos(){
+  const dessiner = () => {
+    const g = $("#grillePhotos");
+    g.innerHTML = E.photos.map((p,k)=>`
+      <figure class="vig">
+        <button class="x" type="button" data-x="${k}" aria-label="Retirer la photo">&times;</button>
+        <img src="${p.src}" alt="">
+        <input class="lg" type="text" value="${esc(p.legende)}" data-k="${k}" placeholder="Sa légende">
+      </figure>`).join("");
+    g.querySelectorAll(".lg").forEach(el => {
+      el.addEventListener("input", () => { E.photos[+el.dataset.k].legende = el.value; garder(); });
+    });
+    g.querySelectorAll("[data-x]").forEach(b => {
+      b.addEventListener("click", () => { E.photos.splice(+b.dataset.x,1); garder(); dessiner(); });
+    });
+    const o = poidsTotal(), ko = Math.round(o/1024);
+    const p = $("#poids");
+    p.textContent = E.photos.length
+      ? `${E.photos.length} photo(s), environ ${ko} Ko dans la lettre.`
+      : "Aucune photo pour l'instant.";
+    p.classList.toggle("gros", o > PLAFOND * 0.8);
+    if (o > PLAFOND * 0.8) {
+      p.textContent += " C'est lourd : sur une connexion lente, la lettre mettra du temps à s'ouvrir.";
+    }
+  };
+  dessiner();
+  const f = $("#fichiers");
+  $("#plusPhoto").addEventListener("click", () => f.click());
+  f.addEventListener("change", async () => {
+    const liste = Array.from(f.files || []);
+    for (const fic of liste){
+      if (!/^image\//.test(fic.type)) continue;
+      try {
+        const src = await reduire(fic);
+        if (poidsTotal() + src.length > PLAFOND){
+          alert("La lettre deviendrait trop lourde. Retire une photo avant d'en ajouter une autre.");
+          break;
+        }
+        E.photos.push({ src, legende:"" });
+        garder(); dessiner();
+      } catch(e){
+        alert("Cette image n'a pas pu être lue. Essaie une autre.");
+      }
+    }
+    f.value = "";
+  });
+}
+
+/* =====================================================================
+   5 · LE MONTAGE DE LA LETTRE
+   On ne recopie pas le gabarit : on va le chercher et on remplace le bloc
+   entre les marqueurs. Une seule vérité.
+   ===================================================================== */
+let GABARIT = null;
+
+async function gabarit(){
+  if (GABARIT) return GABARIT;
+  const r = await fetch("gabarit.html", { cache:"no-cache" });
+  if (!r.ok) throw new Error("gabarit introuvable (" + r.status + ")");
+  GABARIT = await r.text();
+  if (!/MINUIT:DEBUT_CONTENU/.test(GABARIT) || !/MINUIT:FIN_CONTENU/.test(GABARIT)){
+    throw new Error("les marqueurs du gabarit ont disparu");
+  }
+  return GABARIT;
+}
+
+function contenu(){
+  const paragraphes = (E.corps||"").split(/\n\s*\n/).map(t=>t.trim()).filter(Boolean);
+  const mots = (E.mots||[]).map(m=>m.trim()).filter(Boolean);
+  const musiques = (E.musiques||[])
+    .filter(m => (m.titre||"").trim())
+    .map(m => ({ titre:m.titre.trim(), artiste:(m.artiste||"").trim(), lien:(m.lien||"").trim() }));
+  const q = (E.question||"").trim();
+  return {
+    pour: (E.pour||"toi").trim(),
+    de: (E.de||"").trim(),
+    initiale: ((E.initiale||E.de||"M").trim()[0]||"M").toUpperCase(),
+    code: (E.code||"").replace(/\D/g,""),
+    indice: (E.indice||"").trim(),
+    accueil: (E.accueil||"").trim(),
+    corps: paragraphes,
+    signature: (E.signature||"").trim(),
+    mots,
+    photos: (E.photos||[]).map(p => ({ src:p.src||"", legende:(p.legende||"").trim() })),
+    musiques,
+    question: q ? {
+      texte:q, oui:"Oui", non:"Non",
+      railleries:["Essaie encore.","Il bouge, ce bouton.","Tu vois bien que non.",
+                  "Vraiment ?","Ce bouton ne marche pas, c'est comme ça.","Abandonne, tu m'aimes."],
+      reponse:(E.reponse||"").trim()
+    } : null,
+    signaturePied:"Créer la mienne sur Minuit",
+    lienPied:""
+  };
+}
+
+async function monter(){
+  const g = await gabarit();
+  const bloc = "/* <<<MINUIT:DEBUT_CONTENU>>> */\nconst LETTRE = "
+             + JSON.stringify(contenu(), null, 2)
+             + ";\n/* <<<MINUIT:FIN_CONTENU>>> */";
+  return g.replace(
+    /\/\* <<<MINUIT:DEBUT_CONTENU>>> \*\/[\s\S]*?\/\* <<<MINUIT:FIN_CONTENU>>> \*\//,
+    () => bloc
+  );
+}
+
+async function montrerApercu(){
+  const c = $("#cadre");
+  try {
+    const html = await monter();
+    c.srcdoc = html;
+    const co = contenu();
+    $("#recap").innerHTML =
+      `Pour <b>${esc(co.pour)}</b> &middot; ${co.corps.length} paragraphe(s) &middot; ` +
+      `${co.mots.length} phrase(s) &middot; ${co.photos.length} photo(s) &middot; ` +
+      `${co.musiques.length} morceau(x) &middot; ` +
+      (co.code ? `code <b>${esc(co.code)}</b>` : "sans code");
+  } catch(e){
+    $("#recap").textContent = "L'aperçu n'a pas pu être monté : " + e.message;
+  }
+}
+
+/* ---------- le compte Mobile Money, lu sur le serveur ---------- */
+const PRIX = 5000;
+async function poserMomo(){
+  $("#montant").textContent = PRIX.toLocaleString("fr-FR").replace(/ |,/g," ") + " F";
+  try {
+    const r = await fetch("/api/config");
+    if (!r.ok) return;
+    const d = await r.json();
+    if (d.momo_number) $("#numero").textContent = d.momo_number + (d.momo_network ? " (" + d.momo_network + ")" : "");
+    if (d.momo_name)   $("#nomMomo").textContent = d.momo_name;
+  } catch(e){ /* hors ligne : les valeurs par défaut restent affichées */ }
+}
+
+/* =====================================================================
+   6 · AVANCER, RECULER, ENVOYER
+   ===================================================================== */
+function manque(){
+  const nom = ETAPES[i];
+  if (nom === "qui" && !(E.pour||"").trim()) return "Il manque son prénom.";
+  if (nom === "mot" && !(E.corps||"").trim()) return "Il manque ta lettre.";
+  if (nom === "code" && E.code && E.code.length !== 4) return "Le code fait quatre chiffres, ou rien du tout.";
+  return "";
+}
+
+$("#bRetour").addEventListener("click", () => { if (i>0){ i--; rendre(); } });
+
+$("#bSuite").addEventListener("click", async () => {
+  const nom = ETAPES[i];
+  const m = manque();
+  if (m){ alert(m); return; }
+  if (nom === "paiement"){ await envoyer(); return; }
+  if (i < ETAPES.length-1){ i++; rendre(); }
+});
+
+async function envoyer(){
+  const err = $("#errPaie");
+  const dire = (t) => { err.textContent = t; };
+  if (!(E.moiWa||"").trim()){ dire("Il manque ton WhatsApp : c'est là qu'arrive le lien."); return; }
+  if (!(E.ref||"").trim()){
+    dire("Il manque la référence de ta transaction. Elle est dans le SMS reçu après le paiement.");
+    return;
+  }
+  const b = $("#bSuite");
+  b.disabled = true; b.textContent = "Envoi..."; dire("");
+  try {
+    const html = await monter();
+    const r = await fetch("/api/order", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        pack:"lettre", biz_name:"Lettre pour " + (E.pour||"toi"),
+        client_name:(E.moiNom||E.de||"").trim(), whatsapp:E.moiWa, email:"",
+        network:E.reseau, ref:E.ref, html
+      })
+    });
+    if (!r.ok) throw new Error("le serveur a répondu " + r.status);
+    const d = await r.json();
+    fini(d.slug);
+  } catch(e){
+    dire("L'envoi a échoué : " + e.message + ". Ta lettre est gardée, réessaie.");
+    b.disabled = false; b.textContent = "J'ai payé, envoyer";
+  }
+}
+
+function fini(slug){
+  // ⚠️ On n'oublie le brouillon QUE MAINTENANT : la commande est partie.
+  oublier();
+  document.querySelector(".bas").style.display = "none";
+  $("#jauge").style.width = "100%";
+  $("#compte").textContent = "Terminé";
+  main.innerHTML = `
+    <section class="etape la fini">
+      <div class="rond">&#10003;</div>
+      <h1>Commande reçue</h1>
+      <p class="aide">On vérifie ton paiement, puis ta lettre part sur ton WhatsApp. En attendant, voilà son aperçu.</p>
+      <a class="lien" href="/v/${encodeURIComponent(slug)}" target="_blank" rel="noopener">/v/${esc(slug)}</a>
+      <p class="note">Garde ce lien : c'est celui que tu enverras. Il ne s'ouvrira pour de bon qu'après la validation du paiement.</p>
+    </section>`;
+  window.scrollTo(0,0);
+}
+
+/* =====================================================================
+   7 · DÉMARRAGE
+   ===================================================================== */
+(function(){
+  const repris = reprendre();
+  if (repris && E.etape > 0){
+    // On ne remet pas le client au début : il revient là où il s'est arrêté,
+    // typiquement juste après être parti payer.
+    i = Math.min(E.etape, ETAPES.length-1);
+  }
+  rendre();
+  if (repris && i > 0){
+    const p = document.createElement("p");
+    p.className = "note";
+    p.innerHTML = "<b>On a retrouvé ta lettre.</b> Rien n'a été perdu.";
+    main.querySelector(".etape").prepend(p);
+  }
+})();
+</script>
+</body>
+</html>

@@ -234,7 +234,11 @@ textarea{resize:vertical;min-height:132px;line-height:1.7}
         </div>
         <div class="groupe">
           <label for="f-code">Code secret <span style="font-weight:400;color:var(--gris)">(facultatif)</span></label>
-          <input type="text" id="f-code" inputmode="numeric" maxlength="4" placeholder="4 chiffres">
+          <input type="text" id="f-code" inputmode="numeric" placeholder="4 chiffres">
+          <!-- Pas de maxlength : il coupe AVANT le filtre. Coller
+               "abc1234" laissait "abc1", le filtre retirait les lettres,
+               et le code tombait a "1" (mesure en navigateur). C'est le
+               filtre ci-dessous qui plafonne a quatre chiffres. -->
           <p class="indice">Elle ne l'ouvre qu'avec ce code.</p>
         </div>
       </div>
@@ -536,7 +540,7 @@ Object.keys(CHAMPS).forEach(function(id){
   var el = document.getElementById(id);
   if (!el) { return; }
   el.addEventListener("input", function(){
-    if (id === "f-code") { el.value = el.value.replace(/\D/g, ""); }
+    if (id === "f-code") { el.value = el.value.replace(/\D/g, "").slice(0, 4); }
     E[CHAMPS[id]] = el.value;
     if (id === "f-lettre") { $("#c-lettre").textContent = String(el.value.length); }
     garder();

@@ -9,7 +9,14 @@
 <title>Une lettre pour toi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<!-- ⚠️ CHARGEE SANS BLOQUER. Une feuille de style externe bloque
+     l'execution du script : tant qu'elle n'est pas arrivee, la lettre
+     affiche « toi » et « M » au lieu du prenom et de l'initiale.
+     Mesure faite : 12 640 ms quand le CDN de polices ne repond pas.
+     Avec media="print" puis bascule, rien n'attend : Georgia s'affiche
+     tout de suite et EB Garamond prend le relais si elle arrive. -->
+<link rel="stylesheet" media="print" onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap">
 <style>
 /* La police manuscrite est EMBARQUÉE dans le fichier, pas appelée dehors.
    Elle porte le prénom, le cachet, l'accueil et la signature : c'est elle qui
@@ -493,6 +500,7 @@ section+section{border-top:1px solid rgba(46,38,32,.1)}
    LE CONTENU. C'est la seule partie qui change d'une lettre à l'autre.
    Le back-office écrira ce bloc, rien d'autre.
    ===================================================================== */
+/* <<<MINUIT:DEBUT_CONTENU>>> */
 const LETTRE = {
   pour: "Ama",
   de: "Koffi",
@@ -549,6 +557,7 @@ const LETTRE = {
   signaturePied: "Créer la mienne sur Minuit",
   lienPied: ""
 };
+/* <<<MINUIT:FIN_CONTENU>>> */
 
 /* ===================================================================== */
 (function(){
