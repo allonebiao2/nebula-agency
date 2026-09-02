@@ -127,20 +127,28 @@ def fontes():
 
 
 def le_qr():
-    """QR vers le domaine, correction H, avec l'oeil de la marque au centre.
+    """Le QR **en vectoriel**, un rectangle par module.
 
-    ⚠️ La correction H tolére ~30 % de perte : un centre couvert a ~16 % passe
-    largement. Mais on ne le croit pas sur parole, **le rendu relit le QR dans
-    l'image finale** — c'est la seule preuve qui compte.
+    ⛔ Il était en PNG base64, affiché a 194 px alors que l'image en faisait 770.
+       Un module tombait alors sur 5,54 px : le navigateur arrondissait, et les
+       modules sortaient **inégaux, 5 px ou 6 px au hasard**. Ça se scanne
+       quand même, mais ça se voit a l'impression et ça ne se superpose pas au
+       SVG. En vectoriel, tous les modules sont identiques, a toute taille.
+    ⚠️ Les modules se recouvrent de 0,02 : sans ce recouvrement une imprimante
+       laisse un cheveu blanc entre deux carrés et le code devient sale.
     """
     import qrcode
     from qrcode.constants import ERROR_CORRECT_H
-    q = qrcode.QRCode(version=None, error_correction=ERROR_CORRECT_H, box_size=22, border=1)
+    q = qrcode.QRCode(version=None, error_correction=ERROR_CORRECT_H, box_size=1, border=1)
     q.add_data(URL); q.make(fit=True)
-    img = q.make_image(fill_color=ENCRE, back_color="#FFFFFF").convert("RGB")
-    buf = io.BytesIO(); img.save(buf, format="PNG")
-    print(f"QR : {img.size[0]}px, version {q.version}, correction H")
-    return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
+    mat = q.get_matrix(); n = len(mat)
+    d = "".join(f"M{i},{j}h1.02v1.02h-1.02z"
+                for j, ligne in enumerate(mat) for i, noir in enumerate(ligne) if noir)
+    print(f"QR : {n}x{n} modules, version {q.version}, correction H, vectoriel")
+    return (f'<svg class="qrsvg" viewBox="0 0 {n} {n}" '
+            f'style="width:194px;height:194px;display:block">'
+            f'<rect width="{n}" height="{n}" fill="#FFFFFF"/>'
+            f'<path fill="{ENCRE}" d="{d}"/></svg>')
 
 
 def svg_inline(chemin, hauteur_css):
@@ -152,7 +160,7 @@ def svg_inline(chemin, hauteur_css):
 
 D = lire_le_site()
 CSS_FONTES = fontes()
-QR64 = le_qr()
+QR_SVG = le_qr()
 LOGO = svg_inline("assets/images/logo-grain-esthetique.svg", "170px")
 MARQUE = svg_inline("assets/images/logo-grain-marque.svg", "33px")
 
@@ -225,7 +233,7 @@ html,body{{background:#888}}
              0 0 0 1px rgba(212,175,114,.55),
              0 0 0 7px #fff,
              0 0 0 8px rgba(212,175,114,.28)}}
-.carte img{{width:194px;height:194px;display:block;image-rendering:pixelated}}
+.carte .qrsvg{{width:194px;height:194px;display:block}}
 .oeil{{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
   width:52px;height:52px;background:#fff;border-radius:11px;
   display:flex;align-items:center;justify-content:center;color:{ENCRE};
@@ -273,7 +281,7 @@ html,body{{background:#888}}
 <div class="z maisons"><span>SOTHYS PARIS</span><i></i><span>SULTANE DE SABA</span></div>
 
 <div class="z bloc-qr">
-  <div class="carte"><img src="{QR64}" alt="QR vers graindesthetique.com"><span class="oeil">{MARQUE}</span></div>
+  <div class="carte">{QR_SVG}<span class="oeil">{MARQUE}</span></div>
   <div class="cta">Toute la carte des soins,<br>et votre <b>rendez-vous</b>, en un scan.</div>
   <div class="web">graindesthetique.com</div>
 </div>

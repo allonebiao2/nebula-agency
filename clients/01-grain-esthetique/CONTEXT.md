@@ -76,7 +76,7 @@ Couche **additive** (images, couleurs, **numéro/liens WhatsApp inchangés** —
 
 ## ✅ NOUVELLE AFFICHE CARRÉE 1:1 POUR L'INSTITUT (2026-09-02)
 
-**`assets/docs/Affiche_Grain_Institut.pdf`** (imprimeur) · **`.png` 4320×4320**
+**`.svg` vectoriel** (voir plus bas) · **`.pdf`** (imprimeur) · **`.png` 4320×4320**
 (net jusqu'à **36 × 36 cm à 300 dpi**) · **`.jpg` 1600 px, 204 Ko** (WhatsApp).
 Outils : `_outils/_build_affiche_institut.py` puis `_outils/_render_affiche_institut.py`.
 ⚠️ L'ancienne `Affiche_Grain_Carre.*` est **conservée**, rien n'a été écrasé.
@@ -137,6 +137,63 @@ il est **gitignoré** et se régénère en une commande.
    `margin-top:auto` du pied en fait l'air qui manquait.
 ⚠️ Et deux rouges du 1er jet étaient réels : **ça débordait de 139 px**, et la
 ville était à **4,1:1** (mauve trop clair sur le rose du haut → `#6F5462`, 6,3:1).
+
+### ⚡ ET EN **VRAI SVG** (2026-09-02) : `assets/docs/Affiche_Grain_Institut.svg`
+267 Ko. ⛔ **Pas un PNG emballé** : logo, six icônes, cadre, filets, **textes en
+tracés** et **QR module par module**, tout est vectoriel. Aucune référence
+externe, aucune fonte requise. Outils : `_outils/_build_affiche_svg.py` +
+`_outils/_polices_svg.py`.
+
+⚠️ **Pourquoi les textes sont vectorisés et pas en `<text>`** : un `<text>` avec
+sa fonte en base64 s'affiche dans un navigateur, mais Illustrator et une bonne
+part des serveurs d'impression l'ignorent, retombent sur une fonte par défaut,
+et **ça se découvre une fois les exemplaires imprimés**. Un imprimeur demande
+d'ailleurs toujours « les textes vectorisés ».
+
+⚠️ **La mise en page n'est pas recopiée**, elle est **relevée dans le navigateur**
+sur le HTML déjà contrôlé. La retaper aurait créé une 2ᵉ mise en page qui dérive
+dès la première retouche : le PNG et le SVG ne seraient plus la même affiche.
+
+⚡ **Le QR est passé en vectoriel DANS LE HTML aussi.** Il était en PNG affiché à
+194 px alors que l'image en faisait 770 : un module tombait sur 5,54 px, le
+navigateur arrondissait, et **les modules sortaient inégaux (5 ou 6 px au
+hasard)**. Un seul QR pour le PNG, le PDF et le SVG.
+
+### ⛔ CINQ PIÈGES, TOUS TROUVÉS À LA MESURE
+1. ⛔ **HarfBuzz ne lit pas le woff2.** `tt.save()` réécrit du woff2 (fontTools
+   conserve le format), la face se construisait quand même et **chaque
+   caractère renvoyait le glyphe 0** : l'affiche se remplissait de cases
+   « NO GLYPH ». → `tt.flavor = None` avant de sauver.
+   ⚠️ **Et ma vérification de couverture ne le voyait pas** : elle lisait la
+   table `cmap` avec fontTools, qui répondait « tout est là ». **Une couverture
+   vérifiée sur une bibliothèque ne dit rien de ce que produit l'autre** : on
+   contrôle désormais le **résultat de la composition** (`.notdef` = rouge).
+2. ⛔ **Google sert des fontes VARIABLES.** Dessiner les glyphes donne
+   l'instance par défaut, soit le **Light (300)** pour Cormorant, pas le
+   Regular affiché : lettres plus maigres ET plus étroites, donc un décalage
+   **qui s'accumule le long de la ligne**. → on fige la graisse avant tout.
+3. ⛔ **`radial-gradient` CSS fait des ELLIPSES** (`105% 68%`) et **arrête sa
+   couleur à 58 %**, pas à 100 %. Mon `<radialGradient>` était un cercle avec
+   l'arrêt au bord. → `gradientTransform` + les vrais décalages d'arrêt.
+4. ⛔ **L'ordre des calques** : le fond blanc de l'œil était dessiné **avant**
+   le QR, donc recouvert par lui. Trouvé **sur la carte d'écart**, pas par un
+   contrôle : c'était le seul point encore lumineux.
+5. ⚠️ **CSS compte l'interlettrage du DERNIER caractère** dans la largeur : un
+   texte centré très espacé est en fait décalé d'un demi-espacement. On ancre
+   donc sur le **bord gauche mesuré** plutôt que de recentrer « correctement » :
+   **trois fichiers, une seule affiche.**
+
+### ⚠️ Le contrôle de superposition, et comment il a fallu le corriger
+Le SVG est re-rendu et **superposé au PNG**. Écart mesuré : **7,28 → 1,05**.
+Trois corrections de l'instrument, pas du produit :
+- il s'accusait lui-même d'être « non autonome » à cause de son propre
+  `xmlns="http://…"` puis du texte de son `<desc>` ;
+- il jugeait sur l'écart **brut** : un glyphe en tracé n'est pas anticrénelé
+  comme le même glyphe rendu par le moteur de texte. → verdict après un léger flou ;
+- ⚠️ **le grain est une texture procédurale** à 13 % d'alpha : deux documents ne
+  la rasterisent jamais pareil. → **on l'éteint des deux côtés** (et on vérifie
+  qu'il existe). Le plancher restant (~1,0) vient des ~600 arêtes du QR et des
+  55 contours du logo : au-delà de **1,5**, c'est qu'un élément a vraiment bougé.
 
 ### ⏳ Variante à faire quand on aura le lien
 Une 2ᵉ affiche avec **QR vers les avis Google** (`g.page/r/…`) : posée à
