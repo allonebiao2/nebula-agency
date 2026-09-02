@@ -627,7 +627,7 @@ pause de Hillary, le 2026-08-18.
 ⚠️ Contexte **PC uniquement** : le moteur n'existe que sur pointeur fin
 (`(hover:hover) and (pointer:fine)`).
 
-**129 → 146 contrôles, tous verts. Rien n'est déployé.**
+**129 → 146 contrôles, tous verts.** *(Déployé le 2026-09-02, voir la fin du document.)*
 
 ### Les six questions tranchées, faute de réponse
 
@@ -656,15 +656,40 @@ Même famille que le témoin du 2026-08-18.
 
 **149 contrôles verts.**
 
-### ⏳ Ce qui reste, au 2026-08-21
+## ✅ Publié le 2026-09-02, depuis le PC de Cotonou
 
-- **Publier.** `_dist` est prêt (36 fichiers, 5,11 Mo) mais **rien n'est en
-  ligne** : `secrets/` est ignoré par git, donc une session en conteneur n'a
-  aucun jeton Cloudflare. Depuis le PC de Cotonou :
-  ```bash
-  python clients/11-angy-art/_dist.py
-  npx wrangler pages deploy clients/11-angy-art/_dist --project-name=angy-art --branch=main
-  ```
+Tout ce qui dormait dans `main` est en ligne : les quatre corrections
+d'Angélique, le bouton du héros devenu **sommaire**, et la vague fluidité.
+
+```bash
+python clients/11-angy-art/_dist.py
+wrangler pages deploy clients/11-angy-art/_dist --project-name=angy-art --branch=main
+```
+
+⚠️ **`wrangler` global, pas `npx`** : le paquet a été supprimé avec les
+`node_modules` et le cache npm a été vidé. Le jeton vient de
+`secrets/cloudflare.env`, ignoré par git : **une session en conteneur ne peut
+pas publier**, c'est le PC qui le fait.
+
+**Ce qui a été vérifié après coup**, et pas seulement le code de retour :
+
+- `_dist` reconstruit : **37 fichiers, 4,67 Mo**, aucune trace des anciennes
+  images générées ;
+- **150 contrôles verts** avant l'envoi ;
+- `index.html`, `app.js` et `app.css` servis **identiques au disque en MD5** ;
+- **34 fichiers sur 37 répondent 200**, et les 3 autres sont corrects :
+  `_headers` en **404** (c'est un fichier de configuration, il ne doit pas
+  être public), `index.html` et `404.html` en **308** vers leurs adresses
+  propres ;
+- un fichier absent répond bien **404** ;
+- le corps servi porte `ACCUEIL`, `L'ARTISTE`, `SUR MESURE`, `ÉNERGIES`, les
+  titres d'œuvres et les trois cartels **MISE EN SITUATION**.
+
+⚠️ **Un `git push` ne déploie rien.** Le travail était dans `main` depuis le
+2026-08-21 et le site servait encore l'état d'avant.
+
+### ⏳ Ce qui reste, au 2026-09-02
+
 - Ce qu'elle pourra corriger **en observant** : la cinquième/sixième œuvre
   d'ÉNERGIES, son texte d'introduction, le statut de chaque pièce.
 - Toujours : l'adresse de l'atelier, de vrais avis, **tester le numéro
@@ -718,3 +743,111 @@ var k = 1 - Math.pow(1 - 0.095, dt / 16.7);
 aucun contrôle ne l'aurait vu : sur mobile, le moteur maison ne tourne même pas.
 
 **150 contrôles verts, 0 en échec.**
+
+
+---
+
+## 2026-08-27 — Le bouton « Découvrir les œuvres » est retiré
+
+Demandé par Angélique. Il avait été ajouté le 21/08 sur son propre
+récapitulatif (« un bouton pour Découvrir les œuvres menant directement à la
+collection ») : elle change d'avis en le voyant, c'est son droit et c'est
+exactement à ça que sert une mise en ligne.
+
+Retiré **partout**, pas seulement du balisage : les quatre règles CSS qui le
+portaient (position absolue sur grand écran, retour dans le flux sous 768 px,
+révélation à l'ouverture du héros, exception « mouvement réduit ») sont parties
+avec lui. Il ne reste **aucune trace** de `.hero-pill` dans le projet.
+
+⚠️ **Et les deux paires du contrôle de chevauchement qui le nommaient.** Elles
+ne plantaient pas — le contrôle rend `None` et annonce « absent à cette
+taille » — mais **un contrôle qui décrit un élément disparu ne protège plus
+rien et fait croire qu'il veille.** Remplacées par une paire qui, elle, n'était
+pas testée : `.hero-mx li` contre `.cadre`.
+
+**Arithmétique vérifiée plutôt que supposée** : 149 → 146. Six contrôles
+partis (deux paires × trois largeurs), trois gagnés (une paire × trois
+largeurs). La baisse s'explique entièrement.
+
+Regardé à 390, 768 et 1440 : aucun trou. Le bouton était en position absolue,
+sa disparition ne déplace rien ; la ligne des métriques garde ses 42 à 48 px
+de marge basse.
+
+⚠️ La collection reste atteignable depuis le haut par l'entrée **LA
+COLLECTION** du menu. Rien n'est isolé.
+
+---
+
+## 2026-08-27 (2) — Les quatre corrections d'Angélique, et le sommaire du héros
+
+⚠️ **Correction de la correction précédente** : elle ne voulait pas *supprimer*
+le bouton « Découvrir les œuvres », elle voulait le **transformer**. Elle
+regarde le site **sur téléphone**, et là le menu burger ne lui suffit pas :
+elle veut voir d'un coup d'œil ce que le site contient, et y accéder
+directement.
+
+### Le sommaire
+
+Six entrées à la place du bouton unique : L'ARTISTE · **DÉCOUVRIR LES ŒUVRES**
+· LE JOURNAL · DANS UN LIEU · CRÉATIONS SUR MESURE · CONTACT. Le libellé de la
+deuxième est **sa formule à elle**, elle l'a nommée telle quelle.
+
+⚠️ **Dans le flux, pas en position absolue** comme l'ancien bouton : celui-ci se
+posait *sur* la ligne des métriques dès que le héros passait sur une colonne
+(« DÉCOUVRIR L'ATELIER » barrait « PIÈCES · UNIQUES » à 768 px, corrigé le
+2026-08-08). Le héros est une colonne flex, le sommaire y prend sa place.
+
+⛔ **Et le bouton du son se posait dessus.** Mesuré : **11 × 34 px** de
+recouvrement sur « DÉCOUVRIR LES ŒUVRES », **à 390 px et nulle part ailleurs**
+— c'est-à-dire pile la pastille qu'elle a nommée, pile la largeur où elle
+regarde. La colonne de droite lui est réservée, et un contrôle le vérifie aux
+trois largeurs.
+
+### L'ordre et les noms
+
+`01 L'ARTISTE · 02 COLLECTION ÉNERGIES · 03 LE JOURNAL · 04 DANS UN LIEU ·
+05 CRÉATIONS SUR MESURE`. La collection passe **avant** le journal, et « Dans
+un lieu » — la mise en situation, qu'elle ne trouve pas claire — passe après.
+Le menu suit l'ordre de la page.
+
+La numérotation allait `01, 02, 03, 04, 06` : la suite était **déjà trouée**.
+
+⚠️ **L'ordre a été changé en découpant le fichier en tranches qui se touchent**,
+pas en recollant des morceaux choisis : **longueur identique au caractère près**
+avant et après. Une première version extrayait les sections et les recollait ;
+les commentaires d'en-tête restaient dehors, et le garde-fou de longueur a
+refusé d'écrire.
+
+### ⚠️ La typographie : mesurer avant d'appliquer
+
+Elle dit : « le texte qui suit immédiatement les titres de section est plus
+grand que les titres eux-mêmes ». Pris au pied de la lettre, ça vise les `h2`
+— **et c'était faux** : ils font déjà 80 px contre 14 à 19 px pour les
+paragraphes, cinq fois plus.
+
+**Mesuré, le vrai coupable est ailleurs** : l'**étiquette** de section faisait
+10,5 px et la phrase en dessous 80 px. **Sept fois et demie.** Et c'était le
+**seul endroit du site** où la suite dépassait son titre — les six étiquettes,
+nulle part ailleurs.
+
+Le nom prend donc la taille d'affichage (`clamp(1.45rem, 3.4vw, 2.9rem)`), la
+phrase devient une entrée en matière, et la citation descend aussi (elle
+passait devant son étiquette de 1,6 px).
+
+⚠️ **Deux finitions vues sur les captures, pas dans les contrôles** : le filet
+`.lab b` restait orphelin à droite du nom quand celui-ci se replie à 390 px (il
+prend toute la largeur et devient un soulignement), et le titre de la section
+des œuvres se collait à son étiquette — elle n'avait pas de marge propre,
+contrairement à `.demarche`, `.temps` et `.folio`.
+
+⚠️ **La requête média du filet était placée AVANT la règle qu'elle corrige** :
+à spécificité égale la dernière gagne, elle ne servait à rien. Déplacée après.
+
+**146 → 149 contrôles verts.** Regardé à 390, 768 et 1440.
+
+### ✅ Tranché
+
+« Collection Énergie » (singulier, dans la note) contre **ÉNERGIES** (pluriel,
+son récapitulatif du 21/08, ce qui est en ligne, et ce qui colle au contenu :
+« les forces invisibles : la lumière, les liens, la résilience… »). Mongazi :
+**« non ça va »** — le pluriel reste.

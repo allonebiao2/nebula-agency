@@ -1703,3 +1703,108 @@ Trois contrôles ont accusé un site parfaitement juste, le même jour :
   différence sous prétexte de nettoyage.
 - **À appliquer** : `_outils/_verif_parc.py` (à poser dans les scripts) compare
   chaque site à sa source, pas à sa date.
+
+## 2026-08-27 — Mesurer avant d'appliquer une règle de style énoncée par le client
+
+- **Ce qu'elle a dit** : « le texte qui suit immédiatement les titres de section
+  est plus grand que les titres eux-mêmes, ce qui détourne l'attention ».
+- **Pris au pied de la lettre**, ça vise les `h2` — et j'aurais rétréci les
+  paragraphes ou grossi des titres qui n'en avaient pas besoin. **Mesuré, c'était
+  faux** : les `h2` font déjà 80 px contre 14 à 19 px, cinq fois plus.
+- **Le vrai coupable était ailleurs** : l'**étiquette** de section (« 04 — LA
+  COLLECTION ») faisait 10,5 px, et la phrase en dessous 80 px. **Sept fois et
+  demie.** Et une mesure sur *tous* les titres du site a montré que c'était le
+  **seul endroit** où la suite dépassait son titre : les six étiquettes, nulle
+  part ailleurs.
+- **La règle** : un client décrit ce qu'il *ressent*, pas ce que le code fait.
+  Sa gêne est toujours réelle ; son diagnostic ne l'est pas forcément. **On
+  mesure d'abord, sur tout le parc, et on corrige ce que la mesure désigne.**
+- **Ce que ça a évité** : toucher à une hiérarchie déjà juste, et laisser en
+  place le seul endroit qui la gênait vraiment.
+
+## 2026-08-27 — Réordonner un fichier : découper en tranches qui se touchent
+
+- **Contexte** : intervertir deux sections d'un `index.html` de 59 000
+  caractères.
+- **Première version** : j'extrayais chaque `<section>` et je recollais les
+  morceaux dans le nouvel ordre. **Les commentaires d'en-tête restaient
+  dehors** — et un commentaire perdu, c'est la raison d'être d'une section qui
+  disparaît.
+- **Ce qui l'a attrapé** : `assert len(neuf) > len(s) * 0.98`. Le garde-fou a
+  refusé d'écrire. Sans lui, la perte passait inaperçue.
+- **La bonne méthode** : découper le document en **tranches qui se touchent**
+  (chaque tranche = ce qui sépare la section précédente + la section), puis
+  permuter les tranches. Rien ne peut tomber entre deux, et l'assertion devient
+  **`len(neuf) == len(s)`**, à l'octet près.
+- **À retenir** : quand on réorganise, ne jamais reconstruire à partir de
+  morceaux *choisis*. Paver, puis permuter. Et mesurer l'égalité, pas la
+  ressemblance.
+
+## 2026-08-27 — À spécificité égale, la dernière règle gagne
+
+- Une requête média écrite **avant** la règle qu'elle corrige ne sert à rien :
+  `@media (max-width:560px){ .lab b{max-width:none} }` puis `.lab b{max-width:
+  min(340px,26vw)}` — la seconde gagne, à spécificité égale.
+- **Le symptôme trompe** : la règle *existe*, le sélecteur est *juste*, la
+  requête média *s'applique*. On cherche une erreur de sélecteur pendant que
+  c'est une question d'ordre.
+- **Le réflexe** : une correction responsive se place **après** ce qu'elle
+  corrige, ou porte une spécificité supérieure. Et on **regarde le rendu** —
+  ici, c'est la capture qui a montré que le filet était toujours orphelin.
+
+## Écrire le document ne le publie pas : compter les copies
+
+**2026-09-02, contrat partenaire.** Le contrat 1.3 était dans le dépôt depuis le matin, à
+jour, relu. Un partenaire qui téléchargeait « son contrat » depuis son espace recevait
+quand même celui du 3 août.
+
+Trois copies vivent dans ce dépôt et **elles ne bougent pas ensemble** : le Markdown, le PDF
+de `vente/pdf/`, et celui de `nebula-affilies/assets/docs-partenaires/`, **le seul que le
+partenaire voit**. Et pour cette dernière, changer l'octet ne suffit pas : sans changement
+de la VERSION dans `DOCS_PARTENAIRES`, `publier_documents()` ne rejoue rien.
+
+⚠️ Avant de dire qu'un document est à jour, **demander où le lecteur le prend**, pas où on
+l'a écrit. Même famille que « un `git push` ne déploie rien » : le travail existe là où
+quelqu'un le reçoit.
+
+## Un document daté plus vieux que son propre texte se fait écarter
+
+Le socle et le manuel avaient été modifiés le matin en gardant leur ligne « Version ·
+2026-07-30 ». Le socle est la **source de vérité des prix**, et l'article 15 du contrat en
+fait une **pièce contractuelle** : celui qui compare les deux écarte le plus ancien.
+
+⚠️ Une modification de contenu **oblige** à toucher la ligne de version. Et la couverture ne
+doit jamais tirer sa date du **mtime du fichier** : un `git clone` la remet au jour du clone,
+donc la couverture et le texte finissent par se contredire. La version se lit **dans le
+document**, qui la porte déjà.
+
+⚠️ Et c'est le mtime qui **masquait** l'incohérence : il affichait la date du jour, la
+couverture semblait juste. Corriger une lecture approximative fait apparaître les défauts
+qu'elle cachait ; c'est le signe qu'on a corrigé la bonne chose, pas qu'on a cassé quelque
+chose.
+
+## Une leçon écrite ne protège pas le code écrit après elle
+
+Le matin, leçon posée noir sur blanc : le point d'entrée d'un fichier sensible n'est pas là
+où on le range, c'est **là où on le dépose** (`_partage/` a failli publier une signature
+manuscrite sur un dépôt public).
+
+Douze heures plus tard, dans le script que j'écrivais **pour cette signature-là**, mon mode
+`--voir` écrivait la planche à la racine du dépôt, où rien ne l'ignorait. Même faute, même
+journée, même fichier.
+
+⚠️ Le garde-fou utile n'est pas la note : c'est le **contrôle exécuté**. Ici `git status`
+relu avant le commit, qui a vu le `?? _planche-signature.png`. Écrire la règle et vérifier
+la règle sont deux gestes différents, et seul le second attrape quelque chose.
+
+## Ce qui protège un secret du dépôt est ce qui le fait disparaître du conteneur
+
+La photo de la signature vivait dans `secrets/` et `_partage/signature.JPG`, **ignorés par
+git** : c'est exactement ce qu'il faut sur un dépôt PUBLIC. Mais ignoré par git veut dire
+**absent du clone qui reconstruit la machine** : à la réinitialisation du conteneur, elle
+n'existe plus.
+
+⚠️ Il n'y a rien à corriger : c'est le prix du dépôt public, et il est juste. La conséquence
+est opérationnelle, et il faut la dire au lieu de la découvrir : une session dans le nuage ne
+peut produire un document signé **que dans la séance où la photo est envoyée**. Sur le PC de
+Mongazi, `secrets/` survit et le document se refait quand il veut.

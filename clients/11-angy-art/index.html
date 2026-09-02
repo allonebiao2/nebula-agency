@@ -62,8 +62,8 @@
     <a href="#haut">ACCUEIL</a>
     <a href="#demarche">L'ARTISTE</a>
     <a href="#oeuvres">LA COLLECTION</a>
-    <a href="#personnalise">SUR MESURE</a>
     <a href="#atelier">LE JOURNAL</a>
+    <a href="#personnalise">SUR MESURE</a>
     <a href="#visite">CONTACT</a>
     <a class="nav-m" href="https://wa.me/2290152006490" data-wa="direct">ÉCRIRE SUR WHATSAPP</a>
   </nav>
@@ -119,7 +119,30 @@
     <li><b>ATELIER</b><i>·</i><span>COTONOU</span></li>
   </ul>
 
-  <a class="pill hero-pill" href="#oeuvres">DÉCOUVRIR LES ŒUVRES</a>
+  <!-- ⚠️ LE SOMMAIRE REMPLACE LE BOUTON « DÉCOUVRIR LES ŒUVRES ».
+       Angélique, 2026-08-27 : elle regarde le site SUR TÉLÉPHONE, et là le
+       menu burger ne lui suffit pas — elle veut voir d'un coup d'œil ce que
+       le site contient et y accéder directement. Le nom change parce que ce
+       n'est plus seulement les œuvres.
+       ⚠️ IL EST DANS LE FLUX, pas en position absolue comme l'ancien bouton.
+       Celui-ci se posait SUR la ligne des métriques dès que le héros passait
+       sur une colonne (« DÉCOUVRIR L'ATELIER » barrait « PIÈCES · UNIQUES »
+       à 768 px, corrigé le 2026-08-08). Le héros est une colonne flex : le
+       sommaire y prend sa place, et rien ne peut le recouvrir.
+       ⚠️ « DÉCOUVRIR LES ŒUVRES » reste le libellé de l'entrée qui mène à la
+       collection : c'est sa formule, elle l'a nommée telle quelle. -->
+  <nav class="hero-plan" aria-label="Sommaire du site">
+    <p class="hero-plan-t">SOMMAIRE</p>
+    <ul>
+      <li><a href="#demarche">L'ARTISTE</a></li>
+      <li><a href="#oeuvres">DÉCOUVRIR LES ŒUVRES</a></li>
+      <li><a href="#atelier">LE JOURNAL</a></li>
+      <li><a href="#portfolio">DANS UN LIEU</a></li>
+      <li><a href="#personnalise">CRÉATIONS SUR MESURE</a></li>
+      <li><a href="#visite">CONTACT</a></li>
+    </ul>
+  </nav>
+
 </section>
 
 <!-- ============ 2. LA DÉMARCHE (crème) ============ -->
@@ -154,95 +177,6 @@
   </div>
 </section>
 
-<!-- ============ 2. LA MAIN, EN QUATRE TEMPS (papier) ============
-     La chronologie vraie d'une pièce, en photos d'atelier. C'est cette
-     section qui porte l'authenticité du site : on y voit la forme nue,
-     la couleur qu'elle mélange, le trait qu'elle pose, et l'échelle. -->
-<section class="sec sec--papier temps" id="atelier" aria-labelledby="h2c">
-  <div class="temps-tete">
-    <div>
-      <p class="lab">02 <i>—</i> LE JOURNAL <b></b></p>
-      <h2 class="grand" id="h2c" data-mots>Rien ne quitte l'atelier sans être passé
-        <em>par sa main.</em></h2>
-    </div>
-    <p class="temps-d">Chaque pièce traverse les mêmes quatre étapes, à Cotonou.
-      Aucune n'est déléguée, aucune n'est imprimée.</p>
-  </div>
-
-  <ol class="temps-l">
-    <li class="tp">
-      <div class="tp-i">
-        <img src="assets/images/scenes/temps-1.webp?v=20260826a" width="780" height="927" loading="lazy" decoding="async"
-             alt="Angélique applique l'enduit blanc au pinceau sur une forme découpée, encore sans couleur.">
-      </div>
-      <p class="tp-n">01</p>
-      <h3 class="tp-t">La forme</h3>
-      <p class="tp-s">La découpe reçoit son enduit blanc. Tant que la forme n'est pas juste,
-        la couleur attend.</p>
-    </li>
-    <li class="tp">
-      <div class="tp-i">
-        <img src="assets/images/scenes/temps-2.webp?v=20260826a" width="780" height="927" loading="lazy" decoding="async"
-             alt="Angélique mélange un orange sur une palette tenue dans un cadre doré, devant la pièce à peindre.">
-      </div>
-      <p class="tp-n">02</p>
-      <h3 class="tp-t">La couleur</h3>
-      <p class="tp-s">Le pigment se mélange à la main, dans un cadre doré qui lui sert
-        de palette.</p>
-    </li>
-    <li class="tp">
-      <div class="tp-i">
-        <img src="assets/images/scenes/temps-3.webp?v=20260826a" width="780" height="928" loading="lazy" decoding="async"
-             alt="Angélique trace une ligne blanche au pinceau fin sur un masque terracotta posé à plat.">
-      </div>
-      <p class="tp-n">03</p>
-      <h3 class="tp-t">Le trait</h3>
-      <p class="tp-s">Les motifs se posent au pinceau fin, un par un. Aucun gabarit,
-        aucune impression.</p>
-    </li>
-    <li class="tp">
-      <div class="tp-i">
-        <img src="assets/images/scenes/temps-4.webp?v=20260826a" width="780" height="929" loading="lazy" decoding="async"
-             alt="Angélique, assise sur un tabouret, peint une toile de plus de deux mètres portant deux grands masques.">
-      </div>
-      <p class="tp-n">04</p>
-      <h3 class="tp-t">L'échelle</h3>
-      <p class="tp-s">Certaines pièces dépassent deux mètres. On s'assoit devant,
-        à hauteur de main, et on prend le temps.</p>
-    </li>
-  </ol>
-</section>
-
-<!-- ============ 3. DANS UN LIEU (noir) — carrousel ============ -->
-<section class="sec sec--noir folio" id="portfolio" aria-labelledby="h2b">
-  <div class="folio-tete">
-    <div>
-      <p class="lab lab--n">03 <i>—</i> DANS UN LIEU <b></b></p>
-      <h2 class="grand grand--n" id="h2b" data-mots>Elle change la pièce <em>où elle entre.</em></h2>
-    </div>
-    <p class="folio-d">Des mises en situation&nbsp;: les pièces sont bien celles de l'atelier,
-      l'intérieur est une présentation. Les photos des œuvres disponibles, avec leurs
-      dimensions, s'envoient sur WhatsApp.</p>
-  </div>
-
-  <div class="cars" id="cars" data-cur="VOIR">
-    <div class="cars-p" id="carsP"><!-- posé par app.js --></div>
-  </div>
-
-  <div class="cars-b">
-    <div class="cars-n">
-      <button class="rond" id="carPrev" aria-label="Œuvre précédente">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
-      </button>
-      <button class="rond" id="carNext" aria-label="Œuvre suivante">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
-      </button>
-      <p class="cars-c" id="carsC" aria-live="polite">01 <i>—</i> 06</p>
-    </div>
-    <a class="pill pill--n" href="https://wa.me/2290152006490" data-wa="portfolio">VOIR TOUT LE PORTFOLIO</a>
-  </div>
-</section>
-
 
 <!-- ============ 4. LES ŒUVRES (papier) ============
      Les six pièces envoyées par Angélique le 2026-08-21, avec leurs titres,
@@ -255,9 +189,7 @@
      bien les siens ; les niches de marbre et les livres ne le sont pas. Même
      règle que le carrousel, posée le 2026-08-08. -->
 <section class="sec sec--papier oeuvres" id="oeuvres" aria-labelledby="h2o">
-  <p class="lab">04 <i>—</i> LA COLLECTION <b></b></p>
-
-  <p class="oeu-coll">COLLECTION <b>ÉNERGIES</b></p>
+  <p class="lab">02 <i>—</i> COLLECTION ÉNERGIES <b></b></p>
 
   <h2 class="grand" id="h2o" data-mots>Donner une forme à ce <em>qui ne se voit pas.</em></h2>
 
@@ -454,6 +386,95 @@
   </div>
 </section>
 
+<!-- ============ 2. LA MAIN, EN QUATRE TEMPS (papier) ============
+     La chronologie vraie d'une pièce, en photos d'atelier. C'est cette
+     section qui porte l'authenticité du site : on y voit la forme nue,
+     la couleur qu'elle mélange, le trait qu'elle pose, et l'échelle. -->
+<section class="sec sec--papier temps" id="atelier" aria-labelledby="h2c">
+  <div class="temps-tete">
+    <div>
+      <p class="lab">03 <i>—</i> LE JOURNAL <b></b></p>
+      <h2 class="grand" id="h2c" data-mots>Rien ne quitte l'atelier sans être passé
+        <em>par sa main.</em></h2>
+    </div>
+    <p class="temps-d">Chaque pièce traverse les mêmes quatre étapes, à Cotonou.
+      Aucune n'est déléguée, aucune n'est imprimée.</p>
+  </div>
+
+  <ol class="temps-l">
+    <li class="tp">
+      <div class="tp-i">
+        <img src="assets/images/scenes/temps-1.webp?v=20260826a" width="780" height="927" loading="lazy" decoding="async"
+             alt="Angélique applique l'enduit blanc au pinceau sur une forme découpée, encore sans couleur.">
+      </div>
+      <p class="tp-n">01</p>
+      <h3 class="tp-t">La forme</h3>
+      <p class="tp-s">La découpe reçoit son enduit blanc. Tant que la forme n'est pas juste,
+        la couleur attend.</p>
+    </li>
+    <li class="tp">
+      <div class="tp-i">
+        <img src="assets/images/scenes/temps-2.webp?v=20260826a" width="780" height="927" loading="lazy" decoding="async"
+             alt="Angélique mélange un orange sur une palette tenue dans un cadre doré, devant la pièce à peindre.">
+      </div>
+      <p class="tp-n">02</p>
+      <h3 class="tp-t">La couleur</h3>
+      <p class="tp-s">Le pigment se mélange à la main, dans un cadre doré qui lui sert
+        de palette.</p>
+    </li>
+    <li class="tp">
+      <div class="tp-i">
+        <img src="assets/images/scenes/temps-3.webp?v=20260826a" width="780" height="928" loading="lazy" decoding="async"
+             alt="Angélique trace une ligne blanche au pinceau fin sur un masque terracotta posé à plat.">
+      </div>
+      <p class="tp-n">03</p>
+      <h3 class="tp-t">Le trait</h3>
+      <p class="tp-s">Les motifs se posent au pinceau fin, un par un. Aucun gabarit,
+        aucune impression.</p>
+    </li>
+    <li class="tp">
+      <div class="tp-i">
+        <img src="assets/images/scenes/temps-4.webp?v=20260826a" width="780" height="929" loading="lazy" decoding="async"
+             alt="Angélique, assise sur un tabouret, peint une toile de plus de deux mètres portant deux grands masques.">
+      </div>
+      <p class="tp-n">04</p>
+      <h3 class="tp-t">L'échelle</h3>
+      <p class="tp-s">Certaines pièces dépassent deux mètres. On s'assoit devant,
+        à hauteur de main, et on prend le temps.</p>
+    </li>
+  </ol>
+</section>
+
+<!-- ============ 3. DANS UN LIEU (noir) — carrousel ============ -->
+<section class="sec sec--noir folio" id="portfolio" aria-labelledby="h2b">
+  <div class="folio-tete">
+    <div>
+      <p class="lab lab--n">04 <i>—</i> DANS UN LIEU <b></b></p>
+      <h2 class="grand grand--n" id="h2b" data-mots>Elle change la pièce <em>où elle entre.</em></h2>
+    </div>
+    <p class="folio-d">Des mises en situation&nbsp;: les pièces sont bien celles de l'atelier,
+      l'intérieur est une présentation. Les photos des œuvres disponibles, avec leurs
+      dimensions, s'envoient sur WhatsApp.</p>
+  </div>
+
+  <div class="cars" id="cars" data-cur="VOIR">
+    <div class="cars-p" id="carsP"><!-- posé par app.js --></div>
+  </div>
+
+  <div class="cars-b">
+    <div class="cars-n">
+      <button class="rond" id="carPrev" aria-label="Œuvre précédente">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
+      </button>
+      <button class="rond" id="carNext" aria-label="Œuvre suivante">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+      </button>
+      <p class="cars-c" id="carsC" aria-live="polite">01 <i>—</i> 06</p>
+    </div>
+    <a class="pill pill--n" href="https://wa.me/2290152006490" data-wa="portfolio">VOIR TOUT LE PORTFOLIO</a>
+  </div>
+</section>
+
 <!-- ============ 5. POUR UN LIEU (plein écran) ============
      L'axe le plus commercial de son activité : équiper un hôtel, un
      restaurant, un hall. Une pièce monumentale tient le mur d'une salle. -->
@@ -491,7 +512,7 @@
      ŒUVRE D'ART SUR COMMANDE. Le vocabulaire suit (histoire, mémoire,
      transmission, interprétation), et rien n'annonce de prix. -->
 <section class="sec sec--creme perso" id="personnalise" aria-labelledby="h2p">
-  <p class="lab">06 <i>—</i> CRÉATIONS SUR MESURE <b></b></p>
+  <p class="lab">05 <i>—</i> CRÉATIONS SUR MESURE <b></b></p>
 
   <h2 class="grand" id="h2p" data-mots>Une œuvre qui raconte <em>votre histoire.</em></h2>
 

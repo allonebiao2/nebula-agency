@@ -8,7 +8,9 @@
 > Les 3 guides (Catalogue, Vitrine, Outil métier) viennent après, et ils supposent
 > que vous avez lu celui-ci.
 >
-> Version 1.0 · 2026-07-30 · NEBULA Agency, Cotonou
+> Version 1.1 · 2026-09-02 · NEBULA Agency, Cotonou
+> *1.1 : les frais de réactivation sont chiffrés à 5 000 F, et le §5.2 ter dit qu'ils ne
+> rapportent rien au partenaire.*
 > Confidentiel · réservé aux partenaires actifs
 
 ---
@@ -532,8 +534,12 @@ avec les vôtres pour atteindre les 3 du mois, elles ne vous versent aucune comm
 
 Et pour le client, ce n'est pas anodin non plus : **sans paiement, son site est coupé au
 8e jour de retard.** L'hébergement s'arrête, la sécurité aussi, son QR code ne mène plus à
-rien et ses clients tombent sur une page d'erreur. Ses données sont gardées 6 mois, mais la
-remise en ligne peut coûter des frais de réactivation.
+rien et ses clients tombent sur une page d'erreur. Ses données sont gardées 6 mois, et la
+remise en ligne lui coûte **5 000 F de frais de réactivation**, en plus du semestre dû.
+
+**Ces 5 000 F ne vous rapportent rien** : ils couvrent la remise en ligne. Vous n'avez donc
+aucun intérêt à laisser un client tomber. Dites-lui le chiffre **avant** l'échéance : c'est
+un fait technique qu'on annonce, jamais une menace qu'on brandit.
 
 **Il a 7 jours de courtoisie après l'échéance, pas davantage.** Dites-le lui à l'avance :
 c'est précisément ce qui vous évite d'avoir à l'annoncer trop tard.

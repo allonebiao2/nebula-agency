@@ -1,0 +1,4 @@
+# Les captures et pages d'essai : elles se regénèrent en une commande
+# (python _voir.py, python _qc.py) et pèsent lourd pour rien.
+_vues/
+__pycache__/
