@@ -627,7 +627,7 @@ pause de Hillary, le 2026-08-18.
 ⚠️ Contexte **PC uniquement** : le moteur n'existe que sur pointeur fin
 (`(hover:hover) and (pointer:fine)`).
 
-**129 → 146 contrôles, tous verts. Rien n'est déployé.**
+**129 → 146 contrôles, tous verts.** *(Déployé le 2026-09-02, voir la fin du document.)*
 
 ### Les six questions tranchées, faute de réponse
 
@@ -656,15 +656,40 @@ Même famille que le témoin du 2026-08-18.
 
 **149 contrôles verts.**
 
-### ⏳ Ce qui reste, au 2026-08-21
+## ✅ Publié le 2026-09-02, depuis le PC de Cotonou
 
-- **Publier.** `_dist` est prêt (36 fichiers, 5,11 Mo) mais **rien n'est en
-  ligne** : `secrets/` est ignoré par git, donc une session en conteneur n'a
-  aucun jeton Cloudflare. Depuis le PC de Cotonou :
-  ```bash
-  python clients/11-angy-art/_dist.py
-  npx wrangler pages deploy clients/11-angy-art/_dist --project-name=angy-art --branch=main
-  ```
+Tout ce qui dormait dans `main` est en ligne : les quatre corrections
+d'Angélique, le bouton du héros devenu **sommaire**, et la vague fluidité.
+
+```bash
+python clients/11-angy-art/_dist.py
+wrangler pages deploy clients/11-angy-art/_dist --project-name=angy-art --branch=main
+```
+
+⚠️ **`wrangler` global, pas `npx`** : le paquet a été supprimé avec les
+`node_modules` et le cache npm a été vidé. Le jeton vient de
+`secrets/cloudflare.env`, ignoré par git : **une session en conteneur ne peut
+pas publier**, c'est le PC qui le fait.
+
+**Ce qui a été vérifié après coup**, et pas seulement le code de retour :
+
+- `_dist` reconstruit : **37 fichiers, 4,67 Mo**, aucune trace des anciennes
+  images générées ;
+- **150 contrôles verts** avant l'envoi ;
+- `index.html`, `app.js` et `app.css` servis **identiques au disque en MD5** ;
+- **34 fichiers sur 37 répondent 200**, et les 3 autres sont corrects :
+  `_headers` en **404** (c'est un fichier de configuration, il ne doit pas
+  être public), `index.html` et `404.html` en **308** vers leurs adresses
+  propres ;
+- un fichier absent répond bien **404** ;
+- le corps servi porte `ACCUEIL`, `L'ARTISTE`, `SUR MESURE`, `ÉNERGIES`, les
+  titres d'œuvres et les trois cartels **MISE EN SITUATION**.
+
+⚠️ **Un `git push` ne déploie rien.** Le travail était dans `main` depuis le
+2026-08-21 et le site servait encore l'état d'avant.
+
+### ⏳ Ce qui reste, au 2026-09-02
+
 - Ce qu'elle pourra corriger **en observant** : la cinquième/sixième œuvre
   d'ÉNERGIES, son texte d'introduction, le statut de chaque pièce.
 - Toujours : l'adresse de l'atelier, de vrais avis, **tester le numéro
