@@ -36,10 +36,19 @@ SORTIE = os.path.join(REPO, "secrets", "signature-mongazi.png")
 SEUIL_BLEU = 30      # B - R, en niveaux 0-255
 SEUIL_LUM  = 180     # au-dessus, c'est du papier ou un reflet
 
-# Un quart de tour HORAIRE. Constaté en fabriquant les deux rotations possibles
-# et en les regardant : boucle capitale à gauche, longue envolée finale vers la
-# droite. L'axe principal mesuré (70,7°) dit l'inclinaison, pas l'endroit.
-QUART_HORAIRE = Image.Transpose.ROTATE_270
+# ⛔ La rotation N'A PAS DE VALEUR PAR DÉFAUT, et c'est délibéré.
+# La 1re photo arrivait couchée et demandait un quart de tour horaire. La 2e,
+# prise au même endroit sur le même carrelage, sortait DÉJÀ DROITE d'
+# `exif_transpose` : le même quart de tour la remettait sur le flanc. Un défaut
+# se trompe donc une fois sur deux. On regarde la planche, on décide, on passe
+# `--rot`. Le script prévient quand la boîte est plus haute que large : une
+# signature couchée, c'est presque toujours ça.
+ROTATIONS = {
+    "aucune":  None,
+    "horaire": Image.Transpose.ROTATE_270,
+    "anti":    Image.Transpose.ROTATE_90,
+    "demi":    Image.Transpose.ROTATE_180,
+}
 
 MARGE = 24           # px de papier gardés autour du tracé
 
@@ -59,7 +68,7 @@ def _charger(chemin):
     return im.convert("RGB")
 
 
-def detourer(chemin, marge=MARGE, rotation=QUART_HORAIRE):
+def detourer(chemin, marge=MARGE, rotation=None):
     im = _charger(chemin)
     a = np.asarray(im).astype(np.int16)
     R, G, B = a[..., 0], a[..., 1], a[..., 2]
@@ -70,6 +79,16 @@ def detourer(chemin, marge=MARGE, rotation=QUART_HORAIRE):
     encre = (teinte > SEUIL_BLEU) & (lum < SEUIL_LUM)
     if not encre.any():
         raise SystemExit("Aucune encre bleue trouvée : mauvaise photo, ou seuils à revoir.")
+
+    # Le masque attrape aussi les reflets bleutés du carrelage. Une signature est
+    # d'un seul tenant : on ne garde que la plus grosse tache, et ce qui la
+    # frôle (un point détaché, une barre). Sans ça, un reflet à l'autre bout de
+    # la photo étirait la boîte de 1241 px à 1911.
+    from scipy import ndimage
+    etiq, n = ndimage.label(ndimage.binary_dilation(encre, iterations=6))
+    if n > 1:
+        tailles = ndimage.sum(encre, etiq, range(1, n + 1))
+        encre = encre & (etiq == (int(np.argmax(tailles)) + 1))
 
     ys, xs = np.nonzero(encre)
     y0, y1 = int(ys.min()), int(ys.max())
@@ -88,9 +107,19 @@ def detourer(chemin, marge=MARGE, rotation=QUART_HORAIRE):
     x0, x1 = max(0, x0 - marge), min(l - 1, x1 + marge)
 
     # Alpha CONTINU : la teinte décide, la noirceur module. Les déliés survivent.
-    t = np.clip((teinte - SEUIL_BLEU) / 60.0, 0, 1)
+    #
+    # ⚠️ La rampe était FIXE (60 niveaux au-dessus du seuil), calibrée sur une
+    # photo dont l'encre montait à B-R = 90. La 2e photo, prise dans une pièce
+    # plus sombre, plafonne à 42 : la même formule sortait 0,20 d'opacité, une
+    # signature fantôme, et le masque était pourtant PARFAIT. La rampe se cale
+    # donc sur CETTE photo-ci, au 85e centile de la teinte de l'encre trouvée :
+    # le plein du trait devient opaque, les bords restent progressifs, et une
+    # photo vive comme une photo terne sortent pareil.
+    plein = float(np.percentile(teinte[encre], 85))
+    plein = max(plein, SEUIL_BLEU + 12)          # garde-fou si l'encre est très pâle
+    t = np.clip((teinte - SEUIL_BLEU) / (plein - SEUIL_BLEU), 0, 1)
     noirceur = np.clip((SEUIL_LUM - lum) / SEUIL_LUM, 0, 1)
-    alpha = np.clip(t * (0.35 + 0.65 * noirceur), 0, 1)
+    alpha = np.clip(t * (0.55 + 0.45 * noirceur), 0, 1)
 
     alpha = alpha[y0:y1 + 1, x0:x1 + 1]
     encre_c = a[y0:y1 + 1, x0:x1 + 1]
@@ -135,11 +164,21 @@ if __name__ == "__main__":
     if not args:
         raise SystemExit(__doc__.strip().splitlines()[2].strip())
 
-    img, infos, _ = detourer(args[0])
+    nom_rot = "aucune"
+    for a in sys.argv:
+        if a.startswith("--rot="):
+            nom_rot = a.split("=", 1)[1]
+    if nom_rot not in ROTATIONS:
+        raise SystemExit("--rot doit valoir : " + " | ".join(ROTATIONS))
+
+    img, infos, _ = detourer(args[0], rotation=ROTATIONS[nom_rot])
     print("  photo   %d x %d" % infos["photo"])
     print("  boîte   %d x %d  (%.2f %% de la photo est de l'encre)"
           % (infos["boite"][0], infos["boite"][1], infos["part"] * 100))
-    print("  sortie  %d x %d  après le quart de tour horaire" % infos["sortie"])
+    print("  sortie  %d x %d  (rotation : %s)" % (infos["sortie"] + (nom_rot,)))
+    if infos["sortie"][1] > infos["sortie"][0]:
+        print("  ⚠️  plus HAUTE que large : une signature est presque toujours\n"
+              "      couchée dans ce cas. Regarder la planche avant de conclure.")
     print("  opaque  %.1f %% des pixels au-dessus de 50 %% d'alpha"
           % (infos["opaque"] * 100))
 
