@@ -373,6 +373,15 @@
 | **Bureau des partenaires** | **Render** (`srv-d9nni7e7bikc73c9oksg`) + **Supabase** (schéma `naff`) | Railway a fait disparaître l'app le 2026-08-01, données de prod perdues |
 | Le domaine des partenaires | relais Cloudflare Pages `nebula-partenaires` | change d'origine sans toucher au DNS |
 
+⚠️ **UN SEUL PROJET SUPABASE PORTE TROIS PRODUITS** (vérifié 2026-09-03) : la référence
+`xukduhqqfzogisoimhyo`, région `eu-central-1`, **affichée sous le nom `boussole`** dans le
+tableau de bord. Elle contient le schéma **`piste`** (10 tables), le schéma **`naff`** du
+bureau des partenaires (16 tables) et **`public.boussole_proto_etat`**. Le nom du projet ne
+dit donc pas ce qu'il contient. ⛔ **Si ce projet est mis en pause, les trois tombent
+ensemble** — et les deux autres projets du compte (`cercle`, `allonebiao2@gmail.com's
+Project`) sont déjà en pause, donc ça arrive. ⚠️ Un **jeton d'accès** Supabase est lié au
+**compte**, pas à un projet : `supabase.com/dashboard/account/tokens`.
+
 ⚠️ **Railway est abandonné** (exige une carte). ⚠️ **Le VPS Hostinger `72.61.103.56`
 n'appartient plus à Mongazi** (certificat au nom de `api-preprod.normly.fr`) : ne jamais y
 toucher. ⚠️ **L'auto-déploiement Render ne marche pas** (dépôt branché par URL publique) :
