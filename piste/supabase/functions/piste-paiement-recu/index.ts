@@ -161,6 +161,50 @@ Deno.serve(async (req: Request) => {
     return ok({ ok: false, erreur: 'état' }, 500)
   }
 
-  console.log('saspay · payée', reference, cmd?.total, r.devise)
-  return journal('payee')
+  /* ══ ET LE CARNET PART, MÊME À TROIS HEURES DU MATIN ═══════════════════════
+     C'est ce qui rend le paiement en ligne utile : sans ça, un client paie la
+     nuit et attend le réveil de quelqu'un. On appelle `piste-livrer`, qui sait
+     déjà choisir les fiches, poser le carnet et écrire les deux courriels —
+     recopier ce code ici aurait fait deux vérités.
+
+     ⛔ UN ÉCHEC DE LIVRAISON NE DOIT JAMAIS FAIRE ÉCHOUER L'ENCAISSEMENT.
+     L'argent est arrivé, la commande est marquée payée : c'est acquis. Si la
+     livraison rate (plus de fiches libres, courriel refusé, réseau), on
+     répond quand même 200 à SasPay — sinon il rejouerait la notification et
+     on rejouerait tout le reste — et on écrit au journal ce qui manque. La
+     commande apparaît alors « payée non livrée » dans le cockpit, ce qui est
+     exactement l'état vrai.
+
+     ⚠️ Rejouer est sans danger : `piste_poser_carnet` refuse une deuxième
+     pose, et l'index unique du journal refuse un deuxième événement. C'est ce
+     qui permet de livrer ici plutôt que d'inventer une réservation en deux
+     temps. */
+  let livre = 'non tentée'
+  const jeton = Deno.env.get('PISTE_JETON_INTERNE') || ''
+  if (jeton.length >= 16) {
+    try {
+      const rep = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/piste-livrer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+        },
+        body: JSON.stringify({ reference, interne: jeton }),
+      })
+      const j = await rep.json().catch(() => null)
+      livre = j?.ok === true ? (j.deja ? 'déjà livrée' : 'livrée') : `échec livraison : ${j?.erreur || rep.status}`
+      if (j?.ok !== true) console.error('saspay livraison', reference, livre)
+    } catch (e) {
+      livre = 'échec livraison : ' + String(e)
+      console.error('saspay livraison', reference, livre)
+    }
+  } else {
+    /* ⚠️ Dire pourquoi, plutôt que de livrer en silence ou pas du tout : c'est
+       ce message qui apprend que le secret n'est pas posé. */
+    livre = 'non tentée · PISTE_JETON_INTERNE absent'
+    console.error('saspay livraison', reference, livre)
+  }
+
+  console.log('saspay · payée', reference, cmd?.total, r.devise, '·', livre)
+  return journal('payee · ' + livre)
 })

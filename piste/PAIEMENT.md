@@ -206,6 +206,44 @@ SasPay et tout est journalisé. Le pire cas est le rapprochement à la main,
 c'est-à-dire exactement ce qui se faisait avant. **Rien n'est perdu, et rien
 n'est promis de faux.**
 
+### ✅ 2026-09-03 · LE CARNET PART TOUT SEUL
+
+*« Même si je dors, et qu'il y a des clients, que ça s'encaisse tout seul. »*
+C'est ce qui rend le paiement en ligne utile : sans livraison automatique, un
+client paie la nuit et attend le réveil de quelqu'un.
+
+`piste-paiement-recu` appelle donc `piste-livrer` dès qu'un paiement est
+confirmé. ⚠️ **Il l'appelle, il ne le recopie pas** : le choix des fiches, la
+pose du carnet et les deux courriels sont écrits une fois, à un seul endroit.
+
+**La porte interne** (`PISTE_JETON_INTERNE`, secret Supabase) ne desserre que
+deux choses, et pour de vraies raisons : le mot de passe du cockpit (un serveur
+n'en a pas) et le verrou anti-force-brute (il protège le cockpit de Mongazi —
+le laisser bloquer une livraison, ce serait qu'un inconnu tapant des mots de
+passe au hasard empêche un client qui a **payé** de recevoir sa marchandise).
+⛔ **Tout le reste est identique** : commande introuvable, déjà livrée, fiches
+insuffisantes. Une porte interne n'est pas une porte dérobée.
+
+Vérifié en ligne, sans rien livrer : sans jeton → « mot de passe » ; jeton faux,
+vide ou de la bonne longueur mais erroné → « mot de passe » ; bon jeton et
+référence inexistante → « commande introuvable ».
+
+⛔ **UN ÉCHEC DE LIVRAISON NE FAIT JAMAIS ÉCHOUER L'ENCAISSEMENT.** L'argent est
+arrivé, la commande est marquée payée : c'est acquis. Si la livraison rate, on
+répond quand même 200 à SasPay — sinon il rejouerait la notification — et le
+journal porte la raison. La commande apparaît « payée non livrée », ce qui est
+l'état vrai.
+
+⚠️ **Rejouer est sans danger** : `piste_poser_carnet` refuse une deuxième pose
+et l'index unique du journal refuse un deuxième événement. C'est ce qui permet
+de livrer ici plutôt que d'inventer une réservation en deux temps — le fichier
+portait justement cet avertissement, écrit avant que ce jour arrive.
+
+⚠️ **Trois fonctions n'avaient AUCUNE source dans le dépôt** (`piste-livrer`,
+`piste-commande`, `piste-signalement`) : elles n'existaient que déployées, ce
+que ce fichier annonçait comme un risque depuis le début. Elles sont
+rapatriées (`supabase functions download`).
+
 ### ✅ 2026-09-03 · la base est installée, et elle a corrigé deux erreurs
 
 `paiement.sql` est **joué** sur le projet PISTE : 2 tables (RLS activée) et 4
