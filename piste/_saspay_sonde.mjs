@@ -52,6 +52,26 @@ if (!CLE) {
 `)
   process.exit(1)
 }
+/*
+  ⛔ REFUSER UN EXEMPLE RECOPIÉ. Le gabarit donné dans PAIEMENT.md porte des
+  valeurs d'illustration, et elles se recopient telles quelles : c'est arrivé
+  du premier coup. Sans ce garde-fou, la sonde partait interroger SasPay avec
+  « sk_live_ta_nouvelle_cle », récoltait un 401 partout, et le rapport
+  accusait l'adresse alors que le fautif était le fichier.
+*/
+if (/ta_nouvelle_cle|xxxx+|^sk_live_\.\.\.|_de_l_onglet_/i.test(CLE)) {
+  console.log(`
+  ⛔ La clé lue est encore l'exemple, pas la vraie :
+
+       ${CLE.slice(0, 12)}…
+
+     Ouvre secrets/saspay.env et remplace la valeur de SASPAY_CLE_SECRETE par
+     la clé copiée depuis SasPay. Ni guillemets, ni espace autour du « = ».
+     SASPAY_SECRET_WEBHOOK peut rester vide : la sonde n'en a pas besoin.
+`)
+  process.exit(1)
+}
+
 console.log(`\n  Clé : …${CLE.slice(-4)}  ·  montant d'essai : ${MONTANT} F\n`)
 
 /* ── ce qu'on essaie ──────────────────────────────────────────────────────── */
