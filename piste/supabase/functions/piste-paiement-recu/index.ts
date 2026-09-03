@@ -149,7 +149,12 @@ Deno.serve(async (req: Request) => {
     et réserver en deux temps : poser, agir, confirmer.
   */
   const { data: fait, error: eE } = await db.rpc('piste_etat_commande', {
-    p_reference: reference, p_etat: 'payee',
+    /* ⛔ « paye », PAS « payee ». La contrainte de `piste.commandes` n'accepte
+       que attente / paye / livre / expire / annule — mesuré le 2026-09-03 en
+       transaction annulée. Écrire « payee » lève une violation de contrainte,
+       et ça ne se serait vu qu'au premier paiement réussi : le client aurait
+       payé, la commande serait restée « en attente ». */
+    p_reference: reference, p_etat: 'paye',
   })
   if (eE || fait !== true) {
     console.error('saspay état', reference, eE?.message)

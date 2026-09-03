@@ -9,19 +9,18 @@
 -- n'est écrit que dans l'éditeur Supabase n'est relu par personne et disparaît
 -- avec le projet.
 --
--- ⚠️ UNE SEULE HYPOTHÈSE, ET ELLE EST VÉRIFIÉE PLUS BAS : la table des
--- commandes s'appelle `piste.commande`, et le total est dans
--- `commande->>'total'`. C'est ce que laisse lire `piste_commandes_recentes`.
--- Si le nom diffère, le premier bloc s'arrête net et le dit : rien ne
--- s'installe à moitié.
+-- ✅ VÉRIFIÉ SUR LA BASE le 2026-09-03 : la table est `piste.commandes`, AU
+-- PLURIEL (le premier jet disait `piste.commande` et le garde-fou du bloc 0
+-- l'a arrêté net, ce pour quoi il est écrit), et le total est bien dans
+-- `commande->>'total'` (35 commandes relues).
 -- ════════════════════════════════════════════════════════════════════════════
 
 -- ── 0. le garde-fou ─────────────────────────────────────────────────────────
 DO $$
 BEGIN
-  IF to_regclass('piste.commande') IS NULL THEN
+  IF to_regclass('piste.commandes') IS NULL THEN
     RAISE EXCEPTION
-      'Table piste.commande introuvable. Regarde le vrai nom (\d piste.*) et '
+      'Table piste.commandes introuvable. Regarde le vrai nom (\d piste.*) et '
       'remplace-le partout dans ce fichier avant de le rejouer. Rien n''a été '
       'installé.';
   END IF;
@@ -86,7 +85,7 @@ LANGUAGE sql SECURITY DEFINER SET search_path = piste, public AS $$
   SELECT true,
          c.etat::text,
          COALESCE((c.commande->>'total')::numeric, 0)
-    FROM piste.commande c
+    FROM piste.commandes c
    WHERE c.reference = p_reference
    LIMIT 1;
 $$;

@@ -17,6 +17,7 @@
   jamais appeler SasPay.
 */
 import http from 'node:http'
+import fs from 'node:fs'
 
 const M = await import('./supabase/functions/_shared/saspay.ts')
 const ok = [], ko = []
@@ -120,6 +121,30 @@ const nNu = M.lireNotification({
   data: { id: 'abc', reference: 'TXN-2026-000456', status: 'SUCCESS', amount: '25000.00', currency: 'XOF' },
 })
 dire(!/^PISTE-/.test(nNu.reference), `sans metadata, la référence SasPay ne se déguise pas en commande PISTE`)
+
+/* ── le vocabulaire des etats ────────────────────────────────────────────────
+   Mesure sur la base le 2026-09-03 : piste.commandes n'accepte que
+   attente / paye / livre / expire / annule. Le reste de l'application dit
+   « payee » et « livree ». Un controle qui LIT le fichier, parce que la valeur
+   ecrite est une constante dans le code du webhook et que rien d'autre ne la
+   verifie avant le premier paiement reussi. */
+const ETATS_BASE = ['attente', 'paye', 'livre', 'expire', 'annule']
+const recu = fs.readFileSync(new URL('./supabase/functions/piste-paiement-recu/index.ts', import.meta.url), 'utf8')
+const ecrits = [...recu.matchAll(/p_etat:\s*'([a-z]+)'/g)].map((m) => m[1])
+dire(ecrits.length > 0, `le webhook ecrit bien un etat de commande`)
+dire(ecrits.every((e) => ETATS_BASE.includes(e)),
+     `tout etat ecrit par le webhook est accepte par la contrainte de la base (vu : ${ecrits.join(', ')})`)
+
+/* Et le garde « deja payee » doit reconnaitre l'orthographe DE LA BASE, sinon
+   il ne se declenche jamais et une notification rejouee repaie la commande. */
+const Rdeja = { ...M.reglages(), devise: 'XOF', multiple: 1, deviseSiAbsente: '' }
+const nDeja = { evenementId: 'e', reference: 'PISTE-AB2C', session: 's', montant: 10000, devise: 'XOF', etat: 'paye' }
+for (const etat of ['paye', 'payee', 'livre', 'livree']) {
+  dire(M.decider(nDeja, { existe: true, etat, total: 10000 }, Rdeja).payer === false,
+       `une commande deja « ${etat} » n'est pas repayee`)
+}
+dire(M.decider(nDeja, { existe: true, etat: 'attente', total: 10000 }, Rdeja).payer === true,
+     `une commande « attente » est bien encaissee`)
 
 /* ── retrouver la commande par la transaction ────────────────────────────────
    C'est le maillon qui manquait : la notification ne nomme aucune commande.

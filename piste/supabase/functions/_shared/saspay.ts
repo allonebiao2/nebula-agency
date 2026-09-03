@@ -409,7 +409,13 @@ export function decider(n: Notification, cmd: Attendu | null, r: Reglages): Deci
     return { payer: false, agi: `refus · montant ${recu ?? 'illisible'} au lieu de ${attendu}` }
   }
 
-  if (cmd.etat === 'payee' || cmd.etat === 'livree') return { payer: false, agi: 'déjà payée' }
+  /* ⛔ LES DEUX ORTHOGRAPHES, ET CE N'EST PAS DE LA PRUDENCE DÉCORATIVE. La
+     base écrit « paye » / « livre » ; le reste de l'application dit « payee »
+     / « livree ». Ce garde ne comparant qu'aux secondes, il ne se serait
+     JAMAIS déclenché : une notification rejouée aurait re-marquée payée une
+     commande déjà payée, autant de fois qu'elle arrive. */
+  const DEJA = ['paye', 'payee', 'livre', 'livree']
+  if (DEJA.includes(String(cmd.etat))) return { payer: false, agi: 'déjà payée' }
   return { payer: true, agi: 'payee' }
 }
 

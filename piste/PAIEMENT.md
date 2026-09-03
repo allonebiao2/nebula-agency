@@ -122,7 +122,8 @@ node --experimental-strip-types _qc_paiement.mjs   # ou : npm run qc:paiement
 Arrivé le 2026-09-03. Le fichier `secrets/saspay.env` avait été réécrit par un
 outil Windows, donc en **CRLF**. Le lecteur de la sonde coupait sur `'
 '`, le
-`''` restait collé en fin de ligne, et comme « . » ne traverse pas un retour
+`'
+'` restait collé en fin de ligne, et comme « . » ne traverse pas un retour
 chariot en JavaScript, le `$` de sa regex ne s'accrochait plus à rien :
 **aucune ligne lue**, `Bearer undefined` envoyé, et SasPay répondant « Clé API
 invalide » sur six routes d'affilée.
@@ -132,10 +133,42 @@ invisible.** Ce qui a tranché en trois secondes : la même clé, extraite par
 `sed` et envoyée par `curl`, répondait **200**. Quand un outil échoue et qu'un
 autre réussit sur la même donnée, le défaut est dans l'outil.
 
-Le lecteur coupe désormais sur `/?
+Le lecteur coupe désormais sur `/
+?
 /`. ⚠️ Et la règle de la maison sur les
 écritures de fichiers (Node/Python en UTF-8, jamais PowerShell) vaut aussi
 pour les **fins de ligne**, pas seulement pour les accents.
+
+### ✅ 2026-09-03 · la base est installée, et elle a corrigé deux erreurs
+
+`paiement.sql` est **joué** sur le projet PISTE : 2 tables (RLS activée) et 4
+fonctions, vérifiées en lisant une vraie commande. Le garde-fou du bloc 0 a
+servi deux fois, exactement comme prévu.
+
+⛔ **La table s'appelle `piste.commandes`, au pluriel.** Le fichier disait
+`piste.commande` et s'est arrêté net plutôt que de s'installer à moitié.
+
+⛔ **Et surtout : la base et l'application ne parlent pas la même langue.** La
+contrainte de `piste.commandes` n'accepte que
+`attente / paye / livre / expire / annule`. Le webhook écrivait **`payee`**, que
+la base **refuse** (mesuré en transaction annulée). Conséquence si personne ne
+l'avait vu : **le client paie, SasPay confirme, et la commande reste « en
+attente »** — le défaut n'apparaissant qu'au premier paiement réussi, c'est-à-dire
+au pire moment possible.
+
+⚠️ Le même écart cassait le garde « déjà payée » : il ne comparait qu'à `payee`
+et `livree`, donc il **ne se serait jamais déclenché**, et une notification
+rejouée aurait re-marqué payée une commande déjà payée. Il accepte désormais
+les deux orthographes.
+
+⚠️ **Ce n'est pas propre au paiement** : `piste-cockpit/index.ts` et
+`Cockpit.jsx` emploient partout `payee` / `livree` / `annulee`, et la table
+n'en accepte aucun. **À vérifier sur le cockpit déployé** — hors du périmètre
+de cette vague, mais si le bouton « Marquer payé » n'a jamais fonctionné,
+c'est là que ça se joue.
+
+Un contrôle du QC lit désormais le fichier du webhook et refuse tout état que
+la contrainte n'accepte pas.
 
 ### Où vit la clé, et où elle ne vit pas
 
