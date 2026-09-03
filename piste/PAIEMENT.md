@@ -166,10 +166,45 @@ l'écriture au journal aboutit. ⚠️ La ligne d'essai (`session =
 essai-technique-nebula`) **reste dans `piste.paiement_evenement`** : on ne
 supprime pas des lignes d'un journal de paiement, même de test.
 
+### ✅ Le bouton est OUVERT sur le site (2026-09-03, décision de Mongazi)
+
+`SASPAY_PRET = true`, construit, contrôlé et **déployé** : le domaine sert le
+fichier construit ici, au nom près.
+
+⛔ **Un trou trouvé en branchant, et il était sérieux : la route `#/merci`
+n'existait pas.** C'est pourtant l'adresse où SasPay ramène le client après un
+paiement réussi, et le routeur y retombait silencieusement sur la vitrine. On
+payait 4 320 F et on atterrissait sur la page d'accueil, sans un mot et sans
+son code. ⚠️ Le défaut ne venait pas du paiement : il venait de ce que
+personne n'avait suivi le client APRÈS le bouton.
+
+La page existe donc, et **elle ne dit jamais « paiement confirmé »** : un
+retour de navigateur ne prouve rien, et on y arrive aussi en tapant l'adresse.
+Elle rappelle le code, dit qu'elle n'est pas un reçu, et laisse un moyen de
+nous joindre. ⚠️ Le code vient du site lui-même, rangé juste avant de partir
+payer : l'adresse de retour de SasPay est fixe et ne porte aucun paramètre.
+
+Le Mobile Money à la main **reste en dessous**, et un contrôle vérifie
+l'**ordre**, pas seulement la présence.
+
 ⏳ **Il ne manque plus que le premier encaissement réel** (200 F minimum), qui
 seul peut prouver le dernier maillon : que le champ `transaction` de la session
 de checkout se remplisse, et donc que `referenceParTransaction()` retrouve la
-commande. `SASPAY_PRET` reste `false` jusque-là.
+commande.
+
+⚠️ **D'ici là, surveiller le journal après chaque paiement en ligne.** Une
+ligne « sans commande » veut dire que quelqu'un a payé et que personne n'a été
+prévenu :
+
+```sql
+select recu_le, reference, montant, etat_lu, agi
+  from piste.paiement_evenement order by id desc limit 10;
+```
+
+⚠️ **Ce que ça coûte si le maillon rate** : l'argent arrive quand même chez
+SasPay et tout est journalisé. Le pire cas est le rapprochement à la main,
+c'est-à-dire exactement ce qui se faisait avant. **Rien n'est perdu, et rien
+n'est promis de faux.**
 
 ### ✅ 2026-09-03 · la base est installée, et elle a corrigé deux erreurs
 
