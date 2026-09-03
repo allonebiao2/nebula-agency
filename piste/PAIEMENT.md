@@ -85,6 +85,22 @@ supabase functions deploy piste-paiement-recu --no-verify-jwt
 node _qc_paiement.mjs
 ```
 
+### Où vit la clé, et où elle ne vit pas
+
+| Endroit | Quoi |
+|---|---|
+| `supabase secrets set` | **la vraie place.** C'est de là que la fonction la lit |
+| `secrets/saspay.env`, sur le PC de Cotonou | la copie de sauvegarde. `secrets/` est ignoré par git (`.gitignore` ligne 24) |
+| `.env.example` | la **forme** des variables, sans aucune valeur. C'est le seul des trois qui est versionné |
+
+⛔ **Jamais dans le dépôt, jamais dans une vitrine, jamais dans un paquet
+JavaScript.** Le dépôt est public et le site est statique.
+
+⚠️ **Une clé qui a transité par une conversation, un courriel ou une capture
+d'écran est à considérer comme connue de tiers : on la fait tourner.** Chez
+SasPay comme ailleurs, révoquer et régénérer coûte une minute ; un encaissement
+détourné coûte le chiffre d'affaires.
+
 ⛔ `--no-verify-jwt` n'est pas une négligence : SasPay n'a pas de jeton Supabase
 à présenter. Ce qui protège cette porte, c'est **la signature**.
 
