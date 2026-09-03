@@ -409,6 +409,20 @@ def main():
                 attendre(lambda: pg.frame_locator("#apercu")
                          .locator("#btn-ouvrir").is_visible()))
 
+            # ⛔ « maxlength » TRONQUE AVANT le filtre : coller « abc1234 »
+            # laissait « abc1 », le filtre retirait les lettres, et le code
+            # tombait a « 1 ». Defaut trouve par la session telephone dans mon
+            # propre fichier, mesure en navigateur.
+            for saisi, attendu in (("abc1234", "1234"), ("12ab34", "1234"),
+                                   ("99999", "9999"), ("1234", "1234")):
+                pg.fill("#f-code", "")
+                pg.type("#f-code", saisi)
+                pg.wait_for_timeout(120)
+                dit("code secret : « %s » donne « %s »" % (saisi, attendu),
+                    pg.input_value("#f-code") == attendu,
+                    "obtenu %r" % pg.input_value("#f-code"))
+            pg.fill("#f-code", "")
+
             # ⛔ LE TROU DE L'ECRAN 4 : il quitte la page pour payer.
             garde = pg.evaluate("localStorage.getItem('minuit:brouillon')")
             dit("le brouillon est ecrit a la frappe", bool(garde) and "Zara" in garde)
