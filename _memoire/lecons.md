@@ -1952,3 +1952,43 @@ travailler sur `main` à jour en étant quatre commits en arrière. Vérifier
 - **À appliquer** : chercher les `vw` dans les polices dont le conteneur est en
   `min(…, Npx)`. Vérifier le **nombre de lignes** aux largeurs au-dessus du
   plafond (768, 1440), pas seulement à 390.
+
+---
+
+## Regarder sert à repérer, mesurer sert à conclure
+
+**2026-09-03, signature du contrat.** Sur l'aperçu de la page, la signature paraissait grise
+et faible. J'allais renforcer son alpha. Mesurée sur les pixels réellement rendus à 300 dpi :
+trait le plus foncé à **19,25:1** sur la case, trait courant à **12:1**. De l'encre franche.
+
+Le « pâle » venait de l'aperçu **réduit** : un trait d'un pixel moyenné avec du blanc devient
+gris. J'aurais **dénaturé une signature** pour corriger un défaut de ma visionneuse.
+
+⚠️ Le même jour, la faute inverse : une sortie qui avait l'air fausse (0,3 % d'opaques) et
+dont j'ai d'abord soupçonné le mauvais étage. Les deux se règlent pareil : **l'œil désigne
+l'endroit où chercher, la mesure dit ce qui s'y passe**. Conclure depuis l'un ou l'autre seul
+donne une erreur dans un sens ou dans l'autre.
+
+⛔ Et le cas particulier qui rend ça grave ici : **on ne retouche ni la couleur ni l'opacité
+d'une signature**. La rendre « plus belle », c'est la falsifier. Recadrer, oui, ça ne change
+pas le tracé.
+
+---
+
+## 2026-09-03 — Deux sessions, la même leçon, sans se voir
+
+Le même jour, sur deux chantiers sans rapport (la signature du contrat et
+l'ouverture de la lettre MINUIT), deux sessions ont écrit la même chose :
+*« l'œil désigne l'endroit où chercher, la mesure dit ce qui s'y passe »* d'un
+côté, *« vérifier sa sonde avant d'accuser le produit »* de l'autre.
+
+⚠️ Les deux fautes sont **symétriques** : conclure d'un coup d'œil qu'une
+signature est pâle (elle était à 19:1), et conclure d'une sonde qu'un rabat est
+bloqué (elle lisait le « 3 » de `matrix3d`). **Regarder sans mesurer se trompe
+sur la cause ; mesurer sans regarder ne trouve pas le défaut** — l'amorce à
+0,2 px du bord de la poche avait traversé 36 contrôles verts et n'a été vue que
+sur une capture.
+
+Quand deux chantiers indépendants produisent la même leçon le même jour, elle
+n'est plus une anecdote : c'est une méthode.
+
