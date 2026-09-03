@@ -60,6 +60,36 @@ fait 7 817 fiches sur **trois pays** : si un Togolais ou un Ivoirien peut payer
 seul, c'est le plus gros verrou commercial de PISTE qui saute. ⛔ Rien n'est
 annoncé avant un encaissement réel depuis Lomé ou Abidjan.
 
+### ✅ Et la devise, confirmée dans la foulée
+
+Mongazi : « XOF et XAF aussi etc. » Le **CDF de la première capture n'était que
+la devise sélectionnée par défaut**, pas la seule disponible. ⚠️ *Une valeur
+affichée dans un formulaire n'est pas la liste des valeurs possibles : j'ai
+construit un verrou entier sur une capture d'écran, et j'avais raison de le
+construire, mais tort de croire que la capture disait tout.*
+
+Le doute commercial est levé. Restent le vrai encaissement de 1 000 F et la
+forme technique de leur API.
+
+### La sonde, parce que la machine qui peut les joindre n'est pas la mienne
+
+`piste/_saspay_sonde.mjs`, à lancer **depuis le PC de Cotonou** : elle balaie
+les adresses et les formes d'en-tête plausibles, **lit les codes de retour**
+(401/403 = la porte existe, la clé ne passe pas · 400/422 = adresse et clé
+bonnes, c'est le corps · 404 = mauvais chemin) et écrit les
+`supabase secrets set` à copier.
+
+⛔ **Deux défauts trouvés en l'éprouvant, et le second était grave.** Le filtre
+de sortie du nuage répond **403**, et la sonde a pris ce refus pour la preuve
+que la porte existait : elle a désigné `app.saspay.me` gagnant et **tendu des
+commandes fondées sur ce rien**. Un pare-feu d'entreprise ou un portail wifi
+produiraient le même mirage. Corrigé : on lit le CORPS avant de croire le code
+(`allowlist`, `egress`, `proxy`…), et surtout **aucune commande n'est proposée
+tant qu'on n'a pas vraiment parlé à l'API** (2xx, ou 400/422 avec un message
+d'eux). ⚠️ *Un 401 dit qu'une porte existe, pas que c'est la bonne : figer une
+adresse sur cette seule foi, c'est déployer une hypothèse en croyant déployer
+un fait.*
+
 ### ⛔ Le trou que cette réponse a révélé dans mon propre verrou
 
 Écrit `if (n.devise && n.devise !== r.devise)`, le verrou **laissait passer

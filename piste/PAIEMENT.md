@@ -39,19 +39,14 @@ commercial de PISTE qui saute. ⛔ **Mais on ne change pas cette phrase avant
 d'avoir encaissé pour de vrai depuis Lomé ou Abidjan.** La règle n'a pas
 changé : ne rien promettre avant d'avoir envoyé 1 000 F.
 
-**⏳ Il reste UNE question, et elle est étroite.** La capture du tableau de bord
-montrait **CDF** dans la fenêtre « Créer un lien de paiement ». Accepter MTN
-Bénin implique presque sûrement d'encaisser en XOF (un portefeuille MoMo
-béninois ne se débite pas en francs congolais), mais « presque sûrement » ne
-suffit pas quand il s'agit d'argent. Deux choses à regarder :
+**✅ La devise est confirmée** (Mongazi, 2026-09-03) : le compte propose **XOF**,
+XAF et d'autres. Le CDF vu sur la première capture n'était donc que la devise
+sélectionnée par défaut, pas la seule disponible. Le doute commercial est levé.
 
-1. dans « Créer un lien de paiement », **le XOF est-il dans la liste des
-   devises** à côté du CDF ;
-2. dans l'onglet **Retraits**, **vers quel compte et dans quelle devise**
-   l'argent sort.
-
-**⏳ Et il reste le vrai encaissement de 1 000 F.** Tant que ces deux points ne
-sont pas verts, **`SASPAY_PRET` reste `false`** dans `src/donnees.js`.
+**⏳ Ce qui reste : le vrai encaissement de 1 000 F**, et la forme technique de
+leur API (adresse, noms de champs), que la sonde ci-dessous va chercher. Tant
+que le premier franc n'est pas arrivé, **`SASPAY_PRET` reste `false`** dans
+`src/donnees.js`.
 
 ⚠️ **Un compte multi-pays n'est pas un compte multi-devises pour PISTE.** Le
 verrou reste `XOF`, ce qui couvre exactement les trois marchés du vivier
@@ -81,6 +76,13 @@ n'est relu par personne et disparaît avec le projet.
 ## 4. Brancher, le jour venu
 
 ```bash
+# 0. trouver l'adresse et l'en-tête (depuis le PC de Cotonou, pas le nuage)
+node _saspay_sonde.mjs
+#    → elle balaie les adresses plausibles, lit les codes de retour, et
+#      n'écrit les `supabase secrets set` QUE si elle a vraiment parlé à SasPay.
+#    ⚠️ Un 401 dit qu'une porte existe, pas que c'est la bonne : elle refuse
+#      alors de tendre une commande, et renvoie à l'onglet « Développeur ».
+
 # 1. la base (éditeur SQL Supabase, une seule fois)
 #    → contenu de supabase/paiement.sql
 
