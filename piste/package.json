@@ -9,7 +9,7 @@
     "build": "vite build",
     "preview": "vite preview --port 4173",
     "qc": "node _qc.js",
-    "qc:paiement": "node _qc_paiement.mjs"
+    "qc:paiement": "node --experimental-strip-types _qc_paiement.mjs"
   },
   "dependencies": {
     "react": "^19.1.0",

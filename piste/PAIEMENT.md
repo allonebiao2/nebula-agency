@@ -65,7 +65,7 @@ PISTE ne vend pas de fiches dans ces pays.
 | `supabase/functions/piste-paiement-recu/` | reçoit la notification, vérifie, marque « payée » |
 | `src/donnees.js` → `SASPAY_PRET` | l'interrupteur. `false` = le site ne montre rien |
 | `src/composants/Paiement.jsx` → `EnLigne` | le bouton, au-dessus du Mobile Money à la main |
-| `_qc_paiement.mjs` | **57 contrôles, sans clé, sans réseau, sans base** |
+| `_qc_paiement.mjs` | **64 contrôles, sans clé, sans réseau, sans base** |
 
 ⚠️ **Ces fichiers sont la source.** Comme `piste-cockpit`, ils tournent chez
 Supabase mais ils vivent ici. Ce qui n'est écrit que dans l'éditeur Supabase
@@ -99,7 +99,7 @@ supabase functions deploy piste-paiement-recu --no-verify-jwt
 #    https://xukduhqqfzogisoimhyo.supabase.co/functions/v1/piste-paiement-recu
 
 # 5. le contrôle, avant tout
-node _qc_paiement.mjs
+node --experimental-strip-types _qc_paiement.mjs   # ou : npm run qc:paiement
 ```
 
 ### Où vit la clé, et où elle ne vit pas

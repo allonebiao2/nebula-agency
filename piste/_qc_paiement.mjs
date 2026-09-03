@@ -1,7 +1,11 @@
 /*
   PISTE · le contrôle du paiement en ligne.
 
-      node _qc_paiement.mjs
+      node --experimental-strip-types _qc_paiement.mjs
+
+  ⚠️ Le drapeau n'est pas un caprice : ce fichier importe un `.ts`, que Deno lit
+  nativement et que Node 22 refuse sans lui (`ERR_UNKNOWN_FILE_EXTENSION`).
+  `npm run qc:paiement` le porte deja.
 
   ⚠️ SANS CLÉ, SANS RÉSEAU, SANS BASE. Tout ce qui décide de l'argent vit dans
   `supabase/functions/_shared/saspay.ts`, en Web standard : ce fichier l'essaie
