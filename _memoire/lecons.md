@@ -1882,3 +1882,40 @@ donne une erreur dans un sens ou dans l'autre.
 ⛔ Et le cas particulier qui rend ça grave ici : **on ne retouche ni la couleur ni l'opacité
 d'une signature**. La rendre « plus belle », c'est la falsifier. Recadrer, oui, ça ne change
 pas le tracé.
+
+## 2026-09-03 · Deux erreurs symétriques s'annulent et se cachent
+
+Le brouillon du générateur de PISTE était rangé sous la clé littérale
+`"undefined"` : l'écriture et la lecture passaient toutes deux la VALEUR là où
+la fonction attend le nom court. **Fausses de la même façon, elles marchaient
+ensemble**, et rien ne se voyait. C'est la troisième ligne — celle qui efface,
+et qui était correcte — qui a trahi les deux autres : elle visait la vraie clé,
+jamais écrite, donc le brouillon ne partait jamais et ressuscitait à la visite
+suivante avec une configuration périmée.
+
+⚠️ **Chercher les erreurs symétriques quand un mécanisme « marche » sans qu'on
+sache pourquoi.** Et se méfier du membre correct d'un trio : c'est lui qui
+révèle les deux autres.
+
+## 2026-09-03 · Un moyen de paiement n'est pas un bouton
+
+Ajouter le paiement en ligne à PISTE a montré que **tout l'entonnoir portait une
+hypothèse** : le client paiera à la main, et il faudra reconnaître son versement
+parmi ceux du jour. Le numéro Mobile Money était obligatoire pour tout le monde,
+les consignes parlaient de capture d'écran, et **la page où le fournisseur
+ramène le client n'existait pas** — le routeur retombait sur l'accueil.
+
+⚠️ **Quand on ajoute un moyen de paiement, la question n'est pas « où mettre le
+bouton » mais « qu'est-ce qui, dans ce parcours, n'existait que pour l'ancien
+moyen ». Et surtout : que voit le client APRÈS le bouton.**
+
+## 2026-09-03 · Quand un outil échoue et qu'un autre réussit sur la même donnée
+
+Six routes d'API répondaient « Clé API invalide » sur une clé parfaitement
+valable. La même clé envoyée par `curl` répondait 200. Le coupable était un
+`` : le fichier `.env` avait été réécrit par un outil Windows, donc en CRLF,
+et la regex du lecteur JS n'accrochait plus rien.
+
+⚠️ **Le message d'erreur accusait la donnée, le défaut était dans l'outil.**
+Avant de soupçonner un fournisseur, refaire le même appel avec un autre outil.
+

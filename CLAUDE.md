@@ -157,17 +157,33 @@
 - **Le contrôle** : `_qc.js` + `_qc_generateur.js` + `_qc_carnet.mjs`, tous
   verts avant déploiement. ⚠️ Ils LISENT le stock et les libellés dans les
   données : ne jamais y recopier un chiffre ou un nom de métier.
-- **Le paiement en ligne (SasPay)** : écrit le 2026-09-03, **fermé**
-  (`SASPAY_PRET=false`). L'API est trouvée et **la clé fonctionne** (session de
-  checkout ouverte en 201 depuis le PC). ⚠️ `docs.saspay.me` répond **200 depuis
-  le PC et 403 depuis le nuage** : un refus réseau appartient à la machine qui
-  l'a reçu, pas au service. ⛔ **La notification ne dit pas quelle commande elle
-  paie** — `transaction.success` ne porte ni `metadata` ni numéro de session, et
-  son champ `reference` est celui de SasPay, qui écrasait le nôtre en silence ;
-  le lien se rattrape par la session de checkout, **et ce maillon n'est pas
-  encore prouvé**. ⚠️ Minimum **200 XOF**. ⏳ Reste : le **secret de signature**
-  (gabarit dans `secrets/saspay.env`, ⚠️ il ne se réaffiche jamais chez eux) et
-  le premier encaissement réel. Détail : `piste/PAIEMENT.md`.
+- **LE PAIEMENT EN LIGNE (SasPay) EST OUVERT** (2026-09-03) : le site encaisse
+  par Mobile Money ou carte, **et livre le carnet tout seul** — `piste-paiement-recu`
+  appelle `piste-livrer` dès qu'un paiement est confirmé, à trois heures du matin
+  comme à midi. ⚠️ **Il l'appelle, il ne le recopie pas.** La **porte interne**
+  (`PISTE_JETON_INTERNE`) ne desserre que le mot de passe du cockpit et le verrou
+  anti-force-brute (sinon un inconnu tapant des mots de passe empêcherait un client
+  qui a **payé** d'être livré) ; **une porte interne n'est pas une porte dérobée**.
+  ⛔ **Un échec de livraison ne fait jamais échouer l'encaissement.**
+  ⚠️ **Un moyen de paiement n'est pas un bouton, c'est une hypothèse dans tout
+  l'entonnoir** : le numéro Mobile Money était obligatoire pour tout le monde, la
+  route `#/merci` où SasPay ramène le client **n'existait pas**, et les étapes
+  disaient « envoyez une capture » au-dessus d'un bouton Payer.
+  ⚠️ **Lien de paiement ≠ session de checkout** : le lien est réutilisable à
+  montant fixe, la session est à usage unique au montant de la commande — seule
+  la seconde relie un paiement à une commande. La page « Liens de paiement » du
+  tableau de bord reste vide, c'est normal.
+  ✅ **Vérifié sur les 61 réseaux** : Bénin (MTN/Moov/Celtiis), Togo (Mixx/Moov/
+  Togocel, **pas de MTN**), Côte d'Ivoire (MTN/Moov/Orange/Wave/Djamo), tous en XOF.
+  ⚠️ Minimum **200 XOF**. ⚠️ **Les listes de leur API sont paginées et le `limit`
+  est ignoré** : 61 réseaux annoncés, 20 rendus — vérifier `count` et `next` avant
+  de conclure.
+  ⛔ **LE PREMIER PAIEMENT RÉEL N'A PAS EU LIEU** : c'est le seul essai qui prouve
+  le dernier maillon, celui qui relie une notification à une commande.
+  ⏳ Mongazi demande de **supprimer totalement l'ancien chemin** (dépôt à la main +
+  WhatsApp) ; recommandation posée : **faire le test à 200 F d'abord**, sinon un
+  maillon cassé laisse PISTE sans aucun moyen de vendre.
+  Détail : `piste/PAIEMENT.md` et `_memoire/conversations/2026-09-03-piste-paiement-en-ligne.md`.
 - **Source de vérité : `piste/PRODUCT.md`**, 88 décisions.
 
 ### MON BÉNIN — l'expérience du pays  *(objet éditorial, pas un SaaS)*
