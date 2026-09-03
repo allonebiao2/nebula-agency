@@ -554,33 +554,35 @@ const ROUTES = [
      Mobile Money était OBLIGATOIRE, et il servait uniquement à reconnaître un
      versement parmi ceux du jour. Pour qui paie en ligne c'est un mur inutile,
      et c'est ce mur qu'on vérifie ici comme tombé. */
-  const enLigneDefaut = await page.evaluate(() => {
+  /* ⛔ IL N'Y A PLUS QU'UN SEUL MOYEN DE PAYER (Mongazi, 2026-09-03). Tout ce
+     qui n'existait que pour le dépôt à la main a disparu du formulaire : le
+     numéro Mobile Money, l'opérateur, la consigne sur le nom du compte. Ce
+     contrôle vérifie que rien n'en est resté. */
+  const formulaire = await page.evaluate(() => {
     const t = document.body.innerText
-    const champMomo = [...document.querySelectorAll('input')].some(
-      (x) => (x.getAttribute('aria-label') || '') === 'Numéro Mobile Money'
-    )
-    const bouton = (nom) =>
-      [...document.querySelectorAll('button')].find((b) => b.textContent.trim().startsWith(nom))
+    const champ = (l) =>
+      [...document.querySelectorAll('input')].some((x) => (x.getAttribute('aria-label') || '') === l)
     return {
-      choixPropose: !!bouton('Payer en ligne') && !!bouton('Dépôt Mobile Money'),
-      enLigneParDefaut: bouton('Payer en ligne')?.getAttribute('aria-pressed') === 'true',
-      pasDeChampMomo: !champMomo,
+      pasDeChampMomo: !champ('Numéro Mobile Money'),
       pasDeConsigneNom: !/comme ils apparaissent sur votre compte Mobile Money/.test(t),
-      paysAnnonces: /Togo/.test(t) && /Côte d'Ivoire/.test(t) && /Bénin/.test(t),
+      pasDeChoix: !/Comment voulez-vous payer/.test(t),
+      pasDOperateur: !/MTN MoMo/.test(t),
+      boutonPaiement: [...document.querySelectorAll('button')].some(
+        (b) => b.textContent.trim() === 'Continuer vers le paiement'
+      ),
+      pasDEnvoiWhatsapp: !/Envoyer ma commande sur WhatsApp/.test(t),
     }
   })
-  dire(enLigneDefaut.choixPropose, `le client choisit comment il paie`)
-  dire(enLigneDefaut.enLigneParDefaut, `« Payer en ligne » est le choix par défaut`)
-  dire(enLigneDefaut.pasDeChampMomo, `en ligne : aucun numéro Mobile Money n'est demandé`)
-  dire(enLigneDefaut.pasDeConsigneNom, `en ligne : la consigne « comme sur votre compte Mobile Money » disparaît`)
-  dire(enLigneDefaut.paysAnnonces, `en ligne : les trois pays du vivier sont nommés`)
-  /* ⚠️ ON REGARDE, on ne fait pas que mesurer. Un écran peut passer tous les
-     contrôles et rester laid ou illisible : ces deux captures sont là pour
-     être ouvertes après chaque passage. */
+  dire(formulaire.pasDeChampMomo, `plus aucun numéro Mobile Money n'est demandé`)
+  dire(formulaire.pasDeConsigneNom, `plus de consigne « comme sur votre compte Mobile Money »`)
+  dire(formulaire.pasDeChoix, `plus de choix de moyen : il n'y en a qu'un`)
+  dire(formulaire.pasDOperateur, `plus d'opérateur à choisir dans le formulaire`)
+  dire(formulaire.boutonPaiement, `le bouton mène au paiement, pas à WhatsApp`)
+  dire(formulaire.pasDEnvoiWhatsapp, `« Envoyer ma commande sur WhatsApp » a disparu`)
   await page.screenshot({ path: path.join(CAPTURES, 'etape-paiement-en-ligne.png'), fullPage: true })
 
   /* Refusée sans rien, et le message ne réclame PAS un numéro qu'on ne demande plus. */
-  await cliquerTexte(page, 'button', 'Envoyer ma commande sur WhatsApp')
+  await cliquerTexte(page, 'button', 'Continuer vers le paiement')
   await attendre(250)
   const refusLigne = await page.evaluate(() => document.body.innerText)
   dire(
@@ -588,30 +590,6 @@ const ROUTES = [
     `en ligne : le refus ne réclame pas de numéro Mobile Money`
   )
 
-  /* ── ON BASCULE SUR LE DÉPÔT À LA MAIN ────────────────────────────────────
-     ⚠️ Le chemin qui marchait avant ne doit pas avoir bougé d'un mot : tout ce
-     qui suit le contrôle exactement comme avant l'ouverture du paiement. */
-  await cliquerTexte(page, 'button', 'Dépôt Mobile Money')
-  await attendre(250)
-  const bascule = await page.evaluate(() => ({
-    champMomo: [...document.querySelectorAll('input')].some(
-      (x) => (x.getAttribute('aria-label') || '') === 'Numéro Mobile Money'
-    ),
-    consigneNom: /comme ils apparaissent sur votre compte Mobile Money/.test(document.body.innerText),
-  }))
-  dire(bascule.champMomo, `à la main : le numéro Mobile Money réapparaît`)
-  dire(bascule.consigneNom, `à la main : la consigne sur le nom du compte revient`)
-  await page.screenshot({ path: path.join(CAPTURES, 'etape-paiement-a-la-main.png'), fullPage: true })
-
-  /* on ne remplit rien : la commande doit être refusée */
-  await cliquerTexte(page, 'button', 'Envoyer ma commande sur WhatsApp')
-  await attendre(250)
-  const refuse = await page.evaluate(() =>
-    /Il manque votre nom, votre email, votre WhatsApp ou votre numéro Mobile Money/.test(
-      document.body.innerText
-    )
-  )
-  dire(refuse, `une commande sans nom, email, WhatsApp ni Mobile Money est refusée`)
 
   await page.evaluate(() => {
     window.open = () => null /* on ne veut pas ouvrir WhatsApp pendant le contrôle */
@@ -630,10 +608,9 @@ const ROUTES = [
     poser('Votre nom', 'Kponou')
     poser('Votre email', 'adjoa@exemple.com')
     poser('Numéro WhatsApp', '0197000000')
-    poser('Numéro Mobile Money', '0166000000')
   })
   await attendre(250)
-  await cliquerTexte(page, 'button', 'Envoyer ma commande sur WhatsApp')
+  await cliquerTexte(page, 'button', 'Continuer vers le paiement')
   await attendre(500)
 
   /* ⚠️ `page.evaluate` s'execute dans le NAVIGATEUR : une variable de Node
@@ -651,26 +628,26 @@ const ROUTES = [
       montant: plat.includes(attenduPaiement),
       rebours: /Il vous reste/.test(plat) && /\d+ h \d\d min/.test(plat),
       mailEtWhatsapp: /Surveillez votre boîte mail ET votre WhatsApp/.test(t),
-      expediteur: /Payez bien depuis le numéro que vous avez donné/.test(t),
-      momoDeclare: /\+229 0166000000/.test(plat),
-      moyens: /MTN MoMo/.test(plat) && !/Moov|Flooz/.test(plat),
+      /* ⛔ RETOURNÉS LE 2026-09-03 : ces contrôles exigeaient la présence du
+         dépôt à la main. Il est retiré, donc ils vérifient son ABSENCE.
+         ⚠️ Un contrôle qu'on supprime parce qu'il est rouge ne protège plus
+         rien ; celui qu'on retourne protège le sens inverse. */
+      plusDeDepot:
+        !/MTN MoMo/.test(plat) &&
+        !/Moov|Flooz/.test(plat) &&
+        !/numéro NEBULA à créditer/i.test(plat) &&
+        !/0166000000/.test(plat),
+      plusDeCapture: !/Une capture suffit/.test(plat) && !/Faites le transfert/.test(plat),
+      plusDeVocabulaireVirement:
+        !/Montant exact à envoyer/.test(plat) && !/Sous 24 heures, votre carnet/.test(plat),
+      whatsappEnRecours:
+        /Un souci \?/.test(plat) && !/Ouvrir WhatsApp et envoyer/.test(plat),
       email: /piste@nebula-agency\.online/.test(t),
       pasDeTogoNiCI: !/(Togo|Côte d'Ivoire)/.test(t),
       vingtQuatre: /24 heures/.test(plat),
-      depotDistinct: /n'est\s*pas le numéro WhatsApp/.test(plat),
       /* Le paiement en ligne, ouvert le 2026-09-03. */
       boutonEnLigne: [...document.querySelectorAll('button')]
         .some((b) => /^Payer\s/.test(b.textContent.trim())),
-      /* ⚠️ VISER UN REPÈRE STABLE, PAS UN TITRE. Le titre du bloc en ligne
-         change selon ce que le client a choisi (« Payer maintenant » s'il a
-         pris le paiement en ligne, « Plus rapide » s'il a pris le dépôt) :
-         un contrôle accroché au titre devient rouge sans que rien ne casse.
-         Cette phrase-là, elle, est dans les deux cas. */
-      enLigneAvantMomo: (() => {
-        const i = plat.indexOf('en Mobile Money ou par carte')
-        const j = plat.indexOf('MTN MoMo')
-        return i >= 0 && j >= 0 && i < j
-      })(),
       pasDeQuittance: /ne vaut pas reçu/.test(plat),
     }
   }, attenduPaiement)
@@ -678,15 +655,15 @@ const ROUTES = [
   dire(paiement.montant, `l'écran de paiement affiche le montant exact (${attenduPaiement})`)
   dire(paiement.rebours, `le compte à rebours de 24 heures est affiché`)
   dire(paiement.mailEtWhatsapp, `« surveillez votre boîte mail ET votre WhatsApp » est dit`)
-  dire(paiement.expediteur, `l'acheteur est rappelé de payer depuis le numéro déclaré`)
-  dire(paiement.momoDeclare, `le numéro Mobile Money déclaré est repris à l'écran`)
-  dire(paiement.moyens, `MTN MoMo est le seul moyen annoncé, plus aucune trace de Moov`)
+  dire(paiement.plusDeDepot, `plus une trace du dépôt à la main sur l'écran de paiement`)
+  dire(paiement.plusDeCapture, `on ne demande plus ni transfert ni capture d'écran`)
+  dire(paiement.whatsappEnRecours, `WhatsApp est un recours, plus une étape du tunnel`)
+  /* ⚠️ Les mots aussi héritent de l'ancien monde : « montant exact À ENVOYER »
+     et « sous 24 heures » venaient du virement à la main. Rien ne les vérifie
+     jamais — ce sont les phrases, pas les données, qui restent fausses. */
+  dire(paiement.plusDeVocabulaireVirement, `plus de « à envoyer » ni de « sous 24 heures » sur l'écran`)
   dire(paiement.email, `l'adresse d'envoi ${'piste@nebula-agency.online'} est annoncée`)
   dire(paiement.pasDeTogoNiCI, `l'écran de paiement ne promet rien au Togo ni en Côte d'Ivoire`)
-  dire(
-    paiement.depotDistinct,
-    `l'écran prévient que le numéro de dépôt n'est PAS le numéro WhatsApp`
-  )
   dire(paiement.vingtQuatre, `le délai de 24 heures est répété sur l'écran de paiement`)
 
   /* ── LE PAIEMENT EN LIGNE (SasPay), ouvert le 2026-09-03 ──────────────────
@@ -694,8 +671,6 @@ const ROUTES = [
      paiement neuf se met à côté de celui qui marche. Le contrôle vérifie donc
      l'ORDRE, pas seulement la présence. */
   dire(paiement.boutonEnLigne, `le bouton « Payer » en ligne est affiché`)
-  dire(paiement.enLigneAvantMomo, `le paiement en ligne est au-dessus du Mobile Money, qui reste`)
-  dire(paiement.moyens, `le Mobile Money à la main n'a pas disparu sous le paiement en ligne`)
   dire(paiement.pasDeQuittance, `l'écran dit que revenir sur le site ne vaut pas reçu`)
   await page.screenshot({ path: path.join(CAPTURES, 'ecran-paiement.png'), fullPage: true })
 
@@ -704,8 +679,8 @@ const ROUTES = [
     return { n: l.length, c: l[0] || null }
   })
   dire(
-    range.n === 1 && range.c?.momoNumero === '0166000000' && range.c?.prenom === 'Adjoa',
-    `la commande est rangée avec le nom et le numéro Mobile Money`
+    range.n === 1 && range.c?.prenom === 'Adjoa' && range.c?.moyen === 'ligne' && !range.c?.momoNumero,
+    `la commande est rangée avec le nom, et marquée « en ligne » sans numéro Mobile Money`
   )
 
   /* --------------------------------- 6. le cockpit relit ce qui est collé - */
@@ -798,16 +773,14 @@ const ROUTES = [
     poser('Numéro WhatsApp', '0197000000')
   })
   await attendre(250)
-  await cliquerTexte(page2, 'button', 'Envoyer ma commande sur WhatsApp')
+  await cliquerTexte(page2, 'button', 'Continuer vers le paiement')
   await attendre(700)
 
   const ecranLigne = await page2.evaluate(() => {
-    const d = document.querySelector('details')
     const t = document.body.innerText
     return {
       arrive: /Reste à payer/.test(t),
-      replie: !!d && !d.open,
-      resume: (d?.querySelector('summary')?.textContent || '').includes('payer à la main'),
+      plusDeDetails: !document.querySelector('details'),
       momoCache: !/0166000000/.test(t),
       boutonPayer: [...document.querySelectorAll('button')].some((b) =>
         /^Payer\s/.test(b.textContent.trim())
@@ -818,21 +791,12 @@ const ROUTES = [
   })
   dire(ecranLigne.arrive, `en ligne : la commande passe SANS numéro Mobile Money`)
   dire(ecranLigne.boutonPayer, `en ligne : le bouton de paiement est là`)
-  dire(ecranLigne.replie, `en ligne : les consignes de dépôt sont repliées, pas supprimées`)
-  dire(ecranLigne.resume, `en ligne : on peut rouvrir le dépôt à la main en un clic`)
+  dire(ecranLigne.plusDeDetails, `plus aucun bloc de dépôt, même replié`)
   /* ⛔ Trouvé SUR LA CAPTURE, pas par un contrôle : les quatre étapes
      décrivaient le dépôt à la main au-dessus d'un bouton « Payer ». */
   dire(ecranLigne.pasDeTransfert, `en ligne : on ne demande ni transfert ni capture d'écran`)
   await page2.screenshot({ path: path.join(CAPTURES, 'ecran-paiement-en-ligne.png'), fullPage: true })
 
-  /* ⚠️ ET ON LE ROUVRE : replié ne doit pas vouloir dire perdu. */
-  await page2.evaluate(() => document.querySelector('details')?.setAttribute('open', ''))
-  await attendre(200)
-  /* ⚠️ `innerText` rend le texte TEL QU'IL S'AFFICHE : ce titre porte
-     `text-transform: uppercase`, donc il revient en majuscules. Une regex
-     écrite avec la casse du code ne le trouve jamais. */
-  const rouvert = await page2.evaluate(() => /num[ée]ro nebula/i.test(document.body.innerText))
-  dire(rouvert, `en ligne : le dépôt à la main réapparaît quand on le déplie`)
 
   await page2.close()
 
