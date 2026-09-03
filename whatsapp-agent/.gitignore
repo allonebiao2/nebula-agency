@@ -3,3 +3,8 @@
 .env
 __pycache__/
 *.pyc
+
+# Fiches de MISE AU POINT, avec de vrais numeros personnels dedans.
+# ⛔ Le depot est PUBLIC : un numero de test n a rien a y faire, et une
+# fiche de test poussee par erreur enverrait de vraies alertes.
+maisons/local-*.yaml
