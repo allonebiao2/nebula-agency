@@ -23,27 +23,42 @@ pas encore la livraison.
 
 ---
 
-## 2. ⛔ TROIS CHOSES À VÉRIFIER AVANT D'OUVRIR LE BOUTON
+## 2. Où on en est
 
-**1. La devise.** Le tableau de bord SasPay du 2026-09-03 proposait des montants
-en **CDF** (franc congolais). PISTE vend en **FCFA (XOF)**, à Cotonou. 10 000
-CDF valent environ 2 100 F : encaisser la mauvaise devise sans s'en apercevoir,
-c'est livrer un carnet payé au quart. **Si SasPay ne règle pas en XOF sur un
-compte béninois, ce chantier s'arrête ici** — et le code écrit reste bon pour
-FedaPay, qui est déjà dans le stack de l'agence.
+**✅ Les opérateurs sont confirmés** (Mongazi, 2026-09-03) : le compte encaisse
+sur **tous les MTN et tous les Moov Africa**. C'est plus large qu'espéré, et ça
+touche directement ce que PISTE peut vendre.
 
-**2. Un vrai encaissement de 1 000 F.** La même règle que pour Abidjan et pour
-Moov Flooz : *ne rien promettre avant d'avoir envoyé 1 000 F pour de vrai*. Un
-moyen de paiement qu'on affiche sans l'avoir encaissé est un virement qui
-n'arrivera jamais.
+⚠️ **Ce que ça débloque, et qu'il ne faut pas annoncer trop tôt.** Le §9 de
+`PRODUCT.md` garde depuis le début une réserve : « le paiement depuis le Togo
+et la Côte d'Ivoire vers un compte béninois, non testé ». Le vivier compte
+7 817 fiches sur **trois pays**, et l'écran de paiement dit encore « MTN MoMo,
+au Bénin ; si vous payez depuis un autre pays, écrivez-nous d'abord ». Si un
+client togolais ou ivoirien peut payer seul, c'est le plus gros verrou
+commercial de PISTE qui saute. ⛔ **Mais on ne change pas cette phrase avant
+d'avoir encaissé pour de vrai depuis Lomé ou Abidjan.** La règle n'a pas
+changé : ne rien promettre avant d'avoir envoyé 1 000 F.
 
-**3. Que MTN Bénin et Moov Bénin soient bien dans la liste des opérateurs.**
-Un agrégateur qui ne fait que la carte bancaire ne sert à rien ici.
+**⏳ Il reste UNE question, et elle est étroite.** La capture du tableau de bord
+montrait **CDF** dans la fenêtre « Créer un lien de paiement ». Accepter MTN
+Bénin implique presque sûrement d'encaisser en XOF (un portefeuille MoMo
+béninois ne se débite pas en francs congolais), mais « presque sûrement » ne
+suffit pas quand il s'agit d'argent. Deux choses à regarder :
 
-Tant que ces trois points ne sont pas verts, **`SASPAY_PRET` reste `false`**
-dans `src/donnees.js`.
+1. dans « Créer un lien de paiement », **le XOF est-il dans la liste des
+   devises** à côté du CDF ;
+2. dans l'onglet **Retraits**, **vers quel compte et dans quelle devise**
+   l'argent sort.
 
----
+**⏳ Et il reste le vrai encaissement de 1 000 F.** Tant que ces deux points ne
+sont pas verts, **`SASPAY_PRET` reste `false`** dans `src/donnees.js`.
+
+⚠️ **Un compte multi-pays n'est pas un compte multi-devises pour PISTE.** Le
+verrou reste `XOF`, ce qui couvre exactement les trois marchés du vivier
+(Bénin, Togo, Côte d'Ivoire sont tous en franc CFA de l'UEMOA) et refuse tout
+le reste. MTN Cameroun encaisse en XAF, MTN Ghana en GHS, MTN Nigeria en NGN :
+ces paiements-là seront refusés et journalisés, et c'est le comportement voulu.
+PISTE ne vend pas de fiches dans ces pays.
 
 ## 3. Où vit chaque morceau
 
@@ -124,6 +139,7 @@ Corriger une hypothèse, c'est une commande, pas une modification de code.
 | `SASPAY_PREFIXE_CLE` | `Bearer ` | pas de préfixe → poser une chaîne vide |
 | `SASPAY_ENTETE_SIGNATURE` | `x-saspay-signature` | l'en-tête porte un autre nom |
 | `SASPAY_DEVISE` | `XOF` | ⛔ ne jamais mettre autre chose sans avoir relu le §2 |
+| `SASPAY_DEVISE_SI_ABSENTE` | *(vide)* | ⛔ vide = une notification sans devise est **refusée**. N'y poser `XOF` qu'après avoir LU dans le journal que SasPay omet vraiment le champ |
 | `SASPAY_MONTANT_MULTIPLIE` | `1` | SasPay compte en centimes → `100` |
 | `SASPAY_RETOUR` / `SASPAY_ANNULE` | pages du site | — |
 | `SASPAY_SIGNATURE_OBLIGATOIRE` | `1` | voir ci-dessous |

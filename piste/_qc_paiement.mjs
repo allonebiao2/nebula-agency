@@ -67,7 +67,7 @@ dire(M.memeChaine('abc', 'abc') && !M.memeChaine('abc', 'abd') && !M.memeChaine(
      `la comparaison est à temps constant et gère les longueurs`)
 
 /* ═══ 4. la décision ══════════════════════════════════════════════════════ */
-const R = { ...M.reglages(), devise: 'XOF', multiple: 1 }
+const R = { ...M.reglages(), devise: 'XOF', multiple: 1, deviseSiAbsente: '' }
 const CMD = { existe: true, etat: 'attente', total: 10000 }
 const notif = (x = {}) => ({ evenementId: 'e', reference: 'PISTE-AB2C', session: 's',
                              montant: 10000, devise: 'XOF', etat: 'paye', ...x })
@@ -81,6 +81,18 @@ dire(M.decider(notif(), null, R).payer === false, `une commande inconnue ne marq
    environ 2 100 F. Encaisser sans regarder la devise, c'est livrer au quart. */
 const dCDF = M.decider(notif({ devise: 'CDF' }), CMD, R)
 dire(dCDF.payer === false && /CDF/.test(dCDF.agi), `10 000 CDF ne paient pas une commande en XOF`)
+
+/* ⛔ « ABSENT » N'EST PAS « BON ». Le compte accepte tous les MTN et tous les
+   Moov Africa (Mongazi, 2026-09-03) : sans devise annoncée, 10 000 unités
+   peuvent être des nairas. */
+const dSans = M.decider(notif({ devise: '' }), CMD, R)
+dire(dSans.payer === false && /absente/.test(dSans.agi), `une notification sans devise est refusée`)
+dire(M.decider(notif({ devise: '' }), CMD, { ...R, deviseSiAbsente: 'XOF' }).payer === true,
+     `elle passe seulement si SASPAY_DEVISE_SI_ABSENTE le dit explicitement`)
+dire(M.decider(notif({ devise: '' }), CMD, { ...R, deviseSiAbsente: 'XAF' }).payer === false,
+     `et ce réglage ne desserre rien : XAF supposé reste refusé face à XOF`)
+for (const d of ['NGN', 'GHS', 'XAF', 'CDF'])
+  dire(M.decider(notif({ devise: d }), CMD, R).payer === false, `${d} ne paie pas une commande en XOF`)
 
 /* ⛔ LE MONTANT. */
 dire(M.decider(notif({ montant: 5000 }), CMD, R).payer === false, `la moitié du montant ne paie pas`)

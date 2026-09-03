@@ -53,6 +53,16 @@ export function reglages() {
        devise n'est jamais marqué payé. */
     devise:    env('SASPAY_DEVISE', 'XOF'),
 
+    /* ⛔ ET SI LA NOTIFICATION NE DIT PAS SA DEVISE ? On refuse. Vide par
+       défaut = « pas de devise annoncée, pas d'encaissement ». Ne poser une
+       valeur ici qu'après avoir LU dans le journal que SasPay omet vraiment le
+       champ, et seulement si le compte ne peut encaisser qu'une devise.
+       ⚠️ Confirmé par Mongazi le 2026-09-03 : le compte accepte TOUS les MTN
+       et tous les Moov Africa. Or MTN Cameroun encaisse en XAF, MTN Ghana en
+       GHS, MTN Nigeria en NGN. Supposer la devise sur un compte multi-pays,
+       c'est encaisser 10 000 nairas pour 10 000 francs. */
+    deviseSiAbsente: env('SASPAY_DEVISE_SI_ABSENTE', ''),
+
     /* ⚠️ Beaucoup d'API comptent en centimes. Le franc CFA n'a pas de
        décimale, donc ici on attend 1. Si le premier essai réel montre un
        montant cent fois trop grand, ce réglage passe à 100 : c'est le
@@ -305,8 +315,14 @@ export function decider(n: Notification, cmd: Attendu | null, r: Reglages): Deci
   if (!cmd?.existe) return { payer: false, agi: 'commande inconnue' }
   if (n.etat !== 'paye') return { payer: false, agi: 'rien · ' + n.etat }
 
-  if (n.devise && n.devise !== r.devise) {
-    return { payer: false, agi: `refus · devise ${n.devise} au lieu de ${r.devise}` }
+  /* ⛔ « ABSENT » N'EST PAS « BON ». Écrit d'abord `if (n.devise && …)`, ce
+     verrou laissait passer toute notification sans champ devise : 10 000
+     unités non qualifiées valaient 10 000 F. Le compte acceptant tous les MTN
+     et tous les Moov Africa, ces unités peuvent être des nairas. */
+  const devise = n.devise || r.deviseSiAbsente
+  if (!devise) return { payer: false, agi: 'refus · devise absente' }
+  if (devise !== r.devise) {
+    return { payer: false, agi: `refus · devise ${devise} au lieu de ${r.devise}` }
   }
 
   const attendu = Number(cmd.total) || 0

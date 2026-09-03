@@ -42,6 +42,43 @@ refusé.
 Si SasPay ne règle pas en XOF sur un compte béninois, le chantier s'arrête là,
 **et le code reste bon pour FedaPay**, déjà dans le stack de l'agence.
 
+### ✅ Les opérateurs, confirmés le soir même
+
+Mongazi : « ça passe sur MTN Moov. Tous les MTN même et Moov Afrique qui
+existe. » Le compte encaisse donc sur **tous les MTN et tous les Moov Africa**.
+
+⚠️ **Ça répond à la question des opérateurs, pas à celle de la devise.** Un
+agrégateur peut débiter un portefeuille MTN Bénin et créditer un solde en CDF.
+Reste à regarder deux choses : le XOF est-il dans la liste des devises de la
+fenêtre « Créer un lien », et dans quelle devise sort l'argent à l'onglet
+Retraits.
+
+⚠️ **Ce que la couverture débloque** : le §9 de `PRODUCT.md` garde depuis le
+début « le paiement depuis le Togo et la Côte d'Ivoire vers un compte béninois,
+non testé », et l'écran de paiement dit encore « MTN MoMo, au Bénin ». Le vivier
+fait 7 817 fiches sur **trois pays** : si un Togolais ou un Ivoirien peut payer
+seul, c'est le plus gros verrou commercial de PISTE qui saute. ⛔ Rien n'est
+annoncé avant un encaissement réel depuis Lomé ou Abidjan.
+
+### ⛔ Le trou que cette réponse a révélé dans mon propre verrou
+
+Écrit `if (n.devise && n.devise !== r.devise)`, le verrou **laissait passer
+toute notification sans champ devise**. Avec un seul opérateur béninois c'était
+théorique. Avec tous les MTN et tous les Moov Africa sur le même compte, ça ne
+l'est plus : MTN Cameroun encaisse en XAF, MTN Ghana en GHS, MTN Nigeria en
+NGN, et **10 000 unités non qualifiées passaient pour 10 000 F**.
+
+Corrigé : **« absent » n'est pas « bon »**, l'absence de devise est un refus.
+L'échappatoire existe (`SASPAY_DEVISE_SI_ABSENTE`) mais elle est **vide par
+défaut** et ne se pose qu'après avoir LU dans le journal que SasPay omet
+vraiment le champ. ⚠️ *J'avais écrit trois lignes plus haut que rien ne se
+devine sur l'argent, et je l'avais quand même fait.* QC : 57 → **64 contrôles**.
+
+⚠️ **Le verrou reste `XOF`, et c'est exactement juste** : Bénin, Togo et Côte
+d'Ivoire sont tous en franc CFA de l'UEMOA, donc les trois marchés du vivier
+sont couverts par une seule devise, et les pays où PISTE ne vend rien sont
+refusés.
+
 ---
 
 ## Ce qui a été construit (rien n'est branché, rien n'est déployé)
