@@ -499,3 +499,131 @@ bon signe pour le dessin.
    les valeurs d'exemple et fait accuser le produit à tort.
 
 ⏳ **Mongazi tranche** : fusionner puis supprimer `vitrina/lettre/`, ou l'inverse.
+
+---
+
+## SESSION 2026-09-03 — « c'est raté c'est basique » : l'enveloppe n'avait qu'un seul plan
+
+Mongazi envoie une capture de l'ouverture sur son iPhone : *« Regardes comment
+la lettre s'ouvre, c'est raté c'est basique, utilises remontions [Remotion] pour
+améliorer et augmenter la qualité du rendu et rendre les animation plus propre
+et mieux disigner »*.
+
+### ⛔ REMOTION EST LE MAUVAIS OUTIL POUR LA LETTRE, et il faut le dire
+Remotion **fabrique de la vidéo**. La lettre est **interactive** : elle porte le
+prénom de la destinataire, elle attend un code, elle réagit au toucher. Avec
+Remotion il faudrait **un rendu par vente** : une vidéo par prénom, par code,
+par photo. Le produit s'effondre sur son économie.
+
+⚠️ **Ce n'est pas un refus de l'outil, c'est un déplacement** : Remotion reste
+le bon outil pour **les vidéos de démonstration TikTok** (c'est même exactement
+ce que `_studio-video/` fait déjà). Ce qu'il y avait à emprunter à Remotion,
+c'est **sa discipline** : une vidéo se juge image par image. Donc au lieu de
+l'installer, **j'ai mesuré la vraie page image par image**.
+
+### LE DÉFAUT ÉTAIT STRUCTUREL, PAS COSMÉTIQUE
+« Basique » ne se répare pas en ajoutant des courbes. **Une enveloppe a un DOS,
+une POCHE et un RABAT.** La version d'avant n'avait **qu'un seul plan** : le
+papier ne pouvait donc pas sortir « de dedans », il **glissait par-dessus**, et
+ça se voit tout de suite.
+
+Quatre plans désormais : `.dos` · `.papier` · `.devant` (poche opaque) ·
+`.rabat`. Le papier part de l'intérieur, **attend que le rabat ait franchi les
+90 degrés**, puis monte et devient la carte. Mesuré au `requestAnimationFrame`
+**côté page**, pas supposé :
+
+```
+cire tombée        644 ms      papier sorti     877 ms
+rabat à 90°        344 ms      amorce lisible  1227 ms
+rabat grand ouvert 544 ms      code visible    2127 ms
+papier commence    527 ms      ÉCRAN VIDE :    JAMAIS
+```
+
+### ⛔ `preserve-3d` REMPLACE LE z-index PAR UN TRI DE PROFONDEUR 3D
+Le défaut le plus intéressant : **des bandes rouges en travers du papier**.
+Trouvé en lisant les pixels de la colonne centrale (3 zones crème alternant
+avec du rouge), pas dans le code.
+
+La cause n'était pas un z-index mal posé. `transform-style: preserve-3d`
+**annule l'ordre des z-index** et le remplace par un tri de profondeur : les
+plans qui **s'intersectent** sont découpés l'un par l'autre, et le rendu est
+rayé. Mon `rotateX(4deg)` sur le papier le faisait traverser le plan de la
+poche. → rotateX retiré, papier en `translateZ(-2px)`. Vérifié aux pixels :
+**1 seule zone crème**.
+
+⚠️ **Règle à retenir** : dans un contexte `preserve-3d`, deux plans qui doivent
+se recouvrir doivent être **séparés en Z**, pas en z-index.
+
+### Les autres défauts, tous trouvés en mesurant
+| Défaut | Comment il a été trouvé | Correction |
+|---|---|---|
+| Le rabat coupait le papier d'une bande rouge à 1 000 ms | capture | il passe derrière à **520 ms**, posé par le script : visible **pendant** sa rotation, derrière **après** |
+| Le V de la poche laissait deux triangles découverts | mesuré à x=25% : rabat 0-31%, poche 44-100%, **trou de 13%** | le V est **dessiné** sur un rectangle opaque, plus découpé |
+| La cire ne tombait que de 54 px, posée comme deux pétales | capture | 172 et 186 px, rotation ±74 et 81° |
+| Le prénom se retrouvait **derrière le rabat** | capture | il s'efface en montant, 380 ms |
+| 1 200 ms d'écran vide | mesure | fondu croisé, « écran vide : jamais » |
+| Le papier sortait à 282 ms, **avant** l'ouverture du rabat | mesure | retard de 0,5 s sur le papier |
+
+### ⚠️ ET J'AI REFAIT L'ERREUR QUE SON PROPRE CLAUDE.md DOCUMENTE
+*« Ne jamais mesurer une animation d'ouverture avec des `wait_for_timeout`
+empilés autour de captures »* (leçon Angy Art du 08/08). Je l'ai refaite. Une
+capture coûte des centaines de ms, donc l'horloge dérive et le diagnostic est
+faux. → **un chargement de page = une capture**, et c'est la **page** qui compte
+le temps en `requestAnimationFrame`.
+
+⚠️ **Cinq de mes sondes ont menti avant de dire vrai**, dont une qui vaut d'être
+gardée : mon lecteur de matrice CSS avec `/-?[\d.e+-]+/g` **attrapait le « 3 »
+de `matrix3d`**, décalait tous les indices, et le rabat semblait bloqué à
+-0,0° alors qu'il était à **-172°**. *Vérifier sa sonde avant d'accuser le
+produit* — troisième fois dans ce dépôt.
+
+### GARDE-FOU NEUF : AUCUN CARACTÈRE SOSIE D'UN AUTRE ALPHABET
+Le défaut le plus cher de ce fichier tenait en **une frappe** :
+`--or-clair:#d3ae६8` portait un **chiffre devanagari** au lieu d'un 6. Couleur
+invalide → `radial-gradient` invalide → **le cachet de cire ne s'affichait pas
+du tout** et **le prénom de la destinataire était illisible**. Les deux éléments
+les plus importants du premier écran, tués par un caractère que rien ne
+signalait, dans un fichier par ailleurs vert.
+
+Le QC lit maintenant tout le fichier et refuse cyrillique, grec, devanagari,
+pleine-largeur, arabe, mathématique. Il a trouvé **un « е » cyrillique de plus**
+dans un commentaire (`basculе`), corrigé.
+
+⚠️ **Pourquoi ce contrôle-là plutôt qu'une relecture** : un sosie est
+**invisible à l'œil par construction**. C'est précisément le genre de défaut
+qu'une machine doit chercher, et un humain jamais.
+
+### ⛔ ET UN 7e DÉFAUT, TROUVÉ EN REGARDANT LA CAPTURE DE 1 300 ms
+L'amorce (« Bienvenue mon amour, prends ton temps. ») finissait **à 0,2 px du
+bord de la poche**. Elle n'était pas coupée — donc aucun contrôle de
+débordement ne pouvait la voir — mais elle n'avait **aucune respiration**, et la
+moindre variation de métrique de police l'aurait fait passer dessous.
+
+La cause : `align-items:center` centrait le texte sur **toute** la hauteur du
+papier, alors que **le papier ne sort qu'à 62 %** (le reste est dans la poche).
+Un texte centré sur 100 % d'une boîte visible à 62 % tombe forcément en bas.
+
+⚠️ **Et à 768 px c'était pire** : l'amorce était en `clamp(15px,3.9vw,19px)`,
+donc elle **grandissait avec l'écran** alors que l'enveloppe est **plafonnée à
+338 px**. À 19 px la phrase passait à **3 lignes** et **traversait le pli du
+papier** — ça se lit comme un texte barré. Une taille qui suit le viewport dans
+un conteneur à largeur fixe est un bug, pas une adaptation.
+
+Corrigé : alignement en haut (`padding-top:7%`), police plafonnée à **16 px**,
+pli descendu de 38 % à **47 %** pour rester sous la phrase **et** dans la partie
+visible. Mesuré à 360, 390, 768 et 1440 : **2 lignes partout, 43 à 52 px de
+respiration, aucun croisement du pli, pli toujours visible**.
+
+**3 contrôles neufs** (l'amorce respire · elle ne traverse pas le pli · le pli
+reste visible) : le défaut avait traversé **36 contrôles verts**.
+
+### ⏳ CE QUI RESTE
+1. **La planche des 8 images n'a pas pu être assemblée ici** : ni PIL, ni
+   ffmpeg, ni ImageMagick dans ce conteneur, et l'installation a été refusée.
+   Les 8 captures existent (390 px, un chargement chacune, horodatage vrai) —
+   **à regarder sur le PC**, c'est la règle de la maison (*« Regarder les
+   captures, section par section, en 390 ET 1440, avant de dire fini »*).
+2. **Mongazi tranche le doublon** `minuit/` vs `vitrina/lettre/` (recommandé :
+   garder `minuit/`, 22 Ko, zéro appel réseau).
+3. **La livraison à l'heure choisie** (n8n) : la fonction qui donne son nom au
+   produit, toujours pas construite.

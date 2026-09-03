@@ -1864,3 +1864,91 @@ ont été perdues et refaites.
 ⚠️ Et `git merge --ff-only` **échoue en silence** sur une branche divergente : on croit
 travailler sur `main` à jour en étant quatre commits en arrière. Vérifier
 `git log origin/main`, pas seulement le code de retour.
+
+---
+
+## 2026-09-03 — `preserve-3d` REMPLACE le z-index par un tri de profondeur
+
+- **Contexte** : l'enveloppe de MINUIT (`vitrina/lettre/gabarit.html`). Des
+  **bandes rouges rayaient le papier** pendant l'ouverture. Trouvé en lisant les
+  pixels de la colonne centrale (3 zones crème alternant avec du rouge), pas
+  dans le code.
+- **Ce qui s'est passé** : j'ai d'abord cherché un z-index mal posé. Il n'y en
+  avait pas. `transform-style: preserve-3d` **annule l'ordre des z-index** dans
+  son sous-arbre et le remplace par un **tri de profondeur 3D** : deux plans qui
+  **s'intersectent** sont découpés l'un par l'autre, et le rendu est rayé. Mon
+  `rotateX(4deg)` sur le papier le faisait traverser le plan de la poche.
+- **Leçon** : dans un contexte `preserve-3d`, deux plans qui doivent se
+  recouvrir se séparent **en Z** (`translateZ`), jamais en `z-index`. Et une
+  rotation même minuscule (4°) sur un plan large suffit à le faire intersecter
+  son voisin.
+- **À appliquer** : quand un rendu est **rayé** plutôt que mal ordonné, chercher
+  `preserve-3d` avant de toucher aux z-index. Les rayures sont la signature
+  visuelle d'une intersection de plans, pas d'un empilement.
+
+## 2026-09-03 — Un caractère sosie tue un fichier vert, et l'œil ne le verra jamais
+
+- **Contexte** : `--or-clair:#d3ae६8` dans le gabarit de MINUIT. Un **chiffre
+  devanagari** au lieu d'un 6.
+- **Ce qui s'est passé** : couleur invalide → `radial-gradient` invalide → **le
+  cachet de cire ne s'affichait pas du tout** et **le prénom de la destinataire
+  était illisible**. Les deux éléments les plus importants du premier écran,
+  tués par une frappe, dans un fichier par ailleurs vert. Une deuxième
+  occurrence dormait dans un commentaire (`basculе`, « е » cyrillique) : elle
+  était inoffensive, mais elle rendait le mot introuvable au `grep`.
+- **Leçon** : un sosie est **invisible à l'œil par construction**. Aucune
+  relecture humaine ne le trouvera, et aucun contrôle fonctionnel ne le
+  signalera si le défaut ne casse qu'un rendu.
+- **À appliquer** : dans tout fichier livrable, un contrôle qui refuse les
+  caractères cyrilliques, grecs, devanagari, pleine largeur, arabes et
+  mathématiques. Deux lignes de Python, et il rattrape la classe entière.
+  Ajouté à `vitrina/lettre/_qc.py`, **à reprendre dans les autres QC**.
+
+## 2026-09-03 — Une leçon de ce dépôt ne m'a pas protégé de la refaire
+
+- **Contexte** : mesurer l'ouverture de la lettre image par image.
+- **Ce qui s'est passé** : j'ai empilé des `wait_for_timeout` autour de
+  captures. Le CLAUDE.md de la maison **documente exactement ce piège** depuis
+  Angy Art (08/08) : *« ne jamais mesurer une animation d'ouverture avec des
+  `wait_for_timeout` empilés autour de captures »*, parce qu'une capture coûte
+  des centaines de ms et fait dériver l'horloge. Deux diagnostics faux avant de
+  m'en souvenir.
+- **Leçon** : **un chargement de page = une capture**, et c'est la **page** qui
+  compte le temps (`requestAnimationFrame`), jamais le script de pilotage.
+- **À appliquer** : relire les leçons du domaine **avant** d'écrire l'instrument,
+  pas après l'avoir cru. Corollaire déjà écrit ici deux fois et vérifié une
+  troisième : **vérifier sa sonde avant d'accuser le produit** — mon lecteur de
+  matrice CSS attrapait le « 3 » de `matrix3d` et annonçait un rabat bloqué à
+  -0,0° alors qu'il était à -172°.
+
+## 2026-09-03 — Un texte centré dans une boîte à moitié cachée tombe forcément en bas
+
+- **Contexte** : l'amorce du papier de MINUIT, dans l'enveloppe qui s'ouvre.
+- **Ce qui s'est passé** : `align-items:center` centrait la phrase sur **toute**
+  la hauteur du papier. Mais **le papier ne sort de la poche qu'à 62 %** : le
+  reste est caché. Le texte finissait donc **à 0,2 px du bord de la poche** —
+  pas coupé, donc **aucun contrôle de débordement ne pouvait le voir**, mais
+  sans aucune respiration, et la moindre variation de métrique de police
+  l'aurait fait passer dessous. Trouvé en **regardant la capture**, après que le
+  QC était vert à 36 contrôles.
+- **Leçon** : quand une boîte n'est visible qu'en partie, on centre dans la
+  **partie visible**, pas dans la boîte. Le centrage est un calcul sur la boîte,
+  et la boîte n'est pas ce que l'œil voit.
+- **À appliquer** : dès qu'un élément est partiellement recouvert par un autre
+  (poche, bande de bord, barre fixe), mesurer la distance entre le bas du texte
+  et le haut du recouvrement, et exiger une marge réelle. Ajouté au QC.
+
+## 2026-09-03 — Une police en `vw` dans un conteneur plafonné est un bug
+
+- **Contexte** : la même amorce, à 768 px et au-delà.
+- **Ce qui s'est passé** : `font-size:clamp(15px,3.9vw,19px)` faisait grandir la
+  phrase avec l'écran, alors que **l'enveloppe est plafonnée à `min(80vw,338px)`**.
+  Passé 480 px de viewport, la boîte ne grandit plus mais le texte continue : à
+  19 px la phrase passait à **3 lignes** et **traversait le pli du papier**, ce
+  qui se lit comme un **texte barré**.
+- **Leçon** : une taille de police en unités de viewport n'a de sens que si son
+  conteneur suit le viewport. Dans une boîte à largeur plafonnée, le maximum du
+  `clamp` doit être calé sur **la largeur plafonnée**, pas laissé au hasard.
+- **À appliquer** : chercher les `vw` dans les polices dont le conteneur est en
+  `min(…, Npx)`. Vérifier le **nombre de lignes** aux largeurs au-dessus du
+  plafond (768, 1440), pas seulement à 390.

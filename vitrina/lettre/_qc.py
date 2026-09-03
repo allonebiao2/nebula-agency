@@ -122,7 +122,29 @@ def main():
         pg.wait_for_timeout(900)
         t("le cachet se fend a l'ouverture",
           pg.evaluate("document.querySelector('.enveloppe').classList.contains('ouvert')"))
-        pg.wait_for_timeout(1100)
+
+        # ⚠️ TROUVE SUR UNE CAPTURE, PAS DANS LE CODE. Le papier ne sort qu'a
+        # 62 % : le reste reste dans la poche. Une amorce centree sur TOUTE la
+        # hauteur du papier finissait donc a 0,2 px du bord de la poche. Elle
+        # n'etait pas coupee, mais elle n'avait aucune respiration, et a 768 px
+        # elle passait a 3 lignes et TRAVERSAIT le pli (ca se lit comme un
+        # texte barre). On mesure les deux, aux trois largeurs, plus tard.
+        pg.wait_for_timeout(500)
+        g = pg.evaluate("""(()=>{
+          const a=document.querySelector('#amorce').getBoundingClientRect();
+          const pa=document.querySelector('.papier').getBoundingClientRect();
+          const de=document.querySelector('.devant').getBoundingClientRect();
+          const pli=pa.top+pa.height*0.47;
+          return {marge:de.top-a.bottom, surPli:a.bottom>pli&&a.top<pli,
+                  pliVisible:pli<de.top};})()""")
+        t(f"l'amorce respire au-dessus de la poche ({g['marge']:.0f} px)",
+          g["marge"] >= 12, "un texte a ras du bord de la poche se lit comme coupe")
+        t("l'amorce ne traverse pas le pli du papier", not g["surPli"],
+          "un texte a cheval sur le pli se lit comme barre")
+        t("le pli du papier reste visible", g["pliVisible"],
+          "sans pli visible, rien ne dit que la lettre a ete pliee")
+
+        pg.wait_for_timeout(600)
         t("le code apparait", pg.locator("#code").is_visible())
         t("  -> la lettre n'est TOUJOURS pas accessible", pg.locator("#lettre").is_hidden())
 

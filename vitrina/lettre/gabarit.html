@@ -150,17 +150,23 @@ body.ferme{overflow:hidden;height:100vh}
   transition:transform 1.05s cubic-bezier(.22,.9,.3,1) .5s,box-shadow 1.05s ease .5s;
   box-shadow:0 2px 6px rgba(0,0,0,.18);
   overflow:hidden;
-  display:flex;align-items:center;justify-content:center;
+  /* ⚠️ L'AMORCE SE CENTRE DANS LA PARTIE VISIBLE, PAS DANS LE PAPIER.
+     Trouve sur une capture a 1 300 ms, puis mesure : le papier sort a 62 %
+     seulement (le reste est dans la poche), et un texte centre sur toute sa
+     hauteur finissait a 0,2 px du bord de la poche. Il n'etait pas coupe,
+     mais il n'avait aucune respiration, et la moindre variation de metrique
+     de police le faisait passer dessous. On l'aligne en haut. */
+  display:flex;align-items:flex-start;justify-content:center;padding-top:7%;
 }
 /* le pli du papier, qui prouve qu'il a été plié */
 .papier::after{
-  content:"";position:absolute;left:0;right:0;top:38%;height:1px;
+  content:"";position:absolute;left:0;right:0;top:47%;height:1px;
   background:linear-gradient(90deg,transparent,rgba(46,38,32,.13) 12%,rgba(46,38,32,.13) 88%,transparent);
 }
 /* la première phrase, visible sur le papier qui sort */
 .amorce{
-  font-family:var(--script);font-size:clamp(15px,3.9vw,19px);color:var(--cire);
-  opacity:0;text-align:center;padding:0 14%;line-height:1.35;
+  font-family:var(--script);font-size:clamp(14px,3.9vw,16px);color:var(--cire);
+  opacity:0;text-align:center;padding:0 9%;line-height:1.32;
   transition:opacity .8s ease .95s;
 }
 .ouvert .amorce{opacity:.9}
