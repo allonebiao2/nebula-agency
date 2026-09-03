@@ -32,6 +32,17 @@ import os
 import sys
 import urllib.request
 
+# La console de Windows est en cp1252 et ne sait pas ecrire les symboles du
+# depot : sans cette ligne, l'outil MEURT en affichant son propre diagnostic.
+# Vu le 2026-09-03 : rapatrier.py annoncait « le dossier de travail n'est pas
+# propre » et se tuait sur le symbole qui precede la phrase. Un outil qui
+# meurt en annoncant un probleme est pire qu'un outil absent.
+for _f in (sys.stdout, sys.stderr):
+    try:
+        _f.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/126.0 Safari/537.36")
 RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

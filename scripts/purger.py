@@ -44,6 +44,17 @@ USAGE
 import io, json, sys, urllib.error, urllib.request
 from pathlib import Path
 
+# La console de Windows est en cp1252 et ne sait pas ecrire les symboles du
+# depot : sans cette ligne, l'outil MEURT en affichant son propre diagnostic.
+# Vu le 2026-09-03 : rapatrier.py annoncait « le dossier de travail n'est pas
+# propre » et se tuait sur le symbole qui precede la phrase. Un outil qui
+# meurt en annoncant un probleme est pire qu'un outil absent.
+for _f in (sys.stdout, sys.stderr):
+    try:
+        _f.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 RACINE = Path(__file__).resolve().parent.parent
 API = "https://api.cloudflare.com/client/v4"
 

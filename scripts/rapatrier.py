@@ -18,6 +18,17 @@ déploiement).
 """
 import subprocess, sys, argparse, re
 
+# La console de Windows est en cp1252 et ne sait pas ecrire les symboles du
+# depot : sans cette ligne, l'outil MEURT en affichant son propre diagnostic.
+# Vu le 2026-09-03 : rapatrier.py annoncait « le dossier de travail n'est pas
+# propre » et se tuait sur le symbole qui precede la phrase. Un outil qui
+# meurt en annoncant un probleme est pire qu'un outil absent.
+for _f in (sys.stdout, sys.stderr):
+    try:
+        _f.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 def git(*a, silencieux=False):
     r = subprocess.run(["git"] + list(a), capture_output=True, text=True,
                        encoding="utf-8", errors="replace")
